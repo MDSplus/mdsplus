@@ -96,12 +96,21 @@ static int fixup_nid(int *nid, int idx, struct descriptor *path_out)
   status = TdiGetNci(&niddsc,&dtype_str,&dtype_dsc MDS_END_ARG);
   if (status & 1 && dtype == DTYPE_ACTION && AddReference(idx,nid))
   {
-    char ident[17];
+    char ident[64];
+    char tmp[64];
     struct descriptor ident_dsc = {0, DTYPE_T, CLASS_S, 0};
+    EMPTYXD(xd);
     sprintf(ident,"_ACTION_%08X",*nid);
     ident_dsc.length = strlen(ident);
     ident_dsc.pointer = ident;
     StrCopyDx(path_out,&ident_dsc);
+    strcpy(tmp,ident);
+    strcpy(ident,"public ");
+    strcat(ident,tmp);
+    strcat(ident,"=compile('_$_$_$_UNDEFINED')");
+    ident_dsc.length = strlen(ident);
+    TdiExecute(&ident_dsc,&xd MDS_END_ARG);
+    MdsFree1Dx(&xd,NULL);
     return 1;
   }
   return 0;
@@ -178,10 +187,6 @@ int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table)
   num_actions=0;
   if (!varnames_d.length)
     StrCopyDx(&varnames_d,&varnames);
-  /*
-  TdiDeallocate(&varnames_d,&relcount_d MDS_END_ARG);
-  */
-  TdiResetPublic(&relcount_d MDS_END_ARG);
   while ((TreeFindNodeWild(nodespec,&nids[num_actions],&ctx,mask) & 1) && (num_actions < MAX_ACTIONS))
     num_actions++;
   TreeFindNodeEnd(&ctx);
