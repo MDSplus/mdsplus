@@ -40,7 +40,7 @@ function dbinfo, dbname, host, conn, dbtype, dbuser, dbpass
   SQL
   dbtype ="SYBASE"
   host=getenv("SYBASE_HOST")
-  if (strlen(host) eq 0) then host = "eagle"
+  if (strlen(host) eq 0) then host = "RED"
   catch, err
   if (err ne 0) then begin
     dbuser=getenv("USER")

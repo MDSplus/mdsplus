@@ -19,6 +19,9 @@ AC_PROG_CC
 AC_PROG_F77
 
 LD=ld
+LD_LDARC=""
+LD_LDSHARE=""
+IDL_BIN_SUF=""
 
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib -I\$(top_srcdir)/include +DA1.1 +DS1.1 +z";
@@ -45,15 +48,20 @@ sparc-sun-solaris2*)  LINKSHARED="-G -B symbolic -R $(exec_prefix)/lib";
        fi;
        CFLAGS="$CFLAGS -I\$(top_srcdir)/include -fpic";
        FFLAGS="$FFLAGS -I\$(top_srcdir)/include -fpic";
+       IDL_BIN_SUF="solaris2.sparc"
        LDSHARE="-Wl,-B,dynamic";
        LDARC="-Wl,-B,static";
-       FOR_LDFLAGS="-L/opt/SUNWspro/lib -lF77 -lM77 -lsunmath";
+       LD_LDARC="-B static ";
+       LD_LDSHARE="-B dynamic ";
        LIBPATH="LD_LIBRARY_PATH";
        SHARETYPE=".so";;
 alpha-dec-osf*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -pthread";
        FFLAGS="$FFLAGS -I\$(top_srcdir)/include";
+       IDL_BIN_SUF="alpha"
        LDSHARE="-Wl,-so_archive ";
        LDARC="-Wl,-no_so ";
+       LD_LDARC="-no_so ";
+       LD_LDSHARE="-so_archive ";
        LINKSHARED="-shared -rpath $(exec_prefix)/lib";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="-lfor";
@@ -118,6 +126,7 @@ AC_CHECK_LIB(dl,dlopen,LIBDL="-ldl",LIBDL="")
 AC_CHECK_LIB(dld,shl_load,LIBDLD="-ldld",LIBDLD="")
 AC_CHECK_LIB(nsl,main,LIBNSL="-lnsl",LIBNSL="")
 AC_CHECK_LIB(socket,socket,LIBSOCKET="-lsocket",LIBSOCKET="")
+AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
 
 if test "$enable_d3d" = yes -o "$enable_d3d" = on ; then
   AC_MSG_CHECKING(...D3DLIB...)
@@ -207,6 +216,45 @@ if test "$enable_nocell" = yes -o "$enable_nocell" = on ; then
 else
 		 AC_CHECKING(...ipcs part of a cell...)
 fi
+
+dnl Check for Sybase
+AC_MSG_CHECKING(for SYBASE open/client)
+if test -r "/usr/local/sybase/lib/libsybdb.a"
+then 
+        SYBASE="/usr/local/sybase"
+        SYBASE_INC="-I$SYBASE/include"
+        SYBASE_LIB="-L$SYBASE/lib $LD_LDARC -lsybdb $LD_LDSHARE"
+        AC_MSG_RESULT(have sybase open/client)
+else
+        SYBASE_INC=""
+        SYBASE_LIB=""
+        AC_MSG_RESULT(no sybase open/client)
+fi
+
+dnl Check for Idl
+AC_MSG_CHECKING(for idl)
+idl_dir="/usr/local/rsi/idl"
+if test -r $IDL_DIR
+then
+        IDL_INC="-I$idl_dir/external"
+        IDL_LIB="-L$idl_dir/bin/bin.$IDL_BIN_SUF -lidl"
+        AC_MSG_RESULT(have idl $IDL_INC)
+else
+        IDL_INC=""
+        IDL_LIB=""
+        AC_MSG_RESULT(no idl)
+fi
+
+AC_MSG_CHECKING(if idlsql should be built)
+if test -n $SYBASE_INC -a -n $IDL_INC
+then
+        IDLSQL="idlsql"
+        AC_MSG_RESULT(have both idl and sql so yes.)
+else
+        IDLSQL=""
+        AC_MSG_RESULT(missing at least one of idl and sql so no.)
+fi
+
 AC_DEFINE_UNQUOTED(SHARELIB_TYPE,"${SHARETYPE}")
 AC_C_BIGENDIAN
 AC_C_CHAR_UNSIGNED
@@ -239,6 +287,10 @@ AC_CHECK_LIB(socket,socket,LIBSOCKET="-lsocket",LIBSOCKET="")
 AC_SUBST(D3D_PACKAGE)
 AC_SUBST(D3DLIB)
 AC_SUBST(D3D_FFLAGS)
+AC_SUBST(DNET_STUB)
+AC_SUBST(IDL_INC)
+AC_SUBST(IDL_LIB)
+AC_SUBST(IDLSQL)
 AC_SUBST(JAR)
 AC_SUBST(JAVAC)
 AC_SUBST(JAVA_APS)
@@ -261,6 +313,8 @@ AC_SUBST(LIBSOCKET)
 
 AC_SUBST(LINKSHARED)
 AC_SUBST(SHARETYPE)
+AC_SUBST(SYBASE_INC)
+AC_SUBST(SYBASE_LIB)
 AC_SUBST(host)
 AC_SUBST(NEED_SEMUN)
 AC_SUBST(TARGETSYS)
@@ -283,6 +337,7 @@ ccl/Makefile
 cdu/Makefile 
 d3dshr/Makefile 
 dwscope/Makefile 
+idlsql/Makefile
 ipcs/Makefile 
 ipcs/lib/Makefile 
 ipcs/grandpa/Makefile 

@@ -30,7 +30,8 @@ PARTS = ipcs \
         math \
         @D3D_PACKAGE@ \
         wfevent \
-	@JAVA_APS@
+	@JAVA_APS@ \
+        @IDLSQL@ 
 
 all:
 	cdir=`pwd`;\
