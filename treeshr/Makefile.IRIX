@@ -19,6 +19,7 @@ all : .depend
 
 ../shlib/libTreeShr.so : $(OBJECTS) ../shlib
 	ld -shared -o $@ $(OBJECTS) -lc -L../shlib -lMdsShr
+	rm so_locations
 
 ../shlib :
 	mkdir ../shlib
@@ -27,6 +28,7 @@ clean :
 	- rm *.o
 	- rm ../shlib/libTreeShr.so
 	- rm .depend
+	- rm so_locations
 
 depend : .depend
 

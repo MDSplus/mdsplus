@@ -84,12 +84,14 @@ all : .depend
 
 ../shlib/libTdiShr.so : $(OBJECTS) ../shlib
 	ld -shared -o $@ $(OBJECTS) -lc -lm -L../shlib -lMdsShr -lTreeShr
+	rm so_locations
 
 ../shlib :
 	mkdir ../shlib
 clean :
 	- rm *.o
 	- rm ../shlib/libTdiShr.so
+	- rm so_locations
 
 TdiLex.c : TdiLex.x
 	lex -t TdiLex.x > $@

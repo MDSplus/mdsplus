@@ -15,6 +15,7 @@ all : .depend
 
 ../shlib/libMdsShr.so : $(OBJECTS) ../shlib 
 	$(LD) -shared -o $@ $(OBJECTS) -lc 
+	rm so_locations
 
 ../shlib :
 	mkdir ../shlib
@@ -23,6 +24,7 @@ clean :
 	- rm ../shlib/libMdsShr.so
 	- rm *.o
 	- rm .depend
+	- rm so_locations
 
 depend : .depend
 
