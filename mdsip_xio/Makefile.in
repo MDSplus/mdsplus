@@ -1,0 +1,179 @@
+include makefile-header
+
+top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
+SHELL=/bin/sh
+CFLAGS = $(GLOBUS_CFLAGS) $(GLOBUS_INCLUDES) -I/usr/local/mdsplus/include
+LDFLAGS = $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
+EXPORTS = mdsipshr.export
+INSTALL=@top_srcdir@/conf/install-sh -c
+ifeq "@SHARETYPEMOD@x" "x"
+	modules =
+else
+	modules = @MAKESHLIBDIR@libMdsIpShr@SHARETYPEMOD@ 
+endif
+
+
+
+
+SERVER_SOURCES = \
+	mdsip_accept_cb.c \
+	mdsip_authenticate_cb.c \
+	mdsip_become_user.c \
+	mdsip_close_cb.c \
+	mdsip_current_time.c \
+	mdsip_do_message_cb.c \
+	mdsip_initialize_io.c \
+	mdsip_io_wait.c \
+	mdsip_new_client.c \
+	mdsip_open_cb.c \
+        mdsip_parse_command.c \
+	mdsip_process_message.c \
+	mdsip_read_header_cb.c \
+	mdsip_test_result.c \
+	mdsip_write.c \
+        mdsip_server.c
+
+CLIENT_SOURCES = \
+	mdsip_connect.c \
+	mdsip_test_status.c \
+	mdsip_send_message.c \
+	mdsip_get_message.c \
+	mdsip_client_type.c \
+	mdsip_flip_header.c \
+	mdsip_flip_data.c \
+	mdsip_send_arg.c \
+	mdsip_compatible_api.c \
+	mdsip_compatible_api_2.c \
+	mdsip_host_to_ipaddr.c \
+	mdsip_get_result.c \
+	mdsip_value.c \
+	mdsip_put.c \
+	mdsip_arglen.c \
+	mdsip_open.c \
+	mdsip_make_descrip.c \
+	mdsip_close.c \
+	mdsip_set_default.c \
+	mdsip_event_ast.c \
+	mdsip_event_can.c \
+	mdsip_dispatch_event.c
+
+UTIL_SOURCES = \
+	mdsip_connect.c \
+	mdsip_test_status.c \
+	mdsip_send_message.c \
+	mdsip_get_message.c \
+	mdsip_client_type.c \
+	mdsip_flip_header.c \
+	mdsip_flip_data.c \
+	mdsip_send_arg.c \
+	mdsip_compatible_api.c \
+	mdsip_host_to_ipaddr.c \
+	mdsip_get_result.c \
+	mdsip_value.c \
+	mdsip_put.c \
+	mdsip_arglen.c \
+	mdsip_open.c \
+	mdsip_make_descrip.c \
+	mdsip_close.c \
+	mdsip_set_default.c \
+	mdsip_event_ast.c \
+	mdsip_event_can.c \
+	mdsip_dispatch_event.c
+
+SERVER_OBJECTS = $(SERVER_SOURCES:.c=.o)
+CLIENT_OBJECTS = $(CLIENT_SOURCES:.c=.o)
+UTIL_OBJECTS = $(UTIL_SOURCES:.c=.o)
+
+all : makefile-header \
+      @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ \
+      $(modules) \
+      @MAKEBINDIR@ @MAKELIBDIR@ @MAKEETCDIR@ \
+      @MAKEBINDIR@mdsiptest @MAKEBINDIR@mdsip \
+      @MAKEBINDIR@mdsipd @MAKEETCDIR@mdsip.hosts \
+      @MAKEBINDIR@mkdirhier \
+      @MAKELIBDIR@libMdsIpShr.a @MAKELIBDIR@libMdsIpUtil.a 
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SERVER_SOURCES) $(CLIENT_SOURCES)
+
+clean: 
+	@ $(RM) $(SERVER_OBJECTS) $(CLIENT_OBJECTS)
+	@ $(RM) @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@
+	@ $(RM) @MAKEBINDIR@mdsip
+	@ $(RM) makefile-header
+	@ $(RM) so_locations
+	@ $(RM) @MAKELIBDIR@libMdsIpShr.a
+	@ $(RM) @MAKELIBDIR@libMdsIpUtil.a
+	@ $(RM) @MAKEBINDIR@mdsiptest
+	@ $(RM) @MAKEBINDIR@mdsip
+	@ $(RM) @MAKEBINDIR@mdsipd
+	@ $(RM) @MAKEBINDIR@mkdirhier
+	@ $(RM) @MAKEETCDIR@mdsip.hosts
+
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ @libdir@
+        ifdef modules
+		$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsIpShr@SHARETYPEMOD@ @libdir@
+        endif
+	$(INSTALL) -m 755  @MAKEBINDIR@mdsip	@bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@mdsipd	@bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@mkdirhier @bindir@
+	if test "@SHARETYPE@" != ".a" ; then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpShr.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpUtil.a @libdir@; \
+	fi;
+	if [ ! -d $(exec_prefix)/etc ] ; then \
+                mkdirhier $(exec_prefix)/etc; \
+                chmod 755 $(exec_prefix)/etc; \
+        fi;
+	$(INSTALL) -m 755  mdsip.hosts $(exec_prefix)/etc
+
+
+@MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ : $(CLIENT_OBJECTS)
+	$(LD) -o $@ @LINKSHARED@ $(CLIENT_OBJECTS) $(LDFLAGS)
+
+@MAKEBINDIR@mdsip : $(SERVER_OBJECTS)
+	$(CC) -o $@ $(SERVER_OBJECTS) $(LDFLAGS) -L$(top_srcdir)/lib -lMdsIpShr -lMdsShr -lTdiShr
+
+makefile-header:  
+	@GLOBUS_LOCATION@/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@ globus_xio > makefile-header
+
+@MAKEBINDIR@ :
+	mkdir @MAKEBINDIR@
+
+@MAKEBINDIR@mdsiptest : t.c @MAKELIBDIR@libMdsIpShr@SHARETYPE@
+	$(CC) -o $@ $(CFLAGS) t.c -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
+
+@MAKEBINDIR@mdsipd : mdsipd
+	cp mdsipd @MAKEBINDIR@mdsipd
+
+@MAKELIBDIR@libMdsIpShr.a : $(CLIENT_OBJECTS)
+	$(AR) -cr $@ $(CLIENT_OBJECTS)
+	@RANLIB@ $@
+
+ifdef modules
+@MAKESHLIBDIR@libMdsIpShr@SHARETYPEMOD@ : $(CLIENT_OBJECTS)
+	$(LD) -o $@ @LINKMODULE@ $(CLIENT_OBJECTS) $(LIBS) 
+endif
+
+@MAKELIBDIR@libMdsIpUtil.a : $(UTIL_OBJECTS)
+	$(AR) -cr $@ $(UTIL_OBJECTS)
+	@RANLIB@ $@
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@
+
+@MAKEETCDIR@ :
+	mkdir @MAKEETCDIR@
+
+@MAKEETCDIR@mdsip.hosts : mdsip.hosts
+	cp mdsip.hosts @MAKEETCDIR@mdsip.hosts
+
+@MAKEBINDIR@mkdirhier : mkdirhier
+	cp mkdirhier @MAKEBINDIR@mkdirhier
