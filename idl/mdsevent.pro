@@ -60,7 +60,8 @@
 ;-
 function EventImage
   case !version.os of
-  'OSF' : ans = 'libIdlMdsEvent.so'
+  'linux' : ans = 'libIdlMdsEvent.so'
+  'OSF'   : ans = 'libIdlMdsEvent.so'
   'sunos' : ans = 'libIdlMdsEvent.so'
   'Win32' : ans = 'IDLMDSEVENT'
   'hp-ux' : begin
@@ -111,7 +112,7 @@ end
 function esocket
   forward_function mds$socket
   defsysv,'!MDS_SOCKET',exists=old_sock
-  if old_sock then sock = mds$socket else sock = -1
+  if old_sock then sock = mds$socket() else sock = -1
   return,sock
 end
 
