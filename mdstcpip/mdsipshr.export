@@ -24,7 +24,6 @@ GetMdsMsg
 SetCompressionLevel
 MdsSetServerPortname
 ConnectToInet
-FdActive
 CloseSocket
 RegisterRead
 MdsSetClientAddr
@@ -40,4 +39,4 @@ MdsGetServerPortname
 MdsGetClientAddr
 HostToIp
 MdsIpFree
-
+Poll
