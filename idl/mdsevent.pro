@@ -31,8 +31,7 @@
 ;                        	event_id:long, $
 ;                         	pid:long, $
 ;                         	name:string, $
-;                         	data:bytearr(12), $
-;                         	event_ptr:event_struct}
+;                         	data:bytearr(12)
 ;
 ; COMMON BLOCKS:
 ;	None.
@@ -87,39 +86,16 @@ function EventImage
   return, ans
 end
 
-function PointerSize
-  case !version.os of
-  'OSF' : ans = 8
-  'sunos' : ans = 4
-  'hp-ux' : ans = 4
-  else  : ans = 4
-  endcase
-  return, ans
-end
-
 function mdsevent_getevi,id
-  widget_control,id,get_uvalue=event_struct
-  if PointerSize() eq 4 then begin
-    event_stuff = bytarr(56)
-    MdsMemCpy, event_stuff, event_struct, 56
-    e = {mds_event_info,stub_id:long(event_stuff,0),   $
+  widget_control,id,get_uvalue=eventid
+  event_stuff = bytarr(52)
+  stat = call_external(EventImage(),"IDLMdsGetevi",eventid,event_stuff,value=[1,0]);
+  e = {mds_event_info,stub_id:long(event_stuff,0),   $
                          base_id:long(event_stuff,4), $
                          event_id:long(event_stuff,8), $
-                         pid:long(event_stuff,12), $
-                         name:strtrim(event_stuff(16:43)), $
-                         data:event_stuff(44:55), $
-                         event_ptr:event_struct}
-  endif else begin
-    event_stuff = bytarr(60)
-    MdsMemCpy, event_stuff, event_struct, 60
-    e = {mds_event_info,stub_id:long(event_stuff,0),   $
-                         base_id:long(event_stuff,4), $
-                         event_id:long64(event_stuff,8), $
-                         pid:long(event_stuff,16), $
-                         name:strtrim(event_stuff(20:47)), $
-                         data:event_stuff(48:59), $
-                         event_ptr:event_struct}
-  endelse
+                         name:strtrim(event_stuff(12:39)), $
+                         data:event_stuff(40:51)}
+  help,/struct,e
   return,e
 end
 
@@ -136,7 +112,6 @@ pro mdsevent_can,id
   forward_function mds$socket
     widget_control, id, get_value=e
     dummy=call_external(EventImage(),'IDLMdsEventCan',mds$socket(),e.event_id,value=[1,1])
-  ;  dummy=call_external(decw$image(/xt),'XtFree',e.event_ptr,value=[1])
   return
 end
 
@@ -144,17 +119,17 @@ pro mdsevent_cleanup, id
   forward_function mds$socket
     e = mdsevent_getevi(id)
     dummy=call_external(EventImage(),'IDLMdsEventCan',mds$socket(),e.event_id,value=[1,1])
-  ;  dummy=call_external(decw$image(/xt),'XtFree',e.event_ptr,value=[1])
   return
 end
 
 function mdsevent,parent,name,uvalue=uvalue
   forward_function mds$socket
   stub = widget_base(parent)
-  ss = widget_base(stub)  ;; this child widget will hold the event_struct as the user value
-  event_struct=call_external(EventImage(),'IDLMdsEvent',mds$socket(), parent, stub, name, value=[1,0,0,1])
+  ss = widget_base(stub)  ;; this child widget will hold the eventid as the user value
+  eventid=call_external(EventImage(),'IDLMdsEvent',mds$socket(), parent, stub, name, value=[1,0,0,1])
+  help,eventid
   widget_control,stub,event_func='mdsevent_func', func_get_value='mdsevent_get_value'
-  widget_control,ss,set_uvalue=event_struct,kill_notify='mdsevent_cleanup'  ;; kill_notify on this widget so still have access to uvalue
+  widget_control,ss,set_uvalue=eventid,kill_notify='mdsevent_cleanup'  ;; kill_notify on this widget so still have access to uvalue
   if (keyword_set(uvalue)) then widget_control,stub,set_uvalue=uvalue
   return, stub
 end
