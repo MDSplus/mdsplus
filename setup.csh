@@ -73,17 +73,20 @@ if ( $?temp_sym_name ) then
   if ( $temp_sym_old_value == '' ) then
     setenv $temp_sym_name $temp_sym_value
   else
-    switch ($temp_direction)
-    case '>':
-      setenv $temp_sym_name ${temp_sym_old_value}${temp_delim}${temp_sym_value}
-      breaksw
-    case '<':
-      setenv $temp_sym_name ${temp_sym_value}${temp_delim}${temp_sym_old_value}
-      breaksw
-    default:
-      echo bad direction - $temp_direction
-      breaksw
-    endsw
+    echo $temp_sym_old_value | grep -q $temp_sym_value
+    if ( $status) then
+      switch ($temp_direction)
+      case '>':
+        setenv $temp_sym_name ${temp_sym_old_value}${temp_delim}${temp_sym_value}
+        breaksw
+      case '<':
+        setenv $temp_sym_name ${temp_sym_value}${temp_delim}${temp_sym_old_value}
+        breaksw
+      default:
+        echo bad direction - $temp_direction
+        breaksw
+      endsw
+    endif
   endif
   unset temp_sym_name
   unset temp_sym_old_value

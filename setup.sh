@@ -77,16 +77,18 @@ then
     eval $temp_sym_name='`echo $temp_sym_value`'
     export $temp_sym_name
   else
-    case $temp_direction in
-    '>')
-      eval $temp_sym_name='`echo ${temp_sym_old_value}${temp_delim}${temp_sym_value}`'
-      export $temp_sym_name;;
-    '<')
-      eval $temp_sym_name='`echo ${temp_sym_value}${temp_delim}${temp_sym_old_value}`'
-      export $temp_sym_name;;
-    *)
-      echo bad direction - $temp_direction;;
-    esac
+    if ! echo $temp_sym_old_value | grep -q $temp_sym_value ; then
+      case $temp_direction in
+      '>')
+        eval $temp_sym_name='`echo ${temp_sym_old_value}${temp_delim}${temp_sym_value}`'
+        export $temp_sym_name;;
+      '<')
+        eval $temp_sym_name='`echo ${temp_sym_value}${temp_delim}${temp_sym_old_value}`'
+        export $temp_sym_name;;
+      *)
+        echo bad direction - $temp_direction;;
+      esac
+    fi
   fi
   unset temp_sym_name
   unset temp_sym_old_value
@@ -144,7 +146,7 @@ else
     shellcmd=`/bin/awk "$awkcmd" $temp_file`
     unset temp_file
     eval $shellcmd
-    unset temp_setup_script
+#    unset temp_setup_script
     unset shellcmd
     unset awkcmd
   else
