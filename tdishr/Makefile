@@ -78,6 +78,8 @@ TdiXxx.o \
 TdiYaccSubs.o \
 TdiYacc.o
 
+EXPORTS = TdiShr.export
+
 tdishr : ../shlib ../shlib/libTdiShr.$(SHARE_TYPE)
 
 ../shlib/libTdiShr.$(SHARE_TYPE) : $(OBJECTS) 

@@ -79,6 +79,8 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #pragma HP_ALIGN NOPADDING PUSH
 #elif defined(__sgi)
 #pragma pack(1)
+#elif defined(_AIX)
+#pragma options align=packed
 #endif
 
 #ifdef _big_endian
@@ -134,6 +136,8 @@ struct HEADER
 #pragma HP_ALIGN POP
 #elif defined(__sgi)
 #pragma pack(0)
+#elif defined(_AIX)
+#pragma options align=power
 #endif
 
 static char FIELDSY = BITSY + BITSX;

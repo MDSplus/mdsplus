@@ -15,6 +15,8 @@ OBJECTS = \
         MdsSerialize.o \
 	MdsXdRoutines.o
 
+EXPORTS = MdsShr.export
+
 mdsshr : ../shlib ../shlib/libMdsShr.$(SHARE_TYPE)
 
 ../shlib/libMdsShr.$(SHARE_TYPE) : $(OBJECTS) 
