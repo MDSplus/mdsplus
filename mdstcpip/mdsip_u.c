@@ -269,6 +269,7 @@ static void InstallService()
 static void InitializeService(){}
 static void InstallService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
 static void RemoveService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
+static void SetThisServiceStatus(int state, int hint) {}
 #endif
 
 #else
