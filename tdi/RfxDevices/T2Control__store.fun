@@ -14,8 +14,8 @@ public fun T2Control__store(as_is _nid, optional _method)
     private _N_PAR1_NAME = 11;
     private _N_PAR1_VALUE = 12; 
 
-	private _N_INPUT_1 = 21;
-	private _N_OUTPUT_1 = 85;
+	private _N_INPUT_1 = 51;
+	private _N_OUTPUT_1 = 115;
 
 write(*, 'T2Control store');
 
@@ -24,12 +24,6 @@ write(*, 'T2Control store');
     execute(_cmd);
 
 	_trigger = data(DevNodeRef(_nid, _N_TRIG1_TIME));
-	if(_trigger <= 0)
-	{
-		write(*, 'Invalid Trigger time ', _trigger);
-		return(0);
-	}
-
 	_frequency = data(DevNodeRef(_nid, _N_FREQUENCY));
 	if(_frequency <= 0)
 	{
@@ -40,7 +34,7 @@ write(*, 'T2Control store');
 	write(*, 'Frequency: ', _frequency);
 	_period = 1. / _frequency;
 
-	_n_samples =  MdsValue('size(Feedback->getDacSignal(0))');
+	_n_samples =  MdsValue('size(Feedback->getDacSignal:dsc(0))');
 
 	write(*, 'Num recorded samples = ', _n_samples);
 	_n_samples--;
@@ -53,14 +47,13 @@ write(*, 'T2Control store');
 	for(_c = 0; _c < 64; _c++)
 	{
 			_sig_nid =  DevHead(_nid) + _N_INPUT_1  + _c;
-			_data_command = 'Feedback->getAdcSignal:dsc('//_c//')';
-			write(*, _data_command);
-			_data = MdsValue(_data_command);
+			_data = MdsValue('Feedback->getAdcSignal:dsc($1, $2)', _c / 64, mod(_c,64));
 
 			_status = DevPutSignal(_sig_nid, 0, 10/2048., word(_data), 0, _n_samples, _dim);
 			if(! _status)
 			{
-				DevLogErr(_nid, 'Error writing data in pulse file');
+				write(*, 'Error writing data in pulse file for channel ', _c);
+				DevLogErr(_nid, 'Error writing data in pulse file ');
 
 			}
 	}
@@ -68,9 +61,7 @@ write(*, 'T2Control store');
 	for(_c = 0; _c < 32; _c++)
 	{
 			_sig_nid =  DevHead(_nid) + _N_OUTPUT_1  + _c;
-			_data_command = 'Feedback->getDacSignal:dsc('//_c//')';
-			write(*, _data_command);
-			_data = MdsValue(_data_command);
+			_data = MdsValue( 'Feedback->getDacSignal:dsc($1)', _c);
 
 			_status = DevPutSignal(_sig_nid, 0, 10/2048., word(_data), 0, _n_samples, _dim);
 			if(! _status)

@@ -8,8 +8,10 @@ write(*,'T2Control__add');
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':CALIBRATION', 'NUMERIC', 
-		[1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,
-		 1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0], *, _nid);
+		[1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,
+		 1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,
+		 1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,
+		 1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0,1.,0], *, _nid);
     DevAddNode(_path // ':INIT_CONTR', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':TRIG1_CONTR', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':TRIG2_CONTR', 'NUMERIC', 0, *, _nid);
@@ -61,7 +63,7 @@ write(*,'T2Control__add');
     {
         DevAddNode(_path // ':INPUT_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     }
-    for (_c = 10; _c <=62; _c++)
+    for (_c = 10; _c <=64; _c++)
     {
         DevAddNode(_path // ':INPUT_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
