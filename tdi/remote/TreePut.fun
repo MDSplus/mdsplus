@@ -30,7 +30,7 @@ public fun TreePut(in _nodename, in _expression, optional in  _p1, optional in _
   if (_status & 1)
   {
     if (vms())
-     _status = build_call(8,"TreeShr",_put_rtn,getnci(_nodename,"nid_number"),xd(_treeput_ans),0);
+     _status = build_call(8,"TreeShr",_put_rtn,getnci(_nodename,"nid_number"),xd(_treeput_ans),val(0));
     else
      _status = build_call(8,"TreeShr",_put_rtn,val(getnci(_nodename,"nid_number")),xd(_treeput_ans),val(0));
   }
