@@ -77,10 +77,15 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(void *,int,char *), void *astp
   int use_local;    
   char *eventnam;
   int status = 1;
-  int i;
+  int i,j;
   if(!eventnam_in || !*eventnam_in) return 1;
   eventnam = strcpy(malloc(strlen(eventnam_in)+1),eventnam_in);
-  for (i=0;i<strlen(eventnam);i++) eventnam[i]=toupper(eventnam[i]);
+  for (i=0,j=0;i<strlen(eventnam);i++) 
+  {
+    if (eventnam[i] != 32)
+      eventnam[j++]=toupper(eventnam[i]);
+  }
+  eventnam[j]=0;
   initializeLocalRemote(1, &use_local);
   if(num_receive_servers > 0)
     eventAstRemote(eventnam, astadr, astprm, eventid);
@@ -189,10 +194,15 @@ int MDSEvent(char *evname_in, int data_len, char *data)
 {
   int use_local;
   char *evname;
-  int i;
+  int i,j;
   initializeLocalRemote(0, &use_local);
   evname = strcpy(malloc(strlen(evname_in)+1),evname_in);
-  for (i=0;i<strlen(evname);i++) evname[i]=toupper(evname[i]);
+  for (i=0,j=0;i<strlen(evname);i++)
+  {
+    if (evname[i] != 32)
+      evname[j++]=toupper(evname[i]);
+  }
+  evname[j]=0;
   if(num_send_servers > 0)
     sendRemoteEvent(evname, data_len, data);
   if(use_local)
@@ -1758,7 +1768,12 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
   *eventid = -1;
   if(!eventnam_in || !*eventnam_in) return 1;
   eventnam = strcpy(malloc(strlen(eventnam_in)+1),eventnam_in);
-  for (i=0;i<strlen(eventnam);i++) eventnam[i]=toupper(eventnam[i]);
+  for (i=0,j=0;i<strlen(eventnam);i++)
+  {
+    if (eventnam[i] != 32)
+      eventnam[j++]=toupper(eventnam[i]);
+  }
+  eventnam[j]=0;
   initializeLocalRemote(1, &use_local);
   if(num_receive_servers > 0)
     eventAstRemote(eventnam, astadr, astprm, eventid);
@@ -2026,7 +2041,12 @@ int MDSEvent(char *evname_in, int data_len, char *data)
   int status = 1;
   initializeLocalRemote(0, &use_local);
   evname = strcpy(malloc(strlen(evname_in)+1),evname_in);
-  for (i=0;i<strlen(evname);i++) evname[i]=toupper(evname[i]);
+  for (i=0,j=0;i<strlen(evname);i++)
+  {
+     if (evname[i] != 32)
+       evname[j++]=toupper(evname[i]);
+  }
+  evname[j]=0;
   if(num_send_servers > 0)
     sendRemoteEvent(evname, data_len, data);
   if(use_local)
