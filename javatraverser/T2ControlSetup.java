@@ -52,7 +52,7 @@ public class T2ControlSetup extends DeviceSetup
 		}
 		deviceChoice1.setLabelString("Initial Control");
 		deviceChoice1.setConvert(true);
-		deviceChoice1.setChoiceIntValues(new int[] {});
+		deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)5});
 		getContentPane().add(deviceChoice1);
 		deviceChoice1.setBounds(12,156,276,40);
 		deviceChoice2.setOffsetNid(6);
@@ -67,7 +67,7 @@ public class T2ControlSetup extends DeviceSetup
 		}
 		deviceChoice2.setLabelString("Triggered Control");
 		deviceChoice2.setConvert(true);
-		deviceChoice2.setChoiceIntValues(new int[] {});
+		deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)5});
 		getContentPane().add(deviceChoice2);
 		deviceChoice2.setBounds(312,156,300,40);
 		deviceField4.setNumCols(4);
@@ -88,6 +88,7 @@ public class T2ControlSetup extends DeviceSetup
 		deviceTable1.setLabelString("Calibration:");
 		getContentPane().add(deviceTable1);
 		deviceTable1.setBounds(24,204,192,204);
+		JTabbedPane1.setAlignmentX(7.0F);
 		getContentPane().add(JTabbedPane1);
 		JTabbedPane1.setBounds(252,216,396,192);
 		JPanel1.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
