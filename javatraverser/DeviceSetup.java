@@ -17,7 +17,7 @@ public class DeviceSetup extends JDialog
     JMenuItem pop_items[];
     JPopupMenu pop_methods = null;
     Hashtable updateHash = new Hashtable();
-    protected int width = 200, height = 100;
+    public int width = 200, height = 100;
 
     public int getWidth(){return width;}
     public void setWidth(int width){
@@ -248,6 +248,8 @@ public class DeviceSetup extends JDialog
         for(int i = 0; i < num_components; i++)
             ((DeviceComponent)device_components.elementAt(i)).reset();
         setSize(width, height);
+        pack();
+        repaint();
     }
     public void addDataChangeListener(DataChangeListener listener)
     {

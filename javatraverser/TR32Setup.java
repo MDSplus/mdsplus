@@ -142,7 +142,7 @@ public class TR32Setup extends DeviceSetup {
     deviceField5.setBounds(new Rectangle(-2, 104, 460, 30));
     deviceChoice2.setChoiceIntValues(null);
     deviceChoice2.setChoiceFloatValues(null);
-    deviceChoice2.setOffsetNid(12);
+    deviceChoice2.setOffsetNid(14);
     deviceChoice2.setLabelString("Trig. Edge: ");
     deviceChoice2.setChoiceItems(new String[] {"RISING", "FALLING"});
     deviceChoice2.setUpdateIdentifier("");
