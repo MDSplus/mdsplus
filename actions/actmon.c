@@ -41,6 +41,7 @@ $ MCR ACTMON -monitor monitor-name
 #include <usagedef.h>
 #include <treeshr.h>
 #include <mdsshr.h>
+#include <mdslib.h>
 #include <stdlib.h>
 #include <Xm/Xm.h>
 #include <Mrm/MrmPublic.h>
@@ -119,6 +120,7 @@ static void Disable(Widget w, int *tag, XmToggleButtonCallbackStruct *cb);
 static void SetKillTarget(Widget w, int *tag, XmListCallbackStruct *cb);
 static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct *cb);
 static void ConfirmServerAbort(Widget w, void *tag, void *cb);
+static void SetKillSensitive(Widget top);
 
 #define min(a,b) ( ((a)<(b)) ? (a) : (b) )
 #define max(a,b) ( ((a)>(b)) ? (a) : (b) )
@@ -168,7 +170,8 @@ int       main(int argc, String *argv)
                                        {"Disable", (char *)Disable},
                                        {"ConfirmAbort", (char *)ConfirmAbort},
 				       {"SetKillTarget", (char *)SetKillTarget},
-				      };
+				      }; 
+
   MrmType   class;
   static XrmOptionDescRec options[] = {{"-monitor", "*monitor", XrmoptionSepArg, NULL}};
   static XtResource resources[] = {{"monitor", "Monitor", XtRString, sizeof(String), 0, XtRString, "CMOD_MONITOR"},
@@ -200,6 +203,7 @@ int       main(int argc, String *argv)
   if (!kill_target_w) {
     kill_target_w = XtNameToWidget(top, "*server_name");
   }
+  SetKillSensitive( top);
   CheckIn(resource_list.monitor);
   XtAppAddTimeOut(app_ctx,1000,DoTimer,0);
   XtAppMainLoop(app_ctx);
@@ -281,6 +285,39 @@ static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct *cb)
       XtManageChild(dialog);
     }
   }   
+}
+
+static int executable(const char *script)
+{
+  const static int null=0;
+  const static int dtype_long = DTYPE_LONG;
+  int status;
+  static const char *cmd_front = "Spawn('/usr/bin/which ";
+  static const char *cmd_back = " > /dev/null 2>/dev/null')";
+  int dsc;
+  int ans;
+  int retlen;
+  char cmd[132];
+  strcpy(cmd, cmd_front);
+  strcat(cmd, script); 
+  strcat(cmd, cmd_back);
+  dsc = descr((int *)&dtype_long, &ans, (int *)&null, sizeof(ans));
+  status = MdsValue(cmd, &dsc, &null, &retlen);
+  /*  printf("evaluating / %s / returned %d\n", cmd, ans); */
+  return !ans;
+}
+
+static void SetKillSensitive(Widget top)
+{
+  int i;
+  static const char *widgets[] = {"*abort_server_b", "*kill_server_b", "*kill_dispatcher_b"};
+  static const char *scripts[] = {"mdsserver_abort", "mdsserver_kill", "mdsserver_kill_dispatcher"};
+  for (i= 0; i < 3; i++) {
+    Widget w = XtNameToWidget(top, widgets[i]);
+    if (executable(scripts[i ])) {
+      XtVaSetValues(w, XmNsensitive, 1, NULL);
+    }
+  } 
 }
 
 static void ConfirmServerAbort(Widget w, void *tag, void *cb)

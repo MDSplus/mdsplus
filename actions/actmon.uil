@@ -174,9 +174,9 @@ object rowColumn : XmRowColumn widget {
     controls {
          managed XmLabel label;
          managed XmText server_name;
-         managed XmPushButton pushButton;
-         managed XmPushButton pushButton1;
-         managed XmPushButton pushButton2;
+         managed XmPushButton abort_server_b;
+         managed XmPushButton kill_server_b;
+         managed XmPushButton kill_dispatcher_b;
     };
     callbacks {
     };
@@ -206,11 +206,12 @@ object server_name : XmText widget {
     };
 };
 
-object pushButton : XmPushButton widget {
+object abort_server_b : XmPushButton widget {
     arguments {
         XmNlabelString = compound_string("Abort Server");
         XmNwidth = 96;
         XmNheight = 32;
+        XmNsensitive = false;
     };
     controls {
     };
@@ -219,11 +220,12 @@ object pushButton : XmPushButton widget {
     };
 };
 
-object pushButton1 : XmPushButton widget {
+object kill_server_b : XmPushButton widget {
     arguments {
         XmNlabelString = compound_string("Kill Server");
         XmNwidth = 80;
         XmNheight = 32;
+        XmNsensitive = false;
     };
     controls {
     };
@@ -232,11 +234,12 @@ object pushButton1 : XmPushButton widget {
     };
 };
 
-object pushButton2 : XmPushButton widget {
+object kill_dispatcher_b : XmPushButton widget {
     arguments {
         XmNlabelString = compound_string("Kill Dispatcher");
         XmNwidth = 106;
         XmNheight = 32;
+        XmNsensitive = false;
     };
     controls {
     };
