@@ -48,7 +48,12 @@ static int KsMultiIo(
   if( MSGLVL(FUNCTION_NAME) )
     printf( "%s()\n", KM_ROUTINE_NAME );
   
-  sprintf(dev_name, "GK%c%d", Key.scsi_port, Key.scsi_address);
+
+
+  // sprintf(dev_name, "GK%c%d", Key.scsi_port, Key.scsi_address); 
+  sprintf(dev_name, "GK%c%d%0.2d", Key.scsi_port, Key.scsi_address, Key.crate);
+
+
   if( (scsiDevice = get_scsi_device_number( dev_name, &enhanced, &online )) < 0 ) {
     if( MSGLVL(IMPORTANT) )
       fprintf( stderr, "%s(): error -- no scsi device found for '%s'\n", KM_ROUTINE_NAME, dev_name );
