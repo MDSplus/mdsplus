@@ -45,7 +45,7 @@ WaveSetup.java\
 Waveform.java\
 jScope.java
 
-CLASSES = jTraverser/*.class
+CLASSES = *.class
 
 all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/jScope.jar @MAKEJAVADIR@classes/MRJClasses.zip
 
