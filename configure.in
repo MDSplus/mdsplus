@@ -50,6 +50,8 @@ JVM="-ljvm"
 TAR_EXCLUDE="-e"
 GROFF_MAN_FLAGS="-t -man -Tascii"
 GROFF=groff
+HUP_TO_XINETD=""
+HUP_TO_INETD=""
 
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\\\$\$SHLIB_PATH:/usr/local/mdsplus/lib:\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
@@ -64,7 +66,8 @@ hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\\\$\$SHLIB_PATH:/usr/local/mdsplus/lib:\$(e
        LIBPATH="SHLIB_PATH";
        IDL_BIN_SUF="hp";
        FEXECLIBDIR="-Wl,-L";
-       SHARETYPE=".sl";;
+       SHARETYPE=".sl";
+       HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";;
 mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        FFLAGS="$FFLAGS -D_BSD_SIGNALS -KPIC";
        LDSHARE="-B dynamic";
@@ -75,6 +78,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        FOR_LDFLAGS="";
        LIBPATH="LD_LIBRARY_PATH";
        FEXECLIBDIR="-L";
+       HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";
        SHARETYPE=".so";;
 sparc-sun-solaris2*)  
        GROFF=nroff;
@@ -102,7 +106,8 @@ sparc-sun-solaris2*)
        SHARETYPE=".so";
        JVM="";
        jni_inc_dir="/usr/java/include";
-       jni_md_inc_dir="/usr/java/include/solaris";;
+       jni_md_inc_dir="/usr/java/include/solaris";
+       HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
 alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FFLAGS="$FFLAGS -pthread";
        GROFF_MAN_FLAGS="-t -mgan -Tascii";
@@ -118,7 +123,8 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        MDSVME="mdsvme";
        SHARETYPE=".so";
        jni_inc_dir="/usr/include/java";
-       jni_md_inc_dir="/usr/include/java/`uname -m`";;
+       jni_md_inc_dir="/usr/include/java/`uname -m`";
+       HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
 *linux*) CFLAGS="$CFLAGS -fpic";
        FFLAGS="$FFLAGS -fpic -Wno-globals -fno-backslash";
        IDL_BIN_SUF="linux"
@@ -134,7 +140,9 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        TAR_EXCLUDE="--exclude";
        jni_inc_dir="/usr/java/jdk1.3/include";
        jni_md_inc_dir="/usr/java/jdk1.3/include/linux";
-       JVM="-L/usr/java/jdk1.3/jre/lib/i386/classic -ljvm -L/usr/java/jdk1.3/jre/lib/i386/native_threads -lhpi";;
+       JVM="-L/usr/java/jdk1.3/jre/lib/i386/classic -ljvm -L/usr/java/jdk1.3/jre/lib/i386/native_threads -lhpi";
+       HUP_TO_XINETD="kill -HUP \`/sbin/pidof xinetd\`";
+       HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *aix*) CFLAGS="$CFLAGS";
        FFLAGS="$FFLAGS";
        LDSHARE="";
@@ -145,7 +153,8 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        MAKESHLIBDIR="\$(top_srcdir)/shlib/";
        EXPORTS_FILE="\$(EXPORTS)";
        FEXECLIBDIR="-L";
-       SHARETYPE=".a";;
+       SHARETYPE=".a";
+       HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";;
 *windows*)     CFLAGS="$CFLAGS";
        LDSHARE="";
        LDARC="";
@@ -382,6 +391,8 @@ AC_SUBST(FEXECLIBDIR)
 AC_SUBST(FOR_LDFLAGS)
 AC_SUBST(GROFF)
 AC_SUBST(GROFF_MAN_FLAGS)
+AC_SUBST(HUP_TO_INETD)
+AC_SUBST(HUP_TO_XINETD)
 AC_SUBST(IDL_INC)
 AC_SUBST(IDL_LIB)
 AC_SUBST(IDLMDSEVENT)
@@ -466,6 +477,7 @@ mitdevices/Makefile
 remcam/Makefile 
 rpm/Makefile
 rpm/envsyms
+rpm/post_install_script
 servershr/Makefile 
 setevent/Makefile
 tcl/Makefile 
