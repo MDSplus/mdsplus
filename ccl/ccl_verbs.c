@@ -252,12 +252,12 @@ int ccl_show_data()
     if (chars == 0) 
       chars = sprintf(outline,"%06d ",i); 
     if (octal)
-      format = (Mem == 24) ? " %#011o" : " %#06o";
+      format = (Mem == 24) ? " %#011o" : " %#06ho";
     else if (hex || binary)
-      format = (Mem == 24) ? " %#011x" : " %#06x";
+      format = (Mem == 24) ? " %#011x" : " %#06hx";
     else
-      format = (Mem == 24) ? " %11d"  : " %6d";
-    chars += sprintf(&outline[chars],format,d32[i-1]);
+      format = (Mem == 24) ? " %11d"  : " %6hd";
+    chars += sprintf(&outline[chars],format,(Mem == 24) ? d32[i-1] : d16[i-1]);
     if (chars > 72)
     {
       printf("%s\n",outline);
