@@ -1,6 +1,6 @@
-public fun A12__PART_NAME(as_is _nid, in _method)
+public fun A12__PART_NAME(as_is _nid, optional in _method)
 {
-  return(([
+  _name = ([
   '',
   ':NAME',
   ':COMMENT',
@@ -25,5 +25,6 @@ public fun A12__PART_NAME(as_is _nid, in _method)
   ':INPUT_6:STARTIDX',
   ':INPUT_6:ENDIDX',
   ':INIT_ACTION',
-  ':STORE_ACTION'])[getnci(_nid,'conglomerate_elt')-1]);
+  ':STORE_ACTION'])[getnci(_nid,'conglomerate_elt')-1];
+  return(trim(_name));
 }

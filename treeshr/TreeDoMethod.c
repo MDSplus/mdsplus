@@ -108,7 +108,10 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     /*
     lib$establish(TREE$DO_METHOD_HANDLER);
     */
-    status = LibFindImageSymbol(conglom_ptr->image, &method, &addr);
+    if (conglom_ptr->image && conglom_ptr->image->dtype == DTYPE_T)
+      status = LibFindImageSymbol(conglom_ptr->image, &method, &addr);
+    else
+      status = 0;
     /*
     lib$revert();
     */
@@ -128,8 +131,6 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       static DESCRIPTOR(arg,"$,");
       static DESCRIPTOR(tdishr,"TdiShr");
       static DESCRIPTOR(tdiexecute,"TdiExecute");
-      static int funstat;
-      static DESCRIPTOR_LONG(funstat_d,&funstat);
       StrCopyDx(&exp, &method);
       StrAppend(&exp,&open);
       for (i=2;i<nargs;i++) StrAppend(&exp,&arg);
@@ -138,10 +139,9 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       if (status & 1)
       {
         for (i=nargs;i>0;i--) arglist[i+1] = arglist[i];
-        nargs += 3;
+        nargs += 2;
         arglist[0] = (void *)nargs;
         arglist[1] = &exp;
-        arglist[nargs-1] = &funstat_d;
         arglist[nargs] = MdsEND_ARG;
         status = LibCallg(arglist,addr);
       }
