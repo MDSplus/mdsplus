@@ -47,6 +47,7 @@ MAKESHLIBDIR="\$(top_srcdir)/lib/"
 EXPORTS_FILE=""
 JVM="-ljvm"
 TAR_EXCLUDE="-e"
+GROFF_MAN_FLAGS="-t -man -Tascii"
 
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\\\$\$SHLIB_PATH:\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
@@ -97,6 +98,7 @@ sparc-sun-solaris2*)
        SHARETYPE=".so";;
 alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FFLAGS="$FFLAGS -pthread";
+       GROFF_MAN_FLAGS="-t -mgan -Tascii";
        IDL_BIN_SUF="alpha"
        LDSHARE="-Wl,-so_archive ";
        LDARC="-Wl,-no_so ";
@@ -370,6 +372,7 @@ AC_SUBST(DNET_STUB)
 AC_SUBST(EXPORTS_FILE)
 AC_SUBST(FEXECLIBDIR)
 AC_SUBST(FOR_LDFLAGS)
+AC_SUBST(GROFF_MAN_FLAGS)
 AC_SUBST(IDL_INC)
 AC_SUBST(IDL_LIB)
 AC_SUBST(IDLMDSEVENT)
