@@ -26,6 +26,6 @@ else
       }\
       else\
         print $1;\
-    }' /etc/printcap
+    }' /etc/printcap | awk -F: '{print $1;}' -
   fi
 fi
