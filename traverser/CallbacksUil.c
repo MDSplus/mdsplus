@@ -137,7 +137,10 @@ static int get_nid(ListTreeItem *item)
   {
     struct node *nd;
     nd = (struct node *)item->user_data;
-    return nd->nid;
+    if (nd) 
+      return nd->nid;
+    else
+      return -1;
   }
 
 static int get_usage(ListTreeItem *item)
@@ -229,6 +232,7 @@ static void loose_selection_proc(Widget w, Atom *selection)
   int i;
   for (i=0; i<num_selected; i++)
     selections[i]->highlighted = 0;
+  num_selected=0;
   ListTreeRefresh(w);
 }
 
