@@ -27,7 +27,6 @@ clean :
 	- rm *.o
 	- rm @MAKEBINDIR@actions
 	- rm @MAKEUIDDIR@actions.uid
-	- rm .depend
 
 install:
 	if [ ! -d @libdir@ ] ; then \
