@@ -99,13 +99,14 @@ write(*, _delay_pulse );
 
 	_data = TCPReadFloat(public _sock, 1);
 
-	write(*,  _data);
+	write(*,  size(_data) - 1);
+
 
 	if( size( _data ) < 4)
 	{
 		DevLogErr(_nid, "No data read for OSC signal"); 
 	} else {
-		_dim = make_dim(make_window(0, size(_data) - 1, _trig), [* : *: _data[1]]);
+		_dim = make_dim(make_window(0, size(_data) - 1, _trig), *:*:1.e-4);
 		_sig_nid =  DevHead(_nid) +_N_OSC;
 		_status = DevPutSignal(_sig_nid, 0, 1., _data[1..*], 0, size(_data) - 1, _dim);
 		if(! _status )
@@ -131,7 +132,7 @@ write(*, _delay_pulse );
 		DevLogErr(_nid, "No data read for AMP signal"); 
 	} else {
 
-		_dim = make_dim(make_window(0, size(_data) - 1, _trig), [* : *: _data[1]]);
+		_dim = make_dim(make_window(0, size(_data) - 1, _trig), *:*:1.e-4);
 		_sig_nid =  DevHead(_nid) +_N_AMP;
 		_status = DevPutSignal(_sig_nid, 0, 1., _data[1..*], 0, size(_data) - 1, _dim);
 		if(! _status )
@@ -154,7 +155,7 @@ write(*, _delay_pulse );
 	{
 		DevLogErr(_nid, "No data read for SLAB signal"); 
 	} else {
-		_dim = make_dim(make_window(0, size(_data) - 1, _trig), [* : *: _data[1]]);
+		_dim = make_dim(make_window(0, size(_data) - 1, _trig), *:*:1.e-4);
 		_sig_nid =  DevHead(_nid) +_N_SLAB;
 		_status = DevPutSignal(_sig_nid, 0, 1., _data[1..*], 0, size(_data) - 1, _dim);
 		if(! _status )
