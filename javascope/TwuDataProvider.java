@@ -577,6 +577,8 @@ class TwuDataProvider implements DataProvider
               bulk = new TWUSignal(twup, start_idx, step, n_point);
                 
             int inc = n_point/Waveform.MAX_POINTS;
+            if (inc<1) 
+              inc=1;
 
             while(!bulk.complete())
             {
