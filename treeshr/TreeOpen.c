@@ -821,7 +821,7 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
                         status = addr != (void *)-1;
                         if (!status)
                           printf("Error mapping file - errno = %d\n",errno);
-#else /* defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX) */
+#elif !defined(_WIN32) /* defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX) */
 #ifndef MAP_FILE
 #define MAP_FILE 0
 #endif

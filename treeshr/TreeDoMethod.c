@@ -134,17 +134,22 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       static DESCRIPTOR(tdiexecute,"TdiExecute");
       StrCopyDx(&exp, &method);
       StrAppend(&exp,&open);
-      for (i=2;i<nargs;i++) StrAppend(&exp,&arg);
+      for (i=1;i<nargs;i++) StrAppend(&exp,&arg);
       StrAppend(&exp,&close);
       status = LibFindImageSymbol(&tdishr,&tdiexecute,&addr);
       if (status & 1)
       {
+		static int retstatus;
+		static DESCRIPTOR_LONG(retstatus_d,&retstatus);
         for (i=nargs;i>0;i--) arglist[i+1] = arglist[i];
-        nargs += 2;
+        nargs += 3;
         arglist[0] = (void *)nargs;
         arglist[1] = &exp;
+		arglist[nargs-1] = (void *)&retstatus_d;
         arglist[nargs] = MdsEND_ARG;
         status = LibCallg(arglist,addr);
+		if (status & 1)
+			status = retstatus;
       }
       StrFree1Dx(&exp);
       /*      status = TreeNOMETHOD; */
