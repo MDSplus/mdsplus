@@ -721,8 +721,8 @@ error_exit:
 
 static void trim_excess_nodes(TREE_INFO *info_ptr)
 {
-  int      *nodecount_ptr = &info_ptr->header->nodes;
-  int      *free_ptr = &info_ptr->header->free;
+  int      *nodecount_ptr = (int *)&info_ptr->header->nodes;
+  int      *free_ptr = (int *)&info_ptr->header->free;
   NODE     *node_ptr;
   NODE     *nodes_ptr = info_ptr->node;
   NODE     *last_node_ptr = nodes_ptr + *nodecount_ptr - 1;
