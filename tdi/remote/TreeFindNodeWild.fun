@@ -1,6 +1,6 @@
 Public fun TreeFindNodeWild(in _path, optional _usagemask)
 {
-  _ctx = 0;
+  _ctx = 0q;
   _nid = 0;
   _nids = *;
   if (!present(_usagemask)) _usagemask = -1;
