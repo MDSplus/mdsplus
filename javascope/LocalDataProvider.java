@@ -18,9 +18,27 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider {
 
     native public float GetFloat(String in);
 
-    native public float[] GetFloatArray(String in);
+    public synchronized float[] GetFloatArray(String in)  throws IOException
+    {
+        in = "( _jscope_"+var_idx+" = ("+in+"), fs_float(_jscope_"+var_idx+"))";// "fs_float(("+in+"))";
+        var_idx++;
+        return GetFloatArrayNative(in);
+    }
 
-    native public int[] GetShots(String in);
+   native public float[] GetFloatArrayNative(String in);
+
+    native public int[] GetIntArray(String in);
+
+    public int[] GetShots(String in)  
+    {
+        try {
+            return GetIntArray(in);
+        }catch(Exception exc) 
+        {
+            System.err.println("Errore in GetIntArray: " + exc);
+            
+            return null;}
+    }
 
     native public byte [] GetByteArray(String in);
 
@@ -58,4 +76,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider {
     public boolean SupportsFastNetwork(){return false;}
     
     public void    SetArgument(String arg){};
+
+
+
 }	    
