@@ -1,12 +1,13 @@
 public fun TR10__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'TR10', 109, _nidout);
+    DevAddStart(_path, 'TR10', 110, _nidout);
     DevAddNode(_path // ':BOARD_ID', 'NUMERIC', 1, *, _nid);
     DevAddNode(_path // ':SW_MODE', 'TEXT', 'LOCAL', *, _nid);
     DevAddNode(_path // ':IP_ADDR', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':CLOCK_MODE', 'TEXT', 'INTERNAL', *, _nid);
-    DevAddNode(_path // ':TRIG_SOURCE', 'NUMERIC', 0, *, _nid);
+    DevAddNode(_path // ':TRIG_MODE', 'TEXT', 'INTERNAL', *, _nid);
+   DevAddNode(_path // ':TRIG_SOURCE', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':CLOCK_SOURCE', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', 1E4, *, _nid);
     DevAddNode(_path // ':USE_TIME', 'TEXT', 'TRUE', *, _nid);

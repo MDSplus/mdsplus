@@ -1,4 +1,4 @@
-public fun TR10HWInit(in _nid, in _board_id, in _clock_div, in _pts)
+public fun TR10HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_trig)
 {
 
 /* Private constant definition */
@@ -66,12 +66,18 @@ write(*, 'RESET');
 
 
 	TR10->TR10_Clk_SetClockMode(val(_handle), val(_clock_source), val(_TR10_CLK_NO_EXT_CLOCK),
-		val(0B), val(_TR10_CLK_RISING_EDGE), val(_TR10_CLK_TERMINATION_OFF), val(byte(_clock_div)));
+		val(0B), val(_TR10_CLK_RISING_EDGE), val(_TR10_CLK_TERMINATION_OFF), val(long(_clock_div)));
 		
 write(*, 'CLOCK_SET');
 		  
 /* Set Trigger function */
-	TR10->TR10_Trg_SetTrigger(val(_handle), val(_TR10_TRG_SOURCE_EXTERNAL), val(0B), val(0B),
+	if(_ext_trig)
+	    _trig_mode =_TR10_TRG_SOURCE_EXTERNAL;
+	else
+	    _trig_mode =_TR10_TRG_SOURCE_INTERNAL;
+
+
+	TR10->TR10_Trg_SetTrigger(val(_handle), val(_trig_mode), val(0B), val(0B),
 		val(_TR10_TRG_EXT_OUT_ON), val(_TR10_TRG_RISING_EDGE), val(_TR10_TRG_TERMINATION_OFF),
 		val(_TR10_TRG_SYNCHRONOUS), val(0B));
 

@@ -11,7 +11,16 @@ public fun TR10HWReadChan(in _handle, in _chan, in _start_idx, in _end_idx, in _
 
 write(*, 'ACT SAMPLE ', _act_sample);
 
-	_act_sample = _act_sample;
+	_act_pts = long(0);
+	TR10->TR10_Trg_GetActPostSamples(val(_handle), ref(_act_pts));
+
+write(*, 'ACT PTS ', _act_pts);
+	if(_act_pts < _pts)
+	{
+	    write(*, "LESS PTS THAN EXPECTED!!!!!: ", _act_pts, _pts);
+	}
+
+	_pts = _act_pts;	
 
 	_act_sample = _act_sample - _pts + _start_idx;
 	if(_act_sample < 0)
@@ -28,7 +37,8 @@ write(*, 'ACT SAMPLE ', _act_sample);
 	_start_ofs = mod(_act_sample, 32);
 	_act_sample = _act_sample - _start_ofs; 
 
-	_n_samples = long(_end_idx - _start_idx  + _start_ofs);
+	/*_n_samples = long(_end_idx - _start_idx  + _start_ofs);*/
+	_n_samples = long(_pts - _start_idx  + _start_ofs);
 	
 
 	_data = zero(_n_samples+32, 0W);
@@ -40,7 +50,7 @@ write(*, 'MEMREAD', _chan, _act_sample, _n_samples);
 
 
 write(*, 'LETTO');
-	return(_data[_start_ofs:(_end_idx - _start_idx)]);
+	return(_data[_start_ofs:(_end_idx - _start_idx + _start_ofs)]);
 }
 
 	

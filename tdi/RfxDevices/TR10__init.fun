@@ -7,20 +7,21 @@ public fun TR10__init(as_is _nid, optional _method)
     private _N_IP_ADDR = 3;
     private _N_COMMENT = 4;
     private _N_CLOCK_MODE = 5;
-    private _N_TRIG_SOURCE = 6;
-    private _N_CLOCK_SOURCE = 7;
-    private _N_FREQUENCY = 8;
-    private _N_USE_TIME = 9;
-    private _N_PTS = 10;
+    private _N_TRIG_MODE = 6;
+    private _N_TRIG_SOURCE = 7;
+    private _N_CLOCK_SOURCE = 8;
+    private _N_FREQUENCY = 9;
+    private _N_USE_TIME = 10;
+    private _N_PTS = 11;
     private _K_NODES_PER_CHANNEL = 6;
-    private _N_CHANNEL_0= 11;
+    private _N_CHANNEL_0= 12;
     private _N_CHAN_START_TIME = 1;
     private _N_CHAN_END_TIME = 2;
     private _N_CHAN_START_IDX = 3;
     private _N_CHAN_END_IDX = 4;
     private _N_CHAN_DATA = 5;
-    private _N_INIT_ACTION = 47;
-    private _N_STORE_ACTION = 48;
+    private _N_INIT_ACTION = 48;
+    private _N_STORE_ACTION = 49;
     private _2M = 2097152;
 
 
@@ -47,6 +48,7 @@ public fun TR10__init(as_is _nid, optional _method)
  		    abort();
 		}
 	}
+    DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL', 'EXTERNAL'], [0,1], _ext_trig = 0);
     DevNodeCvt(_nid, _N_CLOCK_MODE, ['INTERNAL', 'EXTERNAL'], [0,1], _ext_clock = 0);
     if(_ext_clock)
     {
@@ -148,7 +150,7 @@ public fun TR10__init(as_is _nid, optional _method)
 	}
 	else
 	{
-		_status = TR10HWInit(_nid, _board_id, _clk_div, _pts);
+		_status = TR10HWInit(_nid, _board_id, _clk_div, _pts, _ext_trig);
 		if(_status == 0)
 			abort();
 	}
