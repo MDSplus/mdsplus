@@ -777,6 +777,8 @@ int LibGetVm(int *len, void **vm, ZoneList **zone)
   VmList *list = malloc(sizeof(VmList));
 
   *vm = list->ptr = malloc(*len);
+  if (*vm == NULL)
+    printf("Insufficient virtual memory\n");
   list->next = NULL;
   if (zone != NULL) {
     if ((*zone)->vm) {
