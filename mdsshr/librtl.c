@@ -873,6 +873,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     *symbol_value = dlsym(handle,c_symbol);
     free(c_symbol);
   }
+  else printf("%s\n", dlerror());
   free(c_filename);
   free(full_filename);
   if (*symbol_value == NULL)
