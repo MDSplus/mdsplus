@@ -38,6 +38,12 @@ struct dsc$descriptor_xd *RESAMPLE(struct dsc$descriptor *sig,struct dsc$descrip
 extern int TdiData();
 extern int TdiCvt();
 extern int TdiDimOf();
+struct descriptor *Resample(struct descriptor *in_sig,struct descriptor *in_x);
+
+struct descriptor *resample(struct descriptor *in_sig,struct descriptor *in_x)
+{
+  return Resample(in_sig,in_x);
+}
 
 struct descriptor *Resample(struct descriptor *in_sig,struct descriptor *in_x)
 { 
