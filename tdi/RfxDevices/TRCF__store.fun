@@ -86,7 +86,8 @@ public fun TRCF__store(as_is _nid, optional _method)
 	    		_mar = _base_mar - _num_chans * (_pts - _start_idx) + _i;
 			if(_mar < 0) _mar = _mar + _256K;
     			DevCamChk(_name, CamPiow(_name, 0,16,_mar, 24),1,1);
-			DevCamChk(_name, CamFstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);
+		/*	DevCamChk(_name, CamFstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);*/
+			DevCamChk(_name, CamQstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);
 
 			_dim = make_dim(make_window(_start_idx, _end_idx, _trig), _clock);
 			_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
