@@ -811,6 +811,7 @@ static void Realize(XmdsWaveformWidget w,XtValueMask *mask,XSetWindowAttributes 
 
 static void Redisplay(XmdsWaveformWidget w,XExposeEvent *event)
 {
+  XEvent ev;
   if (event)
   {
 /*
@@ -823,7 +824,8 @@ static void Redisplay(XmdsWaveformWidget w,XExposeEvent *event)
     else
     {
 */
-      while (XCheckWindowEvent(XtDisplay(w),XtWindow(w),ExposureMask,(XEvent *) event));
+      while (XCheckWindowEvent(XtDisplay(w),XtWindow(w),ExposureMask,&ev))
+        event = (XExposeEvent *)&ev;
       if (XtIsRealized((Widget)w) && XtIsManaged((Widget)w))
       {
 	if (waveformPixmap(w) && !waveformRedraw(w))
@@ -890,8 +892,10 @@ static void Destroy(XmdsWaveformWidget w)
 
 static void Pan(XmdsWaveformWidget w,XButtonEvent *event)
 {
+  XEvent ev;
   XmdsWaveformWidget pan_w;
-  while (XCheckMaskEvent(XtDisplay(w),Button2MotionMask,(XEvent *) event));
+  while (XCheckMaskEvent(XtDisplay(w),Button2MotionMask, &ev))
+    event = (XButtonEvent *)&ev;
   for (pan_w = w; pan_w; pan_w = (XmdsWaveformWidget) waveformPanWith(pan_w))
   {
     if (waveformCount(pan_w))
@@ -1191,13 +1195,16 @@ static void ZoomOut(XmdsWaveformWidget w,XButtonEvent *event)
 
 static void Point(XmdsWaveformWidget w,XButtonEvent *event)
 {
+  XEvent ev;
   XmdsWaveformCrosshairsCBStruct crosshair = {XmdsCRCrosshairs, 0};
-  float x = Round(((float) event->x / XtWidth(w)) * (*xMax(w) - *xMin(w)) + *xMin(w), xResolution(w));
-  float y = Round((((float) ((int) XtHeight(w) - event->y)) / XtHeight(w)) * (*yMax(w) - *yMin(w)) + *yMin(w), yResolution(w));
+  float x,y;
+   /* flush the event que for crosshair events */
+  while (XCheckTypedWindowEvent(XtDisplay(w),XtWindow(w),event->type, &ev))
+    event = (XButtonEvent *)&ev;
+  x = Round(((float) event->x / XtWidth(w)) * (*xMax(w) - *xMin(w)) + *xMin(w), xResolution(w));
+  y = Round((((float) ((int) XtHeight(w) - event->y)) / XtHeight(w)) * (*yMax(w) - *yMin(w)) + *yMin(w), yResolution(w));
   crosshair.event = (XEvent *) event;
   if (!waveformCount(w)) return;
-  /* flush the event que for crosshair events */
-  while (XCheckTypedWindowEvent(XtDisplay(w),XtWindow(w),event->type,(XEvent *) event));
   SetCrosshairs((Widget)w,&x,&y,waveformAttachCrosshairs(w));
   crosshair.x = xCrosshair(w);
   crosshair.y = yCrosshair(w);
