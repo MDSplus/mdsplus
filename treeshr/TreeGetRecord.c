@@ -1,5 +1,7 @@
+#ifdef _WIN32
+#include <io.h>
+#endif
 #include <mdsdescrip.h>
-
 #include <mdsshr.h>
 #include <ncidef.h>
 #include "treeshrp.h"
@@ -9,8 +11,12 @@
 #include <string.h>
 
 #include <stdlib.h>
-#if !defined(_WIN32)
 #include <fcntl.h>
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+#ifndef O_RANDOM
+#define O_RANDOM 0
 #endif
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
@@ -152,15 +158,10 @@ static int OpenDatafileR(TREE_INFO *info)
     char *filename = strncpy(malloc(len+9),info->filespec,len);
     filename[len]='\0';
     strcat(filename,"datafile");
-#ifdef _WIN32
-    df_ptr->get = fopen(filename,"rb");
-    status = (df_ptr->get == NULL) ? TreeFAILURE : TreeNORMAL;
-#else
-    df_ptr->get = open(filename,O_RDONLY);
+    df_ptr->get = open(filename,O_RDONLY | O_BINARY | O_RANDOM);
     status = (df_ptr->get == -1) ? TreeFAILURE : TreeNORMAL;
     if (df_ptr->get == -1)
       df_ptr->get == 0;
-#endif
   }
   info->data_file = df_ptr;
   return status;
@@ -277,13 +278,8 @@ static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size,
     status = TreeLockDatafile(info, 1, rfa_l);
     if (status & 1)
     {
-#ifdef _WIN32
-      fseek(info->data_file->get,rfa_l,SEEK_SET);
-      status = (fread((void *)&hdr,12,1,info->data_file->get) == 1) ? TreeSUCCESS : TreeFAILURE;
-#else
       lseek(info->data_file->get,rfa_l,SEEK_SET);
       status = (read(info->data_file->get,(void *)&hdr,12) == 12) ? TreeSUCCESS : TreeFAILURE;
-#endif
       if (status & 1)
       {
         unsigned int partlen = min(swapshort((char *)&hdr.rlength)-10, buffer_space);
@@ -295,11 +291,7 @@ static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size,
           status = 0;
           break;
         }
-#ifdef _WIN32
-        status = (fread((void *)bptr,partlen,1,info->data_file->get) == 1) ? TreeSUCCESS : TreeFAILURE;
-#else
-        status = (read(info->data_file->get,(void *)bptr,partlen) == partlen) ? TreeSUCCESS : TreeFAILURE;
-#endif
+        status = ((unsigned int)read(info->data_file->get,(void *)bptr,partlen) == partlen) ? TreeSUCCESS : TreeFAILURE;
         if (status & 1)
         {
           bptr += partlen;

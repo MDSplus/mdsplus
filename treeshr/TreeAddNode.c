@@ -1,3 +1,6 @@
+#ifdef _WIN32
+#include <io.h>
+#endif
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <string.h>
@@ -777,8 +780,8 @@ static int TreeWriteNci(TREE_INFO *info)
     int num;
     status = TreeFAILURE;
 #ifdef _WIN32
-    fseek(info->nci_file->put,info->edit->first_in_mem * sizeof(struct nci),SEEK_SET);
-    num = fwrite(info->edit->nci,sizeof(struct nci),numnodes,info->nci_file->put);
+    _lseek(info->nci_file->put,info->edit->first_in_mem * sizeof(struct nci),SEEK_SET);
+    num = _write(info->nci_file->put,info->edit->nci,numnodes * sizeof(NCI))/sizeof(NCI);
 #else
     lseek(info->nci_file->put,info->edit->first_in_mem * sizeof(struct nci),SEEK_SET);
     num = write(info->nci_file->put,info->edit->nci,numnodes * sizeof(NCI))/sizeof(NCI);

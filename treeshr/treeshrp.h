@@ -410,13 +410,8 @@ file.
 
 typedef struct nci_file
 {
-#if defined(_WIN32)
-  FILE *get;
-  FILE *put;
-#else
   int get;
   int put;
-#endif
   NCI  nci;
 }  NCI_FILE;
 
@@ -440,13 +435,8 @@ typedef struct data_file
 {
   unsigned  open_for_write:1;
   unsigned: 7;
-#if defined(_WIN32)
-  FILE *get;
-  FILE *put;
-#else
   int get;
   int put;
-#endif
   RECORD_HEADER *record_header;
   ASY_NCI *asy_nci;
   struct descriptor_xd *data;

@@ -1,3 +1,7 @@
+#if defined(_WIN32)
+#include <io.h>
+#endif
+#include <fcntl.h>
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ncidef.h>
@@ -6,8 +10,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mds_stdarg.h>
-#if !defined(_WIN32)
-#include <fcntl.h>
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+#ifndef O_RANDOM
+#define O_RANDOM 0
 #endif
 
 extern int StrFree1Dx();
@@ -677,15 +684,9 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci)
 		  status = TreeLockNci(info,1,node_num);
 		  if (status & 1)
 		  {
-#if defined(_WIN32)
-		    fseek(info->nci_file->get, node_num * sizeof(NCI), SEEK_SET);
-		    status = fread((void *)nci,sizeof(NCI),1,info->nci_file->get) == 1 ? 
-                      TreeSUCCESS : TreeFAILURE;
-#else
 		    lseek(info->nci_file->get, node_num * sizeof(NCI), SEEK_SET);
 		    status = read(info->nci_file->get,(void *)nci, sizeof(NCI)) == sizeof(NCI) ?
-		      TreeSUCCESS : TreeFAILURE;
-#endif
+                      TreeSUCCESS : TreeFAILURE;
                     TreeUnLockNci(info,1,node_num);
 		  }
 		}
@@ -729,13 +730,8 @@ static int OpenNciR(TREE_INFO *info)
 		char *filename = strncpy(malloc(len+16),info->filespec,len);
 		filename[len]='\0';
 		strcat(filename,"characteristics");
-#if defined(_WIN32)
-		info->nci_file->get = fopen(filename,"rb");
-		status = (info->nci_file->get == NULL) ? TreeFAILURE : TreeNORMAL;
-#else
-		info->nci_file->get = open(filename,O_RDONLY);
-		status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
-#endif
+		info->nci_file->get = open(filename,O_RDONLY | O_BINARY | O_RANDOM);
+        status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
 		if (!(status & 1))
 		{
 			free(info->nci_file);

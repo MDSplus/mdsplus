@@ -1,9 +1,12 @@
+#ifdef _WIN32
+#include <io.h>
+#endif
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ctype.h>
-#ifndef _WINDOWS
+#ifndef _WIN32
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -17,11 +20,6 @@
 #define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
-#ifdef _WIN32
-#define closefile fclose
-#else
-#define closefile close
-#endif
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
@@ -274,18 +272,18 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 						{
 							MdsFree1Dx(local_info->data_file->data,NULL);
 							if (local_info->data_file->get)
-                                                          closefile(local_info->data_file->get);
+                                                          close(local_info->data_file->get);
 							if (local_info->data_file->put)
-                                                          closefile(local_info->data_file->put);
+                                                          close(local_info->data_file->put);
 							free(local_info->data_file);
 							local_info->data_file = NULL;
 						}
 						if (local_info->nci_file)
 						{
 							if (local_info->nci_file->get)
-							  closefile(local_info->nci_file->get);
+							  close(local_info->nci_file->get);
 							if (local_info->nci_file->put)
-							  closefile(local_info->nci_file->put);
+							  close(local_info->nci_file->put);
 							free(local_info->nci_file);
 							local_info->nci_file = NULL;
 						}
@@ -978,15 +976,15 @@ int TreeCloseFiles(TREE_INFO *info)
 			if (info->data_file)
 			{
 				MdsFree1Dx(info->data_file->data, NULL);
-				if (info->data_file->get)    closefile(info->data_file->get);
-				if (info->data_file->put)    closefile(info->data_file->put);
+				if (info->data_file->get)    close(info->data_file->get);
+				if (info->data_file->put)    close(info->data_file->put);
 				free(info->data_file);
 				info->data_file = NULL;
 			}
 			if (info->nci_file)
 			{
-				if (info->nci_file->get)    closefile(info->nci_file->get);
-				if (info->nci_file->put)    closefile(info->nci_file->put);
+				if (info->nci_file->get)    close(info->nci_file->get);
+				if (info->nci_file->put)    close(info->nci_file->put);
 				free(info->nci_file);
 				info->nci_file = NULL;
 			}

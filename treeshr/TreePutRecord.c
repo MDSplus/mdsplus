@@ -27,7 +27,10 @@
 
 
 +-----------------------------------------------------------------------------*/
-
+#ifdef _WIN32
+#include <windows.h>
+#include <io.h>
+#endif
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <ncidef.h>
@@ -42,8 +45,12 @@
 #include <librtl_messages.h>
 #include <strroutines.h>
 #include <libroutines.h>
-#if !defined(_WIN32)
 #include <fcntl.h>
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+#ifndef O_RANDOM
+#define O_RANDOM 0
 #endif
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
@@ -517,26 +524,16 @@ int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
     char *filename = strncpy(malloc(len+20),info->filespec,len);
     filename[len]='\0';
     strcat(filename,tmpfile ? "datafile#" : "datafile");
-#ifdef _WIN32
-    df_ptr->get = fopen(filename,tmpfile ? "w+b" : "rb");
-    status = (df_ptr->get == NULL) ? TreeFAILURE : TreeNORMAL;
-#else
-    df_ptr->get = open(filename,tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY, 0777);
+    df_ptr->get = open(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY) | O_BINARY | O_RANDOM);
     status = (df_ptr->get == -1) ? TreeFAILURE : TreeNORMAL;
     if (df_ptr->get == -1)
       df_ptr->get = 0;
-#endif
     if (status & 1)
     {
-#ifdef _WIN32
-      df_ptr->put = fopen(filename,"r+b");
-      status = (df_ptr->put == NULL) ? TreeFAILURE : TreeNORMAL;
-#else
-      df_ptr->put = open(filename,O_RDWR);
+      df_ptr->put = open(filename,O_RDWR | O_BINARY | O_RANDOM);
       status = (df_ptr->put == -1) ? TreeFAILURE : TreeNORMAL;
       if (df_ptr->put == -1)
         df_ptr->put = 0;
-#endif
       if (status & 1)
  	  df_ptr->open_for_write = 1;
     }
@@ -567,23 +564,13 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
     status = TreeLockDatafile(info, 0, -1);
     if (status & 1)
     {
-#ifdef _WIN32
-      fseek(info->data_file->put,0,SEEK_END);
-      eof = ftell(info->data_file->put);
-#else
       eof = lseek(info->data_file->put,0,SEEK_END);
-#endif
       bytes_to_put -= bytes_this_time;
       info->data_file->record_header->rlength = (unsigned short)(bytes_this_time + 10);
-#ifdef _WIN32
-      status = (fwrite((char *) info->data_file->record_header,sizeof(RECORD_HEADER), 1, info->data_file->put) == 1) ? TreeNORMAL : TreeFAILURE;
-      status = (fwrite((char *) data_dsc_ptr->pointer + bytes_to_put, bytes_this_time, 1, info->data_file->put) == 1) ? TreeNORMAL : TreeFAILURE;
-#else
       status = (write(info->data_file->put,(void *) info->data_file->record_header,sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
                     ? TreeNORMAL : TreeFAILURE;
       status = (write(info->data_file->put,(void *) (((char *)data_dsc_ptr->pointer) + bytes_to_put), bytes_this_time) == bytes_this_time)
                     ? TreeNORMAL : TreeFAILURE;
-#endif
       if (!bytes_to_put)
       {
         if (status & 1)
@@ -628,16 +615,10 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
     {
       bytes_to_put -= bytes_this_time;
       info->data_file->record_header->rlength = (unsigned short)(bytes_this_time + 10);
-#ifdef _WIN32
-      fseek(info->data_file->put,rfa_l,SEEK_SET);
-      status = (fwrite((char *) info->data_file->record_header,sizeof(RECORD_HEADER), 1, info->data_file->put) == 1) ? TreeNORMAL : TreeFAILURE;
-      status = (fwrite((char *) data_dsc_ptr->pointer + bytes_to_put, bytes_this_time, 1, info->data_file->put) == 1) ? TreeNORMAL : TreeFAILURE;
-#else
       lseek(info->data_file->put,rfa_l,SEEK_SET);
       status = (write(info->data_file->put,(void *) info->data_file->record_header,sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
                    ? TreeNORMAL : TreeFAILURE;
       status = (write(info->data_file->put,(void *) (((char *)data_dsc_ptr->pointer) + bytes_to_put), bytes_this_time) == bytes_this_time) ? TreeNORMAL : TreeFAILURE;
-#endif
       if (!bytes_to_put)
       {
         if (status & 1)
@@ -1010,9 +991,9 @@ int TreeLockDatafile(TREE_INFO *info, int readonly, int offset)
 {
   struct flock flock_info;
   flock_info.l_type = readonly ? F_RDLCK : F_WRLCK;
-  flock_info.l_whence = offset > 0 ? SEEK_SET : SEEK_END;
-  flock_info.l_start = offset > 0 ? offset : 0;
-  flock_info.l_len = offset > 0 ? 12 : 0x7fffffff;
+  flock_info.l_whence = offset >= 0 ? SEEK_SET : SEEK_END;
+  flock_info.l_start = offset >= 0 ? offset : 0;
+  flock_info.l_len = offset >= 0 ? 12 : 0x7fffffff;
   return (fcntl(readonly ? info->data_file->get : info->data_file->put,F_SETLKW, &flock_info) != -1) ? 
           TreeSUCCESS : TreeFAILURE;
 }
@@ -1028,12 +1009,18 @@ int TreeUnLockDatafile(TREE_INFO *info, int readonly, int offset)
           TreeSUCCESS : TreeFAILURE;
 }
 #else
+static int LockStart;
+static int LockSize;
 int TreeLockDatafile(TREE_INFO *info, int readonly, int offset)
 {
-  return TreeSUCCESS;
+	LockStart = offset >= 0 ? offset : _lseek(info->data_file->put,0,SEEK_END);
+	LockSize = offset >= 0 ? 12 : 0x7fffffff;
+	return LockFile((HANDLE)_get_osfhandle(readonly ? info->data_file->get : info->data_file->put), LockStart, 0,
+	   LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
 }
 int TreeUnLockDatafile(TREE_INFO *info, int readonly, int offset)
 {
-  return TreeSUCCESS;
+  return UnlockFile((HANDLE)_get_osfhandle(readonly ? info->data_file->get : info->data_file->put), LockStart, 0,
+	   LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
 }
 #endif

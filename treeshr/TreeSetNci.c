@@ -31,14 +31,16 @@
 
 
 +-----------------------------------------------------------------------------*/
+#ifdef _WIN32
+#include <windows.h>
+#include <io.h>
+#endif
+#include <fcntl.h>
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ncidef.h>
 #include <string.h>
 #include <stdlib.h>
-#if !defined(_WIN32)
-#include <fcntl.h>
-#endif
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
@@ -192,8 +194,8 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
       if (status & 1)
       {
 #ifdef _WIN32
-	fseek(info->nci_file->put,node_num * sizeof(struct nci),SEEK_SET);
-	status = (fread(nci,sizeof(struct nci),1,info->nci_file->put) == 1) ? TreeNORMAL : TreeFAILURE;
+	_lseek(info->nci_file->put,node_num * sizeof(struct nci),SEEK_SET);
+	status = (_read(info->nci_file->put,nci,sizeof(NCI)) == sizeof(NCI)) ? TreeNORMAL : TreeFAILURE;
 #else
 	lseek(info->nci_file->put,node_num * sizeof(struct nci),SEEK_SET);
 	status = (read(info->nci_file->put,nci,sizeof(NCI)) == sizeof(NCI)) ? TreeNORMAL : TreeFAILURE;
@@ -266,26 +268,16 @@ int TreeOpenNciW(TREE_INFO *info, int tmpfile)
       filename[len]='\0';
       strcat(filename,tmpfile ? "characteristics#" : "characteristics");
       memset(info->nci_file,0, sizeof(NCI_FILE));
-#ifdef _WIN32
-      info->nci_file->get = fopen(filename,tmpfile ? "w+b" : "rb");
-      status = (info->nci_file->get == NULL) ? TreeFAILURE : TreeNORMAL;
-#else
-      info->nci_file->get = open(filename,tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY, 0777);
+      info->nci_file->get = open(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC  : O_RDONLY) | O_BINARY | O_RANDOM);
       status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
       if (info->nci_file->get == -1)
         info->nci_file->get = 0;
-#endif
       if (status & 1)
       {
-#ifdef _WIN32
-        info->nci_file->put = fopen(filename,"r+b");
-        status = (info->nci_file->put == NULL) ? TreeFAILURE : TreeNORMAL;
-#else
-        info->nci_file->put = open(filename,O_RDWR);
+        info->nci_file->put = open(filename,O_RDWR | O_BINARY | O_RANDOM);
         status = (info->nci_file->put == -1) ? TreeFAILURE : TreeNORMAL;
         if (info->nci_file->put == -1)
           info->nci_file->put = 0;
-#endif
       }
       free(filename);
     }
@@ -301,29 +293,18 @@ int TreeOpenNciW(TREE_INFO *info, int tmpfile)
     filename[len]='\0';
     strcat(filename,tmpfile ? "characteristics#" : "characteristics");
     if (info->nci_file->put)
-#ifdef _WIN32
-      fclose(info->nci_file->put);
-    info->nci_file->put = fopen(filename,tmpfile ? "w+b" : "r+b");
-    status = (info->nci_file->put == NULL) ? TreeFAILURE : TreeNORMAL;
-#else
       close(info->nci_file->put);
-    info->nci_file->put = open(filename,tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDWR, 0777);
+    info->nci_file->put = open(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDWR) | O_BINARY | O_RANDOM);
     status = (info->nci_file->put == -1) ? TreeFAILURE : TreeNORMAL;
     if (info->nci_file->put == -1)
       info->nci_file->put = 0;
-#endif
     free(filename);
   }
   if (status & 1)
   {
     if (info->edit)
     {
-#ifdef _WIN32
-    fseek(info->nci_file->put,0,SEEK_END);
-    info->edit->first_in_mem = ftell(info->nci_file->put)/sizeof(NCI);
-#else
     info->edit->first_in_mem = lseek(info->nci_file->put,0,SEEK_END)/sizeof(NCI);
-#endif
     }
   /**********************************************
    Set up the RABs for buffered reads and writes
@@ -394,8 +375,8 @@ int TreePutNci(TREE_INFO *info, int node_num, NCI *nci, int flush)
     if (status & 1)
     {
 #ifdef _WIN32
-      fseek(info->nci_file->put,sizeof(struct nci) * node_num, SEEK_SET);
-      status = (fwrite(nci, sizeof(struct nci), 1, info->nci_file->put) == 1) ? TreeNORMAL : TreeFAILURE;
+      _lseek(info->nci_file->put,sizeof(struct nci) * node_num, SEEK_SET);
+      status = (_write(info->nci_file->put,nci,sizeof(NCI)) == sizeof(NCI)) ? TreeNORMAL : TreeFAILURE;
 #else
       lseek(info->nci_file->put,sizeof(struct nci) * node_num, SEEK_SET);
       status = (write(info->nci_file->put,nci,sizeof(NCI)) == sizeof(NCI)) ? TreeNORMAL : TreeFAILURE;
@@ -689,10 +670,16 @@ int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
 #else
 int TreeLockNci(TREE_INFO *info, int readonly, int nodenum)
 {
-  return TreeSUCCESS;
+	int status = LockFile((HANDLE)_get_osfhandle(readonly ? info->nci_file->get : info->nci_file->put), 
+		nodenum * sizeof(NCI), 0, sizeof(NCI), 0) == 0 ? TreeFAILURE : TreeSUCCESS;
+	if (!(status & 1) && (GetLastError() == ERROR_LOCK_VIOLATION))
+		  status = TreeSUCCESS;
+	return status;
 }
 int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
 {
-  return TreeSUCCESS;
+	int status = UnlockFile((HANDLE)_get_osfhandle(readonly ? info->nci_file->get : info->nci_file->put), 
+		nodenum * sizeof(NCI), 0, sizeof(NCI), 0) == 0 ? TreeFAILURE : TreeSUCCESS;
+	return status;
 }
 #endif
