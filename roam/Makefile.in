@@ -27,7 +27,8 @@ all : makefile-header \
       @MAKESHLIBDIR@libRoam@SHARETYPE@ \
       $(modules) \
       @MAKELIBDIR@ \
-      @MAKELIBDIR@libRoam_@GLOBUS_FLAVOR@.a
+      @MAKELIBDIR@libRoam_@GLOBUS_FLAVOR@.a \
+      @MAKEBINDIR@roam_check_access
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -38,6 +39,7 @@ clean:
 	@ $(RM) makefile-header
 	@ $(RM) so_locations
 	@ $(RM) @MAKELIBDIR@libRoam_@GLOBUS_FLAVOR@.a
+	@ $(RM) @MAKEBINDIR@roam_check_access
 
 
 install:
@@ -45,7 +47,12 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
+	if [ ! -d @bindir@ ] ; then \
+		mkdir @bindir@;
+		chmod 755 @bindir@; \
+	fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKEBINDIR@roam_check_access @bindir@
         ifdef modules
 		$(INSTALL) -m 755  @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPEMOD@ @libdir@
         endif
@@ -65,6 +72,9 @@ makefile-header:
 @MAKELIBDIR@libRoam_@GLOBUS_FLAVOR@.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
+
+@MAKEBINDIR@roam_check_access : roam_check_access.sh
+	cp roam_check_access.sh $@
 
 ifdef modules
 @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPEMOD@ : $(OBJECTS)
