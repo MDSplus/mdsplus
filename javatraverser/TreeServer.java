@@ -214,7 +214,24 @@ class TreeServer extends UnicastRemoteObject implements RemoteTree
     public String dataToString(Data data){return data.toString();}
     public Data dataFromExpr(String expr){return Data.fromExpr(expr);}
     
+    public int getCurrentShot() throws RemoteException
+    {
+        return tree.getCurrentShot();
+    }
+    public int getCurrentShot(String experiment)throws RemoteException
+    {
+        return tree.getCurrentShot(experiment);
+    }
     
+    public void setCurrentShot(int shot)throws RemoteException
+    {
+        tree.setCurrentShot(shot);
+    }
+    
+    public void setCurrentShot(String experiment, int shot)throws RemoteException
+    {
+        tree.setCurrentShot(experiment, shot);
+    }
     
     public static void main(String args[])
     {

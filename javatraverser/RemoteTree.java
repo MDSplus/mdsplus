@@ -42,6 +42,10 @@ public interface RemoteTree extends Remote {
     public int create(int shot) throws RemoteException, DatabaseException;
     public String dataToString(Data data)throws RemoteException;
     public Data dataFromExpr(String expr)throws RemoteException; 
+    public int getCurrentShot() throws RemoteException; 
+    public int getCurrentShot(String experiment)throws RemoteException; 
+    public void setCurrentShot(int shot)throws RemoteException; 
+    public void setCurrentShot(String experiment, int shot)throws RemoteException; 
   }  
     
     

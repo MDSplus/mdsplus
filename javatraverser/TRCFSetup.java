@@ -248,7 +248,7 @@ public class TRCFSetup extends DeviceSetup
 		deviceField33.setLabelString("Start :");
 		timeChannel9.add(deviceField33);
 		deviceField34.setNumCols(15);
-		deviceField34.setOffsetNid(43);
+		deviceField34.setOffsetNid(61);
 		deviceField34.setLabelString("End :");
 		timeChannel9.add(deviceField34);
 		timeChannel10.setInSameLine(true);

@@ -164,7 +164,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel5.add(JPanel10);
 		JPanel11.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		JPanel10.add(JPanel11);
-		deviceField17.setOffsetNid(20);
+		deviceField17.setOffsetNid(25);
 		deviceField17.setLabelString("Trig. Time");
 		JPanel11.add(deviceField17);
 		deviceField18.setOffsetNid(26);

@@ -318,6 +318,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		    JOptionPane.WARNING_MESSAGE);
 	        return;
 	    }
+	    
+	    
+	    
 	    if(open_edit.isSelected() && open_readonly.isSelected())
 	    {
 	        JOptionPane.showMessageDialog(curr_tree, "Tree cannot be open in both edit and readonly mode", "Error opening tree",
@@ -386,6 +389,22 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	            return;
 	        }
 	    }
+	    
+	    
+	    if(shot == 0)
+	    {
+	        try {
+	            shot = curr_experiment.getCurrentShot(exp);
+	        }catch(Exception  exc) {
+	            JOptionPane.showMessageDialog(open_dialog, "Shot 0 not defined for "+ exp, "Error opening tree",
+		        JOptionPane.WARNING_MESSAGE);
+	            return;
+	        }
+	    }
+	            
+	    
+	    
+	    
 	    try {
             curr_experiment.setTree(exp, shot);        
             curr_experiment.setEditable(editable);
