@@ -243,7 +243,7 @@ int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table)
         else
           tree[i] = cptr[i];
       tree[i] = 0;
-      for (i=0; i<num_actions; i++)
+      for (i=0; i<num_actions; /* i++ */ i += num_actions-1)
       {
         struct descrip p1,p2,p3,p4,p5,p6,p7,p8;
         int mode;
