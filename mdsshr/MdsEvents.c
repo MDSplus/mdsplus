@@ -1721,22 +1721,27 @@ STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm
     return status;
 }
 
-struct wfevent_thread_cond { pthread_mutex_t  mutex;
-                             pthread_cond_t cond;
-                             int buflen;
-                             char *data;
-                             int *datlen;
+struct wfevent_thread_cond {
+  int active;
+  pthread_mutex_t  mutex;
+  pthread_cond_t cond;
+  int buflen;
+  char *data;
+  int *datlen;
 };
 
 
 STATIC_ROUTINE void EventHappened(void *astprm, int len, char *data)
 {
   struct wfevent_thread_cond *t = (struct wfevent_thread_cond *)astprm;
-  if (t->buflen && t->data)
-    memcpy(t->data,data,(t->buflen > len) ? len : t->buflen); 
-  if (t->datlen)
-    *t->datlen = len;
   pthread_mutex_lock(&t->mutex);
+  if (t->active)
+  {
+    if (t->buflen && t->data)
+      memcpy(t->data,data,(t->buflen > len) ? len : t->buflen); 
+    if (t->datlen)
+      *t->datlen = len;
+  }
   pthread_cond_signal(&t->cond);
   pthread_mutex_unlock(&t->mutex);
 }
@@ -1744,17 +1749,22 @@ STATIC_ROUTINE void EventHappened(void *astprm, int len, char *data)
 int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
 {
     int eventid=-1;
-    struct wfevent_thread_cond t;
+    struct wfevent_thread_cond t = {1};
     pthread_mutex_init(&t.mutex,pthread_mutexattr_default);
     pthread_cond_init(&t.cond,pthread_condattr_default);
     t.buflen = buflen;
     t.data = data;
     t.datlen = datlen;
     MDSEventAst(evname, EventHappened, &t, &eventid);
+    pthread_mutex_lock(&t.mutex);
     pthread_cond_wait(&t.cond,&t.mutex);
+    pthread_mutex_unlock(&t.mutex);
+    pthread_mutex_lock(&t.mutex);
+    t.active=0;
+    MDSEventCan(eventid);
+    pthread_mutex_unlock(&t.mutex);
     pthread_cond_destroy(&t.cond);
     pthread_mutex_destroy(&t.mutex);
-    MDSEventCan(eventid);
     return(1);
 }
 
