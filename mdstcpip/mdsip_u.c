@@ -195,7 +195,7 @@ static int CheckClient(char *host_c, char *user_c)
               if (local_user.length)
               {
                 char *user = MdsDescrToCstring(&local_user);
-                int status = setlogin(user);
+                int status;
                 struct passwd *pwd = getpwnam(user);
                 if (pwd)
 		{
