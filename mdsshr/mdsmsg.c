@@ -30,6 +30,7 @@
 * Routine for printing status information ...
 *
 * History:
+*  06-Apr-2001  TRG  Start/end each MdsMsg line with '\r', esp for IDL.
 *  05-Jan-1998  TRG  Create.
 *
 ************************************************************************/
@@ -219,7 +220,7 @@ int   MdsMsg(			/* Return: sts provided by user		*/
     if ((sts & ALREADY_DISPLAYED) && (sts != -1))
         return(sts);
 
-    sprintf(text,"%s: ",pgmname());
+    sprintf(text,"\r%s: ",pgmname());
     k = strlen(text);
     if (fmt)
        {
@@ -227,22 +228,23 @@ int   MdsMsg(			/* Return: sts provided by user		*/
         vsprintf(text+k,fmt,ap);
         if (sts)
            {
-            MDSfprintf(stderr,"%s\n    sts=%s\n\n",text,MdsGetMsg(sts));
+            MDSfprintf(stderr,"%s\n\r    sts=%s\n\n\r",text,MdsGetMsg(sts));
             if (write2stdout)
-                MDSfprintf(stdout,"%s\n    sts=%s\n\n",text,MdsGetMsg(sts));
+                MDSfprintf(stdout,"%s\n\r    sts=%s\n\n\r",
+                    text,MdsGetMsg(sts));
            }
         else
            {
-            MDSfprintf(stderr,"%s\n",text);
+            MDSfprintf(stderr,"%s\n\r",text);
             if (write2stdout)
-                MDSfprintf(stdout,"%s\n",text);
+                MDSfprintf(stdout,"%s\n\r",text);
            }
        }
     else
        {
-        MDSfprintf(stderr,"%s:  sts=%s\n",text,MdsGetMsg(sts));
+        MDSfprintf(stderr,"%s:  sts=%s\n\r",text,MdsGetMsg(sts));
         if (write2stdout)
-            MDSfprintf(stdout,"%s:  sts=%s\n",text,MdsGetMsg(sts));
+            MDSfprintf(stdout,"%s:  sts=%s\n\r",text,MdsGetMsg(sts));
        }
 
     return(sts | ALREADY_DISPLAYED);
