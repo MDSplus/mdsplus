@@ -898,7 +898,12 @@ STATIC_ROUTINE void sleep(unsigned int secs)
 
 int LibWait(float *secs)
 {
-  sleep((unsigned int)*secs);
+  struct timespec ts;
+  ts.tv_sec = (unsigned int)*secs;
+  ts.tv_nsec = (unsigned int)((*secs - (unsigned int)*secs)*1E9);
+  nanosleep(&ts, 0);
+
+  /*sleep((unsigned int)*secs);*/
   return 1;
 }
 
