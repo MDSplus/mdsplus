@@ -64,9 +64,9 @@ void LockTdiMutex(pthread_mutex_t *mutex,int *initialized)
 {
   if(!*initialized)
   {
+#ifndef HAVE_WINDOWS_H
     pthread_mutexattr_t m_attr;
     pthread_mutexattr_init(&m_attr);
-    *initialized = 1;
 #if !defined(PTHREAD_MUTEX_RECURSIVE)
 #define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
 #endif
@@ -78,6 +78,10 @@ void LockTdiMutex(pthread_mutex_t *mutex,int *initialized)
 #endif
 #endif
     pthread_mutex_init(mutex,&m_attr);
+#else
+    pthread_mutex_init(mutex);
+#endif
+    *initialized = 1;
   }
   pthread_mutex_lock(mutex);
 }

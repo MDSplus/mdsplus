@@ -342,6 +342,9 @@
 			RelativePath=".\TdiSubscript.c">
 		</File>
 		<File
+			RelativePath="TdiThreadSafe.c">
+		</File>
+		<File
 			RelativePath=".\TdiTrans.c">
 		</File>
 		<File
