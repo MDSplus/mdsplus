@@ -3,7 +3,7 @@ include $(MAKE_OPTIONS)
 OBJECTS = \
         MdsLib.o 
 
-mdslibjeff : ../bin ../shlib ../shlib/libMdsLib.$(SHARE_TYPE)
+mdslib : ../bin ../shlib ../shlib/libMdsLib.$(SHARE_TYPE)
 
 ../bin :
 	mkdir ../bin

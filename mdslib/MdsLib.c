@@ -13,11 +13,14 @@
 
 #include "MdsLib.h"
 extern int TdiExecute();
+extern int TdiCompile();
 extern int TdiData();
 short ArgLen(struct descrip *d);
 static EMPTYXD(mdsValueAnswer);
 
 static int next = 0;
+
+#define MAXARGS 32
 
 short dtype_length(struct descriptor *d)
 {
@@ -219,12 +222,11 @@ int MdsValue(char *expression, ...)
     arg = MakeDescrip(&exparg,DTYPE_CSTRING,0,0,expression);
     for (i=0;i<nargs && (status & 1);i++)
     {
-      /*printf("sock: %d, idx: %d, dtype: %d, nargs: %d, len: %d, ndims: %d, dims[0]: %d, ptr: %f\n",
-	mdsSocket,i,arg->dtype,nargs,ArgLen(arg),arg->ndims,arg->dims,*(float *)arg->ptr);*/
       status = SendArg(mdsSocket, i, arg->dtype, nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
       descnum = va_arg(incrmtr, int *);
       dsc = &descrs[*descnum-1];
       arg = MakeIpDescrip(arg, dsc);
+      printf("Got next arg!\n");
 
     }
 
@@ -300,8 +302,7 @@ int MdsValue(char *expression, ...)
   }
   else 
   {
-    int status;
-    void *arglist[34];
+    void *arglist[MAXARGS];
     struct descriptor *dsc;
     struct descriptor dexpression = {0,DTYPE_T,CLASS_S,0};
     EMPTYXD(tmp);
@@ -382,6 +383,118 @@ int MdsValue(char *expression, ...)
 
 }
 
+int  MdsPut(char *pathname, char *expression, ...)
+{
+  va_list incrmtr;
+  int a_count;
+  int i;
+  unsigned char nargs;
+  int status = 1;
+  int *descnum = &status;  /* initialize to point at non zero value */
+  struct descriptor *dsc;
+
+  va_start(incrmtr, expression);
+  for (a_count = 0; *descnum != NULL; a_count++)
+  {
+    printf("a_count: %d   descnum: %d \n",a_count,*descnum);
+    descnum = va_arg(incrmtr, int *);
+  }
+  a_count--; /* subtract one for terminator of argument list */
+
+
+  /**************************** REPLACE client/server with regular access ******************/
+
+  if (mdsSocket > 0)   /* CLIENT/SERVER */
+  {
+#ifdef _UNIX_SERVER
+    static char *putexpprefix = "TreePutRecord(";
+    static char *argplace = "$,";
+#else
+    static char *putexpprefix = "MDSLIB->MDS$PUT(";
+    static char *argplace = "descr($),";
+#endif
+    char *putexp;
+    struct descrip putexparg;
+    struct descrip exparg;
+    struct descrip *arg;
+    unsigned char idx=0;
+    nargs = a_count + 2; /* +1 for pathname +1 for expression */
+    putexp = malloc(strlen(putexpprefix) + (nargs) * strlen(argplace) + 1);
+    strcpy(putexp,putexpprefix);
+    for (i=0;i<nargs;i++) strcat(putexp,argplace);
+    putexp[strlen(putexp)-1] = ')';
+    printf("PUT EXPRESSION: -->%s<--\n",putexp);
+  
+    va_start(incrmtr, expression);
+
+    nargs = nargs + 1; /* add 1 for putexp  sent first */
+    arg = MakeDescrip(&putexparg,DTYPE_CSTRING,0,0,putexp);
+    status = SendArg(mdsSocket, idx++, arg->dtype, nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
+    free(putexp);
+    arg = MakeDescrip(&exparg,DTYPE_CSTRING,0,0,pathname);
+    status = SendArg(mdsSocket, idx++, arg->dtype, nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
+    arg = MakeDescrip(&exparg,DTYPE_CSTRING,0,0,expression);
+    for (i=idx;i<nargs && (status & 1);i++)
+    {
+      status = SendArg(mdsSocket, (char)i, arg->dtype, nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
+      descnum = va_arg(incrmtr, int *);
+      dsc = &descrs[*descnum-1];
+      arg = MakeIpDescrip(arg, dsc);
+    }
+      
+    if (status & 1)
+    {
+      char dtype;
+      int dims[MAX_DIMS];
+      char ndims;
+      short len;
+      int numbytes;
+      void *dptr;
+      status = GetAnswerInfo(mdsSocket, &dtype, &len, &ndims, dims, &numbytes, &dptr);
+      if (status & 1 && dtype == DTYPE_LONG && ndims == 0 && numbytes == sizeof(int))
+	memcpy(&status,dptr,numbytes);
+    }
+  }
+  else 
+  {
+
+    void *arglist[MAXARGS];
+    struct descriptor *dsc;
+    struct descriptor dexpression = {0,DTYPE_T,CLASS_S,0};
+    EMPTYXD(tmp);
+    int argidx = 1;
+    int i;
+    int nid;
+
+    if ((status = TreeFindNode(pathname, &nid)) & 1)
+    {
+      dexpression.length = strlen((char *)expression);
+      dexpression.pointer = (char *)expression;
+      arglist[argidx++] = (void *)&dexpression;
+      va_start(incrmtr, expression);
+      for (i=1;i <= a_count; i++)
+      {
+        descnum = va_arg(incrmtr, int *);
+        dsc = &descrs[*descnum-1];
+        arglist[argidx++] = (void *)dsc;
+      }
+      arglist[argidx++] = (void *)&tmp;
+      arglist[argidx++] = MdsEND_ARG;
+      *(int *)&arglist[0] = argidx; 
+      status = LibCallg(arglist,TdiCompile);
+      if (status & 1)
+      {
+	if ((status = TreePutRecord(nid, (struct descriptor *)arglist[argidx-2])) & 1)
+	{ 
+	  TreeWait();
+	}
+      }
+      MdsFree1Dx(&tmp, NULL);
+    }
+
+  }
+  return(status);
+}
 
 
 int  MdsOpen(char *tree, int shot)
