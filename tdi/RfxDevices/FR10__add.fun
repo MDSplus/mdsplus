@@ -14,9 +14,20 @@ public fun FR10__add(in _path, out _nidout)
     	DevAddNode(_path // ':PTS', 'NUMERIC', *, *, _nid);
 	DevAddNode(_path // ':TRIG_EDGE', 'TEXT', 'RISING', *, _nid);
 
-    	for (_c = 1; _c <=16; _c++)
+    	for (_c = 1; _c <=9; _c++)
     	{
-        	_cn = _path // '.CHANNEL_' // TEXT(_c, 1);
+        	_cn = _path // '.CHANNEL_0' // TEXT(_c, 1);
+        	DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
+    		DevAddNode(_cn // ':START_TIME', 'NUMERIC', 0., *, _nid);
+        	DevAddNode(_cn // ':END_TIME', 'NUMERIC', 1., *, _nid);
+        	DevAddNode(_cn // ':START_IDX', 'NUMERIC', *, *, _nid);
+        	DevAddNode(_cn // ':END_IDX', 'NUMERIC', *, *, _nid);
+        	DevAddNode(_cn // ':DATA', 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+    	}
+
+    	for (_c = 10; _c <=16; _c++)
+    	{
+        	_cn = _path // '.CHANNEL_' // TEXT(_c, 2);
         	DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
     		DevAddNode(_cn // ':START_TIME', 'NUMERIC', 0., *, _nid);
         	DevAddNode(_cn // ':END_TIME', 'NUMERIC', 1., *, _nid);
