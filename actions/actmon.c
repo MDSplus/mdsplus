@@ -50,12 +50,45 @@ $ MCR ACTMON -monitor monitor-name
 #include <Xm/MessageB.h>
 #include <stdio.h>
 #include <time.h>
+#include <pthread.h>
+
+#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
+#define pthread_condattr_default NULL
+#define pthread_mutexattr_default NULL
+#endif
+#define def_lock(name) \
+\
+static int name##_mutex_initialized = 0;\
+static pthread_mutex_t name##_mutex;\
+\
+static void lock_##name()\
+{\
+\
+  if(! name##_mutex_initialized)\
+  {\
+    name##_mutex_initialized = 1;\
+    pthread_mutex_init(&name##_mutex, pthread_mutexattr_default);\
+  }\
+  pthread_mutex_lock(&name##_mutex);\
+}\
+\
+static void unlock_##name()\
+{\
+\
+  if(! name##_mutex_initialized)\
+  {\
+    name##_mutex_initialized = 1;\
+    pthread_mutex_init(&name##_mutex, pthread_mutexattr_default);\
+  }\
+\
+  pthread_mutex_unlock(&name##_mutex);\
+}
+
+def_lock(event_queue)
 
 extern int TdiExecute();
 
-typedef struct { int forward;
-                 int previous;
-                 char *msg;
+typedef struct _LinkedEvent { char *msg;
                  char *tree;
                  int  shot;
                  int phase;
@@ -67,6 +100,7 @@ typedef struct { int forward;
                  char *fullpath;
                  char *time;
                  char *status_text;
+                 struct _LinkedEvent *next;
                } LinkedEvent;
 
 static void Exit(Widget w, int *tag, XtPointer callback_data);
@@ -112,13 +146,15 @@ static XmFontList fontlist;
 #define EventEfn 1
 #define DOING 1
 #define DONE 2
-static LinkedEvent *EventQ;
+static LinkedEvent *EventQueueHead = 0;
+static LinkedEvent *EventQueueTail = 0;
 int unique_tag_seed = 0;
 static XmString done_label;
 static XmString doing_label;
 static XmString dispatched_label;
 static XmString error_label;
-
+static XtAppContext app_ctx;
+static void DoTimer();
 
 #define TimeString(tm) ctime(&tm)
 
@@ -133,7 +169,6 @@ int       main(int argc, String *argv)
   static XrmOptionDescRec options[] = {{"-monitor", "*monitor", XrmoptionSepArg, NULL}};
   static XtResource resources[] = {{"monitor", "Monitor", XtRString, sizeof(String), 0, XtRString, "CMOD_MONITOR"},
 				   {"images", "Images", XtRString, sizeof(String), sizeof(String), XtRString, ""}};
-  XtAppContext app_ctx;
   MrmHierarchy drm_hierarchy;
   struct { String monitor;
            String images;
@@ -141,9 +176,6 @@ int       main(int argc, String *argv)
   Widget top;
   Widget main;
   int zeros[] = {0,0};
-
-  EventQ = (LinkedEvent *)malloc(sizeof(LinkedEvent));
-  memcpy(EventQ, zeros, sizeof(zeros));
   MrmInitialize();
   MrmRegisterNames(callbacks, XtNumber(callbacks));
   top = XtVaAppInitialize(&app_ctx, "ActMon", options, XtNumber(options), &argc, argv, NULL,
@@ -162,6 +194,7 @@ int       main(int argc, String *argv)
   done_label = XmStringCreateSimple("Done");
   error_label = XmStringCreateSimple("Error");
   CheckIn(resource_list.monitor);
+  XtAppAddTimeOut(app_ctx,1000,DoTimer,0);
   XtAppMainLoop(app_ctx);
 }
 
@@ -238,10 +271,13 @@ static void Disable(Widget w, int *tag, XmToggleButtonCallbackStruct *cb)
     case 6: CurrentWidgetOff = cb->set;
     case 7: dw = XtParent(CurrentWidget); break;
   }
-  if (cb->set)
-    XtUnmanageChild(dw);
-  else
-    XtManageChild(dw);
+  if (dw)
+  {
+    if (cb->set)
+      XtUnmanageChild(dw);
+    else
+      XtManageChild(dw);
+  }
 }
 
 static void ParseTime(LinkedEvent *event)
@@ -254,8 +290,8 @@ static void ParseTime(LinkedEvent *event)
 static int ParseMsg(char *msg, LinkedEvent *event)
 {
   char *tmp;
-  event->msg = msg;
-  event->tree = strtok(msg," ");
+  event->msg = strcpy(malloc(strlen(msg)+1),msg);
+  event->tree = strtok(event->msg," ");
   if (!event->tree) return 0;
   tmp = strtok(0," ");
   if (!tmp) return 0;
@@ -288,16 +324,60 @@ static int ParseMsg(char *msg, LinkedEvent *event)
   ParseTime(event);
   return 1;
 }
-  
+
+static LinkedEvent *GetQEvent()
+{
+  LinkedEvent *ans = 0;
+  lock_event_queue();
+  ans = EventQueueHead;
+  if (EventQueueHead)
+    EventQueueHead = EventQueueHead->next;
+  if (!EventQueueHead)
+    EventQueueTail = 0;
+  unlock_event_queue();
+  return ans;
+}
+
+static void DoTimer()
+{
+  LinkedEvent *ev;
+  while ((ev = GetQEvent()) != 0)
+  {
+    EventUpdate(ev);
+    if (ev->msg)
+      free(ev->msg);
+    free(ev);
+  }
+  XtAppAddTimeOut(app_ctx,100,DoTimer,0);
+}
+
+static void QEvent(LinkedEvent *ev)
+{
+  ev->next = 0;
+  lock_event_queue();
+  if (EventQueueTail) 
+    EventQueueTail->next = ev;
+  else
+  {
+    EventQueueHead = ev;
+  }
+  EventQueueTail = ev;
+  unlock_event_queue();
+}
+    
 static void MessageAst(int dummy, char *reply)
 {
-  LinkedEvent event;
-  if (reply && ParseMsg(reply,&event))
+  LinkedEvent *event = malloc(sizeof(LinkedEvent));
+  event->msg = 0;
+  if (reply && ParseMsg(reply,event))
   {
-    EventUpdate(&event);
+    QEvent(event);
   }
   else
   {
+    if (event->msg)
+      free(event->msg);
+    free(event);
     CheckIn(0);
   }
 }
@@ -387,7 +467,6 @@ static void PutLog(char *time, char  *mode, char *status, char *server, char *pa
       }
     }
   }
-  XFlush(XtDisplay(CurrentWidget));
 }
 
 static void PutError(char *time, String  mode, char *status, char *server, char *path)
@@ -410,7 +489,9 @@ static void PutError(char *time, String  mode, char *status, char *server, char 
     XmListDeletePos(ErrorWidget,1);
   }
   XmListSetBottomPos(ErrorWidget,0);
+  /*
   XFlush(XtDisplay(ErrorWidget));
+  */
 
 }
 
