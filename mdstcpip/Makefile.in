@@ -1,16 +1,24 @@
 SHELL=/bin/sh
 CC=@CC@
 LD=@LD@
+
+COMPRESSION_SOURCES=adler32.c compress.c deflate.c infblock.c infcodes.c\
+inffast.c inflate.c inftrees.c infutil.c trees.c uncompr.c zutil.c
+COMPRESSION_SWITCH=-DCOMPRESSION
+#COMPRESS_SOURCES=
+#COMPRESSION_SWITCH=
+
 top_srcdir=@top_srcdir@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-CFLAGS=@CFLAGS@
+CFLAGS=@CFLAGS@ $(COMPRESSION_SWITCH)
 LDFLAGS=@LDFLAGS@
 LIBS=@LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
+
 SOURCES = \
-	mdsipshr.c mdsiputil.c vmshpwd.c
+	mdsipshr.c mdsiputil.c vmshpwd.c $(COMPRESSION_SOURCES)
 
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = mdsipshr.export
