@@ -1,7 +1,7 @@
 public fun RFXControl__add(in _path, out _nidout)
 {
 write(*,'RFXControl__add'); 
-    DevAddStart(_path, 'RFXControl', 437 + 226, _nidout);
+    DevAddStart(_path, 'RFXControl', 440 + 227, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -308,22 +308,28 @@ write(*,'RFXControl__add');
 
 /* Simulink Parameters */
     DevAddNode(_path // ':PAR106_NAME', 'TEXT', "SimulinkK1", *, _nid);
-    DevAddNode(_path // ':PAR106_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR106_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
     DevAddNode(_path // ':PAR107_NAME', 'TEXT', "SimulinkK2", *, _nid);
-    DevAddNode(_path // ':PAR107_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR107_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
     DevAddNode(_path // ':PAR108_NAME', 'TEXT', "SimulinkK3", *, _nid);
-    DevAddNode(_path // ':PAR108_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR108_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
     DevAddNode(_path // ':PAR109_NAME', 'TEXT', "SimulinkK4", *, _nid);
-    DevAddNode(_path // ':PAR109_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR109_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
     DevAddNode(_path // ':PAR110_NAME', 'TEXT', "SimulinkK5", *, _nid);
-    DevAddNode(_path // ':PAR110_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR110_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
     DevAddNode(_path // ':PAR111_NAME', 'TEXT', "SimulinkK6", *, _nid);
-    DevAddNode(_path // ':PAR111_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR111_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
     DevAddNode(_path // ':PAR112_NAME', 'TEXT', "SimulinkK7", *, _nid);
-    DevAddNode(_path // ':PAR112_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR112_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
     DevAddNode(_path // ':PAR113_NAME', 'TEXT', "SimulinkK8", *, _nid);
-    DevAddNode(_path // ':PAR113_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR113_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
 
+/* Ramp down */
+    DevAddNode(_path // ':RAMP_SLOPE', 'NUMERIC', 10., *, _nid);
+    DevAddNode(_path // ':RAMP_TRIGGER', 'NUMERIC', 2, *, _nid);
+
+/*  Feedforward */
+    DevAddNode(_path // ':FEEDFORW', 'TEXT', 'DISABLED', *, _nid);
 
 
     DevAddEnd();
