@@ -97,7 +97,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib $(IDL_DIR)\bin\bin.x86\idl32.lib $(SQL_DIR)\DevTools\Lib\ntwdblib.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib $(IDL_DIR)\bin\bin.x86\idl32.lib &quot;$(SQL_DIR)\DevTools\Lib\ntwdblib.lib&quot;"
 				OutputFile="$(OutDir)/idlsql.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -131,9 +131,6 @@
 	<Files>
 		<File
 			RelativePath=".\IdlSql.def">
-		</File>
-		<File
-			RelativePath=".\dynamic_syb.c">
 		</File>
 		<File
 			RelativePath=".\idlsql_syb.c">

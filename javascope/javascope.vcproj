@@ -36,6 +36,7 @@
 				Name="VCNMakeTool"
 				BuildCommandLine="nmake /f &quot;javascope.mak&quot;"
 				ReBuildCommandLine="nmake /f &quot;javascope.mak&quot; /a"
+				CleanCommandLine="del ..\java\classes\MDSplus.jar *.class"
 				Output="..\java\classes\MDSplus.jar"/>
 		</Configuration>
 	</Configurations>
