@@ -6,6 +6,7 @@
 #include "treeshrp.h"
 #include <ncidef.h>
 #include <mdsdescrip.h>
+#include <mdsshr.h>
 #include <usagedef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -456,6 +457,35 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 				  *(int *) itm->pointer = 0;
 			  break;
 		  }
+	  case NciDTYPE_STR:
+	    {
+	      char *lstr;
+	      break_on_no_node;
+	      read_nci;
+	      lstr = MdsDtypeString(nci.dtype);
+	      string = strcpy(malloc(strlen(lstr)+1),lstr);
+	      break;
+	    }
+
+	  case NciCLASS_STR:
+	    {
+	      char *lstr;
+	      break_on_no_node;
+	      read_nci;
+	      lstr = MdsClassString(nci.class);
+	      string = strcpy(malloc(strlen(lstr)+1),lstr);
+	      break;
+	    }
+
+	  case NciUSAGE_STR:
+	    {
+	      char *lstr;
+	      break_on_no_node;
+	      lstr = MdsUsageString(node->usage);
+	      string = strcpy(malloc(strlen(lstr)+1),lstr);
+	      break;
+	    }
+
 	  default:
 		  status = TreeILLEGAL_ITEM;
     }
