@@ -31,6 +31,10 @@
 ;       the tree.
 ; MODIFICATION HISTORY:
 ;	 VERSION 1.0, CREATED BY T.W. Fredian, Sept 22,1992
+;        Modified by Jeff Schachter April 26, 2000:
+;        - added optional PATH to decompile (rather than whole tree)
+;        - removed "SETUP_INFO" check when testing whether data should 
+;          be put.
 ;-
 ;
 function device_part,nid
@@ -47,7 +51,7 @@ if ((numdone ge part) and ((numdone mod part) eq 0)) or (part eq total_nodes) th
 return
 end
 
-pro setup_node,nid
+pro setup_node,nid,lun
   path = mdsvalue('GETNCI($,"FULLPATH")',nid)
 ;  ctx = 0l
 ;  while (call_external('treeshr','tree$find_node_tags',nid,ctx,tagname)) do begin
@@ -55,7 +59,7 @@ pro setup_node,nid
 ;  endwhile
   tagname = mdsvalue('TreeFindNodeTags($)',nid)
   while (tagname ne '') do begin
-    printf,1,'ADD TAG '+ path +' '+tagname
+    printf,lun,'ADD TAG '+ path +' '+tagname
     tagname = mdsvalue('TreeFindNodeTags($)',nid)
   endwhile
   cmd = 'SET NODE/MODEL_WRITE/SHOT_WRITE/NOWRITE_ONCE ' + path + '/'
@@ -63,7 +67,7 @@ pro setup_node,nid
   cmd = cmd + "COMPRESS_ON_PUT/"
   if not mdsvalue('getnci($,"DO_NOT_COMPRESS")',nid) then cmd=cmd+"NO"
   cmd = cmd + "DO_NOT_COMPRESS"
-  printf,1,cmd
+  printf,lun,cmd
   quals = ''
   if mdsvalue('getnci($,"STATE")',nid)           then quals=quals+"/OFF" else quals=quals+"/ON"
   if mdsvalue('getnci($,"INCLUDE")',nid)         then quals=quals+"/INCLUDE" else quals=quals+"/NOINCLUDE"
@@ -71,47 +75,55 @@ pro setup_node,nid
   if mdsvalue('getnci($,"NO_WRITE_SHOT")',nid)   then quals=quals+"/NOSHOT_WRITE"
   if mdsvalue('getnci($,"WRITE_ONCE")',nid)      then quals=quals+"/WRITE_ONCE"
   if mdsvalue('getnci($,"ESSENTIAL")',nid)       then quals=quals+"/ESSENTIAL"
-  if (mdsvalue('getnci($1,"IS_MEMBER") && getnci($1,"SETUP_INFORMATION")',nid)) then begin
+;;  if (mdsvalue('getnci($1,"IS_MEMBER") && getnci($1,"SETUP_INFORMATION")',nid)) then begin
+  if (mdsvalue('getnci($1,"IS_MEMBER")',nid)) then begin
     if (mdsvalue('getnci($,"LENGTH")',nid) ne 0) then begin
       value = mdsvalue('DECOMPILE(`getnci($,"RECORD"))',nid)
       if strpos(value,"<no-node>") eq -1 then begin
-        printf,1,'PUT/EXTEND/NOLF/EOF="****" ' + path
+        printf,lun,'PUT/EXTEND/NOLF/EOF="****" ' + path
         strt = 0l
         len = strlen(value)
         while strt lt len do begin
-          printf,1,strmid(value,strt,80)
+          printf,lun,strmid(value,strt,80)
           strt = strt + 80
         endwhile
-        printf,1,"****"
+        printf,lun,"****"
       endif else begin
-        printf,1,'TYPE ' + path + ' had references to non-existent nodes'
+        printf,lun,'TYPE ' + path + ' had references to non-existent nodes'
       endelse
     endif else begin
-      printf,1,'PUT ' + path + ' ""'
+      printf,lun,'PUT ' + path + ' ""'
     endelse
   endif
   if strlen(quals) gt 0 then begin
-    printf,1,'SET NODE ' + quals + ' ' + path
+    printf,lun,'SET NODE ' + quals + ' ' + path
   endif
   return
 end
 
-pro mdsdecomp_tree,tree,shot,quiet=quiet,status=status
+;==============
+
+pro mdsdecomp_tree,tree,shot,path=path,quiet=quiet,status=status
+
 mdstcl,'close',/quiet
-tmp=size(quiet)
-if tmp(1) eq 0 then quiet=0
+
+if (not(keyword_set(quiet))) then quiet = 0
+if (n_elements(path) eq 0) then path = "\\TOP***"
+
 case n_params() of
   1: mdstcl,'edit '+tree,quiet=quiet,status=status
   2: mdstcl,'edit '+tree+'/shot='+string(shot),quiet=quiet,status=status
   else: status=0
 endcase
 if not status then return
+
 tree=mdsvalue('$EXPT')
 shot=mdsvalue('$SHOTNAME')
-close,1
-openw,1,tree+'_'+shot+'.TCL'
-printf,1,'EDIT/NEW '+tree+'/SHOT='+string(mdsvalue('$SHOT'))
-all_nids=MDSVALUE('GETNCI("\\TOP***","NID_NUMBER")')
+
+openw,lun,tree+'_'+shot+'.TCL',/get_lun
+
+printf,lun,'EDIT/NEW '+tree+'/SHOT='+string(mdsvalue('$SHOT'))
+all_nids=MDSVALUE('GETNCI("'+path+'","NID_NUMBER")')
 defered_nids=0
 usage=['ANY','STRUCTURE','ACTION','DEVICE','DISPATCH','NUMERIC','SIGNAL','TASK','TEXT','WINDOW','AXIS','SUBTREE','COMPOUND_DATA']
 punct=[':','.']
@@ -130,18 +142,18 @@ for i=0,n_elements(all_nids)-1 do begin
       usagenum = MDSVALUE('GETNCI($,"USAGE")',nid)
       case usagenum of
         1:  begin
-            printf,1,'ADD NODE '+ path
+            printf,lun,'ADD NODE '+ path
             end
         11: begin
-            printf,1,'ADD NODE '+ path
-            printf,1,'SET NODE/SUBTREE ' + path
+            printf,lun,'ADD NODE '+ path
+            printf,lun,'SET NODE/SUBTREE ' + path
             end
         else: begin
-            printf,1,'ADD NODE/USAGE=' + USAGE(usagenum) + ' ' + path
+            printf,lun,'ADD NODE/USAGE=' + USAGE(usagenum) + ' ' + path
             end
       endcase
     endif else begin
-      printf,1,'ADD NODE/MODEL=' + MDSVALUE('MODEL_OF(GETNCI($,"RECORD"))',nid) + ' ' + path
+      printf,lun,'ADD NODE/MODEL=' + MDSVALUE('MODEL_OF(GETNCI($,"RECORD"))',nid) + ' ' + path
     endelse
   endif else begin
     defered_nids=[defered_nids,nid]
@@ -162,16 +174,16 @@ while n_elements(defered_nids) gt 1 do begin
   endif else begin
     elt=mdsvalue('GETNCI($,"CONGLOMERATE_ELT")',nid)
     if elt eq 0 then begin
-        printf,1,'ADD NODE/USAGE=' + USAGE(MDSVALUE('GETNCI($,"USAGE")',nid)) + path
+        printf,lun,'ADD NODE/USAGE=' + USAGE(MDSVALUE('GETNCI($,"USAGE")',nid)) + path
     endif else begin
       original = mdsvalue('GETNCI($,"FULLPATH")',nid-elt+1) + mdsvalue('GETNCI($,"ORIGINAL_PART_NAME")',nid)
       if original ne path then begin
         idx = where(parent eq renamed_nids,count)
         if (count) then begin
-          printf,1,'RENAME '+renamed_names(idx)+punct(mdsvalue('GETNCI($,"IS_CHILD")',nid))+$
+          printf,lun,'RENAME '+renamed_names(idx)+punct(mdsvalue('GETNCI($,"IS_CHILD")',nid))+$
                MDSVALUE('GETNCI($,"NODE_NAME")',nid)+ ' ' + path
         endif else begin
-          printf,1,'RENAME '+original + ' ' + path
+          printf,lun,'RENAME '+original + ' ' + path
         endelse
         renamed_nids = [renamed_nids,nid]
         renamed_names = [renamed_names,path]
@@ -184,9 +196,10 @@ endwhile
 ; Assign tags, load data, and set node characteristics of all nodes
 ;
 for i=0,n_elements(all_nids)-1 do begin
-  setup_node,all_nids(i)
+  setup_node,all_nids[i],lun
   report_done,nodes_done,total_nodes
 endfor
-printf,1,'WRITE'
-close,1
+printf,lun,'WRITE'
+free_lun,lun
+
 end
