@@ -257,12 +257,14 @@ static int copy_dx(
      case CLASS_A:
       {
         int dscsize;
+        int align_size;
 	array_coef *pi = (array_coef *) in_ptr;
 	array_coef *po = (array_coef *) out_dsc_ptr;
 	dscsize = sizeof(struct descriptor_a)
 		+ (pi->aflags.coeff ? sizeof(char *) + sizeof(int) * pi->dimct : 0)
 		+ (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0);
-        bytes = DTYPE_T ? dscsize : align(dscsize, pi->length);
+        align_size = (pi->dtype == DTYPE_T) ? 1 : pi->length;
+        bytes = align(dscsize, align_size);
 	if (po)
 	{
 	  _MOVC3(dscsize, (char *) pi, (char *) po);

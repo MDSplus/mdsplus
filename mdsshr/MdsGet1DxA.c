@@ -50,6 +50,7 @@
 #include <mdsshr.h>
 #include <stdlib.h>
 
+#define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 
 #ifdef __VMS
 #pragma member_alignment save
@@ -70,6 +71,7 @@ typedef ARRAY_COEFF(char, 1) array_coef;
   unsigned int new_size;
   int       status;
   int       i;
+  int align_size;
   array_coef *out_dsc;
   unsigned char dsc_dtype = DTYPE_DSC;
   new_arsize = (in_dsc->arsize / in_dsc->length) * (*length_ptr);
@@ -77,6 +79,8 @@ typedef ARRAY_COEFF(char, 1) array_coef;
                                                           sizeof(int) * in_dsc->dimct : 0) +
 						 (in_dsc->aflags.bounds ? sizeof(int) * (in_dsc->dimct * 2) 
                                                                                                      : 0);
+  align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
+  dsc_size = align(dsc_size,align_size);
   new_size = dsc_size + new_arsize;
   status = MdsGet1Dx(&new_size, &dsc_dtype, out_xd, NULL);
   if (status & 1)
