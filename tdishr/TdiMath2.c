@@ -102,9 +102,9 @@ static double mod_d(double in1, double in2) {
 
 #define OperateFloatOne(dtype,routine,p1,p2) \
 { double a,b,ans;\
-  if (CvtConvertFloat(p1,dtype,&a,DTYPE_DOUBLE,0) && CvtConvertFloat(p2,dtype,&b,DTYPE_DOUBLE,0))\
+  if (CvtConvertFloat(p1,dtype,&a,DTYPE_NATIVE_DOUBLE,0) && CvtConvertFloat(p2,dtype,&b,DTYPE_NATIVE_DOUBLE,0))\
   { ans = routine(a,b);\
-    CvtConvertFloat(&ans,DTYPE_DOUBLE,outp++,dtype,0);\
+    CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
   } else CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0); }
 
 #define OperateFloat(type,dtype,routine) \

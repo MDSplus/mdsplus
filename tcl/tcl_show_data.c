@@ -61,10 +61,10 @@ static int   lib_cvt_dx_dx(	/* Returns:  status			*/
         case DTYPE_BU:
             sprintf(string,"0x%02X",*(unsigned char *)p);
             break;
-        case DTYPE_FLOAT:
+        case DTYPE_NATIVE_FLOAT:
             sprintf(string,"%.8g",*(float *)p);
             break;
-        case DTYPE_DOUBLE:
+        case DTYPE_NATIVE_DOUBLE:
             sprintf(string,"%.14lg",*(double *)p);
             break;
         case DTYPE_L:

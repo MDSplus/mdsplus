@@ -162,12 +162,12 @@ struct descriptor	*out_ptr)
 {
        int			status = 1;
        static double digits_d;
-       static struct descriptor digits = {sizeof(digits_d),DTYPE_DOUBLE,CLASS_S,(char *)&digits_d};
+       static struct descriptor digits = {sizeof(digits_d),DTYPE_NATIVE_DOUBLE,CLASS_S,(char *)&digits_d};
        status = TdiDigits(x_ptr,&digits MDS_END_ARG);
        if (status & 1)
        {
 	 static double two_d = 2.;
-	 static struct descriptor two = {sizeof(two_d),DTYPE_DOUBLE,CLASS_S,(char *)&two_d};
+	 static struct descriptor two = {sizeof(two_d),DTYPE_NATIVE_DOUBLE,CLASS_S,(char *)&two_d};
 	 digits_d = 1. - digits_d;
 	 status = TdiPower(&two,&digits,out_ptr MDS_END_ARG);
        }
@@ -402,8 +402,8 @@ float	fprec, frange;
 	if (status & 1) {
 		fprec = prec / _factor;
 		frange = range / _factor;
-		if	(fprec <= 23 && frange <= 127) range = DTYPE_FLOAT;
-		else if (fprec <= 52 && frange <= 1023) range = DTYPE_DOUBLE;
+		if	(fprec <= 23 && frange <= 127) range = DTYPE_NATIVE_FLOAT;
+		else if (fprec <= 52 && frange <= 1023) range = DTYPE_NATIVE_DOUBLE;
 		else if (fprec <= 55 && frange <= 127) range = DTYPE_D;
 		else range = 0;
 		*(int *)pout->pointer = range;

@@ -99,8 +99,8 @@ void UseNativeFloat(struct TdiCatStruct *cat)
   unsigned char k;
   for (k=0;k<TdiCAT_MAX;k++)
     if ( ((TdiREF_CAT[k].cat & ~(0x800)) == (cat->out_cat & ~(0x800))) && 
-         (k == DTYPE_FLOAT || 
-          k == DTYPE_DOUBLE ||
+         (k == DTYPE_NATIVE_FLOAT || 
+          k == DTYPE_NATIVE_DOUBLE ||
           k == DTYPE_FLOAT_COMPLEX ||
           k == DTYPE_DOUBLE_COMPLEX))
     {

@@ -581,6 +581,9 @@ struct descriptor_condition {	RECORD_HEAD
 	struct descriptor_condition name = {sizeof(unsigned char), DTYPE_CONDITION, CLASS_R, (unsigned char *)modifier, 1, __fill_value__\
 	(struct descriptor *)condition}
 
+#ifdef DTYPE_EVENT
+#undef DTYPE_EVENT
+#endif
 #define DTYPE_EVENT	210
 
 #define TreeNEGATE_CONDITION 	7
@@ -637,7 +640,7 @@ struct descriptor_with_error {	RECORD_HEAD
 	struct descriptor_with_error name = {0,DTYPE_WITH_ERROR,CLASS_R,0,2, __fill_value__\
 	(struct descriptor *)data, (struct descriptor *)error}
 
-#define	 DESCRIPTOR_FLOAT(name, _float) struct descriptor name = {sizeof(float), DTYPE_F, CLASS_S, (char *)_float}
+#define	 DESCRIPTOR_FLOAT(name, _float) struct descriptor name = {sizeof(float), DTYPE_NATIVE_FLOAT, CLASS_S, (char *)_float}
 
 #define	 DESCRIPTOR_LONG(name, _long) struct descriptor name = {sizeof(int), DTYPE_L, CLASS_S, (char *)_long}
 
@@ -758,22 +761,30 @@ typedef SIGNAL(MAXDIM) signal_maxdim;
 #endif /* __VMS */
 
 #ifdef __VMS
-#define DTYPE_FLOAT DTYPE_F
+#define DTYPE_NATIVE_FLOAT DTYPE_F
 #define DTYPE_FLOAT_COMPLEX DTYPE_FC
 
 #if __G_FLOAT
-#define DTYPE_DOUBLE DTYPE_G
+#define DTYPE_NATIVE_DOUBLE DTYPE_G
 #define DTYPE_DOUBLE_COMPLEX DTYPE_GC
 #else /* __G_FLOAT */
-#define DTYPE_DOUBLE DTYPE_D
+#define DTYPE_NATIVE_DOUBLE DTYPE_D
 #define DTYPE_DOUBLE_COMPLEX DTYPE_DC
 #endif /* __G_FLOAT */
 
 #else /* __VMS */
-#define DTYPE_FLOAT DTYPE_FS
-#define DTYPE_DOUBLE DTYPE_FT
+#define DTYPE_NATIVE_FLOAT DTYPE_FS
+#define DTYPE_NATIVE_DOUBLE DTYPE_FT
 #define DTYPE_FLOAT_COMPLEX DTYPE_FSC
 #define DTYPE_DOUBLE_COMPLEX DTYPE_FTC
 #endif /* __VMS */
+
+#ifndef DTYPE_FLOAT
+#define DTYPE_FLOAT DTYPE_NATIVE_FLOAT
+#endif
+
+#ifndef DTYPE_DOUBLE
+#define DTYPE_DOUBLE DTYPE_NATIVE_DOUBLE
+#endif
 
 #endif

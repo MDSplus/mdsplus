@@ -110,44 +110,44 @@ static const int roprand = 0x8000;
 
 #define AbsFloat(dtype) \
      double tmp;\
-     if (CvtConvertFloat(&in[i],dtype,&tmp,DTYPE_DOUBLE,0)) \
+     if (CvtConvertFloat(&in[i],dtype,&tmp,DTYPE_NATIVE_DOUBLE,0)) \
      {\
        tmp = tmp > 0 ? tmp : -tmp;\
-       CvtConvertFloat(&tmp,DTYPE_DOUBLE,&out[i],dtype,0);\
+       CvtConvertFloat(&tmp,DTYPE_NATIVE_DOUBLE,&out[i],dtype,0);\
      }\
      else\
        CvtConvertFloat(&roprand,DTYPE_F,&out[i],dtype,0);
 
 #define UnaryMinusFloat(dtype) \
      double tmp;\
-     if (CvtConvertFloat(&in[i],dtype,&tmp,DTYPE_DOUBLE,0)) \
+     if (CvtConvertFloat(&in[i],dtype,&tmp,DTYPE_NATIVE_DOUBLE,0)) \
      {\
        tmp = -tmp;\
-       CvtConvertFloat(&tmp,DTYPE_DOUBLE,&out[i],dtype,0);\
+       CvtConvertFloat(&tmp,DTYPE_NATIVE_DOUBLE,&out[i],dtype,0);\
      }\
      else\
        CvtConvertFloat(&roprand,DTYPE_F,&out[i],dtype,0);
 
 #define UnaryMinusComplex(dtype) \
      double tmp;\
-     if (CvtConvertFloat(&in[i*2],dtype,&tmp,DTYPE_DOUBLE,0)) \
+     if (CvtConvertFloat(&in[i*2],dtype,&tmp,DTYPE_NATIVE_DOUBLE,0)) \
      {\
        tmp = -tmp;\
-       CvtConvertFloat(&tmp,DTYPE_DOUBLE,&out[i*2],dtype,0);\
+       CvtConvertFloat(&tmp,DTYPE_NATIVE_DOUBLE,&out[i*2],dtype,0);\
      }\
      else\
        CvtConvertFloat(&roprand,DTYPE_F,&out[i*2],dtype,0);\
-     if (CvtConvertFloat(&in[i*2+1],dtype,&tmp,DTYPE_DOUBLE,0)) \
+     if (CvtConvertFloat(&in[i*2+1],dtype,&tmp,DTYPE_NATIVE_DOUBLE,0)) \
      {\
        tmp = -tmp;\
-       CvtConvertFloat(&tmp,DTYPE_DOUBLE,&out[i*2+1],dtype,0);\
+       CvtConvertFloat(&tmp,DTYPE_NATIVE_DOUBLE,&out[i*2+1],dtype,0);\
      }\
      else\
        CvtConvertFloat(&roprand,DTYPE_F,&out[i*2+1],dtype,0);
 
 #define NintFloat(dtype) \
      double tmp;\
-     if (CvtConvertFloat(&in[i],dtype,&tmp,DTYPE_DOUBLE,0)) \
+     if (CvtConvertFloat(&in[i],dtype,&tmp,DTYPE_NATIVE_DOUBLE,0)) \
      {\
        out[i] = (int)(tmp + (tmp > 0 ? .5 : -.5));\
      }\
@@ -156,7 +156,7 @@ static const int roprand = 0x8000;
 
 #define NintComplex(dtype) \
      double tmp;\
-     if (CvtConvertFloat(&in[i*2],dtype,&tmp,DTYPE_DOUBLE,0)) \
+     if (CvtConvertFloat(&in[i*2],dtype,&tmp,DTYPE_NATIVE_DOUBLE,0)) \
      {\
        out[i] = (int)(tmp + (tmp > 0 ? .5 : -.5));\
      }\
@@ -167,11 +167,11 @@ static const int roprand = 0x8000;
      double r;\
      double imag;\
      double ans;\
-     if (CvtConvertFloat(&in[i*2],dtype,&r,DTYPE_DOUBLE,0) && \
-         CvtConvertFloat(&in[i*2+1],dtype,&imag,DTYPE_DOUBLE,0)) \
+     if (CvtConvertFloat(&in[i*2],dtype,&r,DTYPE_NATIVE_DOUBLE,0) && \
+         CvtConvertFloat(&in[i*2+1],dtype,&imag,DTYPE_NATIVE_DOUBLE,0)) \
      {\
        ans = r * r + imag * imag;\
-       CvtConvertFloat(&ans,DTYPE_DOUBLE,&out[i],dtype,0);\
+       CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,&out[i],dtype,0);\
      }\
      else\
        CvtConvertFloat(&roprand,DTYPE_F,&out[i],dtype,0);
@@ -180,10 +180,10 @@ static const int roprand = 0x8000;
      double imag;\
      double ans;\
      memcpy(&out[i*2],&in[i*2],sizeof(in[i*2]));\
-     if (CvtConvertFloat(&in[i*2+1],dtype,&imag,DTYPE_DOUBLE,0)) \
+     if (CvtConvertFloat(&in[i*2+1],dtype,&imag,DTYPE_NATIVE_DOUBLE,0)) \
      {\
        ans = -imag;\
-       CvtConvertFloat(&ans,DTYPE_DOUBLE,&out[i*2+1],dtype,0);\
+       CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,&out[i*2+1],dtype,0);\
      }\
      else\
        CvtConvertFloat(&roprand,DTYPE_F,&out[i*2+1],dtype,0);
@@ -195,8 +195,8 @@ static const int roprand = 0x8000;
      double mn;\
      double ans;\
      int bad=0;\
-     if (CvtConvertFloat(&in[i*2],dtype,&r,DTYPE_DOUBLE,0) &&\
-         CvtConvertFloat(&in[i*2+1],dtype,&imag,DTYPE_DOUBLE,0))\
+     if (CvtConvertFloat(&in[i*2],dtype,&r,DTYPE_NATIVE_DOUBLE,0) &&\
+         CvtConvertFloat(&in[i*2+1],dtype,&imag,DTYPE_NATIVE_DOUBLE,0))\
      {\
        r = r > 0 ? r : -r;\
        imag = imag > 0 ? imag : -imag;\
@@ -212,15 +212,15 @@ static const int roprand = 0x8000;
      if (bad)\
        CvtConvertFloat(&roprand,DTYPE_F,&out[i],dtype,0);\
      else\
-       CvtConvertFloat(&ans,DTYPE_DOUBLE,&out[i],dtype,0);
+       CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,&out[i],dtype,0);
 
 #define Abs1Complex(dtype) \
      double r;\
      double imag;\
      double ans;\
      int bad=0;\
-     if (CvtConvertFloat(&in[i*2],dtype,&r,DTYPE_DOUBLE,0) &&\
-         CvtConvertFloat(&in[i*2+1],dtype,&imag,DTYPE_DOUBLE,0))\
+     if (CvtConvertFloat(&in[i*2],dtype,&r,DTYPE_NATIVE_DOUBLE,0) &&\
+         CvtConvertFloat(&in[i*2+1],dtype,&imag,DTYPE_NATIVE_DOUBLE,0))\
      {\
        r = r > 0 ? r : -r;\
        imag = imag > 0 ? imag : -imag;\
@@ -231,7 +231,7 @@ static const int roprand = 0x8000;
      if (bad)\
        CvtConvertFloat(&roprand,DTYPE_F,&out[i],dtype,0);\
      else\
-       CvtConvertFloat(&ans,DTYPE_DOUBLE,&out[i],dtype,0);
+       CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,&out[i],dtype,0);
 
 int MthJNINT();
 int MthJIGNNT();
@@ -532,27 +532,27 @@ int       Tdi3Aimag(struct descriptor *in_ptr,
    case DTYPE_F:  
      start_operate(float)
      float ans = (float)0.0;
-     CvtConvertFloat(&ans,DTYPE_FLOAT,&out[i],DTYPE_F,0);
+     CvtConvertFloat(&ans,DTYPE_NATIVE_FLOAT,&out[i],DTYPE_F,0);
      end_operate
    case DTYPE_FS:  
      start_operate(float)
      float ans = (float)0.0;
-     CvtConvertFloat(&ans,DTYPE_FLOAT,&out[i],DTYPE_FS,0);
+     CvtConvertFloat(&ans,DTYPE_NATIVE_FLOAT,&out[i],DTYPE_FS,0);
      end_operate
    case DTYPE_G:  
      start_operate(double)
      double ans = 0.0;
-     CvtConvertFloat(&ans,DTYPE_DOUBLE,&out[i],DTYPE_G,0);
+     CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,&out[i],DTYPE_G,0);
      end_operate
    case DTYPE_D:	
      start_operate(double)
      double ans = 0.0;
-     CvtConvertFloat(&ans,DTYPE_DOUBLE,&out[i],DTYPE_D,0);
+     CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,&out[i],DTYPE_D,0);
      end_operate
    case DTYPE_FT:	
      start_operate(double)
      double ans = 0.0;
-     CvtConvertFloat(&ans,DTYPE_DOUBLE,&out[i],DTYPE_FT,0);
+     CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,&out[i],DTYPE_FT,0);
      end_operate
    case DTYPE_FC:	
    case DTYPE_FSC:	

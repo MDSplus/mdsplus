@@ -291,7 +291,7 @@ int				status = 1;
 		case DTYPE_W :			*val_ptr = (float) *(short *)		in_ptr->pointer; break;
 		case DTYPE_LU :			*val_ptr = (float) *(unsigned int *)	in_ptr->pointer; break;
 		case DTYPE_L :			*val_ptr = (float) *(int *)		in_ptr->pointer; break;
-		default : {struct descriptor val_dsc = {sizeof(float),DTYPE_FLOAT,CLASS_S,0};
+		default : {struct descriptor val_dsc = {sizeof(float),DTYPE_NATIVE_FLOAT,CLASS_S,0};
                            val_dsc.pointer = (char *)val_ptr;
 			   status = TdiConvert(in_ptr, &val_dsc MDS_END_ARG);
 			  } break;

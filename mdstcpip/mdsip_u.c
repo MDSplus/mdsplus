@@ -5,9 +5,6 @@
 #include <strroutines.h>
 #include <libroutines.h>
 #include "../tdishr/cvtdef.h"
-#undef DTYPE_FLOAT
-#undef DTYPE_DOUBLE
-#undef DTYPE_EVENT
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -847,7 +844,7 @@ static void ClientEventAst(MdsEventList *e, int len, char *data)
       Message *m = malloc(len);
       m->h.client_type = c->client_type;
       m->h.msglen = len;
-      m->h.dtype = DTYPE_EVENT;
+      m->h.dtype = DTYPE_EVENT_NOTIFY;
       info = (JMdsEventInfo *)m->bytes;
       memcpy(info->data, data, (len<12)?len:12);
       for(i = len; i < 12; i++)
@@ -861,7 +858,7 @@ static void ClientEventAst(MdsEventList *e, int len, char *data)
       Message *m = malloc(sizeof(MsgHdr) + e->info_len);
       m->h.client_type = c->client_type;
       m->h.msglen = sizeof(MsgHdr) + e->info_len;
-      m->h.dtype = DTYPE_EVENT;
+      m->h.dtype = DTYPE_EVENT_NOTIFY;
       memcpy(e->info->data, data, (len<12)?len:12); 
       for(i = len; i < 12; i++)
         e->info->data[i] = 0;

@@ -87,7 +87,7 @@ extern void DoubleToWideInt();
 }
 
 #define OperateFloatOne(dtype,operator) \
-    *outp++ = (CvtConvertFloat(in1p,dtype,&a,DTYPE_FLOAT,0) && CvtConvertFloat(in2p,dtype,&b,DTYPE_FLOAT,0)) ? \
+    *outp++ = (CvtConvertFloat(in1p,dtype,&a,DTYPE_NATIVE_FLOAT,0) && CvtConvertFloat(in2p,dtype,&b,DTYPE_NATIVE_FLOAT,0)) ? \
       not((unsigned int)a operator (unsigned int)b) : (unsigned int)0;
 
 #define OperateFloat(dtype,operator) \
@@ -124,7 +124,7 @@ extern void DoubleToWideInt();
 }
 
 #define OperateDoubleOne(dtype,operator) \
-      if (CvtConvertFloat(in1p,dtype,&a,DTYPE_DOUBLE,0) && CvtConvertFloat(in2p,dtype,&b,DTYPE_DOUBLE,0)) \
+      if (CvtConvertFloat(in1p,dtype,&a,DTYPE_NATIVE_DOUBLE,0) && CvtConvertFloat(in2p,dtype,&b,DTYPE_NATIVE_DOUBLE,0)) \
       { unsigned int a_int[2],b_int[2];\
         DoubleToWideInt(&a,2,a_int); DoubleToWideInt(&b,2,b_int); \
         for (i=0;i<2;i++) {*outp++ = not(a_int[i] operator b_int[i]);}\

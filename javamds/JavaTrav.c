@@ -300,7 +300,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getTags
   jfieldID nid_fid;
   jclass cls = (*env)->GetObjectClass(env, jnid),
     string_cls = (*env)->FindClass(env, "java/lang/String");
-  int ctx = 0;
+  void  *ctx = 0;
 
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
@@ -308,7 +308,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getTags
   while(n_tags < 256 && (tags[n_tags] = TreeFindNodeTags(nid, &ctx)) )
   {
 	 n_tags++;
-	 if(ctx == -1)
+	 if(*(int *)&ctx == -1)
 		break;
   }
   jtags = (*env)->NewObjectArray(env, n_tags, string_cls, 0); 

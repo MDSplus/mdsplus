@@ -177,11 +177,11 @@ extern int IsRoprand();
 #define O_OU(lena,pa,lenb,pb,numb) CONVERT_BINARY_SMALLER(pa,pb,numb,lena,lenb)
 #define O_Q(lena,pa,lenb,pb,numb) CONVERT_BINARY_SMALLER(pa,pb,numb,lena,lenb)
 /*********** Binary to Floating Point ****************************/
-#define CONVERT_FLOAT(pb,numb,otype) if (otype != DTYPE_FLOAT) {int i=numb; float *op = (float *)pb; \
-     while (i-- > 0) {float tmp = *op; CvtConvertFloat(&tmp, DTYPE_FLOAT, op++, otype, 0);}}
+#define CONVERT_FLOAT(pb,numb,otype) if (otype != DTYPE_NATIVE_FLOAT) {int i=numb; float *op = (float *)pb; \
+     while (i-- > 0) {float tmp = *op; CvtConvertFloat(&tmp, DTYPE_NATIVE_FLOAT, op++, otype, 0);}}
 
-#define CONVERT_DOUBLE(pb,numb,otype) if (otype != DTYPE_DOUBLE) {int i=numb; double *op = (double *)pb; \
-     while (i-- > 0) {double tmp = *op; CvtConvertFloat(&tmp, DTYPE_DOUBLE, op++, otype, 0);}}
+#define CONVERT_DOUBLE(pb,numb,otype) if (otype != DTYPE_NATIVE_DOUBLE) {int i=numb; double *op = (double *)pb; \
+     while (i-- > 0) {double tmp = *op; CvtConvertFloat(&tmp, DTYPE_NATIVE_DOUBLE, op++, otype, 0);}}
 
 #define BINARY_TO_FLOAT(ti,pa,pb,numb,otype)  \
   {int i=numb; ti *ip=(ti*)pa; float *op=(float*)pb; while (i-- > 0) *op++ =(float)*ip++; status = 1; CONVERT_FLOAT(pb,numb,otype)}
@@ -321,25 +321,25 @@ extern int IsRoprand();
 #define FLOAT_TO_BINARY(itype,pa,pb,numb,to,mino,maxo)  \
   {int i=numb; float *ip=(float*)pa; to *op=(to*)pb; \
    while (i-- > 0) { float tmp; \
-     if (itype != DTYPE_FLOAT) CvtConvertFloat(ip++, itype, &tmp, DTYPE_FLOAT,0); else tmp = *ip++; \
+     if (itype != DTYPE_NATIVE_FLOAT) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_FLOAT,0); else tmp = *ip++; \
      *op++ = (to)max((float)((to)mino),min((float)((to)maxo),tmp));} status = 1;}
 
 #define DOUBLE_TO_BINARY(itype,pa,pb,numb,to,mino,maxo)  \
   {int i=numb; double *ip=(double*)pa; to *op=(to*)pb; \
    while (i-- > 0) { double tmp; \
-     if (itype != DTYPE_DOUBLE) CvtConvertFloat(ip++, itype, &tmp, DTYPE_DOUBLE,0); else tmp = *ip++; \
+     if (itype != DTYPE_NATIVE_DOUBLE) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE,0); else tmp = *ip++; \
      *op++ = (to)max((double)((to)mino),min((double)((to)maxo),tmp));} status = 1;}
 
 #define FLOATC_TO_BINARY(itype,pa,pb,numb,to,mino,maxo)  \
   {int i=numb; float *ip=(float*)pa; to *op=(to*)pb; \
    while (i-- > 0) { float tmp; \
-     if (itype != DTYPE_FLOAT) CvtConvertFloat(ip++, itype, &tmp, DTYPE_FLOAT,0); else tmp = *ip++; \
+     if (itype != DTYPE_NATIVE_FLOAT) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_FLOAT,0); else tmp = *ip++; \
      *op++ = (to)max((float)((to)mino),min((float)((to)maxo),tmp)); ip++;} status = 1;}
 
 #define DOUBLEC_TO_BINARY(itype,pa,pb,numb,to,mino,maxo)  \
   {int i=numb; double *ip=(double*)pa; to *op=(to*)pb; \
    while (i-- > 0) { double tmp; \
-     if (itype != DTYPE_DOUBLE) CvtConvertFloat(ip++, itype, &tmp, DTYPE_DOUBLE,0); else tmp = *ip++; \
+     if (itype != DTYPE_NATIVE_DOUBLE) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE,0); else tmp = *ip++; \
      *op++ = (to)max((double)((to)mino),min((double)((to)maxo),tmp)); ip++;} status = 1;}
 
 #define F_BU(lena,pa,lenb,pb,numb) FLOAT_TO_BINARY(DTYPE_F,pa,pb,numb,unsigned char,0,0xff)
@@ -407,25 +407,25 @@ extern int IsRoprand();
 #define FLOAT_TO_LBINARY(itype,pa,pb,numb,size)  \
   {int i=numb; float *ip=(float*)pa; unsigned int *op=(unsigned int *)pb; \
    while (i-- > 0) { double tmp; \
-     if (itype != DTYPE_FLOAT) CvtConvertFloat(ip++, itype, &tmp, DTYPE_DOUBLE,0); else tmp = (double)*ip++; \
+     if (itype != DTYPE_NATIVE_FLOAT) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE,0); else tmp = (double)*ip++; \
      DoubleToWideInt(&tmp, size, op); op += size;} status = 1;}
 
 #define DOUBLE_TO_LBINARY(itype,pa,pb,numb,size)  \
   {int i=numb; double *ip=(double*)pa; unsigned int *op=(unsigned int *)pb; \
    while (i-- > 0) { double tmp; \
-     if (itype != DTYPE_DOUBLE) CvtConvertFloat(ip++, itype, &tmp, DTYPE_DOUBLE,0); else tmp = *ip++; \
+     if (itype != DTYPE_NATIVE_DOUBLE) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE,0); else tmp = *ip++; \
      DoubleToWideInt(&tmp, size, op); op += size;} status = 1;}
 
 #define FLOATC_TO_LBINARY(itype,pa,pb,numb,size)  \
   {int i=numb; float *ip=(float*)pa; unsigned int *op=(unsigned int *)pb; \
    while (i-- > 0) { double tmp; \
-     if (itype != DTYPE_FLOAT) CvtConvertFloat(ip++, itype, &tmp, DTYPE_DOUBLE,0); else tmp = (double)*ip++; \
+     if (itype != DTYPE_NATIVE_FLOAT) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE,0); else tmp = (double)*ip++; \
      DoubleToWideInt(&tmp, size, op); op += size; ip++;} status = 1;}
 
 #define DOUBLEC_TO_LBINARY(itype,pa,pb,numb,size)  \
   {int i=numb; double *ip=(double*)pa; unsigned int *op=(unsigned int *)pb; \
    while (i-- > 0) { double tmp; \
-     if (itype != DTYPE_DOUBLE) CvtConvertFloat(ip++, itype, &tmp, DTYPE_DOUBLE,0); else tmp = *ip++; \
+     if (itype != DTYPE_NATIVE_DOUBLE) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE,0); else tmp = *ip++; \
      DoubleToWideInt(&tmp, size, op); op += size; ip++;} status = 1;}
 
 #define F_QU(lena,pa,lenb,pb,numb)  FLOAT_TO_LBINARY(DTYPE_F,pa,pb,numb,2)
@@ -613,7 +613,7 @@ static void FLOAT_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, cha
       int width;
       int prec;
       double tmp;
-      CvtConvertFloat(ip++,itype,&tmp,DTYPE_DOUBLE,0);
+      CvtConvertFloat(ip++,itype,&tmp,DTYPE_NATIVE_DOUBLE,0);
       width = lenb < 13 ? lenb : 13;
       prec = width - 7;
       if (prec < 0) prec = 0;
@@ -657,8 +657,8 @@ static void DOUBLE_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, ch
       int width;
       int prec;
       double tmp;
-      if (itype != DTYPE_DOUBLE) 
-        CvtConvertFloat(ip++,itype,&tmp,DTYPE_DOUBLE,0);
+      if (itype != DTYPE_NATIVE_DOUBLE) 
+        CvtConvertFloat(ip++,itype,&tmp,DTYPE_NATIVE_DOUBLE,0);
       else 
         tmp=*ip++;
       width = lenb < 23 ? lenb : 23;
@@ -712,8 +712,8 @@ static void FLOATC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, ch
         int prec;
         float tmp;
         char *pe;
-        if (itype != DTYPE_FLOAT) 
-          CvtConvertFloat(ip++,itype,&tmp,DTYPE_FLOAT,0);
+        if (itype != DTYPE_NATIVE_FLOAT) 
+          CvtConvertFloat(ip++,itype,&tmp,DTYPE_NATIVE_FLOAT,0);
         else 
           tmp=*ip++;
         width = len < 13 ? len : 13;
@@ -768,8 +768,8 @@ static void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, c
         int prec;
         double tmp;
         char *pe;
-        if (itype != DTYPE_DOUBLE) 
-          CvtConvertFloat(ip++,itype,&tmp,DTYPE_DOUBLE,0);
+        if (itype != DTYPE_NATIVE_DOUBLE) 
+          CvtConvertFloat(ip++,itype,&tmp,DTYPE_NATIVE_DOUBLE,0);
         else 
           tmp=*ip++;
         width = len < 23 ? len : 23;

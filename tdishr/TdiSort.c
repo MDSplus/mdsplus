@@ -89,8 +89,8 @@ static int GtrFloat(int dtype,void *a, void *b)
   int ans;
   float a_local;
   float b_local;
-  if (CvtConvertFloat(a,dtype,&a_local,DTYPE_FLOAT,0) &&
-      CvtConvertFloat(b,dtype,&b_local,DTYPE_FLOAT,0))
+  if (CvtConvertFloat(a,dtype,&a_local,DTYPE_NATIVE_FLOAT,0) &&
+      CvtConvertFloat(b,dtype,&b_local,DTYPE_NATIVE_FLOAT,0))
     ans = a_local > b_local;
   return ans;
 }
@@ -100,8 +100,8 @@ static int GtrDouble(int dtype,void *a, void *b)
   int ans;
   double a_local;
   double b_local;
-  if (CvtConvertFloat(a,dtype,&a_local,DTYPE_DOUBLE,0) &&
-      CvtConvertFloat(b,dtype,&b_local,DTYPE_DOUBLE,0))
+  if (CvtConvertFloat(a,dtype,&a_local,DTYPE_NATIVE_DOUBLE,0) &&
+      CvtConvertFloat(b,dtype,&b_local,DTYPE_NATIVE_DOUBLE,0))
     ans = a_local > b_local;
   return ans;
 }

@@ -75,9 +75,9 @@ static octaword minocta = {0,0,0,-2147483647};
 static quadword uminquad = {0,0};
 static octaword uminocta = {0,0,0,0};
 
-#if DTYPE_DOUBLE == DTYPE_D
+#if DTYPE_NATIVE_DOUBLE == DTYPE_D
 #define HUGE 1.7E38
-#elif DTYPE_DOUBLE == DTYPE_G
+#elif DTYPE_NATIVE_DOUBLE == DTYPE_G
 #define HUGE 8.9E307
 #else
 #define HUGE 1.7E308
@@ -187,7 +187,7 @@ int TdiGtQ();
         if (*pm0 & 1)\
         {\
           double val;\
-          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_DOUBLE,0) && (val operator result))\
+          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0) && (val operator result))\
             {result = val; count = j0;}\
         }\
       }\
@@ -277,11 +277,11 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
         if (*pm0 & 1)\
         {\
           double val;\
-          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_DOUBLE,0) && (val operator result))\
+          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0) && (val operator result))\
             {result = val; count = j0;}\
         }\
       }\
-      CvtConvertFloat(&result,DTYPE_DOUBLE,outp++,dtype,0);\
+      CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
     }\
   }\
   break;\
@@ -367,14 +367,14 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
         if (*pm0 & 1)\
         {\
           double val;\
-          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_DOUBLE,0))\
+          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0))\
             {result += val; count++;}\
         }\
       }\
       if (count)\
       {\
         result /= count;\
-        CvtConvertFloat(&result,DTYPE_DOUBLE,outp++,dtype,0);\
+        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
       }\
       else\
         CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
@@ -397,8 +397,8 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
         {\
           double val;\
           double vali;\
-          if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_DOUBLE,0) && \
-              CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_DOUBLE,0)) \
+          if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_NATIVE_DOUBLE,0) && \
+              CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) \
             {result += val; resulti += vali; count++;}\
         }\
       }\
@@ -406,8 +406,8 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
       {\
         result /= count;\
         resulti /= count;\
-        CvtConvertFloat(&result,DTYPE_DOUBLE,outp++,dtype,0);\
-        CvtConvertFloat(&resulti,DTYPE_DOUBLE,outp++,dtype,0);\
+        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+        CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
       }\
       else\
       {\
@@ -494,11 +494,11 @@ int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
         if (!bad && *pm0 & 1)\
         {\
           double val;\
-          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_DOUBLE,0)) result *= val; else bad = 1;\
+          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0)) result *= val; else bad = 1;\
         }\
       }\
       if (!bad)\
-        CvtConvertFloat(&result,DTYPE_DOUBLE,outp++,dtype,0);\
+        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
       else\
         CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
     }\
@@ -521,8 +521,8 @@ int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
         {\
           double val;\
           double vali;\
-          if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_DOUBLE,0) && \
-              CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_DOUBLE,0)) \
+          if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_NATIVE_DOUBLE,0) && \
+              CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) \
           {\
             if (first) { result = val; resulti = vali; first = 0;} else \
             {double oldresult = result; result = result * val - resulti * vali; resulti = oldresult * vali + resulti * val;}\
@@ -531,8 +531,8 @@ int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
       }\
       if (!bad)\
       {\
-        CvtConvertFloat(&result,DTYPE_DOUBLE,outp++,dtype,0);\
-        CvtConvertFloat(&resulti,DTYPE_DOUBLE,outp++,dtype,0);\
+        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+        CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
       }\
       else\
       {\
@@ -592,12 +592,12 @@ int Tdi3Product(struct descriptor *in, struct descriptor *mask,
         if (*pm0 & 1)\
         {\
           double val;\
-          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_DOUBLE,0))\
+          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0))\
             {result += val;count++;}\
         }\
       }\
       if (count)\
-        CvtConvertFloat(&result,DTYPE_DOUBLE,outp++,dtype,0);\
+        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
       else\
         CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
     }\
@@ -619,15 +619,15 @@ int Tdi3Product(struct descriptor *in, struct descriptor *mask,
         {\
           double val;\
           double vali;\
-          if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_DOUBLE,0) && \
-              CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_DOUBLE,0)) \
+          if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_NATIVE_DOUBLE,0) && \
+              CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) \
             {result += val; resulti += vali; count++;}\
         }\
       }\
       if (count)\
       {\
-        CvtConvertFloat(&result,DTYPE_DOUBLE,outp++,dtype,0);\
-        CvtConvertFloat(&resulti,DTYPE_DOUBLE,outp++,dtype,0);\
+        CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+        CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
       }\
       else\
       {\
@@ -687,8 +687,8 @@ int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
         if (*pm0 & 1)\
         {\
           double val;\
-          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_DOUBLE,0))\
-          { result += val; count++; CvtConvertFloat(&result,DTYPE_DOUBLE,outp++,dtype,0);}\
+          if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0))\
+          { result += val; count++; CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);}\
           else CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
         }\
       }\
@@ -711,11 +711,11 @@ int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
         {\
           double val;\
           double vali;\
-          if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_DOUBLE,0) && \
-              CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_DOUBLE,0)) \
+          if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_NATIVE_DOUBLE,0) && \
+              CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) \
           { result += val; resulti += vali; count++; \
-            CvtConvertFloat(&result,DTYPE_DOUBLE,outp++,dtype,0);\
-            CvtConvertFloat(&resulti,DTYPE_DOUBLE,outp++,dtype,0);}\
+            CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+            CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);}\
           else {\
             CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
             CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\

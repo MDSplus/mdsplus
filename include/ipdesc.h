@@ -38,11 +38,18 @@ typedef int SOCKET;
 #define DTYPE_SHORT   7
 #define DTYPE_LONG    8
 #define DTYPE_LONGLONG 9
-#ifndef MdsLib_H
+#ifdef DTYPE_FLOAT
+#undef DTYPE_FLOAT
+#endif
 #define DTYPE_FLOAT   10
+#ifdef DTYPE_DOUBLE
+#undef DTYPE_DOUBLE
+#endif
 #define DTYPE_DOUBLE  11
 #define DTYPE_COMPLEX 12
-#define DTYPE_EVENT   99
+#define DTYPE_EVENT_NOTIFY   99
+#ifndef DTYPE_EVENT
+#define DTYPE_EVENT DTYPE_EVENT_NOTIFY
 #endif
 #define DTYPE_CSTRING 14
 

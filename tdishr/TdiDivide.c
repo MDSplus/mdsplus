@@ -130,10 +130,10 @@ typedef struct { int longword[4]; } octaword;
 }
 
 #define OperateCone(type,dtype) \
-  if (CvtConvertFloat(&in1p[0],dtype,&a,DTYPE_DOUBLE,0) && \
-      CvtConvertFloat(&in1p[1],dtype,&b,DTYPE_DOUBLE,0) && \
-      CvtConvertFloat(&in2p[0],dtype,&c,DTYPE_DOUBLE,0) && \
-      CvtConvertFloat(&in2p[1],dtype,&d,DTYPE_DOUBLE,0) ) \
+  if (CvtConvertFloat(&in1p[0],dtype,&a,DTYPE_NATIVE_DOUBLE,0) && \
+      CvtConvertFloat(&in1p[1],dtype,&b,DTYPE_NATIVE_DOUBLE,0) && \
+      CvtConvertFloat(&in2p[0],dtype,&c,DTYPE_NATIVE_DOUBLE,0) && \
+      CvtConvertFloat(&in2p[1],dtype,&d,DTYPE_NATIVE_DOUBLE,0) ) \
   { double abs_c = (c > 0.0) ? c : -c;\
     double abs_d = (d > 0.0) ? d : -d;\
     double r,den,e,f;\
@@ -151,8 +151,8 @@ typedef struct { int longword[4]; } octaword;
       e = (a * r + b)/den;\
       f = (b * r - a)/den;\
     }\
-    CvtConvertFloat(&e,DTYPE_DOUBLE,outp++,dtype,0);\
-    CvtConvertFloat(&f,DTYPE_DOUBLE,outp++,dtype,0);\
+    CvtConvertFloat(&e,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
+    CvtConvertFloat(&f,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
   }\
   else\
   {\
@@ -190,11 +190,11 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor
     case DTYPE_QU:  OperateWide(quadword,2,0);
     case DTYPE_O:   OperateWide(octaword,4,1);
     case DTYPE_OU:  OperateWide(octaword,4,0);
-    case DTYPE_F:   OperateF(float,DTYPE_F,DTYPE_FLOAT) 
-    case DTYPE_FS:  OperateF(float,DTYPE_FS,DTYPE_FLOAT)
-    case DTYPE_G:   OperateF(double,DTYPE_G,DTYPE_DOUBLE) 
-    case DTYPE_D:   OperateF(double,DTYPE_D,DTYPE_DOUBLE)
-    case DTYPE_FT:  OperateF(double,DTYPE_FT,DTYPE_DOUBLE)
+    case DTYPE_F:   OperateF(float,DTYPE_F,DTYPE_NATIVE_FLOAT) 
+    case DTYPE_FS:  OperateF(float,DTYPE_FS,DTYPE_NATIVE_FLOAT)
+    case DTYPE_G:   OperateF(double,DTYPE_G,DTYPE_NATIVE_DOUBLE) 
+    case DTYPE_D:   OperateF(double,DTYPE_D,DTYPE_NATIVE_DOUBLE)
+    case DTYPE_FT:  OperateF(double,DTYPE_FT,DTYPE_NATIVE_DOUBLE)
     case DTYPE_FC:  OperateC(float,DTYPE_F)
     case DTYPE_FSC: OperateC(float,DTYPE_FS)
     case DTYPE_GC:  OperateC(double,DTYPE_G)

@@ -30,9 +30,6 @@ int ServerBuildDispatchTable( )
 ------------------------------------------------------------------------------*/
 
 #include <mdsdescrip.h>
-#undef DTYPE_FLOAT
-#undef DTYPE_DOUBLE
-#undef DTYPE_EVENT
 #include <ipdesc.h>
 #include <usagedef.h>
 #include <dbidef.h>

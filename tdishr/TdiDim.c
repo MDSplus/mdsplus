@@ -384,11 +384,11 @@ int Tdi3Max(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
     case DTYPE_Q: Operate(quadword,TdiGtQ(in1p,in2p,1))
     case DTYPE_OU: Operate(octaword,TdiGtO(in1p,in2p,0))
     case DTYPE_O: Operate(octaword,TdiGtO(in1p,in2p,1))
-    case DTYPE_F: OperateF(float,DTYPE_F,DTYPE_FLOAT,a > b)
-    case DTYPE_FS: OperateF(float,DTYPE_FS,DTYPE_FLOAT,a > b)
-    case DTYPE_G: OperateF(double,DTYPE_G,DTYPE_DOUBLE,a > b)
-    case DTYPE_D: OperateF(double,DTYPE_D,DTYPE_DOUBLE,a > b)
-    case DTYPE_FT: OperateF(double,DTYPE_FT,DTYPE_DOUBLE,a > b)
+    case DTYPE_F: OperateF(float,DTYPE_F,DTYPE_NATIVE_FLOAT,a > b)
+    case DTYPE_FS: OperateF(float,DTYPE_FS,DTYPE_NATIVE_FLOAT,a > b)
+    case DTYPE_G: OperateF(double,DTYPE_G,DTYPE_NATIVE_DOUBLE,a > b)
+    case DTYPE_D: OperateF(double,DTYPE_D,DTYPE_NATIVE_DOUBLE,a > b)
+    case DTYPE_FT: OperateF(double,DTYPE_FT,DTYPE_NATIVE_DOUBLE,a > b)
     default: return TdiINVDTYDSC;
   }
   return 1;
@@ -410,11 +410,11 @@ int Tdi3Min(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
     case DTYPE_Q:  Operate(quadword,TdiLtQ(in1p,in2p,1))
     case DTYPE_OU: Operate(octaword,TdiLtO(in1p,in2p,0))
     case DTYPE_O:  Operate(octaword,TdiLtO(in1p,in2p,1))
-    case DTYPE_F:  OperateF(float,DTYPE_F,DTYPE_FLOAT,a < b)
-    case DTYPE_FS: OperateF(float,DTYPE_FS,DTYPE_FLOAT,a < b)
-    case DTYPE_G:  OperateF(double,DTYPE_G,DTYPE_DOUBLE,a < b)
-    case DTYPE_D:  OperateF(double,DTYPE_D,DTYPE_DOUBLE,a < b)
-    case DTYPE_FT: OperateF(double,DTYPE_FT,DTYPE_DOUBLE,a < b)
+    case DTYPE_F:  OperateF(float,DTYPE_F,DTYPE_NATIVE_FLOAT,a < b)
+    case DTYPE_FS: OperateF(float,DTYPE_FS,DTYPE_NATIVE_FLOAT,a < b)
+    case DTYPE_G:  OperateF(double,DTYPE_G,DTYPE_NATIVE_DOUBLE,a < b)
+    case DTYPE_D:  OperateF(double,DTYPE_D,DTYPE_NATIVE_DOUBLE,a < b)
+    case DTYPE_FT: OperateF(double,DTYPE_FT,DTYPE_NATIVE_DOUBLE,a < b)
     default: return TdiINVDTYDSC;
   }
   return 1;

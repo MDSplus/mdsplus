@@ -31,9 +31,6 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 ------------------------------------------------------------------------------*/
 
 #include <mdsdescrip.h>
-#undef DTYPE_FLOAT
-#undef DTYPE_DOUBLE
-#undef DTYPE_EVENT
 #include <ipdesc.h>
 #include <servershr.h>
 #include "servershrp.h"

@@ -243,11 +243,11 @@ int       Tdi3_Eq(struct descriptor *in1_ptr,
    case DTYPE_L:	test(int)
    case DTYPE_Q:  testn(unsigned int,2,1)
    case DTYPE_O:	testn(unsigned int,4,1)
-   case DTYPE_F:	testf(float,DTYPE_F,DTYPE_FLOAT)
-   case DTYPE_FS:	testf(float,DTYPE_FS,DTYPE_FLOAT)
-   case DTYPE_G:	testf(double,DTYPE_G,DTYPE_DOUBLE)
-   case DTYPE_D:	testf(double,DTYPE_D,DTYPE_DOUBLE)
-   case DTYPE_FT:	testf(double,DTYPE_FT,DTYPE_DOUBLE)
+   case DTYPE_F:	testf(float,DTYPE_F,DTYPE_NATIVE_FLOAT)
+   case DTYPE_FS:	testf(float,DTYPE_FS,DTYPE_NATIVE_FLOAT)
+   case DTYPE_G:	testf(double,DTYPE_G,DTYPE_NATIVE_DOUBLE)
+   case DTYPE_D:	testf(double,DTYPE_D,DTYPE_NATIVE_DOUBLE)
+   case DTYPE_FT:	testf(double,DTYPE_FT,DTYPE_NATIVE_DOUBLE)
    case DTYPE_FC:	
    case DTYPE_FSC: if (op != OP_EQ && op != OP_NE) {status = TdiINVDTYDSC; break;} testn(int,2,0)
    case DTYPE_GC:	

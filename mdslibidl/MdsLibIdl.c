@@ -45,6 +45,8 @@ int IdlMdsClose(int argc, void **argv)
   BlockSig(SIGALRM);
   if (argc > 1)
     status = TreeClose((char *)argv[0],(int)argv[1]);
+  else
+    status = TreeClose(0,0);
   UnBlockSig(SIGALRM);
   return status;
 }
@@ -188,7 +190,6 @@ int IdlMdsValue(int argc, void **argv)
         float float_v = (float)0.0;
         DESCRIPTOR_FLOAT(float_d,0);
         float_d.pointer = (char *)&float_v;
-		float_d.dtype = DTYPE_FLOAT;
 		if (float_d.dtype != mdsValueAnswer.pointer->dtype)
           TdiCvt(&mdsValueAnswer,&float_d,&mdsValueAnswer MDS_END_ARG);
       }
@@ -199,9 +200,9 @@ int IdlMdsValue(int argc, void **argv)
                mdsValueAnswer.pointer->dtype == DTYPE_OU)
       {
         double double_v = 0.0;
-        struct descriptor double_d = {sizeof(double), DTYPE_DOUBLE, CLASS_S, 0};
+        struct descriptor double_d = {sizeof(double), DTYPE_NATIVE_DOUBLE, CLASS_S, 0};
         double_d.pointer = (char *)&double_v;
-		double_d.dtype = DTYPE_DOUBLE;
+		double_d.dtype = DTYPE_NATIVE_DOUBLE;
 		if (double_d.dtype != mdsValueAnswer.pointer->dtype)
           TdiCvt(&mdsValueAnswer,&double_d,&mdsValueAnswer MDS_END_ARG);
       }
@@ -237,8 +238,8 @@ int IdlMdsValue(int argc, void **argv)
         case DTYPE_LU: strcpy((char *)argv[1],"answer = ulong(0)"); break;
         case DTYPE_Q:  strcpy((char *)argv[1],"answer = long64(0)"); break;
         case DTYPE_QU: strcpy((char *)argv[1],"answer = ulong64(0)"); break;
-        case DTYPE_FLOAT: strcpy((char *)argv[1],"answer = 0.0"); break;
-        case DTYPE_DOUBLE: strcpy((char *)argv[1],"answer = double(0.0)"); break;
+        case DTYPE_NATIVE_FLOAT: strcpy((char *)argv[1],"answer = 0.0"); break;
+        case DTYPE_NATIVE_DOUBLE: strcpy((char *)argv[1],"answer = double(0.0)"); break;
         case DTYPE_FLOAT_COMPLEX: strcpy((char *)argv[1],"answer = complex(0.0)"); break;
         case DTYPE_DOUBLE_COMPLEX: strcpy((char *)argv[1],"answer = dcomplex(0.0)"); break;
         case DTYPE_T: 
@@ -274,8 +275,8 @@ int IdlMdsValue(int argc, void **argv)
         case DTYPE_LU: strcpy((char *)argv[1],"answer = ulonarr"); strcat((char *)argv[1],dims); break;
         case DTYPE_Q: strcpy((char *)argv[1],"answer = lon64arr"); strcat((char *)argv[1],dims); break;
         case DTYPE_QU: strcpy((char *)argv[1],"answer = ulon64arr"); strcat((char *)argv[1],dims); break;
-        case DTYPE_FLOAT: strcpy((char *)argv[1],"answer = fltarr"); strcat((char *)argv[1],dims); break;
-        case DTYPE_DOUBLE: strcpy((char *)argv[1],"answer = dblarr"); strcat((char *)argv[1],dims); break;
+        case DTYPE_NATIVE_FLOAT: strcpy((char *)argv[1],"answer = fltarr"); strcat((char *)argv[1],dims); break;
+        case DTYPE_NATIVE_DOUBLE: strcpy((char *)argv[1],"answer = dblarr"); strcat((char *)argv[1],dims); break;
         case DTYPE_FLOAT_COMPLEX: strcpy((char *)argv[1],"answer = complexarr"); strcat((char *)argv[1],dims); break;
         case DTYPE_DOUBLE_COMPLEX: strcpy((char *)argv[1],"answer = dcomplexarr"); strcat((char *)argv[1],dims); break;
         case DTYPE_T: 

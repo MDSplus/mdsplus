@@ -48,7 +48,7 @@ struct descriptor_xd *JavaResample(struct descriptor_xd  *y_xdptr, struct descri
 
 int i;
 
-    DESCRIPTOR_A(a_d, sizeof(float), DTYPE_FLOAT, 0,0); 
+    DESCRIPTOR_A(a_d, sizeof(float), DTYPE_NATIVE_FLOAT, 0,0); 
     int out_points, x_points, y_points, min_points, act_points, start_idx, end_idx, curr_idx, out_idx, status;
     float out_array[1000], xmin, xmax, delta, curr, *x, *y;
     struct descriptor_xd x_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0},
@@ -155,7 +155,7 @@ int i;
 struct descriptor_xd *JavaDim(float *x, int *in_xsamples, float *in_xmin, float *in_xmax)
 {
     static struct descriptor_xd xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
-    DESCRIPTOR_A(a_d, sizeof(float), DTYPE_FLOAT, 0,0); 
+    DESCRIPTOR_A(a_d, sizeof(float), DTYPE_NATIVE_FLOAT, 0,0); 
     int x_points, act_points, i, j, start_idx, end_idx, curr_idx, out_idx;
     float out_array[3*MAX_POINTS+1], xmin, xmax, delta, curr;
     
