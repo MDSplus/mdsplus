@@ -134,13 +134,17 @@ static int   end_macro(		/* Return: TRUE if "END MACRO"		*/
    {
     char  *p;
     char  line[40];
-
     p = nonblank(originalLine);
-    l2un(line,p,sizeof(line));
-    strntrim(line,0,sizeof(line));
-    return(!strcmp(line,"END MACRO") ? 1 : 0);
+    if (p)
+    {
+      int len = (strlen(p) > (sizeof(line)-1)) ? sizeof(line) - 1 : strlen(p);
+      l2un(line,p,len);
+      line[len]=0;
+      strntrim(line,0,len);
+      return(!strcmp(line,"END MACRO") ? 1 : 0);
+    }
+    else return(0);
    }
-
 
 
 	/****************************************************************
@@ -182,15 +186,18 @@ int   mdsdcl_define()			/* Return: status		*/
 		/*======================================================
 		 * Read new macro from input ...
 		 *=====================================================*/
-    for ( ; mdsdcl_get_input_nosymbols("DEFMAC> ",&dsc_cmd) & 1 ; )
+    for ( ; (sts = mdsdcl_get_input_nosymbols("DEFMAC> ",&dsc_cmd)) & 1 ; )
        {
-        p = nonblank(dsc_cmd.dscA_pointer);
+         if ((dsc_cmd.dscW_length > 0) && dsc_cmd.dscA_pointer)
+           p = nonblank(dsc_cmd.dscA_pointer);
+         else
+           p = 0;
         if (!p || end_macro(p))
+        {
             break;
-
+        }
         if (m->numLines >= m->maxLines)
             extend_macro(m);
-
         m->lines[m->numLines++] = STRING_ALLOC(dsc_cmd.dscA_pointer);
        }
     return(1);
