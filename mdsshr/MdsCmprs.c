@@ -174,6 +174,8 @@ int       MdsCmprs(
               xsum,
              *ptally;
   int       tally[MAXY + 1];
+  char      yn_c;
+  char      ye_c;
   int       diff[MAXX],
               exce[MAXX];
   static int signif[65] = {0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -356,8 +358,10 @@ Do this in runs.
     header.e.fields.x = xe;
     header.e.fields.y = ye - 1;
     MdsPk((char *) &FIELDSY, &FIELDSX, (int *) ppack, (int *) &header, (int *) bit_ptr);
-    MdsPk((char *) &yn, (int *) &xn, (int *) ppack, (int *) diff, (int *) bit_ptr);
-    MdsPk((char *) &ye, (int *) &xe, (int *) ppack, (int *) exce, (int *) bit_ptr);
+    yn_c = (char)yn;
+    ye_c = (char)ye;
+    MdsPk(&yn_c, (int *) &xn, (int *) ppack, (int *) diff, (int *) bit_ptr);
+    MdsPk(&ye_c, (int *) &xe, (int *) ppack, (int *) exce, (int *) bit_ptr);
   }
   return 1;
 }
