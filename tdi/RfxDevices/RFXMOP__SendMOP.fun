@@ -122,7 +122,7 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
 		}
 
 
-	    DevNodeCvt(_nid, (_head_task + _N_TASK_FUNCTION), ['INACTIVE', 'ACTIVE', 'QUIESCENT' ], [2,4,1], _funct=-1);
+	    DevNodeCvt(_nid, (_head_task + _N_TASK_FUNCTION), ['INACTIVE', 'ACTIVE', 'QUIESCENT' ], [1,4,2], _funct=-1);
         if(_funct < 0 )
         {
     	   DevLogErr(_nid, "Invalid functionality for task "//(_i+1));

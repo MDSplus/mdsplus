@@ -53,7 +53,8 @@ public fun RFXANSALDO__SendAnsaldo(as_is _nid, optional _method)
 
 
 
-	_tagPath = "\\S7:\\Poloidale\\aliases\\";
+	_tagPathPoloidal = "\\S7:\\Poloidale\\aliases\\";
+	_tagPathToroidal = "\\S7:\\Toroidale\\aliases\\";
 
 
 
@@ -161,13 +162,23 @@ public fun RFXANSALDO__SendAnsaldo(as_is _nid, optional _method)
 
 		_unitPath = "A"//trim(adjustl(_i+1))//"_Config";
 
-		_status = MdsValue('OpcPut($1, $2)', _tagPath//_unitPath, _unit_Dword );
+		_status = MdsValue('OpcPut($1, $2)', _tagPathPoloidal//_unitPath, _unit_Dword );
 		if( _status == 1)
 		{
 			_errMsg = MdsValue("OpcErrorMessage()");
-    		DevLogErr(_nid, _errMsg);
+    			DevLogErr(_nid, _errMsg);
  			abort();
 		}
+
+
+		_status = MdsValue('OpcPut($1, $2)', _tagPathToroidal//_unitPath, _unit_Dword );
+		if( _status == 1)
+		{
+			_errMsg = MdsValue("OpcErrorMessage()");
+    			DevLogErr(_nid, _errMsg);
+ 			abort();
+		}
+
 	}
 
 
@@ -258,13 +269,22 @@ public fun RFXANSALDO__SendAnsaldo(as_is _nid, optional _method)
 
 		_unitPath = "B"//trim(adjustl(_i+1))//"_Config";
 
-		_status = MdsValue('OpcPut($1, $2)', _tagPath//_unitPath, _unit_Dword );
+		_status = MdsValue('OpcPut($1, $2)', _tagPathPoloidal//_unitPath, _unit_Dword );
 		if( _status == 1)
 		{
 			_errMsg = MdsValue("OpcErrorMessage()");
-    		DevLogErr(_nid, _errMsg);
+    			DevLogErr(_nid, _errMsg);
  			abort();
 		}
+
+		_status = MdsValue('OpcPut($1, $2)', _tagPathToroidal//_unitPath, _unit_Dword );
+		if( _status == 1)
+		{
+			_errMsg = MdsValue("OpcErrorMessage()");
+    			DevLogErr(_nid, _errMsg);
+ 			abort();
+		}
+
 	}
 
 
