@@ -4,27 +4,27 @@ public fun AAMaxValue(in _window, in _control, in _config)
     {
 	if(_config == 'Series')
 	{
-	    if(_control == 'Current')
-		return(2.7E3);
 	    if(_control == 'Voltage')
+		return(2.7E3);
+	    if(_control == 'Current')
 		return(8.125E3);
 	    if(_control == 'OpenLoop')
 		return(10.);
 	}
 	if(_config == 'Parallel')
 	{
-	    if(_control == 'Current')
+	    if(_control == 'Voltage' )
 		return(1.35E3);
-	    if(_control == 'Voltage')
+	    if(_control == 'Current')
 		return(16.25E3);
 	    if(_control == 'OpenLoop')
 		return(10.);
 	}
 	if(_config == 'Independent')
 	{
-	    if(_control == 'Current')
-		return(1.35E3);
 	    if(_control == 'Voltage')
+		return(1.35E3);
+	    if(_control == 'Current' )
 		return(8.125E3);
 	    if(_control == 'OpenLoop')
 		return(10.);
@@ -34,27 +34,27 @@ public fun AAMaxValue(in _window, in _control, in _config)
     {
 	if(_config == 'Series')
 	{
-	    if(_control == 'Current')
-		return(2.7E3);
 	    if(_control == 'Voltage')
+		return(2.7E3);
+	    if(_control == 'Current' )
 		return(6.25E3);
 	    if(_control == 'OpenLoop')
 		return(10.);
 	}
 	if(_config == 'Parallel')
 	{
-	    if(_control == 'Current')
-		return(1.35E3);
 	    if(_control == 'Voltage')
+		return(1.35E3);
+	    if(_control == 'Current' )
 		return(12.5E3);
 	    if(_control == 'OpenLoop')
 		return(10.);
 	}
 	if(_config == 'Independent')
 	{
-	    if(_control == 'Current')
-		return(1.35E3);
 	    if(_control == 'Voltage')
+		return(1.35E3);
+	    if(_control == 'Current' )
 		return(6.25E3);
 	    if(_control == 'OpenLoop')
 		return(10.);
