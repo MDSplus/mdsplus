@@ -93,6 +93,11 @@ int KsTranslateIosb( RequestSenseData *sense, int cam_status)
       LastIosb.no_sync =  sense->u2.esr.no_sync;
       LastIosb.tmo     =  sense->u2.esr.tmo;
       LastIosb.adnr    =  sense->u2.esr.adnr;
+      if (sense->u2.esr.adnr)
+      {
+        status = CamDONE_NOX;
+        LastIosb.status = Shorten( CamDONE_NOX );
+      }
       LastIosb.list    =  0;			// list processing not supported
       LastIosb.lbytcnt =  0;			// list processing not supported
     }      
