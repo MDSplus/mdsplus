@@ -1132,8 +1132,11 @@ public class WaveInterface
 		
 		if(out_signal == null)
 		{
-		    out_signal = GetSignalFromProvider(curr_wave, xmin, xmax);
-		 
+            synchronized (dp)
+            {
+                out_signal = GetSignalFromProvider(curr_wave, xmin, xmax);
+            }
+            
 	        if(!(full_flag || 
 	             wave_signals == null || 
 	             wave_signals.length <= curr_wave || 
