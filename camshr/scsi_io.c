@@ -41,7 +41,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 
-#define MAXBUF 2000000
+#define MAXBUF  2000000
 #define ROUTINE_NAME "scsi_io"
 
 #ifndef SG_FLAG_MMAP_IO
