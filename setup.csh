@@ -6,15 +6,22 @@
 # source setup.csh
 #
 #
-set file="envsyms"
-set op=""
-if ( $1 != "" ) then
-if ( $1 == "unset" ) then
-set op=$1
+if ( $setup_file != "" ) then
+  set file=$setup_file
+  set op=""
 else
-set op=$2
-set file=$1
-endif
+  set file="/usr/local/mdsplus/etc/envsyms"
+  set op=""
+  if ( $#argv > 0 ) then
+    if ( $argv[1] == "unset" ) then
+      set op=$argv[1]
+    else
+      if ($#argv > 1) then
+        set op=$argv[2]
+      endif
+      set file=$argv[1]
+    endif
+  endif
 endif
 set os=`uname`
 set cwd=`pwd`
@@ -28,3 +35,4 @@ set awkcmd="$awkcmd"'"if ($?" $1 ") setenv " $1 " " $2 substr($3,2) "$" $1 ";" ;
 set awkcmd="$awkcmd"'else if (($1 !~ /^#.*/) && (substr($3,1,1) == ">")) print "if (! $?" $1 ") setenv " $1 " " $2 ";" '
 set awkcmd="$awkcmd"'"if ($?" $1 ") setenv " $1 " $" $1 substr($3,2) $2 ";" }'
 eval `awk "$awkcmd" $file`
+
