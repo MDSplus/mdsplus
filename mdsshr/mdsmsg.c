@@ -204,7 +204,7 @@ char  *MdsGetMsg(	/* Return: addr of "status" string	*/
      }
      LibFindFileEnd(&ctx);
      if (!(status & 1))
-       sprintf(text,"%%%NONAME-%s-NOMSG, Message number 0x%08X",severity[sts&0x7],sts);
+       sprintf(text,"%%NONAME-%s-NOMSG, Message number 0x%08X",severity[sts&0x7],sts);
      return text;
    }
 
