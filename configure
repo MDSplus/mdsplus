@@ -3358,8 +3358,6 @@ EOF
 
 
 
-
-
 trap '' 1 2 15
 cat > confcache <<\EOF
 # This file is a shell script that caches the results of configure
@@ -3523,8 +3521,6 @@ s%@LDSHARE@%$LDSHARE%g
 s%@LDARC@%$LDARC%g
 s%@LINKSHARED@%$LINKSHARED%g
 s%@SHARETYPE@%$SHARETYPE%g
-s%@XINC@%$XINC%g
-s%@XLIB@%$XLIB%g
 s%@NEED_SEMUN@%$NEED_SEMUN%g
 s%@TARGETSYS@%$TARGETSYS%g
 s%@XM_LIBS@%$XM_LIBS%g
