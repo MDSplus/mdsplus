@@ -20,6 +20,7 @@ PARTS = ipcs \
 	d3dshr \
 	wfevent
 
+
 all :
 	- cdir=`pwd`; \
         for dir in $(PARTS) ; do\
