@@ -39,6 +39,6 @@ install:
                 chmod 755 @libdir@; \
         fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libRemCamShr@SHARETYPE@ @libdir@
-	if [ ! -a "@libdir@libCamShr@SHARETYPE@]" ; then \
-          ln -sf libRemCamShr@SHARETYPE@ @libdir@/libCamShr@SHARETYPE@ \
+	if [ ! -a "@libdir@libCamShr@SHARETYPE@" ]; then \
+          ln -sf libRemCamShr@SHARETYPE@ @libdir@/libCamShr@SHARETYPE@; \
 	fi
