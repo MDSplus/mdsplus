@@ -1,11 +1,10 @@
 public fun OAM01__reset ( as_is _nid, optional _method )
 {
-	private __GPIB_CTRL = 1 ;
-	private __GPIB_ADDR = 2 ;
-	private __MODULE_TYPE = 3 ;
-	private __COMMENT = 4 ;
+	private __GPIB_ADDR = 1 ;
+	private __MODULE_TYPE = 2 ;
+	private __COMMENT = 3 ;
 
-	private __CHANNEL_1A = 5 ;
+	private __CHANNEL_1A = 4 ;
 	private __RANGE = 1 ;
 	private __COUPLING = 2 ;
 	private __SOURCE = 3 ;
@@ -25,14 +24,7 @@ public fun OAM01__reset ( as_is _nid, optional _method )
 
 
 
-	_status = 1 ;
-	_gpib_ctrl = '' ;
-	_gpib_ctrl = if_error ( data ( DevNodeRef ( _nid, __GPIB_CTRL ) ), _status = 0 ) ;
-	if (  ( _status == 0 ) || ( _gpib_ctrl == '' ) )
-	{
-		DevLogErr ( _nid, 'Invalid GPIB controller name' ) ;
-		abort (  ) ;
-	}
+
 
 	_status = 1 ;
 	_gpib_addr = if_error ( data ( DevNodeRef ( _nid, __GPIB_ADDR ) ), _status = 0 ) ;
@@ -81,7 +73,10 @@ public fun OAM01__reset ( as_is _nid, optional _method )
 	}
 
 
-	/* faccio un reset */
+	/*
+		faccio un reset. Il reset spegne i canali, carica una configurazione di
+		default e porta il controllo in locale
+	*/
 
 	_command = 'J0000\n' ;
 	_status = GPIBWrite ( _gpib_id, _command ) ;

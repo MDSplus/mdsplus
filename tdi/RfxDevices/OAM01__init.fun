@@ -1,11 +1,10 @@
 public fun OAM01__init ( as_is _nid, optional _method )
 {
-	private __GPIB_CTRL = 1 ;
-	private __GPIB_ADDR = 2 ;
-	private __MODULE_TYPE = 3 ;
-	private __COMMENT = 4 ;
+	private __GPIB_ADDR = 1 ;
+	private __MODULE_TYPE = 2 ;
+	private __COMMENT = 3 ;
 
-	private __CHANNEL_1A = 5 ;
+	private __CHANNEL_1A = 4 ;
 	private __RANGE = 1 ;
 	private __COUPLING = 2 ;
 	private __SOURCE = 3 ;
@@ -17,6 +16,9 @@ public fun OAM01__init ( as_is _nid, optional _method )
 	private	_NODES_PER_CHANNEL = 6 ;
 
 	private _WAIT = 1. ;
+
+	private _OAM01A = 0.5 ;	/* 1Vpp in uscita */
+	private _OAM01B = 5. ;	/* 10Vpp in uscita */
 
 
 
@@ -30,14 +32,7 @@ public fun OAM01__init ( as_is _nid, optional _method )
 
 
 
-	_status = 1 ;
-	_gpib_ctrl = '' ;
-	_gpib_ctrl = if_error ( data ( DevNodeRef ( _nid, __GPIB_CTRL ) ), _status = 0 ) ;
-	if (  ( _status == 0 ) || ( _gpib_ctrl == '' ) )
-	{
-		DevLogErr ( _nid, 'Invalid GPIB controller name' ) ;
-		abort (  ) ;
-	}
+
 
 	_status = 1 ;
 	_gpib_addr = if_error ( data ( DevNodeRef ( _nid, __GPIB_ADDR ) ), _status = 0 ) ;
@@ -47,7 +42,7 @@ public fun OAM01__init ( as_is _nid, optional _method )
 		abort (  ) ;
 	}
 
-	DevNodeCvt ( _nid, __MODULE_TYPE, [ '5V OUTPUT', '0.5V OUTPUT' ], [ 5, 0.5 ], _module_type = 0.5 ) ;
+	DevNodeCvt ( _nid, __MODULE_TYPE, [ 'OAM01A', 'OAM01B' ], [ _OAM01A, _OAM01B ], _module_type = _OAM01B ) ;
 
 
 
@@ -205,6 +200,8 @@ public fun OAM01__init ( as_is _nid, optional _method )
 				DevLogErr ( _nid, _msg ) ;
 				abort (  ) ;
 			}
+
+			/* mi accerto che sia OFF */
 		}
 	}
 

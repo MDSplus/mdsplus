@@ -1,4 +1,4 @@
-public fun OAM01__calib ( as_is _nid, optional _method )
+public fun OAM01__info ( as_is _nid, optional _method )
 {
 	private __GPIB_ADDR = 1 ;
 	private __MODULE_TYPE = 2 ;
@@ -16,7 +16,6 @@ public fun OAM01__calib ( as_is _nid, optional _method )
 	private	_NODES_PER_CHANNEL = 6 ;
 
 	private _WAIT = 1. ;
-
 
 
 
@@ -77,7 +76,7 @@ public fun OAM01__calib ( as_is _nid, optional _method )
 
 	for ( _channel = 0 ; _channel < _CHANNELS ; _channel ++ )
 	{
-		/* seleziono il canale da calibrare */
+		/* seleziono il canale da cui leggere */
 
 		_command = 'W5834(0' // Trim ( AdjustL ( ( 1 + _channel ) ) ) // ')' // '\n' ;
 		_status = GPIBWrite ( _gpib_id, _command ) ;
@@ -90,17 +89,9 @@ public fun OAM01__calib ( as_is _nid, optional _method )
 		}
 
 
-		/* calibro il canale */
+		/* leggo lo stato del canale */
 
-		_command = "W5836(C501)\n" ;
-		_status = GPIBWrite ( _gpib_id, _command ) ;
-		wait ( _WAIT ) ;
-		if ( 0 == _status )
-		{
-			_msg = 'Command ' // _command // ' failed' ;
-			DevLogErr ( _nid, _msg ) ;
-			abort (  ) ;
-		}
+
 	}
 
 
