@@ -12,7 +12,7 @@ public fun CADH__add(in _path, out _nidout)
     DevAddNode(_path // ':PTS', 'NUMERIC', *, *, _nid);
     for (_c = 1; _c <=4; _c++)
     {
-        _cn = _path // '.CHANNEL_0' // TEXT(_c, 1);
+        _cn = _path // '.CHANNEL_' // TEXT(_c, 1);
         DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
     	DevAddNode(_cn // ':START_TIME', 'NUMERIC', 0., *, _nid);
         DevAddNode(_cn // ':END_TIME', 'NUMERIC', 1., *, _nid);
