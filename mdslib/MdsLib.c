@@ -305,6 +305,11 @@ static void MdsValueCopy(int dim, int length, char fill, char *in, int *in_m, ch
 
 static void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int *length)
 {
+  if (indsc == 0)
+  {
+    if (length) *length = 0;
+    return;
+  }
   char fill = (outdsc->dtype == DTYPE_CSTRING) ? 32 : 0;
   if ( (indsc->class == CLASS_A) &&
        (outdsc->class == CLASS_A) &&
@@ -1109,7 +1114,7 @@ int MdsValue(char *expression, ...)
 
       status = TdiData(xd1.pointer,&xd2 MDS_END_ARG);
 
-      if (status & 1) 
+      if (status & 1 && xd2.length != 0) 
 	{      
 	  int templen = (xd2.pointer)->length;
 	  status = TdiCvt(&xd2,dsc,&xd3 MDS_END_ARG);
@@ -1123,7 +1128,7 @@ int MdsValue(char *expression, ...)
       
       if (status & 1) 
       {
-	MdsValueSet(dsc, &(*xd3.pointer), length);
+	MdsValueSet(dsc, xd3.pointer, length);
 
 	MdsFree1Dx(&xd1, NULL);
 	MdsFree1Dx(&xd2, NULL);
@@ -1331,7 +1336,7 @@ int MdsValue2(char *expression, ...)
 
       status = TdiData(xd1.pointer,&xd2 MDS_END_ARG);
 
-      if (status & 1) 
+      if (status & 1 && xd2.pointer) 
 	{      
 	  int templen = (xd2.pointer)->length;
 	  status = TdiCvt(&xd2,dsc,&xd3 MDS_END_ARG);
@@ -1345,7 +1350,7 @@ int MdsValue2(char *expression, ...)
       
       if (status & 1) 
       {
-	MdsValueSet(dsc, &(*xd3.pointer), length);
+	MdsValueSet(dsc, xd3.pointer, length);
 
 	MdsFree1Dx(&xd1, NULL);
 	MdsFree1Dx(&xd2, NULL);
