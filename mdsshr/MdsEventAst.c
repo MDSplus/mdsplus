@@ -98,6 +98,8 @@ char *name;
     int i;
     id = (idptr)calloc(1,sizeof(struct _id));
     id->name = (char *)calloc(1,strlen(name) + 1);
+		id->data = (char *)calloc(1,4096);		/*    max ipcs msg  */
+		id->dlen = 4096;
     for(i = 0; i < strlen(name); ++i){
         if(islower(name[i]))id->name[i] = toupper(name[i]);
         else id->name[i] = name[i];

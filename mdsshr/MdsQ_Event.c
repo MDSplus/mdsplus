@@ -10,7 +10,7 @@
 #include <mdsevents.h>
 
 
-static int debug = 0;
+static int debug = 1;
 static short timeouttag;
 
 mdsq_event(event)
@@ -34,6 +34,14 @@ char *event;
     id->timertag = reg_hidden_event(hiddennoop,0,0,0);
     hinvl(1000,id->timertag);
     status = mds_handle_event_msg(id);
+		id->status = 0;
+    if((status %2) == 1){
+        memset(class,0L,sizeof(class));
+        class[major_class] = mc_events;
+        class[minor_class] = mc_wait;
+        class[private_tag] = id->tag;
+        ipcs_sendmsg(MDSEVENTD,class,line,strlen(line));
+    }
 
 
 
@@ -90,8 +98,9 @@ MSGPTR msg;
     case mc_create:
         if((msgstatus(msg) % 2) == 1){
             status = (int) class[standard_status];
-            switch(status){
+            switch((short)status){
             case (short)error_duplicate:
+								status = error_success;
                 if(debug)fprintf(stderr,"mdsevents: already there -  good status\n");
                 break;
             default:

@@ -9,7 +9,10 @@ int argc;
 char *argv[];
 {
 
-    char data[20];
+    char data1[20];
+    char data2[20];
+    char data3[20];
+    char data4[20];
 		int len;
     if(argc <= 1){
         fprintf(stderr,"Usage: %s <event name>\n",argv[0]);
@@ -23,9 +26,21 @@ char *argv[];
 		/*mdsq_event(argv[1]);*/
 		/*mdsq_event(argv[1]);*/
 
+		mdsq_event("junk1");
+		mdsq_event("junk2");
+		mdsq_event("junk3");
+		mdsq_event("junk4");
     len = 20;
-		mdswtevent(argv[1],data,&len);
-		printf("data from event = %s\n",data);
+		mdswtevent("junk1",data1,&len);
+		printf("data from event = %s\n",data1);
+		mdswtevent("junk2",data2,&len);
+		printf("data from event = %s\n",data2);
+		mdswtevent("junk3",data3,&len);
+		printf("data from event = %s\n",data3);
+		mdswtevent("junk4",data4,&len);
+		printf("data from event = %s\n",data4);
+		mdsdeq_all();
+		/*mdswtevent(argv[1],data,&len);*/
 
 
 }
