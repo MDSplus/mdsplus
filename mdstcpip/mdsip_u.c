@@ -497,6 +497,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     int ok = 0;
     Client *c;
     time_t tim;
+    int m_status;
     m.h.msglen = sizeof(MsgHdr);
     hp = gethostbyaddr((char *)&sin->sin_addr,sizeof(sin->sin_addr),AF_INET);
     m_user = GetMdsMsg(sock,&status);
@@ -517,13 +518,13 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     }
     else
       ok = 1;
-    m.h.status = (ok & 1) ? (1 | (UseCompression ? SUPPORTS_COMPRESSION : 0)) : 0;
+    m_status = m.h.status = (ok & 1) ? (1 | (UseCompression ? SUPPORTS_COMPRESSION : 0)) : 0;
     m.h.client_type = m_user->h.client_type;
     SetSocketOptions(sock);
     SendMdsMsg(sock,&m,0);
     if (NO_SPAWN)
     {
-      if (m.h.status && NO_SPAWN)
+      if (m_status && NO_SPAWN)
       {
         Client *new = malloc(sizeof(Client));
         FD_SET(sock,&fdactive);
@@ -552,7 +553,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
       printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr,sock, pid, user_p, hp->h_name, inet_ntoa(sin->sin_addr));
     else
       printf("%s (%d) (pid %d) Connection received from %s@%s\r\n", timestr, sock, pid, user_p, inet_ntoa(sin->sin_addr));
-    if (!(m.h.status & 1))
+    if (!(m_status & 1))
     {
       printf("Access denied\n");
       shutdown(sock,2);
