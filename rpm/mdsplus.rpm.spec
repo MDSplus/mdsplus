@@ -3,7 +3,7 @@ Version: 1.1
 Release: 1
 Copyright: GNU GPL
 Group: Applications/Acquisition
-Source: mdsplus-1.0.tar.gz
+Source: mdsplus-1.1.tar.gz
 Prefix: /usr/local
 Buildroot: /var/tmp/mdsplus
 Vendor: MIT Plasma Science and Fusion Center 
