@@ -25,6 +25,10 @@
 #define LibVM_BOUNDARY_TAGS  1
 #define LibVM_EXTEND_AREA    32
 #define LibVM_TAIL_LARGE     128
+#define align(bytes) ((((bytes) + sizeof(void *) - 1)/sizeof(void *)) * sizeof(void *))
+#define compression_threshold 128
+#define _MOVC3(a,b,c) memcpy(c,b,a)
+
 
 void *MdsVM_ZONE = 0;
 
@@ -102,10 +106,6 @@ typedef struct _bounds { int l; int u; } BOUNDS;
 #endif
 
 
-#define compression_threshold 128
-
-#define _MOVC3(a,b,c) memcpy(c,b,a)
-
 static int compressible;
 
 static struct descriptor *FixedArray();
@@ -164,7 +164,7 @@ static int copy_dx(
 	}
 	if (path.pointer)
 	  StrFree1Dx(&path);
-	bytes = sizeof(struct descriptor_s) + in.length;
+	bytes = align(sizeof(struct descriptor_s) + in.length);
       }
       break;
 
@@ -196,7 +196,7 @@ static int copy_dx(
 	}
 	if (path.pointer)
 	  StrFree1Dx(&path);
-	bytes = sizeof(struct descriptor_xs) + in.l_length;
+	bytes = align(sizeof(struct descriptor_xs) + in.l_length);
       }
       break;
 
@@ -214,8 +214,7 @@ static int copy_dx(
 	    _MOVC3(pi->length, (char *) pi->pointer, (char *) po->pointer);
 	  }
 	}
-	bytes += pi->length;
-
+	bytes = align(bytes + pi->length);
       /******************************
       Each descriptor must be copied.
       ******************************/
@@ -228,7 +227,7 @@ static int copy_dx(
 			     fixup_path, fixup_path_arg);
 	    if (po)
 	      po->dscptrs[j] = size ? (struct descriptor *) ((char *) po + bytes) : 0;
-	    bytes += size;
+	    bytes = align(bytes + size);
 	  }
       }
       break;
@@ -248,7 +247,7 @@ static int copy_dx(
 	  if (pi->aflags.coeff)
 	    po->a0 = po->pointer + (pi->a0 - pi->pointer);
 	}
-	bytes += pi->arsize;
+	bytes = align(bytes + pi->arsize);
 	if (pi->arsize > compression_threshold)
 	  compressible = 1;
         free(pi);
@@ -270,7 +269,7 @@ static int copy_dx(
 	  if (pi->aflags.coeff)
 	    po->a0 = po->pointer + (pi->a0 - pi->pointer);
 	}
-	bytes += pi->arsize;
+	bytes = align(bytes + pi->arsize);
 	if (pi->arsize > compression_threshold)
 	  compressible = 1;
       }
@@ -294,7 +293,7 @@ static int copy_dx(
 	  _MOVC3(bytes, (char *) pi, (char *) po);
 	  pdo = (struct descriptor **) (po->pointer = (char *) po + bytes);
 	}
-	bytes += pi->arsize;
+	bytes = align(bytes + pi->arsize);
 
       /******************************
       Each descriptor must be copied.
@@ -306,7 +305,7 @@ static int copy_dx(
 			   &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg);
 	  if (po)
 	    *pdo++ = size ? (struct descriptor *) ((char *) po + bytes) : 0;
-	  bytes += size;
+	  bytes = align(bytes + size);
 	}
       }
       break;
@@ -333,7 +332,7 @@ static int copy_dx(
 	  status = copy_dx((struct descriptor_xd *) pi->pointer,
 			   po ? (struct descriptor_xd *) (po->pointer) : 0,
 			   &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg);
-	  bytes += size;
+	  bytes = align(bytes + size);
 	}
       }
       break;

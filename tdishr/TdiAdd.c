@@ -276,8 +276,11 @@ static int emul(int *m1, int *m2, int *add, int *out)
   _int64 m1_64 = *m1;
   _int64 m2_64 = *m2;
   _int64 add_64 = *add;
-  _int64 *prod = (_int64 *)out;
-  *prod = m1_64 * m2_64 + add_64;
+  _int64 prod;
+  int *prodp = (int *)&prod;
+  prod = m1_64 * m2_64 + add_64;
+  out[0]=prodp[0];
+  out[1]=prodp[1];
   return 1;
 }
 #endif
