@@ -159,75 +159,79 @@ public fun EM_EQU_TEST__init(as_is _nid, optional _method)
 		}	
 	};
 
-    _name = if_error(data(DevNodeRef(_nid, _N_BIRA_CTRLR)), "");
+	_name = if_error(data(DevNodeRef(_nid, _N_BIRA_CTRLR)), "");
 	if(_name == "")
 	{
 	    DevLogErr(_nid, "Missing BIRA 2601 camac name"); 
 		abort();
 	}
-
+	
 	_status = resetBira(_name);
 	if( _status != 1)
 	{
 	    DevLogErr(_nid, "Bira reset operation failed"//_status); 
 	    abort();
 	}
-
-    _dec_1 = if_error(data(DevNodeRef(_nid, _N_DECODER_1)), -1);
-	if(_dec_1 == -1)
+	
+	_dec_1 = if_error(data(DevNodeRef(_nid, _N_DECODER_1)), "");
+	if(_dec_1 == "")
 	{
 		DevLogErr(_nid, "Missing Decoder 1 path reference"); 
 		abort();
 	};
 
-    _dec_2 = if_error(data(DevNodeRef(_nid, _N_DECODER_2)), -1);;
-	if(_dec_2 == -1)
+	_dec_2 = if_error(data(DevNodeRef(_nid, _N_DECODER_2)), "");;
+	if(_dec_2 == "")
 	{
 		DevLogErr(_nid, "Missing Decoder 1 path reference"); 
 		abort();
 	};
 
-    for(_i = 0; _i < _K_NUM_CARD; _i++)
-    {
-		_head_channel = _N_CARD_1 + (_i *  _K_NODES_PER_CARD);
+	_status = tcl("do/method \\acq_trigger init");
+	_status = tcl("do/method \\DEQU_TEST::TOP.TIMING:AUTOZERO init");
+	_status = tcl("do/method \\CADH_CLOCK init");
+	_status = tcl("do/method \\TRCF_CLOCK init");
+	
+	for(_i = 0; _i < _K_NUM_CARD; _i++)
+	{
+		_head_channel = _N_CARD_01 + (_i *  _K_NODES_PER_CARD);
 
-        if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
-        { 
+		if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
+		{ 
 
 			_adc_lin = if_error(data(DevNodeRef(_nid, _head_channel + _N_CARD_ADC_LIN)), "");
-			if(_adc_lin == "")
+			
+			write(*, "ADC lineare "//_adc_lin);
+
+			if( _adc_lin != "" )
 			{
-				DevLogErr(_nid, "Does not defined ADC for linear acquisition in card number : "//(_i+1)); 	
-			}
-			else
-			{
-				_status = tcl("do/method "//_adc_lin//" init");
+				_status = tcl("do/method \\"//_adc_lin//" init");
+				write(*,"do/method \\"//_adc_lin//" init"); 
 			}
 
 			_adc_int = if_error(data(DevNodeRef(_nid, _head_channel + _N_CARD_ADC_INT)), "");
-			if(_adc_int == "")
+			
+			write(*, "ADC integrale "//_adc_int);
+
+			
+			if(_adc_int != "")
 			{
-				DevLogErr(_nid, "Does not defined ADC for integral acquisition in card number : "//(_i+1)); 	
-			}
-			else
-			{
-				_status = tcl("do/method "//_adc_int//" init");
+				_status = tcl("do/method \\"//_adc_int//" init");
+				write(*,"do/method \\"//_adc_int//" init"); 
 			}
 
 
 			_gain_path = if_error(data(DevNodeRef(_nid, _head_channel + _N_CARD_GAIN)), "");
-			if(_adc_int == "")
+			if(_gain_path != "")
 			{
-				DevLogErr(_nid, "Does not defined GAIN  in card number : "//(_i+1)); 	
-			}
-			else
-			{
-				_status = tcl("do/method "//_gain_path//" init");
+				_status = tcl("do/method \\"//_gain_path//" init");
+				write(*,"do/method \\"//_gain_path//" init");
 			}
 
-			_status = tcl("do/method "//_dec_1//" init");
+
+			_status = tcl("do/method \\"//_dec_2//" init");
 			if(_status)
-				_status = tcl("do/method "//_dec_2//" init");
+				_status = tcl("do/method \\"//_dec_1//" init");
 
 
 			_card_id = if_error(data(DevNodeRef(_nid, _head_channel + _N_CARD_FEND)), -1);
@@ -242,15 +246,28 @@ public fun EM_EQU_TEST__init(as_is _nid, optional _method)
 
 				genFendPulses(_name, _card_id);
 
-				wait(3.0);
-				if(_adc_lin == "")
-					_status = tcl("do/method "//_adc_lin//" store");
-				if(_adc_int == "")
-					_status = tcl("do/method "//_adc_int//" store");
+				wait(6.0);
+				if(_adc_lin != "")
+				{
+					write(*,"do/method \\"//_adc_lin//" store");
+					_status = tcl("do/method \\"//_adc_lin//" store");
+				}	
+				if(_adc_int != "")
+				{
+					write(*,"do/method \\"//_adc_int//" store");
+					_status = tcl("do/method \\"//_adc_int//" store");
+				}
 			}
-        }
-    }
+			
+		}
+	}
 
-
-    return (1);
+	_status = resetBira(_name);
+	if( _status != 1)
+	{
+	    DevLogErr(_nid, "Bira reset operation failed"//_status); 
+	    abort();
+	}
+	
+	return (1);
 }
