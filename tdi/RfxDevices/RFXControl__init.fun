@@ -207,6 +207,7 @@ write(*, 'RFXControl init');
 
 
 	_routine_name= data(DevNodeRef(_nid, _N_ROUTINE_NAME));
+	write(*, _routine_name);
 	_status = MdsValue('feedback->stop'// _routine_name // '()');
 	_status = MdsValue('feedback->start'// _routine_name // '()');
 
