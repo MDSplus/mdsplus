@@ -3,7 +3,11 @@ if ( test "$RPM_INSTALL_PREFIX" != "")
 then
   MDSPLUS_DIR=$RPM_INSTALL_PREFIX/mdsplus
 else
-  MDSPLUS_DIR=/usr/local/mdsplus
+  if [ -r /etc/.mdsplus_dir]
+    MDSPLUS_DIR=`cat /etc/.mdsplus_dir`
+  else
+    MDSPLUS_DIR=/usr/local/mdsplus
+  fi
 fi
 until ( test -r $MDSPLUS_DIR/bin/tditest )
 do
@@ -11,6 +15,15 @@ do
   read MDSPLUS_DIR
 done
 echo $MDSPLUS_DIR > /etc/.mdsplus_dir
+if (test "$RPM_INSTALL_PREFIX" != "")
+  echo ""
+  echo "MDSplus is now installed on your system. If you would like to"
+  echo "have MDSplus environment variables setup for all users or"
+  echo "install an MDSplus data server on your system please execute"
+  echo "$MDSPLUS_DIR/rpm/post_install_scrip
+  echo ""
+  exit 0
+fi 
 #
 # Determine if user wants MDSplus environment variables set for all users
 #
