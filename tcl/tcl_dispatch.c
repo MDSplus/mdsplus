@@ -146,7 +146,7 @@ int TclDispatch()
             StrAppend(&ident,&nullstr);
             sts = ServerDispatchAction(SyncEfn,ident.dscA_pointer
                         ,treename,shot,nid,0,0
-                        ,waiting ? &iostatus:0,0);
+                        ,waiting ? &iostatus:0,0,0);
             if (sts & 1)
               {
               if (waiting)
