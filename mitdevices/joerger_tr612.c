@@ -147,7 +147,7 @@ int joerger_tr612___store(struct descriptor *niddsc, InStoreStruct *setup)
   ext_clock_nid = setup->head_nid + JOERGER_TR612_N_EXT_CLOCK;
   pio(0,1,(short *)&reg2,&one);
   pio(8,0,0,0);
-  if ((CamXandQ(0)&1) == 0 && getenv("IGNORE_LAM") == NULL) 
+  if (reg2.armed || reg2.active)
   {
     if (reg2.mode == 0)
       return DEV$_NOT_TRIGGERED;
