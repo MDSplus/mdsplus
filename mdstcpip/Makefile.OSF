@@ -1,10 +1,10 @@
-CFLAGS = -c -I../include -I. -g
+CFLAGS = -I../include -I. -g
 
 OBJECTS = \
 	mdsipshr.o
 
 t : t.c ../shlib/libMdsIpShr.so
-	cc -o t $(CFLAGS) t.c -L../shlib -lMdsIpShr
+	cc -o $@ $(CFLAGS) t.c -L../shlib -lMdsIpShr -lc
 
 ../shlib/libMdsIpShr.so : $(OBJECTS) ../shlib
 	$(LD) -o $@ -shared -no_archive $(OBJECTS) -lc
@@ -24,7 +24,7 @@ depend : .depend
 
 .depend :
 	- rm .depend
-	find *.c -exec cc -I../include -M {} > .depend \;
+	find *.c -exec cc $(CFLAGS) -M {} > .depend \;
 
 include .depend
 

@@ -28,7 +28,7 @@ int PASCAL WinMain(HANDLE hInstance, HANDLE hPrevInstance, LPSTR lpszCmdLine, in
   return 0;
 }
 #else
-int main()
+int main( int argc, void **argv)
 {
   struct descrip ans;
   long sock = ConnectToMds("cmoda.pfc.mit.edu");
