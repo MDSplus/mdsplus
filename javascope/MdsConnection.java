@@ -69,8 +69,8 @@ public class MdsConnection
 	class MRT extends Thread // Mds Receive Thread
 	{
         MdsMessage message;
-        boolean    kill = false;
         boolean    pending = false;
+        boolean    killed = false;
 
 	    public void run()
 	    {
@@ -112,9 +112,21 @@ public class MdsConnection
 	                MdsConnection.this.dispatchConnectionEvent(ce);
 	                MdsConnection.this.NotifyMessage();
 	            }
+                    killed = true;
+                    synchronized(this)
+                    {
+                      notify();
+                    }
 	        }
 	    }
 
+            public synchronized void waitExited()
+            {
+              while(!killed)
+                try{
+                  wait();
+                }catch(InterruptedException exc){}
+            }
 
 	    public synchronized MdsMessage GetMessage()
 	    {
@@ -353,6 +365,7 @@ public class MdsConnection
                 connection_listener.removeAllElements();
 	        dos.close();
             dis.close();
+            receiveThread.waitExited();
             connected = false;
 	    }
 	    catch(IOException e)
