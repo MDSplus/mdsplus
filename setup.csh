@@ -6,22 +6,15 @@
 # source setup.csh
 #
 #
-if ( $setup_file != "" ) then
+if ( $?setup_file ) then
   set file=$setup_file
-  set op=""
 else
-  set file="/usr/local/mdsplus/etc/envsyms"
-  set op=""
-  if ( $#argv > 0 ) then
-    if ( $argv[1] == "unset" ) then
-      set op=$argv[1]
-    else
-      if ($#argv > 1) then
-        set op=$argv[2]
-      endif
-      set file=$argv[1]
-    endif
-  endif
+  set file="envsyms"
+endif
+if ( $?unset ) then
+  set op=unset
+else
+  set op=''
 endif
 set os=`uname`
 set cwd=`pwd`
@@ -30,9 +23,9 @@ set awkcmd="$awkcmd"'{ if ($1 == "source") print $0 ";" ; '
 set awkcmd="$awkcmd"'else if ($1 == ".") print "" ; '
 set awkcmd="$awkcmd"'else if (($1 !~ /^#.*/) && (("'$op'" == "unset"))) print "unsetenv " $1 ";" ; '
 set awkcmd="$awkcmd"'else if (($1 !~ /^#.*/) && (NF < 3)) print "setenv " $1 " " $2 ";" ;'
-set awkcmd="$awkcmd"'else if (($1 !~ /^#.*/) && (substr($3,1,1) == "<")) print "if (! $?" $1 ") setenv " $1 " " $2 ";" '
-set awkcmd="$awkcmd"'"if ($?" $1 ") setenv " $1 " " $2 substr($3,2) "$" $1 ";" ;'
-set awkcmd="$awkcmd"'else if (($1 !~ /^#.*/) && (substr($3,1,1) == ">")) print "if (! $?" $1 ") setenv " $1 " " $2 ";" '
-set awkcmd="$awkcmd"'"if ($?" $1 ") setenv " $1 " $" $1 substr($3,2) $2 ";" }'
-eval `awk "$awkcmd" $file`
-
+set awkcmd="$awkcmd"'else if (($1 !~ /^#.*/) && (substr($3,1,1) == "<")) print "if ($?" $1 ") setenv " $1 " " $2 substr($3,2) "$" $1 ";" '
+set awkcmd="$awkcmd"'"if ( ! $?" $1 ")  setenv " $1 " " $2 ";" ;'
+set awkcmd="$awkcmd"'else if (($1 !~ /^#.*/) && (substr($3,1,1) == ">")) print "if ($?" $1 ") setenv " $1 " $" $1 substr($3,2) $2 ";" '
+set awkcmd="$awkcmd"'"if ( ! $?" $1 ") setenv " $1 " " $2 ";" }'
+set
+echo `/bin/awk "$awkcmd" $file`
