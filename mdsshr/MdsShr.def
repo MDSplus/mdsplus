@@ -99,3 +99,6 @@ libfreevm_
 MSISetPATH
 MSIUnsetPATH
 cstring_to_dsc
+MdsUsageString
+MdsClassString
+MdsDtypeString
