@@ -58,8 +58,7 @@ all :	../shlib/libXmdsShr.$(SHARE_TYPE) \
 	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc -lm \
            -L../shlib -lMdsShr -lTdiShr -lTreeShr $(MOTIF_LIBS) $(X11_LIBS)
 
-../shlib/xmdsuil.wmd : ../bin/wmdcreate
-	../bin/wmdcreate -o ../shlib/xmdsuil.wmd
+../shlib/xmdsuil.wmd : $(WMD_RULE)
 
 ../bin/wmdcreate : wmldbcreate-xmdsshr.c UilConst.h
 	cc -o $@ -DMDS_EXTENSION $(CFLAGS) $(WML_INCLUDE) wmldbcreate-xmdsshr.c $(MOTIF_LIBS) $(X11_LIBS) $(SOCKET_LIB)
@@ -68,9 +67,6 @@ UilConst.h : xmdsuil.wml
 	$(WML) xmdsuil.wml
 	- rm wml-uil.mm
 	- rm wml-uil.sdml
-
-#tokens.dat : 
-#	ln -s /usr/examples/motif/wml/tokens.dat .
 
 clean :
 	- rm *.o

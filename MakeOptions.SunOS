@@ -1,5 +1,5 @@
 MOTIF_KIT=/opt/motif/scomd12s
-WML=$(MOTIF_KIT)/bin/wml
+WMD_RULE = xmdsuil-bigendian.wmd ; cp xmdsuil-bigendian.wmd ../shlib/xmdsuil.wmd
 CFLAGS = -I../include -g
 MOTIF_CFLAGS = -I../include -g -I$(MOTIF_KIT)/include -D_NO_DXm
 MISALIGN_CFLAGS = -misalign2
