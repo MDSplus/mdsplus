@@ -7,7 +7,7 @@ OBJFILES =		\
 	libCdu.a(dasutil_routines2.o)	\
 	libCdu.a(dasutil_routines3.o)
 
-all:	libCdu.a  cdu
+all:	libCdu.a  ../bin/cdu
 
 clean:
 	rm *.o *.a
@@ -15,8 +15,8 @@ clean:
 libCdu.a:	$(OBJFILES)
 		$(RANLIB)
 
-cdu:	cdu.o cdu_util.o cdu_write.o
-	$(CC) $(CFLAGS) -o $@  $@.o cdu_util.o cdu_write.o libCdu.a \
+../bin/cdu:	cdu.o cdu_util.o cdu_write.o
+	$(CC) $(CFLAGS) -o $@  cdu.o cdu_util.o cdu_write.o libCdu.a \
 		-L../shlib  -lMdsShr
 
 .depend:
