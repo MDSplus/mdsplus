@@ -246,7 +246,7 @@ public class MdsDataProvider implements DataProvider
                 expr = "( _jscope_"+v_idx+" = ("+in_y+"), shape(_jscope_"+v_idx+"))";
                 var_idx++;
             }
-            //int shape[] = GetNumDimensions(in_y);
+          //int shape[] = GetNumDimensions(in_y);
             int shape[] = GetNumDimensions(expr);
 
             if(error != null)
@@ -382,8 +382,8 @@ public class MdsDataProvider implements DataProvider
                 {
                     expr = "dim_of(_jscope_"+v_idx+")";
                     tBaseOut =  encodeTimeBase("_jscope_"+v_idx);
-                   // expr = "JavaDim(dim_of(_jscope_"+v_idx + "), FLOAT("+(-Float.MAX_VALUE)+"), " + "FLOAT("+Float.MAX_VALUE+"))";
-                   // isCoded = true;
+                 // expr = "JavaDim(dim_of(_jscope_"+v_idx + "), FLOAT("+(-Float.MAX_VALUE)+"), " + "FLOAT("+Float.MAX_VALUE+"))";
+                 // isCoded = true;
                 }
                 else
                 {
@@ -394,19 +394,19 @@ public class MdsDataProvider implements DataProvider
 
                     if(resample)
                     {
-	                  String limits = "FLOAT("+xmin+"), " + "FLOAT("+xmax+")";
+                       String limits = "FLOAT("+xmin+"), " + "FLOAT("+xmax+")";
                       //expr = "DIM_OF(JavaResample("+ "FLOAT("+in_y+ "), "+
-		              //      "FLOAT(DIM_OF("+in_y+")), "+ limits + "))";
+                      //       "FLOAT(DIM_OF("+in_y+")), "+ limits + "))";
                       expr = set_tdivar + "JavaResample("+ "FLOAT("+in_y_expr+ "), "+
 		                    "FLOAT(DIM_OF("+in_y_expr+")), "+ limits + ")";
                     }
                     else
                     {
-                        //expr = "dim_of("+in_y+")";
+                      //expr = "dim_of("+in_y+")";
                         expr = set_tdivar + "dim_of("+in_y_expr+")";
                         tBaseOut = encodeTimeBase(in_y);
-                      // expr = "JavaDim(dim_of("+in_y+"), FLOAT("+(-Float.MAX_VALUE)+"), " + "FLOAT("+Float.MAX_VALUE+"))";
-                      // isCoded = true;
+                     // expr = "JavaDim(dim_of("+in_y+"), FLOAT("+(-Float.MAX_VALUE)+"), " + "FLOAT("+Float.MAX_VALUE+"))";
+                     // isCoded = true;
 
                     }
                 }

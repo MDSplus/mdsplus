@@ -4,7 +4,7 @@ import java.io.*;
 import java.awt.image.*;
 import java.util.*;
 
-class Frames extends Canvas 
+class Frames extends Canvas
 {
     static final int ROI = 20;
     Vector frame_values = new Vector();
@@ -32,25 +32,25 @@ class Frames extends Canvas
     protected boolean vertical_flip = false;
     protected int color_idx;
     protected int[] frame_type;
-    
+
     Frames()
     {
         super();
         tracker = new MediaTracker(this);
     }
-    
+
     Frames(Frames frames)
     {
         this();
         Image img;
-        
+
         if(frame.size() != 0)
             frame.removeAllElements();
         if(frame_values.size() != 0)
             frame_values.removeAllElements();
         if(frame_time.size() != 0)
             frame_time.removeAllElements();
-            
+
         int num_frame = frames.getNumFrame();
         float buf_values[] = null;
         frame_type = new int[num_frame];
@@ -82,7 +82,7 @@ class Frames extends Canvas
         else
             return null;
     }
-    
+
     public int getFrameType(int i)
     {
         if(i < getNumFrame())
@@ -90,7 +90,7 @@ class Frames extends Canvas
         else
             return 0;
     }
-    
+
     static int DecodeImageType(byte buf[])
     {
         String s = new String(buf, 0, 20);
@@ -98,10 +98,9 @@ class Frames extends Canvas
             return FrameData.AWT_IMAGE;
         if(s.indexOf("JFIF") == 6)
             return FrameData.AWT_IMAGE;
-           
         return FrameData.JAI_IMAGE;
     }
-    
+
     public void CreateColorModel(int mode)
     {
         int pixel_size;
@@ -114,10 +113,10 @@ class Frames extends Canvas
         }
         byte rgb[] = new byte[256], b = 0;
         for(int i = 0; i < 256; i++, b++)
-            rgb[i] = b;                   
+            rgb[i] = b;
         c_model = new IndexColorModel(pixel_size, 256, rgb, rgb, rgb);
     }
-    
+
     protected void finalize()
     {
         if(frame.size() != 0)
@@ -126,16 +125,16 @@ class Frames extends Canvas
             frame_time.removeAllElements();
         tracker = null;
     }
-     
+
     public void SetFrameData(FrameData fd) throws IOException
     {
         int n_frames = fd.GetNumFrames();
         float t[] = fd.GetFrameTimes();
         byte[] buf;
-        
+
         frame_type = new int[n_frames];
-        
-        CreateColorModel(fd.GetFrameType());       
+
+        CreateColorModel(fd.GetFrameType());
         for(int i = 0; i < n_frames; i++)
         {
             buf = fd.GetFrameAt(i);
@@ -151,14 +150,14 @@ class Frames extends Canvas
                 {
                     Dimension d = fd.GetFrameDimension();
                     FlipFrame(buf, d, 2);
-                    
+
                     int n_pix = d.width*d.height;
                     int buf_out[] = new int[n_pix];
                     ByteArrayInputStream b = new ByteArrayInputStream(buf);
-                    DataInputStream din = new DataInputStream(b);                    
+                    DataInputStream din = new DataInputStream(b);
                     for(int j = 0; j < n_pix; j++)
-                       buf_out[j] = (int)din.readLong(); 
-                    
+                       buf_out[j] = (int)din.readLong();
+
                     AddBITMAPImage(buf_out, d, t[i]);
                 }
                 break;
@@ -166,7 +165,7 @@ class Frames extends Canvas
                 {
                     Dimension d = fd.GetFrameDimension();
                     FlipFrame(buf, d, 4);
-                    
+
                     int n_pix = d.width*d.height;
                     float buf_out[] = new float[n_pix];
                     ByteArrayInputStream b = new ByteArrayInputStream(buf);
@@ -185,7 +184,7 @@ class Frames extends Canvas
                     {
                        buf_out1[j] = (int)(255 * (buf_out[j] - min)/(max - min));
                     }
-                    
+
                     AddBITMAPImage(buf_out1, d, t[i]);
                 }
                 break;
@@ -206,8 +205,8 @@ class Frames extends Canvas
         if(buf == null || d == null) return false;
         source = new MemoryImageSource(d.width, d.height, c_model, buf, 0, d.width);
         img = createImage(source);
-        return AddFrame(img, t);        
-    }        
+        return AddFrame(img, t);
+    }
 
     public boolean AddBITMAPImage(int[] buf, Dimension d, float t)
     {
@@ -216,8 +215,8 @@ class Frames extends Canvas
         if(buf == null || d == null) return false;
         source = new MemoryImageSource(d.width, d.height, c_model, buf, 0, d.width);
         img = createImage(source);
-        return AddFrame(img, t);        
-    }        
+        return AddFrame(img, t);
+    }
 
 
     public boolean AddAWTImage(byte[] buf, float t)
@@ -226,13 +225,13 @@ class Frames extends Canvas
         if(buf == null) return false;
         //img = getToolkit().createImage(buf);
         img = Toolkit.getDefaultToolkit().createImage(buf);
-        return AddFrame(img, t);        
-    }    
+        return AddFrame(img, t);
+    }
 
     public void AddJAIImage(byte[] buf, float t) throws IOException
     {
-    }    
-    
+    }
+
     public void SetColorIdx(int color_idx)
     {
         this.color_idx = color_idx;
@@ -243,7 +242,7 @@ class Frames extends Canvas
         return color_idx;
     }
 
-     
+
     public int getNumFrame()
     {
         return frame.size();
@@ -253,12 +252,12 @@ class Frames extends Canvas
     {
         return aspect_ratio;
     }
-    
+
     public void setAspectRatio(boolean aspect_ratio)
     {
         this.aspect_ratio = aspect_ratio;
     }
-    
+
     public void FlipFrame(byte buf[], Dimension d, int num_byte_pixel)
     {
         if(!vertical_flip && !horizontal_flip)
@@ -267,67 +266,67 @@ class Frames extends Canvas
         int img_size = d.height*d.width;
         byte tmp[] = new byte[img_size * num_byte_pixel];
         int i, j , k , l, ofs;
-        
+
         int h = vertical_flip ? d.height - 1: 0;
         int w = horizontal_flip ? d.width - 1: 0;
-                
+
         for(j = 0; j < d.width; j++)
             for(k = 0; k < d.height; k++)
                 for(l = 0; l < num_byte_pixel; l++)
-                    tmp[(Math.abs(h - k) * d.width) +  Math.abs(w - j) + l] = 
+                    tmp[(Math.abs(h - k) * d.width) +  Math.abs(w - j) + l] =
                     buf[(k * d.width) + j + l];
         System.arraycopy(tmp, 0, buf, 0, img_size);
     }
-    
+
     public void flipFrames(byte buf[])
     {
         if(!vertical_flip && !horizontal_flip)
             return;
-        
+
         try
         {
         ByteArrayInputStream b = new ByteArrayInputStream(buf);
         DataInputStream d = new DataInputStream(b);
 
-        int pixel_size = d.readInt();    
+        int pixel_size = d.readInt();
         int width = d.readInt();
         int height = d.readInt();
         int img_size = height*width;
         int n_frame = d.readInt();
-   
+
         d.close();
-        
+
         byte tmp[] = new byte[img_size];
         int i, j , k , ofs;
-        
+
         int h = vertical_flip ? height - 1: 0;
         int w = horizontal_flip ? width - 1: 0;
-        
+
         ofs = 12 + 4 * n_frame;
-        
+
         for(i = 0; i < n_frame; i++)
         {
             for(j = 0; j < width; j++)
                 for(k = 0; k < height; k++)
                    tmp[(Math.abs(h - k) * width) +  Math.abs(w - j)] = buf[ofs + (k * width) + j];
             System.arraycopy(tmp, 0, buf, ofs, img_size);
-            ofs += img_size; 
+            ofs += img_size;
         }
         } catch (IOException e) {}
     }
-    
-    
+
+
     public boolean AddMultiFrame(byte[] buf, float timemin, float timemax)
     {
 
         try
         {
             flipFrames(buf);
-            
+
             MemoryImageSource source;
             ByteArrayInputStream b = new ByteArrayInputStream(buf);
             DataInputStream d = new DataInputStream(b);
-            
+
             int pixel_size = d.readInt();
             int width = d.readInt();
             int height = d.readInt();
@@ -336,18 +335,18 @@ class Frames extends Canvas
             float f_time[] = new float[n_frame];
             for(int i = 0; i < n_frame; i++)
                 f_time[i] = d.readFloat();
-            
+
             byte b_img[];
             Image img;
-            
+
             if(c_model == null)
             {
                 byte rgb[] = new byte[256];
                 for(int i = 0; i < 256; i++)
-                    rgb[i] = (byte)i;                   
-                c_model = new IndexColorModel(pixel_size, 256, rgb, rgb, rgb);    
+                    rgb[i] = (byte)i;
+                c_model = new IndexColorModel(pixel_size, 256, rgb, rgb, rgb);
             }
-            
+
             for(int i = 0; i < n_frame; i++)
             {
                 if(f_time[i] < timemin || f_time[i] > timemax)
@@ -357,14 +356,14 @@ class Frames extends Canvas
                 }
                 b_img = new byte[img_size];
                 d.read(b_img);
-                
+
                 source = new MemoryImageSource(width, height, c_model, b_img, 0, width);
                 img = createImage(source);
                 AddFrame(img, f_time[i]);
             }
             d.close();
-            
-        } 
+
+        }
         catch(IOException e)
         {
             System.out.println("Errore "+e);
@@ -381,8 +380,8 @@ class Frames extends Canvas
 //        img = getToolkit().createImage(buf);
         img = Toolkit.getDefaultToolkit().createImage(buf);
         return AddFrame(img, t);
-        
-    }    
+
+    }
 
     public boolean AddFrame(Image img, float t)
     {
@@ -398,7 +397,7 @@ class Frames extends Canvas
     public boolean AddFrame(Object f, float t)
     {
         frame.addElement(f);
-        frame_time.addElement(new Float(t));        
+        frame_time.addElement(new Float(t));
         return true;
     }
 
@@ -409,37 +408,37 @@ class Frames extends Canvas
         for(int i = 0; i < frame.size(); i++)
             tracker.removeImage((Image)frame.elementAt(i));
         */
-    }    
+    }
 
     protected int[] getPixelArray(int idx, int x, int y, int img_w, int img_h)
     {
        Image img = (Image)frame.elementAt(idx);
        if(img_w == -1 && img_h == -1)
        {
-            img_width = img_w = img.getWidth(this); 
+            img_width = img_w = img.getWidth(this);
             img_height = img_h = img.getHeight(this);
        }
-       int pixel_array[] = new int[img_w * img_h]; 
-       PixelGrabber grabber = new PixelGrabber(img, x, y, img_w, img_h, pixel_array,0,img_w);//idth);    
-       try 
-       { 
-          grabber.grabPixels(); 
-       } catch(InterruptedException ie) { 
-            System.err.println("Pixel array not completed"); 
-            return null; 
+       int pixel_array[] = new int[img_w * img_h];
+       PixelGrabber grabber = new PixelGrabber(img, x, y, img_w, img_h, pixel_array,0,img_w);//idth);
+       try
+       {
+          grabber.grabPixels();
+       } catch(InterruptedException ie) {
+            System.err.println("Pixel array not completed");
+            return null;
        }
        return pixel_array;
     }
-    
+
     protected float[] getValueArray(int idx, int x, int y, int img_w, int img_h)
     {
        if (idx >= frame_values.size()) return null;
-       
+
        float values[] = (float[])frame_values.elementAt(idx);
        Image img = (Image)frame.elementAt(idx);
        if(img_w == -1 && img_h == -1)
        {
-            img_width = img_w = img.getWidth(this); 
+            img_width = img_w = img.getWidth(this);
             img_height = img_h = img.getHeight(this);
        }
        float values_array[] = new float[img_w * img_h];
@@ -447,11 +446,11 @@ class Frames extends Canvas
        for(int j = y; j < img_h; j++)
             for(int i = x; i < img_w; i++)
                 values_array[k++] = values[j * img_width + i];
-                
+
        return values_array;
     }
 
-    
+
     protected void grabFrame()
     {
         if(curr_frame_idx != curr_grab_frame)
@@ -468,7 +467,7 @@ class Frames extends Canvas
     {
         Dimension d = this.GetFrameDim(idx);
         Rectangle r = new Rectangle(0,0,d.width,d.height);
-        return r.contains(x,y);        
+        return r.contains(x,y);
     }
 
     public void setHorizontalFlip(boolean horizontal_flip) {this.horizontal_flip = horizontal_flip;}
@@ -477,10 +476,10 @@ class Frames extends Canvas
     public boolean getVerticalFlip() {return vertical_flip;}
 
     public int getPixel(int idx, int x, int y)
-    {        
+    {
         if(!isInImage(idx, x, y))
             return -1;
-        
+
         if(idx != curr_grab_frame)
         {
             if( (pixel_array = getPixelArray(idx, 0, 0, -1, -1)) != null)
@@ -491,12 +490,12 @@ class Frames extends Canvas
         }
         return pixel_array[(y * img_width) + x];
     }
-    
+
     public float getPointValue(int idx, int x, int y)
-    {        
+    {
         if(!isInImage(idx, x, y))
             return -1;
-        
+
         if(idx != curr_grab_frame)
         {
             if( (pixel_array = getPixelArray(idx, 0, 0, -1, -1)) != null)
@@ -507,12 +506,12 @@ class Frames extends Canvas
         }
         return values_array[(y * img_width) + x];
     }
-    
+
     public int getStartPixelX()
     {
        if(zoom_rect != null)
           return zoom_rect.x;
-       else 
+       else
           return 0;
     }
 
@@ -520,7 +519,7 @@ class Frames extends Canvas
     {
        if(zoom_rect != null)
           return zoom_rect.y;
-       else 
+       else
           return 0;
     }
 
@@ -530,19 +529,19 @@ class Frames extends Canvas
         int e_x, s_x, x, y;
         int pixels_line[] = {pixel_array[(st_y * img_width) + st_x],
                              pixel_array[(st_y * img_width) + st_x]};
-                        
+
         grabFrame();
         if(n_point < 2)
             return pixels_line;
-        
+
         pixels_line = new int[n_point];
-        
+
         for(int i = 0; i < n_point; i++)
         {
             //y = (int)(st_y + (i - st_x) * ((double)end_y - st_y)/(end_x - st_x));
             x = (int)( st_x + (double)i * (end_x - st_x)/n_point);
             y = (int)( st_y + (double)i * (end_y - st_y)/n_point);
-            pixels_line[i] = pixel_array[(y * img_width) + x]; 
+            pixels_line[i] = pixel_array[(y * img_width) + x];
         }
         return pixels_line;
     }
@@ -553,29 +552,29 @@ class Frames extends Canvas
         int e_x, s_x, x, y;
         float values_line[] = {values_array[(st_y * img_width) + st_x],
                                 values_array[(st_y * img_width) + st_x]};
-                        
+
         grabFrame();
         if(n_point < 2)
             return values_line;
-        
+
         values_line = new float[n_point];
-        
+
         for(int i = 0; i < n_point; i++)
         {
             x = (int)( st_x + (double)i * (end_x - st_x)/n_point);
             y = (int)( st_y + (double)i * (end_y - st_y)/n_point);
-            values_line[i] = values_array[(y * img_width) + x]; 
+            values_line[i] = values_array[(y * img_width) + x];
         }
         return values_line;
     }
-    
+
     public int[] getPixelsX(int y)
     {
         int pixels_x[] = null;
         int st, end;
 
         grabFrame();
-        
+
         if(pixel_array != null && y < img_height)
         {
            if(zoom_rect != null)
@@ -589,7 +588,7 @@ class Frames extends Canvas
            pixels_x = new int[end - st];
            for(int i = st, j = 0; i < end; i++, j++)
            {
-              pixels_x[j] = pixel_array[(y * img_width) + i]; 
+              pixels_x[j] = pixel_array[(y * img_width) + i];
            }
         }
         return pixels_x;
@@ -601,7 +600,7 @@ class Frames extends Canvas
         int st, end;
 
         grabFrame();
-        
+
         if(values_array != null && y < img_height)
         {
            if(zoom_rect != null)
@@ -615,7 +614,7 @@ class Frames extends Canvas
            values_x = new float[end - st];
            for(int i = st, j = 0; i < end; i++, j++)
            {
-              values_x[j] = values_array[(y * img_width) + i]; 
+              values_x[j] = values_array[(y * img_width) + i];
            }
         }
         return values_x;
@@ -628,7 +627,7 @@ class Frames extends Canvas
         int st, end;
 
         grabFrame();
-        
+
         if(pixel_array != null && x < img_width)
         {
            if(zoom_rect != null)
@@ -642,7 +641,7 @@ class Frames extends Canvas
            pixels_y = new int[end - st];
            for(int i = st, j = 0; i < end; i++, j++)
            {
-              pixels_y[j] = pixel_array[(i * img_width) + x]; 
+              pixels_y[j] = pixel_array[(i * img_width) + x];
            }
         }
         return pixels_y;
@@ -654,7 +653,7 @@ class Frames extends Canvas
         int st, end;
 
         grabFrame();
-        
+
         if(values_array != null && x < img_width)
         {
            if(zoom_rect != null)
@@ -668,13 +667,13 @@ class Frames extends Canvas
            values_y = new float[end - st];
            for(int i = st, j = 0; i < end; i++, j++)
            {
-              values_y[j] = values_array[(i * img_width) + x]; 
+              values_y[j] = values_array[(i * img_width) + x];
            }
         }
         return values_y;
     }
 
-    
+
     public int[] getPixelsSignal(int x, int y)
     {
         int pixels_signal[] = null;
@@ -696,9 +695,9 @@ class Frames extends Canvas
             {
                 f_array = getPixelArray(i, frames_pixel_roi.x, frames_pixel_roi.y, frames_pixel_roi.width, frames_pixel_roi.height);
                 System.arraycopy(f_array, 0, frames_pixel_array, f_array.length * i, f_array.length);
-            }             
+            }
         }
-        
+
         if(frames_pixel_array != null)
         {
             x -= frames_pixel_roi.x;
@@ -710,7 +709,7 @@ class Frames extends Canvas
                 pixels_signal[i] = frames_pixel_array[size * i + (y * frames_pixel_roi.width) + x];
             }
         }
-        
+
         return pixels_signal;
     }
 
@@ -735,9 +734,9 @@ class Frames extends Canvas
             {
                 f_array = getValueArray(i, frames_pixel_roi.x, frames_pixel_roi.y, frames_pixel_roi.width, frames_pixel_roi.height);
                 System.arraycopy(f_array, 0, frames_value_array, f_array.length * i, f_array.length);
-            }             
+            }
         }
-        
+
         if(frames_value_array != null)
         {
             x -= frames_pixel_roi.x;
@@ -749,7 +748,7 @@ class Frames extends Canvas
                 values_signal[i] = frames_value_array[size * i + (y * frames_pixel_roi.width) + x];
             }
         }
-        
+
         return values_signal;
     }
 
@@ -757,19 +756,19 @@ class Frames extends Canvas
     public Object GetFrameAtTime(float t)
     {
         int idx = GetFrameIdxAtTime(t);
-        
+
         if(idx != -1)
             return GetFrame(idx);
         else
             return null;
-        
+
     }
-    
+
     public float[] getFramesTime()
     {
         if(frame_time == null || frame_time.size() == 0)
             return null;
-            
+
         if(ft == null)
         {
             //float frames_time[] = new float[frame_time.size()];
@@ -781,30 +780,30 @@ class Frames extends Canvas
         }
         return ft;
     }
-    
-    
+
+
     public float GetFrameTime()
     {
         float t_out = 0;
         if(curr_frame_idx != -1 && frame_time.size() != 0)
         {
             t_out = ((Float)frame_time.elementAt(curr_frame_idx)).floatValue();
-        }        
+        }
         return t_out;
     }
-    
+
     //return point position in the show frame
     public Point getImagePoint(Point p, Dimension d)
     {
         Point p_out = new Point(0, 0);
-        
+
         if(curr_frame_idx != -1 && frame.size() != 0)
         {
             Dimension fr_dim = getFrameSize(curr_frame_idx, d);
-  
+
             Dimension view_dim;
             Dimension dim;
-            
+
             if(zoom_rect == null)
             {
                 view_dim = GetFrameDim(curr_frame_idx);
@@ -818,20 +817,20 @@ class Frames extends Canvas
 
             double ratio_x = (double)fr_dim.width/ dim.width;
             double ratio_y = (double)fr_dim.height/ dim.height;
-            
+
             p_out.x = (int) (ratio_x * p.x + ratio_x/2);
-           
-           
+
+
             if(p_out.x > (dim.width-1)*ratio_x)
             {
                 p_out.x = 0;
                 p_out.y = 0;
-            } 
+            }
             else
             {
-                                        
+
                 p_out.y = (int) (ratio_y * p.y + ratio_y/2);
-                    
+
                 if(p_out.y > (dim.height-1)*ratio_y)
                 {
                     p_out.x = 0;
@@ -841,7 +840,7 @@ class Frames extends Canvas
         }
         return p_out;
     }
-    
+
     public void setFramePoint(Point sel_point, Dimension d)
     {
         this.sel_point = getFramePoint(new Point(sel_point.x, sel_point.y), d);
@@ -861,13 +860,13 @@ class Frames extends Canvas
     public Point getFramePoint(Point p, Dimension d)
     {
         Point p_out = new Point(0, 0);
-        
+
         if(curr_frame_idx != -1 && frame.size() != 0)
         {
             Dimension view_dim;
             Dimension dim;
             Dimension fr_dim = getFrameSize(curr_frame_idx, d);
-            
+
             if(zoom_rect == null)
             {
                 view_dim = GetFrameDim(curr_frame_idx);
@@ -881,7 +880,7 @@ class Frames extends Canvas
 
             double ratio_x = (double)dim.width/ fr_dim.width;
             double ratio_y = (double)dim.height/ fr_dim.height;
-            
+
             p_out.x += ratio_x * p.x;
             if(p_out.x > view_dim.width-1)
             {
@@ -895,7 +894,7 @@ class Frames extends Canvas
                 p.y = fr_dim.height;
             }
         }
-        
+
         return p_out;
     }
 
@@ -907,13 +906,13 @@ class Frames extends Canvas
         return true;
     }
 
-    
+
     public float GetTime(int frame_idx)
     {
         if(frame_idx > frame.size() - 1 ) return (float)0.0;
         return ((Float)frame_time.elementAt(frame_idx)).floatValue();
     }
-    
+
     public int GetFrameIdxAtTime(float t)
     {
         int idx = 0;
@@ -921,34 +920,34 @@ class Frames extends Canvas
         if(frame.size() < 0)
             return -1;
 
-        
+
         if(frame.size() == 1)
             return 0;
-  
+
         if(t > ((Float)frame_time.elementAt(frame.size()-1)).floatValue())
             return frame.size()-1;
 
         for(int i = 0; i < frame.size() - 1; i++)
         {
-                
-            if( t >= ((Float)frame_time.elementAt(i)).floatValue() && 
+
+            if( t >= ((Float)frame_time.elementAt(i)).floatValue() &&
                 t < ((Float)frame_time.elementAt(i + 1)).floatValue())
             {
                 idx = i;
                 break;
-            }  
+            }
         }
-        
+
         return idx;
-                
+
     }
-    
+
     protected Dimension GetFrameDim(int idx)
     {
        return  new Dimension( ((Image)frame.elementAt(idx)).getWidth(this),
                               ((Image)frame.elementAt(idx)).getHeight(this));
     }
-    
+
     /*returm frame image pixel dimension*/
     public Dimension getFrameSize(int idx, Dimension d)
     {
@@ -978,27 +977,27 @@ class Frames extends Canvas
          }
          return new Dimension(width, height);
      }
-    
+
     public void setMeasurePoint(int x_pixel, int y_pixel, Dimension d)
     {
         Point mp = getFramePoint(new Point(x_pixel, y_pixel), d);
         x_measure_pixel = mp.x;
         y_measure_pixel = mp.y;
     }
-    
+
     public Point getMeasurePoint(Dimension d)
     {
         return getImagePoint(new Point(x_measure_pixel, y_measure_pixel), d);
     }
-    
+
     public void SetZoomRegion(int idx, Dimension d, Rectangle r)
     {
-        if(idx > frame.size() - 1 || frame.elementAt(idx) == null ) 
+        if(idx > frame.size() - 1 || frame.elementAt(idx) == null )
             return;
 
         Dimension dim;
         Dimension fr_dim = getFrameSize(idx, d);
-        
+
         if(zoom_rect == null)
         {
             zoom_rect = new Rectangle(0, 0, 0, 0);
@@ -1009,18 +1008,18 @@ class Frames extends Canvas
 
         double ratio_x = (double)dim.width/ fr_dim.width;
         double ratio_y = (double)dim.height/ fr_dim.height;
-        
-            
+
+
         zoom_rect.width = (int)(ratio_x * r.width + 0.5);
         zoom_rect.height = (int)(ratio_y * r.height + 0.5);
         zoom_rect.x += ratio_x * r.x + 0.5;
         zoom_rect.y += ratio_y * r.y + 0.5;
-        
+
         if(zoom_rect.width == 0)
             zoom_rect.width = 1;
         if(zoom_rect.height == 0)
             zoom_rect.height = 1;
-                
+
         curr_frame_idx = idx;
     }
 
@@ -1038,7 +1037,7 @@ class Frames extends Canvas
             return;
 
         Dimension  dim = GetFrameDim(0);
-            
+
         if(start_x < 0)
             start_x = 0;
         if(start_y < 0)
@@ -1052,21 +1051,21 @@ class Frames extends Canvas
         {
             view_rect = new Rectangle(start_x, start_y, end_x-start_x, end_y-start_y);
             zoom_rect = view_rect;
-        }                           
+        }
     }
 
     public void Resize()
     {
        zoom_rect = null;
     }
-    
+
     public int getNextFrameIdx()
     {
         if(curr_frame_idx + 1 == getNumFrame())
             return curr_frame_idx;
         else
             return curr_frame_idx + 1;
-        
+
     }
 
     public int getLastFrameIdx()
@@ -1076,14 +1075,14 @@ class Frames extends Canvas
         else
             return curr_frame_idx - 1;
     }
-    
+
     public int GetFrameIdx()
     {
        return curr_frame_idx;
     }
-    
+
     public Object GetFrame(int idx, Dimension d)
-    {       
+    {
         return GetFrame(idx);
     }
 
