@@ -1973,7 +1973,6 @@ static void  Complain(WaveInfo *info, char mode, String error)
     case 2:
     PopupComplaint(DataSetupWidget, error);
   }
-  XtFree(error);
 }
 
 static void  ClearWaveform(WaveInfo *info)
