@@ -259,7 +259,8 @@ extern char *_TreeFindTagWild();
 extern int TreeFlushOff();
 extern int TreeFlushReset();
 extern int TreeFree();
-	extern int TreeGetDbi();
+extern int TreeGetDbi();
+extern int _TreeGetDbi();
 extern int TreeGetNci();
 extern int _TreeGetNci();
 extern int TreeGetDefaultNid();
@@ -268,7 +269,8 @@ extern char *TreeGetMinimumPath();  /********** Use TreeFree(result) *****/
 extern char *_TreeGetMinimumPath(); /********** Use TreeFree(result) *****/
 extern char *TreeGetPath(); /********** Use TreeFree(result) *****/
 extern char *_TreeGetPath();/********** Use TreeFree(result) *****/
-	extern int TreeGetRecord();
+extern int TreeGetRecord();
+extern int _TreeGetRecord();
 extern int TreeGetStackSize();
 extern int _TreeGetStackSize();
 extern int TreeIsOn();

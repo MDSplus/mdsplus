@@ -522,7 +522,7 @@ static int       OpenDatafileW(TREE_INFO *info, int *stv_ptr)
  Executable:
 */
   *stv_ptr = 0;
-  if (df_ptr != 0)
+  if (df_ptr == 0)
   {
     df_ptr = TreeGetVmDatafile();
     status = (df_ptr == NULL) ? TreeFAILURE : TreeNORMAL;

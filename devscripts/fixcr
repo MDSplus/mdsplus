@@ -1,0 +1,4 @@
+#!/bin/sh
+sed s/// $1 > fixcr.tmp
+cp fixcr.tmp $1
+rm fixcr.tmp
