@@ -30,7 +30,7 @@ extern char *ctime();
 #include <unistd.h>  /* for getpid() */
 #define closesocket close
 #endif
-
+#define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 extern char *MdsDescrToCstring();
 extern void MdsFree();
 
@@ -154,7 +154,7 @@ static int SpawnWorker(SOCKET sock)
 }
 #define NO_SPAWN 0
 
-static int BecomeUser(struct descriptor *user)
+static int BecomeUser(char *remuser, struct descriptor *user)
 {
 	return 1;
 }
@@ -292,18 +292,26 @@ static int SpawnWorker(){return getpid();}
 
 static void InstallService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
 static void RemoveService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
-static int BecomeUser(struct descriptor *local_user)
+static int BecomeUser(char *remuser, struct descriptor *local_user)
 {
   int ok;
   CompressString(local_user,0);
   if (local_user->length)
   {
-    char *user = MdsDescrToCstring(local_user);
+    char *luser = MdsDescrToCstring(local_user);
+    char *user = strcmp(luser,"MAP_TO_LOCAL") == 0 ? remuser : luser;
     int status;
     struct passwd *pwd = getpwnam(user);
+    if (!pwd && remuser == user)
+    {
+      int i;
+      for (i=0;i<strlen(user);i++)
+        user[i] = __tolower(user[i]);
+      pwd = getpwnam(user);
+    } 
     if (pwd)
        status = setuid(pwd->pw_uid);
-    MdsFree(user);
+    MdsFree(luser);
     ok = (status == 0) ? 1 : 2;
   }
   else
@@ -468,7 +476,7 @@ static int CheckClient(char *host_c, char *user_c)
           if (access_id.pointer[0] != '!')
           {
             if (StrMatchWild(&match,&access_id) & 1)
-				ok = BecomeUser(&local_user);
+				ok = BecomeUser(user_c,&local_user);
           }
           else
           {
