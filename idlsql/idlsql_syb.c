@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <config.h>
 #include "export.h"
-static IDL_LONG 	three = 3;
-static IDL_LONG 	nitem;		/*the row count*/
+static IDL_MEMINT       three = 3;
+static IDL_MEMINT       nitem;		/*the row count*/
 static int	nline;		/*character count on row*/
 static char	*pline;		/*temporary line*/
 #define MAXMSG 1024
@@ -124,12 +124,13 @@ static int      quiet;
 static const short	HUGE_W = 0x7fff;
 /*********************************************************/
 static void IDLresize(k, dst)
-IDL_LONG	k;
+IDL_MEMINT	k;
 IDL_VPTR	dst;
 {
  IDL_VPTR	tptr;
  void	*buf, *old;
- int	type, j;
+ int	type;
+ IDL_MEMINT   j;
 
 	j = dst->value.arr->n_elts;
 	if (k == j) return;
@@ -225,7 +226,7 @@ char	*form;
 static void	txtitem(form, arg1, arg2, arg3, arg4)
 char	*form;
 {
-int	j;
+IDL_MEMINT   j;
 IDL_VPTR	vpnew = 0;
 IDL_STRING	*psold, *psnew;
 
