@@ -17,7 +17,7 @@ int yyleng; extern unsigned char yytext[];
 int yymorfg;
 extern unsigned char *yysptr, yysbuf[];
 int yytchar;
-#ifdef vxWorks
+#if  defined( vxWorks ) || defined (__PPC)
 FILE *yyin = 0, *yyout = 0;
 #else
 FILE *yyin = {stdin}, *yyout = {stdout};
