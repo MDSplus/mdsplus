@@ -655,7 +655,7 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci)
 		  status = TreeLockNci(info,1,node_num);
 		  if (status & 1)
 		  {
-                    char nci_bytes[42];
+        char nci_bytes[42];
 		    MDS_IO_LSEEK(info->nci_file->get, node_num * sizeof(nci_bytes), SEEK_SET);
 		    status = MDS_IO_READ(info->nci_file->get,(void *)nci_bytes, sizeof(nci_bytes)) == sizeof(nci_bytes) ?
                       TreeSUCCESS : TreeFAILURE;
