@@ -148,6 +148,18 @@
 /* Define if you have <readline/readline.h> header file. */
 #undef HAVE_READLINE_READLINE_H
 
+/* Is malloc.h available?  */
+#undef HAVE_MALLOC_H
+
+/* Define if you prefer to use POSIX semaphores over SysV sem */
+#undef USE_SEMAPHORE_H
+
+/* Define if you prefer to use named pipes over SysV msg */
+#undef USE_PIPED_MESSAGING
+
+/* Define if use need to use localtime instead of timezone and daylight */
+#undef USE_TM_GMTOFF
+
 /* Define if you compiler likes 0xnnnnll long long constants  */
 #define HAVE_LL_CONSTANTS
 
