@@ -169,7 +169,10 @@ int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table)
   num_actions=0;
   if (!varnames_d.length)
     StrCopyDx(&varnames_d,&varnames);
+  /*
   TdiDeallocate(&varnames_d,&relcount_d MDS_END_ARG);
+  */
+  TdiResetPublic(&relcount_d MDS_END_ARG);
   while ((TreeFindNodeWild(nodespec,&nids[num_actions],&ctx,mask) & 1) && (num_actions < MAX_ACTIONS))
     num_actions++;
   TreeFindNodeEnd(&ctx);
