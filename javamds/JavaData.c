@@ -196,7 +196,7 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 	  else
 	    args[0].f = *(float *)desc->pointer;
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-        case DTYPE_NATIVE_DOUBLE : 
+        case DTYPE_DOUBLE : 
 	  cls = (*env)->FindClass(env, "DoubleData");
 	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(D)LData;");
 	  args[0].d = *(float *)desc->pointer;
@@ -288,7 +288,7 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 		case DTYPE_G:
 		case DTYPE_H:
 		case DTYPE_F: 
-		case DTYPE_NATIVE_FLOAT: //Let Tdi handle all the floating point stuff
+		case DTYPE_FLOAT: //Let Tdi handle all the floating point stuff
 			{	
 				status = TdiFloat(array_d, &float_xd MDS_END_ARG);
 				if(!(status & 1))
@@ -306,14 +306,14 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 		MdsFree1Dx(&float_xd, 0);
 		return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 
-	  /*case DTYPE_NATIVE_FLOAT:
+	  /*case DTYPE_FLOAT:
 	  cls = (*env)->FindClass(env, "FloatArray");
 	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([F)LData;");
 	  jfloats = (*env)->NewFloatArray(env, length);
 	  (*env)->SetFloatArrayRegion(env, jfloats, 0, length, (jfloat *)array_d->pointer);
 	  args[0].l = jfloats;
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);*/
-        case DTYPE_NATIVE_DOUBLE: 
+        case DTYPE_DOUBLE: 
 	  cls = (*env)->FindClass(env, "DoubleArray");
 	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([D)LData;");
 	  jdoubles = (*env)->NewDoubleArray(env, length);
@@ -543,14 +543,14 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	    (*env)->ReleaseStringUTFChars(env, java_string, string);
 	    return desc;
 
-	  case DTYPE_NATIVE_FLOAT:
+	  case DTYPE_FLOAT:
 	    datum_fid = (*env)->GetFieldID(env, cls, "datum", "F");
 	    desc->length = sizeof(float);
 	    desc->pointer = (char *)malloc(desc->length);
 	    *(float *)desc->pointer = (*env)->GetFloatField(env, obj, datum_fid);
 	    return desc;
 
-	  case DTYPE_NATIVE_DOUBLE:
+	  case DTYPE_DOUBLE:
 	    datum_fid = (*env)->GetFieldID(env, cls, "datum", "D");
 	    desc->length = sizeof(double);
 	    desc->pointer = (char *)malloc(desc->length);
@@ -630,7 +630,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	    (*env)->ReleaseLongArrayElements(env, jlongs, longs, 0);
 	    return (struct descriptor *)array_d;
 
-	  case DTYPE_NATIVE_FLOAT:
+	  case DTYPE_FLOAT:
 	    datum_fid = (*env)->GetFieldID(env, cls, "datum", "[F");
 	    jfloats = (*env)->GetObjectField(env, obj, datum_fid);
 	    floats =  (*env)->GetFloatArrayElements(env, jfloats,0);
@@ -642,7 +642,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	    (*env)->ReleaseFloatArrayElements(env, jfloats, floats, 0);
 	    return (struct descriptor *)array_d;
 
-	  case DTYPE_NATIVE_DOUBLE:
+	  case DTYPE_DOUBLE:
 	    datum_fid = (*env)->GetFieldID(env, cls, "datum", "[D");
 	    jdoubles = (*env)->GetObjectField(env, obj, datum_fid);
 	    doubles =  (*env)->GetDoubleArrayElements(env, jdoubles,0);

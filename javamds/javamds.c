@@ -343,11 +343,10 @@ jScope panels outside java application */
 JNIEnv *env = 0;
 static jobject jobjects[1024];
 
-
-createWindow(char *name, int *idx)
+void createWindow(char *name, int idx)
 {
 	JavaVM *jvm;
-	static JDK1_1InitArgs vm_args;
+	JDK1_1InitArgs vm_args;
 	jint res;
 	jclass cls;
 	jmethodID mid;
@@ -369,34 +368,35 @@ createWindow(char *name, int *idx)
 		if(res < 0)
 		{
 			printf("\nCannot create Java VM!!\n");
-			return;
+			return 0;
 		}
 	}
 	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
 	if(cls == 0)
 	{
 		printf("\nCannot find jScope classes!");
-		return;
+		return 0;
 	}
 	mid = (*env)->GetStaticMethodID(env, cls, "createWindow", "(Ljava/lang/String;)LCompositeWaveDisplay;");
 	if(mid == 0)
 	{
 		printf("\nCannot find main\n");
-		return;
+		return 0;
 	}
 	if(name)
 		jstr = (*env)->NewStringUTF(env, name);
 	else
 		jstr = (*env)->NewStringUTF(env, "");
-	jobjects[*idx] = (*env)->CallStaticObjectMethod(env, cls, mid, jstr);
+
+	jobjects[idx] = (*env)->CallStaticObjectMethod(env, cls, mid, jstr);
 }
 
 
-void addSignal(int *obj_idx, float *x, float *y, int *num_points, int *row, int *column, 
+void addSignal(int obj_idx, float *x, float *y, int num_points, int row, int column, 
 			   char *name, char *colour)
 {
 	jstring jname, jcolour;
-	jobject jobj = jobjects[*obj_idx];
+	jobject jobj = jobjects[obj_idx];
 	jfloatArray jx, jy;
 	jclass cls;
 	jmethodID mid;
@@ -407,10 +407,10 @@ void addSignal(int *obj_idx, float *x, float *y, int *num_points, int *row, int 
 		return;
 	}
 
-	jx = (*env)->NewFloatArray(env, *num_points);
-	jy = (*env)->NewFloatArray(env, *num_points);
-	(*env)->SetFloatArrayRegion(env, jx, 0, *num_points, (jfloat *)x);
-	(*env)->SetFloatArrayRegion(env, jy, 0, *num_points, (jfloat *)y);
+	jx = (*env)->NewFloatArray(env, num_points);
+	jy = (*env)->NewFloatArray(env, num_points);
+	(*env)->SetFloatArrayRegion(env, jx, 0, num_points, (jfloat *)x);
+	(*env)->SetFloatArrayRegion(env, jy, 0, num_points, (jfloat *)y);
 	if(name)
 		jname = (*env)->NewStringUTF(env, name);
 	else
@@ -435,16 +435,16 @@ void addSignal(int *obj_idx, float *x, float *y, int *num_points, int *row, int 
 	}
 
 
-    (*env)->CallVoidMethod(env, jobj, mid, jx, jy, *row, *column, jname, jcolour);
+    (*env)->CallVoidMethod(env, jobj, mid, jx, jy, row, column, jname, jcolour);
 }
 
 
 
-void showWindow(int *obj_idx, int *x, int *y, int *width, int *height)
+void showWindow(int obj_idx, int x, int y, int width, int height)
 {
 	jclass cls;
 	jmethodID mid;
-	jobject jobj = jobjects[*obj_idx];
+	jobject jobj = jobjects[obj_idx];
 
 	if(env == 0)
 	{
@@ -465,7 +465,7 @@ void showWindow(int *obj_idx, int *x, int *y, int *width, int *height)
 	}
 
 
-    (*env)->CallVoidMethod(env, jobj, mid, *x,*y,*width,*height);
+    (*env)->CallVoidMethod(env, jobj, mid, x,y,width,height);
 }
 
 
