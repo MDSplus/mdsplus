@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+# remove a file if it exists and echo the rm command
+#
+if [ -r $1 ]
+then
+  echo rm $1
+  rm $1
+fi
+
