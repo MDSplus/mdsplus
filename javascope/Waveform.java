@@ -467,6 +467,23 @@ public class Waveform extends JComponent
         }
     }
     
+    
+    protected float convertX(int x)
+    {
+        Insets i = getInsets();
+        Dimension d = getWaveSize();
+        //return (float)wm.XValue(x - i.right, d);
+        return (float)wm.XValue(x, d);
+    }
+    
+    protected float convertY(int y)
+    {
+        Insets i = getInsets();
+        Dimension d = getWaveSize();
+        //return (float)wm.YValue(y - i.top, d);
+        return (float)wm.YValue(y, d);
+    }
+    
     public String  getIntervalPoints()
     {
         Dimension d = getWaveSize();
@@ -504,7 +521,7 @@ public class Waveform extends JComponent
     public boolean isSendProfile(){return send_profile;}
     
    
-    private void setMouse()
+    protected void setMouse()
     {
         final Waveform w = this;
        
