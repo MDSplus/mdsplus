@@ -6,7 +6,11 @@ Function MdsIdlImage
     'IRIX' : return,'libMdsLibIdl.so'
     'OSF' : return,'libMdsLibIdl.so'
     'sunos' : return,'libMdsLibIdl.so'
-    'hp-ux' : return,getenv('MDS_SHLIB_PATH')+'/libMdsLibIdl.sl'
+    'hp-ux' : begin
+      a = getenv('MDS_SHLIB_PATH')
+      if (a eq '') then a = '/usr/local/lib'
+      return,a+'/libMdsLibIdl.sl'
+    end
     'linux' : return,'libMdsLibIdl.so'
     else  : message,'MDS is not supported on this platform',/IOERROR
   endcase

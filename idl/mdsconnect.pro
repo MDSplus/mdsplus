@@ -17,9 +17,10 @@ Function MdsIPImage
     'OSF' : return,'libMdsIpShr.so'
     'sunos' : return,'libMdsIpShr.so'
     'hp-ux' : begin
-              if getenv('MDS_SHLIB_PATH') eq '' then setenv_,'MDS_SHLIB_PATH=/usr/lib'
-              return,getenv('MDS_SHLIB_PATH')+'/libMdsIpShr.sl'
-              end
+      a=getenv('MDS_SHLIB_PATH')
+      if (a eq '') then a = '/usr/local/lib'
+      return,a+'/libMdsIpShr.sl'
+    end
     'MacOS': return,!dir+'libMdsIpShr.lib'
     'linux': return,'/home_ejet/ntcdemo/twf/mdsplus/shlib/libMdsIpShr.so'
     else  : message,'MDS is not supported on this platform',/IOERROR 
