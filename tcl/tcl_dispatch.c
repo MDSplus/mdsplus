@@ -1,5 +1,5 @@
-#include        "tclsysdef.h"
 #include        <servershr.h>
+#include        "tclsysdef.h"
 #include        <stdlib.h>
 #include        <dbidef.h>
 #include        <ncidef.h>
