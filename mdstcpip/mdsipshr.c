@@ -374,7 +374,7 @@ static SOCKET ConnectToPort(char *host, char *service)
     MessageBox(0,"mdsip service not defined as known service","Unknown Service: mdsip",
 	     MB_OK | MB_ICONHAND);
 #else
-    printf("Unknown service: %s\nSet environment variable %s if port is known\n",service);
+    printf("Unknown service: %s\nSet environment variable %s if port is known\n",service,service);
 #endif
     return INVALID_SOCKET;
   }
