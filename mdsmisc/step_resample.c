@@ -33,11 +33,12 @@ struct descriptor_xd *STEP_RESAMPLE(struct descriptor *sig,struct descriptor *x)
 #include <mdsdescrip.h>
 #include <libroutines.h>
 #include <mdsshr.h>
+#include <mds_stdarg.h>
 
 extern int TdiData();
 extern int TdiByte();
 extern int TdiDimOf();
-extern int TdiFsFloat();
+extern int TdiCvt();
 
 struct descriptor *STEP_RESAMPLE(struct descriptor *in_sig,struct descriptor *in_x)
 { 
@@ -62,6 +63,9 @@ static EMPTYXD(xd1);
 static EMPTYXD(xd2);
 struct descriptor_signal *sig = (struct descriptor_signal *)in_sig;
 struct descriptor *x = in_x;
+static float zero=0.0;
+static struct descriptor float_dsc = {sizeof(float),DTYPE_FLOAT,CLASS_S,(char *)&zero};
+
 int i;
 int j=0;
 int new_elements;
@@ -69,19 +73,19 @@ int sig_elements;
 
   while (sig->dtype == DTYPE_DSC) sig = (struct descriptor_signal *)sig->pointer;
   while (x->dtype == DTYPE_DSC) x = (struct descriptor *)x->pointer;
-  return_on_error(TdiData(sig,&xd1));
-  return_on_error(TdiByte(&xd1,&sig_y_xd));
+  return_on_error(TdiData(sig,&xd1 MDS_END_ARG));
+  return_on_error(TdiByte(&xd1,&sig_y_xd MDS_END_ARG));
   sig_y = (struct descriptor_a *)sig_y_xd.pointer;
   if (sig_y->class != CLASS_A) return 0;
   sig_y_b = sig_y->pointer;
-  return_on_error(TdiDimOf(sig,&xd1));
-  return_on_error(TdiData(&xd1,&xd2));
-  return_on_error(TdiFsFloat(&xd2,&sig_x_xd));
+  return_on_error(TdiDimOf(sig,&xd1 MDS_END_ARG));
+  return_on_error(TdiData(&xd1,&xd2 MDS_END_ARG));
+  return_on_error(TdiCvt(&xd2,&float_dsc, &sig_x_xd MDS_END_ARG));
   sig_x = (struct descriptor_a *)sig_x_xd.pointer;
   if (sig_x->class != CLASS_A) return 0;
   sig_x_f = (float *)sig_x->pointer;
-  return_on_error(TdiData(x,&xd1));
-  return_on_error(TdiFsFloat(&xd1,&new_x_xd));
+  return_on_error(TdiData(x,&xd1 MDS_END_ARG));
+  return_on_error(TdiCvt(&xd1,&float_dsc, &new_x_xd MDS_END_ARG));
   new_x = (struct descriptor_a *)new_x_xd.pointer;
   if (new_x->class != CLASS_A) return 0;
   new_x_f = (float *)new_x->pointer;
