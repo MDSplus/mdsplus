@@ -2,6 +2,7 @@ public fun TRCH__add(in _path, out _nidout)
 {
     write(*, _path);
     DevAddStart(_path, 'TRCH', 49, _nidout);
+
     DevAddNode(_path // ':NAME', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':CHANNELS', 'NUMERIC', 6, *, _nid);
@@ -12,6 +13,7 @@ public fun TRCH__add(in _path, out _nidout)
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', 1E4, *, _nid);
     DevAddNode(_path // ':USE_TIME', 'TEXT', 'TRUE', *, _nid);
     DevAddNode(_path // ':PTS', 'NUMERIC', *, *, _nid);
+
     for (_c = 1; _c <=6; _c++)
     {
         _cn = _path // '.CHANNEL_' // TEXT(_c, 1);
