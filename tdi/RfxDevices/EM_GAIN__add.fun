@@ -22,7 +22,7 @@ public fun EM_GAIN__add(in _path, out _nidout)
    	    DevAddNode(_cn // ':INT_GAIN',   'NUMERIC', 0., *, _nid);
    	    DevAddNode(_cn // ':INT_OUTPUT',  'NUMERIC', 0., *, _nid);
   	    DevAddNode(_cn // ':INT_INPUT', 'NUMERIC', compile('('//_cn//':LIN_OUTPUT * 8) / ( ('//_cn//':INT_GAIN ) * ( '//_cn//':CAL_CONST) )'), *, _nid);
-		DevAddNode(_cn // ':CAL_CONST',  'NUMERIC', 0., *, _nid);
+		DevAddNode(_cn // ':CAL_CONST',  'NUMERIC', 1., *, _nid);
    	    
 	}
     DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 55, 'EM_SERVER', getnci(_path, 'fullpath'), _nid);
