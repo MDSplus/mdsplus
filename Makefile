@@ -53,4 +53,7 @@ BINARIES = bin etc shlib uid tdi idl trees envsyms setup.csh setup.sh sys_specif
 binaries :
 	tar cvf - $(BINARIES) | compress -c - > ../binaries/MDSplus.`uname`.tar.Z
 
+CLIENT_BINARIES = include/ipdesc.h mdstcpip/t.c shlib/libMdsIpShr* idl/*.pro
+client-binaries :
+	tar cvf - $(CLIENT_BINARIES) | compress -c - > ../binaries/MDSplus.`uname`.client.tar.Z
 
