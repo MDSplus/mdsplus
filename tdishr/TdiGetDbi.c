@@ -230,9 +230,9 @@ unsigned char	omits[] = {DTYPE_PATH,0};
 		*********************/
 		if (status & 1)
 		{
+			char *tree = MdsDescrToCstring(&expt);
                       	ctx = TreeSwitchDbid(0);
                         reset_ctx=1;
-			char *tree = MdsDescrToCstring(&expt);
 			status = TreeOpen(tree, shot, 1);
 			MdsFree(tree);
 		}
