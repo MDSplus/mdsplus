@@ -95,6 +95,7 @@ static void *MakeDescr(int idx, int *argsize, void *bytes)
     arrayArgs[idx].scale = 0;
     arrayArgs[idx].digits = 0;
     arrayArgs[idx].dimct = argsize[0];
+    arrayArgs[idx].aflags.coeff = 1;
     for (i=0 ; i < argsize[0]; i++)
       arrayArgs[idx].m[i]=argsize[i+1];
     switch (argsize[argsize[0]+1])
