@@ -1,0 +1,85 @@
+CFLAGS = -c +z -Ae +u1 -Wl,+b,. -Wl,+s -D__hpux__ -I/usr/include/X11R6 -I../include -I. -g 
+
+OBJECTS = \
+ListTree.o \
+XmdsBells.o \
+XmdsComplain.o \
+XmdsDeviceSetup.o \
+XmdsDigChans.o \
+XmdsDisplay.o \
+XmdsExpr.o \
+XmdsGetPutNid.o \
+XmdsGetSetOptionIdx.o \
+XmdsInitialize.o \
+XmdsInput.o \
+XmdsInputs.o \
+XmdsNidOptionMenu.o \
+XmdsOkButtons.o \
+XmdsOnOffToggleButton.o \
+XmdsPath.o \
+XmdsPopupMenuPosition.o \
+XmdsSetSubvalues.o \
+XmdsSupport.o \
+XmdsUsageIcons.o \
+XmdsWavedraw.o \
+XmdsWaveform.o \
+XmdsWidgetCallbacks.o \
+XmdsXdBox.o \
+XmdsXdBoxDialog.o \
+XmdsXdBoxDialogButton.o \
+XmdsXdBoxOnOffButton.o
+
+
+all :	.depend
+	make -f Makefile.HPUX -f .depend the_rest
+
+the_rest : ../shlib/libXmdsShr.sl \
+	xmdsuil.wmd \
+	../uid \
+	../uid/xmds_usage_icons.uid \
+	../uid/XmdsDigChans.uid \
+	../uid/XmdsInput.uid \
+	../uid/XmdsXdBox.uid
+
+../uid :
+	mkdir ../uid
+
+../uid/xmds_usage_icons.uid : xmds_usage_icons.uil
+	uil -o $@ $<
+
+../uid/XmdsDigChans.uid : XmdsDigChans.uil
+	uil -wmd xmdsuil.wmd -o $@ $<
+
+../uid/XmdsInput.uid : XmdsInput.uil
+	uil -wmd xmdsuil.wmd -o $@ $<
+
+../uid/XmdsXdBox.uid : XmdsXdBox.uil
+	uil -wmd xmdsuil.wmd -o $@ $<
+
+../shlib/libXmdsShr.sl : $(OBJECTS)
+	ld -o $@ -b $(OBJECTS) -lc -lm \
+          -L/usr/lib/X11R6 -L../shlib -lMdsShr -lTdiShr -lTreeShr \
+	  -lXm -lXt -lX11
+	- rm so_locations
+
+xmdsuil.wmd : xmdsuil.wml wmldbcreate-xmdsshr.c
+	- rm -R wmltemp
+	mkdir wmltemp
+	cd wmltemp ; ln -s /usr/examples/motif/wml/tokens.dat . ; /usr/examples/motif/wml/wml ../xmdsuil.wml
+	cc -o wmltemp/wmdcreate -DMDS_EXTENSION -I../include -I/usr/examples/motif/wml -I. -I./wmltemp wmldbcreate-xmdsshr.c -lXt -lXm
+	wmltemp/wmdcreate -o xmdsuil.wmd
+	- rm -R wmltemp
+
+clean :
+	- rm *.o
+	- rm ../shlib/libXmdsShr.sl
+	- rm so_locations
+	- rm .depend
+	- rm xmdsuil.wmd
+
+depend : .depend
+
+.depend :
+	- rm .depend
+	- find *.c -exec cc $(CFLAGS) -P -Wp,-M {} 2> .depend \;
+	- rm *.i	
