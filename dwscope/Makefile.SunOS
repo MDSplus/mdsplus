@@ -1,0 +1,50 @@
+CFLAGS = -c -D_NO_DXm -D__sunos__ -I/usr/X11R6/include -I../include -I. -g 
+
+OBJECTS_DWSCOPE = \
+dwscope.o \
+dwscopesubs.o \
+evaluate.o
+
+OBJECTS_DWPAD = \
+dwpad.o \
+dwscopesubs.o
+
+all : .depend
+	make -f Makefile.SunOS -f .depend the_rest
+
+the_rest : ../bin/dwscope \
+../uid \
+../uid/dwscope.uid \
+../bin/dwpad \
+../uid/dwpad.uid
+
+../bin/dwscope : $(OBJECTS_DWSCOPE) ../bin
+	cc -o $@ $(OBJECTS_DWSCOPE)   -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr -L/usr/X11R6/lib -lMrm -lXm -lXt -lX11 -lICE -lSM
+
+../bin :
+	mkdir ../bin
+
+../uid :
+	mkdir ../uid
+
+../uid/dwscope.uid : dwscope.uil
+	uil -o $@ dwscope.uil
+
+../bin/dwpad : $(OBJECTS_DWPAD)
+	cc -o $@ $(OBJECTS_DWPAD)  -L../shlib -lXmdsShr -L/usr/X11R6/lib -lMrm -lXm -lXt -lX11
+
+../uid/dwpad.uid : dwpad.uil
+	uil -o $@ dwpad.uil
+ 
+clean :
+	- rm *.o
+	- rm ../bin/dwscope
+	- rm ../uid/dwscope.uid
+	- rm ../bin/dwpad
+	- rm ../uid/dwpad.uid
+
+depend : .depend
+
+.depend :
+	- rm .depend
+	find *.c -exec cc $(CFLAGS) -xM {} > .depend \;

@@ -29,4 +29,4 @@ depend : .depend
 
 .depend :
 	- rm .depend
-	- touch .depend
+	- find . -name '*.c' -exec cc $(CFLAGS) -xM {} \; > .depend

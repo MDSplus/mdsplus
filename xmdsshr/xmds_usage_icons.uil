@@ -3,7 +3,7 @@ module XMDS_USAGE_ICONS
     names = case_sensitive
 
 value
-  TREE$K_MAX_USAGE       : exported 12;
+  TREE_K_MAX_USAGE       : exported 12;
 
 value
   icon_table : color_table (color('black',foreground) = '*', 

@@ -78,8 +78,8 @@ TdiXxx.o \
 TdiYaccSubs.o \
 TdiYacc.o
 
-#all : .depend
-#	make -f Makefile.SunOS -f .depend ../shlib/libTdiShr.so
+all : .depend
+	make -f Makefile.SunOS -f .depend ../shlib/libTdiShr.so
 
 ../shlib/libTdiShr.so : $(OBJECTS) ../shlib
 	ld -G -o $@ $(OBJECTS) -lc -lm -L../shlib -lMdsShr -lTreeShr
@@ -100,5 +100,5 @@ depend : .depend
 
 .depend :
 	- rm .depend
-	find *.c -exec cc -I../include -M {} > .depend \;
+	find *.c -exec cc $(CFLAGS) -xM {} > .depend \;
 	

@@ -13,8 +13,8 @@ TreeSetDefault.o \
 TreeSetNci.o \
 RemoteAccess.o
 
-#all : .depend
-#	make -f Makefile.SunOS -f .depend ../shlib/libTreeShr.so
+all : .depend
+	make -f Makefile.SunOS -f .depend ../shlib/libTreeShr.so
 
 ../shlib/libTreeShr.so : $(OBJECTS) ../shlib
 	cc -o $@ -misalign2 $(OBJECTS) -G -lc -L../shlib -lMdsShr
@@ -34,5 +34,5 @@ depend : .depend
 
 .depend :
 	- rm .depend
-	find *.c -exec cc -I../include -M {} > .depend \;
+	find *.c -exec cc $(CFLAGS) -xM {} > .depend \;
 

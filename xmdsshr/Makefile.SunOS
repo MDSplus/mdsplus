@@ -1,4 +1,4 @@
-CFLAGS = -c -D__sunos__ -I../include -I. -g 
+CFLAGS = -c -D__sunos__ -I/usr/X11R6/include -I../include -I. -g 
 
 OBJECTS = \
 ListTree.o \
@@ -30,8 +30,8 @@ XmdsXdBoxDialogButton.o \
 XmdsXdBoxOnOffButton.o
 
 
-#all :	.depend
-#	make -f Makefile.IRIX -f .depend the_rest
+all :	.depend
+	make -f Makefile.SunOS -f .depend the_rest
 
 the_rest : ../shlib/libXmdsShr.so \
 	xmdsuil.wmd \
@@ -45,21 +45,21 @@ the_rest : ../shlib/libXmdsShr.so \
 	mkdir ../uid
 
 ../uid/xmds_usage_icons.uid : xmds_usage_icons.uil
-	uil -o $@ $<
+	uil -o $@ xmds_usage_icons.uil
 
 ../uid/XmdsDigChans.uid : XmdsDigChans.uil
-	uil -wmd xmdsuil.wmd -o $@ $<
+	uil -wmd xmdsuil.wmd -o $@ XmdsDigChans.uil
 
 ../uid/XmdsInput.uid : XmdsInput.uil
-	uil -wmd xmdsuil.wmd -o $@ $<
+	uil -wmd xmdsuil.wmd -o $@ XmdsInput.uil
 
 ../uid/XmdsXdBox.uid : XmdsXdBox.uil
-	uil -wmd xmdsuil.wmd -o $@ $<
+	uil -wmd xmdsuil.wmd -o $@ XmdsXdBox.uil
 
 ../shlib/libXmdsShr.so : $(OBJECTS)
 	ld -o $@ -G $(OBJECTS) -lc -lm \
           -L../shlib -lMdsShr -lTdiShr -lTreeShr \
-	  -lMrm -lXm -lXt -lX11
+	  -L/usr/X11R6/lib -lMrm -lXm -lXt -lX11
 	- rm so_locations
 
 xmdsuil.wmd : xmdsuil.wml wmldbcreate-xmdsshr.c
@@ -81,4 +81,4 @@ depend : .depend
 
 .depend :
 	- rm .depend
-	find *.c -exec cc -I../include -M {} > .depend \;
+	find *.c -exec cc $(CFLAGS) -xM {} > .depend \;
