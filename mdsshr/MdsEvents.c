@@ -4,8 +4,35 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
 int MDSEventCan(void *eventid) {}
 int MDSEvent(char *evname){}
 #elif defined(HAVE_WINDOWS_H)
-#include <windows.h>
+
 #include <process.h>
+#include <mdsdescrip.h>
+#include <mdsshr.h>
+#include <mds_stdarg.h>
+#include "../mdstcpip/mdsip.h"
+extern char *TranslateLogical(char *);
+static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *eventid);
+static void initializeLocalRemote(int receive_events, int *use_local);
+static void newRemoteId(int *id);
+static void setRemoteId(int id, int ofs, int evid);
+static int sendRemoteEvent(char *evname, int data_len, char *data);
+
+static int remote_local_initialized = 0;
+static SOCKET receive_sockets[256];  	/* Socket to receive external events  */
+static SOCKET send_sockets[256];  		/* Socket to send external events  */
+static char *receive_servers[256];	/* Receive server names */
+static char *send_servers[256];		/* Send server names */
+static HANDLE external_thread = 0;
+static HANDLE external_event = 0;
+static HANDLE thread_alive_event = 0;
+#define MAX_ACTIVE_EVENTS 5000   /* Maximum number events concurrently dealt with by processes */
+
+static int external_shutdown = 0;
+static int external_count = 0;          /* remote event pendings count */
+static int num_receive_servers = 0;	/* numer of external event sources */
+static int num_send_servers = 0;	/* numer of external event destination */
+static unsigned int threadID;
+static int zero = 0;
 
 struct event_struct { char *eventnam;
                       void (*astadr)(void *,int,char *);
@@ -71,6 +98,19 @@ static void EventThreadProc(struct event_struct *event)
 int MDSEventAst(char *eventnam, void (*astadr)(void *,int,char *), void *astprm, int *eventid)
 {
 	struct event_struct *event = (struct event_struct *)malloc(sizeof(struct event_struct));
+
+    int status;
+    int i, j, use_local;    
+    int name_already_in_use;
+
+    if(!eventnam || !*eventnam) return 1;
+    initializeLocalRemote(1, &use_local);
+    if(num_receive_servers > 0)
+	eventAstRemote(eventnam, astadr, astprm, eventid);
+    if(!use_local) return 1;
+
+	/* Local stuff */
+
 	*eventid = (int)event;
 	event->eventnam = strcpy(malloc(strlen(eventnam)+1),eventnam);
 	event->astadr = astadr;
@@ -93,6 +133,12 @@ int MDSWfevent(char *evname, int *data_len, char **data)
 int MDSEvent(char *evname, int data_len, char *data)
 {
 	HANDLE handle = OpenEvent(EVENT_ALL_ACCESS,0,evname);
+	int use_local;
+    initializeLocalRemote(0, &use_local);
+    if(num_send_servers > 0)
+	sendRemoteEvent(evname, data_len, data);
+    if(!use_local) return 1;
+
 	if (handle != NULL)
 		PulseEvent(handle);
 	CloseHandle(handle);
@@ -128,6 +174,380 @@ int MDSEvent(char *evname, int data_len, char *data)
 	return 1;
 	*/
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static char *getEnvironmentVar(char *name)
+{
+    char *trans =  TranslateLogical(name);
+	if(!trans || !*trans) return NULL;
+    return trans;
+}
+
+static int searchOpenServer(char *server) 
+/* Avoid doing MdsConnect on a server already connected before */
+/* for now, allow socket duplications */
+{
+    int i;
+	return 0;
+}
+static void getServerDefinition(char *env_var, char **servers, int *num_servers, int *use_local)
+{
+    int i, j;
+    char *envname = getEnvironmentVar(env_var);
+    char curr_name[256];
+    if(!envname || !*envname)
+    {
+		*use_local = 1;
+		*num_servers = 0;
+ 		return;
+    }
+    i = *num_servers = 0;
+    *use_local = 0;
+    while(i < strlen(envname))
+    {
+		for(j = 0; i < strlen(envname) && envname[i] != ';'; i++, j++)
+			curr_name[j] = envname[i];
+		curr_name[j] = 0;
+		i++;
+		if(!strcmp(curr_name, "0"))
+			*use_local = 1; 
+		else
+		{
+			servers[*num_servers] = malloc(strlen(curr_name) + 1);
+			strcpy(servers[*num_servers], curr_name);
+			(*num_servers)++;
+		}
+    }
+}
+static unsigned __stdcall handleRemoteAst(void *p)
+{
+    char buf[16];
+    struct descriptor 
+	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
+	routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsg"};
+    int status, i;
+    int (*rtn)();
+    Message *m;
+    int  selectstat;
+    fd_set readfds;
+
+    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    if(!(status & 1))
+    {
+		printf("%s\n", MdsGetMsg(status));
+		return;
+    }
+	SetEvent(thread_alive_event);
+    while(1)
+    {
+
+		WaitForSingleObject(external_event, INFINITE);
+		ResetEvent(external_event);
+		if(external_shutdown)
+		{
+			external_thread = 0;
+			_endthreadex(0);
+		}
+        FD_ZERO(&readfds);
+		for(i = 0; i < num_receive_servers; i++)
+			if(receive_sockets[i])
+        		FD_SET(receive_sockets[i],&readfds);
+		selectstat = select(0, &readfds, 0, 0, 0);
+
+		if (selectstat == -1) 
+		{
+      		perror("select error"); 
+			return; 
+		}
+		for(i = 0; i < num_receive_servers; i++)
+		{
+			if(receive_sockets[i] && FD_ISSET( receive_sockets[i], &readfds))
+			{
+				if(WSAEventSelect(receive_sockets[i], external_event, 0)!=0)
+					printf("Error in WSAEventSelect: %d\n", WSAGetLastError());
+				if(ioctlsocket(receive_sockets[i], FIONBIO, &zero) != 0)
+					printf("Error in ioctlsocket: %d\n", WSAGetLastError());
+
+				m = ((Message *(*)())(*rtn))(receive_sockets[i], &status);
+        		if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo)))
+        		{
+            	    MdsEventInfo *event = (MdsEventInfo *)m->bytes;
+            	    ((void (*)())(*event->astadr))(event->astprm,  12, event->data);
+				}
+                if (m) free(m);
+				ResetEvent(external_event);
+				if(WSAEventSelect(receive_sockets[i], external_event, FD_READ)!=0)
+					printf("Error in WSAEventSelect: %d\n", WSAGetLastError());
+
+			}
+ 		}
+    }
+	return 0;
+}
+
+
+
+static void initializeLocalRemote(int receive_events, int *use_local)
+{
+    static int receive_initialized;
+    static int send_initialized;
+    static int use_local_send;
+    static int use_local_receive;
+
+    char *servers[256];
+    int num_servers;
+    struct descriptor 
+	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
+	routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
+    int status, i;
+    int (*rtn)();
+    void *dummy;
+
+    if(receive_initialized && receive_events)
+    {
+		*use_local = use_local_receive;
+		return;
+	}
+    if(send_initialized && !receive_events)
+    {
+		*use_local = use_local_send;
+		return;
+    }
+
+    if(receive_events)
+    {
+		receive_initialized = 1;
+		getServerDefinition("mds_event_server", servers, &num_servers, use_local);   
+		num_receive_servers = num_servers;
+		use_local_receive = *use_local;
+    }
+    else
+    {
+		send_initialized = 1;
+   		getServerDefinition("mds_event_target", servers, &num_servers, use_local);
+		num_send_servers = num_servers;
+		use_local_send = *use_local;
+    }
+	if(!external_event)
+		if((external_event = CreateEvent(NULL, FALSE, FALSE, NULL)) == NULL)
+			printf("Error creating Event\n");
+  
+
+    if(num_servers > 0)
+    {
+        status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+        if (status & 1)
+        {
+			for(i = 0; i < num_servers; i++)
+			{
+				if(receive_events)
+				{
+					receive_sockets[i] = searchOpenServer(servers[i]);
+	 				if(!receive_sockets[i]) receive_sockets[i] = (*rtn) (servers[i]);
+	    			if(receive_sockets[i] == -1)
+	    			{
+						printf("\nError connecting to %s", servers[i]);
+						perror("ConnectToMds");
+	    				receive_sockets[i] = 0;
+					}
+					else
+					{
+						receive_servers[i] = servers[i];
+					}
+				}
+				else
+				{
+					send_sockets[i] = searchOpenServer(servers[i]);
+	 				if(!send_sockets[i]) send_sockets[i] = (*rtn) (servers[i]);
+	    			if(send_sockets[i] == -1)
+	    			{
+						printf("\nError connecting to %s", servers[i]);
+						perror("ConnectToMds");
+	    				send_sockets[i] = 0;
+					}
+					else
+					{
+						send_servers[i] = servers[i];
+					}
+				}
+			}
+		}
+		else printf(MdsGetMsg(status));
+	}
+}
+
+
+
+static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
+{
+    struct descriptor 
+	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
+	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventAst"};
+    int status, i;
+    int curr_eventid;
+    void *dummy;
+    int (*rtn)();
+
+
+    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    if (status & 1)
+    {
+
+		/*First pf all, kill thread listening to sockets */
+		if(external_thread)
+		{
+			external_shutdown = 1;
+			SetEvent(external_event);
+			WaitForSingleObject(external_thread, INFINITE);
+			external_shutdown = 0;
+
+		}
+
+		
+		newRemoteId(eventid);
+		for(i = 0; i < num_receive_servers; i++)
+		{
+			if(receive_sockets[i])
+			{ 
+				if(WSAEventSelect(receive_sockets[i], external_event, 0)!=0)
+					printf("Error in WSAEventSelect: %d\n", WSAGetLastError());
+				if(ioctlsocket(receive_sockets[i], FIONBIO, &zero) != 0)
+					printf("Error in ioctlsocket: %d\n", WSAGetLastError());
+				status = (*rtn) (receive_sockets[i], eventnam, astadr, astprm, &curr_eventid);
+				setRemoteId(*eventid, i, curr_eventid);
+			}
+		}
+		external_count++;
+    }
+    if(!(status & 1)) printf(MdsGetMsg(status));
+	ResetEvent(external_event);
+	for(i = 0; i < num_receive_servers; i++)
+	{
+		if(receive_sockets[i])
+		{ 
+			if(WSAEventSelect(receive_sockets[i], external_event, FD_READ)!=0)
+				printf("Error in WSAEventSelect: %d\n", WSAGetLastError());
+		}
+	}
+
+	if(!thread_alive_event)
+		thread_alive_event = CreateEvent(NULL, FALSE, FALSE, NULL);
+	if((external_thread = (HANDLE)_beginthreadex( NULL, 0, handleRemoteAst, NULL,0, &threadID)) == -1)
+		printf("\nError creating thread\n");
+
+	WaitForSingleObject(thread_alive_event, INFINITE);
+	ResetEvent(thread_alive_event);
+    return status;
+}
+
+
+/* eventid stuff: when using multiple event servers, the code has to deal with multiple eventids */
+static struct {
+    int used;
+    int local_id; 
+    int *external_ids; 
+} event_info[MAX_ACTIVE_EVENTS];
+
+static void newRemoteId(int *id)
+{
+    int i;
+    for(i = 0; i < MAX_ACTIVE_EVENTS - 1 && event_info[i].used; i++);
+    event_info[i].used = 1;
+    event_info[i].external_ids = (int *)malloc(sizeof(int) * 256);
+    *id = i;
+}
+
+static void deleteId(int id)
+{
+    if(!event_info[id].used) return;
+    event_info[id].used = 0;
+    free((char *)event_info[id].external_ids);
+}
+
+static void setLocalId(int id, int evid)
+{
+    event_info[id].local_id = evid;
+}
+
+static void setRemoteId(int id, int ofs, int evid)
+{
+    event_info[id].external_ids[ofs] = evid;
+}
+
+static int getLocalId(int id)
+{
+     return event_info[id].local_id;
+}
+
+static int getRemoteId(int id, int ofs)
+{
+    return event_info[id].external_ids[ofs];
+}
+
+static int sendRemoteEvent(char *evname, int data_len, char *data)
+{
+    int (*rtn)(), (*curr_rtn)();
+    struct descriptor 
+	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
+	routine_d = {DTYPE_T, CLASS_S, 8, "MdsValue"};
+    int status, i, tmp_status;
+    char expression[256];
+    struct descrip ansarg;
+    struct descrip desc;
+
+    desc.dtype = DTYPE_B;
+    desc.ptr = data;
+    desc.length = 1;
+    desc.ndims = 1;
+    desc.dims[0] = data_len;
+    ansarg.ptr = 0;
+    sprintf(expression, "setevent(\"%s\"%s)", evname,data_len > 0 ? ",$" : "");
+    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    if (status & 1)
+    {
+	for(i = 0; i < num_send_servers; i++)
+	{
+	    curr_rtn = rtn;
+	    if(send_sockets[i])
+            {
+              if (data_len > 0)
+                tmp_status = (*curr_rtn) (send_sockets[i], expression, &desc, &ansarg, NULL);
+              else
+                tmp_status = (*curr_rtn) (send_sockets[i], expression, &ansarg, NULL);
+            }
+            if (tmp_status & 1)
+              tmp_status = (ansarg.ptr != NULL) ? *(int *)ansarg.ptr : 0;
+            if (!(tmp_status & 1))
+              status = tmp_status;
+	    if (ansarg.ptr) free(ansarg.ptr);
+	}
+    }
+    return status;
+}
+
+
+
+
 #else
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
