@@ -1169,7 +1169,7 @@ struct dirent *readdir(DIR *dir)
 		return 0;
 }
 
-static char *index(char *str, char c)
+char *index(char *str, char c)
 {
 	int pos = strcspn(str,&c);
 	return (pos == 0) ? ((str[0] == c) ? str : 0) : &str[pos];

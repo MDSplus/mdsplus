@@ -3,6 +3,7 @@ CODE	PRELOAD MOVEABLE DISCARDABLE
 DATA	PRELOAD SINGLE
 EXPORTS
 ;
+index
 LibCallg
 LibCreateVmZone
 LibEstablish
@@ -21,6 +22,7 @@ LibSpawn
 LibSysAscTim
 LibTraverseTree
 LibWait
+MdsCompareXd
 MdsCompress
 MdsCopyDxXd
 MdsCopyDxXdZ
