@@ -1,0 +1,64 @@
+SHELL=/bin/sh
+CC=@CC@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = \
+dummies.c \
+TreeAddNode.c \
+TreeAddTag.c \
+TreeCleanDatafile.c \
+TreeCreatePulseFile.c \
+TreeDeleteNode.c \
+TreeDeletePulseFile.c \
+TreeDoMethod.c \
+TreeFindNode.c \
+TreeFindTagWild.c \
+TreeGetDbi.c \
+TreeGetNci.c \
+TreeGetRecord.c \
+TreeGetSetShotId.c \
+TreeOpen.c \
+TreePutRecord.c \
+TreeRenameNode.c \
+TreeRemoveNodesTags.c\
+TreeSerializeNci.c \
+TreeSetDefault.c \
+TreeSetNci.c \
+TreeVerify.c \
+RemoteAccess.c
+
+OBJECTS = $(SOURCES:.c=.o)
+EXPORTS = TreeShr.export
+
+all : @MAKELIBDIR@ @MAKELIBDIR@libTreeShr@SHARETYPE@ @MAKELIBDIR@libTreeShr.a
+
+clean:
+	- rm *.o
+	- rm @MAKELIBDIR@libTreeShr@SHARETYPE@
+	- rm @MAKELIBDIR@libTreeShr.a
+
+depend:
+	 @makedepend -- $(CFLAGS) -- $(SOURCES)
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 644  @MAKELIBDIR@libTreeShr.a @libdir@
+	$(INSTALL) -m 755  @MAKELIBDIR@libTreeShr@SHARETYPE@ @libdir@
+
+@MAKELIBDIR@libTreeShr@SHARETYPE@ : $(OBJECTS) 
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsShr $(LIBS)
+
+@MAKELIBDIR@libTreeShr.a : $(OBJECTS)
+	$(AR) -r $@ $(OBJECTS)
+	@RANLIB@ $@
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@

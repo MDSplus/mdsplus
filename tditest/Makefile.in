@@ -1,0 +1,34 @@
+SHELL=/bin/sh
+CC=@CC@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = tditest.o
+OBJECTS = $(SOURCES:.c=.o)
+
+all : @MAKEBINDIR@ @MAKEBINDIR@tditest
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
+
+install:
+	if [ ! -d @bindir@ ] ; then \
+                mkdir @bindir@; \
+                chmod 755 @bindir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKEBINDIR@tditest @bindir@
+
+clean :
+	- rm *.o
+	- rm @MAKEBINDIR@tditest
+
+@MAKEBINDIR@tditest : $(OBJECTS)
+	$(CC) -o $@ $(OBJECTS) $(CC_IMAGE_OPTIONS) -L@MAKELIBDIR@ -lTdiShr -lTreeShr -lMdsShr $(LIBS)
+
+@MAKEBINDIR@ :
+	mkdir @MAKEBINDIR@
+

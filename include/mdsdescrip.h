@@ -1,6 +1,8 @@
 #ifndef MDSDESCRIP_H_DEFINED
 #define MDSDESCRIP_H_DEFINED 1
 
+#include <config.h>
+
 #if defined(__VMS)
 #pragma member_alignment save
 #pragma nomember_alignment
@@ -15,10 +17,6 @@
 #define __fill_name__
 #define __fill_value__
 #endif /* _WINDOWS */
-
-#if defined(__hpux) || defined(__sgi) || defined(__sun)
-#define _big_endian
-#endif
 
 #ifdef _DESCRIPTOR_PREFIXES
 #define _DSCA_(field) dscA_##field

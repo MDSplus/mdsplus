@@ -1,0 +1,56 @@
+SHELL=/bin/sh
+CC=@CC@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = \
+        dummies.c  \
+        librtl.c \
+        dasutil_routines4.c \
+        mdsmsg.c \
+        MdsCmprs.c \
+        MdsCompareXd.c \
+        MdsCompress.c \
+        MdsEventAst.c \
+        MdsGet1DxA.c \
+        MdsGet1DxS.c \
+        MdsGetSetShotId.c \
+        MdsPk.c \
+        MdsQ_Event.c \
+        MdsSerialize.c \
+        MdsWtEvent.c \
+        MdsXdRoutines.c
+
+OBJECTS = $(SOURCES:.c=.o)
+EXPORTS = MdsShr.export
+
+all : @MAKELIBDIR@ @MAKELIBDIR@libMdsShr@SHARETYPE@ @MAKELIBDIR@libMdsShr.a
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
+
+clean :
+	rm *.o
+	rm @MAKELIBDIR@libMdsShr.*
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 644  @MAKELIBDIR@libMdsShr.a @libdir@
+	$(INSTALL) -m 755  @MAKELIBDIR@libMdsShr@SHARETYPE@ @libdir@
+
+@MAKELIBDIR@libMdsShr@SHARETYPE@ : $(OBJECTS) 
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS)  -L@MAKELIBDIR@ -lipcs $(LIBS)
+
+@MAKELIBDIR@libMdsShr.a : $(OBJECTS)
+	$(AR) -r $@ $(OBJECTS)
+	@RANLIB@ $@
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@

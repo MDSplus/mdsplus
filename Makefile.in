@@ -1,0 +1,51 @@
+#@(#)$RCSfile$ $Revision$
+# @configure_input@
+SHELL=/bin/sh
+
+PARTS = ipcs \
+        mdsshr \
+        treeshr \
+        tdishr \
+        tditest \
+        xmdsshr \
+        mdstcpip \
+        dwscope \
+        mitdevices \
+        mdslibidl \
+        remcam \
+        cdu     \
+        mdsdcl  \
+        ccl     \
+        tcl \
+        traverser \
+        actions \
+        mdslib \
+        math \
+        d3dshr \
+        wfevent
+
+all:
+	cdir=`pwd`;\
+	for dir in $(PARTS) ; do\
+	  echo Making $${dir}; cd $${dir}; make all; cd $$cdir;\
+	done
+
+.IGNORE:
+
+clean:
+	cdir=`pwd`;\
+	for dir in $(PARTS) ; do\
+	  cd $${dir} && make -i clean; cd $$cdir;\
+	done
+
+depend:
+	cdir=`pwd`;\
+	for dir in $(PARTS) ; do\
+	  cd $${dir}; make depend; cd $$cdir;\
+	done
+
+install: 
+	cdir=`pwd`;\
+	for dir in $(PARTS) ; do\
+	  cd $${dir}; make install; cd $$cdir;\
+	done
