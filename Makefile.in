@@ -6,6 +6,8 @@ JAVA_APS = javamds \
 	   javascope \
            javatraverser
 
+D3D_PACKAGE = d3dshr
+
 PARTS = ipcs \
         mdsshr \
         treeshr \
@@ -26,7 +28,7 @@ PARTS = ipcs \
         actions \
         mdslib \
         math \
-        @D3DSHR@ \
+        @D3D_PACKAGE@ \
         wfevent \
 	@JAVA_APS@
 
