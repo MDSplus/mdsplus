@@ -95,7 +95,7 @@ void      MdsPk(char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int *
       {
 	hold |= *pitems << off;
 #ifdef _big_endian
-        for (i=0;i<3;i++)
+        for (i=0;i<4;i++)
           ((char *)ppack)[i] = ((char *)&hold)[3-i];
         ppack++;
 #else
@@ -114,7 +114,7 @@ void      MdsPk(char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int *
       if (off >= test)
       {
 #ifdef _big_endian
-        for (i=0;i<3;i++)
+        for (i=0;i<4;i++)
           ((char *)ppack)[i] = ((char *)&hold)[3-i];
         ppack++;
 #else
@@ -129,7 +129,7 @@ void      MdsPk(char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int *
   }
   if (off)
 #ifdef _big_endian
-    for (i=0;i<3;i++)
+    for (i=0;i<4;i++)
       ((char *)ppack)[i] = ((char *)&hold)[3-i];
 #else
     *ppack = hold;
