@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <config.h>
 #include "export.h"
 static IDL_LONG 	three = 3;
 static IDL_LONG 	nitem;		/*the row count*/
@@ -327,12 +328,14 @@ int		rblob;
 			type = IDL_TYP_INT;
 			break;
 		case SYBDATETIME :		/***convert date to double***/
-			if (date) {		/*Julian day 3 million?? is 17-Nov-1858*/
-			int yr, mo, da, hr, mi, se, th, leap;
-			int status = dbconvert(dbproc,type,buf,len,SYBCHAR,(unsigned char*)ddate,sizeof(ddate)-1);
+		    if (date) 
+		    {		/*Julian day 3 million?? is 17-Nov-1858*/
+			  int yr, mo, da, hr, mi, se, th, leap;
+			  int status = dbconvert(dbproc,type,buf,len,SYBCHAR,(unsigned char*)ddate,sizeof(ddate)-1);
+
 #ifdef VMS
-            quadword big_time;
- 			struct dsc$descriptor_s date_dsc = {22, DSC$K_DTYPE_T, DSC$K_CLASS_S, (char *)ddate};
+			  quadword big_time;
+			  struct dsc$descriptor_s date_dsc = {22, DSC$K_DTYPE_T, DSC$K_CLASS_S, (char *)ddate};
                         	ddate[20] = '.';
                                 ddate[3] = ddate[0];
                                 ddate[0] = ddate[4];
@@ -354,7 +357,6 @@ int		rblob;
                                 else
                                   temp.d = HUGE_D;
                                 break;
-			}
 #else
 			static char *moname = "JanFebMarAprMayJunJulAugSepOctNovDec";
 			static int day[] = {0,31,59,90,120,151,181,212,243,273,304,334};
@@ -373,8 +375,30 @@ int		rblob;
 				temp.d = (double)(yr * 365 + day[mo] + da + leap - 678941);
 				temp.d += (double)(th + 1000*(se + 60*(mi + 60*hr)))/86400000.;
 				break;
-			}
 #endif
+		  }
+
+		  else 
+		  {  
+		    /***convert to text***/
+		    if (!ind) 
+		    {
+		      int status;
+#ifdef WORDS_BIGENDIAN
+		      unsigned long hi = *(unsigned long *)buf;
+		      *(unsigned long *)buf = *((unsigned long *)buf+1);
+		      *((unsigned long *)buf+1) = hi;
+#endif
+		      status = dbconvert(dbproc,type,buf,len,SYBCHAR,(unsigned char *)ddate,sizeof(ddate)-1);
+		      if (status >= 0) {
+			ddate[status] = '\0'; 
+		      } else strcpy(ddate, "FAILED");
+		      IDL_StrStore(&temp.str, ddate);
+		    }
+		    type = IDL_TYP_STRING;
+		    break;
+		  }
+
 		case SYBMONEY :			/***convert to text***/
 			if (!ind) {
 			int status = dbconvert(dbproc,type,buf,len,SYBCHAR,(unsigned char *)ddate,sizeof(ddate)-1);
@@ -651,3 +675,4 @@ char	*argk;
 #endif
 	return &result;
 }
+                                                                                                                                                
