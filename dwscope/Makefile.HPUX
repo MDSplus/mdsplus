@@ -1,4 +1,4 @@
-CFLAGS = -c +z -Ae +u1 -Wl,+b,. -Wl,+s -D_NO_DXm -D__hpux__ -I/usr/include/X11R6 -I../include -I. -g 
+CFLAGS = -c +z -Ae +u1 -Wl,+b,. -Wl,+s -D_NO_DXm -D__hpux__ -I/usr/include/X11R5 -I../include -I. -g 
 
 OBJECTS_DWSCOPE = \
 dwscope.o \
@@ -19,7 +19,7 @@ the_rest : ../bin/dwscope \
 ../uid/dwpad.uid
 
 ../bin/dwscope : $(OBJECTS_DWSCOPE) ../bin
-	cc -o $@ $(OBJECTS_DWSCOPE)   -L/usr/lib/X11R6 -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr -lMrm -lXm -lXt -lX11
+	cc -o $@ $(OBJECTS_DWSCOPE)   -L/usr/lib/X11R5 -L/usr/lib/Motif1.1 -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr -lMrm -lXm -lXt -lX11
 
 ../bin :
 	mkdir ../bin
@@ -31,7 +31,7 @@ the_rest : ../bin/dwscope \
 	uil -o $@ dwscope.uil
 
 ../bin/dwpad : $(OBJECTS_DWPAD)
-	cc -o $@ $(OBJECTS_DWPAD)  -L/usr/lib/X11R6 -L../shlib -lXmdsShr -lMrm -lXm -lXt -lX11
+	cc -o $@ $(OBJECTS_DWPAD)  -L/usr/lib/X11R5 -L/usr/lib/Motif1.1 -L../shlib -lXmdsShr -lMrm -lXm -lXt -lX11
 
 ../uid/dwpad.uid : dwpad.uil
 	uil -o $@ dwpad.uil

@@ -32,6 +32,6 @@ depend : .depend
 
 .depend :
 	- rm .depend
-        - find *.c -exec cc $(CFLAGS) -P -Wp,-M {} 2> .depend \;
-        - rm *.i        
+	- find *.c -exec cc $(CFLAGS) -P -Wp,-M {} 2> .depend \;
+	- rm *.i        
 
