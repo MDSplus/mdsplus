@@ -1459,15 +1459,6 @@ static char *_FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind)
       else
         return 0;
     dp = readdir(ctx->dir_ptr);
-#ifdef _LINUX
-    if (dp != NULL)
-    {
-      if( dp->d_dtype)
-      {
-        dp = (struct dirent *)(((char *)dp)-1);
-      }
-    }
-#endif
     if (dp != NULL) {
       struct descriptor upname = {0,DTYPE_T,CLASS_D,0};
       DESCRIPTOR_FROM_CSTRING(filename, dp->d_name)

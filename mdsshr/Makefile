@@ -8,14 +8,11 @@ OBJECTS = \
 	MdsCmprs.o \
 	MdsCompareXd.o \
 	MdsCompress.o \
-	MdsEventAst.o \
 	MdsGet1DxA.o \
 	MdsGet1DxS.o \
         MdsGetSetShotId.o \
         MdsPk.o \
-        MdsQ_Event.o \
         MdsSerialize.o \
-        MdsWtEvent.o \
 	MdsXdRoutines.o
 
 EXPORTS = MdsShr.export
