@@ -23,20 +23,27 @@ LD_LDARC=""
 LD_LDSHARE=""
 IDL_BIN_SUF=""
 
+CFLAGS="$CFLAGS -I\$(top_srcdir)/include"
+FFLAGS="$FFLAGS -I\$(top_srcdir)/include"
+
 case "$target" in
-hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib -I\$(top_srcdir)/include +DA1.1 +DS1.1 +z";
-       FFLAGS="$FFLAGS +z +es -I\$(top_srcdir)/include";
+hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
+       FFLAGS="$FFLAGS +z +es";
        D3D_FFLAGS="+U77 +E1 -K"; 
-       LDSHARE="-Wl,-a shared_archive";
-       LDARC="-Wl,-a archive";
+       LDSHARE="-Wl,-a,shared_archive";
+       LDARC="-Wl,-a,archive";
+       LD_LDSHARE=-a shared_archive";
+       LD_LDARC="-a archive";
        LINKSHARED="-b";
        FOR_LDFLAGS="-v -L/usr/lib/pa1.1 -lcl -lf";
        LIBPATH="SHLIB_PATH";
        SHARETYPE=".sl";;
-mips*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -signed -D_BSD_SIGNALS -KPIC";
-       FFLAGS="$FFLAGS -I\$(top_srcdir)/include -D_BSD_SIGNALS -KPIC";
+mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
+       FFLAGS="$FFLAGS -D_BSD_SIGNALS -KPIC";
        LDSHARE="-B dynamic ";
        LDARC="-B static ";
+       LD_LDSHARE="-B dynamic";
+       LD_LDARC="-B status";
        LINKSHARED="-shared -rpath $(exec_prefix)/lib";
        FOR_LDFLAGS="";
        LIBPATH="LD_LIBRARY_PATH";
@@ -46,8 +53,8 @@ sparc-sun-solaris2*)  LINKSHARED="-G -B symbolic -R $(exec_prefix)/lib";
 	 LD=gcc;
          LINKSHARED="-Wl,-G -Wl,-B,symbolic -Wl,-R,$(exec_prefix)/lib";
        fi;
-       CFLAGS="$CFLAGS -I\$(top_srcdir)/include -fpic";
-       FFLAGS="$FFLAGS -I\$(top_srcdir)/include -fpic";
+       CFLAGS="$CFLAGS -fpic";
+       FFLAGS="$FFLAGS -fpic";
        IDL_BIN_SUF="solaris2.sparc"
        LDSHARE="-Wl,-B,dynamic";
        LDARC="-Wl,-B,static";
@@ -55,8 +62,8 @@ sparc-sun-solaris2*)  LINKSHARED="-G -B symbolic -R $(exec_prefix)/lib";
        LD_LDSHARE="-B dynamic ";
        LIBPATH="LD_LIBRARY_PATH";
        SHARETYPE=".so";;
-alpha-dec-osf*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -pthread";
-       FFLAGS="$FFLAGS -I\$(top_srcdir)/include";
+alpha-dec-osf*) CFLAGS="$CFLAGS -pthread";
+       FFLAGS="$FFLAGS -pthread";
        IDL_BIN_SUF="alpha"
        LDSHARE="-Wl,-so_archive ";
        LDARC="-Wl,-no_so ";
@@ -66,33 +73,35 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -pthread";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="-lfor";
        SHARETYPE=".so";;
-*linux*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -fpic";
-       FFLAGS="$FFLAGS -I\$(top_srcdir)/include -fpic";
+*linux*) CFLAGS="$CFLAGS -fpic";
+       FFLAGS="$FFLAGS -fpic";
        LDSHARE="-shared ";
        LDARC="-static ";
+       LD_LDSHARE="-shared";
+       LD_LDARC="-static";
        LINKSHARED="-shared ";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
        SHARETYPE=".so";;
-*aix*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include";
-       FFLAGS="$FFLAGS -I\$(top_srcdir)/include";
+*aix*) CFLAGS="$CFLAGS";
+       FFLAGS="$FFLAGS";
        LDSHARE="";
        LDARC="";
        FOR_LDFLAGS="";
-       LINKSHARED="$(exec_prefix)/lib";
+       LINKSHARED="";
        LIBPATH="LIBPATH";
        SHARETYPE=".a";;
-*windows*)     CFLAGS="$CFLAGS -I\$(top_srcdir)/include";
+*windows*)     CFLAGS="$CFLAGS";
        LDSHARE="";
        LDARC="";
-       LINKSHARED="$(exec_prefix)/lib";
+       LINKSHARED="";
        SHARETYPE="";;
-*)     CFLAGS="$CFLAGS -I\$(top_srcdir)/include";
-       FFLAGS="$FFLAGS -I\$(top_srcdir)/include";
+*)     CFLAGS="$CFLAGS";
+       FFLAGS="$FFLAGS";
        FOR_LDFLAGS="";
        LDSHARE="";
        LDARC="";
-       LINKSHARED="$(exec_prefix)/lib";
+       LINKSHARED="";
        LIBPATH="LD_LIBRARY_PATH";
        SHARETYPE=".so";;
 esac
@@ -303,6 +312,8 @@ AC_SUBST(MAKEETCDIR)
 AC_SUBST(MAKEJAVADIR)
 AC_SUBST(LDSHARE)
 AC_SUBST(LDARC)
+AC_SUBST(LD_LDSHARE)
+AC_SUBST(LD_LDARC)
 
 AC_SUBST(LIBDL)
 AC_SUBST(LIBDLD)
