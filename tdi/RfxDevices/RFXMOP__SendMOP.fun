@@ -1,7 +1,7 @@
 public fun RFXMOP__SendMOP(as_is _nid, optional _method)
 {
 
-	write(*, 'RFXMOP');
+	write(*, 'RFXMOP è questo');
 
     private _K_CONG_NODES = 135;
     private _N_HEAD = 0;
