@@ -33,7 +33,12 @@ MDSVME=""
 
 CFLAGS="$CFLAGS -I\$(top_srcdir)/include"
 FFLAGS="$FFLAGS -I\$(top_srcdir)/include"
-uiddir="/usr/lib/X11/uid"
+
+case "$prefix" in
+/usr/local*) : ${uiddir=/usr/lib/X11/uid};;
+*) : ${uiddir=$prefix/uid};;
+esac
+
 MAKESHLIBDIR="\$(top_srcdir)/lib/"
 EXPORTS_FILE=""
 
