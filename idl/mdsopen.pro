@@ -35,54 +35,21 @@
 
 pro MdsOpen,tree,shot,quiet=quiet,status=status
 
-  forward_function mdsIsClient,mdsIdlImage,mds$socket,MdsRoutinePrefix,MdsIPImage,IsWindows
-
   if (n_params() ne 2 or n_elements(tree) eq 0 or n_elements(shot) eq 0) then begin
     message,'Must specify valid tree and shot to open',/continue,noprint=keyword_set(quiet)
     status = 0
     return
   endif
-
   if (strcompress(tree,/remove) eq '') then begin
     message,'Must specify valid tree name',/continue,noprint=keyword_set(quiet)
     status = 0
     return
   endif
 
-  if (mdsIsClient()) then begin
-
-    ON_ERROR,2                  ;RETURN TO CALLER IF ERROR
-
-    ; Determine whether experiment and shot were provided.
-
-    sock = mds$socket(quiet=quiet,status=status)
-    if not status then return
-    status = call_external(MdsIPImage(),MdsRoutinePrefix()+'MdsOpen',$
-                           sock,string(tree),long(shot),$
-                           value=[1b,byte(not IsWindows()),1b])
-    if not status then begin
-      if keyword_set(quiet) then message,mdsgetmsg(status,quiet=quiet),/continue,/noprint $
-                            else message,mdsgetmsg(status,quiet=quiet),/continue
-    endif
-
-  endif else begin
-
-    if (!VERSION.OS eq 'vms') then begin
-
-      mds$open,tree,shot,quiet=quiet,status=status
-
-    endif else begin
-        
-      status=call_external(MdsIdlImage(),'IdlMdsOpen',strtrim(tree,2),long(shot),value=[1b,1b])
-      if not status then begin
-        msg = 'Error opening tree '+strtrim(tree,2)+' shot '+strtrim(shot,2)
-        if keyword_set(quiet) then $
-            message,msg,/continue,/noprint $
-        else $
-            message,msg,/continue
-      endif
-    endelse
-
-  endelse
+  status = MdsValue('treeopen($,$)',string(tree),long(shot),quiet=quiet,status=status)
+  if not status then begin
+    if keyword_set(quiet) then message,mdsgetmsg(status,quiet=quiet),/continue,/noprint $
+                          else message,mdsgetmsg(status,quiet=quiet),/continue
+  endif
 
 end

@@ -40,46 +40,14 @@
 
 pro MdsClose,tree,shot,quiet=quiet,status=status
 
-  forward_function mdsIsClient,mdsIdlImage,mds$socket,MdsRoutinePrefix,MdsIPImage
-
-  if (mdsIsClient()) then begin
-    ON_ERROR,2                  ;RETURN TO CALLER IF ERROR
-
-    ; Determine whether experiment and shot were provided.
-    
-    sock = mds$socket(quiet=quiet,status=status)
-    if not status then return
-    sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'MdsClose',sock,value=[1b])
-    if not status then begin
-      if keyword_set(quiet) then message,mdsgetmsg(status,quiet=quiet),/continue,/noprint $
-                            else message,mdsgetmsg(status,quiet=quiet),/continue
-    endif
-
+  if (n_params() eq 2) then begin
+    status = MdsValue('TreeClose($,$)',string(tree),long(shot),/quiet,status=retstatus)
   endif else begin
-
-    if (!VERSION.OS eq 'vms') then begin
-
-      if n_elements(tree) eq 0 then $
-        mds$close, quiet=quiet, status=status else $
-        mds$close, tree, shot, quiet=quiet,status=status
-
-    endif else begin
-        
-
-      if n_params() gt 1 then $
-          status=call_external(MdsIdlImage(),'IdlMdsClose',strtrim(tree,2),long(shot),value=[1b,1b]) $
-      else $
-          status=call_external(MdsIdlImage(),'IdlMdsClose',0L,value=[1b])
-      if not status then begin
-        msg = 'Error closing tree'
-        if (n_params() gt 1) then msg = msg+strtrim(tree,2)+' shot '+strtrim(shot,2)
-        if keyword_set(quiet) then $
-            message,msg,/continue,/noprint $
-        else $
-            message,msg,/continue
-      endif
-
-    endelse
-
+    status = MdsValue('TreeClose()',/quiet,status=retstatus)
   endelse
+  if (status) then status = retstatus
+  if not status then begin
+    if keyword_set(quiet) then message,mdsgetmsg(status,quiet=quiet),/continue,/noprint $
+                          else message,mdsgetmsg(status,quiet=quiet),/continue
+  endif
 end

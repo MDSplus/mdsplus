@@ -32,35 +32,10 @@
 
 pro MdsSetDefault,node,quiet=quiet,status=status
 
-  forward_function mdsIsClient,mdsIdlImage,mds$socket,MdsRoutinePrefix,MdsIPImage,IsWindows
-
-  if (mdsIsClient()) then begin
-
-    ON_ERROR,2                  ;RETURN TO CALLER IF ERROR
-    sock = mds$socket(quiet=quiet,status=status)
-    if not status then return
-    status = call_external(MdsIPImage(),MdsRoutinePrefix()+'MdsSetDefault',sock,string(node),value=[1b,byte(not IsWindows())])
-    if not status then begin
+  status = MdsValue('TreeSetDefault($)',string(node),/quiet,status=retstatus)
+  if (status) then status = retstatus
+  if not status then begin
       if keyword_set(quiet) then message,mdsgetmsg(status,quiet=quiet),/continue,/noprint $
                             else message,mdsgetmsg(status,quiet=quiet),/continue
-    endif
-
-  endif else begin
-
-    if (!VERSION.OS eq 'vms') then begin
-
-      mds$set_def,node,quiet=quiet,status=status
-
-    endif else begin
-      status=call_external(MdsIdlImage(),'IdlMdsSetDefault',strtrim(node,2),value=[1b])
-      if not status then begin
-        msg = 'Error setting default to '+strtrim(node,2) 
-        if keyword_set(quiet) then $
-            message,msg,/continue,/noprint $
-        else $
-            message,msg,/continue
-      endif
-    endelse
-  endelse
-
+  endif
 end
