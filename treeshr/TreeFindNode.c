@@ -178,8 +178,8 @@ int _TreeFindNodeWild(void *dbid, char *path, int *nid_out, void **ctx_inout, in
   {
     node_to_nid(dblist, node, nid);
   }
-  else if ((status == TreeNMN) && not_first_time)
-    status = TreeFAILURE;
+  else if ((status == TreeNNF) && not_first_time)
+    status = TreeNMN;
   return status;
 }
 
