@@ -1,6 +1,6 @@
 public fun RFXPoloidal__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXPoloidal', 25, _nidout);
+    DevAddStart(_path, 'RFXPoloidal', 22, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':LOAD_INDUCT', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':LOAD_RESIST', 'NUMERIC', *, *, _nid);
@@ -22,9 +22,6 @@ public fun RFXPoloidal__add(in _path, out _nidout)
     DevAddNode(_path // ':PV_WINDOW', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':R_TRANSFER', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':PTCB_VOLTAGE', 'NUMERIC', *, *, _nid);
-    DevAddNode(_path // ':NUM_PM_UNITS', 'NUMERIC', *, *, _nid);
-    DevAddNode(_path // ':NUM_PC_UNITS', 'NUMERIC', *, *, _nid);
-    DevAddNode(_path // ':NUM_PV_UNITS', 'NUMERIC', *, *, _nid);
     DevAddEnd();
 }
 
