@@ -241,7 +241,7 @@ class jDispatchMonitor extends JFrame implements MdsServerListener,
         {
             System.out.println(e.getMessage());
         }
-        JMenu edit = new JMenu("Edit");
+        JMenu file = new JMenu("File");
         JMenuItem open = new JMenuItem("Open Connection ...");
         open.addActionListener(new ActionListener()
             {
@@ -251,7 +251,7 @@ class jDispatchMonitor extends JFrame implements MdsServerListener,
                 }
             }       
         );
-        edit.add(open);
+        file.add(open);
  
         JMenuItem exit = new JMenuItem("Exit");
         exit.addActionListener(new ActionListener()
@@ -262,7 +262,7 @@ class jDispatchMonitor extends JFrame implements MdsServerListener,
                 }
             }       
         );
-        edit.add(exit);
+        file.add(exit);
         
         JMenu view = new JMenu("View");
         JCheckBoxMenuItem build_cb = new JCheckBoxMenuItem("Build", true);
@@ -315,7 +315,7 @@ class jDispatchMonitor extends JFrame implements MdsServerListener,
         view.add(auto_scroll_cb);
 
                 
-        mb.add(edit);
+        mb.add(file);
         mb.add(view);
         mb.add(phase_m);
         
