@@ -27,6 +27,8 @@ class jDispatchMonitor extends JFrame implements MdsServerListener,
     JMenuItem     do_redispatch;
     JMenuItem     do_abort;
     
+    JList curr_list;
+    int   item_idx;
     
     boolean auto_scroll = true;
     int curr_phase = -1;
@@ -671,14 +673,25 @@ class jDispatchMonitor extends JFrame implements MdsServerListener,
         }
     }
     
-    private void showUpdateAction(JList list, int idx)
+    private  void showUpdateAction(JList list, int idx)
     {
-        if(auto_scroll && show_phase == -1)
+        curr_list = list;
+        item_idx = idx;
+        try
         {
-            if(idx == -1)
-                idx = list.getModel().getSize() - 1;
-            list.ensureIndexIsVisible(idx);
-        }   
+            SwingUtilities.invokeAndWait(new Runnable() 
+            {
+                public void run()
+                {
+                    if(auto_scroll && show_phase == -1)
+                    {
+                        if(item_idx == -1)
+                            item_idx = curr_list.getModel().getSize() - 1;
+                        curr_list.ensureIndexIsVisible(item_idx);
+                    }   
+                }
+            });
+        } catch(Exception e){}
     }
     
     private void counter(MdsMonitorEvent me)
