@@ -75,6 +75,10 @@ public class Database implements RemoteTree{
     public Data dataFromExpr(String expr){return null;}
     public native long saveContext();
     public native void restoreContext(long context);
+    public int getCurrentShot() { return getCurrentShot(name);}
+    public native int getCurrentShot(String experiment);
+    public void setCurrentShot(int shot) {setCurrentShot(name, shot);}
+    public native void setCurrentShot(String experiment, int shot);
   }  
     
     

@@ -299,6 +299,8 @@ public class Node
 	experiment.setDefault(nid, Tree.context);
 	if(info == null)
 	    info = experiment.getInfo(nid, Tree.context);
+	if(!name.startsWith(":") && !name.startsWith("."))
+	    name = "."+name;
 	new_nid = experiment.addNode(name, NodeInfo.USAGE_STRUCTURE, Tree.context);
 	experiment.setDefault(prev_default, Tree.context);
 	return new Node(experiment, hierarchy, this, true, new_nid);

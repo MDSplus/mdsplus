@@ -35,7 +35,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     JDialog open_dialog = null, add_node_dialog = null, add_subtree_dialog = null;
     JTextField open_exp, open_shot;
     JCheckBox open_readonly, open_edit;
-    JTextField add_node_name, add_subtree_name;
+    JTextField add_node_name, add_node_tag, add_subtree_name;
     int add_node_usage;
     JDialog modify_tags_dialog;
     JDialog add_device_dialog;
@@ -686,6 +686,10 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        jp1.add(add_node_name = new JTextField(12));
 	        jp.add(jp1, "North");
 	        jp1 = new JPanel();
+	        jp1.add(new JLabel("Node tag: "));
+	        jp1.add(add_node_tag = new JTextField(12));
+	        jp.add(jp1, "Center");
+	        jp1 = new JPanel();
 	        jp1.add(add_node_ok = new JButton("Ok"));
 	        add_node_ok.addActionListener(this);
 	        JButton cancel_b = new JButton("Cancel");
@@ -707,6 +711,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        add_node_dialog.show();
 	    }
 	    add_node_name.setText("");
+	    add_node_tag.setText("");
 	    add_node_dialog.setTitle("Add to: "+ curr_node.getFullPath());
 	    add_node_dialog.setLocation(curr_origin);
 	    add_node_dialog.show();
@@ -825,6 +830,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
  
     public static Node addNode(int usage, String name, Node toNode, DefaultMutableTreeNode toTreeNode)
     {
+        Node new_node = null;
 	    DefaultMutableTreeNode new_tree_node = null;
 	    if(name == null || name.length() == 0 || name.length() > 12)
 	    {
@@ -833,7 +839,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        return null;
 	    }
 	    try {
-	        Node new_node = toNode.addNode(usage, name);
+	        new_node = toNode.addNode(usage, name);
 	        int num_children = toTreeNode.getChildCount();
 	        int i;
 	        if(num_children > 0)
@@ -860,7 +866,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		    "Error adding Node", JOptionPane.WARNING_MESSAGE);
 	        return null;
 	    }
-	return null;
+	return new_node;
     }
 	 
 	 
@@ -1185,7 +1191,13 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
    
     public void addNode()
 	{
-	    addNode(add_node_usage, add_node_name.getText().toUpperCase());
+	    Node newNode = addNode(add_node_usage, add_node_name.getText().toUpperCase());
+	    if(!add_node_tag.getText().trim().equals(""))
+        {
+            try {
+	            newNode.setTags(new String[]{add_node_tag.getText().trim().toUpperCase()});
+	        }catch(Exception exc){System.err.println("Error adding tag: " + exc);}
+	    }
 	    add_node_dialog.setVisible(false);
 	}
     

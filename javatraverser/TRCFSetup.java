@@ -345,7 +345,6 @@ public class TRCFSetup extends DeviceSetup
 		JTabbedPane1.add(JScrollPane2);
 		JScrollPane2.setBounds(2,24,511,165);
 		JScrollPane2.setVisible(false);
-		//JPanel2.add(timeChannel7);
 		JPanel4.setLayout(new GridLayout(16,1,0,0));
 		JScrollPane2.getViewport().add(JPanel4);
 		JPanel4.setBounds(-2,-1,505,656);
