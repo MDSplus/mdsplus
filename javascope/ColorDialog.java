@@ -40,41 +40,42 @@ class ColorDialog extends ScopePositionDialog  {
 					     "Magenta", "Orange", "Pink", 
 					     "Red", "Yellow"};
 
-    ColorDialog(Frame dw, String title) {
+    ColorDialog(Frame dw, String title)
+    {
 
         super(dw, title, true);
-	setResizable(false);
-	//super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
+	    setResizable(false);
+	    //super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
 
-	main_scope = (jScope)dw;
+	    main_scope = (jScope)dw;
 	
         GridBagConstraints c = new GridBagConstraints();
         GridBagLayout gridbag = new GridBagLayout();
         setLayout(gridbag);        
 
-	c.insets = new Insets(4, 4, 4, 4);
+	    c.insets = new Insets(4, 4, 4, 4);
         c.fill = GridBagConstraints.BOTH;
 
         c.gridwidth = GridBagConstraints.REMAINDER;
-	label = new Label("Color list customization");
+	    label = new Label("Color list customization");
         gridbag.setConstraints(label, c);
         add(label);
 
-//	Panel p0 = new Panel();
+//	    Panel p0 = new Panel();
 //      p0.setLayout(new FlowLayout(FlowLayout.LEFT));
 				
-	c.gridwidth = GridBagConstraints.BOTH;
-	label = new Label("Name");
+	    c.gridwidth = GridBagConstraints.BOTH;
+	    label = new Label("Name");
         gridbag.setConstraints(label, c);
         add(label);
     		
-	colorName = new TextField(15);
-	colorName.addKeyListener(this);			
+	    colorName = new TextField(15);
+	    colorName.addKeyListener(this);			
         gridbag.setConstraints(colorName, c);
         add(colorName);
 //      p0.add(colorName);
 //      gridbag.setConstraints(p0, c);
-//	add(p0);
+//	    add(p0);
 
 	color = new Choice();
 	color.addItem("Black");	
@@ -148,9 +149,9 @@ class ColorDialog extends ScopePositionDialog  {
 	Panel p1 = new Panel();
         p1.setLayout(new FlowLayout(FlowLayout.CENTER));
     	
-	cancel = new Button("Cancel");
-	cancel.addActionListener(this);	
-        p1.add(cancel);
+	ok = new Button("Ok");
+	ok.addActionListener(this);	
+        p1.add(ok);
 
     	add = new Button("Add");
 	add.addActionListener(this);	
@@ -164,9 +165,10 @@ class ColorDialog extends ScopePositionDialog  {
 	reset.addActionListener(this);	
         p1.add(reset);
 				    		
-	ok = new Button("Ok");
-	ok.addActionListener(this);	
-        p1.add(ok);
+
+	cancel = new Button("Cancel");
+	cancel.addActionListener(this);	
+        p1.add(cancel);
 
     	c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(p1, c);
@@ -365,13 +367,13 @@ class ColorDialog extends ScopePositionDialog  {
     }
 
     
-    public int fromFile(BufferedReader in, String prompt) throws IOException
+    public int fromFile(ReaderConfig in, String prompt) throws IOException
     {
     	String str;
-	int error = 0;
-	removeAllColorItems();
+	    int error = 0;
+	    removeAllColorItems();
 
-	while((str = in.readLine()) != null) {
+	    while((str = in.readLine()) != null) {
 
 	    if(str.indexOf(prompt) != -1)
 	    {

@@ -15,6 +15,7 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
    RowColumnLayout    row_col_layout;
    Setup              setup;
 
+   
 
    class WaveButton extends Canvas {
 	private Image image;
@@ -124,6 +125,7 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
      validate();
   }
   
+  
     public void printAll(Graphics g, int height, int width, int mode)
     {
       int i, j, k = 0;
@@ -200,9 +202,10 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
 
      if(ob instanceof Canvas)
      {
-	if((m_button & MouseEvent.BUTTON2_MASK) == MouseEvent.BUTTON2_MASK)
-	    row_col_layout.resizeRowColumn(ob);		
-     }	
+	    if((m_button & MouseEvent.BUTTON2_MASK) == MouseEvent.BUTTON2_MASK)
+	        row_col_layout.resizeRowColumn(ob);		
+     }
+     
   }
     
   public  void mouseExited(MouseEvent e)

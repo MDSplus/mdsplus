@@ -12,12 +12,17 @@ public class SetupDefaults extends ScopePositionDialog {
    TextField        def_node, upd_event;
    Button           ok, cancel, reset, erase, apply;
    Label            lab;
-   int		    shots[];
-   jScope	    main_scope;
+   int	  shots[];
+   jScope main_scope;
    String xmin, xmax, ymax, ymin;
    String title_str, xlabel, ylabel;
    String experiment_str, shot_str;
    String upd_event_str, def_node_str;
+   
+   private Panel         panel;
+   private TextField     x_grid_lines, y_grid_lines;
+   private Choice	     grid_mode;  
+   int	   curr_grid_mode = 0, x_curr_lines_grid = 3, y_curr_lines_grid = 3;
 
 
    public SetupDefaults(Frame fw, String frame_title) 
@@ -137,6 +142,36 @@ public class SetupDefaults extends ScopePositionDialog {
       def_node = new TextField(30);
       gridbag.setConstraints(def_node, c);
       add(def_node);
+
+    panel = new Panel();
+    panel.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
+    c.fill =  GridBagConstraints.NONE;     
+    lab = new Label("Grid: Mode");
+    panel.add(lab);
+            
+    grid_mode = new Choice();
+    grid_mode.addItem("Dotted"); 
+    grid_mode.addItem("Gray"); 
+    grid_mode.addItem("None");
+    grid_mode.addItemListener(this);
+    grid_mode.select(curr_grid_mode);	      	
+    panel.add(grid_mode);
+
+    panel.add(new Label("   lines x:"));
+    panel.add(x_grid_lines = new TextField(2));
+    x_grid_lines.addActionListener(this);
+    x_grid_lines.setText(""+x_curr_lines_grid);    
+
+    panel.add(new Label("   y:"));
+    panel.add(y_grid_lines = new TextField(2));
+    y_grid_lines.addActionListener(this);
+    y_grid_lines.setText(""+y_curr_lines_grid);    
+        
+    gridbag.setConstraints(panel, c);
+    add(panel);	
+     	      	
+      	      	
+      	      	
       	      	
       c.fill =  GridBagConstraints.NONE;     
       c.anchor = GridBagConstraints.CENTER;
@@ -168,6 +203,20 @@ public class SetupDefaults extends ScopePositionDialog {
       add(cancel);
    }
    
+   public int getGridMode()
+   {
+      return curr_grid_mode;
+   }
+
+   public int getXLines()
+   {
+      return x_curr_lines_grid;
+   }
+   
+   public int getYLines()
+   {
+      return y_curr_lines_grid;
+   }
 
    public void eraseForm()
    {
@@ -182,6 +231,10 @@ public class SetupDefaults extends ScopePositionDialog {
 	shot.setText("");
 	upd_event.setText("");
 	def_node.setText("");
+	grid_mode.select(0);
+	x_grid_lines.setText("3");
+	y_grid_lines.setText("3");
+	
    }
    
    private void setTextValue(TextField t, String val)
@@ -194,7 +247,6 @@ public class SetupDefaults extends ScopePositionDialog {
 
    private void initialize()      
    { 
-   
 	    eraseForm();	    
 	    setTextValue(title, title_str);
 	    setTextValue(y_label, ylabel);
@@ -207,6 +259,9 @@ public class SetupDefaults extends ScopePositionDialog {
 	    setTextValue(shot, shot_str);		
 	    setTextValue(upd_event, upd_event_str);
 	    setTextValue(def_node, def_node_str);		
+	    grid_mode.select(curr_grid_mode);
+	    x_grid_lines.setText(""+x_curr_lines_grid);
+	    y_grid_lines.setText(""+y_curr_lines_grid);
    }
    
    private void saveDefaultConfiguration()
@@ -223,6 +278,17 @@ public class SetupDefaults extends ScopePositionDialog {
       ylabel		    = new String(y_label.getText());
       upd_event_str  	= new String(upd_event.getText());
       def_node_str	    = new String(def_node.getText());
+	  curr_grid_mode    = grid_mode.getSelectedIndex();
+	  x_curr_lines_grid = new Integer(x_grid_lines.getText().trim()).intValue();
+	  if(x_curr_lines_grid > 10) {
+	    x_curr_lines_grid = 10;
+	    x_grid_lines.setText("10");
+	  }
+	  y_curr_lines_grid = new Integer(y_grid_lines.getText().trim()).intValue();
+	  if(y_curr_lines_grid > 10) {
+	    y_curr_lines_grid = 10;
+	    y_grid_lines.setText("10");
+	  }
     } 
     
    public String getDefaultValue(int i, boolean def_flag, WaveInterface wi)
@@ -333,7 +399,7 @@ public class SetupDefaults extends ScopePositionDialog {
 	jScope.writeLine(out, prompt + "y_label: "    , ylabel);
    }
 
-   public int fromFile(BufferedReader in, String prompt) throws IOException
+   public int fromFile(ReaderConfig in, String prompt) throws IOException
    {
 	String str;
 	int error = 0;

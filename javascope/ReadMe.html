@@ -53,17 +53,16 @@ selected panel.
 <br>&nbsp;</blockquote>
 Pointer modes are also selectable using the bottom radio boxes.
 <p>- <u>Prin</u>t:
-<blockquote>- <i>Print All</i>: prints waveforms. The current version uses
-Java built-in printing capabilities, which do not produce an high-quality
-printout, and which is known to have a bug in the definition of the sheet
-dimension. High quality PostScript generation will be provided in a next
-version of jScope.</blockquote>
+<blockquote>- <i>Print All</i>: prints all the waveforms.</blockquote>
 - <u>Customize</u>:
 <blockquote>- <i>Global Setting</i>: defines a subset of the waveform settings
 which is valid for all waveforms (see description of waveform settings
-below)
+below). It defines also grid configuration, such as the number the number
+of vertical and horizontal grids.
 <p>- <i>Window</i>: defines the number of panels. Panels can then be re-dimensioned
 by dragging the small handles between panels.
+<p>- <i>Font Selection</i>: defines the font to be used for labels and
+numbers in jScope
 <p>- <i>Color list</i>: defines the color palette, which is then used to
 assign colors to waveforms.
 <p>-<i>Public variables</i>: defines the context for data access (see customization
@@ -72,7 +71,8 @@ section for using this feature in non MDSPlus systems)
 version only).
 <p>-<i> Use last Saved Setting, Use Saved Setting from... </i>: retrieve
 the a saved jScope configuration. jScope configurations can be saved in
-files, and reloaded at any time.
+files, and reloaded at any time. The name of a configuration file can be
+defined as a command argument. e.g. java jScope &lt;configuration filename>.
 <p>- <i>Save current setting, Save current setting as</i>: save current
 configuration in a file.</blockquote>
 - <u>Autoscale</u>: used to redisplay full waveforms (e.g. after zooming
@@ -94,6 +94,9 @@ in Copy mode). The first item of this menu defines the contents of the
 selected panel and activates a setup form. The form defines the following
 fields:
 <blockquote>- <u>Title</u>: the title of the panel (optional)
+<br>- <u>Signal Label</u>: the string to appear in the legend associated
+with the signal. If no label is defined, the definition of the Y axis of
+the signal is displayed.
 <br>- <u>Y</u>: the y axis of the signal
 <br>- <u>Y</u> label: the label associated with y axis (optional)
 <br>- <u>X</u>: the x axis of the signal (optional, see below how jScope
@@ -116,18 +119,45 @@ it and press &lt;del>.
 which allows easier typing of long specifications of the X and Y axis.
 It is possible then to define maximum and minimum errors for displaying
 error bars, by clicking <u>button error...</u>. The other elements are
-still not implemented (browse) or not fully tested (log scales). Most fields
-have a toggle button associated with them: when selected, the value of
-the corresponding field is taken from the global configuration (see before).
-For the definition of the shot field it is also possible to use the bottom
-shot field. In this case a set or a range of shots can be defined: a set
-is specified by the following syntax: [&lt;sho1>, ,shot2>, ...]; a range
-by: &lt;first_shot>:&lt;last_shot>. Once a signal has been added to the
-list, the corresponding color and type of marker can be set first selecting
-the signal and then using the pull-down menus on the right of the form.
+still not implemented (browse). Most fields have a toggle button associated
+with them: when selected, the value of the corresponding field is taken
+from the global configuration (see before). For the definition of the shot
+field it is also possible to use the bottom shot field. In this case a
+set or a range of shots can be defined: a set is specified by the following
+syntax: [&lt;sho1>, ,shot2>, ...]; a range by: &lt;first_shot>:&lt;last_shot>.
+Once a signal has been added to the list, the corresponding color and type
+of marker can be set first selecting the signal and then using the pull-down
+menus on the right of the form.
+<br>When a signal in the signal list is selected in the Setup data source
+popup form, it is possible to define the associated marker and color, as
+well to define wether the interpolating line has to be displayed and the
+marker step, i.e. the number of data points for each visible marker.
+<p>The second item of the Waveform popup menu allows the selection of the
+associated waveform (indicated by a red border around the selected waveform).
+Waveform selection is used as a fast way for defining waveforms: in this
+case the name of the signal can be typed in the bottom <i>Signal</i> text
+field and inserted in the selected waveform by pressing &lt;Return>. The
+name refers only to the Y Value field of the Setup popup form; all the
+other parameters are taken from the global configuration. Multiple waveforms
+can be inserted by consecutively typing the waveform name and pressing
+&lt;Return> in the Signal field.
+<p>The other two items of the Waveform popup menu allow the definition
+of legend for the signals associated with the waveform. The legen can be
+activated/deactivated and positioned where needed in the waveform window.
+The associated labels associated with the signals are displayed in the
+legend. If no label is associated with a given signal, the Y-value name
+is displayed istead.
+<p>The <i>Signals </i>item of the Waveform popup menu allows a rapid activation/deactivation
+of the currently defined signals. It is useful when dealing with multiple
+signals to individually define their visibility in the waveform panel.
+<p>The <i>Marker</i>, <i>Marker-step</i>, <i>Colors</i> and <i>Interpolate</i>
+items of the Waveform popup menu are active only in point mode, i.e. when
+one signal is selected, and allow a rapid definition of the associated
+graphical configuration without opening the Setup data source popup form.
 <p>The other items of the popup list allow rescalings of waveforms, and
 their meanings are clear from the associated label.
-<br>&nbsp;
+<p>Finally the last item <i>Save as Text</i> writes the displayed waveforms
+points in a text file.
 <blockquote>&nbsp;</blockquote>
 </blockquote>
 
@@ -175,8 +205,7 @@ window.
 <br>These methods are called when fields title, x label and y label, repectively,
 are left empty. The argument is&nbsp; the content of the y value field.
 If no default label is defined, these methods return null.
-<br>&nbsp;
-<br>The following methods refer to more specialized tasks, currently supported
+<p>The following methods refer to more specialized tasks, currently supported
 by MDSplus. Implement them as follows:
 <p>public boolean SupportsAsynch() { return false; }
 <br>public void addMdsEventListener(MdsEventListener l, String event){}

@@ -2,7 +2,7 @@ import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import com.apple.mrj.*;
+//import com.apple.mrj.*;
 
 public class Setup extends Object implements WaveSetup {
     Label coords_label; 
@@ -24,18 +24,23 @@ public class Setup extends Object implements WaveSetup {
     float height_percent[], width_percent[]; 
     BufferedWriter out;
     boolean modified;
+    MultiWaveform sel_wave;
+    int signal_idx;
 
 
 
    public Setup(Frame pw, Label label)
     {
-	main_scope = (jScope)pw;
-	rows[0] = 1;
-	prec_rows[0] = 1;
-	coords_label = label;
-	sd = new SetupDataDialog(pw, "Setup data");
-	menu = new Button3Menu(pw, sd, this);
-	pw.add(menu);
+	    main_scope = (jScope)pw;
+	    rows[0] = 1;
+	    prec_rows[0] = 1;
+	    coords_label = label;
+	    sd = new SetupDataDialog(pw, "Setup data");
+	    if(!main_scope.is_applet)
+	    {
+	        menu = new Button3Menu(pw, sd, this);
+	        pw.add(menu);
+	    }
     }
     
     public void newWaves(int num)
@@ -72,7 +77,8 @@ public class Setup extends Object implements WaveSetup {
 
     public void SetSetup(Waveform w, int x, int y)    
     {
-	wave_idx = GetWaveIndex(w);
+        if(menu == null) return;
+	    wave_idx = GetWaveIndex(w);
     	menu.Show((MultiWaveform)w, x, y);
     }
 
@@ -96,11 +102,11 @@ public class Setup extends Object implements WaveSetup {
         
     public void WaveCheckError(int k)
     {
-	if(waves[k].wi == null || waves[k].wi.shots == null || waves[k].wi.shots[0] == jScope.UNDEF_SHOT) {
-	    if(waves[k].wi == null )
+	//if(waves[k].wi == null || waves[k].wi.shots == null || waves[k].wi.shots[0] == jScope.UNDEF_SHOT) {
+	  if(waves[k].wi == null ) {
 		waves[k].SetTitle("Error during evaluate wave");
-	    else
-		waves[k].SetTitle("Undefined Shot");
+//	    else
+//		waves[k].SetTitle("Undefined Shot");
 	    return;	
 	}
 	if(waves[k].wi.error != null) {
@@ -142,6 +148,7 @@ public class Setup extends Object implements WaveSetup {
     { 
         if(coords_label != null)
 	    {   
+	        signal_idx = sig_idx;
 	        WaveInterface  wi = ((MultiWaveform)w).wi;
 	        if(wi.shots != null)
 	        {
@@ -181,6 +188,13 @@ public class Setup extends Object implements WaveSetup {
 	  Refresh(dest, "");
     }
    
+   public void SetFontToWaves(Font f)
+   {
+      waves[0].SetFont(f);
+      for(int i = 0; i < num_waves; i++)
+         waves[i].Repaint();
+   }
+   
    public String UpdateWave(MultiWaveform wave)
    {
 	WaveInterface wi = wave.wi;
@@ -204,9 +218,9 @@ public class Setup extends Object implements WaveSetup {
     public void SetFastNetworkAll(boolean state)
     {
     	fast_network_access = state;
-	for(int i = 0; i < num_waves; i++)
-	    if(waves[i].wi != null)
-		waves[i].wi.full_flag = !state;
+	    for(int i = 0; i < num_waves; i++)
+	        if(waves[i].wi != null)
+		        waves[i].wi.full_flag = !state;
     }    
  
 
@@ -277,10 +291,13 @@ public class Setup extends Object implements WaveSetup {
 	    
 	    w.SetMode(Waveform.MODE_WAIT);
 	    main_scope.SetStatusLabel("Refresh wave row " + p.x + " column " + p.y + label);
-	    main_scope.updateMainShot();
+	    //main_scope.updateMainShot();
 	    main_scope.setup_default.updateDefaultWI(((MultiWaveform)w).wi);
-	    main_scope.updateShotWI(((MultiWaveform)w).wi);	
+	    main_scope.updateShotWI(((MultiWaveform)w).wi);
+	    if(((MultiWaveform)w).wi != null)
+	        ((MultiWaveform)w).wi.modified = true; 
 	    UpdateWave((MultiWaveform)w);
+	    
 	    WaveCheckError(GetWaveIndex(w));
 	    main_scope.SetStatusLabel("Wave row " + p.x + " column "+ p.y + " refreshed");	    
 	    w.SetMode(main_scope.wave_mode);
@@ -288,14 +305,16 @@ public class Setup extends Object implements WaveSetup {
     
     public void ChangeRowColumn(int _row[])
     {
-	columns = 0;
-	for(int i=0; i < 4; i++) {
-	    prec_rows[i] = rows[i];
-	    rows[i] = _row[i];
-	    if(rows[i] != 0)
-		columns++;
-	}
-    }	
+	    columns = 0;
+	    for(int i=0; i < 4; i++) {
+	        prec_rows[i] = rows[i];
+	        rows[i] = _row[i];
+	        if(rows[i] != 0)
+	            columns = i + 1;
+		        //columns++;
+	    }
+    }
+    
     public int GetNumWave()
     {
 	int n_wave = 0;
@@ -304,6 +323,40 @@ public class Setup extends Object implements WaveSetup {
 	    n_wave += rows[i];
 	return n_wave;
     } 
+    
+    public void SaveAsText(MultiWaveform w)
+    {
+        if(w == null || w.wi == null) return;
+        
+	    FileDialog file_diag = new FileDialog(main_scope, "Save signals as", FileDialog.SAVE);
+        file_diag.pack();
+        file_diag.show();
+	    String txtsig_file = file_diag.getDirectory() + file_diag.getFile();
+	    if(txtsig_file != null)
+	    {
+            try {
+	            BufferedWriter out = new BufferedWriter(new FileWriter(txtsig_file));
+	            for(int i = 0; i < w.wi.signals.length; i++)
+	            {
+	                out.write("x : " + w.wi.in_x[i]);
+	                out.newLine();
+	                out.write("y : " + w.wi.in_y[i]);
+	                out.newLine();
+	                out.write("shot : " + w.wi.shots[i]);
+	                out.newLine();
+	                for(int j = 0; j < w.wi.signals[i].x.length; j++)
+	                {
+	                    out.write(""+w.wi.signals[i].x[j]+" "+""+w.wi.signals[i].y[j]);
+	                    out.newLine();	                    
+	                }
+	            }
+	            out.close();
+	        } catch (IOException e) {
+	            System.out.println(e);
+	        }
+	    }
+	    file_diag = null;
+    }
     
     private String trimString(String s)
     {
@@ -318,7 +371,7 @@ public class Setup extends Object implements WaveSetup {
 	return s_new;
     }
 
-    public int fromFile(BufferedReader in, String prompt) throws IOException
+    public int fromFile(ReaderConfig in, String prompt) throws IOException
     {
 	String str;
 	int error = 0;
@@ -365,8 +418,10 @@ public class Setup extends Object implements WaveSetup {
 	    
 	    if(str.indexOf("Scope.data_server_address:") != -1)
 	    {
-		data_server_address = str.substring("Scope.data_server_address: ".length(), str.length());
-		continue;	
+		    data_server_address = str.substring("Scope.data_server_address: ".length(), str.length());
+            if(!main_scope.is_applet)
+                main_scope.server_diag.addServerIp(data_server_address);
+		    continue;	
 	    }
 					
 	    if(str.indexOf("Scope.rows_in_column_") != -1)
@@ -393,8 +448,9 @@ public class Setup extends Object implements WaveSetup {
 	    //Evaluate real number of columns
 	    int r_columns =  0;
 	    for(int i = 0; i < 4; i++)
-		if(rows[i] != 0)
-		    r_columns++;
+		    if(rows[i] != 0)
+		        r_columns = i + 1;
+		        //r_columns++;
 
 	    //Silent file configuration correction
 	    //possible define same warning information	    	    
@@ -442,79 +498,98 @@ public class Setup extends Object implements WaveSetup {
      }
 
 
-    public void toFile(String conf_file)    
+    public void toFile(String conf_file, boolean is_html)    
     {
-	MultiWaveform w[] = main_scope.setup.waves;
-	int wc_idx, height_w[] = new int[4];
-	File f;
+	    MultiWaveform w[] = main_scope.setup.waves;
+	    int wc_idx, height_w[] = new int[4];
+	    File f;
 	
 	
-	if(System.getProperty("os.name").equals("Mac OS"))
-	{	
-	    MRJFileUtils.setDefaultFileType(new MRJOSType("TEXT"));
-	    MRJFileUtils.setDefaultFileCreator(new MRJOSType("JSCP"));
-	} 
+//	    if(System.getProperty("os.name").equals("Mac OS"))
+//	    {	
+//	        MRJFileUtils.setDefaultFileType(new MRJOSType("TEXT"));
+//	        MRJFileUtils.setDefaultFileCreator(new MRJOSType("JSCP"));
+//	    } 
 	
-	f = new File(conf_file);    
-	if(f.exists()) f.delete();   
-
+	    f = new File(conf_file);    
+	    if(f.exists()) f.delete();   
 	
         try {
-	    out = new BufferedWriter(new FileWriter(f));
-	    out.write("Scope.geometry: " + width + "x" + height + "+" + ypos + "+" + xpos);
-	    out.newLine();
-	    if(title != null) {
-		out.write("Scope.title: " + title);
-		out.newLine();
-	    }	    
-	    out.write("Scope.columns: " + columns);
-	    out.newLine();
+	        out = new BufferedWriter(new FileWriter(f));
+	        
+	        if(is_html)
+	        {         
+	            out.write("<HTML>\n");
+	            out.write("<HEAD>\n");
+	            out.write("<TITLE>Autogenerated HTML</TITLE>\n");
+                out.write("</HEAD>\n");
+                out.write("<BODY>\n");
+                out.write("<APPLET CODE=\"Applet1.class\" WIDTH=0 HEIGHT=0>\n");
+                out.write("<PARAM NAME = CONFIGURATION VALUE = \"\n");
+	        }
+	        
+	        out.write("Scope.geometry: " + width + "x" + height + "+" + ypos + "+" + xpos);
+	        out.newLine();
+	        if(title != null) {
+		        out.write("Scope.title: " + title);
+		        out.newLine();
+	        }	    
+	        out.write("Scope.columns: " + columns);
+	        out.newLine();
 
-	    jScope.writeLine(out, "Scope.fast_network_access: ", ""+fast_network_access);		    
-	    jScope.writeLine(out, "Scope.data_server_address: ",    data_server_address);		    
+	        jScope.writeLine(out, "Scope.fast_network_access: ", ""+fast_network_access);		    
+	        jScope.writeLine(out, "Scope.data_server_address: ",    data_server_address);		    
 
-	    main_scope.color_dialog.toFile(out, "Scope.item_color_");
-	    main_scope.setup_default.toFile(out, "Scope.global_1_1.");
-        main_scope.pub_var_diag.toFile(out, "Scope.public_variable_");
+            main_scope.font_dialog.toFile(out, "Scope.font");
+	        main_scope.color_dialog.toFile(out, "Scope.item_color_");
+	        main_scope.setup_default.toFile(out, "Scope.global_1_1.");
+            main_scope.pub_var_diag.toFile(out, "Scope.public_variable_");
 
 				    	    	    
-	    for(int i = 0, c = 1, k = 0; i < columns; i++,c++)
-	    {
-		jScope.writeLine(out, "Scope.rows_in_column_" + c + ": " , ""+rows[i]);
-    		for(int j = 0, r = 1; j < rows[i]; j++, r++)
-		{		
-		    out.newLine();
+	        for(int i = 0, c = 1, k = 0; i < columns; i++,c++)
+	        {
+		        jScope.writeLine(out, "Scope.rows_in_column_" + c + ": " , ""+rows[i]);
+    		    for(int j = 0, r = 1; j < rows[i]; j++, r++)
+		        {		
+		            out.newLine();
 
-		    jScope.writeLine(out, "Scope.plot_" + r + "_" + c + ".height: "          , ""+w[k].getSize().height );
-		    jScope.writeLine(out, "Scope.plot_" + r + "_" + c + ".grid_mode: "       , ""+w[k].grid_mode);
-            if(w[k].wi != null)
-		        w[k].wi.toFile(out, "Scope.plot_" + r + "_" + c + ".", main_scope);
-		    k++;
-		}
-	    }
+		            jScope.writeLine(out, "Scope.plot_" + r + "_" + c + ".height: "          , ""+w[k].getSize().height );
+		            jScope.writeLine(out, "Scope.plot_" + r + "_" + c + ".grid_mode: "       , ""+w[k].grid_mode);
+                    if(w[k].wi != null)
+		                w[k].wi.toFile(out, "Scope.plot_" + r + "_" + c + ".", main_scope);
+		            k++;
+		        }
+	        }
 	    
-	    for(int i = 1, k = 0, pos = 0; i < columns; i++)
-	    {
-		pos += (int)(((float)w[k].getSize().width/ width) * 1000.);
-		jScope.writeLine(out, "Scope.vpane_" + i + ": " , ""+pos);
-		k += rows[i-1];
-	    } 
-	    
-	    
+	        for(int i = 1, k = 0, pos = 0; i < columns; i++)
+	        {
+		        pos += (int)(((float)w[k].getSize().width/ width) * 1000.);
+		        jScope.writeLine(out, "Scope.vpane_" + i + ": " , ""+pos);
+		        k += rows[i-1];
+	        } 	    
 
-	    out.close();
-    	} 
-	catch(IOException e) {
-	    System.out.println("Errore : " + e);
-	}		
+	        if(is_html)
+	        {         
+	            out.write("\"></APPLET>\n");
+	            out.write("</BODY>\n");
+	            out.write("</HTML>\n");
+	        }
+
+	        out.close();
+    	} catch(IOException e) {
+	        System.out.println("Errore : " + e);
+	    }		
     }    
 }
 
-class Button3Menu extends PopupMenu implements ActionListener {
+class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	MultiWaveform   wave;
 	MenuItem setup, autoscale, autoscaleY, autoscaleAll, autoscaleAllY,
 		 allSameScale, allSameXScale, allSameXScaleAutoY, allSameYScale,
-		 resetScales, resetAllScales, refresh;
+		 resetScales, resetAllScales, refresh, saveAsText, selectWave,
+		 legend, remove_legend;
+	Menu signalList, markerList, colorList, markerStep;
+	CheckboxMenuItem interpolate_f;
 	SetupDataDialog sd;
 	int curr_x, curr_y;
 	Setup controller;
@@ -526,6 +601,38 @@ class Button3Menu extends PopupMenu implements ActionListener {
 	
 	add(setup = new MenuItem("Setup data source..."));
 	setup.addActionListener(this);
+	add(selectWave = new MenuItem("Select wave"));
+	selectWave.addActionListener(this);
+	add(legend = new MenuItem("Position legend"));
+	legend.addActionListener(this);
+	legend.setEnabled(false);
+	add(remove_legend = new MenuItem("Remove legend"));
+	remove_legend.setEnabled(false);
+	remove_legend.addActionListener(this);
+	add(new MenuItem("-"));
+	add(signalList = new Menu("Signals"));
+	signalList.setEnabled(false);	
+	add(markerList = new Menu("Markers"));	
+	CheckboxMenuItem ob;
+    for(int i = 0; i < jScope.markerList.length; i++)
+    {
+        markerList.add(ob = new CheckboxMenuItem(jScope.markerList[i]));
+        ob.addItemListener(this);
+    }
+	markerList.setEnabled(false);	    
+	add(markerStep = new Menu("Markers step"));	
+    for(int i = 0; i < jScope.markerStepList.length; i++)
+    {
+        markerStep.add(ob = new CheckboxMenuItem(""+jScope.markerStepList[i]));
+        ob.addItemListener(this);
+    }
+	markerStep.setEnabled(false);
+	add(colorList = new Menu("Colors"));
+	colorList.setEnabled(false);
+    add(interpolate_f = new CheckboxMenuItem("Interpolate", false));
+	interpolate_f.setEnabled(false);
+    interpolate_f.addItemListener(this);
+	add(new MenuItem("-"));
 	add(autoscale = new MenuItem("Autoscale"));
 	autoscale.addActionListener(this);
 	add(autoscaleY = new MenuItem("Autoscale Y"));
@@ -548,14 +655,107 @@ class Button3Menu extends PopupMenu implements ActionListener {
 	resetAllScales.addActionListener(this);
 	add(refresh = new MenuItem("Refresh"));
 	refresh.addActionListener(this);
+	add(new MenuItem("-"));
+	add(saveAsText = new MenuItem("Save as text ..."));
+	saveAsText.addActionListener(this);
     }
 	
+	private void SelectListItem(Menu m, int idx)
+	{
+        for(int i = 0; i < m.getItemCount(); i++)
+	        ((CheckboxMenuItem)m.getItem(i)).setState(false);
+	    if(idx < m.getItemCount())
+            ((CheckboxMenuItem)m.getItem(idx)).setState(true);
+	}
+	
+	private int GetSelectedItem(Menu m, Object ob)
+	{
+	    int idx = 0;
+	    for(int i = 0; i < m.getItemCount(); i++)
+	    {
+	        if(m.getItem(i) == ob) {
+	            idx = i;
+	            continue;
+	        }
+	        if(((CheckboxMenuItem)m.getItem(i)).getState())
+	            ((CheckboxMenuItem)m.getItem(i)).setState(false);
+	    }
+	    return idx;
+	}
     public void Show(MultiWaveform w, int x, int y)
     {
-	curr_x = x;
-	curr_y = y;
-	wave   = w;
-	show(w, x, y );	
+        if(controller.sel_wave == w)
+            selectWave.setLabel("Deselect wave");
+        else
+            selectWave.setLabel("Select wave");
+
+        
+        signalList.removeAll();
+        if(w.wi != null)
+        {
+            String s_name[] = w.wi.getSignalsName();
+            boolean s_state[] = w.wi.getSignalsState();
+
+
+            
+            boolean state = (w.mode == Waveform.MODE_POINT && controller.signal_idx != -1);
+            
+            markerList.setEnabled(state);
+            colorList.setEnabled(state);	
+            interpolate_f.setEnabled(state);
+            interpolate_f.setState(w.wi.interpolates[controller.signal_idx]);
+            
+            boolean state_m = state && (w.wi.markers[controller.signal_idx] != Waveform.NONE 
+                                        && w.wi.markers[controller.signal_idx] != Waveform.POINT);
+            markerStep.setEnabled(state_m);
+
+            if(state)
+            {
+                SelectListItem(markerList, w.wi.markers[controller.signal_idx]);
+                int st;
+                for(st = 0; st < jScope.markerStepList.length; st++)
+                    if(jScope.markerStepList[st] == w.wi.markers_step[controller.signal_idx])
+                        break;
+                SelectListItem(markerStep, st);
+                        
+                colorList.removeAll();
+
+	            String[] colors_name = controller.main_scope.color_dialog.GetColorsName();
+	            CheckboxMenuItem ob = null;
+	            if(colors_name != null)
+	            {
+	                for(int i = 0; i < colors_name.length; i++) {
+                        colorList.add(ob = new CheckboxMenuItem(colors_name[i]));
+                        ob.addItemListener(this);
+                    }
+	            }
+                SelectListItem(colorList, w.wi.colors_idx[controller.signal_idx]);
+
+            }
+            
+            CheckboxMenuItem ob;
+            if(s_name != null)
+            {
+                signalList.setEnabled(s_name.length != 0);
+	            legend.setEnabled(s_name.length != 0);
+                for(int i = 0; i < s_name.length; i++)
+                {
+                    signalList.add(ob = new CheckboxMenuItem(s_name[i], s_state[i]));
+                    ob.addItemListener(this);
+                }
+            }
+            
+            if(w.wi.make_legend)
+            	remove_legend.setEnabled(true);
+        } else
+            signalList.setEnabled(false);
+        
+        
+        
+	    curr_x = x;
+	    curr_y = y;
+	    wave   = w;
+	    show(w, x, y );	
      }
 
     public void actionPerformed(ActionEvent e)
@@ -563,7 +763,7 @@ class Button3Menu extends PopupMenu implements ActionListener {
 	Object target = e.getSource();
 
 		
-    	if(target == (Object)autoscale)
+    if(target == (Object)autoscale)
 	{
 	    wave.Autoscale();
 	    wave.repaint();
@@ -619,6 +819,112 @@ class Button3Menu extends PopupMenu implements ActionListener {
 	if(target == (Object)setup) {
 	    sd.Show(wave, controller);
 	}
+
+	if(target == (Object)saveAsText) {
+	    controller.SaveAsText(wave);
+	}
+       
+	if(target == (Object)selectWave) {
+	    if(controller.sel_wave != null)
+	        controller.sel_wave.DeselectWave();
+	    if(controller.sel_wave == wave)
+	    {
+	        controller.sel_wave = null;
+	        return;
+	    }
+	    controller.sel_wave = wave;
+	    wave.SelectWave();
+	}
+	
+	if(target == legend)
+	{
+	    wave.wi.make_legend = true;
+	    wave.wi.legend_x = curr_x;
+	    wave.wi.legend_y = curr_y;
+	    wave.SetLegend(new Point(curr_x, curr_y));
+	}
+	if(target == remove_legend)
+	{
+	    wave.wi.make_legend = false;
+	    wave.RemoveLegend();
+	    remove_legend.setEnabled(false);
+	}
        
     }
+    
+    public void itemStateChanged(ItemEvent e)
+    {
+	    Object target = e.getSource();
+	    
+	    if(target instanceof CheckboxMenuItem)
+	    {
+	        CheckboxMenuItem cb = (CheckboxMenuItem)target;
+	        Menu parent = (Menu)cb.getParent();
+	        
+	        if(target == interpolate_f)
+	        {
+	            wave.wi.interpolates[controller.signal_idx] = ((CheckboxMenuItem)target).getState(); 
+	            wave.Repaint();
+	        }
+	        
+	        if(parent == signalList)
+	        {
+	            wave.wi.setWaveState(((CheckboxMenuItem)target).getLabel(), 
+	                         ((CheckboxMenuItem)target).getState());
+	            wave.Repaint();
+	        }
+	        
+	        if(parent == markerList)
+	        {
+	            int idx = 0;
+	            idx = GetSelectedItem(parent, cb);
+	            if(idx < parent.getItemCount())
+	            {       
+	                if(wave.wi.markers[controller.signal_idx] == idx)
+	                {
+	                    cb.setState(true);
+	                } else {
+	                    wave.wi.markers[controller.signal_idx] = idx;
+	                }
+	            }
+	            wave.Repaint();	                
+	        }
+
+	        if(parent == markerStep)
+	        {
+	            int idx = 0;
+	            idx = GetSelectedItem(parent, cb);
+	            if(idx < parent.getItemCount())
+	            {       
+	                if(wave.wi.markers_step[controller.signal_idx] == jScope.markerStepList[idx])
+	                {
+	                    cb.setState(true);
+	                } else {
+	                    wave.wi.markers_step[controller.signal_idx] = jScope.markerStepList[idx];
+	                }
+	            }
+	            wave.Repaint();	                
+	        }
+
+	        
+	        if(parent == colorList)
+	        {
+	            int idx = 0;
+	            idx = GetSelectedItem(parent, cb);
+	            if(idx < parent.getItemCount())
+	            {       
+	                if(wave.wi.colors_idx[controller.signal_idx] == idx)
+	                {
+	                    cb.setState(true);
+	                } else {
+	                    wave.wi.colors_idx[controller.signal_idx] = idx;
+	                    wave.wi.colors[controller.signal_idx] = controller.main_scope.color_dialog.GetColorAt(idx);
+                        wave.SetCrosshairColor(wave.wi.colors[controller.signal_idx]);
+	                }
+	            }
+	            wave.Repaint();	                
+	        }
+	    }
+	}
+    
 }

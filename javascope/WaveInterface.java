@@ -6,7 +6,7 @@ public class WaveInterface
     public boolean full_flag;
     public int     num_waves;
     public boolean x_log, y_log;
-    public String  in_x[], in_y[], in_up_err[], in_low_err[];
+    public String  in_label[], in_x[], in_y[], in_up_err[], in_low_err[];
     
     // Prameter used to evaluate waveform
     public String in_xmin, in_xmax, in_ymax, in_ymin;
@@ -19,6 +19,9 @@ public class WaveInterface
     public String cin_xmin, cin_xmax, cin_ymax, cin_ymin;
     public String cin_title, cin_xlabel, cin_ylabel;
     public String cin_def_node, cin_upd_event, cexperiment; 
+
+    boolean make_legend = false;
+    int legend_x, legend_y;
      
     public  int     markers_step[];
     public  int     markers[];
@@ -47,8 +50,8 @@ public class WaveInterface
     private boolean evaluated[];
     
     public String in_shot, cin_shot;
-    public int defaults;
-    public int num_shot;
+    public int defaults = 0xffffffff;
+    public int num_shot = 1;
     public boolean modified = true;
     static final int B_shot = 8, B_x_min = 12, B_x_max = 13, B_y_min = 14, B_y_max = 15,
 		             B_title = 16, B_x_label = 10, B_y_label = 11, B_exp = 7, B_event = 17,
@@ -69,6 +72,10 @@ public class WaveInterface
 	in_grid_mode = wi.in_grid_mode;
 	x_log = wi.x_log;
 	y_log = wi.y_log;
+	make_legend = wi.make_legend;
+	legend_x = wi.legend_x;
+	legend_y = wi.legend_y;
+	in_label = new String[num_waves];
 	in_x = new String[num_waves];
 	in_y = new String[num_waves];
 	in_up_err = new String[num_waves];
@@ -78,10 +85,17 @@ public class WaveInterface
 	colors = new Color[num_waves];
 	colors_idx = new int[num_waves];
 	interpolates = new boolean[num_waves];
-	shots = new int[num_waves];
+	if(wi.in_shot == null || wi.in_shot.trim().length() == 0)
+	    shots = wi.shots = null;
+	else
+	    shots = new int[num_waves];
 	
 	for(int i = 0; i < num_waves; i++)
 	{
+	    if(wi.in_label[i] != null)
+		in_label[i] = new String(wi.in_label[i]);
+	    else
+		in_label[i] = null;
 	    if(wi.in_x[i] != null)
 		in_x[i] = new String(wi.in_x[i]);
 	    else
@@ -211,7 +225,8 @@ public class WaveInterface
     
     public WaveInterface(DataProvider _dp)
     {
-	full_flag = false;
+	//full_flag = false;
+	full_flag = true;
 	dp = _dp;
 	experiment = null;
 	shots = null;
@@ -220,7 +235,8 @@ public class WaveInterface
 	colors = null;
 	interpolates = null;
 	du = null;  
-	x_log = y_log = false;                                                       
+	x_log = y_log = false;
+	make_legend = false;
     }
     
     public boolean UseDefaultShot()
@@ -232,6 +248,145 @@ public class WaveInterface
     {
 	dp = _dp;
     }
+
+    public void setWaveState(String name, boolean state)
+    {
+        
+        if(num_waves != 0)
+        {
+            for(int i = 0; i < num_waves; i++)
+                if(name.equals(in_y[i]))
+                {
+                    for(int j = i; j < i + num_shot; j++)
+                    {
+                        interpolates[j] = state;
+                        markers[i] = Waveform.NONE;
+                    }
+                    return;
+                }
+        }
+    }
+
+
+    public boolean[] getSignalsState()
+    {
+        boolean state[] = null;
+        
+        if(num_waves != 0)
+        {
+            state = new boolean[num_waves/num_shot];
+            for(int i = 0, j = 0; i < num_waves; i+= num_shot)
+                state[j++] = (interpolates[i] || (markers[i] != Waveform.NONE));
+        }
+        return state;
+    }
+
+    public String[] getSignalsName()
+    {
+        String name[] = null;
+        
+        if(num_waves != 0)
+        {
+            name = new String[num_waves/num_shot];
+            for(int i = 0, j = 0; i < num_waves; i+= num_shot)
+                name[j++] = in_y[i];
+        }
+        return name;
+    }
+    
+    public boolean addSignal(String s)
+    {
+        int new_num_waves;
+        
+        if(num_waves != 0)
+        {
+            for(int i = 0; i < num_waves; i++)
+                if(s.equals(in_y[i]))
+                    return false;
+            new_num_waves = num_waves + num_shot;
+        } else 
+            new_num_waves = 1;
+        
+        
+        String new_in_label[] = new String[new_num_waves];
+        String new_in_x[] = new String[new_num_waves];
+	    String new_in_y[] = new String[new_num_waves];
+	    String new_in_up_err[] = new String[new_num_waves];
+	    String new_in_low_err[] = new String[new_num_waves];
+    	int new_markers[] = new int[new_num_waves];
+	    int new_markers_step[] = new int[new_num_waves];
+	    Color new_colors[] = new Color[new_num_waves];
+	    int new_colors_idx[] = new int[new_num_waves];
+	    boolean new_interpolates[] = new boolean[new_num_waves];
+	    int new_shots[] = null;
+	    if(shots != null) 
+	        new_shots = new int[new_num_waves];
+	    boolean new_evaluated[] = new boolean[new_num_waves];
+	    Signal new_signals[] = new Signal[new_num_waves];    
+	    
+	    for(int i=0; i < num_waves; i++)
+	    {
+	        new_in_label[i] = in_label[i];
+            new_in_x[i] = in_x[i];
+	        new_in_y[i] = in_y[i];
+	        new_in_up_err[i] = in_up_err[i];
+	        new_in_low_err[i] = in_low_err[i];
+    	    new_markers[i] = markers[i];
+	        new_markers_step[i] = markers_step[i];
+	        new_colors[i] = colors[i];
+	        new_colors_idx[i] = colors_idx[i];
+	        new_interpolates[i] = interpolates[i];
+	        if(new_shots != null)
+	            new_shots[i] = shots[i];
+	        if(evaluated != null)
+	            new_evaluated[i] = evaluated[i];
+	        else
+	            new_evaluated[i] = false;
+	        if(signals != null)
+	            new_signals[i] = signals[i];
+	    }
+	    
+	    for(int i= num_waves; i < new_num_waves; i++)
+	    {
+	        new_in_label[i] = "";
+            new_in_x[i] = "";
+	        new_in_y[i] = new String(s);
+	        new_in_up_err[i] = "";
+	        new_in_low_err[i] = "";
+    	    new_markers[i] = 0;
+	        new_markers_step[i] = 1;
+	        //new_colors[i] = colors[i - num_shot];
+	        new_colors_idx[i] = 0;
+	        new_interpolates[i] = true;
+	        new_evaluated[i] = false;
+	        if(new_shots != null)
+	            new_shots[i] = shots[i - num_shot];
+//	        else
+//	            new_shots[i] = jScope.UNDEF_SHOT;
+        }
+
+        in_label = new_in_label;
+        in_x = new_in_x;
+	    in_y = new_in_y;
+	    in_up_err = new_in_up_err;
+	    in_low_err = new_in_low_err;
+	    markers = new_markers;
+	    markers_step = new_markers_step;
+	    colors = new_colors;
+	    colors_idx = new_colors_idx;
+	    interpolates = new_interpolates;
+	    shots = new_shots;
+	    num_waves = new_num_waves;
+	    evaluated = new_evaluated;
+	    signals = new_signals;
+	    modified = true;
+	    
+	    //if(shots != null)
+	    //    return false;
+	    //else
+	        return true;
+    }
+    
     
     public synchronized int StartEvaluate()
     {
@@ -693,6 +848,9 @@ public class WaveInterface
 	    jScope.writeLine(out, prompt + "y_label: "         , cin_ylabel);
 	    jScope.writeLine(out, prompt + "x_log: "           , ""+x_log);
 	    jScope.writeLine(out, prompt + "y_log: "           , ""+y_log);
+	    if(make_legend) {
+	        jScope.writeLine(out, prompt + "legend: "           , "("+legend_x+","+legend_y+")");
+	    }
 	    jScope.writeLine(out, prompt + "experiment: "      , cexperiment);
 	    jScope.writeLine(out, prompt + "event: "           , cin_upd_event);
 	    jScope.writeLine(out, prompt + "default_node: "    , cin_def_node);
@@ -714,6 +872,7 @@ public class WaveInterface
 		    
 	    for(exp = 0, exp_n = 1; exp < num_waves; exp += num_shot, exp_n++)
 	    {
+	        jScope.writeLine(out, prompt + "label"     + "_" + exp_n + ": " , in_label[exp]);
 	        jScope.writeLine(out, prompt + "x_expr"     + "_" + exp_n + ": " , addNewLineCode(in_x[exp]));
 	        jScope.writeLine(out, prompt + "y_expr"     + "_" + exp_n + ": " , addNewLineCode(in_y[exp]));
 	        jScope.writeLine(out, prompt + "up_error"   + "_" + exp_n + ": " , in_up_err[exp]);
@@ -760,6 +919,7 @@ public class WaveInterface
     
     private void createVector()
     {
+    in_label = new String[num_waves];      
 	shots	 = new int[num_waves];
 	in_y	 = new String[num_waves];
 	in_x	 = new String[num_waves];
@@ -773,16 +933,16 @@ public class WaveInterface
 	
 	for(int i = 0; i < num_waves; i++)
 	{
-	    shots[i]	 = jScope.UNDEF_SHOT;
+	    shots[i]	    = jScope.UNDEF_SHOT;
 	    markers[i]      = 0;
 	    markers_step[i] = 1;
-    	    colors_idx[i]   = i % 12;
+    	colors_idx[i]   = i % 12;
 	    interpolates[i] = true;
 	}
     }
     
 
-    public int fromFile(BufferedReader in, String prompt, jScope main_scope) throws IOException
+    public int fromFile(ReaderConfig in, String prompt, jScope main_scope) throws IOException
     { 
 	    String str;
 	    int error = 0, len, pos, num_expr = 0;
@@ -828,6 +988,13 @@ public class WaveInterface
 		            y_log = new Boolean(str.substring(len, str.length())).booleanValue();
 		            continue;		
 		        }		    
+		        if(str.indexOf(".legend:") != -1)
+		        {
+		            make_legend = true;
+		            legend_x = Integer.parseInt(str.substring(str.indexOf("(") + 1, str.indexOf(",")));
+		            legend_y = Integer.parseInt(str.substring(str.indexOf(",") + 1, str.indexOf(")")));
+		            continue;		
+		        }
 		        if(str.indexOf(".experiment:") != -1)
 		        {
 		            cexperiment = str.substring(len, str.length());
@@ -980,6 +1147,15 @@ public class WaveInterface
 		            if(str.indexOf(".global_defaults:") != -1)
 		            {
 		                defaults = new Integer(str.substring(len, str.length())).intValue();
+		                continue;		
+		            }		    
+		            if((pos = str.indexOf(".label_")) != -1)
+		            {			
+		                pos += ".label_".length();
+		                int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
+		                in_label[expr_idx] = str.substring(pos + 2, str.length());
+		                for(int j = 1; j < num_shot; j++)
+			                in_label[expr_idx + j] = in_label[expr_idx];			
 		                continue;		
 		            }		    
 		            if((pos = str.indexOf(".x_expr_")) != -1)

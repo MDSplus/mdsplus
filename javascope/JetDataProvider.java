@@ -246,7 +246,7 @@ class JetDataProvider implements DataProvider
             }catch(Exception e){}
         }
     }
-    error_string = "Error parsing sot number(s)";
+    error_string = "Error parsing shot number(s)";
     return null;
  }
 

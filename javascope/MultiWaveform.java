@@ -38,86 +38,95 @@ waveforms.
     
     public void Erase()
     {
-	signals = orig_signals = null;
+	    signals = orig_signals = null;
     	num_signals = 0;
-	super.Erase();
+	    super.Erase();
     }
     
   public void processMdsEvent(MdsEvent e)
   {
     controller.Refresh(this, " on event " + e.name);
   }
-  
-  
+    protected void initLegendPos()
+    {
+        super.legend_x = super.wm.XValue(wi.legend_x, getSize());
+        super.legend_y = super.wm.YValue(wi.legend_y, getSize());
+    }
 
     public void Update(WaveInterface _wi)
     {
-	wi = _wi;
-	orig_signals = null;
-	if(wi.colors != null)
-	{
-	    colors = wi.colors;
-	    num_colors =  wi.colors.length;
-	    crosshair_color = colors[curr_point_sig_idx % num_colors];
-	    first_set_point = true;
-	}
-    super.x_label = wi.xlabel;
-	super.y_label = wi.ylabel;
-	super.x_log = wi.x_log;
-	super.y_log = wi.y_log;
-	super.title = wi.title;
+	    wi = _wi;
+	    orig_signals = null;
+	    if(wi.colors != null)
+	    {
+	        colors = wi.colors;
+	        num_colors =  wi.colors.length;
+	        crosshair_color = colors[curr_point_sig_idx % num_colors];
+	        first_set_point = true;
+	    }
+        super.x_label = wi.xlabel;
+	    super.y_label = wi.ylabel;
+	    super.x_log = wi.x_log;
+	    super.y_log = wi.y_log;
+	    super.title = wi.title;
+        super.make_legend = wi.make_legend;
+	    super.legend_x = -1;
+        super.legend_y = -1;
 
-	if(wi.signals != null)
-	{
-	    for(int i = 0; i < wi.signals.length; i++)
-		if(wi.signals[i] != null)
-		{
-		    this.Update(wi.signals, wi.num_waves, wi.markers, wi.markers_step, wi.interpolates);
-		    return;
-		}
-	}
-	this.Erase();	
+	    if(wi.signals != null)
+	    {
+	        for(int i = 0; i < wi.signals.length; i++)
+		        if(wi.signals[i] != null)
+		        {
+		            this.Update(wi.signals, wi.num_waves, wi.markers, wi.markers_step, wi.interpolates);
+		            return;
+		        }
+	    }
+	    this.Erase();
+
     }
 	
     public void Update(Signal _signals[], int _num_signals, int _markers[], int _markers_step[], boolean _interp[])
     {
-	int i;
-	signals = new Signal[_num_signals];
+	    int i;
+	    signals = new Signal[_num_signals];
 
         num_signals = _num_signals;
-	for(i = 0; i < num_signals; i++)
-	    if(_signals[i] != null) 
-		signals[i] = new Signal(_signals[i]);
+	    for(i = 0; i < num_signals; i++)
+	        if(_signals[i] != null) 
+		        signals[i] = new Signal(_signals[i]);
 //	    signals[i] = _signals[i];
  
-	orig_signals = null;
-	markers = _markers;
-	markers_step = _markers_step;
-	interpolates = _interp;
-	curr_point_sig_idx = 0;
-	UpdateLimits();
-	for(i = 0; i < num_signals; i++)
-	    if(signals[i] != null) break;
-	if(i < num_signals)    
-	    super.Update(waveform_signal);
+	    orig_signals = null;
+	    markers = _markers;
+	    markers_step = _markers_step;
+	    interpolates = _interp;
+	    curr_point_sig_idx = 0;
+	    UpdateLimits();
+	    for(i = 0; i < num_signals; i++)
+	        if(signals[i] != null) break;
+	        if(i < num_signals)    
+	            super.Update(waveform_signal);
     }
     	
     public void UpdateSignals(Signal _signals[], int _num_signals, int timestamp)
     {
 	//System.out.println("timestamp"+update_timestamp+ timestamp);
     
-	if(update_timestamp != timestamp)
-	    return;
-	signals = _signals;
-	num_signals = _num_signals;
-	curr_point_sig_idx = 0;
-	super.UpdateSignal(waveform_signal);
-    }	
-   public void SetColors(Color _colors[], int _num_colors)
+	    if(update_timestamp != timestamp)
+	        return;
+	    signals = _signals;
+	    num_signals = _num_signals;
+	    curr_point_sig_idx = 0;
+	    super.UpdateSignal(waveform_signal);
+    }
+    
+    public void SetColors(Color _colors[], int _num_colors)
     {
-	colors = _colors;
-	num_colors = _num_colors;
-    }	
+	    colors = _colors;
+	    num_colors = _num_colors;
+    }
+    
     public void Update(Signal _signals[], int _num_signals)
     {
 	int i;
@@ -162,6 +171,40 @@ waveforms.
 		waveform_signal.ymin = signals[i].ymin;
 	}
     }	
+
+    protected void DrawLegend(Graphics g, Point p)
+    {
+        int h = g.getFont().getSize() + 2;
+        Color prev_col = g.getColor();
+        Point pts[] = new Point[1];
+        String s;
+        pts[0] = new Point();
+        
+        wi.legend_x = p.x;
+        wi.legend_y = p.y;
+        
+        for(int i = 0, py = p.y ; i < wi.num_waves; i++, py += h)
+        {
+            if(!wi.interpolates[i] && wi.markers[i] == Waveform.NONE)
+                continue;
+            g.setColor(wi.colors[i]);
+            pts[0].x = p.x - marker_width/2;
+            pts[0].y = py - marker_width/2;
+            try {
+            DrawMarkers(g, pts, 1, wi.markers[i]);
+            } catch (IOException e) {};
+            String name = (wi.in_label[i] != null && wi.in_label[i].length() > 0) ? wi.in_label[i] : wi.in_y[i]; 
+            if(wi.shots != null) {
+                s = name+" "+wi.shots[i];
+            } else {
+                s = name;
+            }
+            g.drawString(s, p.x + marker_width, py);
+      }
+       
+        g.setColor(prev_col);
+    }
+
 
     protected void DrawSignal(Graphics g)
     {

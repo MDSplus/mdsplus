@@ -396,9 +396,6 @@ import java.util.*;
 	    if(val[i] < step/100 && val[i] > -step/100)
 		val[i] = 0;	
 
-	    if(is_log)
-		val[i] = Math.exp(val[i] * Math.log(10.));
-
 	    curr += step;
 	}
 	if(mode == IS_X)
@@ -418,38 +415,40 @@ import java.util.*;
     
     public void GetLimits(Graphics g, Rectangle lim_rect, boolean ylog)
     {
-	int label_width, label_height, curr_dim;
-	FontMetrics fm;
-	Font curr_font;
+	    int label_width, label_height, curr_dim;
+	    FontMetrics fm;
+	    Font curr_font;
 
+/*
     	curr_font = g.getFont();
-	curr_font = new Font(curr_font.getName(), curr_font.getStyle(), 10);
-	g.setFont(curr_font);
+	    curr_font = new Font(curr_font.getName(), curr_font.getStyle(), 10);
+	    g.setFont(curr_font);
+*/	
     	fm = g.getFontMetrics();
-	if(int_xlabels)
-	    label_height = 1;
-	else
-	{
-	    if(x_label != null)
-		label_height = 2*fm.getHeight();
+	    if(int_xlabels)
+	        label_height = 1;
 	    else
-		label_height = fm.getHeight();
-	}
-	label_width = 0;
-	if(!int_ylabels)
-	{
-	    for(int i = 0; i < y_dim; i++)
 	    {
-		curr_dim = fm.stringWidth(Waveform.ConvertToString(y_values[i], ylog));
-		if(label_width < curr_dim)
-		    label_width = curr_dim;
-	    }	
-	    if(y_label != null)
-		label_width += fm.getHeight();
+	        if(x_label != null)
+		        label_height = 2*fm.getHeight();
+	        else
+		        label_height = fm.getHeight();
+	    }
+	    label_width = 0;
+	    if(!int_ylabels)
+	    {
+	        for(int i = 0; i < y_dim; i++)
+	        {
+		        curr_dim = fm.stringWidth(Waveform.ConvertToString(y_values[i], ylog));
+		        if(label_width < curr_dim)
+		            label_width = curr_dim;
+	        }	
+	        if(y_label != null)
+		        label_width += fm.getHeight();
 	    
-	}
-	lim_rect.width = label_width;
-	lim_rect.height = label_height;
+	    }
+	    lim_rect.width = label_width;
+	    lim_rect.height = label_height;
 
     }
 
@@ -477,31 +476,32 @@ import java.util.*;
 	    font = g.getFont();
 	    font = new Font(font.getName(), font.getStyle(), 10);
 	    g.setFont(font);
-	    fm = g.getFontMetrics();
-	    if(int_xlabels)
-		label_height = 0;
-	    else
-		label_height = /*2 * */fm.getHeight();
-	    label_descent = fm.getDescent();
-	    label_width = 0;
-	    if(!int_ylabels)
-	    {
-		for(i = 0; i < y_dim; i++)
-		{
-		    curr_dim = fm.stringWidth(Waveform.ConvertToString(y_values[i], wm.YLog()));
-		    if(label_width < curr_dim)
-			label_width = curr_dim;
-		}	
-		if(y_label != null)
-		    label_width += fm.getHeight();
-//	    label_width -= fm.charWidth(' ');
-	    }
 	}
 	else
 	{
 	    g.setFont(font);
 	    fm = g.getFontMetrics();
 	}
+	    
+	    fm = g.getFontMetrics();
+	    if(int_xlabels)
+		    label_height = 0;
+	    else
+		    label_height = /*2 * */fm.getHeight();
+	        label_descent = fm.getDescent();
+	        label_width = 0;
+	    if(!int_ylabels)
+	    {
+		    for(i = 0; i < y_dim; i++)
+		    {
+		        curr_dim = fm.stringWidth(Waveform.ConvertToString(y_values[i], wm.YLog()));
+		        if(label_width < curr_dim)
+			        label_width = curr_dim;
+		    }	
+		    if(y_label != null)
+		        label_width += fm.getHeight();
+//	        label_width -= fm.charWidth(' ');
+	    }
 
 	if(y_label != null && vert_label == null)
 	{
@@ -687,11 +687,11 @@ import java.util.*;
 		}
 	    g.setColor(prev_col);
 	    curr_string = Waveform.ConvertToString(x_values[i], wm.XLog());
-	    curr_dim = dim - fm.stringWidth(curr_string)/2;
+	    curr_dim = dim -  fm.stringWidth(curr_string)/2;
 	    if(curr_dim >= label_width && dim + fm.stringWidth(curr_string)/2 < d.width)
 	    {
             if(!w.waveformPrint)
-	    	    g.drawString(curr_string, curr_dim, d.height /*- fm.getHeight()*/ - label_descent);
+	    	    g.drawString(curr_string, curr_dim, d.height - fm.getHeight()/10 - label_descent);
 		    else {
 		        xlabel_offset_ps[i] = (float)d.height /*- fm.getHeight()*/ - label_descent;
 		        xcurr_dim[i] = curr_dim;
@@ -772,14 +772,20 @@ public class Waveform extends Canvas
     boolean int_xlabel, int_ylabel;
     Rectangle curr_display_limits;
     public static final int NONE = 0, SQUARE = 1, CIRCLE = 2, CROSS = 3,
-	TRIANGLE = 4, POINT = 5;		
+	TRIANGLE = 4, POINT = 5, MARKER_WIDTH = 8;		
     public static final int MODE_ZOOM = 1, MODE_POINT = 2, MODE_PAN = 3, 
 	MODE_COPY = 4, MODE_WAIT = 5;
     Cursor def_cursor;
+    boolean is_select;
 
     static float dashes_ps[];
     static int num_dashes_ps;
     static float offset_dashes_ps;
+
+    private boolean execute_print = false;
+    boolean make_legend = false;
+    double legend_x;
+    double legend_y;
 
 
     public Waveform(WaveSetup c, Signal s)
@@ -801,7 +807,7 @@ public class Waveform extends Canvas
 	grid_mode = Grid.IS_NONE;
 	interpolate = true;
 	marker = NONE;
-	marker_width = 6; 
+	marker_width = MARKER_WIDTH; 
 	setMouse();
 	float dashe[] = new float[2];
 	dashe[0] = 1;
@@ -820,7 +826,7 @@ public class Waveform extends Canvas
 	interpolate = true;
 	first_set_point = true;
 	marker = NONE; 
-	marker_width = 6;
+	marker_width = MARKER_WIDTH;
 	x_log = y_log = false;
 	setMouse();
 	float dashe[] = new float[2];
@@ -865,6 +871,11 @@ public class Waveform extends Canvas
 	     return out;
     }	
     
+    static Font font = null;
+    public void SetFont(Font f)
+    {
+        font = f;
+    }
    
     private void setMouse()
     {
@@ -1030,7 +1041,7 @@ public class Waveform extends Canvas
 	interpolate = true;
 	first_set_point = true;
 	marker = NONE; 
-	marker_width = 6;
+	marker_width = MARKER_WIDTH;
 	x_log = y_log = false;
 	off_image = null;
 	not_drawn = true;
@@ -1043,6 +1054,30 @@ public class Waveform extends Canvas
     public void SetInterpolate(boolean _interpolate) {interpolate = _interpolate; }
     public void SetXLog(boolean _x_log) {x_log = _x_log;}
     public void SetYLog(boolean _y_log) {y_log = _y_log;}
+    public void SetCrosshairColor(Color _crosshair_color) {crosshair_color = _crosshair_color;}
+    
+    public void SelectWave()
+    {
+        Graphics g = getGraphics();
+        g.setColor(Color.red);
+        g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+        is_select = true;   
+    }
+    
+    public void DeselectWave()
+    {
+        Graphics g = getGraphics();
+        g.setColor(Color.black);
+        g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+        is_select = false;
+        
+    }
+    
+    public void Repaint()
+    {
+	    not_drawn = true;
+	    repaint();
+    }
   	
 	synchronized public void Update(Signal s)
     {
@@ -1135,14 +1170,38 @@ public class Waveform extends Canvas
 	end_y = y[0];
     }
 
-    private boolean execute_print = false;
+    
     public void paint(Graphics g)
     {
         if(execute_print) return;
         paint(g, getSize(), false);
     }
+    
+    public void RemoveLegend()
+    {
+        not_drawn = true;
+        make_legend = false;
+        repaint();
+    }
 
-    public void paint(Graphics g, Dimension d, boolean print_flag)
+    public void SetLegend(Point p)
+    {
+        Dimension d = getSize();
+        legend_x = wm.XValue(p.x, d);
+        legend_y = wm.YValue(p.y, d);
+        make_legend = true;
+        not_drawn = true;
+        repaint();
+    }
+
+    protected void DrawLegend(Graphics g, Point p)
+    {        
+    }
+    protected void initLegendPos()
+    {
+    }
+
+    synchronized public void paint(Graphics g, Dimension d, boolean print_flag)
     {
 
 	Float fc_x, fc_y;
@@ -1151,16 +1210,15 @@ public class Waveform extends Canvas
 	Graphics g1;
 	double curr_x, curr_y, xmax = 1, ymax = 1, xmin = 0, ymin = 0;
 
-    execute_print = print_flag;   
-	if(not_drawn || prev_width != d.width 
-		|| prev_height!= d.height || print_flag )
+    execute_print = print_flag;
+    if(not_drawn || prev_width != d.width 
+		|| prev_height!= d.height || print_flag)
 	{
 	    not_drawn = false;
-	    if(!print_flag)
+	    if(!print_flag) 
 	        g.clipRect(0, 0, d.width, d.height);
+	        
 	    
-	    prev_width = d.width;
-	    prev_height = d.height;
 	    if(mode != MODE_PAN || dragging == false)
 	    {
 		    if(waveform_signal != null)
@@ -1184,20 +1242,26 @@ public class Waveform extends Canvas
 	    {
 		    grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, 
 		                    title, grid_step_x, grid_step_y, int_xlabel, int_ylabel);
+		    grid.font = font;
 		    curr_display_limits = new Rectangle();
 		    grid.GetLimits(off_graphics, curr_display_limits, y_log);
 		    wm = new WaveformMetrics(xmax, xmin, ymax, ymin, curr_display_limits, d, x_log, y_log);
 	    }
 	    else
 		    resizing = false;
+		    
+	    
 	    if(!selected || print_flag)
 		    off_graphics.setColor(Color.white);
 	    else
 		    off_graphics.setColor(Color.lightGray);
 	    off_graphics.fillRect(0, 0, d.width, d.height);
+
+	    
 	    off_graphics.setColor(Color.black);
 	    if( !(print_flag && grid_mode == Grid.IS_NONE) )
 	        off_graphics.drawRect(0, 0, d.width - 1, d.height - 1);
+
 	    grid.paint(off_graphics, d, this, wm);
 	    if(waveform_signal != null)
 	    {
@@ -1212,9 +1276,23 @@ public class Waveform extends Canvas
 		            d.width - curr_display_limits.width, d.height - curr_display_limits.height);
     	    //DrawSignal(off_graphics);
     	    DrawSignal(off_graphics, d);
+    	    if(make_legend) {
+    	        Point p = new Point();
+    	        if(legend_x == -1 || ((mode == MODE_ZOOM || mode == MODE_PAN)
+    	                               && prev_width == d.width 
+		                               && prev_height == d.height))
+    	           initLegendPos();
+                p.x = wm.XPixel(legend_x, d);
+                p.y = wm.YPixel(legend_y, d);
+    	        DrawLegend(off_graphics, p);
+    	    }
 	    }
         if(!print_flag)
 	        off_graphics.clipRect(0, 0, d.width, d.height);
+	        
+	    prev_width = d.width;
+	    prev_height = d.height;
+	    
 	}
 	if(mode == MODE_ZOOM)
 	{
@@ -1291,6 +1369,15 @@ public class Waveform extends Canvas
 	    g.clipRect(wave_b_box.x, wave_b_box.y, wave_b_box.width, wave_b_box.height);
 	    DrawSignal(g);
 	}
+	
+	
+    if(is_select)
+    {
+	  g.setColor(Color.red);
+	  g.drawRect(0, 0, d.width - 1, d.height - 1);
+	  g.setColor(Color.black);
+    }	    
+	
 	execute_print = false;
     }
 
