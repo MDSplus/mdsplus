@@ -1,4 +1,3 @@
-#include <libio.h>
 #include "mdsip.h"
 #ifdef GLOBUS
 #include <stdio.h>
