@@ -92,5 +92,9 @@ LINK32=link.exe
 
 SOURCE=.\MdsLibIdl.c
 # End Source File
+# Begin Source File
+
+SOURCE=.\mdslibidl.def
+# End Source File
 # End Target
 # End Project
