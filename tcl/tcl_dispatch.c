@@ -134,6 +134,8 @@ int TclDispatch()
         niddsc.dscA_pointer = (char *) &nid;
         sts = TdiIdentOf(&niddsc,&ident MDS_END_ARG);
         if (sts & 1)
+          sts = TdiData(&ident, &ident MDS_END_ARG);
+        if (sts & 1)
            {
             static char treename[13];
             static DESCRIPTOR(nullstr,"\0");
