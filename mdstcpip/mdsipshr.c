@@ -290,7 +290,6 @@ int MdsValueFtotSize (struct descrip *dataarg)
 {
   int totsize = 0;
   if (dataarg->ndims == 0) {
-    printf("MDSvalueF: scalar\n");
     totsize=1;
   } else { 
     int i;
@@ -341,7 +340,6 @@ int  MdsValueF(SOCKET sock, char *expression, double *data, int maxsize, int *re
 	free(newdata);
 	break;
     default :
-	printf ("MDSValueF: Can't handle type: %u\n", dataarg.dtype);
 	status=0;
 	break;
     }
@@ -365,7 +363,6 @@ int  MdsValueC(SOCKET sock, char *expression, char *data, int *retsize)
 	memcpy(data, (char *) dataarg.ptr, ArgLen(&dataarg)*sizeof(char));
 	break;
     default :
-	printf ("MDSValueC: Can't handle type: %u\n", dataarg.dtype);
 	status=0;
 	break;
     }
@@ -388,7 +385,6 @@ int  MdsValueI(SOCKET sock, char *expression, int *data)
 	memcpy(data, (int *) dataarg.ptr, ArgLen(&dataarg));
 	break;
     default :
-	printf ("MDSValueI: Can't handle type: %u\n", dataarg.dtype);
 	status=0;
 	break;
     }
@@ -590,7 +586,7 @@ static SOCKET ConnectToPort(char *host, char *service)
 #endif
   if (hp == NULL)
   {
-    printf("Error: %s unknown\n",host);
+    printf("Error in MDSplus ConnectToPort: %s unknown\n",host);
     return INVALID_SOCKET;
   }
   s = socket(AF_INET, SOCK_STREAM, 0);
@@ -605,7 +601,7 @@ static SOCKET ConnectToPort(char *host, char *service)
   }
   if (sp == NULL || sp->s_port == 0)
   {
-    printf("Unknown service: %s\nSet environment variable %s if port is known\n",service,service);
+    printf("Error in MDSplus ConnectToPort: Unknown service: %s\nSet environment variable %s if port is known\n",service,service);
     return INVALID_SOCKET;
   }
   sin.sin_family = AF_INET;
@@ -643,14 +639,14 @@ static SOCKET ConnectToPort(char *host, char *service)
       m = GetMdsMsg(s,&status);
       if (!(status & 1))
       {
-        printf("Error in connect to service\n");
+        printf("Error in MDSplus ConnectToPort connect to service\n");
         return INVALID_SOCKET;
       }
       else
       {
         if (!m->h.status)
         {
-          printf("Access denied\n");
+          printf("MDSplus ConnectToPort: Access denied\n");
           free(m);
           DisconnectFromMds(s);
           return INVALID_SOCKET;
@@ -659,7 +655,7 @@ static SOCKET ConnectToPort(char *host, char *service)
     }
     else
     {
-      printf("Error in user verification\n");
+      printf("MDSplus ConnectToPort: Error in user verification\n");
       return INVALID_SOCKET;
     }
   }
@@ -925,7 +921,7 @@ Message *GetMdsMsg(SOCKET sock, int *status)
       }
       else
       {
-        perror("GETMSG recv error");
+        perror("MDSplus GETMSG recv error");
         printf("errno = %d\n",errno);
       }
     }
