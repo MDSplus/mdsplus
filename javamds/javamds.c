@@ -445,6 +445,8 @@ jScope panels outside java application */
 JNIEnv *env = 0;
 static jobject jobjects[1024];
 
+
+/****************************************************************************************
 void createWindow(char *name, int idx)
 {
 	JavaVM *jvm;
@@ -455,7 +457,7 @@ void createWindow(char *name, int idx)
 	jstring jstr;
 	char classpath[2048], *curr_classpath;
 
-	if(env == 0) /* Java virtual machine does not exist yet */
+        if(env == 0) //Java virtual machine does not exist yet 
 	{
 		vm_args.version = 0x00010001;
 		JNI_GetDefaultJavaVMInitArgs(&vm_args);
@@ -472,6 +474,7 @@ void createWindow(char *name, int idx)
 			return ;
 		}
 	}
+	printf("\n----- %s -----\n", classpath);
 	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
 	if(cls == 0)
 	{
@@ -493,6 +496,69 @@ void createWindow(char *name, int idx)
 
 	jobjects[idx] = (*env)->CallStaticObjectMethod(env, cls, mid, jstr);
 }
+*************************************************************************************************************/
+
+
+
+
+void createWindow(char *name, int idx)
+{
+	JavaVM *jvm;
+	jint res;
+	jclass cls;
+	jmethodID mid;
+	jstring jstr;
+	char classpath[2048], *curr_classpath;
+
+	JavaVMInitArgs vm_args;
+        JavaVMOption options[1];
+
+	if(env == 0) /* Java virtual machine does not exist yet */
+	{
+		vm_args.version = JNI_VERSION_1_2;
+		vm_args.options = options;
+		vm_args.nOptions = 1;
+		vm_args.ignoreUnrecognized = 1;
+
+
+		curr_classpath = getenv("CLASSPATH");
+		if(curr_classpath)
+		{
+			sprintf(classpath, "-Djava.class.path=%s", curr_classpath);
+			options[0].optionString = classpath;
+		}
+		res = JNI_CreateJavaVM(&jvm, (void **)&env, &vm_args);
+		if(res < 0)
+		{
+			printf("\nCannot create Java VM!!\n");
+			return ;
+		}
+	}
+	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
+	if(cls == 0)
+	{
+		printf("\nCannot find CompositeWaveDisplay classes!\n");
+		return;
+	}	
+		
+	mid = (*env)->GetStaticMethodID(env, cls, "createWindow", "(Ljava/lang/String;)LCompositeWaveDisplay;");
+	if(mid == 0)
+	{
+		printf("\nCannot find main\n");
+		return;
+	}
+
+	if(name)
+		jstr = (*env)->NewStringUTF(env, name);
+	else
+		jstr = (*env)->NewStringUTF(env, "");
+
+	jobjects[idx] = (*env)->CallStaticObjectMethod(env, cls, mid, jstr);
+}
+
+
+
+
 
 void clearWindow(char *name, int idx)
 {
