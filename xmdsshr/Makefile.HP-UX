@@ -59,7 +59,7 @@ xmdsshr : ../shlib \
 	uil -wmd ../shlib/xmdsuil.wmd -o $@ XmdsXdBox.uil
 
 ../shlib/libXmdsShr.a : $(OBJECTS)
-        $(AR) -r $@ $(OBJECTS)
+	$(AR) -r $@ $(OBJECTS)
 
 ../shlib/xmdsuil.wmd : $(WMD_RULE)
 
