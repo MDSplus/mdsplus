@@ -217,12 +217,15 @@ Se scalare una sola acquisizione attualmente non gestito
 		_rec_length = _K_CHAN_MEM;
     }
 
-	_b_size = _rec_length * 2;
+
+	_pre_trigger = if_error(data(DevNodeRef(_nid, _N_PRE_TRIGGER)), 0);
+
 
 	_vResolution = zero(_num_acq, FT_FLOAT(0.0));
 	_vOffset     = zero(_num_acq, FT_FLOAT(0.0));
 
-	_data = zero(_b_size * _num_acq, 0W);
+	_data = zero(_rec_length * _num_acq, 0W);
+	_b_size = _rec_length * 2;
 
     for(_i = 0; _i < _num_chans; _i++)
     {
@@ -255,10 +258,15 @@ Se scalare una sola acquisizione attualmente non gestito
 
 				_sig_nid =  DevHead(_nid) + _head_channel +  _N_CHAN_DATA;
 
+/*
 				_status = DevPutSignal(_sig_nid, - _vOffset[0], _vResolution[0], word(_data), 0, _end_idx - _start_idx - 1, _dim);
+*/
 
 write(*, "offset ", FT_FLOAT(_vOffset[0]));
 write(*, "gain ", FT_FLOAT(_vResolution[0]));
+
+				_dataSig = _data[_pre_trigger + _start_idx: _pre_trigger + _end_idx: *];
+				_status = DevPutSignal(_sig_nid, 0, _vResolution[0], word(_dataSig), 0, _end_idx - _start_idx, _dim);
 
 				if(! _status)
 				{

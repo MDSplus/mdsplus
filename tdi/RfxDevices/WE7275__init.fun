@@ -282,13 +282,24 @@ write(*, '-- idx ', _curr_start_idx);
 			    _curr_start_idx = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_START_IDX));	
 			}
 
-			_curr_rec_length = _curr_end_idx - _curr_start_idx;
-			_curr_pre_trigger = abs(_curr_start_idx);
+			if( _curr_end_idx <= _curr_start_idx)
+			{
+				DevLogErr(_nid, "End idx - time must be greater then Start idx - time");
+				abort();
+			}
+			 
+			if( _curr_start_idx < _pre_trigger) _pre_trigger = long(_curr_start_idx);
 
-			if(_curr_pre_trigger > _pre_trigger) _pre_trigger = long(_curr_pre_trigger);
+	        _curr_rec_length = 0;
+
+			if( _curr_end_idx < 0)
+			    _curr_rec_length = 2 - _pre_trigger;
+			else 
+			    _curr_rec_length = _curr_end_idx - _pre_trigger;
+
 			if(_curr_rec_length > _rec_length) _rec_length = long(_curr_rec_length);
 
-        } 
+		} 
 		else
 		{
 			_state_a = [_state_a, 0];
@@ -318,6 +329,8 @@ write(*, '-- idx ', _curr_start_idx);
 	{
 		DevLogErr(_nid, "WARNING : Max memory for channel must be less than 4M");
 		_rec_length = _K_CHAN_MEM;
+	} else {
+	        _rec_length = _rec_length + 1;
 	}
 
 	if(_rec_length * _smp_int < 5e-3)

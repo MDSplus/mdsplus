@@ -15,7 +15,7 @@ public fun RFXMOP__add(in _path, out _nidout)
 
         DevAddNode(_cn, 'STRUCTURE',  *,        *, _nid);
     	DevAddNode(_cn//':NAME',     'TEXT',    *,        *, _nid);
-    	DevAddNode(_cn//':FUNCTION', 'TEXT',   "OFFLINE", *, _nid);
+    	DevAddNode(_cn//':FUNCTION', 'TEXT',   "INACTIVE", *, _nid);
     	DevAddNode(_cn//':MODE',     'NUMERIC', 1,        *, _nid);
      }
 

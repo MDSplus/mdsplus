@@ -288,10 +288,22 @@ Attualmente non implementati perchè non necessari
 			    _curr_start_idx = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_START_IDX));	
 			}
 
-			_curr_rec_length = _curr_end_idx - _curr_start_idx;
-			_curr_pre_trigger = abs(_curr_start_idx);
+			/*
+			 * Check Start / End consistency
+			 */
+			if( _curr_end_idx <=  _curr_start_idx)
+			{
+				DevLogErr(_nid, "End idx / time must be greater then Start idx/time"); 
+				abort();
+			}
 
-			if(_curr_pre_trigger > _pre_trigger) _pre_trigger = long(_curr_pre_trigger);
+ 			if(_curr_start_idx < _pre_trigger) _pre_trigger = long(_curr_start_idx);
+
+			if(_curr_end_idx < 0)
+			   _curr_rec_length = 2 - _pre_trigger;
+			else
+			   _curr_rec_length = _curr_end_idx - _pre_trigger;
+
 			if(_curr_rec_length > _rec_length) _rec_length = long(_curr_rec_length);
 
         } 
@@ -307,7 +319,7 @@ Attualmente non implementati perchè non necessari
 		_range_a    = [_range_a, _range];
 
 		_offset = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_OFFSET));
-		_offset_a   = [_offset_a, _offset];
+		_offset_a   = [_offset_a, float(_offset)];
 
 		DevNodeCvt(_nid, _head_channel + _N_CHAN_FILTER, [0, 0.5E6, 1E6], [0,1,2], _filter=0);
 		_filter_a   = [_filter_a, _filter];
@@ -329,8 +341,9 @@ Attualmente non implementati perchè non necessari
 	{
 		DevLogErr(_nid, "WARNING : Max memory for channel must be less than 4M");
 		_rec_length = _K_CHAN_MEM;
+	} else {
+	        _rec_length = _rec_length + 1;
 	}
-
 
 	DevPut(_nid,  _N_REC_LENGTH, long(_rec_length));
 
