@@ -160,6 +160,8 @@ public class CompileTree extends Thread
         String usageStr = node.getAttribute("USAGE");
         NidData nid = null;
         boolean success;
+
+        //System.out.println(name);
         try {
             NidData parentNid = tree.getDefault(0);
             success = false;
@@ -280,9 +282,14 @@ public class CompileTree extends Thread
 
             if(type.equals("field"))
             {
-                nid= tree.resolve(new PathData(name), 0);
+              try {
+                nid = tree.resolve(new PathData(name), 0);
                 tree.setDefault(nid, 0);
                 success = true;
+              }catch(Exception exc)
+              {
+                System.out.println("WARNING: device field  " + name + " not found in model ");
+              }
             }
             if(success)
             {
@@ -360,6 +367,7 @@ public class CompileTree extends Thread
         }catch(Exception exc)
         {
             System.out.println("Internal error in recCompile: " + exc);
+            exc.printStackTrace();
         }
     }
 
