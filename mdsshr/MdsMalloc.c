@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
+#include <signal.h>
 
 struct vmlist { struct vmlist *next;
                 int len;
