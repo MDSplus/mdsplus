@@ -93,7 +93,7 @@ int   mdsdcl_type()
     static DYNAMIC_DESCRIPTOR(dsc_text);
 
     sts = cli_get_value("P1",&dsc_text);
-    printf("%s\n",(sts&1) ? dsc_text.dscA_pointer : " ");
+    printf("%s\r\n",(sts&1) ? dsc_text.dscA_pointer : " ");
     fflush(stdout);
     str_free1_dx(&dsc_text);
     return(1);

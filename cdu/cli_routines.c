@@ -14,6 +14,9 @@
 * Emulation of Digital's CLI routines.
 *
 * History:
+*  06-Apr-2001  TRG  cli_process_qualifier: CLI_STS_IVQUAL may be an ok
+*                     return sts (see note).  Therefore, no MdsMsg.
+*                    Added a few "\r"s to output for the sake of IDL.
 *  19-Jan-1998  TRG  find_entity: disable searching for keywords below
 *                     the current level.
 *  14-Jan-1998  TRG  Use IS_QUALIFIER_CHARACTER() to check for qual.
@@ -499,11 +502,15 @@ static int   cli_process_qualifier(	/* Return: status		*/
                }
            }
         if (!opt)
-            return(cli_error(CLI_STS_IVVERB,"Unknown qualifier"));
+            return(CLI_STS_IVQUAL);
+			/* Note: this can be a legitimate return value if
+			 *  the same verb appears in more than one table.
+			 *  Therefore, don't print warning message.
+			 *-----------------------------------------------*/
        }
 
     if (cliDebug)
-        printf("--> qualifier %s%s\n",qual->qualA_name,
+        printf("--> qualifier %s%s\n\r",qual->qualA_name,
                 (qual->qualL_status==CLI_STS_NEGATED)?" (NEGATED)":"");
     if (qual->qualA_syntax)
         setCurrentSyntax(FALSE,qual->qualA_syntax);
@@ -537,7 +544,7 @@ static int   cli_process_parameter(	/* Return: status		*/
 
     prm = currentParameters + (paramId-1);
     if (cliDebug)
-        printf("--> parameter %s\n",prm->prmA_name);
+        printf("--> parameter %s\n\r",prm->prmA_name);
 
     sts = set_value(pp,prm->prmA_value);
 		/* Note: currentSyntax may have changed inside set_value */
@@ -565,7 +572,7 @@ static int   cli_process_verb(		/* Return: status		*/
 		 *======================================================*/
     v = currentSyntax;
     if (cliDebug)
-        printf("\ncmd = %s\n",v->vrbA_name);
+        printf("\ncmd = %s\n\r",v->vrbA_name);
 
     p = *pp;
     sts = CLI_STS_NORMAL;		/* a nice, positive outlook	*/

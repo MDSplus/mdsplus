@@ -37,6 +37,7 @@
 #define CLI_STS_NEGATED    CLI_STS(20)	/* entity is present+negated	*/
 #define CLI_STS_NOTNEGATABLE CLI_STS(22) /* entity is not negatable	*/
 #define CLI_STS_ERROR      CLI_STS(24)	/* error in subroutine		*/
+#define CLI_STS_IVQUAL     CLI_STS(26)	/* invalid verb qualifier	*/
 
 #ifdef CREATE_STS_TEXT
 static struct stsText  cli_stsText[] = {
@@ -57,6 +58,7 @@ static struct stsText  cli_stsText[] = {
        ,STS_TEXT(CLI_STS_NEGATED,"Entity is present but negated")
        ,STS_TEXT(CLI_STS_NOTNEGATABLE,"Entity cannot be negated")
        ,STS_TEXT(CLI_STS_ERROR,"Generic ERROR")
+       ,STS_TEXT(CLI_STS_IVQUAL,"Invalid verb qualifier")
        };
 #endif
 

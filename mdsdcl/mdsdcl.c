@@ -8,14 +8,16 @@
 * The MDSDCL command line interpreter, main routine.
 *
 * History:
-*  01-May-2000  TRG  Revert to previous: indirect commands on cmdline now
-*                     handled inside mdsdcl_do_command.
+*  06-Apr-2001  TRG  Revised "@" processing removes "makeCmdlineMacro".
+*  26-Apr-2000  TRG  Treat cmdline as special-case "macro", via
+*                     makeCmdlineMacro.  Will allow processing of "@".
 *  04-Dec-1997  TRG  Create.
 *
 **********************************************************************/
 
 
 extern int   mdsdcl_do_command();
+extern struct _mdsdcl_ctrl  *mdsdcl_ctrl_address();
 
 
 #define CMD_PREP    1		/* Table-initialization command		*/
@@ -30,7 +32,7 @@ static struct cmd_struct  cmd0[2] = {
 	/***************************************************************
 	 * main:  Mdsdcl main program
 	 ***************************************************************/
-int  main(
+void  main(
     int   argc
    ,char  *argv[]
    )
@@ -38,9 +40,11 @@ int  main(
     int   i,k;
     int   sts;
     char  *p;
+    struct _mdsdcl_ctrl  *ctrl;
     static DYNAMIC_DESCRIPTOR(dsc_cmdline);
 
     set_pgmname(argv[0]);
+    ctrl = mdsdcl_ctrl_address();
 
 		/*=======================================================
 		 * Command-line arguments ?
@@ -91,8 +95,17 @@ int  main(
                         str_append(&dsc_cmdline,argv[++i]);
                    }
                }
-            sts = mdsdcl_do_command(dsc_cmdline.dscA_pointer);
-            exit(sts);
+            sts = mdsdcl_do_command(&dsc_cmdline);
+            for ( ; ctrl->depth > 0 ; )
+               {
+                sts = mdsdcl_do_command(0);
+                {
+                 struct _mdsdcl_io  *io;
+
+                 io = ctrl->ioLevel + ctrl->depth;	/* for debug only*/
+                }
+               }
+            exit(0);
            }
        }
 
@@ -106,5 +119,4 @@ int  main(
         if (sts == CLI_STS_EOF)
             exit(0);
        }
-    return(0);
    }						/*  */

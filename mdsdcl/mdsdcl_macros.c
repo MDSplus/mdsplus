@@ -17,7 +17,8 @@
 *   mdsdcl_show_macro:  Display any or all macros
 *
 * History:
-*  28-Apr-2000  TRG  makeCmdlineMacro: new function.
+*  06-Apr-2001  TRG  mdsdcl_do_macro: add "indirect" processing option.
+*                     Formerly done with mdsdcl_get_input().
 *  07-Jan-1998  TRG  mdsdcl_do_macro: new function.
 *  30-Dec-1997  TRG  Create.
 *
@@ -113,7 +114,7 @@ static void  extend_macro(	/* Return:  void			*/
     int   nbytes;
 
     if (m->numLines != m->maxLines)
-        fprintf(stderr,"\n*WARN* from extend_macro()\n\n");
+        fprintf(stderr,"\n*WARN* from extend_macro()\n\n\r");
 
     nbytes = m->maxLines * sizeof(char *) + INCR;
     m->lines = (char **)realloc(m->lines,nbytes);
@@ -155,7 +156,7 @@ int   mdsdcl_define()			/* Return: status		*/
     struct _mdsdcl_macro  *m;
     static DYNAMIC_DESCRIPTOR(dsc_name);
     static DYNAMIC_DESCRIPTOR(dsc_cmd);
-    static char  fmt1[] = "Macro '%s' is open -- cannot be editted";
+    static char  fmt1[] = "Macro '%s' is open -- cannot be edited";
 
     sts = cli_get_value("P1",&dsc_name);
     if (~sts & 1)
@@ -207,10 +208,10 @@ static void  display_macro(		/* Return: void			*/
     int  i;
     char **p;
 
-    printf("\n%s\n",m->name);
+    printf("\n%s\n\r",m->name);
     p = m->lines;
     for (i=0 ; i<m->numLines ; i++)
-        printf("  %s\n",p[i]);
+        printf("  %s\n\r",p[i]);
     return;
    }
 
@@ -234,7 +235,7 @@ int   mdsdcl_show_macro()		/* Return: status		*/
         m = find_macro(dsc_name.dscA_pointer);
         if (!m)
            {
-            fprintf(stderr,"  --> macro '%s' not defined\n",
+            fprintf(stderr,"  --> macro '%s' not defined\n\r",
                 dsc_name.dscA_pointer);
             return(1);
            }
@@ -248,7 +249,7 @@ int   mdsdcl_show_macro()		/* Return: status		*/
     m = ctrl->macro.list;
     if (!m)
        {
-        fprintf(stderr,"  --> No macros defined\n\n");
+        fprintf(stderr,"  --> No macros defined\n\n\r");
         return(1);
        }
     for (i=0 ; i<ctrl->macro.numMacros ; i++,m++)
@@ -256,7 +257,7 @@ int   mdsdcl_show_macro()		/* Return: status		*/
         if (full)
             display_macro(m);
         else
-            printf("  %s\n",m->name);
+            printf("  %s\n\r",m->name);
        }
     return(1);
    }
@@ -287,6 +288,16 @@ int   mdsdcl_do_macro()		/* Return: status			*/
 
     if (cli_present("INTERACTIVE") & 1)
         return(MdsMsg(MDSDCL_STS_ERROR,fmt0,0));
+
+    if (cli_present("INDIRECT") & 1)
+       {
+        sts = mdsdcl_openIndirectLevel(dsc_util.dscA_pointer);
+        if (!sts & 1)
+            return(MdsMsg(sts,"failed to open file %s",dsc_util.dscA_pointer));
+        for ( ; sts & 1 ; )
+            sts = mdsdcl_do_command(0);
+        return((sts==MDSDCL_STS_INDIRECT_EOF) ? 1 : sts);
+       }
 
     l2u(dsc_util.dscA_pointer,0);		/* convert to uc	*/
     macro = find_macro(dsc_util.dscA_pointer);
@@ -337,7 +348,7 @@ int   mdsdcl_do_macro()		/* Return: status			*/
 
         do {
             sts = mdsdcl_do_command(0);
-           }  while ((sts & 1) || (sts == CLI_STS_NOCOMD));
+           }  while (sts & 1);
 
         if (sts == MDSDCL_STS_INDIRECT_EOF)
             continue;
@@ -346,25 +357,4 @@ int   mdsdcl_do_macro()		/* Return: status			*/
        }
 
     return((sts==MDSDCL_STS_INDIRECT_EOF) ? 1 : sts);
-   }
-
-
-
-	/****************************************************************
-	 * makeCmdlineMacro:
-	 ****************************************************************/
-int   makeCmdlineMacro(
-    char  *macroName		/* <r> name -- probably "__CMDLINE__"	*/
-   ,char  *cmdline		/* <r> the actual command line		*/
-   )
-   {
-    struct _mdsdcl_macro  *m;
-
-    if (!ctrl->tbladr[0])  mdsdcl_initialize(ctrl);
-
-    m = get_macro(macroName);
-    for ( ; m->numLines>0 ; )
-        free(m->lines[--m->numLines]);		/* free previous lines	*/
-    m->lines[m->numLines++] = STRING_ALLOC(cmdline);
-    return(1);
    }

@@ -14,6 +14,8 @@
 * Basic input routine for MDSDCL ...
 *
 * History:
+*  06-Apr-2001  TRG  Make mdsdcl_openIndirectLevel globally defined
+*                    Replace leading "@" by "do/indirect" in command line.
 *  22-Dec-1997  TRG  Create.
 *
 *************************************************************************/
@@ -59,9 +61,9 @@ static int   closeIndirectLevel()
 
 
 	/*****************************************************************
-	 * openIndirectLevel:
+	 * mdsdcl_openIndirectLevel:
 	 *****************************************************************/
-static int   openIndirectLevel(		/* Return: status		*/
+int   mdsdcl_openIndirectLevel(		/* Return: status		*/
     char  *p				/* <r> addr in cmdline		*/
    )
    {
@@ -292,25 +294,6 @@ static int   get_cmdstring(	/* Return: status			*/
 
 
 
-	/****************************************************************
-	 * displayCmdline:
-	 ****************************************************************/
-static void  displayCmdline(
-    char  *cmdline		/* <r> the command line			*/
-   )
-   {
-    int   i;
-
-    if (!nonblank(cmdline))
-        return;
-    for (i=0 ; i<=ctrl->depth ; i++)
-        printf("==");
-    printf("> %s\n",cmdline);
-    return;
-   }
-
-
-
 	/*****************************************************************
 	 * really_get_input:
 	 *****************************************************************/
@@ -348,13 +331,7 @@ static int   really_get_input(		/* Return: status		*/
         p = nonblank(dsc_cmd->dscA_pointer);
         if (p && *p=='@')
            {
-            if (ctrl->verify)
-                displayCmdline(p);
-            p++;			/* bump past the '@'		*/
-            sts = openIndirectLevel(p);
-            if (!sts & 1)
-                return(sts);
-            return(really_get_input(uprompt,dsc_cmd,len,flag));
+            str_replace(dsc_cmd,dsc_cmd,0,1,"do/indirect ");
            }
        }
 
@@ -374,8 +351,6 @@ int   mdsdcl_get_input(			/* Return: status		*/
     int   sts;
 
     sts = really_get_input(uprompt,dsc_cmd,0,0);
-    if (ctrl->verify)
-        displayCmdline(dsc_cmd->dscA_pointer);
     return(sts);
    }
 
