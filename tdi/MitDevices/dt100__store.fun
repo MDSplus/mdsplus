@@ -1,5 +1,6 @@
 public fun dt100__store(as_is _nid, optional _method)
 {
+  write (*, "starting store");
   _node = DevNodeRef(_nid,1);
   _node = if_error(data(_node), "");
   if (Len(_node) > 0) {
@@ -26,6 +27,7 @@ public fun dt100__store(as_is _nid, optional _method)
   /*************************************
    Get setup info
   *************************************/
+  write (*, "get the setup info");
   _cmd = 'Dt100GetNumChannels('//_board//')';
   _num_chans = MdsValue(_cmd);
   _cmd = 'Dt100GetNumSamples('//_board//')';
@@ -50,6 +52,7 @@ public fun dt100__store(as_is _nid, optional _method)
   _offset = 5.;
   for (_chan=0; _chan < _num_chans; _chan++)
   {
+    write (*, "working on "//_chan);
     _chan_offset = _chan * 3 + 10;
     _chan_nid = DevHead(_nid) + _chan_offset;
     if (DevIsOn(_chan_nid))
@@ -62,8 +65,10 @@ public fun dt100__store(as_is _nid, optional _method)
       _ubound = min(max(_ubound,_lbound),_max_samples-1);
 
       _cmd =  'Dt100ReadChannel('//_board//','// _chan+1//')';
+      write (*, "read the data "//_cmd);
       _data = MdsValue(_cmd);
       _dim = make_dim(make_window(_lbound,_ubound,_trigger),_clk);
+      write (*, "write the data");
       DevPutSignal(_chan_nid, _offset, 10./(32*1024), _data[_lbound : _ubound], _lbound, _ubound, _dim);
     }
   }
