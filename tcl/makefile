@@ -30,9 +30,10 @@ clean:
 tcl:
 	chmod +x tcl
 
-tcl_commands.o:
+tcl_commands.c:	tcl_commands.ocld
 	../cdu/cdu < tcl_commands.ocld
-	$(CC) $(CFLAGS) -c tcl_commands.c
+
+tcl_commands.o:	tcl_commands.c
 
 libTcl.a:	$(OBJFILES)
 	ranlib libTcl.a
