@@ -199,8 +199,8 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
 {
   int       status;
 
-  status = TreeLockNci(info,0,node_num);
-  if (!(status & 1)) return status;
+ /* status = TreeLockNci(info,0,node_num);
+  if (!(status & 1)) return status;*/
   status = TreeNORMAL;
 
 /******************************************
@@ -218,11 +218,13 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
     if (status & 1)
     {      
         char nci_bytes[42];
-	MDS_IO_LSEEK(info->nci_file->put,node_num * sizeof(nci_bytes),SEEK_SET);
-	status = (MDS_IO_READ(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
+		status = TreeLockNci(info,0,node_num);
+			if (!(status & 1)) return status;
+		MDS_IO_LSEEK(info->nci_file->put,node_num * sizeof(nci_bytes),SEEK_SET);
+		status = (MDS_IO_READ(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
         if (status == TreeNORMAL)
           TreeSerializeNciIn(nci_bytes,nci);
-	if (!(status & 1))
+		if (!(status & 1))
           TreeUnLockNci(info,0,node_num);
     }
   }
@@ -233,6 +235,8 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
    the characteristics are just a memory reference
    away.
   *********************************************/
+	status = TreeLockNci(info,0,node_num);
+		if (!(status & 1)) return status;
 
     memcpy(nci, info->edit->nci + node_num - info->edit->first_in_mem, sizeof(struct nci));
   }
