@@ -1157,6 +1157,35 @@ char *LibFindImageSymbolErrString()
   return FIS_Error;
 }
 
+#ifdef _linux
+static int dlopen_mutex_initialized = 0;
+static pthread_mutex_t dlopen_mutex;
+
+static void dlopen_lock()
+{
+
+  if(!dlopen_mutex_initialized)
+  {
+    dlopen_mutex_initialized = 1;
+    pthread_mutex_init(&dlopen_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_lock(&dlopen_mutex);
+}
+
+static void dlopen_unlock()
+{
+
+  if(!dlopen_mutex_initialized)
+  {
+    dlopen_mutex_initialized = 1;
+    pthread_mutex_init(&dlopen_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_unlock(&dlopen_mutex);
+}
+#endif
+
 int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
 {
   char *c_filename = MdsDescrToCstring(filename);
@@ -1164,6 +1193,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   void *handle;
   char *tmp_error1 = 0;
   char *tmp_error2 = 0;
+  int dlopen_mode = RTLD_LAZY;
   
   *symbol_value = NULL;
   strcpy(full_filename,"lib");
@@ -1174,17 +1204,21 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     free(FIS_Error);
     FIS_Error = 0;
   }
-  handle = dlopen(c_filename,RTLD_LAZY);
+#ifdef _linux
+  dlopen_lock();
+  dlopen_mode = RTLD_NOW | RTLD_GLOBAL;
+#endif
+  handle = dlopen(c_filename,dlopen_mode);
   if (handle == NULL) {
     tmp_error1 = dlerror();
     if (tmp_error1 == NULL) tmp_error1="";
     tmp_error1 = strcpy((char *)malloc(strlen(tmp_error1)+1),tmp_error1);
-    handle = dlopen(full_filename,RTLD_LAZY);
+    handle = dlopen(full_filename,dlopen_mode);
     if (handle == NULL) {
       tmp_error2 = dlerror();
       if (tmp_error2 == NULL) tmp_error2="";
       tmp_error2 = strcpy((char *)malloc(strlen(tmp_error2)+1),tmp_error2);
-      handle = dlopen(&full_filename[3],RTLD_LAZY);
+      handle = dlopen(&full_filename[3],dlopen_mode);
     }
   }
   if (handle != NULL)
@@ -1208,6 +1242,9 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
       strlen(full_filename)*2+strlen(tmp)+strlen(tmp_error1)+strlen(tmp_error2)+10)),
       "Error loading library:\n\t %s - %s\n\t %s - %s\n\t%s - %s\n",c_filename,tmp_error1,full_filename,tmp_error2,&full_filename[3],tmp);
   }
+#ifdef _linux
+  dlopen_unlock();
+#endif
   if (tmp_error1)
     free(tmp_error1);
   if (tmp_error2)
