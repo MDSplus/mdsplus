@@ -221,8 +221,8 @@ public class FR10Setup
   }
 
   private void jbInit() throws Exception {
-    this.setWidth(531);
-    this.setHeight(531);
+    this.setWidth(638);
+    this.setHeight(638);
     this.setDeviceType("FR10");
     this.setDeviceProvider("150.178.3.101");
     this.setDeviceTitle("FR10");
