@@ -437,12 +437,12 @@ public void Receive(DataInputStream dis)throws IOException
     message_id = dis.readByte();
     dtype = dis.readByte();
     client_type = dis.readByte();
-    System.out.println("Client type = "+(new Integer(client_type)).toString());
+//    System.out.println("Client type = "+(new Integer(client_type)).toString());
     ndims = dis.readByte();
     swap = ((client_type & BIG_ENDIAN_MASK) != BIG_ENDIAN_MASK);
-    System.out.println(swap);
+//    System.out.println(swap);
     msglen = ToInt(msglen_b);
-    System.out.println("msglen = "+(new Integer(msglen)).toString());
+//    System.out.println("msglen = "+(new Integer(msglen)).toString());
     status = ToInt(status_b);
     length = ToShort(length_b);
     bytes = new byte[4];
