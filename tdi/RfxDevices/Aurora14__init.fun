@@ -58,10 +58,10 @@ public fun Aurora14__init(as_is _nid, optional _method)
 
 /* Trigger stuff */
     DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL', 'EXTERNAL'],[1,0], _int_trig = 0);
-    if(_int_trig == 0)
-	_trig = 0;
+    if(_int_trig)
+		_trig = 0;
     else
-	_trig=if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), (DevLogErr(_nid, "Cannot resolve trigger"); abort();));
+		_trig=if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), (DevLogErr(_nid, "Cannot resolve trigger"); abort();));
 
 /* Read burst/normal mode */
     DevNodeCvt(_nid, _N_OP_MODE, ['NORMAL', 'BURST'],[1,3], _op_mode = 0);

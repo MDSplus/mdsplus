@@ -73,7 +73,7 @@ write(*, _c);
 			_sig_nid =  DevHead(_nid) + _N_OUTPUT_1  + _c;
 			_data = MdsValue( 'Feedback->getDacSignal:dsc(0, $1)', _c);
 
-			_status = DevPutSignal(_sig_nid, -2048, 5/2048., word(_data), 0, _n_samples, _dim);
+			_status = DevPutSignal(_sig_nid, -2048, 10/2048., word(_data), 0, _n_samples, _dim);
 			if(! _status)
 			{
 				DevLogErr(_nid, 'Error writing data in pulse file');
