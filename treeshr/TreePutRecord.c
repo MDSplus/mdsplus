@@ -42,7 +42,7 @@
 #include <librtl_messages.h>
 #include <strroutines.h>
 #include <libroutines.h>
-#ifdef unix
+#if !defined(_WIN32)
 #include <fcntl.h>
 #endif
 
@@ -1005,7 +1005,7 @@ static int Dsc2Rec(struct descriptor *inp, struct descriptor_xd *out_dsc_ptr)
   return status;
 }
 
-#if defined(unix)
+#if !defined(_WIN32)
 int TreeLockDatafile(TREE_INFO *info, int readonly, int offset)
 {
   struct flock flock_info;
@@ -1027,7 +1027,7 @@ int TreeUnLockDatafile(TREE_INFO *info, int readonly, int offset)
   return (fcntl(readonly ? info->data_file->get : info->data_file->put,F_SETLKW, &flock_info) != -1) ? 
           TreeSUCCESS : TreeFAILURE;
 }
-#elif defined(_WIN32)
+#else
 int TreeLockDatafile(TREE_INFO *info, int readonly, int offset)
 {
   return TreeSUCCESS;

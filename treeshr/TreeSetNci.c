@@ -36,7 +36,7 @@
 #include <ncidef.h>
 #include <string.h>
 #include <stdlib.h>
-#ifdef unix
+#if !defined(_WIN32)
 #include <fcntl.h>
 #endif
 
@@ -664,7 +664,7 @@ static int SetNodeParentState(PINO_DATABASE *db, NODE *node, NCI *nci, unsigned 
   return status;
 }
 
-#if defined(unix)
+#if !defined(_WIN32)
 int TreeLockNci(TREE_INFO *info, int readonly, int nodenum)
 {
   struct flock flock_info;
@@ -686,7 +686,7 @@ int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
   return (fcntl(readonly ? info->nci_file->get : info->nci_file->put,F_SETLKW, &flock_info) != -1) ? 
           TreeSUCCESS : TreeFAILURE;
 }
-#elif defined(_WIN32)
+#else
 int TreeLockNci(TREE_INFO *info, int readonly, int nodenum)
 {
   return TreeSUCCESS;

@@ -9,7 +9,7 @@
 #include <string.h>
 
 #include <stdlib.h>
-#if defined(unix)
+#if !defined(_WIN32)
 #include <fcntl.h>
 #endif
 

@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mds_stdarg.h>
-#if defined(unix)
+#if !defined(_WIN32)
 #include <fcntl.h>
 #endif
 
