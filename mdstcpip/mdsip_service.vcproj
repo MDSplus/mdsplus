@@ -39,12 +39,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="../mdsshr/debug/mdsshr.lib ../treeshr/debug/treeshr.lib ../tdishr/debug/tdishr.lib debug/mdsipshr.lib wsock32.lib odbc32.lib odbccp32.lib"
-				OutputFile="../Debug/mdsip_service.exe"
+				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib"
+				OutputFile="$(OutDir)/mdsip_service.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\mdsip_service\Debug/mdsip_service.pdb"
+				ProgramDatabaseFile="$(IntDir)/mdsip_service.pdb"
 				SubSystem="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -81,6 +81,7 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough=""
 				PrecompiledHeaderFile=".\mdsip_service\Release/mdsip_service.pch"
 				AssemblerListingLocation=".\mdsip_service\Release/"
 				ObjectFile=".\mdsip_service\Release/"
@@ -94,7 +95,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib"
-				OutputFile="../Release/mdsip_service.exe"
+				OutputFile="$(OutDir)/mdsip_service.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ProgramDatabaseFile=".\mdsip_service\Release/mdsip_service.pdb"

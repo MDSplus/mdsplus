@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\Release"
+			OutputDirectory="../Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -40,12 +40,12 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib"
-				OutputFile="../Release/mdsipshr.dll"
+				OutputFile="$(OutDir)/mdsipshr.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\mdsipshr.def"
 				SubSystem="2"
-				ImportLibrary=".\Release/mdsipshr.lib"/>
+				ImportLibrary="$(OutDir)/mdsipshr.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"
@@ -70,7 +70,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\Debug"
+			OutputDirectory="../Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -96,14 +96,14 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib"
-				OutputFile="../Debug/mdsipshr.dll"
+				OutputFile="$(OutDir)/mdsipshr.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\mdsipshr.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/mdsipshr.pdb"
+				ProgramDatabaseFile="$(IntDir)/mdsipshr.pdb"
 				SubSystem="1"
-				ImportLibrary=".\Debug/mdsipshr.lib"/>
+				ImportLibrary="$(OutDir)/mdsipshr.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"

@@ -41,7 +41,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib"
-				OutputFile="../Release/mdsip.exe"
+				OutputFile="$(OutDir)/mdsip.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				SubSystem="1"/>
@@ -91,12 +91,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="debug/mdsipshr.lib ../mdsshr/debug/mdsshr.lib ../treeshr/debug/treeshr.lib ../tdishr/debug/tdishr.lib wsock32.lib odbc32.lib odbccp32.lib"
-				OutputFile="../Debug/mdsip.exe"
+				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib"
+				OutputFile="$(OutDir)/mdsip.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/mdsip.pdb"
+				ProgramDatabaseFile="$(IntDir)/mdsip.pdb"
 				SubSystem="1"/>
 			<Tool
 				Name="VCMIDLTool"
