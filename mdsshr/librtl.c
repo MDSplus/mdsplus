@@ -1,14 +1,14 @@
 #if !(defined(__ALPHA) && defined(__VMS))
 void __MB(){return;}
 #endif
-#ifdef _MSC_VER
+#if defined(WIN32)
 #pragma warning (disable : 4100 4201 4115 4214 4514)
 #include <process.h>
 #include <windows.h>
 #include <tchar.h>
 #include <wtypes.h>
 #include <winreg.h>
-#else
+#elif defined(__osf__)
 #include <unistd.h>
 #include <dlfcn.h>
 #endif
@@ -140,6 +140,8 @@ int StrGet1Dx(unsigned short *len, struct descriptor *out)
 typedef __int64 _int64;
 #elif defined(__osf__)
 typedef long _int64;
+#elif defined(__hpux__)
+typedef long long _int64;
 #endif
 
 int LibEmul(int *m1, int *m2, int *add, _int64 *prod)

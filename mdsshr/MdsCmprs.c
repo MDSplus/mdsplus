@@ -63,8 +63,8 @@
 	MdsPk/MdsUnpk do right-to-left packing/unpacking, not assumed here.
 */
 
-#include <mdsshr.h>
 #include <mdsdescrip.h>
+#include <mdsshr.h>
 #include <string.h>
 #include <librtl_messages.h>
 
