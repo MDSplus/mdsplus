@@ -1,3 +1,4 @@
+#include <config.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <treeshr.h>
@@ -56,6 +57,7 @@ static fd_set fdactive;
 static int multi = 0;
 static int IsService = 0;
 static int IsWorker = 0;
+static int NO_SPAWN = 1;
 static int ContextSwitching = 0;
 static char *PortName;
 #if defined(_WIN32)
@@ -98,7 +100,7 @@ static int shut = 0;
 static int *workerShutdown;
 #define MakeDesc(name) memcpy(malloc(sizeof(name)),&name,sizeof(name))
 
-#ifdef _WIN32
+#ifdef _NT_SERVICE
 
 static char *ServiceName()
 {
@@ -135,14 +137,6 @@ static void InitWorkerCommunications()
 	*workerShutdown = 0;
 }
 
-static void InitializeSockets()
-{
-  WSADATA wsaData;
-  WORD wVersionRequested;
-  wVersionRequested = MAKEWORD(1,1);
-  WSAStartup(wVersionRequested,&wsaData);
-}
-
 static int SpawnWorker(SOCKET sock)
 {
 	BOOL status;
@@ -156,14 +150,6 @@ static int SpawnWorker(SOCKET sock)
 	CloseHandle(pinfo.hThread);
 	return pinfo.dwProcessId;
 }
-#define NO_SPAWN 0
-
-static int BecomeUser(char *remuser, struct descriptor *user)
-{
-	return 1;
-}
-
-#ifdef _NT_SERVICE
 
 static unsigned long hService;
 int ServiceMain(int,char**);
@@ -210,11 +196,15 @@ static void InitializeService()
 
 int main( int argc, char **argv) 
 {
-  if (argc >= 3 && (strcmp(argv[2],"service") == 0))
+  int service_per_user = strcmp(argv[2],"service") == 0;
+  int service_multi = strcmp(argv[2],"service_multi") == 0;
+  int service_server = strcmp(argv[2],"service_server") == 0;
+  if (argc >= 3 && (service_per_user || service_multi || service_server))
   {
 	portname = argv[1];
 	if (argc > 3)
 		hostfile = argv[3];
+	multi = NO_SPAWN = !service_per_user;
 	IsService = 1;
 	{
       SERVICE_TABLE_ENTRY srvcTable[] = {{ServiceName(),(LPSERVICE_MAIN_FUNCTION)ServiceMain},{NULL,NULL}};
@@ -245,7 +235,7 @@ static void RemoveService()
   }
 }
 
-static void InstallService()
+static void InstallService(int typesrv)
 {
   SC_HANDLE hSCManager;
   int status;
@@ -258,7 +248,12 @@ static void InstallService()
 	  strcpy(file,_pgmptr);
 	  strcat(file," ");
 	  strcat(file,portname);
-	  strcat(file," service ");
+	  switch (typesrv)
+	  {
+	  case 0: strcat(file," service "); break;
+	  case 1: strcat(file," service_multi "); break;
+	  case 2: strcat(file," service_server "); break;
+	  }
 	  if (strchr(hostfile,' '))
 	  {
 		  strcat(file,"\"");
@@ -279,25 +274,34 @@ static void InstallService()
 }
 
 #else
-static void InitializeService(){}
 static void InstallService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
 static void RemoveService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
-static void SetThisServiceStatus(int state, int hint) {}
-#endif
-
-#else
 static void StartWorker(char **argv){}
 static void InitWorkerCommunications(){}
-static void InitializeSockets(){}
 static void InitializeService(){}
 static void SetThisServiceStatus(int state, int hint) {}
 static int SpawnWorker(){return getpid();}
-#define NO_SPAWN 1
+#ifndef SERVICE_START_PENDING
 #define SERVICE_START_PENDING 0
 #define SERVICE_RUNNING 1
+#endif
+#endif
 
-static void InstallService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
-static void RemoveService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
+#ifdef HAVE_WINDOWS_H
+static int BecomeUser(char *remuser, struct descriptor *user)
+{
+	return 1;
+}
+static void InitializeSockets()
+{
+  WSADATA wsaData;
+  WORD wVersionRequested;
+  wVersionRequested = MAKEWORD(1,1);
+  WSAStartup(wVersionRequested,&wsaData);
+}
+
+#else
+static void InitializeSockets(){}
 static int BecomeUser(char *remuser, struct descriptor *local_user)
 {
   int ok = 1;
@@ -322,7 +326,6 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
   }
   return ok;
 }
-
 #endif
 
 int main(int argc, char **argv)
@@ -336,15 +339,15 @@ int main(int argc, char **argv)
   FD_ZERO(&fdactive);
   if (argc <= 1 && !IsService)
   {
-    printf("Usage: mdsip portname|portnumber [multi|install|remove|server] [hostfile]\n");
+    printf("Usage: mdsip portname|portnumber [multi|install|install_server|install_multi|remove|server] [hostfile]\n");
     exit(0);
   }
-  multi = 0;
   ContextSwitching = 0;
   if (IsService)
 	  InitializeService();
   else
   {
+	multi = 0;
     portname = argv[1];
     if (argc > 2)
 	{
@@ -357,7 +360,17 @@ int main(int argc, char **argv)
 	  }
 	  else if (strcmp("install",argv[2]) == 0)
 	  {
-		InstallService();
+		InstallService(0);
+		exit(0);
+	  }
+	  else if (strcmp("install_multi",argv[2]) == 0)
+	  {
+		InstallService(1);
+		exit(0);
+	  }
+	  else if (strcmp("install_server",argv[2]) == 0)
+	  {
+		InstallService(2);
 		exit(0);
 	  }
 	  else if (strcmp("remove",argv[2]) == 0)
@@ -549,27 +562,32 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     m.h.status = ok & 1;
     m.h.client_type = m_user->h.client_type;
     SendMdsMsg(sock,&m,0);
-    if (m.h.status && NO_SPAWN)
-    {
-      Client *new = malloc(sizeof(Client));
-      FD_SET(sock,&fdactive);
-      new->sock = sock;
-      new->context.tree = 0;
-      new->message_id = 0;
-      new->event = 0;
-      for (i=0;i<6;i++)
-	    new->tdicontext[i] = NULL;
-      for (i=0;i<MAX_ARGS;i++)
-        new->descrip[i] = NULL;
-      new->addr = *(int *)&sin->sin_addr;
-      new->next = NULL;
-      for (c=ClientList; c && c->next; c = c->next);
-      if (c) 
-        c->next = new;
-      else
-        ClientList = new;
+	if (NO_SPAWN)
+	{
+      if (m.h.status && NO_SPAWN)
+	  {
+        Client *new = malloc(sizeof(Client));
+        FD_SET(sock,&fdactive);
+        new->sock = sock;
+        new->context.tree = 0;
+        new->message_id = 0;
+        new->event = 0;
+        for (i=0;i<6;i++)
+	      new->tdicontext[i] = NULL;
+        for (i=0;i<MAX_ARGS;i++)
+          new->descrip[i] = NULL;
+        new->addr = *(int *)&sin->sin_addr;
+        new->next = NULL;
+        for (c=ClientList; c && c->next; c = c->next);
+        if (c) 
+          c->next = new;
+        else
+          ClientList = new;
+	  }
+	  pid = getpid();
 	}
-    pid = SpawnWorker(sock);
+	else
+      pid = SpawnWorker(sock);
     if (hp)
       printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr,sock, pid, user_p, hp->h_name, inet_ntoa(sin->sin_addr));
     else
