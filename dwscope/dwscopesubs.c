@@ -697,7 +697,7 @@ void      GetDataSetup(Widget w, WaveInfo *info, int *change_mask)
   GetGlobalDefaults(XtNameToWidget(top, "*defaults_setup_db"), info);
 #define changed(field,test) \
 ((test) || ((global_defaults & M_##field) != (info->_global.global_defaults & M_##field))) << B_##field
-#define changed_string(field,name) changed(field, ReplaceString(&info->field, XmTextGetString(XtNameToWidget(w, name)), 1))
+#define changed_string(field,name) changed(field, ReplaceString(&info->field, XmTextGetString(XtNameToWidget(w, name)), 0))
   mask |= changed_string(database,"exp_text");
   mask |= changed_string(shot, "shot_text");
   mask |= changed_string(default_node, "default_text");
