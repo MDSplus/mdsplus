@@ -1,3 +1,8 @@
+#ifdef linux
+#define _LARGEFILE_SOURCE
+#define _FILE_OFFSET_BITS 64
+#define __USE_FILE_OFFSET64
+#endif
 #define _GNU_SOURCE /* glibc2 needs this */
 #if defined(__sparc__)
 #include "/usr/include/sys/types.h"
