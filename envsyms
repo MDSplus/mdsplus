@@ -1,0 +1,23 @@
+MDSPLUS `pwd`
+#
+# TDI Functions
+#
+MDS_PATH $MDSPLUS/tdi
+#
+# Test trees
+#
+main_path $MDSPLUS/trees
+subtree_path $main_path/subtree
+#
+# UID path
+#
+UIDPATH $MDSPLUS/uid/%U
+#
+# IDL path
+#
+IDL_PATH $MDSPLUS/idl
+#
+# Make options file
+#
+MAKE_OPTIONS $MDSPLUS/sys_specific/MakeOptions.`uname`
+DEPEND .depend
