@@ -717,6 +717,7 @@ static int OpenNciR(TREE_INFO *info)
 		strcat(filename,"characteristics");
 		info->nci_file->get = fopen(filename,"rb");
 		status = (info->nci_file->get == NULL) ? TreeFAILURE : TreeNORMAL;
+                if (status & 1) setbuf(info->nci_file->get,0);
 #endif
 		if (!(status & 1))
 		{

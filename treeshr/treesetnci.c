@@ -314,6 +314,7 @@ static int OpenNciW(TREE_INFO *info)
       status = (info->nci_file->get == NULL) ? TreeFAILURE : TreeNORMAL;
       if (status & 1)
       {
+	setbuf(info->nci_file->get,0);
         info->nci_file->put = fopen(filename,"r+b");
         status = (info->nci_file->put == NULL) ? TreeFAILURE : TreeNORMAL;
       }
@@ -498,7 +499,9 @@ static int PutNci(TREE_INFO *info, int node_num, NCI *nci, int flush)
     if (status == RMS$_WER)
       status = info->nci_file->$a_putrab->rab$l_stv;
 #else /* __VMS */
+    fseek(info->nci_file->put,sizeof(struct nci) * node_num, SEEK_SET);
     status = fwrite(nci, sizeof(struct nci), 1, info->nci_file->put) == 1;
+    fflush(info->nci_file->put);
 #endif /* __VMS */
   }
 
