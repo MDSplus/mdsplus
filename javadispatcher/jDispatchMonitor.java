@@ -919,9 +919,9 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 	phase_failed.clear();
         if(me != null)
         {
-            exp_l.setText("Experiment: "+me.tree);
-            shot_l.setText("Shot: "     +me.shot);
-            phase_l.setText("Phase: "   +MdsHelper.toPhaseName(me.phase));
+            exp_l.setText("Experiment: "+ me.tree);
+            shot_l.setText("Shot: "     + me.shot);
+            phase_l.setText("Phase: "   + MdsHelper.toPhaseName(me.phase));
             tree = new String(me.tree);
             shot = me.shot;
         }
@@ -1137,7 +1137,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             dm = new jDispatchMonitor();
         dm.pack();
         dm.setSize(600, 700);
-        dm.show();
+        dm.setVisible(true);
     }
 
 }
