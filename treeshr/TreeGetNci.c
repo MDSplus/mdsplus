@@ -96,14 +96,13 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  break_on_no_node;
 		  read_nci;
 		  set_retlen(sizeof(nci.time_inserted));
-                  ((int *)itm->pointer)[0] = swapint((char *)&nci.time_inserted[0]);
-                  ((int *)itm->pointer)[1] = swapint((char *)&nci.time_inserted[1]);
+                  memcpy(itm->pointer,nci.time_inserted,sizeof(nci.time_inserted));
 		  break;
 	  case NciOWNER_ID:
 		  break_on_no_node;
 		  read_nci;
 		  set_retlen(sizeof(nci.owner_identifier));
-		  *(unsigned int *) itm->pointer = swapint((char *)&nci.owner_identifier);
+		  *(unsigned int *) itm->pointer = nci.owner_identifier;
 		  break;
 	  case NciCLASS:
 		  break_on_no_node;
@@ -121,21 +120,21 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  break_on_no_node;
 		  read_nci;
 		  set_retlen(sizeof(nci.length));
-		  *(unsigned int *) itm->pointer = swapint((char *)&nci.length);
+		  *(unsigned int *) itm->pointer = nci.length;
 		  break;
 	  case NciRLENGTH:
 		  break_on_no_node;
 		  read_nci;
 		  set_retlen(sizeof(nci.length));
 		  *(unsigned int *) itm->pointer =
-			  (nci.flags2 & NciM_DATA_IN_ATT_BLOCK) ? swapint((char *)&nci.length) :
-		  swapint((char *)&nci.DATA_INFO.DATA_LOCATION.record_length);
+			  (nci.flags2 & NciM_DATA_IN_ATT_BLOCK) ? nci.length : 
+                                 nci.DATA_INFO.DATA_LOCATION.record_length;
 		  break;
 	  case NciSTATUS:
 		  break_on_no_node;
 		  read_nci;
 		  set_retlen(sizeof(nci.status));
-		  *(unsigned int *) itm->pointer = swapint((char *)&nci.status);
+		  *(unsigned int *) itm->pointer = nci.status;
 		  break;
 	  case NciDATA_IN_NCI:
 		  break_on_no_node;
@@ -154,14 +153,14 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  read_nci;
 		  set_retlen(sizeof(nci.DATA_INFO.ERROR_INFO.error_status));
 		  *(unsigned int *) itm->pointer = (nci.flags2 & NciM_ERROR_ON_PUT) ? 
-                           swapint((char *)&nci.DATA_INFO.ERROR_INFO.error_status) : 1;
+                           nci.DATA_INFO.ERROR_INFO.error_status : 1;
 		  break;
 	  case NciIO_STV:
 		  break_on_no_node;
 		  read_nci;
 		  set_retlen(sizeof(nci.DATA_INFO.ERROR_INFO.stv));
 		  *(unsigned int *) itm->pointer = (nci.flags2 & NciM_ERROR_ON_PUT) ? 
-                           swapint((char *)&nci.DATA_INFO.ERROR_INFO.stv) : 1;
+                           nci.DATA_INFO.ERROR_INFO.stv : 1;
 		  break;
 	  case NciRFA:
 		  break_on_no_node;
@@ -652,9 +651,12 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci)
 		  status = TreeLockNci(info,1,node_num);
 		  if (status & 1)
 		  {
-		    lseek(info->nci_file->get, node_num * sizeof(NCI), SEEK_SET);
-		    status = read(info->nci_file->get,(void *)nci, sizeof(NCI)) == sizeof(NCI) ?
+                    char nci_bytes[42];
+		    lseek(info->nci_file->get, node_num * sizeof(nci_bytes), SEEK_SET);
+		    status = read(info->nci_file->get,(void *)nci_bytes, sizeof(nci_bytes)) == sizeof(nci_bytes) ?
                       TreeSUCCESS : TreeFAILURE;
+                    if (status == TreeSUCCESS)
+                      TreeSerializeNciIn(nci_bytes,nci);
                     TreeUnLockNci(info,1,node_num);
 		  }
 		}
@@ -667,7 +669,6 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci)
     away.
 		*********************************************/
 
-		static int nci_size = sizeof(NCI);
 		memcpy(nci,info->edit->nci +  node_num - info->edit->first_in_mem, sizeof(NCI));
 	}
 

@@ -199,13 +199,16 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
       status = TreeLockNci(info,0,node_num);
       if (status & 1)
       {
+        char nci_bytes[42];
 #ifdef _WIN32
-	_lseek(info->nci_file->put,node_num * sizeof(struct nci),SEEK_SET);
-	status = (_read(info->nci_file->put,nci,sizeof(NCI)) == sizeof(NCI)) ? TreeNORMAL : TreeFAILURE;
+	_lseek(info->nci_file->put,node_num * sizeof(nci_bytes),SEEK_SET);
+	status = (_read(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
 #else
-	lseek(info->nci_file->put,node_num * sizeof(struct nci),SEEK_SET);
-	status = (read(info->nci_file->put,nci,sizeof(NCI)) == sizeof(NCI)) ? TreeNORMAL : TreeFAILURE;
+	lseek(info->nci_file->put,node_num * sizeof(nci_bytes),SEEK_SET);
+	status = (read(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
 #endif
+        if (status == TreeNORMAL)
+          TreeSerializeNciIn(nci_bytes,nci);
 	if (!(status & 1))
           TreeUnLockNci(info,0,node_num);
       }
@@ -380,12 +383,14 @@ int TreePutNci(TREE_INFO *info, int node_num, NCI *nci, int flush)
     status = TreeLockNci(info, 0, node_num);
     if (status & 1)
     {
+      char nci_bytes[42];
+      TreeSerializeNciOut(nci,nci_bytes);
 #ifdef _WIN32
-      _lseek(info->nci_file->put,sizeof(struct nci) * node_num, SEEK_SET);
-      status = (_write(info->nci_file->put,nci,sizeof(NCI)) == sizeof(NCI)) ? TreeNORMAL : TreeFAILURE;
+      _lseek(info->nci_file->put,sizeof(nci_bytes) * node_num, SEEK_SET);
+      status = (_write(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
 #else
-      lseek(info->nci_file->put,sizeof(struct nci) * node_num, SEEK_SET);
-      status = (write(info->nci_file->put,nci,sizeof(NCI)) == sizeof(NCI)) ? TreeNORMAL : TreeFAILURE;
+      lseek(info->nci_file->put,sizeof(nci_bytes) * node_num, SEEK_SET);
+      status = (write(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
 #endif
       TreeUnLockNci(info, 0, node_num);
     }
