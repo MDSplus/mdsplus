@@ -432,10 +432,30 @@ int *dims, char *bytes)
   return status;
 }
 
+static void FlushSocket(SOCKET sock)
+{
+  struct timeval timout = {0,1};
+  int status;
+  int nbytes;
+  char buffer[1000];
+  fd_set readfds, writefds;
+  FD_ZERO(&readfds);
+  FD_SET(sock,&readfds);
+  FD_ZERO(&writefds);
+  FD_SET(sock,&writefds);
+  while(((status = select(FD_SETSIZE, &readfds, &writefds, 0, &timout)) > 0) && FD_ISSET(sock,&readfds))
+  {
+    nbytes = recv(sock, buffer, sizeof(buffer), 0);
+    timout.tv_usec = 100000;
+    FD_CLR(sock,&writefds);
+  }
+}
+
 int SendMdsMsg(SOCKET sock, Message *m, int oob)
 {
   char *bptr = (char *)m;
   int bytes_to_send = m->h.msglen;
+  if (!oob) FlushSocket(sock);
   if ((m->h.client_type & SwapEndianOnServer) != 0)
   {
     if (Endian(m->h.client_type) != Endian(ClientType()))
