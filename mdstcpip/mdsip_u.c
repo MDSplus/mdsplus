@@ -23,6 +23,9 @@ extern char *ctime();
 #if defined(_WIN32)
 #include <process.h>
 #else
+#ifndef SOCKET_ERROR
+#define SOCKET_ERROR -1
+#endif
 #include <pwd.h>
 #include <unistd.h>  /* for getpid() */
 #define closesocket close
@@ -109,8 +112,8 @@ static void StartWorker(char **argv)
   HANDLE sharedMemHandle;
   SOCKET sock;
   BOOL dup = DuplicateHandle(OpenProcess(PROCESS_ALL_ACCESS,TRUE,atoi(argv[3])), 
-			                           (HANDLE)atoi(argv[4]),GetCurrentProcess(),(HANDLE *)&sock,
-									   PROCESS_ALL_ACCESS, TRUE,DUPLICATE_CLOSE_SOURCE|DUPLICATE_SAME_ACCESS);
+	     (HANDLE)atoi(argv[4]),GetCurrentProcess(),(HANDLE *)&sock,
+	     PROCESS_ALL_ACCESS, TRUE,DUPLICATE_CLOSE_SOURCE|DUPLICATE_SAME_ACCESS);
   ClientList = malloc(sizeof(Client));
   FD_SET(sock,&fdactive);
   memset(ClientList,0,sizeof(*ClientList));
@@ -162,7 +165,7 @@ static unsigned long hService;
 int ServiceMain(int,char**);
 static SERVICE_STATUS serviceStatus;
 
-static BOOL SetThisServiceStatus(int state,int hint)
+static void SetThisServiceStatus(int state,int hint)
 {
   serviceStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
   serviceStatus.dwCurrentState = state;
@@ -171,7 +174,7 @@ static BOOL SetThisServiceStatus(int state,int hint)
   serviceStatus.dwServiceSpecificExitCode = 0;
   serviceStatus.dwCheckPoint = 0;
   serviceStatus.dwWaitHint = hint;
-  return SetServiceStatus(hService,&serviceStatus);
+  SetServiceStatus(hService,&serviceStatus);
 }
 
 VOID WINAPI serviceHandler(DWORD fdwControl)
@@ -180,9 +183,9 @@ VOID WINAPI serviceHandler(DWORD fdwControl)
 	{
 	case SERVICE_CONTROL_STOP:
 		{
-		BOOL status = SetThisServiceStatus(SERVICE_STOP_PENDING,1000);
+		SetThisServiceStatus(SERVICE_STOP_PENDING,1000);
 		*workerShutdown = 1;
-		status = SetThisServiceStatus(SERVICE_STOPPED,0);
+		SetThisServiceStatus(SERVICE_STOPPED,0);
 		shut = 1;
         break;
 		}
@@ -193,8 +196,8 @@ VOID WINAPI serviceHandler(DWORD fdwControl)
 static void InitializeService()
 {
 	char file[120];
-    hService = RegisterServiceCtrlHandler(ServiceName(),(LPHANDLER_FUNCTION) serviceHandler);
-    SetThisServiceStatus(SERVICE_START_PENDING,1000);
+        hService = RegisterServiceCtrlHandler(ServiceName(),(LPHANDLER_FUNCTION) serviceHandler);
+        SetThisServiceStatus(SERVICE_START_PENDING,1000);
 	strcpy(file,"C:\\");
 	strcat(file,ServiceName());
 	strcat(file,".log");
@@ -263,22 +266,24 @@ static void InstallService()
 }
 
 #else
-static void InitializeService(char **hostfile, char **portname){}
+static void InitializeService(){}
 static void InstallService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
+static void RemoveService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
 #endif
 
 #else
 static void StartWorker(char **argv){}
 static void InitWorkerCommunications(){}
 static void InitializeSockets(){}
-static void InitializeService(char **hostfile, char **portname){}
-static BOOL SetThisServiceStatus(int state, int hint) {return 1;}
+static void InitializeService(){}
+static void SetThisServiceStatus(int state, int hint) {}
 static int SpawnWorker(){return getpid();}
 #define NO_SPAWN 1
 #define SERVICE_START_PENDING 0
 #define SERVICE_RUNNING 1
 
 static void InstallService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
+static void RemoveService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
 static int BecomeUser(struct descriptor *local_user)
 {
   int ok;
@@ -305,7 +310,7 @@ int main(int argc, char **argv)
   static struct sockaddr_in sin;
   int tablesize = FD_SETSIZE;
   fd_set readfds;
-  TIMEVAL timeout = {1,0};
+  struct timeval timeout = {1,0};
   InitializeSockets();
   FD_ZERO(&fdactive);
   //DebugBreak();
