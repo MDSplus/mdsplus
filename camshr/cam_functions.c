@@ -114,6 +114,8 @@ static BYTE JorwayModes[2][2][4] = {
 #define	JORWAYMODE(mode, enhanced, multisample)	JorwayModes[multisample][enhanced][mode]
 #define	KSMODE(mode)				mode
 
+static Jorway73ATranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status );
+
 //-----------------------------------------------------------
 // local function prototypes
 //-----------------------------------------------------------
@@ -136,6 +138,16 @@ static int  MultiIo(    CamKey 			Key,
 						int 			Enhanced 
 						);
 static int  JorwayDoIo( CamKey 			Key, 
+						BYTE 			A, 
+						BYTE 			F, 
+						int 			Count, 
+						BYTE 			*Data, 
+						BYTE 			Mem, 
+						TranslatedIosb *iosb, 
+						int 			dmode, 
+						int 			Enhanced 
+						);
+static int  Jorway73ADoIo( CamKey 			Key, 
 						BYTE 			A, 
 						BYTE 			F, 
 						int 			Count, 
@@ -171,9 +183,9 @@ static void str2upcase( char *str );
 //-----------------------------------------------------------
 // function prototypes -- not necessarily local
 //-----------------------------------------------------------
-void 		Blank( UserParams *user );
-int 		JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status );
-int 		KsTranslateIosb( RequestSenseData *sense, int scsi_status );
+static void 		Blank( UserParams *user );
+static int 		JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status );
+static int 		KsTranslateIosb( RequestSenseData *sense, int scsi_status );
 
 //-----------------------------------------------------------
 // local, global
@@ -453,6 +465,23 @@ static int SingleIo(
 									);
 				break;
 
+			case JORWAY_73A:
+				if( MSGLVL(DETAILS) )
+					printf( "-->>JorwayDoIo()\n" );
+
+				status = Jorway73ADoIo(
+									Key, 			// module info
+									A, 				// module sub address
+									F, 				// module function
+									1, 				// implied count of 1
+									Data, 			// data
+									Mem, 			// 16 or 24 bit data
+									iosb,			// status struct
+									dmode,			// mode
+									0				// non-enhanced
+									);
+				break;
+
 			default:
 				if( MSGLVL(IMPORTANT) )
 					fprintf( stderr, "highway type(%d) not supported\n", highwayType );
@@ -529,6 +558,26 @@ static int MultiIo(
 									KSMODE(dmode),	// mode
 									Enhanced		// enhanced
 									);
+				break;
+
+		        case JORWAY_73A:
+
+				mode = JORWAYMODE(dmode, (Enhanced && highwayType == JORWAY), Count > 1);
+				if( mode != NO_MODE )
+					status = Jorway73ADoIo(
+									Key, 			// module info
+									A, 				// module sub address
+									F, 				// module function
+									Count,			// data count int bytes
+									Data, 			// data
+									Mem, 			// 16 or 24 bit data
+									iosb,			// status struct
+									dmode,			// mode
+									Enhanced		// highway mode
+									);
+				else
+					status = NOT_SUPPORTED();
+
 				break;
 
 			default:
@@ -663,6 +712,124 @@ JorwayDoIo_Exit:
 }
 
 //-----------------------------------------------------------
+static int Jorway73ADoIo(
+					CamKey			Key,
+					BYTE			A,
+					BYTE			F,
+					int				Count,
+					BYTE			*Data,
+					BYTE			Mem,
+					TranslatedIosb	*iosb,
+					int				dmode,
+					int				Enhanced
+					)
+{
+	char		dev_name[5];
+	int			IsDataCommand, scsiDevice;
+	int 		xfer_data_length;
+	int 		status;
+        unsigned char *cmd;
+        unsigned char cmdlen;
+        int direction;
+        unsigned int bytcnt;
+        int reqbytcnt = 0;
+        SenseData sense;
+        char sensretlen;
+        int online;
+        int enhanced;
+	CDBCamacDataCommand( DATAcommand );
+	CDBCamacNonDataCommand( NONDATAcommand );
+
+	if( MSGLVL(FUNCTION_NAME) )
+		printf( "%s()\n", J_ROUTINE_NAME );
+//printf( "%s(iosb is %sNULL)\n", J_ROUTINE_NAME, (iosb)?"NOT ":"" );		// [2002.12.13]
+
+	sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address, Key.crate);
+        if( (scsiDevice = get_scsi_device_number( dev_name, &enhanced, &online )) < 0 ) {
+		if( MSGLVL(IMPORTANT) )
+			fprintf( stderr, "%s(): error -- no scsi device found for '%s'\n", J_ROUTINE_NAME, dev_name );
+
+		status = NO_DEVICE;
+		goto Jorway73ADoIo_Exit;
+	}
+        if (!online && Key.slot != 30)
+          return CamOFFLINE;
+
+        if (!Enhanced)
+          enhanced = 0;
+	if( MSGLVL(DETAILS) )
+		printf( "%s(): device '%s' = '/dev/sg%d'\n", J_ROUTINE_NAME, dev_name, scsiDevice );
+
+	IsDataCommand = (F & 0x08) ? FALSE : TRUE;
+
+	if( IsDataCommand ) {
+		union {
+			BYTE	     b[4];
+			unsigned int l;
+		} transfer_len;
+
+		DATAcommand.f     = F;
+		DATAcommand.bs    = Mem == 24;
+		DATAcommand.n     = Key.slot;
+		DATAcommand.m     = JORWAYMODE(dmode, enhanced, Count > 1);
+		DATAcommand.a     = A;
+		DATAcommand.sncx  = 0;
+		DATAcommand.scs   = 0;
+
+		reqbytcnt = transfer_len.l    = Count * ((Mem == 24) ? 4 : 2);
+#	if 	JORWAY_DISCONNECT
+#		ifdef SG_BIG_BUFF
+			DATAcommand.dd = transfer_len.l > SG_BIG_BUFF;
+#		else
+			DATAcommand.dd = transfer_len.l > 4096;
+#		endif
+#	else
+		DATAcommand.dd    = 0;
+#	endif
+		DATAcommand.crate = Key.crate;
+		DATAcommand.sp    = HIGHWAY_SERIAL;
+
+		DATAcommand.transfer_len[0] = transfer_len.b[2];	// NB! order reversal
+		DATAcommand.transfer_len[1] = transfer_len.b[1];
+		DATAcommand.transfer_len[2] = transfer_len.b[0];
+
+                cmd = (unsigned char *)&DATAcommand;
+                cmdlen = sizeof(DATAcommand);
+                direction = (F < 8) ? 1 : 2;
+	}
+	else {
+		NONDATAcommand.bytes[1] = F;
+		NONDATAcommand.bytes[2] = Key.slot;
+		NONDATAcommand.bytes[3] = A;
+		NONDATAcommand.bytes[4] = (HIGHWAY_SERIAL << 7) | Key.crate;
+
+		cmd = (unsigned char *)&NONDATAcommand;
+		cmdlen = sizeof(NONDATAcommand);
+                direction = 0;
+	}
+        scsi_lock(scsiDevice,1);
+        status = scsi_io( scsiDevice, direction, cmd, cmdlen, Data, reqbytcnt, (unsigned char *)&sense,
+			  sizeof(sense), &sensretlen, &bytcnt);
+        scsi_lock(scsiDevice,0);
+        status = Jorway73ATranslateIosb(reqbytcnt,&sense,status);
+	if ( iosb ) *iosb = LastIosb;					// [2002.12.11]
+
+
+Jorway73ADoIo_Exit:
+	if( MSGLVL(DETAILS) ) {
+		printf( "%s(): iosb->status [0x%x]\n", J_ROUTINE_NAME, iosb->status );
+		printf( "%s(): iosb->x      [0x%x]\n", J_ROUTINE_NAME, iosb->x      );
+		printf( "%s(): iosb->q      [0x%x]\n", J_ROUTINE_NAME, iosb->q      );
+
+//printf( "%s(): iosb->bytcnt [%d]\n", J_ROUTINE_NAME, iosb->bytcnt);	// [2002.12.11]
+	}
+
+
+//printf("Jorway73ADoIo(iosb)::->> bytecount= %d\n", iosb->bytcnt);	// [2002.12.13]
+	return status;
+}
+
+//-----------------------------------------------------------
 // static int KsSingleIo() { .. }
 #include "KsS.c"
 
@@ -706,7 +873,122 @@ CamAssign_Exit:
 }
 // extract CAMAC status info for Jorway highways
 //-----------------------------------------------------------
-JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status )
+static int JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status )
+{
+  int status;
+  int bytcnt = reqbytcnt - ((int)sense->word_count_defect[2])+
+    (((int)sense->word_count_defect[1])<<8)+
+    (((int)sense->word_count_defect[0])<<16);
+ 
+  if (Verbose)
+  {
+    printf("SCSI Sense data:  code=%d,valid=%d,sense_key=%d,word count deficit=%d\n\n",sense->code,sense->valid,
+	   sense->sense_key, ((int)sense->word_count_defect[2])+
+	   (((int)sense->word_count_defect[1])<<8)+
+	   (((int)sense->word_count_defect[0])<<16));
+    printf("     Main status register:\n\n");
+    printf("                  bdmd=%d,dsne=%d,bdsq=%d,snex=%d,crto=%d,to=%d,no_x=%d,no_q=%d\n\n",
+                            sense->main_status_reg.bdmd,sense->main_status_reg.dsne,sense->main_status_reg.bdsq,
+                            sense->main_status_reg.snex,sense->main_status_reg.crto,sense->main_status_reg.to,
+                            sense->main_status_reg.no_x,sense->main_status_reg.no_q);
+    printf("     Serial status register:\n\n");
+    printf("                  cret=%d,timos=%d,rpe=%d,hdrrec=%d,cmdfor=%d,rnre1=%d,rnrg1=%d,snex=%d,hngd=%d\n",
+                            sense->serial_status_reg.cret,sense->serial_status_reg.timos,sense->serial_status_reg.rpe,
+                            sense->serial_status_reg.hdrrec,sense->serial_status_reg.cmdfor,
+                            sense->serial_status_reg.rnre1,sense->serial_status_reg.rnrg1,
+                            sense->serial_status_reg.snex,sense->serial_status_reg.hngd);
+    printf("                  sync=%d,losyn=%d,rerr=%d,derr=%d\n\n",sense->serial_status_reg.sync,
+                            sense->serial_status_reg.losyn,sense->serial_status_reg.rerr,
+                            sense->serial_status_reg.derr);
+    printf("                  Additional Sense Code=%d,slot=%d,crate=%d\n\n",sense->additional_sense_code,
+                              sense->slot_high_bit * 16 + sense->slot,sense->crate);
+  }
+	LastIosb.bytcnt = (unsigned short)(bytcnt & 0xffff);
+        LastIosb.lbytcnt = (unsigned short)(bytcnt >> 16);
+        LastIosb.x=0;
+        LastIosb.q=0;
+        LastIosb.err=0;
+        LastIosb.lpe=0;
+        LastIosb.tpe=0;
+        LastIosb.no_sync=0;
+        LastIosb.tmo=0;
+        LastIosb.adnr=0;
+        LastIosb.list=0;
+
+	if( MSGLVL(FUNCTION_NAME) )
+		printf( "%s()\n", JT_ROUTINE_NAME );
+
+	if( MSGLVL(DETAILS) ) {
+		printf( "%s(): scsi status 0x%x\n", JT_ROUTINE_NAME, scsi_status );
+	}
+
+        LastIosb.q = !sense->main_status_reg.no_q;
+        LastIosb.x = !sense->main_status_reg.no_x;
+	status = CamSERTRAERR;
+        switch (scsi_status) {
+        case 0:
+          status = 1;
+          break;
+	case 1: {
+          switch(sense->sense_key) {
+            case SENSE_HARDWARE_ERROR:
+              if (sense->additional_sense_code == SENSE2_NOX) {
+                LastIosb.q = 0;
+                LastIosb.x = 0;
+                if (sense->main_status_reg.snex)
+                  status = CamSCCFAIL;
+                else
+                  status = CamDONE_NOX;
+              }
+              else if (sense->additional_sense_code == SENSE2_NOQ) {
+                LastIosb.q = 0;
+                status = CamDONE_NOQ;
+              }
+              else {
+                LastIosb.err = 1;
+                LastIosb.tmo = sense->main_status_reg.to | sense->serial_status_reg.timos;
+                LastIosb.no_sync = sense->serial_status_reg.losyn | sense->serial_status_reg.sync;
+                LastIosb.lpe = LastIosb.tpe = sense->serial_status_reg.rpe;
+              }
+              break;  
+            case SENSE_SHORT_TRANSFER:
+              LastIosb.q = 0;
+              status = CamDONE_NOQ;
+              break;
+            case SENSE_UNIT_ATTENTION:
+              LastIosb.q = !sense->main_status_reg.no_q;
+              LastIosb.x = !sense->main_status_reg.no_x;
+              LastIosb.tmo = sense->main_status_reg.to | sense->serial_status_reg.timos;
+              LastIosb.no_sync = sense->serial_status_reg.losyn | sense->serial_status_reg.sync;
+              LastIosb.lpe = LastIosb.tpe = sense->serial_status_reg.rpe;
+              LastIosb.err = LastIosb.lpe || LastIosb.no_sync || LastIosb.tmo;
+              if (LastIosb.err) break;
+              if (!LastIosb.x)
+                status = CamDONE_NOX;
+              else if (!LastIosb.q)
+                status = CamDONE_NOQ;
+              else
+                status = CamDONE_Q;
+              break;
+             }
+	}
+        break;
+	case 2: 
+              if (!LastIosb.x)
+                status = CamDONE_NOX;
+              else if (!LastIosb.q)
+                status = CamDONE_NOQ;
+              else
+                status = CamDONE_Q;
+              break;
+	}
+        LastIosb.status = (unsigned short)status&0xffff;
+	return status;
+}
+
+// extract CAMAC status info for Jorway highways
+//-----------------------------------------------------------
+static int Jorway73ATranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status )
 {
   int status;
   int bytcnt = reqbytcnt - ((int)sense->word_count_defect[2])+

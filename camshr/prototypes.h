@@ -115,7 +115,7 @@ int TestUnitReady( char *serial_driver );
 int  add_entry( int dbType, char *newEntry );
 int  bisearch( int dbType, const void *target, int size,
 			   int (*compare)(const void *key1, const void *key2)); 
-void Blank( UserParams *user );
+static void Blank( UserParams *user );
 int  check_for_file( char *FileName );
 int  check_sema4();
 int  commit_entry( int dbType );
@@ -132,8 +132,8 @@ char *get_file_name( char *filename );
 int  get_scsi_device_number( char *highway_name, int *enhanced, int *online );
 int  issort( void *data, int size, int esize,
 			 int (*compare)(const void *key1, const void *key2));
-int JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status );
-int KsTranslateIosb( RequestSenseData *sense, int scsi_status );
+static int JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status );
+static int KsTranslateIosb( RequestSenseData *sense, int scsi_status );
 int  lock_file();
 int  lookup_entry( int dbType, char *module_name );
 int  map_data_file( int dbType );
