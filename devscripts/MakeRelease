@@ -21,5 +21,5 @@ echo "Assigning the tag $tag to all files in the MDSplus CVS repository"
 cvs -Q tag -RF $tag
 cvs update ChangeLog
 devscripts/MakeChangeLog
-cvs commit -m "New MDSplus release $version-$release"
+cvs commit -m "New MDSplus release $version-$release" ChangeLog
 
