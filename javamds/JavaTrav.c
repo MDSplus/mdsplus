@@ -553,22 +553,20 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getWild
 {
   int i, num_nids = 0;
   void *ctx = 0;
-  int nids[MAX_NODES];
+  int *nids = (int *)malloc(MAX_NODES * sizeof(int));
 
   jobject jnids, jnid;
-  jclass cls = (*env)->FindClass(env, "NidData");
+  jclass cls;
   jmethodID constr;
   jvalue args[1];
   int status;
 
-  /*printf("\nParte findNodeWild" );*/
 
+  cls = (*env)->FindClass(env, "NidData");
   while (((status = TreeFindNodeWild("***",&nids[num_nids],&ctx,1 << usage_mask)) & 1) && (num_nids < MAX_NODES))
   {
-	  /*printf("Letto %d\n", nids[num_nids]);*/
 	  num_nids++;
   }
-  /*printf("%s\n", MdsGetMsg(status));*/
   if(num_nids == 0) return NULL;
   constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
   jnids = (*env)->NewObjectArray(env, num_nids, cls, 0);
@@ -578,12 +576,10 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getWild
       jnid = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
       (*env)->SetObjectArrayElement(env, jnids, i, jnid);
     }
-
-/*printf("\nEnd getWild");*/
+  free((char *)nids);
   return jnids;
 
 }
-
 
 JNIEXPORT jobjectArray JNICALL Java_Database_getMembers
   (JNIEnv *env, jobject obj, jobject jnid)
