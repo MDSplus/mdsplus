@@ -40,7 +40,8 @@ public fun K3115__reset(as_is _nid, optional _method)
 
 
 	_camac_name = data(DevNodeRef(_nid, __CAMAC_NAME));
-	write(*, "Camac Name: ", _camac_name);
+
 	DevCamChk(_camac_name, CamPiow(_camac_name, 0, 9, _zero = 0, 16), 1, 1);
+	DevCamChk(_camac_name, CamPiow(_camac_name, 2, 9, _zero = 0, 16), 1, 1); 
 	return(1);
 }

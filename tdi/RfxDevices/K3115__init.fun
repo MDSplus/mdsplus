@@ -45,16 +45,16 @@ public fun K3115__init(as_is _nid, optional _method)
 
 
 	_camac_name = data(DevNodeRef(_nid, __CAMAC_NAME));
-	write(*, "Camac Name: ", _camac_name);
+/*	write(*, "Camac Name: ", _camac_name); */
 
 	DevNodeCvt(_nid, __CONTROL_MODE, ['MASTER', 'SLAVE'], [_MASTER, _SLAVE], _control_mode = _MASTER);
-	write(*, "Control Mode: ", (_control_mode == _MASTER ? "MASTER" : "SLAVE"));
+/*	write(*, "Control Mode: ", (_control_mode == _MASTER ? "MASTER" : "SLAVE")); */
 
 	DevNodeCvt(_nid, __WAVE_MODE, ['CYCLIC', 'ACYCLIC'], [_CYCLIC, _ACYCLIC], _wave_mode = _CYCLIC);
-	write(*, "Wave Mode: ", (_wave_mode == _CYCLIC ? "CYCLIC" : "ACYCLIC"));
+/*	write(*, "Wave Mode: ", (_wave_mode == _CYCLIC ? "CYCLIC" : "ACYCLIC")); */
 
 	DevNodeCvt(_nid, __CLOCK_MODE, ['INTERNAL', 'EXTERNAL'], [_INTERNAL, _EXTERNAL], _clock_mode = _INTERNAL);
-	write(*, "Clock Mode: ", (_clock_mode == _INTERNAL ? "INTERNAL" : "EXTERNAL"));
+/*	write(*, "Clock Mode: ", (_clock_mode == _INTERNAL ? "INTERNAL" : "EXTERNAL")); */
 
 	if(_clock_mode == _EXTERNAL)
 	{
@@ -82,64 +82,119 @@ public fun K3115__init(as_is _nid, optional _method)
 		_clock_start = 0;
 		_clock_end = _MDS$K_FHUGE;
 	}
+/*
 	write(*, "Clock Start: ", _clock_start);
 	write(*, "Clock End: ", _clock_end);
 	write(*, "Clock Frequency (Hz): ", _clock_freq);
+*/
 
 	_clock_control = word(_control_mode << 4 | _clock_mode << 3 | _clock_rate);
-	write(*, "Clock Control: ", _clock_control);
-	DevCamChk(_camac_name, CamPiow(_camac_name, 0, 17, _clock_control, 16), 1, 1);
+/*	write(*, "Clock Control: ", _clock_control); */
+
+	DevCamChk(_camac_name, CamPiow(_camac_name, 0, 17, _clock_control, 16), 1, 1); 
+
 	DevCamChk(_camac_name, CamPiow(_camac_name, 2, 9, _zero = 0, 16), 1, 1);
+
+	if(_wave_mode == _CYCLIC)
+	{
+		DevCamChk(_camac_name, CamPiow(_camac_name, 0, 26, _dummy=0, 16), 1, 1);
+	}
+	else
+	{
+		DevCamChk(_camac_name, CamPiow(_camac_name, 0, 24, _dummy=0, 16), 1, 1);
+	}
 
 
 
 	_max_end_time = _clock_start + 1023 * _clock_delta;
-	write(*, "Max end time: ", _max_end_time);
+/*	write(*, "Max end time: ", _max_end_time); */
 
 	for(_n_chan = 0; _n_chan < 6; _n_chan++)
 	{
 		if(DevIsOn(DevNodeRef(_nid, __CHANNEL_1 + (_n_chan * __NODES_PER_CHANNEL))))
 		{
-			write(*, "Channel ", _n_chan + 1, " is ON");
+		/*	write(*, "Channel ", _n_chan + 1, " is ON"); */
 			DevNodeCvt(_nid, __CHANNEL_1 + __RANGE + (_n_chan * __NODES_PER_CHANNEL), [20, 10, 5], [20, 10, 5], _range = 20);
-			write(*, "Channel ", _n_chan + 1, " range (Vpp): ", _range);
+			/* write(*, "Channel ", _n_chan + 1, " range (Vpp): ", _range); */
 			DevNodeCvt(_nid, __CHANNEL_1 + __RANGE_POL + (_n_chan * __NODES_PER_CHANNEL), ['BIPOLAR', 'UNIPOLAR'], [_BIPOLAR, _UNIPOLAR], _range_pol = _BIPOLAR);
-			write(*, "Channel ", _n_chan + 1, " range polarity: ", (_range_pol == _BIPOLAR ? "BIPOLAR" : "UNIPOLAR"));
+			/* write(*, "Channel ", _n_chan + 1, " range polarity: ", (_range_pol == _BIPOLAR ? "BIPOLAR" : "UNIPOLAR")); */
 			if((_range_pol == _UNIPOLAR) && (_range == 20))
 			{
 				write(*, "Channel ", _n_chan + 1, " invalid range");
-				return(1);
+				abort();
 			}
 			_low_voltage = (_range_pol == _BIPOLAR) ? -_range / 2. : 0.;
 			_high_voltage = (_range_pol == _BIPOLAR) ? _range / 2. : _range;
+
+
+/*
 			write(*, "Channel ", _n_chan + 1, " low voltage (V): ", _low_voltage);
 			write(*, "Channel ", _n_chan + 1, " high voltage (V): ", _high_voltage);
+*/
+
+
 
 			_voltages = data(DevNodeRef(_nid, __CHANNEL_1 + __VOLTAGES + (_n_chan * __NODES_PER_CHANNEL)));
 			_n_voltages = size(_voltages);
-			write(*, "Channel ", _n_chan + 1, " voltages before: ", _voltages);
+	/*		write(*, "Channel ", _n_chan + 1, " voltages before: ", _voltages); */
+
+
+
 			_new_voltages = [];
 			_clipped = 0;
+			_trucated = 0;
 			for(_j = 0; _j < _n_voltages; _j++)
 			{
 				if(_voltages[_j] > _high_voltage)
 				{
+/*
+					if( _j == (_n_voltages-1) )
+					{
+						_new_voltages = [_new_voltages, 0];
+						_truncated = 1;
+					}
+					else
+					{
+						_new_voltages = [_new_voltages, _high_voltage];
+					}
+*/
+
 					_new_voltages = [_new_voltages, _high_voltage];
 					_clipped = 1;
-					write(*, ">>>>>");
 				}
 				else
 				{
 					if(_voltages[_j] < _low_voltage)
 					{
+/*
+						if( _j == (_n_voltages-1) )
+						{
+							_new_voltages = [_new_voltages, 0];
+							_truncated = 1;
+						}
+						else
+						{
+							_new_voltages = [_new_voltages, _low_voltage];
+						}
+*/
+
 						_new_voltages = [_new_voltages, _low_voltage];
 						_clipped = 1;
-						write(*, "<<<<<");
 					}
 					else
 					{
+/*
+						if( _j == (_n_voltages-1) )
+						{
+							_new_voltages = [_new_voltages, 0];
+							_truncated = 1;
+						}
+						else
+						{
+							_new_voltages = [_new_voltages, _voltages[_j]];
+						}
+*/
 						_new_voltages = [_new_voltages, _voltages[_j]];
-						write(*, "OK");
 					}
 				}
 			}
@@ -147,37 +202,41 @@ public fun K3115__init(as_is _nid, optional _method)
 			{
 				write(*, "Channel ", _n_chan + 1, " clipped");
 			}
-			write(*, "Channel ", _n_chan + 1, " voltages: ", _new_voltages);
+
+
 
 			DevNodeCvt(_nid, __CHANNEL_1 + __TIME_MODE + (_n_chan * __NODES_PER_CHANNEL), ['AS IS', 'VARIABLE'], [_ASIS, _VARIABLE], _time_mode = _ASIS);
-			write(*, "Channel ", _n_chan + 1, " time mode: ", (_time_mode == _ASIS ? "AS IS" : "VARIABLE"));
+		/*	write(*, "Channel ", _n_chan + 1, " time mode: ", (_time_mode == _ASIS ? "AS IS" : "VARIABLE")); */
 
 			if(_time_mode == _VARIABLE)
 			{
+
+
+
 				_times = data(DevNodeRef(_nid, __CHANNEL_1 + __TIMES + (_n_chan * __NODES_PER_CHANNEL)));
 				_n_times = size(_times);
 				if(_n_voltages <> _n_times)
 				{
 					write(*, "Times <> Voltages");
-					return(1);
+					abort();
 				}
 
 
 				_status = 1;
 				for(_j = 0; (_j < (_n_times - 1)); _j++)
 				{
-					if(_times[_j] > _times[_j + 1])
+					if(_times[_j] >= _times[_j + 1])
 					{
  						_status = 0;
 						break;
 					}
 				}
 
-				write(*, "Channel ", _n_chan + 1, " times: ", _times);
+				/* write(*, "Channel ", _n_chan + 1, " times: ", _times); */
 				if(_status == 0)
 				{
 					write(*, "Temp [", _j, "] errato");
-					return(1);
+					abort();
 				}
 
 
@@ -193,19 +252,39 @@ public fun K3115__init(as_is _nid, optional _method)
 				{
 					_end_time = _max_end_time;
 				}
-				write(*, "Channel ", _n_chan + 1, " end time: ", _end_time);	
+			/*	write(*, "Channel ", _n_chan + 1, " end time: ", _end_time);	 */
+
 				_sgn = make_signal(_new_voltages, , _times);
 				_rsgn = resample(_sgn, _clock_start, _end_time, _clock_delta);
+
+				_new_rsgn =  data(_rsgn);
+				if(_wave_mode == _ACYCLIC)
+				{
+				    _len = size(_new_rsgn);
+				    if(_len > 1000)
+					_len = 1000;
+				    _new_rsgn = [ _new_rsgn[*: _len ], zero(1023 - _len, 0) ];                             
+				} 
+		
+				_rsgn_new = make_signal(_new_rsgn, , dim_of(_rsgn));
+	
+
+				DevPut(_nid, __CHANNEL_1 + __OUTPUT + (_n_chan * __NODES_PER_CHANNEL), _rsgn_new);
+				_fifo = word((4095. / _range) * _new_rsgn);
+
+			/*
 				DevPut(_nid, __CHANNEL_1 + __OUTPUT + (_n_chan * __NODES_PER_CHANNEL), _rsgn);
-				_fifo = word((4096. / _range) * data(_rsgn));
-				write(*, _fifo);
+				_fifo = word((4095. / _range) * data(_rsgn));
+			
+				write(*, "TIMES", dim_of(_rsgn));
+			*/
 			}
 			else
 			{
 				if(_n_voltages > 1024)
 				{
 					write(*, "Channel ", _n_chan + 1, " troppi valori");
-					return(1);
+					abort();
 				}
 
 				_tensioni = [];
@@ -217,10 +296,14 @@ public fun K3115__init(as_is _nid, optional _method)
 						_tensioni = [_tensioni, 0];
 				}
 				else
-					_tensioni = _new_voltages;
+				{
+					/* _tensioni = _new_voltages; */
+					_tensioni = _new_voltages[*:(size(_tmp)-2)];
+					_tensioni = [_tensioni, 0];
+				}
 
-				_fifo = word((4096. / _range) * _tensioni);
-				write(*, _fifo);
+				_fifo = word((4095. / _range) * _tensioni);
+				/* write(*, _fifo); */
 
 				_times = make_range(0, 1023. * _clock_delta, _clock_delta);
 				_sgn = make_signal(_tensioni, , _times);
@@ -229,24 +312,19 @@ public fun K3115__init(as_is _nid, optional _method)
 		}
 		else
 		{
-			write(*, "Channel ", _n_chan + 1, " is OFF");
-			_fifo = zero(1024, 0);
+			/* write(*, "Channel ", _n_chan + 1, " is OFF"); */
+			_fifo = word(zero(1024, 0));
 		}
 
-
+/*
+		write(*, "FIFO", word(_fifo));
+		write(*, "Size fifo ", size(_fifo));
+*/
 
 		DevCamChk(_camac_name, CamQStopw(_camac_name, _n_chan, 16, size(_fifo), _fifo, 16), 1, 1);
 	}
 		
 
-	if(_wave_mode == _CYCLIC)
-	{
-		DevCamChk(_camac_name, CamPiow(_camac_name, 0, 26, _dummy=0, 16), 1, 1);
-	}
-	else
-	{
-		DevCamChk(_camac_name, CamPiow(_camac_name, 0, 24, _dummy=0, 16), 1, 1);
-	}
 
 	DevCamChk(_camac_name, CamPiow(_camac_name, 0, 25, _dummy=0, 16), 1, 1);
 
