@@ -6,6 +6,7 @@ Linux*)
 #
 # Add /usr/local/mdsplus/lib to /etc/ld.so.conf
 #
+set
 echo Configuring mdsplus libraries
 if grep "^/usr/local/mdsplus/lib" /etc/ld.so.conf > /dev/null
 then
