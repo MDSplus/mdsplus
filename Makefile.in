@@ -31,7 +31,7 @@ PARTS = \
         @D3D_PACKAGE@ \
         wfevent \
         setevent \
-	@JAVA_APS@ \
+        @JAVA_APS@ \
         @IDLSQL@ \
 	@IDLMDSEVENT@
 
