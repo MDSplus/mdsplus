@@ -6,7 +6,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@
+LIBS=-L@MAKESHLIBDIR@ -lMdsShr $(LIBS)@LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
@@ -35,13 +35,13 @@ TreeVerify.c \
 RemoteAccess.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = TreeShr.export
+EXPORTS = TreeShr.exports
 
-all : @MAKELIBDIR@ @MAKELIBDIR@libTreeShr@SHARETYPE@ @MAKELIBDIR@libTreeShr.a
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libTreeShr@SHARETYPE@ @MAKELIBDIR@libTreeShr.a
 
 clean:
 	- rm *.o
-	- rm @MAKELIBDIR@libTreeShr@SHARETYPE@
+	- rm @MAKESHLIBDIR@libTreeShr@SHARETYPE@
 	- rm @MAKELIBDIR@libTreeShr.a
 
 depend:
@@ -52,11 +52,14 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 644  @MAKELIBDIR@libTreeShr.a @libdir@
-	$(INSTALL) -m 755  @MAKELIBDIR@libTreeShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libTreeShr@SHARETYPE@ @libdir@
+	if test @SHARETYPE@ != .a ; then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libTreeShr.a @libdir@
+	fi;
 
-@MAKELIBDIR@libTreeShr@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsShr $(LIBS)
+
+@MAKESHLIBDIR@libTreeShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
+	@MAKESHARED@
 
 @MAKELIBDIR@libTreeShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
@@ -64,3 +67,8 @@ install:
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
+
+@MAKESHLIBDIR_RULE@
+
+TreeShr.exports: TreeShr.def
+	sed -e /LIBRARY/\;/\;/d TreeShr.def > $@

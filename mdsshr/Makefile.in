@@ -26,7 +26,7 @@ SOURCES = \
         MdsXdRoutines.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = MdsShr.export
+EXPORTS = MdsShr.exports
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsShr@SHARETYPE@ @MAKELIBDIR@libMdsShr.a
 
@@ -60,5 +60,5 @@ install:
 
 @MAKESHLIBDIR_RULE@
 
-MdsShr.export: MdsShr.def
+MdsShr.exports: MdsShr.def
 	sed -e /LIBRARY/\;/\;/d MdsShr.def > $@
