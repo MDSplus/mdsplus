@@ -1281,7 +1281,7 @@ static void PrintHelp(char *option)
   printf("      --hostfile hostfile\n");
   printf("      --nocompression\n");
   printf("      --compression\n\n");
-  printf("  Deprecated Format:\n\n    mdsip port|service [multi|server|install|install_server|install_multi|remove] [hostflie]\n");
+  printf("  Deprecated Format:\n\n    mdsip port|service [multi|server|install|install_server|install_multi|remove] [hostfile]\n");
   exit(1);
 } 
 
