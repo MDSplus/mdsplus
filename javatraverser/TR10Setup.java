@@ -49,11 +49,20 @@ public class TR10Setup extends DeviceSetup
 		JPanel2.add(BorderLayout.CENTER, JPanel5);
 		JPanel7.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		JPanel5.add(BorderLayout.NORTH, JPanel7);
-		deviceField2.setNumCols(35);
+		deviceField2.setNumCols(25);
 		deviceField2.setTextOnly(true);
 		deviceField2.setOffsetNid(4);
 		deviceField2.setLabelString("Comment:");
 		JPanel7.add(deviceField2);
+		deviceChoice7.setOffsetNid(10);
+		{
+			String[] tempString = new String[2];
+			tempString[0] = "TRUE";
+			tempString[1] = "FALSE";
+			deviceChoice7.setChoiceItems(tempString);
+		}
+		deviceChoice7.setLabelString("Use Time:");
+		JPanel7.add(deviceChoice7);
 		JPanel8.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		JPanel5.add(BorderLayout.CENTER, JPanel8);
 		deviceField4.setNumCols(25);
@@ -116,6 +125,7 @@ public class TR10Setup extends DeviceSetup
 		}
 		deviceChoice3.setLabelString("Trig. Mode");
 		JPanel6.add(deviceChoice3);
+		JPanel6.add(deviceChoice6);
 		{
 			String[] tempString = new String[3];
 			tempString[0] = "init";
@@ -127,9 +137,9 @@ public class TR10Setup extends DeviceSetup
 		getContentPane().add(BorderLayout.CENTER, JTabbedPane1);
 		JScrollPane1.setAutoscrolls(true);
 		JTabbedPane1.add(JScrollPane1);
-		JScrollPane1.setBounds(2,24,596,259);
+		JScrollPane1.setBounds(2,24,596,254);
 		JScrollPane1.setVisible(false);
-		JViewport1.setExtentSize(new java.awt.Dimension(521,656));
+		JViewport1.setExtentSize(new java.awt.Dimension(578,496));
 		JViewport1.setView(JPanel1);
 		JViewport1.setViewSize(new java.awt.Dimension(505,656));
 		JScrollPane1.getViewport().add(JViewport1);
@@ -362,9 +372,9 @@ public class TR10Setup extends DeviceSetup
 		deviceField48.setLabelString("End :");
 		timeChannel16.add(deviceField48);
 		JTabbedPane1.add(JScrollPane2);
-		JScrollPane2.setBounds(2,24,596,259);
+		JScrollPane2.setBounds(2,24,596,254);
 		JScrollPane2.setVisible(false);
-		JViewport2.setExtentSize(new java.awt.Dimension(521,656));
+		JViewport2.setExtentSize(new java.awt.Dimension(578,496));
 		JViewport2.setView(JPanel4);
 		JViewport2.setViewSize(new java.awt.Dimension(505,656));
 		JScrollPane2.getViewport().add(JViewport2);
@@ -647,6 +657,7 @@ public class TR10Setup extends DeviceSetup
 	javax.swing.JPanel JPanel5 = new javax.swing.JPanel();
 	javax.swing.JPanel JPanel7 = new javax.swing.JPanel();
 	DeviceField deviceField2 = new DeviceField();
+	DeviceChoice deviceChoice7 = new DeviceChoice();
 	javax.swing.JPanel JPanel8 = new javax.swing.JPanel();
 	DeviceField deviceField4 = new DeviceField();
 	DeviceDispatch deviceDispatch1 = new DeviceDispatch();
@@ -657,6 +668,7 @@ public class TR10Setup extends DeviceSetup
 	DeviceChoice deviceChoice1 = new DeviceChoice();
 	DeviceChoice deviceChoice2 = new DeviceChoice();
 	DeviceChoice deviceChoice3 = new DeviceChoice();
+	DeviceChoice deviceChoice6 = new DeviceChoice();
 	DeviceButtons deviceButtons1 = new DeviceButtons();
 	javax.swing.JTabbedPane JTabbedPane1 = new javax.swing.JTabbedPane();
 	javax.swing.JScrollPane JScrollPane1 = new javax.swing.JScrollPane();
