@@ -1136,13 +1136,11 @@ int LibEstablish()
   return 1;
 }
 
-int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
+time_t LibCvtTim(int *time_in,double *t) 
 {
+  double t_out;
   time_t bintim = time(&bintim);
-  char *time_str;
-  char time_out[23];
   struct tm *_tm;
-  unsigned short slen=sizeof(time_out);
 #ifndef HAVE_VXWORKS_H
   tzset();
   _tm = localtime(&bintim);
@@ -1152,13 +1150,26 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
     double time_d;
     memcpy(&time_local,time_in,sizeof(time_local));
     time_d = ((double)(time_local >> 24)) * 1.6777216 - 3.5067168e+09;
-    bintim = (time_t)(time_d > 0 ? time_d : 0) - _tm->tm_gmtoff; 
+    t_out = (time_d > 0 ? time_d : 0) + timezone;
+    bintim = (time_t)(time_d > 0 ? time_d : 0);  
   }
   else
-    bintim = time(0) - _tm->tm_gmtoff;
+    bintim = t_out = time(0);
+  bintim -= _tm->tm_gmtoff;
 #else
-  bintim = time(0) + timezone;
+  bintim = t_out = time(0);
 #endif
+  if (t != 0)
+    *t = t_out;
+  return(bintim);
+}
+  
+int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
+{
+  char *time_str;
+  char time_out[23];
+  unsigned short slen=sizeof(time_out);
+  time_t bintim = LibCvtTim(time_in,0);
   time_str = ctime(&bintim);
   time_out[0]  = time_str[8];
   time_out[1]  = time_str[9];
