@@ -1,9 +1,0 @@
-all :
-	cd mdsshr ; make -f Makefile.IRIX
-	cd treeshr ; make -f Makefile.IRIX
-	cd tdishr ; make -f Makefile.IRIX
-	cd tditest ; make -f Makefile.IRIX
-	cd xmdsshr ; make -f Makefile.IRIX
-	cd dwscope ; make -f Makefile.IRIX
-	cd mitdevices ; make -f Makefile.IRIX
-	cd traverser ; make -f Makefile.IRIX

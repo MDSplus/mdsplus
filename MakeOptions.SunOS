@@ -1,4 +1,7 @@
 CFLAGS = -I../include -g
+MISALIGN_CFLAGS = -misalign2
+MISALIGN_LD_FLAGS = -misalign2
 SHARE_TYPE = so
 MAKE_DEPEND = cc $(CFLAGS) -xM {} > .depend \;
 LD_SHARED_LIB_OPTIONS = -G -ldl
+LD = cc

@@ -690,7 +690,7 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,char *op
 					strcat(resnam,TREE_PATH_DELIM);
 				strcat(resnam,name);
 				strcat(resnam,type);
-#if defined(__osf__) || defined(__hpux__) || defined(__sunos__)
+#if defined(__osf__) || defined(__hpux) || defined(__sun) || defined(__sgi)
 				info->channel = open(resnam,O_RDONLY);
 				file = info->channel ? fdopen(info->channel,"rb") : NULL;
 #else
@@ -913,8 +913,8 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
                         status = addr != (void *)-1;
                         if (!status)
                           printf("Error mapping file - errno = %d\n",errno);
-#elif defined(__hpux__) || defined(__sunos__)
-#if defined(__sunos__)
+#elif defined(__hpux) || defined(__sun) || defined(__sgi)
+#if defined(__sun)
 #define MAP_FILE 0
 #endif
                         info->section_addr[0] = mmap(0,info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE, 
@@ -965,7 +965,7 @@ static int GetVmForTree(TREE_INFO *info)
 
 #if defined(__ALPHA) && defined(__VMS)
 	int PAGE_SIZE=64;
-#elif defined(__osf__) || defined(__hpux__)
+#elif defined(__osf__) || defined(__hpux)
 	int PAGE_SIZE = sysconf(_SC_PAGE_SIZE)/512;
 #else
 	int PAGE_SIZE=1;
