@@ -383,7 +383,7 @@ int  DisconnectFromMds(SOCKET sock)
 {
   int status;
   shutdown(sock,2);
-  status = close(sock);
+  status = close(sock) == 0;
 #ifdef __MSDOS__
   WSACleanup();
 #endif
