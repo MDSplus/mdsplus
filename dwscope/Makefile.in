@@ -54,7 +54,7 @@ install:
 	cp ScopePrinters $@
 
 @MAKEBINDIR@dwscopePrint : dwscopePrint
-        cp dwcopePrint $@
+	cp dwcopePrint $@
 
 @MAKEBINDIR@dwscope_remote : dwscope.o dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o
 	$(CC) -o $@ $(CFLAGS) dwscope.o  dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o \
