@@ -67,9 +67,13 @@ int dtype_length(struct descriptor *d)
 #ifdef __VMS
 char *DscToCstring(struct dsc$descriptor *dsc)
 {
-  return (dsc->dsc$b_dtype == DSC$K_DTYPE_T) ?
-               strcpy((char *)malloc(strlen(dsc->dsc$a_pointer)+1),dsc->dsc$a_pointer) : 
+   char *ans = (dsc->dsc$b_dtype == DSC$K_DTYPE_T) ?
+               strcpy((char *)malloc(strlen(dsc->dsc$a_pointer)+1),dsc->dsc$a_pointer) :
                strcpy((char *)malloc(strlen((char *)dsc)+1),(char *)dsc);
+  int i;
+  char *p;
+  for (p = ans ? ans + strlen(ans) - 1 : 0; p && *p == ' ' && p >= ans; p--) *p = 0;
+  return ans;
 }
 #endif
 
