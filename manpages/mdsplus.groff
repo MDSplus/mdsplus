@@ -31,5 +31,5 @@ http://www.psfc.mit.edu/mdsplus
 http://www.psfc.mit.edu/MDSplusDOC
 .RE
 actions(1), ccl(1), cts(1), dwpad(1), dwscope(1), dwscope_remote(1), jScope(1), jTraverser(1),
-mdstcl(1), setevent(1), tditest(1), tdic(1), traverser(1), wfevent(1), mdsip.hosts, .mdsplus(5),
+mdstcl(1), setevent(1), tditest(1), tdic(1), traverser(1), wfevent(1), mdsip.hosts(5), .mdsplus(5),
 mdsplus.conf(5), mdsip(8), mdsipd(8)
