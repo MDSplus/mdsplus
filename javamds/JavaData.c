@@ -137,8 +137,8 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
     {
       return  NULL;
     }
- /*printf("DescripToObject dtype = %d class = %d\n", desc->dtype, desc->class);
-   */  
+ /*printf("DescripToObject dtype = %d class = %d\n", desc->dtype, desc->class);*/
+     
   if(desc->class == CLASS_XD)
     return DescripToObject(env, ((struct descriptor_xd *)desc)->pointer);
 
@@ -734,8 +734,8 @@ void FreeDescrip(struct descriptor *desc)
   if(!desc)
     return;
 
-/*printf("FreeDescrip class %d dtype %d\n", desc->class, desc->dtype);
-*/
+/*printf("FreeDescrip class %d dtype %d\n", desc->class, desc->dtype);*/
+
   switch(desc->class) {
     case CLASS_S : free(desc->pointer); break;
     case CLASS_A : free(((struct descriptor_a *)desc)->pointer); break;

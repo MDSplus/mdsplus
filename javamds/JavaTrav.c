@@ -198,157 +198,82 @@ JNIEXPORT void JNICALL Java_Database_quit (JNIEnv *env, jobject obj)
       
 
 JNIEXPORT jobject JNICALL Java_Database_getData
-
  (JNIEnv *env, jobject obj, jobject jnid)
-
 {
-
   int nid, status;
-
   jfieldID nid_fid;
-
   jclass cls;
-
   EMPTYXD(xd);
-
   EMPTYXD(out_xd);
-
   jobject ris;
 
-
-
   cls = (*env)->GetObjectClass(env, jnid);
-
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
-
   nid = (*env)->GetIntField(env, jnid, nid_fid);
-
-
 
   status = TreeGetRecord(nid, &xd);
 
-
-
-/* //  printf("\nletti %d bytes", xd.l_length);*/
-
-/*
-
-  status = TdiDecompile(&xd, &out_xd MDS_END_ARG);
-
+   /*printf("\nletti %d bytes\n", xd.l_length);
+*/
+ /* status = TdiDecompile(&xd, &out_xd MDS_END_ARG);
 printf("\nEnd TdiDecompile");
-
 out_xd.pointer->pointer[out_xd.pointer->length - 1] = 0;
-
 printf(out_xd.pointer->pointer);*/
-
  
 
-
-
   if(!(status & 1))
-
     {
-
       RaiseException(env, MdsGetMsg(status));
-
       return NULL;
-
     }
-
-  if(!xd.pointer)
-
+  if(!xd.l_length || !xd.pointer)
     return NULL;
 
-
-
-
-
+/*printf("Parte DescripToObject\n");*/
   ris = DescripToObject(env, xd.pointer);
-
+/*printf("Finita DescripToObject\n");*/
    
-
   MdsFree1Dx(&xd, NULL);
-
   return ris;
-
 }
-
-
 
 JNIEXPORT jobject JNICALL Java_Database_evaluateData
-
  (JNIEnv *env, jobject obj, jobject jnid)
-
 {
-
   int nid, status;
-
   jfieldID nid_fid;
-
   jclass cls;
-
   EMPTYXD(xd);
-
   EMPTYXD(out_xd);
-
   jobject ris;
 
-
-
   cls = (*env)->GetObjectClass(env, jnid);
-
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
-
   nid = (*env)->GetIntField(env, jnid, nid_fid);
 
-
-
   status = TreeGetRecord(nid, &xd);
-
   if(!(status & 1))
-
     {
-
       RaiseException(env, MdsGetMsg(status));
-
       return NULL;
-
     }
-
-  if(!xd.pointer)
-
+  if(!xd.l_length || !xd.pointer)
     return NULL;
-
   status = TdiData(&xd, &xd MDS_END_ARG);
-
   if(!(status & 1))
-
     {
-
       RaiseException(env, MdsGetMsg(status));
-
       return NULL;
-
     }
-
   if(!xd.pointer)
-
     return NULL;
-
-
-
 
 
   ris = DescripToObject(env, xd.pointer);
-
    
-
   MdsFree1Dx(&xd, NULL);
-
   return ris;
-
 }
-
 
 JNIEXPORT void JNICALL Java_Database_putData
   (JNIEnv *env, jobject obj, jobject jnid, jobject jdata)
@@ -896,7 +821,7 @@ static int doAction(int nid)
 	int method_nid, i;
 	struct descriptor nid_d = {sizeof(int), DTYPE_NID, CLASS_S, 0};
 	char type = DTYPE_L;
-	DESCRIPTOR_CALL(call_d, (unsigned int *)0, (unsigned char)256, 0, 0);
+	DESCRIPTOR_CALL(call_d, (unsigned int *)0, 256, 0, 0);
  	nid_d.pointer = (char *)&method_nid;
  	call_d.pointer = (unsigned char *)&type;
 	status = TreeGetRecord(nid, &xd);
