@@ -2077,10 +2077,11 @@ static void /*XtActionProc*/Resize(Widget w, XEvent *event, String *params, Card
   int       r;
   double orig_height = XtHeight(Pane[0]);
   double new_height;
+  XEvent ev;
 
   /* flush the event que for resize events */
-  while (XCheckTypedWindowEvent(XtDisplay(w),XtWindow(w),event->type,(XEvent *) event));
-
+  while (XCheckTypedWindowEvent(XtDisplay(w),XtWindow(w),event->type, &ev))
+    event = &ev;
   if (!PreventResize)
   {
     for (c = 0; c < Columns; c++)
