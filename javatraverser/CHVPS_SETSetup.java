@@ -112,6 +112,7 @@ public class CHVPS_SETSetup extends DeviceSetup {
     deviceField9.setIdentifier("");
     jPanel5.setLayout(flowLayout4);
     flowLayout4.setAlignment(FlowLayout.LEFT);
+    deviceButtons1.setMethods(new String[] {"init"});
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jPanel1,  BorderLayout.CENTER);
     jPanel1.add(jPanel2, null);

@@ -1240,6 +1240,7 @@ public class CHVPSSetup extends DeviceSetup {
     deviceField111111113.setOffsetNid(17);
     deviceField111111113.setNumCols(25);
     deviceField111111113.setIdentifier("");
+    deviceButtons1.setMethods(new String[] {"init", "trigger", "reset", "turn_off"});
     this.getContentPane().add(jPanel1, BorderLayout.NORTH);
     jPanel1.add(jPanel2, null);
     jPanel2.add(deviceField1, null);
