@@ -73,7 +73,7 @@ MdsLib_client.o : MdsLib.c
 	mkdir @MAKELIBDIR@
 
 @MAKEBINDIR@mdslib_ctest : mdslib_ctest.c
-	$(CC) -o $@ $(CFLAGS) mdslib_ctest.c -L@MAKELIBDIR@ -lMdsLib $(MDSLIB_LIBS) $(LIBS)
+	$(CC) -o $@ $(CFLAGS) mdslib_ctest.c -L@MAKELIBDIR@ -lMdsLib $(MDSLIB_LIBS) $(LIBS) @LIBM@
 
 @MAKEBINDIR@mdslib_ftest : mdslib_ftest.o
 	$(FC) -o $@ $(FFLAGS) mdslib_ftest.f @FEXECLIBDIR@@MAKELIBDIR@ -lMdsLib $(MDSLIB_LIBS) $(LIBS)
