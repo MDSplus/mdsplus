@@ -819,47 +819,47 @@ break;
 case 3:
 
 # line 714 "TdiLex.x"
-	{pos();  return	(TdiLexFloat(	yyleng, yytext, TdiYylvalPtr));}
+	{pos();  return	(TdiLexFloat(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case 4:
 
 # line 716 "TdiLex.x"
-{pos(); return	(TdiLexFloat(	yyleng, yytext, TdiYylvalPtr));}
+{pos(); return	(TdiLexFloat(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case 5:
 
 # line 718 "TdiLex.x"
-{pos();  return	(TdiLexInteger(	yyleng, yytext, TdiYylvalPtr));}
+{pos();  return	(TdiLexInteger(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case 6:
 
 # line 720 "TdiLex.x"
-	{pos();  return	(TdiLexIdent(	yyleng, yytext, TdiYylvalPtr));}
+	{pos();  return	(TdiLexIdent(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case 7:
 
 # line 722 "TdiLex.x"
-	{pos();  return	(TdiLexPath(	yyleng, yytext, TdiYylvalPtr));}
+	{pos();  return	(TdiLexPath(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case 8:
 
 # line 724 "TdiLex.x"
-	{pos();  return	(TdiLexQuote(	yyleng, yytext, TdiYylvalPtr));}
+	{pos();  return	(TdiLexQuote(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case 9:
 
 # line 726 "TdiLex.x"
-	{pos();  return	(TdiLexPoint(	yyleng, yytext, TdiYylvalPtr));}
+	{pos();  return	(TdiLexPoint(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case 10:
 
 # line 728 "TdiLex.x"
-           {pos(); if      (TdiLexComment(      yyleng, yytext, TdiYylvalPtr)) return(LEX_ERROR);}
+           {pos(); if      (TdiLexComment(      yyleng, (unsigned char *)yytext, TdiYylvalPtr)) return(LEX_ERROR);}
 break;
 case 11:
 
 # line 730 "TdiLex.x"
-	{pos(); return	(TdiLexPunct(	yyleng, yytext, TdiYylvalPtr));}
+	{pos(); return	(TdiLexPunct(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case -1:
 break;

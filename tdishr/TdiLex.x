@@ -711,23 +711,23 @@ point		"->"{anum}+(":"|"..")?
 
 \n	{nlpos();}
 
-{flt0}		{pos();  return	(TdiLexFloat(	yyleng, yytext, TdiYylvalPtr));}
+{flt0}		{pos();  return	(TdiLexFloat(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 
-({flt1})|({flt2})|({flt3}) {pos(); return	(TdiLexFloat(	yyleng, yytext, TdiYylvalPtr));}
+({flt1})|({flt2})|({flt3}) {pos(); return	(TdiLexFloat(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 
-{integer}	{pos();  return	(TdiLexInteger(	yyleng, yytext, TdiYylvalPtr));}
+{integer}	{pos();  return	(TdiLexInteger(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 
-{name}		{pos();  return	(TdiLexIdent(	yyleng, yytext, TdiYylvalPtr));}
+{name}		{pos();  return	(TdiLexIdent(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 
-{path}		{pos();  return	(TdiLexPath(	yyleng, yytext, TdiYylvalPtr));}
+{path}		{pos();  return	(TdiLexPath(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 
-[\"\']		{pos();  return	(TdiLexQuote(	yyleng, yytext, TdiYylvalPtr));}
+[\"\']		{pos();  return	(TdiLexQuote(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 
-{point}		{pos();  return	(TdiLexPoint(	yyleng, yytext, TdiYylvalPtr));}
+{point}		{pos();  return	(TdiLexPoint(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 
-"/*"            {pos(); if      (TdiLexComment(      yyleng, yytext, TdiYylvalPtr)) return(LEX_ERROR);}
+"/*"            {pos(); if      (TdiLexComment(      yyleng, (unsigned char *)yytext, TdiYylvalPtr)) return(LEX_ERROR);}
 
-.		{pos(); return	(TdiLexPunct(	yyleng, yytext, TdiYylvalPtr));}
+.		{pos(); return	(TdiLexPunct(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 
 %%
 
