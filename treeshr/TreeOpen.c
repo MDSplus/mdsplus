@@ -712,10 +712,12 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
 				part = &path[i+1];
 			}
 		}
+/*
 		if (file == NULL && report)
 		{
 		   perror("Error opening tree file");
 		}
+*/
 		free(path);
 	}
 	if (resnam_out)
