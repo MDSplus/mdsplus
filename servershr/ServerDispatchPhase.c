@@ -367,6 +367,10 @@ static void WaitForActions(int all)
     pthread_mutex_lock(&JobWaitMutex);
     pthread_get_expiration_np(&one_sec,&abstime);
     status = pthread_cond_timedwait( &JobWaitCondition, &JobWaitMutex, &abstime);
+#if defined(_DECTHREADS_) && (_DECTHREADS_ == 1)
+    if (status == -1 && errno == 11)
+      status = ETIMEDOUT;
+#endif
     pthread_mutex_unlock(&JobWaitMutex);
   }
 }
