@@ -41,24 +41,37 @@ Ensures action dispatching to servers, keeping load balancing.
             return;
         }
 
-        //GAB2004 Consider only Active servers
-        Vector all_server_vect = (Vector)servers.get(server_class);
-        Vector server_vect = new Vector();
-        if(all_server_vect != null)
-        {
-          for (int i = 0; i < all_server_vect.size(); i++) {
-            Server currServer = (Server) all_server_vect.elementAt(i);
-            if (currServer.isReady())
-              server_vect.addElement(currServer);
-          }
-        }
 
-        if(server_vect.size() > 0)
+  /*      Vector server_vect = (Vector)servers.get(server_class);
+        if(server_vect == null)
         {
             if(default_server != null)
                 default_server.pushAction(action);
             return;
-        }
+        }*/
+        Vector server_vect = new Vector();
+        Vector all_server_vect = (Vector)servers.get(server_class);
+         if(all_server_vect == null)
+         {
+             if(default_server != null)
+                 default_server.pushAction(action);
+             return;
+         }
+         else
+          {
+            for (int i = 0; i < all_server_vect.size(); i++) {
+              Server curr_server = (Server) all_server_vect.elementAt(i);
+              if (curr_server.isReady())
+                server_vect.addElement(all_server_vect.elementAt(i));
+            }
+          }
+          if (server_vect.size() == 0) {
+            if (default_server != null)
+              default_server.pushAction(action);
+            return;
+          }
+     /////////////////////////////
+
         Enumeration server_list = server_vect.elements();
         int curr_load, min_load = 1000000;
         Server curr_server, min_server = null;
