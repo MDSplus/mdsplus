@@ -1204,6 +1204,7 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data)
       JMdsEventInfo *info;
       int len = sizeof(MsgHdr) + sizeof(JMdsEventInfo);
       Message *m = malloc(len);
+	  m->h.ndims = 0;
       m->h.client_type = c->client_type;
       m->h.msglen = len;
       m->h.dtype = DTYPE_EVENT_NOTIFY;
@@ -1219,6 +1220,7 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data)
     else
     {
       Message *m = malloc(sizeof(MsgHdr) + e->info_len);
+	  m->h.ndims = 0;
       m->h.client_type = c->client_type;
       m->h.msglen = sizeof(MsgHdr) + e->info_len;
       m->h.dtype = DTYPE_EVENT_NOTIFY;
@@ -1257,6 +1259,8 @@ static void ExecuteMessage(Client *c)
     MdsEventList *newe = (MdsEventList *)malloc(sizeof(MdsEventList));
     struct descriptor_a *info = (struct descriptor_a *)c->descrip[2];
     newe->sock = c->sock;
+
+
     /**/
     evname = malloc(c->descrip[1]->length + 1);
     memcpy(evname, c->descrip[1]->pointer, c->descrip[1]->length);
@@ -1319,8 +1323,8 @@ static void ExecuteMessage(Client *c)
         MDSEventCan(e->eventid);
 #endif
 	/**/
-        free(e);
         *p = e->next;
+        free(e);
       }
     }
     if (!java)
