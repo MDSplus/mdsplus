@@ -13,21 +13,40 @@ static char error_message[512];
 
 /*Support routine for MdsHelper */
 JNIEXPORT jstring JNICALL Java_MdsHelper_getErrorString
+
   (JNIEnv *env, jclass cld, jint jstatus)
+
 {
+
 	char *error_msg = MdsGetMsg(jstatus);
+
 	return (*env)->NewStringUTF(env, error_msg);
+
 }
+
 	
+
 JNIEXPORT void JNICALL Java_MdsHelper_generateEvent
+
   (JNIEnv *env, jclass cld, jstring jevent, jint jshot)
+
 {
+
 	const char *event = (*env)->GetStringUTFChars(env, jevent, 0);
+
 	int shot = jshot;
+
 	MDSEvent((char *)event, sizeof(int), (char *)&shot);
+
     (*env)->ReleaseStringUTFChars(env, jevent, event);
+
  
+
 }
+
+
+
+
 
 
 
