@@ -17,14 +17,41 @@ int yyleng; extern unsigned char yytext[];
 int yymorfg;
 extern unsigned char *yysptr, yysbuf[];
 int yytchar;
+/*
 FILE *yyin = {stdin}, *yyout = {stdout};
+*/
+FILE *yyin = 0, *yyout = 0;
 extern int yylineno;
+/* forward declaration for yywork necessary for c++*/
+struct yywork;
 struct yysvf { 
 	struct yywork *yystoff;
 	struct yysvf *yyother;
 	int *yystops;};
 struct yysvf *yyestate;
 extern struct yysvf yysvec[], *yybgin;
+/*define YY_NOPROTO to disable function prototypes */
+#ifndef YY_NOPROTO
+#if defined (__STDC__) || defined  (__cplusplus)
+/* GNU C always defines __STDC__. Must test if zero */
+#if defined (__GNUC__) && !__STDC__
+#define YYVOID 
+#else
+#define YYVOID void
+#endif /*__GNUC__ */
+#else /* __STDC__ */
+#define YYVOID 
+#endif /* __STDC__ */
+#if defined  (__cplusplus)
+extern "C" {
+#endif /*__cplusplus_ */
+int yylook(YYVOID);
+int yylex(YYVOID);
+int yywrap(YYVOID);
+#if defined  (__cplusplus)
+}
+#endif /*__cplusplus_ */
+#endif /* YY_NOPROTO */
 	/*	TdiLex
 	Lexical analysis to parse tokens for TdiYacc.y.
 	Definition section precedes rule section.
@@ -847,7 +874,7 @@ int yyvstop[] = {
 4,
 0,
 0};
-# define YYTYPE unsigned char
+# define YYTYPE unsigned int
 struct yywork { YYTYPE verify, advance; } yycrank[] = {
 0,0,	0,0,	1,3,	0,0,	
 0,0,	0,0,	0,0,	0,0,	
@@ -1120,7 +1147,7 @@ yycrank+0,	yysvec+12,	0,
 0,	0,	0};
 struct yywork *yytop = yycrank+895;
 struct yysvf *yybgin = yysvec+1;
-unsigned char yymatch[] = {
+const unsigned int yymatch[] = {
 00  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
 01  ,011 ,012 ,01  ,01  ,011 ,01  ,01  ,
 01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
@@ -1154,14 +1181,14 @@ unsigned char yymatch[] = {
 01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
 01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
 0};
-unsigned char yyextra[] = {
+const unsigned char yyextra[] = {
 0,0,0,1,0,0,0,0,
 0,0,0,0,0,0,0,0,
 0};
 /*
  * *****************************************************************
  * *                                                               *
- * *    Copyright (c) Digital Equipment Corporation, 1991, 1998    *
+ * *    Copyright (c) Digital Equipment Corporation, 1991, 1999    *
  * *                                                               *
  * *   All Rights Reserved.  Unpublished rights  reserved  under   *
  * *   the copyright laws of the United States.                    *
@@ -1184,7 +1211,10 @@ unsigned char yyextra[] = {
  * HISTORY
  */
 /*
- * @(#)$RCSfile$
+ * @(#)$RCSfile$ $Revision$ (DEC) $Date$
+ */
+/*
+ ** C Language Skeleton for lex output - yytext array
  */
 int yylineno =1;
 # define YYU(x) x
@@ -1196,6 +1226,32 @@ unsigned char *yysptr = yysbuf;
 int *yyfnd;
 extern struct yysvf *yyestate;
 int yyprevious = YYNEWLINE;
+/*
+ * Define YY_NOPROTO to suppress the prototype declarations
+ * GNUC and DECC define __STDC__ differently
+ */
+#ifdef __GNUC__
+#if !__STDC__
+#define YY_NOPROTO
+#endif /* __STDC__ */
+#elif !defined(__STDC__) &&  !defined (__cplusplus)
+#define YY_NOPROTO
+#endif /* __STDC__ */
+
+#ifndef YY_NOPROTO
+int yyback(int *, int);
+# ifdef LEXDEBUG
+#if defined (__cplusplus)
+extern "C" {
+#endif /* __cplusplus */
+int allprint(char);
+int sprint(unsigned char *);
+#if defined (__cplusplus)
+}
+#endif /* __cplusplus */
+#endif /* LEXDEBUG */
+#endif /* YY_NOPROTO */
+
 yylook(){
 	register struct yysvf *yystate, **lsp;
 	register struct yywork *yyt;
@@ -1234,7 +1290,7 @@ yylook(){
 			*yylastch++ = yych = input();
             if (yylastch >= yytext + (YYLMAX - 1)) {
                 fprintf(yyout, "Maximum token length exceeded\n");
-                yytext[YYLMAX - 1] = 0;
+                yytext[YYLMAX - 1] = 0; 
                 return 0;
             }
 			yyfirst=0;
@@ -1354,8 +1410,7 @@ yylook(){
 # endif
 		}
 	}
-yyback(p, m)
-	int *p;
+yyback(int *p, int m)
 {
 if (p==0) return(0);
 while (*p)
@@ -1369,11 +1424,11 @@ return(0);
 yyinput(){
 	return(input());
 	}
-yyoutput(c)
-  int c; {
+yyoutput(int c)
+    {
 	output(c);
 	}
-yyunput(c)
-   int c; {
+yyunput(int c)
+    {
 	unput(c);
 	}
