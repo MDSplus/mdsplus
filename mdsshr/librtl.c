@@ -339,6 +339,8 @@ int StrAppend(struct descriptor *out, struct descriptor *tail)
   {
     struct descriptor new = {0,DTYPE_T,CLASS_D,0};
     unsigned short len = (unsigned short)(out->length + tail->length);
+    if (((unsigned int)out->length + (unsigned int)tail->length) > 0xffff)
+      return 0;
     StrGet1Dx(&len,&new);
     memcpy(new.pointer, out->pointer, out->length);
     memcpy(new.pointer + out->length, tail->pointer, tail->length);
