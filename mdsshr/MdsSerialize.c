@@ -526,7 +526,8 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
 #if defined(WORDS_BIGENDIAN)
             if (inp->dtype == DTYPE_FUNCTION && inp->length == 2)
 			{
-			  short swap(short,(char *)out_ptr,value);
+			  short value;
+                          swap(short,(char *)out_ptr,value);
                           memcpy(out_ptr,&value,2);
 			}
 #endif
