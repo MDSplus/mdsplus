@@ -31,7 +31,8 @@ public fun TR10HWConfig(in _board_id)
 
 
 /* Initialize Library if the first time */
-    if_error(_TR10_initialized, (TR10->TR10_InitLibrary(); public _TR10_initialized = 1;));
+    _first = 0;
+    if_error(_TR10_initialized, (TR10->TR10_InitLibrary(); public _TR10_initialized = 1; _first = 1;));
 	
 
 /* Open device */
@@ -49,9 +50,9 @@ public fun TR10HWConfig(in _board_id)
 
 /* Set clock functions on external clock */
 	_clock_source = byte(_TR10_TRG_SOURCE_EXTERNAL);
-	
+	_clock_div = byte(_TR10_CLK_DIVIDE);
 	TR10->TR10_Clk_SetClockMode(val(_handle), val(_clock_source), val(_TR10_CLK_NO_EXT_CLOCK),
-		val(0B), val(_TR10_CLK_RISING_EDGE), val(_TR10_CLK_TERMINATION_OFF), val(long(1)));
+		val(0B), val(_TR10_CLK_RISING_EDGE), val(_TR10_CLK_TERMINATION_OFF), val(long(_clock_div)));
 		  
 /* Set Trigger function */
 	_trig_mode =_TR10_TRG_SOURCE_EXTERNAL;
