@@ -111,21 +111,24 @@ static void CheckList()
   }
 }
 
-void MdsShowVM()
+void MdsShowVM(int full)
 {
   struct vmlist *n;
   pthread_lock_global_np();
   printf("malloc %d times, free %d times, %d still allocated in %d chunks\n",
     NumMalloc,NumFree,Allocated,NumMalloc-NumFree);
-  for (n=VM; n; n=n->next)
+  if (full)
   {
-    int i;
-    char *p = malloc(n->len+1);
-    for (i=0;i<n->len;i++)
+    for (n=VM; n; n=n->next)
+    {
+      int i;
+      char *p = malloc(n->len+1);
+      for (i=0;i<n->len;i++)
       p[i] = (n->vm[i] < 32 || n->vm[i] > 122) ? '.' : n->vm[i];
-    p[n->len] = 0;
-    printf("%d -------- %.100s\n",n->len,p);
-    free(p);
+      p[n->len] = 0;
+      printf("%d -------- %.100s\n",n->len,p);
+      free(p);
+    }
   } 
   pthread_unlock_global_np();
 }    
