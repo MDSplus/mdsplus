@@ -37,8 +37,11 @@
 ;  your SQLSERVER database server.
 ;
 ;  Jeff Schachter 7/31/2000: do not use USER environment variable as
-;  user can override its value, and thus pretend to be someone else.
-;  Instead, use Unix shell command 'whoami',
+;    user can override its value, and thus pretend to be someone else.
+;    Instead, use Unix shell command 'whoami',
+;
+;  Tom Gibney  03/20/2001:  use last value in "result" from whoami.
+;    Since .cshrc gets executed, it may generate output too.
 ;
 function dbinfo, dbname, host, conn, dbtype, dbuser, dbpass
   SQL
@@ -49,7 +52,7 @@ function dbinfo, dbname, host, conn, dbtype, dbuser, dbpass
   if (err ne 0) then begin
     catch,/cancel
     spawn,'\whoami',result
-    dbuser = result[0]
+    dbuser = result[n_elements(result)-1]
     ;dbuser=getenv("USER")
     dbpass="PFCWORLD"
     conn = ["USE "+dbname, "SET TEXTSIZE 8192"]
