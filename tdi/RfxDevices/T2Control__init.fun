@@ -4,7 +4,7 @@ public fun T2Control__init(as_is _nid, optional _method)
     private _N_COMMENT = 1;
     private _N_VME_IP = 2;
     private _N_FREQUENCY = 3;
-    private _K_CALIBRATION = 4;
+    private _N_CALIBRATION = 4;
     private _N_INIT_CONTROL = 5;
     private _N_TRIG1_CONTROL = 6;
     private _N_TRIG2_CONTROL = 7;
@@ -31,7 +31,7 @@ write(*, 'T2Control init');
 	}
 
 	write(*, 'Frequency: ', _frequency);
-	_period = 1 / _frequency;
+	_period = 1. / _frequency;
 	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackPeriod', float(_period));
 
 
@@ -70,14 +70,14 @@ write(*, 'T2Control init');
 
 	_calibration = data(DevNodeRef(_nid, _N_CALIBRATION));
 
-	write(*, 'Calibration: ', _calibration);
+/*	write(*, 'Calibration: ', _calibration);*/
 	_status = MdsValue('Feedback->setCalibration($1, $2)', float(_calibration), 64);
 	
     for(_par = 0; _par < 11; _par++)
 	{
 		_par_name = data(DevNodeRef(_nid, _N_PAR1_NAME + _par * 2));
 		_par_value = data(DevNodeRef(_nid, _N_PAR1_VALUE + _par * 2));
-	    _status = MdsValue('Feedback->setFloatVariable($1, $2)', _par_name, float(_par_value));
+	    _status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedback'//_par_name, float(_par_value));
 	}
 
 	_status = MdsValue('Feedback->startFeedback()');
