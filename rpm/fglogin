@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# Tries to access the MyProxy server at cert.fusiongrid.org
+# If that server is not available, tries the mirror server at 
+#   roam.fusiongrid.org
+
+if test -z "${GLOBUS_LOCATION}"; then
+    echo ""
+    echo "ERROR: Please set GLOBUS_LOCATION to the Globus installation directory before"
+    echo "running this script"
+    echo ""
+    exit 1
+fi
+source ${GLOBUS_LOCATION}/etc/globus-user-env.sh
+MYPROXY_GET_DEL=`which myproxy-get-delegation`
+if test -z "${MYPROXY_GET_DEL}"; then
+    echo ""
+    echo "ERROR: can't find the myproxy-get-delegation command"
+    echo ""
+    exit 1
+fi
+#echo $*
+#echo "${MYPROXY_GET_DEL} -s cert.fusiongrid.org $*"
+${MYPROXY_GET_DEL} -s cert.fusiongrid.org $*
+if test $? -ne 0; then
+#   echo ""
+#   echo "${MYPROXY_GET_DEL} -s roam.fusiongrid.org $*"
+   ${MYPROXY_GET_DEL} -s roam.fusiongrid.org $* 
+fi
+ 
