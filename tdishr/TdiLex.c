@@ -507,7 +507,7 @@ int			len,
 unsigned char		*str,
 struct marker		*mark_ptr)
 {
-  	int nid, status, token = LEX_VALUE;
+  	int nid, token = LEX_VALUE;
 	unsigned char *str_l;
 	str_l = (unsigned char *)strncpy((char *)malloc(len+1),(char *)str,len);
         str_l[len] = 0;
