@@ -362,7 +362,7 @@ static int BecomeUser(char *remuser, struct descriptor *user)
 
 #ifdef HAVE_VXWORKS_H
 
-int mdsip(int portIn, char modeIn, char *hostfileIn, int compressionIn)
+int mdsip(int portIn, char modeIn,  int compressionIn)
 {
   char port_name[64];
   static struct sockaddr_in sin;
@@ -378,8 +378,7 @@ int mdsip(int portIn, char modeIn, char *hostfileIn, int compressionIn)
   strcpy(Portname, port_name);
   port = portIn;
   SetMode(modeIn, &mode);
-  hostfile = malloc(strlen(hostfileIn)+1);
-  strcpy(hostfile, hostfileIn);
+  hostfile =0;
   flags = 0;
   MaxCompressionLevel = compressionIn;
 
@@ -494,6 +493,14 @@ static void CompressString(struct descriptor *in, int upcase)
     StrRight(in,in,&two);
 }
 
+#ifdef HAVE_VXWORKS_H
+static int CheckClient(char *host_c, char *user_c)
+{
+  return 1;
+}
+  
+#else
+
 static int CheckClient(char *host_c, char *user_c)
 {
   FILE *f = fopen(hostfile,"r");
@@ -549,6 +556,8 @@ static int CheckClient(char *host_c, char *user_c)
   }
   return ok;
 }
+
+#endif
 
 static void AddClient(int sock,struct sockaddr_in *sin)
 {
