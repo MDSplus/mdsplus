@@ -7,6 +7,8 @@ CLASSES = ../java/classes/*.java
 
 OBJECTS = javamds.o
 
+EXPORTS = javamds.export
+
 javascope : 	../shlib ../shlib/libJavaMds.$(SHARE_TYPE) \
 		../java ../java/classes ../java/classes/javaScope.class 
 	@ echo javaScope done

@@ -3,6 +3,8 @@ include $(MAKE_OPTIONS)
 OBJECTS = \
 	mdsipshr.o
 
+EXPORTS = mdsipshr.export
+
 mdstcpip : ../bin ../shlib ../bin/mdsiptest ../bin/mdsip ../bin/mdsipd
 
 ../bin :

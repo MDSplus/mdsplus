@@ -5,6 +5,8 @@ OBJECTS = \
         CamMulti.o \
 	CamSingle.o
 
+EXPORTS = remcam.export
+
 remcam : ../shlib ../shlib/libRemCamShr.$(SHARE_TYPE)
 
 ../shlib/libRemCamShr.$(SHARE_TYPE) : $(OBJECTS) 

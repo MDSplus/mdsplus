@@ -1,0 +1,4 @@
+#
+# Shared image path
+#
+LIBPATH $MDSPLUS/shlib

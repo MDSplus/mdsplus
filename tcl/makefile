@@ -33,6 +33,8 @@ OBJFILES = 			\
 	libTcl.a(tcl_verify_tree.o)	\
 	libTcl.a(tcl_write.o)
 
+EXPORTS = tcl_commands.export
+
 all:	../bin/tcl tcl_commands.o  libTcl.a	\
 			../shlib/tcl_commands.$(SHARE_TYPE)
 

@@ -14,6 +14,8 @@ libMdsdcl.a(mdsdcl_set_command.o)	\
 libMdsdcl.a(mdsdcl_spawn.o)		\
 libMdsdcl.a(mdsdcl_wait.o)
 
+EXPORTS = mdsdclshr.export
+
 all:	libMdsdcl.a  ../bin/mdsdcl  ../shlib/libMdsdcl.$(SHARE_TYPE)
 
 clean:
