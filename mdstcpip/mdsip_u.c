@@ -22,6 +22,7 @@ extern char *ctime();
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #if !defined(_WIN32)
 #include <pwd.h>
+#include <unistd.h>  /* for getpid() */
 #define closesocket close
 #endif
 
@@ -260,6 +261,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     struct hostent *hp;
     int i;
     int status;
+    pid_t pid;
     int ok = 0;
     Client *c;
     time_t tim;
@@ -276,10 +278,18 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     tim = time(0);
     timestr = ctime(&tim);
     timestr[strlen(timestr)-1] = 0;
+#ifndef _WIN32
+    pid = getpid();
+    if (hp)
+      printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr,sock, pid, user_p, hp->h_name, inet_ntoa(sin->sin_addr));
+    else
+      printf("%s (%d) (pid %d) Connection received from %s@%s\r\n", timestr, sock, pid, user_p, inet_ntoa(sin->sin_addr));
+#else
     if (hp)
       printf("%s (%d) Connection received from %s@%s [%s]\r\n", timestr,sock, user_p, hp->h_name, inet_ntoa(sin->sin_addr));
     else
       printf("%s (%d) Connection received from %s@%s\r\n", timestr, sock, user_p, inet_ntoa(sin->sin_addr));
+#endif
     if (!multi)
     {
       if (hp) ok = CheckClient(hp->h_name,user_p);
