@@ -91,3 +91,5 @@ pthread_mutex_init
 pthread_mutex_lock
 pthread_mutex_unlock
 pthread_unlock_global_np
+MDSprintf
+MDSfprintf
