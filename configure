@@ -635,10 +635,10 @@ test "$host_alias" != "$target_alias" &&
 
 
 case "$target" in
-hppa*) {CC=cc};
-       {F77=f77};;
-alpha-dec-osf*) {CC=cc};
-		{F77=f77};;
+hppa*) : ${CC=cc};
+       : ${F77=f77};;
+alpha-dec-osf*) : ${CC=cc};
+		: ${F77=f77};;
 esac
 
 # Extract the first word of "gcc", so it can be a program name with args.

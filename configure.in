@@ -8,10 +8,10 @@ AC_CANONICAL_SYSTEM
 
 dnl See if we need to use native compilers
 case "$target" in
-hppa*) {CC=cc};
-       {F77=f77};;
-alpha-dec-osf*) {CC=cc};
-		{F77=f77};;
+hppa*) : ${CC=cc};
+       : ${F77=f77};;
+alpha-dec-osf*) : ${CC=cc};
+		: ${F77=f77};;
 esac
 
 dnl Check out the compiler
