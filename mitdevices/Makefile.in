@@ -11,6 +11,7 @@ UIDS = \
 @MAKEUIDDIR@B3224.uid \
 @MAKEUIDDIR@B5910A.uid \
 @MAKEUIDDIR@DSP2904.uid \
+@MAKEUIDDIR@DT100.uid \
 @MAKEUIDDIR@EC727.uid \
 @MAKEUIDDIR@FERA.uid \
 @MAKEUIDDIR@H908.uid \
@@ -67,18 +68,47 @@ WML_DEPENDENT = \
 @MAKEUIDDIR@UMCCD.uid \
 @MAKEUIDDIR@U_OF_M_SPECT.uid
 
-all: $(UIDS)
+SOURCES = io.c
+OBJECTS = $(SOURCES:.c=.o)
+EXPORTS = io.exports
+
+all :  @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libio@SHARETYPE@ @MAKELIBDIR@libio.a  $(UIDS)
+
+
 
 depend:
 	@ :
 
 clean:
 	- rm $(UIDS)
+	- rm @MAKESHLIBDIR@libio@SHARETYPE@
+	- rm @MAKELIBDIR@libio.a
 
 install:
 	for uid in $(UIDS) ; do\
 	  $(INSTALL) -m 644 $${uid} @uiddir@;\
 	done
+	if [ ! -d @libdir@ ] ; then \
+	        mkdir @libdir@; \
+	        chmod 755 @libdir@; \
+	fi;
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libio@SHARETYPE@ @libdir@
+        if test @SHARETYPE@ != .a ; then \
+          $(INSTALL) -m 644  @MAKELIBDIR@libio.a @libdir@; \
+        fi;
+
+@MAKESHLIBDIR@libio@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
+
+@MAKELIBDIR@libio.a : $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
+	@RANLIB@ $@
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@
+
+io.exports: io.def
+	sed -e /LIBRARY/\;/\;/d io.def > $@
 
 @MAKEUIDDIR@A12.uid : A12.uil ; @UIL@ -o @MAKEUIDDIR@A12.uid A12.uil
 @MAKEUIDDIR@A14.uid : A14.uil ; @UIL@ -o @MAKEUIDDIR@A14.uid A14.uil
@@ -87,6 +117,7 @@ install:
 @MAKEUIDDIR@B3224.uid : B3224.uil ; @UIL@ -o @MAKEUIDDIR@B3224.uid B3224.uil
 @MAKEUIDDIR@B5910A.uid : B5910A.uil ; @UIL@ -o @MAKEUIDDIR@B5910A.uid B5910A.uil
 @MAKEUIDDIR@DSP2904.uid : DSP2904.uil ; @UIL@ -o @MAKEUIDDIR@DSP2904.uid DSP2904.uil
+@MAKEUIDDIR@DT100.uid : DT100.uil ; @UIL@ -o @MAKEUIDDIR@DT100.uid DT100.uil
 @MAKEUIDDIR@EC727.uid : EC727.uil ; @UIL@ -o @MAKEUIDDIR@EC727.uid EC727.uil
 @MAKEUIDDIR@FERA.uid : FERA.uil ; @UIL@ -o @MAKEUIDDIR@FERA.uid FERA.uil
 @MAKEUIDDIR@H908.uid : H908.uil ; @UIL@ -o @MAKEUIDDIR@H908.uid H908.uil
@@ -140,3 +171,4 @@ install:
 @MAKEUIDDIR@T4012.uid : T4012.uil ; @UIL@ -o @MAKEUIDDIR@T4012.uid T4012.uil
 @MAKEUIDDIR@UMCCD.uid : UMCCD.uil ; @UIL@ -o @MAKEUIDDIR@UMCCD.uid UMCCD.uil
 @MAKEUIDDIR@U_OF_M_SPECT.uid : U_OF_M_SPECT.uil ; @UIL@ -o @MAKEUIDDIR@U_OF_M_SPECT.uid U_OF_M_SPECT.uil
+
