@@ -135,12 +135,10 @@ short ArgLen(struct descrip *d)
   return len;
 }
 
-#ifdef _WIN32
 void MdsIpFree(void *ptr)
 {
 	free(ptr);
 }
-#endif
 
 #if !defined(__VMS) && !defined(_WIN32) && !defined(HAVE_VXWORKS_H)
 static struct timeval connectTimer = {0,0};
