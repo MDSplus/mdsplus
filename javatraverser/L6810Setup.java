@@ -148,12 +148,12 @@ public class L6810Setup extends DeviceSetup
         gridLayout1.setRows(2);
         deviceChoice7.setIdentifier("");
         deviceChoice7.setUpdateIdentifier("");
-        deviceChoice7.setChoiceItems(new String[] {"409.6mV", "1.024V", "2.048V", "4.096V", "10.24V", "25.6V", "51.2V", "102.4V"});
+        deviceChoice7.setChoiceItems(new String[] {"409.6", "1.024", "2.048", "4.096", "10.24", "25.6", "51.2", "102.4"});
         deviceChoice7.setLabelString("Range: ");
         deviceChoice7.setOffsetNid(19);
-        deviceChoice7.setConvert(true);
-        deviceChoice7.setChoiceFloatValues(null);
-        deviceChoice7.setChoiceIntValues(new int[] {(int)0,(int)1,(int)2,(int)3,(int)4,(int)5,(int)6,(int)7});
+        deviceChoice7.setConvert(false);
+        deviceChoice7.setChoiceFloatValues(new float[] {(float)409.6,(float)1.024,(float)2.048,(float)4.096,(float)10.24,(float)25.6,(float)51.2,(float)102.4});
+        deviceChoice7.setChoiceIntValues(null);
         deviceChoice8.setIdentifier("");
         deviceChoice8.setUpdateIdentifier("");
         deviceChoice8.setChoiceItems(new String[] {"Non inverting input, DC coupled", "Non inverting input, AC coupled", "Inverting input, DC coupled", "Inverting input, AC coupled",
@@ -177,12 +177,12 @@ public class L6810Setup extends DeviceSetup
         deviceField9.setIdentifier("");
         deviceChoice9.setIdentifier("");
         deviceChoice9.setUpdateIdentifier("");
-        deviceChoice9.setChoiceItems(new String[] {"409.6mV", "1.024V", "2.048V", "4.096V", "10.24V", "25.6V", "51.2V", "102.4V"});
+        deviceChoice9.setChoiceItems(new String[] {"409.6", "1.024", "2.048", "4.096", "10.24", "25.6", "51.2", "102.4"});
         deviceChoice9.setLabelString("Range: ");
         deviceChoice9.setOffsetNid(25);
-        deviceChoice9.setConvert(true);
-        deviceChoice9.setChoiceFloatValues(null);
-        deviceChoice9.setChoiceIntValues(new int[] {(int)0,(int)1,(int)2,(int)3,(int)4,(int)5,(int)6,(int)7});
+        deviceChoice9.setConvert(false);
+        deviceChoice9.setChoiceFloatValues(new float[] {(float)409.6,(float)1.024,(float)2.048,(float)4.096,(float)10.24,(float)25.6,(float)51.2,(float)102.4});
+        deviceChoice9.setChoiceIntValues(null);
         deviceChoice10.setIdentifier("");
         deviceChoice10.setUpdateIdentifier("");
         deviceChoice10.setChoiceItems(new String[] {"Non inverting input, DC coupled", "Non inverting input, AC coupled", "Inverting input, DC coupled", "Inverting input, AC coupled",
@@ -206,12 +206,12 @@ public class L6810Setup extends DeviceSetup
         deviceField11.setIdentifier("");
         deviceChoice11.setIdentifier("");
         deviceChoice11.setUpdateIdentifier("");
-        deviceChoice11.setChoiceItems(new String[] {"409.6mV", "1.024V", "2.048V", "4.096V", "10.24V", "25.6V", "51.2V", "102.4V"});
+        deviceChoice11.setChoiceItems(new String[] {"409.6", "1.024", "2.048", "4.096", "10.24", "25.6", "51.2", "102.4"});
         deviceChoice11.setLabelString("Range: ");
         deviceChoice11.setOffsetNid(31);
-        deviceChoice11.setConvert(true);
-        deviceChoice11.setChoiceFloatValues(null);
-        deviceChoice11.setChoiceIntValues(new int[] {(int)0,(int)1,(int)2,(int)3,(int)4,(int)5,(int)6,(int)7});
+        deviceChoice11.setConvert(false);
+        deviceChoice11.setChoiceFloatValues(new float[] {(float)409.6,(float)1.024,(float)2.048,(float)4.096,(float)10.24,(float)25.6,(float)51.2,(float)102.4});
+        deviceChoice11.setChoiceIntValues(null);
         deviceChoice12.setIdentifier("");
         deviceChoice12.setUpdateIdentifier("");
         deviceChoice12.setChoiceItems(new String[] {"Non inverting input, DC coupled", "Non inverting input, AC coupled", "Inverting input, DC coupled", "Inverting input, AC coupled",
@@ -244,12 +244,12 @@ public class L6810Setup extends DeviceSetup
     deviceField6.setLabelString("End idx: ");
     deviceField6.setNumCols(15);
     deviceField6.setIdentifier("");
-    deviceChoice6.setChoiceIntValues(new int[] {(int)0,(int)1,(int)2,(int)3,(int)4,(int)5,(int)6,(int)7});
-    deviceChoice6.setChoiceFloatValues(null);
-    deviceChoice6.setConvert(true);
+    deviceChoice6.setChoiceIntValues(null);
+    deviceChoice6.setChoiceFloatValues(new float[] {(float)409.6,(float)1.024,(float)2.048,(float)4.096,(float)10.24,(float)25.6,(float)51.2,(float)102.4});
+    deviceChoice6.setConvert(false);
     deviceChoice6.setOffsetNid(13);
     deviceChoice6.setLabelString("Range: ");
-    deviceChoice6.setChoiceItems(new String[] {"409.6mV", "1.024V", "2.048V", "4.096V", "10.24V", "25.6V", "51.2V", "102.4V"});
+    deviceChoice6.setChoiceItems(new String[] {"409.6", "1.024", "2.048", "4.096", "10.24", "25.6", "51.2", "102.4"});
     deviceChoice6.setUpdateIdentifier("");
     deviceChoice6.setIdentifier("");
     deviceChoice5.setChoiceIntValues(new int[] {(int)0,(int)1,(int)2,(int)3,(int)4,(int)5,(int)6,(int)7});
