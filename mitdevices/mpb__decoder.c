@@ -140,15 +140,15 @@ static int one=1;
 #ifdef DEBUG
 #define pio(addr,fcode,data, comment) { unsigned short dataval = (unsigned short)data; \
 printf("pio/f=%d/a=%d/d=%x/hex ! (%d)  %s/hex\n",fcode,addr,data,data,comment);\
-return_on_error(DevCamChk(CamPiow(setup->name,addr,fcode,&dataval,16),&one,&one),status);}
+return_on_error(DevCamChk(CamPiow(setup->name,addr,fcode,&dataval,16),&one,0),status);}
 #define write(addr,fcode,data, comment) { unsigned short dataval = (unsigned short)data; \
 printf("pio/f=%d/a=%d/d=%x/hex ! (%d)  %s/hex\n",fcode,addr,data,data,comment);\
-return_on_error(DevCamChk(CamPiow(setup->name,addr,fcode,&dataval,16),&one,&one),status);}
+return_on_error(DevCamChk(CamPiow(setup->name,addr,fcode,&dataval,16),&one,0),status);}
 #else
 #define pio(addr,fcode,data, comment) { unsigned short dataval = (unsigned short) data; \
-return_on_error(DevCamChk(CamPiow(setup->name,addr,fcode,&dataval,16),&one,&one),status);}
+return_on_error(DevCamChk(CamPiow(setup->name,addr,fcode,&dataval,16),&one,0),status);}
 #define write(addr,fcode,data, comment) { unsigned short dataval = (unsigned short)data; \
-return_on_error(DevCamChk(CamPiow(setup->name,addr,fcode,&dataval,16),&one,&one),status);}
+return_on_error(DevCamChk(CamPiow(setup->name,addr,fcode,&dataval,16),&one,0),status);}
 #endif
 
 static int GetInt(Widget w, int headnid, int channel, int offset, int *answer);
