@@ -18,8 +18,9 @@ all : @MAKESHLIBDIR@ @MAKESHLIBDIR@libRemCamShr@SHARETYPE@
 
 @MAKESHLIBDIR@libRemCamShr@SHARETYPE@ : $(OBJECTS) 
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS)
-	if [ ! -a @MAKESHLIBDIR@libCamShr@SHARETYPE@ ] ; then \
-		ln -sf libRemCamShr@SHARETYPE@ @MAKESHLIBDIR@libCamShr@SHARETYPE@
+	if [ ! -a "@MAKESHLIBDIR@libCamShr@SHARETYPE@" ] ; then \
+		ln -sf libRemCamShr@SHARETYPE@ @MAKESHLIBDIR@libCamShr@SHARETYPE@; \
+	fi
 
 @MAKESHLIBDIR@ :
 	mkdir @MAKESHLIBDIR@
@@ -38,5 +39,6 @@ install:
                 chmod 755 @libdir@; \
         fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libRemCamShr@SHARETYPE@ @libdir@
-	if [ ! -a @libdir@libCamShr@SHARETYPE@] ; then \
-          ln -sf libRemCamShr@SHARETYPE@ @libdir@/libCamShr.so
+	if [ ! -a "@libdir@libCamShr@SHARETYPE@]" ; then \
+          ln -sf libRemCamShr@SHARETYPE@ @libdir@/libCamShr.so \
+	fi
