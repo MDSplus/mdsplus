@@ -99,6 +99,7 @@ static XrmOptionDescRec options[] = {
 {"-bg",		"*background",		XrmoptionSepArg,	NULL},
 {"-borderwidth","*borderWidth",		XrmoptionSepArg,	NULL},
 {"-bordercolor","*borderColor",		XrmoptionSepArg,	NULL},
+{"-buttonfont","*buttonFontList",       XrmoptionSepArg,        NULL},
 {"-bw",		"*borderWidth",		XrmoptionSepArg,	NULL},
 {"-display",	".display",		XrmoptionSepArg,	NULL},
 {"-fg",		"*foreground",		XrmoptionSepArg,	NULL},
