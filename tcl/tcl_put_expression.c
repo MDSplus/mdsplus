@@ -34,7 +34,6 @@ int TclPutExpression()
        {
         if (cli_present("EXTENDED") & 1)
            {
-            static int len;
             static DYNAMIC_DESCRIPTOR(val_part);
             static DYNAMIC_DESCRIPTOR(dsc_eof);
             int use_lf = cli_present("LF") & 1;
@@ -50,7 +49,7 @@ int TclPutExpression()
                     if (!strcmp(dsc_eof.dscA_pointer,val_part.dscA_pointer))
                         break;
                    }
-                else if (!len)
+                else if (!val_part.dscW_length)
                     break;
                 if (use_lf)
                     str_concat(&dsc_ascValue,&dsc_ascValue,&val_part,"\n",0);
