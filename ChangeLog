@@ -1,5 +1,183 @@
-Version 1.6-1
+Version 1.6-2
 
+
+2004-06-08 09:59  twf
+
+	* mdsip_xio/mdsip_compatible_api.c:
+	
+	Fix IDL mdsvalue. Do not free memory prematurely
+
+2004-06-07 11:51  manduchi
+
+	* javatraverser/: DeviceTable.java, RFXControlSetup.java,
+	T2ControlSetup.java:
+	
+	Fixes
+
+2004-06-04 10:34  manduchi
+
+	* camshr/debug.c:
+	
+	Fix debug
+
+2004-06-01 06:02  manduchi
+
+	* javatraverser/RFXPRConfigSetup.java:
+	
+	Fix
+
+2004-05-31 05:28  manduchi
+
+	* javatraverser/DeviceField.java:
+	
+	Rempve printouts
+
+2004-05-28 08:54  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	Do not use Linux rmic which crashes
+
+2004-05-28 08:13  manduchi
+
+	* javascope/TWUSignal.java:
+	
+	Removed header: it contained some bad characher which made the IBM
+	Javac die
+
+2004-05-27 11:53  manduchi
+
+	* javatraverser/NI6071ESetup.java:
+	
+	Dimension!!
+
+2004-05-27 11:46  manduchi
+
+	* javatraverser/: DeviceField.java, NI6071ESetup.java:
+	
+	Last fixes?
+
+2004-05-27 10:40  manduchi
+
+	* javatraverser/PXD114Setup.java:
+	
+	Minor Fixes
+
+2004-05-27 10:34  manduchi
+
+	* javatraverser/: PXD114Setup.java, PXD14Setup.java:
+	
+	Change name
+
+2004-05-27 09:25  manduchi
+
+	* tdi/RfxDevices/: PXD114__init.fun, PXD114__store.fun:
+	
+	Fixes
+
+2004-05-27 07:36  manduchi
+
+	* javamds/: JavaData.c, javamds.c, javamds.dsp:
+	
+	Added support for double timebases
+
+2004-05-27 07:36  manduchi
+
+	* javascope/LocalDataProvider.java:
+	
+	Fixes
+
+2004-05-27 05:29  manduchi
+
+	* javascope/LocalDataProvider.java:
+	
+	Fix double arrays
+
+2004-05-27 03:50  manduchi
+
+	* javascope/: ASCIIDataProvider.java, AsdexDataProvider.java,
+	DemoDataProvider.java, JetDataProvider.java,
+	MdsContinuousDataProvider.java, MdsDataProvider.java, Signal.java,
+	T2DataProvider.java, TwuWaveData.java, WaveData.java,
+	WaveInterface.java, Waveform.java, WaveformMetrics.java,
+	jScope.java:
+	
+	Improve precision for X values
+
+2004-05-25 12:46  manduchi
+
+	* tdi/RfxDevices/: PXD114__add.fun, PXD114__init.fun,
+	PXD114__store.fun:
+	
+	First fixes
+
+2004-05-25 12:20  manduchi
+
+	* tcl/tcl_set_callbacks.c:
+	
+	Compile under Windows
+
+2004-05-25 11:25  manduchi
+
+	* tdi/RfxDevices/: PXD114__add.fun, PXD114__init.fun,
+	PXD114__store.fun, PXD14__add.fun, PXD14__init.fun,
+	PXD14__store.fun:
+	
+	Name change
+
+2004-05-25 11:09  manduchi
+
+	* tdi/RfxDevices/PXD14__add.fun:
+	
+	LeCroy PXD device support
+
+2004-05-25 11:08  manduchi
+
+	* javascope/: MdsConnection.java, jScope.java, javascope.dsp:
+	
+	Fix
+
+2004-05-25 11:08  manduchi
+
+	* tdi/RfxDevices/: PXD14__init.fun, PXD14__store.fun:
+	
+	LeCroy PXD14 device support
+
+2004-05-25 11:08  manduchi
+
+	* javatraverser/PXD14Setup.java:
+	
+	LeCroy PXD14 device
+
+2004-05-21 15:33  jas
+
+	* devscripts/MakeRpm:
+	
+	forget about versions
+
+2004-05-21 15:31  jas
+
+	* rpm/rpm.spec:
+	
+	remove release from tar file name
+
+2004-05-21 15:30  jas
+
+	* devscripts/MakeRpm:
+	
+	trying to get the release to build
+
+2004-05-21 15:10  jas
+
+	* rpm/rpm.spec:
+	
+	make sure the release is in the tar file's name
+
+2004-05-21 14:24  jas
+
+	* ChangeLog:
+	
+	New MDSplus release 1.6-1
 
 2004-05-21 14:18  jas
 
