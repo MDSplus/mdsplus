@@ -15,11 +15,27 @@
 #include <tchar.h>
 #include <wtypes.h>
 #include <winreg.h>
+
+#define RTLD_LAZY 0
+#define SHARELIB_PREFIX ""
+
+static void *dlopen(char *filename, int flags)
+{
+  return (void *)LoadLibrary(filename);
+}
+
+static void *dlsym(void *handle, char *name)
+{
+  return (void *)GetProcAddress((HINSTANCE)handle, name);
+}
+
 #else /* WIN32 */
 
 #include <unistd.h>
 #include <sys/types.h>
 #include <dirent.h>
+
+#define SHARELIB_PREFIX "lib"
 
 #if defined(__hpux)
 #include <dl.h>
@@ -79,6 +95,35 @@ char *MdsDescrToCstring(struct descriptor *in)
 }
 
 int LibSigToRet(){return 1;}
+
+int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
+{
+  char *c_filename = MdsDescrToCstring(filename);
+  char *full_filename = malloc(strlen(c_filename) + 10);
+  void *handle;
+  *symbol_value = NULL;
+  strcpy(full_filename,SHARELIB_PREFIX);
+  strcat(full_filename,c_filename);
+  strcat(full_filename,SHARELIB_TYPE);
+  handle = dlopen(full_filename,RTLD_LAZY);
+  if (handle == NULL) {
+    strcpy(full_filename,c_filename);
+    strcat(full_filename,SHARELIB_TYPE);
+    handle = dlopen(full_filename,RTLD_LAZY);
+  }
+  if (handle != NULL)
+  {
+    char *c_symbol = MdsDescrToCstring(symbol);
+    *symbol_value = dlsym(handle,c_symbol);
+    free(c_symbol);
+  }
+  free(c_filename);
+  free(full_filename);
+  if (*symbol_value == NULL)
+    return LibKEYNOTFOU;
+  else
+    return 1;  
+}
 
 int StrConcat( struct descriptor *out, struct descriptor *first, ...)
 {
@@ -808,25 +853,6 @@ static char *GetRegistryPath(char *pathname)
   return (char *)path;
 }
 
-int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, FARPROC *symbol_value)
-{
-  char *c_filename = MdsDescrToCstring(filename);
-  HINSTANCE handle;
-  *symbol_value = (FARPROC)0;
-  handle = LoadLibrary(c_filename);
-  if (handle != 0)
-  {
-    char *c_symbol = MdsDescrToCstring(symbol);
-    *symbol_value = GetProcAddress(handle, c_symbol);
-    free(c_symbol);
-  }
-  free(c_filename);
-  if (*symbol_value == (FARPROC)0)
-    return LibKEYNOTFOU;
-  else
-    return 1;  
-}
-
 unsigned int LibCallg(void **arglist, FARPROC *routine)
 {
   int a_idx;
@@ -935,35 +961,6 @@ unsigned int LibCallg(void **arglist, unsigned int (*routine)())
     default: printf("Error - currently no more than 32 arguments supported on external calls\n");
   }
   return 0;
-}
-
-int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
-{
-  char *c_filename = MdsDescrToCstring(filename);
-  char *full_filename = malloc(strlen(c_filename) + 10);
-  void *handle;
-  *symbol_value = NULL;
-  strcpy(full_filename,"lib");
-  strcat(full_filename,c_filename);
-  strcat(full_filename,SHARELIB_TYPE);
-  handle = dlopen(full_filename,RTLD_LAZY);
-  if (handle == NULL) {
-    strcpy(full_filename,c_filename);
-    strcat(full_filename,SHARELIB_TYPE);
-    handle = dlopen(full_filename,RTLD_LAZY);
-  }
-  if (handle != NULL)
-  {
-    char *c_symbol = MdsDescrToCstring(symbol);
-    *symbol_value = dlsym(handle,c_symbol);
-    free(c_symbol);
-  }
-  free(c_filename);
-  free(full_filename);
-  if (*symbol_value == NULL)
-    return LibKEYNOTFOU;
-  else
-    return 1;  
 }
 
 int LibSpawn(struct descriptor *cmd, struct descriptor *in, struct descriptor *out)
