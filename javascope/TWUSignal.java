@@ -1,27 +1,5 @@
-/* ------------------------------------------------------------------------ */
-/*
- * TWUSignal: Handling the TEC Web-Umbrella Signal (Bulk) File.
- *
- * Copyright © 2002, J.G.Krom, H.R.Koslowski, Forschungszentrum Jülich GmbH.
- * All rights reserved.
- * 
- * This class handles the bulk datafiles as used in the TEC Web-Umbrella.
- *
- * The TWU* classes (with TWU in three capitals) are written so that they 
- * can also be used in other java based applications and not only by jScope.  
- * Please keep the code of these separate of jScope specific elements.
- *
- * Authors: Jon Krom, H.R.Koslowski, 
- *          Forschungszentrum Jülich, Institut für Plasmaphysik.
- *
- * $Id$
- *
- * ------------------------------------------------------------------------ 
- * Derived from (matlab-) WUSignal.java Revision 1.6 2002/02/26 hrk/jgk
- * I removed the automatic CVS log from this file; it can be read
- * directly from the CVS repository with "cvs log".
- */
-/* ------------------------------------------------------------------------ */
+//Header removed: contained some dirty character which made IBM JVM fail
+
 
 import java.net.*;
 import java.io.*;
