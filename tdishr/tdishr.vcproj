@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\Release"
+			OutputDirectory="../Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -40,12 +40,12 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="../Release/tdishr.dll"
+				OutputFile="$(OutDir)/tdishr.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\TdiShr.def"
 				SubSystem="2"
-				ImportLibrary=".\Release/tdishr.lib"/>
+				ImportLibrary="$(OutDir)/tdishr.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"
@@ -70,7 +70,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\Debug"
+			OutputDirectory="../Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -96,14 +96,14 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="../Debug/tdishr.dll"
+				OutputFile="$(OutDir)/tdishr.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\TdiShr.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/tdishr.pdb"
+				ProgramDatabaseFile="$(IntDir)/tdishr.pdb"
 				SubSystem="2"
-				ImportLibrary=".\Debug/tdishr.lib"/>
+				ImportLibrary="$(OutDir)/tdishr.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"

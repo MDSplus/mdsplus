@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\Debug"
+			OutputDirectory="../Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -39,14 +39,14 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="../Debug/tcl_commands.dll"
+				OutputFile="$(OutDir)/tcl_commands.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\tcl_commands.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/tcl_commands.pdb"
+				ProgramDatabaseFile="$(IntDir)/tcl_commands.pdb"
 				SubSystem="2"
-				ImportLibrary=".\Debug/tcl_commands.lib"/>
+				ImportLibrary="$(OutDir)/tcl_commands.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -71,7 +71,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\Release"
+			OutputDirectory="../Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -98,12 +98,12 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="../Release/tcl_commands.dll"
+				OutputFile="$(OutDir)/tcl_commands.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\tcl_commands.def"
 				SubSystem="2"
-				ImportLibrary=".\Release/tcl_commands.lib"/>
+				ImportLibrary="$(OutDir)/tcl_commands.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"

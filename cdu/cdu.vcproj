@@ -41,7 +41,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="../Release/cdu.exe"
+				OutputFile="$(OutDir)/cdu.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				SubSystem="1"/>
@@ -92,11 +92,11 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="../Debug/cdu.exe"
+				OutputFile="$(OutDir)/cdu.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/cdu.pdb"
+				ProgramDatabaseFile="$(IntDir)/cdu.pdb"
 				SubSystem="1"/>
 			<Tool
 				Name="VCMIDLTool"

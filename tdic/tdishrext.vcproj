@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\Debug"
+			OutputDirectory="../Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -41,13 +41,13 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="../Debug/tdishrext.dll"
+				OutputFile="$(OutDir)/tdishrext.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\tdishrext.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/tdishrext.pdb"
-				ImportLibrary=".\Debug/tdishrext.lib"/>
+				ProgramDatabaseFile="$(IntDir)/tdishrext.pdb"
+				ImportLibrary="$(OutDir)/tdishrext.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -72,7 +72,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\Release"
+			OutputDirectory="../Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -100,12 +100,12 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="../Release/tdishrext.dll"
+				OutputFile="$(OutDir)/tdishrext.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\tdishrext.def"
 				ProgramDatabaseFile=".\Release/tdishrext.pdb"
-				ImportLibrary=".\Release/tdishrext.lib"/>
+				ImportLibrary="$(OutDir)/tdishrext.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"

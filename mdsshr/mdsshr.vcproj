@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\Debug"
+			OutputDirectory="../Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -39,15 +39,15 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="wsock32.lib ws2_32.lib odbc32.lib odbccp32.lib"
-				OutputFile="../Debug/mdsshr.dll"
+				OutputFile="$(OutDir)/mdsshr.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="libcd.lib"
 				ModuleDefinitionFile=".\MdsShr.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/mdsshr.pdb"
+				ProgramDatabaseFile="$(IntDir)/mdsshr.pdb"
 				SubSystem="2"
-				ImportLibrary=".\Debug/mdsshr.lib"/>
+				ImportLibrary="$(OutDir)/mdsshr.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -72,7 +72,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\Release"
+			OutputDirectory="../Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -99,12 +99,13 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="wsock32.lib ws2_32.lib odbc32.lib odbccp32.lib"
-				OutputFile="../Release/mdsshr.dll"
+				OutputFile="$(OutDir)/mdsshr.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\MdsShr.def"
 				SubSystem="2"
-				ImportLibrary=".\Release/mdsshr.lib"/>
+				SetChecksum="TRUE"
+				ImportLibrary="$(OutDir)/mdsshr.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"

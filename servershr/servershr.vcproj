@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\Release"
+			OutputDirectory="../Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -40,13 +40,13 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib"
-				OutputFile="../Release/mdsservershr.dll"
+				OutputFile="$(OutDir)/mdsservershr.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\servershr.def"
 				ProgramDatabaseFile=".\Release/mdsservershr.pdb"
 				SubSystem="2"
-				ImportLibrary=".\Release/mdsservershr.lib"/>
+				ImportLibrary="$(OutDir)/mdsservershr.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"
@@ -71,7 +71,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\Debug"
+			OutputDirectory="../Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -97,14 +97,14 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib"
-				OutputFile="../Debug/mdsservershr.dll"
+				OutputFile="$(OutDir)/mdsservershr.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\servershr.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/mdsservershr.pdb"
+				ProgramDatabaseFile="$(IntDir)/mdsservershr.pdb"
 				SubSystem="2"
-				ImportLibrary=".\Debug/mdsservershr.lib"/>
+				ImportLibrary="$(OutDir)/mdsservershr.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
