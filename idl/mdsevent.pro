@@ -95,7 +95,7 @@ function mdsevent_getevi,id
                          event_id:long(event_stuff,8), $
                          name:strtrim(event_stuff(12:39)), $
                          data:event_stuff(40:51)}
-  help,/struct,e
+  ;help,/struct,e
   return,e
 end
 
@@ -127,7 +127,7 @@ function mdsevent,parent,name,uvalue=uvalue
   stub = widget_base(parent)
   ss = widget_base(stub)  ;; this child widget will hold the eventid as the user value
   eventid=call_external(EventImage(),'IDLMdsEvent',mds$socket(), parent, stub, name, value=[1,0,0,1])
-  help,eventid
+  ;help,eventid
   widget_control,stub,event_func='mdsevent_func', func_get_value='mdsevent_get_value'
   widget_control,ss,set_uvalue=eventid,kill_notify='mdsevent_cleanup'  ;; kill_notify on this widget so still have access to uvalue
   if (keyword_set(uvalue)) then widget_control,stub,set_uvalue=uvalue
