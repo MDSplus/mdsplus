@@ -59,6 +59,7 @@ static int Doit(struct descriptor_routine	*ptask, struct descriptor_xd *out_ptr)
   int *arglist[256];
   LibEstablish(LibSigToRet);
   ndesc = ptask->ndesc;
+  while (ndesc > 3 && ptask->arguments[ndesc-4] == 0) ndesc--;
   dtype = ptask->length ? *(unsigned char *)ptask->pointer : DTYPE_L;
   switch (ptask->dtype) {
     case DTYPE_METHOD : {
@@ -69,17 +70,20 @@ static int Doit(struct descriptor_routine	*ptask, struct descriptor_xd *out_ptr)
       nid_dsc.pointer = (char *)&nid;
       status = TdiData(pmethod->method, &method_d MDS_END_ARG);
       if (status & 1) status = TdiGetNid(pmethod->object, &nid);
-      arglist[0] = (int *)(ndesc - 1);
+      arglist[0] = (int *)ndesc;
       arglist[1] = (int *)&nid_dsc;
       arglist[2] = (int *)&method_d;
+
       /*** skip timeout,method,object ***/
       for (j = 3; j < ndesc; ++j) arglist[j] = (int *)pmethod->arguments[j-3];
+	  arglist[ndesc] = MdsEND_ARG;
       if (status & 1) {
-	status = LibCallg(arglist, TreeDoMethod);
-	status = TdiPutLong(&status, out_ptr);
+	    status = LibCallg(arglist, TreeDoMethod);
+	    status = TdiPutLong(&status, out_ptr);
       }
       StrFree1Dx(&method_d);
-      break; }
+      break; 
+	}
     /*case DTYPE_PROCEDURE :	break;*/
     /*case DTYPE_PROGRAM :	break;*/
     case DTYPE_ROUTINE :
