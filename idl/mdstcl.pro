@@ -5,8 +5,8 @@
 pro MdsTcl,command,output=output,status=status,quiet=quiet
   forward_function MdsValue
   if n_elements(command) ne 0 then begin
-    status = MdsValue('Tcl($,_output)',command)
-    output = MdsValue('if_error(_output,"")')
+    status = MdsValue('Tcl($,public _output)',command)
+    output = MdsValue('if_error(public _output,"")')
     if strlen(output) gt 0 then begin
       output = str_sep(output,string([10b]))
       if not arg_present(output) then for i=0,(size(output))[1]-1 do print,output[i]
