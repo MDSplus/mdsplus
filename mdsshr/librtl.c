@@ -197,7 +197,9 @@ void *dlsym(void *handle, char *name)
   int s = shl_findsym((shl_t *)&handle,name,0,&symbol);
   return symbol;
 }
-
+#elif defined(_AIX)
+#include <dlfcn.h>
+#define SHARELIB_TYPE ".a"
 #else
 #include <dlfcn.h>
 #define SHARELIB_TYPE ".so"
@@ -600,7 +602,7 @@ int StrGet1Dx(unsigned short *len, struct descriptor *out)
 
 #if defined(__alpha) && defined(__vms)
 typedef __int64 _int64;
-#elif defined(__unix__) || defined(unix) || defined(__unix) ||defined (vxWorks)
+#elif defined(__unix__) || defined(unix) || defined(__unix) ||defined (vxWorks) 
 typedef long long _int64;
 #endif
 
