@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# File: daq_server
+#
+# Fires up an mdsip server in multi mode to be used to
+# support remote devices like dt100s.
+#
+# usage:
+#       create the directory:
+#         /var/log/mdsplus/daq_server
+#       add a line to /etc/services:
+#         mdsip_daq_server 8500/tcp  
+# 	add a line to /etc/inittab like:
+#         m1:345:respawn:/usr/local/mdsplus/bin/daq_server
+#
+. /usr/local/mdsplus/etc/profile.d/mdsplus.sh
+exec /usr/local/mdsplus/bin/mdsip mdsip_daq_server multi >> /var/log/mdsplus/daq_server/access 2>> /var/log/mdsplus/daq_server/errors
