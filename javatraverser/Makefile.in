@@ -24,7 +24,8 @@ TRCFSetup.java \
 Aurora14Setup.java \
 ACQD265Setup.java \
 NI6071ESetup.java\
-PELLETSetup.java
+PELLETSetup.java\
+RFXTimesSetup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
