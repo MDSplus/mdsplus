@@ -108,7 +108,7 @@ SOURCE=.\mdsevent.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\RSI\IDL54\bin\bin.x86\idl32.lib
+SOURCE="$(IDL_DIR)\bin\bin.x86\idl32.lib"
 # End Source File
 # End Target
 # End Project
