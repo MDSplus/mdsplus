@@ -445,7 +445,10 @@ int SendMdsMsg(SOCKET sock, Message *m, int oob)
     int bytes_sent;
     bytes_sent = send(sock, bptr, bytes_this_time, oob);
     if (bytes_sent <= 0)
-      return 0;
+    {
+      if (errno != EINTR)
+        return 0;
+    }
     else
     {
       bytes_to_send -= bytes_sent;
@@ -590,9 +593,12 @@ Message *GetMdsMsg(SOCKET sock, int *status)
       }
       else
       {
-        perror("MDSplus GETMSG recv error");
-        *status = 0;
-        return 0;
+        if (errno != EINTR)
+	{
+          perror("MDSplus GETMSG recv error");
+          *status = 0;
+          return 0;
+        }
       }
     }
     else
