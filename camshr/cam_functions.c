@@ -1111,7 +1111,7 @@ static int Jorway73ATranslateIosb( int isdatacmd, int reqbytcnt, J73ASenseData *
 	LastIosb.list=0;
         status = CamDONE_Q;
 	break;
-      case 2:
+      case 1:
 	LastIosb.x=sense->additional_sense_code != 0x44;
 	LastIosb.q=sense->additional_sense_code != 0x80;
 	LastIosb.err=0;
@@ -1142,7 +1142,7 @@ static int Jorway73ATranslateIosb( int isdatacmd, int reqbytcnt, J73ASenseData *
 	LastIosb.list=0;
 	status = CamDONE_NOQ;
 	break;
-      case 2:
+      case 1:
 	LastIosb.x=0;
 	LastIosb.q=0;
 	LastIosb.err=0;
@@ -1157,7 +1157,7 @@ static int Jorway73ATranslateIosb( int isdatacmd, int reqbytcnt, J73ASenseData *
 	case 0x80: status = CamDONE_NOQ; break;
 	}
 	break;
-      case 4:
+      case 2:
 	LastIosb.x=1;
 	LastIosb.q=1;
 	LastIosb.err=0;
