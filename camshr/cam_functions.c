@@ -366,13 +366,11 @@ int Cam##pname(                                     \
 // macro expansion
 //-----------------------------------------------------------
 CallSingleIo( Piow,    QIgnore )	// yields: int = CamPiow( ... )
-CallSingleIo( PioQrep, QRep    )	//       : int = CamPioQrep( ... )
+CallSingleIo( PioQrepw, QRep    )	//       : int = CamPioQrepw( ... )
 
-//CallMultiIo( FQstop, QStop,   1 )	//       : int = CamFQstop( ... )
-//CallMultiIo( FStop,  QIgnore, 1 )	//       : int = CamFStop( ... )
 CallMultiIo( FQstopw, QStop,   1 )	//       : int = CamFQstopw( ... )		[2001.09.13]
 CallMultiIo( FStopw,  QIgnore, 1 )	//       : int = CamFStopw( ... )		[2001.09.13]
-
+CallMultiIo( FQrepw,  QRep,    1 )	//       : int = CamQrepw( ... )		[2001.04.18]
 CallMultiIo( Qrepw,   QRep,    0 )	//       : int = CamQrepw( ... )		[2001.04.18]
 CallMultiIo( Qscanw,  QScan,   0 )	//       : int = CamQscanw( ... )		[2001.04.18]
 CallMultiIo( Qstopw,  QStop,   0 )	//       : int = CamQstopw( ... )		[2001.08.30]
