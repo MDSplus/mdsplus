@@ -339,6 +339,10 @@ typedef struct record_header
 
 #define MAX_SEARCH_LEVELS 32
 
+#ifdef vxWorks
+#undef NONE
+#endif
+
 typedef enum search_type
 {
   NONE,

@@ -6,7 +6,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifndef vxWorks
 #define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
 #define MAX_DIMS 7
 struct descrip { char dtype;
                  char ndims;

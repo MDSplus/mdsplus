@@ -7,7 +7,9 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern void *DBID;
 
+#ifndef vxWorks
 #define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
 
 
 static int IsMember(NODE *node);

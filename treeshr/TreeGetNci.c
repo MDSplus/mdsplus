@@ -21,7 +21,10 @@ extern int StrFree1Dx();
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
+#ifndef vxWorks
 #define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
+
 #define read_nci \
  if (need_nci)\
  {\
@@ -696,7 +699,11 @@ static int OpenNciR(TREE_INFO *info)
 		char *filename = strncpy(malloc(len+16),info->filespec,len);
 		filename[len]='\0';
 		strcat(filename,"characteristics");
+#ifdef vxWorks
+		info->nci_file->get = open(filename,O_RDONLY | O_BINARY | O_RANDOM, 0);
+#else
 		info->nci_file->get = open(filename,O_RDONLY | O_BINARY | O_RANDOM);
+#endif
         status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
 		if (!(status & 1))
 		{

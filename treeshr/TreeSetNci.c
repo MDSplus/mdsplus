@@ -283,7 +283,11 @@ int TreeOpenNciW(TREE_INFO *info, int tmpfile)
         info->nci_file->get = 0;
       if (status & 1)
       {
+#ifdef vxWorks
+        info->nci_file->put = open(filename,O_RDWR | O_BINARY | O_RANDOM, 0);
+#else
         info->nci_file->put = open(filename,O_RDWR | O_BINARY | O_RANDOM);
+#endif
         status = (info->nci_file->put == -1) ? TreeFAILURE : TreeNORMAL;
         if (info->nci_file->put == -1)
           info->nci_file->put = 0;
@@ -649,6 +653,7 @@ static int SetNodeParentState(PINO_DATABASE *db, NODE *node, NCI *nci, unsigned 
   node_num = node - info->node;
   status = TreeGetNciLw(info, node_num, nci);
   if (status & 1)
+
   {
     bitassign(state,nci->flags,NciM_PARENT_STATE);
     status = TreePutNci(info, node_num, nci, 0);
@@ -656,7 +661,25 @@ static int SetNodeParentState(PINO_DATABASE *db, NODE *node, NCI *nci, unsigned 
   return status;
 }
 
-#if !defined(_WIN32)
+#if defined (_WIN32)
+
+int TreeLockNci(TREE_INFO *info, int readonly, int nodenum)
+{
+	int status = LockFile((HANDLE)_get_osfhandle(readonly ? info->nci_file->get : info->nci_file->put), 
+		nodenum * sizeof(NCI), 0, sizeof(NCI), 0) == 0 ? TreeFAILURE : TreeSUCCESS;
+	if (!(status & 1) && (GetLastError() == ERROR_LOCK_VIOLATION))
+		  status = TreeSUCCESS;
+	return status;
+}
+int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
+{
+	int status = UnlockFile((HANDLE)_get_osfhandle(readonly ? info->nci_file->get : info->nci_file->put), 
+		nodenum * sizeof(NCI), 0, sizeof(NCI), 0) == 0 ? TreeFAILURE : TreeSUCCESS;
+	return status;
+}
+#else
+
+#if !defined(vxWorks)
 int TreeLockNci(TREE_INFO *info, int readonly, int nodenum)
 {
   struct flock flock_info;
@@ -678,19 +701,15 @@ int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
   return (fcntl(readonly ? info->nci_file->get : info->nci_file->put,F_SETLKW, &flock_info) != -1) ? 
           TreeSUCCESS : TreeFAILURE;
 }
+
 #else
-int TreeLockNci(TREE_INFO *info, int readonly, int nodenum)
-{
-	int status = LockFile((HANDLE)_get_osfhandle(readonly ? info->nci_file->get : info->nci_file->put), 
-		nodenum * sizeof(NCI), 0, sizeof(NCI), 0) == 0 ? TreeFAILURE : TreeSUCCESS;
-	if (!(status & 1) && (GetLastError() == ERROR_LOCK_VIOLATION))
-		  status = TreeSUCCESS;
-	return status;
-}
-int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
-{
-	int status = UnlockFile((HANDLE)_get_osfhandle(readonly ? info->nci_file->get : info->nci_file->put), 
-		nodenum * sizeof(NCI), 0, sizeof(NCI), 0) == 0 ? TreeFAILURE : TreeSUCCESS;
-	return status;
-}
+/*It seems that vxWorks or NFS does not support file locking*/
+
+int TreeUnLockNci(TREE_INFO *info, int readonly, int offset)
+{ return  TreeSUCCESS; }
+
+int TreeLockNci(TREE_INFO *info, int readonly, int offset)
+{ return  TreeSUCCESS; }
+
+#endif
 #endif

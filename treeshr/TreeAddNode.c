@@ -735,7 +735,15 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
 			goto error_exit;
 		remove(info_ptr->filespec);
         fclose(ntreef);
+#ifdef vxWorks
+	/*rename is not supported by nfs on vxWorks*/
+
+	copy(nfilenam,info_ptr->filespec);
+	remove(nfilenam);
+#else
         rename(nfilenam,info_ptr->filespec);
+#endif
+
 		(*dblist)->modified = 0;
         TreeCallHook(WriteTree, info_ptr);
       }

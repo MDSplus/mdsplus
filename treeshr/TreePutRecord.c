@@ -53,9 +53,15 @@
 #define O_RANDOM 0
 #endif
 
+#ifdef vxWorks
+static int timezone = 0;
+#endif
+
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
+#ifndef vxWorks
 #define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
 
 static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci);
 static int FixupNid(NID *nid, unsigned char *tree, struct descriptor *path);
@@ -89,7 +95,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   int       length = 0;
   int       shot_open;
   compress_utility = utility_update == 2;
-#if !defined(_WINDOWS)
+#if !defined(_WINDOWS) && !defined(vxWorks)
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -134,7 +140,9 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
         bitassign(dblist->setup_info, local_nci.flags, NciM_SETUP_INFORMATION);
 	local_nci.owner_identifier = saved_uic;
 	/* VMS time = unixtime * 10,000,000 + 0x7c95674beb4000q */
+#ifndef vxWorks
         tzset();
+#endif
         m1 = (unsigned int)time(NULL) - timezone;
 	LibEmul(&m1,&m2,zero,temp);
 #ifdef _big_endian
@@ -344,7 +352,11 @@ int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
       df_ptr->get = 0;
     if (status & 1)
     {
+#ifdef vxWorks
+      df_ptr->put = open(filename,O_RDWR | O_BINARY | O_RANDOM, 0);
+#else
       df_ptr->put = open(filename,O_RDWR | O_BINARY | O_RANDOM);
+#endif
       status = (df_ptr->put == -1) ? TreeFAILURE : TreeNORMAL;
       if (df_ptr->put == -1)
         df_ptr->put = 0;
@@ -493,7 +505,32 @@ static int AddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
 	Eliminates DSC descriptors. Need DSC for classes A and APD?
 -----------------------------------------------------------------*/
 
-#if !defined(_WIN32)
+#ifdef _WIN32
+
+static int LockStart;
+static int LockSize;
+int TreeLockDatafile(TREE_INFO *info, int readonly, int offset)
+{
+	LockStart = offset >= 0 ? offset : _lseek(info->data_file->put,0,SEEK_END);
+	LockSize = offset >= 0 ? 12 : 0x7fffffff;
+	return LockFile((HANDLE)_get_osfhandle(readonly ? info->data_file->get : info->data_file->put), LockStart, 0,
+	   LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
+}
+int TreeUnLockDatafile(TREE_INFO *info, int readonly, int offset)
+{
+  return UnlockFile((HANDLE)_get_osfhandle(readonly ? info->data_file->get : info->data_file->put), LockStart, 0,
+	   LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
+}
+#else
+# ifdef vxWorks
+/* It seems that vxWorks or NFS does not support file locking*/
+
+int TreeUnLockDatafile(TREE_INFO *info, int readonly, int offset)
+{ return  TreeSUCCESS; }
+
+int TreeLockDatafile(TREE_INFO *info, int readonly, int offset)
+{ return  TreeSUCCESS; }
+#else
 int TreeLockDatafile(TREE_INFO *info, int readonly, int offset)
 {
   struct flock flock_info;
@@ -515,19 +552,6 @@ int TreeUnLockDatafile(TREE_INFO *info, int readonly, int offset)
   return (fcntl(readonly ? info->data_file->get : info->data_file->put,F_SETLKW, &flock_info) != -1) ? 
           TreeSUCCESS : TreeFAILURE;
 }
-#else
-static int LockStart;
-static int LockSize;
-int TreeLockDatafile(TREE_INFO *info, int readonly, int offset)
-{
-	LockStart = offset >= 0 ? offset : _lseek(info->data_file->put,0,SEEK_END);
-	LockSize = offset >= 0 ? 12 : 0x7fffffff;
-	return LockFile((HANDLE)_get_osfhandle(readonly ? info->data_file->get : info->data_file->put), LockStart, 0,
-	   LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
-}
-int TreeUnLockDatafile(TREE_INFO *info, int readonly, int offset)
-{
-  return UnlockFile((HANDLE)_get_osfhandle(readonly ? info->data_file->get : info->data_file->put), LockStart, 0,
-	   LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
-}
 #endif
+#endif
+
