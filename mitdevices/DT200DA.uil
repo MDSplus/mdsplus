@@ -135,8 +135,15 @@ value
 
     DT200_INPUTS :  29;
 
-    DT200_INIT_ACTION :  189;
-    DT200_STORE_ACTION :  190;
+    DT200_DO_HEAD : 189;
+    DT200_DO_TRIG_SRC: 190;
+    DT200_DO_CLOCK_SRC: 191;
+    DT200_DO_CHANS : 192;
+    DT200_DO_NODES_PER_CHAN : 4;
+    DT200_DO_SET_POINTS : 1;
+
+    DT200_INIT_ACTION :  232;
+    DT200_STORE_ACTION :  233;
 
     FILTER_LABEL : compound_string("Coeffs");
 
@@ -167,11 +174,11 @@ list BaseStyleReasons : callbacks {
 !(BX)    };
 !(BX)};
 
-object DT200 : XmFormDialog widget {
+object DT200DA : XmFormDialog widget {
     arguments {
         XmNautoUnmanage = false;
         XmNresizePolicy = XmRESIZE_GROW;
-        XmNdialogTitle = compound_string("Dt200 CPCI Digitizer");
+        XmNdialogTitle = compound_string("Dt200 CPCI Digitizer with Outputs");
         XmNx = 460;
         XmNy = 467;
         XmNwidth = 816;
@@ -196,6 +203,7 @@ object DT200 : XmFormDialog widget {
          managed user_defined nameField;
          managed XmLabelGadget nameLabel;
          unmanaged XmFormDialog routingBox;
+         unmanaged XmFormDialog doBox;
     };
     callbacks {
     };
@@ -514,7 +522,7 @@ object nidOptionMenu3 : user_defined procedure XmdsCreateNidOptionMenu {
         XmNtopAttachment = XmATTACH_WIDGET;
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_FORM;
-        XmNtopWidget = user_defined dsNidOptionMenu1;
+        XmNtopWidget =user_defined dsNidOptionMenu1;
         XmNtopOffset = 1;
         XmNbottomOffset = 0;
         XmNleftOffset = 17;
@@ -553,7 +561,7 @@ object nidOptionMenu4 : user_defined procedure XmdsCreateNidOptionMenu {
         XmNtopAttachment = XmATTACH_OPPOSITE_WIDGET;
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_FORM;
-        XmNtopWidget = user_defined nidOptionMenu3;
+        XmNtopWidget =user_defined nidOptionMenu3;
         XmNtopOffset = 40;
         XmNbottomOffset = 0;
         XmNleftOffset = 30;
@@ -574,7 +582,7 @@ object labelGadget13 : XmLabelGadget widget {
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
         XmNtopWidget = user_defined commentField;
-        XmNleftWidget = user_defined dsNidOptionMenu1;
+        XmNleftWidget =user_defined dsNidOptionMenu1;
         XmNtopOffset = 26;
         XmNbottomOffset = 0;
         XmNleftOffset = 43;
@@ -619,7 +627,7 @@ object scrolledWindow1 : XmScrolledWindow widget {
         XmNscrollingPolicy = XmAUTOMATIC;
         XmNtopAttachment = XmATTACH_WIDGET;
         XmNbottomAttachment = XmATTACH_NONE;
-        XmNtopWidget = user_defined nidOptionMenu4;
+        XmNtopWidget =user_defined nidOptionMenu4;
         XmNtopOffset = 11;
         XmNbottomOffset = 0;
         XmNx = 30;
@@ -3513,6 +3521,7 @@ object pushButton2 : XmPushButton widget {
     controls {
     };
     callbacks {
+        XmNactivateCallback = procedure ManageChild("*doBox");
     };
 };
 
@@ -3906,7 +3915,7 @@ object nidOptionMenu17 : user_defined procedure XmdsCreateNidOptionMenu {
         XmdsNnidOffset = DT200_DI1_WIRE;
         XmdsNlabelStrings = string_table(
 	compound_string("MI1 unused"),
-	compound_string("J51 unused"),
+	compound_string("J51 trig-R"),
 	compound_string("None"));
         XmNwidth = 170;
     };
@@ -3965,15 +3974,15 @@ object nidOptionMenu19 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
-	compound_string("'MI0'"),
-	compound_string("'J50'"),
+	compound_string("'MI2'"),
+	compound_string("'J52'"),
 	compound_string(""));
         XmNlabelString = compound_string("");
         XmdsNputOnApply = true;
         XmdsNnidOffset = DT200_DI2_WIRE;
         XmdsNlabelStrings = string_table(
-	compound_string("MI2 ai trig-F"),
-	compound_string("J52 ai trig-R"),
+	compound_string("MI2 trig-F"),
+	compound_string("J52 ao trig-R"),
 	compound_string("None"));
         XmNwidth = 170;
     };
@@ -4399,4 +4408,401 @@ object niwdig_xdBoxOnOffButton : user_defined procedure XmdsCreateXdBoxDialogBut
     callbacks {
     };
 };
+object doBox : XmFormDialog widget {
+    arguments {
+        XmNresizePolicy = XmRESIZE_GROW;
+        XmNdialogTitle = compound_string("Dt200 Digital Outputs");
+        XmNx = 298;
+        XmNy = 317;
+        XmNheight = 518;
+    };
+    controls {
+         managed XmForm deviceButtons2;
+         managed user_defined dOnidOptionMenu1;
+         managed user_defined dOnidOptionMenu;
+         managed XmFrame dOframe;
+    };
+    callbacks {
+    };
+};
+
+object dOframe : XmFrame widget {
+    arguments {
+        XmNtopAttachment = XmATTACH_WIDGET;
+        XmNbottomAttachment = XmATTACH_NONE;
+        XmNleftAttachment = XmATTACH_FORM;
+        XmNtopWidget =user_defined dOnidOptionMenu1;
+        XmNtopOffset = 0;
+        XmNbottomOffset = 0;
+        XmNleftOffset = 10;
+    };
+    controls {
+         managed XmRowColumn dOrowColumn;
+    };
+    callbacks {
+    };
+};
+
+object dOrowColumn : XmRowColumn widget {
+    arguments {
+        XmNborderWidth = 0;
+        XmNorientation = XmVERTICAL;
+        XmNpacking = XmPACK_COLUMN;
+        XmNnumColumns = 2;
+        XmNtearOffModel = XmTEAR_OFF_DISABLED;
+        XmNx = 2;
+        XmNy = 2;
+        XmNwidth = 365;
+        XmNheight = 383;
+    };
+    controls {
+         managed XmLabel dOlabel;
+         managed user_defined dOxdBoxOnOffButton;
+         managed user_defined dOxdBoxOnOffButton1;
+         managed user_defined dOxdBoxOnOffButton2;
+         managed user_defined dOxdBoxOnOffButton3;
+         managed user_defined dOxdBoxOnOffButton4;
+         managed user_defined dOxdBoxOnOffButton5;
+         managed user_defined dOxdBoxOnOffButton6;
+         managed user_defined dOxdBoxOnOffButton7;
+         managed XmLabel dOlabel1;
+         managed user_defined dOexprField;
+         managed user_defined dOexprField1;
+         managed user_defined dOexprField2;
+         managed user_defined dOexprField3;
+         managed user_defined dOexprField4;
+         managed user_defined dOexprField5;
+         managed user_defined dOexprField6;
+         managed user_defined dOexprField7;
+    };
+    callbacks {
+    };
+};
+
+object dOlabel : XmLabel widget {
+    arguments {
+        XmNlabelString = compound_string("On/Off");
+        XmNwidth = 178;
+        XmNheight = 35;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOxdBoxOnOffButton : user_defined procedure XmdsCreateOnOffToggleButton {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(0*DT200_DO_NODES_PER_CHAN) ;
+        XmNlabelString = compound_string("Digital Out 0");
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOxdBoxOnOffButton1 : user_defined procedure XmdsCreateOnOffToggleButton {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(1*DT200_DO_NODES_PER_CHAN) ;
+        XmNlabelString = compound_string("Digital Out 1");
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOxdBoxOnOffButton2 : user_defined procedure XmdsCreateOnOffToggleButton {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(2*DT200_DO_NODES_PER_CHAN) ;
+        XmNlabelString = compound_string("Digital Out 2");
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOxdBoxOnOffButton3 : user_defined procedure XmdsCreateOnOffToggleButton {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(3*DT200_DO_NODES_PER_CHAN) ;
+        XmNlabelString = compound_string("Digital Out 3");
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOxdBoxOnOffButton4 : user_defined procedure XmdsCreateOnOffToggleButton {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(4*DT200_DO_NODES_PER_CHAN) ;
+        XmNlabelString = compound_string("Digital Out 4");
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOxdBoxOnOffButton5 : user_defined procedure XmdsCreateOnOffToggleButton {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(5*DT200_DO_NODES_PER_CHAN) ;
+        XmNlabelString = compound_string("Digital Out 5");
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOxdBoxOnOffButton6 : user_defined procedure XmdsCreateOnOffToggleButton {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(6*DT200_DO_NODES_PER_CHAN) ;
+        XmNlabelString = compound_string("Digital Out 6");
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOxdBoxOnOffButton7 : user_defined procedure XmdsCreateOnOffToggleButton {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(7*DT200_DO_NODES_PER_CHAN) ;
+        XmNlabelString = compound_string("Digital Out 7");
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOlabel1 : XmLabel widget {
+    arguments {
+        XmNlabelString = compound_string("Expression");
+        XmNwidth = 178;
+        XmNheight = 35;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOexprField : user_defined procedure XmdsCreateExprField {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(0*DT200_DO_NODES_PER_CHAN)+DT200_DO_SET_POINTS ;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOexprField1 : user_defined procedure XmdsCreateExprField {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(1*DT200_DO_NODES_PER_CHAN)+DT200_DO_SET_POINTS ;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOexprField2 : user_defined procedure XmdsCreateExprField {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(2*DT200_DO_NODES_PER_CHAN)+DT200_DO_SET_POINTS ;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOexprField3 : user_defined procedure XmdsCreateExprField {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(3*DT200_DO_NODES_PER_CHAN)+DT200_DO_SET_POINTS ;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOexprField4 : user_defined procedure XmdsCreateExprField {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(4*DT200_DO_NODES_PER_CHAN)+DT200_DO_SET_POINTS ;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOexprField5 : user_defined procedure XmdsCreateExprField {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(5*DT200_DO_NODES_PER_CHAN)+DT200_DO_SET_POINTS ;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOexprField6 : user_defined procedure XmdsCreateExprField {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(6*DT200_DO_NODES_PER_CHAN)+DT200_DO_SET_POINTS ;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOexprField7 : user_defined procedure XmdsCreateExprField {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CHANS+(7*DT200_DO_NODES_PER_CHAN)+DT200_DO_SET_POINTS ;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+
+object dOnidOptionMenu : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_TRIG_SRC;
+        XmdsNvalueStrings = string_table(
+	compound_string("'DI0'"),
+	compound_string("'DI1'"),
+	compound_string("'DI2'"),
+	compound_string("'DI3'"),
+	compound_string("'DI4'"),
+	compound_string("'DI5'"));
+        XmNlabelString = compound_string("Trigger Source:");
+        XmdsNputOnApply = true;
+        XmdsNlabelStrings = string_table(
+	compound_string("DI0"),
+	compound_string("DI1"),
+	compound_string("DI2"),
+	compound_string("DI3"),
+	compound_string("DI4"),
+	compound_string("DI5"));
+        XmNleftAttachment = XmATTACH_FORM;
+        XmNtopOffset = 10;
+        XmNleftOffset = 50;
+        XmNx = 50;
+        XmNy = 10;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dOnidOptionMenu1 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNnidOffset = DT200_DO_CLOCK_SRC;
+        XmdsNvalueStrings = string_table(
+	compound_string("'DI0'"),
+	compound_string("'DI1'"),
+	compound_string("'DI2'"),
+	compound_string("'DI3'"),
+	compound_string("'DI4'"),
+	compound_string("'DI5'"));
+        XmNlabelString = compound_string("Clock Source:");
+        XmdsNputOnApply = true;
+        XmdsNlabelStrings = string_table(
+	compound_string("DI0"),
+	compound_string("DI1"),
+	compound_string("DI2"),
+	compound_string("DI3"),
+	compound_string("DI4"),
+	compound_string("DI5"));
+        XmNleftAttachment = XmATTACH_WIDGET;
+        XmNrightAttachment = XmATTACH_NONE;
+        XmNleftWidget =user_defined dOnidOptionMenu;
+        XmNtopOffset = 10;
+        XmNleftOffset = 50;
+        XmNrightOffset = 0;
+        XmNx = 271;
+        XmNy = 10;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object deviceButtons2 : XmForm widget {
+    arguments {
+        XmNresizePolicy = XmRESIZE_NONE;
+        XmNleftAttachment = XmATTACH_FORM;
+        XmNrightAttachment = XmATTACH_NONE;
+        XmNtopOffset = 450;
+        XmNleftOffset = 10;
+        XmNx = 10;
+        XmNy = 450;
+        XmNheight = 30;
+    };
+    controls {
+         managed XmPushButton pushButton5;
+         managed user_defined resetButton2;
+    };
+    callbacks {
+    };
+};
+
+object resetButton2 : user_defined procedure XmdsCreateResetButton {
+    arguments {
+        XmNleftAttachment = XmATTACH_POSITION;
+        XmNleftPosition = 19;
+        XmNtopOffset = 0;
+        XmNleftOffset = -25;
+        XmNx = 44;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object pushButton5 : XmPushButton widget {
+    arguments {
+        XmNlabelString = compound_string("Dismiss");
+        XmNleftAttachment = XmATTACH_FORM;
+        XmNtopOffset = 0;
+        XmNleftOffset = 300;
+        XmNx = 300;
+        XmNy = 0;
+    };
+    controls {
+    };
+    callbacks {
+        XmNactivateCallback = procedure UnManageChild("*doBox");
+    };
+};
+
+
 end module;

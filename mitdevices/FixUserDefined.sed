@@ -9,7 +9,7 @@ s/managed XmdsCancelButton/managed user_defined/g
 s/managed XmdsResetButton/managed user_defined/g
 s/managed XmdsApplyButton/managed user_defined/g
 s/managed XmdsXdBoxDialogButton/managed user_defined/g
-s/managed XmdsNidOptionMenu/managed user_definedu/g
+s/managed XmdsNidOptionMenu/managed user_defined/g
 s/managed XmdsOnOffToggleButton/managed user_defined/g
 s/managed XmdsPath/managed user_defined/g
 s/managed XmdsWaveform/managed user_defined/g
