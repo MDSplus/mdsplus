@@ -77,7 +77,7 @@ EM_FLU_TESTSetup.java\
 BOLOSetup.java\
 XRAYSetup.java\
 SXCSetup.java\
-RFXAxiControlSetup.java
+RfxAxiControlSetup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
@@ -187,7 +187,8 @@ WithUnitsData.java\
 jTraverser.java\
 DecompileTree.java\
 CompileTree.java \
-LoadPulse.java
+LoadPulse.java \
+OAM01Setup.java 
 
 GIFS = DeviceApply.gif \
        DeviceChoice.gif \
