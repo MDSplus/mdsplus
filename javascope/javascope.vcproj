@@ -47,6 +47,9 @@
 				RelativePath=".\AboutWindow.java">
 			</File>
 			<File
+				RelativePath="AsdexDataProvider.java">
+			</File>
+			<File
 				RelativePath=".\Base64.java">
 			</File>
 			<File
@@ -78,6 +81,9 @@
 			</File>
 			<File
 				RelativePath=".\DataServerItem.java">
+			</File>
+			<File
+				RelativePath="DemoAccess.java">
 			</File>
 			<File
 				RelativePath=".\DemoDataProvider.java">
@@ -230,6 +236,18 @@
 				RelativePath=".\SignalsBoxDialog.java">
 			</File>
 			<File
+				RelativePath="TSDataProvider.java">
+			</File>
+			<File
+				RelativePath="TWUFetchOptions.java">
+			</File>
+			<File
+				RelativePath="TWUProperties.java">
+			</File>
+			<File
+				RelativePath="TWUSignal.java">
+			</File>
+			<File
 				RelativePath=".\TextorBrowseSignals.java">
 			</File>
 			<File
@@ -273,6 +291,12 @@
 			</File>
 			<File
 				RelativePath=".\WaveformContainer_2.java">
+			</File>
+			<File
+				RelativePath="WaveformEditor.java">
+			</File>
+			<File
+				RelativePath="WaveformEditorListener.java">
 			</File>
 			<File
 				RelativePath=".\WaveformEvent.java">
