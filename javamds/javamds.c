@@ -144,6 +144,7 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
     struct descriptor_a *arr_ptr;
 	char *expanded_in;
 
+    error_message[0] = 0;
     *out_dim = 0;
 	if(is_float)
 	{

@@ -173,9 +173,9 @@ static char buf[1000];
   name = (*env)->GetStringUTFChars(env, jname, 0);
   shot = (*env)->GetIntField(env, obj, shot_fid);
 
-	printf("PARTE OPEN NEW\n");
+/*	printf("PARTE OPEN NEW\n");*/
 	status = TreeOpenNew((char *)name, shot);
-	printf("FATTO");
+/*	printf("FATTO");*/
   (*env)->ReleaseStringUTFChars(env, jname, name);
 
 sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));
