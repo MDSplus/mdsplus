@@ -420,7 +420,31 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
 	case H5T_TIME:
 	  printf("dataset is time ---- UNSUPPORTED\n"); break;
 	case H5T_STRING:
-	   break;
+	  {
+	    int slen = H5Tget_size(type);
+	    hid_t st_id;
+	    if (slen < 0) {
+	      printf("Badly formed string attribute\n");
+	      return;
+	    }
+#if H5_VERS_MAJOR>=1&&H5_VERS_MINOR>=6&&H5_VERS_RELEASE>=1
+	    if(H5Tis_variable_str(type)) {                    
+	      st_id = H5Tcopy (H5T_C_S1);
+	      H5Tset_size(st_id, H5T_VARIABLE);
+	    } else {
+#endif
+	      st_id = H5Tcopy (type);
+	      H5Tset_cset(st_id, H5T_CSET_ASCII);
+#if H5_VERS_MAJOR>=1&&H5_VERS_MINOR>=6&&H5_VERS_RELEASE>=1
+	    } 
+#endif	  
+            if (H5Tget_size(st_id) > slen) {
+	      slen = H5Tget_size(st_id);
+	    }
+	    H5Tset_size (st_id, slen);
+	    PutData(obj, nid, DTYPE_T, st_id, slen, n_ds_dims, ds_dims, 0); 
+	  }		
+	  break;
 	case H5T_BITFIELD:
 	  printf("dataset is bitfield ---- UNSUPPORTED\n"); break;
 	case H5T_OPAQUE:
