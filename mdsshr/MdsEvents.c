@@ -131,7 +131,7 @@ static int canEventRemote(int eventid)
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventCan"};
-    int status, i;
+    int status=1, i;
     static int (*rtn)() = 0;
     if (rtn == 0)
       status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
@@ -321,7 +321,7 @@ static unsigned __stdcall handleRemoteAst(void *p)
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsgOOB"};
-    int status, i;
+    int status=1, i;
     static int (*rtn)() = 0;
     Message *m;
     int  selectstat;
@@ -395,7 +395,7 @@ static void initializeLocalRemote(int receive_events, int *use_local)
     struct descriptor 
 	  library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	  routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
-    int status, i;
+    int status=1, i;
     static int (*rtn)() = 0;
 
     if(receive_initialized && receive_events)
@@ -479,7 +479,7 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventAst"};
-    int status, i;
+    int status=1, i;
     int curr_eventid;
     static int (*rtn)() = 0;
 
@@ -587,7 +587,7 @@ static int sendRemoteEvent(char *evname, int data_len, char *data)
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 8, "MdsValue"};
-    int status, i, tmp_status;
+    int status=1, i, tmp_status;
     char expression[256];
     struct descrip ansarg;
     struct descrip desc;
@@ -1401,7 +1401,7 @@ static void handleRemoteAst()
 {
   static DESCRIPTOR(library_d,"MdsIpShr");
   static DESCRIPTOR(routine_d,"Poll");
-  int status;
+  int status=1;
   static void (*rtn)(void (*)(SOCKET)) = 0;
   if (rtn == 0)
     status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
@@ -1417,7 +1417,7 @@ static int RegisterRead(SOCKET sock)
 {
   static DESCRIPTOR(library_d,"MdsIpShr");
   static DESCRIPTOR(routine_d,"RegisterRead");
-  int status;
+  int status=1;
   static int (*rtn)(SOCKET) = 0;
   if (rtn == 0)
     status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
@@ -1435,7 +1435,7 @@ static void handleRemoteEvent(SOCKET sock)
   struct descriptor 
   library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
   routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsg"};
-  int status, i;
+  int status=1, i;
   static int (*rtn)() = 0;
   Message *m;
   if (rtn == 0)
@@ -1475,7 +1475,7 @@ static void handleRemoteAst()
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsg"};
-    int status, i;
+    int status=1, i;
     static int (*rtn)() = 0;
     Message *m;
     int tablesize = FD_SETSIZE, selectstat;
@@ -1556,7 +1556,7 @@ static void initializeLocalRemote(int receive_events, int *use_local)
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
-    int status, i;
+    int status=1, i;
     static int (*rtn)() = 0;
     void *dummy;
 
@@ -1641,7 +1641,7 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventAst"};
-    int status, i;
+    int status=1, i;
     int curr_eventid;
     void *dummy;
     static int (*rtn)() = 0;
@@ -1823,7 +1823,7 @@ static int canEventRemote(int eventid)
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventCan"};
-    int status, i;
+    int status=1, i;
     void *dummy;
     static int (*rtn)() = 0;
 
@@ -1914,7 +1914,7 @@ static int sendRemoteEvent(char *evname, int data_len, char *data)
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 8, "MdsValue"};
-    int status, i, tmp_status;
+    int status=1, i, tmp_status;
     char expression[256];
     struct descrip ansarg;
     struct descrip desc;
