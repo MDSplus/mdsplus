@@ -96,7 +96,7 @@ public class TR32Setup extends DeviceSetup {
   }
   private void jbInit() throws Exception {
     this.setWidth(730);
-    this.setHeight(730);
+    this.setHeight(520);
     this.setDeviceType("TR32");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("INCAA TR32 CPCI Transient Recorder");
@@ -195,7 +195,10 @@ public class TR32Setup extends DeviceSetup {
     deviceChoice6.setChoiceItems(new String[] {"0.125", "0.15625", "0.25", "0.3125", "0.5", "0.625", "1", "1.25", "2", "2.5", "4", "5", "8", "10"});
     deviceChoice6.setUpdateIdentifier("");
     deviceChoice6.setIdentifier("");
-    deviceButtons1.setBounds(new Rectangle(213, 426, 280, 36));
+    deviceButtons1.setCheckExpressions(null);
+    deviceButtons1.setCheckMessages(null);
+    deviceButtons1.setMethods(new String[] {"INIT", "TRIGGER", "STORE"});
+    deviceButtons1.setBounds(new Rectangle(213, 426, 301, 36));
     jPanel3.setLayout(flowLayout2);
     flowLayout2.setHgap(5);
     flowLayout2.setVgap(10);
