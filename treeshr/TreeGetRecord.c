@@ -75,6 +75,16 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 		dptr->class = CLASS_S;
 		dptr->pointer = (char *) dptr + sizeof(struct descriptor);
                 memcpy(dptr->pointer,nci.DATA_INFO.DATA_IN_RECORD.data,dptr->length);
+                if (dptr->dtype != DTYPE_T)
+		{
+		  switch (dptr->length)
+		  {
+		  case 2: *(short *)dptr->pointer = swapshort(*(short *)dptr->pointer); break;
+		  case 4: *(int *)dptr->pointer = swapint(*(int *)dptr->pointer); break;
+		  case 8: *(int *)dptr->pointer = swapint(*(int *)dptr->pointer); break;
+		          ((int *)dptr->pointer)[1] = swapint(((int *)dptr->pointer)[1]); break;
+		  }
+  	        }
 	      }
 	      else
 	      {
@@ -84,7 +94,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 		if ((status & 1) && ((retsize != length) || (nodenum != nidx)))
 		  status = TreeBADRECORD;
                 else
-	          status = Rec2Dsc(data,dsc);
+	          status = (Rec2Dsc(data,dsc) & 1) ? TreeNORMAL : TreeBADRECORD;
                 free(data);
 	      }
 	      break;
@@ -209,7 +219,10 @@ static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree)
 	if ((nid_ptr->node == 0) && (nid_ptr->tree == 0))
 	  status = 1;
 	else
+	{
+          nid_ptr->node = *(int *)nid_ptr & 0xffffff;
 	  nid_ptr->tree = tree;
+        }
       }
       break;
 
