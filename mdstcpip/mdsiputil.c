@@ -627,7 +627,6 @@ int SendMdsMsg(SOCKET sock, Message *m, int oob)
   unsigned long clength = 0; 
   Message *cm = 0;
   int status;
-  printf("Compression level is %d\n",CompressionLevel);
   if (len > 0 && CompressionLevel > 0 && m->h.client_type != SENDCAPABILITIES)
   {
 	  clength = len;
