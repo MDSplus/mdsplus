@@ -436,10 +436,10 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
 	  {
 	    switch (in_ptr->length)
 	    {
-	    case 2: LoadShort(inp,out_ptr); break;
-            case 4: LoadInt(inp,out_ptr); break;
-            case 8: LoadInt(inp,out_ptr);
-                    LoadInt(inp+sizeof(int),out_ptr); break;
+	    case 2: LoadShort(inp[0],out_ptr); break;
+            case 4: LoadInt(inp[0],out_ptr); break;
+            case 8: LoadInt(inp[0],out_ptr);
+                    LoadInt(inp[4],out_ptr); break;
             default: memcpy(out_ptr,inp, in_ptr->length); break;
 	    }
 	  }
@@ -563,10 +563,10 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
             unsigned int i;
             switch (in_ptr->length)
 	    {
-              case 2:  for (i=0; i < inp->arsize; i += sizeof(short)) LoadShort(inp2+i,out_ptr+i);
+  	      case 2:  for (i=0; i < inp->arsize; i += sizeof(short)) {LoadShort(inp2[i],out_ptr+i);}
                        break;
               case 4:
-              case 8:  for (i=0; i < inp->arsize; i += sizeof(int)) LoadInt(inp2+i,out_ptr+i);
+	      case 8:  for (i=0; i < inp->arsize; i += sizeof(int)) {LoadInt(inp2[i],out_ptr+i);}
                        break;
               default: memcpy(out_ptr,inp2,inp->arsize);
             }
@@ -914,10 +914,10 @@ int MdsSerializeDscOutZ(struct descriptor *in,
           char *inp = out_ptr->pointer;
 	  switch (out_ptr->length)
 	  {
-	    case 2:  LoadShort(inp,outp); break;
-            case 4:  LoadInt(inp,outp); break;
-            case 8:  LoadInt(inp,outp); 
-                     LoadInt(inp+4,outp+4); break;
+	    case 2:  LoadShort(inp[0],outp); break;
+            case 4:  LoadInt(inp[0],outp); break;
+            case 8:  LoadInt(inp[0],outp); 
+                     LoadInt(inp[4],outp+4); break;
 	    default: memcpy(outp, inp, out_ptr->length);
 	  }
         }
