@@ -1,4 +1,4 @@
-public fun TR10HWConfig(in _nid, in _board_id)
+public fun TR10HWConfig(in _board_id)
 {
 
 /* Private constant definition */
