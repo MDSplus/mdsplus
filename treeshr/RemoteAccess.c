@@ -255,7 +255,7 @@ int GetRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor_xd *dsc
   struct descrip ans = empty_ans;
   int status;
   char exp[512];
-  sprintf(exp,"SerializeOut(`getnci(%d,'RECORD'))",nid_in);
+  sprintf(exp,"SerializeOut(0,%d)",nid_in);
   status = MdsValue0(dblist->tree_info->channel,exp,&ans);
   if (status & 1)
   {
@@ -268,6 +268,23 @@ int GetRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor_xd *dsc
   return status;
 }
 
+static int LeadingBackslash(char *path)
+{
+  int i;
+  int len = strlen(path);
+  for (i=0;i<len;i++)
+  {
+    if ((path[i] != 32) && (path[i] != 9))
+    {
+      if (path[i] == '\\')
+        return 1;
+      else
+        return 0;
+    }
+  }
+  return 0;
+}
+      
 int FindNodeRemote(PINO_DATABASE *dblist, char *path, int *outnid)
 {
   struct descrip ans = empty_ans;
@@ -314,7 +331,10 @@ int FindNodeWildRemote(PINO_DATABASE *dblist, char *path, int *nid_out, void **c
   {
     struct descrip ans = empty_ans;
     char *exp = malloc(strlen(path)+50);
-    sprintf(exp,"TreeFindNodeWild('%s',%d)",path,usage_mask);
+    if (LeadingBackslash(path))
+      sprintf(exp,"TreeFindNodeWild('\\%s',%d)",path,usage_mask);
+    else
+      sprintf(exp,"TreeFindNodeWild('%s',%d)",path,usage_mask);
     status = MdsValue0(dblist->tree_info->channel,exp,&ans);
 
     free(exp);
@@ -441,7 +461,7 @@ char *FindTagWildRemote(PINO_DATABASE *dblist, char *wild, int *nidout, void **c
   sprintf(exp,"TreeFindTagWild(\"%s\",_nid,%s)//\"\\0\"",wild,first_time ? "_remftwctx = 0" : "_remftwctx");
   status = MdsValue0(dblist->tree_info->channel,exp,&ans);
   (*ctx)->remote_tag = ans.ptr;
-  if (status & 1)
+  if (status & 1 && nidout)
   {
     status = MdsValue0(dblist->tree_info->channel,"_nid",&nid_ans);
     if ((status & 1) && (nid_ans.dtype == DTYPE_L) && (nid_ans.ptr != 0))
