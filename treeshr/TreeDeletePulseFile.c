@@ -50,7 +50,7 @@ int       _TreeDeletePulseFile(void *dbid, int shotid, int allfiles)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   int       status = 1;
-  int       retstatus;
+  int       retstatus = 1;
   int       num;
   int       nids[256];
   int       i;
@@ -69,7 +69,7 @@ int       _TreeDeletePulseFile(void *dbid, int shotid, int allfiles)
   {
     void       *ctx = 0;
     shot = ((PINO_DATABASE *)dbid_tmp)->shotid;
-    for (num = 0; num < 256 && _TreeFindTagWild(dbid_tmp, "TOP", &nids[num], &ctx); num++);
+    for (num = 0; num < 256 && _TreeFindTagWild(dbid_tmp, "TOP", &nids[num], &ctx); num++)
     {
       char name[13];
       if (nids[num])
