@@ -95,11 +95,12 @@ int paragon_rpt___store(struct descriptor *niddsc_ptr, InStoreStruct *setup)
             case 'T':
                       sscanf(&line[1],"%63s %2s %255[^|\n]",name,type,value);
                       {
+			unsigned short len;
                         static struct descriptor val_d = {0, DTYPE_T, CLASS_S, 0};
                         static struct descriptor trimmed = {0, DTYPE_T, CLASS_D, 0};
                         val_d.length = strlen(value);
                         val_d.pointer = value;
-                        StrTrim(&trimmed,&val_d);
+                        StrTrim(&trimmed,&val_d,&len);
                         if (text_names.l_length)
                         {
                           TdiVector(&text_names,&name_d,&text_names MDS_END_ARG);
