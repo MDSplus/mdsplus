@@ -111,7 +111,7 @@ install:
 	$(JAR) c0f $@ $(CLASSES)
 
 jTraverser/jTraverser.class: 	$(SOURCES)
-	env CLASSPATH=@MAKEJAVADIR@classes/MRJClasses.zip $(JAVAC) -g -d jTraverser $(SOURCES)
+	env CLASSPATH=@MAKEJAVADIR@classes/MRJClasses.zip $(JAVAC) -g -d . $(SOURCES)
 
 @MAKEBINDIR@ : ; mkdir @MAKEBINDIR@
 
