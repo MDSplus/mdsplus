@@ -8,23 +8,24 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
    private _N_CARD_ADDR = 3;
 
    private _K_NUM_CHANNEL = 16;
-   private _K_NODES_PER_CHANNEL = 10;
+   private _K_NODES_PER_CHANNEL = 11;
    private _N_CHANNEL_1 = 4;
-   private _N_CHAN_LIN_NAME = 1;
-   private _N_CHAN_LIN_GAIN = 2;
-   private _N_CHAN_LIN_INPUT = 3;
-   private _N_CHAN_LIN_OUTPUT = 4;
-   private _N_CHAN_INT_NAME = 5;
-   private _N_CHAN_INT_GAIN = 6;
-   private _N_CHAN_INT_INPUT = 7;
-   private _N_CHAN_INT_OUTPUT = 8;
-   private _N_CHAN_CAL_GAIN = 9;
+   private _N_CHAN_LIN_NAME   =  1;
+   private _N_CHAN_LIN_CALIB  =  2;
+   private _N_CHAN_LIN_GAIN   =  3;
+   private _N_CHAN_LIN_INPUT  =  4;
+   private _N_CHAN_LIN_OUTPUT =  5;
+   private _N_CHAN_INT_NAME   =  6;
+   private _N_CHAN_INT_CALIB  =  7;
+   private _N_CHAN_INT_GAIN   =  8;
+   private _N_CHAN_INT_INPUT  =  9;
+   private _N_CHAN_INT_OUTPUT = 10;
 
 /*  CAMAC Function definition	*/
 	public _B2601_K_READ	   = 0;
 	public _B2601_K_CLEAR	   = 9;
 	public _B2601_K_WRITE	   = 16;	
-	public _B2601_K_DISABLE   = 24;
+	public _B2601_K_DISABLE    = 24;
 	public _B2601_K_ENABLE	   = 26;
 
 /*  CAMAC Argument definition	*/
