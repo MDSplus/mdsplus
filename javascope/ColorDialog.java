@@ -24,6 +24,7 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
     Vector color_set_clone;
     Color color_vector[];
     String color_name[];
+    int    colorMapIndex[] = null;
     private boolean reversed = false;
 
 
@@ -59,7 +60,7 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
         gridbag.setConstraints(label, c);
         getContentPane().add(label);
 
-//	    Panel p0 = new Panel();
+//	Panel p0 = new Panel();
 //      p0.setLayout(new FlowLayout(FlowLayout.LEFT));
 
 	    c.gridwidth = GridBagConstraints.BOTH;
@@ -221,7 +222,7 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 	    ok.addActionListener(this);
         p1.add(ok);
 
-    	add = new JButton("Add");
+    	add = new JButton("Add/Apply");
 	    add.addActionListener(this);
         p1.add(add);
 
@@ -400,6 +401,28 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 	        color_set.removeAllElements();
     }
 
+    public int InsertItemAt(String name, Color color)
+    {
+         int i;
+         String ext = "";
+         int extIdx = 1;
+
+         for (i = 0; i < color_set.size(); i++)
+         {
+             if( (((Item)color_set.elementAt(i)).name.equals(name+ext)))
+             {
+                ext = "_"+extIdx;
+                extIdx++;
+             }
+             if( (((Item)color_set.elementAt(i)).color.equals(color)))
+                 return i;
+         }
+
+         Item c_item = new Item(name+ext, color);
+         color_set.insertElementAt(c_item, i);
+         return i;
+    }
+
     public void InsertItemAt(String name, Color color, int idx)
     {
 	    Item c_item = new Item(name, color);
@@ -423,6 +446,11 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
    public Color[] GetColors()
    {
        return color_vector;
+   }
+
+   public int[] getColorMapIndex()
+   {
+       return colorMapIndex;
    }
 
    private void SetSliderToColor(Color c)
@@ -505,11 +533,12 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 	    return(new Color(c));
     }
 
-    public void fromFile(Properties pr, String prompt) throws IOException
+    public void FromFile(Properties pr, String prompt) throws IOException
     {
     	String prop;
-	    int idx = 0;
-	    removeAllColorItems();
+        int idx = 0;
+        Vector newColorMap = new Vector();
+//**	removeAllColorItems();
 
         //Syntax  Scope.color_x: <name>,java.awt.Color[r=xxx,g=xxx,b=xxx]
 
@@ -518,12 +547,19 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 	        StringTokenizer st = new StringTokenizer(prop, ",");
 	        String name = st.nextToken();
 	        st.nextToken("["); // dummy java.awt.Color[
-		    Color cr = StringToColor(st.nextToken("")); //remained string r=xxx,g=xxx,b=xxx]
-		    InsertItemAt(name, cr, idx);
-            idx++;
+                Color cr = StringToColor(st.nextToken("")); //remained string r=xxx,g=xxx,b=xxx]
+//              InsertItemAt(name, cr, idx);
+                newColorMap.addElement(new Integer(InsertItemAt(name, cr)));
+                idx++;
 	    }
 
-	    //Set default color list if not defined color
+            colorMapIndex = new int[newColorMap.size()];
+            for(int i = 0; i < newColorMap.size(); i++)
+            {
+                colorMapIndex[i] = ((Integer)newColorMap.elementAt(i)).intValue();
+            }
+
+	    //Set default color list if is not defined color
 	    //in configuration file
 	    if(GetNumColor() == 0)
 	    {
