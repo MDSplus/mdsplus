@@ -1,7 +1,9 @@
 #ifndef MDSDESCRIP_H_DEFINED
 #define MDSDESCRIP_H_DEFINED 1
 
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#endif
 
 #if defined(__VMS)
 #pragma member_alignment save

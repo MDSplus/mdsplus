@@ -1,7 +1,9 @@
 #ifndef MDSTYPES_H
 #define MDSTYPES_H
 
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#endif
 
 #if (SIZEOF__INT64 != 8)
 #if (SIZEOF_LONG == 8)
