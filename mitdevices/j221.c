@@ -24,7 +24,7 @@ static int merge_data(int nid, int **data, int **times, int *ndata);
 
 int j221___init(struct descriptor *nid, InInitStruct *setup)
 { 
-  int status;
+  int status=1;
   int merge_status;
   int num,*time,*bit;
   static float dt = 1e-6;
@@ -40,7 +40,7 @@ int j221___init(struct descriptor *nid, InInitStruct *setup)
  	    	          unsigned j221_setup_v_hold     : 1;      
  	    	          unsigned j221_setup_v_divide   : 1;      
  	    	          unsigned j221_setup_v_clock    : 1;      
-			  unsigned : 9;
+			  unsigned : 25;
 		        } registers;
   pio(9,0,0);    /* Clear the memory address */
   pio(1,0,(short *)&registers);

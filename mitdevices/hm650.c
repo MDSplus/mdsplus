@@ -44,7 +44,9 @@ int hm650___init(struct descriptor *niddsc, InInitStruct *setup)
   unsigned short int_threshold;
   int i;
   float delays[8];
-  pio(21,0,0,16);
+  int zero=0;
+
+  pio(21,0,&zero,16);
   
   int_threshold = (setup->threshold+2.5)/5. * 4095;
   int_threshold = (min(max(int_threshold, 0), 4095));
@@ -100,7 +102,7 @@ int hm650___init(struct descriptor *niddsc, InInitStruct *setup)
     }
   }
 
-  pio(21, 0, 0, 16);
+  pio(21, 0, &zero, 16);
 
   if (status&1 == 0) return status;
   else if (dly_status&1 == 0) return dly_status;
