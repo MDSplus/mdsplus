@@ -1161,7 +1161,7 @@ hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s +DA1.1 +DS1.1 +z";
        LINKSHARED="-b +s ";
        FOR_LDFLAGS="-v -L/usr/lib/pa1.1 -lcl -lf";
        LIBPATH="SHLIB_PATH";
-       IDL_LD="-L/usr/local/rsi/bin/bin.hp -lidl";
+       IDL_LD="-L/usr/local/rsi/idl/bin/bin.hp -lidl";
        LIBPTHREAD="";
        FEXECLIBDIR="-Wl,-L";
        SHARETYPE=".sl";
@@ -1205,7 +1205,7 @@ sparc-sun-solaris2*)
          fi;
        fi;
        FFLAGS="$FFLAGS -PIC";
-       IDL_LD="-L/usr/local/rsi/bin/bin.solaris2.sparc -lidl"
+       IDL_LD="-L/usr/local/rsi/idl/bin/bin.solaris2.sparc -lidl"
        LIBPATH="LD_LIBRARY_PATH";
        FEXECLIBDIR="-L";
        SHARETYPE=".so";
