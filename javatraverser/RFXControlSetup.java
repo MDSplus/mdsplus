@@ -67,7 +67,6 @@ public class RFXControlSetup extends DeviceSetup {
   JPanel jPanel20 = new JPanel();
   DeviceField deviceField124 = new DeviceField();
   JPanel jPanel31 = new JPanel();
-  BorderLayout borderLayout3 = new BorderLayout();
   DeviceTable deviceTable2 = new DeviceTable();
   DeviceTable deviceTable1 = new DeviceTable();
   FlowLayout flowLayout2 = new FlowLayout();
@@ -349,6 +348,7 @@ public class RFXControlSetup extends DeviceSetup {
     JPanel jPanel319 = new JPanel();
     DeviceChannel deviceChannel213 = new DeviceChannel();
     DeviceField deviceField112117 = new DeviceField();
+  GridLayout gridLayout7 = new GridLayout();
   public RFXControlSetup() {
     try {
       jbInit();
@@ -358,7 +358,7 @@ public class RFXControlSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(819);
+    this.setWidth(900);
     this.setHeight(600);
     this.setDeviceType("RFXControl");
     this.setDeviceProvider("localhost");
@@ -521,7 +521,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField124.setNumCols(4);
     deviceField124.setLabelString("Init Phase:");
     deviceField124.setOffsetNid(839);
-    jPanel31.setLayout(borderLayout3);
+    jPanel31.setLayout(gridLayout7);
     deviceTable2.setOffsetNid(5);
     deviceTable2.setLabelString("Out Calibration");
     deviceTable2.setNumCols(2);
@@ -1417,7 +1417,9 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField112117.setNumCols(20);
         deviceField112117.setLabelString("X:");
         deviceField112117.setOffsetNid(1111);
-        this.getContentPane().add(deviceButtons1,  BorderLayout.SOUTH);
+        gridLayout7.setColumns(1);
+    gridLayout7.setRows(2);
+    this.getContentPane().add(deviceButtons1,  BorderLayout.SOUTH);
     this.getContentPane().add(jPanel9,  BorderLayout.NORTH);
     jPanel9.add(jPanel10, null);
     jPanel10.add(deviceField1, null);
@@ -1734,8 +1736,8 @@ public class RFXControlSetup extends DeviceSetup {
     jPanel7.add(deviceField27, null);
     jPanel7.add(deviceField26, null);
     jPanel33.add(jPanel31,  BorderLayout.WEST);
-    jPanel31.add(deviceTable2, BorderLayout.SOUTH);
-    jPanel31.add(deviceTable1, BorderLayout.NORTH);
+    jPanel31.add(deviceTable1, null);
+    jPanel31.add(deviceTable2, null);
     jTabbedPane1.add(jPanel2, "Ind. Perturbation");
   }
 
