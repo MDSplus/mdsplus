@@ -56,7 +56,8 @@ FR10Setup.java \
 RFXMOPSetup.java \
 RFXANSALDOSetup.java \
 IPC901Setup.java \
-CADHSetup.java
+CADHSetup.java \
+J221Setup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
