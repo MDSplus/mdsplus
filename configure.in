@@ -96,6 +96,7 @@ MAKEBINDIR="\$(top_srcdir)/bin/"
 MAKELIBDIR="\$(top_srcdir)/lib/"
 MAKEUIDDIR="\$(top_srcdir)/uid/"
 MAKEETCDIR="\$(top_srcdir)/etc/"
+MAKEJAVADIR="\$(top_srcdir)/java/"
 
 dnl Checks for libraries.
 
@@ -114,6 +115,16 @@ AC_CHECK_LIB(d3,ptdata,D3DSHR="d3dshr")
 
 dnl Checks for header files.
 AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/filio.h netdb.h resolv.h dlfcn.h dl.h vxWorks.h windows.h sys/resource.h)
+
+dnl Check for jdk files
+AC_CHECK_FILE(/usr/include/java/jni.h,JDK_CFLAGS="-I/usr/include/java")
+AC_CHECK_FILE(/usr/include/java/`uname -m`/jni_md.h,JDK_CFLAGS="$JDK_CFLAGS -I/usr/include/java/`uname -m`")
+if test "$JDK_CFLAGS"
+then
+  JAVA_APS="$(JAVA_APS)"
+else
+  JAVA_APS=""
+fi
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -185,6 +196,8 @@ AC_CHECK_SIZEOF(int *)
 SIZEOF_INT_P=$ac_cv_sizeof_int_p
 AC_PATH_XTRA
 AC_PATH_PROG(UIL,uil,uil,$PATH:/usr/bin/X11)
+AC_PATH_PROG(JAVAC,javac,javac)
+AC_PATH_PROG(JAR,jar,jar)
 if test $X_CFLAGS
 then
 	X_CFLAGS="$X_CFLAGS -D_NO_DXm"
@@ -197,10 +210,15 @@ AC_DEFINE_UNQUOTED(TARGET_CPU,${target_cpu})
 AC_DEFINE_UNQUOTED(TARGET_VENDOR,${target_vendor})
 
 AC_SUBST(D3DSHR)
+AC_SUBST(JAR)
+AC_SUBST(JAVAC)
+AC_SUBST(JAVA_APS)
+AC_SUBST(JDK_CFLAGS)
 AC_SUBST(MAKEBINDIR)
 AC_SUBST(MAKELIBDIR)
 AC_SUBST(MAKEUIDDIR)
 AC_SUBST(MAKEETCDIR)
+AC_SUBST(MAKEJAVADIR)
 AC_SUBST(LDSHARE)
 AC_SUBST(LDARC)
 AC_SUBST(LINKSHARED)
@@ -220,35 +238,38 @@ AC_SUBST(FOR_LDFLAGS);
 AC_SUBST(SIZEOF_INT_P)
 AC_LINK_FILES(ipcs/include/ipcs, include/ipcs)
 AC_LINK_FILES(include/config.h, ipcs/include/ipcs/config.h)
-AC_OUTPUT(Makefile \
-ipcs/Makefile \
-ipcs/lib/Makefile \
-ipcs/grandpa/Makefile \
-ipcs/netmailer/Makefile \
-ipcs/applications/Makefile \
-ipcs/events/Makefile \
-mdsshr/Makefile \
-treeshr/Makefile \
-tdishr/Makefile \
-tditest/Makefile \
-xmdsshr/Makefile \
-mdstcpip/Makefile \
-dwscope/Makefile \
-mitdevices/Makefile \
-mdslibidl/Makefile \
-remcam/Makefile \
-cdu/Makefile \
-mdsdcl/Makefile \
-ccl/Makefile \
-servershr/Makefile \
-tcl/Makefile \
-traverser/Makefile \
-actions/Makefile \
-mdslib/Makefile \
-math/Makefile \
-math/csint.f \
-math/umach.f \
-d3dshr/Makefile \
-wfevent/Makefile \
+AC_OUTPUT(Makefile 
+actions/Makefile 
+ccl/Makefile 
+cdu/Makefile 
+d3dshr/Makefile 
+dwscope/Makefile 
+ipcs/Makefile 
+ipcs/lib/Makefile 
+ipcs/grandpa/Makefile 
+ipcs/netmailer/Makefile 
+ipcs/applications/Makefile 
+ipcs/events/Makefile 
+javamds/Makefile 
+javascope/Makefile
+javatraverser/Makefile
+math/Makefile 
+math/csint.f 
+math/umach.f 
+mdsdcl/Makefile 
+mdslib/Makefile 
+mdslibidl/Makefile 
+mdsshr/Makefile 
+mdstcpip/Makefile 
+mitdevices/Makefile 
+remcam/Makefile 
+servershr/Makefile 
+tcl/Makefile 
+tdishr/Makefile 
+tditest/Makefile 
+traverser/Makefile 
+treeshr/Makefile 
+wfevent/Makefile 
+xmdsshr/Makefile 
 )
 AC_OUTPUT_COMMANDS(make depend)
