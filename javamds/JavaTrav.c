@@ -133,9 +133,11 @@ static char buf[1000];
   shot = (*env)->GetIntField(env, obj, shot_fid);
   if(is_editable)
     {
-      status =  TreeOpenEdit((char *)name, shot);
+		status =  TreeOpenEdit((char *)name, shot);
       if(!(status & 1))
-	status = TreeOpenNew((char *)name, shot);
+	  {
+		status = TreeOpenNew((char *)name, shot);
+	  }
     }
   else
     status = TreeOpen((char *)name, shot, is_readonly);
@@ -170,7 +172,10 @@ static char buf[1000];
   jname = (*env)->GetObjectField(env, obj, name_fid);
   name = (*env)->GetStringUTFChars(env, jname, 0);
   shot = (*env)->GetIntField(env, obj, shot_fid);
-  status = TreeOpenNew((char *)name, shot);
+
+	printf("PARTE OPEN NEW\n");
+	status = TreeOpenNew((char *)name, shot);
+	printf("FATTO");
   (*env)->ReleaseStringUTFChars(env, jname, name);
 
 sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));

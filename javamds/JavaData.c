@@ -331,7 +331,7 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 				for(i = 0; i < length; i++)
 					CvtConvertFloat(&((double *)array_d->pointer)[i], desc->dtype, &double_buf[i], DTYPE_DOUBLE, 0);
 				cls = (*env)->FindClass(env, "DoubleArray");
-				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([FI)LData;");
+				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([DI)LData;");
 				jdoubles = (*env)->NewDoubleArray(env, length);
 				(*env)->SetDoubleArrayRegion(env, jdoubles, 0, length, (jdouble *)double_buf);
 				args[0].l = jdoubles;
