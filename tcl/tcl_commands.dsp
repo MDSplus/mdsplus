@@ -195,6 +195,10 @@ SOURCE=.\tcl_edit.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\tcl_put_expression.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\tcl_remove_tag.c
 # End Source File
 # Begin Source File
