@@ -1,6 +1,206 @@
 Version 1.6-1
 
 
+2004-05-21 14:18  jas
+
+	* tdi/MitDevices/Dt200GetVoltCoef.fun:
+	
+	fix parse of getVoltsRange output
+
+2004-05-21 14:06  jas
+
+	* tdi/MitDevices/: Dt200GetVoltCoef.fun, Dt200GetVoltOffset.fun,
+	Dt200IsAcq216.fun, Dt200ReadChannel.fun, Dt200WriteRsh.fun:
+	
+	bring cpci code up to date
+
+2004-05-21 13:15  twf
+
+	* mdsshr/MdsShr.exports:
+	
+	Add more exports
+
+2004-05-21 12:58  twf
+
+	* mdstcpip/mdsip_socket_io.c:
+	
+	AIX support
+
+2004-05-21 12:53  twf
+
+	* mdsmisc/MdsMisc.exports, mdstcpip/mdsip_socket_io.c,
+	mdstcpip/mdsipshr.exports:
+	
+	AIX support
+
+2004-05-21 12:50  twf
+
+	* idl/: mdsconnect.pro, mdsidlimage.pro, mdsvalue.pro:
+	
+	Fix for 64 bit
+
+2004-05-21 12:40  twf
+
+	* tdishr/TdiShr.exports:
+	
+	Remove TdiTranspose
+
+2004-05-21 12:34  twf
+
+	* tdic/tdic.c:
+	
+	Fix for no readline
+
+2004-05-21 12:13  twf
+
+	* mdsshr/MdsShr.exports:
+	
+	Add more entry points
+
+2004-05-21 12:12  twf
+
+	* mdsshr/librtl.c:
+	
+	64 bit
+
+2004-05-21 11:42  twf
+
+	* mdslibidl/MdsLibIdl.c:
+	
+	Fix for 64 bit architecture
+
+2004-05-20 11:32  manduchi
+
+	* javatraverser/RFXPRConfigSetup.java:
+	
+	Fix
+
+2004-05-20 10:52  manduchi
+
+	* tdi/RfxDevices/: OPCAsyncGet.fun, OPCBrowseTag.fun,
+	OPCDisableAsyncGet.fun, OPCPut.fun, WE7000__init.fun,
+	WE7116__init.fun, WE7116__store.fun, WE7275__init.fun,
+	WE7275__store.fun:
+	
+	Fix
+
+2004-05-20 10:06  jas
+
+	* tdi/MitDevices/idl.fun, mitdevices/Makefile.in:
+	
+	change the name of libIDL.so to libIdl.so
+
+2004-05-20 09:36  manduchi
+
+	* tdi/RfxDevices/: PXD14__init.fun, PXD14__store.fun, pxdtest.fun:
+	
+	LeCroy PXD114 device support
+
+2004-05-19 05:04  manduchi
+
+	* tdi/RfxDevices/RFXPRConfig__add.fun:
+	
+	Fields added
+
+2004-05-19 05:02  manduchi
+
+	* javatraverser/: DeviceTable.java, DeviceTableCustomizer.java,
+	Devicebeans.jar, RFXPRConfigSetup.java, RFXTimesSetup.java:
+	
+	Table improvements
+
+2004-05-18 09:49  manduchi
+
+	* javatraverser/DeviceTable.java:
+	
+	Fix
+
+2004-05-18 09:15  manduchi
+
+	* tdi/RfxDevices/RFXPRConfig__add.fun:
+	
+	Better name
+
+2004-05-18 08:49  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	Added RFX device
+
+2004-05-18 08:48  manduchi
+
+	* javatraverser/DeviceTable.java:
+	
+	Prints forgotten
+
+2004-05-18 08:43  manduchi
+
+	* tdi/RfxDevices/RFXPRConfig__add.fun:
+	
+	Add chopper state
+
+2004-05-18 08:43  manduchi
+
+	* javatraverser/: DeviceTable.java, DeviceTableBeanInfo.java,
+	DeviceTableCustomizer.java, DeviceWaveBeanInfo.java,
+	Devicebeans.jar, RFXPRConfigSetup.java, RFXToroidalSetup.java:
+	
+	Button tables
+
+2004-05-17 13:49  twf
+
+	* mdstcpip/mdsipshr.export:
+	
+	New entry points
+
+2004-05-17 13:30  twf
+
+	* mdsmisc/Makefile.in:
+	
+	Add math library to link
+
+2004-05-17 13:29  twf
+
+	* mdsmisc/bwfilter.c:
+	
+	Fix comment
+
+2004-05-17 13:28  twf
+
+	* mdsmisc/MdsMisc.def:
+	
+	def file for AIX
+
+2004-05-17 08:56  twf
+
+	* mdsshr/librtl.c:
+	
+	Fix malloc for FindImageSymbol error message
+
+2004-05-14 13:20  jas
+
+	* devscripts/MakeRpm:
+	
+	add the release to the kit name
+
+2004-05-14 12:09  jas
+
+	* devscripts/MakeRelease:
+	
+	Need to tag the changelog
+
+2004-05-14 10:56  twf
+
+	* mdsip_xio/mdsip_authenticate_cb.c:
+	
+	Fix host strcat
+
+2004-05-14 10:48  jas
+
+	* ChangeLog:
+	
+	New MDSplus release 1.6-1
+
 2004-05-12 16:31  jas
 
 	* mdsshr/MdsEvents.c:
