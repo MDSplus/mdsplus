@@ -43,7 +43,7 @@
 // input:	db type, number of place holders
 // output:	status
 //-------------------------------------------------------------------------
-int create_tmp_file( int dbType, int count )
+int create_tmp_file( int dbType, int count , char *filename)
 {
 	char	fmt[10];
 	int		entrySize, fd, i, status = SUCCESS;
@@ -51,7 +51,7 @@ int create_tmp_file( int dbType, int count )
 	if( MSGLVL(FUNCTION_NAME) )
 		printf( "create_tmp_file()\n" );
 
-	if( (fd = Creat(TMP_FILE, 0666)) == ERROR ) {
+	if( (fd = mkstemp(filename)) == ERROR ) {
 		if( MSGLVL(ALWAYS) ) {
 			fprintf( stderr, "create_tmp_file(): file error %d\n", fd );
 			perror("creat()");

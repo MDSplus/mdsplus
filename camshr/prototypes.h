@@ -122,7 +122,7 @@ int  commit_entry( int dbType );
 int  compare_str( const void *key1, const void *key2 );
 int  copy( int dbType, char *in_file, char *out_file, int count );
 int  create_sema4();
-int  create_tmp_file( int dbType, int count );
+int  create_tmp_file( int dbType, int count , char *filename);
 int  expand_db( int dbType, int numOfEntries );
 int  find_scsi_device( char *deviceName );
 int  get_crate_status( char *crate_name, int *crate_status );

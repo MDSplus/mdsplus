@@ -43,9 +43,10 @@
 int contract_db( int dbType, int numOfEntries )
 {
 	char	*FileName;
-	char	oldname[256], newname[256];
 	int		FileIncr, newCount; 
 	int		status = SUCCESS;		// optimistic, aren't we ... :>
+        char    tmpfile[1024];
+        strcpy(tmpfile,get_file_name("mdscts_temp_file_XXXXXX"));
 
 	if( MSGLVL(FUNCTION_NAME) )
 		printf( "contract_db()\n" );
@@ -70,7 +71,7 @@ int contract_db( int dbType, int numOfEntries )
 	newCount = (((int)numOfEntries / FileIncr) + 1) * FileIncr;
 
 	// create a TMP file
-	if( (status = create_tmp_file( dbType, newCount )) != SUCCESS ) {
+	if( (status = create_tmp_file( dbType, newCount, tmpfile )) != SUCCESS ) {
 		if( MSGLVL(ALWAYS) )
 			fprintf( stderr, "error creating TMP file\n" );
 
@@ -79,7 +80,7 @@ int contract_db( int dbType, int numOfEntries )
 
 	// only need to copy old data if there is any
 	if( numOfEntries ) { 				// copy current db file to TMP file
-		if( (status = copy( dbType, FileName, TMP_FILE, numOfEntries )) != SUCCESS ) {
+		if( (status = copy( dbType, FileName, tmpfile, numOfEntries )) != SUCCESS ) {
 			if( MSGLVL(ALWAYS) )
 				fprintf( stderr, "error copying db to TMP file\n" );
 
@@ -98,13 +99,7 @@ int contract_db( int dbType, int numOfEntries )
 		}
 	}
 
-	// rename TMP file to new db file
-	// NB! following two lines of code prevent problems with side effects of
-	// 		using pointers. When functions were used as function arguments,
-	// 		both old and new file names were the same!
-	sprintf(oldname, "%s", get_file_name( TMP_FILE )); 
-	sprintf(newname, "%s", get_file_name( FileName ));
-	if( rename(oldname, newname) ) {	// non-zero is an error
+	if( rename(tmpfile, get_file_name( FileName )) ) {	// non-zero is an error
 		if( MSGLVL(ALWAYS) ) {
 			fprintf( stderr, "error renaming temp db file\n" );
 			perror("rename()");
@@ -113,7 +108,7 @@ int contract_db( int dbType, int numOfEntries )
 		status = CONTRACT_ERROR;
 		goto ContractDB_Exit;
 	}
-
+        chmod(get_file_name( FileName ), O666);
 	// re-map file
 	if( map_data_file( dbType ) != SUCCESS ) {
 		if( MSGLVL(ALWAYS) )

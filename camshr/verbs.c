@@ -24,7 +24,7 @@
 // Mon Dec  9 15:51:05 EST 2002	-- 'ShowCrate()' fixed crate status
 //-------------------------------------------------------------------------
 
-#define	NEED_WARM_N_FUZZY	1
+#define	NEED_WARM_N_FUZZY	0
 
 //-------------------------------------------------------------------------
 // include files
