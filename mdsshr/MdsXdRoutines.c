@@ -30,6 +30,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define compression_threshold 128
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 
+void MdsFixDscLength(struct descriptor *in);
 
 static void *MdsVM_ZONE = 0;
 
@@ -258,6 +259,8 @@ static int copy_dx(
 	dscsize = sizeof(struct descriptor_a)
 		+ (pi->aflags.coeff ? sizeof(char *) + sizeof(int) * pi->dimct : 0)
 		+ (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0);
+        if (pi->length == 0)
+          MdsFixDscLength((struct descriptor *)pi);
         align_size = (pi->dtype == DTYPE_T) ? 1 : pi->length;
 	bytes = dscsize + pi->arsize + align_size;
 	if (po)
@@ -399,4 +402,26 @@ static struct descriptor *FixedArray(struct descriptor *in)
 int MdsCopyDxXd(struct descriptor *in, struct descriptor_xd *out)
 {
   return MdsCopyDxXdZ(in, out, NULL, NULL, NULL, NULL, NULL);
+}
+
+void MdsFixDscLength(struct descriptor *in)
+{
+  switch(in->dtype)
+  {
+    case DTYPE_B:
+    case DTYPE_BU: in->length = 1; break;
+    case DTYPE_W:
+    case DTYPE_WU: in->length = 2; break;
+    case DTYPE_L:
+    case DTYPE_LU:
+    case DTYPE_F:
+    case DTYPE_FS: in->length = 4; break;
+    case DTYPE_D:
+    case DTYPE_G:
+    case DTYPE_FT:
+    case DTYPE_Q:
+    case DTYPE_QU: in->length = 8; break;
+    case DTYPE_O:
+    case DTYPE_OU: in->length = 16; break;
+  }
 }

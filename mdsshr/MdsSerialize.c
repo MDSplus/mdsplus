@@ -24,6 +24,7 @@
 #define set_a0(ans)       swap(int,&in_ptr[16],ans)
 #define m()         (&in_ptr[20])
 #define LoadChar(in,outp)  (outp)[0] = ((char *)&in)[0]
+#define FixLength(a) if (a.length == 0) MdsFixDscLength(&a)
 #ifdef WORDS_BIGENDIAN
 #define LoadShort(in,outp) (outp)[0] = ((char *)&in)[1]; (outp)[1] = ((char *)&in)[0]
 #define LoadInt(in,outp)   (outp)[0] = ((char *)&in)[3]; (outp)[1] = ((char *)&in)[2]; \
@@ -96,6 +97,7 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	struct descriptor *po = (struct descriptor *) out_dsc_ptr;
         set_length(in.length);
         in.dtype = dtype();
+        FixLength(in);
 	in.class = CLASS_S;
 	if (po)
 	{
@@ -146,6 +148,7 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	struct descriptor_r *po = (struct descriptor_r *) out_dsc_ptr;
         set_length(pi_tmp.length);
         pi_tmp.dtype = dtype();
+        FixLength(pi_tmp);
         pi_tmp.class = CLASS_R;
         pi_tmp.ndesc = ndesc();
 	pi_tmp.dscptrs[0] = 0;
@@ -198,6 +201,7 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	array_coeff *po = (array_coeff *) out_dsc_ptr;
         set_length(a_tmp.length);
         a_tmp.dtype = dtype();
+        FixLength(a_tmp);
         a_tmp.class = class();
         a_tmp.scale = scale();
         a_tmp.digits = digits();
@@ -283,6 +287,7 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	unsigned int       num_dsc;
         set_length(a_tmp.length);
         a_tmp.dtype = dtype();
+        FixLength(a_tmp);
         a_tmp.class = class();
         a_tmp.scale = scale();
         a_tmp.digits = digits();
@@ -356,6 +361,7 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
         int offset;
         set_length(a_tmp.length);
         a_tmp.dtype = dtype();
+        FixLength(a_tmp);
         a_tmp.class = class();
         a_tmp.scale = scale();
         a_tmp.digits = digits();

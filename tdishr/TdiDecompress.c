@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include "tdirefstandard.h"
 #include "tdirefcat.h"
+#include <tdimessages.h>
 #include <mdsshr.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
@@ -34,7 +35,30 @@ int	bit = 0;
 	if (status & 1) status = Tdi2Vector(narg-2, &uni[2], &dat[2], &cats[2]);
 	if (status & 1) {
 	struct descriptor_a *pa = (struct descriptor_a *)dat[2].pointer;
-	int	nitems = (int)pa->arsize / (int)pa->length;
+	int	nitems;
+        if (pa->length <= 0)
+        {
+          switch (pa->dtype)
+          {
+            case DTYPE_B:
+            case DTYPE_BU: pa->length = 1; break;
+            case DTYPE_W:
+            case DTYPE_WU: pa->length = 2; break;
+            case DTYPE_L:
+            case DTYPE_LU:
+            case DTYPE_F:
+            case DTYPE_FS: pa->length = 4; break;
+            case DTYPE_D:
+            case DTYPE_G:
+            case DTYPE_FT:
+            case DTYPE_Q:
+            case DTYPE_QU: pa->length = 8; break;
+            case DTYPE_O:
+            case DTYPE_OU: pa->length = 16; break;
+            default: return TdiINVDTYDSC;
+          }
+        }
+        nitems = (int)pa->arsize / (int)pa->length;
 
 		if (cats[1].in_dtype == DTYPE_MISSING) symbol = MdsXpand;
 		else status = TdiFindImageSymbol(dat[0].pointer, dat[1].pointer, &symbol);
