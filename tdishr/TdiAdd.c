@@ -259,10 +259,24 @@ int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2, struct descript
 
 #if defined(__alpha) && defined(__vms)
 typedef __int64 _int64;
-#elif defined(__osf__) || defined(__irix__)
+#define swapquad(in)
+#define swapocta(in)
+#elif defined(__osf__) 
 typedef long _int64;
+#define swapquad(in)
+#define swapocta(in)
+#elif defined(__irix__)
+typedef long _int64;
+#define swapquad(in)
+#define swapocta(in)
 #elif defined(__hpux__)
 typedef long long _int64;
+#define swapquad(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[1]; iptr[1]=stmp;}
+#define swapocta(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[3]; iptr[3]=stmp; \
+                                                                   stmp=iptr[1]; iptr[1]=iptr[2]; iptr[2]=stmp;}
+#else
+#define swapquad(in)
+#define swapocta(in)
 #endif
 
 static int zero=0;
@@ -285,9 +299,6 @@ static int emul(int *m1, int *m2, int *add, int *out)
 }
 #endif
 
-#define swapquad(in) if (!littleendian) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[1]; iptr[1]=stmp;}
-#define swapocta(in) if (!littleendian) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[3]; iptr[3]=stmp; \
-                                                                   stmp=iptr[1]; iptr[1]=iptr[2]; iptr[2]=stmp;}
 
 int TdiMultiplyQuadword(int *in1, int *in2, int *out)
 {
