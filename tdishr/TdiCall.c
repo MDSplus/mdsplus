@@ -90,9 +90,21 @@ STATIC_ROUTINE int TdiInterlude  (int opcode, struct descriptor **newdsc, int (*
               break;
             }
 #endif
+	case DTYPE_DSC:
+	  {
+             void * (*called_dsc)() = (void * (*)())called;
+             void **result_dsc = (void **)result;
+             *max = sizeof(void *);
+             *result_dsc = (*called_dsc)(newdsc,routine);
+             break;
+          }
           default:
-            *max = sizeof(int);
-	    *result = (*called)(newdsc, routine);
+	    {
+              unsigned int (*called_int)() =  (unsigned int (*)())called;
+              unsigned int *result_int = (unsigned int *)result;
+              *max = sizeof(int);
+	      *result_int = (*called_int)(newdsc, routine);
+            }
         }
 	return 1;
 }
@@ -147,8 +159,12 @@ unsigned char			origin[255];
 				}
                                 origin[ntmp++] = (unsigned char)j;
 			}
-			else if (code == OpcVal) 
-                                status = TdiGetLong(pfun->arguments[0], &newdsc[j-1]);
+			else if (code == OpcVal)
+			  {
+                            int ans; 
+                                status = TdiGetLong(pfun->arguments[0], &ans);
+                            *(long *)&newdsc[j-1]=ans;
+                          }
 			else if (code == OpcXd) {
 				tmp[ntmp] = EMPTY_XD;
 				status = TdiEvaluate(pfun->arguments[0], 
