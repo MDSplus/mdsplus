@@ -19,6 +19,15 @@ JNIEXPORT jstring JNICALL Java_MdsHelper_getErrorString
 	return (*env)->NewStringUTF(env, error_msg);
 }
 	
+JNIEXPORT void JNICALL Java_MdsHelper_generateEvent
+  (JNIEnv *env, jclass cld, jstring jevent, jint jshot)
+{
+	const char *event = (*env)->GetStringUTFChars(env, jevent, 0);
+	int shot = jshot;
+	MDSEvent((char *)event, sizeof(int), (char *)&shot);
+    (*env)->ReleaseStringUTFChars(env, jevent, event);
+ 
+}
 
 
 
@@ -304,7 +313,7 @@ JNIEXPORT jstring JNICALL Java_LocalProvider_GetString(JNIEnv *env, jobject obj,
 
 
 
-JNIEXPORT jfloatArray JNICALL Java_LocalProvider_GetFloatArray(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jfloatArray JNICALL Java_LocalProvider_GetFloatArrayNative(JNIEnv *env, jobject obj, jstring in)
 {
     jfloatArray jarr;
     float zero = 0.;
