@@ -1,5 +1,5 @@
 include $(MAKE_OPTIONS)
-LFLAGS = -g -L$(MDSPLUS)/shlib
+LFLAGS = -L$(MDSPLUS)/shlib
 
 OBJFILES = 			\
 	libTcl.a(mds_dsc_string.o)	\
