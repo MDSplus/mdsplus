@@ -84,10 +84,6 @@ struct _mdsdcl_ctrl  {
 	/***************************************************************
 	 * Function prototypes:
 	 ***************************************************************/
-int   mdsdcl_main(		/* The real main program		*/
-    int   argc			/* <r> argument count			*/
-   ,char  *argv[]		/* <r> arg list				*/
-   );
 int   mdsdcl_dcl_parse(			/* Returns CLI_STS_xxx status	*/
     void  *command			/* <r:opt> command string	*/
    ,struct _mdsdcl_ctrl  *ctrl		/* <m> control structure	*/

@@ -8,3 +8,4 @@ MAKE_DEPEND = cc $(CFLAGS) -M {} > .depend \;
 LD_SHARED_LIB_OPTIONS = -shared -no_archive
 MOTIF_LIBS = -lMrm -lXm
 X11_LIBS = -lXt -lX11
+RANLIB = ranlib $@

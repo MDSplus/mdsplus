@@ -13,10 +13,11 @@ clean:
 	rm *.o *.a
 
 libCdu.a:	$(OBJFILES)
-		ranlib libCdu.a
+		$(RANLIB)
 
 cdu:	cdu.o cdu_util.o cdu_write.o
-	$(CC) $(CFLAGS) -o $@  $@.o cdu_util.o cdu_write.o libCdu.a
+	$(CC) $(CFLAGS) -o $@  $@.o cdu_util.o cdu_write.o libCdu.a \
+		-L../shlib  -lMdsShr
 
 .depend:
 	touch .depend

@@ -25,18 +25,19 @@ mdsdcl_tables.c:	mdsdcl_tables.ocld
 	../cdu/cdu < mdsdcl_tables.ocld
 
 libMdsdcl.a:	$(OBJFILES)
-		ranlib libMdsdcl.a
+		$(RANLIB)
 
 ../shlib/libMdsdcl.$(SHARE_TYPE):	mdsdcl_tables.o  libMdsdcl.a
-	$(LD)  -o $@ $(LFLAGS)	\
-		$(LD_SHARED_LIB_OPTIONS)  mdsdcl_tables.o  libMdsdcl.a	\
-		-lMdsShr  -lTreeShr  -lTdiShr 	\
-		$(MDSPLUS)/cdu/libCdu.a  -lcurses  -lc
+	$(LD)  -o $@ $(LFLAGS)		\
+		$(LD_SHARED_LIB_OPTIONS)		\
+		mdsdcl_tables.o		\
+		$(EXPORT_SYMBOLS) libMdsdcl.a	\
+		$(EXPORT_SYMBOLS)  $(MDSPLUS)/cdu/libCdu.a	\
+		-lMdsShr  -lcurses
 
 ../bin/mdsdcl:	mdsdcl.o  ../shlib/libMdsdcl.$(SHARE_TYPE)
-	$(CC)  $(CFLAGS)	\
-		-o $@  $(LFLAGS)	\
-		mdsdcl.o  -lMdsdcl -lMdsShr
+	$(CC) $(CFLAGS) -o $@ $(LFLAGS) mdsdcl.o	\
+		-lMdsdcl -lMdsShr
 
 .depend:
 	touch .depend

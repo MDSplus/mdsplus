@@ -38,13 +38,12 @@ tcl_commands.c:	tcl_commands.ocld
 tcl_commands.o:	tcl_commands.c
 
 libTcl.a:	$(OBJFILES)
-	ranlib libTcl.a
+	$(RANLIB)
 
 ../shlib/tcl_commands.$(SHARE_TYPE):	libTcl.a
-	$(LD)  -o $@ $(LFLAGS) $(LD_SHARED_LIB_OPTIONS)	\
+	$(CC) $(CFLAGS)  -o $@ $(LFLAGS) $(LD_SHARED_LIB_OPTIONS)	\
 		tcl_commands.o  libTcl.a	\
-		-lMdsdcl -lMdsShr -lTreeShr -lTdiShr	\
-		$(MDSPLUS)/cdu/libCdu.a
+		-lMdsdcl -lMdsShr -lTreeShr -lTdiShr
 
 .depend:
 	touch .depend
