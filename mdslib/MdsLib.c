@@ -13,15 +13,6 @@ variable argument lists so a second compilation of these routines is
 necessary to create the fortran entry points.  See more notes at
 bottom of this file for configuring fortran entry points.
 **************************************************************************/
-//#if defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux) || defined (HAVE_WINDOWS_H)
-//extern int mdsvalue_(char *expression, ...);
-//#define MDSVALUE mdsvalue_
-//#elif defined(__hpux)
-//extern int mdsvalue(char *expression, ...);
-//#define MDSVALUE mdsvalue
-//#else
-//#define MDSVALUE MdsValue
-//#endif
 #ifdef __VMS
 #include <descrip.h>
 #endif
@@ -561,7 +552,7 @@ SOCKET MdsConnect(char *host)
 #endif
 
 #if !defined(FORTRAN_ENTRY_POINTS) || defined(descr)
-int WINAPI descr (int *dtype, void *data, int *dim1, ...)
+int descr (int *dtype, void *data, int *dim1, ...)
 {
 
   /* variable length argument list: 
