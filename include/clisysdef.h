@@ -17,6 +17,7 @@
 * Data structures for CLI emulation ...
 *
 * History:
+*  16-Aug-2001  TRG  Make IS_COMMENT_CHARACTER be '!' only, not ';'
 *  20-Oct-1997  TRG  Create.
 *
 *************************************************************************/
@@ -98,7 +99,7 @@ struct cduVerb  {
 #define QUALIFIER_CHARACTER     '-'
 #endif
 
-#define IS_COMMENT_CHARACTER(C)       ((C)=='!' || (C)==';')
+#define IS_COMMENT_CHARACTER(C)       /*((C)=='!' || (C)==';')*/  ((C)=='!')
 #define IS_CONTINUATION_CHARACTER(C)  ((C)=='-' || (C)=='\\')
 #define IS_QUALIFIER_CHARACTER(C)     ((C)=='/' || (C)=='-')
 
