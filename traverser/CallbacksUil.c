@@ -1303,7 +1303,7 @@ static Boolean TagsApply(Widget w, int nid)
 {
   int status;
   int retstatus = 1;
-  Widget list_widget = XtNameToWidget(w, "tag_list");
+  Widget list_widget = XtNameToWidget(w, "*.tag_list");
   XmString *item_list;
   int      num_items;
   int i;
@@ -1331,7 +1331,7 @@ static void TagsReset(Widget w, int nid)
   XmString path_str;
   Widget list_widget;
   void *ctx;
-  list_widget = XtNameToWidget(w, "tag_list");
+  list_widget = XtNameToWidget(w, "*.tag_list");
   XmListDeleteAllItems(list_widget);
   path = TreeGetPath(nid);
   path_str = XmStringCreateLtoR(path, XmSTRING_DEFAULT_CHARSET);
@@ -1375,7 +1375,7 @@ void tag_button_proc(Widget w, int *tag)
                   char *new_tag = (char *)XmTextFieldGetString(XtNameToWidget(tag_widget, "tag_current_text"));
                   if (strlen(new_tag)) {
                     XmString new_tag_str = XmStringCreateSimple(new_tag);
-                    Widget list_widget = XtNameToWidget(tag_widget, "tag_list");
+                    Widget list_widget = XtNameToWidget(tag_widget, "*.tag_list");
                     XmListAddItemUnselected(list_widget, new_tag_str, 0);
                     XmStringFree(new_tag_str);
                     XtFree(new_tag);
@@ -1386,7 +1386,7 @@ void tag_button_proc(Widget w, int *tag)
                 {
 		  int *pos_list;
 		  int pos_count;
-                  Widget list_widget = XtNameToWidget(tag_widget, "tag_list");
+                  Widget list_widget = XtNameToWidget(tag_widget, "*.tag_list");
                   if (XmListGetSelectedPos(list_widget, &pos_list, &pos_count))
                     XmListDeletePos(list_widget, pos_list[0]);
                 }
@@ -1399,7 +1399,7 @@ void tag_selection_proc(Widget w, int *tag, XmListCallbackStruct *reason)
   Widget tag_widget = XtParent(w);
   char *tag_txt;
   XmStringGetLtoR(reason->item, XmSTRING_DEFAULT_CHARSET, &tag_txt);
-  XmTextFieldSetString(XtNameToWidget(tag_widget, "tag_current_text"), tag_txt);
+  XmTextFieldSetString(XtNameToWidget(tag_widget->core.parent, "*.tag_current_text"), tag_txt);
   XtFree(tag_txt);
 }
 
