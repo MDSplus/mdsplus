@@ -78,6 +78,36 @@ Package=<4>
 
 ###############################################################################
 
+Project: "istart"=.\ipcs\grandpa\istart.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name ipcs
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "istop"=.\ipcs\grandpa\istop.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name ipcs
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "javamds"=.\javascope\javamds.dsp - Package Owner=<4>
 
 Package=<5>
@@ -86,6 +116,15 @@ Package=<5>
 
 Package=<4>
 {{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
+    End Project Dependency
 }}}
 
 ###############################################################################
