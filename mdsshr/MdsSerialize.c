@@ -17,7 +17,7 @@
 #define binscale()  ((*((unsigned char  *)&in_ptr[10]) & 0x08) != 0)
 #define redim()     ((*((unsigned char  *)&in_ptr[10]) & 0x10) != 0)
 #define column()    ((*((unsigned char  *)&in_ptr[10]) & 0x20) != 0)
-#define coeff(ptr)     ((*((unsigned char  *)&in_ptr[10]) & 0x40) != 0)
+#define coeff()     ((*((unsigned char  *)&in_ptr[10]) & 0x40) != 0)
 #define bounds()    ((*((unsigned char  *)&in_ptr[10]) & 0x80) != 0)
 #define dimct()     (*(unsigned char  *)&in_ptr[11])
 #define set_arsize(ans)    swap(int,&in_ptr[12],ans)
