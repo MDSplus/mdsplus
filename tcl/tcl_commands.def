@@ -4,3 +4,7 @@ DATA	PRELOAD SINGLE
 EXPORTS
 ;
 tcl_commands
+TclGetOut
+TclOutLen
+TclSaveOut
+TclSetCallbacks
