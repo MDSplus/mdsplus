@@ -3,10 +3,16 @@ CC=@CC@
 top_srcdir=@top_srcdir@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
+GROFF_FLAGS=@GROFF_MAN_FLAGS@
 
 all : $(top_srcdir)/man/man1 \
       $(top_srcdir)/man/man1/mdsplus.1.gz \
-      $(top_srcdir)/man/man1/traverser.1.gz
+      $(top_srcdir)/man/man1/traverser.1.gz \
+      $(top_srcdir)/man/man5 \
+      $(top_srcdir)/man/man5/mdsplus.conf.5.gz \
+      $(top_srcdir)/man/man5/.mdsplus.5.gz \
+      $(top_srcdir)/man/man5/mdsip.hosts.5.gz
+
 
 depend:
 	@ :
@@ -16,16 +22,36 @@ clean :
 
 install: 
 	- mkdirhier $(exec_prefix)/man/man1
+	$(INSTALL) -m 755  $(top_srcdir)/man/man1/mdsplus.1.gz $(exec_prefix)/man/man1
 	$(INSTALL) -m 755  $(top_srcdir)/man/man1/traverser.1.gz $(exec_prefix)/man/man1
+	- mkdirhier $(exec_prefix)/man/man5
+	$(INSTALL) -m 755  $(top_srcdir)/man/man5/mdsplus.conf.5.gz $(exec_prefix)/man/man5
+	$(INSTALL) -m 755  $(top_srcdir)/man/man5/.mdsplus.5.gz $(exec_prefix)/man/man5
+	$(INSTALL) -m 755  $(top_srcdir)/man/man5/mdsip.hosts.5.gz $(exec_prefix)/man/man5
 
 
 $(top_srcdir)/man/man1 :
 	mkdirhier $@
 
+$(top_srcdir)/man/man5 :
+	mkdirhier $@
+
 $(top_srcdir)/man/man1/traverser.1.gz : traverser.groff
-	groff -t -man -Tascii traverser.groff > $(top_srcdir)/man/man1/traverser.1
+	groff $(GROFF_FLAGS) traverser.groff > $(top_srcdir)/man/man1/traverser.1
 	gzip -f $(top_srcdir)/man/man1/traverser.1
 
 $(top_srcdir)/man/man1/mdsplus.1.gz : mdsplus.groff
-	groff -t -man -Tascii mdsplus.groff > $(top_srcdir)/man/man1/mdsplus.1
+	groff $(GROFF_FLAGS) mdsplus.groff > $(top_srcdir)/man/man1/mdsplus.1
 	gzip -f $(top_srcdir)/man/man1/mdsplus.1
+
+$(top_srcdir)/man/man5/mdsplus.conf.5.gz : mdsplus.conf.groff
+	groff $(GROFF_FLAGS) mdsplus.conf.groff > $(top_srcdir)/man/man5/mdsplus.conf.5
+	gzip -f $(top_srcdir)/man/man5/mdsplus.conf.5
+
+$(top_srcdir)/man/man5/.mdsplus.5.gz : .mdsplus.groff
+	groff $(GROFF_FLAGS) .mdsplus.groff > $(top_srcdir)/man/man5/.mdsplus.5
+	gzip -f $(top_srcdir)/man/man5/.mdsplus.5
+
+$(top_srcdir)/man/man5/mdsip.hosts.5.gz : mdsip.hosts.groff
+	groff $(GROFF_FLAGS) mdsip.hosts.groff > $(top_srcdir)/man/man5/mdsip.hosts.5
+	gzip -f $(top_srcdir)/man/man5/mdsip.hosts.5

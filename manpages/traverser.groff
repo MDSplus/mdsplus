@@ -12,12 +12,12 @@ traverser \- a X-windows application for working with MDSplus trees
 ]
 .SH DESCRIPTION
 .B traverser
-is an MDSplus application that lets you create, edit, modify or display the 
-contents of an MDSplus tree. Before an MDSplus tree can be accessed, an environment
-variable must be defined which points to the directory (or list of directories) 
+is an MDSplus application that lets you create, edit, modify or display the \
+contents of an MDSplus tree. Before an MDSplus tree can be accessed, an environment \
+variable must be defined which points to the directory (or list of directories) \
 where the tree files reside. This environment variable should be named
 .IR "treename"_path. 
-The best place to make these definitions is by adding a line
+The best place to make these definitions is by adding a line \
 to the file /etc/mdsplus.config or to $HOME/.mdsplus using the following format:
 
 

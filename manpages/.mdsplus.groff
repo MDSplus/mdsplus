@@ -1,0 +1,53 @@
+.\" This is used to generate the man page for the .mdsplus file
+.TH .mdsplus 5 "October 4, 2000" "V1.0" "MDSplus"
+.SH NAME
+.mdsplus \- user configuration file for MDSplus environment variables
+.SH SYNOPSIS
+The
+.B $HOME/.mdsplus
+file is used to define environment variables use by MDSplus. It
+should contain lines that look like:
+.P
+.RS
+.I
+environment-variable value [ "<" | ">" delimiter]
+.RE
+.SH DESCRIPTION
+The
+.B
+$HOME/.mdsplus
+file contains environment variable definitions used by MDSplus. These environment variables
+will be defined in both sh and csh shells and their variants during login. You would typically
+include tree paths and perhaps a MDS_PATH definition to add local tdi fun's to those included
+with the MDSplus distribution. You can specify whether the definition should replace an existing
+environment variable definition or prepend or append the definition to the existing value. 
+For example if the file contained the line:
+.P
+.RS
+mytree_path /usr/mdsplus_trees/mytree
+.RE
+.P
+then the environment variable "mytree_path" would be defined as specified even if this
+environment variable was previously defined. On the otherhand if the file contained the
+line:
+.P
+.RS
+mytree_path /usr/mdsplus_trees/mytree >;
+.RE
+.P
+then the directory /usr/mdsplus_trees/mytree would be appended to the value of mytree_path
+, if previously defined, using a semicolon to delimit the directories. If instead of >;
+we had used <; then the directory would be placed at the beginning again delimited by the
+semicolon.
+
+You can include comments in the
+.B
+$HOME/.mdsplus
+file by starting the line with a # character.
+.SH "SEE ALSO"
+MDSplus WEB Documentation: 
+.RS 
+http://www.psfc.mit.edu/mdsplus
+http://www.psfc.mit.edu/MDSplusDOC
+.RE
+mdsplus(1), mdsplus.conf(5)

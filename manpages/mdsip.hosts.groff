@@ -1,0 +1,60 @@
+.\" This is used to generate the man page for the mdsip.hosts file
+.TH mdsip.hosts 5 "October 4, 2000" "V1.0" "MDSplus"
+.SH NAME
+mdsip.hosts \- remote access authorization file for MDSplus servers
+.SH SYNOPSIS
+The
+.B
+/etc/mdsip.hosts
+file is used to define access rights for remote
+connections to MDSplus data servers.
+.SH DESCRIPTION
+The
+.B
+/etc/mdsip.hosts
+file provides information to the MDSplus servers regarding what remote clients
+can attach to the server and to what user account the remote connection is to
+be mapped.
+
+When a remote client connects to an MDSplus server, the client sends the username
+of the person attempting the connection. A string consisting of the username followed
+by @ followed by the internet address of the remote system is compared against entries
+in the mdsip.hosts file to see if the string matches one in the file. If a match occurs
+then the server takes on the access privileges of the local user assigned to this
+connection. The format of the lines in the mdsip.host file include a match string (wildcarding
+permitted) followed by whitespace, a "|" character, whitespace and then a local username or
+the string "MAP_TO_LOCAL". Particular users or address can be explicitly denied access by
+beginning the match line with an exclamation point, "!". Match attempts begin at the top
+of the file and stop whenever a match occurs. If no matches are found then the connection
+is disallowed and the server drops the connection.
+
+For example, if the mdsip.hosts file contained the following:
+.P
+!root@*
+.br
+twf@*.psfc.mit.edu | george
+.br
+twf@18.77.* | fred
+.br
+*@*.pppl.gov | MAP_TO_LOCAL
+.br
+multi | nobody
+.P
+If anyone one logged in as root on any remote system tried to connect to the MDSplus server
+the server would deny the connection. If the user, twf, attempted to login from any host
+in the psfc.mit.edu domain, the server would permit the connection and would run under the
+local user, george, account. Similarly you can use numeric ip address in the map as shown
+in the next line. The following line indicates that if anyone connects from the pppl.gov
+domain (except root which would be denied access), the serve should accept the connection
+and run under the same user account as the user on the remote system. The last line is a
+special mapping used for servers running in either multi or server mode. In these modes the
+server accepts multiple concurrent connections so all connections execute in the same process.
+When a server runs in multi or server mode, it searchs the mdsip.hosts file for a match
+string of "multi" and then runs under the specified user account.
+.SH "SEE ALSO"
+MDSplus WEB Documentation: 
+.RS 
+http://www.psfc.mit.edu/mdsplus
+http://www.psfc.mit.edu/MDSplusDOC
+.RE
+mdsplus(1), mdsip(8), mdsipd(8)
