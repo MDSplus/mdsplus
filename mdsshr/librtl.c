@@ -39,7 +39,7 @@ static void *dlsym(void *handle, char *name)
 
 static char *dlerror()
 {
-  static LPTSTR *error_string = 0;
+  static LPTSTR error_string = 0;
   DWORD last_error=GetLastError();
   if (error_string)
   {
