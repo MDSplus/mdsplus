@@ -4,6 +4,7 @@ Release: 1
 Copyright: GNU GPL
 Group: Applications/Acquisition
 Source: mdsplus-1.0.tar.gz
+Prefix: /usr/local
 Buildroot: /var/tmp/mdsplus
 Vendor: MIT Plasma Science and Fusion Center 
 Summary: MDSplus Data Acquisition System
@@ -42,8 +43,21 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-/usr/local/mdsplus
-%doc README README.INSTALL
+/usr/local/mdsplus/LabView
+/usr/local/mdsplus/bin
+/usr/local/mdsplus/etc
+/usr/local/mdsplus/idl
+/usr/local/mdsplus/include
+/usr/local/mdsplus/java
+/usr/local/mdsplus/lib
+/usr/local/mdsplus/man
+/usr/local/mdsplus/rpm
+/usr/local/mdsplus/setup.csh
+/usr/local/mdsplus/setup.sh
+/usr/local/mdsplus/tdi
+/usr/local/mdsplus/trees
+/usr/local/mdsplus/uid
+%dir /usr/local/mdsplus/local
 
 %changelog
 * Wed Aug 29 2000 Basil P. DUVAL <basil.duval@epfl.ch>
