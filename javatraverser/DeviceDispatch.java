@@ -45,7 +45,7 @@ public class DeviceDispatch extends DeviceComponent
             }catch(Exception e)
             {
                 System.out.println("Cannot read device NCI 1: "+e);
-                //return;
+                continue;
             }
             if(nodeInfos[i].getUsage() == NodeInfo.USAGE_ACTION)
                 num_actions++;
