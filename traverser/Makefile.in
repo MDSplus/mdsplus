@@ -55,4 +55,4 @@ install:
 	mkdir @MAKEUIDDIR@
 
 @MAKEUIDDIR@traverser.uid : traverser.uil
-	uil -o $@ traverser.uil
+	$(UIL) -o $@ traverser.uil
