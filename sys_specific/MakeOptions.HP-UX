@@ -1,4 +1,4 @@
-CFLAGS = +z -Ae -Wl,+s -I../include -g +DA1.1 +DS1.1
+CFLAGS = +z -Ae -Wl,+s -I../include -g +DA1.1 +DS1.1 -DINCREASE_FILE_LIMIT
 MOTIF_CFLAGS = +z -Ae -Wl,+s -I../include -g +DA1.1 +DS1.1 -I/usr/include/X11R6 -D_NO_DXm
 WMD_RULE=xmdsuil-bigendian.wmd ; cp xmdsuil-bigendian.wmd ../shlib/xmdsuil.wmd
 SHARE_TYPE = sl
