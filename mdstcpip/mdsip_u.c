@@ -361,10 +361,15 @@ static void ConvertFloat(int num, int in_type, char in_length, char *in_ptr, int
       int j,k;
       for (j=0;j<2;j++)
         for (k=0;k<4;k++)
+#ifdef _big_endian
           cray_f[j * 4 + k] = ptr[j * 4 + 3 - k];
+#else
+          cray_f[(1-j)*4 + k] = ptr[j * 4 + 3 - k];
+#endif
       ptr = cray_f;
     }
     CvtConvertFloat(ptr, in_type, out_p, out_type, 0);
+#ifdef _big_endian
     if (out_type == CvtCRAY)
     {
       int j,k;
@@ -374,6 +379,7 @@ static void ConvertFloat(int num, int in_type, char in_length, char *in_ptr, int
           cray_f[j * 4 + k] = ptr[j * 4 + 3 - k];
       for (j=0;j<8;j++) ptr[j] = cray_f[j];
     }
+#endif
   }
 }
 
@@ -737,25 +743,21 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
         break;
       case DTYPE_FS: 
         ConvertFloat(num, CvtIEEE_S, (char)d->length, d->pointer, CvtCRAY, (char)m->h.length, m->bytes); 
-        m->h.dtype = DTYPE_F;
         break;
       case DTYPE_FC: 
         ConvertFloat(num*2,CvtVAX_F, (char)(d->length/2), d->pointer,CvtCRAY,(char)(m->h.length/2), m->bytes); 
         break;
       case DTYPE_FSC: 
         ConvertFloat(num*2,CvtIEEE_S,(char)(d->length/2),d->pointer,CvtCRAY,(char)(m->h.length/2), m->bytes);
-        m->h.dtype = DTYPE_FC;
         break;
       case DTYPE_D:
         ConvertFloat(num, CvtVAX_D, sizeof(double), d->pointer, CvtCRAY, (char)m->h.length, m->bytes); 
         break;
       case DTYPE_G:
         ConvertFloat(num, CvtVAX_G, sizeof(double), d->pointer, CvtCRAY, (char)m->h.length, m->bytes); 
-        m->h.dtype = DTYPE_D;
         break;
       case DTYPE_FT: 
         ConvertFloat(num, CvtIEEE_T, sizeof(double), d->pointer, CvtCRAY, (char)m->h.length, m->bytes); 
-        m->h.dtype = DTYPE_D; 
         break;
       default: 
         memcpy(m->bytes,d->pointer,nbytes); 
@@ -791,6 +793,8 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
     m->h.dtype = DTYPE_D;
   else if (m->h.dtype == DTYPE_FS)
     m->h.dtype = DTYPE_F;
+  else if (m->h.dtype == DTYPE_FSC)
+    m->h.dtype = DTYPE_FC;
   SendMdsMsg(c->sock, m, 0);
   free(m);
 }
