@@ -321,78 +321,79 @@ public class RFXTimesSetup extends DeviceSetup {
     "tcl(\'set node \\\\CLOSE_PNSS /off\'); 1;",
         "if(_CLOSE_TNST_state == 1) tcl(\'set node \\\\CLOSE_TNST/on\'); else " +
     "tcl(\'set node \\\\CLOSE_TNST /off\'); 1;",
-        "if(_CLOSE_PP3_state == 1) tcl(\'set node \\\\CLOSE_PP3/on\'); else " +
-    "tcl(\'set node \\\\CLOSE_PP3 /off\'); 1;",
+        "if(_CLOSE_PP3_state == 1) tcl(\'set node \\\\CLOSE_PP3/on\'); else tcl(\'set " +
+    "node \\\\CLOSE_PP3 /off\'); 1;",
         "if(_CLOSE_PPSC2_state == 1) tcl(\'set node \\\\CLOSE_PPSC2/on\'); else " +
     "tcl(\'set node \\\\CLOSE_PPSC2 /off\'); 1;",
-        "if(_CLOSE_PTCT_1_state == 1) tcl(\'set node \\\\CLOSE_PTCT_1/on\'); " +
-    "else tcl(\'set node \\\\CLOSE_PTCT_1 /off\'); 1;",
-        "if(_CLOSE_PTCT_4_state == 1) tcl(\'set node \\\\CLOSE_PTCT_4/on\'); " +
-    "else tcl(\'set node \\\\CLOSE_PTCT_4 /off\'); 1;",
-        "if(_CLOSE_PTCT_7_state == 1) tcl(\'set node \\\\CLOSE_PTCT_7/on\'); " +
-    "else tcl(\'set node \\\\CLOSE_PTCT_7 /off\'); 1;",
+        "if(_CLOSE_PTCT_1_state == 1) tcl(\'set node \\\\CLOSE_PTCT_1/on\'); else " +
+    "tcl(\'set node \\\\CLOSE_PTCT_1 /off\'); 1;",
+        "if(_CLOSE_PTCT_4_state == 1) tcl(\'set node \\\\CLOSE_PTCT_4/on\'); else " +
+    "tcl(\'set node \\\\CLOSE_PTCT_4 /off\'); 1;",
+        "if(_CLOSE_PTCT_7_state == 1) tcl(\'set node \\\\CLOSE_PTCT_7/on\'); else " +
+    "tcl(\'set node \\\\CLOSE_PTCT_7 /off\'); 1;",
         "if(_INSRT_PTCB_state == 1) tcl(\'set node \\\\INSRT_PTCB/on\'); else " +
     "tcl(\'set node \\\\INSRT_PTCB /off\'); 1;",
         "if(_START_TF_state == 1) tcl(\'set node \\\\START_TF/on\'); else tcl(\'set " +
     "node \\\\START_TF /off\'); 1;",
-        "if(_STOP_PM_state == 1) tcl(\'set node \\\\STOP_PM/on\'); else tcl(\'set " +
-    "node \\\\STOP_PM /off\'); 1;",
+        "if(_STOP_PM_state == 1) tcl(\'set node \\\\ENABLE_PM/on\'); else tcl(\'set " +
+    "node \\\\ENABLE_PM /off\'); 1;",
         "if(_START_PV_state == 1) tcl(\'set node \\\\START_PV/on\'); else tcl(\'set " +
     "node \\\\START_PV/off\'); 1;",
-        "if(_EN_INV_TC_state == 1) tcl(\'set node \\\\EN_INV_TC/on\'); else " +
-    "tcl(\'set node \\\\EN_INV_TC /off\'); 1;",
+        "if(_EN_INV_TC_state == 1) tcl(\'set node \\\\EN_INV_TC/on\'); else tcl(\'set " +
+    "node \\\\EN_INV_TC /off\'); 1;",
         "if(_CROWBAR_ON_TC_state == 1) tcl(\'set node \\\\CROWBAR_ON_TC/on\'); " +
     "else tcl(\'set node \\\\CROWBAR_ON_TC /off\'); 1;",
         "if(_CLOSE_TNSI_state == 1) tcl(\'set node \\\\CLOSE_TNSI/on\'); else " +
     "tcl(\'set node \\\\CLOSE_TNSI /off\'); 1;",
-        "if(_CLOSE_PP1_state == 1) tcl(\'set node \\\\CLOSE_PP1/on\'); else " +
-    "tcl(\'set node \\\\CLOSE_PP1 /off\'); 1;",
-        "if(_CLOSE_PP4_state == 1) tcl(\'set node \\\\CLOSE_PP4/on\'); else " +
-    "tcl(\'set node \\\\CLOSE_PP4 /off\'); 1;",
+        "if(_CLOSE_PP1_state == 1) tcl(\'set node \\\\CLOSE_PP1/on\'); else tcl(\'set " +
+    "node \\\\CLOSE_PP1 /off\'); 1;",
+        "if(_CLOSE_PP4_state == 1) tcl(\'set node \\\\CLOSE_PP4/on\'); else tcl(\'set " +
+    "node \\\\CLOSE_PP4 /off\'); 1;",
         "if(_CLOSE_PPSC3_state == 1) tcl(\'set node \\\\CLOSE_PPSC3/on\'); else " +
     "tcl(\'set node \\\\CLOSE_PPSC3 /off\'); 1;",
-        "if(_CLOSE_PTCT_2_state == 1) tcl(\'set node \\\\CLOSE_PTCT_2/on\'); " +
-    "else tcl(\'set node \\\\CLOSE_PTCT_2 /off\'); 1;",
-        "if(_CLOSE_PTCT_5_state == 1) tcl(\'set node \\\\CLOSE_PTCT_5/on\'); " +
-    "else tcl(\'set node \\\\CLOSE_PTCT_5 /off\'); 1;",
-        "if(_CLOSE_PTCT_8_state == 1) tcl(\'set node \\\\CLOSE_PTCT_8/on\'); " +
-    "else tcl(\'set node \\\\CLOSE_PTCT_8 /off\'); 1;",
-        "if(_OPEN_PTSO_state == 1) tcl(\'set node \\\\OPEN_PTSO/on\'); else " +
-    "tcl(\'set node \\\\OPEN_PTSO /off\'); 1;",
-        "if(_STOP_TF_state == 1) tcl(\'set node \\\\STOP_TF/on\'); else tcl(\'set " +
-    "node \\\\STOP_TF /off\'); 1;",
+        "if(_CLOSE_PTCT_2_state == 1) tcl(\'set node \\\\CLOSE_PTCT_2/on\'); else " +
+    "tcl(\'set node \\\\CLOSE_PTCT_2 /off\'); 1;",
+        "if(_CLOSE_PTCT_5_state == 1) tcl(\'set node \\\\CLOSE_PTCT_5/on\'); else " +
+    "tcl(\'set node \\\\CLOSE_PTCT_5 /off\'); 1;",
+        "if(_CLOSE_PTCT_8_state == 1) tcl(\'set node \\\\CLOSE_PTCT_8/on\'); else " +
+    "tcl(\'set node \\\\CLOSE_PTCT_8 /off\'); 1;",
+        "if(_OPEN_PTSO_state == 1) tcl(\'set node \\\\OPEN_PTSO/on\'); else tcl(\'set " +
+    "node \\\\OPEN_PTSO /off\'); 1;",
+        "if(_STOP_TF_state == 1) tcl(\'set node \\\\ENABLE_TF/on\'); else tcl(\'set " +
+    "node \\\\ENABLE_TF /off\'); 1;",
         "if(_START_PC_state == 1) tcl(\'set node \\\\START_PC/on\'); else tcl(\'set " +
     "node \\\\START_PC /off\'); 1;",
-        "if(_STOP_PV_state == 1) tcl(\'set node \\\\STOP_PV/on\'); else tcl(\'set " +
-    "node \\\\STOP_PV /off\'); 1;",
+        "if(_STOP_PV_state == 1) tcl(\'set node \\\\ENABLE_PV/on\'); else tcl(\'set " +
+    "node \\\\ENABLE_PV /off\'); 1;",
         "if(_FOR_PWM_TC_state == 1) tcl(\'set node \\\\FOR_PWM_TC/on\'); else " +
     "tcl(\'set node \\\\FOR_PWM_TC /off\'); 1;",
         "if(_CLOSE_TNSR_state == 1) tcl(\'set node \\\\CLOSE_TNSR/on\'); else " +
     "tcl(\'set node \\\\CLOSE_TNSR /off\'); 1;",
-        "if(_CLOSE_PP2_state == 1) tcl(\'set node \\\\CLOSE_PP2/on\'); else " +
-    "tcl(\'set node \\\\CLOSE_PP2 /off\'); 1;",
+        "if(_CLOSE_PP2_state == 1) tcl(\'set node \\\\CLOSE_PP2/on\'); else tcl(\'set " +
+    "node \\\\CLOSE_PP2 /off\'); 1;",
         "if(_CLOSE_PPSC1_state == 1) tcl(\'set node \\\\CLOSE_PPSC1/on\'); else " +
     "tcl(\'set node \\\\CLOSE_PPSC1 /off\'); 1;",
-        "if(_CLOSE_PTCT_3_state == 1) tcl(\'set node \\\\CLOSE_PTCT_3/on\'); " +
-    "else tcl(\'set node \\\\CLOSE_PTCT_3 /off\'); 1;",
-        "if(_CLOSE_PTCT_6_state == 1) tcl(\'set node \\\\CLOSE_PTCT_6/on\'); " +
-    "else tcl(\'set node \\\\CLOSE_PTCT_6 /off\'); 1;",
+        "if(_CLOSE_PTCT_3_state == 1) tcl(\'set node \\\\CLOSE_PTCT_3/on\'); else " +
+    "tcl(\'set node \\\\CLOSE_PTCT_3 /off\'); 1;",
+        "if(_CLOSE_PTCT_6_state == 1) tcl(\'set node \\\\CLOSE_PTCT_6/on\'); else " +
+    "tcl(\'set node \\\\CLOSE_PTCT_6 /off\'); 1;",
         "if(_INSRT_PC_state == 1) tcl(\'set node \\\\INSRT_PC/on\'); else tcl(\'set " +
     "node \\\\INSRT_PC /off\'); 1;",
         "if(_PPSC_C_state == 1) tcl(\'set node \\\\PPSC_C/on\'); else tcl(\'set " +
-    "node \\\\PPSC_C /off\'); 1;",
-        "if(_START_PM_state == 1) tcl(\'set node \\\\START_PM/on\'); else tcl(\'set " +
+    "node \\\\PPSC_C /off\'); 1;", "if(_START_PM_state == 1) tcl(\'set node \\\\START_PM/on\'); else tcl(\'set " +
     "node \\\\START_PM /off\'); 1;",
-        "if(_STOP_PC_state == 1) tcl(\'set node \\\\STOP_PC/on\'); else tcl(\'set " +
-    "node \\\\STOP_PC /off\'); 1;",
+        "if(_STOP_PC_state == 1) tcl(\'set node \\\\ENABLE_PC/on\'); else tcl(\'set " +
+    "node \\\\ENABLE_PC /off\'); 1;",
         "if(_EN_CHOP_TC_state == 1) tcl(\'set node \\\\EN_CHOP_TC/on\'); else " +
     "tcl(\'set node \\\\EN_CHOP_TC /off\'); 1;",
         "if(_CLOSE_IS_TC_state == 1) tcl(\'set node \\\\CLOSE_IS_TC/on\'); else " +
     "tcl(\'set node \\\\CLOSE_IS_TC /off\'); 1;"
         });
-    deviceButtons1.setCheckMessages(new String[] {"None1", "None2", "None3", "None4", "None5", "None6", "None7", "None8", "None9", "None0", "None11", "None12", "None13", "None14", "None15", "None16", "None17", "None18",
-        "None19", "None20", "None21", "None22", "None23", "None24", "None25", "None26", "None27", "None28", "None29", "None30", "None31", "None32", "None33", "None34",
-        "None35", "None36", "None37"});
+    deviceButtons1.setCheckMessages(new String[] {"None1<NL>None2<NL>None3<NL>None4<NL>None5<NL>None6<NL>None7<NL>None8<NL>None9<NL>None0<NL>None11<NL>N" +
+    "one12<NL>None13<NL>None14<NL>None15<NL>None16<NL>None17<NL>None18<NL>None19<NL>None20<NL>None21<NL>No" +
+    "ne22<NL>None23<NL>None24<NL>None25<NL>None26<NL>None27<NL>None28<NL>None29<NL>None30<NL>None31<NL>Non" +
+    "e32<NL>None33<NL>None34<NL>None35<NL>None36<NL>None37<NL>"
+        });
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jPanel1, BorderLayout.CENTER);
     jPanel1.add(jPanel2, null);
