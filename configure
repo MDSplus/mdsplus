@@ -3787,7 +3787,7 @@ sparc-sun-solaris2*)
        jni_inc_dir="/usr/java/include";
        jni_md_inc_dir="/usr/java/include/solaris";
        HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
-alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
+alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FFLAGS="$FFLAGS -pthread";
        GROFF_MAN_FLAGS="-t -mgan -Tascii";
        IDL_LD="-expect_unresolved 'IDL_*'"
