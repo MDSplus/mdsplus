@@ -4737,7 +4737,6 @@ cts/Makefile
 d3dshr/Makefile 
 dwscope/Makefile 
 gen_device/Makefile
-idldyn/Makefile
 idlmdsevent/Makefile
 idlsql/Makefile
 javaclient/Makefile
@@ -4947,7 +4946,6 @@ cts/Makefile
 d3dshr/Makefile 
 dwscope/Makefile 
 gen_device/Makefile
-idldyn/Makefile
 idlmdsevent/Makefile
 idlsql/Makefile
 javaclient/Makefile
