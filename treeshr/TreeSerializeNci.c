@@ -9,11 +9,9 @@ void TreeSerializeNciOut(NCI *in, char *out)
   *ptr = in->flags2;                                ptr += 1;
                                                     ptr += 1;
 #ifdef WORDS_BIGENDIAN
-  LoadInt(in->time_inserted[1],ptr);                ptr += 4;
-  LoadInt(in->time_inserted[0],ptr);                ptr += 4;
+  LoadQuad(in->time_inserted,ptr);                  ptr += 8;
 #else
-  LoadInt(in->time_inserted[0],ptr);                ptr += 4;
-  LoadInt(in->time_inserted[1],ptr);                ptr += 4;
+  memcpy(ptr,in->time_inserted,8);                  ptr += 8;
 #endif
   LoadInt(in->owner_identifier,ptr);                ptr += 4;
   *ptr = in->class;                                 ptr += 1;

@@ -102,11 +102,6 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	  {
 	    switch (po->length)
 	    {
-	      /*
-	    case 2: *(short *)po->pointer = swapshort(po->pointer); break;
-            case 4: *(int *)po->pointer = swapint(po->pointer); break;
-            case 8: *(_int64 *)po->pointer = swapquad(po->pointer); break;
-	      */
 	    case 2: swap(short,po->pointer,*(short *)po->pointer) break;
             case 4: swap(int,po->pointer,*(int *)po->pointer) break;
             case 8: swap(_int64,po->pointer,*(_int64 *)po->pointer); break;
@@ -950,8 +945,7 @@ int MdsSerializeDscOutZ(struct descriptor *in,
 	  {
 	    case 2:  LoadShort(inp[0],outp); break;
             case 4:  LoadInt(inp[0],outp); break;
-            case 8:  LoadInt(inp[0],outp); 
-                     LoadInt(inp[4],outp+4); break;
+            case 8:  LoadQuad(inp[0],outp); break;
 	    default: memcpy(outp, inp, out_ptr->length);
 	  }
         }
