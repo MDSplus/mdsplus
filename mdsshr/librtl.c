@@ -1287,7 +1287,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     char *tmp = dlerror();
     if (tmp == "") tmp="";
     sprintf((FIS_Error = (char *)malloc(strlen("Error loading library:\n\t %s - %s\n\t %s, %s\n\t%s - %s\n")+
-      strlen(full_filename)*2+strlen(tmp)+strlen(tmp_error1)+strlen(tmp_error2)+10)),
+      strlen(full_filename)*3+strlen(tmp)+strlen(tmp_error1)+strlen(tmp_error2)+10)),
       "Error loading library:\n\t %s - %s\n\t %s - %s\n\t%s - %s\n",c_filename,tmp_error1,full_filename,tmp_error2,&full_filename[3],tmp);
   }
   if (old_fis_error != 0 && old_fis_error != FIS_Error)
