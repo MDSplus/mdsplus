@@ -889,6 +889,7 @@ DeleteNodeNow( Widget w, XtPointer client_data, XtPointer call_data)
     int *parent_nids = (int *)malloc(sizeof(int)*NUM_TO_DELETE);
     Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
     ListTreeItem *itm;
+    loose_selection_proc(tree, NULL);
     for (i=0; i<NUM_TO_DELETE; i++) {
       int nid = NIDS_TO_DELETE[i];
       ListTreeItem *itm = FindItemByNid(ListTreeFirstItem(tree), nid);
