@@ -17,6 +17,15 @@ extern void FreeDescrip(struct descriptor *desc);
 extern int TdiData();
 extern int TdiCompile();
 
+
+static void report(char *msg)
+{	
+    FILE *f = fopen("/usr/users/manduchi/web.log", "a");
+    fprintf(f, "%s\n", msg);
+    fclose(f);
+}
+
+
 struct descriptor_xd *getDeviceFields(char *deviceName)
 {
 	int status, nid, curr_nid, i;
@@ -107,6 +116,7 @@ JNIEXPORT void JNICALL Java_Database_open
   const char *name;
   jobject jname;
   int is_editable, is_readonly, shot;
+static char buf[1000];
 
   name_fid =  (*env)->GetFieldID(env, cls, "name", "Ljava/lang/String;");
   readonly_fid = (*env)->GetFieldID(env, cls, "is_readonly", "Z");
@@ -117,7 +127,6 @@ JNIEXPORT void JNICALL Java_Database_open
   is_editable = (*env)->GetBooleanField(env, obj, editable_fid);
   is_readonly = (*env)->GetBooleanField(env, obj, readonly_fid);
   shot = (*env)->GetIntField(env, obj, shot_fid);
-
   if(is_editable)
     {
       status =  TreeOpenEdit((char *)name, shot);
@@ -127,8 +136,11 @@ JNIEXPORT void JNICALL Java_Database_open
   else
     status = TreeOpen((char *)name, shot, is_readonly);
   (*env)->ReleaseStringUTFChars(env, jname, name);
+
+//report(MdsGetMsg(status));
+sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));
   if(!(status & 1))
-    RaiseException(env, MdsGetMsg(status));
+    RaiseException(env, buf);//MdsGetMsg(status));
 }
 
 

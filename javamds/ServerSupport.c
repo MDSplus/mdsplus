@@ -48,9 +48,11 @@ struct descriptor_xd *JavaResample(struct descriptor_xd  *y_xdptr, struct descri
 
 int i;
 
+    DESCRIPTOR_SIGNAL_1(sig_d, 0, 0, 0);
     DESCRIPTOR_A(a_d, sizeof(float), DTYPE_FLOAT, 0,0); 
+    DESCRIPTOR_A(ax_d, sizeof(float), DTYPE_FLOAT, 0,0); 
     int out_points, x_points, y_points, min_points, act_points, start_idx, end_idx, curr_idx, out_idx, status;
-    float out_array[1000], xmin, xmax, delta, curr, *x, *y;
+    float out_array[1000], out_arrayx[1000], xmin, xmax, delta, curr, *x, *y;
     struct descriptor_xd x_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0},
 	y_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};     
 
@@ -117,7 +119,10 @@ int i;
     if(act_points < MAX_POINTS)
     {
 	for(curr_idx = start_idx, out_idx = 0; curr_idx <= end_idx; curr_idx++, out_idx++)
+	{
+	    out_arrayx[out_idx] = x[curr_idx];
 	    out_array[out_idx] = y[curr_idx];
+	}
 	out_points = out_idx;
     }
     else /*Resample*/	    
@@ -127,24 +132,33 @@ int i;
 	curr_idx = start_idx;
 	out_idx = 1;
 	out_array[0] = y[start_idx];
+	out_arrayx[0] = x[start_idx];
 	while(curr <= x[end_idx] && out_idx < MAX_POINTS && curr_idx <= x_points)
 	{
 	    while(x[curr_idx] < curr)
 		curr_idx++;
 	    if(curr_idx <= x_points)
 	    {
+		out_arrayx[out_idx] = curr;
 		out_array[out_idx++] = y[curr_idx - 1] + (y[curr_idx] - y[curr_idx - 1]) *		
 		    (curr - x[curr_idx - 1]) / (x[curr_idx] - x[curr_idx - 1]);
 		curr = x[start_idx] + out_idx * delta;
 	    }
 	}
-	if(out_idx == MAX_POINTS - 2)
-	    out_array[++out_idx] = out_array[MAX_POINTS - 2]; /*For approx error*/	    
-	out_points = out_idx+1;
+	for(;out_idx < MAX_POINTS; out_idx++)
+	{
+	    out_array[out_idx] = out_array[out_idx - 1];
+	    out_arrayx[out_idx] = out_arrayx[out_idx - 1] + delta;
+	}
+	out_points = out_idx;
     }
     a_d.pointer = (char *)out_array;
     a_d.arsize = out_points * 4;
-    MdsCopyDxXd((struct descriptor *)&a_d, xd );
+    ax_d.pointer = (char *)out_arrayx;
+    ax_d.arsize = out_points * 4;
+    sig_d.data = (struct descriptor *)&a_d;
+    sig_d.dimensions[0] = (struct descriptor *)&ax_d;
+    MdsCopyDxXd((struct descriptor *)&sig_d, xd );
     MdsFree1Dx(&x_xd, NULL);
     MdsFree1Dx(&y_xd, NULL);
     return xd;
