@@ -3,7 +3,7 @@ Public fun dt200__add(in _path, out _nidout)
 /*  DevAddStart(_path,'DT200',231,_nidout); */
   DevAddStart(_path,'DT200',191,_nidout, 'MitDevices');
   DevAddNode(_path//':NODE','TEXT',*,*,_nid);
-  DevAddNode(_path//':BOARD','NUMERIC',1,'/noshotwrite',_nid);
+  DevAddNode(_path//':BOARD','NUMERIC',1,'/noshot_write',_nid);
   DevAddNode(_path//':COMMENT','TEXT',*,*,_nid);
 
   /* trigger routing */
@@ -16,8 +16,8 @@ Public fun dt200__add(in _path, out _nidout)
     DevAddNode(_name//':BUS', 'TEXT', *,'/noshot_write', _nid);
   }
   /* internal clock / clock divider (or int clock freq) */
-  DevAddNode(_path//':CLOCK_SRC', 'TEXT', 'INT', '/noshotwrite', _nid);
-  DevAddNode(_path//':CLOCK_DIV', 'NUMERIC', 200000., '/noshotwrite', _nid);
+  DevAddNode(_path//':CLOCK_SRC', 'TEXT', 'INT', '/noshot_write', _nid);
+  DevAddNode(_path//':CLOCK_DIV', 'NUMERIC', 200000., '/noshot_write', _nid);
 
   /* data acquisition */
 
