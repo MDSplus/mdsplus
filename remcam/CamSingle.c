@@ -82,7 +82,6 @@ static int CamSingle(char *routine, char *name, int a, int f, void *data, int me
     struct descrip data_d = {8,0,{0,0,0,0,0,0,0},0};
     struct descrip ans_d = {0,0,{0,0,0,0,0,0,0},0};
     char cmd[512];
-    int istatus;
 
     writeData = (!(f &0x08)) && (f > 8);
     sprintf(cmd,"CamSingle('%s','%s',%d,%d,%s,%d,_iosb)",routine,name,a,f,(writeData) ? "_data=$" : "_data",mem);
