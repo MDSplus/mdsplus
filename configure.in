@@ -417,7 +417,7 @@ AC_TYPE_SIZE_T
 dnl Check if we are missing <sys/sem.h> but can use <semaphore.h> API instead
 AC_MSG_CHECKING([if we should use named semaphores])
 AC_TRY_CPP([ #include <sys/sem.h> ] , namedsem=no, namedsem=yes )
-if test $namedsem = yes; then
+if test "$namedsem" = yes; then
 AC_TRY_CPP([ #include <semaphore.h> ], 
   [AC_DEFINE(USE_SEMAPHORE_H) namedsem=yes], 
    namedsem=no)
@@ -438,14 +438,14 @@ fi
 AC_CACHE_CHECK([for timezone and daylight externals], mdsplus_cv_have_timezone, 
     AC_TRY_LINK([#include <time.h>], [long z2 = timezone - daylight*3600;], 
         mdsplus_cv_have_timezone=yes, mdsplus_cv_have_timezone=no))
-    if test $mdsplus_cv_have_timezone = yes; then
+    if test "$mdsplus_cv_have_timezone" = yes; then
         AC_DEFINE(HAVE_TIMEZONE)
     else
         AC_CACHE_CHECK([for tm_gmtoff in struct tm], mdsplus_cv_tm_gmtoff_in_tm,
             AC_TRY_LINK([#include <time.h>], [struct tm tim; tim.tm_gmtoff = 0;],
             mdsplus_cv_tm_gmtoff_in_tm=yes,mdsplus_cv_tm_gmtoff_in_tm=no))
     fi
-    if test $mdsplus_cv_tm_gmtoff_in_tm = yes; then
+    if test "$mdsplus_cv_tm_gmtoff_in_tm" = yes; then
         AC_DEFINE(USE_TM_GMTOFF)
     fi
 

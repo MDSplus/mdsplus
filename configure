@@ -2950,7 +2950,7 @@ else
   namedsem=yes 
 fi
 rm -f conftest*
-if test $namedsem = yes; then
+if test "$namedsem" = yes; then
 cat > conftest.$ac_ext <<EOF
 #line 2956 "configure"
 #include "confdefs.h"
@@ -3096,7 +3096,7 @@ rm -f conftest*
 fi
 
 echo "$ac_t""$mdsplus_cv_have_timezone" 1>&6
-    if test $mdsplus_cv_have_timezone = yes; then
+    if test "$mdsplus_cv_have_timezone" = yes; then
         cat >> confdefs.h <<\EOF
 #define HAVE_TIMEZONE 1
 EOF
@@ -3129,7 +3129,7 @@ fi
 
 echo "$ac_t""$mdsplus_cv_tm_gmtoff_in_tm" 1>&6
     fi
-    if test $mdsplus_cv_tm_gmtoff_in_tm = yes; then
+    if test "$mdsplus_cv_tm_gmtoff_in_tm" = yes; then
         cat >> confdefs.h <<\EOF
 #define USE_TM_GMTOFF 1
 EOF
