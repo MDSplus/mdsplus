@@ -73,3 +73,7 @@ all : $(UIDS)
 clean:
 	rm *.uid
 
+.depend:
+	touch .depend
+
+include $(DEPEND)
