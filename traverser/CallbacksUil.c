@@ -558,6 +558,24 @@ static Widget toplevel;
 
 static Boolean notify_on=TRUE;
 
+static void FixUpName(Widget tree, ListTreeItem *itm)
+{
+  int nid = get_nid(itm);
+  char *name = get_node_name(nid);
+  int def_nid = -1;
+  TreeGetDefaultNid(&def_nid);
+  if (nid == def_nid) {
+    char *str = malloc(strlen(name)+3+3+1);
+    strcpy(str, "<<<");
+    strcat(str, name);
+    strcat(str, ">>>");
+    ListTreeRenameItem(tree, itm, str);
+    free(str);
+  }
+  else
+    ListTreeRenameItem(tree, itm, name);
+}
+
 static void NodeTouched(int nid, NodeTouchType type)
 {
   if (notify_on) {
@@ -577,6 +595,16 @@ static void NodeTouched(int nid, NodeTouchType type)
 	case on_off:      FixPixMaps(treew, this_item); break;
 	case set_def:     set_default(toplevel, FindChildItemByNid(treew, this_item, nid)); break;
 	case new:         this_item = insert_item(treew, this_item, nid); break;
+	case rename_node: if ((this_item = FindItemByNid(ListTreeFirstItem(treew), nid)) != NULL) FixUpName(treew, this_item); break;
+	case delete:      
+	  if ((this_item = FindItemByNid(ListTreeFirstItem(treew), nid)) != NULL) 
+	  {
+	    int pnid = parent_nid(nid);
+            ListTreeItem *pitem = FindItemByNid(ListTreeFirstItem(treew), pnid);
+            ListTreeDelete(treew, this_item);
+	    FixUpName(treew, pitem); 
+	  }
+	  break;
 	}
       }
     }
