@@ -47,7 +47,7 @@ extern int ServerDispatchPhase(pthread_cond_t *efn, void *vtable, char *phasenam
 extern int ServerFailedEssential(void *vtable,int reset);
 extern char *ServerFindServers(void **ctx, char *wild_match);
 extern int ServerMonitorCheckin(char *server, void (*ast)(), void *astparam, void (*link_down)());
-extern int ServerSetLogging( char *server, char *logging_mode );
+extern int ServerSetLogging( char *server, int logging_mode );
 extern int ServerStartServer( char *server );
 extern int ServerStopServer( char *server );
 
