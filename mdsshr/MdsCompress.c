@@ -135,7 +135,7 @@ typedef RECORD(4) record_four;
       asize = sizeof(struct descriptor_a) + 
 	      (porig->aflags.coeff ? sizeof(void *) + porig->dimct * sizeof(int) : 0) +
 	      (porig->aflags.bounds ? porig->dimct * 2 * sizeof(int) : 0);
-
+      asize = ((asize + asize - 1)/sizeof(void *)) * sizeof(void *);
     /**************************************************************
     Check if we have minimum requirements.
     Make two CLASS_CA descriptors with a0=offset.
@@ -281,7 +281,7 @@ Compact/copy from work.
   if (status & 1)
   {
     _MOVC3(work.l_length, work.pointer, out_ptr->pointer);
-    status = compress(cimage_ptr, centry_ptr, (int) out_ptr->pointer - (int) work.pointer, work.pointer);
+    status = compress(cimage_ptr, centry_ptr, (char *) out_ptr->pointer - (char *) work.pointer, work.pointer);
     if (status & 1)
       status = MdsCopyDxXd(work.pointer, out_ptr);
     MdsFree1Dx(&work,NULL);

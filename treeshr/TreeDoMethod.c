@@ -49,7 +49,7 @@ int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
   void *arglist[256];
   va_list   incrmtr;
   count(nargs);
-  arglist[0] = (void *)(nargs + 1);
+  arglist[0] = (void *)(nargs + 2);
   arglist[1] = DBID;
   arglist[2] = nid_dsc;
   arglist[3] = method_ptr;
@@ -57,6 +57,7 @@ int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
   for (i = 3; i <= nargs ; i++)
     arglist[i + 1] = va_arg(incrmtr, struct descriptor *);
   va_end(incrmtr);
+  arglist[nargs+2] = MdsEND_ARG;
   return LibCallg(arglist,_TreeDoMethod);
 }
 
@@ -127,6 +128,8 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       static DESCRIPTOR(arg,"$,");
       static DESCRIPTOR(tdishr,"TdiShr");
       static DESCRIPTOR(tdiexecute,"TdiExecute");
+      static int funstat;
+      static DESCRIPTOR_LONG(funstat_d,&funstat);
       StrCopyDx(&exp, &method);
       StrAppend(&exp,&open);
       for (i=2;i<nargs;i++) StrAppend(&exp,&arg);
@@ -135,9 +138,10 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       if (status & 1)
       {
         for (i=nargs;i>0;i--) arglist[i+1] = arglist[i];
-        nargs += 2;
+        nargs += 3;
         arglist[0] = (void *)nargs;
         arglist[1] = &exp;
+        arglist[nargs-1] = &funstat_d;
         arglist[nargs] = MdsEND_ARG;
         status = LibCallg(arglist,addr);
       }
