@@ -85,7 +85,12 @@ int TclDoMethod()
                }
             if (sts & 1)
                {
+#ifdef vms
                 arglist[0] = (void *)(argc + 2);
+#else
+                arglist[argc+3] = MdsEND_ARG;
+                arglist[0] = (void *)(argc + 3);
+#endif
                 sts = LibCallg(arglist,TreeDoMethod);
                }
             str_free1_dx(&arg);
