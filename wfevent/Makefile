@@ -12,7 +12,7 @@ all : ../bin \
 	mkdir ../bin
 
 ../bin/wfevent : $(OBJECTS)  ../shlib/libipcs.a ../shlib/libMdsShr.a
-	$(CC) -Wl,-a archive -o $@ $(OBJECTS)  -L../shlib -lMdsShr -lipcs -lm
+	$(CC) -o $@ $(OBJECTS)  -L../shlib -lMdsShr -lipcs -lm
 
 clean :
 	- rm .depend
