@@ -49,7 +49,7 @@ clean :
           fi;\
 	done
 
-BINARIES = bin shlib uid tdi idl trees envsyms setup.csh setup.sh sys_specific/envsyms.`uname`
+BINARIES = bin etc shlib uid tdi idl trees envsyms setup.csh setup.sh sys_specific/envsyms.`uname`
 binaries :
 	tar cvf - $(BINARIES) | compress -c - > ../binaries/MDSplus.`uname`.tar.Z
 
