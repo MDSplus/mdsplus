@@ -550,6 +550,32 @@ int  MdsEventCan(SOCKET sock, int eventid)
 }
 
 #ifndef _WIN32
+void MdsDispatchEvent(SOCKET sock)
+#else
+unsigned long WINAPI MdsDispatchEvent(SOCKET sock)
+#endif
+{
+  int status;
+  Message  *m;
+#ifndef _WIN32
+  if ((m = GetMdsMsg(sock,&status)) != 0)
+#else
+  while ((m = GetMdsMsgOOB(sock,&status)) != 0)
+#endif
+  {
+    if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo)))
+    {
+      MdsEventInfo *event = (MdsEventInfo *)m->bytes;
+      (*event->astadr)(event->astprm, event->eventid, event->data);
+    }
+#ifdef MULTINET
+    sys$qiow(0,sock,IO$_SETMODE | IO$M_ATTNAST,0,0,0,MdsDispatchEvent,sock,0,0,0,0);
+#endif
+  }
+#ifdef _WIN32
+  return 0;
+#endif
+}
 
 #ifndef vxWorks
 
@@ -662,4 +688,3 @@ int  IdlSendArg(int lArgc, void * * lpvArgv)
   return status;
 }
 #endif //vxWorks
-#endif 
