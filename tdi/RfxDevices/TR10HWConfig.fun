@@ -59,7 +59,7 @@ write(*, 'Cicico3');
 	_trig_mode =_TR10_TRG_SOURCE_EXTERNAL;
 	
 	TR10->TR10_Trg_SetTrigger(val(_handle), val(_trig_mode), val(0B), val(0B),
-		val(_TR10_TRG_EXT_OUT_ON), val(byte(_trig_edge)), val(_TR10_TRG_TERMINATION_ON),
+		val(_TR10_TRG_EXT_OUT_ON), val(byte(_TR10_CLK_RISING_EDGE)), val(_TR10_TRG_TERMINATION_ON),
 		val(_TR10_TRG_SYNCHRONOUS), val(0B));
 write(*, 'Cicico4');
 
