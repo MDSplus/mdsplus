@@ -472,7 +472,15 @@ static void DoSrvCommand(SrvJob *job_in)
 
 static int AddMonitorClient(SrvJob *job)
 {
-  MonitorList *new = (MonitorList *)malloc(sizeof(MonitorList));
+  MonitorList *new;
+  MonitorList *curr;
+
+  for (curr=Monitors; curr; curr=curr->next)
+  {
+     if(job->h.addr == curr->addr && job->h.port == curr->port)
+	return(1);
+  }
+  new = (MonitorList *)malloc(sizeof(MonitorList));
   new->addr = job->h.addr;
   new->port = job->h.port;
   new->next = Monitors;
@@ -480,12 +488,14 @@ static int AddMonitorClient(SrvJob *job)
   return(1);
 }
 
+
 static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in)
 {
   int status;
   SrvMonitorJob *job = (SrvMonitorJob *)job_in;
   char msg[1024];
-  sprintf(msg,"%s %d %d %d %d %s",job->tree,job->shot,job->nid,job->on,job->mode,job->server);
+//  sprintf(msg,"%s %d %d %d %d %s",job->tree,job->shot,job->nid,job->on,job->mode,job->server);
+  sprintf(msg,"%s %d %d %d %d %d %s %d",job->tree,job->shot,job->phase,job->nid,job->on,job->mode,job->server,job->status);
   status = SendReply(job_in, SrvJobFINISHED,1,strlen(msg),msg);
   if (!(status & 1))
   {
@@ -500,8 +510,16 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in)
 static int SendToMonitors(SrvJob *job)
 {
   MonitorList *m,*prev;
+  int prev_addr = job->h.addr;
+  short prev_port = job->h.port;
   for (prev=0,m=Monitors; m; prev=m,m=m->next)
+  {
+    job->h.addr = m->addr;
+    job->h.port = m->port;
     SendToMonitor(m, prev, job);
+  }
+  job->h.addr = prev_addr;
+  job->h.port = prev_port;
   return 1;
 }
 

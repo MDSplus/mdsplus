@@ -116,6 +116,16 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
   int status = 0;
   int jobid;
 
+  static  int ssm_mutex_initialized = 0;
+  static  pthread_mutex_t ssm_mutex;
+
+  if(!ssm_mutex_initialized)
+  {
+	ssm_mutex_initialized = 1;
+	pthread_mutex_init(&ssm_mutex, pthread_mutexattr_default);
+  }
+  pthread_mutex_lock(&ssm_mutex);
+
   if (StartReceiver(&port) && ((sock = ServerConnect(server)) >= 0))
   {
     char cmd[] = "MdsServerShr->ServerQAction($,$,$,$,$,$,$,$,$,$,$,$,$)";
@@ -182,10 +192,13 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
     status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
     if (mem) free(mem);
   }
+
+  pthread_mutex_unlock(&ssm_mutex);
   return status;
 
  send_error:
   perror("Error sending message to server");
+  pthread_mutex_unlock(&ssm_mutex);
   CleanupJob(status,jobid);
   return status;
 }
