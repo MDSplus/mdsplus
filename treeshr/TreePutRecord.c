@@ -132,7 +132,8 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
         m1[0] = (unsigned int)time(NULL) - timezone;
 	LibEmul(m1,m2,zero,temp);
         AddQuadword(temp,addin,time_inserted);
-        memcpy(local_nci.time_inserted,time_inserted,sizeof(time_inserted));
+        local_nci.time_inserted[0] = swapint((char *)&time_inserted[0]);
+        local_nci.time_inserted[1] = swapint((char *)&time_inserted[1]);
       }
       if (!(open_status & 1))
       {
