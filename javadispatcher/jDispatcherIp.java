@@ -23,24 +23,28 @@ class jDispatcherIp extends MdsIp
     public MdsMessage handleMessage(MdsMessage [] messages)
     {
         int ris = -1;
-        if(messages.length < 8 || messages[2].dtype != Descriptor.DTYPE_SHORT 
+        String command  ="", compositeCommand;
+        try {
+            compositeCommand = new String(messages[0].body);
+            StringTokenizer st = new StringTokenizer(compositeCommand, "\"");
+            while(!(st.nextToken().equals("TCL")));
+            st.nextToken();
+            command = st.nextToken();
+        }catch (Exception exc)
+       /* if(messages.length < 8 || messages[2].dtype != Descriptor.DTYPE_SHORT 
             || messages[1].dtype != Descriptor.DTYPE_LONG || 
             messages[6].dtype != Descriptor.DTYPE_CSTRING ||
             messages[7].dtype != Descriptor.DTYPE_CSTRING
-            )
+            )*/
         {
-            System.err.println("Unexpected message has been received by jDispatcherIp");
+            System.err.println("Unexpected message has been received by jDispatcherIp: + compositeCommand");
         }
-        else
+        try {
+            ris = doCommand(command.toUpperCase());
+        }catch (Exception exc) 
         {
-            try {
-                String cli = messages[6].ToString();
-                ris = doCommand(messages[7].ToString().toUpperCase());
-            }catch (Exception exc) 
-            {
-                return new MdsMessage(exc.getMessage(), null);
-            } 
-        }
+            return new MdsMessage(exc.getMessage(), null);
+        } 
         if(ris < 0) //i.e. if any command except get current
         {
             MdsMessage msg =  new MdsMessage((byte)1);
