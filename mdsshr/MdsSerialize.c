@@ -468,8 +468,7 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
 	    {
 	    case 2: LoadShort(inp[0],out_ptr); break;
             case 4: LoadInt(inp[0],out_ptr); break;
-            case 8: LoadInt(inp[0],out_ptr);
-                    LoadInt(inp[4],out_ptr); break;
+            case 8: LoadQuad(inp[0],out_ptr); break;
             default: memcpy(out_ptr,inp, in_ptr->length); break;
 	    }
 	  }
@@ -601,9 +600,8 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
 	    {
   	      case 2:  for (i=0; i < inp->arsize; i += sizeof(short)) {LoadShort(inp2[i],out_ptr+i);}
                        break;
-              case 4:
-	      case 8:  for (i=0; i < inp->arsize; i += sizeof(int)) {LoadInt(inp2[i],out_ptr+i);}
-                       break;
+              case 4:  for (i=0; i < inp->arsize; i += sizeof(int)) {LoadInt(inp2[i],out_ptr+i);} break;
+	      case 8:  for (i=0; i < inp->arsize; i += in_ptr->length) {LoadQuad(inp2[i],out_ptr+i);} break;
               default: memcpy(out_ptr,inp2,inp->arsize);
             }
           }
