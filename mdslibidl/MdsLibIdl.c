@@ -232,11 +232,11 @@ int IdlMdsValue(int argc, void **argv)
 	case DTYPE_B:  strcpy((char *)argv[2],"if answer gt 127 then answer = fix(answer)-256");
         case DTYPE_BU: strcpy((char *)argv[1],"answer = 0b"); break; 
         case DTYPE_W: strcpy((char *)argv[1],"answer = 0"); break;
-        case DTYPE_WU: strcpy((char *)argv[1],"answer = 0U"); break;
+        case DTYPE_WU: strcpy((char *)argv[1],"answer = uint(0)"); break;
         case DTYPE_L:  strcpy((char *)argv[1],"answer = 0L"); break;
-        case DTYPE_LU: strcpy((char *)argv[1],"answer = 0UL"); break;
-        case DTYPE_Q:  strcpy((char *)argv[1],"answer = 0LL"); break;
-        case DTYPE_QU: strcpy((char *)argv[1],"answer = 0ULL"); break;
+        case DTYPE_LU: strcpy((char *)argv[1],"answer = ulong(0)"); break;
+        case DTYPE_Q:  strcpy((char *)argv[1],"answer = long64(0)"); break;
+        case DTYPE_QU: strcpy((char *)argv[1],"answer = ulong64(0)"); break;
         case DTYPE_FLOAT: strcpy((char *)argv[1],"answer = 0.0"); break;
         case DTYPE_DOUBLE: strcpy((char *)argv[1],"answer = double(0.0)"); break;
         case DTYPE_FLOAT_COMPLEX: strcpy((char *)argv[1],"answer = complex(0.0)"); break;
