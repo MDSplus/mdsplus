@@ -1,5 +1,7 @@
 public fun DevLogErr(in _nid, in _errmsg)
 {
+ 
+ 	public _last_device_error = _errmsg;
     write(*, _errmsg);
 
 	_server = getenv('error_server');
