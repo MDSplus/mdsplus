@@ -1,0 +1,9 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\MIT]
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\MIT\MDSplus]
+"main_path"="\\\\lost\\twf\\mdsplus\\trees"
+"subtree_path"="\\\\lost\\twf\\mdsplus\\trees\\subtree"
+"MDS_PATH"="\\\\lost\\twf\\mdsplus\\tdi"
+
