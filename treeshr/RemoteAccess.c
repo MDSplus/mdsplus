@@ -541,13 +541,21 @@ int PutRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor *dsc, i
   int status = MdsSerializeDscOut(dsc,&out);
   if (status & 1)
   {
-    struct descrip ans = empty_ans;
-    struct descrip data = {DTYPE_B,1,{0,0,0,0,0,0,0},1,0};
     char exp[512];
-    sprintf(exp,"TreePutRecord(%d, SerializeIn($), %d)",nid_in,utility_update);
-    data.dims[0] = ((struct descriptor_a *)out.pointer)->arsize;
-    data.ptr = out.pointer->pointer;
-    status = MdsValue1(dblist->tree_info->channel,exp,&data,&ans);
+    struct descrip ans = empty_ans;
+    if (out.pointer)
+    {
+      struct descrip data = {DTYPE_B,1,{0,0,0,0,0,0,0},1,0};
+      sprintf(exp,"TreePutRecord(%d, SerializeIn($), %d)",nid_in,utility_update);
+      data.dims[0] = ((struct descriptor_a *)out.pointer)->arsize;
+      data.ptr = out.pointer->pointer;
+      status = MdsValue1(dblist->tree_info->channel,exp,&data,&ans);
+    }
+    else
+    {
+      sprintf(exp,"TreePutRecord(%d, *, %d)",nid_in,utility_update);
+      status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+    }
     if (ans.ptr)
     {
       if (ans.dtype == DTYPE_L)
