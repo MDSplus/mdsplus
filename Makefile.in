@@ -20,9 +20,10 @@ PARTS = \
         mdstcpip \
         dwscope \
 	gen_device \
+	@CAMSHR@ \
+        remcam \
         mitdevices \
         mdslibidl \
-        remcam \
         cdu     \
         mdsdcl  \
         ccl     \

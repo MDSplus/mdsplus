@@ -57,6 +57,7 @@ LD_LDSHARE=""
 IDL_BIN_SUF=""
 MDSVME=""
 LOC="%loc"
+CAMSHR=""
 
 CFLAGS="$CFLAGS $MEMCHK -I\$(top_srcdir)/include"
 FFLAGS="$FFLAGS  -I\$(top_srcdir)/include"
@@ -181,6 +182,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        jni_md_inc_dir="/usr/include/java/`uname -m`";
        HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
 *86*linux*) CFLAGS="$CFLAGS -fpic";
+       CAMSHR="camshr";
        FFLAGS="$FFLAGS -fpic -Wno-globals -fno-backslash";
        IDL_BIN_SUF="linux.x86";
        LDSHARE="-Wl,-Bdynamic ";
@@ -200,6 +202,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *linux*) CFLAGS="$CFLAGS -fpic";
+       CAMSHR="camshr";
        FFLAGS="$FFLAGS -fpic -Wno-globals -fno-backslash";
        IDL_BIN_SUF="linux"
        LDSHARE="-Wl,-Bdynamic ";
@@ -475,6 +478,7 @@ AC_DEFINE_UNQUOTED(TARGET_VENDOR,${target_vendor})
 
 LIBS="$LIBPTHREAD $LIBS"
 
+AC_SUBST(CAMSHR)
 AC_SUBST(D3D_PACKAGE)
 AC_SUBST(D3DLIB)
 AC_SUBST(D3D_FFLAGS)
@@ -550,6 +554,7 @@ AC_SUBST(uiddir)
 AC_OUTPUT(Makefile
 envsyms
 actions/Makefile 
+camshr/Makefile
 ccl/Makefile 
 cdu/Makefile 
 cts/Makefile
