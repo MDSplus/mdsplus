@@ -79,7 +79,9 @@ struct descriptor_xd *getDeviceFields(char *deviceName)
 
 static void RaiseException(JNIEnv *env, char *msg)
 {
+
    jclass exc = (*env)->FindClass(env, "DatabaseException");
+	(*env)->ExceptionClear(env);
    (*env)->ThrowNew(env, exc, msg);
    /* //free(msg);*/
 }
@@ -371,6 +373,30 @@ JNIEXPORT jobject JNICALL Java_Database_evaluateData
 
 }
 
+JNIEXPORT jobject JNICALL Java_Database_evaluateSimpleData
+ (JNIEnv *env, jobject obj, jobject jdata, jint context)
+{
+	int nid, status;
+	jfieldID nid_fid;
+	jclass cls;
+	jobject ris;
+	EMPTYXD(xd);
+
+	struct descriptor *dsc = ObjectToDescrip(env, jdata);
+	status = TdiData(dsc, &xd MDS_END_ARG);
+	if(!(status & 1))
+    {
+		RaiseException(env, MdsGetMsg(status));
+		return NULL;
+    }
+	if(!xd.l_length || !xd.pointer)
+		return NULL;
+	ris = DescripToObject(env, xd.pointer);
+	MdsFree1Dx(&xd, NULL);
+	FreeDescrip(dsc);
+	return ris;
+}
+
 
 JNIEXPORT void JNICALL Java_Database_putData
   (JNIEnv *env, jobject obj, jobject jnid, jobject jdata, jint context)
@@ -387,11 +413,7 @@ JNIEXPORT void JNICALL Java_Database_putData
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
   dsc = ObjectToDescrip(env, jdata);
-  /*status = TdiDecompile(dsc, &xd MDS_END_ARG);
-printf("\ndopo di ObjTODesc %x %x %x %d\n", obj, dsc->pointer, xd.pointer, status);
-xd.pointer->pointer[xd.pointer->length - 1] = 0;
-printf(xd.pointer->pointer);
-  */  
+
   if(!dsc)
   {
     status = TreePutRecord(nid, (struct descriptor *)&xd, 0);
@@ -401,8 +423,9 @@ printf(xd.pointer->pointer);
       status = TreePutRecord(nid, dsc, 0);
       FreeDescrip(dsc);
     }
-  if(!(status & 1))
-      RaiseException(env, MdsGetMsg(status));
+	//printf("PUT RECORD: %s\n", MdsGetMsg(status));
+	if(!(status & 1))
+	    RaiseException(env, MdsGetMsg(status));
 }
 
 JNIEXPORT jobject JNICALL Java_Database_getInfo
@@ -633,60 +656,60 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getSons
 {
   
   int nid, status, i;
-  jfieldID nid_fid;
-  jobject jnids;
-  jclass cls = (*env)->GetObjectClass(env, jnid);
-  jmethodID constr;
-  jvalue args[1];
-  static int num_nids_len, num_nids, nids_len;
-  int *nids;
+	  jfieldID nid_fid;
+	  jobject jnids;
+	  jclass cls = (*env)->GetObjectClass(env, jnid);
+	  jmethodID constr;
+	  jvalue args[1];
+	  static int num_nids_len, num_nids, nids_len;
+	  int *nids;
 
 
 
-  struct nci_itm nci_list1[] = 
-  {{4, NciNUMBER_OF_CHILDREN, &num_nids, &num_nids_len},
-   {NciEND_OF_LIST, 0, 0, 0}},
+	  struct nci_itm nci_list1[] = 
+	  {{4, NciNUMBER_OF_CHILDREN, &num_nids, &num_nids_len},
+	   {NciEND_OF_LIST, 0, 0, 0}},
 
-  nci_list2[] = 
-  {{0, NciCHILDREN_NIDS, 0, &nids_len},
-   {NciEND_OF_LIST, 0, 0, 0}};
+	  nci_list2[] = 
+	  {{0, NciCHILDREN_NIDS, 0, &nids_len},
+	   {NciEND_OF_LIST, 0, 0, 0}};
 
-/* //printf("\nStart getSons");*/
+	/* //printf("\nStart getSons");*/
   
-  nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
-  nid = (*env)->GetIntField(env, jnid, nid_fid);
-  status = TreeGetNci(nid, nci_list1);
-  if(!(status & 1))
-    {
-      RaiseException(env, MdsGetMsg(status));
-      return NULL;
-    }
+	  nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+	  nid = (*env)->GetIntField(env, jnid, nid_fid);
+	  status = TreeGetNci(nid, nci_list1);
+	  if(!(status & 1))
+		{
+		  RaiseException(env, MdsGetMsg(status));
+		  return NULL;
+		}
    
-  if(num_nids > 0)
-  {
-	nids = (int *)malloc(num_nids * sizeof(nid));
-	nci_list2[0].buffer_length = sizeof(int) * num_nids;
-	nci_list2[0].pointer = nids;
-	status = TreeGetNci(nid, nci_list2);
-	if(!(status & 1))
-    {
-      RaiseException(env, MdsGetMsg(status));
-      return NULL;
-    }
-  } 
-  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
-  jnids = (*env)->NewObjectArray(env, num_nids, cls, 0);
-  for(i = 0; i < num_nids; i++)
-    {
-      args[0].i = nids[i];
-      jnid = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-      (*env)->SetObjectArrayElement(env, jnids, i, jnid);
-    }
-  if(num_nids > 0)
-	free((char *)nids);
-/*
-//printf("\nEnd getSons"); */
-  return jnids;
+	  if(num_nids > 0)
+	  {
+		nids = (int *)malloc(num_nids * sizeof(nid));
+		nci_list2[0].buffer_length = sizeof(int) * num_nids;
+		nci_list2[0].pointer = nids;
+		status = TreeGetNci(nid, nci_list2);
+		if(!(status & 1))
+		{
+		  RaiseException(env, MdsGetMsg(status));
+		  return NULL;
+		}
+	  } 
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
+	  jnids = (*env)->NewObjectArray(env, num_nids, cls, 0);
+	  for(i = 0; i < num_nids; i++)
+		{
+		  args[0].i = nids[i];
+		  jnid = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		  (*env)->SetObjectArrayElement(env, jnids, i, jnid);
+		}
+	  if(num_nids > 0)
+		free((char *)nids);
+	/*
+	//printf("\nEnd getSons"); */
+	  return jnids;
 }
 
 #define MAX_NODES 5000

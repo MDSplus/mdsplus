@@ -35,13 +35,10 @@ JNIEXPORT void JNICALL Java_MdsHelper_generateEvent
 	const char *event = (*env)->GetStringUTFChars(env, jevent, 0);
 
 	int shot = jshot;
-
-	MDSEvent((char *)event, sizeof(int), (char *)&shot);
+	if(strlen(event) > 0)
+		MDSEvent((char *)event, sizeof(int), (char *)&shot);
 
     (*env)->ReleaseStringUTFChars(env, jevent, event);
-
- 
-
 }
 
 
@@ -339,11 +336,11 @@ JNIEXPORT jfloatArray JNICALL Java_LocalDataProvider_GetFloatArrayNative(JNIEnv 
     const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
     int dim;
     float *out_ptr;
-
-
     out_ptr = MdsGetArray((char *)in_char, &dim, 1, 0);
 
     (*env)->ReleaseStringUTFChars(env, in, in_char);
+
+
 
     if(error_message[0]) /*Return a dummy vector without elements*/
     {
@@ -632,5 +629,3 @@ void showWindow(int obj_idx, int x, int y, int width, int height)
     (*env)->CallVoidMethod(env, jobj, mid, x,y,width,height);
 }
 
-
- 

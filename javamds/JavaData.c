@@ -153,108 +153,117 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
       switch(desc->dtype) {
         case DTYPE_BU: is_unsigned =1;
         case DTYPE_B : 
-	  cls = (*env)->FindClass(env, "ByteData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(BZ)LData;");
-	  args[0].b = *(char *)desc->pointer;
-	  args[1].z = is_unsigned;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		  cls = (*env)->FindClass(env, "ByteData");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(BZ)LData;");
+		  args[0].b = *(char *)desc->pointer;
+		  args[1].z = is_unsigned;
+		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_WU: is_unsigned =1;
         case DTYPE_W : 
-	  cls = (*env)->FindClass(env, "ShortData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(SZ)LData;");
-	  args[0].s = *(short *)desc->pointer;
-	  args[1].z = is_unsigned;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		  cls = (*env)->FindClass(env, "ShortData");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(SZ)LData;");
+		  args[0].s = *(short *)desc->pointer;
+		  args[1].z = is_unsigned;
+		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_LU: is_unsigned =1;
         case DTYPE_L : 
-	  cls = (*env)->FindClass(env, "IntData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(IZ)LData;");
-	  args[0].i = *(int *)desc->pointer;
-	  args[1].z = is_unsigned;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		  cls = (*env)->FindClass(env, "IntData");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(IZ)LData;");
+		  args[0].i = *(int *)desc->pointer;
+		  args[1].z = is_unsigned;
+		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_NID : 
-	  cls = (*env)->FindClass(env, "NidData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
-	  args[0].i = *(int *)desc->pointer;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		  cls = (*env)->FindClass(env, "NidData");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
+		  args[0].i = *(int *)desc->pointer;
+		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_QU: is_unsigned =1;
         case DTYPE_Q : 
-	  cls = (*env)->FindClass(env, "QuadData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(JZ)LData;");
-	  args[0].j = *(long *)desc->pointer;
-	  args[1].z = is_unsigned;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		  cls = (*env)->FindClass(env, "QuadData");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(JZ)LData;");
+		  args[0].j = *(long *)desc->pointer;
+		  args[1].z = is_unsigned;
+		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_OU: is_unsigned =1;
         case DTYPE_O : 
-	  cls = (*env)->FindClass(env, "OctaData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([JZ)LData;");
-	  jlongs = (*env)->NewLongArray(env, 2);
-	  (*env)->SetLongArrayRegion(env, jlongs, 0, 2, (jlong *)desc->pointer);
-	  args[0].l = jlongs;
-	  args[1].z = is_unsigned;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		  cls = (*env)->FindClass(env, "OctaData");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([JZ)LData;");
+		  jlongs = (*env)->NewLongArray(env, 2);
+		  (*env)->SetLongArrayRegion(env, jlongs, 0, 2, (jlong *)desc->pointer);
+		  args[0].l = jlongs;
+		  args[1].z = is_unsigned;
+		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_FS :
         case DTYPE_F:
-	  cls = (*env)->FindClass(env, "FloatData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(F)LData;");
-	  if(desc->dtype == DTYPE_F)
-	      CvtConvertFloat(desc->pointer, DTYPE_F, &args[0].f, DTYPE_FS, 0);
-	  else
-	    args[0].f = *(float *)desc->pointer;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		  cls = (*env)->FindClass(env, "FloatData");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(F)LData;");
+		  if(desc->dtype == DTYPE_F)
+			  CvtConvertFloat(desc->pointer, DTYPE_F, &args[0].f, DTYPE_FS, 0);
+		  else
+			args[0].f = *(float *)desc->pointer;
+		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_DOUBLE : 
-	  cls = (*env)->FindClass(env, "DoubleData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(D)LData;");
-	  args[0].d = *(float *)desc->pointer;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		  cls = (*env)->FindClass(env, "DoubleData");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(D)LData;");
+		  args[0].d = *(float *)desc->pointer;
+		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_T :
-	  cls = (*env)->FindClass(env, "StringData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(Ljava/lang/String;)LData;");
-	  buf = (char *)malloc(desc->length+1);
-	  memcpy(buf, desc->pointer, desc->length);
-	  buf[desc->length] = 0;
-	  args[0].l = (*env)->NewStringUTF(env, buf);
-	  free(buf);
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		  cls = (*env)->FindClass(env, "StringData");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(Ljava/lang/String;)LData;");
+		  buf = (char *)malloc(desc->length+1);
+		  memcpy(buf, desc->pointer, desc->length);
+		  buf[desc->length] = 0;
+		  args[0].l = (*env)->NewStringUTF(env, buf);
+		  free(buf);
+		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+        case DTYPE_IDENT :
+		  cls = (*env)->FindClass(env, "IdentData");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(Ljava/lang/String;)LData;");
+		  buf = (char *)malloc(desc->length+1);
+		  memcpy(buf, desc->pointer, desc->length);
+		  buf[desc->length] = 0;
+		  args[0].l = (*env)->NewStringUTF(env, buf);
+		  free(buf);
+		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_PATH :
-	  cls = (*env)->FindClass(env, "PathData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(Ljava/lang/String;)LData;");
-	  buf = (char *)malloc(desc->length+1);
-	  memcpy(buf, desc->pointer, desc->length);
-	  buf[desc->length] = 0;
-	  args[0].l = (*env)->NewStringUTF(env, buf);
-	  free(buf);
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		  cls = (*env)->FindClass(env, "PathData");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(Ljava/lang/String;)LData;");
+		  buf = (char *)malloc(desc->length+1);
+		  memcpy(buf, desc->pointer, desc->length);
+		  buf[desc->length] = 0;
+		  args[0].l = (*env)->NewStringUTF(env, buf);
+		  free(buf);
+		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_EVENT :
-	  cls = (*env)->FindClass(env, "EventData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(Ljava/lang/String;)LData;");
-	  buf = (char *)malloc(desc->length+1);
-	  memcpy(buf, desc->pointer, desc->length);
-	  buf[desc->length] = 0;
-	  args[0].l = (*env)->NewStringUTF(env, buf);
-	  free(buf);
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-	  
+		  cls = (*env)->FindClass(env, "EventData");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(Ljava/lang/String;)LData;");
+		  buf = (char *)malloc(desc->length+1);
+		  memcpy(buf, desc->pointer, desc->length);
+		  buf[desc->length] = 0;
+		  args[0].l = (*env)->NewStringUTF(env, buf);
+		  free(buf);
+		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		  
         default: 
-	  sprintf(message, "Datatype %d not supported for class CLASS_S", desc->dtype);
-	  exc = (*env)->FindClass(env, "UnsupportedDataException");
-	  (*env)->ThrowNew(env, exc, message);
-      }
-	  case CLASS_CA: 
+		  sprintf(message, "Datatype %d not supported for class CLASS_S", desc->dtype);
+		  exc = (*env)->FindClass(env, "UnsupportedDataException");
+		  (*env)->ThrowNew(env, exc, message);
+		  }
+		  case CLASS_CA: 
 
-		status = TdiData(desc, &ca_xd MDS_END_ARG);
+			status = TdiData(desc, &ca_xd MDS_END_ARG);
 
-		if(!(status & 1)) 
+			if(!(status & 1)) 
 
-		{
+			{
 
-			printf("Cannot evaluate CA descriptor\n");
+				printf("Cannot evaluate CA descriptor\n");
 
-			return NULL;
+				return NULL;
 
-		}
+			}
 
-		is_ca = 1;
+			is_ca = 1;
 	  case CLASS_A:
 
 		if(is_ca)
@@ -465,6 +474,8 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 	args[0].l = jobjects;
 	return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
   }
+
+
   return 0;
 }
 
@@ -586,6 +597,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	  case DTYPE_T:
 	  case DTYPE_PATH:
 	  case DTYPE_EVENT:
+	  case DTYPE_IDENT:
 	    datum_fid = (*env)->GetFieldID(env, cls, "datum", "Ljava/lang/String;");
 	    java_string =(*env)->GetObjectField(env, obj, datum_fid);
 	    string = (*env)->GetStringUTFChars(env, java_string, 0);
