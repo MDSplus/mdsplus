@@ -99,7 +99,7 @@ install:
 	$(JAR) c0f $@ *.class
 
 jScope.class: 	$(SOURCES)
-	$(JAVAC) -g  -classpath .:$(top_srcdir)/javascope/MindTerm.jar jScope.java *BrowseSignals.java *DataProvider.java *Listener.java WaveformEditor.java
+	$(JAVAC) -g  -classpath .:$(top_srcdir)/javascope/MindTerm.jar $(SOURCES) 
 
 CompositeWaveDisplay.class: 	$(SOURCES)
 	$(JAVAC) -g  -classpath .:$(top_srcdir)/javascope/MindTerm.jar CompositeWaveDisplay.java
