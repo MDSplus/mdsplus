@@ -505,11 +505,11 @@ int main(int argc, char **argv)
 #endif
   MdsSetServerPortname(Portname);
   if (IsService)
-    InitializeService();
-  else
   {
-    switch (mode)
-    {
+    InitializeService();
+  }
+  switch (mode)
+  {
     case 0:     ContextSwitching = 0; multi = 0; break;
     case 'I':   ContextSwitching = 0; multi = 0; break;
     case 'm':   ContextSwitching = 1; multi = 1; break;
@@ -521,7 +521,6 @@ int main(int argc, char **argv)
 #ifndef HAVE_VXWORKS_H
     case 'w':   StartWorker(argv); break;
 #endif
-    }
   }
   if (multi || IsService || mode == 'I')
   {
@@ -747,7 +746,7 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
     m_status = m.h.status = (ok & 1) ? (1 | (user_compression_level << 1)) : 0;
     m.h.client_type = m_user ? m_user->h.client_type : 0; 
     if (m_user)
-      free(m_user);
+      MdsIpFree(m_user);
     if ((ok & 1) && mode == 'I' && pid == getpid())
       return;
     SetSocketOptions(sock);
