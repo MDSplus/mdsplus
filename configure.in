@@ -151,7 +151,7 @@ AC_CHECK_LIB(dld,shl_load,LIBDLD="-ldld",LIBDLD="")
 AC_CHECK_LIB(c,gethostbyname,LIBNSL="",AC_CHECK_LIB(socket,gethostbyname,LIBNSL="-lsocket",AC_CHECK_LIB(nsl,gethostbyname,LIBNSL="-lnsl",LIBNSL="")))
 AC_CHECK_LIB(c,socket,LIBSOCKET="",AC_CHECK_LIB(socket,socket,LIBSOCKET="-lsocket",LIBSOCKET=""))
 AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
-AC_CHECK_LIB(pthread,pthread_kill,LIBPTHREAD="-lpthread",AC_CHECK_LIB(cma,pthread_kill,LIBPTHREAD="-lcma",LIBPTHREAD=""))
+AC_CHECK_LIB(pthread,pthread_kill,LIBPTHREAD="-lpthread",AC_CHECK_LIB(cma,pthread_create,LIBPTHREAD="-lcma",LIBPTHREAD=""))
 
 if test "$enable_d3d" = yes -o "$enable_d3d" = on ; then
   AC_MSG_CHECKING(...D3DLIB_PATH...)
