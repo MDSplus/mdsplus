@@ -1,5 +1,6 @@
 procedure
 	XmdsCreateExprField;
+	XmdsCreateExpr;
 	XmdsCreateDigChans;
 	XmdsCreateXdBoxOnOffButton;
 	XmdsCreateOkButton;
@@ -9,6 +10,9 @@ procedure
         XmdsCreateXdBoxDialogButton;
         XmdsCreateNidOptionMenu;
         XmdsCreateOnOffToggleButton;
+        XmdsCreatePath;
+        XmdsCreateWaveform;
+        XmdsCreateWavedraw;
 
 value
 	XmdsNnid : argument("nid",integer);
@@ -24,3 +28,33 @@ value
         XmdsNvalueStrings : argument("valueStrings",string_table);
         XmdsNputOnApply : argument("putOnApply",boolean);
         XmdsNshowPath : argument("showPath",boolean);
+        XmdsNpathType : argument("pathType",integer);
+        NciABSOLUTE_PATH : 0;
+        NciRELATIVE_PATH : 1;
+        XmdsPOINTER_MODE_USER : 0;
+        XmdsPOINTER_MODE_NONE : 1;
+        XmdsPOINTER_MODE_POINT : 2;
+        XmdsPOINTER_MODE_ZOOM : 3;
+        XmdsPOINTER_MODE_DRAG : 4;
+        XmdsPOINTER_MODE_EDIT : 5;
+        XmdsPOINTER_MODE_DRAW1 : 6;
+        XmdsPOINTER_MODE_DRAW2 : 7;
+        XmdsPOINTER_MODE_SET_PEN : 8;
+        XmdsPOINTER_MODE_SLIDE_STRETCH : 9;
+        XmdsNpointerMode : argument("pointerMode",integer);
+        XmdsNattachCrosshairs : argument("attachCrosshairs",boolean);
+        XmdsNcrosshairsCallback : reason("crosshairsCallback");
+        XmdsNalignCallback : reason("alignCallback");
+        XmdsNcutCallback : reason("cutCallback");
+        XmdsNpasteCallback : reason("pasteCallback");
+        XmdsNdeletePointCallback : reason("deletePointCallback");
+        XmdsNaddPointCallback : reason("addPointCallback");
+        XmdsNfitCallback : reason("fitCallback");
+        XmdsNlimitsCallback : reason("limitsCallback");
+        XmdsNmoveCallback : reason("moveCallback");
+        XmdsNxIncreasing : argument("xIncreasing",boolean);
+        XmdsNshowSelections : argument("showSelections",boolean);
+        XmdsNshowMode : argument("showMode",integer);
+        XmdsSHOW_MODE_LINE : 0;
+        XmdsSHOW_MODE_POINTER : 1;
+        XmdsSHOW_MODE_BOTH : 2;

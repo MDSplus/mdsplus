@@ -3,6 +3,8 @@ module hm650
     version = 
     "v1.0"
 
+include file "XmdsWidgets.uil";
+
 object
     HM650: XmBulletinBoardDialog 
         {
@@ -26,7 +28,7 @@ object
                     XmNy = 10;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -52,7 +54,7 @@ object
                     XmNy = 40;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -78,7 +80,7 @@ object
                     XmNy = 80;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -91,7 +93,7 @@ object
                     XmNy = 114;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -103,7 +105,7 @@ object
                     XmdsNnidOffset = HM650$N_INIT_ACTION;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -111,7 +113,7 @@ object
                     XmNy = 440;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -119,7 +121,7 @@ object
                     XmNy = 441;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -127,7 +129,7 @@ object
                     XmNy = 442;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -147,7 +149,7 @@ object
                     XmNy = 79;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -160,7 +162,7 @@ object
                     XmNy = 148;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -173,7 +175,7 @@ object
                     XmNy = 179;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -186,7 +188,7 @@ object
                     XmNy = 214;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -199,7 +201,7 @@ object
                     XmNy = 246;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -212,7 +214,7 @@ object
                     XmNy = 279;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -225,7 +227,7 @@ object
                     XmNy = 315;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -338,7 +340,7 @@ object
                     XmNy = 78;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -351,7 +353,7 @@ object
                     XmNy = 114;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -364,7 +366,7 @@ object
                     XmNy = 148;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -377,7 +379,7 @@ object
                     XmNy = 179;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -390,7 +392,7 @@ object
                     XmNy = 214;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -403,7 +405,7 @@ object
                     XmNy = 246;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -416,7 +418,7 @@ object
                     XmNy = 279;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -429,7 +431,7 @@ object
                     XmNy = 315;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -452,7 +454,7 @@ object
                     compound_string("Threshold:");
                     };
                 };
-            XmdsExpr 
+            user_defined procedure XmdsCreateExpr 
                 {
                 arguments
                     {
@@ -465,7 +467,7 @@ object
                     XmdsNnidOffset = HM650$N_THRESHOLD;
                     };
                 };
-            XmdsPath 
+            user_defined procedure XmdsCreatePath 
                 {
                 arguments
                     {
@@ -476,7 +478,7 @@ object
                     XmdsNpathType = NciRELATIVE_PATH;
                     };
                 };
-            XmdsPath 
+            user_defined procedure XmdsCreatePath 
                 {
                 arguments
                     {
@@ -487,7 +489,7 @@ object
                     XmdsNpathType = NciRELATIVE_PATH;
                     };
                 };
-            XmdsPath 
+            user_defined procedure XmdsCreatePath 
                 {
                 arguments
                     {
@@ -498,7 +500,7 @@ object
                     XmdsNpathType = NciRELATIVE_PATH;
                     };
                 };
-            XmdsPath 
+            user_defined procedure XmdsCreatePath 
                 {
                 arguments
                     {
@@ -509,7 +511,7 @@ object
                     XmdsNpathType = NciRELATIVE_PATH;
                     };
                 };
-            XmdsPath 
+            user_defined procedure XmdsCreatePath 
                 {
                 arguments
                     {
@@ -520,7 +522,7 @@ object
                     XmdsNpathType = NciRELATIVE_PATH;
                     };
                 };
-            XmdsPath 
+            user_defined procedure XmdsCreatePath 
                 {
                 arguments
                     {
@@ -531,7 +533,7 @@ object
                     XmdsNpathType = NciRELATIVE_PATH;
                     };
                 };
-            XmdsPath 
+            user_defined procedure XmdsCreatePath 
                 {
                 arguments
                     {
@@ -542,7 +544,7 @@ object
                     XmdsNpathType = NciRELATIVE_PATH;
                     };
                 };
-            XmdsPath 
+            user_defined procedure XmdsCreatePath 
                 {
                 arguments
                     {

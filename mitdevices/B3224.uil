@@ -1,6 +1,8 @@
 module B3224_UIL
     names = case_sensitive
 
+include file "XmdsWidgets.uil";
+
 value
     B3224$N_NAME: 1;
     B3224$N_COMMENT: 2;
@@ -32,7 +34,7 @@ object
                     compound_string("CAMAC Name:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -57,7 +59,7 @@ object
                     compound_string("Comment:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -82,7 +84,7 @@ object
                     compound_string("Output 1:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -105,7 +107,7 @@ object
                     compound_string("Output 2:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -118,7 +120,7 @@ object
                     XmdsNnidOffset = B3224$N_OUTPUT_2;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -130,7 +132,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -138,7 +140,7 @@ object
                     XmNy = 175;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -146,7 +148,7 @@ object
                     XmNy = 175;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -154,7 +156,7 @@ object
                     XmNy = 175;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {

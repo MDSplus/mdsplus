@@ -3,6 +3,8 @@ module fera
     version = 
     "v1.0"
 
+include file "XmdsWidgets.uil";
+
 object
     FERA: XmBulletinBoardDialog 
         {
@@ -26,7 +28,7 @@ object
                     XmNy = 91;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -51,7 +53,7 @@ object
                     XmNy = 15;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -76,7 +78,7 @@ object
                     XmNy = 60;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -89,7 +91,7 @@ object
                     XmNy = 51;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -101,7 +103,7 @@ object
                     XmdsNnidOffset = FERA$N_INIT_ACTION;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -113,7 +115,7 @@ object
                     XmdsNnidOffset = FERA$N_STORE_ACTION;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -121,7 +123,7 @@ object
                     XmNy = 246;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -129,7 +131,7 @@ object
                     XmNy = 246;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -137,7 +139,7 @@ object
                     XmNy = 246;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -165,7 +167,7 @@ object
                     XmNy = 87;
                     };
                 };
-            XmdsExpr 
+            user_defined procedure XmdsCreateExpr 
                 {
                 arguments
                     {
@@ -182,7 +184,7 @@ object
                     XmNeditMode = XmMULTI_LINE_EDIT;
                     };
                 };
-            XmdsExpr 
+            user_defined procedure XmdsCreateExpr 
                 {
                 arguments
                     {

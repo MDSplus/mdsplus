@@ -3,6 +3,8 @@ module hv1440
     version = 
     "v1.0"
 
+include file "XmdsWidgets.uil";
+
 object
     HV1440: XmBulletinBoardDialog 
         {
@@ -27,7 +29,7 @@ object
                     XmNy = 10;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -52,7 +54,7 @@ object
                     XmNy = 44;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -67,7 +69,7 @@ object
                     XmNy = 45;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -79,7 +81,7 @@ object
                     XmdsNnidOffset = HV1440$N_ON_ACTION;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -87,7 +89,7 @@ object
                     XmNy = 450;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -95,7 +97,7 @@ object
                     XmNy = 450;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -103,7 +105,7 @@ object
                     XmNy = 450;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -113,7 +115,7 @@ object
                     compound_string("Cancel");
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -125,7 +127,7 @@ object
                     XmdsNnidOffset = HV1440$N_OFF_ACTION;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -137,7 +139,7 @@ object
                     XmdsNnidOffset = HV1440$N_INIT_ACTION;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -199,7 +201,7 @@ object
                     compound_string(" 1 ");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -224,7 +226,7 @@ object
                     compound_string(" 5 ");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -249,7 +251,7 @@ object
                     compound_string(" 2 ");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -274,7 +276,7 @@ object
                     compound_string(" 6 ");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -299,7 +301,7 @@ object
                     compound_string(" 3 ");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -324,7 +326,7 @@ object
                     compound_string(" 7 ");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -349,7 +351,7 @@ object
                     compound_string(" 4 ");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -374,7 +376,7 @@ object
                     compound_string(" 8 ");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -399,7 +401,7 @@ object
                     compound_string("Readout:");
                     };
                 };
-            XmdsPath 
+            user_defined procedure XmdsCreatePath 
                 {
                 arguments
                     {
@@ -492,7 +494,7 @@ object
                     compound_string("16");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -507,7 +509,7 @@ object
                     XmdsNputOnApply = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -522,7 +524,7 @@ object
                     XmdsNputOnApply = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -537,7 +539,7 @@ object
                     XmdsNputOnApply = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -552,7 +554,7 @@ object
                     XmdsNputOnApply = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -567,7 +569,7 @@ object
                     XmdsNputOnApply = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -582,7 +584,7 @@ object
                     XmdsNputOnApply = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -597,7 +599,7 @@ object
                     XmdsNputOnApply = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -612,7 +614,7 @@ object
                     XmdsNputOnApply = true;
                     };
                 };
-            XmdsNidOptionMenu 
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -707,7 +709,7 @@ object
                     compound_string("Range:");
                     };
                 };
-            XmdsNidOptionMenu 
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {

@@ -10,6 +10,8 @@ module b5910a
         XmToggleButton = gadget;
         }
 
+include file "XmdsWidgets.uil";
+
 object
     B5910A: XmBulletinBoardDialog 
         {
@@ -32,7 +34,7 @@ object
                     compound_string("CAMAC name:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -54,7 +56,7 @@ object
                     XmNy = 40;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -77,7 +79,7 @@ object
                     XmNy = 70;
                     };
                 };
-            XmdsExprField trigger;
+            user_defined trigger;
             XmLabel 
                 {
                 arguments
@@ -88,8 +90,8 @@ object
                     XmNy = 100;
                     };
                 };
-            XmdsExprField samples;
-            XmdsNidOptionMenu 
+            user_defined samples;
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -113,7 +115,7 @@ object
                     XmNy = 130;
                     };
                 };
-            XmdsNidOptionMenu 
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -189,7 +191,7 @@ object
                     XmNy = 162;
                     };
                 };
-            XmdsNidOptionMenu clock;
+            user_defined clock;
             XmPushButton 
                 {
                 arguments
@@ -236,8 +238,8 @@ object
                                     compound_string("1");
                                     };
                                 };
-                            XmdsXdBoxDialogButton xd1;
-                            XmdsPath 
+                            user_defined xd1;
+                            user_defined procedure XmdsCreatePath 
                                 {
                                 arguments
                                     {
@@ -265,8 +267,8 @@ object
                                     compound_string("2");
                                     };
                                 };
-                            XmdsXdBoxDialogButton xd2;
-                            XmdsPath 
+                            user_defined xd2;
+                            user_defined procedure XmdsCreatePath 
                                 {
                                 arguments
                                     {
@@ -294,8 +296,8 @@ object
                                     compound_string("3");
                                     };
                                 };
-                            XmdsXdBoxDialogButton xd3;
-                            XmdsPath 
+                            user_defined xd3;
+                            user_defined procedure XmdsCreatePath 
                                 {
                                 arguments
                                     {
@@ -323,8 +325,8 @@ object
                                     compound_string("4");
                                     };
                                 };
-                            XmdsXdBoxDialogButton xd4;
-                            XmdsPath 
+                            user_defined xd4;
+                            user_defined procedure XmdsCreatePath 
                                 {
                                 arguments
                                     {
@@ -337,7 +339,7 @@ object
                         };
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -349,7 +351,7 @@ object
                     XmNy = 350;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -357,7 +359,7 @@ object
                     XmNy = 390;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -365,7 +367,7 @@ object
                     XmNy = 390;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -401,7 +403,7 @@ object
                     XmNy = 169;
                     };
                 };
-            XmdsExprField ext_clock;
+            user_defined ext_clock;
             };
         };
     draw_popup: XmFormDialog 
@@ -603,7 +605,7 @@ object
             };
         controls
             {
-            XmdsWavedraw s1;
+            user_defined s1;
             XmBulletinBoard 
                 {
                 arguments
@@ -668,7 +670,7 @@ object
 
                     };
                 };
-            XmdsWavedraw s2;
+            user_defined s2;
             XmBulletinBoard 
                 {
                 arguments
@@ -734,7 +736,7 @@ object
 
                     };
                 };
-            XmdsWavedraw s3;
+            user_defined s3;
             XmBulletinBoard 
                 {
                 arguments
@@ -800,7 +802,7 @@ object
 
                     };
                 };
-            XmdsWavedraw s4;
+            user_defined s4;
             XmBulletinBoard 
                 {
                 arguments
@@ -931,7 +933,7 @@ object
                 };
             };
         };
-    trigger: XmdsExprField 
+    trigger: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -943,7 +945,7 @@ object
             XmNy = 70;
             };
         };
-    samples: XmdsExprField 
+    samples: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -955,7 +957,7 @@ object
             XmNmarginHeight = 1;
             };
         };
-    clock: XmdsNidOptionMenu 
+    clock: user_defined procedure XmdsCreateNidOptionMenu 
         {
         arguments
             {
@@ -1003,7 +1005,7 @@ object
                 compound_string(""));
             };
         };
-    xd1: XmdsXdBoxDialogButton 
+    xd1: user_defined procedure XmdsCreateXdBoxDialogButton 
         {
         arguments
             {
@@ -1013,7 +1015,7 @@ object
             XmdsNnidOffset = B5910A$N_CHANNELS+B5910A$K_NODES_PER_CHANNEL*0+B5910A$N_CHAN_PROGRAMMING;
             };
         };
-    xd2: XmdsXdBoxDialogButton 
+    xd2: user_defined procedure XmdsCreateXdBoxDialogButton 
         {
         arguments
             {
@@ -1023,7 +1025,7 @@ object
             XmdsNnidOffset = B5910A$N_CHANNELS+B5910A$K_NODES_PER_CHANNEL*1+B5910A$N_CHAN_PROGRAMMING;
             };
         };
-    xd3: XmdsXdBoxDialogButton 
+    xd3: user_defined procedure XmdsCreateXdBoxDialogButton 
         {
         arguments
             {
@@ -1033,7 +1035,7 @@ object
             XmdsNnidOffset = B5910A$N_CHANNELS+B5910A$K_NODES_PER_CHANNEL*2+B5910A$N_CHAN_PROGRAMMING;
             };
         };
-    xd4: XmdsXdBoxDialogButton 
+    xd4: user_defined procedure XmdsCreateXdBoxDialogButton 
         {
         arguments
             {
@@ -1163,7 +1165,7 @@ object
                 };
             };
         };
-    s1: XmdsWavedraw 
+    s1: user_defined procedure XmdsCreateWavedraw 
         {
         arguments
             {
@@ -1175,7 +1177,7 @@ object
             callbacks waveform_callbacks;
             };
         };
-    s2: XmdsWavedraw 
+    s2: user_defined procedure XmdsCreateWavedraw 
         {
         arguments
             {
@@ -1187,7 +1189,7 @@ object
             callbacks waveform_callbacks;
             };
         };
-    s3: XmdsWavedraw 
+    s3: user_defined procedure XmdsCreateWavedraw 
         {
         arguments
             {
@@ -1199,7 +1201,7 @@ object
             callbacks waveform_callbacks;
             };
         };
-    s4: XmdsWavedraw 
+    s4: user_defined procedure XmdsCreateWavedraw 
         {
         arguments
             {
@@ -1274,7 +1276,7 @@ object
             XmNrecomputeSize = false;
             };
         };
-    ext_clock: XmdsExprField 
+    ext_clock: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
