@@ -97,13 +97,16 @@ typedef enum {on_off, rename_node, delete, new, tree, set_def} NodeTouchType;
 
 static char *get_node_name(int nid)
 {
+    char *name;
     char *ans;
+    int def_nid;
+    int status;
     static int c_nid;
     static DESCRIPTOR_NID(nid_dsc, &c_nid);
-    static char *getnci = 
-      "TRIM(GETNCI($1, 'NODE_NAME'))//(((GETNCI($1, 'NUMBER_OF_CHILDREN')+GETNCI($1, 'NUMBER_OF_MEMBERS')) > 0) ? '...' : '')";
+    static char *getnci = "TRIM((GETNCI($1, 'IS_CHILD') ? '.' : '')//GETNCI($1, 'NODE_NAME'))//(((GETNCI($1, 'NUMBER_OF_CHILDREN')+GETNCI($1, 'NUMBER_OF_MEMBERS')) > 0) ? '...' : '')";
     c_nid = nid;
-    return ReadString(getnci, &nid_dsc MDS_END_ARG);
+    name=ReadString(getnci, &nid_dsc MDS_END_ARG);
+    return name;
 }
 
 static void set_name(ListTreeItem *item, char *name)
@@ -273,7 +276,10 @@ static ListTreeItem *add_item(Widget tree, ListTreeItem *parent,int nid)
     item->user_data = (XtPointer)malloc(sizeof(struct node));
     set_nid(item, nid);
     set_name(item, name);
-    set_populated(item, 0);
+    if (name[strlen(name)-1] == '.')
+      set_populated(item, 0);
+    else
+      set_populated(item, 1);
     usage = ReadInt(get_usage, &nid_dsc MDS_END_ARG);
     set_usage(item, usage);
     FixPixMap(tree, item);
@@ -317,21 +323,36 @@ void add_descendents(Widget tree, ListTreeItem *item, int nid)
 static ListTreeItem *insert_item(Widget tree, ListTreeItem *parent,int nid)
   {
     ListTreeItem *itm;
-    if (!is_populated(parent)) {
-      static int c_nid;
-      static DESCRIPTOR_NID(nid_dsc, &c_nid);
-      static char *get_nci = "GETNCI($, \"NODE_NAME\")";
-      char *node_name =  ReadString(get_nci, &nid_dsc MDS_END_ARG);
-      ListTreeRefreshOff(tree);
-      add_descendents(tree, parent, get_nid(parent));
-      ListTreeRefreshOn(tree);
-      itm = ListTreeFindChildName(tree, parent, node_name);
-    }else{
-       itm = add_item(tree, parent, nid);
-       ListTreeOrderChildren(tree, parent);
+    char *node_name=get_node_name(nid);
+    itm = ListTreeFindChildName(tree, parent, node_name);
+    if (itm == NULL) {
+      if (!is_populated(parent)) {
+        ListTreeRefreshOff(tree);
+	add_descendents(tree, parent, get_nid(parent));
+	ListTreeRefreshOn(tree);
+	itm = ListTreeFindChildName(tree, parent, node_name);
+      }else{
+	itm = add_item(tree, parent, nid);
+	ListTreeOrderChildren(tree, parent);
+      }
     }
-    ListTreeRenameItem(tree, parent, get_node_name(get_nid(parent))); 
-    return itm;
+    {
+      int status;
+      int def_nid;
+      int parent_nid = get_nid(parent);
+      char *name = get_node_name(parent_nid);
+      status = TreeGetDefaultNid(&def_nid);
+      if ((status&1) &&(parent_nid==def_nid)) {
+        char *tmp = malloc(strlen(name)+3+3+1);
+        strcpy(tmp, "<<<");
+        strcat(tmp, name);
+        strcat(tmp,">>>");
+        ListTreeRenameItem(tree, parent, tmp); 
+        free(tmp);
+      } else
+        ListTreeRenameItem(tree, parent, name);
+    } 
+      return itm;
   }
       
 void HighlightCallback(Widget w, XtPointer client, XtPointer call)
@@ -396,15 +417,17 @@ static ListTreeItem *Open(Widget tree, int nid)
   int parent;
   if (nid == 0) {
     item = ListTreeFirstItem(tree);
-    add_descendents(tree, item, nid);
+    if (!item->open) 
+      add_descendents(tree, item, nid);
     return item;
   }
   parent = parent_nid(nid);
   parent_item = Open(tree, parent);
   for(item=parent_item->firstchild; ((item != NULL) && (get_nid(item) != nid)); item = item->nextsibling);
   if (item)
-    add_descendents(tree, item, nid);
-  return item;    
+    if (!item->open)
+      add_descendents(tree, item, nid);
+  return (item==NULL) ? parent_item : item;    
 }
 
 static void set_default(Widget w, ListTreeItem *item)
@@ -481,11 +504,48 @@ static void CommandLineOpen(Display *display, Widget tree)
   }
 }
 
-static void NodeTouched(int nid, NodeTouchType type)
+static ListTreeItem *FindParentItemByNid(Widget tree, int nid)
 {
+  static char *getnci = "GETNCI($, 'PARENT')";
+  static int c_nid;
+  static DESCRIPTOR_NID(nid_dsc, &c_nid);
+  int parent_nid;
+  c_nid = nid;  
+  parent_nid = ReadInt(getnci, &nid_dsc MDS_END_ARG);
+  return Open(tree,(parent_nid>0)? parent_nid : 0);
+}
+
+static ListTreeItem *FindChildItemByNid(Widget tree, ListTreeItem *parent, int nid)
+{
+  ListTreeItem *itm;
+  Boolean found;
+
+  if (nid==0) return parent;
+  for (itm=parent->firstchild; itm && !found; ) {
+    found = get_nid(itm) == nid;
+    if (!found) itm=itm->nextsibling;
+  }
+  return itm;
 }
 
 static Widget toplevel;
+
+static void NodeTouched(int nid, NodeTouchType type)
+{
+  Widget tree = XtNameToWidget(BxFindTopShell(toplevel), "*.tree");
+  ListTreeItem *this_item;
+  ListTreeRefreshOff(tree);
+  this_item = FindParentItemByNid(tree, nid);
+  if (this_item != NULL) {
+    switch(type) {
+    case on_off:      FixPixMaps(tree, this_item); break;
+    case set_def:     set_default(toplevel, FindChildItemByNid(tree, this_item, nid)); break;
+    case new:         this_item = insert_item(tree, this_item, nid); break;
+    }
+  }
+  ListTreeRefreshOn(tree);
+}
+
 
 void MessageDismiss(Widget w)
 {
