@@ -883,7 +883,7 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
   int socket = -1;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename,&hostpart,&filepart);
-  int fd = hostpart ? io_open_remote(hostpart,filepart,options,mode,&socket) :  open(filename, options, mode);
+  int fd = hostpart ? io_open_remote(hostpart,filepart,options,mode,&socket) :  open(filename, options | O_BINARY | O_RANDOM, mode);
   free(tmp);
   if (fd != -1)
     fd = NewFD(fd,socket);

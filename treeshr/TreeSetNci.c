@@ -466,6 +466,11 @@ int _TreeTurnOn(void *dbid, int nid_in)
   status = TreeGetNciLw(info, node_num, &nci);
   if (~status & 1)
     return status;
+      
+  status = TreeLockNci(info, 0, node_num);
+  if (~status & 1)
+    return status;
+
   if (nci.flags & NciM_STATE)
   {
     bitassign(0,nci.flags,NciM_STATE);
