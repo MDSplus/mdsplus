@@ -1824,7 +1824,7 @@ static void CalculateNewSize(XmdsXdBoxWidget w,unsigned short *width,unsigned sh
 static XmdsXdBoxWidget FindXdBoxWidget(Widget w)
 {
   Widget xdbw;
-  for (xdbw = w; xdbw && ((xdbw->core.name == 0) || strcmp(xdbw->core.name,"xd_box")); xdbw = XtParent(xdbw));
+  for (xdbw = w; xdbw && ((xdbw->core.name == 0) || (xdbw->core.name==0xffffff) || strcmp(xdbw->core.name,"xd_box")); xdbw = XtParent(xdbw));
   if (xdbw) xdbw = XtParent(xdbw);
   return (XmdsXdBoxWidget) xdbw;
 }
