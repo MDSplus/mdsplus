@@ -98,6 +98,7 @@ psect_attr=servip,noshr
 
 #include "mex.h"
 #include <string.h>
+#include <mdstypes.h>
 /* Include for mds descriptor definition */
 #include "ipdesc.h"
 
@@ -173,8 +174,7 @@ void GetMatReply(int nlhs,mxArray *plhs[])
    int *iptr;
    unsigned int *uiptr;
 #ifdef DTYPE_LONGLONG
-   long long *qptr;
-   unsigned long long *uqptr;
+   _int64 *qptr;
 #endif
    float *fptr;
    double *dptr, *dpout;
@@ -296,15 +296,22 @@ void GetMatReply(int nlhs,mxArray *plhs[])
 	   *dpout++ = *iptr++;
 	 break;
 #ifdef DTYPE_LONGLONG
-       case DTYPE_ULONGLONG   :  
-	 uqptr = (unsigned long long *)ans.ptr;
+       case DTYPE_ULONGLONG   : 
+#ifdef _WIN32
+	 qptr = (_int64 *)ans.ptr;
 	 while(len--)
-	   *dpout++ = *uqptr++;
-	 break;
+	   *dpout++ = (double)*qptr++;
+   break;
+#else
+	 uqptr = (_int64u *)ans.ptr;
+	 while(len--)
+	   *dpout++ = (double)*uqptr++;
+   break;
+#endif
        case DTYPE_LONGLONG    :
-	 qptr = (long long *)ans.ptr;
+	 qptr = (_int64 *)ans.ptr;
 	 while(len--)
-	   *dpout++ = *qptr++;
+	   *dpout++ = (double)*qptr++;
 	 break;
 #endif
        case DTYPE_FLOAT   :
@@ -365,8 +372,8 @@ void SendMatValue(CONST mxArray *prhs[],int i, int nrhs, int opt)  {
    int *iptr;
    unsigned int *uiptr;
 #ifdef DTYPE_LONGLONG
-   long long *qptr;
-   unsigned long long *uqptr;
+   _int64 *qptr;
+   _int64u *uqptr;
 #endif
    float *fptr;
    double *dptr;
@@ -606,20 +613,20 @@ void SendMatValue(CONST mxArray *prhs[],int i, int nrhs, int opt)  {
 	 break;
 #ifdef DTYPE_LONGLONG
        case DTYPE_ULONGLONG   :  
-	 alloc = sizeof(unsigned long long);
+	 alloc = sizeof(_int64u);
 	 if(conv < 0)  break;
-	 uqptr = (unsigned long long *)MatAlloc(len, alloc);
+	 uqptr = (_int64u *)MatAlloc(len, alloc);
 	 strptr = (char *)uqptr;
 	 while(len--)
-	   *uqptr++ = (unsigned long long)*dptr++;
+	   *uqptr++ = (_int64u)*dptr++;
 	 break;
        case DTYPE_LONGLONG    :
-	 alloc = sizeof(long long);
+	 alloc = sizeof(_int64);
 	 if(conv < 0)  break;
-	 qptr = (long long *)MatAlloc(len, alloc);
+	 qptr = (_int64 *)MatAlloc(len, alloc);
 	 strptr = (char *)qptr;
 	 while(len--)
-	   *qptr++ = (long long)*dptr++;
+	   *qptr++ = (_int64)*dptr++;
 	 break;
 #endif
        case DTYPE_ULONG   :  
