@@ -11,7 +11,9 @@
 #include <io.h>
 #define read _read
 #else
+#ifdef HAVE_MALLOC_H
 #include        <malloc.h>
+#endif
 #include        <sys/types.h>
 #include        <termios.h>
 #ifdef CURSES

@@ -1250,7 +1250,11 @@ int   equalsAscFilename(
 #ifdef vms
 #include        <stdlib.h>
 #else
+#ifdef HAVE_MALLOC_H
 #include	<malloc.h>
+#else
+#include 	<stdlib.h>
+#endif
 #endif
 
 /********************************************************************

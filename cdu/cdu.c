@@ -4,7 +4,7 @@
 #ifdef vms
 #include        <lib$routines.h>
 #include        <ssdef.h>
-#else
+#elif HAVE_MALLOC_H
 #include        <malloc.h>
 #endif
 
