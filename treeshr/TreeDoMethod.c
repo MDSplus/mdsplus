@@ -32,6 +32,7 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 #include "treeshrp.h"
 #include <mdsdescrip.h>
 #include <treeshr.h>
+#include <tdimessages.h>
 #include <libroutines.h>
 #include <strroutines.h>
 #include <mds_stdarg.h>
@@ -148,8 +149,10 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 		arglist[nargs-1] = (void *)&retstatus_d;
         arglist[nargs] = MdsEND_ARG;
         status = LibCallg(arglist,addr);
-		if (status & 1)
-			status = retstatus;
+	if (status & 1)
+	  status = retstatus;
+        if (status == TdiUNKNOWN_VAR)
+          status = TreeNOMETHOD;
       }
       StrFree1Dx(&exp);
       /*      status = TreeNOMETHOD; */
