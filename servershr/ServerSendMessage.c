@@ -115,6 +115,7 @@ static void lock_client_list();
 static void unlock_client_list();
 static void lock_job_list();
 static void unlock_job_list();
+extern int pthread_cond_timedwait();
 
 int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, int *socket,
                          void (*ast)(), void *astparam, void (*before_ast)(),
@@ -142,7 +143,6 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, int *so
     va_list vlist;
     void *mem=0;
     struct descrip *arg;
-    unsigned char totargs;
     if (socket) *socket = sock;
     jobid = RegisterJob(msgid,retstatus,ast,astparam,before_ast,sock);
     if (addr == 0)
@@ -453,7 +453,23 @@ static int StartReceiver(short *port_out)
       while ((ThreadRunning == 0) && (pthread_mutex_lock(&worker_mutex) == 0))
       {
         if (!ThreadRunning)
-          pthread_cond_wait(&worker_condition,&worker_mutex);
+#ifdef HAVE_WINDOWS_H
+        pthread_cond_timedwait(&worker_condition, &worker_mutex, 1000);
+#else
+        {
+          struct timespec one_sec = {1,0};
+          struct timespec abstime;
+          struct timeval tmval;
+      /*
+	pthread_get_expiration_np(&one_sec,&abstime);
+      */
+      
+         gettimeofday(&tmval, 0);
+         abstime.tv_sec = tmval.tv_sec + 1;
+         abstime.tv_nsec = tmval.tv_usec * 1000;
+         pthread_cond_timedwait( &worker_condition, &worker_mutex, &abstime);
+        }
+#endif
         pthread_mutex_unlock(&worker_mutex);
       }
       status = 1;
