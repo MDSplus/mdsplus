@@ -21,8 +21,13 @@ extern char *ctime();
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #if !defined(_WIN95)
+#include <pwd.h>
 #define closesocket close
 #endif
+
+extern char *MdsDescrToCstring();
+extern void MdsFree();
+
 typedef ARRAY_COEFF(char,7) ARRAY_7;
 
 typedef struct _context { void *tree;
@@ -130,11 +135,12 @@ static int DoMessage(Client *c)
   return status;
 }
 
-static void CompressString(struct descriptor *in)
+static void CompressString(struct descriptor *in, int upcase)
 {
   unsigned short len;
   StrTrim(in,in,&len);
-  StrUpcase(in,in);
+  if (upcase)
+    StrUpcase(in,in);
   while(in->length && (in->pointer[0] == ' ' || in->pointer[0] == '	'))
     StrRight(in,in,&two);
 }
@@ -174,31 +180,32 @@ static int CheckClient(char *host_c, char *user_c)
     {
       if (line_c[0] != '#')
       {
-        line_d.length = strlen(line_c) - 1;
+        line_d.length = strlen(line_c) - 2;
 	StrElement(&access_id,&zero,&delimiter,&line_d);
         StrElement(&local_user,&one,&delimiter,&line_d);
-        CompressString(&access_id);
-        CompressString(&local_user);
+        CompressString(&access_id,1);
         if (access_id.length)
         {
           if (access_id.pointer[0] != '!')
           {
             if (StrMatchWild(&match,&access_id) & 1)
             {
-	      /*
+#if defined(__unix__) || defined(unix) || defined(__unix)
+              CompressString(&local_user,0);
               if (local_user.length)
               {
-  	        int persona;
-	        int status;
-	        status = sys$persona_create(&persona,&local_user,0);
-                if (status & 1)
-                {
-                  status = sys$persona_assume(&persona,IMP$M_ASSUME_SECURITY | IMP$M_ASSUME_ACCOUNT | IMP$M_ASSUME_JOB_WIDE);
-                  ok = (status & 1) ? 1 : 2;
+                char *user = MdsDescrToCstring(&local_user);
+                int status = setlogin(user);
+                struct passwd *pwd = getpwnam(user);
+                if (pwd)
+		{
+                  status = setuid(pwd->pw_uid);
                 }
+                MdsFree(user);
+                ok = (status == 0) ? 1 : 2;
               }
               else
-	      */
+#endif
                 ok = 1;
             }
           }
