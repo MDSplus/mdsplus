@@ -47,12 +47,13 @@ static int TdiInterlude  (int opcode, struct descriptor **newdsc, int (*routine)
 #if  defined(__ALPHA) && defined(__VMS)
         int f_regs = (*(int *)routine == 0x23FF0000) ? 0 : 1;
 #else
-        int f_regs = (opcode == 0);
+        int f_regs = 1;/*(opcode == 0) */
 #endif
 	LibEstablish(TdiFaultHandler);
         switch (opcode)
         {
           case DTYPE_F:
+	  case DTYPE_FS:
             if (f_regs)
             { float (*called_f)() = (float (*)())called;
               float *result_f = (float *)result;
