@@ -130,7 +130,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
       {
         unsigned int m1;
         unsigned int m2 = 10000000;
-        _int64 addin = 0x7c95674beb4000;
+        _int64 addin = (_int64)0x7c95674beb4000;
         _int64 zero = 0;
 /*
         unsigned int zero[2] = {0,0};
