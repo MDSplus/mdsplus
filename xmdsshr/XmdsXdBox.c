@@ -1666,7 +1666,7 @@ static void axis_change_type_proc(Widget w,int *tag)
 
 static int WidgetNameCmp(Widget w, char *string)
 {
-  return ((w->core.name == 0) || (w->core.name==(char *)0xffffff) || strcmp(w->core.name,"xd_box"));
+  return ((w->core.name == 0) || (w->core.name==(char *)0xffffff) || strcmp(w->core.name, string));
 }
 
 static void dispatch_change_type_proc(Widget w,int *tag)
