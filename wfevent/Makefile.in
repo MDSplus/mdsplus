@@ -9,7 +9,7 @@ LDFLAGS=@LDFLAGS@
 LIBS=@LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
-SOURCES = wfevent.o
+SOURCES = wfevent.c
 OBJECTS = $(SOURCES:.c=.o)
 
 all: @MAKEBINDIR@ @MAKEBINDIR@wfevent 

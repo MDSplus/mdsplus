@@ -33,7 +33,7 @@ clean:
 	- rm  *.o
 	- rm mdsdcl_tables.c
 
-depend:  mdsdcl_tables.c
+depend: 
 	 @makedepend -- $(CFLAGS) -- $(SOURCES) mdsdcl_tables.c mdsdcl.c
 
 install:

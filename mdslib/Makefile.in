@@ -11,7 +11,7 @@ LDFLAGS=@LDFLAGS@
 LIBS=@LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
-SOURCES = MdsLib.o
+SOURCES = MdsLib.c
 OBJECTS = $(SOURCES:.c=.o)
 
 OBJECTS_CLIENT = MdsLib_client.o

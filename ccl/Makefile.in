@@ -22,7 +22,7 @@ clean:
 	- rm ccl_commands.c
 
 depend:
-	 @makedepend -- $(CFLAGS) -- $(SOURCES) ccl_commands.c
+	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install:
 	if [ ! -d @libdir@ ] ; then \
