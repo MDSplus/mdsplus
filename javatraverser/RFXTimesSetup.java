@@ -130,6 +130,8 @@ public class RFXTimesSetup extends DeviceSetup {
   DeviceField deviceField11116 = new DeviceField();
   JPanel jPanel25 = new JPanel();
   DeviceField deviceField11117 = new DeviceField();
+  TitledBorder titledBorder17;
+  TitledBorder titledBorder18;
   public RFXTimesSetup() {
     try {
       jbInit();
@@ -157,6 +159,8 @@ public class RFXTimesSetup extends DeviceSetup {
     titledBorder14 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"PTCB");
     titledBorder15 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"PTCT");
     titledBorder16 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Gas Puffing");
+    titledBorder17 = new TitledBorder("");
+    titledBorder18 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"PM");
     this.setWidth(830);
     this.setHeight(770);
     this.setDeviceType("RFXTimes");
@@ -296,7 +300,8 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField119.setNumCols(5);
     deviceField119.setLabelString("T_CLOSE_PNSS");
     deviceField119.setOffsetNid(1);
-    jPanel11.setBorder(titledBorder1);
+    jPanel11.setFont(new java.awt.Font("Dialog", 1, 20));
+    jPanel11.setBorder(titledBorder18);
     jPanel11.setLayout(gridLayout7);
     gridLayout7.setColumns(1);
     gridLayout7.setRows(3);

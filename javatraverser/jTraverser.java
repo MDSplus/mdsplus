@@ -39,7 +39,9 @@ public class jTraverser extends JFrame implements ActionListener
 
 	if(args.length >= 2)
 	    FrameRepository.frame = new jTraverser(args[0], args[1]);
-	else
+	else if(args.length == 1)
+      FrameRepository.frame = new jTraverser(args[0], null);
+    else
 	    FrameRepository.frame = new jTraverser(null, null);
 
     }
@@ -131,7 +133,7 @@ public class jTraverser extends JFrame implements ActionListener
 
 	tree = new Tree(this);
 	if(exp_name != null)
-	    tree.open(exp_name.toUpperCase(), Integer.parseInt(shot_name), false, false);
+	    tree.open(exp_name.toUpperCase(), (shot_name == null)?-1:Integer.parseInt(shot_name), false, false);
 	else
 	    setTitle("jTraverser - no tree open");
 	getContentPane().add(tree);

@@ -243,7 +243,7 @@ class RFXTimingSetup extends DeviceSetup
 
 
 
-    void scan()
+    void scan(boolean full)
     {
         rfxDevices = new Vector();
         dio2Devices = new Vector();
@@ -252,17 +252,27 @@ class RFXTimingSetup extends DeviceSetup
         rfxDeviceNids = new Vector();
         mpbDecoderNids = new Vector();
         errorStrings = new Vector();
+        eventTimes = new Hashtable();
         NidData []deviceNids = null;
-        try {
-            try {
-                NidData nid = subtree.resolve(new PathData(topTiming), Tree.context);
-                subtree.setDefault(nid, Tree.context);
-            }catch(Exception exc)
+        NidData prevNid = null;
+        try
+        {
+          if (full)
+            subtree.setDefault(new NidData(0), Tree.context);
+          else
+            try
             {
-                subtree.setDefault(new NidData(0), Tree.context);
+              prevNid = subtree.getDefault(Tree.context);
+              NidData nid = subtree.resolve(new PathData(topTiming), Tree.context);
+              subtree.setDefault(nid, Tree.context);
             }
-            deviceNids = subtree.getWild(USAGE_DEVICE, Tree.context);
-        }catch(Exception exc)
+            catch (Exception exc)
+            {
+              subtree.setDefault(new NidData(0), Tree.context);
+            }
+          deviceNids = subtree.getWild(USAGE_DEVICE, Tree.context);
+        }
+        catch (Exception exc)
         {System.err.println("RFXTimingSetup: Error reading device data: "+ exc);}
         if(deviceNids == null) return;
         for(int idx = 0; idx < deviceNids.length; idx++)
@@ -334,8 +344,19 @@ class RFXTimingSetup extends DeviceSetup
                     Data time = subtree.getData(new NidData(baseNid +
                         chan * DIO2_ENC_NODES_PER_CHANNEL +
                         DIO2_ENC_CHANNEL_0 + DIO2_ENC_CHAN_EVENT_TIME), Tree.context);
-                    if (!event.trim().equals(""))
-                      eventTimes.put(event, time);
+                    boolean sourceOn = true;
+                    try {
+                      if (time instanceof NidData)
+                        sourceOn = subtree.isOn( (NidData) time, Tree.context);
+                      if (time instanceof PathData)
+                      {
+                        NidData sourceNid = subtree.resolve( (PathData) time,
+                            Tree.context);
+                        sourceOn = subtree.isOn(sourceNid, Tree.context);
+                      }
+                    }catch(Exception exc){sourceOn = false;}
+                      if (!event.trim().equals("") && sourceOn)
+                        eventTimes.put(event, time);
                   }
                   catch (Exception exc)
                   {}
@@ -899,6 +920,12 @@ class RFXTimingSetup extends DeviceSetup
                     JOptionPane.WARNING_MESSAGE);
 
         }
+        try {
+          if(prevNid != null)
+            subtree.setDefault(prevNid, Tree.context);
+        }catch(Exception exc)
+        {
+        }
     }
 
 
@@ -937,6 +964,26 @@ class RFXTimingSetup extends DeviceSetup
           }
         }
       }
+      for (int idx = 0; idx < dio2Devices.size(); idx++)
+      {
+        Device device = (Device) dio2Devices.elementAt(idx);
+        for (int i = 0; i < device.times.length; i++)
+        {
+          float time = 0;
+          try
+          {
+            time = subtree.evaluateData(device.times[i], Tree.context).getFloat();
+          }
+          catch (Exception exc)
+          {}
+          if (time < minStart)
+            minStart = time;
+          if (time > maxEnd)
+            maxEnd = time;
+        }
+      }
+
+
       int chanIdx = 1;
       float start = minStart - (maxEnd - minStart) / 4;
       float convFact = d.width / (maxEnd - minStart + (maxEnd - minStart) / 2);
@@ -996,7 +1043,7 @@ class RFXTimingSetup extends DeviceSetup
     public void configure(RemoteTree subtree, int baseNid)
     {
         this.subtree = subtree;
-        scan();
+        scan(true);
 
         JComponent waves = new JComponent()
         {
@@ -1171,7 +1218,6 @@ class RFXTimingSetup extends DeviceSetup
                 {
                     case 0: return "Event";
                     case 1: return "Time";
-                    case 2: return "Recorded Time";
                 }
                 return "";
             }
@@ -1181,7 +1227,7 @@ class RFXTimingSetup extends DeviceSetup
               if(evNames == null) return 0;
               return evNames.length;
             }
-            public int getColumnCount() {return 3;  }
+            public int getColumnCount() {return 2;  }
             public boolean isCellEditable(int row, int col)
             {
                 return false;
@@ -1196,7 +1242,6 @@ class RFXTimingSetup extends DeviceSetup
                             return subtree.dataToString(subtree.evaluateData(evTimes[row], Tree.context));
                         }catch(Exception exc){return "";}
                     //return evTimes[row].toString();
-                    case 2: return evRecTimes[row];
                 }
                 return "";
             }
@@ -1226,14 +1271,24 @@ class RFXTimingSetup extends DeviceSetup
                   showRecordedEvents();
             }});
         jp.add(recordedB);
-        JButton updateB = new JButton("Update");
+        JButton updateB = new JButton("Rescan Timing");
         updateB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                scan();
+                scan(false);
+                reportEvents();
                 repaint();
             }
         });
         jp.add(updateB);
+        JButton updateFullB = new JButton("Rescan Fully");
+        updateFullB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                scan(true);
+                reportEvents();
+                repaint();
+            }
+        });
+        jp.add(updateFullB);
         getContentPane().add(jp, "South");
         setSize(500, 500);
 	}
