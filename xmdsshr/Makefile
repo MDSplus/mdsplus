@@ -71,7 +71,7 @@ xmdsshr : ../shlib \
 ../shlib/xmdsuil.wmd : $(WMD_RULE)
 
 ../bin/wmdcreate : wmldbcreate-xmdsshr.c UilConst.h
-	cc -o $@ -DMDS_EXTENSION $(CFLAGS) $(WML_INCLUDE) wmldbcreate-xmdsshr.c $(MOTIF_LIBS) $(X11_LIBS) $(SOCKET_LIB)
+	$(CC) -o $@ -DMDS_EXTENSION $(CFLAGS) $(WML_INCLUDE) wmldbcreate-xmdsshr.c $(MOTIF_LIBS) $(X11_LIBS) $(SOCKET_LIB)
 
 UilConst.h : xmdsuil.wml 
 	$(WML) 
