@@ -1,6 +1,172 @@
 Version 1.6-2
 
 
+2004-06-29 10:01  jas
+
+	* tdi/MitDevices/: dt196__add.fun, dt_acq16__store.fun:
+	
+	new 96 channel digitizers
+
+2004-06-23 13:55  twf
+
+	* mdsip_xio/mdsip_do_message_cb.c:
+	
+	Fix for endian switch
+
+2004-06-22 10:41  manduchi
+
+	* javamds/JavaTrav.c:
+	
+	Added support for expressions in DoAction
+
+2004-06-22 09:03  twf
+
+	* tdishr/TdiCall.c:
+	
+	Fixes for 64 bit irix
+
+2004-06-22 09:02  twf
+
+	* treeshr/: TreeAddNode.c, treeshrp.h:
+	
+	fixes for irix
+
+2004-06-22 04:18  manduchi
+
+	* javatraverser/: Devicebeans.jar, FR10Setup.java, K3115Setup.java,
+	Makefile.in:
+	
+	Added K3115Setup.java
+
+2004-06-22 04:15  manduchi
+
+	* tdi/RfxDevices/: K3115__add.fun, K3115__init.fun:
+	
+	Added K3115__add.fun K3115__init.fun
+
+2004-06-21 10:55  jas
+
+	* idl/Logbook/get_columns.pro:
+	
+	typo
+
+2004-06-21 10:13  jas
+
+	* idl/Logbook/get_columns.pro:
+	
+	change to use exact table names
+
+2004-06-17 11:17  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	Fix for zero length data
+
+2004-06-17 10:52  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Add some signal handling
+
+2004-06-16 14:38  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Add some cleanup if message queues deleted manually
+
+2004-06-16 11:35  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Fix status return
+
+2004-06-16 11:01  manduchi
+
+	* javatraverser/: DeviceTable.java, T2ControlSetup.java:
+	
+	Table improvements
+
+2004-06-16 09:30  twf
+
+	* tdishr/tdithreadsafe.h:
+	
+	Add carriage return to last line
+
+2004-06-16 03:33  manduchi
+
+	* tdi/RfxDevices/: OPCPut.fun, RFXMOP__OPCSend.fun,
+	RFXMOP__add.fun:
+	
+	Fun for RFX Mode for Operation device
+
+2004-06-15 07:54  twf
+
+	* html/software/download.php:
+	
+	Use include for dbinfo
+
+2004-06-14 15:18  twf
+
+	* html/software/: download.php, menu.shtml:
+	
+	Add php download script
+
+2004-06-14 15:12  twf
+
+	* html/menu.shtml:
+	
+	use absolute reference
+
+2004-06-14 09:55  manduchi
+
+	* tdi/RfxDevices/: PXD114__init.fun, PXD114__store.fun:
+	
+	Minor fixes
+
+2004-06-11 08:58  manduchi
+
+	* javatraverser/DeviceTable.java,
+	javatraverser/T2ControlSetup.java,
+	tdi/RfxDevices/T2Control__add.fun,
+	tdi/RfxDevices/T2Control__init.fun,
+	tdi/RfxDevices/T2Control__store.fun, tdi/RfxDevices/TR10HWInit.fun:
+	
+	T2 improvements
+
+2004-06-10 12:38  jas
+
+	* mitdevices/DT196.uil:
+	
+	minor mods to the form
+
+2004-06-10 11:54  jas
+
+	* mitdevices/: DT196.uil, FixUserDefined.sed, Makefile.in:
+	
+	Fix devs with add methods and add form for DT196
+
+2004-06-08 15:26  jas
+
+	* mitdevices/io.c:
+	
+	new read (vs fread) routines for dt100-hub (dt196)
+
+2004-06-08 15:23  jas
+
+	* tdi/MitDevices/: Dt196GetPostSamples.fun, Dt196Init.fun,
+	Dt196ReadChannel.fun, Dt196Reset.fun, Dt196SetRoute.fun,
+	Dt200GetVoltCoef.fun, Dt200WriteMaster.fun, MitDevices.fun,
+	dt196__add.fun, dt196__init.fun, dt196__part_name.fun,
+	dt196__store.fun:
+	
+	Support for new acq196 cards (dt196)
+
+2004-06-08 10:10  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.6-2
+
 2004-06-08 09:59  twf
 
 	* mdsip_xio/mdsip_compatible_api.c:
