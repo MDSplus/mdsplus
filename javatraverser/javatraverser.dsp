@@ -565,5 +565,173 @@ SOURCE=.\WithUnitsData.java
 SOURCE=.\javatraverser.mak
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=.\ACQD265Setup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\ADC265Setup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\Aurora14Setup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\DIO2EncoderSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\DIO2Setup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\E1463Setup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\FR10Setup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\L5613Setup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\MPBDecoderSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\MPBEncoderSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\MPBRecorderSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\NI6071ESetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\PELLETSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXABUnitsSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXChopperSetupSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXClockSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXControlSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXDClockSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXFeedforwardSetupSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXGClockSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXInverterSetupSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXPConfigSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXPCSetupSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXPMSetupSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXPoloidalSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXPRConfigSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXPulseSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXPVSetupSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXTFSetupSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXTimesSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXTimingSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\RFXToroidalSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\T2ControlSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\TR10Setup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\TR32Setup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\TRCFSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\TRCHSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\VMEWavesSetup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\WE7000Setup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\WE7116Setup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\WE7275Setup.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\WEGroupSetup.java
+# End Source File
 # End Target
 # End Project

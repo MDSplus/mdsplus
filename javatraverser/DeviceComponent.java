@@ -125,11 +125,11 @@ public abstract class DeviceComponent extends JPanel
             curr_container = curr_component.getParent();
             curr_component = curr_container;
         }while ((curr_container != null) && !(curr_container instanceof Window));
-        if(curr_container != null)
+       /* if(curr_container != null)
         {
             ((Window)curr_container).pack();
             ((Window)curr_container).show();
-        }
+        }*/
     }
 
 //Event handling in DW setup

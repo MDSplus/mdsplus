@@ -148,7 +148,7 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceTable7.setNumCols(6);
     deviceTable7.setNumRows(1);
     deviceTable7.setIdentifier("");
-    deviceTable7.setColumnNames(new String[] {"Sect.1", "Sect.2", "Sect.3", "Sect.4", "Sect.5", "Sect.6"});
+    deviceTable7.setColumnNames(new String[] {"Sect.7", "Sect.8", "Sect.9", "Sect.10", "Sect.11", "Sect.12"});
     deviceTable7.setRowNames(null);
     deviceTable7.setEditable(false);
     deviceTable7.setDisplayRowNumber(false);

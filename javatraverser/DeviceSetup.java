@@ -248,7 +248,7 @@ public class DeviceSetup extends JDialog
         for(int i = 0; i < num_components; i++)
             ((DeviceComponent)device_components.elementAt(i)).reset();
         setSize(width, height);
-        pack();
+        //pack();
         repaint();
     }
     public void addDataChangeListener(DataChangeListener listener)
