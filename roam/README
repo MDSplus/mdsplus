@@ -1,0 +1,38 @@
+To use the ROAM gridmap callout you need to have the following line in your
+/etc/grid-security/gsi-authz.conf file:
+
+globus_mapping /usr/local/fusiongrid/lib/libRoam roam_gridmap_callout
+
+When the jobmanager checks to see if a users credentials map to a local account it will
+first check with ROAM and if it does not find a mapping in ROAM it will look in the normal
+globus gridmap file. When the jobmanager checks with ROAM it uses the check_access_jobmanager.fun
+tdi function. A default version of this is provided which will check the user for site Access
+permission and for job Execute permission. The following environment variables determine the behavior:
+
+ROAM_SERVER --- specifies the roam host (i.e. roam.fusiongrid.org)
+ROAM_SITE_RESOURCE --- specifies the site resource (optional)
+ROAM_JOBMANAGER_RESOURCE --- specifies the jobmanager resource
+
+The resource permissions are checked as follows:
+------------------------------------------------------------------------------------------------------------
+if the ROAM_SITE_RESOURCE is defined then the following must be true to enable the user to execute jobs:
+
+   1) The user "nobody" was not granted "Access" permission to the site resource
+   2) This user was not granted "Noaccess" permission to the site resource
+   3) Either the user "everyone" or this user has been granted the "Access" permission to the site resource
+
+if the ROAM_SITE_RESOURCE was not defined or the above rules were obeyed then the following must also be
+true to enable the user to execute jobs:
+
+   1) The user "nobody" was not granted the "Execute" permission to the jobmanager resource
+   2) This user was granted the "Execute" permission to the jobmanager resource and the aux information
+      for this permission contains a valid local username. (The job will be run using this username)
+-----------------------------------------------------------------------------------------------------------
+
+The gridftp server will use a similar procedure for determining access as the jobmanager. This is controlled
+by th check_access_file.fun tdi function. The only differences between the gridftp and jobmanager access
+checking is that gridftp uses the "ROAM_GRIDFTP_RESOURCE" environment variable and for that resource it checks
+for the "Access" permission instead of the "Execute" permission.
+
+You can override this access check logic by putting a site specific tdi directory in the MDS_PATH search list
+and create your own check_access_jobmanager.fun and check_access_file.fun procedures.
