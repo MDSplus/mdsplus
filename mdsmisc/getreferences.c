@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 static int CountRefs(struct descriptor *src);
 static void FillRefs(struct descriptor *src, int *ans, int *idx);
 static int GetNid(struct descriptor *dsc);
