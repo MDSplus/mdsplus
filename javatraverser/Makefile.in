@@ -41,6 +41,7 @@ RFXInverterSetupSetup.java \
 RFXFeedforwardSetupSetup.java \
 RFXPRConfigSetup.java \
 TR10Setup.java \
+K3115Setup.java \
 DIO2Setup.java \
 DIO2EncoderSetup.java \
 WE7000Setup.java \
