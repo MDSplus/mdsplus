@@ -304,7 +304,7 @@ JNIEXPORT jstring JNICALL Java_LocalProvider_GetString(JNIEnv *env, jobject obj,
 
 
 
-JNIEXPORT jfloatArray JNICALL Java_LocalProvider_GetFloatArray(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jfloatArray JNICALL Java_LocalProvider_GetFloatArrayNative(JNIEnv *env, jobject obj, jstring in)
 {
     jfloatArray jarr;
     float zero = 0.;
