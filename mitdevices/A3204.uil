@@ -2,6 +2,7 @@ module A3204_UIL
     names = case_sensitive
     version = 
     "v1.0"
+include file "XmdsWidgets.uil";
 
 object
     A3204: XmBulletinBoardDialog 
@@ -26,7 +27,7 @@ object
                     XmNy = 10;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -50,7 +51,7 @@ object
                     XmNy = 40;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -104,7 +105,7 @@ object
                     XmNy = 74;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -112,7 +113,7 @@ object
                     XmNy = 280;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -120,7 +121,7 @@ object
                     XmNy = 280;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -148,7 +149,7 @@ object
                             compound_string("1");
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -159,7 +160,7 @@ object
                             XmdsNnidOffset = A3204$N_C1+A3204$N_INP_OUTPUT;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -170,7 +171,7 @@ object
                             XmdsNnidOffset = A3204$N_C1+A3204$N_INP_OFFSET;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -181,7 +182,7 @@ object
                             XmdsNnidOffset = A3204$N_C1+A3204$N_INP_FILTER;
                             };
                         };
-                    XmdsNidOptionMenu 
+                    user_defined procedure XmdsCreateNidOptionMenu 
                         {
                         arguments
                             {
@@ -260,7 +261,7 @@ object
                             compound_string("2");
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -271,7 +272,7 @@ object
                             XmdsNnidOffset = A3204$N_C2+A3204$N_INP_OUTPUT;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -282,7 +283,7 @@ object
                             XmdsNnidOffset = A3204$N_C2+A3204$N_INP_OFFSET;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -293,7 +294,7 @@ object
                             XmdsNnidOffset = A3204$N_C2+A3204$N_INP_FILTER;
                             };
                         };
-                    XmdsNidOptionMenu 
+                    user_defined procedure XmdsCreateNidOptionMenu 
                         {
                         arguments
                             {
@@ -372,7 +373,7 @@ object
                             compound_string("3");
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -383,7 +384,7 @@ object
                             XmdsNnidOffset = A3204$N_C3+A3204$N_INP_OUTPUT;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -394,7 +395,7 @@ object
                             XmdsNnidOffset = A3204$N_C3+A3204$N_INP_OFFSET;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -405,7 +406,7 @@ object
                             XmdsNnidOffset = A3204$N_C3+A3204$N_INP_FILTER;
                             };
                         };
-                    XmdsNidOptionMenu 
+                    user_defined procedure XmdsCreateNidOptionMenu 
                         {
                         arguments
                             {
@@ -483,7 +484,7 @@ object
                             compound_string("4");
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -494,7 +495,7 @@ object
                             XmdsNnidOffset = A3204$N_C4+A3204$N_INP_OUTPUT;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -505,7 +506,7 @@ object
                             XmdsNnidOffset = A3204$N_C4+A3204$N_INP_OFFSET;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -516,7 +517,7 @@ object
                             XmdsNnidOffset = A3204$N_C4+A3204$N_INP_FILTER;
                             };
                         };
-                    XmdsNidOptionMenu 
+                    user_defined procedure XmdsCreateNidOptionMenu 
                         {
                         arguments
                             {
@@ -574,7 +575,7 @@ object
                         };
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -588,7 +589,7 @@ object
                     compound_string("Initialization Action");
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -602,7 +603,7 @@ object
                     compound_string("Store Action");
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {

@@ -1,6 +1,8 @@
 module B2408_UIL
     names = case_sensitive
 
+include file "XmdsWidgets.uil";
+
 object
     B2408: XmBulletinBoardDialog 
         {
@@ -37,7 +39,7 @@ object
                     compound_string("Comment:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -51,7 +53,7 @@ object
                     XmdsNdefaultQuote = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -65,7 +67,7 @@ object
                     XmdsNdefaultQuote = true;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -79,7 +81,7 @@ object
                     compound_string("Initialization Action");
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -93,7 +95,7 @@ object
                     compound_string("Store Action");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -126,7 +128,7 @@ object
                     compound_string("Trigger:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -139,7 +141,7 @@ object
                     XmdsNnidOffset = B2408$N_TRIGGER;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -147,7 +149,7 @@ object
                     XmNy = 230;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -155,7 +157,7 @@ object
                     XmNy = 230;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -163,7 +165,7 @@ object
                     XmNy = 230;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -185,7 +187,7 @@ object
                     };
                 controls
                     {
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {

@@ -8,6 +8,7 @@ procedure
 	XmdsCreateApplyButton;
         XmdsCreateXdBoxDialogButton;
         XmdsCreateNidOptionMenu;
+        XmdsCreateOnOffToggleButton;
 
 value
 	XmdsNnid : argument("nid",integer);
@@ -22,3 +23,4 @@ value
         XmdsNlabelStrings : argument("labelStrings",string_table);
         XmdsNvalueStrings : argument("valueStrings",string_table);
         XmdsNputOnApply : argument("putOnApply",boolean);
+        XmdsNshowPath : argument("showPath",boolean);
