@@ -11,7 +11,7 @@ import java.lang.InterruptedException;
 class T2DataProvider
     implements DataProvider
 {
-    String vmsIp = "130.237.47.20";
+    String vmsIp = "130.237.47.22";
     int shot;
     int port = 8000;
     Socket socket = null;
@@ -43,8 +43,10 @@ class T2DataProvider
     public boolean SupportsFastNetwork(){return false;}
     public void    SetArgument(String arg)
     {
+      StringTokenizer st = new StringTokenizer(arg, ":");
         try {
-            port = Integer.parseInt(arg);
+          vmsIp = st.nextToken();
+          port = Integer.parseInt(st.nextToken());
         }catch(Exception exc){port = 8000;}
     }
     public boolean SupportsTunneling() {return false;}
@@ -53,42 +55,42 @@ class T2DataProvider
     //     interface methods for getting *Data objects
     //  ---------------------------------------------------
 
-    public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) 
+    public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max)
         throws IOException
     {
         return null;
     }
 
-    public synchronized WaveData GetWaveData (String in) 
-    { 
-        return GetWaveData (in, in+"$"); 
-    }
-
-    public synchronized WaveData GetWaveData (String in_y, String in_x) 
+    public synchronized WaveData GetWaveData (String in)
     {
-        return new T2WaveData(in_y, in_x);
+        return GetWaveData (in, in+"$");
     }
 
-    public synchronized WaveData GetResampledWaveData(String in, float start, float end, int n_points) 
-    { 
+    public synchronized WaveData GetWaveData (String in_y, String in_x)
+    {
+        return new T2WaveData(in_y.toUpperCase(), (in_x != null)?in_x.toUpperCase():in_x);
+    }
+
+    public synchronized WaveData GetResampledWaveData(String in, float start, float end, int n_points)
+    {
         return null;
     }
 
     public synchronized WaveData
-    GetResampledWaveData(String in_y, String in_x, float start, float end, int n_points) 
+    GetResampledWaveData(String in_y, String in_x, float start, float end, int n_points)
     {
         return null;
     }
 
-    public synchronized void AddConnectionListener(ConnectionListener l) 
+    public synchronized void AddConnectionListener(ConnectionListener l)
     {
-        if (l == null) 
+        if (l == null)
           return;
 
         connection_listener.addElement(l);
     }
 
-    public synchronized void RemoveConnectionListener(ConnectionListener l) 
+    public synchronized void RemoveConnectionListener(ConnectionListener l)
     {
         if (l == null)
           return;
@@ -96,9 +98,9 @@ class T2DataProvider
         connection_listener.removeElement(l);
     }
 
-    protected void DispatchConnectionEvent(ConnectionEvent e) 
+    protected void DispatchConnectionEvent(ConnectionEvent e)
     {
-        if (connection_listener != null) 
+        if (connection_listener != null)
         {
             for(int i = 0; i < connection_listener.size(); i++)
               ((ConnectionListener)connection_listener.elementAt(i)).processConnectionEvent(e);
@@ -132,7 +134,7 @@ class T2DataProvider
                     while(st.hasMoreTokens())
                       result[i++] = Integer.parseInt(st.nextToken());
                     return result;
-                } 
+                }
                 catch(Exception e) {}
             }
         }
@@ -148,7 +150,7 @@ class T2DataProvider
                     {
                         start = Integer.parseInt(st.nextToken());
                         end = Integer.parseInt(st.nextToken());
-                        if(end < start) 
+                        if(end < start)
                           end = start;
                         result = new long[end-start+1];
                         for(int i = 0; i < end-start+1; i++)
@@ -161,7 +163,7 @@ class T2DataProvider
             else
             {
                 result = new long[1];
-                try 
+                try
                 {
                     result[0] = Long.parseLong(curr_in);
                     return result;
@@ -198,10 +200,10 @@ class T2DataProvider
                 errorString = "Missing shot";
                 return;
             }
-            if(inY.length() == 0) 
+            if(inY.length() == 0)
             {
                 return;
-            }    
+            }
             try {
                 dos.writeInt(shot);
                 dos.writeInt(inY.length());
@@ -232,13 +234,13 @@ class T2DataProvider
                 socket = null;
             }
         }
-                
+
         public int GetNumDimension(){return 1;}
 
         /**
         * Get Y data (for unidimensional signals) or Z data (for bidimensional signals) as a float array.
         * If bidimensional sugnals are returned, values are ordered by rows.
-        * 
+        *
         * @return The signal Y or Z data coded as a float array.
         * @exception java.io.IOException
         */
@@ -246,7 +248,7 @@ class T2DataProvider
 
         /**
         * Get X array, usually representing the time values for signals.
-        * 
+        *
         * @return The returned X values coded as a float array
         * @exception java.io.IOException
         */
@@ -254,43 +256,43 @@ class T2DataProvider
 
         /**
         * Get Y data description (only for bidimensional signals)
-        * 
+        *
         * @return The Y data specification coded as a float array.
         * @exception java.io.IOException
         */
         public float[] GetYData()  {return null;}
 
         /**
-        * Get the associated title for the signal. It is displayed if no title is defined in the setup 
+        * Get the associated title for the signal. It is displayed if no title is defined in the setup
         * data definition.
-        * 
+        *
         * @return The title string.
         * @exception java.io.IOException
         */
         public String GetTitle() {return "";}
 
         /**
-        * Get the associated label for X axis. It is displayed if no X axis label is defined in the setup data 
+        * Get the associated label for X axis. It is displayed if no X axis label is defined in the setup data
         * definition.
-        * 
+        *
         * @return The X label string.
         * @exception java.io.IOException
         */
         public String GetXLabel()  {return "";}
 
         /**
-        * Get the associated label for Y axis. It is displayed if no Y axis label is defined in the setup data 
+        * Get the associated label for Y axis. It is displayed if no Y axis label is defined in the setup data
         * definition.
-        * 
+        *
         * @return The Y label string.
         * @exception java.io.IOException
         */
         public String GetYLabel() {return "";}
 
         /**
-        * Get the associated label for Z axis (for bidimensional signals only). It is displayed if no X axis label is defined in the setup data 
+        * Get the associated label for Z axis (for bidimensional signals only). It is displayed if no X axis label is defined in the setup data
         * definition.
-        * 
+        *
         * @return The Z label string.
         * @exception java.io.IOException
         */
