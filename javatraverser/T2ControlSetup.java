@@ -90,12 +90,13 @@ public class T2ControlSetup extends DeviceSetup
 		deviceTable1.setLabelString("In Calibration");
 		getContentPane().add(deviceTable1);
 		deviceTable1.setBounds(12,204,192,108);
-		JTabbedPane1.setAlignmentX(7.0F);
+		JTabbedPane1.setAlignmentX(1.0F);
 		getContentPane().add(JTabbedPane1);
 		JTabbedPane1.setBounds(216,216,480,192);
 		JPanel1.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		JTabbedPane1.add(JPanel1);
 		JPanel1.setBounds(2,24,475,165);
+		JPanel1.setVisible(false);
 		deviceField5.setNumCols(5);
 		deviceField5.setOffsetNid(14);
 		deviceField5.setLabelString("Kp:");
@@ -111,6 +112,7 @@ public class T2ControlSetup extends DeviceSetup
 		JPanel2.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		JTabbedPane1.add(JPanel2);
 		JPanel2.setBounds(2,24,475,165);
+		JPanel2.setVisible(false);
 		deviceField8.setNumCols(2);
 		deviceField8.setIdentifier("n1");
 		deviceField8.setOffsetNid(20);
@@ -121,7 +123,7 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField9.setLabelString("Amp. : ");
 		JPanel2.add(deviceField9);
 		deviceField10.setNumCols(4);
-		deviceField10.setOffsetNid(22);
+		deviceField10.setOffsetNid(24);
 		deviceField10.setLabelString("Freq. (Hz)");
 		JPanel2.add(deviceField10);
 		deviceField11.setNumCols(4);
@@ -181,6 +183,8 @@ public class T2ControlSetup extends DeviceSetup
 		JPanel2.add(deviceField47);
 		JPanel3.setLayout(new GridLayout(3,2,0,0));
 		JTabbedPane1.add(JPanel3);
+		JPanel3.setBounds(2,24,475,165);
+		JPanel3.setVisible(false);
 		deviceField12.setNumCols(8);
 		deviceField12.setOffsetNid(52);
 		deviceField12.setLabelString("K1:");
@@ -200,6 +204,7 @@ public class T2ControlSetup extends DeviceSetup
 		JPanel4.setLayout(new GridLayout(4,4,0,0));
 		JTabbedPane1.add(JPanel4);
 		JPanel4.setBounds(2,24,475,165);
+		JPanel4.setVisible(false);
 		deviceField17.setNumCols(2);
 		deviceField17.setIdentifier("id1");
 		deviceField17.setOffsetNid(62);
@@ -268,7 +273,8 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField32.setOffsetNid(92);
 		deviceField32.setLabelString("Phi:");
 		JPanel4.add(deviceField32);
-		JPanel3.setBounds(2,24,475,165);
+		JTabbedPane1.setSelectedIndex(0);
+		JTabbedPane1.setSelectedComponent(JPanel1);
 		JTabbedPane1.setTitleAt(0,"Intelligent Shell");
 		JTabbedPane1.setTitleAt(1,"Rot. Perturbation");
 		JTabbedPane1.setTitleAt(2,"Mode Control");
