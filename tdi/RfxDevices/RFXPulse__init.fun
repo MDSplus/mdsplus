@@ -127,10 +127,7 @@ public fun RFXPulse__init(as_is _nid, optional _method)
 		{
 			if(_start_event == _event_num)
 			{
-		/*	 	if(_output_mode > 1)
-    	    		DevPut(_nid, _N_CORRECTION, 0); 
-				else 
-		*/   		DevPut(_nid, _N_CORRECTION, -f_float(_curr_period)); 
+		  		DevPut(_nid, _N_CORRECTION, _curr_period); 
 			}
 			else
 			{

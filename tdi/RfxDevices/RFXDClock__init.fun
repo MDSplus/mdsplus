@@ -229,7 +229,7 @@ public fun RFXDClock__init(as_is _nid, optional _method)
 		_start_time = TimingGetEventTime(TimingEncodeEvent(_start_event));
 		_interval = _trigger_time - _start_time;
 		if(_start_event == _event_num)
-			_correction =  0;
+			_correction =  _gate_period;
 		else
 			_correction = _interval - long((_interval + 1D-7)/_gate_period) * _gate_period - _gate_period;
 		_effective_delay = _effective_delay - _correction;
