@@ -60,14 +60,14 @@ all :	../shlib/libXmdsShr.so \
 
 ../shlib/xmdsuil.wmd : ../bin/wmdcreate
 	../bin/wmdcreate -o ../shlib/xmdsuil.wmd
-	rm wml-uil.mm
-	rm wml-uil.sdml
 
 ../bin/wmdcreate : wmldbcreate-xmdsshr.c UilConst.h
 	cc -o $@ -DMDS_EXTENSION -I../include -I. wmldbcreate-xmdsshr.c -lXt -lXm
 
 UilConst.h : xmdsuil.wml tokens.dat
 	/usr/examples/motif/wml/wml xmdsuil.wml
+	rm wml-uil.mm
+	rm wml-uil.sdml
 
 tokens.dat : /usr/examples/motif/wml/tokens.dat
 	ln -s /usr/examples/motif/wml/tokens.dat .

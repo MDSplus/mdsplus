@@ -24,7 +24,7 @@ the_rest : ../bin/traverser \
 	mkdir ../uid
 
 ../uid/traverser.uid : traverser.uil ../uid
-	uil -wmd ../xmdsshr/xmdsuil.wmd -o $@ traverser.uil
+	uil -wmd ../shlib/xmdsuil.wmd -o $@ traverser.uil
 	
 clean :
 	- rm *.o

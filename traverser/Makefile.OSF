@@ -19,7 +19,7 @@ all : ../bin/traverser \
 	mkdir ../bin
 
 ../uid/traverser.uid : traverser.uil
-	uil -wmd ../xmdsshr/xmdsuil.wmd -o $@ $<
+	uil -wmd ../shlib/xmdsuil.wmd -o $@ $<
 	
 clean :
 	- rm *.o
