@@ -50,7 +50,7 @@ public fun TR6_3__store(as_is _nid, optional _method)
 	}
 	else
 	{
-		if((_status2 >> 6) & 1)
+		if(((_status2 >> 6) & 1)!= 0)
     	{
             DevLogErr(_nid, 'Module is not in STOP state');
             abort();
@@ -82,7 +82,7 @@ public fun TR6_3__store(as_is _nid, optional _method)
 
 /* Read and store channel range for channels 5 and 6 */
     DevCamChk(_name, CamPiow(_name, 3, 0, _w=0, 16),1,*); 
-	for(_i = 4; _i < 4; _i++)
+	for(_i = 4; _i < 6; _i++)
 	{
 		_range_code = ((_w >> (((_i - 4) * 3) + 1)) & 3);
 		if(_range_code == 0)
@@ -102,18 +102,8 @@ public fun TR6_3__store(as_is _nid, optional _method)
 
 	}
 
-	if(_w >> 11 & 1)
-		_mem_size = _512K;
-	else
-		_mem_size = _128K;
-
 /* Get trigger time */
-    _trig = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _INVALID);
-	if(_trig == _INVALID)
-	{
-	    DevLogErr(_nid, 'Cannot resolve trigger');
-		abort();
-	}
+    _trig = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), 0);
     _num_triggers = size(_trig);
 
     _pts_samples = DevNodeRef(_nid, _N_PTS); 
@@ -121,17 +111,12 @@ public fun TR6_3__store(as_is _nid, optional _method)
 
 /* Get Clock */
 	_clock = if_error(evaluate(DevNodeRef(_nid, _N_CLOCK_SOURCE)), _INVALID);
-	if(_cklock == _INVALID)
+/*	if(data(_clock) == _INVALID)
 	{
 		DevLogErr(_nid, 'Cannot resolve clock');
 		abort();
-	}
+	}*/
     _clock = execute('evaluate(`_clock)');
-
-
-
-/* Enable Readout */
-    DevCamChk(_name, CamPiow(_name, 0, 17, _w=0, 16),1,*); 
 
     for(_chan = 0; _chan < 6; _chan++)
     {
@@ -158,7 +143,6 @@ public fun TR6_3__store(as_is _nid, optional _method)
 			}
 
 			DevCamChk(_name, CamQstopw(_name, _chan, 2, _samples, _data=0, 16), 1, *);
-
 			if(_burst == 1 && _num_triggers > 0)
 			{
 				_dt = slope_of(_clock);
@@ -173,7 +157,6 @@ public fun TR6_3__store(as_is _nid, optional _method)
 			}
 			else
 				_dim = make_dim(make_window(- _pre_samples, _end_idx, _trig), _clock);
-
 
 			if(_bipolar)
 			{

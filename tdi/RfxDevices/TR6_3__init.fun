@@ -30,9 +30,17 @@ public fun TR6_3__init(as_is _nid, optional _method)
 /* Abort previous work */
     DevCamChk(_name, CamPiow(_name, 2, 25, _dummy=0, 16),1,*); 
 
+/* Read status register */
+    DevCamChk(_name, CamPiow(_name, 3, 0, _status=0, 16),1,*); 
+
+    if((_status & (1 << 11)) != 0)
+	_mem_size = _512K;
+    else
+	_mem_size = _128K;
+
 
 /* Read burst/normal mode */
-    DevNodeCvt(_nid, _N_OP_MODE, ['NORMAL', 'BURST'],[0,1], _burst = 0);
+    DevNodeCvt(_nid, _N_OP_MODE, ['NORMAL', 'BURST'],[0,1], _burst= 0);
 
 
 	_control_w1 = 0;
@@ -42,7 +50,6 @@ public fun TR6_3__init(as_is _nid, optional _method)
 		_control_w2 = 8;
 	else
 		_control_w2 = 0;
-
 
 
 /* Trigger stuff */
@@ -115,11 +122,10 @@ public fun TR6_3__init(as_is _nid, optional _method)
 			DevLogErr(_nid, "Pre trigger not supported in BURST mode");
 			abort();
 		}			
-		_act_eigths = 0;
-		while((_act_heights * _mem_size / 8) < _pts)
+		_act_eights = 0;
+		while((_act_eights * _mem_size / 8) < _pts)
 			_act_eights++;
-
-		_control_w1 = _control_w1 | ((_act_heights - 1) << 3);
+		_control_w1 = _control_w1 | ((_act_eights - 1) << 3);
 		_pts = _act_eights * _mem_size /8;
 	}
 	else /* Otherwise define active memory as mem_size, and adjust pre_trigger samples */
@@ -127,8 +133,10 @@ public fun TR6_3__init(as_is _nid, optional _method)
 		_control_w1 = _control_w1 | (7 << 3);
 		_pre_eights = 0;
 		while((_pre_eights * _mem_size / 8) < _pre_samples)
+		{
 			_pre_eights++;
-		_control_w1  = _control_w1 | (_pre_eights << _pre_samples);
+		}
+		_control_w1  = _control_w1 | _pre_eights;
 		_pre_samples = _pre_eights * _mem_size / 8;
 	}
 
@@ -137,12 +145,12 @@ public fun TR6_3__init(as_is _nid, optional _method)
 
 
 /* Write control words */
+/*write(*, _control_w1, _control_w2);*/
 
     DevCamChk(_name, CamPiow(_name, 0, 16, _control_w1, 16),1,*); 
     DevCamChk(_name, CamPiow(_name, 1, 16, _control_w2, 16),1,*); 
 
 /* Arm module */
-
     DevCamChk(_name, CamPiow(_name, 0, 9, _control_w2, 16),1,*); 
 
      return (1);
