@@ -64,7 +64,6 @@ int TreeTurnOff(int nid) { return _TreeTurnOff(DBID, nid);}
 int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci);
 
 int TreeOpenNciW(TREE_INFO *info);
-static int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state);
 static int UnlockNci(TREE_INFO *info, int node_num);
 static int SetNodeParentState(PINO_DATABASE *db, NODE *node, NCI *nci, unsigned int state);
 
@@ -768,7 +767,7 @@ static int UnlockNci(TREE_INFO *info, int node_num)
 
 +-----------------------------------------------------------------------------*/
 
-static int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state)
+int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state)
 {
   int       status;
   NCI       nci;

@@ -642,7 +642,7 @@ extern int SetDefaultNidRemote(PINO_DATABASE *dblist, int nid);
 
 extern int GetDefaultNidRemote(PINO_DATABASE *dblist, int *nid);
 
-
+extern int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state);
 
 extern int TreeCloseFiles(TREE_INFO *info);
 

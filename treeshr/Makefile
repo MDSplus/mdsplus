@@ -15,6 +15,7 @@ TreeGetNci.o \
 TreeGetRecord.o \
 TreeOpen.o \
 TreePutRecord.o \
+TreeRenameNode.o \
 TreeRemoveNodesTags.o\
 TreeSetDefault.o \
 TreeSetNci.o \
