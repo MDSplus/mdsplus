@@ -22,24 +22,24 @@ public class T2ControlSetup extends DeviceSetup
 		setDeviceTitle("Control Supervision for T2");
 		setDeviceType("T2Control");
 		getContentPane().setLayout(null);
-		setSize(654,450);
-		deviceField1.setNumCols(30);
+		setSize(654,482);
+		deviceField1.setNumCols(40);
 		deviceField1.setTextOnly(true);
 		deviceField1.setOffsetNid(1);
 		deviceField1.setLabelString("Comment: ");
 		getContentPane().add(deviceField1);
-		deviceField1.setBounds(0,12,432,40);
+		deviceField1.setBounds(0,12,612,40);
 		deviceField2.setNumCols(12);
 		deviceField2.setTextOnly(true);
 		deviceField2.setOffsetNid(2);
 		deviceField2.setLabelString("VME IP:");
 		getContentPane().add(deviceField2);
-		deviceField2.setBounds(420,12,228,40);
+		deviceField2.setBounds(432,60,228,40);
 		deviceField3.setNumCols(8);
 		deviceField3.setOffsetNid(3);
 		deviceField3.setLabelString("Frequency (Hz): ");
 		getContentPane().add(deviceField3);
-		deviceField3.setBounds(12,60,228,40);
+		deviceField3.setBounds(24,108,228,40);
 		deviceChoice1.setOffsetNid(5);
 		{
 			String[] tempString = new String[4];
@@ -53,7 +53,7 @@ public class T2ControlSetup extends DeviceSetup
 		deviceChoice1.setConvert(true);
 		deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4});
 		getContentPane().add(deviceChoice1);
-		deviceChoice1.setBounds(12,108,276,40);
+		deviceChoice1.setBounds(12,156,276,40);
 		deviceChoice2.setOffsetNid(6);
 		{
 			String[] tempString = new String[4];
@@ -67,12 +67,12 @@ public class T2ControlSetup extends DeviceSetup
 		deviceChoice2.setConvert(true);
 		deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4});
 		getContentPane().add(deviceChoice2);
-		deviceChoice2.setBounds(324,108,300,40);
+		deviceChoice2.setBounds(312,156,300,40);
 		deviceField4.setNumCols(4);
 		deviceField4.setOffsetNid(9);
 		deviceField4.setLabelString("Duration from Trigger (sec):");
 		getContentPane().add(deviceField4);
-		deviceField4.setBounds(240,60,252,40);
+		deviceField4.setBounds(252,108,252,40);
 		deviceTable1.setNumCols(2);
 		deviceTable1.setDisplayRowNumber(true);
 		{
@@ -85,9 +85,9 @@ public class T2ControlSetup extends DeviceSetup
 		deviceTable1.setOffsetNid(4);
 		deviceTable1.setLabelString("Calibration:");
 		getContentPane().add(deviceTable1);
-		deviceTable1.setBounds(24,168,192,204);
+		deviceTable1.setBounds(24,204,192,204);
 		getContentPane().add(JTabbedPane1);
-		JTabbedPane1.setBounds(240,180,396,192);
+		JTabbedPane1.setBounds(252,216,396,192);
 		JPanel1.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		JTabbedPane1.add(JPanel1);
 		JPanel1.setBounds(2,24,391,165);
@@ -121,8 +121,7 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField11.setLabelString("Init. Phase (Rad):");
 		JPanel2.add(deviceField11);
 		JPanel3.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		JTabbedPane1.add(JPanel3);
-		JPanel3.setBounds(2,24,391,165);
+		JPanel2.add(JPanel3);
 		deviceField12.setNumCols(8);
 		deviceField12.setOffsetNid(26);
 		deviceField12.setLabelString("K1:");
@@ -141,7 +140,6 @@ public class T2ControlSetup extends DeviceSetup
 		JPanel3.add(deviceField15);
 		JTabbedPane1.setTitleAt(0,"Intelligent Shell");
 		JTabbedPane1.setTitleAt(1,"Rotating Perturbation");
-		JTabbedPane1.setTitleAt(2,"Mode Control");
 		{
 			String[] tempString = new String[2];
 			tempString[0] = "INIT";
@@ -149,9 +147,14 @@ public class T2ControlSetup extends DeviceSetup
 			deviceButtons1.setMethods(tempString);
 		}
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(168,396,336,40);
+		deviceButtons1.setBounds(144,432,336,40);
 		getContentPane().add(deviceDispatch1);
-		deviceDispatch1.setBounds(516,60,131,40);
+		deviceDispatch1.setBounds(504,108,131,40);
+		deviceField16.setNumCols(25);
+		deviceField16.setOffsetNid(8);
+		deviceField16.setLabelString("Trigger time:");
+		getContentPane().add(deviceField16);
+		deviceField16.setBounds(12,60,420,40);
 		//}}
 	}
 
@@ -215,6 +218,7 @@ public class T2ControlSetup extends DeviceSetup
 	DeviceField deviceField15 = new DeviceField();
 	DeviceButtons deviceButtons1 = new DeviceButtons();
 	DeviceDispatch deviceDispatch1 = new DeviceDispatch();
+	DeviceField deviceField16 = new DeviceField();
 	//}}
 
 }
