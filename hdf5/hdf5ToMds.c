@@ -54,7 +54,7 @@ static int AddNode(const char *h5name,int member)
   int nid;
   for (i=0;i<strlen(h5name) && 
     ((h5name[i] < 'A' || h5name[i] > 'Z') &&
-     (h5name[i] < 'a' || name[i] > 'z')); i++);
+     (h5name[i] < 'a' || h5name[i] > 'z')); i++);
   if (i == strlen(h5name))
     strcat(name,"ITEM");
   else
