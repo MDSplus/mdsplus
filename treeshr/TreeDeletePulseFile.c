@@ -74,7 +74,6 @@ int       _TreeDeletePulseFile(void *dbid, int shotid, int allfiles)
   if ((status = _TreeIsOpen(dblist)) != TreeOPEN)
     return status;
 
-  
   status = _TreeOpen(&dbid_tmp, dblist->experiment, shotid, 0);
   if (status & 1)
   {
@@ -100,6 +99,7 @@ int       _TreeDeletePulseFile(void *dbid, int shotid, int allfiles)
       if (!(status & 1))
         retstatus = status;
     }
+    _TreeClose(&dbid_tmp, dblist->experiment, shotid);
   }
   return retstatus;
 }
@@ -115,6 +115,7 @@ static int  TreeDeleteTreeFiles(char *tree, int shot)
   char name[32];
   int i;
   int status = 1;
+  int retstatus = 1;
   int itype;
   char *types[] = {".tree",".characteristics",".datafile"};
   for (i=0;i<len && i < 12;i++)
@@ -153,7 +154,7 @@ static int  TreeDeleteTreeFiles(char *tree, int shot)
 	  path[i] = 0;
           sfile = strcpy(malloc(strlen(part)+strlen(name)+strlen(type)+2),part);
 	  if (strcmp(sfile+strlen(sfile)-1,TREE_PATH_DELIM))
-	    strcat(sfile,TREE_PATH_DELIM);
+	  strcat(sfile,TREE_PATH_DELIM);
 	  strcat(sfile,name);
 	  strcat(sfile,type);
           if (stat(sfile,&stat_info) == 0)
@@ -168,22 +169,21 @@ static int  TreeDeleteTreeFiles(char *tree, int shot)
       }
       if (sfile)
       {
-        DeleteFile(sfile);
+        retstatus = DeleteFile(sfile);
         free(sfile);
       }
     }
     free(path);
 	TranslateLogicalFree(pathin);
   }
-  return status;
+  return retstatus ? status : 0;
 }
 
 #if !defined(_WIN32)
 static int DeleteFile(char *src)
 {
-  char cmd[1024];
-  sprintf(cmd,"rm %s",src);
-  return system(cmd) == 0;
+  int status = remove(src);
+  return status == 0;
 }
 #endif
 
