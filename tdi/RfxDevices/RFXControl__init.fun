@@ -45,7 +45,7 @@ public fun RFXControl__init(as_is _nid, optional _method)
 
  
 	private _MAX_CONTROLS = 6;
-	private _NUM_PARAMETERS = 117;
+	private _NUM_PARAMETERS = 137;
 
 
 write(*, 'RFXControl init');

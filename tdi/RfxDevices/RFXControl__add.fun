@@ -1,7 +1,7 @@
 public fun RFXControl__add(in _path, out _nidout)
 {
 write(*,'RFXControl__add'); 
-    DevAddStart(_path, 'RFXControl', 831 + 242, _nidout);
+    DevAddStart(_path, 'RFXControl', 831 + 274, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -270,106 +270,134 @@ write(*,'RFXControl__add');
     DevAddNode(_path // ':PAR79_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
     DevAddNode(_path // ':PAR80_NAME', 'TEXT', "WaveY32", *, _nid);
     DevAddNode(_path // ':PAR80_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
-	
-
-
-
+	DevAddNode(_path // ':PAR81_NAME', 'TEXT', "WaveX33", *, _nid);
+    DevAddNode(_path // ':PAR81_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR82_NAME', 'TEXT', "WaveY33", *, _nid);
+    DevAddNode(_path // ':PAR82_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR83_NAME', 'TEXT', "WaveX34", *, _nid);
+    DevAddNode(_path // ':PAR83_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR84_NAME', 'TEXT', "WaveY34", *, _nid);
+    DevAddNode(_path // ':PAR84_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR85_NAME', 'TEXT', "WaveX35", *, _nid);
+    DevAddNode(_path // ':PAR85_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR86_NAME', 'TEXT', "WaveY35", *, _nid);
+    DevAddNode(_path // ':PAR86_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR87_NAME', 'TEXT', "WaveX36", *, _nid);
+    DevAddNode(_path // ':PAR87_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR88_NAME', 'TEXT', "WaveY36", *, _nid);
+    DevAddNode(_path // ':PAR88_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR89_NAME', 'TEXT', "WaveX37", *, _nid);
+    DevAddNode(_path // ':PAR89_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR90_NAME', 'TEXT', "WaveY37", *, _nid);
+    DevAddNode(_path // ':PAR90_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR91_NAME', 'TEXT', "WaveX38", *, _nid);
+    DevAddNode(_path // ':PAR91_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR92_NAME', 'TEXT', "WaveY38", *, _nid);
+    DevAddNode(_path // ':PAR92_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR93_NAME', 'TEXT', "WaveX39", *, _nid);
+    DevAddNode(_path // ':PAR93_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR94_NAME', 'TEXT', "WaveY39", *, _nid);
+    DevAddNode(_path // ':PAR94_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR95_NAME', 'TEXT', "WaveX40", *, _nid);
+    DevAddNode(_path // ':PAR95_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR96_NAME', 'TEXT', "WaveY40", *, _nid);
+    DevAddNode(_path // ':PAR96_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
 
 
 /* Rotating perturmation */
-    DevAddNode(_path // ':PAR81_NAME', 'TEXT', "RotPertN1", *, _nid);
-    DevAddNode(_path // ':PAR81_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR82_NAME', 'TEXT', "RotPertM1", *, _nid);
-    DevAddNode(_path // ':PAR82_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR83_NAME', 'TEXT', "RotPertAmplitude1", *, _nid);
-    DevAddNode(_path // ':PAR83_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR84_NAME', 'TEXT', "RotPertAmpAngVel1", *, _nid);
-    DevAddNode(_path // ':PAR84_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR85_NAME', 'TEXT', "RotPertAmpPhase1", *, _nid);
-    DevAddNode(_path // ':PAR85_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR86_NAME', 'TEXT', "RotPertAngVel1", *, _nid);
-    DevAddNode(_path // ':PAR86_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR87_NAME', 'TEXT', "RotPertPhase1", *, _nid);
-    DevAddNode(_path // ':PAR87_VAL', 'NUMERIC', 0., *, _nid);
-
- 
-    DevAddNode(_path // ':PAR88_NAME', 'TEXT', "RotPertN2", *, _nid);
-    DevAddNode(_path // ':PAR88_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR89_NAME', 'TEXT', "RotPertM2", *, _nid);
-    DevAddNode(_path // ':PAR89_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR90_NAME', 'TEXT', "RotPertAmplitude2", *, _nid);
-    DevAddNode(_path // ':PAR90_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR91_NAME', 'TEXT', "RotPertAmpAngVel2", *, _nid);
-    DevAddNode(_path // ':PAR91_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR92_NAME', 'TEXT', "RotPertAmpPhase2", *, _nid);
-    DevAddNode(_path // ':PAR92_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR93_NAME', 'TEXT', "RotPertAngVel2", *, _nid);
-    DevAddNode(_path // ':PAR93_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR94_NAME', 'TEXT', "RotPertPhase2", *, _nid);
-    DevAddNode(_path // ':PAR94_VAL', 'NUMERIC', 0., *, _nid);
-
- 
-    DevAddNode(_path // ':PAR95_NAME', 'TEXT', "RotPertN3", *, _nid);
-    DevAddNode(_path // ':PAR95_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR96_NAME', 'TEXT', "RotPertM3", *, _nid);
-    DevAddNode(_path // ':PAR96_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR97_NAME', 'TEXT', "RotPertAmplitude3", *, _nid);
+    DevAddNode(_path // ':PAR97_NAME', 'TEXT', "RotPertN1", *, _nid);
     DevAddNode(_path // ':PAR97_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR98_NAME', 'TEXT', "RotPertAmpAngVel3", *, _nid);
+    DevAddNode(_path // ':PAR98_NAME', 'TEXT', "RotPertM1", *, _nid);
     DevAddNode(_path // ':PAR98_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR99_NAME', 'TEXT', "RotPertAmpPhase3", *, _nid);
+    DevAddNode(_path // ':PAR99_NAME', 'TEXT', "RotPertAmplitude1", *, _nid);
     DevAddNode(_path // ':PAR99_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR100_NAME', 'TEXT', "RotPertAngVel3", *, _nid);
+    DevAddNode(_path // ':PAR100_NAME', 'TEXT', "RotPertAmpAngVel1", *, _nid);
     DevAddNode(_path // ':PAR100_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR101_NAME', 'TEXT', "RotPertPhase3", *, _nid);
+    DevAddNode(_path // ':PAR101_NAME', 'TEXT', "RotPertAmpPhase1", *, _nid);
     DevAddNode(_path // ':PAR101_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR102_NAME', 'TEXT', "RotPertAngVel1", *, _nid);
+    DevAddNode(_path // ':PAR102_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR103_NAME', 'TEXT', "RotPertPhase1", *, _nid);
+    DevAddNode(_path // ':PAR103_VAL', 'NUMERIC', 0., *, _nid);
 
  
-    DevAddNode(_path // ':PAR102_NAME', 'TEXT', "RotPertN4", *, _nid);
-    DevAddNode(_path // ':PAR102_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR103_NAME', 'TEXT', "RotPertM4", *, _nid);
-    DevAddNode(_path // ':PAR103_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR104_NAME', 'TEXT', "RotPertAmplitude4", *, _nid);
+    DevAddNode(_path // ':PAR104_NAME', 'TEXT', "RotPertN2", *, _nid);
     DevAddNode(_path // ':PAR104_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR105_NAME', 'TEXT', "RotPertAmpAngVel4", *, _nid);
+    DevAddNode(_path // ':PAR105_NAME', 'TEXT', "RotPertM2", *, _nid);
     DevAddNode(_path // ':PAR105_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR106_NAME', 'TEXT', "RotPertAmpPhase4", *, _nid);
+    DevAddNode(_path // ':PAR106_NAME', 'TEXT', "RotPertAmplitude2", *, _nid);
     DevAddNode(_path // ':PAR106_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR107_NAME', 'TEXT', "RotPertAngVel4", *, _nid);
+    DevAddNode(_path // ':PAR107_NAME', 'TEXT', "RotPertAmpAngVel2", *, _nid);
     DevAddNode(_path // ':PAR107_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR108_NAME', 'TEXT', "RotPertPhase4", *, _nid);
+    DevAddNode(_path // ':PAR108_NAME', 'TEXT', "RotPertAmpPhase2", *, _nid);
     DevAddNode(_path // ':PAR108_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR109_NAME', 'TEXT', "RotPertAngVel2", *, _nid);
+    DevAddNode(_path // ':PAR109_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR110_NAME', 'TEXT', "RotPertPhase2", *, _nid);
+    DevAddNode(_path // ':PAR110_VAL', 'NUMERIC', 0., *, _nid);
+
+ 
+    DevAddNode(_path // ':PAR111_NAME', 'TEXT', "RotPertN3", *, _nid);
+    DevAddNode(_path // ':PAR111_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR112_NAME', 'TEXT', "RotPertM3", *, _nid);
+    DevAddNode(_path // ':PAR112_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR113_NAME', 'TEXT', "RotPertAmplitude3", *, _nid);
+    DevAddNode(_path // ':PAR113_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR114_NAME', 'TEXT', "RotPertAmpAngVel3", *, _nid);
+    DevAddNode(_path // ':PAR114_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR115_NAME', 'TEXT', "RotPertAmpPhase3", *, _nid);
+    DevAddNode(_path // ':PAR115_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR116_NAME', 'TEXT', "RotPertAngVel3", *, _nid);
+    DevAddNode(_path // ':PAR116_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR117_NAME', 'TEXT', "RotPertPhase3", *, _nid);
+    DevAddNode(_path // ':PAR117_VAL', 'NUMERIC', 0., *, _nid);
+
+ 
+    DevAddNode(_path // ':PAR118_NAME', 'TEXT', "RotPertN4", *, _nid);
+    DevAddNode(_path // ':PAR118_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR119_NAME', 'TEXT', "RotPertM4", *, _nid);
+    DevAddNode(_path // ':PAR119_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR120_NAME', 'TEXT', "RotPertAmplitude4", *, _nid);
+    DevAddNode(_path // ':PAR120_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR121_NAME', 'TEXT', "RotPertAmpAngVel4", *, _nid);
+    DevAddNode(_path // ':PAR121_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR122_NAME', 'TEXT', "RotPertAmpPhase4", *, _nid);
+    DevAddNode(_path // ':PAR122_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR123_NAME', 'TEXT', "RotPertAngVel4", *, _nid);
+    DevAddNode(_path // ':PAR123_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR124_NAME', 'TEXT', "RotPertPhase4", *, _nid);
+    DevAddNode(_path // ':PAR124_VAL', 'NUMERIC', 0., *, _nid);
 
  /* Mode Control */
 
-    DevAddNode(_path // ':PAR109_NAME', 'TEXT', "ModeControlKp", *, _nid);
-    DevAddNode(_path // ':PAR109_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR110_NAME', 'TEXT', "ModeControlKi", *, _nid);
-    DevAddNode(_path // ':PAR110_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR111_NAME', 'TEXT', "ModeControlKd", *, _nid);
-    DevAddNode(_path // ':PAR111_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR112_NAME', 'TEXT', "K4", *, _nid);
-    DevAddNode(_path // ':PAR112_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR113_NAME', 'TEXT', "K5", *, _nid);
-    DevAddNode(_path // ':PAR113_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR125_NAME', 'TEXT', "ModeControlKp", *, _nid);
+    DevAddNode(_path // ':PAR125_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR126_NAME', 'TEXT', "ModeControlKi", *, _nid);
+    DevAddNode(_path // ':PAR126_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR127_NAME', 'TEXT', "ModeControlKd", *, _nid);
+    DevAddNode(_path // ':PAR127_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR128_NAME', 'TEXT', "K4", *, _nid);
+    DevAddNode(_path // ':PAR128_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR129_NAME', 'TEXT', "K5", *, _nid);
+    DevAddNode(_path // ':PAR129_VAL', 'NUMERIC', 0., *, _nid);
 
 /* Simulink Parameters */
-    DevAddNode(_path // ':PAR114_NAME', 'TEXT', "SimulinkK1", *, _nid);
-    DevAddNode(_path // ':PAR114_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR115_NAME', 'TEXT', "SimulinkK2", *, _nid);
-    DevAddNode(_path // ':PAR115_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR116_NAME', 'TEXT', "SimulinkK3", *, _nid);
-    DevAddNode(_path // ':PAR116_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR117_NAME', 'TEXT', "SimulinkK4", *, _nid);
-    DevAddNode(_path // ':PAR117_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR118_NAME', 'TEXT', "SimulinkK5", *, _nid);
-    DevAddNode(_path // ':PAR118_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR119_NAME', 'TEXT', "SimulinkK6", *, _nid);
-    DevAddNode(_path // ':PAR119_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR120_NAME', 'TEXT', "SimulinkK7", *, _nid);
-    DevAddNode(_path // ':PAR120_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR121_NAME', 'TEXT', "SimulinkK8", *, _nid);
-    DevAddNode(_path // ':PAR121_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
+    DevAddNode(_path // ':PAR130_NAME', 'TEXT', "SimulinkK1", *, _nid);
+    DevAddNode(_path // ':PAR130_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
+    DevAddNode(_path // ':PAR131_NAME', 'TEXT', "SimulinkK2", *, _nid);
+    DevAddNode(_path // ':PAR131_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
+    DevAddNode(_path // ':PAR132_NAME', 'TEXT', "SimulinkK3", *, _nid);
+    DevAddNode(_path // ':PAR132_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
+    DevAddNode(_path // ':PAR133_NAME', 'TEXT', "SimulinkK4", *, _nid);
+    DevAddNode(_path // ':PAR133_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
+    DevAddNode(_path // ':PAR134_NAME', 'TEXT', "SimulinkK5", *, _nid);
+    DevAddNode(_path // ':PAR134_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
+    DevAddNode(_path // ':PAR135_NAME', 'TEXT', "SimulinkK6", *, _nid);
+    DevAddNode(_path // ':PAR135_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
+    DevAddNode(_path // ':PAR136_NAME', 'TEXT', "SimulinkK7", *, _nid);
+    DevAddNode(_path // ':PAR136_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
+    DevAddNode(_path // ':PAR137_NAME', 'TEXT', "SimulinkK8", *, _nid);
+    DevAddNode(_path // ':PAR137_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
 
 
 

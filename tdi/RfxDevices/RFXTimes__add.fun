@@ -1,6 +1,6 @@
 public fun RFXTimes__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXTimes', 35, _nidout);
+    DevAddStart(_path, 'RFXTimes', 39, _nidout);
     DevAddNode(_path // ':CLOSE_PNSS', 'NUMERIC', *, *, _nid);
 	tcl('add tag '//_path //':CLOSE_PNSS T_CLOSE_PNSS');
     DevAddNode(_path // ':CLOSE_PP1', 'NUMERIC', *, *, _nid);
@@ -67,8 +67,20 @@ public fun RFXTimes__add(in _path, out _nidout)
 	tcl('add tag '//_path //':STOP_PC T_STOP_PC');
     DevAddNode(_path // ':START_RFX', 'NUMERIC', -5., *, _nid);
 	tcl('add tag '//_path //':START_RFX T_START_RFX');
-    DevAddNode(_path // ':OPEN_BPS', 'NUMERIC', *, *, _nid);
-	tcl('add tag '//_path //':OPEN_BPS T_OPEN_BPS');
+
+    DevAddNode(_path // ':EN_CHOP_TC', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':EN_CHOP_TC T_EN_CHOP_TC');
+    DevAddNode(_path // ':EN_INV_TC', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':EN_INV_TC T_EN_INV_TC');
+    DevAddNode(_path // ':FOR_PWM_TC', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':FOR_PWM_TC T_FOR_PWM_TC');
+    DevAddNode(_path // ':CLOSE_IS_TC', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':CLOSE_IS_TC T_CLOSE_IS_TC');
+    DevAddNode(_path // ':CROWB_ON_TC', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':CROWB_ON_TC T_CROWBAR_ON_TC');
+
+
+
     DevAddEnd();
 }
 

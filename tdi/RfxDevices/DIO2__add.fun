@@ -24,7 +24,7 @@ public fun DIO2__add(in _path, out _nidout)
    		DevAddNode(_cn // ':INIT_LEVEL_1', 'TEXT', 'LOW', *, _nid);
    		DevAddNode(_cn // ':INIT_LEVEL_2', 'TEXT', 'LOW', *, _nid);
      	DevAddNode(_cn // ':DUTY_CYCLE', 'NUMERIC', 50, *, _nid);
-    	DevAddNode(_cn // ':TRIGGER', 'NUMERIC', *, *, _nid);
+    	DevAddNode(_cn // ':TRIGGER', 'NUMERIC', 0, *, _nid);
 
      	DevAddNode(_cn // ':CLOCK', 'NUMERIC', *, *, _nid);
      	DevAddNode(_cn // ':TRIGGER_1', 'NUMERIC', *, *, _nid);
@@ -37,7 +37,7 @@ public fun DIO2__add(in _path, out _nidout)
     DevAddNode(_path // ':SYNCH', 'TEXT', 'NO', *, _nid);
     DevAddNode(_path // ':SYNCH_EVENT', 'TEXT', *, *, _nid);
 
-    DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 50,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 25,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path//':STORE_ACTION', 'STORE','STORE', 2,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }

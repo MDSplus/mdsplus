@@ -142,7 +142,7 @@ public fun TR10__init(as_is _nid, optional _method)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		execute(_cmd);
-	    _status = MdsValue('TR10HWInit(0, $1, $2, $3)', _board_id, _clk_div, _pts);
+	    _status = MdsValue('TR10HWInit(0, $1, $2, $3, $4, $5)', _board_id, _clk_div, _pts, _ext_trig, _trig_edge);
 		MdsDisconnect();
 		if(_status == 0)
 		{
