@@ -1050,6 +1050,14 @@ and c then donot define the macro.
 #define FortranMdsSetDefault mdssetdefault_
 #define MdsPut mdsput_
 #define MdsValue mdsvalue_
+#elif defined(__hpux)
+#define FortranMdsConnect mdsconnect
+#define FortranMdsClose mdsclose
+#define FortranMdsDisconnect mdsdisconnect
+#define FortranMdsOpen mdsopen
+#define FortranMdsSetDefault mdssetdefault
+#define MdsPut mdsput
+#define MdsValue mdsvalue
 #endif
 
 #ifdef FortranMdsConnect
