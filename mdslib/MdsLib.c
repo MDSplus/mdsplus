@@ -462,7 +462,7 @@ int MdsValue(char *expression, ...)
       if (length && numbytes) {
 	if (arg->ndims == 0 ) 
 	  {
-	    *length = MdsValueLength(numbytes,dsc);
+	    *length = MdsValueLength(numbytes,dscAnswer);
 	  }
 	else {
 	  int i;
