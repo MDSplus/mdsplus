@@ -235,6 +235,7 @@ int a14___store(struct descriptor *niddsc, InStoreStruct *setup)
     case 2:  
     case 3:  min_idx = 0;
 	     max_idx = memptr ? memptr-1 : memsize_idx;
+             if (max_idx > memsize_idx) max_idx=memsize_idx;
              start_addr = 0;
              break;
     default: min_idx = 0;
