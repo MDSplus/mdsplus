@@ -27,7 +27,10 @@ public fun TRCF__init(as_is _nid, optional _method)
     private _INVALID = 10E20;
 
      _name = DevNodeRef(_nid, _N_NAME);
+
+
     DevCamChk(_name, CamPiow(_name, 0,28, _dummy=0, 16),1,1); 
+
 /*Check if CADF or TRCF */
     _control_reg = 1 << 15;
     _status=DevCamChk(_name, CamPiow(_name, 2,16, _control_reg,24),1,*); 
