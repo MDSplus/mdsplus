@@ -98,10 +98,6 @@ SOURCE=.\TdiShrExt.c
 
 SOURCE=.\tdishrext.def
 # End Source File
-# Begin Source File
-
-SOURCE=.\xslmdsunix.c
-# End Source File
 # End Group
 # Begin Group "Header Files"
 

@@ -50,13 +50,12 @@ extern int TDI$ZERO();
 extern int   MdsOpen(SOCKET sock, char *tree, int shot);
 extern int   MdsClose(SOCKET sock);
 extern int   MdsCopyDxXd(struct descriptor *in, struct descriptor_xd *out);
+extern int   TdiCvt();
 
 #define MIN(a,b) (((a) < (b)) ? (a) : (b))
 #define MAX(a,b) (((a) > (b)) ? (a) : (b))
 
 #define LOCAL "local"
-#define SERVERTEST    "::"
-#define PORTTEST      ":"
 #define STRLEN 128
 
 /* Variables that stay set between calls */
@@ -85,7 +84,7 @@ struct  descriptor_xd *rMdsCurrent();
 struct  descriptor_xd *rgetenv();
 
 static  SOCKET AddConnection(char *server);
-static  int MdsToIp(struct descriptor *tdiarg ,short *len);
+static  int MdsToIp(struct descriptor **tdiarg ,short *len);
 static  int IpToMds(int dtypein);
 
 /* Test routines */
@@ -220,84 +219,34 @@ static SOCKET AddConnection(char *server)
    return(nsock);
 }
 
-/* mdsopen and server connect */
-int rMdsOpen(char *treein, int *shotin)
+/* mds server connect */
+int rMdsConnect(char *hostin)
 {
-   char *server=NULL;
-   char *sptr;
-   char trees[STRLEN], temp[STRLEN];
-   char *tree=trees;
-   int status;
-   SOCKET nsock;
-
-   strcpy(trees,treein);	       /* get a copy */
+   char host[STRLEN];
+   unsigned int i;
+   if (hostin == NULL)
+     return(0);
 /* Convert to lower case for comparisons */
-   for(sptr=trees+strlen(trees);sptr >= trees;sptr--)
-      *sptr = tolower(*sptr);
-/* Look for server in tree */
-   if( (sptr =strstr(trees,SERVERTEST)) != NULL) {
-      *sptr = '\0';		       /* terminate the new server string */
-      strcpy(temp,trees);	       /* copy server string into temp */
-      server = temp;		       /* point server to new string */
-      tree = sptr+strlen(SERVERTEST);  /* skip over initial part of string */
-      if(!strcmp(server,LOCAL)) {
-	 strcpy(serv,LOCAL);
-	 sock = INVALID_SOCKET;
-	 return(sock);
-      }
-/* check to see if a port was requested */
-      if( (sptr =strstr(tree,PORTTEST)) != NULL) {
-	 strcat(server,sptr);       /* add port to end */
-	 *sptr = '\0';
-      }
-   } else {
-/* If there is a socket open, make it the default */
-      if(sock != INVALID_SOCKET)
-      	server = serv;
-      else if(server == NULL)
-      	return(0);			       /* Just Incase somebody calls routine with no string */
+   for(i=0; i<(STRLEN-1) && i<strlen(hostin); i++)
+     host[i] = tolower(hostin[i]);
+   host[i] = 0;
+   if(!strcmp(host,LOCAL)) {
+	   strcpy(serv,LOCAL);
+	   sock = INVALID_SOCKET;
+	   return(sock);
    }
 /* If no socket, or server name has changed */
-   if((sock == INVALID_SOCKET) || strcmp(server,serv) ) {
-      if((nsock = AddConnection(server)) == INVALID_SOCKET)  {
-	 *serv = '\0';
-	 sock  = INVALID_SOCKET;
-	 return(0);		       /* no connection obtained */
+   if((sock == INVALID_SOCKET) || strcmp(host,serv) ) {
+      if((sock = AddConnection(host)) == INVALID_SOCKET)  {
+        *serv = '\0';
+	      return(0);		       /* no connection obtained */
       } else  {
-	 sock = nsock;
-	 strcpy(serv,server);	       /* copy new name to memory, keep socket open */
+	       strcpy(serv,host);	       /* copy new name to memory, keep socket open */
       }
    }
-#ifdef DEBUG
-   printf("mdsopen: got server [%s] and tree [%s] socket %lx\n",server,tree,sock);
-#endif
-/* If string empty, or no shot given (ie string) do not perform mdsopen */
-   if(strlen(tree) && (shotin !=NULL)) {
-/* Open the shot and get status */
-#ifdef DEBUG
-      printf("Opening server [%s] tree [%s] with shot [%d]\n",server,tree,*shotin);
-#endif
-      status = MdsOpen(sock,tree,*shotin);
-#ifdef DEBUG
-      printf("mdsopen: status [%d]\n",status);
-#endif
-   } else
-     status = sock;
-   return(status);
+   return(sock);
 }
 
-/* mdsclose and server connect */
-int rMdsClose() {
-   int status;
-	
-   if(sock != INVALID_SOCKET) {
-      status= MdsClose(sock);
-   } else  {
-      printf("mdsclose: warning, communication socket closed\n");
-      status = 0;
-   }
-   return(status);
-}
 /* mdsdisconnect ==================================================================== */
 int rMdsDisconnect(int all) {
    int status = 1;
@@ -386,13 +335,11 @@ struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)  /**** NOTE:
 /* Make up the correct packet for SendArg */
       switch(tdiarg->class) {
        case CLASS_S:		       /* fixed-length descriptor */
-	 ptr = (unsigned char *)tdiarg->pointer;
 	 ndims=0;
 	 num = 1;
 	 break;
        case CLASS_A:		       /* Array descriptor */
 	 desca = (struct descriptor_a *)tdiarg;
-	 ptr = (unsigned char *)desca->pointer;
 	 num = desca->arsize/desca->length;
 	 ndims = desca->dimct;	       /* dimensions count */
 	 if(desca->aflags.coeff)  {
@@ -404,8 +351,9 @@ struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)  /**** NOTE:
 	 break;
       }
 /* translate the type from Mds to MdsIp descriptors (dtype copied to avoid conflicts from tdi) */
-      if(!(dtype = MdsToIp(tdiarg, &len)))
+      if(!(dtype = MdsToIp(&tdiarg, &len)))
       	return(0);
+	 ptr = (unsigned char *)tdiarg->pointer;
 #ifdef DEBUG
       printf("SendArg sock[%d],idx[%d],dtype[%d],nargs[%d],len[%d],ndims[%d]\n",
 	     sock,i,dtype,nargs,len,ndims);
@@ -455,69 +403,96 @@ _ans=build_call(8,'BpdMdsUnix','rMdsOpen','localhost::')
 _a=build_call(24,'BpdMdsUnix','rMdsValue',descr('$'),descr(2..4), xd([]),val(0ul))
 #endif
 /* definitions from ipdesc.h for MdsIp descriptor */
-#define IDTYPE_MISSING 0
-#define IDTYPE_UCHAR   2
-#define IDTYPE_USHORT  3
-#define IDTYPE_ULONG   4
-#define IDTYPE_CHAR    6
-#define IDTYPE_SHORT   7
-#define IDTYPE_LONG    8
-#define IDTYPE_FLOAT   10
-#define IDTYPE_DOUBLE  11
-#define IDTYPE_COMPLEX 12
-#define IDTYPE_CSTRING 14
-static int MdsToIp(struct descriptor *tdiarg ,short *len) {
+static int MdsToIp(struct descriptor **tdiarg ,short *len) {
    int dtype;
    short llen;
+   static EMPTYXD(xd);
 
    if(len == NULL)
      len = &llen;		       /* ensure writing is not invalid */
 
-   switch(tdiarg->dtype) {
+   switch((*tdiarg)->dtype) {
     case DTYPE_BU:	/*      2		byte (unsigned);  8-bit unsigned quantity */
-      dtype = IDTYPE_UCHAR;
+      dtype = DTYPE_UCHAR;
       *len = sizeof(char); break;
     case DTYPE_WU:	/*      3		word (unsigned);  16-bit unsigned quantity */
-      dtype = IDTYPE_USHORT;
+      dtype = DTYPE_USHORT;
       *len = sizeof(short); break;
     case DTYPE_LU:	/* 	4		longword (unsigned);  32-bit unsigned quantity */
-      dtype = IDTYPE_ULONG;
+      dtype = DTYPE_ULONG;
       *len = sizeof(int); break;
+    case DTYPE_QU: /* 5 quadword (unsigned); 64-bit unsigned quantity */
+      dtype = DTYPE_ULONGLONG;
+      *len = 8; break;
     case DTYPE_B:	/* 	6		byte integer (signed);  8-bit signed 2's-complement integer */
-      dtype = IDTYPE_CHAR;
+      dtype = DTYPE_CHAR;
       *len = sizeof(char); break;
     case DTYPE_W:	/* 	7		word integer (signed);  16-bit signed 2's-complement integer */
-      dtype = IDTYPE_SHORT;
+      dtype = DTYPE_SHORT;
       *len = sizeof(short); break;
     case DTYPE_L:	/* 	8		longword integer (signed);  32-bit signed 2's-complement integer */
-      dtype = IDTYPE_LONG;
+      dtype = DTYPE_LONG;
       *len = sizeof(int); break;
+    case DTYPE_Q: /*  9   quadword integer (signed); 64-bit signed 2's-complement integer */
+      dtype = DTYPE_LONGLONG;
+      *len = 8; break;
     case DTYPE_T:	/* 	14		character string;  a single 8-bit character or a sequence of characters */
-      dtype = IDTYPE_CSTRING;
-      *len = tdiarg->length ? tdiarg->length : (tdiarg->pointer ? strlen(tdiarg->pointer) : 0); break;
+      dtype = DTYPE_CSTRING;
+      *len = (*tdiarg)->length ? (*tdiarg)->length : ((*tdiarg)->pointer ? strlen((*tdiarg)->pointer) : 0); break;
     case DTYPE_F:	/* 	10		F_floating;  32-bit single-precision floating point */
     case DTYPE_FS:	/*      52		IEEE float basic single S */
-      dtype = IDTYPE_FLOAT;
+      if ((*tdiarg)->dtype != DTYPE_NATIVE_FLOAT)
+      {
+        static char tmp[4];
+        static struct descriptor mold = {4,DTYPE_NATIVE_FLOAT,CLASS_S,tmp};
+        TdiCvt(*tdiarg,&mold,&xd MDS_END_ARG);
+        *tdiarg = xd.pointer;
+      }
+      dtype = DTYPE_FLOAT;
       *len = sizeof(float); break;
+    case DTYPE_D:
+    case DTYPE_G:
     case DTYPE_FT:	/*      53              IEEE float basic double T */
-      dtype = IDTYPE_DOUBLE;
+      if ((*tdiarg)->dtype != DTYPE_NATIVE_DOUBLE)
+      {
+        static char tmp[8];
+        static struct descriptor mold = {8,DTYPE_NATIVE_DOUBLE,CLASS_S,tmp};
+        TdiCvt(*tdiarg,&mold,&xd MDS_END_ARG);
+        *tdiarg = xd.pointer;
+      }
+      dtype = DTYPE_DOUBLE;
       *len = sizeof(double); break;
+    case DTYPE_FC:
     case DTYPE_FSC:	/*      54		IEEE float basic single S complex */
-      dtype = IDTYPE_COMPLEX;
+      if ((*tdiarg)->dtype != DTYPE_FLOAT_COMPLEX)
+      {
+        static char tmp[8];
+        static struct descriptor mold = {8,DTYPE_FLOAT_COMPLEX,CLASS_S,tmp};
+        TdiCvt(*tdiarg,&mold,&xd MDS_END_ARG);
+        *tdiarg = xd.pointer;
+      }
+      dtype = DTYPE_COMPLEX;
       *len = sizeof(float)*2; break;
+    case DTYPE_DC:
+    case DTYPE_GC:
+    case DTYPE_FTC:	/*      54		IEEE float basic single S complex */
+      if ((*tdiarg)->dtype != DTYPE_DOUBLE_COMPLEX)
+      {
+        static char tmp[16];
+        static struct descriptor mold = {16,DTYPE_DOUBLE_COMPLEX,CLASS_S,tmp};
+        TdiCvt(*tdiarg,&mold,&xd MDS_END_ARG);
+        *tdiarg = xd.pointer;
+      }
+      dtype = DTYPE_COMPLEX_DOUBLE;
+      *len = sizeof(float)*2; break;
+    
+    
     case DTYPE_Z:	/*      0		unspecified */
-      dtype = IDTYPE_MISSING;
+      dtype = 0;
       *len = 0; break;
-    case DTYPE_QU:	/* 	5		quadword (unsigned);  64-bit unsigned quantity */
-    case DTYPE_Q:	/* 	9		quadword integer (signed);  64-bit signed 2's-complement integer */
-    case DTYPE_D:	/* 	11		D_floating;  64-bit double-precision floating point */
-    case DTYPE_G:	/* 	27		G_floating;  64-bit double-precision floating point */
     case DTYPE_H:	/* 	28		H_floating;  128-bit quadruple-precision floating point */
-    case DTYPE_FC:	/* 	12		F_floating complex */
-    case DTYPE_DC:	/* 	13		D_floating complex */
     case DTYPE_OU:	/* 	25		octaword (unsigned);  128-bit unsigned quantity */
     case DTYPE_O:	/* 	26		octaword integer (signed);  128-bit signed 2's-complement integer */
-    case DTYPE_GC:	/* 	29		G_floating complex */
     case DTYPE_HC:	/* 	30		H_floating complex */
     case DTYPE_CIT:	/* 	31		COBOL Intermediate Temporary */
     case DTYPE_VT:	/* 	37		varying character string;  16-bit count, followed by a string */
@@ -530,9 +505,8 @@ static int MdsToIp(struct descriptor *tdiarg ,short *len) {
     case DTYPE_P:	/* 	21		packed decimal string */
     case DTYPE_V:	/* 	1		aligned bit string */
     case DTYPE_VU:	/* 	34		unaligned bit string */
-    case DTYPE_FTC:	/*      55		IEEE float basic double T complex */
     default :
-      printf("Descriptor type [%d]\n not handled\n",tdiarg->dtype);
+      printf("Descriptor type [%d]\n not handled\n",(*tdiarg)->dtype);
       *len=dtype=0;
    }
    return(dtype);
@@ -540,27 +514,32 @@ static int MdsToIp(struct descriptor *tdiarg ,short *len) {
 static int IpToMds(int dtypein) {
    int dtype;
    switch(dtypein) {
-    case IDTYPE_UCHAR :
+    case DTYPE_UCHAR :
       dtype = DTYPE_BU;break;	       /*      2		byte (unsigned);  8-bit unsigned quantity */
-    case IDTYPE_USHORT :
+    case DTYPE_USHORT :
       dtype = DTYPE_WU;break;	       /*      3		word (unsigned);  16-bit unsigned quantity */
-    case IDTYPE_ULONG :
+    case DTYPE_ULONG :
       dtype = DTYPE_LU;break;	       /*      4		longword (unsigned);  32-bit unsigned quantity */
-    case IDTYPE_CHAR :
+    case DTYPE_ULONGLONG :
+      dtype = DTYPE_QU;break;        /*      5    quadword (unsigned); 64-bit unsigned quantity */
+    case DTYPE_CHAR :
       dtype = DTYPE_B;break;	       /*      6		byte integer (signed);  8-bit signed 2's-complement integer */
-    case IDTYPE_SHORT :
+    case DTYPE_SHORT :
       dtype = DTYPE_W;break;	       /*      7		word integer (signed);  16-bit signed 2's-complement integer */
-    case IDTYPE_LONG :
+    case DTYPE_LONG :
       dtype = DTYPE_L;break;	       /*      8		longword integer (signed);  32-bit signed 2's-complement integer */
-    case IDTYPE_CSTRING :
+    case DTYPE_LONGLONG:
+      dtype = DTYPE_Q;break;         /*      9    quadword integer (signed);  64-bit signed 2's-complement integer */
+    case DTYPE_FLOAT :
+      dtype = DTYPE_NATIVE_FLOAT;break; /*  10    float 32-bit */
+    case DTYPE_DOUBLE :
+      dtype = DTYPE_NATIVE_DOUBLE;break; /* 11    double 64-bit */
+    case DTYPE_COMPLEX :
+      dtype = DTYPE_FLOAT_COMPLEX;break; /* 12    complex 32-bit real and imaginary */
+    case DTYPE_COMPLEX_DOUBLE :
+      dtype = DTYPE_DOUBLE_COMPLEX;break;/* 13    complex 64-bit real and imaginary */
+    case DTYPE_CSTRING :
       dtype = DTYPE_T;break;	       /*     14		character string;  a single 8-bit character or a sequence of characters */
-    case IDTYPE_FLOAT :
-      dtype = DTYPE_F;		       /*     10		F_floating;  32-bit single-precision floating point */
-      dtype = DTYPE_FS;break;	       /*     52		IEEE float basic single S */
-    case IDTYPE_DOUBLE :
-      dtype = DTYPE_FT;break;	       /*     53              IEEE float basic double T */
-    case IDTYPE_COMPLEX :
-      dtype = DTYPE_FSC;break;	       /*     54		IEEE float basic single S complex */
    }
    return(dtype);
 }
