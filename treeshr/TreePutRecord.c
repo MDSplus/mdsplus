@@ -492,7 +492,7 @@ int TreeLockDatafile(TREE_INFO *info, int readonly, int offset)
   flock_info.l_type = readonly ? F_RDLCK : F_WRLCK;
   flock_info.l_whence = offset >= 0 ? SEEK_SET : SEEK_END;
   flock_info.l_start = offset >= 0 ? offset : 0;
-  flock_info.l_len = offset >= 0 ? 12 : 0x7fffffff;
+  flock_info.l_len = offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3);
   return (fcntl(readonly ? info->data_file->get : info->data_file->put,F_SETLKW, &flock_info) != -1) ? 
           TreeSUCCESS : TreeFAILURE;
 }
