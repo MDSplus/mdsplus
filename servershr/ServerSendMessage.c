@@ -124,7 +124,7 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, int *so
   short port;
   int sock;
   int flags = 0;
-  int status = 0;
+  int status = ServerPATH_DOWN;
   int jobid;
   int i;
 
@@ -607,8 +607,6 @@ int ServerConnect(char *server_in)
   return(sock);
 }
 
-#include <sys/ioctl.h>
-#include <stropts.h>
 
 static void DoMessage(Client *c, fd_set *fdactive)
 {

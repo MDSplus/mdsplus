@@ -83,7 +83,7 @@ static pthread_t WorkerThread;
 static pthread_cond_t JobWaitCondition;
 static pthread_mutex_t JobWaitMutex;
 static char *current_job_text = 0;
-static int Debug = 1;
+static int Debug = 0;
 static int QueueLocked = 0;
 int ProgLoc = 0;
 static int WorkerDied = 0;
