@@ -5,6 +5,10 @@
 
 int TreeCallHook(TreeshrHookType htype, TREE_INFO *info)
 {
+#ifdef HAVE_VXWORKS_H
+  return 1;
+}
+#else
   static DESCRIPTOR(image,"TreeShrHooks");
   static DESCRIPTOR(rtnname,"Notify");
   static int (*rtn)(TreeshrHookType,char *, int) = 0;
@@ -19,3 +23,4 @@ int TreeCallHook(TreeshrHookType htype, TREE_INFO *info)
     rtn = (int (*)(TreeshrHookType,char *,int))-1;
   return status;
 }
+#endif
