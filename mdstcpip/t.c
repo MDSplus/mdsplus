@@ -9,7 +9,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 int main( int argc, void **argv)
 {
   struct descrip ans;
-  long sock = ConnectToMds("cmoda.pfc.mit.edu");
+  long sock = ConnectToMds("198.125.176.13");
   if (sock != -1)
   {
     printf("status from MdsOpen = %d\n",MdsOpen(sock,"CMOD",0));

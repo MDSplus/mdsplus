@@ -572,7 +572,6 @@ static SOCKET ConnectToPort(char *host, char *service)
   static int one=1;
   long sendbuf = 32768,recvbuf = 32768;
 
-  
   hp = gethostbyname(host);
 #ifdef _WIN32
   if ((hp == NULL) && (WSAGetLastError() == WSANOTINITIALISED))
@@ -584,6 +583,15 @@ static SOCKET ConnectToPort(char *host, char *service)
 	  hp = gethostbyname(host);
   }
 #endif
+  if (hp == NULL)
+  {
+    unsigned int part1,part2,part3,part4;
+    if (sscanf(host,"%d.%d.%d.%d",&part1,&part2,&part3,&part4) == 4)
+    {
+      int addr = part1 * 0x1000000 + part2 * 0x10000 + part3 * 0x100 + part4; 
+      hp = gethostbyaddr(&addr, 4, AF_INET);
+    }
+  }
   if (hp == NULL)
   {
     printf("Error in MDSplus ConnectToPort: %s unknown\n",host);
