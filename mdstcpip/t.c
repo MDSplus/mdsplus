@@ -12,7 +12,7 @@ int main( int argc, void **argv)
   struct descrip ans;
   float val = 9876;
   struct descrip vald = {DTYPE_FLOAT,0};
-  long sock = ConnectToMds("lost.pfc.mit.edu:9000");
+  long sock = ConnectToMds((argc > 1) ? argv[1] : "lost.pfc.mit.edu:9000");
   if (sock != -1)
   {
     printf("status from MdsOpen = %d\n",MdsOpen(sock,"main",-1));
