@@ -696,7 +696,7 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,char *op
 #endif
 				if (file == NULL)
 				{
-					//		  perror("Error opening tree file");
+					perror("Error opening tree file");
 					free(resnam);
 					resnam = NULL;
 				}

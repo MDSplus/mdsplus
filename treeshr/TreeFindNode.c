@@ -1140,8 +1140,6 @@ static int BsearchCompare(const void *this_one, const void *compare_one)
   return strncmp((char *)tsearch->tag, (char *)tag, sizeof(TAG_NAME));
 }
 
-extern int TREE$_SEARCH_VM_ZONE;
-
 int TreeFindParent(PINO_DATABASE *dblist, char *path_ptr, NODE **node_ptrptr, char **namedsc_ptr, SEARCH_TYPE *type_ptr)
 {
   static SEARCH_CONTEXT ctx[MAX_SEARCH_LEVELS];
