@@ -9,6 +9,7 @@
 #include <treeshr.h>
 #include <ncidef.h>
 #include <libroutines.h>
+#include <usagedef.h>
 
 extern struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj);
 extern jobject DescripToObject(JNIEnv *env, struct descriptor *desc);
@@ -16,38 +17,50 @@ extern void FreeDescrip(struct descriptor *desc);
 
 extern int TdiCompile();
 
-static char **getDeviceFields(char *deviceName, int *num_fields)
+struct descriptor_xd *getDeviceFields(char *deviceName)
 {
 	int status, nid, curr_nid, i;
-	char **names;
+	char *names;
 	static int conglomerate_nids, conglomerate_nids_len;
 	struct nci_itm nci_list[] = 
 	{{4, NciNUMBER_OF_ELTS, &conglomerate_nids, &conglomerate_nids_len}, 
 	{NciEND_OF_LIST, 0, 0, 0}};
-
+	EMPTYXD(xd);
+	struct descriptor dsc = {0, DTYPE_T, CLASS_S, 0};
+	char log_string[4096];
 
 	conglomerate_nids = 0;
-	status = TreeOpenNew("device", -1);
-	if(!(status & 1)) return NULL;
+	sprintf(log_string, "device_beans_path=%s", getenv("HOME"));
+	putenv(log_string);
+	printf("\n%s\n", getenv("device_beans_path"));
+	status = TreeOpenNew("device_beans", 1);
+	printf(MdsGetMsg(status));
+	if(!(status & 1)) return &xd;
+	status = TreeAddNode("Boh", &nid, TreeUSAGE_STRUCTURE);
+	printf(MdsGetMsg(status));
+	TreeSetDefaultNid(nid);
 	status = TreeAddConglom("TEST", deviceName, &nid);
+	printf(MdsGetMsg(status));
 	if(status & 1) status = TreeGetNci(nid, nci_list);
 	if(!(status & 1) || conglomerate_nids == 0) 
 	{
 		TreeQuitTree("TEST", -1);
-		return NULL;
+		return &xd;
 	}
 	conglomerate_nids--;
-	names = (char **)malloc(sizeof(char *) * conglomerate_nids);
+	names = (char *)malloc(256 * conglomerate_nids);
 	TreeSetDefaultNid(nid);
 	curr_nid = nid + 1;
+	names[0] = 0;
 	for(i = 0; i < conglomerate_nids; i++, curr_nid++)
-	{
-		names[i] = TreeGetMinimumPath(&nid, curr_nid);
-//		printf(names[i]);
-	}
+	    sprintf(&names[strlen(names)], "%s ", TreeGetMinimumPath(&nid, curr_nid));
 	TreeQuitTree("TEST", -1);
-	*num_fields = conglomerate_nids;
-	return names;
+	dsc.length = strlen(names);
+	dsc.pointer = names;
+	MdsCopyDxXd(&dsc, &xd);
+	printf(names);
+	free(names);
+	return &xd;
 }
 
 
@@ -170,6 +183,8 @@ JNIEXPORT jobject JNICALL Java_Database_getData
   EMPTYXD(xd);
   EMPTYXD(out_xd);
   jobject ris;
+
+printf("\nParte Java_Database_getData\n");
 
 
   cls = (*env)->GetObjectClass(env, jnid);
@@ -794,30 +809,4 @@ JNIEXPORT void JNICALL Java_Database_doAction
 }
   
  
-JNIEXPORT jobjectArray JNICALL Java_Database_getDeviceComponents
-  (JNIEnv *env, jobject obj, jstring jname)
-{
-	const char *name = (*env)->GetStringUTFChars(env, jname, 0);
-	int num_fields, i;
-	jobjectArray jfields;
-	jclass string_cls = (*env)->FindClass(env, "java/lang/String");
-	jstring jfield; 
-
-	char **fields = getDeviceFields((char *)name, &num_fields);
-	(*env)->ReleaseStringUTFChars(env, jname, name);
-	if(fields == NULL) return NULL;
-
-	jfields = (*env)->NewObjectArray(env, num_fields, string_cls, 0); 
-	for(i = 0; i < num_fields; i++)
-    {
-		jfield = (*env)->NewStringUTF(env, fields[i]);
-		TreeFree(fields[i]);
-		(*env)->SetObjectArrayElement(env, jfields, i, jfield);
-    }
-	free((char *)fields);
-	return jfields;
-}
-
-
-
 

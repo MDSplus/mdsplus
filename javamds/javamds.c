@@ -9,6 +9,9 @@
 extern int TdiCompile(), TdiData(), TdiFloat();
 static char error_message[512];
 
+
+/* Support routines for jScope */
+
 static void MdsUpdate(char *exp, int shot)
 {
     static int prev_shot;
@@ -252,6 +255,9 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
 		return byte_ris;
 	return int_ris;
 }
+
+
+/* Implementation of the native methods for LocalProvider class in jScope */
 
 
 JNIEXPORT void JNICALL Java_LocalProvider_Update(JNIEnv *env, jobject obj, jstring exp, jint shot)
@@ -528,7 +534,4 @@ void showWindow(int obj_idx, int x, int y, int width, int height)
 }
 
 
-
-
-	
  
