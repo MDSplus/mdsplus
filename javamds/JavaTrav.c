@@ -184,9 +184,6 @@ JNIEXPORT jobject JNICALL Java_Database_getData
   EMPTYXD(out_xd);
   jobject ris;
 
-printf("\nParte Java_Database_getData\n");
-
-
   cls = (*env)->GetObjectClass(env, jnid);
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
@@ -796,17 +793,44 @@ static int doAction(int nid)
 JNIEXPORT void JNICALL Java_Database_doAction
   (JNIEnv *env, jobject obj, jobject jnid)
 {
-  int nid, status;
-  jfieldID nid_fid;
-  jclass cls = (*env)->GetObjectClass(env, jnid);
+	int nid, status;
+	jfieldID nid_fid;
+	jclass cls = (*env)->GetObjectClass(env, jnid);
 
-  nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
-  nid = (*env)->GetIntField(env, jnid, nid_fid);
+	nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+	nid = (*env)->GetIntField(env, jnid, nid_fid);
 
-  status = doAction(nid);
-  if(!(status & 1))
-      RaiseException(env, (status == 0)?"Cannot perform action":MdsGetMsg(status));
+	status = doAction(nid);
+	if(!(status & 1))
+		RaiseException(env, (status == 0)?"Cannot execute action":MdsGetMsg(status));
 }
   
  
+JNIEXPORT void JNICALL Java_Database_doDeviceMethod
+  (JNIEnv *env, jobject obj, jobject jnid, jstring jmethod)
+{
+	int status, nid;
+	jfieldID nid_fid;
+	const char *method;
+	static int stat = 0;
+	jclass cls = (*env)->GetObjectClass(env, jnid);
+	struct descriptor nid_dsc = {sizeof(int), DTYPE_NID, CLASS_S, (char *)&nid},
+	method_dsc = {0, DTYPE_T, CLASS_S, 0},
+	stat_d = {4, DTYPE_L, CLASS_S, (char *)&stat};
+
+	nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+	nid = (*env)->GetIntField(env, jnid, nid_fid);
+	nid_dsc.pointer = (char *)&nid;
+
+	method = (*env)->GetStringUTFChars(env, jmethod, 0);
+	method_dsc.length = strlen(method);
+	method_dsc.pointer = (char *)method;
+	status = TreeDoMethod(&nid_dsc, &method_dsc, &stat_d MDS_END_ARG);
+	(*env)->ReleaseStringUTFChars(env, jmethod, method);
+	if(!(status & 1) || !(stat & 1))
+		RaiseException(env, (status == 0)?"Cannot execute method":MdsGetMsg(status));
+}
+
+
+
 
