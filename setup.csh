@@ -27,5 +27,5 @@ set awkcmd="$awkcmd"'else if (($1 !~ /^#.*/) && (substr($3,1,1) == "<")) print "
 set awkcmd="$awkcmd"'"if ( ! $?" $1 ")  setenv " $1 " " $2 ";" ;'
 set awkcmd="$awkcmd"'else if (($1 !~ /^#.*/) && (substr($3,1,1) == ">")) print "if ($?" $1 ") setenv " $1 " $" $1 substr($3,2) $2 ";" '
 set awkcmd="$awkcmd"'"if ( ! $?" $1 ") setenv " $1 " " $2 ";" }'
-set
-echo `/bin/awk "$awkcmd" $file`
+eval `/bin/awk "$awkcmd" $file`
+unset awkcmd
