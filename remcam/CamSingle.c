@@ -33,10 +33,10 @@ int RemoteServerId()
   return socket;
 }
  
-static int CamSingle(char *routine, struct descriptor *name, int *a, int *f, void *data, int *mem, short *iosb);
+static int CamSingle(char *routine, char *name, int a, int f, void *data, int mem, short *iosb);
 
 #define MakeSingle(locnam,remnam) \
-int locnam(struct descriptor *name, int *a, int *f, void *data, int *mem, short *iosb) \
+int locnam(char *name, int a, int f, void *data, int mem, short *iosb) \
 { \
   return CamSingle(#remnam,name,a,f,data,mem,iosb); \
 }
@@ -44,7 +44,7 @@ int locnam(struct descriptor *name, int *a, int *f, void *data, int *mem, short 
 MakeSingle(CamPiow,cam$piow)
 MakeSingle(CamPioQrepw,cam$pioqrepw)
 
-static int CamSingle(char *routine, struct descriptor *name, int *a, int *f, void *data, int *mem, short *iosb)
+static int CamSingle(char *routine, char *name, int a, int f, void *data, int mem, short *iosb)
 {
   int serverid = RemoteServerId();
   int status = 0;
@@ -52,18 +52,15 @@ static int CamSingle(char *routine, struct descriptor *name, int *a, int *f, voi
   {
     struct descrip data_d = {8,0,{0,0,0,0,0,0,0},0};
     struct descrip ans_d = {0,0,{0,0,0,0,0,0,0},0};
-    char name_c[512];
     char cmd[512];
-    strncpy(name_c,name->pointer,name->length);
-    name_c[name->length] = '\0';
-    sprintf(cmd,"CamSingle('%s','%s',%d,%d,%s,%d,_iosb)",routine,name_c,*a,*f,*f < 8 ? "_data" : "_data=$",*mem);
-    if (*f < 8)
+    sprintf(cmd,"CamSingle('%s','%s',%d,%d,%s,%d,_iosb)",routine,name,a,f,f < 8 ? "_data" : "_data=$",mem);
+    if (f < 8)
     {
       status = MdsValue(serverid,cmd,&ans_d,0);
     }
     else
     {
-      data_d.dtype = *mem < 24 ? DTYPE_SHORT : DTYPE_LONG;
+      data_d.dtype = mem < 24 ? DTYPE_SHORT : DTYPE_LONG;
       data_d.ptr = data;
       status = MdsValue(serverid,cmd,&data_d,&ans_d,0);
     }      
@@ -76,7 +73,7 @@ static int CamSingle(char *routine, struct descriptor *name, int *a, int *f, voi
         RemCamLastIosb[i] = iosb[i] = (short)(((int *)ans_d.ptr)[i+1]);
       }
       for (i=5;i<ans_d.dims[0];i++)
-        if (*mem < 24)
+        if (mem < 24)
           ((short *)data)[i-5] = (short)((int *)ans_d.ptr)[i];
         else
           ((int *)data)[i-5] = ((int *)ans_d.ptr)[i];
