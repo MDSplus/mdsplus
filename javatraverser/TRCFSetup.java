@@ -132,7 +132,7 @@ public class TRCFSetup extends DeviceSetup
 		JScrollPane1.setVisible(false);
 		JPanel1.setLayout(new GridLayout(16,1,0,0));
 		JScrollPane1.getViewport().add(JPanel1);
-		JPanel1.setBounds(0,-1,505,656);
+		JPanel1.setBounds(0,0,505,656);
 		timeChannel1.setInSameLine(true);
 		timeChannel1.setOffsetNid(11);
 		timeChannel1.setLabelString("Ch1:");
@@ -265,7 +265,7 @@ public class TRCFSetup extends DeviceSetup
 		timeChannel10.add(deviceField36);
 		timeChannel11.setInSameLine(true);
 		timeChannel11.setOffsetNid(71);
-		timeChannel11.setLabelString("Ch6:");
+		timeChannel11.setLabelString("Ch11:");
 		timeChannel11.setBorderVisible(true);
 		JPanel1.add(timeChannel11);
 		deviceField37.setNumCols(15);
@@ -347,7 +347,7 @@ public class TRCFSetup extends DeviceSetup
 		JScrollPane2.setVisible(false);
 		JPanel4.setLayout(new GridLayout(16,1,0,0));
 		JScrollPane2.getViewport().add(JPanel4);
-		JPanel4.setBounds(-2,-1,505,656);
+		JPanel4.setBounds(0,-1,505,656);
 		idxChannel1.setInSameLine(true);
 		idxChannel1.setOffsetNid(11);
 		idxChannel1.setLabelString("Ch1:");

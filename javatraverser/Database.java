@@ -79,6 +79,7 @@ public class Database implements RemoteTree{
     public native int getCurrentShot(String experiment);
     public void setCurrentShot(int shot) {setCurrentShot(name, shot);}
     public native void setCurrentShot(String experiment, int shot);
+    public native String getOriginalPartName(NidData nid) throws DatabaseException;
   }  
     
     
