@@ -132,9 +132,9 @@ static int canEventRemote(int eventid)
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventCan"};
     int status, i;
-    int (*rtn)();
-
-    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    static int (*rtn)() = 0;
+    if (rtn == 0)
+      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     /* kill external thread before sending messages over the socket */
     if(status & 1)
     {
@@ -322,12 +322,12 @@ static unsigned __stdcall handleRemoteAst(void *p)
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsgOOB"};
     int status, i;
-    int (*rtn)();
+    static int (*rtn)() = 0;
     Message *m;
     int  selectstat;
     fd_set readfds;
-
-    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    if (rtn == 0)
+      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if(!(status & 1))
     {
 		printf("%s\n", MdsGetMsg(status));
@@ -396,7 +396,7 @@ static void initializeLocalRemote(int receive_events, int *use_local)
 	  library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	  routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
     int status, i;
-    int (*rtn)();
+    static int (*rtn)() = 0;
 
     if(receive_initialized && receive_events)
     {
@@ -430,7 +430,8 @@ static void initializeLocalRemote(int receive_events, int *use_local)
 
     if(num_servers > 0)
     {
-        status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+        if (rtn == 0)
+          status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
         if (status & 1)
         {
 			for(i = 0; i < num_servers; i++)
@@ -480,10 +481,11 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
 	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventAst"};
     int status, i;
     int curr_eventid;
-    int (*rtn)();
+    static int (*rtn)() = 0;
 
 
-    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    if (rtn == 0)
+      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
     {
 
@@ -580,7 +582,8 @@ static int getRemoteId(int id, int ofs)
 
 static int sendRemoteEvent(char *evname, int data_len, char *data)
 {
-    int (*rtn)(), (*curr_rtn)();
+    static int (*rtn)();
+    int (*curr_rtn)();
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 8, "MdsValue"};
@@ -596,7 +599,8 @@ static int sendRemoteEvent(char *evname, int data_len, char *data)
     desc.dims[0] = data_len;
     ansarg.ptr = 0;
     sprintf(expression, "setevent(\"%s\"%s)", evname,data_len > 0 ? ",$" : "");
-    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    if (rtn == 0)
+      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
     {
 	for(i = 0; i < num_send_servers; i++)
@@ -1398,8 +1402,9 @@ static void handleRemoteAst()
   static DESCRIPTOR(library_d,"MdsIpShr");
   static DESCRIPTOR(routine_d,"Poll");
   int status;
-  void (*rtn)(void (*)(SOCKET));
-  status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+  static void (*rtn)(void (*)(SOCKET)) = 0;
+  if (rtn == 0)
+    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
   if(!(status & 1))
   {
     printf("%s\n", MdsGetMsg(status));
@@ -1413,8 +1418,9 @@ static int RegisterRead(SOCKET sock)
   static DESCRIPTOR(library_d,"MdsIpShr");
   static DESCRIPTOR(routine_d,"RegisterRead");
   int status;
-  int (*rtn)(SOCKET);
-  status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+  static int (*rtn)(SOCKET) = 0;
+  if (rtn == 0)
+    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
   if(!(status & 1))
   {
     printf("%s\n", MdsGetMsg(status));
@@ -1430,9 +1436,10 @@ static void handleRemoteEvent(SOCKET sock)
   library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
   routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsg"};
   int status, i;
-  int (*rtn)();
+  static int (*rtn)() = 0;
   Message *m;
-  status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+  if (rtn == 0)
+    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
   if(!(status & 1))
   {
     printf("handleRemoteEvent error: %s\n", MdsGetMsg(status));
@@ -1469,12 +1476,13 @@ static void handleRemoteAst()
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsg"};
     int status, i;
-    int (*rtn)();
+    static int (*rtn)() = 0;
     Message *m;
     int tablesize = FD_SETSIZE, selectstat;
     fd_set readfds;
 
-    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    if (rtn == 0)
+      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if(!(status & 1))
     {
 	printf("%s\n", MdsGetMsg(status));
@@ -1549,7 +1557,7 @@ static void initializeLocalRemote(int receive_events, int *use_local)
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
     int status, i;
-    int (*rtn)();
+    static int (*rtn)() = 0;
     void *dummy;
 
     if(receive_initialized && receive_events)
@@ -1579,7 +1587,8 @@ static void initializeLocalRemote(int receive_events, int *use_local)
     }
     if(num_servers > 0)
     {
-        status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+        if (rtn == 0)
+          status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
         if (status & 1)
         {
 	    if(external_thread_created)
@@ -1635,8 +1644,9 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
     int status, i;
     int curr_eventid;
     void *dummy;
-    int (*rtn)();
-    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    static int (*rtn)() = 0;
+    if (rtn == 0)
+      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
     {
 /* if external_thread running, it must be killed before sending messages over socket */
@@ -1815,9 +1825,10 @@ static int canEventRemote(int eventid)
 	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventCan"};
     int status, i;
     void *dummy;
-    int (*rtn)();
+    static int (*rtn)() = 0;
 
-    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    if (rtn == 0)
+      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     /* kill external thread before sending messages over the socket */
     if(status & 1)
     {
@@ -1898,7 +1909,8 @@ int MDSEventCan(int eventid)
 
 static int sendRemoteEvent(char *evname, int data_len, char *data)
 {
-    int (*rtn)(), (*curr_rtn)();
+    static int (*rtn)() = 0;
+    int (*curr_rtn)();
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 8, "MdsValue"};
@@ -1921,7 +1933,8 @@ static int sendRemoteEvent(char *evname, int data_len, char *data)
     desc.dims[0] = data_len;
     ansarg.ptr = 0;
     sprintf(expression, "setevent(\"%s\"%s)", evname,data_len > 0 ? ",$" : "");
-    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    if (rtn == 0)
+      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
     {
 	for(i = 0; i < num_send_servers; i++)
@@ -1975,6 +1988,7 @@ int MDSEvent(char *evname, int data_len, char *data)
     }
 
     releaseLock();
+    printf("%d, MDSEvent returned\n",pthread_self());
     return 0;
 }
 		    
