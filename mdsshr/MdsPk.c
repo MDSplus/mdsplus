@@ -33,6 +33,22 @@ static unsigned int masks[33] = {0,
 0x1ffff, 0x3ffff, 0x7ffff, 0xfffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff,
 0x1ffffff, 0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff, 0xffffffff,};
 #include  <string.h>
+
+#ifdef _big_endian
+static int SwapBytes(int in)
+{
+  char *in_c = (char *)&in;
+  int out;
+  char *out_c = (char *)&out;
+  int i;
+  for (i=0;i<4;i++) out_c[i] = in_c[3-i];
+  return out;
+}
+#define getppack SwapBytes(*ppack)
+#else
+#define getppack *ppack
+#endif
+
 void      MdsPk(char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int *bit_ptr)
 {
   int       nbits = *nbits_ptr;
@@ -87,6 +103,8 @@ void      MdsPk(char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int *
     *ppack = hold;
   return;
 }
+
+
 /*-------------------------------------------------------------*/
 void      MdsUnpk(char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int *bit_ptr)
 {
@@ -101,27 +119,23 @@ void      MdsUnpk(char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int
   int      hold,
               full,
               max;
-#ifdef _big_endian
-  char     *ppack_c = (char *)ppack;
-  char     tmp_c = ppack_c[0];
-  ppack_c[0] = ppack_c[3];
-  ppack_c[3] = tmp_c;
-  tmp_c = ppack_c[1];
-  ppack_c[1] = ppack_c[2];
-  ppack_c[2] = tmp_c;
-#endif
   *bit_ptr += size * nitems;
 /*32-bit data*/
   
   if (test == 0)
   {
     if ((off & 7) == 0)
-      memcpy( pitems, ((char *) ppack) +(off >> 3), sizeof(int) * nitems);
+    {
+      int i;
+      ppack = (int *)((char *)ppack) + (off >> 3);
+      for (i=0;i<nitems;i++,ppack++) pitems[i] = getppack;
+    }
     else
       for (; --nitems >= 0;)
       {
-	hold = *(unsigned int *) ppack >> off;
-	hold |= *++ppack << (32 - off);
+	hold = ((unsigned int) getppack) >> off;
+        ppack++;
+	hold |= ((unsigned int) getppack) << (32 - off);
 	*pitems++ = hold;
       }
   }
@@ -134,8 +148,9 @@ void      MdsUnpk(char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int
     {
       if (off >= test)
       {
-	hold = *(unsigned int *) ppack >> off;
-	hold |= (*++ppack << (32 - off)) & mask;
+	hold = ((unsigned int) getppack) >> off;
+        ppack++;
+	hold |= (((unsigned int) getppack) << (32 - off)) & mask;
 	if (hold > max)
 	  *pitems++ = hold - full;
 	else
@@ -144,7 +159,7 @@ void      MdsUnpk(char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int
       }
       else
       {
-	hold = (*ppack >> off) & mask;
+	hold = (((unsigned int) getppack) >> off) & mask;
 	if (hold > max)
 	  *pitems++ = hold - full;
 	else
@@ -159,14 +174,15 @@ void      MdsUnpk(char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int
     {
       if (off >= test)
       {
-	hold = *(unsigned int *) ppack >> off;
-	hold |= (*++ppack << (32 - off)) & mask;
+	hold = ((unsigned int) getppack) >> off;
+        ppack++;
+	hold |= (((unsigned int) getppack) << (32 - off)) & mask;
 	*pitems++ = hold;
 	off -= test;
       }
       else
       {
-	hold = (*ppack >> off) & mask;
+	hold = (((unsigned int)getppack) >> off) & mask;
 	*pitems++ = hold;
 	off += size;
       }
