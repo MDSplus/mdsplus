@@ -377,7 +377,8 @@ static void PutLog(char *time, char  *mode, char *status, char *server, char *pa
       XmListReplaceItemsPos(CurrentWidget, &item, 1, idx);
       XmStringFree(item);
     }
-  }     
+  }
+  XFlush(XtDisplay(CurrentWidget));
 }
 
 static void PutError(char *time, String  mode, char *status, char *server, char *path)
@@ -400,6 +401,8 @@ static void PutError(char *time, String  mode, char *status, char *server, char 
     XmListDeletePos(ErrorWidget,1);
   }
   XmListSetBottomPos(ErrorWidget,0);
+  XFlush(XtDisplay(ErrorWidget));
+
 }
 
 static void DoOpenTree(LinkedEvent *event)
