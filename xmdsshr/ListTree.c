@@ -30,7 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h> 
 
-#include "ListTreeP.h"
+#include <Xmds/ListTreeP.h>
 /* #define DEBUG */
 
 #ifndef __GNUC__
