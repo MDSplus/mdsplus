@@ -66,15 +66,15 @@ typedef struct {int q0; int q1;} quadword;
 typedef struct {int o0; int o1; int o2; int o3;} octaword;
 static quadword qzero = {0,0};
 static octaword ozero = {0,0,0,0};
-static quadword maxquad = {0xffffffff,0x7fffffff};
-static octaword maxocta = {0xffffffff,0xffffffff,0xffffffff,0x7fffffff};
-static quadword umaxquad = {0xffffffff,0xffffffff};
-static int umax64[2] = {0xffffffff,0xffffffff};
-static octaword umaxocta = {0xffffffff,0xffffffff,0xffffffff,0xffffffff};
-static quadword  minquad = {0x00000000,0x80000000};
-static octaword minocta = {0x00000000,0x00000000,0x00000000,0x80000000};
-static quadword uminquad = {0x00000000,0x00000000};
-static octaword uminocta = {0x00000000,0x00000000,0x00000000,0x00000000};
+static quadword maxquad = {-1,2147483647};
+static octaword maxocta = {-1,-1,-1,2147483647};
+static quadword umaxquad = {-1,-1};
+static int umax64[2] = {-1,-1};
+static octaword umaxocta = {-1,-1,-1,-1};
+static quadword  minquad = {0,-2147483647};
+static octaword minocta = {0,0,0,-2147483647};
+static quadword uminquad = {0,0};
+static octaword uminocta = {0,0,0,0};
 
 #if DTYPE_DOUBLE == DTYPE_D
 #define HUGE 1.7E38
@@ -212,7 +212,7 @@ int Tdi3MaxLoc(struct descriptor *in, struct descriptor *mask,
     case DTYPE_BU: OperateL(unsigned char,(unsigned char)0;count = -1,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_W:  OperateL(short,(short)-32768;count = -1,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_WU: OperateL(unsigned short,(unsigned short)0;count = -1,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_L:  OperateL(int,(int)0x80000000;count = -1,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_L:  OperateL(int,-2147483647;count = -1,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_LU: OperateL(unsigned int,(unsigned int)0;count = -1,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_QU: OperateL(quadword,minquad;count = -1,TdiGtQ(pi0,&result,0),
 			result = *pi0;count = j0;,*outp++ = count)
@@ -302,7 +302,7 @@ int Tdi3MaxVal(struct descriptor *in, struct descriptor *mask,
     case DTYPE_BU: Operate(unsigned char,(unsigned char)0,*pi0 > result,result = *pi0;,*outp++ = result)
     case DTYPE_W:  Operate(short,(short)-32768,*pi0 > result,result = *pi0;,*outp++ = result)
     case DTYPE_WU: Operate(unsigned short,(unsigned short)0,*pi0 > result,result = *pi0;,*outp++ = result)
-    case DTYPE_L:  Operate(int,(int)0x80000000,*pi0 > result,result = *pi0;,*outp++ = result)
+    case DTYPE_L:  Operate(int,-2147483647,*pi0 > result,result = *pi0;,*outp++ = result)
     case DTYPE_LU: Operate(unsigned int,(unsigned int)0,*pi0 > result,result = *pi0;,*outp++ = result)
     case DTYPE_QU: Operate(quadword,uminquad,TdiGtQ(pi0,&result,0),
 			memcpy(&result,pi0,sizeof(result));,memcpy(outp++,&result,sizeof(result)))

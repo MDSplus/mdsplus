@@ -154,7 +154,7 @@ Widget XmdsCreateDigChans(Widget parent,String name,ArgList args,Cardinal argcou
     TreeGetNci(head_nid,nci);
     /*    StrConcat(&path_s,&path_s,&zero MDS_END_ARG); */
     path_s[path_len] = '\0';
-    path = XmStringCreateSimple(path_s);
+    path = XmStringCreateSimple((char *)path_s);
     /* StrFree1Dx(&path_s); */
     {
       static MrmRegisterArg uilnames[] = {{"c_nid",NULL},

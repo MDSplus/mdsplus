@@ -48,7 +48,7 @@
 #include <Mrm/MrmPublic.h>
 #include <Xmds/XmdsDisplay.h>
 #include <Xm/Label.h>
-#define DisplayUserData 0xABCDEFAB
+#define DisplayUserData 0xABCDEFA
 
 
 /*------------------------------------------------------------------------------

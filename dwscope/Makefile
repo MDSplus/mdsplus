@@ -41,7 +41,6 @@ clean :
 	- rm ../uid/dwpad.uid
 
 .depend :
-	- rm .depend
 	find *.c -exec $(MAKE_DEPEND)
 
 include $(DEPEND)

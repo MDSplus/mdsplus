@@ -54,7 +54,7 @@
 #include <Xm/Label.h>
 #include <Xmds/XmdsPath.h>
 #include <xmdsshr.h>
-#define PathUserData 0xAAAAAAAA
+#define PathUserData 0xAAAAAAA
 
 
 /*------------------------------------------------------------------------------

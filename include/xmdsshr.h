@@ -67,7 +67,7 @@ extern void	XmdsResetAllXds(Widget w);
 extern void	XmdsSetDeviceNid(int nid);
 extern void	XmdsSetOptionIdx(Widget w,int idx);
 extern int	XmdsSetState(int nid,Widget w);
-extern int	XmdsSetSubvalues(XtPointer record,XtResourceList resources,Cardinal num_resources,ArgList args,Cardinal argcount);
+extern int	XmdsSetSubvalues(void * record,XtResourceList resources,Cardinal num_resources,ArgList args,Cardinal argcount);
 extern Pixmap	*XmdsUsageGrayIcons();
 extern Pixmap	*XmdsUsageIcons();
 extern void	XmdsUsageIconsInitialize(Widget w);

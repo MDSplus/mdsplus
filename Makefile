@@ -1,13 +1,13 @@
 PARTS = mdsshr \
 	treeshr \
 	tdishr \
-        remcam \
 	tditest \
 	xmdsshr \
 	dwscope \
 	mitdevices \
 	mdslibidl \
 	mdstcpip	\
+	remcam \
 	cdu	\
 	mdsdcl	\
 	ccl	\
