@@ -26,7 +26,7 @@ static void CheckList();
 
 void *MdsMALLOC(int len)
 {
-  struct vmlist *p = malloc(len+sizeof(struct vmlist)+15);
+  struct vmlist *p = malloc(len+sizeof(struct vmlist)+sizeof(POST)-1);
   if (len <= 0)
   {
     MDSprintf("malloc called with len <= 0\n");
