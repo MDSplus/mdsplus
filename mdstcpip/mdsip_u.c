@@ -646,6 +646,32 @@ int main(int argc, char **argv)
         fprintf(stderr,"Error count exceeded, shutting down\n");
         shut=1;
       }
+#ifndef GLOBUS
+      else
+      {
+        Client *c;
+	ZeroFD();
+	SetFD(serverSock);
+        for (c=ClientList; c;)
+	{
+	  struct sockaddr sin;
+	  socklen_t n = sizeof(sin);
+          lock_ast();
+	  if (getpeername(c->sock, (struct sockaddr *)&sin, &n))
+	  {
+	    fprintf(stderr,"Removed disconnected client\n");
+	    RemoveClient(c);
+	    c=ClientList;
+	  }
+	  else
+	  {
+	    SetFD(c->sock);
+	    c=c->next;
+	  }
+          unlock_ast();
+        }
+      }
+#endif
     }
   }
   CloseSocket(serverSock);
