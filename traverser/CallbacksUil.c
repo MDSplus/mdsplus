@@ -1486,7 +1486,7 @@ CommandEntered( Widget w, XtPointer client_data, XtPointer call_data)
   XmCommandCallbackStruct *cb = (XmCommandCallbackStruct *)call_data;
   char *cmd;
   int status;
-  XmStringGetLtoR(cb->value, XmSTRING_DEFAULT_CHARSET, &cmd);
+  cmd = XmStringUnparse(cb->value, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
   status = mdsdcl_do_command(cmd);
 } 
 
@@ -1548,7 +1548,8 @@ static Boolean TagsApply(Widget w, int nid)
   XtVaGetValues(list_widget, XmNitems, &item_list, XmNitemCount, &num_items, NULL);
   for (i=0; i<num_items; i++) {
     char *tag_txt;
-    if (XmStringGetLtoR(item_list[i], XmSTRING_DEFAULT_CHARSET, &tag_txt)) {
+    tag_txt = XmStringUnparse(item_list[i], NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
+    if (tag_txt) {
       status = TreeAddTag(nid, tag_txt);
       if (!(status&1)) {
         retstatus = status;
@@ -1635,7 +1636,7 @@ void tag_selection_proc(Widget w, int *tag, XmListCallbackStruct *reason)
 {
   Widget tag_widget = XtParent(w);
   char *tag_txt;
-  XmStringGetLtoR(reason->item, XmSTRING_DEFAULT_CHARSET, &tag_txt);
+  tag_txt = XmStringUnparse(reason->item, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
   XmTextFieldSetString(XtNameToWidget(tag_widget->core.parent, "*.tag_current_text"), tag_txt);
   XtFree(tag_txt);
 }

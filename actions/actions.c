@@ -119,7 +119,7 @@ static void ToggleEssential(Widget w, XtPointer tag, XmListCallbackStruct *cb)
     static int flags;
     static NCI_ITM itmlst[] = {{sizeof(flags),NciGET_FLAGS,(unsigned char *)&flags,0},{0,NciEND_OF_LIST,0,0}};
     TreeGetNci(actions[i].nid,itmlst);
-    XmStringGetLtoR(cb->item,XmSTRING_DEFAULT_CHARSET,&item_string);
+    item_string = XmStringUnparse(cb->item, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
     if (flags & NciM_ESSENTIAL)
     {
       static int flags = NciM_ESSENTIAL;

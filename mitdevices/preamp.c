@@ -123,7 +123,7 @@ static Boolean ask_incaa_button(Widget w)
   String incaa_name;
   int c_nids[INCAA16_K_CONG_NODES];
   XtVaGetValues(w, XmNuserData, &device_nid, XmNtextString, &incaa_string, NULL);
-  XmStringGetLtoR(incaa_string, XmSTRING_DEFAULT_CHARSET, &incaa_name);
+  incaa_name = XmStringUnparse(incaa_string, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
   status = TreeFindNode(incaa_name, &incaa_nid);
   if (status&1) {
     status = DevNids(&incaa_nid_dsc,sizeof(c_nids),c_nids);

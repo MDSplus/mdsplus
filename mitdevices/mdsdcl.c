@@ -74,7 +74,8 @@ static int Apply(Widget w)
   for (i=0;i<num;i++)
   {
     String item;
-    if (XmStringGetLtoR(selections[i], XmSTRING_DEFAULT_CHARSET, &item))
+    item = XmStringUnparse(selections[i], NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
+    if (item)
     {
       if (list)
       {
