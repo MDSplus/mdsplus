@@ -129,7 +129,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
       {
         unsigned int m1;
         unsigned int m2 = 10000000;
-        _int64 addin = 0x7c95674beb4000ll;
+        _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
         _int64 zero = 0;
         _int64 temp = 0;
         bitassign(dblist->setup_info, local_nci.flags, NciM_SETUP_INFORMATION);

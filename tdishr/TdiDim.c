@@ -461,7 +461,7 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 #define char_min -128
 #define short_min -32768
 #define int_min 0x80000000
-#define _int64_min 0x8000000000000000ll
+#define _int64_min LONG_LONG_CONSTANT(0x8000000000000000)
 #define min_struct(type) type##_min
 
 #undef Operate
