@@ -41,6 +41,12 @@
 #include <ncidef.h>
 #include <string.h>
 #include <stdlib.h>
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+#ifndef O_RANDOM
+#define O_RANDOM 0
+#endif
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
