@@ -877,7 +877,6 @@ static int Jorway73ADoIo(
         status = scsi_io( scsiDevice, direction, cmd, cmdlen, Data, reqbytcnt, (unsigned char *)&sense,
 			  sizeof(sense), &sensretlen, &bytcnt);
         scsi_lock(scsiDevice,0);
-        if (cmd == (unsigned char *)&NONDATAcommand)
         status = Jorway73ATranslateIosb(IsDataCommand, reqbytcnt,&sense,status);
 	if ( iosb ) *iosb = LastIosb;					// [2002.12.11]
 
