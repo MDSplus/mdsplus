@@ -51,7 +51,7 @@ install:
 	$(UIL) -o $@ actions.uil
 
 @MAKEBINDIR@actmon : actmon.o
-	 $(CC) -o $@ $(CFLAGS) actmon.o  -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr -lXmdsShr -lMdsServerShr -lMdsLib  $(MLIBS) $(LIBS)
+	 $(CC) -o $@ $(CFLAGS) actmon.o  -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr -lXmdsShr -lMdsIpShr -lMdsServerShr -lMdsLib  $(MLIBS) $(LIBS)
 
 @MAKEUIDDIR@actmon.uid : actmon.uil
 	$(UIL) -o $@ actmon.uil
