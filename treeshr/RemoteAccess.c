@@ -11,6 +11,8 @@
 #include <io.h>
 #define write _write
 #define lseek _lseek
+#else
+#include <unistd.h>
 #endif
 #include <time.h>
 #include <fcntl.h>
@@ -22,7 +24,6 @@
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ncidef.h>
-#include <unistd.h>
 #ifndef HAVE_VXWORKS_H
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
