@@ -710,6 +710,7 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
 		TranslateLogicalFree(path);
 		path = npath;
                 MaskReplace(path,tree_lower,shot);
+                pathlen = strlen(path);
 		if (shot < 0)
 			sprintf(name,"%s_model",tree_lower);
 		else if (shot < 1000)
