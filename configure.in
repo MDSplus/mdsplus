@@ -216,7 +216,7 @@ AC_CHECK_SIZEOF(_int64)
 AC_CHECK_SIZEOF(int *)
 SIZEOF_INT_P=$ac_cv_sizeof_int_p
 AC_PATH_XTRA
-AC_PATH_PROG(UIL,uil,uil,/usr/bin/X11:$PATH)
+AC_PATH_PROG(UIL,uil,uil,$UILPATH:/usr/bin/X11:$PATH)
 AC_PATH_PROG(JAVAC,javac,javac)
 AC_PATH_PROG(JAR,jar,jar)
 XM_LIBS="-lMrm -lXm"

@@ -34,7 +34,7 @@ Certain optional packages installed on system may be incompatible with some or
 all of the MDSplus package. We will try to keep a list of potential problems
 found in this document along with possible workarounds.
 
-Digital Unix conflicts:
+LessTif conflicts:
 
 1) If the LessTif package is installed then configure will find it before it
 finds the real Motif package. LessTif is a marginal implementation of Motif
@@ -42,7 +42,11 @@ and the MDSplus X applications will not build or run using LessTif package.
 
 To build on a system with LessTif installed do the following:
 
-./configure --x-libraries=/usr/shlib --x-includes=/usr/include
+setenv UILPATH [motif-bin-directory-where-uil-image-is]
+./configure --x-libraries=[motif-library-directory] --x-includes=[motif-include-directory]
+
+replacing the text inside the brackets (and the brackets) with the location of the real
+Motif files.
 
 
 
