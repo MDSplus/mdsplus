@@ -23,3 +23,4 @@ Node Usage definitions
 #define TreeUSAGE_AXIS     10
 #define TreeUSAGE_SUBTREE  11
 #define TreeUSAGE_COMPOUND_DATA 12
+#define TreeUSAGE_MAXIMUM  TreeUSAGE_COMPOUND_DATA
