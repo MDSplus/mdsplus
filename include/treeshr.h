@@ -195,6 +195,7 @@ extern TreeCANCEL;
 #define TreeUNSUPARRDTYPE 0xfd1816a
 #define TreeWRITEFIRST 0xfd1815a
 #define TreeFAILURE 0xfd18fa2
+#define TreeLOCK_FAILURE 0xfd18fb2
 #define TreeFILE_NOT_FOUND 0xfd18faa
 #define TreeCANCEL 0xfd18c80
 
@@ -280,6 +281,7 @@ static struct stsText  treeshr_stsText[] = {
    ,STS_TEXT(TreeUNSUPARRDTYPE,"Complex data types not supported as members of arrays")
    ,STS_TEXT(TreeWRITEFIRST,"Tree has been modified:  write or quit first")
    ,STS_TEXT(TreeFAILURE,"Operation NOT successful")
+   ,STS_TEXT(TreeLOCK_FAILURE,"Error locking file, perhaps NFSLOCKING not enabled on this system")
    ,STS_TEXT(TreeFILE_NOT_FOUND,"File or Directory Not Found")
    ,STS_TEXT(TreeCANCEL,"User canceled operation")
    };
