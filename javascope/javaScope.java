@@ -5,9 +5,9 @@ import java.awt.event.*;
 import java.lang.*;
 import java.util.*;
   
-public class javaScope extends Frame implements ActionListener, ItemListener, 
-//MRJOpenDocumentHandler, MRJQuitHandler, 
-					        WindowListener {
+public class javaScope extends Frame implements ActionListener, ItemListener,WindowListener
+//, MRJOpenDocumentHandler,MRJQuitHandler
+{
 
   private MenuBar       mb;
   private Menu          edit_m, pointer_mode_m, customize_m, autoscale_m, print_m, network_m, servers_m;
@@ -42,7 +42,7 @@ public class javaScope extends Frame implements ActionListener, ItemListener,
   private String	config_file, last_config_file;
   String		prev_main_shot;
   private String	server_ip;
-  private static String[] server_ip_list; 
+  private String[]	server_ip_list; 
   private ServerDialog  server_diag;
   EvaluateWaveform	ew;
   static WaveInterface  wi_source;
@@ -68,8 +68,8 @@ public class javaScope extends Frame implements ActionListener, ItemListener,
 	ip_addr = props.getProperty("data.address");
 	if(ip_addr == null)
 	{
-	    server_ip = new String("Local");
-	    db = new LocalProvider();
+	    server_ip = new String("150.178.3.80");
+	    db = new NetworkProvider("150.178.3.80");
 	} else {
 	    server_ip = new String(ip_addr);
 	    db = new NetworkProvider(ip_addr);
@@ -172,14 +172,7 @@ public class javaScope extends Frame implements ActionListener, ItemListener,
     
     network_m = new Menu("Network");
     mb.add(network_m);
-    if(db instanceof LocalProvider)
-    {
-        fast_network_i = new CheckboxMenuItem("Fast network access", false);
-	fast_network_i.setEnabled(false);
-	sc.fast_network_access = false;
-    }
-    else
-        fast_network_i = new CheckboxMenuItem("Fast network access", true);
+    fast_network_i = new CheckboxMenuItem("Fast network access", true);
     network_m.add(fast_network_i);
     fast_network_i.addItemListener(this);        
     servers_m  = new Menu("Servers");
@@ -754,7 +747,7 @@ public class javaScope extends Frame implements ActionListener, ItemListener,
 	config_file = new String(file);
     MACfile = null;    
     pack();
-    if(file == null && System.getProperty("os.name").equals("Mac OS")) 
+    if(file == null) 
 	setSize(750,550);
     show(); 
 /*    

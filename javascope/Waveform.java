@@ -1121,11 +1121,12 @@ public class Waveform extends Canvas
 	{
 		double xrange;
 		Dimension d = size();
-		if(dragging || mode != MODE_POINT || waveform_signal == null || wm == null)
+		if(dragging || mode != MODE_POINT || waveform_signal == null)
 			return;
 		if(curr_x < waveform_signal.x[0])
 			curr_x = waveform_signal.x[0];
 		xrange = waveform_signal.x[waveform_signal.n_points - 1] - waveform_signal.x[0];
+
 		end_x = wm.XPixel(curr_x, d);
 		//ext_update = true;
 		repaint();

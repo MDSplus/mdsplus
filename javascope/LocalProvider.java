@@ -1,6 +1,6 @@
 public class LocalProvider implements DataProvider {
     static {
-	System.loadLibrary("JavaMds");
+	System.loadLibrary("javamds");
     }
     native public void Update(String exp, int s);
     native public String GetString(String in);

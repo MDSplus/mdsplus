@@ -78,6 +78,7 @@ public boolean SupportsAsynch() { return true; }
 
 public synchronized void Update(String exp, int s)
 {
+    if(exp == null) return;
     if(experiment == null || !experiment.equals(exp) || s != shot)
     {
     

@@ -479,7 +479,7 @@ class ScopeConfiguration {
 		    {
 			wc[wc_idx].num_shot     = new Integer(str.substring(len, str.length())).intValue();			
 			wc[wc_idx].markers      = new int[wc[wc_idx].num_expr * wc[wc_idx].num_shot];
-		      //wc[wc_idx].colors     = new Color[wc[wc_idx].num_expr * wc[wc_idx].num_shot];
+		      //wc[wc_idx].colors       = new Color[wc[wc_idx].num_expr * wc[wc_idx].num_shot];
 			wc[wc_idx].colors_idx   = new int[wc[wc_idx].num_expr * wc[wc_idx].num_shot];
 			wc[wc_idx].interpolates = new boolean[wc[wc_idx].num_expr * wc[wc_idx].num_shot];
    			continue;		
@@ -655,8 +655,8 @@ class ScopeConfiguration {
 	
 	if(System.getProperty("os.name").equals("Mac OS"))
 	{	
-	//    MRJFileUtils.setDefaultFileType(new MRJOSType("TEXT"));
-	//    MRJFileUtils.setDefaultFileCreator(new MRJOSType("JSCP"));
+	 //   MRJFileUtils.setDefaultFileType(new MRJOSType("TEXT"));
+	 //   MRJFileUtils.setDefaultFileCreator(new MRJOSType("JSCP"));
 	} 
 	f = new File(conf_file);    
 	if(f.exists()) f.delete();   

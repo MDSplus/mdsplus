@@ -76,7 +76,6 @@ import java.util.*;
 	int error_cd = 0;
     	int i = 0, k = 0, j = 0;
 	
-	StringTokenizer st = new StringTokenizer(in_shots, ",:");
 	String token = null;
 	char delim = ' ', last_delim = ' ';
 
@@ -84,7 +83,9 @@ import java.util.*;
 	{
 	    s_value[0] = WaveSetupData.UNDEF_SHOT;
 	    return s_value;
-	}    
+	}
+	    
+	StringTokenizer st = new StringTokenizer(in_shots, ",:");
 		
 	try {
 	    while(st.hasMoreTokens()) {
@@ -225,8 +226,9 @@ import java.util.*;
    
    public void initSignals(WaveformConf wc, String curr_shot)   
    { 
-	if(wc == null || curr_shot == null) { 	    
-	    shots = null;
+	//if(wc == null || curr_shot == null) { 	    
+	if(wc == null) {
+    	    shots = null;
 	    signals = null;
 	    num_shot = 0;
 	    num_signal = 0;

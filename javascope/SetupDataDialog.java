@@ -754,20 +754,25 @@ import java.lang.Integer;
       if(ob == apply || ob == ok)
       {
 	int error = 0;
+	boolean def_exp = true, def_shot = true;
 	
 	setup.main_scope.SetStatusLabel("Update signal"); 
 
 	if(experiment.getText() == null || experiment.getText().trim().length() == 0)
+	    def_exp = false;
+	
+	if(shot.getText() == null || shot.getText().trim().length() == 0)
+	    def_shot = false;
+	
+	if(def_exp ^ def_shot)
 	{
-	    error_msg.addMessage("Undefined experiment name\n");
+	    if(!def_shot)
+		error_msg.addMessage("Experiment defined but undefined shot\n");
+	    if(!def_exp)
+		error_msg.addMessage("Shot defined but undefined experiment\n");
 	    error = 1;
 	}
 	
-	if(shot.getText() == null || shot.getText().trim().length() == 0)
-	{
-	    error_msg.addMessage("Undefined shot value\n");
-	    error = 1;
-	}
 	
 	if(sel_signal == -1)
 	    addSignals();
