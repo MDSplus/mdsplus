@@ -18,7 +18,6 @@
 		 * Function prototypes:
 		 *======================================================*/
 static int CvtDxT(struct descriptor *in_dsc_ptr,int depth);
-char  *MdsDtypeString(char);
 
 #ifdef vms
 #define TdiOpcodeString  tdi$opcode_string
