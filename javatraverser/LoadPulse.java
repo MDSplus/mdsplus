@@ -18,10 +18,13 @@ public class LoadPulse
     {
         String path;
         String decompiled;
-        NodeDescriptor(String path, String decompiled)
+        boolean on, parentOn;
+        NodeDescriptor(String path, String decompiled, boolean on, boolean parentOn)
         {
             this.path = path;
             this.decompiled = decompiled;
+            this.on = on;
+            this.parentOn = parentOn;
         }
 
         String getPath()
@@ -33,6 +36,9 @@ public class LoadPulse
         {
             return decompiled;
         }
+
+        boolean isOn(){return on;}
+        boolean isParentOn(){return parentOn;}
     }
 
 
@@ -86,7 +92,7 @@ public class LoadPulse
                             {
                                 String currDecompiled = currData.toString();
                                 nodesV.addElement(new NodeDescriptor(currPath,
-                                    currDecompiled));
+                                    currDecompiled, currInfo.isOn(), currInfo.isParentOn()));
                             }
                         }
                         catch (Exception exc)
@@ -110,6 +116,11 @@ public class LoadPulse
                     NidData currNid = tree.resolve(new PathData(currNode.getPath()), 0);
                     Data currData = Data.fromExpr(currNode.getDecompiled());
                     tree.putData(currNid, currData, 0);
+                    tree.setOn(currNid, currNode.isOn(), 0);
+                    /*if(currNode.isParentOn() && !currNode.isOn())
+                        tree.setOn(currNid, false, 0);
+                    if(currNode.isParentOn() && !currNode.isOn())
+                        tree.setOn(currNid, false, 0);*/
                 }
                 catch (Exception exc)
                 {
