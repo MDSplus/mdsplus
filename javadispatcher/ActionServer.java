@@ -274,7 +274,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
         this.shot = shot;
         if(mds_server == null) return;
         try {
-            //mds_server.createPulse(tree, shot);
+            mds_server.createPulse(tree, shot);
         }catch(Exception exc){}
     }
 

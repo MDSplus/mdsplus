@@ -72,6 +72,8 @@ class jDispatcherIp extends MdsIp
     
     protected int doCommand(String command)
     {
+        System.out.println(command);
+        
         StringTokenizer st = new StringTokenizer(command, "/ ");
         try {
             String first_part = st.nextToken();
