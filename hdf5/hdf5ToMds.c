@@ -28,7 +28,7 @@ static void parse_command_line(int argc, const char *argv[])
     shot = argv[3];
 }
 
-static int AddNode(const char *h5name,int member)
+static int AddNode(const char *h5name,int usage)
 {
 
   /********************************************************
@@ -47,7 +47,7 @@ static int AddNode(const char *h5name,int member)
 
   int status;
   int memlen = ((strlen(h5name) < 12) ? 12 : strlen(h5name))+2;
-  char *name = strcpy(malloc(memlen),member ? ":" : ".");
+  char *name = strcpy(malloc(memlen),(usage!=TreeUSAGE_STRUCTURE) ? ":" : ".");
   int i;
   int len;
   int idx=1;
@@ -73,7 +73,7 @@ static int AddNode(const char *h5name,int member)
         (name[i] != '_'))
       name[i] = '_';
   }
-  status = TreeAddNode(name,&nid,member ? TreeUSAGE_SIGNAL : TreeUSAGE_STRUCTURE);
+  status = TreeAddNode(name,&nid,usage);
   while (status == TreeALREADY_THERE)
   {
     if (len < 13)
@@ -103,7 +103,7 @@ static int AddNode(const char *h5name,int member)
       printf("Can't make unique node name\n");
       exit(EXIT_FAILURE);
     }
-    status = TreeAddNode(name,&nid,member ? TreeUSAGE_SIGNAL : TreeUSAGE_STRUCTURE);
+    status = TreeAddNode(name,&nid,usage);
   } 
   if (status & 1)
   {
@@ -216,7 +216,6 @@ static int mds_find_attr(hid_t attr_id, const char *name, void *op_data)
     int n_ds_dims = H5Sget_simple_extent_dims(space,ds_dims,0);
     size_t precision;
     H5Sclose(space);
-    nid = AddNode(name,1);
     type = H5Aget_type(obj);
     switch (H5Tget_class(type))
       {
@@ -226,6 +225,7 @@ static int mds_find_attr(hid_t attr_id, const char *name, void *op_data)
 	  break;
 	}
       case H5T_INTEGER:
+	nid = AddNode(name,TreeUSAGE_NUMERIC);
 	precision = H5Tget_precision(type);
 	is_signed = (H5Tget_sign(type) != H5T_SGN_NONE);
 	size = precision/8;
@@ -254,6 +254,7 @@ static int mds_find_attr(hid_t attr_id, const char *name, void *op_data)
 	PutData(obj, nid, dtype, htype, size, n_ds_dims, ds_dims, 1);
 	break;
       case H5T_FLOAT:
+	nid = AddNode(name,TreeUSAGE_NUMERIC);
 	precision = H5Tget_precision(type);
 	size = precision/8;
 	switch (precision)
@@ -275,7 +276,31 @@ static int mds_find_attr(hid_t attr_id, const char *name, void *op_data)
       case H5T_TIME:
 	printf("dataset is time ---- UNSUPPORTED\n"); break;
       case H5T_STRING:
-	printf("dataset is string\n"); break;
+	nid = AddNode(name,TreeUSAGE_TEXT);
+	if (n_ds_dims != 0) {
+          printf("dataset is string array ---- UNSUPPORTED\n");
+        } else {
+	  int slen = H5Tget_size (type);
+	  if (slen <0) {
+	    printf("Badly formed string attribute\n");
+	  } else {
+	    char *s = (char *) malloc((slen+1)*sizeof(char));
+	    hid_t st_id = H5Tcopy (H5T_C_S1);
+	    H5Tset_size (st_id, slen);
+	    if (H5Aread(obj, st_id, (void *)s)) {
+	      printf("error reading string\n");
+	    } else {
+	      int status;
+	      struct descriptor dsc={slen, DTYPE_T, CLASS_S, (void *) s};
+	      status = TreePutRecord(nid, &dsc, 0);
+	      if ((status&1)==0) {
+		printf("error writing %s values %s to tree\n", name, s);
+	      }
+	    }
+	    free(s);
+	  }
+        }
+        break;
       case H5T_BITFIELD:
 	printf("dataset is bitfield ---- UNSUPPORTED\n"); break;
       case H5T_OPAQUE:
@@ -312,7 +337,7 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
     case H5G_GROUP:
       if ((obj = H5Gopen(group, name)) >= 0) {
 	int first_time = 1;
-	nid = AddNode(name,0);
+	nid = AddNode(name,TreeUSAGE_STRUCTURE);
 	H5Giterate(obj, ".", NULL, mds_find_objs, (void *)&first_time);
 	H5Gclose (obj);
       }
@@ -328,7 +353,7 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
         int n_ds_dims = H5Sget_simple_extent_dims(space,ds_dims,0);
         size_t precision;
         H5Sclose(space);
-        nid = AddNode(name,1);
+        nid = AddNode(name,TreeUSAGE_SIGNAL);
         H5Aiterate(obj,&idx,mds_find_attr,(void *)0);
         type = H5Dget_type(obj);
         switch (H5Tget_class(type))
@@ -388,7 +413,7 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
 	case H5T_TIME:
 	  printf("dataset is time ---- UNSUPPORTED\n"); break;
 	case H5T_STRING:
-	  printf("dataset is string\n"); break;
+	   break;
 	case H5T_BITFIELD:
 	  printf("dataset is bitfield ---- UNSUPPORTED\n"); break;
 	case H5T_OPAQUE:
@@ -403,10 +428,10 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
       }
       break;
   case H5G_TYPE:
-    nid = AddNode(name,0);
+    nid = AddNode(name,TreeUSAGE_STRUCTURE);
     printf("Type is H5G_TYPE ---- UNSUPPORTED\n"); break;
   default:
-    nid = AddNode(name,0);
+    nid = AddNode(name,TreeUSAGE_STRUCTURE);
     printf("Unknown type\n"); break;
   }
   TreeSetDefaultNid(defnid);
