@@ -18,7 +18,7 @@ mdslib_ctest : mdslib_ctest.c ../shlib/libMdsLib.$(SHARE_TYPE)
 	cc -o $@ $(CFLAGS) mdslib_ctest.c -L../shlib -lMdsLib
 
 mdslib_ftest : mdslib_ftest.f ../shlib/libMdsLib.$(SHARE_TYPE)
-	f77 -o $@ $(FFLAGS) mdslib_ftest.f -Wl,-L../shlib -lMdsLib
+	f77 -o $@ $(FFLAGS) mdslib_ftest.f -lMdsLib
 
 clean :
 	- rm *.o
