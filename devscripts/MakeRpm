@@ -23,6 +23,6 @@ echo "s/#ENABLEGLOBUS#/$enableglobus/g" >> tmp.sed
 echo "s/#VERSION#/$version/g" >> tmp.sed
 echo "s/#RELEASE#/$release/g" >> tmp.sed
 sed -f tmp.sed mdsplus$globuskit-$version/rpm/rpm.spec > rpm.spec 
-rpm -ba rpm.spec
+rpmbuild -ba rpm.spec
 cd ..
 rm -Rf mdskit$globuskit
