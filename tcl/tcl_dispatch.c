@@ -119,9 +119,9 @@ int TclDispatch()
             static DYNAMIC_DESCRIPTOR(treename);
             static int shot;
             static DBI_ITM itmlst[] =
-                           {{0,DbiNAME,(unsigned char *) &treename,0},
-                            {4,DbiSHOTID,(unsigned char *) &shot,0},
-                            {0,0,(unsigned char *) 0,0}};
+                           {{0,DbiNAME,&treename,0},
+                            {4,DbiSHOTID,&shot,0},
+                            {0,0,0,0}};
             TreeGetDbi(itmlst);
             sts = ServerDispatchAction(SyncEfn,ident.dscA_pointer
                         ,treename.dscA_pointer,shot,nid,0,0

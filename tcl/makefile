@@ -28,6 +28,7 @@ OBJFILES = 			\
 	libTcl.a(tcl_set_tree.o)	\
 	libTcl.a(tcl_show_current.o)	\
 	libTcl.a(tcl_show_data.o)	\
+	libTcl.a(tcl_show_db.o)	\
 	libTcl.a(tcl_verify_tree.o)	\
 	libTcl.a(tcl_write.o)
 

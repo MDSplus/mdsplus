@@ -9,7 +9,6 @@ dummy(TclPutExpression)
 dummy(TclCommand)
 dummy(TclRundownTree)
 dummy(TclSetEvent)
-dummy(TclShowDB)
 dummy(TclWfevent)
 
 
