@@ -1,367 +1,3 @@
-/*  CMS REPLACEMENT HISTORY, Element XMDSWAVEFORM.C */
-/*  *362   3-NOV-1997 18:55:52 MRL "remove dps" */
-/*  *361   3-NOV-1997 13:19:17 MRL "remove dps calls" */
-/*  *360   3-NOV-1997 13:17:20 MRL "remove dps calls" */
-/*  *359   3-NOV-1997 13:14:29 MRL "remove dps calls" */
-/*  *358  27-AUG-1997 15:12:00 TWF "Fix inline error messages" */
-/*  *357  27-AUG-1997 14:14:31 TWF "Fix multiline title" */
-/*  *356  27-AUG-1997 14:00:29 TWF "Add full error message reporting" */
-/*  *355  25-JUN-1997 09:02:13 TWF "Fix step plot" */
-/*  *354  25-JUN-1997 08:59:39 TWF "Fix step plot" */
-/*  *353  15-APR-1997 11:51:51 JAS "Fix axp floating exceptions in ConvertToPix" */
-/*  *352  18-MAR-1997 10:22:46 TWF "Fix for DECC 5.3" */
-/*  *351  18-MAR-1997 09:32:34 TWF "Fix for DECC 5.3" */
-/*  *350   9-DEC-1996 09:44:08 TWF "Fix printing" */
-/*  *349   4-DEC-1996 10:17:16 TWF "Fix beginning" */
-/*  *348   4-DEC-1996 09:48:33 TWF "Take out debug printout" */
-/*  *347   3-DEC-1996 15:08:03 TWF "Reduce number of vectors and rectangles drawn" */
-/*  *346   3-DEC-1996 14:50:55 TWF "Reduce number of vectors and rectangles drawn" */
-/*  *345   3-DEC-1996 14:22:33 TWF "Reduce number of vectors and rectangles drawn" */
-/*  *344  31-OCT-1996 15:33:39 JAS "Add more to opening print comment" */
-/*  *343  25-JAN-1996 11:54:18 JAS "Add fixup for comparisons to the fixup of the condition handler (VAX)" */
-/*  *342  24-JAN-1996 11:04:13 JAS "Don't draw points that are at the  limits" */
-/*  *341  18-JAN-1996 09:45:18 TWF "fix huge pixvals" */
-/*  *340  18-JAN-1996 09:37:10 TWF "Fix huge pixvas" */
-/*  *339   5-JAN-1996 08:30:20 TWF "debug Round" */
-/*  *338   5-JAN-1996 08:18:46 TWF "debug Round" */
-/*  *337  12-DEC-1995 13:50:33 TWF "Use floor" */
-/*  *336  12-DEC-1995 11:53:13 TWF "Make zooming double" */
-/*  *335  19-JAN-1995 12:06:39 TWF "Portability" */
-/*  *334  19-JAN-1995 12:01:42 TWF "Portability" */
-/*  *333  14-NOV-1994 08:09:11 TWF "Prevent multiple redisplays" */
-/*  *332  27-OCT-1994 11:24:00 TWF "Fix autoscale" */
-/*  *331  19-OCT-1994 13:35:26 TWF "Nolonger support VAXC" */
-/*  *330  17-OCT-1994 08:09:27 TWF "Fix for bx" */
-/*  *329   4-OCT-1994 12:15:40 TWF "Fix mdslib_ps" */
-/*  *328   4-OCT-1994 09:30:48 TWF "Fix mdslib_ps" */
-/*  *327   3-OCT-1994 15:17:00 TWF "Unix" */
-/*  *326   3-OCT-1994 15:07:53 TWF "Unix" */
-/*  *325   3-OCT-1994 11:58:35 TWF "Unix port" */
-/*  *324   3-OCT-1994 11:53:50 TWF "Unix port" */
-/*  *323   3-OCT-1994 11:15:42 TWF "Unix port" */
-/*  *322  16-AUG-1994 11:14:27 MRL "FIX BORDER." */
-/*  *321  12-AUG-1994 13:26:43 MRL "Change print border algorithm." */
-/*  *320  12-AUG-1994 12:55:55 MRL "Change print border algorithm." */
-/*  *319  11-AUG-1994 16:17:26 MRL "Change print border algorithm." */
-/*  *318  11-AUG-1994 15:49:39 MRL "Change print border algorithm." */
-/*  *317  11-AUG-1994 15:05:25 MRL "Change print border algorithm." */
-/*  *316  11-AUG-1994 14:03:46 MRL "Change print border algorithm." */
-/*  *315  11-AUG-1994 13:31:19 MRL "Change print border algorithm." */
-/*  *314  11-AUG-1994 13:00:49 MRL "Change print border algorithm." */
-/*  *313  11-AUG-1994 11:47:19 MRL "Change print border algorithm." */
-/*  *312  24-JUN-1994 15:32:25 TWF "Motif 1.2" */
-/*  *311  24-JUN-1994 15:29:50 TWF "Motif 1.2" */
-/*  *310  23-JUN-1994 09:10:51 TWF "motif 1.2" */
-/*  *309  22-JUN-1994 16:12:48 TWF "Motif 1.2" */
-/*  *308  15-JUN-1994 16:58:36 TWF "Use double precision on point" */
-/*  *307  16-MAY-1994 13:06:37 MRL "Change grid line print width." */
-/*  *306  16-MAY-1994 12:43:54 MRL "Change grid line print width." */
-/*  *305   5-MAY-1994 12:36:47 MRL "Fix border print." */
-/*  *304   5-MAY-1994 10:51:44 MRL "Really fix border now!" */
-/*  *303   4-MAY-1994 16:48:54 MRL "Really fix border now!" */
-/*  *302   4-MAY-1994 16:23:41 MRL "Really fix border now!" */
-/*  *301   4-MAY-1994 15:23:46 MRL "Really fix border now!" */
-/*  *300   4-MAY-1994 15:14:13 MRL "Really fix border now!" */
-/*  *299   4-MAY-1994 15:01:26 MRL "Really fix border now!" */
-/*  *298   4-MAY-1994 14:08:51 MRL "Really fix border now!" */
-/*  *297  25-APR-1994 10:32:39 MRL "FIx print labels." */
-/*  *296  22-APR-1994 17:10:08 MRL "FIx print labels." */
-/*  *295  22-APR-1994 15:24:24 MRL "Fix print text" */
-/*  *294  22-APR-1994 11:21:09 MRL "Fix border print." */
-/*  *293  22-APR-1994 10:58:45 MRL "Fix border" */
-/*  *292   6-APR-1994 16:49:47 MRL "Add window title print." */
-/*  *291  15-MAR-1994 10:10:21 TWF "Add shift modifiers" */
-/*  *290  15-MAR-1994 09:44:02 TWF "Add shift modifier" */
-/*  *289  15-MAR-1994 09:31:24 TWF "Add shift modifier" */
-/*  *288  15-MAR-1994 09:05:30 TWF "Add shift modifiers" */
-/*  *287  15-MAR-1994 09:03:29 TWF "Add shift modifiers" */
-/*  *286  15-MAR-1994 09:01:10 TWF "Add shift modifier" */
-/*  *285  15-MAR-1994 08:58:18 TWF "Add shift pan and shift zoom" */
-/*  *284  14-MAR-1994 15:45:16 MRL "" */
-/*  *283  11-MAR-1994 13:58:35 MRL "" */
-/*  *282  11-MAR-1994 13:37:18 MRL "" */
-/*  *281  11-MAR-1994 13:09:31 MRL "" */
-/*  *280  11-MAR-1994 13:04:31 MRL "" */
-/*  *279   7-MAR-1994 12:55:08 MRL "" */
-/*  *278  23-FEB-1994 09:37:13 TWF "revert" */
-/*  *277  23-FEB-1994 09:15:59 TWF "Test new widgetclass mechanism on AXP" */
-/*  *276  22-FEB-1994 14:41:08 TWF "Remove NO_X_GBLS" */
-/*  *275   8-DEC-1993 08:34:55 TWF "Fix compile errors on AXP" */
-/*  *274   7-DEC-1993 10:39:17 MRL "Fix tick mark print." */
-/*  *273   7-DEC-1993 08:23:46 TWF "Fix grid lines" */
-/*  *272   6-DEC-1993 14:58:38 TWF "change tick marks" */
-/*  *271   6-DEC-1993 14:41:25 TWF "Add ticks instead of grid" */
-/*  *270   6-DEC-1993 14:23:26 TWF "Add ticks instead of grid" */
-/*  *269   6-DEC-1993 14:20:58 TWF "Add ticks instead of grid" */
-/*  *268   6-DEC-1993 14:14:27 TWF "Add ticks instead of grid" */
-/*  *267  15-NOV-1993 09:00:19 TWF "Handle missing values on AXP" */
-/*  *266  12-NOV-1993 12:42:49 MRL "fix print font" */
-/*  *265  10-NOV-1993 14:16:04 MRL "" */
-/*  *264   3-NOV-1993 11:17:37 TWF "Fix compilation errors on AXP" */
-/*  *263   3-NOV-1993 10:59:36 TWF "Fix setvalues on font" */
-/*  *262   1-NOV-1993 15:23:24 MRL "Print in same font as displayed." */
-/*  *261  27-OCT-1993 16:56:49 TWF "Add setvalues font" */
-/*  *260  19-OCT-1993 15:12:00 JAS "Fix Autoscale missing x vaues" */
-/*  *259  30-SEP-1993 14:50:55 TWF "Fix single axis autoscaling" */
-/*  *258  30-SEP-1993 10:53:31 TWF "Allow single point plots" */
-/*  *257  24-SEP-1993 10:38:32 TWF "Initialize crosshairs" */
-/*  *256  21-SEP-1993 08:15:38 TWF "Fix accvio" */
-/*  *255  20-SEP-1993 14:26:02 TWF "Add y only autoscaling" */
-/*  *254  20-SEP-1993 14:10:54 TWF "Add autoscale y" */
-/*  *253  10-SEP-1993 08:45:56 TWF "Change font" */
-/*  *252  10-SEP-1993 08:39:39 TWF "Change default font" */
-/*  *251   4-SEP-1993 08:32:58 MRL "Set GCFont for waveformPlotGC." */
-/*  *250  23-JUL-1993 15:22:11 TWF "Add disable_update flag" */
-/*  *249  23-JUL-1993 15:11:20 TWF "Add disable_update flag" */
-/*  *248  23-JUL-1993 15:03:36 TWF "Add disable_update flag" */
-/*  *247  23-JUL-1993 10:43:56 TWF "Clear redisplay flag in plot" */
-/*  *246  23-JUL-1993 09:51:30 TWF "Clear defered flag when a plot takes place" */
-/*  *245  23-JUL-1993 09:31:34 TWF "Add defered update to set wave" */
-/*  *244  23-JUL-1993 08:47:25 TWF "Clear defered in init" */
-/*  *243  23-JUL-1993 08:27:46 TWF "Fix restricted button translations" */
-/*  *242  21-JUL-1993 15:04:27 TWF "Change blanking behavior" */
-/*  *241  21-JUL-1993 14:50:51 TWF "Change blanking behavior" */
-/*  *240  21-JUL-1993 14:48:32 TWF "Change blanking behavior" */
-/*  *239  20-JUL-1993 14:11:26 TWF "Fix buttons" */
-/*  *238  15-JUL-1993 14:52:12 TWF "Make all button ups function" */
-/*  *237  15-JUL-1993 14:42:09 TWF "Fix access violation with pixvals" */
-/*  *236  15-JUL-1993 10:31:36 TWF "Fix panning conflict" */
-/*  *235  15-JUL-1993 10:18:34 TWF "Fix panning conflict" */
-/*  *234   9-JUN-1993 12:29:31 TWF "Fix flt overflow" */
-/*  *233   9-JUN-1993 12:27:26 TWF "Fix flt overflow" */
-/*  *232   9-JUN-1993 12:01:40 TWF "Fix flt overflow" */
-/*  *231   9-JUN-1993 11:55:46 TWF "Fix flt overflow" */
-/*  *230   9-JUN-1993 11:34:17 TWF "Fix flt overflow" */
-/*  *229   9-JUN-1993 11:20:59 TWF "Fix flt overflow" */
-/*  *228   9-JUN-1993 11:18:13 TWF "Fix flt overflow" */
-/*  *227   9-JUN-1993 10:49:45 TWF "Fix flt overflow" */
-/*  *226   9-JUN-1993 10:34:10 TWF "Fix flt overflow" */
-/*  *225   9-JUN-1993 10:24:28 TWF "Fix autoscale if all roprand" */
-/*  *224   9-JUN-1993 10:18:21 TWF "Fix autoscale if all roprand" */
-/*  *223   9-JUN-1993 10:13:58 TWF "Fix autoscale if all roprand" */
-/*  *222   9-JUN-1993 09:39:28 TWF "Fix autoscale if all roprand" */
-/*  *221   9-JUN-1993 09:18:34 TWF "Fix autoscale if all roprand" */
-/*  *220   9-JUN-1993 09:02:34 TWF "Fix autoscale if all roprand" */
-/*  *219   9-JUN-1993 08:39:07 TWF "Fix autoscale if all roprand" */
-/*  *218   8-JUN-1993 12:18:42 TWF "Avoid fltovf" */
-/*  *217   8-JUN-1993 10:58:01 TWF "Avoid fltovf" */
-/*  *216  10-MAY-1993 14:16:53 TWF "Make it shareable" */
-/*  *215  29-APR-1993 09:26:32 TWF "Fix step plot point" */
-/*  *214  15-APR-1993 12:21:08 TWF "Fix WidgetClasses" */
-/*  *213  12-APR-1993 16:14:26 MRL "More eps." */
-/*  *212  12-APR-1993 15:31:17 MRL "Add eps code." */
-/*  *211  11-MAR-1993 13:36:54 TWF "Remove fixup" */
-/*  *210  11-MAR-1993 13:27:18 TWF "Remove fixup" */
-/*  *209  11-MAR-1993 13:18:40 TWF "Remove fixup" */
-/*  *208  11-MAR-1993 12:37:42 TWF "No fixup" */
-/*  *207   4-MAR-1993 16:31:52 TWF "Check va_count" */
-/*  *206   4-MAR-1993 15:35:52 JAS "make it complile with vaxc" */
-/*  *205   3-MAR-1993 09:46:04 JAS "use ssdef" */
-/*  *204  26-FEB-1993 11:26:37 JAS "port to decc" */
-/*  *203  22-OCT-1992 12:29:41 TWF "Fix setwave" */
-/*  *202  22-OCT-1992 12:24:15 TWF "Fix setwave" */
-/*  *201  22-OCT-1992 11:51:13 TWF "" */
-/*  *200  19-OCT-1992 10:42:07 TWF "Fix background_pixmap" */
-/*  *199  19-OCT-1992 10:22:41 TWF "Implement background pixmap" */
-/*  *198  19-OCT-1992 09:54:39 TWF "Use background pixmap" */
-/*  *197  14-OCT-1992 11:19:58 TWF "Add autoscale to setwave" */
-/*  *196  14-OCT-1992 11:15:22 TWF "Add autoscale to setwave" */
-/*  *195  13-OCT-1992 12:38:44 TWF "Add closed resource" */
-/*  *194   5-OCT-1992 10:08:23 TWF "Make SetWave args optional" */
-/*  *193   5-OCT-1992 09:15:08 TWF "Add another update routine" */
-/*  *192   1-OCT-1992 12:28:56 TWF "Fix crosshairs reason" */
-/*  *191  26-AUG-1992 11:36:50 TWF "Check out redisplay" */
-/*  *190  15-JUN-1992 12:54:46 MRL "Limit print point stack." */
-/*  *189  14-JUN-1992 21:09:09 MRL "TYPO" */
-/*  *188  14-JUN-1992 20:50:51 MRL "Optimize print." */
-/*  *187  28-MAY-1992 16:05:03 TWF "Add animation resource" */
-/*  *186  28-MAY-1992 15:55:20 TWF "Add animation resource" */
-/*  *185  28-MAY-1992 09:31:52 TWF "Fix pointermode for wavedraw" */
-/*  *184  13-APR-1992 14:50:32 TWF "Fix crosshairs" */
-/*  *183  13-APR-1992 13:41:00 TWF "Fix crosshairs" */
-/*  *182  10-APR-1992 17:07:01 TWF "Fix resize" */
-/*  *181  10-APR-1992 12:51:33 TWF "Fix resize" */
-/*  *180  10-APR-1992 11:54:17 TWF "Fix resize" */
-/*  *179   9-APR-1992 17:35:27 TWF "Fix resize" */
-/*  *178   9-APR-1992 15:19:25 TWF "Fix resize" */
-/*  *177   9-APR-1992 14:52:39 TWF "Fix resize" */
-/*  *176   9-APR-1992 11:25:31 TWF "Fix backing store" */
-/*  *175   9-APR-1992 10:19:10 TWF "Fix backing store" */
-/*  *174   8-APR-1992 17:14:09 TWF "Fix backing store" */
-/*  *173   8-APR-1992 17:07:32 TWF "Fix backing store" */
-/*  *172   8-APR-1992 16:56:33 TWF "Fix backing store" */
-/*  *171   8-APR-1992 16:42:26 TWF "Fix backing store" */
-/*  *170   8-APR-1992 16:15:27 TWF "Fix backing store" */
-/*  *169   8-APR-1992 15:59:53 TWF "Fix backing store" */
-/*  *168   8-APR-1992 15:25:03 TWF "Fix backing store" */
-/*  *167   8-APR-1992 15:14:17 TWF "Fix backing store" */
-/*  *166   8-APR-1992 14:48:53 TWF "Fix backing store" */
-/*  *165   8-APR-1992 14:28:25 TWF "Fix backing store" */
-/*  *164   8-APR-1992 14:05:12 TWF "Fix backing store" */
-/*  *163   8-APR-1992 13:49:07 TWF "Fix backing store" */
-/*  *162   8-APR-1992 13:44:14 TWF "Fix backing store" */
-/*  *161   8-APR-1992 13:32:29 TWF "Fix backing store" */
-/*  *160   8-APR-1992 13:28:44 TWF "Fix backing store" */
-/*  *159   8-APR-1992 13:18:30 TWF "Fix backing store" */
-/*  *158   8-APR-1992 11:20:06 TWF "Add mapping event" */
-/*  *157   8-APR-1992 11:16:28 TWF "Add mapping event" */
-/*  *156   8-APR-1992 10:51:29 TWF "Fix backing store" */
-/*  *155   8-APR-1992 10:34:53 TWF "Fix backing store" */
-/*  *154   8-APR-1992 10:14:17 TWF "Fix backing store" */
-/*  *153   8-APR-1992 10:07:29 TWF "Fix backing store" */
-/*  *152   7-APR-1992 16:22:43 TWF "Take out visibility change event" */
-/*  *151   7-APR-1992 15:12:27 TWF "Backing store problem" */
-/*  *150   7-APR-1992 14:26:05 TWF "Handle non-backing store" */
-/*  *149   7-APR-1992 14:15:24 TWF "Alternate method if no backing store" */
-/*  *148   7-APR-1992 14:01:57 TWF "Alternate method if no backing store" */
-/*  *147  18-MAR-1992 17:20:54 TWF "Draw max points per io based on max_request_size" */
-/*  *146   2-MAR-1992 09:43:36 TWF "Do not do some actions when no data" */
-/*  *145  15-JAN-1992 11:53:39 MRL "Fix print resolution bug." */
-/*  *144  10-JAN-1992 13:18:36 MRL "Change print font." */
-/*  *143  10-JAN-1992 12:49:27 MRL "Add test for no waveformCount in Print." */
-/*  *142   9-JAN-1992 09:34:42 TWF "Change expose compression" */
-/*  *141   6-JAN-1992 13:20:02 MRL "Fix print title." */
-/*  *140   6-JAN-1992 12:37:08 MRL "Fix print ylabels." */
-/*  *139   6-JAN-1992 10:47:52 MRL "Fix print ylabels." */
-/*  *138   5-JAN-1992 10:47:20 MRL "TYPO" */
-/*  *137   5-JAN-1992 10:42:22 MRL "Fix single frame print size." */
-/*  *136   3-JAN-1992 15:44:35 MRL "Fix print string." */
-/*  *135   3-JAN-1992 15:21:40 MRL "Fix print string." */
-/*  *134   3-JAN-1992 13:41:18 MRL "Fix print string." */
-/*  *133   2-JAN-1992 17:10:45 TWF "Fix compile error" */
-/*  *132   2-JAN-1992 16:45:30 MRL "Fix print ylabels." */
-/*  *131   2-JAN-1992 13:01:42 MRL "Fix print xlabels." */
-/*  *130   2-JAN-1992 12:40:24 MRL "Fix print xlabels." */
-/*  *129   2-JAN-1992 10:37:49 MRL "Fix dashes." */
-/*  *128  31-DEC-1991 08:49:12 MRL "Fix grid." */
-/*  *127  30-DEC-1991 16:50:13 MRL "Fix grid." */
-/*  *126  30-DEC-1991 16:16:58 MRL "Fix frame border." */
-/*  *125  30-DEC-1991 14:28:02 MRL "Fix x labels." */
-/*  *124  30-DEC-1991 13:39:59 MRL "" */
-/*  *123  30-DEC-1991 12:22:04 MRL "Fix print frame size." */
-/*  *122  30-DEC-1991 10:44:02 MRL "Fix print frame positioning." */
-/*  *121  27-DEC-1991 15:27:05 MRL "" */
-/*  *120  27-DEC-1991 15:03:28 MRL "Change clip call." */
-/*  *119  27-DEC-1991 14:28:16 MRL "" */
-/*  *118  27-DEC-1991 13:16:34 MRL "Fix DrawSegments." */
-/*  *117  27-DEC-1991 12:36:32 MRL "Fix print margins." */
-/*  *116  27-DEC-1991 11:28:02 MRL "Fix print margins." */
-/*  *115  27-DEC-1991 10:04:03 MRL "Fix print clip command,y labels." */
-/*  *114  26-DEC-1991 16:34:15 MRL "Fix print centering." */
-/*  *113  26-DEC-1991 14:58:06 MRL "Typo." */
-/*  *112  26-DEC-1991 14:46:44 MRL "Fix print frame size." */
-/*  *111  26-DEC-1991 13:06:44 MRL "Fix print frame size." */
-/*  *110  26-DEC-1991 11:34:09 MRL "Fix print frame size." */
-/*  *109  26-DEC-1991 10:51:53 MRL "Fix print frame size." */
-/*  *108  26-DEC-1991 10:46:14 MRL "Fix print frame size." */
-/*  *107  26-DEC-1991 10:21:46 MRL "Fix print frame size." */
-/*  *106  24-DEC-1991 15:06:15 MRL "Fix print font size." */
-/*  *105  24-DEC-1991 14:43:38 MRL "Fix print font size." */
-/*  *104  23-DEC-1991 14:45:18 MRL "Fix gsave/grestore." */
-/*  *103  23-DEC-1991 10:47:17 MRL "Typo." */
-/*  *102  23-DEC-1991 09:51:46 MRL "Fix print." */
-/*  *101  20-DEC-1991 16:52:21 MRL "Fix print" */
-/*  *100  20-DEC-1991 13:05:58 MRL "Fix print algorithm." */
-/*  *99   20-DEC-1991 12:16:50 TWF "Inherit stuff" */
-/*  *98   20-DEC-1991 12:11:25 MRL "Fix print algorithm." */
-/*  *97   20-DEC-1991 12:04:31 MRL "Fix print algorithm." */
-/*  *96   20-DEC-1991 11:54:50 MRL "Fix print algorithm." */
-/*  *95   19-DEC-1991 16:13:13 MRL "Fix print algorithm." */
-/*  *94   19-DEC-1991 14:33:07 MRL "Fix print algorithm." */
-/*  *93   19-DEC-1991 13:37:03 MRL "Fix print algorithm." */
-/*  *92   19-DEC-1991 13:25:42 MRL "Fix print algorithm." */
-/*  *91   18-DEC-1991 15:26:33 MRL "Fix print width." */
-/*  *90   18-DEC-1991 14:43:27 MRL "Fix print width." */
-/*  *89   18-DEC-1991 12:30:02 MRL "Fix print line widths." */
-/*  *88   18-DEC-1991 10:39:48 MRL "Change print line width." */
-/*  *87   17-DEC-1991 16:13:50 TWF "Reduce buffer size for rectangles to make it work on 4 plane systems" */
-/*  *86   17-DEC-1991 14:52:16 MRL "fix print title." */
-/*  *85   17-DEC-1991 13:32:48 MRL "Change printlinewidths." */
-/*  *84   17-DEC-1991 12:18:59 MRL "Change printlinewidths." */
-/*  *83   17-DEC-1991 12:06:57 MRL "Change printlinewidths." */
-/*  *82   16-DEC-1991 11:19:01 MRL "fix print." */
-/*  *81   16-DEC-1991 10:57:36 MRL "Fix print." */
-/*  *80   16-DEC-1991 10:26:17 TWF "Fix autoscale" */
-/*  *79   13-DEC-1991 15:41:07 MRL "Add resolution for print." */
-/*  *78   13-DEC-1991 14:57:03 MRL "Add resolution for print." */
-/*  *77   13-DEC-1991 14:24:37 MRL "Add resolution for print." */
-/*  *76   13-DEC-1991 14:17:13 MRL "Add resolution for print." */
-/*  *75   13-DEC-1991 11:43:10 TWF "Fix updatelimits call" */
-/*  *74   13-DEC-1991 09:54:15 TWF "Fix updatelimits" */
-/*  *73   11-DEC-1991 09:55:33 TWF "Fix reverse mode plotting" */
-/*  *72   11-DEC-1991 09:23:46 TWF "Make it plot first time" */
-/*  *71   11-DEC-1991 08:45:09 TWF "Use backing store always" */
-/*  *70   10-DEC-1991 17:44:51 TWF "Fix redisplay with backingstore" */
-/*  *69   10-DEC-1991 17:17:29 TWF "Fix plot of selected waveform" */
-/*  *68   10-DEC-1991 16:42:19 TWF "Fix blank panels" */
-/*  *67   10-DEC-1991 16:36:36 TWF "Fix blank panels" */
-/*  *66   10-DEC-1991 15:19:21 TWF "Fix blank panels" */
-/*  *65   10-DEC-1991 10:40:42 MRL "Add rlineto." */
-/*  *64   10-DEC-1991 09:59:06 MRL "Add rlineto." */
-/*  *63    9-DEC-1991 14:26:36 MRL "More speedy." */
-/*  *62    9-DEC-1991 12:25:45 MRL "Speed up again." */
-/*  *61    9-DEC-1991 11:40:44 MRL "Speed up again." */
-/*  *60    6-DEC-1991 15:24:41 TWF "Fix title color" */
-/*  *59    6-DEC-1991 15:03:32 MRL "Try again." */
-/*  *58    6-DEC-1991 12:08:00 MRL "TYPO" */
-/*  *57    6-DEC-1991 11:59:11 MRL "Try to speed up print." */
-/*  *56    5-DEC-1991 10:10:13 TWF "Fix colors" */
-/*  *55    3-DEC-1991 11:24:06 TWF "Make rectangles smaller" */
-/*  *54    2-DEC-1991 09:02:16 TWF "Fix resizing" */
-/*  *53    2-DEC-1991 08:30:19 TWF "fix backing store" */
-/*  *52    2-DEC-1991 08:01:30 TWF "fix backing store" */
-/*  *51    2-DEC-1991 07:47:29 TWF "try using backing store always" */
-/*  *50   27-NOV-1991 17:43:04 TWF "use backing store" */
-/*  *49   27-NOV-1991 17:39:14 TWF "use backing store" */
-/*  *48   27-NOV-1991 17:33:37 TWF "use backing store" */
-/*  *47   27-NOV-1991 17:11:17 TWF "use backing store" */
-/*  *46   27-NOV-1991 16:46:07 TWF "Use backingstore even more so" */
-/*  *45   27-NOV-1991 15:47:01 TWF "use backing store if available" */
-/*  *44   27-NOV-1991 12:36:44 TWF "Avoid multiple plotting with resize" */
-/*  *43   27-NOV-1991 12:00:21 TWF "Avoid multiple plotting with resize" */
-/*  *42   27-NOV-1991 10:20:10 TWF "Speed up after running PCA" */
-/*  *41   27-NOV-1991 08:24:02 TWF "Speed up after running PCA" */
-/*  *40   26-NOV-1991 15:55:21 TWF "Speed up after running PCA" */
-/*  *39   26-NOV-1991 13:50:09 TWF "Speed up after running PCA" */
-/*  *38   26-NOV-1991 12:47:32 TWF "Speed up after running PCA" */
-/*  *37   26-NOV-1991 11:17:37 TWF "Speed up after running PCS" */
-/*  *36   25-NOV-1991 11:46:09 TWF "Add show mode" */
-/*  *35   25-NOV-1991 10:02:59 TWF "add show mode" */
-/*  *34   25-NOV-1991 09:52:42 TWF "Add points_only" */
-/*  *33   13-NOV-1991 15:30:02 TWF "Fix print scaling" */
-/*  *32   13-NOV-1991 15:23:12 TWF "Fix print scaling" */
-/*  *31   13-NOV-1991 15:19:13 TWF "Fix print scaling" */
-/*  *30   12-NOV-1991 08:15:34 TWF "Fix print" */
-/*  *29    8-NOV-1991 18:42:42 TWF "Fix printing" */
-/*  *28    8-NOV-1991 18:02:23 TWF "fix drag" */
-/*  *27    8-NOV-1991 17:49:20 TWF "Fix drag" */
-/*  *26    8-NOV-1991 17:29:53 TWF "Fix drag" */
-/*  *25    8-NOV-1991 17:11:20 TWF "Fix panning" */
-/*  *24    8-NOV-1991 16:39:07 TWF "" */
-/*  *23    8-NOV-1991 16:16:32 TWF "Fix converttopix call" */
-/*  *22    8-NOV-1991 15:54:22 TWF "Release pixvalues ASAP" */
-/*  *21    8-NOV-1991 15:50:35 TWF "Release pixvalues ASAP" */
-/*  *20    8-NOV-1991 15:17:08 TWF "make sure defered gets drawn" */
-/*  *19    8-NOV-1991 15:03:35 TWF "Make sure deferred updates get drawn" */
-/*  *18    8-NOV-1991 15:00:27 TWF "Make sure deferred updates get drawn" */
-/*  *17    5-NOV-1991 12:49:41 TWF "Make labels transparent" */
-/*  *16    1-NOV-1991 09:20:21 TWF "Add limits to XmdsWaveformUpdate" */
-/*  *15    1-NOV-1991 08:17:55 TWF "Change Update to take min/max's" */
-/*  *14    1-NOV-1991 08:15:13 TWF "Change Update to take min/max's" */
-/*  *13    1-NOV-1991 08:07:17 TWF "Change Update to take min/max's" */
-/*  *12   17-OCT-1991 12:31:38 TWF "Make title transparent" */
-/*  *11   16-OCT-1991 14:54:42 TWF "Make titles transparent" */
-/*  *10   15-OCT-1991 13:13:55 MRL " Fix print." */
-/*  *9    11-OCT-1991 16:45:54 TWF "Fix roprand" */
-/*  *8    11-OCT-1991 15:46:06 TWF "Add roprand handling" */
-/*  *7    11-OCT-1991 15:30:03 TWF "Add roprand handling" */
-/*  *6    11-OCT-1991 15:07:06 TWF "Add roprand handling" */
-/*  *5    11-OCT-1991 14:51:59 TWF "Add roprand handling" */
-/*  *4    11-OCT-1991 14:47:34 TWF "Add roprand handling" */
-/*  *3     8-OCT-1991 15:37:57 TWF "Take out globaldef" */
-/*  *2     8-OCT-1991 14:15:09 TWF "Change library includes to file includes" */
-/*  *1     8-OCT-1991 13:41:13 TWF "XmdsWaveform widget" */
-/*  CMS REPLACEMENT HISTORY, Element XMDSWAVEFORM.C */
 /*------------------------------------------------------------------------------
 
 		Name:   XmdsWaveform
@@ -491,7 +127,7 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
  Local variables:                                                             */
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
+static int height_page;
 enum crosshairsmode
 {
   move_xh,first_xh,last_xh
@@ -2430,7 +2066,7 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
   static Position xorigin,yorigin;
   static float xoffset,yoffset;
   static float x,y;
-  static float rotate,width_limit,height_limit,width_page,height_page;
+  static float rotate,width_limit,height_limit,width_page;
   static short swidth,sheight;
   static float margin = .375;
   static unsigned long fatom;
@@ -2727,7 +2363,7 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
   {
     float yscale = 1. - fontsize * 1.5 * 1.25 * resinc / (sheight - 1.);
 		/* Scale so top of plot still at same place, */
-    float yoffset = 11 * resolution * (1. - yscale);
+    float yoffset = height_page * resolution * (1. - yscale);
 		/* but bottom appears raised from original spot. */
     fprintf(printfid,"%g %g translate\n",0.,yoffset);
     fprintf(printfid,"%g %g scale\n",1.,yscale);
@@ -2749,7 +2385,7 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
     int length = strlen(title);
     int twidth = XTextWidth(waveformFontStruct(w), title, length);
     float x = max(0, ((int) XtWidth(w) - twidth) / 2);
-    float y = (11 * 75. - (XtHeight(w) - 1) + (.25 * fontsize) / 2.);
+    float y = (height_page * 75. - (XtHeight(w) - 1) + (.25 * fontsize) / 2.);
     float middle = x + twidth/2 - XTextWidth(waveformFontStruct(w),title,1)/2.;
     int i;
     SetScale(1);
@@ -2935,7 +2571,7 @@ static void DrawLines(Display *display,Window win,GC gc,XPoint *point,int kp, Di
 	      lastpoint = imin;
 	      if (np == 100)
 	      {
-		fprintf(printfid,"%d %d %d v\n",np,point[lastpoint].x,11 * resolution - point[lastpoint].y);
+		fprintf(printfid,"%d %d %d v\n",np,point[lastpoint].x,height_page * resolution - point[lastpoint].y);
 		np = 0;
 	      }
 	    }
@@ -2946,7 +2582,7 @@ static void DrawLines(Display *display,Window win,GC gc,XPoint *point,int kp, Di
 	      lastpoint = imax;
 	      if (np == 100)
 	      {
-		fprintf(printfid,"%d %d %d v\n",np,point[lastpoint].x,11 * resolution - point[lastpoint].y);
+		fprintf(printfid,"%d %d %d v\n",np,point[lastpoint].x,height_page * resolution - point[lastpoint].y);
 		np = 0;
 	      }
 	    }
@@ -2965,7 +2601,7 @@ static void DrawLines(Display *display,Window win,GC gc,XPoint *point,int kp, Di
 	  lastpoint = i;
 	  if (np == 100)
 	  {
-	    fprintf(printfid,"%d %d %d v\n",np,point[lastpoint].x,11 * resolution - point[lastpoint].y);
+	    fprintf(printfid,"%d %d %d v\n",np,point[lastpoint].x,height_page * resolution - point[lastpoint].y);
 	    np = 0;
 	  }
 	}
@@ -2981,7 +2617,7 @@ static void DrawLines(Display *display,Window win,GC gc,XPoint *point,int kp, Di
 	    fprintf(printfid,"%d %d\n",point[lastpoint].x - point[i].x,point[i].y - point[lastpoint].y);
 	    np++;
 	  }
-	  fprintf(printfid,"%d %d %d v\n",np,point[i].x,11 * resolution - point[i].y);
+	  fprintf(printfid,"%d %d %d v\n",np,point[i].x,height_page * resolution - point[i].y);
 	  np = 0;
 	}
 	pen_down = 0;
@@ -2996,7 +2632,7 @@ static void DrawLines(Display *display,Window win,GC gc,XPoint *point,int kp, Di
     }
     if (np)
     {
-      fprintf(printfid,"%d %d %d v\n",np,point[lastpoint].x,11 * resolution - point[lastpoint].y);
+      fprintf(printfid,"%d %d %d v\n",np,point[lastpoint].x,height_page * resolution - point[lastpoint].y);
     }
     fprintf(printfid,"grestore\n");
   }
@@ -3036,7 +2672,7 @@ static void DrawRectangles(Display *display,Window win,GC gc,XRectangle *rectang
 	   could be in the grid.  However, for our application, this test is good enough. */
 
 	fprintf(printfid,"%d %d %d %d dorectangle\n",
-		  rectangle[i].x,11 * resolution - rectangle[i].y,rectangle[i].width,rectangle[i].height);
+		  rectangle[i].x,height_page * resolution - rectangle[i].y,rectangle[i].width,rectangle[i].height);
     }
     fprintf(printfid,"grestore\n");
   }
@@ -3094,9 +2730,9 @@ static void DrawSegments(Display *display,Window win,GC gc,float *crosshairs,int
     for (i = 0; i < num * 4; i = i + 4)
     {
       fprintf(printfid,"%d %d mv\n",(int) (crosshairs[i] * scale * resinc),
-	      (int) (11 * resolution) - (int) (crosshairs[i + 2] * scale * resinc));
+	      (int) (height_page * resolution) - (int) (crosshairs[i + 2] * scale * resinc));
       fprintf(printfid,"%d %d ln\n",(int) (crosshairs[i + 1] * scale * resinc),
-	      (int) (11 * resolution) - (int) (crosshairs[i + 3] * scale * resinc));
+	      (int) (height_page * resolution) - (int) (crosshairs[i + 3] * scale * resinc));
       fprintf(printfid,"stroke\n");
     }
     fprintf(printfid,"grestore\n");
