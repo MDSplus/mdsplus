@@ -55,7 +55,7 @@ int copy( int dbType, char *inFile, char *outFile, int count )
 		printf( "copy()\n" );
 
 	// get a read file descriptor
-	if( (Read_fd = Open(inFile, O_RDONLY)) == ERROR ) {
+	if( (Read_fd = Open(inFile, O_RDONLY)) == -1 ) {
 		if( MSGLVL(ALWAYS) )
 			perror("open(rd)");
 
@@ -64,9 +64,9 @@ int copy( int dbType, char *inFile, char *outFile, int count )
 	}
 
 	// get a write file descriptor
-	if( (Write_fd = Open(outFile, O_WRONLY)) == ERROR ) {
-		if( MSGLVL(ALWAYS) )
-			perror("open(wr)");
+	if( (Write_fd = open(outFile, O_WRONLY)) == -1 ) {
+	  printf("Error opening %s\n",outFile);
+		perror("open(wr)");
 
 		status = FILE_ERROR;
 		goto Copy_Exit_2;
@@ -109,10 +109,10 @@ int copy( int dbType, char *inFile, char *outFile, int count )
 	}
 
 Copy_Exit_3:
-	if( Write_fd != ERROR ) close(Write_fd);
+	if( Write_fd != -1 ) close(Write_fd);
 
 Copy_Exit_2:
-	if( Read_fd  != ERROR ) close(Read_fd);
+	if( Read_fd  != -1 ) close(Read_fd);
 
 Copy_Exit_1:
 	if( MSGLVL(DETAILS) ) {

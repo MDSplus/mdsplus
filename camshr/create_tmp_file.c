@@ -51,7 +51,7 @@ int create_tmp_file( int dbType, int count , char *filename)
 	if( MSGLVL(FUNCTION_NAME) )
 		printf( "create_tmp_file()\n" );
 
-	if( (fd = mkstemp(filename)) == ERROR ) {
+	if( (fd = mkstemp(filename)) == -1 ) {
 		if( MSGLVL(ALWAYS) ) {
 			fprintf( stderr, "create_tmp_file(): file error %d\n", fd );
 			perror("creat()");
@@ -60,7 +60,7 @@ int create_tmp_file( int dbType, int count , char *filename)
 		status = FILE_ERROR;
 		goto CreateTmpFile_Exit;
 	}
-
+        chmod(filename,0666);
 	// figure out size of each entry
 	switch( dbType ) {
 		case CTS_DB:
