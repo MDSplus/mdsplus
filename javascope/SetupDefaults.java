@@ -12,7 +12,7 @@ public class SetupDefaults extends ScopePositionDialog {
    Button           ok, cancel, reset, erase, apply;
    Label            lab;
    javaScope	    main_scope;
-   EvaluateWaveform sd_block;
+   EvaluateWaveform ew;
 
 
    public SetupDefaults(Frame fw, String frame_title) 
@@ -25,7 +25,7 @@ public class SetupDefaults extends ScopePositionDialog {
 
             
       main_scope = (javaScope)fw; 	
-      sd_block = new EvaluateWaveform(main_scope);
+      ew = main_scope.ew;
   
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints c = new GridBagConstraints();
@@ -170,12 +170,9 @@ public class SetupDefaults extends ScopePositionDialog {
 
    public void putSetupDefault(WaveformConf wc)      
    { 
-
-	if(wc == null) {
-	    eraseForm();	    
-	    return;
-	}
-      
+   
+	eraseForm();	    
+	if(wc == null) return;
 	setTextValue(title, wc.title);
 	setTextValue(y_label, wc.y_label);
 	setTextValue(x_label, wc.x_label);
@@ -216,8 +213,8 @@ public class SetupDefaults extends ScopePositionDialog {
 
       if(ob == apply || ob == ok)
       {
-	if(shot.getText() != null && shot.getText().length()!= 0)
-	    sd_block.evaluateShot(shot.getText());
+	//if(shot.getText() != null && shot.getText().length()!= 0)
+	    //sd_block.evaluateShot(shot.getText());
 	saveDefaultConfiguration();
 	main_scope.UpdateAllWaves();
 	if(ob == ok)

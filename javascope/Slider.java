@@ -21,6 +21,8 @@ class Slider extends Panel implements AdjustmentListener {
   private int       mode_show;
   private int       mode_pos;
   private int       font_size = 12;
+  transient AdjustmentListener adjustmentListener;
+
          
   final static int VERTICAL         = Scrollbar.VERTICAL;
   final static int HORIZONTAL       = Scrollbar.HORIZONTAL;
@@ -73,6 +75,21 @@ class Slider extends Panel implements AdjustmentListener {
   {
      return new Insets(5,5,5,8);
   }	 
+
+  public synchronized void addAdjustmentListener(AdjustmentListener l) {	
+	adjustmentListener = AWTEventMulticaster.add(adjustmentListener, l);
+  } 
+
+  public synchronized void removeAdjustmentListener(AdjustmentListener l) {
+	adjustmentListener = AWTEventMulticaster.remove(adjustmentListener, l);
+  }
+  
+  protected void processAdjustmentEvent(AdjustmentEvent e) {
+	if (adjustmentListener != null) {
+            adjustmentListener.adjustmentValueChanged(e);
+        }
+  }
+
 
   public void paint(Graphics g)
   {
@@ -157,15 +174,14 @@ class Slider extends Panel implements AdjustmentListener {
   {
     value = _value;
     scr_slide.setValue(_value);
-                		
+    repaint();
   }	    
 
   public void adjustmentValueChanged(AdjustmentEvent e) 
   {
-
      value = scr_slide.getValue();
      updateLabel();
-    
+     processAdjustmentEvent(e);
   }
 
 

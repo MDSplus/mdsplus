@@ -1,7 +1,11 @@
+import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.*;
+import java.util.*;
 
-class ScopePositionDialog extends Dialog implements ActionListener, KeyListener, ItemListener, FocusListener {
+class ScopePositionDialog extends Dialog implements ActionListener, KeyListener, 
+					    ItemListener, FocusListener, AdjustmentListener {
 
     ScopePositionDialog(Frame dw, String title, boolean flag)
     {
@@ -45,6 +49,6 @@ class ScopePositionDialog extends Dialog implements ActionListener, KeyListener,
     {}
     public void focusLost(FocusEvent e)
     {}      		     
-
+    public void adjustmentValueChanged(AdjustmentEvent e)
+    {}      		     
 } 
-

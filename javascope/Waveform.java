@@ -2,11 +2,14 @@ import java.applet.Applet;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
+import java.util.*;
 
+//public class Waveform extends Canvas 
+//{
 
 // Support classes (they are only valid in the Waveform context) 
 
-class WaveformMetrics {
+ class WaveformMetrics {
     double xmax, xmin, ymax, ymin;
     double xrange, //xmax - xmin
 	   yrange; //ymax - ymin
@@ -15,6 +18,8 @@ class WaveformMetrics {
     double x_offset;
     double x_range;
     int start_x;
+    double FACT_X, FACT_Y, OFS_X, OFS_Y;
+    
     static final double LOG10 = 2.302585092994, MIN_LOG = 10E-100; 
 
     public WaveformMetrics(double _xmax, double _xmin, 
@@ -71,7 +76,7 @@ class WaveformMetrics {
 	yrange = ymax - ymin;
 	
 	if(xrange <= 0)
-	{
+	{ 
 	    xrange = (double)1E-10;
 	    x_offset = 0.5;
 	}
@@ -80,15 +85,31 @@ class WaveformMetrics {
 	    yrange = (double)1E-10;
 	}
     }
-    public double XMax() {return xmax;}
-    public double YMax() {return ymax;}
-    public double XMin() {return xmin;}
-    public double YMin() {return ymin;}
-    public double XRange() {return xmax - xmin;}
-    public double YRange() {return ymax - ymin;}
-    public boolean XLog() { return x_log;}
-    public boolean YLog() {return y_log;}		
-    public int XPixel(double x, Dimension d)
+    final public double XMax() {return xmax;}
+    final public double YMax() {return ymax;}
+    final public double XMin() {return xmin;}
+    final public double YMin() {return ymin;}
+    final public double XRange() {return xmax - xmin;}
+    final public double YRange() {return ymax - ymin;}
+    final public boolean XLog() { return x_log;}
+    final public boolean YLog() {return y_log;}	
+    final public void ComputeFactors(Dimension d)
+    {
+	OFS_X = x_offset * d.width - xmin*x_range*d.width/xrange + 0.5;
+	FACT_X = x_range*d.width/xrange;
+	OFS_Y = y_range * ymax*d.height/yrange + 0.5;
+	FACT_Y = -y_range * d.height/yrange;
+    }
+    final public int XPixel(double x)
+    {
+	return (int)(x * FACT_X + OFS_X);
+    }
+    final public int YPixel(double y)
+    {
+	return (int)(y * FACT_Y + OFS_Y);
+    }
+			
+    final public int XPixel(double x, Dimension d)
     {
 	double ris;
 	if(x_log)
@@ -103,7 +124,7 @@ class WaveformMetrics {
 	    ris = -20000;
 	return (int)ris;
     }			
-    public int YPixel(double y, Dimension d )
+    final public int YPixel(double y, Dimension d )
     {
 	if(y_log)
 	{ 
@@ -117,7 +138,7 @@ class WaveformMetrics {
 	    ris = -20000;
 	return (int)ris;
     }
-    public double XValue(int x, Dimension d)
+    final public double XValue(int x, Dimension d)
     {
 	double ris = (double)(((x - 0.5)/d.width - x_offset) * xrange / x_range + xmin);
 	if(x_log)
@@ -125,7 +146,7 @@ class WaveformMetrics {
 	else
 	    return ris;
     }
-    public double YValue(int y, Dimension d)
+    final public double YValue(int y, Dimension d)
     {
 	double ris = (double)(ymax - ((y - 0.5)/d.height) * yrange/y_range);
 	if(y_log)
@@ -133,17 +154,133 @@ class WaveformMetrics {
 	else
 	    return ris;
     }
-       
+
+    
+    public Vector ToPolygons(Signal sig, Dimension d)
+    {
+	int i, j, curr_num_points, curr_x, start_x, max_points;
+	float  max_y, min_y, curr_y;
+	Vector curr_vect = new Vector(5);
+	int xpoints[], ypoints[];
+	Polygon curr_polygon;
+	int pol_idx = 0;
+	min_y = max_y = sig.y[0];
+	xpoints = new int[sig.n_points];
+	ypoints = new int[sig.n_points];
+	curr_num_points = 0;
+	i = j = 0;
+	if(x_log || y_log)
+	{
+	    start_x = XPixel(sig.x[0], d);
+	    while(j < sig.n_points)
+	    {
+		for(j = i+1; j < sig.n_points && 
+		    (pol_idx >= sig.n_nans || j != sig.nans[pol_idx])&& 
+		    (curr_x = XPixel(sig.x[j], d)) == start_x; j++)
+		{
+		    curr_y = sig.y[j];
+		    if(curr_y < min_y) min_y = curr_y;
+		    if(curr_y > max_y) max_y = curr_y;
+		}
+		if(max_y > min_y)
+		{
+		    xpoints[curr_num_points] = xpoints[curr_num_points + 1] = start_x;
+		    ypoints[curr_num_points] = YPixel(min_y, d);
+		    ypoints[curr_num_points + 1] = YPixel(max_y, d);
+		    curr_num_points +=2;
+		}
+		else
+		{
+		    xpoints[curr_num_points] = start_x;
+		    ypoints[curr_num_points] = YPixel(max_y, d);
+		    curr_num_points++;
+		}
+		if(j == sig.n_points || Float.isNaN(sig.y[j])) 
+		{
+		    curr_polygon = new Polygon(xpoints, ypoints, curr_num_points);
+		    curr_vect.addElement(curr_polygon);
+		    pol_idx++;
+		    curr_num_points = 0;
+		    if(j < sig.n_points)  //need to raise pen
+		    {
+			while(j < sig.n_points && Float.isNaN(sig.y[j]))
+			    j++;
+		    }
+		}
+		if(j < sig.n_points)
+		{
+		    start_x = XPixel(sig.x[j], d);
+		    max_y = min_y = sig.y[j];
+		    i = j;
+		}
+	    }
+	}
+	else // Not using logaritmic scales
+	{
+	    ComputeFactors(d);
+	    start_x = XPixel(sig.x[0]);
+	    while(j < sig.n_points)
+	    {
+		for(j = i+1; j < sig.n_points && //!Float.isNaN(sig.y[j]) && 
+		    (pol_idx >= sig.n_nans || j != sig.nans[pol_idx])&& 
+		    (curr_x = XPixel(sig.x[j])) == start_x; j++)
+		{
+		    curr_y = sig.y[j];
+		    if(curr_y < min_y) min_y = curr_y;
+		    if(curr_y > max_y) max_y = curr_y;
+		}
+		if(max_y > min_y)
+		{
+		    xpoints[curr_num_points] = xpoints[curr_num_points + 1] = start_x;
+		    ypoints[curr_num_points] = YPixel(min_y);
+		    ypoints[curr_num_points + 1] = YPixel(max_y);
+		    curr_num_points +=2;
+		}
+		else
+		{
+		    xpoints[curr_num_points] = start_x;
+		    ypoints[curr_num_points] = YPixel(max_y);
+		    curr_num_points++;
+		}
+		if(j == sig.n_points || Float.isNaN(sig.y[j])) 
+		{
+		    curr_polygon = new Polygon(xpoints, ypoints, curr_num_points);
+		    curr_vect.addElement(curr_polygon);
+		    pol_idx++;
+		    curr_num_points = 0;
+		    if(j < sig.n_points)  //need to raise pen
+		    {
+			while(j < sig.n_points && Float.isNaN(sig.y[j]))
+			    j++;
+		    }
+		}
+		if(j < sig.n_points)
+		{
+		    start_x = XPixel(sig.x[j]);
+		    max_y = min_y = sig.y[j];
+		    i = j;
+		}
+	    }
+	}
+	return curr_vect;
+    }	
+	      
+		     
+			    
+				   
+					  
+						        
 	
 }
 
 
-class Grid {
+ class Grid {
     WaveformMetrics wm;
     int x_dim, y_dim;
     double x_values[], y_values[], x_step, y_step;
     int grid_step_x, grid_step_y;
     int mode;
+    boolean int_ylabels, int_xlabels;
     Font font;
     Image vert_label;	
     int label_width, label_height, label_descent, num_x_steps, num_y_steps;	
@@ -152,7 +289,8 @@ class Grid {
     final static int IS_DOTTED = 0, IS_GRAY = 1, IS_NONE = 2; 
 	
     public Grid(double xmax, double ymax, double xmin, double ymin, boolean xlog, boolean ylog, 
-	int _mode, String _x_label, String _y_label, String _title, int _grid_step_x, int _grid_step_y)
+	int _mode, String _x_label, String _y_label, String _title, int _grid_step_x, int _grid_step_y,
+	boolean _int_xlabels, boolean _int_ylabels)
     {
 	mode = _mode;
 	x_label = _x_label;
@@ -160,6 +298,8 @@ class Grid {
 	title = _title;
 	grid_step_x = _grid_step_x;
 	grid_step_y = _grid_step_y;
+	int_xlabels = _int_xlabels;
+	int_ylabels = _int_ylabels;
 	font = null;
 	x_values = new double[50];
 	y_values = new double[50];
@@ -178,9 +318,9 @@ class Grid {
 	int count = 0, i, num_steps, rem_step = 1;
 	Float f;
 	if(xrange <= 0)
-	    xrange = (double)1E-10;
+	    xrange = (double)1E-3;
  	if(yrange <= 0)
-	    yrange = (double)1E-10;
+	    yrange = (double)1E-3 ;
 
     	if(mode == IS_X)
 	{
@@ -197,8 +337,8 @@ class Grid {
 	    curr_min = ymin - (double)0.1 * yrange;
 
 	    step = (ymax - ymin)/grid_step;
-	    if(step < 10e-20)
-		step = 10e-20;
+//	    if(step < 10e-10)
+//		step = 10e-10;
 	    is_log = ylog;
 
 	}
@@ -229,12 +369,15 @@ class Grid {
 	else
 	    for(i = 0; i < count; i++)
 		step /=10;
-	curr = (int)(curr_min / step) * step;
-	while(curr >= curr_min)
+	curr = (long)(curr_min / step) * step;
+	if(curr > curr_min)
+	    curr -= (long)((curr - curr_min)/step) *step; 
+	
+    	while(curr >= curr_min)
 	    curr -= step;
 	for(i = 0; i < 50 && curr < curr_max + step; i++)
 	{
-    	    val[i] = (int)(curr / step + 0.5) * step;
+    	    val[i] = (long)(curr / step + 0.5) * step;
 //Fix per la stampa dello 0
 	    if(val[i] < step/100 && val[i] > -step/100)
 		val[i] = 0;	
@@ -269,20 +412,28 @@ class Grid {
 	curr_font = new Font(curr_font.getName(), curr_font.getStyle(), 10);
 	g.setFont(curr_font);
     	fm = g.getFontMetrics();
-	if(x_label != null)
-	    label_height = 2*fm.getHeight();
+	if(int_xlabels)
+	    label_height = 1;
 	else
-	    label_height = fm.getHeight();
-	label_width = 0;
-	for(int i = 0; i < y_dim; i++)
 	{
-	    curr_dim = fm.stringWidth(ConvertToString(y_values[i], ylog));
-	    if(label_width < curr_dim)
-		label_width = curr_dim;
-	}	
-	if(y_label != null)
-	    label_width += fm.getHeight();
+	    if(x_label != null)
+		label_height = 2*fm.getHeight();
+	    else
+		label_height = fm.getHeight();
+	}
+	label_width = 0;
+	if(!int_ylabels)
+	{
+	    for(int i = 0; i < y_dim; i++)
+	    {
+		curr_dim = fm.stringWidth(ConvertToString(y_values[i], ylog));
+		if(label_width < curr_dim)
+		    label_width = curr_dim;
+	    }	
+	    if(y_label != null)
+		label_width += fm.getHeight();
 	    
+	}
 	lim_rect.width = label_width;
 	lim_rect.height = label_height;
 
@@ -304,18 +455,24 @@ class Grid {
 	    font = new Font(font.getName(), font.getStyle(), 10);
 	    g.setFont(font);
 	    fm = g.getFontMetrics();
-	    label_height = /*2 * */fm.getHeight();
+	    if(int_xlabels)
+		label_height = 0;
+	    else
+		label_height = /*2 * */fm.getHeight();
 	    label_descent = fm.getDescent();
 	    label_width = 0;
-	    for(i = 0; i < y_dim; i++)
+	    if(!int_ylabels)
 	    {
-		curr_dim = fm.stringWidth(ConvertToString(y_values[i], wm.YLog()));
-		if(label_width < curr_dim)
-		    label_width = curr_dim;
-	    }	
-	    if(y_label != null)
-		label_width += fm.getHeight();
+		for(i = 0; i < y_dim; i++)
+		{
+		    curr_dim = fm.stringWidth(ConvertToString(y_values[i], wm.YLog()));
+		    if(label_width < curr_dim)
+			label_width = curr_dim;
+		}	
+		if(y_label != null)
+		    label_width += fm.getHeight();
 //	    label_width -= fm.charWidth(' ');
+	    }
 	}
 	else
 	{
@@ -382,12 +539,20 @@ class Grid {
   	    if(dim <= d.height - label_height)
 	    {
 		curr_dim = dim + fm.getHeight()/2;
-		if(curr_dim - fm.getAscent() >= 0)
+		if((curr_dim - fm.getAscent() >= 0) && (curr_dim + fm.getDescent() <= d.height))
 		{
-		    if(y_label != null)	
-			g.drawString(ConvertToString(y_values[i], wm.YLog()), fm.getHeight(), curr_dim);
-		    else
-			g.drawString(ConvertToString(y_values[i], wm.YLog()), 0, curr_dim);
+		    int ylabel_offset = 0;
+		    if(y_label != null)
+			ylabel_offset = fm.getHeight();
+		    if(int_ylabels)
+		    {
+			if(mode == Grid.IS_NONE)
+			    ylabel_offset += d.width/40;
+			else
+			    ylabel_offset = 2;
+		    }
+		    
+		    g.drawString(ConvertToString(y_values[i], wm.YLog()), ylabel_offset, curr_dim);
 		}
     	    }
 	}
@@ -452,7 +617,7 @@ class Grid {
     }
 
 
-    private String ConvertToString(double f, boolean is_log)
+    static String ConvertToString(double f, boolean is_log)
     {
 	double curr_f, curr_f1;
 	double abs_f;
@@ -519,6 +684,7 @@ public class Waveform extends Canvas
     boolean x_log, y_log;	
     boolean interpolate;	
     boolean is_mb2;
+    boolean int_xlabel, int_ylabel;
     Rectangle curr_display_limits;
     public static final int NONE = 0, SQUARE = 1, CIRCLE = 2, CROSS = 3,
 	TRIANGLE = 4, POINT = 5;		
@@ -540,8 +706,6 @@ public class Waveform extends Canvas
 	first_set_point = true;
 	not_drawn = true;
 	double xmax = MaxXSignal(), xmin = MinXSignal(), ymax = MaxYSignal(), ymin = MinYSignal();
-	grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, title, 
-	    grid_step_x, grid_step_y);
 	curr_rect = null;
 	mode = MODE_ZOOM;
 	prev_point_x = prev_point_y = -1;
@@ -578,6 +742,8 @@ public class Waveform extends Canvas
 	marker = NONE; 
 	marker_width = 6;
 	x_log = y_log = false;
+	off_image = null;
+	not_drawn = true;
 	repaint();
     }
 	
@@ -599,8 +765,8 @@ public class Waveform extends Canvas
 
     	double xmax = MaxXSignal(), xmin = MinXSignal(), ymax = MaxYSignal(), ymin = MinYSignal();
 
-	grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, title, 
-	    grid_step_x, grid_step_y);
+//	grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, title, 
+//	    grid_step_x, grid_step_y);
 	wm = null;
 
     	curr_rect = null;
@@ -620,9 +786,11 @@ public class Waveform extends Canvas
 	repaint();
     }
     
-    public void SetGridMode(int _grid_mode)
+    public void SetGridMode(int _grid_mode, boolean int_xlabel, boolean int_ylabel)
     {
 	grid_mode = _grid_mode;
+	this.int_xlabel = int_xlabel;
+	this.int_ylabel = int_ylabel;
 	wm = null;
 	grid = null;
 	not_drawn = true;
@@ -632,11 +800,11 @@ public class Waveform extends Canvas
 
    protected void SetMode(int mod)
     {
-	if(selected)
-	{
-	    selected = false;
-	    not_drawn = true;
-	}
+//	if(selected) Prova Cesare per la copia su scope differenti
+//	{
+//	    selected = false;
+//	    not_drawn = true;
+//	}
 	if(def_cursor == null)
 	    def_cursor = getCursor();
 	mode = mod;
@@ -705,7 +873,7 @@ public class Waveform extends Canvas
 	    off_image = createImage(d.width, d.height);
 	    off_graphics = off_image.getGraphics(); 
 	    grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, 
-		title, grid_step_x, grid_step_y);
+		title, grid_step_x, grid_step_y, int_xlabel, int_ylabel);
 	    curr_display_limits = new Rectangle();
 	    grid.GetLimits(off_graphics, curr_display_limits, y_log);
 	    wm = new WaveformMetrics(xmax, xmin, ymax, ymin, curr_display_limits, d, x_log, y_log);
@@ -744,7 +912,7 @@ public class Waveform extends Canvas
 	    	g.drawRect(curr_rect.x, curr_rect.y, curr_rect.width,
 		    curr_rect.height);
 	    }
-	    else
+	    else 
 	    {
 		//g.clipRect(0, 0, d.width, d.height);
 	        g.drawImage(off_image, 0, 0, this);
@@ -777,7 +945,7 @@ public class Waveform extends Canvas
 		g1 = g.create(0, 0, d.width, d.height);
 		g1.clipRect(prev_point_x - 4, 0, 8, d.height);
 	        g1.drawImage(off_image, 0, 0, this);
-	        g.drawImage(off_image, 0, 0, this);
+	        //g.drawImage(off_image, 0, 0, this);
 	    }
             Color prev_color = g.getColor();
 	    if(crosshair_color != null)
@@ -834,10 +1002,20 @@ public class Waveform extends Canvas
 	g.setClip(prev_clip);
     }	
     protected double MaxXSignal() {return waveform_signal.xmax;}
-    protected double MaxYSignal() {return waveform_signal.ymax;}
+    protected double MaxYSignal() 
+    {
+	if(waveform_signal.ymax <= waveform_signal.ymin)
+	    return  waveform_signal.ymax + 1E-3 + Math.abs(waveform_signal.ymax);
+	return waveform_signal.ymax;
+    }
     protected double MinXSignal() {return waveform_signal.xmin;}
-    protected double MinYSignal() {return waveform_signal.ymin;}
-
+    protected double MinYSignal() 
+    {
+	if(waveform_signal.ymax <= waveform_signal.ymin)
+	    return  waveform_signal.ymin - 1E-3 - Math.abs(waveform_signal.ymax);
+	return waveform_signal.ymin;
+    }
+    
     public boolean mouseDown(Event e, int x, int y)
     {
 	if((e.modifiers & Event.ALT_MASK) != 0) 
@@ -943,12 +1121,11 @@ public class Waveform extends Canvas
 	{
 		double xrange;
 		Dimension d = size();
-		if(dragging || mode != MODE_POINT || waveform_signal == null)
+		if(dragging || mode != MODE_POINT || waveform_signal == null || wm == null)
 			return;
 		if(curr_x < waveform_signal.x[0])
 			curr_x = waveform_signal.x[0];
 		xrange = waveform_signal.x[waveform_signal.n_points - 1] - waveform_signal.x[0];
-
 		end_x = wm.XPixel(curr_x, d);
 		//ext_update = true;
 		repaint();
@@ -1137,8 +1314,8 @@ public class Waveform extends Canvas
     void ReportChanges()
     {
 	double xmax = MaxXSignal(), ymax = MaxYSignal(), xmin = MinXSignal(), ymin = MinYSignal();
-	grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, title, 
-	    grid_step_x, grid_step_y);
+//	grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, title, 
+//	    grid_step_x, grid_step_y);
 	wm = null;
 	not_drawn = true;
 	repaint();

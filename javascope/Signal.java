@@ -5,10 +5,12 @@ import java.net.*;
 
 public class Signal
 {
-    public double x[], y[], up_error[], low_error[], ymax, ymin, xmax, xmin, step, 
+    public float x[], y[], up_error[], low_error[];
+    public double ymax, ymin, xmax, xmin, step, 
 	saved_xmin, saved_xmax, saved_ymin, saved_ymax;
     public boolean error, asym_error;
     public int n_points;
+    public int nans[], n_nans = 0;
     int prev_idx = 0;
     double t_xmax, t_xmin, t_ymax, t_ymin;
     boolean increasing_x;
@@ -16,20 +18,20 @@ public class Signal
 Float flo;
 Integer inte;
 
-    public Signal(double _x[], double _y[], int _n_points)
+    public Signal(float _x[], float _y[], int _n_points)
     {
 	error = asym_error = false;
 	SetAxis(_x, _y, _n_points);
 	CheckIncreasingX();
     }	
-    public Signal(double _x[], double _y[])
+    public Signal(float _x[], float _y[])
     {
 	error = asym_error = false;
 	SetAxis(_x, _y, _x.length);
 	CheckIncreasingX();
     }	
     
-    public Signal(double _x[], double _y[], double _err[])
+    public Signal(float _x[], float _y[], float _err[])
     {
 	error = true;
 	up_error = _err;
@@ -37,7 +39,7 @@ Integer inte;
 	SetAxis(_x, _y, _x.length);
 	CheckIncreasingX();
     }	
-    public Signal(double _x[], double _y[], double _err1[], double _err2[])
+    public Signal(float _x[], float _y[], float _err1[], float _err2[])
     {
 	error = asym_error = true;
 	up_error = _err1;
@@ -46,7 +48,7 @@ Integer inte;
 	SetAxis(_x, _y, _x.length);
 	CheckIncreasingX();
     }	
-    public Signal(double _x[], double _y[], int _n_points, 
+    public Signal(float _x[], float _y[], int _n_points, 
 	double _xmin, double _xmax, double _ymin, double _ymax)
     {
 	error = asym_error = false;
@@ -60,6 +62,8 @@ Integer inte;
 	    xmax = xmin + x[1] - x[0];
 	saved_xmin = xmin;
 	saved_xmax = xmax;
+	if(xmax <= xmin)
+	    saved_xmax = xmax = xmin+(float)1E-6;
 	saved_ymin = ymin = _ymin;
 	saved_ymax = ymax = _ymax;
  	CheckIncreasingX();
@@ -71,17 +75,17 @@ Integer inte;
     {
 	error = asym_error = false;
 	n_points = 100;
-	x = new double[n_points];
-	y = new double[n_points];
+	x = new float[n_points];
+	y = new float[n_points];
 	for(int i = 0; i < n_points; i++)
 	{
-	    x[i] = (double)i;
+	    x[i] = (float)i;
 	    y[i] = 0;
 	}		
-	saved_xmin = xmin = x[0];
-	saved_xmax = xmax = x[n_points - 1];
-	saved_ymin = ymin  = (double)-1e-6;
-	saved_ymax = ymax = (double)1e-6;
+	saved_xmin = xmin = (double)x[0];
+	saved_xmax = xmax = (double)x[n_points - 1];
+	saved_ymin = ymin  = -1e-6;
+	saved_ymax = ymax = 1e-6;
 	increasing_x = true;
     }
     public Signal(Signal s)
@@ -94,8 +98,10 @@ Integer inte;
 	if(asym_error)
 	    low_error = s.low_error;	
 	n_points = s.n_points;
-	x = new double[n_points];
-	y = new double[n_points];
+	nans = s.nans;
+	n_nans = s.n_nans;
+	x = new float[n_points];
+	y = new float[n_points];
 	for(i = 0, ymax = ymin = s.y[0]; i < n_points; i++)
 	{
 	    x[i] = s.x[i];
@@ -105,6 +111,8 @@ Integer inte;
 	saved_ymin = ymin = s.ymin;
 	saved_xmin = xmin = s.xmin;
 	saved_xmax = xmax = s.xmax;
+	if(xmax <= xmin)
+	    saved_xmax = xmax = xmin+ 1E-6;
 	increasing_x = s.increasing_x;
     }
 
@@ -120,12 +128,12 @@ Integer inte;
 // divisione n_points per intero successivo sino a <= points
 	for(step = 1; s.n_points / step > points; step++);
 	n_points = s.n_points / step;
-	x = new double[n_points];
-	y = new double[n_points];
+	x = new float[n_points];
+	y = new float[n_points];
 	if(error)
-	    up_error = new double[n_points];
+	    up_error = new float[n_points];
 	if(asym_error)
-	    low_error = new double[n_points];
+	    low_error = new float[n_points];
 	for(i = 0, ymax = ymin = s.y[0]; i < n_points; i++)
 	{
 	    x[i] = s.x[i * step];
@@ -143,6 +151,8 @@ Integer inte;
 	xmax = s.xmax;
 	saved_xmin = s.saved_xmin;
 	xmin = s.xmin;
+	if(xmax <= xmin)
+	    saved_xmax = xmax = xmin+1E-6;
 	increasing_x = s.increasing_x;
     }
 
@@ -150,14 +160,15 @@ Integer inte;
 	double start_y, double end_y)
     {
 	int start_idx, curr_idx;
-
+	nans = s.nans;
+	n_nans = s.n_nans;
 	n_points = s.n_points;
 	if(error = s.error)
-	    up_error = new double[n_points];	
+	    up_error = new float[n_points];	
 	if(asym_error = s.asym_error)
-	    low_error = new double[n_points];
-	x = new double[n_points];
-	y = new double[n_points];
+	    low_error = new float[n_points];
+	x = new float[n_points];
+	y = new float[n_points];
 	increasing_x = s.increasing_x;
 	for(int i = 0; i < n_points; i++)
 	{
@@ -178,6 +189,9 @@ Integer inte;
 	xmin = start_x;
 	saved_xmax = s.saved_xmax;
 	xmax = end_x;
+	if(xmax <= xmin)
+	    saved_xmax = xmax = xmin+1E-6;
+
     }	
     void CheckIncreasingX()
     {
@@ -190,21 +204,27 @@ Integer inte;
 	    increasing_x = true;
     }
     
-    void SetAxis(double _x[], double _y[], int _n_points)
+    void SetAxis(float _x[], float _y[], int _n_points)
     {	
-	int i;
-	x = new double[_x.length];
+	int i;/*
+	x = new float[_x.length];
 	for(i = 0; i < _x.length; i++)
 	    x[i] = _x[i];
-	y = new double[_y.length];
+	y = new float[_y.length];
 	for(i = 0; i < _y.length; i++)
 	    y[i] = _y[i];
+	*/
+	x = _x;
+	y = _y;
 	    
+	nans = new int[100];    
 	n_points = _n_points;
 	ymax = ymin = y[0];
 	xmax = xmin = x[0];
 	for(i = 0; i < n_points; i++)
 	{
+	    if(Float.isNaN(y[i]) && n_nans < 100)
+		nans[n_nans++] = i; 
 	    if(y[i] > ymax)	
 		ymax = y[i];
 	    if(ymin > y[i])
@@ -223,7 +243,7 @@ Integer inte;
     }	
 
 
-    public void AddError(double _error[])
+    public void AddError(float _error[])
     {
 	error = true;
 	up_error = _error;
@@ -237,7 +257,7 @@ Integer inte;
 	  
     }
 
-    public void AddAsymError(double _up_error[], double _low_error[])
+    public void AddAsymError(float _up_error[], float _low_error[])
     {
 	error = asym_error = true;
 	up_error = _up_error;
@@ -257,8 +277,8 @@ Integer inte;
     	return new Signal(this, new_dim);
     }
 
-    public Signal Reshape(int new_dim, double start_x, 
-	double end_x, double start_y, double end_y)
+    public Signal Reshape(int new_dim, float start_x, 
+	float end_x, float start_y, float end_y)
     {
 	return new Signal(new Signal(this, start_x, end_x, 
 		start_y, end_y), new_dim);
@@ -295,7 +315,7 @@ Integer inte;
 		xmax = x[i];
 	}
 	if(xmin == xmax)
-	    xmax = xmin + (double)1E-10;
+	    xmax = xmin + (float)1E-10;
 
     }
 
@@ -310,13 +330,13 @@ Integer inte;
 		ymax = y[i];
 	}
 /*	if(ymin == ymax)
-	    ymax = ymin + (double)1E-10;*/
+	    ymax = ymin + (float)1E-10;*/
     }
     public void AutoscaleY(double min, double max)
     {
 	int i;
-	ymin = Double.POSITIVE_INFINITY;
-	ymax = Double.NEGATIVE_INFINITY;
+	ymin = Float.POSITIVE_INFINITY;
+	ymax = Float.NEGATIVE_INFINITY;
 	for(i = 0; i < n_points; i++)
 	{
 	    if(x[i] >= min && x[i] <= max && y[i] < ymin)
@@ -327,7 +347,7 @@ Integer inte;
 	if(ymin >= ymax)
 	{
 	    ymin = 0;
-	    ymax = ymin + (double)1E-10;
+	    ymax = ymin + (float)1E-10;
 	}
     }
 

@@ -6,4 +6,7 @@ interface WaveSetup {
 	public void Hide();
 	public void BroadcastScale(Waveform w);
 	public void NotifyChange(Waveform target_w, Waveform source_w);
+	public void SetSourceCopy(Waveform source_w);
+	public WaveInterface GetSource();
+	
 }

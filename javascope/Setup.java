@@ -6,7 +6,7 @@ import java.io.*;
 
 public class Setup extends Object implements WaveSetup {
     Label coords_label; 
-    SetupData sd;	
+    SetupDataDialog sd;	
     Button3Menu menu;	
     public MultiWaveform waves[];
     public int num_waves;
@@ -18,7 +18,7 @@ public class Setup extends Object implements WaveSetup {
     {
 	main_scope = (javaScope)pw;
 	coords_label = label;
-	sd = new SetupData(pw, "Setup data");
+	sd = new SetupDataDialog(pw, "Setup data");
 	menu = new Button3Menu(pw, sd, this);
 	pw.add(menu);
     }
@@ -26,7 +26,7 @@ public class Setup extends Object implements WaveSetup {
     public int GetWaveIndex(Waveform w)
     {
 	int idx;
-	for(idx = 0; idx < num_waves && waves[idx] != w; idx++);
+	for(idx = 0; idx < num_waves &&  waves[idx] != w; idx++);
 	if(idx < num_waves)
 	    return idx;
 	else
@@ -78,8 +78,8 @@ public class Setup extends Object implements WaveSetup {
         if(coords_label != null)
 	{   
 	    WaveInterface  wi = ((MultiWaveform)w).GetWaveInterface(); 
-  	    coords_label.setText(SetStrSize("[" + (new Float(curr_x)).toString() + ", " 
-				 + (new Float(curr_y)).toString() + "]", 30) +
+  	    coords_label.setText(SetStrSize("[" + Grid.ConvertToString(curr_x, false) + ", " 
+				 + Grid.ConvertToString(curr_y, false) + "]", 30) +
 		    " Expr : " + wi.in_y[sig_idx] +  
 		    " Shot = " + wi.shots[sig_idx]);
 	    if(true)
@@ -89,12 +89,26 @@ public class Setup extends Object implements WaveSetup {
 	}	
     }
     
+    public WaveInterface GetSource()
+    {
+	return main_scope.wi_source;
+    }
+    
+    public void SetSourceCopy(Waveform source)
+    {
+	if(source != null) {
+	    main_scope.wi_source = ((MultiWaveform)source).wi;
+	    main_scope.wc_source = GetWaveformConf(GetWaveIndex(source));
+	} else {
+	    main_scope.wi_source = null;
+	    main_scope.wc_source = null;
+	}
+    }
+    
     public void NotifyChange(Waveform dest, Waveform source)    
     {
-	WaveInterface  wi = ((MultiWaveform)source).GetWaveInterface();
-	WaveformConf   wc_source = GetWaveformConf(GetWaveIndex(source));
 	WaveformConf   wc_dest = GetWaveformConf(GetWaveIndex(dest));
-	wc_dest.Copy(wc_source);
+	wc_dest.Copy(main_scope.wc_source);
   //  	wc_dest.setWaveformConf(wi); 
     }
 
@@ -159,19 +173,30 @@ public class Setup extends Object implements WaveSetup {
 	AllSameScale((MultiWaveform)w);
     }
     
-}	
+    public void Refresh(Waveform w)
+    {
+	EvaluateWaveform ew;
+	WaveformConf	wc = main_scope.sc.GetWaveformConf(wave_idx, true);
 
+    	ew = main_scope.ew;
+	ew.error_msg.resetMsg();
+	ew.evaluateMainShot(main_scope.shot_t.getText());
+	ew.UpdateWave((MultiWaveform)w, wc, main_scope.shot_t.getText());
+	ew.error_msg.showMessage();
+    }
+    
+}
 
 class Button3Menu extends PopupMenu implements ActionListener {
 	MultiWaveform   wave;
 	MenuItem setup, autoscale, autoscaleY, autoscaleAll, autoscaleAllY,
 		 allSameScale, allSameXScale, allSameXScaleAutoY, allSameYScale,
 		 resetScales, resetAllScales, refresh;
-	SetupData sd;
+	SetupDataDialog sd;
 	int curr_x, curr_y;
 	Setup controller;
 
-    public Button3Menu(Frame pw, SetupData _sd, Setup _controller)
+    public Button3Menu(Frame pw, SetupDataDialog _sd, Setup _controller)
     {
 	sd = _sd;
 	controller = _controller;
@@ -265,12 +290,12 @@ class Button3Menu extends PopupMenu implements ActionListener {
 	}
 	if(target == (Object)refresh)
 	{
-	    wave.repaint();	
+	    controller.Refresh(wave);
+	   // wave.repaint();	
 	}
 	if(target == (Object)setup) {
 	    sd.Show(wave, controller);
 	}
        
     }
-
 }

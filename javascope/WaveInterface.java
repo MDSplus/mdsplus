@@ -14,28 +14,30 @@ public class WaveInterface
     public String in_title, in_xlabel, in_ylabel; 
     public int shots[];
     public String error;
+    private String curr_error;
     public String provider;
     
     public Signal signals[];
-    public double xmax, xmin, ymax, ymin; 
+    public float xmax, xmin, ymax, ymin; 
     public String title, xlabel, ylabel;
     private DataProvider dp;
 // Used for asynchronous Update  
     public boolean asynch_update = true;  
     Signal wave_signals[];
-    double wave_xmin, wave_xmax;
+    float wave_xmin, wave_xmax;
     int wave_timestamp;
     AsynchUpdater du;
     boolean request_pending;
-    double orig_xmin, orig_xmax;
+    float orig_xmin, orig_xmax;
+    private boolean evaluated[];
     
 
-    static final double HUGE = 1E8;
+    static final float HUGE = (float)1E8;
     static final int MAX_POINTS = 1000;
     
     public WaveInterface(WaveInterface wi)
     {
-	full_flag = false;
+	full_flag = wi.full_flag;
 	provider = wi.provider;
 	num_waves = wi.num_waves;
 	x_log = wi.x_log;
@@ -96,35 +98,8 @@ public class WaveInterface
 	error = null;
 	dp = wi.dp;
     }	
-    /*public WaveInterface()
-    {
-	full_flag = false;
-	provider = null;
-	dp = new DataProvider();
-	experiment = null;
-	shots = null;
-	in_xmin = in_xmax = in_ymin = in_ymax = in_title = in_xlabel = in_ylabel = null;
-	markers = null;
-	colors = null;
-	interpolates = null;
-	du = null;  
-	x_log = y_log = false;                                                       
-    }
-    public WaveInterface(String _provider)
-    {
-	full_flag = false;
-	provider = _provider;
-	dp = new DataProvider(provider);
-	experiment = null;
-	shots = null;
-	in_xmin = in_xmax = in_ymin = in_ymax = in_title = in_xlabel = in_ylabel = null;
-	markers = null;
-	colors = null;
-	interpolates = null;
-	du = null;  
-	x_log = y_log = false;                                                       
-    }
-    */
+
+    
     public WaveInterface(DataProvider _dp)
     {
 	full_flag = false;
@@ -138,21 +113,19 @@ public class WaveInterface
 	du = null;  
 	x_log = y_log = false;                                                       
     }
-    
-    public synchronized int Evaluate()
+ 
+    public synchronized int StartEvaluate()
     {
-    
-//System.out.println("Start Evaluate");    
-	int curr_wave, x_samples = 0;
-	double up_err[] = null, low_err[] = null;
-	double expanded_x[];
-	error = null;
+ 	error = null;
 	if(in_y == null || in_x == null || shots == null)
 	{
 	    error = "Missing shot or Y or X values";
 	    return 0;
 	}    
 	num_waves = in_y.length;
+	evaluated = new boolean[num_waves];
+	signals = new Signal[num_waves];    
+
 	if(in_x != null && num_waves != in_x.length)
 	{
 	    error = "X values are different from Y values";
@@ -163,7 +136,7 @@ public class WaveInterface
 //compute limits
 	if(in_xmin != null && (in_xmin.trim()).length() != 0)
 	{
-	    xmin = dp.GetDouble(in_xmin);
+	    xmin = dp.GetFloat(in_xmin);
 	    if(dp.ErrorString() != null)
 	    {
 		error = dp.ErrorString();
@@ -174,7 +147,7 @@ public class WaveInterface
 	    xmin = -HUGE;
 	if(in_xmax != null && (in_xmax.trim()).length() != 0)
 	{
-	    xmax = dp.GetDouble(in_xmax);
+	    xmax = dp.GetFloat(in_xmax);
 	    if(dp.ErrorString() != null)
 	    {
 		error = dp.ErrorString();
@@ -185,7 +158,7 @@ public class WaveInterface
 	    xmax = HUGE;
 	if(in_ymax != null && (in_ymax.trim()).length() != 0)
 	{
-	    ymax = dp.GetDouble(in_ymax);
+	    ymax = dp.GetFloat(in_ymax);
 	    if(dp.ErrorString() != null)
 	    {
 		error = dp.ErrorString();
@@ -196,7 +169,7 @@ public class WaveInterface
 	    ymax = HUGE;
   	if(in_ymin != null && (in_ymin.trim()).length() != 0)
 	{
-	    ymin = dp.GetDouble(in_ymin);
+	    ymin = dp.GetFloat(in_ymin);
 	    if(dp.ErrorString() != null)
 	    {
 		error = dp.ErrorString();
@@ -239,59 +212,96 @@ public class WaveInterface
 	}	
 	else
 	    ylabel = null;
-
- // Compute signals
-// System.out.println("Creo Signal" + num_waves);
-	signals = new Signal[num_waves];    
-	for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
-	{
-// System.out.println("Leggo Signal");
-	
-	    signals[curr_wave] = GetSignal(curr_wave, -1E8, 1E8);
-// System.out.println("Signal letti");
-	    
-	    if(signals[curr_wave] == null)
-		return 0;
-	    if(xmin != -HUGE) signals[curr_wave].xmin = xmin;
-	    if(xmax !=  HUGE) signals[curr_wave].xmax = xmax;
-	    if(ymin != -HUGE) signals[curr_wave].ymin = ymin;
-	    if(ymax !=  HUGE) signals[curr_wave].ymax = ymax;	    	    
-	}
+      
 	return 1;
-    }
+    } 
+	     
 	
+    public synchronized void EvaluateShot(int shot)
+    {
+	int curr_wave;
+
+    	for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
+	{
+	    if(shots[curr_wave] == shot)
+	    {
+		evaluated[curr_wave] = true;
+		signals[curr_wave] = GetSignal(curr_wave, (float)-1E8, (float)1E8);
+		if(signals[curr_wave] == null)
+		{
+		    if(error == null)
+			error = curr_error;
+		    else
+			error = error + "\n" + curr_error;
+		}
+		else
+		{
+		    if(xmin != -HUGE) signals[curr_wave].xmin = xmin;
+		    if(xmax !=  HUGE) signals[curr_wave].xmax = xmax;
+		    if(ymin != -HUGE) signals[curr_wave].ymin = ymin;
+		    if(ymax !=  HUGE) signals[curr_wave].ymax = ymax;	
+		}
+	    }    	    
+	}
+    }
+    public synchronized void EvaluateOthers()
+    {
+	int curr_wave;
+
+    	for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
+	{
+	    if(!evaluated[curr_wave])
+	    {
+		evaluated[curr_wave] = true;
+		signals[curr_wave] = GetSignal(curr_wave, (float)-1E8, (float)1E8);
+		if(signals[curr_wave] == null)
+		{
+		    if(error == null)
+			error = curr_error;
+		    else
+			error = error + "\n" + curr_error;
+		}
+		else
+		{
+		    if(xmin != -HUGE) signals[curr_wave].xmin = xmin;
+		    if(xmax !=  HUGE) signals[curr_wave].xmax = xmax;
+		    if(ymin != -HUGE) signals[curr_wave].ymin = ymin;
+		    if(ymax !=  HUGE) signals[curr_wave].ymax = ymax;	
+		}
+	    }    	    
+	}
+    }
     
-	    
-		    
-    private Signal GetSignal(int curr_wave, double xmin, double xmax)
+				    
+    private Signal GetSignal(int curr_wave, float xmin, float xmax)
     {			    
 		
-	String limits = "FLOAT("+new Double(xmin).toString()+"), " +		    		    
-	    "FLOAT("+new Double(xmax).toString()+")";			    		    
+	String limits = "FLOAT("+new Float(xmin).toString()+"), " +		    		    
+	    "FLOAT("+new Float(xmax).toString()+")";			    		    
 	dp.Update(experiment, shots[curr_wave]);
 	if(in_y[curr_wave] == null)
 	{
-	    error = "Missing Y value";
+	    curr_error = "Missing Y value";
 	    return null;
 	}
-	double curr_y[] = null, curr_x[] = null, up_err[] = null,
+	float curr_y[] = null, curr_x[] = null, up_err[] = null,
 	    low_err[] = null, expanded_x[] = null;
 	int x_samples = 0;
 	
 	if(in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0)
 	{
 	    if(full_flag)
-		curr_y = dp.GetDoubleArray(in_y[curr_wave]);
+		curr_y = dp.GetFloatArray(in_y[curr_wave]);
 	    else
-		curr_y = dp.GetDoubleArray("JAVA_RESAMPLE("+ "FLOAT("+in_y[curr_wave]+ "), " +
+		curr_y = dp.GetFloatArray("JAVA_RESAMPLE("+ "FLOAT("+in_y[curr_wave]+ "), " +
 		   "FLOAT("+in_x[curr_wave]+ "), " + limits + ")");	
 	    if(curr_y != null && curr_y.length > 1 && in_up_err != null && 
 		    in_up_err[curr_wave] != null && (in_up_err[curr_wave].trim()).length() != 0)
 	    {
 		if(full_flag)
-		    up_err = dp.GetDoubleArray(in_up_err[curr_wave]);
+		    up_err = dp.GetFloatArray(in_up_err[curr_wave]);
 		else
-		    up_err = dp.GetDoubleArray("JAVA_RESAMPLE("+ "FLOAT("+in_up_err[curr_wave]+ "), " +
+		    up_err = dp.GetFloatArray("JAVA_RESAMPLE("+ "FLOAT("+in_up_err[curr_wave]+ "), " +
 		      "FLOAT("+in_x[curr_wave]+ "), " + limits + ")");
 		if(up_err == null || up_err.length <= 1)
 			curr_y = null;			
@@ -300,9 +310,9 @@ public class WaveInterface
 		    in_low_err[curr_wave] != null && (in_low_err[curr_wave].trim()).length() != 0)
 	    {
 		if(full_flag)
-		    low_err = dp.GetDoubleArray(in_low_err[curr_wave]);
+		    low_err = dp.GetFloatArray(in_low_err[curr_wave]);
 		else
-		    low_err = dp.GetDoubleArray("JAVA_RESAMPLE("+ "FLOAT("+in_low_err[curr_wave]+ "), " +
+		    low_err = dp.GetFloatArray("JAVA_RESAMPLE("+ "FLOAT("+in_low_err[curr_wave]+ "), " +
 		      "FLOAT("+in_x[curr_wave]+ "), " + limits + ")");
 		if(low_err == null || low_err.length <= 1)
 			curr_y = null;			
@@ -311,19 +321,19 @@ public class WaveInterface
 	    {
 		if(full_flag)
 		{
-		    curr_x = dp.GetDoubleArray(in_x[curr_wave]);
+		    curr_x = dp.GetFloatArray(in_x[curr_wave]);
 		    if(curr_x == null || curr_x.length <= 1)
 			curr_y = null;
 		}
 		else
 		{
-		    curr_x = dp.GetDoubleArray("JAVA_DIM(FLOAT("+ in_x[curr_wave]+ "), " +
+		    curr_x = dp.GetFloatArray("JAVA_DIM(FLOAT("+ in_x[curr_wave]+ "), " +
 			limits + ")"); 
 		    if(curr_x == null || curr_x.length <= 1)
 			curr_y = null;
 		    else
 		    {
-			expanded_x = new double[curr_y.length];
+			expanded_x = new float[curr_y.length];
 			x_samples = ExpandTimes(curr_x, expanded_x);
 			curr_x = expanded_x;
 		    }
@@ -333,17 +343,17 @@ public class WaveInterface
 	else
 	{
 	    if(full_flag)
-		curr_y = dp.GetDoubleArray(in_y[curr_wave]);
+		curr_y = dp.GetFloatArray(in_y[curr_wave]);
 	    else
-		curr_y = dp.GetDoubleArray("JAVA_RESAMPLE("+ "FLOAT("+in_y[curr_wave]+ "), "+
+		curr_y = dp.GetFloatArray("JAVA_RESAMPLE("+ "FLOAT("+in_y[curr_wave]+ "), "+
 		    "FLOAT(DIM_OF("+in_y[curr_wave]+")), "+ limits + ")");
 	    if(curr_y != null && curr_y.length > 1 && in_up_err != null && in_up_err[curr_wave] != null 
 		    && (in_up_err[curr_wave].trim()).length() != 0)
 	    {
 		if(full_flag)
-		    up_err = dp.GetDoubleArray(in_up_err[curr_wave]);
+		    up_err = dp.GetFloatArray(in_up_err[curr_wave]);
 		else
-		    up_err = dp.GetDoubleArray("JAVA_RESAMPLE(FLOAT("+ in_up_err[curr_wave]+ "), DIM_OF(FLOAT("+
+		    up_err = dp.GetFloatArray("JAVA_RESAMPLE(FLOAT("+ in_up_err[curr_wave]+ "), DIM_OF(FLOAT("+
 			in_y[curr_wave] + ")), "+limits +")");
 		if(up_err == null || up_err.length <= 1)
 		    curr_y = null;
@@ -353,9 +363,9 @@ public class WaveInterface
 		    in_low_err[curr_wave] != null && (in_low_err[curr_wave].trim()).length() != 0)
 	    {
 		if(full_flag)
-		    low_err = dp.GetDoubleArray(in_low_err[curr_wave]);
+		    low_err = dp.GetFloatArray(in_low_err[curr_wave]);
 		else
-		    low_err = dp.GetDoubleArray("JAVA_RESAMPLE(FLOAT("+in_low_err[curr_wave] +
+		    low_err = dp.GetFloatArray("JAVA_RESAMPLE(FLOAT("+in_low_err[curr_wave] +
 			 "), DIM_OF(FLOAT("+ in_y[curr_wave] + ")),"+ limits + ")");
 			
 		if(low_err == null || low_err.length <= 1)
@@ -365,14 +375,14 @@ public class WaveInterface
 	    if(curr_y != null)
 	    {
 		if(full_flag)
-		    curr_x = dp.GetDoubleArray("DIM_OF("+in_y[curr_wave]+")");
+		    curr_x = dp.GetFloatArray("DIM_OF("+in_y[curr_wave]+")");
 		else
 		{
-		    curr_x = dp.GetDoubleArray("JAVA_DIM(FLOAT(DIM_OF("+ in_y[curr_wave]+ 
+		    curr_x = dp.GetFloatArray("JAVA_DIM(FLOAT(DIM_OF("+ in_y[curr_wave]+ 
 			")), "+ limits + ")"); 
-		    if(curr_x != null || curr_y.length <= 1)
+		    if(curr_x != null && curr_x.length > 1)
 		    {
-			expanded_x = new double[curr_y.length];
+			expanded_x = new float[curr_y.length];
 			x_samples = ExpandTimes(curr_x, expanded_x);
 			curr_x = expanded_x;
 		    }
@@ -383,7 +393,7 @@ public class WaveInterface
 	}
 	if(curr_x == null)
 	{
-	    error = dp.ErrorString();
+	    curr_error = dp.ErrorString();
 	    return null;
 	}
 	int min_len;
@@ -417,13 +427,13 @@ public class WaveInterface
     }
     
     
-    private int ExpandTimes(double coded_time[], double expanded_time[])
+    private int ExpandTimes(float coded_time[], float expanded_time[])
     {
 	int max_len = expanded_time.length;
 	int num_blocks = (coded_time.length-1) / 3;
 //each block codes start, end, delta
 	int out_idx, in_idx, curr_block;
-	double curr_time;
+	float curr_time;
 	
 	if(coded_time[0] > 0) //JAVA$DIM decided to apply coding
 	{
@@ -458,8 +468,8 @@ public class WaveInterface
     }
 
 
-    void AsynchUpdate(Signal sigs[], double xmin, double xmax, 
-	double _orig_xmin, double _orig_xmax, int timestamp, boolean panning, MultiWaveform w)
+    void AsynchUpdate(Signal sigs[], float xmin, float xmax, 
+	float _orig_xmin, float _orig_xmax, int timestamp, boolean panning, MultiWaveform w)
     {
 	int curr_wave;
 	boolean needs_update = false;

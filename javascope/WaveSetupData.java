@@ -7,23 +7,25 @@ import java.awt.*;
 */ 
 class WaveSetupData {
    public static final int UNDEF_SHOT = -99999;
-   public static final int MAX_NUM_SHOT = 10;   
-   public static final int MAX_COLOR  = 12;
-   public static final Color[]  COLOR_SET = {Color.black, Color.blue, Color.cyan, Color.darkGray,
-					     Color.gray, Color.green, Color.lightGray, 
-					     Color.magenta, Color.orange, Color.pink, 
-					     Color.red, Color.yellow};
+   public static final int MAX_NUM_SHOT = 30;   
+// public static final int MAX_COLOR  = 12;
+//  public static final Color[]  COLOR_SET = {Color.black, Color.blue, Color.cyan, Color.darkGray,
+	//				     Color.gray, Color.green, Color.lightGray, 
+	//				     Color.magenta, Color.orange, Color.pink, 
+	//				     Color.red, Color.yellow};
   
    String  x_expr;
    String  y_expr;
    int     shot;
-   Color   color;
+// Color   color; 
+   int     color_idx;
    boolean interpolate;
    int     marker;
    String  up_err;
    String  low_err;
- 
-   public int colorToIdx()
+
+/* 
+   public int colorToIdx111()
    {   
 	int c_idx;
 	
@@ -34,13 +36,14 @@ class WaveSetupData {
 	return c_idx;
    }
   
-   public int colorToIdx(Color c)
+   public int colorToIdx111(Color c)
    {   
 	int c_idx;
 	for(c_idx = 0;  c_idx < MAX_COLOR && c != COLOR_SET[c_idx]; c_idx++);
 	c_idx = c_idx % MAX_COLOR;
 	return c_idx;
    }
+*/
 
    public boolean equals(WaveSetupData ws)
    {
@@ -74,8 +77,9 @@ class WaveSetupData {
 	if(ws.low_err != null)
 	   low_err = new String(ws.low_err);
 	shot          = ws.shot;
-	color         = ws.color;
-	interpolate   = ws.interpolate;
+//	color         = ws.color;
+	color_idx     = ws.color_idx;
+    	interpolate   = ws.interpolate;
 	marker        = ws.marker;
    } 
 }

@@ -1,18 +1,22 @@
+//import com.apple.mrj.*;
 import java.io.*;
 import java.awt.*;
 
 
 class ScopeConfiguration {
+    final static String msg_error_title = "File configuration sintax error\n";
     String title, event;
-    String error;
+    String error, msg_error;
+    StringBuffer msg_error_buffer = new StringBuffer(msg_error_title);
     int num_conf = 0;
     int columns = 1;
     int rows[] = new int[4];
     int prec_rows[] = new int[4];
     private WaveformConf wc[];
-    WaveformConf gwc = new WaveformConf();
+    WaveformConf gwc;
     int select_wc_idx;
     int height = 500, width = 700, xpos = 50, ypos = 50;
+    boolean fast_network_access = true;
     float height_percent[], width_percent[]; 
     BufferedWriter out;
 
@@ -21,11 +25,12 @@ class ScopeConfiguration {
     {
 	rows[0] = 1;
 	prec_rows[0] = 1;
+	gwc = new WaveformConf();
     }
     
-    public void SetWaveformsConf(WaveformConf[] _wc)
+    public void SetWaveformsConf(WaveformConf[] wc)
     {
-	wc = _wc;
+	this.wc = wc;
     }
     
     public void SetWaveformConf(int idx, WaveformConf _wc)
@@ -49,7 +54,12 @@ class ScopeConfiguration {
 	else
 	    return null;
     }
-    
+
+    public void SetModified(int idx, boolean mod)
+    {
+	wc[idx].modified = true;
+    }
+        
     public WaveformConf GetWaveformConf(int idx, boolean def)
     {
 	WaveformConf wc_new = null;
@@ -174,16 +184,20 @@ class ScopeConfiguration {
 	return s_new;
     }
     
-    ScopeConfiguration(String conf_file)    
+    ScopeConfiguration(String conf_file, ColorDialog c_list)    
     {
 	WaveformConf new_wc[];
 	String str = null;
 	int wc_idx, height_w[] = new int[4];
-	
+	boolean first_color = true;
+
+		
+	gwc = new WaveformConf();
         try {
 	    BufferedReader in = new BufferedReader(new FileReader(conf_file));
      
 	    while((str = in.readLine()) != null) {
+	      try {
 		if(str.trim().length() != 0 && str.indexOf("Scope") == -1) {
 		    rows[0] = 1;
 		    error = new String("Invalid file configuration\n");
@@ -213,6 +227,27 @@ class ScopeConfiguration {
 		    continue;	
 		}
 
+		if(str.indexOf("Scope.fast_network_access:") != -1)
+		{
+		    fast_network_access =  new Boolean(str.substring("Scope.fast_network_access: ".length(), 
+										    str.length())).booleanValue();
+		    continue;		
+		}
+				    
+		if(str.indexOf("Scope.item_color_") != -1)
+		{
+		    int len;
+		    int i = new Integer(str.substring("Scope.item_color_".length(), len = str.indexOf(":"))).intValue();
+		    String name = new String(str.substring(len  + 2, len = str.indexOf(",")));
+		    Color cr = StringToColor(new String(str.substring(len + 2, str.length())));
+		    if(first_color) {
+			first_color = false;
+			c_list.removeAllColorItems();
+		    }
+		    c_list.insertItemAt(name, cr, i);
+		    continue;
+    		}
+	    
     		if(str.indexOf("Scope.rows_in_column_") != -1)
 		{
 		    int len;
@@ -336,11 +371,6 @@ class ScopeConfiguration {
 			wc[wc_idx].y_log = new Boolean(str.substring(len, str.length())).booleanValue();
 			continue;		
 		    }		    
-		    if(str.indexOf(".optimize_network:") != -1)
-		    {
-			wc[wc_idx].opt_network = new Boolean(str.substring(len, str.length())).booleanValue();
-			continue;		
-		    }		    
 		    if(str.indexOf(".experiment:") != -1)
 		    {
 			wc[wc_idx].experiment = str.substring(len, str.length());
@@ -390,10 +420,13 @@ class ScopeConfiguration {
 			wc[wc_idx].y_expr          = new String[wc[wc_idx].num_expr];
 			wc[wc_idx].x_expr          = new String[wc[wc_idx].num_expr];
 			wc[wc_idx].markers         = new int[wc[wc_idx].num_expr * n_shot];
-			wc[wc_idx].colors          = new Color[wc[wc_idx].num_expr * n_shot];
+		      //wc[wc_idx].colors        = new Color[wc[wc_idx].num_expr * n_shot];
+			wc[wc_idx].colors_idx      = new int[wc[wc_idx].num_expr * n_shot];
 			wc[wc_idx].interpolates    = new boolean[wc[wc_idx].num_expr * n_shot];
-			for(int i = 0; i < n_shot * wc[wc_idx].num_expr; i++)
+			for(int i = 0; i < n_shot * wc[wc_idx].num_expr; i++) {
 			    wc[wc_idx].interpolates[i] = true;
+			    wc[wc_idx].colors_idx[i] = -1;
+			}
 			wc[wc_idx].up_err          = new String[wc[wc_idx].num_expr];
 			wc[wc_idx].low_err         = new String[wc[wc_idx].num_expr];
 
@@ -446,7 +479,8 @@ class ScopeConfiguration {
 		    {
 			wc[wc_idx].num_shot     = new Integer(str.substring(len, str.length())).intValue();			
 			wc[wc_idx].markers      = new int[wc[wc_idx].num_expr * wc[wc_idx].num_shot];
-			wc[wc_idx].colors       = new Color[wc[wc_idx].num_expr * wc[wc_idx].num_shot];
+		      //wc[wc_idx].colors     = new Color[wc[wc_idx].num_expr * wc[wc_idx].num_shot];
+			wc[wc_idx].colors_idx   = new int[wc[wc_idx].num_expr * wc[wc_idx].num_shot];
 			wc[wc_idx].interpolates = new boolean[wc[wc_idx].num_expr * wc[wc_idx].num_shot];
    			continue;		
 		    }
@@ -494,13 +528,17 @@ class ScopeConfiguration {
 			continue;		
     		    }
 		    if((pos = str.indexOf(".color_")) != -1)
-		    {			
-			pos += ".color_".length();
-			int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
-			int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
-			Color cr = StringToColor(new String(str.substring(pos + 2, str.length())));
-    			wc[wc_idx].colors[expr_idx *  wc[wc_idx].num_shot + shot_idx] = cr;
-			continue;		
+		    {
+		      pos += ".color_".length();
+		      int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
+		      int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
+		      try {			
+//			Color cr = StringToColor(new String(str.substring(pos + 2, str.length())));
+//    			wc[wc_idx].colors[expr_idx *  wc[wc_idx].num_shot + shot_idx] = cr;
+			int c_idx = new Integer(str.substring(pos + 2, str.length())).intValue();
+    			wc[wc_idx].colors_idx[expr_idx *  wc[wc_idx].num_shot + shot_idx] = c_idx;
+		      } catch(Exception e) { wc[wc_idx].colors_idx[expr_idx *  wc[wc_idx].num_shot + shot_idx] = 0;}
+    			continue;		
     		    }
 		    if((pos = str.indexOf(".marker_")) != -1)
 		    {			
@@ -546,7 +584,22 @@ class ScopeConfiguration {
 		    int w = new Integer(str.substring(len + 2, str.length())).intValue();
 		    width_percent[c] = (float)w;
 		    continue;		
-		}		    
+		}
+	      }		    	  		    
+	      catch(StringIndexOutOfBoundsException e)
+	      {
+		 if(str.length() > 70)
+		    msg_error_buffer.append(str.substring(0, 65) + " ...\n");
+		 else
+		    msg_error_buffer.append(str + "\n");
+	      }		
+	      catch(ArrayIndexOutOfBoundsException e)
+	      {
+		 if(str.length() > 70)
+		    msg_error_buffer.append(str.substring(0, 65) + " ...\n");
+		 else
+		    msg_error_buffer.append(str + "\n");
+	      }		
 	    }
 	    if(columns == 4)
 		width_percent[3] = (float)((1000 - width_percent[2])/1000.);
@@ -559,26 +612,26 @@ class ScopeConfiguration {
 	    
 	    int k = 0;
     	    for(int j = 0; j < columns; j++)
-		for(int i = 0; i < rows[j]; i++)
+		for(int i = 0; i < rows[j]; i++) {
+		    if(height_percent[k] < RowColumnLayout.MIN_SIZE) {
+			k -= i;
+			for(i = 0; i < rows[j]; i++)
+			    height_percent[k++] = (float)1./rows[j];			
+			break;
+		    }
 		    height_percent[k] = height_percent[k++]/height_w[j];
-	    	    
+	    	}
+		    
 	    for(k = 0; k < rows.length && rows[k] != 0; k++);
 	    if(k != columns) 
-		error = new String("Configuration file sintax error\n");
-		    
+    		error = new String("Configuration file sintax error\n");
 	} 
-	catch(IOException e) {
-	    error = new String("Configuration file not found\n");
-	    System.out.println("Errore : " + e);
+	catch(Exception e) {
+	    error = new String("Configuration file not found or invalid file configuration\n");
 	}
-	catch(StringIndexOutOfBoundsException e)
-	{
-	    error = new String("File configuration sintax error\n" + str + "\n");
-	}		
-	catch(ArrayIndexOutOfBoundsException e)
-	{
-	    error = new String("File configuration sintax error\n" + str + "\n");
-	}		
+	
+	if(msg_error_buffer.length() > msg_error_title.length())
+	    msg_error = msg_error_buffer.toString();
     }
 
     private void writeLine(String prompt, String value)
@@ -594,14 +647,22 @@ class ScopeConfiguration {
 	}		
     }
 
-    public void SaveScopeConfiguration(String conf_file, MultiWaveform w[])    
+    public void SaveScopeConfiguration(String conf_file, MultiWaveform w[], ColorDialog c_list)    
     {
 	String str;
 	int wc_idx, height_w[] = new int[4];
-
+	File f;
+	
+	if(System.getProperty("os.name").equals("Mac OS"))
+	{	
+	//    MRJFileUtils.setDefaultFileType(new MRJOSType("TEXT"));
+	//    MRJFileUtils.setDefaultFileCreator(new MRJOSType("JSCP"));
+	} 
+	f = new File(conf_file);    
+	if(f.exists()) f.delete();   
 	
         try {
-	    out = new BufferedWriter(new FileWriter(conf_file));
+	    out = new BufferedWriter(new FileWriter(f));
 	    out.write("Scope.geometry: " + width + "x" + height + "+" + ypos + "+" + xpos);
 	    out.newLine();
 	    if(title != null) {
@@ -610,7 +671,14 @@ class ScopeConfiguration {
 	    }	    
 	    out.write("Scope.columns: " + columns);
 	    out.newLine();
-	    
+
+	    writeLine("Scope.fast_network_access: ", ""+fast_network_access);		    
+
+    	    for(int i = 0; i < c_list.GetNumColor(); i++)
+	    {
+		writeLine("Scope.item_color_" + i + ": " , c_list.GetNameAt(i) + "," + c_list.GetColorAt(i));		
+	    }
+	    	    
 	    writeLine("Scope.global_1_1.experiment: " , gwc.experiment);
 	    writeLine("Scope.global_1_1.shot: "       , gwc.shot_str);
 	    writeLine("Scope.global_1_1.title: "      , gwc.title);
@@ -633,7 +701,6 @@ class ScopeConfiguration {
 		    writeLine("Scope.plot_" + r + "_" + c + ".y_label: "         , wc[k].y_label);
 		    writeLine("Scope.plot_" + r + "_" + c + ".x_log: "           , ""+wc[k].x_log);
 		    writeLine("Scope.plot_" + r + "_" + c + ".y_log: "           , ""+wc[k].y_log);
-		    writeLine("Scope.plot_" + r + "_" + c + ".optimize_network: ", ""+wc[k].opt_network);		    
 		    writeLine("Scope.plot_" + r + "_" + c + ".experiment: "      , wc[k].experiment);
 		    writeLine("Scope.plot_" + r + "_" + c + ".shot: "            , wc[k].shot_str);
 		    writeLine("Scope.plot_" + r + "_" + c + ".num_expr: "        , ""+wc[k].num_expr);
@@ -661,7 +728,8 @@ class ScopeConfiguration {
 			    writeLine("Scope.plot_" + r + "_" + c + ".interpolate" + "_" + exp_n + "_" + sht_n + ": " ,
 										    ""+wc[k].interpolates[s]);								    
 			    writeLine("Scope.plot_" + r + "_" + c + ".color" + "_" + exp_n + "_" + sht_n + ": " , 
-										    ""+wc[k].colors[s]);
+										    ""+wc[k].colors_idx[s]);
+//										    ""+wc[k].colors[s]);
 			    writeLine("Scope.plot_" + r + "_" + c + ".marker" + "_" + exp_n + "_" + sht_n + ": " ,
 										    ""+wc[k].markers[s]);
 			    s++;

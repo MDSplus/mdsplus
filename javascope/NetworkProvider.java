@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.*;
 
+//public class NetworkProvider implements DataProvider {
+
 
 class Descriptor {
 public    static final byte MAX_DIM = 8;
@@ -12,7 +14,7 @@ public    static final byte DTYPE_LONG = 8;
 public    static final byte DTYPE_FLOAT = 10;
 
 public    byte dtype;
-public    double data[];
+public    float data[];
 public	  String strdata;
 public	  String error;
 
@@ -78,8 +80,10 @@ public synchronized void Update(String exp, int s)
 {
     if(experiment == null || !experiment.equals(exp) || s != shot)
     {
-	if(open)
-	    mds.MdsValue("MDSLIB->MDS$CLOSE()");
+    
+//System.out.println("OPEN!");    
+//	if(open)
+//	    mds.MdsValue("MDSLIB->MDS$CLOSE()");
 	experiment = exp;
 	shot = s;    	
 	open = false;
@@ -109,7 +113,7 @@ public synchronized String GetString(String in)
 }
 
 	
-public synchronized double GetDouble(String in)
+public synchronized float GetFloat(String in)
 {
     error = null;
     if(NotYetNumber(in))
@@ -121,7 +125,7 @@ public synchronized double GetDouble(String in)
 	    error = desc.error;
 	switch (desc.dtype) {
 		case Descriptor.DTYPE_FLOAT:
-		    return (double)desc.data[0];
+		    return desc.data[0];
 		case Descriptor.DTYPE_CHAR:
 		    error = "Cannot convert a string to float";
 		    return 0;
@@ -131,12 +135,12 @@ public synchronized double GetDouble(String in)
 	}
     }	        
     else
-	return new Double(in).doubleValue();
+	return new Float(in).floatValue();
     return 0;
 }	
 	
 	
-public synchronized double[] GetDoubleArray(String in)
+public synchronized float[] GetFloatArray(String in)
 {
     String open_err = new String("");
     if(!CheckOpen())
@@ -250,18 +254,20 @@ class Mds {
 		break;
 	    case Descriptor.DTYPE_SHORT:
 		short data[] = message.ToShortArray();
-		out.data = new double[data.length];
+		out.data = new float[data.length];
 		for(i = 0; i < data.length; i++)
-		   out.data[i] = (double)data[i];
+		   out.data[i] = (float)data[i];
+		out.dtype = Descriptor.DTYPE_FLOAT;
 		break;
 	    case Descriptor.DTYPE_LONG:
 		int int_data[] = message.ToIntArray();
-		out.data = new double[int_data.length];
+		out.data = new float[int_data.length];
 		for(i = 0; i < int_data.length; i++)
-		   out.data[i] = (double)int_data[i];
+		   out.data[i] = (float)int_data[i];
+		out.dtype = Descriptor.DTYPE_FLOAT;
 		break;
 	    case Descriptor.DTYPE_FLOAT:
-		out.data = message.ToDoubleArray();
+		out.data = message.ToFloatArray();
 		break;
 	    case Descriptor.DTYPE_CSTRING:
 		out.error = new String(message.body);
@@ -296,9 +302,8 @@ class Mds {
 	    }
 	    else
 		sock = new Socket(provider,8000);
-//System.out.println("Socket Created");
-	
-		
+//System.out.println("Socket Created");		
+				
 	    dis = new DataInputStream(new BufferedInputStream(
 		sock.getInputStream()));
 	    dos = new DataOutputStream(new BufferedOutputStream(
@@ -317,7 +322,7 @@ class MdsMessage extends Object
 
 final byte MAX_DIM = 8;
 //final byte DTYPE_CSTRING = 14;
-final byte JAVA_CLIENT = 3;
+final byte JAVA_CLIENT = 4;
 //final byte DTYPE_CHAR = 6;
 //final byte DTYPE_SHORT = 7;
 //final byte DTYPE_LONG = 8;
@@ -348,7 +353,7 @@ public MdsMessage(String s)
     for(int i = 0; i < MAX_DIM; i++)
 	dims[i] = 0;
     dtype = Descriptor.DTYPE_CSTRING;
-    client_type = JAVA_CLIENT - 128;
+    client_type = (byte)(JAVA_CLIENT - 128);
     body = s.getBytes();
 }
 
@@ -456,7 +461,7 @@ private short ToShort(byte bytes[]) throws IOException
 }
 private float ToFloat(byte bytes[]) throws IOException
 {
-    Flip(bytes, 4);
+    //Flip(bytes, 4);
     ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
     DataInputStream dis = new DataInputStream(bis);
     return dis.readFloat();
@@ -481,27 +486,28 @@ public short[] ToShortArray() throws IOException
 	out[i] = dis.readShort();
     return out;
 }
-public double[] ToDoubleArray() throws IOException
+public float[] ToFloatArray() throws IOException
 {
-    Flip(body, 4);
+    //Flip(body, 4);
     ByteArrayInputStream bis = new ByteArrayInputStream(body);
     DataInputStream dis = new DataInputStream(bis);
-    double out[] = new double[body.length / 4];
+    float out[] = new float[body.length / 4];
     for(int i = 0, j = 0; i < body.length / 4; i++, j += 4)
-	if(IsRoprand(body, j))
-	    out[i] = Double.NaN;
-	else
-	    out[i] = (double)dis.readFloat();
+//	if(IsRoprand(body, j))
+//	    out[i] = Double.NaN;
+//	else
+	    out[i] = dis.readFloat();
     return out;
+
 }
  
-private boolean IsRoprand(byte arr[], int idx)
+private final boolean IsRoprand(byte arr[], int idx)
 {
     return  (arr[idx] == 0 && arr[idx + 1] == 0 && arr[idx + 2] == -128
 	&& arr[idx + 3] == 0);
 }  
+} // End definition MdsMessage       
+//}//End definition Mds
        
-}
-       
-    
+//}//End definition class NetworkProvider   
 	    

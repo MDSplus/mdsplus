@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.*;
 
 
 public class MultiWaveform extends Waveform
@@ -18,6 +19,7 @@ waveforms.
     WaveInterface wi;
     static WaveInterface copy_wi;
     static Waveform source_copy_w;
+    private double orig_xmin, orig_xmax;
     
     public MultiWaveform(WaveSetup c)
     {
@@ -49,13 +51,25 @@ waveforms.
 	{
 	    colors = wi.colors;
 	    num_colors =  wi.colors.length;
+	    crosshair_color = colors[curr_point_sig_idx % num_colors];
+	    first_set_point = true;
 	}
     	super.x_label = wi.xlabel;
 	super.y_label = wi.ylabel;
 	super.x_log = wi.x_log;
 	super.y_log = wi.y_log;
 	super.title = wi.title;
-	this.Update(wi.signals, wi.num_waves, wi.markers, wi.interpolates);
+
+	if(wi.signals != null)
+	{
+	    for(int i = 0; i < wi.signals.length; i++)
+		if(wi.signals[i] != null)
+		{
+		    this.Update(wi.signals, wi.num_waves, wi.markers, wi.interpolates);
+		    return;
+		}
+	}
+	this.Erase();	
     }
 	
     public void Update(Signal _signals[], int _num_signals, int _markers[], boolean _interp[])
@@ -67,6 +81,7 @@ waveforms.
 	for(i = 0; i < num_signals; i++)
 	    if(_signals[i] != null) 
 		signals[i] = new Signal(_signals[i]);
+//	    signals[i] = _signals[i];
  
 	orig_signals = null;
 	markers = _markers;
@@ -144,64 +159,97 @@ waveforms.
 	int i, j, x[], y[];
 	Point curr_points[];
 	Dimension d = size();
+	Vector segments = null;
 		
 	int step, num_steps;
 	for(i = 0; i < num_signals; i++)
 	{
 	    if(signals[i] == null) continue;
 	    g.setColor(colors[i % num_colors]);
-	    x = new int[signals[i].n_points];
-	    y = new int[signals[i].n_points];
-	    curr_points = new Point[signals[i].n_points];
-	    if(mode == MODE_PAN && dragging && signals[i].n_points > 100)
+	    if(mode == MODE_PAN && dragging && signals[i].n_points > 100) //dragging large signals
 	    {
+		x = new int[signals[i].n_points];
+		y = new int[signals[i].n_points];
+		curr_points = new Point[signals[i].n_points];
 		step = signals[i].n_points/100;
 		num_steps = 100;
-	    }
-	    else
-	    {
-		num_steps = signals[i].n_points;
-		step = 1;
-	    }
-	    for(j = 0; j < num_steps; j++)
-	    {
-	    	x[j] = wm.XPixel(signals[i].x[step*j], d);
-	    	y[j] = wm.YPixel(signals[i].y[step*j], d);
-	    	curr_points[j] = new Point(x[j], y[j]);	
-	    }
-	    
-	    
-	    
-	    if(interpolates == null || interpolates[i])
-//		g.drawPolyline(x, y, signals[i].n_points);
-		for(int jj = 0; jj < num_steps -1; jj++)
-		    if(!Double.isNaN(signals[i].y[step*jj]) && 
+		for(j = 0; j < num_steps; j++)
+		{
+		    x[j] = wm.XPixel(signals[i].x[step*j], d);
+		    y[j] = wm.YPixel(signals[i].y[step*j], d);
+		    curr_points[j] = new Point(x[j], y[j]);	
+		}
+		if(interpolates == null || interpolates[i])
+		    for(int jj = 0; jj < num_steps -1; jj++)
+			if(!Double.isNaN(signals[i].y[step*jj]) && 
 			    !Double.isNaN(signals[i].y[step*(jj+1)]))
-			g.drawLine( x[jj], y[jj], x[jj+1], y[jj+1]);
-		    else
-			System.out.println("NaN");
-		    
+			    g.drawLine( x[jj], y[jj], x[jj+1], y[jj+1]);
+	    }
+	    else // not dragging
+	    {
+		segments = wm.ToPolygons(signals[i], d);
+		Polygon curr_polygon;
+		if(interpolates == null || interpolates[i])
+		    for(int k = 0; k < segments.size(); k++)
+		    {
+			curr_polygon = (Polygon)segments.elementAt(k);
+			g.drawPolyline(curr_polygon.xpoints, curr_polygon.ypoints, curr_polygon.npoints);
+		    }
+	    }
+	    
 	    if(dragging && mode == MODE_PAN)
 		return;    
 	    if(markers != null && markers[i] != NONE)
-	    	DrawMarkers(g, curr_points, signals[i].n_points, markers[i]);
+	    	DrawMarkers(g, segments, markers[i]);
 	    if(signals[i].error)
 		DrawError(g, size(), signals[i]);
 	}
     }
 
+    protected void DrawMarkers(Graphics g, Vector segments, int mark_type)
+    {
+	int num_points, num_segments = segments.size();
+	int i;
+	Point points[];
+	Polygon curr_polygon;
+	
+	for(i = num_points = 0; i < num_segments; i++)
+	    num_points += ((Polygon)segments.elementAt(i)).npoints;
+	
+	points = new Point[num_points];
+	for(i = 0; i < num_points; i++)
+	    points[i] = new Point();
+	for(i = num_points = 0; i < num_segments; i++)
+	{
+	    curr_polygon = (Polygon)segments.elementAt(i);
+	    for(int j = 0; j < curr_polygon.npoints; j++)
+	    {
+		points[num_points].x = curr_polygon.xpoints[j];
+		points[num_points].y = curr_polygon.ypoints[j];
+		num_points++;
+    	    }
+	}
+	DrawMarkers(g, points, num_points, mark_type);
+    }
+        
+    
+    
+    
+    
+    
+
     protected double FindPointY(double curr_x, double curr_y, boolean is_first)	
    {
 	Signal curr_signal;
 	int curr_idx, i, min_idx = 0;
-	double curr_dist, min_dist = 0;
+	double curr_dist, min_dist = 1E20;
 	
-	if(signals[curr_point_sig_idx] == null) return 0;
+	//if(signals[curr_point_sig_idx] == null) return 0;
 	if(!is_first)
 	{
 	    min_idx = signals[curr_point_sig_idx].FindClosestIdx(curr_x, curr_y);
 	    curr_signal = signals[curr_point_sig_idx];
-            if((min_idx == curr_signal.n_points -1) || min_idx == 0)
+            if((min_idx == curr_signal.n_points -1))// || min_idx == 0)
 	    	return curr_signal.y[min_idx];
 	    else
 		return curr_signal.y[min_idx] + 
@@ -301,6 +349,8 @@ waveforms.
     {
 	double xmin, xmax;
 	
+	if(waveform_signal == null) return; // Cesare
+	
 	if(signals == null)
 	    return;
 	if(w != this && orig_signals != null)   //Previous zoom for differentr windows
@@ -314,12 +364,14 @@ waveforms.
 
     public void ResetScales()
     {
-	if(signals != null && waveform_signal == null)
+	if(signals == null || waveform_signal == null)
 	    return;
 	if(orig_signals != null)
 	{
 	    signals = orig_signals;
-	    waveform_signal = signals[0]; 
+	    int i;
+	    for(i = 0; i < signals.length && signals[i] == null; i++);
+	    waveform_signal = signals[i]; 
 	}
 	waveform_signal.ResetScales();
 	ReportChanges();
@@ -336,19 +388,23 @@ protected void NotifyZoom(double start_xs, double end_xs, double start_ys, doubl
 	orig_signals = new Signal[signals.length];
 	for(int i = 0; i < signals.length; i++)
 	    orig_signals[i] = signals[i];
+	orig_xmin = waveform_signal.xmin;
+	orig_xmax = waveform_signal.xmax;
     }
     if(wi != null)
-	wi.AsynchUpdate(signals, start_xs - x_range, end_xs + x_range, 
-	    orig_signals[0].xmin,orig_signals[0].xmax, update_timestamp, mode == MODE_PAN, this);
+	wi.AsynchUpdate(signals, (float)(start_xs - x_range), (float)(end_xs + x_range), 
+	    (float)orig_xmin, (float)orig_xmax, update_timestamp, mode == MODE_PAN, this);
 }	
 
 
 protected void HandleCopy()
 {
-    if(copy_wi == null)
+//    if(copy_wi == null)
+    if((copy_wi = controller.GetSource()) == null)
     {
 	copy_wi = wi;
 	source_copy_w = (Waveform)this;
+	controller.SetSourceCopy(source_copy_w);
 	SetSelected(true);
     }
     else
@@ -357,6 +413,7 @@ protected void HandleCopy()
 	{
 	    copy_wi = null;
 	    SetSelected(false);
+	    controller.SetSourceCopy(null);
 	}
 	else
 	{
@@ -369,6 +426,7 @@ protected void HandleCopy()
 protected void SetMode(int mod)
 {
     copy_wi = null;
+//    controller.SetSourceCopy(null);
     super.SetMode(mod);
 }
 	

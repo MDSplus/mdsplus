@@ -22,13 +22,6 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
       sc    = _sc;
       createWavePanel();   
    }
-   
-   WavePanel(Setup _setup)
-   {
-      setup = _setup;
-      createWavePanel();   
-   }
-   
  
    private void createWavePanel() {
         
@@ -68,7 +61,7 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
 	{
            if(setup.waves == null || j >= sc.prec_rows[i] || setup.waves.length <= kk + j || setup.waves[kk + j] == null) {
 	      wave = new MultiWaveform(setup);
-	      if((new_waveform_conf[k + j] = sc.GetWaveformConf(kk + j)) == null)
+	      if((new_waveform_conf[k + j] = sc.GetWaveformConf(kk + j)) == null || j >= sc.prec_rows[i])
 		 new_waveform_conf[k + j] = new WaveformConf();	       
            } else {
 	      wave = setup.waves[kk + j];
@@ -94,11 +87,23 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
       ImageProducer producer;
       int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0, sx2 = 0, sy2 = 0;
       int hpan = 15, wpan = 15;
-    
-      dy1 = hpan;
-      height -= 2 * hpan;
-      width  -= 2 * wpan;
-  
+      
+      /* Fix page dimension  bug on Mac OS */
+      System.out.println("page size width" + width + " height " + height);
+      if(System.getProperties().getProperty("os.name").equals("Mac OS"))
+      {
+	hpan = 5;
+	wpan = 0;
+	width  -= 45;
+	height += 25;
+	height -= 2 * hpan;
+	dy1 = hpan;	
+      } else {	    		      
+	dy1 = hpan;
+	height -= 2 * hpan;
+	width  -= 2 * wpan;
+      }
+       
       for(i = 0 ; i < sc.columns; i++)
       {	  
 	  dy2 += (int)(height * ((RowColumnLayout)getLayout()).getPercentWidth(i));
@@ -108,13 +113,14 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
 	      new_image = createImage(new FilteredImageSource(curr_image.getSource(), filter));
 	      sx2 = new_image.getWidth(this);
 	      sy2 = new_image.getHeight(this);
-	      dx1 = dx2 - (int)(width * ((RowColumnLayout)getLayout()).getPercentHeight(k));	      	      
+	      dx1 = dx2 - (int)(width * ((RowColumnLayout)getLayout()).getPercentHeight(k)) + 1;	      	      
 	      g.drawImage(new_image, dx1, dy1, dx2, dy2, 0, 0, sx2, sy2, this);
 	      dx2 = dx1;
 	      k++;
 	  }
 	  dy1 = dy2;	  
-      }  
+      }
+
   }
   
    
@@ -139,6 +145,7 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
 		row_col_layout.resizeRowColumn(ob);	
 	    break;		    		    
 	}
+	
      }	
   }
     
@@ -153,13 +160,15 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
   public  void mousePressed(MouseEvent e)    
     {}
   
+
 }
 
-
 class WaveButton extends Canvas {
+    private Image image;
 
     WaveButton()
     {
+//	image = Toolkit.getDefaultToolkit().getImage("/home/Web/work/Cesare/pr_sqdi.gif");
     	setBackground(Color.lightGray);
 	setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
     }
@@ -167,6 +176,7 @@ class WaveButton extends Canvas {
     public void paint(Graphics g)
     {
 	Rectangle d = getBounds();
+//	g.drawImage(image, 0, 0, this);
 	g.draw3DRect(0, 0, d.width-1, d.height-1, true);
     }
     public void print(Graphics g)

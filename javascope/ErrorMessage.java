@@ -17,7 +17,7 @@ class ErrorMessage extends ScopePositionDialog {
     {
 	
 	super(fw, "Error Setup", true);
-	setResizable(false);
+	setResizable(true);
 	
 	f = fw; 	
 	setTitle("Error Message");
@@ -47,9 +47,13 @@ class ErrorMessage extends ScopePositionDialog {
 	if(n_row == 0) 
 	    return 0;
 	setLayout(new GridLayout(n_row + 1, 0));
-	add(acknowledge = new Button("Acknowledge"));
+	Panel p = new Panel();
+	((FlowLayout)p.getLayout()).setAlignment(FlowLayout.CENTER);
+	p.add(acknowledge = new Button("Acknowledge"));
 	acknowledge.addActionListener(this);
+	add(p);
 	pack();
+	setResizable(false);	    
 	setPosition(f);
 	show();
 	return 1;
@@ -71,10 +75,16 @@ class ErrorMessage extends ScopePositionDialog {
 	}
     }
     
-    public void actionPerformed(ActionEvent e)
+    public void resetMsg()
     {
-	setVisible(false);
 	removeAll();
 	n_row = 0;	   
+    }
+    
+    public void actionPerformed(ActionEvent e)
+    {
+    	setResizable(true);
+	setVisible(false);
+	resetMsg();
     }    
 }

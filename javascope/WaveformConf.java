@@ -1,6 +1,8 @@
+import java.lang.*;
 import java.awt.*;
 
 class WaveformConf {
+    boolean modified = true;
     int     num_expr;
     int	    num_shot;
     String  title;
@@ -14,112 +16,64 @@ class WaveformConf {
     String  y_max;
     String  y_min;
     String  y_label;
-    Color   colors[];
+    //Color   colors[];
+    int     colors_idx[];
     int	    markers[];
     boolean interpolates[];
     boolean x_log;
     boolean y_log;
-    boolean opt_network = true;
-    int grid_mode;
+//    boolean opt_network = true;
+    int     grid_mode;
     String  shot_str;
     String  experiment;
     int     defaults = 0;
     static final int B_shot = 8, B_x_min = 12, B_x_max = 13, B_y_min = 14, B_y_max = 15,
 		     B_title = 16, B_x_label = 10, B_y_label = 11, B_exp = 7; 
 
-    public void setWaveformConf(WaveInterface wi)
+    private boolean equalsString(String s1, String s2)
     {
-	int prec_shot;
-	boolean sh_list = false;
-	StringBuffer shot_buff = new StringBuffer(512);
-
-	if(wi == null) 	    
-	    return;
-
-	for(num_shot = 1; num_shot < wi.shots.length && wi.shots[0] != wi.shots[num_shot] ; num_shot++);
-
-	prec_shot = -100;
-	for(int i = 0; i < num_shot; i++)
-	{
-	    if(prec_shot == -100) {
-		shot_buff.append(wi.shots[i]);
-		prec_shot = wi.shots[i];
-	    } else {
-		if(wi.shots[i] - prec_shot == 1 && i + 1 < num_shot) 
-		{
- 		    prec_shot = wi.shots[i];
-		    sh_list = true;  		
-		} else {
-		    if (sh_list)
-		    {
-			sh_list = false;
-			if(wi.shots[i] - prec_shot == 1)
-			    shot_buff.append(":" + wi.shots[i]);
-			else
-			    shot_buff.append(":" + prec_shot + "," + wi.shots[i]);
-			prec_shot = wi.shots[i];
-		    } else {
-			shot_buff.append("," + wi.shots[i]);
-			prec_shot = wi.shots[i];
-		    }
-		}		 
-	    }
+	boolean res = false;
+	
+	if(s1 != null) {
+	    if(s2 == null && s1.length() == 0) res = true;
+	    else
+		if(s1.equals(s2)) res = true;
+	} else {
+	    if(s2 != null && s2.length() != 0) res =  false;
+	    else res = true;
 	}
-	
-	shot_str  = new String(shot_buff);				    		        
-	num_expr  = wi.num_waves/num_shot;
-
-	title	  = new String(wi.in_title);
-	if(wi.in_xmax != null)
-	    x_max          = new String(wi.in_xmax);
-	if(wi.in_ymax != null)
-	    x_min          = new String(wi.in_xmax);
-	if(wi.in_ymax != null)
-	    y_max          = new String(wi.in_ymax);
-	if(wi.in_ymin != null)
-	    y_min          = new String(wi.in_ymin);
-	if(wi.in_xlabel != null)
-	    x_label        = new String(wi.in_xlabel);
-	if(wi.in_ylabel != null)
-	    y_label        = new String(wi.in_ylabel);
-	    
-	x_log	  = wi.x_log;
-	y_log	  = wi.y_log;
-	opt_network = !wi.full_flag;
-	experiment   = new String(wi.experiment);
-	x_expr       = new String[num_expr];
-	y_expr       = new String[num_expr];
-	up_err       = new String[num_expr];
-	low_err      = new String[num_expr];
-	interpolates = new boolean[num_expr * num_shot];
-	markers      = new int[num_expr * num_shot];
-	colors       = new Color[num_expr * num_shot];
-	for(int i=0, k=0; i < num_expr; i++)
-	{
-	
-	    if(wi.in_x[i] != null)
-		x_expr[i]      = new String(wi.in_x[i]);
-	    if(wi.in_y[i] != null)
-		y_expr[i]      = new String(wi.in_y[i]);
-	    if(wi.in_up_err[i] != null)
-		up_err[i]      = new String(wi.in_up_err[i]);
-	    if(wi.in_low_err[i] != null)
-		low_err[i]     = new String(wi.in_low_err[i]);
-	    
-	    for(int j=0; j < num_shot; j++)
-	    {
-		interpolates[k] = wi.interpolates[k];
-		markers[k]      = wi.markers[k];
-		colors[k]     = wi.colors[k];
-		k++;
-	    }
-	}    	
+	return res;	        
     }
-    
-	    
+
+    public boolean equals(WaveformConf in)
+    {
+	if(num_expr != in.num_expr) return false;
+	if(num_shot != in.num_shot) return false;
+	
+	if(!equalsString(title, in.title))     return false;	
+	if(!equalsString(x_max, in.x_max))     return false;
+	if(!equalsString(x_min, in.x_min))     return false;
+	if(!equalsString(x_label, in.x_label)) return false;	
+	if(!equalsString(y_max, in.y_max))     return false;
+	if(!equalsString(y_min, in.y_min))     return false;
+	if(!equalsString(y_label, in.y_label)) return false;	
+
+    	if(!equalsString(shot_str, in.shot_str))     return false;	
+	if(!equalsString(experiment, in.experiment)) return false;	
+
+    	for(int i = 0 ; i < num_expr; i++)
+	{
+	    if(!equalsString(x_expr[i], in.x_expr[i])) return false;
+	    if(!equalsString(y_expr[i], in.y_expr[i])) return false;
+	    if(!equalsString(up_err[i], in.up_err[i])) return false;
+	    if(!equalsString(low_err[i], in.low_err[i])) return false;
+	}
+	return true;
+    }
+    	    
     public void Copy(WaveformConf in)
     {
-	
+	modified = in.modified;
 	num_expr = in.num_expr;
         num_shot = in.num_shot;
 	if(in.title != null)
@@ -147,20 +101,22 @@ class WaveformConf {
 	y_min = in.y_min;
     	if(in.y_label != null)
 	  y_label = new String(in.y_label);
-	if(in.colors != null)
+	if(in.markers != null)
 	{
-	    colors = new Color[in.colors.length];
+//	    colors = new Color[in.colors.length];
+	    colors_idx = new int[in.colors_idx.length];
 	    markers = new int[in.markers.length];
 	    interpolates = new boolean[in.interpolates.length];
-	    for(int i=0; i < in.colors.length; i++) {
-		colors[i]       = in.colors[i];
-		markers[i]      = in.markers[i];
+	    for(int i=0; i < in.markers.length; i++) {
+//		colors[i]       = in.colors[i];
+		colors_idx[i]   = in.colors_idx[i];
+    		markers[i]      = in.markers[i];
 		interpolates[i] = in.interpolates[i];
 	    }
 	}
 	x_log = in.x_log;
 	y_log = in.y_log;
-	opt_network = in.opt_network;
+	//opt_network = in.opt_network;
 	if(in.shot_str != null)
 	    shot_str = new String(in.shot_str);
 	if(in.experiment != null)
@@ -168,3 +124,5 @@ class WaveformConf {
 	defaults = in.defaults;
     }
 }
+
+

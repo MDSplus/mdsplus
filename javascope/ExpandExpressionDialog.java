@@ -13,9 +13,9 @@ class ExpandExpressionDialog extends ScopePositionDialog {
  private Label lab;
  private TextArea x_expr, y_expr;
  private Button ok, cancel;
- private SetupData  conf_dialog;
+ private SetupDataDialog  conf_dialog;
  
- ExpandExpressionDialog(Frame _fw, SetupData conf_diag)
+ ExpandExpressionDialog(Frame _fw, SetupDataDialog conf_diag)
  {
     super(_fw, "Expand Expression Dialog", false);
     super.setFont(new Font("Helvetica", Font.PLAIN, 10));    

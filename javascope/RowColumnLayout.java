@@ -15,8 +15,9 @@ public class RowColumnLayout implements LayoutManager {
     private int pos_x, pos_y;
     private Container main_p;
     static final int HORIZONTAL = 1, VERTICAL = 2, NONE = 3;
-    static final int MIN_SIZE = 100;
+    static final int MIN_SIZE = 20;
     
+
     public RowColumnLayout(int _column, int[] _row) {
         column = _column;
 	row = new int[column];
@@ -307,7 +308,7 @@ public class RowColumnLayout implements LayoutManager {
 	resize_mode = NONE;
     }
     
-    private void resizeColumns(Container parent, int col_idx)
+    private void resizeColumns(Container parent, int col_idx) 
     {
 	int k = 0, x = 0;
 	int previousWidth = 0, currMaxWidth, currWidth;
@@ -331,9 +332,9 @@ public class RowColumnLayout implements LayoutManager {
 		    {
 		       Component b = parent.getComponent(k);		
 		       if(j == row[i] - 1) 	    
-			  b.setBounds(x + d.width - hgap, maxHeight - 20, 8, 15);		     
+			  b.setBounds(x + d.width - hgap , maxHeight - 10, 4, 8);
 		       else 		    
-			  b.setBounds(x + d.width - 20,  c.getBounds().y + c.getBounds().height - 2, 15, 8 );
+			  b.setBounds(x + d.width - 10,  c.getBounds().y + c.getBounds().height , 8, 4 );
 		    }
 		}
 		k++;
@@ -367,9 +368,9 @@ public class RowColumnLayout implements LayoutManager {
 		{
 		    Component b = parent.getComponent(k);		
 		    if(j == row[col_idx] - 1)
-		      b.setBounds(c.getBounds().x + c.getBounds().width - hgap, maxHeight - 20, 8, 15);		     		    
+		      b.setBounds(c.getBounds().x + c.getBounds().width - hgap, maxHeight - 10, 4, 8);		     		    
 		    else 	    
-		      b.setBounds(c.getBounds().x +  c.getBounds().width - 20, y + d.height - 2, 15, 8 );
+		      b.setBounds(c.getBounds().x +  c.getBounds().width - 10, y + d.height, 8, 4 );
 		}
 	     }
 	     k++;
@@ -470,9 +471,9 @@ public class RowColumnLayout implements LayoutManager {
 		{
 		    Component b = parent.getComponent(k);		
 		    if(j == row[i] - 1) 	    
-		      b.setBounds(x + d.width - hgap, maxHeight - 20, 8, 15);		     
+		      b.setBounds(x + d.width - hgap, maxHeight - 10, 4, 8);		     
 		    else 		    
-		      b.setBounds(x + previousWidth - 20, y + d.height - 2, 15, 8 );
+		      b.setBounds(x + previousWidth - 10, y + d.height, 8, 4);
 		}
 	     }
 	     k++;
