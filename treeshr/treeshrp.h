@@ -40,11 +40,16 @@ static int swapint(int in)
 #define swapint(in) in
 #endif
 
+#define bitassign(bool,value,mask) value = (bool) ? (value) | (mask) : (value) & ~(mask)
+
 typedef struct nci
 {
+/*
   union
   {
+*/
     unsigned int flags;
+/*
     struct
     {
       unsigned  state:1;
@@ -63,6 +68,7 @@ typedef struct nci
       unsigned  include_in_pulse:1;
     }         NCI_FLAGS;
   }         NCI_FLAG_WORD;
+*/
   unsigned  char data_in_att_block:1;
   unsigned  char error_on_put:1;
   unsigned  char :8;

@@ -1,0 +1,9 @@
+all :
+	cd mdsshr ; make -f Makefile.HPUX
+	cd treeshr ; make -f Makefile.HPUX
+	cd tdishr ; make -f Makefile.HPUX
+	cd tditest ; make -f Makefile.HPUX
+	cd xmdsshr ; make -f Makefile.HPUX
+	cd dwscope ; make -f Makefile.HPUX
+	cd mitdevices ; make -f Makefile.HPUX
+	cd traverser ; make -f Makefile.HPUX

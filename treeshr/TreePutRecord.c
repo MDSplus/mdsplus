@@ -127,7 +127,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
         unsigned int zero[2] = {0,0};
         unsigned int addin[2] = {0x4beb4000,0x7c9567};
         unsigned int temp[2] = {0,0};
-	local_nci.NCI_FLAG_WORD.NCI_FLAGS.setup_information = dblist->setup_info;
+        bitassign(dblist->setup_info, local_nci.flags, NciM_SETUP_INFORMATION);
 	local_nci.owner_identifier = saved_uic;
 	/* VMS time = unixtime * 10,000,000 + 0x7c95674beb4000q */
         tzset();
@@ -151,11 +151,11 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 	if (!utility_update)
 	{
 	  old_record_length = nci->data_in_att_block ? 0 : nci->DATA_INFO.DATA_LOCATION.record_length;
-	  if (nci->NCI_FLAG_WORD.NCI_FLAGS.write_once && nci->length)
+	  if ((nci->flags & NciM_WRITE_ONCE) && nci->length)
 	    status = TreeNOOVERWRITE;
-	  if ((status & 1) && (shot_open && nci->NCI_FLAG_WORD.NCI_FLAGS.nowrite_shot))
+	  if ((status & 1) && (shot_open && (nci->flags & NciM_NO_WRITE_SHOT)))
 	    status = TreeNOWRITESHOT;
-	  if ((status & 1) && (!shot_open && nci->NCI_FLAG_WORD.NCI_FLAGS.nowrite_model))
+	  if ((status & 1) && (!shot_open && (nci->flags & NciM_NO_WRITE_MODEL)))
 	    status = TreeNOWRITEMODEL;
 	}
 	if (status & 1)
@@ -284,12 +284,12 @@ static int CopyToRecord(NCI *nci,
   nid_reference = 0;
   path_reference = 0;
   status = MdsCopyDxXdZ(descriptor_ptr, io_dscr_ptr, 0, FixupNid, &tree, FixupPath, NULL);
-  nci->NCI_FLAG_WORD.NCI_FLAGS.path_reference = path_reference;
-  nci->NCI_FLAG_WORD.NCI_FLAGS.nid_reference = nid_reference;
+  bitassign(path_reference,nci->flags,NciM_PATH_REFERENCE);
+  bitassign(nid_reference,nci->flags,NciM_NID_REFERENCE);
   if (status == MdsCOMPRESSIBLE)
   {
-    if ((compress_utility || nci->NCI_FLAG_WORD.NCI_FLAGS.compress_on_put) &&
-        (!nci->NCI_FLAG_WORD.NCI_FLAGS.do_not_compress))
+    if ((compress_utility || (nci->flags & NciM_COMPRESS_ON_PUT)) &&
+        (!(nci->flags & NciM_DO_NOT_COMPRESS)))
     {
       static    EMPTYXD(empty);
       static    EMPTYXD(temp);
@@ -297,13 +297,13 @@ static int CopyToRecord(NCI *nci,
       *io_dscr_ptr = empty;
       status = MdsCompress(0, 0, (struct descriptor *)&temp, io_dscr_ptr);
       MdsFree1Dx(&temp, NULL);
-      nci->NCI_FLAG_WORD.NCI_FLAGS.compressible = 0;
+      bitassign(0,nci->flags,NciM_COMPRESSIBLE);
     }
     else
-      nci->NCI_FLAG_WORD.NCI_FLAGS.compressible = 1;
+      bitassign(1,nci->flags,NciM_COMPRESSIBLE);
   }
   else
-    nci->NCI_FLAG_WORD.NCI_FLAGS.compressible = 0;
+    bitassign(0,nci->flags,NciM_COMPRESSIBLE);
   if (status & 1)
   {
     if (io_dscr_ptr->pointer)
@@ -329,7 +329,7 @@ static int CopyToRecord(NCI *nci,
 	  {           
             nci->DATA_INFO.DATA_LOCATION.record_length = nci->length;
 	    nci->length = 0;
-	    status = PointerToOffset(io_dscr_ptr->pointer, &nci->length);
+	    status = PointerToOffset(io_dscr_ptr->pointer, (unsigned int *)&nci->length);
 #if  !(defined(__VMS) || defined(_WINDOWS))
             if (status & 1)
 	    { struct descriptor_xd tempxd = *io_dscr_ptr;
@@ -354,7 +354,7 @@ static int CopyToRecord(NCI *nci,
 	  nci->class = (out_ptr->class == CLASS_XD) ? CLASS_XS : out_ptr->class;
 	  nci->data_in_att_block = 0;
 	  nci->length = 0;
-	  status = PointerToOffset(io_dscr_ptr->pointer, &nci->length);
+	  status = PointerToOffset(io_dscr_ptr->pointer, (unsigned int *)&nci->length);
 #if  !(defined(__VMS) || defined(_WINDOWS))
             if (status & 1)
 	    { struct descriptor_xd tempxd = *io_dscr_ptr;

@@ -2,6 +2,7 @@
 #include <treeshr.h>
 #define EMPTY_NODE
 #define EMPTY_NCI
+#include <ncidef.h>
 #include "treeshrp.h"
 #include <mds_stdarg.h>
 #include <usagedef.h>
@@ -117,7 +118,13 @@ int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
 	  status = TreeGetNciLw(dblist->tree_info, nid.node, &scratch_nci);
 	  if (status & 1)
 	  {
+            if (_TreeIsOn(dblist,*(int *)&parent_nid) & 1)
+              new_nci.flags &= ~NciM_PARENT_STATE;
+            else
+              new_nci.flags |= NciM_PARENT_STATE;
+	    /*
 	    new_nci.NCI_FLAG_WORD.NCI_FLAGS.parent_state = !(_TreeIsOn(dblist,*(int *)&parent_nid) & 1);
+	    */
 	    status = TreePutNci(dblist->tree_info, nid.node, &new_nci, 1);
 	  }
 	}

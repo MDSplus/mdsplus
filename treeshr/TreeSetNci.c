@@ -97,10 +97,10 @@ int       _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
       {
 
        case NciSET_FLAGS:
-	nci.NCI_FLAG_WORD.flags |= *(unsigned int *) itm_ptr->pointer;
+	nci.flags |= *(unsigned int *) itm_ptr->pointer;
 	break;
        case NciCLEAR_FLAGS:
-	nci.NCI_FLAG_WORD.flags &= ~(*(unsigned int *) itm_ptr->pointer);
+	nci.flags &= ~(*(unsigned int *) itm_ptr->pointer);
 	break;
        case NciSTATUS:
 	nci.status = *(unsigned int *) itm_ptr->pointer;
@@ -571,13 +571,13 @@ int _TreeTurnOn(void *dbid, int nid_in)
   status = TreeGetNciLw(info, node_num, &nci);
   if (~status & 1)
     return status;
-  if (nci.NCI_FLAG_WORD.NCI_FLAGS.state)
+  if (nci.flags & NciM_STATE)
   {
-    nci.NCI_FLAG_WORD.NCI_FLAGS.state = 0;
+    bitassign(0,nci.flags,NciM_STATE);
     status = TreePutNci(info, node_num, &nci, 0);
     if (~status & 1)
       return status;
-    if (!nci.NCI_FLAG_WORD.NCI_FLAGS.parent_state)
+    if (!(nci.flags & NciM_PARENT_STATE))
     {
       nid_to_node(dblist, nid, node);
       if (node->child)
@@ -656,13 +656,13 @@ int _TreeTurnOff(void *dbid, int nid_in)
   status = TreeGetNciLw(info, node_num, &nci);
   if (~status & 1)
     return status;
-  if (!nci.NCI_FLAG_WORD.NCI_FLAGS.state)
+  if (!(nci.flags & NciM_STATE))
   {
-    nci.NCI_FLAG_WORD.NCI_FLAGS.state = 1;
+    bitassign(1,nci.flags,NciM_STATE);
     status = TreePutNci(info, node_num, &nci, 0);
     if (~status & 1)
       return status;
-    if (!nci.NCI_FLAG_WORD.NCI_FLAGS.parent_state)
+    if (!(nci.flags & NciM_PARENT_STATE))
     {
       nid_to_node(dblist, nid, node);
       if (node->child)
@@ -775,9 +775,9 @@ static int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state)
   for (lnode = node; lnode && (status & 1); lnode = brother_of(lnode))
   {
     status = SetNodeParentState(db, lnode, &nci, state);
-    if ((status & 1) && (!nci.NCI_FLAG_WORD.NCI_FLAGS.state) && (lnode->child))
+    if ((status & 1) && (!(nci.flags & NciM_STATE)) && (lnode->child))
       status = SetParentState(db, child_of(lnode), state);
-    if ((status & 1) && (!nci.NCI_FLAG_WORD.NCI_FLAGS.state) && (lnode->member))
+    if ((status & 1) && (!(nci.flags & NciM_STATE)) && (lnode->member))
       status = SetParentState(db, member_of(lnode), state);
   }
   return status;
@@ -829,7 +829,7 @@ static int SetNodeParentState(PINO_DATABASE *db, NODE *node, NCI *nci, unsigned 
   status = TreeGetNciLw(info, node_num, nci);
   if (status & 1)
   {
-    nci->NCI_FLAG_WORD.NCI_FLAGS.parent_state = state;
+    bitassign(state,nci->flags,NciM_PARENT_STATE);
     status = TreePutNci(info, node_num, nci, 0);
   }
   return status;

@@ -82,8 +82,8 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 	  case NciGET_FLAGS:
 		  break_on_no_node;
 		  read_nci;
-		  set_retlen(sizeof(nci.NCI_FLAG_WORD.flags));
-		  *(unsigned int *) itm->pointer = nci.NCI_FLAG_WORD.flags;
+		  set_retlen(sizeof(nci.flags));
+		  *(unsigned int *) itm->pointer = nci.flags;
 		  break;
 	  case NciTIME_INSERTED:
 		  break_on_no_node;
@@ -610,15 +610,22 @@ int _TreeIsOn(void *dbid, int nid)
 
 static void FixupNciIn(NCI *nci)
 {
-  unsigned int flags = swapint(nci->NCI_FLAG_WORD.flags);
+/*
+  unsigned int flags = swapint(nci->flags);
   unsigned char *flagsc_p = ((unsigned char *)nci) + sizeof(nci->NCI_FLAG_WORD.flags);
-  int i;
+  int i; 
   nci->NCI_FLAG_WORD.flags = 0;
   for (i=0;i<32;i++)
   {
     if (flags & (1 << (31 - i)))
         nci->NCI_FLAG_WORD.flags |= (1 << i);  
   }
+*/
+  unsigned int flags;
+  unsigned char *flagsc_p = ((unsigned char *)nci) + sizeof(nci->flags);
+  int i; 
+  
+  nci->flags = swapint(nci->flags);
   flags = *flagsc_p;
   *flagsc_p = 0;
   for (i=0;i<8;i++)
