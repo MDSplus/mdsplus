@@ -11,17 +11,17 @@ import java.util.*;
 
 public class DecompileTree
 {
-    static Database mdsTree; 
+    static Database mdsTree;
     static Document document;
     public static void main(String args[])
     {
-        
+
         if(args.length < 1)
         {
             System.err.println("Usage: java DecompileTree <treeName> [<shot>]");
             System.exit(0);
         }
-        
+
         String treeName = args[0];
         int shot = -1;
         if(args.length > 1)
@@ -30,18 +30,18 @@ public class DecompileTree
                 shot = Integer.parseInt(args[1]);
             } catch(Exception exc) {System.err.println("Invalid shot number"); System.exit(0);}
         }
-            
+
         Properties properties = System.getProperties();
         String full = properties.getProperty("full");
         boolean isFull = false;
         if(full != null && full.equals("yes"))
             isFull = true;
-            
+
         String outName = properties.getProperty("out");
         if(outName == null)
             outName = args[0]+".xml";
-            
-            
+
+
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
           DocumentBuilder builder = factory.newDocumentBuilder();
@@ -53,7 +53,7 @@ public class DecompileTree
             System.exit(0);
         }
         Element tree = (Element) document.createElement("tree");
-                  
+
         mdsTree = new Database(treeName, shot);
         try {
             mdsTree.open();
@@ -77,7 +77,7 @@ public class DecompileTree
         try {
             members = mdsTree.getMembers(topNid, 0);
         }catch(Exception exc) {members = new NidData[0];}
-            
+
         for(int i = 0; i < members.length; i++)
         {
             Element docMember = null;
@@ -87,7 +87,7 @@ public class DecompileTree
                     docMember = (Element) document.createElement("device");
                 if(info.getUsage() == NodeInfo.USAGE_COMPOUND_DATA)
                     docMember = (Element) document.createElement("compound_data");
-                else 
+                else
                     docMember = (Element) document.createElement("member");
             }catch(Exception exc){System.err.println(exc);}
             tree.appendChild(docMember);
@@ -105,9 +105,9 @@ public class DecompileTree
             transformer.transform(source, result);
         }catch(Exception  exc){System.err.println(exc);}
     }
-   
-    
-                 
+
+
+
     static void recDecompile(NidData nid, Element node, boolean isDeviceField)
     {
         try {
@@ -158,7 +158,7 @@ public class DecompileTree
                             subtreeMembers.addElement(members[i]);
                     }catch(Exception exc){}
                 }
-                
+
                 if((!info.isOn() && info.isParentOn())
                     || (info.isOn() && !info.isParentOn())
                     || (info.isSetup()&& data != null) || tags.length > 0
@@ -211,7 +211,7 @@ public class DecompileTree
                     Element currNode = (Element) document.createElement("member");
                     recDecompile((NidData)subtreeMembers.elementAt(i), currNode, false);
                 }
-                
+
             } //End management of device fields
             else
             {
@@ -229,10 +229,10 @@ public class DecompileTree
                     node.setAttribute("MODEL", model.substring(1, model.length() - 1));
                 }
                 int conglomerateElt = info.getConglomerateElt();
-                    
+
                 //Handle renamed device fields
                 if(conglomerateElt > 1)
-                {   
+                {
                     NidData deviceNid = new NidData(nid.getInt() - conglomerateElt + 1);
                     NodeInfo deviceInfo = null;
                     try {
@@ -271,13 +271,13 @@ public class DecompileTree
                 if(info.isCompressOnPut()) flags += (flags.length() > 0)?",COMPRESS_ON_PUT":"COMPRESS_ON_PUT";
                 if(info.isNoWriteModel()) flags += (flags.length() > 0)?",NO_WRITE_MODEL":"NO_WRITE_MODEL";
                 if(info.isNoWriteShot()) flags += (flags.length() > 0)?",NO_WRITE_SHOT":"NO_WRITE_SHOT";
-        
-                if(flags.length() > 0)                
+
+                if(flags.length() > 0)
                     node.setAttribute("FLAGS", flags);
-                 
+
                 //usage
                 int usage = info.getUsage();
-                if(usage != NodeInfo.USAGE_STRUCTURE 
+                if(usage != NodeInfo.USAGE_STRUCTURE
                     && usage != NodeInfo.USAGE_DEVICE && usage != NodeInfo.USAGE_COMPOUND_DATA)
                 {
                     String usageStr = "";
@@ -294,7 +294,7 @@ public class DecompileTree
                         case NodeInfo.USAGE_SUBTREE : usageStr = "SUBTREE"; break;
                     }
                     node.setAttribute("USAGE", usageStr);
-                    
+
                 //Data, if setup data
                     if(info.isSetup())
                     {
@@ -321,7 +321,8 @@ public class DecompileTree
                     }catch(Exception exc){sons = new NidData[0];}
                     if(info.getUsage() == NodeInfo.USAGE_DEVICE || info.getUsage() == NodeInfo.USAGE_COMPOUND_DATA)
                     {
-                        int numFields = info.getConglomerateNids() - 1;
+                     // int numFields = info.getConglomerateNids() - 1;
+                      int numFields = info.getConglomerateNids();
                         for(int i = 1; i < numFields; i++)
                             recDecompile(new NidData(nid.getInt() + i), node, true);
                     }
@@ -358,9 +359,9 @@ public class DecompileTree
             System.err.println(exc);
         }
     }
-                    
-                 
-/*                  
+
+
+/*
           Element member = (Element) document.createElement("member");
           member.setAttribute("USAGE", "TEXT");
           tree.appendChild(member);
@@ -369,6 +370,6 @@ public class DecompileTree
           data.appendChild(dataText);
           member.appendChild(data);
 */
-          
-          
+
+
 }
