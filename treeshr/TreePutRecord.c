@@ -209,7 +209,9 @@ static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci)
 #define is_numeric ( ((nci->dtype >= DTYPE_BU) &&\
                       (nci->dtype <= DTYPE_DC)) ||\
                      ((nci->dtype >= DTYPE_OU) &&\
-                      (nci->dtype <= DTYPE_HC)) )
+                      (nci->dtype <= DTYPE_HC)) ||\
+                     ((nci->dtype >= DTYPE_FS) &&\
+                      (nci->dtype <= DTYPE_FTC))  )
 
 
   NODE     *node_ptr;
