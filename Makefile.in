@@ -3,10 +3,10 @@
 prefix=@prefix@
 SHELL=/bin/sh
 
-JAVA_APS = javadispatcher \
-	   javamds \
+JAVA_APS = javamds \
 	   javascope \
            javatraverser \
+	   javadispatcher \
 	   javaclient
 
 D3D_PACKAGE = d3dshr
