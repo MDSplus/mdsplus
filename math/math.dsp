@@ -105,7 +105,7 @@ InputName=caxpy
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -119,7 +119,7 @@ InputName=caxpy
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -140,7 +140,7 @@ InputName=cgeco
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -154,7 +154,7 @@ InputName=cgeco
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -175,7 +175,7 @@ InputName=cmul
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -189,7 +189,7 @@ InputName=cmul
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -210,7 +210,7 @@ InputName=csint-win32
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -224,7 +224,7 @@ InputName=csint-win32
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -245,7 +245,7 @@ InputName=csval
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -259,7 +259,7 @@ InputName=csval
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -280,7 +280,7 @@ InputName=daxpy
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -294,7 +294,7 @@ InputName=daxpy
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -315,7 +315,7 @@ InputName=dcsint
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -329,7 +329,7 @@ InputName=dcsint
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -350,7 +350,7 @@ InputName=dcsval
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -364,7 +364,7 @@ InputName=dcsval
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -385,7 +385,7 @@ InputName=dgeco
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -399,7 +399,7 @@ InputName=dgeco
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -420,7 +420,7 @@ InputName=dmul
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -434,7 +434,7 @@ InputName=dmul
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -455,7 +455,7 @@ InputName=dpermu
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -469,7 +469,7 @@ InputName=dpermu
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -490,7 +490,7 @@ InputName=dppval
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -504,7 +504,7 @@ InputName=dppval
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -525,7 +525,7 @@ InputName=dsrch
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -539,7 +539,7 @@ InputName=dsrch
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -560,7 +560,7 @@ InputName=dsvrgn
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -574,7 +574,7 @@ InputName=dsvrgn
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -595,7 +595,7 @@ InputName=gn
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -609,7 +609,7 @@ InputName=gn
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -630,7 +630,7 @@ InputName=isrch
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -644,7 +644,7 @@ InputName=isrch
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -665,7 +665,7 @@ InputName=librtl-win32
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	set path=%path%;%g77_dir%\bin 
 	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -fno-underscoring\
- -fcase-preserve 
+  -fcase-preserve 
 	
 # End Custom Build
 
@@ -679,7 +679,7 @@ InputName=librtl-win32
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	set path=%path%;%g77_dir%\bin 
 	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -fno-underscoring\
- -fcase-preserve 
+  -fcase-preserve 
 	
 # End Custom Build
 
@@ -704,7 +704,7 @@ InputName=permu
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -718,7 +718,7 @@ InputName=permu
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -739,7 +739,7 @@ InputName=ppval
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -753,7 +753,7 @@ InputName=ppval
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -774,7 +774,7 @@ InputName=saxpy
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -788,7 +788,7 @@ InputName=saxpy
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -809,7 +809,7 @@ InputName=sgeco
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -823,7 +823,7 @@ InputName=sgeco
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -844,7 +844,7 @@ InputName=smul
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -858,7 +858,7 @@ InputName=smul
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -879,7 +879,7 @@ InputName=srch
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -893,7 +893,7 @@ InputName=srch
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -914,7 +914,7 @@ InputName=ssrch
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -928,7 +928,7 @@ InputName=ssrch
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -949,7 +949,7 @@ InputName=svign
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -963,7 +963,7 @@ InputName=svign
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -984,7 +984,7 @@ InputName=svrgn
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -998,7 +998,7 @@ InputName=svrgn
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -1019,7 +1019,7 @@ InputName=umach-win32
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -1033,7 +1033,7 @@ InputName=umach-win32
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -1054,7 +1054,7 @@ InputName=zaxpy
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -1068,7 +1068,7 @@ InputName=zaxpy
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -1089,7 +1089,7 @@ InputName=zgeco
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -1103,7 +1103,7 @@ InputName=zgeco
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -1124,7 +1124,7 @@ InputName=zmul
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 
@@ -1138,7 +1138,7 @@ InputName=zmul
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
-	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
 	
 # End Custom Build
 

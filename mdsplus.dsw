@@ -321,33 +321,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "mdsserver"=.\mdsserver\mdsserver.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name mdsshr
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name servershr
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name tdishr
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name treeshr
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name mdsdclshr
-    End Project Dependency
-}}}
-
-###############################################################################
-
 Project: "mdsshr"=.\mdsshr\mdsshr.dsp - Package Owner=<4>
 
 Package=<5>
