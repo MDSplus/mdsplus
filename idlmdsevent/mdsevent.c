@@ -40,16 +40,19 @@ typedef struct _event_struct { int stub_id;
                                char name[28];
                                char value[12];
                                int loc_event_id;
+							   void *thread_handle;
+							   DWORD thread_id;
                                struct _event_struct *next;
                              } EventStruct;
 
 #include <stdio.h>
 #ifdef WIN32
 #include <windows.h>
+extern unsigned long WINAPI MdsDispatchEvent(SOCKET sock);
 #else
 #include <X11/Intrinsic.h>
-extern void MdsDispatchEvent(void *, int *, unsigned long *);
 static XtInputId XTINPUTID=0;
+extern void MdsDispatchEvent(void *, int *, unsigned long *);
 #endif
 
 static EventStruct *EventList = (EventStruct *)0;
@@ -90,6 +93,8 @@ int IDLMdsEventCan(int argc, void * *argv)
     for (e=EventList,p=0;e && e->loc_event_id != eventid; p=e,e=e->next);
     if (e)
 	{
+		if (e->thread_handle)
+			TerminateThread(e->thread_handle, 0);
 		if (p)
 			p->next = e->next;
 		else
@@ -126,7 +131,18 @@ int IDLMdsEvent(int argc, void * *argv)
         && (stub_rec = IDL_WidgetStubLookup(*stub_id)))
     {
       /* IDL_WidgetSetStubIds(stub_rec, parent_rec, parent_rec);   */
-#ifndef WIN32
+#ifdef WIN32
+		if (sock > 0) {
+			    e->thread_handle = CreateThread(
+					(LPSECURITY_ATTRIBUTES)NULL, 
+					0, 
+					(LPTHREAD_START_ROUTINE)MdsDispatchEvent, 
+					(LPVOID)sock, 
+					(DWORD)NULL, 
+					&e->thread_id);
+		} else
+			e->thread_handle = 0;
+#else 
       if (!XTINPUTID && (sock >= 0)) {
         Widget w1, w2;
         IDL_WidgetGetStubIds(parent_rec, (unsigned long *)&w1, (unsigned long *)&w2);
