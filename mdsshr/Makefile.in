@@ -7,7 +7,7 @@ exec_prefix=@exec_prefix@
 RM=$(top_srcdir)/devscripts/rm_if
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=@LIBPTHREAD@ @LIBS@ @LIBDL@ 
+LIBS=@LIBS@ @LIBDL@ 
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
