@@ -108,25 +108,29 @@ function mdsevent_get_value, id
   return, mdsevent_getevi(widget_info(id,/child))
 end
 
-pro mdsevent_can,id
+function esocket
   forward_function mds$socket
+  defsysv,'!MDS_SOCKET',exists=old_sock
+  if old_sock then sock = mds$socket else sock = -1
+  return,sock
+end
+
+pro mdsevent_can,id
     widget_control, id, get_value=e
-    dummy=call_external(EventImage(),'IDLMdsEventCan',mds$socket(),e.event_id,value=[1,1])
+    dummy=call_external(EventImage(),'IDLMdsEventCan',esocket(),e.event_id,value=[1,1])
   return
 end
 
 pro mdsevent_cleanup, id
-  forward_function mds$socket
     e = mdsevent_getevi(id)
-    dummy=call_external(EventImage(),'IDLMdsEventCan',mds$socket(),e.event_id,value=[1,1])
+    dummy=call_external(EventImage(),'IDLMdsEventCan',esocket(),e.event_id,value=[1,1])
   return
 end
 
 function mdsevent,parent,name,uvalue=uvalue
-  forward_function mds$socket
   stub = widget_base(parent)
   ss = widget_base(stub)  ;; this child widget will hold the eventid as the user value
-  eventid=call_external(EventImage(),'IDLMdsEvent',mds$socket(), parent, stub, name, value=[1,0,0,1])
+  eventid=call_external(EventImage(),'IDLMdsEvent',esocket(), parent, stub, name, value=[1,0,0,1])
   ;help,eventid
   widget_control,stub,event_func='mdsevent_func', func_get_value='mdsevent_get_value'
   widget_control,ss,set_uvalue=eventid,kill_notify='mdsevent_cleanup'  ;; kill_notify on this widget so still have access to uvalue
