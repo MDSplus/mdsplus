@@ -916,7 +916,7 @@ int MdsSerializeDscOutZ(struct descriptor *in,
 	    {
               int tmp_int = swapint((char *)altbuf);
               int i;
-              char *tmp_c = &tmp_int;
+              char *tmp_c = (char *)&tmp_int;
               for (i=0;i<4;i++) ((char *)altbuf)[i] = tmp_c[i];
               break;
             }
@@ -924,7 +924,7 @@ int MdsSerializeDscOutZ(struct descriptor *in,
 	    {
               int tmp_int = swapint((char *)altbuf);
               int i;
-              char *tmp_c = &tmp_int;
+              char *tmp_c = (char *)&tmp_int;
               for (i=0;i<4;i++) ((char *)altbuf)[i] = tmp_c[i];
               tmp_int = swapint(&((char *)altbuf)[4]);
               for (i=0;i<4;i++) ((char *)altbuf)[i+4] = tmp_c[i];
