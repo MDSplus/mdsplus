@@ -1076,7 +1076,8 @@ public class MultiWaveform extends Waveform
 	        }
 	    }
 	    super.ReportLimits(r, add_undo);
-        NotifyZoom(r.start_xs, r.end_xs, r.start_ys, r.end_ys, update_timestamp);	    
+	    if(add_undo)
+            NotifyZoom(r.start_xs, r.end_xs, r.start_ys, r.end_ys, update_timestamp);	    
     }
 
     public void Autoscale()
