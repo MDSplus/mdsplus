@@ -1,6 +1,50 @@
 Version 1.3-0
 
 
+2002-09-13 15:02  twf
+
+	* cts/: Makefile.in, cts, cts_commands.export, cts_commands.ocld,
+	verbs.c:
+	
+	move cts to camshr
+
+2002-09-13 15:00  twf
+
+	* Makefile.in:
+	
+	move cts to camshr directory
+
+2002-09-13 14:58  twf
+
+	* camshr/: Makefile.in, cts, cts_commands.ocld, verbs.c:
+	
+	Move cts to this directory
+
+2002-09-13 14:28  twf
+
+	* tdi/MdsVersion.fun:
+	
+	Fun to return MDSplus version string
+
+2002-09-13 14:05  twf
+
+	* Makefile.in:
+	
+	Make release targets uppercase to avoid conflict with
+	files/directories
+
+2002-09-13 14:00  twf
+
+	* devscripts/MakeRelease:
+	
+	Only commit the ChangeLog
+
+2002-09-13 13:57  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.3-0
+
 2002-09-13 13:54  twf
 
 	* ChangeLog:
