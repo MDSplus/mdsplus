@@ -7,6 +7,7 @@
 #else
 #include        <signal.h>
 #include        <sys/time.h>
+#include        <pthread.h>
 #endif
 #include        <stdio.h>
 #include        "mdsdcl.h"
@@ -41,7 +42,11 @@ int   mdsdcl_wait()		/* Return:  status			*/
     int   nsec;
     float fsec;
 #if !defined(_WIN32)
+#ifdef _NO_THREADS
     struct itimerval  value;		/* Two "timeval" structs	*/
+#else
+    struct timespec timer;
+#endif
 #endif
 #endif
     static DYNAMIC_DESCRIPTOR(dsc_deltatime);
@@ -73,7 +78,7 @@ int   mdsdcl_wait()		/* Return:  status			*/
 #if defined(_WIN32)
 	millisec += nsec * 1000;
 	Sleep(millisec);
-#else
+#elif defined(_NO_THREADS)
 
     getitimer(ITIMER_REAL,&value);
 
@@ -84,6 +89,10 @@ int   mdsdcl_wait()		/* Return:  status			*/
     getitimer(ITIMER_REAL,&value);
     signal(SIGALRM,no_op);		/* declare handler routine	*/
     sigpause(SIGALRM);
+#else
+    timer.tv_sec = nsec;
+    timer.tv_nsec = millisec * 1000000;
+    pthread_delay_np(&timer);
 #endif
     sts = 1;
 #endif
