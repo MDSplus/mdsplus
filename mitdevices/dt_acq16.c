@@ -30,7 +30,7 @@ int DT_ACQ16$DW_SETUP( struct dsc$descriptor *niddsc, struct dsc$descriptor *met
   return XmdsDeviceSetup(parent, (int *)niddsc->dsc$a_pointer, uids, XtNumber(uids), "DT_ACQ16", uilnames, XtNumber(uilnames), 0);
 }
 #else
-int DT_ACQ16__DW_SETUP( struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+int dt_acq16__dw_setup( struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 { 
   static String uids[] = {{"DT_ACQ16.uid"}};
   static int nid;
