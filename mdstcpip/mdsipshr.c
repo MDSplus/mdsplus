@@ -101,9 +101,15 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIPSHR.C */
 #include "mdsip.h"
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-
+#ifdef _USE_VARARGS
+int MdsValue(va_alist) va_dcl
+{
+  SOCKET sock;
+  char *expression;
+#else
 int MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated argument list expected ****/
 {
+#endif
   va_list incrmtr;
   int a_count;
   int i;
@@ -112,12 +118,24 @@ int MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated ar
   int status = 1;
   struct descrip exparg;
   struct descrip *arg = &exparg;
+#ifdef _USE_VARARGS
+  va_start(incrmtr);
+  sock = va_arg(incrmtr, SOCKET);
+  expression = va_arg(incrmtr, char *);
+#else
   va_start(incrmtr, expression);
+#endif
   for (a_count = 1; arg != NULL; a_count++)
   {
     arg = va_arg(incrmtr, struct descrip *);
   }
+#ifdef _USE_VARARGS
+  va_start(incrmtr);
+  sock = va_arg(incrmtr, SOCKET);
+  expression = va_arg(incrmtr, char *);
+#else
   va_start(incrmtr, expression);
+#endif
   nargs = a_count - 2;
   arg = MakeDescrip((struct descrip *)&exparg,DTYPE_CSTRING,0,0,expression);
   for (i=1;i<a_count-1 && (status & 1);i++)
@@ -126,6 +144,7 @@ int MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated ar
     status = SendArg(sock, idx, arg->dtype, nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
     arg = va_arg(incrmtr, struct descrip *);
   }
+  va_end(incrmtr);
   if (status & 1)
   {
     short len;
@@ -153,32 +172,49 @@ int MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated ar
   return status;
 }
 
+#ifdef _USE_VARARGS
+int MdsPut(va_alist) va_dcl
+{
+  SOCKET sock;
+  char *node;
+  char *expression;
+#else
 int MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL terminated argument list expected ****/
 {
+#endif
   va_list incrmtr;
   int a_count;
   int i;
   unsigned char nargs;
   unsigned char idx = 0;
   int status = 1;
-#ifdef _UNIX_SERVER
   static char *putexpprefix = "TreePut(";
   static char *argplace = "$,";
-#else
-  static char *putexpprefix = "MDSLIB->MDS$PUT(";
-  static char *argplace = "descr($),";
-#endif
   char *putexp;
   struct descrip putexparg;
   struct descrip exparg;
   struct descrip *arg;
+#ifdef _USE_VARARGS
+  va_start(incrmtr);
+  sock = va_arg(incrmtr, SOCKET);
+  node = va_arg(incrmtr, char *);
+  expression = va_arg(incrmtr, char *);
+#else
   va_start(incrmtr, expression);
+#endif
   for (a_count = 3; va_arg(incrmtr, struct descrip *); a_count++);
   putexp = malloc(strlen(putexpprefix) + (a_count - 1) * strlen(argplace) + 1);
   strcpy(putexp,putexpprefix);
   for (i=0;i<a_count - 1;i++) strcat(putexp,argplace);
   putexp[strlen(putexp)-1] = ')';
+#ifdef _USE_VARARGS
+  va_start(incrmtr);
+  sock = va_arg(incrmtr, SOCKET);
+  node = va_arg(incrmtr, char *);
+  expression = va_arg(incrmtr, char *);
+#else
   va_start(incrmtr, expression);
+#endif
   nargs = a_count;
   arg = MakeDescrip(&putexparg,DTYPE_CSTRING,0,0,putexp);
 
@@ -192,6 +228,7 @@ int MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL ter
     status = SendArg(sock, (char)i, arg->dtype, nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
     arg = va_arg(incrmtr, struct descrip *);
   }
+  va_end(incrmtr);
   if (status & 1)
   {
     char dtype;

@@ -93,9 +93,14 @@
 #include <sys/select.h>
 #endif
 
-#include <ipdesc.h>
-#include <stdio.h>            
+#include <stdio.h>
+#ifdef _USE_VARARGS
+#include <varargs.h>
+#define _NO_MDS_PROTO
+#else            
 #include <stdarg.h>
+#endif
+#include <ipdesc.h>
 #include <string.h>
 #include <stdlib.h>
 
