@@ -66,9 +66,9 @@ extern int CvtConvertFloat();
 #define min(a,b) ((a)<(b)) ? (a) : (b) 
 #define max(a,b) ((a)<(b)) ? (b) : (a) 
 
-typedef struct { int int32[2]; } int64;
-typedef struct { unsigned int int32[2]; } uint64;
-typedef struct { int64 longword[2]; } octaword;
+typedef struct { int int32[2]; } Int64;
+typedef struct { unsigned int int32[2]; } uInt64;
+typedef struct { Int64 longword[2]; } octaword;
 
 #define negate128 TdiSubtractOctaword(&octazero,&in[i],&out[i])
 
@@ -261,12 +261,12 @@ int       Tdi3Abs(struct descriptor *in_ptr,
      out[i] = in[i];
      end_operate
    case DTYPE_QU: 
-     start_operate(uint64)
+     start_operate(uInt64)
      copy64;
      end_operate
    case DTYPE_OU: 
      out_count = out_count * 2;
-     start_operate(uint64)
+     start_operate(uInt64)
      copy64;
      end_operate
    case DTYPE_B:  
@@ -282,7 +282,7 @@ int       Tdi3Abs(struct descriptor *in_ptr,
      out[i] = in[i] > 0 ? in[i] : -in[i];
      end_operate
    case DTYPE_Q:  
-     start_operate(int64)
+     start_operate(Int64)
      abs64
      end_operate
    case DTYPE_O:  
@@ -360,12 +360,12 @@ int       Tdi3Abs1(struct descriptor *in_ptr,
      out[i] = in[i];
      end_operate
    case DTYPE_QU: 
-     start_operate(uint64)
+     start_operate(uInt64)
      copy64;
      end_operate
    case DTYPE_OU: 
      out_count = out_count * 2;
-     start_operate(uint64)
+     start_operate(uInt64)
      copy64;
      end_operate
    case DTYPE_B:  
@@ -381,7 +381,7 @@ int       Tdi3Abs1(struct descriptor *in_ptr,
      out[i] = in[i] > 0 ? in[i] : -in[i];
      end_operate
    case DTYPE_Q:  
-     start_operate(int64)
+     start_operate(Int64)
      abs64
      end_operate
    case DTYPE_O:  
@@ -520,13 +520,13 @@ int       Tdi3Aimag(struct descriptor *in_ptr,
      end_operate
    case DTYPE_Q: 
    case DTYPE_QU: 
-     start_operate(int64)
+     start_operate(Int64)
      zero64;
      end_operate
    case DTYPE_O:  
    case DTYPE_OU: 
      out_count = out_count * 2;
-     start_operate(int64)
+     start_operate(Int64)
      zero64;
      end_operate
    case DTYPE_F:  
@@ -601,13 +601,13 @@ int       Tdi3Conjg(struct descriptor *in_ptr,
      end_operate
    case DTYPE_QU: 
    case DTYPE_Q: 
-     start_operate(uint64)
+     start_operate(uInt64)
      copy64;
      end_operate
    case DTYPE_OU: 
    case DTYPE_O: 
      out_count = out_count * 2;
-     start_operate(uint64)
+     start_operate(uInt64)
      copy64;
      end_operate
    case DTYPE_F:  
@@ -673,12 +673,12 @@ int       Tdi3Inot(struct descriptor *in_ptr,
      out[i] = ~in[i];
      end_operate
    case DTYPE_QU: 
-     start_operate(uint64)
+     start_operate(uInt64)
      not64;
      end_operate
    case DTYPE_OU: 
      out_count = out_count * 2;
-     start_operate(uint64)
+     start_operate(uInt64)
      not64;
      end_operate
    case DTYPE_B: 
@@ -694,12 +694,12 @@ int       Tdi3Inot(struct descriptor *in_ptr,
      out[i] = ~in[i];
      end_operate
    case DTYPE_Q: 
-     start_operate(int64)
+     start_operate(Int64)
      not64;
      end_operate
    case DTYPE_O: 
      out_count = out_count * 2;
-     start_operate(uint64)
+     start_operate(uInt64)
      not64;
      end_operate
    default:
@@ -735,7 +735,7 @@ int       Tdi3Logical(struct descriptor *in_ptr,
      out[i] = (unsigned char)(1 & in[i]);
      end_operate
    case DTYPE_QU: 
-     start_operate1(uint64, unsigned char)
+     start_operate1(uInt64, unsigned char)
      bool64;
      end_operate
    case DTYPE_OU: 
@@ -755,7 +755,7 @@ int       Tdi3Logical(struct descriptor *in_ptr,
      out[i] = (unsigned char)(1 & in[i]);
      end_operate
    case DTYPE_Q: 
-     start_operate1(int64, unsigned char)
+     start_operate1(Int64, unsigned char)
      bool64;
      end_operate
    case DTYPE_O: 
@@ -793,7 +793,7 @@ int       Tdi3Not(struct descriptor *in_ptr,
      out[i] = (unsigned char)!(in[i] & 1);
      end_operate
    case DTYPE_QU: 
-     start_operate1(uint64, unsigned char)
+     start_operate1(uInt64, unsigned char)
      bool64;
      out[i] = (unsigned char)!out[i];
      end_operate
@@ -815,7 +815,7 @@ int       Tdi3Not(struct descriptor *in_ptr,
      out[i] = (unsigned char)!(in[i] & 1);
      end_operate
    case DTYPE_Q: 
-     start_operate1(int64, unsigned char)
+     start_operate1(Int64, unsigned char)
      bool64;
      out[i] = (unsigned char)!out[i];
      end_operate
@@ -857,12 +857,12 @@ int       Tdi3Nint(struct descriptor *in_ptr,struct descriptor *kind,
      out[i] = in[i];
      end_operate
    case DTYPE_QU: 
-     start_operate(int64)
+     start_operate(Int64)
      copy64;
      end_operate
    case DTYPE_OU: 
      out_count = out_count * 2;
-     start_operate(uint64)
+     start_operate(uInt64)
      copy64;
      end_operate
    case DTYPE_B: 
@@ -878,12 +878,12 @@ int       Tdi3Nint(struct descriptor *in_ptr,struct descriptor *kind,
      out[i] = in[i];
      end_operate
    case DTYPE_Q: 
-     start_operate(int64)
+     start_operate(Int64)
      copy64;
      end_operate
    case DTYPE_O: 
      out_count = out_count * 2;
-     start_operate(uint64)
+     start_operate(uInt64)
      copy64;
      end_operate
    case DTYPE_F:  
@@ -958,7 +958,7 @@ int       Tdi3UnaryMinus(struct descriptor *in_ptr,
      out[i] = -in[i];
      end_operate
    case DTYPE_QU: 
-     start_operate(int64)
+     start_operate(Int64)
      negate64;
      end_operate
    case DTYPE_OU: 
@@ -978,7 +978,7 @@ int       Tdi3UnaryMinus(struct descriptor *in_ptr,
      out[i] = -in[i];
      end_operate
    case DTYPE_Q:  
-     start_operate(int64)
+     start_operate(Int64)
      negate64;
      end_operate
    case DTYPE_O:  
