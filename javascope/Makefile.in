@@ -3,6 +3,7 @@ top_srcdir=@top_srcdir@
 JAVADIR = @MAKEJAVADIR@classes
 JAVAC = @JAVAC@
 JAR = @JAR@
+INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = FtuProvider.java\
 Base64.java\
@@ -26,23 +27,17 @@ JiSlabIterator.java\
 JiVar.java\
 JiVarImpl.java\
 LocalProvider.java\
-MdsEvent.java\
-MdsEventListener.java\
-MdsEventManager.java\
 MultiWaveform.java\
 NetworkProvider.java\
 RandomAccessData.java\
 RotateFilter.java\
 RowColumnLayout.java\
 ScopePositionDialog.java\
-Setup.java\
 SetupDataDialog.java\
 SetupDefaults.java\
 Signal.java\
 Slider.java\
 WaveInterface.java\
-WavePanel.java\
-WaveSetup.java\
 Waveform.java\
 jScope.java
 
@@ -55,12 +50,12 @@ clean: ; rm $(CLASSES) @MAKEBINDIR@jScope @MAKEJAVADIR@classes/jScope.jar
 depend: ; @ :
 
 install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
+	if [ ! -d @exec_prefix@/java/classes ] ; then \
+                mkdirhier @exec_prefix@/java/classes ; \
+                chmod -R 755 @exec_prefix@/java; \
         fi;
-	$(INSTALL) -m 644  @MAKEJAVADIR@classes/jScope.jar @libdir@
-	$(INSTALL) -m 755  @MAKEBINDIR@jScope @bindir@
+	$(INSTALL) -m 644  @MAKEJAVADIR@classes/jScope.jar @exec_prefix@/java/classes
+	$(INSTALL) -m 755  @MAKEBINDIR@jScope @exec_prefix@/bin
 
 @MAKEJAVADIR@ : ; mkdir @MAKEJAVADIR@
 
@@ -70,7 +65,7 @@ install:
 	$(JAR) c0f $@ $(CLASSES)
 
 jScope.class: 	$(SOURCES)
-	env CLASSPATH=MRJClasses.zip $(JAVAC) -g $(SOURCES)
+	$(JAVAC) -g $(SOURCES)
 
 @MAKEBINDIR@ : ; mkdir @MAKEBINDIR@
 
