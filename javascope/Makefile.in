@@ -48,7 +48,7 @@ jScope.java
 
 CLASSES = *.class
 
-all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/jScope.jar @MAKEJAVADIR@classes/MRJClasses.zip
+all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/jScope.jar
 
 clean: ; rm $(CLASSES) @MAKEBINDIR@jScope @MAKEJAVADIR@classes/jScope.jar
 
@@ -65,8 +65,6 @@ install:
 @MAKEJAVADIR@ : ; mkdir @MAKEJAVADIR@
 
 @MAKEJAVADIR@classes : ; mkdir @MAKEJAVADIR@classes
-
-@MAKEJAVADIR@classes/MRJClasses.zip : MRJClasses.zip ; cp MRJClasses.zip $@
 
 @MAKEJAVADIR@classes/jScope.jar: jScope.class
 	$(JAR) c0f $@ $(CLASSES)
