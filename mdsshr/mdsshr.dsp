@@ -177,6 +177,10 @@ SOURCE=.\MdsShr.def
 # End Source File
 # Begin Source File
 
+SOURCE=.\MdsShrThreadSafe.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\MdsXdRoutines.c
 # End Source File
 # End Target
