@@ -467,10 +467,11 @@ char *FindTagWildRemote(PINO_DATABASE *dblist, char *wild, int *nidout, void **c
   if (status & 1 && ans.ptr && ans.dtype == DTYPE_T && strlen((char *)ans.ptr) > 0)
   {
     (*ctx)->remote_tag = strcpy(malloc(strlen(ans.ptr)+1),ans.ptr);
-    MdsIpFree(ans.ptr);
   }
   else
     (*ctx)->remote_tag = 0;
+  if (ans.ptr)
+    MdsIpFree(ans.ptr);
   if (status & 1 && nidout)
   {
     status = MdsValue0(dblist->tree_info->channel,"_nid",&nid_ans);
@@ -478,7 +479,8 @@ char *FindTagWildRemote(PINO_DATABASE *dblist, char *wild, int *nidout, void **c
       *nidout = *(int *)nid_ans.ptr;
     else
       *nidout = 0;
-    MdsIpFree(ans.ptr);
+    if (nid_ans.ptr) 
+      MdsIpFree(nid_ans.ptr);
   }
   return (*ctx)->remote_tag;
 }
