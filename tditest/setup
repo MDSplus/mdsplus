@@ -1,0 +1,3 @@
+setenv MDS_PATH /usr/users/twf/mdsplus/tditest/funs
+setenv main_path /usr/users/twf/mdsplus/tditest/trees
+setenv subtree_path /usr/users/twf/mdsplus/tditest/trees/subtree
