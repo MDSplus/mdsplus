@@ -424,23 +424,26 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
       {
 	if (out_ptr)
 	{
+          char *inp = ((char *)in_ptr) + offset(in_ptr->pointer);
           int dscsize = 8;
           LoadShort(in_ptr->length, out_ptr);
           LoadChar(in_ptr->dtype, out_ptr+2);
           LoadChar(in_ptr->class,out_ptr+3);
           LoadInt(dscsize,out_ptr+4);
           out_ptr += 8;
-          memcpy(out_ptr,((char *)in_ptr) + offset(in_ptr->pointer), in_ptr->length);
           if (in_ptr->dtype != DTYPE_T)
 	  {
 	    switch (in_ptr->length)
 	    {
-	    case 2: *(short *)out_ptr = swapshort(out_ptr); break;
-            case 4: *(int *)out_ptr = swapint(out_ptr); break;
-            case 8: *(int *)out_ptr = swapint(out_ptr); 
-	            ((int *)out_ptr)[1] = swapint(out_ptr + sizeof(int)); break;
+	    case 2: LoadShort(inp,out_ptr); break;
+            case 4: LoadInt(inp,out_ptr); break;
+            case 8: LoadInt(inp,out_ptr);
+                    LoadInt(inp+sizeof(int),out_ptr); break;
+            default: memcpy(out_ptr,inp, in_ptr->length); break;
 	    }
 	  }
+          else
+            memcpy(out_ptr,inp, in_ptr->length);
           out_ptr += in_ptr->length;
 	}
 	bytes_out = 8 + in_ptr->length;
@@ -518,6 +521,7 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
         array_coeff *inp = (array_coeff *)in_ptr;
         if (out_ptr)
 	{
+          char *inp2 = ((char *)inp) + offset(inp->pointer);
           int dscsize = 16 + (inp->aflags.coeff ? sizeof(int) + sizeof(int) * inp->dimct : 0)
                     + (inp->aflags.bounds ? sizeof(int) * (inp->dimct * 2) : 0);
           LoadShort(inp->length, out_ptr);
@@ -551,27 +555,23 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
               }
             }
           }
-          memcpy(out_ptr,((char *)inp) + offset(inp->pointer),inp->arsize);
+#ifdef _big_endian
           if (in_ptr->dtype != DTYPE_T)
 	  {
             unsigned int i;
             switch (in_ptr->length)
 	    {
-            case 2:
-              { short *ptr;
-                for (i=0,ptr = (short *)out_ptr; i < inp->arsize; i += sizeof(*ptr),ptr++)
-                  *ptr = swapshort((char *)ptr);
-              }
-              break;
-            case 4:
-            case 8:
-              { int *ptr;
-                for (i=0,ptr=(int *)out_ptr; i < inp->arsize; i += sizeof(*ptr),ptr++)
-                  *ptr = swapint((char *)ptr);
-              }
-              break;
+              case 2:  for (i=0; i < inp->arsize; i += sizeof(short)) LoadShort(inp2+i,out_ptr+i);
+                       break;
+              case 4:
+              case 8:  for (i=0; i < inp->arsize; i += sizeof(int)) LoadInt(inp2+i,out_ptr+i);
+                       break;
+              default: memcpy(out_ptr,inp2,inp->arsize);
             }
           }
+          else
+#endif
+            memcpy(out_ptr,inp2,inp->arsize);
           out_ptr += inp->arsize;
         }
 	bytes_out = 16
@@ -905,34 +905,23 @@ int MdsSerializeDscOutZ(struct descriptor *in,
         data_in_altbuf = 1;
 	class = CLASS_S;
 	length = out_ptr->length + 8;
-        memcpy(altbuf, out_ptr->pointer, out_ptr->length);
 #ifdef _big_endian
         if (dtype != DTYPE_T)
         {
 	  switch (out_ptr->length)
 	  {
-	    case 2: *(short *)altbuf = swapshort((char *)altbuf); break;
-            case 4: 
-	    {
-              int tmp_int = swapint((char *)altbuf);
-              int i;
-              char *tmp_c = (char *)&tmp_int;
-              for (i=0;i<4;i++) ((char *)altbuf)[i] = tmp_c[i];
-              break;
-            }
-            case 8: *(int *)altbuf = swapint((char *)altbuf); 
-	    {
-              int tmp_int = swapint((char *)altbuf);
-              int i;
-              char *tmp_c = (char *)&tmp_int;
-              for (i=0;i<4;i++) ((char *)altbuf)[i] = tmp_c[i];
-              tmp_int = swapint(&((char *)altbuf)[4]);
-              for (i=0;i<4;i++) ((char *)altbuf)[i+4] = tmp_c[i];
-              break;
-            }
+            char *outp = (char *)altbuf;
+            char *inp = out_ptr->pointer;
+	    case 2:  LoadShort(inp,outp); break;
+            case 4:  LoadInt(inp,outp); break;
+            case 8:  LoadInt(inp,outp); 
+                     LoadInt(inp+4,outp+4); break;
+	    default: memcpy(outp, inp, out_ptr->length);
 	  }
         }
+        else
 #endif
+          memcpy(altbuf, out_ptr->pointer, out_ptr->length);
       }
       else
       {
