@@ -125,7 +125,15 @@ int   mdsdcl_spawn(			/* Return: status		*/
 #else				/*---------------- unix ----------------*/
     k = 0;
     if (dsc_cmd.dscA_pointer)
+    {
         k += sprintf(cmdstring+k,"%s",dsc_cmd.dscA_pointer);
+        if (cmdstring[0] == '"' && cmdstring[strlen(cmdstring)-1] == '"')
+	{
+          k = sprintf(cmdstring,"%s",dsc_cmd.dscA_pointer+1);
+          k--;
+          cmdstring[k]='\0';
+        }
+    }
     if (dsc_input.dscA_pointer)
         k += sprintf(cmdstring+k," <%s",dsc_input.dscA_pointer);
     if (dsc_output.dscA_pointer)
