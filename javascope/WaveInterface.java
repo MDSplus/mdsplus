@@ -1076,15 +1076,19 @@ public class WaveInterface
 	    }
 	    
 	    
-	    try {
-	        dimension = dp.GetWaveData(in_y[curr_wave]).GetNumDimension();
-	    }catch(Exception exc) {dimension = 1; }
-	    if(dp.ErrorString() != null)
+	    if(in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() > 0)
+	        dimension = 1;
+	    else
 	    {
-	        curr_error = dp.ErrorString();
-	        return null;
+	        try {
+	            dimension = dp.GetWaveData(in_y[curr_wave]).GetNumDimension();
+	        }catch(Exception exc) {dimension = 1; }
+	        if(dp.ErrorString() != null)
+	        {
+	            curr_error = dp.ErrorString();
+	            return null;
+	        }
 	    }
-	    
 	    if(dimension > 2)
 	    {
 	        curr_error = "Can't display signal with more than two dimensions";
