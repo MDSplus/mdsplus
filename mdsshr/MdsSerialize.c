@@ -1,7 +1,7 @@
+#include <string.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <librtl_messages.h>
-#include <string.h>
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 #define length_of(ptr)    ((unsigned short)swapshort(&ptr[0]))

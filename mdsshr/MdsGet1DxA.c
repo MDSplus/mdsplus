@@ -47,9 +47,9 @@
 +-----------------------------------------------------------------------------*/
 
 #define _DESCRIPTOR_PREFIXES
+#include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
-#include <stdlib.h>
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 

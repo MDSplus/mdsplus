@@ -12,13 +12,13 @@
 /*  *2    19-OCT-1995 14:57:44 TWF "Add mdsxdroutines.c" */
 /*  *1    19-OCT-1995 13:38:16 TWF "XD handling" */
 /*  CMS REPLACEMENT HISTORY, Element MDSXDROUTINES.C */
+#include <string.h>
+#include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
 #include <libroutines.h>
 #include <strroutines.h>
 #include <librtl_messages.h>
-#include <string.h>
-#include <stdlib.h>
 #include <mdsshr.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

@@ -27,9 +27,9 @@
        Management.
 
 -----------------------------------------------------------------------------*/
+#include <string.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
-#include <string.h>
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 int       MdsCompareXd(struct descriptor * dsc1_ptr, struct descriptor * dsc2_ptr)
