@@ -1,0 +1,64 @@
+Microsoft Visual Studio Solution File, Format Version 1.00
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "cdu", "cdu\cdu.dsp", "{D1D52C43-625B-41EE-BC2D-E0BC790A4126}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "cdushr", "cdu\cdushr.dsp", "{2C1A0277-BD26-4927-A672-BEE3024D8F41}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "icons", "icons\icons.dsp", "{5A405971-AB43-421C-A00D-9D42607B2C1B}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "idlmdsevent", "idlmdsevent\idlmdsevent.dsp", "{E4727C29-7306-4BE4-B042-0A9D881DDE54}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "idlsql", "idlsql\idlsql.dsp", "{5EEE87F4-5827-4CB6-B4B8-15C212F9E01E}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "javamds", "javamds\javamds.dsp", "{983E3D30-F96F-45EF-A36C-0F715D93FE53}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "jscopetest", "jscopetest\jscopetest.dsp", "{592A8A51-85A0-4202-88C6-751A5A9E1CAE}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "math", "math\math.dsp", "{55CD402B-6054-4A90-AD9D-3438FB7D922E}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "mdsdcl", "mdsdcl\mdsdcl.dsp", "{942B17EF-97E7-4422-A225-CA3AC0196F53}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "mdsdclshr", "mdsdcl\mdsdclshr.dsp", "{55A0CDE1-A803-4DD7-9A81-D7AF473606F1}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "mdsip", "mdstcpip\mdsip.dsp", "{3A58502B-31EE-41D0-BDD0-EA4BC01C28A5}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "mdsip_service", "mdstcpip\mdsip_service.dsp", "{B96F38AC-C418-4300-ABE2-D624BFC475C1}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "mdsipshr", "mdstcpip\mdsipshr.dsp", "{11405500-0AD5-4986-AEE7-4C267CBB93A9}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "mdsiptest", "mdstcpip\mdsiptest.dsp", "{646A208F-03B6-423F-B1A6-9F435BA91F05}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "mdsjet", "mdsjet\mdsjet.dsp", "{F82F31D4-12DE-4DF4-86E6-01D37A07934F}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "mdslib", "mdslib\mdslib.dsp", "{CA71200D-3715-4AF3-A982-8A4FC63A1B38}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "mdslib_client", "mdslib\mdslib_client.dsp", "{60A8FD4E-5C4F-425F-A075-CE0E53D14D7E}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "mdslibidl", "mdslibidl\mdslibidl.dsp", "{384442DB-C800-4B6E-95C2-9BD278792BC7}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "mdsshr", "mdsshr\mdsshr.dsp", "{28F5D557-300B-4C49-98C8-A6321846651C}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "remcam", "remcam\remcam.dsp", "{C8B88FDA-4013-4DF4-8CF3-9F00FD403FC0}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "servershr", "servershr\servershr.dsp", "{95E3048F-6DA5-4C37-8047-BD6F899044F8}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "setevent", "setevent\setevent.dsp", "{4B625FBD-16F9-49F2-8527-45B8FB9E622F}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "tcl_commands", "tcl\tcl_commands.dsp", "{E0E8ABA8-AA8B-487D-897A-B968DC53D8FE}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "tdishr", "tdishr\tdishr.dsp", "{FA708994-7887-4C0D-A81F-009900C741EE}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "tditest", "tditest\tditest.dsp", "{6F3C8393-F36F-4813-B74E-8983F736E183}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "treeshr", "treeshr\treeshr.dsp", "{2C015189-0D07-4907-976D-3A9C840FE4AF}"
+EndProject
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "wfevent", "wfevent\wfevent.dsp", "{0B3FC79C-FA0D-4C86-BF28-12A435C06AA5}"
+EndProject
+Global
+	GlobalSection(LocalDeployment) = postSolution
+		StartupProject = {00000000-0000-0000-0000-000000000000}
+	EndGlobalSection
+	GlobalSection(BuildOrder) = postSolution
+	EndGlobalSection
+	GlobalSection(DeploymentRoot) = postSolution
+	EndGlobalSection
+EndGlobal
