@@ -119,12 +119,10 @@ void TestTdi()
 
   for (i=0;i<10;i++) result[i]=0;
 
-  printf("MdsValue(1.) - with no return length argument SEG FAULT WITHOUT -g\n");
-  /*
-    dsc = descr(&dtype_float, &result1, &null);
-    status = MdsValue("1.", &dsc);
-    printf("status: %d\n");
-  */
+/**** should segfault with no return length argument!!!! need to provide NULL *****/  
+  dsc = descr(&dtype_float, &result1, &null);
+  status = MdsValue("1.", &dsc,&null,0);
+  printf("status: %d\n");
 
   printf("Range creation");
   dsc = descr(&dtype_float,result,&sresult,&null);

@@ -13,27 +13,12 @@ variable argument lists so a second compilation of these routines is
 necessary to create the fortran entry points.  See more notes at
 bottom of this file for configuring fortran entry points.
 **************************************************************************/
-#ifdef __VMS
-#include <descrip.h>
-#endif
+#include <mdsdescrip.h>
 #include "mdslib.h"
 SOCKET mdsSocket=INVALID_SOCKET;
+#define NDESCRIP_CACHE 256
+static struct descriptor *descrs[NDESCRIP_CACHE];
 #ifndef _CLIENT_ONLY
-#ifdef __VMS
-extern int MDS$OPEN();
-extern int MDS$CLOSE();
-extern int MDS$VALUE();
-extern int MDS$PUT();
-extern int MDS$SET_DEFAULT();
-#define TdiExecute TDI$EXECUTE
-#define TdiCompile TDI$COMPILE
-#define TdiData TDI$DATA
-#define LibCallg lib$callg
-#define TreeFindNode TREE$FIND_NODE
-#define TdiCvt TDI$CVT
-#define TreePutRecord TREE$PUT_RECORD
-#define TreeWait TREE$WAIT
-#else
 extern int TreeOpen();
 extern int TreeClose();
 extern int TreeSetDefault();
@@ -48,7 +33,7 @@ extern int TreeFindNode();
 extern int TreePutRecord();
 extern int TreeWait();
 extern int TdiDebug();
-#endif
+
 
 short ArgLen(struct descrip *d);
 
