@@ -1,4 +1,9 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIP.H */
+/*  *65    5-JAN-1999 10:21:52 TWF "Fix swap on server" */
+/*  *64    5-JAN-1999 10:16:35 TWF "Fix swap on server" */
+/*  *63    5-JAN-1999 10:16:12 TWF "Fix swap on server" */
+/*  *62    4-JAN-1999 14:13:39 TWF "add swap on server capability" */
+/*  *61    4-JAN-1999 12:25:35 TWF "add swap on server capability" */
 /*  *60   16-JUN-1998 16:21:26 TWF "use 5000 on OpenVMS" */
 /*  *59   15-JUN-1998 15:32:21 TWF "Select buffer size" */
 /*  *58   14-APR-1998 15:58:00 TWF "Add sighold defines" */
@@ -99,9 +104,10 @@
 #define VMSG_CLIENT    4
 #define CRAY_CLIENT    8
 #define BigEndian      0x80
+#define SwapEndianOnServer 0x40
 #define LittleEndian   0
 #define Endian(c)  (c & BigEndian)
-#define CType(c)   (c & 0x7f)
+#define CType(c)   (c & 0x0f)
 
 #define EVENTASTREQUEST     "---EVENTAST---REQUEST---"
 #define EVENTCANREQUEST     "---EVENTCAN---REQUEST---"

@@ -110,6 +110,8 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status);
 int SendMdsMsg(SOCKET sock, Message *m, int oob);
 
 static int initialized = 0;
+static void FlipHeader(MsgHdr *header);
+static void FlipData(Message *m);
 
 static char ClientType(void)
 {
@@ -117,7 +119,7 @@ static char ClientType(void)
   if (!ctype)
   {
     union { int i;
-            char  c[sizeof(int)];
+            char  c[sizeof(double)];
             float x;
             double d;
           } client_test;
@@ -704,6 +706,7 @@ static SOCKET ConnectToPort(char *host, char *service)
     user_p = (cuserid(user) && strlen(user)) ? user : "?";
 #endif
     m = malloc(sizeof(MsgHdr) + strlen(user_p));
+    m->h.client_type = 0;
     m->h.length = strlen(user_p);
     m->h.msglen = sizeof(MsgHdr) + m->h.length;
     m->h.dtype = DTYPE_CSTRING;
@@ -836,6 +839,7 @@ int *dims, char *bytes)
     nbytes *= dims[i];
   msglen = sizeof(MsgHdr) + nbytes;
   m = malloc(msglen);
+  m->h.client_type = 0;
   m->h.msglen = msglen;
   m->h.message_id = message_id;
   m->h.descriptor_idx = idx;
@@ -860,7 +864,16 @@ int SendMdsMsg(SOCKET sock, Message *m, int oob)
 {
   char *bptr = (char *)m;
   int bytes_to_send = m->h.msglen;
-  m->h.client_type = ClientType();
+  if ((m->h.client_type & SwapEndianOnServer) != 0)
+  {
+    if (Endian(m->h.client_type) != Endian(ClientType()))
+    {
+      FlipData(m);
+      FlipHeader(&m->h);
+    }
+  }
+  else
+    m->h.client_type = ClientType();
   while (bytes_to_send > 0)
   {
     int bytes_this_time = min(bytes_to_send,BUFSIZ);
@@ -1038,7 +1051,7 @@ Message *GetMdsMsg(SOCKET sock, int *status)
   }
   if (msglen && !bytes_remaining)
   {
-    if ( Endian(header.client_type) != Endian(ClientType()) ) FlipData(msg);
+    if (Endian(header.client_type) != Endian(ClientType())) FlipData(msg);
     *status = 1;
   }
   else

@@ -269,6 +269,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
       ok = 1;
     if (user) free(user);
     m.h.status = ok & 1;
+    m.h.client_type = m_user->h.client_type;
     SendMdsMsg(sock,&m,0);
     if (m.h.status)
     {
@@ -537,6 +538,7 @@ static void ClientEventAst(MdsEventList *e)
       JMdsEventInfo *info;
       int len = sizeof(MsgHdr) + sizeof(JMdsEventInfo);
       Message *m = malloc(len);
+      m->h.client_type = c->client_type;
       m->h.msglen = len;
       m->h.dtype = DTYPE_EVENT;
       info = (JMdsEventInfo *)m->bytes;
@@ -550,6 +552,7 @@ static void ClientEventAst(MdsEventList *e)
     else
     {
       Message *m = malloc(sizeof(MsgHdr) + e->info_len);
+      m->h.client_type = c->client_type;
       m->h.msglen = sizeof(MsgHdr) + e->info_len;
       m->h.dtype = DTYPE_EVENT;
       /*
@@ -698,6 +701,7 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
   }
   m = malloc(sizeof(MsgHdr) + nbytes);
   m->h.msglen = sizeof(MsgHdr) + nbytes;
+  m->h.client_type = c->client_type;
   m->h.message_id = c->message_id;
   m->h.status = status;
   m->h.dtype = d->dtype;
