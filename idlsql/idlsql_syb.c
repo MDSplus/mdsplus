@@ -113,7 +113,7 @@ static IDL_VPTR	vpcount, vperror, vpstatus, vptext;
 static IDL_VARIABLE result = {IDL_TYP_LONG, 0};
 static IDL_STRING	EMPTYSTRING = {0,0,0};
 static double	HUGE_D = 1.7e+38;
-static float	HUGE_F = 1.7e+38;
+static float	HUGE_F = 1.7f+38;
 static long	HUGE_L = 0x7fffffff;
 static long      quiet;
 static short	HUGE_W = 0x7fff;
@@ -175,7 +175,7 @@ int	len = 0;
 		IDL_StoreScalar(vperror, IDL_TYP_STRING, (IDL_ALLTYPES *)&EMPTYSTRING);
 		if (!(status & 1)) {
 			if (status) {
-				strncpy(hold, GetDBMsgText(), MAXMSG-1);
+				strncat(hold, GetDBMsgText(), MAXMSG-1);
 				len = strlen(hold);
 				hold[len] = '\0';
 			}
@@ -184,7 +184,7 @@ int	len = 0;
 	}
 	if ((status != 1))
 	if (!quiet) {
-				strncpy(hold, GetDBMsgText(), MAXMSG-1);
+				strncat(hold, GetDBMsgText(), MAXMSG-1);
 				len = strlen(hold);
 		IDL_MessageErrno(IDL_M_NAMED_GENERIC, 0, IDL_MSG_RET, hold);
 	}
