@@ -55,10 +55,18 @@ extern int TdiExecute();
 
 typedef struct { int forward;
                  int previous;
-                 Msg message;
-                 char fill[3];
-                 MonitorMsg monmsg;
-                 time_t time;
+                 char *msg;
+                 char *tree;
+                 int  shot;
+                 int phase;
+                 int nid;
+                 int on;
+                 int mode;
+                 char *server;
+                 int status;
+                 char *fullpath;
+                 char *time;
+                 char *status_text;
                } LinkedEvent;
 
 static void Exit(Widget w, int *tag, XtPointer callback_data);
@@ -141,7 +149,6 @@ int       main(int argc, String *argv)
   top = XtVaAppInitialize(&app_ctx, "ActMon", options, XtNumber(options), &argc, argv, NULL,
                                 XmNallowShellResize, 1, NULL);
   XtGetApplicationResources(top, &resource_list, resources, XtNumber(resources), (Arg *) NULL, 0);
-  CheckIn(resource_list.monitor);
   MrmOpenHierarchy(XtNumber(hierarchy_name), hierarchy_name, 0, &drm_hierarchy);
   MrmFetchWidget(drm_hierarchy, "main", top, &main, &class);
   MrmCloseHierarchy(drm_hierarchy);
@@ -154,6 +161,7 @@ int       main(int argc, String *argv)
   doing_label = XmStringCreateSimple("Doing");
   done_label = XmStringCreateSimple("Done");
   error_label = XmStringCreateSimple("Error");
+  CheckIn(resource_list.monitor);
   XtAppMainLoop(app_ctx);
 }
 
@@ -237,20 +245,63 @@ static void Disable(Widget w, int *tag, XmToggleButtonCallbackStruct *cb)
     XtManageChild(dw);
 }
 
-static void MessageAst(int dummy, int *netid, int *length, Msg *reply)
+static void ParseTime(LinkedEvent *event)
 {
-  int len = *length > sizeof(Msg) ? sizeof(Msg) : *length;
-  LinkedEvent event;
-  event.message = *reply;
-  event.monmsg = *(MonitorMsg *)reply->data;
-  event.time = time(NULL);
+  event->time = strtok(event->time," ");
+  while(event->time && strchr(event->time,':') == 0) event->time = strtok(0," ");
+}
+  
 
-  EventUpdate(&event);
+static int ParseMsg(char *msg, LinkedEvent *event)
+{
+  char *tmp;
+  event->msg = msg;
+  event->tree = strtok(msg," ");
+  if (!event->tree) return 0;
+  tmp = strtok(0," ");
+  if (!tmp) return 0;
+  event->shot = atoi(tmp);
+  if (event->shot <= 0) return 0;
+  tmp = strtok(0," ");
+  if (!tmp) return 0;
+  event->phase = atoi(tmp);
+  tmp = strtok(0," ");
+  if (!tmp) return 0;
+  event->nid = atoi(tmp);
+  tmp = strtok(0," ");
+  if (!tmp) return 0;
+  event->on = atoi(tmp);
+  if (event->on != 0 && event->on != 1) return 0;
+  tmp = strtok(0," ");
+  if (!tmp) return 0;
+  event->mode = atoi(tmp);
+  event->server = strtok(0," ");
+  if (!event->server) return 0;
+  tmp = strtok(0," ");
+  if (!tmp) return 0;
+  event->status = atoi(tmp);
+  event->fullpath = strtok(0," ");
+  if (!event->fullpath) return 0;
+  event->time = strtok(0,";");
+  if (!event->time) return 0;
+  event->status_text = strtok(0,";");
+  if (!event->status_text) return 0;
+  ParseTime(event);
+  return 1;
+}
+  
+static void MessageAst(int dummy, char *reply)
+{
+  LinkedEvent event;
+  if (ParseMsg(reply,&event))
+  {
+    EventUpdate(&event);
+  }
 }
 
 static void EventUpdate(LinkedEvent *event)
 {
-    switch (event->monmsg.mode)
+    switch (event->mode)
     {
       case build_table_begin: 
                               DoOpenTree(event);
@@ -258,9 +309,9 @@ static void EventUpdate(LinkedEvent *event)
                               break;
       case build_table_end:  
                               break;
-      case dispatched: if (current_shot == event->monmsg.shot) Dispatched(event); break;
-      case doing: if (current_shot == event->monmsg.shot) Doing(event); break;
-      case done: if (current_shot == event->monmsg.shot) Done(event); break;
+      case dispatched: Dispatched(event); break;
+      case doing: Doing(event); break;
+      case done: Done(event); break;
     }
 }  
 
@@ -293,13 +344,13 @@ static int FindServer(char *name)
   return idx;
 }
   
-static void PutLog(time_t time, char  *mode, char *status, char *server, char *path)
+static void PutLog(char *time, char  *mode, char *status, char *server, char *path)
 {
-  char text[132];
+  char text[2048];
   XmString item;
   int items;
-  if (LogWidgetOff && CurrentWidgetOff) return;
-  sprintf(text, "%s %d %s %s %s %s", TimeString(time), current_shot, mode, status, server, path);
+  if (LogWidgetOff && CurrentWidgetOff || LogWidget == 0) return;
+  sprintf(text, "%s %12d %-10.10s %-32.32s %-20.20s %s", time, current_shot, mode, status, server, path);
   item = XmStringCreateSimple(text);
   if (!LogWidgetOff) {
     XmListAddItemUnselected(LogWidget,item,0);
@@ -316,7 +367,7 @@ static void PutLog(time_t time, char  *mode, char *status, char *server, char *p
   if (!CurrentWidgetOff) {
     if(strcmp(mode, "DOING")==0) {
       int idx = FindServer(server);
-      sprintf(text, "%s %s %d %s", server, TimeString(time), current_shot, path);
+      sprintf(text, "%-20.20s %s %12d %s", server, time, current_shot, path);
       item = XmStringCreateSimple(text);
       XmListReplaceItemsPos(CurrentWidget, &item, 1, idx);
       XmStringFree(item);
@@ -329,15 +380,15 @@ static void PutLog(time_t time, char  *mode, char *status, char *server, char *p
   }     
 }
 
-static void PutError(time_t time, String  mode, char *status, char *server, char *path)
+static void PutError(char *time, String  mode, char *status, char *server, char *path)
 {
 
-  char text[132];
+  char text[2048];
   XmString item;
   int items;
 
   if (ErrorWidgetOff) return;
-  sprintf(text, "%s %d %s %s %s %s", TimeString(time), current_shot, mode, status, server, path);
+  sprintf(text, "%s %12d %s %-36.36s %-20.20s %s", time, current_shot, mode, status, server, path);
   item = XmStringCreateSimple(text);
   XmListAddItemUnselected(ErrorWidget,item,0);
   XmStringFree(item);
@@ -366,17 +417,12 @@ static void DoOpenTree(LinkedEvent *event)
     free(doing);
   }
   DoingList = 0;
-  if ((event->monmsg.shot != current_shot) || strcmp(event->monmsg.treename, current_tree))
+  if ((event->shot != current_shot) || strcmp(event->tree, current_tree))
   {
-    if (current_tree)
-      TreeClose(current_tree,current_shot);
-    if (TreeOpen(event->monmsg.treename, event->monmsg.shot, 1) & 1)
-    {
-      current_shot = event->monmsg.shot;
-      current_tree = realloc(current_tree, strlen(event->monmsg.treename)+1);
-      strcpy(current_tree, event->monmsg.treename);
-      PutLog(event->time, "NEW SHOT", asterisks, asterisks, current_tree);
-    }
+    current_shot = event->shot;
+    current_tree = realloc(current_tree, strlen(event->tree)+1);
+    strcpy(current_tree, event->tree);
+    PutLog(event->time, "NEW SHOT", (char *)asterisks, (char *)asterisks, current_tree);
   }
   unique_tag_seed = 0;
 }
@@ -394,20 +440,20 @@ static void Phase(LinkedEvent *event)
   static DESCRIPTOR(const phase_lookup,"PHASE_NAME_LOOKUP($)");
   static struct descriptor phase_d = {sizeof(int), DTYPE_L, CLASS_S, 0};
   phase_d.length = sizeof(int);
-  phase_d.pointer = (char *)&event->monmsg.phase;
-  if (current_phase != event->monmsg.phase)
+  phase_d.pointer = (char *)&event->phase;
+  if (current_phase != event->phase)
   {
     if (!(TdiExecute(&phase_lookup,&phase_d, &phase MDS_END_ARG) & 1))
       StrCopyDx(&phase,&unknown);
-    PutLog(event->time, "PHASE", asterisks, asterisks, phase.pointer);
-    current_phase = event->monmsg.phase;
+    PutLog(event->time, "PHASE", (char *)asterisks, (char *)asterisks, phase.pointer);
+    current_phase = event->phase;
   }
 }
 
 static void Dispatched(LinkedEvent *event)
 {
   Phase(event);
-  PutLog(event->time, "DISPATCHED", " ", event->monmsg.server, TreeGetPath(event->monmsg.nid));
+  PutLog(event->time, "DISPATCHED", " ", event->server, event->fullpath);
 }
 
 static void Doing(LinkedEvent *event)
@@ -417,7 +463,7 @@ static void Doing(LinkedEvent *event)
   DoingListItem *d;
   int items;
   Phase(event);
-  PutLog(event->time, "DOING", " ", event->monmsg.server, TreeGetPath(event->monmsg.nid));
+  PutLog(event->time, "DOING", " ", event->server, event->fullpath);
   XtVaGetValues(LogWidget, XmNitemCount, &items, NULL);
   XmListSelectPos(LogWidget,0,0);
   for (prev=0,d=DoingList;d;prev=d,d=d->next);
@@ -425,7 +471,7 @@ static void Doing(LinkedEvent *event)
     prev->next = doing;
   else
     DoingList = doing;
-  doing->nid = event->monmsg.nid;
+  doing->nid = event->nid;
   doing->pos = items;
   doing->next = 0;
 }
@@ -440,7 +486,7 @@ static void Done(LinkedEvent *event)
   char message_c[32];
   int length = 0;
   XmListGetSelectedPos(LogWidget,&items,&num);
-  for (prev=0, doing = DoingList; doing && (doing->nid != event->monmsg.nid); prev=doing, doing=doing->next);
+  for (prev=0, doing = DoingList; doing && (doing->nid != event->nid); prev=doing, doing=doing->next);
   if (doing)
   {
     XmListDeselectPos(LogWidget, doing->pos);
@@ -450,9 +496,9 @@ static void Done(LinkedEvent *event)
       DoingList = doing->next;
     free(doing);
   }
-  PutLog(event->time, "DONE", (event->monmsg.status & 1)  ? " " : MdsGetMsg(event->monmsg.status),  event->monmsg.server, TreeGetPath(event->monmsg.nid));
-  if (!(event->monmsg.status & 1))
-    PutError(event->time, "DONE",  MdsGetMsg(event->monmsg.status), event->monmsg.server, TreeGetPath(event->monmsg.nid));
+  PutLog(event->time, "DONE", (event->status & 1)  ? " " : event->status_text,  event->server, event->fullpath);
+  if (!(event->status & 1))
+    PutError(event->time, "DONE",  event->status_text, event->server, event->fullpath);
 }
 
 static void MonitorDown()
