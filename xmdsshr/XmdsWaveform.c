@@ -2421,7 +2421,7 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
   static Position xorigin,yorigin;
   static float xoffset,yoffset;
   static float x,y;
-  static float rotate,width_limit,height_limit;
+  static float rotate,width_limit,height_limit,width_page,height_page;
   static short swidth,sheight;
   static float margin = .375;
   static unsigned long fatom;
@@ -2459,15 +2459,25 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
 
     resinc = resolution / 75.;
 
-    if (rotate == 0)
+    if (getenv("A4PAPER") == NULL)
     {
-      width_limit = (8.5 - 2. * margin) * resolution;
-      height_limit = (11. - 2. * margin) * resolution;
+      width_page = 8.5;
+      height_page = 11.;
     }
     else
     {
-      width_limit = (11. - 2. * margin) * resolution;
-      height_limit = (8.5 - 2. * margin) * resolution;
+      width_page = 8.27;
+      height_page = 11.69;
+    }
+    if (rotate == 0)
+    {
+      width_limit = (width_page - 2. * margin) * resolution;
+      height_limit = (height_page - 2. * margin) * resolution;
+    }
+    else
+    {
+      width_limit = (height_page - 2. * margin) * resolution;
+      height_limit = (width_page - 2. * margin) * resolution;
     }
 
     XtTranslateCoords((Widget)w,0,0,&xorigin,&yorigin);
@@ -2546,7 +2556,7 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
       if (fatom) fontsize = fontsize * fs->properties[i].card32 / 120.;
 
       if (rotate != 0)
-        fprintf(printfid,"%g %g translate\n",11. * 72. - (11. - 8.5) * 72. / 2.,(11. - 8.5) * 72. / 2.);
+        fprintf(printfid,"%g %g translate\n",height_page * 72. - (height_page - width_page) * 72. / 2.,(height_page - width_page) * 72. / 2.);
       /* Rotation is around origin, so must move origin for proper plot position */
       fprintf(printfid,"%g rotate\n",rotate);
 
@@ -2563,9 +2573,9 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
 	{
 	  float y = XtBorderWidth(w) * scale;
 	  if (!inp_total_height)
-	    y = -(72. * (11. - 2. * margin) - height) / 2. - 72. * margin;
+	    y = -(72. * (height_page - 2. * margin) - height) / 2. - 72. * margin;
 	  else
-	    y = -(72. * (11. - 2. * margin) - height) / 2. 
+	    y = -(72. * (height_page - 2. * margin) - height) / 2. 
 		- y * resinc - 72. * margin;
 
           fprintf(printfid,"(%s) %g %g centershow\n",window_title,
@@ -2609,14 +2619,14 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
   y = (yorigin + XtBorderWidth(w)) * scale - yoffset;
 
   if (!inp_total_width)
-    x = (resolution * (8.5 - 2. * margin) - width) / 2. + resolution * margin;
+    x = (resolution * (width_page - 2. * margin) - width) / 2. + resolution * margin;
   else
-    x = (resolution * (8.5 - 2. * margin) - width) / 2. + x * resinc + resolution * margin;
+    x = (resolution * (width_page - 2. * margin) - width) / 2. + x * resinc + resolution * margin;
 
   if (!inp_total_height)
-    y = -(resolution * (11. - 2. * margin) - height) / 2. - resolution * margin;
+    y = -(resolution * (height_page - 2. * margin) - height) / 2. - resolution * margin;
   else
-    y = -(resolution * (11. - 2. * margin) - height) / 2. - y * resinc - resolution * margin;
+    y = -(resolution * (height_page - 2. * margin) - height) / 2. - y * resinc - resolution * margin;
 
   fprintf(printfid,"gsave\n");
   fprintf(printfid,"%g %g translate\n",x / resinc,y / resinc);	/* Center plot */
@@ -2629,8 +2639,8 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
 
   xstart = ((!inp_total_width) ? -1 : - (int) (XtBorderWidth(w)) * scale);
   xend = ((!inp_total_width) ? (int) (XtWidth(w) * scale) : XtWidth(w) * scale);
-  ystart = 11. * 75. - ((!inp_total_height) ? (int) (XtHeight(w) * scale) : (XtBorderWidth(w) + XtHeight(w)) * scale);
-  yend = 11. * 75. + ((!inp_total_height) ? 1. : (int) (XtBorderWidth(w)) * scale);
+  ystart = height_page * 75. - ((!inp_total_height) ? (int) (XtHeight(w) * scale) : (XtBorderWidth(w) + XtHeight(w)) * scale);
+  yend = height_page * 75. + ((!inp_total_height) ? 1. : (int) (XtBorderWidth(w)) * scale);
 
   if (inp_total_width && (inp_total_width > XtWidth(w) + 4 || 
       inp_total_height > XtHeight(w) + 4))
