@@ -27,7 +27,9 @@
  */
 #include <stdio.h>
 #include <string.h>
+#ifndef _AIX
 #include <strings.h>
+#endif
 #include <ctype.h>
 #include <libroutines.h>
 #include <strroutines.h>

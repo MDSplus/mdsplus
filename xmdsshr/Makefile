@@ -31,6 +31,8 @@ XmdsXdBoxDialog.o \
 XmdsXdBoxDialogButton.o \
 XmdsXdBoxOnOffButton.o
 
+EXPORTS = xmdsshr.export
+
 xmdsshr : ../shlib \
 	../shlib/xmdsuil.wmd \
         ../uid \

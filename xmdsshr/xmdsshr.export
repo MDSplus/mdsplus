@@ -42,7 +42,7 @@ XmdsSetState
 XmdsXdsAreValid
 XmdsResetAllXds
 XmdsCreateWavedraw
-XmdsWavedrawWidgetClass
+xmdsWavedrawWidgetClass
 xmdsWavedrawClassRec
 XmdsWavedrawDeletePoint
 XmdsWavedrawAddPoint
@@ -69,7 +69,7 @@ XmdsExprFieldApply
 XmdsExprApply
 XmdsIsDigChans
 XmdsDigChansApply
-XmdsSetSubValues
+XmdsSetSubvalues
 XmdsCreateOnOffToggleButton
 XmdsOnOffToggleButtonReset
 XmdsOnOffToggleButtonPut
@@ -91,7 +91,7 @@ XmdsXdBoxOnOffButtonPut
 XmdsXdBoxOnOffButtonApply
 XmdsIsXdBoxOnOffButton
 XmdsCreateOkButton
-XmdsXdBoxWidgetClass
+xmdsXdBoxWidgetClass
 xmdsXdBoxClassRec
 XmdsCreateXdBox
 XmdsXdBoxGetXd
