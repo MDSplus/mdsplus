@@ -15,7 +15,7 @@ public fun OAM01__init ( as_is _nid, optional _method )
 	private	_CHANNELS = 8 ;
 	private	_NODES_PER_CHANNEL = 6 ;
 
-	private _WAIT = 1. ;
+	private _WAIT = .5 ;
 
 	private _OAM01A = 0.5 ;	/* 1Vpp in uscita */
 	private _OAM01B = 5. ;	/* 10Vpp in uscita */
@@ -90,7 +90,7 @@ public fun OAM01__init ( as_is _nid, optional _method )
 		_channel_name = element ( 2, '_', getnci ( _nid_head + __CHANNEL_1A + ( _channel * _NODES_PER_CHANNEL ), 'fullpath' ) ) ;
 
 
-		/* Ricavo il nid del campo output corrente */
+		/* Ricavo il nid del campo output corrente in forma di path */
 
 		_nid_output = getnci ( _nid_head + __CHANNEL_1A + __OUTPUT + ( _channel * _NODES_PER_CHANNEL ), 'fullpath' ) ;
 
@@ -121,8 +121,8 @@ public fun OAM01__init ( as_is _nid, optional _method )
 			DevNodeCvt ( _nid, __CHANNEL_1A + __SOURCE + ( _channel * _NODES_PER_CHANNEL ), [ 'INPUT', 'ZERO', 'REF', 'BAT' ], [ '00', '01', '02', '03' ], _source = '00' ) ;
 
 			_status = 1 ;
-			_output = if_error ( data ( DevNodeRef ( _nid, __CHANNEL_1A + __OUTPUT + ( _channel * _NODES_PER_CHANNEL ) ) ), _status = 0 ) ;
-			if (  ( _status == 0 ) || ( _output == '' ) )
+			_output = if_error ( DevNodeRef ( _nid, __CHANNEL_1A + __OUTPUT + ( _channel * _NODES_PER_CHANNEL ) ), _status = 0 ) ;
+			if ( _status == 0 )
 			{
 				_msg = 'Invalid output in channel ' // _channel_name ;
 				DevLogErr ( _nid, _msg ) ;
@@ -130,20 +130,6 @@ public fun OAM01__init ( as_is _nid, optional _method )
 			}
 
 			DevPut ( _nid, __CHANNEL_1A + __INPUT + ( _channel * _NODES_PER_CHANNEL ), compile ( Trim ( AdjustL ( _rangen / _module_type ) ) // '*' // _nid_output ) ) ;
-
-
-
-			/* metto ON il canale */
-
-			_command = 'W5836(C401)\n' ;
-			_status = GPIBWrite ( _gpib_id, _command ) ;
-			wait ( _WAIT ) ;
-			if ( 0 == _status )
-			{
-				_msg = 'Command ' // _command // ' failed' ;
-				DevLogErr ( _nid, _msg ) ;
-				abort (  ) ;
-			}
 
 
 
@@ -177,6 +163,19 @@ public fun OAM01__init ( as_is _nid, optional _method )
 			/* setto il source */
 
 			_command = 'W5836(C2' // _source // ')' // '\n' ;
+			_status = GPIBWrite ( _gpib_id, _command ) ;
+			wait ( _WAIT ) ;
+			if ( 0 == _status )
+			{
+				_msg = 'Command ' // _command // ' failed' ;
+				DevLogErr ( _nid, _msg ) ;
+				abort (  ) ;
+			}
+
+
+			/* metto ON il canale */
+
+			_command = 'W5836(C401)\n' ;
 			_status = GPIBWrite ( _gpib_id, _command ) ;
 			wait ( _WAIT ) ;
 			if ( 0 == _status )
