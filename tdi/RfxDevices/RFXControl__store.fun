@@ -23,6 +23,7 @@ public fun RFXControl__store(as_is _nid, optional _method)
     private _N_MAPPING = 19;
     private _N_N_ADC_IN = 16;
     private _N_N_DAC_OUT = 17;
+    private _N_N_USER = 17;
     private _N_N_NET_IN = 18;
     private _N_N_NET_OUT = 19;
 	private _N_RAMP_SLOPE = 20;
@@ -37,6 +38,7 @@ public fun RFXControl__store(as_is _nid, optional _method)
 	
 	private _N_ADC_IN_1 = 29;
 	private _N_DAC_OUT_1 = 221;
+	private _N_USER_1 = 317;
 	private _N_NET_IN_1 = 317;
 	private _N_NET_OUT_1 = 381;
 	private _N_MODES_1 = 445;
@@ -134,6 +136,24 @@ write(*, _c);
 			DevLogErr(_nid, 'Error writing mods in pulse file:'//getmsg(_status));
 		}
 	}
+
+
+	_num_user_signals = MdsValue('Feedback->getNumUserSignals()');
+	write(*, 'Num User Signals: ', _num_user_signals);
+	if(_c > 128) _c = 128;
+	for(_c = 0; _c < _num_user_signals; _c++)
+	{
+write(*, _c);
+			_sig_nid =  DevHead(_nid) + _N_USER_1  + _c;
+			_data = MdsValue('Feedback->getUserSignal:dsc($1)', _c);
+			_status = DevPutSignal(_sig_nid, 0, 10/2048., word(_data), 0, _n_samples, _dim);
+			if(! _status)
+			{
+				write(*, 'Error writing data in pulse file for channel ', _c);
+				DevLogErr(_nid, 'Error writing data in pulse file ');
+
+			}
+	}	
 
 
 /* NET_IN and NET_OUT not yet implemented */ 
