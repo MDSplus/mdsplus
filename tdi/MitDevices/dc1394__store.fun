@@ -20,7 +20,7 @@ public fun dc1394__store(as_is _nid, optional _method)
   _DC1394_INIT_ACTION = 17;
   _DC1394_STORE_ACTION = 18;
 
-  _camera_no = if_error(DevNodeRef(_nid, _DC1394_CAMERA_NO), 0);
+  _camera_no = if_error(data(DevNodeRef(_nid, _DC1394_CAMERA_NO)), 0);
   _num_frames = libdc1394_support->dc1394NumFrames(val(_camera_no));
   if (_num_frames <= 0) {
      write(*, "no frames taken");
@@ -32,7 +32,7 @@ public fun dc1394__store(as_is _nid, optional _method)
   _frames = zero([_width, _height, _num_frames] , 0bu);
   _times = zero(_num_frames, 0.0D0);
 
-  _status = libdc1394_support->dc1394ReadFrames((val(1)), ref(_frames));
+  _status = libdc1394_support->dc1394ReadFrames((val(_camera_no)), ref(_frames));
 
   if (_status) {
     _requested = if_error(DevNodeRef(_nid, _DC1394_REQUESTED), 0 : _num_frames-1 : 1);

@@ -30,10 +30,10 @@ public fun dc1394__init(as_is _nid, optional in _method)
   _camera_no = if_error(DevNodeRef(_nid, _DC1394_CAMERA_NO), 0);
   _width = if_error(DevNodeRef(_nid, _DC1394_WIDTH), 640);
   _height = if_error(DevNodeRef(_nid, _DC1394_HEIGHT), 480);
-  _shutter = if_error(DevNodeRef(_nid, _DC1394_SHUTTER), 0);
-  _gain = if_error(DevNodeRef(_nid, _DC1394_GAIN), 1);
+  _shutter = if_error(data(DevNodeRef(_nid, _DC1394_SHUTTER)), 0);
+  _gain = if_error(data(DevNodeRef(_nid, _DC1394_GAIN)), 1);
 
-  _trig_mode = if_error(DevNodeRef(_nid, _DC1394_TRIG_MODE), 0);
+  _trig_mode = if_error(data(DevNodeRef(_nid, _DC1394_TRIG_MODE)), 0);
   _trig_mode = (_trig_mode lt 0) ? 0 : (_trig_mode gt 3) ? 3 : _trig_mode;
   _trig_mode = _trig_mode + _DC1394_TRIGGER_MODE_0;
 
