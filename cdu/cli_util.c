@@ -102,7 +102,7 @@ int   cliToken(
         sts = ascFilename(&p,&dscUtil,0);
     else if (typeflag == VAL_M_NUMBER)
        {
-        if (isdigit(*p))
+        if (isdigit(*p) || (*p=='-' && isdigit(*(p+1))))
            {
             sts = longToken(&p,&dscUtil,0,0);
            }
