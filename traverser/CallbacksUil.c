@@ -920,6 +920,8 @@ AddNodeDismiss( Widget w, XtPointer client_data, XtPointer call_data)
   XtUnmanageChild(w);
 }
 
+extern int GetSupportedDevices();
+
 Boolean add_node(Widget w, ListTreeItem *parent, char *name, int usage, ListTreeItem **itm)
 {
   int parent_nid = get_nid(parent);
@@ -934,11 +936,29 @@ Boolean add_node(Widget w, ListTreeItem *parent, char *name, int usage, ListTree
   parent_path = ReadString(getnci, &nid_dsc MDS_END_ARG);
   full_path=realloc(parent_path, strlen(parent_path)+1+strlen(name)+1);
   if (usage == TreeUSAGE_DEVICE) {
-    XmdsComplain(w, "Non Motif traverser does not\nyet support adding devices to the tree");
+    static Boolean devices_loaded = False; 
+    char **devnames;
+    char **imagenames;
+    int num;
+    Widget top;
+    top = XtNameToWidget(BxFindTopShell(w), "*.addDeviceDialog");
+    if (!devices_loaded) {
+      int i;
+      Widget rb;
+      status = GetSupportedDevices(&devnames, &imagenames, &num);
+      rb = XtNameToWidget(top, "*.ad_radioBox1");
+      for (i=0; i<num; i++) {
+	Widget w = XmCreateToggleButton(rb, devnames[i], NULL, 0);
+        XtManageChild(w);
+      }
+      devices_loaded = True;
+    }
+    XtManageChild(top);
+    XmdsComplain(BxFindTopShell(w), "Non Motif traverser does not\nyet support adding devices to the tree");
     return 0;
   }
   if (usage == TreeUSAGE_SUBTREE) {
-    XmdsComplain(w, "Non Motif traverser does not\nyet support adding subtrees to the tree");
+    XmdsComplain(BxFindTopShell(w), "Non Motif traverser does not\nyet support adding subtrees to the tree");
     return 0;
   }
     

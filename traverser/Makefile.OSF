@@ -6,7 +6,8 @@ OBJECTS = \
 	CallbacksUil.o \
         ReadInt.o \
         ReadString.o \
-        GetNciString.o
+        GetNciString.o \
+        GetSupportedDevices.o
 
 all : ../bin/traverser \
 	../uid/traverser.uid

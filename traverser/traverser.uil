@@ -166,6 +166,7 @@ object mainWindow : XmMainWindow widget {
         XmNheight = 672;
     };
     controls {
+!(BX)         unmanaged XmDialogShell xmDialogShell3;
 !(BX)         unmanaged XmDialogShell xmDialogShell2;
 !(BX)         unmanaged XmDialogShell xmDialogShell1;
 !(BX)         unmanaged XmDialogShell xmDialogShell;
@@ -535,7 +536,6 @@ object toggleButton1 : XmToggleButton widget {
         XmNlabelString = compound_string("device...");
         XmNwidth = 83;
         XmNheight = 26;
-        XmNsensitive = false;
     };
     controls {
     };
@@ -674,6 +674,162 @@ object separator2 : XmSeparator widget {
 };
 
 object pushButton : XmPushButton widget {
+    arguments {
+        XmNlabelString = compound_string("Apply");
+        XmNx = 118;
+        XmNy = 258;
+        XmNwidth = 67;
+        XmNheight = 42;
+    };
+    controls {
+    };
+    callbacks {
+        XmNactivateCallback = procedure AddNodeApply();
+    };
+};
+
+
+
+!(BX)object xmDialogShell3 : XmDialogShell widget {
+!(BX)    arguments {
+!(BX)        XmNwidth = 263;
+!(BX)        XmNheight = 270;
+!(BX)    };
+!(BX)    controls {
+!(BX)         unmanaged XmMessageDialog addDeviceDialog;
+!(BX)    };
+!(BX)    callbacks {
+!(BX)    };
+!(BX)};
+
+object addDeviceDialog : XmMessageDialog widget {
+    arguments {
+        XmNresizePolicy = XmRESIZE_GROW;
+	XmNautoUnmanage = false;
+        XmNshadowType = XmSHADOW_ETCHED_IN;
+        XmNdialogStyle = XmDIALOG_MODELESS;
+        XmNdialogTitle = compound_string("Add Device");
+        XmNdialogType = XmDIALOG_MESSAGE;
+        XmNmessageAlignment = XmALIGNMENT_BEGINNING;
+        XmNx = 807;
+        XmNy = 194;
+!        XmNwidth = 410;
+!        XmNheight = 311;
+    };
+    controls {
+         managed XmBulletinBoard ad_bulletinBoard;
+         managed XmPushButton ad_pushButton;
+    };
+    callbacks {
+        XmNokCallback = procedure AddNode();
+        XmNcancelCallback = procedure AddNodeDismiss();
+    };
+};
+
+object ad_bulletinBoard : XmBulletinBoard widget {
+    arguments {
+        XmNresizePolicy = XmRESIZE_GROW;
+        XmNx = 11;
+        XmNy = 25;
+!        XmNwidth = 388;
+!        XmNheight = 211;
+    };
+    controls {
+         managed XmSeparator ad_separator2;
+         managed XmRadioBox ad_radioBox1;
+         managed XmTextField ad_nodeTags;
+         managed XmLabel ad_label;
+         managed XmTextField ad_nodeName;
+         managed XmLabel ad_label1;
+    };
+    callbacks {
+    };
+};
+
+object ad_label1 : XmLabel widget {
+    arguments {
+        XmNlabelString = compound_string("Node Name:");
+        XmNx = 11;
+        XmNy = 12;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object ad_nodeName : XmTextField widget {
+    arguments {
+        XmNmarginHeight = 1;
+        XmNmarginWidth = 1;
+        XmNcolumns = 12;
+        XmNx = 104;
+        XmNy = 10;
+        XmNheight = 23;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object ad_label : XmLabel widget {
+    arguments {
+        XmNlabelString = compound_string("Tags:");
+        XmNx = 50;
+        XmNy = 33;
+        XmNheight = 20;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object ad_nodeTags : XmTextField widget {
+    arguments {
+        XmNmarginHeight = 1;
+        XmNmarginWidth = 1;
+        XmNcolumns = 32;
+        XmNx = 102;
+        XmNy = 31;
+        XmNheight = 25;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object ad_radioBox1 : XmRadioBox widget {
+    arguments {
+        XmNresizeWidth = true;
+        XmNresizeHeight = true;
+        XmNnumColumns = 4;
+        XmNx = 55;
+        XmNy = 85;
+ !       XmNwidth = 297;
+ !       XmNheight = 170;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+
+object ad_separator2 : XmSeparator widget {
+    arguments {
+        XmNy = 65;
+        XmNwidth = 367;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object ad_pushButton : XmPushButton widget {
     arguments {
         XmNlabelString = compound_string("Apply");
         XmNx = 118;

@@ -127,6 +127,7 @@ Widget TopLevelShell;
 Widget MainWindow;
 Widget WriteDialog;
 Widget AddDialog;
+Widget AddDeviceDialog;
 Widget OpenDialog;
 
 /*
@@ -285,6 +286,10 @@ int main(int argc, char **argv)
     AddDialog = NULL;
     MrmFetchWidget(HierarchyID, "addDialog", MainWindow,
             &AddDialog, &MrmWClass);
+    
+    AddDeviceDialog = NULL;
+    MrmFetchWidget(HierarchyID, "addDeviceDialog", MainWindow,
+            &AddDeviceDialog, &MrmWClass);
     
     OpenDialog = NULL;
     MrmFetchWidget(HierarchyID, "openDialog", MainWindow,
