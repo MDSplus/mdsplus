@@ -130,9 +130,16 @@ unsigned char			origin[255];
 			else if (code == OpcRef) {
 				tmp[ntmp] = EMPTY_XD;
 				status = TdiData(pfun->arguments[0], &tmp[ntmp] MDS_END_ARG);
-				if (tmp[ntmp].pointer) 
+				if (tmp[ntmp].pointer)
+				{
+                                  if (tmp[ntmp].pointer->dtype == DTYPE_T)
+				  {
+                                    DESCRIPTOR(zero,"\0");
+                                    TdiConcat(&tmp[ntmp],&zero,&tmp[ntmp]);
+                                  }  
                                   newdsc[j-1] = (struct descriptor *)tmp[ntmp].pointer->pointer;
-				origin[ntmp++] = (unsigned char)j;
+				}
+                                origin[ntmp++] = (unsigned char)j;
 			}
 			else if (code == OpcVal) 
                                 status = TdiGetLong(pfun->arguments[0], &newdsc[j-1]);
