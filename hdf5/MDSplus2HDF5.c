@@ -34,6 +34,38 @@ static DESCRIPTOR(error_dsc, error_msg);
 extern int TdiExecute();
 
 /*
+  Routine MemberMangle - return a new name for a member with an '_' in the front.
+
+  Since MDSplus can have both members and children with the same name at any given
+  level in the tree, the possibility exists that when we try to add the data for a 
+  member to the HDF5 file, its name will already be taken.  If this is the case, try
+  sticking an '_' in the front, and try again.
+*/
+static char *MemberMangle(char * name)
+{
+  static char ans[MAX_TREENAME+2];
+  ans[0]='_'; ans[1]=0;
+  strcat(ans, name);
+  return(ans);
+}
+/*
+  Routine ChildMangle - return a new name for a member with a '.' in the front.
+
+  Since MDSplus can have both members and children with the same name at any given
+  level in the tree, the possibility exists that when we try to add the data for a 
+  member to the HDF5 file, its name will already be taken.  In the case of MDSplus 
+  complex data structures we are adding a group, so a '.' is more appropriate.
+*/
+static char *ChildMangle(char * name)
+{
+  static char ans[MAX_TREENAME+2];
+  ans[0]='.';
+  ans[1]=0;
+  strcat(ans, name);
+  return(ans);
+}
+
+/*
   Routine GetNidNCI - return a Node ID given an expresion and a
   NID to substitiute into it. 
 
@@ -59,10 +91,11 @@ static int GetNidNCI(int nid, char *expr)
     switch (d_ptr->dtype) {
     case DTYPE_NID:
     case DTYPE_L: ans = *(int *)d_ptr->pointer; break;
-    case DTYPE_W:
-    case DTYPE_WU : ans = *(short *)d_ptr->pointer; break;
-    case DTYPE_B:
-    case DTYPE_BU : ans = *(char *)d_ptr->pointer; break;
+    case DTYPE_LU: ans = *(unsigned int *)d_ptr->pointer; break;
+    case DTYPE_W: ans = *(short *)d_ptr->pointer; break;
+    case DTYPE_WU : ans = *(unsigned short *)d_ptr->pointer; break;
+    case DTYPE_B: ans = *(char *)d_ptr->pointer; break;
+    case DTYPE_BU : ans = *(unsigned char *)d_ptr->pointer; break;
     default: ans = 0; break;
     }
   } else 
@@ -194,7 +227,11 @@ hid_t MdsType2HDF5Type(unsigned char type)
   case DTYPE_FS : return(H5T_NATIVE_FLOAT);
   case DTYPE_FT : return(H5T_NATIVE_DOUBLE);
   case DTYPE_L : return(H5T_NATIVE_LONG);
+  case DTYPE_LU : return(H5T_NATIVE_ULONG);
   case DTYPE_W : return(H5T_NATIVE_SHORT);
+  case DTYPE_WU : return(H5T_NATIVE_USHORT);
+  case DTYPE_B : return(H5T_NATIVE_CHAR);
+  case DTYPE_BU : return(H5T_NATIVE_UCHAR);
   default: fprintf(stderr, "type %d not yet supported\n", type);
   }
   return(0);
@@ -207,11 +244,15 @@ static void PutNumeric(hid_t parent, char *name, struct descriptor *dsc)
   if (type != 0) {
     hid_t ds_id = H5Screate(H5S_SCALAR);
     hid_t a_id = H5Acreate(parent, name, MdsType2HDF5Type(dsc->dtype), ds_id, H5P_DEFAULT);
+    if (a_id < 0) {
+      char *new_name = MemberMangle(name);
+      a_id = H5Acreate(parent, new_name, MdsType2HDF5Type(dsc->dtype), ds_id, H5P_DEFAULT);
+    }
     if (a_id > 0) {
       status = H5Awrite(a_id, MdsType2HDF5Type(dsc->dtype), dsc->pointer);
       H5Aclose(a_id);
     } else
-      fprintf(stderr, "could not create attribute %s\n",name);
+      fprintf(stderr, "could not create attribute to store scalar in %s\n",name);
   }
 }
 
@@ -239,9 +280,17 @@ static void PutArray(hid_t parent, char *name, struct descriptor *dsc)
     }
     space_id = H5Screate_simple(rank, dim, NULL);
     ds_id = H5Dcreate(parent, name, dtype, space_id, H5P_DEFAULT);
-    status = H5Dwrite(ds_id, dtype, H5S_ALL, H5S_ALL, H5P_DEFAULT, dsc->pointer);
-    H5Dclose(ds_id);
-    H5Sclose(space_id);
+    if (ds_id < 0) {
+      char *new_name = MemberMangle(name);
+      ds_id = H5Acreate(parent, new_name, MdsType2HDF5Type(dsc->dtype), ds_id, H5P_DEFAULT);
+    }
+    if (ds_id > 0) {
+      status = H5Dwrite(ds_id, dtype, H5S_ALL, H5S_ALL, H5P_DEFAULT, dsc->pointer);
+      H5Dclose(ds_id);
+      H5Sclose(space_id);
+    }
+    else 
+      fprintf(stderr, "could not create atribute to store array in %s\n", name);
   }
 }
 
@@ -256,6 +305,10 @@ static void PutScalar(hid_t parent, char *name, struct descriptor *dsc)
     hid_t type = H5Tcopy(H5T_C_S1);
     H5Tset_size(type, size);
     hid_t a_id = H5Acreate(parent, name, type, ds_id, H5P_DEFAULT);
+    if (a_id < 0) {
+      char *new_name = MemberMangle(name);
+      a_id = H5Acreate(parent, new_name, MdsType2HDF5Type(dsc->dtype), ds_id, H5P_DEFAULT);
+    }
     if (a_id > 0) {
       status = H5Awrite(a_id, type, dsc->pointer);
       status = H5Aclose(a_id);
@@ -313,20 +366,34 @@ static void WriteData(hid_t parent, char *name, struct descriptor *dsc)
 	int i;
 	hid_t g_id;
 	g_id = H5Gcreate(parent, name, 0);
-        WriteData(g_id, "data", r_ptr->dscptrs[0]);
-        WriteData(g_id, "raw", r_ptr->dscptrs[1]);
-        for (i=2; i< r_ptr->ndesc; i++) {
-          char name[5];
-          sprintf(name,"dim%1.1d", i-2);
-	  WriteData(g_id, name, r_ptr->dscptrs[i]);
+	if (g_id < 0) {
+	  char *new_name = ChildMangle(name);
+	  g_id = H5Gcreate(parent, new_name, 0);
 	}
+	if (g_id > 0) {
+	  WriteData(g_id, "data", r_ptr->dscptrs[0]);
+	  WriteData(g_id, "raw", r_ptr->dscptrs[1]);
+	  for (i=2; i< r_ptr->ndesc; i++) {
+	    char name[5];
+	    sprintf(name,"dim%1.1d", i-2);
+	    WriteData(g_id, name, r_ptr->dscptrs[i]);
+	  }
+	} else
+	  fprintf(stderr, "could not create group for signal components of %s \n", name);
 	break;
       }
       case DTYPE_WITH_UNITS: {
 	hid_t g_id;
 	g_id = H5Gcreate(parent, name, 0);
-        WriteData(g_id, "data", r_ptr->dscptrs[0]);
-        WriteData(g_id, "units", r_ptr->dscptrs[1]);
+	if (g_id < 0) {
+	  char *new_name = ChildMangle(name);
+	  g_id = H5Gcreate(parent, new_name, 0);
+	}
+	if (g_id > 0) {
+	  WriteData(g_id, "data", r_ptr->dscptrs[0]);
+	  WriteData(g_id, "units", r_ptr->dscptrs[1]);
+	} else
+	  fprintf(stderr, "could not create group for with_units components of %s \n", name);
 	break;
       }
       default: {
@@ -350,6 +417,7 @@ static void WriteData(hid_t parent, char *name, struct descriptor *dsc)
 
   Arguments:
 		parent - (hid_t) The HDF5 group to add this attribute to.
+		name - (char *) name of the attribute to store the data into.
 		nid - (int) the nid of the node to evaluate so that it can
 			be written to the file.
 
@@ -362,7 +430,6 @@ static void WriteDataNID(hid_t parent, char *name, int nid)
   static EMPTYXD(xd) ;
   DESCRIPTOR_NID(nid_dsc, &nid);
   int status;
-  printf("\t\tWriting data to %d\n", nid);
   status = TdiEvaluate(&nid_dsc, &xd MDS_END_ARG);
   if (status &1) {
     WriteData(parent, name, (struct descriptor *)&xd);
@@ -403,32 +470,34 @@ static void AddBranch(int nid, hid_t parent_id)
   _is_child = is_child(nid);
   _has_descendants = has_descendants(nid);
 
-  printf("entering AddBranch(%d)\n", nid);
   if (_is_child ||_has_descendants) {
-    char child_name[MAX_TREENAME+2];
-    if (nid != 0) {
-      child_name[0]='.'; child_name[1]=0;
-      strcat(child_name, name);
+    g_id = H5Gcreate(parent_id,name, 0);
+    /* if it fails assume it was because 
+       the name was already taken.  Since the members are 
+       added first, tack a '.' in the front.
+    */
+    if (g_id < 0) {
+      char *child_name = ChildMangle(name);
+      g_id = H5Gcreate(parent_id, child_name, 0);
     }
-    else
-      strcpy(child_name, name);
-    printf("\t adding a group for %s\n", child_name);
-    g_id = H5Gcreate(parent_id,child_name, 0);
-    for ( mem_nid = FirstMember(nid); mem_nid; mem_nid=NextSibling(mem_nid)) {
-      AddBranch( mem_nid, g_id);
+    if (g_id >= 0) {
+      for ( mem_nid = FirstMember(nid); mem_nid; mem_nid=NextSibling(mem_nid)) {
+	AddBranch( mem_nid, g_id);
+      }
+      for (child_nid = FirstChild(nid); child_nid; child_nid=NextSibling(child_nid)) {
+	AddBranch(child_nid, g_id);
+      }
     }
-    for (child_nid = FirstChild(nid); child_nid; child_nid=NextSibling(child_nid)) {
-      AddBranch(child_nid, g_id);
+    else {
+      fprintf(stderr, "Error adding HDF5 Group for %s\n", name);
     }
   }
 
   if (!_is_child) {
-    printf("\t writing data for %s\n", name);
     WriteDataNID(parent_id, name, nid);
   } 
   if (_is_child || _has_descendants)
     H5Gclose(g_id);
-  printf("Leaving AddBranch(%d)\n", nid);
 }
 
 int main(int argc, const char *argv[])
