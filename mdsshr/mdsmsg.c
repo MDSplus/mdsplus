@@ -174,7 +174,7 @@ char  *MdsGetMsg(	/* Return: addr of "status" string	*/
 
      if (sts == 1)
      {
-       strcat(text,"%SS-S-SUCCESS, Success");
+       strcpy(text,"%SS-S-SUCCESS, Success");
        return text;
      }
      max = getFacility(sts,&facnam,&stsText);
