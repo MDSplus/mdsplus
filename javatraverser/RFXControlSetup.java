@@ -169,8 +169,8 @@ public class RFXControlSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(752);
-    this.setHeight(752);
+    this.setWidth(786);
+    this.setHeight(786);
     this.setDeviceType("RFXControl");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("RFX Control Setup");
@@ -240,7 +240,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice2.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "MODE CONTROL"});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
-    deviceChoice2.setBounds(new Rectangle(229, 139, 273, 35));
+    deviceChoice2.setBounds(new Rectangle(250, 137, 273, 35));
     deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)4});
     deviceChoice3.setChoiceFloatValues(null);
     deviceChoice3.setConvert(true);
@@ -249,7 +249,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice3.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "MODE CONTROL"});
     deviceChoice3.setUpdateIdentifier("");
     deviceChoice3.setIdentifier("");
-    deviceChoice3.setBounds(new Rectangle(478, 138, 277, 35));
+    deviceChoice3.setBounds(new Rectangle(509, 139, 277, 35));
     deviceTable1.setOffsetNid(4);
     deviceTable1.setLabelString("Input calibration");
     deviceTable1.setNumCols(2);
@@ -267,7 +267,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable2.setDisplayRowNumber(true);
     deviceTable2.setBounds(new Rectangle(18, 301, 205, 105));
     deviceButtons1.setBounds(new Rectangle(242, 418, 316, 36));
-    jTabbedPane1.setBounds(new Rectangle(232, 192, 513, 211));
+    jTabbedPane1.setBounds(new Rectangle(232, 192, 529, 211));
     deviceField11111.setIdentifier("");
     deviceField11111.setShowState(true);
     deviceField11111.setNumCols(40);
@@ -731,14 +731,14 @@ public class RFXControlSetup extends DeviceSetup {
     this.getContentPane().add(deviceField8, null);
     this.getContentPane().add(deviceField9, null);
     this.getContentPane().add(deviceChoice1, null);
-    this.getContentPane().add(deviceChoice2, null);
-    this.getContentPane().add(deviceChoice3, null);
     this.getContentPane().add(deviceField4, null);
     this.getContentPane().add(deviceField2, null);
     this.getContentPane().add(deviceTable1, null);
     this.getContentPane().add(deviceTable2, null);
     this.getContentPane().add(deviceButtons1, null);
     this.getContentPane().add(jTabbedPane1, null);
+    this.getContentPane().add(deviceChoice2, null);
+    this.getContentPane().add(deviceChoice3, null);
     jTabbedPane1.add(jScrollPane1,   "Waveform Generation");
     jScrollPane1.getViewport().add(jPanel3, null);
     jPanel1118.add(deviceField11111119, null);
