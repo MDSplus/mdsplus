@@ -378,7 +378,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
     int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
     _int64 eof;
     unsigned char rfa[6];
-    status = TreeLockDatafile(info, 0, -1);
+    status = TreeLockDatafile(info, 0, 0);
     if (status & 1)
     {
       unsigned short rlength = bytes_this_time + 10;
@@ -410,7 +410,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
         SeekToRfa(eof,rfa);
         memcpy(&info->data_file->record_header->rfa,rfa,sizeof(info->data_file->record_header->rfa));
       }
-      TreeUnLockDatafile(info, 0, eof);
+      TreeUnLockDatafile(info, 0, 0);
     }
     else
       TreeUnLockNci(info, 0, nodenum);

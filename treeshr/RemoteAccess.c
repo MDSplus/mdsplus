@@ -1073,17 +1073,35 @@ int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode)
     if (FDS[fd-1].socket == -1)
     {
 #if defined (_WIN32)
-        static int LockStart;
-        static int LockSize;
-        if (mode > 0)
+      int LockStart = (int)(offset >= 0 ? offset : lseek(FDS[fd-1].fd,0,SEEK_END));
+      int LockSize = size;
+      if (mode > 0)
+      {
+        HANDLE h = (HANDLE)_get_osfhandle(FDS[fd-1].fd);
+  	    status = LockFile(h, LockStart, 0, LockSize, 0);
+        if (status == 0)
         {
-          LockStart = (int)(offset >= 0 ? offset : lseek(fd,0,SEEK_END));
-  	      LockSize = size;
-  	      status = ( (LockFile((HANDLE)_get_osfhandle(FDS[fd-1].fd), LockStart, 0, LockSize, 0) == 0) && 
-                     (GetLastError() != ERROR_LOCK_VIOLATION) ) ? TreeFAILURE : TreeSUCCESS;
+          int errornum = GetLastError();
+          if (errornum == ERROR_LOCK_VIOLATION)
+            status = TreeSUCCESS;
+          else
+            status = TreeFAILURE;
         }
         else
-	        status = UnlockFile((HANDLE)_get_osfhandle(FDS[fd-1].fd),LockStart, 0, LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
+          status = TreeSUCCESS;
+      }
+      else
+      {
+        HANDLE h = (HANDLE)_get_osfhandle(FDS[fd-1].fd);
+	      status = UnlockFile(h,LockStart, 0, LockSize, 0);
+        if (status == 0)
+        {
+          int errornum = GetLastError();
+          status = TreeFAILURE;
+        }
+        else
+          status = TreeSUCCESS;
+      }
 #elif defined (HAVE_VXWORKS_H)
         status = TreeSUCCESS;
 #else
