@@ -292,6 +292,25 @@ static int   get_cmdstring(	/* Return: status			*/
 
 
 
+	/****************************************************************
+	 * displayCmdline:
+	 ****************************************************************/
+static void  displayCmdline(
+    char  *cmdline		/* <r> the command line			*/
+   )
+   {
+    int   i;
+
+    if (!nonblank(cmdline))
+        return;
+    for (i=0 ; i<=ctrl->depth ; i++)
+        printf("==");
+    printf("> %s\n",cmdline);
+    return;
+   }
+
+
+
 	/*****************************************************************
 	 * really_get_input:
 	 *****************************************************************/
@@ -329,6 +348,8 @@ static int   really_get_input(		/* Return: status		*/
         p = nonblank(dsc_cmd->dscA_pointer);
         if (p && *p=='@')
            {
+            if (ctrl->verify)
+                displayCmdline(p);
             p++;			/* bump past the '@'		*/
             sts = openIndirectLevel(p);
             if (!sts & 1)
@@ -350,7 +371,12 @@ int   mdsdcl_get_input(			/* Return: status		*/
    ,struct descriptor  *dsc_cmd		/* <w> new command line		*/
    )
    {
-    return(really_get_input(uprompt,dsc_cmd,0,0));
+    int   sts;
+
+    sts = really_get_input(uprompt,dsc_cmd,0,0);
+    if (ctrl->verify)
+        displayCmdline(dsc_cmd->dscA_pointer);
+    return(sts);
    }
 
 

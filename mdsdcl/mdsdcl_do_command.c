@@ -12,6 +12,7 @@
 * from within main().
 *
 * History:
+*  06-May-1998  TRG  Remove "verify" display:  moved to "get_input".
 *  10-Nov-1997  TRG  Adapted from original VMS-only source code.
 *
 **********************************************************************/
@@ -100,10 +101,13 @@ int mdsdcl_do_command(
             sts = cli_dispatch(ctrl);
             if (sts != CLI_STS_INVROUT)
                {
-                if ((ctrl->verify == 1) && (sts & 1))
-                    printf("%s\n",dsc_cmd.dscA_pointer);
                 if (~sts & 1)
+                   {
+                    if (dsc_cmd.dscA_pointer)
+                        MdsMsg(0,"--> failed on line '%s'",
+                                dsc_cmd.dscA_pointer);
                     mdsdcl_close_indirect_all();
+                   }
                 return(sts);		/*--------------------> return	*/
                }
            }
@@ -117,11 +121,6 @@ int mdsdcl_do_command(
     if (sts & 1)
        {			/* Try to dispatch the macro ...	*/
         sts = cli_dispatch(ctrl);
-        if (sts != CLI_STS_INVROUT)
-           {
-            if ((ctrl->verify == 1) && (sts & 1))
-                printf("%s\n",dsc_cmd.dscA_pointer);
-           }
        }
     if (~sts & 1)
         mdsdcl_close_indirect_all();
