@@ -31,6 +31,7 @@ public class NetworkProvider implements DataProvider {
     String experiment;
     int shot;
     boolean open, connected;
+    boolean connection_down = false;
     Mds mds;
     MdsEventManager mdsEventManager = new MdsEventManager();
     public String error;
@@ -103,8 +104,12 @@ public synchronized void Update(String exp, int s)
 
 public synchronized String GetString(String in)
 {
- 
-    error = null;
+    error = null;    
+    if(connection_down)
+    {
+        return "";
+    }
+
     if(NotYetString(in))
     {
     	if(!CheckOpen())
@@ -144,6 +149,11 @@ public synchronized void SetEnvironment(String in)
 public synchronized float GetFloat(String in)
 {
     error = null;
+    if(connection_down)
+    {
+        return 0;
+    }
+    error = null;
     if(NotYetNumber(in))
     {
     	if(!CheckOpen())
@@ -172,6 +182,11 @@ public synchronized float GetFloat(String in)
 	
 public synchronized float[] GetFloatArray(String in)
 {
+    if(connection_down)
+    {
+        error = "Connection to data server is down. Please re-connect"; 
+        return null;
+    }
     in = "fs_float(("+in+"))";
     String open_err = new String("");
     if(!CheckOpen())
@@ -198,6 +213,13 @@ public synchronized float[] GetFloatArray(String in)
 	
 public synchronized int[] GetIntArray(String in)
 {
+    error = null;
+    if(connection_down)
+    {
+        int dummy_ris[] = new int[1];
+        dummy_ris[0] = 0;
+        return dummy_ris;
+    }
     String open_err = new String("");
     if(!CheckOpen())
 	return null;
@@ -371,7 +393,7 @@ class PMET extends Thread //Process Mds Event Thread
 	
 	class MRT extends Thread // Mds Receive Thread
 	{
-        MdsMessage message;
+        MdsMessage message = null;
 
 	    public void run()
 	    {
@@ -392,9 +414,9 @@ class PMET extends Thread //Process Mds Event Thread
 	                    Mds.this.ReceiveNotify();
 	                }
 	            }
-	        } catch(IOException e) { System.out.println("Could not get IO for "+provider + e);}  
+	        } catch(IOException e) { System.out.println("Could not get IO for "+provider + e); message = null;}  
 	    }
-	    
+
 	    public MdsMessage GetMessage()
 	    {
 	       return message;
@@ -422,11 +444,27 @@ class PMET extends Thread //Process Mds Event Thread
 	    wait();
         message = receiveThread.GetMessage();
     
-	    if(message.length == 0)
+	    if(message == null)
 	    {
-	        out.error = "Null response from server";
+	        out.error = "No response from data server";
+	        connection_down = true;
 	        return out;
 	    }
+	    
+	    
+	    if(message.length == 0)
+	    {
+	        out.error = "Zero length response from data server";
+	        return out;
+	    }
+// Keep messages to a reasonable size
+        if(message.length > 5E6)
+        {
+            out.error = "A possibly incosistent message of " + message.length + " bytes has been received from the data server";
+	        return out;
+	    }
+	    
+	    
 	    switch (out.dtype = message.dtype)
 	    {
 	        case Descriptor.DTYPE_CHAR:
@@ -450,7 +488,7 @@ class PMET extends Thread //Process Mds Event Thread
 		        out.error = new String(message.body);
 		    break;
 	    }
-	} catch(IOException e) { out.error = new String("Could not get IO for "+provider + e);}
+	} catch(IOException e) { out.error = new String("Could not get IO for "+provider + e); }
       catch (InterruptedException e) {out.error = new String("Could not get IO for "+provider + e);}  
 	return out;
     }		
@@ -499,9 +537,9 @@ class PMET extends Thread //Process Mds Event Thread
 	    receiveThread = new MRT();
 	    receiveThread.start();
 	    
-	} catch(NumberFormatException e){error="Data provider syntax error "+ provider + " (host:port)"; return 0;}
-	  catch(UnknownHostException e) {error="Data provider: "+ host + " port " + port +" unknown"; return 0;}
-	  catch(IOException e) { error = "Could not get IO for " +provider+ e; return 0;}
+	} catch(NumberFormatException e){error="Data provider syntax error "+ provider + " (host:port)"; connection_down = true; return 0;}
+	  catch(UnknownHostException e) {error="Data provider: "+ host + " port " + port +" unknown"; connection_down = true; return 0;}
+	  catch(IOException e) { error = "Could not get IO for " +provider+ e; connection_down = true; return 0;}
 
 
 	return 1;

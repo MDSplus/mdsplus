@@ -1142,6 +1142,7 @@ public class Waveform extends Canvas
 		prev_ymax = wm.YMax(),
 		prev_ymin = wm.YMin(),
 		new_xmax, new_xmin, new_ymax, new_ymin;
+
 		
 	if(enlarge)
 	{
@@ -1157,6 +1158,19 @@ public class Waveform extends Canvas
 	    new_ymax = curr_y + (prev_ymax - curr_y)*2.;
 	    new_ymin = curr_y - (curr_y - prev_ymin)*2.;
 	}
+// Now center waveform
+    double shift_x = (new_xmax + new_xmin)/2. - curr_x;
+    double shift_y = curr_y - (new_ymax + new_ymin)/2.;
+    new_xmax -= shift_x;
+    new_xmin -= shift_x;
+    new_ymax += shift_y;
+    new_ymin += shift_y;
+//Center the cursor 
+//	dispatchEvent(new MouseEvent(this, 0, 0, 0, wm.XPixel((new_xmax + new_xmin)/2.),
+//	    wm.YPixel((new_ymax + new_ymin)/2.), 0, false));
+//    setLocation(wm.XPixel((new_xmax + new_xmin)/2), wm.YPixel((new_ymax + new_ymin)/2.));
+
+
 	waveform_signal.xmin = new_xmin;
 	waveform_signal.xmax = new_xmax;
 	waveform_signal.ymin = new_ymin;

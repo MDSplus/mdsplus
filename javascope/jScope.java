@@ -129,9 +129,9 @@ public class jScope extends Frame implements ActionListener, ItemListener,
             wait();
         } catch (InterruptedException e){}
 
-        date = new Date();
-        start = date.getTime();
-        System.out.println("Start "+start+" ms ");
+       // date = new Date();
+       // start = date.getTime();
+       // System.out.println("Start "+start+" ms ");
         
 	    isUpdateAllWaves = true;
 	    SetStatusLabel("");
@@ -231,11 +231,11 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	        jScope.this.printAllWaves();
 	    }
 
-        date = new Date();
-        end = date.getTime();
-        System.out.println("End "+end+" ms ");
+        //date = new Date();
+        //end = date.getTime();
+        //System.out.println("End "+end+" ms ");
         
-        System.out.println("Durata "+(end-start)+" ms ");
+        //System.out.println("Durata "+(end-start)+" ms ");
 	    	    
 
 	    } catch(Throwable e ) {

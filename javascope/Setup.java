@@ -104,7 +104,7 @@ public class Setup extends Object implements WaveSetup {
 		        }
 		        for(int ii = 0; ii < w.wi.num_waves; ii++)
 		        {		                
-			        if(w.wi.w_error[ii] != null)
+			        if(w.wi.w_error != null && w.wi.w_error[ii] != null)
 			            n_error++;
 			                
 			    }
@@ -369,8 +369,8 @@ public class Setup extends Object implements WaveSetup {
 	    main_scope.updateShotWI(((MultiWaveform)w).wi);
 	    if(((MultiWaveform)w).wi != null)
 	        ((MultiWaveform)w).wi.modified = true; 
-	    SetErrorTitle(((MultiWaveform)w));
 	    UpdateWave((MultiWaveform)w);	    
+	    SetErrorTitle(((MultiWaveform)w));
 	    main_scope.SetStatusLabel("Wave row " + p.x + " column "+ p.y + " refreshed");	    
 	    w.SetMode(main_scope.wave_mode);
     }    
