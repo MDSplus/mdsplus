@@ -186,7 +186,7 @@ fi
 ;;
 SunOS*)
 #
-# Compaq TruUNIX post install script
+# SunOS post install script
 #
 # Put symlinks in /usr/local/lib to all MDSplus shared libraries
 #
