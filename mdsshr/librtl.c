@@ -1207,17 +1207,37 @@ static int parsedate(char *asctim, void *dummy)
 {
   return time(0);
 }
+#define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
+static int mds_strcasecmp(char *in1, char *in2)
+{
+  int ans = -1;
+  if (strlen(in1) == strlen(in2))
+  {
+    int i;
+    int len1 = strlen(in1);
+    ans = 0;
+    for (i=0;i<len1;i++)
+    {
+      if (__tolower(in1[i]) != __tolower(in2[i]))
+      {
+        ans = -1;
+        break;
+      }
+    }
+  }
+  return ans;
+}
 
 int LibConvertDateString(char *asc_time, _int64 *qtime)
 {
   int tim;
   
   /* VMS time = unixtime * 10,000,000 + 0x7c95674beb4000q */
-  if (strcasecmp(asc_time, "today") == 0) {
+  if (mds_strcasecmp(asc_time, "today") == 0) {
     tim=(time(NULL)/SEC_PER_DAY)*SEC_PER_DAY;
-  } else if (strcasecmp(asc_time, "tomorrow") == 0) {
+  } else if (mds_strcasecmp(asc_time, "tomorrow") == 0) {
     tim=(time(NULL)/SEC_PER_DAY)*SEC_PER_DAY+SEC_PER_DAY;
-  }else if (strcasecmp(asc_time, "yesterday") == 0) {
+  }else if (mds_strcasecmp(asc_time, "yesterday") == 0) {
     tim=(time(NULL)/SEC_PER_DAY)*SEC_PER_DAY-SEC_PER_DAY;
   }
   else {
