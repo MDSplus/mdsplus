@@ -59,7 +59,9 @@ pro MdsClose,tree,shot,quiet=quiet,status=status
 
     if (!VERSION.OS eq 'vms') then begin
 
-      mds$close,tree,shot,quiet=quiet,status=status
+      if n_elements(tree) eq 0 then $
+        mds$close, quiet=quiet, status=status else $
+        mds$close, tree, shot, quiet=quiet,status=status
 
     endif else begin
         
