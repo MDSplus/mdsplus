@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "export.h"
-static IDL_MEMINT 	three = 3;
-static IDL_MEMINT 	nitem;		/*the row count*/
+static IDL_LONG 	three = 3;
+static IDL_LONG 	nitem;		/*the row count*/
 static int	nline;		/*character count on row*/
 static char	*pline;		/*temporary line*/
 #define MAXMSG 1024
@@ -14,10 +14,14 @@ typedef struct {
 	int		l1;
 }	quadword;
 
+#ifdef __toupper
+#undef __toupper
+#define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
+#endif
+
 #ifdef __VMS
 #include <descrip.h>
 #include <starlet.h>
-#include <ctype.h>	/*for toupper definition*/
 #include <math.h>	/*for pow definition*/
 extern void FLOAT_TO_IEEE();
 extern void IEEE_TO_FLOAT();
@@ -119,7 +123,7 @@ static int      quiet;
 static const short	HUGE_W = 0x7fff;
 /*********************************************************/
 static void IDLresize(k, dst)
-IDL_MEMINT	k;
+IDL_LONG	k;
 IDL_VPTR	dst;
 {
  IDL_VPTR	tptr;
@@ -241,7 +245,7 @@ static char *AddDaysToQuery(char *qry)
 {
   char *p1, *p2;
   for (p1=buf, p2=qry; *p2; p1++, p2++)
-     *p1 = _toupper(*p2);
+     *p1 = __toupper(*p2);
   *p1 = 0;
   if (strstr(buf, "TODAY") || strstr(buf, "TOMORROW") || strstr(buf, "YESTERDAY")) {
     strcpy(buf, "declare @today datetime; set @today = cast(getdate() as varchar (12));");
@@ -332,9 +336,9 @@ int		rblob;
                         	ddate[20] = '.';
                                 ddate[3] = ddate[0];
                                 ddate[0] = ddate[4];
-                                ddate[4] = toupper(ddate[1]);
+                                ddate[4] = __toupper(ddate[1]);
                                 ddate[1] = ddate[5];
-                                ddate[5] = toupper(ddate[2]);
+                                ddate[5] = __toupper(ddate[2]);
                                 ddate[2] = '-';
                                 ddate[6] = '-';
 				if (status < 0) {temp.d = HUGE_D; break;}
