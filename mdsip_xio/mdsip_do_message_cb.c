@@ -13,6 +13,9 @@ void mdsip_do_message_cb(
   mdsip_test_result(xio_handle,result,ctx,"mdsip_do_message_cb");
   if (result == GLOBUS_SUCCESS)
   {
+    if (Endian(ctx->header.client_type) != Endian(ctx->options->server_type)) {
+      mdsip_flip_data( ctx->message );
+    }
     mdsip_process_message((void *)xio_handle,ctx,ctx->message);
     free(ctx->message);
     globus_result_t res = globus_xio_register_read(xio_handle,(globus_byte_t *)&ctx->header, 
