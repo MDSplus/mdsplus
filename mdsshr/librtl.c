@@ -680,8 +680,11 @@ char *TranslateLogical(char *name)
 {
 	char *env = getenv(name);
 	env = env ? strcpy(malloc(strlen(env)+1),env) : 0;
+      
+/*
         if (!env)
           env = GetTdiLogical(name);
+*/
 	return env;
 }
 unsigned int LibCallg(void **arglist, unsigned int (*routine)())
