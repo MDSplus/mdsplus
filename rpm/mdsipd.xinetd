@@ -5,6 +5,8 @@ service mdsip
 {
         socket_type     = stream
         wait            = no
+        cps             = 1000 5
+        instances       = UNLIMITED
         user            = root
         server          = /usr/local/mdsplus/bin/mdsipd
         server_args     = mdsip /var/log/mdsplus/mdsipd
