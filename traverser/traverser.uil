@@ -147,6 +147,8 @@ procedure CreateAddDevice();
 procedure AddDevice();
 procedure WriteTree(integer);
 procedure CreateTree();
+procedure DeleteNode();
+procedure DeleteNodeNow();
 procedure ModifyTags();
 procedure tag_button_proc(integer);
 procedure tag_selection_proc();
@@ -194,6 +196,7 @@ object mainWindow : XmMainWindow widget {
          managed XmCommand command;
          unmanaged XmFormDialog message_box;
 	 unmanaged XmMessageDialog createDialog;
+	 unmanaged XmMessageDialog delete_ok_box;
          unmanaged XmBulletinBoardDialog tags_box;
     };
     callbacks {
@@ -201,7 +204,42 @@ object mainWindow : XmMainWindow widget {
     };
 };
 
-object createDialog : XmMessageDialog widget {
+object 
+delete_ok_box : XmMessageDialog widget {
+    arguments {
+        XmNdialogStyle = XmDIALOG_FULL_APPLICATION_MODAL;
+        XmNdialogType = XmDIALOG_QUESTION;
+        XmNmessageString = compound_string("Are you sure you want to delete...");
+        XmNmessageAlignment = XmALIGNMENT_CENTER;
+        XmNokLabelString = compound_string("Delete");
+        XmNx = 0;
+        XmNy = 0;
+        XmNwidth = 290;
+        XmNheight = 112;
+    };
+    controls {
+	XmScrolledList delete_ok_list;
+    };
+    callbacks {
+        XmNokCallback = procedure DeleteNodeNow;
+    };
+};
+
+object delete_ok_list: XmScrolledList 
+        {
+        arguments
+            {
+            XmNx = 17;
+            XmNy = 50;
+            XmNwidth = 192;
+            XmNlistSizePolicy = XmCONSTANT;
+            XmNselectionPolicy = XmSINGLE_SELECT;
+            XmNvisibleItemCount = 10;
+            };
+        };
+
+object 
+createDialog : XmMessageDialog widget {
     arguments {
         XmNdialogStyle = XmDIALOG_FULL_APPLICATION_MODAL;
         XmNdialogType = XmDIALOG_QUESTION;
@@ -1206,6 +1244,7 @@ object pushButton5 : XmPushButton widget {
     controls {
     };
     callbacks {
+        XmNactivateCallback = procedure DeleteNode();
     };
 };
 

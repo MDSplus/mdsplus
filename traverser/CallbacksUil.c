@@ -518,6 +518,18 @@ static void CommandLineOpen(Display *display, Widget tree)
   }
 }
 
+
+static ListTreeItem *FindItemByNid(ListTreeItem *parent, int nid)
+{
+  ListTreeItem *itm;
+  if (get_nid(parent) == nid) return parent;
+  for (itm=parent->firstchild; itm; itm=itm->nextsibling) {
+    ListTreeItem *ans;
+    if ((ans = FindItemByNid(itm, nid)) != NULL) return ans;
+  }
+  return NULL;
+}
+
 static ListTreeItem *FindParentItemByNid(Widget tree, int nid)
 {
   static char *getnci = "GETNCI($, 'PARENT')";
@@ -814,6 +826,92 @@ ModifyData( Widget w, XtPointer client_data, XtPointer call_data)
       int nid = get_nid(selections[i]);
       modify_data(w, nid, i);
     }
+}
+
+static int NUM_TO_DELETE = 0;
+static int *NIDS_TO_DELETE = 0;
+
+void 
+DeleteNodeNow( Widget w, XtPointer client_data, XtPointer call_data)
+{
+    int i;
+    int status;
+    int def_nid;
+    int *parent_nids = (int *)malloc(sizeof(int)*NUM_TO_DELETE);
+    Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
+    ListTreeItem *itm;
+    for (i=0; i<NUM_TO_DELETE; i++) {
+      int nid = NIDS_TO_DELETE[i];
+      ListTreeItem *itm = FindItemByNid(ListTreeFirstItem(tree), nid);
+      if (itm != NULL)
+	ListTreeDelete(tree, itm);
+      parent_nids[i] = parent_nid(nid);
+    }
+    TreeDeleteNodeExecute();
+
+    status = TreeGetDefaultNid(&def_nid);
+    if ((status&1) == 0) def_nid = 0; 
+    for (i=0; i<NUM_TO_DELETE; i++) {
+      if (parent_nids[i] != -1)
+        if ((itm = FindItemByNid(ListTreeFirstItem(tree), parent_nids[i])) != NULL) {
+          char *name = get_node_name(parent_nids[i]);
+          if (parent_nids[i] == def_nid) {
+             char *str = malloc(strlen(name)+3+3+1);
+             strcpy(str, "<<<");
+	     strcat(str, name);
+	     strcat(str, ">>>");
+	     ListTreeRenameItem(tree, itm, str);
+	     free(str);
+	  }
+	  else
+	     ListTreeRenameItem(tree, itm, name);
+	}
+    }
+    free(parent_nids);
+    free(NIDS_TO_DELETE);
+    NIDS_TO_DELETE = NULL;
+}
+
+void DeleteNodeConditional()
+{
+  int idx = 0;
+  static int first_time = 1;
+  Widget delete_ok_box = XtNameToWidget(toplevel, "*delete_ok_box");
+  Widget delete_ok_list = XtNameToWidget(delete_ok_box, "*delete_ok_list");
+  int nid;
+  if (first_time) {
+    XtManageChild(delete_ok_box);
+    XtUnmanageChild(delete_ok_box);
+  }
+  XmListDeleteAllItems(delete_ok_list);
+  if (NIDS_TO_DELETE != NULL) free(NIDS_TO_DELETE);
+  NIDS_TO_DELETE = (int *)malloc(NUM_TO_DELETE*sizeof(int));
+  for (nid=0; TreeDeleteNodeGetNid(&nid)&1;) {
+    XmString path_str;
+    char *c_path = TreeGetPath(nid);
+    NIDS_TO_DELETE[idx++] = nid;
+    path_str = XmStringCreateSimple(c_path);
+    XtFree(c_path);
+    XmListAddItemUnselected(delete_ok_list, path_str, 0);
+    XmStringFree(path_str);
+  }
+  XtManageChild(delete_ok_box);
+}
+
+void
+DeleteNode( Widget w, XtPointer client_data, XtPointer call_data)
+{
+    int i;
+    NUM_TO_DELETE=0;
+    if (num_selected > 0) {
+      for (i=0; i<num_selected; i++) {
+	int nid = get_nid(selections[i]);
+	TreeDeleteNodeInitialize(nid, &NUM_TO_DELETE, i==0);
+      }
+      DeleteNodeConditional();
+    }
+    else
+      XmdsComplain(w, "Please choose one or more nodes\nbefore choosing delete node.");
 }
 
 static int DoMethodNoSignal(struct descriptor *niddsc, struct descriptor *method, Widget parent)
