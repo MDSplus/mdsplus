@@ -670,6 +670,7 @@ int main(int argc, char **argv)
 	  }
           unlock_ast();
         }
+        readfds=FdActive();
       }
 #endif
     }
