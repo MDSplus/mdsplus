@@ -14,10 +14,10 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
     Choice nids;
     Button doneButton;
     Checkbox displayRowNumC;
-    
+
     public DeviceTableCustomizer()
     {
-    }        
+    }
     public void setObject(Object o)
     {
         bean = (DeviceTable)o;
@@ -33,20 +33,20 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
         jp1.add(numRows = new TextField(4));
         int rows = bean.getNumRows();
         numRows.setText((new Integer(rows)).toString());
-        
+
         jp1.add(new Label("Num. Columns: "));
         jp1.add(numCols = new TextField(4));
         int cols = bean.getNumCols();
         numCols.setText((new Integer(cols)).toString());
-        
+
         jp.add(jp1);
         jp1 = new Panel();
         jp1.add(new Label("Offset nid: "));
         jp1.add(nids = new Choice());
-        
+
         String names[] = getDeviceFields();
-        
-        
+
+
         if(names != null)
         for(int i = 0; i < names.length; i++)
             nids.addItem(names[i]);
@@ -58,15 +58,15 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
         jp1.add(new Label("Opt. identifier: "));
         jp1.add(identifier = new TextField(bean.getIdentifier(), 15));
         jp1.add(displayRowNumC = new Checkbox("Display row num.", bean.getDisplayRowNumber()));
-        
-        
+
+
         jp.add(jp1);
         jp1 = new Panel();
         jp1.add(new Label("Column Names: "));
         jp1.add(columnNames = new TextField(bean.getIdentifier(), 40));
-        
+
         jp.add(jp1);
-        
+
         add(jp, "Center");
         jp = new Panel();
         jp.add(doneButton = new Button("Apply"));
@@ -90,17 +90,15 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
         });
         add(jp,"South");
     }
-    
+
     public void addPropertyChangeListener(PropertyChangeListener l)
     {
-		JOptionPane.showMessageDialog(null, "Aggiunto listener", 
-		    "", JOptionPane.WARNING_MESSAGE);
         listeners.addPropertyChangeListener(l);
     }
-    
+
     public void removePropertyChangeListener(PropertyChangeListener l)
     {
         listeners.removePropertyChangeListener(l);
     }
   }
-        
+

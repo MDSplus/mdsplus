@@ -16,10 +16,10 @@ public class DeviceFieldCustomizer extends DeviceCustomizer implements Customize
     Checkbox textOnly;
     Checkbox editable;
     Checkbox displayEvaluated;
-    
+
     public DeviceFieldCustomizer()
     {
-    }        
+    }
     public void setObject(Object o)
     {
 
@@ -43,9 +43,9 @@ public class DeviceFieldCustomizer extends DeviceCustomizer implements Customize
         jp1.add(editable = new Checkbox("Editable: ", bean.getEditable()));
         jp1.add(new Label("Offset nid: "));
         jp1.add(nids = new Choice());
-        
+
         String names[] = getDeviceFields();
-        
+
         if(names != null)
         for(int i = 0; i < names.length; i++)
             nids.addItem(names[i]);
@@ -58,7 +58,7 @@ public class DeviceFieldCustomizer extends DeviceCustomizer implements Customize
         jp1.add(new Label("Opt. identifier: "));
         jp1.add(identifier = new TextField(bean.getIdentifier(), 20));
         jp.add(jp1);
-        
+
         add(jp, "Center");
         jp = new Panel();
         jp.add(doneButton = new Button("Apply"));
@@ -74,22 +74,20 @@ public class DeviceFieldCustomizer extends DeviceCustomizer implements Customize
                 bean.setDisplayEvaluated(displayEvaluated.getState());
                 bean.setOffsetNid(nids.getSelectedIndex() + 1);
                 bean.setIdentifier(identifier.getText());
-                listeners.firePropertyChange(null, null, null);
+                //listeners.firePropertyChange(null, null, null);
             }
         });
         add(jp,"South");
     }
-    
+
     public void addPropertyChangeListener(PropertyChangeListener l)
     {
-		JOptionPane.showMessageDialog(null, "Aggiunto listener", 
-		    "", JOptionPane.WARNING_MESSAGE);
         listeners.addPropertyChangeListener(l);
     }
-    
+
     public void removePropertyChangeListener(PropertyChangeListener l)
     {
         listeners.removePropertyChangeListener(l);
     }
   }
-        
+

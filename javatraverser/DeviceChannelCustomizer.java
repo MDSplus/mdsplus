@@ -13,10 +13,10 @@ public class DeviceChannelCustomizer extends DeviceCustomizer implements Customi
     Choice nids;
     Button doneButton;
     Checkbox showBorder, inSameLine, showState;
-    
+
     public DeviceChannelCustomizer()
     {
-    }        
+    }
     public void setObject(Object o)
     {
         bean = (DeviceChannel)o;
@@ -36,16 +36,16 @@ public class DeviceChannelCustomizer extends DeviceCustomizer implements Customi
         jp1.add(nids = new Choice());
 
         String names[] = getDeviceFields();
-        
+
         if(names != null)
         for(int i = 0; i < names.length; i++)
             nids.addItem(names[i]);
         int offsetNid = bean.getOffsetNid();
         if(offsetNid > 0) offsetNid--;
         nids.select(offsetNid);
-            
+
         jp.add(jp1);
-        
+
         jp1 = new Panel();
         jp1.add(new Label("Lines: "));
         jp1.add(lines = new TextField(4));
@@ -84,17 +84,15 @@ public class DeviceChannelCustomizer extends DeviceCustomizer implements Customi
         });
         add(jp,"South");
     }
-    
+
     public void addPropertyChangeListener(PropertyChangeListener l)
     {
-		JOptionPane.showMessageDialog(null, "Aggiunto listener", 
-		    "", JOptionPane.WARNING_MESSAGE);
         listeners.addPropertyChangeListener(l);
     }
-    
+
     public void removePropertyChangeListener(PropertyChangeListener l)
     {
         listeners.removePropertyChangeListener(l);
     }
   }
-        
+

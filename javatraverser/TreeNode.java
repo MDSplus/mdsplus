@@ -18,24 +18,38 @@ public class TreeNode extends JLabel
     public static void setSelectedNode(Node sel)
     {
 	    selected = sel;
- 	    
-	    
+
+
     }
-    
+
 	public static void copyToClipboard()
 	{
 	    try {
-	        String fullPath = selected.getInfo().getFullPath();
-	        Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-	        StringSelection content = new StringSelection(fullPath);
-	        cb.setContents(content, null);
-	    }catch(Exception exc){System.err.println("Cannot copy fullPath to Clibboard");}
+                Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+                String []tags = selected.getTags();
+                StringSelection content;
+                if(tags != null && tags.length > 0)
+                {
+                  String expName = jTraverser.getExperimentName();
+                  if(expName != null && !expName.trim().equals(""))
+                    content = new StringSelection("\\\\"+expName+"::"+tags[0]);
+                  else
+                    content = new StringSelection(tags[0]);
+                  cb.setContents(content, null);
+                }
+                else
+                {
+                  String fullPath = selected.getInfo().getFullPath();
+                  content = new StringSelection(fullPath);
+                  cb.setContents(content, null);
+                }
+	    }catch(Exception exc){System.err.println("Cannot copy fullPath to Clipboard");}
 	}
     public static void copy()
     {
         copied = selected;
     }
-    
+
     public static void paste()
     {
         if(copied != null && copied != selected)
@@ -43,12 +57,12 @@ public class TreeNode extends JLabel
             Node.pasteSubtree(copied, selected, true);
         }
     }
-    
+
     public static void delete()
     {
         Tree.deleteNode(selected);
     }
-    
+
     public TreeNode(Node _node, String name, Icon icon)
     {
 	super(name+"                ", icon, JLabel.LEFT);
@@ -67,7 +81,7 @@ public class TreeNode extends JLabel
 	    //setText(node.getName().trim() + "                                   ");
 	    //setForeground(Color.black);
     }
-    
+
     public void paint(Graphics g)
     {
 	setText(node.getName());
@@ -75,12 +89,12 @@ public class TreeNode extends JLabel
 	    setForeground(Color.red);
 	else
 	    setForeground(Color.black);
-    
+
     	if(node.isOn())
 	    setFont(bold_f);
 	else
 	    setFont(plain_f);
-	    
+
 	if(selected == node)
 	    setBorder(BorderFactory.createLineBorder(Color.black, 1));
 	else

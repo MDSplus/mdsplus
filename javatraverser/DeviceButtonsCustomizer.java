@@ -15,10 +15,10 @@ public class DeviceButtonsCustomizer extends Panel implements Customizer
     Vector expressionsV = new Vector(), messagesV = new Vector();
 
     Button addButton, removeButton, doneButton;
-    
+
     public DeviceButtonsCustomizer()
     {
-    }        
+    }
     public void setObject(Object o)
     {
         bean = (DeviceButtons)o;
@@ -35,8 +35,8 @@ public class DeviceButtonsCustomizer extends Panel implements Customizer
                 message.setText((String)(messagesV.elementAt(idx)));
             }
         });
-        
-        
+
+
         String exprs[] = bean.getCheckExpressions();
         if(exprs != null)
         {
@@ -58,7 +58,7 @@ public class DeviceButtonsCustomizer extends Panel implements Customizer
         jp1.add(new Label("Error message: "));
         jp1.add(message = new TextField(30));
         jp.add(jp1, "South");
-        
+
         jp1 = new Panel();
         jp1.setLayout(new GridLayout(2, 1));
         Panel jp2 = new Panel();
@@ -85,7 +85,7 @@ public class DeviceButtonsCustomizer extends Panel implements Customizer
                 }
             }
         });
-        removeButton.addActionListener(new ActionListener() 
+        removeButton.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -111,8 +111,8 @@ public class DeviceButtonsCustomizer extends Panel implements Customizer
             }
             methods.setText(method_txt);
         }
-                
-                
+
+
         jp.add(jp1, "North");
         jp1 = new Panel();
         jp1.add(doneButton = new Button("Apply"));
@@ -149,17 +149,15 @@ public class DeviceButtonsCustomizer extends Panel implements Customizer
         });
         add(jp,"South");
     }
-    
+
     public void addPropertyChangeListener(PropertyChangeListener l)
     {
-		JOptionPane.showMessageDialog(null, "Aggiunto listener", 
-		    "", JOptionPane.WARNING_MESSAGE);
         listeners.addPropertyChangeListener(l);
     }
-    
+
     public void removePropertyChangeListener(PropertyChangeListener l)
     {
         listeners.removePropertyChangeListener(l);
     }
   }
-        
+

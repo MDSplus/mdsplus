@@ -10,17 +10,17 @@ public class DeviceWaveCustomizer extends DeviceCustomizer implements Customizer
     Object obj;
     PropertyChangeSupport listeners = new PropertyChangeSupport(this);
     TextField identifier, updateIdentifier, updateExpression;
-    
+
     Choice nids;
     Button doneButton;
     Checkbox minXVisible;
     Checkbox maxXVisible;
     Checkbox minYVisible;
     Checkbox maxYVisible;
-    
+
     public DeviceWaveCustomizer()
     {
-    }        
+    }
     public void setObject(Object o)
     {
 
@@ -34,9 +34,9 @@ public class DeviceWaveCustomizer extends DeviceCustomizer implements Customizer
         jp1.add(identifier = new TextField(bean.getIdentifier(), 20));
         jp1.add(new Label("Offset nid: "));
         jp1.add(nids = new Choice());
-        
+
         String names[] = getDeviceFields();
-        
+
         if(names != null)
         for(int i = 0; i < names.length; i++)
             nids.addItem(names[i]);
@@ -51,14 +51,14 @@ public class DeviceWaveCustomizer extends DeviceCustomizer implements Customizer
         jp1.add(minYVisible = new Checkbox("Min Y Visible: ", bean.getMinYVisible()));
         jp1.add(maxYVisible = new Checkbox("Max Y Visible: ", bean.getMaxYVisible()));
         jp.add(jp1);
-        
+
         jp1 = new Panel();
         jp1.add(new Label("Update id: "));
         jp1.add(updateIdentifier = new TextField(bean.getUpdateIdentifier(), 10));
         jp1.add(new Label("Update expr: "));
         jp1.add(updateExpression = new TextField(bean.getUpdateExpression(), 30));
         jp.add(jp1);
-        
+
         add(jp, "Center");
         jp = new Panel();
         jp.add(doneButton = new Button("Apply"));
@@ -78,17 +78,15 @@ public class DeviceWaveCustomizer extends DeviceCustomizer implements Customizer
         });
         add(jp,"South");
     }
-    
+
     public void addPropertyChangeListener(PropertyChangeListener l)
     {
-		JOptionPane.showMessageDialog(null, "Aggiunto listener", 
-		    "", JOptionPane.WARNING_MESSAGE);
         listeners.addPropertyChangeListener(l);
     }
-    
+
     public void removePropertyChangeListener(PropertyChangeListener l)
     {
         listeners.removePropertyChangeListener(l);
     }
   }
-        
+

@@ -9,8 +9,9 @@ import javax.swing.plaf.*;
 import java.util.*;
 public class jTraverser extends JFrame implements ActionListener
 {
-    
-    String exp_name, shot_name;
+
+    static String exp_name, shot_name;
+    static boolean editable;
     Tree tree;
     JMenu file_m, edit_m, data_m, customize_m;
     JMenuItem open, close, quit;
@@ -18,7 +19,7 @@ public class jTraverser extends JFrame implements ActionListener
 	add_window_b, add_axis_b, add_device_b, add_child_b, add_subtree_b, delete_node_b, modify_tags_b,
 	rename_node_b, turn_on_b, turn_off_b, display_data_b, display_nci_b, modify_data_b,
 	set_default_b, setup_device_b, do_action_b, outline_b, tree_b, copy_b, paste_b;
-	
+
     TreeDialog display_data_d = null, modify_data_d = null, display_nci_d = null;
     DisplayData display_data;
     DisplayNci display_nci;
@@ -27,7 +28,7 @@ public class jTraverser extends JFrame implements ActionListener
      * Constructor.
      */
     public static void main(String args[]) {
-	
+
     if(System.getProperty("os.name").equals("Linux"))
     {
 	    UIManager.put("Label.font", new FontUIResource(new Font("LuciduxSans", Font.BOLD, 11)));
@@ -39,10 +40,10 @@ public class jTraverser extends JFrame implements ActionListener
 	    FrameRepository.frame = new jTraverser(args[0], args[1]);
 	else
 	    FrameRepository.frame = new jTraverser(null, null);
-	
+
     }
-    
-    
+
+
     public jTraverser(String exp_name, String shot_name)
     {
 	this.exp_name = exp_name;
@@ -97,7 +98,7 @@ public class jTraverser extends JFrame implements ActionListener
 	copy_b.addActionListener(this);
 	curr_menu.add(paste_b = new JMenuItem("Paste"));
 	paste_b.addActionListener(this);
-	
+
 	data_m = curr_menu = new JMenu("Data");
 	menu_bar.add(curr_menu);
 	curr_menu.add(turn_on_b = new JMenuItem("Turn On"));
@@ -124,54 +125,26 @@ public class jTraverser extends JFrame implements ActionListener
 	jm.add(tree_b = new JMenuItem("Tree"));
 	tree_b.addActionListener(this);
 	curr_menu.add(jm);
-	
+
 	tree = new Tree(this);
 	if(exp_name != null)
 	    tree.open(exp_name.toUpperCase(), Integer.parseInt(shot_name), false, false);
 	else
 	    setTitle("jTraverser - no tree open");
 	getContentPane().add(tree);
-	
-	
+
 	addWindowListener(new WindowAdapter() {
 	    public void windowClosing(WindowEvent e)
 	    {
 	        System.exit(0);
 	    }});
-	    
-	addKeyListener(new KeyAdapter() {
-	    public void keyTyped(KeyEvent e)
-	    {
-	        if((e.getModifiers() & Event.CTRL_MASK) != 0)
-	        {
-	            int cc = e.getKeyChar();
-	            //if(e.getKeyChar() == 'c')  
-	            if(e.getKeyChar() == 3)  
-                {
-	                TreeNode.copyToClipboard();
-	            }   
-	        }
-	        if(!tree.isEditable())
-	            return;
-	        if((e.getModifiers() & Event.CTRL_MASK) != 0)
-	        {
-	            if(e.getKeyChar() == 'c')  
-	                TreeNode.copy();
-	            if(e.getKeyChar() == 'v')  
-	                TreeNode.paste();
-	        }
-	        else if(e.getKeyChar() == KeyEvent.VK_DELETE || e.getKeyChar() == KeyEvent.VK_BACK_SPACE)
-	            TreeNode.delete();
-	    }
-	});
-	        
-	      
-	        
-	    
-	    
+
 	pack();
-	show(); 
+	show();
     }
+
+    public static String getExperimentName(){return exp_name;}
+    public static boolean isEditable(){return editable;}
 public void actionPerformed(ActionEvent e)
 {
     Object source = e.getSource();
@@ -179,8 +152,8 @@ public void actionPerformed(ActionEvent e)
     if(source == (Object)close) tree.close();
     if(source == (Object)quit) tree.quit();
 
-    if(source == (Object)tree_b)tree.setAngled(true); 
-    if(source == (Object)outline_b) tree.setAngled(false); 
+    if(source == (Object)tree_b)tree.setAngled(true);
+    if(source == (Object)outline_b) tree.setAngled(false);
     if(source == (Object)add_action_b) tree.addNode(NodeInfo.USAGE_ACTION);
     if(source == (Object)add_dispatch_b) tree.addNode(NodeInfo.USAGE_DISPATCH);
     if(source == (Object)add_numeric_b) tree.addNode(NodeInfo.USAGE_NUMERIC);
@@ -197,25 +170,25 @@ public void actionPerformed(ActionEvent e)
     if(source == (Object)add_device_b) tree.addDevice();
     if(source == (Object)copy_b) TreeNode.copy();
     if(source == (Object)paste_b) TreeNode.paste();
-    
-    if(source == (Object)turn_on_b) 
+
+    if(source == (Object)turn_on_b)
     {
 	    Node curr_node = tree.getCurrentNode();
 	    if(curr_node == null) return;
-	    curr_node.turnOn(); 
+	    curr_node.turnOn();
 	    tree.reportChange();
     }
-    if(source == (Object)turn_off_b) 
+    if(source == (Object)turn_off_b)
     {
 	    Node curr_node = tree.getCurrentNode();
 	    if(curr_node == null) return;
-	    curr_node.turnOff(); 
+	    curr_node.turnOff();
 	    tree.reportChange();
     }
     if(source == (Object)display_data_b)
     {
 	    if(tree.getCurrentNode() == null) return;
-	    if(display_data_d == null) 
+	    if(display_data_d == null)
 	    {
 	        display_data_d = new TreeDialog(display_data = new DisplayData());
 	        display_data.setFrame(display_data_d);
@@ -224,11 +197,11 @@ public void actionPerformed(ActionEvent e)
 	    display_data_d.pack();
 	    //display_data_d.setLocation(new Point(50,50));
 	    display_data_d.show();
-    }    
+    }
     if(source == (Object)display_nci_b)
     {
 	    if(tree.getCurrentNode() == null) return;
-	    if(display_nci_d == null) 
+	    if(display_nci_d == null)
 	    {
 	        display_nci_d = new TreeDialog(display_nci = new DisplayNci());
 	        display_nci.setFrame(display_nci_d);
@@ -237,11 +210,11 @@ public void actionPerformed(ActionEvent e)
 	    display_nci_d.pack();
 	    display_nci_d.setLocation(new Point(50,50));
 	    display_nci_d.show();
-    }    
+    }
     if(source == (Object)modify_data_b)
     {
 	    if(tree.getCurrentNode() == null) return;
-	    if(modify_data_d == null) 
+	    if(modify_data_d == null)
 	    {
 	        modify_data_d = new TreeDialog(modify_data = new ModifyData());
 	        modify_data.setFrame(modify_data_d);
@@ -252,7 +225,7 @@ public void actionPerformed(ActionEvent e)
 	    modify_data_d.show();
     }
     if(source == (Object)set_default_b)
-    { 
+    {
 	    if(tree.getCurrentNode() == null) return;
 	    try {
 	        tree.getCurrentNode().setDefault();
@@ -268,7 +241,8 @@ public void actionPerformed(ActionEvent e)
 
 void reportChange(String exp, int shot, boolean editable, boolean readonly)
 {
-    
+    jTraverser.editable = editable;
+    jTraverser.exp_name = exp;
     String title;
     if(exp != null)
     {
@@ -316,5 +290,5 @@ public Component add(Component component)
 {
     return getContentPane().add(component);
 }
-	   
-}    
+
+}
