@@ -67,6 +67,7 @@
 #include <mdsshr.h>
 #include <string.h>
 #include <librtl_messages.h>
+static char *cvsrev = "@(#)$RCSFILE$ $Revision$ $Date$";
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAXX 1024		/*length of longest run allowed*/
