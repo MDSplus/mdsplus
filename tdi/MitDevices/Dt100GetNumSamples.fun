@@ -10,6 +10,10 @@ fun Dt100GetNumSamples(in _board)
     abort();
   }
   _numstr=extract(20, len(_ans)-20, _ans);
+  _sp = index(_numstr, ' ');
+  if (_sp > 0) {
+    _numstr = extract(0, _sp, _numstr);
+  }
   _ans = if_error(execute(_numstr), 0);
   return(_ans);
 }

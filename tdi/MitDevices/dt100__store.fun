@@ -4,7 +4,7 @@ public fun dt100__store(as_is _nid, optional _method)
   _node = if_error(data(_node), "");
   if (Len(_node) > 0) {
     _status = MdsConnect(_node);
-    if (! _status) {
+    if (_status < 0) {
       Write(*,"Could not connect to "//_node);
       Abort();
     }
@@ -22,6 +22,12 @@ public fun dt100__store(as_is _nid, optional _method)
     write(*, '%DT100ERR, board '//_board//' Device not triggered');
     return(0);
   }
+
+  /*************************************
+    Do the DMA Transfer
+   ************************************/
+  _cmd = 'DT100WriteMaster('//_board//', "bigdump")';
+  _dummy = MdsValue(_cmd);
 
   /*************************************
    Get setup info

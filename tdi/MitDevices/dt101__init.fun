@@ -1,4 +1,4 @@
-public fun DT100__INIT(as_is _nid, optional _method)
+public fun DT101__INIT(as_is _nid, optional _method)
 {
   _modes = ['SOFT_TRANSIENT', 'GATED_TRANSIENT', 'GATED_CONTINOUS'];
   _node = DevNodeRef(_nid,1);
@@ -20,9 +20,9 @@ public fun DT100__INIT(as_is _nid, optional _method)
   _mem_size = DevNodeRef(_nid, 6);
   _chansize = _mem_size*1024*1024 / 2 / _active_chans;
   _chansize = if_error(min(_chansize, DevNodeRef(_nid, 8)*1024), _chansize);
-
-  _cmd = 'Dt100Init('//_board//','//_active_chans//','//DevNodeRef(_nid, 9)//','//_chansize//')';
-  write(*, _cmd);
-  MdsValue(_cmd);
+  _intClock = if_error(data(DevNodeRef(_nid, 11)), 0);
+  _preTrig = if_error(data(DevNodeRef(_nid, 10))*1024, 100); 
+  _mode = if_error(data(DevNodeRef(_nid, 9)), 0);
+  MdsValue('Dt101Init($,$,$,$,$,$)', _board, _active_chans, _mode, _chansize, _preTrig, _intClock);
   return(1);
 }
