@@ -55,4 +55,4 @@ mdsdcl_tables.c:	mdsdcl_tables.ocld
 	$(LD)  -o $@ @LINKSHARED@ mdsdcl_tables.o $(OBJECTS) -L@MAKELIBDIR@ -lCdu -lMdsShr  $(LIBS)
 
 @MAKEBINDIR@mdsdcl:	mdsdcl.o
-	$(CC) $(CFLAGS) -o $@ mdsdcl.o -L@MAKELIBDIR@ -lMdsdcl -lMdsShr
+	$(CC) $(CFLAGS) -o $@ mdsdcl.o -L@MAKELIBDIR@ -lMdsdcl -lCdu -lMdsShr
