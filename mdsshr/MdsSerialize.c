@@ -335,7 +335,7 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
           po->length = sizeof(struct descriptor *);
           po->arsize = num_dsc * sizeof(struct descriptor *);
 	}
-	bytes_out += po->arsize;
+	bytes_out += pi->arsize;
         bytes_in += pi->arsize;
       /******************************
       Each descriptor must be copied.
