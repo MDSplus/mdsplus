@@ -41,7 +41,8 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <sys/mman.h>
-
+#include <sys/ipc.h>
+#include <sys/sem.h>
 #define ROUTINE_NAME "scsi_io"
 
 #ifndef SG_FLAG_MMAP_IO
@@ -49,7 +50,7 @@
 #endif
 
 #define MIN_MAXBUF 65538
-
+#define SEM_ID 80420
 static int FDS[10] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}; 
 static int MAXBUF[10] =   {0,0,0,0,0,0,0,0,0,0};
 static int BUFFSIZE[10] = {0,0,0,0,0,0,0,0,0,0};
@@ -159,10 +160,69 @@ static int OpenScsi(int scsiDevice, char **buff_out)
   return fd;
 }
 
+static int lock_scsi(int scsiDevice, int lock)
+{
+  static int semId = 0;
+  int status = 0;
+  struct sembuf psembuf;
+  if (!semId)
+  {
+    semId = semget(SEM_ID,10,0);
+    if (semId == -1)
+    {
+      if (errno == ENOENT)
+      {
+        int status;
+        semId = semget(SEM_ID,10,IPC_CREAT | 0x1ff);
+        if (semId == -1)
+	{
+          perror("Error creating locking semaphore");
+          semId = 0;
+        }
+        else
+	{
+          int i;
+          union semun {int val;} arg;
+          arg.val = 1;
+          for (i=0;i<10;i++)
+	  {
+            status = semctl(semId, i, SETVAL, arg);
+            if (status == -1)
+              perror("Error accessing locking semaphore");
+          }
+        }
+      }
+      else
+	perror("Error accessing locking semaphore");
+    }
+  }
+  psembuf.sem_num = scsiDevice;
+  psembuf.sem_op = lock ? -1 : 1;
+  psembuf.sem_flg = SEM_UNDO;
+  status = semop(semId,&psembuf,1);
+  if (status == -1)
+    perror("Error locking CAMAC system");
+  return (status == 0);
+}  
+
+static int locked_scsi_io(int scsiDevice, int direction, unsigned char *cmdp, 
+         unsigned char cmd_len, char *buffer, unsigned int buflen, 
+         unsigned char *sbp, unsigned char mx_sb_len, 
+			  unsigned char *sb_out_len, int *transfer_len, int lock);
+
 int scsi_io(int scsiDevice, int direction, unsigned char *cmdp, 
          unsigned char cmd_len, char *buffer, unsigned int buflen, 
          unsigned char *sbp, unsigned char mx_sb_len, 
          unsigned char *sb_out_len, int *transfer_len)
+{
+  return locked_scsi_io(scsiDevice, direction, cmdp, cmd_len, buffer, buflen, 
+			sbp, mx_sb_len, sb_out_len, transfer_len, 1);
+}
+
+static int locked_scsi_io(int scsiDevice, int direction, unsigned char *cmdp, 
+         unsigned char cmd_len, char *buffer, unsigned int buflen, 
+         unsigned char *sbp, unsigned char mx_sb_len, 
+			  unsigned char *sb_out_len, int *transfer_len, int lock)
 {
   char *buf;
   int fd;
@@ -198,6 +258,8 @@ int scsi_io(int scsiDevice, int direction, unsigned char *cmdp,
       sghdr.timeout = 10000;
       sghdr.flags = SG_FLAG_MMAP_IO;
       sghdr.pack_id = 0;
+      if (lock)
+        lock_scsi(scsiDevice,1);
       if (ioctl(fd, SG_IO, &sghdr) >= 0)
       {
         status = sghdr.masked_status;
@@ -210,13 +272,16 @@ int scsi_io(int scsiDevice, int direction, unsigned char *cmdp,
         {
           int len = 0;
           unsigned char sense_cmd[] = {3,0,0,0,mx_sb_len,0}; 
-          scsi_io(scsiDevice, 1, sense_cmd, sizeof(sense_cmd), sbp, mx_sb_len, 0, 0, 0, &len);
+          locked_scsi_io(scsiDevice, 1, sense_cmd, sizeof(sense_cmd), sbp, mx_sb_len, 
+			 0, 0, 0, &len, 0);
           if (sb_out_len != 0)
             *sb_out_len = (unsigned char)len;
         }
         else if (sb_out_len != 0)
           *sb_out_len = sghdr.sb_len_wr;
       }
+      if (lock)
+        lock_scsi(scsiDevice,0);
     }
   }
   if (transfer_len != 0)
