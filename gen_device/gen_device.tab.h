@@ -18,7 +18,7 @@
 #define DISPATCH 270
 #define FLOAT_NUMBER 271
 #define NUMERIC 272
-#define SIGNAL 273
+#define GEN_SIGNAL 273
 #define TASK 274
 #define TEXT 275
 #define WINDOW 276
@@ -47,8 +47,8 @@
 #define IS 299
 #define STRING_WORD 300
 #define PATH_ITEM 301
-#define ROUTINE 302
-#define ARRAY 303
+#define GEN_ROUTINE 302
+#define GEN_ARRAY 303
 #define COMPRESSIBLE 304
 #define NO_WRITE_MODEL 305
 #define NO_WRITE_SHOT 306

@@ -879,7 +879,7 @@ YY_RULE_SETUP
 case 14:
 YY_RULE_SETUP
 #line 50 "gen_device.x"
-{return SIGNAL;}
+{return GEN_SIGNAL;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
@@ -944,7 +944,7 @@ YY_RULE_SETUP
 case 27:
 YY_RULE_SETUP
 #line 63 "gen_device.x"
-{return ROUTINE;}
+{return GEN_ROUTINE;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
@@ -1019,7 +1019,7 @@ YY_RULE_SETUP
 case 42:
 YY_RULE_SETUP
 #line 78 "gen_device.x"
-{return ARRAY; }
+{return GEN_ARRAY; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
