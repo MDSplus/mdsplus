@@ -7,11 +7,20 @@
  * 
  * This class handles the properties 'file' as used in the TEC Web-Umbrella.
  *
+ * This class does not throw any exceptions; this should be left so.  This is
+ * because it is also used in contexts where the handling of such exceptions 
+ * is somewhat troublesome. (E.g. JVMs running implicitly by matlab.)
+ *
  * Author: Jon Krom, Forschungszentrum Jülich, Institut für Plasmaphysik.
  *
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2002/05/06 16:02:05  jgk
+ * Suggested by  Marco van de Giessen <A.P.M.vandeGiessen@phys.uu.nl>:
+ * - equalsIgnoreCase() is more generally useful than equals().
+ * - A faked properties page can sometimes be useful.
+ *
  * Revision 1.4  2002/04/26 11:42:38  jgk
  * Changed End-Of-Line marker from Windows- to CVS standard.
  *
@@ -156,7 +165,7 @@ public class TWUProperties
     Units()
     {
         String unitstr =  signalProps.getProperty("Unit");
-        return (unitstr == null ? "<unknown>" : unitstr) ;
+        return ((unitstr == null || unitstr.equalsIgnoreCase("None")) ? "" : unitstr) ;
     }
 
     public String
