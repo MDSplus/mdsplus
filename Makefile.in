@@ -9,6 +9,8 @@ JAVA_APS = javamds \
 	   javadispatcher \
 	   javaclient
 
+HDF5_APS = hdf5
+
 D3D_PACKAGE = d3dshr
 
 PARTS = \
@@ -45,7 +47,8 @@ PARTS = \
 	@MDSSQL@ \
         @IDLSQL@ \
 	@IDLMDSEVENT@ \
-	@MDSVME@
+	@MDSVME@ \
+	@HDF5_APS@
 
 all:
 	cdir=`pwd`;\
