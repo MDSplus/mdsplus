@@ -27,7 +27,6 @@ public class RFXControlSetup extends DeviceSetup {
   DeviceField deviceField1 = new DeviceField();
   DeviceField deviceField4 = new DeviceField();
   DeviceField deviceField3 = new DeviceField();
-  DeviceDispatch deviceDispatch1 = new DeviceDispatch();
   DeviceField deviceField6 = new DeviceField();
   DeviceField deviceField5 = new DeviceField();
   DeviceField deviceField9 = new DeviceField();
@@ -283,6 +282,7 @@ public class RFXControlSetup extends DeviceSetup {
   DeviceField deviceField11111111111 = new DeviceField();
   DeviceChannel deviceChannel1115 = new DeviceChannel();
   DeviceField deviceField111117 = new DeviceField();
+  DeviceDispatch deviceDispatch1 = new DeviceDispatch();
   public RFXControlSetup() {
     try {
       jbInit();
@@ -292,8 +292,8 @@ public class RFXControlSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(790);
-    this.setHeight(600);
+    this.setWidth(819);
+    this.setHeight(819);
     this.setDeviceType("RFXControl");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("RFX Control Setup");
@@ -309,7 +309,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField1.setOffsetNid(1);
     deviceField1.setTextOnly(true);
     deviceField1.setLabelString("Comment: ");
-    deviceField1.setNumCols(30);
+    deviceField1.setNumCols(20);
     deviceField1.setIdentifier("");
     deviceField4.setOffsetNid(10);
     deviceField4.setLabelString("Trig2 time: ");
@@ -320,12 +320,12 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField3.setNumCols(22);
     deviceField3.setIdentifier("trig1_time");
     deviceField6.setOffsetNid(14);
-    deviceField6.setLabelString("Post sampling time (s):");
-    deviceField6.setNumCols(5);
+    deviceField6.setLabelString("Post smp time (s):");
+    deviceField6.setNumCols(20);
     deviceField6.setIdentifier("post_sampling_time");
     deviceField5.setOffsetNid(13);
-    deviceField5.setLabelString("Pre sampling time (s): ");
-    deviceField5.setNumCols(5);
+    deviceField5.setLabelString("Pre smp. time (s): ");
+    deviceField5.setNumCols(20);
     deviceField5.setIdentifier("pre_sampling_time");
     deviceField9.setOffsetNid(12);
     deviceField9.setLabelString("Sys duration: ");
@@ -1149,13 +1149,13 @@ public class RFXControlSetup extends DeviceSetup {
     jPanel9.add(jPanel10, null);
     jPanel10.add(deviceField1, null);
     jPanel10.add(deviceField15, null);
+    jPanel10.add(deviceDispatch1, null);
     jPanel9.add(jPanel30, null);
     jPanel30.add(deviceField3, null);
     jPanel30.add(deviceField4, null);
     jPanel9.add(jPanel29, null);
     jPanel29.add(deviceField5, null);
     jPanel29.add(deviceField6, null);
-    jPanel29.add(deviceDispatch1, null);
     jPanel9.add(jPanel28, null);
     jPanel28.add(deviceField7, null);
     jPanel28.add(deviceField8, null);
