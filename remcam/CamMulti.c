@@ -40,7 +40,7 @@ static int CamMulti(char *routine, struct descriptor *name, int *a, int *f, int 
     char cmd[512];
     strncpy(name_c,name->pointer,name->length);
     name_c[name->length] = '\0';
-    sprintf(cmd,"RemCamMulti('%s','%s',%d,%d,%d,%s,%d,_iosb)",routine,name_c,*a,*f,*count,*f < 8 ? "_data" : "$",*mem);
+    sprintf(cmd,"RemCamMulti('%s','%s',%d,%d,%d,%s,%d,_iosb)",routine,name_c,*a,*f,*count,*f < 8 ? "_data" : "_data=$",*mem);
     if (*f < 8)
     {
       status = MdsValue(serverid,cmd,&ans_d,0);

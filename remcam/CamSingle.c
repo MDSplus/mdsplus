@@ -48,13 +48,13 @@ static int CamSingle(char *routine, struct descriptor *name, int *a, int *f, voi
   int status = 0;
   if (serverid)
   {
-    struct descrip data_d = {8,1,{0,0,0,0,0,0,0},0};
+    struct descrip data_d = {8,0,{0,0,0,0,0,0,0},0};
     struct descrip ans_d = {0,0,{0,0,0,0,0,0,0},0};
     char name_c[512];
     char cmd[512];
     strncpy(name_c,name->pointer,name->length);
     name_c[name->length] = '\0';
-    sprintf(cmd,"RemCamSingle('%s','%s',%d,%d,%s,%d,_iosb)",routine,name_c,*a,*f,*f < 8 ? "_data" : "$",*mem);
+    sprintf(cmd,"RemCamSingle('%s','%s',%d,%d,%s,%d,_iosb)",routine,name_c,*a,*f,*f < 8 ? "_data" : "_data=$",*mem);
     if (*f < 8)
     {
       status = MdsValue(serverid,cmd,&ans_d,0);
