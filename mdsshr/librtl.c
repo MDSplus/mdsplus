@@ -197,7 +197,7 @@ void *dlsym(void *handle, char *name)
 char *TranslateLogical(char *name)
 {
 	char *env = getenv(name);
-	return env ? strcpy(malloc(strlen(env)+1,env) : 0;
+	return env ? strcpy(malloc(strlen(env)+1),env) : 0;
 }
 unsigned int LibCallg(void **arglist, unsigned int (*routine)())
 {
