@@ -1015,7 +1015,10 @@ STATIC_ROUTINE int sendMessage(char *evname, int key, int data_len, char *data)
 #else
     status = msgid = msgget(key, 0777);
     if(msgid == -1)
-	perror("msgget");
+    {     
+	perror("msgget - sendMessage");
+        removeDeadMsg(key);
+    }
     else
     {
 /* Check for dummies: if there are messages on the queue, compare the current time with
@@ -1125,7 +1128,7 @@ STATIC_ROUTINE void removeMessage(int key)
 
     status = msgid = msgget(key, 0777);
     if(msgid == -1)
-	perror("msgget");
+	perror("msgget removeMessage");
     status = msgctl(msgid, IPC_RMID, &buf);
     if(status == -1) perror("msgctl");
 #endif
@@ -1158,7 +1161,6 @@ STATIC_ROUTINE void startRemoteAstHandler()
 STATIC_ROUTINE void removeDeadMsg(int key)
 {
     int i, curr, prev;
-
     LockMdsShrMutex(&sharedMutex,&sharedMutex_initialized);
     for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
     {
@@ -1168,8 +1170,9 @@ STATIC_ROUTINE void removeDeadMsg(int key)
 		shared_name[shared_info[i].nameid].first_id = shared_info[i].next_id;
 	    else
 	    {
-		for(curr = prev = shared_name[shared_info[i].nameid].first_id; curr != i; curr = shared_info[curr].next_id);
-		shared_info[prev].next_id = shared_info[curr].next_id;
+		for(curr = prev = shared_name[shared_info[i].nameid].first_id; curr != i && curr != -1; curr = shared_info[curr].next_id);
+               if (curr > -1 && prev > -1)
+		  shared_info[prev].next_id = shared_info[curr].next_id;
 	    }
 	    shared_name[shared_info[i].nameid].refcount--;
 	    shared_info[i].nameid = -1;
