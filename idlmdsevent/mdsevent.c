@@ -30,6 +30,7 @@ Invoked from MDSEVENT.PRO
 
 ------------------------------------------------------------------------------*/
 #include <ipdesc.h>
+#include <mdsshr.h>
 
 typedef struct _event_struct { int stub_id;
                                int base_id;
@@ -81,23 +82,23 @@ static int UnBlockSig(int sig_number)
 
 int IDLMdsEventCan(int argc, void * *argv)
 {
-        EventStruct *e,*p;
+    EventStruct *e,*p;
 	SOCKET sock = (SOCKET)((char *)argv[0] - (char *)0);
-	 int eventid = (unsigned int)((char *)argv[1] - (char *)0);
-        int status;
-        BlockSig(SIGALRM);
+	int eventid = (unsigned int)((char *)argv[1] - (char *)0);
+    int status;
+    BlockSig(SIGALRM);
 	status = (sock >= 0) ? MdsEventCan(sock, eventid) : MDSEventCan(eventid);
-        UnBlockSig(SIGALRM);
-        for (e=EventList,p=0;e && e->loc_event_id != eventid; p=e,e=e->next);
-        if (e)
+    UnBlockSig(SIGALRM);
+    for (e=EventList,p=0;e && e->loc_event_id != eventid; p=e,e=e->next);
+    if (e)
 	{
-          if (p)
-            p->next = e->next;
-          else
-            EventList = e->next;
-          free(e);        
-        }
-        return status;
+		if (p)
+			p->next = e->next;
+		else
+			EventList = e->next;
+		free(e);
+	}
+	return status;
 }
 
 int IDLMdsGetevi(int argc, void **argv)

@@ -5,8 +5,8 @@ WaveDisplay.class : *.java
 	%JDK_DIR%\bin\javac.exe WaveDisplay.java
 
 ..\java :
-	mkdir ..\java
+	- mkdir ..\java
 
 ..\java\classes :
-	mkdir ..\java\classes
+	- mkdir ..\java\classes
 

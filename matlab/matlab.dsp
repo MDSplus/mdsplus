@@ -99,29 +99,5 @@ SOURCE=.\mdsipmex.c
 SOURCE=.\mdsipmex.def
 # End Source File
 # End Group
-# Begin Group "Header Files"
-
-# PROP Default_Filter "h;hpp;hxx;hm;inl"
-# Begin Source File
-
-SOURCE=..\include\mdstypes.h
-# End Source File
-# Begin Source File
-
-SOURCE="$(MATLAB_DIR)\extern\include\mex.h"
-# End Source File
-# End Group
-# Begin Group "Resource Files"
-
-# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
-# End Group
-# Begin Source File
-
-SOURCE=..\..\MATLAB6p1\extern\lib\win32\microsoft\msvc60\libmx.lib
-# End Source File
-# Begin Source File
-
-SOURCE="$(MATLAB_DIR)\extern\lib\win32\microsoft\msvc60\libmex.lib"
-# End Source File
 # End Target
 # End Project
