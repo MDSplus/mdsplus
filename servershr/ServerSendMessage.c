@@ -44,9 +44,9 @@ int ServerSendMessage();
 #include <netinet/in.h>
 #include <netdb.h>
 #include <sys/time.h>
+#include <pthread.h>
 #define INVALID_SOCKET -1
 #endif
-
 #define HAS_CONDITION 987654
 #define NOT_DONE 1212121
 

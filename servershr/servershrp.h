@@ -22,6 +22,10 @@ extern BOOL pthread_cond_destroy();
 #define close closesocket
 #else
 #include <pthread.h>
+#ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
+extern void pthread_lock_global_np();
+extern void pthread_unlock_global_np();
+#endif
 #endif
 
 #define SrvNoop        0           /**** Used to start server ****/
