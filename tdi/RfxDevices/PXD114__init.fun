@@ -26,6 +26,8 @@ public fun PXD114__init(as_is _nid, optional _method)
 
 	private _INVALID = 10E20;
 
+write(*, 'Start PDX114 INIT');
+
 	_board_id = if_error(data(DevNodeRef(_nid, _N_NAME)), 'INVALID');
 	if(_board_id == 'INVALID')
 	{
@@ -159,6 +161,7 @@ public fun PXD114__init(as_is _nid, optional _method)
 	DevPut(_nid, _N_ACT_SEG_LEN, _act_seg_len);
 	DevPut(_nid, _N_ACT_SAMP_FRQ, FT_FLOAT(_act_samp_frq));
 
+write(*, 'End PDX114 INIT');
     return(1);	
 
 }

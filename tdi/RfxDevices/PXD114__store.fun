@@ -26,7 +26,7 @@ public fun PXD114__store(as_is _nid, optional _method)
 	private _N_CHAN_DATA = 5;
 
 	private _INVALID = 10E20;
-
+write(*, 'Start PDX114 STORE');
 	_name = if_error(data(DevNodeRef(_nid, _N_NAME)), 'INVALID');
 	if(_name == 'INVALID')
 	{
@@ -85,7 +85,7 @@ public fun PXD114__store(as_is _nid, optional _method)
     _status = LECROY_PXD114->PXDStore(
 		long(_handle), 
 		_act_seg_len,
-		_num_segments,
+		ref(_num_segments),
 		ref(_trig_times), 
 		ref(_seg1),
 		ref(_seg2),
@@ -182,7 +182,7 @@ _status = 1;
 		abort();
 	}
 	_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(2 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
-	_status = DevPutSignal(_sig_nid, 0, _curr_range/8192., word(_seg1), 0, _act_seg_len * _num_segments, _dim);
+	_status = DevPutSignal(_sig_nid, 0, _curr_range/8192., word(_seg3), 0, _act_seg_len * _num_segments, _dim);
 	if(! _status)
 	{
 		DevLogErr(_nid, 'Error writing data in pulse file');
@@ -196,12 +196,13 @@ _status = 1;
 		abort();
 	}
 	_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(3 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
-	_status = DevPutSignal(_sig_nid, 0, _curr_range/8192., word(_seg1), 0, _act_seg_len * _num_segments, _dim);
+	_status = DevPutSignal(_sig_nid, 0, _curr_range/8192., word(_seg4), 0, _act_seg_len * _num_segments, _dim);
 	if(! _status)
 	{
 		DevLogErr(_nid, 'Error writing data in pulse file');
 
 	}
+write(*, 'End PDX114 STORE');
     return(1);	
 
 }
