@@ -62,7 +62,7 @@ int bwfilter( float *w_cut_in, int *order_in, int *num, float *in, float *out)
     y_filtered[j] = x_current[j];
   }
 
-// Do dynamic filtering in time domain until input stream stops
+/* Do dynamic filtering in time domain until input stream stops */
 
   for (out_idx=0;out_idx < *num && in_idx < *num; out_idx++)
   {
