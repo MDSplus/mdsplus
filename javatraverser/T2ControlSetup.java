@@ -42,30 +42,32 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField3.setBounds(24,108,228,40);
 		deviceChoice1.setOffsetNid(5);
 		{
-			String[] tempString = new String[4];
+			String[] tempString = new String[5];
 			tempString[0] = "Offset Correction";
 			tempString[1] = "Intelligent Shell";
 			tempString[2] = "Rotating Perturbation";
 			tempString[3] = "Mode Control";
+			tempString[4] = "Individual Perturbation";
 			deviceChoice1.setChoiceItems(tempString);
 		}
 		deviceChoice1.setLabelString("Initial Control");
 		deviceChoice1.setConvert(true);
-		deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4});
+		deviceChoice1.setChoiceIntValues(new int[] {});
 		getContentPane().add(deviceChoice1);
 		deviceChoice1.setBounds(12,156,276,40);
 		deviceChoice2.setOffsetNid(6);
 		{
-			String[] tempString = new String[4];
+			String[] tempString = new String[5];
 			tempString[0] = "Offset Correction";
 			tempString[1] = "Intelligent Shell";
 			tempString[2] = "Rotating Perturbation";
 			tempString[3] = "Mode Control";
+			tempString[4] = "Individual Perturbation";
 			deviceChoice2.setChoiceItems(tempString);
 		}
 		deviceChoice2.setLabelString("Triggered Control");
 		deviceChoice2.setConvert(true);
-		deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4});
+		deviceChoice2.setChoiceIntValues(new int[] {});
 		getContentPane().add(deviceChoice2);
 		deviceChoice2.setBounds(312,156,300,40);
 		deviceField4.setNumCols(4);
