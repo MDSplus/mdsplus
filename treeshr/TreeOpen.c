@@ -399,12 +399,12 @@ static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *su
 	  
 	  info->flush = (dblist->shotid == -1);
 	  info->treenam = strcpy(malloc(strlen(tree)+1),tree);
-	  status = MapTree(tree, dblist->shotid, info, 0, parent != 0);
+	  status = MapTree(tree, dblist->shotid, info, 0, parent == 0);
 	  if (status == TreeFAILURE && treeshr_errno == TreeFILE_NOT_FOUND)
 	  {
 	    status = TreeCallHook(RetrieveTree, info);
 	    if (status == TreeNORMAL)
-	      status = MapTree(tree, dblist->shotid, info, 0, parent != 0);
+	      status = MapTree(tree, dblist->shotid, info, 0, parent == 0);
 	  }
 	  if (status == TreeNORMAL)
 	  {
