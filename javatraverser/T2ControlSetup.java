@@ -532,20 +532,22 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField57.setOffsetNid(106);
 		deviceField57.setLabelString("Autozero end:");
 		getContentPane().add(deviceField57);
-		deviceField57.setBounds(300,204,180,40);
+		deviceField57.setBounds(288,204,180,40);
 		deviceChoice3.setOffsetNid(108);
 		{
-			String[] tempString = new String[3];
+			String[] tempString = new String[5];
 			tempString[0] = "16 Equally Spaced Coils";
 			tempString[1] = "16 Coils";
 			tempString[2] = "8 Coils";
+			tempString[3] = "8 Equally Spaced Coils A";
+			tempString[4] = "8 Equally Spaced Coils B";
 			deviceChoice3.setChoiceItems(tempString);
 		}
 		deviceChoice3.setLabelString("Map:");
 		deviceChoice3.setConvert(true);
-		deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3});
+		deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)5});
 		getContentPane().add(deviceChoice3);
-		deviceChoice3.setBounds(480,204,228,40);
+		deviceChoice3.setBounds(468,204,252,40);
 		//}}
 	}
 
