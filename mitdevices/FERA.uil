@@ -1,0 +1,219 @@
+module fera
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+object
+    FERA: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNdialogTitle = 
+            compound_string("LeCroy Fera Charge digitizers");
+            XmNautoUnmanage = false;
+            XmNnoResize = true;
+            XmNborderWidth = 1;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Controler name:");
+                    XmNx = 49;
+                    XmNy = 91;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 20;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = FERA$N_CNTRL_NAME;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 16;
+                    XmNy = 115;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNx = 17;
+                    XmNy = 15;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 54;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = FERA$N_COMMENT;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 114;
+                    XmNy = 14;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("External clock:");
+                    XmNx = 18;
+                    XmNy = 60;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 48;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = FERA$N_EXT_CLOCK;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 136;
+                    XmNy = 51;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    XmNx = 38;
+                    XmNy = 208;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = FERA$N_INIT_ACTION;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    XmNx = 260;
+                    XmNy = 208;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = FERA$N_STORE_ACTION;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 11;
+                    XmNy = 246;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 152;
+                    XmNy = 246;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 333;
+                    XmNy = 246;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 541;
+                    XmNy = 246;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Digitizer names:");
+                    XmNx = 270;
+                    XmNy = 88;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Memory names:");
+                    XmNx = 456;
+                    XmNy = 87;
+                    };
+                };
+            XmdsExpr 
+                {
+                arguments
+                    {
+                    XmNcolumns = 20;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = FERA$N_MEM_NAME;
+                    XmdsNdefaultQuote = false;
+                    XmdsNautoQuote = false;
+                    XmNx = 439;
+                    XmNy = 114;
+                    XmNrows = 5;
+                    XmNeditMode = XmMULTI_LINE_EDIT;
+                    };
+                };
+            XmdsExpr 
+                {
+                arguments
+                    {
+                    XmNcolumns = 20;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = FERA$N_DIG_NAME;
+                    XmdsNdefaultQuote = false;
+                    XmdsNautoQuote = false;
+                    XmNx = 246;
+                    XmNy = 114;
+                    XmNrows = 5;
+                    XmNeditMode = XmMULTI_LINE_EDIT;
+                    };
+                };
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    FERA$K_CONG_NODES: 9;
+    FERA$N_HEAD: 0;
+    FERA$N_COMMENT: 1;
+    FERA$N_DIG_NAME: 2;
+    FERA$N_CNTRL_NAME: 3;
+    FERA$N_MEM_NAME: 4;
+    FERA$N_EXT_CLOCK: 5;
+    FERA$N_OUTPUT: 6;
+    FERA$N_INIT_ACTION: 7;
+    FERA$N_STORE_ACTION: 8;
+
+end module;
+

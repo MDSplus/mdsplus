@@ -1,0 +1,207 @@
+module a12
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+object
+    A12: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNdialogTitle = 
+            compound_string("Aurora 12-Bit Transient Digitizer");
+            XmNautoUnmanage = false;
+            XmNnoResize = true;
+            XmNborderWidth = 1;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("CAMAC name:");
+                    XmNx = 10;
+                    XmNy = 10;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 54;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = A12$N_CTS_NAME;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 10;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNx = 10;
+                    XmNy = 40;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 54;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = A12$N_COMMENT;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 40;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("External clock:");
+                    XmNx = 11;
+                    XmNy = 105;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 48;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = A12$N_EXT_CLOCK_IN;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 140;
+                    XmNy = 102;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Trigger:");
+                    XmNx = 10;
+                    XmNy = 72;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 48;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = A12$N_STOP_TRIG;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 140;
+                    XmNy = 70;
+                    };
+                };
+            XmdsDigChans 
+                {
+                arguments
+                    {
+                    XmdsNchannels = 6;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = A12$N_INPUTS;
+                    XmdsNdataNidOffset = A12$N_INP_HEAD;
+                    XmdsNstartIdxNidOffset = A12$N_INP_STARTIDX;
+                    XmdsNendIdxNidOffset = A12$N_INP_ENDIDX;
+                    XmdsNnodesPerChannel = A12$K_NODES_PER_INP;
+                    XmNx = 9;
+                    XmNy = 151;
+                    XmNwidth = 588;
+                    XmNheight = 245;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    XmNx = 10;
+                    XmNy = 400;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = A12$N_INIT_ACTION;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    XmNx = 200;
+                    XmNy = 400;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = A12$N_STORE_ACTION;
+                    };
+                };
+            XmdsOkButton
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 440;
+                    };
+                };
+            XmdsApplyButton
+                {
+                arguments
+                    {
+                    XmNx = 159;
+                    XmNy = 440;
+                    };
+                };
+            XmdsResetButton
+                {
+                arguments
+                    {
+                    XmNx = 350;
+                    XmNy = 440;
+                    };
+                };
+            XmdsCancelButton
+                {
+                arguments
+                    {
+                    XmNx = 524;
+                    XmNy = 440;
+                    };
+                };
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    A12$K_CONG_NODES: 25;
+    A12$N_HEAD: 0;
+    A12$N_CTS_NAME: 1;
+    A12$N_COMMENT: 2;
+    A12$N_EXT_CLOCK_IN: 3;
+    A12$N_STOP_TRIG: 4;
+    A12$N_INPUTS: 5;
+    A12$K_NODES_PER_INP: 3;
+    A12$N_INP_HEAD: 0;
+    A12$N_INP_STARTIDX: 1;
+    A12$N_INP_ENDIDX: 2;
+    A12$N_INIT_ACTION: 23;
+    A12$N_STORE_ACTION: 24;
+
+end module;

@@ -1,0 +1,169 @@
+module B3224_UIL
+    names = case_sensitive
+
+value
+    B3224$N_NAME: 1;
+    B3224$N_COMMENT: 2;
+    B3224$N_OUTPUT_1: 3;
+    B3224$N_OUTPUT_2: 4;
+    B3224$N_INIT_ACTION: 5;
+    DEVICE_NID: -1;
+
+object
+    B3224: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNresizePolicy = XmRESIZE_GROW;
+            XmNautoUnmanage = false;
+            XmNdialogTitle = 
+            compound_string("Bi Ra Model 3224 Dual 24 Bit Output Register");
+            XmNnoResize = true;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 10;
+                    XmNlabelString = 
+                    compound_string("CAMAC Name:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 110;
+                    XmNy = 10;
+                    XmNcolumns = 32;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = B3224$N_NAME;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 35;
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 110;
+                    XmNy = 35;
+                    XmNcolumns = 32;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = B3224$N_COMMENT;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 71;
+                    XmNlabelString = 
+                    compound_string("Output 1:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 110;
+                    XmNy = 70;
+                    XmNcolumns = 18;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = B3224$N_OUTPUT_1;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 95;
+                    XmNlabelString = 
+                    compound_string("Output 2:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 110;
+                    XmNy = 94;
+                    XmNcolumns = 18;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = B3224$N_OUTPUT_2;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 125;
+                    XmdsNnidOffset = B3224$N_INIT_ACTION;
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    XmdsNnid = DEVICE_NID;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 175;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 108;
+                    XmNy = 175;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 243;
+                    XmNy = 175;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 352;
+                    XmNy = 175;
+                    };
+                };
+            };
+        };
+
+end module;
+

@@ -1,0 +1,445 @@
+module L8210_UIL
+    names = case_sensitive
+
+object
+   L8210: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNx = 0;
+            XmNy = 0;
+            XmNborderWidth = 1;
+            XmNresizePolicy = XmRESIZE_ANY;
+            XmNdialogTitle = 
+            compound_string("Lecroy Model 8210 10-Bit Transient Digitizer");
+            XmNheight = 584;
+            XmNdefaultPosition = true;
+            XmNnoResize = true;
+            XmNautoUnmanage = false;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 23;
+                    XmNy = 17;
+                    XmNlabelString = 
+                    compound_string("CAMAC name:");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 24;
+                    XmNy = 47;
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 28;
+                    XmNy = 113;
+                    XmNlabelString = 
+                    compound_string("Trigger:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 131;
+                    XmNy = 15;
+                    XmNcolumns = 47;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L8210$N_CTS_NAME;
+                    XmNwidth = 350;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 130;
+                    XmNy = 43;
+                    XmNcolumns = 47;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L8210$N_COMMENT;
+                    XmNwidth = 350;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 149;
+                    XmNy = 110;
+                    XmNcolumns = 47;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L8210$N_STOP_TRIG;
+                    XmNwidth = 350;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 149;
+                    XmNy = 78;
+                    XmNcolumns = 30;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNdefaultQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L8210$N_EXT_CLOCK_IN;
+                    XmNwidth = 350;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 24;
+                    XmNy = 466;
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        apply_proc();
+                        };
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 310;
+                    XmNy = 467;
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        reset_proc();
+                        };
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 166;
+                    XmNy = 466;
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        apply_proc();
+                        };
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 486;
+                    XmNy = 466;
+                    };
+                };
+            XmdsNidOptionMenu header_menu;
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNx = 27;
+                    XmNy = 425;
+                    XmdsNnidOffset = L8210$N_INIT_ACTION;
+                    XmNlabelString = 
+                    compound_string("Init Action");
+                    XmdsNnid = DEVICE_NID;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNx = 290;
+                    XmNy = 424;
+                    XmdsNnidOffset = L8210$N_STORE_ACTION;
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    XmdsNnid = DEVICE_NID;
+                    };
+                };
+            XmdsDigChans 
+                {
+                arguments
+                    {
+                    XmNx = 8;
+                    XmNy = 245;
+                    XmdsNchannels = 4;
+                    XmdsNdataNidOffset = L8210$N_INP_HEAD;
+                    XmdsNendIdxNidOffset = L8210$N_INP_ENDIDX;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L8210$N_INPUTS;
+                    XmdsNnodesPerChannel = L8210$K_NODES_PER_INP;
+                    XmdsNstartIdxNidOffset = L8210$N_INP_STARTIDX;
+                    XmNwidth = 535;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 26;
+                    XmNy = 77;
+                    XmNlabelString = 
+                    compound_string("External Clock:");
+                    };
+                };
+            XmScale mems_scale;
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 172;
+                    XmNy = 161;
+                    XmNlabelString = 
+                    compound_string("Memories:");
+                    };
+                };
+            XmPushButtonGadget 
+                {
+                arguments
+                    {
+                    XmNx = 48;
+                    XmNy = 205;
+                    XmNlabelString = 
+                    compound_string("Display PTS Choices");
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        pts_activate_proc();
+                        };
+                    };
+                };
+            unmanaged XmBulletinBoardDialog pts_dlog;
+            };
+        };
+    mems_scale: XmScale 
+        {
+        arguments
+            {
+            XmNx = 247;
+            XmNy = 152;
+            XmNborderWidth = 0;
+            XmNminimum = 0;
+            XmNmaximum = 12;
+            XmNorientation = XmHORIZONTAL;
+            XmNshowValue = true;
+            XmNuserData = mems_nid;
+            };
+        };
+    pts_dlog: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNborderWidth = 1;
+            XmNresizePolicy = XmRESIZE_ANY;
+            XmNwidth = 86;
+            XmNdialogTitle = 
+            compound_string("Pts Switch settings");
+            XmNnoResize = true;
+            XmNheight = 257;
+            };
+        controls
+            {
+            XmPushButton 
+                {
+                arguments
+                    {
+                    XmNx = 11;
+                    XmNy = 213;
+                    XmNlabelString = 
+                    compound_string("Dismiss");
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        pts_dismiss_proc();
+                        };
+                    };
+                };
+            XmRowColumn 
+                {
+                arguments
+                    {
+                    XmNx = 18;
+                    XmNy = 0;
+                    XmNborderWidth = 1;
+                    XmNorientation = XmVERTICAL;
+                    };
+                controls
+                    {
+                    XmLabelGadget pts_0;
+                    XmLabelGadget pts_1;
+                    XmLabelGadget pts_2;
+                    XmLabelGadget pts_3;
+                    XmLabelGadget pts_4;
+                    XmLabelGadget pts_5;
+                    XmLabelGadget pts_6;
+                    XmLabelGadget pts_7;
+                    };
+                };
+            };
+        };
+    pts_0: XmLabelGadget 
+        {
+        arguments
+            {
+            XmNx = 9;
+            XmNy = 9;
+            XmNlabelString = 
+            compound_string("Label");
+            };
+        };
+    pts_1: XmLabelGadget 
+        {
+        arguments
+            {
+            XmNx = 10;
+            XmNy = 11;
+            XmNlabelString = 
+            compound_string("Label");
+            };
+        };
+    pts_2: XmLabelGadget 
+        {
+        arguments
+            {
+            XmNx = 11;
+            XmNy = 37;
+            XmNlabelString = 
+            compound_string("Label");
+            };
+        };
+    pts_3: XmLabelGadget 
+        {
+        arguments
+            {
+            XmNx = 11;
+            XmNy = 56;
+            XmNlabelString = 
+            compound_string("Label");
+            };
+        };
+    pts_4: XmLabelGadget 
+        {
+        arguments
+            {
+            XmNx = 20;
+            XmNy = 83;
+            XmNlabelString = 
+            compound_string("Label");
+            };
+        };
+    pts_5: XmLabelGadget 
+        {
+        arguments
+            {
+            XmNx = 14;
+            XmNy = 106;
+            XmNlabelString = 
+            compound_string("Label");
+            };
+        };
+    pts_6: XmLabelGadget 
+        {
+        arguments
+            {
+            XmNx = 9;
+            XmNy = 127;
+            XmNlabelString = 
+            compound_string("Label");
+            };
+        };
+    pts_7: XmLabelGadget 
+        {
+        arguments
+            {
+            XmNx = 10;
+            XmNy = 152;
+            XmNlabelString = 
+            compound_string("Label");
+            };
+        };
+    header_menu: XmdsNidOptionMenu 
+        {
+        arguments
+            {
+            XmNx = 263;
+            XmNy = 202;
+            XmdsNnidOffset = L8210$N_HEADER;
+            XmNwidth = 25;
+            XmNheight = 25;
+            XmNlabelString = 
+            compound_string("PTS Header");
+            XmdsNnid = DEVICE_NID;
+            XmdsNlabelStrings = l8210_header_names;
+            XmdsNvalueStrings = l8210_header_values;
+            };
+        };
+
+value
+    L8210$K_CONG_NODES: 26;
+    L8210$N_HEAD: 0;
+    L8210$N_CTS_NAME: 1;
+    L8210$N_COMMENT: 2;
+    L8210$N_EXT_CLOCK_IN: 3;
+    L8210$N_STOP_TRIG: 4;
+    L8210$N_CLOCK_OUT: 5;
+    L8210$N_MEMORIES: 6;
+    L8210$N_HEADER: 7;
+    L8210$N_INPUTS: 8;
+    L8210$K_NODES_PER_INP: 4;
+    L8210$N_INP_HEAD: 0;
+    L8210$N_INP_STARTIDX: 1;
+    L8210$N_INP_ENDIDX: 2;
+    L8210$N_INP_USE_TIMES: 3;
+    L8210$N_INIT_ACTION: 24;
+    L8210$N_STORE_ACTION: 25;
+    DEVICE_NID: -1;
+
+procedure
+    pts_activate_proc;
+    reset_proc;
+    apply_proc;
+    pts_dismiss_proc;
+
+identifier mems_nid;
+
+value
+    l8210_header_names : imported string_table;
+    l8210_header_values : imported string_table;
+end module;

@@ -1,0 +1,192 @@
+module joerger_adcp
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+object
+    JOERGER_ADCP: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNdialogTitle = 
+            compound_string("Joerger ADCP 16-Input Differential ADC");
+            XmNautoUnmanage = false;
+            XmNnoResize = true;
+            XmNborderWidth = 1;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("CAMAC name:");
+                    XmNx = 10;
+                    XmNy = 10;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 54;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_ADCP$N_NAME;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 10;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNx = 10;
+                    XmNy = 40;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 54;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_ADCP$N_COMMENT;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 40;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    XmNx = 10;
+                    XmNy = 140;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_ADCP$N_INIT_ACTION;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    XmNx = 200;
+                    XmNy = 140;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_ADCP$N_STORE_ACTION;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 180;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 159;
+                    XmNy = 180;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 350;
+                    XmNy = 180;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 524;
+                    XmNy = 180;
+                    };
+                };
+            XmdsPath 
+                {
+                arguments
+                    {
+                    XmNx = 143;
+                    XmNy = 109;
+                    XmNwidth = 387;
+                    XmNheight = 25;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_ADCP$N_INPUTS;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Output");
+                    XmNx = 16;
+                    XmNy = 108;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Operating Mode:");
+                    XmNx = 10;
+                    XmNy = 75;
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 143;
+                    XmNy = 74;
+                    XmdsNnidOffset = JOERGER_ADCP$N_NO_TRIG;
+                    XmNwidth = 25;
+                    XmNheight = 25;
+                    XmdsNlabelStrings = string_table(
+                        compound_string(" Triggered"),
+                        
+                        compound_string(" Scan at Store Time"));
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNvalueStrings = string_table(
+                        compound_string("0"),
+                        
+                        compound_string("1"));
+                    };
+                };
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    JOERGER_ADCP$K_CONG_NODES: 7;
+    JOERGER_ADCP$N_HEAD: 0;
+    JOERGER_ADCP$N_NAME: 1;
+    JOERGER_ADCP$N_COMMENT: 2;
+    JOERGER_ADCP$N_NO_TRIG: 3;
+    JOERGER_ADCP$N_INPUTS: 4;
+    JOERGER_ADCP$N_INIT_ACTION: 5;
+    JOERGER_ADCP$N_STORE_ACTION: 6;
+
+end module;
+

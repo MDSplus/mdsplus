@@ -1,0 +1,437 @@
+module hv4032
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+object
+    HV4032: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNdialogTitle = 
+            compound_string("LeCroy Hv4032 High Voltage System");
+            XmNautoUnmanage = false;
+            XmNnoResize = true;
+            XmNborderWidth = 1;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("CAMAC name:");
+                    XmNx = 10;
+                    XmNy = 10;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 46;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV4032$N_NAME;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 10;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNx = 10;
+                    XmNy = 40;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 46;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV4032$N_COMMENT;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 40;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("On Action");
+                    XmNx = 181;
+                    XmNy = 264;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV4032$N_ON_ACTION;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 27;
+                    XmNy = 303;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 193;
+                    XmNy = 307;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 357;
+                    XmNy = 307;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 481;
+                    XmNy = 306;
+                    XmNlabelString = 
+                    compound_string("Cancel");
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Off Action");
+                    XmNx = 295;
+                    XmNy = 264;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV4032$N_OFF_ACTION;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    XmNx = 10;
+                    XmNy = 264;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV4032$N_INIT_ACTION;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    XmNx = 410;
+                    XmNy = 264;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV4032$N_STORE_ACTION;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 22;
+                    XmNy = 81;
+                    XmNlabelString = 
+                    compound_string("Slot:");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 84;
+                    XmNy = 81;
+                    XmNlabelString = 
+                    compound_string("Pod Device Name");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 283;
+                    XmNy = 81;
+                    XmNlabelString = 
+                    compound_string("Slot:");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 350;
+                    XmNy = 81;
+                    XmNlabelString = 
+                    compound_string("Pod Device Name");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 25;
+                    XmNy = 112;
+                    XmNlabelString = 
+                    compound_string(" 1 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 70;
+                    XmNy = 112;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV4032$N_POD_1;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 290;
+                    XmNy = 112;
+                    XmNlabelString = 
+                    compound_string(" 5 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 328;
+                    XmNy = 112;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV4032$N_POD_5;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 25;
+                    XmNy = 142;
+                    XmNlabelString = 
+                    compound_string(" 2 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 70;
+                    XmNy = 142;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV4032$N_POD_2;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 290;
+                    XmNy = 141;
+                    XmNlabelString = 
+                    compound_string(" 6 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 328;
+                    XmNy = 141;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV4032$N_POD_6;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 25;
+                    XmNy = 177;
+                    XmNlabelString = 
+                    compound_string(" 3 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 70;
+                    XmNy = 177;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV4032$N_POD_3;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 291;
+                    XmNy = 177;
+                    XmNlabelString = 
+                    compound_string(" 7 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 328;
+                    XmNy = 177;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV4032$N_POD_7;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 24;
+                    XmNy = 214;
+                    XmNlabelString = 
+                    compound_string(" 4 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 72;
+                    XmNy = 214;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV4032$N_POD_4;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 291;
+                    XmNy = 214;
+                    XmNlabelString = 
+                    compound_string(" 8 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 327;
+                    XmNy = 214;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV4032$N_POD_8;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 72;
+                    XmNy = 241;
+                    XmNlabelString = 
+                    compound_string("Readout:");
+                    };
+                };
+            XmdsPath 
+                {
+                arguments
+                    {
+                    XmNx = 151;
+                    XmNy = 241;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV4032$N_READOUT;
+                    XmdsNpathType = NciRELATIVE_PATH;
+                    };
+                };
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    HV4032$K_CONG_NODES: 16;
+    HV4032$N_HEAD: 0;
+    HV4032$N_NAME: 1;
+    HV4032$N_COMMENT: 2;
+    HV4032$N_PODS: 3;
+    HV4032$N_POD_1: 3;
+    HV4032$N_POD_2: 4;
+    HV4032$N_POD_3: 5;
+    HV4032$N_POD_4: 6;
+    HV4032$N_POD_5: 7;
+    HV4032$N_POD_6: 8;
+    HV4032$N_POD_7: 9;
+    HV4032$N_POD_8: 10;
+    HV4032$N_READOUT: 11;
+    HV4032$N_INIT_ACTION: 12;
+    HV4032$N_STORE_ACTION: 13;
+    HV4032$N_ON_ACTION: 14;
+    HV4032$N_OFF_ACTION: 15;
+
+end module;
+

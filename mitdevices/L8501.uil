@@ -1,0 +1,425 @@
+module l8501
+    names = case_sensitive
+    version = 
+    "v1.0"
+    objects =
+        {
+        XmLabel = gadget;
+        XmPushButton = gadget;
+        XmSeparator = gadget;
+        XmToggleButton = gadget;
+        XmCascadeButton = gadget;
+        }
+
+value
+    DEVICE_NID: -1;
+    L8501$N_TRIGGER1: 3;
+    L8501$N_TRIGGER2: 4;
+    L8501$N_TRIGGER3: 5;
+    L8501$N_MODE: 6;
+    L8501$N_FREQ1: 7;
+    L8501$N_FREQ2: 8;
+    L8501$N_FREQ3: 9;
+    L8501$N_F2_COUNT: 10;
+    L8501$N_F3_COUNT: 11;
+    L8501$N_INIT: 14;
+    L8501$N_STORE: 15;
+    L8501$N_COMMENT: 2;
+    L8501$N_NAME: 1;
+    frequency_labels: string_table(
+        compound_string("20 Hz "),
+        
+        compound_string("50 Hz "),
+        
+        compound_string("100 Hz "),
+        
+        compound_string("200 Hz "),
+        
+        compound_string("500 Hz "),
+        
+        compound_string("1 KHz "),
+        
+        compound_string("2 KHz "),
+        
+        compound_string("5 KHz "),
+        
+        compound_string("10 KHz "),
+        
+        compound_string("20 KHz "),
+        
+        compound_string("50 KHz"),
+        
+        compound_string("100 KHz "),
+        
+        compound_string("200 KHz "),
+        
+        compound_string("500 KHz"),
+        
+        compound_string("1 MHz"),
+        
+        compound_string("2 MHz "),
+        
+        compound_string("5 MHz"),
+        
+        compound_string("10 MHz "),
+        
+        compound_string("20 MHz "));
+    frequency_values: string_table(
+        compound_string("20E-3 "),
+        
+        compound_string("50E-3"),
+        
+        compound_string(".1"),
+        
+        compound_string(".2"),
+        
+        compound_string(".5"),
+        
+        compound_string("1."),
+        
+        compound_string("2. "),
+        
+        compound_string("5. "),
+        
+        compound_string("10. "),
+        
+        compound_string("20."),
+        
+        compound_string("50."),
+        
+        compound_string("100. "),
+        
+        compound_string("200."),
+        
+        compound_string("500."),
+        
+        compound_string("1000."),
+        
+        compound_string("2000."),
+        
+        compound_string("5000."),
+        
+        compound_string("10E3 "),
+        
+        compound_string("20E3 "));
+
+identifier
+    SetupContext ;
+
+object
+    L8501: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNdefaultPosition = true;
+            XmNnoResize = true;
+            XmNautoUnmanage = false;
+            XmNdialogTitle = 
+            compound_string("LeCroy - Model 8501 Programmable 3-Speed Clock Generator");
+            XmNheight = 428;
+            XmNwidth = 513;
+            XmNmarginHeight = 0;
+            XmNmarginWidth = 0;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("CAMAC name:");
+                    XmNx = 5;
+                    XmNy = 5;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 32;
+                    XmdsNautoQuote = true;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L8501$N_NAME;
+                    XmNx = 100;
+                    XmNy = 5;
+                    XmNmarginHeight = 1;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNx = 5;
+                    XmNy = 35;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 32;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L8501$N_COMMENT;
+                    XmdsNautoQuote = true;
+                    XmNx = 100;
+                    XmNy = 35;
+                    XmNmarginHeight = 1;
+                    };
+                };
+            XmdsNidOptionMenu freq1;
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 20;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L8501$N_TRIGGER1;
+                    XmNx = 120;
+                    XmNy = 135;
+                    XmNmarginHeight = 1;
+                    };
+                };
+            XmdsNidOptionMenu freq2;
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 20;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L8501$N_TRIGGER2;
+                    XmNx = 120;
+                    XmNy = 165;
+                    XmNmarginHeight = 1;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 20;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L8501$N_F2_COUNT;
+                    XmNx = 300;
+                    XmNy = 165;
+                    XmNmarginHeight = 1;
+                    };
+                };
+            XmdsNidOptionMenu freq3;
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 20;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L8501$N_TRIGGER3;
+                    XmNx = 120;
+                    XmNy = 190;
+                    XmNmarginHeight = 1;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 20;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L8501$N_F3_COUNT;
+                    XmNx = 300;
+                    XmNy = 190;
+                    XmNmarginHeight = 1;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Frequency");
+                    XmNx = 30;
+                    XmNy = 110;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Trigger");
+                    XmNx = 180;
+                    XmNy = 110;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Count");
+                    XmNx = 360;
+                    XmNy = 135;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNy = 250;
+                    XmNx = 10;
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        Check(0);
+                        };
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 425;
+                    XmNy = 250;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNy = 250;
+                    XmNx = 150;
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        Check(0);
+                        };
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 300;
+                    XmNy = 250;
+                    };
+                };
+            XmdsNidOptionMenu mode;
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNx = 120;
+                    XmNy = 220;
+                    XmdsNnidOffset = L8501$N_INIT;
+                    XmNlabelString = 
+                    compound_string("Init Action");
+                    XmdsNnid = DEVICE_NID;
+                    XmNmarginHeight = 0;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNx = 240;
+                    XmNy = 220;
+                    XmdsNnidOffset = L8501$N_STORE;
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    XmdsNnid = DEVICE_NID;
+                    XmNmarginHeight = 0;
+                    };
+                };
+            };
+        };
+    freq1: XmdsNidOptionMenu 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("");
+            XmNx = 0;
+            XmNy = 130;
+            XmdsNlabelStrings = frequency_labels;
+            XmdsNvalueStrings = frequency_values;
+            XmdsNnidOffset = L8501$N_FREQ1;
+            XmdsNnid = DEVICE_NID;
+            };
+        callbacks
+            {
+            };
+        };
+    freq2: XmdsNidOptionMenu 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("");
+            XmNx = 0;
+            XmNy = 160;
+            XmdsNlabelStrings = frequency_labels;
+            XmdsNvalueStrings = frequency_values;
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = L8501$N_FREQ2;
+            };
+        callbacks
+            {
+            };
+        };
+    freq3: XmdsNidOptionMenu 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("");
+            XmNx = 0;
+            XmNy = 190;
+            XmdsNnidOffset = L8501$N_FREQ3;
+            XmdsNnid = DEVICE_NID;
+            XmdsNlabelStrings = frequency_labels;
+            XmdsNvalueStrings = frequency_values;
+            };
+        };
+    mode: XmdsNidOptionMenu 
+        {
+        arguments
+            {
+            XmNx = 100;
+            XmNy = 75;
+            XmdsNvalueStrings = string_table(
+                compound_string("1 "),
+                
+                compound_string("2 "),
+                
+                compound_string("3 "),
+                
+                compound_string("4 "));
+            XmdsNlabelStrings = string_table(
+                compound_string("Presettable Frequency Shift "),
+                
+                compound_string("Triggerable Frequency Shift "),
+                
+                compound_string("Interleaved Clock"),
+                
+                compound_string("Burst"));
+            XmNlabelString = 
+            compound_string("Mode:");
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = L8501$N_MODE;
+            XmNmarginHeight = 0;
+            };
+        callbacks
+            {
+            };
+        };
+
+procedure
+    Check;
+
+end module;
+

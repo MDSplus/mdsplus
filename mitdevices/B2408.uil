@@ -1,0 +1,218 @@
+module B2408_UIL
+    names = case_sensitive
+
+object
+    B2408: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNresizePolicy = XmRESIZE_ANY;
+            XmNdialogTitle = 
+            compound_string("Bi Ra Model 2048 Serial Time Interval Counter");
+            XmNautoUnmanage = false;
+            XmNnoResize = true;
+            XmNdefaultPosition = true;
+            XmNwidth = 434;
+            XmNheight = 404;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 11;
+                    XmNy = 10;
+                    XmNlabelString = 
+                    compound_string("CAMAC Name:");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 40;
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 110;
+                    XmNy = 8;
+                    XmNcolumns = 32;
+                    XmNmarginHeight = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = B2408$N_NAME;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 111;
+                    XmNy = 40;
+                    XmNcolumns = 32;
+                    XmNmarginHeight = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = B2408$N_COMMENT;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNx = 14;
+                    XmNy = 196;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = B2408$N_INIT_ACTION;
+                    XmNwidth = 25;
+                    XmNheight = 25;
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNx = 254;
+                    XmNy = 189;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = B2408$N_STORE_ACTION;
+                    XmNwidth = 25;
+                    XmNheight = 25;
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 132;
+                    XmNy = 112;
+                    XmNcolumns = 20;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = B2408$N_EXT_CLOCK;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 9;
+                    XmNy = 114;
+                    XmNlabelString = 
+                    compound_string("External Clock:");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 12;
+                    XmNy = 80;
+                    XmNlabelString = 
+                    compound_string("Trigger:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 133;
+                    XmNy = 77;
+                    XmNcolumns = 20;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = B2408$N_TRIGGER;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 338;
+                    XmNy = 230;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 217;
+                    XmNy = 230;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 14;
+                    XmNy = 230;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 102;
+                    XmNy = 230;
+                    };
+                };
+            XmBulletinBoard 
+                {
+                arguments
+                    {
+                    XmNx = 13;
+                    XmNy = 146;
+                    XmNwidth = 401;
+                    XmNheight = 43;
+                    XmNresizePolicy = XmRESIZE_NONE;
+                    XmNshadowThickness = 2;
+                    XmNshadowType = XmSHADOW_IN;
+                    };
+                controls
+                    {
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmdsNnidOffset = B2408$N_TIMEBASE;
+                            XmdsNshowPath = true;
+                            XmNwidth = 25;
+                            XmNheight = 25;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNputOnApply = true;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    B2408$K_CONG_NODES: 8;
+    B2408$N_HEAD: 0;
+    B2408$N_NAME: 1;
+    B2408$N_COMMENT: 2;
+    B2408$N_TRIGGER: 3;
+    B2408$N_EXT_CLOCK: 4;
+    B2408$N_TIMEBASE: 5;
+    B2408$N_INIT_ACTION: 6;
+    B2408$N_STORE_ACTION: 7;
+
+end module;
+

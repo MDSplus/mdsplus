@@ -1,0 +1,1375 @@
+module b5910a
+    names = case_sensitive
+    version = 
+    "v1.0"
+    objects =
+        {
+        XmLabel = gadget;
+        XmPushButton = gadget;
+        XmSeparator = gadget;
+        XmToggleButton = gadget;
+        }
+
+object
+    B5910A: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNautoUnmanage = false;
+            XmNdefaultPosition = true;
+            XmNnoResize = true;
+            XmNdialogTitle = 
+            compound_string("Bi Ra Model 5910 12-Bit Function Generator");
+            XmNresizePolicy = XmRESIZE_GROW;
+            };
+        controls
+            {
+            XmLabel 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("CAMAC name:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 32;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = B5910A$N_NAME;
+                    XmNmarginHeight = 1;
+                    XmNx = 160;
+                    XmdsNautoQuote = true;
+                    };
+                };
+            XmLabel 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNx = 10;
+                    XmNy = 40;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 32;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = B5910A$N_COMMENT;
+                    XmNmarginHeight = 1;
+                    XmNx = 160;
+                    XmNy = 40;
+                    XmdsNautoQuote = true;
+                    };
+                };
+            XmLabel 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Trigger:");
+                    XmNx = 10;
+                    XmNy = 70;
+                    };
+                };
+            XmdsExprField trigger;
+            XmLabel 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Samples per channel:");
+                    XmNx = 10;
+                    XmNy = 100;
+                    };
+                };
+            XmdsExprField samples;
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Active Channels:");
+                    XmdsNlabelStrings = string_table(
+                        compound_string("1 "),
+                        
+                        compound_string("2 "),
+                        
+                        compound_string("4 "));
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = B5910A$N_NOC;
+                    XmdsNvalueStrings = string_table(
+                        compound_string("1 "),
+                        
+                        compound_string("2 "),
+                        
+                        compound_string("4 "));
+                    XmNx = 10;
+                    XmNy = 130;
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Scan Iterations:");
+                    XmdsNlabelStrings = string_table(
+                        compound_string("1"),
+                        
+                        compound_string("2"),
+                        
+                        compound_string("3"),
+                        
+                        compound_string("4"),
+                        
+                        compound_string("5"),
+                        
+                        compound_string("6"),
+                        
+                        compound_string("7"),
+                        
+                        compound_string("8"),
+                        
+                        compound_string("9"),
+                        
+                        compound_string("10"),
+                        
+                        compound_string("11"),
+                        
+                        compound_string("12"),
+                        
+                        compound_string("13"),
+                        
+                        compound_string("14"),
+                        
+                        compound_string("15"),
+                        
+                        compound_string("Continuous "));
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = B5910A$N_ITERATIONS;
+                    XmdsNvalueStrings = string_table(
+                        compound_string("1"),
+                        
+                        compound_string("2"),
+                        
+                        compound_string("3"),
+                        
+                        compound_string("4"),
+                        
+                        compound_string("5"),
+                        
+                        compound_string("6"),
+                        
+                        compound_string("7"),
+                        
+                        compound_string("8"),
+                        
+                        compound_string("9"),
+                        
+                        compound_string("10"),
+                        
+                        compound_string("11"),
+                        
+                        compound_string("12"),
+                        
+                        compound_string("13"),
+                        
+                        compound_string("14"),
+                        
+                        compound_string("15"),
+                        
+                        compound_string("0"));
+                    XmNx = 10;
+                    XmNy = 162;
+                    };
+                };
+            XmdsNidOptionMenu clock;
+            XmPushButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Edit Waveforms");
+                    XmNx = 259;
+                    XmNy = 350;
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        ResetWave();
+                        Draw();
+                        };
+                    };
+                };
+            XmRowColumn 
+                {
+                arguments
+                    {
+                    XmNorientation = XmVERTICAL;
+                    XmNpacking = XmPACK_COLUMN;
+                    XmNx = 14;
+                    XmNy = 195;
+                    };
+                controls
+                    {
+                    XmRowColumn 
+                        {
+                        arguments
+                            {
+                            XmNorientation = XmHORIZONTAL;
+                            XmNpacking = XmPACK_TIGHT;
+                            };
+                        controls
+                            {
+                            XmLabel 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("1");
+                                    };
+                                };
+                            XmdsXdBoxDialogButton xd1;
+                            XmdsPath 
+                                {
+                                arguments
+                                    {
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNnidOffset = B5910A$N_CHANNELS+B5910A$K_NODES_PER_CHANNEL*0;
+                                    XmdsNpathType = NciRELATIVE_PATH;
+                                    };
+                                };
+                            };
+                        };
+                    XmRowColumn 
+                        {
+                        arguments
+                            {
+                            XmNorientation = XmHORIZONTAL;
+                            XmNpacking = XmPACK_TIGHT;
+                            };
+                        controls
+                            {
+                            XmLabel 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("2");
+                                    };
+                                };
+                            XmdsXdBoxDialogButton xd2;
+                            XmdsPath 
+                                {
+                                arguments
+                                    {
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNnidOffset = B5910A$N_CHANNELS+B5910A$K_NODES_PER_CHANNEL*1;
+                                    XmdsNpathType = NciRELATIVE_PATH;
+                                    };
+                                };
+                            };
+                        };
+                    XmRowColumn 
+                        {
+                        arguments
+                            {
+                            XmNorientation = XmHORIZONTAL;
+                            XmNpacking = XmPACK_TIGHT;
+                            };
+                        controls
+                            {
+                            XmLabel 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("3");
+                                    };
+                                };
+                            XmdsXdBoxDialogButton xd3;
+                            XmdsPath 
+                                {
+                                arguments
+                                    {
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNnidOffset = B5910A$N_CHANNELS+B5910A$K_NODES_PER_CHANNEL*2;
+                                    XmdsNpathType = NciRELATIVE_PATH;
+                                    };
+                                };
+                            };
+                        };
+                    XmRowColumn 
+                        {
+                        arguments
+                            {
+                            XmNorientation = XmHORIZONTAL;
+                            XmNpacking = XmPACK_TIGHT;
+                            };
+                        controls
+                            {
+                            XmLabel 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("4");
+                                    };
+                                };
+                            XmdsXdBoxDialogButton xd4;
+                            XmdsPath 
+                                {
+                                arguments
+                                    {
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNnidOffset = B5910A$N_CHANNELS+B5910A$K_NODES_PER_CHANNEL*3;
+                                    XmdsNpathType = NciRELATIVE_PATH;
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = B5910A$N_INIT_ACTION;
+                    XmNx = 10;
+                    XmNy = 350;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 390;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 451;
+                    XmNy = 390;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 135;
+                    XmNy = 390;
+                    };
+                };
+            XmPushButtonGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Reset");
+                    XmNx = 308;
+                    XmNy = 390;
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        Reset();
+                        };
+                    };
+                };
+            unmanaged XmFormDialog draw_popup;
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Ext clock:");
+                    XmNx = 272;
+                    XmNy = 169;
+                    };
+                };
+            XmdsExprField ext_clock;
+            };
+        };
+    draw_popup: XmFormDialog 
+        {
+        arguments
+            {
+            XmNdialogStyle = XmDIALOG_MODELESS;
+            XmNdefaultPosition = true;
+            XmNdialogTitle = 
+            compound_string("B5910A Channel Waveforms");
+            XmNnoResize = true;
+            };
+        controls
+            {
+            XmRowColumn menu_bar;
+            XmBulletinBoard plots;
+            XmForm 
+                {
+                arguments
+                    {
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNtopAttachment = XmATTACH_WIDGET;
+                    XmNtopWidget = XmBulletinBoard plots;
+                    };
+                controls
+                    {
+                    XmRadioBox radbox;
+                    XmTextField crosshairs_st;
+		    XmPushButtonGadget set_point;
+                    XmLabel helpText;
+                    };
+                };
+            };
+        };
+    file_pulldown: XmPulldownMenu 
+        {
+        controls
+            {
+            XmPushButton widget
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Refresh");
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        ResetWave();
+                        };
+                    };
+                };
+            XmPushButton widget
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Dismiss");
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        Dismiss();
+                        };
+                    };
+                };
+            };
+        };
+    Point: XmToggleButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Point");
+            XmNset = false;
+            };
+        callbacks
+            {
+            XmNvalueChangedCallback = procedures
+                {
+                SetPointerMode(XmdsPOINTER_MODE_POINT);
+                };
+            };
+        };
+    Pan: XmToggleButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Pan");
+            XmNset = false;
+            };
+        callbacks
+            {
+            XmNvalueChangedCallback = procedures
+                {
+                SetPointerMode(XmdsPOINTER_MODE_DRAG);
+                };
+            };
+        };
+    Zoom: XmToggleButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Zoom");
+            XmNset = true;
+            };
+        callbacks
+            {
+            XmNvalueChangedCallback = procedures
+                {
+                SetPointerMode(XmdsPOINTER_MODE_ZOOM);
+                };
+            };
+        };
+    SelectButton: XmToggleButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Draw");
+            XmNset = false;
+            };
+        callbacks
+            {
+            XmNvalueChangedCallback = procedures
+                {
+                SetPointerMode(XmdsPOINTER_MODE_DRAW2);
+                };
+            };
+        };
+    SlideStretch: XmToggleButtonGadget 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Slide");
+            XmNset = false;
+            XmNx = 276;
+            XmNy = 1;
+            };
+        callbacks
+            {
+            XmNvalueChangedCallback = procedures
+                {
+                SetPointerMode(XmdsPOINTER_MODE_SLIDE_STRETCH);
+                };
+            };
+        };
+    crosshairs_st: XmTextField 
+        {
+        arguments
+            {
+            XmNcolumns = 40;
+!            XmNeditable = false;
+!            XmNcursorPositionVisible = false;
+            XmNtopAttachment = XmATTACH_FORM;
+            XmNleftAttachment = XmATTACH_WIDGET;
+            XmNleftWidget = XmRadioBox radbox;
+            XmNvalue = 
+            "(0,0)";
+            XmNtopPosition = 200;
+            XmNtopOffset = 28;
+            XmNhighlightThickness = 0;
+            XmNshadowThickness = 0;
+            XmNleftOffset = 28;
+            };
+        };
+    set_point: XmPushButton
+        {
+        arguments
+           {
+           XmNlabelString = compound_string("Set");
+            XmNtopAttachment = XmATTACH_FORM;
+            XmNleftAttachment = XmATTACH_WIDGET;
+            XmNleftWidget = XmTextField crosshairs_st;
+            XmNtopPosition = 200;
+            XmNtopOffset = 28;
+           };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                SetPoint();
+                };
+            };
+        };
+    plots: XmBulletinBoard 
+        {
+        arguments
+            {
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmRowColumn menu_bar;
+            XmNrightAttachment = XmATTACH_FORM;
+            };
+        controls
+            {
+            XmdsWavedraw s1;
+            XmBulletinBoard 
+                {
+                arguments
+                    {
+                    XmNy = 10;
+                    XmNx = 620;
+                    };
+                controls
+                    {
+                    XmOptionMenu s1_fit;
+                    XmPushButton 
+                        {
+                        arguments
+                            {
+                            XmNlabelString = 
+                            compound_string("Initialize");
+                            XmNy = 60;
+                            XmNx = 48;
+                            };
+                        callbacks
+                            {
+                            XmNactivateCallback = procedures
+                                {
+                                InitWave(1);
+                                };
+                            };
+                        };
+                    XmPushButton 
+                        {
+                        arguments
+                            {
+                            XmNlabelString = 
+                            compound_string("Same X");
+                            XmNy = 100;
+                            XmNx = 0;
+                            };
+                        callbacks
+                            {
+                            XmNactivateCallback = procedures
+                                {
+                                SameX(1);
+                                };
+                            };
+                        };
+                    XmPushButton 
+                        {
+                        arguments
+                            {
+                            XmNlabelString = 
+                            compound_string("Auto Y");
+                            XmNy = 100;
+                            XmNx = 80;
+                            };
+                        callbacks
+                            {
+                            XmNactivateCallback = procedures
+                                {
+                                AutoY(1);
+                                };
+                            };
+                        };
+
+                    };
+                };
+            XmdsWavedraw s2;
+            XmBulletinBoard 
+                {
+                arguments
+                    {
+                    XmNy = 160;
+                    XmNx = 620;
+                    XmNheight = 150;
+                    };
+                controls
+                    {
+                    XmOptionMenu s2_fit;
+                    XmPushButton 
+                        {
+                        arguments
+                            {
+                            XmNlabelString = 
+                            compound_string("Initialize");
+                            XmNy = 60;
+                            XmNx = 48;
+                            };
+                        callbacks
+                            {
+                            XmNactivateCallback = procedures
+                                {
+                                InitWave(2);
+                                };
+                            };
+                        };
+                    XmPushButton 
+                        {
+                        arguments
+                            {
+                            XmNlabelString = 
+                            compound_string("Same X");
+                            XmNy = 100;
+                            XmNx = 0;
+                            };
+                        callbacks
+                            {
+                            XmNactivateCallback = procedures
+                                {
+                                SameX(2);
+                                };
+                            };
+                        };
+                    XmPushButton 
+                        {
+                        arguments
+                            {
+                            XmNlabelString = 
+                            compound_string("Auto Y");
+                            XmNy = 100;
+                            XmNx = 80;
+                            };
+                        callbacks
+                            {
+                            XmNactivateCallback = procedures
+                                {
+                                AutoY(2);
+                                };
+                            };
+                        };
+
+                    };
+                };
+            XmdsWavedraw s3;
+            XmBulletinBoard 
+                {
+                arguments
+                    {
+                    XmNy = 310;
+                    XmNx = 620;
+                    XmNheight = 150;
+                    };
+                controls
+                    {
+                    XmOptionMenu s3_fit;
+                    XmPushButton 
+                        {
+                        arguments
+                            {
+                            XmNlabelString = 
+                            compound_string("Initialize");
+                            XmNy = 60;
+                            XmNx = 48;
+                            };
+                        callbacks
+                            {
+                            XmNactivateCallback = procedures
+                                {
+                                InitWave(3);
+                                };
+                            };
+                        };
+                    XmPushButton 
+                        {
+                        arguments
+                            {
+                            XmNlabelString = 
+                            compound_string("Same X");
+                            XmNy = 100;
+                            XmNx = 0;
+                            };
+                        callbacks
+                            {
+                            XmNactivateCallback = procedures
+                                {
+                                SameX(3);
+                                };
+                            };
+                        };
+                    XmPushButton 
+                        {
+                        arguments
+                            {
+                            XmNlabelString = 
+                            compound_string("Auto Y");
+                            XmNy = 100;
+                            XmNx = 80;
+                            };
+                        callbacks
+                            {
+                            XmNactivateCallback = procedures
+                                {
+                                AutoY(3);
+                                };
+                            };
+                        };
+
+                    };
+                };
+            XmdsWavedraw s4;
+            XmBulletinBoard 
+                {
+                arguments
+                    {
+                    XmNy = 460;
+                    XmNx = 620;
+                    XmNheight = 150;
+                    };
+                controls
+                    {
+                    XmOptionMenu s4_fit;
+                    XmPushButton 
+                        {
+                        arguments
+                            {
+                            XmNlabelString = 
+                            compound_string("Initialize");
+                            XmNy = 60;
+                            XmNx = 48;
+                            };
+                        callbacks
+                            {
+                            XmNactivateCallback = procedures
+                                {
+                                InitWave(4);
+                                };
+                            };
+                        };
+                    XmPushButton 
+                        {
+                        arguments
+                            {
+                            XmNlabelString = 
+                            compound_string("Same X");
+                            XmNy = 100;
+                            XmNx = 0;
+                            };
+                        callbacks
+                            {
+                            XmNactivateCallback = procedures
+                                {
+                                SameX(4);
+                                };
+                            };
+                        };
+                    XmPushButton 
+                        {
+                        arguments
+                            {
+                            XmNlabelString = 
+                            compound_string("Auto Y");
+                            XmNy = 100;
+                            XmNx = 80;
+                            };
+                        callbacks
+                            {
+                            XmNactivateCallback = procedures
+                                {
+                                AutoY(4);
+                                };
+                            };
+                        };
+
+                    };
+                };
+            };
+        };
+    radbox: XmRadioBox 
+        {
+        arguments
+            {
+            XmNtopAttachment = XmATTACH_FORM;
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNorientation = XmHORIZONTAL;
+            XmNtopOffset = 25;
+            XmNy = 37;
+            XmNheight = 34;
+            };
+        controls
+            {
+            XmToggleButton Point;
+            XmToggleButton Pan;
+            XmToggleButton Zoom;
+            XmToggleButton SelectButton;
+            XmToggleButtonGadget SlideStretch;
+            };
+        };
+    fit_pulldown: XmPulldownMenu 
+        {
+        controls
+            {
+            XmPushButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Spline");
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        FitChange(0);
+                        };
+                    };
+                };
+            XmPushButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Linear");
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        FitChange(1);
+                        };
+                    };
+                };
+            };
+        callbacks
+            {
+            XmNentryCallback = procedures
+                {
+                FitChange(0);
+                };
+            };
+        };
+    trigger: XmdsExprField 
+        {
+        arguments
+            {
+            XmNcolumns = 32;
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = B5910A$N_START_TRIG;
+            XmNmarginHeight = 1;
+            XmNx = 160;
+            XmNy = 70;
+            };
+        };
+    samples: XmdsExprField 
+        {
+        arguments
+            {
+            XmNcolumns = 12;
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = B5910A$N_SAMPLES;
+            XmNx = 160;
+            XmNy = 100;
+            XmNmarginHeight = 1;
+            };
+        };
+    clock: XmdsNidOptionMenu 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Frequency");
+            XmdsNlabelStrings = string_table(
+                compound_string("2 kHz "),
+                
+                compound_string("5 kHz "),
+                
+                compound_string("10 Khz "),
+                
+                compound_string("20 kHz "),
+                
+                compound_string("50 kHz "),
+                
+                compound_string("100 kHz "),
+                
+                compound_string("200 kHz "),
+                
+                compound_string("500 kHz "),
+                
+                compound_string("External "));
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = B5910A$N_INT_CLOCK;
+            XmNx = 268;
+            XmNy = 130;
+            XmdsNvalueStrings = string_table(
+                compound_string("*:*:.0005"),
+                
+                compound_string("*:*:.0002"),
+                
+                compound_string("*:*:.0001"),
+                
+                compound_string("*:*:.00005"),
+                
+                compound_string("*:*:.00002"),
+                
+                compound_string("*:*:.00001"),
+                
+                compound_string("*:*:.000005"),
+                
+                compound_string("*:*:.000002"),
+                
+                compound_string(""));
+            };
+        };
+    xd1: XmdsXdBoxDialogButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Modify");
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = B5910A$N_CHANNELS+B5910A$K_NODES_PER_CHANNEL*0+B5910A$N_CHAN_PROGRAMMING;
+            };
+        };
+    xd2: XmdsXdBoxDialogButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Modify");
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = B5910A$N_CHANNELS+B5910A$K_NODES_PER_CHANNEL*1+B5910A$N_CHAN_PROGRAMMING;
+            };
+        };
+    xd3: XmdsXdBoxDialogButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Modify");
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = B5910A$N_CHANNELS+B5910A$K_NODES_PER_CHANNEL*2+B5910A$N_CHAN_PROGRAMMING;
+            };
+        };
+    xd4: XmdsXdBoxDialogButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Modify");
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = B5910A$N_CHANNELS+B5910A$K_NODES_PER_CHANNEL*3+B5910A$N_CHAN_PROGRAMMING;
+            };
+        };
+    menu_bar: XmRowColumn 
+        {
+        arguments
+            {
+            XmNorientation = XmHORIZONTAL;
+            XmNisAligned = false;
+            XmNpacking = XmPACK_TIGHT;
+            XmNtopAttachment = XmATTACH_FORM;
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNrightAttachment = XmATTACH_FORM;
+            XmNrowColumnType = XmMENU_BAR;
+            };
+        controls
+            {
+            XmCascadeButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("File");
+                    };
+                controls
+                    {
+                    XmPulldownMenu file_pulldown;
+                    };
+                };
+            XmCascadeButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("SetScale");
+                    };
+                controls
+                    {
+                    XmPulldownMenu 
+                        {
+                        controls
+                            {
+                            XmPushButton 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("+/- 10.24");
+                                    };
+                                callbacks
+                                    {
+                                    XmNactivateCallback = procedures
+                                        {
+                                        FullscaleAll(0);
+                                        };
+                                    };
+                                };
+                            XmPushButton 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("+/- 5.12");
+                                    };
+                                callbacks
+                                    {
+                                    XmNactivateCallback = procedures
+                                        {
+                                        FullscaleAll(1);
+                                        };
+                                    };
+                                };
+                            XmPushButton 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("0-10.24");
+                                    };
+                                callbacks
+                                    {
+                                    XmNactivateCallback = procedures
+                                        {
+                                        FullscaleAll(2);
+                                        };
+                                    };
+                                };
+                            XmPushButton 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("0-5.12");
+                                    };
+                                callbacks
+                                    {
+                                    XmNactivateCallback = procedures
+                                        {
+                                        FullscaleAll(3);
+                                        };
+                                    };
+                                };
+                            XmPushButton widget
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("Autoscale");
+                                    };
+                                callbacks
+                                    {
+                                    XmNactivateCallback = procedures
+                                        {
+                                        AutoscaleAll();
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+        };
+    s1: XmdsWavedraw 
+        {
+        arguments
+            {
+            arguments waveform_arguments;
+            XmNy = 10;
+            };
+        callbacks
+            {
+            callbacks waveform_callbacks;
+            };
+        };
+    s2: XmdsWavedraw 
+        {
+        arguments
+            {
+            arguments waveform_arguments;
+            XmNy = 160;
+            };
+        callbacks
+            {
+            callbacks waveform_callbacks;
+            };
+        };
+    s3: XmdsWavedraw 
+        {
+        arguments
+            {
+            arguments waveform_arguments;
+            XmNy = 310;
+            };
+        callbacks
+            {
+            callbacks waveform_callbacks;
+            };
+        };
+    s4: XmdsWavedraw 
+        {
+        arguments
+            {
+            arguments waveform_arguments;
+            XmNy = 460;
+            };
+        callbacks
+            {
+            callbacks waveform_callbacks;
+            };
+        };
+    s1_fit: XmOptionMenu 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Fit");
+            };
+        controls
+            {
+            XmPulldownMenu fit_pulldown;
+            };
+        };
+    s2_fit: XmOptionMenu 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Fit");
+            };
+        controls
+            {
+            XmPulldownMenu fit_pulldown;
+            };
+        };
+    s3_fit: XmOptionMenu 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Fit");
+            };
+        controls
+            {
+            XmPulldownMenu fit_pulldown;
+            };
+        };
+    s4_fit: XmOptionMenu 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Fit");
+            };
+        controls
+            {
+            XmPulldownMenu fit_pulldown;
+            };
+        };
+    helpText: XmLabel 
+        {
+        arguments
+            {
+            XmNtopAttachment = XmATTACH_FORM;
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNhighlightThickness = 0;
+            XmNfontList = font_table(iso_latin3=font('-*-NEW CENTURY SCHOOLBOOK-MEDIUM-R-*--*-100-*-*-*-*-ISO8859-1'));
+            XmNalignment = XmALIGNMENT_CENTER;
+            XmNlabelString = 
+            compound_string("Button 1: Zoom in 2x, Button 1 drag: Zoom in box, Button 2: Zoom out");
+            XmNwidth = 600;
+            XmNrecomputeSize = false;
+            };
+        };
+    ext_clock: XmdsExprField 
+        {
+        arguments
+            {
+            XmNcolumns = 16;
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = B5910A$N_EXT_CLOCK;
+	    XmNuserData = external_clock_nid;
+            XmNx = 349;
+            XmNy = 166;
+            XmNmarginHeight = 1;
+            };
+        };
+
+list
+    waveform_arguments: arguments
+        {
+        XmNwidth = 600;
+        XmNheight = 150;
+        XmdsNattachCrosshairs = true;
+        XmdsNshowMode = XmdsSHOW_MODE_LINE;
+        XmdsNshowSelections = true;
+        XmdsNpointerMode = XmdsPOINTER_MODE_ZOOM;
+        XmNborderWidth = 1;
+        XmdsNxIncreasing = false;
+        };
+    waveform_callbacks: callbacks
+        {
+        XmdsNcrosshairsCallback = procedures
+            {
+            Crosshairs();
+            };
+        XmdsNalignCallback = procedures
+            {
+            Align();
+            };
+        XmdsNmoveCallback = procedures
+            {
+            Move();
+            };
+        XmdsNlimitsCallback = procedures
+            {
+            Limits();
+            };
+        XmdsNfitCallback = procedures
+            {
+            Fit();
+            };
+        XmdsNaddPointCallback = procedures
+            {
+            AddPoint();
+            };
+        XmdsNdeletePointCallback = procedures
+            {
+            DeletePoint();
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    B5910A$N_NAME: 1;
+    B5910A$N_COMMENT: 2;
+    B5910A$N_INT_CLOCK: 3;
+    B5910A$N_EXT_CLOCK: 4;
+    B5910A$N_START_TRIG: 5;
+    B5910A$N_SAMPLES: 6;
+    B5910A$N_ITERATIONS: 7;
+    B5910A$N_NOC: 8;
+    B5910A$N_CHANNELS: 9;
+    B5910A$N_CHAN_PROGRAMMING: 1;
+    B5910A$K_NODES_PER_CHANNEL: 2;
+    B5910A$N_CLOCK_OUT: 17;
+    B5910A$N_INIT_ACTION: 18;
+
+identifier
+    external_clock_nid;
+procedure
+    AddPoint();
+    Align();
+    AutoscaleAll();
+    AutoY(integer);
+    Dismiss();
+    Crosshairs();
+    DeletePoint();
+    Draw();
+    Fit();
+    FitChange(integer);
+    FullscaleAll(integer);
+    InitWave(integer);
+    Limits();
+    Move();
+    Reset();
+    ResetWave();
+    SameX(integer);
+    SetPoint();
+    SetPointerMode(integer);
+
+end module;
+

@@ -1,0 +1,65 @@
+module L8210_HEADERS
+    names = case_sensitive
+!------------------------------------------------------------------------------
+!
+!		Name:   L8210_HEADERS   
+!
+!		Type:   Integer*4 Function
+!
+!     		Author:	JOSH STILLERMAN
+!
+!		Date:    30-DEC-1992
+!
+!    		Purpose: UIL module to define the header jumper configurations
+!                        for Lecroy L8210 modules
+!
+!------------------------------------------------------------------------------
+!   Copyright (c) 1992
+!   Property of Massachusetts Institute of Technology, Cambridge MA 02139.
+!   This program cannot be copied or distributed in any form for non-MIT
+!   use without specific written approval of MIT Plasma Fusion Center
+!   Management.
+!---------------------------------------------------------------------------
+!
+! 	Description:
+!
+!            This file is used to define the available header configurations 
+!            for Lecroy 8210 digitizer modules. 
+!
+!            To define a new header:
+!		1 - Add its name (which will appear in the header menu on the 
+!		    L8210 setup form) to the first string table.
+!		2 - Add an encoding of the jumper information to the corresponding
+!		    entry of the second table. (see encoding directions below)
+!		3 - recompile this module with the command:
+!  $ UIL/MOTIF/WIDGET=XMDSUIL /OUT=MDS$ROOT:[SYSLIB]L8210_HEADER.UID L8210_HEADERS.UIL
+!
+!	     Encoding directions:
+!		The header is a 16 pin dip package and is described in the 8210 manual
+!		Figure 2 in chapter 11 (appendix A). There are 6 pins (1,2,3,4,5,and 6) which
+!               can be connected to one of four pins or left floating.  The destinations
+!               are designated by A,B,C, for 2^0, 2^1, and 2^2  and G for ground, and ' '
+!               for floating.
+!  
+!+-----------------------------------------------------------------------------
+
+value l8210_header_names : exported  string_table(compound_string(" Header 8"),
+                                                  compound_string(" Header 8 For 2 Mems"),
+                                                  compound_string(" Header 8 For 4 Mems"),
+                                                  compound_string(" Header 10"),
+                                                  compound_string(" Header 10 For 2 Mems"),
+                                                  compound_string(" Header 10 For 4 Mems"),
+                                                  compound_string(" Header 12 For 2 Mems"),
+                                                  compound_string(" Header 12 For 4 Mems"),
+                                                  compound_string(" Header 14 For 4 Mems"));
+
+value l8210_header_values : exported string_table(compound_string("'ABC GG'"),
+                                                  compound_string("'ABC  G'"),
+                                                  compound_string("'ABC   '"),
+                                                  compound_string("' ABCGG'"),
+                                                  compound_string("' ABC G'"),
+                                                  compound_string("' ABC  '"),
+                                                  compound_string("'  ABCG'"),
+                                                  compound_string("'  ABC '"),
+                                                  compound_string("'  GABC'"));
+end module;

@@ -1,0 +1,2693 @@
+module RETICON120_UIL
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+object
+    RETICON120: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNdefaultPosition = true;
+            XmNnoResize = true;
+            XmNautoUnmanage = false;
+            XmNdialogTitle = 
+            compound_string("Reticon S-series Linear Array Controller Model 120");
+            XmNwidth = 515;
+            XmNheight = 465;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("CAMAC name:");
+                    XmNx = 10;
+                    XmNy = 10;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = RETICON120$N_NAME;
+                    XmNcolumns = 32;
+                    XmNx = 120;
+                    XmNy = 10;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("MEMORY name:");
+                    XmNx = 10;
+                    XmNy = 70;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = RETICON120$N_MEMORY_NAME;
+                    XmNcolumns = 32;
+                    XmNx = 120;
+                    XmNy = 70;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNmarginHeight = 0;
+                    XmNmarginWidth = 0;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNx = 9;
+                    XmNy = 40;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = RETICON120$N_COMMENT;
+                    XmNcolumns = 32;
+                    XmNx = 120;
+                    XmNy = 40;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Start trigger:");
+                    XmNy = 100;
+                    XmNx = 10;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 36;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = RETICON120$N_START_TRIG;
+                    XmNx = 120;
+                    XmNy = 100;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    };
+                };
+            XmPushButtonGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Select pixels");
+                    XmNx = 309;
+                    XmNy = 130;
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        PopupPixels();
+                        };
+                    };
+                };
+            XmRowColumn 
+                {
+                arguments
+                    {
+                    XmNy = 205;
+                    XmNheight = 212;
+                    XmNwidth = 598;
+                    XmNorientation = XmVERTICAL;
+                    XmNx = 25;
+                    };
+                controls
+                    {
+                    XmRowColumn 
+                        {
+                        arguments
+                            {
+                            XmNborderWidth = 0;
+                            XmNorientation = XmHORIZONTAL;
+                            };
+                        controls
+                            {
+                            XmLabelGadget 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("0");
+                                    };
+                                };
+                            XmdsNidOptionMenu p0;
+                            XmdsExprField f0;
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("");
+                                    XmdsNlabelStrings = ratio_labels;
+                                    XmdsNvalueStrings = ratio_values;
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNnidOffset = 
+                                        RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*0+RETICON120$N_STATE_FRAME_SELECT;
+                                    };
+                                };
+                            };
+                        };
+                    XmRowColumn 
+                        {
+                        arguments
+                            {
+                            XmNborderWidth = 0;
+                            XmNorientation = XmHORIZONTAL;
+                            XmNx = 3;
+                            XmNy = 45;
+                            };
+                        controls
+                            {
+                            XmLabelGadget 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("1");
+                                    };
+                                };
+                            XmdsNidOptionMenu p1;
+                            XmdsExprField f1;
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("");
+                                    XmdsNlabelStrings = ratio_labels;
+                                    XmdsNvalueStrings = ratio_values;
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNnidOffset = 
+                                        RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*1+RETICON120$N_STATE_FRAME_SELECT;
+                                    };
+                                };
+                            };
+                        };
+                    XmRowColumn 
+                        {
+                        arguments
+                            {
+                            XmNborderWidth = 0;
+                            XmNorientation = XmHORIZONTAL;
+                            XmNx = 3;
+                            XmNy = 88;
+                            };
+                        controls
+                            {
+                            XmLabelGadget 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("2");
+                                    };
+                                };
+                            XmdsNidOptionMenu p2;
+                            XmdsExprField f2;
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("");
+                                    XmdsNlabelStrings = ratio_labels;
+                                    XmdsNvalueStrings = ratio_values;
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNnidOffset = 
+                                        RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*2+RETICON120$N_STATE_FRAME_SELECT;
+                                    };
+                                };
+                            };
+                        };
+                    XmRowColumn 
+                        {
+                        arguments
+                            {
+                            XmNborderWidth = 0;
+                            XmNorientation = XmHORIZONTAL;
+                            XmNx = 2;
+                            XmNy = 132;
+                            };
+                        controls
+                            {
+                            XmLabelGadget 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("3");
+                                    };
+                                };
+                            XmdsNidOptionMenu p3;
+                            XmdsExprField f3;
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNlabelString = 
+                                    compound_string("");
+                                    XmdsNlabelStrings = ratio_labels;
+                                    XmdsNvalueStrings = ratio_values;
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNnidOffset = 
+                                        RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*3+RETICON120$N_STATE_FRAME_SELECT;
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 390;
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        Apply();
+                        };
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 359;
+                    XmNy = 390;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 123;
+                    XmNy = 390;
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        Apply();
+                        };
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 258;
+                    XmNy = 390;
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        Reset();
+                        };
+                    };
+                };
+            unmanaged XmBulletinBoardDialog 
+                {
+                arguments
+                    {
+                    XmNdialogTitle = 
+                    compound_string("Select Pixels");
+                    XmNnoResize = true;
+                    };
+                controls
+                    {
+                    XmRowColumn pixel_menu;
+                    XmPushButtonGadget 
+                        {
+                        arguments
+                            {
+                            XmNlabelString = 
+                            compound_string("Dismiss");
+                            XmNx = 232;
+                            XmNy = 350;
+                            };
+                        };
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("State");
+                    XmNx = 16;
+                    XmNy = 170;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Period",separate=true) &
+                        compound_string("(msec)");
+                    XmNx = 79;
+                    XmNy = 170;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Frames");
+                    XmNx = 171;
+                    XmNy = 170;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Recording",separate=true) &
+                        compound_string("Ratio");
+                    XmNx = 259;
+                    XmNy = 170;
+                    };
+                };
+            XmdsNidOptionMenu number_of_states;
+            };
+        callbacks
+            {
+            XmNmapCallback = procedures
+                {
+                Reset();
+                };
+            };
+        };
+    pixel_menu: XmRowColumn 
+        {
+        arguments
+            {
+            XmNadjustMargin = false;
+            XmNmarginWidth = 0;
+            XmNmarginHeight = 0;
+            XmNnumColumns = 16;
+            XmNborderWidth = 0;
+            XmNspacing = 0;
+            XmNpacking = XmPACK_COLUMN;
+            XmNorientation = XmHORIZONTAL;
+            XmNuserData = nid;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("1");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("16");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("17");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("32");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("33");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("48");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("49");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("64");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("65");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("80");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("81");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("96");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("97");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("112");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("113");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("128");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("129");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("144");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("145");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("160");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("161");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("176");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("177");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("192");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("193");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("208");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("209");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("224");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("225");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("240");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("241");
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmToggleButtonGadget 
+                {
+                arguments
+                    {
+                    arguments pixel_button_args;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("256");
+                    };
+                };
+            };
+        };
+    number_of_states: XmdsNidOptionMenu 
+        {
+        arguments
+            {
+            XmNx = 10;
+            XmNy = 130;
+            XmdsNnidOffset = RETICON120$N_NUM_STATES;
+            XmNlabelString = 
+            compound_string("Number of states:");
+            XmdsNlabelStrings = num_states;
+            XmdsNvalueStrings = num_states;
+            XmdsNnid = DEVICE_NID;
+            };
+        };
+    p0: XmdsNidOptionMenu 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("");
+            XmdsNlabelStrings = periods;
+            XmdsNvalueStrings = periods;
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*0+RETICON120$N_STATE_PERIOD;
+            };
+        };
+    p1: XmdsNidOptionMenu 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("");
+            XmdsNlabelStrings = periods;
+            XmdsNvalueStrings = periods;
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*1+RETICON120$N_STATE_PERIOD;
+            };
+        };
+    p2: XmdsNidOptionMenu 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("");
+            XmdsNlabelStrings = periods;
+            XmdsNvalueStrings = periods;
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*2+RETICON120$N_STATE_PERIOD;
+            };
+        };
+    p3: XmdsNidOptionMenu 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("");
+            XmdsNlabelStrings = periods;
+            XmdsNvalueStrings = periods;
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*3+RETICON120$N_STATE_PERIOD;
+            };
+        };
+    f0: XmdsExprField 
+        {
+        arguments
+            {
+            XmNcolumns = 5;
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*0+RETICON120$N_STATE_FRAMES;
+            };
+        };
+    f1: XmdsExprField 
+        {
+        arguments
+            {
+            XmNcolumns = 5;
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*1+RETICON120$N_STATE_FRAMES;
+            };
+        };
+    f2: XmdsExprField 
+        {
+        arguments
+            {
+            XmNcolumns = 5;
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*2+RETICON120$N_STATE_FRAMES;
+            };
+        };
+    f3: XmdsExprField 
+        {
+        arguments
+            {
+            XmNcolumns = 5;
+            XmdsNnid = DEVICE_NID;
+            XmdsNnidOffset = RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*3+RETICON120$N_STATE_FRAMES;
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    RETICON120$K_CONG_NODES: 28;
+    RETICON120$N_HEAD: 0;
+    RETICON120$N_NAME: 1;
+    RETICON120$N_COMMENT: 2;
+    RETICON120$N_MEMORY_NAME: 3;
+    RETICON120$N_START_TRIG: 4;
+    RETICON120$N_PIXEL_SELECT: 5;
+    RETICON120$N_PIXEL_AXIS: 6;
+    RETICON120$N_DATA: 7;
+    RETICON120$N_EVENT_LATCH: 8;
+    RETICON120$N_NUM_STATES: 9;
+    RETICON120$N_FRAME_INDEX: 10;
+    RETICON120$N_STATES: 11;
+    RETICON120$K_NODES_PER_STATE: 4;
+    RETICON120$N_STATE_HEAD: 0;
+    RETICON120$N_STATE_PERIOD: 1;
+    RETICON120$N_STATE_FRAMES: 2;
+    RETICON120$N_STATE_FRAME_SELECT: 3;
+    RETICON120$N_INIT_ACTION: 27;
+    RETICON120$N_STORE_ACTION: 28;
+    num_states: string_table(
+        compound_string("1 "),
+        
+        compound_string("2 "),
+        
+        compound_string("3 "),
+        
+        compound_string("4 "));
+    periods: string_table(
+        compound_string(".5"),
+        
+        compound_string("1."),
+        
+        compound_string("2."),
+        
+        compound_string("4."),
+        
+        compound_string("8."),
+        
+        compound_string("16."),
+        
+        compound_string("32."),
+        
+        compound_string("64."),
+        
+        compound_string("128."),
+        
+        compound_string("256."),
+        
+        compound_string("512."),
+        
+        compound_string("1024."),
+        
+        compound_string("2048."),
+        
+        compound_string("4096."),
+        
+        compound_string("8192."));
+    ratio_labels: string_table(
+        compound_string("1/1"),
+        
+        compound_string("1/2"),
+        
+        compound_string("1/4"),
+        
+        compound_string("1/8"),
+        
+        compound_string("1/16"),
+        
+        compound_string("1/32"),
+        
+        compound_string("1/64"));
+    ratio_values: string_table(
+        compound_string("1"),
+        
+        compound_string("2"),
+        
+        compound_string("4"),
+        
+        compound_string("8"),
+        
+        compound_string("16"),
+        
+        compound_string("32"),
+        
+        compound_string("64"));
+
+procedure
+    Reset;
+    Apply;
+    PopupPixels;
+
+list
+    pixel_button_args: arguments
+        {
+        XmNlabelString = 
+        compound_string("");
+        XmNmarginHeight = 0;
+        XmNmarginWidth = 0;
+        XmNhighlightThickness = 0;
+        };
+
+identifier
+    nid ;
+
+end module;
+

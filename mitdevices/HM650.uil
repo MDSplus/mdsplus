@@ -1,0 +1,597 @@
+module hm650
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+object
+    HM650: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNdialogTitle = 
+            compound_string("Highland M650 8 Channel Delay Generator");
+            XmNautoUnmanage = false;
+            XmNnoResize = true;
+            XmNborderWidth = 1;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("CAMAC name:");
+                    XmNx = 10;
+                    XmNy = 10;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 34;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_NAME;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 10;
+                    XmNwidth = 436;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNx = 10;
+                    XmNy = 40;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 34;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_COMMENT;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 40;
+                    XmNwidth = 437;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Trigger In");
+                    XmNx = 99;
+                    XmNy = 80;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_IN_0;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 74;
+                    XmNy = 114;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    XmNx = 357;
+                    XmNy = 388;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_INIT_ACTION;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 440;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 175;
+                    XmNy = 441;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 360;
+                    XmNy = 442;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 507;
+                    XmNy = 439;
+                    XmNlabelString = 
+                    compound_string("Cancel");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Channel");
+                    XmNx = 12;
+                    XmNy = 79;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_IN_1;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 75;
+                    XmNy = 148;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_IN_2;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 75;
+                    XmNy = 179;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_IN_3;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 75;
+                    XmNy = 214;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_IN_4;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 75;
+                    XmNy = 246;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_IN_5;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 75;
+                    XmNy = 279;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_IN_6;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 75;
+                    XmNy = 315;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_IN_7;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 75;
+                    XmNy = 352;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string(" 0 ");
+                    XmNx = 25;
+                    XmNy = 114;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string(" 1 ");
+                    XmNx = 25;
+                    XmNy = 148;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string(" 2 ");
+                    XmNx = 25;
+                    XmNy = 182;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string(" 3 ");
+                    XmNx = 25;
+                    XmNy = 211;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string(" 4 ");
+                    XmNx = 25;
+                    XmNy = 245;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string(" 5 ");
+                    XmNx = 25;
+                    XmNy = 279;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string(" 6 ");
+                    XmNx = 25;
+                    XmNy = 316;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string(" 7 ");
+                    XmNx = 25;
+                    XmNy = 349;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Delay (NSec)");
+                    XmNx = 245;
+                    XmNy = 79;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Trigger Out");
+                    XmNx = 448;
+                    XmNy = 78;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_DELAY_0;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 228;
+                    XmNy = 114;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_DELAY_1;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 228;
+                    XmNy = 148;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_DELAY_2;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 228;
+                    XmNy = 179;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_DELAY_3;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 228;
+                    XmNy = 214;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_DELAY_4;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 228;
+                    XmNy = 246;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_DELAY_5;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 228;
+                    XmNy = 279;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_DELAY_6;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 228;
+                    XmNy = 315;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_DELAY_7;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 228;
+                    XmNy = 352;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 23;
+                    XmNy = 393;
+                    XmNlabelString = 
+                    compound_string("Threshold:");
+                    };
+                };
+            XmdsExpr 
+                {
+                arguments
+                    {
+                    XmNx = 108;
+                    XmNy = 390;
+                    XmNcolumns = 10;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_THRESHOLD;
+                    };
+                };
+            XmdsPath 
+                {
+                arguments
+                    {
+                    XmNx = 388;
+                    XmNy = 116;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_OUT_0;
+                    XmdsNpathType = NciRELATIVE_PATH;
+                    };
+                };
+            XmdsPath 
+                {
+                arguments
+                    {
+                    XmNx = 388;
+                    XmNy = 149;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_OUT_1;
+                    XmdsNpathType = NciRELATIVE_PATH;
+                    };
+                };
+            XmdsPath 
+                {
+                arguments
+                    {
+                    XmNx = 389;
+                    XmNy = 181;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_OUT_2;
+                    XmdsNpathType = NciRELATIVE_PATH;
+                    };
+                };
+            XmdsPath 
+                {
+                arguments
+                    {
+                    XmNx = 388;
+                    XmNy = 216;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_OUT_3;
+                    XmdsNpathType = NciRELATIVE_PATH;
+                    };
+                };
+            XmdsPath 
+                {
+                arguments
+                    {
+                    XmNx = 388;
+                    XmNy = 248;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_OUT_4;
+                    XmdsNpathType = NciRELATIVE_PATH;
+                    };
+                };
+            XmdsPath 
+                {
+                arguments
+                    {
+                    XmNx = 388;
+                    XmNy = 281;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_OUT_5;
+                    XmdsNpathType = NciRELATIVE_PATH;
+                    };
+                };
+            XmdsPath 
+                {
+                arguments
+                    {
+                    XmNx = 388;
+                    XmNy = 316;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_OUT_6;
+                    XmdsNpathType = NciRELATIVE_PATH;
+                    };
+                };
+            XmdsPath 
+                {
+                arguments
+                    {
+                    XmNx = 387;
+                    XmNy = 353;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HM650$N_TRIG_OUT_7;
+                    XmdsNpathType = NciRELATIVE_PATH;
+                    };
+                };
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    HM650$K_CONG_NODES: 30;
+    HM650$N_HEAD: 0;
+    HM650$N_NAME: 1;
+    HM650$N_COMMENT: 2;
+    HM650$N_THRESHOLD: 3;
+    HM650$N_TRIG_INS: 4;
+    HM650$N_TRIG_IN_0: 4;
+    HM650$N_TRIG_IN_1: 5;
+    HM650$N_TRIG_IN_2: 6;
+    HM650$N_TRIG_IN_3: 7;
+    HM650$N_TRIG_IN_4: 8;
+    HM650$N_TRIG_IN_5: 9;
+    HM650$N_TRIG_IN_6: 10;
+    HM650$N_TRIG_IN_7: 11;
+    HM650$N_DELAYS: 12;
+    HM650$N_DELAY_0: 12;
+    HM650$N_DELAY_1: 13;
+    HM650$N_DELAY_2: 14;
+    HM650$N_DELAY_3: 15;
+    HM650$N_DELAY_4: 16;
+    HM650$N_DELAY_5: 17;
+    HM650$N_DELAY_6: 18;
+    HM650$N_DELAY_7: 19;
+    HM650$N_TRIG_OUTS: 20;
+    HM650$N_TRIG_OUT_0: 20;
+    HM650$N_TRIG_OUT_1: 21;
+    HM650$N_TRIG_OUT_2: 22;
+    HM650$N_TRIG_OUT_3: 23;
+    HM650$N_TRIG_OUT_4: 24;
+    HM650$N_TRIG_OUT_5: 25;
+    HM650$N_TRIG_OUT_6: 26;
+    HM650$N_TRIG_OUT_7: 27;
+    HM650$N_INIT_ACTION: 28;
+    HM650$N_STORE_ACTION: 29;
+
+end module;
+

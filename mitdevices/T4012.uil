@@ -1,0 +1,572 @@
+module T4012_UIL
+    names = case_sensitive
+
+value
+    T4012$N_NAME: 1;
+    T4012$N_COMMENT: 2;
+    T4012$N_CHANNELS: 3;
+    T4012$N_POST_SAMPLES: 4;
+    T4012$N_SMP_PER_CHAN: 5;
+    T4012$N_DISPLAY_CHAN: 6;
+    T4012$N_TRIGGER: 7;
+    T4012$N_FREQUENCY_1: 8;
+    T4012$N_FREQUENCY_2: 9;
+    T4012$N_SWITCH_MODE: 10;
+    T4012$N_SWITCH_TRIG: 11;
+    T4012$N_EXTERN_CLOCK: 12;
+    T4012$N_CLOCK_OUT: 13;
+    T4012$N_INIT_ACTION: 14;
+    T4012$N_STORE_ACTION: 15;
+    DEVICE_NID: -1;
+
+object
+    T4012: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNx = 0;
+            XmNy = 0;
+            XmNresizePolicy = XmRESIZE_GROW;
+            XmNautoUnmanage = false;
+            XmNdialogTitle = 
+            compound_string("DSP - Model T4012 TRAQ System");
+            XmNnoResize = true;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 10;
+                    XmNlabelString = 
+                    compound_string("CAMAC name:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 150;
+                    XmNy = 10;
+                    XmNcolumns = 32;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = T4012$N_NAME;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 35;
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 150;
+                    XmNy = 35;
+                    XmNcolumns = 32;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = T4012$N_COMMENT;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 60;
+                    XmNlabelString = 
+                    compound_string("Number of channels:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 170;
+                    XmNy = 60;
+                    XmNcolumns = 4;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = T4012$N_CHANNELS;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 110;
+                    XmNlabelString = 
+                    compound_string("Post Trigger Samples:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 170;
+                    XmNy = 110;
+                    XmNcolumns = 1;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = T4012$N_POST_SAMPLES;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 186;
+                    XmNy = 112;
+                    XmNlabelString = 
+                    compound_string("/8");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 85;
+                    XmNlabelString = 
+                    compound_string("Samples per channel:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 170;
+                    XmNy = 85;
+                    XmNcolumns = 8;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = T4012$N_SMP_PER_CHAN;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 135;
+                    XmNlabelString = 
+                    compound_string("Display channel:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 170;
+                    XmNy = 135;
+                    XmNcolumns = 4;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = T4012$N_DISPLAY_CHAN;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 160;
+                    XmNlabelString = 
+                    compound_string("Stop trigger:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 170;
+                    XmNy = 160;
+                    XmNcolumns = 16;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = T4012$N_TRIGGER;
+                    };
+                };
+            XmScrolledWindow 
+                {
+                arguments
+                    {
+                    XmNx = 340;
+                    XmNy = 100;
+                    };
+                controls
+                    {
+                    XmList 
+                        {
+                        arguments
+                            {
+                            XmNlistSizePolicy = XmVARIABLE;
+                            XmNvisibleItemCount = 5;
+                            XmNselectionPolicy = XmBROWSE_SELECT;
+                            XmNuserData = nid;
+                            XmNitems = string_table(
+                                compound_string("T2812_01 "),
+                                
+                                compound_string("T2812_02 "),
+                                
+                                compound_string("T2812_03 "),
+                                
+                                compound_string("T2812_04"),
+                                
+                                compound_string("T2812_05 "),
+                                
+                                compound_string("T2812_06 "),
+                                
+                                compound_string("T2812_07 "));
+                            };
+                        callbacks
+                            {
+                            MrmNcreateCallback = procedures
+                                {
+                                Load(0);
+                                };
+                            };
+                        };
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 343;
+                    XmNy = 78;
+                    XmNlabelString = 
+                    compound_string("Digitizers");
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 235;
+                    XmdsNnidOffset = T4012$N_FREQUENCY_1;
+                    XmNlabelString = 
+                    compound_string("Frequency 1:");
+                    XmdsNlabelStrings = string_table(
+                        compound_string("10 Hz"),
+                        
+                        compound_string("20 Hz"),
+                        
+                        compound_string("50 Hz"),
+                        
+                        compound_string("100 Hz "),
+                        
+                        compound_string("200 Hz "),
+                        
+                        compound_string("500 Hz "),
+                        
+                        compound_string("1 kHz"),
+                        
+                        compound_string("2 kHz "),
+                        
+                        compound_string("5 kHz "),
+                        
+                        compound_string("10 kHz "),
+                        
+                        compound_string("20 kHz "),
+                        
+                        compound_string("50 kHz "),
+                        
+                        compound_string("100 kHz "),
+                        
+                        compound_string("200 kHz "),
+                        
+                        compound_string("500 kHz "),
+                        
+                        compound_string("1 MHz "),
+                        
+                        compound_string("2 MHz "),
+                        
+                        compound_string("5 MHz "),
+                        
+                        compound_string("External "));
+                    XmdsNvalueStrings = string_table(
+                        compound_string(".01 "),
+                        
+                        compound_string(".02 "),
+                        
+                        compound_string(".05 "),
+                        
+                        compound_string(".10 "),
+                        
+                        compound_string(".20 "),
+                        
+                        compound_string(".50 "),
+                        
+                        compound_string(" 1.0"),
+                        
+                        compound_string("2.0 "),
+                        
+                        compound_string("5.0 "),
+                        
+                        compound_string("10.0 "),
+                        
+                        compound_string("20.0 "),
+                        
+                        compound_string("50.0 "),
+                        
+                        compound_string(" 100.0"),
+                        
+                        compound_string("200.0 "),
+                        
+                        compound_string("500.0 "),
+                        
+                        compound_string("1000.0"),
+                        
+                        compound_string("2000.0 "),
+                        
+                        compound_string("5000.0 "),
+                        
+                        compound_string(" "));
+                    XmdsNnid = DEVICE_NID;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 185;
+                    XmNlabelString = 
+                    compound_string("SWI Trigger:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 170;
+                    XmNy = 185;
+                    XmNcolumns = 16;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = T4012$N_SWITCH_TRIG;
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 265;
+                    XmdsNnidOffset = T4012$N_FREQUENCY_2;
+                    XmNlabelString = 
+                    compound_string("Frequency 2:");
+                    XmdsNlabelStrings = string_table(
+                        compound_string("10 Hz"),
+                        
+                        compound_string("20 Hz"),
+                        
+                        compound_string("50 Hz"),
+                        
+                        compound_string("100 Hz "),
+                        
+                        compound_string("200 Hz "),
+                        
+                        compound_string("500 Hz "),
+                        
+                        compound_string("1 kHz"),
+                        
+                        compound_string("2 kHz "),
+                        
+                        compound_string("5 kHz "),
+                        
+                        compound_string("10 kHz "),
+                        
+                        compound_string("20 kHz "),
+                        
+                        compound_string("50 kHz "),
+                        
+                        compound_string("100 kHz "),
+                        
+                        compound_string("200 kHz "),
+                        
+                        compound_string("500 kHz "),
+                        
+                        compound_string("1 MHz "),
+                        
+                        compound_string("2 MHz "),
+                        
+                        compound_string("5 MHz "));
+                    XmdsNvalueStrings = string_table(
+                        compound_string(".01 "),
+                        
+                        compound_string(".02 "),
+                        
+                        compound_string(".05 "),
+                        
+                        compound_string(".10 "),
+                        
+                        compound_string(".20 "),
+                        
+                        compound_string(".50 "),
+                        
+                        compound_string(" 1.0"),
+                        
+                        compound_string("2.0 "),
+                        
+                        compound_string("5.0 "),
+                        
+                        compound_string("10.0 "),
+                        
+                        compound_string("20.0 "),
+                        
+                        compound_string("50.0 "),
+                        
+                        compound_string(" 100.0"),
+                        
+                        compound_string("200.0 "),
+                        
+                        compound_string("500.0 "),
+                        
+                        compound_string("1000.0"),
+                        
+                        compound_string("2000.0 "),
+                        
+                        compound_string("5000.0 "));
+                    XmdsNnid = DEVICE_NID;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 210;
+                    XmNlabelString = 
+                    compound_string("External clock:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 170;
+                    XmNy = 210;
+                    XmNcolumns = 16;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = T4012$N_EXTERN_CLOCK;
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 215;
+                    XmNy = 235;
+                    XmdsNnidOffset = T4012$N_SWITCH_MODE;
+                    XmNlabelString = 
+                    compound_string("Frequency Switch:");
+                    XmdsNlabelStrings = string_table(
+                        compound_string("disabled"),
+                        
+                        compound_string("SWI  Trigger"),
+                        
+                        compound_string("Stop Trigger"));
+                    XmdsNvalueStrings = string_table(
+                        compound_string("0"),
+                        
+                        compound_string("1 "),
+                        
+                        compound_string("2 "));
+                    XmdsNnid = DEVICE_NID;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 304;
+                    XmdsNnidOffset = T4012$N_INIT_ACTION;
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    XmdsNnid = DEVICE_NID;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNx = 207;
+                    XmNy = 305;
+                    XmdsNnidOffset = T4012$N_STORE_ACTION;
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    XmdsNnid = DEVICE_NID;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 345;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 145;
+                    XmNy = 345;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 306;
+                    XmNy = 345;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 418;
+                    XmNy = 345;
+                    };
+                };
+            };
+        };
+
+procedure
+    Load;
+
+identifier
+    nid;
+
+end module;
+

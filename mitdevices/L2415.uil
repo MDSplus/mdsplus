@@ -1,0 +1,297 @@
+module l2415
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+object
+    L2415: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNdialogTitle = 
+            compound_string("Lecroy 2415 High voltage power supply");
+            XmNautoUnmanage = false;
+            XmNnoResize = true;
+            XmNborderWidth = 1;
+            XmNheight = 708;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("CAMAC name:");
+                    XmNx = 10;
+                    XmNy = 10;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 40;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L2415$N_CTS_NAME;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 10;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNx = 10;
+                    XmNy = 40;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 40;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L2415$N_COMMENT;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 40;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    XmNx = 24;
+                    XmNy = 241;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L2415$N_INIT_ACTION;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    XmNx = 285;
+                    XmNy = 244;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L2415$N_STORE_ACTION;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 16;
+                    XmNy = 281;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 130;
+                    XmNy = 286;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 278;
+                    XmNy = 284;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 414;
+                    XmNy = 283;
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 15;
+                    XmNy = 74;
+                    XmdsNnidOffset = L2415$N_POLARITY;
+                    XmNlabelString = 
+                    compound_string("Polarity");
+                    XmdsNlabelStrings = string_table(
+                        compound_string(" Positive"),
+                        
+                        compound_string(" Negative"));
+                    XmdsNputOnApply = true;
+                    XmdsNvalueStrings = string_table(
+                        compound_string("1.0"),
+                        
+                        compound_string("-1.0"));
+                    XmdsNnid = DEVICE_NID;
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 244;
+                    XmNy = 74;
+                    XmdsNnidOffset = L2415$N_RANGE;
+                    XmNlabelString = 
+                    compound_string("Range");
+                    XmdsNlabelStrings = string_table(
+                        compound_string(" 3.5 KV"),
+                        
+                        compound_string(" 7.0 KV"));
+                    XmdsNputOnApply = true;
+                    XmdsNvalueStrings = string_table(
+                        compound_string("3500."),
+                        
+                        compound_string("7000."));
+                    XmdsNnid = DEVICE_NID;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Voltage:");
+                    XmNx = 13;
+                    XmNy = 127;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 10;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L2415$N_VOLTAGE;
+                    XmdsNdefaultQuote = false;
+                    XmdsNautoQuote = false;
+                    XmNx = 82;
+                    XmNy = 124;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("(Volts)");
+                    XmNx = 175;
+                    XmNy = 127;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Current:");
+                    XmNx = 248;
+                    XmNy = 124;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 10;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L2415$N_CURRENT;
+                    XmdsNdefaultQuote = false;
+                    XmdsNautoQuote = false;
+                    XmNx = 310;
+                    XmNy = 120;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("(Amps)");
+                    XmNx = 405;
+                    XmNy = 122;
+                    };
+                };
+            XmBulletinBoard 
+                {
+                arguments
+                    {
+                    XmNx = 19;
+                    XmNy = 155;
+                    XmNresizePolicy = XmRESIZE_NONE;
+                    XmNshadowThickness = 2;
+                    XmNshadowType = XmSHADOW_IN;
+                    XmNheight = 70;
+                    XmNwidth = 463;
+                    };
+                controls
+                    {
+                    XmdsPath 
+                        {
+                        arguments
+                            {
+                            XmNx = 31;
+                            XmNy = 12;
+                            XmNlabelString = 
+                            compound_string("Voltage Out:");
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = L2415$N_VOLT_OUT;
+                            };
+                        };
+                    XmdsPath 
+                        {
+                        arguments
+                            {
+                            XmNx = 31;
+                            XmNy = 37;
+                            XmNlabelString = 
+                            compound_string("Current Out:");
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = L2415$N_CURR_OUT;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    L2415$K_CONG_NODES: 11;
+    L2415$N_HEAD: 0;
+    L2415$N_CTS_NAME: 1;
+    L2415$N_COMMENT: 2;
+    L2415$N_POLARITY: 3;
+    L2415$N_RANGE: 4;
+    L2415$N_CURRENT: 5;
+    L2415$N_VOLTAGE: 6;
+    L2415$N_CURR_OUT: 7;
+    L2415$N_VOLT_OUT: 8;
+    L2415$N_INIT_ACTION: 9;
+    L2415$N_STORE_ACTION: 10;
+
+end module;
+

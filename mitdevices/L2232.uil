@@ -1,0 +1,185 @@
+module l2232
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+object
+    L2232: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNdialogTitle = 
+            compound_string("LeCroy 2232 32-Input Differential ADC");
+            XmNautoUnmanage = false;
+            XmNnoResize = true;
+            XmNborderWidth = 1;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("CAMAC name:");
+                    XmNx = 10;
+                    XmNy = 10;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 54;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L2232$N_CTS_NAME;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 10;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNx = 10;
+                    XmNy = 40;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 54;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L2232$N_COMMENT;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 40;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Trigger:");
+                    XmNx = 10;
+                    XmNy = 72;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 48;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L2232$N_TRIGGER;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 140;
+                    XmNy = 70;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    XmNx = 10;
+                    XmNy = 140;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L2232$N_INIT_ACTION;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    XmNx = 200;
+                    XmNy = 140;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L2232$N_STORE_ACTION;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 180;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 159;
+                    XmNy = 180;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 350;
+                    XmNy = 180;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 524;
+                    XmNy = 180;
+                    };
+                };
+            XmdsPath 
+                {
+                arguments
+                    {
+                    XmNx = 143;
+                    XmNy = 109;
+                    XmNwidth = 387;
+                    XmNheight = 25;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = L2232$N_INPUTS;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Output");
+                    XmNx = 16;
+                    XmNy = 108;
+                    };
+                };
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    L2232$K_CONG_NODES: 7;
+    L2232$N_HEAD: 0;
+    L2232$N_CTS_NAME: 1;
+    L2232$N_COMMENT: 2;
+    L2232$N_TRIGGER: 3;
+    L2232$N_INPUTS: 4;
+    L2232$N_INIT_ACTION: 5;
+    L2232$N_STORE_ACTION: 6;
+
+end module;
+

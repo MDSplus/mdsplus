@@ -1,0 +1,68 @@
+module L8212_HEADERS
+    names = case_sensitive
+!------------------------------------------------------------------------------
+!
+!		Name:   L8212_HEADERS   
+!
+!		Type:   Integer*4 Function
+!
+!     		Author:	JOSH STILLERMAN
+!
+!		Date:    4-DEC-1992
+!
+!    		Purpose: UIL module to define the header jumper configurations
+!                        for Lecroy L8212 modules
+!
+!------------------------------------------------------------------------------
+!   Copyright (c) 1992
+!   Property of Massachusetts Institute of Technology, Cambridge MA 02139.
+!   This program cannot be copied or distributed in any form for non-MIT
+!   use without specific written approval of MIT Plasma Fusion Center
+!   Management.
+!---------------------------------------------------------------------------
+!
+! 	Description:
+!
+!            This file is used to define the available header configurations 
+!            for Lecroy 8212 digitizer modules. 
+!
+!            To define a new header:
+!		1 - Add its name (which will appear in the header menu on the 
+!		    L8212 setup form) to the first string table.
+!		2 - Add an encoding of the jumper information to the corresponding
+!		    entry of the second table. (see encoding directions below)
+!		3 - recompile this module with the command:
+!  $ UIL/MOTIF/WIDGET=XMDSUIL /OUT=MDS$ROOT:[SYSLIB]L8212_HEADER.UID L8212_HEADERS.UIL
+!
+!	     Encoding directions:
+!		The header is a 16 pin dip package and is described in the 8212 manual
+!		Figure 1 in chapter 5. There are 5 pins (1,2,3,4,and 9) which the
+!		remaining pins can be connected to define a set of PTS values. (See
+!		that tables on pages 5.4 ...)  the header specification in 
+!		l8212_header_values is a string which denotes which of these 5 places
+!		each of the remaining 11 pins are connected two.  These are Pins
+!		5,6,7,8,10,11,12,13,14,15,16 which are  denoted B,K,A,D,C,J,I,H,G,F,E
+!		in chapter 5 of the manual.
+!  
+!+-----------------------------------------------------------------------------
+
+value l8212_header_names : exported  string_table(	compound_string(" Header 4 "),
+						        compound_string(" Header 7        "),
+						        compound_string(" Header 7 for 8 memories "),
+						        compound_string(" Header 9  "),
+						        compound_string(" Header 9 for 2 memories "),
+						        compound_string(" Header 9 for 3 memories      "),
+						        compound_string(" Header 9 for 4 memories "),
+						        compound_string(" Fixed 6144 for 3 memories"),
+                                                        compound_string(" 32 Channels with 3 memories"));
+
+value l8212_header_values : exported string_table(	compound_string("'49414944432'"),
+				                        compound_string("'99999943219'"),
+				                        compound_string("'94994443219'"),
+				                        compound_string("'99999932199'"),
+				                        compound_string("'99999432199'"),
+				                        compound_string("'94999932199'"),
+				                        compound_string("'94999432199'"),
+				                        compound_string("'94999949499'"),
+                                                        compound_string("'94999943219'"));
+end module;

@@ -1,0 +1,771 @@
+module hv1440
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+object
+    HV1440: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNdialogTitle = 
+            compound_string("LeCroy Hv1440 High Voltage System");
+            XmNautoUnmanage = false;
+            XmNnoResize = true;
+            XmNborderWidth = 1;
+            XmNheight = 784;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("CAMAC name:");
+                    XmNx = 10;
+                    XmNy = 10;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 46;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_NAME;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 10;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNx = 10;
+                    XmNy = 44;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 46;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_COMMENT;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 45;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("On Action");
+                    XmNx = 181;
+                    XmNy = 410;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_ON_ACTION;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 27;
+                    XmNy = 450;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 193;
+                    XmNy = 450;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 357;
+                    XmNy = 450;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 481;
+                    XmNy = 450;
+                    XmNlabelString = 
+                    compound_string("Cancel");
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Off Action");
+                    XmNx = 295;
+                    XmNy = 410;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_OFF_ACTION;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    XmNx = 10;
+                    XmNy = 410;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_INIT_ACTION;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    XmNx = 410;
+                    XmNy = 410;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_STORE_ACTION;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 22;
+                    XmNy = 81;
+                    XmNlabelString = 
+                    compound_string("Slot:");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 84;
+                    XmNy = 81;
+                    XmNlabelString = 
+                    compound_string("Pod Device Name");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 283;
+                    XmNy = 81;
+                    XmNlabelString = 
+                    compound_string("Slot:");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 350;
+                    XmNy = 81;
+                    XmNlabelString = 
+                    compound_string("Pod Device Name");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 25;
+                    XmNy = 112;
+                    XmNlabelString = 
+                    compound_string(" 1 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 65;
+                    XmNy = 112;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_POD_01;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 25;
+                    XmNy = 232;
+                    XmNlabelString = 
+                    compound_string(" 5 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 65;
+                    XmNy = 232;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_POD_05;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 25;
+                    XmNy = 142;
+                    XmNlabelString = 
+                    compound_string(" 2 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 65;
+                    XmNy = 142;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_POD_02;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 25;
+                    XmNy = 262;
+                    XmNlabelString = 
+                    compound_string(" 6 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 65;
+                    XmNy = 262;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_POD_06;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 25;
+                    XmNy = 172;
+                    XmNlabelString = 
+                    compound_string(" 3 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 65;
+                    XmNy = 172;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_POD_03;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 25;
+                    XmNy = 292;
+                    XmNlabelString = 
+                    compound_string(" 7 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 65;
+                    XmNy = 292;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_POD_07;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 25;
+                    XmNy = 202;
+                    XmNlabelString = 
+                    compound_string(" 4 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 65;
+                    XmNy = 202;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_POD_04;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 25;
+                    XmNy = 322;
+                    XmNlabelString = 
+                    compound_string(" 8 ");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 65;
+                    XmNy = 322;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_POD_08;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 34;
+                    XmNy = 390;
+                    XmNlabelString = 
+                    compound_string("Readout:");
+                    };
+                };
+            XmdsPath 
+                {
+                arguments
+                    {
+                    XmNx = 102;
+                    XmNy = 390;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_READOUT;
+                    XmdsNpathType = NciRELATIVE_PATH;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 285;
+                    XmNy = 112;
+                    XmNlabelString = 
+                    compound_string(" 9 ");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 284;
+                    XmNy = 142;
+                    XmNlabelString = 
+                    compound_string("10");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 285;
+                    XmNy = 172;
+                    XmNlabelString = 
+                    compound_string("11");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 285;
+                    XmNy = 202;
+                    XmNlabelString = 
+                    compound_string("12");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 285;
+                    XmNy = 232;
+                    XmNlabelString = 
+                    compound_string("13");
+                    XmNwidth = 22;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 285;
+                    XmNy = 262;
+                    XmNlabelString = 
+                    compound_string("14");
+                    XmNwidth = 22;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 285;
+                    XmNy = 292;
+                    XmNlabelString = 
+                    compound_string("15");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 285;
+                    XmNy = 322;
+                    XmNlabelString = 
+                    compound_string("16");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 320;
+                    XmNy = 112;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_POD_09;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 320;
+                    XmNy = 142;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_POD_10;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 320;
+                    XmNy = 172;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = HV1440$N_POD_11;
+                    XmdsNnidOffset = HV1440$N_POD_03;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 320;
+                    XmNy = 202;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_POD_12;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 320;
+                    XmNy = 232;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_POD_13;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 320;
+                    XmNy = 262;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_POD_14;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 320;
+                    XmNy = 292;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_POD_15;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 320;
+                    XmNy = 322;
+                    XmNcolumns = 22;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = false;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = HV1440$N_POD_16;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 132;
+                    XmNy = 353;
+                    XmdsNnidOffset = HV1440$N_FRAME;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNlabelStrings = string_table(
+                        compound_string("1"),
+                        
+                        compound_string("2"),
+                        
+                        compound_string("3"),
+                        
+                        compound_string("4"),
+                        
+                        compound_string("5"),
+                        
+                        compound_string("6"),
+                        
+                        compound_string(" 7"),
+                        
+                        compound_string(" 8"),
+                        
+                        compound_string(" 9"),
+                        
+                        compound_string(" 10"),
+                        
+                        compound_string(" 11"),
+                        
+                        compound_string(" 12"),
+                        
+                        compound_string(" 13"),
+                        
+                        compound_string(" 14"),
+                        
+                        compound_string(" 15"),
+                        
+                        compound_string(" 16"));
+                        
+                    XmdsNvalueStrings = string_table(
+                        compound_string(" 1"),
+                        
+                        compound_string(" 2"),
+                        
+                        compound_string(" 3"),
+                        
+                        compound_string(" 4"),
+                        
+                        compound_string(" 5"),
+                        
+                        compound_string(" 6"),
+                        
+                        compound_string(" 7"),
+                        
+                        compound_string(" 8"),
+                        
+                        compound_string(" 9"),
+                        
+                        compound_string(" 10"),
+                        
+                        compound_string(" 11"),
+                        
+                        compound_string(" 12"),
+                        
+                        compound_string(" 13"),
+                        
+                        compound_string(" 14"),
+                        
+                        compound_string(" 15"),
+                        
+                        compound_string(" 16"));
+                    };
+                };
+            XmLabel 
+                {
+                arguments
+                    {
+                    XmNx = 78;
+                    XmNy = 360;
+                    XmNlabelString = 
+                    compound_string("Frame:");
+                    };
+                };
+            XmLabel 
+                {
+                arguments
+                    {
+                    XmNx = 335;
+                    XmNy = 360;
+                    XmNlabelString = 
+                    compound_string("Range:");
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 386;
+                    XmNy = 353;
+                    XmdsNnidOffset = HV1440$N_RANGE;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNlabelStrings = string_table(
+                        compound_string("1.0 "),
+                        
+                        compound_string(" 0.625"),
+                        
+                        compound_string(" 0.5"),
+                        
+                        compound_string(" 0.375"));
+                    XmdsNvalueStrings = string_table(
+                        compound_string(" 1.0"),
+                        
+                        compound_string(" 0.625"),
+                        
+                        compound_string(" 0.5"),
+                        
+                        compound_string(" 0.375"));
+                    };
+                };
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    HV1440$K_CONG_NODES: 26;
+    HV1440$N_HEAD: 0;
+    HV1440$N_NAME: 1;
+    HV1440$N_COMMENT: 2;
+    HV1440$N_RANGE: 3;
+    HV1440$N_PODS: 4;
+    HV1440$N_POD_01: 4;
+    HV1440$N_POD_02: 5;
+    HV1440$N_POD_03: 6;
+    HV1440$N_POD_04: 7;
+    HV1440$N_POD_05: 8;
+    HV1440$N_POD_06: 9;
+    HV1440$N_POD_07: 10;
+    HV1440$N_POD_08: 11;
+    HV1440$N_POD_09: 12;
+    HV1440$N_POD_10: 13;
+    HV1440$N_POD_11: 14;
+    HV1440$N_POD_12: 15;
+    HV1440$N_POD_13: 16;
+    HV1440$N_POD_14: 17;
+    HV1440$N_POD_15: 18;
+    HV1440$N_POD_16: 19;
+    HV1440$N_READOUT: 20;
+    HV1440$N_FRAME: 21;
+    HV1440$N_INIT_ACTION: 22;
+    HV1440$N_STORE_ACTION: 23;
+    HV1440$N_ON_ACTION: 24;
+    HV1440$N_OFF_ACTION: 25;
+
+end module;
+

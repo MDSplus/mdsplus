@@ -1,0 +1,404 @@
+module a14
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+object
+    A14: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNdialogTitle = 
+            compound_string("Aurora 14 12-Bit Transient Digitizer - 1 Mhz");
+            XmNautoUnmanage = false;
+            XmNnoResize = true;
+            XmNborderWidth = 1;
+            XmNheight = 699;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("CAMAC name:");
+                    XmNx = 10;
+                    XmNy = 10;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 54;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = A14$N_CTS_NAME;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 10;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNx = 10;
+                    XmNy = 40;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 54;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = A14$N_COMMENT;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 40;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("External clock:");
+                    XmNx = 11;
+                    XmNy = 105;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 48;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = A14$N_EXT_CLOCK_IN;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 140;
+                    XmNy = 102;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Trigger:");
+                    XmNx = 10;
+                    XmNy = 72;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 48;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = A14$N_STOP_TRIG;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 140;
+                    XmNy = 70;
+                    };
+                };
+            XmdsDigChans 
+                {
+                arguments
+                    {
+                    XmdsNchannels = 6;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = A14$N_INPUTS;
+                    XmdsNdataNidOffset = A14$N_INP_HEAD;
+                    XmdsNstartIdxNidOffset = A14$N_INP_STARTIDX;
+                    XmdsNendIdxNidOffset = A14$N_INP_ENDIDX;
+                    XmdsNnodesPerChannel = A14$K_NODES_PER_INP;
+                    XmNx = 10;
+                    XmNy = 222;
+                    XmNwidth = 588;
+                    XmNheight = 245;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    XmNx = 14;
+                    XmNy = 470;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = A14$N_INIT_ACTION;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    XmNx = 206;
+                    XmNy = 470;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = A14$N_STORE_ACTION;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 510;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 160;
+                    XmNy = 510;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 348;
+                    XmNy = 510;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 536;
+                    XmNy = 510;
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 185;
+                    XmdsNnidOffset = A14$N_CLOCK_DIVIDE;
+                    XmNlabelString = 
+                    compound_string("Frequency:");
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNlabelStrings = string_table(
+                        compound_string("1 MHz"),
+                        
+                        compound_string("500 KHz"),
+                        
+                        compound_string("250 KHz"),
+                        
+                        compound_string("100 KHz"),
+                        
+                        compound_string("50 KHz"),
+                        
+                        compound_string("25 KHz"),
+                        
+                        compound_string("10 KHz"));
+                    XmdsNvalueStrings = string_table(
+                        compound_string("1 "),
+                        
+                        compound_string("2 "),
+                        
+                        compound_string("4 "),
+                        
+                        compound_string("10 "),
+                        
+                        compound_string("20 "),
+                        
+                        compound_string("40 "),
+                        
+                        compound_string("100 "));
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 446;
+                    XmNy = 128;
+                    XmdsNnidOffset = A14$N_CLK_POLARITY;
+                    XmNlabelString = 
+                    compound_string("Clock:");
+                    XmdsNvalueStrings = string_table(
+                        compound_string("0 "),
+                        
+                        compound_string("1 "));
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNlabelStrings = string_table(
+                        compound_string("Rising Edge "),
+                        
+                        compound_string("Falling Edge"));
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 449;
+                    XmNy = 159;
+                    XmdsNnidOffset = A14$N_STR_POLARITY;
+                    XmNlabelString = 
+                    compound_string("Start:");
+                    XmdsNvalueStrings = string_table(
+                        compound_string("0 "),
+                        
+                        compound_string("1 "));
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNlabelStrings = string_table(
+                        compound_string("Rising Edge "),
+                        
+                        compound_string("Falling Edge"));
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 453;
+                    XmNy = 190;
+                    XmdsNnidOffset = A14$N_STP_POLARITY;
+                    XmNlabelString = 
+                    compound_string("Stop:");
+                    XmdsNvalueStrings = string_table(
+                        compound_string("0 "),
+                        
+                        compound_string("1 "));
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNlabelStrings = string_table(
+                        compound_string("Rising Edge "),
+                        
+                        compound_string("Falling Edge"));
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 128;
+                    XmdsNnidOffset = A14$N_MODE;
+                    XmNlabelString = 
+                    compound_string("Mode:");
+                    XmdsNvalueStrings = string_table(
+                        compound_string("0 "),
+                        
+                        compound_string("1 "),
+                        
+                        compound_string("2 "),
+                        
+                        compound_string("3 "),
+                        
+                        compound_string("4 "));
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNlabelStrings = string_table(
+                        compound_string("Pre/Post Trigger "),
+                        
+                        compound_string("Cyclic Buffer "),
+                        
+                        compound_string("Multi Start/Stop "),
+                        
+                        compound_string("Multi Start "),
+                        
+                        compound_string("Slave "));
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 228;
+                    XmNy = 128;
+                    XmdsNnidOffset = A14$N_GATED;
+                    XmNlabelString = 
+                    compound_string("Gated Clock:");
+                    XmdsNvalueStrings = string_table(
+                        compound_string("0 "),
+                        
+                        compound_string("1 "));
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNlabelStrings = string_table(
+                        compound_string("No "),
+                        
+                        compound_string("Yes"));
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 16;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = A14$N_PTS;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 160;
+                    XmNy = 159;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 14;
+                    XmNy = 160;
+                    XmNlabelString = 
+                    compound_string("Post Trigger Samples:");
+                    };
+                };
+            XmdsXdBoxDialogButton 
+                {
+                arguments
+                    {
+                    XmNx = 260;
+                    XmNy = 189;
+                    XmdsNnidOffset = A14$N_DIMENSION;
+                    XmNlabelString = 
+                    compound_string("Special Dimension");
+                    XmdsNnid = DEVICE_NID;
+                    };
+                };
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    A14$K_CONG_NODES: 33;
+    A14$N_HEAD: 0;
+    A14$N_CTS_NAME: 1;
+    A14$N_COMMENT: 2;
+    A14$N_EXT_CLOCK_IN: 4;
+    A14$N_STOP_TRIG: 5;
+    A14$N_INPUTS: 13;
+    A14$K_NODES_PER_INP: 3;
+    A14$N_INP_HEAD: 0;
+    A14$N_INP_STARTIDX: 1;
+    A14$N_INP_ENDIDX: 2;
+    A14$N_INIT_ACTION: 31;
+    A14$N_STORE_ACTION: 32;
+    A14$N_CLOCK_DIVIDE: 3;
+    A14$N_PTS: 6;
+    A14$N_MODE: 7;
+    A14$N_DIMENSION: 8;
+    A14$N_CLK_POLARITY: 9;
+    A14$N_STR_POLARITY: 10;
+    A14$N_STP_POLARITY: 11;
+    A14$N_GATED: 12;
+
+end module;
+

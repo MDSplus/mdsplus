@@ -1,0 +1,229 @@
+module MDSDCL_UIL
+    names = case_sensitive
+
+object
+    MDSDCL: XmFormDialog 
+        {
+        arguments
+            {
+            XmNwidth = 460;
+            XmNheight = 480;
+            XmNresizePolicy = XmRESIZE_GROW;
+            XmNautoUnmanage = false;
+            XmNdialogTitle = 
+            compound_string("MDS Command Line Interpreter");
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNleftOffset = 10;
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNtopOffset = 10;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 40;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = MDSDCL$N_COMMENT;
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNleftOffset = 85;
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNtopOffset = 10;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Interpreters: ",separate=true) &
+                        compound_string("(Select one or more)");
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNleftOffset = 10;
+                    XmNtopOffset = 50;
+                    };
+                };
+            XmScrolledWindow 
+                {
+                arguments
+                    {
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNleftOffset = 180;
+                    XmNtopOffset = 50;
+                    };
+                controls
+                    {
+                    XmList interpreters;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Commands:");
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNleftOffset = 11;
+                    XmNtopOffset = 113;
+                    };
+                };
+            XmdsExpr 
+                {
+                arguments
+                    {
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnidOffset = MDSDCL$N_COMMANDS;
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNleftOffset = 10;
+                    XmNtopOffset = 133;
+                    XmNrightAttachment = XmATTACH_FORM;
+                    XmNrightOffset = 10;
+                    XmNbottomAttachment = XmATTACH_FORM;
+                    XmNbottomOffset = 86;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    XmNnavigationType = XmTAB_GROUP;
+                    XmNeditMode = XmMULTI_LINE_EDIT;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNleftAttachment = XmATTACH_NONE;
+                    XmNtopAttachment = XmATTACH_NONE;
+                    XmNleftOffset = 392;
+                    XmNtopOffset = 385;
+                    XmNbottomAttachment = XmATTACH_FORM;
+                    XmNbottomOffset = 10;
+                    XmNrightAttachment = XmATTACH_FORM;
+                    XmNrightOffset = 10;
+                    };
+                };
+            XmdsOkButton
+                {
+                arguments
+                    {
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNtopAttachment = XmATTACH_NONE;
+                    XmNleftOffset = 10;
+                    XmNtopOffset = 417;
+                    XmNbottomAttachment = XmATTACH_FORM;
+                    XmNbottomOffset = 10;
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        Apply;
+                        };
+                    };
+                };
+            XmdsApplyButton
+                {
+                arguments
+                    {
+                    XmNleftAttachment = XmATTACH_POSITION;
+                    XmNtopAttachment = XmATTACH_NONE;
+                    XmNtopOffset = 416;
+                    XmNbottomAttachment = XmATTACH_FORM;
+                    XmNbottomOffset = 10;
+                    XmNleftPosition = 27;
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        Apply;
+                        };
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmdsNnidOffset = MDSDCL$N_EXEC_ACTION;
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNtopAttachment = XmATTACH_NONE;
+                    XmNleftOffset = 10;
+                    XmNtopOffset = 400;
+                    XmNbottomAttachment = XmATTACH_FORM;
+                    XmNbottomOffset = 44;
+                    XmNlabelString = 
+                    compound_string("Execute Action");
+                    XmdsNnid = DEVICE_NID;
+                    };
+                };
+            XmPushButtonGadget
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Reset");
+                    XmNleftAttachment = XmATTACH_POSITION;
+                    XmNtopAttachment = XmATTACH_NONE;
+                    XmNtopOffset = 416;
+                    XmNbottomAttachment = XmATTACH_FORM;
+                    XmNbottomOffset = 10;
+                    XmNleftPosition = 57;
+                    };
+                callbacks
+                    {
+                    MrmNcreateCallback = procedures
+                        {
+                        Reset;
+                        };
+                    XmNactivateCallback = procedures
+                        {
+                        Reset;
+                        };
+                    };
+                };
+            };
+        };
+    interpreters: XmList 
+        {
+        arguments
+            {
+            XmNselectionPolicy = XmMULTIPLE_SELECT;
+            XmNvisibleItemCount = 4;
+            XmNlistMarginHeight = 0;
+            XmNlistMarginWidth = 0;
+            XmNhighlightThickness = 0;
+            XmNuserData = selections_nid;
+            };
+        };
+value
+    DEVICE_NID: -1;
+    MDSDCL$N_COMMENT:     1;
+    MDSDCL$N_VERBS:       2;
+    MDSDCL$N_COMMANDS:    3;
+    MDSDCL$N_EXEC_ACTION: 4;
+
+identifier
+    selections_nid;
+
+procedure
+    Apply;
+    Reset;
+
+end module;

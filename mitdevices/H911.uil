@@ -1,0 +1,211 @@
+module h911
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+object
+    H911: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNdialogTitle = 
+            compound_string("Aurora 12-Bit Transient Digitizer");
+            XmNautoUnmanage = false;
+            XmNnoResize = true;
+            XmNborderWidth = 1;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("CAMAC name:");
+                    XmNx = 10;
+                    XmNy = 10;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 54;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = H911$N_NAME;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 10;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNx = 10;
+                    XmNy = 40;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 54;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = H911$N_COMMENT;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 40;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("External clock:");
+                    XmNx = 11;
+                    XmNy = 75;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 48;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = H911$N_EXT_CLOCK;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmNx = 140;
+                    XmNy = 72;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    XmNx = 10;
+                    XmNy = 416;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = H911$N_INIT_ACTION;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    XmNx = 200;
+                    XmNy = 416;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = H911$N_STORE_ACTION;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 456;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 159;
+                    XmNy = 456;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 350;
+                    XmNy = 456;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 524;
+                    XmNy = 456;
+                    };
+                };
+            XmdsDigChans 
+                {
+                arguments
+                    {
+                    XmNx = 41;
+                    XmNy = 101;
+                    XmdsNchannels = 32;
+                    XmdsNdataNidOffset = 0;
+                    XmdsNendIdxNidOffset = 0;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = H911$N_CHANNEL_01;
+                    XmdsNnodesPerChannel = 1;
+                    XmdsNstartIdxNidOffset = 0;
+                    XmNwidth = 526;
+                    XmNheight = 305;
+                    };
+                };
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    H911$K_CONG_NODES: 38;
+    H911$N_HEAD: 0;
+    H911$N_NAME: 1;
+    H911$N_COMMENT: 2;
+    H911$N_EXT_CLOCK: 3;
+    H911$N_CHANNEL_01: 4;
+    H911$N_CHANNEL_02: 5;
+    H911$N_CHANNEL_03: 6;
+    H911$N_CHANNEL_04: 7;
+    H911$N_CHANNEL_05: 8;
+    H911$N_CHANNEL_06: 9;
+    H911$N_CHANNEL_07: 10;
+    H911$N_CHANNEL_08: 11;
+    H911$N_CHANNEL_09: 12;
+    H911$N_CHANNEL_10: 13;
+    H911$N_CHANNEL_11: 14;
+    H911$N_CHANNEL_12: 15;
+    H911$N_CHANNEL_13: 16;
+    H911$N_CHANNEL_14: 17;
+    H911$N_CHANNEL_15: 18;
+    H911$N_CHANNEL_16: 19;
+    H911$N_CHANNEL_17: 20;
+    H911$N_CHANNEL_18: 21;
+    H911$N_CHANNEL_19: 22;
+    H911$N_CHANNEL_20: 23;
+    H911$N_CHANNEL_21: 24;
+    H911$N_CHANNEL_22: 25;
+    H911$N_CHANNEL_23: 26;
+    H911$N_CHANNEL_24: 27;
+    H911$N_CHANNEL_25: 28;
+    H911$N_CHANNEL_26: 29;
+    H911$N_CHANNEL_27: 30;
+    H911$N_CHANNEL_28: 31;
+    H911$N_CHANNEL_29: 32;
+    H911$N_CHANNEL_30: 33;
+    H911$N_CHANNEL_31: 34;
+    H911$N_CHANNEL_32: 35;
+    H911$N_INIT_ACTION: 36;
+    H911$N_STORE_ACTION: 37;
+
+end module;
+

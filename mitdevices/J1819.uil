@@ -1,0 +1,260 @@
+module J1819_UIL
+    names = case_sensitive
+
+object
+    J1819: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNresizePolicy = XmRESIZE_ANY;
+            XmNdialogTitle = 
+            compound_string("JorWay model 1819 Phase Digitizer");
+            XmNautoUnmanage = false;
+!            XmNnoResize = true;
+            XmNdefaultPosition = true;
+            XmNwidth = 475;
+            XmNheight = 320;
+            XmNx = 1;
+            XmNy = -1;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 11;
+                    XmNy = 10;
+                    XmNlabelString = 
+                    compound_string("CAMAC Name:");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 40;
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 110;
+                    XmNy = 8;
+                    XmNcolumns = 32;
+                    XmNmarginHeight = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = J1819$N_NAME;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 111;
+                    XmNy = 40;
+                    XmNcolumns = 32;
+                    XmNmarginHeight = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = J1819$N_COMMENT;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNx = 19;
+                    XmNy = 236;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = J1819$N_INIT_ACTION;
+                    XmNwidth = 25;
+                    XmNheight = 25;
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNx = 336;
+                    XmNy = 238;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = J1819$N_STORE_ACTION;
+                    XmNwidth = 25;
+                    XmNheight = 25;
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 132;
+                    XmNy = 112;
+                    XmNcolumns = 32;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = J1819$N_EXT_CLOCK_IN;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 9;
+                    XmNy = 114;
+                    XmNlabelString = 
+                    compound_string("External Clock:");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 12;
+                    XmNy = 80;
+                    XmNlabelString = 
+                    compound_string("Trigger:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 133;
+                    XmNy = 79;
+                    XmNcolumns = 32;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = J1819$N_STOP_TRIG;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 404;
+                    XmNy = 274;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 285;
+                    XmNy = 274;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 16;
+                    XmNy = 274;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 142;
+                    XmNy = 274;
+                    };
+                };
+            XmBulletinBoard 
+                {
+                arguments
+                    {
+                    XmNx = 16;
+                    XmNy = 190;
+                    XmNwidth = 446;
+                    XmNheight = 43;
+                    XmNresizePolicy = XmRESIZE_NONE;
+                    XmNshadowThickness = 2;
+                    XmNshadowType = XmSHADOW_IN;
+                    XmNmarginHeight = 5;
+                    XmNmarginWidth = 5;
+                    };
+                controls
+                    {
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmdsNnidOffset = J1819$N_TRUE_PHASE;
+                            XmdsNshowPath = true;
+                            XmNwidth = 25;
+                            XmNheight = 25;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNputOnApply = true;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNx = 326;
+                            XmNy = 8;
+                            XmNcolumns = 12;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = J1819$N_SAMPLES;
+                            XmdsNputOnApply = true;
+                            XmdsNautoQuote = false;
+                            XmdsNdefaultQuote = false;
+                            };
+                        };
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 64;
+                    XmNy = 164;
+                    XmNlabelString = 
+                    compound_string("Phase Data");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 343;
+                    XmNy = 158;
+                    XmNlabelString = 
+                    compound_string("Samples");
+                    };
+                };
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    J1819$K_CONG_NODES: 10;
+    J1819$N_HEAD: 0;
+    J1819$N_NAME: 1;
+    J1819$N_COMMENT: 2;
+    J1819$N_EXT_CLOCK_IN: 3;
+    J1819$N_STOP_TRIG: 4;
+    J1819$N_SAMPLES: 5;
+    J1819$N_INPUT: 6;
+    J1819$N_TRUE_PHASE: 7;
+    J1819$N_INIT_ACTION: 8;
+    J1819$N_STORE_ACTION: 9;
+
+end module;
+

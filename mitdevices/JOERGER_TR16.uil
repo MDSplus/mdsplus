@@ -1,0 +1,676 @@
+module JOERGER_TR16_UIL
+    names = case_sensitive
+
+object
+    JOERGER_TR16: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNx = 0;
+            XmNy = 0;
+            XmNresizePolicy = XmRESIZE_GROW;
+            XmNdialogTitle = 
+            compound_string("JOERGER_TR16  Joerger 16 Channel Transient Recorder");
+            XmNautoUnmanage = false;
+            XmNnoResize = true;
+            XmNdefaultPosition = true;
+            XmNwidth = 739;
+            XmNheight = 432;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 11;
+                    XmNy = 10;
+                    XmNlabelString = 
+                    compound_string("CAMAC Name:");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 40;
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 110;
+                    XmNy = 8;
+                    XmNcolumns = 32;
+                    XmNmarginHeight = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_TR16$N_NAME;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 108;
+                    XmNy = 38;
+                    XmNcolumns = 32;
+                    XmNmarginHeight = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_TR16$N_COMMENT;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNx = 12;
+                    XmNy = 346;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_TR16$N_INIT_ACTION;
+                    XmNwidth = 25;
+                    XmNheight = 25;
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNx = 217;
+                    XmNy = 346;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_TR16$N_STORE_ACTION;
+                    XmNwidth = 25;
+                    XmNheight = 25;
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 484;
+                    XmNy = 104;
+                    XmdsNnidOffset = JOERGER_TR16$N_ACTIVE_CHANS;
+                    XmNlabelString = 
+                    compound_string("Active Channels:");
+                    XmdsNlabelStrings = string_table(
+                        compound_string("1 "),
+                        
+                        compound_string("2 "),
+                        
+                        compound_string("4 "),
+                        
+                        compound_string("8 "),
+                        
+                        compound_string("16 "));
+                    XmdsNvalueStrings = string_table(
+                        compound_string("1 "),
+                        
+                        compound_string("2 "),
+                        
+                        compound_string("4 "),
+                        
+                        compound_string("8 "),
+                        
+                        compound_string("16 "));
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 584;
+                    XmNy = 65;
+                    XmdsNnidOffset = JOERGER_TR16$N_MASTER;
+                    XmdsNvalueStrings = string_table(
+                        compound_string("0"),
+                        
+                        compound_string("1"));
+                    XmdsNlabelStrings = string_table(
+                        compound_string("Master"),
+                        
+                        compound_string("Slave"));
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 9;
+                    XmNy = 69;
+                    XmdsNnidOffset = JOERGER_TR16$N_FREQ;
+                    XmNlabelString = 
+                    compound_string("Front Panel CLK IN:");
+                    XmdsNlabelStrings = string_table(
+                        compound_string("160   KHz "),
+                        
+                        compound_string(" 80   KHz "),
+                        
+                        compound_string(" 40   kHz "),
+                        
+                        compound_string(" 20   kHz "),
+                        
+                        compound_string(" 10   kHz "),
+                        
+                        compound_string("  5   kHz "),
+                        
+                        compound_string("  2.5 kHz "),
+                        
+                        compound_string("External"));
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNvalueStrings = string_table(
+                        compound_string("160."),
+                        
+                        compound_string("80."),
+                        
+                        compound_string("40."),
+                        
+                        compound_string("20."),
+                        
+                        compound_string("10."),
+                        
+                        compound_string("5."),
+                        
+                        compound_string("2.5"),
+                        
+                        compound_string("0.0"));
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 365;
+                    XmNy = 74;
+                    XmNcolumns = 20;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_TR16$N_EXT_CLOCK_IN;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 259;
+                    XmNy = 76;
+                    XmNlabelString = 
+                    compound_string("External Clock:");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 109;
+                    XmNlabelString = 
+                    compound_string("Trigger:");
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 72;
+                    XmNy = 106;
+                    XmNcolumns = 20;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_TR16$N_STOP_TRIG;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 660;
+                    XmNy = 383;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 439;
+                    XmNy = 383;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 9;
+                    XmNy = 383;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 199;
+                    XmNy = 383;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNx = 306;
+                    XmNy = 107;
+                    XmNcolumns = 20;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_TR16$N_POST_TRIG;
+                    XmNheight = 28;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 269;
+                    XmNy = 108;
+                    XmNlabelString = 
+                    compound_string("PTS:");
+                    XmNheight = 22;
+                    };
+                };
+            XmScrolledWindow 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 139;
+                    XmNwidth = 701;
+                    XmNheight = 196;
+                    XmNborderWidth = 1;
+                    XmNscrollBarDisplayPolicy = XmAS_NEEDED;
+                    XmNscrollingPolicy = XmAUTOMATIC;
+                    };
+                controls
+                    {
+                    XmBulletinBoard 
+                        {
+                        arguments
+                            {
+                            XmNwidth = 667;
+                            XmNheight = 627;
+                            XmNborderWidth = 1;
+                            XmNresizePolicy = XmRESIZE_NONE;
+                            };
+                        controls
+                            {
+                            XmdsDigChans 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 0;
+                                    XmNy = 0;
+                                    XmdsNchannels = 16;
+                                    XmdsNdataNidOffset = JOERGER_TR16$N_INP_HEAD;
+                                    XmdsNendIdxNidOffset = JOERGER_TR16$N_INP_ENDIDX;
+                                    XmdsNnodesPerChannel = JOERGER_TR16$K_NODES_PER_INP;
+                                    XmdsNstartIdxNidOffset = JOERGER_TR16$N_INP_STARTIDX;
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS;
+                                    XmNwidth = 515;
+                                    XmNheight = 593;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 30;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+0*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN;
+                                        
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 62;
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+1*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN;
+                                        
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 94;
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+2*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN;
+                                        
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 128;
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+3*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN;
+                                        
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 162;
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+4*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN;
+                                        
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 196;
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+5*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN;
+                                        
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 231;
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+6*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN;
+                                        
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 268;
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+7*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN;
+                                        
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 303;
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+8*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN;
+                                        
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 339;
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+9*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN;
+                                        
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 376;
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+10*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN
+                                        ;
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 411;
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+11*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN
+                                        ;
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 445;
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+12*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN
+                                        ;
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 483;
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+13*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN
+                                        ;
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 520;
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+14*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN
+                                        ;
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmdsNidOptionMenu 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 531;
+                                    XmNy = 560;
+                                    XmNwidth = 25;
+                                    XmNheight = 25;
+                                    XmdsNlabelStrings = gains;
+                                    XmdsNnidOffset = JOERGER_TR16$N_INPUTS+15*JOERGER_TR16$K_NODES_PER_INP+JOERGER_TR16$N_INP_GAIN
+                                        ;
+                                    XmdsNnid = DEVICE_NID;
+                                    XmdsNvalueStrings = gains;
+                                    };
+                                };
+                            XmLabelGadget 
+                                {
+                                arguments
+                                    {
+                                    XmNx = 554;
+                                    XmNy = 8;
+                                    XmNlabelString = 
+                                    compound_string("Gain");
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+            XmdsNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 474;
+                    XmNy = 28;
+                    XmdsNnidOffset = JOERGER_TR16$N_ACTIVE_MEM;
+                    XmNlabelString = 
+                    compound_string("Active Memory:");
+                    XmdsNlabelStrings = string_table(
+                        compound_string("8K"),
+                        
+                        compound_string("16K"),
+                        
+                        compound_string("32K"),
+                        
+                        compound_string("64K"),
+                        
+                        compound_string("128K"),
+                        
+                        compound_string("256K"),
+                        
+                        compound_string("512K"),
+                        
+                        compound_string("1024K"));
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNvalueStrings = string_table(
+                        compound_string("8"),
+                        
+                        compound_string("16"),
+                        
+                        compound_string("32"),
+                        
+                        compound_string("64"),
+                        
+                        compound_string("128"),
+                        
+                        compound_string("256"),
+                        
+                        compound_string("512"),
+                        
+                        compound_string("1024"));
+                    XmdsNputOnApply = true;
+                    };
+                };
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    JOERGER_TR16$K_CONG_NODES: 77;
+    JOERGER_TR16$N_HEAD: 0;
+    JOERGER_TR16$N_NAME: 1;
+    JOERGER_TR16$N_COMMENT: 2;
+    JOERGER_TR16$N_FREQ: 3;
+    JOERGER_TR16$N_EXT_CLOCK_IN: 4;
+    JOERGER_TR16$N_STOP_TRIG: 5;
+    JOERGER_TR16$N_MEM_SIZE: 6;
+    JOERGER_TR16$N_ACTIVE_MEM: 7;
+    JOERGER_TR16$N_ACTIVE_CHANS: 8;
+    JOERGER_TR16$N_POST_TRIG: 9;
+    JOERGER_TR16$N_MASTER: 10;
+    JOERGER_TR16$N_INPUTS: 11;
+    JOERGER_TR16$K_NODES_PER_INP: 4;
+    JOERGER_TR16$N_INP_HEAD: 0;
+    JOERGER_TR16$N_INP_STARTIDX: 1;
+    JOERGER_TR16$N_INP_ENDIDX: 2;
+    JOERGER_TR16$N_INP_GAIN: 3;
+    JOERGER_TR16$N_INIT_ACTION: 75;
+    JOERGER_TR16$N_STORE_ACTION: 76;
+
+value
+    gains: string_table(
+        compound_string(" 1"),
+        
+        compound_string(" 2"),
+        
+        compound_string(" 4"),
+        
+        compound_string(" 8"));
+
+end module;
+

@@ -1,0 +1,823 @@
+module joerger_dac16
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+object
+    JOERGER_DAC16: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNdialogTitle = 
+            compound_string("Joerger DAC16 16-Digital to Analog Converter");
+            XmNautoUnmanage = false;
+            XmNnoResize = true;
+            XmNborderWidth = 1;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("CAMAC name:");
+                    XmNx = 10;
+                    XmNy = 10;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 40;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_DAC16$N_NAME;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 10;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNx = 10;
+                    XmNy = 40;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 40;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_DAC16$N_COMMENT;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNx = 120;
+                    XmNy = 40;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    XmNx = 10;
+                    XmNy = 351;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_DAC16$N_INIT_ACTION;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 391;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 132;
+                    XmNy = 391;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 290;
+                    XmNy = 391;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 414;
+                    XmNy = 391;
+                    };
+                };
+            XmBulletinBoard 
+                {
+                arguments
+                    {
+                    XmNx = 17;
+                    XmNy = 94;
+                    XmNwidth = 468;
+                    XmNheight = 256;
+                    XmNborderWidth = 0;
+                    XmNresizePolicy = XmRESIZE_NONE;
+                    XmNshadowThickness = 2;
+                    XmNshadowType = XmSHADOW_IN;
+                    };
+                controls
+                    {
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 41;
+                            XmNy = 9;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_01;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 81;
+                            XmNy = 9;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_01;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 19;
+                            XmNy = 13;
+                            XmNlabelString = 
+                            compound_string(" 1");
+                            XmNwidth = 15;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 19;
+                            XmNy = 38;
+                            XmNlabelString = 
+                            compound_string(" 2");
+                            XmNwidth = 15;
+                            };
+                        };
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 41;
+                            XmNy = 39;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_02;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 81;
+                            XmNy = 39;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_02;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 19;
+                            XmNy = 74;
+                            XmNlabelString = 
+                            compound_string(" 3");
+                            XmNwidth = 15;
+                            };
+                        };
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 41;
+                            XmNy = 69;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_03;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 81;
+                            XmNy = 70;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_03;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 19;
+                            XmNy = 103;
+                            XmNlabelString = 
+                            compound_string(" 4");
+                            XmNwidth = 15;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 19;
+                            XmNy = 131;
+                            XmNlabelString = 
+                            compound_string(" 5");
+                            XmNwidth = 15;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 19;
+                            XmNy = 160;
+                            XmNlabelString = 
+                            compound_string(" 6");
+                            XmNwidth = 15;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 19;
+                            XmNy = 191;
+                            XmNlabelString = 
+                            compound_string(" 7");
+                            XmNwidth = 15;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 19;
+                            XmNy = 221;
+                            XmNlabelString = 
+                            compound_string(" 8");
+                            XmNwidth = 16;
+                            };
+                        };
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 41;
+                            XmNy = 101;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_04;
+                            };
+                        };
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 41;
+                            XmNy = 128;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_05 ;
+                            };
+                        };
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 41;
+                            XmNy = 154;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_06;
+                            };
+                        };
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 41;
+                            XmNy = 186;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_07;
+                            };
+                        };
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 41;
+                            XmNy = 217;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_08;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 81;
+                            XmNy = 101;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_04;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 81;
+                            XmNy = 132;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_05;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 81;
+                            XmNy = 158;
+                            XmNwidth = 116;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_06;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 81;
+                            XmNy = 187;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_07;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 81;
+                            XmNy = 220;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_08;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 248;
+                            XmNy = 12;
+                            XmNlabelString = 
+                            compound_string(" 9");
+                            XmNwidth = 15;
+                            };
+                        };
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 275;
+                            XmNy = 9;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_09;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 312;
+                            XmNy = 10;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_09;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 248;
+                            XmNy = 40;
+                            XmNlabelString = 
+                            compound_string("10");
+                            XmNwidth = 15;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 312;
+                            XmNy = 39;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_10;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 313;
+                            XmNy = 70;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_11;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 312;
+                            XmNy = 98;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_12;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 314;
+                            XmNy = 128;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_13;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 314;
+                            XmNy = 160;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_14;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 315;
+                            XmNy = 189;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_15;
+                            };
+                        };
+                    XmdsExprField 
+                        {
+                        arguments
+                            {
+                            XmNcolumns = 13;
+                            XmNmarginHeight = 1;
+                            XmNmarginWidth = 1;
+                            XmdsNdefaultQuote = false;
+                            XmdsNautoQuote = false;
+                            XmNx = 315;
+                            XmNy = 219;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_16;
+                            };
+                        };
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 277;
+                            XmNy = 38;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_10;
+                            };
+                        };
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 276;
+                            XmNy = 69;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_11;
+                            };
+                        };
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 276;
+                            XmNy = 95;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_12;
+                            };
+                        };
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 276;
+                            XmNy = 123;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_13;
+                            };
+                        };
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 276;
+                            XmNy = 156;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_14;
+                            };
+                        };
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 277;
+                            XmNy = 188;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_15;
+                            };
+                        };
+                    XmdsOnOffToggleButton 
+                        {
+                        arguments
+                            {
+                            XmNx = 277;
+                            XmNy = 217;
+                            XmNwidth = 24;
+                            XmNheight = 25;
+                            XmdsNshowPath = false;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_16;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 247;
+                            XmNy = 69;
+                            XmNlabelString = 
+                            compound_string("11");
+                            XmNwidth = 15;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 248;
+                            XmNy = 93;
+                            XmNlabelString = 
+                            compound_string("12");
+                            XmNwidth = 15;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 250;
+                            XmNy = 123;
+                            XmNlabelString = 
+                            compound_string("13");
+                            XmNwidth = 15;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 250;
+                            XmNy = 155;
+                            XmNlabelString = 
+                            compound_string("14");
+                            XmNwidth = 15;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 252;
+                            XmNy = 187;
+                            XmNlabelString = 
+                            compound_string("15");
+                            XmNwidth = 15;
+                            };
+                        };
+                    XmLabelGadget 
+                        {
+                        arguments
+                            {
+                            XmNx = 254;
+                            XmNy = 219;
+                            XmNlabelString = 
+                            compound_string("16");
+                            XmNwidth = 15;
+                            };
+                        };
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 43;
+                    XmNy = 67;
+                    XmNlabelString = 
+                    compound_string("On/Off");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 111;
+                    XmNy = 67;
+                    XmNlabelString = 
+                    compound_string("Volts");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 272;
+                    XmNy = 70;
+                    XmNlabelString = 
+                    compound_string("On/Off");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 354;
+                    XmNy = 68;
+                    XmNlabelString = 
+                    compound_string("Volts");
+                    };
+                };
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    JOERGER_DAC16$K_CONG_NODES: 20;
+    JOERGER_DAC16$N_HEAD: 0;
+    JOERGER_DAC16$N_NAME: 1;
+    JOERGER_DAC16$N_COMMENT: 2;
+    JOERGER_DAC16$N_OUTPUT_01: 3;
+    JOERGER_DAC16$N_OUTPUT_02: 4;
+    JOERGER_DAC16$N_OUTPUT_03: 5;
+    JOERGER_DAC16$N_OUTPUT_04: 6;
+    JOERGER_DAC16$N_OUTPUT_05: 7;
+    JOERGER_DAC16$N_OUTPUT_06: 8;
+    JOERGER_DAC16$N_OUTPUT_07: 9;
+    JOERGER_DAC16$N_OUTPUT_08: 10;
+    JOERGER_DAC16$N_OUTPUT_09: 11;
+    JOERGER_DAC16$N_OUTPUT_10: 12;
+    JOERGER_DAC16$N_OUTPUT_11: 13;
+    JOERGER_DAC16$N_OUTPUT_12: 14;
+    JOERGER_DAC16$N_OUTPUT_13: 15;
+    JOERGER_DAC16$N_OUTPUT_14: 16;
+    JOERGER_DAC16$N_OUTPUT_15: 17;
+    JOERGER_DAC16$N_OUTPUT_16: 18;
+    JOERGER_DAC16$N_INIT_ACTION: 19;
+
+end module;
+

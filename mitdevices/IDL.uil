@@ -1,0 +1,149 @@
+module IDL_UIL
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+object
+    IDL: XmFormDialog 
+        {
+        arguments
+            {
+            XmNdefaultPosition = true;
+            XmNrubberPositioning = false;
+            XmNautoUnmanage = false;
+            XmNdialogTitle = 
+            compound_string("IDL command pseudo device");
+            XmNheight = 400;
+            XmNmarginHeight = 10;
+            XmNmarginWidth = 10;
+            XmNborderWidth = 0;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNtopOffset = 0;
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNleftOffset = 0;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 48;
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNtopOffset = 0;
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNleftOffset = 80;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = IDL$N_COMMENT;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("IDL Commands:");
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNtopOffset = 40;
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNleftOffset = 0;
+                    };
+                };
+            XmdsExpr 
+                {
+                arguments
+                    {
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = IDL$N_COMMANDS;
+                    XmdsNdefaultQuote = true;
+                    XmdsNautoQuote = true;
+                    XmNscrollVertical = true;
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNtopOffset = 66;
+                    XmNrightAttachment = XmATTACH_FORM;
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNleftOffset = 0;
+                    XmNbottomAttachment = XmATTACH_FORM;
+                    XmNbottomOffset = 68;
+                    XmNrightOffset = 0;
+                    XmNnavigationType = XmTAB_GROUP;
+                    XmNeditMode = XmMULTI_LINE_EDIT;
+                    };
+                };
+            XmdsOkButton 
+                {
+                arguments
+                    {
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNbottomAttachment = XmATTACH_FORM;
+                    XmNbottomOffset = 0;
+                    };
+                };
+            XmdsCancelButton 
+                {
+                arguments
+                    {
+                    XmNbottomAttachment = XmATTACH_FORM;
+                    XmNrightAttachment = XmATTACH_FORM;
+                    XmNbottomOffset = 0;
+                    };
+                };
+            XmdsApplyButton 
+                {
+                arguments
+                    {
+                    XmNbottomAttachment = XmATTACH_FORM;
+                    XmNbottomOffset = 0;
+                    XmNleftAttachment = XmATTACH_POSITION;
+                    XmNleftPosition = 30;
+                    };
+                };
+            XmdsResetButton 
+                {
+                arguments
+                    {
+                    XmNleftAttachment = XmATTACH_POSITION;
+                    XmNleftPosition = 60;
+                    XmNbottomAttachment = XmATTACH_FORM;
+                    XmNbottomOffset = 0;
+                    };
+                };
+            XmdsXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmdsNnidOffset = IDL$N_EXEC_ACTION;
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNtopAttachment = XmATTACH_NONE;
+                    XmNleftOffset = 13;
+                    XmNtopOffset = 341;
+                    XmNlabelString = 
+                    compound_string("Execute Action");
+                    XmNbottomAttachment = XmATTACH_FORM;
+                    XmNbottomOffset = 36;
+                    XmNy = 341;
+                    XmdsNnid = DEVICE_NID;
+                    };
+                };
+            };
+        };
+
+value
+    DEVICE_NID: -1;
+    IDL$N_HEAD: 0;
+    IDL$N_COMMENT: 1;
+    IDL$N_COMMANDS: 2;
+    IDL$N_EXEC_ACTION: 3;
+
+end module;
+
