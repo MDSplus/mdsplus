@@ -329,7 +329,7 @@ static void cleanup(int dummy)
 }
 
 
-//    status = MDSEventAst(c->descrip[1]->pointer,(void (*)())ClientEventAst,newe,&newe->eventid);
+/*    status = MDSEventAst(c->descrip[1]->pointer,(void (*)())ClientEventAst,newe,&newe->eventid); */
 
 
 static void initializeLocalRemote()
