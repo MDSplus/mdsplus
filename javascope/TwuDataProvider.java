@@ -124,8 +124,8 @@ class TwuDataProvider
             // Check if signal path is in the format
             //   //url_server_address/experiment/shotGroup/#####/signal_path
 
-            if(IsHashedURL(in))
-              return hashed2shot(in,shot);
+            if(TwuNameServices.isHashedURL(in))
+              return TwuNameServices.hashed2shot(in,shot);
 
             // If not, then it is of the old jScope internal format 
             //   url_server_address//group/signal_path
@@ -152,32 +152,6 @@ class TwuDataProvider
         in = in.toLowerCase();
         return (in.startsWith("http://") || in.startsWith("//") ) && in.indexOf("#")==-1 ;
     }
-
-    public static boolean IsHashedURL(String in)
-    { 
-        in = in.toLowerCase();
-        return in.startsWith("//") && in.indexOf("#")!=-1 ;
-        
-    }
-
-    public static String hashed2shot(String hashedURL, long shot)
-    { 
-        if (hashedURL==null )
-          return hashedURL;
-
-        final int hashfield = hashedURL.indexOf("#");
-            
-        if (hashfield ==-1 )
-          return hashedURL;
-        
-        String full_url = 
-            hashedURL.substring(0,hashfield) 
-            + shot 
-            + hashedURL.substring(hashedURL.lastIndexOf("#")+1);
-
-        return full_url ;
-    }
-        
 
     static 
     private String GetURLserver(String in)
