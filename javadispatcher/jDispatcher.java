@@ -310,7 +310,7 @@ class jDispatcher implements ServerListener
    {
         String server;
 
-        MonitorEvent event = new MonitorEvent(this, tree, shot, curr_phase.phase_name, action);
+        MonitorEvent event = new MonitorEvent(this, tree, shot, (curr_phase == null)?"none":curr_phase.phase_name, action);
         Enumeration monitor_list = monitors.elements();
         while(monitor_list.hasMoreElements())
         {   
@@ -427,6 +427,13 @@ class jDispatcher implements ServerListener
        //     return;
         //update status in report
         Action action = event.getAction();
+        try {
+            String mdsevent = ((DispatchData)(action.getAction().getDispatch())).getCompletion().toString();
+            if(mdsevent != null && !mdsevent.equals("\"\""))
+            {
+                MdsHelper.generateEvent(mdsevent, 0);
+            }
+        }catch(Exception exc){}
      
         action.setStatus(Action.DONE, event.getStatus(), verbose);
         fireMonitorEvent(action, MONITOR_DONE);

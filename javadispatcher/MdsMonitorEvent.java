@@ -59,7 +59,7 @@ class MdsMonitorEvent extends MdsServerEvent
             if(buf.hasMoreTokens())
                 nid    = Integer.decode(buf.nextToken()).intValue();
             if(buf.hasMoreTokens())
-                on     = Integer.decode(buf.nextToken()).intValue();
+                on    = Integer.decode(buf.nextToken()).intValue();
             if(buf.hasMoreTokens())
                 mode   = Integer.decode(buf.nextToken()).intValue();
             if(buf.hasMoreTokens())

@@ -28,7 +28,8 @@ class MdsHelper
             
             
             
-    public static native String getErrorString(int status);  
+    public static native String getErrorString(int status); 
+    public static native void generateEvent(String event, int shot);
  //   public static String getErrorString(int status){return "Error message not yet implemented"; }
     public static int toPhaseId(String phase_name)
     {
