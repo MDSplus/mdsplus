@@ -6,7 +6,8 @@ exec_prefix=@exec_prefix@
 JAVADIR = @MAKEJAVADIR@classes
 JAVAC = @JAVAC@  -classpath ../java/classes/jScope.jar:.
 JAR = @JAR@
-RMIC = rmic
+
+RMIC = $(JDK_ROOT)/bin/rmic
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 DEVICES = TRCHSetup.java\
