@@ -36,16 +36,15 @@ static unsigned int masks[33] = {0,
 #include  <string.h>
 #include <mdsdescrip.h>
 #ifdef _big_endian
-static int SwapBytes(int in)
+static int SwapBytes(char *in_c)
 {
-  char *in_c = (char *)&in;
   int out;
   char *out_c = (char *)&out;
   int i;
   for (i=0;i<4;i++) out_c[i] = in_c[3-i];
   return out;
 }
-#define getppack SwapBytes(*ppack)
+#define getppack SwapBytes((char *)ppack)
 #else
 #define getppack *ppack
 #endif
