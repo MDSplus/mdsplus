@@ -57,6 +57,8 @@ public class WaveInterface
     protected boolean is_image = false;
     boolean use_jai = false;
     boolean keep_ratio = true;
+    boolean horizontal_flip = false;
+    boolean vertical_flip = false;
     int     signal_select = -1;
     Frames  frames;
 
@@ -312,6 +314,8 @@ public class WaveInterface
         is_image = false;
         use_jai = false;
         keep_ratio = true;
+        horizontal_flip = false;
+        vertical_flip = false;
         frames = null;
     }
     
@@ -899,6 +903,43 @@ public class WaveInterface
     }
     
     
+    public void flipFrames(byte buf[])
+    {
+        if(!vertical_flip && !horizontal_flip)
+            return;
+        
+        try
+        {
+        ByteArrayInputStream b = new ByteArrayInputStream(buf);
+        DataInputStream d = new DataInputStream(b);
+
+            
+        int width = d.readInt();
+        int height = d.readInt();
+        int img_size = height*width;
+        int n_frame = d.readInt();
+   
+        d.close();
+        
+        byte tmp[] = new byte[img_size];
+        int i, j , k , ofs;
+        
+        int h = vertical_flip ? height - 1: 0;
+        int w = horizontal_flip ? width - 1: 0;
+        
+        ofs = 12 + 4 * n_frame;
+        
+        for(i = 0; i < n_frame; i++)
+        {
+            for(j = 0; j < width; j++)
+                for(k = 0; k < height; k++)
+                   tmp[(Math.abs(h - k) * width) +  Math.abs(w - j)] = buf[ofs + (k * width) + j];
+            System.arraycopy(tmp, 0, buf, ofs, img_size);
+            ofs += img_size; 
+        }
+        } catch (IOException e) {}
+    }
+    
     private void InitializeFrames()
     {
         float f_time[];
@@ -929,6 +970,7 @@ public class WaveInterface
 //            controller.DisplayFrameLoad("Loading single or multi frame image");
             if( (buf = dp.GetAllFrames(in_y[0])) != null )
             {
+                flipFrames(buf);
                 CreateNewFramesClass();
                 if(!frames.AddMultiFrame(buf, timemin, timemax))
                 {

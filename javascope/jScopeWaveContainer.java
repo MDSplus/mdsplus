@@ -200,7 +200,12 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
                 {
                     profile_dialog.updateProfiles(e.pixels_x, e.start_pixel_x, 
                                                   e.pixels_y, e.start_pixel_y,
-                                                  e.pixels_signal, e.frames_time);                    
+                                                  e.pixels_signal, e.frames_time);
+                    if(e.pixels_line != null)
+                        profile_dialog.updateProfileLine(e.pixels_line);
+                    else
+                        profile_dialog.removeProfileLine();
+                    
                 }
             return;
         }

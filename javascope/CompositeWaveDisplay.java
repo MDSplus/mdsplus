@@ -10,7 +10,7 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
     private CheckboxGroup pointer_mode;
     private WaveformContainer wave_container;
     private boolean automatic_color = false;
-    private boolean isApplet = false;
+    private boolean isApplet = true;
     private Label point_pos;
 
     public static void main(String args[])
@@ -65,12 +65,17 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
         return cwd;
     }
 
-    CompositeWaveDisplay(boolean isApplet)
+    public CompositeWaveDisplay()
+    {
+        super();
+    }
+    
+    public CompositeWaveDisplay(boolean isApplet)
     {
         super();
         this.isApplet = isApplet;
     }
-    
+
     public void init()
     {
         
@@ -114,7 +119,8 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
 		           wave_container.SetMode(Waveform.MODE_PAN);
 		       }
 		    });
-		    
+	
+		    /*
             Button print = new Button("Print");
             print.addActionListener(new ActionListener()
                 {
@@ -123,8 +129,8 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
                         print();
                     }
                 });
-                
-		    
+            panel.add("East", print);    
+		    */
             Panel panel1 = new Panel();
             panel1.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 3));
             panel1.add(point);
@@ -140,7 +146,6 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
                 point_pos.setFont(new Font("Courier", Font.PLAIN, 12));
                 panel.add("Center", point_pos);
             }
-            panel.add("East", print);
             
             add(wave_container, BorderLayout.CENTER);
             add(panel, BorderLayout.SOUTH);
@@ -235,7 +240,9 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
                     }
                 
                 }
-            } catch(Exception e){showStatus(e.toString()+" url "+url);};
+            } catch(Exception e){
+                showStatus(e.toString()+" url "+url);                    
+            }
             i++;
         }
     }
@@ -370,18 +377,28 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
         }
         if(isApplet) showStatus("Add "+s.getName()+" col "+col+" row "+row);
         w.Update();
-   }
+    }
     
-    public void print()
+    
+    public void print(Graphics g)
     {
-        PrintJob p = getToolkit().getPrintJob(null, "Print", null);
-        if(p != null) 
+
+        //PrintJob p = getToolkit().getPrintJob(null, "Print", null);
+        //if(p != null)
+        //if(g instanceof PrintGraphics)
         {
-	        Graphics g = p.getGraphics();
-	        Dimension dim = p.getPageDimension();
-	        wave_container.PrintAll(g, 0, 0, dim.height, dim.width); 
-	        g.dispose();
-	        p.end();
+	        System.out.println("------- IN PRINT --------"+g);
+	      //  Graphics g = p.getGraphics();
+	      //  Dimension dim = p.getPageDimension();
+	        Dimension dim = new Dimension(500, 700);
+	        System.out.println("------- OK --------");
+	        //PrintGraphics pg = (PrintGraphics)g; 
+	        //PrintJob p = pg.getPrintJob();
+	        //Dimension dim = p.getPageDimension();
+	        
+	        wave_container.PrintAll(g, 0, 0, dim.width, dim.height); 
+	        //g.dispose();
+	        //p.end();
 	    }
     }
 }

@@ -1003,7 +1003,7 @@ import java.util.Vector;
 		keep_ratio_b.setLabel("Keep ratio");
 		add(keep_ratio_b);
 		keep_ratio_b.setBounds(636,145,84,20);
-				
+
 		x_min_b.setLabel("X min");
 		add(x_min_b);
 		x_min_b.setBounds(322,145,52,20);
@@ -1025,6 +1025,11 @@ import java.util.Vector;
 		shot_b.setBounds(322,168,48,20);
 		add(shot);
 		shot.setBounds(377,169,247,20);
+		
+	    horizontal_flip_b.setLabel("Horizontal flip");
+		add(horizontal_flip_b);
+		horizontal_flip_b.setBounds(636,169,86,20);
+		
 		upd_event_b.setLabel("Update event");
 		add(upd_event_b);
 		upd_event_b.setBounds(6,192,90,20);
@@ -1035,6 +1040,11 @@ import java.util.Vector;
 		def_node_b.setBounds(322,192,96,20);
 		add(def_node);
 		def_node.setBounds(417,192,207,20);
+
+	    vertical_flip_b.setLabel("Vertical flip");
+		add(vertical_flip_b);
+		vertical_flip_b.setBounds(636,192,84,20);
+
 		panel1.setLayout(null);
 		add(panel1);
 		panel1.setBounds(12,365,660,40);
@@ -1140,10 +1150,12 @@ import java.util.Vector;
 	java.awt.TextField experiment = new java.awt.TextField();
 	java.awt.Checkbox shot_b = new java.awt.Checkbox();
 	java.awt.TextField shot = new java.awt.TextField();
+	java.awt.Checkbox horizontal_flip_b = new java.awt.Checkbox();
 	java.awt.Checkbox upd_event_b = new java.awt.Checkbox();
 	java.awt.TextField upd_event = new java.awt.TextField();
 	java.awt.Checkbox def_node_b = new java.awt.Checkbox();
 	java.awt.TextField def_node = new java.awt.TextField();
+	java.awt.Checkbox vertical_flip_b = new java.awt.Checkbox();
 	java.awt.Panel panel1 = new java.awt.Panel();
 	java.awt.Button ok = new java.awt.Button();
 	java.awt.Button apply = new java.awt.Button();
@@ -1415,6 +1427,9 @@ import java.util.Vector;
     image_b.setState(wi.is_image);
     use_jai_b.setState(wi.use_jai);
     keep_ratio_b.setState(wi.keep_ratio);
+    horizontal_flip_b.setState(wi.horizontal_flip);
+    vertical_flip_b.setState(wi.vertical_flip);
+
 
 	setDefaultFlags(wi.defaults);
 	PutDefaultValues();
@@ -1471,6 +1486,8 @@ import java.util.Vector;
         error.setVisible(false);
         use_jai_b.setVisible(true);
         keep_ratio_b.setVisible(true);
+        horizontal_flip_b.setVisible(true);
+        vertical_flip_b.setVisible(true);
         panel1.setBounds(12,215,660,40);
 		y_lab.setText("Frames");
 		y_lab.setBounds(10,73,35,20);
@@ -1506,6 +1523,8 @@ import java.util.Vector;
         x_lab.setVisible(true);
         use_jai_b.setVisible(false);
         keep_ratio_b.setVisible(false);
+        horizontal_flip_b.setVisible(false);
+        vertical_flip_b.setVisible(false);
 		panel1.setBounds(12,365,660,40);
 		y_lab.setText("Y");
 		add(y_lab);
@@ -1584,15 +1603,17 @@ import java.util.Vector;
 	if(!main_scope.equalsString(y_max.getText(),   wave_wi.cin_ymax))     return true;
 	if(!main_scope.equalsString(y_min.getText(),   wave_wi.cin_ymin))     return true;
 	if(!main_scope.equalsString(y_label.getText(), wave_wi.cin_ylabel))   return true;	
-	if(y_log.getState() != wave_wi.y_log)				                  return true;		
-    if(!main_scope.equalsString(shot.getText(),   wave_wi.cin_shot))        return true;	
+	if(y_log.getState() != wave_wi.y_log)				                      return true;		
+    if(!main_scope.equalsString(shot.getText(),   wave_wi.cin_shot))          return true;	
     if(!main_scope.equalsString(upd_event.getText(),   wave_wi.cin_upd_event))  return true;	
     if(!main_scope.equalsString(def_node.getText(),    wave_wi.cin_def_node))   return true;	
-	if(!main_scope.equalsString(experiment.getText(), wave_wi.cexperiment)) return true;
-	if(getDefaultFlags() != wave_wi.defaults)				                return true;	
+	if(!main_scope.equalsString(experiment.getText(), wave_wi.cexperiment))   return true;
+	if(getDefaultFlags() != wave_wi.defaults)				                  return true;	
 	if(image_b.getState() != wave_wi.is_image)				                  return true;		
 	if(use_jai_b.getState() != wave_wi.use_jai)				                  return true;		
 	if(keep_ratio_b.getState() != wave_wi.keep_ratio)				          return true;		
+	if(horizontal_flip_b.getState() != wave_wi.horizontal_flip)				  return true;		
+	if(vertical_flip_b.getState() != wave_wi.vertical_flip)				      return true;		
 
     for(int i = 0 ; i < wave_wi.num_waves; i++)
 	{
@@ -1672,6 +1693,8 @@ import java.util.Vector;
 	  wi.is_image = image_b.getState();
 	  wi.use_jai = use_jai_b.getState();
 	  wi.keep_ratio = keep_ratio_b.getState();
+	  wi.horizontal_flip = horizontal_flip_b.getState();
+	  wi.vertical_flip = vertical_flip_b.getState();
 	  
 	  if(!wi.modified)
 	  {

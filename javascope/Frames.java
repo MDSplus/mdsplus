@@ -170,6 +170,19 @@ class Frames extends Canvas {
        }
        return pixel_array;
     }
+    
+    private void grabFrame()
+    {
+        if(curr_frame_idx != curr_grab_frame)
+        {
+            Image img = (Image)frame.elementAt(curr_frame_idx);
+            img_width = img.getWidth(this); 
+            img_height = img.getHeight(this);
+            
+            if( (pixel_array = getPixelArray(img, 0, 0, img_width, img_height)) != null)
+                curr_grab_frame = curr_frame_idx;
+        }
+    }
 
     public int getPixel(int idx, int x, int y)
     {
@@ -204,11 +217,49 @@ class Frames extends Canvas {
           return 0;
     }
 
+    public int[] getPixelsLine(int st_x, int st_y, int end_x, int end_y)
+    {
+        int n_point = (int) (Math.sqrt( Math.pow((double)(st_x - end_x), 2.0) + Math.pow((double)(st_y - end_y), 2.0)) + 0.5);
+        int e_x, s_x, x, y;
+        int pixels_line[] = {pixel_array[(st_y * img_width) + st_x],
+                             pixel_array[(st_y * img_width) + st_x]};
+                        
+        grabFrame();
+        
+        /*
+        if(st_x < end_x)
+        {
+            s_x = st_x;
+            e_x = end_x;
+        } else {
+            s_x = end_x;
+            e_x = st_x;            
+        }
+        
+        if((e_x - s_x) < 2)
+            return pixels_line;
+        */
+        if(n_point < 2)
+            return pixels_line;
+        
+        pixels_line = new int[n_point];
+        
+        for(int i = 0; i < n_point; i++)
+        {
+            //y = (int)(st_y + (i - st_x) * ((double)end_y - st_y)/(end_x - st_x));
+            x = (int)( st_x + (double)i * (end_x - st_x)/n_point);
+            y = (int)( st_y + (double)i * (end_y - st_y)/n_point);
+            pixels_line[i] = pixel_array[(y * img_width) + x]; 
+        }
+        return pixels_line;
+    }
     
     public int[] getPixelsX(int y)
     {
         int pixels_x[] = null;
         int st, end;
+
+        grabFrame();
         
         if(pixel_array != null && y < img_height)
         {
@@ -233,6 +284,8 @@ class Frames extends Canvas {
     {
         int pixels_y[] = null;
         int st, end;
+
+        grabFrame();
         
         if(pixel_array != null && x < img_width)
         {

@@ -24,6 +24,7 @@ public class WaveformEvent extends AWTEvent {
     int    pixels_y[];
     int    start_pixel_y;
     int    pixels_signal[];
+    int    pixels_line[] = null;
     float  frames_time[];
 
     public WaveformEvent (Object source, int event_id, String status_info) 
@@ -70,6 +71,11 @@ public class WaveformEvent extends AWTEvent {
         this.frames_time = frames_time;
         this.start_pixel_x = start_pixel_x;
         this.start_pixel_y = start_pixel_y;
+    }
+    
+    public void setPixelsLine(int p_line[])
+    {
+        pixels_line = p_line;
     }
 
 }

@@ -404,6 +404,8 @@ class MdsWaveInterface extends WaveInterface {
 	is_image = wi.is_image;
 	use_jai = wi.use_jai;
 	keep_ratio = wi.keep_ratio;
+	vertical_flip = wi.vertical_flip;
+	horizontal_flip = wi.horizontal_flip;	
 	make_legend = wi.make_legend;
 	reversed = wi.reversed;
 	legend_x = wi.legend_x;
@@ -779,9 +781,11 @@ class MdsWaveInterface extends WaveInterface {
 	            WaveInterface.WriteLine(out,prompt + "legend: "           , "("+legend_x+","+legend_y+")");
 	        }
 	    } else {
-	       WaveInterface.WriteLine(out,prompt + "is_image: "           , ""+is_image);
+	       WaveInterface.WriteLine(out,prompt + "is_image: "          , ""+is_image);
 	       WaveInterface.WriteLine(out,prompt + "use_jai: "           , ""+use_jai);
-	       WaveInterface.WriteLine(out,prompt + "keep_ratio: "           , ""+keep_ratio);
+	       WaveInterface.WriteLine(out,prompt + "keep_ratio: "        , ""+keep_ratio);
+	       WaveInterface.WriteLine(out,prompt + "horizontal_flip: "   , ""+horizontal_flip);
+	       WaveInterface.WriteLine(out,prompt + "vertical_flip: "     , ""+vertical_flip);
 	    }    
 	    
 	   WaveInterface.WriteLine(out,prompt + "experiment: "      , cexperiment);
@@ -910,7 +914,19 @@ class MdsWaveInterface extends WaveInterface {
 		                keep_ratio = new Boolean(str.substring(len, str.length())).booleanValue();
 		                continue;		
 		            }		            
-		        
+
+		            if(str.indexOf(".horizontal_flip:") != -1)
+		            {
+		                horizontal_flip = new Boolean(str.substring(len, str.length())).booleanValue();
+		                continue;		
+		            }		            
+
+		            if(str.indexOf(".vertical_flip:") != -1)
+		            {
+		                vertical_flip = new Boolean(str.substring(len, str.length())).booleanValue();
+		                continue;		
+		            }		            
+
 		        
 		        if(str.indexOf(".experiment:") != -1)
 		        {

@@ -118,12 +118,13 @@ class jScopeWavePopup extends MultiWavePopup {
                 selectWave.setLabel("Deselect wave panel");
             else
                 selectWave.setLabel("Select wave panel");
-        } /*else {
-           if(wave.sendProfile())
-                profile_dialog.setLabel("Remove profile dialog");
-            else
-                profile_dialog.setLabel("Show profile dialog");
-        }*/
+        } else {
+            profile_dialog.enable(!wave.sendProfile());
+            //if(wave.sendProfile())
+                //profile_dialog.setLabel("Remove profile dialog");
+            //else
+                //profile_dialog.setLabel("Show profile dialog");
+        }
     }
 
     protected void SetMenu()

@@ -194,7 +194,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
             return;
         }
         
-        if(w.GetMode() == Waveform.MODE_POINT)
+        if(w.GetMode() == Waveform.MODE_POINT && !w.IsImage())
             UpdatePoints(e.point_x, (Waveform)e.getSource());
             
         if(!w.IsImage() && show_measure && e.getID() == WaveformEvent.POINT_UPDATE)

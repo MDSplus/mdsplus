@@ -9,6 +9,7 @@ public class ProfileDialog extends Dialog
     private WaveformContainer profile_container;
     int row[] = {3};
     Waveform wave[] = new Waveform[3];
+    Waveform w_profile_line = null;
     
     ProfileDialog(Frame f, String title)
     {
@@ -24,7 +25,43 @@ public class ProfileDialog extends Dialog
         profile_container.add(wave);
         add(profile_container);
         addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {dispose();}});
+            public void windowClosing(WindowEvent e) 
+            {
+                Waveform.setSendProfile(false);
+                dispose();
+            }
+        });
+    }
+    
+    public void addProfileLine()
+    {        
+        w_profile_line = new Waveform();
+        profile_container.add(w_profile_line, 4, 1);
+        w_profile_line.SetTitle("Line Profile");
+        profile_container.update();
+    }
+
+    public void removeProfileLine()
+    {   
+        if(w_profile_line == null) return;
+        profile_container.removeComponent(w_profile_line);
+        w_profile_line = null;
+        profile_container.update();        
+    }
+
+    public void updateProfileLine(int pixels_line[])
+    {
+        float x[] = new float[pixels_line.length];
+        float xt[] = new float[pixels_line.length];
+        
+        if(w_profile_line == null)
+          addProfileLine();  
+        for(int i = 0; i < pixels_line.length; i++)
+        {
+            x[i] = (float)(pixels_line[i] & 0xff);
+            xt[i] = (float)i;
+        }
+        w_profile_line.Update(xt, x);
     }
     
     public void updateProfiles(int pixels_x[], int start_pixel_x, 

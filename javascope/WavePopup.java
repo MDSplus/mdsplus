@@ -268,6 +268,10 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	            autoscaleAll.setLabel("Autoscale all images");
 	            add(autoscaleAll);
 	       }
+           if(wave.mode == Waveform.MODE_POINT)// && wave.sendProfile())
+           {
+              insert(set_point, 0);
+           }     
        } else {
         
            add(markerList);
@@ -307,7 +311,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
            }     
            if(wave.mode == Waveform.MODE_POINT)
            {
-                insert(set_point, 0);
+              insert(set_point, 0);
            }     
        }
 	}
@@ -320,6 +324,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
         colorList.setEnabled(state);	
         SelectListItem(colorList, wave.GetColorIdx());
 	    playFrame.setEnabled(state);
+        set_point.setEnabled(state);
 	}
 	
 	protected void SetSignalMenu()
@@ -398,8 +403,14 @@ public class WavePopup extends PopupMenu implements  ItemListener {
             else
                 set_point.setLabel("Set Point");
         } else {
+            
+            if(wave.ShowMeasure())// && wave.sendProfile())
+                set_point.setLabel("Deselect Point");
+            else
+                set_point.setLabel("Set Point");
+
             if(wave.is_playing)
-	             playFrame.setLabel("Stop play");
+	            playFrame.setLabel("Stop play");
 	        else 
 	            playFrame.setLabel("Start play");
 	    }

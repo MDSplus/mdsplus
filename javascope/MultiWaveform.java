@@ -424,7 +424,8 @@ public class MultiWaveform extends Waveform
                Dimension d = getSize();
                double curr_x = wm.XValue(end_x, d),
 	                  curr_y = wm.YValue(end_y, d); 
-               FindPointY(curr_x, curr_y, true);
+//               FindPointY(curr_x, curr_y, true);
+               FindPoint(curr_x, curr_y, true);
             }
         }
     }
@@ -624,6 +625,48 @@ public class MultiWaveform extends Waveform
 	    
     }
 
+
+
+    protected Point FindPoint(double curr_x, double curr_y, boolean is_first)	
+    {
+	    Signal curr_signal;
+	    int curr_idx, i, min_idx = 0;
+	    double curr_dist, min_dist = 1E20;
+	
+	//if(signals[curr_point_sig_idx] == null) return 0;
+	    if(!is_first)
+	    {
+	        curr_signal = (Signal)signals.elementAt(curr_point_sig_idx);
+	        return FindPoint(curr_signal, curr_x, curr_y);    
+		}
+		
+	    for(curr_point_sig_idx = i = 0; i < signals.size(); i++)
+	    {
+	        curr_signal = (Signal)signals.elementAt(i);
+	        if(curr_signal  == null || !GetSignalState(i)) continue;
+	        curr_idx =  curr_signal.FindClosestIdx(curr_x, curr_y);	
+	        curr_dist = (curr_signal.y[curr_idx] - curr_y)*
+		        (curr_signal.y[curr_idx] - curr_y);
+	        if(i == 0 || curr_dist < min_dist)
+	        {
+		        min_dist = curr_dist;
+		        min_idx = curr_idx;
+		        curr_point_sig_idx = i;
+	        }
+	    }
+	    curr_signal= (Signal)signals.elementAt(curr_point_sig_idx);
+	    crosshair_color = colors[curr_signal.getColorIdx() % colors.length];
+	    
+        if(curr_signal.getColor() != null)
+            crosshair_color = curr_signal.getColor();
+        else
+	        crosshair_color = colors[curr_signal.getColorIdx() % colors.length];
+	    
+	    return FindPoint(curr_signal, curr_x, curr_y);    
+    }
+
+
+/*
     protected double FindPointY(double curr_x, double curr_y, boolean is_first)	
     {
 	    Signal curr_signal;
@@ -634,13 +677,30 @@ public class MultiWaveform extends Waveform
 	    if(!is_first)
 	    {
 	        curr_signal = (Signal)signals.elementAt(curr_point_sig_idx);
-	        min_idx = curr_signal .FindClosestIdx(curr_x, curr_y);
+	        min_idx = curr_signal.FindClosestIdx(curr_x, curr_y);
             if((min_idx == curr_signal.n_points -1))// || min_idx == 0)
 	    	    return curr_signal.y[min_idx];
 	        else
-		        return curr_signal.y[min_idx] + 
-	                (curr_signal.y[min_idx+1] - curr_signal.y[min_idx]) * (curr_x - curr_signal.x[min_idx])/
-	                (curr_signal.x[min_idx+1] - curr_signal.x[min_idx]);
+	        {
+	            if(curr_signal.getMarker() != Signal.NONE && !curr_signal.getInterpolate())
+	            {
+	                if(curr_x < curr_signal.x[min_idx] +  (curr_signal.x[min_idx+1] - curr_signal.x[min_idx])/2)
+	                {
+//	                    end_x = wm.XPixel(curr_signal.x[min_idx], getSize());
+	                    return curr_signal.y[min_idx];
+	                } else {
+//	                    end_x = wm.XPixel(curr_signal.x[min_idx+1], getSize());
+	                    return curr_signal.y[min_idx+1];
+	                }
+	            } else
+	                return curr_signal.y[min_idx] + 
+	                    (curr_signal.y[min_idx+1] - curr_signal.y[min_idx]) * (curr_x - curr_signal.x[min_idx])/
+	                    (curr_signal.x[min_idx+1] - curr_signal.x[min_idx]);
+		    }
+//		        return curr_signal.y[min_idx] + 
+//	                (curr_signal.y[min_idx+1] - curr_signal.y[min_idx]) * (curr_x - curr_signal.x[min_idx])/
+//	                (curr_signal.x[min_idx+1] - curr_signal.x[min_idx]);
+	        
 	    }
 	    for(curr_point_sig_idx = i = 0; i < signals.size(); i++)
 	    {
@@ -667,12 +727,24 @@ public class MultiWaveform extends Waveform
 	    
         if((min_idx == curr_signal.n_points -1) || min_idx == 0)
 	        return curr_signal.y[min_idx];
-	    else
-	        return curr_signal.y[min_idx] + 
-	            (curr_signal.y[min_idx+1] - curr_signal.y[min_idx]) * (curr_x - curr_signal.x[min_idx])/
-	            (curr_signal.x[min_idx+1] - curr_signal.x[min_idx]);
+	    else 
+	    {
+	        if(curr_signal.getMarker() != Signal.NONE && !curr_signal.getInterpolate())
+	        {
+	            if(curr_x - curr_signal.y[min_idx] <  curr_signal.y[min_idx+1] - curr_x)
+	                return curr_signal.y[min_idx];
+	            else
+	                return curr_signal.y[min_idx+1];
+	        } else
+	            return curr_signal.y[min_idx] + 
+	                (curr_signal.y[min_idx+1] - curr_signal.y[min_idx]) * (curr_x - curr_signal.x[min_idx])/
+	                (curr_signal.x[min_idx+1] - curr_signal.x[min_idx]);
+	     }
+//	        return curr_signal.y[min_idx] + 
+//	            (curr_signal.y[min_idx+1] - curr_signal.y[min_idx]) * (curr_x - curr_signal.x[min_idx])/
+//	            (curr_signal.x[min_idx+1] - curr_signal.x[min_idx]);
     }
-        
+*/        
     protected int GetSelectedSignal() {return curr_point_sig_idx; }
 
     public int getSignalMode(int idx)
