@@ -89,7 +89,7 @@ static int   openIndirectLevel(		/* Return: status		*/
             p2 = strchr(ctrl->def_file.dscA_pointer,'*');
             if (p2)
                {
-                k = p2 - ctrl->def_file.dscA_pointer;
+                k = p2 - (char *)ctrl->def_file.dscA_pointer;
                 str_replace(&dsc_filename,&ctrl->def_file,k,k+1,
                     &dsc_filename);
                 fp = fopen(dsc_filename.dscA_pointer,"r");
@@ -281,9 +281,9 @@ static int   get_cmdstring(	/* Return: status			*/
             sts = readInputLine(prompt.continuation,&dsc_continueLine);
             if (~sts & 1)
                 break;			/* EOF:  out of loop		*/
-            i = p - dsc_cmd->dscA_pointer;
+            i = p - (char *)dsc_cmd->dscA_pointer;
             str_append(dsc_cmd,&dsc_continueLine);
-            p = dsc_cmd->dscA_pointer + i;
+            p = (char *)dsc_cmd->dscA_pointer + i;
             str_free1_dx(&dsc_continueLine);
            }
        }

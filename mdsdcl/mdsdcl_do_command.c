@@ -127,3 +127,13 @@ int mdsdcl_do_command(
 
     return(sts);			/*--------------------> return	*/
    }
+
+
+
+	/***************************************************************
+	 * mdsdcl_ctrl_address:
+	 ***************************************************************/
+struct _mdsdcl_ctrl  *mdsdcl_ctrl_address()
+   {
+    return(ctrl);
+   }

@@ -345,3 +345,22 @@ int   mdsdcl_do_macro()		/* Return: status			*/
 
     return((sts==MDSDCL_STS_INDIRECT_EOF) ? 1 : sts);
    }
+
+
+
+	/****************************************************************
+	 * makeCmdlineMacro:
+	 ****************************************************************/
+int   makeCmdlineMacro(
+    char  *macroName		/* <r> name -- probably "__CMDLINE__"	*/
+   ,char  *cmdline		/* <r> the actual command line		*/
+   )
+   {
+    struct _mdsdcl_macro  *m;
+
+    if (!ctrl->tbladr[0])  mdsdcl_initialize(ctrl);
+
+    m = get_macro(macroName);
+    m->lines[m->numLines++] = cmdline;
+    return(1);
+   }
