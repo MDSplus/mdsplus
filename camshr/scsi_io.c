@@ -37,6 +37,7 @@
 #include <scsi/sg.h>
 #include <unistd.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -50,7 +51,7 @@
 #define MIN_MAXBUF 65538
 
 static int FDS[10] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}; 
-static int MAXBUF[10] = {MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF};
+static int MAXBUF[10] =   {0,0,0,0,0,0,0,0,0,0};
 static int BUFFSIZE[10] = {0,0,0,0,0,0,0,0,0,0};
 static int OpenScsi(int scsiDevice, char **buff_out);
 
@@ -116,9 +117,16 @@ static int OpenScsi(int scsiDevice, char **buff_out)
       }
       else
       {
-        int reqsize = MAXBUF[scsiDevice];
+        int reqsize;
         int pagesize = getpagesize();
-        reqsize = ((reqsize + pagesize -1) / pagesize) * pagesize;
+        if (MAXBUF[scsiDevice] < MIN_MAXBUF)
+	{
+          char *env = getenv("CAMAC_BUFFSIZE");
+          if (env) MAXBUF[scsiDevice] = atoi(env);
+          if (MAXBUF[scsiDevice] < MIN_MAXBUF)
+	    MAXBUF[scsiDevice] = MIN_MAXBUF;
+	}
+        reqsize = ((MAXBUF[scsiDevice] + pagesize -1) / pagesize) * pagesize;
 	if( ( ioctl(fd, SG_SET_RESERVED_SIZE, &reqsize) < 0) ||
 	    ( ioctl(fd, SG_GET_RESERVED_SIZE, &BUFFSIZE[scsiDevice]) < 0) ||
 	    ( BUFFSIZE[scsiDevice] < MIN_MAXBUF ))
@@ -163,14 +171,14 @@ int scsi_io(int scsiDevice, int direction, unsigned char *cmdp,
   struct sg_io_hdr sghdr = {'S'};
   if (sb_out_len != 0)
     *sb_out_len = 0;
-  if (buflen > MAXBUF[scsiDevice])
+  fd = OpenScsi(scsiDevice,&buf);
+  if (fd >= 0)
   {
-    fprintf( stderr, "%s(): buffer size (%d) too large, must be less than %d\n",ROUTINE_NAME,buflen,MAXBUF[scsiDevice]);
-  }
-  else
-  {
-    fd = OpenScsi(scsiDevice,&buf);
-    if (fd >= 0)
+    if (buflen > MAXBUF[scsiDevice])
+    {
+      fprintf( stderr, "%s(): buffer size (%d) too large, must be less than %d\n",ROUTINE_NAME,buflen,MAXBUF[scsiDevice]);
+    }
+    else
     {
       switch (direction)
       {
