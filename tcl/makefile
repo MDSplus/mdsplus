@@ -41,6 +41,7 @@ all:	../bin/tcl tcl_commands.o  libTcl.a	\
 clean:
 	find . -name libTcl.a -exec rm {} \;
 	find ../shlib -name tcl_commands.$(SHARE_TYPE) -exec rm {} \;
+	rm tcl_commands.o
 	rm tcl_commands.c
 
 ../bin/tcl:	tcl
