@@ -1,11 +1,11 @@
 #ifdef vxWorks
-int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
+int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, void **eventid) {}
 int MDSEventCan(void *eventid) {}
 int MDSEvent(char *evname){}
 #else
 #ifdef WIN32
-int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
-int MDSEventCan(int eventid) {}
+int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, void **eventid) {}
+int MDSEventCan(void *eventid) {}
 int MDSEvent(char *evname){}
 #else
 
@@ -14,10 +14,13 @@ int MDSEvent(char *evname){}
 #include <sys/shm.h>
 #include <sys/sem.h>
 #include <sys/msg.h>
+#include <sys/socket.h>
 #include <unistd.h>
 #include <signal.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <ipdesc.h>
+#include <mdsdescrip.h>
 
 /* MDsEvent: UNIX and Win32 implementation of MDS Events */
 
@@ -37,6 +40,9 @@ int MDSEvent(char *evname){}
 #define MAX_ACTIVE_EVENTS 1024   /* Maximum number events concurrently dealt with by processes */
 #define MAX_EVENTNAMES 	  1024   /* Maximum number of different event names */
 
+#define MAX_DATA_LEN 64		 /* Maximum number of bytes to be broadcasted by events */
+
+
 /* Description of event names */
 struct SharedEventName {
     short refcount;  /* number of active event connections making reference to this name */
@@ -49,13 +55,23 @@ struct SharedEventInfo{
     int msgkey;  /* message ID of the message queue connecting to the target process */
 };
 
+/* Description of the message sent ove msg queues: name of the event and up to 64 bytes of data */
+struct EventMessage {
+	long int mtype; 
+	char name[MAX_EVENTNAME_LEN];
+	char length;
+	char data[MAX_DATA_LEN];
+};
+
+
+
 
 /* Process private part: Array of MAX_EVENTNAMES PrivateEventInfo structs */
 struct PrivateEventInfo {
     char active;  /* indicates wether this descriptor is active, i.e. describing an event declared by the process */
     char name[MAX_EVENTNAME_LEN]; /* name of the event */
-    void (*astadr)(void *);	  /* ast routine address */
-    void *astprm;		  /* ast routine oarameter */
+    void (*astadr)(void *, int, char *);	  /* ast routine address */
+    void *astprm;		  /* ast routine parameter */
 };
 
 
@@ -71,7 +87,17 @@ static void initializeShared();
 static void *handleMessage(void * dummy);
 
 
+static int remote_local_initialized = 0;
+static int remote_id = 0;
+
 /************* OS dependent part ******************/
+
+static char *getEnvironmentVar(char *name)
+{
+    char *trans =  getenv(name);
+    if(!trans || !*trans) return NULL;
+    return trans;
+}
 
 
 static void cleanup(int);
@@ -142,15 +168,17 @@ static int attachSharedInfo()
 }
 
 
-static int readMessage(char *event_name)
+static int readMessage(char *event_name, int *data_len, char *data)
 {
-    struct msgbuf {
-	long int mtype; 
-	char name[MAX_EVENTNAME_LEN];
-    } message;
+    struct EventMessage message;
     int status; 
-    if((status = msgrcv(msgId, &message, MAX_EVENTNAME_LEN+10, 1, 0)) != -1)
+    if((status = msgrcv(msgId, &message, sizeof(message), 1, 0)) != -1)
+    {
 	strncpy(event_name, message.name, MAX_EVENTNAME_LEN - 1);
+	*data_len = message.length;
+	if(message.length > 0)
+	    memcpy(data, message.data, message.length);
+    }
     return status;
 }
 
@@ -179,23 +207,26 @@ static void setHandle()
     } 
 }
 
-static int sendMessage(char *evname, int key)
+static int sendMessage(char *evname, int key, int data_len, char *data)
 {
-    struct msgbuf {
-	long int mtype;
-	char name[MAX_EVENTNAME_LEN];
-    }message;
+    struct EventMessage message;
     int status, msgid;
 
     strncpy(message.name, evname, MAX_EVENTNAME_LEN - 1);
     message.mtype = 1;
+    message.length = data_len;
+    if(data_len > 0)
+    {
+	if(data_len > MAX_DATA_LEN) data_len = MAX_DATA_LEN;
+	memcpy(message.data, data, data_len);
+    }
 
     status = msgid = msgget(key, 0777);
     if(msgid == -1)
 	perror("msgget");
     else
     {
-    	if((status = msgsnd(msgid, &message, MAX_EVENTNAME_LEN, IPC_NOWAIT)) == -1)
+    	if((status = msgsnd(msgid, &message, sizeof(message), IPC_NOWAIT)) == -1)
 	    perror("msgsend");
     }
     return status;
@@ -242,16 +273,17 @@ static void *handleMessage(void * dummy)
 {
     int i;
     char event_name[MAX_EVENTNAME_LEN];
+    int data_len;
+    char data[MAX_DATA_LEN];
     while(1)
     {	
-	if(readMessage(event_name) != -1)
+	if(readMessage(event_name, &data_len, data) != -1)
 	{
     	    for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
     	    {
 	        if(private_info[i].active && !strcmp(event_name, private_info[i].name))
 		{
-		    (*(private_info[i].astadr))(private_info[i].astprm);
-		    break;
+		    (*(private_info[i].astadr))(private_info[i].astprm, data_len, data);
 		}
 	    }
 	}
@@ -294,18 +326,81 @@ static void cleanup(int dummy)
 //    status = MDSEventAst(c->descrip[1]->pointer,(void (*)())ClientEventAst,newe,&newe->eventid);
 
 
+static void initializeLocalRemote()
+{
+    char *env_name;
+    struct descriptor 
+	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
+	routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
+    int status;
+    int (*rtn)();
 
 
-int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
+    if(!remote_local_initialized)
+    {
+	remote_local_initialized = 1;
+	env_name = getEnvironmentVar("mds_event_server");
+	if(env_name != NULL)
+	{
+    	    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    	    if (status & 1)
+	    {
+	 	remote_id = (*rtn) (env_name);
+	    	if(remote_id == -1)
+	    	{
+		    perror("ConnectToMds");
+	    	    remote_id = 0;
+		}
+	    }
+	    else printf(MdsGetMsg(status));
+	}
+    }
+}
+	    
+static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, void **eventid)
+{
+    struct descriptor 
+	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
+	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventAst"};
+    int status;
+    int (*rtn)();
+
+    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    if (status & 1)
+	status = (*rtn) (remote_id, eventnam, astadr, astprm, eventid);
+    if(!(status & 1)) printf(MdsGetMsg(status));
+    return status;
+}
+
+
+int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, void **eventid)
 {
     int status;
     int i, j;    
+    int name_already_in_use;
     
     if(!eventnam || !*eventnam) return 1;
 
-    /* define internal event dispatching structure */ 
+    initializeLocalRemote();
+    if(remote_id)
+	return eventAstRemote(eventnam, astadr, astprm, eventid);
+
+
+    /* First check wether the same name is already in use */
     for(i = 0; i < MAX_EVENTNAMES; i++)
 	if(private_info[i].active && !strcmp(eventnam, private_info[i].name))
+	    break;
+    if(i < MAX_EVENTNAMES)
+	name_already_in_use = 1;
+    else
+	name_already_in_use = 0;
+
+
+    /* define internal event dispatching structure */ 
+    for(i = 0; i < MAX_EVENTNAMES; i++)
+	//if(private_info[i].active && !strcmp(eventnam, private_info[i].name))
+	if(private_info[i].active && !strcmp(eventnam, private_info[i].name) &&
+		private_info[i].astadr == astadr && private_info[i].astprm == astprm)
 	     break;
     if(i == MAX_EVENTNAMES) /* if no previous MdsEventAst to that event made by the process */
     {
@@ -319,7 +414,10 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
     private_info[i].astprm = (void *)(void *)astprm;
 
 
-    *eventid = i; 
+    *eventid = &private_info[i]; 
+
+    if(name_already_in_use)
+	return 1;
 
     setHandle();
 
@@ -365,15 +463,31 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
     return 1;
 }
 
+static int canEventRemote(void *eventid)
+{
+    struct descriptor 
+	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
+	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventCan"};
+    int status;
+    int (*rtn)();
+
+    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    if (status & 1)
+	  status = (*rtn) (remote_id, eventid);
+    return status;
+}
+
 	
-int MDSEventCan(int eventid)
+int MDSEventCan(void * eventid)
 {
     int i, j, k;
     struct PrivateEventInfo *evinfo;
-    if(eventid < 0 || eventid >= MAX_EVENTNAMES)
-	return 1;
-    
-    evinfo = &private_info[eventid];
+
+    initializeLocalRemote();
+    if(remote_id)
+	return canEventRemote(eventid);
+
+    evinfo = (struct PrivateEventInfo *) eventid;
  
     if(!shared_info) return 0; /*must follow MdsEventAst */
 
@@ -398,10 +512,37 @@ int MDSEventCan(int eventid)
 
 
 
+static int sendRemoteEvent(char *evname, int data_len, char *data)
+{
+    struct descriptor 
+	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
+	routine_d = {DTYPE_T, CLASS_S, 8, "MdsValue"};
+    char expression[128];
+    int status;
+    int (*rtn)();
+    EMPTYXD(ansarg);
+    struct descrip dsc;
 
-int MDSEvent(char *evname)
+    dsc.dtype = DTYPE_T;
+    dsc.ptr = data;
+    dsc.ndims = 0;
+    dsc.length = data_len;
+
+    sprintf(expression, "MdsShr->MDS$EVENT(\"%s\", ref($))", evname);
+    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    if (status & 1)
+	  status = (*rtn) (remote_id, expression, &dsc, &ansarg, NULL);
+    return status;
+}
+
+int MDSEvent(char *evname, int data_len, char *data)
 {
     int i, j;
+    
+    initializeLocalRemote();
+    if(remote_id)
+	return sendRemoteEvent(evname, data_len, data);
+
 
     getLock();
     if(!shared_info)
@@ -416,7 +557,7 @@ int MDSEvent(char *evname)
     for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
     {
 	if(shared_info[i].nameid >= 0 && !strcmp(evname, shared_name[shared_info[i].nameid].name))
-	    sendMessage(evname, shared_info[i].msgkey);
+	    sendMessage(evname, shared_info[i].msgkey, data_len, data);
     }
 
     releaseLock();
