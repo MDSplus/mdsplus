@@ -642,6 +642,8 @@ static void ResetWindow(String geometry, String title, String icon, int cols, in
   if (geometry)
   {
     XParseGeometry(geometry, &x, &y, &width, &height);
+    if (x >= WidthOfScreen(XtScreen(PadWidget))) x =  WidthOfScreen(XtScreen(PadWidget))-50;
+    if ((y + height) > HeightOfScreen(XtScreen(PadWidget))) y = HeightOfScreen(XtScreen(PadWidget)) - height - 50;
     if (width > 200 && height > 100)
       XtVaSetValues(MainWidget, XtNwidth, width, XtNheight, height, NULL);
     else
