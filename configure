@@ -665,8 +665,8 @@ fi
 if test "${enable_globus+set}" = set; then
   enableval="$enable_globus"
   if test "$enableval" = yes; then
-               GLOBUS_CFLAGS="-DGLOBUS -I\$(GLOBUS_DEVELOPMENT_PATH)/include"
-               GLOBUS_LIBS="-L\$(GLOBUS_DEVELOPMENT_PATH)/lib -lglobus_io -lglobus_gss_assist -lglobus_gss -lglobus_gaa -lssl -lcrypto -lglobus_common"
+               GLOBUS_CFLAGS="-DGLOBUS -I\$(GLOBUS_LOCATION)/include/gcc32dbg"
+               GLOBUS_LIBS="-L\$(GLOBUS_LOCATION)/lib -lglobus_io_gcc32dbg -lglobus_gss_assist_gcc32dbg -lssl_gcc32dbg -lglobus_ssl_utils_gcc32dbg -lcrypto_gcc32dbg -lglobus_common_gcc32dbg -lglobus_gssapi_gsi_gcc32dbg"
         else
                GLOBUS_CFLAGS=""
                GLOBUS_LIBS=""
@@ -1060,7 +1060,7 @@ IDL_BIN_SUF=""
 MDSVME=""
 
 CFLAGS="$CFLAGS $MEMCHK -I\$(top_srcdir)/include"
-FFLAGS="$FFLAGS -I\$(top_srcdir)/include"
+FFLAGS="$FFLAGS  -I\$(top_srcdir)/include"
 
 case "$exec_prefix" in
 NONE) : ${uiddir=/usr/lib/X11/uid};;
@@ -1099,7 +1099,7 @@ fi
 
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\\\$\$SHLIB_PATH:/usr/local/mdsplus/lib:\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
-       FFLAGS="$FFLAGS +z +es";
+       FFLAGS="$FFLAGS +z +es -Wl,+s,+b\\\$\$SHLIB_PATH:/usr/local/mdsplus/lib:\$(exec_prefix)/lib +DA1.1 +DS1.1";
        D3D_FFLAGS="+U77 +E1 -K"; 
        LDSHARE="-Wl,-a,shared_archive";
        LDARC="-Wl,-a,archive";
