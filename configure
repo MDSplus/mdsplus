@@ -1015,7 +1015,7 @@ IDL_BIN_SUF=""
 
 CFLAGS="$CFLAGS -I\$(top_srcdir)/include"
 FFLAGS="$FFLAGS -I\$(top_srcdir)/include"
-uiddir = "/usr/lib/X11/uid"
+uiddir="/usr/lib/X11/uid"
 
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
