@@ -97,6 +97,7 @@ all: @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libTdiShr@SHARETYPE@ @MAKELIBDIR@
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 	@mv Makefile Makefile.tmp
+	@grep -v '\.y' Makefile.tmp > Makefile   
 	@rm Makefile.tmp
 
 clean:
