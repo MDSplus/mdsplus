@@ -972,7 +972,8 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   char *c_filename = MdsDescrToCstring(filename);
   char *full_filename = malloc(strlen(c_filename) + 10);
   void *handle;
-  char *tmp_error = 0;
+  char *tmp_error1 = 0;
+  char *tmp_error2 = 0;
   *symbol_value = NULL;
   strcpy(full_filename,"lib");
   strcat(full_filename,c_filename);
@@ -982,17 +983,22 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     free(FIS_Error);
     FIS_Error = 0;
   }
-  handle = dlopen(full_filename,RTLD_LAZY);
+  handle = dlopen(c_filename,RTLD_LAZY);
   if (handle == NULL) {
-    tmp_error = dlerror();
-    tmp_error = strcpy((char *)malloc(strlen(tmp_error)+1),tmp_error);
-    handle = dlopen(&full_filename[3],RTLD_LAZY);
+    tmp_error1 = dlerror();
+    tmp_error1 = strcpy((char *)malloc(strlen(tmp_error1)+1),tmp_error1);
+    handle = dlopen(full_filename,RTLD_LAZY);
+    if (handle == NULL) {
+      tmp_error2 = dlerror();
+      tmp_error2 = strcpy((char *)malloc(strlen(tmp_error2)+1),tmp_error2);
+      handle = dlopen(&full_filename[3],RTLD_LAZY);
+    }
   }
   if (handle != NULL)
   {
     char *c_symbol = MdsDescrToCstring(symbol);
     *symbol_value = dlsym(handle,c_symbol);
-    if (!symbol_value)
+    if (!(*symbol_value))
     {
       char *tmp = dlerror();
       sprintf((FIS_Error = (char *)malloc(strlen(tmp)+strlen("error finding symbol , ")+strlen(c_symbol)+1)),"error finding symbol %s, %s",
@@ -1003,12 +1009,14 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   else 
   {
     char *tmp = dlerror();
-    sprintf((FIS_Error = (char *)malloc(strlen("Error opening library , \nError opening library , ")+strlen(full_filename)*2+strlen(tmp)+
-                                       strlen(tmp_error))),"Error opening library %s, %s\nError opening library %s, %s",full_filename,tmp_error,
-			&full_filename[3],tmp);
+    sprintf((FIS_Error = (char *)malloc(strlen("Error loading library:\n\t %s - %s\n\t %s, %s\n\t%s - %s\n")+
+      strlen(full_filename)*2+strlen(tmp)+strlen(tmp_error1)+strlen(tmp_error2)+10)),
+      "Error loading library:\n\t %s - %s\n\t %s - %s\n\t%s - %s\n",c_filename,tmp_error1,full_filename,tmp_error2,&full_filename[3],tmp);
   }
-  if (tmp_error)
-    free(tmp_error);
+  if (tmp_error1)
+    free(tmp_error1);
+  if (tmp_error2)
+    free(tmp_error2);
   free(c_filename);
   free(full_filename);
   if (*symbol_value == NULL)
@@ -1774,7 +1782,7 @@ int StrElement(struct descriptor *dest, int *num, struct descriptor *delim, stru
   for (cnt=0; (cnt<*num)&&(src_ptr<=se_ptr); src_ptr++)
     if (*src_ptr==*delim->pointer) cnt++;
   if (cnt < *num) return StrNOELEM;
-  for(e_ptr=src_ptr; src_ptr<=se_ptr; src_ptr++)
+  for(e_ptr=src_ptr; src_ptr<se_ptr; src_ptr++)
     if (*src_ptr == *delim->pointer) break;
   len = (unsigned short)(src_ptr-e_ptr);
   status = StrCopyR(dest, &len, e_ptr);
@@ -2121,6 +2129,23 @@ int MdsPutEnv(char *cmd)
     char *tmp=strcpy(malloc(strlen(cmd)+1),cmd);
     putenv(tmp);
     status = 1;
+  }
+  return status;
+}
+
+int libffs(int *position, int *size, char *base, int *find_position)
+{
+  int i;
+  int status = 0;
+  int *bits = (int *)(base + (*position)/8); 
+  for (i=(*position) % 8;i<*size;i++)
+  {
+    if (*bits & (1 << i))
+    {
+      *find_position = ((*position)/8)*8 + i;
+      status = 1;
+      break;
+    }
   }
   return status;
 }
