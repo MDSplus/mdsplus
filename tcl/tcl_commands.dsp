@@ -89,10 +89,6 @@ LINK32=link.exe
 # Name "tcl_commands - Win32 Debug"
 # Begin Source File
 
-SOURCE=.\mds_dsc_string.c
-# End Source File
-# Begin Source File
-
 SOURCE=.\tcl_add_node.c
 # End Source File
 # Begin Source File
@@ -239,6 +235,10 @@ SOURCE=.\tcl_show_data.c
 # Begin Source File
 
 SOURCE=.\tcl_show_db.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\tcl_show_version.c
 # End Source File
 # Begin Source File
 
