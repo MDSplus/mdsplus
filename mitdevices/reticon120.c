@@ -234,11 +234,11 @@ int reticon120___store(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
 
 #pragma member_alignment save
 #pragma nomember_alignment
-typedef  struct { unsigned value        : 12;
-           unsigned state_switch  : 1;
-           unsigned event_latch   : 1;
-           unsigned pixel_group   : 1;
-           unsigned frame_start   : 1;
+typedef  struct { unsigned  __attribute__ ((packed)) value     : 12   ;
+           unsigned  __attribute__ ((packed)) state_switch : 1;
+           unsigned  __attribute__ ((packed)) event_latch  : 1;
+           unsigned  __attribute__ ((packed)) pixel_group  : 1;
+           unsigned  __attribute__ ((packed)) frame_start : 1;
          } buf  __attribute__ ((packed)) ;
 #pragma member_alignment restore
 

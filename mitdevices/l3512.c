@@ -37,18 +37,18 @@ int l3512___init(struct descriptor *niddsc, InInitStruct *setup)
   DwellCode dwell_code;
 #pragma member_alignment save
 #pragma nomember_alignment
-  struct { unsigned offset    : 8;
-           unsigned gain      : 3;
-           unsigned decrement : 1;
-           unsigned multi     : 1;
-           unsigned camac     : 1;
-           unsigned not_used  : 1;
-           unsigned disable   : 1;
+  struct { unsigned __attribute__ ((packed)) offset    : 8;
+           unsigned __attribute__ ((packed)) gain      : 3;
+           unsigned __attribute__ ((packed)) decrement : 1;
+           unsigned __attribute__ ((packed)) multi     : 1;
+           unsigned __attribute__ ((packed)) camac     : 1;
+           unsigned __attribute__ ((packed)) not_used  : 1;
+           unsigned __attribute__ ((packed)) disable   : 1;
          } setup_3512 = {0,0,0,0,1,0,0};
-  struct { unsigned enable    : 1;
-           unsigned autostart : 1;
-           unsigned rescan    : 1;
-           unsigned fill      : 13;
+  struct { unsigned __attribute__ ((packed)) enable    : 1;
+           unsigned __attribute__ ((packed)) autostart : 1;
+           unsigned __attribute__ ((packed))rescan    : 1;
+           unsigned __attribute__ ((packed)) fill      : 13;
          } setup_3587 = {1,0,0,0};
 #pragma member_alignment restore
   int i;

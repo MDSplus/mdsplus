@@ -82,10 +82,10 @@ int l2256___store(struct descriptor *niddsc, InStoreStruct *setup)
 
 #pragma member_alignment save
 #pragma nomember_alignment
-  struct { unsigned frequency : 3;
-           unsigned pre       : 3;
-           unsigned offset    : 8;
-         } reg;
+  struct { unsigned __attribute__ ((packed)) frequency : 3;
+           unsigned __attribute__ ((packed)) pre       : 3;
+           unsigned __attribute__ ((packed)) offset    : 8;
+         }  reg;
 #pragma member_alignment restore
 
   if (TreeIsOn(channel_nid) & 1)
