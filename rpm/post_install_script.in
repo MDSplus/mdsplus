@@ -129,7 +129,7 @@ N*) MDSplusSrv=n;;
 \?*) unset MDSplusSrv
     echo ""
     echo "$product can be setup to serve data to remote clients."
-    echo "Entering a y[es] here will add the mdsip service to xinetd.
+    echo "Entering a y[es] here will add the mdsip service to xinetd."
     echo "";;
 *)  unset MDSplusSrv
     echo ""
@@ -164,7 +164,7 @@ then
 #
   if [ -r /etc/xinetd.d ] ; then
     echo Adding mdsip to /etc/xinetd.d
-    if [ "$product"  = "FusiongGrid" ]
+    if [ "$product"  = "FusionGrid" ]
     then
       cp $MDSPLUS_DIR/rpm/fusiongrid-mdsip.xinetd /etc/xinetd.d/mdsip
       cp $MDSPLUS_DIR/rpm/fusiongrid-mdsips.xinetd /etc/xinetd.d/mdsips
@@ -188,10 +188,11 @@ fi
 if (test "$MDSplusEnv" = "y")
 then
   echo Adding $product login scripts
-  if [ -r /etc/profile.d ]; then
+  if [ -r /etc/profile.d ]
+  then
     ln -s $MDSPLUS_DIR/setup.csh /etc/profile.d/mdsplus.csh
     ln -s $MDSPLUS_DIR/setup.sh /etc/profile.d/mdsplus.sh
-    if [ "$product" = "FusionGrid"]
+    if [ "$product" = "FusionGrid" ]
     then
 	if [ ! -r /etc/profile.d/globus.csh ]
 	then

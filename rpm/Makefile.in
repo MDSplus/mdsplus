@@ -28,4 +28,11 @@ install:
 	$(INSTALL) -m 755  mdsplus.conf.template $(exec_prefix)/etc
 	$(INSTALL) -m 755  post_uninstall_script $(exec_prefix)/rpm
 	$(INSTALL) -m 755  post_install_script   $(exec_prefix)/rpm
-	$(INSTALL) -m 755  mdsipd.xinetd	 $(exec_prefix)/rpm
+	if [  -r $(exec_prefix)/GLOBUS_LICENSE ] ; then \
+		$(INSTALL) -m 755  fusiongrid-mdsip.xinetd $(exec_prefix)/rpm; \
+		$(INSTALL) -m 755  fusiongrid-mdsips.xinetd $(exec_prefix)/rpm; \
+		$(INSTALL) -m 755  globus-gatekeeper.xinetd $(exec_prefix)/rpm; \
+		$(INSTALL) -m 755  globus-gridftp.xinetd $(exec_prefix)/rpm; \
+	else \
+		$(INSTALL) -m 755  mdsipd.xinetd	 $(exec_prefix)/rpm; \
+	fi
