@@ -15,6 +15,8 @@ write(*, "DIO ENCODER  HW TRIGGER");
 		return(0);
 	}
 
+
+write(*, 'Generate Event ', _event);
 	_status = DIO2->DIO2_Cmd_GenerateEvent(val(_handle), val(byte(_event)));
 
 	if(_status != 0)
