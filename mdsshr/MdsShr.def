@@ -74,6 +74,7 @@ TranslateLogicalXd
 MDSEventCan
 MDSEventAst
 MDSEvent
+MDSWfevent
 pthread_cancel
 pthread_cleanup_pop
 pthread_cleanup_push
