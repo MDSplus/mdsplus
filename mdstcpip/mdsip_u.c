@@ -1074,14 +1074,24 @@ static void ProcessMessage(Client *c, Message *message)
         int fd;
         char *filename = (char *)message->bytes;
         char *ptr;
+        int fopts = message->h.dims[1];
+        mode_t mode = message->h.dims[2];
         DESCRIPTOR_LONG(fd_d,0);
         fd_d.pointer = (char *)&fd;
-        fd = open(filename,message->h.dims[1] | O_BINARY | O_RANDOM,message->h.dims[2]);
+        fd = open(filename,fopts | O_BINARY | O_RANDOM,mode);
         if (fd == -1)
 	{
           while (fd == -1 && ((ptr = index(filename,'\\')) != 0)) *ptr='/';
-          fd = open(filename,message->h.dims[1] | O_BINARY | O_RANDOM,message->h.dims[2]);
+          fd = open(filename,fopts | O_BINARY | O_RANDOM,mode);
         }
+#ifndef HAVE_WINDOWS_H
+        if ((fd != -1) && ((fopts & O_CREAT) != 0)) {
+          char *cmd=(char *)malloc(64+strlen(filename));
+          sprintf(cmd,"SetMdsplusFileProtection %s 2> /dev/null",filename);
+          system(cmd);
+	  free(cmd);
+	}
+#endif
         SendResponse(c, 1, (struct descriptor *)&fd_d);
 	      break;
       }

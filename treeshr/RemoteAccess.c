@@ -885,7 +885,20 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
   int socket = -1;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename,&hostpart,&filepart);
-  int fd = hostpart ? io_open_remote(hostpart,filepart,options,mode,&socket) :  open(filename, options | O_BINARY | O_RANDOM, mode);
+  int fd;
+  if (hostpart)
+    fd = io_open_remote(hostpart,filepart,options,mode,&socket);
+  else {
+    fd = open(filename, options | O_BINARY | O_RANDOM, mode);
+#ifndef HAVE_WINDOWS_H
+    if ((fd != -1) && ((options & O_CREAT) != 0)) {
+      char *cmd=(char *)malloc(64+strlen(filename));
+      sprintf(cmd,"SetMdsplusFileProtection %s 2> /dev/null",filename);
+      system(cmd);
+      free(cmd);
+#endif
+    }
+  }
   free(tmp);
   if (fd != -1)
     fd = NewFD(fd,socket);

@@ -126,6 +126,12 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       DBID = dbid;
       status = LibCallg(arglist, addr);
       DBID = old_dbid;
+      if (arglist[nargs])
+      {
+        struct descriptor *ans = (struct descriptor *)arglist[nargs];
+        if ((ans->dtype == DTYPE_L) && (ans->length == 4) && (ans->pointer))
+	  *(int *)ans->pointer = status;
+      }
     }
     else
     {

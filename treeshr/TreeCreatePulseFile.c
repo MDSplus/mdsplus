@@ -283,6 +283,10 @@ static int CopyFile(char *src, char *dst, int dont_replace)
   status = system(cmd);
   if (status != 0)
      printf("Error creating pulse with command: %s, status = %d\n",cmd,status);
+  else {
+    sprintf(cmd,"SetMdsplusFileProtection %s 2> /dev/null",dst);
+    system(cmd);
+  }
   free(cmd);
   return status == 0;
 }
