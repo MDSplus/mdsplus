@@ -58,6 +58,14 @@ AC_ARG_ENABLE(memcheck,
            MEMCHKLIB=""
         fi)
 
+AC_ARG_ENABLE(gcc_profiling,
+	[  --enable-gcc_profiling       enable gcc profiling],
+	if test "$enableval" = yes; then
+           GCCPROF="-pg"
+        else
+           GCCPROF=""
+        fi)
+
 if test "$NOF77"
 then
 :;
@@ -74,7 +82,7 @@ MDSVME=""
 LOC="%loc"
 CAMSHR=""
 
-CFLAGS="$CFLAGS $MEMCHK -I\$(top_srcdir)/include"
+CFLAGS="$CFLAGS $GCCPROF $MEMCHK -I\$(top_srcdir)/include"
 FFLAGS="$FFLAGS  -I\$(top_srcdir)/include"
 
 : ${uiddir=$exec_prefix/uid}

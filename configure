@@ -841,6 +841,7 @@ Optional Features:
   --enable-nodebug        compile without debug info
   --enable-globus        use globus_io for mdsip communications
   --enable-memcheck       enable virtual memory debugging
+  --enable-gcc_profiling       enable gcc profiling
   --enable-d3d            build d3d ptdata access library
   --enable-staticmotif    build with static motif libraries
 
@@ -2945,7 +2946,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:2948:" \
+echo "$as_me:2949:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -3675,6 +3676,16 @@ if test "${enable_memcheck+set}" = set; then
         fi
 fi;
 
+# Check whether --enable-gcc_profiling or --disable-gcc_profiling was given.
+if test "${enable_gcc_profiling+set}" = set; then
+  enableval="$enable_gcc_profiling"
+  if test "$enableval" = yes; then
+           GCCPROF="-pg"
+        else
+           GCCPROF=""
+        fi
+fi;
+
 if test "$NOF77"
 then
 :;
@@ -3771,7 +3782,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:3774:" \
+echo "$as_me:3785:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -3902,7 +3913,7 @@ MDSVME=""
 LOC="%loc"
 CAMSHR=""
 
-CFLAGS="$CFLAGS $MEMCHK -I\$(top_srcdir)/include"
+CFLAGS="$CFLAGS $GCCPROF $MEMCHK -I\$(top_srcdir)/include"
 FFLAGS="$FFLAGS  -I\$(top_srcdir)/include"
 
 : ${uiddir=$exec_prefix/uid}
