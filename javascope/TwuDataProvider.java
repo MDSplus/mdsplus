@@ -938,52 +938,34 @@ class TwuDataProvider
     FindIndicesForXRange( SingleTwuSignal xsig, float x_start, float x_end, int n_points ) 
         throws  Exception
     {
-        int ix_start = -1, ix_end = -1 ;
-        TWUProperties prop = xsig.getTWUProperties() ;
-        boolean is_equi = prop.Equidistant() ;
-        int     len     = prop.LengthTotal() ;
+        final TWUProperties prop = xsig.getTWUProperties() ;
+        final int           len  = prop.LengthTotal() ;
 
         if (prop.Dimensions() == 0 || len <= 1)
           return new TwuFetchOptions(0,1,1);  // mainly used to pick scalars out.
 
-        float min = 0.0f, max = 0.0f;
-        if (is_equi) 
+        int           ix_start = -1;
+        int           ix_end   = -1 ;
+        final double  min      = prop.Minimum();
+        final double  max      = prop.Maximum();
+        final boolean is_equi  = prop.Equidistant() ;
+
+        if (is_equi && min < max)
         {
-            // use the property values for equidistant data
-            // to get the indices the easy way.
+            final double first = prop.Decrementing() ? max : min;
+            final double last  = prop.Decrementing() ? min : max;
+            final double mult  = len / (last - first) ;
 
-            min = (float) prop.Minimum();
-            max = (float) prop.Maximum();
+            if (x_start < first)
+              x_start = (float) first ;
 
-            if (min == max)
-            {
-                is_equi = false ; 
-                // apparently Minimum and Maximum are bogus.
-                // so let's try the other method...
-            }
-            if (min >  max) 
-            {
-                float tmp = min; min = max ; max = tmp ;
-            }
+            if (x_end   > last)
+              x_end = (float) last ;
+
+            ix_start = (int) Math.floor ( mult*(x_start - first) );
+            ix_end   = (int) Math.ceil  ( mult*(x_end   - first) );
         }
-        if (is_equi) 
-        { 
-            boolean up  = prop.Incrementing();
-            if (! up) 
-            {
-                float tmp = min ; min = max ; max = tmp;
-            }
-            float   mult = len / (max - min) ;
-            if (x_start < min)
-              x_start = min ;
-
-            if (x_end   > max)
-              x_end = max ;
-
-            ix_start = (int) Math.floor ( mult*(x_start - min) );
-            ix_end   = (int) Math.ceil  ( mult*(x_end   - min) );
-        }
-        else 
+        else
         {
             // do an iterated search to find the indices, 
             // by reading parts of the abscissa values.
@@ -994,10 +976,10 @@ class TwuDataProvider
             //    there should be no peaks or valleys.
             // ------------------------------------------------
 
-            int POINTS_PER_REQUEST = 100 ;
-            int step, k = POINTS_PER_REQUEST;
+            final int POINTS_PER_REQUEST = 100 ;
+            int       k    = POINTS_PER_REQUEST;
+            final int step = (int) Math.ceil ( len / (float)k ) ;
 
-            step = (int) Math.ceil ( len / (float)k ) ;
             TwuFetchOptions opt = new TwuFetchOptions ( 0, step, k );
             float[] data = xsig.doFetch (opt);
 
@@ -1043,13 +1025,14 @@ class TwuDataProvider
             ix_end   = FindNonEquiIndex(up ? x_end   : x_start,  xsig, ix_end,   step, k, len);
         }
 
+        // extra checks:
         if (ix_start < 0   )
-          ix_start = 0   ; // extra checks.
+          ix_start = 0   ;
         if (ix_end   >= len)
           ix_end   = len ;
-
         if (n_points < 2)
           n_points = 2 ;
+
         int range = ix_end - ix_start ; 
         int step  = range / (n_points - 1)  ; 
         if (step < 1) step = 1 ;
