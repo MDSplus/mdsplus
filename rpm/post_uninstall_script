@@ -13,6 +13,11 @@ Linux*)
 # Linux post uninstall script
 #
 #
+# Remove mdsplus libraries from /etc/ld.so.conf
+#
+/bin/cp /etc/ld.so.conf /etc/ld.so.conf.before_mdsplus_removal
+/bin/grep -v "^$MDSPLUS_DIR/lib" /etc/ld.so.conf > /etc/ld.so.conf
+# 
 # Remove profile.d scripts
 #
 rm /etc/profile.d/mdsplus.csh
