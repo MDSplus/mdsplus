@@ -85,8 +85,8 @@ int KsTranslateIosb( RequestSenseData *sense, int cam_status)
 	  printf("CamSERTRAERR\n");
 	break;
       }
-      LastIosb.x       = !sense->u2.esr.nox;
-      LastIosb.q       = !sense->u2.esr.noq;
+      LastIosb.x       = !sense->u1.csr.nox;
+      LastIosb.q       = !sense->u1.csr.noq;
       LastIosb.err     =  sense->u2.esr.err;
       LastIosb.lpe     =  sense->u2.esr.lpe;
       LastIosb.tpe     =  sense->u2.esr.tpe;
@@ -99,7 +99,7 @@ int KsTranslateIosb( RequestSenseData *sense, int cam_status)
         LastIosb.status = Shorten( CamDONE_NOX );
       }
       LastIosb.list    =  0;			// list processing not supported
-      LastIosb.lbytcnt =  0;			// list processing not supported
+//      LastIosb.lbytcnt =  0;			// list processing not supported
     }      
  KsTranslateIosb_Exit:
       if( MSGLVL(DETAILS) ) {
