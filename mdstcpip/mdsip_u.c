@@ -123,6 +123,7 @@ static void StartWorker(char **argv)
   memset(ClientList,0,sizeof(*ClientList));
   ClientList->sock = sock;
   IsWorker = 1;
+  PortName = portname;
   sharedMemHandle = OpenFileMapping(FILE_MAP_READ, FALSE, ServiceName());
   workerShutdown = (int *)MapViewOfFile(sharedMemHandle, FILE_MAP_READ, 0, 0, sizeof(int));
 }
@@ -221,7 +222,9 @@ int main( int argc, char **argv)
 	}
   }
   else
+  {
 	  ServiceMain(argc,argv);
+  }
   return 1;
 }
 #define main ServiceMain
@@ -329,6 +332,7 @@ int main(int argc, char **argv)
   fd_set readfds;
   struct timeval timeout = {1,0};
   InitializeSockets();
+  /* DebugBreak(); */
   FD_ZERO(&fdactive);
   if (argc <= 1 && !IsService)
   {
@@ -951,7 +955,7 @@ static void ExecuteMessage(Client *c)
     c->descrip[c->nargs++] = (struct descriptor *)(xd = (struct descriptor_xd *)memcpy(malloc(sizeof(emptyxd)),&emptyxd,sizeof(emptyxd)));
     c->descrip[c->nargs++] = MdsEND_ARG;
     DefineTdi("public $REMADDR=$",DTYPE_LONG,4,&c->addr);
-    DefineTdi("public $PORTNAME=$",DTYPE_T,strlen(PortName),PortName);
+    DefineTdi("public $PORTNAME=$",DTYPE_T,(short)strlen(PortName),PortName);
     ResetErrors();
     status = LibCallg(&c->nargs, TdiExecute);
     if (status & 1) status = TdiData(xd,&ans MDS_END_ARG);
