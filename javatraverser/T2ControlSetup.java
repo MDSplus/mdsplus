@@ -121,7 +121,7 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField11.setLabelString("Init. Phase (Rad):");
 		JPanel2.add(deviceField11);
 		JPanel3.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		JPanel2.add(JPanel3);
+		JTabbedPane1.add(JPanel3);
 		deviceField12.setNumCols(8);
 		deviceField12.setOffsetNid(26);
 		deviceField12.setLabelString("K1:");
@@ -138,8 +138,10 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField15.setOffsetNid(32);
 		deviceField15.setLabelString("K4:");
 		JPanel3.add(deviceField15);
+		JPanel3.setBounds(2,24,391,165);
 		JTabbedPane1.setTitleAt(0,"Intelligent Shell");
 		JTabbedPane1.setTitleAt(1,"Rotating Perturbation");
+		JTabbedPane1.setTitleAt(2,"Mode Control");
 		{
 			String[] tempString = new String[2];
 			tempString[0] = "INIT";
