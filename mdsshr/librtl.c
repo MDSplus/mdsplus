@@ -11,7 +11,7 @@
 #include <math.h>
 
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$ $Name$";
 
 extern int MdsCopyDxXd();
 
