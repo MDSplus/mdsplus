@@ -171,6 +171,7 @@ int TclOutLen()
   pthread_mutex_lock(&saved_output_mutex);
   ans = saved_output ? strlen(saved_output) : 0;
   pthread_mutex_unlock(&saved_output_mutex);
+  return ans;
 }
 
 int TclGetOut(int free_out, int len_out, char *out)
