@@ -185,7 +185,7 @@ object
                     XmNmarginHeight = 1;
                     XmNmarginWidth = 1;
                     XmNcolumns = 10;
-                    XmdsNnidOffset = U_OF_M_SPECT$N_NUM_SPECTRA_SETUP;
+                    XmdsNnidOffset = U_OF_M_SPECT$N_NUM_SPEC_SETUP;
                     XmdsNnid = DEVICE_NID;
                     XmdsNdefaultQuote = false;
                     XmdsNautoQuote = false;
@@ -358,7 +358,7 @@ value
     U_OF_M_SPECT$N_TRIGGER: 4;
     U_OF_M_SPECT$N_WAVELENGTH_SETUP: 6;
     U_OF_M_SPECT$N_SLIT_SETUP: 7;
-    U_OF_M_SPECT$N_NUM_SPECTRA_SETUP: 8;
+    U_OF_M_SPECT$N_NUM_SPEC_SETUP: 8;
     U_OF_M_SPECT$N_GRATING_SETUP: 9;
     U_OF_M_SPECT$N_EXPOSURE_SETUP: 10;
     U_OF_M_SPECT$N_FILTER_SETUP: 11;
