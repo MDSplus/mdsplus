@@ -58,11 +58,12 @@ public fun TR10__init(as_is _nid, optional _method)
 			abort();
   		}
 		_clock_val = execute('`_clk');
-		_clk_div = 1;
+		_clk_div = 0;
     }
     else
     {
         DevNodeCvt(_nid, _N_FREQUENCY, [200E3,100E3,50E3,20E3,10E3,5E3,2E3,1E3,500,200,100],[1,2,4,10,20,40,100,200,400,1000,2000], _clk_div = 0);
+
         _freq = data(DevNodeRef(_nid, _N_FREQUENCY));
         _clock_val = make_range(*,*,1./ _freq);
     	DevPut(_nid, _N_CLOCK_SOURCE, _clock_val);

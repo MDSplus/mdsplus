@@ -57,7 +57,7 @@ public fun TR10__store(as_is _nid, optional _method)
 	if(_remote)
 	{
 	    _handle = MdsValue('TR10HWStartStore(0, $1, $2)', _board_id, _pts);
-		if(_handle == 0)
+		if(_handle == -1)
 		{
 			DevLogErr(_nid, 'TR10 device not in STOP stat. Board ID: '//_board_id);
 			abort();
@@ -65,8 +65,12 @@ public fun TR10__store(as_is _nid, optional _method)
 	}
 	else
 	{
+
+write(*, 'PARTE START STORE');
+
 		_handle = TR10HWStartStore(_nid, _board_id, _pts);
-		if(_handle == 0)
+write(*, 'FINISCE START STORE');
+		if(_handle == -1)
 			abort();
 	}
     
@@ -84,9 +88,16 @@ public fun TR10__store(as_is _nid, optional _method)
 
 	/* Read data */
 			if(_remote)
-				_data = MdsValue('TR10HWReadChan($1, $2, $3, $4, $5)', _handle, _i, _start_idx, _end_idx, _pts);	
+			{
+				_data = MdsValue('TR10HWReadChan($1, $2, $3, $4, $5)', _handle, (_i + 1), _start_idx, _end_idx, _pts);	
+				write(*, 'Letti remoti ', size(_data));
+			}
 			else
-				_data = TR10HWReadChan(_handle, _i, _start_idx, _end_idx, _pts);							
+			{
+				write(*, 'PARTE READCHAN');
+				_data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts);	
+				write(*, 'FINISCE READCHAN', size(_data));
+			}						
 
 	/* Build signal */
 			_dim = make_dim(make_window(_start_idx, _end_idx, _trig), _clock);

@@ -6,7 +6,9 @@ public fun TR10__trigger(as_is _nid, optional _method)
     private _N_SW_MODE = 2;
     private _N_IP_ADDR = 3;
 
+    private _INVALID = 10E20;
 
+write(*, 'TR10 TRIGGER');
     _board_id=if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
     if(_board_id == _INVALID)
     {
@@ -14,18 +16,21 @@ public fun TR10__trigger(as_is _nid, optional _method)
  		return (0);
     }
 
+
+write(*, 'BOARD OID', _board_id);
+
     DevNodeCvt(_nid, _N_SW_MODE, ['LOCAL', 'REMOTE'], [0,1], _remote = 0);
 
-	if(_remote)
+	if(_remote )
 	{
-		_ip_addr = if_error(data(DevNodeRef(_nid, _N_IP_ADDR)), _INVALID);
-		if(_ip_addr == _INVALID)
+		_ip_addr = if_error(data(DevNodeRef(_nid, _N_IP_ADDR)), "");
+		if(_ip_addr == "")
 		{
     	    write(*, "Invalid Crate IP specification");
  		    return (0);
 		}
 	}
-
+write(*,'REMOTE TESTED', _remote);
 	if(_remote)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';

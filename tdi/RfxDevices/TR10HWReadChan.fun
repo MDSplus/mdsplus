@@ -4,26 +4,18 @@ public fun TR10HWReadChan(in _handle, in _chan, in _start_idx, in _end_idx, in _
 	private _2M = 2097152;
 
 
-	write(*, 'TR10HWReadChan', _handle, _chan, _start_idx, _end_idx, _pts);
-	return (sin((0:(_end_idx - _start_idx))/1000.)* 30000.);
-
-
-
-
-
-
-
-
-
 
 /* Get current sample */	
 	_act_sample = long(0);
-	TR10->TR10_Trg_GetActShotSample(val(_handle), _act_sample);
+	TR10->TR10_Trg_GetActShotSamples(val(_handle), ref(_act_sample));
+
+write(*, 'ACT SAMPLE ', _act_sample);
 
 	_act_sample = _act_sample - _pts + _start_idx;
 	if(_act_sample < 0)
 		_act_sample = _act_sample + _2M;
 
+  write(*, 'NUOVO ACT SAMPLE ', _act_sample);
 /* Allocate buffer */
 
 /* Make sure starting address and data length are multiple of 32 */
@@ -37,9 +29,13 @@ public fun TR10HWReadChan(in _handle, in _chan, in _start_idx, in _end_idx, in _
 
 	_data = zero(_n_samples, 0L);
 
-/* Read channel */
-	TR10->TR10_Mem_Read_DMA(val(_handle), val(byte(_chan)), val(long(_act_sample)), _data, val(_n_samples));
+write(*, 'MEMREAD', _chan, _act_sample, _n_samples);
 
+/* Read channel */
+	TR10->TR10_Mem_Read_DMA(val(_handle), val(byte(_chan)), val(long(_act_sample)), ref(_data), val(_n_samples));
+
+
+write(*, 'LETTO');
 	return(_data[_start_ofs:(_end_idx - _start_idx)]);
 }
 
