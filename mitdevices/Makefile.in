@@ -15,6 +15,7 @@ X_PRE_LIBS=@X_PRE_LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 MOTIF_LIBS = @MOTIF_LD_LDARC@ @XM_LIBS@ @MOTIF_LD_LDSHARE@ @LIBXP@ @LIBXEXT@
 UIL=@UIL@ -I$(top_srcdir)/include
+MATH_LIBS=-L$(top_srcdir)/lib -lMdsMath
 
 UIDS = \
 @MAKEUIDDIR@A12.uid \
@@ -149,7 +150,7 @@ install:
 	@RANLIB@ $@
 
 @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ : $(IO_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(IO_OBJECTS) $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(IO_OBJECTS) $(MATH_LIBS) $(LIBS)
 
 @MAKELIBDIR@libMitDevicesIO.a : $(IO_OBJECTS)
 	$(AR) -cr $@ $(IO_OBJECTS)
