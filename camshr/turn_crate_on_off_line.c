@@ -67,7 +67,7 @@ int turn_crate_on_off_line( char *crate_name, int state )
 
 	pController = &controller[0];
 
-        if (CRATEdb[idx].HwyType != JORWAY_73A) {
+        if (CRATEdb[idx].HwyType != ('0'+JORWAY_73A)) {
 	  SCCdata = 1;					// initiates Dataway Z
 	  status = CamPiow(
 			   pController,		// serial crate controller name
