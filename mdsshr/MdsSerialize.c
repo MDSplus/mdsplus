@@ -989,5 +989,5 @@ int MdsSerializeDscOutZ(struct descriptor *in,
 
 int MdsSerializeDscOut(struct descriptor *in,struct descriptor_xd *out)
 {
-  return MdsSerializeDscOutZ(in,out,0,0,0,0,1,0,0,0,0,0,0,0,0);
+  return MdsSerializeDscOutZ(in,out,0,0,0,0,0,0,0,0,0,0,0,0,0);
 }
