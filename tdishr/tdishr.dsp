@@ -342,6 +342,18 @@ SOURCE=.\TdiSort.c
 # Begin Source File
 
 SOURCE=.\TdiSql.c
+
+!IF  "$(CFG)" == "tdishr - Win32 Release"
+
+# ADD CPP /D "_DEBUG" /D "SYBASE" /D "_MBCS" /D "_USRDLL" /D "MDSSQL_EXPORTS" /D "DBNTWIN32"
+# SUBTRACT CPP /D "NDEBUG"
+
+!ELSEIF  "$(CFG)" == "tdishr - Win32 Debug"
+
+# ADD CPP /D "SYBASE" /D "_MBCS" /D "_USRDLL" /D "MDSSQL_EXPORTS" /D "DBNTWIN32"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
