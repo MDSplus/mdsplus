@@ -32,7 +32,7 @@ static struct cmd_struct  cmd0[2] = {
 	/***************************************************************
 	 * main:  Mdsdcl main program
 	 ***************************************************************/
-void  main(
+int  main(
     int   argc
    ,char  *argv[]
    )
