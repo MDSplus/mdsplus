@@ -3,6 +3,7 @@ if (test "$MDSPLUS_DIR" = "")
 then
   MDSPLUS_DIR=/usr/local/mdsplus
   if ( test -r /etc/.mdsplus_dir )
+  then
     MDSPLUS_DIR=`/bin/cat /etc/.mdsplus_dir`
   fi
 fi
@@ -62,9 +63,11 @@ echo Removing mdsplus from login scripts
 /bin/grep -v "^source $MDSPLUS_DIR/setup.csh" /etc/csh.login.before_mdsplus_removal > /etc/csh.login
 ;;
 esac
-if (test -r $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
+if (test -r $MDSPLUS_DIR/local/mdsplus_post_uninstall_script)
+then
   rm $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 fi
-if (test -r /etc/.mdsplus_dir
+if (test -r /etc/.mdsplus_dir)
+then
   rm /etc/.mdsplus_dir
 fi

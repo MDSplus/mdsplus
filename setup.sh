@@ -65,6 +65,7 @@ if (test "$MDSPLUS_DIR" = "")
 then
   MDSPLUS_DIR=/usr/local/mdsplus
   if ( test -r /etc/.mdsplus_dir )
+  then
     MDSPLUS_DIR=`/bin/cat /etc/.mdsplus_dir`
   fi
 fi
