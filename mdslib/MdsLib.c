@@ -196,7 +196,7 @@ static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
    * is of the right type.  It is only used for remote MDSplus 
    */
 
-  char *newexpression = (char *) malloc(strlen(expression)+16);
+  char *newexpression = (char *) malloc(strlen(expression)+24);
 				
   switch (dsc->dtype) 
     {
@@ -211,9 +211,9 @@ static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
     case DTYPE_DOUBLE : strcpy(newexpression,"DBLE"); break;
     }
 
-  strcat(newexpression, "(");
+  strcat(newexpression, "((");
   strcat(newexpression, expression);
-  strcat(newexpression, ")");
+  strcat(newexpression, "))");
 
   return newexpression;
 
