@@ -60,7 +60,6 @@ pro MdsOpen,tree,shot,quiet=quiet,status=status
     status = call_external(MdsIPImage(),MdsRoutinePrefix()+'MdsOpen',$
                            sock,string(tree),long(shot),$
                            value=[1b,byte(not IsWindows()),1b])
-    return
     if not status then begin
       if keyword_set(quiet) then message,mdsgetmsg(status,quiet=quiet),/continue,/noprint $
                             else message,mdsgetmsg(status,quiet=quiet),/continue
