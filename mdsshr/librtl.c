@@ -1276,3 +1276,4 @@ void TranslateLogicalFree(char *value)
 {
 	free(value);
 }
+
