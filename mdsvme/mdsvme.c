@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include "dmaexreg.h"
+#include "vmp_reg.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -180,3 +181,41 @@ int A14Wait(int crate, int slot)
   return VmeWaitForInterrupt("/dev/dmaex0",3,0xce);
 }
 
+int PioRead(char *device, unsigned int addr, unsigned int mode, int bufsize, void *buffer, int *bytes_read)
+{
+  struct pio_info		setVme, getVme;
+  int fd = open(device,O_RDWR);
+  int status = 0;
+  void *pMapAdr;
+  *bytes_read = 0;
+  if (fd != -1)
+  {
+    setVme.pio_addr = addr;
+    setVme.pio_size = bufsize;
+    setVme.pio_am = mode;
+    setVme.pio_access = HANDLE_LONGWORD;
+    if (ioctl(fd,VMP_MAP_PIO_ADDR,&setVme) < 0)
+      perror("error in ioctl VMP_MAP_PIO_ADDR");
+    else
+    {
+      memset(buffer,0,bufsize);
+      pMapAdr = (int *)mmap((caddr_t)0, setVme.pio_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+      if (pMapAdr == (int *)-1){
+    	printf ( "### error in mmap\n" );
+      }
+      else
+      {
+        bcopy((char *)pMapAdr, buffer, bufsize);
+        *bytes_read = bufsize;
+    	if ( munmap((caddr_t)pMapAdr,setVme.pio_size) < 0 ){
+        	printf ( "### error in munmap\n" );
+    	}
+        status = 1;
+      }
+    }
+    close(fd);
+  }
+  else
+    perror("Error opening VME device");
+  return status;
+}
