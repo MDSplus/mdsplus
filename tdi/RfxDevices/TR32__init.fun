@@ -37,7 +37,6 @@ public fun TR32__init(as_is _nid, optional _method)
 	}
 
 	DevNodeCvt(_nid, _N_TRIG_EDGE, ['RISING', 'FALLING'], [0, 1], _trig_edge = 0);
-
 	DevNodeCvt(_nid, _N_SW_MODE, ['LOCAL', 'REMOTE'], [0, 1], _remote = 0);
 	if(_remote != 0)
 	{
@@ -65,24 +64,26 @@ public fun TR32__init(as_is _nid, optional _method)
   		}
 		_clock_val = execute('`_clk');
 		_clk_div = if_error(DevNodeRef(_nid, _N_CK_RESAMPLING), _INVALID);
-		if(_trig == _INVALID)
+		if(_clk_div == _INVALID)
 		{
     		DevLogErr(_nid, "Cannot resolve clock resampling in external clock");
  			abort();
 		}
 		if(_clk_div > 1)
-			_clock_val = make_range(,,slope_of(_clock_val)/_clk_div);
+		{
+			_clock_val = make_range(,,slope_of(_clock_val)*_clk_div);
+		}
+
     }
     else
     {
-        DevNodeCvt(_nid, _N_FREQUENCY, [3E6,1.5E6,1E6,500E3,200E3,100E3,50E3,20E3,10E3,5E3,2E3,1E3,500],[1,2,3,6,15,30,60,150,300,600,1500, 3000,6000], _clk_div = 0);
+        DevNodeCvt(_nid, _N_INT_FREQUENCY, [3E6,1.5E6,1E6,500E3,200E3,100E3,50E3,20E3,10E3,5E3,2E3,1E3,500],[1,2,3,6,15,30,60,150,300,600,1500, 3000,6000], _clk_div = 0);
 
-        _freq = data(DevNodeRef(_nid, _N_FREQUENCY));
+        _freq = data(DevNodeRef(_nid, _N_INT_FREQUENCY));
+
         _clock_val = make_range(*,*,1./ _freq);
     	DevPut(_nid, _N_CLOCK_SOURCE, _clock_val);
 	}
-
-
     _trig=if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _INVALID);
     if(_trig == _INVALID)
     {
@@ -164,7 +165,7 @@ public fun TR32__init(as_is _nid, optional _method)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		execute(_cmd);
-	    _status = MdsValue('TR32HWInit(0, $1, $2, $3, $4, $5, $6, $7)', _board_id, _clk_div, _pts, _ext_trig, _trig_edge, _clock_term, _ranges);
+	    _status = MdsValue('TR32HWInit(0, $1, $2, $3, $4, $5, $6, $7, $8)', _board_id, _ext_clock,  _clk_div, _pts, _ext_trig, _trig_edge, _clock_term, _ranges);
 		MdsDisconnect();
 		if(_status == 0)
 		{
@@ -174,7 +175,7 @@ public fun TR32__init(as_is _nid, optional _method)
 	}
 	else
 	{
-		_status = TR32HWInit(_nid, _board_id, _clk_div, _pts, _ext_trig, _trig_edge, _clock_term, _ranges);
+		_status = TR32HWInit(_nid, _board_id, _ext_clock, _clk_div, _pts, _ext_trig, _trig_edge, _clock_term, _ranges);
 		if(_status == 0)
 			abort();
 	}

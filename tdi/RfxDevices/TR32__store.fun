@@ -57,6 +57,15 @@ public fun TR32__store(as_is _nid, optional _method)
     _trig = data(DevNodeRef(_nid, _N_TRIG_SOURCE));
     _clock = evaluate(DevNodeRef(_nid, _N_CLOCK_SOURCE));
     _clock = execute('evaluate(`_clock)');
+    DevNodeCvt(_nid, _N_CLOCK_MODE, ['INTERNAL', 'EXTERNAL'], [0, 1], _ext_clock = 0);
+    if(_ext_clock)
+    {
+    	_clk_div = if_error(DevNodeRef(_nid, _N_CK_RESAMPLING), _INVALID);
+    	if(_clk_div != _INVALID && _clk_div != 1 )
+	{
+	    _clock = make_range(,,slope_of(_clock)*_clk_div);
+	}
+     }
     _pts = data(DevNodeRef(_nid, _N_PTS));
 
 	if(_remote)

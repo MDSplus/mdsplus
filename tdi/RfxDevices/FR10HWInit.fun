@@ -49,7 +49,10 @@ public fun FR10HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 
 /* Set clock functions */
 	if(_clock_div == 0) /*_clock_div == 0 means external clock */
+        {
 		_clock_source = _FR10_CLK_SOURCE_EXTERNAL;
+		_clock_div = 1;
+	}
 	else
 		_clock_source = _FR10_CLK_SOURCE_INTERNAL;
 

@@ -1,4 +1,4 @@
-public fun TR32HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_trig, in _trig_edge, in _clk_termination, in _ranges)
+public fun TR32HWInit(in _nid, in _board_id, in _ext_clock, in _clock_div, in _pts, in _ext_trig, in _trig_edge, in _clk_termination, in _ranges)
 {
 
 
@@ -49,10 +49,10 @@ public fun TR32HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 
 
 /* Set clock functions */
-	if(_clock_div == 0) /*_clock_div == 0 means external clock */
-		_clock_source = byte(_TR32_TRG_SOURCE_EXTERNAL);
+	if(_ext_clock) 
+		_clock_source = byte(_TR32_CLK_SOURCE_EXTERNAL);
 	else
-		_clock_source = byte(_TR32_TRG_SOURCE_INTERNAL);
+		_clock_source = byte(_TR32_CLK_SOURCE_INTERNAL);
 
 
 	if(_clk_termination)
@@ -61,8 +61,12 @@ public fun TR32HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 		_clock_termination = _TR32_CLK_TERMINATION_OFF;
 
 
+
+write(*, 'Clock div: ', data(_clock_div)); 
+write(*, 'Clock source: ', _clock_source); 
+
 	TR32->TR32_Clk_SetClock(val(_handle), val(_clock_source), val(_TR32_CLK_NO_EXT_CLOCK),
-		val(_TR32_CLK_DIVIDE), val(_TR32_CLK_RISING_EDGE), val(_clock_termination), val(long(_clock_div)));
+		val(_TR32_CLK_DIVIDE), val(_TR32_CLK_RISING_EDGE), val(_clock_termination), val(long(data(_clock_div))));
 		  
 /* Set Trigger function */
 	if(_ext_trig)
@@ -80,6 +84,8 @@ public fun TR32HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 		val(_TR32_TRG_SYNCHRONOUS), val(0B), val(0W));
 
 /* Set Post Trigger Samples */
+ write(*, 'PTS: ', _pts);
+
 	TR32->TR32_Trg_SetPostSamples(val(_handle), val(long(_pts)));
 
 /* Set Channel input range */ 

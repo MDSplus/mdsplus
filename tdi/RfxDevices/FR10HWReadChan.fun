@@ -9,13 +9,20 @@ public fun FR10HWReadChan(in _handle, in _chan, in _start_idx, in _end_idx, in _
 	_act_sample = long(0);
 	FR10->FR10_Trg_GetActShotSamples(val(_handle), ref(_act_sample));
 
+        _act_shot_samples = _act_sample;
+
 
 	_act_pts = long(0);
 	FR10->FR10_Trg_GetActPostSamples(val(_handle), ref(_act_pts));
+
+        _act_post_samples = _act_pts;
+
 	if(_act_pts < _pts - 32)
 	{
 	    write(*, "LESS PTS THAN EXPECTED!!!!!: ", _act_pts, _pts);
 	}
+ write(*, "ACT sample", _act_sample);
+ write(*, "ACT pts", _act_pts);
 
 	_pts = _act_pts;	
 
@@ -33,14 +40,44 @@ public fun FR10HWReadChan(in _handle, in _chan, in _start_idx, in _end_idx, in _
 
 	/*_n_samples = long(_end_idx - _start_idx  + _start_ofs);*/
 	_n_samples = long(_pts - _start_idx  + _start_ofs);
-	
+
+write(*, "n samples", _n_samples);
+write(*, "start ods", _start_ofs);
+write(*, "ACT sample", _act_sample);	
 
 	_data = zero(_n_samples+32, 0W);
 
+/* Prova di Cesare*/
+
+ _act_pre_sample = _act_shot_samples - _act_post_samples;
+ _samplestart = _act_pre_sample;
+ _readstart = (_samplestart / 32) * 32;
+ _trigpreposition = _act_pre_sample - _readstart;
+ _samplelength =  _act_post_samples + _trigpreposition; 
+ _readlength = ( (mod(_samplelength,32) ) ? (((_samplelength/32) + 1) * 32) : ( (_samplelength/32) * 32) );
+ _illegal = _readlength - _samplelength; 
+
+write(*, "Sample start ", _samplestart);
+write(*, "read start ", _readstart);
+write(*, "Trigger pre position ", _trigpreposition);
+write(*, "Sample length ", _samplelength);
+write(*, "Read length ", _readlength);
+write(*, "Illegal ", _illegal);
+
+  _data = zero(_samplelength, 0W);
+
+
+
 /* Read channel */
+
 	FR10->FR10_Mem_Read_DMA(val(_handle), val(byte(_chan)), val(long(_act_sample)), ref(_data), val(_n_samples));
 
 	return(_data[_start_ofs:(_end_idx - _start_idx + _start_ofs)]);
+/*
+	FR10->FR10_Mem_Read_DMA(val(_handle), val(byte(_chan)), val(long(_samplestart)), ref(_data), val(_samplelength));
+
+	return(_data[0:(_readlength - _illegal)]);
+*/
 }
 
 	
