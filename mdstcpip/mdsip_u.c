@@ -816,15 +816,23 @@ static void ProcessMessage(Client *c, Message *message)
         default:
           switch (d->dtype)
           {
-            case DTYPE_FLOAT:
+            case DTYPE_FLOAT:   ConvertFloat(num, CvtVAX_F, (char)message->h.length, message->bytes,
+                                                  CvtIEEE_S, sizeof(float), d->pointer); break;
             case DTYPE_COMPLEX: ConvertFloat(num * 2, CvtVAX_F, (char)message->h.length, message->bytes,
                                                   CvtIEEE_S, sizeof(float), d->pointer); break;
-            case DTYPE_DOUBLE:
-            case DTYPE_COMPLEX_DOUBLE: if (CType(c->client_type) == VMSG_CLIENT)
-                            ConvertFloat(num, CvtVAX_G, (char)message->h.length, message->bytes,
+            case DTYPE_DOUBLE:  if (CType(c->client_type) == VMSG_CLIENT)
+                                   ConvertFloat(num, CvtVAX_G, (char)message->h.length, message->bytes,
                                                   CvtIEEE_T, sizeof(double), d->pointer); 
-                          else
-                            ConvertFloat(num, CvtVAX_D, (char)message->h.length, message->bytes,
+                                else
+                                   ConvertFloat(num, CvtVAX_D, (char)message->h.length, message->bytes,
+                                                  CvtIEEE_T, sizeof(double), d->pointer);
+                                break;
+
+            case DTYPE_COMPLEX_DOUBLE: if (CType(c->client_type) == VMSG_CLIENT)
+                                          ConvertFloat(num * 2, CvtVAX_G, (char)(message->h.length)/2, message->bytes,
+                                                  CvtIEEE_T, sizeof(double), d->pointer); 
+                                       else
+                                          ConvertFloat(num * 2, CvtVAX_D, (char)(message->h.length)/2, message->bytes,
                                                   CvtIEEE_T, sizeof(double), d->pointer);
                           break;
             default: memcpy(d->pointer,message->bytes,dbytes); break;
