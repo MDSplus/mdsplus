@@ -193,9 +193,9 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,char
           dblist->tree_info = info;
           dblist->remote = 1;
         }
+        else
+          status = TreeFILE_NOT_FOUND;
       }
-      else
-        status = TreeFILE_NOT_FOUND;
     }
     if (ans.ptr) MdsIpFree(ans.ptr);
   }

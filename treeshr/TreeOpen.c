@@ -86,7 +86,13 @@ static char *TreePath( char *tree, char *tree_lower_out )
   strcat(pathname,TREE_PATH_SUFFIX);
   if (tree_lower_out)
     strcpy(tree_lower_out,tree_lower);
-  return TranslateLogical(pathname);
+  path = TranslateLogical(pathname);
+  if (path)
+  {
+    for (i=strlen(path)-1;i>=0 && (path[i]==32 || path[i]==9);i--) 
+      path[i]=0;
+  }
+  return path;
 }
 
 int _TreeOpen(void **dbid, char *tree_in, int shot_in, int read_only_flag)
