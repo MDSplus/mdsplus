@@ -6,8 +6,6 @@
 #include        <lib$routines.h>
 #include        <ssdef.h>
 #include        <time.h>
-#else
-#include        <sys/time.h>
 #endif
 
 /**********************************************************************
@@ -40,7 +38,7 @@ static struct _mdsdcl_macro  *find_macro( /* Return: addr of struct	*/
     char  name[]			/* <r> macro name, upper case	*/
    )
    {
-    int   i,k;
+    int   i;
     struct _mdsdcl_macro  *m;
 
     m = ctrl->macro.list;
@@ -58,7 +56,6 @@ static struct _mdsdcl_macro  *find_macro( /* Return: addr of struct	*/
 	 *****************************************************************/
 static void  expand_macro_list()	/* Return: void			*/
    {
-    int   i,k;
     int   nbytes;
 
     nbytes = ctrl->macro.maxMacros * sizeof(struct _mdsdcl_macro) + INCR;
@@ -81,8 +78,6 @@ static struct _mdsdcl_macro  *get_macro( /* Return: addr of struct	*/
     char  name[]			/* <r> macro name, upper case	*/
    )
    {
-    int   i,k;
-    int   nbytes;
     struct _mdsdcl_macro  *m;
 
     if (m = find_macro(name))
@@ -113,7 +108,6 @@ static void  extend_macro(	/* Return:  void			*/
     struct _mdsdcl_macro  *m	/* <m> macro to be extended		*/
    )
    {
-    int   i,k;
     int   nbytes;
 
     if (m->numLines != m->maxLines)
@@ -208,7 +202,7 @@ static void  display_macro(		/* Return: void			*/
     struct _mdsdcl_macro  *m		/* <r> ptr to macro struct	*/
    )
    {
-    int  i,k;
+    int  i;
     char **p;
 
     printf("\n%s\n",m->name);
@@ -225,7 +219,7 @@ static void  display_macro(		/* Return: void			*/
 	 *****************************************************************/
 int   mdsdcl_show_macro()		/* Return: status		*/
    {
-    int   i,k;
+    int   i;
     int   full;
     int   sts;
     struct _mdsdcl_macro  *m;
@@ -272,7 +266,7 @@ int   mdsdcl_show_macro()		/* Return: status		*/
 	 ****************************************************************/
 int   mdsdcl_do_macro()		/* Return: status			*/
    {
-    int   i,k;
+    int   i;
     int   icnt;
     int   irepeat;
     int   sts;

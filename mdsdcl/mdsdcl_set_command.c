@@ -36,9 +36,8 @@ int   mdsdcl_set_command(		/* Return: status		*/
     struct _mdsdcl_ctrl  *ctrl		/* <m> the control structure	*/
    )
    {
-    int   i,k;
+    int   i;
     int   sts;
-    void  *hndl;
     void  *newTable;
     static DYNAMIC_DESCRIPTOR(dsc_table);
 

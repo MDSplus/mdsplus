@@ -1,9 +1,10 @@
 #include        <stdio.h>
 #include        "mdsdcl.h"
-#ifdef vms
+#if defined(vms)
 #include        <lib$routines.h>
 #include        <sys/clidef.h>
 #include        <ssdef.h>
+#elif defined(_WIN32)
 #else
 #include        <errno.h>
 #include        <signal.h>
@@ -46,8 +47,7 @@ int   mdsdcl_spawn(			/* Return: status		*/
     struct _mdsdcl_ctrl  *ctrl		/* <r> control structure	*/
    )
    {
-    int   i,k;
-    int   efn;
+    int   k;
     int   flags;
     int   ccflag;
     int   keypadFlag;
@@ -56,16 +56,17 @@ int   mdsdcl_spawn(			/* Return: status		*/
     int   symbolsFlag;
     int   waitFlag;
     int   sts;
-    char  *p;
     static DYNAMIC_DESCRIPTOR(dsc_cmd);
     static DYNAMIC_DESCRIPTOR(dsc_input);
     static DYNAMIC_DESCRIPTOR(dsc_output);
     static DYNAMIC_DESCRIPTOR(dsc_process_name);
     static DYNAMIC_DESCRIPTOR(dsc_prompt);
     static DYNAMIC_DESCRIPTOR(dsc_cli);
-#ifdef unix
+#if !defined(vms)
     char  cmdstring[256];
+#if defined(unix)
     pid_t  pid,xpid;
+#endif
 #endif
 
     flags = 0;
@@ -89,7 +90,7 @@ int   mdsdcl_spawn(			/* Return: status		*/
     symbolsFlag = cli_present("SYMBOLS") & 1;
     waitFlag = cli_present("WAIT") & 1;
 
-#ifdef vms
+#if defined(vms)
     if (!ccflag)
         flags |= CLI$M_NOCONTROL;
     if (!keypadFlag)
@@ -104,6 +105,7 @@ int   mdsdcl_spawn(			/* Return: status		*/
     flags |= CLI$M_NOWAIT;
     if (waitFlag)
        {
+		int   efn;
         lib$get_ef(&efn);
         sys$clref(efn);
         sts = lib$spawn(&dsc_cmd,&dsc_input,&dsc_output,&flags,
@@ -127,11 +129,13 @@ int   mdsdcl_spawn(			/* Return: status		*/
         k += sprintf(cmdstring+k," <%s",dsc_input.dscA_pointer);
     if (dsc_output.dscA_pointer)
         k += sprintf(cmdstring+k," >%s",dsc_output.dscA_pointer);
+#if defined(unix)
     signal(SIGCHLD,notifyFlag ? child_done : SIG_DFL);
     pid = fork();
     if (!pid)
        {		/*-------------> child process: execute cmd	*/
         static char  *arglist[4];
+		char  *p;
 
         printf("\nChild process: cmdstring='%s'\n",cmdstring);
         arglist[0] = nonblank(cmdstring);
@@ -178,6 +182,9 @@ int   mdsdcl_spawn(			/* Return: status		*/
                 break;
            }
        }
+#else
+	sts = system(cmdstring);
+#endif
 #endif
     return(sts);
    }

@@ -18,6 +18,8 @@ extern char  *MdsDtypeString();
 extern char  *MdsClassString();
 #ifdef vms
 extern int  sys$asctim();
+#else
+extern int LibSysAscTim();
 #endif
 
 

@@ -4,8 +4,6 @@
 #include        <lib$routines.h>
 #include        <ssdef.h>
 #include        <time.h>
-#else
-#include        <sys/time.h>
 #endif
 
 /**********************************************************************
@@ -50,6 +48,7 @@ mdsdcl_debug()
 mdsdcl_exit()
    {
     exit(0);
+	return 1;
    }
 
 
@@ -119,7 +118,7 @@ mdsdcl_set_verify(		/* Returns: status			*/
 	 ****************************************************************/
 int   mdsdcl_define_symbol()
    {
-    int   i,k;
+    int   k;
     int   sts;
     char  *p;
     static DYNAMIC_DESCRIPTOR(dsc_name);

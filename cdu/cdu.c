@@ -22,7 +22,7 @@
 ***********************************************************************/
 
 
-int   debugCdu = 0;		/* set to 1 for extra printout		*/
+extern int   debugCdu;		/* set to 1 for extra printout		*/
 
 
 #define STS_NOT_SUPPORTED      3	/* option not supported		*/
@@ -262,19 +262,23 @@ static int   illegalCmdline(	/* Return: status			*/
    ,char  text[]		/* <r:opt> extra error text		*/
    )
    {
-    int   i,k;
     char  *p;
     char  *startOfCmdline;
+	/*
+    int   k;
     char  fmt[20];
+	*/
 
     startOfCmdline = getString_startOfLine();
     p = startOfCmdline[0] ? startOfCmdline : "<null>";
     printf("\n--> Illegal cmd line: '%.48s'\n",p);
+/*
     if (k>=0 && k<48)
        {
         sprintf(fmt,"%%%ds^^^\n",23+k);
         printf(fmt,"");
        }
+*/
     if (text)
         printf("    %s\n",text);
 
@@ -423,7 +427,7 @@ static void  show_type(
     char  typeName[]		/* <r> typeName to display		*/
    )
    {
-    int   i,k;
+    int   i;
     int   idx;
     long  mask;
     char  *p;
@@ -466,10 +470,7 @@ static void  show_verb(		/* Informational only			*/
    {
     int   i,k;
     long  mask;
-    int   paramId;
     char  *p;
-    struct qualifier  *q;
-    struct paramClause  *prm;
 
     printf("\n%s %s",
             (callerOpt==DEFINE_VERB)?"Verb":"Syntax",v->vrbA_name);
@@ -514,7 +515,6 @@ static void  show_verb(		/* Informational only			*/
 	 ***************************************************************/
 static struct valueClause  *cmd_value()	/* Return: addr of structure	*/
    {
-    int   i,k;
     long  mask;
     int   opt;
     char  cmd[32];
@@ -601,9 +601,7 @@ static int   cmd_verbQualifier(		/* Return: status		*/
     struct verblist  *v		/* <m> verblist struct to fill in	*/
    )
    {
-    int   i,k;
     int   opt;
-    int   sts;
     char  cmd[32];
     char  *p;
     char  qualName[32];
@@ -685,7 +683,7 @@ static int   cmd_verbParameter(	/* Return: status			*/
     struct verblist  *v		/* <m> verblist struct to fill in	*/
    )
    {
-    int   i,k;
+    int   k;
     int   opt;
     int   sts;
     char  cmd[32];
@@ -770,7 +768,6 @@ static int   cmd_defineVerb(
     int   callerOpt		/* <r> DEFINE_VERB or DEFINE_SYNTAX	*/
    )
    {
-    int   i,k;
     int   sts;
     int   opt;
     char  cmd[32];
@@ -873,9 +870,7 @@ static int   cmd_parseKeywordClauses(
     struct keyword  *key	/* <m> keyword struct to fill in	*/
    )
    {
-    int   i,k;
     int   opt;
-    int   sts;
     char  cmd[32];
     char  *p;
 
@@ -944,9 +939,6 @@ static int   cmd_parseKeywordClauses(
 	 *****************************************************************/
 static int   cmd_defineType()	/* Return: status			*/
    {
-    int   i,k;
-    int   opt;
-    int   sts;
     char  cmd[32];
     char  *p;
     char  typeName[32];
@@ -993,7 +985,6 @@ static int   cmd_defineType()	/* Return: status			*/
 	 ****************************************************************/
 static int   cmd_define()	/* Return: status			*/
    {
-    int   i,k;
     int   opt;
     int   sts;
     char  cmd[32];
@@ -1066,7 +1057,6 @@ static int   cmd_module()	/* Return: status			*/
 static int   cdu_parse(		/* Return: status			*/
    )
    {
-    int   i,k;
     int   opt;
     int   sts;
     char  cmd[32];
@@ -1116,7 +1106,6 @@ main(
    ,char  *argv[]
    )
    {
-    int   i,k;
     int   sts;
     static int   flags;
 
@@ -1126,4 +1115,5 @@ main(
 
     cdu_write(moduleName);
     exit(0);
+	return 1;
    }

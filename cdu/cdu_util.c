@@ -72,9 +72,8 @@ int   userTypeHasBeenWritten(	/* Return: 1(T) or 0(F)			*/
     char  uname[]		/* <r> name of "type"			*/
    )
    {
-    int   i,k;
+    int   i;
     char  name[32];
-    struct userType  *u;
 
     l2u(name,uname);		/* make upper-case version of name	*/
     for (i=0 ; i<userTypeCnt && strcmp(name,userTypeList[i].name) ; i++)
@@ -89,10 +88,9 @@ int   okToWriteUserType(	/* Return: 1(T) or 0(F)			*/
     char  uname[]		/* <r> name of "type"			*/
    )
    {
-    int   i,k;
+    int   i;
     int   hbw;			/* "hasBeenWritten" value		*/
     char  name[32];
-    struct userType  *u;
 
     l2u(name,uname);		/* make upper-case version of name	*/
     for (i=0 ; i<userTypeCnt && strcmp(name,userTypeList[i].name) ; i++)
@@ -120,9 +118,8 @@ void  markUserTypeWritten(	/* Returns:  void			*/
     char  uname[]		/* <r> name of "type"			*/
    )
    {
-    int   i,k;
+    int   i;
     char  name[32];
-    struct userType  *u;
 
     l2u(name,uname);		/* make upper-case version of name	*/
     for (i=0 ; i<userTypeCnt && strcmp(name,userTypeList[i].name) ; i++)
@@ -141,9 +138,8 @@ int   getUserTypeIdx(		/* Return: idx into userTypeList[]	*/
     char  uname[]		/* <r> name of "type"			*/
    )
    {
-    int   i,k;
+    int   i;
     char  name[32];
-    struct userType  *u;
 
     l2u(name,uname);		/* make upper-case version of name	*/
     for (i=0 ; i<userTypeCnt && strcmp(name,userTypeList[i].name) ; i++)
@@ -175,7 +171,6 @@ struct keyword  *getKeywordStruct(	/* Return: addr of keyword struct */
    ,char  uname[]			/* <r> keyword name		*/
    )
    {
-    int   i,k;
     int   idx;
     char  name[32];
     struct keywordChain  *key,*keyB4;
@@ -235,7 +230,7 @@ struct paramClause  *findParamByIdx(	/* Return: addr of paramClause	*/
    ,int   paramIdx			/* <r> parameter idx		*/
    )
    {
-    int   i,k;
+    int   i;
     struct parameterChain  *pc;
 
     if (paramIdx < 1)
@@ -254,7 +249,7 @@ struct paramClause  *getParamByIdx(	/* Return: addr of paramClause	*/
    ,int   paramIdx			/* <r> parameter idx		*/
    )
    {
-    int   i,k;
+    int   i;
     char  paramName[32];
     struct parameterChain  *pc,*pcB4;
 
@@ -303,7 +298,7 @@ struct qualifier  *findQualifierByIdx(	/* Return: addr of qualifier str*/
    ,int   idx			/* <r> index number			*/
    )
    {
-    int   i,k;
+    int   i;
     struct qualifierChain  *qc;
 
     qc = v->vrbA_qualifiersTop;
@@ -318,7 +313,6 @@ struct qualifier  *findQualifier( /* Return: addr of qualifier struct	*/
    ,char  qualName[]		/* <r> name of qualifier		*/
    )
    {
-    int   i,k;
     char  name[32];
     struct qualifierChain  *qc;
 
@@ -335,7 +329,6 @@ struct qualifier  *getQualifier( /* Return: addr of qualifier struct	*/
    ,char  qualName[]		/* <r> name of qualifier		*/
    )
    {
-    int   i,k;
     char  name[32];		/* upper-case version of qualName[]	*/
     struct qualifierChain  *qc,*qcB4;
 
@@ -394,7 +387,7 @@ struct verblist  *findVerbByIdx( /* Return: Addr of existing verb	*/
     int   idxRequest		/* <r> idx of requested verb		*/
    )
    {
-    int   i,k;
+    int   i;
     struct verbChain  *vc;
 
     for (i=0,vc=topVerb ; vc && i<idxRequest ; i++,vc=vc->flink)
@@ -436,7 +429,6 @@ struct verblist  *getVerb(	/* Return: Create verb if req'd		*/
     char  verbName[]		/* <r> name of the verb			*/
    )
    {
-    char  name[32];
     struct verblist  *v;
 
     v = findVerb(verbName);
@@ -475,7 +467,7 @@ struct verblist  *findSyntaxByIdx( /* Return: Addr of existing syntax	*/
     int   idxRequest		/* <r> idx of requested verb		*/
    )
    {
-    int   i,k;
+    int   i;
     struct verbChain  *vc;
 
     for (i=0,vc=topSyntax ; vc && i<idxRequest ; i++,vc=vc->flink)
@@ -517,7 +509,6 @@ struct verblist  *getSyntax(	/* Return: Create syntax if req'd	*/
     char  syntaxName[]		/* <r> name of syntax			*/
    )
    {
-    char  name[32];
     struct verblist  *v;
 
     v = findSyntax(syntaxName);

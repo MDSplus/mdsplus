@@ -33,6 +33,7 @@ int CamQ(unsigned short *iosb_in)
 int CamGetStat(unsigned short *iosb_in)
 {
   memcpy(iosb_in,RemCamLastIosb,sizeof(RemCamLastIosb));
+  return 1;
 }
 
 int CamXandQ(unsigned short *iosb_in)

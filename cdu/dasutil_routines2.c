@@ -1,3 +1,8 @@
+#ifdef _WIN32
+#include <io.h>
+#define isatty _isatty
+#endif
+
 #include        "dasutil.h"
 #include        <ctype.h>
 #include        <stdio.h>
@@ -6,6 +11,7 @@
 #ifdef vms
 #include        <varargs.h>
 #endif
+
 
 /***********************************************************************
 * CDATE.C --
@@ -141,8 +147,7 @@ int   asc2time(
    ,time_t  *bintim		/* <w> time integer			*/
    )
    {
-    long  i,k;
-    long  month;
+    long  k;
     char  *p,*p2;
     time_t  ktim;
     struct tm  tm;
@@ -340,7 +345,9 @@ extern int   lib$get_foreign();
 	 ***************************************************************/
 static void  __initialize()
    {
+#ifdef vms
     short  len;
+#endif
 
     if (inputStruct[0].fp)
         return;				/*---------------------> return	*/
@@ -424,7 +431,7 @@ void  putNext(
    ,int   flag			/* <r> 0:atEnd 1:clear 2:atStart	*/
    )
    {
-    int   i,k;
+    int   k;
     int   numArgs;
     char  *p;
     char  temp[256];
@@ -499,7 +506,9 @@ void  putNext(
 static void  clearAll()
    {
     FILE  *fp;
+#ifdef vms
     char  filename[128];
+#endif
     char  *linePtr;
     char  *p;
 
@@ -533,7 +542,7 @@ static successReturn(
    ,int   usingDefault		/* <r> flag				*/
    )
    {
-    int   i,k;
+    int   k;
 
     strcpy(token," ");
     if (linePtr && usingDefault)
@@ -627,7 +636,7 @@ static char  *startNextToken(
     void  *dsc_prompt		/* <r> string or descr: prompt string	*/
    )
    {
-    int   i,k;
+    int   k;
     char  *p;
     char  promptString[80];
     char  *linePtr;
@@ -801,7 +810,7 @@ int   getString(
    ,char  alphExtensions[]		/* <r:opt> other legal 1st chars */
    )
    {
-    int   i,k;
+    int   k;
     int   numArgs;
     int   sts;
     char  *linePtr;
@@ -873,7 +882,6 @@ int   getDouble(
    ,struct descriptor  *dsc_userFlag	/* <opt:w> 1-char "flag"	*/
    )
    {
-    int   i,k;
     int   incrDecrFlag;		/* Increment=1  Decrement=2		*/
     int   numArgs;
     int   sts;
@@ -973,7 +981,6 @@ int   getLong(
    ,struct descriptor  *dsc_userFlag	/* <opt:w> 1-char "flag"	*/
    )
    {
-    int   i,k;
     int   numArgs;
     int   sts;
     double v,vmin,vmax;
@@ -1017,7 +1024,6 @@ int   getFloat(
    ,struct descriptor  *dsc_userFlag	/* <opt:w> 1-char "flag"	*/
    )
    {
-    int   i,k;
     int   numArgs;
     int   sts;
     double v,vmin,vmax;
@@ -1103,7 +1109,6 @@ int   getEqualsLong(
    ,struct descriptor  *dsc_userFlag	/* <opt:w> 1-char "flag"	*/
    )
    {
-    int   i,k;
     int   numArgs;
     char  *p;
     void  *argMin,*argMax,*argFlag;
@@ -1137,9 +1142,7 @@ int   getEqualsString(
    ,char  alphExtensions[]		/* <r:opt> other legal 1st chars */
    )
    {
-    int   i,k;
     int   numArgs;
-    char  *linePtr;
     char  *otherAlph;
     char  *p;
 
@@ -1200,7 +1203,6 @@ int   getYesno(
    ,int   ynDefault		/* <r> default:  1=Y  0=N		*/
    )
    {
-    int   i,k;
     int   opt;
     int   sts;
     char  *linePtr;
@@ -1264,7 +1266,7 @@ int   getCmd(
    ,int   flags			/* <r> Flags: 1=NoMsg			*/
    )
    {
-    int   i,k;
+    int   k;
     char  *p;
     char  cmdString[80];
     static char  string[32];
@@ -1300,8 +1302,7 @@ int   getLine(
    ,struct descriptor  *dsc_val		/* <m> string returned		*/
    )
    {
-    int   i,k;
-    int   sts;
+    int   k;
     char  *linePtr;
     static int   incr = 16;	/* mem increment for dynamic strings	*/
 

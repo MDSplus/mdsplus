@@ -60,9 +60,7 @@ static int   init_value(	/* Return: initial "processing" status	*/
     struct cduValue  *val	/* <m> value structure			*/
    )
    {
-    int   i,k;
     int   sts;
-    struct cduChain  *chain,*chainNext;
     struct cduKeyword  *key;
 
     sts = 0;
@@ -108,11 +106,10 @@ static int   initLookupTable(	/* Return: num entries in cmd-lookup table*/
    ,struct cmd_struct  **addrTable /* <m> start of "lookup" table	*/
    )
    {
-    int   i,k;
+    int   i;
     int   icnt;
     int   maxEntities;
     struct cduEntity  *e;
-    struct cduVerb  *v;
     struct cmd_struct  *entLookup;
 
     if (!entTop)
@@ -170,11 +167,10 @@ static int   initEntityTable(	/* Return: num entities defined		*/
    ,struct cmd_struct  **addrTable /* <m> top of entity "lookup" table	*/
    )
    {
-    int   i,k;
+    int   i;
     int   icnt;
     int   sts;
     struct cduEntity  *e;
-    struct cduVerb  *v;
 
     if (!entTop)
         return(0);
@@ -203,13 +199,12 @@ static int   init_table(	/* Return: num verbs defined		*/
     struct cduVerb  *table	/* <r> addr of command table		*/
    )
    {
-    int   i,k;
+    int   i;
     int   icnt;
-    struct cmd_struct  *cmd;
     struct cduVerb  *v;
 
     if (table == currentTable)
-        return;
+        return 1;
 
     currentTable = table;
 
@@ -242,7 +237,7 @@ static int   init_table(	/* Return: num verbs defined		*/
         cmdVerb[i].cmdL_id = i;
         cmdVerb[i].cmdA_string = v->vrbA_name;
        }
-    return;
+    return 1;
    }
 
 
@@ -313,7 +308,6 @@ static int   readCliValueList(	/* Return: status			*/
    ,struct cduValue  *val	/* <m> the value struct			*/
    )
    {
-    int   i,k;
     int   sts;
     char  *p;
 
@@ -355,11 +349,10 @@ static long  set_value(		/* Return: CLI_STS_xxxx			*/
    ,struct cduValue  *val	/* <m> the value struct			*/
    )
    {
-    int   i,k;
     int   keycnt;
     int   opt;
     int   sts;
-    char  *p,*p2;
+    char  *p;
     struct cmd_struct  *cmd;
     struct cduKeyword  *key;
     static DYNAMIC_DESCRIPTOR(dsc_temp);
@@ -473,7 +466,6 @@ static long  cli_process_qualifier(	/* Return: status		*/
    )
 
    {
-    int   i,k;
     int   opt;
     char  *p;
     struct cduQualifier  *qual;
@@ -535,8 +527,6 @@ static long  cli_process_parameter(	/* Return: status		*/
    )
 
    {
-    int   i,k;
-    int   opt;
     int   sts;
     struct cduParam  *prm;
     struct cduVerb  *v;
@@ -566,7 +556,6 @@ static int   cli_process_verb(		/* Return: status		*/
    ,char  prompt[]		/* <r> prompt string, if req'd		*/
    )
    {
-    int   i,k;
     int   sts;
     char  *p;
     struct cduVerb  *v;		/* current syntax			*/
@@ -610,7 +599,7 @@ static void  make_entityString(
    ,int   maxlen		/* <r> sizeof(entityString)		*/
    )
    {
-    int   i,k;
+    int   k;
     char  *p;
     struct descriptor  *dsc;
 
@@ -649,11 +638,11 @@ static struct cduEntity  *find_entity(	/* Return: addr of struct	*/
    ,struct cduEntity  entityList[]	/* <r> params, quals, or keywds	*/
    )
    {
-    int   i,k;
+    int   k;
     char  *p;
     char  *t;
     struct cduValue  *val;
-    struct cduEntity  *e,*kwd;
+    struct cduEntity  *e;
 
     if (!entityList)
         return(0);
@@ -743,10 +732,9 @@ int   cli_dcl_parse(		/* Returns: status			*/
    ,void  *uprompt		/* <r:opt> descr or c-string		*/
    )
    {
-    int   i,k;
+    int   k;
     int   opt;
     int   sts;
-    int   tokenLen;
     char  *p;
     char  prompt[48];
     struct cduParam  *prm;
@@ -884,10 +872,8 @@ int   cli_present(		/* Return: status			*/
     void  *entity		/* <r> entity name: dsc or c-string	*/
    )
    {
-    int   i,k;
     char  entityString[128];
     struct cduEntity  *e;
-    struct cduValue  *val;
 
     if (!currentSyntax)
         return(CLI_STS_IVREQTYP);
@@ -914,7 +900,7 @@ int   cli_get_value(		/* Return: status			*/
    ,struct descriptor  *dsc_ret	/* <w> return value descriptor		*/
    )
    {
-    int   i,k;
+    int   k;
     int   sts;
     char  entityString[128];
     char  *p,*p2;

@@ -1,10 +1,15 @@
 #include        <stdio.h>
 #include        <string.h>
+#include		<stdlib.h>
+#include		<ctype.h>
 #include        "dasutil.h"
 
-#ifdef vms
+#if defined(vms)
 #include        <unistd.h>
 #include        <smg$routines.h>
+#elif defined(_WIN32)
+#include <io.h>
+#define read _read
 #else
 #include        <malloc.h>
 #ifdef CURSES
@@ -71,7 +76,7 @@ static int   decode_escape_sequence(
     int   fd				/* <r> input file descr		*/
    )
    {
-    int   i,k;
+    int   i;
     char  c;
     char  escSequence[32];
     char  *p;
@@ -145,7 +150,6 @@ static char  *get_history_line(	/* Returns:  ptr to cmd from history[]	*/
     int   kchar		/* <r> key input from user		*/
    )
    {
-    int   i,k;
     int   idx;
     int   incr;
 
@@ -225,7 +229,9 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
     char  c;
     char  line[256];
     char  displayLine[256];
+#if !defined(_WIN32)
     struct termios  tt,ttsave;
+#endif
 #endif
 
     fd = fileno(fp);
@@ -306,6 +312,7 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
 		/*=======================================================
 		 * Save tty settings;  reset tty for command-line editing.
 		 *======================================================*/
+#if !defined(_WIN32)
     sts = tcgetattr(fd,&tt);
     memcpy(&ttsave,&tt,sizeof(ttsave));	/* save copy of tt	*/
     tt.c_lflag &= ~ICANON;
@@ -319,7 +326,7 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
         usrline[0] = '\0';
         return(0);
        }
-
+#endif
 		/*=======================================================
 		 * Edit input line from tty ...
 		 *======================================================*/
@@ -450,9 +457,11 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
            }
        }
     irecall = HISTORY_NOT_ACTIVE;
+#if !defined(_WIN32)
     sts = tcsetattr(fd,TCSANOW,&ttsave);
     if (sts)
         perror("Error from tcseattr");
+#endif
     strncpy(usrline,line,maxlen);
     printf("\n");
 #endif

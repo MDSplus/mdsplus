@@ -6,8 +6,6 @@
 #include        <lib$routines.h>
 #include        <ssdef.h>
 #include        <time.h>
-#else
-#include        <sys/time.h>
 #endif
 
 /**********************************************************************
@@ -31,7 +29,7 @@ static struct _mdsdcl_ctrl *ctrl = &MDSDCL_COMMON;
 	 *****************************************************************/
 static int   closeIndirectLevel()
    {
-    int   i,k;
+    int   i;
     struct _mdsdcl_io  *io;
     struct _mdsdcl_macro  *macro;
 
@@ -127,7 +125,7 @@ static int   readInputLine(	/* Return: status			*/
    ,struct descriptor  *dsc_cmd		/* <w> new command line		*/
    )
    {
-    int   i,k;
+    int   k;
     int   sts;
     char  *p;
     FILE  *fp;
@@ -304,11 +302,8 @@ static int   really_get_input(		/* Return: status		*/
    ,int   flag				/* <r> 1 for "no-substitute"	*/
    )
    {
-    int   i,k;
     int   sts;
     char  *p;
-    char  prompt[32];
-    struct descriptor  *dsc;
     struct _mdsdcl_io  *io;
 
 		/*--------------------------------------------------------

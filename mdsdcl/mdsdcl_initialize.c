@@ -6,6 +6,10 @@
 #include        <unistd.h>
 #include        <lib$routines.h>
 #endif
+#ifdef _WIN32
+#include <io.h>
+#define isatty(a) _isatty(a)
+#endif
 
 /***********************************************************************
 * MDSDCL_INITIALIZE.C --

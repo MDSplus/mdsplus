@@ -34,6 +34,7 @@ MdsGet1DxS
 MdsGetCurrentShotId
 MdsSetCurrentShotId
 MdsGetMsg
+MdsMsg
 MdsXpand
 StrAppend
 StrCaseBlindCompare
@@ -53,3 +54,15 @@ StrRight
 StrTranslate
 StrTrim
 StrUpcase
+str_append
+str_concat
+str_copy_dx
+str_dupl_char
+str_element
+str_free1_dx
+str_prefix
+str_replace
+str_trim
+pgmname
+dasmsg
+set_pgmname

@@ -11,6 +11,7 @@
 *
 ************************************************************************/
 
+extern int TdiDecompile();
 
 #ifdef vms
 #define TdiDecompile  tdi$decompile

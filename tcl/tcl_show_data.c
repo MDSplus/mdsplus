@@ -22,8 +22,9 @@ char  *MdsDtypeString(char);
 
 #ifdef vms
 #define TdiOpcodeString  tdi$opcode_string
-extern int  tdi$opcode_string();
 #endif
+
+extern int TdiOpcodeString();
 
 
 

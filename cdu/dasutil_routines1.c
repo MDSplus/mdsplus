@@ -144,7 +144,7 @@ int cmd_lookup(
 			/*------------------------------------------------
 			 * Exact match ?
 			 *-----------------------------------------------*/
-            if (k == strlen(cmdA_string))
+            if (k == (int)strlen(cmdA_string))
                {
                 icount = 1;
                 isave = i;
@@ -247,13 +247,16 @@ char  *s,*t;
 **************************************************************************/
 
 
-#ifdef vms
+#include        <errno.h>
+#if defined(vms)
 #include        <lib$routines.h>
+#elif defined(_WIN32)
+#include <time.h>
+static clock_t cpu_start;
+static time_t time_start;
 #else
 #include        <sys/time.h>
 #include        <sys/resource.h>
-#include        <errno.h>
-
 static struct rusage  base;
 static struct rusage  rnow;
 static struct timeval  startTime;
@@ -267,8 +270,11 @@ static struct timeval  nowTime;
 	 *****************************************************************/
 int   init_timer()
    {
-#ifdef vms
+#if defined(vms)
     lib$init_timer();
+#elif defined(_WIN32)
+	cpu_start = clock();
+	time_start = time(&time_start);
 #else
     gettimeofday(&startTime,0);
     if (getrusage(RUSAGE_SELF,&base))
@@ -284,9 +290,13 @@ int   init_timer()
 	 ****************************************************************/
 int   show_timer()
    {
-#ifdef vms
+#if defined(vms)
     lib$show_timer();
     printf("\n");
+#elif defined(_WIN32)
+	time_t now;
+	now = time(&now);
+	fprintf(stderr,"elapsed=%g cpu=%g",difftime(now,time_start),(clock()-cpu_start)/CLOCKS_PER_SEC );
 #else
     long emsec,umsec,smsec;		/* milliseconds			*/
 
@@ -416,7 +426,7 @@ long  bcd2i(
     unsigned long  bcd	/* <r> bcd val, 4 bits per digit, max 8 digits	*/
    )
    {
-    int   i,ival;
+    int   ival;
 
     if (bcd)
         ival = bcd2i(bcd>>4)*10 + (bcd & 0x0F);
@@ -536,7 +546,7 @@ int   strtrim(
    )
    {
     char  *s,*t;
-    int   i,k;
+    int   k;
     t = to;
     s = from ? from : to;
 
@@ -564,7 +574,7 @@ int   strntrim(
    )
    {
     char  *s,*t;
-    int   i,k;
+    int   k;
 
     t = to;
     s = from ? from : to;
@@ -864,8 +874,7 @@ int   doubleToken(
     double *uval		/* <w:opt> return double value here	*/
    )
    {
-    char  *p,*p2;
-    int   n;
+    char  *p;
     char  *token;
     long  tknLen;
     char  utilString[80];
@@ -996,7 +1005,7 @@ int   deltatimeToken(		/* Returns: status			*/
    ,long  *uval			/* <w:opt> return deltatime <sec> here	*/
    )
    {
-    int   i,k;
+    int   k;
     long  kk;
     int   day,hr,min,sec,hund;
     int   sts;
@@ -1532,6 +1541,11 @@ int   yesno(
 	/***************************************************************
 	 * interactive:
 	 ***************************************************************/
+#ifdef _WIN32
+#include <io.h>
+#define isatty _isatty
+#endif
+
 int   interactive()
    {
     return(isatty(fileno(stdin)));

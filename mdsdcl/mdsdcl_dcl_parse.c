@@ -5,8 +5,6 @@
 #ifdef vms
 #include        <lib$routines.h>
 #include        <ssdef.h>
-#else
-#include        <sys/time.h>
 #endif
 
 /**********************************************************************
@@ -31,7 +29,6 @@ int   mdsdcl_dcl_parse(		/* Returns CLI_STS_xxx status	*/
    ,int   tabidx			/* <r> cmd table idx, 1-based	*/
    )
    {
-    int   i,k;
     int   indirect_flag;
     int   nbytes;
     int   sts;

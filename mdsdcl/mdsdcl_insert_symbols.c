@@ -6,8 +6,6 @@
 #include        <lib$routines.h>
 #include        <ssdef.h>
 #include        <time.h>
-#else
-#include        <sys/time.h>
 #endif
 
 /**********************************************************************
@@ -94,10 +92,9 @@ void  mdsdcl_insert_symbols(		/* Returns: void		*/
    ,struct descriptor  *dsc_prmList	/* <r> parameter list		*/
    )
    {
-    int   i,k;
     int   doubleQuotes;
     int   offsetStart;
-    char  *p,*p2;
+    char  *p;
 
     p = dsc_cmdline->dscA_pointer;
     if (!p)  return;

@@ -107,4 +107,5 @@ main(
 /*        if ((~sts & 01) && sts!=CLI_STS_NOCOMD)
 /*            fprintf(stderr,"--> error status %08X\n\n\n",sts);  /*  */
        }
+	return 1;
    }						/*  */

@@ -19,7 +19,7 @@
 ***********************************************************************/
 
 
-extern int   debugCdu;		/* set to 1 for extra printout		*/
+int   debugCdu = 0;		/* set to 1 for extra printout		*/
 
 
 static FILE  *fp;
@@ -68,7 +68,6 @@ static void  writeExtern(
     char  name[]		/* <r> name of extern value		*/
    )
    {
-    int   i,k;
     char  ucname[32];		/* upper-case version of "name"		*/
     struct stringlink  {
         struct stringlink  *flink;
@@ -108,7 +107,6 @@ static void  writeValue(
    ,struct valueClause  *val	/* <r> addr of value struct		*/
    )
    {
-    int   i,k;
     char  textDefault[64];
 
     if (!val)
@@ -141,7 +139,6 @@ static void  writeUserType(
     char  name[]		/* <r> userType name			*/
    )
    {
-    int   i,k;
     int   icnt;
     char  prefix[32];
     char  textLabel[64],textSyntax[64],textValue[64];
@@ -205,7 +202,6 @@ static void  writeParams(
    ,struct verblist  *v		/* <r> the verb				*/
    )
    {
-    int   i,k;
     int   icnt;
     char  prefix[32];
     char  textLabel[64],textPrompt[64],textValue[64];
@@ -259,7 +255,6 @@ static void  writeQualifiers(
    ,struct verblist  *v		/* <r> the verb				*/
    )
    {
-    int   i,k;
     int   icnt;
     char  prefix[32];
     char  textLabel[64],textSyntax[64],textValue[64];
@@ -315,7 +310,6 @@ static void  writeSyntax(
     char  name[]		/* <r> name for user-defined syntax	*/
    )
    {
-    int   i,k;
     char  prefix[32];
     char  textParameters[64],textQualifiers[64];
     struct verblist  *v;
@@ -368,7 +362,6 @@ int   writeProtoUserType(	/* Returns: status			*/
     char  name[]		/* <r> userType name			*/
    )
    {
-    int   i,k;
     int   icnt;
 
     for (icnt=0 ; findKeywordByIdx(name,icnt) ; icnt++)
@@ -390,7 +383,6 @@ void  cdu_write(
     int   i,k;
     int   icnt;
     char  filename[128];
-    char  *p;
     char  prefix[32];
     char  textParameters[64];
     char  textQualifiers[64];

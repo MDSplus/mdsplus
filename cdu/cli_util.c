@@ -42,7 +42,7 @@ int   cli_error(		/* Display only				*/
    ,char  msg[]			/* <r> message to display		*/
    )
    {
-    int   i,k;
+    int   k;
     char  fmt[20];
     char  *p;
     struct descriptor  *dsc;
@@ -78,7 +78,7 @@ int   cliToken(
    ,long  flags			/* <r> cli flags, describing data type	*/
    )
    {
-    int   i,k;
+    int   k;
     int   sts;
     int   typeflag;
     char  c;
@@ -176,7 +176,7 @@ struct cmd_struct  *make_lookup_keyword( /* Return: addr of cmd_struct	*/
     struct cduKeyword  keywordList[]	/* <r> keyword list		*/
    )
    {
-    int   i,k;
+    int   i;
     int   icnt;
     struct cmd_struct  *cmd;
     struct cduKeyword  *key;

@@ -36,9 +36,7 @@ int mdsdcl_do_command(
    )
    {
     int tblidx;
-    int len;
     int sts;
-    int save_flag;
     int tried_indirect = 0;
     struct _mdsdcl_io  *io;
     static char  doMacro[12];
