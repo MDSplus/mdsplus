@@ -19,10 +19,10 @@ public fun VMEWaves__trigger(as_is _nid, optional _method)
     execute(_cmd);
     for(_chan = 0; _chan < 32; _chan++)
     {
-  	if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 + (_chan * _K_NODES_PER_CHANNEL))))
-	{
-	    MdsValue('waveform->trigger($1)', _chan);
-	}
+  		if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 + (_chan * _K_NODES_PER_CHANNEL))))
+		{
+			MdsValue('waveform->trigger($1)', _chan);
+		}
     }
     MdsDisconnect();
     return (1);
