@@ -1487,9 +1487,10 @@ public class Waveform extends Canvas
 	    waveform_signal.Traslate(pan_delta_x, pan_delta_y, wm.x_log, wm.y_log);
 	    wm = new WaveformMetrics(MaxXSignal(), MinXSignal(), MaxYSignal(), 
 			MinYSignal(), curr_display_limits, d, wm.x_log, wm.y_log);
+
         if(reversed)
-            g.setColor(Color.black);
-        else
+	        g.setColor(Color.black);
+	    else    
 	        g.setColor(Color.white);
 	    g.fillRect(1, 1, d.width-2, d.height-2);
 	    g.setColor(Color.black);

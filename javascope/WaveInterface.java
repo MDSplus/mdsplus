@@ -635,25 +635,25 @@ public class WaveInterface
 	
 	if(in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0)
 	{
-		curr_y = dp.GetFloatArray(in_y[curr_wave]);
+		curr_y = dp.GetFloatArray("fs_float(("+in_y[curr_wave]+"))");
 	
 	    if(curr_y != null && curr_y.length > 1 && in_up_err != null && 
 		    in_up_err[curr_wave] != null && (in_up_err[curr_wave].trim()).length() != 0)
 	    {
-		    up_err = dp.GetFloatArray(in_up_err[curr_wave]);
+		    up_err = dp.GetFloatArray("fs_float((" + in_up_err[curr_wave]+"))");
 		if(up_err == null || up_err.length <= 1)
 			curr_y = null;			
 	    }
 	    if(curr_y != null && in_low_err != null && 
 		    in_low_err[curr_wave] != null && (in_low_err[curr_wave].trim()).length() != 0)
 	    {
-		    low_err = dp.GetFloatArray(in_low_err[curr_wave]);
+		    low_err = dp.GetFloatArray("fs_float((" + in_low_err[curr_wave] + "))");
 		if(low_err == null || low_err.length <= 1)
 			curr_y = null;			
 	    }
 	    if(curr_y != null) 
 	    {
-		    curr_x = dp.GetFloatArray(in_x[curr_wave]);
+		    curr_x = dp.GetFloatArray("fs_float((" + in_x[curr_wave]+"))");
 		    if(curr_x == null || curr_x.length <= 1)
 			curr_y = null;
 	    }
@@ -661,9 +661,9 @@ public class WaveInterface
 	else // Campo X non definito
 	{
 	    if(full_flag)
-		curr_y = dp.GetFloatArray(in_y[curr_wave]);
+		curr_y = dp.GetFloatArray("fs_float((" + in_y[curr_wave]+"))");
 	    else
-		curr_y = dp.GetFloatArray("JavaResample("+ "FLOAT("+in_y[curr_wave]+ "), "+
+		curr_y = dp.GetFloatArray("JavaResample("+ "FS_FLOAT("+in_y[curr_wave]+ "), "+
 		    "FLOAT(DIM_OF("+in_y[curr_wave]+")), "+ limits + ")");
 		
 		
@@ -671,9 +671,9 @@ public class WaveInterface
 		    && (in_up_err[curr_wave].trim()).length() != 0)
 	    {
 		if(full_flag)
-		    up_err = dp.GetFloatArray(in_up_err[curr_wave]);
+		    up_err = dp.GetFloatArray("fs_float((" + in_up_err[curr_wave]+"))");
 		else
-		    up_err = dp.GetFloatArray("JavaResample(FLOAT("+ in_up_err[curr_wave]+ "), DIM_OF(FLOAT("+
+		    up_err = dp.GetFloatArray("JavaResample(FS_FLOAT("+ in_up_err[curr_wave]+ "), DIM_OF(FLOAT("+
 			in_y[curr_wave] + ")), "+limits +")");
 		if(up_err == null || up_err.length <= 1)
 		    curr_y = null;
@@ -683,9 +683,9 @@ public class WaveInterface
 		    in_low_err[curr_wave] != null && (in_low_err[curr_wave].trim()).length() != 0)
 	    {
 		if(full_flag)
-		    low_err = dp.GetFloatArray(in_low_err[curr_wave]);
+		    low_err = dp.GetFloatArray("fs_float((" + in_low_err[curr_wave]+"))");
 		else
-		    low_err = dp.GetFloatArray("JavaResample(FLOAT("+in_low_err[curr_wave] +
+		    low_err = dp.GetFloatArray("JavaResample(FS_FLOAT("+in_low_err[curr_wave] +
 			 "), DIM_OF(FLOAT("+ in_y[curr_wave] + ")),"+ limits + ")");
 			
 		if(low_err == null || low_err.length <= 1)
@@ -696,10 +696,10 @@ public class WaveInterface
 	    {
 		if(full_flag)
 //		    curr_x = dp.GetFloatArray("DIM_OF("+in_y[curr_wave]+")");
-		    curr_x = dp.GetFloatArray(dp.GetXSpecification(in_y[curr_wave]));
+		    curr_x = dp.GetFloatArray("fs_float((" + dp.GetXSpecification(in_y[curr_wave])+"))");
 		else
 		{
-		    curr_x = dp.GetFloatArray("JavaDim(FLOAT(DIM_OF("+ in_y[curr_wave]+ 
+		    curr_x = dp.GetFloatArray("JavaDim(FS_FLOAT(DIM_OF("+ in_y[curr_wave]+ 
 			")), "+ limits + ")"); 
 		    if(curr_x != null && curr_x.length > 1)
 		    {

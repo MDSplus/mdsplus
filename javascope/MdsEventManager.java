@@ -55,7 +55,7 @@ class MdsEventManager {
             if(!((EventItem)mdsEventList.elementAt(i)).listener.contains((Object)l))
             {
                 ((EventItem)mdsEventList.elementAt(i)).listener.addElement(l);
-                System.out.println("Add listener to event "+event_name);
+//                System.out.println("Add listener to event "+event_name);
             }
         }     
 

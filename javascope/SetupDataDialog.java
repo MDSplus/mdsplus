@@ -644,23 +644,23 @@ import java.util.Vector;
     	    
 	    for(int j = 0; j < num_sig; j += shots.length)
 	    {	    		    
-		for(int i = 0; i < shots.length; i++)
-		{
-		    if(i < list_num_shot) {
-			signals.setElementAt(signals.elementAt(j+i),k);
-		    } else {
-			Data ws = new Data();
-			ws.copy(((Data)signals.elementAt(j)));
-			color_idx = (color_idx + 1) % main_scope.color_dialog.GetNumColor();
-			ws.color_idx = color_idx;
-			signals.insertElementAt(ws, k);
+		    for(int i = 0; i < shots.length; i++)
+		    {
+		        if(i < list_num_shot) {
+			        signals.setElementAt(signals.elementAt(j+i),k);
+		        } else {
+			        Data ws = new Data();
+			        ws.copy(((Data)signals.elementAt(j)));
+			        color_idx = (color_idx + 1) % main_scope.color_dialog.GetNumColor();
+			        ws.color_idx = color_idx;
+			        signals.insertElementAt(ws, k);
+		        }
+		        ((Data)signals.elementAt(k)).shot = shots[i];
+		        k++;
 		    }
-		    ((Data)signals.elementAt(k)).shot = shots[i];
-		    k++;
-		}
-		for(l = shots.length; l < list_num_shot; l++)
-		    signals.removeElementAt(j + shots.length);
-	    }
+		    for(l = shots.length; l < list_num_shot; l++)
+		        signals.removeElementAt(j + shots.length);
+	     }
        } 
 
        public void updateSignals()
@@ -698,11 +698,12 @@ import java.util.Vector;
          
 	 public void signalListRefresh()
 	 {
-	    if(sig_list.getItemCount() != 0)
+//	    if(sig_list.getItemCount() > 1)
 		sig_list.removeAll();
 	    sig_list.add("Select this item to add new expression");
+        if(signals.size() == 0) return;
 	    for(int i = 0; i < signals.size(); i++)
-		signalListAdd((Data)signals.elementAt(i));
+		    signalListAdd((Data)signals.elementAt(i));
 	    signalSelect(sel_signal); 	
 	  } 
 
@@ -741,14 +742,15 @@ import java.util.Vector;
 
       public void updateList()
       {
-    	    if(evaluateShotList(shot.getText())) {
-		signalsRefresh();
-		signalListRefresh();
-	    }
+    	    if(evaluateShotList(shot.getText())) 
+    	    {
+		        signalsRefresh();
+		        signalListRefresh();
+	        }
     	    if(sel_signal == -1)	    
-		signalList.addSignals();
-	    else
-		signalList.updateSignals();			    	
+		        signalList.addSignals();
+	        else
+		        signalList.updateSignals();			    	
       }
  
      
