@@ -14,7 +14,7 @@
 #include "MdsLib.h"
 extern int TdiExecute();
 extern int TdiData();
-static short ArgLen(struct descrip *d);
+short ArgLen(struct descrip *d);
 static EMPTYXD(mdsValueAnswer);
 
 static int next = 0;
