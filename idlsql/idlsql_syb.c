@@ -112,11 +112,11 @@ typedef struct {
 static IDL_VPTR	vpcount, vperror, vpstatus, vptext;
 static IDL_VARIABLE result = {IDL_TYP_LONG, 0};
 static IDL_STRING	EMPTYSTRING = {0,0,0};
-static double	HUGE_D = 1.7e+38;
-static float	HUGE_F = 1.7f+38;
-static long	HUGE_L = 0x7fffffff;
+static const double	HUGE_D = 1.7e+38;
+static const float	HUGE_F = (float)1.7e+38;
+static const long	HUGE_L = 0x7fffffff;
 static long      quiet;
-static short	HUGE_W = 0x7fff;
+static const short	HUGE_W = 0x7fff;
 /*********************************************************/
 static void IDLresize(k, dst)
 long	k;
