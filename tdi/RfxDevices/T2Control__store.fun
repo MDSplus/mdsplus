@@ -17,9 +17,10 @@ public fun T2Control__store(as_is _nid, optional _method)
     private _N_PAR1_NAME = 13;
     private _N_PAR1_VALUE = 14; 
 
-	private _N_INPUT_1 = 98;
-	private _N_OUTPUT_1 = 162;
-	private _N_MODES_1 = 194;
+	private _N_INPUT_1 = 110;
+	private _N_OUTPUT_1 = 174;
+	private _N_MODES_1 = 206;
+	private _N_FILTERED_1 = 258;
 
 
 write(*, 'T2Control store');
@@ -49,6 +50,18 @@ write(*, 'T2Control store');
 	{
 			_sig_nid =  DevHead(_nid) + _N_INPUT_1  + _c;
 			_data = MdsValue('Feedback->getAdcSignal:dsc($1, $2)', _c / 64, mod(_c,64));
+			_status = DevPutSignal(_sig_nid, 0, 10/2048., word(_data), 0, _n_samples, _dim);
+			if(! _status)
+			{
+				write(*, 'Error writing data in pulse file for channel ', _c);
+				DevLogErr(_nid, 'Error writing data in pulse file ');
+
+			}
+	}
+	for(_c = 0; _c < 64; _c++)
+	{
+			_sig_nid =  DevHead(_nid) + _N_FILTERED_1  + _c;
+			_data = MdsValue('Feedback->getFilteredAdcSignal:dsc($1, $2)', _c / 64, mod(_c,64));
 			_status = DevPutSignal(_sig_nid, 0, 10/2048., word(_data), 0, _n_samples, _dim);
 			if(! _status)
 			{
