@@ -1781,13 +1781,15 @@ object dsNidOptionMenu2 : user_defined procedure XmdsCreateNidOptionMenu {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
 	compound_string("\"ext\""),
-	compound_string(" \"star\""),
-	compound_string(" \"int\""),
+	compound_string("\"star\""),
+	compound_string("\"int\""),
 	compound_string("\"1\""),
-	compound_string(" \"2\""),
-	compound_string(" \"3\""),
-	compound_string(" \"4\""),
-	compound_string(" \"5\', \"6\", \"7\""));
+	compound_string("\"2\""),
+	compound_string("\"3\""),
+	compound_string("\"4\""),
+	compound_string("\"5\""),
+	compound_string("\"6\""),
+	compound_string("\"7\""));
         XmNlabelString = compound_string("Trigger Source:");
         XmdsNputOnApply = true;
         XmdsNnidOffset = TR10_TRIG_SRC;
