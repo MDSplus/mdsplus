@@ -424,7 +424,17 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
           LoadChar(in_ptr->class,out_ptr+3);
           LoadInt(dscsize,out_ptr+4);
           out_ptr += 8;
-          memcpy(out_ptr,((char *)in_ptr) + offset(in_ptr->pointer), in_ptr->length); 
+          memcpy(out_ptr,((char *)in_ptr) + offset(in_ptr->pointer), in_ptr->length);
+          if (in_ptr->dtype != DTYPE_T)
+	  {
+	    switch (in_ptr->length)
+	    {
+	    case 2: *(short *)out_ptr = swapshort(out_ptr); break;
+            case 4: *(int *)out_ptr = swapint(out_ptr); break;
+            case 8: *(int *)out_ptr = swapint(out_ptr); 
+	            ((int *)out_ptr)[1] = swapint(out_ptr + sizeof(int)); break;
+	    }
+	  }
           out_ptr += in_ptr->length;
 	}
 	bytes_out = 8 + in_ptr->length;
@@ -532,6 +542,26 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
             }
           }
           memcpy(out_ptr,((char *)inp) + offset(inp->pointer),inp->arsize);
+          if (in_ptr->dtype != DTYPE_T)
+	  {
+            unsigned int i;
+            switch (in_ptr->length)
+	    {
+            case 2:
+              { short *ptr;
+                for (i=0,ptr = (short *)out_ptr; i < inp->arsize; i += sizeof(*ptr),ptr++)
+                  *ptr = swapshort((char *)ptr);
+              }
+              break;
+            case 4:
+            case 8:
+              { int *ptr;
+                for (i=0,ptr=(int *)out_ptr; i < inp->arsize; i += sizeof(*ptr),ptr++)
+                  *ptr = swapint((char *)ptr);
+              }
+              break;
+            }
+          }
           out_ptr += inp->arsize;
         }
 	bytes_out = 16
@@ -685,7 +715,7 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
   return status;
 }
 
-static int Dsc2Rec(struct descriptor *inp, struct descriptor_xd *out_dsc_ptr)
+static int Dsc2Rec(struct descriptor *inp, struct descriptor_xd *out_dsc_ptr, unsigned int *reclen)
 {
   unsigned int size_out;
   unsigned int size_in;
@@ -696,7 +726,7 @@ static int Dsc2Rec(struct descriptor *inp, struct descriptor_xd *out_dsc_ptr)
   {
     unsigned short nlen = 1;
     array out_template = {1,DTYPE_B,CLASS_A,0,0,0,{0,1,1,0,0},1,0};
-    out_template.arsize = size_out;
+    out_template.arsize = *reclen = size_out;
     status = MdsGet1DxA((struct descriptor_a *)&out_template, &nlen, (unsigned char *) &dsc_dtype, out_dsc_ptr);
     if (status & 1)
     {
@@ -878,10 +908,9 @@ int MdsSerializeDscOutZ(struct descriptor *in,
 	  tempxd = *out;
 	  out->l_length = 0;
 	  out->pointer = 0;
-	  Dsc2Rec(tempxd.pointer,out);
+	  Dsc2Rec(tempxd.pointer,out,&reclen);
 	  MdsFree1Dx(&tempxd, NULL);
 	}
-	reclen = out->l_length;
       }
     }
     else

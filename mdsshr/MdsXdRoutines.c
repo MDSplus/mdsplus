@@ -107,8 +107,6 @@ typedef struct _bounds { int l; int u; } BOUNDS;
 #endif
 
 
-static int compressible;
-
 static struct descriptor *FixedArray();
 
 /*-----------------------------------------------------------------
@@ -123,7 +121,7 @@ static int copy_dx(
 		               int (*fixup_nid) (),
 		               void  *fixup_nid_arg,
 		               int (*fixup_path) (),
-		               void  *fixup_path_arg)
+		               void  *fixup_path_arg, int *compressible)
 {
   static struct descriptor_d path = {0, DTYPE_T, CLASS_D, 0};
   unsigned int status = 1,
@@ -229,7 +227,7 @@ static int copy_dx(
 	    status = copy_dx((struct descriptor_xd *) pi->dscptrs[j],
 			     po ? (struct descriptor_xd *) ((char *) po + bytes) : 0,
 			     &size, fixup_nid, fixup_nid_arg,
-			     fixup_path, fixup_path_arg);
+			     fixup_path, fixup_path_arg, compressible);
 	    if (po)
 	      po->dscptrs[j] = size ? (struct descriptor *) ((char *) po + bytes) : 0;
 	    bytes = align(bytes + size, sizeof(void *));
@@ -254,7 +252,7 @@ static int copy_dx(
 	}
 	bytes = align(bytes + pi->arsize, sizeof(void *));
 	if (pi->arsize > compression_threshold)
-	  compressible = 1;
+	  *compressible = 1;
         free(pi);
       }
       break;
@@ -279,7 +277,7 @@ static int copy_dx(
 	    po->a0 = po->pointer + (pi->a0 - pi->pointer);
 	}
 	if (pi->arsize > compression_threshold)
-	  compressible = 1;
+	  *compressible = 1;
       }
       break;
 
@@ -310,7 +308,7 @@ static int copy_dx(
 	{
 	  status = copy_dx((struct descriptor_xd *) * pdi++,
 			   po ? (struct descriptor_xd *) ((char *) po + bytes) : 0,
-			   &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg);
+			   &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg, compressible);
 	  if (po)
 	    *pdo++ = size ? (struct descriptor *) ((char *) po + bytes) : 0;
 	  bytes = align(bytes + size, sizeof(void *));
@@ -341,7 +339,7 @@ static int copy_dx(
 	{
 	  status = copy_dx((struct descriptor_xd *) pi->pointer,
 			   po ? (struct descriptor_xd *) (po->pointer) : 0,
-			   &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg);
+			   &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg, compressible);
 	  bytes = align(bytes + size, sizeof(void *));
 	}
       }
@@ -370,15 +368,16 @@ int MdsCopyDxXdZ(struct descriptor *in_dsc_ptr, struct descriptor_xd *out_dsc_pt
 * a contiguous descriptor can be allocated.
 * If something to copy then do it, else clear.
 ************************************************/
-  compressible = 0;
-  status = copy_dx((struct descriptor_xd *) in_dsc_ptr, 0, &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg);
+  int compressible = 0;
+  status = copy_dx((struct descriptor_xd *) in_dsc_ptr, 0, &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg,
+                   &compressible);
   if (status & 1 && size)
   {
     status = MdsGet1Dx(&size, (unsigned char *) &dsc_dtype, out_dsc_ptr, zone);
     if (status & 1)
       status = copy_dx((struct descriptor_xd *) in_dsc_ptr,
 		       (struct descriptor_xd *) out_dsc_ptr->pointer,
-		       &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg);
+		       &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg,&compressible);
     if (status & 1 && compressible)
       status = MdsCOMPRESSIBLE;
   }
