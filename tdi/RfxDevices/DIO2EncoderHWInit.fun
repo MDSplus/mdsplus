@@ -58,10 +58,11 @@ public fun DIO2EncoderHWInit(in _nid, in _board_id, in _ext_clock, in _events)
 
 write(*, 'OPEN');
 
-/* Reset module */
-	DIO2->DIO2_Reset(val(_handle));
+/* Reset module
 
-write(*, 'RESET');
+DIO2->DIO2_Reset(val(_handle));
+
+write(*, 'RESET');  */
 
 write(*, '----> ', _events);
 

@@ -54,7 +54,7 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 	_status = DIO2->DIO2_Cmd_TimingChannelDisarm(val(_handle),val(byte(255)));
 
 
-	_status = DIO2->DIO2_TH_SetTimingHighway(val(_handle), val(byte(1)), val(byte(1)));
+	/*_status = DIO2->DIO2_TH_SetTimingHighway(val(_handle), val(byte(1)), val(byte(1)));*/
 /* Set clock functions */
 	if(_ext_clock)
 	{
