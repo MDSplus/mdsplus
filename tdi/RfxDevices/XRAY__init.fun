@@ -104,15 +104,13 @@ public fun XRAY__init(as_is _nid, optional _method)
 		  _id = TomoChanId( _i+1, _enabled, XrayChMapping() );
 		  DevPut(_nid, _chan_nid + _N_CHAN_CHANNEL_ID, _id);            
 		  _chan_id = [_chan_id, _id];
-		  
-		  TomoTest(_id);
-
+		
 		  DevNodeCvt(_nid, _chan_nid + _N_CHAN_GAIN, [1, 2, 5, 10],[1,2,3,4], _gain = 1);
-		 _gain_id = [_gain_id, byte(_gain)];
+		  _gain_id = [_gain_id, byte(_gain)];
 
 
 		  DevNodeCvt(_nid, _chan_nid + _N_CHAN_FILTER, [2000, 5000, 20000, 50000, 100000, 200000, 0],[1,2,3,4,5,6,7], _filter = 1);
-		 _filter_id = [_filter_id, byte(_filter)];
+		  _filter_id = [_filter_id, byte(_filter)];
 
 
 		  DevNodeCvt(_nid, _chan_nid + _N_CHAN_BIAS, [0,1,2,4,6,8,10,12,14,16,18,20,22,24,26,28],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16], _bias = 0);
@@ -132,6 +130,11 @@ public fun XRAY__init(as_is _nid, optional _method)
 	_errors_1 = zero(_K_CHANNELS, 0);
 
 
+/*
+Inizializzazione degli amplificatori
+Si procede Opera sempre sul rack 1 in quanto su questo
+rack e' installata la scheda GPIB
+*/
 	_cmd = 'MdsConnect("'//_ip_addr_1//'")';
 	_status = execute(_cmd);
 	
@@ -144,8 +147,10 @@ public fun XRAY__init(as_is _nid, optional _method)
 	       _expr = "XrayHWInit(1, $, $, $, $, $, $)";  
 
 	       _errors_1 = MdsValue(_expr, _chan_id, _gain_id, _filter_id , _trans_id, _detector_id, _bias_id, 0);
+
 	       
 		MdsDisconnect();
+
 
 	}
 	else

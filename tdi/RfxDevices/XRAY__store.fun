@@ -37,7 +37,7 @@ write(*, "XRAY init");
 	}
 
 
-        _ip_addr_1 = if_error(data(DevNodeRef(_nid, _N_IP_ADDR_1)), "");
+    _ip_addr_1 = if_error(data(DevNodeRef(_nid, _N_IP_ADDR_1)), "");
 	if( _ip_addr_1 == "" )
 	{
     	    DevLogErr(_nid, "Invalid Crate IP specification rack 1");
@@ -70,8 +70,6 @@ write(*, "XRAY init");
 	                               [0,      1,     3,     4 ,    9,     24,   49,   99,   249], _reduction = 0);
 
 
-
-	
 	_start_idx = 0;
 	_end_idx = _acq_duration * _freq;
 
@@ -88,63 +86,61 @@ write(*, "XRAY init");
 		      _chan_nid = _N_CHANNEL_0 + _i * _K_NODES_PER_CHANNEL;
 
 		    if(DevIsOn(DevNodeRef(_nid, _chan_nid)))
-       		    { 
+       		{ 
 
 
-			_chan_id = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_CHANNEL_ID)), 0 );
-			_error   = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_STATUS)), 0 );
+				_chan_id = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_CHANNEL_ID)), 0 );
+				_error   = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_STATUS)), 0 );
 
-			if( TomoVMERack(_chan_id) == 0)
-			{
-
-				if(TomoChanIsActive(_chan_id) && _error == 0 )
+				if( TomoVMERack(_chan_id) == 0)
 				{
 
-
-					_c = TomoVMEChan(_chan_id);
-					_m = TomoVMEModule(_chan_id);
-
-write(*,"Rack 0 Canale ", _i, _m, _c);	
-
-
-					if(MdsValue("Tomo->vt10Triggered(val("//_m//"))") )
+					if(TomoChanIsActive(_chan_id) && _error == 0 )
 					{
-	
-  						_expr = "vt10GetData("//_m//","//_c//","//_end_idx//","//_reduction//")" ;  
-   						_data = MdsValue(_expr);
 
-						_dim = make_dim(make_window(_start_idx, _end_idx, _trig), make_range(*,*,float(1./_freq)));
 
-						_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
-			
+						_c = TomoVMEChan(_chan_id);
+						_m = TomoVMEModule(_chan_id);
 
-						_status = DevPutSignal(_sig_nid, 0, 5.0/2048., word(_data), 0, _end_idx - _start_idx, _dim);
+	write(*,"Rack 0 Canale ", _i, _m, _c);	
 
-				
-						if(! _status)
+
+						if(MdsValue("Tomo->vt10Triggered(val("//_m//"))") )
 						{
-							DevLogErr(_nid, 'Error writing data in pulse file');
-							abort();
+		
+  							_expr = "vt10GetData("//_m//","//_c//","//_end_idx//","//_reduction//")" ;  
+   							_data = MdsValue(_expr);
 
+							_dim = make_dim(make_window(_start_idx, _end_idx, _trig), make_range(*,*,float(1./_freq)));
+
+							_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
+				
+
+							_status = DevPutSignal(_sig_nid, 0, 5.0/2048., word(_data), 0, _end_idx - _start_idx, _dim);
+
+					
+							if(! _status)
+							{
+								DevLogErr(_nid, 'Error writing data in pulse file');
+								abort();
+
+							}
+						} 
+						else 
+						{
+							DevLogErr(_nid, 'Module '//_m//' was not Triggered');
 						}
-					} 
-					else 
-					{
-						DevLogErr(_nid, 'Module '//_m//' was not Triggered');
 					}
-
 				}
 			}
-		    }
 		}
    		MdsDisconnect();
 	}
-
 	else
-        {   	 
+    {   	 
 		DevLogErr(_nid, "Cannot connect to VME rack 0");
 	        abort();
-        }
+    }
 
 
 	_cmd = 'MdsConnect("'//_ip_addr_1//'")';
@@ -159,52 +155,51 @@ write(*,"Rack 0 Canale ", _i, _m, _c);
 		     _chan_nid = _N_CHANNEL_0 + _i * _K_NODES_PER_CHANNEL;
 
 		    if(DevIsOn(DevNodeRef(_nid, _chan_nid)))
-       		    { 
+       		{ 
 
-			_chan_id = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_CHANNEL_ID)), 0 );
-			_error   = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_STATUS)), 0 );
+				_chan_id = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_CHANNEL_ID)), 0 );
+				_error   = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_STATUS)), 0 );
 
 
-			if( TomoVMERack(_chan_id) == 1)
-			{
-				if(TomoChanIsActive(_chan_id) && _error == 0 )
+				if( TomoVMERack(_chan_id) == 1)
 				{
-	
-					_c = TomoVMEChan(_chan_id);
-					_m = TomoVMEModule(_chan_id);
-
-write(*,"Rack 1 Canale ", _i, _m, _c);	
-
-
-					if(MdsValue("Tomo->vt10Triggered(val("//_m//"))") )
+					if(TomoChanIsActive(_chan_id) && _error == 0 )
 					{
-	
-						_expr = "vt10GetData("//_m//","//_c//","//_end_idx//","//_reduction//")" ;  
-						_data = MdsValue(_expr);
-	
-						_dim = make_dim(make_window(_start_idx, _end_idx, _trig), make_range(*,*,float(1./_freq)));
-	
-						_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  + (_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
-			
-	
-						_status = DevPutSignal(_sig_nid, 0, 5.0/2048., word(_data), 0, _end_idx - _start_idx - 1, _dim);
-	
-				
-						if(! _status)
+		
+						_c = TomoVMEChan(_chan_id);
+						_m = TomoVMEModule(_chan_id);
+
+	write(*,"Rack 1 Canale ", _i, _m, _c);	
+
+
+						if(MdsValue("Tomo->vt10Triggered(val("//_m//"))") )
 						{
-							DevLogErr(_nid, 'Error writing data in pulse file');
-							abort();
-	
+		
+							_expr = "vt10GetData("//_m//","//_c//","//_end_idx//","//_reduction//")" ;  
+							_data = MdsValue(_expr);
+		
+							_dim = make_dim(make_window(_start_idx, _end_idx, _trig), make_range(*,*,float(1./_freq)));
+		
+							_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  + (_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
+				
+		
+							_status = DevPutSignal(_sig_nid, 0, 5.0/2048., word(_data), 0, _end_idx - _start_idx, _dim);
+		
+					
+							if(! _status)
+							{
+								DevLogErr(_nid, 'Error writing data in pulse file');
+								abort();
+		
+							}
+						} 
+						else
+						{
+							DevLogErr(_nid, 'Module '//_m//' was not Triggered');
 						}
-					} 
-					else
-					{
-						DevLogErr(_nid, 'Module '//_m//' was not Triggered');
 					}
 				}
 			}
-		    }
-
 		}
    		MdsDisconnect();
 	}
