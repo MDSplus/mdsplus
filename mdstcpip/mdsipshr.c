@@ -698,7 +698,7 @@ int  GetAnswerInfo(SOCKET sock, char *dtype, short *length, char *ndims, int *di
     for (i=0;i<m->h.ndims;i++)
     {
 #ifdef __CRAY
-      dims[i] = i % 2 ? m->h.dims[i/2] >> 32 : m->h.dims[i/2] & 0xffffffff;
+      dims[i] = i % 2 ? m->h.dims[i/2] & 0xffffffff : m->h.dims[i/2] >> 32;
 #else
       dims[i] = m->h.dims[i];
 #endif
