@@ -23,6 +23,7 @@
 				Name="VCNMakeTool"
 				BuildCommandLine="nmake /f &quot;javatraverser.mak&quot;"
 				ReBuildCommandLine="nmake /f &quot;javatraverser.mak&quot; /a"
+				CleanCommandLine="del *.class ..\java\classes\MDSplus.jar"
 				Output="..\java\classes\MDSplus.jar"/>
 		</Configuration>
 		<Configuration

@@ -36,6 +36,7 @@
 				Name="VCNMakeTool"
 				BuildCommandLine="NMAKE /f jWebTree.mak"
 				ReBuildCommandLine="NMAKE /f jWebTree.mak /a"
+				CleanCommandLine="del *.class"
 				Output="..\java\classes\jWebTree.class"/>
 		</Configuration>
 	</Configurations>
