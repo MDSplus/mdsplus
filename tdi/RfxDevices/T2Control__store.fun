@@ -110,7 +110,7 @@ write(*, _c);
 	}
 	_zero = MdsValue('Feedback->getZero:dsc()');
         for(_i = 0; _i < size(_zero); _i++)
-	    write(*, _zero[_i] * 10./2048); 
+	    write(*, _zero[_i]); 
 
     MdsDisconnect();
     return (1);
