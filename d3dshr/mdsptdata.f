@@ -101,7 +101,7 @@ C handling depending on the DFI
 	    MDSptread=DFI_DECODE(f,t,n,ier1)
 c	    if (ier1.ne.0) ier=ier1
 c	    return
-	    if (ier1 eq -1) then
+	    if (ier1.eq.-1) then
 c	       call GETDAT(shot,pointname,1,ier,t,f,n,-10000,10000,0,0,0)
 c	       write (7,*) "GETDAT CALL: ",ier
 c	       return
