@@ -1,5 +1,9 @@
 public fun FR10__init(as_is _nid, optional _method)
 {
+
+
+
+
     private _N_HEAD = 0;
     private _N_BOARD_ID = 1;
     private _N_SW_MODE = 2;

@@ -1,5 +1,8 @@
 public fun FR10HWStartStore(in _nid, in _board_id, in _pts)
 {
+
+
+
 /* Initialize Library if the first time */
     	if_error(_FR10_initialized, (FR10->FR10_InitLibrary(); public _FR10_initialized = 1;));
 

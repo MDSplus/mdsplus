@@ -1,6 +1,8 @@
 public fun FR10HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_trig, in _trig_edge)
 {
 
+
+
 /* Private constant definition */
 
 	private _FR10_TRG_SOURCE_INTERNAL =		byte(0x0);

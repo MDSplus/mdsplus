@@ -5,6 +5,10 @@ public fun FR10__trigger(as_is _nid, optional _method)
     private _N_SW_MODE = 2;
     private _N_IP_ADDR = 3;
 
+
+
+
+
     private _INVALID = 10E20;
 
 

@@ -1,5 +1,8 @@
 public fun FR10__add(in _path, out _nidout)
 {
+
+
+
     DevAddStart(_path, 'FR10', 111, _nidout);
 
     DevAddNode(_path // ':BOARD_ID', 'NUMERIC', 1, *, _nid);

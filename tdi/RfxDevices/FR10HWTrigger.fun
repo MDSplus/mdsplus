@@ -1,6 +1,9 @@
 public fun FR10HWTrigger(in _board_id)
 {
 
+
+
+
 /* Initialize Library if the first time */
     	if_error(_FR10_initialized, (FR10->FR10_InitLibrary(); public _FR10_initialized = 1;));
 
