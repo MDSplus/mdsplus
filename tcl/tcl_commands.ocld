@@ -271,6 +271,7 @@ define type show_TYPE
 	keyword DB,syntax=show_db										       ! 53 
 	keyword DEFAULT,syntax=show_default
         keyword SERVER,syntax=show_server									       ! 83 
+	keyword VERSION,syntax=show_version
 Define syntax show_current											       ! 53 
 	Routine TclShowCurrent										       ! 53
         parameter p1,prompt="What",value(required,type=SET_TYPE)						       ! 53 
@@ -291,6 +292,9 @@ define syntax show_server											       ! 83
         parameter p2,label=server_name,prompt="Server",value(required,list)						       ! 83 
         qualifier output,default										       ! 92 
         qualifier full												       ! 102
+define syntax show_version
+	Routine TclShowVersion
+	parameter p1,prompt="What",value(requred,type=show_TYPE)
 define verb start												       ! 92 
         parameter p1,prompt="What",value(required,type=start_TYPE)						       ! 92 
 define syntax start_server											       ! 92 

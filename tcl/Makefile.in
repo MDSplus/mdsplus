@@ -40,6 +40,7 @@ SOURCES = 			\
 	tcl_show_current.c	\
 	tcl_show_data.c	\
 	tcl_show_db.c	\
+	tcl_show_version.c \
 	tcl_verify_tree.c	\
 	tcl_wfevent.c \
 	tcl_write.c
