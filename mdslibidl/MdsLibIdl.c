@@ -242,7 +242,7 @@ int IdlMdsValue(int argc, void **argv)
   }
   arglist[argidx++] = (void *)&tmp;
   arglist[argidx++] = MdsEND_ARG;
-  *(int *)&arglist[0] = argidx; 
+  *(long *)&arglist[0] = argidx; 
   status = LibCallg(arglist,TdiExecute);
   if (status & 1)
   {
