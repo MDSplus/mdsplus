@@ -16,6 +16,7 @@ public class DoubleData extends AtomicData
 	    this.flags = flags;
     }
     public int getInt() {return (int)datum; }
-    public float getFloat() {return (int)datum; }
+    public float getFloat() {return (float)datum; }
+    public double getDouble() {return datum; }
     public int getFlags() {return flags;}
 }

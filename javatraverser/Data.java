@@ -48,6 +48,10 @@ public abstract class Data implements Serializable
     {
 	throw new IllegalDataException("Conversion to float not supported", this);
     }
+    public double getDouble() throws IllegalDataException	    
+    {
+	throw new IllegalDataException("Conversion to double not supported", this);
+    }
     public int[] getIntArray() throws IllegalDataException		    
     {
 	throw new IllegalDataException("Conversion to int array not supported", this); 
@@ -55,6 +59,10 @@ public abstract class Data implements Serializable
     public float[] getFloatArray() throws IllegalDataException	  
     {
 	throw new IllegalDataException("Conversion to float array not supported", this); 
+    }
+    public double[] getDoubleArray() throws IllegalDataException	  
+    {
+	throw new IllegalDataException("Conversion to double array not supported", this); 
     }
     public String getString() throws IllegalDataException		    
     {

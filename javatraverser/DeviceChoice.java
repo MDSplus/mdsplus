@@ -11,6 +11,7 @@ public class DeviceChoice extends DeviceComponent
     protected String choiceItems[];
     protected int choiceIntValues[] = null;
     protected float choiceFloatValues[] = null;
+    protected double choiceDoubleValues[] = null;
     protected boolean convert = false;
 
     public void setConvert(boolean convert) {this.convert = convert; }
@@ -36,6 +37,8 @@ public class DeviceChoice extends DeviceComponent
     public int [] getChoiceIntValues() {return choiceIntValues; }
     public void setChoiceFloatValues(float choiceFloatValues[]) {this.choiceFloatValues = choiceFloatValues; }
     public float [] getChoiceFloatValues() {return choiceFloatValues; }
+    public void setChoiceDoubleValues(double choiceDoubleValues[]) {this.choiceDoubleValues = choiceDoubleValues; }
+    public double [] getChoiceDoubleValues() {return choiceDoubleValues; }
 
     public void setLabelString(String labelString)
     {
@@ -100,6 +103,7 @@ public class DeviceChoice extends DeviceComponent
         String data_string;
         int curr_idx, data_value;
         float data_float;
+        double data_double;
         if(showState)
             checkB.setSelected(is_on);
 
@@ -147,6 +151,16 @@ public class DeviceChoice extends DeviceComponent
                 }
                 catch(Exception e){}
             }
+            else if(choiceDoubleValues != null)
+            {
+                try {
+                    data_double = data.getDouble();
+                    for(curr_idx = 0; curr_idx < choiceDoubleValues.length && data_double != choiceDoubleValues[curr_idx]; curr_idx++);
+                    if(curr_idx < choiceDoubleValues.length)
+                    comboB.setSelectedIndex(curr_idx);
+                }
+                catch(Exception e){}
+            }
         }
         setEnabled(is_on);
     }
@@ -167,6 +181,8 @@ public class DeviceChoice extends DeviceComponent
                 return new IntData(choiceIntValues[curr_idx]);
             if(choiceFloatValues != null)
                 return new FloatData(choiceFloatValues[curr_idx]);
+            if(choiceDoubleValues != null)
+                return new DoubleData(choiceDoubleValues[curr_idx]);
             return new StringData(choiceItems[curr_idx]);
         }
     }
