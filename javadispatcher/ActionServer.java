@@ -12,16 +12,18 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
     String tree;
     String server_class;
     String ip_address;
+    String subtree;
     int shot;
     javax.swing.Timer timer;
-    static final int RECONNECT_TIME = 5; 
-    
-    
-    public ActionServer(String tree, String ip_address, String server_class)
+    static final int RECONNECT_TIME = 5;
+
+
+    public ActionServer(String tree, String ip_address, String server_class, String subtree)
     {
         this.tree = tree;
         this.server_class = server_class;
         this.ip_address = ip_address;
+        this.subtree = subtree;
         try {
             mds_server = new MdsServer(ip_address);
             mds_server.addMdsServerListener(this);
@@ -29,7 +31,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
         }catch(Exception exc) {mds_server = null; }
         timer = new javax.swing.Timer(0, new ActionListener() {
             public void actionPerformed(ActionEvent e)
-            {   
+            {
                 synchronized(ActionServer.this)
                 {
                     timer.stop();
@@ -63,7 +65,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             }});
             timer.setRepeats(false);
     }
-    public void setTree(String tree) {this.tree = tree; }   
+    public void setTree(String tree) {this.tree = tree; }
     public boolean isActive() {return mds_server != null; }
     public void processConnectionEvent(ConnectionEvent e)
     {
@@ -72,7 +74,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             try {
                 if(mds_server != null)
                     mds_server.shutdown();
-            }catch(Exception exc) 
+            }catch(Exception exc)
             {
                 System.err.println("Error shutting down socket");
             }
@@ -131,16 +133,16 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                     conn_timer.setRepeats(false);
                     conn_timer.setInitialDelay(RECONNECT_TIME * 1000);
                     conn_timer.start();
-                    
+
         }
     }
-                        
-    
+
+
     public synchronized void addServerListener(ServerListener listener)
     {
         server_listeners.addElement(listener);
     }
-   
+
     public void pushAction(Action action)
     {
         synchronized (enqueued_actions){
@@ -151,8 +153,8 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             mds_server.dispatchAction(tree, shot, action.getNid(), action.getNid());
         }catch(Exception exc) {processAborted(action);}
     }
-    
-    
+
+
     public synchronized void processMdsServerEvent(MdsServerEvent e)
     {
        int mode = e.getFlags();
@@ -161,12 +163,12 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             case MdsServerEvent.SrvJobSTARTING:
                 synchronized(enqueued_actions)
                 {
-                    doing_actions.put(new Integer(e.getJobid()), 
+                    doing_actions.put(new Integer(e.getJobid()),
                         doing_action = (Action)enqueued_actions.firstElement());
                     enqueued_actions.removeElement(doing_action);
                 }
                 processDoing(doing_action);
-                
+
                 int timeout = 0;
                 try {
                     Data task = doing_action.getAction().getTask();
@@ -184,8 +186,8 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                     timer.setInitialDelay(timeout * 1000);
                     timer.start();
                 }
-                
-              
+
+
                 break;
             case MdsServerEvent.SrvJobFINISHED :
                 timer.stop();
@@ -224,13 +226,13 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
     }
     protected void processDoing(Action action)
     {
-        
-        
+
+
         Enumeration listeners = server_listeners.elements();
         while(listeners.hasMoreElements())
         {
             ServerListener listener = (ServerListener)listeners.nextElement();
-            
+
             listener.actionStarting(new ServerEvent(this, action));
         }
     }
@@ -244,9 +246,9 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             notify();
         }
     }
-        
-     
-    
+
+
+
     public Action popAction()
     {
         if(mds_server == null) return  null;
@@ -265,16 +267,16 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
         }
         return null;
     }
-        
-    
+
+
     public synchronized Action[] collectActions() {return null; }
 
     public void beginSequence(int shot)
     {
         this.shot = shot;
-        if(mds_server == null) return;
+        if(mds_server == null || subtree == null || subtree.equals("")) return;
         try {
-            mds_server.createPulse(tree, shot);
+            mds_server.createPulse(subtree, shot);
         }catch(Exception exc){}
     }
 
@@ -285,7 +287,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             mds_server.closeTrees();
         }catch(Exception exc) {}
     }
-        
+
     public synchronized String  getServerClass() {return server_class; }
 
     public int getQueueLength()
@@ -293,14 +295,14 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
         return enqueued_actions.size();
     }
 
-    public synchronized void abort(boolean flush)   
+    public synchronized void abort(boolean flush)
     {
         if(mds_server == null) return;
         try {
             mds_server.abort(flush);
         }catch(Exception exc){}
     }
-    
+
     public synchronized boolean abortAction(Action action)
     {
         if((doing_actions.get(new Integer(action.getNid())) == null) && enqueued_actions.indexOf(action) == -1)
@@ -330,7 +332,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             {
                 curr_action = (Action)action_list.nextElement();
                 try {
-                    mds_server.dispatchAction(ActionServer.this.tree, shot, 
+                    mds_server.dispatchAction(ActionServer.this.tree, shot,
                         curr_action.getNid(), curr_action.getNid());
                     enqueued_actions.addElement(curr_action);
                 }catch(Exception exc) {}
@@ -338,8 +340,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
         }
         return true;
     }
-}        
-    
-     
-    
-    
+}
+
+
+

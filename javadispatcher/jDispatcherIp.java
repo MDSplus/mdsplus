@@ -10,7 +10,7 @@ class jDispatcherIp extends MdsIp
     String currTreeName;
 
     Database tree;
-    
+
     public void setDispatcher(jDispatcher dispatcher) {this.dispatcher = dispatcher; }
     public jDispatcherIp(int port, jDispatcher dispatcher, String treeName)
     {
@@ -25,9 +25,9 @@ class jDispatcherIp extends MdsIp
     {
         int ris = -1;
         String command  ="", compositeCommand = "";
-        try 
+        try
 	{
-             
+
 	    compositeCommand = new String(messages[0].body);
 
 	    System.err.println("Comando a jDispatcherIp " + compositeCommand);
@@ -38,13 +38,13 @@ class jDispatcherIp extends MdsIp
 	    System.err.println("Token scartato " + st.nextToken());
 
             command = st.nextToken();
-	    
+
 	    System.err.println("Comando pulito " + command);
 
         }
 	catch (Exception exc)
-         /* if(messages.length < 8 || messages[2].dtype != Descriptor.DTYPE_SHORT 
-            || messages[1].dtype != Descriptor.DTYPE_LONG || 
+         /* if(messages.length < 8 || messages[2].dtype != Descriptor.DTYPE_SHORT
+            || messages[1].dtype != Descriptor.DTYPE_LONG ||
             messages[6].dtype != Descriptor.DTYPE_CSTRING ||
             messages[7].dtype != Descriptor.DTYPE_CSTRING
             )*/
@@ -52,14 +52,14 @@ class jDispatcherIp extends MdsIp
             System.err.println("Unexpected message has been received by jDispatcherIp:" + compositeCommand + " " + exc);
 
         }
-        try 
+        try
 	{
             ris = doCommand(command.toUpperCase());
         }
-	catch (Exception exc) 
+	catch (Exception exc)
         {
             return new MdsMessage(exc.getMessage(), null);
-        } 
+        }
         if(ris < 0) //i.e. if any command except get current
         {
             MdsMessage msg =  new MdsMessage((byte)1);
@@ -74,26 +74,26 @@ class jDispatcherIp extends MdsIp
             buf[2] = (byte)((ris >> 8)& 0xFF);
             buf[3] = (byte)(ris& 0xFF);
 
-            
-            
-/*    public MdsMessage(byte descr_idx, byte dtype, 
-                        byte nargs, 
-                        int dims[], 
+
+
+/*    public MdsMessage(byte descr_idx, byte dtype,
+                        byte nargs,
+                        int dims[],
                         byte body[])
-  */          
-            
-            
+  */
+
+
             MdsMessage msg =  new MdsMessage((byte)0, (byte)Data.DTYPE_L, (byte)0, new int[]{1}, buf);
             msg.status = 1;
             return msg;
         }
-        
+
     }
-    
+
     protected int doCommand(String command)
     {
         System.out.println(command);
-        
+
         StringTokenizer st = new StringTokenizer(command, "/ ");
         try {
             String first_part = st.nextToken();
@@ -160,7 +160,7 @@ class jDispatcherIp extends MdsIp
                 String second_part = st.nextToken();
                 if(second_part.equals("CURRENT"))
                 {
-		    System.out.println("Shot corrente :" +  getCurrentShot()); 
+		    System.out.println("Shot corrente :" +  getCurrentShot());
                     return getCurrentShot();
                 }
                 else throw new Exception("Invalid Command");
@@ -176,7 +176,7 @@ class jDispatcherIp extends MdsIp
             }
             else throw new Exception("Invalid Command");
             return -1;
-        }catch (Exception exc) 
+        }catch (Exception exc)
         {
             System.out.println("Invalid command: "+command);
             return -1;
@@ -195,7 +195,7 @@ class jDispatcherIp extends MdsIp
              tree.setCurrentShot(currTreeName, shot);
         }catch(Exception exc){}
     }
-    
+
     void incrementCurrentShot()
     {
         try {
@@ -206,7 +206,7 @@ class jDispatcherIp extends MdsIp
             System.err.println("Error incrementing current shot");
         }
     }
-    
+
 
     public static void main(String args[])
     {
@@ -243,12 +243,13 @@ class jDispatcherIp extends MdsIp
             if(server_class == null) break;
             String server_ip = properties.getProperty("jDispatcher.server_"+i+".address");
             if(server_ip == null) break;
-            Server server = new ActionServer("", server_ip.trim(), server_class.trim());
+            String server_subtree = properties.getProperty("jDispatcher.server_"+i+".subtree");
+            Server server = new ActionServer("", server_ip.trim(), server_class.trim(), server_subtree);
             servers.addElement(server);
             dispatcher.addServer(server);
             i++;
         }
-        i = 1;       
+        i = 1;
         while(true)
         {
             String monitor_port = properties.getProperty("jDispatcher.monitor_"+i+".port");
@@ -261,19 +262,19 @@ class jDispatcherIp extends MdsIp
                 i++;
             }catch(Exception exc){break; }
         }
-        
+
         String default_server = properties.getProperty("jDispatcher.default_server_idx");
         try {
             int default_server_idx = Integer.parseInt(default_server) - 1;
             Server server = (Server)servers.elementAt(default_server_idx);
             dispatcher.setDefaultServer(server);
         }catch(Exception exc){}
-          
+
         jDispatcherIp dispatcherIp = new jDispatcherIp(port, dispatcher, treeName);
-        
+
         //dispatcherIp.incrementCurrentShot();
         //int shot = dispatcherIp.getCurrentShot();
-        
+
         dispatcherIp.start();
         try {
         dispatcherIp.getListenThread().join();
