@@ -136,7 +136,7 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
                 bean.setPreferredHeight(Integer.parseInt(preferredHeightT.getText()));
                 listeners.firePropertyChange("preferredHeight", oldPreferredHeight, bean.getPreferredHeight());
 
-                StringTokenizer st = new StringTokenizer(columnNames.getText(), " ,");
+                StringTokenizer st = new StringTokenizer(columnNames.getText(), " ");
                 String colNames[] = new String[st.countTokens()];
                 int idx = 0;
                 while(st.hasMoreTokens())
@@ -145,7 +145,7 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
                 bean.setColumnNames(colNames);
                 listeners.firePropertyChange("columnNames", oldColumnNames, bean.getColumnNames());
 
-                st = new StringTokenizer(rowNames.getText(), " ,");
+                st = new StringTokenizer(rowNames.getText(), " ");
                 String rowNames[] = new String[st.countTokens()];
                 idx = 0;
                 while(st.hasMoreTokens())

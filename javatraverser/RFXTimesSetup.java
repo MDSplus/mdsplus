@@ -406,7 +406,7 @@ public class RFXTimesSetup extends DeviceSetup {
     "tcl(\'set node \\\\EN_INV_TC /off\'); 1;",
         "if(_START_PWM_TC_state == 1) tcl(\'set node \\\\FOR_PWM_TC/on\'); else " +
     "tcl(\'set node \\\\FOR_PWM_TC /off\'); 1;",
-        "if(_START_TF_state == 1) tcl(\'set node \\\\ENABLE_PR/on\'); else tcl(\'set " +
+        "if(_START_PR_state == 1) tcl(\'set node \\\\ENABLE_PR/on\'); else tcl(\'set " +
     "node \\\\ENABLE_PR/off\'); 1;"
         });
     deviceButtons1.setCheckMessages(new String[] {"Item1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9", "Item 10", "Item 11", "Item 12", "Item 13", "Item 14", "Item 15",

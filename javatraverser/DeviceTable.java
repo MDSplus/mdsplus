@@ -31,8 +31,6 @@ public class DeviceTable extends DeviceComponent
     protected String items[] = new String[9];
     static String copiedColItems[], copiedRowItems[], copiedItems[];
 
-    JCheckBox buttons[];
-    //JLabel rowLabels[];
     public void setNumRows(int numRows)
     {
         this.numRows = numRows;
@@ -252,7 +250,6 @@ public class DeviceTable extends DeviceComponent
         label.setText(labelString);
 
 
-
         table.setModel(new AbstractTableModel() {
             public int getColumnCount()
             {
@@ -346,22 +343,26 @@ public class DeviceTable extends DeviceComponent
 
             public void setValueAt(Object value, int row, int col)
             {
-              if(binary) return;
-
-                if(rowNames.length > 0)
-                    items[row * numCols + col - 1] = (String)value;
-                 else if(displayRowNumber)
-                      items[row * numCols + col - 1] = (String)value;
-
+              int itemIdx;
+                if(rowNames.length > 0 || displayRowNumber)
+                  itemIdx = row * numCols + col - 1;
                 else
-                    items[row * numCols + col] = (String)value;
+                  itemIdx = row * numCols + col;
+
+                if(binary)
+                {
+                  boolean isOn = ((Boolean)value).booleanValue();
+                  items[itemIdx] = (isOn)?"1":"0";
+                }
+                else
+                  items[itemIdx] = (String)value;
                 fireTableCellUpdated(row, col);
             }
 
             public Class getColumnClass(int c) {
               if (!binary)
                 return String.class;
-              if (rowNames.length > 0 && c == 0)
+              if ((rowNames.length > 0 || displayRowNumber) && c == 0)
                 return String.class;
               return Boolean.class;
             }
@@ -369,87 +370,13 @@ public class DeviceTable extends DeviceComponent
 
 
           if(binary)
-          {
             table.setRowSelectionAllowed(false);
-            buttons = new JCheckBox[numRows * numCols];
-        /*    if(rowNames.length > 0)
-            {
-              rowLabels = new JLabel[numRows];
-              for(int i = 0; i < numRows; i++)
-              {
-                try{
-                  rowLabels[i] = new JLabel(rowNames[i]);
-                }catch(Exception exc){rowLabels[i] = new JLabel("");}
-              }
-            }*/
-            for(int i = 0; i < numRows * numCols; i++)
-            {
-              buttons[i] = new JCheckBox("", items[i].equals("1"));
-            }
 
-
-            for(int i = 0; i < numCols; i++)
-            {
-              int colIdx;
-              if(displayRowNumber || rowNames.length > 0)
-                colIdx = i+1;
-              else
-                colIdx = i;
-              table.getColumnModel().getColumn(colIdx).setCellEditor(
-                  new TableCellEditor() {
-                public Component getTableCellEditorComponent(JTable table,
-                    Object value, boolean isSelected, int row, int column) {
-                 if (rowNames.length > 0) {
-                    /*if (column == 0)
-                      return rowLabels[row];
-                    else*/
-                      return buttons[row * numCols + column - 1];
-                  }
-                  else
-                    return buttons[row * numCols + column];
-                }
-
-                public void addCellEditorListener(CellEditorListener l) {}
-
-                public void removeCellEditorListener(CellEditorListener l) {}
-
-                public void cancelCellEditing() {}
-
-                public boolean stopCellEditing() {
-                  return true;
-                }
-
-                public boolean shouldSelectCell(EventObject e) {
-                  return true;
-                }
-
-                public boolean isCellEditable(EventObject e) {
-                  return true;
-                }
-
-                public Object getCellEditorValue() {
-                  return null;
-                }
-              });
-            }
-          }
-
-
-
-        table.setPreferredScrollableViewportSize(new Dimension(preferredColumnWidth * numCols,preferredHeight));
+          table.setPreferredScrollableViewportSize(new Dimension(preferredColumnWidth * numCols,preferredHeight));
+          table.revalidate();
         initializing = false;
     }
 
-   void updateBinaryItems()
-   {
-     for(int i = 0; i < items.length; i++)
-       if(buttons[i].isSelected())
-       {
-         items[i] = "1";
-       }
-       else
-         items[i] = "0";
-   }
 
     public void displayData(Data data, boolean is_on)
     {
@@ -474,8 +401,6 @@ public class DeviceTable extends DeviceComponent
     public Data getData()
     {
         int n_data = items.length;
-        if(binary)
-          updateBinaryItems();
         String dataString = "[";
         for(int i = 0; i < n_data; i++)
         {
