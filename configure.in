@@ -22,7 +22,8 @@ LD=ld
 
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib -I\$(top_srcdir)/include +DA1.1 +DS1.1 +z";
-       FFLAGS="$FFLAGS +z +es -I\$(top_srcdir)/include"; 
+       FFLAGS="$FFLAGS +z +es -I\$(top_srcdir)/include";
+       D3D_FFLAGS="+U77 +E1 -K"; 
        LDSHARE="-Wl,-a shared_archive";
        LDARC="-Wl,-a archive";
        LINKSHARED="-b";
@@ -110,10 +111,18 @@ AC_CHECK_LIB(dl,dlopen)
 AC_CHECK_LIB(dld,shl_load)
 AC_CHECK_LIB(nsl,main)
 AC_CHECK_LIB(socket,socket)
-D3DSHR=""
-AC_CHECK_LIB(d3,ptdata__,D3DSHR="d3dshr")
-AC_CHECK_LIB(d3,ptdata_,D3DSHR="d3dshr")
-AC_CHECK_LIB(d3,ptdata,D3DSHR="d3dshr")
+
+AC_MSG_CHECKING(...d3d library...)
+if test "$d3d_lib"
+then
+		 D3DSHR="d3dshr";
+		 D3DLIB="$d3d_lib";
+                 AC_MSG_RESULT($D3DLIB)
+else
+		 D3DSHR="";
+		 D3DLIB="";
+		 AC_MSG_RESULT(no)
+fi
 
 dnl Checks for header files.
 AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/filio.h netdb.h resolv.h dlfcn.h dl.h vxWorks.h windows.h sys/resource.h)
@@ -213,6 +222,8 @@ AC_DEFINE_UNQUOTED(TARGET_CPU,${target_cpu})
 AC_DEFINE_UNQUOTED(TARGET_VENDOR,${target_vendor})
 
 AC_SUBST(D3DSHR)
+AC_SUBST(D3DLIB)
+AC_SUBST(D3D_FFLAGS)
 AC_SUBST(JAR)
 AC_SUBST(JAVAC)
 AC_SUBST(JAVA_APS)

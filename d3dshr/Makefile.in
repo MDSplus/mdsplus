@@ -4,7 +4,8 @@ LD=@LD@
 top_srcdir=@top_srcdir@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-FFLAGS=@FFLAGS@
+FFLAGS=@FFLAGS@ @D3D_FFLAGS@
+D3DLIB=@D3DLIB@
 LDFLAGS=@LDFLAGS@
 LIBS=@LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
@@ -32,4 +33,4 @@ install:
 	mkdir @MAKELIBDIR@
 
 @MAKELIBDIR@libMdsD3D@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS)  -ld3 @FOR_LDFLAGS@ $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS)  -ld3 @FOR_LDFLAGS@ $(D3DLIB) $(LIBS)
