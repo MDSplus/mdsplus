@@ -1,0 +1,40 @@
+LIBRARY	cdushr
+CODE	PRELOAD MOVEABLE DISCARDABLE
+DATA	PRELOAD SINGLE
+EXPORTS
+;
+ascFilename
+ascToken
+bumpString_linePtr
+debugCdu
+cdu_write
+clearnext
+cli_addr_cmdline_dsc
+cli_dcl_parse
+cli_debug
+cli_dispatch
+cli_error
+cli_get_value
+cli_present
+cmd_lookup
+fgets_with_edit
+getEqualsString
+getFilename
+getKeywordStruct
+getParamByIdx
+getQualifier
+getString
+getString_linePtr
+getString_startOfLine
+init_timer
+interactive
+l2u
+l2un
+newSyntax
+newVerb
+nonblank
+putNext
+show_timer
+strntrim
+termio_init
+yesno

@@ -1,0 +1,7 @@
+LIBRARY	MdsDclShr
+CODE	PRELOAD MOVEABLE DISCARDABLE
+DATA	PRELOAD SINGLE
+EXPORTS
+;
+mdsdcl_do_command
+mdsdcl_get_input
