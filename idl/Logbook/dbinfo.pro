@@ -47,6 +47,7 @@ function dbinfo, dbname, host, conn, dbtype, dbuser, dbpass
   if (strlen(host) eq 0) then host = "RED"
   catch, err
   if (err ne 0) then begin
+    catch,/cancel
     spawn,'\whoami',result
     dbuser = result[0]
     ;dbuser=getenv("USER")
