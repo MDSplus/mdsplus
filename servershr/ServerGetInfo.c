@@ -41,7 +41,7 @@ extern int ServerConnect();
 
 char *ServerGetInfo(int full, char *server)
 {
-  char *cmd = "ServerGetInfo()"; 
+  char *cmd = "MdsServerShr->ServerInfo:dsc()"; 
   char *ans;
   char *ansret;
   short len = 0;

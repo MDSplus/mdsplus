@@ -67,6 +67,7 @@ extern int TdiCompletionOf();
 extern int TdiExecute();
 extern int TdiErrorlogsOf();
 extern int TdiGetLong();
+extern int ProgLoc;
 
 static void Dispatch(int idx);
 void SendMonitor(int mode, int idx);
@@ -374,6 +375,7 @@ static void WaitForActions(int all)
   while ((status == ETIMEDOUT) && !(WaitForAll ? NoOutstandingActions(first_g,last_g) && NoOutstandingActions(first_c,last_c)
                     : (AbortInProgress ? 1 : NoOutstandingActions(first_g,last_g)) ))
   {
+    ProgLoc = 600;
     pthread_mutex_lock(&JobWaitMutex);
 #ifdef HAVE_WINDOWS_H
 	status = pthread_cond_timedwait(&JobWaitCondition, 1000);
@@ -382,7 +384,9 @@ static void WaitForActions(int all)
       struct timespec one_sec = {1,0};
       struct timespec abstime;
       pthread_get_expiration_np(&one_sec,&abstime);
+      ProgLoc = 601;
       status = pthread_cond_timedwait( &JobWaitCondition, &JobWaitMutex, &abstime);
+      ProgLoc = 602;
 	}
 #if defined(_DECTHREADS_) && (_DECTHREADS_ == 1)
     if (status == -1 && errno == 11)
@@ -390,6 +394,7 @@ static void WaitForActions(int all)
 #endif
 #endif
     pthread_mutex_unlock(&JobWaitMutex);
+      ProgLoc = 603;
   }
 }
 
@@ -417,7 +422,8 @@ static char *DetailProc(int full)
           strcpy(msg,"\nWaiting on:\n");
           first = 0;
         }
-        sprintf(msg1,"	%s %s %s\n",path,actions[i].doing ? "in progress on" : "dispatched to",Server(server,actions[i].server));
+        sprintf(msg1,"	%s %s %s for shot %d\n",path,actions[i].doing ? "in progress on" : "dispatched to",
+             Server(server,actions[i].server),table->shot);
         TreeFree(path);
         if (msglen < (strlen(msg) + strlen(msg1) + 1))
         {

@@ -117,9 +117,9 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
 
   if (StartReceiver(&port) && ((sock = ServerConnect(server)) >= 0))
   {
-    char cmd[] = "ServerQAction($,$,$,$,$,$,$,$,$,$,$,$,$)";
+    char cmd[] = "MdsServerShr->ServerQAction($,$,$,$,$,$,$,$,$,$,$,$,$)";
     unsigned char numargs = max(0,min(numargs_in,8));
-    int offset = strlen("ServerQAction($,$,$,$,$") + numargs * 2;
+    int offset = strlen("MdsServerShr->ServerQAction($,$,$,$,$") + numargs * 2;
     unsigned char idx = 0;
     char dtype;
     short len;
