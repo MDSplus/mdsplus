@@ -49,4 +49,7 @@ clean :
 	- rm .depend
 
 
+.depend :
+	find *.f -exec $(MAKE_DEPEND)
 
+include $(DEPEND)
