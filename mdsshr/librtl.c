@@ -650,7 +650,7 @@ int StrTrim(struct descriptor *out, struct descriptor *in, unsigned short *lenou
   struct descriptor tmp = {0,DTYPE_T,CLASS_D,0};
   struct descriptor s = {0,DTYPE_T,CLASS_S,0};
   unsigned short i;
-  for (i=in->length;i>0;i--) if (in->pointer[i-1] != 32) break;
+  for (i=in->length;i>0;i--) if (in->pointer[i-1] != 32 && in->pointer[i-1] != 9) break;
   StrCopyDx(&tmp,in);
   s.length = i;
   s.pointer = tmp.pointer;
