@@ -44,7 +44,8 @@ public class DeviceDispatch extends DeviceComponent
                 nodeInfos[i] = subtree.getInfo(currNid, Tree.context);
             }catch(Exception e)
             {
-                System.out.println("Cannot read device NCI 1: "+e + " " + currNid.getInt());
+                System.out.println("Cannot read device NCI 1: "+e + " " + currNid.getInt()
+                                   + " " + num_actions + " " + num_components);
                 return;
             }
             if(nodeInfos[i].getUsage() == NodeInfo.USAGE_ACTION)
