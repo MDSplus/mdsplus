@@ -73,6 +73,27 @@ write(*, 'T2Control init');
 	write(*, 'Init Control: ', _control_idx);
 	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackInitControl', long(_control_idx));
 
+	_pre_time = data(DevNodeRef(_nid, _N_PRE_TIME));
+	if(_pre_time < 0)
+	{
+		write(*, 'Invalid Presampling time ', _pre_time);
+		return(0);
+	}
+
+	write(*, 'Presampling time: ', _pre_time);
+	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackPreTriggerSamples', long(_pre_time * _period));
+
+
+	_post_time = data(DevNodeRef(_nid, _N_POST_TIME));
+	if(_post_time < 0)
+	{
+		write(*, 'Invalid Postsampling time ', _post_time);
+		return(0);
+	}
+
+	write(*, 'Postasampling time: ', _post_time);
+	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackPostTriggerSamples', long(_post_time * _period));
+
 
 	_control_idx = data(DevNodeRef(_nid, _N_TRIG_CONTROL));
 	if(_control_idx < 0 || _control_idx > 5)
