@@ -31,6 +31,8 @@
 #include <windows.h>
 #include <io.h>
 #endif
+#include <stdio.h>
+#include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <ncidef.h>
@@ -39,8 +41,6 @@
 #include <usagedef.h>
 #include <ncidef.h>
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 #include <librtl_messages.h>
 #include <strroutines.h>
@@ -380,6 +380,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
 {
   int       status = TreeNORMAL;
   int       bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
+
   LoadInt(nodenum, (char *)&info->data_file->record_header->node_number);
   memset(&info->data_file->record_header->rfa,0,sizeof(RFA));
   while (bytes_to_put && (status & 1))
@@ -465,7 +466,7 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
     }
     else
       TreeUnLockNci(info, 0, nodenum);
-  }
+ }
   return status;
 }
 
@@ -522,14 +523,11 @@ int TreeUnLockDatafile(TREE_INFO *info, int readonly, int offset)
 	   LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
 }
 #else
-# ifdef vxWorks
-/* It seems that vxWorks or NFS does not support file locking*/
-
-int TreeUnLockDatafile(TREE_INFO *info, int readonly, int offset)
-{ return  TreeSUCCESS; }
-
-int TreeLockDatafile(TREE_INFO *info, int readonly, int offset)
-{ return  TreeSUCCESS; }
+#ifdef vxWorks 
+int TreeLockDatafile(TREE_INFO *info, int readonly, int nodenum)
+{ return TreeSUCCESS; }
+int TreeUnLockDatafile(TREE_INFO *info, int readonly, int nodenum)
+{ return TreeSUCCESS; }
 #else
 int TreeLockDatafile(TREE_INFO *info, int readonly, int offset)
 {

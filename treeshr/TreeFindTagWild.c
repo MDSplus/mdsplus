@@ -30,11 +30,11 @@ TreeFindTagEnd(void **ctx);
 
 +-----------------------------------------------------------------------------*/
 
+#include <stdlib.h>
+#include <string.h>
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <strroutines.h>
-#include <stdlib.h>
-#include <string.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 

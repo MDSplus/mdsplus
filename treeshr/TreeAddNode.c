@@ -3,6 +3,8 @@
 #define write _write
 #define lseek _lseek
 #endif
+#include <string.h>
+#include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <string.h>

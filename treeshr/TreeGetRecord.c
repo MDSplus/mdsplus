@@ -1,6 +1,8 @@
 #ifdef _WIN32
 #include <io.h>
 #endif
+#include <string.h>
+#include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <ncidef.h>
@@ -8,8 +10,6 @@
 #include <treeshr.h>
 #include <librtl_messages.h>
 #include <errno.h>
-#include <string.h>
-#include <stdlib.h>
 #include <fcntl.h>
 #ifndef O_BINARY
 #define O_BINARY 0

@@ -28,11 +28,10 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 
 
 ------------------------------------------------------------------------------*/
-
+#include <ncidef.h>
+#include "treeshrp.h"
 #include <mdsdescrip.h>
 #include <treeshr.h>
-#include "treeshrp.h"
-#include <ncidef.h>
 #include <libroutines.h>
 #include <strroutines.h>
 #include <mds_stdarg.h>

@@ -30,9 +30,9 @@
 
 +-----------------------------------------------------------------------------*/
 
+#include <string.h>
 #include <treeshr.h>
 #include "treeshrp.h"
-#include <string.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 

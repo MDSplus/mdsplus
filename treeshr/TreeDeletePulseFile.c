@@ -28,11 +28,11 @@ int TreeDeletePulseFile(int shotid,int numnids, int *nids)
 
 
 ------------------------------------------------------------------------------*/
+#include <stdlib.h>
+#include <string.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <treeshr.h>
-#include <stdlib.h>
-#include <string.h>
 #include "treeshrp.h"
 #include <ncidef.h>
 #include <sys/stat.h>

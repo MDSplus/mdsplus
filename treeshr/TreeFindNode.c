@@ -1,7 +1,7 @@
-#include <treeshr.h>
-#include "treeshrp.h"
 #include <stdlib.h>
 #include <string.h>
+#include <treeshr.h>
+#include "treeshrp.h"
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 

@@ -35,12 +35,12 @@
 #include <windows.h>
 #include <io.h>
 #endif
+#include <string.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ncidef.h>
-#include <string.h>
-#include <stdlib.h>
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
@@ -679,7 +679,13 @@ int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
 }
 #else
 
-#if !defined(vxWorks)
+#ifdef vxWorks 
+int TreeLockNci(TREE_INFO *info, int readonly, int nodenum)
+{ return TreeSUCCESS; }
+int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
+{ return TreeSUCCESS; }
+#else
+
 int TreeLockNci(TREE_INFO *info, int readonly, int nodenum)
 {
   struct flock flock_info;
@@ -701,15 +707,5 @@ int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
   return (fcntl(readonly ? info->nci_file->get : info->nci_file->put,F_SETLKW, &flock_info) != -1) ? 
           TreeSUCCESS : TreeFAILURE;
 }
-
-#else
-/*It seems that vxWorks or NFS does not support file locking*/
-
-int TreeUnLockNci(TREE_INFO *info, int readonly, int offset)
-{ return  TreeSUCCESS; }
-
-int TreeLockNci(TREE_INFO *info, int readonly, int offset)
-{ return  TreeSUCCESS; }
-
 #endif
 #endif

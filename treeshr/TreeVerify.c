@@ -29,11 +29,11 @@ int TreeVerify( )
 
 ------------------------------------------------------------------------------*/
 
+#include <stdio.h>
 #include <mdsdescrip.h>
 #include <ncidef.h>
 #include <treeshr.h>
 #include "treeshrp.h"
-#include <stdio.h>
 
 static int maxnodes;
 static int nodecount;

@@ -29,13 +29,10 @@ int TreeDeleteNodeInitialize(NID *nid,int *count,reset)
 
 
 ------------------------------------------------------------------------------*/
-
-
-
-#include <treeshr.h>
-#include "treeshrp.h"
 #include <string.h>
 #include <stdlib.h>
+#include <treeshr.h>
+#include "treeshrp.h"
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 

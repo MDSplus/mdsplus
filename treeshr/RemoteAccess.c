@@ -1,10 +1,10 @@
+#include <string.h>
+#include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ncidef.h>
-#include <string.h>
-#include <stdlib.h>
 
 #ifndef vxWorks
 #define min(a,b) (((a) < (b)) ? (a) : (b))

@@ -27,11 +27,11 @@
 
 
 +-----------------------------------------------------------------------------*/
+#include <stdlib.h>
+#include <string.h>
 #include <mdsdescrip.h>
 #include <treeshr.h>
 #include "treeshrp.h"
-#include <stdlib.h>
-#include <string.h>
 
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

@@ -1,6 +1,6 @@
+#include <string.h>
 #include <ncidef.h>
 #include "treeshrp.h"
-#include <string.h>
 
 void TreeSerializeNciOut(NCI *in, char *out)
 {

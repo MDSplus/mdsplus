@@ -29,13 +29,13 @@
   move the node from its location in the tree.
 +-----------------------------------------------------------------------------*/
 
+#include <string.h>
+#include <stdlib.h>
 #include <mdsdescrip.h>
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <usagedef.h>
 #include <ncidef.h>
-#include <string.h>
-#include <stdlib.h>
 
 #define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 
