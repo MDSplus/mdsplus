@@ -178,7 +178,12 @@ public class SshTunneling extends Thread
         try 
         {
 		    SSH2Connection con = client.getConnection();
-    							
+/* 
+    		System.out.println("127.0.0.1:"+
+						        Integer.parseInt(localPort)+
+						        " "+server+":"+
+						        Integer.parseInt(remotePort));					
+ */   							
 		    sshListener = con.newLocalForward("127.0.0.1",
 						                        Integer.parseInt(localPort),
 						                        server,
@@ -194,13 +199,11 @@ public class SshTunneling extends Thread
                 }
     		    
 		    });
-		    //sshListener.run();
         }
         catch(Exception e)
         {
  		    JOptionPane.showMessageDialog(f, "Exception starting ssh port forward process! " + e, 
 		                                  "alert", JOptionPane.ERROR_MESSAGE);
-//            System.err.println("IOException starting process! " + e);
         }        
     }
 }

@@ -23,6 +23,7 @@ public class MdsDataProvider implements DataProvider
     int var_idx = 0;
     
     boolean is_tunneling = false;
+    String tunnel_provider = "127.0.0.1:8000";
     SshTunneling ssh_tunneling;
 
     class SimpleFrameData implements FrameData
@@ -350,7 +351,7 @@ public class MdsDataProvider implements DataProvider
     private void setProvider(String arg)
     {
         if(is_tunneling)
-            provider = "localhost";
+            provider = tunnel_provider;
         else
             provider = arg;
     }
@@ -955,9 +956,13 @@ public class MdsDataProvider implements DataProvider
                 ssh_tunneling = new SshTunneling(f, this, ip, remote_port, 
                                              server_item.user, server_item.tunnel_port);
                 ssh_tunneling.start();
+                tunnel_provider = "127.0.0.1:"+server_item.tunnel_port;
             }
-            catch(Exception e)
+            catch(Throwable exc)
             {
+	            if(exc instanceof NoClassDefFoundError)
+ 		            JOptionPane.showMessageDialog(f, "The MindTerm.jar library is required for ssh tunneling.You can download it from \nhttp://www.appgate.com/mindterm/download.php", 
+		                                  "alert", JOptionPane.ERROR_MESSAGE);
                 return DataProvider.LOGIN_ERROR;
             }
        }      
