@@ -278,7 +278,7 @@ int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2, struct descript
 typedef long long _int64;
 #endif
 
-static int zero=0;
+static int zero[]={0,0};
 
 #ifdef __VAX
 #define emul lib##$emul
@@ -296,14 +296,7 @@ extern int emul();
 
 static int emul(int *m1, int *m2, int *add, int *out)
 {
-  _int64 m1_64 = *m1;
-  _int64 m2_64 = *m2;
-  _int64 add_64 = *add;
-  _int64 prod;
-  int *prodp = (int *)&prod;
-  prod = m1_64 * m2_64 + add_64;
-  out[0]=prodp[0];
-  out[1]=prodp[1];
+  *(_int64 *)out = *(_int64 *)m1 * *(_int64 *)m2 + *(_int64 *)add;
   return 1;
 }
 #endif
@@ -311,7 +304,7 @@ static int emul(int *m1, int *m2, int *add, int *out)
 
 int TdiMultiplyQuadword(int *in1, int *in2, int *out)
 {
-  int tmp[3];
+  int tmp[3] = {0,0,0};
   int in1l[2];
   int in2l[2];
 #ifdef WORDS_BIGENDIAN
@@ -325,7 +318,7 @@ int TdiMultiplyQuadword(int *in1, int *in2, int *out)
   in2l[0] = in2[0];
   in2l[1] = in2[1];
 #endif
-  emul(&in2l[0],&in1l[0],&zero,&tmp[0]);
+  emul(&in2l[0],&in1l[0],zero,&tmp[0]);
   swapquad(&tmp[0])
   emul(&in2l[1],&in1l[0],&tmp[1],&tmp[1]);
   swapquad(&tmp[1])
@@ -342,7 +335,7 @@ int TdiMultiplyQuadword(int *in1, int *in2, int *out)
 
 int TdiMultiplyOctaword(int *in1, int *in2, int *out)
 {
-  int tmp[8];
+  int tmp[8] = {0,0,0,0,0,0,0,0};
   int in1l[4];
   int in2l[4];
   int tmp2[4];
@@ -368,7 +361,7 @@ int TdiMultiplyOctaword(int *in1, int *in2, int *out)
   in2l[3] = in2[3];
 #endif
 
-  emul(&in2l[0],in1l,&zero,&tmp[0]);
+  emul(&in2l[0],in1l,zero,&tmp[0]);
   swapquad(&tmp[0]);
   emul(&in2l[1],in1l,&tmp[1],&tmp[1]);
   swapquad(&tmp[1]);
@@ -376,7 +369,7 @@ int TdiMultiplyOctaword(int *in1, int *in2, int *out)
   swapquad(&tmp[2]);
   emul(&in2l[3],in1l,&tmp[3],&tmp[3]);
   swapquad(&tmp[3]);
-  emul(&in2l[0],&in1l[1],&zero,&tmp[4]);
+  emul(&in2l[0],&in1l[1],zero,&tmp[4]);
   swapquad(&tmp[4]);
   emul(&in2l[1],&in1l[1],&tmp[5],&tmp[5]);
   swapquad(&tmp[5]);
@@ -388,7 +381,7 @@ int TdiMultiplyOctaword(int *in1, int *in2, int *out)
   swapocta(tmp3);
   TdiAddOctaword(tmp2,tmp3,&tmp[1]);
   swapocta(&tmp[1]);
-  emul(&in2l[0],&in1l[2],&zero,&tmp[4]);
+  emul(&in2l[0],&in1l[2],zero,&tmp[4]);
   swapquad(&tmp[4]);
   emul(&in2l[1],&in1l[2],&tmp[5],&tmp[5]);
   swapquad(&tmp[5]);
