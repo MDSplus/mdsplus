@@ -1,4 +1,5 @@
 top_srcdir=@top_srcdir@
+prefix=@prefix@
 exec_prefix=@exec_prefix@
 INSTALL=@top_srcdir@/conf/install-sh -c
 

@@ -2,6 +2,7 @@ SHELL=/bin/sh
 LD=@LD@
 FC=@F77@
 top_srcdir=@top_srcdir@
+prefix=@prefix@
 exec_prefix=@exec_prefix@
 FFLAGS=@FFLAGS@
 LDFLAGS=@LDFLAGS@

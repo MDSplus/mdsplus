@@ -3,6 +3,7 @@ CC=@CC@
 FC=@F77@
 LD=@LD@
 top_srcdir=@top_srcdir@
+prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 FFLAGS=@FFLAGS@
