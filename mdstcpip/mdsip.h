@@ -140,10 +140,10 @@
 #define Endian(c)  (c & BigEndian)
 #define CType(c)   (c & 0x0f)
 #define IsCompressed(c) (c & COMPRESSED)
-#ifndef NOCOMPRESSION
-#define SUPPORTS_COMPRESSION 0x8000
-#else
+#ifdef NOCOMPRESSION
 #define SUPPORTS_COMPRESSION 0
+#else
+#define SUPPORTS_COMPRESSION 0x8000
 #endif
 #define SupportsCompression(c) (c & SUPPORTS_COMPRESSION)
 

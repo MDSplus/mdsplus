@@ -16,12 +16,12 @@
 #endif
 
 static unsigned char message_id = 1;
-#ifndef NOCOMPRESSION
-static int UseCompression = 1;
+#ifdef NOCOMPRESSION
+static int UseCompression = 0;
 #define compress(a,b,c,d) -1
 #define uncompress(a,b,c,d) -1
 #else
-static int UseCompression = 0;
+static int UseCompression = 1;
 extern int compress();
 extern int uncompress();
 #endif
