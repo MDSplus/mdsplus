@@ -1,6 +1,7 @@
 SHELL=/bin/sh
 CC=@CC@
 LD=@LD@
+prefix=@prefix@
 top_srcdir=@top_srcdir@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
