@@ -24,7 +24,7 @@ public class NI6071ESetup extends DeviceSetup
 		deviceField1.setOffsetNid(2);
 		deviceField1.setLabelString("Comment :");
 		getContentPane().add(deviceField1);
-		deviceField1.setBounds(-1,10,247,31);
+		deviceField1.setBounds(-1,10,255,31);
 		deviceField2.setNumCols(15);
 		deviceField2.setTextOnly(true);
 		deviceField2.setOffsetNid(1);
@@ -104,7 +104,7 @@ public class NI6071ESetup extends DeviceSetup
 		getContentPane().add(deviceButtons1);
 		deviceButtons1.setBounds(72,228,281,40);
 		getContentPane().add(deviceDispatch1);
-		deviceDispatch1.setBounds(245,8,131,32);
+		deviceDispatch1.setBounds(255,8,131,32);
 		//}}
 	}
 
