@@ -77,6 +77,7 @@ public fun TRCH__init(as_is _nid, optional _method)
 			if(_curr_pts > _pts) _pts = long(_curr_pts);
         }
     }
+
     if(_pts > _max_chan_samples)
     {
         DevLogErr(_nid, 'Too many samples. Truncated.');
