@@ -366,10 +366,6 @@ SOURCE=.\IntData.java
 # End Source File
 # Begin Source File
 
-SOURCE=.\javatraverser.mak
-# End Source File
-# Begin Source File
-
 SOURCE=.\jTraverser.java
 # End Source File
 # Begin Source File
@@ -560,6 +556,14 @@ SOURCE=.\WithUnitsData.java
 # Begin Group "Resource Files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# End Group
+# Begin Group "Makefile"
+
+# PROP Default_Filter "mak"
+# Begin Source File
+
+SOURCE=.\javatraverser.mak
+# End Source File
 # End Group
 # End Target
 # End Project

@@ -28,7 +28,7 @@ CFG=javascope - Win32 Debug
 
 !IF  "$(CFG)" == "javascope - Win32 Release"
 
-# PROP BASE Use_MFC
+# PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
 # PROP BASE Output_Dir "Release"
 # PROP BASE Intermediate_Dir "Release"
@@ -37,7 +37,7 @@ CFG=javascope - Win32 Debug
 # PROP BASE Target_File "javascope.exe"
 # PROP BASE Bsc_Name "javascope.bsc"
 # PROP BASE Target_Dir ""
-# PROP Use_MFC
+# PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
@@ -49,7 +49,7 @@ CFG=javascope - Win32 Debug
 
 !ELSEIF  "$(CFG)" == "javascope - Win32 Debug"
 
-# PROP BASE Use_MFC
+# PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
 # PROP BASE Output_Dir "Debug"
 # PROP BASE Intermediate_Dir "Debug"
@@ -58,7 +58,7 @@ CFG=javascope - Win32 Debug
 # PROP BASE Target_File "javascope.exe"
 # PROP BASE Bsc_Name "javascope.bsc"
 # PROP BASE Target_Dir ""
-# PROP Use_MFC
+# PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"
@@ -135,10 +135,6 @@ SOURCE=.\FtuProvider.java
 # Begin Source File
 
 SOURCE=.\Grid.java
-# End Source File
-# Begin Source File
-
-SOURCE=.\javascope.mak
 # End Source File
 # Begin Source File
 
@@ -360,6 +356,14 @@ SOURCE=.\WavePopup.java
 # Begin Group "Resource Files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# End Group
+# Begin Group "Makefile"
+
+# PROP Default_Filter "*.mak"
+# Begin Source File
+
+SOURCE=.\javascope.mak
+# End Source File
 # End Group
 # End Target
 # End Project
