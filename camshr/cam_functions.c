@@ -830,7 +830,7 @@ static int Jorway73ADoIo(
 
         if (online && Key.slot == 30 && F == 1 && A == 0)
 	{
-          *(short *)Data = 0x1000;
+          *(short *)Data = 0x30;
           return CamDONE_Q;
         }
         if (!Enhanced)
