@@ -1,20 +1,13 @@
 public fun EM_EQU_TEST__add(in _path, out _nidout)
 {
 
-    DevAddStart(_path, 'EM_EQU_TEST', 72, _nidout);
+    DevAddStart(_path, 'EM_EQU_TEST', 56, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':BIRA_CTRLR', 'TEXT', *, *, _nid);
-    DevAddNode(_path // ':DECODER_1', 'TEXT', *, *, _nid);
-    DevAddNode(_path // ':DECODER_2', 'TEXT', *, *, _nid);
-    DevAddNode(_path // ':START', 'NUMERIC', *, *, _nid);
-    DevAddNode(_path // ':END', 'NUMERIC', *, *, _nid);
-    DevAddNode(_path // ':FERQ_1', 'NUMERIC', *, *, _nid);
-    DevAddNode(_path // ':FREQ_2', 'NUMERIC', *, *, _nid);
-    DevAddNode(_path // ':DELAY', 'NUMERIC', *, *, _nid);
-    DevAddNode(_path // ':DURATION', 'NUMERIC', *, *, _nid);
-    DevAddNode(_path // ':Z_DURATION', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':DECODER_1',   'TEXT', *, *, _nid);
+    DevAddNode(_path // ':DECODER_2',   'TEXT', *, *, _nid);
 
-	for (_c = 1; _c <=12; _c++)
+	for (_c = 1; _c <= 10; _c++)
 	{
 		if(_c < 10)
 		    _cn = _path // '.CARD_0' // TEXT(_c, 1);
@@ -28,6 +21,7 @@ public fun EM_EQU_TEST__add(in _path, out _nidout)
      	DevAddNode(_cn // ':ADC_INT',   'TEXT', *, *, _nid);
 
 	}
+
     DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 55, 'EM_SERVER', getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }

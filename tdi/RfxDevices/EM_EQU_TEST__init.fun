@@ -1,24 +1,16 @@
 public fun EM_EQU_TEST__init(as_is _nid, optional _method)
 {
 
-    private _K_CONG_NODES = 72;
+    private _K_CONG_NODES = 66;
     private _N_HEAD = 0;
     private _N_COMMENT = 1;
     private _N_BIRA_CTRLR = 2;
-
     private _N_DECODER_1 = 3;
-    private _N_DECODER_2 = 4; 
-    private _N_START = 5;
-    private _N_END = 6;
-    private _N_FERQ_1 = 7;
-    private _N_FREQ_2 = 8;
-    private _N_DELAY = 9;
-    private _N_DURATION = 10;
-    private _N_Z_DURATION = 11;
+    private _N_DECODER_2 = 4;
 
-    private _K_NUM_CARD = 12;
+    private _K_NUM_CARD = 10;
     private _K_NODES_PER_CARD = 5;
-    private _N_CARD_1 = 12;
+    private _N_CARD_01 = 5;
     private _N_CARD_FEND  = 1;
     private _N_CARD_GAIN  = 2;
     private _N_CARD_ADC_LIN  = 3;
@@ -43,27 +35,142 @@ public fun EM_EQU_TEST__init(as_is _nid, optional _method)
 	private _INTEGRAL = 1;
 
 
+/*  CAMAC Function definition	*/
+	public _B2601_K_READ	   = 0;
+	public _B2601_K_CLEAR	   = 9;
+	public _B2601_K_WRITE	   = 16;	
+	public _B2601_K_DISABLE   = 24;
+	public _B2601_K_ENABLE	   = 26;
+
+/*  CAMAC Argument definition	*/
+	public _B2601_K_INPUT	  = 0;
+	public _B2601_K_OUTPUT	  = 1;
+
+    public _READ = 1;
+	public _WRITE = 0;
+
+    public _LINEAR   = 0;
+	public _INTEGRAL = 1;
+
+	private fun WordCommand(in _card_addr, in _rw, in _reset)
+	{
+		return ( _card_addr | _rw << 11 |  _reset << 20 );
+	};
+
+	private fun WordSetGain(in _word, in _chan, in _lin_int, in _gain)
+	{
+		_word = _word & ~( word(127) << 12 );
+		_word = _word & ~( word(15)  << 7 );
+		_word = _word & ~( word(1)   << 19 );
+
+		return  ( _word |  (_gain) << 12 | (_chan) << 7 | (_lin_int) << 19 );
+	};
+	
+	private fun WordSetChan(inout _word, in _chan)
+	{
+		_word = _word & ~( word(15) << 7 );
+
+		_word = ( _word |  (_chan) << 7 );
+	};
+
+	private fun WordGetCard(in _word)
+	{
+		return  ( _word & (127) );
+	};
+
+	private fun WordGetChan(in _word)
+	{
+		return ( ( _word & (15) << 7 ) >> 7 );
+	};
+	
+	private fun WordGetGain(in _word)
+	{
+		return ( ( _word & (127) << 12 ) >> 12 );
+	};
+
+	private fun IsRemote(in _word)
+	{
+		return ( ( _word & (1) << 19 ) >> 19 );
+	};
+
+	private fun WriteGain(in _name,  in _word)
+	{
+		_a = _B2601_K_OUTPUT;
+		_f = _B2601_K_WRITE;
+		return( DevCamChk(_name, CamPiow(_name, _a, _f, _word, 24),1,1) );
+	};
+
+
+	private fun resetBira(in _name)
+	{
+		_a = _B2601_K_INPUT;
+		_f = _B2601_K_CLEAR;
+		_w = 0;
+		_status = DevCamChk(_name, CamPiow(_name, _a, _f, _w, 24),1,1);
+		
+		if( _status )
+		{
+			wait(0.02);		
+
+			_a = _B2601_K_OUTPUT;
+			_f = _B2601_K_CLEAR;
+			_w = 0;
+			_status = DevCamChk(_name, CamPiow(_name, _a, _f, _w, 24),1,1);
+		}
+		
+		return ( _status );
+	}
+
 	private fun genFendPulses(in _name, in _card)
 	{
-		_word = ( word(_card) << 25 |  7 << 8 );
-
-		_a = _B2601$K_OUTPUT;
-		_f = _B2601$K_WRITE;
+		_a = _B2601_K_OUTPUT;
+		_f = _B2601_K_WRITE;
 
 		for( _i = 0 ; _i < 16; _i++)
 		{
-			_word = _word + word( _i << 21 );
-	        DevCamChk(_name, CamPiow( _name, _a, _f, _word, 24),1,1);
+			_word = _card + ( _i << 7 );
+			DevCamChk(_name, CamPiow( _name, _a, _f, _word, 24),1,1);
 			wait(0.02);
 		}
 	};
 
+	private fun ReadGain(in _name, in _cmnd, inout _value)
+	{		
+		_a = _B2601_K_INPUT;
+		_f = _B2601_K_CLEAR;
+		_w = 0;
+		_status = DevCamChk(_name, CamPiow(_name, _a, _f, _w, 24),1,1);
+		
+		if( _status )
+		{
+			wait(0.02);
+			_a = _B2601_K_OUTPUT;
+			_f = _B2601_K_WRITE;
+			_status = DevCamChk(_name, CamPiow(_name, _a, _f, _cmnd, 24),1,1);
+			wait(0.02);
+
+			if( _status )
+			{
+				wait(0.02);
+				_a = _B2601_K_INPUT;
+				_f = _B2601_K_READ;
+				_status = DevCamChk(_name, CamPiow(_name, _a, _f, _value, 24),1,1);
+			}
+		}	
+	};
 
     _name = if_error(data(DevNodeRef(_nid, _N_BIRA_CTRLR)), "");
 	if(_name == "")
 	{
 	    DevLogErr(_nid, "Missing BIRA 2601 camac name"); 
 		abort();
+	}
+
+	_status = resetBira(_name);
+	if( _status != 1)
+	{
+	    DevLogErr(_nid, "Bira reset operation failed"//_status); 
+	    abort();
 	}
 
     _dec_1 = if_error(data(DevNodeRef(_nid, _N_DECODER_1)), -1);

@@ -1,24 +1,24 @@
 public fun EM_GAIN__init(as_is _nid, optional _method)
 {
 
-        private _K_CONG_NODES = 149;
-        private _N_HEAD = 0;
-        private _N_COMMENT = 1;
-        private _N_BIRA_CTRLR = 2;
-        private _N_CARD_ADDR = 3;
+   private _K_CONG_NODES = 149;
+   private _N_HEAD = 0;
+   private _N_COMMENT = 1;
+   private _N_BIRA_CTRLR = 2;
+   private _N_CARD_ADDR = 3;
 
-        private _K_NUM_CHANNEL = 16;
-        private _K_NODES_PER_CHANNEL = 10;
-        private _N_CHANNEL_1 = 4;
-        private _N_CHAN_LIN_NAME = 1;
-   	private _N_CHAN_LIN_GAIN = 2;
-   	private _N_CHAN_LIN_INPUT = 3;
-   	private _N_CHAN_LIN_OUTPUT = 4;
-        private _N_CHAN_INT_NAME = 5;
-   	private _N_CHAN_INT_GAIN = 6;
-   	private _N_CHAN_INT_INPUT = 7;
-    	private _N_CHAN_INT_OUTPUT = 8;
-  	private _N_CHAN_CAL_GAIN = 9;
+   private _K_NUM_CHANNEL = 16;
+   private _K_NODES_PER_CHANNEL = 10;
+   private _N_CHANNEL_1 = 4;
+   private _N_CHAN_LIN_NAME = 1;
+   private _N_CHAN_LIN_GAIN = 2;
+   private _N_CHAN_LIN_INPUT = 3;
+   private _N_CHAN_LIN_OUTPUT = 4;
+   private _N_CHAN_INT_NAME = 5;
+   private _N_CHAN_INT_GAIN = 6;
+   private _N_CHAN_INT_INPUT = 7;
+   private _N_CHAN_INT_OUTPUT = 8;
+   private _N_CHAN_CAL_GAIN = 9;
 
 /*  CAMAC Function definition	*/
 	public _B2601_K_READ	   = 0;
@@ -31,10 +31,10 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 	public _B2601_K_INPUT	  = 0;
 	public _B2601_K_OUTPUT	  = 1;
 
-        public _READ = 1;
+    public _READ = 1;
 	public _WRITE = 0;
 
-        public _LINEAR   = 0;
+    public _LINEAR   = 0;
 	public _INTEGRAL = 1;
 
 	private fun WordCommand(in _card_addr, in _rw, in _reset)
@@ -144,14 +144,14 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 		}	
 	};
 
-        _name = if_error(data(DevNodeRef(_nid, _N_BIRA_CTRLR)), "");
-        if(_name == "")
-        {
+   _name = if_error(data(DevNodeRef(_nid, _N_BIRA_CTRLR)), "");
+   if(_name == "")
+   {
 	    DevLogErr(_nid, "Missing BIRA 2601 camac name"); 
 	    abort();
-        }
+   }
 
-        _card_addr = if_error(data(DevNodeRef(_nid, _N_CARD_ADDR)), -1);
+   _card_addr = if_error(data(DevNodeRef(_nid, _N_CARD_ADDR)), -1);
 	if(_card_addr == -1) 
 	{ 
 	    DevLogErr(_nid, "EM gain card address"); 
@@ -180,10 +180,10 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 		abort();
 	}
 	
-        
+   
 	for(_i = 0; _i < _K_NUM_CHANNEL; _i++)
-        {
-		_head_channel = _N_CHANNEL_1 + (_i *  _K_NODES_PER_CHANNEL);
+   {
+ 		_head_channel = _N_CHANNEL_1 + (_i *  _K_NODES_PER_CHANNEL);
 	
 		if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
 		{ 
