@@ -3,7 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class ModifyData extends NodeEditor implements ActionListener
+public class ModifyData extends NodeEditor 
 {
     boolean is_editable;
     ActionEditor action_edit = null;
@@ -23,65 +23,56 @@ public class ModifyData extends NodeEditor implements ActionListener
     public ModifyData() {this(true);}
     public ModifyData(boolean editable)
     {
-	is_editable = editable;
-	setLayout(new BorderLayout());
-	JPanel ip = new JPanel();
-	ip.add(onoff = new JLabel(""));
-	ip.add(new JLabel("Tags: "));
-	ip.add(tags = new JLabel(""));
-	add(ip, "North");
-	JPanel jp = new JPanel();
-	add(jp, "South");
-	if(is_editable)
-	{
-	    ok_b = new JButton("Ok");
-//	ok_b.addActionListener(new ActionListener () {
-//	    public void actionPerformed(ActionEvent e) {ok();}
-//	});
-	    ok_b.addActionListener(this);
-	    jp.add(ok_b);
-	    apply_b = new JButton("Apply");
-//	apply_b.addActionListener(new ActionListener () {
-//	    public void actionPerformed(ActionEvent e) {apply();}
-//	});
-	    apply_b.addActionListener(this);
-	    jp.add(apply_b);
-	    reset_b = new JButton("Reset");
-//	reset_b.addActionListener(new ActionListener () {
-//	    public void actionPerformed(ActionEvent e) {
-//		    reset();}
-//	});
-	    reset_b.addActionListener(this);
-	    jp.add(reset_b);
-	}
-	cancel_b = new JButton("Cancel");
-//	cancel_b.addActionListener(new ActionListener () {
-//	    public void actionPerformed(ActionEvent e) {cancel();}
-//	});
-	cancel_b.addActionListener(this);
-	jp.add(cancel_b);
+	    is_editable = editable;
+	    setLayout(new BorderLayout());
+	    JPanel ip = new JPanel();
+	    ip.add(onoff = new JLabel(""));
+	    ip.add(new JLabel("Tags: "));
+	    ip.add(tags = new JLabel(""));
+	    add(ip, "North");
+	    JPanel jp = new JPanel();
+	    add(jp, "South");
+	    if(is_editable)
+	    {
+	        ok_b = new JButton("Ok");
+    	    ok_b.addActionListener(new ActionListener () {
+    	        public void actionPerformed(ActionEvent e) {ok();}
+    	    });
+	        jp.add(ok_b);
+	        apply_b = new JButton("Apply");
+    	    apply_b.addActionListener(new ActionListener () {
+    	        public void actionPerformed(ActionEvent e) {apply();}
+          	});
+	        jp.add(apply_b);
+	        reset_b = new JButton("Reset");
+        	reset_b.addActionListener(new ActionListener () {
+        	    public void actionPerformed(ActionEvent e) {
+        		    reset();}
+        	});
+	        jp.add(reset_b);
+	        addKeyListener(new KeyAdapter() {
+	            public void keyTyped(KeyEvent e)
+	            {
+	                if(e.getKeyCode() == KeyEvent.VK_ENTER)
+	                    ok();
+	            }
+	        });
+	    }
+	    cancel_b = new JButton("Cancel");
+    	cancel_b.addActionListener(new ActionListener () {
+    	    public void actionPerformed(ActionEvent e) {cancel();}
+    	});
+    	cancel_b.setSelected(true);
+	    jp.add(cancel_b);
     }
-
-    public void actionPerformed(ActionEvent e)
-    {
-	Object obj = e.getSource();
-	if(obj == ok_b) ok();
-	if(obj == apply_b) apply();
-	if(obj == reset_b) reset();
-	if(obj == cancel_b) cancel();
-	
-	
-    }
-	
-
 
     private void replace(Editor edit)
     {
-	if(curr_edit != null && curr_edit != edit)
-	    remove((Component)curr_edit);
-	curr_edit = edit;
-	add((Component)edit, "Center");
-	//add(edit);
+	    if(curr_edit != null && curr_edit != edit)
+	        remove((Component)curr_edit);
+	    curr_edit = edit;
+	    add((Component)edit, "Center");
+	    //add(edit);
     }
      
     public void setNode(Node _node)

@@ -64,6 +64,7 @@ FloatArray.java\
 FloatData.java\
 FrameRepository.java\
 FunctionData.java\
+IdentData.java\
 IllegalDataException.java\
 IntArray.java\
 IntData.java\

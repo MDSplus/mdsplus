@@ -3,7 +3,7 @@ import javax.swing.*;
 import java.net.URL;
 import java.rmi.*;
 import java.rmi.RemoteException.*;
-
+import javax.swing.tree.*;
 public class Node
 {
     RemoteTree experiment;
@@ -17,26 +17,35 @@ public class Node
     JLabel tree_label = null;
     NodeBeanInfo bean_info = null;
     Tree hierarchy;
+    static Node copiedNode = null;
     
     public Node(RemoteTree experiment, Tree hierarchy) throws DatabaseException, RemoteException
     {
-	this.experiment = experiment;
-	this.hierarchy = hierarchy;
-	nid = new NidData(0);
-	info = experiment.getInfo(nid, Tree.context);
-	parent = null;
-	is_member = false;
+	    this.experiment = experiment;
+	    this.hierarchy = hierarchy;
+	    nid = new NidData(0);
+	    info = experiment.getInfo(nid, Tree.context);
+	    parent = null;
+	    is_member = false;
+	    sons = new Node[0];
+	    members = new Node[0];
     }
     
     public Node(RemoteTree experiment, Tree hierarchy, Node parent, boolean is_member, NidData nid)
     {
-	this.experiment = experiment;
-	this.hierarchy = hierarchy;
-	this.nid = nid;
-	this.parent = parent;
-	try {
-	    info = experiment.getInfo(nid, Tree.context);
-	}catch(Exception e) {System.out.println("Error getting info " + e);}
+	    this.experiment = experiment;
+	    this.hierarchy = hierarchy;
+	    this.nid = nid;
+	    this.parent = parent;
+	    try {
+	        info = experiment.getInfo(nid, Tree.context);
+	    }catch(Exception e) 
+	    {
+	        System.out.println("Error getting info " + e);
+	    }
+	    sons = new Node[0];
+	    members = new Node[0];
+	    
     }
     
     public void updateData() throws DatabaseException, RemoteException
@@ -46,14 +55,16 @@ public class Node
     
     public void updateInfo() throws DatabaseException, RemoteException
     {
-	info = experiment.getInfo(nid, Tree.context);
+	    info = experiment.getInfo(nid, Tree.context);
     }
     
     public void expand() throws DatabaseException, RemoteException
     {
 	    int i;
 	    NidData sons_nid[] = experiment.getSons(nid, Tree.context);
+	    if(sons_nid == null) sons_nid = new NidData[0];
 	    NidData members_nid[] = experiment.getMembers(nid, Tree.context);
+	    if(members_nid == null) members_nid = new NidData[0];
 	    sons = new Node[sons_nid.length];
 	    members = new Node[members_nid.length];
 	    for(i = 0; i < sons_nid.length; i++)
@@ -105,8 +116,8 @@ public class Node
     }
     public Data getData() throws DatabaseException, RemoteException
     {
-	data = experiment.getData(nid, Tree.context);
-	return data;
+	    data = experiment.getData(nid, Tree.context);
+	    return data;
     }
     public NodeInfo getInfo()throws DatabaseException, RemoteException
     {
@@ -209,15 +220,32 @@ public class Node
     public Node[] getMembers() {return members; }
     public Node addNode(int usage, String name) throws DatabaseException, RemoteException
     {
-	NidData prev_default = experiment.getDefault(Tree.context), new_nid = null;
-	experiment.setDefault(nid, Tree.context);
-	try {
-	    if(info == null)
-		info = experiment.getInfo(nid, Tree.context);
-	    new_nid = experiment.addNode(name, usage, Tree.context);
-	} finally {
-	    experiment.setDefault(prev_default, Tree.context); }
-	return new Node(experiment, hierarchy, this, true, new_nid);
+	    NidData prev_default = experiment.getDefault(Tree.context), new_nid = null;
+	    experiment.setDefault(nid, Tree.context);
+	    try {
+	        if(info == null)
+		    info = experiment.getInfo(nid, Tree.context);
+	        new_nid = experiment.addNode(name, usage, Tree.context);
+	    } finally {
+	        experiment.setDefault(prev_default, Tree.context); }
+	    Node newNode = new Node(experiment, hierarchy, this, true, new_nid);
+	    if(name.charAt(0) == '.')
+	    {
+	        Node []newNodes = new Node[sons.length + 1];
+	        for(int i = 0; i < sons.length; i++)
+	            newNodes[i] = sons[i];
+	        newNodes[sons.length] = newNode;
+	        sons = newNodes;
+	    }
+	    else
+	    {
+	        Node []newNodes = new Node[members.length + 1];
+	        for(int i = 0; i < members.length; i++)
+	            newNodes[i] = members[i];
+	        newNodes[members.length] = newNode;
+	        members = newNodes;
+	    }
+	    return newNode;
     }
 
     public Node addDevice(String name, String type) throws DatabaseException, RemoteException
@@ -231,7 +259,24 @@ public class Node
 	    } finally {
 	        experiment.setDefault(prev_default, Tree.context); 
 	    }
-	    return new Node(experiment, hierarchy, this, true, new_nid);
+	    Node newNode = new Node(experiment, hierarchy, this, true, new_nid);
+	    if(name.charAt(0) == '.')
+	    {
+	        Node []newNodes = new Node[sons.length + 1];
+	        for(int i = 0; i < sons.length; i++)
+	            newNodes[i] = sons[i];
+	        newNodes[sons.length] = newNode;
+	        sons = newNodes;
+	    }
+	    else
+	    {
+	        Node []newNodes = new Node[members.length + 1];
+	        for(int i = 0; i < members.length; i++)
+	            newNodes[i] = members[i];
+	        newNodes[members.length] = newNode;
+	        members = newNodes;
+	    }
+	    return newNode;
     }
 
 	 
@@ -289,6 +334,7 @@ public class Node
         
     public JLabel getIcon()
     {
+        if(info == null) return null;
 	if(tree_label != null)
 	    return tree_label;
 	ImageIcon icon = null;
@@ -316,6 +362,105 @@ public class Node
     }
 
     public String toString() {return getName(); }
+   
+    static public void pasteSubtree(Node fromNode, Node toNode, boolean isMember)
+    {
+        DefaultMutableTreeNode savedTreeNode = Tree.getCurrTreeNode();
+        try {
+            fromNode.expand();
+            String []usedNames = new String[toNode.sons.length + toNode.members.length];
+            //collect names used so far
+            int idx = 0;
+            for(int i = 0; i < toNode.sons.length; i++)
+                usedNames[idx++] = toNode.sons[i].getName().trim();
+            for(int i = 0; i < toNode.members.length; i++)
+                usedNames[idx++] = toNode.members[i].getName().trim();
+
+            if(fromNode.getUsage() == NodeInfo.USAGE_DEVICE)
+            {
+                ConglomData conglom = (ConglomData)fromNode.getData();
+                Node newNode = Tree.addDevice((isMember?":":".")+getUniqueName(fromNode.getName().trim(), usedNames),
+                    conglom.getModel().getString(), toNode);
+                newNode.expand();
+                copySubtreeContent(fromNode, newNode);
+            }
+            else
+            {
+                Node newNode = Tree.addNode(fromNode.getUsage(), 
+                    (isMember?":":".")+getUniqueName(fromNode.getName().trim(), usedNames), toNode);
+                if(newNode == null) return;
+                newNode.expand();
+                try {
+                    Data data = fromNode.getData();
+                    if(data != null)
+                        newNode.setData(data);
+                }catch(Exception exc){}
+                for(int i = 0; i < fromNode.sons.length; i++)
+                {
+                    pasteSubtree(fromNode.sons[i], newNode, false);
+                }
+                for(int i = 0; i < fromNode.members.length; i++)
+                {
+                    pasteSubtree(fromNode.members[i], newNode, true);
+                }
+            }
+        }catch(Exception exc)
+ 		{
+ 		    JOptionPane.showMessageDialog(FrameRepository.frame, ""+exc, 
+		        "Error copying subtree", JOptionPane.WARNING_MESSAGE);
+		}
+        Tree.setCurrTreeNode(savedTreeNode);        
+    }
+ 
+    public static void copySubtreeContent(Node fromNode, Node toNode)
+    {
+        try {
+            fromNode.expand();
+            toNode.expand();
+        }catch(Exception exc)
+        {
+            System.err.println("Error expanding nodes: " + exc);
+        }
+        try {
+            Data data = fromNode.getData();
+            if(data != null)
+            {
+                if(!(data instanceof ActionData))
+                    toNode.setData(data);
+            }
+        }catch(Throwable exc){}
+        for(int i = 0; i < fromNode.sons.length; i++)
+            copySubtreeContent(fromNode.sons[i], toNode.sons[i]);
+        for(int i = 0; i < fromNode.members.length; i++)
+            copySubtreeContent(fromNode.members[i], toNode.members[i]);
+    }    
+    
+    
+    public static String getUniqueName(String name, String [] usedNames)
+    {
+        int i;
+        for(i = 0; i < usedNames.length && !name.equals(usedNames[i]); i++);
+        if(i == usedNames.length) return name;
+        for(i = name.length() - 1; i > 0 && (name.charAt(i) >= '0' && name.charAt(i) <= '9'); i--);
+        name = name.substring(0, i + 1);
+        String prevName;
+        if(name.length() < 10)
+            prevName = name;
+        else
+            prevName = name.substring(0, 9);
+        for(i = 1; i < 1000; i++)
+        {
+            String newName = prevName+i;
+            int j;
+            for(j = 0; j < usedNames.length && !newName.equals(usedNames[j]);j++);
+            if(j == usedNames.length) return newName;
+        }
+        return "XXXXXXX"; //Dummy name, hopefully will never reach this
+    }
+            
+        
+   
+   
    
 }
     
