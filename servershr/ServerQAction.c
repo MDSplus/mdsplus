@@ -11,6 +11,8 @@
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
+#define pthread_mutexattr_default NULL
+#define pthread_condattr_default NULL
 #else
 #undef select
 #endif
@@ -487,13 +489,13 @@ static int StartThread()
   int status;
   if (JobWaitInitialized == 0)
   {
-    status = pthread_mutex_init(&JobWaitMutex,0);
+    status = pthread_mutex_init(&JobWaitMutex,pthread_mutexattr_default);
     if (status)
     {
       perror("Error creating pthread mutex");
       exit(status);
     }
-    status = pthread_cond_init(&JobWaitCondition,0);
+    status = pthread_cond_init(&JobWaitCondition,pthread_condattr_default);
     if (status)
     {
       perror("Error creating pthread condition");
@@ -503,7 +505,7 @@ static int StartThread()
   }
   if (WorkerThreadRunning == 0)
   {
-    status = pthread_create(&WorkerThread, 0, Worker, 0);
+    status = pthread_create(&WorkerThread, 0, Worker, pthread_attr_default);
     if (status)
     {
       perror("Error creating pthread");
