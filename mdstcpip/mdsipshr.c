@@ -1,4 +1,6 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIPSHR.C */
+/*  *84    6-JAN-1998 09:29:46 TWF "Use larger window" */
+/*  *83    6-JAN-1998 09:28:25 TWF "Use larger window" */
 /*  *82   23-SEP-1997 14:29:56 TWF "Might not always get full header" */
 /*  *81   23-SEP-1997 10:01:32 TWF "Avoid interrupts from IDL" */
 /*  *80   19-AUG-1997 11:22:26 TWF "Fix selectstat" */
@@ -341,6 +343,7 @@ static SOCKET ConnectToPort(char *host, char *service)
   struct hostent *hp;
   struct servent *sp;
   static int one=1;
+  long sendbuf = 32768,recvbuf = 32768;
   hp = gethostbyname(host);
   if (hp == NULL)
   {
@@ -427,7 +430,9 @@ static SOCKET ConnectToPort(char *host, char *service)
       return INVALID_SOCKET;
     }
   }
-  setsockopt(s, SOL_SOCKET,SO_OOBINLINE,(void *)&one,4);
+  setsockopt(s, SOL_SOCKET,SO_RCVBUF,(void *)&recvbuf,sizeof(long));
+  setsockopt(s, SOL_SOCKET,SO_SNDBUF,(void *)&sendbuf,sizeof(long));
+  setsockopt(s, SOL_SOCKET,SO_OOBINLINE,(void *)&one,sizeof(long));
 #ifdef MULTINET
   sys$qiow(0,s,IO$_SETMODE | IO$M_ATTNAST,0,0,0,MdsDispatchEvent,s,0,0,0,0);
 #endif
