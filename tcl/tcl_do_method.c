@@ -107,6 +107,13 @@ int TclDoMethod()
     str_free1_dx(&object);
 #ifdef vms
     if (!(sts & 1)) lib$signal(sts,0);
+#else
+	if (!(sts & 1))
+	{
+		char msg[512];
+		sprintf(msg,"Error executing method - %s",MdsGetMsg(sts));
+		TclTextOut(msg);
+	}
 #endif
     return sts;
    }
