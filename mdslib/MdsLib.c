@@ -1,9 +1,11 @@
 /* TO DO: 
 
  - multi-dimensional arrays (and Fortran - fill by column) 
-   - HOW TO HANDLE >2d arrays???
+   - Confirm that this works for 3D array (PSIRZ)
 
  - cstring data types
+
+ - complex data
 
  - parameters passed to native API
 
@@ -17,6 +19,26 @@ static EMPTYXD(mdsValueAnswer);
 
 static int next = 0;
 
+short dtype_length(struct descriptor *d)
+{
+  short len;
+  switch (d->dtype)
+  {
+    case DTYPE_CSTRING :  len = d->length ? d->length : (d->pointer ? strlen(d->pointer) : 0); break;
+    case DTYPE_UCHAR   :
+    case DTYPE_CHAR    :  len = sizeof(char); break;
+    case DTYPE_USHORT  :
+    case DTYPE_SHORT   :  len = sizeof(short); break;
+    case DTYPE_ULONG   :  
+    case DTYPE_LONG    :  len = sizeof(long); break;
+    case DTYPE_FLOAT   :  len = sizeof(float); break;
+    case DTYPE_DOUBLE  :  len = sizeof(double); break;
+    case DTYPE_FLOAT_COMPLEX :  len = sizeof(float) * 2; break;
+    case DTYPE_DOUBLE_COMPLEX :  len = sizeof(double) * 2; break;
+  }
+  return len;
+}
+
 int descr (int *dtype, void *data, int *dim1, ...)
 
 {
@@ -25,33 +47,26 @@ int descr (int *dtype, void *data, int *dim1, ...)
   int retval;
 
   dsc->dtype = *dtype;
+  switch (dsc->dtype)
+  {
+    case DTYPE_F :  
+      dsc->dtype = DTYPE_FLOAT;
+      break;
+    case DTYPE_D :  
+      dsc->dtype = DTYPE_DOUBLE;
+      break;
+    case DTYPE_FC : 
+      dsc->dtype = DTYPE_FLOAT_COMPLEX;
+      break;
+    default : 
+      break;
+  }
+  dsc->length = dtype_length(dsc);
   dsc->pointer = (char *)data;
-
-  printf("DTYPE_FLOAT: %d\n",DTYPE_FLOAT);
 
   if (*dim1 == 0) 
   {
     dsc->class = CLASS_S;
-    switch (dsc->dtype)
-    {
-      case DTYPE_CHAR :  
-	dsc->length = sizeof(char);
-	break;
-      case DTYPE_SHORT :  
-	dsc->length = sizeof(short);
-	break;
-      case DTYPE_LONG :  
-	dsc->length = sizeof(long);
-	break;
-      case DTYPE_FLOAT :  
-	dsc->length = sizeof(float);
-	break;
-      case DTYPE_DOUBLE :  
-	dsc->length = sizeof(double);
-	break;
-      default : 
-	dsc->length = 0;
-    }
   }
   else 
   {
@@ -119,7 +134,7 @@ int descr (int *dtype, void *data, int *dim1, ...)
 
 
 
-void NewMdsConnect(char *host)
+void MdsConnect(char *host)
 {
   mdsSocket = ConnectToMds(host);  /*** SETS GLOBAL VARIABLE mdsSOCKET ***/
 }
@@ -128,9 +143,28 @@ void NewMdsConnect(char *host)
 
 struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
 {
+
+  int dtype;
+
+  switch (dsc->dtype)
+  {
+
+    case DTYPE_FLOAT : 
+      dtype = DTYPE_F;
+      break;
+    case DTYPE_DOUBLE : 
+      dtype = DTYPE_D;
+      break;
+    case DTYPE_FLOAT_COMPLEX: 
+      dtype = DTYPE_FC;
+      break;
+    default:
+      dtype = dsc->dtype;
+  }
+
   if (dsc->class == CLASS_S) 
   {
-    arg = MakeDescrip(arg, dsc->dtype, 0, 0, dsc->pointer);
+    arg = MakeDescrip(arg, dtype, 0, 0, dsc->pointer);
   } 
   else 
   {
@@ -141,7 +175,7 @@ struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
       int dims[MAXDIM];
       for (i=0; i<adsc->dimct; i++) dims[i] = adsc->m[i];
       for (i=adsc->dimct; i<MAXDIM; i++) dims[i] = 0;
-      arg = MakeDescrip(arg, adsc->dtype, adsc->dimct, dims, adsc->pointer);
+      arg = MakeDescrip(arg, dtype, adsc->dimct, dims, adsc->pointer);
     }
     else 
     {
@@ -152,8 +186,7 @@ struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
 }
 
 
-
-int NewMdsValue(char *expression, ...) 
+int MdsValue(char *expression, ...) 
 {
 
   va_list incrmtr;
@@ -209,48 +242,53 @@ int NewMdsValue(char *expression, ...)
 
       status = GetAnswerInfo(mdsSocket, &arg->dtype, &len, &arg->ndims, arg->dims, &numbytes, &dptr);
 
+
       arg->length = len; 
       if (numbytes)
       {
-	switch (arg->dtype)
+	status = (arg->dtype != DTYPE_CSTRING) || (arg->dtype == dsc->dtype);
+	if (status) 
 	{
+	  switch (arg->dtype)
+  	  {
 
-/*	  case DTYPE_UCHAR :     
-	    memcpy(dsc->pointer, (uchar *) dptr, numbytes);
-	    break;
+/*	    case DTYPE_UCHAR :     
+	      memcpy(dsc->pointer, (uchar *) dptr, numbytes);
+	      break;
 	    
-	  case DTYPE_USHORT : 
-	    memcpy(dsc->pointer, (ushort *) dptr, numbytes);
-	    break;
+	    case DTYPE_USHORT : 
+	      memcpy(dsc->pointer, (ushort *) dptr, numbytes);
+	      break;
 
-  	  case DTYPE_ULONG : 
-	    memcpy(dsc->pointer, (ulong *) dptr, numbytes);
-	    break;
+  	    case DTYPE_ULONG : 
+	      memcpy(dsc->pointer, (ulong *) dptr, numbytes);
+	      break;
 */
-  	  case DTYPE_CHAR : 
-  	  case DTYPE_CSTRING:
-	    memcpy(dsc->pointer, (char *) dptr, numbytes);
-	    break;
+  	    case DTYPE_CHAR : 
+  	    case DTYPE_CSTRING:
+	      memcpy(dsc->pointer, (char *) dptr, numbytes);
+	      break;
 
-  	  case DTYPE_SHORT : 
-	    memcpy(dsc->pointer, (short *) dptr, numbytes);
-	    break;
+  	    case DTYPE_SHORT : 
+	      memcpy(dsc->pointer, (short *) dptr, numbytes);
+	      break;
 
-  	  case DTYPE_LONG : 
-	    memcpy(dsc->pointer, (long *) dptr, numbytes);
-	    break;
+  	    case DTYPE_LONG : 
+	      memcpy(dsc->pointer, (long *) dptr, numbytes);
+	      break;
 
-  	  case DTYPE_FLOAT : 
-	    memcpy(dsc->pointer, (float *) dptr, numbytes);
-	    break;
+  	    case DTYPE_F : 
+	      memcpy(dsc->pointer, (float *) dptr, numbytes);
+	      break;
 
-  	  case DTYPE_DOUBLE : 
-	    memcpy(dsc->pointer, (double *) dptr, numbytes);
-	    break;
+  	    case DTYPE_D : 
+	      memcpy(dsc->pointer, (double *) dptr, numbytes);
+	      break;
 
-	  default : 
-	    status = 0;
-	    break;
+	    default : 
+	      status = 0;
+	      break;
+	  }
 	}
       } 
       else 
@@ -340,60 +378,91 @@ int NewMdsValue(char *expression, ...)
       MdsFree1Dx(&tmp, NULL);
     }
   }
+  return(status);
 
 }
 
 
 
-int  NewMdsOpen(char *tree, int shot)
+int  MdsOpen(char *tree, int shot)
 {
 
   if (mdsSocket > 0)
   {
-    struct descrip treearg;
+
+    /*    struct descrip treearg;
     struct descrip shotarg;
-    struct descrip ansarg;
+    struct descrip ansarg;*/
+
+    long answer;
+    int status;
+    int d1,d2,d3; /* descriptor numbers passed to MdsValue */
+    int dtype_cstring = DTYPE_CSTRING;
+    int dtype_long = DTYPE_LONG;
+    int null = NULL;
+
 #ifdef _UNIX_SERVER
     static char *expression = "TreeOpen($,$)";
 #else
     static char *expression = "MDSLIB->MDS$OPEN($,$)";
 #endif
 
-    int status = MdsValue(mdsSocket, expression, MakeDescrip((struct descrip *)&treearg,DTYPE_CSTRING,0,0,tree), 
-			  MakeDescrip((struct descrip *)&shotarg,DTYPE_LONG,0,0,&shot),
-			  (struct descrip *)&ansarg, (struct descrip *)NULL);
+    d1 = descr(&dtype_cstring,tree,&null);
+    d2 = descr(&dtype_long,&shot, &null);
+    d3 = descr(&dtype_long,&answer,&null);
+
+    status = MdsValue(expression, &d1, &d2, &d3, &null);
     
-    if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) status = *(int *)ansarg.ptr;
-    if (ansarg.ptr) free(ansarg.ptr);
-    return status;
+    if ((status & 1))
+    {
+      return *(int *)&answer; 
+    } else 
+      return 0;  /*&&& should I return status here?  It looks messed up. &&& */
   }
   else 
   {
-    return TreeOpen(*tree, shot);
+    return TreeOpen(tree, shot);
   }
 }
 
 
-int  NewMdsClose(char *tree, int shot)
+int  MdsClose(char *tree, int shot)
 {
 
   if (mdsSocket > 0)
   {
-    struct descrip ansarg;
+
+
+    long answer;
+    int status;
+    int d1,d2,d3; /* descriptor numbers passed to MdsValue */
+    int dtype_cstring = DTYPE_CSTRING;
+    int dtype_long = DTYPE_LONG;
+    int null = NULL;
+
 #ifdef _UNIX_SERVER
-    static char *expression = "TreeClose()";
+    static char *expression = "TreeClose($,$)";
 #else
-    static char *expression = "MDSLIB->MDS$CLOSE()";
+    static char *expression = "MDSLIB->MDS$CLOSE($,$)";
 #endif
-    int status = MdsValue(mdsSocket, expression, &ansarg, NULL);
-    if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) status = *(int *)ansarg.ptr;
-    if (ansarg.ptr) free(ansarg.ptr);
-    return status;
+
+    d1 = descr(&dtype_cstring,tree,&null);
+    d2 = descr(&dtype_long,&shot, &null);
+    d3 = descr(&dtype_long,&answer,&null);
+
+    status = MdsValue(expression, &d1, &d2, &d3, &null);
+    
+    if ((status & 1))
+    {
+      return *(int *)&answer; 
+    } else 
+      return 0;  /*&&& should I return status here?  It looks messed up. &&& */
   }
   else 
   {
-    return TreeClose(*tree, shot);
+    return TreeClose(tree, shot);
   }
+
 
 }
 

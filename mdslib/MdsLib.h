@@ -1,9 +1,14 @@
+#include <ipdesc.h>
+/*** undefine conflicting data types ***/
+#undef DTYPE_FLOAT
+#undef DTYPE_DOUBLE
+#undef DTYPE_COMPLEX
+
 #include <mdsdescrip.h>
 #include <stdio.h>            
 #include <mds_stdarg.h>
 #include <string.h>
 #include <stdlib.h>
-#include <ipdesc.h>
 
 
 #define NDESCRIP_CACHE 256

@@ -9,7 +9,7 @@ mdslibjeff : ../bin ../shlib ../shlib/libMdsLib.$(SHARE_TYPE)
 	mkdir ../bin
 
 ../shlib/libMdsLib.$(SHARE_TYPE) : $(OBJECTS) 
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc $(SOCKET_LIB) -L /f/mdsplus/cvsroot/mdsplus/shlib -lMdsIpShr -lTdiShr -lTreeShr -lMdsShr
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) +s +b /f/mdsplus/cvsroot/mdsplus/shlib $(OBJECTS) -lc $(SOCKET_LIB) -L/f/mdsplus/cvsroot/mdsplus/shlib -lTdiShr -lTreeShr -lMdsShr -L../mdstcpip -lMdsIpUtil
 
 ../shlib :
 	mkdir ../shlib
