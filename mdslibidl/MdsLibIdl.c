@@ -89,29 +89,9 @@ typedef struct {
   char *s;      /*  Addr of string, invalid if slen == 0.  */
 } IDL_STRING_L;
 
-typedef struct {
-  IDL_STRING arch;              /* Machine architecture */
-  IDL_STRING os;                /* Operating System */
-  IDL_STRING os_family;         /* Operating System family
-                                   (e.g. Unix vs SunOS) */
-  IDL_STRING release;           /* Software release */
-  IDL_STRING build_date;        /* Date on which this executable was built */
-  short memory_bits;            /* # of bits used to address memory */
-  short file_offset_bits;       /* # of bits used to represent file offsets */
-} IDL_SYS_VERSION;
-/*
-extern IDL_SYS_VERSION IDL_SysvVersion;
-*/
-
-static int ShortStrings()
+static int ShortStrings(char *b)
 {
-  /*  return IDL_SysvVersion.arch.stype == 0 &&
-         IDL_SysvVersion.os.stype == 0 &&
-         IDL_SysvVersion.os_family.stype == 0 &&
-         IDL_SysvVersion.release.stype == 0 &&
-    IDL_SysvVersion.build_date.stype == 0;
-  */
-  return 1;
+  return b[5] != 0 || b[6] != 0;
 }
 
 static void *MakeDescr(int idx, int *argsize, void *bytes)
@@ -129,7 +109,8 @@ static void *MakeDescr(int idx, int *argsize, void *bytes)
     case 5: scalarArgs[idx].length = 8; scalarArgs[idx].dtype = DTYPE_FT; break;
     case 6: scalarArgs[idx].length = 8; scalarArgs[idx].dtype = DTYPE_FSC; break;
     case 7: scalarArgs[idx].length = ((IDL_STRING *)bytes)->slen ; scalarArgs[idx].dtype = DTYPE_T; 
-               scalarArgs[idx].pointer = ShortStrings() ? ((IDL_STRING *)bytes)->s : ((IDL_STRING_L *)bytes)->s; break;
+               scalarArgs[idx].pointer = ShortStrings(bytes) ? 
+                         ((IDL_STRING *)bytes)->s : ((IDL_STRING_L *)bytes)->s; break;
     case 9: scalarArgs[idx].length = 16; scalarArgs[idx].dtype = DTYPE_FTC; break;
     case 12: scalarArgs[idx].length = 2; scalarArgs[idx].dtype = DTYPE_WU; break;
     case 13: scalarArgs[idx].length = 4; scalarArgs[idx].dtype = DTYPE_LU; break;
@@ -160,7 +141,7 @@ static void *MakeDescr(int idx, int *argsize, void *bytes)
     case 6: arrayArgs[idx].length = 8; arrayArgs[idx].dtype = DTYPE_FSC; arrayArgs[idx].arsize = argsize[argsize[0]+2] * 8; break;
     case 7: 
       {
-        if (ShortStrings())
+        if (ShortStrings(bytes))
 	{
   	IDL_STRING *str;
         int num = 1;
