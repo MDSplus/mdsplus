@@ -1,3 +1,4 @@
+#ifdef XIO
 #include "globus_common.h"
 #include "gssapi.h"
 #include "globus_gss_assist.h"
@@ -8,14 +9,19 @@
 #include "globus_xio_gsi.h"
 #include "globus_xio_http.h"
 #define LINE_LEN 1024
+#else
+#include <curl/curl.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#endif
 
 static char *urlencode(char *in)
 {
-  static char *ans=0;
+  char *ans=0;
   int i;
   int j=0;
   int inlen=strlen(in);
-  if (ans != 0) free(ans);
   ans=malloc(inlen*3);
   for(i=0,j=0;i<inlen;i++)
   {
@@ -40,6 +46,7 @@ static char *urlencode(char *in)
   return ans;
 }
 
+#ifdef XIO
 int roam_check_access(char *host, int https, char *resource, char *permit, char *dn, char **aux)
 {
   globus_xio_driver_t                     tcp_driver;
@@ -67,6 +74,7 @@ int roam_check_access(char *host, int https, char *resource, char *permit, char 
   strcat(url,"&");
   strcat(url,"uname=");
   strcat(url,urlencode(dn));
+  printf("url=%s\n",url);
   globus_module_activate(GLOBUS_XIO_MODULE);
   globus_xio_stack_init(&stack, NULL);
   globus_xio_driver_load("tcp", &tcp_driver);
@@ -125,3 +133,72 @@ int roam_check_access(char *host, int https, char *resource, char *permit, char 
   globus_xio_close(xio_handle, NULL);
   return status;
 }
+#else
+
+struct _buf { size_t size; char *ptr; };
+
+static int callback(char *ptr, size_t size, size_t nmemb, struct _buf *buf)
+{
+  if (buf->size==0)
+  {
+    buf->ptr = malloc(size*nmemb+1);
+    memcpy(buf->ptr,ptr,size*nmemb);
+  }
+  else
+  {
+    buf->ptr = realloc(buf->ptr,buf->size+size*nmemb+1);
+    memcpy(buf->ptr+buf->size,ptr,size*nmemb);
+  }
+  buf->size += size*nmemb;
+  buf->ptr[buf->size]=0;
+  return size*nmemb;
+}
+
+int roam_check_access(char *host, int https, char *resource, char *permit, char *dn, char **aux)
+{
+  CURL *ctx=curl_easy_init();
+  CURLcode status;
+  struct _buf buf = {0,0};
+  char *url = malloc(strlen(host)+30+(strlen(resource)+strlen(permit)+strlen(dn))*3);
+  char *res=urlencode(resource);
+  char *perm=urlencode(permit);
+  char *uname=urlencode(dn);
+  sprintf(url,"http%s://%s/?check_access&rname=%s&permission=%s&uname=%s",
+	  https ? "s" : "",host,res,perm,uname);
+  free(res);
+  free(perm);
+  free(uname);
+  curl_easy_setopt(ctx,CURLOPT_WRITEFUNCTION,callback);
+  curl_easy_setopt(ctx,CURLOPT_WRITEDATA,&buf);
+  curl_easy_setopt(ctx,CURLOPT_URL,url);
+  curl_easy_setopt(ctx,CURLOPT_CAPATH,"/etc/grid-security/certificates");
+  status = curl_easy_perform(ctx);
+  curl_easy_cleanup(ctx);
+  if (status == 0 && buf.size >= 4) 
+  {
+    if (strncmp(buf.ptr,"yes",3)==0)
+    {
+      if (buf.size > 4)
+      {
+        *aux=malloc(buf.size-4);
+        if (buf.size > 5)
+	  strncpy(*aux,&buf.ptr[4],buf.size-4);
+	(*aux)[buf.size-4]=0;
+      }
+      else
+      {
+        (*aux)=strcpy(malloc(1),"");
+      }
+    }
+    else
+      status=-1;
+  }
+  else
+  {
+    status=-1;
+  }
+  if (buf.ptr)
+    free(buf.ptr);
+  return status;
+}
+#endif
