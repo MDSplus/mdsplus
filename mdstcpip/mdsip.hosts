@@ -16,6 +16,13 @@
 # For local account mapping you can also use the keyword MAP_TO_LOCAL which
 # maps the username of the remote user to the same name on the local system.
 #
+#
+# If you want to run an mdsip server from a non-privileged account you will
+# need to map all permitted connections to the special keyword SELF. This
+# instructs the server to not attempt to switch user id when incoming connections
+# occur. Do not use the SELF mapping when running the server from the root
+# account as this will compromise system security.
+#
 # Changes to this file take effect immediately without restarting inetd or
 # any other service. They do not effect existing connections however.
 #
