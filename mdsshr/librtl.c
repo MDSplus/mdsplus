@@ -1077,6 +1077,12 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   strcat(full_filename,c_filename);
   strcat(full_filename,".sl");
   handle = shl_load(full_filename,BIND_DEFERRED | BIND_NOSTART | DYNAMIC_PATH,0);
+  if (handle == NULL)
+  {
+    strcpy(full_filename,c_filename);
+    strcat(full_filename,".sl");
+    handle = shl_load(full_filename,BIND_DEFERRED | BIND_NOSTART | DYNAMIC_PATH,0);
+  }
   if (handle != NULL)
   {
     char *c_symbol = MdsDescrToCstring(symbol);
