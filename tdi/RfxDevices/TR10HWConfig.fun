@@ -29,11 +29,12 @@ public fun TR10HWConfig(in _board_id)
 	private _TR10_CLK_TERMINATION_OFF	=	byte(0x0);
 	private _TR10_CLK_TERMINATION_ON	=	byte(0x1);
 
+write(*, 'Cicico');
 
 /* Initialize Library if the first time */
     _first = 0;
     if_error(_TR10_initialized, (TR10->TR10_InitLibrary(); public _TR10_initialized = 1; _first = 1;));
-	
+write(*, 'Cicico1');	
 
 /* Open device */
 	_handle = 0L;
@@ -43,6 +44,7 @@ public fun TR10HWConfig(in _board_id)
 		DevLogErr(_nid, "Error opening TR10 device, board ID = "// _board_id);
 		return(0);
 	}
+write(*, 'Cicico2');
 
 /* Reset module */
 /*	TR10->TR10_Reset(val(_handle));
@@ -50,17 +52,16 @@ public fun TR10HWConfig(in _board_id)
 
 /* Set clock functions on external clock */
 	_clock_source = byte(_TR10_TRG_SOURCE_EXTERNAL);
-	_clock_div = byte(_TR10_CLK_DIVIDE);
 	TR10->TR10_Clk_SetClockMode(val(_handle), val(_clock_source), val(_TR10_CLK_NO_EXT_CLOCK),
-		val(0B), val(_TR10_CLK_RISING_EDGE), val(_TR10_CLK_TERMINATION_OFF), val(long(_clock_div)));
-		  
+		val(0B), val(_TR10_CLK_RISING_EDGE), val(_TR10_CLK_TERMINATION_OFF), val(long(1)));
+write(*, 'Cicico3');		  
 /* Set Trigger function */
 	_trig_mode =_TR10_TRG_SOURCE_EXTERNAL;
 	
 	TR10->TR10_Trg_SetTrigger(val(_handle), val(_trig_mode), val(0B), val(0B),
 		val(_TR10_TRG_EXT_OUT_ON), val(byte(_trig_edge)), val(_TR10_TRG_TERMINATION_ON),
 		val(_TR10_TRG_SYNCHRONOUS), val(0B));
-
+write(*, 'Cicico4');
 
 /* Close device */
 	TR10->TR10_Close(val(_handle));
