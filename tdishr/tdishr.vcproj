@@ -371,6 +371,9 @@
 		<File
 			RelativePath=".\TdiYaccSubs.c">
 		</File>
+		<File
+			RelativePath="..\include\libroutines.h">
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
