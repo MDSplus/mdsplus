@@ -4,6 +4,43 @@
 ;  return,answer
 ;end
 
+;+
+; NAME:
+;	MDSVALUE (Native and TCP/IP version) 
+; PURPOSE:
+;       Return the value of an MDSplus expression
+; CATEGORY:
+;	MDSPLUS/IP
+; CALLING SEQUENCE:
+;	answer = MDSVALUE(expression[,arg1,...,argn][,/QUIET][STATUS=stat])
+; INPUT PARAMETERS:
+;       expression = character string containing a valid MDSplus expression
+; OPTIONAL INPUT PARAMETERS:
+;       arg1,...,argn = values to substitute into the expression where
+;                       "$" or "$n" placeholders indicate.
+; Keywords:
+;       QUIET = prevents IDL error if TCL command fails
+;       STATUS = return status, low bit set = success
+; OUTPUTS:
+;       stat = return status, low bit set = success
+; OUTPUTS:
+;	None.
+; COMMON BLOCKS:
+;	None.
+; SIDE EFFECTS:
+;	None.
+; RESTRICTIONS:
+;	None.
+; PROCEDURE:
+;	Calls MDSplus shared image library IdlMdsValue.  Works with
+;	both native access (Unix, VMS, Win32/WinNT) and client/server
+;	(Unix, VMS, Win32/WinNT, MacOS).  
+; MODIFICATION HISTORY:
+;	 VERSION 1.0, CREATED BY T.W. Fredian, September 22,1992
+;        VERSION 2.0, Jeff Schachter 1998.10.06 - added support for
+;                     both client/server (MdsIpShr) and native access.
+;                     Test is based on mdsIsClient() function
+;-
 
 
 function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,quiet=quiet,status=status
