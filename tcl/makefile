@@ -15,7 +15,8 @@ OBJFILES = 			\
 	tcl_set_current.o	\
 	tcl_set_default.o	\
 	tcl_set_node.o		\
-	tcl_set_tree.o
+	tcl_set_tree.o		\
+	tcl_show_data.o
 
 all:	tcl tcl_commands.o  libTcl.a  ../shlib/tcl_commands.$(SHARE_TYPE)
 

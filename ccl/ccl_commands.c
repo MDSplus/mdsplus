@@ -4,7 +4,7 @@
 #include        "clisysdef.h"
 
 		/* Filename: ccl_commands.hh
-		 * created by cdu :  10-Feb-1998 16:57:07
+		 * created by cdu :  12-Mar-1998 08:53:34
 		 ********************************************************/
 
 extern struct cduKeyword  CCL_show_keywords[4];
@@ -16,7 +16,7 @@ static struct cduValue  v01p01value = {
        };
 
 static struct cduParam  v01params[2] = {
-        "P1",0x0000,0,0,&v01p01value,0
+        "P1",0x1000,0,0,&v01p01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -61,18 +61,18 @@ static struct cduValue  v01q10value = {
        };
 
 static struct cduQualifier v01qualifiers[13] = {
-        "TABLES",0x0001,0,0,&v01q01value,0
-       ,"HELPLIB",0x0001,0,0,&v01q02value,0
-       ,"AUXHELPLIB",0x0001,0,0,&v01q03value,0
-       ,"PROMPT",0x0001,0,0,&v01q04value,0
-       ,"DEF_FILE",0x0001,0,0,&v01q05value,0
-       ,"KEY_DEFS",0x0001,0,0,&v01q06value,0
-       ,"DEF_LIBRARIES",0x0001,0,0,&v01q07value,0
-       ,"COMMAND",0x0001,0,0,&v01q08value,0
-       ,"INI_DEF_FILE",0x0001,0,0,&v01q09value,0
-       ,"LIBRARY",0x0000,0,0,&v01q10value,0
-       ,"DEBUG",0x0000,0,0,0,0
-       ,"CLOSE",0x0000,0,0,0,0
+        "TABLES",0x2001,0,0,&v01q01value,0
+       ,"HELPLIB",0x2001,0,0,&v01q02value,0
+       ,"AUXHELPLIB",0x2001,0,0,&v01q03value,0
+       ,"PROMPT",0x2001,0,0,&v01q04value,0
+       ,"DEF_FILE",0x2001,0,0,&v01q05value,0
+       ,"KEY_DEFS",0x2001,0,0,&v01q06value,0
+       ,"DEF_LIBRARIES",0x2001,0,0,&v01q07value,0
+       ,"COMMAND",0x2001,0,0,&v01q08value,0
+       ,"INI_DEF_FILE",0x2001,0,0,&v01q09value,0
+       ,"LIBRARY",0x2000,0,0,&v01q10value,0
+       ,"DEBUG",0x2000,0,0,0,0
+       ,"CLOSE",0x2000,0,0,0,0
        ,0				/* null entry at end	*/
        };
 extern int   ccl_pio();
@@ -82,7 +82,7 @@ static struct cduValue  v03p01value = {
        };
 
 static struct cduParam  v03params[2] = {
-        "P1",0x0000,"MODULE",0,&v03p01value,0
+        "P1",0x1000,"MODULE",0,&v03p01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -107,15 +107,15 @@ static struct cduValue  v03q09value = {
        };
 
 static struct cduQualifier v03qualifiers[10] = {
-        "ADDRESS",0x0005,0,0,&v03q01value,0
-       ,"FUNCTION",0x0005,0,0,&v03q02value,0
-       ,"DATA",0x0004,0,0,&v03q03value,0
-       ,"COUNT",0x0005,0,0,&v03q04value,0
-       ,"HEX",0x0004,0,0,0,0
-       ,"BINARY",0x0004,0,0,0,0
-       ,"OCTAL",0x0004,0,0,0,0
-       ,"DECIMAL",0x0005,0,0,0,0
-       ,"MEMORY",0x0004,0,0,&v03q09value,0
+        "ADDRESS",0x2005,0,0,&v03q01value,0
+       ,"FUNCTION",0x2005,0,0,&v03q02value,0
+       ,"DATA",0x2004,0,0,&v03q03value,0
+       ,"COUNT",0x2005,0,0,&v03q04value,0
+       ,"HEX",0x2004,0,0,0,0
+       ,"BINARY",0x2004,0,0,0,0
+       ,"OCTAL",0x2004,0,0,0,0
+       ,"DECIMAL",0x2005,0,0,0,0
+       ,"MEMORY",0x2004,0,0,&v03q09value,0
        ,0				/* null entry at end	*/
        };
 extern int   ccl_qrep();
@@ -125,7 +125,7 @@ static struct cduValue  v04p01value = {
        };
 
 static struct cduParam  v04params[2] = {
-        "P1",0x0000,"MODULE",0,&v04p01value,0
+        "P1",0x1000,"MODULE",0,&v04p01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -150,15 +150,15 @@ static struct cduValue  v04q09value = {
        };
 
 static struct cduQualifier v04qualifiers[10] = {
-        "ADDRESS",0x0005,0,0,&v04q01value,0
-       ,"FUNCTION",0x0005,0,0,&v04q02value,0
-       ,"COUNT",0x0004,0,0,&v04q03value,0
-       ,"DATA",0x0004,0,0,&v04q04value,0
-       ,"HEX",0x0004,0,0,0,0
-       ,"BINARY",0x0004,0,0,0,0
-       ,"OCTAL",0x0004,0,0,0,0
-       ,"DECIMAL",0x0005,0,0,0,0
-       ,"MEMORY",0x0004,0,0,&v04q09value,0
+        "ADDRESS",0x2005,0,0,&v04q01value,0
+       ,"FUNCTION",0x2005,0,0,&v04q02value,0
+       ,"COUNT",0x2004,0,0,&v04q03value,0
+       ,"DATA",0x2004,0,0,&v04q04value,0
+       ,"HEX",0x2004,0,0,0,0
+       ,"BINARY",0x2004,0,0,0,0
+       ,"OCTAL",0x2004,0,0,0,0
+       ,"DECIMAL",0x2005,0,0,0,0
+       ,"MEMORY",0x2004,0,0,&v04q09value,0
        ,0				/* null entry at end	*/
        };
 extern int   ccl_qscan();
@@ -168,7 +168,7 @@ static struct cduValue  v05p01value = {
        };
 
 static struct cduParam  v05params[2] = {
-        "P1",0x0000,"MODULE",0,&v05p01value,0
+        "P1",0x1000,"MODULE",0,&v05p01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -193,15 +193,15 @@ static struct cduValue  v05q09value = {
        };
 
 static struct cduQualifier v05qualifiers[10] = {
-        "ADDRESS",0x0005,0,0,&v05q01value,0
-       ,"FUNCTION",0x0005,0,0,&v05q02value,0
-       ,"COUNT",0x0004,0,0,&v05q03value,0
-       ,"DATA",0x0004,0,0,&v05q04value,0
-       ,"HEX",0x0004,0,0,0,0
-       ,"BINARY",0x0004,0,0,0,0
-       ,"OCTAL",0x0004,0,0,0,0
-       ,"DECIMAL",0x0005,0,0,0,0
-       ,"MEMORY",0x0004,0,0,&v05q09value,0
+        "ADDRESS",0x2005,0,0,&v05q01value,0
+       ,"FUNCTION",0x2005,0,0,&v05q02value,0
+       ,"COUNT",0x2004,0,0,&v05q03value,0
+       ,"DATA",0x2004,0,0,&v05q04value,0
+       ,"HEX",0x2004,0,0,0,0
+       ,"BINARY",0x2004,0,0,0,0
+       ,"OCTAL",0x2004,0,0,0,0
+       ,"DECIMAL",0x2005,0,0,0,0
+       ,"MEMORY",0x2004,0,0,&v05q09value,0
        ,0				/* null entry at end	*/
        };
 extern int   ccl_qstop();
@@ -211,7 +211,7 @@ static struct cduValue  v06p01value = {
        };
 
 static struct cduParam  v06params[2] = {
-        "P1",0x0000,"MODULE",0,&v06p01value,0
+        "P1",0x1000,"MODULE",0,&v06p01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -236,15 +236,15 @@ static struct cduValue  v06q09value = {
        };
 
 static struct cduQualifier v06qualifiers[10] = {
-        "ADDRESS",0x0005,0,0,&v06q01value,0
-       ,"FUNCTION",0x0005,0,0,&v06q02value,0
-       ,"COUNT",0x0004,0,0,&v06q03value,0
-       ,"DATA",0x0004,0,0,&v06q04value,0
-       ,"HEX",0x0004,0,0,0,0
-       ,"BINARY",0x0004,0,0,0,0
-       ,"OCTAL",0x0004,0,0,0,0
-       ,"DECIMAL",0x0005,0,0,0,0
-       ,"MEMORY",0x0004,0,0,&v06q09value,0
+        "ADDRESS",0x2005,0,0,&v06q01value,0
+       ,"FUNCTION",0x2005,0,0,&v06q02value,0
+       ,"COUNT",0x2004,0,0,&v06q03value,0
+       ,"DATA",0x2004,0,0,&v06q04value,0
+       ,"HEX",0x2004,0,0,0,0
+       ,"BINARY",0x2004,0,0,0,0
+       ,"OCTAL",0x2004,0,0,0,0
+       ,"DECIMAL",0x2005,0,0,0,0
+       ,"MEMORY",0x2004,0,0,&v06q09value,0
        ,0				/* null entry at end	*/
        };
 extern int   ccl_stop();
@@ -254,7 +254,7 @@ static struct cduValue  v07p01value = {
        };
 
 static struct cduParam  v07params[2] = {
-        "P1",0x0000,"MODULE",0,&v07p01value,0
+        "P1",0x1000,"MODULE",0,&v07p01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -279,16 +279,16 @@ static struct cduValue  v07q09value = {
        };
 
 static struct cduQualifier v07qualifiers[11] = {
-        "ADDRESS",0x0005,0,0,&v07q01value,0
-       ,"FUNCTION",0x0005,0,0,&v07q02value,0
-       ,"COUNT",0x0004,0,0,&v07q03value,0
-       ,"DATA",0x0004,0,0,&v07q04value,0
-       ,"HEX",0x0004,0,0,0,0
-       ,"BINARY",0x0004,0,0,0,0
-       ,"OCTAL",0x0004,0,0,0,0
-       ,"DECIMAL",0x0005,0,0,0,0
-       ,"MEMORY",0x0004,0,0,&v07q09value,0
-       ,"ENHANCED",0x0000,0,0,0,0
+        "ADDRESS",0x2005,0,0,&v07q01value,0
+       ,"FUNCTION",0x2005,0,0,&v07q02value,0
+       ,"COUNT",0x2004,0,0,&v07q03value,0
+       ,"DATA",0x2004,0,0,&v07q04value,0
+       ,"HEX",0x2004,0,0,0,0
+       ,"BINARY",0x2004,0,0,0,0
+       ,"OCTAL",0x2004,0,0,0,0
+       ,"DECIMAL",0x2005,0,0,0,0
+       ,"MEMORY",0x2004,0,0,&v07q09value,0
+       ,"ENHANCED",0x2000,0,0,0,0
        ,0				/* null entry at end	*/
        };
 
@@ -297,7 +297,7 @@ static struct cduValue  v08p01value = {
        };
 
 static struct cduParam  v08params[2] = {
-        "P1",0x0000,"MODULE",0,&v08p01value,0
+        "P1",0x1000,"MODULE",0,&v08p01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -322,16 +322,16 @@ static struct cduValue  v08q09value = {
        };
 
 static struct cduQualifier v08qualifiers[11] = {
-        "ADDRESS",0x0005,0,0,&v08q01value,0
-       ,"FUNCTION",0x0005,0,0,&v08q02value,0
-       ,"COUNT",0x0004,0,0,&v08q03value,0
-       ,"DATA",0x0004,0,0,&v08q04value,0
-       ,"HEX",0x0004,0,0,0,0
-       ,"BINARY",0x0004,0,0,0,0
-       ,"OCTAL",0x0004,0,0,0,0
-       ,"DECIMAL",0x0005,0,0,0,0
-       ,"MEMORY",0x0004,0,0,&v08q09value,0
-       ,"ENHANCED",0x0001,0,0,0,0
+        "ADDRESS",0x2005,0,0,&v08q01value,0
+       ,"FUNCTION",0x2005,0,0,&v08q02value,0
+       ,"COUNT",0x2004,0,0,&v08q03value,0
+       ,"DATA",0x2004,0,0,&v08q04value,0
+       ,"HEX",0x2004,0,0,0,0
+       ,"BINARY",0x2004,0,0,0,0
+       ,"OCTAL",0x2004,0,0,0,0
+       ,"DECIMAL",0x2005,0,0,0,0
+       ,"MEMORY",0x2004,0,0,&v08q09value,0
+       ,"ENHANCED",0x2001,0,0,0,0
        ,0				/* null entry at end	*/
        };
 extern int   ccl_dclst();
@@ -342,7 +342,7 @@ static struct cduValue  v10p01value = {
        };
 
 static struct cduParam  v10params[2] = {
-        "P1",0x0000,"MODULE",0,&v10p01value,0
+        "P1",0x1000,"MODULE",0,&v10p01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -367,16 +367,16 @@ static struct cduValue  v10q10value = {
        };
 
 static struct cduQualifier v10qualifiers[11] = {
-        "STEP",0x0004,0,0,&v10q01value,0
-       ,"ADDRESS",0x0005,0,0,&v10q02value,0
-       ,"FUNCTION",0x0005,0,0,&v10q03value,0
-       ,"DATA",0x0004,0,0,&v10q04value,0
-       ,"COUNT",0x0005,0,0,0,0
-       ,"HEX",0x0004,0,0,0,0
-       ,"BINARY",0x0004,0,0,0,0
-       ,"OCTAL",0x0005,0,0,0,0
-       ,"DECIMAL",0x0005,0,0,0,0
-       ,"MEMORY",0x0005,0,0,&v10q10value,0
+        "STEP",0x2004,0,0,&v10q01value,0
+       ,"ADDRESS",0x2005,0,0,&v10q02value,0
+       ,"FUNCTION",0x2005,0,0,&v10q03value,0
+       ,"DATA",0x2004,0,0,&v10q04value,0
+       ,"COUNT",0x2005,0,0,0,0
+       ,"HEX",0x2004,0,0,0,0
+       ,"BINARY",0x2004,0,0,0,0
+       ,"OCTAL",0x2005,0,0,0,0
+       ,"DECIMAL",0x2005,0,0,0,0
+       ,"MEMORY",0x2005,0,0,&v10q10value,0
        ,0				/* null entry at end	*/
        };
 extern int   ccl_lqscan();
@@ -386,7 +386,7 @@ static struct cduValue  v11p01value = {
        };
 
 static struct cduParam  v11params[2] = {
-        "P1",0x0000,"MODULE",0,&v11p01value,0
+        "P1",0x1000,"MODULE",0,&v11p01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -415,16 +415,16 @@ static struct cduValue  v11q10value = {
        };
 
 static struct cduQualifier v11qualifiers[11] = {
-        "STEP",0x0004,0,0,&v11q01value,0
-       ,"ADDRESS",0x0005,0,0,&v11q02value,0
-       ,"FUNCTION",0x0005,0,0,&v11q03value,0
-       ,"COUNT",0x0004,0,0,&v11q04value,0
-       ,"DATA",0x0004,0,0,&v11q05value,0
-       ,"HEX",0x0004,0,0,0,0
-       ,"BINARY",0x0004,0,0,0,0
-       ,"OCTAL",0x0004,0,0,0,0
-       ,"DECIMAL",0x0005,0,0,0,0
-       ,"MEMORY",0x0005,0,0,&v11q10value,0
+        "STEP",0x2004,0,0,&v11q01value,0
+       ,"ADDRESS",0x2005,0,0,&v11q02value,0
+       ,"FUNCTION",0x2005,0,0,&v11q03value,0
+       ,"COUNT",0x2004,0,0,&v11q04value,0
+       ,"DATA",0x2004,0,0,&v11q05value,0
+       ,"HEX",0x2004,0,0,0,0
+       ,"BINARY",0x2004,0,0,0,0
+       ,"OCTAL",0x2004,0,0,0,0
+       ,"DECIMAL",0x2005,0,0,0,0
+       ,"MEMORY",0x2005,0,0,&v11q10value,0
        ,0				/* null entry at end	*/
        };
 extern int   ccl_lstop();
@@ -434,7 +434,7 @@ static struct cduValue  v12p01value = {
        };
 
 static struct cduParam  v12params[2] = {
-        "P1",0x0000,"MODULE",0,&v12p01value,0
+        "P1",0x1000,"MODULE",0,&v12p01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -463,16 +463,16 @@ static struct cduValue  v12q10value = {
        };
 
 static struct cduQualifier v12qualifiers[11] = {
-        "STEP",0x0004,0,0,&v12q01value,0
-       ,"ADDRESS",0x0005,0,0,&v12q02value,0
-       ,"FUNCTION",0x0005,0,0,&v12q03value,0
-       ,"COUNT",0x0004,0,0,&v12q04value,0
-       ,"DATA",0x0004,0,0,&v12q05value,0
-       ,"HEX",0x0004,0,0,0,0
-       ,"BINARY",0x0004,0,0,0,0
-       ,"OCTAL",0x0004,0,0,0,0
-       ,"DECIMAL",0x0005,0,0,0,0
-       ,"MEMORY",0x0005,0,0,&v12q10value,0
+        "STEP",0x2004,0,0,&v12q01value,0
+       ,"ADDRESS",0x2005,0,0,&v12q02value,0
+       ,"FUNCTION",0x2005,0,0,&v12q03value,0
+       ,"COUNT",0x2004,0,0,&v12q04value,0
+       ,"DATA",0x2004,0,0,&v12q05value,0
+       ,"HEX",0x2004,0,0,0,0
+       ,"BINARY",0x2004,0,0,0,0
+       ,"OCTAL",0x2004,0,0,0,0
+       ,"DECIMAL",0x2005,0,0,0,0
+       ,"MEMORY",0x2005,0,0,&v12q10value,0
        ,0				/* null entry at end	*/
        };
 extern int   ccl_execute();
@@ -491,10 +491,10 @@ static struct cduValue  v14q03value = {
        };
 
 static struct cduQualifier v14qualifiers[5] = {
-        "STEP",0x0005,0,0,&v14q01value,0
-       ,"COUNT",0x0005,0,0,&v14q02value,0
-       ,"MEMORY",0x0004,0,0,&v14q03value,0
-       ,"DATA",0x0000,0,0,0,0
+        "STEP",0x2005,0,0,&v14q01value,0
+       ,"COUNT",0x2005,0,0,&v14q02value,0
+       ,"MEMORY",0x2004,0,0,&v14q03value,0
+       ,"DATA",0x2000,0,0,0,0
        ,0				/* null entry at end	*/
        };
 extern int   ccl_wdata();
@@ -516,14 +516,14 @@ static struct cduValue  v15q04value = {
        };
 
 static struct cduQualifier v15qualifiers[9] = {
-        "STEP",0x0004,0,0,&v15q01value,0
-       ,"COUNT",0x0005,0,0,&v15q02value,0
-       ,"MEMORY",0x0004,0,0,&v15q03value,0
-       ,"DATA",0x0004,0,0,&v15q04value,0
-       ,"HEX",0x0004,0,0,0,0
-       ,"BINARY",0x0004,0,0,0,0
-       ,"OCTAL",0x0004,0,0,0,0
-       ,"DECIMAL",0x0005,0,0,0,0
+        "STEP",0x2004,0,0,&v15q01value,0
+       ,"COUNT",0x2005,0,0,&v15q02value,0
+       ,"MEMORY",0x2004,0,0,&v15q03value,0
+       ,"DATA",0x2004,0,0,&v15q04value,0
+       ,"HEX",0x2004,0,0,0,0
+       ,"BINARY",0x2004,0,0,0,0
+       ,"OCTAL",0x2004,0,0,0,0
+       ,"DECIMAL",0x2005,0,0,0,0
        ,0				/* null entry at end	*/
        };
 extern int   ccl_lamwait();
@@ -533,7 +533,7 @@ static struct cduValue  v16p01value = {
        };
 
 static struct cduParam  v16params[2] = {
-        "P1",0x0000,"MODULE",0,&v16p01value,0
+        "P1",0x1000,"MODULE",0,&v16p01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -542,7 +542,7 @@ static struct cduValue  v16q01value = {
        };
 
 static struct cduQualifier v16qualifiers[2] = {
-        "TIMEOUT",0x0005,0,0,&v16q01value,0
+        "TIMEOUT",0x2005,0,0,&v16q01value,0
        ,0				/* null entry at end	*/
        };
 extern int   ccl_set_xandq();
@@ -552,14 +552,14 @@ static struct cduValue  SET_XANDQ_p01value = {
        };
 
 static struct cduParam  SET_XANDQ_params[2] = {
-        "P1",0x0000,0,0,&SET_XANDQ_p01value,0
+        "P1",0x1000,0,0,&SET_XANDQ_p01value,0
        ,0				/* null entry at end	*/
        };
 
 static struct cduKeyword  XANDQ_KEYWORDS[4] = {	/* "Type" def	*/
-        "ANY",0x0000,0,0,0,0
-       ,"NO",0x0000,0,0,0,0
-       ,"YES",0x0000,0,0,0,0
+        "ANY",0x4000,0,0,0,0
+       ,"NO",0x4000,0,0,0,0
+       ,"YES",0x4000,0,0,0,0
        ,0				/* null entry at end	*/
        };
 
@@ -572,8 +572,8 @@ static struct cduValue  SET_XANDQ_q02value = {
        };
 
 static struct cduQualifier SET_XANDQ_qualifiers[3] = {
-        "X",0x0001,0,0,&SET_XANDQ_q01value,0
-       ,"Q",0x0001,0,0,&SET_XANDQ_q02value,0
+        "X",0x2001,0,0,&SET_XANDQ_q01value,0
+       ,"Q",0x2001,0,0,&SET_XANDQ_q02value,0
        ,0				/* null entry at end	*/
        };
 
@@ -591,7 +591,7 @@ static struct cduValue  SET_MEMORY_16_q01value = {
        };
 
 static struct cduQualifier SET_MEMORY_16_qualifiers[2] = {
-        "MEMORY",0x0005,0,0,&SET_MEMORY_16_q01value,0
+        "MEMORY",0x2005,0,0,&SET_MEMORY_16_q01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -604,7 +604,7 @@ static struct cduValue  SET_MEMORY_24_q01value = {
        };
 
 static struct cduQualifier SET_MEMORY_24_qualifiers[2] = {
-        "MEMORY",0x0005,0,0,&SET_MEMORY_24_q01value,0
+        "MEMORY",0x2005,0,0,&SET_MEMORY_24_q01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -613,8 +613,8 @@ static struct cduVerb  SET_MEMORY_24 = {	/* Syntax def	*/
        };
 
 static struct cduKeyword  memory_keywords[3] = {	/* "Type" def	*/
-        "16",0x0000,0,&SET_MEMORY_16,0,0
-       ,"24",0x0000,0,&SET_MEMORY_24,0,0
+        "16",0x4000,0,&SET_MEMORY_16,0,0
+       ,"24",0x4000,0,&SET_MEMORY_24,0,0
        ,0				/* null entry at end	*/
        };
 
@@ -623,8 +623,8 @@ static struct cduValue  SET_MEMORY_p02value = {
        };
 
 static struct cduParam  SET_MEMORY_params[3] = {
-        "P1",0x0000,0,"What",&SET_MEMORY_p01value,0
-       ,"P2",0x0000,0,0,&SET_MEMORY_p02value,0
+        "P1",0x1000,0,"What",&SET_MEMORY_p01value,0
+       ,"P2",0x1000,0,0,&SET_MEMORY_p02value,0
        ,0				/* null entry at end	*/
        };
 
@@ -642,8 +642,8 @@ static struct cduValue  SET_MODULE_p02value = {
        };
 
 static struct cduParam  SET_MODULE_params[3] = {
-        "P1",0x0000,0,0,&SET_MODULE_p01value,0
-       ,"P2",0x0000,"MODULE","Module",&SET_MODULE_p02value,0
+        "P1",0x1000,0,0,&SET_MODULE_p01value,0
+       ,"P2",0x1000,"MODULE","Module",&SET_MODULE_p02value,0
        ,0				/* null entry at end	*/
        };
 
@@ -652,9 +652,9 @@ static struct cduVerb  SET_MODULE = {	/* Syntax def	*/
        };
 
 struct cduKeyword  CCL_set_keywords[4] = {	/* "Type" def	*/
-        "XANDQ",0x0000,0,&SET_XANDQ,0,0
-       ,"MEMORY",0x0000,0,&SET_MEMORY,0,0
-       ,"MODULE",0x0000,0,&SET_MODULE,0,0
+        "XANDQ",0x4000,0,&SET_XANDQ,0,0
+       ,"MEMORY",0x4000,0,&SET_MEMORY,0,0
+       ,"MODULE",0x4000,0,&SET_MODULE,0,0
        ,0				/* null entry at end	*/
        };
 
@@ -663,7 +663,7 @@ static struct cduValue  v17p01value = {
        };
 
 static struct cduParam  v17params[2] = {
-        "P1",0x0000,0,"What",&v17p01value,0
+        "P1",0x1000,0,"What",&v17p01value,0
        ,0				/* null entry at end	*/
        };
 extern int   ccl_show_data();
@@ -673,7 +673,7 @@ static struct cduValue  SHOW_DATA_p01value = {
        };
 
 static struct cduParam  SHOW_DATA_params[2] = {
-        "P1",0x0000,0,0,&SHOW_DATA_p01value,0
+        "P1",0x1000,0,0,&SHOW_DATA_p01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -686,13 +686,13 @@ static struct cduValue  SHOW_DATA_q02value = {
        };
 
 static struct cduQualifier SHOW_DATA_qualifiers[8] = {
-        "START",0x0005,0,0,&SHOW_DATA_q01value,0
-       ,"END",0x0005,0,0,&SHOW_DATA_q02value,0
-       ,"BINARY",0x0004,0,0,0,0
-       ,"DECIMAL",0x0005,0,0,0,0
-       ,"OCTAL",0x0004,0,0,0,0
-       ,"HEX",0x0004,0,0,0,0
-       ,"MEMORY",0x0004,0,0,0,0
+        "START",0x2005,0,0,&SHOW_DATA_q01value,0
+       ,"END",0x2005,0,0,&SHOW_DATA_q02value,0
+       ,"BINARY",0x2004,0,0,0,0
+       ,"DECIMAL",0x2005,0,0,0,0
+       ,"OCTAL",0x2004,0,0,0,0
+       ,"HEX",0x2004,0,0,0,0
+       ,"MEMORY",0x2004,0,0,0,0
        ,0				/* null entry at end	*/
        };
 
@@ -706,7 +706,7 @@ static struct cduValue  SHOW_MODULE_p01value = {
        };
 
 static struct cduParam  SHOW_MODULE_params[2] = {
-        "P1",0x0000,0,0,&SHOW_MODULE_p01value,0
+        "P1",0x1000,0,0,&SHOW_MODULE_p01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -720,7 +720,7 @@ static struct cduValue  SHOW_STATUS_p01value = {
        };
 
 static struct cduParam  SHOW_STATUS_params[2] = {
-        "P1",0x0000,0,0,&SHOW_STATUS_p01value,0
+        "P1",0x1000,0,0,&SHOW_STATUS_p01value,0
        ,0				/* null entry at end	*/
        };
 
@@ -729,9 +729,9 @@ static struct cduVerb  SHOW_STATUS = {	/* Syntax def	*/
        };
 
 struct cduKeyword  CCL_show_keywords[4] = {	/* "Type" def	*/
-        "DATA",0x0000,0,&SHOW_DATA,0,0
-       ,"MODULE",0x0000,0,&SHOW_MODULE,0,0
-       ,"STATUS",0x0000,0,&SHOW_STATUS,0,0
+        "DATA",0x4000,0,&SHOW_DATA,0,0
+       ,"MODULE",0x4000,0,&SHOW_MODULE,0,0
+       ,"STATUS",0x4000,0,&SHOW_STATUS,0,0
        ,0				/* null entry at end	*/
        };
 
@@ -740,7 +740,7 @@ static struct cduValue  v18p01value = {
        };
 
 static struct cduParam  v18params[2] = {
-        "P1",0x0000,0,"What",&v18p01value,0
+        "P1",0x1000,0,"What",&v18p01value,0
        ,0				/* null entry at end	*/
        };
 extern int   ccl_plot_data();
@@ -762,10 +762,10 @@ static struct cduValue  v19q04value = {
        };
 
 static struct cduQualifier v19qualifiers[5] = {
-        "START",0x0005,0,0,&v19q01value,0
-       ,"END",0x0005,0,0,&v19q02value,0
-       ,"DEVICE",0x0005,0,0,&v19q03value,0
-       ,"DEVTYPE",0x0005,0,0,&v19q04value,0
+        "START",0x2005,0,0,&v19q01value,0
+       ,"END",0x2005,0,0,&v19q02value,0
+       ,"DEVICE",0x2005,0,0,&v19q03value,0
+       ,"DEVTYPE",0x2005,0,0,&v19q04value,0
        ,0				/* null entry at end	*/
        };
 

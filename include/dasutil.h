@@ -164,6 +164,16 @@ struct descriptor  {
                 {sizeof(string)-1,DSC_K_DTYPE_T,DSC_K_CLASS_S,string}
 #define DYNAMIC_DESCRIPTOR(D)  struct descriptor  D = {\
                                       0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0 }
+#ifdef vms
+#define is_cdescr(d)			\
+           (((struct descriptor *)(d))->dscB_dtype==DSC_K_DTYPE_T && \
+            ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_S && \
+            ((struct descriptor *)(d))->dscW_length<=1024)
+#define is_ddescr(d)			\
+           (((struct descriptor *)(d))->dscB_dtype==DSC_K_DTYPE_T && \
+            ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_D && \
+            ((struct descriptor *)(d))->dscW_length<=1024)
+#else
 #define ALIGN_MASK(x)  (sizeof(x) - 1)
 #define is_cdescr(d)  (((int)(d) & ALIGN_MASK(void *))==0 &&	\
             ((struct descriptor *)(d))->dscB_dtype==DSC_K_DTYPE_T && \
@@ -173,6 +183,7 @@ struct descriptor  {
             ((struct descriptor *)(d))->dscB_dtype==DSC_K_DTYPE_T && \
             ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_D && \
             ((struct descriptor *)(d))->dscW_length<=1024)
+#endif
 #define dsc_descriptor  descriptor
 
 #define NIL           (void *)0
