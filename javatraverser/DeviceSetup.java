@@ -17,68 +17,72 @@ public class DeviceSetup extends JDialog
     JMenuItem pop_items[];
     JPopupMenu pop_methods = null;
     Hashtable updateHash = new Hashtable();
-    
-    
-    
-    
-    public void setDeviceType(String deviceType) 
+    protected int width = 200, height = 100;
+
+    public int getWidth(){return width;}
+    public void setWidth(int width){this.width = width;}
+    public int getHeight(){return height;}
+    public void setHeight(int height){this.height = height;}
+
+    public void setDeviceType(String deviceType)
     {
         this.deviceType = deviceType;
         DeviceSetupBeanInfo.beanDeviceType = deviceType;
 
     }
-    public String getDeviceType() 
+    public String getDeviceType()
     {
         DeviceSetupBeanInfo.beanDeviceType = deviceType;
-        return deviceType; 
+        return deviceType;
     }
-    
-    public void setDeviceProvider(String deviceProvider) 
+
+    public void setDeviceProvider(String deviceProvider)
     {
         this.deviceProvider = deviceProvider;
         DeviceSetupBeanInfo.beanDeviceProvider = deviceProvider;
 
     }
-    public String getDeviceProvider() 
+    public String getDeviceProvider()
     {
         DeviceSetupBeanInfo.beanDeviceProvider = deviceProvider;
-        return deviceProvider; 
+        return deviceProvider;
     }
-    
-    public void setDeviceTitle(String deviceTitle) 
+
+    public void setDeviceTitle(String deviceTitle)
     {
         this.deviceTitle = deviceTitle;
         //setTitle(deviceTitle);
-        
+
     }
     public String getDeviceTitle() {return deviceTitle; }
-    
-    
+
+
     public DeviceSetup()
     {
         this(FrameRepository.frame);
         setTitle(deviceTitle);
 //        getContentPane().setLayout(new BorderLayout());
         DeviceSetupBeanInfo.beanDeviceType = deviceType;
-        
+
     }
     public DeviceSetup(Frame f)
     {
         super(FrameRepository.frame);
         setTitle(deviceTitle);
+        setSize(width, height);
         //getContentPane().setLayout(new BorderLayout());
     }
     public void configure(RemoteTree subtree, int baseNid)
     {
-        NidData oldNid = null; 
+        NidData oldNid = null;
         try {
             oldNid = subtree.getDefault(Tree.context);
             subtree.setDefault(new NidData(baseNid), Tree.context);
         }catch(Exception exc){System.out.println(exc);}
- 
+
         this.baseNid = baseNid;
-        this.subtree = subtree;  
-        
+        this.subtree = subtree;
+
         String path = null;
         try {
             NodeInfo info = subtree.getInfo(new NidData(baseNid), 0);
@@ -88,9 +92,9 @@ public class DeviceSetup extends JDialog
             setTitle(deviceTitle);
         else
             setTitle(deviceTitle + " -- " + path);
-        
+
         //collect every DeviceComponent
-        java.util.Stack search_stack = new java.util.Stack();  
+        java.util.Stack search_stack = new java.util.Stack();
         search_stack.push(this);
         do
         {
@@ -100,7 +104,7 @@ public class DeviceSetup extends JDialog
             {
                 if(curr_components[i] instanceof DeviceButtons)
                     methods = ((DeviceButtons)curr_components[i]).getMethods();
-                
+
                 if(curr_components[i] instanceof DeviceComponent)
                 {
                     device_components.addElement(curr_components[i]);
@@ -135,8 +139,8 @@ public class DeviceSetup extends JDialog
         }
         }
         catch(Throwable exc){System.out.println(exc);}
-        
-        
+
+
         if(methods != null && methods.length > 0)
         {
             pop_methods = new JPopupMenu("Methods");
@@ -151,10 +155,10 @@ public class DeviceSetup extends JDialog
                         boolean success = true;
                         String errmsg = "";
                         int j;
-                        for(j = 0; 
+                        for(j = 0;
                             j < pop_items.length && ((JMenuItem)e.getSource()) != pop_items[j]; j++);
                         if(j == pop_items.length) return;
-                        if(JOptionPane.showConfirmDialog(DeviceSetup.this, 
+                        if(JOptionPane.showConfirmDialog(DeviceSetup.this,
                             "Execute "+methods[j] + "?",
                             "Execute a device method",
                             JOptionPane.YES_NO_OPTION,
@@ -165,16 +169,16 @@ public class DeviceSetup extends JDialog
                                     new NidData(DeviceSetup.this.baseNid), methods[j], Tree.context);
                             }catch(Exception exc) {errmsg = exc.toString(); success = false;}
                             if(!success)
-                                JOptionPane.showMessageDialog(DeviceSetup.this, 
+                                JOptionPane.showMessageDialog(DeviceSetup.this,
                                     "Error executing method " + methods[j] + ": "+errmsg,
                                     "Method execution report",
                                     JOptionPane.WARNING_MESSAGE);
                             else
-                                JOptionPane.showMessageDialog(DeviceSetup.this, 
+                                JOptionPane.showMessageDialog(DeviceSetup.this,
                                     "Method " + methods[j] + " succesfully executed",
                                     "Method execution report",
                                     JOptionPane.INFORMATION_MESSAGE);
-                        }          
+                        }
                     }});
             }
             pop_methods.pack();
@@ -200,25 +204,25 @@ public class DeviceSetup extends JDialog
         }catch(Exception exc){
             System.out.println("Error in Configure: " + exc);
         }
-                
+
     }
-    
+
     public void apply()
     {
-        NidData oldNid = null; 
+        NidData oldNid = null;
         try {
             oldNid = subtree.getDefault(Tree.context);
             subtree.setDefault(new NidData(baseNid), Tree.context);
         }catch(Exception exc){}
-        
+
         for(int i = 0; i < num_components; i++)
         {
             try {
             ((DeviceComponent)device_components.elementAt(i)).apply();
             } catch(Exception exc)
             {
-                JOptionPane.showMessageDialog(this, exc.toString(), 
-                    "Error writing data at offset nid " + 
+                JOptionPane.showMessageDialog(this, exc.toString(),
+                    "Error writing data at offset nid " +
                     ((DeviceComponent)device_components.elementAt(i)).getOffsetNid(),
                     JOptionPane.WARNING_MESSAGE);
             }
@@ -247,7 +251,7 @@ public class DeviceSetup extends JDialog
         for(int i = 0; i < num_listeners; i++)
             ((DataChangeListener)dataChangeListeners.elementAt(i)).dataChanged(new DataChangeEvent(this, 0, null));
     }
-    
+
     public void updateIdentifiers()
     {
         StringBuffer varExpr = new StringBuffer();
@@ -269,8 +273,8 @@ public class DeviceSetup extends JDialog
         if(device_components.size() > 0)
             Data.evaluate(varExpr.toString());
     }
-        
-    
+
+
     public int check(String expressions[], String [] messages)
     {
         if(expressions == null || messages == null) return 0;
@@ -300,14 +304,14 @@ public class DeviceSetup extends JDialog
         {
             if(Data.evaluate(varExpr + expressions[idx]) == 0)
             {
-			    JOptionPane.showMessageDialog(this, messages[idx], 
+			    JOptionPane.showMessageDialog(this, messages[idx],
 			        "Error in device configuration" ,JOptionPane.WARNING_MESSAGE);
 			    return 0;
 			}
 		}
 		return 1;
 	}
-	
+
 	public void fireUpdate(String id, Data val)
 	{
 	    Vector components = (Vector)updateHash.get(id);
@@ -317,7 +321,6 @@ public class DeviceSetup extends JDialog
 	            ((DeviceComponent)components.elementAt(i)).fireUpdate(id, val);
 	    }
 	}
-	
-}       
-        
- 
+
+}
+

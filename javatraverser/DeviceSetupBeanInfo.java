@@ -3,8 +3,8 @@ import java.awt.*;
 
 public class DeviceSetupBeanInfo extends SimpleBeanInfo
 {
-    static String beanDeviceType = null; 
-    static String beanDeviceProvider = null;    
+    static String beanDeviceType = null;
+    static String beanDeviceProvider = null;
     public PropertyDescriptor property(String name, String description)
     throws IntrospectionException
     {
@@ -20,10 +20,12 @@ public class DeviceSetupBeanInfo extends SimpleBeanInfo
     {
         try {
             PropertyDescriptor[] props = {
-               property("deviceType", "The MDS type of the device"),
-               property("deviceProvider", "The IP address of the device repository"),
-               property("deviceTitle", "The title of the device setup form"),
-               property("layout", "The Layout manager")
+                property("width", "width"),
+                property("height", "height"),
+                property("deviceType", "The MDS type of the device"),
+                property("deviceProvider", "The IP address of the device repository"),
+                property("deviceTitle", "The title of the device setup form"),
+                property("layout", "The Layout manager"),
             };
              return props;
         }catch(IntrospectionException e)
