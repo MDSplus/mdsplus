@@ -84,6 +84,9 @@ extern void AddDeviceDismiss(Widget, XtPointer, XtPointer);
 extern void CreateAddDevice(Widget, XtPointer, XtPointer);
 extern void AddDevice(Widget, XtPointer, XtPointer);
 extern void WriteTree(Widget, XtPointer, XtPointer);
+extern void ModifyTags(Widget, XtPointer, XtPointer);
+extern void tag_button_proc(Widget, XtPointer, XtPointer);
+extern void tag_selection_proc (Widget, XtPointer, XtPointer);
 
 /*
  * Function prototypes for routines located in utilities file
@@ -163,7 +166,7 @@ int main(int argc, char **argv)
     MrmHierarchy HierarchyID;
     MrmType MrmWClass;
     static char *UidFile [] = { BX_UID_FILE_NAME };
-    MRMRegisterArg NamesList[32];
+    MRMRegisterArg NamesList[35];
     Cardinal Nlac;
     Nlac = 0;
     NamesList[Nlac].name = "CloseTree";
@@ -230,6 +233,12 @@ int main(int argc, char **argv)
     NamesList[Nlac++].value = (XtPointer) AddDevice;
     NamesList[Nlac].name = "WriteTree";
     NamesList[Nlac++].value = (XtPointer) WriteTree;
+    NamesList[Nlac].name = "ModifyTags";
+    NamesList[Nlac++].value = (XtPointer) ModifyTags;
+    NamesList[Nlac].name = "tag_button_proc";
+    NamesList[Nlac++].value = (XtPointer) tag_button_proc;
+    NamesList[Nlac].name = "tag_selection_proc";
+    NamesList[Nlac++].value = (XtPointer) tag_selection_proc;
     NamesList[Nlac].name = NULL;
     NamesList[Nlac].value = NULL;
     

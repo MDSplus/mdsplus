@@ -106,6 +106,15 @@ value
     USAGE_AXIS :     10;
     USAGE_SUBTREE :  11;
 
+    TAGS_OK: 0;
+    TAGS_APPLY: 1;
+    TAGS_RESET: 2;
+    TAGS_CANCEL: 3;
+    TAGS_ADD: 4;
+    TAGS_REMOVE: 5;
+
+
+
 procedure BxManageCB(string);
 procedure BxExitCB(integer);
 procedure AddListTree();
@@ -138,6 +147,9 @@ procedure CreateAddDevice();
 procedure AddDevice();
 procedure WriteTree(integer);
 procedure CreateTree();
+procedure ModifyTags();
+procedure tag_button_proc(integer);
+procedure tag_selection_proc();
 
 list BaseStyle : arguments {
 };
@@ -182,6 +194,7 @@ object mainWindow : XmMainWindow widget {
          managed XmCommand command;
          unmanaged XmFormDialog message_box;
 	 unmanaged XmMessageDialog createDialog;
+         unmanaged XmBulletinBoardDialog tags_box;
     };
     callbacks {
         MrmNcreateCallback = procedure AddListTree();
@@ -1182,6 +1195,7 @@ object pushButton4 : XmPushButton widget {
     controls {
     };
     callbacks {
+        XmNactivateCallback = procedure ModifyTags();
     };
 };
 
@@ -1453,5 +1467,205 @@ object
             XmNbottomOffset = 50;
             };
         };
+
+object
+    tags_box: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNborderWidth = 1;
+            XmNresizePolicy = XmRESIZE_ANY;
+            XmNdialogTitle = 
+            compound_string("Modify Tags");
+            XmNautoUnmanage = false;
+            XmNcancelButton = XmPushButtonGadget tag_cancel_button;
+            XmNdefaultButton = XmPushButtonGadget tag_ok_button;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 15;
+                    XmNy = 9;
+                    XmNlabelString = 
+                    compound_string("Node:");
+                    };
+                };
+            XmLabelGadget tag_node_label;
+            XmList tag_list;
+            XmPushButtonGadget tag_add_tag_button;
+            XmPushButtonGadget tag_remove_tag_button;
+            XmTextField tag_current_text;
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 17;
+                    XmNy = 158;
+                    XmNlabelString = 
+                    compound_string("Current Selection");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 17;
+                    XmNy = 26;
+                    XmNlabelString = 
+                    compound_string("Tag List:");
+                    };
+                };
+            XmPushButtonGadget tag_ok_button;
+            XmPushButtonGadget tag_apply_button;
+            XmPushButtonGadget tag_reset_button;
+            XmPushButtonGadget tag_cancel_button;
+            };
+        };
+    tag_list: XmList 
+        {
+        arguments
+            {
+            XmNx = 17;
+            XmNy = 50;
+            XmNwidth = 192;
+            XmNlistSizePolicy = XmCONSTANT;
+            XmNselectionPolicy = XmSINGLE_SELECT;
+            XmNvisibleItemCount = 5;
+            };
+        callbacks
+            {
+            XmNsingleSelectionCallback = procedures
+                {
+                tag_selection_proc();
+                };
+            };
+        };
+    tag_node_label: XmLabelGadget 
+        {
+        arguments
+            {
+            XmNx = 62;
+            XmNy = 9;
+            XmNlabelString = 
+            compound_string("Full-path-here");
+            };
+        };
+    tag_ok_button: XmPushButtonGadget 
+        {
+        arguments
+            {
+            XmNx = 15;
+            XmNy = 210;
+            XmNlabelString = 
+            compound_string("Ok");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                tag_button_proc(TAGS_OK);
+                };
+            };
+        };
+    tag_cancel_button: XmPushButtonGadget 
+        {
+        arguments
+            {
+            XmNx = 253;
+            XmNy = 210;
+            XmNlabelString = 
+            compound_string("Cancel");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                tag_button_proc(TAGS_CANCEL);
+                };
+            };
+        };
+    tag_current_text: XmTextField 
+        {
+        arguments
+            {
+            XmNx = 15;
+            XmNy = 179;
+            XmNheight = 25;
+            XmNcolumns = 25;
+            XmNmarginHeight = 1;
+            };
+        };
+    tag_apply_button: XmPushButtonGadget 
+        {
+        arguments
+            {
+            XmNx = 86;
+            XmNy = 210;
+            XmNlabelString = 
+            compound_string("Apply");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                tag_button_proc(TAGS_APPLY);
+                };
+            };
+        };
+    tag_reset_button: XmPushButtonGadget 
+        {
+        arguments
+            {
+            XmNx = 174;
+            XmNy = 210;
+            XmNlabelString = 
+            compound_string("Reset");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                tag_button_proc(TAGS_RESET);
+                };
+            };
+        };
+    tag_add_tag_button: XmPushButtonGadget 
+        {
+        arguments
+            {
+            XmNx = 220;
+            XmNy = 50;
+            XmNlabelString = 
+            compound_string("Add Tag");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                tag_button_proc(TAGS_ADD);
+                };
+            };
+        };
+    tag_remove_tag_button: XmPushButtonGadget 
+        {
+        arguments
+            {
+            XmNx = 222;
+            XmNy = 92;
+            XmNlabelString = 
+            compound_string("Remove Tag");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                tag_button_proc(TAGS_REMOVE);
+                };
+            };
+        };
+
 
 end module;

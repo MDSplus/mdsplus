@@ -1298,3 +1298,127 @@ AddDeviceDismiss( Widget w, XtPointer client_data, XtPointer call_data)
 {
   XtUnmanageChild(w);
 }
+
+static Boolean TagsApply(Widget w, int nid)
+{
+  int status;
+  int retstatus = 1;
+  Widget list_widget = XtNameToWidget(w, "tag_list");
+  XmString *item_list;
+  int      num_items;
+  int i;
+  TreeRemoveNodesTags(nid);
+  XtVaGetValues(list_widget, XmNitems, &item_list, XmNitemCount, &num_items, NULL);
+  for (i=0; i<num_items; i++) {
+    char *tag_txt;
+    if (XmStringGetLtoR(item_list[i], XmSTRING_DEFAULT_CHARSET, &tag_txt)) {
+      status = TreeAddTag(nid, tag_txt);
+      if (!(status&1)) {
+        retstatus = status;
+        XmdsComplain(toplevel, "Error Adding tag\n%s", tag_txt);
+      }
+      XtFree(tag_txt);
+    }
+  }
+  return retstatus;
+}
+
+static void TagsReset(Widget w, int nid)
+{
+  char *path;
+  char *tag;
+  int status;
+  XmString path_str;
+  Widget list_widget;
+  void *ctx;
+  list_widget = XtNameToWidget(w, "tag_list");
+  XmListDeleteAllItems(list_widget);
+  path = TreeGetPath(nid);
+  path_str = XmStringCreateLtoR(path, XmSTRING_DEFAULT_CHARSET);
+  XtVaSetValues(XtNameToWidget(w, "tag_node_label"), XmNlabelString, path_str, NULL);
+  XmStringFree(path_str);
+  for (ctx=0; (tag=TreeFindNodeTags(nid, &ctx)) != NULL;) {
+    XmString tag_str = XmStringCreateLtoR(tag, XmSTRING_DEFAULT_CHARSET);
+    XmListAddItemUnselected(list_widget, tag_str, 0);
+    XmStringFree(tag_str);
+  }
+  XmTextFieldSetString(XtNameToWidget(w,"tag_current_text"), "");
+}
+
+
+#define TAGS_OK 0
+#define TAGS_APPLY 1
+#define TAGS_RESET 2
+#define TAGS_CANCEL 3
+#define TAGS_ADD 4
+#define TAGS_REMOVE 5
+void tag_button_proc(Widget w, int *tag)
+{
+  Widget tag_widget = XtParent(w);
+  int nid;
+  XtVaGetValues(tag_widget, XmNuserData, &nid, NULL);
+  switch (*tag) {
+    case TAGS_OK:
+                if (TagsApply(tag_widget, nid)&1) XtUnmanageChild(tag_widget);
+                break;
+    case TAGS_APPLY:
+                TagsApply(tag_widget, nid);
+                break;
+    case TAGS_RESET:
+                TagsReset(tag_widget, nid);
+                break;
+    case TAGS_CANCEL:
+                XtUnmanageChild(tag_widget);
+                break;
+    case TAGS_ADD:
+                {
+                  char *new_tag = (char *)XmTextFieldGetString(XtNameToWidget(tag_widget, "tag_current_text"));
+                  if (strlen(new_tag)) {
+                    XmString new_tag_str = XmStringCreateSimple(new_tag);
+                    Widget list_widget = XtNameToWidget(tag_widget, "tag_list");
+                    XmListAddItemUnselected(list_widget, new_tag_str, 0);
+                    XmStringFree(new_tag_str);
+                    XtFree(new_tag);
+                  }
+                }
+                break;
+    case TAGS_REMOVE:
+                {
+		  int *pos_list;
+		  int pos_count;
+                  Widget list_widget = XtNameToWidget(tag_widget, "tag_list");
+                  if (XmListGetSelectedPos(list_widget, &pos_list, &pos_count))
+                    XmListDeletePos(list_widget, pos_list[0]);
+                }
+                break;
+  }
+}
+
+void tag_selection_proc(Widget w, int *tag, XmListCallbackStruct *reason)
+{
+  Widget tag_widget = XtParent(w);
+  char *tag_txt;
+  XmStringGetLtoR(reason->item, XmSTRING_DEFAULT_CHARSET, &tag_txt);
+  XmTextFieldSetString(XtNameToWidget(tag_widget, "tag_current_text"), tag_txt);
+  XtFree(tag_txt);
+}
+
+void ModifyTags(Widget w, XtPointer client_data, XmListCallbackStruct *reason)
+{
+    Widget tagsw = XtNameToWidget(BxFindTopShell(w), "*.tags_box");
+    if (!XtIsManaged(tagsw)) {
+      if (num_selected == 1) {
+	int nid = get_nid(selections[0]);
+	XtVaSetValues(tagsw, XmNuserData, nid, 0);
+        TagsReset(tagsw, nid);
+	XtManageChild(tagsw); 
+      }
+      else {
+        XmdsComplain(w, "Please select exactly one node before modifying tags");
+      }
+    }
+    else {
+      XmdsComplain(w, "Please modify only one node's tags at a time");
+    }
+}
+
