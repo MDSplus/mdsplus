@@ -111,6 +111,9 @@ public class RFXGClockSetup extends DeviceSetup
     deviceField7.setTextOnly(true);
     deviceField7.setLabelString("Event");
     deviceField7.setIdentifier("");
+    deviceButtons1.setCheckExpressions(null);
+    deviceButtons1.setCheckMessages(null);
+    deviceButtons1.setMethods(new String[] {"INIT"});
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jPanel1, BorderLayout.CENTER);
     jPanel1.add(jPanel2, null);

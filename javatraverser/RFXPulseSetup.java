@@ -99,6 +99,9 @@ public class RFXPulseSetup extends DeviceSetup
     deviceField5.setOffsetNid(8);
     deviceField5.setLabelString("Duration(s): ");
     deviceField5.setIdentifier("");
+    deviceButtons1.setCheckExpressions(null);
+    deviceButtons1.setCheckMessages(null);
+    deviceButtons1.setMethods(new String[] {"INIT"});
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jPanel1, BorderLayout.CENTER);
     jPanel1.add(jPanel2, null);

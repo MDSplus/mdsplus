@@ -71,6 +71,9 @@ public class RFXClockSetup extends DeviceSetup
     deviceField2.setLabelString("Duty cycle: ");
     deviceField2.setNumCols(5);
     deviceField2.setIdentifier("");
+    deviceButtons1.setCheckExpressions(null);
+    deviceButtons1.setCheckMessages(null);
+    deviceButtons1.setMethods(new String[] {"INIT"});
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jPanel1, BorderLayout.CENTER);
     jPanel1.add(jPanel2, null);
