@@ -117,10 +117,12 @@ typedef struct { char server[32];
                  unsigned dispatched : 1;
 		 unsigned doing : 1;
 		 unsigned recorded : 1;
+                 char *path;
+                 char *event;
                } ActionInfo;
 
 typedef struct { int num;
-                 char tree[12];
+                 char tree[13];
                  int shot;
                  int failed_essential;
                  ActionInfo actions[1];

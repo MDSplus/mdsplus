@@ -158,12 +158,21 @@ int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table)
   int status=1;
   int *nids = (int *)malloc(MAX_ACTIONS * sizeof(int));
   int *nidptr;
-  static char tree[12];
-  static int shot;
-  static DBI_ITM itmlst[] = {{sizeof(tree),DbiNAME,(unsigned char *)tree,0},
-                          {sizeof(shot),DbiSHOTID,(unsigned char *)&shot,0},
+  char tree[12];
+  int shot;
+  char *cptr;
+  static DBI_ITM itmlst[] = {{sizeof(tree),DbiNAME,0,0},
+                          {sizeof(shot),DbiSHOTID,0,0},
                           {0,0,0,0}};
+  itmlst[0].pointer=&tree;
+  itmlst[1].pointer=&shot;
   TreeGetDbi(itmlst);
+  for (i=0, cptr = tree;i<12;i++) 
+    if (cptr[i] == (char)32) 
+      break;
+    else
+      tree[i] = cptr[i];
+  tree[i] = 0;
   if (shot == -1)
     return ServerINVSHOT;
   num_actions=0;
@@ -180,15 +189,17 @@ int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table)
   {
     static struct descriptor node = {0, DTYPE_T, CLASS_D, 0};
     static struct descriptor object = {0, DTYPE_T, CLASS_D, 0};
+    static zero=0;
     int table_size = sizeof(DispatchTable) + (num_actions-1) * sizeof(ActionInfo);
     *table_ptr = (DispatchTable *)malloc(table_size);
     memset(*table_ptr,0,table_size);
     actions = (*table_ptr)->actions;
     (*table_ptr)->shot = shot;
-    memcpy((*table_ptr)->tree,tree,sizeof(tree));
+    strcpy((*table_ptr)->tree,tree);
     for (i=0, nidptr = nids; i<num_actions; nidptr++, i++)
     {
-      static struct descriptor niddsc = {4, DTYPE_NID, CLASS_S, 0};
+      struct descriptor event_name = {0, DTYPE_T, CLASS_D, 0};
+      struct descriptor niddsc = {4, DTYPE_NID, CLASS_S, 0};
       static EMPTYXD(xd);
       niddsc.pointer = (char *)nidptr;
       actions[i].nid = *nidptr;
@@ -219,14 +230,23 @@ int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table)
               actions[i].sequence = 0;
               actions[i].condition = (struct descriptor *)memcpy(malloc(sizeof(emptyxd)),&emptyxd,sizeof(emptyxd));
               MdsCopyDxXd((struct descriptor *)dispatch->when,(struct descriptor_xd *)actions[i].condition);
+	      actions[i].path = TreeGetMinimumPath(&zero,actions[i].nid);
             }
             else if (actions[i].sequence <= 0)
               actions[i].phase = 0x10000002;
+	    else
+	      actions[i].path = TreeGetMinimumPath(&zero,actions[i].nid);
             if (!(TdiData(dispatch->ident,&server MDS_END_ARG)&1))
               actions[i].phase = 0x10000003;
           }
           else
             actions[i].phase =   0x10000004;
+	  if (TdiData(dispatch->completion,&event_name MDS_END_ARG) & 1 && event_name.length)
+	  {
+	    actions[i].event = strncpy((char *)malloc(event_name.length+1),event_name.pointer,event_name.length);
+	    actions[i].event[event_name.length] = 0;
+	    StrFree1Dx(&event_name);
+	  }
         }
         else
           actions[i].phase =     0x10000005;
