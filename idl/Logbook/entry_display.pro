@@ -2050,6 +2050,7 @@ common widget_common, base
   bb = widget_button(b, value='Print Options')
   bb = widget_button(b, value='Make Entry Options')
   num_w = widget_button(mbar, value = 'Num =  0')
+  bb = widget_button(num_w, value='')
 ;  widget_control, num_w, sensitive=0
   b = widget_button(mbar, value='Help', /help)
   bb = widget_button(b, value='About')
