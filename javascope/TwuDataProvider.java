@@ -31,9 +31,6 @@ class TwuDataProvider
     transient Vector   connection_listener = new Vector();
     private String user_agent;
 
-    private static boolean debug = false ;
-
-
     //DataProvider implementation
     public boolean SupportsCompression(){return false;}
     public void    SetCompression(boolean state){}
@@ -317,7 +314,8 @@ class TwuDataProvider
         {
             if (! propertiesAvailable) 
             { 
-                try {
+                try
+                {
                     fetchProperties() ; 
                     // NB, this throws an exception if an error 
                     // occurs OR HAS occurred before.
@@ -663,7 +661,6 @@ class TwuDataProvider
 
         public TwuWaveData()                                    
         { 
-            default_init()  ; 
         }
 
         public TwuWaveData(String in_y)                         
@@ -690,15 +687,6 @@ class TwuDataProvider
 
             this.in_y = in_y ;
             this.in_x = in_x ;
-        }
-
-        private void default_init() 
-        {
-            // leftover from a 'development version' in which
-            // this class was subclassed. remember, when you
-            // instantiate a subclass, java always runs the
-            // default constructor (with no arguments) of
-            // the superclass !
         }
 
         public void setZoom (float xmin, float xmax, int n_points) 
@@ -898,13 +886,10 @@ class TwuDataProvider
 
     public TwuWaveData FindWaveData (String in_y, String in_x) 
     {
-        if ( lastWaveData == null 
-             || 
-             ! lastWaveData.equalsInputSignal (in_y, in_x)
-           )
-        {
-            lastWaveData = new TwuWaveData (in_y, in_x) ;
-        }
+        if ( lastWaveData == null  ||  ! lastWaveData.equalsInputSignal (in_y, in_x) )
+	{
+	    lastWaveData = new TwuWaveData (in_y, in_x) ;
+	}
         return lastWaveData ;
     }
 
@@ -952,57 +937,6 @@ class TwuDataProvider
     //       data fetching (or creation) methods below.
     //  ----------------------------------------------------
 
-    //  This method is for equidistant data only.
-    //  It's not used anymore really ... just here for comparison.
-    //
-    public TwuFetchOptions 
-    OldFindIndicesForXRange( SingleTwuSignal xsig, float xmin, float xmax, int n_points )
-    {
-        if (n_points < 50) n_points = Waveform.MAX_POINTS ; 
-        int start = 0, step = 1, total = n_points, end = -1, len = 0 ;
-        float fullmin = 0, fullmax = 0, fullrange = 0, ratio_a = 0, ratio_b = 0 ;
-        boolean decrem = false ;
-
-        try 
-        {
-            TWUProperties xprops = xsig.getTWUProperties() ;
-            if (xprops.Dimensions() == 0 || xprops.LengthTotal() <= 1)
-              return new TwuFetchOptions(0,1,1); // mainly used to pick scalars out.
-
-            len = xprops.LengthTotal() ;
-            fullmin   = (float) xprops.Minimum() ;
-            fullmax   = (float) xprops.Maximum() ;
-            fullrange = fullmax - fullmin ;
-            if (fullrange == 0) 
-              throw new Exception ("bad X properties : missing minimum and/or maximum.");
-
-            if (xmin < fullmin) xmin = fullmin ;
-            if (xmax > fullmax) xmax = fullmax ;
-            ratio_a = (xmin - fullmin) / fullrange ;
-            ratio_b = (xmax - fullmin) / fullrange ;
-            start   = (int) (ratio_a * len) ; 
-            end     = (int) (ratio_b * len) ;
-            step    = (end - start) / n_points ;
-            // integer divide rounds down, so you might get 
-            // a little more than (n_points) points.
-
-            if (step == 0) 
-              step = 1 ;
-            total   = (int) Math.ceil ( ((float)(end - start)) / ((float) step) );
-            decrem  = xprops.Decrementing();
-            if (decrem) 
-            {
-                int tmp = start ; start = len-1 - end ; end = len-1 - tmp ;
-            }
-        }
-        catch (Exception e) { handleException(e); }
-
-        TwuFetchOptions ret = new TwuFetchOptions (start, step, total);
-        return ret ;
-    } // end OldFindIndicesForXRange().
-
-// ----------------------------  new routine, needed a bit of work ...  ----------------------------
-
     protected TwuFetchOptions
     FindIndicesForXRange( SingleTwuSignal xsig, float x_start, float x_end, int n_points ) 
         throws  Exception
@@ -1044,13 +978,11 @@ class TwuDataProvider
             }
             float   mult = len / (max - min) ;
             if (x_start < min)
-            {
-                x_start = min ;
-            }
+	      x_start = min ;
+
             if (x_end   > max)
-            {
-                x_end   = max ;
-            }
+	      x_end = max ;
+
             ix_start = (int) Math.floor ( mult*(x_start - min) );
             ix_end   = (int) Math.ceil  ( mult*(x_end   - min) );
         }
@@ -1119,10 +1051,8 @@ class TwuDataProvider
             // garbage-collect the now redundant data. 
             // saves some memory [okay, now I'm optimizing... :)]
 
-            ix_start = FindNonEquiIndex 
-                (up ? x_start : x_end,   xsig, ix_start, step, k, len);
-            ix_end   = FindNonEquiIndex 
-                (up ? x_end   : x_start, xsig, ix_end,   step, k, len);
+            ix_start = FindNonEquiIndex(up ? x_start : x_end,    xsig, ix_start, step, k, len);
+            ix_end   = FindNonEquiIndex(up ? x_end   : x_start,  xsig, ix_end,   step, k, len);
         }
 
         if (ix_start < 0   )
@@ -1411,7 +1341,7 @@ class TwuDataProvider
     }
 
     //  -------------------------------------------
-    //      constructor, main, small stuff ...
+    //      constructor, small stuff ...
     //  -------------------------------------------
 
     public void Update(String experiment, int shot)
@@ -1429,21 +1359,13 @@ class TwuDataProvider
     public TwuDataProvider(String user_agent)
     {
         this.user_agent = user_agent;
-    }
-
-    public static void main(String args[])
-    {
-        TwuDataProvider dp = new TwuDataProvider();
-        float x[], y[], xdata[];
-        y = dp.GetFloatArray("http://ipptwu.ipp.kfa-juelich.de/textor/all/86858/RT2/IVD/IBT2P-star");
-        x = dp.GetFloatArray("TIME:http://iptwu.ipp.kfa-juelich.de/textor/all/86858/RT2/IVD/IBT2P-star");
-
-        for(int i = 0; i < x.length; i++)
-          System.out.println(x[i] + "  " +y[i]);
-
-        System.out.println("Num. points: "+y.length);
+        // Could be used in the constructor for TWUProperties and in similar get URL actions.
+	// A site could used this as a possible (internal) software distribution management
+	// tool.  In the log of a web-server you can, by checking the user_agent, see which
+	// machines are still running old software.
     }
 }
+
 // -------------------------------------------------------------------------------------------------
 // End of: $Id$
 // -------------------------------------------------------------------------------------------------
