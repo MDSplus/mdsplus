@@ -89,7 +89,8 @@ class MdsMessage extends Object
         this.ndims = ndims;
         this.dims = new int[Descriptor.MAX_DIM];
         for(int i = 0; i < Descriptor.MAX_DIM; i++)
-	        this.dims[i] = (dims == null || dims.length >= i) ? 0 : dims[i];
+	        //this.dims[i] = (dims == null || dims.length >= i) ? 0 : dims[i];
+	        this.dims[i] = (dims != null && i < dims.length) ? dims[i]:0;
         this.dtype = dtype;
         client_type = JAVA_CLIENT;
         this.body = body;
