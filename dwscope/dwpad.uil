@@ -1,0 +1,1012 @@
+module Pad
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+value
+    USE_DIALOG: 0;
+    USE_DEFAULT: 1;
+    POPUP_DIALOG: 2;
+
+identifier
+    DataSetupWidget ;
+    RestoreFromWidget ;
+    SaveAsWidget ;
+    PadLabelWidget ;
+    CustomizeWindowWidget ;
+    PadWidget ;
+    Button3Widget ;
+    DefaultFile ;
+    WriteBeforeExitWidget;
+
+procedure
+    Exit;
+    ExitWithCheck;
+    Restore(integer);
+    Save(integer);
+    SetDirMask(any);
+    ApplyDataSetup;
+    ApplyCustomizeWindow;
+    ApplyLabel;
+    ResetCustomizeWindow;
+    ResetDataSetup;
+    ResetLabel;
+    EraseDataSetup;
+    Ok;
+    DisplayHelp(string);
+    XmdsRegisterWidgetCallback(any);
+    XmdsManageChildCallback(any);
+    XmdsUnmanageChildCallback(any);
+
+object
+    pad: XmMainWindow 
+        {
+        arguments
+            {
+            XmNborderWidth = 0;
+            XmNwidth = 0;
+            XmNheight = 0;
+            XmNmenuBar = XmMenuBar menu_bar;
+            XmNworkWindow = XmScrolledWindow work_scroll;
+            };
+        controls
+            {
+            XmMenuBar menu_bar;
+            XmScrolledWindow work_scroll;
+            unmanaged XmFileSelectionDialog file_dialog;
+            unmanaged XmFormDialog data_setup_db;
+            unmanaged XmBulletinBoardDialog defaults_setup_db;
+	    unmanaged XmFormDialog expand_dialog;
+            unmanaged XmFormDialog customize_window;
+            unmanaged XmFormDialog label_db;
+!            unmanaged DXmHelp help_window;
+            unmanaged XmPopupMenu button3_popup;
+            unmanaged XmQuestionDialog write_before_exit;
+            };
+        callbacks
+            {
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp("Pad");
+                };
+            };
+        };
+    menu_bar: XmMenuBar 
+        {
+        arguments
+            {
+            XmNorientation = XmHORIZONTAL;
+            XmNisAligned = false;
+            XmNpacking = XmPACK_TIGHT;
+            XmNmenuHelpWidget = XmCascadeButton help_pulldown_entry;
+            XmNborderWidth = 1;
+            };
+        controls
+            {
+            XmCascadeButton file_pulldown_entry;
+            XmCascadeButton customize_pulldown_entry;
+            XmCascadeButton help_pulldown_entry;
+            };
+        callbacks
+            {
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Menus");
+                };
+            };
+        };
+    work_scroll: XmScrolledWindow 
+        {
+        arguments
+            {
+            XmNborderWidth = 0;
+            XmNworkWindow = XmRowColumn pad_adb;
+            XmNscrollingPolicy = XmAUTOMATIC;
+            XmNscrollBarDisplayPolicy = XmAS_NEEDED;
+            };
+        controls
+            {
+            XmRowColumn pad_adb;
+            };
+        };
+    pad_adb: XmRowColumn 
+        {
+        arguments
+            {
+            XmNentryAlignment = XmALIGNMENT_CENTER;
+            XmNentryBorder = 0;
+            XmNspacing = 1;
+            XmNpacking = XmPACK_COLUMN;
+            XmNrowColumnType = XmWORK_AREA;
+            XmNborderWidth = 0;
+            };
+        callbacks
+            {
+            MrmNcreateCallback = procedures
+                {
+                XmdsRegisterWidgetCallback(PadWidget);
+                };
+            };
+        };
+    file_pulldown_entry: XmCascadeButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("File");
+            };
+        controls
+            {
+            XmPulldownMenu file_pulldown;
+            };
+        callbacks
+            {
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Menus File");
+                };
+            };
+        };
+    file_pulldown: XmPulldownMenu 
+        {
+        controls
+            {
+            XmPushButton exit_button;
+            };
+        };
+    exit_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Exit");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                ExitWithCheck;
+                };
+            };
+        };
+    customize_pulldown_entry: XmCascadeButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Customize");
+            };
+        controls
+            {
+            XmPulldownMenu customize_pulldown;
+            };
+        callbacks
+            {
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Menus Customize");
+                };
+            };
+        };
+    customize_pulldown: XmPulldownMenu 
+        {
+        controls
+            {
+            XmPushButton cust_window_button;
+            XmSeparator 
+                {
+                };
+            XmPushButton restore_button;
+            XmPushButton restore_from_button;
+            XmSeparator 
+                {
+                };
+            XmPushButton save_button;
+            XmPushButton save_as_button;
+            };
+        };
+    cust_window_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Window...");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                ResetCustomizeWindow();
+                XmdsManageChildCallback(CustomizeWindowWidget);
+                };
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Menus Customize Window");
+                };
+            };
+        };
+    restore_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Use Last Saved Settings");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                Restore(USE_DEFAULT);
+                };
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Menus Customize Settings");
+                };
+            };
+        };
+    restore_from_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Use Saved Settings From...");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+		Restore(POPUP_DIALOG);
+                };
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Menus Customize Settings");
+                };
+            };
+        };
+    save_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Save Current Settings");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                Save(USE_DEFAULT);
+                };
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Menus Customize Settings");
+                };
+            };
+        };
+    save_as_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Save Current Settings As...");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                Save(POPUP_DIALOG);
+                };
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Menus Customize Settings");
+                };
+            };
+        };
+    help_pulldown_entry: XmCascadeButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Help");
+            XmNx = 346;
+            XmNwidth = 44;
+            };
+        controls
+            {
+            XmPulldownMenu help_pulldown;
+            };
+        callbacks
+            {
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Menus Help");
+                };
+            };
+        };
+    help_pulldown: XmPulldownMenu 
+        {
+        controls
+            {
+            XmPushButton overview_button;
+            XmPushButton about_button;
+            XmSeparator 
+                {
+                };
+            XmPushButton file_button;
+            XmPushButton customize_button;
+            XmSeparator 
+                {
+                };
+            XmPushButton pads_button;
+            XmSeparator 
+                {
+                };
+            XmPushButton MDSplus_button;
+            XmPushButton TDISHR_button;
+            };
+        };
+    overview_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Overview");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                DisplayHelp(
+                "Pad");
+                };
+            };
+        };
+    about_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("About");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                DisplayHelp(
+                "Pad About");
+                };
+            };
+        };
+    file_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("File");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Menus File");
+                };
+            };
+        };
+    customize_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Customize");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Menus Customize");
+                };
+            };
+        };
+    pads_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Pad Buttons");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Buttons");
+                };
+            };
+        };
+    MDSplus_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("MDSplus");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                DisplayHelp(
+                "MDSplus");
+                };
+            };
+        };
+    TDISHR_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("TDISHR");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                DisplayHelp(
+                "TDISHR");
+                };
+            };
+        };
+!    help_window: DXmHelp 
+!        {
+!        arguments
+!            {
+!            DXmNapplicationName = 
+!            compound_string("Pad");
+!            DXmNlibrarySpec = 
+!            compound_string("MDSplus");
+!            DXmNoverviewTopic = 
+!            compound_string("Pad");
+!            };
+!        };
+    button3_popup: XmPopupMenu 
+        {
+        arguments
+            {
+            XmNmenuHistory = XmPushButton data_setup;
+            };
+        controls
+            {
+            XmPushButton data_setup;
+            XmPushButton pad_label;
+            XmPushButton pad_erase;
+            };
+        callbacks
+            {
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Buttons");
+                };
+            MrmNcreateCallback = procedures
+                {
+                XmdsRegisterWidgetCallback(Button3Widget);
+                };
+            };
+        };
+    data_setup: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Setup data source...");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                XmdsUnmanageChildCallback(Button3Widget);
+                ResetDataSetup();
+                XmdsManageChildCallback(DataSetupWidget);
+                };
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Buttons Setup_data_source");
+                };
+            };
+        };
+    pad_label: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Label...");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                ResetLabel();
+                XmdsManageChildCallback(PadLabelWidget);
+                };
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Buttons Label");
+                };
+            };
+        };
+    pad_erase: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Erase");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                EraseDataSetup();
+                };
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Buttons Erase");
+                };
+            };
+        };
+    file_dialog: XmFileSelectionDialog 
+        {
+        arguments
+            {
+            XmNdirMask = 
+            compound_string("DECW$USER_DEFAULTS:Scope_*.DAT");
+            XmNdialogTitle = 
+            compound_string("Save Current Settings As");
+            XmNselectionLabelString = 
+            compound_string("Select Name For Configuration File: ");
+            XmNdefaultPosition = true;
+            XmNautoUnmanage = true;
+            };
+        callbacks
+            {
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "XYplot File_Selection");
+                };
+            };
+        };
+    customize_window: XmFormDialog 
+        {
+        arguments
+            {
+            XmNdefaultButton = XmPushButton cw_ok_button;
+            XmNhorizontalSpacing = 2;
+            XmNverticalSpacing = 2;
+            XmNdefaultPosition = true;
+            XmNautoUnmanage = false;
+            XmNdialogTitle = 
+            compound_string("Customize Button Layout");
+            XmNnoResize = true;
+            XmNdialogStyle = XmDIALOG_MODELESS;
+            XmNmarginWidth = 3;
+            XmNmarginHeight = 3;
+            };
+        controls
+            {
+            XmText columns;
+            XmLabel columns_label;
+            XmText rows_in_columns;
+            XmLabel rows_label;
+            XmScale padlabelwidth;
+            XmText window_title;
+            XmLabel window_title_label;
+            XmText icon_name;
+            XmLabel icon_name_label;
+            XmRadioBox font_box;
+            XmPushButton cw_ok_button;
+            XmPushButton cw_apply_button;
+            XmPushButton cw_cancel_button;
+            };
+        callbacks
+            {
+            MrmNcreateCallback = procedures
+                {
+                XmdsRegisterWidgetCallback(CustomizeWindowWidget);
+                };
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Menus Customize Window");
+                };
+            };
+        };
+    columns_label: XmLabel 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Columns");
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNtopAttachment = XmATTACH_FORM;
+            };
+        };
+    columns: XmText 
+        {
+        arguments
+            {
+            XmNtopAttachment = XmATTACH_FORM;
+            XmNleftAttachment = XmATTACH_WIDGET;
+            XmNleftWidget = XmLabel columns_label;
+            XmNcolumns = 4;
+            };
+        };
+    rows_label: XmLabel 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Rows");
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmText columns;
+            };
+        };
+    rows_in_columns: XmText 
+        {
+        arguments
+            {
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmText columns;
+            XmNleftAttachment = XmATTACH_WIDGET;
+            XmNleftWidget = XmLabel columns_label;
+            XmNcolumns = 4;
+            };
+        };
+    window_title: XmText 
+        {
+        arguments
+            {
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmText rows_in_columns;
+            XmNcolumns = 30;
+            };
+        };
+    window_title_label: XmLabel 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Window Title");
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmText window_title;
+            };
+        };
+    icon_name: XmText 
+        {
+        arguments
+            {
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmLabel window_title_label;
+            XmNcolumns = 30;
+            };
+        };
+    icon_name_label: XmLabel 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Icon Name");
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmText icon_name;
+            };
+        };
+    font_box: XmRadioBox 
+        {
+        arguments
+            {
+            XmNtopAttachment = XmATTACH_FORM;
+            XmNleftAttachment = XmATTACH_WIDGET;
+            XmNleftWidget = XmText window_title;
+            XmNborderWidth = 0;
+            XmNorientation = XmVERTICAL;
+            };
+        controls
+            {
+            XmToggleButton big_font;
+            XmToggleButton little_font;
+            };
+        };
+    big_font: XmToggleButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Big Font");
+            };
+        };
+    little_font: XmToggleButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Little Font");
+            XmNset = true;
+            };
+        };
+    padlabelwidth: XmScale 
+        {
+        arguments
+            {
+            XmNleftAttachment = XmATTACH_WIDGET;
+            XmNleftWidget = XmText window_title;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmRadioBox font_box;
+            XmNorientation = XmHORIZONTAL;
+            XmNwidth = 167;
+            XmNvalue = 25;
+            XmNmaximum = 50;
+            XmNminimum = 1;
+            XmNshowValue = true;
+            XmNtitleString = 
+            compound_string("Label width");
+            };
+        };
+    cw_ok_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("OK");
+            XmNleftAttachment = XmATTACH_WIDGET;
+            XmNleftWidget = XmText icon_name;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmLabel window_title_label;
+            XmNtopOffset = 10;
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                ApplyCustomizeWindow();
+                Ok();
+                };
+            };
+        };
+    cw_apply_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Apply");
+            XmNleftAttachment = XmATTACH_WIDGET;
+            XmNleftWidget = XmPushButton cw_ok_button;
+            XmNleftOffset = 10;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmLabel window_title_label;
+            XmNtopOffset = 10;
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                ApplyCustomizeWindow();
+                };
+            };
+        };
+    cw_cancel_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Cancel");
+            XmNleftAttachment = XmATTACH_WIDGET;
+            XmNleftWidget = XmPushButton cw_apply_button;
+            XmNleftOffset = 10;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmLabel window_title_label;
+            XmNtopOffset = 10;
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                XmdsUnmanageChildCallback(CustomizeWindowWidget);
+                };
+            };
+        };
+    label_db: XmFormDialog 
+        {
+        arguments
+            {
+            XmNdefaultButton = XmPushButton lab_ok_button;
+            XmNhorizontalSpacing = 2;
+            XmNverticalSpacing = 2;
+            XmNdefaultPosition = true;
+            XmNrubberPositioning = true;
+            XmNdialogStyle = XmDIALOG_APPLICATION_MODAL;
+            XmNwidth = 300;
+            };
+        controls
+            {
+            XmLabel pad_label_title;
+            XmLabel pad_label_label;
+            XmText pad_label_expression;
+            XmPushButton lab_ok_button;
+            XmPushButton lab_reset_button;
+            XmPushButton lab_cancel_button;
+            };
+        callbacks
+            {
+            MrmNcreateCallback = procedures
+                {
+                XmdsRegisterWidgetCallback(PadLabelWidget);
+                };
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "Pad Buttons Label");
+                };
+            };
+        };
+    pad_label_title: XmLabel 
+        {
+        arguments
+            {
+            XmNtopAttachment = XmATTACH_FORM;
+            XmNleftAttachment = XmATTACH_FORM;
+            };
+        };
+    pad_label_label: XmLabel 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Label:");
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmLabel pad_label_title;
+            XmNleftAttachment = XmATTACH_FORM;
+            };
+        };
+    pad_label_expression: XmText 
+        {
+        arguments
+            {
+            XmNrows = 1;
+            XmNcolumns = 25;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmLabel pad_label_title;
+            XmNleftAttachment = XmATTACH_WIDGET;
+            XmNleftWidget = XmLabel pad_label_label;
+            XmNleftOffset = 4;
+            XmNresizeHeight = false;
+            XmNresizeWidth = false;
+            };
+        };
+    lab_ok_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("OK");
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmText pad_label_expression;
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                ApplyLabel();
+                Ok();
+                };
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "XYplot Buttons");
+                };
+            };
+        };
+    lab_reset_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Reset");
+            XmNrightAttachment = XmATTACH_POSITION;
+            XmNrightPosition = 66;
+            XmNrightOffset = -10;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmText pad_label_expression;
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                ResetLabel();
+                XmdsManageChildCallback(PadLabelWidget);
+                };
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "XYplot Buttons");
+                };
+            };
+        };
+    lab_cancel_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Cancel");
+            XmNrightAttachment = XmATTACH_FORM;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmText pad_label_expression;
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                XmdsUnmanageChildCallback(PadLabelWidget);
+                };
+            XmNhelpCallback = procedures
+                {
+                DisplayHelp(
+                "XYplot Buttons");
+                };
+            };
+        };
+    write_before_exit: XmQuestionDialog
+        {
+        arguments
+            {
+              XmNdialogTitle = 
+              compound_string("Save current settings");
+              XmNautoUnmanage = true;
+              XmNokLabelString = "Yes";
+              XmNcancelLabelString = "No";
+              XmNhelpLabelString = "Cancel";
+              XmNmessageString = "Save settings before exiting?";
+            };
+        callbacks
+            {
+            MrmNcreateCallback = procedures
+                {
+                XmdsRegisterWidgetCallback(WriteBeforeExitWidget);
+                };
+            XmNokCallback = procedures
+                {
+                Save(USE_DEFAULT);
+                Exit;
+                };
+            XmNcancelCallback = procedures
+                {
+                Exit;
+                };
+            XmNhelpCallback = procedures
+                {
+                XmdsUnmanageChildCallback(WriteBeforeExitWidget);
+                };
+            };
+        };
+
+    data_setup_db: imported XmFormDialog;
+    defaults_setup_db: imported XmBulletinBoardDialog;
+    expand_dialog: imported XmFormDialog;
+end module;
+
