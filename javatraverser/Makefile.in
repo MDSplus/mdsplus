@@ -58,7 +58,8 @@ RFXANSALDOSetup.java \
 IPC901Setup.java \
 CADHSetup.java \
 J221Setup.java \
-RFXVISetupSetup.java
+RFXVISetupSetup.java \
+RFXVIConfigSetup.java \
 
 
 SOURCES = ActionData.java\
