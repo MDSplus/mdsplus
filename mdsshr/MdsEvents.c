@@ -404,7 +404,7 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 
     /* define internal event dispatching structure */ 
     for(i = 0; i < MAX_EVENTNAMES; i++)
-	//if(private_info[i].active && !strcmp(eventnam, private_info[i].name))
+	/* if(private_info[i].active && !strcmp(eventnam, private_info[i].name)) */
 	if(private_info[i].active && !strcmp(eventnam, private_info[i].name) &&
 		private_info[i].astadr == astadr && private_info[i].astprm == astprm)
 	     break;
@@ -566,7 +566,7 @@ int MDSEvent(char *evname, int data_len, char *data)
     if(name_idx < MAX_EVENTNAMES)
     {
     	for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
-		//if(shared_info[i].nameid >= 0 && !strcmp(evname, shared_name[shared_info[i].nameid].name))
+		/* if(shared_info[i].nameid >= 0 && !strcmp(evname, shared_name[shared_info[i].nameid].name)) */
 	    if(shared_info[i].nameid == name_idx)
 	    	sendMessage(evname, shared_info[i].msgkey, data_len, data);
     }
