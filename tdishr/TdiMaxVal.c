@@ -52,7 +52,6 @@ extern int Tdi3Divide(  );
 
 #include <stdlib.h>
 #include <mdsdescrip.h>
-#include <mdsdescrip.h>
 #include <string.h>
 #include <tdimessages.h>
 
@@ -360,10 +359,10 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
 { type *outp = (type *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  count = 0;\
   for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
     for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
       double result = 0;\
+	  count = 0;\
       for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
         if (*pm0 & 1)\
         {\
@@ -388,11 +387,11 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
 { type *outp = (type *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  count = 0;\
   for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
     for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
       double result = 0;\
       double resulti = 0;\
+	  count = 0;\
       for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
         if (*pm0 & 1)\
         {\
