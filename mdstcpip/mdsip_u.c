@@ -47,6 +47,11 @@ typedef struct _client { SOCKET sock;
 static Client *ClientList = 0;
 static fd_set fdactive;
 static int multi;
+#if defined(_WIN32)
+static char *hostfile = "C:\\mdsip.hosts";
+#else
+static char *hostfile = "/etc/mdsip.hosts";
+#endif
 
 extern int TdiSaveContext();
 extern int TdiRestoreContext();
@@ -89,7 +94,27 @@ int main(int argc, char **argv)
   wVersionRequested = MAKEWORD(1,1);
   WSAStartup(wVersionRequested,&wsaData);
 #endif
-  multi = argc > 2;  
+  if (argc <= 1)
+  {
+    printf("Usage: mdsip portname|portnumber [multi] [hostfile]\n");
+    exit(0);
+  }
+  if (argc > 2)
+  {
+    if (strcmp("multi",argv[2]) == 0)
+    {
+      multi = 1;
+      if (argc > 3)
+        hostfile = argv[3];
+    }
+    else
+    {
+      multi = 0;
+      hostfile = argv[2];
+    }
+  }
+  else
+    multi = 0;
   FD_ZERO(&fdactive);
   if (multi)
     sock = CreateMdsPort(argv[1],1);
@@ -147,13 +172,8 @@ static void CompressString(struct descriptor *in, int upcase)
   
 static int CheckClient(char *host_c, char *user_c)
 {
-  FILE *f;
+  FILE *f = fopen(hostfile,"r");
   int ok = 0;
-#if defined(_WIN32)
-  f = fopen("C:\\mdsip.hosts","r");
-#else
-  f = fopen("/etc/mdsip.hosts","r");
-#endif
   if (f)
   {
     static char line_c[256];
@@ -222,7 +242,7 @@ static int CheckClient(char *host_c, char *user_c)
   }
   else
   {
-    printf("Unable to open mdsip.hosts file\n");
+    printf("Unable to open hostfile: %s\n",hostfile);
     exit(1);
   }
   return ok;
