@@ -23,9 +23,9 @@
 #else
 #include <sys/ioctl.h>
 #ifndef I_NREAD
-#ifdef HAVE_VXWORKS_H
+#if defined(HAVE_VXWORKS_H)
 #include <streams/stropts.h>
-#else
+#elif !defined(__sparc__)
 #include <stropts.h>
 #endif
 #endif

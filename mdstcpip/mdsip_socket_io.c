@@ -297,7 +297,7 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
 void FlushSocket(SOCKET sock)
 {
 #ifndef GLOBUS
-#if !((defined(_UCX) || defined(ANET)) && (__CRTL_VER < 70000000))
+#if !defined(__sparc__) && !((defined(_UCX) || defined(ANET)) && (__CRTL_VER < 70000000))
   struct timeval timout = {0,1};
   int status;
   int nbytes;
