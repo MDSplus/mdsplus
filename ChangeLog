@@ -1,5 +1,139 @@
-Version 1.3-2
+Version 1.4-0
 
+
+2003-01-22 14:19  twf
+
+	* configure, configure.in:
+	
+	upgrade to globus 2.2
+
+2003-01-22 08:44  twf
+
+	* treeshr/TreeAddNode.c, treeshr/TreeDoMethod.c,
+	treeshr/RemoteAccess.c, treeshr/TreeCreatePulseFile.c,
+	mdstcpip/mdsip_u.c:
+	
+	Add SetMdsplusFileProtection script
+
+2003-01-22 08:42  twf
+
+	* treeshr/TreeOpen.c:
+	
+	Fix strcpy buffer overrun
+
+2003-01-16 09:18  manduchi
+
+	* javascope/: AboutWindow.java, AsdexDataProvider.java,
+	Base64.java, ColorDialog.java, CompositeWaveDisplay.java,
+	ConnectionEvent.java, ConnectionListener.java, DataAccess.java,
+	DataAccessURL.java, DataCacheObject.java, DataCached.java,
+	DataProvider.java, DataServerItem.java, DemoAccess.java,
+	DemoDataProvider.java, Descriptor.java, FontSelection.java,
+	FrameData.java, FrameJAI.java, Frames.java, FtuDataProvider.java,
+	Grid.java, JetDataProvider.java, JetMdsDataProvider.java,
+	JiDataSource.java, JiDim.java, JiNcSource.java, JiNcVar.java,
+	JiNcVarByte.java, JiNcVarChar.java, JiNcVarDouble.java,
+	JiNcVarFloat.java, JiNcVarImp.java, JiNcVarInt.java,
+	JiNcVarShort.java, JiSlab.java, JiSlabIterator.java, JiVar.java,
+	JiVarImpl.java, LocalDataProvider.java, MdsAccess.java,
+	MdsConnection.java, MdsDataClient.java, MdsDataProvider.java,
+	MdsIOException.java, MdsMessage.java, MdsPlusBrowseSignals.java,
+	MdsWaveInterface.java, MultiWavePopup.java, MultiWaveform.java,
+	NotConnectedDataProvider.java, ProfileDialog.java, RdaAccess.java,
+	RotateFilter.java, RowColumnContainer.java, RowColumnLayout.java,
+	SetupDataDialog.java, SetupDefaults.java, SetupWaveformParams.java,
+	Signal.java, SignalBox.java, SignalCache.java,
+	SignalsBoxDialog.java, UniversalDataProvider.java,
+	UpdateEvent.java, UpdateEventListener.java,
+	WaveContainerEvent.java, WaveContainerListener.java, WaveData.java,
+	WaveDisplay.java, WaveInterface.java, WavePopup.java,
+	Waveform.java, WaveformContainer.java, WaveformEvent.java,
+	WaveformListener.java, WaveformManager.java, WaveformMetrics.java,
+	jScope.java, jScopeBrowseSignals.java, jScopeBrowseUrl.java,
+	jScopeDefaultValues.java, jScopeMultiWave.java,
+	jScopeProperties.java, jScopeWaveContainer.java,
+	jScopeWavePopup.java:
+	
+	Fix bugs about colours and other things
+
+2003-01-14 11:34  jgk
+
+	* javascope/TwuDataProvider.java:
+	
+	Added  the "synchronized" qualifier to assorted methods;  amongst
+	others to the method GetResampledWaveData() for which the
+	documentation already states that it should be thread safe.
+
+2003-01-14 11:01  jgk
+
+	* javascope/TwuDataProvider.java:
+	
+	In revision 2.13, we factored-out the (nested) class
+	TwuFetchOptions into its own source file.  However, this change
+	was, accidentally, overwritten in revision 2.14.  This entry
+	reverts back to the state of 2.13, but with the later modifications
+	merged in.
+
+2003-01-13 09:09  twf
+
+	* javascope/javascope.vcproj:
+	
+	Add more java source to project
+
+2003-01-13 09:06  twf
+
+	* mdsplus.sln, Setup/Setup.vdproj:
+	
+	Take globus out of main build
+
+2003-01-13 09:05  twf
+
+	* servershr/ServerDispatchPhase.c, servershr/ServerQAction.c,
+	mdsshr/MdsEvents.c, mdsshr/librtl.c:
+	
+	Fix to locking problem on windows
+
+2003-01-09 12:07  manduchi
+
+	* javascope/Waveform.java:
+	
+	Just a test
+
+2003-01-09 11:49  jgk
+
+	* javascope/TWUProperties.java:
+	
+	Another trivial change to test the CVS notification system.
+
+2003-01-09 09:35  jgk
+
+	* javascope/TWUProperties.java:
+	
+	Some trivial changes to test the CVS notification system.
+
+2003-01-02 12:51  twf
+
+	* rpm/: makekit, mdsplus-globus.rpm.spec, mdsplus.rpm.spec:
+	
+	use devscripts/MakeRpm and rpm.spec for rpm builds
+
+2003-01-02 12:03  twf
+
+	* scripts/Makefile.in:
+	
+	Fix typo
+
+2003-01-02 12:02  twf
+
+	* remcam/Makefile.in:
+	
+	Fix makefile
+
+2003-01-02 11:42  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.3-2
 
 2003-01-02 11:19  twf
 
