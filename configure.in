@@ -434,6 +434,7 @@ d3dshr/Makefile
 dwscope/Makefile 
 idlmdsevent/Makefile
 idlsql/Makefile
+javaclient/Makefile
 javamds/Makefile 
 javascope/Makefile
 javatraverser/Makefile

@@ -4,7 +4,8 @@ SHELL=/bin/sh
 
 JAVA_APS = javamds \
 	   javascope \
-           javatraverser
+           javatraverser \
+	   javaclient
 
 D3D_PACKAGE = d3dshr
 
