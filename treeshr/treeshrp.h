@@ -16,21 +16,16 @@
 *********************************************/
 
 
-#if defined(_VMS) || defined(__osf__)
-#pragma member_alignment save
-#pragma nomember_alignment
-#elif defined(__hpux)
+#define PACK
+#if defined(__hpux)
 #pragma HP_ALIGN NOPADDING PUSH
-#elif defined(__sgi) || defined(__sun) 
+#elif defined(__sgi) || defined(__sun) || defined(__osf__) 
 #pragma pack(1)
 #elif defined(_WINDOWS)
 #pragma pack(push,enter_include,1)
-#endif
-
-#if defined(__linux__)
+#elif defined(__linux__)
+#undef  PACK
 #define PACK __attribute__ ((packed))
-#else
-#define PACK
 #endif
 
 #if defined(_big_endian)
@@ -307,11 +302,9 @@ typedef struct record_header
 }         RECORD_HEADER PACK;
 
 
-#if defined(__VMS) || defined(__osf__)
-#pragma member_alignment restore
-#elif defined(__hpux)
+#if defined(__hpux)
 #pragma HP_ALIGN POP
-#elif defined(__sgi)
+#elif defined(__sgi) || defined(__osf__)
 #pragma pack(0)
 #elif defined(__sun)
 #pragma pack(4)

@@ -130,7 +130,7 @@ int	n, status = 1;
     *(type *)outp = IsRoprand(dtype,inp) ? *(type *)rep : *(type *)inp;\
   break;
 
-#define do_fix(type,dtype) case dtype##C : do_complex(type,dtype)  case dtype : do_simple(type,dtype)
+#define do_fix(type,dtype) case DTYPE##dtype##C : do_complex(type,DTYPE##dtype)  case DTYPE##dtype : do_simple(type,DTYPE##dtype)
 
 int			Tdi3FixRoprand(
 struct descriptor	*old_ptr,
@@ -152,11 +152,11 @@ int	n, cmplx, status = 1;
 	}
 	if (status & 1) 
           switch (out_ptr->dtype) {
-            do_fix(float,DTYPE_F)
-            do_fix(float,DTYPE_FS)
-            do_fix(double,DTYPE_D)
-            do_fix(double,DTYPE_G)
-            do_fix(double,DTYPE_FT)
+            do_fix(float,_F)
+            do_fix(float,_FS)
+            do_fix(double,_D)
+            do_fix(double,_G)
+            do_fix(double,_FT)
 	    default :break;
 	  }
 	return status;
