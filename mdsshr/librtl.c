@@ -943,7 +943,7 @@ unsigned int LibCallg(void **arglist, FARPROC *routine)
 
   return retval;
 }
-#elif defined(__unix__) || defined (unix)
+#elif defined(__unix__) || defined (unix) || defined(__unix)
 unsigned int LibCallg(void **arglist, unsigned int (*routine)())
 {
   switch (*(int *)arglist & 0xff)
