@@ -12,6 +12,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.3  2002/04/24 09:06:17  manduchi
+ * Added Asdex Data Provider
+ *
  * Derived from (matlab-) WUProperties.java Revision 1.6 2002/02/26 hrk/jgk
  */
 /* ------------------------------------------------------------------------ */
