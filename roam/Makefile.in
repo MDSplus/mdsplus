@@ -36,6 +36,7 @@ depend:
 clean: 
 	@ $(RM) $(OBJECTS)
 	@ $(RM) @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@libRoam@SHARETYPE@
 	@ $(RM) makefile-header
 	@ $(RM) so_locations
 	@ $(RM) @MAKELIBDIR@libRoam_@GLOBUS_FLAVOR@.a
@@ -52,6 +53,8 @@ install:
 		chmod 755 @bindir@; \
 	fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ @libdir@
+	ln -sf libRoam@SHARETYPE@ @libdir@/libRoam_@GLOBUS_FLAVOR@SHARETYPE@
+	chmod 755 @libdir@/libRoam@SHARETYPE@
 	$(INSTALL) -m 755  @MAKEBINDIR@roam_check_access @bindir@
         ifdef modules
 		$(INSTALL) -m 755  @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPEMOD@ @libdir@
