@@ -488,28 +488,44 @@ static jobject jobjects[1024];
 
 void createWindow(char *name, int idx)
 {
-	JavaVM *jvm;
-	JDK1_1InitArgs vm_args;
 	jint res;
 	jclass cls;
 	jmethodID mid;
 	jstring jstr;
 	char classpath[2048], *curr_classpath;
 
+
+	JavaVM *jvm;
+	JavaVMInitArgs vm_args;
+	JavaVMOption   options[3];
+
 	if(env == 0) /* Java virtual machine does not exist yet */
 	{
-		vm_args.version = 0x00010001;
-		JNI_GetDefaultJavaVMInitArgs(&vm_args);
+	        vm_args.version = JNI_VERSION_1_2;//0x00010001;
+		options[0].optionString = "-Djava.compiler=NONE";           /* disable JIT */
+		options[1].optionString = "-Djava.class.path=/usr/local/mdsplus/java/classes/jTraverser.jar";            /* user classes */
+		options[2].optionString = "-verbose:jni";                   /* print JNI-related messages */
+
+		vm_args.nOptions = 2;
+		vm_args.ignoreUnrecognized = JNI_FALSE;
+		vm_args.options = options;
 		curr_classpath = getenv("CLASSPATH");
+
 		if(curr_classpath)
 		{
-			sprintf(classpath, "%s%c%s", vm_args.classpath, PATH_SEPARATOR, curr_classpath);
-			vm_args.classpath = classpath;
+			sprintf(classpath, "%s%c%s",options[1].optionString , PATH_SEPARATOR, curr_classpath);
+			options[1].optionString = classpath;
 		}
+
+
+
+
+
 		res = JNI_CreateJavaVM(&jvm, (void **)&env, &vm_args);
+
 		if(res < 0)
 		{
-			printf("\nCannot create Java VM!!\n");
+			printf("\nCannot create Java VM (result = %d)!!\n", res);
 			return ;
 		}
 	}
@@ -682,9 +698,6 @@ void deviceSetup(char *deviceName, char *treeName, int shot, char *rootName, int
 
 		if(curr_classpath)
 		{
-		        classpath[0] = '\0';
-		//	sprintf(classpath, "%s%c%s", vm_args.classpath, PATH_SEPARATOR, curr_classpath);
-		//	vm_args.classpath = classpath;
 			sprintf(classpath, "%s%c%s",options[1].optionString , PATH_SEPARATOR, curr_classpath);
 			options[1].optionString = classpath;
 		}
@@ -694,6 +707,7 @@ void deviceSetup(char *deviceName, char *treeName, int shot, char *rootName, int
 
 
 		res = JNI_CreateJavaVM(&jvm, (void **)&env, &vm_args);
+
 		if(res < 0)
 		{
 			printf("\nCannot create Java VM (result = %d)!!\n", res);
