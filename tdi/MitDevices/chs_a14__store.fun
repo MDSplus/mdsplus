@@ -1,6 +1,6 @@
 public fun chs_a14__store(as_is _nid, optional _method)
 {
-  _debug = 1;
+  _debug = 0;
   _dignum = DevNodeRef(_nid,1);
   _ext_clock = DevNodeRef(_nid,4);
   _trigger   = DevNodeRef(_nid,5);
@@ -50,6 +50,7 @@ public fun chs_a14__store(as_is _nid, optional _method)
     case(3) {_min_idx = 0; _max_idx = _memptr ? _memptr - 1 : _memsize_idx; _start_addr = 0; break;}
     case default {_min_idx = 0; _max_idx = _memsize_idx; _start_addr = 0; break;}
   }
+  if (_debug) write(*,"_min_idx=",_min_idx,"  _max_idx=",_max_idx);
   _clk = _is_ext_clock ? _ext_clock_name : "* : * : "//_dt;
   _dim_str_for_post_mode_p1 = "BUILD_WITH_UNITS((_A14_ADJUST=A14_ADJUST("//_trigger_name//","//_clk//
                                     "),BUILD_DIM(BUILD_WINDOW("//(_sr_mode != 0)//"+";
@@ -88,6 +89,7 @@ public fun chs_a14__store(as_is _nid, optional _method)
       _lbound += _lbound mod 2;
       _samples = _ubound - _lbound + 1;
       _samples += _samples mod 2;
+      if (_debug) write(*,"_samples=",_samples,"  _ubound=",_ubound,"_lbound=",_lbound);
       _offset = ([0,0,0,0,-2048,-2048,-2048,-2048])[_range & 7];
       _coefficient = ([2.5/4096,5./4096,5./4096,10./4096,5./4096,10./4096,10./4096,20./4096])[_range & 7];
       if (_samples > 0)
@@ -95,7 +97,9 @@ public fun chs_a14__store(as_is _nid, optional _method)
         _addr =  0x10700000 + (_dignum-1) * (6 * 0x40000) + _chan * 0x40000 + _start_addr + _lbound;
         _samples_read = 0;
         _data = chs_vme_readwords(_addr,_samples);
+        if(_debug) write(*,"size(_data)=",size(_data));
         _data = set_range(_lbound : _ubound,_data & 4095uw);
+        if (_debug) write(*,"size(_data)=",size(_data));
         if (_is_special_dimension)
           _dim_str = _special_dim_name;
         else if (_sr_mode == 0 || _sr_mode == 1)
