@@ -66,6 +66,7 @@ public class RFXTimesSetup extends DeviceSetup {
   DeviceField deviceField18 = new DeviceField();
   DeviceField deviceField20 = new DeviceField();
   DeviceField deviceField21 = new DeviceField();
+  DeviceField deviceField22 = new DeviceField();
   public RFXTimesSetup() {
     try {
       jbInit();
@@ -251,7 +252,7 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField1111.setShowState(true);
     deviceField1111.setDisplayEvaluated(false);
     deviceField1111.setPreferredWidth(-1);
-    deviceField1113.setOffsetNid(41);
+    deviceField1113.setOffsetNid(42);
     deviceField1113.setLabelString("T_CROWBAR_ON_TC");
     deviceField1113.setNumCols(5);
     deviceField1113.setIdentifier("CROWBAR_ON_TC");
@@ -422,26 +423,31 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField3.setNumCols(5);
     deviceField3.setIdentifier("STOP_PWM_TC");
     deviceField3.setShowState(true);
-    deviceField9.setOffsetNid(42);
+    deviceField9.setOffsetNid(43);
     deviceField9.setLabelString("T_START_INV_TC_REF");
     deviceField9.setNumCols(5);
     deviceField9.setIdentifier("START_INV_TC_REF");
     deviceField9.setShowState(true);
-    deviceField18.setOffsetNid(43);
+    deviceField18.setOffsetNid(44);
     deviceField18.setLabelString("T_STOP_INV_TC_REF");
     deviceField18.setNumCols(5);
     deviceField18.setIdentifier("STOP_INV_TC_REF");
     deviceField18.setShowState(true);
-    deviceField20.setOffsetNid(44);
+    deviceField20.setOffsetNid(45);
     deviceField20.setLabelString("T_START_PWM_TC_REF");
     deviceField20.setNumCols(5);
     deviceField20.setIdentifier("START_FWD_TC_REF");
     deviceField20.setShowState(true);
-    deviceField21.setOffsetNid(45);
+    deviceField21.setOffsetNid(46);
     deviceField21.setLabelString("T_STOP_PWM_TC_REF");
     deviceField21.setNumCols(5);
     deviceField21.setIdentifier("STOP_FWD_TC_REF");
     deviceField21.setShowState(true);
+    deviceField22.setOffsetNid(41);
+    deviceField22.setLabelString("T_OPEN_IS_TC");
+    deviceField22.setNumCols(5);
+    deviceField22.setIdentifier("");
+    deviceField22.setShowState(true);
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jPanel1, BorderLayout.CENTER);
     jPanel1.add(jPanel2, null);
@@ -468,10 +474,11 @@ public class RFXTimesSetup extends DeviceSetup {
     jPanel3.add(deviceField1117, null);
     jPanel3.add(deviceField1116, null);
     jPanel3.add(deviceField1115, null);
-    jPanel3.add(deviceField1114, null);
     jPanel3.add(deviceField1113, null);
     jPanel3.add(deviceField2, null);
     jPanel3.add(deviceField18, null);
+    jPanel3.add(deviceField1114, null);
+    jPanel3.add(deviceField22, null);
     jPanel4.add(deviceField1110, null);
     jPanel4.add(deviceField117, null);
     jPanel4.add(deviceField116, null);
