@@ -967,7 +967,10 @@ STATIC_ROUTINE void setHandle()
 #else 
 	/* get first unused message queue id */
 	while((msgId = msgget(msgKey, 0777 | IPC_CREAT | IPC_EXCL)) == -1)
+	  if (errno == EEXIST)
 	    msgKey++;
+	  else
+	    perror("setHandle:msgget fail - check MSGMNI");
 #endif
 	if(pthread_create(&thread, pthread_attr_default, handleMessage, 0) !=  0)
 	    perror("setHandle:pthread_create");
