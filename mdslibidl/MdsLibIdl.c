@@ -99,15 +99,19 @@ typedef struct {
   short memory_bits;            /* # of bits used to address memory */
   short file_offset_bits;       /* # of bits used to represent file offsets */
 } IDL_SYS_VERSION;
+/*
 extern IDL_SYS_VERSION IDL_SysvVersion;
+*/
 
 static int ShortStrings()
 {
-  return IDL_SysvVersion.arch.stype == 0 &&
+  /*  return IDL_SysvVersion.arch.stype == 0 &&
          IDL_SysvVersion.os.stype == 0 &&
          IDL_SysvVersion.os_family.stype == 0 &&
          IDL_SysvVersion.release.stype == 0 &&
     IDL_SysvVersion.build_date.stype == 0;
+  */
+  return 1;
 }
 
 static void *MakeDescr(int idx, int *argsize, void *bytes)
