@@ -1,6 +1,6 @@
 import java.util.*;
 
-class Action 
+class Action
 {
     ActionData action;
     int nid;
@@ -15,7 +15,7 @@ class Action
     static final int DOING = 3;
     static final int DONE = 4;
     static final int ABORTED = 5;
-    
+
     public Action(ActionData action, int nid, String name, boolean on)
     {
         this.action = action;
@@ -24,27 +24,27 @@ class Action
         this.on = on;
         dispatch_status = NOT_DISPATCHED;
         status = 0;
-        
+
     }
-    
+
    // public int getTimestamp() {return timestamp; }
-    public void setTimestamp(int timestamp) {this.timestamp = timestamp; }
-    public ActionData getAction() {return action; }
-    public int getNid() {return nid; }
-    public String getName() {return name; }
-    public boolean isOn() {return on; }
-    public int getDispatchStatus() {return dispatch_status; }
-    public int getStatus() {return status; }
-    public boolean isManual() {return manual; }
-    public void setManual(boolean manual) {this.manual = manual; }
-    void setStatus(int status) {this.status = status; }
-   
-    void setStatus(int dispatch_status, int status, boolean verbose) 
+    public synchronized void setTimestamp(int timestamp) {this.timestamp = timestamp; }
+    public synchronized ActionData getAction() {return action; }
+    public synchronized int getNid() {return nid; }
+    public synchronized String getName() {return name; }
+    public synchronized boolean isOn() {return on; }
+    public synchronized int getDispatchStatus() {return dispatch_status; }
+    public synchronized int getStatus() {return status; }
+    public synchronized boolean isManual() {return manual; }
+    public synchronized void setManual(boolean manual) {this.manual = manual; }
+    synchronized void setStatus(int status) {this.status = status; }
+
+    synchronized void setStatus(int dispatch_status, int status, boolean verbose)
     {
         String server;
         this.status = status;
         this.dispatch_status = dispatch_status;
-        
+
         if(verbose)
         {
             try {
@@ -53,19 +53,19 @@ class Action
             switch(dispatch_status) {
                 case DISPATCHED : System.out.println(""+ new Date() + " Dispatching node " +
                     name + " to " + server); break;
-                 case DOING : System.out.println(""+new Date() + " " +server + 
+                 case DOING : System.out.println(""+new Date() + " " +server +
                         " is beginning action " + name); break;
-                 case DONE : 
+                 case DONE :
                         if((status & 1) != 0)
                             System.out.println(""+new Date() + " Action " +name + " completed  ");
                         else
-                            System.out.println(""+new Date() + " Action " +name + 
-                                " failed  " + MdsHelper.getErrorString(status)); 
+                            System.out.println(""+new Date() + " Action " +name +
+                                " failed  " + MdsHelper.getErrorString(status));
                         break;
                  case ABORTED: System.out.println(""+new Date() + " Action " +name + " aborted"); break;
-            }      
-        }   
+            }
+        }
     }
-    public String toString() {return name; }  
-    
+    public synchronized String toString() {return name; }
+
 }

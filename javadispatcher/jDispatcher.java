@@ -374,8 +374,8 @@ class jDispatcher implements ServerListener
               doing_phase = true;
               dep_dispatched.addElement(action);
               action.setStatus(Action.DISPATCHED, 0, verbose);
-              balancer.enqueueAction(action);
               fireMonitorEvent(action, MONITOR_DISPATCHED);
+              balancer.enqueueAction(action);
             }
           }
 
@@ -402,8 +402,8 @@ class jDispatcher implements ServerListener
                     doing_phase = true;
                     seq_dispatched.addElement(action);
                     action.setStatus(Action.DISPATCHED, 0, verbose);
-                    balancer.enqueueAction(action);
                     fireMonitorEvent(action, MONITOR_DISPATCHED);
+                    balancer.enqueueAction(action);
 
                 }
             }
@@ -419,8 +419,8 @@ class jDispatcher implements ServerListener
         if(action == null) return false;
         action.setStatus(Action.DISPATCHED, 0, verbose);
         action.setManual(true);
-        balancer.enqueueAction(action);
         fireMonitorEvent(action, MONITOR_DISPATCHED);
+        balancer.enqueueAction(action);
         return true;
     }
 
@@ -510,8 +510,8 @@ class jDispatcher implements ServerListener
                 {
                     dep_dispatched.addElement(curr_action);
                     curr_action.setStatus(Action.DISPATCHED, 0, verbose);
-                    balancer.enqueueAction(curr_action);
                     fireMonitorEvent(curr_action, MONITOR_DISPATCHED);
+                    balancer.enqueueAction(curr_action);
                }
             }
         }catch(Exception exc) {System.err.println("Internal error: action not stored in depend_actions hashtable");}
@@ -531,9 +531,9 @@ class jDispatcher implements ServerListener
                     Action curr_action = (Action)actions.nextElement();
                     seq_dispatched.addElement(curr_action);
 		    curr_action.setStatus(Action.DISPATCHED, 0, verbose); //Spostata da cesare
+                    fireMonitorEvent(curr_action, MONITOR_DISPATCHED);
                     balancer.enqueueAction(curr_action);
 //                    curr_action.setStatus(Action.DISPATCHED, 0, verbose);
-                    fireMonitorEvent(curr_action, MONITOR_DISPATCHED);
                }
             }
             else
