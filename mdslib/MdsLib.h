@@ -1,3 +1,6 @@
+#ifndef MdsLib_H
+#define MdsLib_H
+
 #ifdef __VMS 
 #include "ipdesc.h"
 #else
@@ -31,3 +34,5 @@ SOCKET MdsConnect(char *host);
 int MdsValue(char *expression, ...); /**** NOTE: NULL terminated argument list expected ****/
 
 SOCKET mdsSocket=INVALID_SOCKET;
+
+#endif

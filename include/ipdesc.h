@@ -60,6 +60,13 @@ extern struct descrip *MakeDescrip();
 extern struct descrip *MakeDescripWithLength();
 extern int   MdsEventAst();
 extern int   MdsEventCan();
+#ifndef MdsLib_H
+extern int   MdsValue();
+extern int   MdsPut();
+extern int   MdsOpen();
+extern int   MdsSetDefault();
+extern int   MdsClose();
+#endif
 #else
 extern SOCKET ConnectToMds(char *host);
 extern SOCKET ConnectToMdsEvents(char *host);
@@ -72,4 +79,11 @@ extern struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype, char 
 extern struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype, int length, char ndims, int *dims, void *ptr);
 extern int   MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, void **eventid);
 extern int   MdsEventCan(SOCKET sock, void *eventid);
+#ifndef MdsLib_H
+extern int   MdsValue(SOCKET sock, char *,...);
+extern int   MdsPut(SOCKET sock, char *node, char *expression,...);
+extern int   MdsOpen(SOCKET sock, char *tree, int shot);
+extern int   MdsSetDefault(SOCKET sock, char *node);
+extern int   MdsClose(SOCKET sock);
+#endif
 #endif

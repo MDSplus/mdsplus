@@ -185,8 +185,3 @@ typedef struct _message { MsgHdr h;
                           char bytes[1];
 			} Message, *MsgPtr;
 
-extern int   MdsValue(SOCKET sock, char *,...);
-extern int   MdsPut(SOCKET sock, char *node, char *expression,...);
-extern int   MdsOpen(SOCKET sock, char *tree, int shot);
-extern int   MdsSetDefault(SOCKET sock, char *node);
-extern int   MdsClose(SOCKET sock);
