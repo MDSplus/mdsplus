@@ -11,6 +11,8 @@
 #       $1 = service or portnumber
 #       $2 = log directory (directory must exist)
 #       $3 = optional alternate mdsip.hosts file
+#       $4 = optional chroot directory
+#
 if (test "$MDSPLUS_DIR" = "")
 then
   MDSPLUS_DIR=/usr/local/mdsplus
@@ -21,4 +23,9 @@ then
 fi
 . $MDSPLUS_DIR/setup.sh
 $MDSPLUS_DIR/bin/mkdirhier $2
-exec $MDSPLUS_DIR/bin/mdsip -p $1 -h ${3:-/etc/mdsip.hosts} -c 9 >> $2/access 2>> $2/errors
+if (test "$4" = "")
+then
+  exec $MDSPLUS_DIR/bin/mdsip -p $1 -h ${3:-/etc/mdsip.hosts} -c 9 >> $2/access 2>> $2/errors
+else
+  /usr/sbin/chroot $4 $MDSPLUS_DIR/bin/mdsip -p $1 -h ${3:-/etc/mdsip.hosts} -c 9 >> $2/access 2>> $2/errors
+fi
