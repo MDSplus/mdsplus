@@ -51,6 +51,11 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 #include <pthread.h>
 #include <errno.h>
 
+#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
+#define pthread_condattr_default NULL
+#define pthread_mutexattr_default NULL
+#endif
+
 extern int TdiCompletionOf();
 extern int TdiExecute();
 extern int TdiErrorlogsOf();
@@ -428,13 +433,13 @@ int ServerDispatchPhase(pthread_cond_t *cond, void *vtable, char *phasenam, char
   phasenam_d.pointer = phasenam;
   if (JobWaitInitialized == 0)
   {
-    status = pthread_mutex_init(&JobWaitMutex,0);
+    status = pthread_mutex_init(&JobWaitMutex,pthread_mutexattr_default);
     if (status)
     {
       perror("Error creating pthread mutex");
       exit(status);
     }
-    status = pthread_cond_init(&JobWaitCondition,0);
+    status = pthread_cond_init(&JobWaitCondition,pthread_condattr_default);
     if (status)
     {
       perror("Error creating pthread condition");
