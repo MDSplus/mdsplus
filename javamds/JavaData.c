@@ -129,11 +129,16 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
   struct descriptor_r *record_d;
   char *buf;
   EMPTYXD(float_xd);
+  EMPTYXD(ca_xd);
+  int is_ca = 0;
+
+
   if(!desc)
     {
       return  NULL;
     }
-      
+ printf("DescripToObject dtype = %d class = %d\n", desc->dtype, desc->class);
+     
   if(desc->class == CLASS_XD)
     return DescripToObject(env, ((struct descriptor_xd *)desc)->pointer);
 
@@ -231,60 +236,75 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 	  (*env)->ThrowNew(env, exc, message);
       }
 	  case CLASS_CA: 
+		status = TdiData(desc, &ca_xd MDS_END_ARG);
+		if(!(status & 1)) 
+		{
+			printf("Cannot evaluate CA descriptor\n");
+			return NULL;
+		}
+		is_ca = 1;
 	  case CLASS_A:
-      array_d = (struct descriptor_a *)desc;
-      length =array_d->arsize/array_d->length; 
-      switch(array_d->dtype) {
-        case DTYPE_BU: is_unsigned = 1;
-        case DTYPE_B: 
-	  cls = (*env)->FindClass(env, "ByteArray");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([BZ)LData;");
-	  jbytes = (*env)->NewByteArray(env, length);
-	  (*env)->SetByteArrayRegion(env, jbytes, 0, length, (jbyte *)array_d->pointer);
-	  args[0].l = jbytes;
-	  args[1].z = is_unsigned;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-        case DTYPE_WU: is_unsigned = 1;
-        case DTYPE_W:  
-	  cls = (*env)->FindClass(env, "ShortArray");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([SZ)LData;");
-	  jshorts = (*env)->NewShortArray(env, length);
-	  (*env)->SetShortArrayRegion(env, jshorts, 0, length, (jshort *)array_d->pointer);
-	  args[0].l = jshorts;
-	  args[1].z = is_unsigned;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-        case DTYPE_LU: is_unsigned = 1;
-        case DTYPE_L: 
-	  cls = (*env)->FindClass(env, "IntArray");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([IZ)LData;");
-	  jints = (*env)->NewIntArray(env, length);
-	  (*env)->SetIntArrayRegion(env, jints, 0, length, (jint *)array_d->pointer);
-	  args[0].l = jints;
-	  args[1].z = is_unsigned;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-        case DTYPE_QU: is_unsigned = 1;
-        case DTYPE_Q: 
-	  cls = (*env)->FindClass(env, "QuadArray");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([JZ)LData;");
-	  jlongs = (*env)->NewLongArray(env, length);
-	  (*env)->SetLongArrayRegion(env, jlongs, 0, length, (jlong *)array_d->pointer);
-	  args[0].l = jlongs;
-	  args[1].z = is_unsigned;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-        case DTYPE_OU: is_unsigned = 1;
-        case DTYPE_O: 
-	  cls = (*env)->FindClass(env, "OctaArray");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([JZ)LData;");
-	  jlongs = (*env)->NewLongArray(env, 2*length);
-	  (*env)->SetLongArrayRegion(env, jlongs, 0, 2*length, (jlong *)array_d->pointer);
-	  args[0].l = jlongs;
-	  args[1].z = is_unsigned;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-		case DTYPE_D:
-		case DTYPE_G:
-		case DTYPE_H:
-		case DTYPE_F: 
-		case DTYPE_FLOAT: /* //Let Tdi handle all the floating point stuff */
+		if(is_ca)
+			array_d = (struct descriptor_a *)ca_xd.pointer;
+		else
+			array_d = (struct descriptor_a *)desc;
+		length =array_d->arsize/array_d->length; 
+		switch(array_d->dtype) {
+			case DTYPE_BU: is_unsigned = 1;
+			case DTYPE_B: 
+				cls = (*env)->FindClass(env, "ByteArray");
+				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([BZ)LData;");
+				jbytes = (*env)->NewByteArray(env, length);
+				(*env)->SetByteArrayRegion(env, jbytes, 0, length, (jbyte *)array_d->pointer);
+				args[0].l = jbytes;
+				args[1].z = is_unsigned;
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+			case DTYPE_WU: is_unsigned = 1;
+			case DTYPE_W:  
+				cls = (*env)->FindClass(env, "ShortArray");
+				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([SZ)LData;");
+				jshorts = (*env)->NewShortArray(env, length);
+				(*env)->SetShortArrayRegion(env, jshorts, 0, length, (jshort *)array_d->pointer);
+				args[0].l = jshorts;
+				args[1].z = is_unsigned;
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+			case DTYPE_LU: is_unsigned = 1;
+			case DTYPE_L: 
+				cls = (*env)->FindClass(env, "IntArray");
+				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([IZ)LData;");
+				jints = (*env)->NewIntArray(env, length);
+				(*env)->SetIntArrayRegion(env, jints, 0, length, (jint *)array_d->pointer);
+				args[0].l = jints;
+				args[1].z = is_unsigned;
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+			case DTYPE_QU: is_unsigned = 1;
+			case DTYPE_Q: 
+				cls = (*env)->FindClass(env, "QuadArray");
+				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([JZ)LData;");
+				jlongs = (*env)->NewLongArray(env, length);
+				(*env)->SetLongArrayRegion(env, jlongs, 0, length, (jlong *)array_d->pointer);
+				args[0].l = jlongs;
+				args[1].z = is_unsigned;
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+			case DTYPE_OU: is_unsigned = 1;
+			case DTYPE_O: 
+				cls = (*env)->FindClass(env, "OctaArray");
+				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([JZ)LData;");
+				jlongs = (*env)->NewLongArray(env, 2*length);
+				(*env)->SetLongArrayRegion(env, jlongs, 0, 2*length, (jlong *)array_d->pointer);
+				args[0].l = jlongs;
+				args[1].z = is_unsigned;
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+			case DTYPE_D:
+			case DTYPE_G:
+			case DTYPE_H:
+			case DTYPE_F: 
+			case DTYPE_FLOAT: /* //Let Tdi handle all the floating point stuff */
 			{	
 				status = TdiFloat(array_d, &float_xd MDS_END_ARG);
 				if(!(status & 1))
@@ -293,14 +313,15 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 					exit(0);
 				}
 			}
-	  array_d = (struct descriptor_a *)float_xd.pointer;
-		cls = (*env)->FindClass(env, "FloatArray");
-		constr = (*env)->GetStaticMethodID(env, cls, "getData", "([F)LData;");
-		jfloats = (*env)->NewFloatArray(env, length);
-		(*env)->SetFloatArrayRegion(env, jfloats, 0, length, (jfloat *)array_d->pointer);
-		args[0].l = jfloats;
-		MdsFree1Dx(&float_xd, 0);
-		return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+				array_d = (struct descriptor_a *)float_xd.pointer;
+				cls = (*env)->FindClass(env, "FloatArray");
+				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([F)LData;");
+				jfloats = (*env)->NewFloatArray(env, length);
+				(*env)->SetFloatArrayRegion(env, jfloats, 0, length, (jfloat *)array_d->pointer);
+				args[0].l = jfloats;
+				MdsFree1Dx(&float_xd, 0);
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 
 	  /*case DTYPE_FLOAT:
 	  cls = (*env)->FindClass(env, "FloatArray");
@@ -309,14 +330,15 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 	  (*env)->SetFloatArrayRegion(env, jfloats, 0, length, (jfloat *)array_d->pointer);
 	  args[0].l = jfloats;
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);*/
-        case DTYPE_DOUBLE: 
-	  cls = (*env)->FindClass(env, "DoubleArray");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([D)LData;");
-	  jdoubles = (*env)->NewDoubleArray(env, length);
-	  (*env)->SetDoubleArrayRegion(env, jdoubles, 0, length, (jdouble *)array_d->pointer);
-	  args[0].l = jdoubles;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-      }
+			case DTYPE_DOUBLE: 
+				cls = (*env)->FindClass(env, "DoubleArray");
+				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([D)LData;");
+				jdoubles = (*env)->NewDoubleArray(env, length);
+				(*env)->SetDoubleArrayRegion(env, jdoubles, 0, length, (jdouble *)array_d->pointer);
+				args[0].l = jdoubles;
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		}
       case CLASS_R :
 	record_d = (struct descriptor_r *)desc;
 	switch(record_d->dtype) {
@@ -711,6 +733,8 @@ void FreeDescrip(struct descriptor *desc)
 
   if(!desc)
     return;
+
+printf("FreeDescrip class %d dtype %d\n", desc->class, desc->dtype);
 
   switch(desc->class) {
     case CLASS_S : free(desc->pointer); break;
