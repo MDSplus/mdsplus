@@ -4,8 +4,6 @@
     int a(){printf("Routine %s not implemented yet\n",#a);return 0;}
 
 dummy(TclDispatch_abort_server)
-dummy(TclCleanDatafile)
-dummy(TclCompressDatafile)
 dummy(TclDeleteNode)
 dummy(TclDeletePulse)
 dummy(TclDispatch)
@@ -15,13 +13,11 @@ dummy(TclDispatch_phase)
 dummy(TclDispatch_close)
 dummy(TclDispatch_command)
 dummy(TclDoNode)
-dummy(TclEdit)
 dummy(TclLink)
 dummy(TreeMarkIncludes)
 dummy(TclPutExpression)
 dummy(TclCommand)
 dummy(TclRemoveTag)
-dummy(TclRename)
 dummy(TclRundownTree)
 dummy(TclDispatch_set_server)
 dummy(TclSetEvent)
@@ -37,5 +33,4 @@ dummy(TclWfevent)
 #ifndef __vms
 dummy(ServerCreatePulse)
 dummy(TreeSetNoSubtree)
-dummy(TreeVerifyTree)
 #endif

@@ -3,11 +3,17 @@
 /***********************************************************************
 * TCL_VERIFY_TREE.C --
 *
-* Call TreeVerifyTree routine.
+* Call TreeVerify routine.
 * History:
 *  13-Mar-1998  TRG  Create.  Port from original mdsPlus code.
 *
 ************************************************************************/
+
+
+#ifdef vms
+#define TreeVerify  TREE$VERIFY_TREE
+int   TREE$VERIFY_TREE();
+#endif
 
 
 
@@ -18,7 +24,7 @@ int   TclVerifyTree()		/* Returns: status			*/
    {
     int   sts;
 
-    sts = TreeVerifyTree();
+    sts = TreeVerify();
     if (~sts & 1)
         MdsMsg(sts,0);
     return(sts);

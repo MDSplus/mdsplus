@@ -6,12 +6,16 @@ OBJFILES = 			\
 	libTcl.a(tcl_dummy.o)		\
 	libTcl.a(tcl_add_node.o)	\
 	libTcl.a(tcl_add_tag.o)		\
+	libTcl.a(tcl_clean_datafile.o)		\
 	libTcl.a(tcl_close.o)		\
+	libTcl.a(tcl_compress_datafile.o)		\
 	libTcl.a(tcl_create_pulse.o)	\
 	libTcl.a(tcl_decompile.o)	\
 	libTcl.a(tcl_directory.o)	\
 	libTcl.a(tcl_directory_tag.o)	\
 	libTcl.a(tcl_do_method.o)	\
+	libTcl.a(tcl_edit.o)		\
+	libTcl.a(tcl_rename.o)		\
 	libTcl.a(tcl_set_callbacks.o)	\
 	libTcl.a(tcl_set_current.o)	\
 	libTcl.a(tcl_set_default.o)	\
