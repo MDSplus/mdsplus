@@ -3,21 +3,6 @@ Microsoft Developer Studio Workspace File, Format Version 5.00
 
 ###############################################################################
 
-Project: "bounce"=.\ipcs\applications\bounce.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name ipcs
-    End Project Dependency
-}}}
-
-###############################################################################
-
 Project: "cdu"=.\cdu\cdu.dsp - Package Owner=<4>
 
 Package=<5>
@@ -46,21 +31,6 @@ Package=<4>
 {{{
     Begin Project Dependency
     Project_Dep_Name mdsshr
-    End Project Dependency
-}}}
-
-###############################################################################
-
-Project: "grandpa"=.\ipcs\grandpa\grandpa.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name ipcs
     End Project Dependency
 }}}
 
@@ -101,63 +71,6 @@ Package=<5>
 
 Package=<4>
 {{{
-}}}
-
-###############################################################################
-
-Project: "ipcs"=.\ipcs\ipcs.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "ipcsdll"=.\ipcs\lib\ipcsdll.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name ipcs
-    End Project Dependency
-}}}
-
-###############################################################################
-
-Project: "istart"=.\ipcs\grandpa\istart.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name ipcs
-    End Project Dependency
-}}}
-
-###############################################################################
-
-Project: "istop"=.\ipcs\grandpa\istop.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name ipcs
-    End Project Dependency
 }}}
 
 ###############################################################################
@@ -205,6 +118,21 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name treeshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "math"=.\math\math.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
     End Project Dependency
 }}}
 
@@ -416,9 +344,6 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name mdsdclshr
     End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name ipcsdll
-    End Project Dependency
 }}}
 
 ###############################################################################
@@ -431,69 +356,6 @@ Package=<5>
 
 Package=<4>
 {{{
-    Begin Project Dependency
-    Project_Dep_Name ipcsdll
-    End Project Dependency
-}}}
-
-###############################################################################
-
-Project: "netmailer"=.\ipcs\netmailer\netmailer.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name ipcs
-    End Project Dependency
-}}}
-
-###############################################################################
-
-Project: "nm_status"=.\ipcs\netmailer\nm_status.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name ipcs
-    End Project Dependency
-}}}
-
-###############################################################################
-
-Project: "process"=.\ipcs\applications\process.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name ipcs
-    End Project Dependency
-}}}
-
-###############################################################################
-
-Project: "quickmsg"=.\ipcs\applications\quickmsg.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name ipcs
-    End Project Dependency
 }}}
 
 ###############################################################################
@@ -531,7 +393,7 @@ Package=<4>
     Project_Dep_Name treeshr
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name ipcsdll
+    Project_Dep_Name mdsipshr
     End Project Dependency
 }}}
 
