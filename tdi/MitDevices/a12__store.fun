@@ -32,9 +32,9 @@ public fun a12__store(as_is _nid, optional _method)
         _chan_sel = _chan;
       }
       _offset = ((1 << _chan) & _offsets) != 0 ? -2048 : 0;
-      _stat = DevCamChk(_name,CamPiow(_name,_chan_sel,16,_d=0,16),1,*);
+      DevCamChk(_name,CamPiow(_name,_chan_sel,16,_d=0,16),1,*);
       _stat = DevCamChk(_name,CamFStopw(_name,0,2,_max_samples,_data,16),1,*);
-      _dim = compile('build_dimension(build_window(_lbound,_ubound,'//getnci(DevNodeRef(_nid,4),'fullpath')//'),_clk)');
+      _dim = make_dim(make_window(_lbound,_ubound,DevNodeRef(_nid,4)),_clk);
       _stat = DevPutSignal(_chan_nid, _offset, 10./4096, _data[_lbound : _ubound], _lbound, _ubound, _dim);
     }
   }
