@@ -680,7 +680,7 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
 		{
 			if (*part == ' ') 
 				part++;
-			else if ((path[i] == ' ' || path[i] == ';' || path[i] == 0) && strlen(part))
+			else if ((path[i] == ';' || path[i] == 0) && strlen(part))
 			{
 				path[i] = 0;
 				resnam = strcpy(malloc(strlen(part)+strlen(name)+strlen(type)+2),part);
