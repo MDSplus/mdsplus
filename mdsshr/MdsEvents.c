@@ -939,7 +939,7 @@ static int canEventRemote(int eventid)
 	
 int MDSEventCan(int eventid)
 {
-    int i, j, k, curr_id, prev_id, use_local, local_eventid;
+    int i, j, k, curr_id, prev_id, use_local, local_eventid, name_in_use;
     struct PrivateEventInfo *evinfo;
 
     if(eventid < 0) return 0;
@@ -957,18 +957,23 @@ int MDSEventCan(int eventid)
 /* local stuff */
     evinfo = &private_info[local_eventid];
     if(!shared_info) return 0; /*must follow MdsEventAst */
-
-    getLock();
+    name_in_use = 0;
+    for(i = 0; i < MAX_EVENTNAMES; i++)
+	if((i != local_eventid) && private_info[i].active && !strcmp(evinfo->name, private_info[i].name))
+          name_in_use = 1;
+    if (!name_in_use)
+    {
+      getLock();
 
 /* deactivate corresponding SharedEventInfo slot */
-    for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
-    {
+      for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
+      {
 	if(shared_info[i].msgkey == msgKey && shared_info[i].nameid >= 0 
 		&& !strcmp(evinfo->name, shared_name[shared_info[i].nameid].name))
 	    break;
-    }
-    if(i < MAX_ACTIVE_EVENTS) /* if corresponding slot found */
-    {
+      }
+      if(i < MAX_ACTIVE_EVENTS) /* if corresponding slot found */
+      {
 	shared_name[shared_info[i].nameid].refcount--;
 
 /* Remove shared info from list */
@@ -986,9 +991,10 @@ int MDSEventCan(int eventid)
 	} 	
 
 	shared_info[i].nameid = shared_info[i].next_id = -1;
-    }
+      }
 
-    releaseLock();
+      releaseLock();
+    }
     evinfo->active = 0;
 }
 
