@@ -27,8 +27,8 @@ public fun DIO2__add(in _path, out _nidout)
     	DevAddNode(_cn // ':TRIGGER', 'NUMERIC', 0, *, _nid);
 
      	DevAddNode(_cn // ':CLOCK', 'NUMERIC', *, *, _nid);
-     	DevAddNode(_cn // ':TRIGGER_1', 'NUMERIC', *, *, _nid);
-     	DevAddNode(_cn // ':TRIGGER_2', 'NUMERIC', *, *, _nid);
+		DevAddNode(_cn // ':TRIGGER_1', 'NUMERIC', compile(_cn // ':TRIGGER +' //_cn //':DELAY'), *, _nid);
+		DevAddNode(_cn // ':TRIGGER_2', 'NUMERIC', compile(_cn // ':TRIGGER_1 +' //_cn //':DURATION'), *, _nid);
      	DevAddNode(_cn // ':COMMENT', 'TEXT', *, *, _nid);
 
    }
