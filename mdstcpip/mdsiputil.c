@@ -327,7 +327,7 @@ SOCKET  ConnectToMdsEvents(char *host)
   sscanf(host,"%[^:]:%s",hostpart,portpart);
   if (strlen(portpart) == 0)
     strcpy(portpart,"mdsipe");
-  return ConnectToPort(host, portpart);
+  return ConnectToPort(hostpart, portpart);
 }
 
 int  GetAnswerInfo(SOCKET sock, char *dtype, short *length, char *ndims, int *dims,
