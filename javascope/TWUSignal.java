@@ -13,6 +13,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2002/05/06 16:09:57  jgk
+ * Fiddles (sorry).
+ *
  * Revision 1.7  2002/05/06 16:07:10  jgk
  * Further adjustment suggested by Marco van de Giessen.
  *
@@ -160,6 +163,15 @@ public class TWUSignal
 
             con.setRequestProperty("User-Agent",
                                    "TWUSignal.java for jScope ($Revision$)");
+
+            // It seems to be more efficient, for the type of data we have in the
+            // bulk files, to close the connection after the server has send all
+            // the data.  In that way HTTP/1.1 servers will not "chunk" the data.
+            // This chunking doubled the amounts to transfer and the de-chunking 
+            // on the client side took significant effort.
+
+            con.setRequestProperty("Connection", "close"); 
+
             con.connect();
 
             instream = 
