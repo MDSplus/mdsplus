@@ -457,7 +457,7 @@ int main(int argc, char **argv)
 #endif
   }
 #ifdef GLOBUS
-  Poll();
+  Poll(0);
 #else
   {
   static struct sockaddr_in sin;

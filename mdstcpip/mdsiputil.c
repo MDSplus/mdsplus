@@ -216,7 +216,7 @@ static SOCKET ConnectToPort(char *host, char *service)
     else
     {
       char *port = getenv(service);
-      port = (port == NULL) ? "8000" : port;
+      port = (port == NULL) ? ((host[0]=='_') ? "8200" : "8000") : port;
       portnum = htons((short)atoi(port));
     }
   }
@@ -292,11 +292,13 @@ static SOCKET ConnectToPort(char *host, char *service)
     }
   }
   SetSocketOptions(s,0);
+#ifndef GLOBUS
 #ifndef _WIN32
   setsockopt(s, SOL_SOCKET,SO_OOBINLINE,(void *)&one,sizeof(one));
 #endif
 #ifdef MULTINET
   sys$qiow(0,s,IO$_SETMODE | IO$M_ATTNAST,0,0,0,MdsDispatchEvent,s,0,0,0,0);
+#endif
 #endif
   return s;
 }
@@ -311,8 +313,12 @@ int HostToIp(char *host, int *addr, short *port)
 
   sscanf(host,"%[^:]:%s",hostpart,portpart);
   if (strlen(portpart) == 0)
-    strcpy(portpart,"mdsip");
-
+  {
+    if (host[0] == '_')
+      strcpy(portpart,"mdsips");
+    else
+      strcpy(portpart,"mdsip");
+  }
   if (strcmp(hostpart, "local") == 0) {
     *addr = 0;
     *port = 0;
@@ -393,7 +399,12 @@ SOCKET  ConnectToMds(char *host)
   int i;
   sscanf(host,"%[^:]:%s",hostpart,portpart);
   if (strlen(portpart) == 0)
-    strcpy(portpart,"mdsip");
+  {
+    if (host[0] == '_')
+      strcpy(portpart,"mdsips");
+    else
+      strcpy(portpart,"mdsip");
+  }
   for (i=strlen(hostpart)-1;i>=0 && hostpart[i]==32;hostpart[i]=0,i--);
   return ConnectToPort(hostpart,portpart);
 }

@@ -1,18 +1,33 @@
 #include "mdsip.h"
 #ifdef GLOBUS
+#ifdef __VMS
+#include <descrip.h>
+#include <impdef.h>
+#include <netdb.h>
+#include <ucx$inetdef.h>
+    typedef struct SocketParamStruct
+        {
+        unsigned short protocol;
+        unsigned char  type;
+        unsigned char  family;
+        }    socketParamType, /* For one occurance */
+            *socketParamPtr;  /* For a pointer to an occ.*/
+#else
+#include <syslog.h>
+#include <libio.h>
+#include <sys/param.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <fcntl.h>
 #include <pwd.h>
-#include <sys/param.h>
 #include <unistd.h>
 #include <errno.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <sys/socket.h>
-#include <syslog.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <time.h>
@@ -109,7 +124,7 @@ void RegisterRead(SOCKET s)
     CloseSocket(s);
 }
 
-char *GetName(globus_io_handle_t *handle)
+char *MGetName(globus_io_handle_t *handle)
 {
     gss_ctx_id_t context = 0;
     OM_uint32 minor_status = 0;
@@ -179,9 +194,11 @@ void ConnectReceived(void *callback_arg, globus_io_handle_t *listener_handle, gl
 #endif
 
 #ifdef GLOBUS
-void Poll(int shut,int IsWorker,int IsService, SOCKET serverSock)
+void Poll(void (*DoMessage_in)(SOCKET s))
 {
-   while (1) globus_poll_blocking();
+  if (DoMessage_in != 0)
+    DoMessage = DoMessage_in;
+  while (1) globus_poll_blocking();
 }
 
 static globus_bool_t AuthenticationCallback(void *arg, globus_io_handle_t *handle, globus_result_t result, char *identity, gss_ctx_id_t *context_handle)
@@ -245,14 +262,13 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
   globus_io_attr_set_socket_sndbuf(&attr,sendbuf);
   globus_io_attr_set_tcp_nodelay(&attr,GLOBUS_TRUE);
   globus_io_attr_set_socket_reuseaddr(&attr,GLOBUS_TRUE);
+  globus_io_attr_set_socket_oobinline(&attr,GLOBUS_TRUE);
   globus_io_secure_authorization_data_initialize(&auth_data);
   globus_io_secure_authorization_data_set_callback(&auth_data,AuthenticationCallback,0);
   globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
   globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_CALLBACK,&auth_data);
   globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
-/*
-  globus_io_attr_set_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
-*/
+  globus_io_attr_set_secure_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
   AddClient = AddClient_in;
   DoMessage = DoMessage_in;
   if ((result = globus_io_tcp_create_listener(&netport,5,&attr,handle)) != GLOBUS_SUCCESS)
@@ -492,21 +508,20 @@ SOCKET MConnect(char *host, unsigned short port)
   globus_io_attr_set_socket_rcvbuf(&attr,recvbuf);
   globus_io_attr_set_socket_sndbuf(&attr,sendbuf);
   globus_io_attr_set_tcp_nodelay(&attr,GLOBUS_TRUE);
+  globus_io_attr_set_socket_oobinline(&attr,GLOBUS_TRUE);
   if (host[0]=='_')
   {
     globus_io_secure_authorization_data_initialize(&auth_data);
+    globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_HOST,&auth_data);
+    /*
     globus_io_secure_authorization_data_set_identity(&auth_data,
 							      "/O=Grid/O=National Fusion Collaboratory/OU=MIT/CN=LBNL-MDSplusDataServer");;
-    globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
     globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_IDENTITY,&auth_data);
-/*
-    globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_HOST,&auth_data);
-*/
+    */
+    globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
     globus_io_attr_set_secure_delegation_mode(&attr,GLOBUS_IO_SECURE_DELEGATION_MODE_FULL_PROXY);
     globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
-/*
-    globus_io_attr_set_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
-*/
+    globus_io_attr_set_secure_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
   }
   if ((result = globus_io_tcp_connect((host[0] == '_') ? &host[1] : host,htons(port),&attr,handle)) != GLOBUS_SUCCESS)
   {
@@ -602,16 +617,34 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
 #ifdef GLOBUS
 globus_result_t globus_io_tcp_accept_inetd(globus_io_attr_t *attr,   globus_io_handle_t *handle)
 {
+  static FILE *   fdin;
   static FILE *   fdout;
   globus_result_t result;
   OM_uint32 major_status = 0;
   OM_uint32 minor_status = 0;
   OM_uint32 ret_flags = 0;
   int       token_status = 0;
+  int s=0;
+#ifdef __VMS
+  static $DESCRIPTOR(INET,"SYS$NET");
+  int status = sys$assign(&INET,&s,0,0);
+  socketParamType socketParam;
+  socketParam.protocol = UCX$C_TCP;
+  socketParam.type     = INET_PROTYP$C_STREAM;
+  socketParam.family   = UCX$C_AUXS; /* From AUXServer */
+  status = sys$qiow( 0,             /* efn.v | 0 */
+                          s,     /* chan.v */
+                          IO$_SETMODE,   /* func.v */
+                          0,         /* iosb.r | 0 */
+		          0, 0,          /* astadr, astprm: UNUSED */
+		          &socketParam,  /* p1.r Socket creation parameter */
+		          0, 0, 0, 0, 0  /* p2, p3, p4, p5, p6 UNUSED */ );
+  s = decc$socket_fd(s);
+#endif
   globus_i_io_mutex_lock();
   result = globus_i_io_initialize_handle(handle,GLOBUS_IO_HANDLE_TYPE_TCP_CONNECTED);
   result = globus_i_io_copy_tcpattr_to_handle(attr,handle);
-  handle->fd = 0;
+  handle->fd = s;
   handle->state=GLOBUS_IO_HANDLE_STATE_CONNECTED;
   globus_i_io_mutex_unlock();
   major_status = globus_gss_assist_acquire_cred_ext(&minor_status,
@@ -631,6 +664,7 @@ globus_result_t globus_io_tcp_accept_inetd(globus_io_attr_t *attr,   globus_io_h
                             0);
       exit(0);
   }
+  fdin = fdopen(dup(s),"r");
   fdout = fdopen(dup(0),"w");
   setbuf(fdout,NULL);
   major_status = globus_gss_assist_accept_sec_context(&minor_status,
@@ -645,7 +679,7 @@ globus_result_t globus_io_tcp_accept_inetd(globus_io_attr_t *attr,   globus_io_h
                        &token_status,
     		       &handle->delegated_credential,
                        globus_gss_assist_token_get_fd,
-                       (void *)stdin,
+                       (void *)fdin,
                        globus_gss_assist_token_send_fd,
                        (void *)fdout);
   if (major_status != GSS_S_COMPLETE)
@@ -749,14 +783,13 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
   result = globus_io_attr_set_socket_sndbuf(&attr,sendbuf);
   result = globus_io_attr_set_tcp_nodelay(&attr,GLOBUS_TRUE);
   result = globus_io_attr_set_socket_reuseaddr(&attr,GLOBUS_TRUE);
+  result = globus_io_attr_set_socket_oobinline(&attr,GLOBUS_TRUE);
   result = globus_io_secure_authorization_data_initialize(&auth_data);
   result = globus_io_secure_authorization_data_set_callback(&auth_data,AuthenticationCallback,0);
   result = globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
   result = globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_CALLBACK,&auth_data);
   result = globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
-  /*
-  globus_io_attr_set_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
-  */
+  globus_io_attr_set_secure_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
   result = globus_io_tcp_accept_inetd(&attr,handle);
   result = globus_io_tcpattr_destroy(&attr);
   if ((result = globus_io_tcp_get_remote_address(handle,host,&sin.sin_port)) != GLOBUS_SUCCESS)
@@ -768,7 +801,7 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
   memcpy(&sin.sin_addr,&in_host,sizeof(host));
   AddClient = AddClient_in;
   DoMessage = DoMessage_in;
-  (*AddClient)(s,&sin,GetName(handle));
+  (*AddClient)(s,&sin,MGetName(handle));
   chown(getenv("X509_USER_PROXY"),getuid(),getgid());
   return -1;
 #endif
