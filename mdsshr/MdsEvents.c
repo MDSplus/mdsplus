@@ -1266,10 +1266,13 @@ static void handleRemoteEvent(SOCKET sock)
   
 static void KillHandler()
 {
+  int status;
   void *dummy;
   external_shutdown = 1;
   write(fds[1], "x", 1);
-  pthread_join(external_thread, &dummy);
+  status = pthread_join(external_thread, &dummy);
+  close(fds[0]);
+  close(fds[1]);
   external_shutdown = 0;
   external_thread_created = 0;
 }
