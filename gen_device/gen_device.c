@@ -24,8 +24,8 @@ void Error(char *);
 
 static void UpdateLibrary();
 
-#define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
-#define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
+#define __TOlower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
+#define __TOupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 
 static void FreeInList();
 
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     int status, i, next_arg;
     file_name = argv[1];
     if((descr_file = fopen(file_name, "r")) == 0) Error("Cannot open input file");
-    options = argc > 1 ? argv[2] : "";
+    options = argc > 2 ? argv[2] : "";   /* DTG ** fixed small off by one bug */
     for (i=0,next_arg=2;i<strlen(options);i++)
     {
       switch(options[i])
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
       case 's': single_qual = 1; break;
       case 'x': { next_arg++; suffix = next_arg < argc ? argv[next_arg] : ""; break;}
       case 'a': add_qual = 1; break;
-      default:
+      default: ;
       }
     }
     TreeOpen("main",-1,0);
@@ -77,10 +77,10 @@ void DevGenAdd(char *device, char *library, NodeDescr *bottom)
     NodeDescr *curr_node;
     int num_nodes;
     lower_device_name = malloc(strlen(device) + 1);
-    for (i=0;i<strlen(device);i++) lower_device_name[i] = __tolower(device[i]);
+    for (i=0;i<strlen(device);i++) lower_device_name[i] = __TOlower(device[i]);
     lower_device_name[i]=0;
     upper_device_name = malloc(strlen(device) + 1);
-    for (i=0;i<strlen(device);i++) upper_device_name[i] = __toupper(device[i]);
+    for (i=0;i<strlen(device);i++) upper_device_name[i] = __TOupper(device[i]);
     upper_device_name[i]=0;
     if(!single_qual)
     {
@@ -108,7 +108,7 @@ void DevGenAdd(char *device, char *library, NodeDescr *bottom)
     fprintf(out_file, "\tstatic DESCRIPTOR_CONGLOM(conglom_d, &library_d, &model_d, 0, 0);\n");
     fprintf(out_file, "\tint usage = TreeUSAGE_DEVICE;\n"); 
     fprintf(out_file, "\tint curr_nid, old_nid, head_nid, status;\n");
-    fprintf(out_file, "\tshort flags = NciM_WRITE_ONCE;\n\tNCI_ITM flag_itm[] = {{2, NciSET_FLAGS, 0, 0},{0, 0, 0, 0}};\n");
+    fprintf(out_file, "\tlong int flags = NciM_WRITE_ONCE;\n\tNCI_ITM flag_itm[] = {{2, NciSET_FLAGS, 0, 0},{0, 0, 0, 0}};\n");
     fprintf(out_file, "\tchar *name_ptr = strncpy(malloc(name_d_ptr->length+1),name_d_ptr->pointer,name_d_ptr->length);\n");
     fprintf(out_file, "\tflag_itm[0].pointer = (unsigned char *)&flags;\n");
     fprintf(out_file, "\tname_ptr[name_d_ptr->length]=0;\n");
@@ -443,12 +443,12 @@ void DevGenOperation(char *operation, InDescr *input_list, int is_operation)
     
     for (i=0; operation[i] != 0; i++)
     {
-      low_case_operation[i] = __tolower(operation[i]);
-      mixed_case_operation[i] = __tolower(operation[i]);
+      low_case_operation[i] = __TOlower(operation[i]);
+      mixed_case_operation[i] = __TOlower(operation[i]);
     }
     low_case_operation[i]=0;
     mixed_case_operation[i]=0;
-    mixed_case_operation[0]=__toupper(mixed_case_operation[0]);
+    mixed_case_operation[0]=__TOupper(mixed_case_operation[0]);
     if (!single_qual)
     {
 	if(is_operation)

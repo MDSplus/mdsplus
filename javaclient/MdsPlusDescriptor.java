@@ -109,9 +109,10 @@ public class MdsPlusDescriptor extends Object
 	*/
 	public MdsPlusDescriptor(String s) {
 		dtype = DTYPE_CSTRING;
-		data = new byte[s.length()];
+//		data = new byte[s.length()];
 		dims = new int[0];
-		s.getBytes(0,s.length(),data,0);
+                data = s.getBytes();
+//		s.getBytes(0,s.length(),data,0);
 	}
 
 	/** constructs an MdsPlusDescriptor from a byte array.
@@ -426,7 +427,8 @@ public class MdsPlusDescriptor extends Object
 	public String GetErrorString() {
 		String ans = null;
 		if ((dtype == DTYPE_CSTRING) && ((status & 1)==0) && (data.length > 0))
-			ans = new String(data,0x00);
+//			ans = new String(data,0x00);
+                        ans = new String(data);
 		return ans;
 	}
 
@@ -435,7 +437,8 @@ public class MdsPlusDescriptor extends Object
 	public String String() {
 		String ans = null;
 		if ((dtype == DTYPE_CSTRING) && ((status & 1)==1) && (data.length > 0))
-			ans = new String(data,0x00);
+//			ans = new String(data,0x00);
+                        ans = new String(data);
 		return ans;
 	}
 	

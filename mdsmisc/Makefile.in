@@ -42,7 +42,7 @@ install:
 	fi;
 
 @MAKESHLIBDIR@libMdsMisc@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) -L@MAKESHLIBDIR@ -lTdiShr
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr
 
 @MAKELIBDIR@libMdsMisc.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)

@@ -14,7 +14,7 @@ SOURCES = javamds.c ServerSupport.c JavaData.c JavaTrav.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = javamds.export
 
-all: 	@MAKELIBDIR@ @MAKELIBDIR@libJavaMds@SHARETYPE@
+all: 	@MAKELIBDIR@ @MAKELIBDIR@libJavaMds@SHARETYPEJNI@
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -23,18 +23,17 @@ clean:
 	@ $(RM) $(CLASSES)
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) @MAKELIBDIR@libJavaMds@SHARETYPE@
-
+	@ $(RM) @MAKELIBDIR@libJavaMds@SHARETYPEJNI@
 
 install:
 	if [ ! -d @libdir@ ] ; then \
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKELIBDIR@libJavaMds@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKELIBDIR@libJavaMds@SHARETYPEJNI@ @libdir@
 
-@MAKELIBDIR@libJavaMds@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lpthread $(LIBS)
+@MAKELIBDIR@libJavaMds@SHARETYPEJNI@ : $(OBJECTS) 
+	$(LD) -o $@ @LINKJNI@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lpthread $(LIBS)
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@

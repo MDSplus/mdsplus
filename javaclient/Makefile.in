@@ -13,7 +13,7 @@ MdsPlusEvents.java\
 MdsPlusEvent.java\
 MdsPlus.java
 
-CLASSES = $(SOURCES:.java=.class)
+CLASSES = $(SOURCES:%.java=MdsPlus/%.class)
 
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/MdsPlus.jar

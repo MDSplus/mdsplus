@@ -52,7 +52,7 @@ lex.gen_device.c : gen_device.x
 	lex -Pgen_device gen_device.x
 
 @MAKESHLIBDIR@libGenDevShr@SHARETYPE@ : $(LIB_OBJECTS) @EXPORTS_FILE@
-	$(LD) -o $@ @LINKSHARED@ $(LIB_OBJECTS) $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(LIB_OBJECTS) $(LIB_LIBS)
 
 @MAKELIBDIR@libGenDevShr.a : $(LIB_OBJECTS)
 	$(AR) -cr $@ $(LIB_OBJECTS)
