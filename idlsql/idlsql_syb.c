@@ -117,13 +117,52 @@ typedef struct {
 }	ARGLIST;
 static IDL_VPTR	vpcount, vperror, vpstatus, vptext;
 static IDL_VARIABLE result = {IDL_TYP_LONG, 0};
+typedef struct { short len; short stype; char *s; } IDL_STRING_S;
+typedef struct { int len; short stype; char *s; } IDL_STRING_L;
+/*
 static IDL_STRING	EMPTYSTRING = {0,0,0};
+*/
+static const char EMPTYSTRING_C[20];
 static const double	HUGE_D = 1.7e+38;
 static const float	HUGE_F = (float)1.7e+38;
 static const int	HUGE_L = 0x7fffffff;
 static int      quiet;
 static const short	HUGE_W = 0x7fff;
 /*********************************************************/
+
+static int IdlStrSize()
+{
+  static int strsize = 0;
+  if (strsize == 0)
+  {
+    char *b = (char *)IDL_SysvVersionRelease();
+    strsize = (b[4] != 0 || b[5] != 0) ? sizeof(IDL_STRING_S) : sizeof(IDL_STRING_L);
+  }
+  printf("strsize = %d\n",strsize);
+  return strsize;
+}
+
+static void IdlStrClear(IDL_STRING  *in)
+{
+  memset(in,0,IdlStrSize());
+}
+
+static void IdlStrCopy(IDL_STRING *out, IDL_STRING *in)
+{
+  memcpy(out,in,IdlStrSize());
+}
+
+static char *IdlStrS(IDL_STRING *in)
+{
+  return (IdlStrSize() == sizeof(IDL_STRING_S)) ? ((IDL_STRING_S *)in)->s :  ((IDL_STRING_L *)in)->s;
+}
+
+static void IdlStrClearStype(IDL_STRING *in)
+{
+  short *stype = (IdlStrSize() == sizeof(IDL_STRING_S)) ? &((IDL_STRING_S *)in)->stype :  &((IDL_STRING_L *)in)->stype;
+  *stype = 0;
+}
+
 static void IDLresize(k, dst)
 IDL_MEMINT	k;
 IDL_VPTR	dst;
@@ -160,9 +199,10 @@ IDL_VPTR	dst;
 			for (;--j>=0;) *out++ = *in++;
 			break;
 		}
-	case IDL_TYP_STRING : {
-		IDL_STRING *in = old, *out = buf;
-			for (;--j>=0;) {*out++ = *in; *in++ = EMPTYSTRING;}
+	case IDL_TYP_STRING : {	char *in = (char *)old;
+                                char *out = (char *)buf;
+                                int strsize = IdlStrSize();
+          for (;--j>=0;out+=strsize,in+=strsize) {IdlStrCopy((IDL_STRING *)out,(IDL_STRING *)in); IdlStrClear((IDL_STRING *)in);}
 			break;
 		}
  	/***array of string descriptors***/
@@ -179,7 +219,7 @@ int	len = 0;
 	if (vpcount) IDL_StoreScalar(vpcount, IDL_TYP_LONG, (IDL_ALLTYPES *)&rows);
 	if (vpstatus) IDL_StoreScalar(vpstatus, IDL_TYP_LONG, (IDL_ALLTYPES *)&status);
 	if (vperror) {
-		IDL_StoreScalar(vperror, IDL_TYP_STRING, (IDL_ALLTYPES *)&EMPTYSTRING);
+		IDL_StoreScalar(vperror, IDL_TYP_STRING, (IDL_ALLTYPES *)&EMPTYSTRING_C);
 		if (!(status & 1)) {
 			if (status) {
 				strncat(hold, GetDBMsgText(), MAXMSG-1);
@@ -229,16 +269,22 @@ char	*form;
 {
 IDL_MEMINT   j;
 IDL_VPTR	vpnew = 0;
-IDL_STRING	*psold, *psnew;
-
-	if (nitem > 0) psold = (void *)vptext->value.arr->data;
+ char *psold, *psnew;
+ int strsize = IdlStrSize();
+	if (nitem > 0) psold = (char *)vptext->value.arr->data;
 	++nitem;
-	psnew = (void *)IDL_MakeTempArray(IDL_TYP_STRING, 1, &nitem, IDL_BARR_INI_NOP, &vpnew);
+	psnew = (char *)IDL_MakeTempArray(IDL_TYP_STRING, 1, &nitem, IDL_BARR_INI_NOP, &vpnew);
 	for (j = nitem; --j > 0;) {
+	  /*
 		*psnew++ = *psold;
 		*psold++ = EMPTYSTRING;
+		*/
+	  IdlStrCopy((IDL_STRING *)psnew,(IDL_STRING *)psold);
+	  IdlStrClear((IDL_STRING *)psold);
+          psnew += strsize;
+          psold += strsize;
 	}
-	IDL_StrStore(psnew, pline);
+	IDL_StrStore((IDL_STRING *)psnew, pline);
 	nline = 0;
 	IDL_VarCopy(vpnew, vptext);
 }
@@ -290,7 +336,7 @@ int		rblob;
 			if (isnotseg) IDLresize(-(rows+1), dst);/*remove excess*/
 			continue;
 		}
-		temp.str = EMPTYSTRING;
+		IdlStrClear(&temp.str);
 		if (rblob || isnotseg) {IDL_EXCLUDE_EXPR(dst);}
 		len = dbdatlen(dbproc, j+1);
 		buf = dbdata(dbproc, j+1);
@@ -299,12 +345,13 @@ int		rblob;
 		switch (type) {
 		case SYBCHAR :
 		case SYBTEXT :
-			if (!ind) {
+		  if (!ind) { char *sval;
 				IDL_StrEnsureLength(&temp.str, len);
-                                if (temp.str.s)
+                                sval = IdlStrS(&temp.str);
+                                if (sval)
                                 {
-				  temp.str.s[len] = '\0';
-				  memcpy(temp.str.s, (char *)buf, len);
+				  sval[len] = '\0';
+				  memcpy(sval, (char *)buf, len);
                                 }
 			}
 			type = IDL_TYP_STRING;
@@ -442,7 +489,8 @@ int		rblob;
 			case IDL_TYP_DOUBLE :	*(((double *)buf)	+(rows-1)) = temp.d;	break;
 			case IDL_TYP_LONG :		*((int *)buf	+(rows-1)) = temp.l;	break;
 			case IDL_TYP_INT :		*((short *)buf	+(rows-1)) = temp.i;	break;
-			case IDL_TYP_STRING :	*((IDL_STRING *)buf	+(rows-1)) = temp.str;	break;
+			  /*			case IDL_TYP_STRING :	*((IDL_STRING *)buf	+(rows-1)) = temp.str;	break; */
+			case IDL_TYP_STRING : IdlStrCopy((IDL_STRING *)((char *)buf + (rows-1) * IdlStrSize()),&temp.str); break;
 			}
 		}
 	}
@@ -494,6 +542,7 @@ char		*pout_end = pout+MAXPARSE;
 		IDL_ENSURE_SIMPLE(src0);
 		/** assumes nonzero array size **/
 		if (excess && (src0->flags & IDL_V_ARR)) {
+		  int strsize = IdlStrSize();
 			buf = src0->value.arr->data;
 			src.type = src0->type;
 			switch (src0->type) {
@@ -503,9 +552,8 @@ char		*pout_end = pout+MAXPARSE;
 			case IDL_TYP_FLOAT :	src.value.f	= *((float *)buf+count); break;
 			case IDL_TYP_DOUBLE :	src.value.d	= *((double *)buf+count); break;
 			case IDL_TYP_COMPLEX :	src.value.cmp	= *((IDL_COMPLEX *)buf+count); break;
-			case IDL_TYP_STRING :	src.value.str	= *((IDL_STRING *)buf+count);
-				src.value.str.stype = 0; /**not a copy, don't discard**/
-				break;
+			case IDL_TYP_STRING :	IdlStrCopy(&src.value.str,(IDL_STRING *)((char *)buf + count * strsize));
+			                        IdlStrClearStype(&src.value.str);
 			}
 			if (++count >= src0->value.arr->n_elts) {
 				count = 0;
@@ -584,7 +632,6 @@ char	*argk;
 int		rows, status;
 IDL_VPTR		argv[IDL_MAXPARAMS+1];
 ARGLIST		user_args;
-static IDL_STRING host;
 static IDL_KW_PAR kw_list[] = {
 	{"COUNT",	IDL_TYP_UNDEF,	1,IDL_KW_OUT|IDL_KW_ZERO,	0,	IDL_CHARA(vpcount)},
 	{"DATE",	IDL_TYP_LONG,	1,IDL_KW_ZERO,		0,	IDL_CHARA(date)},
@@ -642,7 +689,6 @@ char	*argk;
  static int    head_present;
  static int   width;
  static int    width_present;
- static IDL_STRING host;
  static IDL_KW_PAR kw_list[] = {
 	{"COUNT",	IDL_TYP_UNDEF,	1,IDL_KW_OUT|IDL_KW_ZERO,	0,	IDL_CHARA(vpcount)},
 	{"ERROR",	IDL_TYP_UNDEF,	1,IDL_KW_OUT|IDL_KW_ZERO,	0,	IDL_CHARA(vperror)},
@@ -665,7 +711,7 @@ char	*argk;
 	if (vptext) {
 		nitem = 0;
 		nline = 0;
-		IDL_StoreScalar(vptext, IDL_TYP_STRING, (IDL_ALLTYPES *)&EMPTYSTRING);
+		IDL_StoreScalar(vptext, IDL_TYP_STRING, (IDL_ALLTYPES *)&EMPTYSTRING_C);
 		USERSQL_SET(mygets, txtadd, txtline, txtitem, width, head);
 		pline = IDL_GetScratch(&vpline, 32768, sizeof(char));
 	}
