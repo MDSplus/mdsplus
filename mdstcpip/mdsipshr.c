@@ -8,6 +8,19 @@ extern int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims
 static int BlockSig(int sig_number)
 {
   sigset_t newsigset;
+#if defined(sun)
+  if (sig_number == SIGALRM)
+    {				/* Solaris: simple block doesn't work?	*/
+     struct sigaction  act;
+     sigaction(sig_number,NULL,&act);	/* get current state ...	*/
+     if (~act.sa_flags & SA_RESTART)
+        {				/*...set SA_RESTART bit		*/
+         act.sa_flags |= SA_RESTART;
+         if (sigaction(sig_number,&act,NULL))
+             perror("BlockSig *err* sigaction");
+        }
+    }
+#endif
   sigemptyset(&newsigset);
   sigaddset(&newsigset,sig_number);
   return sigprocmask(SIG_BLOCK, &newsigset, NULL);

@@ -618,6 +618,7 @@ static int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int oob)
   {
     shutdown(sock,2);
     close(sock);
+    fprintf(stderr,"\rSendBytes shutdown socket %d: too many EINTR's",sock);
     return 0;
   }
   return 1;
@@ -648,6 +649,7 @@ static int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob)
   {
     shutdown(sock,2);
     close(sock);
+    fprintf(stderr,"\rGetBytes shutdown socket %d: too many EINTR's",sock);
     return 0;
   }
   return 1;
@@ -787,6 +789,7 @@ Message *GetMdsMsg(SOCKET sock, int *status)
     {
       shutdown(sock,2);
       close(sock);
+    fprintf(stderr,"\rGetMdsMsg shutdown socket %d: too many EINTR's",sock);
       *status = 0;
       return 0;
     }  
