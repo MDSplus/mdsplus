@@ -237,7 +237,7 @@ static NODE empty_node = {{'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' '
 #define member_of(a)  (NODE *)((a)->member  ? (char *)(a) + swapint((char *)&((a)->member))  : 0)
 #define child_of(a)   (NODE *)((a)->child   ? (char *)(a) + swapint((char *)&((a)->child))   : 0)
 #define brother_of(a) (NODE *)((a)->brother ? (char *)(a) + swapint((char *)&((a)->brother)) : 0)
-#define link_it(out,a,b)  out = (((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; out = swapint((char *)&out)
+#define link_it(out,a,b)  out = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; out = swapint((char *)&out)
 
 
 /********************************************

@@ -77,14 +77,12 @@ int TreeWriteTree(char *exp_ptr, int shotid)
 int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
-  NID	   *nid_ptr = 0;
   int       status;
   NODE     *parent;
   NODE     *new_ptr;
   char     *node_name;
   SEARCH_TYPE node_type;
   int      nid;
-  STATIC_CONSTANT char blank = ' ';
   short    *conglom_size;
   short    *conglom_index;
   char *upcase_name;
@@ -192,7 +190,6 @@ int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
 int TreeInsertChild(NODE *parent_ptr,NODE *child_ptr,int  sort)
 {
   int status;
-  int done = 0;
   NODE *pre_ptr;
   NODE *tmp_ptr;
   status = TreeNORMAL;                                                                        /* Assume success */
@@ -238,7 +235,6 @@ int TreeInsertChild(NODE *parent_ptr,NODE *child_ptr,int  sort)
 int TreeInsertMember(NODE *parent_ptr,NODE *member_ptr,int  sort)
 {
       int status;
-      int done = 0;
       NODE *tmp_ptr;
       NODE *pre_ptr;
 /*------------------------------------------------------------------------------
@@ -358,8 +354,10 @@ int       TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_no
     int       uic_code = JPI$_UIC;
     lib$getjpi(&uic_code, 0, 0, &empty_nci.nci$l_owner_identifier, 0, 0);
     */
-    link_it(empty_node.parent,sizeof(NODE)*2,sizeof(NODE)*1);
-    link_it(empty_node.child,sizeof(NODE)*1,sizeof(NODE)*2);
+    int offset1=sizeof(NODE)*1;
+    int offset2=sizeof(NODE)*2;
+    link_it(empty_node.parent,offset2,offset1);
+    link_it(empty_node.child,offset1,offset2);
     empty_node_array = (NODE *) malloc(empty_node_size);
     if (empty_node_array == NULL) return 0;
     empty_nci_array = (NCI *) malloc(empty_nci_size);
@@ -634,8 +632,6 @@ int _TreeEndConglomerate(void *dbid)
 
 STATIC_ROUTINE void trim_excess_nodes(TREE_INFO *info_ptr);
 
-STATIC_CONSTANT int one = 1;
-STATIC_CONSTANT int zero = 0;
 
 #ifdef WORDS_BIGENDIAN
 STATIC_ROUTINE TREE_HEADER *HeaderOut(TREE_HEADER *hdr)
@@ -682,7 +678,7 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
       for (i=0;i<12 && i<len;i++)
       uptree[i] = __toupper(exp_ptr[i]);
       uptree[i]='\0';
-      shot = (shotid == 0) ? TreeGetCurrentShotId(exp_ptr) : shotid;
+      shot = (shotid == 0) ? TreeGetCurrentShotId(uptree) : shotid;
       status = TreeNOT_OPEN;
       for (prev_db = 0, db = (*dblist); db ? db->open : 0; prev_db = db, db = db->next)
       {
@@ -979,11 +975,11 @@ int _TreeQuitTree(void **dbid, char *exp_ptr, int shotid)
       for (i=0;i<12 && i<len;i++)
       uptree[i] = __toupper(exp_ptr[i]);
       uptree[i]='\0';
-      shot = (shotid == 0) ? TreeGetCurrentShotId(exp_ptr) : shotid;
+      shot = (shotid == 0) ? TreeGetCurrentShotId(uptree) : shotid;
       status = TreeNOT_OPEN;
       for (prev_db = 0, db = (*dblist); db ? db->open : 0; prev_db = db, db = db->next)
       {
-	if ((shot == db->shotid) && (strcmp(exp_ptr, db->main_treenam) == 0))
+	if ((shot == db->shotid) && (strcmp(uptree, db->main_treenam) == 0))
 	{
 	  if (prev_db)
 	  {
