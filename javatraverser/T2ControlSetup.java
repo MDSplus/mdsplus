@@ -198,22 +198,24 @@ public class T2ControlSetup extends DeviceSetup {
     deviceField6.setLabelString("Sys. duration(s):");
     deviceField6.setNumCols(5);
     deviceField6.setIdentifier("");
-    deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)5,(int)2,(int)3,(int)4,(int)6,(int)7,(int)8});
+    deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)5,(int)2,(int)3,(int)4,(int)6,(int)7,(int)8,(int)9});
     deviceChoice2.setChoiceFloatValues(null);
     deviceChoice2.setConvert(true);
     deviceChoice2.setOffsetNid(6);
     deviceChoice2.setLabelString("Initial Control: ");
     deviceChoice2.setChoiceItems(new String[] {"Offset Correction", "Individual Perturbation", "Intelligent Shell", "Rotating Perturbation", "Mode Control (Diag)",
-        "Mode control (Full)", "Mode control (Diag-Plasma)", "Mode Control (Diag+Rot)"});
+        "Mode control (Full)", "Mode control (Diag-Plasma)", "Mode Control (Diag+Rot/Times)", "Mode Control (Diag+Rot/sinusoidal)"
+        });
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
-    deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)5,(int)2,(int)3,(int)4,(int)6,(int)7,(int)8});
+    deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)5,(int)2,(int)3,(int)4,(int)6,(int)7,(int)8,(int)9});
     deviceChoice1.setChoiceFloatValues(null);
     deviceChoice1.setConvert(true);
     deviceChoice1.setOffsetNid(7);
     deviceChoice1.setLabelString("Trigger control: ");
     deviceChoice1.setChoiceItems(new String[] {"Offset Correction", "Individual Perturbation", "Intelligent Shell", "Rotating Perturbation", "Mode Control (Diag)",
-        "Mode control (Full)", "Mode control (Diag-Plasma)", "Mode Control (Diag+Rot)"});
+        "Mode control (Full)", "Mode control (Diag-Plasma)", "Mode Control (Diag+Rot/Times)", "Mode Control (Diag+Rot/Sinusoidal)"
+        });
     deviceChoice1.setUpdateIdentifier("");
     deviceChoice1.setIdentifier("");
     deviceField10.setOffsetNid(127);
