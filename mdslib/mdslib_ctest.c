@@ -40,11 +40,14 @@ void main(int argc, char *argv[])
   dscrsize = descr(&dtype_short,&sizeresult,&null); 
   dscrstring = descr(&dtype_cstring,string,&null,&stringlength);
 
+
   if (argc > 1) 
     {
       printf("SOCKET: %d\n",MdsConnect(argv[1])); 
       printf("SOCKET: %d\n",MdsConnect(argv[1])); 
     }
+  printf("doing mdsvalue(1)\n");
+  status = MdsValue("1.",&dscr,&null,&returnlength);
 
   shot = 96021;
   status = MdsOpen("EFIT01",&shot);
@@ -146,7 +149,7 @@ void main(int argc, char *argv[])
   printf("experiment: %s\n",string);
 
   dsc = descr(&dtype_long,&shot, &null);
-  status = MdsValue("$SHOT",&dsc,&null);
+  status = MdsValue("$SHOT",&dsc,&null,&returnlength);
   printf("SHOT: %d\n",shot);
 
 

@@ -406,36 +406,47 @@ int MdsValue(char *expression, ...)
 
   if (mdsSocket > 0)   /* CLIENT/SERVER */
   {
+    struct descriptor *dscAnswer;
     struct descrip exparg;
     struct descrip *arg = &exparg;
     char *newexpression;
 
     va_start(incrmtr, expression);
-    nargs = a_count - 1 + 1;  /* -1 for answer argument, +1 for expression */
-    for (i=0;i<nargs; i++) descnum = va_arg(incrmtr, int *);
-    dsc = descrs[*descnum - 1];
-    va_start(incrmtr, expression);
+    nargs = a_count - 1 ;  /* -1 for answer argument */
 
-    newexpression = MdsValueRemoteExpression(expression,dsc);  /* wraps expression with conversion function */
-                                                               /* malloc's space for newexpression that needs */
-	                                                       /* to be freed */
+    /* Get last argument - it is the answer descriptor number */
+    for (i=1;i<=nargs+1; i++) descnum = va_arg(incrmtr, int *);
+    dscAnswer = descrs[*descnum - 1];
 
+    /* 
+     * Send expression descriptor first.
+     * MdsValueRemoteExpression wraps expression with type conversion function.
+     * It malloc's space for newexpression that needs to be freed after
+     */
+    newexpression = MdsValueRemoteExpression(expression,dscAnswer);  
     arg = MakeDescrip(&exparg,DTYPE_CSTRING,0,0,newexpression);
+    status = SendArg(mdsSocket, 0, arg->dtype, (char)nargs+1, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
+    free(newexpression); 
 
-    
-    for (i=0;i<nargs && (status & 1);i++)
+    /* send each argument */
+
+    va_start(incrmtr, expression);
+    for (i=1;i<=nargs && (status & 1);i++)
     {
-      status = SendArg(mdsSocket, (unsigned char)i, arg->dtype, (char)nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
       descnum = va_arg(incrmtr, int *);
       if (*descnum > 0)
       {
         dsc = descrs[*descnum-1];
         arg = MakeIpDescrip(arg, dsc);
+	status = SendArg(mdsSocket, (unsigned char)i, arg->dtype, (char)nargs+1, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
       }
+      else
+	{
+	  printf("I: %d    BAD DESCRIPTOR!!!\n",i);
+	}
 
     }
 
-    free(newexpression); 
 
     if (status & 1)
     {
@@ -445,8 +456,9 @@ int MdsValue(char *expression, ...)
       struct descrip exparg;
       struct descrip *arg = &exparg;
 
+      arg = MakeIpDescrip(arg, dscAnswer);
       status = GetAnswerInfo(mdsSocket, &arg->dtype, &len, &arg->ndims, arg->dims, &numbytes, &dptr);
-      if (status & 1) MdsValueSet(dsc, dptr, numbytes);
+      if (status & 1) MdsValueSet(dscAnswer, dptr, numbytes);
       if (length && numbytes) {
 	if (arg->ndims == 0 ) 
 	  {
@@ -490,12 +502,6 @@ int MdsValue(char *expression, ...)
 	 
       descnum = va_arg(incrmtr, int *);
       dsc = descrs[*descnum-1];
-
-      /********** very suspicious code in next if statement!!! doesn't do anything as written *******/
-      if (dsc->class == CLASS_A) 
-	{
-	  struct descriptor_a *adsc = (struct descriptor_a *)dsc;
-	}
 
       status = TdiData(xd1.pointer,&xd2 MDS_END_ARG);
 
@@ -685,10 +691,6 @@ int  MdsOpen(char *tree, int *shot)
   if (mdsSocket > 0)
   {
 
-    /*    struct descrip treearg;
-    struct descrip shotarg;
-    struct descrip ansarg;*/
-
     long answer;
     int status;
     int length;
@@ -709,7 +711,6 @@ int  MdsOpen(char *tree, int *shot)
     d3 = descr(&dtype_long,&answer,&null);
 
     status = MdsValue(expression, &d1, &d2, &d3, &null, &length);
-    
     if ((status & 1))
     {
       return *(int *)&answer; 
