@@ -90,7 +90,8 @@ public class DeviceButtonsCustomizer extends Panel implements Customizer
             public void actionPerformed(ActionEvent e)
             {
                 int idx = exprList.getSelectedIndex();
-                exprList.delItem(idx);
+        //        exprList.delItem(idx);
+                exprList.remove(idx);
                 messagesV.removeElementAt(idx);
                 expressionsV.removeElementAt(idx);
             }

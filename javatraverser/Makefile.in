@@ -33,7 +33,11 @@ RFXPMSetupSetup.java\
 RFXPCSetupSetup.java \
 TR10Setup.java \
 DIO2Setup.java \
-DIO2EncoderSetup.java
+DIO2EncoderSetup.java \
+WE7000Setup.java \
+WE7116Setup.java \
+WE7275Setup.java \
+WEGroupSetup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\

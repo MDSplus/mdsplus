@@ -8,16 +8,16 @@ public class DeviceChannel extends DeviceComponent
     public String labelString = null;
     public boolean borderVisible = false;
     public boolean inSameLine = false;
-    
+
     protected JCheckBox    checkB = null;
     protected Vector device_components = null;
     public int lines = 1, columns = 0; //if columns == 0 FlowLayout is assumed
-    
+
     public String showVal;
     public boolean showState = true;
     private boolean initial_state;
-    
-    
+
+
     protected boolean initializing = false;
     protected JPanel componentsPanel;
 
@@ -45,7 +45,7 @@ public class DeviceChannel extends DeviceComponent
                 add(checkB, "North");
         }
     }
-    
+
     public boolean getInSameLine() {return inSameLine; }
 
 
@@ -72,8 +72,8 @@ public class DeviceChannel extends DeviceComponent
         else
             componentsPanel.setLayout(new FlowLayout());
         initializing = false;
-    }        
-    public void setLabelString(String labelString) 
+    }
+    public void setLabelString(String labelString)
     {
         this.labelString = labelString;
         if(checkB != null) checkB.setText(labelString);
@@ -83,7 +83,7 @@ public class DeviceChannel extends DeviceComponent
     public void setBorderVisible(boolean borderVisible)
     {
         this.borderVisible = borderVisible;
- 
+
         if(borderVisible)
             //componentsPanel.setBorder(new LineBorder(Color.black, 1));
             setBorder(new LineBorder(Color.black, 1));
@@ -92,7 +92,7 @@ public class DeviceChannel extends DeviceComponent
             setBorder(null);
     }
     public boolean getBorderVisible(){return borderVisible;}
-    
+
     public DeviceChannel()
     {
         initializing = true;
@@ -103,7 +103,7 @@ public class DeviceChannel extends DeviceComponent
         checkB.setText(labelString);
         add(componentsPanel, "Center");
         initializing = false;
-    }    
+    }
     protected void initializeData(Data data, boolean is_on)
     {
         if(!showState)
@@ -123,8 +123,8 @@ public class DeviceChannel extends DeviceComponent
             });
         }
     }
-    
-    
+
+
     protected void displayData(Data data, boolean is_on)
     {
         initial_state = is_on;
@@ -138,14 +138,14 @@ public class DeviceChannel extends DeviceComponent
         else
             return checkB.isSelected();
     }
-    
-    
+
+
     private void buildComponentList()
     {
         if(device_components == null)
         {
             device_components = new Vector();
-            java.util.Stack search_stack = new java.util.Stack();  
+            java.util.Stack search_stack = new java.util.Stack();
             search_stack.push(this);
             do
             {
@@ -160,10 +160,10 @@ public class DeviceChannel extends DeviceComponent
                 }
             }while(!search_stack.empty());
         }
-    }        
-    
-    
-    
+    }
+
+
+
     private void propagateState(boolean state)
     {
         buildComponentList();
@@ -195,21 +195,21 @@ public class DeviceChannel extends DeviceComponent
             return componentsPanel.add(c);
         return super.add(c);
     }
-        
+
     public Component add(String name, Component c)
     {
         if(!initializing)
             return componentsPanel.add(c);
         return super.add(c);
     }
-        
+
     public Component add(Component c, int intex)
     {
         if(!initializing)
             return componentsPanel.add(c);
         return super.add(c);
     }
-    
+
     public void fireUpdate(String updateId, Data newExpr)
     {
         if(updateId == null || !updateIdentifier.equals(updateId))
@@ -227,7 +227,7 @@ public class DeviceChannel extends DeviceComponent
         else
             setEnabledAll(false);
     }
-    
+
     protected boolean supportsState(){return showState;}
     protected void setEnabledAll(boolean enabled)
     {
@@ -238,9 +238,9 @@ public class DeviceChannel extends DeviceComponent
             for(int i = 0; i < size; i++)
             {
                 if(enabled)
-                    ((DeviceComponent)device_components.elementAt(i)).enable();
+                    ((DeviceComponent)device_components.elementAt(i)).setEnable();
                 else
-                    ((DeviceComponent)device_components.elementAt(i)).disable();
+                    ((DeviceComponent)device_components.elementAt(i)).setDisable();
             }
         }
     }

@@ -12,13 +12,13 @@ public class DeviceChoice extends DeviceComponent
     protected int choiceIntValues[] = null;
     protected float choiceFloatValues[] = null;
     protected boolean convert = false;
-    
+
     public void setConvert(boolean convert) {this.convert = convert; }
     public boolean getConvert() {return convert;}
-    public void setChoiceItems(String choiceItems[]) 
+    public void setChoiceItems(String choiceItems[])
     {
         this.choiceItems = choiceItems;
-        if(comboB != null && comboB.getItemCount() > 0) 
+        if(comboB != null && comboB.getItemCount() > 0)
             comboB.removeAllItems();
         if(choiceItems != null)
         {
@@ -29,22 +29,22 @@ public class DeviceChoice extends DeviceComponent
         }
     }
     public String [] getChoiceItems() {return choiceItems; }
-    public void setChoiceIntValues(int choiceIntValues[]) 
+    public void setChoiceIntValues(int choiceIntValues[])
     {
-        this.choiceIntValues = choiceIntValues; 
+        this.choiceIntValues = choiceIntValues;
     }
     public int [] getChoiceIntValues() {return choiceIntValues; }
     public void setChoiceFloatValues(float choiceFloatValues[]) {this.choiceFloatValues = choiceFloatValues; }
     public float [] getChoiceFloatValues() {return choiceFloatValues; }
-    
-    public void setLabelString(String labelString) 
+
+    public void setLabelString(String labelString)
     {
-        this.labelString = labelString; 
+        this.labelString = labelString;
         label.setText(labelString);
         redisplay();
     }
     public String getLabelString() {return labelString; }
-    public void setShowState(boolean showState) 
+    public void setShowState(boolean showState)
     {
         this.showState = showState;
         if(showState)
@@ -52,14 +52,14 @@ public class DeviceChoice extends DeviceComponent
         redisplay();
     }
     public boolean getShowState() {return showState; }
-        
+
     protected JCheckBox checkB;
     protected JComboBox comboB;
     protected JLabel label;
     protected boolean initializing = false;
-    
+
     public DeviceChoice()
-    {       
+    {
         initializing = true;
         add(checkB = new JCheckBox());
         checkB.setVisible(false);
@@ -67,7 +67,7 @@ public class DeviceChoice extends DeviceComponent
         add(comboB = new JComboBox(new String[]{"Item"}));
         initializing = false;
     }
-    
+
     protected void initializeData(Data data, boolean is_on)
     {
         initial_state = is_on;
@@ -85,15 +85,15 @@ public class DeviceChoice extends DeviceComponent
             }
         });
         initializing = false;
-    }        
-      
+    }
+
     public void postConfigure()
     {
         String currItem = (String)comboB.getSelectedItem();
         if(master != null && updateIdentifier != null)
             master.fireUpdate(updateIdentifier, new StringData(currItem));
     }
- 
+
     protected void displayData(Data data, boolean is_on)
     {
         initial_state = is_on;
@@ -102,7 +102,7 @@ public class DeviceChoice extends DeviceComponent
         float data_float;
         if(showState)
             checkB.setSelected(is_on);
-         
+
         if(convert)
         {
             try {
@@ -148,9 +148,9 @@ public class DeviceChoice extends DeviceComponent
                 catch(Exception e){}
             }
         }
-    }   
-            
-        
+    }
+
+
     protected Data getData()
     {
         int curr_idx = comboB.getSelectedIndex();
@@ -158,8 +158,8 @@ public class DeviceChoice extends DeviceComponent
         {
             if(choiceIntValues != null)
                 return new IntData(choiceIntValues[curr_idx]);
-            return new IntData(curr_idx);    
-        }      
+            return new IntData(curr_idx);
+        }
         else
         {
             if(choiceIntValues != null)
@@ -169,7 +169,7 @@ public class DeviceChoice extends DeviceComponent
             return new StringData(choiceItems[curr_idx]);
         }
     }
-    
+
     protected boolean getState()
     {
         if(!showState)
@@ -177,7 +177,7 @@ public class DeviceChoice extends DeviceComponent
         else
             return checkB.isSelected();
     }
-    
+
     public void setEnabled(boolean state)
     {
         //if(checkB != null) checkB.setEnabled(state);
@@ -188,29 +188,29 @@ public class DeviceChoice extends DeviceComponent
     {
         if(!initializing)
         {
-		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Choice. Please remove the component.", 
+		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Choice. Please remove the component.",
 		        "Error adding Device field", JOptionPane.WARNING_MESSAGE);
             return null;
         }
         return super.add(c);
     }
-        
+
     public Component add(String name, Component c)
     {
         if(!initializing)
         {
-		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Choice. Please remove the component.", 
+		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Choice. Please remove the component.",
 		        "Error adding Device field", JOptionPane.WARNING_MESSAGE);
             return null;
         }
         return super.add(c);
     }
-        
+
     public Component add(Component c, int intex)
     {
         if(!initializing)
         {
-		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Choice. Please remove the component.", 
+		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Choice. Please remove the component.",
 		        "Error adding Device field", JOptionPane.WARNING_MESSAGE);
             return null;
         }
@@ -222,4 +222,4 @@ public class DeviceChoice extends DeviceComponent
 
 
 }
-    
+

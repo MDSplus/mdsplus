@@ -4,7 +4,7 @@ import java.awt.*;
 public abstract class DeviceComponent extends JPanel
 {
     RemoteTree subtree;
-    
+
     public int mode = DATA;
     public static final int DATA = 0, STATE = 1, DISPATCH = 2;
     public int baseNid = 0, offsetNid = 0;
@@ -16,9 +16,9 @@ public abstract class DeviceComponent extends JPanel
     protected boolean editable = true;
     private boolean is_initialized = false;
     private boolean enabled = true;
-    
-    
-    
+
+
+
     void setSubtree(RemoteTree subtree) {this.subtree = subtree; }
     RemoteTree getSubtree(){return subtree; }
     public void setBaseNid(int nid) {baseNid = nid; }
@@ -29,7 +29,7 @@ public abstract class DeviceComponent extends JPanel
     {
         this.identifier = identifier;
     }
-    public String getIdentifier() 
+    public String getIdentifier()
     {
         return identifier;
     }
@@ -38,9 +38,9 @@ public abstract class DeviceComponent extends JPanel
         this.updateIdentifier = updateIdentifier;
     }
     public String getUpdateIdentifier() {return updateIdentifier; }
-    
-    
-    public void configure(int baseNid) 
+
+
+    public void configure(int baseNid)
     {
         this.baseNid = baseNid;
         nidData = new NidData(baseNid+offsetNid);
@@ -49,16 +49,16 @@ public abstract class DeviceComponent extends JPanel
             try {
                 init_data = curr_data = subtree.getData(nidData, Tree.context);
             }catch(Exception e) {init_data = curr_data = null;}
-            
-            
-            
+
+
+
         }
         else init_data = null;
         //if(mode != DISPATCH)
         {
             try {
-                init_on = curr_on = subtree.isOn(nidData, Tree.context); 
-            } catch(Exception e) 
+                init_on = curr_on = subtree.isOn(nidData, Tree.context);
+            } catch(Exception e)
             {
                 System.out.println("Error configuring device: " + e);
             }
@@ -71,14 +71,14 @@ public abstract class DeviceComponent extends JPanel
         else
             displayData(curr_data, curr_on);
     }
-    
+
     public void reset()
     {
         curr_data = init_data;
         curr_on = init_on;
         displayData(curr_data, curr_on);
     }
-    
+
     public void apply() throws Exception
     {
         if(!enabled) return;
@@ -91,12 +91,12 @@ public abstract class DeviceComponent extends JPanel
                     curr_data = subtree.resolve((PathData)curr_data, Tree.context);
                 }catch(Exception exc){}
             }
-  */         
+  */
             if(editable)
             {
                 try {
                 subtree.putData(nidData, curr_data, Tree.context);
-                } catch(Exception e) 
+                } catch(Exception e)
                 {
                     System.out.println("Error writing device data: " + e);
                     System.out.println(curr_data);
@@ -114,8 +114,8 @@ public abstract class DeviceComponent extends JPanel
                 System.out.println("Error writing device state: " + e);
             }
         }
-    } 
-    
+    }
+
     protected void redisplay()
     {
         Container curr_container;
@@ -130,7 +130,7 @@ public abstract class DeviceComponent extends JPanel
             ((Window)curr_container).show();
         }
     }
-        
+
 //Event handling in DW setup
     DeviceSetup master;
     public String getUpdateId(DeviceSetup master)
@@ -147,21 +147,20 @@ public abstract class DeviceComponent extends JPanel
     public void postConfigure(){}
     void postApply(){}
     protected boolean supportsState(){return false;}
-    public void enable()
+    public void setEnable()
     {
         enabled = true;
     }
-    public void disable()
+    public void setDisable()
     {
         enabled = false;
     }
 }
 
 
-        
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
