@@ -11,6 +11,7 @@ public fun chs_a14__init(as_is _nid, optional _method)
   _gated        = DevNodeRef(_nid,12);
   _clock_speed  = data(build_signal([0,1,2,3,4,5,6],*,[1,2,4,10,20,40,100])[_clock_divide]);
   _is_ext_clock = getnci(_ext_clock,"LENGTH") > 0;
+  _mode = 0; /* cinos only supports mode 0 */
   _sr = _clock_speed | 
         (_is_ext_clock << 3) | 
         ((_mode & 7) << 8) | 
@@ -18,9 +19,11 @@ public fun chs_a14__init(as_is _nid, optional _method)
         ((_stp_polarity != 0) << 12) |
         ((_str_polarity != 0) << 13) |
         ((_clk_polarity != 0) << 14);
+  write(*,"_sr=",_sr);
+  _sr=9876;
   _settings = chs_vme_readwords(0x106e0000,128);
   write(*,"settings were ",_settings);
-  _nsettings = [_settings[0:(34+_dignum*16)],word(_sr & 0xffff),_settings[(35+_dignum*16) : *]];
+  _nsettings = [_settings[0:(34+_dignum*16)],word(_sr & 0xffff),_settings[(36+_dignum*16) : *]];
   write(*,"settings will be ",_nsettings);
   return(chs_vme_writewords(0x106e0000,_settings));
 }
