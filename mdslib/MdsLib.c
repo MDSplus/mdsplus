@@ -1,20 +1,21 @@
 /* TO DO: 
 
- - multi-dimensional arrays (and Fortran - fill by column) 
-   - Confirm that this works for 3D array (PSIRZ)
-
- - cstring data types
-
- - complex data
-
- - parameters passed to native API
-
+  - ensure all data types covered
 */
 
 #include "MdsLib.h"
+#ifdef __VMS
+extern int MDS$OPEN();
+extern int MDS$CLOSE();
+extern int MDS$VALUE();
+extern int MDS$PUT();
+extern int MDS$SET_DEFAULT();
+extern int lib$callg();
+#else
 extern int TdiExecute();
 extern int TdiCompile();
 extern int TdiData();
+#endif
 short ArgLen(struct descrip *d);
 static EMPTYXD(mdsValueAnswer);
 
@@ -82,7 +83,7 @@ int descr (int *dtype, void *data, int *dim1, ...)
     
     /* count the number of dimensions beyond the first */
     va_start(incrmtr, dim1);
-    for (ndim = 1; *dim !=NULL; ndim++)
+    for (ndim = 1; *dim != 0; ndim++)
     {
       dim = va_arg(incrmtr, int *);
     }
@@ -204,13 +205,36 @@ int MdsValue(char *expression, ...)
   int *descnum = &status;  /* initialize to point at non zero value */
   struct descriptor *dsc;
 
+#ifdef __VMS
+  void *arglist[MAXARGS];
+  struct descriptor dexpression = {0,DTYPE_T,CLASS_S,0};
+  int argidx = 1;
+#endif
+
+
   va_start(incrmtr, expression);
-  for (a_count = 0; *descnum != NULL; a_count++)
+  for (a_count = 0; *descnum != 0; a_count++)
   {
     descnum = va_arg(incrmtr, int *);
   }
   a_count--; /* subtract one for terminator of argument list */
 
+
+#ifdef __VMS  
+  dexpression.length = strlen((char *)expression);
+  dexpression.pointer = (char *)expression;
+  arglist[argidx++] = (void *)&dexpression;
+  va_start(incrmtr, expression);
+  for (i=1;i <= a_count; i++)
+    {
+      descnum = va_arg(incrmtr, int *);
+      dsc = &descrs[*descnum-1];
+      arglist[argidx++] = (void *)dsc;
+    }
+  *(int *)&arglist[0] = argidx; 
+  return lib$callg(arglist,MDS$VALUE);
+
+#else  
 
   /**************************** REPLACE client/server with regular access ******************/
 
@@ -328,9 +352,13 @@ int MdsValue(char *expression, ...)
     arglist[argidx++] = MdsEND_ARG;
     *(int *)&arglist[0] = argidx; 
     status = LibCallg(arglist,TdiExecute);
+
     if (status & 1)
     {
+
+
       status = TdiData(tmp.pointer,&mdsValueAnswer MDS_END_ARG);
+
       if (status) 
       {
 	int numbytes;
@@ -387,8 +415,10 @@ int MdsValue(char *expression, ...)
     }
   }
   return(status);
+#endif
 
 }
+
 
 int  MdsPut(char *pathname, char *expression, ...)
 {
@@ -396,18 +426,42 @@ int  MdsPut(char *pathname, char *expression, ...)
   int a_count;
   int i;
   unsigned char nargs;
+
+#ifdef __VMS
+  void *arglist[MAXARGS];
+  struct descriptor dexpression = {0,DTYPE_T,CLASS_S,0};
+  int argidx = 1;
+#endif
+
+  struct descriptor *dsc;
   int status = 1;
   int *descnum = &status;  /* initialize to point at non zero value */
-  struct descriptor *dsc;
 
   va_start(incrmtr, expression);
-  for (a_count = 0; *descnum != NULL; a_count++)
+  for (a_count = 0; *descnum != 0; a_count++)
   {
     printf("a_count: %d   descnum: %d \n",a_count,*descnum);
     descnum = va_arg(incrmtr, int *);
   }
   a_count--; /* subtract one for terminator of argument list */
 
+
+#ifdef __VMS
+
+  dexpression.length = strlen((char *)expression);
+  dexpression.pointer = (char *)expression;
+  arglist[argidx++] = (void *)&dexpression;
+  va_start(incrmtr, expression);
+  for (i=1;i <= a_count; i++)
+    {
+      descnum = va_arg(incrmtr, int *);
+      dsc = &descrs[*descnum-1];
+      arglist[argidx++] = (void *)dsc;
+    }
+  *(int *)&arglist[0] = argidx; 
+  return lib$callg(arglist,MDS$PUT);
+
+#else
 
   /**************************** REPLACE client/server with regular access ******************/
 
@@ -488,7 +542,9 @@ int  MdsPut(char *pathname, char *expression, ...)
       arglist[argidx++] = (void *)&tmp;
       arglist[argidx++] = MdsEND_ARG;
       *(int *)&arglist[0] = argidx; 
+
       status = LibCallg(arglist,TdiCompile);
+
       if (status & 1)
       {
 	if ((status = TreePutRecord(nid, (struct descriptor *)arglist[argidx-2])) & 1)
@@ -501,6 +557,7 @@ int  MdsPut(char *pathname, char *expression, ...)
 
   }
   return(status);
+#endif
 }
 
 
@@ -519,7 +576,7 @@ int  MdsOpen(char *tree, int shot)
     int d1,d2,d3; /* descriptor numbers passed to MdsValue */
     int dtype_cstring = DTYPE_CSTRING;
     int dtype_long = DTYPE_LONG;
-    int null = NULL;
+    int null = 0;
 
 #ifdef _UNIX_SERVER
     static char *expression = "TreeOpen($,$)";
@@ -541,8 +598,18 @@ int  MdsOpen(char *tree, int shot)
   }
   else 
   {
+
+#ifdef __VMS
+    struct descriptor treeexp = {0,DTYPE_T,CLASS_S,0};
+    treeexp.length = strlen((char *)tree);
+    treeexp.pointer = (char *)tree;
+    return MDS$OPEN(&treeexp, &shot);
+#else
     return TreeOpen(tree, shot, 0);
+#endif
+
   }
+
 }
 
 
@@ -558,7 +625,7 @@ int  MdsClose(char *tree, int shot)
     int d1,d2,d3; /* descriptor numbers passed to MdsValue */
     int dtype_cstring = DTYPE_CSTRING;
     int dtype_long = DTYPE_LONG;
-    int null = NULL;
+    int null = 0;
 
 #ifdef _UNIX_SERVER
     static char *expression = "TreeClose($,$)";
@@ -580,7 +647,14 @@ int  MdsClose(char *tree, int shot)
   }
   else 
   {
+#ifdef __VMS
+    struct descriptor treeexp = {0,DTYPE_T,CLASS_S,0};
+    treeexp.length = strlen((char *)tree);
+    treeexp.pointer = (char *)tree;
+    return MDS$CLOSE(&treeexp, &shot);
+#else
     return TreeClose(tree, shot);
+#endif
   }
 
 
@@ -600,7 +674,7 @@ int  MdsSetDefault(char *node)
 #endif
 
     long answer;
-    int null = NULL;
+    int null = 0;
     int dtype_long = DTYPE_LONG;
     int dtype_cstring = DTYPE_CSTRING;
     int d1 = descr(&dtype_cstring, node, &null);
@@ -617,7 +691,16 @@ int  MdsSetDefault(char *node)
 
   {
 
+#ifdef __VMS
+    struct descriptor defaultexp = {0,DTYPE_T,CLASS_S,0};
+    defaultexp.length = strlen((char *)node);
+    defaultexp.pointer = (char *)node;
+    return MDS$SET_DEFAULT(&defaultexp);
+#else
     return TreeSetDefault(node);
+#endif
   }
 
 }
+
+

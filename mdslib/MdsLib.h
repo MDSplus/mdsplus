@@ -1,8 +1,13 @@
+#ifdef __VMS 
+#include "ipdesc.h"
+#else
 #include <ipdesc.h>
+#endif
 /*** undefine conflicting data types ***/
 #undef DTYPE_FLOAT
 #undef DTYPE_DOUBLE
 #undef DTYPE_COMPLEX
+#undef DTYPE_EVENT
 
 #include <mdsdescrip.h>
 #include <stdio.h>            
@@ -20,7 +25,6 @@ int descr (int *dtype, void *data, int *dim1, ...);
 SOCKET mdsSocket;
 
 
-void NewMdsConnect(char *host);
-struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc);
-int NewMdsValue(char *expression, ...); /**** NOTE: NULL terminated argument list expected ****/
+void MdsConnect(char *host);
+int MdsValue(char *expression, ...); /**** NOTE: NULL terminated argument list expected ****/
 
