@@ -80,7 +80,6 @@ void XmdsComplain(Widget parent,char *string)
   if (new_parent)
   {
     static XtCallbackRec ok_callback_list[] = {{(XtCallbackProc)XtDestroyWidget, 0},{0,0}};
-    XmString cstring = XmStringCreateLtoR(string, XmSTRING_DEFAULT_CHARSET);
     Arg args[] = {{XmNmessageString, (long) 0}, 
 		  {XmNdialogTitle, (long) 0},
 		  {XmNokLabelString, (long) 0}, 
@@ -88,15 +87,17 @@ void XmdsComplain(Widget parent,char *string)
 		  {XmNminimizeButtons, TRUE},
 		  {XmNokCallback, (long) ok_callback_list},
 		  {XmNdefaultPosition,1}};
-    args[0].value = (long) cstring;
+    args[0].value = (long) XmStringCreateLtoR(string, XmSTRING_DEFAULT_CHARSET);
     args[1].value = (long) XmStringCreateLtoR("Error",XmSTRING_DEFAULT_CHARSET);
     args[2].value = (long) XmStringCreateLtoR("Dismiss",XmSTRING_DEFAULT_CHARSET);
     w = XmCreateErrorDialog(new_parent,"XmdsComplain",args,XtNumber(args));
     XtDestroyWidget(XmMessageBoxGetChild(w,XmDIALOG_CANCEL_BUTTON));
     XtDestroyWidget(XmMessageBoxGetChild(w,XmDIALOG_HELP_BUTTON));
     XtManageChild(w);
+    XmStringFree((XmString)args[0].value);
+    XmStringFree((XmString)args[1].value);
+    XmStringFree((XmString)args[2].value);
   }
   else
     printf("Error displaying dialog box\nCould not find widget to 'parent' box\nError message was:\n\t%s\n",string);
-  XtFree(string);
 }

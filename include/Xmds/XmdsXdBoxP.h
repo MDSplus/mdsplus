@@ -54,7 +54,7 @@ typedef struct _XmdsXdBoxPart
     int				nid;
     int                         nid_offset;
     int 			default_nid;
-    unsigned short		usage;
+    unsigned char		usage;
     struct descriptor_xd	*xd;
 
     Boolean			show_buttons;

@@ -237,7 +237,7 @@ static XtResource resources[] = {
   {XmdsNnid, "Nid", XtRInt, sizeof(int), XtOffset(XmdsXdBoxWidget, xdbox.nid), XtRImmediate, 0},
   {XmdsNnidOffset, "Nid", XtRInt, sizeof(int), XtOffset(XmdsXdBoxWidget, xdbox.nid_offset), XtRImmediate, 0},
   {XmdsNshowButtons, "ShowButtons", XtRBoolean, sizeof(Boolean), XtOffset(XmdsXdBoxWidget, xdbox.show_buttons), XtRImmediate, 0},
-  {XmdsNusage, "Usage", XtRShort, sizeof(short), XtOffset(XmdsXdBoxWidget, xdbox.usage), XtRImmediate, 0},
+  {XmdsNusage, "Usage", XtRShort, sizeof(unsigned char), XtOffset(XmdsXdBoxWidget, xdbox.usage), XtRImmediate, 0},
   {XmdsNxd, "Xd", XtRPointer, sizeof(struct descriptor_xd *), XtOffset(XmdsXdBoxWidget, xdbox.xd), XtRImmediate, 0},
   {XmdsNautoDestroy, "AutoDestroy", XtRBoolean, sizeof(Boolean), XtOffset(XmdsXdBoxWidget, xdbox.auto_destroy), XtRImmediate, 0},
   {XmdsNautoUnmanage, "AutoUnmanage", XtRBoolean, sizeof(Boolean), XtOffset(XmdsXdBoxWidget, xdbox.auto_unmanage), 
@@ -582,7 +582,7 @@ static void Initialize(Widget req,Widget new,ArgList args,Cardinal *argcount)
   {
     if (w->xdbox.nid)
     {
-      NCI_ITM itms[] = {{2, NciUSAGE, 0, 0}, {0,0,0,0}};
+      NCI_ITM itms[] = {{sizeof(w->xdbox.usage), NciUSAGE, 0, 0}, {0,0,0,0}};
       int nid = w->xdbox.nid + w->xdbox.nid_offset;
       int status;
       itms[0].pointer = (unsigned char *) &w->xdbox.usage;
