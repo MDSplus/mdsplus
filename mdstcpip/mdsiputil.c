@@ -61,7 +61,7 @@ static char ClientType(void)
   static char ctype = 0;
   if (!ctype)
   {
-    union { int i;
+    union { int i bits32;
             char  c[sizeof(double)];
             float x;
             double d;
@@ -75,7 +75,12 @@ static char ClientType(void)
       ctype = VMS_CLIENT;
     }
     else if (client_test.i == 0x3F800000)
-      ctype = IEEE_CLIENT;
+    {
+      if (sizeof(int) == 8)
+        ctype = CRAY_IEEE_CLIENT;
+      else
+        ctype = IEEE_CLIENT;
+    }
     else
       ctype = CRAY_CLIENT;
     client_test.i = 1;
