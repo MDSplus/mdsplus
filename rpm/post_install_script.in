@@ -38,6 +38,9 @@ then
   then
     echo "include $MDSPLUS_DIR/local/roam.env" > $MDSPLUS_DIR/local/envsyms
   fi
+  GPT_LOCATION=$MDSPLUS_DIR
+  export GPT_LOCATION
+  $GPT_LOCATION/sbin/gpt-postinstall --force
   if [ ! -r $MDSPLUS_DIR/local/roam.env ]
   then
     echo "ROAM_SERVER roam.fusiongrid.org" > $MDSPLUS_DIR/local/roam.env
