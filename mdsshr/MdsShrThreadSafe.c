@@ -11,29 +11,27 @@ STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
 STATIC_ROUTINE void buffer_key_alloc();
 
 #ifdef HAVE_WINDOWS_H
-STATIC_THREADSAFE int dwTlsIndex = -1;
 
 void pthread_once(pthread_once_t *one_time,void (*key_alloc)())
 {
   if (*one_time == PTHREAD_ONCE_INIT)
   {
-    if (dwTlsIndex == -1)
-      dwTlsIndex = TlsAlloc();
-    *one_time = dwTlsIndex; 
+    *one_time = 1;
+    key_alloc();
   }
 }
 
 void *pthread_getspecific(pthread_key_t buffer_key)
 {
-  return TlsGetValue(dwTlsIndex);
+  return TlsGetValue(buffer_key);
 }
 
 void pthread_setspecific(pthread_key_t buffer_key, void *p)
 {
-  TlsSetValue(dwTlsIndex,p);
+  TlsSetValue(buffer_key,p);
 }
 
-void pthread_key_create(void **d1,void *d2){}
+void pthread_key_create(pthread_key_t *buffer_key,void *d2){*buffer_key=TlsAlloc();}
 extern void pthread_mutex_init(HANDLE *mutex);
 extern void pthread_mutex_lock(HANDLE *mutex);
 extern void pthread_mutex_unlock(HANDLE *mutex);
