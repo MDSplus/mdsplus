@@ -50,7 +50,7 @@ class TwuDataProvider
 
 
     // ---------------------------------------------------------------------------------------------
-    class SimpleFrameData 
+    class TwuSimpleFrameData 
         implements FrameData
     {
         String in_x, in_y;
@@ -66,7 +66,7 @@ class TwuDataProvider
         private Dimension dim = null;
         private int header_size = 0;
 
-        public SimpleFrameData (String in_y, String in_x, float time_min, float time_max) 
+        public TwuSimpleFrameData (String in_y, String in_x, float time_min, float time_max) 
             throws IOException
         {
             int i;
@@ -195,7 +195,7 @@ class TwuDataProvider
             }
             return b_img;
         }
-    } // end (nested) class SimpleFrameData 
+    } // end (nested) class TwuSimpleFrameData 
 
     // ---------------------------------------------------------------------------------------------
     class TwuSingleSignal 
@@ -611,7 +611,7 @@ class TwuDataProvider
     public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) 
         throws IOException
     {
-        return (new SimpleFrameData(in_y, in_x, time_min, time_max));
+        return (new TwuSimpleFrameData(in_y, in_x, time_min, time_max));
     }
 
     public synchronized WaveData GetWaveData (String in) 
