@@ -110,6 +110,7 @@ static char *receive_servers[256];	/* Receive server names */
 static char *send_servers[256];		/* Send server names */
 static pthread_t thread;       		/* Thread for local event handling */
 static pthread_t external_thread;	/* Thread for remote event handling */
+static int external_thread_created = 0; /* Thread for remot event handling flag */
 static int external_shutdown = 0;	/* flag to request remote events thread termination */
 static int fds[2];			/* file descriptors used by the pipe */
 static int external_count = 0;          /* remote event pendings count */
@@ -342,8 +343,11 @@ static void removeMessage(int key)
 static void createThread(void (*rtn)())
 {
     pipe(fds);
+    external_thread_created = 0;
     if(pthread_create(&external_thread, pthread_attr_default, (void *(*)(void *))rtn, 0) !=  0)
 	perror("pthread_create");
+    else
+        external_thread_created = 1;
 
 }
 	
@@ -656,13 +660,13 @@ static void initializeLocalRemote(int receive_events, int *use_local)
         status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
         if (status & 1)
         {
-	    if(external_thread)
+	    if(external_thread_created)
 	    {
 	    	external_shutdown = 1;
 	    	write(fds[1], "x", 1);
 	    	pthread_join(external_thread, &dummy);
 	    	external_shutdown = 0;
-	    	external_thread = 0;
+                external_thread_created = 0;
 	    }	
 	    for(i = 0; i < num_servers; i++)
 	    {
@@ -716,13 +720,13 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
     if (status & 1)
     {
 /* if external_thread running, it must be killed before sending messages over socket */
-	if(external_thread)
+	if(external_thread_created)
 	{
 	    external_shutdown = 1;
 	    write(fds[1], "x", 1);
 	    pthread_join(external_thread, &dummy);
 	    external_shutdown = 0;
-	    external_thread = 0;
+	    external_thread_created = 0;
 	}
 	newRemoteId(eventid);
 	for(i = 0; i < num_receive_servers; i++)
@@ -867,7 +871,7 @@ static int canEventRemote(int eventid)
     	write(fds[1], "x", 1);
     	pthread_join(external_thread, &dummy);
     	external_shutdown = 0;
-	external_thread = 0;
+	external_thread_created = 0;
 	for(i = 0; i < num_receive_servers; i++)
 	{
 	    if(receive_sockets[i]) status = (*rtn) (receive_sockets[i], getRemoteId(eventid, i));
