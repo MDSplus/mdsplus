@@ -86,7 +86,11 @@ class MdsMessage extends Object
         this.length = (short)body_size;
         this.nargs = nargs;
         this.descr_idx = descr_idx;
-        this.ndims = ndims;
+        //this.ndims = ndims; ???? Cesare 7-8-2003
+        if(dims != null)
+            ndims = (byte)( (dims.length > Descriptor.MAX_DIM) ? Descriptor.MAX_DIM : dims.length);
+        else
+            ndims = 0;
         this.dims = new int[Descriptor.MAX_DIM];
         for(int i = 0; i < Descriptor.MAX_DIM; i++)
 	        //this.dims[i] = (dims == null || dims.length >= i) ? 0 : dims[i];
