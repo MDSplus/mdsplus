@@ -49,7 +49,7 @@ public class DeviceTable extends DeviceComponent
     public void setNumCols(int numCols)
     {
         this.numCols = numCols;
-        table.setPreferredScrollableViewportSize(new Dimension(50 * numCols, 70));
+        table.setPreferredScrollableViewportSize(new Dimension(30 * numCols, 70));
         redisplay();
     }
     public int getNumCols() {return numCols; }
@@ -120,9 +120,9 @@ public class DeviceTable extends DeviceComponent
         while( idx < numCols * numRows && st.hasMoreTokens())
             items[idx++] = st.nextToken();
         label.setText(labelString);
-        
-        
-        
+
+
+
         table.setModel(new AbstractTableModel() {
             public int getColumnCount()
             {
@@ -170,7 +170,7 @@ public class DeviceTable extends DeviceComponent
                   }
                   else {
                     try {
-                      return items[row * (numCols-1) + col - 1];
+                      return items[row * numCols + col - 1];
                     }
                     catch (Exception exc) {
                       return "";
@@ -197,16 +197,16 @@ public class DeviceTable extends DeviceComponent
                 if(displayRowNumber)
                     items[row * numCols + col - 1] = (String)value;
                 else if(rowNames.length > 0)
-                    items[row * (numCols - 1) + col - 1] = (String)value;
-                
+                    items[row * numCols + col - 1] = (String)value;
+
                 else
                     items[row * numCols + col] = (String)value;
                 fireTableCellUpdated(row, col);
             }});
         if(numRows < 10)
-            table.setPreferredScrollableViewportSize(new Dimension(numCols* 35, numRows* table.getRowHeight()));
+            table.setPreferredScrollableViewportSize(new Dimension(numCols* 33, numRows* table.getRowHeight()));
         else
-            table.setPreferredScrollableViewportSize(new Dimension(numCols* 35, 100));
+            table.setPreferredScrollableViewportSize(new Dimension(numCols* 33, 100));
         initializing = false;
     }
 
