@@ -35,8 +35,6 @@
 #endif
 
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
-#define SetFlagsCompressionLevel(flags,level) flags = ((flags & ~0x1e) | (level << 1))
-#define GetFlagsCompressionLevel(flags,level) level = ((flags & ~0x1e) >> 1)
 
 extern char *MdsDescrToCstring();
 extern void MdsFree();
@@ -166,7 +164,7 @@ static int SpawnWorker(SOCKET sock)
   static STARTUPINFO startupinfo;
   PROCESS_INFORMATION pinfo;
   char cmd[1024];
-  sprintf(cmd,"mdsip_service -p %s -F %d -W %d %d",portname,flags,GetCurrentProcessId(),sock);
+  sprintf(cmd,"mdsip_service -p %s -c %d -W %d %d",portname,MaxCompressionLevel,GetCurrentProcessId(),sock);
   startupinfo.cb = sizeof(startupinfo);
   status = CreateProcess(_pgmptr,cmd,NULL,NULL,FALSE,0,NULL,NULL,&startupinfo, &pinfo);
   CloseHandle(pinfo.hProcess);
@@ -553,7 +551,6 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     }
     else
     {
-      SetFlagsCompressionLevel(flags,user_compression_level);
       pid = SpawnWorker(sock);
     }
     if (hp)
@@ -1432,8 +1429,8 @@ static void ParseCommand(int argc, char **argv,char **portname, short *port, cha
           case 'c': if (argc > (i+1) && *argv[i+1] >= '0' && *argv[i+1] <= '9') {i++; *compression_level = atoi(argv[i]);} else *compression_level=0; break;
 	  case '-': i += ParseOption(&option[2],&argv[i+1],argc-i-1,portname,port,hostfile,mode,flags,compression_level); break;
 #ifdef HAVE_WINDOWS_H
-          case 'F': *flags = atoi(argv[++i]); GetFlagsCompressionLevel(*flags,*compression_level); break;
-          case 'W': i += 2; break;
+          case 'F': *flags = atoi(argv[++i]); break;
+          case 'W': i += 2; *mode='w'; break;
 #endif
 	  default: PrintHelp(option); break;
         }
@@ -1480,7 +1477,6 @@ static void ParseCommand(int argc, char **argv,char **portname, short *port, cha
     *compression_level = 0;
   else if (*compression_level > 9)
     *compression_level = 9;
-  SetFlagsCompressionLevel(*flags,*compression_level);
   if (*hostfile == 0) *hostfile = strcpy((char *)malloc(strlen(DEFAULT_HOSTFILE)+1),DEFAULT_HOSTFILE);
   if (*port == 0)
   {

@@ -372,7 +372,7 @@ int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, in
   int size = sizeof(info);
   int status;
 #ifdef _WIN32
-  for (et=eThreads; eThreads && et->sock != sock; et = et->next);
+  for (et=eThreads; et && et->sock != sock; et = et->next);
   if (et == NULL) {
 	  et =  (EventThread *)malloc(sizeof(EventThread));
       et->sock = sock;
