@@ -97,7 +97,7 @@ clean :
 #tdiyacc.h : TdiYacc.y
 #	yacc -d TdiYacc.y ; mv y.tab.h $@
 
-.depend : TdiLex.c TdiYacc.c
+.depend :
 	find *.c -exec $(MAKE_DEPEND)
 
 include $(DEPEND)
