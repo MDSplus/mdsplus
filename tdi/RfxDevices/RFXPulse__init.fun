@@ -84,7 +84,7 @@ public fun RFXPulse__init(as_is _nid, optional _method)
     }
     else
 		_duration = 0;
-    _curr_period = 1E-6;
+    _curr_period = 1D-6;
     if(_delay > _duration)
 		_max_delay = _delay;
     else
@@ -104,8 +104,8 @@ public fun RFXPulse__init(as_is _nid, optional _method)
 		_effective_duration = _curr_period;
     else
 		_effective_duration = _hold * _curr_period;
-    DevPut(_nid, _N_EFFECTIVE_DELAY, _effective_delay); 
-    DevPut(_nid, _N_EFFECTIVE_DURATION, _effective_duration); 
+    DevPut(_nid, _N_EFFECTIVE_DELAY, f_float(_effective_delay)); 
+    DevPut(_nid, _N_EFFECTIVE_DURATION, f_float(_effective_duration)); 
 	if(_trigger_mode > 0)
     	DevPut(_nid, _N_CORRECTION, 0); 
     else
@@ -130,14 +130,14 @@ public fun RFXPulse__init(as_is _nid, optional _method)
 		/*	 	if(_output_mode > 1)
     	    		DevPut(_nid, _N_CORRECTION, 0); 
 				else 
-		*/   		DevPut(_nid, _N_CORRECTION, -_curr_period); 
+		*/   		DevPut(_nid, _N_CORRECTION, -f_float(_curr_period)); 
 			}
 			else
 			{
 				_trig_path = getnci(DevNodeRef(_nid, _N_EXT_TRIGGER), 'FULLPATH');
 				_corr_expr = _trig_path // ' + 1E-8 - ' // _start_time // ' - ' //
-				_curr_period // ' * AINT((' //_trig_path // ' - '// _start_time //
-				'+ 1E-8)/' // _curr_period // ') - ' // _curr_period;
+				f_float(_curr_period) // ' * AINT((' //_trig_path // ' - '// _start_time //
+				'+ 1E-8)/' // f_float(_curr_period) // ') - ' // f_float(_curr_period);
   	    			DevPut(_nid, _N_CORRECTION, compile(_corr_expr));
 			}
 		}

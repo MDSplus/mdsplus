@@ -40,7 +40,6 @@ public fun RFXDClock__init(as_is _nid, optional _method)
 
 
 
-write(*, 'Parte RFXDClock__init');
     _decoder =  if_error(DevNodeRef(_nid, _N_DECODER), (DevLogErr(_nid, 'Cannot resolve decoder');abort();));
     _decoder_nid = compile(getnci(getnci(_decoder, 'record'), 'fullpath'));
     _gate_chan = if_error(data(DevNodeRef(_nid, _N_GATE_CHAN)), (DevLogErr(_nid, 'Cannot resolve clock channel');abort();));
@@ -121,11 +120,16 @@ write(*, 'Parte RFXDClock__init');
     else
 		_max_delay = _duration;
     _clock_source = 0;
+    
+    _multiplier = 1;
     while(_curr_period * 65534 < _max_delay)
     {
 		_clock_source++;
+		_multiplier = _multiplier * 10;
   		_curr_period = _curr_period * 10;
     }
+    _curr_period = 1D-6 * _multiplier;
+    
     _load = long(_delay / _curr_period + 0.5);
     _hold = long(_duration / _curr_period + 0.5);
     if(_load < 3) _load = 3;
@@ -157,13 +161,19 @@ write(*, 'Parte RFXDClock__init');
 		_period = _period1;
     else
 		_period = _period2;
-    _curr_period = 1E-6;
+    _curr_period = 1D-6;
     _clock_source = 0;
+    
+    _multiplier = 1;
     while(_curr_period * 65534 < _period)
     {
 		_clock_source++;
+		_multiplier = _multiplier * 10;
   		_curr_period = _curr_period * 10;
     }
+    
+    _curr_period = 1D-6 * _multiplier;
+    
     if(_output_mode == 0 || _output_mode == 3)
     {
 		_load = long(_period1 / (_curr_period * 2) + 0.5);
@@ -215,30 +225,23 @@ write(*, 'Parte RFXDClock__init');
     {
     	_start_event = if_error(long(data(DevNodeRef(_decoder_nid, _N_START_EVENT))), (DevLogErr(_nid, 'Cannot resolve start event');abort();));
 
-write(*, 'SYNCH SCALERS EVENT: ', _start_event);
 
 		_start_time = TimingGetEventTime(TimingEncodeEvent(_start_event));
-
-write(*, 'START SCALERS TIME: ', _start_time);
 		_interval = _trigger_time - _start_time;
 		if(_start_event == _event_num)
-			_correction = 0;
+			_correction =  0;
 		else
-			_correction = _interval - long((_interval + 1E-7)/_gate_period) * _gate_period - _gate_period;
-
-write(*, 'CORRECTION: ', _correction);
-write(*, 'GATE_PERIOD: ', _gate_period);
-
+			_correction = _interval - long((_interval + 1D-7)/_gate_period) * _gate_period - _gate_period;
 		_effective_delay = _effective_delay - _correction;
 		if((_output_mode == 0) || (_output_mode == 3))
 		{
-			_semi_periods = (_interval + _effective_delay + 1E-7)/(_effective_period1/2.);
+			_semi_periods = (_interval + _effective_delay + 1D-7)/(_effective_period1/2.);
 			_int_semi_periods = long(_semi_periods);
 			_real_delay = _int_semi_periods * _effective_period1/2. + _effective_period1/2. - _interval;
 		}
 		else
 		{
-			_semi_periods = (_interval + _effective_delay + 1E-7)/_effective_period1;
+			_semi_periods = (_interval + _effective_delay + 1D-7)/_effective_period1;
 			_int_semi_periods = long(_semi_periods);
 			_real_delay = _int_semi_periods * _effective_period1 + _effective_period1 - _interval;
 		}
@@ -248,27 +251,25 @@ write(*, 'GATE_PERIOD: ', _gate_period);
 
 
 	}
-    if(_effective_period1 < 1./148E3)
+    if(_effective_period1 < 1./148D3)
 		_real_delay = _real_delay - _effective_period1/2.;
-    if(_effective_period2 < 1./148E3)
+    if(_effective_period2 < 1./148D3)
 		_real_duration = _real_duration - _effective_period2/2.;
 
     _real_duration_r = _real_duration - _effective_period2/2.;
     _real_delay_r = _real_delay - _effective_period1/2.;
 
-write(*,'REAL DURATION: ', _real_duration);
-        
-    if(_output_mode >=3)
-		_axis = compile('MAKE_RANGE([-10000,'//_trigger_time//'+'//_real_delay//','// 
-			_trigger_time//'+'//_real_delay//'+'//_real_duration//'],['//_trigger_time//'+'//_real_delay_r//','//
-			_trigger_time//'+'//_real_delay//'+'//_real_duration_r//', `_LARGE_TIME],['//
-			_period1//','//_period2//','//_period1//'])');
-	else
-		_axis = compile('MAKE_RANGE([-HUGE(0.), '//_trigger_time//'+'//_real_delay//'],['//
-			_trigger_time//'+'//_real_delay_r//',10000],['//
-			_period1//','//_period2//'])');
 
-	write(*, _axis);
+    if(_output_mode >=3)
+		_axis = compile('MAKE_RANGE([-10000,'//f_float(_trigger_time)//'+'//f_float(_real_delay)//','// 
+		f_float(_trigger_time)//'+'//f_float(_real_delay)//'+'//f_float(_real_duration)//'],['//f_float(_trigger_time)//'+'//f_float(_real_delay_r)//','//
+			f_float(_trigger_time)//'+'//f_float(_real_delay)//'+'//f_float(_real_duration_r)//', `_LARGE_TIME],['//
+			f_float(_effective_period1)//','//f_float(_effective_period2)//','//f_float(_effective_period1)//'])');
+	else
+		_axis = compile('MAKE_RANGE([-HUGE(0.), '//f_float(_trigger_time)//'+'//f_float(_real_delay)//'],['//
+			f_float(_trigger_time)//'+'//f_float(_real_delay_r)//',10000],['//
+			f_float(_effective_period1)//','//f_float(_effective_period2)//'])');
+
 	DevPut(_nid, _N_CLOCK, _axis); 
 
     return (1);
