@@ -18,9 +18,9 @@
 
 class TWUFetchOptions 
 {
-    public int start =  0 ;
-    public int step  =  1 ;
-    public int total = -1 ;
+    private int start =  0 ;
+    private int step  =  1 ;
+    private int total = -1 ;
 
     public TWUFetchOptions () {} 
     // defaults to the options for retrieving
@@ -28,61 +28,49 @@ class TWUFetchOptions
 
     public TWUFetchOptions (int sta, int ste, int tot) 
     {
-        start = sta ; 
-        step  = ste>0 ? ste : 1 ;
+        start = sta ;
+        step  = ste ;
         total = tot ; 
     }
 
-    public void clip (int length) 
+    public void clip (final int twupLengthTotal) 
     {
-        if (length <= 0) // handle flawed input ...
-        { 
-            start = 0 ; step = 1 ; total = 0 ; 
-            return ; 
-        }
+        final int length = twupLengthTotal;
 
-        if (total <= 0)
-          total  = length ; 
-            
-        // note: should we allow total = 0 ? it *may* not be
-        // a good idea to have 'total = 0' translated to 'get all'.
-
-        if (step < 1)
-          step = 1 ;
-
-        int begin = start, end = start + (total-1)*step ;
-        if (end < begin) 
-        {
-            int tmp = end ; end = begin ; begin = tmp;
-            step = -step;
-        }
-
-        if (begin < 0) 
-        { 
-            begin %= step ; 
-            if(begin < 0)
-              begin += step ; 
-        }
-
-        end = (length-1) - end ;
-        if (end < 0)   
-        {
-            end %= step ; 
-            if(end < 0)
-              end += step ; 
-        }
-        end = (length-1) - end ;
-
-        if (begin >= length)
+        if ( (length <= 0) || (length <= start) )
         {
             start = 0 ; step = 1 ; total = 0 ; 
             return ; 
         }
+
+        if (start < 0 ) start = 0 ;
+        if (step  < 1)  step  = 1 ;
+        if (total < 0)  total = length ; 
+
+        // note: How should we hanlde total==0 ? it *may* not be
+        // a good idea to have 'total==0' translated to 'get all'.
+        // MvdG
+        //
+        if (total ==0)  total = length ; 
+        //
+        // Indeed, I like to think about total==0 as a legal 
+        // request for no data.  JGK
+        // (But other codes break on that idea for the moment.)
+
+        final int requestedEnd  = start + (total-1)*step ;
+
+        int overshoot = requestedEnd - (length-1)  ;
+        if (overshoot > 0)   
+        {
+            overshoot %= step ;
+            if(overshoot > 0)
+              overshoot -= step ; 
+        }
+
+        final int realEnd = (length-1) + overshoot ;
 
         // got a valid range now :
-        start = begin ;
-        total = (end - begin)/step + 1 ;
-        // step has already been set, above.
+        total = (realEnd - start)/step + 1 ;
     }
 
     public boolean equalsForBulkData (TWUFetchOptions opt) 
@@ -104,6 +92,10 @@ class TWUFetchOptions
     {
         return new TWUFetchOptions (start, step, total) ;
     }
+
+    public int getStart()  { return start; }
+    public int getStep()   { return step ; }
+    public int getTotal()  { return total; }
 
     public String toString() 
     {
