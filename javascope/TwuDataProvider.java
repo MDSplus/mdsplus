@@ -198,10 +198,10 @@ class TwuDataProvider
     } // end (nested) class SimpleFrameData 
 
     // ---------------------------------------------------------------------------------------------
-    class SingleTwuSignal 
+    class TwuSingleSignal 
     {
         TWUProperties   properties      = null  ;
-        SingleTwuSignal mainSignal      = null  ;
+        TwuSingleSignal mainSignal      = null  ;
         TWUFetchOptions fetchOptions    = null  ;
         String    source                = null  ;
         float[]   data                  = null  ;
@@ -214,12 +214,12 @@ class TwuDataProvider
         boolean   fakeAbscissa          = false ;
         boolean   isAbscissa            = false ;
 
-        public SingleTwuSignal (String src)             
+        public TwuSingleSignal (String src)             
         {
             source = src;  
         }
 
-        public SingleTwuSignal (SingleTwuSignal prnt) 
+        public TwuSingleSignal (TwuSingleSignal prnt) 
         {
             mainSignal = prnt ;
             isAbscissa = true ;
@@ -576,30 +576,30 @@ class TwuDataProvider
             checkForError (this); 
         }
 
-        private void checkForError (SingleTwuSignal sig) 
+        private void checkForError (TwuSingleSignal sig) 
             throws Exception 
         {
             if (sig.error) 
               throw( (Exception) sig.errorSource.fillInStackTrace() ) ;
         }
 
-    } // end (nested) class SingleTwuSignal.
+    } // end (nested) class TwuSingleSignal.
 
     // ---------------------------------------------------------------------------------------------
 
     // Temporary factory methods, while untangling the nested classes.
     // JGK 2003-07-09
 
-    SingleTwuSignal
-    newSingleTwuSignal (String sig) 
+    TwuSingleSignal
+    newTwuSingleSignal (String sig) 
     {
-        return new SingleTwuSignal(sig);
+        return new TwuSingleSignal(sig);
     }
     
-    SingleTwuSignal
-    newSingleTwuSignal (SingleTwuSignal sig) 
+    TwuSingleSignal
+    newTwuSingleSignal (TwuSingleSignal sig) 
     {
-        return new SingleTwuSignal(sig);
+        return new TwuSingleSignal(sig);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -746,7 +746,7 @@ class TwuDataProvider
     //  ----------------------------------------------------
 
     protected synchronized TWUFetchOptions
-    FindIndicesForXRange( SingleTwuSignal xsig, float x_start, float x_end, int n_points ) 
+    FindIndicesForXRange( TwuSingleSignal xsig, float x_start, float x_end, int n_points ) 
         throws  Exception
     {
         final TWUProperties prop = xsig.getTWUProperties() ;
@@ -858,7 +858,7 @@ class TwuDataProvider
     }
 
     protected synchronized int
-    FindNonEquiIndex(float target, SingleTwuSignal xsig, int start, int laststep, int maxpts, int len)
+    FindNonEquiIndex(float target, TwuSingleSignal xsig, int start, int laststep, int maxpts, int len)
         throws Exception
     {
         // This is an iterative routine : it 'zooms in' on (a subsampled part of the)
