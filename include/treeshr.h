@@ -186,7 +186,7 @@ extern TreeCANCEL;
 #define TreeREADERR 0xfd181ba
 #define TreeREADONLY 0xfd181b2
 #define TreeRESOLVED 0xfd18011
-#define TreeSUCCESS 0xfd18023
+#define TreeSUCCESS 0xfd18641
 #define TreeTAGNAMLEN 0xfd18152
 #define TreeTNF 0xfd18078
 #define TreeTREENF 0xfd18080
@@ -194,9 +194,9 @@ extern TreeCANCEL;
 #define TreeUNSPRTCLASS 0xfd1811a
 #define TreeUNSUPARRDTYPE 0xfd1816a
 #define TreeWRITEFIRST 0xfd1815a
-#define TreeFAILURE 0xfd1818a
-#define TreeFILE_NOT_FOUND 0xfd1819a
-#define TreeCANCEL 0xfd181aa
+#define TreeFAILURE 0xfd18fa2
+#define TreeFILE_NOT_FOUND 0xfd18faa
+#define TreeCANCEL 0xfd18c80
 
 #endif
 
