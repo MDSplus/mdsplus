@@ -1,0 +1,294 @@
+module MAIN_UIL
+version = 'V1.0'
+names = case_sensitive
+
+procedure AddListTree();
+procedure TurnOnOff(integer);
+procedure DisplayData();
+procedure DisplayNci();
+procedure ModifyData();
+procedure SetupDevice();
+procedure MenuUnmap();
+procedure MTurnOnOff(integer);
+procedure MSetupDevice();
+procedure MDisplayData();
+procedure MDisplayNci();
+procedure MModifyData();
+procedure CloseTree();
+procedure OpenTree();
+procedure Exit;
+procedure Disable(integer);
+procedure ConfirmAbort();
+
+list BaseStyle : arguments {
+};
+
+list BaseStyleReasons : callbacks {
+};
+
+
+object main : XmMainWindow widget {
+    arguments {
+        XmNwidth = 800;
+        XmNheight = 341;
+    };
+    controls {
+         managed XmPanedWindow panedWindow;
+         managed XmMenuBar menuBar;
+    };
+    callbacks {
+    };
+};
+
+object panedWindow : XmPanedWindow widget {
+    arguments {
+    };
+    controls {
+         managed XmScrolledWindow scrolledWindow;
+         managed XmScrolledWindow scrolledWindow1;
+         managed XmScrolledWindow scrolledWindow2;
+    };
+    callbacks {
+    };
+};
+
+
+object scrolledWindow : XmScrolledWindow widget {
+    arguments {
+    };
+    controls {
+         managed XmList log;
+    };
+    callbacks {
+    };
+};
+
+object log : XmList widget {
+    arguments {
+        XmNsensitive = true;
+        XmNhighlightThickness = 0;
+        XmNshadowThickness = 0;
+        XmNfontList = font_table(
+		font('FIXED',character_set=iso_latin1));
+        XmNselectionPolicy = XmMULTIPLE_SELECT;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object scrolledWindow1 : XmScrolledWindow widget {
+    arguments {
+    };
+    controls {
+         managed XmList errors;
+    };
+    callbacks {
+    };
+};
+
+object errors : XmList widget {
+    arguments {
+        XmNsensitive = true;
+        XmNhighlightThickness = 0;
+        XmNshadowThickness = 0;
+        XmNfontList = font_table(
+		font('FIXED',character_set=iso_latin1));
+        XmNselectionPolicy = XmMULTIPLE_SELECT;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object scrolledWindow2 : XmScrolledWindow widget {
+    arguments {
+    };
+    controls {
+         managed XmList current_actions;
+    };
+    callbacks {
+    };
+};
+
+object current_actions : XmList widget {
+    arguments {
+        XmNsensitive = true;
+        XmNhighlightThickness = 0;
+        XmNshadowThickness = 0;
+        XmNfontList = font_table(
+		font('FIXED',character_set=iso_latin1));
+        XmNselectionPolicy = XmMULTIPLE_SELECT;
+    };
+    controls {
+    };
+    callbacks {
+        XmNdefaultActionCallback = procedure ConfirmAbort();
+    };
+};
+
+object menuBar : XmMenuBar widget {
+    arguments {
+    };
+    controls {
+         managed XmCascadeButtonGadget cascadeButtonGadget;
+         managed XmCascadeButtonGadget cascadeButtonGadget1;
+    };
+    callbacks {
+    };
+};
+
+object cascadeButtonGadget : XmCascadeButtonGadget widget {
+    arguments {
+        XmNlabelString = compound_string("File");
+    };
+    controls {
+         unmanaged XmPulldownMenu pulldownMenu;
+    };
+    callbacks {
+    };
+};
+
+object pulldownMenu : XmPulldownMenu widget {
+    arguments {
+    };
+    controls {
+         managed XmPushButtonGadget pushButtonGadget;
+    };
+    callbacks {
+    };
+};
+
+object pushButtonGadget : XmPushButtonGadget widget {
+    arguments {
+        XmNlabelString = compound_string("Exit");
+    };
+    controls {
+    };
+    callbacks {
+        XmNactivateCallback = procedure Exit(0);
+    };
+};
+
+object cascadeButtonGadget1 : XmCascadeButtonGadget widget {
+    arguments {
+        XmNlabelString = compound_string("Options");
+    };
+    controls {
+         unmanaged XmPulldownMenu pulldownMenu1;
+    };
+    callbacks {
+    };
+};
+
+object pulldownMenu1 : XmPulldownMenu widget {
+    arguments {
+    };
+    controls {
+         managed XmToggleButtonGadget toggleButtonGadget;
+         managed XmToggleButtonGadget toggleButtonGadget1;
+         managed XmToggleButtonGadget toggleButtonGadget2;
+         managed XmToggleButtonGadget toggleButtonGadget3;
+         managed XmToggleButtonGadget toggleButtonGadget4;
+         managed XmToggleButtonGadget toggleButtonGadget5;
+         managed XmToggleButtonGadget toggleButtonGadget6;
+         managed XmToggleButtonGadget toggleButtonGadget7;
+    };
+    callbacks {
+    };
+};
+
+object toggleButtonGadget : XmToggleButtonGadget widget {
+    arguments {
+        XmNlabelString = compound_string("Action Outline Update Disabled");
+    };
+    controls {
+    };
+    callbacks {
+        XmNvalueChangedCallback = procedure Disable(0);
+    };
+};
+
+object toggleButtonGadget1 : XmToggleButtonGadget widget {
+    arguments {
+        XmNlabelString = compound_string("Action Outline Off");
+        XmNset = true;
+    };
+    controls {
+    };
+    callbacks {
+        XmNvalueChangedCallback = procedure Disable(3);
+    };
+};
+
+object toggleButtonGadget2 : XmToggleButtonGadget widget {
+    arguments {
+        XmNlabelString = compound_string("Action Log Update Disabled");
+    };
+    controls {
+    };
+    callbacks {
+        XmNvalueChangedCallback = procedure Disable(1);
+    };
+};
+
+object toggleButtonGadget3 : XmToggleButtonGadget widget {
+    arguments {
+        XmNlabelString = compound_string("Action Log Off");
+        XmNset = true;
+    };
+    controls {
+    };
+    callbacks {
+        XmNvalueChangedCallback = procedure Disable(4);
+    };
+};
+
+object toggleButtonGadget4 : XmToggleButtonGadget widget {
+    arguments {
+        XmNlabelString = compound_string("Action Errors Updates Disabled");
+    };
+    controls {
+    };
+    callbacks {
+        XmNvalueChangedCallback = procedure Disable(2);
+    };
+};
+
+object toggleButtonGadget5 : XmToggleButtonGadget widget {
+    arguments {
+        XmNlabelString = compound_string("Action Errors Off");
+    };
+    controls {
+    };
+    callbacks {
+        XmNvalueChangedCallback = procedure Disable(5);
+    };
+};
+
+object toggleButtonGadget6 : XmToggleButtonGadget widget {
+    arguments {
+        XmNlabelString = compound_string("Current Actions Updates Disabled" &
+ "");
+    };
+    controls {
+    };
+    callbacks {
+        XmNvalueChangedCallback = procedure Disable(6);
+    };
+};
+
+object toggleButtonGadget7 : XmToggleButtonGadget widget {
+    arguments {
+        XmNlabelString = compound_string("Current Actions Off");
+    };
+    controls {
+    };
+    callbacks {
+        XmNvalueChangedCallback = procedure Disable(7);
+    };
+};
+
+end module;
