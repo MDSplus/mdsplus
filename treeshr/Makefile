@@ -1,4 +1,4 @@
-CFLAGS = -c -I../include -I. -g
+include $(MAKE_OPTIONS)
 
 OBJECTS = \
 dummies.o \
@@ -13,23 +13,20 @@ TreeSetDefault.o \
 TreeSetNci.o \
 RemoteAccess.o
 
-../shlib/libTreeShr.so : $(OBJECTS) ../shlib
-	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm -L../shlib -lMdsShr
-	- rm so_locations
+../shlib/libTreeShr.$(SHARE_TYPE) : $(OBJECTS) ../shlib
+	ld -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc -L../shlib -lMdsShr
 
 ../shlib :
 	mkdir ../shlib
 
 clean :
 	- rm *.o
-	- rm ../shlib/libTreeShr.so
-	- rm so_locations
+	- rm ../shlib/libTreeShr.$(SHARE_TYPE)
 	- rm .depend
 
 depend : .depend
 
 .depend :
-	- rm .depend
-	find *.c -exec cc -I../include -M {} > .depend \;
+	find *.c -exec $(MAKE_DEPEND)
 
 include .depend
