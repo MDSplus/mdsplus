@@ -306,7 +306,7 @@ struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
 
   if (dsc->class == CLASS_S) 
   {
-    arg = MakeDescrip(arg, (char)dtype, (char)0, (int *)0, dsc->pointer);
+    arg = MakeDescripWithLength(arg, (char)dtype, (int)dsc->length, (char)0, (int *)0, dsc->pointer);
   } 
   else 
   {
@@ -318,7 +318,7 @@ struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
     if (adsc->dimct > 1) m = adsc->m;
     for (i=0; i<adsc->dimct; i++) dims[i] = m[i];
     for (i=adsc->dimct; i<MAXDIM; i++) dims[i] = 0;
-    arg = MakeDescrip(arg, (char)dtype, adsc->dimct, dims, adsc->pointer);
+    arg = MakeDescripWithLength(arg, (char)dtype, (int)dsc->length, adsc->dimct, dims, adsc->pointer);
   }
   return arg;
 }
