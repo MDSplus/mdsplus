@@ -213,7 +213,6 @@ struct descriptor_xd	tmp;
 int				stat1 = 1;
 struct descriptor		*dsc_ptr;
 static int recursion_count = 0;
-        pthread_lock_global_np();
         tmp = emptyxd;
 	if (narg < fun_ptr->m1)		status = TdiMISS_ARG;
 	else if (narg > fun_ptr->m2)	status = TdiEXTRA_ARG;
@@ -354,7 +353,6 @@ static int recursion_count = 0;
 notmp:	MdsFree1Dx(&tmp, NULL);
 done:	recursion_count = 0;
 	mess_stat = status;
-        pthread_unlock_global_np();
 	return status;
 }
 /*--------------------------------------------------------------
