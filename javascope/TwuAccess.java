@@ -1,11 +1,13 @@
 import java.util.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class TwuAccess implements DataAccess
 {
     String ip_addr = null;
     String shot_str = null;
     String signal = null;
+    String experiment = null;
     TWUDataProvider tw = null;
         
     public static void main(String args[])
@@ -13,6 +15,8 @@ public class TwuAccess implements DataAccess
         TwuAccess access = new TwuAccess();
         String url = "twu://ipp333.ipp.kfa-juelich.de/textor/all/86858/RT2/IVD/IBT2P-star";
         boolean supports = access.supports(url);
+        try
+        {
         float y [] = access.getY(url);
         float x [] = access.getX(url);
  
@@ -20,7 +24,7 @@ public class TwuAccess implements DataAccess
             System.out.println(x[i] + "  " +y[i]);
            
         System.out.println("Num. points: "+y.length);
-
+        } catch (IOException exc){}
     }
     
     public boolean supports(String url)
@@ -30,7 +34,7 @@ public class TwuAccess implements DataAccess
         return st.nextToken().equals("twu");
     }
     
-    private String setProvider(String url)
+    public String setProvider(String url) throws IOException
     {
         signal = "http" + url.substring(url.indexOf(":"));
         
@@ -58,25 +62,35 @@ public class TwuAccess implements DataAccess
         return signal;
     }
 
+    public String getExperiment()
+    {
+        return experiment;
+    }
+
+    public DataProvider getDataProvider()
+    {
+        return tw;
+    }
+
     public void close(){}
     
     public void setPassword(String encoded_credentials){}
 
-    public float [] getX(String url)
+    public float [] getX(String url) throws IOException
     {
         signal = setProvider(url);
         if(signal == null) return null;
         return tw.GetFloatArray(tw.GetXSpecification(signal));
     }
     
-    public float [] getY(String url)
+    public float [] getY(String url) throws IOException
     {
         signal = setProvider(url);
         if(signal == null) return null;
         return tw.GetFloatArray(signal);
     }    
     
-    public Signal getSignal(String url)
+    public Signal getSignal(String url) throws IOException
     {
         signal = setProvider(url);
         if(signal == null) return null;
@@ -104,6 +118,9 @@ public class TwuAccess implements DataAccess
         return tw.ErrorString();
     }
 
-    public Frames getImages(String url, Frames f){return null;}
+    public Frames getImages(String url, Frames f) throws IOException
+    {
+        return null;
+    }
 }
         

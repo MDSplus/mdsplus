@@ -3,7 +3,6 @@ import java.awt.*;
 
 class MdsWaveInterface extends WaveInterface {
  
-    static final int MAX_NUM_SHOT = 30;
  
     public String  in_def_node, in_upd_event, last_upd_event;
  
@@ -12,7 +11,7 @@ class MdsWaveInterface extends WaveInterface {
     public String cin_title, cin_xlabel, cin_ylabel;
     public String cin_def_node, cin_upd_event, cexperiment;
 
-    public String in_shot, cin_shot;
+    public String cin_shot;
     public int defaults = 0xffffffff;
     static final int B_shot = 8, B_x_min = 12, B_x_max = 13, B_y_min = 14, B_y_max = 15,
 		             B_title = 16, B_x_label = 10, B_y_label = 11, B_exp = 7, B_event = 17,
@@ -192,7 +191,8 @@ class MdsWaveInterface extends WaveInterface {
 
   public void UpdateShot() throws IOException
   {
-	int curr_shots[] = null, l = 0, curr_num_shot;
+	int curr_shots[] = null;
+	//, l = 0, curr_num_shot;
 	String c_shot_str = this.GetUsedShot();
   
     error = null;
@@ -235,7 +235,12 @@ class MdsWaveInterface extends WaveInterface {
 	  curr_shots = GetShotArray(cin_shot);
 	}
 	
+	in_shot = c_shot_str;
+    if(!UpdateShot(curr_shots))
+       previous_shot = "not defined";
+        
 	
+    /*
 	if(curr_shots == null)
 	{
 	    curr_num_shot = 1;
@@ -244,22 +249,6 @@ class MdsWaveInterface extends WaveInterface {
 	} else
 	    curr_num_shot = curr_shots.length;
 
-/*
-  	
-	//Check current shot list and wave interface shot list
-	if(shots != null && shots.length == curr_shots.length)
-	{
-	    for(l = 0; l < curr_shots.length; l++)
-		if(curr_shots[l] != shots[l])
-		    break;
-		    
-	    if(l == curr_shots.length)
-        {
-            shots = curr_shots;
-	        return;
-        }
-    }
-*/
 	modified     = true;
 	
 	int num_signal; 
@@ -342,9 +331,10 @@ class MdsWaveInterface extends WaveInterface {
 	else
 	    this.num_shot = 1;
 	num_waves = num_signal;
+	*/
   }
 
-  
+  /*
     public int[] GetShotArray(String in_shots) throws IOException
     {
 	    int int_data[] = null;
@@ -367,7 +357,7 @@ class MdsWaveInterface extends WaveInterface {
 	    }
 	    return int_data;
    }
-  
+  */
   
     public MdsWaveInterface(MdsWaveInterface wi)
     {
@@ -377,7 +367,7 @@ class MdsWaveInterface extends WaveInterface {
 	    num_waves = wi.num_waves;
 	    num_shot  = wi.num_shot;
 	    defaults  = wi.defaults;
-	    modified = true;
+	    modified = wi.modified;//********true;
 	    in_grid_mode = wi.in_grid_mode;
 	    x_log = wi.x_log;
 	    y_log = wi.y_log;
@@ -405,9 +395,9 @@ class MdsWaveInterface extends WaveInterface {
 	    signals = new Signal[num_waves];
 	    
 	    if(wi.in_shot == null || wi.in_shot.trim().length() == 0)
-	        shots = wi.shots = null;
+	       shots = wi.shots = null;
 	    else
-	        shots = new int[num_waves];
+	       shots = new int[num_waves];
     	
 	    for(int i = 0; i < num_waves; i++)
 	    {
@@ -576,15 +566,12 @@ class MdsWaveInterface extends WaveInterface {
 	        cin_def_node = new String(wi.cin_def_node);
 	    else
 	        cin_def_node = null;
-    	
-//	    main_shot_evaluated = wi.main_shot_evaluated;    	
-//        main_shot_str = wi.main_shot_str;
-//	    main_shots = wi.main_shots;
-    	
+    	    	
 	    def_vals = wi.def_vals;
     	    	
 	    error = null;
-	    SetDataProvider(wi.dp);	
+	    //SetDataProvider(wi.dp);	
+        super.SetDataProvider(wi.dp);
     }	
 
 
@@ -649,7 +636,6 @@ class MdsWaveInterface extends WaveInterface {
     {
 	    super.SetDataProvider(_dp);
 	    default_is_update = false;
-//		main_shot_evaluated = false;
     }
 
     public synchronized void refresh()
@@ -696,6 +682,7 @@ class MdsWaveInterface extends WaveInterface {
         cin_shot = null;
         defaults = 0xffffffff;
         default_is_update = false;
+        previous_shot = "";
     }
    
     public void CreateVector()

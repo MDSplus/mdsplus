@@ -72,8 +72,9 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   private JFrame    main_scope;
 //  PrinterJob        prnJob;
 //  PageFormat        pf;
-  ResourceBundle rb = null;
-  PropertyResourceBundle prb = null;
+//  ResourceBundle rb = null;
+//  PropertyResourceBundle prb = null;
+  Properties js_prop = null;
   String            default_server=DEFAULT_SERVER;
   boolean           is_playing = false;
   int height = 500, width = 700, xpos = 50, ypos = 50;
@@ -81,6 +82,8 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   SetupDataDialog setup_dialog;  
 //  static SignalCache sc = new SignalCache();
   JProgressBar progress_bar;
+
+  private jScopeHelpDialog help_dialog ;
 
   private boolean modified = false;
   
@@ -419,6 +422,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   {
         
  
+    help_dialog = new jScopeHelpDialog(this);
     main_scope = this;
 
     Properties props = System.getProperties();
@@ -430,9 +434,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 
     InitProperties();
     GetPropertiesValue();
-    
-    
-    
+        
     font_dialog   = new FontSelection(this, "Waveform Font Selection");
     setup_default = new SetupDefaults(this, "Default Setup", def_values);
     color_dialog  = new ColorDialog(this, "Color Configuration Dialog");
@@ -448,6 +450,19 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     setJMenuBar(mb);
     edit_m = new JMenu("File");
     mb.add(edit_m);
+    
+    JMenuItem browse_signals_i = new JMenuItem("Browse signals");            
+    edit_m.add(browse_signals_i);
+    browse_signals_i.addActionListener(new ActionListener()
+	    {
+	        public void actionPerformed(ActionEvent e)
+            {
+                wave_panel.showBrowseSignals();
+            }
+	    }
+	);
+
+    
     open_i = new JMenuItem("New Window");
     open_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
     edit_m.add(open_i);	
@@ -524,18 +539,15 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     print_m = new JMenu("Print");
     mb.add(print_m);
     print_all_i = new JMenuItem("Print all ...");
-    
-    if(!(this instanceof jScope))
+    print_all_i.addActionListener(new ActionListener()
     {
-        print_all_i.addActionListener(new ActionListener()
+        public void actionPerformed(ActionEvent e) 
         {
-            public void actionPerformed(ActionEvent e) 
-            {
-		        printThread = new PrintThread();
-	            printThread.start();
-            }
-        });
-    }
+		    printThread = new PrintThread();
+	        printThread.start();
+        }
+    });
+    
     print_m.add(print_all_i);
     mb.add(print_m);
     
@@ -614,18 +626,24 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     use_cache_i.addItemListener(this);
 
     free_cache_i = new JMenuItem("Free cache");
+    free_cache_i.setEnabled(false);
     network_m.add(free_cache_i);
     free_cache_i.addActionListener(new ActionListener()
 	    {
 	        public void actionPerformed(ActionEvent e)
             {
                 String cache_directory = System.getProperty("Signal.cache_directory");
-                Object[] options = { "OK", "CANCEL" };
-                int opt = JOptionPane.showOptionDialog(null, "Remove all files in jScope cache directory "+ cache_directory, "Warning", 
-                            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
-                            null, options, options[0]);
-	            if (opt == JOptionPane.OK_OPTION)
-	                    wave_panel.freeCache();
+                if(cache_directory != null && cache_directory.trim().length() != 0)
+                {
+                    Object[] options = { "OK", "CANCEL" };
+                    int opt = JOptionPane.showOptionDialog(null, "Remove all files in jScope cache directory "+ cache_directory, "Warning", 
+                                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                                null, options, options[0]);
+	                if (opt == JOptionPane.OK_OPTION)
+	                        wave_panel.freeCache();
+                } else {
+		            JOptionPane.showMessageDialog(null, "Undefined cache directory", "alert", JOptionPane.ERROR_MESSAGE);     
+                }
 	        }
 	    }
 	);
@@ -676,6 +694,18 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     icon.setImageObserver(print_icon);
     progress_pan.add(print_icon);
     */
+    help_m = new JMenu("Help");
+    mb.add(help_m);
+    JMenuItem about_i = new JMenuItem("About jScope");
+    help_m.add(about_i);
+    about_i.addActionListener(new ActionListener()
+	    {
+	        public void actionPerformed(ActionEvent e)
+            {
+                help_dialog.show();
+            }
+	    }
+	);
 
 
     setup_dialog = new SetupDataDialog(this, "Setup");
@@ -841,15 +871,31 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         wave_panel.InvalidateDefaults();
   }
 
-  
+
   public void InitProperties()
   {
     try
     {
-        String f_name = System.getProperty("user.home")+ File.separator + "jScope.properties";
-        if(is_debug)
-            System.out.println("Properties file "+f_name);
-        prb = new PropertyResourceBundle(new FileInputStream(f_name));
+        StringTokenizer path = new StringTokenizer(System.getProperty("java.class.path"), File.pathSeparator);
+        String p, f_name;
+        File f;
+        while(path.hasMoreTokens())
+        {
+            p = path.nextToken();
+            f = new File(p);
+            if(!f.isDirectory())
+                continue;
+            f_name = p + File.separator + "jScope.properties";        
+            f = new File(f_name);
+            if(f.exists())
+            {
+                if(is_debug)
+                    System.out.println("Properties file "+f_name);
+                js_prop = new Properties();
+                js_prop.load(new FileInputStream(f));
+                break;
+            }
+        }        
     } 
     catch( FileNotFoundException e)
     {
@@ -860,17 +906,16 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         System.out.println(e);
     }
   }
-  
-  
+
   protected void GetPropertiesValue()
   {    
-    if(prb == null) return;
+    if(js_prop == null) return;
     
-    curr_directory = (String)prb.handleGetObject("jScope.directory");
-    default_server = (String)prb.handleGetObject("jScope.default_server");
-    String cache_directory = (String)prb.handleGetObject("jScope.cache_directory");
-    String cache_size = (String)prb.handleGetObject("jScope.cache_size");
-    String f_name = (String)prb.handleGetObject("jScope.save_selected_points");
+    curr_directory = (String)js_prop.getProperty("jScope.directory");
+    default_server = (String)js_prop.getProperty("jScope.default_server");
+    String cache_directory = (String)js_prop.getProperty("jScope.cache_directory");
+    String cache_size = (String)js_prop.getProperty("jScope.cache_size");
+    String f_name = (String)js_prop.getProperty("jScope.save_selected_points");
     Properties p = System.getProperties();
     if(cache_directory != null)
         p.put("Signal.cache_directory", cache_directory);
@@ -881,10 +926,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     if(curr_directory != null)
         p.put("jScope.curr_directory", curr_directory);
   }
-  
-  
-  PropertyResourceBundle res_values;
-    
+        
   private boolean IsIpAddress(String addr)
   {
     if(addr.trim().indexOf(".") != -1 && addr.trim().indexOf(" ") == -1)
@@ -1104,7 +1146,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   
   private void SaveAs()
   {
-	    if(curr_directory != null)
+	    if(curr_directory != null &&  curr_directory.trim().length() != 0)
 	        file_diag.setCurrentDirectory(new File(curr_directory));
 
 //	    int returnVal = file_diag.showSaveDialog(this);
@@ -1137,7 +1179,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   {
      
 
-	if(curr_directory != null)
+	 if(curr_directory != null &&  curr_directory.trim().length() != 0)
 	    file_diag.setCurrentDirectory(new File(curr_directory));
 
 	//int returnVal = file_diag.showOpenDialog(this);
@@ -1190,7 +1232,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     {
         use_cache_i.setEnabled(true);
         use_cache_i.setState(wave_panel.isCacheEnabled());
-        free_cache_i.setEnabled(true);        
+        free_cache_i.setEnabled(wave_panel.isCacheEnabled());        
     } else {
         use_cache_i.setEnabled(false);
         free_cache_i.setEnabled(false);
@@ -1700,6 +1742,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         if(ob == use_cache_i)
         {
 	        wave_panel.enableCache(use_cache_i.getState());
+            free_cache_i.setEnabled(use_cache_i.getState());        
         }
 
         if(e.getStateChange() != ItemEvent.SELECTED)
@@ -1904,11 +1947,12 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   public static void main(String[] args)
   {
         String file = null;    
+
+        AboutWindow about = new AboutWindow();
+        about.setVisible(true);
         
         jScope_1 win = new jScope_1(100, 100);
 
-
-        
         win.pack();                 
 	    win.setSize(750, 550);
         if(args.length == 1) 
@@ -2339,11 +2383,7 @@ class ServerDialog extends JDialog implements ActionListener
 	
 	    if(dw.server_ip_list == null) {
 	        addServerIp(new DataServerItem("Local", null, null));	
-            if(jScope_1.IsNewJVMVersion())
-	            GetPropertiesValue();
-	        else
-                GetPropertiesValue_VM11();
-
+	        GetPropertiesValue();
 	        addServerIp(new DataServerItem(dw.default_server, null, null));
 	    }
 	    else
@@ -2355,47 +2395,22 @@ class ServerDialog extends JDialog implements ActionListener
 
     private void GetPropertiesValue()
     {
-       ResourceBundle rb = dw.rb;
-       DataServerItem dsi;
-       int i = 1;
-       
-       if(rb == null) return;
-       try {
-        while(true) {
-            dsi = new DataServerItem();
-            dsi.data_server = (String)rb.getString("jScope.data_server_"+i);
-            try
-            {
-                dsi.browse_class = (String)rb.getString("jScope.data_server_"+i+".browse_class");
-            }catch(MissingResourceException e){}
-            try
-            {
-                dsi.browse_url = (String)rb.getString("jScope.data_server_"+i+".browse_url");
-            }catch(MissingResourceException e){}
-	        addServerIp(dsi);
-	        i++;
-        } 
-       }catch(MissingResourceException e){}
-    }
-
-    private void GetPropertiesValue_VM11()
-    {
-       PropertyResourceBundle prb = dw.prb;
+       Properties js_prop = dw.js_prop;
        DataServerItem dsi;
        int i = 1;       
 
-       if(prb == null) return;
+       if(js_prop == null) return;
        while(true) {
            dsi = new DataServerItem();
-           dsi.data_server = (String)prb.handleGetObject("jScope.data_server_"+i);
+           dsi.data_server = (String)js_prop.getProperty("jScope.data_server_"+i);
            if(dsi.data_server == null) break;
-           dsi.browse_class = (String)prb.handleGetObject("jScope.data_server_"+i+".browse_class");
-           dsi.browse_url = (String)prb.handleGetObject("jScope.data_server_"+i+".browse_url");
+           dsi.browse_class = (String)js_prop.getProperty("jScope.data_server_"+i+".browse_class");
+           dsi.browse_url = (String)js_prop.getProperty("jScope.data_server_"+i+".browse_url");
 	       addServerIp(dsi);
 	       i++;
        } 
     }
-
+    
     public void Show()
     {    
 	    setLocationRelativeTo(dw);

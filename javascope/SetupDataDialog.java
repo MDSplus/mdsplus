@@ -1090,9 +1090,11 @@ import javax.swing.event.*;
       wave_coord = new Point(row, col);
       wave = (jScopeMultiWave)w;
       wave.addWaveformListener(this);
-      wi = wave.wi;
-      wi = new MdsWaveInterface(wave, wave.wi.dp, wave.wi.def_vals);
-      wi.defaults = wave.wi.defaults;
+      //wi = (MdsWaveInterface)wave.wi;
+      wi = new MdsWaveInterface(wave, 
+                                ((MdsWaveInterface)wave.wi).dp, 
+                                ((MdsWaveInterface)wave.wi).def_vals);
+      wi.defaults = ((MdsWaveInterface)wave.wi).defaults;
       putWindowSetup((MdsWaveInterface)wave.wi);
       updateDataSetup();
       setLocationRelativeTo(w.getParent());
@@ -1755,7 +1757,7 @@ import javax.swing.event.*;
         switch(e.getID())
         {
              case WaveformEvent.END_UPDATE :
-                String full_error = w.wi.getErrorString(main_scope.wave_panel.getBriefError());
+                String full_error = ((MdsWaveInterface)w.wi).getErrorString(main_scope.wave_panel.getBriefError());
                 if(full_error != null)
                 {
 		            JOptionPane.showMessageDialog(SetupDataDialog.this, full_error, 

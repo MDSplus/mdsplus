@@ -11,7 +11,6 @@ public class jScope extends jScope_1
   PrinterJob            prnJob;
   PageFormat            pf;
   private JMenuItem     print_i, page_i;
-  private jScopeHelpDialog help_dialog ;
 
   public jScope(int spos_x, int spos_y)
   {
@@ -21,7 +20,6 @@ public class jScope extends jScope_1
   public void jScopeCreate(int spos_x, int spos_y)
   {
     
-        help_dialog = new jScopeHelpDialog(this);
         super.jScopeCreate(spos_x, spos_y);
 
         prnJob = PrinterJob.getPrinterJob();
@@ -70,6 +68,7 @@ public class jScope extends jScope_1
             }
         });
         
+        print_all_i.removeAll();
         print_all_i.setText("Print all");
         print_all_i.addActionListener(new ActionListener()
         {
@@ -87,29 +86,7 @@ public class jScope extends jScope_1
             }
         });
         
-        help_m = new JMenu("Help");
-        mb.add(help_m);
-        JMenuItem about_i = new JMenuItem("About jScope");
-        help_m.add(about_i);
-        about_i.addActionListener(new ActionListener()
-	        {
-	            public void actionPerformed(ActionEvent e)
-                {
-                    help_dialog.show();
-                }
-	        }
-	    );
 	    
-        JMenuItem browse_signals_i = new JMenuItem("Browse signals");            
-        edit_m.insert(browse_signals_i, 0);
-        browse_signals_i.addActionListener(new ActionListener()
-	        {
-	            public void actionPerformed(ActionEvent e)
-                {
-                    wave_panel.showBrowseSignals();
-                }
-	        }
-	    );
   }
   
     protected jScopeWaveContainer buildWaveContainer()
@@ -118,54 +95,6 @@ public class jScope extends jScope_1
         return (new jScopeWaveContainer_2(rows, def_values));
     }
   
-
-  public void InitProperties()
-  {
-    try
-    {
-        rb = ResourceBundle.getBundle("jScope");
-    } 
-    catch( MissingResourceException e)
-    {
-        System.out.println(e);
-    }
-  }
- 
-  protected void GetPropertiesValue()
-  {
-    if(rb == null) return;
-    Properties p = System.getProperties();
-    
-    try {
-        curr_directory = rb.getString("jScope.directory");
-        File f = new File(curr_directory);
-        if(!f.exists())
-            curr_directory = null;
-        else
-            p.put("jScope.curr_directory", curr_directory);
-    }
-    catch(MissingResourceException e){}
-    try {
-        default_server = (String)rb.getString("jScope.default_server");
-    }
-    catch(MissingResourceException e){}
-    try {
-        String cache_directory = (String)rb.getString("jScope.cache_directory");
-        p.put("Signal.cache_directory", cache_directory);
-    }
-    catch(MissingResourceException e){}
-    try {
-        String cache_size = (String)rb.getString("jScope.cache_size");
-        p.put("Signal.cache_size", cache_size);
-    }
-    catch(MissingResourceException e){}
-    try {
-        String f_name = (String)rb.getString("jScope.save_selected_points");
-        p.put("jScope.save_selected_points", f_name);
-    }
-    catch(MissingResourceException e){}
-  }
-
 
   protected void PrintAllWaves()
   {

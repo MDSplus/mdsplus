@@ -5,6 +5,7 @@ import java.util.Vector;
 
 public class WaveInterface
 {
+    static final int MAX_NUM_SHOT = 30;
     public Waveform wave;
     public boolean full_flag;
     public int     num_waves;
@@ -51,7 +52,7 @@ public class WaveInterface
     protected boolean evaluated[];
         
     static final float HUGE = (float)1E8;
-    static final int   MAX_POINTS = 1000;
+//    static int MAX_POINTS = 1000;
    
     protected boolean is_image = false;
     boolean use_jai = false;
@@ -220,9 +221,10 @@ public class WaveInterface
                 }
         }
     }
-
+    
     public void ShowLegend(boolean state){show_legend = state;}
     public void setModified(boolean state){modified = state;}
+    
 
     public void SetLegendPosition(double x, double y)
     {
@@ -402,8 +404,8 @@ public class WaveInterface
 	        
 	        new_interpolates[i] = true;
 	        new_evaluated[i] = false;
-	        if(shots != null)
-	            new_shots[i] = shots[i - num_shot];
+	        if(shots != null && shots.length != 0)
+	            new_shots[i] = shots[(i - num_shot> 0) ? (i - num_shot) : 0];
         }
 
         in_label = new_in_label;
@@ -420,7 +422,7 @@ public class WaveInterface
 	    evaluated = new_evaluated;
 	    signals = new_signals;
 	    w_error = new_w_error;
-	    modified = true;
+//	    modified = true;
 	    
 	    add_signal = true;
 	    return true;
@@ -428,6 +430,106 @@ public class WaveInterface
     
     public boolean isAddSignal() {return add_signal;}
     public void    setAddSignal(boolean add_signal) {this.add_signal = add_signal;}
+    
+    public boolean UpdateShot(int curr_shots[]) throws IOException
+    {
+	    int l = 0, curr_num_shot;
+	    
+	    if(curr_shots == null)
+	    {
+	        curr_num_shot = 1;
+	        shots = null;
+	        if(num_shot == 0) return false;
+	    } else
+	        curr_num_shot = curr_shots.length;
+
+	    modified     = true;
+    	
+	    int num_signal; 
+	    int num_expr;
+	    if(num_shot == 0)
+        {
+	        num_signal = num_waves * curr_num_shot;
+	        num_expr = num_waves;
+        } 
+        else 
+        {
+	        num_signal = num_waves / num_shot * curr_num_shot;
+	        num_expr = num_waves / num_shot;
+        }
+
+	    if(num_signal == 0)
+	        return false;
+   
+    	
+        String[]  in_label     = new String[num_signal];
+        String[]  in_x         = new String[num_signal];
+	    String[]  in_y         = new String[num_signal];
+	    String[]  in_up_err    = new String[num_signal];
+	    String[]  in_low_err   = new String[num_signal];
+	    int[]     markers      = new int[num_signal];
+	    int[]     markers_step = new int[num_signal];
+	    int[]     colors_idx   = new int[num_signal];
+	    boolean[] interpolates = new boolean[num_signal];
+	    int[]     shots = null;
+	    if(curr_shots != null)
+	        shots = new int[num_signal];				
+
+        int sig_idx = (this.num_shot == 0) ? 1 : this.num_shot;
+	    for(int i = 0, k = 0; i < num_expr; i++)      
+	    {
+	        for(int j = 0; j < curr_num_shot; j++, k++)
+	        {
+		        in_label[k]     = this.in_label[i * sig_idx];
+		        in_x[k]         = this.in_x[i * sig_idx];
+		        in_y[k]         = this.in_y[i * sig_idx];
+		        if(j < 	this.num_shot)
+		        {	
+		            markers[k]	    = this.markers[i * this.num_shot + j];	  
+		            markers_step[k] = this.markers_step[i * this.num_shot + j];	  
+		            interpolates[k] = this.interpolates[i * this.num_shot + j];
+		            if(curr_shots != null)
+		                shots[k]        = curr_shots[j];
+		            in_up_err[k]    = this.in_up_err[i * this.num_shot + j];	    
+		            in_low_err[k]   = this.in_low_err[i * this.num_shot + j];	    
+		            colors_idx[k]   = this.colors_idx[i * this.num_shot + j];
+		        } else {
+		            markers[k]	    = this.markers[i * this.num_shot];	  
+		            markers_step[k] = this.markers_step[i * this.num_shot];	  
+		            interpolates[k] = this.interpolates[i * this.num_shot];
+		            in_up_err[k]    = this.in_up_err[i * this.num_shot];	    
+		            in_low_err[k]   = this.in_low_err[i * this.num_shot];
+    		        
+		            if(auto_color_on_expr)
+		                colors_idx[k]   = i % Waveform.colors.length;//this.colors_idx[i * this.num_shot];
+		            else
+		                colors_idx[k]   = j % Waveform.colors.length;
+    		            
+		            if(curr_shots != null)
+		                shots[k]        = curr_shots[j];
+ 		        }
+	        }
+	    }
+    	
+	    this.in_label     = in_label;
+	    this.in_x         = in_x;
+	    this.in_y         = in_y;
+	    this.in_up_err    = in_up_err;
+	    this.in_low_err   = in_low_err;
+	    this.markers      = markers;
+	    this.markers_step = markers_step;
+	    this.colors_idx   = colors_idx;
+	    this.interpolates = interpolates;
+	    this.shots        = shots;
+	    if(shots != null)
+	        this.num_shot     = curr_num_shot;
+	    else
+	        this.num_shot = 1;
+	    num_waves = num_signal;
+	    
+	    return true;
+    }
+    
     
     public synchronized int StartEvaluate() throws IOException
     {
@@ -784,7 +886,37 @@ public class WaveInterface
             curr_error = " Load Frames error "+e; 
         }
     }
+    
+    public void setShotArray(String in_shot) throws IOException
+    {
+        this.in_shot = in_shot;
+        int curr_shots[] = GetShotArray(in_shot);
+        UpdateShot(curr_shots);
+    }
 				    
+    public int[] GetShotArray(String in_shots) throws IOException
+    {
+	    int int_data[] = null;
+	
+	    if(in_shots == null || in_shots.trim().length() == 0)
+	        return int_data;
+	
+	    dp.Update(null, 0);
+	    int_data = dp.GetIntArray(in_shots);
+	    if( int_data == null || int_data.length == 0 || int_data.length > MAX_NUM_SHOT)
+	    {
+	        if(int_data != null && int_data.length > MAX_NUM_SHOT)
+                error = "Too many shots. Max shot list elements " + MAX_NUM_SHOT +"\n";
+	        else {
+		        if(dp.ErrorString() != null)	    
+		            error = dp.ErrorString();
+		        else
+		            error = "Shot syntax error\n";
+	        }
+	    }
+	    return int_data;
+   }
+
     private Signal GetSignal(int curr_wave, float xmin, float xmax) throws IOException
     {			    
 		
@@ -1018,7 +1150,7 @@ public class WaveInterface
 	    for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
 	    {
 	        if(wave_signals[curr_wave] == null) continue;
-	        if (wave_signals[curr_wave].n_points >= MAX_POINTS - 5 || (panning && 
+	        if (wave_signals[curr_wave].n_points >= Waveform.MAX_POINTS - 5 || (panning && 
 		    (orig_xmin < xmin || orig_xmax > xmax)))
 		    needs_update = true;
 	    }
@@ -1049,6 +1181,9 @@ public class WaveInterface
 	    boolean needs_update = false;
 	    int curr_wave, saved_timestamp = wave_timestamp;
 	    
+	    Cursor curr_cursor = w.getCursor();
+        w.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+	   
         WaveformEvent we = new WaveformEvent(w, "Asyncronous signal loading");
         w.dispatchWaveformEvent(we);
         
@@ -1072,6 +1207,7 @@ public class WaveInterface
 	        w.AutoscaleY();
 	        //w.UpdateSignals(wave_signals, wave_signals.length, wave_timestamp);
 	    }
+        w.setCursor(curr_cursor);
         we = new WaveformEvent(w, "Asyncronous operation completed");
         w.dispatchWaveformEvent(we);
      }

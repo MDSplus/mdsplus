@@ -44,10 +44,7 @@ public class SetupDefaults extends JDialog implements ActionListener {
 //      this.def_vals = def_vals;      
       main_scope = (jScope_1)fw;
       
-      if(jScope_1.IsNewJVMVersion())
-	    GetPropertiesValue();
-	  else
-        GetPropertiesValue_VM11();
+	  GetPropertiesValue();
   
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints c = new GridBagConstraints();
@@ -243,64 +240,23 @@ public class SetupDefaults extends JDialog implements ActionListener {
    
    private void GetPropertiesValue()
    {
-       ResourceBundle rb = main_scope.rb;
+       Properties js_prop = main_scope.js_prop;
        String prop;
        int val = 0;
        
-       if(rb == null) return;
+       if(js_prop == null) return;
    
-       try {
-            prop = (String)rb.getString("jScope.reversed");
-            if(prop != null && ( prop.equals("true") || prop.equals("false")))
-            {
-                reversed = new Boolean(prop).booleanValue();
-            }
-       } catch(MissingResourceException e){}
-       
-       try {
-            prop = (String)rb.getString("jScope.grid_mode");
-            if(prop != null && (val = IsGridMode(prop)) > 0)
-                curr_grid_mode =  val;
-       } catch(MissingResourceException e){}
-       
-       try {
-            prop = (String)rb.getString("jScope.x_grid");
-            try
-            {
-                val = Integer.parseInt(prop);
-                x_curr_lines_grid = val > Grid.MAX_GRID ? Grid.MAX_GRID : val;
-            } catch (NumberFormatException e) {}
-       } catch(MissingResourceException e){}
-       
-       try {
-            prop = (String)rb.getString("jScope.y_grid");
-            try
-            {
-                val = Integer.parseInt(prop);
-                y_curr_lines_grid = val > Grid.MAX_GRID ? Grid.MAX_GRID : val;
-            } catch (NumberFormatException e) {}       
-       } catch(MissingResourceException e){}
-   }
-   
-   private void GetPropertiesValue_VM11()
-   {
-       PropertyResourceBundle prb = main_scope.prb;
-       String prop;
-       int val = 0;
-       
-       if(prb == null) return;
-   
-       prop = (String)prb.handleGetObject("jScope.reversed");
+       prop = (String)js_prop.getProperty("jScope.reversed");
        if(prop != null && ( prop.equals("true") || prop.equals("false")))
        {
          reversed = new Boolean(prop).booleanValue();
        }
        
-       prop = (String)prb.handleGetObject("jScope.grid_mode");
+       prop = (String)js_prop.getProperty("jScope.grid_mode");
        if(prop != null && (val = IsGridMode(prop)) > 0)
          curr_grid_mode =  val;
        
-       prop = (String)prb.handleGetObject("jScope.x_grid");
+       prop = (String)js_prop.getProperty("jScope.x_grid");
        if(prop != null)
        {
             try
@@ -310,7 +266,7 @@ public class SetupDefaults extends JDialog implements ActionListener {
             } catch (NumberFormatException e) {}
        }
        
-       prop = (String)prb.handleGetObject("jScope.y_grid");
+       prop = (String)js_prop.getProperty("jScope.y_grid");
        if(prop != null)
        {
             try
@@ -321,7 +277,7 @@ public class SetupDefaults extends JDialog implements ActionListener {
        }
        
    }
-
+   
    public int getLegendMode()
    {
       return curr_legend_mode;

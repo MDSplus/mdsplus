@@ -135,9 +135,9 @@ class TWUDataProvider implements DataProvider
                 
             n_point = n_point_redu;
                         
-            skip = 1+n_point/1000;
-            if(n_point > 1000)
-                n_point = 1000;
+            skip = 1+n_point/Waveform.MAX_POINTS;
+            if(n_point > Waveform.MAX_POINTS)
+                n_point = Waveform.MAX_POINTS;
                 
             return getFloatArray(getSignalPath(in_x), false);
         }
@@ -160,9 +160,9 @@ class TWUDataProvider implements DataProvider
         else
             is_time = false;
         
-        //If fast access mode are used in the last signal evaluation
+        //If fast access mode is used in the last signal evaluation
         //must be set last_url_name to null to force signal
-        //evaluation in the case the new signal is the euqal to the last
+        //evaluation in the case the new signal is the equal to the last
         if(fast_access)
         {
            fast_access = false; 
@@ -333,7 +333,7 @@ class TWUDataProvider implements DataProvider
             int curr_len = 0;
             Vector lines = new Vector();
            
-            int inc = n_point/1000;
+            int inc = n_point/Waveform.MAX_POINTS;
             int p = 0;
             float [] values = new float[n_point];
             String curr_str; 

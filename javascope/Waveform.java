@@ -12,6 +12,8 @@ import java.awt.Insets;
 public class Waveform extends JComponent
 {
 
+    public static int     MAX_POINTS = 1000;
+
     public static final Color[]  COLOR_SET = {Color.black, Color.blue, Color.cyan, Color.darkGray,
 					     Color.gray, Color.green, Color.lightGray, 
 					     Color.magenta, Color.orange, Color.pink, 
@@ -114,6 +116,7 @@ public class Waveform extends JComponent
     private boolean border_changed = false;
     private javax.swing.Timer play_timer;
 	private boolean restart_play = false;
+	
      
     class ZoomRegion
     {
@@ -469,6 +472,9 @@ public class Waveform extends JComponent
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e)
             {
+                if(getCursor().getType() == Cursor.WAIT_CURSOR)
+                    return;
+
                 Insets i = getInsets();
                 just_deselected = false;
                 Dimension d = getWaveSize();
@@ -581,6 +587,9 @@ public class Waveform extends JComponent
         
             public void mouseReleased(MouseEvent e)
             {
+                if(getCursor().getType() == Cursor.WAIT_CURSOR)
+                    return;
+
                 Insets i = getInsets();
 	            int idx;
 	            Dimension d = getWaveSize();
@@ -647,7 +656,11 @@ public class Waveform extends JComponent
         
         addMouseMotionListener(new MouseMotionAdapter() {            
 	        public void mouseDragged(MouseEvent e)
-            {                
+            {
+                
+                if(getCursor().getType() == Cursor.WAIT_CURSOR)
+                    return;
+                
 	            if(waveform_signal == null && !is_image || is_mb2)
 	                return;
 

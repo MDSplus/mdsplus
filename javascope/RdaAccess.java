@@ -1,11 +1,13 @@
 import java.util.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class RdaAccess implements DataAccess
 {
     String ip_addr = null;
     String shot_str = null;
     String signal = null;
+    String experiment = null;
     JetDataProvider jp = null;
     String encoded_credentials;
     
@@ -22,6 +24,8 @@ public class RdaAccess implements DataAccess
         RdaAccess access = new RdaAccess();
         String url = "rda:://data.jet.uk/PPF/40000/MAGN/IPLA";
         boolean supports = access.supports(url);
+        try
+        {
         float x [] = access.getX(url);
         float y [] = access.getY(url);
  
@@ -29,7 +33,7 @@ public class RdaAccess implements DataAccess
             System.out.println(x[i] + "  " +y[i]);
            
         System.out.println("Num. points: "+y.length);
-
+        } catch (Exception e){}
     }
     
     public boolean supports(String url)
@@ -39,12 +43,12 @@ public class RdaAccess implements DataAccess
         return st.nextToken().equals("rda");
     }
     
-    private String setProvider(String url)
+    public String setProvider(String url) throws IOException
     {
         String protocol = url.substring(0, url.indexOf(":"));
         String context = url.substring(url.indexOf(":")+3);
         String addr = context.substring(0, context.indexOf("/"));
-        String signal = context.substring(addr.length()+1, context.length());
+        signal = context.substring(addr.length()+1, context.length());
      
         if(addr == null) return null;
         if(ip_addr == null || !ip_addr.equals(addr))
@@ -55,7 +59,7 @@ public class RdaAccess implements DataAccess
             //jp.setUrlSource(protocol+"://"+addr+"/");
             jp.setUrlSource("http://"+addr+"/");
             if(!jp.checkPasswd(encoded_credentials))
-                return null;
+                throw(new IOException("Invalid autentication"));
             
             ip_addr = addr;
         }
@@ -73,6 +77,16 @@ public class RdaAccess implements DataAccess
         return signal;
     }
 
+    public String getExperiment()
+    {
+        return experiment;
+    }
+
+    public DataProvider getDataProvider()
+    {
+        return jp;
+    }
+
 
     public void setPassword(String encoded_credentials)
     {
@@ -83,7 +97,7 @@ public class RdaAccess implements DataAccess
         this.encoded_credentials = encoded_credentials;
     }
 
-    public float [] getX(String url)
+    public float [] getX(String url) throws IOException
     {
         signal = setProvider(url);
         if(signal == null) return null;
@@ -91,7 +105,7 @@ public class RdaAccess implements DataAccess
         return jp.GetFloatArray(jp.GetXSpecification(signal));
     }
     
-    public float [] getY(String url)
+    public float [] getY(String url) throws IOException
     {
         signal = setProvider(url);
         if(signal == null) return null;
@@ -128,7 +142,7 @@ public class RdaAccess implements DataAccess
     }
     
     
-    public Signal getSignal(String url)
+    public Signal getSignal(String url) throws IOException
     {
         signal = setProvider(url);
         if(signal == null) return null;

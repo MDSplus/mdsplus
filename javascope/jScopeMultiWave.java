@@ -9,7 +9,7 @@ waveforms.
 */
 public class jScopeMultiWave extends MultiWaveform implements NetworkListener
 {
-    MdsWaveInterface wi;
+   // MdsWaveInterface wi;
    
     
     public jScopeMultiWave(DataProvider dp, jScopeDefaultValues def_values)
@@ -41,7 +41,7 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
         Thread p = new Thread() {
             public void run()
             {
-                wi.refresh();
+                ((MdsWaveInterface)wi).refresh();
                     
 	            SwingUtilities.invokeLater(new Runnable() {
 	                public void run() {
@@ -91,20 +91,20 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
     {
         String out_error;
         if(wi.isAddSignal())
-            out_error = wi.getErrorString(true);
+            out_error = ((MdsWaveInterface)wi).getErrorString(true);
         else
-            out_error = wi.getErrorTitle(true);
+            out_error = ((MdsWaveInterface)wi).getErrorTitle(true);
         
-        if(out_error != null && wi.prev_wi != null)
+        if(out_error != null && ((MdsWaveInterface)wi).prev_wi != null)
         {
             //reset to previous configuration
-            wi.prev_wi.w_error = wi.w_error;            
+            ((MdsWaveInterface)wi).prev_wi.w_error = ((MdsWaveInterface)wi).w_error;            
             if(wi.isAddSignal())
-                wi.prev_wi.setAddSignal(true);                    
-            wi = wi.prev_wi;
-            wi.prev_wi = null;
+                ((MdsWaveInterface)wi).prev_wi.setAddSignal(true);                    
+            wi = ((MdsWaveInterface)wi).prev_wi;
+            ((MdsWaveInterface)wi).prev_wi = null;
         } else
-            wi.prev_wi = null;
+            ((MdsWaveInterface)wi).prev_wi = null;
         Update(wi);
         WaveformEvent e = new WaveformEvent(this, WaveformEvent.END_UPDATE);
         dispatchWaveformEvent(e);
@@ -241,7 +241,7 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
        return wi.GetSignalState(i);
     }
 
-
+/*
     protected void NotifyZoom(double start_xs, double end_xs, double start_ys, double end_ys,
 	    int timestamp) 
     {
@@ -259,25 +259,25 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
 	        wi.AsynchUpdate(signals, (float)(start_xs - x_range), (float)(end_xs + x_range), 
 	            (float)orig_xmin, (float)orig_xmax, update_timestamp, mode == MODE_PAN, this);
     }	
-
+*/
     public void AddEvent(String event)  throws IOException
     {
-        wi.AddEvent(this, event);
+        ((MdsWaveInterface)wi).AddEvent(this, event);
     }
 
     public void RemoveEvent(String event)  throws IOException
     {
-        wi.AddEvent(this, event);
+        ((MdsWaveInterface)wi).AddEvent(this, event);
     }
 
     public void AddEvent()  throws IOException
     {
-        wi.AddEvent(this);
+        ((MdsWaveInterface)wi).AddEvent(this);
     }
 
     public void RemoveEvent()  throws IOException
     {
-        wi.RemoveEvent(this);
+        ((MdsWaveInterface)wi).RemoveEvent(this);
     }
     
     public void removeNotify()

@@ -7,6 +7,7 @@ public class MdsAccess implements DataAccess
     String ip_addr = null;
     String shot_str = null;
     String signal = null;
+    String experiment = null;
     NetworkProvider np = null;
     String error = null;
 
@@ -16,14 +17,14 @@ public class MdsAccess implements DataAccess
         MdsAccess access = new MdsAccess();
         String url = "mds:://150.178.3.80/a/14000/\\emra_it";
         boolean supports = access.supports(url);
-        //try
+        try
         {
             Signal s = access.getSignal(url);
             s = access.getSignal(url);
             //float x [] = access.getX(url);
             //float y [] = access.getY(url);
          }
-        //catch (IOException e) {}
+        catch (IOException e) {}
     }
 
     public boolean supports(String url)
@@ -33,7 +34,7 @@ public class MdsAccess implements DataAccess
         return st.nextToken().equals("mds");
     }
     
-    private String setProvider(String url)
+    public String setProvider(String url) throws IOException
     {
         StringTokenizer st1 = new StringTokenizer(url, ":");
         String content = st1.nextToken();
@@ -49,7 +50,7 @@ public class MdsAccess implements DataAccess
             np = new NetworkProvider(addr);
             ip_addr = addr;
         }
-        String experiment = st2.nextToken();
+        experiment = st2.nextToken();
         if(experiment != null && !experiment.equals(""))
         {
             //String shot_str = st2.nextToken();
@@ -57,7 +58,8 @@ public class MdsAccess implements DataAccess
             int shot = (new Integer(shot_str)).intValue();
             np.Update(experiment, shot);
         }
-        return st2.nextToken();
+        signal = st2.nextToken();
+        return signal;
     }
     
     public String getShot()
@@ -68,6 +70,16 @@ public class MdsAccess implements DataAccess
     public String getSignal()
     {
         return signal;
+    }
+
+    public String getExperiment()
+    {
+        return experiment;
+    }
+
+    public DataProvider getDataProvider()
+    {
+        return np;
     }
 
     public void close()
@@ -92,31 +104,24 @@ public class MdsAccess implements DataAccess
         return np.GetFloatArray(signal);
     }
     
-    public Signal getSignal(String url)
+    public Signal getSignal(String url) throws IOException
     {
         Signal s = null;
         error = null;
         
-        try
-        {
-            float y[] = getY(url);
-            float x[] = getX(url);
+        float y[] = getY(url);
+        float x[] = getX(url);
                 
-            if(x == null || y == null)
-            {
-                error = np.ErrorString();
-                return null;
-            }
-            s = new Signal(x, y);
-        } 
-        catch (IOException e) 
+        if(x == null || y == null)
         {
-            error = new String(e.getMessage());
-        }        
+            error = np.ErrorString();
+            return null;
+        }
+        s = new Signal(x, y);
         return s;
     }
  
-    public Frames getImages(String url, Frames f)
+    public Frames getImages(String url, Frames f) throws IOException
     {
         byte buf[];
         String signal = setProvider(url);

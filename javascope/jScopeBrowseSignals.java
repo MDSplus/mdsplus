@@ -158,15 +158,10 @@
      public void connectToBrowser(String url_path) throws Exception
      {
  	    URL url = null;
- 	    //try { 
- 		    url = new URL(url_path);
- 		    url_list.addElement(url);
-            if(url != null)
-                html.setPage(url);
-        //} catch (Exception e) { 
- 	    //    System.err.println("Failed to open " + url_path); 
- 	    //    url = null; 
-       // }
+ 		url = new URL(url_path);
+ 		url_list.addElement(url);
+        if(url != null)
+            html.setPage(url);
      }
   
      public HyperlinkListener createHyperLinkListener() { 
@@ -182,7 +177,28 @@
  		            } else { 
  			            try { 
  			                URL u = e.getURL();
+ 			                
+ 			                //To fix JVM 1.1 Bug
+ 			                if(u == null)
+ 			                {
+ 			                    HTMLDocument hdoc = (HTMLDocument)html.getDocument();
+ 			                    try {
+ 			                        
+ 			                        StringTokenizer st = new StringTokenizer(hdoc.getBase().toString(),"/");
+ 			                        int num_token = st.countTokens();
+ 			                        String base = st.nextToken()+"//";
+ 			                        for(int i = 0; i < num_token-2; i++)
+ 			                            base = base + st.nextToken()+"/";
+ 			                        System.out.println("JDK1.1 url = "+base+e.getDescription());  			                        
+ 			                        u = new URL(base+e.getDescription());
+ 			     		        } catch (MalformedURLException m) {
+			                        u = null;
+		                        }
+                            }
+ 			                // end fix bug JVM 1.1
+ 			                
  			                html.setPage(u);
+ 			                
  			                int sz = url_list.size();
  			                for(int i = curr_url + 1; i < sz; i++)
  			                    url_list.removeElementAt(curr_url + 1);

@@ -1,11 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.*;
-import java.util.Vector;
-import java.util.ResourceBundle;
-import java.util.PropertyResourceBundle;
-import java.util.MissingResourceException;
-import java.util.Hashtable;
+import java.util.*;
 import java.io.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -50,10 +46,7 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 
 	    main_scope = (jScope_1)dw;
 	    
-        if(jScope_1.IsNewJVMVersion())
-	        GetPropertiesValue();
-	    else
-            GetPropertiesValue_VM11();
+	    GetPropertiesValue();
 	    
         GridBagConstraints c = new GridBagConstraints();
         GridBagLayout gridbag = new GridBagLayout();
@@ -249,45 +242,25 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
         pack();	 
      }
  
-     
     private void GetPropertiesValue()
     {
-       ResourceBundle rb = main_scope.rb;
-       String prop;
-       int i = 0, len;
+        Properties js_prop = main_scope.js_prop;
+        String prop;
+        int i = 0, len;
        
-       if(rb == null) return;
-       try {
-            while(true) {
-                prop = (String)rb.getString("jScope.item_color_"+i);
-                String name = new String(prop.substring(0, len = prop.indexOf(",")));
-		        Color cr = StringToColor(new String(prop.substring(len + 2, prop.length())));
-		        InsertItemAt(name, cr, i);
-                i++;
-            }
-       } catch(MissingResourceException e){}
-       
+        if(js_prop == null) return;
+        while(true) 
+        {
+            prop = (String)js_prop.getProperty("jScope.item_color_"+i);
+            if(prop == null)
+                break;
+            String name = new String(prop.substring(0, len = prop.indexOf(",")));
+		    Color cr = StringToColor(new String(prop.substring(len + 2, prop.length())));
+		    InsertItemAt(name, cr, i);
+            i++;
+        }   
     }     
-     
-     
-    private void GetPropertiesValue_VM11()
-    {
-       PropertyResourceBundle prb = main_scope.prb;
-       String prop;
-       int i = 0, len;
-       
-       if(prb == null) return;
- 
-       while(true) {
-           prop = (String)prb.handleGetObject("jScope.item_color_"+i);
-           if(prop == null) break;
-           String name = new String(prop.substring(0, len = prop.indexOf(",")));
-		   Color cr = StringToColor(new String(prop.substring(len + 2, prop.length())));
-		   InsertItemAt(name, cr, i);
-           i++;
-       }
-    }     
-     
+        
     private Vector CopyColorItemsVector(Vector in)
     {
 	    Vector out = new Vector(in.size());
@@ -556,13 +529,9 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 	    //in configuration file
 	    if(GetNumColor() == 0)
 	    {
-	        if(main_scope.rb != null || main_scope.prb != null)
+	        if(main_scope.js_prop != null)
 	        {
-	            if(main_scope.rb != null)
-	                GetPropertiesValue();
-	            else
-	                GetPropertiesValue_VM11();
-	            
+	           GetPropertiesValue();
 	        } else {
                 ColorSetItems(Waveform.COLOR_NAME, Waveform.COLOR_SET);
             }

@@ -79,7 +79,11 @@ class JetDataProvider implements DataProvider
         use_cache = state;
     }
     public boolean isCacheEnabled(){return use_cache;}
-    public void    freeCache(){sc.freeCache();}
+    public void    freeCache()
+    {
+        if(sc != null)
+            sc.freeCache();
+    }
 
 
     synchronized void InquireCredentials(JFrame f)
@@ -157,7 +161,7 @@ class JetDataProvider implements DataProvider
         inquiry_dialog.show();
     }
 
-   boolean checkPasswd(String encoded_credentials)
+   public boolean checkPasswd(String encoded_credentials)
    {
             this.encoded_credentials = encoded_credentials;
             //System.out.println(encoded_credentials);
@@ -174,6 +178,7 @@ class JetDataProvider implements DataProvider
             while(num_read_bytes < content_len)
                 num_read_bytes += br.read(buffer, num_read_bytes, buffer.length - num_read_bytes);
             br.close();
+            br = null;
         }catch(Exception e){System.out.println(e);return false;}
         String out = new String(buffer);
         if(out.indexOf("incorrect password") != -1)
@@ -209,12 +214,12 @@ class JetDataProvider implements DataProvider
     public String GetString(String in) {return in; }
     public float GetFloat(String in){ return new Float(in).floatValue(); }
 
-    public float[] GetFloatArray(String in_x, String in_y, float start, float end)
+    public float[] GetFloatArray(String in_x, String in_y, float start, float end) throws IOException
     {
-        return null;
+        return GetFloatArray(in_x);
     }
 
-    public float[] GetFloatArray(String in)
+    public float[] GetFloatArray(String in) throws IOException
     {
         float out[] = null;
         String in_expr = new String(in);
@@ -242,7 +247,6 @@ class JetDataProvider implements DataProvider
                 while(st.hasMoreTokens())
                     url_name = url_name + st.nextToken();
             }
-//            url_name = in;
             else
                 url_name = experiment + "/" + shot + "/" + in;
         }
@@ -285,19 +289,22 @@ class JetDataProvider implements DataProvider
                 urlcon = url.openConnection();
                 //urlcon.setRequestProperty("Connection", "Keep-Alive");
                 urlcon.setRequestProperty("Authorization", "Basic "+encoded_credentials);
-                br = new BufferedInputStream(urlcon.getInputStream());
+                InputStream is = urlcon.getInputStream();
+                br = new BufferedInputStream(is);
                 content_len = urlcon.getContentLength();
                 if(content_len <= 0)
                 {
                     last_url_name = null;
                     error_string = "Error reading URL " + url_name + " : null content length";
-                    return null;
+                    throw(new IOException(error_string));
+                    //return null;
                 }
                 buffer = new byte[content_len];
                 int num_read_bytes = 0;
                 while(num_read_bytes < content_len)
                     num_read_bytes += br.read(buffer, num_read_bytes, buffer.length - num_read_bytes);
                 br.close();
+                br = null;
 
                 JiNcSource jns = new JiNcSource("myname", new RandomAccessData(buffer));
 
@@ -315,11 +322,6 @@ class JetDataProvider implements DataProvider
                         jvarXData = jns.getVar(jdimXData.mName);
                     }
                 }
-
-
-//                JiVar jvarTime = jns.getVar("TIME"),
-//                      jvarData = jns.getVar("SIGNAL"),
-//                      jvarXData = jns.getVar("X");
 
                 JiDim[] dims = jvarTime.getDims();
                 double[] time = jvarTime.readDouble(dims);
@@ -341,7 +343,8 @@ class JetDataProvider implements DataProvider
             {
                 error_string = "Error reading URL " + url_name + " : " + e;
                 last_url_name = null;
-                return null;
+                throw(new IOException(error_string));
+//                return null;
             }
 
 
@@ -365,7 +368,7 @@ class JetDataProvider implements DataProvider
         }
     }
 
- public int[] GetIntArray(String in)
+ public int[] GetIntArray(String in) throws IOException
  {
     error_string = null;
     int [] result;
@@ -414,7 +417,8 @@ class JetDataProvider implements DataProvider
         }
     }
     error_string = "Error parsing shot number(s)";
-    return null;
+    throw(new IOException(error_string));
+    //return null;
  }
 
  public String GetXSpecification(String in)
@@ -468,6 +472,8 @@ public static void main(String args[])
     JetDataProvider dp = new JetDataProvider("obarana", "clublatino");
     dp.setEvaluateUrl(true);
     float x[], y[], xdata[];
+    try
+    {
     y = dp.GetFloatArray("PPF/40573/MAGN/BPOL");
     x = dp.GetFloatArray("TIME:PPF/40573/MAGN/BPOL");
     xdata = dp.GetFloatArray("X:PPF/40573/MAGN/BPOL");
@@ -476,6 +482,7 @@ public static void main(String args[])
         System.out.println(x[i] + "  " +y[i]);
 
     System.out.println("Num. points: "+y.length);
+    } catch (IOException exc){}
  }
 
 }

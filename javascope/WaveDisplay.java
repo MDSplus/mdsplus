@@ -7,9 +7,10 @@ import java.security.AccessControlException;
 
 public class WaveDisplay extends JApplet implements WaveformListener
 {
-    Waveform w;
-    WavePopup wave_popup;
+    MultiWaveform w;
+    MultiWavePopup wave_popup;
     private Frame frame;
+    JTextField shot_txt;
 
     public WaveDisplay()
     {
@@ -18,7 +19,8 @@ public class WaveDisplay extends JApplet implements WaveformListener
         DataAccessURL.addProtocol(new TwuAccess());
         
         JPanel panel = new JPanel();
-        w = new Waveform();
+        w = new MultiWaveform();
+        w.setWaveInterface(new WaveInterface());
         w.addWaveformListener(this);
         
         /*
@@ -36,7 +38,7 @@ public class WaveDisplay extends JApplet implements WaveformListener
         
         
         setBackground(Color.lightGray);
-        wave_popup = new WavePopup();
+        wave_popup = new MultiWavePopup();
         getContentPane().add(wave_popup);
         panel.addMouseListener( new MouseAdapter()
 	        {
@@ -86,6 +88,29 @@ public class WaveDisplay extends JApplet implements WaveformListener
         panel1.add(point);
         panel1.add(zoom);
         panel1.add(pan);
+        /*
+        panel1.add(new JLabel("Shot"));
+        shot_txt = new JTextField(20);
+        shot_txt.addActionListener(
+            new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    try 
+                    {
+                        WaveInterface wi = w.getWaveInterface();                   
+                        wi.setShotArray(shot_txt.getText());
+	                    wi.StartEvaluate();
+		                wi.EvaluateOthers();
+		                w.Update(wi.signals);
+		            } catch (Exception exc){}
+                }
+            }
+        );
+        
+        panel1.add(shot_txt);
+    */        
+        
         
         w.SetGridMode(Grid.IS_DOTTED, true, true);
         panel.setLayout(new BorderLayout());
@@ -117,10 +142,32 @@ public class WaveDisplay extends JApplet implements WaveformListener
 	    int event_id = e.getID();
 	    	 	 
 	    WaveformEvent we = (WaveformEvent)e;
-	    Waveform w = (Waveform)we.getSource();
+	    MultiWaveform w = (MultiWaveform)we.getSource();
+	    WaveInterface  wi = w.getWaveInterface();
 	    int we_id = we.getID();
+	        
+	    switch(we_id)
+	    {
+    	    case WaveformEvent.MEASURE_UPDATE:
+	        case WaveformEvent.POINT_UPDATE:
+	        case WaveformEvent.POINT_IMAGE_UPDATE:
+       	        s = we.toString();
+	            if(wi.shots != null)
+	            {
+		            s = (s +
+		                " Expr : " + w.getSignalName(we.signal_idx) +  
+		                " Shot = " + wi.shots[we.signal_idx]);
+	            } else {
+		            s  = (s +
+		                " Expr : " + w.getSignalName(we.signal_idx));  
+	            }
+	        break;
+	        case WaveformEvent.STATUS_INFO:
+	            s = we.status_info;
+	        break;
+	    }
 
-	    s = we.toString()+" "+w.getSignalName();
+//	    s = we.toString()+" "+w.getSignalName();
         showStatus(s);
     }
 
@@ -140,8 +187,14 @@ public class WaveDisplay extends JApplet implements WaveformListener
         String  param;
         String global_autentication, signal_autentication, 
                autentication;
+        boolean async_update = false;
 
         global_autentication = getParameter("AUTENTICATION");
+        
+        param = getParameter("ASYNC_UPDATE");
+        if(param != null)
+            async_update = this.translateToBoolean(param); 
+                
         try 
         {
             if((sig_param = getParameter("SIGNAL")) != null)
@@ -155,25 +208,51 @@ public class WaveDisplay extends JApplet implements WaveformListener
                 
                 url = getParameterValue(sig_param, "url");
                 
-                Signal s = DataAccessURL.getSignal(url, autentication);
-                if(s != null)
+                //Signal s = DataAccessURL.getSignal(url, autentication);
+                DataAccess da = DataAccessURL.getDataAccess(url);
+                //if(s != null)
+                if(da != null)
                 {
+                    da.setPassword(autentication);
+                    da.setProvider(url);
+                    
+                    WaveInterface wi = w.getWaveInterface();
+                    wi.SetDataProvider(da.getDataProvider());
+                    wi.experiment = da.getExperiment();
+                    wi.AddSignal(da.getSignal());
+                    
                     color = getParameterValue(sig_param, "color");
-                    if(color != null)
-                        s.setColor(new Color(Integer.decode(color).intValue()));                    
                     
-                    marker = getParameterValue(sig_param, "marker");
-                    s.setMarker(marker);
                     
-                    name = getParameterValue(sig_param, "name");
-                    if(name != null)
-                        s.setName(name);
+                    wi.full_flag = !async_update;
+                    
+                    
+                    wi.setShotArray(da.getShot());
+
+	                wi.StartEvaluate();
+		            wi.EvaluateOthers();
+                   
+                    Signal s;
+                    if(wi.signals != null && (s = wi.signals[0]) != null)
+                    {
+                        color = getParameterValue(sig_param, "color");
+                        if(color != null)
+                            s.setColor(new Color(Integer.decode(color).intValue()));                    
                         
-                    title = getParameterValue(sig_param, "title");
-                    if(title != null)
-                        w.SetTitle(title);
+                        marker = getParameterValue(sig_param, "marker");
+                        s.setMarker(marker);
                         
-                    w.Update(s);
+                        name = getParameterValue(sig_param, "name");
+                        if(name != null)
+                            s.setName(name);
+                        else
+                            s.setName(wi.in_y[0]);
+                            
+                        title = getParameterValue(sig_param, "title");
+                        if(title != null)
+                            w.SetTitle(title);
+                    }                   
+		            w.Update(wi.signals);		            
                 } 
             } 
             else
@@ -220,11 +299,9 @@ public class WaveDisplay extends JApplet implements WaveformListener
 		                                        JOptionPane.ERROR_MESSAGE);
             } else {
 		        JOptionPane.showMessageDialog(this, 
-		                                        e.toString()+" url "+url, 
+		                                        e.toString(), 
 		                                        "alert", 
 		                                        JOptionPane.ERROR_MESSAGE);
-
-                showStatus(e.toString()+" url "+url);
             }
         }
     }

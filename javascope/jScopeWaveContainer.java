@@ -212,7 +212,7 @@ class jScopeWaveContainer extends WaveformContainer
      
        jScopeMultiWave w =  ((jScopeMultiWave)source);
         
-       MdsWaveInterface mwi = new MdsWaveInterface(w.wi);
+       MdsWaveInterface mwi = new MdsWaveInterface(((MdsWaveInterface)w.wi));
        mwi.setDefaultsValues(def_vals);
 	  ((jScopeMultiWave)dest).wi = mwi;
 	  ((jScopeMultiWave)dest).wi.SetDataProvider(dp);
@@ -343,7 +343,7 @@ class jScopeWaveContainer extends WaveformContainer
                 Point p = getComponentPosition(w);
 	            if(w.wi.isAddSignal())
 	            {
-	                String er = w.wi.getErrorString(this.brief_error);
+	                String er = ((MdsWaveInterface)w.wi).getErrorString(this.brief_error);
 	                if(er != null)
 		                JOptionPane.showMessageDialog(this, er, 
 		                                            "alert", 
@@ -587,7 +587,7 @@ class jScopeWaveContainer extends WaveformContainer
 		    {
 	            w = (jScopeMultiWave)getGridComponent(k);
 	            if(w != null)
-		            w.wi.default_is_update = false;
+		            ((MdsWaveInterface)w.wi).default_is_update = false;
 		    }
 	    }
     }
@@ -971,14 +971,14 @@ class jScopeWaveContainer extends WaveformContainer
 	    ResetDrawPanel(read_rows);
 	    jScopeMultiWave w;
 	    
-            for(int c = 0, k = 0; c < 4 ; c++)
+        for(int c = 0, k = 0; c < 4 ; c++)
 		{
 		    for(int r = 0; r < read_rows[c]; r++)
 		    {
 		        w = (jScopeMultiWave)getGridComponent(k);
-			w.wi.FromFile(in, "Scope.plot_"+(r+1)+"_"+(c+1));
+			    ((MdsWaveInterface)w.wi).FromFile(in, "Scope.plot_"+(r+1)+"_"+(c+1));
 //                setColor(wave_panel.waves[k].wi);
-			k++;
+			    k++;
 			    //setup.SetStatusLabel("Load wave configuration column "+(c+1)+" row "+(r+1));	    
 		    }
 		}
@@ -1089,6 +1089,15 @@ class jScopeWaveContainer extends WaveformContainer
 		        change = false;
 	        }
 	    } 
+
+	    if(new_data_server.equals("Jet MDSPlus data"))
+	    {
+		    new_dp = new JetMdsProvider();
+		    fast_network_access = false;
+		    supports_fast_network = true;
+		    change = true;	
+	    }
+	    
 	    
 //Gabriele 26/10/99
         if(new_data_server.equals("Jet data"))
@@ -1107,13 +1116,9 @@ class jScopeWaveContainer extends WaveformContainer
                     change = true;
                 break;
                 case JetDataProvider.LOGIN_ERROR :
-//                    if(dp == null)
-//                        SetServerName(new_server_name, false);
                     return "Invallid Login";
                 case JetDataProvider.LOGIN_CANCEL :
-//                    if(dp == null)
-//                        SetServerName(new_server_name, false);
-                     return null;         
+                    return null;         
             }
         } 
     
@@ -1238,27 +1243,27 @@ class jScopeWaveContainer extends WaveformContainer
         if(sel_wave.wi == null)
         {
             sel_wave.wi = new MdsWaveInterface(sel_wave, dp, def_vals);
-            sel_wave.wi.prev_wi = new MdsWaveInterface(sel_wave, dp, def_vals);
+            ((MdsWaveInterface)sel_wave.wi).prev_wi = new MdsWaveInterface(sel_wave, dp, def_vals);
         } else {
             new_wi = new MdsWaveInterface((MdsWaveInterface)sel_wave.wi);
             new_wi.wave = sel_wave;
-            new_wi.prev_wi = sel_wave.wi;
+            new_wi.prev_wi = (MdsWaveInterface)sel_wave.wi;
             sel_wave.wi = new_wi;
         }
         if(tree != null &&
-           (sel_wave.wi.cexperiment == null || 
-            sel_wave.wi.cexperiment.trim().length() == 0))
+           (((MdsWaveInterface)sel_wave.wi).cexperiment == null || 
+            ((MdsWaveInterface)sel_wave.wi).cexperiment.trim().length() == 0))
         {
-            sel_wave.wi.cexperiment = new String(tree);
-            sel_wave.wi.defaults &= ~(1 << MdsWaveInterface.B_exp);
+            ((MdsWaveInterface)sel_wave.wi).cexperiment = new String(tree);
+            ((MdsWaveInterface)sel_wave.wi).defaults &= ~(1 << MdsWaveInterface.B_exp);
         }
         
         if(shot != null && 
-           (sel_wave.wi.cin_shot == null || 
-            sel_wave.wi.cin_shot.trim().length() == 0))
+           (((MdsWaveInterface)sel_wave.wi).cin_shot == null || 
+            ((MdsWaveInterface)sel_wave.wi).cin_shot.trim().length() == 0))
         {
-            sel_wave.wi.cin_shot = new String(shot);
-            sel_wave.wi.defaults &= ~(1 << MdsWaveInterface.B_shot);
+            ((MdsWaveInterface)sel_wave.wi).cin_shot = new String(shot);
+            ((MdsWaveInterface)sel_wave.wi).defaults &= ~(1 << MdsWaveInterface.B_shot);
         }
         
         if(sel_wave.wi.AddSignal(expr)) 
@@ -1384,7 +1389,7 @@ class jScopeWaveContainer extends WaveformContainer
                 title = "Save signals on panel (" + p.x +", " + p.y + ") in text format";
         }        
         JFileChooser file_diag = new JFileChooser();
-	    if(save_as_txt_directory != null)
+	    if(save_as_txt_directory != null && save_as_txt_directory.trim().length() != 0)
 	        file_diag.setCurrentDirectory(new File(save_as_txt_directory));
         
         file_diag.setDialogTitle(title);
@@ -1401,10 +1406,10 @@ class jScopeWaveContainer extends WaveformContainer
 	            if(all)
 	            {
 	                for(int i = 0; i < GetWaveformCount(); i++)
-	                   panel.add(GetWavePanel(i));
+	                   panel.addElement(GetWavePanel(i));
 	                
 	            } else
-                    panel.add(w);
+                    panel.addElement(w);
                 
                 String s = "", s1="", s2="";
                 boolean g_more_point, new_line;
@@ -1418,7 +1423,7 @@ class jScopeWaveContainer extends WaveformContainer
                         for(int k = 0; k < panel.size(); k++)
                         {
                             wave = (jScopeMultiWave)panel.elementAt(k);
-                            wi = wave.wi;
+                            wi = (MdsWaveInterface)wave.wi;
                             
                             if(wi == null || wi.signals == null)
                                 continue;
@@ -1449,7 +1454,7 @@ class jScopeWaveContainer extends WaveformContainer
                     {
                         more_point[k] = true;
                         wave = (jScopeMultiWave)panel.elementAt(k);
-                        wi = wave.wi;
+                        wi = (MdsWaveInterface)wave.wi;
                         if(wi == null || wi.signals == null)
                             continue;
                         if(wi.signals.length > n_max_sig)
@@ -1463,7 +1468,7 @@ class jScopeWaveContainer extends WaveformContainer
                         for(int k = 0; k < panel.size(); k++)
                         {
                             wave = (jScopeMultiWave)panel.elementAt(k);
-                            wi = wave.wi;
+                            wi = (MdsWaveInterface)wave.wi;
                             
                             if(wi == null || wi.signals == null)
                                 continue;

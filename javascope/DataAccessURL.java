@@ -21,7 +21,7 @@ class DataAccessURL
         return getSignal(url, null, passwd);
     }
     
-    static public DataAccess getDataAccess(String url)
+    static public DataAccess getDataAccess(String url) throws IOException
     {
         DataAccess da = null;
         
@@ -31,6 +31,8 @@ class DataAccessURL
             if(da.supports(url))
                 break;
         }
+        if(da == null)
+            throw(new IOException("Protocol not recognized"));       
         return da;
     }
     
@@ -62,7 +64,7 @@ class DataAccessURL
                 throw(new IOException(da.getError()));
             }
         }
-        throw(new IOException("Protocol not recognized"));
+        return null;
     }    
 
 

@@ -6,7 +6,7 @@ public class LocalProvider extends NetworkProvider implements DataProvider {
 
     }
 
-    public String GetXSpecification(String yspec) {return "DIM_OF("+yspec+")";}
+    public String GetXSpecification(String yspec) {return "DIM_OF(_jscope)";}
 
     native public void SetEnvironment(String exp);
 
@@ -16,7 +16,13 @@ public class LocalProvider extends NetworkProvider implements DataProvider {
 
     native public float GetFloat(String in);
 
-    native public float[] GetFloatArray(String in);
+    public float [] GetFloatArray(String in)
+    {
+        in = "( _jscope = ("+in+"), fs_float(_jscope))";
+        return GetFloatArrayNative(in);
+    }
+
+    native public float[] GetFloatArrayNative(String in);
 
     native public int[] GetIntArray(String in);
 

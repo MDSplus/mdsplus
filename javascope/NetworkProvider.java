@@ -72,7 +72,11 @@ public class NetworkProvider implements DataProvider
         use_cache = state;
     }
     public boolean isCacheEnabled(){return use_cache;}
-    public void    freeCache(){sc.freeCache();}
+    public void    freeCache()
+    {
+        if(sc != null)
+            sc.freeCache();
+    }
 
     public String GetDefaultTitle(String in_y[])throws IOException {return null;}
     public String GetDefaultXLabel(String in_y[])throws IOException {return null;}
@@ -193,7 +197,7 @@ public class NetworkProvider implements DataProvider
 
     public synchronized String ErrorString() { return error; }
 
-    public String GetXSpecification(String yspec) {return "DIM_OF("+yspec+")";}
+    public String GetXSpecification(String yspec) {return "DIM_OF(_jscope)";}
     public String GetXDataSpecification(String yspec) {return null;}
 
     public boolean SupportsAsynch() { return true; }
@@ -354,7 +358,7 @@ public class NetworkProvider implements DataProvider
     	
     public synchronized float[] GetFloatArray(String in)  throws IOException
     {
-        in = "fs_float(("+in+"))";
+        in = "( _jscope = ("+in+"), fs_float(_jscope))";// "fs_float(("+in+"))";
         String open_err = new String("");
         float[] out = null;
         
