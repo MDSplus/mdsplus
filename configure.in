@@ -51,15 +51,18 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
 sparc-sun-solaris2*)  LINKSHARED="-G -B symbolic -R \$(exec_prefix)/lib";
        if test $CC = gcc; then
 	 LD=gcc;
-         LINKSHARED="-Wl,-G -Wl,-B,symbolic -Wl,-R,\$(exec_prefix)/lib";
+         LINKSHARED="-Wl,-G -symbolic -Wl,-R,\$(exec_prefix)/lib";
+         LD_LDSHARE="-Wl,-B,dynamic";
+         LD_LDARC="-Wl,-B,static";
+       else 
+         LD_LDARC="-B static ";
+         LD_LDSHARE="-B dynamic ";
        fi;
        CFLAGS="$CFLAGS -fpic";
        FFLAGS="$FFLAGS -fpic";
        IDL_BIN_SUF="solaris2.sparc"
        LDSHARE="-Wl,-B,dynamic";
        LDARC="-Wl,-B,static";
-       LD_LDARC="-B static ";
-       LD_LDSHARE="-B dynamic ";
        LIBPATH="LD_LIBRARY_PATH";
        SHARETYPE=".so";;
 alpha-dec-osf*) CFLAGS="$CFLAGS -pthread";
@@ -242,11 +245,11 @@ fi
 
 dnl Check for Idl
 AC_MSG_CHECKING(for idl)
-idl_dir="/usr/local/rsi/idl"
+IDL_DIR="/usr/local/rsi/idl"
 if test -r $IDL_DIR
 then
-        IDL_INC="-I$idl_dir/external"
-        IDL_LIB="-L$idl_dir/bin/bin.$IDL_BIN_SUF -lidl"
+        IDL_INC="-I$IDL_DIR/external"
+        IDL_LIB="-L$IDL_DIR/bin/bin.$IDL_BIN_SUF -lidl"
         AC_MSG_RESULT(have idl $IDL_INC)
 else
         IDL_INC=""
