@@ -47,14 +47,14 @@ install:
 	mkdir @MAKEBINDIR@
 
 @MAKELIBDIR@libMdsLib@SHARETYPE@ : $(OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ @LDARC@ -lMdsIpUtil @LDSHARE@ -lTdiShr -lTreeShr -lMdsShr $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsIpUtil -lTdiShr -lTreeShr -lMdsShr $(LIBS)
 
 @MAKELIBDIR@libMdsLib.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
 @MAKELIBDIR@libMdsLib_client@SHARETYPE@ : $(OBJECTS_CLIENT)
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS_CLIENT) -L@MAKELIBDIR@ @LDARC@ -lMdsIpUtil @LDSHARE@ $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS_CLIENT) -L@MAKELIBDIR@ -lMdsIpUtil $(LIBS)
 
 @MAKELIBDIR@libMdsLib_client.a : $(OBJECTS_CLIENT)
 	$(AR) -cr $@ $(OBJECTS_CLIENT)
