@@ -1,4 +1,3 @@
 #!/bin/sh
-#/usr/bin/lpr -P $2 $1
-echo print the file $1 to printer $2
+/usr/bin/lpr -P $2 $1
 rm $1

@@ -2548,7 +2548,7 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
       if (rotate != 0)
         fprintf(printfid,"%g %g translate\n",11. * 72. - (11. - 8.5) * 72. / 2.,(11. - 8.5) * 72. / 2.);
       /* Rotation is around origin, so must move origin for proper plot position */
-      fprintf(printfid,"%d rotate\n",rotate);
+      fprintf(printfid,"%g rotate\n",rotate);
 
       if (window_title && strlen(window_title))
       /* If window title, allow space at top of plot for printing window title. */

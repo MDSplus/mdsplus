@@ -1141,8 +1141,8 @@ static void /*XtCallbackProc*/ApplyCustomizePrint(Widget w, XtPointer client_dat
   ReplaceString(&ScopePrintEvent, XmTextGetString(XtNameToWidget(CustomizePrintWidget, "print_event")), 1);
   ScopePrintWindowTitle = XmToggleButtonGetState(XtNameToWidget(CustomizePrintWidget,"print_window_title"));
   ScopePrintToFile = strcmp(ScopePrinter,"To file") == 0;
-  printf("ScopePrintToFile = %d\n",ScopePrintToFile);
   SetupEvent(ScopePrintEvent, &ScopePrintEventReceived, &ScopePrintEventId);
+  ApplyStatus = 1;
 }
 
 static void SetFont(String font)
@@ -1501,7 +1501,7 @@ static void /*XtCallbackProc*/PrintAll(Widget w, XtPointer client_data, XmAnyCal
   if (printfid)
   {
     XmString  filenames[1];
-    int       orientation = 0;
+    int       orientation = 2;
     filenames[0] = XmStringCreateSimple(ScopePrintFile);
 
 #ifndef _NO_DXm
@@ -1570,7 +1570,7 @@ static void /*XtCallbackProc*/Print(Widget w, XtPointer client_data, XmAnyCallba
     if (printfid)
     {
       XmString  filenames[1];
-      int       orientation = 0;
+      int       orientation = 2;
       filenames[0] = XmStringCreateSimple(ScopePrintFile);
 #ifndef _NO_DXm
       XtVaGetValues(CustomizePrintWidget, DXmNorientation, &orientation, NULL);
@@ -1911,6 +1911,7 @@ static void  RestoreDatabase(String dbname)
 #endif
   ScopePrintWindowTitle = atoi(GetResource(scopedb, "Scope.print_window_title", "0"));
   ReplaceString(&ScopePrinter, GetResource(scopedb,"Scope.printer","To file"),0);
+  ScopePrintToFile = strcmp(ScopePrinter,"To file") == 0;
 /*
   ScopePrintToFile = atoi(GetResource(scopedb, "Scope.print_to_file", "0"));
 */

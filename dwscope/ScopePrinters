@@ -7,6 +7,25 @@ else
   then
 	cat $MDSPLUS_DIR/local/scope_printers
   else
-	grep '|' /etc/printcap | awk -F\| '{print $1}' | grep -v \:
+    awk -F\| '{\
+      if (match($0,/^#/) != 0 || match($0,/^[:blank:]*$/) != 0) \
+        next; \
+      while (match($0,/\\[:blank:]*$/) != 0) \
+      {\
+        split($0,a,/\\[:blank:]*$/);\
+        line = line a[1];\
+        getline;\
+      }\
+      if (length(line) > 0)\
+      {\
+        gsub(/\ /,"",line);\
+        gsub(/\t/,"",line);\
+        split(line,a,/\|/);\
+        print a[1];\
+        line="";\
+      }\
+      else\
+        print $1;\
+    }' /etc/printcap
   fi
 fi
