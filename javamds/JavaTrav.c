@@ -1111,9 +1111,9 @@ static int doAction(int nid)
 
 		currPtr = MdsDescrToCstring(command_proc_d_ptr);
 		if(numArgs > 0)
-			sprintf(command, "echo \'%s", currPtr);
-		else
 			sprintf(command, "echo \'%s,", currPtr);
+		else
+			sprintf(command, "echo \'%s", currPtr);
 		for(i = 0; i < numArgs; i++)
 		{
 			if(!procedure_d_ptr->arguments[i]) break;
