@@ -165,7 +165,7 @@ int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table)
   char *nodespec = wildcard ? wildcard : allnodes;
   int mask = 1 << TreeUSAGE_ACTION;
   int status=1;
-  int *nids = (int *)malloc(MAX_ACTIONS * sizeof(int));
+  int *nids;
   int *nidptr;
   char tree[12];
   int shot;
@@ -184,6 +184,7 @@ int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table)
   tree[i] = 0;
   if (shot == -1)
     return ServerINVSHOT;
+  nids = (int *)malloc(MAX_ACTIONS * sizeof(int));
   num_actions=0;
   if (!varnames_d.length)
     StrCopyDx(&varnames_d,&varnames);
