@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <signal.h>
+#include <STATICdef.h>
 
 struct vmlist { struct vmlist *next;
                 int len;
@@ -21,14 +22,14 @@ struct vmlist { struct vmlist *next;
                 char vm[1];
               };
 
-static struct vmlist *VM = 0;
-static int NumMalloc = 0;
-static int NumFree = 0;
-static int Allocated = 0;
-static char PRE[]  = "abcdefghijklmnopqrst";
-static char POST[] = "tsrqponmlkjihgfedcba";
+STATIC_THREADSAFE struct vmlist *VM = 0;
+STATIC_THREADSAFE int NumMalloc = 0;
+STATIC_THREADSAFE int NumFree = 0;
+STATIC_THREADSAFE int Allocated = 0;
+STATIC_CONSTANT char PRE[]  = "abcdefghijklmnopqrst";
+STATIC_CONSTANT char POST[] = "tsrqponmlkjihgfedcba";
 
-static void CheckList();
+STATIC_ROUTINE void CheckList();
 
 void *MdsMALLOC(int len)
 {
@@ -99,7 +100,7 @@ void *MdsREALLOC(void *ptr, int len)
   return newmem;
 }
 
-static void CheckList()
+STATIC_ROUTINE void CheckList()
 {
   struct vmlist *n;
   for (n=VM; n; n=n->next)

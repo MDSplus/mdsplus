@@ -50,10 +50,11 @@
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
+#include <STATICdef.h>
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
   int       MdsGet1DxA(struct descriptor_a * in_ptr, unsigned short *length_ptr, unsigned char *dtype_ptr,
 			            struct descriptor_xd *out_xd)

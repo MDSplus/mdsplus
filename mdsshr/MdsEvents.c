@@ -1,4 +1,6 @@
 #include <config.h>
+#include <STATICdef.h>
+#include "mdsshrthreadsafe.h"
 
 #define _GNU_SOURCE /* glibc2 needs this */
 #ifdef __sparc__
@@ -18,28 +20,27 @@ int MDSEvent(char *evname){}
 #include <mds_stdarg.h>
 #include "../mdstcpip/mdsip.h"
 extern char *TranslateLogical(char *);
-static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *eventid);
-static void initializeLocalRemote(int receive_events, int *use_local);
-static void newRemoteId(int *id);
-static void setRemoteId(int id, int ofs, int evid);
-static int sendRemoteEvent(char *evname, int data_len, char *data);
-static int getRemoteId(int id, int ofs);
-static int remote_local_initialized = 0;
-static SOCKET receive_sockets[256];  	/* Socket to receive external events  */
-static SOCKET send_sockets[256];  		/* Socket to send external events  */
-static char *receive_servers[256];	/* Receive server names */
-static char *send_servers[256];		/* Send server names */
-static HANDLE external_thread = 0;
-static HANDLE external_event = 0;
-static HANDLE thread_alive_event = 0;
+STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *eventid);
+STATIC_ROUTINE void initializeLocalRemote(int receive_events, int *use_local);
+STATIC_ROUTINE void newRemoteId(int *id);
+STATIC_ROUTINE void setRemoteId(int id, int ofs, int evid);
+STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data);
+STATIC_ROUTINE int getRemoteId(int id, int ofs);
+STATIC_THREADSAFE SOCKET receive_sockets[256];  	/* Socket to receive external events  */
+STATIC_THREADSAFE SOCKET send_sockets[256];  		/* Socket to send external events  */
+STATIC_THREADSAFE char *receive_servers[256];	/* Receive server names */
+STATIC_THREADSAFE char *send_servers[256];		/* Send server names */
+STATIC_THREADSAFE HANDLE external_thread = 0;
+STATIC_THREADSAFE HANDLE external_event = 0;
+STATIC_THREADSAFE HANDLE thread_alive_event = 0;
 #define MAX_ACTIVE_EVENTS 5000   /* Maximum number events concurrently dealt with by processes */
 
-static int external_shutdown = 0;
-static int external_count = 0;          /* remote event pendings count */
-static int num_receive_servers = 0;	/* numer of external event sources */
-static int num_send_servers = 0;	/* numer of external event destination */
-static unsigned int threadID;
-static int zero = 0;
+STATIC_THREADSAFE int external_shutdown = 0;
+STATIC_THREADSAFE int external_count = 0;          /* remote event pendings count */
+STATIC_THREADSAFE int num_receive_servers = 0;	/* numer of external event sources */
+STATIC_THREADSAFE int num_send_servers = 0;	/* numer of external event destination */
+STATIC_THREADSAFE unsigned int threadID;
+STATIC_CONSTANT int zero = 0;
 
 struct event_struct { char *eventnam;
                       void (*astadr)(void *,int,char *);
@@ -49,51 +50,14 @@ struct event_struct { char *eventnam;
 					  unsigned long thread;
 					  HANDLE event;
 };
-static void EventActionProc(struct event_struct *event)
+
+STATIC_ROUTINE void EventActionProc(struct event_struct *event)
 {
 		(*event->astadr)(event->astprm,event->len,event->data);
 }
 
-static void EventThreadProc(struct event_struct *event)
+STATIC_ROUTINE void EventThreadProc(struct event_struct *event)
 {
-	/*
-	UINT msgnum = RegisterWindowMessage("MDSplus Events");
-	MSG message;
-	int status;
-	HWND hWnd = GetTopWindow(NULL);
-	status = PeekMessage(&message,hWnd,msgnum,msgnum,PM_NOREMOVE);
-	while( (status = GetMessage(&message,hWnd,msgnum,msgnum)) != -1)
-	{
-    	_beginthread((void (*)(void *))EventActionProc,0,(void *)event);
-	}
-*/
-	/*
-	char pipename[256];
-	HANDLE pipe = INVALID_HANDLE_VALUE;
-	int status = ERROR_PIPE_BUSY;
-	char data[256];
-	int num;
-	for (num=0;(pipe == INVALID_HANDLE_VALUE) && (status == ERROR_PIPE_BUSY);num++)
-	{
-	  sprintf(pipename,"\\\\.\\pipe\\mdsevents\\%s\\%0x",event->eventnam,num);
-	  pipe = CreateNamedPipe(pipename,PIPE_ACCESS_INBOUND,PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,1,512,512,1000,0);
-	  if (pipe == INVALID_HANDLE_VALUE)
-	  {
-	    status = GetLastError();
-	    printf("Error creating pipe - %d\n",status);
-	  }
-	}
-	if (pipe != INVALID_HANDLE_VALUE)
-	{
-		while ((ConnectNamedPipe(pipe,0) != 0) && ((status = ReadFile(pipe,data,sizeof(data),&event->len,0)) != 0))
-	  {
-		event->data= memcpy(malloc(event->len),data,event->len);
-        _beginthread((void (*)(void *))EventActionProc,0,(void *)event);
-	  }
-	}
-	*/
-
-
 	while ( WaitForSingleObject(event->event,INFINITE) != WAIT_FAILED)
 	{
 		event->len = 0;
@@ -126,13 +90,13 @@ int MDSEventAst(char *eventnam, void (*astadr)(void *,int,char *), void *astprm,
 	return(event->thread != -1);
 }
 
-static int canEventRemote(int eventid)
+STATIC_ROUTINE int canEventRemote(int eventid)
 {
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventCan"};
     int status=1, i;
-    static int (*rtn)() = 0;
+    STATIC_THREADSAFE int (*rtn)() = 0;
     if (rtn == 0)
       status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     /* kill external thread before sending messages over the socket */
@@ -173,7 +137,7 @@ struct MDSWfevent_struct {
     int *retlen;
 };
 
-static void MDSWfevent_ast(void *astparam, int data_len, char *data)
+STATIC_ROUTINE void MDSWfevent_ast(void *astparam, int data_len, char *data)
 {
   BOOLEAN status;
   struct MDSWfevent_struct *event = (struct MDSWfevent_struct *)astparam;
@@ -222,72 +186,23 @@ int MDSEvent(char *evname, int data_len, char *data)
 	CloseHandle(handle);
 	return 1;
 
-	/*
-	UINT msgnum = RegisterWindowMessage("MDSplus Events");
-	int status;
-	status = BroadcastSystemMessage(BSF_POSTMESSAGE,0, msgnum,32,19876);
-	return status;
-*/
-	/*
-	char pipename[256];
-	int status;
-	int num;
-	HANDLE pipe = 0;
-	for (num=0;(pipe != INVALID_HANDLE_VALUE);num++)
-	{
-	  sprintf(pipename,"\\\\.\\pipe\\mdsevents\\%s\\%0x",evname,num);
-	  pipe = CreateFile(pipename,GENERIC_WRITE,0,0,OPEN_EXISTING,0,0);
-	  if (pipe == INVALID_HANDLE_VALUE)
-	  {
-	    status = GetLastError();
-	    printf("Error creating pipe - %d\n",status);
-	  }
-	  else
-	  {
-		  int len_written = 0;
-		  status = WriteFile(pipe,data,data_len,&len_written,0);
-		  CloseHandle(pipe);
-	  }
-	}
-	return 1;
-	*/
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-static char *getEnvironmentVar(char *name)
+STATIC_ROUTINE char *getEnvironmentVar(char *name)
 {
     char *trans =  TranslateLogical(name);
 	if(!trans || !*trans) return NULL;
     return trans;
 }
 
-static int searchOpenServer(char *server) 
+STATIC_ROUTINE int searchOpenServer(char *server) 
 /* Avoid doing MdsConnect on a server already connected before */
 /* for now, allow socket duplications */
 {
 	return 0;
 }
-static void getServerDefinition(char *env_var, char **servers, int *num_servers, int *use_local)
+
+STATIC_ROUTINE void getServerDefinition(char *env_var, char **servers, int *num_servers, int *use_local)
 {
     int i, j;
     char *envname = getEnvironmentVar(env_var);
@@ -316,13 +231,14 @@ static void getServerDefinition(char *env_var, char **servers, int *num_servers,
 		}
     }
 }
-static unsigned __stdcall handleRemoteAst(void *p)
+
+STATIC_ROUTINE unsigned __stdcall handleRemoteAst(void *p)
 {
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsgOOB"};
     int status=1, i;
-    static int (*rtn)() = 0;
+    STATIC_THREADSAFE int (*rtn)() = 0;
     Message *m;
     int  selectstat;
     fd_set readfds;
@@ -382,13 +298,15 @@ static unsigned __stdcall handleRemoteAst(void *p)
 }
 
 
+STATIC_THREADSAFE pthread_mutex_t initMutex;
+STATIC_THREADSAFE int             initMutex_initialized = 0;
 
-static void initializeLocalRemote(int receive_events, int *use_local)
+STATIC_ROUTINE void initializeLocalRemote(int receive_events, int *use_local)
 {
-    static int receive_initialized;
-    static int send_initialized;
-    static int use_local_send;
-    static int use_local_receive;
+    STATIC_THREADSAFE int receive_initialized;
+    STATIC_THREADSAFE int send_initialized;
+    STATIC_THREADSAFE int use_local_send;
+    STATIC_THREADSAFE int use_local_receive;
 
     char *servers[256];
     int num_servers;
@@ -396,16 +314,19 @@ static void initializeLocalRemote(int receive_events, int *use_local)
 	  library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	  routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
     int status=1, i;
-    static int (*rtn)() = 0;
+    STATIC_THREADSAFE int (*rtn)() = 0;
+    LockMdsShrMutex(&initMutex,&initMutex_initialized);
 
     if(receive_initialized && receive_events)
     {
 		*use_local = use_local_receive;
+                UnlockMdsShrMutex(&initMutex);
 		return;
 	}
     if(send_initialized && !receive_events)
     {
 		*use_local = use_local_send;
+                UnlockMdsShrMutex(&initMutex);
 		return;
     }
 
@@ -470,18 +391,19 @@ static void initializeLocalRemote(int receive_events, int *use_local)
 		}
 		else printf(MdsGetMsg(status));
 	}
+        UnlockMdsShrMutex(&initMutex);
 }
 
 
 
-static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
+STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 {
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventAst"};
     int status=1, i;
     int curr_eventid;
-    static int (*rtn)() = 0;
+    STATIC_THREADSAFE int (*rtn)() = 0;
 
 
     if (rtn == 0)
@@ -538,51 +460,69 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
 
 
 /* eventid stuff: when using multiple event servers, the code has to deal with multiple eventids */
-static struct {
+STATIC_THREADSAFE struct {
     int used;
     int local_id; 
     int *external_ids; 
 } event_info[MAX_ACTIVE_EVENTS];
 
-static void newRemoteId(int *id)
+STATIC_THREADSAFE pthread_mutex_t event_infoMutex;
+STATIC_THREADSAFE int             event_infoMutex_initialized = 0;
+
+STATIC_ROUTINE void newRemoteId(int *id)
 {
     int i;
+    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
     for(i = 0; i < MAX_ACTIVE_EVENTS - 1 && event_info[i].used; i++);
     event_info[i].used = 1;
     event_info[i].external_ids = (int *)malloc(sizeof(int) * 256);
     *id = i;
+    UnlockMdsShrMutex(&event_infoMutex);
 }
 
-static void deleteId(int id)
+STATIC_ROUTINE void deleteId(int id)
 {
-    if(!event_info[id].used) return;
-    event_info[id].used = 0;
-    free((char *)event_info[id].external_ids);
+    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
+    if(event_info[id].used)
+    {
+      event_info[id].used = 0;
+      free((char *)event_info[id].external_ids);
+    }
+    UnlockMdsShrMutex(&event_infoMutex);
+    return;
 }
 
-static void setLocalId(int id, int evid)
+STATIC_ROUTINE void setLocalId(int id, int evid)
 {
+    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
     event_info[id].local_id = evid;
+    UnlockMdsShrMutex(&event_infoMutex);
 }
 
-static void setRemoteId(int id, int ofs, int evid)
+STATIC_ROUTINE void setRemoteId(int id, int ofs, int evid)
 {
+    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
     event_info[id].external_ids[ofs] = evid;
+    UnlockMdsShrMutex(&event_infoMutex);
 }
 
-static int getLocalId(int id)
+STATIC_ROUTINE int getLocalId(int id)
 {
+    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
      return event_info[id].local_id;
+    UnlockMdsShrMutex(&event_infoMutex);
 }
 
-static int getRemoteId(int id, int ofs)
+STATIC_ROUTINE int getRemoteId(int id, int ofs)
 {
+    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
     return event_info[id].external_ids[ofs];
+    UnlockMdsShrMutex(&event_infoMutex);
 }
 
-static int sendRemoteEvent(char *evname, int data_len, char *data)
+STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
 {
-    static int (*rtn)();
+    STATIC_THREADSAFE int (*rtn)();
     int (*curr_rtn)();
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
@@ -738,38 +678,44 @@ struct AstDescriptor {
 };
 
 
-static int is_exiting = 0;
+STATIC_THREADSAFE pthread_mutex_t privateMutex;
+STATIC_THREADSAFE int             privateMutex_initialized = 0;
+STATIC_THREADSAFE pthread_mutex_t sharedMutex;
+STATIC_THREADSAFE int             sharedMutex_initialized = 0;
+STATIC_THREADSAFE pthread_mutex_t msgIdMutex;
+STATIC_THREADSAFE int             msgIdMutex_initialized = 0;
 
-static int shmId = 0, semLocked = 0; 
-static int  msgId = 0, msgKey = MSG_ID;
-static struct PrivateEventInfo private_info[MAX_ACTIVE_EVENTS];
-static struct SharedEventInfo *shared_info = 0;
-static struct SharedEventName *shared_name = 0;
+STATIC_THREADSAFE int is_exiting = 0;
 
-static void initializeShared();
-static void *handleMessage(void * dummy);
-static void removeDeadMsg(int key);
+STATIC_THREADSAFE int semLocked = 0; 
+STATIC_THREADSAFE int  msgId = 0, msgKey = MSG_ID;
+STATIC_THREADSAFE struct PrivateEventInfo private_info[MAX_ACTIVE_EVENTS];
+STATIC_THREADSAFE struct SharedEventInfo *shared_info = 0;
+STATIC_THREADSAFE struct SharedEventName *shared_name = 0;
+
+STATIC_ROUTINE void initializeShared();
+STATIC_ROUTINE void *handleMessage(void * dummy);
+STATIC_ROUTINE void removeDeadMsg(int key);
 
 
-static int remote_local_initialized = 0;
-static int receive_sockets[256];  	/* Socket to receive external events  */
-static int send_sockets[256];  		/* Socket to send external events  */
-static char *receive_servers[256];	/* Receive server names */
-static char *send_servers[256];		/* Send server names */
-static pthread_t local_thread = 0;      /* Thread for local event handling */
-static pthread_t external_thread;	/* Thread for remote event handling */
-static int external_thread_created = 0; /* Thread for remot event handling flag */
-static int external_shutdown = 0;	/* flag to request remote events thread termination */
-static int fds[2];			/* file descriptors used by the pipe */
-static int external_count = 0;          /* remote event pendings count */
-static int num_receive_servers = 0;	/* numer of external event sources */
-static int num_send_servers = 0;	/* numer of external event destination */
+STATIC_THREADSAFE int receive_sockets[256];  	/* Socket to receive external events  */
+STATIC_THREADSAFE int send_sockets[256];  		/* Socket to send external events  */
+STATIC_THREADSAFE char *receive_servers[256];	/* Receive server names */
+STATIC_THREADSAFE char *send_servers[256];		/* Send server names */
+STATIC_THREADSAFE pthread_t local_thread = 0;      /* Thread for local event handling */
+STATIC_THREADSAFE pthread_t external_thread;	/* Thread for remote event handling */
+STATIC_THREADSAFE int external_thread_created = 0; /* Thread for remot event handling flag */
+STATIC_THREADSAFE int external_shutdown = 0;	/* flag to request remote events thread termination */
+STATIC_THREADSAFE int fds[2];			/* file descriptors used by the pipe */
+STATIC_THREADSAFE int external_count = 0;          /* remote event pendings count */
+STATIC_THREADSAFE int num_receive_servers = 0;	/* numer of external event sources */
+STATIC_THREADSAFE int num_send_servers = 0;	/* numer of external event destination */
 
 
 
 /************* OS dependent part ******************/
 
-static char *getEnvironmentVar(char *name)
+STATIC_ROUTINE char *getEnvironmentVar(char *name)
 {
     char *trans =  getenv(name);
     if(!trans || !*trans) return NULL;
@@ -777,12 +723,12 @@ static char *getEnvironmentVar(char *name)
 }
 
 
-static void cleanup(int);
-static void handleRemoteAst();
+STATIC_ROUTINE void cleanup(int);
+STATIC_ROUTINE void handleRemoteAst();
 
-static int getSemId()
+STATIC_ROUTINE int getSemId()
 {
-  static int semId = 0;
+  STATIC_THREADSAFE int semId = 0;
   if(!semId) /* Acquire semaphore id if not done*/
   {
 #ifdef HAVE_WINDOWS_H
@@ -833,7 +779,7 @@ static int getSemId()
   return semId;
 }
 
-static int semSet(int lock)
+STATIC_ROUTINE int semSet(int lock)
 {
     int status;
 #ifdef HAVE_WINDOWS_H
@@ -856,7 +802,7 @@ static int semSet(int lock)
     /* MacOS X prior to 10.2 does'nt have SysV IPC... it does have POSIX semaphores,
      * we won't bother with the silly getSemId call since we have type problems*/
     
-    static sem_t *sem_p=NULL;
+    STATIC_ROUTINE sem_t *sem_p=NULL;
 
     if (sem_p == NULL) {
       sem_p = sem_open("MDSEvents Semaphore",O_CREAT,0777,1);
@@ -886,20 +832,22 @@ static int semSet(int lock)
 }
 
 
-static int getLock()
+STATIC_ROUTINE int getLock()
 {
   return semSet(1);
 }
 
-static int releaseLock()
+STATIC_ROUTINE int releaseLock()
 {
   return semLocked ? semSet(0) : 1;
 }
 
-static int attachSharedInfo()
+STATIC_ROUTINE int attachSharedInfo()
 {
     int size = sizeof(struct SharedEventInfo) * MAX_ACTIVE_EVENTS + 
 	sizeof(struct SharedEventName) * MAX_EVENTNAMES + 2 * sizeof(int);
+    STATIC_THREADSAFE int shmId = 0; 
+    LockMdsShrMutex(&sharedMutex,&sharedMutex_initialized);
     shmId = shmget(SHMEM_ID, size, 0777 | IPC_CREAT |IPC_EXCL);
     if(shmId != -1) /* If shared memory memory region not created yet, it must be intialized */
     { 
@@ -910,6 +858,7 @@ static int attachSharedInfo()
 	if(shared_name == (void *)-1) 
 	{
 	    perror("shmat");
+            UnlockMdsShrMutex(&sharedMutex);
 	    return -1;
 	}
 	shared_info = (struct SharedEventInfo *)&shared_name[MAX_EVENTNAMES];
@@ -922,20 +871,23 @@ static int attachSharedInfo()
 	if(shared_info == (void *)-1)
 	{
 	    perror("shmat");
+            UnlockMdsShrMutex(&sharedMutex);
 	    return -1;
 	}
 	shared_info = (struct SharedEventInfo *)&shared_name[MAX_EVENTNAMES];
      }
+    UnlockMdsShrMutex(&sharedMutex);
     return 0;
 }
 
 
 
 
-static int readMessage(char *event_name, int *data_len, char *data)
+STATIC_ROUTINE int readMessage(char *event_name, int *data_len, char *data)
 {
     struct EventMessage message;
     int status; 
+    LockMdsShrMutex(&msgIdMutex,&msgIdMutex_initialized);
 
 #ifdef USE_PIPED_MESSAGING
     if((status = read(msgId, &message, sizeof(message))) != sizeof(message)) {
@@ -952,6 +904,7 @@ static int readMessage(char *event_name, int *data_len, char *data)
 	if(message.length > 0)
 	    memcpy(data, message.data, message.length);
     }
+    UnlockMdsShrMutex(&msgIdMutex);
     return status;
 }
 
@@ -965,13 +918,13 @@ static int readMessage(char *event_name, int *data_len, char *data)
 #endif
 
 #ifdef USE_PIPED_MESSAGING
-static void setKeyPath(char *path, int key)
+STATIC_ROUTINE void setKeyPath(char *path, int key)
 {
     sprintf(path,"/tmp/MdsEvent.%d",key);
 }
 #endif
 
-static void setHandle()
+STATIC_ROUTINE void setHandle()
 {
    pthread_t thread;
    if(!msgId)
@@ -980,6 +933,7 @@ static void setHandle()
       char keypath[PATH_MAX];
       mode_t um;
       
+      LockMdsShrMutex(&msgIdMutex,&msgIdMutex_initialized);
       um = umask(0);
       setKeyPath(keypath,msgKey);
       while (mkfifo(keypath,0777) == -1) {
@@ -1000,10 +954,11 @@ static void setHandle()
 #endif
 	if(pthread_create(&thread, pthread_attr_default, handleMessage, 0) !=  0)
 	    perror("pthread_create");
+      UnlockMdsShrMutex(&msgIdMutex);
     } 
 }
 
-static int sendMessage(char *evname, int key, int data_len, char *data)
+STATIC_ROUTINE int sendMessage(char *evname, int key, int data_len, char *data)
 {
     struct EventMessage message;
     int status, msgid;
@@ -1077,7 +1032,7 @@ static int sendMessage(char *evname, int key, int data_len, char *data)
 #endif
 }
 
-/*static void attachExitHandler(void (*handler)())
+/*STATIC_ROUTINE void attachExitHandler(void (*handler)())
 {
     struct sigaction action, old_action;
 
@@ -1092,7 +1047,7 @@ static int sendMessage(char *evname, int key, int data_len, char *data)
 	perror("signal");
 }*/
 
-static void attachExitHandler(void (*handler)())
+STATIC_ROUTINE void attachExitHandler(void (*handler)())
 {
     if(atexit(handler) == -1)
 	perror("atexit");
@@ -1101,7 +1056,7 @@ static void attachExitHandler(void (*handler)())
 
 
 
-static void releaseMessages()
+STATIC_ROUTINE void releaseMessages()
 {
     void *dummy;
 #ifdef USE_PIPED_MESSAGING
@@ -1135,7 +1090,7 @@ static void releaseMessages()
 }
 
 
-static void removeMessage(int key)
+STATIC_ROUTINE void removeMessage(int key)
 {
 
 #ifdef USE_PIPED_MESSAGING
@@ -1156,7 +1111,7 @@ static void removeMessage(int key)
 #endif
 }
  
-static int createThread(pthread_t *thread, void (*rtn)(), void *par)
+STATIC_ROUTINE int createThread(pthread_t *thread, void (*rtn)(), void *par)
 {
   int status = 1;
   if(pthread_create(thread, pthread_attr_default, (void *(*)(void *))rtn, par) !=  0)
@@ -1167,7 +1122,7 @@ static int createThread(pthread_t *thread, void (*rtn)(), void *par)
   return status;
 }
 
-static void startRemoteAstHandler()
+STATIC_ROUTINE void startRemoteAstHandler()
 {
     pipe(fds);
     external_thread_created = createThread(&external_thread, handleRemoteAst,0);
@@ -1180,10 +1135,11 @@ static void startRemoteAstHandler()
 /***************** End of OS dependent part ****************/
 
 
-static void removeDeadMsg(int key)
+STATIC_ROUTINE void removeDeadMsg(int key)
 {
     int i, curr, prev;
 
+    LockMdsShrMutex(&sharedMutex,&sharedMutex_initialized);
     for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
     {
 	if(shared_info[i].nameid >= 0 && shared_info[i].msgkey == key)
@@ -1200,6 +1156,7 @@ static void removeDeadMsg(int key)
 	}
     }
     removeMessage(key);
+    UnlockMdsShrMutex(&sharedMutex);
 }
 
 
@@ -1208,7 +1165,7 @@ static void removeDeadMsg(int key)
 
 
 
-static void initializeShared()
+STATIC_ROUTINE void initializeShared()
 {	
     int i;
     for(i = 0; i < MAX_EVENTNAMES; i++)
@@ -1224,7 +1181,7 @@ static void initializeShared()
 }
 
 
-static void executeAst(struct AstDescriptor *ast_d)
+STATIC_ROUTINE void executeAst(struct AstDescriptor *ast_d)
 {
     (*(ast_d->astadr))(ast_d->astprm, ast_d->data_len, ast_d->data);
     if(ast_d->data_len > 0)
@@ -1233,7 +1190,7 @@ static void executeAst(struct AstDescriptor *ast_d)
 }
 
 
-static void *handleMessage(void * dummy)
+STATIC_ROUTINE void *handleMessage(void * dummy)
 {
     int i;
     char event_name[MAX_EVENTNAME_LEN];
@@ -1244,6 +1201,7 @@ static void *handleMessage(void * dummy)
     {	
 	if(readMessage(event_name, &data_len, data) != -1)
 	{
+            LockMdsShrMutex(&privateMutex,&privateMutex_initialized);
     	    for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
     	    {
 	        if(private_info[i].active && !strcmp(event_name, private_info[i].name))
@@ -1265,6 +1223,7 @@ static void *handleMessage(void * dummy)
                     pthread_detach(local_thread);
 		}
 	    }
+            UnlockMdsShrMutex(&privateMutex);
 	}
 	else
 	    return NULL;
@@ -1274,7 +1233,7 @@ static void *handleMessage(void * dummy)
 
 
 
-static void cleanup(int dummy)
+STATIC_ROUTINE void cleanup(int dummy)
 {
 /* remove all events declared by the process and not removed by MdsEventCan */
     int i, curr_id, prev_id;
@@ -1285,6 +1244,7 @@ static void cleanup(int dummy)
     if(!shared_info) return;
 
     getLock();
+    LockMdsShrMutex(&sharedMutex,&sharedMutex_initialized);
     for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
     {
 	if(shared_info[i].msgkey == msgKey && shared_info[i].nameid >= 0)
@@ -1310,59 +1270,78 @@ static void cleanup(int dummy)
 	}
     }
     releaseLock();
+    UnlockMdsShrMutex(&sharedMutex);
 
     releaseMessages();
     exit(0);
 
 }
 
+STATIC_THREADSAFE pthread_mutex_t event_infoMutex;
+STATIC_THREADSAFE int             event_infoMutex_initialized = 0;
+
 
 /* eventid stuff: when using multiple event servers, the code has to deal with multiple eventids */
-static struct {
+STATIC_THREADSAFE struct {
     int used;
     int local_id; 
     int *external_ids; 
 } event_info[MAX_ACTIVE_EVENTS];
 
-static void newRemoteId(int *id)
+STATIC_ROUTINE void newRemoteId(int *id)
 {
     int i;
+    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
     for(i = 0; i < MAX_ACTIVE_EVENTS - 1 && event_info[i].used; i++);
     event_info[i].used = 1;
     event_info[i].external_ids = (int *)malloc(sizeof(int) * 256);
     *id = i;
+    UnlockMdsShrMutex(&event_infoMutex);
 }
 
-static void deleteId(int id)
+STATIC_ROUTINE void deleteId(int id)
 {
-    if(!event_info[id].used) return;
-    event_info[id].used = 0;
-    free((char *)event_info[id].external_ids);
+    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
+    if(event_info[id].used)
+    {
+      event_info[id].used = 0;
+      free((char *)event_info[id].external_ids);
+    }
+    UnlockMdsShrMutex(&event_infoMutex);
+    return;
 }
 
-static void setLocalId(int id, int evid)
+STATIC_ROUTINE void setLocalId(int id, int evid)
 {
+    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
     event_info[id].local_id = evid;
+    UnlockMdsShrMutex(&event_infoMutex);
 }
 
-static void setRemoteId(int id, int ofs, int evid)
+STATIC_ROUTINE void setRemoteId(int id, int ofs, int evid)
 {
+    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
     event_info[id].external_ids[ofs] = evid;
+    UnlockMdsShrMutex(&event_infoMutex);
 }
 
-static int getLocalId(int id)
+STATIC_ROUTINE int getLocalId(int id)
 {
+    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
      return event_info[id].local_id;
+    UnlockMdsShrMutex(&event_infoMutex);
 }
 
-static int getRemoteId(int id, int ofs)
+STATIC_ROUTINE int getRemoteId(int id, int ofs)
 {
+    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
     return event_info[id].external_ids[ofs];
+    UnlockMdsShrMutex(&event_infoMutex);
 }
 
 
 
-static void getServerDefinition(char *env_var, char **servers, int *num_servers, int *use_local)
+STATIC_ROUTINE void getServerDefinition(char *env_var, char **servers, int *num_servers, int *use_local)
 {
     int i, j;
     char *envname = getEnvironmentVar(env_var);
@@ -1393,16 +1372,16 @@ static void getServerDefinition(char *env_var, char **servers, int *num_servers,
 }
 
 #ifdef GLOBUS
-static void handleRemoteEvent(SOCKET sock);
+STATIC_ROUTINE void handleRemoteEvent(SOCKET sock);
 
-static void KillHandler() {}
+STATIC_ROUTINE void KillHandler() {}
 
-static void handleRemoteAst()
+STATIC_ROUTINE void handleRemoteAst()
 {
-  static DESCRIPTOR(library_d,"MdsIpShr");
-  static DESCRIPTOR(routine_d,"Poll");
+  STATIC_CONSTANT DESCRIPTOR(library_d,"MdsIpShr");
+  STATIC_CONSTANT DESCRIPTOR(routine_d,"Poll");
   int status=1;
-  static void (*rtn)(void (*)(SOCKET)) = 0;
+  STATIC_THREADSAFE void (*rtn)(void (*)(SOCKET)) = 0;
   if (rtn == 0)
     status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
   if(!(status & 1))
@@ -1413,12 +1392,12 @@ static void handleRemoteAst()
   (*rtn)(handleRemoteEvent);
 }
 
-static int RegisterRead(SOCKET sock)
+STATIC_ROUTINE int RegisterRead(SOCKET sock)
 {
-  static DESCRIPTOR(library_d,"MdsIpShr");
-  static DESCRIPTOR(routine_d,"RegisterRead");
+  STATIC_CONSTANT DESCRIPTOR(library_d,"MdsIpShr");
+  STATIC_CONSTANT DESCRIPTOR(routine_d,"RegisterRead");
   int status=1;
-  static int (*rtn)(SOCKET) = 0;
+  STATIC_THREADSAFE int (*rtn)(SOCKET) = 0;
   if (rtn == 0)
     status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
   if(!(status & 1))
@@ -1429,14 +1408,14 @@ static int RegisterRead(SOCKET sock)
   return ((*rtn)(sock));
 }
   
-static void handleRemoteEvent(SOCKET sock)
+STATIC_ROUTINE void handleRemoteEvent(SOCKET sock)
 {
   char buf[16];
-  struct descriptor 
+  STATIC_CONSTANT struct descriptor 
   library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
   routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsg"};
   int status=1, i;
-  static int (*rtn)() = 0;
+  STATIC_THREADSAFE int (*rtn)() = 0;
   Message *m;
   if (rtn == 0)
     status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
@@ -1456,7 +1435,7 @@ static void handleRemoteEvent(SOCKET sock)
 
 #else
   
-static void KillHandler()
+STATIC_CONSTANT void KillHandler()
 {
   int status;
   void *dummy;
@@ -1469,14 +1448,14 @@ static void KillHandler()
   external_thread_created = 0;
 }
 
-static void handleRemoteAst()
+STATIC_ROUTINE void handleRemoteAst()
 {
     char buf[16];
-    struct descriptor 
+    STATIC_CONSTANT struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsg"};
     int status=1, i;
-    static int (*rtn)() = 0;
+    STATIC_THREADSAFE int (*rtn)() = 0;
     Message *m;
     int tablesize = FD_SETSIZE, selectstat;
     fd_set readfds;
@@ -1526,7 +1505,7 @@ static void handleRemoteAst()
 }
 #endif
 
-static int searchOpenServer(char *server) 
+STATIC_ROUTINE int searchOpenServer(char *server) 
 /* Avoid doing MdsConnect on a server already connected before */
 /* for now, allow socket duplications */
 {
@@ -1544,30 +1523,37 @@ static int searchOpenServer(char *server)
 }
 */
 
-static void initializeLocalRemote(int receive_events, int *use_local)
+STATIC_THREADSAFE pthread_mutex_t initMutex;
+STATIC_THREADSAFE int             initMutex_initialized = 0;
+
+STATIC_ROUTINE void initializeLocalRemote(int receive_events, int *use_local)
 {
-    static int receive_initialized;
-    static int send_initialized;
-    static int use_local_send;
-    static int use_local_receive;
+    STATIC_THREADSAFE int receive_initialized;
+    STATIC_THREADSAFE int send_initialized;
+    STATIC_THREADSAFE int use_local_send;
+    STATIC_THREADSAFE int use_local_receive;
 
     char *servers[256];
     int num_servers;
-    struct descriptor 
+    STATIC_CONSTANT struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
     int status=1, i;
-    static int (*rtn)() = 0;
+    STATIC_THREADSAFE int (*rtn)() = 0;
     void *dummy;
+
+    LockMdsShrMutex(&initMutex,&initMutex_initialized);
 
     if(receive_initialized && receive_events)
     {
 	*use_local = use_local_receive;
+        UnlockMdsShrMutex(&initMutex);
 	return;
     }
     if(send_initialized && !receive_events)
     {
 	*use_local = use_local_send;
+        UnlockMdsShrMutex(&initMutex);
 	return;
     }
 
@@ -1631,20 +1617,21 @@ static void initializeLocalRemote(int receive_events, int *use_local)
 	}
 	else printf(MdsGetMsg(status));
     }
+    UnlockMdsShrMutex(&initMutex);
 }
 
 
 
 	    
-static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
+STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 {
-    struct descriptor 
+    STATIC_CONSTANT struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventAst"};
     int status=1, i;
     int curr_eventid;
     void *dummy;
-    static int (*rtn)() = 0;
+    STATIC_THREADSAFE int (*rtn)() = 0;
     if (rtn == 0)
       status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
@@ -1684,7 +1671,7 @@ struct wfevent_thread_cond { pthread_mutex_t  mutex;
 };
 
 
-static void EventHappened(void *astprm, int len, char *data)
+STATIC_ROUTINE void EventHappened(void *astprm, int len, char *data)
 {
   struct wfevent_thread_cond *t = (struct wfevent_thread_cond *)astprm;
   if (t->buflen && t->data)
@@ -1740,6 +1727,7 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 
 
     /* define internal event dispatching structure */ 
+    LockMdsShrMutex(&privateMutex,&privateMutex_initialized);
     for(i = 0; i < MAX_EVENTNAMES; i++)
 	if(private_info[i].active && !strcmp(eventnam, private_info[i].name) &&
 		private_info[i].astadr == astadr && private_info[i].astprm == astprm)
@@ -1754,6 +1742,7 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
     }
     private_info[i].astadr = astadr;
     private_info[i].astprm = (void *)(void *)astprm;
+    UnlockMdsShrMutex(&privateMutex);
 
 
     /* *eventid = i; */
@@ -1778,11 +1767,13 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 	    return 0;
 	}
     }
+    LockMdsShrMutex(&sharedMutex,&sharedMutex_initialized);
 /* Find first free SharedEventInfo slot */
     for(i = 0; i < MAX_ACTIVE_EVENTS && shared_info[i].nameid != -1; i++);
     if(i == MAX_ACTIVE_EVENTS) /* If no free SharedEventInfo slot foud */
     {
 	releaseLock();
+        UnlockMdsShrMutex(&sharedMutex);
 	return 0;
     }
     shared_info[i].msgkey = msgKey;
@@ -1796,6 +1787,7 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 	if(j == MAX_EVENTNAMES) /* If event names slot full */
 	{
 	    releaseLock();
+            UnlockMdsShrMutex(&sharedMutex);
 	    return 0;
 	}
 	strncpy(shared_name[j].name, eventnam, MAX_EVENTNAME_LEN - 1);
@@ -1813,19 +1805,20 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
     shared_info[i].nameid = j;
 
     releaseLock();
+    UnlockMdsShrMutex(&sharedMutex);
 
     attachExitHandler(cleanup);
     return 1;
 }
 
-static int canEventRemote(int eventid)
+STATIC_ROUTINE int canEventRemote(int eventid)
 {
-    struct descriptor 
+    STATIC_CONSTANT struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventCan"};
     int status=1, i;
     void *dummy;
-    static int (*rtn)() = 0;
+    STATIC_THREADSAFE int (*rtn)() = 0;
 
     if (rtn == 0)
       status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
@@ -1864,14 +1857,17 @@ int MDSEventCan(int eventid)
     evinfo = &private_info[local_eventid];
     if(!shared_info) return 0; /*must follow MdsEventAst */
     name_in_use = 0;
+    LockMdsShrMutex(&privateMutex,&privateMutex_initialized);
     for(i = 0; i < MAX_EVENTNAMES; i++)
 	if((i != local_eventid) && private_info[i].active && !strcmp(evinfo->name, private_info[i].name))
           name_in_use = 1;
+    UnlockMdsShrMutex(&privateMutex);
     if (!name_in_use)
     {
       getLock();
 
 /* deactivate corresponding SharedEventInfo slot */
+      LockMdsShrMutex(&sharedMutex,&sharedMutex_initialized);
       for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
       {
 	if(shared_info[i].msgkey == msgKey && shared_info[i].nameid >= 0 
@@ -1900,6 +1896,7 @@ int MDSEventCan(int eventid)
       }
 
       releaseLock();
+      UnlockMdsShrMutex(&sharedMutex);
     }
     evinfo->active = 0;
     return 0;
@@ -1907,11 +1904,11 @@ int MDSEventCan(int eventid)
 
 
 
-static int sendRemoteEvent(char *evname, int data_len, char *data)
+STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
 {
-    static int (*rtn)() = 0;
+    STATIC_THREADSAFE int (*rtn)() = 0;
     int (*curr_rtn)();
-    struct descriptor 
+    STATIC_CONSTANT struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 8, "MdsValue"};
     int status=1, i, tmp_status;
@@ -1978,6 +1975,7 @@ int MDSEvent(char *evname, int data_len, char *data)
     }
 
     /* Search event name in the event name list */
+    LockMdsShrMutex(&sharedMutex,&sharedMutex_initialized);
     for(name_idx = 0; name_idx < MAX_EVENTNAMES && (shared_name[name_idx].refcount == 0 
 	|| strcmp(shared_name[name_idx].name, evname)); name_idx++);
     if(name_idx < MAX_EVENTNAMES)
@@ -1988,6 +1986,7 @@ int MDSEvent(char *evname, int data_len, char *data)
     }
 
     releaseLock();
+    UnlockMdsShrMutex(&sharedMutex);
     printf("%d, MDSEvent returned\n",pthread_self());
     return 0;
 }

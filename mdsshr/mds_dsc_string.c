@@ -1,13 +1,14 @@
 #include        <stdio.h>
 #include        <mdsdescrip.h>
 #include        <usagedef.h>
+#include        <STATICdef.h>
 
 #define checkString(S)  if (id==S)  return #S ;
 
 
 char  *MdsDtypeString( int  id )
    {
-    static char  dtypeString[24];
+     STATIC_THREADSAFE char  dtypeString[24]; /* not really threadsafe but should be ok */
 
     id = id & 0x00FF;
     checkString(DTYPE_MISSING)
@@ -83,7 +84,7 @@ char  *MdsDtypeString( int  id )
 
 char  *MdsClassString( int  id )
    {
-    static char  classString[24];
+     STATIC_THREADSAFE char  classString[24]; /* not really threadsafe but ok */
 
     id = id & 0x00FF;
     checkString(CLASS_XD)
@@ -109,7 +110,7 @@ char  *MdsClassString( int  id )
 
 char *MdsUsageString( int id )
 {
-  static char  usageString[24];
+  STATIC_THREADSAFE char  usageString[24]; /* not really threadsafe but should be ok */
   checkString(TreeUSAGE_ANY)       
   checkString(TreeUSAGE_STRUCTURE)
   checkString(TreeUSAGE_ACTION)

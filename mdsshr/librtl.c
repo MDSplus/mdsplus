@@ -14,11 +14,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <STATICdef.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$ $Name$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$ $Name$";
 
 extern int MdsCopyDxXd();
-static char *GetTdiLogical(char *name);
+STATIC_ROUTINE char *GetTdiLogical(char *name);
 
 char *MdsDescrToCstring(struct descriptor *in);
 int StrFree1Dx(struct descriptor *out);
@@ -34,19 +35,19 @@ void TranslateLogicalFree(char *value);
 
 #define RTLD_LAZY 0
 
-static void *dlopen(char *filename, int flags)
+STATIC_ROUTINE void *dlopen(char *filename, int flags)
 {
   return   (void *)LoadLibrary(filename);
 }
 
-static void *dlsym(void *handle, char *name)
+STATIC_ROUTINE void *dlsym(void *handle, char *name)
 {
   return (void *)GetProcAddress((HINSTANCE)handle, name);
 }
 
-static char *dlerror()
+STATIC_ROUTINE char *dlerror()
 {
-  static LPTSTR error_string = 0;
+  static LPTSTR error_string = 0; /* windows NEED TO MAKE THREADSAFE */
   DWORD last_error=GetLastError();
   if (error_string)
   {
@@ -78,7 +79,7 @@ struct dirent
 	char *d_name;
 };
 
-static DIR *opendir(char *path)
+STATIC_ROUTINE DIR *opendir(char *path)
 {
 	DIR *dir = 0;
 	int info = GetFileAttributes(path);
@@ -93,16 +94,16 @@ static DIR *opendir(char *path)
 	return dir;
 }
 
-static void closedir(DIR *dir)
+STATIC_ROUTINE void closedir(DIR *dir)
 {
 	if (dir)
-		free(dir);
+	  free(dir);
 }
 
 struct dirent *readdir(DIR *dir)
 {
-	static struct dirent ans;
-	static WIN32_FIND_DATA fdata;
+  static struct dirent ans;     /* windows NEED TO MAKE THREADSAFE */
+  static WIN32_FIND_DATA fdata; /* windows NEED TO MAKE THREADSAFE */
 	if (dir->handle == 0)
 	{
 
@@ -194,7 +195,7 @@ int MSISetPATH()
   return 0;
 }
 
-static char *GetRegistry(char *where, char *pathname)
+STATIC_ROUTINE char *GetRegistry(char *where, char *pathname)
 {
   HKEY regkey1=(HKEY)0;
   HKEY regkey2=(HKEY)0;
@@ -375,18 +376,25 @@ BOOL pthread_mutex_destroy(HANDLE *mutex)
   return CloseHandle(*mutex);
 }
 
-static HANDLE global_mutex = NULL;
+STATIC_THREADSAFE HANDLE global_mutex = NULL;
+STATIC_THREADSAFE int globus_mutex_initialized = 0;
 void pthread_unlock_global_np()
 {
-  if (global_mutex == NULL)
-     pthread_mutex_init(&global_mutex);
+  if (!globus_mutex_initialized)
+  {
+    globus_mutex_initialized = 1;
+    pthread_mutex_init(&global_mutex);
+  }
   pthread_mutex_unlock(&global_mutex);
 
 }
 void pthread_lock_global_np()
 {
-  if (global_mutex == NULL)
-     pthread_mutex_init(&global_mutex);
+  if (!global_mutex_initialized)
+  {
+    global_mutex_initialized = 1;
+    pthread_mutex_init(&global_mutex);
+  }
   pthread_mutex_lock(&global_mutex);
 }
 
@@ -501,18 +509,25 @@ BOOL pthread_mutex_destroy(SEM_ID *mutex)
   return (semDelete(*mutex) != ERROR);
 }
 
-static SEM_ID global_mutex = NULL;
+STATIC_THREADSAFE SEM_ID global_mutex = NULL;
+STATIC_THREADSAFE int global_mutex_initialized = 0;
 void pthread_unlock_global_np()
 {
-  if (global_mutex == NULL)
-     pthread_mutex_init(&global_mutex);
+  if (!global_mutex_initialized)
+  {
+    global_mutex_initialized = 1;
+    pthread_mutex_init(&global_mutex);
+  }
   pthread_mutex_unlock(&global_mutex);
 
 }
 void pthread_lock_global_np()
 {
-  if (global_mutex == NULL)
-     pthread_mutex_init(&global_mutex);
+  if (!global_mutex_initialized)
+  {
+    global_mutex_initialized = 1;
+    pthread_mutex_init(&global_mutex);
+  }
   pthread_mutex_lock(&global_mutex);
 }
 
@@ -559,9 +574,9 @@ void pthread_cancel(unsigned long *thread)
 #ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
 #include <inttypes.h>
 #include <pthread.h>
-static pthread_mutex_t GlobalMutex;
-static int Initialized = 0;
-static int LockCount = 0;
+STATIC_THREADSAFE pthread_mutex_t GlobalMutex;
+STATIC_THREADSAFE int Initialized = 0;
+STATIC_THREADSAFE int LockCount = 0;
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
 #define pthread_mutexattr_default NULL
@@ -569,7 +584,7 @@ static int LockCount = 0;
 #else
 #undef select
 #endif
-static pthread_t current_locked_thread = 0;
+STATIC_THREADSAFE pthread_t current_locked_thread = 0;
 
 void pthread_lock_global_np()
 {
@@ -641,7 +656,7 @@ void pthread_unlock_global_np()
 #include <dl.h>
 #define RTLD_LAZY BIND_DEFERRED | BIND_NOSTART | DYNAMIC_PATH
 
-static void *dlopen(char *filename, int flags)
+STATIC_ROUTINE void *dlopen(char *filename, int flags)
 {
   return (void *)shl_load(filename,flags,0);
 }
@@ -662,14 +677,14 @@ void *dlsym(void *handle, char *name)
 
 #endif
 
-static char *nonblank( char *p)
+STATIC_ROUTINE char *nonblank( char *p)
 {
   if (!p) return(0);
   for ( ; *p && isspace(*p) ; p++);
   return(*p ? p : 0);
 }
 
-static char  *blank( char *p)
+STATIC_ROUTINE char  *blank( char *p)
 {
   if (!p) return(0);
   for ( ; *p && !isspace(*p) ; p++);
@@ -779,7 +794,7 @@ unsigned int LibCallg(void **arglist, unsigned int (*routine)())
 
 
 #ifndef HAVE_VXWORKS_H
-static void  child_done(	/* Return: meaningless sts		*/
+STATIC_ROUTINE void  child_done(	/* Return: meaningless sts		*/
     int   sig			/* <r> signal number			*/
    )
    {
@@ -851,15 +866,15 @@ int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
 #ifdef HAVE_VXWORKS_H
 
 
-static WDOG_ID wd;
-static SEM_ID sem;
+static WDOG_ID wd;   /* vxworks NEED TO MAKE THREADSAFE */
+static SEM_ID sem;   /* vxworks NEED TO MAKE THREADSAFE */
 
-static void TimerExpired(int par)
+STATIC_ROUTINE void TimerExpired(int par)
 {
   semGive(sem);
 }
 
-static void sleep(unsigned int secs)
+STATIC_ROUTINE void sleep(unsigned int secs)
 {
   if((sem = semBCreate(SEM_Q_FIFO, SEM_EMPTY)) == NULL)
     return;
@@ -997,15 +1012,15 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   } else
     return 1;  
 }
-static char *FIS_Error = NULL;
+
 char *LibFindImageSymbolErrString()
 {
-  return FIS_Error;
+  return 0;
 }
 
 #elif defined(USE_MACH_MODULE_LOADER)
 
-static char *FIS_Error = NULL;
+static char *FIS_Error = NULL;       /* MacOS NEED TO MAKE THREADSAFE */
 char *LibFindImageSymbolErrString()
 {
   return FIS_Error;
@@ -1014,7 +1029,7 @@ char *LibFindImageSymbolErrString()
 /*
  * helper routine: search for a named module in various locations
  */
-static int search_lib_paths(const char *filename, char *pathbuf,
+STATIC_ROUTINE int search_lib_paths(const char *filename, char *pathbuf,
 			    struct stat *stat_buf)
 {
     const char *pathspec;
@@ -1171,18 +1186,18 @@ int LibFindImageSymbol(struct descriptor *library, struct descriptor *symbol, vo
 }
 
 #else
-char *FIS_Error = 0;
+STATIC_THREADSAFE char *FIS_Error = 0;
 
 char *LibFindImageSymbolErrString()
 {
   return FIS_Error;
 }
 
-#ifdef linux
-static int dlopen_mutex_initialized = 0;
-static pthread_mutex_t dlopen_mutex;
 
-static void dlopen_lock()
+STATIC_THREADSAFE int dlopen_mutex_initialized = 0;
+STATIC_THREADSAFE pthread_mutex_t dlopen_mutex;
+
+STATIC_ROUTINE void dlopen_lock()
 {
 
   if(!dlopen_mutex_initialized)
@@ -1194,7 +1209,7 @@ static void dlopen_lock()
   pthread_mutex_lock(&dlopen_mutex);
 }
 
-static void dlopen_unlock()
+STATIC_ROUTINE void dlopen_unlock()
 {
 
   if(!dlopen_mutex_initialized)
@@ -1205,7 +1220,7 @@ static void dlopen_unlock()
 
   pthread_mutex_unlock(&dlopen_mutex);
 }
-#endif
+
 
 int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
 {
@@ -1373,7 +1388,7 @@ int StrGet1Dx(unsigned short *len, struct descriptor *out)
 }
 
 #ifdef HAVE_VXWORKS_H
-static int timezone = 0;
+static int timezone = 0;   /* vxworks THREADSAFE ? */
 #endif
 
 
@@ -1572,12 +1587,12 @@ int LibEstablish()
 
 #define SEC_PER_DAY (60*60*24)
 
-static int parsedate(char *asctim, void *dummy)
+STATIC_ROUTINE int parsedate(char *asctim, void *dummy)
 {
   return time(0);
 }
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
-static int mds_strcasecmp(char *in1, char *in2)
+STATIC_ROUTINE int mds_strcasecmp(char *in1, char *in2)
 {
   int ans = -1;
   if (strlen(in1) == strlen(in2))
@@ -1785,7 +1800,7 @@ struct bbtree_info { struct node  *currentnode;
 		     int           controlflags;
 		     void         *user_context; };
 
-static int MdsInsertTree();
+STATIC_ROUTINE int MdsInsertTree();
 
 int LibInsertTree(struct node **treehead,char *symbol_ptr, int *control_flags, int (*compare_rtn)(),
                     int (*alloc_rtn)(), struct node **blockaddr, void *user_data)
@@ -1806,7 +1821,7 @@ int LibInsertTree(struct node **treehead,char *symbol_ptr, int *control_flags, i
   return bbtree.foundintree;
 }
 
-static int MdsInsertTree(struct bbtree_info *bbtree_ptr)
+STATIC_ROUTINE int MdsInsertTree(struct bbtree_info *bbtree_ptr)
 {
 
 #define currentNode (bbtree_ptr->currentnode)
@@ -1955,14 +1970,14 @@ int LibLookupTree(struct node **treehead, int *symbolstring, int (*compare_rtn)(
   return LibKEYNOTFOU;
 }
 
-static int MdsTraverseTree(int (*user_rtn)(), void *user_data, struct node *currentnode);
+STATIC_ROUTINE int MdsTraverseTree(int (*user_rtn)(), void *user_data, struct node *currentnode);
 
 int LibTraverseTree(struct node **treehead, int (*user_rtn)(), void *user_data)
 { 
     return MdsTraverseTree(user_rtn, user_data, *treehead);
 }
 
-static int MdsTraverseTree(int (*user_rtn)(), void *user_data, struct node *currentnode)
+STATIC_ROUTINE int MdsTraverseTree(int (*user_rtn)(), void *user_data, struct node *currentnode)
 { 
     struct node *right_subtree;
     int status;
@@ -2161,10 +2176,10 @@ typedef struct {
 } FindFileCtx;
 
 
-static int FindFile(struct descriptor *filespec, struct descriptor *result, int **ctx, int recursively, int caseBlind);
-static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int caseBlind);
-static int FindFileEnd(FindFileCtx *ctx);
-static char *_FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind);
+STATIC_ROUTINE int FindFile(struct descriptor *filespec, struct descriptor *result, int **ctx, int recursively, int caseBlind);
+STATIC_ROUTINE int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int caseBlind);
+STATIC_ROUTINE int FindFileEnd(FindFileCtx *ctx);
+STATIC_ROUTINE char *_FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind);
 
 extern int LibFindFile(struct descriptor *filespec, struct descriptor *result, int **ctx)
 {
@@ -2174,7 +2189,7 @@ extern int LibFindFileRecurseCaseBlind(struct descriptor *filespec, struct descr
 {
   return FindFile(filespec, result, ctx, 1, 1);
 }
-static int FindFile(struct descriptor *filespec, struct descriptor *result, int **ctx, int recursively, int caseBlind)
+STATIC_ROUTINE int FindFile(struct descriptor *filespec, struct descriptor *result, int **ctx, int recursively, int caseBlind)
 {
   unsigned int status;
   char *ans;
@@ -2206,7 +2221,7 @@ extern int LibFindFileEnd(int **ctx)
   return status;
 }
 
-static int FindFileEnd(FindFileCtx *ctx)
+STATIC_ROUTINE int FindFileEnd(FindFileCtx *ctx)
 {
   int i;
   if (ctx != NULL) {
@@ -2229,7 +2244,7 @@ static int FindFileEnd(FindFileCtx *ctx)
   cstring=strncpy(malloc(descr->length+1),descr->pointer,descr->length);\
   cstring[descr->length] = '\0';
 
-static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int caseBlind)
+STATIC_ROUTINE int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int caseBlind)
 {
   FindFileCtx *lctx;
   char *fspec;
@@ -2306,7 +2321,7 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int cas
   return 1;
 }
 
-static char *_FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind)
+STATIC_ROUTINE char *_FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind)
 {
   char *ans;
   struct dirent *dp;
@@ -2385,7 +2400,7 @@ void TranslateLogicalFree(char *value)
 #define LOBYTE(x) ((unsigned char)((x) & 0xFF))
 #define HIBYTE(x) ((unsigned char)((x) >> 8))
 
-static unsigned short icrc1(unsigned short crc)
+STATIC_ROUTINE unsigned short icrc1(unsigned short crc)
 {
   int i;
   unsigned short ans=crc;
@@ -2404,9 +2419,9 @@ static unsigned short icrc1(unsigned short crc)
 
 unsigned short Crc(unsigned int len, unsigned char *bufptr)
 {
-  static unsigned short icrctb[256],init=0;
-  static unsigned char rchr[256];
-  static unsigned it[16]={0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
+  STATIC_THREADSAFE unsigned short icrctb[256],init=0;
+  STATIC_THREADSAFE unsigned char rchr[256];
+  STATIC_CONSTANT unsigned it[16]={0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
   unsigned short j,cword=0;
   if (!init)
   {
@@ -2454,51 +2469,49 @@ int libffs(int *position, int *size, char *base, int *find_position)
   }
   return status;
 }
+STATIC_THREADSAFE char RELEASE[512] = {0};
+STATIC_THREADSAFE struct descriptor RELEASE_D = {0,DTYPE_T,CLASS_S,RELEASE};
+
 
 char *MdsRelease()
 {
 #include <release.h>
-  static const char *tag = MDSPLUS_RELEASE;
-  static char rel[512] = {0};
-  if (rel[0] == 0)
+  STATIC_CONSTANT const char *tag = MDSPLUS_RELEASE;
+  if (RELEASE[0] == 0)
   {
     int major = 0;
     int minor = 0;
     int sub = 0;
     int status = sscanf(&tag[1],"Name: release-%d-%d-%d",&major,&minor,&sub);
     if (status == 0)
-      strcpy(rel,"MDSplus, beta version");
+      strcpy(RELEASE,"MDSplus, beta version");
     else if (status == 1)
-      sprintf(rel,"MDSplus, Version %d",major);
+      sprintf(RELEASE,"MDSplus, Version %d",major);
     else if (status == 2)
-      sprintf(rel,"MDSplus, Version %d.%d",major,minor);
+      sprintf(RELEASE,"MDSplus, Version %d.%d",major,minor);
     else if (status == 3)
-      sprintf(rel,"MDSplus, Version %d.%d-%d",major,minor,sub);
+      sprintf(RELEASE,"MDSplus, Version %d.%d-%d",major,minor,sub);
+    RELEASE_D.length = strlen(RELEASE);
   }
-  return rel;
+  return RELEASE;
 }
 
 struct descriptor *MdsReleaseDsc()
 {
-  static struct descriptor ans = {0,DTYPE_T,CLASS_S,0};
-  if (ans.length == 0)
-  {
-    ans.pointer = MdsRelease();
-    ans.length = strlen(ans.pointer);
-  }
-  return &ans;
+  MdsRelease();
+  return &RELEASE_D;
 }
 
-static char *GetTdiLogical(char *name)
+STATIC_ROUTINE char *GetTdiLogical(char *name)
 {
   int status;
   char *ans = 0;
-  static int (*TdiExecute)()=0;
-  static DESCRIPTOR(exp,"data(ENV($))");
+  STATIC_THREADSAFE int (*TdiExecute)()=0;
+  STATIC_CONSTANT DESCRIPTOR(exp,"data(ENV($))");
   struct descriptor name_d = {0,DTYPE_T,CLASS_S,0};
   struct descriptor ans_d = {0,DTYPE_T,CLASS_D,0};
-  static DESCRIPTOR(image,"TdiShr");
-  static DESCRIPTOR(routine,"TdiExecute");
+  STATIC_CONSTANT DESCRIPTOR(image,"TdiShr");
+  STATIC_CONSTANT DESCRIPTOR(routine,"TdiExecute");
   if (TdiExecute == 0)
   {
     status = LibFindImageSymbol((struct descriptor *)&image,(struct descriptor *)&routine,(void **)&TdiExecute);

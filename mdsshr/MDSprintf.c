@@ -42,13 +42,13 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
-
+#include <STATICdef.h>
 
 		/*=====================================================
 		 * Static variables ...
 		 *====================================================*/
-static int  (*MDSvprintf)() = vprintf;
-static int  (*MDSvfprintf)() = vfprintf;
+STATIC_THREADSAFE int  (*MDSvprintf)() = vprintf;   /* not really threadsafe but ok */
+STATIC_THREADSAFE int  (*MDSvfprintf)() = vfprintf; /* not really threadsafe but ok */
 
 
 
@@ -113,7 +113,7 @@ void  MdsGetOutputFunctions( void **CURvprintf , void **CURvfprintf )
 	 ****************************************************************/
 
 
-static int   woof( char *fmt , va_list ap )
+STATIC_ROUTINE int   woof( char *fmt , va_list ap )
    {
     char  xxfmt[80];
 
@@ -122,7 +122,7 @@ static int   woof( char *fmt , va_list ap )
    }
 
 
-static int   tweet( FILE *fp , char *fmt , va_list ap )
+STATIC_ROUTINE int   tweet( FILE *fp , char *fmt , va_list ap )
    {
     char  xxfmt[80];
 
@@ -132,8 +132,8 @@ static int   tweet( FILE *fp , char *fmt , va_list ap )
 
 int   main( int argc , void *argv[] )
    {
-    static void  *save_vprintf;
-    static void  *save_vfprintf;
+    void  *save_vprintf;
+    void  *save_vfprintf;
     MDSprintf("woof %d %d %d\n",1,2,3);
     MDSfprintf(stderr,"tweet %d %d %d\n",1,2,3);
 

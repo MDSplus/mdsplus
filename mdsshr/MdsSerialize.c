@@ -3,6 +3,7 @@
 #include <mdstypes.h>
 #include <mdsshr.h>
 #include <librtl_messages.h>
+#include <STATICdef.h>
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 #define set_length(ans)  swap(short,&in_ptr[0],ans)
@@ -78,7 +79,7 @@ union __bswap { char   b[8];
 
 #endif
 
-static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr, 
+STATIC_ROUTINE int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr, 
                         unsigned int *b_out, unsigned int *b_in)
 {
   unsigned int status = 1,
@@ -430,7 +431,7 @@ int MdsSerializeDscIn(char *in, struct descriptor_xd *out)
   unsigned int size_out;
   unsigned int size_in;
   int       status;
-  static const unsigned char dsc_dtype = DTYPE_DSC;
+  STATIC_CONSTANT const unsigned char dsc_dtype = DTYPE_DSC;
   status = copy_rec_dx(in, 0, &size_out, &size_in);
   if (status & 1 && size_out)
   {
@@ -443,7 +444,7 @@ int MdsSerializeDscIn(char *in, struct descriptor_xd *out)
   return status;
 }
 
-static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_out, unsigned int *b_in)
+STATIC_ROUTINE int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_out, unsigned int *b_in)
 {
   unsigned int status = 1,
               bytes_out = 0,
@@ -767,12 +768,12 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
   return status;
 }
 
-static int Dsc2Rec(struct descriptor *inp, struct descriptor_xd *out_dsc_ptr, unsigned int *reclen)
+STATIC_ROUTINE int Dsc2Rec(struct descriptor *inp, struct descriptor_xd *out_dsc_ptr, unsigned int *reclen)
 {
   unsigned int size_out;
   unsigned int size_in;
   int       status;
-  static const unsigned char dsc_dtype = DTYPE_B;
+  STATIC_CONSTANT const unsigned char dsc_dtype = DTYPE_B;
   status = copy_dx_rec((struct descriptor *)inp, 0, &size_out, &size_in);
   if (status & 1 && size_out)
   {
@@ -791,7 +792,7 @@ static int Dsc2Rec(struct descriptor *inp, struct descriptor_xd *out_dsc_ptr, un
   return status;
 }
 
-static int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length)
+STATIC_CONSTANT int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length)
 {
   int       status = 1;
   if ((dsc_ptr->dtype == DTYPE_DSC) && (dsc_ptr->class != CLASS_A))

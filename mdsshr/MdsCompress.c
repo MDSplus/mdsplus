@@ -54,6 +54,7 @@ The expansion routine "xentry":
 #include <libroutines.h>
 #include <strroutines.h>
 #include <librtl_messages.h>
+#include <STATICdef.h>
 #ifdef HAVE_VXWORKS_H
 #define _pointer_int int
 #endif
@@ -62,18 +63,18 @@ The expansion routine "xentry":
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 typedef ARRAY_COEFF(char, 1) array_coef;
 typedef RECORD(4) record_four;
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-  static unsigned short opcode = OpcDECOMPRESS;
-  static record_four rec0 = {sizeof(opcode), DTYPE_FUNCTION, CLASS_R, (unsigned char *) &opcode, 4, 0, 0, 0, 0};
-  static    DESCRIPTOR_A(dat0, 1, DTYPE_BU, 0, 0);
-  static struct descriptor EMPTY_D = {0, DTYPE_T, CLASS_D, 0};
-  static    EMPTYXD(EMPTY_XD);
+STATIC_CONSTANT unsigned short opcode = OpcDECOMPRESS;
+STATIC_CONSTANT record_four rec0 = {sizeof(opcode), DTYPE_FUNCTION, CLASS_R, (unsigned char *) &opcode, 4, 0, 0, 0, 0};
+STATIC_CONSTANT    DESCRIPTOR_A(dat0, 1, DTYPE_BU, 0, 0);
+STATIC_CONSTANT struct descriptor EMPTY_D = {0, DTYPE_T, CLASS_D, 0};
+STATIC_CONSTANT EMPTYXD(EMPTY_XD);
 /*--------------------------------------------------------------------------
 	The inner routine scans some classes and tries to compress arrays.
 	If successful returns 1, if unsuccessful returns NORMAL.
 */
-static  int       compress(
+STATIC_ROUTINE  int       compress(
 		               struct descriptor *pcimage,
 		               struct descriptor *pcentry,
 		               int delta,
@@ -254,7 +255,7 @@ int       MdsCompress(
 {
   int       status = 1;
   struct descriptor_xd work;
-  static unsigned char dsc_dtype = DTYPE_DSC;
+  STATIC_CONSTANT unsigned char dsc_dtype = DTYPE_DSC;
   if (in_ptr == 0)
     return MdsFree1Dx(out_ptr,NULL);
   switch (in_ptr->class)

@@ -23,6 +23,8 @@
 
 #define CREATE_STS_TEXT
 #include        "mdsdcldef.h"
+#include <STATICdef.h>
+#include "mdsshrthreadsafe.h"
 #include        "clidef.h"
 #include        "tcldef.h"
 #include        "ccldef.h"
@@ -32,10 +34,6 @@
 #include        "camdef.h"
 
 
-		/*========================================================
-		 * Static variables ...
-		 *=======================================================*/
-static int   mdsmsgFlag = 1;		/* 1 for longer "status" string	*/
 		/*========================================================
 		 * "Define"s and structure definitions ...
 		 *=======================================================*/
@@ -70,7 +68,7 @@ extern int MDSfprintf( FILE *fp , char *fmt , ... );
 	/*****************************************************************
 	 * getFacility:
 	 *****************************************************************/
-static int   getFacility(	/* Return: num entries in stsText[]	*/
+STATIC_ROUTINE int   getFacility(	/* Return: num entries in stsText[]	*/
     int   sts			/* <r> sts value			*/
    ,char  **facilityText	/* <w> name of facility: c-string	*/
    ,struct stsText  **stsText	/* <w> addr of facility's "stsText[]"	*/
@@ -159,23 +157,22 @@ char  *MdsGetMsg(	/* Return: addr of "status" string	*/
     int   sts			/* <r> sts value			*/
    )
    {
-     static DESCRIPTOR(msg_files,"MDSMSG_PATH:*Msg.*");
-     static DESCRIPTOR(getmsg_nam,"getmsg");
+     STATIC_CONSTANT DESCRIPTOR(msg_files,"MDSMSG_PATH:*Msg.*");
+     STATIC_CONSTANT DESCRIPTOR(getmsg_nam,"getmsg");
      struct descriptor_d filnam = {0, DTYPE_T, CLASS_D, 0};
      int   i;
      char  *facnam, *msgnam, *msgtext;
      int status = 0;
      void *ctx = 0;
-     const static char *severity[] = {"W","S","E","I","F","?","?","?"};
-     static char text[512];
+     const STATIC_CONSTANT char *severity[] = {"W","S","E","I","F","?","?","?"};
      int (*getmsg)(int,char **,char **,char **);
      int   max;
      struct stsText  *stsText;
 
      if (sts == 1)
      {
-       strcpy(text,"%SS-S-SUCCESS, Success");
-       return text;
+       strcpy((MdsShrGetThreadStatic())->MdsGetMsg_text,"%SS-S-SUCCESS, Success");
+       return (MdsShrGetThreadStatic())->MdsGetMsg_text;
      }
      max = getFacility(sts,&facnam,&stsText);
      if (max > 0)
@@ -184,12 +181,12 @@ char  *MdsGetMsg(	/* Return: addr of "status" string	*/
        {
          if ((sts & 0xfffffff8) == (stsText[i].stsL_num & 0xfffffff8))
          {
-           sprintf(text,"%%%s-%s-%s, %s",facnam,severity[sts&0x7],stsText[i].stsA_name,stsText[i].stsA_text);
+           sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text,"%%%s-%s-%s, %s",facnam,severity[sts&0x7],stsText[i].stsA_name,stsText[i].stsA_text);
            break;
          }
        }
        if (i == max)
-         sprintf(text,"%%%s-%s-NOMSG, Message number 0x%08x",facnam,severity[sts&0x7],sts);
+         sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text,"%%%s-%s-NOMSG, Message number 0x%08x",facnam,severity[sts&0x7],sts);
        status = 1;
      }
      while (!(status & 1) && (LibFindFile(&msg_files,&filnam,&ctx)&1))
@@ -199,40 +196,23 @@ char  *MdsGetMsg(	/* Return: addr of "status" string	*/
        {
          status = (*getmsg)(sts,&facnam,&msgnam,&msgtext);
          if (status & 1)
-           sprintf(text,"%%%s-%s-%s, %s",facnam,severity[sts&0x7],msgnam,msgtext);
+           sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text,"%%%s-%s-%s, %s",facnam,severity[sts&0x7],msgnam,msgtext);
        }
      }
      LibFindFileEnd(&ctx);
      if (!(status & 1))
-       sprintf(text,"%%NONAME-%s-NOMSG, Message number 0x%08X",severity[sts&0x7],sts);
-     return text;
+       sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text,"%%NONAME-%s-NOMSG, Message number 0x%08X",severity[sts&0x7],sts);
+     return (MdsShrGetThreadStatic())->MdsGetMsg_text;
    }
 
 
 void MdsGetMsgDsc(int status, struct descriptor *out)
 {
-	static struct descriptor tmp = {0,DTYPE_T,CLASS_S,0};
-	tmp.dscA_pointer = MdsGetMsg(status);
-	tmp.dscW_length = strlen(tmp.dscA_pointer);
-	StrCopyDx(out,&tmp);
+	MdsGetMsg(status);
+	(MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp.dscW_length = strlen((MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp.dscA_pointer);
+	StrCopyDx(out,&(MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp);
 	return;
 }
-
-	/****************************************************************
-	 * setMdsMsgFlag:
-	 ****************************************************************/
-int   setMdsMsgFlag(		/* Return: old setting of flag		*/
-    int   new			/* <r> new setting for flag		*/
-   )
-   {
-    int   old;
-
-    old = mdsmsgFlag;
-    mdsmsgFlag = new;
-    return(old);
-   }
-
-
 
 	/*****************************************************************
 	 * MdsMsg:
@@ -245,38 +225,37 @@ int   MdsMsg(			/* Return: sts provided by user		*/
    {
     int   k;
     int   write2stdout;
-    char  text[256];
     va_list  ap;		/* arg ptr				*/
 
     write2stdout = isatty(fileno(stdout)) ^ isatty(fileno(stderr));
     if ((sts & ALREADY_DISPLAYED) && (sts != -1))
         return(sts);
 
-    sprintf(text,"\r%s: ",pgmname());
-    k = strlen(text);
+    sprintf((MdsShrGetThreadStatic())->MdsMsg_text,"\r%s: ",pgmname());
+    k = strlen((MdsShrGetThreadStatic())->MdsMsg_text);
     if (fmt)
        {
         va_start(ap,fmt);	/* initialize "ap"			*/
-        vsprintf(text+k,fmt,ap);
+        vsprintf((MdsShrGetThreadStatic())->MdsMsg_text+k,fmt,ap);
         if (sts)
            {
-            MDSfprintf(stderr,"%s\n\r    sts=%s\n\n\r",text,MdsGetMsg(sts));
+            MDSfprintf(stderr,"%s\n\r    sts=%s\n\n\r",(MdsShrGetThreadStatic())->MdsMsg_text,MdsGetMsg(sts));
             if (write2stdout)
                 MDSfprintf(stdout,"%s\n\r    sts=%s\n\n\r",
-                    text,MdsGetMsg(sts));
+                    (MdsShrGetThreadStatic())->MdsMsg_text,MdsGetMsg(sts));
            }
         else
            {
-            MDSfprintf(stderr,"%s\n\r",text);
+            MDSfprintf(stderr,"%s\n\r",(MdsShrGetThreadStatic())->MdsMsg_text);
             if (write2stdout)
-                MDSfprintf(stdout,"%s\n\r",text);
+                MDSfprintf(stdout,"%s\n\r",(MdsShrGetThreadStatic())->MdsMsg_text);
            }
        }
     else
        {
-        MDSfprintf(stderr,"%s:  sts=%s\n\r",text,MdsGetMsg(sts));
+        MDSfprintf(stderr,"%s:  sts=%s\n\r",(MdsShrGetThreadStatic())->MdsMsg_text,MdsGetMsg(sts));
         if (write2stdout)
-            MDSfprintf(stdout,"%s:  sts=%s\n\r",text,MdsGetMsg(sts));
+            MDSfprintf(stdout,"%s:  sts=%s\n\r",(MdsShrGetThreadStatic())->MdsMsg_text,MdsGetMsg(sts));
        }
 
     return(sts | ALREADY_DISPLAYED);

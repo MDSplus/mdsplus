@@ -43,7 +43,9 @@
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+#include <STATICdef.h>
+
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 
@@ -54,7 +56,7 @@ int       MdsGet1DxS(unsigned short *length_ptr, unsigned char *dtype_ptr, struc
   int dsc_size = sizeof(struct descriptor);
   int align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
   unsigned int length;
-  static unsigned char dsc_dtype = DTYPE_DSC;
+  STATIC_CONSTANT unsigned char dsc_dtype = DTYPE_DSC;
   dsc_size = align(dsc_size,align_size);
   length = dsc_size + *length_ptr;
   status = MdsGet1Dx(&length, &dsc_dtype, out_dsc_ptr, NULL);

@@ -19,8 +19,9 @@
 #include <strroutines.h>
 #include <librtl_messages.h>
 #include <mdsshr.h>
+#include <STATICdef.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define LibVM_FIRST_FIT      1
 #define LibVM_BOUNDARY_TAGS  1
 #define LibVM_EXTEND_AREA    32
@@ -31,24 +32,11 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 void MdsFixDscLength(struct descriptor *in);
 
-static void *MdsVM_ZONE = 0;
+STATIC_CONSTANT void *MdsVM_ZONE = 0;
 
 int  MdsGet1Dx(unsigned int *length_ptr, unsigned char *dtype_ptr, struct descriptor_xd *dsc_ptr, void **zone)
 {
   int       status;
-  /*
-  if (!MdsVM_ZONE)
-  {
-    static    DESCRIPTOR(zone_name, "MDS$GET1_DX zone");
-    static int algorithm = LibVM_FIRST_FIT;
-    static int flags = LibVM_BOUNDARY_TAGS | LibVM_EXTEND_AREA | LibVM_TAIL_LARGE;
-    static int extend_size = 512;
-    static int initial_size = 256;
-    status = LibCreateVmZone(&MdsVM_ZONE, &algorithm, 0, &flags, &extend_size, &initial_size, 0, 0, 0, 0, &zone_name);
-    if (!(status & 1))
-      return status;
-  }
-  */
   if (dsc_ptr->class == CLASS_XD)
   {
     if (*length_ptr != dsc_ptr->l_length)
@@ -99,14 +87,14 @@ int  MdsFree1Dx(struct descriptor_xd *dsc_ptr, void **zone)
 
 typedef struct _bounds { int l; int u; } BOUNDS;
 
-static struct descriptor *FixedArray();
+STATIC_ROUTINE struct descriptor *FixedArray();
 
 /*-----------------------------------------------------------------
 	Recursively compact all descriptors and adjust pointers.
 	NIDs converted to PATHs for TREE$COPY_TO_RECORD.
 	Eliminates DSC descriptors. Need DSC for classes A and APD?
 -----------------------------------------------------------------*/
-static int copy_dx(
+STATIC_ROUTINE int copy_dx(
 		               struct descriptor_xd *in_dsc_ptr,
 		               struct descriptor_xd *out_dsc_ptr,
 		               unsigned int *bytes_used_ptr,
@@ -115,7 +103,6 @@ static int copy_dx(
 		               int (*fixup_path) (),
 		               void  *fixup_path_arg, int *compressible)
 {
-  static struct descriptor_d path = {0, DTYPE_T, CLASS_D, 0};
   unsigned int status = 1,
               bytes = 0,
               j,
@@ -132,6 +119,7 @@ static int copy_dx(
       {
 	struct descriptor in;
 	struct descriptor *po = (struct descriptor *) out_dsc_ptr;
+        struct descriptor_d path = {0, DTYPE_T, CLASS_D, 0};
 	in = *(struct descriptor *) in_ptr;
 	in.class = CLASS_S;
 	if (in.dtype == DTYPE_NID && fixup_nid
@@ -168,6 +156,7 @@ static int copy_dx(
       {
 	struct descriptor_xs in;
 	struct descriptor_xs *po = (struct descriptor_xs *) out_dsc_ptr;
+        struct descriptor_d path = {0, DTYPE_T, CLASS_D, 0};
 	in = *(struct descriptor_xs *) in_ptr;
 	if (in.dtype == DTYPE_NID && fixup_nid
 	    && (*fixup_nid) (in.pointer, fixup_nid_arg, &path))
@@ -356,7 +345,7 @@ int MdsCopyDxXdZ(struct descriptor *in_dsc_ptr, struct descriptor_xd *out_dsc_pt
 {
   unsigned int size;
   int       status;
-  static unsigned char dsc_dtype = DTYPE_DSC;
+  STATIC_CONSTANT unsigned char dsc_dtype = DTYPE_DSC;
 /************************************************
 * Get the total size of the thing to copy so that
 * a contiguous descriptor can be allocated.
@@ -380,7 +369,7 @@ int MdsCopyDxXdZ(struct descriptor *in_dsc_ptr, struct descriptor_xd *out_dsc_pt
   return status;
 }
 
-static struct descriptor *FixedArray(struct descriptor *in)
+STATIC_ROUTINE struct descriptor *FixedArray(struct descriptor *in)
 {
 
   array_coeff *a = (array_coeff *)in;

@@ -24,6 +24,7 @@ SOURCES = \
         MdsGetSetShotId.c \
         MdsPk.c \
         MdsSerialize.c \
+        MdsShrThreadSafe.c \
         MdsXdRoutines.c \
 	MdsMalloc.c \
 	mds_dsc_string.c

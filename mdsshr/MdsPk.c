@@ -27,15 +27,16 @@
 	Pack Macro timings				3.25	3.50		3.40
 	Unpack Macro timings				3.01	3.07		3.02
 */
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-static unsigned int masks[33] = {0,
+#include <STATICdef.h>
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT unsigned int masks[33] = {0,
 0x1, 0x3, 0x7, 0xf, 0x1f, 0x3f, 0x7f, 0xff,
 0x1ff, 0x3ff, 0x7ff, 0xfff, 0x1fff, 0x3fff, 0x7fff, 0xffff,
 0x1ffff, 0x3ffff, 0x7ffff, 0xfffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff,
 0x1ffffff, 0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff, 0xffffffff,};
 #include  <string.h>
 #include <mdsdescrip.h>
-static int SwapBytes(char *in_c)
+STATIC_ROUTINE int SwapBytes(char *in_c)
 {
   int out;
   char *out_c = (char *)&out;

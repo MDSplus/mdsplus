@@ -3,7 +3,7 @@
 #include        <stdio.h>
 #include        <stdlib.h>
 #include        "dasutil.h"
-
+#include        <STATICdef.h>
 /**********************************************************************
 * dasmsg.c
 *
@@ -28,11 +28,10 @@
 	 * msgText:
 	 * Dummy routine, simulates routine in DASUTIL lib on VAX
 	 ***************************************************************/
-static char  *msgText(sts)
+STATIC_ROUTINE char  *msgText(sts,text)
 int   sts;
+char *text;
    {
-    static char  text[33];
-
     sprintf(text,"Error code %d (0x%04X)",sts,sts);
     return(text);
    }
@@ -52,10 +51,9 @@ int   dasmsg(			/* Return: status from user		*/
    )
    {
     char  txt[240];
+    char  text[33];
     int   i;
     va_list  ap;		/* argument ptr				*/
-    static int   nerr;
-
 /*    if (!nerr)
 /*#ifdef __ERRNO_MAX
 /*        nerr = __ERRNO_MAX;
@@ -76,8 +74,8 @@ int   dasmsg(			/* Return: status from user		*/
 
     if (sts)
         fprintf(stderr,"\r%s:  %s\n    sts=%.70s\n",pgmname(),txt,
-/*            (sts>0 && sts<nerr) ? sys_errlist[sts] : msgText(sts)); /* */
-            msgText(sts));
+/*            (sts>0 && sts<nerr) ? sys_errlist[sts] : msgText(sts,text)); /* */
+            msgText(sts,text));
     else
         fprintf(stderr,"\r%s:  %s\n",pgmname(),txt);
     return(sts);
@@ -94,7 +92,7 @@ int   dasmsg(			/* Return: status from user		*/
 *
 ***********************************************************************/
 
-static char  name[32] = "xxx";
+STATIC_CONSTANT char  name[32] = "xxx";
 
 
 char  *pgmname()
@@ -313,7 +311,7 @@ int   str_copy_dx(			/* Return: status		*/
         k = dsc_ret->dscW_length;
     if (k)
         strncpy(dsc_ret->dscA_pointer,p,k);
-    if (k < dsc_ret->dscW_length)		/* i.e., a static dsc	*/
+    if (k < dsc_ret->dscW_length)		/* i.e., a Static dsc	*/
         dsc_ret->dscA_pointer[k] = '\0';
 
     return(1);
@@ -449,7 +447,7 @@ int   str_append(			/* Return: status		*/
         k = dsc_ret->dscW_length - len;
     if (k > 0)
         strncpy(dsc_ret->dscA_pointer+len,p,k);
-    if (nchar < dsc_ret->dscW_length)		/* i.e., a static dsc	*/
+    if (nchar < dsc_ret->dscW_length)		/* i.e., a Static dsc	*/
         dsc_ret->dscA_pointer[nchar] = '\0';
 
     return(1);
@@ -549,7 +547,7 @@ char  *str_concat(		/* Returns: ptr to null-terminated string*/
         dsc_dest->dscW_length = nchar;
        }
     else
-       {			/* else, dsc_ret is a static descriptor	*/
+       {			/* else, dsc_ret is a Static descriptor	*/
         if (nchar > dsc_dest->dscW_length)
             nchar = dsc_dest->dscW_length;
 
@@ -580,7 +578,7 @@ int   str_element(			/* Returns: status		*/
     char  *p,*p2;
     char  *srcBase;
     struct descriptor  *dsc;
-    static struct descriptor  dsc_substring = {
+    struct descriptor  dsc_substring = {
                             0,DSC_K_DTYPE_T,DSC_K_CLASS_S,0} ;
 
 		/*======================================================
@@ -656,10 +654,12 @@ char  *str_dupl_char(			/* Returns: dsc_ret->dscA_pointer */
     return(dsc_ret->dscA_pointer);
    }
 
+/*
 struct descriptor *cstring_to_dsc( char *src) 
 {
-  static struct descriptor ans = {0,DSC_K_DTYPE_T,DSC_K_CLASS_S,0} ;
+  Static struct descriptor ans = {0,DSC_K_DTYPE_T,DSC_K_CLASS_S,0} ;
   ans.dscW_length = strlen(src);
   ans.dscA_pointer = src;
   return &ans;
 }
+*/
