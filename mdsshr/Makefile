@@ -22,9 +22,9 @@ clean :
 	- rm ../shlib/libMdsShr.$(SHARE_TYPE)
 	- rm .depend
 
-include .depend
-
 depend : .depend
 
 .depend :
 	- find *.c -exec $(MAKE_DEPEND)
+
+include .depend
