@@ -23,7 +23,7 @@ all : ../bin/dwscope \
 	uil -o $@ dwscope.uil
 
 ../bin/dwpad : $(OBJECTS_DWPAD)
-	cc -o $@ $(OBJECTS_DWPAD) -L../shlib -lXmdsShr $(MOTIF_LIBS) $(X11_LIBS)
+	cc -o $@ $(OBJECTS_DWPAD) -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr $(MOTIF_LIBS) $(X11_LIBS)
 
 ../uid/dwpad.uid : dwpad.uil
 	uil -o $@ dwpad.uil

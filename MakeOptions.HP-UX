@@ -1,5 +1,5 @@
 CFLAGS = +z -Ae -I../include -g 
-MOTIF_CFLAGS = +z -Ae -I../include -I/usr/include/X11R6 -g
+MOTIF_CFLAGS = +z -Ae -I../include -I/usr/include/X11R6 -g -D_NO_DXm
 SHARE_TYPE = sl
 MAKE_DEPEND = cc $(CFLAGS) -P -Wp,-M {} 2> .depend \; ; rm *.i
 LD_SHARED_LIB_OPTIONS = -b -ldld
