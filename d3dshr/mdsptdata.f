@@ -225,6 +225,10 @@ C Returns a string corresponding to a given PTDATA error code
 	 string='unrecoverable file access error'
 	elseif(error.eq.7)then
 	 string='invalid shot number (<0 or >999999)'
+	elseif(error.eq.12)then
+	 string='shotfile on optical disk'
+        elseif(error.eq.13)then
+         string='shotfile on tape'
 	elseif(error.eq.14)then
 	 string='invalid call type'
 	elseif(error.eq.20)then
