@@ -1,16 +1,6 @@
 #include "treeshrp.h"
 #include <string.h>
 
-#ifdef _big_endian
-#define LoadShort(in,outp) (outp)[0] = ((char *)&in)[1]; (outp)[1] = ((char *)&in)[0]
-#define LoadInt(in,outp)   (outp)[0] = ((char *)&in)[3]; (outp)[1] = ((char *)&in)[2]; \
-                           (outp)[2] = ((char *)&in)[1]; (outp)[3] = ((char *)&in)[0]
-#else
-#define LoadShort(in,outp) (outp)[0] = ((char *)&in)[0]; (outp)[1] = ((char *)&in)[1]
-#define LoadInt(in,outp)   (outp)[0] = ((char *)&in)[0]; (outp)[1] = ((char *)&in)[1]; \
-                           (outp)[2] = ((char *)&in)[2]; (outp)[3] = ((char *)&in)[3]
-#endif
-
 void TreeSerializeNciOut(NCI *in, char *out)
 {
   char *ptr = out;
