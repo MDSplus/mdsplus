@@ -34,7 +34,12 @@ public fun VMEWaves__init(as_is _nid, optional _method)
 /*write(*, _samples);
 */	    if(_samples > size(_y))
 		_samples = size(_y);
-	    MdsValue('waveform->initWave($1, $2, $3, $4, $5, $6)', _chan, float(_trigger), float(_frequency), _samples, float(_x), float(_y));
+	    _status = MdsValue('waveform->initWave($1, $2, $3, $4, $5, $6)', _chan, float(_trigger), float(_frequency), _samples, float(_x), float(_y));
+		if(_status == 0)
+		{
+			DevLogErr(_nid, "Inconsistent waveform definition. See vxWorks console for details");
+			abort();
+		}
    	}
     }
     MdsDisconnect();
