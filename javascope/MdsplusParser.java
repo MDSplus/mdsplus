@@ -65,7 +65,7 @@ class MdsplusParser
                     outExpr += currToken;
             }
         }
-        System.out.println(outExpr);
+       // System.out.println(outExpr);
         return outExpr;
     }
 }
