@@ -55,7 +55,7 @@ int xlate_logicalname( char *Name, CamKey *key )
 	}
 
 	// look up entry in db file
-	if( (i = lookup_entry( CTS_DB, Name )) == ERROR ) {
+	if( (i = lookup_entry( CTS_DB, Name )) < 0 ) {
 		status = NO_DEVICE;
 		goto Xlate_LogicalName_Exit;
 	}
