@@ -52,6 +52,7 @@ public class LoadPulse
             BufferedReader br = new BufferedReader(new FileReader(confFileName));
             String basePath;
             String currPath = "";
+            NidData defNid = tree.getDefault(0);
             while ( (basePath = br.readLine()) != null)
             {
                 NidData currNid;
@@ -70,6 +71,8 @@ public class LoadPulse
                         nids[j++] = nidsText[i];
                     for (int i = 0; i < nidsSignal.length; i++)
                         nids[j++] = nidsSignal[i];
+
+                    tree.setDefault(defNid, 0);
 
                     for (int i = 0; i < nids.length; i++)
                     {
