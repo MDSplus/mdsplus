@@ -109,3 +109,49 @@ static int DoCamMulti(char *routine, char *name, int a, int f, int count, void *
   }
   return status;
 }
+
+int CamSetMAXBUF(char *name, int new)
+{
+  int serverid = RemoteServerId();
+  int status = -1;
+  int writeData;
+  if (serverid)
+  {
+    struct descrip ans_d = {0,0,{0,0,0,0,0,0,0},0};
+    char cmd[512];
+    sprintf(cmd,"CamSetMAXBUF('%s',%d)",name,new);
+    status = MdsValue(serverid,cmd,&ans_d,0);
+    if (status & 1 && ans_d.dtype == DTYPE_LONG && ans_d.ptr)
+    {
+      memcpy(&status,ans_d.ptr,4);
+      free(ans_d.ptr);
+      ans_d.ptr = 0;
+    }
+    else
+      status = -1;
+  }
+  return status;
+}
+
+int CamGetMAXBUF(char *name)
+{
+  int serverid = RemoteServerId();
+  int status = -1;
+  int writeData;
+  if (serverid)
+  {
+    struct descrip ans_d = {0,0,{0,0,0,0,0,0,0},0};
+    char cmd[512];
+    sprintf(cmd,"CamGetMAXBUF('%s')",name);
+    status = MdsValue(serverid,cmd,&ans_d,0);
+    if (status & 1 && ans_d.dtype == DTYPE_LONG && ans_d.ptr)
+    {
+      memcpy(&status,ans_d.ptr,4);
+      free(ans_d.ptr);
+      ans_d.ptr = 0;
+    }
+    else
+      status = -1;
+  }
+  return status;
+}
