@@ -189,7 +189,7 @@ int	i;
 
         if (Tdi_RandomSeed == 1234567)
 	{
-          srandom(time(0));
+          srandom(time(0)+getpid());
           Tdi_RandomSeed = random();
         }
 	N_ELEMENTS(out_ptr, n);
