@@ -635,7 +635,7 @@ static void FixupNciIn(NCI *nci)
   nci->owner_identifier = swapint((char *)&nci->owner_identifier);
   nci->length = swapint((char *)&nci->length);
   nci->status = swapint((char *)&nci->status);
-  if (nci->data_in_att_block)
+  if (nci->flags & NciM_DATA_IN_ATT_BLOCK)
   {
   }
   else if (nci->error_on_put)
