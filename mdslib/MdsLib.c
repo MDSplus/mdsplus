@@ -227,7 +227,7 @@ int *cdescr (int dtype, void *data, ...)
     void *arglist[MAXARGS];
     va_list incrmtr;
     int dsc;
-    int status;
+    static int status;
     int argidx=1;
     arglist[argidx++] = (void *)&dtype;
     arglist[argidx++] = (void *)data;
@@ -399,7 +399,7 @@ void MdsValueSet(struct descriptor *dsc, void *answerptr, int numbytes)
 	  break;
 	case CLASS_A:
 	  numbytes = MIN(numbytes, 
-			 ((struct descriptor_a *)dsc)->arsize);
+			 (int)((struct descriptor_a *)dsc)->arsize);
 	  break;
 	default:
 	  status = 0;
@@ -451,7 +451,7 @@ int MdsValue(char *expression, ...)
       *length = 0;
     }
 
-  if (mdsSocket > 0)   /* CLIENT/SERVER */
+  if (mdsSocket != INVALID_SOCKET)   /* CLIENT/SERVER */
   {
     struct descriptor *dscAnswer;
     struct descrip exparg;
@@ -640,7 +640,7 @@ int  MdsPut(char *pathname, char *expression, ...)
   a_count--; /* subtract one for terminator of argument list */
 
 
-  if (mdsSocket > 0)   /* CLIENT/SERVER */
+  if (mdsSocket != INVALID_SOCKET)   /* CLIENT/SERVER */
   {
     static char *putexpprefix = "TreePut(";
     static char *argplace = "$,";
@@ -770,7 +770,7 @@ int  MdsOpen(char *tree, int *shot)
 {
 #endif
 
-  if (mdsSocket > 0)
+  if (mdsSocket != INVALID_SOCKET)
   {
 
     long answer;
@@ -831,7 +831,7 @@ int  MdsClose(struct dsc$descriptor *treedsc, int *shot)
 int  MdsClose(char *tree, int *shot)
 {
 #endif
-  if (mdsSocket > 0)
+  if (mdsSocket != INVALID_SOCKET)
   {
 
 
@@ -898,7 +898,7 @@ int  MdsSetDefault(char *node)
 {
 #endif
 
-  if (mdsSocket > 0) {
+  if (mdsSocket != INVALID_SOCKET) {
     char *expression = strcpy((char *)malloc(strlen(node)+20),"TreeSetDefault('");
 #ifdef __VMS
     static struct dsc$descriptor expressiondsc = {0,DTYPE_T,CLASS_S,0};
