@@ -1,4 +1,4 @@
-CFLAGS = -I../include -g
+CFLAGS = -I../include -ggdb3
 MOTIF_CFLAGS = -I../include -g -D_NO_DXm
 WML = ln -sf /usr/examples/motif/wml/tokens.dat . ; /usr/examples/motif/wml/wml xmdsuil.wml ; rm wml-uil.* wml.report
 WML_INCLUDE = -I/usr/examples/motif/wml
@@ -8,6 +8,6 @@ MAKE_DEPEND = cc $(CFLAGS) -M {} > .depend \;
 LD = cc
 LD_SHARED_LIB_OPTIONS = -shared 
 DLD = -ldl
-MOTIF_LIBS = -L/usr/X11R6/lib -lMrm -lXm
-X11_LIBS = -L/usr/X11R6/lib -lXt -lX11
+MOTIF_LIBS = -L/usr/X11R6/lib/static -lMrm -lXm
+X11_LIBS = -L/usr/X11R6/lib/static -lXt -lX11 -lXpm -lXext -lSM -lICE
 RANLIB = ranlib $@
