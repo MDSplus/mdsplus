@@ -792,6 +792,7 @@ static void /*XtCallbackProc*/Restore(Widget w, int *option, XmFileSelectionBoxC
               XmString dirmask;
               XtRemoveAllCallbacks(w,XmNokCallback);
               XtAddCallback(w,XmNokCallback,(XtCallbackProc)Restore,0);
+	      SetDirMask(XtNameToWidget(TopWidget,"*file_dialog"),&defaultfile,0);
               XtVaGetValues(w,XmNdirMask,&dirmask,0);
               XmFileSelectionDoSearch(w, dirmask);
               XtVaSetValues(w, XmNdialogTitle, title, XmNselectionLabelString, label, XmNtextString, deffile, NULL);

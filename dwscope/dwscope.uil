@@ -1754,8 +1754,8 @@ object
         {
         arguments
             {
-            XmNdirMask = 
-            compound_string("*.scope");
+            XmNpattern = 
+            compound_string("*.dat");
             XmNdialogTitle = 
             compound_string("Scope: Save Current Settings As");
             XmNselectionLabelString = 
