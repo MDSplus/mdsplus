@@ -264,7 +264,7 @@ typedef UNPACKED_REAL	*UNPACKED_REAL_PTR;
 #define U_R_INVALID	8
 #define U_R_UNUSUAL (U_R_ZERO | U_R_INFINITY | U_R_INVALID)
 
-#define U_R_BIAS	2147483648L
+#define U_R_BIAS	2147483648LU
 
 /*
 ** Special floating point constant definitions
