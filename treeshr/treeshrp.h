@@ -23,8 +23,12 @@
 #define swapshort(in) in
 #endif
 
-#ifdef __hpux__
+#if defined(__hpux__) || defined(__irix__)
+#if defined(__hpux__)
 #pragma HP_ALIGN NOPADDING PUSH
+#elif defined(__irix__)
+#pragma pack(1)
+#endif
 static int swapint(int in)
 {
   int out;
@@ -307,9 +311,12 @@ typedef struct record_header
 #pragma pack(pop,enter_include)
 #endif
 
-#ifdef __hpux__
+#if defined(__hpux__)
 #pragma HP_ALIGN POP
+#elid defined(__irix__)
+#pragma pack(0)
 #endif
+
 
 /*****************************************************
   Search structures

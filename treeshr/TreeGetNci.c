@@ -671,7 +671,7 @@ int GetNciW(TREE_INFO *info, int node_num, NCI *nci)
 #else
 			fseek(info->nci_file->get, node_num * sizeof(NCI), SEEK_SET);
 			fread((void *)nci,sizeof(NCI),1,info->nci_file->get);
-#if defined(__hpux__)
+#if defined(__hpux__) || defined(__irix__)
 			FixupNciIn(nci);
 #endif
 
