@@ -94,7 +94,7 @@ int mdsip_find_user_mapping(char *hostfile, char *ipaddr, char *host, char *name
     {
       match_host = strcpy(malloc(strlen(host)+strlen(name)+2),name);
       strcat(match_host,"@");
-      strcat(match_host,ipaddr);
+      strcat(match_host,host);
     }
 
     while (ok==0 && fgets(line,1023,f))
