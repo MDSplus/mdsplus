@@ -200,11 +200,11 @@ if (sz(n_elements(sz)-2) eq 7) then begin
 ; status = MdsValue('_dbstatus')
     error = 0
     status = 0
-    if not (keyword_set(quiet)) then begin
+;    if not (keyword_set(quiet)) then begin
         Message, count, /continue
-    endif else begin
-        Message, count, /noprint, /continue
-    endelse
+;    endif else begin
+;        Message, count, /noprint, /continue
+;    endelse
     count = -1
 endif else begin
 ;
