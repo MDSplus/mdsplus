@@ -294,7 +294,7 @@ define syntax show_server											       ! 83
         qualifier full												       ! 102
 define syntax show_version
 	Routine TclShowVersion
-	parameter p1,prompt="What",value(requred,type=show_TYPE)
+	parameter p1,prompt="What",value(required,type=show_TYPE)
 define verb start												       ! 92 
         parameter p1,prompt="What",value(required,type=start_TYPE)						       ! 92 
 define syntax start_server											       ! 92 
