@@ -118,7 +118,11 @@ static int OpenShotIdFile(char *experiment,int mode)
   char *filename;
   int found = 0;
   while ((filename = GetFileName(experiment,&ctx)) && !(found=(MDS_IO_EXISTS(filename))));
-  return (found ? MDS_IO_OPEN(filename,mode,0) : CreateShotIdFile(experiment));
+  if (found)
+    fd = MDS_IO_OPEN(filename,mode,0);
+  else if (mode == O_WRONLY)
+    fd = CreateShotIdFile(experiment);
+  return fd;
 }
 
 

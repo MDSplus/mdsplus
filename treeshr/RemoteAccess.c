@@ -1165,7 +1165,7 @@ int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode)
 
 static int io_exists_remote(char *host, char *filename)
 {
-  int ans = -1;
+  int ans = 0;
   int sock = RemoteAccessConnect(host, 1);
   if (sock != -1)
   {
