@@ -469,15 +469,15 @@ ARGLIST 	*arg;
       *pout++ = *pin++;
       break;
     case '\'' :			/* quoted string */
-      while (*pout++ = *pin) {bufchk if (*pin++ == '\'') break; }
+      while (*pout++ = *pin) {bufchk if (*++pin == '\'') break; }
       break;
     case '"' :			/* quoted string */
-      while (*pout++ = *pin) {bufchk if (*pin++ == '"') break; }
+      while (*pout++ = *pin) {bufchk if (*++pin == '"') break; }
       break;
     case '?' : ++pin;		/* parameter marker */
       ++*nmarks;
       if (used >= arg->c) {
-	/*   sprintf(hold, "Expect >= %d parameters, %d given.", arg->used, arg->c); */
+	/*	   sprintf(hold, "Expect >= %d parameters, %d given.", arg->used, arg->c);  */
 	return TdiMISS_ARG;
       }
       if (argv
