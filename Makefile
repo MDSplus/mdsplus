@@ -3,10 +3,10 @@ PARTS = mdsshr \
 	tdishr \
 	tditest \
 	xmdsshr \
+        mdstcpip \
 	dwscope \
 	mitdevices \
 	mdslibidl \
-	mdstcpip	\
 	remcam \
 	cdu	\
 	mdsdcl	\
