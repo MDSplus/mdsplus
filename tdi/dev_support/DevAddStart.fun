@@ -6,5 +6,7 @@ public fun DevAddStart(in _path, in _type, in _numnodes, out _nid)
     write(*,"Error adding contiguous nodes for device "//_path);
     abort();
   }
-  return(DevAddNode(_path,'DEVICE',build_conglom(*,'A12',*,*),'/write_once',_nid));
+  _cmd = "DevAddNode(_path,'DEVICE',build_conglom(*,'"//_type//"',*,*),'/write_once',_nid)";
+  return(execute(_cmd));
+/*  return(DevAddNode(_path,'DEVICE',build_conglom(*,""//_type,*,*),'/write_once',_nid)); */
 }
