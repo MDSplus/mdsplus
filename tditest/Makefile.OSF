@@ -1,9 +1,22 @@
-CFLAGS = -c -I../include -I. -g -migrate -U__DECC -assume noaligned_objects -ieee_with_inexact
+CFLAGS = -c -I../include -I. -g -assume noaligned_objects
 
 OBJECTS = \
 tditest.o
 
-tditest : $(OBJECTS)
-	cc -o $@ $(OBJECTS) -lc -L../tdishr -lTdiShr 
+../bin/tditest : $(OBJECTS) ../bin
+	cc -o $@ $(OBJECTS) -lc -L../shlib -lTdiShr 
 
-##-lc -lm -L../mdsshr -lMdsShr -lots -L../treeshr -lTreeShr
+../bin :
+	mkdir ../bin
+
+clean :
+	- rm *.o
+	- rm ../bin/tditest
+
+depend : .depend
+
+.depend :
+	- rm .depend
+	find *.c -exec cc -I../include -M {} > .depend \;
+
+include .depend
