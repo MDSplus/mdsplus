@@ -137,7 +137,9 @@ WindowData.java\
 WindowEditor.java\
 WithErrorData.java\
 WithUnitsData.java\
-jTraverser.java
+jTraverser.java\
+DecompileTree.java\
+CompileTree.java
 
 GIFS = DeviceApply.gif \
        DeviceChoice.gif \
