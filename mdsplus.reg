@@ -5,5 +5,5 @@ REGEDIT4
 [HKEY_LOCAL_MACHINE\SOFTWARE\MIT\MDSplus]
 "main_path"="C:\\mdsplus\\trees"
 "subtree_path"="C:\\mdsplus\\trees\\subtree"
-"MDS_PATH"="C:\\mdsplus\\tdi"
+"MDS_PATH"="C:\\\mdsplus\\tdi"
 
