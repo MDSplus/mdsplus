@@ -3,6 +3,8 @@ module Pad
     version = 
     "v1.0"
 
+include file "XmdsWidgets.uil";
+
 value
     USE_DIALOG: 0;
     USE_DEFAULT: 1;
@@ -34,9 +36,6 @@ procedure
     EraseDataSetup;
     Ok;
     DisplayHelp(string);
-    XmdsRegisterWidgetCallback(any);
-    XmdsManageChildCallback(any);
-    XmdsUnmanageChildCallback(any);
 
 object
     pad: XmMainWindow 

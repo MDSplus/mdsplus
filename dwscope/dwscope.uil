@@ -11,6 +11,8 @@ module scope_uil
         XmCascadeButton = gadget;
         }
 
+include file "XmdsWidgets.uil";
+
 identifier
     Button3Widget ;
     CustomizeWindowWidget ;
@@ -25,18 +27,6 @@ value
     POPUP_DIALOG: 2;
     USE_DEFAULT_SNAPSHOT: 4;
     POPUP_SNAPSHOT_DIALOG: 5;
-    XmdsPOINTER_MODE_USER : 0;
-    XmdsPOINTER_MODE_NONE : 1;
-    XmdsPOINTER_MODE_POINT : 2;
-    XmdsPOINTER_MODE_ZOOM : 3;
-    XmdsPOINTER_MODE_DRAG : 4;
-    XmdsPOINTER_MODE_EDIT : 5;
-    XmdsNpointerMode : argument("pointerMode",integer);
-    XmdsNattachCrosshairs : argument("attachCrosshairs",boolean);
-    XmdsNcrosshairsCallback : reason("crosshairsCallback");
-    XmdsNalignCallback : reason("alignCallback");
-    XmdsNcutCallback : reason("cutCallback");
-    XmdsNpasteCallback : reason("pasteCallback");
 
 procedure
     Align;
@@ -72,16 +62,12 @@ procedure
     DisplayHelp(string);
     SetPointerMode;
     SetPointerModeMenu;
-    XmdsManageChildCallback(any);
-    XmdsRegisterWidgetCallback(any);
-    XmdsUnmanageChildCallback(any);
     expand_reset(integer);
     expand_ok;
     expand_cancel;
     Updates;
     UpdatesMenuButton;
     GridStyle;
-    XmdsCreateWaveform;
 
 object
     scope: XmMainWindow 
