@@ -28,6 +28,9 @@ int MdsGetCurrentShotId(experiment,shot)
 #include <stdio.h>
 #include <libroutines.h>
 #include <strroutines.h>
+#include <ctype.h>
+
+#define _ToLower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
 static FILE *OpenShotIdFile(char *experiment,char *mode)
 {
@@ -44,7 +47,7 @@ static FILE *OpenShotIdFile(char *experiment,char *mode)
   experiment_d.pointer = experiment;
   StrTrim(&file_d,&experiment_d,&len);
   for (i=0;i<file_d.length;i++) 
-    file_d.pointer[i] = _tolower(file_d.pointer[i]);
+    file_d.pointer[i] = _ToLower(file_d.pointer[i]);
   StrAppend(&file_d,&suffix_d);
   if (LibFindFile(&file_d,&filename,&ctx) & 1)
   {
