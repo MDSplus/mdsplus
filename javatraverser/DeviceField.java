@@ -200,6 +200,7 @@ public class DeviceField extends DeviceComponent
         return super.add(c);
     }
 
+    public boolean supportsState(){return showState;}
 
 
 }
