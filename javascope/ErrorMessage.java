@@ -12,6 +12,7 @@ class ErrorMessage extends ScopePositionDialog {
     private int n_row = 0;
     private Frame f;
     public static final int MAX_ERROR_ROW  = 10;
+    boolean is_message_show = false;
     
     ErrorMessage(Frame fw)
     {
@@ -29,6 +30,9 @@ class ErrorMessage extends ScopePositionDialog {
     public void addMessage(String error)
     {
 	int end;
+	
+	if(is_message_show) 
+	    return;
 
 	if(n_row < MAX_ERROR_ROW)
 	{	
@@ -44,8 +48,9 @@ class ErrorMessage extends ScopePositionDialog {
      */
     public int showMessage()
     {
-	if(n_row == 0) 
+	if(n_row == 0 || is_message_show) 
 	    return 0;
+	is_message_show = true;
 	setLayout(new GridLayout(n_row + 1, 0));
 	Panel p = new Panel();
 	((FlowLayout)p.getLayout()).setAlignment(FlowLayout.CENTER);
@@ -65,6 +70,9 @@ class ErrorMessage extends ScopePositionDialog {
     {
 	int start = 0, end = 0;
 
+	if(is_message_show) 
+	    return;
+
     	removeAll();
 	
 	while((end = error.indexOf('\n', start)) != -1)
@@ -83,6 +91,7 @@ class ErrorMessage extends ScopePositionDialog {
     
     public void actionPerformed(ActionEvent e)
     {
+	is_message_show = false;
     	setResizable(true);
 	setVisible(false);
 	resetMsg();
