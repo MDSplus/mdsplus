@@ -423,20 +423,26 @@ static int StartReceiver(short *port_out)
   }
   if (!ThreadRunning)
   {
+#ifndef HAVE_WINDOWS_H
     size_t ssize;
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     status = pthread_attr_getstacksize(&attr,&ssize);
     status = pthread_attr_setstacksize(&attr,ssize*16);
     status = pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
+#endif
     if (worker_cond_init)
     {
       pthread_mutex_init(&worker_mutex,pthread_mutexattr_default);
       pthread_cond_init(&worker_condition,pthread_condattr_default);
       worker_cond_init = 0;
     }
+#ifndef HAVE_WINDOWS_H
     status = pthread_create(&thread, &attr, Worker, (void *)&sock);
     pthread_attr_destroy(&attr);
+#else
+    status = pthread_create(&thread, pthread_attr_default , Worker, (void *)&sock);
+#endif
     if (status != 0)
     {
       perror("error creating dispatch receiver thread\n");
