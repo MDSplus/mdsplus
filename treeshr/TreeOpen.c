@@ -3,10 +3,13 @@
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ctype.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <usagedef.h>
 #include <errno.h>
+#include <sys/mman.h>
+#include <fcntl.h>
 
 #define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
@@ -219,8 +222,8 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 					if (local_info->edit->external_pages)
 						free(local_info->external);
 #ifdef __VMS
-					if (local_info->edit->tree_edit$a_nci_section[0])
-						sys$deltva(local_info->edit->tree_edit$a_nci_section, 0, 0);
+					if (local_info->edit->nci_section[0])
+						sys$deltva(local_info->edit->nci_section, 0, 0);
 					if (local_info->edit->nci_channel)
 						sys$dassgn(local_info->edit->nci_channel);
 #endif
@@ -245,11 +248,18 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 							MdsEventCan(local_info->rundown_id);
 						if (local_info->section_addr[0])
 						{
-#ifdef __VMS
+#if defined(__VMS)
 							if ((status = sys$cretva(local_info->section_addr, 0, 0)) & 1)
 							if ((status = sys$dassgn(local_info->channel)) & 1)
 							status = lib$free_vm_page(&local_info->vm_pages, &local_info->vm_addr);
 #else
+#if defined(__osf__)
+							if (local_info->channel)
+							{
+							  close(local_info->channel);
+							  munmap(local_info->section_addr[0],local_info->alq * 512);
+							}
+#endif
 							free(local_info->vm_addr);
 #endif
 						}
@@ -628,7 +638,7 @@ static char *GetRegistryPath(char *pathname)
 }
 #endif
 
-static FILE  *OpenOne(char *tree, int shot, char *type,char *options,char **resnam_out)
+static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,char *options,char **resnam_out)
 {
 	FILE *file = 0;
 	int len = strlen(tree);
@@ -673,7 +683,13 @@ static FILE  *OpenOne(char *tree, int shot, char *type,char *options,char **resn
 					strcat(resnam,TREE_PATH_DELIM);
 				strcat(resnam,name);
 				strcat(resnam,type);
+#ifdef __osf__
+				info->channel = open(resnam,O_RDONLY);
+				file = info->channel ? fdopen(info->channel,"rb") : NULL;
+#else
+				info->channel = 0;
 				file = fopen(resnam,"rb");
+#endif
 				if (file == NULL)
 				{
 					//		  perror("Error opening tree file");
@@ -722,7 +738,7 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, in
 	char *resnam;
 	*file_handle = malloc(sizeof(FILE *));
 	file = (FILE **)*file_handle;
-	*file = OpenOne(tree, shot, TREE_TREEFILE_TYPE, "r", &resnam);
+	*file = OpenOne(info, tree, shot, TREE_TREEFILE_TYPE, "r", &resnam);
 	if (*file)
 	{
 		fseek(*file, 0, SEEK_END);
@@ -730,7 +746,7 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, in
 		fseek(*file, 0, SEEK_SET);
 		status = TreeNORMAL;
 		info->filespec=resnam;
-		*remote_file = 1;
+		*remote_file = info->channel == 0;
 	}
 	else if (errno == ENOENT)
 		status = TreeFILE_NOT_FOUND;
@@ -846,11 +862,9 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
 #endif
 
 		}
-
-#ifdef __VMS
-
 		else
 		{
+#if defined(__VMS)
 			int       retadr[2];
 			/************************************************
 			Use file id for the section name.
@@ -861,10 +875,11 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
 			************************************************/
 			status = sys$crmpsc(info->section_addr, retadr, 0, edit_flag == 0 ? SEC$M_GBL : SEC$M_CRF | SEC$M_WRT,
 				TreeSectionName(info), 0, 0, info->channel, info->alq, 0, 0, 0);
-		}
-
+#elif defined(__osf__)
+		        status = mmap(info->section_addr[0],info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE | MAP_FIXED, 
+                            info->channel, 0) != (void *)-1;
 #endif
-
+                }
 		/***********************************************
 		If we successfully mapped the file, see if
 		we got all of the file and the return addresses
@@ -901,10 +916,12 @@ static int GetVmForTree(TREE_INFO *info)
 {
 	int status;
 
-#if defined(__ALPHA)
-#define PAGE_SIZE 64
+#if defined(__ALPHA) && defined(__VMS)
+	int PAGE_SIZE=64;
+#elif defined(__osf__)
+	int PAGE_SIZE = sysconf(_SC_PAGE_SIZE)/512;
 #else
-#define PAGE_SIZE 1
+	int PAGE_SIZE=1;
 #endif
 #define align(addr)  addr = (((unsigned long)addr) % (PAGE_SIZE * 512)) ? \
 	addr - (((unsigned long)addr) % (PAGE_SIZE * 512)) + PAGE_SIZE * 512 : addr
