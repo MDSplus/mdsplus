@@ -830,6 +830,7 @@ int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
     char  *arglist[4];
     char  *p;
     int i=0;
+    signal(SIGCHLD,SIG_DFL);
     arglist[0] = getenv("SHELL");
     if (arglist[0] == 0)
       arglist[0] = sh;
