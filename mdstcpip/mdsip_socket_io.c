@@ -504,9 +504,8 @@ SOCKET Connect(char *host, unsigned short port)
   if (host[0]=='_')
   {
     globus_io_secure_authorization_data_initialize(&auth_data);
-    globus_io_secure_authorization_data_set_callback(&auth_data,AuthenticationCallback,0);
     globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
-    globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_CALLBACK,&auth_data);
+    globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_SELF,&auth_data);
     globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
   }
   if ((result = globus_io_tcp_connect((host[0] == '_') ? &host[1] : host,htons(port),&attr,handle)) != GLOBUS_SUCCESS)
