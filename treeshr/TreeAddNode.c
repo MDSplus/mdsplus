@@ -467,7 +467,7 @@ int _TreeAddConglom(void *dbid, char *path, char *congtype, int *nid)
   int (*addr)();
   if (!IS_OPEN_FOR_EDIT(dblist))
     return TreeNOEDIT;
-  sprintf(exp,"%s__add('%s')",congtype,path);
+  sprintf(exp,"%s__add('%s',_nid)",congtype,path);
   status = LibFindImageSymbol(&tdishr,&tdiexecute,&addr);
   if (status & 1)
   {
