@@ -136,8 +136,10 @@ AC_CHECK_LIB(m,pow,LIBM="-lm",LIBM="")
 AC_CHECK_LIB(resolv,__dn_skipname,LIBRESOLV="-lresolv",LIBRESOLV="")
 AC_CHECK_LIB(dl,dlopen,LIBDL="-ldl",LIBDL="")
 AC_CHECK_LIB(dld,shl_load,LIBDLD="-ldld",LIBDLD="")
+OLD_LIBS="$LIBS"
 AC_SEARCH_LIBS(gethostbyname,c socket nsl,LIBNSL="$ac_func_search_save_LIBS",LIBNSL="")
 AC_SEARCH_LIBS(socket,c socket,LIBSOCKET="$ac_func_search_save_LIBS",LIBSOCKET="")
+LIBS="$OLD_LIBS"
 AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
 
 if test "$enable_d3d" = yes -o "$enable_d3d" = on ; then
