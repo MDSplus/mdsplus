@@ -48,7 +48,7 @@ libTcl.a:	$(OBJFILES)
 	$(LD)  -o $@ $(LFLAGS)	\
 		$(LD_SHARED_LIB_OPTIONS)	\
 		tcl_commands.o  libTcl.a	\
-		-lMdsdcl -lMdsShr -lTreeShr -lTdiShr
+		-lMdsdcl -lMdsShr -lTreeShr -lTdiShr -lc
 
 .depend:
 	touch .depend

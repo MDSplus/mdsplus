@@ -15,7 +15,7 @@ define type ADD_TYPE
 Define syntax add_node
 	Routine TclAddNode
         parameter p1,prompt="What",value(required,type=ADD_TYPE)
-        parameter p2,label=NODE,prompt="Node",value(required)
+        parameter p2,label=NODENAME,prompt="Node",value(required)
 	qualifier model,value(required)										       ! 53 
 	qualifier usage,default,value(default=ANY,type=USAGE_TYPE)						       ! 53 
         qualifier qualifiers,value(required)									       ! 53 

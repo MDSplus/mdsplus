@@ -33,7 +33,7 @@ int   TclAddNode()		/* Return: status			*/
     static DYNAMIC_DESCRIPTOR(dsc_qualifiers);
     static DYNAMIC_DESCRIPTOR(dsc_usageStr);
 
-    sts = cli_get_value("NODE",&dsc_nodnam);
+    sts = cli_get_value("NODENAME",&dsc_nodnam);
     if (cli_get_value("MODEL",&dsc_modelType) & 1)
        {
         stsQual = cli_get_value("QUALIFIERS",&dsc_qualifiers);

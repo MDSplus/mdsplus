@@ -207,7 +207,7 @@ int   str_trim(				/* Return: status		*/
     else
        {
         p = src;
-        k = strlen(src);
+        k = p ? strlen(p) : 0;
        }
 
 		/*--------------------------------------------------------
@@ -281,7 +281,7 @@ int   str_copy_dx(			/* Return: status		*/
     else
        {
         p = source;
-        k = strlen(source);
+        k = p ? strlen(p) : 0;
        }
 
 		/*-------------------------------------------------------
@@ -423,7 +423,7 @@ int   str_append(			/* Return: status		*/
     else
        {
         p = source;
-        k = strlen(source);
+        k = p ? strlen(p) : 0;
        }
 
 		/*-------------------------------------------------------
@@ -511,7 +511,7 @@ char  *str_concat(		/* Returns: ptr to null-terminated string*/
         else
            {
             p = argList[i];
-            k = strlen(p);
+            k = p ? strlen(p) : 0;
            }
         nchar += k;
        }
@@ -536,7 +536,7 @@ char  *str_concat(		/* Returns: ptr to null-terminated string*/
         else
            {
             p = argList[i];
-            k = strlen(p);
+            k = p ? strlen(p) : 0;
            }
         strncpy(tmp+ichar,p,k);
        }
@@ -601,7 +601,7 @@ int   str_element(			/* Returns: status		*/
     else
        {
         srcBase = source;
-        k = strlen(source);
+        k = srcBase ? strlen(srcBase) : 0;
        }
 		/*-------------------------------------------------------
 		 * find "i"th delimiter ...
