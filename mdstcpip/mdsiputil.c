@@ -4,6 +4,8 @@
 #endif
 #ifdef WIN32
 #include <io.h>
+#else
+#include <pwd.h>
 #endif
 
 static unsigned char message_id = 1;
@@ -252,7 +254,10 @@ static SOCKET ConnectToPort(char *host, char *service)
 #ifdef HAVE_VXWORKS_H
     user_p = "vxWorks";
 #else
+    user_p = (getpwuid(geteuid()))->pw_name;
+    /*
     user_p = (cuserid(user) && strlen(user)) ? user : "?";
+    */
 #endif
 #endif
     m = malloc(sizeof(MsgHdr) + strlen(user_p));
