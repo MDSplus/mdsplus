@@ -745,7 +745,7 @@ pro display_event, ev
              idx = strpos(name, ';')
              if (idx ne -1) then $
                name = strmid(name, 0, idx)
-             write_options, name, ctx.defaults_file, ctx.display_options, $
+             write_options, name, ctx.display_options, $
                            ctx.select_options, ctx.print_options, ctx.make_options, $
                            ctx.custom_options
              ctx.defaults_file = name
