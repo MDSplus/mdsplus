@@ -23,7 +23,7 @@ static void initializeLocalRemote(int receive_events, int *use_local);
 static void newRemoteId(int *id);
 static void setRemoteId(int id, int ofs, int evid);
 static int sendRemoteEvent(char *evname, int data_len, char *data);
-
+static int getRemoteId(int id, int ofs);
 static int remote_local_initialized = 0;
 static SOCKET receive_sockets[256];  	/* Socket to receive external events  */
 static SOCKET send_sockets[256];  		/* Socket to send external events  */
@@ -111,7 +111,7 @@ int MDSEventAst(char *eventnam, void (*astadr)(void *,int,char *), void *astprm,
     if(!eventnam || !*eventnam) return 1;
     initializeLocalRemote(1, &use_local);
     if(num_receive_servers > 0)
-	eventAstRemote(eventnam, astadr, astprm, eventid);
+	    eventAstRemote(eventnam, astadr, astprm, eventid);
     if(!use_local) return 1;
 
 	/* Local stuff */
@@ -126,13 +126,85 @@ int MDSEventAst(char *eventnam, void (*astadr)(void *,int,char *), void *astprm,
 	return(event->thread != -1);
 }
 
+static int canEventRemote(int eventid)
+{
+    struct descriptor 
+	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
+	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventCan"};
+    int status, i;
+    int (*rtn)();
+
+    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    /* kill external thread before sending messages over the socket */
+    if(status & 1)
+    {
+ //     KillHandler();
+      for(i = 0; i < num_receive_servers; i++)
+      {
+	if(receive_sockets[i]) status = (*rtn) (receive_sockets[i], getRemoteId(eventid, i));
+      }
+  //    startRemoteAstHandler();
+    }
+    return status;
+}
+
 int MDSEventCan(int eventid) 
 {
-	return 0;
+  int use_local;
+  if(eventid < 0) return 0;
+
+  initializeLocalRemote(1, &use_local);
+  if(num_receive_servers > 0)
+  	canEventRemote(eventid);
+  else
+  {
+    struct event_struct *event = (struct event_struct *)eventid;
+    CloseHandle(event->event);
+    free(event->eventnam);
+    free(event);
+  }
+	return 1;
+}
+
+struct MDSWfevent_struct {
+    HANDLE event;
+    int buflen;
+    char *buffer;
+    int *retlen;
+};
+
+static void MDSWfevent_ast(void *astparam, int data_len, char *data)
+{
+  BOOLEAN status;
+  struct MDSWfevent_struct *event = (struct MDSWfevent_struct *)astparam;
+  if (event->buffer)
+  {
+    if (event->buflen > 0)
+    {
+      memset(event->buffer,0,event->buflen);
+      if (data_len > 0)
+      {
+        memcpy(event->buffer,data,min(data_len,event->buflen));
+      }
+    }
+  }
+  if (event->retlen)
+    *event->retlen = data_len;
+  status = SetEvent(event->event);
 }
 
 int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
 {
+  int eventid;
+  struct MDSWfevent_struct event;
+  event.event = CreateEvent(NULL, TRUE, FALSE, NULL);
+  event.buflen = buflen;
+  event.buffer = data;
+  event.retlen = datlen;
+  MDSEventAst(evname,MDSWfevent_ast,(void *)&event,&eventid);
+  WaitForSingleObject(event.event,INFINITE);
+  MDSEventCan(eventid);
+  CloseHandle(event.event);
   return 1;
 }
 
@@ -248,7 +320,7 @@ static unsigned __stdcall handleRemoteAst(void *p)
 {
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-	routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsg"};
+	routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsgOOB"};
     int status, i;
     int (*rtn)();
     Message *m;
