@@ -155,7 +155,7 @@ int MSIUnsetPATH()
           strcat(newpath,mpath);
         }
       }
-      RegSetValueEx(key,"TESTPATH",0,REG_EXPAND_SZ,path,strlen(path)); 
+      RegSetValueEx(key,"PATH",0,REG_EXPAND_SZ,newpath,strlen(newpath)); 
       free(path);
       free(newpath);
     }
