@@ -96,3 +96,5 @@ MDSprintf
 MDSfprintf
 libgetvm_
 libfreevm_
+MSISetPATH
+MSIUnsetPATH
