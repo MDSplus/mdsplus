@@ -365,5 +365,13 @@ SOURCE=.\WavePopup.java
 SOURCE=.\javascope.mak
 # End Source File
 # End Group
+# Begin Group "Properties"
+
+# PROP Default_Filter "properties"
+# Begin Source File
+
+SOURCE=.\jScope.properties
+# End Source File
+# End Group
 # End Target
 # End Project
