@@ -86,6 +86,10 @@ CFG=javascope - Win32 Debug
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\AboutWindow.java
+# End Source File
+# Begin Source File
+
 SOURCE=.\Base64.java
 # End Source File
 # Begin Source File
@@ -98,6 +102,14 @@ SOURCE=.\CompositeWaveDisplay.java
 # End Source File
 # Begin Source File
 
+SOURCE=.\ConnectionEvent.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\ConnectionListener.java
+# End Source File
+# Begin Source File
+
 SOURCE=.\DataAccess.java
 # End Source File
 # Begin Source File
@@ -106,19 +118,35 @@ SOURCE=.\DataAccessURL.java
 # End Source File
 # Begin Source File
 
+SOURCE=.\DataCached.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\DataCacheObject.java
+# End Source File
+# Begin Source File
+
 SOURCE=.\DataProvider.java
 # End Source File
 # Begin Source File
 
-SOURCE=.\DemoProvider.java
+SOURCE=.\DataServerItem.java
 # End Source File
 # Begin Source File
 
-SOURCE=.\ErrorMessage.java
+SOURCE=.\DemoDataProvider.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\Descriptor.java
 # End Source File
 # Begin Source File
 
 SOURCE=.\FontSelection.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\FrameData.java
 # End Source File
 # Begin Source File
 
@@ -130,7 +158,7 @@ SOURCE=.\Frames.java
 # End Source File
 # Begin Source File
 
-SOURCE=.\FtuProvider.java
+SOURCE=.\FtuDataProvider.java
 # End Source File
 # Begin Source File
 
@@ -139,6 +167,10 @@ SOURCE=.\Grid.java
 # Begin Source File
 
 SOURCE=.\JetDataProvider.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\JetMdsDataProvider.java
 # End Source File
 # Begin Source File
 
@@ -206,7 +238,27 @@ SOURCE=.\jScope.java
 # End Source File
 # Begin Source File
 
+SOURCE=.\jScope_1.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\jScope_2.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\jScopeBrowseSignals.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\jScopeBrowseUrl.java
+# End Source File
+# Begin Source File
+
 SOURCE=.\jScopeDefaultValues.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\jScopeMac.java
 # End Source File
 # Begin Source File
 
@@ -214,7 +266,19 @@ SOURCE=.\jScopeMultiWave.java
 # End Source File
 # Begin Source File
 
+SOURCE=.\jScopeMultiWave_2.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\jScopeProperties.java
+# End Source File
+# Begin Source File
+
 SOURCE=.\jScopeWaveContainer.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\jScopeWaveContainer_2.java
 # End Source File
 # Begin Source File
 
@@ -222,11 +286,35 @@ SOURCE=.\jScopeWavePopup.java
 # End Source File
 # Begin Source File
 
-SOURCE=.\LocalProvider.java
+SOURCE=.\LocalDataProvider.java
 # End Source File
 # Begin Source File
 
 SOURCE=.\MdsAccess.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\MdsConnection.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\MdsDataClient.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\MdsDataProvider.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\MdsIOException.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\MdsMessage.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\MdsPlusBrowseSignals.java
 # End Source File
 # Begin Source File
 
@@ -242,19 +330,11 @@ SOURCE=.\MultiWavePopup.java
 # End Source File
 # Begin Source File
 
-SOURCE=.\NetworkEvent.java
+SOURCE=.\NotConnectedDataProvider.java
 # End Source File
 # Begin Source File
 
-SOURCE=.\NetworkEventListener.java
-# End Source File
-# Begin Source File
-
-SOURCE=.\NetworkEventManager.java
-# End Source File
-# Begin Source File
-
-SOURCE=.\NetworkProvider.java
+SOURCE=.\ProfileDialog.java
 # End Source File
 # Begin Source File
 
@@ -263,10 +343,6 @@ SOURCE=.\RandomAccessData.java
 # Begin Source File
 
 SOURCE=.\RdaAccess.java
-# End Source File
-# Begin Source File
-
-SOURCE=.\ReaderConfig.java
 # End Source File
 # Begin Source File
 
@@ -282,10 +358,6 @@ SOURCE=.\RowColumnLayout.java
 # End Source File
 # Begin Source File
 
-SOURCE=.\ScopePositionDialog.java
-# End Source File
-# Begin Source File
-
 SOURCE=.\SetupDataDialog.java
 # End Source File
 # Begin Source File
@@ -294,11 +366,47 @@ SOURCE=.\SetupDefaults.java
 # End Source File
 # Begin Source File
 
+SOURCE=.\SetupWaveformParams.java
+# End Source File
+# Begin Source File
+
 SOURCE=.\Signal.java
 # End Source File
 # Begin Source File
 
-SOURCE=.\Slider.java
+SOURCE=.\SignalBox.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\SignalCache.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\SignalsBoxDialog.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\TextorBrowseSignals.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\TwuAccess.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\TwuDataProvider.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\UniversalDataProvider.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\UpdateEvent.java
+# End Source File
+# Begin Source File
+
+SOURCE=.\UpdateEventListener.java
 # End Source File
 # Begin Source File
 
@@ -310,6 +418,10 @@ SOURCE=.\WaveContainerListener.java
 # End Source File
 # Begin Source File
 
+SOURCE=.\WaveData.java
+# End Source File
+# Begin Source File
+
 SOURCE=.\WaveDisplay.java
 # End Source File
 # Begin Source File
@@ -318,15 +430,19 @@ SOURCE=.\Waveform.java
 # End Source File
 # Begin Source File
 
+SOURCE=.\Waveform_2.java
+# End Source File
+# Begin Source File
+
 SOURCE=.\WaveformContainer.java
 # End Source File
 # Begin Source File
 
-SOURCE=.\WaveformEvent.java
+SOURCE=.\WaveformContainer_2.java
 # End Source File
 # Begin Source File
 
-SOURCE=.\WaveformEventListener.java
+SOURCE=.\WaveformEvent.java
 # End Source File
 # Begin Source File
 
