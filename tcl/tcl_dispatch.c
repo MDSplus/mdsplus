@@ -3,17 +3,6 @@
 #include        <stdlib.h>
 #include        <dbidef.h>
 #include        <ncidef.h>
-#ifndef HAVE_WINDOWS_H
-#include        <pthread.h>
-#endif
-
-#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
-#define pthread_attr_default NULL
-#define pthread_mutexattr_default NULL
-#define pthread_condattr_default NULL
-#else
-#undef select
-#endif
 
 #ifdef vms
 #include        <lib$routines.h>
@@ -48,9 +37,8 @@ static int SyncEfnInit = 0;
 #ifdef vms
 static int SyncEfn = 0;
 #else
-static pthread_mutex_t SyncEfnMutex;
-static pthread_cond_t *SyncEfn;
-static pthread_cond_t SyncEfnCond;
+static int SyncId;
+static int *SyncEfn = &SyncId;
 #endif
 
 static void  *dispatch_table = 0;
@@ -106,23 +94,11 @@ int TclDispatch_build()
 	/***************************************************************
 	 * TclDispatch:
 	 ***************************************************************/
-static void ConnectionDown()
-   {
-#ifdef vms
-    sys$setef(SyncEfn);
-#else
-    pthread_cond_signal(SyncEfn);
-#endif
-   }
 
 static void InitSyncEfn()
 {
 #ifdef vms
     lib$get_ef(&SyncEfn);
-#else
-    pthread_mutex_init(&SyncEfnMutex,pthread_mutexattr_default);
-    pthread_cond_init(&SyncEfnCond,pthread_condattr_default);
-    SyncEfn = &SyncEfnCond;
 #endif
     SyncEfnInit = 1;
 }
@@ -131,11 +107,9 @@ static void InitSyncEfn()
 #ifdef vms
 static void WaitfrEf(int efn) {sys$waitfr(SyncEfn);}
 #else
-static void WaitfrEf(pthread_cond_t *efn)
+static void WaitfrEf(int *id)
 {
-  pthread_mutex_lock(&SyncEfnMutex);
-  pthread_cond_wait(efn,&SyncEfnMutex);
-  pthread_mutex_unlock(&SyncEfnMutex);
+  ServerWait(*id);
 }
 #endif
 

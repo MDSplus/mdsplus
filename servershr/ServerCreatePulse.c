@@ -34,10 +34,10 @@ int SERVER$CREATE_PULSE(int efn, struct dsc$descriptor *server, struct dsc$descr
 #include <servershr.h>
 #include "servershrp.h"
 
-int ServerCreatePulse(pthread_cond_t *condition, char *server, char *tree, int shot,
+int ServerCreatePulse(int *id, char *server, char *tree, int shot,
                         void (*ast)(), void *astprm, int *retstatus, void (*before_ast)())
 { 
   struct descrip p1,p2;
-  return ServerSendMessage(condition, server, SrvAction, retstatus, ast, astprm, before_ast, 2,
+  return ServerSendMessage(id, server, SrvAction, retstatus, ast, astprm, before_ast, 2,
             MakeDescrip(&p1,DTYPE_CSTRING,0,0,tree), MakeDescrip(&p2,DTYPE_LONG,0,0,&shot));
 }

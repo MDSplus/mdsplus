@@ -255,7 +255,11 @@ static void ActionDone(int idx)
   }
   if ( WaitForAll ? NoOutstandingActions(first_g,last_g) && NoOutstandingActions(first_c,last_c)
                     : (AbortInProgress ? 1 : NoOutstandingActions(first_g,last_g)) )
+  {
+    pthread_mutex_lock(&JobWaitMutex);
     pthread_cond_signal(&JobWaitCondition);
+    pthread_mutex_unlock(&JobWaitMutex);
+  }
   return;
 }
 
@@ -428,7 +432,7 @@ static char *DetailProc(int full)
   return msg;
 }
 
-int ServerDispatchPhase(pthread_cond_t *cond, void *vtable, char *phasenam, char noact,
+int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact,
                           int sync, void (*output_rtn)(), char *monitor)
 { 
   int i;

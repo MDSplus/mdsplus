@@ -48,6 +48,8 @@ int ServerSendMessage();
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
+#define pthread_mutexattr_default NULL
+#define pthread_condattr_default NULL
 #else
 #undef select
 #endif
@@ -57,7 +59,10 @@ extern short ArgLen();
 extern char *TranslateLogical(char *);
 extern void TranslateLogicalFree(char *);
 
-typedef struct _Job { pthread_cond_t *condition;
+typedef struct _Job { int has_condition;
+                      pthread_cond_t condition;
+                      pthread_mutex_t mutex;
+                      int done;
                       int *retstatus;
                       void (*ast)();
                       void *astparam;
@@ -85,7 +90,7 @@ static Client *ClientList = 0;
 
 static int StartReceiver(short *port);
 int ServerConnect(char *server);
-static int RegisterJob(pthread_cond_t *condition, int *retstatus,void (*ast)(), void *astparam, void (*before_ast)(), int sock);
+static int RegisterJob(int *msgid, int *retstatus,void (*ast)(), void *astparam, void (*before_ast)(), int sock);
 static void  CleanupJob(int status,int jobid);
 static void *Worker(void *sockptr);
 static void DoMessage(Client *c, fd_set *fdactive);
@@ -94,7 +99,7 @@ static unsigned int GetHostAddr(char *host);
 static void AddClient(unsigned int addr, short port, int send_sock);
 static void AcceptClient(int reply_sock, struct sockaddr_in *sin, fd_set *fdactive);
 
-int ServerSendMessage( pthread_cond_t *condition, char *server, int op, int *retstatus, 
+int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, 
                          void (*ast)(), void *astparam, void (*before_ast)(),
   int numargs_in, struct descrip *p1, struct descrip *p2, struct descrip *p3, struct descrip *p4,
                   struct descrip *p5, struct descrip *p6, struct descrip *p7, struct descrip *p8) 
@@ -119,7 +124,7 @@ int ServerSendMessage( pthread_cond_t *condition, char *server, int op, int *ret
     int numbytes;
     int *dptr;
 	unsigned char totargs = (unsigned char)(numargs+6);
-    jobid = RegisterJob(condition,retstatus,ast,astparam,before_ast,sock);
+    jobid = RegisterJob(msgid,retstatus,ast,astparam,before_ast,sock);
     cmd[offset] = ')';
     cmd[offset+1] = '\0';
 	if (addr == 0)
@@ -190,6 +195,15 @@ static void RemoveJob(Job *job)
         prev->next = j->next;
       else
         Jobs = j->next;
+      if (j->has_condition)
+      {
+        pthread_mutex_lock(&j->mutex);
+        j->has_condition = 0;
+        j->done = 1;
+        pthread_cond_destroy(&j->condition);
+        pthread_mutex_unlock(&j->mutex);
+        pthread_mutex_destroy(&j->mutex);
+      }
       free(j);
       break;
     }
@@ -200,13 +214,20 @@ static void RemoveJob(Job *job)
 static void DoCompletionAst(int jobid,int status,char *msg, int removeJob)
 {
   Job *j;
+  pthread_lock_global_np();
   for (j=Jobs; j && (j->jobid != jobid); j=j->next);
+  pthread_unlock_global_np();
   if (j)
   {
     if (j->retstatus)
       *j->retstatus = status;
-    if (j->condition)
-      pthread_cond_signal(j->condition);
+    if (j->has_condition)
+    {
+      pthread_mutex_lock(&j->mutex);
+      j->done = 1;
+      pthread_cond_signal(&j->condition);
+      pthread_mutex_unlock(&j->mutex);
+    }
     if (j->ast)
       (*j->ast)(j->astparam,msg);
     if (removeJob)
@@ -214,10 +235,30 @@ static void DoCompletionAst(int jobid,int status,char *msg, int removeJob)
   }
 }
       
+void ServerWait(int jobid)
+{
+  Job *j;
+  pthread_lock_global_np();
+  for (j=Jobs; j && (j->jobid != jobid); j=j->next);
+  if (j)
+  {
+    if (j->has_condition)
+    {
+      pthread_mutex_lock(&j->mutex);
+      while (!j->done)
+        pthread_cond_wait(&j->condition,&j->mutex);
+      pthread_mutex_unlock(&j->mutex);
+    }
+  }
+  pthread_unlock_global_np();
+}
+
 static void DoBeforeAst(int jobid)
 {
   Job *j;
+  pthread_lock_global_np();
   for (j=Jobs; j && (j->jobid != jobid); j=j->next);
+  pthread_unlock_global_np();
   if (j)
   {
     if (j->before_ast)
@@ -225,16 +266,28 @@ static void DoBeforeAst(int jobid)
   }
 }
       
-static int RegisterJob(pthread_cond_t *condition, int *retstatus,void (*ast)(), void *astparam, void (*before_ast)(), int sock)
+static int RegisterJob(int *msgid, int *retstatus,void (*ast)(), void *astparam, void (*before_ast)(), int sock)
 {
   static int jobid = 0;
   Job *j = (Job *)malloc(sizeof(Job));
-  j->condition = condition;
+  j->jobid = ++jobid;
+  if (msgid)
+  {
+    pthread_mutex_init(&j->mutex,pthread_mutexattr_default);
+    pthread_cond_init(&j->condition,pthread_condattr_default);
+    j->has_condition = 1;
+    j->done = 0;
+    *msgid = j->jobid;
+  }
+  else
+  {
+    j->has_condition = 0;
+    j->done = 1;
+  }
   j->retstatus = retstatus;
   j->ast = ast;
   j->astparam = astparam;
   j->before_ast = before_ast;
-  j->jobid = ++jobid;
   j->sock = sock;
   j->next = Jobs;
   pthread_lock_global_np();
@@ -247,6 +300,7 @@ static void  CleanupJob(int status, int jobid)
 {
   Job *j,*prev;
   SOCKET sock;
+  pthread_lock_global_np();
   for (j=Jobs; j && (j->jobid != jobid); j++);
   if (j)
   {
@@ -264,6 +318,7 @@ static void  CleanupJob(int status, int jobid)
         j=next;
       }
   }
+  pthread_unlock_global_np();
 }
 
 static int CreatePort(short starting_port, short *port_out)
@@ -500,6 +555,7 @@ static void RemoveClient(Client *c, fd_set *fdactive)
 {
   Job *j;
   int found = 1;
+  pthread_lock_global_np();
   while (found)
   {
     found = 0;
@@ -522,7 +578,6 @@ static void RemoveClient(Client *c, fd_set *fdactive)
     shutdown(c->send_sock,2);
     close(c->send_sock);
   }
-  pthread_lock_global_np();
   if (ClientList == c)
     ClientList = c->next;
   else

@@ -20,18 +20,18 @@ typedef void *pthread_mutex_t;
 extern int ServerAbortServer( char *server, int flush );
 extern int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table);
 extern int ServerCloseTrees( char *server );
-extern int ServerCreatePulse(pthread_cond_t *efn, char *server, char *tree, int shot,
+extern int ServerCreatePulse(int *id, char *server, char *tree, int shot,
                         void (*ast)(), void *astprm, int *retstatus, void (*before_ast)());
-extern int ServerDispatchAction(pthread_cond_t *efn, char *server, char *tree, int shot, int nid,
+extern int ServerDispatchAction(int *id, char *server, char *tree, int shot, int nid,
                         void (*ast)(), void *astprm, int *retstatus, 
                         void (*before_ast)());
 extern int ServerDispatchClose(void *vtable);
-extern int ServerDispatchCommand(pthread_cond_t *efn, char *server, char *cli, char *command,
+extern int ServerDispatchCommand(int *id, char *server, char *cli, char *command,
                         void (*ast)(), void *astprm, int *retstatus, void (*before_ast)());
 extern int ServerSetLinkDownHandler(void (*handler)());
 extern void ServerSetDetailProc(char *(*detail_proc)(int));
 extern char *(*ServerGetDetailProc())();
-extern int ServerDispatchPhase(pthread_cond_t *efn, void *vtable, char *phasenam, char noact_in,
+extern int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact_in,
                           int sync, void (*output_rtn)(), char *monitor);
 extern int ServerFailedEssential(void *vtable,int reset);
 extern char *ServerFindServers(void **ctx, char *wild_match);
@@ -39,7 +39,7 @@ extern int ServerMonitorCheckin(char *server, void (*ast)(), void *astparam);
 extern int ServerSetLogging( char *server, char logging_mode );
 extern int ServerStartServer( char *server );
 extern int ServerStopServer( char *server );
-
+extern void ServerWait(int id);
 
 #ifdef CREATE_STS_TEXT
 #include        "facility_list.h"

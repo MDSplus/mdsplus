@@ -34,10 +34,10 @@ int SERVER$DISPATCH_COMMAND(int efn, struct dsc$descriptor *server, struct dsc$d
 #include <servershr.h>
 #include "servershrp.h"
 
-int ServerDispatchCommand(pthread_cond_t *condition, char *server, char *cli, char *command,
+int ServerDispatchCommand(int *id, char *server, char *cli, char *command,
                         void (*ast)(), void *astprm, int *retstatus, void (*before_ast)())
 { 
   struct descrip p1,p2;
-  return ServerSendMessage(condition, server, SrvCommand, retstatus, ast, astprm, before_ast, 
+  return ServerSendMessage(id, server, SrvCommand, retstatus, ast, astprm, before_ast, 
                     2,MakeDescrip(&p1,DTYPE_CSTRING,0,0,cli),MakeDescrip(&p2,DTYPE_CSTRING,0,0,command));
 }
