@@ -611,7 +611,8 @@ static SOCKET AttachPort(int addr, short port)
   {
     if (connect(sock, (struct sockaddr *)&sin, sizeof(sin)) == -1)
     {
-      perror("Error in connect back to client");
+      shutdown(sock,2);
+      close(sock);
       return -1;
     }
     new = (ClientList *)malloc(sizeof(ClientList));
