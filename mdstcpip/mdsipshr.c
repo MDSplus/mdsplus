@@ -348,8 +348,11 @@ static int MdsLoginVMS(SOCKET sock, char *username, char *password)
             ((char *)userd.pointer)[i] = __toupper(((char *)userd.pointer)[i]);
           status = Lgihpwd(&hashd,&pwdd,alg,salt,&userd);
           if (status & 1)
+          {
+            int two = 2;
             status = MdsValue(sock, LOGINREQUEST, MakeDescrip(&loginpwd_arg,DTYPE_CSTRING,0,0,LOGINPWD),
-                                                  MakeDescrip(&pwd_arg,DTYPE_LONG,1,&2,hash), &ansarg, NULL);
+                                                  MakeDescrip(&pwd_arg,DTYPE_LONG,1,&two,hash), &ansarg, NULL);
+          }
           else
             printf("Login error: Error checking password\n");
         }

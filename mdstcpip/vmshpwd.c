@@ -47,7 +47,7 @@ Comments:	The overall speed of this routine is not great.  This is
 
 
 /* Uncomment this #define if you want the output in string comparable format */
-#define STRING_OUTPUT				/* String format */
+/* #define STRING_OUTPUT	*/			/* String format */
 
 
 #ifndef VMS
