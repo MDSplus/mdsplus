@@ -145,6 +145,9 @@ public class DeviceDispatch extends DeviceComponent
             dispatch_fields[i].reset();
     }
 
+
+
+
     class DispatchComboEditor implements ComboBoxEditor
     {
         JLabel label = new  JLabel("  Dispatch");
