@@ -219,8 +219,8 @@ struct nci_itm;
 
 #ifdef _MDS_NO_PROTO
 
-extern char* TreeAbsPath();
-extern char* _TreeAbsPath();
+extern char* TreeAbsPath();           /********** Use TreeFree(result) *****/
+extern char* _TreeAbsPath();          /********** Use TreeFree(result) *****/
 	extern int TreeAddConglom();
 	extern int TreeAddMethodImage();
 extern int TreeAddNode();
@@ -248,8 +248,8 @@ extern int TreeFindNode();
 extern int _TreeFindNode();
 extern int TreeFindNodeEnd();
 extern int _TreeFindNodeEnd();
-extern char *TreeFindNodeTags();
-extern char *_TreeFindNodeTags();
+extern char *TreeFindNodeTags();   /********** Use TreeFree(result) *****/
+extern char *_TreeFindNodeTags();  /********** Use TreeFree(result) *****/
 extern int TreeFindNodeWild();
 extern int _TreeFindNodeWild();
 extern void TreeFindTagEnd();
@@ -263,10 +263,10 @@ extern int TreeGetNci();
 extern int _TreeGetNci();
 extern int TreeGetDefaultNid();
 extern int _TreeGetDefaultNid();
-extern char *TreeGetMinimumPath();
-extern char *_TreeGetMinimumPath();
-extern char *TreeGetPath();
-extern char *_TreeGetPath();
+extern char *TreeGetMinimumPath();  /********** Use TreeFree(result) *****/
+extern char *_TreeGetMinimumPath(); /********** Use TreeFree(result) *****/
+extern char *TreeGetPath(); /********** Use TreeFree(result) *****/
+extern char *_TreeGetPath();/********** Use TreeFree(result) *****/
 	extern int TreeGetRecord();
 extern int TreeGetStackSize();
 extern int _TreeGetStackSize();
@@ -313,8 +313,8 @@ extern int _TreeTurnOn();
 
 #else
 
-extern char *TreeAbsPath(char *in);
-extern char *_TreeAbsPath( void *dbid, char *in);
+extern char *TreeAbsPath(char *in);             /********** Use TreeFree(result) *****/
+extern char *_TreeAbsPath( void *dbid, char *in);  /********** Use TreeFree(result) *****/
 extern int TreeAddConglom(struct descriptor *path, struct descriptor *congtype,
 			             struct descriptor *qualifiers, int *nid);
 extern int TreeAddMethodImage();
@@ -344,8 +344,8 @@ extern int TreeFindNode(char *path, int *nid);
 extern int _TreeFindNode(void *dbid, char *path, int *nid);
 extern int TreeFindNodeEnd(void **ctx);
 extern int _TreeFindNodeEnd(void *dbid, void **ctx);
-extern char *TreeFindNodeTags(int nid, void **ctx);
-extern char *_TreeFindNodeTags(void *dbid, int nid, void **ctx);
+extern char *TreeFindNodeTags(int nid, void **ctx);   /********** Use TreeFree(result) *****/
+extern char *_TreeFindNodeTags(void *dbid, int nid, void **ctx);  /********** Use TreeFree(result) *****/
 extern int TreeFindNodeWild(char *path, int *nid, void **ctx, int usage_mask);
 extern int _TreeFindNodeWild(void *dbid, char *path, int *nid, void **ctx, int usage_mask);
 extern void TreeFindTagEnd(void **ctx);
@@ -362,10 +362,10 @@ extern int TreeGetNci(int nid, struct nci_itm *itmlst);
 extern int _TreeGetNci(void *dbid, int nid, struct nci_itm *itmlst);
 extern int TreeGetDefaultNid(int *nid);
 extern int _TreeGetDefaultNid(void *dbid, int *nid);
-extern char *TreeGetMinimumPath(int *def_nid, int nid);
-extern char *_TreeGetMinimumPath(void *dbid, int *def_nid, int nid);
-extern char *TreeGetPath(int nid);
-extern char *_TreeGetPath(void *dbid, int nid);
+extern char *TreeGetMinimumPath(int *def_nid, int nid); /********** Use TreeFree(result) *****/
+extern char *_TreeGetMinimumPath(void *dbid, int *def_nid, int nid); /********** Use TreeFree(result) *****/
+extern char *TreeGetPath(int nid); /********** Use TreeFree(result) *****/
+extern char *_TreeGetPath(void *dbid, int nid); /********** Use TreeFree(result) *****/
 extern int TreeGetRecord(int nid, struct descriptor_xd *dsc_ptr);
 extern int _TreeGetRecord(void *dbid, int nid, struct descriptor_xd *dsc_ptr);
 extern int TreeGetStackSize();
