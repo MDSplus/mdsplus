@@ -13,6 +13,7 @@ static void MdsUpdate(char *exp, int shot)
     static char prev_exp[256];
     int status;
     
+    error_message[0] = 0;
 	
     if(!exp) return;
     if(shot == prev_shot && !strcmp(prev_exp, exp))
@@ -23,8 +24,6 @@ static void MdsUpdate(char *exp, int shot)
     status =  TreeOpen(exp, shot, 0);
     if(!(status & 1))
 	strncpy(error_message, MdsGetMsg(status), 512);
-    else
-	error_message[0] = 0;
 } 
 
 
@@ -112,14 +111,16 @@ static float MdsGetFloat(char *in)
 }
 
 
-static float *MdsGetFloatArray(char *in, int *out_dim)
+static void *MdsGetArray(char *in, int *out_dim, int is_float)
 {
-    float *ris = NULL;
+    float *float_ris = NULL;
+    int *int_ris = NULL;
     int status, dim, i;
     struct descriptor in_d = {0,DTYPE_T,CLASS_S,0};
     EMPTYXD(xd);
     struct descriptor_a *arr_ptr;
 
+    *out_dim = 0;
     in_d.length = strlen(in);
     in_d.pointer = in;
     status = TdiCompile(&in_d, &xd MDS_END_ARG);
@@ -137,38 +138,68 @@ static float *MdsGetFloatArray(char *in, int *out_dim)
     }
     if(xd.pointer->class != CLASS_A)
     {
+	if(!is_float) //Legal only if used to retrieve the sho number
+	{
+	    int_ris = malloc(sizeof(int));
+	    switch(xd.pointer->dtype)
+	    {
+		case DTYPE_BU:
+		case DTYPE_B : int_ris[0] = *((char *)xd.pointer->pointer); break;
+		case DTYPE_WU:
+		case DTYPE_W : int_ris[0] = *((short *)xd.pointer->pointer); break;
+		case DTYPE_LU:
+		case DTYPE_L : int_ris[0] = *((int *)xd.pointer->pointer); break;
+		case DTYPE_F : 
+		case DTYPE_FS : int_ris[0] = *((int *)xd.pointer->pointer); break;
+	    }
+	    *out_dim = 1;
+	    return int_ris;
+	}
 	strcpy(error_message, "Not an array");
 	return 0;
     }
  
     arr_ptr = (struct descriptor_a *)xd.pointer;
     *out_dim = dim = arr_ptr->arsize/arr_ptr->length;
-    ris = (float *)malloc(sizeof(float) * dim);
+    if(is_float)
+        float_ris = (float *)malloc(sizeof(float) * dim);
+    else
+        int_ris = (int *)malloc(sizeof(int) * dim);
     switch(arr_ptr->dtype) {
 	case DTYPE_BU:
 	case DTYPE_B : 
 		for(i = 0; i < dim; i++)
-		    ris[i] = ((char *)arr_ptr->pointer)[i];
+		    if(is_float)
+		    	float_ris[i] = ((char *)arr_ptr->pointer)[i];
+		    else
+		    	int_ris[i] = ((char *)arr_ptr->pointer)[i];
 		break;
 	case DTYPE_WU:
 	case DTYPE_W : 
 		for(i = 0; i < dim; i++)
-		    ris[i] = ((short *)arr_ptr->pointer)[i];
+		    if(is_float)
+		    	float_ris[i] = ((short *)arr_ptr->pointer)[i];
+		    else
+		    	int_ris[i] = ((short *)arr_ptr->pointer)[i];
 		break;
 	case DTYPE_LU:
 	case DTYPE_L : 
 		for(i = 0; i < dim; i++)
-		    ris[i] = ((int *)arr_ptr->pointer)[i];
+		    if(is_float)
+		    	float_ris[i] = ((int *)arr_ptr->pointer)[i];
+		    else
+		    	int_ris[i] = ((int *)arr_ptr->pointer)[i];
 		break;
 	case DTYPE_F : 
 	case DTYPE_FS :
 		for(i = 0; i < dim; i++)
-		    ris[i] = ((float *)arr_ptr->pointer)[i];
+		    if(is_float)
+		    	float_ris[i] = ((float *)arr_ptr->pointer)[i];
+		    else
+		    	int_ris[i] = ((float *)arr_ptr->pointer)[i];
 		break;
 	case DTYPE_D :
-	case DTYPE_G : //Not really correct...
-		memcpy(ris, arr_ptr->pointer, dim * sizeof(float));
-		break;
+	case DTYPE_G :
 	default:	strcpy(error_message, "Not a supported type");
 			return NULL;
     }
@@ -176,13 +207,19 @@ static float *MdsGetFloatArray(char *in, int *out_dim)
 
     MdsFree1Dx(&xd, NULL);
     error_message[0] = 0;
-    return ris;
+    if(is_float)
+    	return float_ris;
+    else
+	return int_ris;
 }
 
 
 JNIEXPORT void JNICALL Java_LocalProvider_Update(JNIEnv *env, jobject obj, jstring exp, jint shot)
 {
-    const char *exp_char = (*env)->GetStringUTFChars(env, exp, 0);
+    const char *exp_char;
+    error_message[0] = 0;
+    if(exp == NULL) return;
+    exp_char = (*env)->GetStringUTFChars(env, exp, 0);
     MdsUpdate((char *)exp_char, shot);
     (*env)->ReleaseStringUTFChars(env, exp, exp_char);
 } 
@@ -190,6 +227,8 @@ JNIEXPORT void JNICALL Java_LocalProvider_Update(JNIEnv *env, jobject obj, jstri
 JNIEXPORT jstring JNICALL Java_LocalProvider_ErrorString(JNIEnv *env, jobject obj)
 {
 
+    if(!error_message[0])
+	return NULL;
     return (*env)->NewStringUTF(env, error_message);
 }  
 
@@ -216,7 +255,7 @@ JNIEXPORT jfloatArray JNICALL Java_LocalProvider_GetFloatArray(JNIEnv *env, jobj
     float *out_ptr;
 
 
-    out_ptr = MdsGetFloatArray((char *)in_char, &dim);
+    out_ptr = MdsGetArray((char *)in_char, &dim, 1);
 
     (*env)->ReleaseStringUTFChars(env, in, in_char);
 
@@ -226,6 +265,28 @@ JNIEXPORT jfloatArray JNICALL Java_LocalProvider_GetFloatArray(JNIEnv *env, jobj
     }
     jarr = (*env)->NewFloatArray(env, dim);
     (*env)->SetFloatArrayRegion(env, jarr, 0, dim, out_ptr);
+    return jarr;
+}
+
+JNIEXPORT jintArray JNICALL Java_LocalProvider_GetIntArray(JNIEnv *env, jobject obj, jstring in)
+{
+    jintArray jarr;
+    float zero = 0.;
+    const char *in_char;
+    int dim;
+    int *out_ptr;
+
+    in_char = (*env)->GetStringUTFChars(env, in, 0);
+    out_ptr = MdsGetArray((char *)in_char, &dim, 0);
+ 
+    (*env)->ReleaseStringUTFChars(env, in, in_char);
+
+    if(error_message[0]) //Return a dummy vector without elements
+    {
+	return NULL;
+    }
+    jarr = (*env)->NewIntArray(env, dim);
+    (*env)->SetIntArrayRegion(env, jarr, 0, dim, out_ptr);
     return jarr;
 }
 

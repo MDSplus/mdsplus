@@ -22,6 +22,7 @@ extern void LocalProvider_Update(struct HLocalProvider *,struct Hjava_lang_Strin
 extern struct Hjava_lang_String *LocalProvider_GetString(struct HLocalProvider *,struct Hjava_lang_String *);
 extern float LocalProvider_GetFloat(struct HLocalProvider *,struct Hjava_lang_String *);
 extern HArrayOfFloat *LocalProvider_GetFloatArray(struct HLocalProvider *,struct Hjava_lang_String *);
+extern HArrayOfInt *LocalProvider_GetIntArray(struct HLocalProvider *,struct Hjava_lang_String *);
 extern struct Hjava_lang_String *LocalProvider_ErrorString(struct HLocalProvider *);
 #ifdef __cplusplus
 }
