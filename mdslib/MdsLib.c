@@ -61,19 +61,27 @@ static int next = 0;
 static int dtype_length(struct descriptor *d)
 {
   short len;
+
+  /*  This function only needs to handle the DTYPE values in ipdesc.h.
+   *  The conversion to native floating/double/complex DTYPE is done in descr()
+   *  AFTER this function is called.
+   */
+
   switch (d->dtype)
   {
+    case DTYPE_UCHAR     :
+    case DTYPE_CHAR      :  len = sizeof(char); break;
+    case DTYPE_USHORT    :
+    case DTYPE_SHORT     :  len = sizeof(short); break;
+    case DTYPE_ULONG     :  
+    case DTYPE_LONG      :  len = sizeof(int); break;
+    case DTYPE_ULONGLONG : 
+    case DTYPE_LONGLONG  :  len = sizeof(int) * 2; break; 
+    case DTYPE_FLOAT     :  len = sizeof(float); break;
+    case DTYPE_DOUBLE    :  len = sizeof(double); break;
+    case DTYPE_COMPLEX   :  len = sizeof(float) * 2; break;
+    case DTYPE_COMPLEX_DOUBLE: len = sizeof(double) * 2; break;
     case DTYPE_CSTRING :  len = d->length ? d->length : (d->pointer ? strlen(d->pointer) : 0); break;
-    case DTYPE_UCHAR   :
-    case DTYPE_CHAR    :  len = sizeof(char); break;
-    case DTYPE_USHORT  :
-    case DTYPE_SHORT   :  len = sizeof(short); break;
-    case DTYPE_ULONG   :  
-    case DTYPE_LONG    :  len = sizeof(int); break;
-    case DTYPE_FLOAT   :  len = sizeof(float); break;
-    case DTYPE_DOUBLE  :  len = sizeof(double); break;
-    case DTYPE_FLOAT_COMPLEX :  len = sizeof(float) * 2; break;
-    case DTYPE_DOUBLE_COMPLEX :  len = sizeof(double) * 2; break;
   }
   return len;
 }
@@ -129,22 +137,7 @@ static struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc
 {
 
   int dtype;
-
-  switch (dsc->dtype)
-  {
-
-    case DTYPE_FLOAT : 
-      dtype = DTYPE_F;
-      break;
-    case DTYPE_DOUBLE : 
-      dtype = DTYPE_D;
-      break;
-    case DTYPE_FLOAT_COMPLEX: 
-      dtype = DTYPE_FC;
-      break;
-    default:
-      dtype = dsc->dtype;
-  }
+  dtype = dsc->dtype;
 
   if (dsc->class == CLASS_S) 
   {
@@ -195,28 +188,78 @@ static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
 
   /* This function will wrap expression in the appropriate type
    * conversion function to ensure that the return value of MdsValue
-   * is of the right type.  It is only used for remote MDSplus 
+   * is of the right type.  It is only used for remote MDSplus.
    */
 
+  char *native_float_str, *native_double_str, *native_complex_str, *native_double_complex_str;
   char *newexpression = (char *) malloc(strlen(expression)+24);
-				
+
+  /*  Determine the native floating/double/complex type of the client, so as to pass the correct
+   *  conversion function to the server and thus save extra conversion steps.
+   */
+
+  switch (DTYPE_NATIVE_FLOAT)
+  {
+    case DTYPE_FS: 
+      native_float_str = "FS_FLOAT"; 
+      native_complex_str = "FS_COMPLEX";
+      break;
+    case DTYPE_F: 
+      native_float_str = "F_FLOAT"; 
+      native_complex_str = "F_COMPLEX";
+      break;
+    default: 
+      printf("Unknown DTYPE_NATIVE_FLOAT: %d.  Using FS_FLOAT.\n",DTYPE_NATIVE_FLOAT);
+      native_float_str = "FS_FLOAT";
+      native_complex_str = "FS_COMPLEX";
+      break;
+  }
+    
+  switch (DTYPE_NATIVE_DOUBLE)
+  {
+    case DTYPE_FT: 
+      native_double_str = "FT_FLOAT"; 
+      native_double_complex_str = "FT_COMPLEX";
+      break;
+    case DTYPE_D: 
+      native_double_str = "D_FLOAT"; 
+      native_double_complex_str = "D_COMPLEX";
+      break;
+    case DTYPE_G:
+      native_double_str = "G_FLOAT"; 
+      native_double_complex_str = "G_COMPLEX";
+      break;
+    default: 
+      printf("Unknown DTYPE_NATIVE_DOUBLE: %d.  Using FT_FLOAT.\n",DTYPE_NATIVE_DOUBLE);
+      native_double_str = "FT_FLOAT";
+      native_double_complex_str = "FT_COMPLEX";
+      break;
+  }
+
+  /*  The DTYPE of the incoming descriptor will be one of the values in ipdesc.h.
+   *  The switch clause below therefore does not need to support NATIVE_FLOAT etc.
+   */
+
   switch (dsc->dtype) 
-    {
-    case DTYPE_CSTRING: strcpy(newexpression,"TEXT"); break;
+  {
     case DTYPE_UCHAR  : strcpy(newexpression,"BYTE_UNSIGNED"); break;
-    case DTYPE_CHAR   : strcpy(newexpression,"BYTE"); break;
     case DTYPE_USHORT : strcpy(newexpression,"WORD_UNSIGNED"); break;
-    case DTYPE_SHORT  : strcpy(newexpression,"WORD"); break;
     case DTYPE_ULONG  : strcpy(newexpression,"LONG_UNSIGNED"); break;
+    case DTYPE_ULONGLONG  : strcpy(newexpression,"QUADWORD_UNSIGNED"); break; 
+    case DTYPE_CHAR   : strcpy(newexpression,"BYTE"); break;
+    case DTYPE_SHORT  : strcpy(newexpression,"WORD"); break;
     case DTYPE_LONG   : strcpy(newexpression,"LONG"); break;
-    case DTYPE_FLOAT  : strcpy(newexpression,"F_FLOAT"); break;
-    case DTYPE_DOUBLE : strcpy(newexpression,"D_FLOAT"); break;
-    }
+    case DTYPE_LONGLONG   : strcpy(newexpression,"QUADWORD"); break; 
+    case DTYPE_FLOAT  : strcpy(newexpression,native_float_str); break;
+    case DTYPE_DOUBLE : strcpy(newexpression,native_double_str); break;  
+    case DTYPE_COMPLEX : strcpy(newexpression,native_complex_str); break;  
+    case DTYPE_COMPLEX_DOUBLE: strcpy(newexpression,native_double_complex_str); break;  
+    case DTYPE_CSTRING: strcpy(newexpression,"TEXT"); break;
+  }
 
   strcat(newexpression, "((");
   strcat(newexpression, expression);
   strcat(newexpression, "))");
-
   return newexpression;
 
 }
@@ -545,26 +588,38 @@ int descr (int *dtype, void *data, int *dim1, ...)
   dsc = descrs[next];
 
   dsc->dtype = *dtype;
-  switch (dsc->dtype)
-  {
-    case DTYPE_F :  
-      dsc->dtype = DTYPE_FLOAT;
-      break;
-    case DTYPE_D :  
-      dsc->dtype = DTYPE_DOUBLE;
-      break;
-    case DTYPE_FC : 
-      dsc->dtype = DTYPE_FLOAT_COMPLEX;
-      break;
-    default : 
-      break;
-  }
 
   if ((dsc->dtype == DTYPE_CSTRING) && (((struct descriptor *)data)->dtype == DTYPE_CSTRING))
     dsc->pointer = ((struct descriptor *)data)->pointer;
   else
     dsc->pointer = (char *)data;
-  dsc->length = dtype_length(dsc);
+  dsc->length = dtype_length(dsc); /* must set length after dtype and data pointers are set */
+
+  /*  Convert DTYPE for native access if required.  Do AFTER the call to dtype_length() to
+   *  save having to support DTYPE_NATIVE_FLOAT etc. in dtype_length().
+   */
+  
+  if (mdsSocket == INVALID_SOCKET)
+  {
+    switch (dsc->dtype)
+    {
+      case DTYPE_FLOAT :  
+        dsc->dtype = DTYPE_NATIVE_FLOAT;
+        break;
+      case DTYPE_DOUBLE :  
+        dsc->dtype = DTYPE_NATIVE_DOUBLE;
+        break;
+      case DTYPE_COMPLEX : 
+        dsc->dtype = DTYPE_FLOAT_COMPLEX;
+        break;
+      case DTYPE_COMPLEX_DOUBLE : 
+        dsc->dtype = DTYPE_DOUBLE_COMPLEX;
+        break;
+      default : 
+        break;
+    }
+  } 
+
 
   if (*dim1 == 0) 
   {
