@@ -63,7 +63,7 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
     Properties props = System.getProperties();
     String is_local = props.getProperty("data.is_local");
     String ip_addr;
-    if(is_local == null || is_local.equals("no"))
+    if(is_local != null && is_local.equals("no"))
     {
 	ip_addr = props.getProperty("data.address");
 	if(ip_addr == null)
@@ -172,7 +172,10 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
     
     network_m = new Menu("Network");
     mb.add(network_m);
-    fast_network_i = new CheckboxMenuItem("Fast network access", true);
+//Gabriele fast network access disabled by default
+    sc.fast_network_access = false;		
+    fast_network_i = new CheckboxMenuItem("Fast network access", false);
+
     network_m.add(fast_network_i);
     fast_network_i.addItemListener(this);        
     servers_m  = new Menu("Servers");
