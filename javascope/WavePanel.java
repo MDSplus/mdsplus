@@ -110,7 +110,7 @@ class WavePanel extends Panel implements  Printable, MouseMotionListener, MouseL
            if(setup.waves == null || j >= setup.prec_rows[i] ||
 				 setup.waves.length <= kk + j || setup.waves[kk + j] == null) {
 	            wave = new MultiWaveform(setup);
-	            wave.wi = new WaveInterface(dp);
+	            wave.wi = new WaveInterface(dp, setup);
            } else {
 	            wave = setup.waves[kk + j];
            } 

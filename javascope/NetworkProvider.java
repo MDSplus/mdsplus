@@ -81,14 +81,27 @@ public String GetDefaultTitle(String in_y[]){return null;}
 public String GetDefaultXLabel(String in_y[]){return null;}
 public String GetDefaultYLabel(String in_y[]){return null;}
 
-public float[]  GetFrameTimes(String in_frame)
+
+private String GetExperimentName(String in_frame)
 {
     String exp;
     
     if(experiment == null)
-        exp = in_frame;
-    else
+    {
+        if(in_frame.indexOf(".") == -1)
+            exp = in_frame;
+        else
+            exp = in_frame.substring(0, in_frame.indexOf("."));
+    } else
         exp = experiment;
+        
+    return exp;
+}
+
+public float[]  GetFrameTimes(String in_frame)
+{
+    String exp = GetExperimentName(in_frame);
+    
     
     String in = "JavaGetFrameTimes(\""+ exp +"\",\""+ in_frame +"\","+shot +" )";
 //    if(!CheckOpen())
@@ -115,13 +128,8 @@ public float[]  GetFrameTimes(String in_frame)
 public byte[] GetFrameAt(String in_frame, int frame_idx)
 {
     
-    String exp;
-    
-    if(experiment == null)
-        exp = in_frame;
-    else
-        exp = experiment;
-    
+    String exp = GetExperimentName(in_frame);
+        
     String in = "JavaGetFrameAt(\""+ exp +"\",\" "+ in_frame +"\","+shot + ", " + frame_idx + " )";
 //    if(!CheckOpen())
 //	    return null;

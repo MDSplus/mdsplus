@@ -127,7 +127,6 @@ public class jScope extends Frame implements ActionListener, ItemListener,
             wait();
         } catch (InterruptedException e){}
 
-        
 	    isUpdateAllWaves = true;
 	    SetStatusLabel("");
 	    apply_b.setLabel("Abort");
@@ -225,11 +224,13 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    {
 	        jScope.this.printAllWaves();
 	    }
+	    	    
+
 	    } catch(Throwable e ) {
 	        isUpdateAllWaves = false;      
  	        apply_b.setLabel("Apply");
 	        setup.SetAllWaveformPointer(wave_mode);
-		    SetStatusLabel("Unrecoverable error during apply");	        
+		    SetStatusLabel("Error during apply "+e);	        
     	    jScope.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	    }    
       }
@@ -973,9 +974,17 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     return setup.fast_network_access;
   }
 
+
+  String status_msg;
   public void SetStatusLabel(String msg)
   {
+    status_msg = msg;
     info_text.setText(" Status: " + msg);
+  }
+
+  public void AppendStatusLabel(String msg)
+  {
+    info_text.setText(" Status: " + status_msg  + msg);
   }
 
   
@@ -1570,7 +1579,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
         } 
             
         if(sel_wave.wi == null)
-            sel_wave.wi = new WaveInterface(db);
+            sel_wave.wi = new WaveInterface(db, sel_wave.controller);
         else
             old_wi = new WaveInterface(sel_wave.wi);
             
@@ -1976,7 +1985,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 		        {
 		            for(int r = 0; r < setup.rows[c]; r++)
 		            {
-			            setup.waves[k].wi = new WaveInterface(db);
+			            setup.waves[k].wi = new WaveInterface(db, setup.waves[k].controller);
 			            setup.waves[k].wi.fromFile(in, "Scope.plot_"+(r+1)+"_"+(c+1), this);
                         setColor(setup.waves[k].wi);
 			            k++;

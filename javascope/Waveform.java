@@ -1,9 +1,11 @@
 import java.applet.Applet;
 import java.awt.*;
+import java.awt.geom.*;
 import java.awt.image.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+import java.awt.geom.*;
 
 //public class Waveform extends Canvas 
 //{
@@ -104,8 +106,7 @@ public class Waveform extends Canvas
 	dashe[0] = 1;
 	dashe[1] = 2;
 	SetDashes(0,dashe,2);
-	
-	
+		
 	}
 
     public Waveform(WaveSetup c)
@@ -686,12 +687,32 @@ public class Waveform extends Canvas
 		    grid.font = font;
 	   }
 	   else
-		    resizing = false;
+		    resizing = false; 
         
        if(!is_min_size)
-	      grid.paint(off_graphics, d, this, null);
+	      grid.paint(g, d, this, null);
+
+       DrawBorder(g, d, print_flag);
    }
 
+
+    private void DrawBorder(Graphics g, Dimension d, boolean print_flag)
+    {
+
+        if(!selected || print_flag)
+	    {
+	        if(reversed && !print_flag)
+	            g.setColor(Color.white);
+	        else
+		        g.setColor(Color.black);
+	    } else
+	        if(is_image && selected)
+	            g.setColor(Color.blue);
+	        
+        if( !(print_flag && grid_mode == Grid.IS_NONE) )
+	            g.drawRect(0, 0, d.width - 1, d.height - 1);
+        
+    }
 
     private double xmax = 1, ymax = 1, xmin = 0, ymin = 0;
     boolean is_min_size;
@@ -719,7 +740,7 @@ public class Waveform extends Canvas
 		                    title, grid_step_x, grid_step_y, int_xlabel, int_ylabel, reversed);
 		        grid.font = font;
 		        curr_display_limits = new Rectangle();
-		        grid.GetLimits(off_graphics, curr_display_limits, y_log);
+		        grid.GetLimits(g, curr_display_limits, y_log);
 		        wm = new WaveformMetrics(xmax, xmin, ymax, ymin, curr_display_limits, d, x_log, y_log);
 	        }
 	        else
@@ -729,22 +750,19 @@ public class Waveform extends Canvas
 	        if(!selected || print_flag)
 	        {
 	            if(reversed && !print_flag)
-	                off_graphics.setColor(Color.black);
+	                g.setColor(Color.black);
 	            else
-		            off_graphics.setColor(Color.white);
+		            g.setColor(Color.white);
 		    }
 	        else
-		        off_graphics.setColor(Color.lightGray);
+		        g.setColor(Color.lightGray);
 		        
-	        off_graphics.fillRect(0, 0, d.width, d.height);
+	        g.fillRect(1, 1, d.width - 2, d.height - 2);
 
-	    
-	        off_graphics.setColor(Color.black);
-	        if( !(print_flag && grid_mode == Grid.IS_NONE) )
-	            off_graphics.drawRect(0, 0, d.width - 1, d.height - 1);
-    
             if(!is_min_size)
-	            grid.paint(off_graphics, d, this, wm);
+	            grid.paint(g, d, this, wm);
+
+            DrawBorder(g, d, print_flag);
 
 	        if(waveform_signal != null)
 	        {
@@ -754,9 +772,9 @@ public class Waveform extends Canvas
 		        wm.YPixel(MinYSignal(), d) - wm.YPixel(MaxYSignal(), d) + 1);
 
                 if(!print_flag)
-		            off_graphics.clipRect(curr_display_limits.width, 0, 
+		            g.clipRect(curr_display_limits.width, 0, 
 		                                  d.width - curr_display_limits.width, d.height - curr_display_limits.height);
-    	        DrawSignal(off_graphics, d);
+    	        DrawSignal(g, d);
 	        }
     	    if(make_legend && !is_min_size) 
     	    {
@@ -767,7 +785,7 @@ public class Waveform extends Canvas
     	           initLegendPos();
                 p.x = wm.XPixel(legend_x, d);
                 p.y = wm.YPixel(legend_y, d);
-    	        DrawLegend(off_graphics, p);
+    	        DrawLegend(g, p);
     	    }
     
     
@@ -902,8 +920,6 @@ public class Waveform extends Canvas
                 paintSignal(off_graphics, d, print_flag);
             else {
                 paintImage(off_graphics, d, print_flag);
-                off_graphics.setColor(Color.black);
-	            off_graphics.drawRect(0, 0, d.width - 1, d.height - 1);
 	        }
   
 //            if(!print_flag)
@@ -995,9 +1011,9 @@ public class Waveform extends Canvas
     protected boolean DrawFrame(Graphics g, Dimension d, int frame_idx)
     {
        f_error = null;
-       Image img;
-//     Graphics2D g2 = (Graphics2D) g;
-       Graphics g2 = (Graphics) g;
+       Object img;
+       Graphics2D g2 = (Graphics2D) g;
+ //      Graphics g2 = (Graphics) g;
       
             
  //      System.out.println("Frame " + frame_idx);
@@ -1006,35 +1022,19 @@ public class Waveform extends Canvas
        
        //g2.clearRect(0, 0, d.width, d.height);
        
-//       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-//                            RenderingHints.VALUE_ANTIALIAS_ON);
-//       g2.setRenderingHint(RenderingHints.KEY_RENDERING,
-//                            RenderingHints.VALUE_RENDER_QUALITY);
+//      g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+  //                          RenderingHints.VALUE_ANTIALIAS_ON);
+ //      g2.setRenderingHint(RenderingHints.KEY_RENDERING,
+ //                           RenderingHints.VALUE_RENDER_QUALITY);
 
        //img = img.getScaledInstance(d.width, d.height, Image.SCALE_DEFAULT);
 
        if(mode == MODE_ZOOM && curr_rect != null)
        {
-        /*
-	       Image tmp = createImage(d.width, d.height);
-	       Graphics tmp_g = tmp.getGraphics();
-          
-           boolean pippo = tmp_g.drawImage(frames.view_frame[frame_idx], 0,
-                                  0,
-                                  d.width,
-                                  d.height,
-                                  start_x,
-                                  start_y,
-                                  end_x,
-                                  end_y,
-                                  this);
-          
-           frames.view_frame[frame_idx] = tmp;
-        */
-          
-           Rectangle rect = new Rectangle(start_x, start_y, end_x, end_y);
+           
+           Rectangle rect = new Rectangle(start_x, start_y, Math.abs(start_x-end_x), Math.abs(start_y-end_y));
            frame_idx = frames.GetFrameIdx();
-           img = frames.GetZoomFrame(frame_idx, d, rect);
+           frames.SetZoomRegion(frame_idx, d, rect);
            curr_rect = null;
        } else {       
 	        if(ext_update)
@@ -1046,37 +1046,42 @@ public class Waveform extends Canvas
 	                frame = f_idx;
 	            }
 	        }
-	         
 	   }
+       img = frames.GetFrame(frame_idx, d);
 	   
-       img = frames.GetFrame(frame_idx);
-
        if(img == null)
        {
            f_error = "No frame at time " + frames.GetTime(frame_idx);
            return false;
        }
        
-       Rectangle r = frames.GetZoomRect();
-       
-       if(r == null)
-            g2.drawImage(img, 0, 0, d.width, d.height, this);
-       else
-            g2.drawImage(img, 0,
+       if(!(img instanceof RenderedImage))
+       {
+            Rectangle r = frames.GetZoomRect();
+            
+            if(r == null)
+                g2.drawImage((Image)img, 0, 0, d.width, d.height, this);
+            else
+                g2.drawImage((Image)img, 0,
                               0,
                               d.width,
                               d.height,
                               r.x,
                               r.y,
-                              r.width,
-                              r.height,
+                              r.x+r.width,
+                              r.y+r.height,
                               this);
+       }
+       else
+       {
+           g2.clearRect(0, 0, d.width, d.height);
+
+           g2.drawRenderedImage((RenderedImage)img, new AffineTransform(1f,0f,0f,1f,0F,0F));
+       }
+       
        return true;
 
     }
-
-    
-    
 
     protected void DrawSignal(Graphics g)
     {
@@ -1123,6 +1128,7 @@ public class Waveform extends Canvas
 	        return 1.;
 	    return waveform_signal.xmax;
     }
+    
     protected double MaxYSignal() 
     {
 	    if(waveform_signal == null)
@@ -1307,7 +1313,7 @@ public class Waveform extends Canvas
 
 		    end_x = wm.XPixel(curr_x, d);
 		    ext_update = true;
-		    paint(getGraphics());
+		    paint(g);
 //		    repaint();
 		    ext_update = false;
 		} else {
@@ -1317,7 +1323,7 @@ public class Waveform extends Canvas
 			    not_drawn = true;
 //		        repaint();
 			    ext_update = true;
-		        paint(getGraphics());
+		        paint(g);
 		        ext_update = false;
 	        }
 		}
@@ -1421,50 +1427,36 @@ public class Waveform extends Canvas
 
     protected void Resize(int x, int y, boolean enlarge)
     {
-        Dimension d = getSize();
-        double  curr_x = wm.XValue(x, d),
-                curr_y = wm.YValue(y, d),
-                prev_xmax = wm.XMax(),
-                prev_xmin = wm.XMin(),
-                prev_ymax = wm.YMax(),
-                prev_ymin = wm.YMin(),
-                new_xmax, new_xmin, new_ymax, new_ymin;
-
-
-        if(enlarge)
-        {
-            new_xmax = curr_x + (prev_xmax - curr_x)/2.;
-            new_xmin = curr_x - (curr_x - prev_xmin)/2.;
-            new_ymax = curr_y + (prev_ymax - curr_y)/2.;
-            new_ymin = curr_y - (curr_y - prev_ymin)/2.;
-        }
-        else
-        {
-            new_xmax = curr_x + (prev_xmax - curr_x)*2.;
-            new_xmin = curr_x - (curr_x - prev_xmin)*2.;
-            new_ymax = curr_y + (prev_ymax - curr_y)*2.;
-            new_ymin = curr_y - (curr_y - prev_ymin)*2.;
-        }
-// Now center waveform
-    double shift_x = (new_xmax + new_xmin)/2. - curr_x;
-    double shift_y = curr_y - (new_ymax + new_ymin)/2.;
-    new_xmax -= shift_x;
-    new_xmin -= shift_x;
-    new_ymax += shift_y;
-    new_ymin += shift_y;
-//Center the cursor
-//      dispatchEvent(new MouseEvent(this, 0, 0, 0, wm.XPixel((new_xmax + new_xmin)/2.),
-//          wm.YPixel((new_ymax + new_ymin)/2.), 0, false));
-//    setLocation(wm.XPixel((new_xmax + new_xmin)/2), wm.YPixel((new_ymax + new_ymin)/2.));
-
-
-        waveform_signal.xmin = new_xmin;
-        waveform_signal.xmax = new_xmax;
-        waveform_signal.ymin = new_ymin;
-        waveform_signal.ymax = new_ymax;
-
-        not_drawn = true;
-        repaint();
+	Dimension d = getSize();
+	double  curr_x = wm.XValue(x, d),
+		curr_y = wm.YValue(y, d),
+		prev_xmax = wm.XMax(), 
+		prev_xmin = wm.XMin(),
+		prev_ymax = wm.YMax(),
+		prev_ymin = wm.YMin(),
+		new_xmax, new_xmin, new_ymax, new_ymin;
+		
+	if(enlarge)
+	{
+	    new_xmax = curr_x + (prev_xmax - curr_x)/2.;
+	    new_xmin = curr_x - (curr_x - prev_xmin)/2.;
+	    new_ymax = curr_y + (prev_ymax - curr_y)/2.;
+	    new_ymin = curr_y - (curr_y - prev_ymin)/2.;
+	}
+	else
+	{
+	    new_xmax = curr_x + (prev_xmax - curr_x)*2.;
+	    new_xmin = curr_x - (curr_x - prev_xmin)*2.;
+	    new_ymax = curr_y + (prev_ymax - curr_y)*2.;
+	    new_ymin = curr_y - (curr_y - prev_ymin)*2.;
+	}
+	waveform_signal.xmin = new_xmin;
+	waveform_signal.xmax = new_xmax;
+	waveform_signal.ymin = new_ymin;
+	waveform_signal.ymax = new_ymax;
+	
+	not_drawn = true;
+	repaint();
     }
 
     

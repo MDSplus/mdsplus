@@ -56,6 +56,8 @@ waveforms.
     public void Update(WaveInterface _wi)
     {
 	    wi = _wi;
+	    
+	    
 	    orig_signals = null;
 	    if(wi.colors != null && wi.colors.length > 0)
 	    {

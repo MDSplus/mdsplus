@@ -99,19 +99,23 @@ class DemoProvider implements DataProvider
         return null;
     }
     
-    public float[] GetFrameTimes(String in)
+    public float[] GetFrameTimes(String in_expr)
     {
         int cnt = 0;
         String n;
         File f;
         float[] out = null; 
+        String in , ext;
+        
+        in = in_expr.substring(0, in_expr.indexOf("."));
+        ext = in_expr.substring(in_expr.indexOf(".") + 1, in_expr.length());
         
         for(int i = 0; i < 30; i++)
         {
                 if(i < 10)
-                    n = in + "00" +(i) + ".jpg";
+                    n = in + "_00" +(i) +"."+ ext;
                 else
-                    n = in + "0" + (i) + ".jpg";
+                    n = in + "_00" +(i) +"."+ ext;
             f = new File(n);
             if(f.exists())
                 cnt++;
@@ -128,7 +132,7 @@ class DemoProvider implements DataProvider
     }
     
     
-    public byte[] GetFrameAt(String in, int frame_idx)
+    public byte[] GetFrameAt(String in_expr, int frame_idx)
     {
         String n;
         byte buf[] = null;
@@ -137,12 +141,16 @@ class DemoProvider implements DataProvider
         String l[] = null;
         int i = frame_idx;
         
+        String in , ext;
+        
+        in = in_expr.substring(0, in_expr.indexOf("."));
+        ext = in_expr.substring(in_expr.indexOf(".")+1, in_expr.length());
+                
                 
                 if(i < 10)
-                    n = in + "00" +(i) + ".jpg";
+                    n = in + "_00" +(i) +"."+ ext;
                 else
-                    n = in + "0" + (i) + ".jpg";
-                
+                    n = in + "_00" +(i) +"."+ ext;
                 
                 
                 File f = new File(n);

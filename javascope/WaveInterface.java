@@ -4,6 +4,8 @@ import java.awt.image.*;
 
 public class WaveInterface
 {
+    WaveSetup controller;
+
     public boolean full_flag;
     public int     num_waves;
     public boolean x_log, y_log;
@@ -64,12 +66,15 @@ public class WaveInterface
 
     
     boolean is_image = false;
+    boolean use_jai = false;
+    int     signal_select = -1;
     Frames frames;
 
     
     
     public WaveInterface(WaveInterface wi)
     {
+    controller = wi.controller;
 	full_flag = wi.full_flag;
 	provider = wi.provider;
 	num_waves = wi.num_waves;
@@ -80,6 +85,7 @@ public class WaveInterface
 	x_log = wi.x_log;
 	y_log = wi.y_log;
 	is_image = wi.is_image;
+	use_jai = wi.use_jai;
 	make_legend = wi.make_legend;
 	reversed = wi.reversed;
 	legend_x = wi.legend_x;
@@ -242,8 +248,9 @@ public class WaveInterface
     }	
 
     
-    public WaveInterface(DataProvider _dp)
+    public WaveInterface(DataProvider _dp, WaveSetup c)
     {
+    controller = c;
 	//full_flag = false;
 	full_flag = true;
 	dp = _dp;
@@ -632,7 +639,6 @@ public class WaveInterface
     
     private Frames GetFrames()
     {
-        Panel p = new Panel();
         float f_time[];
         int j = 0, i = 0;
         curr_error = null;
@@ -667,21 +673,49 @@ public class WaveInterface
 	            
 	        return null;
         }
+
+        Frames frames;
         
-        Frames frames = new Frames();
+        if(use_jai)
+        {
+            try
+            {
+                Class cl = Class.forName("FrameJAI");
+                frames = (Frames)cl.newInstance();
+            } catch (ClassNotFoundException e)
+              {
+                frames = new Frames();
+                use_jai = false;
+              }
+              catch (InstantiationException e)
+              {
+                frames = new Frames();
+                use_jai = false;
+              }
+              catch (IllegalAccessException e)
+            {
+                frames = new Frames();
+                use_jai = false;
+            }
+        } else
+            frames = new Frames();
+        
+        
+        
         Image img;
         byte buf[];
 
         try
         {
-           for(i = 0, j = 0; i < f_time.length && j < 100; j++)
+           for(i = 0, j = 0; j < f_time.length && j < 100; j++)
             {
+                controller.DisplayFrameLoad(j, f_time.length);
                 buf = dp.GetFrameAt(in_y[0], j);
                 if(buf == null)
                 {
                     continue;
                 } else {
-                    frames.AddFrame(buf, f_time[i]);
+                    frames.AddFrame(buf, f_time[j]);
                     i++;
                 }
             }
@@ -981,9 +1015,10 @@ public class WaveInterface
 	        if(make_legend) {
 	            jScope.writeLine(out, prompt + "legend: "           , "("+legend_x+","+legend_y+")");
 	        }
-	    } else 
+	    } else {
 	        jScope.writeLine(out, prompt + "is_image: "           , ""+is_image);
-	        
+	        jScope.writeLine(out, prompt + "use_jai: "           , ""+use_jai);
+	    }    
 	    
 	    jScope.writeLine(out, prompt + "experiment: "      , cexperiment);
 	    jScope.writeLine(out, prompt + "event: "           , cin_upd_event);
@@ -1147,6 +1182,11 @@ public class WaveInterface
 		                continue;		
 		            }		            
 		        
+		            if(str.indexOf(".use_jai:") != -1)
+		            {
+		                use_jai = new Boolean(str.substring(len, str.length())).booleanValue();
+		                continue;		
+		            }		            
 		        
 		        
 		        

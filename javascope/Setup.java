@@ -28,7 +28,6 @@ public class Setup extends Object implements WaveSetup {
     float height_percent[], width_percent[]; 
     boolean modified;
     MultiWaveform sel_wave;
-    int signal_idx;
 
 
 
@@ -188,11 +187,13 @@ public class Setup extends Object implements WaveSetup {
                               double dx, double dy, int sig_idx, 
                               boolean measure, boolean broadcast)
     { 
+                
+        
         if(coords_label != null)
 	    {   
 	        String s;
-	        signal_idx = sig_idx;
 	        WaveInterface  wi = ((MultiWaveform)w).wi;
+	        wi.signal_select = sig_idx;
 	        
 	        if(measure)
 	        {
@@ -234,6 +235,11 @@ public class Setup extends Object implements WaveSetup {
 //	        else
 //		        w.UpdatePoint(curr_x); boo!!!!
 	    }	
+    }
+    
+    public void DisplayFrameLoad(int frame, int all_frames)
+    {
+        main_scope.AppendStatusLabel(" [Frame "+frame+"/"+all_frames+"]" );
     }
     
     public WaveInterface GetSource()
@@ -902,8 +908,8 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
                 ob.addItemListener(this);
             }
 	    }
-        SelectListItem(colorList, wave.wi.colors_idx[controller.signal_idx]);
-	}
+        SelectListItem(colorList, wave.wi.colors_idx[wave.wi.signal_select]);
+    }
 	
 	private void SetMenuItem(boolean is_image)
 	{
@@ -918,6 +924,7 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	   {
            add(setup);
            colorList.setLabel("Colors");
+           add(remove_panel);
            add(colorList);	
 	       add(sep1);
 	       add(playFrame);
@@ -970,7 +977,7 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	         playFrame.setLabel("Start play");
 	    
         if(state) {
-            controller.signal_idx = 0;
+            w.wi.signal_select = 0;
             SetColorMenu();
         }
         colorList.setEnabled(state);	
@@ -985,7 +992,6 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
         else
             selectWave.setLabel("Select wave panel");
 
-        remove_panel.setEnabled(controller.waves.length > 1);
 	    
         signalList.removeAll();
         if(w.wi != null && w.wi.num_waves != 0)
@@ -993,28 +999,29 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
             String s_name[] = w.wi.getSignalsName();
             boolean s_state[] = w.wi.getSignalsState();
         
-            boolean state = ((w.mode == Waveform.MODE_POINT && controller.signal_idx != -1) || 
-                                w.num_signals == 1);
+            boolean state = ((w.mode == Waveform.MODE_POINT && 
+                              w.wi.signal_select != -1) || 
+                              w.num_signals == 1);
             
             markerList.setEnabled(state);
             colorList.setEnabled(state);	
             interpolate_f.setEnabled(state);
             if(state) {
                 if(w.num_signals == 1)
-                    controller.signal_idx = 0;
-                interpolate_f.setState(w.wi.interpolates[controller.signal_idx]);
-                boolean state_m = state && (w.wi.markers[controller.signal_idx] != Waveform.NONE 
-                                        && w.wi.markers[controller.signal_idx] != Waveform.POINT);
+                    w.wi.signal_select = 0;
+               interpolate_f.setState(w.wi.interpolates[w.wi.signal_select]);
+                boolean state_m = state && (w.wi.markers[w.wi.signal_select] != Waveform.NONE 
+                                        && w.wi.markers[w.wi.signal_select] != Waveform.POINT);
                 markerStep.setEnabled(state_m);
             } else
                 markerStep.setEnabled(false);
             
             if(state)
             {
-                SelectListItem(markerList, w.wi.markers[controller.signal_idx]);
+                SelectListItem(markerList, w.wi.markers[w.wi.signal_select]);
                 int st;
                 for(st = 0; st < jScope.markerStepList.length; st++)
-                    if(jScope.markerStepList[st] == w.wi.markers_step[controller.signal_idx])
+                      if(jScope.markerStepList[st] == w.wi.markers_step[w.wi.signal_select])
                         break;
                 SelectListItem(markerStep, st);
 
@@ -1053,7 +1060,9 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
     public void Show(MultiWaveform w, int x, int y)
     {
  	    wave   = w;
-       
+ 	    
+ 	    remove_panel.setEnabled(controller.waves.length > 1);
+
         if(w.wi.is_image)
             SetImageMenu(w);
         else
@@ -1123,9 +1132,9 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	   // wave.repaint();	
 	}
 	if(target == (Object)setup) {
-	    if(wave.mode == Waveform.MODE_POINT && controller.signal_idx != -1)
-	    {
-	        sd.selectSignal(controller.signal_idx);
+        if(wave.mode == Waveform.MODE_POINT && wave.wi.signal_select != -1)
+        {
+	        sd.selectSignal(wave.wi.signal_select);
 	    } else
 	        if(wave.num_signals > 0 || wave.is_image && wave.wi.num_waves != 0)
 	            sd.selectSignal(0);
@@ -1200,8 +1209,7 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	        
 	        if(target == interpolate_f)
 	        {
-	            wave.wi.interpolates[controller.signal_idx] = ((CheckboxMenuItem)target).getState(); 
-	            wave.Repaint();
+                wave.wi.interpolates[wave.wi.signal_select] = ((CheckboxMenuItem)target).getState(); 	            wave.Repaint();
 	        }
 	        
 	        if(parent == signalList)
@@ -1218,11 +1226,11 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	            idx = GetSelectedItem(parent, cb);
 	            if(idx < parent.getItemCount())
 	            {       
-	                if(wave.wi.markers[controller.signal_idx] == idx)
+	                if(wave.wi.markers[wave.wi.signal_select] == idx)
 	                {
 	                    cb.setState(true);
 	                } else {
-	                    wave.wi.markers[controller.signal_idx] = idx;
+		                wave.wi.markers[wave.wi.signal_select] = idx;
 	                }
 	            }
 	            wave.Repaint();	                
@@ -1234,11 +1242,11 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	            idx = GetSelectedItem(parent, cb);
 	            if(idx < parent.getItemCount())
 	            {       
-	                if(wave.wi.markers_step[controller.signal_idx] == jScope.markerStepList[idx])
+                    if(wave.wi.markers_step[wave.wi.signal_select] == jScope.markerStepList[idx])
 	                {
 	                    cb.setState(true);
 	                } else {
-	                    wave.wi.markers_step[controller.signal_idx] = jScope.markerStepList[idx];
+	                    wave.wi.markers_step[wave.wi.signal_select] = jScope.markerStepList[idx];
 	                }
 	            }
 	            wave.Repaint();	                
@@ -1251,13 +1259,13 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	            idx = GetSelectedItem(parent, cb);
 	            if(idx < parent.getItemCount())
 	            {       
-	               if(wave.wi.colors_idx[controller.signal_idx] == idx)
-	               {
+                   if(wave.wi.colors_idx[wave.wi.signal_select] == idx)
+                   {
 	                  cb.setState(true);
 	               } else {
-	                  wave.wi.colors_idx[controller.signal_idx] = idx;
-	                  wave.wi.colors[controller.signal_idx] = controller.main_scope.color_dialog.GetColorAt(idx);
-                      wave.SetCrosshairColor(wave.wi.colors[controller.signal_idx]);
+	                  wave.wi.colors_idx[wave.wi.signal_select] = idx;
+	                  wave.wi.colors[wave.wi.signal_select] = controller.main_scope.color_dialog.GetColorAt(idx);
+                      wave.SetCrosshairColor(wave.wi.colors[wave.wi.signal_select]);
 	                }
 	            }
 	            wave.Repaint();	                

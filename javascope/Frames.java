@@ -7,6 +7,7 @@ class Frames extends Canvas {
     Vector frame = new Vector();
     Vector frame_time = new Vector();
     Rectangle zoom_rect = null;
+    Rectangle prev_rect = null;
     Rectangle view_rect = null;
     int curr_frame_idx = -1;
     MediaTracker tracker;
@@ -24,13 +25,19 @@ class Frames extends Canvas {
         return frame.size();
     }
 
-    public void AddFrame(byte[] buf, float t)
+    public boolean AddFrame(byte[] buf, float t)
     {
         Image img;
         
         img = getToolkit().createImage(buf);
-        AddFrame(img, t);
-        tracker.addImage(img, 0);        
+        if(img != null)
+        {
+            AddFrame(img, t);
+            tracker.addImage(img, 0);
+            return true;
+        } else
+            return false;
+        
     }    
 
     public void WaitLoadFrame() throws InterruptedException
@@ -39,13 +46,14 @@ class Frames extends Canvas {
     }    
 
     
-    public void AddFrame(Image f, float t)
+    public boolean AddFrame(Object f, float t)
     {
         frame.addElement(f);
-        frame_time.addElement(new Float(t));
+        frame_time.addElement(new Float(t));     
+        return true;
     }
 
-    public Image GetFrameAtTime(float t)
+    public Object GetFrameAtTime(float t)
     {
         int idx = GetFrameIdxAtTime(t);
         
@@ -73,15 +81,13 @@ class Frames extends Canvas {
         
         if(curr_frame_idx != -1 && frame.size() != 0)
         {
-            Dimension dim = new Dimension();
+            Dimension dim ;
             
             if(zoom_rect == null)
             {
-                dim.width = ((Image)frame.elementAt(curr_frame_idx)).getWidth(this);
-                dim.height = ((Image)frame.elementAt(curr_frame_idx)).getHeight(this);
+                dim = GetFrameDim(curr_frame_idx);
             } else {
-                dim.width = zoom_rect.width - zoom_rect.x;
-                dim.height = zoom_rect.height - zoom_rect.y;
+                dim = new Dimension(zoom_rect.width, zoom_rect.height);
                 p_out.x = zoom_rect.x;
                 p_out.y = zoom_rect.y;
             }
@@ -104,17 +110,23 @@ class Frames extends Canvas {
     
     public int GetFrameIdxAtTime(float t)
     {
-        int idx = -1;
+        int idx = 0;
         
         if(frame.size() == 1)
             return 0;
+  
+        if(t > ((Float)frame_time.elementAt(frame.size()-1)).floatValue())
+            return frame.size()-1;
 
         for(int i = 0; i < frame.size() - 1; i++)
         {
                 
             if( t >= ((Float)frame_time.elementAt(i)).floatValue() && 
                 t < ((Float)frame_time.elementAt(i + 1)).floatValue())
+            {
                 idx = i;
+                break;
+            }  
 /*            
             if( t > ((Float)frame_time.elementAt(i)).floatValue() && 
                 t < ((Float)frame_time.elementAt(i + 1)).floatValue())
@@ -131,42 +143,43 @@ class Frames extends Canvas {
  */
         }
         
-        if(idx != curr_frame_idx)
-            return idx;
-        else
-            return -1;
+        return idx;
+                
     }
     
-    
-    public Image GetZoomFrame(int idx, Dimension d, Rectangle r)
+    protected Dimension GetFrameDim(int idx)
     {
-        if(idx > frame.size() - 1 || frame.elementAt(idx) == null ) return null;
+       return  new Dimension( ((Image)frame.elementAt(idx)).getWidth(this),
+                              ((Image)frame.elementAt(idx)).getHeight(this));
+    }
+    
+    public void SetZoomRegion(int idx, Dimension d, Rectangle r)
+    {
+        if(idx > frame.size() - 1 || frame.elementAt(idx) == null ) 
+            return;
 
-
-        Dimension dim = new Dimension();
+        Dimension dim;
         
         if(zoom_rect == null)
         {
             zoom_rect = new Rectangle(0, 0, 0, 0);
-            dim.width = ((Image)frame.elementAt(idx)).getWidth(this);
-            dim.height = ((Image)frame.elementAt(idx)).getHeight(this);
+            dim = GetFrameDim(idx);
         } else {
-            dim.width = zoom_rect.width - zoom_rect.x;
-            dim.height = zoom_rect.height - zoom_rect.y;
+            dim = new Dimension (zoom_rect.width, zoom_rect.height);
         }
 
         double ratio_x = (double)dim.width/ d.width;
         double ratio_y = (double)dim.height/ d.height;
         
             
-        zoom_rect.width = zoom_rect.x + (int)(ratio_x * r.width);
-        zoom_rect.height = zoom_rect.y + (int)(ratio_y * r.height);
-        zoom_rect.x += ratio_x * r.x;
-        zoom_rect.y += ratio_y * r.y;
+        zoom_rect.width = (int)(ratio_x * r.width + 0.5);
+        zoom_rect.height = (int)(ratio_y * r.height + 0.5);
+        zoom_rect.x += ratio_x * r.x + 0.5;
+        zoom_rect.y += ratio_y * r.y + 0.5;
         
+        prev_rect = new Rectangle(zoom_rect);
         
         curr_frame_idx = idx;
-        return GetFrame(idx);        
     }
 
     public Rectangle GetZoomRect()
@@ -191,7 +204,7 @@ class Frames extends Canvas {
         if(end_y == -1)
             start_y = ((Image)frame.elementAt(0)).getHeight(this);
         
-        view_rect = new Rectangle(start_x, start_y, end_x, end_y);
+        view_rect = new Rectangle(start_x, start_y, start_x - end_x, start_y - end_y);
         zoom_rect = view_rect;
     }
 
@@ -204,16 +217,19 @@ class Frames extends Canvas {
     {
        return curr_frame_idx;
     }
+    
+    public Object GetFrame(int idx, Dimension d)
+    {
+        return GetFrame(idx);
+    }
 
-    public Image GetFrame(int idx)
+    public Object GetFrame(int idx)
     {
         int count;
-        
         if(idx >= frame.size())
             idx = frame.size() - 1;
         if(idx < 0 || frame.elementAt(idx) == null) return null;
         curr_frame_idx = idx;
-        return (Image)frame.elementAt(idx);
+        return frame.elementAt(idx);
     }
-
 }

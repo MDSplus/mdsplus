@@ -719,7 +719,7 @@ import java.util.Vector;
         if(signals.size() == 0) return;
 	    for(int i = 0; i < signals.size(); i++)
 		    signalListAdd((Data)signals.elementAt(i));
-	    signalSelect(sel_signal); 	
+//	    signalSelect(sel_signal); 	
 	  } 
 
 	  private void signalListAdd(Data ws)
@@ -1252,9 +1252,16 @@ import java.util.Vector;
 		y_max_b.setBounds(477,96,56,20);
 		add(y_max);
 		y_max.setBounds(532,96,92,20);
+		
 		image_b.setLabel("Is Image");
 		add(image_b);
 		image_b.setBounds(636,96,84,20);
+		
+		use_jai_b.setLabel("Use JAI");
+		add(use_jai_b);
+		use_jai_b.setBounds(636,120,84,20);
+		
+		
 		x_lab.setText("X");
 		add(x_lab);
 		x_lab.setBounds(9,121,12,20);
@@ -1346,6 +1353,7 @@ import java.util.Vector;
       y_max_b.addItemListener(this);
       y_max.addKeyListener(this);
       image_b.addItemListener(this);
+     // use_jai_b.addItemListener(this);
       x_expr.addKeyListener(this);
       x_label_b.addItemListener(this);
       x_min_b.addItemListener(this);
@@ -1380,6 +1388,7 @@ import java.util.Vector;
 	java.awt.Checkbox y_max_b = new java.awt.Checkbox();
 	java.awt.TextField y_max = new java.awt.TextField();
 	java.awt.Checkbox image_b = new java.awt.Checkbox();
+	java.awt.Checkbox use_jai_b = new java.awt.Checkbox();
 	java.awt.Label x_lab = new java.awt.Label();
 	java.awt.TextField x_expr = new java.awt.TextField();
 	java.awt.Checkbox x_log = new java.awt.Checkbox();
@@ -1417,7 +1426,7 @@ import java.util.Vector;
    {
       setup = _setup;
       pack();
-      wi = new WaveInterface(setup.main_scope.db);
+      wi = new WaveInterface(setup.main_scope.db, w.controller);
       wave = w;
       putWindowSetup(w.wi);
       setPosition(w.getParent());
@@ -1574,6 +1583,7 @@ import java.util.Vector;
 	putDefaultValues();
 	
     image_b.setState(wi.is_image);
+    use_jai_b.setState(wi.use_jai);
 
 //    if(!wi.is_image)
 //    {
@@ -1604,6 +1614,7 @@ import java.util.Vector;
         y_log.setVisible(false); 
         signalList.setVisible(false);
         error.setVisible(false);
+        use_jai_b.setVisible(true);
 		panel1.setBounds(12,215,660,40);
 		y_lab.setText("Frames");
 		y_lab.setBounds(10,73,35,20);
@@ -1618,6 +1629,7 @@ import java.util.Vector;
         signalList.setVisible(true);        
         error.setVisible(true);
         x_lab.setVisible(true);
+        use_jai_b.setVisible(false);
 		panel1.setBounds(12,365,660,40);
 		y_lab.setText("Y");
 		add(y_lab);
@@ -1661,6 +1673,7 @@ import java.util.Vector;
 	{
 	    signalList.reset();
 	    signalList.signalListRefresh();
+
 	}
   } 
  
@@ -1691,6 +1704,7 @@ import java.util.Vector;
 	if(!main_scope.equalsString(experiment.getText(), wave_wi.cexperiment)) return true;
 	if(getDefaultFlags() != wave_wi.defaults)				                return true;	
 	if(image_b.getState() != wave_wi.is_image)				                  return true;		
+	if(use_jai_b.getState() != wave_wi.use_jai)				                  return true;		
 
     for(int i = 0 ; i < wave_wi.num_waves; i++)
 	{
@@ -1711,7 +1725,7 @@ import java.util.Vector;
 	        signalList.updateList();
             setCursor(c_cursor);
 	    } catch (Throwable e) {
-	        main_scope.SetStatusLabel("Unrecoverable error during update list");	    
+	        main_scope.SetStatusLabel("Error during update list"+e);	    
             setCursor(c_cursor);
 	    }
     }
@@ -1752,13 +1766,15 @@ import java.util.Vector;
 
  	  if(num_signal == 0)
  	  {
-	      wave.wi = new WaveInterface(main_scope.db);
+	      wave.wi = new WaveInterface(main_scope.db, wave.controller);
 	      wi.is_image = image_b.getState();
+	      wi.use_jai = use_jai_b.getState();
 	      return 1;
       }
 
 	  wi.modified = isChanged(s);
 	  wi.is_image = image_b.getState();
+	  wi.use_jai = use_jai_b.getState();
 	  
 	  if(!wi.modified)
 	  {
