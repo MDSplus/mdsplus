@@ -13,6 +13,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2002/04/26 13:14:30  jgk
+ * Changed End-Of-Line marker from Windows- to CVS standard.
+ * No code changes (or at least, not intentional :-) ).
+ *
  * Revision 1.4  2002/04/24 09:06:17  manduchi
  * Added Asdex Data Provider
  *
@@ -38,6 +42,7 @@ public class TWUSignal
     private int            sampleCount  = 0;
     private int            samples2Read = 0;
     private boolean        finished     = false;
+    private boolean        error        = false;
 
     /* -------------------------------------------------------------------- */
     // Constructors (and related functions)
@@ -133,6 +138,7 @@ public class TWUSignal
     {
         try
         {
+            error = false ;
             StringBuffer bulk 
                 = new StringBuffer(twup.FQBulkName() + "?start=" + firstSample );
 
@@ -155,6 +161,7 @@ public class TWUSignal
         catch (Exception e) 
         {
             System.out.println("TWUSignal.prepareToRead :" + e);
+            error = true ;
         }
     }
 
@@ -165,6 +172,12 @@ public class TWUSignal
     complete()
     {
         return finished ;
+    }
+
+    public boolean
+    error()
+    { 
+	return error ;
     }
 
     public void
@@ -211,6 +224,7 @@ public class TWUSignal
         catch (Exception e) 
         {
             System.out.println("TWUSignal.tryToRead :" + e);
+	    error = true ;
         }
     }
 
