@@ -34,6 +34,21 @@ fi
 if [ -r $MDSPLUS_DIR/GLOBUS_LICENSE ]
 then
   product=FusionGrid
+  if [ ! -r $MDSPLUS_DIR/local/envsyms ]
+  then
+    echo "include $MDSPLUS_DIR/local/roam.env" > $MDSPLUS_DIR/local/envsyms
+  fi
+  if [ ! -r $MDSPLUS_DIR/local/roam.env ]
+  then
+    echo "ROAM_SERVER roam.fusiongrid.org" > $MDSPLUS_DIR/local/roam.env
+    echo "ROAM_SITE_RESOURCE MYSITE" >> $MDSPLUS_DIR/local/roam.env
+    echo "ROAM_MDSIPS_RESOURCE MYDATA" >> $MDSPLUS_DIR/local/roam.env
+    echo "ROAM_GRIDFTP_RESOURCE MYSITE-GRIDFTP" >> $MDSPLUS_DIR/local/roam.env
+    echo "ROAM_JOBCONTROL_RESOURCE MYSITE-JOBS" >> $MDSPLUS_DIR/local/roam.env
+    echo "ROAM_GRIDFTP_GUEST_ACCOUNT nobody" >> $MDSPLUS_DIR/local/roam.env
+    echo "ROAM_MDSIP_RESOURCE MYSITE-MDSIP" >> $MDSPLUS_DIR/local/roam.env
+    echo "ROAM_MDSIP_GUEST_ACCOUNT" >> $MDSPLUS_DIR/local/roam.env
+  fi
 else
   product=MDSplus
 fi
@@ -151,10 +166,10 @@ then
     echo Adding mdsip to /etc/xinetd.d
     if [ "$product"  = "FusiongGrid" ]
     then
-      cp $MDSPLUS_DIR/setup/mdsip.xinetd /etc/xinetd.d/mdsip
-      cp $MDSPLUS_DIR/setup/mdsips.xinetd /etc/xinetd.d/mdsips
-      cp $MDSPLUS_DIR/setup/globus-gatekeeper.xinetd /etc/xinetd.d/globus-gatekeeper
-      cp $MDSPLUS_DIR/setup/globus-gridftp.xinetd /etc/xinetd.d/globus-gridftp
+      cp $MDSPLUS_DIR/rpm/fusiongrid-mdsip.xinetd /etc/xinetd.d/mdsip
+      cp $MDSPLUS_DIR/rpm/fusiongrid-mdsips.xinetd /etc/xinetd.d/mdsips
+      cp $MDSPLUS_DIR/rpm/globus-gatekeeper.xinetd /etc/xinetd.d/globus-gatekeeper
+      cp $MDSPLUS_DIR/rpm/globus-gridftp.xinetd /etc/xinetd.d/globus-gridftp
     else
       cp $MDSPLUS_DIR/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
     fi
