@@ -14,7 +14,7 @@ mdslib : ../bin ../shlib ../shlib/libMdsLib.$(SHARE_TYPE)  mdslib_ctest  mdslib_
 ../shlib :
 	mkdir ../shlib
 
-mdslib_ctest : mdslib_ctest.c ../shlib/libMdsLib.$(SHARE_TYPE)
+mdslib_ctest : mdslib_ctest.o ../shlib/libMdsLib.$(SHARE_TYPE)
 	cc -o $@ $(CFLAGS) mdslib_ctest.c -I../include -L../shlib -lMdsLib
 
 mdslib_ftest : mdslib_ftest.f ../shlib/libMdsLib.$(SHARE_TYPE)

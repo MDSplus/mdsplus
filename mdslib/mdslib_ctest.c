@@ -1,4 +1,4 @@
-#include "/f/mdsplus/cvsroot/mdsplus/mdslib/MdsLib.h"
+#include "MdsLib.h"
 
 
 void main(int argc, char *argv[]);
