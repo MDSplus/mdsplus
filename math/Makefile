@@ -29,16 +29,19 @@ OBJECTS = \
 	umach.o  \
 	zaxpy.o  \
 	zgeco.o  \
-	zmul.o   \
-	mod.o
+	zmul.o   
+
+
+.F.f:
+	f77 $(MATHFFLAGS) $(FPREPROCESSOR)  $<
 
 .f.o: 
-	f77 $(FFLAGS) +apollo -c $<
+	f77 $(MATHFFLAGS) -c $<
 
 math : ../shlib ../shlib/libMdsMath.$(SHARE_TYPE) 
 
 ../shlib/libMdsMath.$(SHARE_TYPE) : $(OBJECTS) 
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) 
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -L../shlib -lMdsShr $(MATHLDFLAGS)
 
 ../shlib :
 	mkdir ../shlib
@@ -46,7 +49,6 @@ math : ../shlib ../shlib/libMdsMath.$(SHARE_TYPE)
 clean :
 	- rm *.o
 	- rm ../shlib/libMdsMath.$(SHARE_TYPE)
-	- rm .depend
 
 
 .depend :

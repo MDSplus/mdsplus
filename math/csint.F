@@ -244,7 +244,11 @@
 	Real	c(4,*)	!output, [4,ndata] coefficients, f f' f'' f'''
 !+Internal, initialize spline vectors
 	Integer j,k
+#ifdef BIT64
 	Integer*8	i,igot(2)
+#else
+	integer i,igot(2)
+#endif
         Data igot /0,0/
 	Call IW9GET(ndata,igot)
 	i = igot(1)
