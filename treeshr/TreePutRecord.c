@@ -383,7 +383,6 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
     {
       unsigned short rlength = bytes_this_time + 10;
       eof = lseek(info->data_file->put,0,SEEK_END);
-      printf("eof = %ld\n",eof);
       bytes_to_put -= bytes_this_time;
       LoadShort(rlength,(char *)&info->data_file->record_header->rlength);
       status = (write(info->data_file->put,(void *) info->data_file->record_header,sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
