@@ -8,7 +8,7 @@ public fun TR10SetClockMode(in _handle, in _clk_src, in _clk_output, in _div_mod
   case DEFAULT Write(*, "TR10 : invalid clock source "//_clk_src); abort();
   };
 
-  _ClkOutput = (_clk_output) ? _TR10_PXI_TRIG7 : _TR10_CLK_NO_EXT_CLOCK;
+  _ClkOutput = (_clk_output) ? _TR10_CLK_PXI_TRIG7 : _TR10_CLK_NO_EXT_CLOCK;
   _DivMode = (_div_mode == 'div') ? _TR10_CLK_DIVIDE : _TR10_CLK_SUB_SAMPLE;
   _ClkSense = (_clk_sense == '+') ? _TR10_CLK_RISING_EDGE : _TR10_CLK_FALLING_EDGE;
   _ClkTerm = (_clk_term) ? _TR10_CLK_TERMINATION_ON : _TR10_CLK_TERMINATION_OFF;

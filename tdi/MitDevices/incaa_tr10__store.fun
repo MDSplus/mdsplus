@@ -69,8 +69,16 @@ public fun incaa_tr10__store(as_is _nid, optional _method)
   _post_trig = MdsValue("TR10GetActPostSamples($)", _handle);
   _pre_trig = _total_samples-_post_trig;
 
-  _first_idx = - _pre_trig;
-  _last_idx = _post_trig;
+  /*************************************
+    Get Requested pre and post trigger
+   *************************************/
+  _req_post_trig = if_error(data(DevNodeRef(_nid, _TR10_POST_TRIG))*1024, 2097150L );
+  _req_post_trig = min(_req_post_trig, _post_trig);
+  _req_pre_trig = if_error(data(DevNodeRef(_nid, _TR10_PRE_TRIG))*1024, 0);
+  _req_pre_trig = min(_req_pre_trig, _pre_trig);
+
+  _first_idx = - _req_pre_trig;
+  _last_idx = _req_post_trig;
   _max_samples = _total_samples;
 
   _offset = 0.0;
@@ -86,10 +94,10 @@ public fun incaa_tr10__store(as_is _nid, optional _method)
       _endidx   = DevNodeRef(_nid,_chan_offset+_TR10_INPUT_END);
       _lbound = if_error(long(data(_startidx)),_first_idx);
 
-      _ubound = if_error(long(data(_endidx)),_post_trig); /* or _post_trig -1 ? */
+      _ubound = if_error(long(data(_endidx)),_last_idx); /* or _post_trig -1 ? */
       _filter = if_error(text(data(DevNodeRef(_nid, _chan_offset+_TR10_INPUT_FILTER))), "");
-      _inc = (len(_filter) == 0) ? 1 : execute('GetInc'//_filter);
-     _data= MdsValue('TR10ReadChannel($,$,$,$,$,$)', _board, _chan+1, _lbound-_first_idx, _ubound-_first_idx, _inc, _filter);     
+      _data= MdsValue('TR10ReadChannel($,$,$,$,$)', _board, _chan+1, _pre_trig+_lbound, _ubound-_lbound, _filter); 
+      _inc = (len(_filter) > 0) ? if_error(mdsvalue("public _increment"), 1) : 1;    
 
       if (_inc > 1) {
         _slope = IF_ERROR(SLOPE_OF(_clk), 0);
@@ -106,9 +114,5 @@ public fun incaa_tr10__store(as_is _nid, optional _method)
       DevPutSignalNoBounds(_chan_nid, _offset, 10./(32*1024), _data, _dim);
     }
   }
-  /* 
-    Tell the remote end to reset all the tdi variables etc...
-  _dummy = MdsValue('reset_public(),reset_private()');
-  */
   return(1);
 }
