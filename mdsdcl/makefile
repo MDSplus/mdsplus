@@ -22,7 +22,7 @@ clean:
 mdsdcl_tables.o:	mdsdcl_tables.c
 
 mdsdcl_tables.c:	mdsdcl_tables.ocld
-	../cdu/cdu < mdsdcl_tables.ocld
+	../bin/cdu < mdsdcl_tables.ocld
 
 libMdsdcl.a:	$(OBJFILES)
 		$(RANLIB)

@@ -33,7 +33,7 @@ clean:
 	cp  tcl ../bin
 
 tcl_commands.c:	tcl_commands.ocld
-	../cdu/cdu < tcl_commands.ocld
+	../bin/cdu < tcl_commands.ocld
 
 tcl_commands.o:	tcl_commands.c
 
