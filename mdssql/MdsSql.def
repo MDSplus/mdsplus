@@ -1,0 +1,12 @@
+LIBRARY	MdsSql
+EXPORTS
+;
+Login_Sybase
+SQL_DYNAMIC
+GetDBMsgText
+dbconvert
+dbnumcols
+dbcolname
+dbcoltype
+dbdatlen
+dbdata
