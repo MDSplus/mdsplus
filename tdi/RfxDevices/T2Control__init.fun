@@ -43,7 +43,7 @@ write(*, 'T2Control init');
 	}
 
 	write(*, 'Duration: ', _duration);
-	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackPeriod', float(_duration));
+	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackDuration', float(_duration));
 
 
 	_control_idx = data(DevNodeRef(_nid, _N_INIT_CONTROL));
