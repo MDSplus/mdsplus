@@ -499,20 +499,21 @@ void MessageClear(Widget w)
   XmTextSetString(text_w, "");
 }
 
-static void TOutput(struct descriptor *text)
+static void TOutput(char *text)
 {
-  char *txt = malloc(text->length+2);
-  Widget message_box = XtNameToWidget(toplevel, "*message_box");
-  Widget message_text = XtNameToWidget(message_box, "*message_text");
-  txt[0] = '\n';
-  strncpy(&txt[1], (char *)text->pointer, text->length);
-  txt[text->length+1]=0;
+  char *txt = malloc(strlen(text)+2);
+  Widget message_box;
+  Widget message_text;
+  message_box = XtNameToWidget(toplevel, "*message_box");
+  message_text = XtNameToWidget(message_box, "*message_text");
+  strcpy(txt, text);
+  strcat(txt, "\n");
   XmTextInsert(message_text, XmTextGetLastPosition(message_text), txt);
   XmTextShowPosition(message_text, XmTextGetLastPosition(message_text));
-  XtFree(txt);
+  free(txt);
 }
 
-static void TCLOutput(struct descriptor *text)
+static void TCLOutput(char *text)
 {
   Widget message_box = XtNameToWidget(toplevel, "*message_box");
   if (!XtIsManaged(message_box))
@@ -524,13 +525,14 @@ static void InitializeCommandInterface(Widget w)
 {
   static DESCRIPTOR(const image_name, "tcl_commands");
   static DESCRIPTOR(const routine_name, "TclSetCallbacks");
-  static DESCRIPTOR(const set_command, "set command tcl_commands/def_file=*.tcl/helplib=tclhelp");
+  static DESCRIPTOR(const set_command, "set command tcl_commands -def_file=*.tcl");
   int status = mdsdcl_do_command(&set_command);
   if (status&1) {
     int (*set_callbacks)();
     status = LibFindImageSymbol(&image_name, &routine_name, &set_callbacks);
-    if (status&1)
-      set_callbacks(TCLOutput, TCLOutput, NodeTouched);
+    if (status&1) {
+      status =set_callbacks(TCLOutput, TCLOutput, NodeTouched);
+    }
   }
   toplevel = BxFindTopShell(w);
 }
