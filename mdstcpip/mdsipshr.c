@@ -589,7 +589,7 @@ static SOCKET ConnectToPort(char *host, char *service)
     if (sscanf(host,"%d.%d.%d.%d",&part1,&part2,&part3,&part4) == 4)
     {
       int addr = part1 * 0x1000000 + part2 * 0x10000 + part3 * 0x100 + part4; 
-      hp = gethostbyaddr(&addr, 4, AF_INET);
+      hp = gethostbyaddr((void *)&addr, 4, AF_INET);
     }
   }
   if (hp == NULL)
