@@ -1,0 +1,132 @@
+#include        <stdio.h>
+#include        "mdsdcl.h"
+#ifdef vms
+#include        <ssdef.h>
+#include        <lib$routines.h>
+#endif
+
+/*********************************************************************
+* MDSDCL_DO_COMMAND.C --
+*
+* Effectively, the main MDSDCL routine.  Called again and again
+* from within main().
+*
+* History:
+*  10-Nov-1997  TRG  Adapted from original VMS-only source code.
+*
+**********************************************************************/
+
+
+struct _mdsdcl_ctrl  MDSDCL_COMMON;
+static struct _mdsdcl_ctrl *ctrl = &MDSDCL_COMMON;
+
+#ifdef vms
+extern sys$setast();
+extern smg$set_out_of_band_asts();
+#endif
+
+
+
+	/****************************************************************
+	 * mdsdcl_do_command:
+	 * Effectively, the main MDSDCL routine ...
+	 ****************************************************************/
+int mdsdcl_do_command(
+    void  *command		/* <r:opt> command -- cstring or dsc	*/
+   )
+   {
+    int tblidx;
+    int len;
+    int sts;
+    int save_flag;
+    int tried_indirect = 0;
+    struct _mdsdcl_io  *io;
+    static char  doMacro[12];
+    static DYNAMIC_DESCRIPTOR(dsc_cmd);
+#ifdef vms
+    extern int   MDSDCL$MSG_TO_RET();
+    extern int   MDSDCL$OUT_OF_BAND_AST();
+#endif
+
+	/*---------------------------------------------------------------
+	 * Executable:
+	 *--------------------------------------------------------------*/
+#ifdef vms
+    lib$establish(MDSDCL$MSG_TO_RET);
+    sys$setast(1);
+/*    smg$set_out_of_band_asts(&ctrl->pasteboard_id,&0x4000008,
+/*                        MDSDCL$OUT_OF_BAND_AST,ctrl);	/*  */
+#endif
+
+    if (!ctrl->tbladr[0])  mdsdcl_initialize(ctrl);
+    tblidx = ctrl->tables;
+
+    if (!doMacro[0])
+       {			/* first time ...			*/
+        sprintf(doMacro,"DO %cMACRO ",QUALIFIER_CHARACTER);
+       }
+
+    io = ctrl->ioLevel + ctrl->depth;
+    if (command)
+       {
+        str_trim(&io->last_command,command);
+        str_copy_dx(&dsc_cmd,&io->last_command);
+        mdsdcl_insert_symbols(io->ioParameter,&dsc_cmd);
+       }
+    else
+       {
+        str_free1_dx(&io->last_command);
+        str_free1_dx(&dsc_cmd);
+       }
+
+		/*-------------------------------------------------------
+		 * Try each table in turn ...
+		 *------------------------------------------------------*/
+    for ( ; tblidx>0 ; tblidx--)
+       {
+        sts = mdsdcl_dcl_parse(&dsc_cmd,ctrl,tblidx);
+        if (~sts & 1)
+           {
+            if ((sts == CLI_STS_EOF) || (sts == CLI_STS_NOCOMD))
+                return(sts);		/*--------------------> return	*/
+            if (sts == MDSDCL_STS_INDIRECT_EOF)
+                return(sts);		/*--------------------> return	*/
+           }
+
+        io = ctrl->ioLevel + ctrl->depth;
+        if (!dsc_cmd.dscA_pointer)
+            str_copy_dx(&dsc_cmd,&io->last_command);
+
+        if (sts & 1)
+           {			/* Try to dispatch the routine ...	*/
+            sts = cli_dispatch(ctrl);
+            if (sts != CLI_STS_INVROUT)
+               {
+                if ((ctrl->verify == 1) && (sts & 1))
+                    printf("%s\n",dsc_cmd.dscA_pointer);
+                if (~sts & 1)
+                    mdsdcl_close_indirect_all();
+                return(sts);		/*--------------------> return	*/
+               }
+           }
+        }
+		/*-------------------------------------------------------
+		 * Command not found in any table:  try it as a macro ...
+		 *------------------------------------------------------*/
+    tblidx = 1;
+    str_prefix(&dsc_cmd,doMacro);
+    sts = mdsdcl_dcl_parse(&dsc_cmd,ctrl,tblidx);
+    if (sts & 1)
+       {			/* Try to dispatch the macro ...	*/
+        sts = cli_dispatch(ctrl);
+        if (sts != CLI_STS_INVROUT)
+           {
+            if ((ctrl->verify == 1) && (sts & 1))
+                printf("%s\n",dsc_cmd.dscA_pointer);
+           }
+       }
+    if (~sts & 1)
+        mdsdcl_close_indirect_all();
+
+    return(sts);			/*--------------------> return	*/
+   }
