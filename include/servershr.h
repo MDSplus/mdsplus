@@ -29,7 +29,7 @@ extern int ServerCloseTrees( char *server );
 extern int ServerCreatePulse(int *id, char *server, char *tree, int shot,
                         void (*ast)(), void *astprm, int *retstatus, void (*before_ast)());
 extern int ServerDispatchAction(int *id, char *server, char *tree, int shot, int nid,
-                        void (*ast)(), void *astprm, int *retstatus, 
+				void (*ast)(), void *astprm, int *retstatus, int *socket,
                         void (*before_ast)());
 extern int ServerDispatchClose(void *vtable);
 extern int ServerDispatchCommand(int *id, char *server, char *cli, char *command,
