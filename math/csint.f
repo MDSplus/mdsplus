@@ -243,8 +243,8 @@
 	Real	break(*)!output, [ndata] breakpoints
 	Real	c(4,*)	!output, [4,ndata] coefficients, f f' f'' f'''
 !+Internal, initialize spline vectors
-	Integer i,j,k
-	Integer	igot(2)
+	Integer j,k
+	Integer*8	i,igot(2)
         Data igot /0,0/
 	Call IW9GET(ndata,igot)
 	i = igot(1)

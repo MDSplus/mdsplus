@@ -99,7 +99,7 @@
 !-----------------------------------------------------------------------
 	Subroutine DW9GET(iwant,igot)
 	Integer	iwant	!input, number of doubles
-	Integer	igot(2)	!modify, memory allocation
+	Integer*8	igot(2)	!modify, memory allocation
 !+Allocate double memory
 	Call IW9GET(2*iwant,igot)
 	igot(1) = igot(1)/2
@@ -107,24 +107,27 @@
 !-----------------------------------------------------------------------
 	Subroutine W9GET(iwant,igot)
 	Integer	iwant	!input, number of singles
-	Integer	igot(2)	!modify, memory allocation
+	Integer*8	igot(2)	!modify, memory allocation
 !+Allocate single memory
 	Call IW9GET(iwant,igot)
 	End
 !-----------------------------------------------------------------------
 	Subroutine IW9GET(iwant,igot)
 	Integer	iwant	!input, number of integers
-	Integer	igot(2)	!modify, memory allocation
+	Integer*8	igot(2)	!modify, memory allocation
 !		igot must be declared save/static, preset to 0
 !+Allocate simple memory
 	Logical LibGetVm
+	Integer BytesPerInt
+        BytesPerInt = sizeof(igot(1))
 	If (igot(2).ne.iwant) Then
 		If (igot(2).ne.0)
-     1	Call LibFreeVm(4*igot(2),igot(1)*4+%loc(igot(1)),%val(0))
+     1	Call LibFreeVm(BytesPerInt*igot(2),
+     1          igot(1)*BytesPerInt+%loc(igot(1)),%val(0))
 		igot(2) = 0
 		If (iwant.gt.0) Then
-			If (LibGetVm(4*iwant,igot(1),%val(0))) Then
-				igot(1) = (igot(1) - %loc(igot(1)))/4
+			If (LibGetVm(BytesPerInt*iwant,igot(1),%val(0))) Then
+				igot(1) = (igot(1) - %loc(igot(1)))/BytesPerInt
 				igot(2) = iwant
 			Endif
 		Endif
