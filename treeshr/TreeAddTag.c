@@ -95,7 +95,8 @@ the tag name specified does not already exist.
     newtag_idx = 0;
     for (i=0;i<tags;i++)
     {
-      char *defined_tag = (char *)(dblist->tree_info->tag_info + swapint((char *)&i))->name;
+      int idx = swapint((char *)(old_tags_ptr+i));
+      char *defined_tag = (char *)(dblist->tree_info->tag_info + idx)->name;
       int cmp = strncmp(tag, defined_tag, sizeof(TAG_NAME));
       if (cmp == 0)
         return TreeDUPTAG;
@@ -158,7 +159,7 @@ the tag name specified does not already exist.
    to the end of the existing tag information blocks.
   ********************************************************/
 
-    memcpy(old_tags_ptr + newtag_idx + 1, old_tags_ptr + newtag_idx, (tags - newtag_idx) * sizeof(int));
+    memmove(old_tags_ptr + newtag_idx + 1, old_tags_ptr + newtag_idx, (tags - newtag_idx) * sizeof(int));
     *(old_tags_ptr + newtag_idx) = swapint((char *)&tags);	/* Load new */
   }
 
@@ -228,3 +229,4 @@ the tag name specified does not already exist.
   return TreeNORMAL;
 
 }
+
