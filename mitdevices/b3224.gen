@@ -1,0 +1,14 @@
+device model = B3224 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    OUTPUT_1	      : undefined		options = no_write_shot			usage = numeric;
+    OUTPUT_2	      : undefined		options = no_write_shot			usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     OUTPUT_1 : int;
+     OUTPUT_2 : int;
+}

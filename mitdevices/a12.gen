@@ -1,0 +1,40 @@
+device model = A12 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    EXT_CLOCK_IN      : undefined		options = no_write_shot 		usage = axis ;
+    STOP_TRIG         : datum value = 0.	options = no_write_shot			usage = numeric;
+    INPUT_1           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_1:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_1:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_2           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_2:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_2:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_3           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_3:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_3:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_4           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_4:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_4:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_5           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_5:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_5:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_6           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_6:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_6:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     EXT_CLOCK_IN;
+}
+
+operation TRIGGER requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STOP requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

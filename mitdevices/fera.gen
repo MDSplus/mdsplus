@@ -1,0 +1,19 @@
+device model = FERA library = MIT$DEVICES with
+{
+    COMMENT           : undefined 							usage = text;
+    DIG_NAME          : undefined 							usage = text;
+    CNTRL_NAME        : undefined 							usage = text;
+    MEM_NAME          : undefined 							usage = text;
+    EXT_CLOCK         : undefined		options = no_write_shot 		usage = axis ;
+    OUTPUT            : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     CNTRL_NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STORE requires {
+     CNTRL_NAME : string error_message is DEV$_BAD_NAME;
+}

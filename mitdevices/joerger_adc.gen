@@ -1,0 +1,12 @@
+device model = JOERGER_ADC library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    DATA	      : undefined		options = no_write_model,write_once	usage = numeric;
+    VSTRAP            : datum value = 10.	options = no_write_shot			usage = numeric;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

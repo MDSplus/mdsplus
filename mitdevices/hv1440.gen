@@ -1,0 +1,48 @@
+device model = HV1440 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    RANGE	      : datum value = 1.0	options = no_write_shot			usage = numeric;
+    POD_01            : undefined               options = no_write_shot			usage = numeric;
+    POD_02            : undefined               options = no_write_shot			usage = numeric;
+    POD_03            : undefined               options = no_write_shot			usage = numeric;
+    POD_04            : undefined               options = no_write_shot			usage = numeric;
+    POD_05            : undefined               options = no_write_shot			usage = numeric;
+    POD_06            : undefined               options = no_write_shot			usage = numeric;
+    POD_07            : undefined               options = no_write_shot			usage = numeric;
+    POD_08            : undefined               options = no_write_shot			usage = numeric;
+    POD_09            : undefined               options = no_write_shot			usage = numeric;
+    POD_10            : undefined               options = no_write_shot			usage = numeric;
+    POD_11            : undefined               options = no_write_shot			usage = numeric;
+    POD_12            : undefined               options = no_write_shot			usage = numeric;
+    POD_13            : undefined               options = no_write_shot			usage = numeric;
+    POD_14            : undefined               options = no_write_shot			usage = numeric;
+    POD_15            : undefined               options = no_write_shot			usage = numeric;
+    POD_16            : undefined               options = no_write_shot			usage = numeric;
+    READOUT           : undefined               options = no_write_model,write_once	usage = numeric;
+    FRAME	      : datum value = 1		options = no_write_shot			usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+    ON_ACTION         : action operation = ON sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    OFF_ACTION        : action operation = OFF sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     FRAME : int error_message is HV1440$_BAD_FRAME;
+     RANGE : float error_message is HV1440$_BAD_RANGE;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     FRAME : int error_message is HV1440$_BAD_FRAME;
+     RANGE : float error_message is HV1440$_BAD_RANGE;
+}
+
+operation ON requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation OFF requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

@@ -1,0 +1,32 @@
+device model = MIT_ENCODER library = MIT$DEVICES with
+{
+    NAME              : undefined 		options = no_write_shot			usage = text;
+    COMMENT           : undefined 							usage = text;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    CHANNEL_1         : undefined		options = no_write_shot			usage = numeric;
+    CHANNEL_1:EVENT   : undefined 		options = no_write_shot			usage = text;
+    CHANNEL_2         : undefined		options = no_write_shot			usage = numeric;
+    CHANNEL_2:EVENT   : undefined 		options = no_write_shot			usage = text;
+    CHANNEL_3         : undefined		options = no_write_shot			usage = numeric;
+    CHANNEL_3:EVENT   : undefined 		options = no_write_shot			usage = text;
+    CHANNEL_4         : undefined		options = no_write_shot			usage = numeric;
+    CHANNEL_4:EVENT   : undefined 		options = no_write_shot			usage = text;
+    CHANNEL_5         : undefined		options = no_write_shot			usage = numeric;
+    CHANNEL_5:EVENT   : undefined 		options = no_write_shot			usage = text;
+    CHANNEL_6         : undefined		options = no_write_shot			usage = numeric;
+    CHANNEL_6:EVENT   : undefined 		options = no_write_shot			usage = text;
+    SOFT_CHANNEL      : undefined		options = no_write_shot			usage = numeric;
+    SOFT_CHANNEL:EVENT : undefined 		options = no_write_shot			usage = text;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation TRIGGER requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+routine SET_EVENT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

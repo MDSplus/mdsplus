@@ -1,0 +1,91 @@
+device model = INCAA16 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    INT_CLK_FRQ	      : datum value = 5.0       options = no_write_shot			usage = numeric;
+    CLOCK_IN          : undefined		options = no_write_shot 		usage = axis ;
+    CLOCK_OUT         : undefined		options = no_write_model,write_once	usage = axis ;
+    TRIG_IN           : datum value = 0.	options = no_write_shot			usage = numeric;
+    TRIG_OUT          : datum value = TRIG_IN   options = no_write_model,write_once	usage = numeric;
+    MASTER            : datum value = 1         options = no_write_shot			usage = numeric;
+    EXT_1MHZ          : datum value = 1         options = no_write_shot			usage = numeric;
+    PTSC              : datum value = 1         options = no_write_shot			usage = numeric;
+    ACTIVE_CHANS      : datum value = 1         options = no_write_shot			usage = numeric;
+    INPUT_01           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_01:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_01:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_02           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_02:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_02:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_03           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_03:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_03:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_04           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_04:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_04:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_05           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_05:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_05:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_06           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_06:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_06:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_07           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_07:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_07:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_08           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_08:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_08:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_09           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_09:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_09:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_10           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_10:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_10:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_11           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_11:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_11:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_12           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_12:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_12:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_13           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_13:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_13:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_14           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_14:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_14:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_15           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_15:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_15:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_16           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_16:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_16:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     INT_CLK_FRQ;
+     ACTIVE_CHANS : int valid if in [1->0,2->1,4->2,8->3,16->4] error_message is INCAA$_BAD_ACTIVE_CHANS;
+     MASTER : int valid if in [0,1] error_message is INCAA$_BAD_MASTER;
+     EXT_1MHZ : int valid if in [0,1] error_message is INCAA$_BAD_EXT_1MHZ;
+     PTSC : int error_message is INCAA$_BAD_PTSC;
+}
+
+operation ARM requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     INT_CLK_FRQ;
+     ACTIVE_CHANS : int valid if in [1->0,2->1,4->2,8->3,16->4] error_message is INCAA$_BAD_ACTIVE_CHANS;
+     MASTER : int valid if in [0,1] error_message is INCAA$_BAD_MASTER;
+     EXT_1MHZ : int valid if in [0,1] error_message is INCAA$_BAD_EXT_1MHZ;
+     PTSC : int error_message is INCAA$_BAD_PTSC;
+}
+
+operation TRIGGER requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     PTSC : int error_message is INCAA$_BAD_PTSC;
+}

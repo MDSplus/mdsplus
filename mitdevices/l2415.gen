@@ -1,0 +1,25 @@
+device model = L2415 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    POLARITY          : datum value = 1.	options = no_write_shot			usage = numeric;
+    RANGE             : datum value = 3500.	options = no_write_shot			usage = numeric;
+    CURRENT           : datum value = 0.	options = no_write_shot			usage = numeric;
+    VOLTAGE           : datum value = 0.	options = no_write_shot			usage = numeric;
+    CURR_OUT          : undefined  		options = no_write_model,write_once	usage = numeric;
+    VOLT_OUT          : undefined  		options = no_write_model,write_once	usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     POLARITY : float;
+     RANGE : float;
+     CURRENT : float;
+     VOLTAGE : float;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

@@ -1,0 +1,42 @@
+device model = JOERGER_DAC16 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    OUTPUT_01	      : undefined 		options = no_write_shot			usage = numeric;
+    OUTPUT_02	      : undefined 		options = no_write_shot			usage = numeric;
+    OUTPUT_03	      : undefined 		options = no_write_shot			usage = numeric;
+    OUTPUT_04	      : undefined 		options = no_write_shot			usage = numeric;
+    OUTPUT_05	      : undefined 		options = no_write_shot			usage = numeric;
+    OUTPUT_06	      : undefined 		options = no_write_shot			usage = numeric;
+    OUTPUT_07	      : undefined 		options = no_write_shot			usage = numeric;
+    OUTPUT_08	      : undefined 		options = no_write_shot			usage = numeric;
+    OUTPUT_09	      : undefined 		options = no_write_shot			usage = numeric;
+    OUTPUT_10	      : undefined 		options = no_write_shot			usage = numeric;
+    OUTPUT_11	      : undefined 		options = no_write_shot			usage = numeric;
+    OUTPUT_12	      : undefined 		options = no_write_shot			usage = numeric;
+    OUTPUT_13	      : undefined 		options = no_write_shot			usage = numeric;
+    OUTPUT_14	      : undefined 		options = no_write_shot			usage = numeric;
+    OUTPUT_15	      : undefined 		options = no_write_shot			usage = numeric;
+    OUTPUT_16	      : undefined 		options = no_write_shot			usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     OUTPUT_01 : float;
+     OUTPUT_02 : float;
+     OUTPUT_03 : float;
+     OUTPUT_04 : float;
+     OUTPUT_05 : float;
+     OUTPUT_06 : float;
+     OUTPUT_07 : float;
+     OUTPUT_08 : float;
+     OUTPUT_09 : float;
+     OUTPUT_10 : float;
+     OUTPUT_11 : float;
+     OUTPUT_12 : float;
+     OUTPUT_13 : float;
+     OUTPUT_14 : float;
+     OUTPUT_15 : float;
+     OUTPUT_16 : float;
+}

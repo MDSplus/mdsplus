@@ -1,0 +1,21 @@
+device model = MIT_DECODER library = MIT$DEVICES with
+{
+    NAME                 : undefined 		options = no_write_shot			usage = text;
+    COMMENT              : undefined 							usage = text;
+    MASTER_REG	         : datum value = 45056	options = no_write_shot			usage = numeric;
+    CHANNEL_0            : undefined		options = no_write_model,write_once	usage = signal ;
+    CHANNEL_0:PSEUDO_DEV : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_1            : undefined		options = no_write_model,write_once	usage = signal ;
+    CHANNEL_1:PSEUDO_DEV : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_2            : undefined		options = no_write_model,write_once	usage = signal ;
+    CHANNEL_2:PSEUDO_DEV : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_3            : undefined		options = no_write_model,write_once	usage = signal ;
+    CHANNEL_3:PSEUDO_DEV : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_4            : undefined		options = no_write_model,write_once	usage = signal ;
+    CHANNEL_4:PSEUDO_DEV : undefined 		options = no_write_shot			usage = numeric;
+    INIT_ACTION          : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

@@ -1,0 +1,11 @@
+device model = HV4032A1 library = MIT$DEVICES with
+{
+    VOLTAGE_1     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_2     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_3     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_4     : undefined               options = no_write_shot			usage = numeric;
+}
+
+routine GET_SETTINGS requires {
+	VOLTAGE_1;
+}

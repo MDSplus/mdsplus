@@ -1,0 +1,34 @@
+device model = DSP2904 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    TRAQ_NAME	      : undefined		options = no_write_shot 		usage = text;
+    TIMER	      : undefined		options = no_write_model,write_once,compressible	usage = signal;
+    TIMER.GATE	      : undefined							usage = structure;
+    TIMER.WRAP	      : undefined							usage = structure;
+    TIMER.BITS_32     : undefined							usage = structure;
+    TIMER:PRESET      : datum value = 0		options = no_write_shot			usage = numeric;
+    TIMER:CHANNEL     : datum value = 9		options = no_write_shot			usage = numeric;
+    COUNTER	      : undefined		options = no_write_model,write_once,compressible	usage = signal;
+    COUNTER.GATE      : undefined							usage = structure;
+    COUNTER.WRAP      : undefined							usage = structure;
+    COUNTER.BITS_32   : undefined							usage = structure;
+    COUNTER:PRESET    : datum value = 0		options = no_write_shot			usage = numeric;
+    COUNTER:CHANNEL   : datum value = 10	options = no_write_shot			usage = numeric;
+    .IDX_DIVIDER      : undefined		options = no_write_shot			usage = structure;
+    .TIME_OF_CNT      : undefined		options = no_write_shot			usage = structure;
+    RATE	      : datum value = 102.4E-6  options = no_write_shot                 usage = numeric;
+    CLOCK_OUT         : undefined		options = no_write_model,write_once	usage = axis;
+    EXT_CLK_IN        : undefined		options = no_write_shot			usage = axis;
+    START	      : datum value = 0.0	options = no_write_shot			usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STORE requires {
+     TRAQ_NAME : string error_message is DEV$_BAD_NAME;
+}

@@ -1,0 +1,46 @@
+device model = PARAGON_HIST library = MIT$DEVICES with
+{
+    COMMENT           : undefined 							usage = text;
+    REPORT_NAME       : undefined		options = no_write_shot 		usage = text;
+    NODE              : undefined		options = no_write_shot 		usage = text;
+    NAME_0            : undefined		options = no_write_shot 		usage = text;
+    NAME_1            : undefined		options = no_write_shot 		usage = text;
+    NAME_2            : undefined		options = no_write_shot 		usage = text;
+    NAME_3            : undefined		options = no_write_shot 		usage = text;
+    NAME_4            : undefined		options = no_write_shot 		usage = text;
+    NAME_5            : undefined		options = no_write_shot 		usage = text;
+    NAME_6            : undefined		options = no_write_shot 		usage = text;
+    NAME_7            : undefined		options = no_write_shot 		usage = text;
+    NAME_8            : undefined		options = no_write_shot 		usage = text;
+    NAME_9            : undefined		options = no_write_shot 		usage = text;
+    VALUE_0           : undefined		options = no_write_model 		usage = signal;
+    VALUE_1           : undefined		options = no_write_model 		usage = signal;
+    VALUE_2           : undefined		options = no_write_model 		usage = signal;
+    VALUE_3           : undefined		options = no_write_model 		usage = signal;
+    VALUE_4           : undefined		options = no_write_model 		usage = signal;
+    VALUE_5           : undefined		options = no_write_model 		usage = signal;
+    VALUE_6           : undefined		options = no_write_model 		usage = signal;
+    VALUE_7           : undefined		options = no_write_model 		usage = signal;
+    VALUE_8           : undefined		options = no_write_model 		usage = signal;
+    VALUE_9           : undefined		options = no_write_model 		usage = signal;
+    LIMIT_0           : undefined							usage = numeric;
+    LIMIT_1           : undefined							usage = numeric;
+    LIMIT_2           : undefined							usage = numeric;
+    LIMIT_3           : undefined							usage = numeric;
+    LIMIT_4           : undefined							usage = numeric;
+    LIMIT_5           : undefined							usage = numeric;
+    LIMIT_6           : undefined							usage = numeric;
+    LIMIT_7           : undefined							usage = numeric;
+    LIMIT_8           : undefined							usage = numeric;
+    LIMIT_9           : undefined							usage = numeric;
+    DELETE_FILE       : datum value = 1		options = no_write_shot 		usage = numeric;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = PARAGON_SERVER;
+}
+
+operation STORE requires {
+     REPORT_NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation INSERT requires {
+     REPORT_NAME : string error_message is DEV$_BAD_NAME;
+}

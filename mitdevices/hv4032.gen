@@ -1,0 +1,34 @@
+device model = HV4032 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    POD_1             : undefined               options = no_write_shot			usage = numeric;
+    POD_2             : undefined               options = no_write_shot			usage = numeric;
+    POD_3             : undefined               options = no_write_shot			usage = numeric;
+    POD_4             : undefined               options = no_write_shot			usage = numeric;
+    POD_5             : undefined               options = no_write_shot			usage = numeric;
+    POD_6             : undefined               options = no_write_shot			usage = numeric;
+    POD_7             : undefined               options = no_write_shot			usage = numeric;
+    POD_8             : undefined               options = no_write_shot			usage = numeric;
+    READOUT           : undefined               options = no_write_model,write_once	usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+    ON_ACTION         : action operation = ON sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    OFF_ACTION        : action operation = OFF sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation ON requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation OFF requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

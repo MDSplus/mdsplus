@@ -1,0 +1,15 @@
+device model = MIT__CLOCK library = MIT$DEVICES with
+{
+    COMMENT           : undefined 								usage = text;
+    FREQUENCY         : datum value = 1000.     options = no_write_shot				usage = numeric;
+    DUTY_CYCLE	      : datum value = .5	options = no_write_shot				usage = numeric;
+    TSTART	      : datum value = -4.	options = no_write_shot				usage = numeric;
+    START_LOW	      : undefined		options = no_write_shot,no_write_model  	usage = numeric;    
+    EDGES_R           : datum value = MIT__CLOCK(TSTART,FREQUENCY,DUTY_CYCLE,!GETNCI(START_LOW,'STATE'),1) options = write_once usage = axis;
+    EDGES_F	      : datum value = MIT__CLOCK(TSTART,FREQUENCY,DUTY_CYCLE,!GETNCI(START_LOW,'STATE'),0) options = write_once usage = axis;
+}
+
+routine GET_SETUP requires {
+     FREQUENCY : float valid if in [.01 - .5E6] error_message is TIMING$_INVCLKFRQ;
+     DUTY_CYCLE : float valid if in [.0001 - .9999] error_message is TIMING$_INVDUTY;
+}

@@ -1,0 +1,19 @@
+device model = J412 library = MIT$DEVICES with
+{
+    NAME              		: undefined 								usage = text;
+    COMMENT           		: undefined 								usage = text;
+    DT	         		: undefined					options = no_write_shot usage = numeric;
+    START_TRIG        		: datum value = 0.				options = no_write_shot	usage = numeric;
+    SET_POINTS 			: undefined					options = no_write_shot usage = numeric;
+    OUTPUT        		: datum value =  :START_TRIG+:DT*:SET_POINTS    options =  write_once	usage =  axis;
+    NUM_CYCLES			: datum value = 0.				options = no_write_shot	usage = numeric;
+    INIT_ACTION       		: action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     NUM_CYCLES : int valid if in [1 - 255] error_message is J412$_BADCYCLES;
+     SET_POINTS;
+}
+
+

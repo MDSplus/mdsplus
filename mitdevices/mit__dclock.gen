@@ -1,0 +1,16 @@
+device model = MIT__DCLOCK library = MIT$DEVICES with
+{
+    COMMENT           : undefined 							usage = text;
+    FREQUENCY_1       : datum value = 1000.     options = no_write_shot			usage = numeric;
+    FREQUENCY_2       : datum value = 1000.     options = no_write_shot			usage = numeric;
+    TSTART	      : datum value = -4.	options = no_write_shot			usage = numeric;
+    START_LOW	      : undefined		options = no_write_model,no_write_shot	usage = numeric;
+    GATE	      : undefined               options = no_write_shot 		usage = axis;
+    EDGES_R	      : datum value = MIT__DCLOCK(TSTART,FREQUENCY_1,FREQUENCY_2,!GETNCI(START_LOW,'STATE'),GATE,1) options = write_once usage = axis;
+    EDGES_F	      : datum value = MIT__DCLOCK(TSTART,FREQUENCY_1,FREQUENCY_2,!GETNCI(START_LOW,'STATE'),GATE,0) options = write_once usage = axis;
+}
+
+routine GET_SETUP requires {
+     FREQUENCY_1: float valid if in [.01 - .5E6] error_message is TIMING$_INVCLKFRQ;
+     FREQUENCY_2: float valid if in [.01 - .5E6] error_message is TIMING$_INVCLKFRQ;
+}

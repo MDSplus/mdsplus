@@ -1,0 +1,35 @@
+device model = T4012 library = MIT$DEVICES with
+{
+    NAME	      : undefined		options = no_write_shot 		usage = text;
+    COMMENT           : undefined 							usage = text;
+    CHANNELS	      : datum value = 1		options = no_write_shot			usage = numeric;
+    POST_SAMPLES      : datum value = 8		options = no_write_shot			usage = numeric;
+    SMP_PER_CHAN      : datum value = 1024	options = no_write_shot			usage = numeric;
+    DISPLAY_CHAN      : datum value = 1		options = no_write_shot			usage = numeric;
+    TRIGGER           : datum value = 0.	options = no_write_shot			usage = numeric;
+    FREQUENCY_1       : datum value = 1E3	options = no_write_shot			usage = numeric;
+    FREQUENCY_2       : datum value = 1E3	options = no_write_shot			usage = numeric;
+    SWITCH_MODE	      : datum value = 0		options = no_write_shot			usage = numeric;
+    SWITCH_TRIG       : undefined		options = no_write_shot			usage = numeric;
+    EXTERN_CLOCK      : undefined		options = no_write_shot			usage = axis;
+    CLOCK_OUT         : undefined		options = no_write_model,write_once,compressible	usage = axis;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     CHANNELS : int valid if in [1 - 256] error_message is DEV$_INV_SETUP;
+     POST_SAMPLES : int;
+     SMP_PER_CHAN : int;
+     SWITCH_MODE : int;
+     DISPLAY_CHAN : int;
+}
+
+operation TRIGGER requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

@@ -1,0 +1,48 @@
+device model = H911 library = MIT$DEVICES with
+{
+    NAME              		: undefined 								usage = text;
+    COMMENT           		: undefined 								usage = text;
+    EXT_CLOCK         		: undefined					options = no_write_shot usage = axis;
+    CHANNEL_01 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_02 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_03 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_04 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_05 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_06 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_07 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_08 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_09 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_10 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_11 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_12 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_13 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_14 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_15 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_16 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_17 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_18 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_19 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_20 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_21 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_22 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_23 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_24 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_25 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_26 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_27 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_28 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_29 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_30 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_31 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_32 	                : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INIT_ACTION       		: action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION       		: action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

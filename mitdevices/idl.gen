@@ -1,0 +1,10 @@
+device model = IDL library = MIT$DEVICES with
+{
+    COMMENT      : undefined 			       usage = text;
+    COMMANDS     : undefined   options = no_write_shot usage = text;
+    EXEC_ACTION  : action operation = EXECUTE sequence = 50 phase = ANALYSIS server_class = IDL_SERVER;
+}
+
+operation EXECUTE requires {
+     COMMANDS : string error_message is DEV$_BAD_COMMANDS;
+}

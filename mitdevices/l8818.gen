@@ -1,0 +1,32 @@
+device model = L8818 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    TRIGGER           : datum value = 0.	options = no_write_shot			usage = numeric;
+    CLOCK             : undefined							usage = axis ;
+    EXT_CLOCK         : undefined		options = no_write_shot 		usage = axis ;
+    PRE_TRIG	      : datum value = 0BU	options = no_write_shot			usage = numeric;
+    ACTIVE_MEM	      : datum value = 0BU	options = no_write_shot			usage = numeric;
+    INPUT             : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT:STARTIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT:ENDIDX      : undefined 		options = no_write_shot			usage = numeric;
+    INPUT:OFFSET      : datum value=128BU	options = no_write_shot			usage = numeric ;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     INPUT:OFFSET : int valid if in [0 - 255] error_message is L8818$_BAD_OFFSET;
+     PRE_TRIG : int valid if in [0 - 8] error_message is L8818$_BAD_PRETRIG;
+     ACTIVE_MEM : int valid if in [0 - 512] error_message is L8828$_BAD_ACTIVEMEM;
+     CLOCK : float valid if in [100.0->0, 50.0->1, 25.0->2, 12.5->3, 6.25->4, 3.625->5, 1.5625->6, 0.0->7] error_message is L8818$_BAD_CLOCK;
+}
+
+operation TRIGGER requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

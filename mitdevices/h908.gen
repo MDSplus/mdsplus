@@ -1,0 +1,128 @@
+device model = H908 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    EXT_CLOCK         : undefined		options = no_write_shot 		usage = axis ;
+    TRIGGER           : datum value = 0.	options = no_write_shot			usage = numeric;
+    PTS		      : datum value = 1		options = no_write_shot			usage = numeric;
+    INT_CLOCK         : datum value = 15	options = no_write_shot			usage = numeric;
+    ACTIVE_CHANS      : datum value = 32	options = no_write_shot			usage = numeric;
+    INPUT_01           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_01:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_01:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_02           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_02:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_02:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_03           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_03:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_03:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_04           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_04:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_04:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_05           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_05:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_05:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_06           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_06:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_06:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_07           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_07:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_07:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_08           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_08:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_08:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_09           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_09:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_09:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_10           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_10:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_10:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_11           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_11:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_11:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_12           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_12:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_12:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_13           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_13:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_13:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_14           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_14:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_14:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_15           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_15:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_15:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_16           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_16:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_16:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_17           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_17:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_17:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_18           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_18:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_18:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_19           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_19:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_19:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_20           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_20:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_20:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_21           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_21:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_21:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_22           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_22:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_22:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_23           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_23:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_23:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_24           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_24:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_24:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_25           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_25:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_25:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_26           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_26:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_26:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_27           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_27:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_27:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_28           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_28:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_28:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_29           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_29:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_29:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_30           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_30:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_30:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_31           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_31:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_31:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_32           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_32:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_32:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     INT_CLOCK : int valid if in [0->0,40000->1,20000->2,10000->3,5000->4,2000->5,1000->6,500->7,200->8,100->9] error_message is H908$_BAD_CLOCK;
+     ACTIVE_CHANS : int valid if in [32->0,16->1,8->2,4->3] error_message is H908$_BAD_ACTIVE_CHANS;
+     PTS;
+}
+
+operation TRIGGER requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STOP requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+

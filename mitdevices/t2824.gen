@@ -1,0 +1,7 @@
+device model = T2824 library = MIT$DEVICES with
+{
+    INPUT_1              : undefined		options = no_write_model,write_once	usage = signal ;
+    INPUT_1:CALIBRATION  : datum value = [2048.,.00244141] options = no_write_shot	usage = numeric;
+    INPUT_1:STARTIDX     : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_1:ENDIDX       : undefined 		options = no_write_shot			usage = numeric;
+}

@@ -1,0 +1,47 @@
+device model = A3204 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    INPUT_1	      : undefined		options = no_write_model,write_once	usage = signal;
+    INPUT_1:GAIN      : datum value = 1.	options = no_write_shot			usage = numeric;
+    INPUT_1:OFFSET    : datum value = 0.	options = no_write_shot			usage = numeric;
+    INPUT_1.FILTER    : undefined;
+    INPUT_1:OUTPUT    : undefined		options = no_write_shot			usage = signal;
+    INPUT_1:FILTER_ON : undefined		options = no_write_model,write_once	usage = text;
+    INPUT_2	      : undefined		options = no_write_model,write_once	usage = signal;
+    INPUT_2:GAIN      : datum value = 1.	options = no_write_shot			usage = numeric;
+    INPUT_2:OFFSET    : datum value = 0.	options = no_write_shot			usage = numeric;
+    INPUT_2.FILTER    : undefined;
+    INPUT_2:OUTPUT    : undefined		options = no_write_shot			usage = signal;
+    INPUT_2:FILTER_ON : undefined		options = no_write_model,write_once	usage = text;
+    INPUT_3	      : undefined		options = no_write_model,write_once	usage = signal;
+    INPUT_3:GAIN      : datum value = 1.	options = no_write_shot			usage = numeric;
+    INPUT_3:OFFSET    : datum value = 0.	options = no_write_shot			usage = numeric;
+    INPUT_3.FILTER    : undefined;
+    INPUT_3:OUTPUT    : undefined		options = no_write_shot			usage = signal;
+    INPUT_3:FILTER_ON : undefined		options = no_write_model,write_once	usage = text;
+    INPUT_4	      : undefined		options = no_write_model,write_once	usage = signal;
+    INPUT_4:GAIN      : datum value = 1.	options = no_write_shot			usage = numeric;
+    INPUT_4:OFFSET    : datum value = 0.	options = no_write_shot			usage = numeric;
+    INPUT_4.FILTER    : undefined;
+    INPUT_4:OUTPUT    : undefined		options = no_write_shot			usage = signal;
+    INPUT_4:FILTER_ON : undefined		options = no_write_model,write_once	usage = text;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     INPUT_1:GAIN : float valid if in [.5->0,1.->1,2.->2,4.->3,8.->4,16.->5,32.->6,64.->7,128.->8,256.->9,512.->10] error_message is DEV$_BAD_GAIN;
+     INPUT_1:OFFSET: float;
+     INPUT_2:GAIN : float valid if in [.5->0,1.->1,2.->2,4.->3,8.->4,16.->5,32.->6,64.->7,128.->8,256.->9,512.->10] error_message is DEV$_BAD_GAIN;
+     INPUT_2:OFFSET: float;
+     INPUT_3:GAIN : float valid if in [.5->0,1.->1,2.->2,4.->3,8.->4,16.->5,32.->6,64.->7,128.->8,256.->9,512.->10] error_message is DEV$_BAD_GAIN;
+     INPUT_3:OFFSET: float;
+     INPUT_4:GAIN : float valid if in [.5->0,1.->1,2.->2,4.->3,8.->4,16.->5,32.->6,64.->7,128.->8,256.->9,512.->10] error_message is DEV$_BAD_GAIN;
+     INPUT_4:OFFSET: float;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

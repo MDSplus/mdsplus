@@ -1,0 +1,51 @@
+device model = JOERGER_TR612 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    ACTMEM            : datum value = 7		options = no_write_shot 		usage = numeric ;
+    PRETRIG           : datum value = 0		options = no_write_shot 		usage = numeric ;
+    MODE              : datum value = 0		options = no_write_shot			usage = numeric;
+    FREQUENCY         : datum value = 2		options = no_write_shot			usage = numeric;
+    EXT_CLOCK         : undefined 							usage = axis;
+    TRIGGER           : datum value = 0.						usage = numeric;
+    INPUT_1           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_1:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_1:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_2           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_2:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_2:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_3           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_3:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_3:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_4           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_4:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_4:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_5           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_5:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_5:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_6           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_6:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_6:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     ACTMEM : int valid if in [0 - 7] error_message is J_TR612$_BAD_ACTMEM;
+     PRETRIG : int valid if in [0 - 7] error_message is J_TR612$_BAD_PRETRIG;
+     MODE : int valid if in [0 - 1] error_message is J_TR612$_BAD_MODE;
+     FREQUENCY : int valid if in [0 - 4] error_message is J_TR612$_BAD_FREQUENCY;
+}
+
+operation TRIGGER requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STOP requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

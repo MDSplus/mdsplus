@@ -1,0 +1,61 @@
+device model = INCAA6 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    INT_CLK_FRQ	      : datum value = 5.0       options = no_write_shot			usage = numeric;
+    CLOCK_IN          : undefined		options = no_write_shot 		usage = axis ;
+    CLOCK_OUT         : undefined		options = no_write_model,write_once	usage = axis ;
+    TRIG_IN           : datum value = 0.	options = no_write_shot			usage = numeric;
+    TRIG_OUT          : datum value = TRIG_IN   options = no_write_model,no_write_shot,write_once	usage = numeric;
+    MASTER            : datum value = 1         options = no_write_shot			usage = numeric;
+    EXT_1MHZ          : datum value = 1         options = no_write_shot			usage = numeric;
+    PTSC              : datum value = 1         options = no_write_shot			usage = numeric;
+    ACTIVE_CHANS      : datum value = 1         options = no_write_shot			usage = numeric;
+    INPUT_1           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_1:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_1:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_2           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_2:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_2:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_3           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_3:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_3:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_4           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_4:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_4:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_5           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_5:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_5:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_6           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_6:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_6:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     INT_CLK_FRQ;
+     ACTIVE_CHANS : int valid if in [0,1,2] error_message is INCAA$_BAD_ACTIVE_CHANS;
+     MASTER : int valid if in [0,1] error_message is INCAA$_BAD_MASTER;
+     EXT_1MHZ : int valid if in [0,1] error_message is INCAA$_BAD_EXT_1MHZ;
+     PTSC : int error_message is INCAA$_BAD_PTSC;
+}
+
+operation ARM requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     INT_CLK_FRQ;
+     ACTIVE_CHANS : int valid if in [0,1,2] error_message is INCAA$_BAD_ACTIVE_CHANS;
+     MASTER : int valid if in [0,1] error_message is INCAA$_BAD_MASTER;
+     EXT_1MHZ : int valid if in [0,1] error_message is INCAA$_BAD_EXT_1MHZ;
+     PTSC : int error_message is INCAA$_BAD_PTSC;
+}
+
+operation TRIGGER requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     PTSC : int error_message is INCAA$_BAD_PTSC;
+}

@@ -1,0 +1,66 @@
+device model = L6810A  library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    FREQ	      : datum value = 1000000	options = no_write_shot			usage = numeric;
+    EXT_CLOCK_IN      : undefined		options = no_write_shot 		usage = axis ;
+    STOP_TRIG         : datum value = 0.	options = no_write_shot			usage = numeric;
+    MEMORIES	      : datum value = 1		options = no_write_shot			usage = numeric;
+    ACTIVE_MEM		: datum value = 128     options = no_write_shot			usage = numeric;
+    ACTIVE_CHANS 	: datum value = 4       options = no_write_shot			usage = numeric;
+    INPUT_01           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_01:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_01:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_01:FULL_SCALE : datum value = 10.24	options = no_write_shot			usage = numeric;
+    INPUT_01:SRC_CPLING : datum value = 0       options = no_write_shot			usage = numeric;
+    INPUT_01:OFFSET    : datum value = 128BU    options = no_write_shot			usage = numeric;
+    INPUT_02           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_02:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_02:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_02:FULL_SCALE : datum value = 10.24	options = no_write_shot			usage = numeric;
+    INPUT_02:SRC_CPLING : datum value = 0       options = no_write_shot			usage = numeric;
+    INPUT_02:OFFSET    : datum value = 128BU    options = no_write_shot			usage = numeric;
+    INPUT_03           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_03:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_03:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_03:FULL_SCALE : datum value = 10.24	options = no_write_shot			usage = numeric;
+    INPUT_03:SRC_CPLING : datum value = 0       options = no_write_shot			usage = numeric;
+    INPUT_03:OFFSET    : datum value = 128BU    options = no_write_shot			usage = numeric;
+    INPUT_04           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_04:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_04:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_04:FULL_SCALE : datum value = 10.24	options = no_write_shot			usage = numeric;
+    INPUT_04:SRC_CPLING : datum value = 0       options = no_write_shot			usage = numeric;
+    INPUT_04:OFFSET    : datum value = 128BU    options = no_write_shot			usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     MEMORIES : int valid if in [1 - 16] error_message is L6810$_BAD_MEMORIES;
+     ACTIVE_MEM : int valid if in [1->0, 2->1, 4->2, 8->3, 16->4, 32->5, 64->6, 128->7, 256->8, 512->9, 1024->10, 2048->11, 4096->12, 8192->13] error_message is L6810$_BAD_ACTIVEMEM;
+     ACTIVE_CHANS : int valid if in [1, 2, 4] error_message is L6810$_BAD_ACTIVECHAN;
+     FREQ : int valid if in [0->0, 20->1, 50->2, 100->3, 200->4, 500->5, 1000->6, 2000->7, 5000->8, 10000->9, 20000->10, 50000->11, 100000->12, 200000->13, 500000->14, 1000000->15, 2000000->16, 5000000->17] error_message is L6810$_BAD_FREQUENCY; 
+     INPUT_01:FULL_SCALE : float valid if in [.4096->0, 1.024->1, 2.048->2, 4.096->3, 10.24->4, 25.6->5, 51.2->6, 102.4->7] error_message is L6810$_BAD_FULL_SCALE;
+     INPUT_02:FULL_SCALE : float valid if in [.4096->0, 1.024->1, 2.048->2, 4.096->3, 10.24->4, 25.6->5, 51.2->6, 102.4->7] error_message is L6810$_BAD_FULL_SCALE;
+     INPUT_03:FULL_SCALE : float valid if in [.4096->0, 1.024->1, 2.048->2, 4.096->3, 10.24->4, 25.6->5, 51.2->6, 102.4->7] error_message is L6810$_BAD_FULL_SCALE;
+     INPUT_04:FULL_SCALE : float valid if in [.4096->0, 1.024->1, 2.048->2, 4.096->3, 10.24->4, 25.6->5, 51.2->6, 102.4->7] error_message is L6810$_BAD_FULL_SCALE;
+     INPUT_01:SRC_CPLING : int valid if in [0 - 7] error_message is L6810$_BAD_COUPLING;
+     INPUT_02:SRC_CPLING : int valid if in [0 - 7] error_message is L6810$_BAD_COUPLING;
+     INPUT_03:SRC_CPLING : int valid if in [0 - 7] error_message is L6810$_BAD_COUPLING;
+     INPUT_04:SRC_CPLING : int valid if in [0 - 7] error_message is L6810$_BAD_COUPLING;
+     INPUT_01:OFFSET     : int valid if in [0 - 255] error_message is L6810$_BAD_OFFSET;
+     INPUT_02:OFFSET     : int valid if in [0 - 255] error_message is L6810$_BAD_OFFSET;
+     INPUT_03:OFFSET     : int valid if in [0 - 255] error_message is L6810$_BAD_OFFSET;
+     INPUT_04:OFFSET     : int valid if in [0 - 255] error_message is L6810$_BAD_OFFSET;
+     EXT_CLOCK_IN;
+}
+
+operation TRIGGER requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

@@ -1,0 +1,37 @@
+device model = L8100 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    INPUT_1	      : undefined		options = no_write_model,write_once	usage = signal;
+    INPUT_1:GAIN      : datum value = 1.	options = no_write_shot			usage = numeric;
+    INPUT_1:MULT      : datum value = 1.	options = no_write_shot			usage = numeric;
+    INPUT_1:GROUND    : datum value = 0B	options = no_write_shot			usage = numeric;
+    INPUT_1:OFFSET    : datum value = 0.	options = no_write_shot			usage = numeric;
+    INPUT_1:FILTER    : undefined		options = no_write_model,write_once	usage = text;
+    INPUT_1:OUTPUT    : undefined		options = no_write_shot			usage = signal;
+    INPUT_1:FILTER_ON : undefined		options = no_write_model,write_once	usage = text;
+    INPUT_2	      : undefined		options = no_write_model,write_once	usage = signal;
+    INPUT_2:GAIN      : datum value = 1.	options = no_write_shot			usage = numeric;
+    INPUT_2:MULT      : datum value = 1.	options = no_write_shot			usage = numeric;
+    INPUT_2:GROUND    : datum value = 0B	options = no_write_shot			usage = numeric;
+    INPUT_2:OFFSET    : datum value = 0.	options = no_write_shot			usage = numeric;
+    INPUT_2:FILTER    : undefined		options = no_write_model,write_once	usage = text;
+    INPUT_2:OUTPUT    : undefined		options = no_write_shot			usage = signal;
+    INPUT_2:FILTER_ON : undefined		options = no_write_model,write_once	usage = text;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     INPUT_1:GAIN : float valid if in [100.->1, 10.->2, 1.->4] error_message is DEV$_BAD_GAIN;
+     INPUT_1:MULT : float valid if in [1.->1, .5->2, .2->4] error_message is DEV$_BAD_GAIN;
+     INPUT_1:OFFSET : float valid if in [-5.5 - 5.5] error_message is DEV$_BAD_OFFSET;
+     INPUT_2:GAIN : float valid if in [100.->1, 10.->2, 1.->4] error_message is DEV$_BAD_GAIN;
+     INPUT_2:MULT : float valid if in [1.->1, .5->2, .2->4] error_message is DEV$_BAD_GAIN;
+     INPUT_2:OFFSET : float valid if in [-5.5 - 5.5] error_message is DEV$_BAD_OFFSET;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

@@ -1,0 +1,10 @@
+device model = MIT_CLOCK library = MIT$DEVICES with
+{
+    COMMENT           : undefined 							usage = text;
+    FREQUENCY         : datum value = 1000.     options = no_write_shot			usage = numeric;
+    OUTPUT            : undefined               options = no_write_model,write_once	usage = numeric;
+}
+
+routine GET_SETUP requires {
+     FREQUENCY;
+}

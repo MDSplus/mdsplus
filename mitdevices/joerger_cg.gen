@@ -1,0 +1,26 @@
+device model = JOERGER_CG library = MIT$DEVICES with
+{
+    NAME                : undefined 	       usage = text;
+    COMMENT             : undefined 	       usage = text;
+    CHANNEL_1           : datum value = *:*:1. usage = axis ;
+    CHANNEL_1.INVERTED  : undefined ;
+    CHANNEL_2           : datum value = *:*:1. usage = axis ;
+    CHANNEL_2.INVERTED  : undefined ;
+    CHANNEL_3           : datum value = *:*:1. usage = axis ;
+    CHANNEL_3.INVERTED  : undefined ;
+    CHANNEL_4           : datum value = *:*:1. usage = axis ;
+    CHANNEL_4.INVERTED  : undefined ;
+    INIT_ACTION       : action operation = INIT sequence = 10 phase = INIT server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     CHANNEL_1;
+     CHANNEL_2;
+     CHANNEL_3;
+     CHANNEL_4;
+}
+
+operation STOP requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

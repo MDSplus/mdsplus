@@ -1,0 +1,20 @@
+device model = MIT__GATE library = MIT$DEVICES with
+{
+    COMMENT           : undefined 							usage = text;
+    TRIGGER_MODE      : datum value = 0         options = no_write_shot			usage = numeric;
+    START_LOW         : undefined               options = no_write_model,no_write_shot	usage = numeric;
+    TRIGGER           : undefined               options = no_write_shot			usage = numeric;
+    EVENT             : undefined		options = no_write_shot			usage = text;
+    DURATION          : undefined		options = no_write_shot			usage = numeric;
+    PULSE_TIME        : undefined		options = no_write_shot			usage = numeric;
+    GATE_OUT          : datum value = MIT__GATE(TRIGGER,PULSE_TIME,DURATION) options = write_once usage = numeric;
+    EDGES_R           : datum value = GATE_OUT[GETNCI(START_LOW,'STATE')] options = write_once	usage = numeric;
+    EDGES_F           : datum value = GATE_OUT[!GETNCI(START_LOW,'STATE')] options = write_once	usage = numeric;
+}
+
+routine GET_SETUP requires {
+     TRIGGER : float;
+     PULSE_TIME : float;
+     DURATION : float;
+     TRIGGER_MODE : int valid if in [0 - 3] error_message is TIMING$_INVTRGMOD;
+}

@@ -1,0 +1,48 @@
+device model = RETICON120 library = MIT$DEVICES with
+{
+    NAME              : undefined 		options = no_write_shot			usage = text;
+    COMMENT           : undefined 							usage = text;
+    MEMORY_NAME       : undefined 		options = no_write_shot			usage = text;
+    START_TRIG        : datum value = 0.	options = no_write_shot			usage = numeric;
+    PIXEL_SELECT      : undefined 		options = no_write_shot			usage = numeric;
+    PIXEL_AXIS	      : datum value = _X=PACK(1:256,:PIXEL_SELECT)*4,_X=SORTVAL([_X-3,_X-2,_X-1,_X]),BUILD_WITH_UNITS(SET_RANGE(SIZE(_X),_X),'pixel') options = write_once usage = axis;
+    DATA	      : undefined		options = no_write_model,write_once,compressible	usage = signal;
+    EVENT_LATCH	      : undefined		options = no_write_model,write_once	usage = numeric;
+    NUM_STATES	      : datum value = 4		options = no_write_shot			usage = numeric;
+    FRAME_INDEX       : undefined		options = no_write_model,write_once	usage = numeric;
+    .STATE_0          : undefined               					usage = structure;
+    .STATE_0:PERIOD   : datum value = 8.0	options = no_write_shot			usage = numeric;
+    .STATE_0:FRAMES   : datum value = 1		options = no_write_shot			usage = numeric;
+    .STATE_0:FRAME_SELECT   : datum value = 1	options = no_write_shot			usage = numeric;
+    .STATE_1          : undefined               					usage = structure;
+    .STATE_1:PERIOD   : datum value = 8.0	options = no_write_shot			usage = numeric;
+    .STATE_1:FRAMES   : datum value = 1		options = no_write_shot			usage = numeric;
+    .STATE_1:FRAME_SELECT   : datum value = 1	options = no_write_shot			usage = numeric;
+    .STATE_2          : undefined               					usage = structure;
+    .STATE_2:PERIOD   : datum value = 8.0	options = no_write_shot			usage = numeric;
+    .STATE_2:FRAMES   : datum value = 1		options = no_write_shot			usage = numeric;
+    .STATE_2:FRAME_SELECT   : datum value = 1	options = no_write_shot			usage = numeric;
+    .STATE_3          : undefined               					usage = structure;
+    .STATE_3:PERIOD   : datum value = 8.0	options = no_write_shot			usage = numeric;
+    .STATE_3:FRAMES   : datum value = 1		options = no_write_shot			usage = numeric;
+    .STATE_3:FRAME_SELECT   : datum value = 1	options = no_write_shot			usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     MEMORY_NAME : string error_message is DEV$_BAD_NAME;
+     NUM_STATES : int valid if in [1 - 4] error_message is RETICON$_BAD_NUM_STATES;
+     PIXEL_SELECT;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     MEMORY_NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation TRIGGER requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     MEMORY_NAME : string error_message is DEV$_BAD_NAME;
+}

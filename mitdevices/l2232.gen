@@ -1,0 +1,17 @@
+device model = L2232 library = MIT$DEVICES with
+{
+    CTS_NAME          : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    TRIGGER           : datum value = 0.	options = no_write_shot			usage = numeric;
+    INPUTS            : undefined		options = no_write_model,write_once	usage = signal ;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     CTS_NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STORE requires {
+     CTS_NAME : string error_message is DEV$_BAD_NAME;
+}

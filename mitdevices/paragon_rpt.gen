@@ -1,0 +1,13 @@
+device model = PARAGON_RPT library = MIT$DEVICES with
+{
+    COMMENT           : undefined 							usage = text;
+    REPORT_NAME       : undefined		options = no_write_shot 		usage = text;
+    TEXT              : undefined		options = no_write_model,write_once	usage = signal;
+    ANALOG            : undefined		options = no_write_model,write_once	usage = signal;
+    DIGITAL           : undefined		options = no_write_model,write_once	usage = signal;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = PARAGON_SERVER;
+}
+
+operation STORE requires {
+     REPORT_NAME : string error_message is DEV$_BAD_NAME;
+}

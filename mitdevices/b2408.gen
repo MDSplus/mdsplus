@@ -1,0 +1,18 @@
+device model = B2408 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    TRIGGER           : datum value = 0.	options = no_write_shot			usage = numeric;
+    EXT_CLOCK         : undefined		options = no_write_shot 		usage = axis ;
+    TIMEBASE          : undefined               options = no_write_model,write_once,compressible        usage = signal;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

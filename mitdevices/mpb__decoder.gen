@@ -1,0 +1,78 @@
+device model = MPB__DECODER library = MIT$DEVICES with
+{
+    NAME                 : undefined 			options = no_write_shot	usage = text;
+    COMMENT              : undefined 					       	usage = text;
+    CLOCK_OUT		 : datum value = * : * : 1E-6	options = write_once	usage = axis;
+    .CHANNEL_0           : undefined					       	usage = structure ;
+    .CHANNEL_0:MODE      : datum value = 0		options = no_write_shot	usage = numeric;
+    .CHANNEL_0:P1	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_0:P2	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_0:P3	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_0:P4	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_0:P5	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_0:P6	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_0.START_LOW : undefined						usage = structure;
+    .CHANNEL_0:EDGES     : undefined						usage = any;
+    .CHANNEL_0:EDGES_R   : undefined						usage = any;
+    .CHANNEL_0:EDGES_F   : undefined						usage = any;
+    .CHANNEL_0:COMMENT   : undefined						usage = text;
+    .CHANNEL_1           : undefined					       	usage = structure ;
+    .CHANNEL_1:MODE      : datum value = 3		options = no_write_shot	usage = numeric;
+    .CHANNEL_1:P1	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_1:P2	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_1:P3	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_1:P4	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_1:P5	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_1:P6	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_1.START_LOW : undefined						usage = structure;
+    .CHANNEL_1:EDGES     : undefined						usage = any;
+    .CHANNEL_1:EDGES_R   : undefined						usage = any;
+    .CHANNEL_1:EDGES_F   : undefined						usage = any;
+    .CHANNEL_1:COMMENT   : undefined						usage = text;
+    .CHANNEL_2           : undefined					       	usage = structure ;
+    .CHANNEL_2:MODE      : undefined			options = no_write_shot	usage = numeric;
+    .CHANNEL_2:P1	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_2:P2	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_2:P3	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_2:P4	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_2:P5	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_2:P6	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_2.START_LOW : undefined						usage = structure;
+    .CHANNEL_2:EDGES     : undefined						usage = any;
+    .CHANNEL_2:EDGES_R   : undefined						usage = any;
+    .CHANNEL_2:EDGES_F   : undefined						usage = any;
+    .CHANNEL_2:COMMENT   : undefined						usage = text;
+    .CHANNEL_3           : undefined					       	usage = structure ;
+    .CHANNEL_3:MODE      : undefined			options = no_write_shot	usage = numeric;
+    .CHANNEL_3:P1	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_3:P2	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_3:P3	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_3:P4	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_3:P5	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_3:P6	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_3.START_LOW : undefined						usage = structure;
+    .CHANNEL_3:EDGES     : undefined						usage = any;
+    .CHANNEL_3:EDGES_R   : undefined						usage = any;
+    .CHANNEL_3:EDGES_F   : undefined						usage = any;
+    .CHANNEL_3:COMMENT   : undefined						usage = text;
+    .CHANNEL_4           : undefined					       	usage = structure ;
+    .CHANNEL_4:MODE      : undefined			options = no_write_shot	usage = numeric;
+    .CHANNEL_4:P1	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_4:P2	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_4:P3	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_4:P4	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_4:P5	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_4:P6	 : undefined			options = no_write_shot	usage = any;
+    .CHANNEL_4.START_LOW : undefined						usage = structure;
+    .CHANNEL_4:EDGES     : undefined						usage = any;
+    .CHANNEL_4:EDGES_R   : undefined						usage = any;
+    .CHANNEL_4:EDGES_F   : undefined						usage = any;
+    .CHANNEL_4:COMMENT   : undefined						usage = text;
+    START_TIME 	 	 : datum value = build_path('\\TSTART')	options = no_write_shot usage = numeric;
+    START_EVENT	 	 : datum value = ['START']	options = no_write_shot usage = text;
+    INIT_ACTION          : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

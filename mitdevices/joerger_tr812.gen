@@ -1,0 +1,71 @@
+device model = JOERGER_TR812 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    TRIGGER           : datum value = 0.	options = no_write_shot			usage = numeric;
+    BURST_MODE	      : undefined		options = no_write_shot,no_write_model  usage = numeric;
+    EXT_CLOCK         : undefined		options = no_write_shot 		usage = axis ;
+    PRE_TRIGGER       : datum value = 0		options = no_write_shot			usage = numeric;
+    ACT_MEMORY        : datum value = 8		options = no_write_shot			usage = numeric;
+    CHANNEL_1           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_1:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_1:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_1:GAIN      : datum value = 1	options = no_write_shot			usage = numeric;
+    CHANNEL_2           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_2:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_2:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_2:GAIN      : datum value = 1	options = no_write_shot			usage = numeric;
+    CHANNEL_3           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_3:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_3:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_3:GAIN      : datum value = 1	options = no_write_shot			usage = numeric;
+    CHANNEL_4           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_4:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_4:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_4:GAIN      : datum value = 1	options = no_write_shot			usage = numeric;
+    CHANNEL_5           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_5:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_5:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_5:GAIN      : datum value = 1	options = no_write_shot			usage = numeric;
+    CHANNEL_6           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_6:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_6:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_6:GAIN      : datum value = 1	options = no_write_shot			usage = numeric;
+    CHANNEL_7           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_7:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_7:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_7:GAIN      : datum value = 1	options = no_write_shot			usage = numeric;
+    CHANNEL_8           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    CHANNEL_8:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_8:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    CHANNEL_8:GAIN      : datum value = 1	options = no_write_shot			usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     PRE_TRIGGER : int valid if in [0 - 7] error_message is JOERGER$_BAD_PRE_TRIGGER;
+     ACT_MEMORY : int valid if in [1 - 8] error_message is JOERGER$_BAD_ACT_MEMORY;
+     CHANNEL_1:GAIN : int valid if in [1->0, 2->1, 4->2, 8->3] error_message is JOERGER$_BAD_GAIN;
+     CHANNEL_2:GAIN : int valid if in [1->0, 2->1, 4->2, 8->3] error_message is JOERGER$_BAD_GAIN;
+     CHANNEL_3:GAIN : int valid if in [1->0, 2->1, 4->2, 8->3] error_message is JOERGER$_BAD_GAIN;
+     CHANNEL_4:GAIN : int valid if in [1->0, 2->1, 4->2, 8->3] error_message is JOERGER$_BAD_GAIN;
+     CHANNEL_5:GAIN : int valid if in [1->0, 2->1, 4->2, 8->3] error_message is JOERGER$_BAD_GAIN;
+     CHANNEL_6:GAIN : int valid if in [1->0, 2->1, 4->2, 8->3] error_message is JOERGER$_BAD_GAIN;
+     CHANNEL_7:GAIN : int valid if in [1->0, 2->1, 4->2, 8->3] error_message is JOERGER$_BAD_GAIN;
+     CHANNEL_8:GAIN : int valid if in [1->0, 2->1, 4->2, 8->3] error_message is JOERGER$_BAD_GAIN;
+     EXT_CLOCK;
+}
+
+operation TRIGGER requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation PARTIAL_STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

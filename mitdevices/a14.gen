@@ -1,0 +1,61 @@
+device model = A14 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    CLOCK_DIVIDE      : datum value = 1         options = no_write_shot                 usage = numeric;
+    EXT_CLOCK_IN      : undefined		options = no_write_shot 		usage = axis ;
+    STOP_TRIG         : datum value = 0.	options = no_write_shot			usage = numeric;
+    PTS               : datum value = 0         options = no_write_shot                 usage = numeric;
+    MODE              : datum value = 0         options = no_write_shot                 usage = numeric;
+    DIMENSION         : undefined		options = no_write_shot                 usage = numeric;
+    CLK_POLARITY      : datum value = 0         options = no_write_shot                 usage = numeric;
+    STR_POLARITY      : datum value = 0         options = no_write_shot                 usage = numeric;
+    STP_POLARITY      : datum value = 0         options = no_write_shot                 usage = numeric;
+    GATED             : datum value = 0         options = no_write_shot                 usage = numeric;
+    INPUT_1           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_1:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_1:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_2           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_2:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_2:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_3           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_3:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_3:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_4           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_4:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_4:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_5           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_5:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_5:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_6           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_6:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_6:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     CLOCK_DIVIDE : int valid if in [1->0,2->1,4->2,10->3,20->4,40->5,100->6] error_message is A14$_BAD_CLK_DIVIDE;
+     EXT_CLOCK_IN;
+     PTS : int;
+     MODE : int valid if in [0 - 4] error_message is A14$_BAD_MODE;
+     CLK_POLARITY : int valid if in [0,1] error_message is A14$_BAD_CLK_POLARITY;
+     STR_POLARITY : int valid if in [0,1] error_message is A14$_BAD_STR_POLARITY;
+     STP_POLARITY : int valid if in [0,1] error_message is A14$_BAD_STP_POLARITY;
+     GATED        : int valid if in [0,1] error_message is A14$_BAD_GATED;
+}
+
+operation START requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STOP requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     EXT_CLOCK_IN;
+     DIMENSION;
+}

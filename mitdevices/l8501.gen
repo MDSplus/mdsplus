@@ -1,0 +1,28 @@
+device model = L8501 library = MIT$DEVICES with
+{
+    NAME              : undefined 		options = no_write_shot 		usage = text;
+    COMMENT           : undefined 							usage = text;
+    TRIGGER1	      : datum value = 0.	options = no_write_shot			usage = numeric;
+    TRIGGER2	      : datum value = 0.	options = no_write_shot			usage = numeric;
+    TRIGGER3	      : datum value = 0.	options = no_write_shot			usage = numeric;
+    MODE	      : datum value = 3		options = no_write_shot			usage = numeric;
+    FREQ1	      : datum value = 1E3	options = no_write_shot			usage = numeric;
+    FREQ2	      : datum value = 1E3	options = no_write_shot			usage = numeric;
+    FREQ3	      : datum value = 1E3	options = no_write_shot			usage = numeric;
+    F2_COUNT	      : datum value = 0		options = no_write_shot			usage = numeric;
+    F3_COUNT	      : datum value = 0		options = no_write_shot			usage = numeric;
+    CLOCK_OUT         : undefined		options = no_write_model,write_once	usage = axis;
+    STOP_OUT	      : undefined		options = no_write_model,write_once	usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     MODE : int valid if in [1->0,2->1,3->2,4->3] error_message is DEV$_BAD_MODE;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     MODE : int valid if in [1->0,2->1,3->2,4->3] error_message is DEV$_BAD_MODE;
+}

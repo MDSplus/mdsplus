@@ -1,0 +1,34 @@
+device model = L8590_SCLR library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    NUM_ACTIVE        : datum value = 8		options = no_write_shot 		usage = numeric;
+    INPUT_1           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_1:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_1:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_2           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_2:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_2:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_3           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_3:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_3:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_4           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_4:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_4:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_5           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_5:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_5:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_6           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_6:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_6:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_7           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_7:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_7:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_8           : undefined		options = no_write_model,write_once,compressible	usage = signal ;
+    INPUT_8:STARTIDX  : undefined 		options = no_write_shot			usage = numeric;
+    INPUT_8:ENDIDX    : undefined 		options = no_write_shot			usage = numeric;
+}
+
+routine GET_SETUP requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     NUM_ACTIVE : int valid if in [1->0,2->1,3->2,4->2,5->3,6->3,7->3,8->3] error_message is DEV$_INV_SETUP;
+}

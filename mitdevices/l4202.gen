@@ -1,0 +1,30 @@
+device model = L4202 library = MIT$DEVICES with
+{
+    NAME              : undefined		options = no_write_shot			usage = text;
+    COMMENT           : undefined 							usage = text;
+    MEMORY_NAME       : undefined		options = no_write_shot			usage = text;
+    EXT_CLOCK         : undefined		options = no_write_shot 		usage = axis;
+    NUM_SPECTRA       : datum value = 10	options = no_write_shot			usage = numeric;
+    ROUTER_INC        : datum value = 1792	options = no_write_shot			usage = numeric;
+    OFFSET            : datum value = 0		options = no_write_shot			usage = numeric;
+    RESOLUTION        : datum value = 0.156	options = no_write_shot			usage = numeric;
+    LOOP_INHIBIT      : datum value = 1		options = no_write_shot			usage = numeric;
+    SPECTRA           : undefined		options = no_write_model,write_once,compressible	usage = signal;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     MEMORY_NAME : string error_message is DEV$_BAD_NAME;
+     ROUTER_INC : int;
+     NUM_SPECTRA : int;
+     OFFSET : int;
+     RESOLUTION : float;
+}
+
+operation STORE requires {
+     MEMORY_NAME : string error_message is DEV$_BAD_NAME;
+     ROUTER_INC : int;
+     NUM_SPECTRA : int;
+}

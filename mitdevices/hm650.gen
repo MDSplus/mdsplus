@@ -1,0 +1,48 @@
+device model = HM650 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined 							usage = text;
+    THRESHOLD         : datum value = 0.        options = no_write_shot                 usage = numeric;
+    TRIG_IN_0         : undefined		options = no_write_shot			usage = numeric;
+    TRIG_IN_1         : undefined		options = no_write_shot			usage = numeric;
+    TRIG_IN_2         : undefined		options = no_write_shot			usage = numeric;
+    TRIG_IN_3         : undefined		options = no_write_shot			usage = numeric;
+    TRIG_IN_4         : undefined		options = no_write_shot			usage = numeric;
+    TRIG_IN_5         : undefined		options = no_write_shot			usage = numeric;
+    TRIG_IN_6         : undefined		options = no_write_shot			usage = numeric;
+    TRIG_IN_7         : undefined		options = no_write_shot			usage = numeric;
+    DELAY_0	      : datum value = 0.	options = no_write_shot			usage = numeric;
+    DELAY_1	      : datum value = 0.	options = no_write_shot			usage = numeric;
+    DELAY_2	      : datum value = 0.	options = no_write_shot			usage = numeric;
+    DELAY_3	      : datum value = 0.	options = no_write_shot			usage = numeric;
+    DELAY_4	      : datum value = 0.	options = no_write_shot			usage = numeric;
+    DELAY_5	      : datum value = 0.	options = no_write_shot			usage = numeric;
+    DELAY_6	      : datum value = 0.	options = no_write_shot			usage = numeric;
+    DELAY_7	      : datum value = 0.	options = no_write_shot			usage = numeric;
+    TRIG_OUT_0        : undefined		options = no_write_model,write_once	usage = numeric;
+    TRIG_OUT_1        : undefined		options = no_write_model,write_once	usage = numeric;
+    TRIG_OUT_2        : undefined		options = no_write_model,write_once	usage = numeric;
+    TRIG_OUT_3        : undefined		options = no_write_model,write_once	usage = numeric;
+    TRIG_OUT_4        : undefined		options = no_write_model,write_once	usage = numeric;
+    TRIG_OUT_5        : undefined		options = no_write_model,write_once	usage = numeric;
+    TRIG_OUT_6        : undefined		options = no_write_model,write_once	usage = numeric;
+    TRIG_OUT_7        : undefined		options = no_write_model,write_once	usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     THRESHOLD : float;
+     DELAY_0 : float;
+     DELAY_1 : float;
+     DELAY_2 : float;
+     DELAY_3 : float;
+     DELAY_4 : float;
+     DELAY_5 : float;
+     DELAY_6 : float;
+     DELAY_7 : float;
+}
+
+operation TRIGGER requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}

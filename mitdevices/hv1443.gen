@@ -1,0 +1,23 @@
+device model = HV1443 library = MIT$DEVICES with
+{
+    VOLTAGE_01     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_02     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_03     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_04     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_05     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_06     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_07     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_08     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_09     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_10     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_11     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_12     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_13     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_14     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_15     : undefined               options = no_write_shot			usage = numeric;
+    VOLTAGE_16     : undefined               options = no_write_shot			usage = numeric;
+}
+
+routine GET_SETTINGS requires {
+	VOLTAGE_01;
+}

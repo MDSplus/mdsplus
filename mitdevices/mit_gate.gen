@@ -1,0 +1,11 @@
+device model = MIT_GATE library = MIT$DEVICES with
+{
+    COMMENT           : undefined 							usage = text;
+    TRIGGER_MODE      : datum value = 0         options = no_write_shot			usage = numeric;
+    OUTPUT_MODE       : datum value = 0         options = no_write_shot			usage = numeric;
+    TRIGGER           : undefined               options = no_write_shot			usage = numeric;
+    EVENT             : undefined		options = no_write_shot			usage = text;
+    DURATION          : undefined		options = no_write_shot			usage = numeric;
+    PULSE_TIME        : undefined		options = no_write_shot			usage = numeric;
+    OUTPUT            : undefined               options = no_write_model,write_once	usage = numeric;
+}

@@ -1,0 +1,35 @@
+device model = B5910A library = MIT$DEVICES with
+{
+    NAME              		: undefined 								usage = text;
+    COMMENT           		: undefined 								usage = text;
+    INT_CLOCK         		: datum value = * : * : .0005			options = no_write_shot usage = axis;
+    EXT_CLOCK         		: undefined					options = no_write_shot usage = axis;
+    START_TRIG        		: datum value = 0.				options = no_write_shot	usage = numeric;
+    SAMPLES           		: datum value = 8192      			options = no_write_shot usage = numeric;
+    ITERATIONS        		: datum value = 1         			options = no_write_shot usage = numeric;
+    NOC               		: datum value = 4         			options = no_write_shot usage = numeric;
+    CHANNEL_1         		: datum value = B5910A$CHAN(CHANNEL_1) 		options = write_once 	usage = signal;
+    CHANNEL_1:PROGRAMMING	: undefined 								usage = signal;
+    CHANNEL_2         		: datum value = B5910A$CHAN(CHANNEL_2) 		options = write_once 	usage = signal;
+    CHANNEL_2:PROGRAMMING  	: undefined 								usage = signal;
+    CHANNEL_3         		: datum value = B5910A$CHAN(CHANNEL_3) 		options = write_once 	usage = signal;
+    CHANNEL_3:PROGRAMMING  	: undefined 								usage = signal;
+    CHANNEL_4         		: datum value = B5910A$CHAN(CHANNEL_4) 		options = write_once 	usage = signal;
+    CHANNEL_4:PROGRAMMING  	: undefined 								usage = signal;
+    CLOCK_OUT         		: datum value = IF_ERROR(INT_CLOCK,EXT_CLOCK)	options = write_once	usage = axis;
+    INIT_ACTION       		: action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     NOC  : int valid if in [1 - 4] error_message is B5910A$_BAD_NOC;
+     INT_CLOCK;
+     ITERATIONS : int valid if in [0 - 15] error_message is B5910A$_BAD_ITERATIONS;
+     SAMPLES : int valid if in [1 - 32768] error_message is B5910A$_BAD_SAMPS;
+     CHANNEL_1;
+     CHANNEL_2;
+     CHANNEL_3;
+     CHANNEL_4;
+     START_TRIG;
+}
+

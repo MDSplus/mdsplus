@@ -1,0 +1,13 @@
+device model = MIT_DCLOCK library = MIT$DEVICES with
+{
+    COMMENT           : undefined 							usage = text;
+    FREQUENCY_1       : datum value = 1000.     options = no_write_shot			usage = numeric;
+    FREQUENCY_2       : datum value = 1000.     options = no_write_shot			usage = numeric;
+    GATE	      : undefined               options = no_write_shot 		usage = axis;
+    OUTPUT            : undefined               options = no_write_model,write_once	usage = numeric;
+}
+
+routine GET_SETUP requires {
+     FREQUENCY_1: float error_message is MPB$_BADFREQ;
+     FREQUENCY_2: float error_message is MPB$_BADFREQ;
+}

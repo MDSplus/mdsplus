@@ -1,0 +1,38 @@
+device model = U_OF_M_SPECT library = MIT$DEVICES with
+{
+    COMMENT           : undefined 							usage = text;
+    GO_FILE           : undefined 		options = no_write_shot			usage = text;
+    DATA_FILE         : undefined 		options = no_write_shot			usage = text;
+    TRIGGER           : datum value = 0.	options = no_write_shot			usage = numeric;
+    .SETUP	      : undefined							usage = structure;
+    .SETUP:WAVE_LENGTH  : datum value = 2000	options = no_write_shot			usage = numeric;
+    .SETUP:SLIT_WIDTH   : datum value = 25	options = no_write_shot			usage = numeric;
+    .SETUP:NUM_SPECTRA  : datum value = 5	options = no_write_shot			usage = numeric;
+    .SETUP:GRATING_TYPE : datum value = 1	options = no_write_shot			usage = numeric;
+    .SETUP:EXPOSURE     : datum value = 30	options = no_write_shot			usage = numeric;
+    .SETUP:FILTER       : datum value = 0	options = no_write_shot			usage = numeric;
+    WAVE_LENGTH       : undefined		options = no_write_model,write_once	usage = numeric;
+    SLIT_WIDTH        : undefined		options = no_write_model,write_once	usage = numeric;
+    GRATING_TYPE      : undefined		options = no_write_model,write_once	usage = numeric;
+    EXPOSURE          : undefined		options = no_write_model,write_once	usage = numeric;
+    FILTER            : undefined		options = no_write_model,write_once	usage = numeric;
+    SPECTRA	      : undefined		options = no_write_model,write_once,compressible	usage = signal;
+    ORDER_SORTER      : datum value = 0		options = no_write_shot			usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = U_OF_M_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = U_OF_M_SERVER;
+}
+
+operation INIT requires {
+     GO_FILE : string error_message is DEV$_BAD_NAME;
+     DATA_FILE : string error_message is DEV$_BAD_NAME;
+     .SETUP:WAVE_LENGTH : int valid if in [0 - 13500] error_message is U_OF_M$_BAD_WAVE_LENGTH;
+     .SETUP:SLIT_WIDTH : int valid if in [0 - 500] error_message is U_OF_M$_BAD_SLIT_WIDTH;
+     .SETUP:NUM_SPECTRA : int valid if in [1 - 100] error_message is U_OF_M$_BAD_NUM_SPECTRA;
+     .SETUP:GRATING_TYPE : int valid if in [1 - 5] error_message is U_OF_M$_BAD_GRATING;
+     .SETUP:EXPOSURE : int valid if in [30 - 3000] error_message is U_OF_M$_BAD_EXPOSURE;
+     .SETUP:FILTER : int valid if in [0 - 5] error_message is U_OF_M$_BAD_FILTER;
+}
+
+operation STORE requires {
+     DATA_FILE : string error_message is DEV$_BAD_NAME;
+}

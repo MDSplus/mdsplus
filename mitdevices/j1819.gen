@@ -1,0 +1,26 @@
+device model = J1819 library = MIT$DEVICES with
+{
+    NAME              : undefined 							usage = text;
+    COMMENT           : undefined							usage = text;
+    EXT_CLOCK_IN      : undefined		options = no_write_shot 		usage = axis ;
+    STOP_TRIG         : datum value = 0.	options = no_write_shot			usage = numeric;
+    SAMPLES           : datum value = 0.	options = no_write_shot			usage = numeric;
+    INPUT             : undefined 		options = no_write_model,write_once,compressible	usage = signal;
+    TRUE_PHASE        : datum value = 0         options = no_write_shot			usage = numeric;
+    INIT_ACTION       : action operation = INIT sequence = 50 phase = INIT server_class = CAMAC_SERVER;
+    STORE_ACTION      : action operation = STORE sequence = 50 phase = STORE server_class = CAMAC_SERVER;
+}
+
+operation INIT requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     SAMPLES : int;
+}
+
+operation STORE requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+     SAMPLES : int;
+}
+
+operation TRIGGER requires {
+     NAME : string error_message is DEV$_BAD_NAME;
+}
