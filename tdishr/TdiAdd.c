@@ -259,9 +259,9 @@ int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2, struct descript
 
 #if defined(__alpha) && defined(__vms)
 typedef __int64 _int64;
-#elif defined(__osf__) || defined(__irix__) || defined(__sunos__)
+#elif defined(__osf__) || defined(__sgi) || defined(__sun)
 typedef long long _int64;
-#elif defined(__hpux__)
+#elif defined(__hpux)
 typedef long long _int64;
 #else
 #endif
