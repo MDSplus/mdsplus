@@ -6,32 +6,23 @@
 Program to wait for MDSPlus event from the command line.
 */
 
-static int printdata = 0;
-
-extern int MDSEventAst();
-extern int LibWait();
-
-void EventOccurred(void *astprm, int len, char *data)
-{
-  if (printdata)
-  {
-    char *s = strncpy((char *)malloc(len+1),data,len);
-    s[len] = 0;
-    printf("Event %s occurred with data = \\%s\\\n",(char *)astprm,s);
-  }
-  exit(0);
-}
-
 main(int argc, char **argv)
 {
-    float forever = 1E6;
-    int eventid;
+    int len;
+    char data[256];
     if(argc < 2){
         fprintf(stderr,"Usage: %s <event name> [-d]\n",argv[0]);
         exit(1);
     }
-    printdata = (argc == 3) && (strcmp(argv[2],"-d") == 0); 
-    MDSEventAst(argv[1], EventOccurred, argv[1], &eventid);
-    LibWait(&forever);
+    MDSWfevent(argv[1], 255, data, &len);
+    if ((argc == 3) && (strcmp(argv[2],"-d") == 0) && len)
+    {
+      if (len < 256)
+        data[len] = 0;
+      else
+        data[255] = 0;
+      printf("Event %s occurred with data = \\%s\\\n",argv[1],data);
+    }
+    return(1);
 }
 

@@ -991,29 +991,33 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
 
 struct wfevent_thread_cond { pthread_mutex_t  mutex;
                              pthread_cond_t cond;
-                             char **data;
-                             int *len;
+                             int buflen;
+                             char *data;
+                             int *datlen;
 };
 
 
 static void EventHappened(void *astprm, int len, char *data)
 {
   struct wfevent_thread_cond *t = (struct wfevent_thread_cond *)astprm;
-  if (t->data) *t->data = memcpy(malloc(len),data,len);
-  if (t->len) *t->len = len;
+  if (t->buflen && t->data)
+    memcpy(t->data,data,(t->buflen > len) ? len : t->buflen); 
+  if (t->datlen)
+    *t->datlen = len;
   pthread_mutex_lock(&t->mutex);
   pthread_cond_signal(&t->cond);
   pthread_mutex_unlock(&t->mutex);
 }
 
-int MDSWfevent(char *evname, int *data_len, char **data)
+int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
 {
     int eventid=-1;
     struct wfevent_thread_cond t;
     pthread_mutex_init(&t.mutex,pthread_mutexattr_default);
     pthread_cond_init(&t.cond,pthread_condattr_default);
-    t.len = data_len;
+    t.buflen = buflen;
     t.data = data;
+    t.datlen = datlen;
     MDSEventAst(evname, EventHappened, &t, &eventid);
     pthread_cond_wait(&t.cond,&t.mutex);
     pthread_cond_destroy(&t.cond);
