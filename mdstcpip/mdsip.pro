@@ -72,10 +72,11 @@ pro mds$connect,host,status=status,quiet=quiet,port=port
   endif
   sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'ConnectToMds',host,value=[byte(!version.os ne 'windows')])
   if (sock gt 0) then begin
+    status = 1
     x=execute('!MDS_SOCKET = sock')
   endif else begin
     if not keyword_set(quiet) then message,'Error connecting to '+host,/IOERROR
-    status = -1
+    status = 0
   endelse
   return
 end  
