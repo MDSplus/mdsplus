@@ -22,8 +22,6 @@ extern int TdiCvtArgs();
 extern int TdiGetArgs();
 extern int TdiMasterData();
 extern int Tdi2Vector();
-extern int MdsCopyDxXd();
-extern int MdsFree1Dx();
 
 TdiRefStandard(Tdi1Vector)
 array miss = {sizeof(char),DTYPE_MISSING,CLASS_A,(char *)0,0,0,{0,1,1,0,0},1,0};

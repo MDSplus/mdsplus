@@ -44,7 +44,6 @@
 #include <mdsshr.h>
 #include <stdlib.h>
 
-extern int MdsGet1Dx();
 
 int       MdsGet1DxS(unsigned short *length_ptr, unsigned char *dtype_ptr, struct descriptor_xd *out_dsc_ptr)
 {

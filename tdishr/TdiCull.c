@@ -20,8 +20,6 @@
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 
-extern int MdsFree1Dx();
-extern int MdsCopyDxXd();
 extern struct descriptor *TdiRANGE_PTRS[3];
 extern unsigned short OpcValue;
 

@@ -41,8 +41,6 @@
 
 extern unsigned short OpcVector;
 
-extern int MdsFree1Dx();
-extern int MdsCopyDxXd();
 extern int TdiGetData();
 extern int TdiData();
 extern int TdiUpcase();

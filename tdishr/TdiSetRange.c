@@ -26,7 +26,6 @@
 #include <mdsshr.h>
 #include <string.h>
 
-extern int MdsFree1Dx();
 extern int TdiGetArgs();
 extern int TdiGetData();
 extern int TdiGetLong();

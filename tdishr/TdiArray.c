@@ -29,7 +29,6 @@ int Tdi_RandomSeed = 1234567;
 extern int TdiData();
 extern int TdiConvert();
 extern int Tdi3Add();
-extern int MdsFree1Dx();
 extern int CvtConvertFloat();
 
 TdiRefStandard(Tdi1Array)

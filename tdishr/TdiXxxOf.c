@@ -7,8 +7,6 @@
 #include "tdirefstandard.h"
 #include <stdlib.h>
 #include <mdsshr.h>
-extern int MdsFree1Dx();
-extern int MdsCopyDxXd();
 extern int TdiGetData();
 extern int TdiGetLong();
 extern int TdiPutLogical();

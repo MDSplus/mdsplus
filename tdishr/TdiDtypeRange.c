@@ -29,7 +29,6 @@ static struct descriptor minus_one = {sizeof(int), DTYPE_L, CLASS_S, (char *)&mi
 
 extern struct descriptor *TdiItoXSpecial;
 
-extern int MdsFree1Dx();
 extern int TdiItoX();
 extern int TdiXtoI();
 extern int TdiCvtArgs();

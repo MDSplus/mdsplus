@@ -28,10 +28,10 @@
 
 +-----------------------------------------------------------------------------*/
 
+#include <mdsdescrip.h>
 #include <mdsshr.h>
 #include "treeshrp.h"
 #include <treeshr.h>
-#include <mdsdescrip.h>
 #include <usagedef.h>
 #include <ncidef.h>
 #include <string.h>
@@ -282,7 +282,7 @@ static int CopyToRecord(NCI *nci,
   struct descriptor *out_ptr;
   nid_reference = 0;
   path_reference = 0;
-  status = MdsCopyDxXd(descriptor_ptr, io_dscr_ptr, 0, FixupNid, &tree, FixupPath);
+  status = MdsCopyDxXdZ(descriptor_ptr, io_dscr_ptr, 0, FixupNid, &tree, FixupPath, NULL);
   nci->NCI_FLAG_WORD.NCI_FLAGS.path_reference = path_reference;
   nci->NCI_FLAG_WORD.NCI_FLAGS.nid_reference = nid_reference;
   if (status == MdsCOMPRESSIBLE)

@@ -48,15 +48,11 @@ The expansion routine "xentry":
 
 
 #include <string.h>
-#include <mdsshr.h>
 #include <mdsdescrip.h>
+#include <mdsshr.h>
 #include <libroutines.h>
 #include <strroutines.h>
 #include <librtl_messages.h>
-
-extern int MdsFree1Dx();
-extern int MdsGet1Dx();
-extern int MdsCopyDxXd();
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 typedef ARRAY_COEFF(char, 1) array_coef;

@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 
-extern int MdsFree1Dx();
 extern int TdiEvaluate();
 extern int Tdi1Same();
 extern int TdiData();

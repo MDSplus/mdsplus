@@ -14,8 +14,6 @@
 #include <mdsshr.h>
 #include <mds_stdarg.h>
 
-extern int MdsFree1Dx();
-extern int MdsCopyDxXd();
 extern int TdiGetLong();
 extern int TdiGetArgs();
 extern int TdiCvtArgs();

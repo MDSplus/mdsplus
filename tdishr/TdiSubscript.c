@@ -45,7 +45,6 @@ extern struct descriptor *TdiRANGE_PTRS[3];
 extern struct descriptor *TdiSELF_PTR;
 extern unsigned short OpcValue;
 
-extern int MdsFree1Dx();
 extern int TdiGetArgs();
 extern int TdiMasterData();
 extern int TdiIcull();

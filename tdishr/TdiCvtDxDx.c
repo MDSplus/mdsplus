@@ -13,7 +13,6 @@
 
 extern int TdiConvert();
 extern int TdiGetShape();
-extern int MdsCopyDxXd();
 
 int				TdiCvtDxDx(
 struct descriptor		*in_ptr,

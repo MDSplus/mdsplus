@@ -45,8 +45,6 @@ extern int TdiConvert();
 extern int TdiData();
 extern int TdiUnits();
 extern int Tdi2Add();
-extern int MdsCopyDxXd();
-extern int MdsFree1Dx();
 
 int TdiImpose();
 

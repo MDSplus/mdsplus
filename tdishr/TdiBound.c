@@ -34,7 +34,6 @@ extern unsigned short
 	OpcSize,
 	OpcVector;
 
-extern int MdsFree1Dx();
 extern int TdiGetArgs();
 extern int TdiGetLong();
 extern int TdiIntrinsic();

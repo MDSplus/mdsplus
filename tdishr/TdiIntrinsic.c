@@ -43,8 +43,6 @@ typedef struct _bounds { int l; int u; } BOUNDS;
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 extern int TdiDECOMPILE_MAX;
 extern unsigned short OpcCompile;
-extern int MdsFree1Dx();
-extern int MdsCopyDxXd();
 extern int TdiFaultHandlerNoFixup(  );
 extern int Tdi0Decompile(  );
 extern int TdiConvert(  );

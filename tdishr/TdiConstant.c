@@ -9,7 +9,6 @@
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
 #include <mdsshr.h>
-extern int MdsCopyDxXd();
 TdiRefStandard(Tdi1Constant)
 
 	status = MdsCopyDxXd((struct descriptor *)(*TdiRefFunction[opcode].f3)(), out_ptr);

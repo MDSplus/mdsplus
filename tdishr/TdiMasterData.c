@@ -16,8 +16,6 @@
 #include "tdirefstandard.h"
 #include <mdsshr.h>
 #include <stdlib.h>
-extern int MdsCopyDxXd();
-extern int MdsFree1Dx();
 
 static EMPTYXD(emptyxd);
 

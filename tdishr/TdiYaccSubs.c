@@ -15,8 +15,6 @@ extern unsigned short OpcSetRange;
 #include <tdimessages.h>
 #include <mdsshr.h>
 
-extern int MdsCopyDxXdZ();
-extern int MdsFree1Dx();
 extern int Tdi1Build();
 extern int TdiEvaluate();
 

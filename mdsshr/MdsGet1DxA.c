@@ -50,7 +50,6 @@
 #include <mdsshr.h>
 #include <stdlib.h>
 
-extern int MdsGet1Dx();
 
 #ifdef __VMS
 #pragma member_alignment save

@@ -17,7 +17,6 @@ extern int TdiON_ERROR;
 #include <stdlib.h>
 #include <mdsshr.h>
 
-extern int MdsFree1Dx();
 extern int TdiIntrinsic();
 extern int TdiEvaluate();
 extern int TdiGetLong();

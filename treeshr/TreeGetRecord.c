@@ -1,17 +1,14 @@
+#include <mdsdescrip.h>
 #include <mdsshr.h>
 #include "treeshrp.h"
 #include <treeshr.h>
-#include <mdsdescrip.h>
 #include <librtl_messages.h>
 #include <string.h>
 #include <stdlib.h>
 
-extern int Rec2Dsc();
-extern int GetNciW();
 
 static int OpenDatafileR(TREE_INFO *info);
 static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree);
-extern DATA_FILE *TreeGetVmDatafile();
 static int GetDatafile(TREE_INFO *info_ptr, unsigned short *rfa, int *buffer_size, char *record, int *retsize,int *nodenum);
 static int Rec2Dsc(char *in, struct descriptor_xd *out_dsc_ptr);
 
@@ -69,7 +66,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 	      {
                 unsigned char dsc_dtype = DTYPE_DSC;
                 int dlen = nci.length - 8;
-                int ddlen = nci.length - 8 + sizeof(struct descriptor);
+                unsigned int ddlen = nci.length - 8 + sizeof(struct descriptor);
                 status = MdsGet1Dx(&ddlen, &dsc_dtype, dsc,0);
 		dptr = dsc->pointer;
 		dptr->length = nci.length - 8;

@@ -17,7 +17,6 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 
-extern int MdsFree1Dx();
 extern int TdiGetArgs();
 extern int Tdi2Vector();
 extern int TdiFindImageSymbol();

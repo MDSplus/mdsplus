@@ -14,8 +14,6 @@ extern unsigned short OpcCompile;
 #include <stdlib.h>
 #include <string.h>
 
-extern int MdsFree1Dx();
-extern int MdsCopyDxXd();
 extern int TdiEvaluate();
 extern int TdiYacc();
 extern int TdiIntrinsic();

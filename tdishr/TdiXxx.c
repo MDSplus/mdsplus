@@ -10,8 +10,6 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 
-extern int MdsFree1Dx();
-extern int MdsCopyDxXd();
 extern int TdiConcat();
 extern int TdiTranslate();
 extern int TdiGetLong();

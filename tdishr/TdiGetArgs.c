@@ -15,7 +15,6 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 
-extern int MdsFree1Dx();
 extern struct descriptor_xd *TdiSELF_PTR;
 
 #include "tdirefcat.h"

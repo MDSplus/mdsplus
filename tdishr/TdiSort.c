@@ -34,7 +34,6 @@
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 extern unsigned short OpcVector;
 
-extern int MdsFree1Dx();
 extern int TdiGetArgs();
 extern int TdiCvtArgs();
 extern int TdiMasterData();

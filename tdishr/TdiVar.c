@@ -55,9 +55,6 @@ extern unsigned short OpcIn, OpcInOut, OpcOptional, OpcOut, OpcAsIs;
 extern unsigned short OpcPostDec, OpcPostInc, OpcPreDec, OpcPreInc;
 extern unsigned short OpcPrivate, OpcPublic, OpcVar;
 
-extern int MdsFree1Dx();
-extern int MdsCopyDxXd();
-extern int MdsCopyDxXdZ();
 extern int TdiFaultHandler();
 extern int TdiData();
 extern int TdiDeallocate();

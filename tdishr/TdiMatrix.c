@@ -15,7 +15,6 @@
 #include <mdsshr.h>
 #include <string.h>
 
-extern int MdsFree1Dx();
 extern int TdiGetArgs();
 extern int TdiData();
 extern int TdiConvert();

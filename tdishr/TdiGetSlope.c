@@ -19,7 +19,6 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 
-extern int MdsFree1Dx();
 extern int TdiData(  );
 extern int TdiGetLong(  );
 extern int TdiRange(  );

@@ -44,8 +44,6 @@ extern unsigned short OpcItoX;
 extern unsigned short OpcVector;
 extern unsigned short OpcValue;
 
-extern int MdsFree1Dx();
-extern int MdsCopyDxXd();
 extern int TdiGetData();
 extern int TdiGetLong();
 extern int TdiUnits();

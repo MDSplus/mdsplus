@@ -73,8 +73,6 @@ extern  unsigned short
 #include <mdsshr.h>
 #include <string.h>
 
-extern int MdsCopyDxXd();
-extern int MdsFree1Dx();
 extern int Tdi2Mask2();
 extern int Tdi2Mask3();
 extern int Tdi2Sign();

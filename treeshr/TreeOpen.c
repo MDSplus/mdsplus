@@ -1,3 +1,4 @@
+#include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <treeshr.h>
 #include "treeshrp.h"
@@ -255,7 +256,7 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 						TreeWait(local_info);
 						if (local_info->data_file)
 						{
-							MdsFree1Dx(local_info->data_file->data);
+							MdsFree1Dx(local_info->data_file->data,NULL);
 #ifdef __VMS
 							sys$close(local_info->data_file->$a_fab, 0, 0);
 #else
@@ -1089,7 +1090,7 @@ int TreeCloseFiles(TREE_INFO *info)
 			TreeWait(info);
 			if (info->data_file)
 			{
-				MdsFree1Dx(info->data_file->data);
+				MdsFree1Dx(info->data_file->data, NULL);
 #ifdef __VMS
 				sys$close(info->data_file->fab, 0, 0);
 #else

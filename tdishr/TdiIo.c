@@ -15,8 +15,6 @@
 #include <strroutines.h>
 #include <mdsshr.h>
 
-extern int MdsFree1Dx();
-
 static struct descriptor_d EMPTY_D = {0,DTYPE_T,CLASS_D,0};
 static DESCRIPTOR(dNUL, "\0");
 static DESCRIPTOR(dBAD, "/*bad*/");

@@ -15,7 +15,6 @@
 typedef struct {int lo; unsigned int hi;} quadw;
 
 #include <mdsdescrip.h>
-#include <mdsdescrip.h>
 #include "tdirefstandard.h"
 #include <libroutines.h>
 #include <strroutines.h>
@@ -27,7 +26,6 @@ typedef struct {int lo; unsigned int hi;} quadw;
 #include <mdsshr.h>
 #include <treeshr.h>
 
-extern int MdsFree1Dx();
 extern int TdiTaskOf();
 extern int TdiGetFloat();
 extern int TdiConvert();

@@ -21,9 +21,6 @@ RULES OF THE GAME:
 #include <stdlib.h>
 #include <string.h>
 
-extern int MdsCopyDxXd();
-extern int MdsFree1Dx();
-
 static struct descriptor missing = {0,DTYPE_MISSING,CLASS_S,0};
 
 extern int TdiGetIdent();

@@ -35,8 +35,6 @@ static DESCRIPTOR(RIGHT_ANGLE,	">");
 static DESCRIPTOR(LEFT_PAREN,	"(");
 static DESCRIPTOR(RIGHT_PAREN,	")");
 
-extern int MdsCopyDxXd();
-
 static int		DependencyGet(
 int			prec,
 struct descriptor_r *pin,

@@ -20,7 +20,6 @@ extern unsigned short OpcDotProduct;
 #include <mdsshr.h>
 #include <string.h>
 
-extern int MdsFree1Dx();
 extern int Tdi2Keep();
 extern int TdiCvtArgs();
 extern int TdiGetArgs();

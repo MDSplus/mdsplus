@@ -38,9 +38,6 @@ static struct item {
 #define siztab sizeof(struct item)
 #define numtab (sizeof(table)/siztab)
 
-extern int MdsFree1Dx();
-extern int MdsCopyDxXd();
-extern int MdsCopyDxXdZ();
 extern int TdiData();
 extern int TdiUpcase();
 extern int TdiGetData();

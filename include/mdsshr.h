@@ -19,19 +19,18 @@ extern MdsCOMPRESSIBLE;
 #define MdsCOMPRESSIBLE 3
 #endif
 
+extern int MdsCmprs(int *nitems, struct descriptor_a *items, struct descriptor_a *pack, int *bit);
+extern int MdsCompress(struct descriptor *cimage, struct descriptor *centry, struct descriptor *in, struct descriptor_xd *out);
+extern int MdsCopyDxXd(struct descriptor *in, struct descriptor_xd *out);
+extern int MdsCopyDxXdZ(struct descriptor *in, struct descriptor_xd *out, void **zone, int (*fixup_nid) (), void *fixup_nid_arg,
+                        int (*fixup_path) (), void *fixup_path_arg);
 extern char *MdsDescrToCstring(struct descriptor *);
-
 extern void MdsFree(void *);
-
-extern int MdsGet1Dx();
-extern int MdsGet1DxS();
-extern int MdsGet1DxA();
-
+extern int MdsGet1Dx(unsigned int *len, unsigned char *dtype, struct descriptor_xd *dsc, void **zone);
+extern int MdsGet1DxA(struct descriptor_a * in, unsigned short *len, unsigned char *dtype, struct descriptor_xd *out);
+extern int MdsGet1DxS(unsigned short *len, unsigned char *dtype, struct descriptor_xd *out);
 extern int MdsGetCurrentShotid();
-extern int MdsFree1Dx();
-extern int MdsXpand();
-extern int MdsCopyDxXd();
-extern int MdsCmprs();
-extern int MdsPk();
-extern int MdsUnpk();
-extern int MdsCompress();
+extern int MdsFree1Dx(struct descriptor_xd *dsc, void **zone);
+extern void MdsPk(char *nbits, int *nitems, int pack[], int items[], int *bit);
+extern void MdsUnpk(char *nbits, int *nitems, int pack[], int items[], int *bit);
+extern int MdsXpand(int *nitems, struct descriptor_a *pack, struct descriptor_a *items, int *bit);

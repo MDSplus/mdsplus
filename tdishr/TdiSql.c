@@ -42,8 +42,6 @@
 #define  DTYPE_D DTYPE_G
 #endif
 
-extern int MdsFree1Dx();
-extern int MdsCopyDxXd();
 extern int TdiFindImageSymbol();
 extern int TdiGetLong();
 extern int TdiGetIdent();
