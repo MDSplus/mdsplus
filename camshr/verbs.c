@@ -482,7 +482,7 @@ int SetCrate()
 
 	  status = turn_crate_on_off_line( cratename , (on) ? ON : OFF );
           if (!(status & 1) && !quiet)
-            printf("Error turning crate %s %\n",cratename,on ? "online" : "offline");
+            printf("Error turning crate %s %s\n",cratename,on ? "online" : "offline");
           free(cratename);
         }
         find_crate_end(&ctx);
