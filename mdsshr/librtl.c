@@ -377,12 +377,12 @@ BOOL pthread_mutex_destroy(HANDLE *mutex)
 }
 
 STATIC_THREADSAFE HANDLE global_mutex = NULL;
-STATIC_THREADSAFE int globus_mutex_initialized = 0;
+STATIC_THREADSAFE int global_mutex_initialized = 0;
 void pthread_unlock_global_np()
 {
-  if (!globus_mutex_initialized)
+  if (!global_mutex_initialized)
   {
-    globus_mutex_initialized = 1;
+    global_mutex_initialized = 1;
     pthread_mutex_init(&global_mutex);
   }
   pthread_mutex_unlock(&global_mutex);
