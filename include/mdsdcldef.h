@@ -27,7 +27,7 @@
 #define __MDSDCLDEF   1
 
 #define MAX_TABLES     15
-#define MAX_DEPTH      4	/* Max depth of indirection, incl macros */
+#define MAX_DEPTH      8	/* Max depth of indirection, incl macros */
 
 struct _mdsdcl_io  {
     FILE  *fp;			/* File ptr.  0 for macros		*/
