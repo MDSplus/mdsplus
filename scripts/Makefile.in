@@ -24,7 +24,7 @@ install:
 	cp unix_submit @MAKEBINDIR@unix_submit
 
 @MAKEBINDIR@synchronize_unix : synchronize_unix
-	cp synchronize_unix @MAKEBINDIR@sychronize_unix
+	cp synchronize_unix @MAKEBINDIR@synchronize_unix
 
 @MAKEBINDIR@ :
 	mkdir @MAKEBINDIR@
