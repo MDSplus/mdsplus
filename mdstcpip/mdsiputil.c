@@ -45,14 +45,14 @@ extern int inet_addr();
 #ifdef __VMS
 extern int MdsDispatchEvent();
 #endif
-static int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int oob)
+static int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int options)
 {
   int tries = 0;
   while ((bytes_to_send > 0) && (tries < 10))
   {
 	int bytes_sent;
     int bytes_this_time = min(bytes_to_send,BUFSIZ);
-    bytes_sent = SocketSend(sock, bptr, bytes_to_send, oob ? MSG_OOB : 0);
+    bytes_sent = SocketSend(sock, bptr, bytes_to_send, options);
     if (bytes_sent <= 0)
     {
       if (errno != EINTR)

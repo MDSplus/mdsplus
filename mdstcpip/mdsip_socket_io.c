@@ -100,6 +100,13 @@ void SetFD(SOCKET sock) {}
 void ClearFD(SOCKET sock) {}
 
 #else
+//#include <signal.h>
+#include <pthread.h>
+#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
+#define pthread_attr_default NULL
+#define pthread_mutexattr_default NULL
+#define pthread_condattr_default NULL
+#endif
 static fd_set fdactive;
 void ZeroFD() { FD_ZERO(&fdactive);}
 void SetFD(SOCKET sock) { FD_SET(sock,&fdactive);}
@@ -362,13 +369,87 @@ void FlushSocket(SOCKET sock)
 #endif
 }
 
+typedef struct _socket_list {int socket; struct _socket_list *next;} SocketList;
+
+static SocketList *Sockets = 0;
+
+static int socket_mutex_initialized = 0;
+static pthread_mutex_t socket_mutex;
+
+static void lock_socket_list()
+{
+
+  if(!socket_mutex_initialized)
+  {
+    socket_mutex_initialized = 1;
+    pthread_mutex_init(&socket_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_lock(&socket_mutex);
+}
+
+static void unlock_socket_list()
+{
+
+  if(!socket_mutex_initialized)
+  {
+    socket_mutex_initialized = 1;
+    pthread_mutex_init(&socket_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_unlock(&socket_mutex);
+}
+
+static void PushSocket(SocketList *s)
+{
+  SocketList *oldhead;
+  lock_socket_list();
+  oldhead=Sockets;
+  Sockets=s;
+  s->next=oldhead;
+  unlock_socket_list();
+}
+
+static void PopSocket(SocketList *s_in)
+{
+  SocketList *p,*s;
+  lock_socket_list();
+  for (s=Sockets,p=0;s && s!=s_in; p=s,s=s->next);
+  if (s)
+  {
+    if (p)
+      p->next = s->next;
+    else
+      Sockets = s->next;
+  }
+  unlock_socket_list();
+}
+
+static void ABORT(int sigval)
+{
+  SocketList *s;
+  lock_socket_list();
+  for (s=Sockets;s;s=s->next) CloseSocket(s->socket);
+  unlock_socket_list();
+}
+
 int SocketRecv(SOCKET s, char *bptr, int num,int oob)
 {
 #ifndef GLOBUS
 #ifdef HAVE_WINDOWS_H
   return recv(s,bptr,num,(oob ? MSG_OOB : 0));
 #else
-  return recv(s,bptr,num,(oob ? MSG_OOB : 0) | MSG_NOSIGNAL);
+  int num_got=0;
+  struct sockaddr sin;
+  socklen_t n = sizeof(sin);
+  SocketList this_socket = {s,0};
+  PushSocket(&this_socket);
+  this_socket.socket=s;
+  signal(SIGABRT,ABORT);
+  if (getpeername(s, (struct sockaddr *)&sin, &n)==0)
+    num_got=recv(s,bptr,num,(oob ? MSG_OOB : 0) | MSG_NOSIGNAL);
+  PopSocket(&this_socket);
+  return num_got;
 #endif
 #else
   int bytes_to_read = num;
@@ -403,13 +484,13 @@ int SocketRecv(SOCKET s, char *bptr, int num,int oob)
 #endif
 }   
 
-int SocketSend(SOCKET s, char *bptr, int num, int oob)
+int SocketSend(SOCKET s, char *bptr, int num, int options)
 {
 #ifndef GLOBUS
 #ifdef HAVE_WINDOWS_H
-  return send(s,bptr,num,(oob ? MSG_OOB : 0));
+  return send(s,bptr,num,options);
 #else
-  return send(s,bptr,num,(oob ? MSG_OOB : 0) | MSG_NOSIGNAL);
+  return send(s,bptr,num, options | MSG_NOSIGNAL);
 #endif
 #else
   globus_io_handle_t *handle = GetHandle(s);

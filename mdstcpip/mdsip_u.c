@@ -815,6 +815,10 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
     pid = getpid();
     m.h.msglen = sizeof(MsgHdr);
     m_user = GetMdsMsg(sock,&status);
+    if (m_user == 0 || !(status & 1))
+    {
+      return;
+    }
     if ((status & 1) && (m_user) && (m_user->h.dtype == DTYPE_CSTRING))
     {
       user = malloc(m_user->h.length + 1);
@@ -1326,6 +1330,7 @@ static void ProcessMessage(Client *c, Message *message)
 static void ClientEventAst(MdsEventList *e, int data_len, char *data)
 {
   Client *c;
+  int status=1;
   int i;
   char client_type,compression_level;
   lock_ast();
@@ -1354,7 +1359,7 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data)
         info->data[i] = 0;
       info->eventid = e->jeventid;
       SetCompressionLevel(compression_level);
-      SendMdsMsg(e->sock, m, 0);
+      SendMdsMsg(e->sock, m, MSG_DONTWAIT);
       free(m);
     }
     else
@@ -1369,7 +1374,7 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data)
         e->info->data[i] = 0;
       memcpy(m->bytes,e->info,e->info_len);
       SetCompressionLevel(compression_level);
-      SendMdsMsg(e->sock, m, MSG_OOB);
+      status = SendMdsMsg(e->sock, m, MSG_OOB | MSG_DONTWAIT);
       free(m);
     }
   }
@@ -1381,6 +1386,8 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data)
     if (e->info_len > 0) free(e->info);
     free(e);
   }
+  if (status != 1)
+    CloseSocket(c->sock);
   unlock_ast();
 }
 
