@@ -1,55 +1,55 @@
 public fun TR32__init(as_is _nid, optional _method)
 {
-    private _N_HEAD = 0;
-    private _N_BOARD_ID = 1;
-    private _N_SW_MODE = 2;
-    private _N_IP_ADDR = 3;
-    private _N_COMMENT = 4;
-    private _N_CLOCK_MODE = 5;
-    private _N_TRIG_MODE = 6;
-    private _N_TRIG_SOURCE = 7;
-    private _N_CLOCK_SOURCE = 8;
-    private _N_FREQUENCY = 9;
-    private _N_USE_TIME = 10;
-    private _N_PTS = 11;
-    private _N_TRIG_EDGE = 12;
-    private _K_NODES_PER_CHANNEL = 7;
-    private _N_CHANNEL_0= 13;
-    private _N_CHAN_RANGE = 1;
-    private _N_CHAN_START_TIME = 2;
-    private _N_CHAN_END_TIME = 3;
-    private _N_CHAN_START_IDX = 4;
-    private _N_CHAN_END_IDX = 5;
-    private _N_CHAN_DATA = 6;
-    private _64M = 67108864;
+	private _N_HEAD = 0;
+	private _N_BOARD_ID = 1;
+	private _N_SW_MODE = 2;
+	private _N_IP_ADDR = 3;
+	private _N_COMMENT = 4;
+	private _N_CLOCK_MODE = 5;
+	private _N_TRIG_MODE = 6;
+	private _N_TRIG_SOURCE = 7;
+	private _N_CLOCK_SOURCE = 8;
+	private _N_FREQUENCY = 9;
+	private _N_USE_TIME = 10;
+	private _N_PTS = 11;
+	private _N_TRIG_EDGE = 12;
+	private _N_CHANNEL_0= 13;
+
+	private _K_NODES_PER_CHANNEL = 7;
+	private _N_CHAN_RANGE = 1;
+	private _N_CHAN_START_TIME = 2;
+	private _N_CHAN_END_TIME = 3;
+	private _N_CHAN_START_IDX = 4;
+	private _N_CHAN_END_IDX = 5;
+	private _N_CHAN_DATA = 6;
+
+	private _64M = 67108864;
+	private _INVALID = 10E20;
 
 
+	_board_id = if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
+	if(_board_id == _INVALID)
+	{
+    		DevLogErr(_nid, "Invalid Board ID specification");
+		abort();
+	}
 
-    private _INVALID = 10E20;
+	DevNodeCvt(_nid, _N_TRIG_EDGE, ['RISING', 'FALLING'], [0, 1], _trig_edge = 0);
 
-    write(*, 'TR10');
-
-    _board_id=if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
-    if(_board_id == _INVALID)
-    {
-    	DevLogErr(_nid, "Invalid Board ID specification");
- 		abort();
-    }
-
-    DevNodeCvt(_nid, _N_SW_MODE, ['LOCAL', 'REMOTE'], [0,1], _remote = 0);
-    DevNodeCvt(_nid, _N_TRIG_EDGE, ['RISING', 'FALLING'], [0,1], _trig_edge = 0);
-
+	DevNodeCvt(_nid, _N_SW_MODE, ['LOCAL', 'REMOTE'], [0, 1], _remote = 0);
 	if(_remote != 0)
 	{
 		_ip_addr = if_error(data(DevNodeRef(_nid, _N_IP_ADDR)), "");
 		if(_ip_addr == "")
 		{
-    	    DevLogErr(_nid, "Invalid Crate IP specification");
- 		    abort();
+    	    		DevLogErr(_nid, "Invalid Crate IP specification");
+ 		    	abort();
 		}
 	}
-    DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL', 'EXTERNAL'], [0,1], _ext_trig = 0);
-    DevNodeCvt(_nid, _N_CLOCK_MODE, ['INTERNAL', 'EXTERNAL'], [0,1], _ext_clock = 0);
+
+	DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL', 'EXTERNAL'], [0, 1], _ext_trig = 0);
+
+	DevNodeCvt(_nid, _N_CLOCK_MODE, ['INTERNAL', 'EXTERNAL'], [0, 1], _ext_clock = 0);
     if(_ext_clock)
     {
 		_status = 1;
@@ -128,7 +128,13 @@ public fun TR32__init(as_is _nid, optional _method)
 				[0x130,0x030,0x120,0x020,0x110,0x010,0x100,0x000,0x112,0x012,0x113,0x013,0x103,0x003],
 				 _range = 3);
 			_ranges = [_ranges, _range];
+
         }
+	else
+	{
+		_range = 0x003;
+		_ranges = [_ranges, _range];
+	}
     }
     if(_pts > _64M)
     {
