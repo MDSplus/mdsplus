@@ -35,3 +35,8 @@ SetSocketOptions
 GetCompressionLevel
 SetCompressionLevel
 HostToIp
+MdsSetServerPortname
+MdsSetClientAddr
+MdsGetServerPortname
+MdsGetClientAddr
+GetAnswerInfoTS
