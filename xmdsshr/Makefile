@@ -1,5 +1,7 @@
 include $(MAKE_OPTIONS)
 
+CFLAGS = $(MOTIF_CFLAGS)
+
 OBJECTS = \
 ListTree.o \
 XmdsBells.o \
