@@ -223,7 +223,7 @@ static int CheckClient(char *host_c, char *user_c)
 
 static void AddClient(int sock,struct sockaddr_in *sin)
 {
-  if (sock > 0)
+  if (sock >= 0)
   {
     static Message m;
     Message *m_user;
@@ -792,9 +792,14 @@ static int CreateMdsPort(char *service, int multi_in)
 static int ConnectToInet(char *service)
 {
   static struct sockaddr_in sin;
-  int s=0;
+  int s=-1;
   int n = sizeof(sin);
-  int status = 1; /* sys$assign(&INET, &s, 0, 0); */
+  int status = 1;
+#ifdef _VMS
+  status = sys$assign(&INET, &s, 0, 0);
+#else
+  s=0;
+#endif
   if (!(status & 1)) { exit(status);}
   FD_SET(s,&fdactive);
   if ((status=getpeername(s, (struct sockaddr *)&sin, &n)) < 0)
