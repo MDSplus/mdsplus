@@ -222,7 +222,13 @@ typedef struct node
   unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
 }         NODE;
 #ifdef EMPTY_NODE
-static const NODE empty_node = {{'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '}, sizeof(NODE), 0, 0, -(int)sizeof(NODE), 0, 0, 0, 0};
+#ifdef _big_endian
+static const NODE empty_node = {{'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '}, 
+                                sizeof(NODE), 0, 0, -(int)sizeof(NODE), 0, 0, 0, 0};
+#else
+static const NODE empty_node = {{'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '}, 
+                                sizeof(NODE) << 24, 0, 0, ((-(int)sizeof(NODE)) << 24) | 0xffffff, 0, 0, 0, 0};
+#endif
 #endif
 
 /*****************************************************

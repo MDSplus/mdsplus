@@ -629,6 +629,20 @@ static void trim_excess_nodes(TREE_INFO *info_ptr);
 static int one = 1;
 static int zero = 0;
 
+#ifdef _big_endian
+static TREE_HEADER *HeaderOut(TREE_HEADER *hdr)
+{
+  TREE_HEADER out = *hdr;
+  char flags = (hdr->sort_children ? 1 : 0) | (hdr->sort_members ? 2 : 0);
+  *(char *)&out = flags;
+  SwapBytesInt((char *)&out.free);
+  SwapBytesInt((char *)&out.tags);
+  SwapBytesInt((char *)&out.externals);
+  SwapBytesInt((char *)&out.nodes);
+  return *out;
+}
+#endif
+
 int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
 {
   PINO_DATABASE **dblist = (PINO_DATABASE **)dbid;
@@ -697,7 +711,11 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
       if (ntreef)
       {
         size_t num;
+#ifdef _big_endian
+        num = fwrite(HeaderOut(info_ptr->header),512,header_pages,ntreef);
+#else
         num = fwrite(info_ptr->header,512,header_pages,ntreef);
+#endif
         if (num != header_pages) goto error_exit;
         num = fwrite(info_ptr->node,512,node_pages,ntreef);
         if (num != node_pages) goto error_exit;
