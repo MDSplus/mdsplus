@@ -585,12 +585,9 @@ static SOCKET ConnectToPort(char *host, char *service)
 #endif
   if (hp == NULL)
   {
-    unsigned int part1,part2,part3,part4;
-    if (sscanf(host,"%d.%d.%d.%d",&part1,&part2,&part3,&part4) == 4)
-    {
-      int addr = part1 * 0x1000000 + part2 * 0x10000 + part3 * 0x100 + part4; 
-      hp = gethostbyaddr((void *)&addr, 4, AF_INET);
-    }
+    int addr = inet_addr(host);
+    if (addr != INADDR_NONE)
+    hp = gethostbyaddr((void *) &addr, (int) sizeof(addr), AF_INET);
   }
   if (hp == NULL)
   {
