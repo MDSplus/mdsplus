@@ -18,9 +18,9 @@ OBJECTS = \
 	mkdir ../shlib
 
 clean :
-	- rm *.o
-	- rm ../shlib/libMdsShr.$(SHARE_TYPE)
-	- rm .depend
+	if (test -f *.o) then rm *.o; fi
+	if (test -f ../shlib/libMdsShr.$(SHARE_TYPE)) then rm ../shlib/libMdsShr.$(SHARE_TYPE); fi
+	if (test -f .depend) then rm .depend; fi
 
 depend : .depend
 

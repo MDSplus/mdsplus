@@ -1,11 +1,31 @@
+PARTS = mdsshr \
+	treeshr \
+	tdishr \
+	tditest \
+	xmdsshr \
+	dwscope \
+	mitdevices \
+	traverser \
+	mdslibidl \
+	mdstcpip
+
 all :
-	cd mdsshr ; make
-	cd treeshr ; make
-	cd tdishr ; make
-	cd tditest ; make
-	cd xmdsshr ; make
-	cd dwscope ; make
-	cd mitdevices ; make 
-	cd traverser ; make
-	cd mdslibidl ; make
-	cd mdstcpip ; make
+	cdir=`pwd`; \
+        for dir in $(PARTS) ; do\
+	  if (test -d $${dir}) then \
+	    cd $${dir};\
+	    make;\
+	    cd $$cdir;\
+          fi;\
+	done
+
+clean :
+	cdir=`pwd`; \
+	for dir in $(PARTS) ; do\
+	  if (test -d $${dir}) then \
+	    cd $${dir};\
+	    make clean;\
+	    cd $$cdir;\
+          fi;\
+	done
+
