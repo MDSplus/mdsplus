@@ -467,7 +467,7 @@ public class K3115Setup
     jPanel111.setLayout(gridLayout7);
     CH02panel.setLayout(flowLayout110);
     CH02panel.setBorder(BorderFactory.createLineBorder(Color.gray,1));
-    CH02panel.setPreferredSize(new Dimension(560, 140));
+    CH02panel.setPreferredSize(new Dimension(560, 150));
     timesCH02panel.setLayout(flowLayout18);
     voltagesCH02panel.setLayout(flowLayout111);
     jLabel19.setFont(new java.awt.Font("Dialog", 1, 11));
@@ -580,7 +580,7 @@ public class K3115Setup
     flowLayout115.setVgap(5);
     CH03panel.setLayout(flowLayout115);
     CH03panel.setBorder(BorderFactory.createLineBorder(Color.gray,1));
-    CH03panel.setPreferredSize(new Dimension(560, 140));
+    CH03panel.setPreferredSize(new Dimension(560, 150));
     flowLayout116.setAlignment(FlowLayout.LEFT);
     flowLayout116.setHgap(5);
     flowLayout116.setVgap(5);
@@ -600,7 +600,7 @@ public class K3115Setup
     flowLayout118.setVgap(5);
     CH04panel.setLayout(flowLayout119);
     CH04panel.setBorder(BorderFactory.createLineBorder(Color.gray,1));
-    CH04panel.setPreferredSize(new Dimension(560, 140));
+    CH04panel.setPreferredSize(new Dimension(560, 150));
     flowLayout119.setAlignment(FlowLayout.LEFT);
     flowLayout119.setHgap(5);
     flowLayout119.setVgap(5);
@@ -741,7 +741,7 @@ public class K3115Setup
     jLabel1114.setText("Range (Vpp) :");
     CH01panel.setLayout(flowLayout1119);
     CH01panel.setBorder(BorderFactory.createLineBorder(Color.gray,1));
-    CH01panel.setPreferredSize(new Dimension(560, 140));
+    CH01panel.setPreferredSize(new Dimension(560, 150));
     gridLayout10.setRows(3);
     gridLayout10.setVgap(0);
     jLabel1115.setText("CH 01 :");
@@ -814,7 +814,7 @@ public class K3115Setup
     flowLayout122.setAlignment(FlowLayout.RIGHT);
     CH05panel.setLayout(flowLayout11117);
     CH05panel.setBorder(BorderFactory.createLineBorder(Color.gray,1));
-    CH05panel.setPreferredSize(new Dimension(560, 140));
+    CH05panel.setPreferredSize(new Dimension(560, 150));
     flowLayout11114.setAlignment(FlowLayout.LEFT);
     flowLayout11114.setHgap(5);
     flowLayout11114.setVgap(5);
@@ -921,7 +921,7 @@ public class K3115Setup
     jLabel11116.setText("Range (Vpp) :");
     CH06panel.setLayout(flowLayout11118);
     CH06panel.setBorder(BorderFactory.createLineBorder(Color.gray,1));
-    CH06panel.setPreferredSize(new Dimension(560, 140));
+    CH06panel.setPreferredSize(new Dimension(560, 150));
     jLabel11117.setFont(new java.awt.Font("Dialog", 1, 11));
     jLabel11117.setPreferredSize(new Dimension(80, 15));
     jLabel11117.setHorizontalAlignment(SwingConstants.RIGHT);
