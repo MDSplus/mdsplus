@@ -19,7 +19,7 @@ typedef enum { none,
                statistics
              } LoggingType;
 
-typedef enum { build_table_begin,
+typedef enum { build_table_begin=1,
                build_table,
                build_table_end,
                display_checkin,
