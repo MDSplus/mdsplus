@@ -569,18 +569,19 @@ plain:		status = TdiData(&axis, &axis MDS_END_ARG);
 			else	status = TdiDtypeRange(&dk0, &dk1, out_ptr MDS_END_ARG);			/*plain indexes*/
 		}
 		else if (flag) {
-			if (k0 != 0) {
-				status = TdiAdd(list[1], &dk0, &tmp MDS_END_ARG); 			/*offset of xat0 or array bound*/
+			if (k0 != 0 && pwin) {
+			  	status = TdiSubtract(list[1], &dk0, &tmp MDS_END_ARG); 			/*offset of xat0 or array bound*/
 				status = TdiMap(&axis, &tmp, out_ptr MDS_END_ARG); 			/*straight mapping*/
 			}
 			else	status = TdiMap(&axis, list[1], out_ptr MDS_END_ARG);			/*straight mapping*/
 		}
 		else {
 			status = TdiBsearch(list[1], &window, pmode, out_ptr MDS_END_ARG);			/*lookup*/
+			if (k0 != 0 && status & 1) 
+                          status = TdiAdd(out_ptr, &dk0, out_ptr MDS_END_ARG);/*offset*/
 			if (status & 1) status = TdiMap(&tmp, out_ptr, out_ptr MDS_END_ARG);		/*unorder*/
-			if (k0 != 0 && status & 1) status = TdiSubtract(out_ptr, &dk0, out_ptr MDS_END_ARG);/*offset*/
 		}
-		if (status & 1 && k0 !=0) {
+		if (status & 1 && k0 !=0 && out_ptr != NULL && out_ptr->pointer != NULL && out_ptr->pointer->class == CLASS_A) {
 		        DESCRIPTOR_RANGE(range,0,0,0);
 			status = TdiSetRange(&range, out_ptr, out_ptr MDS_END_ARG);
 		}
