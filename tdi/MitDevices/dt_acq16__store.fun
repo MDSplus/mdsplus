@@ -48,8 +48,7 @@ public fun dt_acq16__store(as_is _nid, optional _method)
     _tries=0;
     while(_tries++ < 60) {
       _state = MdsValue('Dt200WriteMaster($, "getState")', _board);
-      _state = extract(len(_state)-13, 13, _state);
-      if (_state == "ST_POSTPROCESS") {
+      if (_state == "ACQ32:4 ST_POSTPROCESS") {
         wait(1.);
       } else {
         break;
@@ -59,8 +58,7 @@ public fun dt_acq16__store(as_is _nid, optional _method)
   }
 
   _state = MdsValue('Dt200WriteMaster($, "getState")', _board);
-  _state = extract(len(_state)-7, 7, _state);
-  if (_state != "ST_STOP") {
+  if (_state != "ACQ32:0 ST_STOP") {
     write(*, '%DT200ERR, board '//_board//' Device not triggered');
     Abort();
   }
@@ -146,9 +144,6 @@ public fun dt_acq16__store(as_is _nid, optional _method)
       if (_inc > 1) {
         _slope = IF_ERROR(SLOPE_OF(_clk), 0);
         if (_slope != 0) {
-
-          write (*, "building new dim with "//_slope);
-
           _start = (begin_of(_clk) != $missing) ? begin_of(_clk)+(_slope*_inc)/2. : $missing;
           _dim = make_dim(make_window(_lbound/_inc, _ubound/_inc, _trigger), make_range( _start,  *, _slope*_inc));
         } else {

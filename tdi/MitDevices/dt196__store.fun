@@ -142,7 +142,7 @@ public fun dt196__store(as_is _nid, optional _method)
       WRITE(*, "About to write channel "//_chan+1);
       write (*, size(_data));
 */
-      DevPutSignalNoBounds(_chan_nid, mdsvalue('Dt200GetVoltOffset($)', _board), MdsValue('Dt200GetVoltCoef($)', _board), _data, _dim);
+      DevPutSignalNoBounds(_chan_nid, mdsvalue('Dt196GetVoltOffset($)', _board), MdsValue('Dt196GetVoltCoef($)', _board), _data, _dim);
       tcl("show timer");
     }
   }

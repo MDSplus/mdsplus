@@ -53,7 +53,7 @@ public fun DT216__INIT(as_is _nid, optional _method)
   _clockSource = if_error(data(DevNodeRef(_nid, _DT200_CLOCK_SRC)), '');
   _clockFreq = if_error(data(DevNodeRef(_nid, _DT200_CLOCK_DIV)), 0);
 
-  MdsValue('Dt196Init($,$,$,$,$,$,$)', _board, _activeChans, _trigSource, _clockSource, _clockFreq, _preTrig, _postTrig);
+  MdsValue('Dt216Init($,$,$,$,$,$,$)', _board, _activeChans, _trigSource, _clockSource, _clockFreq, _preTrig, _postTrig);
   
   return(1);
 }
