@@ -109,7 +109,7 @@ short ArgLen(struct descrip *d)
     case DTYPE_USHORT  :
     case DTYPE_SHORT   :  len = sizeof(short); break;
     case DTYPE_ULONG   :  
-    case DTYPE_LONG    :  len = sizeof(long); break;
+    case DTYPE_LONG    :  len = sizeof(int); break;
     case DTYPE_FLOAT   :  len = sizeof(float); break;
     case DTYPE_DOUBLE  :  len = sizeof(double); break;
     case DTYPE_COMPLEX :  len = sizeof(float) * 2; break;
