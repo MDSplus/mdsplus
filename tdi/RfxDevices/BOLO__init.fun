@@ -59,6 +59,7 @@ write(*, "TEST 1");
 	    abort();
 	}
 
+/*
 
 	_trig = if_error( data(DevNodeRef(_nid, _N_TRIG_SOURCE)), (_status = 1) );
 	if(_status == 1)
@@ -67,7 +68,7 @@ write(*, "TEST 1");
 	    abort();
 	}
     
-
+*/
 
 	DevNodeCvt(_nid, _N_HOR_HEAD, ["USED", "NOT USED"],[1, 0], _hor_head = 0);
 

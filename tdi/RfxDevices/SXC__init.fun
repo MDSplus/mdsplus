@@ -1,20 +1,19 @@
-public fun XRAY__init(as_is _nid, optional _method)
+public fun SXC__init(as_is _nid, optional _method)
 {
 
-	private _K_CONG_NODES = 714;
+	private _K_CONG_NODES = 190;
 	private _N_HEAD = 0;
 	private _N_COMMENT = 1;
-	private _N_IP_ADDR_0 = 2;
-	private _N_IP_ADDR_1 = 3;
-	private _N_FREQUENCY = 4;
-	private _N_TRIG_MODE = 5;
-	private _N_TRIG_SOURCE = 6;
-	private _N_DURATION = 7;
-	private _N_HOR_HEAD = 8;
-	private _N_HEAD_POS = 9;
+	private _N_IP_ADDR = 2;
+	private _N_FREQUENCY = 3;
+	private _N_TRIG_MODE = 4;
+	private _N_TRIG_SOURCE = 5;
+	private _N_DURATION = 6;
+	private _N_HOR_HEAD = 7;
+	private _N_HEAD_POS = 8;
 	
 	private _K_NODES_PER_CHANNEL = 9;
-	private _N_CHANNEL_0 = 10;
+	private _N_CHANNEL_0 = 9;
 	private _N_CHAN_CHANNEL_ID = 1;
 	private _N_CHAN_AMP_TYPE = 2;
 	private _N_CHAN_GAIN = 3;
@@ -24,27 +23,19 @@ public fun XRAY__init(as_is _nid, optional _method)
 	private _N_CHAN_STATUS = 7;
 	private _N_CHAN_DATA = 8;
 	
-	private _K_CHANNELS	= 78;
-
+	private _K_CHANNELS	= 20;
 
 	_status = 0;
 
-	write(*, "XRAY 1");
+	write(*, "SXC 1");
 
-	_ip_addr_0 = if_error(data(DevNodeRef(_nid, _N_IP_ADDR_0)), "");
-	if( _ip_addr_0 == ""  )
+	_ip_addr = if_error(data(DevNodeRef(_nid, _N_IP_ADDR)), "");
+	if( _ip_addr == ""  )
 	{
-    	DevLogErr(_nid, "Invalid Crate IP specification rack 0");
+    	DevLogErr(_nid, "Invalid Crate IP specification rack");
 	    abort();
 	}
 
-
-	_ip_addr_1 = if_error(data(DevNodeRef(_nid, _N_IP_ADDR_1)), "");
-	if( _ip_addr_1 == "" )
-	{
-    	DevLogErr(_nid, "Invalid Crate IP specification rack 1");
-	    abort();
-	}
 
 
    	_freq = if_error( data(DevNodeRef(_nid, _N_FREQUENCY)), (_status = 1) );
@@ -70,7 +61,8 @@ public fun XRAY__init(as_is _nid, optional _method)
     	DevLogErr(_nid, "Invalid trigger time");
 	    abort();
 	}
-*/    
+*/
+    
 	DevNodeCvt(_nid, _N_FREQUENCY, [1000000,500000,250000,200000,100000,40000,20000,10000,5000],
 	                               [0,      1,     3,     4 ,    9,    24,   49,    99,   249], _reduction = 0);
 
@@ -101,7 +93,7 @@ public fun XRAY__init(as_is _nid, optional _method)
 		   }
 
 
-		  _id = TomoChanId( _i+1, _enabled, XrayChMapping() );
+		  _id = TomoChanId( _i+1, _enabled, SxcChMapping() );
 		  DevPut(_nid, _chan_nid + _N_CHAN_CHANNEL_ID, _id);            
 		  _chan_id = [_chan_id, _id];
 		
@@ -124,90 +116,40 @@ public fun XRAY__init(as_is _nid, optional _method)
 	}
 
 
-	write(*, "Initialize amplifire modules : ", _ip_addr_1);
+	write(*, "Initialize amplifire modules : ", _ip_addr);
 
-	_errors_0 = zero(_K_CHANNELS, 0);
-	_errors_1 = zero(_K_CHANNELS, 0);
+	_errors = zero(_K_CHANNELS, 0);
 
 
-/*
-Inizializzazione degli amplificatori
-Si procede Opera sempre sul rack 1 in quanto su questo
-rack e' installata la scheda GPIB
-*/
-	_cmd = 'MdsConnect("'//_ip_addr_1//'")';
-	_status = execute(_cmd);
+	write(*, "Initialize rack ", _ip_addr);
 	
-	if(_status != 0)
-	{
-	       _expr = "XrayHWInit(0, $, $, $, $, $, $)";  
-	
-	       _errors_0 = MdsValue(_expr, _chan_id, _gain_id, _filter_id , _trans_id, _detector_id, _bias_id, 0);
-
-	       _expr = "XrayHWInit(1, $, $, $, $, $, $)";  
-
-	       _errors_1 = MdsValue(_expr, _chan_id, _gain_id, _filter_id , _trans_id, _detector_id, _bias_id, 0);
-
-	       
-		MdsDisconnect();
-
-
-	}
-	else
-	{   	
-		
-		DevLogErr(_nid, "Cannot connect to VME rack 0 to perform amplifire model initialization");
-		abort();		
-	}
-
-
-	write(*, "Initialize rack ", _ip_addr_0);
-	
-	_cmd = 'MdsConnect("'//_ip_addr_0//'")';
+	_cmd = 'MdsConnect("'//_ip_addr//'")';
 	_status = execute(_cmd);
 
 
 	if(_status != 0)
 	{
+
+		_expr = "SxcHWInit(0, $, $, $, $, $, $)";  
+	
+	    _errors = MdsValue(_expr, _chan_id, _gain_id, _filter_id , _trans_id, _detector_id, _bias_id, 0);
+
 		
-		_expr = "XrayHwStartAcq(0, $, $, $, $)" ;  
-		MdsValue(_expr, _chan_id, _errors_0, _reduction, _trig_mode, 0);
+		_expr = "SxcHwStartAcq(0, $, $, $, $)" ;  
+		MdsValue(_expr, _chan_id, _errors, _reduction, _trig_mode, 0);
 		
 		MdsDisconnect();
 		
-		write(*, "Fine Initialize rack ", _ip_addr_0);
+		write(*, "Fine Initialize rack ", _ip_addr);
 	}
 	else
 	{   	
 		
-		DevLogErr(_nid, "Cannot connect to VME rack 0");
+		DevLogErr(_nid, "Cannot connect to VME rack");
 		abort();		
 	}
 
 
-	 write(*, "Initialize rack ", _ip_addr_1);
-
-	 _cmd = 'MdsConnect("'//_ip_addr_1//'")';
-	 _status = execute(_cmd);
-
- 
-	 if(_status != 0)
-     {
-	
-	   _expr = "XrayHwStartAcq(1, $, $, $, $)" ;  
-	   MdsValue(_expr, _chan_id, _errors_1, _reduction, _trig_mode, 0);
-   	   MdsValue(_expr);
-
-	   MdsDisconnect();
-
-	   write(*, "Fine Initialize rack ", _ip_addr_1);
-	 }
-	 else
-	 {   	
-	    DevLogErr(_nid, "Cannot connect to VME rack 1");
-	    abort();
-	 }
-                 
 	          
 	 for(_i = 0; _i < _K_CHANNELS; _i++)
 	 {
@@ -217,10 +159,7 @@ rack e' installata la scheda GPIB
 		if( TomoChanIsActive(_chan_id[_i]) )
 		{
 	
-		  if(TomoVmeRack(_chan_id[_i]) == 0)
-				DevPut(_nid, _chan_nid + _N_CHAN_STATUS, _errors_0[ _i ]);
-			  else
-				DevPut(_nid, _chan_nid + _N_CHAN_STATUS, _errors_1[ _i ]);  
+			DevPut(_nid, _chan_nid + _N_CHAN_STATUS, _errors[ _i ]);
 		}
      }
      return(1);
