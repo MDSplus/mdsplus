@@ -8,24 +8,24 @@ public class PropertiesEditor extends JDialog
 {
     JEditorPane text;
     String prFile;
-    
+
     public PropertiesEditor(JFrame owner, String propetiesFile)
     {
         super(owner);
         this.setTitle("jScope properties file editor : " + propetiesFile);
-        
+
         prFile = propetiesFile;
-        
+
         text = new JEditorPane();
         text.setEditable(true);
-        
+
         try
         {
             text.setPage("file:"+propetiesFile);
         }
         catch(IOException exc){}
-        
-        
+
+
         JScrollPane scroller = new JScrollPane();
         JViewport vp = scroller.getViewport();
         vp.add(text);
@@ -44,8 +44,8 @@ public class PropertiesEditor extends JDialog
                     try
                     {
                         text.write(new FileWriter(prFile));
- 		                JOptionPane.showMessageDialog(PropertiesEditor.this, 
- 		                                          "The changes will be effect the next time you restart jScope.",
+ 		                JOptionPane.showMessageDialog(PropertiesEditor.this,
+ 		                                          "The changes will take effect the next time you restart jScope.",
 		                                          "Info", JOptionPane.WARNING_MESSAGE);
                     }
                     catch (IOException exc){exc.printStackTrace();};
