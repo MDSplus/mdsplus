@@ -1062,6 +1062,7 @@ object radioBox : XmRadioBox widget {
         XmNheight = 32;
     };
     controls {
+         managed XmToggleButton r_w_toggle;
          managed XmToggleButton r_o_toggle;
          managed XmToggleButton edit_toggle;
     };
@@ -1074,6 +1075,18 @@ object r_o_toggle : XmToggleButton widget {
         XmNlabelString = compound_string("Read Only");
         XmNwidth = 88;
         XmNheight = 26;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object r_w_toggle : XmToggleButton widget {
+    arguments {
+        XmNlabelString = compound_string("Read Write");
+        XmNwidth = 88;
+        XmNheight = 26;
+        XmNset = true;
     };
     controls {
     };
