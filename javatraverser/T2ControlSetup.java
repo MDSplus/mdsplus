@@ -88,7 +88,7 @@ public class T2ControlSetup extends DeviceSetup
 			tempString[1] = "Offset";
 			deviceTable1.setColumnNames(tempString);
 		}
-		deviceTable1.setNumRows(64);
+		deviceTable1.setNumRows(96);
 		deviceTable1.setOffsetNid(4);
 		deviceTable1.setLabelString("In Calibration");
 		getContentPane().add(deviceTable1);
