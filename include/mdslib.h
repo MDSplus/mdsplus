@@ -33,6 +33,6 @@ int descr (int *dtype, void *data, int *dim1, ...);
 SOCKET MdsConnect(char *host);
 int MdsValue(char *expression, ...); /**** NOTE: NULL terminated argument list expected ****/
 
-SOCKET mdsSocket=INVALID_SOCKET;
+extern SOCKET mdsSocket;
 
 #endif

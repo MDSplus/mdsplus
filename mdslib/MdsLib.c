@@ -18,7 +18,7 @@ bottom of this file for configuring fortran entry points.
 #include <descrip.h>
 #endif
 #include "mdslib.h"
-
+SOCKET mdsSocket=INVALID_SOCKET;
 #ifndef _CLIENT_ONLY
 #ifdef __VMS
 extern int MDS$OPEN();
