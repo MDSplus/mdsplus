@@ -18,15 +18,9 @@ public fun chs_a14__init(as_is _nid, optional _method)
         ((_stp_polarity != 0) << 12) |
         ((_str_polarity != 0) << 13) |
         ((_clk_polarity != 0) << 14);
-  _bytes_written = 0;
-  _VME_UDATA    = 0x00090000;
-  _VME_D16      = 0x00400000;
-  _VME_BS_LWORD = 0x03000000;
-  _VME_DENSE    = 0x10000000;
-  _mode = _VME_UDATA | _VME_D16 | _VME_BS_LWORD | _VME_DENSE;
-  _settings = zero(128,0w);
-  MdsVme->PioRead("/dev/vmp0",val(0x106e0000),val(_mode),val(128),_settings);
-  _settings = [_settings[0:(8+_dignum*16)],word(_sr & 0xffff),_settings[(10+_dignum*16):(16+_dignum*16)],
-               word(_sr >> 16),_settings[(18+_dignum*16) : *]];
-  return(MdsVme->PioWrite("/dev/vmp0",val(0x106e0000),val(_mode),val(128),_settings));
+  _settings = chs_vme_readwords(0x106e0000,128);
+  write(*,"settings were ",_settings);
+  _nsettings = [_settings[0:(34+_dignum*16)],word(_sr & 0xffff),_settings[(35+_dignum*16) : *]];
+  write(*,"settings will be ",_nsettings);
+  return(chs_vme_writewords(0x106e0000,_settings));
 }
