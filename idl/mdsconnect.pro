@@ -9,7 +9,7 @@ end
 Function MdsIPImage
 ;Path to shared library
   case !version.os of
-    'vms' : return,'mdsipshr'
+    'vms' : if float(strmid(!version.release,0,3)) ge 5.2 then return,'mdsipshr_ieee' else return,'mdsipshr'
     'windows' : return,'mdsipshr'
 	'Win32'	: return,'mdsipshr'
     'AIX' : return,'libMdsIpShr.lib'
@@ -17,10 +17,9 @@ Function MdsIPImage
     'OSF' : return,'libMdsIpShr.so'
     'sunos' : return,'libMdsIpShr.so'
     'hp-ux' : begin
-      a=getenv('MDS_SHLIB_PATH')
-      if (a eq '') then a = '/usr/local/lib'
-      return,a+'/libMdsIpShr.sl'
-    end
+              if getenv('MDS_SHLIB_PATH') eq '' then setenv_,'MDS_SHLIB_PATH=/usr/lib'
+              return,getenv('MDS_SHLIB_PATH')+'/libMdsIpShr.sl'
+              end
     'MacOS': return,!dir+'libMdsIpShr.lib'
     'linux': return,'/home_ejet/ntcdemo/twf/mdsplus/shlib/libMdsIpShr.so'
     else  : message,'MDS is not supported on this platform',/IOERROR 
@@ -72,6 +71,7 @@ pro Mds$SendArg,sock,n,idx,arg
   s = size(arg)
   ndims = s(0)
   dims = lonarr(8)
+  arg_saved=''
   if ndims gt 0 then for i=1,ndims do dims(i-1) = s(i)
   dtype = s(ndims + 1)
   dtypes =  [0,2,7,8,10,11,12,14,0]
@@ -79,18 +79,23 @@ pro Mds$SendArg,sock,n,idx,arg
   length = lengths(dtype)
   dtype = dtypes(dtype)
   if dtype eq 14 then begin
-    if (n_elements(arg) gt 1) then begin
-      message,'Argument must be a scalar string',/continue
-      arg=arg[0]
-    endif
-    length = strlen(arg)
-    argByVal = 1b 
+    if (ndims gt 0) then begin
+      lengths = strlen(arg)
+      length = max(lengths)
+      arg_saved = arg
+      arg = string(bytarr(length * n_elements(arg_saved))+32b)
+      for i=0,n_elements(arg_saved)-1 do begin
+        strput,arg,(arg_saved[[i]])[0],i*length
+      endfor
+    endif else length = strlen(arg)
+    argByVal = 1b
 ;;;    if !version.os eq 'windows' then argByVal = 0b  ; removed as
 ;;;    part of CVS update by Jeff Schachter 1998.08.21
   endif else begin
     argByVal = 0b
   endelse
   x = call_external(MdsIPImage(),MdsRoutinePrefix()+'SendArg',sock,idx,dtype,n,length,ndims,dims,arg,value=[1b,1b,1b,1b,1b,1b,0b,argByVal])
+  if (n_elements(arg_saved) gt 1) then arg=arg_saved
   return
 end
 
