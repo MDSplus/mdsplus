@@ -68,7 +68,7 @@ install:
 	for dir in $(PARTS) ; do\
 	  cd $${dir}; make install; cd $$cdir;\
 	done
-	tar cf - --exclude CVS $(MISC_PARTS) | (cd @exec_prefix@; tar xf -)
+	tar cf - @TAR_EXCLUDE@ CVS $(MISC_PARTS) | (cd @exec_prefix@; tar xf -)
 	(cd @exec_prefix@; chmod -R 755 $(MISC_PARTS))
 
 BINARIES = bin etc lib uid \
