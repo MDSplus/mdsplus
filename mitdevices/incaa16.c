@@ -62,8 +62,7 @@ int incaa16___arm(struct descriptor *niddsc, InArmStruct *setup)
   csreg.recirc = csreg.mode = 1;
   pio(28,0,0);
   {
-    float five_usec = 5E-6;
-    //    DEV$WAIT(&five_usec);
+    DevWait((float)5E-6);
   }
   pio(28,0,0);                /* Initialize */
   pio(16,2,(int *)&csreg);

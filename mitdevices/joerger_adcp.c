@@ -42,7 +42,7 @@ int joerger_adcp___store(struct descriptor *nid_dsc, InStoreStruct *setup)
   if (setup->no_trig) {
     float wait = 10E-6*16;
     pio(26, 0, 0);
-    //    return_on_error(DEV$WAIT(&wait));
+    return_on_error(DevWait(wait));
   }
   for (chan=0; chan<16; chan++)
     pio(0,chan,&buffer[chan]);

@@ -239,7 +239,7 @@ static unsigned int Input(InStoreStruct *setup, int code)
   int status;
   unsigned short i;
   AccessTraq(setup, code,16);
-  //  DEV$WAIT(&(float).005);
+  DevWait((float).005);
   pio(0,0,&i,16);
   return i;
 }
@@ -250,7 +250,7 @@ static int AccessTraq(InStoreStruct *setup, int data,int memsize)
   pio(17,0,&data,memsize);
   for (try = 0;(try < 20) && (!(CamQ(0)&1)) && (status &1);try++) 
   {
-    //    DEV$WAIT(&(float).0005);
+    DevWait((float).0005);
     pio(17,0,&data,memsize);
   }
   return status;

@@ -104,7 +104,7 @@ int l8210___store(struct descriptor *niddsc_ptr, InStoreStruct *setup)
   clock_out_nid = setup->head_nid + L8210_N_CLOCK_OUT;
   pio(26,0,0);
   wait_time = setup->memories*30E-3;
-  //  DEV$WAIT(&wait_time);
+  DevWait(wait_time);
   pio(8,0,0);
   if ((CamXandQ(0)&1) == 0) return DEV$_NOT_TRIGGERED;
   return_on_error(ReadSetup(setup, &setup->memories, setup->header, &samples_per_channel,

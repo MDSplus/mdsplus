@@ -3,6 +3,7 @@
 #include <mitdevices_msg.h>
 #include <treeshr.h>
 #include <ncidef.h>
+#include <time.h>
 
 extern int TdiData();
 extern int CamX();
@@ -83,5 +84,14 @@ int DevNid(int *nid_in, int *nid_out)
   return status;
 }
   
-  
+int DevWait(float time)
+{
+  struct timespec req = {(time_t)time,(long)((time - (long)time)*1E9)};
+  struct timespec rem = {0,0};
+  while (nanosleep(&req,&rem) == -1 && (rem.tv_sec != 0 || rem.tv_nsec != 0))
+  {
+    req = rem;
+  }
+  return 1;
+}
   

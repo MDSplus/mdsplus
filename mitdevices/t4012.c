@@ -111,7 +111,7 @@ arm:
     pio(0,0,&sampling);
     for (try = 0;(try < 30) && (!(CamQ(0)&1)) && (status &1);try++) 
     {
-      //      DEV$WAIT(&(float).001);
+      DevWait((float).001);
       pio(0,0,&sampling);
     }
     if (try == 30) return DEV$_CAM_NOSQ;
@@ -268,7 +268,7 @@ int t4012___store(int *niddsc, InStoreStruct *setup)
             chan_nid = 0;
           }
           else
-            // DEV$WAIT(&(float).005);
+            DevWait((float).005);
 
           chan_nid = CNID(i,HEAD);
           *lbound = (DevLong(&CNID(i,STARTIDX),(int *)lbound) & 1) ? min(idxmax,max(idxmin,*lbound)) : idxmin;
@@ -312,7 +312,7 @@ static unsigned int Input(InStoreStruct *setup,int code)
   int status;
   unsigned short i;
   AccessTraq(setup,code,16,0,0);
-  // DEV$WAIT(&(float).005);
+  DevWait((float).005);
   pio(0,0,&i);
   return i;
 }
@@ -358,7 +358,7 @@ static int AccessTraq(InStoreStruct *setup, int data,int memsize,void *arglist,i
     if (arglist && !called)
       called = 1 | LibCallg(arglist,routine);
     else
-      // DEV$WAIT(&(float).001);
+      DevWait((float).001);
     piomem(17,0,&data,memsize);
   }
   if (try == 30) status = DEV$_CAM_NOSQ;

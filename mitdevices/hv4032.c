@@ -192,14 +192,14 @@ int hv4032___store(struct descriptor *niddsc, InStoreStruct *setup)
   pio(9,0,0);
   pio(26,1,0);
   send_hv2(0,16,4);
-  //  DEV$WAIT(&(float).01);
+  DevWait((float).01);
   for (i=0; i < HV4032_K_MAX_CHANNELS; i++) {
     int ivolt;
     unsigned short attempts;
     for(ivolt=0,attempts=0; ivolt%16 != 3 && attempts < 40; attempts++) {
       pio(2,0,&ivolt);
       settings[i] = (ivolt-3)/16;
-      //      DEV$WAIT(&(float).005);
+      DevWait((float).005);
     }
     if (attempts == 40) settings[i] = -1;
   }
