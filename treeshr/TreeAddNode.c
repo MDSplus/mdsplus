@@ -1,5 +1,7 @@
 #ifdef _WIN32
 #include <io.h>
+#define write _write
+#define lseek _lseek
 #endif
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -797,19 +799,15 @@ static int TreeWriteNci(TREE_INFO *info)
   if (info->header->nodes > info->edit->first_in_mem)
   {
     int numnodes = info->header->nodes - info->edit->first_in_mem;
-    int num;
-    status = TreeFAILURE;
-#ifdef _WIN32
-    _lseek(info->nci_file->put,info->edit->first_in_mem * sizeof(struct nci),SEEK_SET);
-    num = _write(info->nci_file->put,info->edit->nci,numnodes * sizeof(NCI))/sizeof(NCI);
-#else
-    lseek(info->nci_file->put,info->edit->first_in_mem * sizeof(struct nci),SEEK_SET);
-    num = write(info->nci_file->put,info->edit->nci,numnodes * sizeof(NCI))/sizeof(NCI);
-#endif
-    if (num == numnodes)
+    int i;
+    char nci_bytes[42];
+    for (i = 0; i < numnodes && (status & 1); i++)
     {
-      info->edit->first_in_mem = info->header->nodes;
-      status = TreeNORMAL;
+      lseek((info->nci_file->put,info->edit->first_in_mem + i) * sizeof(nci_bytes),SEEK_SET);
+      TreeSerializeNciOut(&info->edit->nci[i],nci_bytes);
+      status = (write(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
+      if (status & 1)
+        info->edit->first_in_mem++;
     }
   }
   return status;

@@ -313,7 +313,7 @@ int TreeOpenNciW(TREE_INFO *info, int tmpfile)
   {
     if (info->edit)
     {
-    info->edit->first_in_mem = lseek(info->nci_file->put,0,SEEK_END)/sizeof(NCI);
+    info->edit->first_in_mem = lseek(info->nci_file->put,0,SEEK_END)/42;
     }
   /**********************************************
    Set up the RABs for buffered reads and writes
