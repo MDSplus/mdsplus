@@ -63,7 +63,8 @@ int   mdsdcl_spawn(			/* Return: status		*/
     static DYNAMIC_DESCRIPTOR(dsc_prompt);
     static DYNAMIC_DESCRIPTOR(dsc_cli);
 #if !defined(vms)
-    char  cmdstring[256];
+    char  cmdstring[256] = "";
+    struct descriptor cmdstring_d = {0,DTYPE_T,CLASS_S,0};
 #ifndef _WIN32
     pid_t  pid,xpid;
 #endif
@@ -129,62 +130,9 @@ int   mdsdcl_spawn(			/* Return: status		*/
         k += sprintf(cmdstring+k," <%s",dsc_input.dscA_pointer);
     if (dsc_output.dscA_pointer)
         k += sprintf(cmdstring+k," >%s",dsc_output.dscA_pointer);
-#ifndef _WIN32
-    signal(SIGCHLD,notifyFlag ? child_done : SIG_DFL);
-    pid = fork();
-    if (!pid)
-       {		/*-------------> child process: execute cmd	*/
-        static char  *arglist[4];
-		char  *p;
-
-        printf("\nChild process: cmdstring='%s'\n",cmdstring);
-        arglist[0] = nonblank(cmdstring);
-        p = blank(arglist[0]);
-        if (p)
-           {
-            *p = '\0';
-            p = nonblank(p+1);
-           }
-        arglist[1] = p;
-        printf("  arglist[0] = %s\n",arglist[0]);
-        printf("  arglist[1] = %s\n",arglist[1]?arglist[1]:"Null");
-        printf("\n");
-        sts = execvp(arglist[0],arglist);
-
-        printf("\nChild process:  try again ...\n");
-        arglist[3] = 0;
-        arglist[2] = arglist[1];
-        arglist[1] = arglist[0];
-        arglist[0] = "sh";
-        printf("  arglist[0] = %s\n",arglist[0]);
-        printf("  arglist[1] = %s\n",arglist[1]?arglist[1]:"Null");
-        printf("  arglist[2] = %s\n",arglist[2]?arglist[2]:"Null");
-        printf("\n");
-        sts = execvp("/bin/sh",arglist);
-
-        fprintf(stderr,"\n+++ *ERR* should never have gotten here!\n");
-        perror("from inside mdsdcl_spawn()");
-        fprintf(stderr,"\n");
-        exit(1);
-       }
-			/*-------------> parent process ...		*/
-    if (pid == -1)
-       {
-        fprintf(stderr,"Error %d from fork()\n",errno);
-        return(0);
-       }
-    if (waitFlag)
-       {
-        for ( ; ; )
-           {
-            xpid = wait(&sts);
-            if (xpid == pid)
-                break;
-           }
-       }
-#else
-	sts = system(cmdstring) == 0;
+    cmdstring_d.dscW_length = k;
+    cmdstring_d.dscA_pointer = cmdstring;
+    sts = LibSpawn(&cmdstring_d,waitFlag,notifyFlag);
 #endif
-#endif
-    return(sts);
+    return(sts == 0);
    }
