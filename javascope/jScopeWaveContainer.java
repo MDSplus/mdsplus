@@ -13,8 +13,7 @@ import java.awt.Component;
 import java.awt.FileDialog;
 import java.io.PrintWriter;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Vector;
+import java.util.*;
 import java.io.*;
 import javax.swing.*;
 //import java.awt.print.*;
@@ -343,9 +342,16 @@ class jScopeWaveContainer extends WaveformContainer
                 Point p = getComponentPosition(w);
 	            if(w.wi.isAddSignal())
 	            {
-	                String er = ((MdsWaveInterface)w.wi).getErrorString(this.brief_error);
+	                String er;
+	                if(w.wi.error != null)
+	                    er = w.wi.error;
+	                else
+	                     er = ((MdsWaveInterface)w.wi).getErrorString(this.brief_error);
 	                if(er != null)
-		                JOptionPane.showMessageDialog(this, er, 
+//		                JOptionPane.showMessageDialog(this, er, 
+//		                                            "alert", 
+//		                                            JOptionPane.ERROR_MESSAGE);
+		                jScope_1.ShowMessage(this, er, 
 		                                            "alert", 
 		                                            JOptionPane.ERROR_MESSAGE);
 	                w.wi.setAddSignal(false);
@@ -362,9 +368,17 @@ class jScopeWaveContainer extends WaveformContainer
         if(browse_sig != null)
             browse_sig.show();
         else
-		  JOptionPane.showMessageDialog(null, "Signals browser not yet implemented on this data server" , "alert", 
-		                                JOptionPane.ERROR_MESSAGE); 
-            
+        {
+          String msg;
+          if(this.getBrowseUrl() == null)
+            msg = "Signals browser not yet implemented on this data server";
+          else
+          {
+            msg = "jScope is unable to locate the signal server page at " + this.getBrowseUrl();
+            msg = msg + "\nModify browse_url property for this data server in jScope.properties file.";
+		  }
+		  JOptionPane.showMessageDialog(null, msg , "alert", JOptionPane.ERROR_MESSAGE); 
+        }    
     }
 
     public void ShowProfileDialog(jScopeMultiWave wave)
@@ -792,182 +806,122 @@ class jScopeWaveContainer extends WaveformContainer
     }
 
 
-    public String FromFile(ReaderConfig in, String prompt) throws IOException
+    public void FromFile(Properties pr, String prompt) throws IOException
     {        
-	    String str;
-	    String error = null;
+	    String prop;
 	    int read_rows[] = {0,0,0,0};
 
-     
-            in.reset();
-	    while((str = in.readLine()) != null) 
+	    prop = pr.getProperty(prompt+".columns");
+	    if(prop == null)
+	        throw(new IOException("missing columns keyword"));
+	    else
 	    {
-	        //if(str.trim().length() != 0 && str.indexOf("Scope") != 0) 
-	        //{
-		    //    return 1;
-	        //}
-	    	    
-	        if(str.indexOf("Scope.columns:") == 0) {
-		        int len = "Scope.columns: ".length();
-		        columns = new Integer(str.substring(len, str.length())).intValue();
-		        pw = new float[MAX_COLUMN];
-		        continue;
-	        }
+		    columns = new Integer(prop).intValue();
+		    pw = new float[MAX_COLUMN];
+	    }
+	     
+	    title = pr.getProperty(prompt+".title");
 	    
-	        if(str.indexOf("Scope.title:") == 0) {
-		        title = str.substring("Scope.title: ".length(), str.length());
-		        continue;
-	        }
-
-	        if(str.indexOf("Scope.update_event:") == 0) {
-		        event = str.substring("Scope.update_event: ".length(), str.length());
-		        continue;
-	        }
-
-	        if(str.indexOf("Scope.print_event:") == 0) {
-		        print_event = str.substring("Scope.print_event: ".length(), str.length());
-		        continue;
-	        }
-
-	        if(str.indexOf("Scope.fast_network_access:") != -1)
-	        {
-		        fast_network_access =  new Boolean(str.substring("Scope.fast_network_access: ".length(), 
-										str.length())).booleanValue();
-		        continue;		
-	        }
+	    event = pr.getProperty(prompt+".update_event");
 	    
-	        if(str.indexOf("Scope.data_server_address:") != -1)
-	        {
-	            server_item = new DataServerItem();
-	            String server_name;
-		        server_name = str.substring("Scope.data_server_address: ".length(), str.length());
-                int idx = server_name.indexOf("|");
-                if(idx != -1)
-                {
-                    String user = server_name.substring(0, idx);
-                    if(!user.equals(System.getProperty("user.name")))
-                        server_name = System.getProperty("user.name") + server_name.substring(idx, server_name.length());
-                }
-		        server_item.data_server = server_name;
-		        continue;	
-	        }
-
-	        if(str.indexOf("Scope.data_server_browse_class:") != -1)
-	        {
-                if(server_item == null) continue;
-		        server_item.browse_class = str.substring("Scope.data_server_browse_class: ".length(), str.length());
-		        continue;	
-	        }
-
-	        if(str.indexOf("Scope.data_server_browse_url:") != -1)
-	        {
-                if(server_item == null) continue;
-		        server_item.browse_url = str.substring("Scope.data_server_browse_url: ".length(), str.length());
-		        continue;	
-	        }
-					
-					
-	        if(str.indexOf("Scope.rows_in_column_") != -1)
-	        {
-		        int len;
-		        int c = new Integer(str.substring("Scope.rows_in_column_".length(), len = str.indexOf(":"))).intValue() - 1;
-		        int r = new Integer(str.substring(len + 2, str.length())).intValue();
-
-		        if(c > MAX_COLUMN)
-		        {
-		            error = "Column number exceed max number of column "+ MAX_COLUMN;
-		            break;
-		        }
-		        read_rows[c] = r;
-		        continue;		
-	        }
+	    print_event = pr.getProperty(prompt+".print_event");
 	    
-	        if(str.indexOf("Scope.vpane_") != -1)
-	        {
-		        int len;
-		        int c = new Integer(str.substring("Scope.vpane_".length(), len = str.indexOf(":"))).intValue() - 1;
-		        int w = new Integer(str.substring(len + 2, str.length())).intValue();
-		        if(c > columns)
-		        {
-		            error = "Column number exceds number of column defined in file";
-		            break;
-		        }
-		        pw[c] = (float)w;
-		        continue;		
-	        }		
-
-	        if(str.indexOf("Scope.reversed:") != -1)
-                {
-                   reversed = new Boolean(str.substring("Scope.reversed: ".length(), str.length())).booleanValue();
-                }
-	    
-	        if(str.indexOf("Scope.global_1_1") == 0)
-	        {
-		        int len = str.indexOf(":") + 2;
-
-		        if(str.indexOf(".xmax:") != -1)
-		        {
-		            def_vals.xmax = str.substring(len, str.length());
-		            continue;		
-		        }
-		        if(str.indexOf(".xmin:") != -1)
-		        {
-		            def_vals.xmin = str.substring(len, str.length());
-		            continue;		
-		        }
-				
-		        if(str.indexOf(".x_label:") != -1)
-		        {
-		            def_vals.xlabel = str.substring(len, str.length());
-		            continue;		
-		        }
-		        if(str.indexOf(".ymax:") != -1)
-		        {
-		            def_vals.ymax = str.substring(len, str.length());
-		            continue;		
-		        }
-		        if(str.indexOf(".ymin:") != -1)
-		        {
-		            def_vals.ymin = str.substring(len, str.length());
-		            continue;		
-		        }
-		        if(str.indexOf(".y_label:") != -1)
-		        {
-		            def_vals.ylabel = str.substring(len, str.length());
-		            continue;		
-		        }
-		        if(str.indexOf(".experiment:") != -1)
-		        {
-		            def_vals.experiment_str = str.substring(len, str.length());
-		            continue;		
-		        }
-		        if(str.indexOf(".title:") != -1)
-		        {
-		            def_vals.title_str = str.substring(len, str.length());
-		            continue;		
-		        }
-		        if(str.indexOf(".shot:") != -1)
-		        {
-		            def_vals.shot_str = str.substring(len, str.length());
-		            if(def_vals.shot_str.indexOf("_shots") != -1) 
-			        def_vals.shot_str  =  def_vals.shot_str.substring(def_vals.shot_str.indexOf("[")+1, def_vals.shot_str.indexOf("]")); 
-//aa		    def_vals.shots = main_scope.evaluateShot(def_vals.shot_str);
-                    def_vals.is_evaluated = false;
-                    continue;		
-		        }		
-		        if(str.indexOf(".event:") != -1)
-		        {
-		            def_vals.upd_event_str = str.substring(len, str.length());
-		            continue;		
-		        }
-		        if(str.indexOf(".default_node:") != -1)
-		        {
-		            def_vals.def_node_str = str.substring(len, str.length());
-		            continue;		
-		        }   
-            }	    	           
+	    prop = pr.getProperty(prompt+".fast_network_access");
+	    if(prop != null)
+	    {
+		    fast_network_access =  new Boolean(prop).booleanValue();
 	    }
 	    
+	    prop = pr.getProperty(prompt+".data_server_address");
+	    if(prop != null)
+	    {
+	        server_item = new DataServerItem();
+	        String server_name;
+		    server_name = prop;
+            int idx = server_name.indexOf("|");
+            if(idx != -1)
+            {
+                String user = server_name.substring(0, idx);
+                if(!user.equals(System.getProperty("user.name")))
+                    server_name = System.getProperty("user.name") + server_name.substring(idx, server_name.length());
+            }
+		    server_item.data_server = server_name;
+        }
+        
+        if(server_item != null)
+        {
+		    server_item.browse_class = pr.getProperty(prompt+".data_server_browse_class");
+        }
+        
+        if(server_item != null)
+        {
+		    server_item.browse_url = pr.getProperty(prompt+".data_server_browse_url");
+        }
+
+        for(int c = 1; c <= MAX_COLUMN; c++)
+        {
+            prop = pr.getProperty(prompt+".rows_in_column_"+c);
+            if(prop == null)
+            {
+                if(c == 1)
+	                throw(new IOException("missing rows_in_column_1 keyword"));
+                break;
+            }
+		    int r = new Integer(prop).intValue();
+		    read_rows[c - 1] = r;
+        }
+		
+		if(columns > 1)
+		{
+		    for(int c = 1; c < columns; c++)
+		    {
+                prop = pr.getProperty(prompt+".vpane_"+c);
+                if(prop == null)
+                {
+	                throw(new IOException("missing vpan_"+ c +" keyword"));
+                }
+		        int w = new Integer(prop).intValue();
+		        pw[c-1] = (float)w;
+		    }
+		}
+						    
+	    prop = pr.getProperty(prompt+".reversed");
+	    if(prop != null)
+	    {
+		    reversed =  new Boolean(prop).booleanValue();
+	    }
+	    
+        def_vals.xmax = pr.getProperty(prompt+".global_1_1.xmax");
+        
+        def_vals.xmin = pr.getProperty(prompt+".global_1_1.xmin");
+        
+        def_vals.xlabel = pr.getProperty(prompt+".global_1_1.x_label");
+        
+        def_vals.ymax = pr.getProperty(prompt+".global_1_1.ymax");
+        
+        def_vals.ymin = pr.getProperty(prompt+".global_1_1.ymin");
+        
+        def_vals.ylabel = pr.getProperty(prompt+".global_1_1.y_label");
+        
+        def_vals.experiment_str = pr.getProperty(prompt+".global_1_1.experiment");
+        
+        def_vals.title_str = pr.getProperty(prompt+".global_1_1.title");
+        
+	    def_vals.upd_event_str = pr.getProperty(prompt+".global_1_1.event");
+	    
+	    def_vals.def_node_str = pr.getProperty(prompt+".global_1_1.default_node");
+        
+        prop = pr.getProperty(prompt+".global_1_1.shot");
+        if(prop != null)
+        {
+		    if(prop.indexOf("_shots") != -1) 
+			    def_vals.shot_str  =  prop.substring(prop.indexOf("[")+1, prop.indexOf("]")); 
+            else
+		        def_vals.shot_str = prop;
+            
+            def_vals.is_evaluated = false;
+        }
+	    	    
 	    ResetDrawPanel(read_rows);
 	    jScopeMultiWave w;
 	    
@@ -976,10 +930,8 @@ class jScopeWaveContainer extends WaveformContainer
 		    for(int r = 0; r < read_rows[c]; r++)
 		    {
 		        w = (jScopeMultiWave)getGridComponent(k);
-			    ((MdsWaveInterface)w.wi).FromFile(in, "Scope.plot_"+(r+1)+"_"+(c+1));
-//                setColor(wave_panel.waves[k].wi);
+			    ((MdsWaveInterface)w.wi).FromFile(pr, "Scope.plot_"+(r+1)+"_"+(c+1));
 			    k++;
-			    //setup.SetStatusLabel("Load wave configuration column "+(c+1)+" row "+(r+1));	    
 		    }
 		}
 
@@ -989,16 +941,9 @@ class jScopeWaveContainer extends WaveformContainer
 	    for(int i = 0; i < 4; i++)
 	        if(read_rows[i] != 0)
 		        r_columns = i + 1;
-
-	    if(pw == null)
-	    {
-	        pw = new float[MAX_COLUMN];
-	        columns = 0;
-        }
         
 	    //Silent file configuration correction
 	    //possible define same warning information	    	    
-
 	    if(columns != r_columns)
 	    {			
 		    columns = r_columns;
@@ -1016,12 +961,9 @@ class jScopeWaveContainer extends WaveformContainer
 		            pw[0] = Math.abs((float)(((pw[0] == 0) ? 1000 : pw[0])/1000.));
 	    }
 	
-	    if(error == null)
-	        UpdateHeight();
+	    UpdateHeight();
 	    
-	    return error;
     }
-
 
     public void UpdateHeight()
     {
@@ -1196,27 +1138,11 @@ class jScopeWaveContainer extends WaveformContainer
                     } 
                     catch (Exception e)
                     {
-		                JOptionPane.showMessageDialog(this, "Can't create browse signal : "+e, 
-		                                            "alert", 
-		                                            JOptionPane.ERROR_MESSAGE);
+		   //             JOptionPane.showMessageDialog(this, "Can't create browse signal : "+e, 
+		   //                                         "alert", 
+		   //                                         JOptionPane.ERROR_MESSAGE);
                         browse_sig = null;
                     }
-                    /*
-                    catch (InstantiationException e)
-                    {
-		                JOptionPane.showMessageDialog(this, "Can't create browse signal : "+e, 
-		                                            "alert", 
-		                                            JOptionPane.ERROR_MESSAGE);
-                        browse_sig = null;
-                    }         
-                    catch (IllegalAccessException e)
-                    {
-		                JOptionPane.showMessageDialog(this, "Can't create browse signal : "+e, 
-		                                            "alert", 
-		                                            JOptionPane.ERROR_MESSAGE);
-                        browse_sig = null;
-                    } 
-                    */
                 } else {
                     browse_sig = null;
                 }

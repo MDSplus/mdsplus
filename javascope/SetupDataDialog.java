@@ -850,18 +850,18 @@ import javax.swing.event.*;
 	    p2.add(lab_y);		 	
         p1.add(p2);
         
-	    y_expr = new JTextArea(10,50);
-	    y_expr.setBorder(BorderFactory.createLoweredBevelBorder());
-	    p1.add(y_expr);
+	    y_expr = new JTextArea(50, 20);
+ 		JScrollPane scroller = new JScrollPane(y_expr); 
+	    p1.add(scroller);
     	  
         JPanel p3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	    lab_x = new JLabel("X Expression:");	  
 	    p3.add(lab_x);		 	
         p1.add(p3);
         
-	    x_expr = new JTextArea(10,50);
-	    x_expr.setBorder(BorderFactory.createLoweredBevelBorder());
-	    p1.add(x_expr);
+	    x_expr = new JTextArea(50, 20);
+ 		scroller = new JScrollPane(x_expr); 
+	    p1.add(scroller);
         
 	    JPanel p = new JPanel();
 	    p.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -1082,6 +1082,13 @@ import javax.swing.event.*;
       reset.addActionListener(this);
       erase.addActionListener(this);
       cancel.addActionListener(this);
+      
+      pack();
+      y_expr.setPreferredSize(y_expr.getSize());
+      x_expr.setPreferredSize(x_expr.getSize());
+      p3.setPreferredSize(p3.getSize());
+      p9.setPreferredSize(p9.getSize());
+
    }
    
 
@@ -1593,6 +1600,7 @@ import javax.swing.event.*;
       }
 
 	  wi.modified = isChanged(s);
+	  main_scope.setChange(wi.modified);
 	  wi.is_image = image_b.isSelected();
 	  wi.use_jai = use_jai_b.isSelected();
 	  wi.keep_ratio = keep_ratio_b.isSelected();
@@ -1816,6 +1824,7 @@ import javax.swing.event.*;
       {	
 	        expand_expr.setExpressionString(x_expr.getText(), y_expr.getText());
 	        expand_expr.setLocationRelativeTo(this);	        
+	        expand_expr.setSize(600,400);
 	        expand_expr.show();
       }	
    }

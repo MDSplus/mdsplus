@@ -107,6 +107,33 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     
 
     
+    
+static Component T_parentComponent;
+static Object T_message;
+static String T_title;
+static int T_messageType;
+
+  static public void ShowMessage(Component parentComponent, Object message,
+                                    String title,int messageType)  
+  {  
+        T_parentComponent = parentComponent;
+        T_message = message;
+        T_title = title;
+        T_messageType = messageType;
+        
+        
+
+	    // do the following on the gui thread
+	    SwingUtilities.invokeLater(new Runnable() {
+	        public void run() {
+		        JOptionPane.showMessageDialog(T_parentComponent, T_message, 
+		                                            T_title, 
+		                                            T_messageType);
+	        }
+	    });
+      
+  }
+   
   class PrintThread extends Thread {
     
     public void run()
@@ -280,6 +307,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 		            expr_list.insertElementAt(new String(txt2), j);
 		        }		
 	        }
+	        dw.setChange(true);
         }
        
        private void SetPubVar()
@@ -334,35 +362,24 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	        out.println("");
         }
        
-              
-    public String fromFile(ReaderConfig in, String prompt) throws IOException
+    public void fromFile(Properties pr, String prompt) throws IOException
     {
-    	String str;
-	    String error = null;
+    	String prop;
+    	int idx = 0;
 
-        in.reset();
-	    while((str = in.readLine()) != null) {
-	        if(str.indexOf(prompt) != -1)
-	        {
-		        int len;
-		        int i = new Integer(str.substring("Scope.public_variable_".length(), len = str.indexOf(":"))).intValue();
-		        String name = new String(str.substring(len  + 2, len = str.indexOf("=")));
-		        String expr = new String(str.substring(len + 2, str.length()));
-		        name_list.insertElementAt(name.trim(), i);
-		        expr_list.insertElementAt(expr.trim(), i);
-		        
-		        continue;
-	        }
+	    while((prop = pr.getProperty(prompt+idx)) != null)
+	    {
+		    StringTokenizer st = new StringTokenizer(prop, "="); 
+		    String name = st.nextToken();
+		    String expr = st.nextToken();
+		    name_list.insertElementAt(name.trim(), idx);
+		    expr_list.insertElementAt(expr.trim(), idx);
+		    idx++;     
 	    }
-	    return error;
      }
   }
 
-  static boolean IsNewJVMVersion()
-  {
-    String ver = System.getProperty("java.version");
-    return (! (ver.indexOf("1.0") != -1 || ver.indexOf("1.1") != -1) );
-  }
+
 
 	    
 	    
@@ -871,30 +888,36 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         wave_panel.InvalidateDefaults();
   }
 
+  public static String findFileInClassPath(String file)
+  {
+    StringTokenizer path = new StringTokenizer(System.getProperty("java.class.path"), File.pathSeparator);
+    String p, f_name;
+    File f;
+    while(path.hasMoreTokens())
+    {
+        p = path.nextToken();
+        f = new File(p);
+        if(!f.isDirectory())
+            continue;
+        f_name = p + File.separator + file;        
+        f = new File(f_name);
+        if(f.exists())
+            return f_name;
+    }
+    return null;
+  }
 
   public void InitProperties()
   {
+    String f_name;
     try
     {
-        StringTokenizer path = new StringTokenizer(System.getProperty("java.class.path"), File.pathSeparator);
-        String p, f_name;
-        File f;
-        while(path.hasMoreTokens())
+        if((f_name = findFileInClassPath("jScope.properties")) != null)
         {
-            p = path.nextToken();
-            f = new File(p);
-            if(!f.isDirectory())
-                continue;
-            f_name = p + File.separator + "jScope.properties";        
-            f = new File(f_name);
-            if(f.exists())
-            {
-                if(is_debug)
-                    System.out.println("Properties file "+f_name);
-                js_prop = new Properties();
-                js_prop.load(new FileInputStream(f));
-                break;
-            }
+            if(is_debug)
+                System.out.println("Properties file "+ f_name);
+            js_prop = new Properties();
+            js_prop.load(new FileInputStream(f_name));
         }        
     } 
     catch( FileNotFoundException e)
@@ -1065,7 +1088,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     {
         Rectangle r = getBounds();
         Dimension d = getSize();
-        modified = false;
+        setChange(false);
         SetWindowTitle("");                   
 	    out.println("Scope.geometry: " + r.width + "x" + r.height + "+" + r.x + "+" + r.y);
         
@@ -1076,6 +1099,12 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         color_dialog.toFile(out, "Scope.color_");
         
         wave_panel.ToFile(out, "Scope.");
+    }
+
+    public void setChange(boolean change)
+    {
+        modified = change;
+        this.SetWindowTitle("");
     }
 
 
@@ -1101,14 +1130,12 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	    }		
     }
   
-  public void closeScope()
+  private int saveWarning()
   {
-	if(modified)
-	{
 	    Object[] options = {"Save",
                             "Don't Save",
                             "Cancel"};
-        int opt = JOptionPane.showOptionDialog(null,
+        return JOptionPane.showOptionDialog(null,
             "Save change to the configuration file before closing ?",
             "Warning",
             JOptionPane.YES_NO_CANCEL_OPTION,
@@ -1116,8 +1143,14 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
             null,
             options,
             options[0]);
-
-        switch(opt)
+            
+  }
+  
+  public void closeScope()
+  {
+	if(modified)
+	{
+        switch( saveWarning())
 	    {
 		    case JOptionPane.YES_OPTION:
 		        if(config_file == null)
@@ -1177,15 +1210,32 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 
   private void LoadConfigurationFrom()
   {
-     
+    if(modified)
+    {
+        switch( saveWarning())
+	    {
+		    case JOptionPane.YES_OPTION:
+		        if(config_file == null)
+		        {
+			        SaveAs();
+			        return;
+		        } else
+			        SaveConfiguration(config_file);
+			break;
+		    case JOptionPane.CANCEL_OPTION:
+		    return;
+		    
+	    }
+    }
+    setChange(false);
 
-	 if(curr_directory != null &&  curr_directory.trim().length() != 0)
+	if(curr_directory != null &&  curr_directory.trim().length() != 0)
 	    file_diag.setCurrentDirectory(new File(curr_directory));
-
-	//int returnVal = file_diag.showOpenDialog(this);
-
+    
     javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
-        public void actionPerformed(ActionEvent ae) {
+        public void actionPerformed(ActionEvent ae) 
+        {
+
             int returnVal = file_diag.showOpenDialog(jScope_1.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) 
 	        {    	    
@@ -1196,7 +1246,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	            { 
 	                curr_directory = d;
 			        config_file = curr_directory;
-                    LoadConf();
+                    LoadConfiguration();
 	            }
 	        }     
 	    }
@@ -1268,6 +1318,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         	
 	        if((is_changed = setup_default.IsChanged(def_values)))
 	        {
+	            this.setChange(true);
 	            wave_panel.RemoveAllEvents(this);
 	            setup_default.SaveDefaultConfiguration(def_values);
 	            InvalidateDefaults();
@@ -1439,12 +1490,10 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         String error = null, sig = signal_expr.getText(); 
         
         if(sig != null && sig.trim().length() != 0)
+        {
             wave_panel.AddSignal(sig);
-            // error = wave_panel.AddSignal(sig);
-        //if(error != null)
-        //{
-		//    JOptionPane.showMessageDialog(null, error, "alert", JOptionPane.ERROR_MESSAGE); 
-        //}      
+            setChange(true);
+        }
     }
 
     
@@ -1515,6 +1564,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	                wave_panel.update();
 	                UpdateColors();
 	                UpdateFont();
+	                setChange(true);
 	            }
             }
         });
@@ -1528,7 +1578,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	    {
 	        curr_directory = last_directory;
 		    config_file = curr_directory;
-	        LoadConf();
+	        LoadConfiguration();
 	    }		
     }
     
@@ -1727,6 +1777,10 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         if(ob == fast_network_i)
         {
 	        wave_panel.SetFastNetworkState(fast_network_i.getState());
+            use_cache_i.setEnabled(!fast_network_i.getState());
+    	    wave_panel.enableCache(false);
+            free_cache_i.setEnabled(false);
+            use_cache_i.setState(false);
         }
          
         if(ob == enable_compression_i)
@@ -1806,53 +1860,44 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	else
 	    setTitle("- Scope - " + f_name + (modified ? " (changed)" : "") + " " + info);
 	
-  }     
-  
-  
-  public String FromFile(ReaderConfig in)
-  {
-	    String str;
-	    String error = null;
-
-	    while((str = in.readLine()) != null) 
-	    {
-	        if(str.indexOf("Scope.geometry:") == 0) 
-	        {
-		        int pos;
-		        int len = "Scope.geometry: ".length();
-		        width  = new Integer(str.substring(len, pos = str.indexOf("x", len))).intValue();
-		        height = new Integer(str.substring(pos + 1, pos = str.indexOf("+", pos))).intValue();
-		        xpos = new Integer(str.substring(pos + 1, pos = str.indexOf("+", pos + 1))).intValue();
-		        ypos = new Integer(str.substring(pos + 1, pos = str.length())).intValue();
-		        break;
-	        }
-	    }
-	    return error;
   }
   
-  
-  public String LoadFromFile(ReaderConfig in)    
+  public void FromFile(Properties pr) throws IOException
   {
-    String error = null;
-    String str = null;
-    int wave_mode = wave_panel.GetMode();
+	    String prop = "";
+    
+        try
+        {
+	        if((prop = pr.getProperty("Scope.geometry")) != null) 
+	        {
+	            StringTokenizer st = new StringTokenizer(prop);
+		        width  = new Integer(st.nextToken("x")).intValue();
+		        height = new Integer(st.nextToken("x+")).intValue();
+		        xpos = new Integer(st.nextToken("+")).intValue();
+		        ypos = new Integer(st.nextToken("+")).intValue();
+	        }
+        } 
+        catch (Exception exc)
+        {
+            throw (new IOException(prop));
+        }
+  }
 
-    setCursor(new Cursor(Cursor.WAIT_CURSOR));
-    try {
-        error = FromFile(in);
-	    if(error == null)        
-            error = font_dialog.fromFile(in, "Scope.font");
-        if(error == null)        
-            error = color_dialog.fromFile(in, "Scope.color_");
-	    if(error == null)        
-            error = pub_var_diag.fromFile(in, "Scope.public_variable_");
-	    if(error == null)
-	        error = wave_panel.FromFile(in , "Scope.");
-    } catch(Exception e) {
-	    error = ""+e;
-    }
-    setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-    return error;
+    
+  public void LoadFromFile(Properties pr) throws IOException  
+  {
+    try
+    {
+        FromFile(pr);
+        font_dialog.fromFile(pr, "Scope.font");
+        color_dialog.fromFile(pr, "Scope.color_");
+        pub_var_diag.fromFile(pr, "Scope.public_variable_");
+	    wave_panel.FromFile(pr , "Scope");
+	 }
+	 catch (Exception e)
+	 {
+        throw (new IOException("Configuration file syntax error : "+e.getMessage()));
+	 }
   }
  
   private void Reset()
@@ -1862,6 +1907,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     wave_panel.Reset();
   }
 
+/*
   private void LoadConfError(String line)
   {
     Reset();
@@ -1872,56 +1918,48 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	   JOptionPane.showMessageDialog(null, "File configuration syntax error " + "<" + config_file + ">", 
 		                                  "alert", JOptionPane.ERROR_MESSAGE); 
   }
+  */
   
-  public void LoadConf()
+  public void LoadConfiguration()
   {
+        if(config_file == null) return;
 
-      if(config_file == null) return;
-
-       //    Thread ld_cnf = new Thread()
-       //     {
-	   //	      String in;
-       //         public void run() 
-       //         {
-		            ReaderConfig rc = null;
-		            try {
-			            LoadConf(rc = new ReaderConfig(new FileReader(config_file)));
-		            } catch (IOException e){
-			            if(rc != null)
-			                LoadConfError(rc.readCurrLine());
-			            else
-			                LoadConfError(null);
-		            }
-         //       }
-
-         //  };
-
-         //  ld_cnf.start();        
+        try {  		    
+            jScopeProperties pr = new jScopeProperties();
+            pr.load(new FileInputStream(config_file));
+            LoadConfiguration(pr);
+        } 
+        catch (IOException e)
+        {
+            Reset();
+	        JOptionPane.showMessageDialog(null, e.getMessage(), "alert", JOptionPane.ERROR_MESSAGE); 
+        }
   }
-
-  public void LoadConf(ReaderConfig in)
+  
+  public void LoadConfiguration(Properties pr)
   {
     String curr_dsa = wave_panel.GetServerName();
-    String error = null;
     
     wave_panel.EraseAllWave();
-    if((error = LoadFromFile(in)) == null)
-    { 
+    try
+    {
+        LoadFromFile(pr);
 	    setBounds(xpos, ypos, width, height);
         UpdateColors();
         UpdateFont();
 	    wave_panel.update();	
-	    validate();
-	    
-//	    if(wave_panel.GetServerName() != null && !curr_dsa.equals(wave_panel.GetServerName()))
-//    	        server_diag.addServerIp(wave_panel.GetServerName());
+	    validate();   	    
         server_diag.addServerIp(wave_panel.getServerItem());
         SetDataServer(wave_panel.getServerItem());
- 
-   	    UpdateAllWaves();
-    } else {
-	    JOptionPane.showMessageDialog(null, error, "alert", JOptionPane.ERROR_MESSAGE); 
-            LoadConfError(in.readCurrLine());
+        UpdateAllWaves();
+        //wave_panel.initMdsWaveInterface();
+   	    //wave_panel.UpdateAllWave();
+    } 
+    catch(Exception e)
+    {
+        Reset();
+		JOptionPane.showMessageDialog(null, e.getMessage(), 
+		                                  "alert", JOptionPane.ERROR_MESSAGE); 
     }
     SetWindowTitle("");
     System.gc();
@@ -1937,7 +1975,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         if(file != null)
 	    {
 	       config_file = new String(file);
-	       LoadConf();
+	       LoadConfiguration();
 	    }
         SetWindowTitle("");      
         show();
@@ -1948,9 +1986,6 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   {
         String file = null;    
 
-        AboutWindow about = new AboutWindow();
-        about.setVisible(true);
-        
         jScope_1 win = new jScope_1(100, 100);
 
         win.pack();                 

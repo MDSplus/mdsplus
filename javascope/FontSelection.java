@@ -1,7 +1,7 @@
 import java.lang.Integer;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Vector;
+import java.util.*;
 import javax.swing.*;
 import java.io.*;
 
@@ -149,28 +149,20 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         return new Font(fontchoice, stChoice, Integer.parseInt(siChoice));
     }
 
-    public String fromFile(ReaderConfig in, String prompt) throws IOException
+    public void fromFile(Properties pr, String prompt) throws IOException
     {
-    	String str;
-	    String error = null;
+    	String prop;
     
-        in.reset();
-	    while((str = in.readLine()) != null) {
-	        if(str.indexOf(prompt) != -1)
-	        {
-	            font = StringToFont(str.substring(prompt.length()+1));
-	            break;
-	        }
+	    if((prop = pr.getProperty(prompt)) != null) {
+	         font = StringToFont(prop);
 	    }
 	    
 	    if(font != null) {
 	        setFontChoice();
-	        this.fontC.changeFont(font);
-	    }
-	    
-	    return error;
+	        fontC.changeFont(font);
+	    }	    
     }
-    
+
     
     public void toFile(PrintWriter out, String prompt)
     {
@@ -213,6 +205,7 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
             font = GetFont();
             main_scope.UpdateFont();
             main_scope.RepaintAllWaves();
+            main_scope.setChange(true);
 	        if(ob == ok)
 		        setVisible(false);
         }  

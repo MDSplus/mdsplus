@@ -1227,8 +1227,8 @@ public class Signal
      */
     public void ResetYScale()
     {
-	ymax = saved_ymax;
-	ymin = saved_ymin;
+	    ymax = saved_ymax;
+	    ymin = saved_ymin;
     }
 
     /**
@@ -1236,10 +1236,10 @@ public class Signal
      */
     public void ResetScales()
     {
-	xmax = saved_xmax;
-	xmin = saved_xmin;
+	    xmax = saved_xmax;
+	    xmin = saved_xmin;
     	ymax = saved_ymax;
-	ymin = saved_ymin;
+	    ymin = saved_ymin;
     }
 
     /**
@@ -1247,17 +1247,16 @@ public class Signal
      */
     public void AutoscaleX()
     {
-	int i;
-	for(i = 0, xmin = xmax = x[0]; i < n_points; i++)
-	{
-	    if(xmin > x[i])
-		xmin = x[i];
-	    if(xmax < x[i])
-		xmax = x[i];
-	}
-	if(xmin == xmax)
-	    xmax = xmin + (float)1E-10;
-       
+	    int i;
+	    for(i = 0, xmin = xmax = x[0]; i < n_points; i++)
+	    {
+	        if(xmin > x[i])
+		    xmin = x[i];
+	        if(xmax < x[i])
+		    xmax = x[i];
+	    }
+	    if(xmin == xmax)
+	        xmax = xmin + (float)1E-10;      
     }
 
     /**
@@ -1337,8 +1336,8 @@ public class Signal
      */
     public void Autoscale()
     {
-	AutoscaleX();
-	AutoscaleY();
+	    AutoscaleX();
+	    AutoscaleY();
     }
     
     private boolean find_NaN = false;
@@ -1482,6 +1481,56 @@ public class Signal
 	}
     }	
 
+    public void merge(float xm[], float ym[])
+    {
+        int st_idx = -1, end_idx = -1;
+        int j = 0;
+        int k = 0;
+        int m_length;
+
+        if(xm.length != ym.length) 
+        {
+            return;
+        }
+                
+        
+        for(j = 0; j < n_points; j++)
+        {
+            if(x[j] > xm[0])
+            {
+                st_idx = j;
+                for(; x[j] < xm[xm.length - 1]; j++);
+                end_idx = j;
+                break;
+            }
+        }
+                        
+        float xn[] = new float[n_points+xm.length - (end_idx - st_idx)];
+        float yn[] = new float[n_points+ym.length - (end_idx - st_idx)];
+        
+        
+        for(j = 0; j < st_idx; j++)
+        {
+            xn[j] = x[j];
+            yn[j] = y[j];
+        }
+   
+        for(int h = st_idx, l = 0; l < xm.length; l++, h++)
+        {
+            xn[h] = xm[l];
+            yn[h] = ym[l];
+        }
+
+        for(int h = st_idx + xm.length, l = end_idx; l < n_points; l++, h++)
+        {
+            xn[h] = x[l];
+            yn[h] = y[l];
+        }
+
+        x = xn;
+        y = yn;
+        n_points = x.length;
+    }
 }
 
 

@@ -504,25 +504,22 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 	    return(new Color(c));
     }
 
-    
-    public String fromFile(ReaderConfig in, String prompt) throws IOException
+    public void fromFile(Properties pr, String prompt) throws IOException
     {
-    	String str;
-	    String error = null;
+    	String prop;
+	    int idx = 0;
 	    removeAllColorItems();
 
-        in.reset();
-	    while((str = in.readLine()) != null) {
+        //Syntax  Scope.color_x: <name>,java.awt.Color[r=xxx,g=xxx,b=xxx]
 
-	        if(str.indexOf(prompt) != -1)
-	        {
-		        int len;
-		        int i = new Integer(str.substring(prompt.length(), len = str.indexOf(":"))).intValue();
-		        String name = new String(str.substring(len  + 2, len = str.indexOf(",")));
-		        Color cr = StringToColor(new String(str.substring(len + 2, str.length())));
-		        InsertItemAt(name, cr, i);
-		        continue;
-	        }
+	    while((prop = pr.getProperty(prompt+idx)) != null) 
+	    {
+	        StringTokenizer st = new StringTokenizer(prop, ",");
+	        String name = st.nextToken();
+	        st.nextToken("["); // dummy java.awt.Color[
+		    Color cr = StringToColor(st.nextToken("")); //remained string r=xxx,g=xxx,b=xxx]
+		    InsertItemAt(name, cr, idx);
+            idx++;
 	    }
 	    
 	    //Set default color list if not defined color
@@ -530,17 +527,13 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 	    if(GetNumColor() == 0)
 	    {
 	        if(main_scope.js_prop != null)
-	        {
-	           GetPropertiesValue();
-	        } else {
+	            GetPropertiesValue();	            
+	        else
                 ColorSetItems(Waveform.COLOR_NAME, Waveform.COLOR_SET);
-            }
 	    }
 	    SetColorVector();
         GetColorsName();
-	    return error;
     }
-    
     
     public void toFile(PrintWriter out, String prompt)
     {
@@ -568,6 +561,7 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 	        SetColorVector();
             main_scope.UpdateColors();
             main_scope.RepaintAllWaves();
+            main_scope.setChange(true);
         }
     	
 	    if(ob == add)

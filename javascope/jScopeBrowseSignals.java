@@ -189,7 +189,8 @@
  			                        String base = st.nextToken()+"//";
  			                        for(int i = 0; i < num_token-2; i++)
  			                            base = base + st.nextToken()+"/";
- 			                        System.out.println("JDK1.1 url = "+base+e.getDescription());  			                        
+ 			                        if(jScope_1.is_debug)
+ 			                            System.out.println("JDK1.1 url = "+base+e.getDescription());  			                        
  			                        u = new URL(base+e.getDescription());
  			     		        } catch (MalformedURLException m) {
 			                        u = null;

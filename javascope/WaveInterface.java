@@ -203,6 +203,11 @@ public class WaveInterface
 		w_error = null;
     }
 
+    public DataProvider getDataProvider()
+    {
+        return dp;
+    }
+
     public void setSignalState(String name, boolean state)
     {
         
@@ -564,8 +569,14 @@ public class WaveInterface
 	    }
 	
 	    if(shots != null)
-	        dp.Update(experiment, shots[0]);
-	    else
+	    {
+	        int i = -1;
+	        do
+	        {
+	            i++;
+	            dp.Update(experiment, shots[i]);
+	        } while( i < shots.length && dp.ErrorString() != null);
+	    } else
 	        dp.Update(null, 0);
 	
 	    if(dp.ErrorString() != null)
@@ -711,6 +722,7 @@ public class WaveInterface
 		        if(signals[curr_wave] == null)
 		        {
 		            w_error[curr_wave] = curr_error;
+		            evaluated[curr_wave] = false;
 		        }
 		        else
 		        {
@@ -743,6 +755,7 @@ public class WaveInterface
             return;
         }
         
+       
     	for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
 	    {
 	        if(!evaluated[curr_wave] &&  
@@ -754,7 +767,7 @@ public class WaveInterface
 		        if(signals[curr_wave] == null)
 		        {
 	                w_error[curr_wave] = curr_error;
-
+		            evaluated[curr_wave] = false;
 		        }
 		        else
 		        {
@@ -1016,7 +1029,10 @@ public class WaveInterface
 		            curr_x = dp.GetFloatArray(dp.GetXSpecification(in_y[curr_wave]));
 		        else
 		        {
-		            curr_x = dp.GetFloatArray(dp.GetXSpecification(in_y[curr_wave]), ""+curr_y.length, xmin, xmax );
+		 //           if(dp instanceof NetworkProvider)
+		 //               curr_x = dp.GetFloatArray("DIM_OF("+ in_y[curr_wave]+ ")", ""+curr_y.length, xmin, xmax );
+		 //           else
+		                curr_x = dp.GetFloatArray(dp.GetXSpecification(in_y[curr_wave]), ""+curr_y.length, xmin, xmax );
 		            /*
 		            curr_x = dp.GetFloatArray("JavaDim(FLOAT(DIM_OF("+ in_y[curr_wave]+ 
 			                                    ")), "+ limits + ")"); 
@@ -1064,13 +1080,18 @@ public class WaveInterface
     	        out_signal.setXData(x_data[0]);
 	      }
 	    } else {
-	       // if(full_flag || wave_signals == null || wave_signals.length <= curr_wave || wave_signals[curr_wave] == null)
-	       // {
+	        if(full_flag || wave_signals == null || wave_signals.length <= curr_wave || wave_signals[curr_wave] == null)
+	        {
     	        out_signal = new Signal(curr_x, curr_y, min_len);
-    	   // } else {
-    	   //     out_signal = wave_signals[curr_wave];
-    	   //     out_signal.setAxis(curr_x, curr_y, min_len);
-    	   // }
+    	    } else {
+    	        // In this case GetSignal is called only
+    	        // to inflate the signal and therefore
+    	        // limits must not be changed
+    	        out_signal = wave_signals[curr_wave];
+    	        out_signal.merge(curr_x, curr_y);
+    	        out_signal.setFullLoad(full_flag);    
+    	        return out_signal;
+    	    }
     	}
     	
 	    if(xmin != -HUGE)
@@ -1098,38 +1119,6 @@ public class WaveInterface
         return out_signal;
     }
     
-/*    
-    private int ExpandTimes(float coded_time[], float expanded_time[])
-    {
-	    int max_len = expanded_time.length;
-	    int num_blocks = (coded_time.length-1) / 3;
-    //each block codes start, end, delta
-	    int out_idx, in_idx, curr_block;
-	    float curr_time;
-    	
-	    if(coded_time[0] > 0) //JAVA$DIM decided to apply coding
-	    {
-	        for(curr_block = 0, out_idx = 0; out_idx < max_len && curr_block < num_blocks; 
-		    curr_block++)
-	        {   
-	            for(in_idx = 0; out_idx < max_len; in_idx++)
-	            { 
-		            curr_time = coded_time[curr_block*3+1] + 
-		            in_idx * coded_time[curr_block*3+3];
-		            if(curr_time > coded_time[curr_block*3+2])
-		            break;
-		            expanded_time[out_idx++] = curr_time;
-	            }		    		    
-	        }
-	    }
-	    else //JAVA$DIM did not apply coding
-	        for(out_idx = 0; out_idx < max_len && out_idx < coded_time.length-1; out_idx++)
-		        expanded_time[out_idx] = coded_time[out_idx+1];		
-    	
-        return out_idx;
-    }
-*/
-
     void AsynchUpdate(/*Signal sigs[],*/ Vector sigs, float xmin, float xmax, 
 	                    float _orig_xmin, float _orig_xmax, 
 	                    int timestamp, boolean panning, MultiWaveform w)
@@ -1151,10 +1140,11 @@ public class WaveInterface
 	    {
 	        if(wave_signals[curr_wave] == null) continue;
 	        if (wave_signals[curr_wave].n_points >= Waveform.MAX_POINTS - 5 || (panning && 
-		    (orig_xmin < xmin || orig_xmax > xmax)))
-		    needs_update = true;
+		    (orig_xmin < xmin || orig_xmax > xmax)) ||
+		    (orig_xmin > xmin || orig_xmax < xmax) )
+		        needs_update = true;
 	    }
-	    if(needs_update && dp.SupportsAsynch())
+	    if(needs_update && dp.SupportsAsynch() )
 	    {
 	        if(asynch_update)
 	        {
@@ -1204,7 +1194,7 @@ public class WaveInterface
 	    if(needs_update && saved_timestamp == wave_timestamp)
 	    {
 	        w.UpdateSignals(wave_signals, wave_timestamp);
-	        w.AutoscaleY();
+	        //w.AutoscaleY();
 	        //w.UpdateSignals(wave_signals, wave_signals.length, wave_timestamp);
 	    }
         w.setCursor(curr_cursor);
@@ -1232,10 +1222,11 @@ class AsynchUpdater  extends Thread
 	        while(wi.request_pending)
 	        {
 	            wi.request_pending = false;
+	            
 	            try
 	            {
 	                wi.DynamicUpdate(w);
-	            } catch (IOException e) {}
+	            } catch (Exception e) {}
 	        }
 	        try {
 	            wait();

@@ -12,6 +12,11 @@ public class jScopeMac extends jScope_1 implements MRJQuitHandler, MRJOpenDocume
 {
     static String     MACfile;
 
+    public jScopeMac()
+    {
+        this(100,100);
+    }
+    
     public jScopeMac(int spos_x, int spos_y)
     {
         super(spos_x, spos_y);

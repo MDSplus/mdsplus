@@ -13,9 +13,17 @@ public class AboutWindow extends JLabel  {
   {
     try
     {
-        io = new ImageIcon(getClass().getClassLoader().getResource("about_jscope.jpg"));
+        String icon_file = jScope_1.findFileInClassPath("about_jscope.jpg");
+        if(icon_file != null)
+            io = new ImageIcon(icon_file);
+        if(jScope_1.is_debug)
+            System.out.println("about_jscope image path "+icon_file);
+        //if(jScope.IsNewJVMVersion())
+        //    io = new ImageIcon(getClass().getClassLoader().getResource("about_jscope.jpg"));
+        //else
+        //    io = new ImageIcon("about_jscope.jpg");
         setIcon(io);
-    } catch (NullPointerException e){};
+    } catch (NullPointerException e){}
   }
   
   public void update( Graphics g ) {
@@ -36,7 +44,7 @@ public class AboutWindow extends JLabel  {
     int start  = 32+2;
     int top    = 102+1;
     int botton = 268+1;
-    int delta  = 12;
+    int delta  = 14;
     
     g.setColor( new Color( 128, 128, 128 ) );
     g.drawRect( -1, -1, getWidth(), getHeight() ); // makes a bevel border likeness
@@ -44,7 +52,7 @@ public class AboutWindow extends JLabel  {
 //    g.drawString( "v" + SystemState.version, start, top );
 
     g.drawString( "http://www.igi.pd.cnr.it",  start, botton - 2*delta );
-//    g.drawString( "jScope release 6.0",        start, botton -   delta );
+    g.drawString( "JVM used :" +  System.getProperty("java.version"), start, botton -  delta );
     
 	gReal.drawImage( imageBuffer, 0, 0, this );
   }

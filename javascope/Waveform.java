@@ -863,9 +863,9 @@ public class Waveform extends JComponent
   	
 	synchronized public void Update(Signal s)
     {
-        wave_error = null;
-	    if(mode == MODE_PAN)
-	        mode = MODE_ZOOM;
+//       wave_error = null;
+//	    if(mode == MODE_PAN)
+//	        mode = MODE_ZOOM;
 	    update_timestamp++;
 	    waveform_signal = s;
     	//double xmax = MaxXSignal(), xmin = MinXSignal(), ymax = MaxYSignal(), ymin = MinYSignal();
@@ -1040,7 +1040,7 @@ public class Waveform extends JComponent
 	   String tit;
 	            
 	   if(wave_error != null)
-	      tit = title + wave_error;
+	      tit = title + " " + wave_error;
 	   else
 	      tit = title;
 	      
@@ -1099,6 +1099,7 @@ public class Waveform extends JComponent
 		            xmin = MinXSignal();
 		            ymax = MaxYSignal();
 		            ymin = MinYSignal();
+		            
 		        }
 	        }
 
@@ -1885,6 +1886,7 @@ public class Waveform extends JComponent
         {
             frames.Resize();
         } else {
+            
 	        if(waveform_signal == null)
 	            return;
 	        waveform_signal.Autoscale();

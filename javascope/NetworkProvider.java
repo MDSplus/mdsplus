@@ -333,7 +333,8 @@ public class NetworkProvider implements DataProvider
 	    String limits = "FLOAT("+start+"), " + "FLOAT("+end+")";
 	    if(in_y.startsWith("DIM_OF"))
 	    {
-	        
+	        return GetFloatArray(in_y);
+	/*        
 		    float curr_x[] = GetFloatArray("JavaDim(FLOAT("+ in_y+ "), "+ limits + ")"); 
 		    if(curr_x != null && curr_x.length > 1)
 		    {   
@@ -348,6 +349,7 @@ public class NetworkProvider implements DataProvider
 			       curr_x = expanded_x;
 		    }
 		    return curr_x;
+	*/	    
 	    }
 	    else 
 	    {
@@ -359,6 +361,7 @@ public class NetworkProvider implements DataProvider
     public synchronized float[] GetFloatArray(String in)  throws IOException
     {
         in = "( _jscope = ("+in+"), fs_float(_jscope))";// "fs_float(("+in+"))";
+
         String open_err = new String("");
         float[] out = null;
         

@@ -308,7 +308,8 @@ public class MultiWaveform extends Waveform
 */    	
     public void UpdateSignals(Signal signals[], int timestamp)
     {
-	//System.out.println("timestamp"+update_timestamp+ timestamp);
+        
+	    //System.out.println("timestamp "+update_timestamp + " "+ timestamp);
     
         Signal s;
     
@@ -1100,7 +1101,6 @@ public class MultiWaveform extends Waveform
 	        orig_signals = null;
 	    }    
 	
-
 	    for(i = 0; i < signals.size(); i++)
 	        if(signals.elementAt(i) != null) break;
 	    if(i == signals.size()) return;
@@ -1213,11 +1213,12 @@ public class MultiWaveform extends Waveform
 	        orig_xmin = waveform_signal.xmin;
 	        orig_xmax = waveform_signal.xmax;
         }
+       
         
         if(wi != null)
 	        wi.AsynchUpdate(signals, (float)(start_xs - x_range), (float)(end_xs + x_range), 
 	            (float)orig_xmin, (float)orig_xmax, update_timestamp, mode == MODE_PAN, this);
-
+        
     }	
 
     protected void HandleCopy()

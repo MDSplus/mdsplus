@@ -29,7 +29,6 @@ public  class WaveformMetrics implements Serializable {
 	double delta_x, delta_y;
 	int border_y;
 	
-	
 	if(_ymin > _ymax) _ymin = _ymax;
 	if(_xmin > _xmax) _xmin = _xmax;
 	start_x = ylabel_width;

@@ -91,13 +91,18 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
     {
         String out_error;
         if(wi.isAddSignal())
+        {
             out_error = ((MdsWaveInterface)wi).getErrorString(true);
+            if(wi.error != null)
+                out_error = wi.error;
+        }
         else
             out_error = ((MdsWaveInterface)wi).getErrorTitle(true);
         
         if(out_error != null && ((MdsWaveInterface)wi).prev_wi != null)
         {
             //reset to previous configuration
+            ((MdsWaveInterface)wi).prev_wi.error = ((MdsWaveInterface)wi).error;            
             ((MdsWaveInterface)wi).prev_wi.w_error = ((MdsWaveInterface)wi).w_error;            
             if(wi.isAddSignal())
                 ((MdsWaveInterface)wi).prev_wi.setAddSignal(true);                    
@@ -123,7 +128,7 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
 	    super.y_log = wi.y_log;
 	    
 	  //  String error = null;
-	    if(!wi.isAddSignal())
+	  //  if(!wi.isAddSignal())
 	        wave_error = wi.getErrorTitle(true);
 	        
 	    if(wi.title != null)
@@ -295,5 +300,4 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
         g.dispose();
         super.removeNotify();
     }
-    
 }

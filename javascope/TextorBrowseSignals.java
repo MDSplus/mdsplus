@@ -15,28 +15,13 @@ public class TextorBrowseSignals extends jScopeBrowseSignals
         String sig_path = null, curr_line;
         try
         {
-            URLConnection urlcon;
-            /*
-            if(url_name.indexOf("?only") == -1)
-            {
- 		        JOptionPane.showMessageDialog(this, 
- 		                        "Select properties only page of the signal to add", 
-		                        "Warning", JOptionPane.INFORMATION_MESSAGE);
-		        return null;
-            }
-            */
-            URL u = new URL(url_name);//+"?only");//read properties first 
-            urlcon = u.openConnection();
-            BufferedReader br = new BufferedReader(new InputStreamReader(urlcon.getInputStream()));
+            BufferedReader br = new BufferedReader(new StringReader(html.getText()));
             while (sig_path == null)
             {
                 try {
                     curr_line = br.readLine();
                     if(curr_line.startsWith("SignalURL"))
                         sig_path = curr_line.substring(curr_line.indexOf("http:"));
-//                    if(curr_line.startsWith("Should be handle"))
-//                        sig_path = curr_line.substring(curr_line.indexOf("http:"), 
-//                                                       curr_line.indexOf("?only"));
                }
                 catch(Exception exc) 
                 {

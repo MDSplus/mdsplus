@@ -31,7 +31,7 @@ DataServerItem.java         JiNcVarImp.java             NetworkProvider.java    
 DemoProvider.java           JiNcVarInt.java             ProfileDialog.java          WavePopup.java              jScopeWaveContainer_2.java\
 Descriptor.java             JiNcVarShort.java           RandomAccessData.java       Waveform.java               jScopeWavePopup.java\
 FontSelection.java          JiSlab.java                 RdaAccess.java              WaveformContainer.java      jScope_1.java\
-Frames.java                 JiSlabIterator.java         ReaderConfig.java           WaveformContainer_2.java	JetMdsProvider.java\
+Frames.java                 JiSlabIterator.java         jScopeProperties.java       WaveformContainer_2.java	JetMdsProvider.java\
 FtuProvider.java            JiVar.java                  RotateFilter.java           WaveformEvent.java
 
 CLASSES = $(SOURCES:.java=.class)

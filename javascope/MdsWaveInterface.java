@@ -1,5 +1,7 @@
 import java.io.*;
 import java.awt.*;
+import java.util.*;
+
 
 class MdsWaveInterface extends WaveInterface {
  
@@ -91,9 +93,11 @@ class MdsWaveInterface extends WaveInterface {
       def_flag =    ((defaults & (1<<bit)) == 1<<bit);
       in_title      = GetDefaultValue(bit, def_flag);
       
+      /*
       bit = MdsWaveInterface.B_shot;
       def_flag =    ((defaults & (1<<bit)) == 1<<bit);
       in_shot       = GetDefaultValue(bit ,  def_flag); 
+      */
       
       bit =MdsWaveInterface.B_exp;
       def_flag =    ((defaults & (1<<bit)) == 1<<bit);
@@ -238,126 +242,7 @@ class MdsWaveInterface extends WaveInterface {
 	in_shot = c_shot_str;
     if(!UpdateShot(curr_shots))
        previous_shot = "not defined";
-        
-	
-    /*
-	if(curr_shots == null)
-	{
-	    curr_num_shot = 1;
-	    shots = null;
-	    if(num_shot == 0) return;
-	} else
-	    curr_num_shot = curr_shots.length;
-
-	modified     = true;
-	
-	int num_signal; 
-	int num_expr;
-	if(num_shot == 0)
-    {
-	    num_signal = num_waves * curr_num_shot;
-	    num_expr = num_waves;
-    } 
-    else 
-    {
-	    num_signal = num_waves / num_shot * curr_num_shot;
-	    num_expr = num_waves / num_shot;
-    }
-
-	if(num_signal == 0)
-	    return;
-		
-    String[]  in_label     = new String[num_signal];
-    String[]  in_x         = new String[num_signal];
-	String[]  in_y         = new String[num_signal];
-	String[]  in_up_err    = new String[num_signal];
-	String[]  in_low_err   = new String[num_signal];
-	int[]     markers      = new int[num_signal];
-	int[]     markers_step = new int[num_signal];
-	int[]     colors_idx   = new int[num_signal];
-	boolean[] interpolates = new boolean[num_signal];
-	int[]     shots = null;
-	if(curr_shots != null)
-	    shots = new int[num_signal];				
-
-    int sig_idx = (this.num_shot == 0) ? 1 : this.num_shot;
-	for(int i = 0, k = 0; i < num_expr; i++)      
-	{
-	    for(int j = 0; j < curr_num_shot; j++, k++)
-	    {
-		    in_label[k]     = this.in_label[i * sig_idx];
-		    in_x[k]         = this.in_x[i * sig_idx];
-		    in_y[k]         = this.in_y[i * sig_idx];
-		    if(j < 	this.num_shot)
-		    {	
-		        markers[k]	    = this.markers[i * this.num_shot + j];	  
-		        markers_step[k] = this.markers_step[i * this.num_shot + j];	  
-		        interpolates[k] = this.interpolates[i * this.num_shot + j];
-		        if(curr_shots != null)
-		            shots[k]        = curr_shots[j];
-		        in_up_err[k]    = this.in_up_err[i * this.num_shot + j];	    
-		        in_low_err[k]   = this.in_low_err[i * this.num_shot + j];	    
-		        colors_idx[k]   = this.colors_idx[i * this.num_shot + j];
-		    } else {
-		        markers[k]	    = this.markers[i * this.num_shot];	  
-		        markers_step[k] = this.markers_step[i * this.num_shot];	  
-		        interpolates[k] = this.interpolates[i * this.num_shot];
-		        in_up_err[k]    = this.in_up_err[i * this.num_shot];	    
-		        in_low_err[k]   = this.in_low_err[i * this.num_shot];
-		        
-		        if(auto_color_on_expr)
-		            colors_idx[k]   = i % Waveform.colors.length;//this.colors_idx[i * this.num_shot];
-		        else
-		            colors_idx[k]   = j % Waveform.colors.length;
-		            
-		        if(curr_shots != null)
-		            shots[k]        = curr_shots[j];
- 		    }
-	    }
-	}
-	
-	this.in_label     = in_label;
-	this.in_x         = in_x;
-	this.in_y         = in_y;
-	this.in_up_err    = in_up_err;
-	this.in_low_err   = in_low_err;
-	this.markers      = markers;
-	this.markers_step = markers_step;
-	this.colors_idx   = colors_idx;
-	this.interpolates = interpolates;
-	this.shots        = shots;
-	if(shots != null)
-	    this.num_shot     = curr_num_shot;
-	else
-	    this.num_shot = 1;
-	num_waves = num_signal;
-	*/
   }
-
-  /*
-    public int[] GetShotArray(String in_shots) throws IOException
-    {
-	    int int_data[] = null;
-	
-	    if(in_shots == null || in_shots.trim().length() == 0)
-	        return int_data;
-	
-	    dp.Update(null, 0);
-	    int_data = dp.GetIntArray(in_shots);
-	    if( int_data == null || int_data.length == 0 || int_data.length > MAX_NUM_SHOT)
-	    {
-	        if(int_data != null && int_data.length > MAX_NUM_SHOT)
-                error = "Too many shots. Max shot list elements " + MAX_NUM_SHOT +"\n";
-	        else {
-		        if(dp.ErrorString() != null)	    
-		            error = dp.ErrorString();
-		        else
-		            error = "Shot syntax error\n";
-	        }
-	    }
-	    return int_data;
-   }
-  */
   
     public MdsWaveInterface(MdsWaveInterface wi)
     {
@@ -569,9 +454,10 @@ class MdsWaveInterface extends WaveInterface {
     	    	
 	    def_vals = wi.def_vals;
     	    	
-	    error = null;
-	    //SetDataProvider(wi.dp);	
-        super.SetDataProvider(wi.dp);
+	    // error = null;
+	    SetDataProvider(wi.dp);	
+        //super.SetDataProvider(wi.dp);
+        //dp = wi.dp;
     }	
 
 
@@ -648,7 +534,8 @@ class MdsWaveInterface extends WaveInterface {
 	            //if(modified)
 	            {
 	                StartEvaluate();
-		            EvaluateOthers();
+	                if(error == null)
+		                EvaluateOthers();
 	            }
 
 	            //modified = (error != null);
@@ -700,7 +587,6 @@ class MdsWaveInterface extends WaveInterface {
 	
 	    for(int i = 0; i < num_waves; i++)
 	    {
-//	        shots[i]	    = UNDEF_SHOT;
 	        markers[i]      = 0;
 	        markers_step[i] = 1;
     	    colors_idx[i]   = i % Waveform.colors.length;
@@ -843,392 +729,305 @@ class MdsWaveInterface extends WaveInterface {
 	        }
 	    } 
     }
-    
-    
-    public int FromFile(ReaderConfig in, String prompt) throws IOException
+
+
+    public void FromFile(Properties pr, String prompt) throws IOException
     { 
-	    String str;
-	    int error = 0, len, pos, num_expr = 0;
-	    boolean shot_evaluated = false;
-	    int sh[] = null;
+	    String prop = null;
+	    int len, pos, num_expr = 0;
      
-        in.reset();
         Erase();
-	    while((str = in.readLine()) != null) 
-	    {
-	        if(str.indexOf(prompt) == 0)
-	        {
-		        len =  str.indexOf(":") + 2;
 
-		        if(str.indexOf(".height:") != -1)
-		        {
-		            height = new Integer(str.substring(len, str.length())).intValue();
-		            continue;		
-		        }
+        try
+        {
+            prop = pr.getProperty(prompt+".height");
+            if(prop != null)
+ 		        height = new Integer(prop).intValue();
+           
+            prop = pr.getProperty(prompt+".grid_mode");
+            if(prop != null)
+ 		        in_grid_mode = new Integer(prop).intValue();
+            
+		    cin_xlabel = pr.getProperty(prompt+".x_label");
 
-		
-		        if(str.indexOf(".grid_mode:") != -1)
+		    cin_ylabel = pr.getProperty(prompt+".y_label");
+    		
+		    cin_title = pr.getProperty(prompt+".title");
+
+		    cin_ymin = pr.getProperty(prompt+".ymin");
+
+		    cin_ymax = pr.getProperty(prompt+".ymax");
+    		
+		    cin_xmin = pr.getProperty(prompt+".xmin");
+
+		    cin_xmax = pr.getProperty(prompt+".xmax");
+    		
+		    cin_timemin = pr.getProperty(prompt+".time_min");
+    		
+		    cin_timemax = pr.getProperty(prompt+".time_max");
+
+		    cin_def_node = pr.getProperty(prompt+".default_node");
+
+		    cin_upd_event = pr.getProperty(prompt+".event");
+    				
+            prop = pr.getProperty(prompt+".x_log");
+            if(prop != null)
+ 		        x_log = new Boolean(prop).booleanValue();;
+    		
+            prop = pr.getProperty(prompt+".y_log");
+            if(prop != null)
+ 		        y_log = new Boolean(prop).booleanValue();;		
+    		        
+            prop = pr.getProperty(prompt+".legend");
+            if(prop != null)
+            {
+		        show_legend = true;
+		        legend_x = Double.valueOf(prop.substring(prop.indexOf("(") + 1, prop.indexOf(","))).doubleValue();
+		        legend_y = Double.valueOf(prop.substring(prop.indexOf(",") + 1, prop.indexOf(")"))).doubleValue();
+            }
+     		            
+            prop = pr.getProperty(prompt+".is_image");
+            if(prop != null)
+ 		        is_image = new Boolean(prop).booleanValue();;		
+    		        
+            prop = pr.getProperty(prompt+".use_jai");
+            if(prop != null)
+ 		        use_jai = new Boolean(prop).booleanValue();;		
+
+            prop = pr.getProperty(prompt+".keep_ratio");
+            if(prop != null)
+ 		        keep_ratio = new Boolean(prop).booleanValue();;		
+    		            
+            prop = pr.getProperty(prompt+".horizontal_flip");
+            if(prop != null)
+ 		        horizontal_flip = new Boolean(prop).booleanValue();;		
+    		        
+            prop = pr.getProperty(prompt+".vertical_flip");
+            if(prop != null)
+ 		        vertical_flip = new Boolean(prop).booleanValue();;		
+    		        
+
+		    cexperiment = pr.getProperty(prompt+".experiment");
+
+		    cin_shot = pr.getProperty(prompt+".shot");
+
+		    prop = pr.getProperty(prompt+".x");
+		    if(prop != null)
+		    {
+		        String x_str = prop;
+    				
+		        x_str = RemoveNewLineCode(x_str);
+		        if(in_x == null || in_x.length == 0)
+			        in_x = new String[1];
+		        in_x[0] = x_str;
+		    }
+
+		    prop = pr.getProperty(prompt+".y");
+		    if(prop != null)
+		    {
+		        StringTokenizer st_y = null;
+		        StringTokenizer st_x = null;		        
+		        num_shot = 1;
+		        String token = null;
+		        String y_str = prop.toLowerCase();
+		        String x_str = null;
+
+		        y_str = RemoveNewLineCode(y_str);
+    		    
+		        if(in_x != null && in_x.length != 0)
+			        x_str = in_x[0];
+    																	    
+		        if(y_str.indexOf("[") == 0 && y_str.indexOf("$roprand") != -1)
 		        {
-		            in_grid_mode = new Integer(str.substring(len, str.length())).intValue();
-		            continue;		
-		        }
-		
-		        if(str.indexOf(".x_label:") != -1)
+    		        //Parse [expression1,$roprand,expression2,....,$roprand,expressionN]  
+    		        st_y = new StringTokenizer(y_str, "[]");
+    		        token = st_y.nextToken();
+    		        st_y = new StringTokenizer(token, ",");
+    		       
+    		       
+    		        while(st_y.hasMoreTokens())
+    		        {
+    		            token = st_y.nextToken().trim();
+    		            if(token.indexOf("$roprand") != -1)
+    		                continue;
+			            num_expr++;    		                
+    		        }
+    		    } else
+    		        num_expr = 1; 
+    		
+		        num_waves = num_expr * num_shot;
+		        CreateVector();
+
+		        if(num_expr == 1) 
 		        {
-		            cin_xlabel = str.substring(len, str.length());
-		            continue;		
-		        }
-		        if(str.indexOf(".y_label:") != -1)
-		        {
-		            cin_ylabel = str.substring(len, str.length());
-		            continue;		
-		        }
-		        
-		            if(str.indexOf(".x_log:") != -1)
-		            {
-		                x_log = new Boolean(str.substring(len, str.length())).booleanValue();
-		                continue;		
-		            }
-		            if(str.indexOf(".y_log:") != -1)
-		            {
-		                y_log = new Boolean(str.substring(len, str.length())).booleanValue();
-		                continue;		
-		            }
+			        in_y[0] = y_str;
+			        if( in_y[0].indexOf("multitrace") != -1) 
+			        {
+			            in_y[0] = "compile"+y_str.substring(y_str.indexOf("("));
+			            //in_y[0] =  in_y[0].substring(in_y[0].indexOf("\"") + 1, in_y[0].indexOf("\")"));  
+			        }
+			        
+			        if(x_str != null)
+			            in_x[0] = new String(x_str);
+			        else
+			            in_x[0] = null;
+    		    
+		        } else {
 		            
-		            if(str.indexOf(".legend:") != -1)
-		            {
-		                show_legend = true;
-		                legend_x = Double.valueOf(str.substring(str.indexOf("(") + 1, str.indexOf(","))).doubleValue();
-		                legend_y = Double.valueOf(str.substring(str.indexOf(",") + 1, str.indexOf(")"))).doubleValue();
-		                continue;		
-		            }
+    		        st_y = new StringTokenizer(y_str, "[]");
+    		        String token_y = st_y.nextToken();
+    		        st_y = new StringTokenizer(token_y, ",");
+                    if(x_str != null)
+                    {
+    		            st_x = new StringTokenizer(x_str, "[]");
+    		            token = st_x.nextToken();
+    		            st_x = new StringTokenizer(token, ",");
+                    }
 		            
-		            if(str.indexOf(".is_image:") != -1)
-		            {
-		                is_image = new Boolean(str.substring(len, str.length())).booleanValue();
-		                continue;		
-		            }		            
-		        
-		            if(str.indexOf(".use_jai:") != -1)
-		            {
-		                use_jai = new Boolean(str.substring(len, str.length())).booleanValue();
-		                continue;		
-		            }		            
-		        
-		            if(str.indexOf(".keep_ratio:") != -1)
-		            {
-		                keep_ratio = new Boolean(str.substring(len, str.length())).booleanValue();
-		                continue;		
-		            }		            
+		            
+		            int i = 0;			
+		            while(st_y.hasMoreTokens())
+    		        {
+    		            token_y = st_y.nextToken().trim();
+   		            
+     		            if(st_x != null)
+    		               token = st_x.nextToken().trim(); 	               		                
 
-		            if(str.indexOf(".horizontal_flip:") != -1)
-		            {
-		                horizontal_flip = new Boolean(str.substring(len, str.length())).booleanValue();
-		                continue;		
-		            }		            
-
-		            if(str.indexOf(".vertical_flip:") != -1)
-		            {
-		                vertical_flip = new Boolean(str.substring(len, str.length())).booleanValue();
-		                continue;		
-		            }		            
-
-		        
-		        if(str.indexOf(".experiment:") != -1)
+   		            
+    		            if(token_y.indexOf("$roprand") != -1)
+    		                continue;
+    		                    		                
+    		            in_y[i] = token_y;
+    		            if(st_x != null)
+    		               in_x[i] = token; 	               		                
+			            if(in_y[i].indexOf("multitrace") != -1)
+			            {
+				            in_y[i] =   "compile"+in_y[i].substring(in_y[i].indexOf("("));  
+			            }
+			            i++; 
+    		        } 
+		        }    
+		    }
+            
+		    prop = pr.getProperty(prompt+".num_expr");
+		    if(prop != null)
+		    {
+		        num_expr = new Integer(prop).intValue();
+		   //     num_expr = (num_expr > 0) ? num_expr : 1;						
+            } 
+             
+		    prop = pr.getProperty(prompt+".num_shot");
+		    if(prop != null)
+		    {
+		        num_shot = new Integer(prop).intValue();
+		        num_shot = (num_shot > 0) ? num_shot : 1;
+		        if(num_expr != 0)
 		        {
-		            cexperiment = str.substring(len, str.length());
-		            continue;		
-		        }
-		        
-		        if(str.indexOf(".shot:") != -1)
-		        {
-		            cin_shot = str.substring(len, str.length());
-	/*
-		            sh = GetShotArray(cin_shot);
-		    
-		            if(sh.length == num_shot)
-		            {
-			            for(int i = 0, k = 0; i < num_expr; i++)
-			                for(int j = 0; j < num_shot; j++)
-			                {
-				                shots[k] = sh[j];
-				                k++;
-			                }
-		            } else
-			            shot_evaluated = true;
-	*/
-		            continue;		
-		        }
-		        if(str.indexOf(".x:") != -1)
-		        {
-		            String x_str = str.substring(len, str.length());
-				
-		            x_str = RemoveNewLineCode(x_str);
-		            if(in_x == null || in_x.length == 0)
-			            in_x = new String[1];
-		            in_x[0] = x_str;
-		            continue;		
-		        }
-		        if(str.indexOf(".y:") != -1)
-		        {
-		            num_shot = 1;
-		            String y_str = str.substring(len, str.length());
-		            String x_str = null;
-
-		            y_str = RemoveNewLineCode(y_str);
-		    
-		            if(in_x != null && in_x.length != 0)
-			            x_str = in_x[0];
-																	    
-		            if(y_str.indexOf("[") == 0 && y_str.toLowerCase().indexOf("$roprand") != -1)
-		            {
-		
-			            pos = y_str.toLowerCase().indexOf(",$roprand");
-			            do {
-			                num_expr++;
-			                pos += ",$roprand".length();
-			            } while((pos = y_str.toLowerCase().indexOf(",$roprand", pos)) != -1 );
-			            num_expr++;
-		            } else {
-			            num_expr = 1;
-		            }
-		    
 		            num_waves = num_expr * num_shot;
 		            CreateVector();
+		        }
+            } 
 
-		            if(num_expr == 1) {
-			            in_y[0] = y_str;
-			            if( in_y[0].toLowerCase().indexOf("multitrace") != -1)
-			            {
-			                in_y[0] =  in_y[0].substring(in_y[0].indexOf("\\") + 1, in_y[0].indexOf("\")"));  
-			            }
-			            if(x_str != null)
-			                in_x[0] = new String(x_str);
-			            else
-			                in_x[0] = null;
-		    
-		                } else {
-		                    int pos_x = (x_str != null) ? x_str.indexOf("[") : 0;
-		                    int pos_y = y_str.indexOf("[");			  
-		                    int i, j;			
-			                for(i = 0; i < (num_expr - 1) * num_shot; i += num_shot)
-			                {
-			                    in_y[i] = y_str.substring(pos_y + 1, pos_y = y_str.toLowerCase().indexOf(",$roprand", pos_y));
-			                    if(x_str != null) {
-				                    if(x_str.indexOf(",0", pos_x) != -1)
-				                    in_x[i] = x_str.substring(pos_x  + 1, pos_x =  x_str.indexOf(",0", pos_x));			    			
-			                    }
-			                    if(in_y[i].toLowerCase().indexOf("multitrace") != -1)
-			                    {
-				                    in_y[i] =  in_y[i].substring(in_y[i].indexOf("\\") + 1, in_y[i].indexOf("\")"));  
-			                    }
-			                    for(j = 1; j < num_shot; j++)
-			                    {
-				                    in_y[i+j] = new String(in_y[i]);
-				                    in_x[i+j] = new String(in_x[i]);				
-			                    }
-			                    pos_y += ",$roprand".length();
-			                    pos_x += ",0".length();
-			                }
-			                in_y[i] = y_str.substring(pos_y + 1,  y_str.indexOf("]", pos_y));
-			                if(x_str != null)
-			                    in_x[i] = x_str.substring(pos_x + 1, x_str.indexOf("]", pos_x));			    			
-			                for(j = 1; j < num_shot; j++)
-			                {
-			                    in_y[i+j] = new String(in_y[i]);
-			                    in_x[i+j] = new String(in_x[i]);				
-			                }
-		                }    
-		                continue;		
-		            }
-		            if(str.indexOf(".num_expr:") != -1)
-		            {
-		                num_expr = new Integer(str.substring(len, str.length())).intValue();
-		                num_expr = (num_expr > 0) ? num_expr : 1;						
-		                if(num_shot != 0) {
-			                num_waves = num_expr * num_shot;
-			                CreateVector();
-			                if(shot_evaluated)
-			                {
-			                    if(sh.length == num_shot)
-			                    {
-				                    for(int i = 0, k = 0; i < num_expr; i++)
-				                    for(int j = 0; j < num_shot; j++)
-				                    {
-					                    shots[k] = sh[j];
-					                    k++;
-				                    }
-			                    } 			    
-			                }
-		                 }
-		                 continue;		
-		            }		    
-		            if(str.indexOf(".num_shot:") != -1)
-		            {
-		
-		                num_shot = new Integer(str.substring(len, str.length())).intValue();
-		                num_shot = (num_shot > 0) ? num_shot : 1;			
-		                if(num_expr != 0) {
-			                num_waves = num_expr * num_shot;
-			                CreateVector();
-			                if(shot_evaluated)
-			                {
-			                    if(sh.length == num_shot)
-			                    {
-				                    for(int i = 0, k = 0; i < num_expr; i++)
-				                        for(int j = 0; j < num_shot; j++)
-				                        {
-					                        shots[k] = sh[j];
-					                        k++;
-				                        }
-			                    } 			    
-			                }
-		                }
-		                continue;		
-		            }
-		            if(str.indexOf(".global_defaults:") != -1)
-		            {
-		                defaults = new Integer(str.substring(len, str.length())).intValue();
-		                continue;		
-		            }		    
-		            if((pos = str.indexOf(".label_")) != -1)
-		            {			
-		                pos += ".label_".length();
-		                int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
-		                in_label[expr_idx] = str.substring(pos + 2, str.length());
-		                for(int j = 1; j < num_shot; j++)
-			                in_label[expr_idx + j] = in_label[expr_idx];			
-		                continue;		
-		            }		    
-		            if((pos = str.indexOf(".x_expr_")) != -1)
-		            {			
-		                pos += ".x_expr_".length();
-		                int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
-		                in_x[expr_idx] = RemoveNewLineCode(str.substring(pos + 2, str.length()));
-		                for(int j = 1; j < num_shot; j++)
-			                in_x[expr_idx + j] = in_x[expr_idx];			
-		                continue;		
-		            }		    
-		            if((pos = str.indexOf(".y_expr_")) != -1)
-		            {			
-		                pos += ".y_expr_".length();
-		                int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
-		                in_y[expr_idx] = RemoveNewLineCode(str.substring(pos + 2, str.length()));
-		                for(int j = 1; j < num_shot; j++)
+
+
+		    prop = pr.getProperty(prompt+".global_defaults");
+		    if(prop != null)
+            {
+		        defaults = new Integer(prop).intValue();
+            }
+            
+            int expr_idx;
+            
+            for(int idx = 1; idx <= num_expr; idx++)
+            {
+		        prop = pr.getProperty(prompt+".label_"+idx);
+		        if(prop != null)
+                {
+                    expr_idx = (idx - 1)*num_shot;
+		            in_label[expr_idx] = prop;
+		            for(int j = 1; j < num_shot; j++)
+			            in_label[expr_idx + j] = prop;			
+                }
+     
+		        prop = pr.getProperty(prompt+".x_expr_"+idx);
+		        if(prop != null)
+                {
+                    expr_idx = (idx - 1)*num_shot;
+		            in_x[expr_idx] = RemoveNewLineCode(prop);
+		            for(int j = 1; j < num_shot; j++)
+			            in_x[expr_idx + j] = in_x[expr_idx];			
+                }            
+     
+		        prop = pr.getProperty(prompt+".y_expr_"+idx);
+		        if(prop != null)
+                {
+                    expr_idx = (idx - 1)*num_shot;
+		            in_y[expr_idx] = RemoveNewLineCode(prop);
+		            for(int j = 1; j < num_shot; j++)
 			            in_y[expr_idx + j] = in_y[expr_idx];			
-		                continue;		
-		            }
-		            
-		                if((pos = str.indexOf(".up_error_")) != -1)
-		                {			
-		                    pos += ".up_error_".length();
-		                    int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
-		                    in_up_err[expr_idx] = str.substring(pos + 2, str.length());
-		                    for(int j = 1; j < num_shot; j++)
-			                    in_up_err[expr_idx + j] = in_up_err[expr_idx];			
-		                    continue;		
-		                }		    
-		                if((pos = str.indexOf(".low_error_")) != -1)
-		                {			
-		                    pos += ".low_error_".length();
-		                    int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
-		                    in_low_err[expr_idx] = str.substring(pos + 2, str.length());
-		                    for(int j = 1; j < num_shot; j++)
-			                    in_low_err[expr_idx + j] = in_low_err[expr_idx];			
-		                    continue;		
-		                }
-		
-		                if((pos = str.indexOf(".interpolate_")) != -1)
-		                {			
-		                    pos += ".interpolate_".length();
-		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
-		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
-		                    interpolates[expr_idx *  num_shot + shot_idx] = 
-						    new Boolean(str.substring(pos + 2, str.length())).booleanValue();
-		                    continue;		
-		                }
-		                
-		                if((pos = str.indexOf(".color_")) != -1)
-		                {
-		                    pos += ".color_".length();
-		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
-		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
-		                    try {			
-		                        int c_idx = new Integer(str.substring(pos + 2, str.length())).intValue();
-		                        colors_idx[expr_idx *  num_shot + shot_idx] = c_idx;
-		                    } catch(Exception e) { colors_idx[expr_idx *  num_shot + shot_idx] = 0;}
-		                    continue;		
-		                }
-		                if((pos = str.indexOf(".marker_")) != -1)
-		                {			
-		                    pos += ".marker_".length();
-		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
-		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
-		                    markers[expr_idx *  num_shot + shot_idx] = 
-						    new Integer(str.substring(pos + 2, str.length())).intValue();
-		                    continue;		
-		                }
-		
-		                if((pos = str.indexOf(".step_marker_")) != -1)
-		                {			
-		                    pos += ".step_marker_".length();
-		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
-		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
-		                    markers_step[expr_idx *  num_shot + shot_idx] = 
-						    new Integer(str.substring(pos + 2, str.length())).intValue();
-		                    continue;		
-		                }
-					
-		            if(str.indexOf(".title:") != -1)
-		            {
-		                cin_title = str.substring(len, str.length());
-		                continue;		
-		            }
-		            if(str.indexOf(".ymin:") != -1)
-		            {
-		                cin_ymin = str.substring(len, str.length());
-		                continue;		
-		            }
-		            if(str.indexOf(".ymax:") != -1)
-		            {
-		                cin_ymax = str.substring(len, str.length());
-		                continue;		
-		            }
-		            if(str.indexOf(".xmin:") != -1)
-		            {
-		                cin_xmin = str.substring(len, str.length());
-		                continue;		
-		            }
-		            if(str.indexOf(".xmax:") != -1)
-		            {
-		                cin_xmax = str.substring(len, str.length());
-		                continue;
-		            }
-                    if(str.indexOf(".time_min:") != -1)
-		            {
-		                cin_timemin = str.substring(len, str.length());
-		                continue;		
-		            }
-		            if(str.indexOf(".time_max:") != -1)
-		            {
-		                cin_timemax = str.substring(len, str.length());
-		                continue;		
-		            }
-		            if(str.indexOf(".default_node:") != -1)
-		            {
-		                cin_def_node = str.substring(len, str.length());
-		                continue;		
-		            }
-		            if(str.indexOf(".event:") != -1)
-		            {
-		                cin_upd_event = str.substring(len, str.length());
-		                continue;		
-		            }
-	            }
-	        }
-		
-	        return error;
-        }	 
-	      	        
-    }		
+                }
+                
+		        prop = pr.getProperty(prompt+".up_error_"+idx);
+		        if(prop != null)
+                {
+                    expr_idx = (idx - 1)*num_shot;
+		            in_up_err[expr_idx] = prop;
+		            for(int j = 1; j < num_shot; j++)
+			            in_up_err[expr_idx + j] = prop;			
+                }
+                
+		        prop = pr.getProperty(prompt+".in_low_err"+idx);
+		        if(prop != null)
+                {
+                    expr_idx = (idx - 1)*num_shot;
+		            in_low_err[expr_idx] = prop;
+		            for(int j = 1; j < num_shot; j++)
+			            in_low_err[expr_idx + j] = prop;			
+                }
+                
+                for(int s = 1; s <= num_shot; s++)
+                {
+                    expr_idx = (idx - 1)*num_shot - 1;
+                    
+		            prop = pr.getProperty(prompt+".interpolate_"+idx+"_"+s);
+		            if(prop != null)
+                    {
+                        interpolates[expr_idx + s] = new Boolean(prop).booleanValue();               
+                    }
+     
+		            prop = pr.getProperty(prompt+".color_"+idx+"_"+s);
+		            if(prop != null)
+                    {
+                        try
+                        {
+                            colors_idx[expr_idx + s] = new Integer(prop).intValue();
+                        } catch(Exception e) {colors_idx[expr_idx + s] = 0;}
+                    }
+                    
+		            prop = pr.getProperty(prompt+".marker_"+idx+"_"+s);
+		            if(prop != null)
+                    {
+                        try
+                        {
+                            markers[expr_idx + s] = new Integer(prop).intValue();
+                        } catch(Exception e) {markers[expr_idx + s] = 0;}
+                    }
+                    
+		            prop = pr.getProperty(prompt+".step_marker_"+idx+"_"+s);
+		            if(prop != null)
+                    {
+                        try
+                        {
+                            markers_step[expr_idx + s] = new Integer(prop).intValue();
+                        } catch(Exception e) {markers_step[expr_idx + s] = 0;}
+                    }            
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            throw(new IOException(e + " \n when parsing " + prop ));
+        }
+    }	 
+}		
 
