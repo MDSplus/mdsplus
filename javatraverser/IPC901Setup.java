@@ -89,7 +89,7 @@ public class IPC901Setup extends DeviceSetup {
     deviceChoice1.setUpdateIdentifier("");
     deviceChoice1.setIdentifier("");
     deviceField5.setOffsetNid(7);
-    deviceField5.setLabelString("Num. Samples: ");
+    deviceField5.setLabelString("End Time: ");
     deviceField5.setNumCols(4);
     deviceField5.setIdentifier("");
     deviceField6.setOffsetNid(6);
