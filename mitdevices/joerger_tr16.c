@@ -119,6 +119,7 @@ int joerger_tr16___store(struct descriptor *niddsc_ptr, InStoreStruct *setup)
 
   short *channel_data;
   int status;
+  int put_status = 1;
   int chan;
   int samples_to_read;
   int i;
@@ -151,7 +152,7 @@ int joerger_tr16___store(struct descriptor *niddsc_ptr, InStoreStruct *setup)
 #undef return_on_error
 #define return_on_error(f) if (!((status = f) & 1)) {free(channel_data); return status;}
 
-  for (chan=0;((chan < 16) && (status & 1));chan++)
+  for (chan=0;((chan < 16) && (status & 1) && (put_status &1));chan++)
   {
     if (TreeIsOn(CHAN_NID(chan,JOERGER_TR16_N_CHAN_HEAD)) & 1)
     {
@@ -166,21 +167,29 @@ int joerger_tr16___store(struct descriptor *niddsc_ptr, InStoreStruct *setup)
       raw.m[0] = raw.bounds[0].u - raw.bounds[0].l + 1;
       if (raw.m[0] > 0)
       {
-        samples_to_read = raw.bounds[0].u - min_idx + 1;
-        status = ReadChannel(setup->name,chan,&samples_to_read,channel_data);
-        if (status & 1)
-        {
-	  coefficient = .610E-3;
-          raw.pointer = (char *)(channel_data + (raw.bounds[0].l - min_idx));
-          raw.a0 = raw.pointer - (raw.bounds[0].l * sizeof(channel_data[0]));
-          raw.arsize = raw.m[0] * 2;
-          status = TreePutRecord(CHAN_NID(chan,JOERGER_TR16_N_CHAN_HEAD),(struct descriptor *)&signal,0);
+        int tries;
+        status = 0;
+        for (tries=0; (!(status&1) && (tries < 5)); tries++) {
+          samples_to_read = raw.bounds[0].u - min_idx + 1;
+          status = ReadChannel(setup->name,chan,&samples_to_read,channel_data);
+          if (status & 1)
+          {
+	    coefficient = .610E-3;
+            raw.pointer = (char *)(channel_data + (raw.bounds[0].l - min_idx));
+            raw.a0 = raw.pointer - (raw.bounds[0].l * sizeof(channel_data[0]));
+            raw.arsize = raw.m[0] * 2;
+            put_status = TreePutRecord(CHAN_NID(chan,JOERGER_TR16_N_CHAN_HEAD),(struct descriptor *)&signal,0);
+            if (tries > 0) {
+              printf("TR16 read channel %d in %d tries\n", chan+1, tries);
+            }
+          }
         }
+	status = 1;
       }
     }
   }
   free(channel_data);
-  return status;
+  return put_status;
 }
 
 #undef return_on_error
