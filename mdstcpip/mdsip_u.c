@@ -597,9 +597,9 @@ static void RemoveClient(Client *c)
   for (e=c->event; e; e=nexte)
   {
     nexte = e->next;
-    /*
-    MdsEventCan(e->eventid);
-    */
+    /**/
+    MDSEventCan(e->eventid);
+    /**/
     if (e->info_len > 0) free(e->info);
     free(e);
   }
@@ -836,9 +836,9 @@ static void ClientEventAst(MdsEventList *e)
   }
   else
   {
-    /*
-    MdsEventCan(e->eventid);
-    */
+    /**/
+    MDSEventCan(e->eventid);
+    /**/
     if (e->info_len > 0) free(e->info);
     free(e);
   }
@@ -849,6 +849,7 @@ static void ExecuteMessage(Client *c)
   int status=1;
   static EMPTYXD(emptyxd);
   struct descriptor_xd *xd;
+  char *evname;
   static DESCRIPTOR(eventastreq,EVENTASTREQUEST);
   static DESCRIPTOR(eventcanreq,EVENTCANREQUEST);
   int java = CType(c->client_type) == JAVA_CLIENT;
@@ -859,9 +860,13 @@ static void ExecuteMessage(Client *c)
     MdsEventList *newe = (MdsEventList *)malloc(sizeof(MdsEventList));
     struct descriptor_a *info = (struct descriptor_a *)c->descrip[2];
     newe->sock = c->sock;
-    /*
-    status = MdsEventAst(c->descrip[1].pointer,(void (*)())ClientEventAst,newe,&newe->eventid);
-    */
+    /**/
+    evname = malloc(c->descrip[1]->length + 1);
+    memcpy(evname, c->descrip[1]->pointer, c->descrip[1]->length);
+    evname[c->descrip[1]->length] = 0;
+    status = MDSEventAst(evname,(void (*)())ClientEventAst,newe,&newe->eventid);
+    free(evname); 
+ /**/
     if (java)
     {
       newe->info = 0;
@@ -910,9 +915,9 @@ static void ExecuteMessage(Client *c)
         for(p=&c->event,e=c->event;e && (e->eventid != eventid) ;p=&e->next,e=e->next);
       if (e)
       {
-	/*
-        MdsEventCan((int *)e->eventid);
-	*/
+	/**/
+        MDSEventCan(e->eventid);
+	/**/
         free(e);
         *p = e->next;
       }
