@@ -396,14 +396,16 @@ char *FindNodeTagsRemote(PINO_DATABASE *dblist, int nid_in, void **ctx_ptr)
 char *AbsPathRemote(PINO_DATABASE *dblist, char *inpath)
 {
   struct descrip ans = empty_ans;
-  char *exp = (char *)malloc(strlen(inpath)+20);
+  struct descrip pdsc;
   static char *path = 0;
   char *retans = 0;
   int status;
   char *tag = 0;
-  sprintf(exp,"TreeAbsPath(\"%s\")",inpath);
-  status = MdsValue0(dblist->tree_info->channel,exp,&ans);
-  free(exp);
+  pdsc.dtype = DTYPE_T;
+  pdsc.ndims = 0;
+  pdsc.length = strlen(inpath);
+  pdsc.ptr = inpath;
+  status = MdsValue1(dblist->tree_info->channel,"TreeAbsPath($)",&pdsc,&ans);
   if (ans.ptr)
   {
     if (ans.dtype == DTYPE_T)
