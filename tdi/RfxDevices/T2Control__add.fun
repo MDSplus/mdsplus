@@ -1,8 +1,6 @@
 public fun T2Control__add(in _path, out _nidout)
 {
-
 write(*,'T2Control__add'); 
-
     DevAddStart(_path, 'T2Control', 231, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
@@ -110,6 +108,3 @@ write(*,'T2Control__add');
     DevAddAction(_path// ':STORE_ACTION', 'STORE', 'STORE', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }
-
-       
-

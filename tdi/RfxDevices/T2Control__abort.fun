@@ -13,7 +13,6 @@ public fun T2Control__abort(as_is _nid, optional _method)
     private _N_TRIG2_TIME = 10;
     private _N_PAR1_NAME = 11;
     private _N_PAR1_VALUE = 12; 
-
 write(*, 'T2Control abort');
 
     _vme_ip = DevNodeRef(_nid, _N_VME_IP);

@@ -96,7 +96,7 @@ public fun TR10__store(as_is _nid, optional _method)
 				_data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts);					  }						
 
 	/* Build signal */
-			_dim = make_dim(make_window(_start_idx, _end_idx, _trig), _clock);
+			_dim = make_dim(make_window(_start_idx, _end_idx - 1, _trig), _clock);
 			_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
 
 			_status = DevPutSignal(_sig_nid, 0, 10/32768., word(_data), 0, _end_idx - _start_idx - 1, _dim);
