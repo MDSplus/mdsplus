@@ -395,3 +395,24 @@ return
 end
 
 ;*/
+
+
+pro mdsconnect,host,status=status,quiet=quiet,port=port
+  mdsdisconnect,/quiet
+  if n_elements(port) ne 0 then begin
+    setenv,'mdsip='+strtrim(port,2)
+  endif else if getenv('mdsip') eq '' then begin
+    setenv,'mdsip=8000'
+  endif
+
+  sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'ConnectToMds',host,value=[byte(!version.os ne 'windows')])
+  sockmin=1l-(!version.os eq 'MacOS')
+  if (sock ge sockmin) then begin
+    status = 1
+    x=execute('!MDS_SOCKET = sock')
+  endif else begin
+    if not keyword_set(quiet) then message,'Error connecting to '+host,/IOERROR
+    status = 0
+  endelse
+  return
+end
