@@ -37,7 +37,7 @@ tcl_commands.o:
 libTcl.a:	$(OBJFILES)
 	ranlib libTcl.a
 
-../shlib/tcl_commands.$(SHARE_TYPE):	libTcl.a
+../shlib/tcl_commands.$(SHARE_TYPE):	tcl_commands.o  libTcl.a
 	$(CC) $(CFLAGS)  -o $@ $(LFLAGS) $(LD_SHARED_LIB_OPTIONS)	\
 		tcl_commands.o  libTcl.a	\
 		-lMdsdcl -lMdsShr -lTreeShr -lTdiShr	\
