@@ -428,7 +428,7 @@ static int ___MdsSetSocket(int *newsocket)
   mdsSocket = *newsocket;
   return oldsocket;
 }
-int MdsSetSocket(int *newsocket) { return ___MdsSetSocket(newsocket);}
+int MdsSetSocket(SOCKET *newsocket) { return ___MdsSetSocket(newsocket);}
 
 #ifdef __VMS
 int  MdsClose(struct dsc$descriptor *treedsc, int *shot)
