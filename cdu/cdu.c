@@ -1,9 +1,9 @@
 #include        <stdio.h>
+#include        <stdlib.h>
 #include        <string.h>
 #include        "cdudef.h"
 #ifdef vms
 #include        <lib$routines.h>
-#include        <stdlib.h>
 #include        <ssdef.h>
 #else
 #include        <malloc.h>
