@@ -4,3 +4,4 @@ all :
 	cd tdishr ; make -f Makefile.OSF
 	cd xmdsshr ; make -f Makefile.OSF
 	cd dwscope ; make -f Makefile.OSF
+	cd traverser ; make -f Makefile.OSF
