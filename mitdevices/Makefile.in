@@ -96,6 +96,7 @@ UIDS = \
 
 SOURCES = \
 dt200.c \
+dt_acq16.c \
 DevRoutines.c \
 a12_gen.c a12.c \
 a14_gen.c a14.c \
@@ -654,6 +655,7 @@ MitDevices.exports: MitDevices.def
 @MAKEUIDDIR@DT101.uid : DT101.uil ; $(UIL) -o @MAKEUIDDIR@DT101.uid DT101.uil
 @MAKEUIDDIR@DT200.uid : DT200.uil ; $(UIL) -o @MAKEUIDDIR@DT200.uid DT200.uil
 @MAKEUIDDIR@DT200DA.uid : DT200DA.uil ; $(UIL) -o @MAKEUIDDIR@DT200DA.uid DT200DA.uil
+@MAKEUIDDIR@DT_ACQ16.uid : DT_ACQ16.uil ; $(UIL) -o @MAKEUIDDIR@DT_ACQ16.uid DT_ACQ16.uil
 @MAKEUIDDIR@DSP2904.uid : DSP2904.uil ; $(UIL) -o @MAKEUIDDIR@DSP2904.uid DSP2904.uil
 @MAKEUIDDIR@EC727.uid : EC727.uil ; $(UIL) -o @MAKEUIDDIR@EC727.uid EC727.uil
 @MAKEUIDDIR@FERA.uid : FERA.uil ; $(UIL) -o @MAKEUIDDIR@FERA.uid FERA.uil

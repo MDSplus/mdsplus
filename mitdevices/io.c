@@ -144,9 +144,11 @@ int DMARead2(short *buffer, const char *fname, int *chan, int *samples, int *act
     
   return out;
 }
+#define MAX_CHUNK_SIZE 1024*1024
 
 int DMARead3(short *buffer, const char *fname, int *start, int *end, int *inc, float *coeffs, int *num_coeffs)
 {
+  int samples_to_go;
   int linc = (*num_coeffs <= 1) ?  *inc :  1;
   int samples = (*end - *start + 1)/linc;
   unsigned length = samples*sizeof(short);
@@ -171,17 +173,22 @@ int DMARead3(short *buffer, const char *fname, int *start, int *end, int *inc, f
   }
   buffer_def.istart = *start;
   buffer_def.istride = linc;
-  buffer_def.nsamples = samples;
   buffer_def.buffer = (short *)region;
+  for (samples_to_go=length/2; samples_to_go > 0; samples_to_go -= buffer_def.nsamples)
+    {
+      buffer_def.nsamples = MIN(samples_to_go, MAX_CHUNK_SIZE);
+      printf("about to ioctl istart = %d, istride= %d, nsamples = %d \n", 
+	     buffer_def.istart, buffer_def.istride, buffer_def.nsamples);
 
-  printf("about to ioctl istart = %d, istride= %d, nsamples = %d \n", buffer_def.istart, buffer_def.istride, buffer_def.nsamples);
-
-  rc = ioctl( fd, ACQ32_IOREAD_LOCALBUF, &buffer_def );
-  printf("back from ioctl *num_coeffs=%d\n", *num_coeffs);
-  if (rc < 0) {
-    printf("got back %d from ioctl\n", rc);
-    perror("call to ioctl");
-  }
+      rc = ioctl( fd, ACQ32_IOREAD_LOCALBUF, &buffer_def );
+      printf("back from ioctl *num_coeffs=%d\n", *num_coeffs);
+      if (rc < 0) {
+	printf("got back %d from ioctl\n", rc);
+	perror("call to ioctl");
+      }
+      buffer_def.buffer += buffer_def.nsamples;
+      buffer_def.istart += buffer_def.nsamples*buffer_def.istride;
+    }
   if (*num_coeffs > 1) {
     for (idx = 0; idx < (*end - *start + 1)/ *inc; idx ++) {
       sam = 0;
@@ -194,7 +201,7 @@ int DMARead3(short *buffer, const char *fname, int *start, int *end, int *inc, f
     }
     /*  printf("\n"); */
   } else {
-    memcpy(buffer, region, buffer_def.nsamples*sizeof(short));
+    memcpy(buffer, region, samples*sizeof(short));
   }
   printf("about to umap...\n");
   rc = munmap((void *)region, length);
