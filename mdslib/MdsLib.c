@@ -264,13 +264,14 @@ struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
 int MdsValueLength(int numbytes, struct descriptor *dsc)
 {
   int length;
+
   switch (dsc->class) 
     {
     case CLASS_S:
     case CLASS_D:
       if (dsc->dtype == DTYPE_CSTRING) 
 	{
-	  length = dsc->length;
+	  length = MIN(numbytes, dsc->length);
 	}
       else
 	{
