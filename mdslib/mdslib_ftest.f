@@ -43,26 +43,26 @@ c23456789012345678901234567890123456789012345678901234567890123456789012
       write (6,*) "MdsValue($EXPT): ",cresult,status,size
 
       dsc = descr(IDTYPE_LONG,42042,0)
-      status = MdsPut("\TOP:NUMERIC"//CHAR(0),"$",dsc,0)
-      write (6,*) "MdsPut('\TOP:NUMERIC',$,42042): ",status
+      status = MdsPut("NUMERIC"//CHAR(0),"$",dsc,0)
+      write (6,*) "MdsPut('NUMERIC',$,42042): ",status
 
       dsc = descr(IDTYPE_LONG,iresult,0)
-      status = MdsValue("\TOP:NUMERIC"//CHAR(0),dsc,0,)
-      write (6,*) "MdsValue('\TOP:NUMERIC'): ",iresult,status
+      status = MdsValue("NUMERIC"//CHAR(0),dsc,0,)
+      write (6,*) "MdsValue('NUMERIC'): ",iresult,status
 
       dsc = descr(IDTYPE_FLOAT,resultarr,20,0)
-      status = MdsPut("\TOP:NUMERIC"//CHAR(0),"$",dsc,0)
-      write (6,*) "MdsPut('\TOP:NUMERIC','$',array) : ",status
+      status = MdsPut("NUMERIC"//CHAR(0),"$",dsc,0)
+      write (6,*) "MdsPut('NUMERIC','$',array) : ",status
       do i=1,20
          resultarr(i) = 0.
       enddo
 
-      status = MdsValue("\TOP:NUMERIC"//CHAR(0),dsc,0,size)
-      write (6,*) "MdsValue('\TOP:NUMERIC'): " ,resultarr, status, size
+      status = MdsValue("NUMERIC"//CHAR(0),dsc,0,size)
+      write (6,*) "MdsValue('NUMERIC'): " ,resultarr, status, size
 
       dsc = descr(IDTYPE_FLOAT,array2d,nx,ny,0)
-      status = MdsPut("\TOP:NUMERIC"//CHAR(0),"$",dsc,0)
-      write (6,*) "MdsPut('\TOP:NUMERIC',$,array2d) : ",status
+      status = MdsPut("NUMERIC"//CHAR(0),"$",dsc,0)
+      write (6,*) "MdsPut('NUMERIC',$,array2d) : ",status
 
       
       
