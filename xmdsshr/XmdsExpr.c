@@ -244,7 +244,7 @@ XmdsExprClassRec xmdsExprClassRec = {
      /*   change_managed: 	*/  XtInheritChangeManaged,
      /*   insert_child:   	*/  XtInheritInsertChild,
      /*   delete_child:   	*/  XtInheritDeleteChild,
-     /*   extension:      	*/  (char *)&composite_extension
+     /*   extension:      	*/  NULL /* (char *)&composite_extension */
   },
   {  /* constraint_class */
      /* constraint resource list */ NULL,
