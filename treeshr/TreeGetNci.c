@@ -607,6 +607,8 @@ int _TreeIsOn(void *dbid, int nid)
 }
 
 
+
+#ifdef _big_endian
 static void FixupNciIn(NCI *nci)
 {
   unsigned int flags;
@@ -641,6 +643,7 @@ static void FixupNciIn(NCI *nci)
     nci->DATA_INFO.DATA_LOCATION.record_length = swapint((char *)&nci->DATA_INFO.DATA_LOCATION.record_length);
   }    
 }
+#endif
 
 int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci)
 {
@@ -670,7 +673,7 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci)
 #else
 			fseek(info->nci_file->get, node_num * sizeof(NCI), SEEK_SET);
 			fread((void *)nci,sizeof(NCI),1,info->nci_file->get);
-#if defined(__hpux__) || defined(__irix__)
+#if defined(_big_endian)
 			FixupNciIn(nci);
 #endif
 

@@ -1,0 +1,32 @@
+CFLAGS = -c -D__sunos__ -D_big_endian -I../include -I. -g 
+
+OBJECTS = \
+	MdsGet1DxA.o \
+	MdsGet1DxS.o \
+	MdsXdRoutines.o \
+	MdsCmprs.o \
+	MdsPk.o \
+        MdsCompareXd.o \
+        MdsCompress.o \
+	dummies.o \
+	librtl.o
+
+all : .depend
+	make -f Makefile.SunOS -f .depend ../shlib/libMdsShr.so
+
+../shlib/libMdsShr.so : $(OBJECTS) ../shlib 
+	$(LD) -o $@ $(OBJECTS) -G -lc -ldl
+
+../shlib :
+	mkdir ../shlib
+
+clean :
+	- rm ../shlib/libMdsShr.so
+	- rm *.o
+	- rm .depend
+
+depend : .depend
+
+.depend :
+	- rm .depend
+	- touch .depend

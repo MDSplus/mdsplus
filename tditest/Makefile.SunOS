@@ -1,0 +1,25 @@
+CFLAGS = -I../include -I. -g
+
+OBJECTS = \
+tditest.o
+
+#all : .depend
+#	make -f Makefile.SunOS -f .depend ../bin/tditest
+
+../bin/tditest : $(OBJECTS) ../bin
+	cc -o $@ $(OBJECTS) -lc -L../shlib -lTdiShr
+
+../bin :
+	mkdir ../bin
+
+clean :
+	- rm *.o
+	- rm ../bin/tditest
+	- rm .depend
+
+depend : .depend
+
+.depend :
+	- rm .depend
+	find *.c -exec cc -I../include -M {} > .depend \;
+

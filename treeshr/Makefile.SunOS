@@ -1,0 +1,36 @@
+CFLAGS = -c -D__sunos__ -misalign -D_big_endian -I../include -I. -g 
+
+OBJECTS = \
+dummies.o \
+TreeAddNode.o \
+TreeFindNode.o \
+TreeGetDbi.o \
+TreeGetNci.o \
+TreeGetRecord.o \
+TreeOpen.o \
+TreePutRecord.o \
+TreeSetDefault.o \
+TreeSetNci.o \
+RemoteAccess.o
+
+#all : .depend
+#	make -f Makefile.SunOS -f .depend ../shlib/libTreeShr.so
+
+../shlib/libTreeShr.so : $(OBJECTS) ../shlib
+	ld -o $@ $(OBJECTS) -G -lc -L../shlib -lMdsShr
+
+../shlib :
+	mkdir ../shlib
+
+clean :
+	- rm *.o
+	- rm ../shlib/libTreeShr.so
+	- rm .depend
+	- rm so_locations
+
+depend : .depend
+
+.depend :
+	- rm .depend
+	find *.c -exec cc -I../include -M {} > .depend \;
+

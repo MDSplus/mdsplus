@@ -1,0 +1,10 @@
+all :
+	cd mdsshr ; make -f Makefile.SunOS
+	cd treeshr ; make -f Makefile.SunOS
+	cd tdishr ; make -f Makefile.SunOS
+	cd tditest ; make -f Makefile.SunOS
+	cd xmdsshr ; make -f Makefile.SunOS
+	cd dwscope ; make -f Makefile.SunOS
+	cd mitdevices ; make -f Makefile.SunOS
+	cd traverser ; make -f Makefile.SunOS
+	cd mdslibidl ; make -f Makefile.SunOS
