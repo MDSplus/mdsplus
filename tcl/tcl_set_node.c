@@ -29,6 +29,7 @@ int TclSetNode()
 
     cli_get_value("NODENAME",&dsc_nodename);
     nodename = dsc_nodename.dscA_pointer;
+    l2u(nodename,0);
     log = cli_present("LOG") & 1;
 
     usageMask = -1;

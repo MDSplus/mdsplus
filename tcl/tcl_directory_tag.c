@@ -36,6 +36,7 @@ int TclDirectoryTag()
     while (cli_get_value("TAG",&dsc_tagnam) & 1)
        {
         tagnam = dsc_tagnam.dscA_pointer;
+        l2u(tagnam,0);
         ctx = 0;
         sub_total = 0;
         TclTextOut(" ");

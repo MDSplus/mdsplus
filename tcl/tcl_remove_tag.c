@@ -21,6 +21,7 @@ int TclRemoveTag()
     static DYNAMIC_DESCRIPTOR(dsc_tagnam);
 
     cli_get_value("TAG",&dsc_tagnam);
+    l2u(dsc_tagnam.dscA_pointer,0);
     sts = TreeRemoveTag(dsc_tagnam.dscA_pointer);
     if (~sts & 1)
         sts = MdsMsg(sts,"Failed to remove tag '%s'",

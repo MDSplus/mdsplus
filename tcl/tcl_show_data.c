@@ -509,6 +509,7 @@ int TclShowData()
     usageMask = -1;
     while (cli_get_value("NODE",&dsc_nodnam) & 1)
        {
+        l2u(dsc_nodnam.dscA_pointer,0);
         while (TreeFindNodeWild(dsc_nodnam.dscA_pointer,&nid,&ctx,usageMask) & 1)
            {
             pathnam = TreeGetPath(nid);

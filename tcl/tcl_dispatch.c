@@ -104,6 +104,7 @@ int TclDispatch()
     int netid;
     int waiting = cli_present("WAIT") != CLI_STS_NEGATED;
     cli_get_value("NODE",&treenode);
+    l2u(treenode.dscA_pointer,0);
 #ifdef vms
     if (!SyncEfn) lib$get_ef(&SyncEfn);
 #endif

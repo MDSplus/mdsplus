@@ -108,20 +108,20 @@ int   TclDirectory()
     static int   head_nid;
     static int   partlen;
     static NCI_ITM full_list[] = {
-          {4,NciGET_FLAGS,(unsigned char *)&nciFlags,&retlen}
-         ,{8,NciTIME_INSERTED,(unsigned char *)time,&retlen}
-         ,{4,NciOWNER_ID,(unsigned char *)&owner,&retlen}
-         ,{1,NciCLASS,(unsigned char *)&class,&retlen}
-         ,{1,NciDTYPE,(unsigned char *)&dtype,&retlen}
-         ,{4,NciLENGTH,(unsigned char *)&dataLen,&retlen}
-         ,{2,NciCONGLOMERATE_ELT,(unsigned char *)&conglomerate_elt,&retlen}
-         ,{0,NciEND_OF_LIST,(unsigned char *)0,0}
+          {4,NciGET_FLAGS,&nciFlags,0}
+         ,{8,NciTIME_INSERTED,time,0}
+         ,{4,NciOWNER_ID,&owner,0}
+         ,{1,NciCLASS,&class,0}
+         ,{1,NciDTYPE,&dtype,0}
+         ,{4,NciLENGTH,&dataLen,0}
+         ,{2,NciCONGLOMERATE_ELT,&conglomerate_elt,0}
+         ,{0,NciEND_OF_LIST,0,0}
          };
 
     static NCI_ITM cong_list[] = {
-          {4,NciCONGLOMERATE_NIDS,(unsigned char *)&head_nid,&retlen}
-         ,{64,NciORIGINAL_PART_NAME,(unsigned char *)partC,&partlen}
-         ,{0,NciEND_OF_LIST,(unsigned char *)0,0}
+          {4,NciCONGLOMERATE_NIDS,&head_nid,&retlen}
+         ,{64,NciORIGINAL_PART_NAME,partC,&partlen}
+         ,{0,NciEND_OF_LIST,0,0}
          };
     int last_parent_nid = -1;
     static int parent_nid;
@@ -130,14 +130,12 @@ int   TclDirectory()
     int previous_relationship;
     static unsigned char nodeUsage;
     static NCI_ITM general_info_list[] = {
-          {4,NciPARENT,(unsigned char *)&parent_nid,0}
-         ,{12,NciNODE_NAME,(unsigned char *)nodnamC,&nodnamLen}
-         ,{4,NciPARENT_RELATIONSHIP,(unsigned char *)&relationship,0}
-         ,{1,NciUSAGE,(unsigned char *)&nodeUsage,0}
+          {4,NciPARENT,&parent_nid,0}
+         ,{12,NciNODE_NAME,nodnamC,&nodnamLen}
+         ,{4,NciPARENT_RELATIONSHIP,&relationship,0}
+         ,{1,NciUSAGE,&nodeUsage,0}
          ,{0,NciEND_OF_LIST,0,0}
          };
-    static DYNAMIC_DESCRIPTOR(dtype_dsc);
-    static DYNAMIC_DESCRIPTOR(class_dsc);
     static int elmnt;
     static DYNAMIC_DESCRIPTOR(dsc_allUsage);
     static DYNAMIC_DESCRIPTOR(dsc_usageStr);
@@ -183,6 +181,7 @@ int   TclDirectory()
     str_free1_dx(&dsc_outline);
     while (cli_get_value("NODE",&dsc_nodeList) & 1)
        {
+        l2u(dsc_nodeList.dscA_pointer,0);
         for (elmnt=0; str_element(&dsc_nodnam,elmnt,',',&dsc_nodeList) & 1; elmnt++)
            {
             while ((status = TreeFindNodeWild(dsc_nodnam.dscA_pointer,&nid,&ctx,usageMask)) & 1)

@@ -81,6 +81,7 @@ int TclDeleteNode()
        {
         ctx = 0;
         nodename = dsc_nodnam.dscA_pointer;
+        l2u(nodename,0);
         while (TreeFindNodeWild(nodename,&nid,&ctx,usageMask) & 1)
            {
             nids++;
