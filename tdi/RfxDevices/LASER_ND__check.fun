@@ -19,23 +19,23 @@ public fun LASER_ND__check(as_is _nid, optional _method)
 
     _port = if_error(data(DevNodeRef(_nid, _N_PORT)),(DevLogErr(_nid, "Missing TCP Port"); abort();));
 
-	_sock = OpenConnection(_ip, _port, _ASCII_MODE);
+	_sock = TCPOpenConnection(_ip, _port, _ASCII_MODE);
 	if(_sock == 0)
 	{
 		DevLogErr(_nid, "Cannot connect to remote instruments"); 
 		abort();
 	}
 
-	if(SendCommand(_sock, "ND_STATUS") == 0)
+	if(TCPSendCommand(_sock, "ND_STATUS") == 0)
 	{
-		CloseConnection(_sock);
+		TCPCloseConnection(_sock);
 		DevLogErr(_nid, ""Error during send ND_STATUS command "); 
 		abort();
 	}
 
-	if((_msg = CheckAnswer(_sock) )!= "")
+	if((_msg = TCPCheckAnswer(_sock) )!= "")
 	{
-		CloseConnection(_sock);
+		TCPCloseConnection(_sock);
 		DevLogErr(_nid, "Error in ND_STATUS command execution : "//_msg); 
 		abort();
 	}
@@ -44,7 +44,7 @@ public fun LASER_ND__check(as_is _nid, optional _method)
 
 	write(*, "Laser Neodimio Status : "//_st[0]);
 
-	CloseConnection(_sock);
+	TCPCloseConnection(_sock);
 
 	return (1);
 
