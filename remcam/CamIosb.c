@@ -5,6 +5,11 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern unsigned short RemCamLastIosb[4];
 
+int CamVerbose(int flag)
+{
+  return 1;
+}
+
 int CamBytcnt(unsigned short *iosb)
 {
   return (int)(iosb ? iosb[1] : RemCamLastIosb[1]);
