@@ -1,4 +1,4 @@
-CFLAGS = -c -I../include -I. -g -migrate -U__DECC -assume noaligned_objects
+CFLAGS = -c -I../include -I. -g -assume noaligned_objects
 
 OBJECTS = \
 	MdsGet1DxA.o \
@@ -10,9 +10,20 @@ OBJECTS = \
 	MdsCompress.o \
 	librtl.o
 
-libMdsShr.so : libMdsShr.a
-	$(LD) -o $@ -shared -all $< -lc -lm -lots
+libMdsShr.so : $(OBJECTS)
+	$(LD) -o $@ -shared -no_archive $(OBJECTS) -lc -lm -lots
 
-libMdsShr.a : $(OBJECTS)
-	$(AR) $(ARFLAGS) $@ *.o
+clean :
+	- rm *.o
+	- rm so_locations
+	- rm *.so
+	- rm .depend
+
+depend : .depend
+
+.depend :
+	- rm .depend
+	find *.c -exec cc -I../include -M {} > .depend \;
+
+include .depend
 
