@@ -99,8 +99,9 @@ sparc-sun-solaris2*)
        LIBPATH="LD_LIBRARY_PATH";
        FEXECLIBDIR="-L";
        SHARETYPE=".so";
-       jni_inc_dir="/usr/java1.1/include";
-       jni_md_inc_dir="/usr/java1.1/include/solaris";;
+       JVM="";
+       jni_inc_dir="/usr/java/include";
+       jni_md_inc_dir="/usr/java/include/solaris";;
 alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FFLAGS="$FFLAGS -pthread";
        GROFF_MAN_FLAGS="-t -mgan -Tascii";
