@@ -610,6 +610,7 @@ static SOCKET ConnectToPort(char *host, char *service)
     m->h.length = strlen(user_p);
     m->h.msglen = sizeof(MsgHdr) + m->h.length;
     m->h.dtype = DTYPE_CSTRING;
+    m->h.ndims = 0;
     memcpy(m->bytes,user_p,m->h.length);
     status = SendMdsMsg(s,m,0);
     free(m);
