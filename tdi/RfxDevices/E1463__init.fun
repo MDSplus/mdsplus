@@ -78,7 +78,7 @@ write(*, _command1);
     _command2 = _command2 // 'ES';
 write(*, _command2);
     _exp_time = if_error(data(DevNodeRef(_nid, _N_EXP_TIME)),(DevLogErr(_nid, "Exposure time is missing"); abort();));
-    _command3 = 'MSK 0;ET ' // trim(adjustl(f_float(_exp_time)));
+    _command3 = 'MSK 0;ET ' // trim(adjustl(float(_exp_time)));
 write(*, _command3);
 
     if_error(GPIBInit(), (DevLogErr(_nid, "Cannot initialize GPIB"); abort();));    

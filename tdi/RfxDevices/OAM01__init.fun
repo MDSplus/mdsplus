@@ -19,7 +19,7 @@ public fun OAM01__init ( as_is _nid, optional _method )
 
 
 
-
+if_error(GPIBInit(), (DevLogErr(_nid, "Cannot initialize GPIB"); abort();));
 	_nid_head = getnci ( _nid, 'nid_number' ) ;
 
 	_status = 1 ;
@@ -43,12 +43,20 @@ public fun OAM01__init ( as_is _nid, optional _method )
 
 
 
-
+    _gpib_id = GPIBGetId(_gpib_addr);
+    if(_gpib_id == 0)
+    {
+	DevLogErr(_nid, "Cannot initialize GPIB"); 
+	abort();
+    }
+	write(*, "ID: ", _gpib_id);
 
 
 	/* predispongo in remoto */
 
-	_command = "W5836(80)" ;
+	_command = 'W5836(80)\n' ;
+    if_error(GPIBWrite(_gpib_id, _command), (DevLogErr(_nid, "Error in GPIB communication"); abort();));
+wait(1.);
 
 
 
@@ -69,9 +77,11 @@ public fun OAM01__init ( as_is _nid, optional _method )
 
 
 		/* seleziono il canale da configurare */
-		_command = "W5834(0" // Trim ( AdjustL ( ( 1 + _channel ) ) ) // ")" ;
+		_command = 'W5834(0' // Trim ( AdjustL ( ( 1 + _channel ) ) ) // ')' // '\n' ;
 		write(*, "ch: ", _command);
+    if_error(GPIBWrite(_gpib_id, _command), (DevLogErr(_nid, "Error in GPIB communication"); abort();));
 
+wait(1.);
 
 
 			DevNodeCvt ( _nid, __CHANNEL_1A + __RANGE + ( _channel * _NODES_PER_CHANNEL ), [ 250, 100, 50, 25, 10, 5, 2.5, 1, 0.5 ], [ '00', '01', '02', '03', '04', '05', '06', '07', '08' ], _range = '00' ) ;
@@ -103,32 +113,46 @@ DevPut(_nid, __CHANNEL_1A + __INPUT + ( _channel * _NODES_PER_CHANNEL ), _input)
 
 
 			/* metto ON il canale */
-			_command = "W5836(C401)" ;
+			_command = 'W5836(C401)\n' ;
+    if_error(GPIBWrite(_gpib_id, _command), (DevLogErr(_nid, "Error in GPIB communication"); abort();));
+wait(1.);
+
 			/* setto il range */
-			_command = "W5836(C0" // _range // ")" ;
+			_command = 'W5836(C0' // _range // ')' // '\n' ;
+    if_error(GPIBWrite(_gpib_id, _command), (DevLogErr(_nid, "Error in GPIB communication"); abort();));
 			write(*, "range: ", _command);
+wait(1.);
+
 			/* setto il coupling */
-			_command = "W5836(C1" // _coupling // ")" ;
+			_command = 'W5836(C1' // _coupling // ')' // '\n' ;
 			write(*, "coupling: ", _command);
+    if_error(GPIBWrite(_gpib_id, _command), (DevLogErr(_nid, "Error in GPIB communication"); abort();));
+wait(1.);
+
 			/* setto il source */
-			_command = "W5836(C2" // _source // ")" ;
+			_command = 'W5836(C2' // _source // ')' // '\n' ;
 			write(*, "source: ", _command);
-
-
+    if_error(GPIBWrite(_gpib_id, _command), (DevLogErr(_nid, "Error in GPIB communication"); abort();));
+wait(1.);
 		}
 		else
 		{
 			/* metto OFF il canale */
-			_command = "W5836(C400)" ;
+			_command = 'W5836(C400)\n' ;
 			write ( *, " OFF " ) ;
+    if_error(GPIBWrite(_gpib_id, _command), (DevLogErr(_nid, "Error in GPIB communication"); abort();));
+	wait(1.);
 		}
 	}
 
 	/* mi metto sul canale virtuale */
-	_command = "W5834(00)" ;
+	_command = 'W5834(00)\n' ;
+    if_error(GPIBWriteW(_gpib_id, _command), (DevLogErr(_nid, "Error in GPIB communication"); abort();));
+wait(1.);
 	write(*, "ch: ", _command);
 	/* rimetto il controllo in locale */
-	_command = "W5836(00)" ;
+	_command = 'W5836(00)\n' ;
+    if_error(GPIBWrite(_gpib_id, _command), (DevLogErr(_nid, "Error in GPIB communication"); abort();));
 	write(*, _command);
 
 	return ( 1 ) ;
