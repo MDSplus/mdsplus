@@ -24,7 +24,7 @@ class InfoServer implements Server
             model_database = new Database(tree, -1);
             model_database.open();
             model_database.create(shot);
-        }catch(Exception exc) {model_database = null; System.out.println("Error opening " + tree + " shot " + shot);}
+        }catch(Exception exc) {model_database = null; System.out.println("Error opening " + tree + " shot " + shot + ": " + exc);}
     }
     public void endSequence(int shot)
     {
