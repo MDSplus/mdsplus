@@ -1660,6 +1660,7 @@ int WINAPI descr1VB(int *dtype, void *value)
   } else
     return descr(dtype,value,&zero);
 }
+int WINAPI descr1VB2(int *dtype,int *len) {return (descr2(dtype,&zero,len));}
 int WINAPI descr2VB(int *dtype, int *num, void *value)
 { if (*dtype == DTYPE_CSTRING)
   {
@@ -1668,6 +1669,7 @@ int WINAPI descr2VB(int *dtype, int *num, void *value)
   } else
     return descr(dtype,value,num,&zero);
 }
+int WINAPI descr2VB2(int *dtype,int *num,int *len) {return (descr2(dtype,num,&zero,len));}
 int WINAPI descr3VB(int *dtype, int *n1, int *n2, void *value)
 { if (*dtype == DTYPE_CSTRING)
   {
@@ -1676,6 +1678,7 @@ int WINAPI descr3VB(int *dtype, int *n1, int *n2, void *value)
   } else
     return descr(dtype,value,n1,n2,&zero);
 }
+int WINAPI descr3VB2(int *dtype, int *n1, int *n2, int *len) {return (descr2(dtype,n1,n2,&zero,len));}
 int WINAPI descr4VB(int *dtype, int *n1, int *n2, int *n3, void *value)
 { if (*dtype == DTYPE_CSTRING)
   {
@@ -1684,18 +1687,32 @@ int WINAPI descr4VB(int *dtype, int *n1, int *n2, int *n3, void *value)
   } else
     return descr(dtype,value,n1,n2,n3,&zero);
 }
+int WINAPI descr4VB2(int *dtype, int *n1, int *n2, int *n3,int *len) {return (descr2(dtype,n1,n2,n3,&zero,len));}
 int WINAPI MdsValue1VB(char *expression, int *ansd, int *retlen)
  { return MdsValue(expression,ansd,&zero,retlen);}
+int WINAPI MdsValue1VB2(char *expression, int *ansd, void *value, int *retlen)
+ { return MdsValue2(expression,ansd,value,&zero,retlen);}
+
 int WINAPI MdsValue2VB(char *expression, int *arg1d, int *ansd, int *retlen)
  { return MdsValue(expression,arg1d,ansd,&zero,retlen);}
+int WINAPI MdsValue2VB2(char *expression, int *arg1d, void *arg1v, int *ansd, void *value, int *retlen)
+ { return MdsValue2(expression,arg1d,arg1v,ansd,value,&zero,retlen);}
 int WINAPI MdsValue3VB(char *expression, int *arg1d, int *arg2d, int *ansd, int *retlen)
- { return MdsValue(expression,arg1d,ansd,&zero,retlen);}
+ { return MdsValue(expression,arg1d,arg2d,ansd,&zero,retlen);}
+int WINAPI MdsValue3VB2(char *expression, int *arg1d, void *arg1v, int *arg2d, void *arg2v, int *ansd, void *value, int *retlen)
+ { return MdsValue2(expression,arg1d,arg1v,arg2d,arg2v,ansd,value,&zero,retlen);}
 int WINAPI MdsPut1VB(char *node, char *expression, int *ansd)
  { return MdsPut(node,expression,ansd,&zero);}
+int WINAPI MdsPut1VB2(char *node, char *expression, int *ansd, void *value)
+ { return MdsPut2(node,expression,ansd,value,&zero);}
 int WINAPI MdsPut2VB(char *node, char *expression, int *arg1d, int *ansd)
  { return MdsPut(node,expression,arg1d,ansd,&zero);}
+int WINAPI MdsPut2VB2(char *node, char *expression, int *arg1d, void *arg1v, int *ansd, void *value)
+ { return MdsPut2(node,expression,arg1d,arg1v,ansd,value,&zero);}
 int WINAPI MdsPut3VB(char *node, char *expression, int *arg1d, int *arg2d, int *ansd)
  { return MdsPut(node,expression,arg1d,arg2d,ansd,&zero);}
+int WINAPI MdsPut3VB2(char *node, char *expression, int *arg1d, void *arg1v, int *arg2d, void *arg2v,int *ansd, void *value)
+ { return MdsPut2(node,expression,arg1d,arg1v,arg2d,arg2v,ansd,value,&zero);}
 #endif
 
 /************************************************************
