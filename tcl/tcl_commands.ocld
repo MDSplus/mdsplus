@@ -47,6 +47,7 @@ define verb close												       ! 53
 	Routine TclClose											       ! 53
 	parameter p1, LABEL=FILE										       ! 53 
 	qualifier shotid,default,nonnegatable,value(default="-1",type=$number)					       ! 53 
+        qualifier confirm,default
 	qualifier all												       ! 109
 define verb compress												       ! 66 
 	Routine TclCompressDatafile										       ! 66

@@ -40,8 +40,12 @@ int TclClose()
        }
     if (sts == TreeWRITEFIRST)
        {
-        printf(promptWritefirst);
-        if (yesno(1))
+         if (cli_present("CONFIRM") == CLI_STS_NEGATED)
+           sts = TreeQuitTree(0,0);
+         else
+	 {
+	   printf(promptWritefirst);
+	   if (yesno(1))
            {
             sts = TreeWriteTree(0,0);
             if (sts & 1)
@@ -49,8 +53,9 @@ int TclClose()
                 TreeClose(0,0);
                }
            }
-        else
-            sts = TreeQuitTree(0,0);
+	   else
+	     sts = TreeQuitTree(0,0);
+	 }
        }
     if (sts & 1)
         TclNodeTouched(0,tree);
