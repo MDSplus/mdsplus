@@ -24,13 +24,8 @@ class TwuSingleSignal
     private TWUFetchOptions fetchOptions    = null  ;
     private String    source                = null  ;
     private float[]   data                  = null  ;
-    private boolean   dataAvailable         = false ;
-    private boolean   propertiesAvailable   = false ;
     private long      shotOfTheProperties   = 0;
-    private boolean   fetchOptionsAvailable = false ;
-    private boolean   error                 = false ;
     private Exception errorSource           = null  ;
-    private boolean   fakeAbscissa          = false ;
     private boolean   isAbscissa            = false ;
 
     // A constructor that is useful for main signals.
@@ -108,7 +103,7 @@ class TwuSingleSignal
     getTWUProperties(long requestedShot)
         throws IOException
     {
-        if (! propertiesAvailable || shotOfTheProperties!=requestedShot )
+        if (properties==null || shotOfTheProperties!=requestedShot )
         {
             try
             {
@@ -146,8 +141,8 @@ class TwuSingleSignal
         {
             // Don't remember errors and data from previous attempts
             errorSource = null ;
-            error = false ;
-            dataAvailable = false ;
+            //            error = false ;
+            data  = null ;
 
             if (isAbscissa)
               fetch_X_Properties() ;
@@ -157,10 +152,9 @@ class TwuSingleSignal
         catch (Exception e)
         {
             errorSource = e ;
-            error = true ;
+            //            error = true ;
         }
         checkForError() ;
-        propertiesAvailable = true ;
     }
 
     private void 
@@ -215,7 +209,6 @@ class TwuSingleSignal
     private void 
     fake_my_Properties()
     {
-        fakeAbscissa = true ;
         int len = mainSignal.getTWUProperties().LengthTotal() ;
         properties = new FakeTWUProperties (len) ;
         // creates an empty (but non-null!) Properties object,
@@ -223,21 +216,17 @@ class TwuSingleSignal
     }
 
     public boolean
-    dataReady()
-    {
-        return dataAvailable ;   // note: you should also check for error !!!
-    }
-
-    public boolean
     propertiesReady()
     {
-        return propertiesAvailable ; // ditto.
+        return properties!=null ; // ditto.
     }
+
+    //-----------------------------------------------------------------------------
 
     public boolean
     error()
     {
-        return error ;
+        return errorSource!=null ;
     }
 
     public Exception
@@ -245,6 +234,8 @@ class TwuSingleSignal
     {
         return errorSource ;
     }
+
+    //-----------------------------------------------------------------------------
 
     public float []
     getData (TWUFetchOptions opt )
@@ -257,7 +248,7 @@ class TwuSingleSignal
     public float []
     getData ( ) throws IOException
     {
-        if (dataAvailable)
+        if (data!=null)
           return data ;
 
         try
@@ -281,7 +272,7 @@ class TwuSingleSignal
         throws IOException
     {
         doClip (opt);
-        if ( fetchOptionsAvailable
+        if ( fetchOptions!=null
              &&
              fetchOptions.equalsForBulkData (opt) )
         {
@@ -289,8 +280,6 @@ class TwuSingleSignal
         }
 
         fetchOptions = opt ;
-        fetchOptionsAvailable = true ;
-        dataAvailable = false ;
         data = null ;
     }
 
@@ -305,7 +294,7 @@ class TwuSingleSignal
     private void
     fetchBulkData() throws Exception
     {
-        if (! fetchOptionsAvailable)
+        if (fetchOptions==null)
           throwError ("unspecified fetch options (internal error)");
 
         if (fetchOptions.getTotal() == -1 )
@@ -318,7 +307,6 @@ class TwuSingleSignal
         }
 
         data = doFetch (fetchOptions);
-        dataAvailable = true ;
     }
 
     protected float[]
@@ -331,14 +319,14 @@ class TwuSingleSignal
         TWUSignal bulk = new TWUSignal (properties, 
                                         opt.getStart(), opt.getStep(), opt.getTotal());
 
-        return SimplifiedGetFloats(bulk, isAbscissa, opt.getTotal());
+        return SimplifiedGetFloats(bulk, opt.getTotal());
     }
 
     private float [] 
-    SimplifiedGetFloats(TWUSignal bulk, boolean is_time, int n_point)
+    SimplifiedGetFloats(final TWUSignal bulk, final int n_point)
     {
         ConnectionEvent ce;
-        ce = makeConnectionEvent((is_time ? "Load X" : "Load Y"), 0, 0);
+        ce = makeConnectionEvent((isAbscissa ? "Load X" : "Load Y"), 0, 0);
         DispatchConnectionEvent(ce);
 
         int inc = Waveform.MAX_POINTS!=0 ? n_point/Waveform.MAX_POINTS : 0;
@@ -349,7 +337,7 @@ class TwuSingleSignal
         {
             bulk.tryToRead(inc);
 
-            ce = makeConnectionEvent((is_time ? "X:" : "Y:"), 
+            ce = makeConnectionEvent((isAbscissa ? "X:" : "Y:"), 
                                      n_point, bulk.getActualSampleCount());
             DispatchConnectionEvent(ce);
                 
@@ -363,26 +351,30 @@ class TwuSingleSignal
         return bulk.error() ? null : bulk.getBulkData() ;
     }
 
+    //-----------------------------------------------------------------------------
+
     private void 
     createScalarData()
     {
         // an extra check to see if it really is a scalar
-        if (fetchOptions.getTotal() == 1)
+        if (properties!=null && properties.LengthTotal() == 1)
         {
             // return an (almost) empty array so there won't be
             // an error ; also, TwuWaveData.GetTitle() will
             // return an adapted title string containing the scalar value.
 
-            data = new float[] {0.0f} ;
+            if (properties.getProperty("Signal.Minimum") != null)
+              data = new float[] { (float) properties.Minimum()  };
+            else
+              data = new float[] {0.0f} ;
+
             // an empty array would cause an exception in Signal. But this works.
-            dataAvailable = true ;
             return ;
         }
         else
           setErrorString("No numerical data available!" );
 
         data = null ; // 'triggers' display of the error_string.
-        dataAvailable = true ;
     }
 
     public String 
@@ -409,12 +401,13 @@ class TwuSingleSignal
         return name + " = " + min + " " + units ;
     }
 
+    //-----------------------------------------------------------------------------
 
     private void
     throwError (String msg)
         throws Exception
     {
-        error = true ;
+        //        error = true ;
         errorSource = new Exception (msg);
         throw errorSource ;
     }
@@ -430,7 +423,7 @@ class TwuSingleSignal
     checkForError (TwuSingleSignal sig)
         throws Exception
     {
-        if (sig!= null && sig.error)
+        if (sig!= null && sig.error())
           throw( (Exception) sig.errorSource.fillInStackTrace() ) ;
     }
 
@@ -445,11 +438,12 @@ class TwuSingleSignal
         //  or if (debug) e.printStackTrace (System.out) ....
     }
 
+
     // ---------------------------------------------------------------------------------------------
 
     protected TWUFetchOptions
-    FindIndicesForXRange( long requestedShot,
-                          float x_start, float x_end, int n_points ) 
+    FindIndicesForXRange( final long requestedShot,
+                          final float x_start, final float x_end, final int n_points )
         throws  Exception
     {
         final TWUProperties prop = this.getTWUProperties(requestedShot) ;
@@ -458,153 +452,104 @@ class TwuSingleSignal
         if (prop.Dimensions() == 0 || len <= 1)
           return new TWUFetchOptions(0,1,1);  // mainly used to pick scalars out.
 
-        int           ix_start = -1;
-        int           ix_end   = -1 ;
-        final double  min      = prop.Minimum();
-        final double  max      = prop.Maximum();
-
-        // do an iterated search to find the indices, 
+        // do an iterated search to find the indices,
         // by reading parts of the abscissa values.
 
-        // ------------------------------------------------
-        //   minimum assumption here: data is a 1-to-1 map,
-        //    and it's either ascending or descending ;
-        //    there should be no peaks or valleys.
-        // ------------------------------------------------
-
         final int POINTS_PER_REQUEST = 100 ;
-        int       k    = POINTS_PER_REQUEST;
-        final int step = (int) Math.ceil ( len / (float)k ) ;
 
-        TWUFetchOptions opt = new TWUFetchOptions ( 0, step, k );
-        float[] data = this.doFetch (opt);
+        final int step     = (int) Math.ceil ( len / (float)POINTS_PER_REQUEST ) ;
 
-        boolean up = data [1] > data [0] ; 
-        k = data.length ; // may be less than POINTS_PER_REQUEST .
+        final int ix_start = FindIndex(x_start, this, 0, step, POINTS_PER_REQUEST, len);
+        final int ix_end   = FindIndex(x_end,   this, 0, step, POINTS_PER_REQUEST, len);
 
-        int i=0;
-        if (up)
-        {
-            while( i<k && data[i] <= x_start)
-              i++;
-        }
-        else
-        {
-            while( i<k && data[i] >= x_end)
-              i++;
-        }
-        if (i != 0)
-          i-- ;     
-        // correct the overshoot from the 'break'.
-        ix_start = i * step ; 
-        // temporary starting index. will zoom in to get the index of a closer match.
+        final int range       = ix_end - ix_start ;
+        final int aproxStep   = range / (n_points - 1)  ;
 
-        int j=k-1;
-        if (up)
-        {
-            while( j>i && data[j] >= x_end )
-              j--;
-        }
-        else
-        {
-            while( j>i && data[j] <= x_start )
-              j--;
-        }
-        
-        ix_end = j * step ;
-            
-        data = null ; 
-        // garbage-collect the now redundant data. 
-        // saves some memory [okay, now I'm optimizing... :)]
-        
-        ix_start = FindNonEquiIndex(up ? x_start : x_end,    this, ix_start, step, k);
-        ix_end   = FindNonEquiIndex(up ? x_end   : x_start,  this, ix_end,   step, k);
+        final int finalStep   = aproxStep<1 ? 1 : (range / (n_points - 1))  ;
+        final int finalPoints = 1 +  (int) Math.floor ( (float)range / (float)finalStep );
 
-
-        // extra checks:
-        if (ix_start < 0   )
-          ix_start = 0   ;
-        if (ix_end   >= len)
-          ix_end   = len ;
-        if (n_points < 2)
-          n_points = 2 ;
-
-        int range = ix_end - ix_start ; 
-        int finalStep  = range / (n_points - 1)  ; 
-        if (finalStep < 1) finalStep = 1 ;
-        int real_numsteps = (int) Math.floor ( (float)range / (float)finalStep );
-
-        int real_n_points = real_numsteps + 1 ; 
         // I want the last point (ix_end) included.
         // you should end up getting *at least* n_point points.
-        // NB: due to clipping, it *is* still possible that you do not get the very last point ....
 
-        return new TWUFetchOptions (ix_start, finalStep, real_n_points) ;
+        return new TWUFetchOptions (ix_start, finalStep, finalPoints) ;
     }
 
     // ---------------------------------------------------------------------------------------------
     static private int
-    FindNonEquiIndex(final float target, 
-                     final TwuSingleSignal xsig, 
-                     final int start, 
-                     final int laststep, 
-                     final int maxpts)
+    FindIndex(final float target,
+              final TwuSingleSignal xsig,
+              final int start,
+              final int step,
+              final int maxpts,
+              final int upperlimit)
     {
         // This is an iterative routine : it 'zooms in' on (a subsampled part of the)
         // abscissa data, until it finds the closest index. It looks between indices
-        // start and start+laststep, subsamples at most maxpts at a time =>
-        // next stepsize will be ceil (laststep/maxpts) ....
-        // 
+        // start and start+(step*maxpts), subsamples at most maxpts at a time =>
+        // next stepsize will be ceil (step/maxpts) ....
+        //
 
-        int newstep = (int) Math.ceil (laststep / ((float)maxpts)) ;
-        if (newstep < 1)
-          newstep = 1 ;
+        float []  data      = xsig.doFetch (new TWUFetchOptions (start, step, maxpts+1));
+        final int newnum    = data.length ;
+        final int ix        = findIndexInSubset(data, target );
+        final int bestGuess = start+ix*step ;
 
-        int end = start + laststep ;
-        int num = (int) Math.ceil ( laststep / ((float)newstep) );
-
-        float [] data = xsig.doFetch (new TWUFetchOptions (start, newstep, num+1)); 
-
-        // the "num+1" is for reading the sample at the edge, for comparison 
-        // (we want to get the index for which the data is closest to the target value.)
-
-        int newnum = data.length ;
-
-        boolean up = data[1] > data[0] ;
-        int i=0;
-        if (up) 
+        if(step>1)
         {
-            while ( i<newnum && data[i]<=target )
-              i++;
+            // Continue search with smaller step.
+
+            int newstep = (int) Math.ceil (step / ((float)maxpts)) ;
+            if (newstep < 1)
+              newstep = 1 ;        
+
+
+            data = null ;
+            return FindIndex (target, xsig, bestGuess, newstep, maxpts, upperlimit ) ;
+        }
+
+        if (ix >= newnum-1)
+          return bestGuess>upperlimit ? upperlimit : bestGuess ;
+
+        final boolean closer =
+            ( Math.abs (data[ix] - target) <= Math.abs (data[ix+1] - target) ) ;
+
+        return  closer ? bestGuess  : bestGuess+1 ;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    static private int
+    findIndexInSubset(final float[] subsetData,
+                      final float   target)
+    {
+        if (subsetData==null)
+          return 0;
+        
+        final int len=subsetData.length;
+
+        if (len<2)
+          return 0;
+
+        final boolean up = subsetData[1] > subsetData[0] ;
+
+
+        int ix=0;
+        if (up)
+        {
+            while ( ix<len && subsetData[ix] <= target)
+              ix++;
         }
         else
         {
-            while ( i<newnum && data[i]>=target )
-              i++;
+            while ( ix<len && subsetData[ix] >= target)
+              ix++;
         }
-        if (i > 0)
-          i-- ; // correct overshoot.
+        if (ix != 0)
+          ix-- ;  // correct the overshoot from the 'break'.
 
-        int newstart = start+i*newstep ;
-        int ret ;
-        if (newstep > 1) 
-        {
-            data = null ; 
-            ret = FindNonEquiIndex (target, xsig, newstart, newstep, maxpts) ; 
-        }
-        else 
-        {
-            if (i >= newnum-1)
-              ret = newstart ;
-            else 
-            {
-                boolean closer = 
-                    ( Math.abs (data[i] - target) <= Math.abs (data[i+1] - target) ) ;
-                ret = closer ? newstart : newstart+1 ;
-            }
-        }
-        return ret ;
+        return ix;
     }
+    
+    // ---------------------------------------------------------------------------------------------
 }
 
 // -------------------------------------------------------------------------------------------------
