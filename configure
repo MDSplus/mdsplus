@@ -4834,6 +4834,7 @@ cdu/Makefile
 d3dshr/Makefile 
 dwscope/Makefile 
 gen_device/Makefile
+hdf5/Makefile
 idlmdsevent/Makefile
 idlsql/Makefile
 javaclient/Makefile
@@ -5044,6 +5045,7 @@ cdu/Makefile
 d3dshr/Makefile 
 dwscope/Makefile 
 gen_device/Makefile
+hdf5/Makefile
 idlmdsevent/Makefile
 idlsql/Makefile
 javaclient/Makefile
