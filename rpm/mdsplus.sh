@@ -11,4 +11,5 @@ setup_file=$HOME/.mdsplus
 if [ -r $setup_file ]; then
 . /usr/local/mdsplus/setup.sh
 fi
+unset setup_file
 fi
