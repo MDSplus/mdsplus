@@ -16,7 +16,6 @@ PARTS = \
         tditest \
         xmdsshr \
         mdstcpip \
-	tdic \
         dwscope \
         mitdevices \
         mdslibidl \
@@ -27,6 +26,7 @@ PARTS = \
         cts     \
 	servershr \
         tcl \
+        tdic \
         traverser \
         actions \
         mdslib \
