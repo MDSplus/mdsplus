@@ -1021,9 +1021,9 @@ MDSVME=""
 CFLAGS="$CFLAGS -I\$(top_srcdir)/include"
 FFLAGS="$FFLAGS -I\$(top_srcdir)/include"
 
-case "$prefix" in
+case "$exec_prefix" in
 /usr/local*) : ${uiddir=/usr/lib/X11/uid};;
-*) : ${uiddir=$prefix/uid};;
+*) : ${uiddir=$exec_prefix/uid};;
 esac
 
 MAKESHLIBDIR="\$(top_srcdir)/lib/"
@@ -4515,6 +4515,7 @@ mdstcpip/Makefile
 mdsvme/Makefile
 mitdevices/Makefile 
 remcam/Makefile 
+rpm/Makefile
 servershr/Makefile 
 setevent/Makefile
 tcl/Makefile 
@@ -4699,6 +4700,7 @@ mdstcpip/Makefile
 mdsvme/Makefile
 mitdevices/Makefile 
 remcam/Makefile 
+rpm/Makefile
 servershr/Makefile 
 setevent/Makefile
 tcl/Makefile 

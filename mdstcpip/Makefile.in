@@ -50,10 +50,16 @@ install:
         fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsip	@bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@mdsipd	@bindir@
 	if test "@SHARETYPE@" != ".a" ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpShr.a @libdir@; \
 		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpUtil.a @libdir@; \
 	fi;
+	if [ ! -d $(exec_prefix)/etc ] ; then \
+                mkdirhier $(exec_prefix)/etc; \
+                chmod 755 $(exec_prefix)/etc; \
+        fi;
+	$(INSTALL) -m 755  mdsip.hosts $(exec_prefix)/etc
 
 @MAKEBINDIR@ :
 	mkdir @MAKEBINDIR@

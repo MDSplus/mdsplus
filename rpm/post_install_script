@@ -1,0 +1,44 @@
+#!/bin/sh
+case "`uname`" in
+Linux*)
+#
+# Linux post install script
+#
+#
+# Add /usr/local/mdsplus/lib to /etc/ld.so.conf
+#
+echo Configuring mdsplus libraries
+if grep "^/usr/local/mdsplus/lib" /etc/ld.so.conf > /dev/null
+then
+	true
+else
+	echo "/usr/local/mdsplus/lib" >> /etc/ld.so.conf
+fi
+/sbin/ldconfig
+#
+# Add mdsip to services
+#
+echo Adding mdsip MDSplus data server
+if grep "^mdsip " /etc/services >/dev/null
+then
+        true
+else
+        echo "mdsip    8000/tcp # Added by package mdsplus" >> /etc/services
+fi
+#
+# Add mdsipd to inetd.conf
+#
+mkdirhier /var/log/mdsplus/mdsipd
+if grep "^mdsip " /etc/inetd.conf > /dev/null
+then
+  true
+else
+  echo "mdsip stream	tcp	nowait root /usr/local/mdsplus/bin/mdsipd mdsipd mdsip /var/log/mdsplus/mdsipd" >> /etc/inetd.conf
+  kill -HUP `/sbin/pidof inetd`
+fi
+echo Adding MDSplus login scripts
+ln -s /usr/local/mdsplus/etc/profile.d/mdsplus.* /etc/profile.d/
+echo Creating sample /etc/mdsip.hosts file for mdsip server to user mapping
+cp /usr/local/mdsplus/etc/mdsip.hosts /etc/
+cp /usr/local/mdsplus/rpm/post_uninstall_script /usr/local/mdsplus_post_uninstall_script
+esac

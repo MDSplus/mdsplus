@@ -1,0 +1,4 @@
+MDS_PATH	/usr/local/mdsplus/tdi
+XAPPLRESDIR	/usr/local/mdsplus <:
+IDL_PATH	\+/usr/local/mdsplus/idl <:
+PATH		/usr/local/mdsplus/bin <:

@@ -1,0 +1,14 @@
+#!/bin/sh
+case "`uname`" in
+Linux*)
+#
+# Linux post install script
+#
+#
+# Remove profile.d scripts
+#
+rm /etc/profile.d/mdsplus.csh
+rm /etc/profile.d/mdsplus.sh
+#
+esac
+rm /usr/local/mdsplus_post_uninstall_script

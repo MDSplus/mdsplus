@@ -9,9 +9,7 @@
 # Parameters:
 #
 #       $1 = service or portnumber
-#       $2 = mdsplus system root directory
-#       $3 = log directory (directory must exist)
-#       $4 = optional alternate mdsip.hosts file
-cd $2
-. $2/setup.sh
-exec bin/mdsip $1 $4 >> $3/access 2>> $3/errors
+#       $2 = log directory (directory must exist)
+#       $3 = optional alternate mdsip.hosts file
+. /usr/local/mdsplus/etc/profile.d/mdsplus.sh
+exec /usr/local/mdsplus/bin/mdsip $1 $3 >> $2/access 2>> $2/errors

@@ -75,6 +75,10 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
+	if [ ! -d @uiddir@ ] ; then \
+	        mkdir @uiddir@; \
+	        chmod 755 @uiddir@; \
+	fi;
 	$(INSTALL) -m 644  @MAKEUIDDIR@xmds_usage_icons.uid @uiddir@
 	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsDigChans.uid @uiddir@
 	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsInput.uid @uiddir@

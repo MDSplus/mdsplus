@@ -1,0 +1,27 @@
+SHELL=/bin/sh
+top_srcdir=@top_srcdir@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+
+all : 
+	:
+      
+
+depend:
+	:
+
+clean :
+	- rm $(exec_prefix)/etc/profile.d/mdsplus.sh
+	- rm $(exec_prefix)/etc/profile.d/mdsplus.csh
+	- rm $(exec_prefix)/etc/envsyms
+
+install:
+	if [ ! -d $(exec_prefix)/etc/profile.d ] ; then \
+                mkdirhier $(exec_prefix)/etc/profile.d; \
+                chmod -R 755 $(exec_prefix)/etc; \
+        fi;
+	$(INSTALL) -m 755  envsyms $(exec_prefix)/etc
+	$(INSTALL) -m 755  mdsplus.csh $(exec_prefix)/etc/profile.d
+	$(INSTALL) -m 755  mdsplus.sh  $(exec_prefix)/etc/profile.d
