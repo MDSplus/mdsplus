@@ -309,7 +309,7 @@ class RFXTimingSetup extends DeviceSetup
                     String event = (subtree.getData(new NidData(baseNid +
                         chan * K_NODES_PER_CHANNEL +
                         N_CHANNEL_1 + N_CHAN_EVENT), Tree.context)).getString();
-                    Data time = subtree.getData(new NidData(baseNid +
+                    Data time = subtree.evaluateData(new NidData(baseNid +
                         chan * K_NODES_PER_CHANNEL +
                         N_CHANNEL_1 + N_CHAN_TRIG), Tree.context);
                     if (!event.trim().equals(""))
@@ -341,7 +341,7 @@ class RFXTimingSetup extends DeviceSetup
                         chan * DIO2_ENC_NODES_PER_CHANNEL +
                         DIO2_ENC_CHANNEL_0 + DIO2_ENC_CHAN_EVENT_NAME), Tree.context)).
                         getString();
-                    Data time = subtree.getData(new NidData(baseNid +
+                    Data time = subtree.evaluateData(new NidData(baseNid +
                         chan * DIO2_ENC_NODES_PER_CHANNEL +
                         DIO2_ENC_CHANNEL_0 + DIO2_ENC_CHAN_EVENT_TIME), Tree.context);
                     boolean sourceOn = true;
@@ -409,7 +409,7 @@ class RFXTimingSetup extends DeviceSetup
                                                 chan * DIO2_NODES_PER_CHANNEL +
                                                 DIO2_CHANNEL_0), Tree.context))
                     continue;
-                   String function = (subtree.getData(new NidData(baseNid +
+                   String function = (subtree.evaluateData(new NidData(baseNid +
                       chan * DIO2_NODES_PER_CHANNEL +
                       DIO2_CHANNEL_0 + DIO2_CHAN_FUNCTION), Tree.context)).
                       getString();
@@ -432,10 +432,10 @@ class RFXTimingSetup extends DeviceSetup
                           chan * DIO2_NODES_PER_CHANNEL +
                           DIO2_CHANNEL_0 + DIO2_CHAN_TRIG_MODE), Tree.context)).
                           getString();
-                      Data delay = subtree.getData(new NidData(baseNid +
+                      Data delay = subtree.evaluateData(new NidData(baseNid +
                           chan * DIO2_NODES_PER_CHANNEL +
                           DIO2_CHANNEL_0 + DIO2_CHAN_DELAY), Tree.context);
-                      Data duration = subtree.getData(new NidData(baseNid +
+                      Data duration = subtree.evaluateData(new NidData(baseNid +
                           chan * DIO2_NODES_PER_CHANNEL +
                           DIO2_CHANNEL_0 + DIO2_CHAN_DURATION), Tree.context);
                       Data trigTime;
@@ -501,10 +501,10 @@ class RFXTimingSetup extends DeviceSetup
                             chan * DIO2_NODES_PER_CHANNEL +
                             DIO2_CHANNEL_0 + DIO2_CHAN_TRIG_MODE), Tree.context)).
                             getString();
-                        Data delay = subtree.getData(new NidData(baseNid +
+                        Data delay = subtree.evaluateData(new NidData(baseNid +
                             chan * DIO2_NODES_PER_CHANNEL +
                             DIO2_CHANNEL_0 + DIO2_CHAN_DELAY), Tree.context);
-                        Data duration = subtree.getData(new NidData(baseNid +
+                        Data duration = subtree.evaluateData(new NidData(baseNid +
                             chan * DIO2_NODES_PER_CHANNEL +
                             DIO2_CHANNEL_0 + DIO2_CHAN_DURATION), Tree.context);
                         Data trigTime;
@@ -575,10 +575,10 @@ class RFXTimingSetup extends DeviceSetup
                           chan * DIO2_NODES_PER_CHANNEL +
                           DIO2_CHANNEL_0 + DIO2_CHAN_TRIG_MODE), Tree.context)).
                           getString();
-                      Data delay = subtree.getData(new NidData(baseNid +
+                      Data delay = subtree.evaluateData(new NidData(baseNid +
                           chan * DIO2_NODES_PER_CHANNEL +
                           DIO2_CHANNEL_0 + DIO2_CHAN_DELAY), Tree.context);
-                      Data duration = subtree.getData(new NidData(baseNid +
+                      Data duration = subtree.evaluateData(new NidData(baseNid +
                           chan * DIO2_NODES_PER_CHANNEL +
                           DIO2_CHANNEL_0 + DIO2_CHAN_DURATION), Tree.context);
                       Data trigTime;
@@ -653,7 +653,7 @@ class RFXTimingSetup extends DeviceSetup
             else if(model.equals("\"RFXClock\""))
             {
                 try {
-                    Data decoder = subtree.getData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt()
+                    Data decoder = subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt()
                         + N_CLOCK_DECODER), Tree.context);
                     if(decoder instanceof PathData)
                         decoder = subtree.resolve((PathData)decoder, Tree.context);
@@ -680,7 +680,7 @@ class RFXTimingSetup extends DeviceSetup
             else if(model.equals("\"RFXPulse\""))
             {
                 try {
-                    Data decoder = subtree.getData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt()
+                    Data decoder = subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt()
                         + N_CLOCK_DECODER), Tree.context);
                     if(decoder instanceof PathData)
                         decoder = subtree.resolve((PathData)decoder, Tree.context);
@@ -692,9 +692,9 @@ class RFXTimingSetup extends DeviceSetup
                             N_PULSE_CHAN), Tree.context)).getInt();
                         String triggerMode = (subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
                             N_PULSE_TRIG_MODE), Tree.context)).getString();
-                        Data delay = subtree.getData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
+                        Data delay = subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
                             N_PULSE_DELAY), Tree.context);
-                        Data duration = subtree.getData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
+                        Data duration = subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
                             N_PULSE_DURATION), Tree.context);
                         Data trigTime;
                         if(triggerMode.equals("EVENT"))
@@ -762,7 +762,7 @@ class RFXTimingSetup extends DeviceSetup
             else if(model.equals("\"RFXDClock\""))
             {
                 try {
-                    Data decoder = subtree.getData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt()
+                    Data decoder = subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt()
                         + N_DCLOCK_DECODER), Tree.context);
                     if(decoder instanceof PathData)
                         decoder = subtree.resolve((PathData)decoder, Tree.context);
@@ -798,13 +798,13 @@ class RFXTimingSetup extends DeviceSetup
                         String outputMode = (subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
                             N_DCLOCK_OUTPUT_MODE), Tree.context)).getString();
 
-                        Data freq1 = subtree.getData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
+                        Data freq1 = subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
                             N_DCLOCK_FREQUENCY1), Tree.context);
-                        Data freq2 = subtree.getData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
+                        Data freq2 = subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
                             N_DCLOCK_FREQUENCY2), Tree.context);
-                        Data delay = subtree.getData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
+                        Data delay = subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
                             N_DCLOCK_DELAY), Tree.context);
-                        Data duration = subtree.getData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
+                        Data duration = subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
                             N_DCLOCK_DURATION), Tree.context);
 
                         Device device;
@@ -837,7 +837,7 @@ class RFXTimingSetup extends DeviceSetup
             else if(model.equals("\"RFXGClock\""))
             {
                 try {
-                    Data decoder = subtree.getData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt()
+                    Data decoder = subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt()
                         + N_GCLOCK_DECODER), Tree.context);
                     if(decoder instanceof PathData)
                         decoder = subtree.resolve((PathData)decoder, Tree.context);
@@ -873,11 +873,11 @@ class RFXTimingSetup extends DeviceSetup
                         String outputMode = (subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
                             N_GCLOCK_OUTPUT_MODE), Tree.context)).getString();
 
-                        Data freq = subtree.getData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
+                        Data freq = subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
                             N_GCLOCK_FREQUENCY), Tree.context);
-                        Data delay = subtree.getData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
+                        Data delay = subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
                             N_GCLOCK_DELAY), Tree.context);
-                        Data duration = subtree.getData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
+                        Data duration = subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
                             N_GCLOCK_DURATION), Tree.context);
 
                         Device device;
