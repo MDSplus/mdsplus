@@ -18,7 +18,7 @@ MLIBS = $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) @LIBPTH
 SOURCES = dwscope.c dwscopesubs.c dwpad.c RemoteDummies.c evaluate.c
 OBJECTS = $(SOURCES:.c=.o) evaluate_local.o
 
-all : @MAKEBINDIR@ @MAKEBINDIR@dwscope @MAKEBINDIR@ScopePrinters @MAKEBINDIR@dwscopePrint @MAKEUIDDIR@dwscope.uid @MAKEBINDIR@dwpad @MAKEUIDDIR@dwpad.uid @MAKEBINDIR@dwscope_remote
+all : @MAKEBINDIR@ @MAKEBINDIR@dwscope @MAKEBINDIR@ScopePrinters @MAKEBINDIR@dwscopePrint @MAKEUIDDIR@dwscope.uid @MAKEBINDIR@dwpad @MAKEUIDDIR@dwpad.uid @MAKEBINDIR@dwscope_remote @MAKELIBDIR@dwscope_setup.ps
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -28,9 +28,11 @@ clean :
 	@ $(RM) @MAKEBINDIR@dwscope
 	@ $(RM) @MAKEBINDIR@dwscope_remote
 	@ $(RM) @MAKEBINDIR@ScopePrinters
+	@ $(RM) @MAKEBINDIR@dwscopePrint
 	@ $(RM) @MAKEUIDDIR@dwscope.uid
 	@ $(RM) @MAKEBINDIR@dwpad
 	@ $(RM) @MAKEUIDDIR@dwpad.uid
+	@ $(RM) @MAKELIBDIR@dwscope_setup.ps
 
 install:
 	if [ ! -d @libdir@ ] ; then \
@@ -39,10 +41,12 @@ install:
         fi;
 	$(INSTALL) -m 755  @MAKEBINDIR@dwscope @bindir@
 	$(INSTALL) -m 755  @MAKEBINDIR@ScopePrinters @bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@dwscopePrint @bindir@
 	$(INSTALL) -m 755  @MAKEBINDIR@dwscope_remote @bindir@
 	$(INSTALL) -m 755  @MAKEBINDIR@dwpad @bindir@
 	$(INSTALL) -m 644  @MAKEUIDDIR@dwscope.uid @uiddir@
 	$(INSTALL) -m 644  @MAKEUIDDIR@dwpad.uid @uiddir@
+	$(INSTALL) -m 644  @MAKELIBDIR@dwscope_setup.ps @libdir@
 
 @MAKEBINDIR@ :
 	mkdir @MAKEBINDIR@
@@ -54,7 +58,7 @@ install:
 	cp ScopePrinters $@
 
 @MAKEBINDIR@dwscopePrint : dwscopePrint
-	cp dwcopePrint $@
+	cp dwscopePrint $@
 
 @MAKEBINDIR@dwscope_remote : dwscope.o dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o
 	$(CC) -o $@ $(CFLAGS) dwscope.o  dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o \
