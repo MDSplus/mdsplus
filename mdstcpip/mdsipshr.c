@@ -521,7 +521,7 @@ int  MdsSetDefault(SOCKET sock, char *node)
   return status;
 }
 
-int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int *eventid)
+int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, void **eventid)
 {
   struct descrip eventnamarg;
   struct descrip infoarg;
@@ -534,12 +534,12 @@ int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, in
   status = MdsValue(sock, EVENTASTREQUEST, MakeDescrip((struct descrip *)&eventnamarg,DTYPE_CSTRING,0,0,eventnam), 
 			      MakeDescrip((struct descrip *)&infoarg,DTYPE_UCHAR,1,&size,&info),
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
-  if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) *eventid = *(int *)ansarg.ptr;
+  if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) *eventid = *(void **)ansarg.ptr;
   if (ansarg.ptr) free(ansarg.ptr);
   return status;
 }
 
-int  MdsEventCan(SOCKET sock, int eventid)
+int  MdsEventCan(SOCKET sock, void *eventid)
 {
   struct descrip eventarg;
   struct descrip ansarg;
