@@ -97,6 +97,27 @@ int t4012___init(struct descriptor *nid, InInitStruct *setup)
   }
   set[7] = min(setup->channels,max(1,setup->display_chan)) | 0x8000;
   MdsFree1Dx(&xd,0);
+
+  /* added 3/29/04 as per Ammanda hubbard,  This sequence of commands
+     fixes the traqs when they get confused.
+
+     my guess is that what is really happening is AccessTraq is failing, and 
+     the remaining setup information is not being sent when the errors occur.
+  */
+  {
+    int data;
+    data=0x2008;
+    pio(17,0,&data);
+    DevWait(1.);
+    data=0x2;
+    pio(17,0,&data);
+    DevWait(.2);
+    pio(0,0, &data);
+    if (data != 8) {
+      printf("F0 at end of Amanda's fix returned %d\n", data);
+    }
+  }
+  
   arm_on_error(AccessTraq((InStoreStruct *)setup,T$REMOTE,16,0,0),status); /* Remote control */
   for (i=0;i<7;i++) {
     arm_on_error(AccessTraq((InStoreStruct *)setup,set[i],16,0,0),status);
