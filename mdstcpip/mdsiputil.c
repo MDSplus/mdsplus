@@ -15,6 +15,7 @@
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
 
+#include <stropts.h>
 static unsigned char message_id = 1;
 #ifdef NOCOMPRESSION
 static int UseCompression = 0;
@@ -453,16 +454,25 @@ static void FlushSocket(SOCKET sock)
   FD_ZERO(&writefds);
   FD_SET(sock,&writefds);
   while((((status = select(FD_SETSIZE, &readfds, &writefds, 0, &timout)) > 0) && FD_ISSET(sock,&readfds)) ||
-	       (errno == EINTR))
+	       (status == -1 && errno == EINTR))
   {
-    nbytes = recv(sock, buffer, sizeof(buffer), 0);
-	if (nbytes <= 0)
-	{
+    if (FD_ISSET(sock,&readfds))
+    {
+        status = ioctl(sock,I_NREAD,&nbytes);
+        if (nbytes > 0 && status != -1)
+        {
+          nbytes = recv(sock, buffer, sizeof(buffer) > nbytes ? nbytes : sizeof(buffer), 0);
+	  if (nbytes <= 0)
+	  {
 		tries++;
 		if (tries > 5) break;
-	}
-	else
+	  }
+	  else
 		tries = 0;
+	}
+    }
+    else
+      FD_SET(sock,&readfds);
     timout.tv_usec = 100000;
     FD_CLR(sock,&writefds);
   }
