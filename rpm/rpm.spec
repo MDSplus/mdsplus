@@ -3,7 +3,7 @@ Version: #VERSION#
 Release: #RELEASE#
 Copyright: GNU GPL
 Group: Applications/Acquisition
-Source: mdsplus#GLOBUS#-#VERSION#.tar.gz
+Source: mdsplus#GLOBUS#-#VERSION#-#RELEASE#.tar.gz
 Prefix: /usr/local
 Buildroot: /var/tmp/mdsplus
 Vendor: MIT Plasma Science and Fusion Center 
