@@ -51,6 +51,7 @@ WEGroupSetup.java \
 RFXControlSetup.java \
 T2ControlSetup.java \
 TR32Setup.java \
+TR6_3Setup.java \
 FR10Setup.java \
 RFXMOPSetup.java \
 RFXANSALDOSetup.java
