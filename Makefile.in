@@ -8,7 +8,7 @@ JAVA_APS = javamds \
 
 D3D_PACKAGE = d3dshr
 
-PARTS = ipcs \
+PARTS = \
         mdsshr \
         treeshr \
         tdishr \
@@ -30,6 +30,7 @@ PARTS = ipcs \
         math \
         @D3D_PACKAGE@ \
         wfevent \
+        setevent \
 	@JAVA_APS@ \
         @IDLSQL@ 
 
@@ -58,3 +59,16 @@ install:
 	for dir in $(PARTS) ; do\
 	  cd $${dir}; make install; cd $$cdir;\
 	done
+
+BINARIES = bin etc lib uid \
+           tdi idl trees envsyms \
+           setup.sh setup.csh java LabView \
+           include/ipdesc.h include/mdslib.inc
+
+CLIENT_BINARIES = include/ipdesc.h include/mdslib.inc lib/libMdsIpShr.* lib/libMdsLib*.* idl
+
+binaries :
+	tar cvf - $(BINARIES) | compress -c - > ../binaries/MDSplus.`uname`.tar.Z
+	tar cvf - $(CLIENT_BINARIES) | compress -c - > ../binaries/MDSplus.`uname`.client.tar.Z
+
+

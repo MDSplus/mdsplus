@@ -1,0 +1,35 @@
+SHELL=/bin/sh
+CC=@CC@
+top_srcdir=@top_srcdir@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = setevent.c
+OBJECTS = $(SOURCES:.c=.o)
+
+all : @MAKEBINDIR@ @MAKEBINDIR@setevent
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
+
+install:
+	if [ ! -d @bindir@ ] ; then \
+                mkdir @bindir@; \
+                chmod 755 @bindir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKEBINDIR@setevent @bindir@
+
+clean :
+	- rm *.o
+	- rm @MAKEBINDIR@setevent
+
+@MAKEBINDIR@setevent : $(OBJECTS)
+	$(CC) -o $@ $(OBJECTS) $(CFLAGS) -L@MAKELIBDIR@ -lMdsShr $(LIBS)
+
+@MAKEBINDIR@ :
+	mkdir @MAKEBINDIR@
+

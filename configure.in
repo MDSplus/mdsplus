@@ -384,6 +384,7 @@ mdstcpip/Makefile
 mitdevices/Makefile 
 remcam/Makefile 
 servershr/Makefile 
+setevent/Makefile
 tcl/Makefile 
 tdishr/Makefile 
 tditest/Makefile 
