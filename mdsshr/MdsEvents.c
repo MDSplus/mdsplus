@@ -1,6 +1,5 @@
 #include <config.h>
 #include <STATICdef.h>
-#include "mdsshrthreadsafe.h"
 
 #define _GNU_SOURCE /* glibc2 needs this */
 #ifdef __sparc__
@@ -19,6 +18,8 @@ int MDSEvent(char *evname){}
 #include <libroutines.h>
 #include <mds_stdarg.h>
 #include "../mdstcpip/mdsip.h"
+#define NO_WINDOWS_H
+#include "mdsshrthreadsafe.h"
 extern char *TranslateLogical(char *);
 STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *eventid);
 STATIC_ROUTINE void initializeLocalRemote(int receive_events, int *use_local);
@@ -567,7 +568,6 @@ STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
 
 #else
 #ifdef HAVE_WINDOWS_H
-#include <windows.h>
 #include "../servershr/servershrp.h"
 #define IPC_CREAT 42
 #define IPC_STAT 42

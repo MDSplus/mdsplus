@@ -164,6 +164,9 @@
 			RelativePath=".\MdsShr.def">
 		</File>
 		<File
+			RelativePath="MdsShrThreadSafe.c">
+		</File>
+		<File
 			RelativePath=".\MdsXdRoutines.c">
 		</File>
 		<File

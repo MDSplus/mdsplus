@@ -10,6 +10,33 @@ STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
 
 STATIC_ROUTINE void buffer_key_alloc();
 
+#ifdef HAVE_WINDOWS_H
+STATIC_THREADSAFE int dwTlsIndex;
+
+void pthread_once(pthread_once_t *one_time,void (*key_alloc)())
+{
+  if (*one_time == PTHREAD_ONCE_INIT)
+  {
+      *one_time = dwTlsIndex = TlsAlloc(); 
+  }
+}
+
+void *pthread_getspecific(pthread_key_t buffer_key)
+{
+  return TlsGetValue(dwTlsIndex);
+}
+
+void pthread_setspecific(pthread_key_t buffer_key, void *p)
+{
+  TlsSetValue(dwTlsIndex,p);
+}
+
+void pthread_key_create(void **d1,void *d2){}
+extern void pthread_mutex_init(HANDLE *mutex);
+extern void pthread_mutex_lock(HANDLE *mutex);
+extern void pthread_mutex_unlock(HANDLE *mutex);
+#endif
+
 /* Return the thread-specific buffer */
 MdsShrThreadStatic *MdsShrGetThreadStatic()
 {
@@ -47,9 +74,9 @@ void LockMdsShrMutex(pthread_mutex_t *mutex,int *initialized)
 {
   if(!*initialized)
   {
+#ifndef HAVE_WINDOWS_H
     pthread_mutexattr_t m_attr;
     pthread_mutexattr_init(&m_attr);
-    *initialized = 1;
 #if !defined(PTHREAD_MUTEX_RECURSIVE)
 #define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
 #endif
@@ -61,6 +88,10 @@ void LockMdsShrMutex(pthread_mutex_t *mutex,int *initialized)
 #endif
 #endif
     pthread_mutex_init(mutex,&m_attr);
+#else
+    pthread_mutex_init(mutex);
+#endif
+    *initialized = 1;
   }
   pthread_mutex_lock(mutex);
 }

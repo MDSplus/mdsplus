@@ -4,6 +4,10 @@
 #elif !defined(HAVE_WINDOWS_H)
 #include <sys/types.h>
 #endif
+#include <STATICdef.h>
+#include "mdsshrthreadsafe.h"
+#define CREATE_STS_TEXT
+#include        "mdsdcldef.h"
 #include        <stdio.h>
 #include        <stdarg.h>
 #include        <stdlib.h>
@@ -21,10 +25,6 @@
 #include        <sys/time.h>
 #endif
 
-#define CREATE_STS_TEXT
-#include        "mdsdcldef.h"
-#include <STATICdef.h>
-#include "mdsshrthreadsafe.h"
 #include        "clidef.h"
 #include        "tcldef.h"
 #include        "ccldef.h"
@@ -209,7 +209,7 @@ char  *MdsGetMsg(	/* Return: addr of "status" string	*/
 void MdsGetMsgDsc(int status, struct descriptor *out)
 {
 	MdsGetMsg(status);
-	(MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp.dscW_length = strlen((MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp.dscA_pointer);
+	(MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp.length = strlen((MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp.pointer);
 	StrCopyDx(out,&(MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp);
 	return;
 }
