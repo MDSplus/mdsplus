@@ -125,6 +125,10 @@ SOURCE=..\mdstcpip\infutil.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\mdstcpip\mdsip_socket_io.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\mdstcpip\mdsiputil.c
 # End Source File
 # Begin Source File

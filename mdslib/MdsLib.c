@@ -612,6 +612,12 @@ int descr (int *dtype, void *data, int *dim1, ...)
   struct descriptor *dsc; 
   int totsize = *dim1;
   int retval;
+  
+  if (data == NULL)
+  {
+    printf("NULL pointer passed as data pointer\n");
+    return -1;
+  }
 
   if (descrs[next]) free(descrs[next]);
 
