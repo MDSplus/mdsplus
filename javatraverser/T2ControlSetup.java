@@ -369,7 +369,7 @@ public class T2ControlSetup extends DeviceSetup {
     deviceField24.setOffsetNid(20);
     deviceField22.setIdentifier("");
     deviceField22.setNumCols(5);
-    deviceField22.setLabelString("Freq(Hz):");
+    deviceField22.setLabelString("Freq(Hz)/Start:");
     deviceField22.setOffsetNid(24);
     deviceField20.setOffsetNid(28);
     deviceField20.setLabelString("Rot. Freq(Hz):");
@@ -380,7 +380,7 @@ public class T2ControlSetup extends DeviceSetup {
     deviceField23.setNumCols(5);
     deviceField23.setIdentifier("");
     deviceField21.setOffsetNid(26);
-    deviceField21.setLabelString("Phse(Rad):");
+    deviceField21.setLabelString("Phase(Rad)/End:");
     deviceField21.setNumCols(5);
     deviceField21.setIdentifier("");
     deviceField26.setIdentifier("");
@@ -393,7 +393,7 @@ public class T2ControlSetup extends DeviceSetup {
     deviceField27.setOffsetNid(56);
     deviceField28.setIdentifier("");
     deviceField28.setNumCols(5);
-    deviceField28.setLabelString("Freq(Hz):");
+    deviceField28.setLabelString("Freq(Hz)/Start:");
     deviceField28.setOffsetNid(60);
     deviceField29.setOffsetNid(64);
     deviceField29.setLabelString("Rot. Freq(Hz):");
@@ -404,7 +404,7 @@ public class T2ControlSetup extends DeviceSetup {
     deviceField210.setNumCols(5);
     deviceField210.setIdentifier("");
     deviceField211.setOffsetNid(62);
-    deviceField211.setLabelString("Phse(Rad):");
+    deviceField211.setLabelString("Phase(Rad)/End:");
     deviceField211.setNumCols(5);
     deviceField211.setIdentifier("");
     deviceField212.setIdentifier("");
@@ -417,7 +417,7 @@ public class T2ControlSetup extends DeviceSetup {
     deviceField213.setOffsetNid(44);
     deviceField214.setIdentifier("");
     deviceField214.setNumCols(5);
-    deviceField214.setLabelString("Freq(Hz):");
+    deviceField214.setLabelString("Freq(Hz)/Start:");
     deviceField214.setOffsetNid(48);
     deviceField215.setOffsetNid(52);
     deviceField215.setLabelString("Rot. Freq(Hz):");
@@ -428,7 +428,7 @@ public class T2ControlSetup extends DeviceSetup {
     deviceField216.setNumCols(5);
     deviceField216.setIdentifier("");
     deviceField217.setOffsetNid(50);
-    deviceField217.setLabelString("Phse(Rad):");
+    deviceField217.setLabelString("Phase(Rad)/End:");
     deviceField217.setNumCols(5);
     deviceField217.setIdentifier("");
     deviceField218.setIdentifier("");
@@ -441,7 +441,7 @@ public class T2ControlSetup extends DeviceSetup {
     deviceField219.setOffsetNid(32);
     deviceField2110.setIdentifier("");
     deviceField2110.setNumCols(5);
-    deviceField2110.setLabelString("Freq(Hz):");
+    deviceField2110.setLabelString("Freq(Hz)/Start:");
     deviceField2110.setOffsetNid(36);
     deviceField2111.setOffsetNid(40);
     deviceField2111.setLabelString("Rot. Freq(Hz):");
@@ -452,7 +452,7 @@ public class T2ControlSetup extends DeviceSetup {
     deviceField2112.setNumCols(5);
     deviceField2112.setIdentifier("");
     deviceField2113.setOffsetNid(38);
-    deviceField2113.setLabelString("Phse(Rad):");
+    deviceField2113.setLabelString("Phase(Rad)/End:");
     deviceField2113.setNumCols(5);
     deviceField2113.setIdentifier("");
     jPanel14.setLayout(borderLayout4);
