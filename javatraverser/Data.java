@@ -83,6 +83,7 @@ public abstract class Data implements Serializable
     public static final int DTYPE_SIGNAL = 195;
     public static final int DTYPE_DIMENSION = 196;
     public static final int DTYPE_WINDOW = 197;
+    public static final int DTYPE_SLOPE = 198;
     public static final int DTYPE_FUNCTION = 199;
     public static final int DTYPE_CONGLOM = 200;
     public static final int DTYPE_RANGE = 201;

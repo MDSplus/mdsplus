@@ -6,7 +6,7 @@ import java.awt.*;
 import javax.swing.JPanel;
 import javax.swing.*;
 import javax.swing.border.*;
-//import com.symantec.itools.javax.swing.borders.EtchedBorder;
+import com.symantec.itools.javax.swing.borders.EtchedBorder;
 
 public class RFXPConfigSetup extends DeviceSetup
 {
@@ -183,8 +183,7 @@ public class RFXPConfigSetup extends DeviceSetup
 	DeviceField deviceField11 = new DeviceField();
 	DeviceField deviceField12 = new DeviceField();
 	DeviceField deviceField13 = new DeviceField();
-	//com.symantec.itools.javax.swing.borders.EtchedBorder etchedBorder1 = new com.symantec.itools.javax.swing.borders.EtchedBorder();
-	javax.swing.border.EtchedBorder etchedBorder1 = new javax.swing.border.EtchedBorder();
+	com.symantec.itools.javax.swing.borders.EtchedBorder etchedBorder1 = new com.symantec.itools.javax.swing.borders.EtchedBorder();
 	//}}
 
 }

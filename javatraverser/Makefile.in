@@ -104,6 +104,7 @@ RoutineEditor.java\
 ShortArray.java\
 ShortData.java\
 SignalData.java\
+SlopeData.java\
 StringArray.java\
 StringData.java\
 SyntaxException.java\
