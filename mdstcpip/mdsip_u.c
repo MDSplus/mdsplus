@@ -59,6 +59,10 @@ extern int SendMdsMsg(int sock, Message *m, int oob);
 void GetErrorText(int status, struct descriptor_xd *xd);
 void ResetErrors();
 
+static int zero = 0;
+static int one = 1;
+static int two = 2;
+
 #define MakeDesc(name) memcpy(malloc(sizeof(name)),&name,sizeof(name))
 
 int main(int argc, char **argv)
@@ -121,7 +125,7 @@ static void CompressString(struct descriptor *in)
   StrTrim(in,in,&len);
   StrUpcase(in,in);
   while(in->length && (in->pointer[0] == ' ' || in->pointer[0] == '	'))
-    StrRight(in,in,&2);
+    StrRight(in,in,&two);
 }
   
 static int CheckClient(char *host_c, char *user_c)
@@ -156,8 +160,8 @@ static int CheckClient(char *host_c, char *user_c)
       if (line_c[0] != '#')
       {
         line_d.length = strlen(line_c) - 1;
-	StrElement(&access_id,&0,&delimiter,&line_d);
-        StrElement(&local_user,&1,&delimiter,&line_d);
+	StrElement(&access_id,&zero,&delimiter,&line_d);
+        StrElement(&local_user,&one,&delimiter,&line_d);
         CompressString(&access_id);
         CompressString(&local_user);
         if (access_id.length)
@@ -185,7 +189,7 @@ static int CheckClient(char *host_c, char *user_c)
           }
           else
           {
-            StrRight(&access_id,&access_id,&2);
+            StrRight(&access_id,&access_id,&two);
             if (StrMatchWild(&match,&access_id) & 1)
               ok = 2;
           }
@@ -217,7 +221,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     int status;
     int ok = 0;
     Client *c;
-    unsigned long tim;
+    time_t tim;
     m.h.msglen = sizeof(MsgHdr);
     hp = gethostbyaddr(&sin->sin_addr,sizeof(sin->sin_addr),AF_INET);
     m_user = GetMdsMsg(sock,&status);
