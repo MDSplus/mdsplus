@@ -674,11 +674,15 @@ int StrUpcase(struct descriptor *out, struct descriptor *in)
   return 1;
 }
 
-int StrRight(struct descriptor *out, struct descriptor *in, unsigned short *start) {
+int StrRight(struct descriptor *out, struct descriptor *in, unsigned short *start) 
+{
+  struct descriptor tmp = {0,DTYPE_T,CLASS_D,0};
   struct descriptor s = {0,DTYPE_T,CLASS_S,0};
+  StrCopyDx(&tmp,in);
   s.length = (unsigned short)((int)in->length - *start + 1);
-  s.pointer = in->pointer+(*start-1);
-  return StrCopyDx(out,&s);
+  s.pointer = tmp.pointer+(*start-1);
+  StrCopyDx(out,&s);
+  return StrFree1Dx(&tmp);
 }
 
 int LibCreateVmZone(ZoneList **zone)
