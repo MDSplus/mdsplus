@@ -533,7 +533,11 @@ static int StartThread()
     pthread_attr_t att;
     pthread_attr_init(&att);
     pthread_attr_setstacksize(&att,0xffffff);
+#ifdef __hpux
+    status = pthread_create(&WorkerThread,att, Worker, 0);
+#else
     status = pthread_create(&WorkerThread,&att, Worker, 0);
+#endif
     if (status)
     {
       perror("Error creating pthread");
