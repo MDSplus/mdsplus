@@ -110,6 +110,7 @@
 
 
 ------------------------------------------------------------------------------*/
+#include <mds_stdarg.h>
 #include <mdsdescrip.h>
 #include <strroutines.h>
 #include <mdsshr.h>
@@ -1874,7 +1875,7 @@ static void GenericGet(XmdsXdBoxWidget w)
       { static struct descriptor tag_d = {0, DTYPE_T, CLASS_S, 0};
         tag_d.length = strlen(tag);
         tag_d.pointer = tag;
-	StrConcat(&tags,&tags,&comma,&tag_d);
+	StrConcat(&tags,&tags,&comma,&tag_d MDS_END_ARG);
       }
       if (tags.length)
       {

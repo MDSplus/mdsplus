@@ -44,6 +44,7 @@
 
 ------------------------------------------------------------------------------*/
 
+#include <mds_stdarg.h>
 #include <mdsdescrip.h>
 #include <strroutines.h>
 #include <ncidef.h>
@@ -122,7 +123,7 @@ Widget XmdsCreatePath(Widget parent,String name,ArgList args,Cardinal argcount)
     if (status & 1)
     {
       static DESCRIPTOR(zero_dsc,"\0");
-      StrConcat(&path_dsc,&path_dsc,&zero_dsc,NULL);
+      StrConcat(&path_dsc,&path_dsc,&zero_dsc MDS_END_ARG);
       lab_args[0].value = (long) XmStringCreateSimple(path_dsc.pointer);
     }
     else

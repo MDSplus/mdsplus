@@ -117,7 +117,7 @@ Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal argc
       status = TdiDecompile(&xd, &display_dsc MDS_END_ARG);
       if (status&1) {
         static DESCRIPTOR(zero_dsc, "\0");
-        StrConcat(&display_dsc, &display_dsc, &zero_dsc, NULL);
+        StrConcat(&display_dsc, &display_dsc, &zero_dsc MDS_END_ARG);
         lab_args[0].value = (long)XmStringCreateSimple(display_dsc.pointer);
       }
       else
