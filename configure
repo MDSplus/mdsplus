@@ -307,7 +307,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP F77 FFLAGS ac_ct_F77 RANLIB ac_ct_RANLIB X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS UIL JAVAC JAR CAMSHR D3D_PACKAGE D3DLIB D3D_FFLAGS DNET_STUB EXPORTS_FILE FEXECLIBDIR FORLD FOR_LDFLAGS GLOBUS_CFLAGS GLOBUS_FLAVOR GLOBUS_LIBS GLOBUS_LOCATION GROFF GROFF_MAN_FLAGS HDF5_INCS HDF5_LIBS HDF5_APS HUP_TO_INETD HUP_TO_XINETD IDL_INC IDL_LIB IDLMDSEVENT IDLMDSWIDGETS IDLSQL JAVA_APS JDK_CFLAGS JVM LD LDSHARE LDARC LD_LDSHARE LD_LDARC LIBDL LIBDLD LIBM LIBNSL LIBPATH LIBPTHREAD LIBREADLINE LIBRESOLV LIBSOCKET LIBXP LIBXEXT LINKSHARED LINKJNI LINKMODULE LOC MAKEBINDIR MAKELIBDIR MAKESHLIBDIR MAKESHLIBDIR_RULE MAKEUIDDIR MAKEETCDIR MAKEJAVADIR MDSSQL MDSTCPIP MDSVME MEMCHKLIB MITDEVICESIO_TARGETS MOTIF_LDSHARE MOTIF_LDARC MOTIF_LD_LDSHARE MOTIF_LD_LDARC NEED_SEMUN SHARETYPE SHARETYPEJNI SHARETYPEMOD SIZEOF_INT_P SYBASE_INC SYBASE_LIB TARGETSYS TAR_EXCLUDE XM_LIBS uiddir USE_SEMAPHORE_H USE_PIPED_MESSAGING USE_TM_GMTOFF LIBDC1394 DC1394_SUPPORT LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP F77 FFLAGS ac_ct_F77 RANLIB ac_ct_RANLIB X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS UIL JAVAC JAR CAMSHR D3D_PACKAGE D3DLIB D3D_FFLAGS DNET_STUB EXPORTS_FILE FEXECLIBDIR FORLD FOR_LDFLAGS GLOBUS_CFLAGS GLOBUS_FLAVOR GLOBUS_LIBS GLOBUS_LOCATION GROFF GROFF_MAN_FLAGS HDF5_INCS HDF5_LIBS HDF5_APS HUP_TO_INETD HUP_TO_XINETD IDL_INC IDL_LIB IDLMDSEVENT IDLMDSWIDGETS IDLSQL JAVA_APS JDK_CFLAGS JVM LD LDSHARE LDARC LD_LDSHARE LD_LDARC LIBDL LIBDLD LIBM LIBNSL LIBPATH LIBPTHREAD LIBREADLINE LIBRESOLV LIBSOCKET LIBXP LIBXEXT LINKSHARED LINKJNI LINKMODULE LOC MAKEBINDIR MAKELIBDIR MAKESHLIBDIR MAKESHLIBDIR_RULE MAKEUIDDIR MAKEETCDIR MAKEJAVADIR MDSSQL MDSTCPIP MDSVME MEMCHKLIB MITDEVICESIO_TARGETS MOTIF_LDSHARE MOTIF_LDARC MOTIF_LD_LDSHARE MOTIF_LD_LDARC NEED_SEMUN SHARETYPE SHARETYPEJNI SHARETYPEMOD SIZEOF_INT_P SRBLIB SRBINCLUDE SYBASE_INC SYBASE_LIB TARGETSYS TAR_EXCLUDE XM_LIBS uiddir USE_SEMAPHORE_H USE_PIPED_MESSAGING USE_TM_GMTOFF LIBDC1394 DC1394_SUPPORT LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -866,6 +866,7 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-xio=globus-location:flavor  use globus xio for mdsip communications
+  --with-srb=srb-install-dir  Enable srb capabilities
   --with-libdc1394=location  compile the libdc1394 digital camera support stuff
   --with-x                use the X Window System
 
@@ -3207,7 +3208,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:3210:" \
+echo "$as_me:3211:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4032,6 +4033,33 @@ else
 
 fi;
 
+
+# Check whether --with-srb or --without-srb was given.
+if test "${with_srb+set}" = set; then
+  withval="$with_srb"
+  SRB_LOCATION=$withval
+          if test "$SRB_LOCATION" = yes
+	  then
+		cat <<EOF
+
+YOU NEED TO PROVIDE THE LOCATION OF THE unixIO subdirectory of your srb installation
+when using the --with-srb option
+
+Format:   --with-srb=srb-install-directory
+Example:  --with-srb=/scratch/slocal/testc/SRB3_2client/unixIO
+
+EOF
+	    exit
+          fi
+	  SRBLIB="-L${SRB_LOCATION} -lsrbUio"
+          SRBINCLUDE="-I${SRB_LOCATION}"
+          cat >>confdefs.h <<\_ACEOF
+#define SRB 1
+_ACEOF
+
+
+fi;
+
 # Check whether --enable-globus or --disable-globus was given.
 if test "${enable_globus+set}" = set; then
   enableval="$enable_globus"
@@ -4164,7 +4192,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:4167:" \
+echo "$as_me:4195:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -6570,13 +6598,13 @@ fi
     HDF5_INCS=""
     HDF5_LIBS=""
   fi
-fi
 
-if test -n "$HDF5_DIR" -a -r $HDF5_DIR
+if test -n "$HDF5_DIR" -a -r "$HDF5_DIR"
 then
       HDF5_APS="\$(HDF5_APS)"
       HDF5_INCS="-I$HDF5_DIR/include"
       HDF5_LIBS="-L$HDF5_DIR/lib"
+fi
 fi
 
 as_ac_File=`echo "ac_cv_file_$jni_inc_dir/jni.h" | $as_tr_sh`
@@ -11196,6 +11224,8 @@ LIBS="$LIBPTHREAD $LIBS"
 
 
 
+
+
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ac_config_files="$ac_config_files Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile idlsql/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile manpages/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdsjet/Makefile mdsip_xio/Makefile mdslib/Makefile mdslibidl/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -11958,6 +11988,8 @@ s,@SHARETYPE@,$SHARETYPE,;t t
 s,@SHARETYPEJNI@,$SHARETYPEJNI,;t t
 s,@SHARETYPEMOD@,$SHARETYPEMOD,;t t
 s,@SIZEOF_INT_P@,$SIZEOF_INT_P,;t t
+s,@SRBLIB@,$SRBLIB,;t t
+s,@SRBINCLUDE@,$SRBINCLUDE,;t t
 s,@SYBASE_INC@,$SYBASE_INC,;t t
 s,@SYBASE_LIB@,$SYBASE_LIB,;t t
 s,@TARGETSYS@,$TARGETSYS,;t t

@@ -157,6 +157,9 @@
 /* Define if you prefer to use named pipes over SysV msg */
 #undef USE_PIPED_MESSAGING
 
+/* Define if you are using SRB */
+#undef SRB
+
 /* Define if use need to use localtime instead of timezone and daylight */
 #undef USE_TM_GMTOFF
 

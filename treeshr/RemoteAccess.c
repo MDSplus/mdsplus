@@ -1,3 +1,4 @@
+#include <config.h>
 #include <STATICdef.h>
 #ifdef linux
 #define _LARGEFILE_SOURCE
@@ -28,8 +29,9 @@
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ncidef.h>
-
-#ifdef SRB
+#include <config.h>
+#ifndef SRB
+asjhakhaskjadhk
 #define SRB_SOCKET 12345  /* this is the socket value used to indicate that
                              this file is an an SRB file.  Positive so that
                              other MDSPlus checks pass, but a value that 
