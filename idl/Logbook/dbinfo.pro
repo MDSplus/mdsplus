@@ -45,6 +45,7 @@ function dbinfo, dbname, host, conn, dbtype, dbuser, dbpass
   if (err ne 0) then begin
     dbuser=getenv("USER")
     dbpass="PFCWORLD"
+    conn = ["USE "+dbname, "SET TEXTSIZE 8192"]
     return, 1
   endif
   OPENR,1,getenv('HOME')+'/'+host+".sybase_login"

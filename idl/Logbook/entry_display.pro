@@ -722,7 +722,7 @@ pro display_event, ev
         widget_control, ev.top, update=0
         new_width = (ev.x-ctx.x_off)/ctx.x_ch_sz
         new_height = (ev.y-ctx.y_off)/ctx.y_ch_sz
-	widget_control, ctx.txt_w, xsize = new_width, ysize=new_height
+	    widget_control, ctx.txt_w, xsize = new_width, ysize=new_height
         txt_geo = widget_info(ctx.txt_w, /geometry)
         message_w = (ev.x-ctx.x_off-ctx.auto_x)/ctx.x_ch_sz
         widget_control, ctx.message_w, xsize=message_w
@@ -1801,7 +1801,7 @@ function txt_event,ev
     if (ev.length gt 0) then begin
       off = ev.offset
       xy = widget_info(ev.id, text_offset_to_xy=off)
-      if (!version.os eq 'Win32') then begin
+      if (!version.os eq 'Win32' ) then begin
         off = off-(xy(1)*2)
         xy = widget_info(ev.id, text_offset_to_xy=off)
       endif
@@ -1820,12 +1820,14 @@ end
 
 pro select_entry, ctx, hand, idx
   end_pos =  widget_info(ctx.txt_w, text_xy_to_offset=[0,hand.lines(idx+1)+1])
-  if (!version.os eq "Win32") then $
+  if (!version.os eq "Win32" ) then begin
     end_pos = end_pos+hand.lines(idx+1)*2
+  endif
   if (end_pos le 0) then end_pos = widget_info(ctx.txt_w, /text_number)-1
   start_pos = widget_info(ctx.txt_w, text_xy_to_offset=[0,hand.lines(idx)+1])
-  if (!version.os eq "Win32") then $
+  if (!version.os eq "Win32") then begin
     start_pos = start_pos+hand.lines(idx)*2
+  endif
   len = end_pos-start_pos+1
   widget_control, ctx.txt_w, set_text_select=[start_pos, len]
 end
@@ -2047,7 +2049,7 @@ common widget_common, base
   bb = widget_button(b, value='Print Options')
   bb = widget_button(b, value='Make Entry Options')
   num_w = widget_button(mbar, value = 'Num =  0')
-  widget_control, num_w, sensitive=0
+;  widget_control, num_w, sensitive=0
   b = widget_button(mbar, value='Help', /help)
   bb = widget_button(b, value='About')
   bb = widget_button(b, value='About LOGBOOK')
