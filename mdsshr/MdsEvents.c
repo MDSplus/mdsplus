@@ -23,11 +23,6 @@ int MDSEvent(char *evname){}
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
-
-/* Just to avoid compiler complains */
-#undef DTYPE_DOUBLE
-#undef DTYPE_EVENT
-#undef DTYPE_FLOAT
 #include "../mdstcpip/mdsip.h"
 
 /* MDsEvent: UNIX and Win32 implementation of MDS Events */
@@ -100,7 +95,7 @@ struct AstDescriptor {
 
 static int is_exiting = 0;
 
-static int shmId = 0, semId = 0;
+static int shmId = 0, semLocked = 0; 
 static int  msgId = 0, msgKey = MSG_ID;
 static struct PrivateEventInfo private_info[MAX_ACTIVE_EVENTS];
 static struct SharedEventInfo *shared_info = 0;
@@ -139,34 +134,62 @@ static char *getEnvironmentVar(char *name)
 
 static void cleanup(int);
 
+static int getSemId()
+{
+  static int semId = 0;
+  if(!semId) /* Acquire semaphore id if not done*/
+  {
+    semId = semget(SEM_ID, 1, 0);
+    if(semId == -1)
+    {
+      semId = 0;
+      if (errno == ENOENT)
+      {
+        int status;
+        semId = semget(SEM_ID, 1, IPC_CREAT | 0x1ff);
+        if (semId == -1)
+        {
+          perror("Error creating locking semaphore");
+          semId = 0;
+        }
+        else
+	{
+          status = semctl(semId,0,SETVAL,1);
+          if (status == -1)
+            perror("Error accessing locking semaphore");
+        }
+      }
+      else
+        perror("Error accessing locking semaphore");
+    }
+  }
+  return semId;
+}
+
+static int semSet(int lock)
+{
+    int status;
+    struct sembuf psembuf;
+    psembuf.sem_num = 0;
+    psembuf.sem_op = lock ? -1 : 1;
+    psembuf.sem_flg = SEM_UNDO;
+    status = semop(getSemId(), &psembuf, 1);
+    if (status == -1)
+      perror("Error locking MdsEvent system");
+    else
+      semLocked = lock;
+    return(status == 0);
+}
+
+
 static int getLock()
 {
-    struct sembuf psembuf;
-
-    if(!semId) /* Acquire semaphore id if not done*/
-    {
-	semId = semget(SEM_ID, 1, IPC_CREAT);
-	if(semId == -1) return 0;
-    }
-    psembuf.sem_num = 0;
-    psembuf.sem_op = -1;
-    psembuf.sem_flg = SEM_UNDO;
-    return semop(semId, &psembuf, 1);
+  return semSet(1);
 }
 
 static int releaseLock()
 {
-    struct sembuf vsembuf;
-
-    if(!semId) return -1; /* Semaphore id must alredy be acquired*/
-    {
-	semId = semget(SEM_ID, 1, IPC_CREAT);
-	if(semId == -1) return 0;
-    }
-    vsembuf.sem_num = 0;
-    vsembuf.sem_op = 1;
-    vsembuf.sem_flg = SEM_UNDO;
-    return semop(semId, &vsembuf, 1);
+  return semLocked ? semSet(0) : 1;
 }
 
      
