@@ -967,9 +967,18 @@ STATIC_ROUTINE void setHandle()
       um = umask(0);
       setKeyPath(keypath,msgKey);
       while (mkfifo(keypath,0777) == -1) {
-	if (errno != EEXIST) 
+        if (errno == EEXIST)
+	{
+          msgId = open(keypath, O_WRONLY | O_NONBLOCK);   /* Make sure someone has this fifo open */
+          if (msgId == -1 && errno == ENXIO) break; /* Nope, reuse this one */
+          close(msgId); /* Somebody else, don't use it */
+          setKeyPath(keypath,++msgKey);
+        }
+        else
+	{
  	   perror("Fatal error with MdsEvent pipes");
-        setKeyPath(keypath,++msgKey);
+           exit(errno);
+        }
       }
       /* don't block on open */
 #ifdef linux
