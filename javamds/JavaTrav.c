@@ -71,7 +71,7 @@ static void RaiseException(JNIEnv *env, char *msg)
 {
    jclass exc = (*env)->FindClass(env, "DatabaseException");
    (*env)->ThrowNew(env, exc, msg);
-   //free(msg);
+   /* //free(msg); */
 }
   
 
@@ -191,7 +191,7 @@ JNIEXPORT jobject JNICALL Java_Database_getData
 
   status = TreeGetRecord(nid, &xd);
 
- // printf("\nletti %d bytes", xd.l_length);
+ /* // printf("\nletti %d bytes", xd.l_length);*/
 /*
   status = TdiDecompile(&xd, &out_xd MDS_END_ARG);
 printf("\nEnd TdiDecompile");
@@ -372,7 +372,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getTags
   for(i = 0; i < n_tags; i++)
     {
       jtag = (*env)->NewStringUTF(env, tags[i]);
-      //free(tags[i]);
+      /* //free(tags[i]);*/
       (*env)->SetObjectArrayElement(env, jtags, i, jtag);
     }
   return jtags;
@@ -485,7 +485,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getSons
   {{0, NciCHILDREN_NIDS, 0, &nids_len},
    {NciEND_OF_LIST, 0, 0, 0}};
 
-//printf("\nStart getSons");
+/* //printf("\nStart getSons"); */
   
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
@@ -518,7 +518,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getSons
   if(num_nids > 0)
 	free((char *)nids);
 
-//printf("\nEnd getSons");
+/* //printf("\nEnd getSons"); */
   return jnids;
 }
 
@@ -544,7 +544,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getMembers
   {{0, NciMEMBER_NIDS, 0, &nids_len},
    {NciEND_OF_LIST, 0, 0, 0}};
 
-//printf("\nStart getMembers");
+/* //printf("\nStart getMembers");*/
 
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
@@ -578,7 +578,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getMembers
     }
   if(num_nids > 0)free((char *)nids);
 
-//printf("\nEnd getMembers");
+/* //printf("\nEnd getMembers");*/
   return jnids;
 }
 
@@ -721,9 +721,11 @@ static int doAction(int nid)
 	char *command, *expression, *path;
 	struct descriptor expr_d = {0, DTYPE_T, CLASS_S, 0};
 	int method_nid, i;
-	struct descriptor nid_d = {sizeof(int), DTYPE_NID, CLASS_S, (char *)&method_nid};
+	struct descriptor nid_d = {sizeof(int), DTYPE_NID, CLASS_S, 0};
 	char type = DTYPE_L;
-	DESCRIPTOR_CALL(call_d, &type, 256, 0, 0);
+	DESCRIPTOR_CALL(call_d, (unsigned char *)0, (unsigned char)253, 0, 0);
+        call_d.pointer = (unsigned char *)&type;
+        nid_d.pointer = (char *)&method_nid;
 
 	status = TreeGetRecord(nid, &xd);
 	if(!(status & 1)) return status;
@@ -814,10 +816,11 @@ JNIEXPORT void JNICALL Java_Database_doDeviceMethod
 	const char *method;
 	static int stat = 0;
 	jclass cls = (*env)->GetObjectClass(env, jnid);
-	struct descriptor nid_dsc = {sizeof(int), DTYPE_NID, CLASS_S, (char *)&nid},
+	struct descriptor nid_dsc = {sizeof(int), DTYPE_NID, CLASS_S, 0},
 	method_dsc = {0, DTYPE_T, CLASS_S, 0},
-	stat_d = {4, DTYPE_L, CLASS_S, (char *)&stat};
-
+	stat_d = {4, DTYPE_L, CLASS_S, 0};
+        nid_dsc.pointer=(char *)&nid;
+        stat_d.pointer=(char *)&stat;
 	nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
 	nid = (*env)->GetIntField(env, jnid, nid_fid);
 	nid_dsc.pointer = (char *)&nid;

@@ -86,7 +86,7 @@ JNIEXPORT jobject JNICALL Java_Data_fromExpr
        error_msg = (char *)MdsGetMsg(status);
        exc = (*env)->FindClass(env, "SyntaxException");
        (*env)->ThrowNew(env, exc, error_msg);
-       //free(error_msg);
+       /* //free(error_msg); */
        return NULL;
      }
    /*
@@ -284,7 +284,7 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 		case DTYPE_G:
 		case DTYPE_H:
 		case DTYPE_F: 
-		case DTYPE_FLOAT: //Let Tdi handle all the floating point stuff
+		case DTYPE_FLOAT: /* //Let Tdi handle all the floating point stuff */
 			{	
 				status = TdiFloat(array_d, &float_xd MDS_END_ARG);
 				if(!(status & 1))
