@@ -12,13 +12,15 @@ TreeSetDefault.o \
 TreeSetNci.o \
 RemoteAccess.o
 
-libTreeShr.so : $(OBJECTS)
-	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm -L../mdsshr -lMdsShr
+../shlib/libTreeShr.so : $(OBJECTS) ../shlib
+	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm -L../shlib -lMdsShr
 
+../shlib :
+	mkdir ../shlib
 
 clean :
 	- rm *.o
-	- rm *.so
+	- rm ../shlib/libTreeShr.so
 	- rm so_locations
 	- rm .depend
 
