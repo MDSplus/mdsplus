@@ -9,7 +9,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     }
 
     native public void SetEnvironment(String exp);
-    native public void Update(String exp, int s);
+    native public void Update(String exp, long s);
     native public String GetString(String in);
     native public float GetFloat(String in);
 
@@ -21,15 +21,16 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     }
 
     native public float[] GetFloatArrayNative(String in);
-    native public int[] GetIntArray(String in);
+    native public int[]   GetIntArray(String in);
+    native public long[]  GetLongArray(String in);
 
-    public int[] GetShots(String in)  
+    public long[] GetShots(String in)  
     {
         try {
-            return GetIntArray(in);
+            return GetLongArray(in);
         }catch(Exception exc) 
         {
-            System.err.println("Errore in GetIntArray: " + exc);
+            System.err.println("Errore in GetLongArray: " + exc);
             
             return null;}
     }

@@ -11,15 +11,12 @@ import javax.swing.event.*;
 
 
 
-//*****
-//Form di visualizzazione della configurazione della
-//wave selezionata
-//*****
  class SetupDataDialog extends JDialog implements ActionListener, 
                                                   ItemListener,
                                                   KeyListener,
                                                   WaveformListener
  {
+   public  static int   UNDEF_SHOT     = -99999;
  
    private JLabel	    lab;
    private SError	    error_w;
@@ -91,7 +88,7 @@ import javax.swing.event.*;
     String  label;
 	String  x_expr;
 	String  y_expr;
-	int     shot;
+	long    shot;
 	int     color_idx;
 	boolean interpolate;
 	int     marker;
@@ -248,10 +245,10 @@ import javax.swing.event.*;
     private JComboBox        show_type, color, marker;
     private JTextField	     marker_step_t;
     private Vector	         signals = new Vector();
-    private String	         shot_str = null;
-    private int		         shots[]=null, list_num_shot = 0;  
+   // private String	         shot_str = null;
+    private long		     shots[]=null;
+    private int              list_num_shot = 0;  
     private int              sel_signal = -1;
-    private int              UNDEF_SHOT     = -99999;
     
     public SList() 
     {
@@ -517,24 +514,13 @@ import javax.swing.event.*;
 	    Data ws;
       
 	    if(wi != null)
-	    {
-	        /*
-	        shots = new int[wi.num_shot];
-	    
-	        if(wi.shots == null)
-	            for(int i = 0; i < wi.num_shot; i++)
-		            shots[i] = jScope.UNDEF_SHOT;	    
-	        else
-	            for(int i = 0; i < wi.num_shot; i++)
-		            shots[i] = wi.shots[i];
-		    */
-		    
+	    {		    
 		    if(wi.shots != null)
 		    {
-	            shots = new int[wi.num_shot];
+	            shots = new long[wi.num_shot];
 	            for(int i = 0; i < wi.num_shot; i++)
 		            shots[i] = wi.shots[i];
-    	        shot_str = wi.in_shot;
+//    	        shot_str = wi.in_shot;
 		    }
 		    
 	        list_num_shot = wi.num_shot;
@@ -617,8 +603,43 @@ import javax.swing.event.*;
        
        public boolean evaluateShotList(String in_shot) throws IOException
        {
-        
+		    if(shots != null && shots.length != 0)
+		        list_num_shot = shots.length;
+		    else
+		        list_num_shot = 1;
+		        
+		    long new_shots[] = wi.GetShotArray(in_shot);     
+		    if(new_shots == null)
+		    {
+		        shots = null;
+		        return true;
+		    } 
+		    else
+		    {
+		        if(shots == null)
+		        {
+		            shots = new_shots;
+		            return true;		        
+		        } else {
+		            if(shots.equals(new_shots))
+		                return false;
+		            shots = new_shots;
+		            if(image_b.isSelected())
+		            {
+		                if(shots.length > 1)
+		                {
+		                    long sh[] = new long[1];
+		                    sh[0]=shots[0];
+		                    shots = sh;
+		                    //list_num_shot = 1;
+		                }
+		            }
+		        }
+		    }
+		    return true;
+        /*
         if(in_shot != null) in_shot = in_shot.trim();
+        
 	    if((shot_str == null && in_shot != null && in_shot.length()!= 0) || 
 	       (shot_str != null && !shot_str.equals(in_shot)))
 	    {
@@ -626,17 +647,17 @@ import javax.swing.event.*;
 		        list_num_shot = shots.length;
 		    else
 		        list_num_shot = 1;
-		    shot_str = in_shot;
 		    shots = wi.GetShotArray(in_shot);
 		    if(shots == null)
 		    {
 		        shot_str = null;
 		    } else {
+		        shot_str = in_shot;
 		        if(image_b.isSelected())
 		        {
 		            if(shots.length > 1)
 		            {
-		                int sh[] = new int[1];
+		                long sh[] = new long[1];
 		                sh[0]=shots[0];
 		                shots = sh;
 		                list_num_shot = 1;
@@ -645,9 +666,10 @@ import javax.swing.event.*;
 		    }
 		    return true;
 	    } else
-		    return false;	    
+		    return false;
+*/
        }
-
+        
 
        public void signalsRefresh()
        { 
@@ -1540,7 +1562,8 @@ import javax.swing.event.*;
         {
 	        signalList.updateList();
 	    } catch (Throwable e) {
-	        main_scope.SetStatusLabel("Error during update list "+e);	    
+		    JOptionPane.showMessageDialog(null, e.getMessage(), "alert", JOptionPane.ERROR_MESSAGE); 
+//	        main_scope.SetStatusLabel("Error during update list "+e);	    
 	    }
         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
    }
@@ -1657,8 +1680,9 @@ import javax.swing.event.*;
       wi.markers_step = new int[num_signal];	  
       wi.colors_idx   = new int[num_signal];
       wi.interpolates = new boolean[num_signal];
-      
-      wi.shots        = new int[num_signal];				
+ 
+      if(s[0].shot != UNDEF_SHOT)
+        wi.shots        = new long[num_signal];				
     
           for(int i = 0; i < num_signal; i++)      
           {

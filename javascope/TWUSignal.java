@@ -13,6 +13,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2002/06/05 15:00:08  jgk
+ * Tell the server to close the connection after sending
+ * all the data.  This stops it "chunking" the data.
+ *
  * Revision 1.8  2002/05/06 16:09:57  jgk
  * Fiddles (sorry).
  *

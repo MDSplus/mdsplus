@@ -114,7 +114,7 @@ class UniversalDataProvider implements DataProvider
     {
         error = null;
     }
-    public void Update(String exp, int s)
+    public void Update(String exp, long s)
     {
         if(exp == null) return;
         if(exp.equals("rfx") && rfx != null)
@@ -147,9 +147,9 @@ class UniversalDataProvider implements DataProvider
     }
     
     
-    public int[] GetShots(String in)
+    public long[] GetShots(String in)
     {
-        int d[] = new int[1];
+        long d[] = new long[1];
         try {
             return rfx.GetShots(in);
         }catch (Exception exc) 
@@ -157,7 +157,7 @@ class UniversalDataProvider implements DataProvider
             try {
                 StringTokenizer st = new StringTokenizer(in, ":");
                 String shotStr = st.nextToken();
-                d[0] = Integer.parseInt(shotStr);
+                d[0] = Long.parseLong(shotStr);
             }catch(Exception exc1) {d[0] = 0;}
         }
         return d;

@@ -12,7 +12,7 @@ class JetMdsDataProvider extends MdsDataProvider
     
     public void SetArgument(String arg){};
         
-    public synchronized void Update(String exp, int s)
+    public synchronized void Update(String exp, long s)
 	{
 	    error = null;
 		shot = s;

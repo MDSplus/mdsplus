@@ -4,7 +4,7 @@ import java.net.URL;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-import java.security.AccessControlException;
+import java.security.*;
 
 public class WaveDisplay extends JApplet implements WaveformListener
 {

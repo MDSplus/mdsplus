@@ -29,7 +29,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   /**Menus on menu bar */
   protected JMenu        edit_m, look_and_feel_m, pointer_mode_m,
                          customize_m, autoscale_m, print_m, network_m, help_m;
-	        JMenu		 servers_m;
+           	JMenu		 servers_m;
   /**Menu items on menu edit_m */	  
   private JMenuItem      exit_i, win_i;
   protected JMenuItem    default_i, use_i, pub_variables_i, save_as_i, use_last_i, 
@@ -64,7 +64,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   static int		num_scope = 0;
   private String	config_file;
   static DataServerItem[] server_ip_list;
-  static ServerDialog     server_diag = null;
+         ServerDialog     server_diag = null;
   static  boolean	not_sup_local = false;
   private Thread	printThread;
   private boolean	executing_update = false;
@@ -696,7 +696,23 @@ static int T_messageType;
 
     servers_m  = new JMenu("Servers");
     network_m.add(servers_m);
-    servers_m.addActionListener(this);
+    //servers_m.addActionListener(this);
+    servers_m.addMenuListener(new MenuListener()
+	    {
+	        public void menuSelected(MenuEvent e)
+            {
+                server_diag.addServerIpList(server_ip_list);
+            }
+	        public void menuCanceled(MenuEvent e)
+            {
+            }
+	        public void menuDeselected(MenuEvent e)
+            {
+            }
+	    }
+	);
+    
+    
     server_list_i  = new JMenuItem("Edit server list ...");
     network_m.add(server_list_i);
     server_list_i.addActionListener(this);
@@ -1105,9 +1121,10 @@ static int T_messageType;
     Properties props = System.getProperties();
     ip_addr = props.getProperty("data.address");
     dp_class = props.getProperty("data.class");
-    if(server_diag == null)
+    //if(server_diag == null)
         server_diag = new ServerDialog(this, "Server list");  
-    
+
+
     
     if(ip_addr != null && dp_class != null)//|| is_local == null || (is_local != null && is_local.equals("no")))
     {
@@ -2511,7 +2528,7 @@ class WindowDialog extends JDialog implements ActionListener
 class ServerDialog extends JDialog implements ActionListener
 {
     private Hashtable data_server_class = new Hashtable();
-    private JList server_list;
+    static  private JList server_list;
     private DefaultListModel list_model = new DefaultListModel();
     private JButton add_b, remove_b, cancel_b;
             JLabel server_label, user_label;
@@ -2654,10 +2671,9 @@ class ServerDialog extends JDialog implements ActionListener
 	    addKnowProvider();
 	
 	    if(dw.server_ip_list == null)
-	    {
 	        GetPropertiesValue();
-	    }
-	    addServerIpList(dw.server_ip_list);
+	    else
+	        addServerIpList(dw.server_ip_list);
 	    
     }
 
@@ -2771,6 +2787,7 @@ class ServerDialog extends JDialog implements ActionListener
 
         Object ob = event.getSource();
         String arg;
+              
       
 	    if(ob == cancel_b)
 	        setVisible(false);

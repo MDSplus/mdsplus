@@ -214,7 +214,7 @@ class jScopeWavePopup extends MultiWavePopup
         
         if(w.ShowMeasure() && f_name != null && f_name.length() != 0)
         {
-            int shot = 0;
+            long shot = 0;
             jScopeMultiWave mw = (jScopeMultiWave) w;
             if(mw.wi.shots != null)
                 shot = mw.wi.shots[mw.GetSelectedSignal()];

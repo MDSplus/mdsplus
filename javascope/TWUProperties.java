@@ -16,6 +16,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2002/05/27 13:49:51  jgk
+ * Suggestion from Marco: NaN for min/max when the're no proper values.
+ *
  * Revision 1.7  2002/05/24 08:55:19  jgk
  * A bit more robust when faced with HTTP servers that do not provide
  * a mime_type.   Assume it to be text/html in these cases (like most

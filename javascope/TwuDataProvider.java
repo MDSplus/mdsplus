@@ -26,7 +26,7 @@ class TwuDataProvider
 {
     String provider_url = "ipptwu.ipp.kfa-juelich.de";
     String experiment;
-    int    shot;
+    long    shot;
     String error_string;
     transient Vector   connection_listener = new Vector();
     private String user_agent;
@@ -294,7 +294,7 @@ class TwuDataProvider
         String    source                = null  ;
         float[]   data                  = null  ;
         boolean   propertiesAvailable   = false ;
-        int       shotOfTheProperties   = 0;
+        long      shotOfTheProperties   = 0;
         boolean   dataAvailable         = false ;
         boolean   fetchOptionsAvailable = false ;
         boolean   error                 = false ;
@@ -976,7 +976,7 @@ class TwuDataProvider
         
     }
 
-    public static String hashed2shot(String hashedURL, int shot)
+    public static String hashed2shot(String hashedURL, long shot)
     { 
         if (hashedURL==null )
           return hashedURL;
@@ -1285,10 +1285,10 @@ class TwuDataProvider
     //     parsing of / extraction from input signal string
     //  -------------------------------------------------------
 
-    public int[] GetShots(String in)
+    public long[] GetShots(String in)
     {
         error_string = null;
-        int [] result;
+        long [] result;
         String curr_in = in.trim();
         if(curr_in.startsWith("[", 0))
         {
@@ -1296,7 +1296,7 @@ class TwuDataProvider
             {
                 curr_in = curr_in.substring(1, curr_in.length() - 1);
                 StringTokenizer st = new StringTokenizer(curr_in, ",", false);
-                result = new int[st.countTokens()];
+                result = new long[st.countTokens()];
                 int i = 0;
                 try
                 {
@@ -1321,7 +1321,7 @@ class TwuDataProvider
                         end = Integer.parseInt(st.nextToken());
                         if(end < start) 
                           end = start;
-                        result = new int[end-start+1];
+                        result = new long[end-start+1];
                         for(int i = 0; i < end-start+1; i++)
                           result[i] = start+i;
                         return result;
@@ -1331,10 +1331,10 @@ class TwuDataProvider
             }
             else
             {
-                result = new int[1];
+                result = new long[1];
                 try 
                 {
-                    result[0] = Integer.parseInt(curr_in);
+                    result[0] = Long.parseLong(curr_in);
                     return result;
                 }
                 catch(Exception e){}
@@ -1377,7 +1377,7 @@ class TwuDataProvider
     //      constructor, small stuff ...
     //  -------------------------------------------
 
-    public void Update(String experiment, int shot)
+    public void Update(String experiment, long shot)
     {
         this.experiment = experiment;
         this.shot = shot;

@@ -23,7 +23,7 @@ class FtuDataProvider extends MdsDataProvider
         SetEnvironment("public _IMODE = 0;");       
     }
     
-    public synchronized void Update(String exp, int s)
+    public synchronized void Update(String exp, long s)
 	{
 	    error = null;
 		shot = s;

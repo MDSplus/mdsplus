@@ -25,6 +25,11 @@ public class WaveInterface
     public String in_shot;
     public int num_shot = 1;
     protected boolean modified = true;
+    
+    //Used by GetShotArray methods to define
+    //if required shots must be evaluate
+    private String shot_str_eval = null;
+    private long shot_list[] = null; 
    
     boolean reversed = false;
     boolean show_legend = false;
@@ -34,7 +39,7 @@ public class WaveInterface
     public  int     markers[];
     public  int     colors_idx[];
     public  boolean interpolates[];
-    public  int     shots[];
+    public  long    shots[];
     public  String  error;
     private String  curr_error;
     public  String  provider;
@@ -236,6 +241,12 @@ public class WaveInterface
 		w_error = null;
 		signals = null;
 		modified = true;
+		
+		//When change data provide  
+		//shot variable is reset to 
+		//assure shot avaluation
+		shot_str_eval = null;
+		shot_list = null;
     }
 
     public DataProvider getDataProvider()
@@ -451,9 +462,9 @@ public class WaveInterface
 	    int new_markers_step[] = new int[new_num_waves];
 	    int new_colors_idx[] = new int[new_num_waves];
 	    boolean new_interpolates[] = new boolean[new_num_waves];
-	    int new_shots[] = null;
+	    long new_shots[] = null;
 	    if(shots != null) 
-	        new_shots = new int[new_num_waves];
+	        new_shots = new long[new_num_waves];
 	    
 	    boolean new_evaluated[] = new boolean[new_num_waves];
 	    Signal new_signals[] = new Signal[new_num_waves];    
@@ -531,7 +542,7 @@ public class WaveInterface
     public boolean isAddSignal() {return add_signal;}
     public void    setAddSignal(boolean add_signal) {this.add_signal = add_signal;}
     
-    public boolean UpdateShot(int curr_shots[]) throws IOException
+    public boolean UpdateShot(long curr_shots[]) throws IOException
     {
 	    int l = 0, curr_num_shot;
 	    
@@ -571,9 +582,9 @@ public class WaveInterface
 	    int[]     markers_step = new int[num_signal];
 	    int[]     colors_idx   = new int[num_signal];
 	    boolean[] interpolates = new boolean[num_signal];
-	    int[]     shots = null;
+	    long[]     shots = null;
 	    if(curr_shots != null)
-	        shots = new int[num_signal];				
+	        shots = new long[num_signal];				
 
         int sig_idx = (this.num_shot == 0) ? 1 : this.num_shot;
 	    for(int i = 0, k = 0; i < num_expr; i++)      
@@ -812,7 +823,7 @@ public class WaveInterface
     } 
 	     
 	
-    public synchronized void EvaluateShot(int shot) throws IOException
+    public synchronized void EvaluateShot(long shot) throws IOException
     {
 	    int curr_wave;
         if(xmin > xmax) xmin = xmax;
@@ -962,21 +973,23 @@ public class WaveInterface
     public void setShotArray(String in_shot) throws IOException
     {
         this.in_shot = in_shot;
-        int curr_shots[] = GetShotArray(in_shot);
+        long curr_shots[] = GetShotArray(in_shot);
         UpdateShot(curr_shots);
     }
 				    
-    public int[] GetShotArray(String in_shots) throws IOException
-    {
-	    int int_data[] = null;
-	
+    public long[] GetShotArray(String in_shots) throws IOException
+    {	
 	    if(in_shots == null || in_shots.trim().length() == 0)
-	        return int_data;
+	        return null;
 	
-	    int_data = dp.GetShots(in_shots);
-	    if( int_data == null || int_data.length == 0 || int_data.length > MAX_NUM_SHOT)
+	    if(! (shot_list == null || shot_list.length == 0 || 
+	       this.shot_str_eval == null || !shot_str_eval.equals(in_shots) ))
+	       return shot_list;
+	       
+	    shot_list = dp.GetShots(in_shots);
+	    if( shot_list == null || shot_list.length == 0 || shot_list.length > MAX_NUM_SHOT)
 	    {
-	        if(int_data != null && int_data.length > MAX_NUM_SHOT)
+	        if(shot_list != null && shot_list.length > MAX_NUM_SHOT)
                 error = "Too many shots. Max shot list elements " + MAX_NUM_SHOT +"\n";
 	        else {
 		        if(dp.ErrorString() != null)	    
@@ -984,8 +997,11 @@ public class WaveInterface
 		        else
 		            error = "Shot syntax error\n";
 	        }
+	        shot_list = null;
+	        throw(new IOException(error));
 	    }
-	    return int_data;
+        shot_str_eval = in_shots;
+	    return shot_list;
    }
 
     private Signal GetSignal(int curr_wave, float xmin, float xmax) throws IOException
@@ -1044,7 +1060,8 @@ public class WaveInterface
     {
 	    float curr_data[] = null, curr_x[] = null, up_err[] = null,
 	          low_err[] = null;
-	    int x_samples = 0, min_len, sh = 0;
+	    int x_samples = 0, min_len;
+	    long sh = 0;
 	    WaveData wd;
 	    Signal out_signal = null;
 	    DataCacheObject cd;
@@ -1223,7 +1240,8 @@ public class WaveInterface
 		            curr_data = null;
 	        }
 	    }
-	    if(curr_x == null || curr_data == null)
+	    if(curr_x == null || curr_x.length == 0 ||
+	       curr_data == null || curr_data.length == 0)
 	    {
 	        curr_error = dp.ErrorString();
 	        return null;
@@ -1258,7 +1276,7 @@ public class WaveInterface
     	
     	if(cache_enabled && full_flag && !is_async_update)
     	{
-    	    int sh = 0;
+    	    long sh = 0;
     	    DataCacheObject cd = new DataCacheObject();
     	    
             String expr = in_y[curr_wave];

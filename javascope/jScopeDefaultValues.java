@@ -1,7 +1,7 @@
 /* $Id$ */
 class jScopeDefaultValues 
 {
-   int	  shots[];
+   long	  shots[];
    String xmin, xmax, ymax, ymin;
    String title_str, xlabel, ylabel;
    String experiment_str, shot_str;

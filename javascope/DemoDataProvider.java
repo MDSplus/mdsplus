@@ -91,7 +91,7 @@ class DemoDataProvider implements DataProvider
     {
         error = null;
     }
-    public void Update(String exp, int s)
+    public void Update(String exp, long s)
     {
         error = null;
     }
@@ -150,10 +150,10 @@ class DemoDataProvider implements DataProvider
         return d;
     }
     
-    public int[] GetShots(String in)
+    public long[] GetShots(String in)
     {
         error = null;
-        int d[] = new int[1];
+        long d[] = new long[1];
         d[0] = 0;
         return d;
         

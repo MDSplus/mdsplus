@@ -13,7 +13,7 @@ class JetDataProvider implements DataProvider
 
     String provider;
     String experiment;
-    int shot;
+    long shot;
     String username, passwd;
     String encoded_credentials;
     String error_string;
@@ -266,7 +266,7 @@ class JetDataProvider implements DataProvider
         return CheckPasswd(encoded_credentials);
    }
     
-    public void Update(String experiment, int shot)
+    public void Update(String experiment, long shot)
     {
         this.experiment = experiment;
         this.shot = shot;
@@ -402,10 +402,10 @@ class JetDataProvider implements DataProvider
         }
     }
 
-    public int[] GetShots(String in) throws IOException
+    public long[] GetShots(String in) throws IOException
     {
         error_string = null;
-        int [] result;
+        long [] result;
         String curr_in = in.trim();
         if(curr_in.startsWith("[", 0))
         {
@@ -413,11 +413,11 @@ class JetDataProvider implements DataProvider
             {
                 curr_in = curr_in.substring(1, curr_in.length() - 1);
                 StringTokenizer st = new StringTokenizer(curr_in, ",", false);
-                result = new int[st.countTokens()];
+                result = new long[st.countTokens()];
                 int i = 0;
                 try{
                     while(st.hasMoreTokens())
-                        result[i++] = Integer.parseInt(st.nextToken());
+                        result[i++] = Long.parseLong(st.nextToken());
                     return result;
                 } catch(Exception e) {}
             }
@@ -434,7 +434,7 @@ class JetDataProvider implements DataProvider
                         start = Integer.parseInt(st.nextToken());
                         end = Integer.parseInt(st.nextToken());
                         if(end < start) end = start;
-                        result = new int[end-start+1];
+                        result = new long[end-start+1];
                         for(int i = 0; i < end-start+1; i++)
                             result[i] = start+i;
                         return result;
@@ -443,9 +443,9 @@ class JetDataProvider implements DataProvider
             }
             else
             {
-                result = new int[1];
+                result = new long[1];
                 try {
-                    result[0] = Integer.parseInt(curr_in);
+                    result[0] = Long.parseLong(curr_in);
                     return result;
                 }catch(Exception e){}
             }

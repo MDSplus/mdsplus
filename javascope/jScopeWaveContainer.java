@@ -43,7 +43,7 @@ class jScopeWaveContainer extends WaveformContainer
     private   boolean   abort;
     private   boolean   add_sig = false;
     private   ProfileDialog profile_dialog;
-    private   int       main_shots[] = null;
+    private   long       main_shots[] = null;
     private   String    main_shot_str = null;
     private   boolean   main_shot_changed = false;
     private   String    main_shot_error = null;
@@ -452,7 +452,7 @@ class jScopeWaveContainer extends WaveformContainer
   }
 
 
-  public int[] getMainShots()
+  public long[] getMainShots()
   {
      try
      {
@@ -490,7 +490,7 @@ class jScopeWaveContainer extends WaveformContainer
   public void EvaluateMainShot(String in_shots) throws IOException
   {
         String error = null;
-	    int int_data[] = null;
+	    long long_data[] = null;
 
         main_shot_error = null;
         
@@ -509,10 +509,10 @@ class jScopeWaveContainer extends WaveformContainer
         main_shot_str = null;
 	
 //	    dp.Update(null, 0);
-	    int_data = dp.GetShots(in_shots);
-	    if( int_data == null || int_data.length == 0 || int_data.length > MdsWaveInterface.MAX_NUM_SHOT)
+	    long_data = dp.GetShots(in_shots);
+	    if( long_data == null || long_data.length == 0 || long_data.length > MdsWaveInterface.MAX_NUM_SHOT)
 	    {
-	        if(int_data != null && int_data.length > MdsWaveInterface.MAX_NUM_SHOT)
+	        if(long_data != null && long_data.length > MdsWaveInterface.MAX_NUM_SHOT)
                 error = "Too many shots. Max shot list elements " + MdsWaveInterface.MAX_NUM_SHOT +"\n";
 	        else {
 		        if(dp.ErrorString() != null)	    
@@ -525,7 +525,7 @@ class jScopeWaveContainer extends WaveformContainer
 	    if(main_shot_error == null)
 	    {
 	        main_shot_changed = false;
-                main_shots = int_data;
+                main_shots = long_data;
 	    }
         main_shot_str = in_shots.trim();
   }
@@ -1046,13 +1046,11 @@ class jScopeWaveContainer extends WaveformContainer
         switch(option)
         {
             case DataProvider.LOGIN_OK :
-		       // fast_network_access = false;
 		        supports_fast_network = new_dp.SupportsFastNetwork();
                 change = true;
                 new_dp.SetArgument(server_item.argument);
             break;
             case DataProvider.LOGIN_ERROR :
-//	            throw(new Exception("Invalid login"));
             case DataProvider.LOGIN_CANCEL :
                 server_item = new DataServerItem("Not Connected", null, null, 
                           null, null, null);
@@ -1075,11 +1073,12 @@ class jScopeWaveContainer extends WaveformContainer
                     dp.Dispose();
                 }
                 
+                
 	            dp = new_dp;
                 if(dp != null)
                     dp.AddConnectionListener((ConnectionListener)l);
-                    
-                ChangeDataProvider(dp);
+                
+                ChangeDataProvider(dp);                
                 AddAllEvents(l);
                 
                 //create browse panel if defined

@@ -15,7 +15,7 @@ public class MdsDataProvider implements DataProvider
     String experiment;
     String default_node;
     private boolean def_node_changed = false;
-    int shot;
+    long shot;
     boolean open, connected;
     MdsConnection mds;
     public String error;
@@ -483,7 +483,7 @@ public class MdsDataProvider implements DataProvider
 
     public synchronized String ErrorString() { return error; }
 
-    public synchronized void Update(String exp, int s)
+    public synchronized void Update(String exp, long s)
     {
         error = null;
 	    var_idx = 0;
@@ -688,12 +688,12 @@ public class MdsDataProvider implements DataProvider
         return out;
     }        
     
-    public int[] GetShots(String in) throws IOException
+    public long[] GetShots(String in) throws IOException
     {
         //To shot evaluation don't execute check
         //if a pulse file is open
         CheckConnection();
-        return GetIntegerArray(in);
+        return GetLongArray(in);
     }
     
     
@@ -703,19 +703,22 @@ public class MdsDataProvider implements DataProvider
         return GetIntegerArray(in);
     }        
    
-    private synchronized int[] GetIntegerArray(String in) throws IOException
+    private synchronized long[] GetLongArray(String in) throws IOException
     {
+        long out_data[];
+        
         Descriptor desc = mds.MdsValue(in);
         switch(desc.dtype)  {
 	    case Descriptor.DTYPE_LONG:
-	        return desc.int_data;
-	    case Descriptor.DTYPE_FLOAT:
-	        {
-		    int out_data[] = new int[desc.float_data.length];
-		    for(int i = 0; i < desc.float_data.length; i++)
-		        out_data[i] = (int)(desc.float_data[i] + 0.5);
+		    out_data = new long[desc.int_data.length];
+		    for(int i = 0; i < desc.int_data.length; i++)
+		        out_data[i] = (long)(desc.int_data[i]);
 		    return out_data;
-	        }
+	    case Descriptor.DTYPE_FLOAT:
+		    out_data = new long[desc.float_data.length];
+		    for(int i = 0; i < desc.float_data.length; i++)
+		        out_data[i] = (long)(desc.float_data[i] + 0.5);
+		    return out_data;
 	    case Descriptor.DTYPE_CHAR:
 	        error = "Cannot convert a string to int array";
 	        return null;
@@ -726,6 +729,31 @@ public class MdsDataProvider implements DataProvider
         }	
         return null;
     }
+ 
+    private synchronized int[] GetIntegerArray(String in) throws IOException
+    {
+        int out_data[];
+        
+        Descriptor desc = mds.MdsValue(in);
+        switch(desc.dtype)  {
+	    case Descriptor.DTYPE_LONG:
+		    return desc.int_data;
+	    case Descriptor.DTYPE_FLOAT:
+		    out_data = new int[desc.float_data.length];
+		    for(int i = 0; i < desc.float_data.length; i++)
+		        out_data[i] = (int)(desc.float_data[i] + 0.5);
+		    return out_data;
+	    case Descriptor.DTYPE_CHAR:
+	        error = "Cannot convert a string to int array";
+	        return null;
+	    case Descriptor.DTYPE_CSTRING:
+	        if((desc.status & 1) == 0)
+	            error = desc.error;
+	        return null;
+        }	
+        return null;
+    }
+ 
     
     public void Dispose()
     {

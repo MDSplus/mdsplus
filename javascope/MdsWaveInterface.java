@@ -205,7 +205,7 @@ class MdsWaveInterface extends WaveInterface
 
   public void UpdateShot() throws IOException
   {
-	int curr_shots[] = null;
+	long curr_shots[] = null;
 	String c_shot_str = this.GetUsedShot();
   
     error = null;
@@ -290,7 +290,7 @@ class MdsWaveInterface extends WaveInterface
 	    if(wi.in_shot == null || wi.in_shot.trim().length() == 0)
 	       shots = wi.shots = null;
 	    else
-	       shots = new int[num_waves];
+	       shots = new long[num_waves];
     	
 	    for(int i = 0; i < num_waves; i++)
 	    {
@@ -595,7 +595,7 @@ class MdsWaveInterface extends WaveInterface
     public void CreateVector()
     {
         in_label = new String[num_waves];      
-	    shots	 = new int[num_waves];
+	    shots	 = new long[num_waves];
 	    in_y	 = new String[num_waves];
 	    in_x	 = new String[num_waves];
 	    in_up_err    = new String[num_waves];

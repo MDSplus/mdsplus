@@ -97,7 +97,7 @@ public class SignalCache
      return out.toString();
  }
 
- public void putCacheData(String provider, String expression, String experiment, int shot, Object data)
+ public void putCacheData(String provider, String expression, String experiment, long shot, Object data)
  {
  //   if(provider == null || expression == null || data == null) return;
     
@@ -132,7 +132,7 @@ public class SignalCache
     } catch (IOException e) {System.out.println(e);}
  }
 
- public Object getCacheData(String provider, String expression, String experiment, int shot)
+ public Object getCacheData(String provider, String expression, String experiment, long shot)
  {
     
     

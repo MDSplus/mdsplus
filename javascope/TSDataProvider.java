@@ -22,7 +22,7 @@ class TSDataProvider extends MdsDataProvider
         mds.setUser("mdsplus");
     }
     
-    public synchronized void Update(String exp, int s)
+    public synchronized void Update(String exp, long s)
 	{
 	    error = null;
 		shot = s;
