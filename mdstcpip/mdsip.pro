@@ -1,4 +1,31 @@
 ;/*
+
+Function MdsIPImage
+  case !version.os of
+    'vms' : return,'mdsipshr'
+    'windows' : return,'mdsipshr'
+    'AIX' : return,'libMdsIpShr.lib'
+    'IRIX' : return,'libMdsIpShr.so'
+    'OSF' : return,'libMdsIpShr.so'
+    'sunos' : return,'libMdsIpShr.so'
+    'hp-ux' : return,getenv('MDS_SHLIB_PATH')+'/libMdsIpShr.sl'
+    else  : message,'MDS is not supported on this platform',/IOERROR 
+  endcase
+end
+
+function MdsRoutinePrefix
+  if !version.os eq 'vms' then return,'' else return,'Idl'
+end
+
+Pro MdsMemCpy,outvar,inptr,num
+  case !version.os of
+    'vms' :  dummy = call_external('decc$shr','decc$memcpy',outvar,inptr,num,value=[0,1,1])
+    'OSF' :  dummy = call_external(MdsIpImage(),MdsRoutinePrefix()+'memcpy',outvar,inptr,num,value=[0,0,1])
+    else  :  dummy = call_external(MdsIpImage(),MdsRoutinePrefix()+'memcpy',outvar,inptr,num,value=[0,1,1])
+  endcase
+  return
+end
+
 function mds$socket,quiet=quiet,status=status
   sock = 0l
   defsysv,'!MDS_SOCKET',exists=old_sock
@@ -20,44 +47,27 @@ pro Mds$SendArg,sock,n,idx,arg
   dtype = s(ndims + 1) 
   dtypes =  [0,2,7,8,10,11,12,14,0] 
   lengths = [0,1,2,4,4,8,8,1,0] 
-  length = lengths(dtype) 
   dtype = dtypes(dtype) 
-  if dtype eq 14 then length = strlen(arg) 
-  case !version.os of 
-  'vms' : x = call_external('MDSIPSHR','SendArg',sock,idx,dtype,n,length,ndims,dims,arg, $ 
-                     value=[1b,1b,1b,1b,1b,1b,0b,dtype eq 14]) 
-  'windows' : x = call_external('MDSIPSHR','IdlSendArg',sock,idx,dtype,n,length,ndims,dims,arg, $
-                     value=[1b,1b,1b,1b,1b,1b,0b,0b]) 
-  'AIX' : x = call_external('IdlSendArg.lib','IdlSendArg',sock,idx,dtype,n,length,ndims,dims,arg, $
-                     value=[1b,1b,1b,1b,1b,1b,0b,dtype eq 14]) 
-  'OSF' : x = call_external('libMdsIpShr.so','IdlSendArg',sock,idx,dtype,n,length,ndims,dims,arg, $
-                     value=[1b,1b,1b,1b,1b,1b,0b,dtype eq 14]) 
-  'sunos' : x = call_external('mdsipshr.so','IdlSendArg',sock,idx,dtype,n,length,ndims,dims,arg, $
-                     value=[1b,1b,1b,1b,1b,1b,0b,dtype eq 14]) 
-  'hp-ux' : x = call_external('~u11023/mdsip/mdsipshr.sl','IdlSendArg',sock,idx,dtype,n,length,ndims,dims,arg, $
-                     value=[1b,1b,1b,1b,1b,1b,0b,dtype eq 14]) 
-  else  : message,'MDS is not supported on this platform',/IOERROR 
-  endcase
+  if dtype eq 14 then begin
+    length = strlen(arg)
+    argByVal = 1b
+    if !version.os eq 'windows' then argByVal = 0b
+  endif else begin
+    length = lengths(dtype)
+    argByVal = 0b
+  endelse
+  x = call_external(MdsIPImage(),MdsRoutinePrefix()+'SendArg',sock,idx,dtype,n,length,ndims,dims,arg,value=[1b,1b,1b,1b,1b,1b,0b,argByVal]) 
   return
 end 
 
 pro mds$connect,host,status=status,quiet=quiet
   mds$disconnect,/quiet
-  case !version.os of
-  'vms' : sock = call_external('MDSIPSHR','ConnectToMds',host,value=[1b])
-  'windows' : sock = call_external('MDSIPSHR','IdlConnectToMds',host)
-  'AIX' : sock = call_external('IdlConnectToMds.lib','IdlConnectToMds',host,value=[1b])
-  'OSF' : sock = call_external('libMdsIpShr.so','IdlConnectToMds',host,value=[1b])
-  'sunos' : sock = call_external('mdsipshr.so','IdlConnectToMds',host,value=[1b])
-  'hp-ux' : sock = call_external('~u11023/mdsip/mdsipshr.sl','IdlConnectToMds',host,value=[1b])
-  else  : message,'MDS is not supported on this platform',/IOERROR
-  endcase
+  sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'ConnectToMds',host,value=[byte(!version.os ne 'windows')])
   if (sock gt 0) then begin
     x=execute('!MDS_SOCKET = sock')
-    status = 1
   endif else begin
     if not keyword_set(quiet) then message,'Error connecting to '+host,/IOERROR
-    status = 0
+    status = -1
   endelse
   return
 end  
@@ -66,15 +76,7 @@ pro mds$disconnect,status=status,quiet=quiet
   status = 1
   sock = mds$socket(status=status,quiet=quiet)
   if status then begin
-    case !version.os of
-    'vms': status = call_external('MDSIPSHR','DisconnectFromMds',sock,value=[1b])
-    'windows': status = call_external('MDSIPSHR','IdlDisconnectFromMds',sock,value=[1b])
-    'AIX': status = call_external('IdlDisconnectFromMds.lib','IdlDisconnectFromMds',sock,value=[1b])
-    'OSF': status = call_external('libMdsIpShr.so','IdlDisconnectFromMds',sock,value=[1b])
-    'sunos': status = call_external('mdsipshr.so','IdlDisconnectFromMds',sock,value=[1b])
-    'hp-ux': status = call_external('~u11023/mdsip/mdsipshr.sl','IdlDisconnectFromMds',sock,value=[1b])
-     else  : message,'MDS is not supported on this platform',/IOERROR
-    endcase
+    status = call_external(MdsIPImage(),MdsRoutinePrefix()+'DisconnectFromMds',sock,value=[1b])
     if (status eq 0) then status = 1 else status = 0
     tmp = execute('!MDS_SOCKET = 0l')
   endif
@@ -96,21 +98,8 @@ function mds$value,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10
   answer = 0
   length = 0
   ansptr = 0l
-  case !version.os of
-  'vms' : status = call_external('MDSIPSHR','GetAnswerInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
-  'windows' : status = call_external('MDSIPSHR','IdlGetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr, $
-  			value=[1,0,0,0,0,0,0])
-  'AIX' : status = call_external('IdlGetAnsInfo.lib','IdlGetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr, $
-  			value=[1,0,0,0,0,0,0])
-  'OSF' : begin
-          ansptr = [0l,0l]
-          status = call_external('libMdsIpShr.so','IdlGetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
-          endif
-   'sunos': status = call_external('mdsipshr.so','IdlGetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
-   'hp-ux': status = call_external('~u11023/mdsip/mdsipshr.sl','IdlGetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,$
-              value=[1,0,0,0,0,0,0])
-  else  : message,'MDS is not supported on this platform',/IOERROR
-  endcase
+  if !version.os eq 'OSF' then ansptr = lonarr(2)
+  status = call_external(MdsIPImage(),MdsRoutinePrefix()+'GetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
   if numbytes gt 0 then begin
     if dtype eq 14 then begin
       if ndims ne 0 then begin
@@ -121,15 +110,7 @@ function mds$value,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10
       endif else begin
         answer = bytarr(length)
       endelse
-      case !version.os of
-      'vms' : dummy = call_external('decc$shr','decc$memcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'windows' : dummy = call_external('MDSIPSHR','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'AIX' : dummy = call_external('Idlmemcpy.lib','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'OSF' : dummy = call_external('libMdsIpShr.so','Idlmemcpy',answer,ansptr,numbytes,value=[0,0,1])
-      'sunos' : dummy = call_external('mdsipshr.so','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'hp-ux' : dummy = call_external('~u11023/mdsip/mdsipshr.sl','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      else  : message,'MDS is not supported on this platform',/IOERROR
-      endcase
+      MdsMemCpy,answer,ansptr,numbytes
       answer = string(answer)
     endif else begin
       if ndims ne 0 then begin
@@ -149,15 +130,7 @@ function mds$value,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10
       12: answer = complex(answer)
       else: message,'Data type '+string(dtype)+'  is not supported',/continue
       endcase
-      case !version.os of
-      'vms' : dummy = call_external('decc$shr','decc$memcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'windows' : dummy = call_external('MDSIPSHR','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'AIX' : dummy = call_external('Idlmemcpy.lib','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'OSF' : dummy = call_external('libMdsIpShr.so','Idlmemcpy',answer,ansptr,numbytes,value=[0,0,1])
-      'sunos' : dummy = call_external('mdsipshr.so','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'hp-ux' : dummy = call_external('~u11023/mdsip/mdsipshr.sl','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      else  : message,'MDS is not supported on this platform',/IOERROR
-      endcase
+      MdsMemCpy,answer,ansptr,numbytes
     endelse
     if not (status and 1) then begin
       if keyword_set(quiet) then message,answer,/noprint,/continue else message,answer,/continue
@@ -190,19 +163,7 @@ pro mds$put,node,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,a
   answer = 0
   length = 0
   ansptr = 0l
-  case !version.os of
-  'vms' : status = call_external('MDSIPSHR','GetAnswerInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
-  'windows' : status = call_external('MDSIPSHR','IdlGetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
-  'AIX' : status = call_external('IdlGetAnsInfo.lib','IdlGetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr, $
-                            value=[1,0,0,0,0,0,0])
-  'OSF' : begin
-          ansptr = [0l,0l]
-          status = call_external('libMdsIpShr.so','IdlGetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
-          end
-  'sunos' : status = call_external('mdsipshr.so','IdlGetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
-  'hp-ux' : status = call_external('~u11023/mdsip/mdsipshr.sl','IdlGetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
-  else  : message,'MDS is not supported on this platform',/IOERROR
-  endcase
+  status = call_external(MdsIPImage(),MdsRoutinePrefix()+'GetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
   if numbytes gt 0 then begin
     if dtype eq 14 then begin
       if ndims ne 0 then begin
@@ -213,15 +174,7 @@ pro mds$put,node,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,a
       endif else begin
         answer = bytarr(length)
       endelse
-      case !version.os of
-      'vms' : dummy = call_external('decc$shr','decc$memcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'windows' : dummy = call_external('MDSIPSHR','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'AIX' : dummy = call_external('Idlmemcpy.lib','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'OSF' : dummy = call_external('libMdsIpShr.so','Idlmemcpy',answer,ansptr,numbytes,value=[0,0,1])
-      'sunos' : dummy = call_external('mdsipshr.so','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'hp-ux' : dummy = call_external('~u11023/mdsip/mdsipshr.sl','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      else  : message,'MDS is not supported on this platform',/IOERROR
-      endcase
+      MdsMemCpy,answer,ansptr,numbytes
       answer = string(answer)
     endif else begin
       if ndims ne 0 then begin
@@ -241,15 +194,7 @@ pro mds$put,node,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,a
       12: answer = complex(answer)
       else: message,'Data type '+string(dtype)+'  is not supported',/ioerror
       endcase
-      case !version.os of
-      'vms' : dummy = call_external('decc$shr','decc$memcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'windows' : dummy = call_external('MDSIPSHR','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'AIX' : dummy = call_external('Idlmemcpy.lib','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'OSF' : dummy = call_external('libMdsIpShr.so','Idlmemcpy',answer,ansptr,numbytes,value=[0,0,1])
-      'sunos' : dummy = call_external('mdsipshr.so','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      'hp-ux' : dummy = call_external('~u11023/mdsip/mdsipshr.sl','Idlmemcpy',answer,ansptr,numbytes,value=[0,1,1])
-      else  : message,'MDS is not supported on this platform',/IOERROR
-      endcase
+      MdsMemCpy,answer,ansptr,numbytes
     endelse
     status = answer
   endif else begin
@@ -297,15 +242,7 @@ PRO MDS$SET_DEF,NODE,QUIET=QUIET,STATUS=STATUS
 ON_ERROR,2		;RETURN TO CALLER IF ERROR
 sock = mds$socket(quiet=quiet,status=status)
 if not status then return
-case !version.os of
-'vms' : status = call_external('MDSIPSHR','MdsSetDefault',sock,string(node),value=[1b,1b])
-'windows' : status = call_external('MDSIPSHR','IdlMdsSetDefault',sock,string(node),value=[1b,0b])
-'AIX' : status = call_external('IdlMdsSetDefault.lib','IdlMdsSetDefault',sock,string(node),value=[1b,1b])
-'OSF' : status = call_external('libMdsIpShr.so','IdlMdsSetDefault',sock,string(node),value=[1b,1b])
-'sunos' : status = call_external('mdsipshr.so','IdlMdsSetDefault',sock,string(node),value=[1b,1b])
-'hp-ux' : status = call_external('~u11023/mdsip/mdsipshr.sl','IdlMdsSetDefault',sock,string(node),value=[1b,1b])
-else  : message,'MDS is not supported on this platform',/IOERROR
-endcase
+status = call_external(MdsIPImage(),MdsRoutinePrefix()+'MdsSetDefault',sock,string(node),value=[1b,byte(!version.os ne 'windows')])
 if not status then begin
   if keyword_set(quiet) then message,mds$getmsg(status,quiet=quiet),/continue,/noprint $
                         else message,mds$getmsg(status,quiet=quiet),/continue
@@ -352,15 +289,7 @@ ON_ERROR,2		;RETURN TO CALLER IF ERROR
 ;
 sock = mds$socket(quiet=quiet,status=status)
 if not status then return
-case !version.os of
-'vms' : status = call_external('MDSIPSHR','MdsOpen',sock,string(experiment),long(shot),value=[1b,1b,1b])
-'windows' : status = call_external('MDSIPSHR','IdlMdsOpen',sock,string(experiment),long(shot),value=[1b,0b,1b])
-'AIX' : status = call_external('IdlMdsOpen.lib','IdlMdsOpen',sock,string(experiment),long(shot),value=[1b,1b,1b])
-'OSF' : status = call_external('libMdsIpShr.so','IdlMdsOpen',sock,string(experiment),long(shot),value=[1b,1b,1b])
-'sunos' : status = call_external('mdsipshr.so','IdlMdsOpen',sock,string(experiment),long(shot),value=[1b,1b,1b])
-'hp-ux' : status = call_external('~u11023/mdsip/mdsipshr.sl','IdlMdsOpen',sock,string(experiment),long(shot),value=[1b,1b,1b])
-else  : message,'MDS is not supported on this platform',/IOERROR
-endcase
+status = call_external(MdsIPImage(),MdsRoutinePrefix()+'MdsOpen',sock,string(experiment),long(shot),value=[1b,byte(!version.os ne 'windows'),1b])
 return
 if not status then begin
   if keyword_set(quiet) then message,mds$getmsg(status,quiet=quiet),/continue,/noprint $
@@ -412,20 +341,17 @@ ON_ERROR,2		;RETURN TO CALLER IF ERROR
 ;
 sock = mds$socket(quiet=quiet,status=status)
 if not status then return
-case !version.os of
-'vms' : sock = call_external('MDSIPSHR','MdsClose',sock,value=[1b])
-'windows' : sock = call_external('MDSIPSHR','IdlMdsClose',sock,value=[1b])
-'AIX' : sock = call_external('IdlMdsClose.lib','IdlMdsClose',sock,value=[1b])
-'OSF' : sock = call_external('libMdsIpShr.so','IdlMdsClose',sock,value=[1b])
-'sunos' : sock = call_external('mdsipshr.so','IdlMdsClose',sock,value=[1b])
-'hp-ux' : sock = call_external('~u11023/mdsip/mdsipshr.sl','IdlMdsClose',sock,value=[1b])
-else  : message,'MDS is not supported on this platform',/IOERROR
-endcase
+sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'MdsClose',sock,value=[1b])
 if not status then begin
   if keyword_set(quiet) then message,mds$getmsg(status,quiet=quiet),/continue,/noprint $
                         else message,mds$getmsg(status,quiet=quiet),/continue
 endif
 RETURN
 END
+
+pro connect,host,_EXTRA=e
+	mds$connect,host,_EXTRA=e
+return
+end
 
 ;*/
