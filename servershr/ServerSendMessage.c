@@ -281,6 +281,13 @@ static void DoBeforeAst(int jobid)
 static int RegisterJob(int *msgid, int *retstatus,void (*ast)(), void *astparam, void (*before_ast)(), int sock)
 {
   Job *j = (Job *)malloc(sizeof(Job));
+  j->retstatus = retstatus;
+  j->ast = ast;
+  j->astparam = astparam;
+  j->before_ast = before_ast;
+  j->sock = sock;
+  pthread_lock_global_np();
+  j->jobid = ++JobId;
   if (msgid)
   {
     pthread_mutex_init(&j->mutex,pthread_mutexattr_default);
@@ -294,13 +301,6 @@ static int RegisterJob(int *msgid, int *retstatus,void (*ast)(), void *astparam,
     j->has_condition = 0;
     j->done = 1;
   }
-  j->retstatus = retstatus;
-  j->ast = ast;
-  j->astparam = astparam;
-  j->before_ast = before_ast;
-  j->sock = sock;
-  pthread_lock_global_np();
-  j->jobid = ++JobId;
   j->next = Jobs;
   Jobs = j;
   pthread_unlock_global_np();
@@ -426,6 +426,7 @@ static int StartReceiver(short *port_out)
 
 static void ThreadExit(void *arg)
 {
+  printf("ServerSendMessage thread exitted\n");
   ThreadRunning = 0;
 }
   
