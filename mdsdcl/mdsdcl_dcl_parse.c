@@ -89,7 +89,7 @@ int   mdsdcl_dcl_parse(		/* Returns CLI_STS_xxx status	*/
             nbytes += strlen(dsc_filename.dscA_pointer) + 3;
 						/* 2 quotes + blank	*/
            }
-        nbytes += p ? strlen(p) : 0;
+        nbytes += p ? strlen(p) + 1 : 0;
 
         if (nbytes > maxcmd)
            {		/*----- allocate enough space for cmd[] ------*/
