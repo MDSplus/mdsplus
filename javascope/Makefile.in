@@ -95,7 +95,7 @@ install:
 	$(JAR) c0f $@ *.class
 
 jScope.class: 	$(SOURCES)
-	$(JAVAC) -g $(SOURCES)
+	$(JAVAC) -g jScope.java
 
 @MAKEBINDIR@ : ; mkdir @MAKEBINDIR@
 
