@@ -157,7 +157,9 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
           if dummy then dummy = call_external(MdsIdlImage(),"IdlGetAns",answer,value=[0b])
           if anscreate_post(0) ne 0 then dummy = execute(string(anscreate_post))
         endif else begin
-          msg = 'Error evaluating expression'
+          if (status ne 0) then begin
+            msg = mdsgetmsg(status)
+          endif else msg = 'Error evaluating expression'
         endelse
       endif else begin
         msg = 'Error in call external'
