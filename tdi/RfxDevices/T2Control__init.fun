@@ -4,15 +4,17 @@ public fun T2Control__init(as_is _nid, optional _method)
     private _N_COMMENT = 1;
     private _N_VME_IP = 2;
     private _N_FREQUENCY = 3;
-    private _N_CALIBRATION = 4;
-    private _N_INIT_CONTROL = 5;
-    private _N_TRIG1_CONTROL = 6;
-    private _N_TRIG2_CONTROL = 7;
-    private _N_TRIG1_TIME = 8;
-    private _N_DURATION = 9;
-    private _N_TRIG2_TIME = 10;
-    private _N_PAR1_NAME = 11;
-    private _N_PAR1_VALUE = 12; 
+    private _N_IN_CALIB = 4;
+    private _N_OUT_CALIB = 5;
+    private _N_INIT_CONTROL = 6;
+    private _N_TRIG_CONTROL = 7;
+    private _N_TRIG_TIME = 8;
+    private _N_CONTR_DURAT = 9;
+    private _N_SYS_DURAT = 10;
+    private _N_PRE_TIME = 11;
+    private _N_POST_TIME = 12;
+    private _N_PAR1_NAME = 13;
+    private _N_PAR1_VALUE = 14; 
 
 
 
@@ -35,15 +37,30 @@ write(*, 'T2Control init');
 	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackPeriod', float(_period));
 
 
-	_duration = data(DevNodeRef(_nid, _N_DURATION));
-	if(_duration <= 0)
+	_sys_duration = data(DevNodeRef(_nid, _N_SYS_DURAT));
+	if(_sys_duration <= 0)
 	{
-		write(*, 'Invalid duration value ', _duration);
+		write(*, 'Invalid system duration value ', _sys_duration);
 		return(0);
 	}
 
-	write(*, 'Duration: ', _duration);
-	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackDuration', float(_duration));
+	write(*, 'System duration: ', _sys_duration);
+	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackSystemDuration', float(_sys_duration));
+
+	_contr_duration = data(DevNodeRef(_nid, _N_CONTR_DURAT));
+	if(_contr_duration <= 0)
+	{
+		write(*, 'Invalid control duration value ', _duration);
+		return(0);
+	}
+	if(_contr_duration > _sys_duration)
+	{
+		write(*, 'Control duration cannot be greater than system duration ', _contr_duration);
+		return(0);
+	}
+
+	write(*, 'Control duration: ', _contr_duration);
+	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackControlDuration', float(_contr_duration));
 
 
 	_control_idx = data(DevNodeRef(_nid, _N_INIT_CONTROL));
@@ -57,23 +74,26 @@ write(*, 'T2Control init');
 	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackInitControl', long(_control_idx));
 
 
-	_control_idx = data(DevNodeRef(_nid, _N_TRIG1_CONTROL));
+	_control_idx = data(DevNodeRef(_nid, _N_TRIG_CONTROL));
 	if(_control_idx < 0 || _control_idx > 5)
 	{
 		write(*, 'Invalid Control Idx ', _control_idx);
 		return(0);
 	}
 
-	write(*, 'Trig 1 Control: ', _control_idx);
+	write(*, 'Trig Control: ', _control_idx);
 	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackTrig1Control', long(_control_idx));
 
 
-	_calibration = data(DevNodeRef(_nid, _N_CALIBRATION));
-
+	_in_calibration = data(DevNodeRef(_nid, _N_IN_CALIB));
 /*	write(*, 'Calibration: ', _calibration);*/
-	_status = MdsValue('Feedback->setCalibration($1, $2)', float(_calibration), 64);
+	_status = MdsValue('Feedback->setInputCalibration($1, $2)', float(_in_calibration), 64);
 	
-    for(_par = 0; _par < 30; _par++)
+	_out_calibration = data(DevNodeRef(_nid, _N_OUT_CALIB));
+/*	write(*, 'Calibration: ', _calibration);*/
+	_status = MdsValue('Feedback->setOutputCalibration($1, $2)', float(_out_calibration), 32);
+	
+    for(_par = 0; _par < 40; _par++)
 	{
 		_par_name = data(DevNodeRef(_nid, _N_PAR1_NAME + _par * 2));
 		_par_value = data(DevNodeRef(_nid, _N_PAR1_VALUE + _par * 2));
