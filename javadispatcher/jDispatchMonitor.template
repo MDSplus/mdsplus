@@ -2,7 +2,7 @@
 #!
 #
 env \
-LD_LIBRARY_PATH=/usr/local/mdsplus/lib \
-SHLIB_PATH=/usr/local/mdsplus/lib \
-CLASSPATH=$HOME:/usr/local/mdsplus/java/classes/jScope.jar:/usr/local/mdsplus/java/classes/jTraverser.jar:/usr/local/mdsplus/java/classes/jDispatcher.jar:/usr/local/mdsplus/java/classes: \
+LD_LIBRARY_PATH=$MDSPLUS_DIR/lib \
+SHLIB_PATH=$MDSPLUS_DIR/lib \
+CLASSPATH=$HOME:$MDSPLUS_DIR/java/classes/jScope.jar:$MDSPLUS_DIR/java/classes/jTraverser.jar:$MDSPLUS_DIR/java/classes/jDispatcher.jar:$MDSPLUS_DIR/java/classes: \
 java jDispatchMonitor $1
