@@ -1,6 +1,7 @@
 SHELL=/bin/sh
 top_srcdir=@top_srcdir@
 RM=$(top_srcdir)/devscripts/rm_if
+prefix=@prefix@
 exec_prefix=@exec_prefix@
 JAVADIR = @MAKEJAVADIR@classes
 JAVAC = @JAVAC@  -classpath ../java/classes/jScope.jar:.
