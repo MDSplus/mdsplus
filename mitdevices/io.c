@@ -7,6 +7,15 @@
 #ifndef MAX
 #define MAX(a,b) ((a) > (b)) ? (a) : (b)
 #endif
+#ifdef FOPEN
+#undef FOPEN
+#endif
+#ifdef FWRITE
+#undef FWRITE
+#endif
+#ifdef FREAD
+#undef FREAD
+#endif
 
 FILE *FOPEN(const char *fname, const char *mode)
 {
