@@ -80,6 +80,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
               status = 1;
   int       bit = 0,
               asize,
+              asize_rec,
               nitems,
               (*symbol) ();
   char     *pcmp,
@@ -146,7 +147,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
     Second is dummy for expansion function.
     ASSUME compressor fails gracefully and only changes *pdat data.
     **************************************************************/
-      prec = (record_four *) ((char *) pwork + asize);
+      prec = (record_four *) align((long)((char *) pwork + sizeof(record_four)),sizeof(void *));
       pca1 = (array_coef *) ((char *) prec + sizeof(rec0));
       pdat = (struct descriptor_a *) ((char *) pca1 + asize);
       pcmp = (char *) pdat + sizeof(struct descriptor_a);
