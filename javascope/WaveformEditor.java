@@ -55,12 +55,12 @@ public class WaveformEditor extends Waveform
                     {
                         minDist = currDist;
                         closestIdx = i;
-                        notifyUpdate(currentX, currentY, closestIdx);
                     }
                 }
+                notifyUpdate(currentX, currentY, closestIdx);
                 if(!editable) return; 
-	           if((e.getModifiers() & Event.META_MASK) != 0) //If MB3
-	           {
+	            if((e.getModifiers() & Event.META_MASK) != 0) //If MB3
+	            {
 	                if((e.getModifiers() & Event.SHIFT_MASK) != 0) //Pont deletion
                     {
                         if(closestIdx != 0 && closestIdx != currentX.length - 1)
