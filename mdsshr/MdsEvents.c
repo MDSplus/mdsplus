@@ -154,19 +154,28 @@ static int readMessage(char *event_name)
     return status;
 }
 
-static pthread_t thread = 0;
+static pthread_t thread;
 
 static void setHandle()
 {
-   pthread_t thread = 0;
+   pthread_t thread;
    if(!msgId)
     {
 	/* get first unused message queue id */
 	while((msgId = msgget(msgKey, 0777 | IPC_CREAT | IPC_EXCL)) == -1)
 	    msgKey++;
 
-	if(pthread_create(&thread, NULL, handleMessage, 0) !=  0)
+#ifdef _DECTHREADS_
+#if _DECTHREADS_ != 1
+#define pthread_attr_default NULL
+#endif
+#else
+#define pthread_attr_default NULL
+#endif
+
+	if(pthread_create(&thread, pthread_attr_default, handleMessage, 0) !=  0)
 	    perror("pthread_create");
+	
     } 
 }
 
@@ -194,17 +203,9 @@ static int sendMessage(char *evname, int key)
 
 static void attachExitHandler(void (*handler)())
 {
-    struct sigaction action, old_action;
-
-    action.sa_handler = (void (*)(int)) handler;
-    action.sa_mask = 0;
-    action.sa_mask = 0;
-    
-
     if(atexit(handler) == -1)
 	perror("atexit");
-    if(sigaction(SIGTERM, &action, &old_action) == -1)
-	perror("signal");
+    signal(SIGTERM,handler);
 }
 
 
@@ -478,7 +479,7 @@ void RemoveMessages()
 	{
     	    status = msgctl(msgid, IPC_RMID, &buf);
 	    printf("\nArato queue %d status %d", i, status);
-	    if(status == -1) perror(msgctl);
+	    if(status == -1) perror("Error in msgctl");
 	}
     }
 }
