@@ -13,6 +13,8 @@
 #define MIN(a,b) ((a) < (b)) ? (a) : (b)
 #endif
 
+#define MAX_CHUNK_SIZE 1024*1024
+
 FILE *FOPEN(const char *fname, const char *mode)
 {
   /*  printf("here I am in open\n"); */
@@ -24,7 +26,16 @@ int FCLOSE(FILE *fd)
 }
 size_t FREAD( void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
-  return fread(ptr, size, nmemb, stream);
+  int samples_to_read = nmemb;
+  int chunk_size;
+  int this_chunk=0;
+  while ((samples_to_read > 0) && (this_chunk >= 0)) {
+    chunk_size = MIN(MAX_CHUNK_SIZE/size, samples_to_read);
+    this_chunk = fread(ptr, size, chunk_size, stream);
+    ptr += this_chunk*size;
+    samples_to_read -= this_chunk;
+  }
+  return ((this_chunk==0) ? nmemb : this_chunk);
 }
 
 size_t FWRITE( void *ptr, size_t size, size_t nmemb, FILE *stream)
@@ -144,7 +155,6 @@ int DMARead2(short *buffer, const char *fname, int *chan, int *samples, int *act
     
   return out;
 }
-#define MAX_CHUNK_SIZE 1024*1024
 
 int DMARead3(short *buffer, const char *fname, int *start, int *end, int *inc, float *coeffs, int *num_coeffs)
 {
