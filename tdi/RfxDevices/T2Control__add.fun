@@ -1,9 +1,7 @@
 public fun T2Control__add(in _path, out _nidout)
 {
 write(*,'T2Control__add'); 
-/*    DevAddStart(_path, 'T2Control', 301, _nidout);*/
-/*    DevAddStart(_path, 'T2Control', 291, _nidout); */
-    DevAddStart(_path, 'T2Control', 308, _nidout);
+    DevAddStart(_path, 'T2Control', 334, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -119,15 +117,36 @@ write(*,'T2Control__add');
 
     DevAddNode(_path // ':PAR44_NAME', 'TEXT', "ModeControlKp", *, _nid);
     DevAddNode(_path // ':PAR44_VAL', 'NUMERIC', zero([32,32],0.), *, _nid);
-    DevAddNode(_path // ':PAR45_NAME', 'TEXT', "ModeControlKi", *, _nid);
-    DevAddNode(_path // ':PAR45_VAL', 'NUMERIC', zero([32,32],0.), *, _nid);
-    DevAddNode(_path // ':PAR46_NAME', 'TEXT', "ModeControlKd", *, _nid);
-    DevAddNode(_path // ':PAR46_VAL', 'NUMERIC', zero([32,32],0.), *, _nid);
-
+    DevAddNode(_path // ':PAR45_NAME', 'TEXT', "ModeControlKpDiagRe", *, _nid);
+    DevAddNode(_path // ':PAR45_VAL', 'NUMERIC', zero([32],0.), *, _nid);
+    DevAddNode(_path // ':PAR46_NAME', 'TEXT', "ModeControlKpDiagIm", *, _nid);
+    DevAddNode(_path // ':PAR46_VAL', 'NUMERIC', zero([32],0.), *, _nid);
     DevAddNode(_path // ':PAR47_NAME', 'TEXT', "ExcludedModeN1", *, _nid);
     DevAddNode(_path // ':PAR47_VAL', 'NUMERIC', 1000, *, _nid);
     DevAddNode(_path // ':PAR48_NAME', 'TEXT', "ExcludedModeN2", *, _nid);
     DevAddNode(_path // ':PAR48_VAL', 'NUMERIC', 1000, *, _nid);
+
+    DevAddNode(_path // ':PAR49_NAME', 'TEXT', "ExtrapEnabled", *, _nid);
+    DevAddNode(_path // ':PAR49_VAL', 'NUMERIC', 0, *, _nid);
+    DevAddNode(_path // ':PAR50_NAME', 'TEXT', "ExtrapDelta", *, _nid);
+    DevAddNode(_path // ':PAR50_VAL', 'NUMERIC', 1E-4, *, _nid);
+
+    DevAddNode(_path // ':PAR51_NAME', 'TEXT', "FieldToCurrentEnabled", *, _nid);
+    DevAddNode(_path // ':PAR51_VAL', 'NUMERIC', 0, *, _nid);
+    DevAddNode(_path // ':PAR52_NAME', 'TEXT', "FieldToCurrent", *, _nid);
+    DevAddNode(_path // ':PAR52_VAL', 'NUMERIC', zero([64,40.]), *, _nid);
+    DevAddNode(_path // ':PAR53_NAME', 'TEXT', "FieldToCurrentModeMapping", *, _nid);
+    DevAddNode(_path // ':PAR53_VAL', 'NUMERIC', zero([16],0.), *, _nid);
+	
+    DevAddNode(_path // ':PAR54_NAME', 'TEXT', "CurrentToVoltageEnabled", *, _nid);
+    DevAddNode(_path // ':PAR54_VAL', 'NUMERIC', 0, *, _nid);
+    DevAddNode(_path // ':PAR55_NAME', 'TEXT', "CurrentToVoltageKp", *, _nid);
+    DevAddNode(_path // ':PAR55_VAL', 'NUMERIC', zero([32],0.), *, _nid);
+    DevAddNode(_path // ':PAR56_NAME', 'TEXT', "CurrentToVoltageKi", *, _nid);
+    DevAddNode(_path // ':PAR56_VAL', 'NUMERIC', zero([32],0.), *, _nid);
+    DevAddNode(_path // ':PAR57_NAME', 'TEXT', "CurrentToVoltageKd", *, _nid);
+    DevAddNode(_path // ':PAR57_VAL', 'NUMERIC', zero([32],0.), *, _nid);
+	
 
     DevAddNode(_path // ':ZERO_START', 'NUMERIC', 0.1, *, _nid);
     DevAddNode(_path // ':ZERO_END', 'NUMERIC', 0.05, *, _nid);
@@ -170,6 +189,10 @@ write(*,'T2Control__add');
     for (_c = 10; _c <=32; _c++)
     {
         DevAddNode(_path // ':CURRENT_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+    }
+    for (_c = 1; _c <=8; _c++)
+    {
+        DevAddNode(_path // ':USER_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     }
     DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path// ':STORE_ACTION', 'STORE', 'STORE', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);

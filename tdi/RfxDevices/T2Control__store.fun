@@ -17,23 +17,19 @@ public fun T2Control__store(as_is _nid, optional _method)
     private _N_PAR1_NAME = 13;
     private _N_PAR1_VALUE = 14; 
 
+    private _N_ZERO_START = 127;
+    private _N_ZERO_END = 128;
+    private _N_ZERO = 129;
+    private _N_MAPPING_ID = 130;
+    private _N_MAPPING = 131;
 
-    private _N_ZERO_START = 109;
-    private _N_ZERO_END = 110;
-    private _N_ZERO = 111;
-    private _N_MAPPING_ID = 112;
-    private _N_MAPPING = 113;
 
-    private _N_INPUT_1 = 114;
-    private _N_OUTPUT_1 = 178;
-    private _N_MODES_1 = 210;
-    private _N_CURRENT_1= 274;
+    private _N_INPUT_1 = 132;
+    private _N_OUTPUT_1 = 196;
+    private _N_MODES_1 = 228;
+    private _N_CURRENT_1= 292;
+    private _N_USER_1= 324;
 
-/*    private _N_INPUT_1 = 109;
-    private _N_OUTPUT_1 = 173;
-    private _N_MODES_1 = 205;
-    private _N_CURRENT_1= 269;
-*/
 
 write(*, 'T2Control store');
     _vme_ip = DevNodeRef(_nid, _N_VME_IP);
@@ -119,6 +115,24 @@ write(*, _c);
 			DevLogErr(_nid, 'Error writing mods in pulse file:'//getmsg(_status));
 		}
 	}
+
+	for(_c = 0; _c < 8; _c++)
+	{
+write(*, _c);
+
+		_sig_nid =  DevHead(_nid) + _N_USER_1  + _c;
+		_data = MdsValue('Feedback->getUserSignal:dsc($1)', _c);
+		_status = DevPutSignal(_sig_nid, 0, 1., _data, 0, _n_samples, _dim);
+		if(! _status)
+		{
+			write(*, 'Error writing data in pulse file for USER channel ', _c);
+			DevLogErr(_nid, 'Error writing data in pulse file ');
+
+		}
+	}
+
+
+
 	_zero = MdsValue('Feedback->getZero:dsc()');
 	_status = DevPut(_nid, _N_ZERO, _zero);
 	if(! _status)

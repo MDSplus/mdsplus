@@ -4,6 +4,7 @@ import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import java.awt.datatransfer.*;
 
 
 public class DeviceTable extends DeviceComponent
@@ -162,6 +163,16 @@ public class DeviceTable extends DeviceComponent
           public void actionPerformed(ActionEvent e) {paste();}
         });
         popM.add(pasteI);
+        JMenuItem copyClipboardI = new JMenuItem("Clipboard Copy");
+        copyClipboardI.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {writeToClipboard();}
+        });
+        popM.add(copyClipboardI);
+        JMenuItem pasteClipboardI = new JMenuItem("Clipboard Paste");
+        pasteClipboardI.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {readFromClipboard();}
+        });
+        popM.add(pasteClipboardI);
       }
       if(copiedRowItems == null)
         pasteRowI.setEnabled(false);
@@ -466,6 +477,46 @@ public class DeviceTable extends DeviceComponent
         ce.stopCellEditing();
       super.apply();
     }
+
+    void readFromClipboard()
+    {
+      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+      Transferable transferable = clipboard.getContents(null);
+      if (transferable == null)
+        return;
+      if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+        try {
+          String tableText = (String) transferable.getTransferData(DataFlavor.
+              stringFlavor);
+          StringTokenizer st = new StringTokenizer(tableText, " ,\n");
+          int idx = 0;
+          while (st.hasMoreTokens() && items.length > idx)
+            items[idx++] = st.nextToken();
+        }
+        catch (Exception exc) {
+          System.err.println("Error reading from clipboard: " + exc);
+        }
+        table.repaint();
+      }
+    }
+
+    void writeToClipboard()
+    {
+      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+      String tableText = "";
+      int idx = 0;
+      for(int i = 0; i < numRows; i++)
+      {
+        for (int j = 0; j < numCols; j++)
+          tableText += " " + items[idx++];
+          tableText += "\n";
+      }
+      clipboard.setContents(new StringSelection(tableText), null);
+
+    }
+
+
+
 
 }
 

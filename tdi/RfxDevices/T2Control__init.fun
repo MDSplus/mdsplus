@@ -16,11 +16,11 @@ public fun T2Control__init(as_is _nid, optional _method)
     private _N_PAR1_NAME = 13;
     private _N_PAR1_VALUE = 14; 
 
-    private _N_ZERO_START = 109;
-    private _N_ZERO_END = 110;
-    private _N_ZERO = 111;
-    private _N_MAPPING_ID = 112;
-    private _N_MAPPING = 113;
+    private _N_ZERO_START = 127;
+    private _N_ZERO_END = 128;
+    private _N_ZERO = 129;
+    private _N_MAPPING_ID = 130;
+    private _N_MAPPING = 131;
 
 
 
@@ -70,7 +70,7 @@ write(*, 'T2Control init');
 
 
 	_control_idx = data(DevNodeRef(_nid, _N_INIT_CONTROL));
-	if(_control_idx < 0 || _control_idx > 5)
+	if(_control_idx < 0 || _control_idx > 6)
 	{
 		write(*, 'Invalid Control Idx ', _control_idx);
 		return(0);
@@ -96,7 +96,7 @@ write(*, 'T2Control init');
 
 
 	_control_idx = data(DevNodeRef(_nid, _N_TRIG_CONTROL));
-	if(_control_idx < 0 || _control_idx > 5)
+	if(_control_idx < 0 || _control_idx > 6)
 	{
 		write(*, 'Invalid Control Idx ', _control_idx);
 		return(0);
@@ -129,11 +129,8 @@ write(*, 'T2Control init');
 
 
 	
-    for(_par = 0; _par < 48; _par++)
+    for(_par = 0; _par < 57; _par++)
 	{
-
-
-
 		_par_name = data(DevNodeRef(_nid, _N_PAR1_NAME + _par * 2));
 
 
