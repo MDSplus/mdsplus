@@ -52,7 +52,13 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 #include <errno.h>
 
 #ifdef HAVE_WINDOWS_H
-//typedef void *pthread_cond_t;
+extern int pthread_cond_signal();
+extern int pthread_mutex_lock();
+extern int pthread_mutex_unlock();
+extern int pthread_mutex_init();
+extern int pthread_cond_init();
+extern int pthread_cond_timedwait();
+#define ETIMEDOUT 42
 #endif
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
@@ -313,7 +319,7 @@ static void AbortRange(int s,int e)
     if (actions[i].dispatched && !actions[i].done)
     {
       int one = 1;
-      ServerAbortServer(Server(actions[i].server),&one);
+      ServerAbortServer(Server(actions[i].server),one);
     }
   }
 }
@@ -361,24 +367,28 @@ static void RecordStatus(int s,int e)
 
 static void WaitForActions(int all)
 {
-#ifndef HAVE_WINDOWS_H
   int status = ETIMEDOUT;
-  struct timespec one_sec = {1,0};
-  struct timespec abstime;
   WaitForAll = all;
   while ((status == ETIMEDOUT) && !(WaitForAll ? NoOutstandingActions(first_g,last_g) && NoOutstandingActions(first_c,last_c)
                     : (AbortInProgress ? 1 : NoOutstandingActions(first_g,last_g)) ))
   {
     pthread_mutex_lock(&JobWaitMutex);
-    pthread_get_expiration_np(&one_sec,&abstime);
-    status = pthread_cond_timedwait( &JobWaitCondition, &JobWaitMutex, &abstime);
+#ifdef HAVE_WINDOWS_H
+	status = pthread_cond_timedwait(&JobWaitCondition, 1000);
+#else
+	{
+      struct timespec one_sec = {1,0};
+      struct timespec abstime;
+      pthread_get_expiration_np(&one_sec,&abstime);
+      status = pthread_cond_timedwait( &JobWaitCondition, &JobWaitMutex, &abstime);
+	}
 #if defined(_DECTHREADS_) && (_DECTHREADS_ == 1)
     if (status == -1 && errno == 11)
       status = ETIMEDOUT;
 #endif
+#endif
     pthread_mutex_unlock(&JobWaitMutex);
   }
-#endif
 }
 
 static char *DetailProc(int full)

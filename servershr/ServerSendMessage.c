@@ -37,7 +37,7 @@ int ServerSendMessage();
 #include <stdio.h>
 #if defined(HAVE_WINDOWS_H)
 #include <windows.h>
-typedef void *pthread_t;
+#define close closesocket
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -62,7 +62,7 @@ typedef struct _Job { pthread_cond_t *condition;
                       void *astparam;
                       void (*before_ast)();
                       int jobid;
-                      int sock;
+                      SOCKET sock;
                       struct _Job *next;
                     } Job;
 
@@ -82,7 +82,7 @@ static Client *ClientList = 0;
 #define SndArgChk(a1,a2,a3,a4,a5,a6,a7,a8) status = SendArg(a1,a2,a3,a4,a5,a6,a7,a8); if (!(status & 1)) goto send_error;
 
 
-static int StartReceiver(unsigned int *addr, short *port);
+static int StartReceiver(short *port);
 int ServerConnect(char *server);
 static int RegisterJob(pthread_cond_t *condition, int *retstatus,void (*ast)(), void *astparam, void (*before_ast)(), int sock);
 static void  CleanupJob(int status,int jobid);
@@ -98,13 +98,14 @@ int ServerSendMessage( pthread_cond_t *condition, char *server, int op, int *ret
   int numargs_in, struct descrip *p1, struct descrip *p2, struct descrip *p3, struct descrip *p4,
                   struct descrip *p5, struct descrip *p6, struct descrip *p7, struct descrip *p8) 
 {
-  unsigned int addr;
+  static unsigned int addr = 0;
   short port;
   int sock;
   int flags = 0;
   int status = 0;
   int jobid;
-  if (StartReceiver(&addr,&port) && ((sock = ServerConnect(server)) >= 0))
+
+  if (StartReceiver(&port) && ((sock = ServerConnect(server)) >= 0))
   {
     char cmd[] = "ServerQAction($,$,$,$,$,$,$,$,$,$,$,$,$)";
     unsigned char numargs = max(0,min(numargs_in,8));
@@ -120,6 +121,13 @@ int ServerSendMessage( pthread_cond_t *condition, char *server, int op, int *ret
     jobid = RegisterJob(condition,retstatus,ast,astparam,before_ast,sock);
     cmd[offset] = ')';
     cmd[offset+1] = '\0';
+	if (addr == 0)
+	{
+      struct sockaddr_in addr_struct;
+	  int len;
+      if (getsockname(sock,(struct sockaddr *)&addr_struct,&len) == 0)
+        addr = *(int *)&addr_struct.sin_addr;
+	}
     SndArgChk(sock, idx++, DTYPE_CSTRING, totargs, (short)strlen(cmd), 0, 0, cmd);
     SndArgChk(sock, idx++, DTYPE_LONG,    totargs, (short)4, 0, 0, (char *)&addr);
     SndArgChk(sock, idx++, DTYPE_SHORT,   totargs, 2, 0, 0, (char *)&port);
@@ -237,7 +245,7 @@ static int RegisterJob(pthread_cond_t *condition, int *retstatus,void (*ast)(), 
 static void  CleanupJob(int status, int jobid)
 {
   Job *j,*prev;
-  int sock;
+  SOCKET sock;
   for (j=Jobs; j && (j->jobid != jobid); j++);
   if (j)
   {
@@ -266,10 +274,27 @@ static int CreatePort(short starting_port, short *port_out)
   int status;
   int one = 1;
   s = socket(AF_INET, SOCK_STREAM, 0);
-  if (s == -1)
+  if (s == INVALID_SOCKET)
   {
+#ifdef HAVE_WINDOWS_H
+	int error = WSAGetLastError();
+	if (error == WSANOTINITIALISED)
+	{
+      WSADATA wsaData;
+      WORD wVersionRequested;
+      wVersionRequested = MAKEWORD(1,1);
+      WSAStartup(wVersionRequested,&wsaData);
+      s = socket(AF_INET, SOCK_STREAM, 0);
+      if (s == INVALID_SOCKET)
+	  {
+        perror("Error getting Connection Socket\n");
+        return(-1);
+	  }
+	}
+#else
     perror("Error getting Connection Socket\n");
     return(-1);
+#endif
   }
   setsockopt(s, SOL_SOCKET,SO_RCVBUF,(char *)&recvbuf,sizeof(long));
   setsockopt(s, SOL_SOCKET,SO_SNDBUF,(char *)&sendbuf,sizeof(long));  
@@ -298,10 +323,9 @@ static int CreatePort(short starting_port, short *port_out)
 
 static int ThreadRunning = 0;
 
-static int StartReceiver(unsigned int *addr_out, short *port_out)
+static int StartReceiver(short *port_out)
 {
   static short port = 0;
-  static unsigned int addr = 0;
   static int sock;
   static pthread_t thread;
   int status = 1;
@@ -311,8 +335,6 @@ static int StartReceiver(unsigned int *addr_out, short *port_out)
     if (sock < 0)
       return(0);
   }
-  if (addr == 0)
-    addr = GetHostAddr(0);
   if (!ThreadRunning)
   {
     status = pthread_create(&thread, pthread_attr_default, Worker, (void *)&sock);
@@ -325,7 +347,6 @@ static int StartReceiver(unsigned int *addr_out, short *port_out)
       status = 1;
   }
   *port_out = port;
-  *addr_out = addr;
   return status;  
 }
 
@@ -516,8 +537,6 @@ static unsigned int GetHostAddr(char *host)
 {
   unsigned int addr = 0;
   struct hostent *hp = NULL;
-  if (host == NULL)
-    return (unsigned int)gethostid();
 #ifndef vxWorks
   hp = gethostbyname(host);
 #endif

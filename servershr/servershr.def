@@ -1,4 +1,4 @@
-LIBRARY	ServerShr
+LIBRARY	MdsServerShr
 CODE	PRELOAD MOVEABLE DISCARDABLE
 DATA	PRELOAD SINGLE
 EXPORTS
@@ -17,6 +17,7 @@ ServerFreeDispatchTable
 ServerGetDetailProc
 ServerGetInfo
 ServerMonitorCheckin
+ServerQAction
 ServerSendMessage
 ServerSetDetailProc
 ServerSetLogging

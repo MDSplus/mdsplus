@@ -4,9 +4,17 @@
 #include <time.h>
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
+#include <mdsshr.h>
+#include <strroutines.h>
 #include <treeshr.h>
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#else
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <pthread.h>
+#endif
+#include <servershr.h>
 #include "servershrp.h"
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
@@ -29,6 +37,8 @@ typedef struct _ClientList { int addr;
                             } ClientList;
 
 extern int TdiDoTask();
+extern int TdiGetNci();
+extern int TdiExecute();
 extern int mdsdcl_do_command(char *command);
 extern int ServerBadSocket(int sock);
 
@@ -186,7 +196,6 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
    
 static int QJob(SrvJob *job)
 {
-  int status;
   SrvJob *qjob = memcpy(malloc(job->h.length),job,job->h.length);
   LockQueue();
   if (LastQueueEntry != 0)
@@ -376,7 +385,7 @@ static void DoSrvCommand(SrvJob *job_in)
 {
   int status;
   SrvCommandJob *job = (SrvCommandJob *)job_in;
-  char *set_table = strcpy(malloc(strlen(job->table)+12),"set command ");
+  char *set_table = strcpy(malloc(strlen(job->table)+24),"set command ");
   char *job_text = (char *)malloc(strlen(job->command) + strlen(job->table) + 60);
   sprintf(job_text,"Doing command %s in command table %s",job->command,job->table);
   current_job_text = job_text;
@@ -455,9 +464,7 @@ static int ShowCurrentJob(struct descriptor_xd *ans)
   return 1;
 }
 
-#ifndef _WIN32
 
-#include <pthread.h>
 
 static void KillThread()
 {
@@ -526,18 +533,12 @@ static int StartThread()
   return 1;
 }
 
-#endif
-
-int main(int argc, char **argv)
-{
-  ServerQAction(0,0,0,0,0,0,0,0,0,0,0,0,0);
-}
-
-static int AttachPort(int addr, short port)
+static SOCKET AttachPort(int addr, short port)
 {
   int sock;
   struct sockaddr_in sin;
   ClientList *l,*new;
+  DebugBreak();
   for (l=Clients;l;l=l->next)
     if (l->addr == addr && l->port == port)
     {
@@ -600,7 +601,7 @@ static void RemoveClient(SrvJob *job)
 static int SendReply(SrvJob *job, int replyType, int status_in, int length, char *msg)
 {
   int status = 0;
-  int sock = AttachPort(job->h.addr, job->h.port);
+  SOCKET sock = AttachPort(job->h.addr, (short)job->h.port);
   if (sock >= 0)
   {
     char reply[60];
