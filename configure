@@ -1414,7 +1414,7 @@ fi
 echo "$ac_t""$ac_cv_search_gethostbyname" 1>&6
 if test "$ac_cv_search_gethostbyname" != "no"; then
   test "$ac_cv_search_gethostbyname" = "none required" || LIBS="$ac_cv_search_gethostbyname $LIBS"
-  LIBNSL="$ac_func_search_save_LIBS"
+  LIBNSL="$ac_cv_search_gethostbyname"
 else :
   LIBNSL=""
 fi
@@ -1476,7 +1476,7 @@ fi
 echo "$ac_t""$ac_cv_search_socket" 1>&6
 if test "$ac_cv_search_socket" != "no"; then
   test "$ac_cv_search_socket" = "none required" || LIBS="$ac_cv_search_socket $LIBS"
-  LIBSOCKET="$ac_func_search_save_LIBS"
+  LIBSOCKET="$ac_cv_search_socket"
 else :
   LIBSOCKET=""
 fi

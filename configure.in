@@ -137,8 +137,8 @@ AC_CHECK_LIB(resolv,__dn_skipname,LIBRESOLV="-lresolv",LIBRESOLV="")
 AC_CHECK_LIB(dl,dlopen,LIBDL="-ldl",LIBDL="")
 AC_CHECK_LIB(dld,shl_load,LIBDLD="-ldld",LIBDLD="")
 OLD_LIBS="$LIBS"
-AC_SEARCH_LIBS(gethostbyname,c socket nsl,LIBNSL="$ac_func_search_save_LIBS",LIBNSL="")
-AC_SEARCH_LIBS(socket,c socket,LIBSOCKET="$ac_func_search_save_LIBS",LIBSOCKET="")
+AC_SEARCH_LIBS(gethostbyname,c socket nsl,LIBNSL="$ac_cv_search_gethostbyname",LIBNSL="")
+AC_SEARCH_LIBS(socket,c socket,LIBSOCKET="$ac_cv_search_socket",LIBSOCKET="")
 LIBS="$OLD_LIBS"
 AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
 
