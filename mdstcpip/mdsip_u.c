@@ -46,6 +46,8 @@
 #include <fcntl.h>
 typedef int ssize_t;
 typedef int mode_t;
+typedef int socklen_t;
+typedef void *pthread_mutex_t;
 #else
 #ifndef SOCKET_ERROR
 #define SOCKET_ERROR -1
