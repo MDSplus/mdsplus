@@ -45,24 +45,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_033CCD02502E6D7DCB2F0787C16D4F46"
-        "OwnerKey" = "8:_9FF3FC76B6DE42708A3A1631B6D8D1FE"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSDCL.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_033CCD02502E6D7DCB2F0787C16D4F46"
-        "OwnerKey" = "8:_C6E24E0224A54EC0A55BA1F8F3F503D0"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSDCL.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_033CCD02502E6D7DCB2F0787C16D4F46"
-        "OwnerKey" = "8:_C398179FDD44478E999CBBDAD8C2F33C"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSDCL.DLL"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_035BE1EE3917411B8CB34D1B729B49DE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:C:\\MDSPLUS\\INCLUDE\\XMDSSHR.H"
@@ -693,60 +675,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_44152C575793C632946C4B94DAEE7477"
-        "OwnerKey" = "8:_291C00CF68F84DCCAF8B0453F702874F"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSIPSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_44152C575793C632946C4B94DAEE7477"
-        "OwnerKey" = "8:_EB23278363A746C99A68EE0488FA7D07"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSIPSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_44152C575793C632946C4B94DAEE7477"
-        "OwnerKey" = "8:_E2CDB96741CD43DFAF30BE1AEB0B1442"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSIPSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_44152C575793C632946C4B94DAEE7477"
-        "OwnerKey" = "8:_C6E24E0224A54EC0A55BA1F8F3F503D0"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSIPSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_44152C575793C632946C4B94DAEE7477"
-        "OwnerKey" = "8:_9D99AB62FECF4B4680CD37FB9A6EFA86"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSIPSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_44152C575793C632946C4B94DAEE7477"
-        "OwnerKey" = "8:_72332611921F41A1BB27D7B0DC4E6556"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSIPSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_44152C575793C632946C4B94DAEE7477"
-        "OwnerKey" = "8:_4BD760EEF96E47719ECA860ED8F1F256"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSIPSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_44152C575793C632946C4B94DAEE7477"
-        "OwnerKey" = "8:_3B35A0C155B747C69B534E8EFAF300D5"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSIPSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_44152C575793C632946C4B94DAEE7477"
-        "OwnerKey" = "8:_38A8558D1178401EBCE940E977A46EEE"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSIPSHR.DLL"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_446C2AE8A9D9427F8E3B68544470382A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:C:\\MDSPLUS\\TDI\\CAMAC\\CAMXANDQ.FUN"
@@ -765,63 +693,15 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_477DF69F4B55476523FB33E22CF01971"
+        "OwnerKey" = "8:_9FF3FC76B6DE42708A3A1631B6D8D1FE"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSERVERSHR.DLL"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_478316F4F7D0402CB38266AEEE2BE4B8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:C:\\MDSPLUS\\TDI\\DEV_SUPPORT\\DEVADDSTART.FUN"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_484940D87B3FEA11F2E1318DABB0799B"
-        "OwnerKey" = "8:_291C00CF68F84DCCAF8B0453F702874F"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TDISHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_484940D87B3FEA11F2E1318DABB0799B"
-        "OwnerKey" = "8:_C6E24E0224A54EC0A55BA1F8F3F503D0"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TDISHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_484940D87B3FEA11F2E1318DABB0799B"
-        "OwnerKey" = "8:_B916B4BF80C544E7A9C80ACF391E8ACB"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TDISHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_484940D87B3FEA11F2E1318DABB0799B"
-        "OwnerKey" = "8:_9FF3FC76B6DE42708A3A1631B6D8D1FE"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TDISHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_484940D87B3FEA11F2E1318DABB0799B"
-        "OwnerKey" = "8:_9D99AB62FECF4B4680CD37FB9A6EFA86"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TDISHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_484940D87B3FEA11F2E1318DABB0799B"
-        "OwnerKey" = "8:_791990F072CD4F938697FFE8C6B1CEEE"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TDISHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_484940D87B3FEA11F2E1318DABB0799B"
-        "OwnerKey" = "8:_72332611921F41A1BB27D7B0DC4E6556"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TDISHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_484940D87B3FEA11F2E1318DABB0799B"
-        "OwnerKey" = "8:_4BD760EEF96E47719ECA860ED8F1F256"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TDISHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_484940D87B3FEA11F2E1318DABB0799B"
-        "OwnerKey" = "8:_46FDBE30BA1F453E8527F7F59AC9D80B"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TDISHR.DLL"
         }
         "Entry"
         {
@@ -969,6 +849,60 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_54457BF4C577F62D7B7308506C8C2DFC"
+        "OwnerKey" = "8:_291C00CF68F84DCCAF8B0453F702874F"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSIPSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_54457BF4C577F62D7B7308506C8C2DFC"
+        "OwnerKey" = "8:_EB23278363A746C99A68EE0488FA7D07"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSIPSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_54457BF4C577F62D7B7308506C8C2DFC"
+        "OwnerKey" = "8:_E2CDB96741CD43DFAF30BE1AEB0B1442"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSIPSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_54457BF4C577F62D7B7308506C8C2DFC"
+        "OwnerKey" = "8:_C6E24E0224A54EC0A55BA1F8F3F503D0"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSIPSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_54457BF4C577F62D7B7308506C8C2DFC"
+        "OwnerKey" = "8:_9D99AB62FECF4B4680CD37FB9A6EFA86"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSIPSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_54457BF4C577F62D7B7308506C8C2DFC"
+        "OwnerKey" = "8:_72332611921F41A1BB27D7B0DC4E6556"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSIPSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_54457BF4C577F62D7B7308506C8C2DFC"
+        "OwnerKey" = "8:_4BD760EEF96E47719ECA860ED8F1F256"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSIPSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_54457BF4C577F62D7B7308506C8C2DFC"
+        "OwnerKey" = "8:_3B35A0C155B747C69B534E8EFAF300D5"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSIPSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_54457BF4C577F62D7B7308506C8C2DFC"
+        "OwnerKey" = "8:_38A8558D1178401EBCE940E977A46EEE"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSIPSHR.DLL"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_5455E919CEA845B0969B01FE4980A985"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:C:\\MDSPLUS\\TDI\\MITDEVICES\\DT100GETPOSTSAMPLES.FUN"
@@ -1014,6 +948,54 @@
         "MsmKey" = "8:_56139A3313B3424CB55183A0DB9F1EFD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:C:\\MDSPLUS\\TDI\\MITDEVICES\\DT100__INIT.FUN"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_566D0A8B491278FAD698F48BCC605D92"
+        "OwnerKey" = "8:_291C00CF68F84DCCAF8B0453F702874F"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TREESHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_566D0A8B491278FAD698F48BCC605D92"
+        "OwnerKey" = "8:_C6E24E0224A54EC0A55BA1F8F3F503D0"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TREESHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_566D0A8B491278FAD698F48BCC605D92"
+        "OwnerKey" = "8:_9FF3FC76B6DE42708A3A1631B6D8D1FE"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TREESHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_566D0A8B491278FAD698F48BCC605D92"
+        "OwnerKey" = "8:_791990F072CD4F938697FFE8C6B1CEEE"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TREESHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_566D0A8B491278FAD698F48BCC605D92"
+        "OwnerKey" = "8:_784FEA3EDAAF48C697E724151F75057C"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TREESHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_566D0A8B491278FAD698F48BCC605D92"
+        "OwnerKey" = "8:_72332611921F41A1BB27D7B0DC4E6556"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TREESHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_566D0A8B491278FAD698F48BCC605D92"
+        "OwnerKey" = "8:_4BD760EEF96E47719ECA860ED8F1F256"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TREESHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_566D0A8B491278FAD698F48BCC605D92"
+        "OwnerKey" = "8:_46FDBE30BA1F453E8527F7F59AC9D80B"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TREESHR.DLL"
         }
         "Entry"
         {
@@ -1143,6 +1125,60 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_69EFAA72ECCAF692689F9D184722303C"
+        "OwnerKey" = "8:_291C00CF68F84DCCAF8B0453F702874F"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TDISHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_69EFAA72ECCAF692689F9D184722303C"
+        "OwnerKey" = "8:_C6E24E0224A54EC0A55BA1F8F3F503D0"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TDISHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_69EFAA72ECCAF692689F9D184722303C"
+        "OwnerKey" = "8:_B916B4BF80C544E7A9C80ACF391E8ACB"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TDISHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_69EFAA72ECCAF692689F9D184722303C"
+        "OwnerKey" = "8:_9FF3FC76B6DE42708A3A1631B6D8D1FE"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TDISHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_69EFAA72ECCAF692689F9D184722303C"
+        "OwnerKey" = "8:_9D99AB62FECF4B4680CD37FB9A6EFA86"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TDISHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_69EFAA72ECCAF692689F9D184722303C"
+        "OwnerKey" = "8:_791990F072CD4F938697FFE8C6B1CEEE"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TDISHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_69EFAA72ECCAF692689F9D184722303C"
+        "OwnerKey" = "8:_72332611921F41A1BB27D7B0DC4E6556"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TDISHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_69EFAA72ECCAF692689F9D184722303C"
+        "OwnerKey" = "8:_4BD760EEF96E47719ECA860ED8F1F256"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TDISHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_69EFAA72ECCAF692689F9D184722303C"
+        "OwnerKey" = "8:_46FDBE30BA1F453E8527F7F59AC9D80B"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\TDISHR.DLL"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_6A01439C0BF44435A854B9A3B22281BB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:C:\\MDSPLUS\\TDI\\MATH\\TESTSUB.FUN"
@@ -1152,54 +1188,6 @@
         "MsmKey" = "8:_6A4C13316DD54E54AA368EC027D90F15"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:C:\\MDSPLUS\\TDI\\REMOTE\\TREESETNCIITM.FUN"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6A910FEC59F1E17D746DC94C0ED6FE94"
-        "OwnerKey" = "8:_291C00CF68F84DCCAF8B0453F702874F"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TREESHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6A910FEC59F1E17D746DC94C0ED6FE94"
-        "OwnerKey" = "8:_C6E24E0224A54EC0A55BA1F8F3F503D0"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TREESHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6A910FEC59F1E17D746DC94C0ED6FE94"
-        "OwnerKey" = "8:_9FF3FC76B6DE42708A3A1631B6D8D1FE"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TREESHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6A910FEC59F1E17D746DC94C0ED6FE94"
-        "OwnerKey" = "8:_791990F072CD4F938697FFE8C6B1CEEE"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TREESHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6A910FEC59F1E17D746DC94C0ED6FE94"
-        "OwnerKey" = "8:_784FEA3EDAAF48C697E724151F75057C"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TREESHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6A910FEC59F1E17D746DC94C0ED6FE94"
-        "OwnerKey" = "8:_72332611921F41A1BB27D7B0DC4E6556"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TREESHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6A910FEC59F1E17D746DC94C0ED6FE94"
-        "OwnerKey" = "8:_4BD760EEF96E47719ECA860ED8F1F256"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TREESHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6A910FEC59F1E17D746DC94C0ED6FE94"
-        "OwnerKey" = "8:_46FDBE30BA1F453E8527F7F59AC9D80B"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\TREESHR.DLL"
         }
         "Entry"
         {
@@ -1410,30 +1398,6 @@
         "MsmKey" = "8:_7BB374228DB94AA2BED90A9ABB3121A6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:C:\\MDSPLUS\\TDI\\GETMSG.FUN"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_7BE236175BB5E57630671AF22BA62317"
-        "OwnerKey" = "8:_6DB0EF7B0C4A4F59ADCA97AD53E6A2CB"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\CDUSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_7BE236175BB5E57630671AF22BA62317"
-        "OwnerKey" = "8:_E4DC907693A048A78B623F485578C335"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\CDUSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_7BE236175BB5E57630671AF22BA62317"
-        "OwnerKey" = "8:_C398179FDD44478E999CBBDAD8C2F33C"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\CDUSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_7BE236175BB5E57630671AF22BA62317"
-        "OwnerKey" = "8:_9FF3FC76B6DE42708A3A1631B6D8D1FE"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\CDUSHR.DLL"
         }
         "Entry"
         {
@@ -1659,12 +1623,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_8B38430D7D5C705F4BA06379D717A7A4"
-        "OwnerKey" = "8:_9FF3FC76B6DE42708A3A1631B6D8D1FE"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSERVERSHR.DLL"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_8C26738D60E54771BB77E93100DD6C04"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:C:\\MDSPLUS\\INCLUDE\\CDUDEF.H"
@@ -1680,162 +1638,6 @@
         "MsmKey" = "8:_8C937ABA67164F249C1D8ACF8326AC9A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:C:\\MDSPLUS\\TDI\\MITDEVICES\\CHS_VME_WRITEWORDS.FUN"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_040F3F969C0842F390FA5BC98AAB1670"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_EB23278363A746C99A68EE0488FA7D07"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_E55CA3D2713F416EBC330C1CBD16350E"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_E4DC907693A048A78B623F485578C335"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_E2CDB96741CD43DFAF30BE1AEB0B1442"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_C6E24E0224A54EC0A55BA1F8F3F503D0"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_C398179FDD44478E999CBBDAD8C2F33C"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_C39298535D154A8BB4D68ED85CD1ABC4"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_C37111F2A3E449368F805ABDEAAF4EA5"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_BA2C7BC5CD9C49E79495C1B8F1BFF8EE"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_B916B4BF80C544E7A9C80ACF391E8ACB"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_9FF3FC76B6DE42708A3A1631B6D8D1FE"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_7B09105F7AC14BC08375D782878C2D7A"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_791990F072CD4F938697FFE8C6B1CEEE"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_784FEA3EDAAF48C697E724151F75057C"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_7789D486BB994BD2849F7B235375C45E"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_72332611921F41A1BB27D7B0DC4E6556"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_6DB0EF7B0C4A4F59ADCA97AD53E6A2CB"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_6995A7D7E7144C46B65367DB4C5C31FC"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_645227C2C4AB4D36B075C5771CC10E4D"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_57CFA2CC99B745E3AA1051F9C75FDC44"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_4BD760EEF96E47719ECA860ED8F1F256"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_3CA9FEEB466E44FEA58961CC83B7E0A0"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_38A8558D1178401EBCE940E977A46EEE"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_291C00CF68F84DCCAF8B0453F702874F"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CB9CF171B6143798CE7815DFAFFF2FD"
-        "OwnerKey" = "8:_1DEC15D1481B4555B77354F8D5CC6004"
-        "MsmSig" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
         }
         "Entry"
         {
@@ -2427,108 +2229,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_1DEC15D1481B4555B77354F8D5CC6004"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_E4DC907693A048A78B623F485578C335"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_C6E24E0224A54EC0A55BA1F8F3F503D0"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_C398179FDD44478E999CBBDAD8C2F33C"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_C39298535D154A8BB4D68ED85CD1ABC4"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_BA2C7BC5CD9C49E79495C1B8F1BFF8EE"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_9FF3FC76B6DE42708A3A1631B6D8D1FE"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_9D99AB62FECF4B4680CD37FB9A6EFA86"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_791990F072CD4F938697FFE8C6B1CEEE"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_784FEA3EDAAF48C697E724151F75057C"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_72332611921F41A1BB27D7B0DC4E6556"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_6995A7D7E7144C46B65367DB4C5C31FC"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_645227C2C4AB4D36B075C5771CC10E4D"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_4BD760EEF96E47719ECA860ED8F1F256"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_46FDBE30BA1F453E8527F7F59AC9D80B"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_3CA9FEEB466E44FEA58961CC83B7E0A0"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C4135DA655DF7C1742AED41D4932830E"
-        "OwnerKey" = "8:_291C00CF68F84DCCAF8B0453F702874F"
-        "MsmSig" = "8:C:\\MDSPLUS\\RELEASE\\MDSSHR.DLL"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_C566294446AC4A859AD1DE6CCB2A315B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:C:\\MDSPLUS\\TDI\\MITDEVICES\\DT200__INIT.FUN"
@@ -2550,6 +2250,114 @@
         "MsmKey" = "8:_C6123F1078EB493CADD6D4A4D40DF263"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:C:\\MDSPLUS\\IDL\\LOGBOOK\\ENTRY_DISPLAY_MAIN.PRO"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_1DEC15D1481B4555B77354F8D5CC6004"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_EB23278363A746C99A68EE0488FA7D07"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_E4DC907693A048A78B623F485578C335"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_C6E24E0224A54EC0A55BA1F8F3F503D0"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_C398179FDD44478E999CBBDAD8C2F33C"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_C39298535D154A8BB4D68ED85CD1ABC4"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_BA2C7BC5CD9C49E79495C1B8F1BFF8EE"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_9FF3FC76B6DE42708A3A1631B6D8D1FE"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_9D99AB62FECF4B4680CD37FB9A6EFA86"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_791990F072CD4F938697FFE8C6B1CEEE"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_784FEA3EDAAF48C697E724151F75057C"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_72332611921F41A1BB27D7B0DC4E6556"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_6995A7D7E7144C46B65367DB4C5C31FC"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_645227C2C4AB4D36B075C5771CC10E4D"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_4BD760EEF96E47719ECA860ED8F1F256"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_46FDBE30BA1F453E8527F7F59AC9D80B"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_3CA9FEEB466E44FEA58961CC83B7E0A0"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C67AA2966AB40575AE2FDA262B52C70E"
+        "OwnerKey" = "8:_291C00CF68F84DCCAF8B0453F702874F"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSSHR.DLL"
         }
         "Entry"
         {
@@ -2775,6 +2583,24 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D9CBB52C90BE340D8291EFD013129E99"
+        "OwnerKey" = "8:_9FF3FC76B6DE42708A3A1631B6D8D1FE"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSDCL.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D9CBB52C90BE340D8291EFD013129E99"
+        "OwnerKey" = "8:_C6E24E0224A54EC0A55BA1F8F3F503D0"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSDCL.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D9CBB52C90BE340D8291EFD013129E99"
+        "OwnerKey" = "8:_C398179FDD44478E999CBBDAD8C2F33C"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\MDSDCL.DLL"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_DA58A6FC6AC7454D8167DA0CC937E3EE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:C:\\MDSPLUS\\TDI\\MITDEVICES\\DT101READCHANNEL3.FUN"
@@ -2790,6 +2616,30 @@
         "MsmKey" = "8:_DAB40C7972F24417BBA5485C73553963"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:C:\\MDSPLUS\\TDI\\MITDEVICES\\DT101READCHANNEL2.FUN"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DBA482568F8131E63DC7C57CBFF59F07"
+        "OwnerKey" = "8:_6DB0EF7B0C4A4F59ADCA97AD53E6A2CB"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\CDUSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DBA482568F8131E63DC7C57CBFF59F07"
+        "OwnerKey" = "8:_E4DC907693A048A78B623F485578C335"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\CDUSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DBA482568F8131E63DC7C57CBFF59F07"
+        "OwnerKey" = "8:_C398179FDD44478E999CBBDAD8C2F33C"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\CDUSHR.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DBA482568F8131E63DC7C57CBFF59F07"
+        "OwnerKey" = "8:_9FF3FC76B6DE42708A3A1631B6D8D1FE"
+        "MsmSig" = "8:C:\\MDSPLUS\\DEBUG\\CDUSHR.DLL"
         }
         "Entry"
         {
@@ -3057,6 +2907,162 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_040F3F969C0842F390FA5BC98AAB1670"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_EB23278363A746C99A68EE0488FA7D07"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_E55CA3D2713F416EBC330C1CBD16350E"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_E4DC907693A048A78B623F485578C335"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_E2CDB96741CD43DFAF30BE1AEB0B1442"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_C6E24E0224A54EC0A55BA1F8F3F503D0"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_C398179FDD44478E999CBBDAD8C2F33C"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_C39298535D154A8BB4D68ED85CD1ABC4"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_C37111F2A3E449368F805ABDEAAF4EA5"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_BA2C7BC5CD9C49E79495C1B8F1BFF8EE"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_B916B4BF80C544E7A9C80ACF391E8ACB"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_9FF3FC76B6DE42708A3A1631B6D8D1FE"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_7B09105F7AC14BC08375D782878C2D7A"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_791990F072CD4F938697FFE8C6B1CEEE"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_784FEA3EDAAF48C697E724151F75057C"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_7789D486BB994BD2849F7B235375C45E"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_72332611921F41A1BB27D7B0DC4E6556"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_6DB0EF7B0C4A4F59ADCA97AD53E6A2CB"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_6995A7D7E7144C46B65367DB4C5C31FC"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_645227C2C4AB4D36B075C5771CC10E4D"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_57CFA2CC99B745E3AA1051F9C75FDC44"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_4BD760EEF96E47719ECA860ED8F1F256"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_3CA9FEEB466E44FEA58961CC83B7E0A0"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_38A8558D1178401EBCE940E977A46EEE"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_291C00CF68F84DCCAF8B0453F702874F"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F20C9ED66AC4805F6CC0A1B855326F73"
+        "OwnerKey" = "8:_1DEC15D1481B4555B77354F8D5CC6004"
+        "MsmSig" = "8:C:\\WINNT\\SYSTEM32\\MSVCR70D.DLL"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_F2DA78DB5B0A4DE1BC54D08392E4E6B3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:C:\\MDSPLUS\\TDI\\MULTI.FUN"
@@ -3281,6 +3287,34 @@
     {
         "CustomAction"
         {
+            "{BD802302-E51A-43FD-B633-D8B93C611E5F}:_B48D7B44355C4E7C96C9DC3FB83D16C7"
+            {
+            "Name" = "8:Remove mdsplusdir from environmentvariable"
+            "Condition" = "8:"
+            "Object" = "8:_C37111F2A3E449368F805ABDEAAF4EA5"
+            "FileType" = "3:1"
+            "InstallAction" = "3:4"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:MSIUnsetPATH"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_FF3FFEE4_594A_4A4C_BAE7_02CAC4998AE5"
+            "InstallerClass" = "11:FALSE"
+            "CustomActionData" = "8:"
+            }
+            "{BD802302-E51A-43FD-B633-D8B93C611E5F}:_C528C51359094F0FB1A564462AF00EFD"
+            {
+            "Name" = "8:Setup PATH environment variable"
+            "Condition" = "8:"
+            "Object" = "8:_C37111F2A3E449368F805ABDEAAF4EA5"
+            "FileType" = "3:1"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:MSISetPATH"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_AE1E4837_69B6_4695_858D_9035B1557B22"
+            "InstallerClass" = "11:FALSE"
+            "CustomActionData" = "8:"
+            }
         }
         "DefaultFeature"
         {
@@ -3391,27 +3425,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_033CCD02502E6D7DCB2F0787C16D4F46"
-            {
-            "Signature" = "8:20000000f77b78bcfcdec1011fae5d3ef107c20174b687578402c201000000000062000000000000000000004d0064007300640063006c002e0064006c006c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-            "SourcePath" = "8:Mdsdcl.dll"
-            "TargetName" = "8:Mdsdcl.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_035BE1EE3917411B8CB34D1B729B49DE"
@@ -4256,7 +4269,7 @@
             }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_23CF0CDC57C638FE635D66E961A9D567"
             {
-            "Signature" = "8:2000000000207c22cb2bc1011b15a82df107c20100207c22cb2bc10100000000005400000000000000000000770073006f0063006b00330032002e0064006c006c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            "Signature" = "8:2000000000207c22cb2bc1016a46ac5c8b0cc20100207c22cb2bc10100000000005400000000000000000000770073006f0063006b00330032002e0064006c006c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
             "SourcePath" = "8:WSOCK32.dll"
             "TargetName" = "8:WSOCK32.dll"
             "Tag" = "8:"
@@ -5275,27 +5288,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_44152C575793C632946C4B94DAEE7477"
-            {
-            "Signature" = "8:2000000019903673fcdec101c360683ef107c201042f36318302c2010000000000e0000000000000000000006d0064007300690070007300680072002e0064006c006c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-            "SourcePath" = "8:MdsIpShr.dll"
-            "TargetName" = "8:MdsIpShr.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_446C2AE8A9D9427F8E3B68544470382A"
             {
             "SourcePath" = "8:..\\tdi\\camac\\CamXandQ.fun"
@@ -5336,6 +5328,27 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_477DF69F4B55476523FB33E22CF01971"
+            {
+            "Signature" = "8:200000008cf133f5e70bc2016a015860920cc201a48a02f9f70bc2010000000000f0000000000000000000006d00640073007300650072007600650072007300680072002e0064006c006c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004d00440053005300450052007e0031002e0044004c004c0000000000"
+            "SourcePath" = "8:MdsServerShr.dll"
+            "TargetName" = "8:MdsServerShr.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_478316F4F7D0402CB38266AEEE2BE4B8"
             {
             "SourcePath" = "8:..\\tdi\\dev_support\\DevAddStart.fun"
@@ -5354,27 +5367,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_484940D87B3FEA11F2E1318DABB0799B"
-            {
-            "Signature" = "8:200000008b181aab00dfc101376a853ef107c20148ce60568402c2010000000000100a0000000000000000007400640069007300680072002e0064006c006c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-            "SourcePath" = "8:TdiShr.dll"
-            "TargetName" = "8:TdiShr.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_4997A8C791B046F6BCA81535F43DB980"
@@ -5837,6 +5829,27 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_54457BF4C577F62D7B7308506C8C2DFC"
+            {
+            "Signature" = "8:20000000de938988e70bc201243f9664910cc20139bd42bef70bc2010000000000c0010000000000000000006d0064007300690070007300680072002e0064006c006c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            "SourcePath" = "8:MdsIpShr.dll"
+            "TargetName" = "8:MdsIpShr.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_5455E919CEA845B0969B01FE4980A985"
             {
             "SourcePath" = "8:..\\tdi\\MitDevices\\Dt100GetPostSamples.fun"
@@ -5995,6 +6008,27 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_566D0A8B491278FAD698F48BCC605D92"
+            {
+            "Signature" = "8:"
+            "SourcePath" = "8:TreeShr.dll"
+            "TargetName" = "8:TreeShr.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_57A683CB4A94416C9EC97AC08657E5C9"
@@ -6357,6 +6391,27 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_69EFAA72ECCAF692689F9D184722303C"
+            {
+            "Signature" = "8:20000000c4f82bb3e70bc2016c55b664910cc2018034e9cbf70bc201000000000000130000000000000000007400640069007300680072002e0064006c006c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            "SourcePath" = "8:TdiShr.dll"
+            "TargetName" = "8:TdiShr.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_6A01439C0BF44435A854B9A3B22281BB"
             {
             "SourcePath" = "8:..\\tdi\\math\\testsub.fun"
@@ -6395,27 +6450,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_6A910FEC59F1E17D746DC94C0ED6FE94"
-            {
-            "Signature" = "8:2000000069bde35f00dfc10107c1973ef107c201781117cc8202c2010000000000800100000000000000000074007200650065007300680072002e0064006c006c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-            "SourcePath" = "8:TreeShr.dll"
-            "TargetName" = "8:TreeShr.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_6AF0A521C0B74006A5FCB43E345F4AD8"
@@ -6976,27 +7010,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_7BE236175BB5E57630671AF22BA62317"
-            {
-            "Signature" = "8:2000000067cae360fcdec1016feca03ef107c201e8b7f9f78302c2010000000000b0000000000000000000006300640075007300680072002e0064006c006c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-            "SourcePath" = "8:cdushr.dll"
-            "TargetName" = "8:cdushr.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_7CCC2A02EB6B47AC9FF4B8C3CBDA0F71"
@@ -7717,27 +7730,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_8B38430D7D5C705F4BA06379D717A7A4"
-            {
-            "Signature" = "8:2000000050646ad600dfc1012382a53ef107c20104bd2c588402c20100000000006a000000000000000000006d00640073007300650072007600650072007300680072002e0064006c006c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004d00440053005300450052007e0031002e0044004c004c0000000000"
-            "SourcePath" = "8:MdsServerShr.dll"
-            "TargetName" = "8:MdsServerShr.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_8C26738D60E54771BB77E93100DD6C04"
@@ -8542,7 +8534,7 @@
             }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_A432713DF7581617B461C4D2226F0685"
             {
-            "Signature" = "8:20000000be412677af7fbf017bcab43ef107c20100e12bce72ffbf01000000003930040000000000000000006e0074007700640062006c00690062002e0064006c006c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            "Signature" = "8:20000000be412677af7fbf0144b3e564910cc20100e12bce72ffbf01000000003930040000000000000000006e0074007700640062006c00690062002e0064006c006c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
             "SourcePath" = "8:ntwdblib.dll"
             "TargetName" = "8:ntwdblib.dll"
             "Tag" = "8:"
@@ -9561,27 +9553,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_C4135DA655DF7C1742AED41D4932830E"
-            {
-            "Signature" = "8:2000000037405b5dfcdec101a76ebc3ef107c2014e510abc8202c201000000000000010000000000000000006d00640073007300680072002e0064006c006c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-            "SourcePath" = "8:MdsShr.dll"
-            "TargetName" = "8:MdsShr.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_C566294446AC4A859AD1DE6CCB2A315B"
             {
             "SourcePath" = "8:..\\tdi\\MitDevices\\dt200__init.fun"
@@ -9660,6 +9631,27 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_C67AA2966AB40575AE2FDA262B52C70E"
+            {
+            "Signature" = "8:200000001f5bd29bf70bc2014a01be66920cc2016809db66920cc2010000000000b0010000000000000000006d00640073007300680072002e0064006c006c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            "SourcePath" = "8:MdsShr.dll"
+            "TargetName" = "8:MdsShr.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_C6D387CE44294EABA5F1A988F0F6CB07"
@@ -10382,6 +10374,27 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_D9CBB52C90BE340D8291EFD013129E99"
+            {
+            "Signature" = "8:200000002e5db4c5e70bc201121e5e60920cc2016dd2fedff70bc2010000000000d0000000000000000000004d0064007300640063006c002e0064006c006c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            "SourcePath" = "8:Mdsdcl.dll"
+            "TargetName" = "8:Mdsdcl.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_DA58A6FC6AC7454D8167DA0CC937E3EE"
             {
             "SourcePath" = "8:..\\tdi\\MitDevices\\Dt101ReadChannel3.fun"
@@ -10440,6 +10453,27 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_DBA482568F8131E63DC7C57CBFF59F07"
+            {
+            "Signature" = "8:200000007e00c69df70bc2017cef4e46910cc20174c1cd46910cc201000000000050010000000000000000006300640075007300680072002e0064006c006c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            "SourcePath" = "8:cdushr.dll"
+            "TargetName" = "8:cdushr.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_DC3D3578CD984D42BD7B10DA298CD852"
@@ -11220,6 +11254,27 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_F20C9ED66AC4805F6CC0A1B855326F73"
+            {
+            "Signature" = "8:200000000031d077b095c10116c9cd5e920cc2010031d077b095c101000000000030080000000000000000006d0073007600630072003700300064002e0064006c006c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            "SourcePath" = "8:MSVCR70D.dll"
+            "TargetName" = "8:MSVCR70D.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{54DA9790-1474-11D3-8E00-00C04F6837D0}:_F2DA78DB5B0A4DE1BC54D08392E4E6B3"
@@ -12276,6 +12331,84 @@
             {
                 "Keys"
                 {
+                    "{7DF0CD0A-FF27-11D2-8D6B-00A0C9CFCEE6}:_105D024CEB434842B517E195DA7BD936"
+                    {
+                    "Name" = "8:SYSTEM"
+                    "Condition" = "8:"
+                    "AlwaysCreate" = "11:FALSE"
+                    "DeleteAtUninstall" = "11:FALSE"
+                    "Transitive" = "11:FALSE"
+                        "Keys"
+                        {
+                            "{7DF0CD0A-FF27-11D2-8D6B-00A0C9CFCEE6}:_63AD3919CF6A4F7BA6846D44B66CD9A7"
+                            {
+                            "Name" = "8:CurrentControlSet"
+                            "Condition" = "8:"
+                            "AlwaysCreate" = "11:FALSE"
+                            "DeleteAtUninstall" = "11:FALSE"
+                            "Transitive" = "11:FALSE"
+                                "Keys"
+                                {
+                                    "{7DF0CD0A-FF27-11D2-8D6B-00A0C9CFCEE6}:_2F50077588764D038622AB29965A2AAD"
+                                    {
+                                    "Name" = "8:Control"
+                                    "Condition" = "8:"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "DeleteAtUninstall" = "11:FALSE"
+                                    "Transitive" = "11:FALSE"
+                                        "Keys"
+                                        {
+                                            "{7DF0CD0A-FF27-11D2-8D6B-00A0C9CFCEE6}:_0C2FEF31D03648F9B63E1D6EF36AF2EE"
+                                            {
+                                            "Name" = "8:Session Manager"
+                                            "Condition" = "8:"
+                                            "AlwaysCreate" = "11:FALSE"
+                                            "DeleteAtUninstall" = "11:FALSE"
+                                            "Transitive" = "11:FALSE"
+                                                "Keys"
+                                                {
+                                                    "{7DF0CD0A-FF27-11D2-8D6B-00A0C9CFCEE6}:_46AAA1DCEE384461A9C52B1822BA8D21"
+                                                    {
+                                                    "Name" = "8:Environment"
+                                                    "Condition" = "8:"
+                                                    "AlwaysCreate" = "11:FALSE"
+                                                    "DeleteAtUninstall" = "11:FALSE"
+                                                    "Transitive" = "11:FALSE"
+                                                        "Keys"
+                                                        {
+                                                        }
+                                                        "Values"
+                                                        {
+                                                            "{B73D4F5A-FF29-11D2-8D6B-00A0C9CFCEE6}:_40E515CBE5124662A712D524350ECDD4"
+                                                            {
+                                                            "Name" = "8:MDSPLUSDIR"
+                                                            "Condition" = "8:"
+                                                            "Transitive" = "11:FALSE"
+                                                            "ValueTypes" = "3:1"
+                                                            "Value" = "8:[TARGETDIR]"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                "Values"
+                                                {
+                                                }
+                                            }
+                                        }
+                                        "Values"
+                                        {
+                                        }
+                                    }
+                                }
+                                "Values"
+                                {
+                                }
+                            }
+                        }
+                        "Values"
+                        {
+                        }
+                    }
                     "{7DF0CD0A-FF27-11D2-8D6B-00A0C9CFCEE6}:_7CF3F8D963A647129A391BAF1C7972C4"
                     {
                     "Name" = "8:Software"
@@ -12387,7 +12520,7 @@
         {
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_040F3F969C0842F390FA5BC98AAB1670"
             {
-            "SourcePath" = "8:..\\Release\\icons.dll"
+            "SourcePath" = "8:..\\Debug\\icons.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12416,7 +12549,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_1DEC15D1481B4555B77354F8D5CC6004"
             {
-            "SourcePath" = "8:..\\Release\\MdsMath.dll"
+            "SourcePath" = "8:..\\Debug\\MdsMath.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12445,7 +12578,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_291C00CF68F84DCCAF8B0453F702874F"
             {
-            "SourcePath" = "8:..\\Release\\mdsip.exe"
+            "SourcePath" = "8:..\\Debug\\mdsip.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12474,7 +12607,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_38A8558D1178401EBCE940E977A46EEE"
             {
-            "SourcePath" = "8:..\\Release\\mdsiptest.exe"
+            "SourcePath" = "8:..\\Debug\\mdsiptest.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12503,7 +12636,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_3B35A0C155B747C69B534E8EFAF300D5"
             {
-            "SourcePath" = "8:..\\Release\\mdsipmex.dll"
+            "SourcePath" = "8:..\\Debug\\mdsipmex.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_F5B7E037D5614EE3B12809035AA8B85C"
@@ -12532,7 +12665,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_3CA9FEEB466E44FEA58961CC83B7E0A0"
             {
-            "SourcePath" = "8:..\\Release\\treeshr.dll"
+            "SourcePath" = "8:..\\Debug\\treeshr.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12561,7 +12694,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_46FDBE30BA1F453E8527F7F59AC9D80B"
             {
-            "SourcePath" = "8:..\\Release\\javamds.dll"
+            "SourcePath" = "8:..\\Debug\\javamds.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12590,7 +12723,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_4BD760EEF96E47719ECA860ED8F1F256"
             {
-            "SourcePath" = "8:..\\Release\\mdsip_service.exe"
+            "SourcePath" = "8:..\\Debug\\mdsip_service.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12619,7 +12752,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_57CFA2CC99B745E3AA1051F9C75FDC44"
             {
-            "SourcePath" = "8:..\\mdsjet\\Release\\mdsjet.dll"
+            "SourcePath" = "8:..\\mdsjet\\Debug\\mdsjet.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12648,7 +12781,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_645227C2C4AB4D36B075C5771CC10E4D"
             {
-            "SourcePath" = "8:..\\Release\\cdushr.dll"
+            "SourcePath" = "8:..\\Debug\\cdushr.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12677,7 +12810,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_6995A7D7E7144C46B65367DB4C5C31FC"
             {
-            "SourcePath" = "8:..\\Release\\wfevent.exe"
+            "SourcePath" = "8:..\\Debug\\wfevent.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12706,7 +12839,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_6DB0EF7B0C4A4F59ADCA97AD53E6A2CB"
             {
-            "SourcePath" = "8:..\\Release\\cdu.exe"
+            "SourcePath" = "8:..\\Debug\\cdu.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12735,7 +12868,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_72332611921F41A1BB27D7B0DC4E6556"
             {
-            "SourcePath" = "8:..\\Release\\mdslib.dll"
+            "SourcePath" = "8:..\\Debug\\mdslib.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12764,7 +12897,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_72BB911EC28A4525A33274F5639FB10C"
             {
-            "SourcePath" = "8:..\\Release\\mdssql.dll"
+            "SourcePath" = "8:..\\Debug\\mdssql.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12793,7 +12926,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_7789D486BB994BD2849F7B235375C45E"
             {
-            "SourcePath" = "8:..\\Release\\mdsipshr.dll"
+            "SourcePath" = "8:..\\Debug\\mdsipshr.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12822,7 +12955,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_784FEA3EDAAF48C697E724151F75057C"
             {
-            "SourcePath" = "8:..\\Release\\tdishr.dll"
+            "SourcePath" = "8:..\\Debug\\tdishr.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12851,7 +12984,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_791990F072CD4F938697FFE8C6B1CEEE"
             {
-            "SourcePath" = "8:..\\Release\\mdslibidl.dll"
+            "SourcePath" = "8:..\\Debug\\mdslibidl.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12880,7 +13013,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_7B09105F7AC14BC08375D782878C2D7A"
             {
-            "SourcePath" = "8:..\\Release\\mdslib_client.dll"
+            "SourcePath" = "8:..\\Debug\\mdslib_client.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12938,7 +13071,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_9D99AB62FECF4B4680CD37FB9A6EFA86"
             {
-            "SourcePath" = "8:..\\Release\\tdishrext.dll"
+            "SourcePath" = "8:..\\Debug\\tdishrext.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -12967,7 +13100,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_9FF3FC76B6DE42708A3A1631B6D8D1FE"
             {
-            "SourcePath" = "8:..\\Release\\tcl_commands.dll"
+            "SourcePath" = "8:..\\Debug\\tcl_commands.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -13054,7 +13187,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_B916B4BF80C544E7A9C80ACF391E8ACB"
             {
-            "SourcePath" = "8:..\\Release\\tditest.exe"
+            "SourcePath" = "8:..\\Debug\\tditest.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -13083,7 +13216,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_BA2C7BC5CD9C49E79495C1B8F1BFF8EE"
             {
-            "SourcePath" = "8:..\\Release\\treeshr.dll"
+            "SourcePath" = "8:..\\Debug\\treeshr.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -13112,7 +13245,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_C37111F2A3E449368F805ABDEAAF4EA5"
             {
-            "SourcePath" = "8:..\\Release\\mdsshr.dll"
+            "SourcePath" = "8:..\\Debug\\mdsshr.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -13141,7 +13274,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_C39298535D154A8BB4D68ED85CD1ABC4"
             {
-            "SourcePath" = "8:..\\Release\\setevent.exe"
+            "SourcePath" = "8:..\\Debug\\setevent.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -13170,7 +13303,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_C398179FDD44478E999CBBDAD8C2F33C"
             {
-            "SourcePath" = "8:..\\Release\\mdsdcl.exe"
+            "SourcePath" = "8:..\\Debug\\mdsdcl.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -13199,7 +13332,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_C6E24E0224A54EC0A55BA1F8F3F503D0"
             {
-            "SourcePath" = "8:..\\Release\\mdsservershr.dll"
+            "SourcePath" = "8:..\\Debug\\mdsservershr.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -13257,7 +13390,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_E2CDB96741CD43DFAF30BE1AEB0B1442"
             {
-            "SourcePath" = "8:..\\Release\\RemCamShr.dll"
+            "SourcePath" = "8:..\\Debug\\RemCamShr.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -13286,7 +13419,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_E4DC907693A048A78B623F485578C335"
             {
-            "SourcePath" = "8:..\\Release\\Mdsdcl.dll"
+            "SourcePath" = "8:..\\Debug\\Mdsdcl.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -13315,7 +13448,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_E55CA3D2713F416EBC330C1CBD16350E"
             {
-            "SourcePath" = "8:..\\Release\\idlsql.dll"
+            "SourcePath" = "8:..\\Debug\\idlsql.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -13344,7 +13477,7 @@
             }
             "{B1E2BB22-187D-11D3-8E02-00C04F6837D0}:_EB23278363A746C99A68EE0488FA7D07"
             {
-            "SourcePath" = "8:..\\Release\\idlmdsevent.dll"
+            "SourcePath" = "8:..\\Debug\\idlmdsevent.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3141F8D2E7AD4315AF37BEDE231CDA20"
@@ -13406,7 +13539,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:MDSplus"
         "ProductCode" = "8:{58BC4125-1B08-4DD5-A6D1-68FAD12B502D}"
-        "PackageCode" = "8:{354BEFDB-EC35-4026-A300-F3BEE2ACC49B}"
+        "PackageCode" = "8:{71924479-10A0-4378-8F7E-B2AEC727044B}"
         "UpgradeCode" = "8:{7EF68197-6C11-417B-91C6-098B65D0154D}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
@@ -13432,32 +13565,6 @@
         }
         "MergeModule"
         {
-            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_8CB9CF171B6143798CE7815DFAFFF2FD"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:vc_crt.msm"
-            "ModuleSignature" = "8:VC_User_CRT.BA9B6D09_0DE0_11D5_A548_0090278A1BB8"
-                "Properties"
-                {
-                    "DIR_RETARGET_TARGETDIR"
-                    {
-                    "Name" = "8:DIR_RETARGET_TARGETDIR"
-                    "DisplayName" = "8:Module Retargetable Folder"
-                    "Description" = "8:"
-                    "Type" = "3:10"
-                    "ContextData" = "8:IsolationDir"
-                    "Attributes" = "3:6"
-                    "Setting" = "3:1"
-                    "UsePlugInResources" = "11:FALSE"
-                    }
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:FALSE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
         }
         "UserInterface"
         {
