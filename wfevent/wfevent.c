@@ -25,6 +25,6 @@ main(int argc, char **argv)
         data[255] = 0;
       printf("Event %s occurred with data = \\%s\\\n",argv[1],data);
     }
-    _exit(0);
+    return(0);
 }
 
