@@ -505,7 +505,7 @@ static int StartThread()
   }
   if (WorkerThreadRunning == 0)
   {
-    status = pthread_create(&WorkerThread, 0, Worker, pthread_attr_default);
+    status = pthread_create(&WorkerThread, pthread_attr_default, Worker, 0);
     if (status)
     {
       perror("Error creating pthread");
