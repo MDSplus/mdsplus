@@ -94,7 +94,7 @@ extern int RegisterRead();
 extern int SetFD();
 extern int ClearFD();
 
-static int CheckClient(char *host_c, char *user_c);
+static int CheckClient(char *hostnum_c, char *host_c, char *user_c);
 typedef ARRAY_COEFF(char,7) ARRAY_7;
 
 typedef struct _context { void *tree;
@@ -548,7 +548,7 @@ int main(int argc, char **argv)
     if (multi)
     {
      char multistr[] = "MULTI";
-     CheckClient(0,multistr);
+     CheckClient(0,0,multistr);
     }
     serverSock = CreateMdsPort(port,1);
     shut = 0;
@@ -642,35 +642,46 @@ static void CompressString(struct descriptor *in, int upcase)
 }
 
 #ifdef HAVE_VXWORKS_H
-static int CheckClient(char *host_c, char *user_c)
+static int CheckClient(char *hostnum_c, char *host_c, char *user_c)
 {
   return 1;
 }
   
 #else
 
-static int CheckClient(char *host_c, char *user_c)
+static int CheckClient(char *hostnum_c, char *host_c, char *user_c)
 {
   FILE *f = fopen(hostfile,"r");
   int ok = 0;
   if (f)
   {
     static char line_c[1024];
-    static char match_c[1024];
+    static char match_c1[1024];
+    static char match_c2[1024];
     static struct descriptor line_d = {0, DTYPE_T, CLASS_S, line_c};
-    static struct descriptor match_d = {0, DTYPE_T, CLASS_S, match_c};
-    static struct descriptor match = {0, DTYPE_T, CLASS_D, 0};
+    static struct descriptor match_d1 = {0, DTYPE_T, CLASS_S, match_c1};
+    static struct descriptor match_d2 = {0, DTYPE_T, CLASS_S, match_c2};
+    static struct descriptor match1 = {0, DTYPE_T, CLASS_D, 0};
+    static struct descriptor match2 = {0, DTYPE_T, CLASS_D, 0};
     static struct descriptor local_user = {0,DTYPE_T,CLASS_D,0};
     static struct descriptor access_id = {0,DTYPE_T,CLASS_D,0};
     static DESCRIPTOR(delimiter,"|");
-    strncpy(match_c,user_c,255);
+    strncpy(match_c1,user_c,255);
+    if (hostnum_c)
+    {
+      strncat(match_c1,"@",255);
+      strncat(match_c1,hostnum_c,255);
+    }
+    match_d1.length = strlen(match_c1);
+    StrUpcase(&match1,&match_d1);
     if (host_c)
     {
-      strncat(match_c,"@",255);
-      strncat(match_c,host_c,255);
+      strncpy(match_c2,user_c,255);
+      strncat(match_c2,"@",255);
+      strncat(match_c2,host_c,255);
+      match_d2.length = strlen(match_c2);
+      StrUpcase(&match2,&match_d2);
     }
-    match_d.length = strlen(match_c);
-    StrUpcase(&match,&match_d);
     while (ok==0 && fgets(line_c,1023,f))
     {
       if (line_c[0] != '#')
@@ -683,13 +694,13 @@ static int CheckClient(char *host_c, char *user_c)
         {
           if (access_id.pointer[0] != '!')
           {
-            if (StrMatchWild(&match,&access_id) & 1)
-              ok = (multi && host_c) ? 1 : BecomeUser(user_c,&local_user);
+            if ((StrMatchWild(&match1,&access_id) & 1) || (match2.length > 0 && (StrMatchWild(&match2,&access_id) & 1)))
+              ok = (multi && hostnum_c) ? 1 : BecomeUser(user_c,&local_user);
           }
           else
           {
             StrRight(&access_id,&access_id,&two);
-            if (StrMatchWild(&match,&access_id) & 1)
+            if ((StrMatchWild(&match1,&access_id) & 1) || (match2.length > 0 && (StrMatchWild(&match2,&access_id) & 1)))
               ok = 2;
           }
         }
@@ -749,10 +760,9 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
     hp = gethostbyaddr((char *)&sin->sin_addr,sizeof(sin->sin_addr),AF_INET);
 #endif
 #ifndef GLOBUS
-    if (hp) ok = CheckClient(hp->h_name,user_p);
-    if (ok == 0) ok = CheckClient((char *)inet_ntoa(sin->sin_addr),user_p);
+    ok = CheckClient((char *)inet_ntoa(sin->sin_addr),hp ? hp->h_name : 0,user_p);
 #else
-    ok = CheckClient(0,dn);
+    ok = CheckClient(0,0,dn);
 #endif
     if (ok & 1)
     {
