@@ -36,14 +36,17 @@
 				Name="VCNMakeTool"
 				BuildCommandLine="nmake /f &quot;javascope.mak&quot;"
 				ReBuildCommandLine="nmake /f &quot;javascope.mak&quot; /a"
-				CleanCommandLine="del ..\java\classes\MDSplus.jar *.class"
-				Output="..\java\classes\MDSplus.jar"/>
+				CleanCommandLine="del ..\java\classes\MindTerm.jar ..\java\classes\jScope.jar ..\java\classes\WaveDisplay.jar ..\java\classes\jScope.properties *.class"
+				Output="..\java\classes\jScope.jar"/>
 		</Configuration>
 	</Configurations>
 	<Files>
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
+			<File
+				RelativePath="ASCIIDataProvider.java">
+			</File>
 			<File
 				RelativePath=".\AboutWindow.java">
 			</File>
@@ -111,6 +114,9 @@
 				RelativePath=".\Grid.java">
 			</File>
 			<File
+				RelativePath="ImageTransferable.java">
+			</File>
+			<File
 				RelativePath=".\JetDataProvider.java">
 			</File>
 			<File
@@ -171,6 +177,9 @@
 				RelativePath=".\MdsConnection.java">
 			</File>
 			<File
+				RelativePath="MdsContinuousDataProvider.java">
+			</File>
+			<File
 				RelativePath=".\MdsDataClient.java">
 			</File>
 			<File
@@ -189,6 +198,9 @@
 				RelativePath=".\MdsWaveInterface.java">
 			</File>
 			<File
+				RelativePath="MdsplusParser.java">
+			</File>
+			<File
 				RelativePath=".\MultiWavePopup.java">
 			</File>
 			<File
@@ -199,6 +211,9 @@
 			</File>
 			<File
 				RelativePath=".\ProfileDialog.java">
+			</File>
+			<File
+				RelativePath="PropertiesEditor.java">
 			</File>
 			<File
 				RelativePath=".\RandomAccessData.java">
@@ -237,6 +252,12 @@
 				RelativePath=".\SignalsBoxDialog.java">
 			</File>
 			<File
+				RelativePath="SshTunneling.java">
+			</File>
+			<File
+				RelativePath="T2DataProvider.java">
+			</File>
+			<File
 				RelativePath="TSDataProvider.java">
 			</File>
 			<File
@@ -256,6 +277,18 @@
 			</File>
 			<File
 				RelativePath=".\TwuDataProvider.java">
+			</File>
+			<File
+				RelativePath="TwuNameServices.java">
+			</File>
+			<File
+				RelativePath="TwuSimpleFrameData.java">
+			</File>
+			<File
+				RelativePath="TwuSingleSignal.java">
+			</File>
+			<File
+				RelativePath="TwuWaveData.java">
 			</File>
 			<File
 				RelativePath=".\UniversalDataProvider.java">
