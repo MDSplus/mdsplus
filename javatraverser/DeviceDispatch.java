@@ -37,8 +37,8 @@ public class DeviceDispatch extends DeviceComponent
         }
         NidData currNid = new NidData(baseNidData.getInt());
         int num_components = nodeInfo.getConglomerateNids();
-        NodeInfo nodeInfos[] = new NodeInfo[num_components];
-        for(i = num_actions = 0; i < num_components; i++)
+        NodeInfo nodeInfos[] = new NodeInfo[num_components + 1];
+        for(i = num_actions = 0; i <= num_components; i++)
         {
             try {
                 nodeInfos[i] = subtree.getInfo(currNid, Tree.context);
@@ -56,7 +56,7 @@ public class DeviceDispatch extends DeviceComponent
         actions = new Data[num_actions];
         dispatch_fields = new DeviceDispatchField[num_actions];
         currNid = new NidData(nidData.getInt());
-        for(i = j = num_actions = 0; i < num_components; i++)
+        for(i = j = num_actions = 0; i <= num_components; i++)
         {
             if(nodeInfos[i].getUsage() == NodeInfo.USAGE_ACTION)
             {
@@ -76,7 +76,7 @@ public class DeviceDispatch extends DeviceComponent
             }
             currNid.incrementNid();
         }
-        for(i = 0; i < num_components; i++)
+        for(i = 0; i <= num_components; i++)
         {
             if(nodeInfos[i].getUsage() == NodeInfo.USAGE_ACTION)
             {
