@@ -25,7 +25,7 @@ DataCached.java             JiNcVarChar.java            MultiWaveform.java      
 DataProvider.java           JiNcVarDouble.java          WaveDisplay.java  \
 DataServerItem.java         JiNcVarFloat.java           RandomAccessData.java       WaveInterface.java         	\
 JiNcVarImp.java             RdaAccess.java              WavePopup.java             	 \
-Descriptor.java             JiNcVarInt.java             RotateFilter.java           Waveform.java             	 \
+Descriptor.java             JiNcVarInt.java             SshTunneling.java          Waveform.java             	 \
 JiNcVarShort.java  \
 FrameData.java              JiSlab.java 		WaveformEditor.java	    WaveformEditorListener.java\
 JiSlabIterator.java         			    WaveformEvent.java  	   SetupWaveformParams.java 	SignalBox.java\
@@ -47,7 +47,7 @@ DataCached.java             JiNcVarChar.java            MultiWaveform.java      
 DataProvider.java           JiNcVarDouble.java          ProfileDialog.java          WaveDisplay.java             \
 DataServerItem.java         JiNcVarFloat.java           RandomAccessData.java       WaveInterface.java          jScopeProperties.java \
 DemoDataProvider.java       JiNcVarImp.java             RdaAccess.java              WavePopup.java              jScopeWaveContainer.java \
-Descriptor.java             JiNcVarInt.java             RotateFilter.java           Waveform.java                \
+Descriptor.java             JiNcVarInt.java             SshTunneling.java            Waveform.java                \
 FontSelection.java          JiNcVarShort.java           RowColumnContainer.java     WaveformContainer.java      jScopeWavePopup.java \
 FrameData.java              JiSlab.java                 RowColumnLayout.java           \
 JiSlabIterator.java         SetupDataDialog.java        WaveformEvent.java          DemoAccess.java		UniversalDataProvider.java\
@@ -57,7 +57,7 @@ TSDataProvider.java	    AsdexDataProvider.java	WaveformEditor.java	    WaveformE
 
 CLASSES = $(SOURCES:.java=.class)
 
-all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/docs @MAKEJAVADIR@classes/jScope.jar  @MAKEJAVADIR@classes/WaveDisplay.jar docs  @MAKEJAVADIR@classes/jScope.properties
+all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/docs @MAKEJAVADIR@classes/jScope.jar  @MAKEJAVADIR@classes/WaveDisplay.jar docs  @MAKEJAVADIR@classes/jScope.properties @MAKEJAVADIR@classes/MindTerm.jar
 
 clean: 
 	@ $(RM) *.class
@@ -89,16 +89,19 @@ install:
 @MAKEJAVADIR@classes/jScope.properties: jScope.properties
 	cp jScope.properties ../java/classes
 
+@MAKEJAVADIR@classes/MindTerm.jar: MindTerm.jar
+	cp MindTerm.jar ../java/classes
+
 @MAKEJAVADIR@classes/WaveDisplay.jar: $(APPLETSOURCES)
 	rm *.class
-	$(JAVAC) -g  $(APPLETSOURCES) 
+	$(JAVAC) -g -classpath .:$(top_srcdir)/javascope/MindTerm.jar $(APPLETSOURCES) 
 	$(JAR) c0f $@ *.class
 
 jScope.class: 	$(SOURCES)
-	$(JAVAC) -g jScope.java *BrowseSignals.java *DataProvider.java *Listener.java WaveformEditor.java
+	$(JAVAC) -g  -classpath .:$(top_srcdir)/javascope/MindTerm.jar jScope.java *BrowseSignals.java *DataProvider.java *Listener.java WaveformEditor.java
 
 CompositeWaveDisplay.class: 	$(SOURCES)
-	$(JAVAC) -g CompositeWaveDisplay.java
+	$(JAVAC) -g  -classpath .:$(top_srcdir)/javascope/MindTerm.jar CompositeWaveDisplay.java
 
 @MAKEBINDIR@ : ; mkdir @MAKEBINDIR@
 
