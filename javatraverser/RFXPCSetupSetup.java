@@ -23,8 +23,8 @@ public class RFXPCSetupSetup extends DeviceSetup {
   DeviceField deviceField1 = new DeviceField();
   DeviceField deviceField2 = new DeviceField();
   DeviceField deviceField3 = new DeviceField();
-  DeviceField deviceField4 = new DeviceField();
   DeviceField deviceField5 = new DeviceField();
+  DeviceChoice deviceChoice1 = new DeviceChoice();
   public RFXPCSetupSetup() {
     try {
       jbInit();
@@ -71,13 +71,13 @@ public class RFXPCSetupSetup extends DeviceSetup {
     deviceField5.setIdentifier("");
     deviceField5.setEditable(false);
     deviceField5.setDisplayEvaluated(true);
-    deviceField4.setOffsetNid(3);
-    deviceField4.setTextOnly(true);
-    deviceField4.setLabelString("Control: ");
-    deviceField4.setNumCols(8);
-    deviceField4.setIdentifier("");
-    deviceField4.setEditable(false);
-    deviceField4.setDisplayEvaluated(true);
+    deviceChoice1.setChoiceIntValues(null);
+    deviceChoice1.setChoiceFloatValues(null);
+    deviceChoice1.setOffsetNid(3);
+    deviceChoice1.setLabelString("Control:");
+    deviceChoice1.setChoiceItems(new String[] {"CURRENT", "VOLTAGE", "OPEN LOOP"});
+    deviceChoice1.setUpdateIdentifier("");
+    deviceChoice1.setIdentifier("");
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(deviceWave1, BorderLayout.CENTER);
     this.getContentPane().add(jPanel1, BorderLayout.NORTH);
@@ -88,7 +88,7 @@ public class RFXPCSetupSetup extends DeviceSetup {
     jPanel4.add(deviceField2, null);
     jPanel1.add(jPanel3, null);
     jPanel3.add(deviceField5, null);
-    jPanel3.add(deviceField4, null);
+    jPanel3.add(deviceChoice1, null);
   }
 
 }

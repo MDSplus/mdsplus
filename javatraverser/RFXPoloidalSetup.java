@@ -39,7 +39,6 @@ public class RFXPoloidalSetup extends DeviceSetup {
   DeviceField deviceField6 = new DeviceField();
   JPanel jPanel10 = new JPanel();
   DeviceField deviceField7 = new DeviceField();
-  DeviceChoice deviceChoice1 = new DeviceChoice();
   DeviceField deviceField8 = new DeviceField();
   BorderLayout borderLayout3 = new BorderLayout();
   DeviceField deviceField9 = new DeviceField();
@@ -47,13 +46,11 @@ public class RFXPoloidalSetup extends DeviceSetup {
   JPanel jPanel12 = new JPanel();
   DeviceField deviceField10 = new DeviceField();
   DeviceField deviceField11 = new DeviceField();
-  DeviceChoice deviceChoice2 = new DeviceChoice();
   BorderLayout borderLayout4 = new BorderLayout();
   DeviceField deviceField12 = new DeviceField();
   JPanel jPanel13 = new JPanel();
   JPanel jPanel14 = new JPanel();
   DeviceField deviceField13 = new DeviceField();
-  DeviceChoice deviceChoice3 = new DeviceChoice();
   DeviceField deviceField14 = new DeviceField();
   public RFXPoloidalSetup() {
     try {
@@ -123,13 +120,6 @@ public class RFXPoloidalSetup extends DeviceSetup {
     deviceField7.setNumCols(4);
     deviceField7.setIdentifier("");
     deviceField7.setEditable(false);
-    deviceChoice1.setChoiceIntValues(null);
-    deviceChoice1.setChoiceFloatValues(null);
-    deviceChoice1.setOffsetNid(7);
-    deviceChoice1.setLabelString("PM Control:");
-    deviceChoice1.setChoiceItems(new String[] {"VOLTAGE", "CURRENT", "OPEN LOOP"});
-    deviceChoice1.setUpdateIdentifier("");
-    deviceChoice1.setIdentifier("");
     deviceField9.setEditable(false);
     deviceField9.setIdentifier("");
     deviceField9.setNumCols(35);
@@ -146,13 +136,6 @@ public class RFXPoloidalSetup extends DeviceSetup {
     deviceField11.setLabelString("PC Connection:");
     deviceField11.setIdentifier("");
     deviceField11.setEditable(false);
-    deviceChoice2.setChoiceIntValues(null);
-    deviceChoice2.setChoiceFloatValues(null);
-    deviceChoice2.setOffsetNid(12);
-    deviceChoice2.setLabelString("PC Control:");
-    deviceChoice2.setChoiceItems(new String[] {"VOLTAGE", "CURRENT", "OPEN LOOP"});
-    deviceChoice2.setUpdateIdentifier("");
-    deviceChoice2.setIdentifier("");
     deviceField12.setOffsetNid(15);
     deviceField12.setTextOnly(true);
     deviceField12.setLabelString("PV Units:");
@@ -164,13 +147,6 @@ public class RFXPoloidalSetup extends DeviceSetup {
     deviceField13.setNumCols(4);
     deviceField13.setIdentifier("");
     deviceField13.setEditable(false);
-    deviceChoice3.setChoiceIntValues(null);
-    deviceChoice3.setChoiceFloatValues(null);
-    deviceChoice3.setOffsetNid(17);
-    deviceChoice3.setLabelString("PV Control:");
-    deviceChoice3.setChoiceItems(new String[] {"VOLTAGE", "CURRENT", "OPEN LOOP"});
-    deviceChoice3.setUpdateIdentifier("");
-    deviceChoice3.setIdentifier("");
     deviceField14.setOffsetNid(16);
     deviceField14.setTextOnly(true);
     deviceField14.setLabelString("PV Connection:");
@@ -192,21 +168,18 @@ public class RFXPoloidalSetup extends DeviceSetup {
     jPanel9.add(deviceField6, null);
     jPanel6.add(jPanel10,  BorderLayout.CENTER);
     jPanel10.add(deviceField8, null);
-    jPanel10.add(deviceChoice1, null);
     jPanel10.add(deviceField7, null);
     jPanel2.add(jPanel8, null);
     jPanel8.add(jPanel11,  BorderLayout.NORTH);
     jPanel11.add(deviceField9, null);
     jPanel8.add(jPanel12, BorderLayout.CENTER);
     jPanel12.add(deviceField11, null);
-    jPanel12.add(deviceChoice2, null);
     jPanel12.add(deviceField10, null);
     jPanel2.add(jPanel7, null);
     jPanel7.add(jPanel13, BorderLayout.NORTH);
     jPanel13.add(deviceField12, null);
     jPanel7.add(jPanel14,  BorderLayout.CENTER);
     jPanel14.add(deviceField14, null);
-    jPanel14.add(deviceChoice3, null);
     jPanel14.add(deviceField13, null);
   }
 

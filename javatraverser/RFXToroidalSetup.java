@@ -54,7 +54,6 @@ public class RFXToroidalSetup extends DeviceSetup {
   DeviceField deviceField5 = new DeviceField();
   DeviceField deviceField6 = new DeviceField();
   JPanel jPanel2 = new JPanel();
-  DeviceChoice deviceChoice7 = new DeviceChoice();
   DeviceField deviceField2 = new DeviceField();
   public RFXToroidalSetup() {
     try {
@@ -235,13 +234,6 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceField6.setNumCols(4);
     deviceField6.setIdentifier("");
     deviceField6.setEditable(false);
-    deviceChoice7.setChoiceIntValues(null);
-    deviceChoice7.setChoiceFloatValues(null);
-    deviceChoice7.setOffsetNid(18);
-    deviceChoice7.setLabelString("TF Control: ");
-    deviceChoice7.setChoiceItems(new String[] {"VOLTAGE", "CURRENT", "OPEN LOOP"});
-    deviceChoice7.setUpdateIdentifier("");
-    deviceChoice7.setIdentifier("");
     deviceField2.setOffsetNid(17);
     deviceField2.setTextOnly(true);
     deviceField2.setLabelString("TF Connection: ");
@@ -282,7 +274,6 @@ public class RFXToroidalSetup extends DeviceSetup {
     jTabbedPane1.add(jPanel2,   "TF");
     jPanel2.add(deviceField5, null);
     jPanel2.add(deviceField2, null);
-    jPanel2.add(deviceChoice7, null);
     jPanel2.add(deviceField6, null);
     jScrollPane5.getViewport().add(deviceTable8, null);
   }

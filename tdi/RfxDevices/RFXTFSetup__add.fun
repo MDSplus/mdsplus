@@ -2,7 +2,7 @@ public fun RFXTFSetup__add(in _path, out _nidout)
 {
     DevAddStart(_path, 'RFXTFSetup',11, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
-    DevAddNode(_path // ':CONTROL', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':CONTROL', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':WINDOW', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':CONFIG', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':UNITS', 'TEXT', *, *, _nid);

@@ -20,10 +20,10 @@ public fun RFXInverterSetup__add(in _path, out _nidout)
 		DevAddNode(_cn // ':MIN_Y', 'NUMERIC', *, *, _nid);
 		DevAddNode(_cn // ':MAX_Y', 'NUMERIC', *, *, _nid);
 
-  		DevAddNode(_cn // ':PERT_AMP', 'NUMERIC', *, *, _nid);
-  		DevAddNode(_cn // ':PERT_FREQ', 'NUMERIC', *, *, _nid);
-  		DevAddNode(_cn // ':PERT_PHASE', 'NUMERIC', *, *, _nid);
-  		DevAddNode(_cn // ':PERT_START', 'NUMERIC', *, *, _nid);
+  		DevAddNode(_cn // ':PERT_AMP', 'NUMERIC', 0, *, _nid);
+  		DevAddNode(_cn // ':PERT_FREQ', 'NUMERIC', 0, *, _nid);
+  		DevAddNode(_cn // ':PERT_PHASE', 'NUMERIC', 0, *, _nid);
+  		DevAddNode(_cn // ':PERT_START', 'NUMERIC', 0, *, _nid);
     }
     DevAddEnd();
 }

@@ -24,8 +24,8 @@ public class RFXPMSetupSetup extends DeviceSetup {
   DeviceField deviceField2 = new DeviceField();
   DeviceField deviceField3 = new DeviceField();
   DeviceField deviceField4 = new DeviceField();
-  DeviceField deviceField5 = new DeviceField();
   DeviceField deviceField6 = new DeviceField();
+  DeviceChoice deviceChoice1 = new DeviceChoice();
   public RFXPMSetupSetup() {
     try {
       jbInit();
@@ -69,13 +69,6 @@ public class RFXPMSetupSetup extends DeviceSetup {
     deviceField6.setIdentifier("");
     deviceField6.setEditable(false);
     deviceField6.setDisplayEvaluated(true);
-    deviceField5.setOffsetNid(3);
-    deviceField5.setTextOnly(true);
-    deviceField5.setLabelString("Control: ");
-    deviceField5.setNumCols(8);
-    deviceField5.setIdentifier("");
-    deviceField5.setEditable(false);
-    deviceField5.setDisplayEvaluated(true);
     deviceField4.setOffsetNid(6);
     deviceField4.setLabelString("Tot. Current Limit:");
     deviceField4.setNumCols(6);
@@ -86,6 +79,13 @@ public class RFXPMSetupSetup extends DeviceSetup {
     deviceWave1.setUpdateExpression("");
     deviceButtons1.setCheckExpressions(new String[] {"(maxval(_wave) *  \\POLOIDAL:PM_ENABLED) <= _imax"});
     deviceButtons1.setCheckMessages(new String[] {"Total magnetizing current above limit"});
+    deviceChoice1.setChoiceIntValues(null);
+    deviceChoice1.setChoiceFloatValues(null);
+    deviceChoice1.setOffsetNid(3);
+    deviceChoice1.setLabelString("Control");
+    deviceChoice1.setChoiceItems(new String[] {"CURRENT", "VOLTAGE", "OPEN LOOP"});
+    deviceChoice1.setUpdateIdentifier("");
+    deviceChoice1.setIdentifier("");
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jPanel1, BorderLayout.NORTH);
     jPanel1.add(jPanel2, null);
@@ -95,7 +95,7 @@ public class RFXPMSetupSetup extends DeviceSetup {
     jPanel4.add(deviceField2, null);
     jPanel1.add(jPanel3, null);
     jPanel3.add(deviceField6, null);
-    jPanel3.add(deviceField5, null);
+    jPanel3.add(deviceChoice1, null);
     jPanel3.add(deviceField4, null);
     this.getContentPane().add(deviceWave1, BorderLayout.CENTER);
   }
