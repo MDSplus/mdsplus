@@ -913,6 +913,9 @@ STATIC_ROUTINE int readMessage(char *event_name, int *data_len, char *data)
         status = status ? status : -1 ;
     } else {
 #else /* ! USE_PIPED_MESSAGING */
+    status = EINTR;
+    while (status == EINTR)
+    {
     if((status = msgrcv(msgId, &message, sizeof(message)-sizeof(message.mtype), 1, 0)) != -1)
     {
 #endif /* USE_PIPED_MESSAGING */
@@ -921,7 +924,14 @@ STATIC_ROUTINE int readMessage(char *event_name, int *data_len, char *data)
 	if(message.length > 0)
 	    memcpy(data, message.data, message.length);
     }
+#ifndef USE_PIPED_MESSAGING
+    else if (errno == EINTR)
+      status = EINTR;
+    }
+#endif
     UnlockMdsShrMutex(&msgIdMutex);
+    if (status == -1)
+       perror("readMessage error");
     return status;
 }
 
