@@ -29,7 +29,7 @@ void *MdsMALLOC(int len)
   struct vmlist *p = malloc(len+sizeof(struct vmlist)+15);
   if (len <= 0)
   {
-    printf("malloc called with len <= 0\n");
+    MDSprintf("malloc called with len <= 0\n");
     raise(SIGUSR1);
   }
   p->len = len;
@@ -63,7 +63,7 @@ void MdsFREE(void *ptr)
   }
   else
   {
-    printf("free called for unknown memory\n");
+    MDSprintf("free called for unknown memory\n");
     raise(SIGUSR1);
   }
   pthread_unlock_global_np();
@@ -86,7 +86,7 @@ void *MdsREALLOC(void *ptr, int len)
     }
     else
     {
-      printf("realloc called for unknown memory\n");
+      MDSprintf("realloc called for unknown memory\n");
       raise(SIGUSR1);
     }
   }
@@ -100,12 +100,12 @@ static void CheckList()
   {
     if (memcmp(n->pre,PRE,sizeof(PRE)-1)!=0)
     {
-      printf("Corrupted memory found\n");
+      MDSprintf("Corrupted memory found\n");
       raise(SIGUSR1);
     }
     if (memcmp(n->vm+n->len,POST,sizeof(PRE)-1)!=0)
     {
-      printf("Corrupted memory found\n");
+      MDSprintf("Corrupted memory found\n");
       raise(SIGUSR1);
     }
   }
@@ -115,7 +115,7 @@ void MdsShowVM(int full)
 {
   struct vmlist *n;
   pthread_lock_global_np();
-  printf("malloc %d times, free %d times, %d still allocated in %d chunks\n",
+  MDSprintf("malloc %d times, free %d times, %d still allocated in %d chunks\n",
     NumMalloc,NumFree,Allocated,NumMalloc-NumFree);
   if (full)
   {
@@ -126,7 +126,7 @@ void MdsShowVM(int full)
       for (i=0;i<n->len;i++)
       p[i] = (n->vm[i] < 32 || n->vm[i] > 122) ? '.' : n->vm[i];
       p[n->len] = 0;
-      printf("%d -------- %.100s\n",n->len,p);
+      MDSprintf("%d -------- %.100s\n",n->len,p);
       free(p);
     }
   } 
