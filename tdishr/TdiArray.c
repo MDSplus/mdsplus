@@ -191,7 +191,6 @@ int	i;
 	{
           srandom(time(0));
           Tdi_RandomSeed = random();
-          printf("Seed=%d\n",Tdi_RandomSeed);
         }
 	N_ELEMENTS(out_ptr, n);
 	switch (out_ptr->dtype) {
