@@ -157,7 +157,7 @@ static void str2upcase( char *str );
 //-----------------------------------------------------------
 void 		Blank( UserParams *user );
 int 		JorwayTranslateIosb( SenseData *sense, int scsi_status );
-void 		KsTranslateIosb( UserParams *user );
+int 		KsTranslateIosb( RequestSenseData *sense, int scsi_status );
 
 //-----------------------------------------------------------
 // local, global

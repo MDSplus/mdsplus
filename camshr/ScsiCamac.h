@@ -78,7 +78,7 @@ typedef struct {char bytes[6];} CamacNonData;
 #if OS == VMS
 // original version
 typedef struct { 
-		unsigned noq            : 1;
+	unsigned noq            : 1;
         unsigned nox            : 1;
         unsigned ste            : 1;
         unsigned adnr           : 1;
