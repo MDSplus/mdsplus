@@ -19,6 +19,7 @@ write(*, "LASER Neodimium");
 
 wait(1);
 
+
    _error = 0;
 
     _ip = if_error(data(DevNodeRef(_nid, _N_IP_ADDRESS)), _error = 1);
@@ -58,57 +59,43 @@ write(*, _n_pulses);
 
 write(*, _delay_pulse );
 
-    if( ( allocated (public _laser_nd_connected) ) == 0)
-    {
-		public _laser_nd_connected = 0;
-    }
-
-    if( ( public _laser_nd_connected ) == 0 )
-    {
-		public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 2000, _swap=0);
-		if(public _sock == 0)
-		{
-			DevLogErr(_nid, "Cannot connect to remote instruments"); 
-			abort();
-		}
-		public _laser_nd_connected = 1;
-
-    }    
-
-write(*, "OK" );
-
-	if((_err_msg = TCPSendCommand(public _sock, "ND_DUMP")) != "")
+	 _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 2000, _swap=0);
+	if( _sock == 0)
 	{
+		DevLogErr(_nid, "Cannot connect to remote instruments"); 
+		abort();
+	}
+
+	write(*, "OK" );
+
+	if((_err_msg = TCPSendCommand( _sock, "ND_DUMP")) != "")
+	{
+		TCPCloseConnection( _sock);
 		DevLogErr(_nid, _err_msg); 
 		abort();
 	}
 
 	wait(5);
 
-	if((_err_msg = TCPSendCommand(public _sock, "ND_INIT")) != "")
+	if((_err_msg = TCPSendCommand( _sock, "ND_INIT")) != "")
 	{
+		TCPCloseConnection( _sock);
 		DevLogErr(_nid, _err_msg); 
 		abort();
 	}
 
 	wait(5);
 
-	if((_err_msg = TCPSendCommand(public _sock, "ND_CHARGE "//trim(adjustl(_n_pulses))//" "//trim(adjustl(_delay_pulse))) ) != "")
+	if((_err_msg = TCPSendCommand( _sock, "ND_CHARGE "//trim(adjustl(_n_pulses))//" "//trim(adjustl(_delay_pulse))) ) != "")
 	{
+		TCPCloseConnection( _sock);
 		DevLogErr(_nid, _err_msg); 
 		abort();
 	}
 
-/*
-	wait(30);
 
+	TCPCloseConnection( _sock);
 
-	if((_err_msg = TCPSendCommand(public _sock, "ND_PULSE") ) != "")
-	{
-		DevLogErr(_nid, _err_msg); 
-	}
-
-*/
 	return (1);
 
 }

@@ -63,25 +63,16 @@ write(*, _delay_pulse );
 		abort();
     }
 
-   if( ( allocated (public _laser_nd_connected) ) == 0)
-   {
-	public _laser_nd_connected = 0;
-   }
-
-    if( ( public _laser_nd_connected ) == 0 )
-    {
-
-		public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 2000, _swap=0);
-		if(public _sock == 0)
-		{
-			DevLogErr(_nid, "Cannot connect to remote instruments"); 
-			abort();
-		}
- 		public _laser_nd_connected = 1;
-	}    
-
-	if((_err_msg = TCPSendCommand(public _sock, "ND_DUMP") ) != "")
+	 _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 2000, _swap=0);
+	if( _sock == 0)
 	{
+		DevLogErr(_nid, "Cannot connect to remote instruments"); 
+		abort();
+	}
+
+	if((_err_msg = TCPSendCommand( _sock, "ND_DUMP") ) != "")
+	{
+		TCPCloseConnection( _sock);
 		DevLogErr(_nid, "Error during send  ND_DUMP command"); 
 		abort();
 	}
@@ -90,14 +81,15 @@ write(*, _delay_pulse );
 /* STORE OSC SIGNAL */
 
 
-	if((_err_msg = TCPSendCommand(public _sock, "ND_GET_OSC")) != "")
+	if((_err_msg = TCPSendCommand( _sock, "ND_GET_OSC")) != "")
 	{
+		TCPCloseConnection( _sock);
 		DevLogErr(_nid, "Error during send  ND_GET_OSC command"); 
 		abort();
 	}
 
 
-	_data = TCPReadFloat(public _sock, 1);
+	_data = TCPReadFloat( _sock, 1);
 
 	write(*,  size(_data) - 1);
 
@@ -118,14 +110,15 @@ write(*, _delay_pulse );
 
 /* STORE AMP SIGNAL */
 
-	if((_err_msg = TCPSendCommand(public _sock, "ND_GET_AMP")) != "")
+	if((_err_msg = TCPSendCommand( _sock, "ND_GET_AMP")) != "")
 	{
+		TCPCloseConnection( _sock);
 		DevLogErr(_nid, "Error during send  ND_GET_AMP command"); 
 		abort();
 	}
 
 
-	_data = TCPReadFloat(public _sock, 1);
+	_data = TCPReadFloat( _sock, 1);
 
 	if( size( _data ) < 2)
 	{
@@ -143,13 +136,14 @@ write(*, _delay_pulse );
 
 /* STORE TOTAL SIGNAL */
 
-	if( (_err_msg = TCPSendCommand(public _sock, "ND_GET_SLAB") ) != "")
+	if( (_err_msg = TCPSendCommand( _sock, "ND_GET_SLAB") ) != "")
 	{
+		TCPCloseConnection( _sock);
 		DevLogErr(_nid, "Error during send  ND_GET_SLAB command "); 
 		abort();
 	}
 
-	_data = TCPReadFloat(public _sock, 1);
+	_data = TCPReadFloat( _sock, 1);
 
 	if( size( _data ) < 4)
 	{
@@ -164,6 +158,7 @@ write(*, _delay_pulse );
 		}
 	}
 
+	TCPCloseConnection( _sock);
 
 	return (1);
 

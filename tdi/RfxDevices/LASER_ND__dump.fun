@@ -33,27 +33,28 @@ public fun LASER_ND__dump(as_is _nid, optional _method)
 		abort();
     }
 
-    if( ( public _laser_nd_connected ) == 0 )
+ 
+    _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 2000, _swap=0);
+    if(_sock == 0)
     {
+		DevLogErr(_nid, "Cannot connect to remote instruments"); 
+		abort();
+    }
+ 
 
-		public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 2000, _swap=0);
-		if(public _sock == 0)
-		{
-			DevLogErr(_nid, "Cannot connect to remote instruments"); 
-			abort();
-		}
-        public _laser_nd_connected = 1;
-    }    
-
-
-	if(TCPSendCommand(public _sock, "ND_DUMP") == 0)
+	if((_err_msg = TCPSendCommand(_sock, "ND_DUMP") ) != "")
 	{
-		DevLogErr(_nid, _msg); 
+		TCPCloseConnection(_sock);
+		DevLogErr(_nid, _err_msg); 
 		abort();
 	}
 
 
+	TCPCloseConnection(_sock);
+
 	return (1);
+
+	
 
 
 }
