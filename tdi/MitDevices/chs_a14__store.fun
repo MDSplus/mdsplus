@@ -14,15 +14,7 @@ public fun chs_a14__store(as_is _nid, optional _method)
   /***********************************
    Get status register
   ************************************/
-  _sr = 0;
-  _VME_UDATA    = 0x00090000;
-  _VME_D16      = 0x00400000;
-  _VME_BS_BYTE  = 0x01000000;
-  _VME_BS_LWORD = 0x03000000;
-  _VME_DENSE    = 0x10000000;
-  _mode = _VME_UDATA | _VME_D16 | _VME_BS_LWORD | _VME_DENSE;
-  _settings = zero(128,0w);
-  _status = MdsVme->PioRead("/dev/vmp0",val(0x106c0000),val(_mode),val(128),ref(_settings));
+  _setting = chs_vme_readwords(0x106c0000,128);
   if (_debug) write(*,"Settings = ",_settings);
   _sr = (long(_settings[10+_dignum*16]) & 0xffff) | (long(_settings[12+_dignum*16]) << 16);
   if (_debug) write(*,"_sr=",_sr);
