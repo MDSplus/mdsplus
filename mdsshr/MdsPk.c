@@ -119,6 +119,9 @@ void      MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[]
       if (off >= test)
       {
 #ifdef WORDS_BIGENDIAN
+#ifdef __APPLE__
+        *ppack = hold;
+#endif
         for (i=0;i<4;i++)
           ((char *)ppack)[i] = ((char *)&hold)[3-i];
         ppack++;
