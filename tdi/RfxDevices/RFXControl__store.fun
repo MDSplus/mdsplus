@@ -146,7 +146,7 @@ write(*, _c);
 write(*, _c);
 			_sig_nid =  DevHead(_nid) + _N_USER_1  + _c;
 			_data = MdsValue('Feedback->getUserSignal:dsc($1)', _c);
-			_status = DevPutSignal(_sig_nid, 0, 10/2048., word(_data), 0, _n_samples, _dim);
+			_status = DevPutSignal(_sig_nid, 0, 1., word(_data), 0, _n_samples, _dim);
 			if(! _status)
 			{
 				write(*, 'Error writing data in pulse file for channel ', _c);
