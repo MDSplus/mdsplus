@@ -133,7 +133,7 @@ public abstract class DeviceComponent extends JPanel
     }
 
 //Event handling in DW setup
-    DeviceSetup master;
+    DeviceSetup master = null;
     public String getUpdateId(DeviceSetup master)
     {
         this.master = master;
@@ -156,6 +156,21 @@ public abstract class DeviceComponent extends JPanel
     {
         enabled = false;
     }
+
+    public void reportDataChanged(Object data)
+    {
+      if(master == null) return;
+      master.propagateData(offsetNid, data);
+    }
+
+    public void reportStateChanged(boolean state)
+    {
+      if(master == null) return;
+      master.propagateState(offsetNid, state);
+    }
+
+    protected void dataChanged(int offsetNid, Object data){}
+    protected void stateChanged(int offsetNid, boolean state){}
 }
 
 

@@ -260,6 +260,21 @@ public class DeviceSetup extends JDialog
             ((DataChangeListener)dataChangeListeners.elementAt(i)).dataChanged(new DataChangeEvent(this, 0, null));
     }
 
+    public void propagateData(int offsetNid, Object data)
+    {
+      for (int idx = 0; idx < device_components.size(); idx++)
+        ( (DeviceComponent) device_components.elementAt(idx)).dataChanged(offsetNid,
+            data);
+    }
+
+    public void propagateState(int offsetNid, boolean state)
+    {
+      for (int idx = 0; idx < device_components.size(); idx++)
+        ( (DeviceComponent) device_components.elementAt(idx)).stateChanged(offsetNid,
+            state);
+    }
+
+
     public void updateIdentifiers()
     {
         StringBuffer varExpr = new StringBuffer();

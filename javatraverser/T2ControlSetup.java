@@ -340,7 +340,7 @@ public class T2ControlSetup extends DeviceSetup
 		JPanel9.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		JPanel3.add(BorderLayout.NORTH, JPanel9);
                 deviceTable3.setDisplayRowNumber(true);
-		deviceTable3.setNumCols(32);
+ 		deviceTable3.setNumCols(32);
 		{
 			String[] tempString = new String[32];
 			tempString[0] = "0";
@@ -499,6 +499,7 @@ public class T2ControlSetup extends DeviceSetup
 		JPanel10.add(deviceTable4);
 		JPanel11.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		JPanel3.add(BorderLayout.SOUTH, JPanel11);
+                deviceTable5.setDisplayRowNumber(true);
 		deviceTable5.setNumCols(32);
 		{
 			String[] tempString = new String[32];

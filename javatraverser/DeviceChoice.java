@@ -13,6 +13,7 @@ public class DeviceChoice extends DeviceComponent
     protected float choiceFloatValues[] = null;
     protected double choiceDoubleValues[] = null;
     protected boolean convert = false;
+    private boolean reportingChange = false;
 
     public void setConvert(boolean convert) {this.convert = convert; }
     public boolean getConvert() {return convert;}
@@ -85,10 +86,23 @@ public class DeviceChoice extends DeviceComponent
                 if(initializing || updateIdentifier == null || updateIdentifier.equals("")) return;
                 String currItem = (String)comboB.getSelectedItem();
                 master.fireUpdate(updateIdentifier, new StringData(currItem));
+                reportingChange = true;
+                reportDataChanged(new Integer(comboB.getSelectedIndex()));
+                reportingChange = false;
             }
         });
         initializing = false;
     }
+
+    protected void dataChanged(int offsetNid, Object data)
+    {
+      if(reportingChange || this.offsetNid != offsetNid)
+        return;
+      try {
+        comboB.setSelectedIndex( ( (Integer) data).intValue());
+      }catch(Exception exc){System.err.println("DeviceChoice.dataChanged: " + exc);}
+    }
+
 
     public void postConfigure()
     {

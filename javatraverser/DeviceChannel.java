@@ -16,6 +16,7 @@ public class DeviceChannel extends DeviceComponent
     public String showVal;
     public boolean showState = true;
     private boolean initial_state;
+    private boolean reportingChange = false;
 
 
     protected boolean initializing = false;
@@ -118,13 +119,22 @@ public class DeviceChannel extends DeviceComponent
             checkB.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent e)
                 {
-                    propagateState(checkB.isSelected());
+                  reportingChange = true;
+                  reportStateChanged(checkB.isSelected());
+                  reportingChange = false;
+                  propagateState(checkB.isSelected());
                 }
             });
         }
         propagateState(is_on);
     }
 
+    protected void stateChanged(int offsetNid, boolean state)
+    {
+      if(this.offsetNid != offsetNid || reportingChange)
+        return;
+      checkB.setSelected(state);
+    }
 
     protected void displayData(Data data, boolean is_on)
     {

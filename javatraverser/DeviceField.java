@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class DeviceField extends DeviceComponent
 {
@@ -12,6 +13,9 @@ public class DeviceField extends DeviceComponent
     public int numCols = 10;
     private boolean initial_state;
     protected boolean initializing = false;
+
+    private boolean reportingChange = false;
+
     public void setNumCols(int numCols)
     {
         this.numCols = numCols;
@@ -83,10 +87,27 @@ public class DeviceField extends DeviceComponent
         }
         displayData(data, is_on);
         setEnabled(is_on);
+
+        textF.addKeyListener(new KeyAdapter() {
+          public void keyTyped(KeyEvent e) {
+            reportingChange = true;
+            reportDataChanged(textF.getText());
+            reportingChange = false;
+          }
+        });
+
+
         initializing = false;
     }
 
-
+    protected void dataChanged(int offsetNid, Object data)
+    {
+      if(reportingChange || this.offsetNid != offsetNid)
+        return;
+      try {
+        textF.setText( (String) data);
+      }catch(Exception exc){}
+    }
 
     void postApply()
     {

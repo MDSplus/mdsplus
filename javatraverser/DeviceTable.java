@@ -150,18 +150,7 @@ public class DeviceTable extends DeviceComponent
 
             public Object getValueAt(int row, int col)
             {
-                if(displayRowNumber)
-                {
-                    if(col == 0)
-                        return "" + (row + 1);
-                    else
-                    {
-                        try {
-                            return items[row * numCols + col - 1];
-                        }catch(Exception exc) {return ""; }
-                    }
-                }
-                else if(rowNames.length > 0)
+               if(rowNames.length > 0)
                 {
                   if (col == 0) {
                     try {
@@ -180,6 +169,20 @@ public class DeviceTable extends DeviceComponent
                     }
                   }
                 }
+                else if(displayRowNumber)
+                {
+                  if (col == 0)
+                    return "" + (row + 1);
+                  else {
+                    try {
+                      return items[row * numCols + col - 1];
+                    }
+                    catch (Exception exc) {
+                      return "";
+                    }
+                  }
+                }
+
                 else
                 {
                     try {
@@ -197,10 +200,10 @@ public class DeviceTable extends DeviceComponent
 
             public void setValueAt(Object value, int row, int col)
             {
-                if(displayRowNumber)
+                if(rowNames.length > 0)
                     items[row * numCols + col - 1] = (String)value;
-                else if(rowNames.length > 0)
-                    items[row * numCols + col - 1] = (String)value;
+                 else if(displayRowNumber)
+                      items[row * numCols + col - 1] = (String)value;
 
                 else
                     items[row * numCols + col] = (String)value;
