@@ -83,8 +83,8 @@ install:
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MAKELIBDIR@libMdsIpUtil.a : mdsiputil.o $(COMPRESSION_OBJECTS)
-	$(AR) -cr $@ mdsiputil.o $(COMPRESSION_OBJECTS)
+@MAKELIBDIR@libMdsIpUtil.a : mdsiputil.o mdsip_socket_io.o $(COMPRESSION_OBJECTS)
+	$(AR) -cr $@ mdsiputil.o mdsip_socket_io.o $(COMPRESSION_OBJECTS)
 	@RANLIB@ $@
 
 @MAKELIBDIR@ :
