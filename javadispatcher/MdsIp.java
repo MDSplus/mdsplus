@@ -10,10 +10,10 @@ class MdsIp implements Runnable
     boolean listening = true;
     Vector listeners = new Vector();
     Thread listen_thread;
-    
+
     public Thread getListenThread() { return listen_thread; }
-            
-    
+
+
     public boolean start()
     {
         try {
@@ -26,9 +26,9 @@ class MdsIp implements Runnable
         listen_thread.start();
         return true;
     }
-    
-    
-    
+
+
+
     public void run()
     {
         while(listening)
@@ -37,7 +37,7 @@ class MdsIp implements Runnable
                 new ReceiverThread(server_sock.accept()).start();
             }catch(Exception exc) {fireConnectionEvent(); break;}
         }
-        
+
         try {
             server_sock.close();
         }catch(Exception exc) {}
@@ -47,7 +47,7 @@ class MdsIp implements Runnable
    {
         listeners.addElement(listener);
    }
-   
+
    protected synchronized void fireConnectionEvent()
    {
         Enumeration listener_list = listeners.elements();
@@ -58,19 +58,19 @@ class MdsIp implements Runnable
                 "Lost connection to mdsip client"));
         }
    }
-   
-   public synchronized MdsMessage handleMessage(MdsMessage messages[])
+
+   public /*synchronized*/ MdsMessage handleMessage(MdsMessage messages[])
    {
         return new MdsMessage();
    }
 
-        
+
     class ReceiverThread extends Thread
     {
         Socket sock;
         DataInputStream dis;
         DataOutputStream dos;
-        
+
         public ReceiverThread(Socket sock)
         {
             this.sock = sock;
@@ -79,7 +79,7 @@ class MdsIp implements Runnable
                 dos = new DataOutputStream(new BufferedOutputStream(sock.getOutputStream()));
             }catch(Exception exc) {fireConnectionEvent(); dis = null; dos = null;}
         }
-        
+
         public void run()
         {
             if(dis == null || dos == null) return;
@@ -114,8 +114,8 @@ class MdsIp implements Runnable
         }
     }
 }
-                
-            
-            
-            
-            
+
+
+
+
+

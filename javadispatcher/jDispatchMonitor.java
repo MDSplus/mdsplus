@@ -33,7 +33,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                     break;
                 case MdsMonitorEvent.MonitorDone       :
                     status = me.ret_status;
-            
+
 		    Hashtable actions = null;
 
 		    if(phase_failed.containsKey(new Integer(me.phase)))
@@ -129,7 +129,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 actions  = new Hashtable();
                 phase_failed.put(new Integer(curr_phase), actions);
             }
-	     
+
             if(actions == null)
                 return new MdsMessage((byte)1);
 
@@ -636,7 +636,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                         catch (Exception exc)
                         {
                             JOptionPane.showMessageDialog(null,
-                                                        "Error during action(s) re-dispatch",
+                                                        "Error Aborting Action",
                                                         "Alert",
                                                         JOptionPane.ERROR_MESSAGE);
 
@@ -658,7 +658,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                         {
                             if(executingList.getModel().getSize() != 0)
                                 JOptionPane.showMessageDialog(null,
-                                                          "Select action(s) to re-dispatch",
+                                                          "Please select the action(s) to re-dispatch or abort",
                                                           "Warning",
                                                           JOptionPane.INFORMATION_MESSAGE);
                             return;
@@ -804,7 +804,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     private void abortAction(MdsMonitorEvent me) throws IOException
     {
         if(me.mode == MdsMonitorEvent.MonitorDoing)
-            doCommand("Abort", me);
+            doCommand("ABORT", me);
     }
 
     private void redispatch(MdsMonitorEvent me) throws IOException
@@ -820,8 +820,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             dispatcher = new MdsServer(MdsHelper.getDispatcher());
             dispatcher.addConnectionListener(jDispatchMonitor.this);
         }
-
-        Descriptor reply = dispatcher.dispatchCommand("tcl", command+" "+me.nid);
+        Descriptor reply = dispatcher.dispatchDirectCommand(command+" "+me.nid);
         if((reply.status & 1) == 0)
         {
                 JOptionPane.showMessageDialog(null,

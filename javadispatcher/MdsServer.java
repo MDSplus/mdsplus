@@ -62,14 +62,10 @@ class MdsServer extends MdsConnection
 	            DataInputStream dis = new DataInputStream(new BufferedInputStream(s.getInputStream()));
 	            while(true)
 	            {
-	                if(dis.read(header) == -1)
-	                {
-	                    //rcv_connected = false;
-	                    //continue;
-	                    break;
-	                }
-
+	                dis.readFully(header);
 	                String head = new String(header);
+
+                        //System.out.println("Ricevuto messaggio: " + head);
 	                StringTokenizer buf = new StringTokenizer(head, " \0");
  	                int id = 0;
 	                int flags = 0;
@@ -222,6 +218,7 @@ class MdsServer extends MdsConnection
         } catch (IOException ex){}
    }
 
+
     public Descriptor sendMessage(int id, int op, Vector args, boolean wait) throws IOException
     {
         return sendMessage(id, op, false, args, wait);
@@ -284,7 +281,8 @@ class MdsServer extends MdsConnection
     {
         Vector args = new Vector();
         args.add(new Descriptor(null, tree));
-        args.add(new Descriptor(null, new int[]{rcv_port}));
+      //  args.add(new Descriptor(null, new int[]{rcv_port}));
+        args.add(new Descriptor(null, new int[]{shot}));
         Descriptor reply = sendMessage(0, SrvCreatePulse, args, true);
         return reply;
     }
@@ -298,6 +296,13 @@ class MdsServer extends MdsConnection
         Descriptor reply = sendMessage(id, SrvAction, true, args, true);
         return reply;
     }
+    public Descriptor dispatchDirectCommand(String command) throws IOException
+    {
+        Descriptor reply = MdsValue(command);
+        return reply;
+    }
+
+
 
     public Descriptor dispatchCommand(String cli, String command) throws IOException
     {

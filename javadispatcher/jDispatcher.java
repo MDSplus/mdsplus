@@ -10,9 +10,9 @@ class jDispatcher implements ServerListener
     static final int MONITOR_DISPATCHED = 5;
     static final int MONITOR_DOING = 6;
     static final int MONITOR_DONE = 7;
-    
+
     boolean doing_phase = false;
-    
+
     String tree;
     /**
     currently open tree
@@ -21,7 +21,7 @@ class jDispatcher implements ServerListener
     /**
     current shot;
     */
-    
+
     int timestamp = 1;
     /**
     timestamp used for messages. Incremented each new seqeuence. Messages with older timestamp
@@ -39,16 +39,16 @@ class jDispatcher implements ServerListener
     /**
     Contains the sequence numbers of the current phase
     */
-    
-    
+
+
     static class PhaseDescriptor
-    /** 
+    /**
     PhaseDescriptor carries all the data structures required by each phase
     */
     {
         String phase_name;
         Vector seq_numbers = new Vector();
-        /** 
+        /**
         Active sequence numbers, in ascending order
         */
         Hashtable seq_actions = new Hashtable();
@@ -67,28 +67,28 @@ class jDispatcher implements ServerListener
         }
     }
     protected PhaseDescriptor curr_phase; //selects the current phase data structures
-    
+
     Hashtable phases = new Hashtable();
     /**
     Indexed by phase name. Associates dispatch data structures with each phase.
     */
-    
+
     Hashtable actions = new Hashtable();
     /**
     Indexed by ActionData, used to retrieve actions from ActionData in method isEnabled
     */
-    
+
     Hashtable action_nids = new Hashtable();
     /**
-    Indexed by nid, used to retrieve actions to be manually dispatched 
+    Indexed by nid, used to retrieve actions to be manually dispatched
     */
-    
+
     protected Vector servers = new Vector();
-    /** 
+    /**
     server list, used for collecting dispatch information. Servers will receive work by the Balancer
     */
     protected Balancer balancer;
-    /** 
+    /**
     All actions will be dispatched to balancer
     */
 
@@ -96,9 +96,9 @@ class jDispatcher implements ServerListener
     /**
     Registered Monitor listeners.
     */
-    
+
     public jDispatcher(Balancer balancer) {this.balancer = balancer; }
-    
+
     public synchronized void clearTables()
     {
         actions.clear();
@@ -108,8 +108,8 @@ class jDispatcher implements ServerListener
         seq_dispatched.removeAllElements();
         timestamp++;
     }
-   
-   
+
+
     public synchronized void addServer(Server server)
     {
         servers.addElement(server);
@@ -125,8 +125,8 @@ class jDispatcher implements ServerListener
         while(server_list.hasMoreElements())
             ((Server)server_list.nextElement()).setTree(tree);
     }
-        
-        
+
+
     public synchronized void collectDispatchInformation()
     /**
     request actions to each server and insert them into hashtables
@@ -148,18 +148,18 @@ class jDispatcher implements ServerListener
         buildDependencies();
         //fireMonitorEvent(null, MONITOR_BUILD_END);
     }
-    
+
     protected void insertAction(Action action, boolean is_first, boolean is_last)
     {
         //record current timestamp
         action.setTimestamp(timestamp);
-        
+
         //Insert action in actions hashtable
         actions.put(action.getAction(), action);
-        
+
         //Insert action in action_nids hashtable
         action_nids.put(new Integer(action.getNid()), action);
-        
+
         //Check if the Action is sequential
         DispatchData dispatch = (DispatchData)action.getAction().getDispatch();
         if(dispatch == null)
@@ -187,7 +187,7 @@ class jDispatcher implements ServerListener
                 System.out.println("Warning: Action "+action+" does not containg a server class string");
                 return;
             }
-                
+
             curr_phase = (PhaseDescriptor)phases.get(phase_name);
             if(curr_phase == null)
             {
@@ -199,14 +199,14 @@ class jDispatcher implements ServerListener
                 int seq_number;
                 try {
                     seq_number = getInt(dispatch.getWhen());
-                }catch(Exception exc) 
+                }catch(Exception exc)
                 {
                 System.out.println("Warning: expression used for sequence number");
                 return;
                 }
                 Integer seq_obj = new Integer(seq_number);
                 if(curr_phase.seq_actions.containsKey(seq_obj))
-		{   
+		{
                     ((Vector)curr_phase.seq_actions.get(seq_obj)).addElement(action);
 		}
                 else //it is the first time such a sequence number is referenced
@@ -240,7 +240,7 @@ class jDispatcher implements ServerListener
                 fireMonitorEvent(action, MONITOR_BUILD);
         }
     }
-    
+
     protected void buildDependencies()
     {
         DispatchData dispatch;
@@ -257,7 +257,7 @@ class jDispatcher implements ServerListener
                 traverseDispatch(action_data, dispatch.getWhen());
         }
     }
-    
+
     protected void traverseDispatch(ActionData action_data, Data when)
     {
         Action action;
@@ -285,29 +285,29 @@ class jDispatcher implements ServerListener
                 traverseDispatch(action_data, args[i]);
         }
     }
-    
-        
+
+
    protected int getInt(Data data)
-   /** 
-   Returns an integer without evaluating expressions. This method will be overridden by 
+   /**
+   Returns an integer without evaluating expressions. This method will be overridden by
    derived classes to achieve TDI expression evaluation ofr non pure Java dispatchers
    */
    {
         try {
             return data.getInt();
-        }catch(Exception exc) 
+        }catch(Exception exc)
         {
             System.out.println("Error: expressions not supported for sequence numbers");
             return 0;
         }
    }
-    
-     
+
+
    public synchronized void addMonitorListener(MonitorListener monitor)
    {
         monitors.addElement(monitor);
    }
-   
+
    protected synchronized void fireMonitorEvent(Action action, int mode)
    {
         String server;
@@ -315,7 +315,7 @@ class jDispatcher implements ServerListener
         MonitorEvent event = new MonitorEvent(this, tree, shot, (curr_phase == null)?"NONE":curr_phase.phase_name, action);
         Enumeration monitor_list = monitors.elements();
         while(monitor_list.hasMoreElements())
-        {   
+        {
             MonitorListener curr_listener = (MonitorListener)monitor_list.nextElement();
             switch(mode) {
                 case MONITOR_BUILD_BEGIN: curr_listener.buildBegin(event); break;
@@ -327,16 +327,16 @@ class jDispatcher implements ServerListener
             }
         }
    }
-   
+
    public synchronized boolean startPhase(String phase_name)
    {
         doing_phase = false;
         //increment timestamp. Incoming messages with older timestamp will be ignored
         curr_phase = (PhaseDescriptor)phases.get(phase_name); //select data structures for the current phase
         if(curr_phase == null) return false; //Phase name does not correspond to any known phase.
-        curr_seq_numbers = curr_phase.seq_numbers.elements(); 
+        curr_seq_numbers = curr_phase.seq_numbers.elements();
         //curr_seq_numbers contains the sequence number for the selected phase
-        
+
         if(curr_seq_numbers.hasMoreElements())
         {
             Integer curr_int;
@@ -362,7 +362,7 @@ class jDispatcher implements ServerListener
         }
         return false; //no actions to be executed in this phase
    }
-      
+
     public synchronized boolean dispatchAction(int nid)
     {
         if(action_nids == null) return false;
@@ -374,8 +374,8 @@ class jDispatcher implements ServerListener
         fireMonitorEvent(action, MONITOR_DISPATCHED);
         return true;
     }
-     
-      
+
+
     public synchronized void abortAction(int nid)
     {
         if(action_nids == null) return;
@@ -383,7 +383,7 @@ class jDispatcher implements ServerListener
         if(action == null) return;
         balancer.abortAction(action);
     }
-        
+
     public synchronized void waitPhase()
     {
         try {
@@ -391,10 +391,10 @@ class jDispatcher implements ServerListener
                 wait();
         }catch(InterruptedException exc){}
     }
-        
-        
-        
-    public synchronized void actionStarting(ServerEvent event) 
+
+
+
+    public synchronized void actionStarting(ServerEvent event)
     /**
     called by a server to notify that the action is starting being executed.
     Simply reports the fact
@@ -406,8 +406,8 @@ class jDispatcher implements ServerListener
         fireMonitorEvent(event.getAction(), MONITOR_DOING);
 
     }
-    
-    public synchronized void actionAborted(ServerEvent event) 
+
+    public synchronized void actionAborted(ServerEvent event)
     /**
     called by a server to notify that the action is starting being executed.
     Simply reports the fact
@@ -419,11 +419,11 @@ class jDispatcher implements ServerListener
         fireMonitorEvent(event.getAction(), MONITOR_DONE);
         reportDone(event.getAction());
    }
-    
-    
+
+
     public synchronized void actionFinished(ServerEvent event)
     /**
-    called by a server to notify that the action has finished 
+    called by a server to notify that the action has finished
     */
     {
        // if(event.getTimestamp() != timestamp) //outdated message
@@ -437,7 +437,7 @@ class jDispatcher implements ServerListener
                 MdsHelper.generateEvent(mdsevent, 0);
             }
         }catch(Exception exc){}
-     
+
         action.setStatus(Action.DONE, event.getStatus(), verbose);
         fireMonitorEvent(action, MONITOR_DONE);
         if(!action.isManual())
@@ -445,7 +445,7 @@ class jDispatcher implements ServerListener
         else
             action.setManual(false);
     }
-        
+
    protected void reportDone(Action action)
    {
         //remove action from dispatched
@@ -466,7 +466,7 @@ class jDispatcher implements ServerListener
                }
             }
         }catch(Exception exc) {System.err.println("Internal error: action not stored in depend_actions hashtable");}
-        if(seq_dispatched.isEmpty())  //No more sequential actions for this sequence number 
+        if(seq_dispatched.isEmpty())  //No more sequential actions for this sequence number
         {
             if(curr_seq_numbers.hasMoreElements()) //Still further sequence numbers
             {
@@ -474,7 +474,7 @@ class jDispatcher implements ServerListener
                 do {
                     curr_int = (Integer)curr_seq_numbers.nextElement();
                 }while(curr_int.intValue() == -1);
-                
+
                 Vector first_action_vect = (Vector)curr_phase.seq_actions.get(curr_int);
                 Enumeration actions = first_action_vect.elements();
                 while(actions.hasMoreElements())
@@ -497,11 +497,11 @@ class jDispatcher implements ServerListener
             }
         }
     }
-                
-            
+
+
     protected boolean isEnabled(Data when)
     /**
-    Check whether this action is enabled to execute, based on the current status hold 
+    Check whether this action is enabled to execute, based on the current status hold
     in curr_status.reports hashtable.
     In this class the check is done in Java. In a derived class it may be performed by evaluating
     a TDI expression.
@@ -517,9 +517,9 @@ class jDispatcher implements ServerListener
             switch (modifier) {
                 case 0: if((status & 1) != 0) return true; return false;
                 case ConditionData.IGNORE_UNDEFINED: //???
-                case ConditionData.IGNORE_STATUS: return true; 
+                case ConditionData.IGNORE_STATUS: return true;
                 case ConditionData.NEGATE_CONDITION: if((status & 1) == 0) return true; return false;
-            }            
+            }
         }
         if(when instanceof ActionData)
         {
@@ -529,7 +529,7 @@ class jDispatcher implements ServerListener
         if(when instanceof DependencyData)
         {
             Data args[] = ((DependencyData)when).getArguments();
-            if(args.length != 2) 
+            if(args.length != 2)
             {
                 System.out.println("Error: dependency needs 2 arguments. Ignored");
                 return false;
@@ -542,8 +542,8 @@ class jDispatcher implements ServerListener
         }
         return true;
     }
-    
-            
+
+
     public synchronized void beginSequence(int shot)
     {
         this.shot = shot;
@@ -563,7 +563,7 @@ class jDispatcher implements ServerListener
     public synchronized void abortPhase()
     {
         Action action;
-        
+
         balancer.abort();
         while(!seq_dispatched.isEmpty())
         {
@@ -577,7 +577,7 @@ class jDispatcher implements ServerListener
             action.setStatus(Action.ABORTED, 0, verbose);
             seq_dispatched.removeElementAt(0);
         }
-    } 
+    }
     public void setDefaultServer(Server server)
     {
         balancer.setDefaultServer(server);

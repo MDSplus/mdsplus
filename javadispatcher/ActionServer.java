@@ -54,6 +54,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                     int size = enqueued_actions.size();
                     Vector removed_actions = new Vector();
                     Action curr_action;
+                    /* Not needed when using jServer
                     while((curr_action = popAction()) != null)
                     {
                         removed_actions.addElement(curr_action);
@@ -75,6 +76,12 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                             enqueued_actions.addElement(action);
                         }catch(Exception exc) {}
                     }
+*/
+                   try {
+                     mds_server.abort(false); //now we are sure that no other action gets aborted
+                   }
+                   catch (Exception exc) {}
+
                 }
             }});
             timer.setRepeats(false);
@@ -258,7 +265,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             listener.actionStarting(new ServerEvent(this, action));
         }
     }
-    protected synchronized void processAborted(Action action)
+    protected /*synchronized*/ void processAborted(Action action)
     {
         Enumeration listeners = server_listeners.elements();
         while(listeners.hasMoreElements())
