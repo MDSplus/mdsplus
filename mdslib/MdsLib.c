@@ -154,7 +154,7 @@ int descr (int *dtype, void *data, int *dim1, ...)
     if (ndim > 1) 
     {
       int i;
-      array_coeff *adsc = (array_coeff *)dsc;  /* &&& CAN I DO DYNAMIC NUMBER OF DIMENSIONS HERE??? */
+      array_coeff *adsc = (array_coeff *)dsc;  /* &&& Can I do dynamic number of dimensions here??? */
       adsc->class = CLASS_A;
   
       if (ndim > MAXDIM) 
@@ -276,18 +276,19 @@ struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
   else 
   {
     int i;
-    array_coeff *adsc = (array_coeff *)dsc;  /* &&& CAN I DO DYNAMIC NUMBER OF DIMENSIONS HERE??? */
+    int dims[MAXDIM];
+    struct descriptor_a *adsc = (struct descriptor_a *)dsc;
     if (adsc->dimct > 1) 
     {
-      int dims[MAXDIM];
+      array_coeff *adsc = (array_coeff *)dsc;  
       for (i=0; i<adsc->dimct; i++) dims[i] = adsc->m[i];
-      for (i=adsc->dimct; i<MAXDIM; i++) dims[i] = 0;
-      arg = MakeDescrip(arg, (char)dtype, adsc->dimct, dims, adsc->pointer);
     }
     else 
     {
-      /*** &&& HOW AM I KEEPING TRACK OF N_ELEMENTS() IF THERE IS ONLY ONE DIM?  via LENGTH and ARSIZE??? ***/
+      dims[0] = adsc->arsize / adsc->length;
     }
+    for (i=adsc->dimct; i<MAXDIM; i++) dims[i] = 0;
+    arg = MakeDescrip(arg, (char)dtype, adsc->dimct, dims, adsc->pointer);
   }
   return arg;
 }
