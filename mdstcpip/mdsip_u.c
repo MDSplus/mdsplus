@@ -33,6 +33,7 @@
 extern char *MdsDescrToCstring();
 extern void MdsFree();
 extern void SetSocketOptions();
+extern void SetCompression();
 
 typedef ARRAY_COEFF(char,7) ARRAY_7;
 
@@ -606,7 +607,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
       printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr,sock, pid, user_p, hp->h_name, inet_ntoa(sin->sin_addr));
     else
       printf("%s (%d) (pid %d) Connection received from %s@%s\r\n", timestr, sock, pid, user_p, inet_ntoa(sin->sin_addr));
-    if (!m.h.status)
+    if (!(m.h.status & 1))
     {
       printf("Access denied\n");
       shutdown(sock,2);

@@ -32,3 +32,4 @@ SendArg
 ArgLen
 MdsIpFree
 SetSocketOptions
+SetCompression
