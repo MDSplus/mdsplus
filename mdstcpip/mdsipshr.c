@@ -125,18 +125,39 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIPSHR.C */
 #include "mdsip.h"
 
+#if defined(__VMS) || defined(WIN32)
+#define BlockSig(arg)
+#define UnBlockSig(arg)
+#else
+static int BlockSig(int sig_number)
+{
+  sigset_t newsigset;
+  sigemptyset(&newsigset);
+  sigaddset(&newsigset,sig_number);
+  return sigprocmask(SIG_BLOCK, &newsigset, NULL);
+}
+
+static int UnBlockSig(int sig_number)
+{
+  sigset_t newsigset;
+  sigemptyset(&newsigset);
+  sigaddset(&newsigset,sig_number);
+  return sigprocmask(SIG_UNBLOCK, &newsigset, NULL);
+}
+#endif
+
 #ifdef __MWERKS__
 // Start of Mac Changes
 static short bGUSIInit = 0;
 
-static void sighold ( int ) {
+static void BlockSig ( int ) {
 	if ( !bGUSIInit ) {
 	//	GUSISetup ( GUSIwithInternetSockets );
 		GUSISetupConfig ();
 		bGUSIInit = 1;
 		}
 	}
-static void sigrelse ( int ) {}
+static void UnBlockSig ( int ) {}
 
 void main () {}
 
@@ -562,9 +583,9 @@ int  IdlMdsClose(int lArgc, void * * lpvArgv)
 /*  status = call_external('mdsipshr','IdlMdsClose', socket, value=[1b])
 */
   int status;
-  sighold(SIGALRM);
+  BlockSig(SIGALRM);
   status = MdsClose((SOCKET)lpvArgv[0]);
-  sigrelse(SIGALRM);
+  UnBlockSig(SIGALRM);
   return status;
 }
 
@@ -573,9 +594,9 @@ int  IdlConnectToMds(int lArgc, void * * lpvArgv)
 /*  status = call_external('mdsipshr','IdlConnectToMds', 'host-name')
 */
   int status;
-  sighold(SIGALRM);
+  BlockSig(SIGALRM);
   status = ConnectToMds((char *)lpvArgv[0]);
-  sigrelse(SIGALRM);
+  UnBlockSig(SIGALRM);
   return status;
 }
 
@@ -584,9 +605,9 @@ int  IdlDisconnectFromMds(int lArgc, void * * lpvArgv)
 /*  status = call_external('mdsipshr','IdlDisconnectFromMds', socket, value=[1b])
 */
   int status;
-  sighold(SIGALRM);
+  BlockSig(SIGALRM);
   status = DisconnectFromMds((SOCKET)lpvArgv[0]);
-  sigrelse(SIGALRM);
+  UnBlockSig(SIGALRM);
   return status;
 }
 
@@ -595,9 +616,9 @@ int  IdlMdsOpen(int lArgc, void * * lpvArgv)
 /*  status = call_external('mdsipshr','IdlMdsOpen', sock, 'tree-name', shot, value = [1b,0b,1b]) 
 */
   int status;
-  sighold(SIGALRM);
+  BlockSig(SIGALRM);
   status = MdsOpen((int)lpvArgv[0],(char *)lpvArgv[1],(int)lpvArgv[2]);
-  sigrelse(SIGALRM);
+  UnBlockSig(SIGALRM);
   return status;
 }
 
@@ -606,9 +627,9 @@ int  IdlMdsSetDefault(int lArgc, void * * lpvArgv)
 /*  status = call_external('mdsipshr','IdlMdsSetDefault', sock, 'node', value = [1b,0b]) 
 */
   int status;
-  sighold(SIGALRM);
+  BlockSig(SIGALRM);
   status = MdsSetDefault((int)lpvArgv[0],(char *)lpvArgv[1]);
-  sigrelse(SIGALRM);
+  UnBlockSig(SIGALRM);
   return status;
 }
 
@@ -617,9 +638,9 @@ int  IdlMdsLogin(int lArgc, void * * lpvArgv)
 /*  status = call_external('mdsipshr','IdlMdsLogin', sock, 'user', 'passwd', value = [1b,0b,0b]) 
 */
   int status;
-  sighold(SIGALRM);
+  BlockSig(SIGALRM);
   status = MdsLogin((int)lpvArgv[0],(char *)lpvArgv[1],(char *)lpvArgv[2]);
-  sigrelse(SIGALRM);
+  UnBlockSig(SIGALRM);
   return status;
 }
 
@@ -629,10 +650,10 @@ int  IdlGetAnsInfo(int lArgc, void * * lpvArgv)
                                value=[1b,0b,0b,0b,0b,0b,0b])
 */
   int status;
-  sighold(SIGALRM);
+  BlockSig(SIGALRM);
   status = GetAnswerInfo((SOCKET)lpvArgv[0], (char *)lpvArgv[1], (short *)lpvArgv[2], (char *)lpvArgv[3],
                        (int *)lpvArgv[4], (int *)lpvArgv[5], (void **)lpvArgv[6]);
-  sigrelse(SIGALRM);
+  UnBlockSig(SIGALRM);
   return status;
 }
 
@@ -659,9 +680,9 @@ int  IdlSendArg(int lArgc, void * * lpvArgv)
   short         length = (short)(int)lpvArgv[4];
   char          ndims  = (char)(int)lpvArgv[5];
   int status;
-  sighold(SIGALRM);
+  BlockSig(SIGALRM);
   status = SendArg((SOCKET)lpvArgv[0], idx, dtype, nargs, length, ndims, (int *)lpvArgv[6], (char *)lpvArgv[7]);
-  sigrelse(SIGALRM);
+  UnBlockSig(SIGALRM);
   return status;
 }
 #endif //vxWorks
