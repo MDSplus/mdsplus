@@ -35,7 +35,7 @@ public fun DIO2__store(as_is _nid, optional _method)
     private _INVALID = 10E20;
 
 
-	write(*, 'DIO2_init');
+	write(*, 'DIO2_store');
 
     _board_id=if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
 

@@ -32,10 +32,12 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 
 
 	write(*, 'DIO2HWInit', _board_id, _ext_clock, _rec_event, _synch_event);
-	return(1);
+
 
 /* Initialize Library if the first time */
-    if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1;));
+    _first = 0;
+    if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1; _first = 1;));
+
 
 
 /* Open device */
@@ -50,12 +52,11 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 		return(0);
 	}
 
-write(*, 'OPEN');
-
 /* Reset module */
-	DIO2->DIO2_Reset(val(_handle));
-
-write(*, 'RESET');
+ /*       if(_first) 
+		DIO2->DIO2_Reset(val(_handle));
+*/
+	_status = DIO2->DIO2_Cmd_TimingChannelDisarm(val(_handle),val(byte(255)));
 
 /* Set clock functions */
 	if(_ext_clock)
@@ -65,6 +66,9 @@ write(*, 'RESET');
 		
 	for(_c = 1; _c <= 8; _c++)
 		_status = DIO2->DIO2_CS_SetClockSource(val(_handle), val(_clock_source), val(byte(_c)), val(byte(_DIO2_CLOCK_SOURCE_RISING_EDGE)));
+
+write(*,'status',_status);
+
 	if(_status != 0)
 	{
 		if(_nid != 0)
@@ -77,7 +81,7 @@ write(*, 'RESET');
 /* Set recorder start event and arm recorder */
 	if(_rec_event != 0)
 	{
-		_status = DIO2->DIO2_ER_SetStartEvent(val(_handle), val(byte(_rec_event)), val(byte(_DIO2_START_EVENT_INT_DISABLE)));
+		_status = DIO2->DIO2_ER_SetStartEvent(val(_handle), val(byte(_rec_event)), val(byte(_DIO2_ER_START_EVENT_INT_DISABLE)));
 		if(_status != 0)
 		{
 			if(_nid != 0)
@@ -86,7 +90,7 @@ write(*, 'RESET');
 				write(*, "Error setting recorder start event in DIO2 device, board ID = "// _board_id);
 			return(0);
 		}
-		_status = DIO2->DIO2_CmdArmEventRecorder(val(_handle));
+		_status = DIO2->DIO2_Cmd_ArmEventRecorder(val(_handle));
 		if(_status != 0)
 		{
 			if(_nid != 0)
@@ -117,10 +121,12 @@ write(*, 'RESET');
 /* Configure Outputs: channel i: output, channel i + 1 corresponding trigger */
 	for(_c = 0; _c < 8; _c++)
 	{
+
 		_status = DIO2->DIO2_IO_SetIOConnectionOutput(val(_handle), val(byte(2 * _c + 1)), 
-			val(byte(_DIO2_CONNECTION_SIDE_FRONT)), val(byte(_DIO2_CONNECTION_SOURCE_TIMING)),
-			val(byte(_c + 1)), val(byte(_DIO2_CONNECTION_TERMINATION_OFF)), 
+			val(byte(_DIO2_IO_CONNECTION_SIDE_FRONT)), val(byte(_DIO2_IO_CONNECTION_SOURCE_TIMING)),
+			val(byte(_c + 1)), val(byte(_DIO2_IO_CONNECTION_TERMINATION_OFF)), 
 			val(byte(_DIO2_IO_INT_DISABLE)));  
+
 		if(_status != 0)
 		{
 			if(_nid != 0)
@@ -130,7 +136,7 @@ write(*, 'RESET');
 			return(0);
 		}
 		_status = DIO2->DIO2_IO_SetIOConnectionInput(val(_handle), val(byte(2 * _c + 2)),
-			val(byte(_DIO2_CONNECTION_SIDE_FRONT)), val(byte(_DIO2_CONNECTION_TERMINATION_OFF)));
+			val(byte(_DIO2_IO_CONNECTION_SIDE_FRONT)), val(byte(_DIO2_IO_CONNECTION_TERMINATION_OFF)));
 		if(_status != 0)
 		{
 			if(_nid != 0)
@@ -145,6 +151,8 @@ write(*, 'RESET');
 
 /* Close device */
 	DIO2->DIO2_Close(val(_handle));
+
+write(*, 'OK end initialized');
 
     return(1);
 }

@@ -2,18 +2,18 @@ public fun DIO2HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 										in _init_level_1, in _init_level_2, in _delay, in _duration, in _event)
 {
 
-	private _DIO2_CLOCK_SOURCE_INTERNAL	=	0x0;
-	private _DIO2_CLOCK_SOURCE_TIMING_HIGHWAY =	0x3;
-	private _DIO2_CLOCK_SOURCE_RISING_EDGE	=	0x0;
-	private _DIO2_ER_START_EVENT_INT_DISABLE	= 0x0;
-	private _DIO2_TC_NO_TRIGGER		=			0x00;
+	private _DIO2_CLOCK_SOURCE_INTERNAL	=		0x00;
+	private _DIO2_CLOCK_SOURCE_TIMING_HIGHWAY =		0x03;
+	private _DIO2_CLOCK_SOURCE_RISING_EDGE	=		0x00;
+	private _DIO2_ER_START_EVENT_INT_DISABLE	= 	0x00;
+	private _DIO2_TC_NO_TRIGGER		=		0x00;
 	private _DIO2_TC_IO_TRIGGER_RISING	=		0x01;
 	private _DIO2_TC_IO_TRIGGER_FALLING	=		0x02;
 	private _DIO2_TC_TIMING_EVENT		=		0x03;
 	private _DIO2_TC_GATE_DISABLED	=			0x00;
 	private _DIO2_TC_INTERRUPT_DISABLE	=		0x00;
 	private _DIO2_TC_SOURCE_FRONT_REAR	=		0x01;
-	private _DIO2_TC_CYCLIC			=			0x1;
+	private _DIO2_TC_CYCLIC			=		0x01;
 	private _DIO2_EC_GENERAL_TRIGGER =			0x00;
 	private _DIO2_EC_START_TRIGGER		=		0x01;
 	private _DIO2_EC_STOP_TRIGGER		=		0x02;
@@ -24,7 +24,6 @@ public fun DIO2HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 
 	write(*, 'DIO2HWSetPulseChan', _board_id, _channel, _trig_mode, _cyclic, _init_level_1,
 		_init_level_2, _delay, _duration, _event);
-	return(1);
 
 /* Initialize Library if the first time */
     if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1;));
@@ -45,9 +44,9 @@ public fun DIO2HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 
 
 /* Set trigger mode*/
-	if(_trig_mode == 0 || _trig_mode == 3) _hw_trig_mode = byte(_DIO_TC_TIMING_EVENT);
-	if(_trig_mode == 1) _hw_trig_mode = byte(_DIO_TC_IO_TRIGGER_RISING);
-	if(_trig_mode == 2) _hw_trig_mode = byte(_DIO_TC_IO_TRIGGER_FALLING);
+	if(_trig_mode == 0 || _trig_mode == 3) _hw_trig_mode = byte(_DIO2_TC_TIMING_EVENT);
+	if(_trig_mode == 1) _hw_trig_mode = byte(_DIO2_TC_IO_TRIGGER_RISING);
+	if(_trig_mode == 2) _hw_trig_mode = byte(_DIO2_TC_IO_TRIGGER_FALLING);
 
 	_status = DIO2->DIO2_TC_SetTrigger(val(_handle), val(byte(_channel + 1)), val(_hw_trig_mode), 
 		val(byte(_DIO2_TC_SOURCE_FRONT_REAR)), val(byte(2 * _channel + 2)));
@@ -81,7 +80,7 @@ public fun DIO2HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 		_mode = byte(0);
 
 
-	_status = DIO2->DIO2_TC_SetPhaseSetting(val(_handle), val(byte(_channel + 1)), val(_mode), 
+	_status = DIO2->DIO2_TC_SetPhaseSettings(val(_handle), val(byte(_channel + 1)), val(_mode), 
 		val(byte(_DIO2_TC_INTERRUPT_DISABLE)), _levels);
 	if(_status != 0)
 	{
@@ -94,10 +93,18 @@ public fun DIO2HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 
 
 /* Timing setting */
-	_delay_cycles = long(_delay / 1E-7 +1);
-	_duration_cycles = long(_duration / 1E-7 +1);
-	_cycles = [long(2),long(2),long(2),long(2)]; 
+/*	_delay_cycles = long(_delay / 1E-7 +1); Cesare */
+/*	_duration_cycles = long(_duration / 1E-7 + 1); Cesare */
 
+	_delay_cycles = long(_delay / 1E-7) - 2;
+	if( _delay_cycles < 0 ) _delay_cycles = 0;
+
+	_duration_cycles = long(_duration / 1E-7) - 1;
+	if( _duration_cycles < 0 ) _duration_cycles = 0;
+
+	_cycles = [long(0),long(0),long(0),long(0)]; 
+
+write(*, "Pulse cycle", _delay_cycles,_duration_cycles );
 
 	_status = DIO2->DIO2_TC_SetPhaseTiming(val(_handle), val(byte(_channel + 1)), _cycles, val(_delay_cycles), 
 		val(_duration_cycles)); 
@@ -114,7 +121,7 @@ public fun DIO2HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 /* Set event if trigger mode == event */
 	if(_trig_mode == 0)
 	{
-		_status = DIO2->DIO2_EC_SETEventDecoder(val(_handle), val(byte(_channel + 1)), val(byte(_event)),
+		_status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(byte(_channel + 1)), val(byte(_event)),
 			val(byte(1 << _channel)), val(byte(_DIO2_EC_GENERAL_TRIGGER))); 
 		if(_status != 0)
 		{

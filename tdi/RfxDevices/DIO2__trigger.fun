@@ -7,6 +7,9 @@ public fun DIO2__trigger(as_is _nid, optional _method)
     private _K_NODES_PER_CHANNEL = 16;
     private _N_CHANNEL_0= 7;
 
+    private _N_CHAN_FUNCTION = 1;
+    private _N_CHAN_TRIG_MODE = 2;
+
     private _INVALID = 10E20;
 
     _board_id=if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
@@ -32,13 +35,20 @@ public fun DIO2__trigger(as_is _nid, optional _method)
 
     for(_c = 0; _c < 8; _c++)
     {
-write(*, '***', _c);
+
 
         if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 +(_c *  _K_NODES_PER_CHANNEL))))
         { 
+		DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_TRIG_MODE,
+				['EVENT', 'RISING EDGE', 'FALLING EDGE', 'SOFTWARE'], [0,1,2,3], _trig_mode = 1);
+
+		if(_trig_mode == 3) 
+		{
+			write(*, 'Trigger on ', _c);
 			_channel_mask = _channel_mask | (1 << _c);
 		}
 	}
+    }
 
 
 

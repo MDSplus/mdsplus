@@ -2,7 +2,6 @@ public fun DIO2HWStartChan(in _nid, in _board_id, in _chan_mask, in _synch_event
 {
 
 	write(*, 'DIO2HWStartChan', _board_id, _chan_mask, _synch_event);
-	return(1);
 
 /* Initialize Library if the first time */
     if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1;));
@@ -20,7 +19,7 @@ public fun DIO2HWStartChan(in _nid, in _board_id, in _chan_mask, in _synch_event
 	}
 
 /*Arm Channel */
-	_status = DIO2->DIO2_Cmd_TimingChannelArm(val(_handle), val(byte(_channel_mask)));
+	_status = DIO2->DIO2_Cmd_TimingChannelArm(val(_handle), val(byte(_chan_mask)));
 	if(_status != 0)
 	{
 		if(_nid != 0)
@@ -33,7 +32,7 @@ public fun DIO2HWStartChan(in _nid, in _board_id, in _chan_mask, in _synch_event
 /*Start Channels if no synch event */
 	if(_synch_event == 0)
 	{
-		_status = DIO2->DIO2_Cmd_TimingChannelStart(val(_handle), val(byte(_channel_mask)));
+		_status = DIO2->DIO2_Cmd_TimingChannelStart(val(_handle), val(byte(_chan_mask)));
 		if(_status != 0)
 		{
 			if(_nid != 0)

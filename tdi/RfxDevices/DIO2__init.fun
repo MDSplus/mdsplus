@@ -46,7 +46,7 @@ public fun DIO2__init(as_is _nid, optional _method)
     }
 
 
-	write(*, _board_id);
+	write(*,"Board Id ", _board_id);
 
     DevNodeCvt(_nid, _N_SW_MODE, ['LOCAL', 'REMOTE'], [0,1], _remote = 0);
 	if(_remote != 0)
@@ -112,7 +112,7 @@ public fun DIO2__init(as_is _nid, optional _method)
 
     for(_c = 0; _c < 8; _c++)
     {
-write(*, '***', _c);
+write(*, 'Impostazione Canale ', _c+1);
 
         if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 +(_c *  _K_NODES_PER_CHANNEL))))
         { 
@@ -169,6 +169,7 @@ write(*, '***', _c);
 						_event =  TimingDecodeEvent(_ev_name);
 					else
 						_event = 0;
+write(*, "------> Event code ", _event);
 
 					if(_event == 0)
 					{
@@ -177,6 +178,9 @@ write(*, '***', _c);
 					}
 
 					_event_time = TimingGetEventTime(_event);
+
+write(*, "------> Event time ", _event_time);
+
 					if(_event_time == HUGE(0.) || _event_time == -HUGE(0.))
 					{
 /* If event time cannot be reconstructed (i.e. RFXTiming device is missing) rely on trigger time */
@@ -193,6 +197,7 @@ write(*, '***', _c);
 				}
 				else
 					_event = 0;
+
 				DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_CYCLIC,
 					['NO', 'YES'], [0,1], _cyclic = 0);
 				DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_INIT_LEVEL_1,
