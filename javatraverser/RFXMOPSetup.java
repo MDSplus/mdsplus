@@ -175,7 +175,7 @@ public class RFXMOPSetup extends DeviceSetup {
   }
   private void jbInit() throws Exception {
     border1 = BorderFactory.createBevelBorder(BevelBorder.LOWERED,Color.white,Color.white,new Color(99, 99, 99),new Color(142, 142, 142));
-    this.setWidth(671);
+    this.setWidth(830);
     this.setHeight(671);
     this.setDeviceType("RFXMOP");
     this.setDeviceProvider("150.178.3.10");
@@ -812,10 +812,10 @@ public class RFXMOPSetup extends DeviceSetup {
     deviceChoice1210.setUpdateIdentifier("");
     deviceChoice1210.setChoiceItems(new String[] {"INACTIVE", "QUIESCENT", "ACTIVE"});
     deviceChoice1210.setLabelString("Function:");
-    deviceChoice1210.setOffsetNid(107);
+    deviceChoice1210.setOffsetNid(111);
     deviceChoice1210.setChoiceFloatValues(null);
     deviceChoice1210.setChoiceIntValues(null);
-    deviceField26.setOffsetNid(106);
+    deviceField26.setOffsetNid(110);
     deviceField26.setTextOnly(true);
     deviceField26.setLabelString("Task:");
     deviceField26.setNumCols(2);
@@ -824,7 +824,7 @@ public class RFXMOPSetup extends DeviceSetup {
     deviceChoice1211.setUpdateIdentifier("");
     deviceChoice1211.setChoiceItems(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"});
     deviceChoice1211.setLabelString("Mode:");
-    deviceChoice1211.setOffsetNid(108);
+    deviceChoice1211.setOffsetNid(112);
     deviceChoice1211.setChoiceFloatValues(null);
     deviceChoice1211.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)5,(int)6,(int)7,(int)8,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15});
     flowLayout1111.setAlignment(FlowLayout.LEFT);
@@ -835,10 +835,10 @@ public class RFXMOPSetup extends DeviceSetup {
     deviceChoice1212.setUpdateIdentifier("");
     deviceChoice1212.setChoiceItems(new String[] {"INACTIVE", "QUIESCENT", "ACTIVE"});
     deviceChoice1212.setLabelString("Function:");
-    deviceChoice1212.setOffsetNid(107);
+    deviceChoice1212.setOffsetNid(115);
     deviceChoice1212.setChoiceFloatValues(null);
     deviceChoice1212.setChoiceIntValues(null);
-    deviceField27.setOffsetNid(106);
+    deviceField27.setOffsetNid(114);
     deviceField27.setTextOnly(true);
     deviceField27.setLabelString("Task:");
     deviceField27.setNumCols(2);
@@ -871,7 +871,6 @@ public class RFXMOPSetup extends DeviceSetup {
     riga27.add(deviceField26, null);
     riga27.add(deviceChoice1210, null);
     riga27.add(deviceChoice1211, null);
-    jPanel4.add(riga28, null);
     jPanel4.add(riga2, null);
     riga2.add(deviceField112, null);
     riga2.add(deviceChoice11113, null);
@@ -979,6 +978,9 @@ public class RFXMOPSetup extends DeviceSetup {
     riga26.add(deviceChoice128, null);
     riga26.add(deviceChoice129, null);
     jPanel4.add(riga27, null);
+
+    jPanel4.add(riga28, null);
+
   }
 
 }

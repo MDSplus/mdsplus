@@ -98,6 +98,7 @@ DispatchData.java\
 DispatchEditor.java\
 DisplayData.java\
 DisplayNci.java\
+DisplayTags.java\
 DoubleArray.java\
 DoubleData.java\
 Editor.java\
@@ -121,6 +122,7 @@ NodeBeanInfo.java\
 NodeDataPropertyEditor.java\
 NodeDisplayData.java\
 NodeDisplayNci.java\
+NodeDisplayTags.java\
 NodeEditor.java\
 NodeId.java\
 NodeInfo.java\
@@ -130,6 +132,7 @@ NodePropertyEditor.java\
 OctaArray.java\
 OctaData.java\
 ParameterData.java\
+ParameterEditor.java\
 PathData.java\
 ProcedureData.java\
 ProcedureEditor.java\

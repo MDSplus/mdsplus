@@ -284,7 +284,7 @@ class RFXTimingSetup extends DeviceSetup
                   Tree.context);
               String model = subtree.dataToString(conglom.getModel());
               //if (model.equals("\"MPBRecorder\""))
-              if (model.equals("\"DIO2\""))
+              if (model.equals("\"DIO2\"") && recorderNid == null)
                 recorderNid = deviceNids[idx];
               if (model.equals("\"RFXClock\"") || model.equals("\"RFXDClock\"") ||
                   model.equals("\"RFXGClock\"") || model.equals("\"RFXPulse\"") ||
