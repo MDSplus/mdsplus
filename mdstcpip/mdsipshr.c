@@ -161,8 +161,13 @@ int MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL ter
   unsigned char nargs;
   unsigned char idx = 0;
   int status = 1;
+#ifdef _UNIX_SERVER
   static char *putexpprefix = "TreePutRecord(";
   static char *argplace = "$,";
+#else
+  static char *putexpprefix = "MDSLIB->MDS$PUT(";
+  static char *argplace = "descr($),";
+#endif
   char *putexp;
   struct descrip putexparg;
   struct descrip exparg;
@@ -176,6 +181,7 @@ int MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL ter
   va_start(incrmtr, expression);
   nargs = a_count;
   arg = MakeDescrip(&putexparg,DTYPE_CSTRING,0,0,putexp);
+
   status = SendArg(sock, idx++, arg->dtype, nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
   free(putexp);
   arg = MakeDescrip(&exparg,DTYPE_CSTRING,0,0,node);
