@@ -257,7 +257,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  set_retlen(sizeof(count));
 		  count = 0;
 		  cng_node = node - swapshort((char *)&node->conglomerate_elt) + 1;
-		  for (count = 0; cng_node->conglomerate_elt > count; count++);
+		  for (count = 0; swapshort((char *)&cng_node->conglomerate_elt) > count; count++, cng_node++);
 		  *(int *) (itm->pointer) = count;
 		  break;
 	  case NciCHILDREN_NIDS:
