@@ -4,6 +4,7 @@ OBJECTS = \
 dummies.o \
 TreeAddNode.o \
 TreeFindNode.o \
+TreeFindTagWild.o \
 TreeGetDbi.o \
 TreeGetNci.o \
 TreeGetRecord.o \
