@@ -30,8 +30,7 @@
 #include "treeshrp.h"
 #include <ncidef.h>
 #include <config.h>
-#ifndef SRB
-asjhakhaskjadhk
+#ifdef SRB
 #define SRB_SOCKET 12345  /* this is the socket value used to indicate that
                              this file is an an SRB file.  Positive so that
                              other MDSPlus checks pass, but a value that 
