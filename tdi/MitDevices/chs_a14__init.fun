@@ -19,10 +19,7 @@ public fun chs_a14__init(as_is _nid, optional _method)
         ((_stp_polarity != 0) << 12) |
         ((_str_polarity != 0) << 13) |
         ((_clk_polarity != 0) << 14);
-  write(*,"_sr=",_sr);
   _settings = chs_vme_readwords(0x106e0000,128);
-  write(*,"settings were ",_settings);
-  _nsettings = [_settings[0:(33+_dignum*16)],word(_sr & 0xffff),_settings[(35+_dignum*16) : *]];
-  write(*,"settings will be ",_nsettings);
+  _settings = [_settings[0:(33+_dignum*16)],word(_sr & 0xffff),_settings[(35+_dignum*16) : *]];
   return(chs_vme_writewords(0x106e0000,_settings));
 }
