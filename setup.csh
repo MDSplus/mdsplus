@@ -73,7 +73,7 @@ if ( $?temp_sym_name ) then
   if ( $temp_sym_old_value == '' ) then
     setenv $temp_sym_name $temp_sym_value
   else
-    echo $temp_sym_old_value | grep -q $temp_sym_value
+    echo $temp_sym_old_value | grep $temp_sym_value > /dev/null
     if ( $status) then
       switch ($temp_direction)
       case '>':
