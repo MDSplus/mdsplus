@@ -8,20 +8,36 @@
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 int main( int argc, void **argv)
 {
+  int status;
   struct descrip ans;
-  long sock = ConnectToMds("198.125.176.13");
+  float val = 9876;
+  struct descrip vald = {DTYPE_FLOAT,0};
+  long sock = ConnectToMds("lost.pfc.mit.edu:9000");
   if (sock != -1)
   {
-    printf("status from MdsOpen = %d\n",MdsOpen(sock,"CMOD",0));
-    printf("status from MdsOpen = %d\n",MdsOpen(sock,"CMOD",0));
-    if (MdsValue(sock,"minval(\\magnetics::ip)",&ans,0) & 1)
+    printf("status from MdsOpen = %d\n",MdsOpen(sock,"main",-1));
+    ans.ptr = 0;
+    if (MdsValue(sock,"f_float(member)",&ans,0) & 1)
+    {
       printf("%g\n",*(float *)ans.ptr);
+      val = *(float *)ans.ptr;
+      val = val + 1.;
+    }
     else
       printf("%s\n",ans.ptr);
+    if (ans.ptr) 
+    {
+      free(ans.ptr);
+      ans.ptr = 0;
+    }
+    vald.ptr = (void *)&val;
+    status = MdsPut(sock,"member","$",&vald,0); 
+    if (!(status & 1)) printf("Error during put %d\n",status);
     if (MdsValue(sock,"42.0",&ans,0) & 1)
       printf("%g\n",*(float *)ans.ptr);
     else
       printf("%s\n",ans.ptr);
+    if (ans.ptr) free(ans.ptr);
   }
   return 1;
 }

@@ -132,7 +132,7 @@
 #define RECV_BUF_SIZE 32768
 #endif
 
-#if defined(__VMS) || defined(WIN32) || defined(__linux__)
+#if defined(__VMS) || defined(WIN32) || defined(__linux__) || defined(_NO_SIGHOLD)
 #define sighold(arg)
 #define sigrelse(arg)
 #endif
