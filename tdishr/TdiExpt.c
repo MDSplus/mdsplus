@@ -26,11 +26,16 @@ char	value[4096];
 static unsigned char    dtype = (unsigned char)DTYPE_T;
 int	retlen, status;
 struct dbi_itm lst[] = {{sizeof(value),DbiDEFAULT,0,0},{0,DbiEND_OF_LIST,0}};
+unsigned short len;
         lst[0].pointer = (unsigned char *)value;
         lst[0].return_length_address = &retlen;
 	status = TreeGetDbi(lst);
-	if (status & 1) status = MdsGet1DxS((unsigned short *)&retlen, &dtype, out_ptr);
-	if (status & 1) memcpy(out_ptr->pointer->pointer, value, retlen);
+	if (status & 1) 
+        { 
+          len = (unsigned short)retlen;
+          status = MdsGet1DxS(&len, &dtype, out_ptr);
+        }
+	if (status & 1) memcpy(out_ptr->pointer->pointer, value, len);
 	return status;
 }
 /*--------------------------------------------------------------
@@ -45,11 +50,16 @@ char	value[39-7];
 int	retlen, status;
 static unsigned char dtype = (unsigned char)DTYPE_T;
 struct dbi_itm lst[] = {{sizeof(value),DbiNAME,0,0},{0,DbiEND_OF_LIST,0}};
+unsigned short len;
         lst[0].pointer = (unsigned char *)value;
         lst[0].return_length_address = &retlen;
 	status = TreeGetDbi(lst);
-	if (status & 1) status = MdsGet1DxS((unsigned short *)&retlen, &dtype, out_ptr);
-	if (status & 1) memcpy(out_ptr->pointer->pointer, value, retlen);
+	if (status & 1)
+        {
+          len = (unsigned short)retlen;
+          status = MdsGet1DxS(&len, &dtype, out_ptr);
+        }
+	if (status & 1) memcpy(out_ptr->pointer->pointer, value, len);
 	return status;
 }
 /*--------------------------------------------------------------
@@ -64,11 +74,16 @@ int	value;
 int	retlen, status;
 static unsigned char dtype = (unsigned char)DTYPE_L;
 struct dbi_itm lst[] = {{sizeof(value),DbiSHOTID,0,0},{0,DbiEND_OF_LIST,0}};
+unsigned short len;
         lst[0].pointer = (unsigned char *)&value;
         lst[0].return_length_address = &retlen;
 	status = TreeGetDbi(lst);
-	if (status & 1) status = MdsGet1DxS((unsigned short *)&retlen, &dtype, out_ptr);
-	if (status & 1) *(int *)out_ptr->pointer->pointer = value;
+	if (status & 1)
+        {
+          len = (unsigned short)retlen;
+          status = MdsGet1DxS(&len, &dtype, out_ptr);
+	}
+        if (status & 1) *(int *)out_ptr->pointer->pointer = value;
 	return status;
 }
 /*--------------------------------------------------------------

@@ -253,6 +253,5 @@ unsigned char	omits[] = {DTYPE_PATH,0};
 		MdsFree1Dx(&tmp, NULL);
 	}
 	if (ctx) TreeRestoreContext(ctx);
-	if (status & 1) status = stat1;
 	return status;
 }
