@@ -1101,7 +1101,7 @@ static int   cdu_parse(		/* Return: status			*/
 	/*****************************************************************
 	 * main:
 	 *****************************************************************/
-void  main(
+int  main(
     int   argc
    ,char  *argv[]
    )
@@ -1115,4 +1115,5 @@ void  main(
 
     cdu_write(moduleName);
     exit(0);
+    return sts;
    }
