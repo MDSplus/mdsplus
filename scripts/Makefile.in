@@ -1,0 +1,30 @@
+SHELL=/bin/sh
+top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SCRIPTS = \
+	@MAKEBINDIR@unix_submit \
+	@MAKEBINDIR@synchronize_unix
+
+all : @MAKEBINDIR@ \
+	$(SCRIPTS)
+
+clean :
+	@ $(RM) $(SCRIPTS)
+
+install:
+	for script in $(SCRIPTS) ; do\
+	  $(INSTALL) -m 755 $${script} @bindir@;\
+	done
+
+@MAKEBINDIR@unix_submit : unix_submit
+	cp unix_submit @MAKEBINDIR@unix_submit
+
+@MAKEBINDIR@synchronize_unix : synchronize_unix
+	cp synchronize_unix @MAKEBINDIR@sychronize_unix
+
+@MAKEBINDIR@ :
+	mkdir @MAKEBINDIR@

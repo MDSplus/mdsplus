@@ -1,0 +1,11 @@
+if [ "x$MDS_LOGS" = "x" ]; then
+    MDS_LOGS="/var/log/mdsplus";
+fi
+if [ -d $MDS_LOGS -a -w $MDS_LOGS ]; then 
+  FILE=`basename $1 ".sh"`
+  LOCKFILE="$MDS_LOGS/$FILE.$2.log.lock"
+  lockfile -1 $LOCKFILE
+  rm -f $LOCKFILE
+else
+  echo "Directory MDS_LOGS ($MDS_LOGS) must exist and be writeable"
+fi

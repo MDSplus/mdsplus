@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+# file: /usr/local/mdsplus/bin/unix_submit.sh
+#
+# shell script to spawn a batch job for automatic intershot analysis.
+#
+# called by unix_submit.fun
+#
+# procedure:
+#  build a log file name from the base file name 
+#    (logs go to /var/mdsplus/log)
+#  insert a status line for this shot
+#  invoke the job with the shot number as $1 redirecting stdout and err
+#    to the end of the log file
+#  insert a done status line for this shot
+
+FILE=`basename $1 ".sh"`
+if [ "x$MDS_LOGS" = "x" ]; then
+    MDS_LOGS="/var/log/mdsplus";
+fi
+if [ -d "$MDS_LOGS" -a -w "$MDS_LOGS" ]; then 
+    LOG="$MDS_LOGS/$FILE.$2.log"
+    CUMULATIVE_LOG="$MDS_LOGS/$FILE.log"
+    lockfile "$LOG.lock"
+    echo ">>>>>>>>>>>>>>>>>>>>>   $2  >>>>>>>>>>>>>>>>>>>>" >> $LOG
+    date >> $LOG
+    /usr/bin/time -a -f "Elapsed %E\tUser %U\tSystem %S"  -o $LOG $1 $2 >>$LOG 2>&1
+    echo "<<<<<<<<<<<<<<<<<<<<<   $2  <<<<<<<<<<<<<<<<<<<<" >> $LOG
+    echo " " > $LOG
+    cat $LOG >> $CUMULATIVE_LOG
+    rm -f $LOG
+    rm -f "$LOG.lock"
+else
+  echo "Directory MDS_LOGS ($MDS_LOGS) must exist and be writeable"
+fi
