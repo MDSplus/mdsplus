@@ -428,9 +428,11 @@ SOCKET  ConnectToMds(char *host)
 {
   char hostpart[256] = {0};
   char portpart[256] = {0};
+  int i;
   sscanf(host,"%[^:]:%s",hostpart,portpart);
   if (strlen(portpart) == 0)
     strcpy(portpart,"mdsip");
+  for (i=strlen(hostpart)-1;i>=0 && hostpart[i]==32;hostpart[i]=0,i--);
   return ConnectToPort(hostpart,portpart);
 }
 
