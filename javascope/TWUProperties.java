@@ -16,6 +16,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2002/05/24 08:55:19  jgk
+ * A bit more robust when faced with HTTP servers that do not provide
+ * a mime_type.   Assume it to be text/html in these cases (like most
+ * browsers seem to do).
+ *
  * Revision 1.6  2002/05/07 11:24:31  jgk
  * Improvement to the Units() method.
  *
@@ -228,7 +233,7 @@ public class TWUProperties
     Minimum()
     {
         String mini = signalProps.getProperty("Signal.Minimum");
-        Double min  = new Double(0.0);
+        Double min  = new Double(Double.NaN);
         if (mini != null)
           min = Double.valueOf(mini);
         return min.doubleValue();
@@ -238,7 +243,7 @@ public class TWUProperties
     Maximum()
     {
         String maxi = signalProps.getProperty("Signal.Maximum");
-        Double max  = new Double(0.0);
+        Double max  = new Double(Double.NaN);
         if (maxi != null)
           max = Double.valueOf(maxi);
         return max.doubleValue();
@@ -251,7 +256,7 @@ public class TWUProperties
         int segments = LengthTotal()-1;
         if (Decrementing())
           segments *= -1;
-        return (segments==0 ? 0.0 : span/segments);
+        return (segments==0 ? Double.NaN : span/segments);
     }
     
     public String
