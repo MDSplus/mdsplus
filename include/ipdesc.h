@@ -22,6 +22,7 @@ typedef int SOCKET;
 #endif
 #define DTYPE_DOUBLE  11
 #define DTYPE_COMPLEX 12
+#define DTYPE_COMPLEX_DOUBLE 13
 #define DTYPE_CSTRING 14
 #define DTYPE_EVENT_NOTIFY   99
 #ifndef DTYPE_EVENT
