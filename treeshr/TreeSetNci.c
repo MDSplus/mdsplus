@@ -428,8 +428,7 @@ int TreePutNci(TREE_INFO *info, int node_num, NCI *nci, int flush)
 *****************************/
 
   else
-    *(info->edit->nci +
-      node_num - info->edit->first_in_mem) = *nci;
+    memcpy(info->edit->nci + (node_num - info->edit->first_in_mem),nci,sizeof(nci));
   return status;
 }
 
