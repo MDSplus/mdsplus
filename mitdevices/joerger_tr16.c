@@ -216,7 +216,7 @@ static int ReadChannel(char *name, int chan, int *samples_ptr, short *data_ptr)
   }
   else
   {
-    return_on_error(DevCamChk(CamFstopw(name,0,2,samples_to_read,data_ptr,16,0),&one,0));
+    return_on_error(DevCamChk(CamFStopw(name,0,2,samples_to_read,data_ptr,16,0),&one,0));
   }
   return 1;
 }
