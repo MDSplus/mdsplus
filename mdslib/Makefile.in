@@ -22,7 +22,8 @@ all: @MAKEBINDIR@ @MAKELIBDIR@ \
          @MAKELIBDIR@libMdsLib_client@SHARETYPE@ \
          @MAKELIBDIR@libMdsLib_client.a \
          @MAKELIBDIR@libMdsLib.a @MAKEBINDIR@mdslib_ctest  \
-         @MAKEBINDIR@mdslib_ftest  @MAKEBINDIR@mdslib_fremotetest
+         @MAKEBINDIR@mdslib_ftest  @MAKEBINDIR@mdslib_fremotetest \
+	 @MAKEBINDIR@dtype_test
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -35,6 +36,7 @@ clean:
 	- rm @MAKELIBDIR@libMdsLib.a
 	- rm @MAKEBINDIR@mdslib_?test
 	- rm @MAKEBINDIR@mdslib_?remotetest
+	- rm @MAKEBINDIR@dtype_test
 
 install:
 	if [ ! -d @libdir@ ] ; then \
@@ -76,4 +78,7 @@ MdsLib_client.o : MdsLib.c
 
 @MAKEBINDIR@mdslib_fremotetest : mdslib_fremotetest.f
 	$(FC) -o $@ $(FFLAGS) mdslib_fremotetest.f -L@MAKELIBDIR@ -lMdsLib $(LIBS)
+
+@MAKEBINDIR@dtype_test : dtype_test.c
+	$(CC) -o $@ $(CFLAGS) dtype_test.c -L@MAKELIBDIR@ -lMdsLib $(LIBS)
 
