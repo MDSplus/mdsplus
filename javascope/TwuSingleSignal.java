@@ -24,26 +24,36 @@ class TwuSingleSignal
     private TWUFetchOptions fetchOptions    = null  ;
     private String    source                = null  ;
     private float[]   data                  = null  ;
+    private boolean   dataAvailable         = false ;
     private boolean   propertiesAvailable   = false ;
     private long      shotOfTheProperties   = 0;
-    private boolean   dataAvailable         = false ;
     private boolean   fetchOptionsAvailable = false ;
     private boolean   error                 = false ;
     private Exception errorSource           = null  ;
     private boolean   fakeAbscissa          = false ;
     private boolean   isAbscissa            = false ;
 
-
+    // A constructor that is useful for main signals.
     public TwuSingleSignal (TwuDataProvider dp, String src)
     {
         provider = dp;
         source = src;
     }
 
+    // A constructor that derives an abscissa signal from a main signal.
     public TwuSingleSignal (TwuDataProvider dp, TwuSingleSignal prnt)
     {
         provider = dp;
         mainSignal = prnt ;
+        isAbscissa = true ;
+    }
+
+    // And a constructor that is mainly useful for testing purposes.
+    public TwuSingleSignal (TWUProperties fakedSignal)
+    {
+        provider = null;
+        properties = fakedSignal ;
+        mainSignal = null ;
         isAbscissa = true ;
     }
 
@@ -54,25 +64,31 @@ class TwuSingleSignal
     private void 
     DispatchConnectionEvent(ConnectionEvent e) 
     {
-        provider.DispatchConnectionEvent(e);
+        if (provider != null)
+          provider.DispatchConnectionEvent(e);
     }
     
     private ConnectionEvent 
     makeConnectionEvent(String info, int total_size, int current_size) 
     {
-        return  new ConnectionEvent (provider, info, total_size, current_size) ;
+        return
+            new ConnectionEvent( (provider != null)?provider:(Object)this, 
+                                 info, total_size, current_size) ;
     }
 
     private ConnectionEvent 
     makeConnectionEvent(String info ) 
     {
-        return  new ConnectionEvent (provider, info) ;
+        return
+            new ConnectionEvent( (provider != null)?provider:(Object)this, 
+                                 info) ;
     }
 
     private void 
     setErrorString(String errmsg)
     {
-        provider.setErrorstring(errmsg);
+        if (provider != null)
+          provider.setErrorstring(errmsg);
     }
     
 
@@ -149,8 +165,8 @@ class TwuSingleSignal
         throws Exception
     {
         checkForError( mainSignal ) ;
-        TWUProperties yprops = mainSignal.getTWUProperties();
-        int dim = yprops.Dimensions() ;
+        TWUProperties yprops = mainSignal!=null?mainSignal.getTWUProperties():null;
+        int dim = yprops!=null?yprops.Dimensions():-1 ;
 
         if (dim > 1 || dim < 0)
           throwError ("Not a 1-dimensional signal !");
@@ -274,10 +290,14 @@ class TwuSingleSignal
     private void doClip (TWUFetchOptions opt)
         throws IOException
     {
-        if (fakeAbscissa)
-          return ;
+//         if (fakeAbscissa)
+//           return ;
         // there *is* no abscissa so there aren't any properties
         // (and certainly no length)!
+        //
+        // Oh?
+        // What is then the purpose of this FakeTWUProperties object ?
+        // JG Krom 2003-10-28
 
         int length = getTWUProperties(shotOfTheProperties).LengthTotal();
         opt.clip (length);
@@ -294,11 +314,6 @@ class TwuSingleSignal
         if (fetchOptions.total <=  1 )
         {
             createScalarData ();
-            return ;
-        }
-        if ( (isAbscissa && fakeAbscissa) || properties.Equidistant() )
-        {
-            createEquidistantData(fetchOptions );
             return ;
         }
 
@@ -341,7 +356,7 @@ class TwuSingleSignal
         }
         if (bulk.error()) 
           setErrorString("Error reading Bulk Data");
-        
+
         DispatchConnectionEvent(makeConnectionEvent(null, 0, 0));
         return bulk.error() ? null : bulk.getBulkData() ;
     }
@@ -393,48 +408,6 @@ class TwuSingleSignal
         return name + " = " + min + " " + units ;
     }
 
-    private void
-    createEquidistantData(TWUFetchOptions opt)
-        throws Exception
-    {
-        float fullstep, start ;
-        int   total ;
-        // NB: it is assumed that opt is already clipped !
-
-        if (fakeAbscissa)
-        {
-            TWUProperties props = mainSignal.getTWUProperties() ;
-
-            total    = props.LengthTotal() - 1 ;
-            fullstep = opt.step  ;
-            start    = opt.start ;
-        }
-        else
-        {
-            float min, max, onestep ;
-            boolean up =    properties.Incrementing();
-            min   = (float) properties.Minimum();
-            max   = (float) properties.Maximum();
-            total =         properties.LengthTotal() - 1 ;
-            if (! up)
-            {
-                float tmp = min ; min = max ; max = tmp ;
-            }
-            onestep  = (max - min) / (float)total ;
-            fullstep = opt.step  * onestep ;
-            start    = opt.start * onestep + min ;
-        }
-        if (total <= 0)
-        {
-            throwError ("negative or zero sample quantity (*probably* an internal error) !");
-        }
-        data = new float [ opt.total ] ;
-        for (int i = 0 ; i < opt.total ; i++)
-        {
-            data[i] = start + i * fullstep ;
-        }
-        dataAvailable = true ;
-    }
 
     private void throwError (String msg)
         throws Exception
@@ -454,7 +427,7 @@ class TwuSingleSignal
     private void checkForError (TwuSingleSignal sig)
         throws Exception
     {
-        if (sig.error)
+        if (sig!= null && sig.error)
           throw( (Exception) sig.errorSource.fillInStackTrace() ) ;
     }
 
@@ -466,6 +439,167 @@ class TwuSingleSignal
         // this method exists only to improve consistency.
         // alternatively : e.printStackTrace() (prints to stderr),
         //  or if (debug) e.printStackTrace (System.out) ....
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    protected TWUFetchOptions
+    FindIndicesForXRange( long requestedShot,
+                          float x_start, float x_end, int n_points ) 
+        throws  Exception
+    {
+        final TWUProperties prop = this.getTWUProperties(requestedShot) ;
+        final int           len  = prop.LengthTotal() ;
+
+        if (prop.Dimensions() == 0 || len <= 1)
+          return new TWUFetchOptions(0,1,1);  // mainly used to pick scalars out.
+
+        int           ix_start = -1;
+        int           ix_end   = -1 ;
+        final double  min      = prop.Minimum();
+        final double  max      = prop.Maximum();
+
+        // do an iterated search to find the indices, 
+        // by reading parts of the abscissa values.
+
+        // ------------------------------------------------
+        //   minimum assumption here: data is a 1-to-1 map,
+        //    and it's either ascending or descending ;
+        //    there should be no peaks or valleys.
+        // ------------------------------------------------
+
+        final int POINTS_PER_REQUEST = 100 ;
+        int       k    = POINTS_PER_REQUEST;
+        final int step = (int) Math.ceil ( len / (float)k ) ;
+
+        TWUFetchOptions opt = new TWUFetchOptions ( 0, step, k );
+        float[] data = this.doFetch (opt);
+
+        boolean up = data [1] > data [0] ; 
+        k = data.length ; // may be less than POINTS_PER_REQUEST .
+
+        int i=0;
+        if (up)
+        {
+            while( i<k && data[i] <= x_start)
+              i++;
+        }
+        else
+        {
+            while( i<k && data[i] >= x_end)
+              i++;
+        }
+        if (i != 0)
+          i-- ;     
+        // correct the overshoot from the 'break'.
+        ix_start = i * step ; 
+        // temporary starting index. will zoom in to get the index of a closer match.
+
+        int j=k-1;
+        if (up)
+        {
+            while( j>i && data[j] >= x_end )
+              j--;
+        }
+        else
+        {
+            while( j>i && data[j] <= x_start )
+              j--;
+        }
+        
+        ix_end = j * step ;
+            
+        data = null ; 
+        // garbage-collect the now redundant data. 
+        // saves some memory [okay, now I'm optimizing... :)]
+        
+        ix_start = FindNonEquiIndex(up ? x_start : x_end,    this, ix_start, step, k);
+        ix_end   = FindNonEquiIndex(up ? x_end   : x_start,  this, ix_end,   step, k);
+
+
+        // extra checks:
+        if (ix_start < 0   )
+          ix_start = 0   ;
+        if (ix_end   >= len)
+          ix_end   = len ;
+        if (n_points < 2)
+          n_points = 2 ;
+
+        int range = ix_end - ix_start ; 
+        int finalStep  = range / (n_points - 1)  ; 
+        if (finalStep < 1) finalStep = 1 ;
+        int real_numsteps = (int) Math.floor ( (float)range / (float)finalStep );
+
+        int real_n_points = real_numsteps + 1 ; 
+        // I want the last point (ix_end) included.
+        // you should end up getting *at least* n_point points.
+        // NB: due to clipping, it *is* still possible that you do not get the very last point ....
+
+        return new TWUFetchOptions (ix_start, finalStep, real_n_points) ;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    static private int
+    FindNonEquiIndex(final float target, 
+                     final TwuSingleSignal xsig, 
+                     final int start, 
+                     final int laststep, 
+                     final int maxpts)
+    {
+        // This is an iterative routine : it 'zooms in' on (a subsampled part of the)
+        // abscissa data, until it finds the closest index. It looks between indices
+        // start and start+laststep, subsamples at most maxpts at a time =>
+        // next stepsize will be ceil (laststep/maxpts) ....
+        // 
+
+        int newstep = (int) Math.ceil (laststep / ((float)maxpts)) ;
+        if (newstep < 1)
+          newstep = 1 ;
+
+        int end = start + laststep ;
+        int num = (int) Math.ceil ( laststep / ((float)newstep) );
+
+        float [] data = xsig.doFetch (new TWUFetchOptions (start, newstep, num+1)); 
+
+        // the "num+1" is for reading the sample at the edge, for comparison 
+        // (we want to get the index for which the data is closest to the target value.)
+
+        int newnum = data.length ;
+
+        boolean up = data[1] > data[0] ;
+        int i=0;
+        if (up) 
+        {
+            while ( i<newnum && data[i]<=target )
+              i++;
+        }
+        else
+        {
+            while ( i<newnum && data[i]>=target )
+              i++;
+        }
+        if (i > 0)
+          i-- ; // correct overshoot.
+
+        int newstart = start+i*newstep ;
+        int ret ;
+        if (newstep > 1) 
+        {
+            data = null ; 
+            ret = FindNonEquiIndex (target, xsig, newstart, newstep, maxpts) ; 
+        }
+        else 
+        {
+            if (i >= newnum-1)
+              ret = newstart ;
+            else 
+            {
+                boolean closer = 
+                    ( Math.abs (data[i] - target) <= Math.abs (data[i+1] - target) ) ;
+                ret = closer ? newstart : newstart+1 ;
+            }
+        }
+        return ret ;
     }
 }
 
