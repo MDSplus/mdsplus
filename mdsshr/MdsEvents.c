@@ -1,11 +1,11 @@
 #ifdef vxWorks
-int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, void **eventid) {}
+int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
 int MDSEventCan(void *eventid) {}
 int MDSEvent(char *evname){}
 #else
 #ifdef WIN32
-int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, void **eventid) {}
-int MDSEventCan(void *eventid) {}
+int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
+int MDSEventCan(int eventid) {}
 int MDSEvent(char *evname){}
 #else
 
@@ -19,8 +19,13 @@ int MDSEvent(char *evname){}
 #include <signal.h>
 #include <pthread.h>
 #include <unistd.h>
-#include <ipdesc.h>
 #include <mdsdescrip.h>
+/* Just to avoid compiler complains */
+#undef DTYPE_DOUBLE
+#undef DTYPE_EVENT
+#undef DTYPE_FLOAT
+
+#include <ipdesc.h>
 
 /* MDsEvent: UNIX and Win32 implementation of MDS Events */
 
@@ -357,7 +362,7 @@ static void initializeLocalRemote()
     }
 }
 	    
-static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, void **eventid)
+static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 {
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
@@ -373,7 +378,7 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, void *
 }
 
 
-int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, void **eventid)
+int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 {
     int status;
     int i, j;    
@@ -414,7 +419,7 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, void **eventid)
     private_info[i].astprm = (void *)(void *)astprm;
 
 
-    *eventid = &private_info[i]; 
+    *eventid = i; 
 
     if(name_already_in_use)
 	return 1;
@@ -463,7 +468,7 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, void **eventid)
     return 1;
 }
 
-static int canEventRemote(void *eventid)
+static int canEventRemote(int eventid)
 {
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
@@ -478,7 +483,7 @@ static int canEventRemote(void *eventid)
 }
 
 	
-int MDSEventCan(void * eventid)
+int MDSEventCan(int eventid)
 {
     int i, j, k;
     struct PrivateEventInfo *evinfo;
@@ -487,7 +492,7 @@ int MDSEventCan(void * eventid)
     if(remote_id)
 	return canEventRemote(eventid);
 
-    evinfo = (struct PrivateEventInfo *) eventid;
+    evinfo = &private_info[eventid];
  
     if(!shared_info) return 0; /*must follow MdsEventAst */
 
