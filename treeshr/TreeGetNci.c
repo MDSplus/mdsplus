@@ -571,7 +571,6 @@ int TreeIsChild(NODE *node)
 char *_TreeGetPath(void *dbid, int nid_in)
 {
 	PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
-	NID nid = *(NID *)&nid;
 	NCI_ITM   itm_lst[] = {{0, NciPATH, 0, 0},{0, NciEND_OF_LIST, 0, 0}};
 	if (!(IS_OPEN(dblist)))
 		return NULL;
