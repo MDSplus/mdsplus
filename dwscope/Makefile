@@ -1,4 +1,6 @@
-CFLAGS = -c -I../include -g -D_NO_DXm
+include $(MAKE_OPTIONS)
+
+CFLAGS = $(MOTIF_CFLAGS)
 
 OBJECTS_DWSCOPE = \
 dwscope.o \
@@ -15,13 +17,13 @@ all : ../bin/dwscope \
 ../uid/dwpad.uid
 
 ../bin/dwscope : $(OBJECTS_DWSCOPE)
-	cc -o $@ $(OBJECTS_DWSCOPE)  -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr -lMrm -lXm -lXt -lX11
+	cc -o $@ $(OBJECTS_DWSCOPE)  -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr $(MOTIF_LIBS) $(X11_LIBS)
 
 ../uid/dwscope.uid : dwscope.uil
 	uil -o $@ dwscope.uil
 
 ../bin/dwpad : $(OBJECTS_DWPAD)
-	cc -o $@ $(OBJECTS_DWPAD) -L../shlib -lXmdsShr -lMrm -lXm -lXt -lX11
+	cc -o $@ $(OBJECTS_DWPAD) -L../shlib -lXmdsShr $(MOTIF_LIBS) $(X11_LIBS)
 
 ../uid/dwpad.uid : dwpad.uil
 	uil -o $@ dwpad.uil
@@ -38,6 +40,6 @@ depend : .depend
 
 .depend :
 	- rm .depend
-	find *.c -exec cc -I../include -M {} > .depend \;
+	find *.c -exec $(MAKE_DEPEND)
 
 include .depend
