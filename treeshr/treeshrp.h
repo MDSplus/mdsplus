@@ -8,6 +8,9 @@
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <treeshr_hooks.h>
+#ifndef _WIN32
+#include <sys/types.h>
+#endif
 
 #ifdef HAVE_VXWORKS_H
 #define _int64 long long
