@@ -15,7 +15,7 @@ public class jTraverser extends JFrame implements ActionListener
     JMenu file_m, edit_m, data_m, customize_m;
     JMenuItem open, close, quit;
     JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_task_b, add_text_b,
-	add_window_b, add_axis_b, add_device_b, add_child_b, delete_node_b, modify_tags_b,
+	add_window_b, add_axis_b, add_device_b, add_child_b, add_subtree_b, delete_node_b, modify_tags_b,
 	rename_node_b, turn_on_b, turn_off_b, display_data_b, display_nci_b, modify_data_b,
 	set_default_b, setup_device_b, do_action_b, outline_b, tree_b, copy_b, paste_b;
 	
@@ -85,6 +85,8 @@ public class jTraverser extends JFrame implements ActionListener
 	add_device_b.addActionListener(this);
 	curr_menu.add(add_child_b = new JMenuItem("Add Child"));
 	add_child_b.addActionListener(this);
+	curr_menu.add(add_subtree_b = new JMenuItem("Add Subtree"));
+	add_subtree_b.addActionListener(this);
 	curr_menu.add(delete_node_b = new JMenuItem("Delete Node"));
 	delete_node_b.addActionListener(this);
 	curr_menu.add(modify_tags_b = new JMenuItem("Modify tags"));
@@ -179,6 +181,7 @@ public void actionPerformed(ActionEvent e)
     if(source == (Object)add_window_b) tree.addNode(NodeInfo.USAGE_WINDOW);
     if(source == (Object)add_axis_b)tree.addNode(NodeInfo.USAGE_AXIS);
     if(source == (Object)add_child_b) tree.addNode(NodeInfo.USAGE_STRUCTURE);
+    if(source == (Object)add_subtree_b) tree.addSubtree();
     if(source == (Object)delete_node_b) tree.deleteNode();
     if(source == (Object)modify_tags_b) tree.modifyTags();
     if(source == (Object)rename_node_b) tree.renameNode();

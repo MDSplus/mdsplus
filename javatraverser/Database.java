@@ -56,6 +56,7 @@ public class Database implements RemoteTree{
     public native String[] getTags(NidData nid, int ctx);
     public native void renameNode(NidData nid, String name, int ctx) throws DatabaseException;
     public native NidData addNode(String name, int usage, int ctx) throws DatabaseException;
+    public native void setSubtree(NidData nid, int ctx) throws DatabaseException;
     public native NidData[] startDelete(NidData nid[], int ctx) throws DatabaseException;
     public native void executeDelete(int ctx) throws DatabaseException;
     public native NidData[] getSons(NidData nid, int ctx) throws DatabaseException;

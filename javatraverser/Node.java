@@ -48,6 +48,18 @@ public class Node
 	    
     }
     
+    public void setSubtree() throws DatabaseException, RemoteException
+    {
+        experiment.setSubtree(nid, Tree.context);
+	    try {
+	        info = experiment.getInfo(nid, Tree.context);
+	        tree_label = null;
+	    }catch(Exception e) 
+	    {
+	        System.out.println("Error getting info " + e);
+	    }
+    }
+    
     public void updateData() throws DatabaseException, RemoteException
     {
 	data = experiment.getData(nid, Tree.context);

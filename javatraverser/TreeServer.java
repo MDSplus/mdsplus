@@ -123,6 +123,11 @@ class TreeServer extends UnicastRemoteObject implements RemoteTree
         NidData nid = tree.addNode(name, usage, 0);
         return nid;
     }
+    public void setSubtree(NidData nid, int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        tree.setSubtree(nid, 0);
+    }
     public NidData[] startDelete(NidData nid[], int ctx)throws DatabaseException 
     {
         setContext(ctx);

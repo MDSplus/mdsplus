@@ -32,10 +32,10 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     public static int context;
     Node curr_node = null;
     static DefaultMutableTreeNode curr_tree_node; 
-    JDialog open_dialog = null, add_node_dialog = null;
+    JDialog open_dialog = null, add_node_dialog = null, add_subtree_dialog = null;
     JTextField open_exp, open_shot;
     JCheckBox open_readonly, open_edit;
-    JTextField add_node_name;
+    JTextField add_node_name, add_subtree_name;
     int add_node_usage;
     JDialog modify_tags_dialog;
     JDialog add_device_dialog;
@@ -52,7 +52,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 // Temporary, to vercome Java's bugs on inner classes
     JMenuItem open_b, close_b, quit_b; 
     JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_task_b, add_text_b,
-	add_window_b, add_axis_b, add_device_b, add_child_b, delete_node_b, modify_tags_b,
+	add_window_b, add_axis_b, add_device_b, add_child_b, add_subtree_b, delete_node_b, modify_tags_b,
 	rename_node_b;
     JButton ok_cb, add_node_ok;
     
@@ -576,6 +576,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		            add_device_b.addActionListener(this);
 		            pop.add(add_child_b = new JMenuItem("Add Child"));
 		            add_child_b.addActionListener(this);
+		            pop.add(add_subtree_b = new JMenuItem("Add Subtree"));
+		            add_subtree_b.addActionListener(this);
 		            pop.add(delete_node_b = new JMenuItem("Delete Node"));
 		            delete_node_b.addActionListener(this);
 		            pop.add(modify_tags_b = new JMenuItem("Modify tags"));
@@ -709,6 +711,49 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    add_node_dialog.setLocation(curr_origin);
 	    add_node_dialog.show();
     }		    
+    public void addSubtree()
+    {
+	    if(curr_node == null) return;
+	    if(add_subtree_dialog == null)
+	    {
+	        add_subtree_dialog = new JDialog(frame);
+	        add_subtree_dialog.setLocation(curr_origin);
+	        JPanel jp = new JPanel();
+	        jp.setLayout(new BorderLayout());
+	        JPanel jp1 = new JPanel();
+	        jp1.add(new JLabel("Node name: "));
+	        jp1.add(add_subtree_name = new JTextField(12));
+	        jp.add(jp1, "North");
+	        jp1 = new JPanel();
+	        JButton ok = new JButton("Ok");
+	        ok.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                Node node = addNode(NodeInfo.USAGE_STRUCTURE, "."+ add_subtree_name.getText().toUpperCase());
+                    try {
+                        node.setSubtree();
+                    }catch(Exception exc)
+                    {
+                        System.err.println("Error setting subtree: " + exc);
+                    }
+	                add_subtree_dialog.setVisible(false);
+	            }
+            });               
+	        jp1.add(ok);
+	        JButton cancel_b = new JButton("Cancel");
+	        cancel_b.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        add_subtree_dialog.setVisible(false); }} );
+	        jp1.add(cancel_b);
+	        jp.add(jp1, "South");
+	        add_subtree_dialog.getContentPane().add(jp);
+	        add_subtree_dialog.pack();
+	        add_subtree_dialog.show();
+	    }
+	    add_subtree_dialog.setTitle("Add Subtree to: "+ curr_node.getFullPath());
+	    add_subtree_dialog.setLocation(curr_origin);
+	    add_subtree_dialog.show();
+    }		    
 	    
  
     public void addDevice()
@@ -766,9 +811,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     }		    
 	 
 	    
-	public void addNode(int usage, String name)
+	public Node addNode(int usage, String name)
 	{
-	    addNode(usage, name, curr_node);
+	    return addNode(usage, name, curr_node);
 	}
 	  
     
@@ -1131,6 +1176,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	if(jb == (Object)add_axis_b) addNode(NodeInfo.USAGE_AXIS);
 	if(jb == (Object)add_node_ok) addNode();
 	if(jb == (Object)add_child_b) addNode(NodeInfo.USAGE_STRUCTURE);
+	if(jb == (Object)add_subtree_b) addSubtree();
 	if(jb == (Object)add_device_b) addDevice();
 	if(jb == (Object)delete_node_b) deleteNode();
 	if(jb == (Object)modify_tags_b) modifyTags();

@@ -24,6 +24,7 @@ public interface RemoteTree extends Remote {
     public void setTags(NidData nid, String tags[], int ctx) throws RemoteException, DatabaseException;
     public String[] getTags(NidData nid, int ctx) throws RemoteException, DatabaseException;
     public void renameNode(NidData nid, String name, int ctx) throws RemoteException, DatabaseException;
+    public void setSubtree(NidData nid,  int ctx) throws RemoteException, DatabaseException;
     public NidData addNode(String name, int usage, int ctx) throws RemoteException, DatabaseException;
     public NidData[] startDelete(NidData nid[], int ctx) throws RemoteException, DatabaseException;
     public void executeDelete(int ctx) throws RemoteException, DatabaseException;
