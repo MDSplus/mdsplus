@@ -52,6 +52,7 @@ int b2408___store(struct descriptor *niddsc, InStoreStruct *setup)
   static DESCRIPTOR(expr, "BUILD_SIGNAL(BUILD_WITH_UNITS(SLOPE_OF($)*$*$VALUE+$,\"Seconds\"), $, *)");
   static DESCRIPTOR(int_clock_expr, "BUILD_SIGNAL(BUILD_WITH_UNITS(1E-6*$*$VALUE+$,\"Seconds\"), $, *)");
   static float multipliers[] = {1, 10, 100, 1000};
+  static int zero = 0;
   int output_nid = setup->head_nid+B2408_N_TIMEBASE;
   StatusReg status_reg;
 
@@ -65,7 +66,7 @@ int b2408___store(struct descriptor *niddsc, InStoreStruct *setup)
     if (npts > 0) {
       int ok,tries;
       for (ok=0,tries=0;tries < 100 && !ok; tries++) {
-        pio(16,0,0,16);
+        pio(16,0,&zero,16);
         stop(2,0,npts,buffer);
         ok = 1;
         for (j=1;j<npts;j++) {
