@@ -70,7 +70,14 @@ public fun DIO2__store(as_is _nid, optional _method)
 	}
 
   	_status = DevPut(_nid, _N_REC_EVENTS, _rec_events);
- 	DevPut(_nid, _N_REC_TIMES, _rec_times);
+
+    	_rec_start_ev_name = if_error(data(DevNodeRef(_nid, _N_REC_START_EV)), '');
+	if(_rec_start_ev_name != '')
+		_rec_start_time = TimingGetEventTime(_rec_start_ev_name);
+	else
+		_rec_start_time = 0;
+
+ 	DevPut(_nid, _N_REC_TIMES, _rec_times + _rec_start_time);
     for(_c = 0; _c < 8; _c++)
     {
         if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 +(_c *  _K_NODES_PER_CHANNEL))))

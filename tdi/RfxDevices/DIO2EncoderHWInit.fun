@@ -81,7 +81,7 @@ write(*, '----> ', _events);
 	for(_c = 0; _c < 16; _c++)
 	{
 		_status = DIO2->DIO2_IO_SetIOConnectionInput(val(_handle), val(byte(_c + 1)),
-			val(byte(_DIO2_IO_CONNECTION_SIDE_FRONT)), val(byte(_DIO2_IO_CONNECTION_TERMINATION_OFF)));
+			val(byte(_DIO2_IO_CONNECTION_SIDE_FRONT)), val(byte(_DIO2_IO_CONNECTION_TERMINATION_ON)));
 	}
 		
 	for(_c = 0; _c < 16; _c++)
