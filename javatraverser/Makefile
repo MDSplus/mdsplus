@@ -42,8 +42,6 @@ javatraverser : ../java ../java/classes ../java/classes/jTraverser.class
 clean :
 	rm $(CLASSES)
 	rm *.o
-	rm ../shlib/libJavaData.$(SHARE_TYPE)
-	rm ../shlib/libJavaTrav.$(SHARE_TYPE)
 
 .depend :
 	echo no depend needed
