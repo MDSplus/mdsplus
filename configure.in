@@ -35,7 +35,6 @@ FFLAGS="$FFLAGS -I\$(top_srcdir)/include"
 uiddir="/usr/lib/X11/uid"
 MAKESHLIBDIR="\$(top_srcdir)/lib/"
 EXPORTS_FILE=""
-MOTIF_STATIC_EXTRA_LIBS=""
 
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
@@ -105,7 +104,6 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LINKSHARED="-shared -rpath \\\$\$LD_LIBRARY_PATH:\$(exec_prefix)/lib";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
-       MOTIF_STATIC_EXTRA_LIBS="-lXp -lXext"
        FEXECLIBDIR="-L";
        SHARETYPE=".so";;
 *aix*) CFLAGS="$CFLAGS";
@@ -174,6 +172,7 @@ AC_CHECK_LIB(c,socket,LIBSOCKET="",AC_CHECK_LIB(socket,socket,LIBSOCKET="-lsocke
 AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
 AC_CHECK_LIB(pthread,pthread_kill,LIBPTHREAD="-lpthread",AC_CHECK_LIB(cma,pthread_create,LIBPTHREAD="-lcma",LIBPTHREAD=""))
 AC_CHECK_LIB(exc,__Ots_CSpecificHandler,LIBPTHREAD="$LIBPTHREAD -lexc")
+AC_CHECK_LIB(pthread,pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL_NP))
 
 if test "$enable_d3d" = yes -o "$enable_d3d" = on ; then
   AC_MSG_CHECKING(...D3DLIB_PATH...)
@@ -183,7 +182,7 @@ if test "$enable_d3d" = yes -o "$enable_d3d" = on ; then
 		 D3D_PACKAGE="\$(D3D_PACKAGE)";
 		 D3DLIB="-L$D3DLIB_PATH";
                  AC_MSG_RESULT($D3DLIB)
-  else
+  elseXpGetDocumentData
 		 AC_MSG_RESULT(libd3.a or libd3$SHARETYPE not found in $D3DLIB_PATH)
                  exit 0
   fi
@@ -193,15 +192,15 @@ AC_MSG_CHECKING(if we are supposed to use static motif libraries)
 if test "$enable_staticmotif" = yes -o "$enable_d3d" = on ; then
   AC_MSG_RESULT(yes)
   MOTIF_LDARC=$LDARC;
-  MOTIF_LDSHARE="$LDSHARE $MOTIF_STATIC_EXTRA_LIBS";
+  MOTIF_LDSHARE="$LDSHARE";
   MOTIF_LD_LDARC=$LD_LDARC;
-  MOTIF_LD_LDSHARE="$LD_LDSHARE $MOTIF_STATIC_EXTRA_LIBS";
+  MOTIF_LDXpGetDocumentData_LDSHARE="$LD_LDSHARE";
 else
   AC_MSG_RESULT(no)
   MOTIF_LDARC="";
   MOTIF_LDSHARE="";
   MOTIF_LD_LDARC="";
-  MOTIF_LD_LDSHARE="";
+  MOTIXpGetDocumentDataF_LD_LDSHARE="";
 fi
   
 dnl Checks for header files.
@@ -326,6 +325,12 @@ then
 else
 	X_CFLAGS=-D_NO_DXm
 fi
+LDFLAGS="$X_LIBS"
+AC_CHECK_LIB(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")
+LDFLAGS="$X_LIBS $LIBXEXT"
+AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
+LDFLAGS=""
+
 AC_DEFINE_UNQUOTED(TARGET_OS,${target_os})
 AC_DEFINE_UNQUOTED(TARGET_CPU,${target_cpu})
 AC_DEFINE_UNQUOTED(TARGET_VENDOR,${target_vendor})
@@ -367,6 +372,8 @@ AC_SUBST(LIBNSL)
 AC_SUBST(LIBPTHREAD)
 AC_SUBST(LIBRESOLV)
 AC_SUBST(LIBSOCKET)
+AC_SUBST(LIBXP)
+AC_SUBST(LIBXEXT)
 
 AC_SUBST(EXPORTS_FILE)
 AC_SUBST(LINKSHARED)
