@@ -410,7 +410,7 @@ public class DeviceTable extends DeviceComponent
             public Class getColumnClass(int c) {
               if (!binary)
                 return String.class;
-              if ((rowNames.length > 0 || displayRowNumber) && c == 0)
+              if ((rowNames != null && (rowNames.length > 0 || displayRowNumber)) && c == 0)
                 return String.class;
               return Boolean.class;
             }

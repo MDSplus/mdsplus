@@ -181,7 +181,8 @@ WithErrorData.java\
 WithUnitsData.java\
 jTraverser.java\
 DecompileTree.java\
-CompileTree.java 
+CompileTree.java \
+LoadsPulse.java
 
 GIFS = DeviceApply.gif \
        DeviceChoice.gif \
