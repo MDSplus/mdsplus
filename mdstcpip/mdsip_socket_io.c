@@ -228,7 +228,9 @@ fd_set FdActive() { return fdactive; }
 
 void SetCloseOnExec(SOCKET sock)
 {
+#ifndef _WIN32
   fcntl(sock,F_SETFD,FD_CLOEXEC);
+#endif
 }
 
 SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *), void (*DoMessage_in)(SOCKET s))
