@@ -301,7 +301,6 @@ static SOCKET ConnectToPort(char *host, char *service)
         if (!(m->h.status & 1))
         {
           printf("MDSplus ConnectToPort: Access denied\n");
-          free(m);
           DisconnectFromMds(s);
           return INVALID_SOCKET;
         }
@@ -343,7 +342,7 @@ int HostToIp(char *host, int *addr, short *port)
     return 1;
   }
 #ifndef vxWorks
-  hp = gethostbyname(host);
+  hp = gethostbyname(hostpart);
 #endif
 #ifdef _WIN32
   if ((hp == NULL) && (WSAGetLastError() == WSANOTINITIALISED))
@@ -352,12 +351,12 @@ int HostToIp(char *host, int *addr, short *port)
     WORD wVersionRequested;
     wVersionRequested = MAKEWORD(1,1);
     WSAStartup(wVersionRequested,&wsaData);
-    hp = gethostbyname(host);
+    hp = gethostbyname(hostpart);
   }
 #endif
   if (hp == NULL)
   {
-    *addr = inet_addr(host);
+    *addr = inet_addr(hostpart);
 #ifndef vxWorks
     if (*addr != 0xffffffff)
       hp = gethostbyaddr((void *) addr, (int) sizeof(* addr), AF_INET);
@@ -384,7 +383,7 @@ int HostToIp(char *host, int *addr, short *port)
   {
     sp = getservbyname(portpart,"tcp");
     if (sp != NULL)
-      *port = sp->s_port;
+      *port = ntohs(sp->s_port);
     else
     {
       char *portc = getenv(portpart);
