@@ -2795,7 +2795,8 @@ class ServerDialog extends JDialog implements ActionListener
                                              "TSDataProvider",
                                              "AsdexDataProvider",
                                              "ASCIIDataProvider",
-                                             "T2DataProvider"};
+                                             "T2DataProvider",
+                                             "MdsContinuousDataProvider"};
 
 
     ServerDialog(JFrame _dw, String title)
