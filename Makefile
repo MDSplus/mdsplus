@@ -20,11 +20,16 @@ all :
           echo Making $${dir};\
 	  if (test -d $${dir}) then \
 	    cd $${dir};\
-            if (test -f $(DEPEND)) then \
-	      make;\
+            if (test -f Makefile.`uname`) then \
+              make='make -f Makefile.'`uname`;\
             else\
-              make DEPEND=/dev/null $(DEPEND);\
-              make;\
+              make=make;\
+            fi;\
+            if (test -f $(DEPEND)) then \
+	      $$make;\
+            else\
+              $$make DEPEND=/dev/null $(DEPEND);\
+              $$make;\
             fi;\
 	    cd $$cdir;\
           fi;\
