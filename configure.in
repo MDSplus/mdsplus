@@ -33,6 +33,8 @@ IDL_BIN_SUF=""
 CFLAGS="$CFLAGS -I\$(top_srcdir)/include"
 FFLAGS="$FFLAGS -I\$(top_srcdir)/include"
 uiddir="/usr/lib/X11/uid"
+MAKESHLIBDIR="\$(top_srcdir)/lib/"
+EXPORTS_FILE=""
 
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
@@ -46,6 +48,7 @@ hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
        FOR_LDFLAGS="-v -L/usr/lib/pa1.1 -lcl -lf";
        LIBPATH="SHLIB_PATH";
        IDL_BIN_SUF="hp";
+       MAKESHARED="\$(LD) -o \$@ $LINKSHARED \$(OBJECTS) \$(LIBS)";
        SHARETYPE=".sl";;
 mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        FFLAGS="$FFLAGS -D_BSD_SIGNALS -KPIC";
@@ -56,6 +59,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LINKSHARED="-shared -rpath \$(exec_prefix)/lib";
        FOR_LDFLAGS="";
        LIBPATH="LD_LIBRARY_PATH";
+       MAKESHARED="\$(LD) -o \$@ $LINKSHARED \$(OBJECTS) \$(LIBS)";
        SHARETYPE=".so";;
 sparc-sun-solaris2*)  
        if test $CC = gcc; then
@@ -77,6 +81,7 @@ sparc-sun-solaris2*)
        FFLAGS="$FFLAGS -PIC";
        IDL_BIN_SUF="solaris2.sparc"
        LIBPATH="LD_LIBRARY_PATH";
+       MAKESHARED="\$(LD) -o \$@ $LINKSHARED \$(OBJECTS) \$(LIBS)";
        SHARETYPE=".so";;
 alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FFLAGS="$FFLAGS -pthread";
@@ -88,6 +93,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LINKSHARED="-shared -rpath \\\$\$LD_LIBRARY_PATH:\$(exec_prefix)/lib";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="-lfor";
+       MAKESHARED="\$(LD) -o \$@ $LINKSHARED \$(OBJECTS) \$(LIBS)";
        SHARETYPE=".so";;
 *linux*) CFLAGS="$CFLAGS -fpic";
        FFLAGS="$FFLAGS -fpic";
@@ -98,19 +104,24 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LINKSHARED="-shared ";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
+       MAKESHARED="\$(LD) -o \$@ $LINKSHARED \$(OBJECTS) \$(LIBS)";
        SHARETYPE=".so";;
 *aix*) CFLAGS="$CFLAGS";
        FFLAGS="$FFLAGS";
        LDSHARE="";
        LDARC="";
        FOR_LDFLAGS="";
-       LINKSHARED="";
+       LINKSHARED="-bnoentry -bM:SRE -bE:\$(EXPORTS)";
        LIBPATH="LIBPATH";
+       MAKESHLIBDIR="\$(top_srcdir)/shlib/";
+       EXPORTS_FILE="\$(EXPORTS)";
+       MAKESHARED="\$(LD) -o \$@ $LINKSHARED \$(OBJECTS) \$(LIBS)";
        SHARETYPE=".a";;
 *windows*)     CFLAGS="$CFLAGS";
        LDSHARE="";
        LDARC="";
        LINKSHARED="";
+       MAKESHARED="";
        SHARETYPE="";;
 *)     CFLAGS="$CFLAGS";
        FFLAGS="$FFLAGS";
@@ -141,6 +152,12 @@ MAKELIBDIR="\$(top_srcdir)/lib/"
 MAKEUIDDIR="\$(top_srcdir)/uid/"
 MAKEETCDIR="\$(top_srcdir)/etc/"
 MAKEJAVADIR="\$(top_srcdir)/java/"
+if test "$MAKELIBDIR"="$MAKESHLIBDIR"; then
+	MAKESHLIBDIR_RULE=""
+else
+	MAKESHLIBDIR_RULE="$MAKESHLIBDIR : ; mkdir $MAKESHLIBDIR"
+fi
+
 
 dnl Checks for libraries.
 
@@ -309,6 +326,9 @@ AC_SUBST(JDK_CFLAGS)
 AC_SUBST(LIBPATH)
 AC_SUBST(MAKEBINDIR)
 AC_SUBST(MAKELIBDIR)
+AC_SUBST(MAKESHLIBDIR)
+AC_SUBST(MAKESHLIBDIR_RULE)
+AC_SUBST(MAKESHARED)
 AC_SUBST(MAKEUIDDIR)
 AC_SUBST(uiddir)
 AC_SUBST(MAKEETCDIR)
@@ -326,6 +346,7 @@ AC_SUBST(LIBPTHREAD)
 AC_SUBST(LIBRESOLV)
 AC_SUBST(LIBSOCKET)
 
+AC_SUBST(EXPORTS_FILE)
 AC_SUBST(LINKSHARED)
 AC_SUBST(SHARETYPE)
 AC_SUBST(SYBASE_INC)

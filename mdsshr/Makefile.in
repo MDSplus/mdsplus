@@ -28,25 +28,28 @@ SOURCES = \
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = MdsShr.export
 
-all : @MAKELIBDIR@ @MAKELIBDIR@libMdsShr@SHARETYPE@ @MAKELIBDIR@libMdsShr.a
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsShr@SHARETYPE@ @MAKELIBDIR@libMdsShr.a
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean :
 	rm *.o
-	rm @MAKELIBDIR@libMdsShr.*
+	rm @MAKELIBDIR@libMdsShr.a
+	rm @MAKESHLIBDIR@libMdsShr@SHARETYPE@
 
 install:
 	if [ ! -d @libdir@ ] ; then \
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 644  @MAKELIBDIR@libMdsShr.a @libdir@
-	$(INSTALL) -m 755  @MAKELIBDIR@libMdsShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsShr@SHARETYPE@ @libdir@
+	if test @SHARETYPE@ != .a ; then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libMdsShr.a @libdir@;
+	fi;
 
-@MAKELIBDIR@libMdsShr@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
+@MAKESHLIBDIR@libMdsShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
+	@MAKESHARED@
 
 @MAKELIBDIR@libMdsShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
@@ -54,3 +57,8 @@ install:
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
+
+@MAKESHLIBDIR_RULE@
+
+MdsShr.export: MdsShr.def
+	sed -e /LIBRARY/\;/\;/d MdsShr.def > $@
