@@ -205,8 +205,10 @@ clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) $(IO_OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) @MAKESHLIBDIR@libio@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@libio.a
+	@ $(RM) @MAKELIBDIR@libMitDevices.a
+	@ $(RM) @MAKESHLIBDIR@libMitDevices@SHARETYPE@
+	@ $(RM)	@MAKESHLIBDIR@libMIT\$$DEVICES@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@
 
 install:
 	for uid in $(UIDS) ; do\
@@ -216,9 +218,11 @@ install:
 	        mkdir @libdir@; \
 	        chmod 755 @libdir@; \
 	fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libio@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevices@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@ @libdir@
+	ln -sf libMitDevices@SHARETYPE@ @libdir@libMIT\$$DEVICES@SHARETYPE@
 	if (test @SHARETYPE@ != .a) then \
-	  $(INSTALL) -m 644  @MAKELIBDIR@libio.a @libdir@; \
+	  $(INSTALL) -m 644  @MAKELIBDIR@libMitDevices.a @libdir@; \
 	fi;
 
 a12_gen.c : a12.gen
@@ -624,6 +628,7 @@ u_of_m_spect_gen.c : u_of_m_spect.gen
 
 @MAKESHLIBDIR@libMitDevices@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS)  -L$(top_srcdir)/lib -lCamShr -lXmdsShr -lGenDevShr -lMdsdcl -lTdiShr -lTreeShr -lMdsShr $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS)
+	ln -sf libMitDevices@SHARETYPE@ @MAKESHLIBDIR@libMIT\$$DEVICES@SHARETYPE@
 
 @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@ : mitdevices_msg.o
 	$(LD) -o $@ @LINKSHARED@ mitdevices_msg.o
