@@ -50,7 +50,7 @@ math : ../shlib ../shlib/libMdsMath.$(SHARE_TYPE)
 	mkdir ../shlib
 
 clean :
-	- rm *.o
+	- rm *.o .depend
 	- rm ../shlib/libMdsMath.$(SHARE_TYPE)
 
 
