@@ -473,6 +473,13 @@ int MdsSetCompression(SOCKET sock, int level)
   return old_level;
 }
 
+static char *ServerPortname = 0;
+static int ClientAddr = 0;
+void MdsSetServerPortname(char *portname){  ServerPortname = portname; }
+void MdsSetClientAddr(int addr) { ClientAddr = addr; }
+char *MdsGetServerPortname() {return ServerPortname;}
+int MdsGetClientAddr() {return ClientAddr;}
+
 #ifndef vxWorks
 
 int  IdlMdsClose(int lArgc, void * * lpvArgv)

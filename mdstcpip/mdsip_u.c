@@ -69,14 +69,13 @@ static int NO_SPAWN = 1;
 static int CommandParsed = 0;
 static int ContextSwitching = 0;
 static char *hostfile;
-static char *portname;
+static char *Portname;
 static short port;
 static char mode;
 static int flags;
 static int MaxCompressionLevel = 9;
 #define IS_SERVICE 0x200
 
-static void DefineTdi(char *execute_string, char dtype, short length, void *value);
 static void ParseCommand(int argc, char **argv,char **portname, short *port, char **hostfile, char *mode, int *flags, int *compression_level);
 extern int TdiSaveContext();
 extern int TdiRestoreContext();
@@ -96,6 +95,9 @@ static void ExecuteMessage(Client *c);
 static void SendResponse(Client *c,int status, struct descriptor *xd);
 static int DoMessage(Client *c);
 static void ConvertFloat(int nbytes, int in_type, char in_length, char *in_ptr, int out_type, char out_length, char *out_ptr);
+static void PrintHelp(char *option);
+static void SetMode(char modein, char *mode);
+
 extern Message *GetMdsMsg(int sock, int *status);
 extern int SendMdsMsg(int sock, Message *m, int oob);
 void GetErrorText(int status, struct descriptor_xd *xd);
@@ -118,7 +120,7 @@ static char *ServiceName()
 	if (name[0] == 0)
 	{
 	  strcpy(name,"MDSIP_");
-	  strcat(name,portname);
+	  strcat(name,Portname);
 	}
 	return name;
 }
@@ -127,9 +129,9 @@ static void RedirectOutput(int pid)
 {
 	char file[120];
 	if (pid)
-	  sprintf(file,"C:\\MDSIP_%s[%d].log",portname,pid);
+	  sprintf(file,"C:\\MDSIP_%s[%d].log",Portname,pid);
 	else
-	  sprintf(file,"C:\\MDSIP_%s.log",portname);
+	  sprintf(file,"C:\\MDSIP_%s.log",Portname);
 	freopen(file,"a",stdout);
 	freopen(file,"a",stderr);
 }
@@ -164,7 +166,7 @@ static int SpawnWorker(SOCKET sock)
   static STARTUPINFO startupinfo;
   PROCESS_INFORMATION pinfo;
   char cmd[1024];
-  sprintf(cmd,"mdsip_service -p %s -c %d -W %d %d",portname,MaxCompressionLevel,GetCurrentProcessId(),sock);
+  sprintf(cmd,"mdsip_service -p %s -c %d -W %d %d",Portname,MaxCompressionLevel,GetCurrentProcessId(),sock);
   startupinfo.cb = sizeof(startupinfo);
   status = CreateProcess(_pgmptr,cmd,NULL,NULL,FALSE,0,NULL,NULL,&startupinfo, &pinfo);
   CloseHandle(pinfo.hProcess);
@@ -215,7 +217,7 @@ static void InitializeService()
 int main( int argc, char **argv) 
 {
   CommandParsed = 1;
-  ParseCommand(argc, argv, &portname, &port, &hostfile, &mode, &flags, &MaxCompressionLevel);
+  ParseCommand(argc, argv, &Portname, &port, &hostfile, &mode, &flags, &MaxCompressionLevel);
   if (flags & IS_SERVICE)
   {
     SERVICE_TABLE_ENTRY srvcTable[] = {{ServiceName(),(LPSERVICE_MAIN_FUNCTION)ServiceMain},{NULL,NULL}};
@@ -253,8 +255,8 @@ static void InstallService(int typesrv)
   if (hSCManager)
   {
     SC_HANDLE hService;
-    char *file = (char *)malloc(strlen(_pgmptr)+strlen(portname)+strlen(hostfile)+100);
-    sprintf(file,"%s -p %s %s -h \"%s\" -F %d",_pgmptr,portname,
+    char *file = (char *)malloc(strlen(_pgmptr)+strlen(Portname)+strlen(hostfile)+100);
+    sprintf(file,"%s -p %s %s -h \"%s\" -F %d",_pgmptr,Portname,
           (typesrv == 0) ? "" : ((typesrv == 1) ? "-m" : "-s"),hostfile, flags | IS_SERVICE);
     hService = CreateService(hSCManager, ServiceName(), ServiceName(), 0, SERVICE_WIN32_OWN_PROCESS,
             SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, file, NULL, NULL, NULL, NULL, NULL);
@@ -314,7 +316,15 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
       pwd = getpwnam(user);
     }
     if (pwd)
+    {
+       int homelen = strlen(pwd->pw_dir); 
+       char *cmd = strcpy(malloc(homelen+10),"HOME=");
+       char *mds_path = getenv("MDS_PATH");
        status = setuid(pwd->pw_uid);
+       strcat(cmd,pwd->pw_dir);
+       putenv(cmd);
+       /* DO NOT FREE CMD --- putenv requires it to stay allocated */
+    }
     MdsFree(luser);
     ok = (status == 0) ? 1 : 2;
   }
@@ -332,7 +342,8 @@ int main(int argc, char **argv)
   /* DebugBreak(); */
   FD_ZERO(&fdactive);
   if (!CommandParsed) 
-    ParseCommand(argc, argv, &portname, &port, &hostfile, &mode, &flags, &MaxCompressionLevel);
+    ParseCommand(argc, argv, &Portname, &port, &hostfile, &mode, &flags, &MaxCompressionLevel);
+  MdsSetServerPortname(Portname);
   if (IsService)
     InitializeService();
   else
@@ -949,8 +960,7 @@ static void ExecuteMessage(Client *c)
     }
     c->descrip[c->nargs++] = (struct descriptor *)(xd = (struct descriptor_xd *)memcpy(malloc(sizeof(emptyxd)),&emptyxd,sizeof(emptyxd)));
     c->descrip[c->nargs++] = MdsEND_ARG;
-    DefineTdi("public $REMADDR=$",DTYPE_LONG,4,&c->addr);
-    DefineTdi("public $PORTNAME=$",DTYPE_T,(short)strlen(portname),portname);
+    MdsSetClientAddr(c->addr);
     ResetErrors();
     SetCompressionLevel(c->compression_level);
     status = LibCallg(&c->nargs, TdiExecute);
@@ -1231,23 +1241,6 @@ void GetErrorText(int status, struct descriptor_xd *xd)
       MdsCopyDxXd((struct descriptor *)&unknown,xd);
   }
 }
-
-static void DefineTdi(char *execute_string, char dtype, short length, void *value)
-{
-  struct descriptor cmd = {0, DTYPE_T, CLASS_S, 0};
-  struct descriptor val = {0, 0, CLASS_S, 0};
-  EMPTYXD(emptyxd);
-  cmd.length = strlen(execute_string);
-  cmd.pointer = execute_string;
-  val.length = length;
-  val.dtype = dtype;
-  val.pointer = value;
-  TdiExecute(&cmd,&val,&emptyxd MDS_END_ARG);
-  MdsFree1Dx(&emptyxd,NULL);
-}
-
-static void PrintHelp(char *option);
-static void SetMode(char modein, char *mode);
 
 static short ParsePort(char *name, char **portname)
 {
