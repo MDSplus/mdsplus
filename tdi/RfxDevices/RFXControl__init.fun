@@ -86,6 +86,13 @@ write(*, 'RFXControl init');
 		abort();
 	}
 
+	write(*, 'Trigger 1 time: ', _trig1_time);
+	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackTrig1Time', float(_trig1_time));
+	write(*, 'Trigger 2 time: ', _trig2_time);
+	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackTrig2Time', float(_trig2_time));
+
+
+
 	_control_idx = data(DevNodeRef(_nid, _N_INIT_CONTROL));
 	if(_control_idx < 0 || _control_idx > _MAX_CONTROLS)
 	{
