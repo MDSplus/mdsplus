@@ -9,7 +9,7 @@ all : .depend
 t : t.c ../shlib/libMdsIpShr.sl
 	cc -o t t.c -L../shlib -lMdsIpShr
 
-../shlib/libMdsIpShr.so : $(OBJECTS) ../shlib
+../shlib/libMdsIpShr.sl : $(OBJECTS) ../shlib
 	$(LD) -o $@ -b $(OBJECTS) -lc
 
 ../shlib :
