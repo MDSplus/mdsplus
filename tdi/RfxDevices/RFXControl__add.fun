@@ -1,7 +1,7 @@
 public fun RFXControl__add(in _path, out _nidout)
 {
 write(*,'RFXControl__add'); 
-    DevAddStart(_path, 'RFXControl', 831 + 341, _nidout);
+    DevAddStart(_path, 'RFXControl', 833 + 341, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -466,6 +466,9 @@ write(*,'RFXControl__add');
     DevAddNode(_path // ':PAR170_NAME', 'TEXT', "SimulinkSelector", *, _nid);
     DevAddNode(_path // ':PAR170_VAL', 'NUMERIC', [0,0,0,0,0,0,0,0], *, _nid);
 
+/* Simulink model */
+	DevAddNode(_path // ':MODEL_1', 'NUMERIC', *, *, _nid);
+	DevAddNode(_path // ':MODEL_2', 'NUMERIC', *, *, _nid);
 
     DevAddEnd();
 }
