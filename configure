@@ -4536,6 +4536,8 @@ cat >> confdefs.h <<EOF
 EOF
 
 
+LIBS="$LIBPTHREAD $LIBS"
+
 
 
 
