@@ -296,6 +296,7 @@ static int RegisterJob(int *msgid, int *retstatus,void (*ast)(), void *astparam,
     oldj = 1;
   else
     j = (Job *)malloc(sizeof(Job));
+  j->in_use=1;
   j->retstatus = retstatus;
   j->ast = ast;
   j->astparam = astparam;
