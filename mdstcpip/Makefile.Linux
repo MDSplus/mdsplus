@@ -12,7 +12,7 @@ mdstcpip : ../bin ../shlib ../bin/mdsiptest ../bin/mdsip
 	cc -o $@ $(CFLAGS) t.c -L../shlib -lMdsIpShr $(SOCKET_LIB)
 
 ../bin/mdsip : mdsip_u.c
-	cc -o $@ $(CFLAGS) mdsip_u.c -L../shlib -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(SOCKET_LIB)
+	cc -o $@ $(CFLAGS) mdsip_u.c -L../shlib -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(SOCKET_LIB) $(DLD)
 
 ../shlib/libMdsIpShr.$(SHARE_TYPE) : $(OBJECTS) 
 	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) $(SOCKET_LIB)
