@@ -32,7 +32,7 @@ int   TclAddTag()		/* Return: status			*/
         sts = TreeAddTag(nid,dsc_tagnam.dscA_pointer);
     if (!(sts & 1))
        {
-        mdsMsg(sts,"Error adding tag %s",dsc_tagnam.dscA_pointer);
+        MdsMsg(sts,"Error adding tag %s",dsc_tagnam.dscA_pointer);
 #ifdef vms
         lib$signal(sts,0);
 #endif

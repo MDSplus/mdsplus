@@ -19,18 +19,15 @@
 ***********************************************************************/
 
 
+extern int   debugCdu;		/* set to 1 for extra printout		*/
+
+
 static FILE  *fp;
 static char  moduleName[32];
 
 static char  fmt_header1[] = "\
-#ifdef __vms\n\
-#define vms  1\n\
-#endif\n\
-#ifdef vms\n\
-#include        \"PPPL_RES:[mdsplus.cdu]clisysdef.h\"\n\
-#else\n\
-#include        \"mdsplus/cdu/clisysdef.h\"\n\
-#endif\n\n\
+#include        \"clisysdef.h\"\n\
+\n\
 \t\t/* Filename: %s\n\
 \t\t * created by %s :  %s\n\
 \t\t ********************************************************/\n\n";
@@ -52,6 +49,8 @@ static char  fmt_qualifiers2[] = "       %c\"%s\",0x%04X,%s,%s,%s,0\n";
 static char  fmt_value1[] = "static struct cduValue  %svalue = {\n";
 static char  fmt_value2[] = "        0x%04X,%s,%s, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0\n";
 
+static char  fmt_protoUserType1[] =
+            "static struct cduKeyword  %s[%d];\t/* Prototype only\t*/\n";
 static char  fmt_userType1[] =
             "static struct cduKeyword  %s[%d] = {\t/* \"Type\" def\t*/\n";
 static char  fmt_userType2[] = "       %c\"%s\",0x%04X,%s,%s,%s,0\n";
@@ -128,7 +127,9 @@ static void  writeValue(
     fprintf(fp,fmt_value2,val->valL_flags,textDefault,
         val->valA_userType ? val->valA_userType : "0");
     fprintf(fp,"       };\n");
-    printf("writeValue: %s\n",parentPrefix);
+
+    if (debugCdu)
+        printf("writeValue: %s\n",parentPrefix);
    }
 
 
@@ -149,7 +150,8 @@ static void  writeUserType(
 
     if (!okToWriteUserType(name))
        {
-        printf("--> userType %s already being written\n",name);
+        if (debugCdu)
+            printf("--> userType %s already being written\n",name);
         return;
        }
     userTypeCnt++;
@@ -189,6 +191,8 @@ static void  writeUserType(
        }
     fprintf(fp,"       ,0\t\t\t\t/* null entry at end\t*/\n");
     fprintf(fp,"       };\n");
+    markUserTypeWritten(name);
+    return;
    }
 
 
@@ -210,7 +214,8 @@ static void  writeParams(
     if (!v->vrbA_parametersTop)
         return;
 
-    printf("writeParams: called for verb %s\n",parentPrefix);
+    if (debugCdu)
+        printf("writeParams: called for verb %s\n",parentPrefix);
     for (icnt=0 ; prm=findParamByIdx(v,icnt+1) ; icnt++)
        {
         sprintf(prefix,"%sp%02d",parentPrefix,icnt+1);
@@ -263,7 +268,8 @@ static void  writeQualifiers(
     if (!v->vrbA_qualifiersTop)
         return;
 
-    printf("writeQualifiers: called for %s\n",parentPrefix);
+    if (debugCdu)
+        printf("writeQualifiers: called for %s\n",parentPrefix);
     for (icnt=0 ; qual=findQualifierByIdx(v,icnt) ; icnt++)
        {
         sprintf(prefix,"%sq%02d",parentPrefix,icnt+1);
@@ -322,7 +328,9 @@ static void  writeSyntax(
         printf("*ERR* failed to find syntax '%s'\n",name);
         exit(0);
        }
-    printf("writeSyntax:  name=%s\n",name);
+
+    if (debugCdu)
+        printf("writeSyntax:  name=%s\n",name);
 
     sprintf(prefix,"%s_",name);	/* prefix for parameters and qualifiers	*/
     writeExtern(v->vrbA_routine);
@@ -352,6 +360,26 @@ static void  writeSyntax(
 
 
 
+	/***************************************************************
+	 * writeProtoUserType:
+	 * Write prototype struct when necessary ...
+	 ***************************************************************/
+int   writeProtoUserType(	/* Returns: status			*/
+    char  name[]		/* <r> userType name			*/
+   )
+   {
+    int   i,k;
+    int   icnt;
+
+    for (icnt=0 ; findKeywordByIdx(name,icnt) ; icnt++)
+        ;
+    fprintf(fp,fmt_protoUserType1,name,icnt+1);
+			/* add 1 to account for null element at end	*/
+    return(1);
+   }
+
+
+
 	/****************************************************************
 	 * cdu_write:
 	 ****************************************************************/
@@ -370,8 +398,17 @@ void  cdu_write(
     struct verblist  *v;
     struct keyword  *key;
 
+    if (!findVerbByIdx(0))
+       {
+        dasmsg(0,"No verbs defined:  output not written");
+        return;
+       }
+
+		/*=======================================================
+		 * Open output file and write it ...
+		 *======================================================*/
     strcpy(moduleName,(_module && _module[0]) ? _module : "cdu_file");
-    sprintf(filename,"%s.hh",moduleName);
+    sprintf(filename,"%s.c",moduleName);
     u2l(filename,0);
     fp = fopen(filename,"w");
     if (fp)
@@ -383,9 +420,9 @@ void  cdu_write(
        }
     fprintf(fp,fmt_header1,filename,pgmname(),cdatime(0));
 
-		/*======================================================
+		/*------------------------------------------------------
 		 * Write support structs first ...
-		 *=====================================================*/
+		 *-----------------------------------------------------*/
     for (icnt=0 ; v=findVerbByIdx(icnt) ; icnt++)
        {
         sprintf(prefix,"v%02d",icnt+1);
@@ -395,9 +432,9 @@ void  cdu_write(
         writeQualifiers(prefix,v);
        }
 
-		/*======================================================
+		/*------------------------------------------------------
 		 * write verb list ...
-		 *=====================================================*/
+		 *-----------------------------------------------------*/
     fprintf(fp,"\n");
     fprintf(fp,fmt_verbs1,moduleName,icnt+1);
 
@@ -425,29 +462,30 @@ void  cdu_write(
     fprintf(fp,"       };\n");
 
 		/*======================================================
-		 * Write all TYPEs (keywords only) ...
+		 * Display all TYPEs (keywords only) ...
+		 * Display all SYNTAXes ...
 		 *=====================================================*/
-    for (i=0 ; userType=findUserTypeByIdx(i) ; i++)
+    if (interactive())
        {
-        printf("\nUSER TYPE = %s\n",userType);
-        for (k=0 ; key=findKeywordByIdx(userType,i) ; i++)
-            printf("    %s\n",key->keyA_name);
+        for (i=0 ; userType=findUserTypeByIdx(i) ; i++)
+           {
+            printf("\nUSER TYPE = %s\n",userType);
+            for (k=0 ; key=findKeywordByIdx(userType,i) ; i++)
+                printf("    %s\n",key->keyA_name);
+           }
+        if (i > 0)
+            printf("\n");
+
+        for (i=0 ; v=findSyntaxByIdx(i) ; i++)
+           {
+            if (!i)
+                printf("\nSYNTAX list\n");
+
+            printf("    %s\n",v->vrbA_name);
+           }
+        if (i > 0)
+            printf("\n");
+
        }
-    if (i > 0)
-        printf("\n");
-
-		/*======================================================
-		 * Write all SYNTAXes ...
-		 *=====================================================*/
-    for (i=0 ; v=findSyntaxByIdx(i) ; i++)
-       {
-        if (!i)
-            printf("\nSYNTAX list\n");
-
-        printf("    %s\n",v->vrbA_name);
-       }
-    if (i > 0)
-        printf("\n");
-
     return;
    }

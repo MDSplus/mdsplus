@@ -9,6 +9,9 @@ OBJFILES =		\
 
 all:	libCdu.a  cdu
 
+clean:
+	rm *.o *.a
+
 libCdu.a:	libCdu.a( $(OBJFILES) )
 		ranlib libCdu.a
 

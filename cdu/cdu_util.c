@@ -17,7 +17,10 @@
 ***********************************************************************/
 
 
-#define MAX_USERTYPES    100
+#define MAX_USERTYPES      100
+#define CDU_WRITTEN        0x01
+#define CDU_REQUESTED      0x02
+#define CDU_PROTO_WRITTEN  0x04
 
 struct userTypeList  {
         char  *name;				/* Name of userType	*/
@@ -65,7 +68,7 @@ void  *findUserTypeByIdx(
 	 * getUserTypeIdx:
 	 * Return addr of "userType" struct.  Create if necessary.
 	 ***************************************************************/
-int   okToWriteUserType(	/* Return: 1(T) or 0(F)			*/
+int   userTypeHasBeenWritten(	/* Return: 1(T) or 0(F)			*/
     char  uname[]		/* <r> name of "type"			*/
    )
    {
@@ -78,10 +81,59 @@ int   okToWriteUserType(	/* Return: 1(T) or 0(F)			*/
         ;
     if (i == userTypeCnt)
         return(0);
-    if (userTypeList[i].hasBeenWritten)
+    return((userTypeList[i].hasBeenWritten & CDU_WRITTEN) ? 1 : 0);
+   }
+
+
+int   okToWriteUserType(	/* Return: 1(T) or 0(F)			*/
+    char  uname[]		/* <r> name of "type"			*/
+   )
+   {
+    int   i,k;
+    int   hbw;			/* "hasBeenWritten" value		*/
+    char  name[32];
+    struct userType  *u;
+
+    l2u(name,uname);		/* make upper-case version of name	*/
+    for (i=0 ; i<userTypeCnt && strcmp(name,userTypeList[i].name) ; i++)
+        ;
+    if (i == userTypeCnt)
         return(0);
-    userTypeList[i].hasBeenWritten = 1;
+
+    hbw = userTypeList[i].hasBeenWritten;
+    if (hbw)
+       {		/* Struct has been requested or actually written */
+        if (!(hbw & (CDU_WRITTEN | CDU_PROTO_WRITTEN)))
+           {
+            if (writeProtoUserType(name) & 1)
+                userTypeList[i].hasBeenWritten |= CDU_PROTO_WRITTEN;
+           }
+        return(0);			/* either requested or written	*/
+       }
+
+    userTypeList[i].hasBeenWritten = CDU_REQUESTED;
     return(1);
+   }
+
+
+void  markUserTypeWritten(	/* Returns:  void			*/
+    char  uname[]		/* <r> name of "type"			*/
+   )
+   {
+    int   i,k;
+    char  name[32];
+    struct userType  *u;
+
+    l2u(name,uname);		/* make upper-case version of name	*/
+    for (i=0 ; i<userTypeCnt && strcmp(name,userTypeList[i].name) ; i++)
+        ;
+    if (i == userTypeCnt)
+       {
+        fprintf(stderr,"\n**INTERNAL ERROR**  User Type not found\n\n");
+        exit(0);
+       }
+    userTypeList[i].hasBeenWritten = CDU_WRITTEN;
+    return;
    }
 
 

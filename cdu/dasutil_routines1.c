@@ -259,6 +259,21 @@ extern int  sys_nerr;
 #endif
 
 
+	/***************************************************************
+	 * msgText:
+	 * Dummy routine, simulates routine in DASUTIL lib on VAX
+	 ***************************************************************/
+static char  *msgText(sts)
+int   sts;
+   {
+    static char  text[33];
+
+    sprintf(text,"Error code %d (0x%04X)",sts,sts);
+    return(text);
+   }
+
+
+
 	/****************************************************************
 	 * dasmsg:
 	 * Print message in standardized format, including a translation
@@ -273,7 +288,6 @@ int   dasmsg(			/* Return: status from user		*/
    {
     char  txt[240];
     int   i;
-    char  *getmsg();
     va_list  ap;		/* argument ptr				*/
     static int   nerr;
 
@@ -297,25 +311,10 @@ int   dasmsg(			/* Return: status from user		*/
 
     if (sts)
         fprintf(stderr,"\r%s:  %s\n    sts=%.70s\n",pgmname(),txt,
-            (sts>0 && sts<nerr) ? sys_errlist[sts] : getmsg(sts));
+            (sts>0 && sts<nerr) ? sys_errlist[sts] : msgText(sts));
     else
         fprintf(stderr,"\r%s:  %s\n",pgmname(),txt);
     return(sts);
-   }
-
-
-
-	/***************************************************************
-	 * getmsg:
-	 * Dummy routine, simulates routine in DASUTIL lib on VAX
-	 ***************************************************************/
-char  *getmsg(sts)
-int   sts;
-   {
-    static char  text[33];
-
-    sprintf(text,"Error code %d (0x%04X)",sts,sts);
-    return(text);
    }
 #include        <stdio.h>
 #include        "dasutil.h"
@@ -675,7 +674,7 @@ int   str_free1_dx(			/* Return: status		*/
 
     if (!is_ddescr(dsc))
        {
-        fprintf(stderr,"str_free_dx: *WARN* non-dynamic string\n");
+        fprintf(stderr,"str_free1_dx: *WARN* non-dynamic string\n");
 #ifdef vms
         lib$signal(SS$_DEBUG);
 #endif

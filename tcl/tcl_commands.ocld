@@ -1,0 +1,318 @@
+Module tcl_commands
+Define verb abort												       ! 83 
+        parameter p1,prompt="What",value(required,type=abort_type)						       ! 83 
+define type abort_type												       ! 83 
+        keyword SERVER,syntax=abort_server									       ! 83 
+define syntax abort_server											       ! 83 
+        Routine TclDispatch_abort_server									       ! 83
+        parameter p1,prompt="What",value(required,type=stop_type)						       ! 83 
+        parameter p2,label=server,prompt="Server",value(required,list)						       ! 83 
+define verb add
+        parameter p1,prompt="What",value(required,type=ADD_TYPE)
+define type ADD_TYPE
+	keyword NODE,syntax=add_node
+	keyword TAG,syntax=add_tag
+Define syntax add_node
+	Routine TclAddNode
+        parameter p1,prompt="What",value(required,type=ADD_TYPE)
+        parameter p2,label=NODE,prompt="Node",value(required)
+	qualifier model,value(required)										       ! 53 
+	qualifier usage,default,value(default=ANY,type=USAGE_TYPE)						       ! 53 
+        qualifier qualifiers,value(required)									       ! 53 
+define type USAGE_TYPE												       ! 53 
+	keyword ANY,value(default=0,type=$NUMBER)								       ! 53 
+	keyword STRUCTURE,value(default=1,type=$NUMBER)								       ! 56 
+	keyword ACTION,value(default=2,type=$NUMBER)								       ! 53 
+	keyword DEVICE,value(default=3,type=$NUMBER)								       ! 53 
+	keyword DISPATCH,value(default=4,type=$NUMBER)								       ! 53 
+	keyword NUMERIC,value(default=5,type=$NUMBER)								       ! 53 
+	keyword SIGNAL,value(default=6,type=$NUMBER)								       ! 53 
+	keyword TASK,value(default=7,type=$NUMBER)								       ! 53 
+	keyword TEXT,value(default=8,type=$NUMBER)								       ! 53 
+	keyword WINDOW,value(default=9,type=$NUMBER)								       ! 53 
+	keyword AXIS,value(default=10,type=$NUMBER)								       ! 53 
+	keyword SUBTREE,value(default=11,type=$NUMBER)								       ! 56 
+	keyword COMPOUND_DATA,value(default=12,type=$NUMBER)							       ! 60 
+Define syntax add_tag
+	Routine TclAddTag
+        parameter p1,prompt="What",value(required,type=ADD_TYPE)
+        parameter p2,LABEL=NODE,prompt="Node",value(required)
+        parameter p3,LABEL=TAG,prompt="Tag",value(required)
+define verb clean												       ! 53 
+        Routine TclCleanDatafile										       ! 62
+	parameter p1, LABEL=FILE,Prompt="File",value(required)							       ! 67 
+	qualifier shotid,default,nonnegatable,value(default="-1",type=$number)					       ! 67 
+	qualifier override											       ! 94 
+define verb close												       ! 53 
+	Routine TclClose											       ! 53
+	parameter p1, LABEL=FILE										       ! 53 
+	qualifier shotid,default,nonnegatable,value(default="-1",type=$number)					       ! 53 
+	qualifier all												       ! 109
+define verb compress												       ! 66 
+	Routine TclCompressDatafile										       ! 66
+	parameter p1, LABEL=FILE,Prompt="File",value(required)							       ! 67 
+	qualifier shotid,default,nonnegatable,value(default="-1",type=$number)					       ! 67 
+	qualifier override											       ! 94 
+define verb create												       ! 53 
+	parameter p1,prompt="What",value(required,type=CREATE_TYPE)						       ! 53 
+define type CREATE_TYPE												       ! 53 
+	keyword PULSE,syntax=create_pulse									       ! 53 
+define syntax create_pulse											       ! 53 
+	Routine TclCreatePulse										       ! 53
+	parameter p1,prompt="What",value(required,type=CREATE_TYPE)						       ! 53 
+        parameter p2,label=shot,prompt="Shot number",value(required)						       ! 93 
+        qualifier include,value(required,list)									       ! 69 
+        qualifier exclude,value(required,list)									       ! 69 
+        qualifier conditional											       ! 78 
+        qualifier nomain,nonnegatable										       ! 69 
+        qualifier dispatch											       ! 90 
+Define verb DECOMPILE												       ! 59 
+	Routine TclDecompile											       ! 59
+	parameter p1, LABEL=PATH, VALUE(required)								       ! 59 
+define type DEFINE_TYPE												       ! 90 
+        keyword SERVER,syntax=define_server									       ! 90 
+Define verb DEFINE												       ! 90 
+        parameter p1,prompt="WHAT",value(required,type=DEFINE_TYPE)						       ! 90 
+define syntax define_server											       ! 90 
+        Routine TclCreatePulse_server										       ! 90
+        parameter p1,prompt="WHAT",value(required,type=DEFINE_TYPE)						       ! 90 
+        parameter p2,value(required)										       ! 90 
+        qualifier tree,value(required,list)									       ! 91 
+define verb delete												       ! 53 
+        parameter p1,prompt="What",value(required,type=DELETE_TYPE)						       ! 53 
+define type DELETE_TYPE												       ! 53 
+        keyword NODE,syntax=delete_node										       ! 53 
+	keyword PULSE,syntax=delete_pulse									       ! 58 
+define syntax delete_node											       ! 53 
+	Routine TclDeleteNode											       ! 53
+        parameter p1,prompt="What",value(required,type=DELETE_TYPE)						       ! 53 
+	parameter p2,prompt="Node",label=node,value(required,list)						       ! 53 
+        qualifier log												       ! 53 
+	qualifier confirm,default										       ! 103
+define syntax delete_pulse											       ! 58 
+	Routine TclDeletePulse										       ! 58
+        parameter p1,prompt="What",value(required,type=DELETE_TYPE)						       ! 58 
+	parameter p2,prompt="Shot number",label=shot,value(required,type=$NUMBER)				       ! 58 
+	qualifier all												       ! 59 
+Define verb directory												       ! 59 
+	Routine TclDirectory											       ! 59
+        parameter p1,label=NODE,value(default="*,.*",list)							       ! 59 
+        qualifier full												       ! 59 
+        qualifier path												       ! 59 
+	qualifier usage,value(list,type=USAGE_TYPE)								       ! 59 
+        qualifier tag, syntax = dir_tag_syntax									       ! 63 
+define syntax dir_tag_syntax											       ! 63 
+	Routine TclDirectoryTag										       ! 64
+	parameter p1, label=TAG, value (default="*::*", list)							       ! 63 
+define verb dispatch												       ! 79 
+        Routine TclDispatch											       ! 79
+        parameter p1,label=NODE											       ! 79 
+        qualifier wait, default											       ! 97 
+	qualifier build,syntax=dispatch_build									       ! 79 
+        qualifier check,syntax=dispatch_check									       ! 99 
+	qualifier phase,syntax=dispatch_phase									       ! 79 
+	qualifier close,syntax=dispatch_close									       ! 79 
+	qualifier command,syntax=dispatch_command								       ! 81 
+define syntax dispatch_build											       ! 79 
+	Routine TclDispatch_build										       ! 79
+        qualifier monitor,value(required)									       ! 86 
+define syntax dispatch_check											       ! 99 
+	Routine TclDispatch_check										       ! 99
+        qualifier reset												       ! 100
+define syntax dispatch_phase											       ! 79 
+	Routine TclDispatch_phase										       ! 79
+	parameter p1,label=PHASE_NAME, prompt="Phase",value(required)						       ! 79 
+	qualifier phase												       ! 79 
+	qualifier noaction											       ! 79 
+        qualifier synch,default,nonnegatable,value(default=1,type=$NUMBER)					       ! 80 
+        qualifier log,default											       ! 85 
+        qualifier monitor,value(required)									       ! 85 
+define syntax dispatch_close											       ! 79 
+	Routine TclDispatch_close										       ! 79
+	qualifier close												       ! 79 
+	qualifier server,value(required,list)									       ! 79 
+define syntax dispatch_command											       ! 81 
+	Routine TclDispatch_command										       ! 81
+	qualifier command											       ! 81 
+	qualifier server,value(required)									       ! 81 
+	qualifier wait												       ! 105
+        qualifier table,default,nonnegatable,value(default="TCL")						       ! 108
+        parameter p1,value(type=$rest_of_line)									       ! 81 
+define verb do													       ! 53 
+	Routine TclDoNode											       ! 53
+	parameter p1, LABEL=NODE, Prompt="Node", value(required)						       ! 53 
+	qualifier method,syntax=do_method									       ! 53 
+define syntax do_method												       ! 53 
+	Routine TclDoMethod											       ! 53
+	parameter p1, LABEL=object, prompt="Object", value(required)						       ! 53 
+	parameter p2, LABEL=method, prompt="Method", value(required)						       ! 53 
+	qualifier argument, value(required,LIST)								       ! 53 
+	qualifier if, value(required)										       ! 75 
+	qualifier override											       ! 76 
+Define verb edit
+	Routine TclEdit
+	parameter p1, LABEL=FILE, Prompt="File",value(required)
+	qualifier shotid,default,nonnegatable,value(default="-1",type=$number)					       ! 53 
+        qualifier new												       ! 53 
+Define verb link												       ! 61 
+	Routine TclLink											       ! 61
+	parameter p1, LABEL=SOURCE, prompt="Source experiment",value(required)					       ! 61 
+	parameter p2, LABEL=DESTINATION, prompt="Destination experiment",value(required)			       ! 61 
+define verb mark												       ! 96 
+        Routine TreeMarkIncludes										       ! 96
+Define verb put													       ! 53 
+	Routine TclPutExpression										       ! 53
+	parameter p1, LABEL=NODE, prompt="Node", value(required)						       ! 53 
+        parameter p2, LABEL=VALUE, prompt="Value", value(required)						       ! 53 
+        qualifier EXTENDED,syntax=put_extended									       ! 71 
+Define syntax put_extended											       ! 71 
+	Routine TclPutExpression										       ! 71
+	parameter p1, LABEL=NODE, prompt="Node", value(required)						       ! 71 
+        qualifier EXTENDED,default										       ! 72 
+	qualifier SYMBOLS											       ! 73 
+        qualifier LF,default											       ! 95 
+        qualifier EOF,value(required)										       ! 71 
+Define verb tcl
+        Routine TclCommand
+	Parameter p1,value(type=$rest_of_line)
+	qualifier tables,default, value(default=TclCommands,LIST)
+	qualifier helplib,default,value(default=TCLHELP)
+	qualifier auxhelplib,default,value(default="MDSDCL,DATABASE_COMMANDS")
+	qualifier prompt,default,value(default="TCL>")
+	qualifier def_file,default,value(default="*.TCL")
+	qualifier key_defs,default,value(default=TCLkeys)
+	qualifier def_libraries,default,value(default=TCL$library)
+	qualifier command,default,value(default=TCLinit)
+	Qualifier ini_def_File,default,value(default="sys$login:*.TCL")
+        qualifier library,value(required)
+	qualifier DEBUG
+define verb remove
+        parameter p1,prompt="What",value(required,type=REMOVE_TYPE)
+define type REMOVE_TYPE
+	keyword TAG,syntax=remove_tag
+Define syntax remove_tag
+	Routine TclRemoveTag
+        parameter p1,prompt="What",value(required,type=REMOVE_TYPE)
+        parameter p2,LABEL=TAG,prompt="Tag",value(required)
+Define verb RENAME												       ! 59 
+	Routine TclRename											       ! 59
+	parameter p1, LABEL=SOURCE, VALUE(required)								       ! 59 
+	parameter p2, LABEL=DEST, VALUE(required)								       ! 59 
+	qualifier LOG												       ! 59 
+define verb rundown												       ! 101
+        parameter p1,prompt="What",value(required,type=RUNDOWN_TYPE)						       ! 101
+define type RUNDOWN_TYPE											       ! 101
+	keyword TREE,syntax=rundown_tree									       ! 101
+Define syntax rundown_tree											       ! 101
+	Routine TclRundownTree										       ! 101
+        parameter p1,prompt="What",value(required,type=RUNDOWN_TYPE)						       ! 101
+	parameter p2, LABEL=FILE,Prompt="File",value(required)							       ! 101
+	qualifier shotid,default,nonnegatable,value(default="-1")						       ! 101
+        qualifier force_exit											       ! 101
+        qualifier subtrees											       ! 101
+define verb set
+        parameter p1,prompt="What",value(required,type=SET_TYPE)
+define type SET_TYPE
+        keyword CURRENT,syntax=set_current									       ! 53 
+	keyword DEFAULT,syntax=set_default
+        keyword NODE,syntax=set_node
+        keyword SERVER,syntax=set_server									       ! 83 
+	keyword TREE,syntax=set_tree
+Define syntax set_current											       ! 53 
+	Routine TclSetCurrent											       ! 53
+        parameter p1,prompt="What",value(required,type=SET_TYPE)						       ! 53 
+        parameter p2,label=experiment,prompt="Experiment",value(required)					       ! 53 
+        parameter p3,label=shot											       ! 107
+        qualifier increment											       ! 74 
+        disallow shot and increment										       ! 74 
+Define syntax set_default
+	Routine TclSetDefault
+        parameter p1,prompt="What",value(required,type=SET_TYPE)
+        parameter p2,LABEL=NODE,prompt="Node",value(required)
+Define syntax set_node
+	Routine TclSetNode
+        parameter p1,prompt="What",value(required,type=SET_TYPE)
+        parameter p2,LABEL=NODE,prompt="Node",value(required)
+        qualifier SUBTREE
+        qualifier ON												       ! 53 
+        qualifier OFF												       ! 53 
+	qualifier WRITE_ONCE											       ! 53 
+        qualifier COMPRESS_ON_PUT										       ! 53 
+        qualifier DO_NOT_COMPRESS										       ! 53 
+	qualifier SHOT_WRITE											       ! 55 
+	qualifier MODEL_WRITE											       ! 55 
+	qualifier INCLUDED											       ! 77 
+	qualifier LOG												       ! 68 
+        qualifier ESSENTIAL											       ! 98 
+        disallow ON AND OFF											       ! 53 
+define syntax set_server											       ! 83 
+        Routine TclDispatch_set_server										       ! 83
+        parameter p1,prompt="What",value(required,type=SET_TYPE)						       ! 83 
+        parameter p2,label=server,prompt="Server",value(required)						       ! 83 
+	qualifier log,nonnegatable,value(default=ACTIONS,type=logging_type)					       ! 84 
+define type logging_type											       ! 84 
+	keyword NONE,value(default=0,type=$NUMBER)								       ! 84 
+	keyword ACTIONS,default,value(default=1,type=$NUMBER)							       ! 93 
+	keyword STATISTICS,value(default=2,type=$NUMBER)							       ! 84 
+Define syntax set_tree
+	Routine TclSetTree
+        parameter p1,prompt="What",value(required,type=SET_TYPE)
+	parameter p2, LABEL=FILE,Prompt="File",value(required)
+	qualifier shotid,default,nonnegatable,value(default="-1")						       ! 93 
+        qualifier readonly											       ! 65 
+define verb SETEVENT												       ! 53 
+	Routine TclSetEvent											       ! 53
+	parameter p1,label=EVENT,prompt="Event",value(required)							       ! 53 
+define verb show
+        parameter p1,prompt="What",value(required,type=show_TYPE)
+define type show_TYPE
+        keyword CURRENT,syntax=show_current									       ! 53 
+	keyword DATA,syntax=show_data										       ! 53 
+	keyword DB,syntax=show_db										       ! 53 
+	keyword DEFAULT,syntax=show_default
+        keyword SERVER,syntax=show_server									       ! 83 
+Define syntax show_current											       ! 53 
+	Routine TclShowCurrent										       ! 53
+        parameter p1,prompt="What",value(required,type=SET_TYPE)						       ! 53 
+        parameter p2,label=experiment,prompt="Experiment",value(required)					       ! 53 
+Define syntax show_data												       ! 53 
+	Routine TclShowData											       ! 53
+        parameter p1,prompt="What",value(required,type=show_TYPE)						       ! 53 
+        parameter p2,LABEL=NODE,prompt="Node",value(required,list)						       ! 53 
+Define syntax show_db												       ! 53 
+	Routine TclShowDB											       ! 53
+        parameter p1,prompt="What",value(required,type=show_TYPE)						       ! 53 
+Define syntax show_default
+	Routine TclShowDefault
+        parameter p1,prompt="What",value(required,type=show_TYPE)
+define syntax show_server											       ! 83 
+        Routine TclDispatch_show_server									       ! 83
+        parameter p1,prompt="What",value(required,type=stop_type)						       ! 83 
+        parameter p2,label=server,prompt="Server",value(required,list)						       ! 83 
+        qualifier output,default										       ! 92 
+        qualifier full												       ! 102
+define verb start												       ! 92 
+        parameter p1,prompt="What",value(required,type=start_TYPE)						       ! 92 
+define syntax start_server											       ! 92 
+        Routine TclDispatch_start_server									       ! 104
+        parameter p1,prompt="What",value(required,type=start_type)						       ! 104
+        parameter p2,label=server,prompt="Server",value(required,list)						       ! 92 
+define type start_TYPE												       ! 92 
+        keyword SERVER,syntax=start_server									       ! 92 
+Define verb stop												       ! 82 
+        parameter p1,prompt="What",value(required,type=stop_type)						       ! 82 
+define type stop_type												       ! 82 
+        keyword SERVER,syntax=stop_server									       ! 82 
+define syntax stop_server											       ! 82 
+        Routine TclDispatch_stop_server									       ! 82
+        parameter p1,prompt="What",value(required,type=stop_type)						       ! 82 
+        parameter p2,label=server,prompt="Server",value(required,list)						       ! 82 
+define verb verify												       ! 59 
+	Routine TclVerifyTree											       ! 62
+define verb WFEVENT												       ! 59 
+	Routine TclWfevent											       ! 59
+	parameter p1,label=event,prompt="Event",value(required)							       ! 59 
+Define verb write
+	Routine TclWrite
+	parameter p1, LABEL=FILE										       ! 53 
+	qualifier shotid,default,nonnegatable,value(default="-1",type=$number)					       ! 53 

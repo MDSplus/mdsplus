@@ -62,7 +62,7 @@ int   mdsdcl_wait()		/* Return:  status			*/
                 &day,&hr,&min,&fsec);
     if (k != 4)
        {
-        mdsMsg(0,"--> invalid time string");
+        MdsMsg(0,"--> invalid time string");
         return(CLI_STS_BADLINE);
        }
     sec = (int)fsec;

@@ -280,7 +280,8 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
 		 * Edit input line from tty ...
 		 *======================================================*/
     line[0] = '\0';
-    printf("%s",prompt ? prompt : "Command> ");
+    if (prompt)
+        printf("%s",prompt);
     fflush(stdout);
     for (p=line ; ; )
        {

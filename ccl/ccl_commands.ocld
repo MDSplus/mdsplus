@@ -1,0 +1,218 @@
+!  VAX/DEC CMS REPLACEMENT HISTORY, Element CCL$COMMANDS.OCLD
+!  *3    25-JAN-1994 12:01:23 TWF "Add fstop"
+!  *2    16-NOV-1988 14:13:26 TWF "Change default plot device type"
+!  *1    20-JUN-1986 12:06:51 TWF "Command tables for CCL commands"
+!  VAX/DEC CMS REPLACEMENT HISTORY, Element CCL$COMMANDS.OCLD
+Module ccl_commands
+Define verb CCL
+	routine ccl_finish
+	Parameter p1,value(type=$rest_of_line)
+	qualifier tables,default,value(list,default="CCL_COMMANDS")
+	qualifier helplib,default,value(default=CCLHELP)
+	qualifier auxhelplib,default,value(default=MDSDCL)
+	qualifier prompt,default,value(default="CCL>")
+	qualifier def_file,default,value(default="*.CCL")
+	qualifier key_defs,default,value(default=cclkeys)
+	qualifier def_libraries,default,value(default="ccl$library")
+	qualifier command,default,value(default=cclinit)
+	Qualifier ini_def_File,default,value(default="sys$login:*.ccl")
+        Qualifier library,value
+        qualifier debug
+        qualifier close
+Define verb finish
+	routine ccl_finish
+Define verb pio
+	routine ccl_pio
+	parameter p1,label=module
+	qualifier address,default,nonnegatable,value(default=0)
+	qualifier function,default,nonnegatable,value(default=0)
+        qualifier data,nonnegatable,value(required,list)
+	qualifier count,default,nonnegatable,value(default=1)
+        qualifier hex,nonnegatable
+        qualifier binary,nonnegatable
+	qualifier octal,nonnegatable
+	qualifier decimal,nonnegatable,default
+	qualifier memory,nonnegatable,value(required)
+Define verb qrep
+	routine ccl_qrep
+	parameter p1,label=module
+	qualifier address,default,nonnegatable,value(default=0)
+	qualifier function,default,nonnegatable,value(default=0)
+	qualifier count,nonnegatable,value(required)
+        qualifier data,nonnegatable,value(required,list)
+        qualifier hex,nonnegatable
+        qualifier binary,nonnegatable
+	qualifier octal,nonnegatable
+	qualifier decimal,nonnegatable,default
+	qualifier memory,nonnegatable,value(required)
+Define verb qscan
+	routine ccl_qscan
+	parameter p1,label=module
+	qualifier address,default,nonnegatable,value(default=0)
+	qualifier function,default,nonnegatable,value(default=0)
+	qualifier count,nonnegatable,value(required)
+        qualifier data,nonnegatable,value(required,list)
+        qualifier hex,nonnegatable
+        qualifier binary,nonnegatable
+	qualifier octal,nonnegatable
+	qualifier decimal,nonnegatable,default
+	qualifier memory,nonnegatable,value(required)
+Define verb qstop
+	routine ccl_qstop
+	parameter p1,label=module
+	qualifier address,default,nonnegatable,value(default=0)
+	qualifier function,default,nonnegatable,value(default=0)
+	qualifier count,nonnegatable,value(required)
+        qualifier data,nonnegatable,value(required,list)
+        qualifier hex,nonnegatable
+        qualifier binary,nonnegatable
+	qualifier octal,nonnegatable
+	qualifier decimal,nonnegatable,default
+	qualifier memory,nonnegatable,value(required)
+Define verb stop
+	routine ccl_stop
+	parameter p1,label=module
+	qualifier address,default,nonnegatable,value(default=0)
+	qualifier function,default,nonnegatable,value(default=0)
+	qualifier count,nonnegatable,value(required)
+        qualifier data,nonnegatable,value(required,list)
+        qualifier hex,nonnegatable
+        qualifier binary,nonnegatable
+	qualifier octal,nonnegatable
+	qualifier decimal,nonnegatable,default
+	qualifier memory,nonnegatable,value(required)
+        qualifier enhanced											       !3
+Define verb fstop												       !3
+	routine ccl_stop											       !3
+	parameter p1,label=module										       !3
+	qualifier address,default,nonnegatable,value(default=0)							       !3
+	qualifier function,default,nonnegatable,value(default=0)						       !3
+	qualifier count,nonnegatable,value(required)								       !3
+        qualifier data,nonnegatable,value(required,list)							       !3
+        qualifier hex,nonnegatable										       !3
+        qualifier binary,nonnegatable										       !3
+	qualifier octal,nonnegatable										       !3
+	qualifier decimal,nonnegatable,default									       !3
+	qualifier memory,nonnegatable,value(required)								       !3
+        qualifier enhanced,default										       !3
+Define verb dclst
+	routine ccl_dclst
+Define verb lpio
+	routine ccl_lpio
+	parameter p1,label=module
+	qualifier step,nonnegatable,value(required)
+	qualifier address,default,nonnegatable,value(default=0)
+	qualifier function,default,nonnegatable,value(default=0)
+        qualifier data,nonnegatable,value(required,list)
+	qualifier count,default,nonnegatable
+        qualifier hex,nonnegatable
+        qualifier binary,nonnegatable
+	qualifier octal,default,nonnegatable
+	qualifier decimal,nonnegatable,default
+	qualifier memory,default,nonnegatable,value(default=24)
+Define verb lqscan
+	routine ccl_lqscan
+	parameter p1,label=module
+	qualifier step,nonnegatable,value(required)
+	qualifier address,default,nonnegatable,value(default=0)
+	qualifier function,default,nonnegatable,value(default=0)
+	qualifier count,nonnegatable,value(required)
+        qualifier data,nonnegatable,value(required,list)
+        qualifier hex,nonnegatable
+        qualifier binary,nonnegatable
+	qualifier octal,nonnegatable
+	qualifier decimal,nonnegatable,default
+	qualifier memory,default,nonnegatable,value(default=24)
+Define verb lstop
+	routine ccl_lstop
+	parameter p1,label=module
+	qualifier step,nonnegatable,value(required)
+	qualifier address,default,nonnegatable,value(default=0)
+	qualifier function,default,nonnegatable,value(default=0)
+	qualifier count,nonnegatable,value(required)
+        qualifier data,nonnegatable,value(required,list)
+        qualifier hex,nonnegatable
+        qualifier binary,nonnegatable
+	qualifier octal,nonnegatable
+	qualifier decimal,nonnegatable,default
+	qualifier memory,default,nonnegatable,value(default=24)
+Define verb execute
+	routine ccl_execute
+Define verb rdata
+	routine ccl_rdata
+	qualifier step,nonnegatable,default,value(default=1)
+	qualifier count,default,nonnegatable,value(default=16383)
+        qualifier memory,nonnegatable,value
+	qualifier data
+Define verb wdata
+	routine ccl_wdata
+	qualifier step,nonnegatable,value(required)
+	qualifier count,default,nonnegatable,value(default=16383)
+        qualifier memory,nonnegatable,value
+        qualifier data,nonnegatable,value(required,list)
+        qualifier hex,nonnegatable
+        qualifier binary,nonnegatable
+	qualifier octal,nonnegatable
+	qualifier decimal,nonnegatable,default
+Define verb lamwait
+	routine ccl_lamwait
+	parameter p1,label=module
+	qualifier timeout,default,nonnegatable,value(default=32767)
+Define syntax set_memory_16
+	qualifier memory,default,nonnegatable,value(default=16)
+Define syntax set_memory_24
+	qualifier memory,default,nonnegatable,value(default=24)
+Define type memory_keywords
+	keyword 16 syntax=set_memory_16
+	keyword 24 syntax=set_memory_24
+Define syntax set_memory
+	routine ccl_set_memory
+        parameter p1,prompt="What",value(required,type=set_keywords)
+	parameter p2,value(type=memory_keywords)
+Define syntax set_module
+	routine ccl_set_module
+        parameter p1,value(required,type=set_keywords)
+	parameter p2,label=module,prompt="Module",value(required)
+Define type XANDQ_KEYWORDS
+	keyword any
+	keyword no
+	keyword yes
+Define syntax set_xandq
+	routine ccl_set_xandq
+	qualifier x,default,value(default=ANY,type=XANDQ_KEYWORDS)
+	qualifier q,default,value(default=ANY,type=XANDQ_KEYWORDS)
+        parameter p1,value(required,type=set_keywords)
+Define type set_keywords
+	keyword xandq		syntax=set_xandq
+	keyword memory		syntax=set_memory
+        keyword module		syntax=set_module
+Define verb set
+        parameter p1,prompt="What",value(required,type=set_keywords)
+Define syntax show_module
+	routine ccl_show_module
+	parameter p1,value(required,type=show_keywords)
+Define syntax show_data
+	routine ccl_show_data
+	qualifier START,nonnegatable,default,value(default=1)
+	qualifier END,nonnegatable,default,value(default=1)
+	qualifier binary,nonnegatable
+	qualifier decimal,nonnegatable,default
+	qualifier octal,nonnegatable
+	qualifier hex,nonnegatable
+        qualifier memory,nonnegatable
+	parameter p1,value(required,type=show_keywords)
+Define syntax show_status
+	routine ccl_show_status
+	parameter p1,value(required,type=show_keywords)
+Define type show_keywords
+	keyword data	syntax=show_data
+	keyword module	syntax=show_module
+	keyword status	syntax=show_status
+Define verb show
+	parameter p1,prompt="What",value(required,type=show_keywords)
+define verb plot
+	routine ccl_plot_data
+	qualifier START,nonnegatable,default,value(default=1)
+	qualifier END,nonnegatable,default,value(default=32767)
+        qualifier DEVICE,nonnegatable,default,value(default="TT:")
+        qualifier DEVTYPE,nonnegatable,default,value(default=RETRO)						       !2

@@ -1,14 +1,9 @@
-#ifdef __vms
-#define vms  1
-#endif
 #include        "clisysdef.h"
 
-		/* Filename: ccl_commands.hh
-		 * created by cdu :  12-Mar-1998 08:53:34
+		/* Filename: ccl_commands.c
+		 * created by cdu :  07-Apr-1998 13:01:55
 		 ********************************************************/
 
-extern struct cduKeyword  CCL_show_keywords[4];
-extern struct cduKeyword  CCL_set_keywords[4];
 extern int   ccl_finish();
 
 static struct cduValue  v01p01value = {
@@ -546,9 +541,10 @@ static struct cduQualifier v16qualifiers[2] = {
        ,0				/* null entry at end	*/
        };
 extern int   ccl_set_xandq();
+static struct cduKeyword  SET_KEYWORDS[4];	/* Prototype only	*/
 
 static struct cduValue  SET_XANDQ_p01value = {
-        0x2001,0,CCL_set_keywords, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SET_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  SET_XANDQ_params[2] = {
@@ -583,7 +579,7 @@ static struct cduVerb  SET_XANDQ = {	/* Syntax def	*/
 extern int   ccl_set_memory();
 
 static struct cduValue  SET_MEMORY_p01value = {
-        0x2001,0,CCL_set_keywords, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SET_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  SET_MEMORY_16_q01value = {
@@ -612,14 +608,14 @@ static struct cduVerb  SET_MEMORY_24 = {	/* Syntax def	*/
         "SET_MEMORY_24",0x0000,0,0,0,0,SET_MEMORY_24_qualifiers
        };
 
-static struct cduKeyword  memory_keywords[3] = {	/* "Type" def	*/
+static struct cduKeyword  MEMORY_KEYWORDS[3] = {	/* "Type" def	*/
         "16",0x4000,0,&SET_MEMORY_16,0,0
        ,"24",0x4000,0,&SET_MEMORY_24,0,0
        ,0				/* null entry at end	*/
        };
 
 static struct cduValue  SET_MEMORY_p02value = {
-        0x0001,0,memory_keywords, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x0001,0,MEMORY_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  SET_MEMORY_params[3] = {
@@ -634,7 +630,7 @@ static struct cduVerb  SET_MEMORY = {	/* Syntax def	*/
 extern int   ccl_set_module();
 
 static struct cduValue  SET_MODULE_p01value = {
-        0x2001,0,CCL_set_keywords, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SET_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  SET_MODULE_p02value = {
@@ -651,7 +647,7 @@ static struct cduVerb  SET_MODULE = {	/* Syntax def	*/
         "SET_MODULE",0x0000,0,0,ccl_set_module,SET_MODULE_params,0
        };
 
-struct cduKeyword  CCL_set_keywords[4] = {	/* "Type" def	*/
+static struct cduKeyword  SET_KEYWORDS[4] = {	/* "Type" def	*/
         "XANDQ",0x4000,0,&SET_XANDQ,0,0
        ,"MEMORY",0x4000,0,&SET_MEMORY,0,0
        ,"MODULE",0x4000,0,&SET_MODULE,0,0
@@ -659,7 +655,7 @@ struct cduKeyword  CCL_set_keywords[4] = {	/* "Type" def	*/
        };
 
 static struct cduValue  v17p01value = {
-        0x2001,0,CCL_set_keywords, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SET_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  v17params[2] = {
@@ -667,9 +663,10 @@ static struct cduParam  v17params[2] = {
        ,0				/* null entry at end	*/
        };
 extern int   ccl_show_data();
+static struct cduKeyword  SHOW_KEYWORDS[4];	/* Prototype only	*/
 
 static struct cduValue  SHOW_DATA_p01value = {
-        0x2001,0,CCL_show_keywords, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SHOW_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  SHOW_DATA_params[2] = {
@@ -702,7 +699,7 @@ static struct cduVerb  SHOW_DATA = {	/* Syntax def	*/
 extern int   ccl_show_module();
 
 static struct cduValue  SHOW_MODULE_p01value = {
-        0x2001,0,CCL_show_keywords, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SHOW_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  SHOW_MODULE_params[2] = {
@@ -716,7 +713,7 @@ static struct cduVerb  SHOW_MODULE = {	/* Syntax def	*/
 extern int   ccl_show_status();
 
 static struct cduValue  SHOW_STATUS_p01value = {
-        0x2001,0,CCL_show_keywords, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SHOW_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  SHOW_STATUS_params[2] = {
@@ -728,7 +725,7 @@ static struct cduVerb  SHOW_STATUS = {	/* Syntax def	*/
         "SHOW_STATUS",0x0000,0,0,ccl_show_status,SHOW_STATUS_params,0
        };
 
-struct cduKeyword  CCL_show_keywords[4] = {	/* "Type" def	*/
+static struct cduKeyword  SHOW_KEYWORDS[4] = {	/* "Type" def	*/
         "DATA",0x4000,0,&SHOW_DATA,0,0
        ,"MODULE",0x4000,0,&SHOW_MODULE,0,0
        ,"STATUS",0x4000,0,&SHOW_STATUS,0,0
@@ -736,7 +733,7 @@ struct cduKeyword  CCL_show_keywords[4] = {	/* "Type" def	*/
        };
 
 static struct cduValue  v18p01value = {
-        0x2001,0,CCL_show_keywords, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SHOW_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  v18params[2] = {

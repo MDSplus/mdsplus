@@ -26,7 +26,66 @@
 ************************************************************************/
 
 
-static int   mdsMsgFlag = 1;		/* 1 for longer "status" string	*/
+#define ALREADY_DISPLAYED  0x80000000
+
+
+static int   mdsmsgFlag = 1;		/* 1 for longer "status" string	*/
+
+
+
+	/*****************************************************************
+	 * getFacility:
+	 *****************************************************************/
+static int   getFacility(	/* Return: num entries in stsText[]	*/
+    int   sts			/* <r> sts value			*/
+   ,char  **facilityText	/* <w> name of facility: c-string	*/
+   ,struct stsText  **stsText	/* <w> addr of facility's "stsText[]"	*/
+   )
+   {
+    int   i,k;
+    int   facility;
+    int   max;
+
+    facility = (sts & ~ALREADY_DISPLAYED) >> 16;
+    if (facility == MDSDCL_FACILITY)
+       {
+        *stsText = mdsdcl_stsText;	/* point to array		*/
+        *facilityText = "MDSDCL_FACILITY";
+        max = sizeof(mdsdcl_stsText)/sizeof(mdsdcl_stsText[0]);
+       }
+    else if (facility == CLI_FACILITY)
+       {
+        *stsText = cli_stsText;		/* point to array		*/
+        *facilityText = "CLI_FACILITY";
+        max = sizeof(cli_stsText)/sizeof(cli_stsText[0]);
+       }
+    else if (facility == CCL_FACILITY)
+       {
+        *stsText = ccl_stsText;		/* point to array		*/
+        *facilityText = "CCL_FACILITY";
+        max = sizeof(ccl_stsText)/sizeof(ccl_stsText[0]);
+       }
+    else if (facility == TCL_FACILITY)
+       {
+        *stsText = tcl_stsText;		/* point to array		*/
+        *facilityText = "TCL_FACILITY";
+        max = sizeof(tcl_stsText)/sizeof(tcl_stsText[0]);
+       }
+    else if (facility == TREESHR_FACILITY)
+       {
+        *stsText = treeshr_stsText;	/* point to array		*/
+        *facilityText = "TREESHR_FACILITY";
+        max = sizeof(treeshr_stsText)/sizeof(treeshr_stsText[0]);
+       }
+    else
+       {
+        *stsText = 0;
+        *facilityText = "???";
+        max = 0;
+       }
+
+    return(max);
+   }
 
 
 
@@ -38,56 +97,20 @@ static char  *statusText(	/* Return: addr of "status" string	*/
    )
    {
     int   i,k;
-    int   facility;
     int   max;
     char  *facilityText;
     struct stsText  *stsText;
     static char  text[72];
     static DESCRIPTOR(dsc_text,text);
 
-    facility = sts >> 16;
-    if (facility == MDSDCL_FACILITY)
-       {
-        stsText = mdsdcl_stsText;	/* point to array		*/
-        facilityText = "MDSDCL_FACILITY";
-        max = sizeof(mdsdcl_stsText)/sizeof(mdsdcl_stsText[0]);
-       }
-    else if (facility == CLI_FACILITY)
-       {
-        stsText = cli_stsText;		/* point to array		*/
-        facilityText = "CLI_FACILITY";
-        max = sizeof(cli_stsText)/sizeof(cli_stsText[0]);
-       }
-    else if (facility == CCL_FACILITY)
-       {
-        stsText = ccl_stsText;		/* point to array		*/
-        facilityText = "CCL_FACILITY";
-        max = sizeof(ccl_stsText)/sizeof(ccl_stsText[0]);
-       }
-    else if (facility == TCL_FACILITY)
-       {
-        stsText = tcl_stsText;		/* point to array		*/
-        facilityText = "TCL_FACILITY";
-        max = sizeof(tcl_stsText)/sizeof(tcl_stsText[0]);
-       }
-    else if (facility == TREESHR_FACILITY)
-       {
-        stsText = treeshr_stsText;	/* point to array		*/
-        facilityText = "TREESHR_FACILITY";
-        max = sizeof(treeshr_stsText)/sizeof(treeshr_stsText[0]);
-       }
-    else
-       {
-        facilityText = "???";
-        max = 0;
-       }
+    max = getFacility(sts,&facilityText,&stsText);
 
     for (i=0 ; i<max ; i++)
        {
         if (sts == stsText[i].stsL_num)
           {
            str_copy_dx(&dsc_text,stsText[i].stsA_name);
-           if (mdsMsgFlag & 1)
+           if (mdsmsgFlag & 1)
               {		/* if longer messages ...		*/
                str_append(&dsc_text," : ");
                str_append(&dsc_text,stsText[i].stsA_text);
@@ -111,17 +134,17 @@ int   setMdsMsgFlag(		/* Return: old setting of flag		*/
    {
     int   old;
 
-    old = mdsMsgFlag;
-    mdsMsgFlag = new;
+    old = mdsmsgFlag;
+    mdsmsgFlag = new;
     return(old);
    }
 
 
 
 	/*****************************************************************
-	 * mdsMsg:
+	 * MdsMsg:
 	 *****************************************************************/
-int   mdsMsg(			/* Return: sts provided by user		*/
+int   MdsMsg(			/* Return: sts provided by user		*/
     int   sts			/* <r> status code			*/
    ,char  fmt[]			/* <r> format statement			*/
    , ...			/* <r:opt> arguments to fmt[]		*/
@@ -130,6 +153,9 @@ int   mdsMsg(			/* Return: sts provided by user		*/
     int   i,k;
     char  text[256];
     va_list  ap;		/* arg ptr				*/
+
+    if ((sts & ALREADY_DISPLAYED) && (sts != -1))
+        return(sts);
 
     sprintf(text,"%s: ",pgmname());
     k = strlen(text);
@@ -144,5 +170,6 @@ int   mdsMsg(			/* Return: sts provided by user		*/
        }
     else
         fprintf(stderr,"%s:  sts=%s",text,statusText(sts));
-    return(sts);
+
+    return(sts | ALREADY_DISPLAYED);
    }

@@ -40,6 +40,6 @@ int TclSetCurrent()
        }
 
     if ((sts & 1) != 1)
-        mdsMsg(sts,0);
+        MdsMsg(sts,0);
     return sts;
    }

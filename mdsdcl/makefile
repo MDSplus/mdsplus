@@ -2,33 +2,35 @@ include $(MAKE_OPTIONS)
 LFLAGS = -L$(MDSPLUS)/shlib
 
 OBJFILES = 		\
-mdsdcl_dcl_parse.o	\
-mdsdcl_do_command.o	\
-mdsdcl_dummy.o		\
-mdsmsg.o		\
-mdsdcl_general.o	\
-mdsdcl_get_input.o	\
-mdsdcl_initialize.o	\
-mdsdcl_insert_symbols.o	\
-mdsdcl_macros.o		\
-mdsdcl_set_command.o	\
-mdsdcl_spawn.o		\
-mdsdcl_wait.o
+libMdsdcl.a(mdsdcl_dcl_parse.o)		\
+libMdsdcl.a(mdsdcl_do_command.o)	\
+libMdsdcl.a(mdsdcl_dummy.o)		\
+libMdsdcl.a(mdsmsg.o)			\
+libMdsdcl.a(mdsdcl_general.o)		\
+libMdsdcl.a(mdsdcl_get_input.o)		\
+libMdsdcl.a(mdsdcl_initialize.o)	\
+libMdsdcl.a(mdsdcl_insert_symbols.o)	\
+libMdsdcl.a(mdsdcl_macros.o)		\
+libMdsdcl.a(mdsdcl_set_command.o)	\
+libMdsdcl.a(mdsdcl_spawn.o)		\
+libMdsdcl.a(mdsdcl_wait.o)
 
-all:	mdsdcl_main.o  mdsdcl_tables.o  libMdsdcl.a	\
-	../shlib/libMdsdcl.$(SHARE_TYPE)  mdsdcl
+all:	mdsdcl libMdsdcl.a  ../shlib/libMdsdcl.$(SHARE_TYPE)
 
-mdsdcl_main.o:
-mdsdcl_tables.o:
+mdsdcl_tables.o:	mdsdcl_tables.c
 
-libMdsdcl.a:	libMdsdcl.a( $(OBJFILES) )
+mdsdcl_tables.c:	mdsdcl_tables.ocld
+	../cdu/cdu < mdsdcl_tables.ocld
+
+libMdsdcl.a:	$(OBJFILES)
 		ranlib libMdsdcl.a
 
-../shlib/libMdsdcl.$(SHARE_TYPE):	libMdsdcl.a
-	$(CC) $(CFLAGS)  -o $@ $(LD_SHARED_LIB_OPTIONS)	\
-		mdsdcl_main.o  mdsdcl_tables.o		\
+../shlib/libMdsdcl.$(SHARE_TYPE):	mdsdcl_tables.o  libMdsdcl.a
+	$(CC) $(CFLAGS)  -o $@ $(LFLAGS)		\
+		$(LD_SHARED_LIB_OPTIONS)		\
+		mdsdcl_tables.o		\
 		libMdsdcl.a  $(MDSPLUS)/cdu/libCdu.a	\
-		$(LFLAGS) -lTreeShr  -lTdiShr  -lcurses -lc
+		-lTreeShr  -lTdiShr  -lcurses -lc
 
 mdsdcl:	mdsdcl.o  ../shlib/libMdsdcl.$(SHARE_TYPE)
 	$(CC) $(CFLAGS) -o $@ $(LFLAGS) $@.o -lMdsdcl		\

@@ -156,7 +156,7 @@ error:
 #ifdef vms
     lib$signal(status,0);
 #else
-    mdsMsg(status,0);
+    MdsMsg(status,0);
 #endif
     return status;
    }

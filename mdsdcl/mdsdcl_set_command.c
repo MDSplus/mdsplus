@@ -142,7 +142,7 @@ int   mdsdcl_set_command(		/* Return: status		*/
 			/*-----------------------------------------------
 			 * No luck.  Print error message ...
 			 *----------------------------------------------*/
-                mdsMsg(0,"Failed to open table '%s'",
+                MdsMsg(0,"Failed to open table '%s'",
                     dsc_table.dscA_pointer);
                 fprintf(stderr,"\n");
                 return(MDSDCL_STS_ERROR);

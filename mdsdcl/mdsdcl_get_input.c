@@ -75,12 +75,12 @@ static int   openIndirectLevel(		/* Return: status		*/
 
     if (ctrl->depth >= MAX_DEPTH)
        {
-        return(mdsMsg(MDSDCL_STS_INDIRECT_ERROR,
+        return(MdsMsg(MDSDCL_STS_INDIRECT_ERROR,
             "Exceeded MAX_DEPTH for indirect files"));
        }
 
     if (!ascFilename(&p,&dsc_filename,0))
-        return(mdsMsg(MDSDCL_STS_INDIRECT_ERROR,
+        return(MdsMsg(MDSDCL_STS_INDIRECT_ERROR,
             "Illegal filename: %s",p?p:""));
 
     fp = fopen(dsc_filename.dscA_pointer,"r");
@@ -100,7 +100,7 @@ static int   openIndirectLevel(		/* Return: status		*/
         if (!fp)
            {
             p2 = dsc_filename.dscA_pointer;
-            return(mdsMsg(MDSDCL_STS_INDIRECT_ERROR,
+            return(MdsMsg(MDSDCL_STS_INDIRECT_ERROR,
                 "No such filename: %s",p2?p2:""));
            }
        }
@@ -155,7 +155,7 @@ static int   readInputLine(	/* Return: status			*/
 #ifdef vms
             lib$signal(SS$_DEBUG);
 #endif
-            return(mdsMsg(MDSDCL_STS_INDIRECT_ERROR,
+            return(MdsMsg(MDSDCL_STS_INDIRECT_ERROR,
                         "Error getting next macro line",0));
            }
         if (io->lineno == macro->numLines)

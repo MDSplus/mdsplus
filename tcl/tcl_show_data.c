@@ -43,7 +43,7 @@ static int   lib_cvt_dx_dx(	/* Returns:  status			*/
     void  *p;
 
     if (!is_cdescr(dsc_out) && !is_ddescr(dsc_out))
-        return(mdsMsg(0,"lib_cvt_dx_dx: dsc_out is not a descriptor"));
+        return(MdsMsg(0,"lib_cvt_dx_dx: dsc_out is not a descriptor"));
 
     p = dsc_in->dscA_pointer;
     dtype = dsc_in->dscB_dtype;

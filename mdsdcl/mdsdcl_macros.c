@@ -176,7 +176,7 @@ int   mdsdcl_define()			/* Return: status		*/
 		 *======================================================*/
     m = get_macro(name);
     if (m->isOpen)
-        return(mdsMsg(MDSDCL_STS_ERROR,fmt1,m->name));
+        return(MdsMsg(MDSDCL_STS_ERROR,fmt1,m->name));
 
     for (i=0 ; i<m->numLines ; i++)
         free(m->lines[i]);
@@ -287,21 +287,21 @@ int   mdsdcl_do_macro()		/* Return: status			*/
 
     sts = cli_get_value("NAME",&dsc_util);
     if (~sts & 1)
-        return(mdsMsg(MDSDCL_STS_ERROR,"Error getting NAME"));
+        return(MdsMsg(MDSDCL_STS_ERROR,"Error getting NAME"));
 
     if (cli_present("INTERACTIVE") & 1)
-        return(mdsMsg(MDSDCL_STS_ERROR,fmt0,0));
+        return(MdsMsg(MDSDCL_STS_ERROR,fmt0,0));
 
     l2u(dsc_util.dscA_pointer,0);		/* convert to uc	*/
     macro = find_macro(dsc_util.dscA_pointer);
     if (!macro)
        {
-        mdsMsg(0,"No such command");
+        MdsMsg(0,"No such command");
         return(MDSDCL_STS_ERROR);
        }
 
     if (macro->isOpen)
-        return(mdsMsg(MDSDCL_STS_ERROR,fmt2,dsc_util.dscA_pointer));
+        return(MdsMsg(MDSDCL_STS_ERROR,fmt2,dsc_util.dscA_pointer));
 
 		/*=======================================================
 		 * Get repeat count ...
@@ -319,7 +319,7 @@ int   mdsdcl_do_macro()		/* Return: status			*/
 		 * Create new ioLevel[] in ctrl struct ...
 		 *=======================================================*/
     if (ctrl->depth >= MAX_DEPTH)
-        return(mdsMsg(MDSDCL_STS_INDIRECT_ERROR,fmt3,0));
+        return(MdsMsg(MDSDCL_STS_INDIRECT_ERROR,fmt3,0));
 
     for (icnt=0 ; icnt<irepeat ; icnt++)
        {

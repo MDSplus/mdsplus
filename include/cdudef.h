@@ -23,6 +23,7 @@
 ***********************************************************************/
 
 
+#ifdef _CASE_DEFINITIONS		/* in cdu.c only	*/
 #define CMD_DEFINE           1
 #define CMD_IDENT            2
 #define CMD_MODULE           3
@@ -41,16 +42,10 @@
 #define VERB_ROUTINE         8
 #define VERB_SYNONYM         9
 
-#define VERB_M_NODISALLOWS   0x0001
-#define VERB_M_NOPARAMETERS  0x0002
-#define VERB_M_NOQUALIFIERS  0x0004
-
 #define PARAM_DEFAULT        1
 #define PARAM_LABEL          2
 #define PARAM_PROMPT         3
 #define PARAM_VALUE          4
-
-#define PARAM_M_DEFAULT    0x0001
 
 #define VAL_CONCATENATE      1
 #define VAL_DEFAULT          2
@@ -58,6 +53,32 @@
 #define VAL_NOCONCATENATE    4
 #define VAL_REQUIRED         5
 #define VAL_TYPE             6
+
+#define QUAL_BATCH           1
+#define QUAL_DEFAULT         2
+#define QUAL_LABEL           3
+#define QUAL_NEGATABLE       4
+#define QUAL_NONNEGATABLE    5
+#define QUAL_PLACEMENT       6
+#define QUAL_SYNTAX          7
+#define QUAL_VALUE           8
+
+#define TYPE_KEYWORD         1
+
+#define KEY_DEFAULT          1
+#define KEY_LABEL            2
+#define KEY_NEGATABLE        3
+#define KEY_NONNEGATABLE     4
+#define KEY_SYNTAX           5
+#define KEY_VALUE            6
+
+#endif		/* _CASE_DEFINITIONS	*/
+
+#define VERB_M_NODISALLOWS   0x0001
+#define VERB_M_NOPARAMETERS  0x0002
+#define VERB_M_NOQUALIFIERS  0x0004
+
+#define PARAM_M_DEFAULT    0x0001
 
 #define VAL_M_USER_DEFINED_TYPE 0x0001
 #define VAL_M_FILE              0x0002
@@ -71,27 +92,9 @@
 #define VAL_M_LIST              0x1000
 #define VAL_M_REQUIRED          0x2000
 
-#define QUAL_BATCH           1
-#define QUAL_DEFAULT         2
-#define QUAL_LABEL           3
-#define QUAL_NEGATABLE       4
-#define QUAL_NONNEGATABLE    5
-#define QUAL_PLACEMENT       6
-#define QUAL_SYNTAX          7
-#define QUAL_VALUE           8
-
 #define QUAL_M_DEFAULT       0x0001
 #define QUAL_M_NEGATABLE     0x0002
 #define QUAL_M_NONNEGATABLE  0x0004
-
-#define TYPE_KEYWORD         1
-
-#define KEY_DEFAULT          1
-#define KEY_LABEL            2
-#define KEY_NEGATABLE        3
-#define KEY_NONNEGATABLE     4
-#define KEY_SYNTAX           5
-#define KEY_VALUE            6
 
 #define KEY_M_DEFAULT       0x0001
 #define KEY_M_NEGATABLE     0x0002
@@ -154,7 +157,13 @@ struct qualifier  {
 void  *findUserTypeByIdx(
     int   idxRequest		/* <r> requested idx number, zero based	*/
    );
+int   userTypeHasBeenWritten(	/* Return: 1(T) or 0(F)			*/
+    char  uname[]		/* <r> name of "type"			*/
+   );
 int   okToWriteUserType(	/* Return: 1(T) or 0(F)			*/
+    char  uname[]		/* <r> name of "type"			*/
+   );
+void  markUserTypeWritten(	/* Returns:  void			*/
     char  uname[]		/* <r> name of "type"			*/
    );
 int   getUserTypeIdx(		/* Return: idx into userTypeList[]	*/
@@ -211,6 +220,9 @@ struct verblist  *newSyntax(	/* Return: Create new syntax; else error*/
    );
 struct verblist  *getSyntax(	/* Return: Create syntax if req'd	*/
     char  syntaxName[]		/* <r> name of syntax			*/
+   );
+int   writeProtoUserType(	/* Returns: status			*/
+    char  name[]		/* <r> userType name			*/
    );
 void  cdu_write(
     char  _module[]		/* <r> name of module -- filename too	*/

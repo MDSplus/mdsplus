@@ -56,7 +56,7 @@ int   TclAddNode()		/* Return: status			*/
         TclNodeTouched(nid,new);
     else
        {
-        mdsMsg(sts,"Error adding node %s",dsc_nodnam.dscA_pointer);
+        MdsMsg(sts,"Error adding node %s",dsc_nodnam.dscA_pointer);
 #ifdef vms
         lib$signal(sts,0);
 #endif

@@ -91,7 +91,7 @@ int   mdsdcl_dcl_parse(			/* Returns CLI_STS_xxx status	*/
 int   mdsdcl_do_command(
     void  *command		/* <r:opt> command -- cstring or dsc	*/
    );
-int   mdsMsg(			/* Return: sts provided by user		*/
+int   MdsMsg(			/* Return: sts provided by user		*/
     int   sts			/* <r> status code			*/
    ,char  fmt[]			/* <r> format statement			*/
    , ...			/* <r:opt> arguments to fmt[]		*/

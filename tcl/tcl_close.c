@@ -55,6 +55,6 @@ int TclClose()
     if (sts & 1)
         TclNodeTouched(0,tree);
     else
-        mdsMsg(sts,"TclClose: *WARN* unexpected status");
+        MdsMsg(sts,"TclClose: *WARN* unexpected status");
     return sts;
    }

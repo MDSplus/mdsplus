@@ -175,7 +175,7 @@ int   TclDirectory()
                 usageMask = usageMask | (1 << usage);
                }
             else
-                mdsMsg(0,"Error getting usage id#",0);
+                MdsMsg(0,"Error getting usage id#",0);
            }
        }
     str_free1_dx(&dsc_outline);

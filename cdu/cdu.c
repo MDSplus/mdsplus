@@ -1,13 +1,15 @@
 #include        <stdio.h>
 #include        <stdlib.h>
 #include        <string.h>
-#include        "cdudef.h"
 #ifdef vms
 #include        <lib$routines.h>
 #include        <ssdef.h>
 #else
 #include        <malloc.h>
 #endif
+
+#define _CASE_DEFINITIONS
+#include        "cdudef.h"
 
 /**********************************************************************
 * CDU.C --
@@ -18,6 +20,9 @@
 *  06-Oct-1997  TRG  Create.
 *
 ***********************************************************************/
+
+
+int   debugCdu = 0;		/* set to 1 for extra printout		*/
 
 
 #define STS_NOT_SUPPORTED      3	/* option not supported		*/
@@ -571,7 +576,7 @@ static struct valueClause  *cmd_value()	/* Return: addr of structure	*/
             case VAL_TYPE:
                 if (!getEqualsString("=type",&dsc_token,0))
                     return((void *)illegalCmdline(psave,"unexpected eof"));
-                strncpy(typeString,token,sizeof(typeString)-1);
+                l2un(typeString,token,sizeof(typeString)-1);
                 p = typeString;
                 mask = cdu_lookup(&p,built_in_types,0,NOMSG,0);
                 if (mask)
@@ -802,14 +807,15 @@ static int   cmd_defineVerb(
         if (!opt)
            {
             putNext(cmd,2);		/* replace cmd (atStart)	*/
-            show_verb(v,callerOpt);	/*  */
+            if (debugCdu)
+                show_verb(v,callerOpt);	/*  */
             return(0);
            }
         switch(opt)
            {
             case VERB_DISALLOW:
-                sts = notHandlingOption(0);
-                clearnext(1);
+                sts = debugCdu ? notHandlingOption(0) : STS_NOT_SUPPORTED;
+                clearnext(debugCdu);
                 break;
 
             case VERB_NODISALLOWS:
@@ -854,7 +860,8 @@ static int   cmd_defineVerb(
                 break;
            }
        }
-    show_verb(v,callerOpt);		/* you're here upon eof	*/
+    if (debugCdu)
+        show_verb(v,callerOpt);		/* you're here upon eof	*/
    }
 
 
@@ -1046,16 +1053,17 @@ static int   cmd_module()	/* Return: status			*/
     if (!cduGetString("Module name",&dsc_token,0))
         return(illegalCmdline(0,"Requires MODULE name"));
     strncpy(moduleName,token,sizeof(moduleName)-1);
-    printf("\nModule = '%s'\n",moduleName);
+    if (interactive())
+       printf("\nModule = '%s'\n",moduleName);
     return(1);
    }
 
 
 
 	/****************************************************************
-	 * cli_parse:
+	 * cdu_parse:
 	 ****************************************************************/
-int   cli_parse(		/* Return: status			*/
+static int   cdu_parse(		/* Return: status			*/
    )
    {
     int   i,k;
@@ -1114,7 +1122,8 @@ main(
 
     termio_init(argc,argv);
 
-    sts = cli_parse();
+    sts = cdu_parse();
 
     cdu_write(moduleName);
+    exit(0);
    }

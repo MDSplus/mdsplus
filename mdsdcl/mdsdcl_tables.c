@@ -1,15 +1,9 @@
-#ifdef __vms
-#define vms  1
-#endif
-
 #include        "clisysdef.h"
 
-		/* Filename: mdsdcl_tables.hh
-		 * created by cdu :  11-Mar-1998 14:00:46
+		/* Filename: mdsdcl_tables.c
+		 * created by cdu :  07-Apr-1998 13:01:40
 		 ********************************************************/
 
-extern struct cduKeyword  MDSDCL_SET_KEYWORDS[7];
-extern struct cduKeyword  MDSDCL_INIT_KEYWORDS[2];
 extern int   MDSDCL_ACTIVATE_IMAGE();
 
 static struct cduVerb  ACTIVATE_IMAGE = {	/* Syntax def	*/
@@ -367,9 +361,10 @@ static struct cduParam  v11params[2] = {
        ,0				/* null entry at end	*/
        };
 extern int   mdsdcl_init_timer();
+static struct cduKeyword  INIT_KEYWORDS[2];	/* Prototype only	*/
 
 static struct cduValue  INIT_TIMER_p01value = {
-        0x2001,0,MDSDCL_INIT_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,INIT_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  INIT_TIMER_params[2] = {
@@ -381,13 +376,13 @@ static struct cduVerb  INIT_TIMER = {	/* Syntax def	*/
         "INIT_TIMER",0x0004,0,0,mdsdcl_init_timer,INIT_TIMER_params,0
        };
 
-struct cduKeyword  MDSDCL_INIT_KEYWORDS[2] = {	/* "Type" def	*/
+static struct cduKeyword  INIT_KEYWORDS[2] = {	/* "Type" def	*/
         "TIMER",0x4000,0,&INIT_TIMER,0,0
        ,0				/* null entry at end	*/
        };
 
 static struct cduValue  v12p01value = {
-        0x2001,0,MDSDCL_INIT_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,INIT_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  v12params[2] = {
@@ -512,9 +507,10 @@ static struct cduVerb  SET_KEY = {	/* Syntax def	*/
         "SET_KEY",0x0000,0,0,MDSDCL_SET_KEY,SET_KEY_params,SET_KEY_qualifiers
        };
 extern int   MDSDCL_SET_INTERRUPT();
+static struct cduKeyword  SET_KEYWORDS[7];	/* Prototype only	*/
 
 static struct cduValue  SET_INTERRUPT_p01value = {
-        0x2001,0,MDSDCL_SET_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SET_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  SET_INTERRUPT_params[2] = {
@@ -589,7 +585,7 @@ static struct cduVerb  SET_PROMPT = {	/* Syntax def	*/
 extern int   mdsdcl_set_verify();
 
 static struct cduValue  SET_VERIFY_p01value = {
-        0x2001,0,MDSDCL_SET_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SET_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  SET_VERIFY_params[2] = {
@@ -601,7 +597,7 @@ static struct cduVerb  SET_VERIFY = {	/* Syntax def	*/
         "SET_VERIFY",0x0004,0,0,mdsdcl_set_verify,SET_VERIFY_params,0
        };
 
-struct cduKeyword  MDSDCL_SET_KEYWORDS[7] = {	/* "Type" def	*/
+static struct cduKeyword  SET_KEYWORDS[7] = {	/* "Type" def	*/
         "COMMAND",0x4000,0,&SET_COMMAND,0,0
        ,"KEY",0x4000,0,&SET_KEY,0,0
        ,"INTERRUPT",0x4002,0,&SET_INTERRUPT,0,0
@@ -612,7 +608,7 @@ struct cduKeyword  MDSDCL_SET_KEYWORDS[7] = {	/* "Type" def	*/
        };
 
 static struct cduValue  v15p01value = {
-        0x2001,0,MDSDCL_SET_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SET_KEYWORDS, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  v15params[2] = {

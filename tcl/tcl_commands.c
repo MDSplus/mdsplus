@@ -1,27 +1,15 @@
-#ifdef __vms
-#define vms  1
-#endif
 #include        "clisysdef.h"
 
-		/* Filename: tcl_commands.hh
-		 * created by cdu :  11-Mar-1998 16:47:46
+		/* Filename: tcl_commands.c
+		 * created by cdu :  07-Apr-1998 13:01:56
 		 ********************************************************/
 
-extern struct cduKeyword  TCL_ADD_TYPE[3];
-extern struct cduKeyword  TCL_DEFINE_TYPE[2];
-extern struct cduKeyword  TCL_CREATE_TYPE[2];
-extern struct cduKeyword  TCL_DELETE_TYPE[3];
-extern struct cduKeyword  TCL_REMOVE_TYPE[2];
-extern struct cduKeyword  TCL_RUNDOWN_TYPE[2];
-extern struct cduKeyword  TCL_SHOW_TYPE[6];
-extern struct cduKeyword  TCL_STOP_TYPE[2];
-extern struct cduKeyword  TCL_SET_TYPE[6];
-extern struct cduKeyword  TCL_START_TYPE[2];
 extern int   TclDispatch_abort_server();
 extern int   TclDispatch_stop_server();
+static struct cduKeyword  STOP_TYPE[2];	/* Prototype only	*/
 
 static struct cduValue  STOP_SERVER_p01value = {
-        0x2001,0,TCL_STOP_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,STOP_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  STOP_SERVER_p02value = {
@@ -38,13 +26,13 @@ static struct cduVerb  STOP_SERVER = {	/* Syntax def	*/
         "STOP_SERVER",0x0000,0,0,TclDispatch_stop_server,STOP_SERVER_params,0
        };
 
-struct cduKeyword  TCL_STOP_TYPE[2] = {	/* "Type" def	*/
+static struct cduKeyword  STOP_TYPE[2] = {	/* "Type" def	*/
         "SERVER",0x4000,0,&STOP_SERVER,0,0
        ,0				/* null entry at end	*/
        };
 
 static struct cduValue  ABORT_SERVER_p01value = {
-        0x2001,0,TCL_STOP_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,STOP_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  ABORT_SERVER_p02value = {
@@ -61,13 +49,13 @@ static struct cduVerb  ABORT_SERVER = {	/* Syntax def	*/
         "ABORT_SERVER",0x0000,0,0,TclDispatch_abort_server,ABORT_SERVER_params,0
        };
 
-static struct cduKeyword  abort_type[2] = {	/* "Type" def	*/
+static struct cduKeyword  ABORT_TYPE[2] = {	/* "Type" def	*/
         "SERVER",0x4000,0,&ABORT_SERVER,0,0
        ,0				/* null entry at end	*/
        };
 
 static struct cduValue  v01p01value = {
-        0x2001,0,abort_type, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,ABORT_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  v01params[2] = {
@@ -75,9 +63,10 @@ static struct cduParam  v01params[2] = {
        ,0				/* null entry at end	*/
        };
 extern int   TclAddNode();
+static struct cduKeyword  ADD_TYPE[3];	/* Prototype only	*/
 
 static struct cduValue  ADD_NODE_p01value = {
-        0x2001,0,TCL_ADD_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,ADD_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  ADD_NODE_p02value = {
@@ -184,7 +173,7 @@ static struct cduVerb  ADD_NODE = {	/* Syntax def	*/
 extern int   TclAddTag();
 
 static struct cduValue  ADD_TAG_p01value = {
-        0x2001,0,TCL_ADD_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,ADD_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  ADD_TAG_p02value = {
@@ -206,14 +195,14 @@ static struct cduVerb  ADD_TAG = {	/* Syntax def	*/
         "ADD_TAG",0x0000,0,0,TclAddTag,ADD_TAG_params,0
        };
 
-struct cduKeyword  TCL_ADD_TYPE[3] = {	/* "Type" def	*/
+static struct cduKeyword  ADD_TYPE[3] = {	/* "Type" def	*/
         "NODE",0x4000,0,&ADD_NODE,0,0
        ,"TAG",0x4000,0,&ADD_TAG,0,0
        ,0				/* null entry at end	*/
        };
 
 static struct cduValue  v02p01value = {
-        0x2001,0,TCL_ADD_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,ADD_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  v02params[2] = {
@@ -281,9 +270,10 @@ static struct cduQualifier v05qualifiers[3] = {
        ,0				/* null entry at end	*/
        };
 extern int   TclCreatePulse();
+static struct cduKeyword  CREATE_TYPE[2];	/* Prototype only	*/
 
 static struct cduValue  CREATE_PULSE_p01value = {
-        0x2001,0,TCL_CREATE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,CREATE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  CREATE_PULSE_p02value = {
@@ -317,13 +307,13 @@ static struct cduVerb  CREATE_PULSE = {	/* Syntax def	*/
         "CREATE_PULSE",0x0000,0,0,TclCreatePulse,CREATE_PULSE_params,CREATE_PULSE_qualifiers
        };
 
-struct cduKeyword  TCL_CREATE_TYPE[2] = {	/* "Type" def	*/
+static struct cduKeyword  CREATE_TYPE[2] = {	/* "Type" def	*/
         "PULSE",0x4000,0,&CREATE_PULSE,0,0
        ,0				/* null entry at end	*/
        };
 
 static struct cduValue  v06p01value = {
-        0x2001,0,TCL_CREATE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,CREATE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  v06params[2] = {
@@ -341,9 +331,10 @@ static struct cduParam  v07params[2] = {
        ,0				/* null entry at end	*/
        };
 extern int   TclCreatePulse_server();
+static struct cduKeyword  DEFINE_TYPE[2];	/* Prototype only	*/
 
 static struct cduValue  DEFINE_SERVER_p01value = {
-        0x2001,0,TCL_DEFINE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,DEFINE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  DEFINE_SERVER_p02value = {
@@ -369,13 +360,13 @@ static struct cduVerb  DEFINE_SERVER = {	/* Syntax def	*/
         "DEFINE_SERVER",0x0000,0,0,TclCreatePulse_server,DEFINE_SERVER_params,DEFINE_SERVER_qualifiers
        };
 
-struct cduKeyword  TCL_DEFINE_TYPE[2] = {	/* "Type" def	*/
+static struct cduKeyword  DEFINE_TYPE[2] = {	/* "Type" def	*/
         "SERVER",0x4000,0,&DEFINE_SERVER,0,0
        ,0				/* null entry at end	*/
        };
 
 static struct cduValue  v08p01value = {
-        0x2001,0,TCL_DEFINE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,DEFINE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  v08params[2] = {
@@ -383,9 +374,10 @@ static struct cduParam  v08params[2] = {
        ,0				/* null entry at end	*/
        };
 extern int   TclDeleteNode();
+static struct cduKeyword  DELETE_TYPE[3];	/* Prototype only	*/
 
 static struct cduValue  DELETE_NODE_p01value = {
-        0x2001,0,TCL_DELETE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,DELETE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  DELETE_NODE_p02value = {
@@ -410,7 +402,7 @@ static struct cduVerb  DELETE_NODE = {	/* Syntax def	*/
 extern int   TclDeletePulse();
 
 static struct cduValue  DELETE_PULSE_p01value = {
-        0x2001,0,TCL_DELETE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,DELETE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  DELETE_PULSE_p02value = {
@@ -432,14 +424,14 @@ static struct cduVerb  DELETE_PULSE = {	/* Syntax def	*/
         "DELETE_PULSE",0x0000,0,0,TclDeletePulse,DELETE_PULSE_params,DELETE_PULSE_qualifiers
        };
 
-struct cduKeyword  TCL_DELETE_TYPE[3] = {	/* "Type" def	*/
+static struct cduKeyword  DELETE_TYPE[3] = {	/* "Type" def	*/
         "NODE",0x4000,0,&DELETE_NODE,0,0
        ,"PULSE",0x4000,0,&DELETE_PULSE,0,0
        ,0				/* null entry at end	*/
        };
 
 static struct cduValue  v09p01value = {
-        0x2001,0,TCL_DELETE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,DELETE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  v09params[2] = {
@@ -798,9 +790,10 @@ static struct cduQualifier v17qualifiers[12] = {
        ,0				/* null entry at end	*/
        };
 extern int   TclRemoveTag();
+static struct cduKeyword  REMOVE_TYPE[2];	/* Prototype only	*/
 
 static struct cduValue  REMOVE_TAG_p01value = {
-        0x2001,0,TCL_REMOVE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,REMOVE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  REMOVE_TAG_p02value = {
@@ -817,13 +810,13 @@ static struct cduVerb  REMOVE_TAG = {	/* Syntax def	*/
         "REMOVE_TAG",0x0000,0,0,TclRemoveTag,REMOVE_TAG_params,0
        };
 
-struct cduKeyword  TCL_REMOVE_TYPE[2] = {	/* "Type" def	*/
+static struct cduKeyword  REMOVE_TYPE[2] = {	/* "Type" def	*/
         "TAG",0x4000,0,&REMOVE_TAG,0,0
        ,0				/* null entry at end	*/
        };
 
 static struct cduValue  v18p01value = {
-        0x2001,0,TCL_REMOVE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,REMOVE_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  v18params[2] = {
@@ -851,9 +844,10 @@ static struct cduQualifier v19qualifiers[2] = {
        ,0				/* null entry at end	*/
        };
 extern int   TclRundownTree();
+static struct cduKeyword  RUNDOWN_TYPE[2];	/* Prototype only	*/
 
 static struct cduValue  RUNDOWN_TREE_p01value = {
-        0x2001,0,TCL_RUNDOWN_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,RUNDOWN_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  RUNDOWN_TREE_p02value = {
@@ -881,13 +875,13 @@ static struct cduVerb  RUNDOWN_TREE = {	/* Syntax def	*/
         "RUNDOWN_TREE",0x0000,0,0,TclRundownTree,RUNDOWN_TREE_params,RUNDOWN_TREE_qualifiers
        };
 
-struct cduKeyword  TCL_RUNDOWN_TYPE[2] = {	/* "Type" def	*/
+static struct cduKeyword  RUNDOWN_TYPE[2] = {	/* "Type" def	*/
         "TREE",0x4000,0,&RUNDOWN_TREE,0,0
        ,0				/* null entry at end	*/
        };
 
 static struct cduValue  v20p01value = {
-        0x2001,0,TCL_RUNDOWN_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,RUNDOWN_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  v20params[2] = {
@@ -895,9 +889,10 @@ static struct cduParam  v20params[2] = {
        ,0				/* null entry at end	*/
        };
 extern int   TclSetCurrent();
+static struct cduKeyword  SET_TYPE[6];	/* Prototype only	*/
 
 static struct cduValue  SET_CURRENT_p01value = {
-        0x2001,0,TCL_SET_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SET_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  SET_CURRENT_p02value = {
@@ -926,7 +921,7 @@ static struct cduVerb  SET_CURRENT = {	/* Syntax def	*/
 extern int   TclSetDefault();
 
 static struct cduValue  SET_DEFAULT_p01value = {
-        0x2001,0,TCL_SET_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SET_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  SET_DEFAULT_p02value = {
@@ -945,7 +940,7 @@ static struct cduVerb  SET_DEFAULT = {	/* Syntax def	*/
 extern int   TclSetNode();
 
 static struct cduValue  SET_NODE_p01value = {
-        0x2001,0,TCL_SET_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SET_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  SET_NODE_p02value = {
@@ -979,7 +974,7 @@ static struct cduVerb  SET_NODE = {	/* Syntax def	*/
 extern int   TclDispatch_set_server();
 
 static struct cduValue  SET_SERVER_p01value = {
-        0x2001,0,TCL_SET_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SET_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  SET_SERVER_p02value = {
@@ -1004,7 +999,7 @@ static struct cduValue  t11k03value = {
         0x0004,"2",0, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
-static struct cduKeyword  logging_type[4] = {	/* "Type" def	*/
+static struct cduKeyword  LOGGING_TYPE[4] = {	/* "Type" def	*/
         "NONE",0x4000,0,0,&t11k01value,0
        ,"ACTIONS",0x4001,0,0,&t11k02value,0
        ,"STATISTICS",0x4000,0,0,&t11k03value,0
@@ -1012,7 +1007,7 @@ static struct cduKeyword  logging_type[4] = {	/* "Type" def	*/
        };
 
 static struct cduValue  SET_SERVER_q01value = {
-        0x0001,"ACTIONS",logging_type, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x0001,"ACTIONS",LOGGING_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduQualifier SET_SERVER_qualifiers[2] = {
@@ -1026,7 +1021,7 @@ static struct cduVerb  SET_SERVER = {	/* Syntax def	*/
 extern int   TclSetTree();
 
 static struct cduValue  SET_TREE_p01value = {
-        0x2001,0,TCL_SET_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SET_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  SET_TREE_p02value = {
@@ -1053,7 +1048,7 @@ static struct cduVerb  SET_TREE = {	/* Syntax def	*/
         "SET_TREE",0x0000,0,0,TclSetTree,SET_TREE_params,SET_TREE_qualifiers
        };
 
-struct cduKeyword  TCL_SET_TYPE[6] = {	/* "Type" def	*/
+static struct cduKeyword  SET_TYPE[6] = {	/* "Type" def	*/
         "CURRENT",0x4000,0,&SET_CURRENT,0,0
        ,"DEFAULT",0x4000,0,&SET_DEFAULT,0,0
        ,"NODE",0x4000,0,&SET_NODE,0,0
@@ -1063,7 +1058,7 @@ struct cduKeyword  TCL_SET_TYPE[6] = {	/* "Type" def	*/
        };
 
 static struct cduValue  v21p01value = {
-        0x2001,0,TCL_SET_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SET_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  v21params[2] = {
@@ -1083,7 +1078,7 @@ static struct cduParam  v22params[2] = {
 extern int   TclShowCurrent();
 
 static struct cduValue  SHOW_CURRENT_p01value = {
-        0x2001,0,TCL_SET_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SET_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  SHOW_CURRENT_p02value = {
@@ -1100,9 +1095,10 @@ static struct cduVerb  SHOW_CURRENT = {	/* Syntax def	*/
         "SHOW_CURRENT",0x0000,0,0,TclShowCurrent,SHOW_CURRENT_params,0
        };
 extern int   TclShowData();
+static struct cduKeyword  SHOW_TYPE[6];	/* Prototype only	*/
 
 static struct cduValue  SHOW_DATA_p01value = {
-        0x2001,0,TCL_SHOW_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SHOW_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  SHOW_DATA_p02value = {
@@ -1121,7 +1117,7 @@ static struct cduVerb  SHOW_DATA = {	/* Syntax def	*/
 extern int   TclShowDB();
 
 static struct cduValue  SHOW_DB_p01value = {
-        0x2001,0,TCL_SHOW_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SHOW_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  SHOW_DB_params[2] = {
@@ -1135,7 +1131,7 @@ static struct cduVerb  SHOW_DB = {	/* Syntax def	*/
 extern int   TclShowDefault();
 
 static struct cduValue  SHOW_DEFAULT_p01value = {
-        0x2001,0,TCL_SHOW_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SHOW_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  SHOW_DEFAULT_params[2] = {
@@ -1149,7 +1145,7 @@ static struct cduVerb  SHOW_DEFAULT = {	/* Syntax def	*/
 extern int   TclDispatch_show_server();
 
 static struct cduValue  SHOW_SERVER_p01value = {
-        0x2001,0,TCL_STOP_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,STOP_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  SHOW_SERVER_p02value = {
@@ -1172,7 +1168,7 @@ static struct cduVerb  SHOW_SERVER = {	/* Syntax def	*/
         "SHOW_SERVER",0x0000,0,0,TclDispatch_show_server,SHOW_SERVER_params,SHOW_SERVER_qualifiers
        };
 
-struct cduKeyword  TCL_SHOW_TYPE[6] = {	/* "Type" def	*/
+static struct cduKeyword  SHOW_TYPE[6] = {	/* "Type" def	*/
         "CURRENT",0x4000,0,&SHOW_CURRENT,0,0
        ,"DATA",0x4000,0,&SHOW_DATA,0,0
        ,"DB",0x4000,0,&SHOW_DB,0,0
@@ -1182,7 +1178,7 @@ struct cduKeyword  TCL_SHOW_TYPE[6] = {	/* "Type" def	*/
        };
 
 static struct cduValue  v23p01value = {
-        0x2001,0,TCL_SHOW_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,SHOW_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  v23params[2] = {
@@ -1190,9 +1186,10 @@ static struct cduParam  v23params[2] = {
        ,0				/* null entry at end	*/
        };
 extern int   TclDispatch_start_server();
+static struct cduKeyword  START_TYPE[2];	/* Prototype only	*/
 
 static struct cduValue  START_SERVER_p01value = {
-        0x2001,0,TCL_START_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,START_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduValue  START_SERVER_p02value = {
@@ -1209,13 +1206,13 @@ static struct cduVerb  START_SERVER = {	/* Syntax def	*/
         "START_SERVER",0x0000,0,0,TclDispatch_start_server,START_SERVER_params,0
        };
 
-struct cduKeyword  TCL_START_TYPE[2] = {	/* "Type" def	*/
+static struct cduKeyword  START_TYPE[2] = {	/* "Type" def	*/
         "SERVER",0x4000,0,&START_SERVER,0,0
        ,0				/* null entry at end	*/
        };
 
 static struct cduValue  v24p01value = {
-        0x2001,0,TCL_START_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,START_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  v24params[2] = {
@@ -1224,7 +1221,7 @@ static struct cduParam  v24params[2] = {
        };
 
 static struct cduValue  v25p01value = {
-        0x2001,0,TCL_STOP_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
+        0x2001,0,STOP_TYPE, {0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0} ,0
        };
 
 static struct cduParam  v25params[2] = {

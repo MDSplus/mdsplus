@@ -2,39 +2,40 @@ include $(MAKE_OPTIONS)
 LFLAGS = -L$(MDSPLUS)/shlib
 
 OBJFILES = 			\
-	mds_dsc_string.o	\
-	tcl_dummy.o		\
-	tcl_add_node.o		\
-	tcl_add_tag.o		\
-	tcl_close.o		\
-	tcl_create_pulse.o	\
-	tcl_decompile.o		\
-	tcl_directory.o		\
-	tcl_directory_tag.o	\
-	tcl_do_method.o		\
-	tcl_set_callbacks.o	\
-	tcl_set_current.o	\
-	tcl_set_default.o	\
-	tcl_set_node.o		\
-	tcl_set_tree.o		\
-	tcl_show_data.o		\
-	tcl_verify_tree.o	\
-	tcl_write.o
+	libTcl.a(mds_dsc_string.o)	\
+	libTcl.a(tcl_dummy.o)		\
+	libTcl.a(tcl_add_node.o)	\
+	libTcl.a(tcl_add_tag.o)		\
+	libTcl.a(tcl_close.o)		\
+	libTcl.a(tcl_create_pulse.o)	\
+	libTcl.a(tcl_decompile.o)	\
+	libTcl.a(tcl_directory.o)	\
+	libTcl.a(tcl_directory_tag.o)	\
+	libTcl.a(tcl_do_method.o)	\
+	libTcl.a(tcl_set_callbacks.o)	\
+	libTcl.a(tcl_set_current.o)	\
+	libTcl.a(tcl_set_default.o)	\
+	libTcl.a(tcl_set_node.o)	\
+	libTcl.a(tcl_set_tree.o)	\
+	libTcl.a(tcl_show_data.o)	\
+	libTcl.a(tcl_verify_tree.o)	\
+	libTcl.a(tcl_write.o)
 
-all:	clean  tcl tcl_commands.o  libTcl.a	\
+all:	tcl tcl_commands.o  libTcl.a	\
 			../shlib/tcl_commands.$(SHARE_TYPE)
 
 clean:
 	find . -name libTcl.a -exec rm {} \;
 
-tcl:	tcl.o
-	$(CC) $(CFLAGS) -o $@ $@.o $(LFLAGS) -lMdsdcl	\
-		$(MDSPLUS)/cdu/libCdu.a
+tcl:
+	chmod +x tcl
 
 tcl_commands.o:
+	../cdu/cdu < tcl_commands.ocld
+	$(CC) $(CFLAGS) -c tcl_commands.c
 
-libTcl.a:	libTcl.a( $(OBJFILES) )
-		ranlib libTcl.a
+libTcl.a:	$(OBJFILES)
+	ranlib libTcl.a
 
 ../shlib/tcl_commands.$(SHARE_TYPE):	libTcl.a
 	$(CC) $(CFLAGS)  -o $@ $(LFLAGS) $(LD_SHARED_LIB_OPTIONS)	\

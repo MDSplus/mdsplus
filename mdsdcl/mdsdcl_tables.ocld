@@ -1,0 +1,242 @@
+!  VAX/DEC CMS REPLACEMENT HISTORY, Element MDSDCL_TABLES.OCLD
+!  *5    11-MAR-1992 11:38:37 TWF "Add Activate/image command"
+!  *4    24-JUN-1991 16:22:26 TWF "Add DEFINE/SYMBOL/REST_OF_LINE"
+!  *3     3-OCT-1989 15:53:03 TWF "Add check qualifier"
+!  *1    20-JUN-1986 15:31:19 JAS ""
+!  VAX/DEC CMS REPLACEMENT HISTORY, Element MDSDCL_TABLES.OCLD
+Module mdsdcl_tables
+Define verb ACTIVATE												       !5
+        qualifier IMAGE,SYNTAX=ACTIVATE_IMAGE,value(required,list)						       !5
+Define syntax ACTIVATE_IMAGE											       !5
+        Routine MDSDCL_ACTIVATE_IMAGE										       !5
+	noparameters												       !5
+Define verb ATTACH
+        Routine MDSDCL_ATTACH
+	parameter p1,prompt="Process",label=process,value(REQUIRED)
+	qualifier IDENTIFICATION,SYNTAX=ATTACH_PID,value(required)
+Define syntax ATTACH_PID
+        Routine MDSDCL_ATTACH
+	noparameters
+Define verb CREATE
+	parameter p1,prompt="What",value(REQUIRED,type=CREATE_KEYWORDS)
+Define type CREATE_KEYWORDS
+	keyword LIBRARY, SYNTAX=CREATE_LIBRARY
+Define SYNTAX CREATE_LIBRARY
+	Routine MDSDCL_CREATE_LIBRARY
+	parameter p1,value(REQUIRED)
+        parameter p2, label=LIBRARY, PROMPT="Library", Value(REQUIRED)
+Define verb DCMD
+	Routine MDSDCL_NOOP
+	Parameter p1,value(type=$rest_of_line)
+	qualifier tables,value
+	qualifier helplib,value
+	qualifier auxhelplib,value
+	qualifier prompt,value
+	qualifier def_file,value
+	qualifier key_defs,value
+	qualifier def_libraries,value
+	qualifier command,value
+	Qualifier ini_def_File,value
+        qualifier library,value(required)
+        qualifier close
+        qualifier keep
+Define verb DEBUG												       !5
+        Routine mdsdcl_debug											       !5
+Define verb DEFINE
+	Routine mdsdcl_define
+	Parameter p1,prompt="Macro",value(REQUIRED)
+	Qualifier KEY,SYNTAX=DEFINE_KEY
+	Qualifier SYMBOL,SYNTAX=DEFINE_SYMBOL
+	Qualifier EDIT
+	DISALLOW ANY2 (EDIT,KEY,SYMBOL)
+Define syntax DEFINE_KEY
+	Routine MDSDCL_DEFINE_KEY
+	Parameter P1,LABEL=KEY,PROMPT="Key name",VALUE(REQUIRED)
+	Parameter P2,PROMPT="equivalence-name",VALUE(REQUIRED,TYPE=$QUOTED_STRING)
+	Qualifier ECHO,DEFAULT
+	Qualifier ERASE
+	Qualifier IF_STATE,VALUE(LIST)
+	Qualifier LOCK_STATE
+	Qualifier LOG,DEFAULT
+	Qualifier SET_STATE,VALUE
+	Qualifier TERMINATE
+Define syntax DEFINE_SYMBOL
+	Routine mdsdcl_define_symbol
+	Parameter P1,LABEL=SYMBOL,PROMPT="Symbol name",VALUE(REQUIRED)
+	Parameter P2,LABEL=VALUE,PROMPT="Value",VALUE(REQUIRED,TYPE=$QUOTED_STRING)
+        qualifier REST_OF_LINE,SYNTAX=DEFINE_SYMBOL_REST							       !4
+Define syntax DEFINE_SYMBOL_REST										       !4
+	Routine mdsdcl_define_symbol										       !4
+	Parameter P1,LABEL=SYMBOL,PROMPT="Symbol name",VALUE(REQUIRED)						       !4
+	Parameter P2,LABEL=VALUE,PROMPT="Value",VALUE(REQUIRED,TYPE=$REST_OF_LINE)				       !4
+Define verb DELETE
+	Parameter P1
+	Qualifier KEY,syntax=DELETE_KEY
+Define syntax DELETE_KEY
+	Routine MDSDCL_DELETE_KEY
+	Parameter P1,LABEL=KEY,PROMPT="Key",VALUE(REQUIRED)
+	Qualifier ALL,SYNTAX=DELETE_KEY_ALL
+	Qualifier LOG,DEFAULT
+	Qualifier STATE,VALUE(LIST)
+	DISALLOW  ALL AND KEY
+Define syntax DELETE_KEY_ALL
+	Routine MDSDCL_DELETE_KEY
+	Noparameters
+	Qualifier ALL,DEFAULT
+	Qualifier LOG,DEFAULT
+	Qualifier STATE,VALUE(LIST)
+Define verb DO
+	Routine mdsdcl_do_macro
+	Parameter P1,label=NAME,PROMPT="Macro",VALUE(REQUIRED)
+	Parameter P2, label=p1
+	Parameter P3, label=p2
+	Parameter P4, label=p3
+	Parameter P5, label=p4
+	Parameter P6, label=p5
+	Parameter P7, label=p6
+	Parameter P8, label=p7
+	Qualifier MACRO,DEFAULT
+	Qualifier INDIRECT
+        Qualifier REPEAT,VALUE(TYPE=$NUMBER)
+        DISALLOW  MACRO AND INDIRECT
+        DISALLOW  INDIRECT AND REPEAT
+Define verb EXIT
+	Routine mdsdcl_exit
+Define verb FINISH
+	Routine MDSDCL_FINISH
+Define verb HELP
+	Routine MDSDCL_HELP
+	Parameter P1,value(type=$rest_of_line)
+define verb INIT
+	Parameter p1,PROMPT="What",VALUE(REQUIRED,TYPE=INIT_KEYWORDS)
+define type INIT_KEYWORDS
+	KEYWORD TIMER,SYNTAX=INIT_TIMER
+Define syntax INIT_TIMER
+        Routine mdsdcl_init_timer
+	Parameter p1,PROMPT="What",VALUE(REQUIRED,TYPE=INIT_KEYWORDS)
+        Noqualifiers
+Define verb MODIFY
+	Routine MDSDCL_MODIFY
+	Parameter P1,PROMPT="Macro",value(REQUIRED)
+Define verb SAVE
+	Routine MDSDCL_SAVE_MACRO
+        Parameter P1, Prompt="Macro", VALUE(REQUIRED)
+	Qualifier name, value(required)
+	Qualifier library, value(required)
+Define verb SET
+	Parameter P1,PROMPT="What",VALUE(REQUIRED,TYPE=SET_KEYWORDS)
+Define type SET_KEYWORDS
+	KEYWORD COMMAND,SYNTAX=SET_COMMAND
+	KEYWORD KEY,SYNTAX=SET_KEY
+	KEYWORD INTERRUPT,NEGATABLE,SYNTAX=SET_INTERRUPT
+	KEYWORD LIBRARY,SYNTAX=SET_LIBRARY
+	KEYWORD PROMPT,SYNTAX=SET_PROMPT
+	KEYWORD VERIFY,NEGATABLE,SYNTAX=SET_VERIFY
+Define syntax SET_COMMAND
+	Routine mdsdcl_set_command
+	Parameter P1,VALUE(REQUIRED)
+	Parameter P2,LABEL=TABLE
+	Qualifier HELPLIB,VALUE(REQUIRED)
+	Qualifier PROMPT,VALUE(REQUIRED)
+	Qualifier DEF_FILE,VALUE(REQUIRED)
+Define syntax SET_KEY
+	Routine MDSDCL_SET_KEY
+	Parameter P1,VALUE(REQUIRED)
+	Qualifier LOG,DEFAULT
+	Qualifier STATE,VALUE(DEFAULT=DEFAULT)
+	Qualifier APPLICATION,NONNEGATABLE,SYNTAX=SET_KEY_APPLICATION
+	Qualifier NUMERIC,NONNEGATABLE,SYNTAX=SET_KEY_NOAPPLICATION
+	Disallow  ANY2 (STATE,APPLICATION,NUMERIC)
+Define syntax SET_KEY_APPLICATION
+	Routine MDSDCL_SET_KEYBOARD_APPLICATION
+	Qualifier APPLICATION,DEFAULT
+Define syntax SET_KEY_NOAPPLICATION
+	Routine MDSDCL_SET_KEYBOARD_APPLICATION
+	Qualifier APPLICATION
+Define syntax SET_INTERRUPT
+	Routine MDSDCL_SET_INTERRUPT
+	Parameter P1,VALUE(REQUIRED,TYPE=SET_KEYWORDS)
+	Noqualifiers
+Define syntax SET_LIBRARY
+	Routine MDSDCL_SET_LIBRARY
+        Parameter P1, Value(REQUIRED)
+        Parameter P2, Label=LIBRARY,Prompt="Library", Value(REQUIRED)
+        Qualifier Close,SYNTAX=SET_LIBRARY_CLOSE
+Define syntax SET_LIBRARY_CLOSE
+	Routine MDSDCL_SET_LIBRARY
+        Parameter P1, Value(REQUIRED)
+	Qualifier close,default
+Define syntax SET_PROMPT
+	Routine mdsdcl_set_prompt
+        Parameter P1, Value(REQUIRED)
+        Parameter P2, Label=PROMPT,Prompt="Prompt", Value(REQUIRED)
+Define syntax SET_VERIFY
+	Routine mdsdcl_set_verify
+	Parameter P1,VALUE(REQUIRED,TYPE=SET_KEYWORDS)
+        Noqualifiers
+Define verb SHOW
+	Parameter P1,PROMPT="What",VALUE(REQUIRED,TYPE=SHOW_KEYWORDS)
+Define type SHOW_KEYWORDS
+	KEYWORD KEY,SYNTAX=SHOW_KEY
+	KEYWORD LIBRARY,SYNTAX=SHOW_LIBRARY
+	KEYWORD MACRO,SYNTAX=SHOW_MACRO
+	KEYWORD TIMER,SYNTAX=SHOW_TIMER
+	KEYWORD VM,SYNTAX=SHOW_VM
+Define syntax SHOW_KEY
+	Routine MDSDCL_SHOW_KEY
+	Parameter P1,VALUE(REQUIRED)
+	Parameter P2,LABEL=KEY,PROMPT="Key",VALUE(REQUIRED)
+        Qualifier ALL,SYNTAX=SHOW_KEY_ALL
+	Qualifier BRIEF
+	Qualifier DIRECTORY,SYNTAX=SHOW_KEY_DIRECTORY
+        Qualifier FULL
+        Qualifier STATE,VALUE(LIST)
+	Disallow  BRIEF AND FULL
+	Disallow  ANY2 (DIRECTORY,ALL,KEY)
+Define syntax SHOW_KEY_ALL
+	Parameter P1,VALUE(REQUIRED)
+        Qualifier ALL,DEFAULT
+	Qualifier BRIEF
+        Qualifier FULL
+        Qualifier STATE,VALUE(LIST)
+	Disallow  BRIEF AND FULL
+Define syntax SHOW_KEY_DIRECTORY
+	Parameter P1,VALUE(REQUIRED)
+        Qualifier ALL
+	Qualifier DIRECTORY,DEFAULT
+Define syntax SHOW_LIBRARY
+	Routine MDSDCL_SHOW_LIBRARY
+	Parameter P1,VALUE(REQUIRED)
+Define syntax SHOW_MACRO
+	Routine mdsdcl_show_macro
+	Parameter P1,VALUE(REQUIRED)
+	Parameter P2,LABEL=MACRO,VALUE
+        Qualifier full
+Define syntax SHOW_TIMER
+	Routine mdsdcl_show_timer
+Define syntax SHOW_VM
+	Routine MDSDCL_SHOW_VM
+	Parameter P1,VALUE(REQUIRED)
+        qualifier full												       !3
+        qualifier check												       !3
+Define verb SPAWN
+	Routine mdsdcl_spawn
+        Parameter p1,label=COMMAND, value(type=$REST_OF_LINE)
+        Qualifier CARRIAGE_CONTROL, DEFAULT
+        Qualifier CLI,value
+        Qualifier INPUT, Value(REQUIRED)
+        Qualifier KEYPAD, DEFAULT
+        Qualifier LOGICAL_NAMES, DEFAULT
+        Qualifier NOTIFY
+        Qualifier OUTPUT, Value(REQUIRED)
+        Qualifier PROCESS, Value(REQUIRED)
+        Qualifier PROMPT, Value(REQUIRED)
+        Qualifier SYMBOLS, DEFAULT
+        Qualifier WAIT, DEFAULT
+        DISALLOW WAIT AND NOTIFY
+Define verb TYPE
+	Routine mdsdcl_type
+        Parameter p1,value(type=$REST_OF_LINE)
+Define verb WAIT
+	Routine mdsdcl_wait
+	Parameter p1,label=DELTA_TIME,Prompt="Deltatime",value(required,type=$DELTATIME)
