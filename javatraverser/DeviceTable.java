@@ -22,7 +22,8 @@ public class DeviceTable extends DeviceComponent
     boolean displayRowNumber = false;
     boolean binary = false;
     JPopupMenu popM = null;
-    JMenuItem copyRowI, copyColI, copyI, pasteRowI, pasteColI, pasteI;
+    JMenuItem copyRowI, copyColI, copyI, pasteRowI, pasteColI, pasteI,
+        propagateToRowI, propagateToColI;
 
     protected int preferredColumnWidth = 30;
     protected int preferredHeight = 70;
@@ -173,6 +174,16 @@ public class DeviceTable extends DeviceComponent
           public void actionPerformed(ActionEvent e) {readFromClipboard();}
         });
         popM.add(pasteClipboardI);
+        JMenuItem propagateToRowI = new JMenuItem("Propagate to Row");
+        propagateToRowI.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {propagateToRow(table.getSelectedRow() ,table.getSelectedColumn());}
+        });
+        popM.add(propagateToRowI);
+        JMenuItem propagateToColI = new JMenuItem("Propagate to Column");
+        propagateToColI.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {propagateToCol(table.getSelectedRow(), table.getSelectedColumn());}
+        });
+        popM.add(propagateToColI);
       }
       if(copiedRowItems == null)
         pasteRowI.setEnabled(false);
@@ -211,6 +222,7 @@ public class DeviceTable extends DeviceComponent
 
     void copyRow(int row)
     {
+      if(row == -1) return;
       copiedRowItems = new String[numCols];
       for(int i = 0; i < numCols; i++)
         copiedRowItems[i] = items[row * numCols + i];
@@ -218,6 +230,7 @@ public class DeviceTable extends DeviceComponent
 
     void pasteRow(int row)
     {
+      if(row == -1) return;
       try {
         for (int i = 0; i < numCols; i++)
           items[row * numCols + i] = copiedRowItems[i];
@@ -239,6 +252,30 @@ public class DeviceTable extends DeviceComponent
       {
         for (int i = 0; i < numRows; i++)
           items[col  + i * numCols] = copiedColItems[i];
+      }catch(Exception exc){}
+      table.repaint();
+    }
+
+    void propagateToRow(int row, int col)
+    {
+      if(displayRowNumber) col--;
+      if(row == -1 || col == -1) return;
+      try
+      {
+        for (int i = 0; i < numCols; i++)
+          items[row * numCols +i] = items[row*numCols + col];
+      }catch(Exception exc){}
+      table.repaint();
+    }
+
+    void propagateToCol(int row, int col)
+    {
+      if(displayRowNumber) col--;
+      if(row == -1 || col == -1) return;
+      try
+      {
+        for (int i = 0; i < numCols; i++)
+          items[col  + i * numCols] = items[row*numCols + col];
       }catch(Exception exc){}
       table.repaint();
     }

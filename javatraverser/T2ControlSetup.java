@@ -135,8 +135,8 @@ public class T2ControlSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(720);
-    this.setHeight(720);
+    this.setWidth(673);
+    this.setHeight(673);
     this.setDeviceType("T2Control");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("T2 Feedback Control");
