@@ -141,13 +141,13 @@
 				Name="Debug|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
-					AdditionalIncludeDirectories="../include,.;e:/program files/jet/jetrda/include;$(NoInherit)"/>
+					AdditionalIncludeDirectories="../include;.;$(NoInherit)"/>
 			</FileConfiguration>
 			<FileConfiguration
 				Name="Release|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
-					AdditionalIncludeDirectories=".;../include;e:/program files/jet/jetrda/include;$(NoInherit)"/>
+					AdditionalIncludeDirectories=".;../include;$(NoInherit)"/>
 			</FileConfiguration>
 		</File>
 		<File
