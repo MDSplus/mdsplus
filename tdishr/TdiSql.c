@@ -187,10 +187,12 @@ static void AppendAnswer(int idx, void *buffer, int len, int dtype)
 static void StoreAnswer(int idx, struct descriptor *dst, int type)
 {
 	int status = 1;
-	DESCRIPTOR_A(src, 0, 0, bufs[idx].vptr, bufs[idx].offset);
+	DESCRIPTOR_A(src, 0, 0, 0, 0);
 	struct descriptor_xd xd = {0, DTYPE_DSC, CLASS_XS, (struct descriptor *)&src, sizeof(src)}; 
 	struct descriptor t_dsc = {0, DTYPE_T, CLASS_S, 0 };
 	if (((type==SYBDATETIME) || (type==SYBDATETIME4)) && !date) type = SYBTEXT;
+        src.pointer = bufs[idx].vptr;
+        src.arsize = bufs[idx].offset;
 	switch(type) {
 	case SYBFLT8 : src.length = 8; src.dtype = DTYPE_FT; break;
 	case SYBREAL : src.length = 4; src.dtype = DTYPE_FS; break;
