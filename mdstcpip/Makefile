@@ -14,10 +14,10 @@ mdstcpip : ../bin ../shlib ../bin/mdsiptest ../bin/mdsip ../bin/mdsipd
 	mkdir ../bin
 
 ../bin/mdsiptest : t.c ../shlib/libMdsIpShr.$(SHARE_TYPE)
-	cc -o $@ $(CFLAGS) t.c -L../shlib -lMdsIpShr $(SOCKET_LIB)
+	$(CC) -o $@ $(CFLAGS) t.c -L../shlib -lMdsIpShr $(SOCKET_LIB)
 
 ../bin/mdsip : mdsip_u.c
-	cc -o $@ $(CFLAGS) mdsip_u.c -L../shlib -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(SOCKET_LIB)
+	$(CC) -o $@ $(CFLAGS) mdsip_u.c -L../shlib -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(SOCKET_LIB)
 
 ../bin/mdsipd : mdsipd
 	cp mdsipd ../bin/mdsipd
