@@ -1060,7 +1060,7 @@ static void  Setup(Widget w, XtPointer client_data, XButtonEvent *event, Boolean
     }
     else
     {
-      XUngrabPointer(XtDisplay(Button3Widget), CurrentTime);
+      XUngrabPointer(XtDisplay(Button3Widget), event->time);
       XtPopdown(XtParent(Button3Widget));
     }
   }
