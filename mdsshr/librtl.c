@@ -99,7 +99,7 @@ struct dirent *readdir(DIR *dir)
 
 char *index(char *str, char c)
 {
-	int pos = strcspn(str,&c);
+	unsigned int pos = strcspn(str,&c);
   return (pos == 0) ? ((str[0] == c) ? str : 0) : ((pos == strlen(str)) ? 0 : &str[pos]);
 }
 
@@ -1720,6 +1720,12 @@ void TranslateLogicalFree(char *value)
 	free(value);
 }
 
+#ifdef LOBYTE
+#undef LOBYTE
+#endif
+#ifdef HIBYTE
+#undef HIBYTE
+#endif
 #define LOBYTE(x) ((unsigned char)((x) & 0xFF))
 #define HIBYTE(x) ((unsigned char)((x) >> 8))
 
@@ -1751,7 +1757,7 @@ unsigned short Crc(unsigned int len, unsigned char *bufptr)
     init=1;
     for (j=0;j<256;j++)
     {
-      icrctb[j]=icrc1(j << 8);
+      icrctb[j]=icrc1((unsigned short)(j << 8));
       rchr[j]=(unsigned char)(it[j & 0xF] << 4 | it[j >> 4]);
     }
   }

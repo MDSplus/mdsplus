@@ -8,6 +8,7 @@ int MDSEvent(char *evname){}
 #include <process.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
+#include <libroutines.h>
 #include <mds_stdarg.h>
 #include "../mdstcpip/mdsip.h"
 extern char *TranslateLogical(char *);
@@ -99,9 +100,7 @@ int MDSEventAst(char *eventnam, void (*astadr)(void *,int,char *), void *astprm,
 {
 	struct event_struct *event = (struct event_struct *)malloc(sizeof(struct event_struct));
 
-    int status;
-    int i, j, use_local;    
-    int name_already_in_use;
+    int use_local;    
 
     if(!eventnam || !*eventnam) return 1;
     initializeLocalRemote(1, &use_local);
@@ -126,8 +125,9 @@ int MDSEventCan(int eventid)
 	return 0;
 }
 
-int MDSWfevent(char *evname, int *data_len, char **data)
+int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
 {
+  return 1;
 }
 
 int MDSEvent(char *evname, int data_len, char *data)
@@ -207,7 +207,6 @@ static int searchOpenServer(char *server)
 /* Avoid doing MdsConnect on a server already connected before */
 /* for now, allow socket duplications */
 {
-    int i;
 	return 0;
 }
 static void getServerDefinition(char *env_var, char **servers, int *num_servers, int *use_local)
@@ -223,9 +222,9 @@ static void getServerDefinition(char *env_var, char **servers, int *num_servers,
     }
     i = *num_servers = 0;
     *use_local = 0;
-    while(i < strlen(envname))
+    while(i < (int)strlen(envname))
     {
-		for(j = 0; i < strlen(envname) && envname[i] != ';'; i++, j++)
+		for(j = 0; i < (int)strlen(envname) && envname[i] != ';'; i++, j++)
 			curr_name[j] = envname[i];
 		curr_name[j] = 0;
 		i++;
@@ -241,7 +240,6 @@ static void getServerDefinition(char *env_var, char **servers, int *num_servers,
 }
 static unsigned __stdcall handleRemoteAst(void *p)
 {
-    char buf[16];
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsg"};
@@ -255,9 +253,9 @@ static unsigned __stdcall handleRemoteAst(void *p)
     if(!(status & 1))
     {
 		printf("%s\n", MdsGetMsg(status));
-		return;
+		return status;
     }
-	SetEvent(thread_alive_event);
+	  SetEvent(thread_alive_event);
     while(1)
     {
 
@@ -277,7 +275,7 @@ static unsigned __stdcall handleRemoteAst(void *p)
 		if (selectstat == -1) 
 		{
       		perror("select error"); 
-			return; 
+			return 0; 
 		}
 		for(i = 0; i < num_receive_servers; i++)
 		{
@@ -317,11 +315,10 @@ static void initializeLocalRemote(int receive_events, int *use_local)
     char *servers[256];
     int num_servers;
     struct descriptor 
-	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-	routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
+	  library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
+	  routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
     int status, i;
     int (*rtn)();
-    void *dummy;
 
     if(receive_initialized && receive_events)
     {
@@ -405,7 +402,6 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
 	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventAst"};
     int status, i;
     int curr_eventid;
-    void *dummy;
     int (*rtn)();
 
 
@@ -452,7 +448,7 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
 
 	if(!thread_alive_event)
 		thread_alive_event = CreateEvent(NULL, FALSE, FALSE, NULL);
-	if((external_thread = (HANDLE)_beginthreadex( NULL, 0, handleRemoteAst, NULL,0, &threadID)) == -1)
+	if((external_thread = (HANDLE)_beginthreadex( NULL, 0, handleRemoteAst, NULL,0, &threadID)) == (HANDLE)-1)
 		printf("\nError creating thread\n");
 
 	WaitForSingleObject(thread_alive_event, INFINITE);
