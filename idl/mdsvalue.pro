@@ -32,6 +32,7 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
 ;;;;  status = call_external(MdsIPImage(),MdsRoutinePrefix()+'GetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
 ;;; temporary fix Jeff Schachte 98.05.13
     status = call_external(MdsIPImage(),MdsGetAnsFn(),sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
+
     if numbytes gt 0 then begin
       if dtype eq 14 then begin
         if ndims ne 0 then begin
@@ -70,6 +71,7 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
       endif
     endif else begin
       if not keyword_set(quiet) then message,'Error evaluating expression',/continue
+      status = 0
       answer = 0
     endelse
     
