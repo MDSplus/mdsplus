@@ -206,7 +206,9 @@ class jDispatcher implements ServerListener
                 }
                 Integer seq_obj = new Integer(seq_number);
                 if(curr_phase.seq_actions.containsKey(seq_obj))
+		{   
                     ((Vector)curr_phase.seq_actions.get(seq_obj)).addElement(action);
+		}
                 else //it is the first time such a sequence number is referenced
                 {
                     Vector curr_vector = new Vector();
@@ -329,7 +331,7 @@ class jDispatcher implements ServerListener
    public synchronized boolean startPhase(String phase_name)
    {
         doing_phase = false;
-     //increment timestamp. Incoming messages with older timestamp will be ignored
+        //increment timestamp. Incoming messages with older timestamp will be ignored
         curr_phase = (PhaseDescriptor)phases.get(phase_name); //select data structures for the current phase
         if(curr_phase == null) return false; //Phase name does not correspond to any known phase.
         curr_seq_numbers = curr_phase.seq_numbers.elements(); 
@@ -353,6 +355,7 @@ class jDispatcher implements ServerListener
                     action.setStatus(Action.DISPATCHED, 0, verbose);
                     balancer.enqueueAction(action);
                     fireMonitorEvent(action, MONITOR_DISPATCHED);
+
                 }
             }
             return true;
@@ -459,7 +462,8 @@ class jDispatcher implements ServerListener
                     dep_dispatched.addElement(curr_action);
                     curr_action.setStatus(Action.DISPATCHED, 0, verbose);
                     balancer.enqueueAction(curr_action);
-                }
+                    fireMonitorEvent(curr_action, MONITOR_DISPATCHED);
+               }
             }
         }catch(Exception exc) {System.err.println("Internal error: action not stored in depend_actions hashtable");}
         if(seq_dispatched.isEmpty())  //No more sequential actions for this sequence number 
@@ -477,9 +481,11 @@ class jDispatcher implements ServerListener
                 {
                     Action curr_action = (Action)actions.nextElement();
                     seq_dispatched.addElement(curr_action);
+		    curr_action.setStatus(Action.DISPATCHED, 0, verbose); //Spostata da cesare
                     balancer.enqueueAction(curr_action);
-                    curr_action.setStatus(Action.DISPATCHED, 0, verbose);
-                }
+//                    curr_action.setStatus(Action.DISPATCHED, 0, verbose);
+                    fireMonitorEvent(curr_action, MONITOR_DISPATCHED);
+               }
             }
             else
             {

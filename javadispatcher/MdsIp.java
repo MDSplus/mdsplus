@@ -88,14 +88,14 @@ class MdsIp implements Runnable
                 msg.Receive(dis);  //Connection message
                 (new MdsMessage()).Send(dos);
             }catch(Exception exc){fireConnectionEvent(); return; }
-            System.out.println("Received connection from "+new String(msg.body));
+//            System.out.println("Received connection from "+new String(msg.body));
             while(true)
             {
                 try {
                     MdsMessage curr_msg = new MdsMessage((byte)0, (byte)0, (byte)0, null, new byte[0]);
                     curr_msg.Receive(dis);
 
-		    System.out.println("Devo ricevere n messaggi "  + curr_msg.nargs);
+//		    System.out.println("Devo ricevere n messaggi "  + curr_msg.nargs);
 
                     MdsMessage messages[] = new MdsMessage[curr_msg.nargs];
                     messages[0] = curr_msg;
@@ -105,7 +105,7 @@ class MdsIp implements Runnable
                         messages[i+1] = new MdsMessage((byte)0, (byte)0, (byte)0, null, new byte[0]);
                         messages[i+1].Receive(dis);
 
-			System.out.println("Ricevuto messaggio  "+ i + " " + new String(messages[i+1].body));
+//			System.out.println("Ricevuto messaggio  "+ i + " " + new String(messages[i+1].body));
                     }
                     MdsMessage answ = handleMessage(messages);
                     answ.Send(dos);

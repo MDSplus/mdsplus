@@ -95,7 +95,7 @@ class MdsServer extends MdsConnection
 	                        byte msg[] = new byte[msg_len];
 	                        dis.read(msg);
 	                        se = new MdsMonitorEvent(this, id, flags, status, new String(msg));
-	                        MdsMonitorEvent me = (MdsMonitorEvent)se;
+	                        //MdsMonitorEvent me = (MdsMonitorEvent)se;
 	                    } else {
 	                        se = new MdsServerEvent(this, id, flags, status);
 	                    }
