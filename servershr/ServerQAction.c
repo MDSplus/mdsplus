@@ -526,6 +526,9 @@ static int StartThread()
   }
   if (WorkerThreadRunning == 0)
   {
+#ifdef HAVE_WINDOWS_H
+	  status = pthread_create(&WorkerThread,0,Worker,0);
+#else
     pthread_attr_t att;
     pthread_attr_init(&att);
     pthread_attr_setstacksize(&att,0xffffff);
@@ -535,6 +538,7 @@ static int StartThread()
 #else
     pthread_attr_setdetachstate(&att,PTHREAD_CREATE_DETACHED);
     status = pthread_create(&WorkerThread,&att, Worker, 0);
+#endif
 #endif
     if (status)
     {
@@ -623,7 +627,9 @@ static int SendReply(SrvJob *job, int replyType, int status_in, int length, char
 {
   int status = 0;
   SOCKET sock;
+#ifndef HAVE_WINDOWS_H
   signal(SIGPIPE,SIG_IGN);
+#endif
   sock = AttachPort(job->h.addr, (short)job->h.port);
   if (sock >= 0)
   {
@@ -645,7 +651,9 @@ static int SendReply(SrvJob *job, int replyType, int status_in, int length, char
     if (!(status & 1))
       RemoveClient(job);
   }
+#ifndef HAVE_WINDOWS_H
   signal(SIGPIPE,SIG_DFL);
+#endif
   return status;
 }
       
