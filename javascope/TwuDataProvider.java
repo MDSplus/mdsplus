@@ -88,7 +88,7 @@ class TwuDataProvider
 
             if(all_times == null)
             {                   
-                    throw(new IOException("Frame time evaluation error"));
+                throw(new IOException("Frame time evaluation error"));
             }
 
             for(i = 0; i < all_times.length; i++)
@@ -723,7 +723,7 @@ class TwuDataProvider
             // same story as above, in setZoom.
         }
 
-        public boolean equalsInputSignal (String in_y, String in_x) 
+        public boolean notEqualsInputSignal (String in_y, String in_x) 
         {
             // this uses a simple (i.e. imperfect) comparison approach to see
             // if the WaveData for in_x, in_y has already been created ...
@@ -731,17 +731,14 @@ class TwuDataProvider
             in_y = (in_y != null && in_y.trim().length() != 0) ? in_y.trim() : null;
             in_x = (in_x != null && in_x.trim().length() != 0) ? in_x.trim() : null;
 
-            boolean y_equals = 
-                (in_y == null && this.in_y == null) 
-                || 
-                in_y.equalsIgnoreCase (this.in_y) ;
+            boolean y_equals
+                = (in_y==null) ? (this.in_y==null)
+                               : (this.in_y!=null && in_y.equalsIgnoreCase(this.in_y) );
+            boolean x_equals
+                = (in_x==null) ? (this.in_x==null)
+                               : (this.in_x!=null && in_x.equalsIgnoreCase(this.in_x) );
 
-            boolean x_equals = 
-                (in_x == null && this.in_x == null) 
-                ||
-                in_x.equalsIgnoreCase (this.in_x) ;
-
-            return  x_equals && y_equals ;
+            return  ! (x_equals && y_equals) ;
         }
 
         // JScope has an inconsistent way of dealing with data: GetFloatData() is used to
@@ -886,10 +883,10 @@ class TwuDataProvider
 
     public TwuWaveData FindWaveData (String in_y, String in_x) 
     {
-        if ( lastWaveData == null  ||  ! lastWaveData.equalsInputSignal (in_y, in_x) )
-	{
-	    lastWaveData = new TwuWaveData (in_y, in_x) ;
-	}
+        if ( lastWaveData == null  ||  lastWaveData.notEqualsInputSignal (in_y, in_x) )
+        {
+            lastWaveData = new TwuWaveData (in_y, in_x) ;
+        }
         return lastWaveData ;
     }
 
@@ -978,10 +975,10 @@ class TwuDataProvider
             }
             float   mult = len / (max - min) ;
             if (x_start < min)
-	      x_start = min ;
+              x_start = min ;
 
             if (x_end   > max)
-	      x_end = max ;
+              x_end = max ;
 
             ix_start = (int) Math.floor ( mult*(x_start - min) );
             ix_end   = (int) Math.ceil  ( mult*(x_end   - min) );
@@ -998,7 +995,7 @@ class TwuDataProvider
             // ------------------------------------------------
 
             int POINTS_PER_REQUEST = 100 ;
-            int step, i, j, k = POINTS_PER_REQUEST;
+            int step, k = POINTS_PER_REQUEST;
 
             step = (int) Math.ceil ( len / (float)k ) ;
             TwuFetchOptions opt = new TwuFetchOptions ( 0, step, k );
@@ -1007,21 +1004,16 @@ class TwuDataProvider
             boolean up = data [1] > data [0] ; 
             k = data.length ; // may be less than POINTS_PER_REQUEST .
 
+            int i=0;
             if (up)
             {
-                for (i=0   ; i < k ; i++) 
-                {
-                    if (data [i] > x_start) 
-                      break; 
-                }
+                while( i<k && data[i] <= x_start)
+                  i++;
             }
             else
             {
-                for (i=0   ; i < k ; i++) 
-                {
-                    if (data [i] < x_end  ) 
-                      break; 
-                }
+                while( i<k && data[i] >= x_end)
+                  i++;
             }
             if (i != 0)
               i-- ;     
@@ -1029,22 +1021,18 @@ class TwuDataProvider
             ix_start = i * step ; 
             // temporary starting index. will zoom in to get the index of a closer match.
 
+            int j=k-1;
             if (up)
             {
-                for (j=k-1 ; j > i ; j--)
-                {
-                    if (data [j] < x_end  ) 
-                      break; 
-                }
+                while( j>i && data[j] >= x_end )
+                  j--;
             }
             else
             {
-                for (j=k-1 ; j > i ; j--) 
-                {
-                   if (data [j] > x_start) 
-                     break; 
-                }
+                while( j>i && data[j] <= x_start )
+                  j--;
             }
+        
             ix_end = j * step ;
 
             data = null ; 
@@ -1103,19 +1091,13 @@ class TwuDataProvider
         int i=0;
         if (up) 
         {
-            for (i=0 ; i < newnum ; i++) 
-            {
-                if (data[i] > target)
-                  break; 
-            }
+            while ( i<newnum && data[i]<=target )
+              i++;
         }
         else
         {
-            for (i=0 ; i < newnum ; i++) 
-            {
-                if (data[i] < target) 
-                  break; 
-            }
+            while ( i<newnum && data[i]>=target )
+              i++;
         }
         if (i > 0)
           i-- ; // correct overshoot.
@@ -1140,7 +1122,7 @@ class TwuDataProvider
         return ret ;
     }
 
-// -------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
 
     protected static void handleException (Exception e) 
     {
@@ -1360,9 +1342,9 @@ class TwuDataProvider
     {
         this.user_agent = user_agent;
         // Could be used in the constructor for TWUProperties and in similar get URL actions.
-	// A site could used this as a possible (internal) software distribution management
-	// tool.  In the log of a web-server you can, by checking the user_agent, see which
-	// machines are still running old software.
+        // A site could used this as a possible (internal) software distribution management
+        // tool.  In the log of a web-server you can, by checking the user_agent, see which
+        // machines are still running old software.
     }
 }
 
