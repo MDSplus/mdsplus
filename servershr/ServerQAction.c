@@ -526,7 +526,19 @@ static void UnlockQueue()
 static void WaitForJob()
 {
   pthread_mutex_lock(&JobWaitMutex);
+#ifdef HAVE_WINDOWS_H
+  status = pthread_cond_timedwait(&JobWaitCondition, 100);
+#else
+  {
+    struct timespec hundred_millisec = {0,100000000};
+    struct timespec abstime;
+    pthread_get_expiration_np(&hundred_millisec,&abstime);
+    pthread_cond_timedwait( &JobWaitCondition, &JobWaitMutex, &abstime);
+  }
+#endif
+  /*
   pthread_cond_wait( &JobWaitCondition, &JobWaitMutex);
+  */
   pthread_mutex_unlock(&JobWaitMutex);
 }
 
@@ -572,14 +584,11 @@ static int StartThread()
       exit(status);
     }
   }
-  else
+  status = pthread_cond_signal(&JobWaitCondition);
+  if (status)
   {
-    status = pthread_cond_signal(&JobWaitCondition);
-    if (status)
-    {
-      perror("Error signalling condition");
-      exit(status);
-    }
+    perror("Error signalling condition");
+    exit(status);
   }
   return 1;
 }
