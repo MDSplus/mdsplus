@@ -1,4 +1,4 @@
-CFLAGS = -I../include -fpic -g -D_LINUX -nostdlib
+CFLAGS = -I../include -fpic -g -D_LINUX 
 MOTIF_CFLAGS = -I../include -D_NO_DXm
 WML = ln -sf /usr/examples/motif/wml/tokens.dat . ; /usr/examples/motif/wml/wml xmdsuil.wml ; rm wml-uil.* wml.report
 WML_INCLUDE = -I/usr/examples/motif/wml
@@ -14,3 +14,4 @@ RANLIB = ranlib $@
 STATIC_LIB = 
 SHARED_LIB =
 IDL_STATIC = -static
+DLD = /usr/lib/libdl.a
