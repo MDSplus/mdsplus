@@ -146,7 +146,7 @@ SOURCE=.\dynamic_syb.c
 # End Source File
 # Begin Source File
 
-SOURCE="$(IDL_DIR)\idl32.lib"
+SOURCE="$(IDL_DIR)\bin\bin.x86\idl32.lib"
 # End Source File
 # Begin Source File
 

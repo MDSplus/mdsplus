@@ -101,7 +101,7 @@ SOURCE=..\idl\mdssetevent.pro
 # End Group
 # Begin Source File
 
-SOURCE="$(IDL_DIR)\idl32.lib"
+SOURCE=..\..\RSI\IDL53\bin\bin.x86\idl32.lib
 # End Source File
 # Begin Source File
 
