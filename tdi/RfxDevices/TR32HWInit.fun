@@ -11,8 +11,8 @@ public fun TR32HWInit(in _nid, in _board_id, in _ext_clock, in _clock_div, in _p
 	private _TR32_TRG_NO_PXI_OUT =			byte(0x7);
 	private _TR32_TRG_EXT_OUT_OFF =			byte(0x0);
 	private _TR32_TRG_EXT_OUT_ON =			byte(0x1);
-	private _TR32_TRG_RISING_EDGE =			byte(0x1);
-	private _TR32_TRG_FALLING_EDGE =		byte(0x0);
+	private _TR32_TRG_RISING_EDGE =			byte(0x0);
+	private _TR32_TRG_FALLING_EDGE =		byte(0x1);
 	private _TR32_TRG_TERMINATION_ON =		byte(0x1);
 	private _TR32_TRG_TERMINATION_OFF=		byte(0x0);
 	private _TR32_TRG_SYNCHRONOUS =			byte(0x1);

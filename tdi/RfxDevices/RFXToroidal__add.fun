@@ -1,6 +1,6 @@
 public fun RFXToroidal__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXToroidal', 16, _nidout);
+    DevAddStart(_path, 'RFXToroidal', 21, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
 
 /*Parameters to be sent */
@@ -29,6 +29,12 @@ public fun RFXToroidal__add(in _path, out _nidout)
    DevAddNode(_path // ':DC8MF2', 'NUMERIC', [0,0,0,0,0,0], *, _nid);
    DevAddNode(_path // ':REC_PARAMS1', 'NUMERIC', ZERO(450, 0.), *, _nid);
    DevAddNode(_path // ':REC_PARAMS2', 'NUMERIC', ZERO(450, 0.), *, _nid);
+
+   DevAddNode(_path // ':TF_UNITS', 'TEXT', *, *, _nid);
+   DevAddNode(_path // ':TF_CONFIG', 'TEXT', *, *, _nid);
+   DevAddNode(_path // ':TF_CONTROL', 'TEXT', *, *, _nid);
+   DevAddNode(_path // ':TF_ENABLED', 'NUMERIC', *, *, _nid);
+   DevAddNode(_path // ':TF_WINDOW', 'NUMERIC', *, *, _nid);
  
    DevAddEnd();
 }
