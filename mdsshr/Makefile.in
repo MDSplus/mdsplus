@@ -40,7 +40,7 @@ clean :
 
 install:
 	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
+                mkdirhier @libdir@; \
                 chmod 755 @libdir@; \
         fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsShr@SHARETYPE@ @libdir@
