@@ -153,7 +153,7 @@ procedure DeleteNodeNow();
 procedure ModifyTags();
 procedure tag_button_proc(integer);
 procedure tag_selection_proc();
-
+procedure  AddNodeStart();
 list BaseStyle : arguments {
 };
 
@@ -1213,7 +1213,7 @@ object pushButtonss : XmPushButton widget {
     controls {
     };
     callbacks {
-        XmNactivateCallback = procedure BxManageCB("addDialog");
+        XmNactivateCallback = procedure AddNodeStart();
     };
 };
 

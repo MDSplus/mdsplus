@@ -89,6 +89,9 @@ static ListTreeItem *selections[MAX_SELECTIONS];
 static int num_selected;
 static Atom XA_TARGETS = 0;
 
+static ListTreeItem *add_target; 
+
+
 struct node {
   int nid;
   int usage;
@@ -1349,6 +1352,17 @@ DoAction( Widget w, XtPointer client_data, XtPointer call_data)
 static unsigned int usage=0;
 static char *device_type=0;
 
+void AddNodeStart( Widget w, XtPointer client_data, XtPointer call_data) 
+{
+   if (num_selected != 1) 
+     XmdsComplain(w, "select exactly one node as parent before choosing add node");
+   else {
+     add_target = selections[0];
+     XtManageChild(XtNameToWidget(toplevel, "*addDialog"));
+
+  }
+}
+
 void
 AddNodeDismiss( Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -1411,37 +1425,33 @@ Boolean AddNodeApply(Widget w)
 {
   Boolean status = 0;
   if (TreeEditing()) {
-    if (num_selected == 1) {
-      if (usage != 0) {
-        Widget name_w = XtNameToWidget(XtParent(w), "*.nodeName");
-        char *name_c = XmTextGetString(name_w);
-        if (strlen(name_c) > 0) {
-          if ((index(name_c, '.') == name_c) || (index(name_c, ':') == name_c))
-            XmdsComplain(w, "Remove leading punctuation");
-          else {
-            if (strlen(name_c) > 12)
-              XmdsComplain(w, "Node names must be no more than 12 characters long");
-	    else {
-              ListTreeItem *ret_itm;
-	      status = add_node(w, selections[0], name_c, usage, &ret_itm);
-              if (status) {
-                Widget tag_w = XtNameToWidget(XtParent(w), "*.nodeTags");
-                char *tags_c = XmTextGetString(tag_w);
-                if (strlen(tags_c) > 0)
-                  add_tags(ret_itm, tags_c);
-              }
-              status = TRUE;
-            }
+    if (usage != 0) {
+      Widget name_w = XtNameToWidget(XtParent(w), "*.nodeName");
+      char *name_c = XmTextGetString(name_w);
+      if (strlen(name_c) > 0) {
+	if ((index(name_c, '.') == name_c) || (index(name_c, ':') == name_c))
+	  XmdsComplain(w, "Remove leading punctuation");
+	else {
+	  if (strlen(name_c) > 12)
+	    XmdsComplain(w, "Node names must be no more than 12 characters long");
+	  else {
+	    ListTreeItem *ret_itm;
+	    status = add_node(w, add_target, name_c, usage, &ret_itm);
+	    if (status) {
+	      Widget tag_w = XtNameToWidget(XtParent(w), "*.nodeTags");
+	      char *tags_c = XmTextGetString(tag_w);
+	      if (strlen(tags_c) > 0)
+		add_tags(ret_itm, tags_c);
+	    }
+	    status = TRUE;
 	  }
-        }
-        else
-          XmdsComplain(w, "Specifiy a name before \"Ok\"");
+	}
       }
       else
-        XmdsComplain(w, "Please choose a usage before pressing \"Ok\"");
+	XmdsComplain(w, "Specifiy a name before \"Ok\"");
     }
     else
-      XmdsComplain(w, "Select exactly one node to be the parent!");
+      XmdsComplain(w, "Please choose a usage before pressing \"Ok\"");
   }
   else
     XmdsComplain(w, "Tree not open for edit");
