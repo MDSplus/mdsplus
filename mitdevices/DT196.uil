@@ -21,139 +21,6 @@ value
     DEVICE$N_INP_HEAD :  0;
     DEVICE$N_INP_ENDIDX :  2;
     DEVICE$N_INP_STARTIDX :  1;
-    DEVICE$N_INPUTS :  12;
-    TR10_NODE :  1;
-    TR10_BOARD :  2;
-    TR10_COMMENT :  3;
-    TR10_TRIG_SRC :  4;
-    TR10_TRIG_CHAN :  5;
-    TR10_TRIG_OUTPUT :  6;
-    TR10_TRIG_SENSE :  7;
-    TR10_TRIG_TERM :  8;
-    TR10_TRIG_SYNC :  9;
-    TR10_TRIG_LEVEL :  10;
-    TR10_TRIG :  11;
-    TR10_CLK_SRC :  12;
-    TR10_CLK_OUTPUT :  13;
-    TR10_CLK_SENSE :  14;
-    TR10_CLK_TERM :  15;
-    TR10_CLK_DIV :  16;
-    TR10_CLOCK :  17;
-    TR10_CLK_EXT_1MHZ :  18;
-    TR10_DAQ_MEM :  18;
-    TR10_ACTIVE_CHAN :  19;
-    TR10_POST_TRIG :  20;
-    TR10_PRE_TRIG :  21;
-    TR10_INPUTS :  22;
-    TR10_NODES_PER_INPUT :  4;
-    TR10_INPUT_HEAD :  0;
-    TR10_INPUT_START :  1;
-    TR10_INPUT_END :  2;
-    TR10_INPUT_FILTER :  3;
-    INCAA16$N_INP_HEAD :  0;
-    INCAA16$N_INP_ENDIDX :  2;
-    INCAA16$K_NODES_PER_INP :  3;
-    INCAA16$N_INP_STARTIDX :  1;
-    INCAA16$N_INPUTS :  12;
-    INCAA16$N_INIT_ACTION :  60;
-    INCAA16$N_STORE_ACTION :  61;
-    DEVICE$N_CLOCK_OUT :  3;
-    DEVICE$N_CHANNEL_0 :  4;
-    DEVICE$N_CHANNEL_0_MODE :  5;
-    DEVICE$N_CHANNEL_0_P1 :  6;
-    DEVICE$N_CHANNEL_0_P2 :  7;
-    DEVICE$N_CHANNEL_0_P3 :  8;
-    DEVICE$N_CHANNEL_0_P4 :  9;
-    DEVICE$N_CHANNEL_0_P5 :  10;
-    DEVICE$N_CHANNEL_0_P6 :  11;
-    DEVICE$N_CHANNEL_0_START_LOW :  12;
-    DEVICE$N_CHANNEL_0_EDGES :  13;
-    DEVICE$N_CHANNEL_0_EDGES_R :  14;
-    DEVICE$N_CHANNEL_0_EDGES_F :  15;
-    DEVICE$N_CHANNEL_0_COMMENT :  16;
-    DEVICE$N_CHANNEL_1 :  17;
-    DEVICE$N_CHANNEL_1_MODE :  18;
-    DEVICE$N_CHANNEL_1_P1 :  19;
-    DEVICE$N_CHANNEL_1_P2 :  20;
-    DEVICE$N_CHANNEL_1_P3 :  21;
-    DEVICE$N_CHANNEL_1_P4 :  22;
-    DEVICE$N_CHANNEL_1_P5 :  23;
-    DEVICE$N_CHANNEL_1_P6 :  24;
-    DEVICE$N_CHANNEL_1_START_LOW :  25;
-    DEVICE$N_CHANNEL_1_EDGES :  26;
-    DEVICE$N_CHANNEL_1_EDGES_R :  27;
-    DEVICE$N_CHANNEL_1_EDGES_F :  28;
-    DEVICE$N_CHANNEL_1_COMMENT :  29;
-    DEVICE$N_CHANNEL_2 :  30;
-    DEVICE$N_CHANNEL_2_MODE :  31;
-    DEVICE$N_CHANNEL_2_P1 :  32;
-    DEVICE$N_CHANNEL_2_P2 :  33;
-    DEVICE$N_CHANNEL_2_P3 :  34;
-    DEVICE$N_CHANNEL_2_P4 :  35;
-    DEVICE$N_CHANNEL_2_P5 :  36;
-    DEVICE$N_CHANNEL_2_P6 :  37;
-    DEVICE$N_CHANNEL_2_START_LOW :  38;
-    DEVICE$N_CHANNEL_2_EDGES :  39;
-    DEVICE$N_CHANNEL_2_EDGES_R :  40;
-    DEVICE$N_CHANNEL_2_EDGES_F :  41;
-    DEVICE$N_CHANNEL_2_COMMENT :  42;
-    DEVICE$N_CHANNEL_3 :  43;
-    DEVICE$N_CHANNEL_3_MODE :  44;
-    DEVICE$N_CHANNEL_3_P1 :  45;
-    DEVICE$N_CHANNEL_3_P2 :  46;
-    DEVICE$N_CHANNEL_3_P3 :  47;
-    DEVICE$N_CHANNEL_3_P4 :  48;
-    DEVICE$N_CHANNEL_3_P5 :  49;
-    DEVICE$N_CHANNEL_3_P6 :  50;
-    DEVICE$N_CHANNEL_3_START_LOW :  51;
-    DEVICE$N_CHANNEL_3_EDGES :  52;
-    DEVICE$N_CHANNEL_3_EDGES_R :  53;
-    DEVICE$N_CHANNEL_3_EDGES_F :  54;
-    DEVICE$N_CHANNEL_3_COMMENT :  55;
-    DEVICE$N_CHANNEL_4 :  56;
-    DEVICE$N_CHANNEL_4_MODE :  57;
-    DEVICE$N_CHANNEL_4_P1 :  58;
-    DEVICE$N_CHANNEL_4_P2 :  59;
-    DEVICE$N_CHANNEL_4_P3 :  60;
-    DEVICE$N_CHANNEL_4_P4 :  61;
-    DEVICE$N_CHANNEL_4_P5 :  62;
-    DEVICE$N_CHANNEL_4_P6 :  63;
-    DEVICE$N_CHANNEL_4_START_LOW :  64;
-    DEVICE$N_CHANNEL_4_EDGES :  65;
-    DEVICE$N_CHANNEL_4_EDGES_R :  66;
-    DEVICE$N_CHANNEL_4_EDGES_F :  67;
-    DEVICE$N_CHANNEL_4_COMMENT :  68;
-    DEVICE$N_START_TIME :  69;
-    DEVICE$N_START_EVENT :  70;
-    DIO2$N__HEAD :  0;
-    DIO2$N__BOARD_ID :  1;
-    DIO2$N__SW_MODE :  2;
-    DIO2$N__IP_ADDR :  3;
-    DIO2$N__COMMENT :  4;
-    DIO2$N__CLOCK_SOURCE :  5;
-    DIO2$N__REC_START_EV :  6;
-    DIO2$K_NODES_PER_CHANNEL :  17;
-    DIO2$N__CHANNEL_0 :  7;
-    DIO2$N__CHAN_FUNCTION :  1;
-    DIO2$N__CHAN_TRIG_MODE :  2;
-    DIO2$N__CHAN_EVENT :  3;
-    DIO2$N__CHAN_CYCLIC :  4;
-    DIO2$N__CHAN_DELAY :  5;
-    DIO2$N__CHAN_DURATION :  6;
-    DIO2$N__CHAN_FREQUENCY_1 :  7;
-    DIO2$N__CHAN_FREQUENCY_2 :  8;
-    DIO2$N__CHAN_INIT_LEVEL_1 :  9;
-    DIO2$N__CHAN_INIT_LEVEL_2 :  10;
-    DIO2$N__CHAN_DUTY_CYCLE :  11;
-    DIO2$N__CHAN_TRIGGER :  12;
-    DIO2$N__CHAN_CLOCK :  13;
-    DIO2$N__CHAN_TRIGGER_1 :  14;
-    DIO2$N__CHAN_TRIGGER_2 :  15;
-    DIO2$N__CHAN_COMMENT :  16;
-    DIO2$N__REC_EVENTS :  143;
-    DIO2$N__REC_TIMES :  144;
-    DIO2$N__SYNCH :  145;
-    DIO2$N__SYNCH_EVENT :  146;
     DEVICE$N_INP_INC :  3;
     DEVICE$N_INP_COEFF :  4;
     DT200_N_x :  0;
@@ -196,10 +63,6 @@ value
     DT200_INIT_ACTION :  509;
     DT200_STORE_ACTION :  510;
     FILTER_LABEL :  compound_string("Coeffs");
-procedure Reset;
-procedure Show;
-procedure ManageChild(string);
-procedure UnManageChild(string);
 
 list BaseStyle : arguments {
 };
@@ -10225,7 +10088,7 @@ object nidOptionMenu : user_defined procedure XmdsCreateNidOptionMenu {
         XmdsNputOnApply = true;
         XmdsNnidOffset = DT200_DIOS + 0 * DT200_N_NODES_PER_DIO + DT200_DIO_WIRE;
         XmdsNlabelStrings = string_table(
-	compound_string("lemo"),
+	compound_string("clock"),
 	compound_string("pxi"),
 	compound_string("fpga"));
         XmNtopAttachment = XmATTACH_OPPOSITE_WIDGET;
@@ -10320,7 +10183,7 @@ object nidOptionMenu5 : user_defined procedure XmdsCreateNidOptionMenu {
         XmdsNputOnApply = true;
         XmdsNnidOffset = DT200_DIOS + 1 * DT200_N_NODES_PER_DIO + DT200_DIO_WIRE;
         XmdsNlabelStrings = string_table(
-	compound_string("lemo"),
+	compound_string("mezz"),
 	compound_string("pxi"),
 	compound_string("fpga"));
         XmNtopAttachment = XmATTACH_WIDGET;
@@ -10415,7 +10278,7 @@ object nidOptionMenu7 : user_defined procedure XmdsCreateNidOptionMenu {
         XmdsNputOnApply = true;
         XmdsNnidOffset = DT200_DIOS + 2 * DT200_N_NODES_PER_DIO + DT200_DIO_WIRE;
         XmdsNlabelStrings = string_table(
-	compound_string("lemo"),
+	compound_string("mezz"),
 	compound_string("pxi"),
 	compound_string("fpga"));
         XmNtopAttachment = XmATTACH_WIDGET;
@@ -10510,7 +10373,7 @@ object nidOptionMenu9 : user_defined procedure XmdsCreateNidOptionMenu {
         XmdsNputOnApply = true;
         XmdsNnidOffset = DT200_DIOS + 3 * DT200_N_NODES_PER_DIO + DT200_DIO_WIRE;
         XmdsNlabelStrings = string_table(
-	compound_string("lemo"),
+	compound_string("trig"),
 	compound_string("pxi"),
 	compound_string("fpga"));
         XmNtopAttachment = XmATTACH_WIDGET;
@@ -10605,7 +10468,7 @@ object nidOptionMenu11 : user_defined procedure XmdsCreateNidOptionMenu {
         XmdsNputOnApply = true;
         XmdsNnidOffset = DT200_DIOS + 4 * DT200_N_NODES_PER_DIO + DT200_DIO_WIRE;
         XmdsNlabelStrings = string_table(
-	compound_string("lemo"),
+	compound_string("mezz"),
 	compound_string("pxi"),
 	compound_string("fpga"));
         XmNtopAttachment = XmATTACH_OPPOSITE_WIDGET;
@@ -10700,7 +10563,7 @@ object nidOptionMenu13 : user_defined procedure XmdsCreateNidOptionMenu {
         XmdsNputOnApply = true;
         XmdsNnidOffset = DT200_DIOS + 5 * DT200_N_NODES_PER_DIO + DT200_DIO_WIRE;
         XmdsNlabelStrings = string_table(
-	compound_string("lemo"),
+	compound_string("mezz"),
 	compound_string("pxi"),
 	compound_string("fpga"));
         XmNtopAttachment = XmATTACH_WIDGET;
