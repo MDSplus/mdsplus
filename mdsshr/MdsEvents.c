@@ -831,6 +831,7 @@ static void handleRemoteAst()
             	    MdsEventInfo *event = (MdsEventInfo *)m->bytes;
             	    ((void (*)())(*event->astadr))(event->astprm,  12, event->data);
 		}
+                if (m) free(m);
 	    }
  	}
     }

@@ -45,6 +45,7 @@ char *ServerGetInfo(int full, char *server)
   char *ans;
   char *ansret;
   short len = 0;
+  void *mem = 0;
   int sock = ServerConnect(server);
   if (sock >= 0)
   {
@@ -56,7 +57,7 @@ char *ServerGetInfo(int full, char *server)
       int dims[8];
       int numbytes;
       char *reply;
-      status = GetAnswerInfo(sock,&dtype,&len,&ndims,dims,&numbytes,(void **)&reply);
+      status = GetAnswerInfoTS(sock,&dtype,&len,&ndims,dims,&numbytes,(void **)&reply,&mem);
       if ((status & 1) && (dtype == DTYPE_CSTRING))
         ans = reply;
       else
@@ -77,6 +78,8 @@ char *ServerGetInfo(int full, char *server)
     len = strlen(ans);
   }
   ansret = strncpy((char *)malloc(len+1),ans,len);
+  if (mem)
+    free(mem);
   ansret[len] = 0;
   return(ansret);
 }

@@ -96,7 +96,8 @@ int MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated ar
     short len;
     int numbytes;
     void *dptr;
-    status = GetAnswerInfo(sock, &arg->dtype, &len, &arg->ndims, arg->dims, &numbytes, &dptr);
+    void *mem = 0;
+    status = GetAnswerInfoTS(sock, &arg->dtype, &len, &arg->ndims, arg->dims, &numbytes, &dptr, &mem);
     arg->length = len;
     if (numbytes)
     {
@@ -112,6 +113,7 @@ int MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated ar
     }
     else
       arg->ptr = NULL;
+    if (mem) free(mem);
   }
   else
     arg->ptr = NULL;
@@ -182,9 +184,11 @@ int MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL ter
     short len;
     int numbytes;
     void *dptr;
-    status = GetAnswerInfo(sock, &dtype, &len, &ndims, dims, &numbytes, &dptr);
+    void *mem = 0;
+    status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, &dptr, &mem);
     if (status & 1 && dtype == DTYPE_LONG && ndims == 0 && numbytes == sizeof(int))
       memcpy(&status,dptr,numbytes);
+    if (mem) free(mem);
   }
   return status;
 }
@@ -444,6 +448,7 @@ unsigned long WINAPI MdsDispatchEvent(SOCKET sock)
       MdsEventInfo *event = (MdsEventInfo *)m->bytes;
       (*event->astadr)(event->astprm, event->eventid, event->data);
     }
+    free(m);
 #ifdef MULTINET
     sys$qiow(0,sock,IO$_SETMODE | IO$M_ATTNAST,0,0,0,MdsDispatchEvent,sock,0,0,0,0);
 #endif

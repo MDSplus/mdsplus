@@ -413,8 +413,7 @@ int main(int argc, char **argv)
 static int DoMessage(Client *c)
 {
   int status;
-  Message *msgptr;
-  msgptr = GetMdsMsg(c->sock,&status);
+  Message *msgptr = GetMdsMsg(c->sock,&status);
   if (status & 1)
   {
     send(c->sock, 0, 0, 0);
@@ -422,6 +421,8 @@ static int DoMessage(Client *c)
   }
   else
     RemoveClient(c);
+  if (msgptr)
+    free(msgptr);
   return status;
 }
 
@@ -533,6 +534,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     }
     m_status = m.h.status = (ok & 1) ? (1 | (user_compression_level << 1)) : 0;
     m.h.client_type = m_user->h.client_type;
+    free(m_user);
     SetSocketOptions(sock);
     SendMdsMsg(sock,&m,0);
     if (NO_SPAWN)

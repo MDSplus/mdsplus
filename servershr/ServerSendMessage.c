@@ -128,6 +128,7 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
     int  dims[8];
     int numbytes;
     int *dptr;
+    void *mem=0;
     unsigned char totargs = (unsigned char)(numargs+6);
     jobid = RegisterJob(msgid,retstatus,ast,astparam,before_ast,sock);
     cmd[offset] = ')';
@@ -178,9 +179,8 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
         }
       }
     }
-    pthread_lock_global_np();
-    status = GetAnswerInfo(sock, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr);
-    pthread_unlock_global_np();
+    status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
+    if (mem) free(mem);
   }
   return status;
 

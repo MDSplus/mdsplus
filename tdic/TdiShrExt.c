@@ -298,6 +298,7 @@ struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)  /**** NOTE:
    short len;
    int numbytes;
    void *dptr;
+   void *mem = 0;
 /* check there is a connection open */
    if(sock == INVALID_SOCKET) {
       printf("MdsValue: No Socket open\n");
@@ -361,7 +362,7 @@ struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)  /**** NOTE:
    va_end(incrmtr);
 /* Get the reply ================================================== */
    if (status & 1) {
-      status = GetAnswerInfo(sock, &dtype, &len, &ndims, dims, &numbytes, &dptr);
+      status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, &dptr,&mem);
 #ifdef DEBUG
       printf("Reply status[%d],dtype[%d],len[%d],ndims[%d],numbytes[%d],ans[%d]\n"
 	     ,status,dtype,len,ndims,numbytes,*(int *)dptr);
@@ -398,6 +399,7 @@ struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)  /**** NOTE:
         MdsCopyDxXd((struct descriptor *)&a_dsc, &ans_xd);   /* Copy the arrival data to xd output */
      }
    }
+   if (mem) free(mem);
    return(&ans_xd);
 }
 #ifdef CALLING

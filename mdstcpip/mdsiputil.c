@@ -1,5 +1,4 @@
 #include "mdsip.h"
-#include <pthread.h>
 #ifndef min
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
@@ -314,7 +313,8 @@ static SOCKET ConnectToPort(char *host, char *service)
         }
         CompressionLevel = (m->h.status & 0x1e) >> 1;
       }
-    }
+      if (m) free(m);
+   }
     else
     {
       printf("MDSplus ConnectToPort: Error in user verification\n");
@@ -434,14 +434,24 @@ SOCKET  ConnectToMdsEvents(char *host)
   return ConnectToPort(hostpart, portpart);
 }
 
-int  GetAnswerInfo(SOCKET sock, char *dtype, short *length, char *ndims, int *dims,
- int *numbytes, void * *dptr)
+int  GetAnswerInfo(SOCKET sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr)
+{
+  static Message *m = 0;
+  if (m)
+  {    
+    free(m);
+    m = 0;
+  }
+  return GetAnswerInfoTS(sock,dtype,length,ndims,dims,numbytes,dptr,&m);
+}
+
+int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, Message **m)
 {
   int status;
-  Message *m;
   int i;
+  *m = 0;
   *numbytes = 0;
-  m = GetMdsMsg(sock, &status);
+  *m = GetMdsMsg(sock, &status);
   if (status != 1)
   {
     *dtype = 0;
@@ -449,42 +459,44 @@ int  GetAnswerInfo(SOCKET sock, char *dtype, short *length, char *ndims, int *di
     *ndims = 0;
     *numbytes = 0;
     *dptr = 0;
+    if (*m) free(*m);
     return 0;
   }
-  if (m->h.ndims)
+  if ((*m)->h.ndims)
   {
-    *numbytes = m->h.length;
-    for (i=0;i<m->h.ndims;i++)
+    *numbytes = (*m)->h.length;
+    for (i=0;i<(*m)->h.ndims;i++)
     {
 #ifdef __CRAY
-      dims[i] = i % 2 ? m->h.dims[i/2] & 0xffffffff : m->h.dims[i/2] >> 32;
+      dims[i] = i % 2 ? (*m)->h.dims[i/2] & 0xffffffff : (*m)->h.dims[i/2] >> 32;
 #else
-      dims[i] = m->h.dims[i];
+      dims[i] = (*m)->h.dims[i];
 #endif
       *numbytes *= dims[i];
 #ifdef DEBUG
       printf("dim[%d] = %d\n",i,dims[i]);
 #endif
     }
-    for (i=m->h.ndims;i < MAX_DIMS; i++)
+    for (i=(*m)->h.ndims;i < MAX_DIMS; i++)
       dims[i] = 0;
   }
   else
   {
-    *numbytes = m->h.length;
+    *numbytes = (*m)->h.length;
     for (i=0;i<MAX_DIMS;i++)
       dims[i] = 0;
   }
-  if ((int)(sizeof(MsgHdr) + *numbytes) != m->h.msglen)
+  if ((int)(sizeof(MsgHdr) + *numbytes) != (*m)->h.msglen)
   {
     *numbytes = 0;
+    if (*m) free(*m);
     return 0;
   }
-  *dtype = m->h.dtype;
-  *length = m->h.length;
-  *ndims = m->h.ndims;
-  *dptr = m->bytes;
-  return m->h.status;
+  *dtype = (*m)->h.dtype;
+  *length = (*m)->h.length;
+  *ndims = (*m)->h.ndims;
+  *dptr = (*m)->bytes;
+  return (*m)->h.status;
 }
 
 int  DisconnectFromMds(SOCKET sock)
@@ -747,16 +759,10 @@ static void FlipData(Message *m)
 
 Message *GetMdsMsg(SOCKET sock, int *status)
 {
-  static MsgHdr header;
-  static Message *msg = 0;
+  MsgHdr header;
+  Message *msg = 0;
   int msglen = 0;
   *status = 0;
-  pthread_lock_global_np();
-  if (msg)
-  {
-    free(msg);
-    msg = 0;
-  }
   *status = GetBytes(sock, (char *)&header, sizeof(MsgHdr), 0);
   if (*status &1)
   {
@@ -771,7 +777,6 @@ Message *GetMdsMsg(SOCKET sock, int *status)
       shutdown(sock,2);
       close(sock);
       *status = 0;
-      pthread_unlock_global_np();
       return 0;
     }  
     msglen = header.msglen;
@@ -801,15 +806,14 @@ Message *GetMdsMsg(SOCKET sock, int *status)
     if (*status & 1 && (Endian(header.client_type) != Endian(ClientType())))
       FlipData(msg);
   }
-  pthread_unlock_global_np();
   return msg;
 }
 
 #ifdef _WIN32
 Message *GetMdsMsgOOB(SOCKET sock, int *status)
 {
-  static MsgHdr header;
-  static Message *msg = 0;
+  MsgHdr header;
+  Message *msg = 0;
   int msglen = 0;
   static struct timeval timer = {10,0};
 
@@ -826,12 +830,6 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
   FD_ZERO(&exceptfds);
   FD_SET(sock,&exceptfds);
   *status = 0;
-  if (msg)
-  {
-    free(msg);
-    msg = 0;
-  }
-
   selectstat = select(tablesize, 0, 0, &exceptfds, NULL);
   if (selectstat == SOCKET_ERROR) {
       perror("GETMSGOOB select error");
@@ -869,8 +867,10 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
     }  
     msg = malloc(header.msglen);
     msg->h = header;
-	*status = GetBytes(sock, msg->bytes, header.msglen - sizeof(MsgHdr), 0);
+    *status = GetBytes(sock, msg->bytes, header.msglen - sizeof(MsgHdr), 0);
   }
+  if (!(*status & 1) && msg)
+    free(msg);
   return (*status & 1) ? msg : 0;
 }
 #endif
