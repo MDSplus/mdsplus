@@ -1969,3 +1969,9 @@ unsigned short Crc(unsigned int len, unsigned char *bufptr)
   return cword;
 }
 
+int MdsPutEnv(char *cmd)
+{
+  char *tmp=strcpy(malloc(strlen(cmd)+1),cmd);
+  putenv(tmp);
+  return 1;
+}
