@@ -85,9 +85,6 @@ clean :
 	- rm *.o
 	- rm *.so
 	- rm so_locations
-	- rm TdiLex.c
-	- rm TdiYacc.c
-	- rm tdiyacc.h
 	- rm .depend
 
 TdiLex.c : TdiLex.x
