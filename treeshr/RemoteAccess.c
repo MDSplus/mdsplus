@@ -903,6 +903,15 @@ STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_
       int info[3];
       info[0]=strlen(filename)+1;
       info[1]=options;
+      if (O_CREAT == 0x0200) /* BSD */
+      {
+        if (mode & O_CREAT)
+          mode = (mode & ~O_CREAT) | 0100;
+        if (mode & O_TRUNC)
+          mode = (mode & ~O_TRUNC) | 01000;
+	if (mode & O_EXCL)
+          mode = (mode & ~O_EXCL) | 0200;
+      }
       info[2]=(int)mode;
       status = SendArg(*sock,MDS_IO_OPEN_K,0,0,0,sizeof(info)/sizeof(int),info,filename);
       if (status & 1)
