@@ -18,7 +18,9 @@ bottom of this file for configuring fortran entry points.
 #include <descrip.h>
 #endif
 #include "mdslib.h"
+#ifndef __VMS
 SOCKET mdsSocket=INVALID_SOCKET;
+#endif
 #ifndef _CLIENT_ONLY
 #ifdef __VMS
 extern int MDS$OPEN();
@@ -616,7 +618,11 @@ int descr (int *dtype, void *data, int *dim1, ...)
       }
       adsc->dimct = ndim;
 
+      adsc->aflags.binscale = 0;
+      adsc->aflags.redim = 1;
+      adsc->aflags.column = 1;
       adsc->aflags.coeff = 1;
+      adsc->aflags.bounds = 0;
       adsc->a0 = adsc->pointer;  /* &&& this will need to be adjusted for native API, as (array lower bound=0) will not be required. */
       adsc->m[0] = *dim1;
 
@@ -638,6 +644,11 @@ int descr (int *dtype, void *data, int *dim1, ...)
       adsc->class = CLASS_A;
       adsc->arsize = totsize * adsc->length;
       adsc->dimct = 1;
+      adsc->aflags.binscale = 0;
+      adsc->aflags.redim = 1;
+      adsc->aflags.column = 1;
+      adsc->aflags.coeff = 0;
+      adsc->aflags.bounds = 0;
       if (ndim < 1) printf("(descr.c) WARNING: requested ndim<1, forcing to 1.\n");
     }
       
@@ -999,7 +1010,7 @@ int  MdsPut(char *pathname, char *expression, ...)
       if (status & 1)
       {
 #ifdef __VMS
-	if ((status = TreePutRecord(&nid, (struct descriptor *)arglist[argidx-2]),0) & 1)
+	if ((status = TreePutRecord(&nid, (struct descriptor *)arglist[argidx-1]),0) & 1)
 	{ 
 #else
 	if ((status = TreePutRecord(nid, (struct descriptor *)arglist[argidx-2]),0) & 1)
