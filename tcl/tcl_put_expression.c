@@ -44,7 +44,7 @@ int TclPutExpression()
             cli_get_value("EOF",&dsc_eof);
             while ((mdsdcl_get_input_nosymbols("PUT> ",&val_part) & 1))
                {
-                if (dsc_eof.dscA_pointer)
+                if (dsc_eof.dscA_pointer && val_part.dscA_pointer)
                    {
                     if (!strcmp(dsc_eof.dscA_pointer,val_part.dscA_pointer))
                         break;
