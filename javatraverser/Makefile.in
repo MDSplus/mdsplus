@@ -11,7 +11,13 @@ INSTALL=@top_srcdir@/conf/install-sh -c
 DEVICES = TRCHSetup.java\
 ADC265Setup.java\
 E1463Setup.java\
-VMEWavesSetup.java
+VMEWavesSetup.java\
+MPBDecoderSetup.java\
+RFXClockSetup.java \
+RFXPulseSetup.java \
+RFXDClockSetup.java \
+RFXGClockSetup.java \
+MPBEncoderSetup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
@@ -89,6 +95,7 @@ RoutineEditor.java\
 ShortArray.java\
 ShortData.java\
 SignalData.java\
+StringArray.java\
 StringData.java\
 SyntaxException.java\
 TaskEditor.java\

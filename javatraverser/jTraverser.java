@@ -270,5 +270,10 @@ void reportChange(String exp, int shot, boolean editable, boolean readonly)
     }
 
 }
+
+public Component add(Component component)
+{
+    return getContentPane().add(component);
+}
 	   
 }    

@@ -1,6 +1,6 @@
 import javax.swing.*;
 import javax.swing.event.*;
-import java.awt.*;
+import java.awt.*;  
 
 public class DeviceField extends DeviceComponent
 {
@@ -78,6 +78,7 @@ public class DeviceField extends DeviceComponent
     
     protected void displayData(Data data, boolean is_on)
     {
+        initial_state = is_on;
         if(showState)
             checkB.setSelected(is_on);
         if(data != null)
@@ -120,6 +121,8 @@ public class DeviceField extends DeviceComponent
         //if(checkB != null) checkB.setEnabled(state);
         //if(textF != null) textF.setEnabled(state);
         if(label != null) label.setEnabled(state);
+        //if(checkB != null) checkB.setSelected(state);
+        //initial_state = state;
     }
 
     public Component add(Component c)

@@ -16,6 +16,10 @@ public class DeviceSetup extends JDialog
     protected String [] methods;
     JMenuItem pop_items[];
     JPopupMenu pop_methods = null;
+    
+    
+    
+    
     public void setDeviceType(String deviceType) 
     {
         this.deviceType = deviceType;
@@ -98,6 +102,7 @@ public class DeviceSetup extends JDialog
         if(methods != null && methods.length > 0)
         {
             pop_methods = new JPopupMenu("Methods");
+            //pop_methods = new JPopupMenu();
             pop_items = new JMenuItem[methods.length];
             for(int i = 0; i < methods.length; i++)
             {
@@ -134,12 +139,16 @@ public class DeviceSetup extends JDialog
                         }          
                     }});
             }
+            pop_methods.pack();
             addMouseListener(new MouseAdapter()
             {
                 public void mousePressed(MouseEvent e)
                 {
                     if((e.getModifiers() & Event.META_MASK)!=0)
+                    {
+                        pop_methods.setInvoker(DeviceSetup.this);
                         pop_methods.show(DeviceSetup.this, e.getX(), e.getY());
+                    }
                 }
                 /*public void mouseReleased(MouseEvent e)
                 {
@@ -153,6 +162,12 @@ public class DeviceSetup extends JDialog
     
     public void apply()
     {
+        NidData oldNid = null; 
+        try {
+            oldNid = subtree.getDefault(Tree.context);
+            subtree.setDefault(new NidData(baseNid), Tree.context);
+        }catch(Exception exc){}
+        
         for(int i = 0; i < num_components; i++)
         {
             try {
@@ -166,6 +181,9 @@ public class DeviceSetup extends JDialog
             }
         }
         fireDataChangeEvent();
+        try {
+            subtree.setDefault(oldNid, Tree.context);
+        }catch(Exception exc){}
     }
     public void reset()
     {

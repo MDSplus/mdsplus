@@ -1,6 +1,6 @@
 //package jTraverser;
 import java.io.*;
-import java.awt.*;
+import java.awt.*;  
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -473,148 +473,148 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     public void mouseReleased(MouseEvent e){}
     public void mousePressed(MouseEvent e)
     {
-	if(curr_tree == null) return;
-	int item_idx;
-	    
-	curr_tree_node = 
-		(DefaultMutableTreeNode)curr_tree.getClosestPathForLocation(e.getX(), e.getY()).getLastPathComponent();
-	curr_node = (Node)curr_tree_node.getUserObject();
-	//if(e.isPopupTrigger())
-	if((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
-	{
-	    Point screen_origin = getLocationOnScreen();
-	    //curr_origin = new Point(e.getX()+screen_origin.x, e.getY()+screen_origin.y);
-        curr_origin = screen_origin;
-        curr_origin.x += 20;
-        curr_origin.y += 20;
-        
-        
-	    NodeBeanInfo nbi = curr_node.getBeanInfo();
-	    final PropertyDescriptor [] node_properties = nbi.getPropertyDescriptors();
-	    final MethodDescriptor [] node_methods = nbi.getMethodDescriptors();
+	    if(curr_tree == null) return;
+	    int item_idx;
+    	    
+	    curr_tree_node = 
+		    (DefaultMutableTreeNode)curr_tree.getClosestPathForLocation(e.getX(), e.getY()).getLastPathComponent();
+	    curr_node = (Node)curr_tree_node.getUserObject();
+	    //if(e.isPopupTrigger())
+	    if((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
+	    {
+	        Point screen_origin = getLocationOnScreen();
+	        //curr_origin = new Point(e.getX()+screen_origin.x, e.getY()+screen_origin.y);
+            curr_origin = screen_origin;
+            curr_origin.x += 20;
+            curr_origin.y += 20;
+            
+            
+	        NodeBeanInfo nbi = curr_node.getBeanInfo();
+	        final PropertyDescriptor [] node_properties = nbi.getPropertyDescriptors();
+	        final MethodDescriptor [] node_methods = nbi.getMethodDescriptors();
 
-	    if(pop == null)
-	    {
-		//dialogs = new JDialog[node_properties.length];
-		dialog_sets = new DialogSet[node_properties.length];
-		for(int i = 0; i < node_properties.length; i++)
-		    dialog_sets[i] = new DialogSet();
-    		pop = new JPopupMenu();
-		menu_items = new JMenuItem[node_properties.length + node_methods.length];
-	    if(is_editable)
-	    {
-		JMenuItem jm = new JMenu("Add Node");
-		jm.add(add_action_b = new JMenuItem("Action"));
-		add_action_b.addActionListener(this);
-		jm.add(add_dispatch_b = new JMenuItem("Dispatch"));
-		add_dispatch_b.addActionListener(this);
-		jm.add(add_numeric_b = new JMenuItem("Numeric"));
-		add_numeric_b.addActionListener(this);
-		jm.add(add_signal_b = new JMenuItem("Signal"));
-		add_signal_b.addActionListener(this);
-		jm.add(add_task_b = new JMenuItem("Task"));
-		add_task_b.addActionListener(this);
-		jm.add(add_text_b = new JMenuItem("Text"));
-		add_text_b.addActionListener(this);
-		jm.add(add_window_b = new JMenuItem("Window"));
-		add_window_b.addActionListener(this);
-		jm.add(add_axis_b = new JMenuItem("Axis"));
-		add_axis_b.addActionListener(this);
-		pop.add(jm);
-		pop.add(add_device_b = new JMenuItem("Add Device"));
-		add_device_b.addActionListener(this);
-		pop.add(add_child_b = new JMenuItem("Add Child"));
-		add_child_b.addActionListener(this);
-		pop.add(delete_node_b = new JMenuItem("Delete Node"));
-		delete_node_b.addActionListener(this);
-		pop.add(modify_tags_b = new JMenuItem("Modify tags"));
-		modify_tags_b.addActionListener(this);
-		pop.add(rename_node_b = new JMenuItem("Rename node"));
-		rename_node_b.addActionListener(this);
-		pop.addSeparator();
-	    }
-	    item_idx = 0;
-	    for(int i = 0; i < node_properties.length; i++)
-	    {
-		pop.add(menu_items[item_idx] = new JMenuItem(
-			node_properties[i].getShortDescription()));
-		menu_items[item_idx].addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-			int idx;
-			for(idx = 0; idx < node_properties.length && 
-			!e.getActionCommand().equals(node_properties[idx].getShortDescription()); idx++);
-			if(idx < node_properties.length)
-			{
-			    Tree.curr_dialog_idx = idx;
-			    
-			    TreeDialog curr_dialog = dialog_sets[idx].getDialog(
-				node_properties[idx].getPropertyEditorClass(), curr_node);
-			    curr_dialog.pack();
-			    curr_dialog.setLocation(curr_origin);
-			    curr_dialog.show();
-			}
-		    }
-		});
-		item_idx++;
-	    }
-    	    for(int i = 0; i < node_methods.length; i++)
-	    {
-		    pop.add(menu_items[item_idx] = new JMenuItem(
-			node_methods[i].getShortDescription()));
-		    menu_items[item_idx].addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			    int idx;
-			    for(idx = 0; idx < node_methods.length && 
-			!e.getActionCommand().equals(node_methods[idx].getShortDescription()); idx++);
-			    if(idx < node_methods.length)
-			    {
-				try {
-				    node_methods[idx].getMethod().invoke(curr_node, null);
-				}catch(Exception exc) {System.out.println("Error executing " + exc); }
-				curr_tree.expandPath(new TreePath(curr_tree_node.getPath()));
-				curr_tree.treeDidChange();
-			    }
-			}
-		    });
-		    item_idx++;
-	    }
-	    pop.addSeparator();
-	    pop.add(open_b = new JMenuItem("Open"));
-	    open_b.addActionListener(this);//) {
-		//public void actionPerformed(ActionEvent e) { Open(); }});
-	    
-	    pop.add(close_b = new JMenuItem("Close"));
-	    close_b.addActionListener(this);//new ActionListener() {
-		//public void actionPerformed(ActionEvent e) {close(); }});
-	    
-	    pop.add(quit_b = new JMenuItem("Quit"));
-	    quit_b.addActionListener(this);
-	}
-	item_idx = 0;
-	for(int i = 0; i < node_properties.length; i++)
-	{
-	    if(!nbi.isSupported(node_properties[i].getShortDescription()))
-		menu_items[item_idx].setEnabled(false);
-	    else
-		menu_items[item_idx].setEnabled(true);
-	    item_idx++;
-	}
-	for(int i = 0; i < node_methods.length; i++)
-	{
-	    if(!nbi.isSupported(node_methods[i].getShortDescription()))
-		menu_items[item_idx].setEnabled(false);
-	    else
-		menu_items[item_idx].setEnabled(true);
-	    item_idx++;
-	}
+	        if(pop == null)
+	        {
+		        //dialogs = new JDialog[node_properties.length];
+		        dialog_sets = new DialogSet[node_properties.length];
+		        for(int i = 0; i < node_properties.length; i++)
+		            dialog_sets[i] = new DialogSet();
+    		        pop = new JPopupMenu();
+		        menu_items = new JMenuItem[node_properties.length + node_methods.length];
+	            if(is_editable)
+	            {
+		            JMenuItem jm = new JMenu("Add Node");
+		            jm.add(add_action_b = new JMenuItem("Action"));
+		            add_action_b.addActionListener(this);
+		            jm.add(add_dispatch_b = new JMenuItem("Dispatch"));
+		            add_dispatch_b.addActionListener(this);
+		            jm.add(add_numeric_b = new JMenuItem("Numeric"));
+		            add_numeric_b.addActionListener(this);
+		            jm.add(add_signal_b = new JMenuItem("Signal"));
+		            add_signal_b.addActionListener(this);
+		            jm.add(add_task_b = new JMenuItem("Task"));
+		            add_task_b.addActionListener(this);
+		            jm.add(add_text_b = new JMenuItem("Text"));
+		            add_text_b.addActionListener(this);
+		            jm.add(add_window_b = new JMenuItem("Window"));
+		            add_window_b.addActionListener(this);
+		            jm.add(add_axis_b = new JMenuItem("Axis"));
+		            add_axis_b.addActionListener(this);
+		            pop.add(jm);
+		            pop.add(add_device_b = new JMenuItem("Add Device"));
+		            add_device_b.addActionListener(this);
+		            pop.add(add_child_b = new JMenuItem("Add Child"));
+		            add_child_b.addActionListener(this);
+		            pop.add(delete_node_b = new JMenuItem("Delete Node"));
+		            delete_node_b.addActionListener(this);
+		            pop.add(modify_tags_b = new JMenuItem("Modify tags"));
+		            modify_tags_b.addActionListener(this);
+		            pop.add(rename_node_b = new JMenuItem("Rename node"));
+		            rename_node_b.addActionListener(this);
+		            pop.addSeparator();
+	            }
+	            item_idx = 0;
+	            for(int i = 0; i < node_properties.length; i++)
+	            {
+		            pop.add(menu_items[item_idx] = new JMenuItem(
+			            node_properties[i].getShortDescription()));
+		            menu_items[item_idx].addActionListener(new ActionListener() {
+		                public void actionPerformed(ActionEvent e) {
+			            int idx;
+			            for(idx = 0; idx < node_properties.length && 
+			            !e.getActionCommand().equals(node_properties[idx].getShortDescription()); idx++);
+			            if(idx < node_properties.length)
+			            {
+			                Tree.curr_dialog_idx = idx;
+            			    
+			                TreeDialog curr_dialog = dialog_sets[idx].getDialog(
+				            node_properties[idx].getPropertyEditorClass(), curr_node);
+			                curr_dialog.pack();
+			                curr_dialog.setLocation(curr_origin);
+			                curr_dialog.show();
+			            }
+		            }
+		            });
+		            item_idx++;
+	            }
+    	        for(int i = 0; i < node_methods.length; i++)
+	            {
+		            pop.add(menu_items[item_idx] = new JMenuItem(
+			        node_methods[i].getShortDescription()));
+		            menu_items[item_idx].addActionListener(new ActionListener() {
+			        public void actionPerformed(ActionEvent e) {
+			            int idx;
+			            for(idx = 0; idx < node_methods.length && 
+			        !e.getActionCommand().equals(node_methods[idx].getShortDescription()); idx++);
+			            if(idx < node_methods.length)
+			            {
+				            try {
+				                node_methods[idx].getMethod().invoke(curr_node, null);
+				            }catch(Exception exc) {System.out.println("Error executing " + exc); }
+				            curr_tree.expandPath(new TreePath(curr_tree_node.getPath()));
+				            curr_tree.treeDidChange();
+			            }
+			        }
+		            });
+		            item_idx++;
+	            }
+	            pop.addSeparator();
+	            pop.add(open_b = new JMenuItem("Open"));
+	            open_b.addActionListener(this);//) {
+		        //public void actionPerformed(ActionEvent e) { Open(); }});
+        	    
+	            pop.add(close_b = new JMenuItem("Close"));
+	            close_b.addActionListener(this);//new ActionListener() {
+		        //public void actionPerformed(ActionEvent e) {close(); }});
+        	    
+	            pop.add(quit_b = new JMenuItem("Quit"));
+	            quit_b.addActionListener(this);
+	        }
+	        item_idx = 0;
+	        for(int i = 0; i < node_properties.length; i++)
+	        {
+	            if(!nbi.isSupported(node_properties[i].getShortDescription()))
+		        menu_items[item_idx].setEnabled(false);
+	            else
+		        menu_items[item_idx].setEnabled(true);
+	            item_idx++;
+	        }
+	        for(int i = 0; i < node_methods.length; i++)
+	        {
+	            if(!nbi.isSupported(node_methods[i].getShortDescription()))
+		        menu_items[item_idx].setEnabled(false);
+	            else
+		        menu_items[item_idx].setEnabled(true);
+	            item_idx++;
+	        }
 
-	pop.show(curr_tree, e.getX(), e.getY()); 
-	}
-	else
-	{
-	    TreeNode.setSelectedNode(curr_node);
-	    curr_tree.treeDidChange();
-	}
+	        pop.show(curr_tree, e.getX(), e.getY()); 
+	    }
+	    else
+	    {
+	        TreeNode.setSelectedNode(curr_node);
+	        curr_tree.treeDidChange();
+	    }
     }
     
     public void addNode(int usage)
@@ -723,7 +723,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		new_tree_node = new DefaultMutableTreeNode(new_node);
 		DefaultTreeModel tree_model = (DefaultTreeModel)curr_tree.getModel();
 		tree_model.insertNodeInto(new_tree_node, curr_tree_node, i);
-		curr_tree.makeVisible(new TreePath(new_tree_node.getPath()));
+		//curr_tree.makeVisible(new TreePath(new_tree_node.getPath()));
+		curr_tree.expandPath(new TreePath(new_tree_node.getPath()));
+		curr_tree.treeDidChange();
 	    }
 	}
 	catch(Exception e) {
