@@ -3,5 +3,7 @@
 #! display MDSplus javascope
 #
 env \
-CLASSPATH=/usr/local/mdsplus/java/classes/jScope.jar \
+LD_LIBRARY_PATH=/usr/local/mdsplus/lib \
+SHLIB_PATH=/usr/local/mdsplus/lib \
+CLASSPATH=$HOME:/usr/local/mdsplus/java/classes/jScope.jar:/usr/local/mdsplus/java/classes \
 java jScope $1 $2 $3 $4 $5 $6 $7

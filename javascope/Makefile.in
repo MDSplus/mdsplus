@@ -1,4 +1,5 @@
 SHELL=/bin/sh
+prefix=@prefix@
 top_srcdir=@top_srcdir@
 RM=$(top_srcdir)/devscripts/rm_if
 JAVADIR = @MAKEJAVADIR@classes
@@ -7,15 +8,12 @@ JAR = @JAR@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = FtuProvider.java\
-AsynchUpdater.java\
 Base64.java\
 ColorDialog.java\
 DataCached.java\
 DataProvider.java\
 DemoProvider.java\
-Discriptor.java\
 ErrorMessage.java\
-FontPanel.java\
 FontSelection.java\
 Frames.java\
 Grid.java\
@@ -36,8 +34,6 @@ JiSlabIterator.java\
 JiVar.java\
 JiVarImpl.java\
 LocalProvider.java\
-MdsMessage.java\
-MdsWavePopup.java\
 MultiWaveform.java\
 NetworkEvent.java\
 NetworkEventListener.java\
@@ -50,7 +46,6 @@ RotateFilter.java\
 RowColumnContainer.java\
 RowColumnLayout.java\
 ScopePositionDialog.java\
-ServerDialog.java\
 SetupDataDialog.java\
 SetupDefaults.java\
 Signal.java\
@@ -66,7 +61,6 @@ WaveformEvent.java\
 WaveformListener.java\
 WaveformManager.java\
 WaveformMetrics.java\
-WindowDialog.java\
 jScopeDefaultValues.java\
 jScopeMultiWave.java\
 jScopeWaveContainer.java\
@@ -78,7 +72,7 @@ CLASSES = $(SOURCES:.java=.class)
 all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/jScope.jar
 
 clean: 
-	@ $(RM) $(CLASSES) *\$*.class
+	@ $(RM) *.class
 	@ $(RM) @MAKEBINDIR@jScope
 	@ $(RM) @MAKEJAVADIR@classes/jScope.jar
 
@@ -90,6 +84,7 @@ install:
                 chmod -R 755 @exec_prefix@/java; \
         fi;
 	$(INSTALL) -m 644  @MAKEJAVADIR@classes/jScope.jar @exec_prefix@/java/classes
+	$(INSTALL) -m 644  jScope.properties @exec_prefix@/java/classes
 	$(INSTALL) -m 755  @MAKEBINDIR@jScope @exec_prefix@/bin
 
 @MAKEJAVADIR@ : ; mkdir @MAKEJAVADIR@
@@ -97,7 +92,7 @@ install:
 @MAKEJAVADIR@classes : ; mkdir @MAKEJAVADIR@classes
 
 @MAKEJAVADIR@classes/jScope.jar: jScope.class
-	$(JAR) c0f $@ $(CLASSES)
+	$(JAR) c0f $@ *.class
 
 jScope.class: 	$(SOURCES)
 	$(JAVAC) -g $(SOURCES)
@@ -105,5 +100,5 @@ jScope.class: 	$(SOURCES)
 @MAKEBINDIR@ : ; mkdir @MAKEBINDIR@
 
 @MAKEBINDIR@jScope : jScope.template
-	sed "s|MAKEJAVADIR|`cd @MAKEJAVADIR@;pwd`|g" jScope.template | sed "s|libdir|`cd @libdir@;pwd`|g" > $@
+	cp jScope.template $@
 	chmod a+x $@
