@@ -1284,8 +1284,10 @@ public class WaveInterface
 	        return null;
 	    }
 	    
+	    
 	    if(in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0)
 	    {
+	        
 	        wd = dp.GetWaveData(in_y[curr_wave], in_x[curr_wave]);
 	        if(wd == null)
 	            curr_data = null;
@@ -1332,9 +1334,9 @@ public class WaveInterface
                 curr_data = null;
             else
             {
+		        curr_data = wd.GetFloatData();	        
 	            xlabel = wd.GetXLabel();
 	            ylabel = wd.GetYLabel();
-		        curr_data = wd.GetFloatData();	        
 	        }
 	        
 	        if(dimension == 1)

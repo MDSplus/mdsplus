@@ -234,7 +234,19 @@ public class MdsDataProvider implements DataProvider
         
         public int GetNumDimension() throws IOException
         {
-            int shape[] = GetNumDimensions(in_y);
+            
+            String expr;
+            if(_jscope_set)
+                expr = "shape(_jscope_"+v_idx+")";
+            else
+            {
+                _jscope_set = true;
+                expr = "( _jscope_"+v_idx+" = ("+in_y+"), shape(_jscope_"+v_idx+"))";
+                var_idx++;
+            }    
+            //int shape[] = GetNumDimensions(in_y);
+            int shape[] = GetNumDimensions(expr);
+            
             if(error != null)
             {
                 error = null;
@@ -246,16 +258,29 @@ public class MdsDataProvider implements DataProvider
         
         public float[] GetFloatData() throws IOException
         {
-           _jscope_set = true;
+          // _jscope_set = true;
+            String in_y_expr = "_jscope_"+v_idx;
+            String set_tdivar = "";
+            if(!_jscope_set)
+            {
+                _jscope_set = true;
+                set_tdivar = "_jscope_"+v_idx+" = ("+in_y+"), ";
+                var_idx++;
+            }    
+           
+           
            if(resample && in_x == null)
            {
 	            String limits = "FLOAT("+xmin+"), " + "FLOAT("+xmax+")";
-                String expr = "JavaResample("+ "FLOAT("+in_y+ "), "+
-		            "FLOAT(DIM_OF("+in_y+")), "+ limits + ")";
+                //String expr = "JavaResample("+ "FLOAT("+in_y+ "), "+
+		        //    "FLOAT(DIM_OF("+in_y+")), "+ limits + ")";
+                String expr = set_tdivar + "JavaResample("+ "FLOAT("+in_y_expr+ "), "+
+		            "FLOAT(DIM_OF("+in_y_expr+")), "+ limits + ")";
+		            		            
 		        return GetFloatArray(expr);
            }
            else
-                return GetFloatArray(in_y);   
+                return GetFloatArray(set_tdivar+"fs_float("+in_y_expr+")");   
         }
         
         private float[] encodeTimeBase(String expr)
@@ -335,15 +360,23 @@ public class MdsDataProvider implements DataProvider
                 } 
                 else
                 {
+                    _jscope_set = true;
+                    String in_y_expr = "_jscope_"+v_idx;
+                    String set_tdivar = "( _jscope_"+v_idx+" = ("+in_y+"), ";
+                    var_idx++;
+                    
                     if(resample)
                     {
 	                  String limits = "FLOAT("+xmin+"), " + "FLOAT("+xmax+")";
-                      expr = "DIM_OF(JavaResample("+ "FLOAT("+in_y+ "), "+
-		                    "FLOAT(DIM_OF("+in_y+")), "+ limits + "))";
+                      //expr = "DIM_OF(JavaResample("+ "FLOAT("+in_y+ "), "+
+		              //      "FLOAT(DIM_OF("+in_y+")), "+ limits + "))";
+                      expr = set_tdivar + "JavaResample("+ "FLOAT("+in_y_expr+ "), "+
+		                    "FLOAT(DIM_OF("+in_y_expr+")), "+ limits + ")";
                     }
                     else
                     {
-                        expr = "dim_of("+in_y+")";
+                        //expr = "dim_of("+in_y+")";
+                        expr = set_tdivar + "dim_of("+in_y_expr+")";
                         tBaseOut = encodeTimeBase(in_y);
                       // expr = "JavaDim(dim_of("+in_y+"), FLOAT("+(-Float.MAX_VALUE)+"), " + "FLOAT("+Float.MAX_VALUE+"))";
                       // isCoded = true;
@@ -361,22 +394,99 @@ public class MdsDataProvider implements DataProvider
         
         public float[] GetYData() throws IOException
         {
-            return GetFloatArray("DIM_OF("+in_y+", 1)");
+            String expr;
+            if(_jscope_set)
+                expr = "dim_of(_jscope_"+v_idx+")";
+            else
+            {
+                _jscope_set = true;
+                expr = "( _jscope_"+v_idx+" = ("+in_y+"), dim_of(_jscope_"+v_idx+", 1))";
+                var_idx++;
+            }
+            return GetFloatArray(expr);
+
+            //return GetFloatArray("DIM_OF("+in_y+", 1)");
         }
         
         public String GetTitle() throws IOException
-        {return GetDefaultTitle(in_y);}
+        {
+            String expr;
+            if(_jscope_set)
+                expr = "help_of(_jscope_"+v_idx+")";
+            else
+            {
+                _jscope_set = true;
+                expr = "( _jscope_"+v_idx+" = ("+in_y+"), help_of(_jscope_"+v_idx+"))";
+                var_idx++;
+            }
+            return GetDefaultTitle(expr);
+            //return GetDefaultTitle(in_y);
+        }
+        
         public String GetXLabel() throws IOException
         {
             if(in_x == null || in_x.length() == 0)
-                return GetDefaultXLabel(in_y);
+            {
+                String expr;
+                if(_jscope_set)
+                    expr = "Units(dim_of(_jscope_"+v_idx+", 1))";
+                else
+                {
+                    _jscope_set = true;
+                    expr = "( _jscope_"+v_idx+" = ("+in_y+"), Units(dim_of(_jscope_"+v_idx+", 1)))";
+                    var_idx++;
+                }    
+                return GetDefaultXLabel(expr);
+                //return GetDefaultXLabel(in_y);
+            }
             else
-                return GetDefaultYLabel(in_x);            
+            {
+                /*
+                String expr;
+                if(_jscope_set)
+                    expr = "Units(_jscope_"+v_idx+")";
+                else
+                {
+                    _jscope_set = true;
+                    expr = "( _jscope_"+v_idx+" = ("+in_x+"), Units(_jscope_"+v_idx+")";
+                    var_idx++;
+                }                          
+                return GetDefaultYLabel(expr);
+                */
+                return GetDefaultYLabel("Units("+in_x+")");
+            }
         }
+        
         public String GetYLabel() throws IOException
-        {return GetDefaultYLabel(in_y);}
+        {
+            String expr;
+            if(_jscope_set)
+                expr = "Units(_jscope_"+v_idx+")";
+            else
+            {
+                _jscope_set = true;
+                expr = "( _jscope_"+v_idx+" = ("+in_y+"), Units(_jscope_"+v_idx+"))";
+                var_idx++;
+            }                          
+            return GetDefaultYLabel(expr);
+            //return GetDefaultYLabel(in_y);
+        }
+        
         public String GetZLabel()  throws IOException
-        {return GetDefaultZLabel(in_y);}
+        {
+            String expr;
+            if(_jscope_set)
+                expr = "Units(dim_of(_jscope_"+v_idx+", 1))";
+            else
+            {
+                _jscope_set = true;
+                expr = "( _jscope_"+v_idx+" = ("+in_y+"), Units(dim_of(_jscope_"+v_idx+", 1)))";
+                var_idx++;
+            }    
+            
+            return GetDefaultZLabel(expr);
+ //           return GetDefaultZLabel(in_y);
+        }
     }
              
         
@@ -788,8 +898,8 @@ public class MdsDataProvider implements DataProvider
     	
     public synchronized float[] GetFloatArray(String in)  throws IOException
     {
-        in = "( _jscope_"+var_idx+" = ("+in+"), fs_float(_jscope_"+var_idx+"))";// "fs_float(("+in+"))";
-        var_idx++;
+        //in = "( _jscope_"+var_idx+" = ("+in+"), fs_float(_jscope_"+var_idx+"))";
+        //var_idx++;
 
         float[] out = null;
         
@@ -1094,7 +1204,8 @@ public class MdsDataProvider implements DataProvider
     
     protected String GetDefaultTitle(String in_y)   throws IOException
     {
-        String out = GetString("help_of("+in_y+")");
+        //String out = GetString("help_of("+in_y+")");
+        String out = GetString(in_y);
         if(out == null || out.length() == 0 || error != null)
         {
             error = null;
@@ -1105,7 +1216,8 @@ public class MdsDataProvider implements DataProvider
             
     protected String GetDefaultXLabel(String in_y)  throws IOException
     {
-        String out = GetString("Units(dim_of("+in_y+"))");
+        //String out = GetString("Units(dim_of("+in_y+"))");
+        String out = GetString(in_y);
         if(out == null || out.length() == 0 || error != null)
         {
             error = null;
@@ -1116,7 +1228,9 @@ public class MdsDataProvider implements DataProvider
             
     protected String GetDefaultYLabel(String in_y)  throws IOException
     {
-        String out = GetString("Units("+in_y+")");
+        //String out = GetString("Units("+in_y+")");
+        
+        String out = GetString(in_y);
         if(out == null || out.length() == 0 || error != null)
         {
             error = null;
@@ -1127,7 +1241,8 @@ public class MdsDataProvider implements DataProvider
  
     protected String GetDefaultZLabel(String in_y)  throws IOException
     {
-        String out = GetString("Units(dim_of("+in_y+", 1))");
+  //      String out = GetString("Units(dim_of("+in_y+", 1))");
+        String out = GetString(in_y);
         if(out == null || out.length() == 0 || error != null)
         {
             error = null;
@@ -1139,7 +1254,8 @@ public class MdsDataProvider implements DataProvider
     
     protected int [] GetNumDimensions(String in_y) throws IOException
     {
-        return GetIntArray("shape("+in_y+")");
+       return GetIntArray(in_y);
+       //return GetIntArray("shape("+in_y+")");
     } 
        
     
