@@ -47,7 +47,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
       status = 1;
     if (status & 1)
     {
-      status = GetNciW(info, nidx, &nci);
+      status = TreeGetNciW(info, nidx, &nci);
       if (status & 1)
       {
 	if (nci.length)

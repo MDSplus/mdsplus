@@ -18,7 +18,7 @@
  {\
     nid_to_tree_nidx(dblist, (&nid), info, node_number);\
     if (info->reopen) TreeCloseFiles(info);\
-    status = GetNciW(info, node_number, &nci);\
+    status = TreeGetNciW(info, node_number, &nci);\
     need_nci = 0;\
     if (!(status & 1)) break;\
  }
@@ -28,7 +28,6 @@
 static int IsChild(NODE *node);
 static char *GetPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs);
 static const char *nonode = "<no-node>   ";
-int GetNciW(TREE_INFO *info, int node_num, NCI *nci);
 static int OpenNciR(TREE_INFO *info);
 
 extern void *DBID;
@@ -643,7 +642,7 @@ static void FixupNciIn(NCI *nci)
   }    
 }
 
-int GetNciW(TREE_INFO *info, int node_num, NCI *nci)
+int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci)
 {
 	int       status = 1;
 
