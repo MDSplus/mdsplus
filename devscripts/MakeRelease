@@ -22,4 +22,4 @@ cvs -Q tag -RF $tag
 cvs update ChangeLog
 devscripts/MakeChangeLog
 cvs commit -m "New MDSplus release $version-$release" ChangeLog
-
+cvs -Q tag -F $tag ChangeLog 
