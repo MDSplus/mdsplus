@@ -73,7 +73,7 @@ extern int IsRoprand();
 #define L_W(lena,pa,lenb,pb,numb) CONVERT_BINARY(int,short,pa,pb,numb)
 /************* Extended binary conversions *************************/
 
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 
 #define CONVERT_BINARY_ZETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; unsigned int *op = (unsigned int *)pb; \
                    while (numb-- > 0) {for(i=1;i<nints;i++) *op++ = (unsigned int)0; *op++ = (unsigned int)*ip++; }\
@@ -960,7 +960,7 @@ double WideIntToDouble(unsigned int *bin_in, int size, int is_signed)
   unsigned int bin[16];
   int negative;
 
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
   for (i=0;i<size;i++) bin[i] = bin_in[size - i - 1];
 #else
   memcpy(bin,bin_in,size * sizeof(int));
@@ -986,7 +986,7 @@ void DoubleToWideInt(double *in, int size, unsigned int *out)
     for (i=0;i<size;i++)
       out[i] = ~out[i];
 
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
   {
     unsigned int tmp[16];
     for (i=0;i<size;i++) tmp[i]=out[i];

@@ -414,7 +414,7 @@ char n1c;
 		case DTYPE_OU :
                         cptr = c0;
 			j = in_ptr->length;
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 			bptr = in_ptr->pointer - 1;
 			while (--j >= 0) {
 				*cptr++ = htab[( *(++bptr) >> 4) & 15];

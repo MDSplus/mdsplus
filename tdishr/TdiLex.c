@@ -17,11 +17,7 @@ int yyleng; extern unsigned char yytext[];
 int yymorfg;
 extern unsigned char *yysptr, yysbuf[];
 int yytchar;
-#if  defined( vxWorks ) || defined (__PPC)
-FILE *yyin = 0, *yyout = 0;
-#else
 FILE *yyin = {stdin}, *yyout = {stdout};
-#endif
 extern int yylineno;
 struct yysvf { 
 	struct yywork *yystoff;
@@ -486,7 +482,7 @@ int			length, is_signed, status = 1, tst, type;
 
 	if (status & 1)
         {
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
           int i;
           unsigned char *ptr = mark_ptr->rptr->pointer;
           for (i=0;i<length/2;i++)
@@ -709,16 +705,7 @@ int		cur = 0, limit;
 }
 # define YYNEWLINE 10
 yylex(){
-
 int nstr; extern int yyprevious;
-#ifdef vxWorks
-if(!yyin)
-    yyin = fdopen(0, "r");
-if(!yyout)
-    yyout = fdopen(1, "w");
-#endif
-
-
 while((nstr = yylook()) >= 0)
 yyfussy: switch(nstr){
 case 0:
@@ -1172,26 +1159,33 @@ unsigned char yyextra[] = {
 0,0,0,0,0,0,0,0,
 0};
 /*
- * (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
- * ALL RIGHTS RESERVED
+ * *****************************************************************
+ * *                                                               *
+ * *    Copyright (c) Digital Equipment Corporation, 1991, 1998    *
+ * *                                                               *
+ * *   All Rights Reserved.  Unpublished rights  reserved  under   *
+ * *   the copyright laws of the United States.                    *
+ * *                                                               *
+ * *   The software contained on this media  is  proprietary  to   *
+ * *   and  embodies  the  confidential  technology  of  Digital   *
+ * *   Equipment Corporation.  Possession, use,  duplication  or   *
+ * *   dissemination of the software and media is authorized only  *
+ * *   pursuant to a valid written license from Digital Equipment  *
+ * *   Corporation.                                                *
+ * *                                                               *
+ * *   RESTRICTED RIGHTS LEGEND   Use, duplication, or disclosure  *
+ * *   by the U.S. Government is subject to restrictions  as  set  *
+ * *   forth in Subparagraph (c)(1)(ii)  of  DFARS  252.227-7013,  *
+ * *   or  in  FAR 52.227-19, as applicable.                       *
+ * *                                                               *
+ * *****************************************************************
  */
 /*
- * OSF/1 Release 1.0
-*/
+ * HISTORY
+ */
 /*
-#
-# IBM CONFIDENTIAL
-# Copyright International Business Machines Corp. 1989
-# Unpublished Work
-# All Rights Reserved
-# Licensed Material - Property of IBM
-#
-#
-# US Government Users Restricted Rights - Use, duplication or
-# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
-# 
-*/
-/* @(#)ncform	1.3  com/lib/l,3.1,8951 9/7/89 18:48:47 */
+ * @(#)$RCSfile$
+ */
 int yylineno =1;
 # define YYU(x) x
 # define NLSTATE yyprevious=YYNEWLINE
@@ -1238,9 +1232,9 @@ yylook(){
 				if(yyz->yystoff == yycrank)break;
 				}
 			*yylastch++ = yych = input();
-            if (yylastch >= yytext + YYLMAX) {
+            if (yylastch >= yytext + (YYLMAX - 1)) {
                 fprintf(yyout, "Maximum token length exceeded\n");
-                yytext[YYLMAX] = 0;
+                yytext[YYLMAX - 1] = 0;
                 return 0;
             }
 			yyfirst=0;
@@ -1329,9 +1323,9 @@ yylook(){
 				yyprevious = YYU(*yylastch);
 				yylsp = lsp;
 				yyleng = yylastch-yytext+1;
-                if (yyleng >= YYLMAX) {
+                if (yyleng >= (YYLMAX - 1)) {
                     fprintf(yyout, "Maximum token length exceeded\n");
-                    yytext[YYLMAX] = 0;
+                    yytext[YYLMAX - 1] = 0;
                     return 0;
                 }
 				yytext[yyleng] = 0;

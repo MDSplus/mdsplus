@@ -1,108 +1,118 @@
-include $(MAKE_OPTIONS)
+# Generated automatically from Makefile.in by configure.
+SHELL=/bin/sh
+CC=cc
+top_srcdir=..
+exec_prefix=${prefix}
+CFLAGS= -I$(top_srcdir)/include
+LDFLAGS=
+LIBS=-lresolv -lm -lc 
+INSTALL=../conf/install-sh -c
 
-OBJECTS = \
-CvtConvertFloat.o \
-DummyRoutines.o \
-IsRoprand.o \
-TdiAbs.o \
-TdiAdd.o \
-TdiAnd.o \
-TdiArray.o \
-TdiBinary.o \
-TdiBound.o \
-TdiBuild.o \
-TdiCall.o \
-TdiChar.o \
-TdiCompileDependency.o \
-TdiCompile.o \
-TdiConstant.o \
-TdiConvert.o \
-TdiCull.o \
-TdiCvtArgs.o \
-TdiCvtDxDx.o \
-TdiDecompileDependency.o \
-TdiDecompileR.o \
-TdiDecompile.o \
-TdiDecompress.o \
-TdiDefCat.o \
-TdiDefFunction.o \
-TdiDim.o \
-TdiDivide.o \
-TdiDoTask.o \
-TdiDtypeRange.o \
-TdiEq.o \
-TdiEvaluate.o \
-TdiExponent.o \
-TdiExpt.o \
-TdiExtFunction.o \
-TdiFaultHandler.o \
-TdiGetArgs.o \
-TdiGetData.o \
-TdiGetDbi.o \
-TdiGetNci.o \
-TdiGetShape.o \
-TdiGetSlope.o \
-TdiHash.o \
-TdiIand.o \
-TdiIntrinsic.o \
-TdiIo.o \
-TdiItoX.o \
-TdiLex.o \
-TdiMakeFunctionTable.o \
-TdiMasterData.o \
-TdiMath1.o \
-TdiMath2.o \
-TdiMatrix.o \
-TdiMaxVal.o \
-TdiMinMax.o \
-TdiOpcDef.o \
-TdiPack.o \
-TdiPower.o \
-TdiSame.o \
-TdiScalar.o \
-TdiSetRange.o \
-TdiShowVm.o \
-TdiSort.o \
-TdiSql.o \
-TdiSquare.o \
-TdiStatement.o \
-TdiSubscript.o \
-TdiTrans.o \
-TdiTrim.o \
-TdiUnary.o \
-TdiUndef.o \
-TdiVar.o \
-TdiVector.o \
-TdiXxxOf.o \
-TdiXxx.o \
-TdiYaccSubs.o \
-TdiYacc.o
+SOURCES = \
+CvtConvertFloat.c \
+DummyRoutines.c \
+IsRoprand.c \
+TdiAbs.c \
+TdiAdd.c \
+TdiAnd.c \
+TdiArray.c \
+TdiBinary.c \
+TdiBound.c \
+TdiBuild.c \
+TdiCall.c \
+TdiChar.c \
+TdiCompileDependency.c \
+TdiCompile.c \
+TdiConstant.c \
+TdiConvert.c \
+TdiCull.c \
+TdiCvtArgs.c \
+TdiCvtDxDx.c \
+TdiDecompileDependency.c \
+TdiDecompileR.c \
+TdiDecompile.c \
+TdiDecompress.c \
+TdiDefCat.c \
+TdiDefFunction.c \
+TdiDim.c \
+TdiDivide.c \
+TdiDoTask.c \
+TdiDtypeRange.c \
+TdiEq.c \
+TdiEvaluate.c \
+TdiExponent.c \
+TdiExpt.c \
+TdiExtFunction.c \
+TdiFaultHandler.c \
+TdiGetArgs.c \
+TdiGetData.c \
+TdiGetDbi.c \
+TdiGetNci.c \
+TdiGetShape.c \
+TdiGetSlope.c \
+TdiHash.c \
+TdiIand.c \
+TdiIntrinsic.c \
+TdiIo.c \
+TdiItoX.c \
+TdiLex.c \
+TdiMakeFunctionTable.c \
+TdiMasterData.c \
+TdiMath1.c \
+TdiMath2.c \
+TdiMatrix.c \
+TdiMaxVal.c \
+TdiMinMax.c \
+TdiOpcDef.c \
+TdiPack.c \
+TdiPower.c \
+TdiSame.c \
+TdiScalar.c \
+TdiSetRange.c \
+TdiShowVm.c \
+TdiSort.c \
+TdiSql.c \
+TdiSquare.c \
+TdiStatement.c \
+TdiSubscript.c \
+TdiTrans.c \
+TdiTrim.c \
+TdiUnary.c \
+TdiUndef.c \
+TdiVar.c \
+TdiVector.c \
+TdiXxxOf.c \
+TdiXxx.c \
+TdiYaccSubs.c \
+TdiYacc.c
 
+OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = TdiShr.export
 
-tdishr : ../shlib ../shlib/libTdiShr.$(SHARE_TYPE) ../shlib/libTdiShr.a
+all: $(top_srcdir)/lib/ $(top_srcdir)/lib/libTdiShr.so $(top_srcdir)/lib/libTdiShr.a
 
-../shlib/libTdiShr.$(SHARE_TYPE) : $(OBJECTS) 
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lm -L../shlib -lMdsShr -lTreeShr
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
-../shlib/libTdiShr.a : $(OBJECTS)
+clean:
+	- rm *.c
+	- rm $(top_srcdir)/lib/libTdiShr.*
+
+install:
+	if [ ! -d ${exec_prefix}/lib ] ; then \
+                mkdir ${exec_prefix}/lib; \
+                chmod 755 ${exec_prefix}/lib; \
+        fi;
+	$(INSTALL) -m 644  $(top_srcdir)/lib/libTdiShr.a ${exec_prefix}/lib
+	$(INSTALL) -m 755  $(top_srcdir)/lib/libTdiShr.so ${exec_prefix}/lib
+
+$(top_srcdir)/lib/libTdiShr.so : $(OBJECTS) 
+	$(LD) -o $@ -shared -rpath $(exec_prefix)/lib $(OBJECTS) -L$(top_srcdir)/lib/  -lTreeShr -lMdsShr $(LIBS)
+
+$(top_srcdir)/lib/libTdiShr.a : $(OBJECTS)
 	$(AR) -r $@ $(OBJECTS)
+	ranlib $@
 
-../shlib :
-	mkdir ../shlib
+$(top_srcdir)/lib/ :
+	mkdir $(top_srcdir)/lib/
 
-clean :
-	- rm *.o
-	- rm ../shlib/libTdiShr.*
-	- rm .depend
-
-#TdiLex.c : TdiLex.x
-#	lex -t TdiLex.x > $@
-
-#tdiyacc.h : TdiYacc.y
-#	yacc -d TdiYacc.y ; mv y.tab.h $@
-
-.depend :
-	find *.c -exec $(MAKE_DEPEND)
-
-include $(DEPEND)

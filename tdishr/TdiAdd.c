@@ -282,7 +282,7 @@ static int zero=0;
 extern int emul();
 #else
 
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 #define swapquad(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[1]; iptr[1]=stmp;}
 #define swapocta(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[3]; iptr[3]=stmp; \
                                                                    stmp=iptr[1]; iptr[1]=iptr[2]; iptr[2]=stmp;}
@@ -311,7 +311,7 @@ int TdiMultiplyQuadword(int *in1, int *in2, int *out)
   int tmp[3];
   int in1l[2];
   int in2l[2];
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
   in1l[0] = in1[1];
   in1l[1] = in1[0];
   in2l[0] = in2[1];
@@ -345,7 +345,7 @@ int TdiMultiplyOctaword(int *in1, int *in2, int *out)
   int tmp2[4];
   int tmp3[4];
 
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
   in1l[0] = in1[3];
   in1l[1] = in1[2];
   in1l[2] = in1[1];
@@ -410,7 +410,7 @@ int TdiMultiplyOctaword(int *in1, int *in2, int *out)
   {
     memcpy(tmp2,&tmp[2],8);
     swapquad(tmp2);
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
     TdiAddQuadword(in2+2 ,tmp2,&tmp[2]);
 #else
     TdiAddQuadword(in2 ,tmp2,&tmp[2]);
@@ -432,7 +432,7 @@ int TdiMultiplyOctaword(int *in1, int *in2, int *out)
   {
     memcpy(tmp2,&tmp[2],8);
     swapquad(tmp2);
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
     TdiAddQuadword(in1+2 ,tmp2,&tmp[2]);
 #else
     TdiAddQuadword(in1 ,tmp2,&tmp[2]);
@@ -441,7 +441,7 @@ int TdiMultiplyOctaword(int *in1, int *in2, int *out)
   }
   if (in2l[2] < 0)
     tmp[3] += in1l[0];
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
   out[0] = tmp[3];
   out[1] = tmp[2];
   out[2] = tmp[1];

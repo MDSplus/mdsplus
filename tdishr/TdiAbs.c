@@ -86,7 +86,7 @@ static octaword octazero = {0,0,0,0};
 #define abs128 if (in[i].longword[1].int32[1] < 0) TdiSubtractOctaword(&octazero,&in[i],&out[i]); else { copy128; }
 #define not64 out[i].int32[0] = ~in[i].int32[0]; out[i].int32[1] = ~in[i].int32[1]
 
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 #define bool64 out[i]=(unsigned char)(1 & in[i].int32[1])
 #define bool128 out[i]=(unsigned char)(1 & in[i].longword[0].int32[3])
 #else

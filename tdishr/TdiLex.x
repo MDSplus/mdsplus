@@ -463,7 +463,7 @@ int			length, is_signed, status = 1, tst, type;
 
 	if (status & 1)
         {
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
           int i;
           unsigned char *ptr = mark_ptr->rptr->pointer;
           for (i=0;i<length/2;i++)

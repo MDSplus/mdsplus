@@ -63,7 +63,7 @@ struct TdiCatStruct		cats[4];
 			numa = bytes / lena;
 			numm = (int)((struct descriptor_a *)dat[1].pointer)->arsize / lenm;
 			pi = parr->pointer;
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 			pm = dat[1].pointer->pointer + lenm - 1;
 #else
 			pm = dat[1].pointer->pointer;

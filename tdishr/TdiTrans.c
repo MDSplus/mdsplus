@@ -52,7 +52,7 @@
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 #define MaskTrue (pi0[leni-1] & 1)
 #else
 #define MaskTrue (pi0[0] & 1)

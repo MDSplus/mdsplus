@@ -113,7 +113,7 @@ typedef struct { int longword[4]; } octaword;
   break;\
 }
 
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 #define setPointers in1p += (size-1); in2p += (size-1);
 #else
 #define setPointers

@@ -125,7 +125,7 @@ int Tdi3Merge(struct descriptor_a *pdtrue, struct descriptor_a *pdfalse, struct 
   char	*pf = pdfalse->pointer;
 
   int	stepm = pdmask->class == CLASS_A ? pdmask->length : 0;
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
   char	*pm = pdmask->pointer + pdmask->length - 1;
 #else
   char	*pm = pdmask->pointer;

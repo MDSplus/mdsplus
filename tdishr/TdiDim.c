@@ -120,7 +120,7 @@ extern int TdiGtQ(  );
 
 #define unconv } TdiConvert(&o,out); free(i1p); free(i2p); free(op);}
 
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 #define _offset size - *in2p/8 - 1
 #else
 #define _offset *in2p/8
