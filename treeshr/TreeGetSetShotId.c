@@ -122,11 +122,12 @@ int       TreeGetCurrentShotId(char *experiment)
     exp[i] = _ToLower(exp[i]);
   strcat(exp,"_path");
   path = TranslateLogical(exp);
+  exp[strlen(experiment)]='\0';
   if (path && ((slen = strlen(path)) > 2) && (path[slen-1] == ':') && (path[slen-2] == ':'))
-    status = TreeGetCurrentShotIdRemote(experiment, path, &shot);
+    status = TreeGetCurrentShotIdRemote(exp, path, &shot);
   else
   {
-    FILE *file = OpenShotIdFile(experiment,"rb");
+    FILE *file = OpenShotIdFile(exp,"rb");
     if (file)
     {
       status = fread(&shot,sizeof(shot),1,file) == 1;
