@@ -169,8 +169,8 @@ public class RFXControlSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(750);
-    this.setHeight(500);
+    this.setWidth(752);
+    this.setHeight(752);
     this.setDeviceType("RFXControl");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("RFX Control Setup");
@@ -231,7 +231,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice1.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "MODE CONTROL"});
     deviceChoice1.setUpdateIdentifier("");
     deviceChoice1.setIdentifier("");
-    deviceChoice1.setBounds(new Rectangle(2, 138, 225, 35));
+    deviceChoice1.setBounds(new Rectangle(2, 138, 248, 35));
     deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)4});
     deviceChoice2.setChoiceFloatValues(null);
     deviceChoice2.setConvert(true);
@@ -240,7 +240,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice2.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "MODE CONTROL"});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
-    deviceChoice2.setBounds(new Rectangle(229, 139, 246, 35));
+    deviceChoice2.setBounds(new Rectangle(229, 139, 273, 35));
     deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)4});
     deviceChoice3.setChoiceFloatValues(null);
     deviceChoice3.setConvert(true);
@@ -249,7 +249,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice3.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "MODE CONTROL"});
     deviceChoice3.setUpdateIdentifier("");
     deviceChoice3.setIdentifier("");
-    deviceChoice3.setBounds(new Rectangle(478, 138, 255, 35));
+    deviceChoice3.setBounds(new Rectangle(478, 138, 277, 35));
     deviceTable1.setOffsetNid(4);
     deviceTable1.setLabelString("Input calibration");
     deviceTable1.setNumCols(2);
@@ -266,8 +266,8 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable2.setColumnNames(new String[] {"Gain", "Offset"});
     deviceTable2.setDisplayRowNumber(true);
     deviceTable2.setBounds(new Rectangle(18, 301, 205, 105));
-    deviceButtons1.setBounds(new Rectangle(242, 418, 280, 36));
-    jTabbedPane1.setBounds(new Rectangle(232, 192, 486, 211));
+    deviceButtons1.setBounds(new Rectangle(242, 418, 316, 36));
+    jTabbedPane1.setBounds(new Rectangle(232, 192, 513, 211));
     deviceField11111.setIdentifier("");
     deviceField11111.setShowState(true);
     deviceField11111.setNumCols(40);
