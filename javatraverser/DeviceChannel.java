@@ -133,7 +133,8 @@ public class DeviceChannel extends DeviceComponent
     {
       if(this.offsetNid != offsetNid || reportingChange)
         return;
-      checkB.setSelected(state);
+      if(checkB != null)
+        checkB.setSelected(state);
     }
 
     protected void displayData(Data data, boolean is_on)

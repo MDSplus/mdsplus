@@ -84,7 +84,7 @@ public class RFXPMSetupSetup extends DeviceSetup {
     deviceWave1.setIdentifier("wave");
     deviceWave1.setUpdateIdentifier("");
     deviceWave1.setUpdateExpression("");
-    deviceButtons1.setCheckExpressions(new String[] {"(maxval(_wave) *  \\POLOIDAL:NUM_PM_UNITS) <= _imax"});
+    deviceButtons1.setCheckExpressions(new String[] {"(maxval(_wave) *  \\POLOIDAL:PM_ENABLED) <= _imax"});
     deviceButtons1.setCheckMessages(new String[] {"Total magnetizing current above limit"});
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jPanel1, BorderLayout.NORTH);

@@ -68,7 +68,7 @@ public class RFXTimesSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(850);
+    this.setWidth(880);
     this.setHeight(500);
     this.setDeviceType("RFXTimes");
     this.setDeviceProvider("localhost");

@@ -26,7 +26,7 @@ public class DeviceField extends DeviceComponent
     {
         this.numCols = numCols;
         textF.setColumns(numCols);
-        redisplay();
+        //redisplay();
     }
     public int getNumCols() {return numCols; }
     public void setEditable(boolean editable) {this.editable = editable;}
@@ -42,7 +42,7 @@ public class DeviceField extends DeviceComponent
     {
         this.labelString = labelString;
         label.setText(labelString);
-        redisplay();
+        //redisplay();
     }
     public String getLabelString() {return labelString; }
     public void setShowState(boolean showState)
@@ -52,7 +52,7 @@ public class DeviceField extends DeviceComponent
             checkB.setVisible(true);
         else
             checkB.setVisible(false);
-        redisplay();
+        //redisplay();
     }
     public boolean getShowState() {return showState; }
     public void setTextOnly(boolean textOnly) {this.textOnly = textOnly; }
@@ -143,7 +143,7 @@ public class DeviceField extends DeviceComponent
           setPreferredSize(new Dimension(preferredWidth, getPreferredSize().height));
           setSize(new Dimension(preferredWidth, getPreferredSize().height));
         }
-        redisplay();
+        //redisplay();
         initializing = false;
     }
 

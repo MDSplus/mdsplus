@@ -100,12 +100,14 @@ public class DIO2Setup extends DeviceSetup
 		deviceChannel1.setLabelString("On:");
 		deviceChannel1.setLayout(new BorderLayout(0,0));
 		JPanel2.add(BorderLayout.CENTER, deviceChannel1);
+		JPanel61.setLayout(new BorderLayout(0,0));
+		deviceChannel1.add(JPanel61);
 		JPanel4.setLayout(new CardLayout(0,0));
-		deviceChannel1.add(BorderLayout.CENTER, JPanel4);
+		JPanel61.add(BorderLayout.CENTER, JPanel4);
 		deviceChannel2.setShowState(false);
 		deviceChannel2.setUpdateIdentifier("CH1");
 		deviceChannel2.setLines(-1);
-		deviceChannel2.setOffsetNid(6);
+		deviceChannel2.setOffsetNid(7);
 		deviceChannel2.setShowVal("PULSE");
 		deviceChannel2.setBorderVisible(true);
 		deviceChannel2.setLayout(new BorderLayout(0,0));
@@ -132,6 +134,7 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice5.setLabelString("Cyclic: ");
 		JPanel3.add(deviceChoice5);
+		deviceField4.setNumCols(15);
 		deviceField4.setTextOnly(true);
 		deviceField4.setOffsetNid(10);
 		deviceField4.setLabelString("Event: ");
@@ -154,9 +157,11 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice7.setLabelString("Initial level 2: ");
 		JPanel3.add(deviceChoice7);
+		deviceField5.setNumCols(15);
 		deviceField5.setOffsetNid(12);
 		deviceField5.setLabelString("Delay: ");
 		JPanel3.add(deviceField5);
+		deviceField6.setNumCols(15);
 		deviceField6.setOffsetNid(13);
 		deviceField6.setLabelString("Duration: ");
 		JPanel3.add(deviceField6);
@@ -165,13 +170,14 @@ public class DIO2Setup extends DeviceSetup
 		JPanel3.add(trigTime1);
 		deviceChannel3.setShowState(false);
 		deviceChannel3.setUpdateIdentifier("CH1");
-		deviceChannel3.setOffsetNid(1);
+		deviceChannel3.setOffsetNid(7);
 		deviceChannel3.setShowVal("CLOCK");
 		deviceChannel3.setBorderVisible(true);
 		deviceChannel3.setLayout(new BorderLayout(0,0));
 		JPanel4.add("CLOCK", deviceChannel3);
 		JPanel5.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		deviceChannel3.add(JPanel5);
+		deviceField7.setNumCols(15);
 		deviceField7.setOffsetNid(14);
 		deviceField7.setLabelString("Frequency:");
 		JPanel5.add(deviceField7);
@@ -181,7 +187,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel5.add(deviceField8);
 		deviceChannel4.setShowState(false);
 		deviceChannel4.setUpdateIdentifier("CH1");
-		deviceChannel4.setOffsetNid(1);
+		deviceChannel4.setOffsetNid(7);
 		deviceChannel4.setShowVal("GCLOCK");
 		deviceChannel4.setBorderVisible(true);
 		deviceChannel4.setLayout(new BorderLayout(0,0));
@@ -199,15 +205,19 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice8.setLabelString("Trigger mode: ");
 		JPanel6.add(deviceChoice8);
+		deviceField9.setNumCols(15);
 		deviceField9.setOffsetNid(12);
 		deviceField9.setLabelString("Delay: ");
 		JPanel6.add(deviceField9);
+		deviceField10.setNumCols(15);
 		deviceField10.setOffsetNid(13);
 		deviceField10.setLabelString("Duration: ");
 		JPanel6.add(deviceField10);
+		deviceField11.setNumCols(15);
 		deviceField11.setOffsetNid(14);
 		deviceField11.setLabelString("Frequency: ");
 		JPanel6.add(deviceField11);
+		deviceField12.setNumCols(15);
 		deviceField12.setTextOnly(true);
 		deviceField12.setOffsetNid(10);
 		deviceField12.setLabelString("Event:");
@@ -217,7 +227,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel6.add(trigTime2);
 		deviceChannel5.setShowState(false);
 		deviceChannel5.setUpdateIdentifier("CH1");
-		deviceChannel5.setOffsetNid(1);
+		deviceChannel5.setOffsetNid(7);
 		deviceChannel5.setShowVal("DCLOCK");
 		deviceChannel5.setBorderVisible(true);
 		deviceChannel5.setLayout(new BorderLayout(0,0));
@@ -235,18 +245,23 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice9.setLabelString("Trigger mode: ");
 		JPanel7.add(deviceChoice9);
+		deviceField13.setNumCols(15);
 		deviceField13.setOffsetNid(12);
 		deviceField13.setLabelString("Delay: ");
 		JPanel7.add(deviceField13);
+		deviceField14.setNumCols(15);
 		deviceField14.setOffsetNid(13);
 		deviceField14.setLabelString("Duration: ");
 		JPanel7.add(deviceField14);
+		deviceField15.setNumCols(15);
 		deviceField15.setOffsetNid(14);
-		deviceField15.setLabelString("Frequency 1: ");
+		deviceField15.setLabelString("Freq.1: ");
 		JPanel7.add(deviceField15);
+		deviceField16.setNumCols(15);
 		deviceField16.setOffsetNid(15);
-		deviceField16.setLabelString("Frequency 2: ");
+		deviceField16.setLabelString("Freq. 2: ");
 		JPanel7.add(deviceField16);
+		deviceField17.setNumCols(15);
 		deviceField17.setTextOnly(true);
 		deviceField17.setOffsetNid(10);
 		deviceField17.setLabelString("Event: ");
@@ -254,9 +269,8 @@ public class DIO2Setup extends DeviceSetup
 		trigTime3.setOffsetNid(19);
 		trigTime3.setLabelString("Trigger time: ");
 		JPanel7.add(trigTime3);
-		((CardLayout) JPanel4.getLayout()).show(JPanel4,"PULSE");
 		JPanel53.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		JPanel2.add(BorderLayout.NORTH,JPanel53);
+		JPanel61.add(BorderLayout.NORTH, JPanel53);
 		deviceChoice3.setUpdateIdentifier("CH1");
 		deviceChoice3.setOffsetNid(8);
 		{
@@ -274,6 +288,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceField118.setOffsetNid(23);
 		deviceField118.setLabelString("Comment: ");
 		JPanel53.add(deviceField118);
+		((CardLayout) JPanel4.getLayout()).show(JPanel4,"PULSE");
 		JPanel8.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(JPanel8);
 		JPanel8.setBounds(2,24,787,203);
@@ -284,12 +299,14 @@ public class DIO2Setup extends DeviceSetup
 		deviceChannel6.setLabelString("On:");
 		deviceChannel6.setLayout(new BorderLayout(0,0));
 		JPanel8.add(BorderLayout.CENTER, deviceChannel6);
+		JPanel62.setLayout(new BorderLayout(0,0));
+		deviceChannel6.add(JPanel62);
 		JPanel9.setLayout(new CardLayout(0,0));
-		deviceChannel6.add(BorderLayout.CENTER, JPanel9);
+		JPanel62.add(BorderLayout.CENTER, JPanel9);
 		deviceChannel7.setShowState(false);
 		deviceChannel7.setUpdateIdentifier("CH2");
 		deviceChannel7.setLines(-1);
-		deviceChannel7.setOffsetNid(21);
+		deviceChannel7.setOffsetNid(24);
 		deviceChannel7.setShowVal("PULSE");
 		deviceChannel7.setBorderVisible(true);
 		deviceChannel7.setLayout(new BorderLayout(0,0));
@@ -316,6 +333,7 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice11.setLabelString("Cyclic: ");
 		JPanel10.add(deviceChoice11);
+		deviceField18.setNumCols(15);
 		deviceField18.setTextOnly(true);
 		deviceField18.setOffsetNid(27);
 		deviceField18.setLabelString("Event: ");
@@ -338,9 +356,11 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice13.setLabelString("Initial level 2: ");
 		JPanel10.add(deviceChoice13);
+		deviceField19.setNumCols(15);
 		deviceField19.setOffsetNid(29);
 		deviceField19.setLabelString("Delay: ");
 		JPanel10.add(deviceField19);
+		deviceField20.setNumCols(15);
 		deviceField20.setOffsetNid(30);
 		deviceField20.setLabelString("Duration: ");
 		JPanel10.add(deviceField20);
@@ -349,13 +369,14 @@ public class DIO2Setup extends DeviceSetup
 		JPanel10.add(trigTime4);
 		deviceChannel8.setShowState(false);
 		deviceChannel8.setUpdateIdentifier("CH2");
-		deviceChannel8.setOffsetNid(1);
+		deviceChannel8.setOffsetNid(24);
 		deviceChannel8.setShowVal("CLOCK");
 		deviceChannel8.setBorderVisible(true);
 		deviceChannel8.setLayout(new BorderLayout(0,0));
 		JPanel9.add("CLOCK", deviceChannel8);
 		JPanel11.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		deviceChannel8.add(JPanel11);
+		deviceField21.setNumCols(15);
 		deviceField21.setOffsetNid(31);
 		deviceField21.setLabelString("Frequency:");
 		JPanel11.add(deviceField21);
@@ -365,7 +386,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel11.add(deviceField22);
 		deviceChannel9.setShowState(false);
 		deviceChannel9.setUpdateIdentifier("CH2");
-		deviceChannel9.setOffsetNid(1);
+		deviceChannel9.setOffsetNid(24);
 		deviceChannel9.setShowVal("GCLOCK");
 		deviceChannel9.setBorderVisible(true);
 		deviceChannel9.setLayout(new BorderLayout(0,0));
@@ -383,15 +404,19 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice14.setLabelString("Trigger mode: ");
 		JPanel12.add(deviceChoice14);
+		deviceField23.setNumCols(15);
 		deviceField23.setOffsetNid(29);
 		deviceField23.setLabelString("Delay: ");
 		JPanel12.add(deviceField23);
+		deviceField24.setNumCols(15);
 		deviceField24.setOffsetNid(30);
 		deviceField24.setLabelString("Duration: ");
 		JPanel12.add(deviceField24);
+		deviceField25.setNumCols(15);
 		deviceField25.setOffsetNid(31);
 		deviceField25.setLabelString("Frequency: ");
 		JPanel12.add(deviceField25);
+		deviceField26.setNumCols(15);
 		deviceField26.setTextOnly(true);
 		deviceField26.setOffsetNid(27);
 		deviceField26.setLabelString("Event:");
@@ -401,7 +426,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel12.add(trigTime5);
 		deviceChannel10.setShowState(false);
 		deviceChannel10.setUpdateIdentifier("CH2");
-		deviceChannel10.setOffsetNid(1);
+		deviceChannel10.setOffsetNid(24);
 		deviceChannel10.setShowVal("DCLOCK");
 		deviceChannel10.setBorderVisible(true);
 		deviceChannel10.setLayout(new BorderLayout(0,0));
@@ -419,18 +444,23 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice15.setLabelString("Trigger mode: ");
 		JPanel13.add(deviceChoice15);
+		deviceField27.setNumCols(15);
 		deviceField27.setOffsetNid(29);
 		deviceField27.setLabelString("Delay: ");
 		JPanel13.add(deviceField27);
+		deviceField28.setNumCols(15);
 		deviceField28.setOffsetNid(30);
 		deviceField28.setLabelString("Duration: ");
 		JPanel13.add(deviceField28);
+		deviceField29.setNumCols(15);
 		deviceField29.setOffsetNid(31);
-		deviceField29.setLabelString("Frequency 1: ");
+		deviceField29.setLabelString("Freq 1: ");
 		JPanel13.add(deviceField29);
+		deviceField30.setNumCols(15);
 		deviceField30.setOffsetNid(32);
-		deviceField30.setLabelString("Frequency 2: ");
+		deviceField30.setLabelString("Freq 2: ");
 		JPanel13.add(deviceField30);
+		deviceField31.setNumCols(15);
 		deviceField31.setTextOnly(true);
 		deviceField31.setOffsetNid(27);
 		deviceField31.setLabelString("Event: ");
@@ -438,9 +468,8 @@ public class DIO2Setup extends DeviceSetup
 		trigTime6.setOffsetNid(36);
 		trigTime6.setLabelString("Trigger time: ");
 		JPanel13.add(trigTime6);
-		((CardLayout) JPanel9.getLayout()).show(JPanel9,"PULSE");
 		JPanel54.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		JPanel8.add(BorderLayout.NORTH,JPanel54);
+		JPanel62.add(BorderLayout.NORTH, JPanel54);
 		deviceChoice16.setUpdateIdentifier("CH2");
 		deviceChoice16.setOffsetNid(25);
 		{
@@ -458,6 +487,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceField119.setOffsetNid(40);
 		deviceField119.setLabelString("Comment:");
 		JPanel54.add(deviceField119);
+		((CardLayout) JPanel9.getLayout()).show(JPanel9,"PULSE");
 		JPanel14.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(JPanel14);
 		JPanel14.setBounds(2,24,787,203);
@@ -468,12 +498,14 @@ public class DIO2Setup extends DeviceSetup
 		deviceChannel11.setLabelString("On:");
 		deviceChannel11.setLayout(new BorderLayout(0,0));
 		JPanel14.add(BorderLayout.CENTER, deviceChannel11);
+		JPanel63.setLayout(new BorderLayout(0,0));
+		deviceChannel11.add(JPanel63);
 		JPanel15.setLayout(new CardLayout(0,0));
-		deviceChannel11.add(BorderLayout.CENTER, JPanel15);
+		JPanel63.add(BorderLayout.CENTER, JPanel15);
 		deviceChannel12.setShowState(false);
 		deviceChannel12.setUpdateIdentifier("CH3");
 		deviceChannel12.setLines(-1);
-		deviceChannel12.setOffsetNid(6);
+		deviceChannel12.setOffsetNid(41);
 		deviceChannel12.setShowVal("PULSE");
 		deviceChannel12.setBorderVisible(true);
 		deviceChannel12.setLayout(new BorderLayout(0,0));
@@ -500,6 +532,7 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice18.setLabelString("Cyclic: ");
 		JPanel16.add(deviceChoice18);
+		deviceField32.setNumCols(15);
 		deviceField32.setTextOnly(true);
 		deviceField32.setOffsetNid(44);
 		deviceField32.setLabelString("Event: ");
@@ -522,9 +555,11 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice20.setLabelString("Initial level 2: ");
 		JPanel16.add(deviceChoice20);
+		deviceField33.setNumCols(15);
 		deviceField33.setOffsetNid(46);
 		deviceField33.setLabelString("Delay: ");
 		JPanel16.add(deviceField33);
+		deviceField34.setNumCols(15);
 		deviceField34.setOffsetNid(47);
 		deviceField34.setLabelString("Duration: ");
 		JPanel16.add(deviceField34);
@@ -533,13 +568,14 @@ public class DIO2Setup extends DeviceSetup
 		JPanel16.add(trigTime7);
 		deviceChannel13.setShowState(false);
 		deviceChannel13.setUpdateIdentifier("CH3");
-		deviceChannel13.setOffsetNid(1);
+		deviceChannel13.setOffsetNid(41);
 		deviceChannel13.setShowVal("CLOCK");
 		deviceChannel13.setBorderVisible(true);
 		deviceChannel13.setLayout(new BorderLayout(0,0));
 		JPanel15.add("CLOCK", deviceChannel13);
 		JPanel17.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		deviceChannel13.add(JPanel17);
+		deviceField35.setNumCols(15);
 		deviceField35.setOffsetNid(48);
 		deviceField35.setLabelString("Frequency:");
 		JPanel17.add(deviceField35);
@@ -549,7 +585,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel17.add(deviceField36);
 		deviceChannel14.setShowState(false);
 		deviceChannel14.setUpdateIdentifier("CH3");
-		deviceChannel14.setOffsetNid(1);
+		deviceChannel14.setOffsetNid(41);
 		deviceChannel14.setShowVal("GCLOCK");
 		deviceChannel14.setBorderVisible(true);
 		deviceChannel14.setLayout(new BorderLayout(0,0));
@@ -567,15 +603,19 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice21.setLabelString("Trigger mode: ");
 		JPanel18.add(deviceChoice21);
+		deviceField37.setNumCols(15);
 		deviceField37.setOffsetNid(46);
 		deviceField37.setLabelString("Delay: ");
 		JPanel18.add(deviceField37);
+		deviceField38.setNumCols(15);
 		deviceField38.setOffsetNid(47);
 		deviceField38.setLabelString("Duration: ");
 		JPanel18.add(deviceField38);
+		deviceField39.setNumCols(15);
 		deviceField39.setOffsetNid(48);
 		deviceField39.setLabelString("Frequency: ");
 		JPanel18.add(deviceField39);
+		deviceField40.setNumCols(15);
 		deviceField40.setTextOnly(true);
 		deviceField40.setOffsetNid(44);
 		deviceField40.setLabelString("Event:");
@@ -585,7 +625,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel18.add(trigTime8);
 		deviceChannel15.setShowState(false);
 		deviceChannel15.setUpdateIdentifier("CH3");
-		deviceChannel15.setOffsetNid(1);
+		deviceChannel15.setOffsetNid(41);
 		deviceChannel15.setShowVal("DCLOCK");
 		deviceChannel15.setBorderVisible(true);
 		deviceChannel15.setLayout(new BorderLayout(0,0));
@@ -603,18 +643,23 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice22.setLabelString("Trigger mode: ");
 		JPanel19.add(deviceChoice22);
+		deviceField41.setNumCols(15);
 		deviceField41.setOffsetNid(46);
 		deviceField41.setLabelString("Delay: ");
 		JPanel19.add(deviceField41);
+		deviceField42.setNumCols(15);
 		deviceField42.setOffsetNid(47);
 		deviceField42.setLabelString("Duration: ");
 		JPanel19.add(deviceField42);
+		deviceField43.setNumCols(15);
 		deviceField43.setOffsetNid(48);
-		deviceField43.setLabelString("Frequency 1: ");
+		deviceField43.setLabelString("Freq. 1: ");
 		JPanel19.add(deviceField43);
+		deviceField44.setNumCols(15);
 		deviceField44.setOffsetNid(49);
-		deviceField44.setLabelString("Frequency 2: ");
+		deviceField44.setLabelString("Freq. 2: ");
 		JPanel19.add(deviceField44);
+		deviceField45.setNumCols(15);
 		deviceField45.setTextOnly(true);
 		deviceField45.setOffsetNid(44);
 		deviceField45.setLabelString("Event: ");
@@ -622,9 +667,8 @@ public class DIO2Setup extends DeviceSetup
 		trigTime9.setOffsetNid(53);
 		trigTime9.setLabelString("Trigger time: ");
 		JPanel19.add(trigTime9);
-		((CardLayout) JPanel15.getLayout()).show(JPanel15,"PULSE");
 		JPanel55.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		JPanel14.add(BorderLayout.NORTH,JPanel55);
+		JPanel63.add(BorderLayout.NORTH, JPanel55);
 		deviceChoice23.setUpdateIdentifier("CH3");
 		deviceChoice23.setOffsetNid(42);
 		{
@@ -642,6 +686,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceField120.setOffsetNid(57);
 		deviceField120.setLabelString("Comment:");
 		JPanel55.add(deviceField120);
+		((CardLayout) JPanel15.getLayout()).show(JPanel15,"PULSE");
 		JPanel20.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(JPanel20);
 		JPanel20.setBounds(2,24,787,203);
@@ -652,12 +697,14 @@ public class DIO2Setup extends DeviceSetup
 		deviceChannel16.setLabelString("On:");
 		deviceChannel16.setLayout(new BorderLayout(0,0));
 		JPanel20.add(BorderLayout.CENTER, deviceChannel16);
+		JPanel64.setLayout(new BorderLayout(0,0));
+		deviceChannel16.add(JPanel64);
 		JPanel21.setLayout(new CardLayout(0,0));
-		deviceChannel16.add(BorderLayout.CENTER, JPanel21);
+		JPanel64.add(BorderLayout.CENTER, JPanel21);
 		deviceChannel17.setShowState(false);
 		deviceChannel17.setUpdateIdentifier("CH4");
 		deviceChannel17.setLines(-1);
-		deviceChannel17.setOffsetNid(6);
+		deviceChannel17.setOffsetNid(58);
 		deviceChannel17.setShowVal("PULSE");
 		deviceChannel17.setBorderVisible(true);
 		deviceChannel17.setLayout(new BorderLayout(0,0));
@@ -684,6 +731,7 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice25.setLabelString("Cyclic: ");
 		JPanel22.add(deviceChoice25);
+		deviceField46.setNumCols(15);
 		deviceField46.setTextOnly(true);
 		deviceField46.setOffsetNid(61);
 		deviceField46.setLabelString("Event: ");
@@ -706,9 +754,11 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice27.setLabelString("Initial level 2: ");
 		JPanel22.add(deviceChoice27);
+		deviceField47.setNumCols(15);
 		deviceField47.setOffsetNid(63);
 		deviceField47.setLabelString("Delay: ");
 		JPanel22.add(deviceField47);
+		deviceField48.setNumCols(15);
 		deviceField48.setOffsetNid(64);
 		deviceField48.setLabelString("Duration: ");
 		JPanel22.add(deviceField48);
@@ -717,13 +767,14 @@ public class DIO2Setup extends DeviceSetup
 		JPanel22.add(trigTime10);
 		deviceChannel18.setShowState(false);
 		deviceChannel18.setUpdateIdentifier("CH4");
-		deviceChannel18.setOffsetNid(1);
+		deviceChannel18.setOffsetNid(58);
 		deviceChannel18.setShowVal("CLOCK");
 		deviceChannel18.setBorderVisible(true);
 		deviceChannel18.setLayout(new BorderLayout(0,0));
 		JPanel21.add("CLOCK", deviceChannel18);
 		JPanel23.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		deviceChannel18.add(JPanel23);
+		deviceField49.setNumCols(15);
 		deviceField49.setOffsetNid(65);
 		deviceField49.setLabelString("Frequency:");
 		JPanel23.add(deviceField49);
@@ -733,7 +784,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel23.add(deviceField50);
 		deviceChannel19.setShowState(false);
 		deviceChannel19.setUpdateIdentifier("CH4");
-		deviceChannel19.setOffsetNid(1);
+		deviceChannel19.setOffsetNid(58);
 		deviceChannel19.setShowVal("GCLOCK");
 		deviceChannel19.setBorderVisible(true);
 		deviceChannel19.setLayout(new BorderLayout(0,0));
@@ -751,15 +802,19 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice28.setLabelString("Trigger mode: ");
 		JPanel24.add(deviceChoice28);
+		deviceField51.setNumCols(15);
 		deviceField51.setOffsetNid(63);
 		deviceField51.setLabelString("Delay: ");
 		JPanel24.add(deviceField51);
+		deviceField52.setNumCols(15);
 		deviceField52.setOffsetNid(64);
 		deviceField52.setLabelString("Duration: ");
 		JPanel24.add(deviceField52);
+		deviceField53.setNumCols(15);
 		deviceField53.setOffsetNid(65);
 		deviceField53.setLabelString("Frequency: ");
 		JPanel24.add(deviceField53);
+		deviceField54.setNumCols(15);
 		deviceField54.setTextOnly(true);
 		deviceField54.setOffsetNid(61);
 		deviceField54.setLabelString("Event:");
@@ -769,7 +824,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel24.add(trigTime11);
 		deviceChannel20.setShowState(false);
 		deviceChannel20.setUpdateIdentifier("CH4");
-		deviceChannel20.setOffsetNid(1);
+		deviceChannel20.setOffsetNid(58);
 		deviceChannel20.setShowVal("DCLOCK");
 		deviceChannel20.setBorderVisible(true);
 		deviceChannel20.setLayout(new BorderLayout(0,0));
@@ -787,18 +842,23 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice29.setLabelString("Trigger mode: ");
 		JPanel25.add(deviceChoice29);
+		deviceField55.setNumCols(15);
 		deviceField55.setOffsetNid(63);
 		deviceField55.setLabelString("Delay: ");
 		JPanel25.add(deviceField55);
+		deviceField56.setNumCols(15);
 		deviceField56.setOffsetNid(64);
 		deviceField56.setLabelString("Duration: ");
 		JPanel25.add(deviceField56);
+		deviceField57.setNumCols(15);
 		deviceField57.setOffsetNid(65);
-		deviceField57.setLabelString("Frequency 1: ");
+		deviceField57.setLabelString("Freq. 1: ");
 		JPanel25.add(deviceField57);
+		deviceField58.setNumCols(15);
 		deviceField58.setOffsetNid(66);
-		deviceField58.setLabelString("Frequency 2: ");
+		deviceField58.setLabelString("Freq. 2: ");
 		JPanel25.add(deviceField58);
+		deviceField59.setNumCols(15);
 		deviceField59.setTextOnly(true);
 		deviceField59.setOffsetNid(61);
 		deviceField59.setLabelString("Event: ");
@@ -806,9 +866,8 @@ public class DIO2Setup extends DeviceSetup
 		trigTime12.setOffsetNid(70);
 		trigTime12.setLabelString("Trigger time: ");
 		JPanel25.add(trigTime12);
-		((CardLayout) JPanel21.getLayout()).show(JPanel21,"PULSE");
 		JPanel56.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		JPanel20.add(BorderLayout.NORTH,JPanel56);
+		JPanel64.add(BorderLayout.NORTH, JPanel56);
 		deviceChoice30.setUpdateIdentifier("CH4");
 		deviceChoice30.setOffsetNid(59);
 		{
@@ -826,6 +885,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceField121.setOffsetNid(74);
 		deviceField121.setLabelString("Comment:");
 		JPanel56.add(deviceField121);
+		((CardLayout) JPanel21.getLayout()).show(JPanel21,"PULSE");
 		JPanel26.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(JPanel26);
 		JPanel26.setBounds(2,24,787,203);
@@ -836,12 +896,14 @@ public class DIO2Setup extends DeviceSetup
 		deviceChannel21.setLabelString("On:");
 		deviceChannel21.setLayout(new BorderLayout(0,0));
 		JPanel26.add(BorderLayout.CENTER, deviceChannel21);
+		JPanel65.setLayout(new BorderLayout(0,0));
+		deviceChannel21.add(JPanel65);
 		JPanel27.setLayout(new CardLayout(0,0));
-		deviceChannel21.add(BorderLayout.CENTER, JPanel27);
+		JPanel65.add(BorderLayout.CENTER, JPanel27);
 		deviceChannel22.setShowState(false);
 		deviceChannel22.setUpdateIdentifier("CH5");
 		deviceChannel22.setLines(-1);
-		deviceChannel22.setOffsetNid(6);
+		deviceChannel22.setOffsetNid(75);
 		deviceChannel22.setShowVal("PULSE");
 		deviceChannel22.setBorderVisible(true);
 		deviceChannel22.setLayout(new BorderLayout(0,0));
@@ -868,6 +930,7 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice32.setLabelString("Cyclic: ");
 		JPanel28.add(deviceChoice32);
+		deviceField60.setNumCols(15);
 		deviceField60.setTextOnly(true);
 		deviceField60.setOffsetNid(78);
 		deviceField60.setLabelString("Event: ");
@@ -890,9 +953,11 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice34.setLabelString("Initial level 2: ");
 		JPanel28.add(deviceChoice34);
+		deviceField61.setNumCols(15);
 		deviceField61.setOffsetNid(80);
 		deviceField61.setLabelString("Delay: ");
 		JPanel28.add(deviceField61);
+		deviceField62.setNumCols(15);
 		deviceField62.setOffsetNid(81);
 		deviceField62.setLabelString("Duration: ");
 		JPanel28.add(deviceField62);
@@ -901,13 +966,14 @@ public class DIO2Setup extends DeviceSetup
 		JPanel28.add(trigTime13);
 		deviceChannel23.setShowState(false);
 		deviceChannel23.setUpdateIdentifier("CH5");
-		deviceChannel23.setOffsetNid(1);
+		deviceChannel23.setOffsetNid(75);
 		deviceChannel23.setShowVal("CLOCK");
 		deviceChannel23.setBorderVisible(true);
 		deviceChannel23.setLayout(new BorderLayout(0,0));
 		JPanel27.add("CLOCK", deviceChannel23);
 		JPanel29.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		deviceChannel23.add(JPanel29);
+		deviceField63.setNumCols(15);
 		deviceField63.setOffsetNid(82);
 		deviceField63.setLabelString("Frequency:");
 		JPanel29.add(deviceField63);
@@ -917,7 +983,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel29.add(deviceField64);
 		deviceChannel24.setShowState(false);
 		deviceChannel24.setUpdateIdentifier("CH5");
-		deviceChannel24.setOffsetNid(1);
+		deviceChannel24.setOffsetNid(75);
 		deviceChannel24.setShowVal("GCLOCK");
 		deviceChannel24.setBorderVisible(true);
 		deviceChannel24.setLayout(new BorderLayout(0,0));
@@ -935,15 +1001,19 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice35.setLabelString("Trigger mode: ");
 		JPanel30.add(deviceChoice35);
+		deviceField65.setNumCols(15);
 		deviceField65.setOffsetNid(80);
 		deviceField65.setLabelString("Delay: ");
 		JPanel30.add(deviceField65);
+		deviceField66.setNumCols(15);
 		deviceField66.setOffsetNid(81);
 		deviceField66.setLabelString("Duration: ");
 		JPanel30.add(deviceField66);
+		deviceField67.setNumCols(15);
 		deviceField67.setOffsetNid(82);
 		deviceField67.setLabelString("Frequency: ");
 		JPanel30.add(deviceField67);
+		deviceField68.setNumCols(15);
 		deviceField68.setTextOnly(true);
 		deviceField68.setOffsetNid(78);
 		deviceField68.setLabelString("Event:");
@@ -953,7 +1023,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel30.add(trigTime14);
 		deviceChannel25.setShowState(false);
 		deviceChannel25.setUpdateIdentifier("CH5");
-		deviceChannel25.setOffsetNid(1);
+		deviceChannel25.setOffsetNid(75);
 		deviceChannel25.setShowVal("DCLOCK");
 		deviceChannel25.setBorderVisible(true);
 		deviceChannel25.setLayout(new BorderLayout(0,0));
@@ -971,18 +1041,23 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice36.setLabelString("Trigger mode: ");
 		JPanel31.add(deviceChoice36);
+		deviceField69.setNumCols(15);
 		deviceField69.setOffsetNid(80);
 		deviceField69.setLabelString("Delay: ");
 		JPanel31.add(deviceField69);
+		deviceField70.setNumCols(15);
 		deviceField70.setOffsetNid(81);
 		deviceField70.setLabelString("Duration: ");
 		JPanel31.add(deviceField70);
+		deviceField71.setNumCols(15);
 		deviceField71.setOffsetNid(82);
-		deviceField71.setLabelString("Frequency 1: ");
+		deviceField71.setLabelString("Freq. 1: ");
 		JPanel31.add(deviceField71);
+		deviceField72.setNumCols(15);
 		deviceField72.setOffsetNid(83);
-		deviceField72.setLabelString("Frequency 2: ");
+		deviceField72.setLabelString("Freq. 2: ");
 		JPanel31.add(deviceField72);
+		deviceField73.setNumCols(15);
 		deviceField73.setTextOnly(true);
 		deviceField73.setOffsetNid(78);
 		deviceField73.setLabelString("Event: ");
@@ -990,9 +1065,8 @@ public class DIO2Setup extends DeviceSetup
 		trigTime15.setOffsetNid(87);
 		trigTime15.setLabelString("Trigger time: ");
 		JPanel31.add(trigTime15);
-		((CardLayout) JPanel27.getLayout()).show(JPanel27,"PULSE");
 		JPanel57.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		JPanel26.add(BorderLayout.NORTH,JPanel57);
+		JPanel65.add(BorderLayout.NORTH, JPanel57);
 		deviceChoice37.setUpdateIdentifier("CH5");
 		deviceChoice37.setOffsetNid(76);
 		{
@@ -1010,6 +1084,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceField122.setOffsetNid(91);
 		deviceField122.setLabelString("Comment:");
 		JPanel57.add(deviceField122);
+		((CardLayout) JPanel27.getLayout()).show(JPanel27,"PULSE");
 		JPanel32.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(JPanel32);
 		JPanel32.setBounds(2,24,787,203);
@@ -1020,12 +1095,14 @@ public class DIO2Setup extends DeviceSetup
 		deviceChannel26.setLabelString("On:");
 		deviceChannel26.setLayout(new BorderLayout(0,0));
 		JPanel32.add(BorderLayout.CENTER, deviceChannel26);
+		JPanel66.setLayout(new BorderLayout(0,0));
+		deviceChannel26.add(JPanel66);
 		JPanel33.setLayout(new CardLayout(0,0));
-		deviceChannel26.add(BorderLayout.CENTER, JPanel33);
+		JPanel66.add(BorderLayout.CENTER, JPanel33);
 		deviceChannel27.setShowState(false);
 		deviceChannel27.setUpdateIdentifier("CH6");
 		deviceChannel27.setLines(-1);
-		deviceChannel27.setOffsetNid(6);
+		deviceChannel27.setOffsetNid(92);
 		deviceChannel27.setShowVal("PULSE");
 		deviceChannel27.setBorderVisible(true);
 		deviceChannel27.setLayout(new BorderLayout(0,0));
@@ -1052,6 +1129,7 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice39.setLabelString("Cyclic: ");
 		JPanel34.add(deviceChoice39);
+		deviceField74.setNumCols(15);
 		deviceField74.setTextOnly(true);
 		deviceField74.setOffsetNid(95);
 		deviceField74.setLabelString("Event: ");
@@ -1074,9 +1152,11 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice41.setLabelString("Initial level 2: ");
 		JPanel34.add(deviceChoice41);
+		deviceField75.setNumCols(15);
 		deviceField75.setOffsetNid(97);
 		deviceField75.setLabelString("Delay: ");
 		JPanel34.add(deviceField75);
+		deviceField76.setNumCols(15);
 		deviceField76.setOffsetNid(98);
 		deviceField76.setLabelString("Duration: ");
 		JPanel34.add(deviceField76);
@@ -1085,13 +1165,14 @@ public class DIO2Setup extends DeviceSetup
 		JPanel34.add(trigTime16);
 		deviceChannel28.setShowState(false);
 		deviceChannel28.setUpdateIdentifier("CH6");
-		deviceChannel28.setOffsetNid(1);
+		deviceChannel28.setOffsetNid(92);
 		deviceChannel28.setShowVal("CLOCK");
 		deviceChannel28.setBorderVisible(true);
 		deviceChannel28.setLayout(new BorderLayout(0,0));
 		JPanel33.add("CLOCK", deviceChannel28);
 		JPanel35.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		deviceChannel28.add(JPanel35);
+		deviceField77.setNumCols(15);
 		deviceField77.setOffsetNid(99);
 		deviceField77.setLabelString("Frequency:");
 		JPanel35.add(deviceField77);
@@ -1101,7 +1182,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel35.add(deviceField78);
 		deviceChannel29.setShowState(false);
 		deviceChannel29.setUpdateIdentifier("CH6");
-		deviceChannel29.setOffsetNid(1);
+		deviceChannel29.setOffsetNid(92);
 		deviceChannel29.setShowVal("GCLOCK");
 		deviceChannel29.setBorderVisible(true);
 		deviceChannel29.setLayout(new BorderLayout(0,0));
@@ -1119,15 +1200,19 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice42.setLabelString("Trigger mode: ");
 		JPanel36.add(deviceChoice42);
+		deviceField79.setNumCols(15);
 		deviceField79.setOffsetNid(97);
 		deviceField79.setLabelString("Delay: ");
 		JPanel36.add(deviceField79);
+		deviceField80.setNumCols(15);
 		deviceField80.setOffsetNid(98);
 		deviceField80.setLabelString("Duration: ");
 		JPanel36.add(deviceField80);
+		deviceField81.setNumCols(15);
 		deviceField81.setOffsetNid(99);
 		deviceField81.setLabelString("Frequency: ");
 		JPanel36.add(deviceField81);
+		deviceField82.setNumCols(15);
 		deviceField82.setTextOnly(true);
 		deviceField82.setOffsetNid(95);
 		deviceField82.setLabelString("Event:");
@@ -1137,7 +1222,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel36.add(trigTime17);
 		deviceChannel30.setShowState(false);
 		deviceChannel30.setUpdateIdentifier("CH6");
-		deviceChannel30.setOffsetNid(1);
+		deviceChannel30.setOffsetNid(92);
 		deviceChannel30.setShowVal("DCLOCK");
 		deviceChannel30.setBorderVisible(true);
 		deviceChannel30.setLayout(new BorderLayout(0,0));
@@ -1155,18 +1240,23 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice43.setLabelString("Trigger mode: ");
 		JPanel37.add(deviceChoice43);
+		deviceField83.setNumCols(15);
 		deviceField83.setOffsetNid(97);
 		deviceField83.setLabelString("Delay: ");
 		JPanel37.add(deviceField83);
+		deviceField84.setNumCols(15);
 		deviceField84.setOffsetNid(98);
 		deviceField84.setLabelString("Duration: ");
 		JPanel37.add(deviceField84);
+		deviceField85.setNumCols(15);
 		deviceField85.setOffsetNid(99);
-		deviceField85.setLabelString("Frequency 1: ");
+		deviceField85.setLabelString("Freq. 1: ");
 		JPanel37.add(deviceField85);
+		deviceField86.setNumCols(15);
 		deviceField86.setOffsetNid(100);
-		deviceField86.setLabelString("Frequency 2: ");
+		deviceField86.setLabelString("Freq. 2: ");
 		JPanel37.add(deviceField86);
+		deviceField87.setNumCols(15);
 		deviceField87.setTextOnly(true);
 		deviceField87.setOffsetNid(95);
 		deviceField87.setLabelString("Event: ");
@@ -1174,9 +1264,8 @@ public class DIO2Setup extends DeviceSetup
 		trigTime18.setOffsetNid(104);
 		trigTime18.setLabelString("Trigger time: ");
 		JPanel37.add(trigTime18);
-		((CardLayout) JPanel33.getLayout()).show(JPanel33,"PULSE");
 		JPanel58.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		JPanel32.add(BorderLayout.NORTH,JPanel58);
+		JPanel66.add(BorderLayout.NORTH, JPanel58);
 		deviceChoice44.setUpdateIdentifier("CH6");
 		deviceChoice44.setOffsetNid(93);
 		{
@@ -1194,6 +1283,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceField123.setOffsetNid(108);
 		deviceField123.setLabelString("Comment:");
 		JPanel58.add(deviceField123);
+		((CardLayout) JPanel33.getLayout()).show(JPanel33,"PULSE");
 		JPanel38.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(JPanel38);
 		JPanel38.setBounds(2,24,787,203);
@@ -1204,12 +1294,14 @@ public class DIO2Setup extends DeviceSetup
 		deviceChannel31.setLabelString("On:");
 		deviceChannel31.setLayout(new BorderLayout(0,0));
 		JPanel38.add(BorderLayout.CENTER, deviceChannel31);
+		JPanel67.setLayout(new BorderLayout(0,0));
+		deviceChannel31.add(JPanel67);
 		JPanel39.setLayout(new CardLayout(0,0));
-		deviceChannel31.add(BorderLayout.CENTER, JPanel39);
+		JPanel67.add(BorderLayout.CENTER, JPanel39);
 		deviceChannel32.setShowState(false);
 		deviceChannel32.setUpdateIdentifier("CH7");
 		deviceChannel32.setLines(-1);
-		deviceChannel32.setOffsetNid(6);
+		deviceChannel32.setOffsetNid(109);
 		deviceChannel32.setShowVal("PULSE");
 		deviceChannel32.setBorderVisible(true);
 		deviceChannel32.setLayout(new BorderLayout(0,0));
@@ -1236,6 +1328,7 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice46.setLabelString("Cyclic: ");
 		JPanel40.add(deviceChoice46);
+		deviceField88.setNumCols(15);
 		deviceField88.setTextOnly(true);
 		deviceField88.setOffsetNid(112);
 		deviceField88.setLabelString("Event: ");
@@ -1258,9 +1351,11 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice48.setLabelString("Initial level 2: ");
 		JPanel40.add(deviceChoice48);
+		deviceField89.setNumCols(15);
 		deviceField89.setOffsetNid(114);
 		deviceField89.setLabelString("Delay: ");
 		JPanel40.add(deviceField89);
+		deviceField90.setNumCols(15);
 		deviceField90.setOffsetNid(115);
 		deviceField90.setLabelString("Duration: ");
 		JPanel40.add(deviceField90);
@@ -1269,13 +1364,14 @@ public class DIO2Setup extends DeviceSetup
 		JPanel40.add(trigTime19);
 		deviceChannel33.setShowState(false);
 		deviceChannel33.setUpdateIdentifier("CH7");
-		deviceChannel33.setOffsetNid(1);
+		deviceChannel33.setOffsetNid(109);
 		deviceChannel33.setShowVal("CLOCK");
 		deviceChannel33.setBorderVisible(true);
 		deviceChannel33.setLayout(new BorderLayout(0,0));
 		JPanel39.add("CLOCK", deviceChannel33);
 		JPanel41.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		deviceChannel33.add(JPanel41);
+		deviceField91.setNumCols(15);
 		deviceField91.setOffsetNid(116);
 		deviceField91.setLabelString("Frequency:");
 		JPanel41.add(deviceField91);
@@ -1285,7 +1381,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel41.add(deviceField92);
 		deviceChannel34.setShowState(false);
 		deviceChannel34.setUpdateIdentifier("CH7");
-		deviceChannel34.setOffsetNid(1);
+		deviceChannel34.setOffsetNid(109);
 		deviceChannel34.setShowVal("GCLOCK");
 		deviceChannel34.setBorderVisible(true);
 		deviceChannel34.setLayout(new BorderLayout(0,0));
@@ -1303,15 +1399,19 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice49.setLabelString("Trigger mode: ");
 		JPanel42.add(deviceChoice49);
+		deviceField93.setNumCols(15);
 		deviceField93.setOffsetNid(114);
 		deviceField93.setLabelString("Delay: ");
 		JPanel42.add(deviceField93);
+		deviceField94.setNumCols(15);
 		deviceField94.setOffsetNid(115);
 		deviceField94.setLabelString("Duration: ");
 		JPanel42.add(deviceField94);
+		deviceField95.setNumCols(15);
 		deviceField95.setOffsetNid(116);
 		deviceField95.setLabelString("Frequency: ");
 		JPanel42.add(deviceField95);
+		deviceField96.setNumCols(15);
 		deviceField96.setTextOnly(true);
 		deviceField96.setOffsetNid(112);
 		deviceField96.setLabelString("Event:");
@@ -1321,7 +1421,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel42.add(trigTime20);
 		deviceChannel35.setShowState(false);
 		deviceChannel35.setUpdateIdentifier("CH7");
-		deviceChannel35.setOffsetNid(1);
+		deviceChannel35.setOffsetNid(109);
 		deviceChannel35.setShowVal("DCLOCK");
 		deviceChannel35.setBorderVisible(true);
 		deviceChannel35.setLayout(new BorderLayout(0,0));
@@ -1339,17 +1439,21 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice50.setLabelString("Trigger mode: ");
 		JPanel43.add(deviceChoice50);
+		deviceField97.setNumCols(15);
 		deviceField97.setOffsetNid(114);
 		deviceField97.setLabelString("Delay: ");
 		JPanel43.add(deviceField97);
+		deviceField98.setNumCols(15);
 		deviceField98.setOffsetNid(115);
 		deviceField98.setLabelString("Duration: ");
 		JPanel43.add(deviceField98);
+		deviceField99.setNumCols(15);
 		deviceField99.setOffsetNid(116);
-		deviceField99.setLabelString("Frequency 1: ");
+		deviceField99.setLabelString("Freq. 1: ");
 		JPanel43.add(deviceField99);
+		deviceField100.setNumCols(15);
 		deviceField100.setOffsetNid(117);
-		deviceField100.setLabelString("Frequency 2: ");
+		deviceField100.setLabelString("Freq. 2: ");
 		JPanel43.add(deviceField100);
 		deviceField101.setTextOnly(true);
 		deviceField101.setOffsetNid(112);
@@ -1358,9 +1462,8 @@ public class DIO2Setup extends DeviceSetup
 		trigTime21.setOffsetNid(121);
 		trigTime21.setLabelString("Trigger time: ");
 		JPanel43.add(trigTime21);
-		((CardLayout) JPanel39.getLayout()).show(JPanel39,"PULSE");
 		JPanel59.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		JPanel38.add(BorderLayout.NORTH,JPanel59);
+		JPanel67.add(BorderLayout.NORTH, JPanel59);
 		deviceChoice51.setUpdateIdentifier("CH7");
 		deviceChoice51.setOffsetNid(110);
 		{
@@ -1378,6 +1481,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceField124.setOffsetNid(125);
 		deviceField124.setLabelString("Comment:");
 		JPanel59.add(deviceField124);
+		((CardLayout) JPanel39.getLayout()).show(JPanel39,"PULSE");
 		JPanel44.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(JPanel44);
 		JPanel44.setBounds(2,24,787,203);
@@ -1388,12 +1492,14 @@ public class DIO2Setup extends DeviceSetup
 		deviceChannel36.setLabelString("On:");
 		deviceChannel36.setLayout(new BorderLayout(0,0));
 		JPanel44.add(BorderLayout.CENTER, deviceChannel36);
+		JPanel68.setLayout(new BorderLayout(0,0));
+		deviceChannel36.add(JPanel68);
 		JPanel45.setLayout(new CardLayout(0,0));
-		deviceChannel36.add(BorderLayout.CENTER, JPanel45);
+		JPanel68.add(BorderLayout.CENTER, JPanel45);
 		deviceChannel37.setShowState(false);
 		deviceChannel37.setUpdateIdentifier("CH8");
 		deviceChannel37.setLines(-1);
-		deviceChannel37.setOffsetNid(6);
+		deviceChannel37.setOffsetNid(126);
 		deviceChannel37.setShowVal("PULSE");
 		deviceChannel37.setBorderVisible(true);
 		deviceChannel37.setLayout(new BorderLayout(0,0));
@@ -1420,6 +1526,7 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice53.setLabelString("Cyclic: ");
 		JPanel46.add(deviceChoice53);
+		deviceField102.setNumCols(15);
 		deviceField102.setTextOnly(true);
 		deviceField102.setOffsetNid(129);
 		deviceField102.setLabelString("Event: ");
@@ -1442,9 +1549,11 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice55.setLabelString("Initial level 2: ");
 		JPanel46.add(deviceChoice55);
+		deviceField103.setNumCols(15);
 		deviceField103.setOffsetNid(131);
 		deviceField103.setLabelString("Delay: ");
 		JPanel46.add(deviceField103);
+		deviceField104.setNumCols(15);
 		deviceField104.setOffsetNid(132);
 		deviceField104.setLabelString("Duration: ");
 		JPanel46.add(deviceField104);
@@ -1453,13 +1562,14 @@ public class DIO2Setup extends DeviceSetup
 		JPanel46.add(trigTime22);
 		deviceChannel38.setShowState(false);
 		deviceChannel38.setUpdateIdentifier("CH8");
-		deviceChannel38.setOffsetNid(1);
+		deviceChannel38.setOffsetNid(126);
 		deviceChannel38.setShowVal("CLOCK");
 		deviceChannel38.setBorderVisible(true);
 		deviceChannel38.setLayout(new BorderLayout(0,0));
 		JPanel45.add("CLOCK", deviceChannel38);
 		JPanel47.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		deviceChannel38.add(JPanel47);
+		deviceField105.setNumCols(15);
 		deviceField105.setOffsetNid(133);
 		deviceField105.setLabelString("Frequency:");
 		JPanel47.add(deviceField105);
@@ -1469,7 +1579,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel47.add(deviceField106);
 		deviceChannel39.setShowState(false);
 		deviceChannel39.setUpdateIdentifier("CH8");
-		deviceChannel39.setOffsetNid(1);
+		deviceChannel39.setOffsetNid(126);
 		deviceChannel39.setShowVal("GCLOCK");
 		deviceChannel39.setBorderVisible(true);
 		deviceChannel39.setLayout(new BorderLayout(0,0));
@@ -1487,15 +1597,19 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice56.setLabelString("Trigger mode: ");
 		JPanel48.add(deviceChoice56);
+		deviceField107.setNumCols(15);
 		deviceField107.setOffsetNid(131);
 		deviceField107.setLabelString("Delay: ");
 		JPanel48.add(deviceField107);
+		deviceField108.setNumCols(15);
 		deviceField108.setOffsetNid(132);
 		deviceField108.setLabelString("Duration: ");
 		JPanel48.add(deviceField108);
+		deviceField109.setNumCols(15);
 		deviceField109.setOffsetNid(133);
 		deviceField109.setLabelString("Frequency: ");
 		JPanel48.add(deviceField109);
+		deviceField110.setNumCols(15);
 		deviceField110.setTextOnly(true);
 		deviceField110.setOffsetNid(129);
 		deviceField110.setLabelString("Event:");
@@ -1505,7 +1619,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel48.add(trigTime23);
 		deviceChannel40.setShowState(false);
 		deviceChannel40.setUpdateIdentifier("CH8");
-		deviceChannel40.setOffsetNid(1);
+		deviceChannel40.setOffsetNid(126);
 		deviceChannel40.setShowVal("DCLOCK");
 		deviceChannel40.setBorderVisible(true);
 		deviceChannel40.setLayout(new BorderLayout(0,0));
@@ -1523,18 +1637,23 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice57.setLabelString("Trigger mode: ");
 		JPanel49.add(deviceChoice57);
+		deviceField111.setNumCols(15);
 		deviceField111.setOffsetNid(131);
 		deviceField111.setLabelString("Delay: ");
 		JPanel49.add(deviceField111);
+		deviceField112.setNumCols(15);
 		deviceField112.setOffsetNid(132);
 		deviceField112.setLabelString("Duration: ");
 		JPanel49.add(deviceField112);
+		deviceField113.setNumCols(15);
 		deviceField113.setOffsetNid(133);
-		deviceField113.setLabelString("Frequency 1: ");
+		deviceField113.setLabelString("Freq. 1: ");
 		JPanel49.add(deviceField113);
+		deviceField114.setNumCols(15);
 		deviceField114.setOffsetNid(134);
-		deviceField114.setLabelString("Frequency 2: ");
+		deviceField114.setLabelString("Freq. 2: ");
 		JPanel49.add(deviceField114);
+		deviceField115.setNumCols(15);
 		deviceField115.setTextOnly(true);
 		deviceField115.setOffsetNid(129);
 		deviceField115.setLabelString("Event: ");
@@ -1542,9 +1661,8 @@ public class DIO2Setup extends DeviceSetup
 		trigTime24.setOffsetNid(138);
 		trigTime24.setLabelString("Trigger time: ");
 		JPanel49.add(trigTime24);
-		((CardLayout) JPanel45.getLayout()).show(JPanel45,"PULSE");
 		JPanel60.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		JPanel44.add(BorderLayout.NORTH,JPanel60);
+		JPanel68.add(BorderLayout.NORTH, JPanel60);
 		deviceChoice58.setUpdateIdentifier("CH8");
 		deviceChoice58.setOffsetNid(127);
 		{
@@ -1562,6 +1680,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceField125.setOffsetNid(142);
 		deviceField125.setLabelString("Comment:");
 		JPanel60.add(deviceField125);
+		((CardLayout) JPanel45.getLayout()).show(JPanel45,"PULSE");
 		JTabbedPane1.setSelectedIndex(0);
 		JTabbedPane1.setSelectedComponent(JPanel2);
 		JTabbedPane1.setTitleAt(0,"CH 1");
@@ -1628,6 +1747,7 @@ public class DIO2Setup extends DeviceSetup
 	javax.swing.JTabbedPane JTabbedPane1 = new javax.swing.JTabbedPane();
 	javax.swing.JPanel JPanel2 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel1 = new DeviceChannel();
+	javax.swing.JPanel JPanel61 = new javax.swing.JPanel();
 	javax.swing.JPanel JPanel4 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel2 = new DeviceChannel();
 	javax.swing.JPanel JPanel3 = new javax.swing.JPanel();
@@ -1665,6 +1785,7 @@ public class DIO2Setup extends DeviceSetup
 	DeviceField deviceField118 = new DeviceField();
 	javax.swing.JPanel JPanel8 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel6 = new DeviceChannel();
+	javax.swing.JPanel JPanel62 = new javax.swing.JPanel();
 	javax.swing.JPanel JPanel9 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel7 = new DeviceChannel();
 	javax.swing.JPanel JPanel10 = new javax.swing.JPanel();
@@ -1702,6 +1823,7 @@ public class DIO2Setup extends DeviceSetup
 	DeviceField deviceField119 = new DeviceField();
 	javax.swing.JPanel JPanel14 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel11 = new DeviceChannel();
+	javax.swing.JPanel JPanel63 = new javax.swing.JPanel();
 	javax.swing.JPanel JPanel15 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel12 = new DeviceChannel();
 	javax.swing.JPanel JPanel16 = new javax.swing.JPanel();
@@ -1739,6 +1861,7 @@ public class DIO2Setup extends DeviceSetup
 	DeviceField deviceField120 = new DeviceField();
 	javax.swing.JPanel JPanel20 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel16 = new DeviceChannel();
+	javax.swing.JPanel JPanel64 = new javax.swing.JPanel();
 	javax.swing.JPanel JPanel21 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel17 = new DeviceChannel();
 	javax.swing.JPanel JPanel22 = new javax.swing.JPanel();
@@ -1776,6 +1899,7 @@ public class DIO2Setup extends DeviceSetup
 	DeviceField deviceField121 = new DeviceField();
 	javax.swing.JPanel JPanel26 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel21 = new DeviceChannel();
+	javax.swing.JPanel JPanel65 = new javax.swing.JPanel();
 	javax.swing.JPanel JPanel27 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel22 = new DeviceChannel();
 	javax.swing.JPanel JPanel28 = new javax.swing.JPanel();
@@ -1813,6 +1937,7 @@ public class DIO2Setup extends DeviceSetup
 	DeviceField deviceField122 = new DeviceField();
 	javax.swing.JPanel JPanel32 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel26 = new DeviceChannel();
+	javax.swing.JPanel JPanel66 = new javax.swing.JPanel();
 	javax.swing.JPanel JPanel33 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel27 = new DeviceChannel();
 	javax.swing.JPanel JPanel34 = new javax.swing.JPanel();
@@ -1850,6 +1975,7 @@ public class DIO2Setup extends DeviceSetup
 	DeviceField deviceField123 = new DeviceField();
 	javax.swing.JPanel JPanel38 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel31 = new DeviceChannel();
+	javax.swing.JPanel JPanel67 = new javax.swing.JPanel();
 	javax.swing.JPanel JPanel39 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel32 = new DeviceChannel();
 	javax.swing.JPanel JPanel40 = new javax.swing.JPanel();
@@ -1887,6 +2013,7 @@ public class DIO2Setup extends DeviceSetup
 	DeviceField deviceField124 = new DeviceField();
 	javax.swing.JPanel JPanel44 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel36 = new DeviceChannel();
+	javax.swing.JPanel JPanel68 = new javax.swing.JPanel();
 	javax.swing.JPanel JPanel45 = new javax.swing.JPanel();
 	DeviceChannel deviceChannel37 = new DeviceChannel();
 	javax.swing.JPanel JPanel46 = new javax.swing.JPanel();
