@@ -364,26 +364,8 @@ int MdsLogin(SOCKET sock, char *username, char *password)
   return status;
 }
 
-#ifdef _WIN32
-typedef struct _EventThread {
-	SOCKET sock;
-	HANDLE thread_handle;
-	DWORD  thread_id;
-	int    eventid;
-	int    event_count;
-	struct _EventThread *next;
-} EventThread;
-
-static EventThread *eThreads = NULL;
-
-unsigned long WINAPI MdsDispatchEvent(SOCKET sock);
-#endif
-
 int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 {
-#ifdef _WIN32
-  EventThread *et;
-#endif
 
   struct descrip eventnamarg;
   struct descrip infoarg;
@@ -391,17 +373,6 @@ int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, in
   MdsEventInfo info;
   int size = sizeof(info);
   int status;
-#ifdef _WIN32
-  for (et=eThreads; et && et->sock != sock; et = et->next);
-  if (et == NULL) {
-	  et =  (EventThread *)malloc(sizeof(EventThread));
-      et->sock = sock;
-	  et->event_count = 0;
-	  et->next = eThreads;
-	  et->thread_handle = NULL;
-	  eThreads = et;
-  }
-#endif
   info.astadr = (void (*)(void *,int ,char *))astadr;
   info.astprm = astprm;
   ansarg.ptr = 0;
@@ -410,39 +381,18 @@ int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, in
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
   if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) {
     *eventid = *(int *)ansarg.ptr;
-/*#ifdef _WIN32
-    et->eventid = *(int *)ansarg.ptr;
-    if (et->thread_handle == NULL)
-    et->thread_handle = CreateThread((LPSECURITY_ATTRIBUTES)NULL, 0, (LPTHREAD_START_ROUTINE)MdsDispatchEvent, (LPVOID)sock, (DWORD)NULL, &et->thread_id);
-    et->event_count++;
-#endif
-*/  }
+	}
   if (ansarg.ptr) free(ansarg.ptr);
   return status;
 }
 
 int  MdsEventCan(SOCKET sock, int eventid)
 {
-#ifdef _WIN32
-  EventThread *et, *prev;
-#endif
   struct descrip eventarg;
   struct descrip ansarg = {0,0,0,0};
   int status = MdsValue(sock, EVENTCANREQUEST, MakeDescrip((struct descrip *)&eventarg,DTYPE_LONG,0,0,&eventid), 
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
   if (ansarg.ptr) free(ansarg.ptr);
-#ifdef _WIN32
-  for (prev=NULL,et=eThreads; et && (et->sock != sock); prev = et,et = et->next);
-  if (et) {
-	et->event_count--;
-	if (et->event_count == 0)
-		TerminateThread(et->thread_handle, 0);
-      if (prev)
-		  prev->next = et->next;
-	  else
-		  eThreads = et->next;
-  }
-#endif
   return status;
 }
 
