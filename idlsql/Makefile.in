@@ -7,11 +7,10 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@ @SYBASE_INC@ @IDL_INC@ 
 LDFLAGS=@LDFLAGS@ @IDL_LIB@
-LIBS=@SYBASE_LIB@ @IDL_LIB@ @LIBS@ @DNET_STUB@ @LIBSOCKET@
+LIBS= -lMdsSql @IDL_LIB@ @LIBS@ @DNET_STUB@ @LIBSOCKET@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
-dynamic_syb.c \
 idlsql_syb.c \
 user_syb.c
 
