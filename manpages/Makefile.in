@@ -5,6 +5,7 @@ RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 GROFF_FLAGS=@GROFF_MAN_FLAGS@
+GROFF=@GROFF@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 manpages = $(top_srcdir)/man/man1/mdsplus.1.gz \
@@ -44,21 +45,16 @@ $(top_srcdir)/man/man5 :
 	mkdirhier $@
 
 $(top_srcdir)/man/man1/traverser.1.gz : traverser.groff
-	groff $(GROFF_FLAGS) traverser.groff > $(top_srcdir)/man/man1/traverser.1
-	gzip -f $(top_srcdir)/man/man1/traverser.1
+	$(GROFF) $(GROFF_FLAGS) traverser.groff | gzip - -c > $@
 
 $(top_srcdir)/man/man1/mdsplus.1.gz : mdsplus.groff
-	groff $(GROFF_FLAGS) mdsplus.groff > $(top_srcdir)/man/man1/mdsplus.1
-	gzip -f $(top_srcdir)/man/man1/mdsplus.1
+	$(GROFF) $(GROFF_FLAGS) mdsplus.groff | gzip - -c > $@
 
 $(top_srcdir)/man/man5/mdsplus.conf.5.gz : mdsplus.conf.groff
-	groff $(GROFF_FLAGS) mdsplus.conf.groff > $(top_srcdir)/man/man5/mdsplus.conf.5
-	gzip -f $(top_srcdir)/man/man5/mdsplus.conf.5
+	$(GROFF) $(GROFF_FLAGS) mdsplus.conf.groff | gzip - -c > $@
 
 $(top_srcdir)/man/man5/.mdsplus.5.gz : .mdsplus.groff
-	groff $(GROFF_FLAGS) .mdsplus.groff > $(top_srcdir)/man/man5/.mdsplus.5
-	gzip -f $(top_srcdir)/man/man5/.mdsplus.5
+	$(GROFF) $(GROFF_FLAGS) .mdsplus.groff | gzip - -c > $@
 
 $(top_srcdir)/man/man5/mdsip.hosts.5.gz : mdsip.hosts.groff
-	groff $(GROFF_FLAGS) mdsip.hosts.groff > $(top_srcdir)/man/man5/mdsip.hosts.5
-	gzip -f $(top_srcdir)/man/man5/mdsip.hosts.5
+	$(GROFF) $(GROFF_FLAGS) mdsip.hosts.groff | gzip - -c > $@
