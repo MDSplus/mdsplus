@@ -585,8 +585,13 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 			    java_string =(*env)->GetObjectField(env, obj, datum_fid);
 			    string = (*env)->GetStringUTFChars(env, java_string, 0);
 			    desc->length = strlen(string);
-			    desc->pointer = (char *)malloc(desc->length);
-			    memcpy(desc->pointer, string, desc->length);
+                            if (desc->length > 0)
+			    {
+			      desc->pointer = (char *)malloc(desc->length);
+			      memcpy(desc->pointer, string, desc->length);
+                            }
+                            else
+                              desc->pointer = 0;
 			    (*env)->ReleaseStringUTFChars(env, java_string, string);
 			    return desc;
 		  case DTYPE_FLOAT:
@@ -790,8 +795,8 @@ void FreeDescrip(struct descriptor *desc)
 /*printf("FreeDescrip class %d dtype %d\n", desc->class, desc->dtype);*/
 
   switch(desc->class) {
-    case CLASS_S : free(desc->pointer); break;
-    case CLASS_A : free(((struct descriptor_a *)desc)->pointer); break;
+    case CLASS_S : if (desc->pointer) free(desc->pointer); break;
+    case CLASS_A : if (desc->pointer) free(((struct descriptor_a *)desc)->pointer); break;
     case CLASS_R :
       record_d = (struct descriptor_r *)desc;
       if(record_d->length)
