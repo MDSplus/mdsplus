@@ -16,5 +16,6 @@ int TreeCallHook(TreeshrHookType htype, TREE_INFO *info)
   if (status & 1)
     return (*rtn)(htype, info->treenam, info->shot);
   else
-    rtn == (int (*)(TreeshrHookType,char *,int))-1;
+    rtn = (int (*)(TreeshrHookType,char *,int))-1;
+  return status;
 }
