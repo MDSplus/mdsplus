@@ -135,7 +135,7 @@ unsigned char			origin[255];
                                   if (tmp[ntmp].pointer->dtype == DTYPE_T)
 				  {
                                     DESCRIPTOR(zero,"\0");
-                                    TdiConcat(&tmp[ntmp],&zero,&tmp[ntmp]);
+                                    TdiConcat(&tmp[ntmp],&zero,&tmp[ntmp] MDS_END_ARG);
                                   }  
                                   newdsc[j-1] = (struct descriptor *)tmp[ntmp].pointer->pointer;
 				}
