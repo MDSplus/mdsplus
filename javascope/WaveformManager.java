@@ -1,18 +1,19 @@
 /* $Id$ */
 import java.awt.Point;
+import java.awt.Component;
 
 /**
  * This interface can be implemented by (Multi)Waveform panel container to
  * perfom interaction between (Multi)Waveform object, autoscale action,
  * copy/paste action etc..
- * 
+ *
  * @see WaveformContainer
  */
 public interface  WaveformManager
 {
     /**
      * Autoscale operation on all waveforms
-     * 
+     *
      * @see Waveform
      * @see MultiWaveform
      */
@@ -20,15 +21,15 @@ public interface  WaveformManager
 
     /**
      * Autoscale operation on all images
-     * 
+     *
      * @see Waveform
      * @see MultiWaveform
      */
     public void     AutoscaleAllImages();
- 
+
     /**
      * Autoscale y axis on all waveform
-     * 
+     *
      * @see Waveform
      * @see MultiWaveform
      */
@@ -36,7 +37,7 @@ public interface  WaveformManager
 
     /**
      * Set the same scale factor of the argument waveform to all waveform
-     * 
+     *
      * @param curr_w a waveform
      * @see Waveform
      * @see MultiWaveform
@@ -45,7 +46,7 @@ public interface  WaveformManager
 
     /**
      * Autoscale y axis and set x axis equals to argument waveform
-     * 
+     *
      * @param curr_w a waveform
      * @see Waveform
      * @see MultiWaveform
@@ -54,7 +55,7 @@ public interface  WaveformManager
 
     /**
      * Set y scale factor of all waveform equals to argument waveform
-     * 
+     *
      * @param curr_w a waveform
      * @see Waveform
      * @see MultiWaveform
@@ -63,7 +64,7 @@ public interface  WaveformManager
 
     /**
      * Set x scale factor of all waveform equals to argument waveform
-     * 
+     *
      * @param curr_w a waveform
      * @see Waveform
      * @see MultiWaveform
@@ -72,7 +73,7 @@ public interface  WaveformManager
 
     /**
      * Reset all waveform scale factor.
-     * 
+     *
      * @see Waveform
      * @see MultiWaveform
      */
@@ -80,14 +81,14 @@ public interface  WaveformManager
 
     /**
      * Remove a waveform.
-     * 
+     *
      * @param w waveform to remove
      */
     public void     removePanel(Waveform w);
 
     /**
      * Get current selected waveform.
-     * 
+     *
      * @return current selected waveform or null
      * @see Waveform
      * @see MultiWaveform
@@ -96,7 +97,7 @@ public interface  WaveformManager
 
     /**
      * Select a waveform
-     * 
+     *
      * @param w waveform to select
      * @see Waveform
      * @see MultiWaveform
@@ -105,7 +106,7 @@ public interface  WaveformManager
 
     /**
      * Deselect waveform.
-     * 
+     *
      * @see Waveform
      * @see MultiWaveform
      */
@@ -113,14 +114,14 @@ public interface  WaveformManager
 
     /**
      * Get the number of waveform in the container
-     * 
+     *
      * @return number of waveform in the container
      */
     public int      GetWaveformCount();
 
     /**
      * Update crosshair position
-     * 
+     *
      * @param curr_x x axis position
      * @param w a waveform to update cross
      * @see Waveform
@@ -130,14 +131,14 @@ public interface  WaveformManager
 
     /**
      * Get current waveform selected as copy source
-     * 
+     *
      * @return copy source waveform
      */
     public Waveform GetCopySource();
 
     /**
      * Set copy source waveform
-     * 
+     *
      * @param w copy source waveform
      * @see Waveform
      * @see MultiWaveform
@@ -146,7 +147,7 @@ public interface  WaveformManager
 
 	/**
 	 * Perform copy operation
-	 * 
+	 *
 	 * @param dest destination waveform
 	 * @param source source waveform
 	 */
@@ -154,7 +155,7 @@ public interface  WaveformManager
 
     /**
      * Enable or disable measure mode
-     * 
+     *
      * @param state measure mode flag
      * @see Waveform
      * @see MultiWaveform
@@ -163,10 +164,13 @@ public interface  WaveformManager
 
     /**
      * Return row, column position on the panel
-     * 
+     *
      * @param w a waveform
      */
     public Point     getWavePosition(Waveform w);
-    
+
     public void maximizeComponent(Waveform w);
+    public Component getMaximizeComponent();
+    public boolean isMaximize();
+
 }

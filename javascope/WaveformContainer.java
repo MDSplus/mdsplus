@@ -755,6 +755,16 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         super.maximizeComponent(w);
     }
 
+    public Component getMaximizeComponent()
+    {
+        return super.getMaximizeComponent();
+    }
+
+    public boolean isMaximize(Waveform w)
+    {
+        return super.isMaximize();
+    }
+
     /**
      * Select a waveform
      *
@@ -894,8 +904,8 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         int i, j, k = 0;
         int pix = 1;
 
-	    if(GetWavePanel(0).grid_mode == 2)//Grid.IS_NONE  mode
-	        pix = 0;
+        if(GetWavePanel(0).grid_mode == 2)//Grid.IS_NONE  mode
+          pix = 0;
 
         int curr_height = 0;
         int curr_width = 0;
@@ -907,10 +917,20 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         {
             if(rows[i] == 0) continue;
 	        g.translate(px, 0);
-            curr_width = (int)(width * ((RowColumnLayout)getLayout()).getPercentWidth(i) + 0.9);
+                curr_width = (int)(width * ((RowColumnLayout)getLayout()).getPercentWidth(i) + 0.9);
+                if( curr_width == 0 )
+                {
+                  k += rows[i];
+                  continue;
+                }
 	        for(j = pos = 0, py = st_y; j < rows[i]; j++)
 	        {
 	            curr_height = (int)(height * ((RowColumnLayout)getLayout()).getPercentHeight(k) + 0.9);
+                    if( curr_height == 0 )
+                    {
+                      k++;
+                      continue;
+                    }
 	            g.translate(0, py);
 	            if(j == rows[i] - 1 && pos + curr_height != height)
 	                curr_height = height - pos;
@@ -932,7 +952,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	            pos += (curr_height - pix);
 	            k++;
 	        }
-            px = curr_width - pix;
+                px = curr_width - pix;
 	        g.translate(0, -pos - st_y + py);
         }
     }

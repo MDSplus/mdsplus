@@ -22,7 +22,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                              UpdateEventListener, ConnectionListener
 {
 
-   static final String VERSION = "jScope (version 7.3.0)";
+   static final String VERSION = "jScope (version 7.3.1)";
    static public boolean is_debug = false;
 
    public  static final int MAX_NUM_SHOT   = 30;
@@ -439,8 +439,8 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     pageFormat = prnJob.defaultPage();
     pageFormat.setOrientation(PageFormat.LANDSCAPE);
     Paper p = pageFormat.getPaper();
-    p.setSize(595.2239, 841.824);
-    p.setImageableArea(16., 16., 560., 810.);
+    p.setSize(597, 844);
+    p.setImageableArea(15., 15., 567., 814.);
     pageFormat.setPaper(p);
     prnJob.validatePage(pageFormat);
     //displayPageFormatAttributes(pageFormat);
@@ -556,7 +556,8 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                 {
                     setName("Print Dialog Thread");
  //                 pageFormat = prnJob.defaultPage(pageFormat);
-                    prnJob.printDialog();
+                    if (prnJob.printDialog())
+                      PrintAllWaves();
  //                 prnJob.validatePage(pageFormat);
  //                   displayPageFormatAttributes(pageFormat);
                 }
@@ -566,7 +567,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     });
     edit_m.add(print_i);
 
-
+/*****************************************************************************************
     page_i = new JMenuItem("Page Setup ...");
     page_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J, ActionEvent.CTRL_MASK));
     page_i.addActionListener(new ActionListener()
@@ -587,6 +588,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         }
     });
     edit_m.add(page_i);
+*********************************************************************************************/
 
     print_all_i = new JMenuItem("Print");
     print_all_i.addActionListener(new ActionListener()
@@ -1760,13 +1762,13 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
   {
         try
         {
-            this.SetStatusLabel("Execute printing");
+            this.SetStatusLabel("Executing print");
             wave_panel.PrintAllWaves(prnJob, pageFormat);
             SetStatusLabel("End print operation");
         }
         catch (PrinterException er)
         {
- 	        JOptionPane.showMessageDialog(null, "Error on printing",
+ 	        JOptionPane.showMessageDialog(null, "Error on print operation",
 		                                "alert", JOptionPane.ERROR_MESSAGE);
         }
   }
@@ -2303,6 +2305,11 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 		        height = new Integer(st.nextToken("x+")).intValue();
 		        xpos = new Integer(st.nextToken("+")).intValue();
 		        ypos = new Integer(st.nextToken("+")).intValue();
+                        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                        if(height > screenSize.height) height = screenSize.height;
+                        if(width >  screenSize.width) width = screenSize.width;
+                        if(ypos + height >  screenSize.height) ypos = screenSize.height - height;
+                        if(xpos + width >  screenSize.width) xpos = screenSize.width - width;
 	        }
 
         }

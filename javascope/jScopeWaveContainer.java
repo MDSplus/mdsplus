@@ -222,7 +222,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
             if (dp.ErrorString() == null || dp.ErrorString().length() == 0)
                 return t;
             else
-                return "< evalution error >";
+                return "< evaluation error >";
 
         }
         catch(IOException exc)
@@ -444,13 +444,12 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	     }
 
 	     fm = g.getFontMetrics();
+             s_width = fm.stringWidth(title);
+             st_y += fm.getHeight()/2 + 2;
+             g.drawString(title, st_x + (width - s_width)/2, st_y);
+             st_y += 2;
+             height -= st_y;
 
-	     st_y += fm.getHeight() + 6;
-	     height -= st_y + 30;
-
-         s_width = fm.stringWidth(title);
-
-         g.drawString(title, st_x + (width - s_width)/2, st_y - 2);
 	}
 
 	super.PrintAll(g, st_x, st_y, height, width);
@@ -1285,7 +1284,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	    }
 	    WaveInterface.WriteLine(out, prompt + "update_event: ", event);
 	    WaveInterface.WriteLine(out, prompt + "print_event: ", print_event);
-        WaveInterface.WriteLine(out, prompt + "reversed: "     , ""+reversed);
+            WaveInterface.WriteLine(out, prompt + "reversed: "     , ""+reversed);
 
 	    out.println();
 
@@ -1307,31 +1306,35 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 
 	    out.println("Scope.columns: " + getColumns());
 
+            float normHeight[] = getNormalizedHeight();
+            float normWidth[] = getNormalizedWidth();
+            Dimension dim = getSize();
+
 	    for(int i = 0, c = 1, k = 0; i < getColumns(); i++,c++)
 	    {
-		    WaveInterface.WriteLine(out, prompt + "rows_in_column_" + c + ": " , ""+getComponentsInColumn(i));
+                WaveInterface.WriteLine(out, prompt + "rows_in_column_" + c + ": " , ""+getComponentsInColumn(i));
     		for(int j = 0, r = 1; j < getComponentsInColumn(i); j++, r++)
-		    {
-		        w = (jScopeMultiWave)getGridComponent(k);
-			    wi = (MdsWaveInterface)w.wi;
-
+                {
+                        w = (jScopeMultiWave)getGridComponent(k);
+                        wi = (MdsWaveInterface)w.wi;
 		        out.println("\n");
-
-		        WaveInterface.WriteLine(out, prompt + "plot_" + r + "_" + c + ".height: "          , ""+w.getSize().height );
+//		        WaveInterface.WriteLine(out, prompt + "plot_" + r + "_" + c + ".height: "          , ""+w.getSize().height );
+                        WaveInterface.WriteLine(out, prompt + "plot_" + r + "_" + c + ".height: "          , "" + (int)(dim.height * normHeight[k]) );
 		        WaveInterface.WriteLine(out, prompt + "plot_" + r + "_" + c + ".grid_mode: "       , ""+w.grid_mode);
-                if(wi != null)
+                        if(wi != null)
 		            wi.ToFile(out, prompt + "plot_" + r + "_" + c + ".");
 		        k++;
-		    }
+                }
 	     }
 
 	    out.println();
 
 	     for(int i = 1, k = 0, pos = 0; i < getColumns(); i++)
 	     {
-		    w = (jScopeMultiWave)getGridComponent(k);
-			wi = (MdsWaveInterface)w.wi;
-		    pos += (int)(((float)w.getSize().width/ getSize().width) * 1000.);
+                  // w = (jScopeMultiWave)getGridComponent(k);
+                  //	wi = (MdsWaveInterface)w.wi;
+		  // pos += (int)(((float)w.getSize().width/ getSize().width) * 1000.);
+                    pos += (int)( normWidth[i-1] * 1000. );
 		    WaveInterface.WriteLine(out, prompt + "vpane_" + i + ": " , ""+pos);
 		    k += getComponentsInColumn(i);
 	     }
