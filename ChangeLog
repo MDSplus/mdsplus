@@ -1,6 +1,158 @@
 Version 1.6-2
 
 
+2004-08-06 15:21  jas
+
+	* mitdevices/Makefile.in:
+	
+	remove MitDevicesIO.so on clean
+
+2004-08-06 14:19  jas
+
+	* mitdevices/Makefile.in:
+	
+	Install needs to install libMitDevicesIO.so
+
+2004-08-04 14:26  twf
+
+	* tdishr/TdiCall.c:
+	
+	Fix for DTYPE_T
+
+2004-07-30 03:23  manduchi
+
+	* javamds/: JavaTrav.c, javamds.c:
+	
+	emoved /usr/local/mdsplus from classpath in activateDeviceSetup
+
+2004-07-29 05:09  manduchi
+
+	* javatraverser/: Makefile.in, RFXANSALDOSetup.java,
+	RFXControlSetup.java, RFXMOPSetup.java:
+	
+	Add RFX mop and Ansaldo setup form
+
+2004-07-28 05:28  manduchi
+
+	* tdi/RfxDevices/: RFXANSALDO__SendAnsaldo.fun,
+	RFXMOP__SendMOP.fun:
+	
+	Mod
+
+2004-07-22 11:56  manduchi
+
+	* javadispatcher/: ActionServer.java, MdsIp.java, MdsServer.java,
+	jDispatchMonitor.java, jDispatcher.java, jDispatcherIp.java,
+	jServer.java:
+	
+	Added jServer for timeout management and manual abort
+
+2004-07-22 10:15  manduchi
+
+	* javadispatcher/InfoServer.java:
+	
+	Fixes
+
+2004-07-21 16:17  jas
+
+	* mitdevices/INCAA_TR10.uil:
+	
+	fix trig out menu
+
+2004-07-21 16:10  jas
+
+	* tdi/MitDevices/incaa_tr10__init.fun:
+	
+	fix trig out on incaa_tr10
+
+2004-07-15 04:09  manduchi
+
+	* tdi/RfxDevices/TR10HWInit.fun:
+	
+	Fix trigger propagation
+
+2004-07-14 15:37  jas
+
+	* mitdevices/: DC1394.uil, Makefile.in, dc1394_support.c:
+	
+	support for firewire camera
+
+2004-07-14 11:28  twf
+
+	* tdi/MitDevices/MitDevices.fun:
+	
+	Add JRG_TR1612 support
+
+2004-07-14 11:22  twf
+
+	* mitdevices/JRG_TR1612.uil, mitdevices/Makefile.in,
+	tdi/MitDevices/jrg_tr1612_24_bit_data_read.fun,
+	tdi/MitDevices/jrg_tr1612__add.fun,
+	tdi/MitDevices/jrg_tr1612__init.fun,
+	tdi/MitDevices/jrg_tr1612__part_name.fun,
+	tdi/MitDevices/jrg_tr1612__store.fun,
+	tdi/dev_support/DevPutValue.fun:
+	
+	Add JRG_TR1612 support
+
+2004-07-12 17:01  jas
+
+	* mitdevices/Makefile.in:
+	
+	dc1394 needs libraw also
+
+2004-07-12 15:14  jas
+
+	* mitdevices/dc1394_support.c:
+	
+	support for firewire camera devices
+
+2004-07-12 15:13  jas
+
+	* configure, configure.in:
+	
+	optional compliation of dc1394_support.c 
+	--with-libdc1394=installation-location
+
+2004-07-12 15:11  jas
+
+	* mitdevices/Makefile.in:
+	
+	add dc1394_support.so for firewire cameras
+
+2004-07-12 15:06  twf
+
+	* idl/: mdscheckarg.pro, mdsconnect.pro, mdsdisconnect.pro,
+	mdsisclient.pro, mdsput.pro, mdsvalue.pro:
+	
+	allow IDL VM applications
+
+2004-07-09 15:59  jas
+
+	* tdi/MitDevices/: MitDevices.fun, dc1394__add.fun,
+	dc1394__init.fun, dc1394__part_name.fun, dc1394__store.fun:
+	
+	new support for firewire video cameras
+
+2004-07-05 07:10  manduchi
+
+	* tdi/RfxDevices/K3115__add.fun:
+	
+	Modified add
+
+2004-06-29 12:43  manduchi
+
+	* tdi/RfxDevices/: RFXANSALDO__SendAnsaldo.fun,
+	RFXANSALDO__add.fun, RFXMOP__SendMOP.fun:
+	
+	MOP and Ansaldo Configuration devices
+
+2004-06-29 10:06  jas
+
+	* ChangeLog:
+	
+	New MDSplus release 1.6-2
+
 2004-06-29 10:01  jas
 
 	* tdi/MitDevices/: dt196__add.fun, dt_acq16__store.fun:
