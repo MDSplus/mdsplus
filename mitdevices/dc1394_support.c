@@ -31,6 +31,8 @@ typedef struct _DC1394Capture {
   dc1394_cameracapture camera;  /* returned by setup_capture */ 
   pthread_t thread_id;
 
+  int debug;
+
 } DC1394Capture;
 
 static DC1394Capture Cameras[MAX_CAMERAS];
@@ -38,13 +40,16 @@ static DC1394Capture Cameras[MAX_CAMERAS];
 static void *AcquireFrames(void *arg); 
 void  dc1394Done(void *arg);
 
-int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode, int shutter, int gain, int trig_on, int iso_speed, int frame_rate)
+int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode, int shutter, int gain, int trig_on, int iso_speed, int frame_rate, int debug)
 {
   char dev_name[32];  /* /dev/video1394/n  where 0 >= n < MAX_CAMERAS */
   dc1394_feature_set features;
   int numNodes;
   int numCameras;
   nodeid_t * camera_nodes;
+
+  if (debug > 0)
+    fprintf(stderr, "Starting Camera setup \n");
 
   if ((cam < 0) || (cam >= MAX_CAMERAS)) {
     fprintf(stderr, "camera num must be 0 <= num < %d\n",  MAX_CAMERAS);
@@ -69,6 +74,8 @@ int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode,
     return(0);
   }
 
+  if (debug > 0)
+    fprintf(stderr, "have the handle, now get the nodecount\n");
   numNodes = raw1394_get_nodecount(Cameras[cam].handle);
   camera_nodes = dc1394_get_camera_nodes(Cameras[cam].handle,&numCameras,1);
   fflush(stdout);
@@ -79,6 +86,8 @@ int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode,
     return(0);
   }
 
+  if (debug > 0)
+    fprintf(stderr, "have the node list and count, now setup the dma\n");
 					
   if (dc1394_dma_setup_capture(Cameras[cam].handle,camera_nodes[0],
 			       0,
@@ -102,6 +111,8 @@ int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode,
     return(0);
   }
 
+  if (debug > 0)
+    fprintf(stderr, "DMA setup, now the trigger mode\n");
    /* set trigger mode */
    if( dc1394_set_trigger_mode(Cameras[cam].handle, Cameras[cam].camera.node, trigger_mode) != DC1394_SUCCESS) {
     fprintf( stderr, "unable to set camera trigger mode\n");
@@ -113,6 +124,8 @@ int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode,
      fprintf(stderr, "unable to set trigger on to %d\n", trig_on);
    }
 
+  if (debug > 0)
+    fprintf(stderr, "trigger mode set, now the shutter\n");
    /* set the shutter */
    if (shutter == 0) {
      if (dc1394_auto_on_off(Cameras[cam].handle, camera_nodes[0], FEATURE_SHUTTER, 1) != DC1394_SUCCESS) {
@@ -126,6 +139,8 @@ int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode,
        fprintf(stderr, "unable to set shutter to %d\n", shutter);
      }
    }
+  if (debug > 0)
+    fprintf(stderr, "shutter set, now the gain\n");
    /* and the gain */
    if (gain == 0) {
      if (dc1394_auto_on_off(Cameras[cam].handle, camera_nodes[0], FEATURE_GAIN, 1) != DC1394_SUCCESS) {
@@ -139,6 +154,9 @@ int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode,
        fprintf(stderr, "unable to set gain to %d\n", gain);
      }
    }
+
+  if (debug > 0)
+    fprintf(stderr, "gain set now allocate the memory\n");
 
    /* free the camera nodes */
   dc1394_free_camera_nodes(camera_nodes);
@@ -156,6 +174,7 @@ int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode,
     Cameras[cam].width=0;
     Cameras[cam].height=0;
     Cameras[cam].max_frames=0;
+    Cameras[cam].debug = debug;
   }
   if (Cameras[cam].frames == NULL) {
     Cameras[cam].frames = (unsigned char *)malloc(width*height*max_frames);
@@ -193,6 +212,8 @@ int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode,
 /*-----------------------------------------------------------------------
    *  have the camera start sending us data
    *-----------------------------------------------------------------------*/
+  if (debug > 0)
+    fprintf(stderr, "start the ISO transmission\n");
   if (dc1394_start_iso_transmission(Cameras[cam].handle,Cameras[cam].camera.node)
       !=DC1394_SUCCESS) 
   {
@@ -202,12 +223,15 @@ int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode,
     return(0);
   }
 
-    if (pthread_create(&Cameras[cam].thread_id,  NULL, AcquireFrames, (void *)cam) != 0) {
+  if (debug > 0) 
+    fprintf(stderr, "Create the thread\n");
+  if (pthread_create(&Cameras[cam].thread_id,  NULL, AcquireFrames, (void *)cam) != 0) {
       fprintf(stderr, "Could not create thread to handle camera daq\n");
       dc1394_dma_release_camera(Cameras[cam].handle,&Cameras[cam].camera);
       return(0);
   }
-
+  if (debug > 0)
+    fprintf(stderr, "all done with init\n");
   return(1);
 }
 
@@ -222,7 +246,8 @@ static void *AcquireFrames(void *arg)
   start_sec = tv.tv_sec;
   //  fprintf(stderr, "Here I am in AcquireFrames - max_frames is %d,  next_frame is %d cam is %d\n", Cameras[cam].max_frames, Cameras[cam].next_frame, cam);
   for (Cameras[cam].next_frame=0; Cameras[cam].next_frame < Cameras[cam].max_frames; Cameras[cam].next_frame++) {
-    //    fprintf(stderr, "trying to read %d \n", Cameras[cam].next_frame);
+    if (Cameras[cam].debug > 1)
+      fprintf(stderr, "trying to read %d \n", Cameras[cam].next_frame);
     if (dc1394_dma_single_capture(&Cameras[cam].camera)!=DC1394_SUCCESS) {
       fprintf( stderr, "unable to capture a frame\n");
       break;
@@ -240,22 +265,36 @@ static void *AcquireFrames(void *arg)
 
   Cameras[cam].thread_id =0;
   pthread_cleanup_pop(0);
+  if (Cameras[cam].debug > 1)
+    fprintf(stderr, "All done with acquire \n");
+
   return;
 }
 
 int dc1394ReadFrames(int cam, char *data) {
-
-
-  memmove(data, Cameras[cam].frames, Cameras[cam].width*Cameras[cam].height*Cameras[cam].next_frame);
+  if (Cameras[cam].debug > 0)
+    fprintf(stderr, "Reading frames\n");
+  if (Cameras[cam].frames != NULL)
+    memmove(data, Cameras[cam].frames, Cameras[cam].width*Cameras[cam].height*Cameras[cam].next_frame);
+  else
+    fprintf(stderr, "No memory allocated ReadFrames\n");
   return(1);
 }
 
 int dc1394ReadTimes(int cam, double *data) {
-  memmove((char *)data, Cameras[cam].times, Cameras[cam].next_frame*sizeof(double));
+  if (Cameras[cam].debug > 0)
+    fprintf(stderr, "Reading times\n");
+  if (Cameras[cam].times != NULL)
+    memmove((char *)data, Cameras[cam].times, Cameras[cam].next_frame*sizeof(double));
+  else
+    fprintf(stderr, "No memory allocated ReadTimes\n");
+  if (Cameras[cam].frames != NULL)
   return 1;
 }
 
 int dc1394NumFrames(int cam) {
+  if (Cameras[cam].debug > 0)
+    fprintf(stderr, "Reading number of frames\n");
   return(Cameras[cam].next_frame);
 }
 
@@ -263,15 +302,28 @@ void  dc1394Done(void *arg)
 {
   int cam = (int)arg;
   /* clean up any active daq */
+  if (Cameras[cam].debug > 0)
+      fprintf(stderr, "In done\n");  
+
   if (Cameras[cam].thread_id) {
     void *status;
+    if (Cameras[cam].debug > 0)
+      fprintf(stderr, "  unlisten\n");  
     dc1394_dma_unlisten(Cameras[cam].handle, &Cameras[cam].camera);
+    if (Cameras[cam].debug > 0)
+      fprintf(stderr, "  stop the ios_transmission\n");  
     dc1394_stop_iso_transmission(Cameras[cam].handle,Cameras[cam].camera.node);
+    if (Cameras[cam].debug > 0)
+      fprintf(stderr, "  release the dma resources\n");  
     dc1394_dma_release_camera(Cameras[cam].handle,&Cameras[cam].camera);
+    if (Cameras[cam].debug > 0)
+      fprintf(stderr, "  Cancel the thread\n");  
     pthread_cancel(Cameras[cam].thread_id);
     pthread_join(Cameras[cam].thread_id, &status);
     Cameras[cam].thread_id = 0;
   }
+  if (Cameras[cam].debug > 0)
+    fprintf(stderr, "done with Done\n");  
   return;
 }
 

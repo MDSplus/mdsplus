@@ -75,3 +75,4 @@ operation INIT requires {
 operation TRIGGER requires {
      NAME : string error_message is DEV$_BAD_NAME;
 }
+
