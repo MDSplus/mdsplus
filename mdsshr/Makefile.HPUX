@@ -1,33 +1,33 @@
-CFLAGS = -c +z -Ae +u1 -Wl,+b,. -Wl,+s -D__hpux__ -D_big_endian -I../include -I. -g 
+CFLAGS = +z -Ae -I../include -g 
+SHARE_TYPE = sl
+MAKE_DEPEND = cc $(CFLAGS) -P -Wp,-M {} 2> .depend \; rm *.i
+LD_OPTIONS = -b -ldld
 
 OBJECTS = \
+	dummies.o \
+	librtl.o \
+	MdsCmprs.o \
+	MdsCompareXd.o \
+	MdsCompress.o \
 	MdsGet1DxA.o \
 	MdsGet1DxS.o \
 	MdsXdRoutines.o \
-	MdsCmprs.o \
-	MdsPk.o \
-        MdsCompareXd.o \
-        MdsCompress.o \
-	dummies.o \
-	librtl.o
+	MdsPk.o
 
-all : .depend
-	make -f Makefile.HPUX -f .depend ../shlib/libMdsShr.sl
-
-../shlib/libMdsShr.sl : $(OBJECTS) ../shlib 
-	$(LD) -o $@ $(OBJECTS) -b -lc -ldld
+../shlib/libMdsShr.$(SHARE_TYPE) : $(OBJECTS) ../shlib
+	$(LD) -o $@ $(OBJECTS) -lc $(LD_OPTIONS)
 
 ../shlib :
 	mkdir ../shlib
 
 clean :
-	- rm ../shlib/libMdsShr.sl
 	- rm *.o
+	- rm ../shlib/libMdsShr.$(SHARE_TYPE)
 	- rm .depend
 
 depend : .depend
 
 .depend :
-	- rm .depend
-	- find *.c -exec cc $(CFLAGS) -P -Wp,-M {} 2> .depend \;
-	- rm *.i	
+	- find *.c -exec $(MAKE_DEPEND)
+
+include .depend

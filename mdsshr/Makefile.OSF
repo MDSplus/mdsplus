@@ -1,34 +1,33 @@
-CFLAGS = -c -I../include -I. -g
+CFLAGS = -I../include -g
+SHARE_TYPE = so
+MAKE_DEPEND = cc $(CFLAGS) -M {} > .depend \;
+LD_OPTIONS = -shared -no_archive
 
 OBJECTS = \
+	dummies.o \
+	librtl.o \
+	MdsCmprs.o \
+	MdsCompareXd.o \
+	MdsCompress.o \
 	MdsGet1DxA.o \
 	MdsGet1DxS.o \
 	MdsXdRoutines.o \
-	MdsCmprs.o \
-	MdsPk.o \
-	MdsCompareXd.o \
-	MdsCompress.o \
-	dummies.o \
-	librtl.o
+	MdsPk.o
 
-../shlib/libMdsShr.so : $(OBJECTS) ../shlib
-	$(LD) -o $@ -shared -no_archive $(OBJECTS) -lc -lm
-	-rm so_locations
+../shlib/libMdsShr.$(SHARE_TYPE) : $(OBJECTS) ../shlib
+	$(LD) -o $@ $(OBJECTS) -lc $(LD_OPTIONS)
 
 ../shlib :
 	mkdir ../shlib
 
 clean :
 	- rm *.o
-	- rm so_locations
-	- rm ../shlib/libMdsShr.so
+	- rm ../shlib/libMdsShr.$(SHARE_TYPE)
 	- rm .depend
 
 depend : .depend
 
 .depend :
-	- rm .depend
-	find *.c -exec cc -I../include -M {} > .depend \;
+	- find *.c -exec $(MAKE_DEPEND)
 
 include .depend
-
