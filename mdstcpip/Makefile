@@ -3,6 +3,9 @@ include $(MAKE_OPTIONS)
 OBJECTS = \
 	mdsipshr.o
 
+OBJECTS_UTIL = \
+	mdsiputil.o
+
 EXPORTS = mdsipshr.export
 
 mdstcpip : ../bin ../shlib ../bin/mdsiptest ../bin/mdsip ../bin/mdsipd
@@ -19,11 +22,15 @@ mdstcpip : ../bin ../shlib ../bin/mdsiptest ../bin/mdsip ../bin/mdsipd
 ../bin/mdsipd : mdsipd
 	cp mdsipd ../bin/mdsipd
 
-../shlib/libMdsIpShr.$(SHARE_TYPE) : $(OBJECTS) 
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc $(SOCKET_LIB)
+../shlib/libMdsIpShr.$(SHARE_TYPE) : $(OBJECTS) libMdsIpUtil.a
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc $(SOCKET_LIB) -L. -lMdsIpUtil
 
 ../shlib :
 	mkdir ../shlib
+
+libMdsIpUtil.a :  $(OBJECTS_UTIL)
+	$(AR) -r $@ $(OBJECTS_UTIL)
+	
 
 clean :
 	- rm *.o

@@ -1,4 +1,5 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIP.H */
+/*  *66   12-JAN-1999 16:12:38 JMS "Moved function prototypes from ipdesc.h to here */
 /*  *65    5-JAN-1999 10:21:52 TWF "Fix swap on server" */
 /*  *64    5-JAN-1999 10:16:35 TWF "Fix swap on server" */
 /*  *63    5-JAN-1999 10:16:12 TWF "Fix swap on server" */
@@ -183,3 +184,9 @@ typedef struct _msghdr { int msglen bits32;
 typedef struct _message { MsgHdr h;
                           char bytes[1];
 			} Message, *MsgPtr;
+
+extern int   MdsValue(SOCKET sock, char *,...);
+extern int   MdsPut(SOCKET sock, char *node, char *expression,...);
+extern int   MdsOpen(SOCKET sock, char *tree, int shot);
+extern int   MdsSetDefault(SOCKET sock, char *node);
+extern int   MdsClose(SOCKET sock);
