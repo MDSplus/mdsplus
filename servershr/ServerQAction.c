@@ -7,13 +7,13 @@
 #include <mdsshr.h>
 #include <strroutines.h>
 #include <treeshr.h>
-#include <sys/time.h>
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 extern int  pthread_cond_timedwait();
 #else
 typedef int SOCKET;
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <netinet/in.h>
 #include <pthread.h>
 #include <signal.h>

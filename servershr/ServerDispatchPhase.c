@@ -47,7 +47,6 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 #include <mds_stdarg.h>
 #include <tdimessages.h>
 #include <errno.h>
-#include <sys/time.h>
 
 #ifdef HAVE_WINDOWS_H
 extern int pthread_cond_signal();
@@ -57,6 +56,8 @@ extern int pthread_mutex_init();
 extern int pthread_cond_init();
 extern int pthread_cond_timedwait();
 #define ETIMEDOUT 42
+#else
+#include <sys/time.h>
 #endif
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
