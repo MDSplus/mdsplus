@@ -48,7 +48,7 @@ public fun CADH__init(as_is _nid, optional _method)
         _clock_val = make_range(*,*,1./ _freq);
     	DevPut(_nid, _N_CLOCK_SOURCE, _clock_val);
    }
-    _control_reg = word(_clk) | (word(_chans) << 4));
+    _control_reg = word(_clk) | (word(_chans) << 4);
     _status=DevCamChk(_name, CamPiow(_name, 2,16, _control_reg,24),1,*);
     _status = 1; 
     _trig=if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _INVALID);
