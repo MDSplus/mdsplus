@@ -27,10 +27,20 @@ class ReaderConfig extends Reader
     {
         StringBuffer buf = new StringBuffer();
         String str;
+        boolean check_file = true;
         
         BufferedReader in = new BufferedReader(fr);
-        while((str=in.readLine()) != null)
-            line_buf.addElement(new String(str));
+        while(((str=in.readLine()) != null))
+        {
+            if(check_file)
+            {
+                if(str.indexOf("Scope.") == -1)
+                    throw(new IOException("Invalid configuration file\n"));
+                check_file = false;  
+            }
+            if(str.trim().length() != 0)
+                line_buf.addElement(new String(str));
+        }
         in.close();
     }
 

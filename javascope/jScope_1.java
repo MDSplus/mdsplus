@@ -18,20 +18,22 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
    public  static final int MAX_NUM_SHOT   = 30;
    public  static final int MAX_VARIABLE   = 10;
    private static int spos_x = 100, spos_y = 100;
-	                                              
-	                                              
+
+  JWindow aboutScreen;
+
   /** Default server */
   static final String DEFAULT_SERVER = "Demo server";
   /**Main menu bar*/
-  private JMenuBar       mb;
+  protected JMenuBar       mb;
   /**Menus on menu bar */
-  protected JMenu          edit_m, look_and_feel_m, pointer_mode_m, customize_m, autoscale_m, print_m, network_m;
-	      JMenu		     servers_m;
+  protected JMenu        edit_m, look_and_feel_m, pointer_mode_m,
+                         customize_m, autoscale_m, print_m, network_m, help_m;
+	        JMenu		 servers_m;
   /**Menu items on menu edit_m */	  
   private JMenuItem      exit_i, win_i;
-  protected JMenuItem      default_i, use_i, pub_variables_i, save_as_i, use_last_i, 
+  protected JMenuItem    default_i, use_i, pub_variables_i, save_as_i, use_last_i, 
                         save_i, color_i, print_all_i,  open_i, 
-                        close_i, server_list_i,  font_i, 
+                        close_i, server_list_i,  font_i, save_all_as_text_i,
                         //print_i, page_i, 
                         free_cache_i;
   private JCheckBoxMenuItem  brief_error_i;			
@@ -75,7 +77,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   int height = 500, width = 700, xpos = 50, ypos = 50;
   jScopeDefaultValues def_values = new jScopeDefaultValues();
   SetupDataDialog setup_dialog;  
-  static SignalCache sc = new SignalCache();
+//  static SignalCache sc = new SignalCache();
   JProgressBar progress_bar;
 
   private boolean modified = false;
@@ -97,6 +99,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     JRadioButtonMenuItem metalMenuItem;
     JRadioButtonMenuItem motifMenuItem;
     JRadioButtonMenuItem windowsMenuItem;
+
 
 
 
@@ -356,8 +359,73 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     String ver = System.getProperty("java.version");
     return (! (ver.indexOf("1.0") != -1 || ver.indexOf("1.1") != -1) );
   }
+
+	    
+	    
+    /**
+     * Show the spash screen while the rest of the demo loads
+     */
+    public void createAboutScreen() {
+	   // JLabel aboutLabel = new JLabel(new ImageIcon(getClass().getResource("About.jpg")));
+	
+	    JLabel aboutLabel = new AboutWindow();
+	    aboutScreen = new JWindow();
+	    aboutScreen.addMouseListener( new MouseAdapter()
+	    {
+            public void mouseClicked( MouseEvent e ) 
+            {
+                hideAbout();
+            }
+	    });
+	    
+	    
+	    aboutScreen.getContentPane().add(aboutLabel);
+	    
+	    aboutScreen.pack();
+	    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	    aboutScreen.setLocation(screenSize.width/2 - aboutScreen.getSize().width/2,
+				     screenSize.height/2 - aboutScreen.getSize().height/2);
+    }
+
+    public void showAboutScreen() 
+    {
+        aboutScreen.show();
+    }
+    
+     /**
+     * pop down the spash screen
+     */
+    public void hideAbout() {
+	    aboutScreen.setVisible(false);
+	    aboutScreen = null;
+    }
+
 	    
   public jScope_1(int spos_x, int spos_y)
+  {
+	createAboutScreen();
+
+	// do the following on the gui thread
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		showAboutScreen();
+	    }
+	});
+	
+	jScopeCreate(spos_x, spos_y);
+	
+	/*
+	// Show the demo and take down the about screen. Note that
+	// we again must do this on the GUI thread using invokeLater.
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		hideAbout();
+	    }
+	});
+    */
+  }
+	    
+  public void jScopeCreate(int spos_x, int spos_y)
   {
         
     main_scope = this;
@@ -554,6 +622,13 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     save_as_i = new JMenuItem("Save current settings as ...");
     customize_m.add(save_as_i);
     save_as_i.addActionListener(this);
+
+    customize_m.add(new JSeparator());
+    save_all_as_text_i = new JMenuItem("Save all as text ...");
+    save_all_as_text_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+    customize_m.add(save_all_as_text_i);
+    save_all_as_text_i.addActionListener(this);
+
 
     autoscale_m = new JMenu("Autoscale");
     mb.add(autoscale_m);
@@ -767,6 +842,11 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     
     InitDataServer();
 
+	
+		//{{REGISTER_LISTENERS
+		SymComponent aSymComponent = new SymComponent();
+		this.addComponentListener(aSymComponent);
+		//}}
 	}
 	
 	protected jScopeWaveContainer buildWaveContainer()
@@ -809,51 +889,8 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         wave_panel.InvalidateDefaults();
   }
 
-/*
-  public void InitProperties()
-  {
-    try
-    {
-        rb = ResourceBundle.getBundle("jScope");
-    } 
-    catch( MissingResourceException e)
-    {
-        System.out.println(e);
-    }
-  }
- 
-  private void GetPropertiesValue()
-  {
-    if(rb == null) return;
-    Properties p = System.getProperties();
-    
-    try {
-        curr_directory = rb.getString("jScope.directory");
-    }
-    catch(MissingResourceException e){}
-    try {
-        default_server = (String)rb.getString("jScope.default_server");
-    }
-    catch(MissingResourceException e){}
-    try {
-        String cache_directory = (String)rb.getString("jScope.cache_directory");
-        p.put("Signal.cache_directory", cache_directory);
-    }
-    catch(MissingResourceException e){}
-    try {
-        String cache_size = (String)rb.getString("jScope.cache_size");
-        p.put("Signal.cache_size", cache_size);
-    }
-    catch(MissingResourceException e){}
-    try {
-        String f_name = (String)rb.getString("jScope.save_selected_points");
-        p.put("jScope.save_selected_points", f_name);
-    }
-    catch(MissingResourceException e){}
-  }
-  */
   
-  public void InitProperties()//_VM11()
+  public void InitProperties()
   {
     try
     {
@@ -873,7 +910,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   }
   
   
-  private void GetPropertiesValue()//_VM11()
+  protected void GetPropertiesValue()
   {    
     if(prb == null) return;
     
@@ -889,6 +926,8 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         p.put("Signal.cache_size", cache_size);
     if(f_name != null)
         p.put("jScope.save_selected_points", f_name);
+    if(curr_directory != null)
+        p.put("jScope.curr_directory", curr_directory);
   }
   
   
@@ -1135,7 +1174,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	                if(f != null && f.trim().length() != 0 && 
 	                    d != null && d.trim().length() != 0)
 	                {
-                            curr_directory = d;
+                        curr_directory = d;
 	                    config_file = curr_directory;
 	                } else
 	                    config_file = null;
@@ -1505,6 +1544,11 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     {
 	    SaveAs();
     }
+    
+    if (ob == save_all_as_text_i)
+    {
+        wave_panel.SaveAsText(null, true);
+    }
 
 /*    
     if (ob == print_all_i)
@@ -1769,11 +1813,6 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 
 	    while((str = in.readLine()) != null) 
 	    {
-	        if(str.indexOf("Scope.") == -1)
-	        {
-	            error = "Invalid jScope configuration file\n";
-	        }
-	    
 	        if(str.indexOf("Scope.geometry:") == 0) 
 	        {
 		        int pos;
@@ -1927,6 +1966,8 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   
   public void windowOpened(WindowEvent e)
   {
+    if(this.aboutScreen != null)
+        hideAbout();
   }
   
   public void windowClosed(WindowEvent e)
@@ -2057,6 +2098,21 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     }
 
 
+
+	class SymComponent extends java.awt.event.ComponentAdapter
+	{
+		public void componentHidden(java.awt.event.ComponentEvent event)
+		{
+			Object object = event.getSource();
+			if (object == jScope_1.this)
+				jScope1_componentHidden(event);
+		}
+	}
+
+	void jScope1_componentHidden(java.awt.event.ComponentEvent event)
+	{
+		// to do: code goes here.
+	}
 }
 
 class WindowDialog extends JDialog implements ActionListener 

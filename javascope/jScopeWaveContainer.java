@@ -14,6 +14,7 @@ import java.awt.FileDialog;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Vector;
 import java.io.*;
 import javax.swing.*;
 //import java.awt.print.*;
@@ -47,6 +48,7 @@ class jScopeWaveContainer extends WaveformContainer
     private   String    main_shot_error = null;
     private   jScopeMultiWave profile_source = null;
               MdsWaveInterface mds_wi[];
+    private   String    save_as_txt_directory = null;
      
 
     class UpdW extends Thread  
@@ -115,6 +117,7 @@ class jScopeWaveContainer extends WaveformContainer
     public jScopeWaveContainer(int rows[], jScopeDefaultValues def_vals)
     {
         this(rows, null, def_vals);
+        
     }
 
        
@@ -128,6 +131,7 @@ class jScopeWaveContainer extends WaveformContainer
         updateThread = new UpdW();
         updateThread.start();
         setBackground(Color.white);
+        save_as_txt_directory = System.getProperty("jScope.curr_directory");
     }
     
    protected Component[] CreateWaveComponents(int num)
@@ -1228,12 +1232,30 @@ class jScopeWaveContainer extends WaveformContainer
 	    
 	    return error;
     }    
-    
-    public void SaveAsText(jScopeMultiWave w)
+        
+    public void SaveAsText(jScopeMultiWave w, boolean all)
     {
-        if(w == null || w.wi == null || w.wi.signals.length == 0) return;
-                
+
+        Vector panel = new Vector();
+        MdsWaveInterface wi;
+        jScopeMultiWave wave;
+
+        if(!all && (w == null || w.wi == null || w.wi.signals == null || w.wi.signals.length == 0)) return;
+        
+        String title = "Save";
+        if(all)
+            title = "Save all signals in text format";
+        else 
+        {
+            Point p = this.getWavePosition(w);
+            if(p != null)
+                title = "Save signals on panel (" + p.x +", " + p.y + ") in text format";
+        }        
         JFileChooser file_diag = new JFileChooser();
+	    if(save_as_txt_directory != null)
+	        file_diag.setCurrentDirectory(new File(save_as_txt_directory));
+        
+        file_diag.setDialogTitle(title);
         
         int returnVal = file_diag.showSaveDialog(this);
         
@@ -1243,74 +1265,126 @@ class jScopeWaveContainer extends WaveformContainer
 	        String txtsig_file = file.getAbsolutePath();
 	        if(txtsig_file != null)
 	        {
+	            save_as_txt_directory = new String(txtsig_file);
+	            if(all)
+	            {
+	                for(int i = 0; i < GetWaveformCount(); i++)
+	                   panel.add(GetWavePanel(i));
+	                
+	            } else
+                    panel.add(w);
+                
                 String s = "", s1="", s2="";
-                boolean more_point, new_line;
+                boolean g_more_point, new_line;
                 StringBuffer space = new StringBuffer();
                 
                 try {
 	                BufferedWriter out = new BufferedWriter(new FileWriter(txtsig_file));
 	                for(int l = 0 ; l < 3; l++)
 	                {
-	                    for(int i = 0; i < w.wi.signals.length; i++)
+	                    out.write("%");
+                        for(int k = 0; k < panel.size(); k++)
                         {
-                            switch(l)
+                            wave = (jScopeMultiWave)panel.elementAt(k);
+                            wi = wave.wi;
+                            
+                            if(wi == null || wi.signals == null)
+                                continue;
+                            
+	                        for(int i = 0; i < wi.signals.length; i++)
                             {
-                            case 0 : s = "x : "    + ((w.wi.in_x != null && w.wi.in_x.length > 0) ? w.wi.in_x[i]: "None"); break;
-                            case 1 : s = "y : "    + ((w.wi.in_y != null && w.wi.in_y.length > 0) ? w.wi.in_y[i]: "None"); break;
-                            case 2 : s = "Shot : " + ((w.wi.shots != null && w.wi.shots.length > 0) ? ""+w.wi.shots[i] : "None"); break;
+                                switch(l)
+                                {
+                                case 0 : s = "x : "    + ((wi.in_x != null && wi.in_x.length > 0) ? wi.in_x[i]: "None"); break;
+                                case 1 : s = "y : "    + ((wi.in_y != null && wi.in_y.length > 0) ? wi.in_y[i]: "None"); break;
+                                case 2 : s = "Shot : " + ((wi.shots != null && wi.shots.length > 0) ? ""+wi.shots[i] : "None"); break;
+                                }
+                                out.write(s, 0, (s.length() < 34) ? s.length() : 34);
+                                space.setLength(0);
+                                for(int u = 0; u < 35 - s.length(); u++)
+                                    space.append(' ');
+                                out.write(space.toString());
                             }
-                            out.write(s, 0, (s.length() < 34) ? s.length() : 34);
-                            space.setLength(0);
-                            for(int u = 0; u < 35 - s.length(); u++)
-                                space.append(' ');
-                            out.write(space.toString());
                         }
 	                    out.newLine();
                     }
+    	  
+    	            g_more_point = true;
     	            
-                    more_point = true;
-                    int j = 0;
-                    double xmax = w.GetWaveformMetrics().XMax();
-                    double xmin = w.GetWaveformMetrics().XMin();
-                    int start_idx[] = new int[w.wi.signals.length];
-                    
-	                for(int i = 0; i < w.wi.signals.length; i++)
-	                    start_idx[i] = 0;
-    	                
-                    while(more_point)
+                    int n_max_sig = 0;
+                    boolean more_point[] = new boolean[panel.size()];
+                    for(int k = 0; k < panel.size(); k++)
                     {
-                        more_point = false;
-	                    for(int i = 0; i < w.wi.signals.length; i++)
+                        more_point[k] = true;
+                        wave = (jScopeMultiWave)panel.elementAt(k);
+                        wi = wave.wi;
+                        if(wi == null || wi.signals == null)
+                            continue;
+                        if(wi.signals.length > n_max_sig)
+                            n_max_sig = wi.signals.length;
+    	            }
+    	            
+    	            int start_idx[][] = new int[panel.size()][n_max_sig];
+                    while(g_more_point)
+                    {
+                        g_more_point = false;
+                        for(int k = 0; k < panel.size(); k++)
                         {
-                            s1 = "";
-                            s2 = "";
-                            if(w.wi.signals[i] != null && w.wi.signals[i].x != null)
+                            wave = (jScopeMultiWave)panel.elementAt(k);
+                            wi = wave.wi;
+                            
+                            if(wi == null || wi.signals == null)
+                                continue;
+                            
+                            if(!more_point[k])
                             {
-                                for(j = start_idx[i]; j < w.wi.signals[i].x.length; j++) 
-                                {
-                                    if(w.wi.signals[i].x[j] > xmin &&
-                                    w.wi.signals[i].x[j] < xmax)
-                                    {   
-                                        more_point = true;
-                                        s1 = ""+w.wi.signals[i].x[j];
-                                        s2 = ""+w.wi.signals[i].y[j];
-                                        start_idx[i] = j+1;
-                                        break;
-                                    } 
-                                }
+	                            for(int i = 0; i < wi.signals.length; i++)
+	                                out.write("                                   ");
+                                continue;
                             }
-                            out.write(s1);
-                            space.setLength(0);
-                            for(int u = 0; u < 15 - s1.length(); u++)
+                            g_more_point = true;
+                            
+                            int j = 0;
+                            double xmax = wave.GetWaveformMetrics().XMax();
+                            double xmin = wave.GetWaveformMetrics().XMin();
+                            //int start_idx[] = new int[wi.signals.length];
+                            
+	                        //for(int i = 0; i < wi.signals.length; i++)
+	                        //    start_idx[i] = 0;
+        	                
+                            more_point[k] = false;
+	                        for(int i = 0; i < wi.signals.length; i++)
+                            {
+                                s1 = "";
+                                s2 = "";
+                                if(wi.signals[i] != null && wi.signals[i].x != null)
+                                {
+                                    for(j = start_idx[k][i]; j < wi.signals[i].x.length; j++) 
+                                    {
+                                        if(wi.signals[i].x[j] > xmin &&
+                                           wi.signals[i].x[j] < xmax)
+                                        {   
+                                            more_point[k] = true;
+                                            s1 = ""+wi.signals[i].x[j];
+                                            s2 = ""+wi.signals[i].y[j];
+                                            start_idx[k][i] = j+1;
+                                            break;
+                                        } 
+                                    }
+                                }
+                                out.write(s1);
+                                space.setLength(0);
+                                for(int u = 0; u < 15 - s1.length(); u++)
+                                    space.append(' ');
                                 space.append(' ');
-                            space.append(' ');
-                            out.write(space.toString());
-                            out.write(" ");
-                            out.write(s2);
-                            space.setLength(0);
-                            for(int u = 0; u < 18 - s2.length(); u++)
-                                space.append(' ');
-                            out.write(space.toString());                            
+                                out.write(space.toString());
+                                out.write(" ");
+                                out.write(s2);
+                                space.setLength(0);
+                                for(int u = 0; u < 18 - s2.length(); u++)
+                                    space.append(' ');
+                                out.write(space.toString());                            
+                            }
                         }
 	                    out.newLine();
                     }                
@@ -1323,4 +1397,5 @@ class jScopeWaveContainer extends WaveformContainer
 	    }
 	    file_diag = null;
     }
+
 }

@@ -68,11 +68,37 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	    {
 	          public void mousePressed(MouseEvent e)
 	          {
-		      Waveform w = (Waveform)e.getSource();
-		      int x = e.getX();
-		      int y = e.getY();
-		      if(wave_popup != null)
-		          wave_popup.Show(w, x, y);
+                Dimension scr_dim = getToolkit().getScreenSize();
+		        Waveform w = (Waveform)e.getSource();
+		        int x = e.getX();
+		        int y = e.getY();
+		        
+		        if(wave_popup != null)
+		        {
+		            Point p = new Point();	
+	                Component co = w;
+                    Dimension wp_size = wave_popup.getSize();
+                    
+                    if(wp_size.height == 0 || wp_size.width == 0)
+                    {
+		                wave_popup.Show(w, x, y);
+                        wp_size = wave_popup.getSize();
+                    }
+                    
+	                while(co != null)
+	                {
+	                    p.x += co.getLocation().x;
+	                    p.y += co.getLocation().y;
+	                    co = co.getParent();
+	                }
+
+		            if(y + p.y + wp_size.height > scr_dim.height)
+		                y -= y + p.y + wp_size.height - scr_dim.height + 20;
+		            if(x + p.x + wp_size.width > scr_dim.width)
+		                x -= x + p.x + wp_size.width - scr_dim.width + 20;
+    		            
+		            wave_popup.Show(w, x, y);
+                 }
 	          }
 	     });
 

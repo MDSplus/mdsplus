@@ -6,6 +6,7 @@ JAVADIR = @MAKEJAVADIR@classes
 JAVAC = @JAVAC@
 JAR = @JAR@
 INSTALL=@top_srcdir@/conf/install-sh -c
+DOCS=jScope.html data_popup.jpg data_setup.jpg frame_popup.jpg image_setup.jpg jScope.jpg 
 
 SOURCES = Base64.java                   JiNcVarByte.java              NetworkEventManager.java      Waveform.java\
 ColorDialog.java              JiNcVarChar.java              NetworkProvider.java          WaveformContainer.java\
@@ -24,11 +25,12 @@ JetDataProvider.java          MdsWaveInterface.java         SignalCache.java    
 JiDataSource.java             MultiWavePopup.java           WaveContainerEvent.java       jScopeWaveContainer_2.java\
 JiDim.java                    MultiWaveform.java            WaveContainerListener.java    jScopeWavePopup.java\
 JiNcSource.java               NetworkEvent.java             WaveInterface.java            jScope_1.java\
-JiNcVar.java                  NetworkEventListener.java     WavePopup.java
+JiNcVar.java                  NetworkEventListener.java     WavePopup.java		  AboutWindow.java\
+jScopeHelpDialog.java
 
 CLASSES = $(SOURCES:.java=.class)
 
-all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/jScope.jar
+all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/docs @MAKEJAVADIR@classes/jScope.jar docs 
 
 clean: 
 	@ $(RM) *.class
@@ -50,6 +52,8 @@ install:
 
 @MAKEJAVADIR@classes : ; mkdir @MAKEJAVADIR@classes
 
+@MAKEJAVADIR@classes/docs : ; mkdir @MAKEJAVADIR@classes/docs
+
 @MAKEJAVADIR@classes/jScope.jar: jScope.class CompositeWaveDisplay.class
 	$(JAR) c0f $@ *.class
 
@@ -64,3 +68,7 @@ CompositeWaveDisplay.class: 	$(SOURCES)
 @MAKEBINDIR@jScope : jScope.template
 	cp jScope.template $@
 	chmod a+x $@
+
+docs: $(DOCS) about_jscope.jpg 
+	cp $(DOCS) @MAKEJAVADIR@classes/docs
+	cp about_jscope.jpg @MAKEJAVADIR@classes

@@ -27,16 +27,27 @@ public class SignalCache {
             max_cache_size = Long.parseLong(s);
         } catch (NumberFormatException e){}
         
+        if(cache_directory != null)
+        {
+            File f = new File(cache_directory);
+            if(!f.exists() || !f.isDirectory()) 
+                f.mkdir();
+            if(f.list() == null)
+                cache_directory = null;
+            
+        }
+        
         if(cache_directory == null)
         {
             cache_directory = System.getProperty("user.home")+ File.separator + "jScopeCache";
-            System.getProperties().put("Signal.cache_directory", cache_directory);
-            
+            System.getProperties().put("Signal.cache_directory", cache_directory);            
+            File f = new File(cache_directory);
+            if(!f.exists() || !f.isDirectory()) 
+                f.mkdir();
         }
-        File f = new File(cache_directory);
-        if(!f.exists() || !f.isDirectory()) 
-            f.mkdir();
+        
         cache_size = initializeCache();
+        
     } catch (NoSuchAlgorithmException e)
     {
         System.out.println(""+e);

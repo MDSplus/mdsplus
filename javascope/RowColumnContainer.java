@@ -145,8 +145,11 @@ public class RowColumnContainer extends JComponent
                 public  void mouseReleased(MouseEvent e)
                 {
                     Component ob = e.getComponent();
+                    int	 m_button = e.getModifiers();
+
                     if(ob instanceof Btm)
-	                    row_col_layout.ResizeRowColumn(ob, e.getPoint().x, e.getPoint().y);	
+	                    if(!((m_button & MouseEvent.BUTTON2_MASK) == MouseEvent.BUTTON2_MASK))
+	                        row_col_layout.ResizeRowColumn(ob, e.getPoint().x, e.getPoint().y);	
                 }
     
                 public  void mouseClicked(MouseEvent e)
@@ -168,7 +171,10 @@ public class RowColumnContainer extends JComponent
                 public  void mouseDragged(MouseEvent e)
                 {
                     Component ob = e.getComponent();
-                    row_col_layout.DrawResize(ob, e.getPoint().x, e.getPoint().y);
+                    int	 m_button = e.getModifiers();
+                    
+	                if(!((m_button & MouseEvent.BUTTON2_MASK) == MouseEvent.BUTTON2_MASK))
+                        row_col_layout.DrawResize(ob, e.getPoint().x, e.getPoint().y);
                 }
 	   });
    }

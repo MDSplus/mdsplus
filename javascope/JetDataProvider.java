@@ -9,6 +9,7 @@ import java.lang.InterruptedException;
 class JetDataProvider implements DataProvider
 {
 
+    String provider;
     String experiment;
     int shot;
     String username, passwd;
@@ -28,6 +29,10 @@ class JetDataProvider implements DataProvider
     private boolean evaluate_url = false;
     private String url_source = "http://data.jet.uk/";
 
+    private boolean use_cache = false;
+    private SignalCache sc = new SignalCache();
+    private   Vector    network_transfer_listener = new Vector();
+
     JTextField user_text; 
     JPasswordField passwd_text;
 
@@ -35,6 +40,7 @@ class JetDataProvider implements DataProvider
 
     JetDataProvider(String username, String passwd)
     {
+        provider = "Jet Data";
         String credentials = username+":"+passwd;
         try{
             encoded_credentials = translator.encode(credentials);
@@ -54,16 +60,18 @@ class JetDataProvider implements DataProvider
     public void setUrlSource(String url_source)
     {
         this.url_source = url_source;
-        System.out.println(url_source);
+        //System.out.println(url_source);
     }
 
     public boolean supportsCompression(){return false;}
     public void setCompression(boolean state){}
     public boolean useCompression(){return false;}
 
-    public boolean supportsCache(){return false;}
-    public void    enableCache(boolean state){}
-    public boolean isCacheEnabled(){return false;}
+    public boolean supportsCache(){return true;}
+    public void    enableCache(boolean state){use_cache = state;}
+    public boolean isCacheEnabled(){return use_cache;}
+    public void    freeCache(){sc.freeCache();}
+
 
     synchronized void InquireCredentials(JFrame f)
     {
@@ -143,7 +151,7 @@ class JetDataProvider implements DataProvider
    boolean checkPasswd(String encoded_credentials)
    {
             this.encoded_credentials = encoded_credentials;
-            System.out.println(encoded_credentials);
+            //System.out.println(encoded_credentials);
             try{
             URLConnection urlcon;
             url = new URL(url_source);
@@ -183,7 +191,6 @@ class JetDataProvider implements DataProvider
 
     public void SetEnvironment(String s) {}
     public void disconnect(){}
-    public void freeCache(){}
     
     public void Update(String experiment, int shot)
     {
@@ -196,6 +203,9 @@ class JetDataProvider implements DataProvider
 
     public float[] GetFloatArray(String in)
     {
+        float out[] = null;
+        String in_expr = new String(in);
+        
         error_string = null;
         boolean is_time = in.startsWith("TIME:", 0);
         boolean is_xdata = in.startsWith("X:", 0);
@@ -224,8 +234,26 @@ class JetDataProvider implements DataProvider
                 url_name = experiment + "/" + shot + "/" + in;
         }
 
-        if(last_url_name != null && url_name.equals(last_url_name))
+        out = null;
+        if(use_cache)
         {
+            String data_from = "Cache";
+            out = (float[])sc.getCacheData(provider, in_expr, experiment, shot);
+            if(out == null)
+                data_from = "Network";
+            NetworkEvent e = new NetworkEvent(this, data_from);
+            dispatchNetworkTransferEvent(e);
+
+        } else {
+            NetworkEvent e = new NetworkEvent(this, "Network");
+            dispatchNetworkTransferEvent(e);
+        }
+        
+        if((last_url_name != null && url_name.equals(last_url_name)) || out!= null)
+        {
+            if(out != null)
+                return out;
+                
             if(is_time)
                 return last_x;
             else
@@ -303,13 +331,24 @@ class JetDataProvider implements DataProvider
                 return null;
             }
 
-            if(is_time)
+
+
+            if(use_cache) 
+            {
+                sc.putCacheData(provider, in, experiment, shot, last_y);
+                sc.putCacheData(provider, "TIME:"+in, experiment, shot, last_x);
+                if(last_xdata != null)
+                    sc.putCacheData(provider, "X:"+in, experiment, shot, last_xdata);
+            }
+            
+            if(is_time)            
                 return last_x;
-            else
+             else 
                 if(is_xdata)
                     return last_xdata;
                 else
                     return last_y;
+
         }
     }
 
@@ -380,9 +419,32 @@ class JetDataProvider implements DataProvider
  public boolean SupportsAsynch() { return false; }
  public void addNetworkEventListener(NetworkEventListener l, String event){}
  public void removeNetworkEventListener(NetworkEventListener l, String event){}
- public void    addNetworkTransferListener(NetworkTransferListener l){}
- public void    removeNetworkTransferListener(NetworkTransferListener l){}
-//b2JhcmFuYTpjbHVibGF0aW5v
+ public void addNetworkTransferListener(NetworkTransferListener l)
+ {
+	if (l == null) {
+	    return;
+	}
+    network_transfer_listener.addElement(l);
+ }
+ 
+ public void removeNetworkTransferListener(NetworkTransferListener l)
+ {
+	if (l == null) {
+	    return;
+	}
+    network_transfer_listener.removeElement(l);
+ }
+ 
+    protected void dispatchNetworkTransferEvent(NetworkEvent e) 
+    {
+        if (network_transfer_listener != null) 
+        {
+            for(int i = 0; i < network_transfer_listener.size(); i++)
+            {
+                ((NetworkTransferListener)network_transfer_listener.elementAt(i)).processNetworkTransferEvent(e);
+            }
+        }
+    }
 
 
 

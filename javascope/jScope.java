@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.lang.*;
 import java.util.*;
+import java.io.File;
 import java.awt.event.*;
 import java.awt.print.*;
 import javax.swing.*;
@@ -10,10 +11,18 @@ public class jScope extends jScope_1
   PrinterJob            prnJob;
   PageFormat            pf;
   private JMenuItem     print_i, page_i;
+  private jScopeHelpDialog help_dialog ;
 
   public jScope(int spos_x, int spos_y)
   {
         super(spos_x, spos_y);
+  }
+  
+  public void jScopeCreate(int spos_x, int spos_y)
+  {
+    
+        help_dialog = new jScopeHelpDialog(this);
+        super.jScopeCreate(spos_x, spos_y);
 
         prnJob = PrinterJob.getPrinterJob();
         pf = prnJob.defaultPage();
@@ -77,6 +86,19 @@ public class jScope extends jScope_1
                 print_page.start();        
             }
         });
+        
+        help_m = new JMenu("Help");
+        mb.add(help_m);
+        JMenuItem about_i = new JMenuItem("About jScope");
+        help_m.add(about_i);
+        about_i.addActionListener(new ActionListener()
+	        {
+	            public void actionPerformed(ActionEvent e)
+                {
+                    help_dialog.show();
+                }
+	        }
+	    );       
   }
   
     protected jScopeWaveContainer buildWaveContainer()
@@ -98,13 +120,18 @@ public class jScope extends jScope_1
     }
   }
  
-  private void GetPropertiesValue()
+  protected void GetPropertiesValue()
   {
     if(rb == null) return;
     Properties p = System.getProperties();
     
     try {
         curr_directory = rb.getString("jScope.directory");
+        File f = new File(curr_directory);
+        if(!f.exists())
+            curr_directory = null;
+        else
+            p.put("jScope.curr_directory", curr_directory);
     }
     catch(MissingResourceException e){}
     try {
@@ -160,6 +187,9 @@ public class jScope extends jScope_1
   public static void main(String[] args)
   {
         String file = null;    
+        
+        AboutWindow about = new AboutWindow();
+        about.show();
         
         jScope win = new jScope(100, 100);
         

@@ -26,6 +26,7 @@ public class SetupDefaults extends JDialog implements ActionListener {
    private JComboBox	 grid_mode;
    private JComboBox     legend_mode;
    private JCheckBox     reversed_b; 
+   private JComboBox     auto_color_mode;
    int	   curr_grid_mode = 0, 
            x_curr_lines_grid = 3, 
            y_curr_lines_grid = 3,
@@ -182,14 +183,21 @@ public class SetupDefaults extends JDialog implements ActionListener {
     
     lab = new JLabel("Legend:");
     panel.add(lab);
-            
     legend_mode = new JComboBox();
     legend_mode.addItem("In Graphics");
     legend_mode.addItem("Fixed Bottom");
-    legend_mode.addItem("Fixed Left");
+    legend_mode.addItem("Fixed Right");
     legend_mode.setSelectedIndex(curr_legend_mode);	      	
-
     panel.add(legend_mode);
+
+    lab = new JLabel("Auto color:");
+    panel.add(lab);
+    auto_color_mode = new JComboBox();
+    auto_color_mode.addItem("on shot");
+    auto_color_mode.addItem("on expression");
+    auto_color_mode.setSelectedIndex(WaveInterface.auto_color_on_expr ? 1 : 0);	      	
+    panel.add(auto_color_mode);
+
 
     gridbag.setConstraints(panel, c);
     getContentPane().add(panel);	
@@ -404,6 +412,12 @@ public class SetupDefaults extends JDialog implements ActionListener {
 	  curr_grid_mode      = grid_mode.getSelectedIndex();
 	  curr_legend_mode    = legend_mode.getSelectedIndex();
 	  reversed            = reversed_b.getModel().isSelected();
+	  
+	  if(auto_color_mode.getSelectedIndex() == 0)
+	    WaveInterface.auto_color_on_expr = false;
+	  else
+	    WaveInterface.auto_color_on_expr = true;
+	  
 	  
 	  x_curr_lines_grid = new Integer(x_grid_lines.getText().trim()).intValue();
 	  if(x_curr_lines_grid > Grid.MAX_GRID) {

@@ -301,11 +301,14 @@ class MdsWaveInterface extends WaveInterface {
 		        interpolates[k] = this.interpolates[i * this.num_shot];
 		        in_up_err[k]    = this.in_up_err[i * this.num_shot];	    
 		        in_low_err[k]   = this.in_low_err[i * this.num_shot];
-		        colors_idx[k]   = this.colors_idx[i * this.num_shot];
+		        
+		        if(auto_color_on_expr)
+		            colors_idx[k]   = i % Waveform.colors.length;//this.colors_idx[i * this.num_shot];
+		        else
+		            colors_idx[k]   = j % Waveform.colors.length;
+		            
 		        if(curr_shots != null)
 		            shots[k]        = curr_shots[j];
-		            
-//		        colors_idx[k]   = k % Waveform.colors.length;
  		    }
 	    }
 	}

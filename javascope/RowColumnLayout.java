@@ -235,7 +235,7 @@ public class RowColumnLayout implements LayoutManager {
      */
     public RowColumnLayout(int[] row)
     {
-        SetRowColumn(row);
+        SetRowColumn(row, null, null);
     }
     /**
      * Costruct a RowColumnLayout with a column number defined by _column 

@@ -61,6 +61,7 @@ public class WaveInterface
     boolean vertical_flip = false;
     int     signal_select = -1;
     Frames  frames;
+    static public boolean auto_color_on_expr = false;
 
     
     /*
@@ -551,7 +552,7 @@ public class WaveInterface
     
     public boolean AddSignal(String s)
     {
-        int new_num_waves;
+        int new_num_waves, expr_idx = 0;
         
         if(num_waves != 0)
         {
@@ -559,6 +560,7 @@ public class WaveInterface
                 if(s.equals(in_y[i]))
                     return false;
             new_num_waves = num_waves + (num_shot != 0 ? num_shot : 1);
+            expr_idx = (new_num_waves/(num_shot != 0 ? num_shot : 1)) - 1;
         } else 
             new_num_waves = 1;
         
@@ -603,9 +605,7 @@ public class WaveInterface
 	            new_w_error[i] = w_error[i];
 	    }
 	    
-	    int last_color_idx; 
-	    
-	        
+	    	        
 	    for(int i= num_waves; i < new_num_waves; i++)
 	    {
 	        new_in_label[i] = "";
@@ -615,7 +615,13 @@ public class WaveInterface
 	        new_in_low_err[i] = "";
     	    new_markers[i] = 0;
 	        new_markers_step[i] = 1;
-	        new_colors_idx[i] = i % Waveform.colors.length;
+	        
+	        
+		    if(auto_color_on_expr)
+	            new_colors_idx[i] = expr_idx;
+            else	        
+	            new_colors_idx[i] = (i - num_waves) % Waveform.colors.length;
+	        
 	        new_interpolates[i] = true;
 	        new_evaluated[i] = false;
 	        if(shots != null)

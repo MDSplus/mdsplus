@@ -73,7 +73,7 @@ class jScopeWavePopup extends MultiWavePopup {
 	        {
 	            public void actionPerformed(ActionEvent e)
 	            {
-	                ((jScopeWaveContainer)jScopeWavePopup.this.parent).SaveAsText(((jScopeMultiWave)wave));
+	                ((jScopeWaveContainer)jScopeWavePopup.this.parent).SaveAsText(((jScopeMultiWave)wave), false);
 	            }
 	        }
 	    );
