@@ -60,6 +60,8 @@ typedef struct nci
 #define PACK
 #if defined(__hpux)
 #pragma HP_ALIGN NOPADDING PUSH
+#elif defined(_AIX)
+#pragma options align=packed
 #elif defined(__sgi) || defined(__sun) || defined(__osf__) 
 #pragma pack(1)
 #elif defined(_WINDOWS)
@@ -284,9 +286,15 @@ typedef struct tag_info
 typedef struct tree_header
 {
   char      version;	/* Version of tree file format */
+#ifdef _AIX
+  unsigned sort_children:1;
+  unsigned sort_members:1;
+  unsigned :6;
+#else
   unsigned  char sort_children:1;	/* Sort children flag */
   unsigned  char sort_members:1;	/* Sort members  flag */
   unsigned  char : 6;
+#endif
   char      fill1[6];
   int       free;	/* First node in free node list (connected by PARENT/CHILD indexes */
   int       tags;	/* Number of tags defined                                          */
@@ -325,6 +333,8 @@ typedef struct record_header
 
 #if defined(__hpux)
 #pragma HP_ALIGN POP
+#elif defined(_AIX)
+#pragma options align=power
 #elif defined(__sgi) || defined(__osf__)
 #pragma pack(0)
 #elif defined(__sun)

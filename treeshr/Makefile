@@ -24,6 +24,8 @@ TreeSetNci.o \
 TreeVerify.o \
 RemoteAccess.o
 
+EXPORTS = TreeShr.export
+
 treeshr : ../shlib ../shlib/libTreeShr.$(SHARE_TYPE)
 
 ../shlib/libTreeShr.$(SHARE_TYPE) : $(OBJECTS) 

@@ -694,17 +694,12 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
                                 }
                                 else
 				{
-#if defined(vxWorks)
-				  info->channel = 0;
-				  file = fopen(resnam,"rb");
-#else
-#if defined(__osf__) || defined(__hpux) || defined(__sun) || defined(__sgi)
+#if (defined(__osf__) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX)) && !defined(vxWorks)
 				  info->channel = open(resnam,O_RDONLY);
 				  file = (info->channel != -1) ? fdopen(info->channel,"rb") : NULL;
 #else
 				  info->channel = 0;
 				  file = fopen(resnam,"rb");
-#endif
 #endif
 				}
 				if (file == NULL)
@@ -824,8 +819,7 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
                         status = addr != (void *)-1;
                         if (!status)
                           printf("Error mapping file - errno = %d\n",errno);
-
-#elif defined(__hpux) || defined(__sun) || defined(__sgi)
+#elif defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX)
 #if defined(__sun) || defined(__sgi)
 #define MAP_FILE 0
 #endif
@@ -869,16 +863,16 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
 static int GetVmForTree(TREE_INFO *info)
 {
 	int status;
-
 #if (defined(__osf__) || defined(__hpux)) && !defined(vxWorks)
-	int PAGE_SIZE = sysconf(_SC_PAGE_SIZE)/512;
-#else
-	int PAGE_SIZE=1;
+#define PAGE_SIZE sysconf(_SC_PAGE_SIZE)/512
+#elif !defined(PAGE_SIZE)
+#define PAGE_SIZE 1
 #endif
-#define align(addr)  addr = (((unsigned long)addr) % (PAGE_SIZE * 512)) ? \
-	addr - (((unsigned long)addr) % (PAGE_SIZE * 512)) + PAGE_SIZE * 512 : addr
+        int page_size = PAGE_SIZE;
+#define align(addr)  addr = (((unsigned long)addr) % (page_size * 512)) ? \
+	addr - (((unsigned long)addr) % (page_size * 512)) + page_size * 512 : addr
 
-	info->vm_pages = ((info->alq + PAGE_SIZE)/PAGE_SIZE * PAGE_SIZE) + PAGE_SIZE;
+	info->vm_pages = ((info->alq + page_size)/page_size * page_size) + page_size;
 	info->vm_addr = malloc(info->vm_pages*512);
 	if (info->vm_addr)
 	{
