@@ -45,16 +45,16 @@ the_rest : ../shlib/libXmdsShr.so \
 	mkdir ../uid
 
 ../uid/xmds_usage_icons.uid : xmds_usage_icons.uil
-	uil -o $@ $<
+	uil -o $@ xmds_usage_icons.uil
 
 ../uid/XmdsDigChans.uid : XmdsDigChans.uil
-	uil -wmd xmdsuil.wmd -o $@ $<
+	uil -wmd xmdsuil.wmd -o $@ XmdsDigChans.uil
 
 ../uid/XmdsInput.uid : XmdsInput.uil
-	uil -wmd xmdsuil.wmd -o $@ $<
+	uil -wmd xmdsuil.wmd -o $@ XmdsInput.uil
 
 ../uid/XmdsXdBox.uid : XmdsXdBox.uil
-	uil -wmd xmdsuil.wmd -o $@ $<
+	uil -wmd xmdsuil.wmd -o $@ XmdsXdBox.uil
 
 ../shlib/libXmdsShr.so : $(OBJECTS)
 	ld -o $@ -shared $(OBJECTS) -lc -lm \
