@@ -661,13 +661,13 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
 	    db->next = (*dblist);
 	    *dblist = db;
 	  }
-	  status = (*dblist)->open_for_edit ? TreeNORMAL : TreeNOT_OPEN;
+	  status = IS_OPEN_FOR_EDIT(*dblist) ? TreeNORMAL : TreeNOT_OPEN;
 	  break;
 	}
       }
     }
     else
-      status = (*dblist)->open_for_edit ? TreeNORMAL : TreeNOT_OPEN;
+      status = IS_OPEN_FOR_EDIT(*dblist) ? TreeNORMAL : TreeNOT_OPEN;
     if (status & 1)
     {
     /**************************************
