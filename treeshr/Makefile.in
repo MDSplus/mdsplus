@@ -14,6 +14,7 @@ SOURCES = \
 dummies.c \
 TreeAddNode.c \
 TreeAddTag.c \
+TreeCallHook.c \
 TreeCleanDatafile.c \
 TreeCreatePulseFile.c \
 TreeDeleteNode.c \
