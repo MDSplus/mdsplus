@@ -160,206 +160,190 @@ public class RFXPRConfigSetup extends DeviceSetup {
     jPanel26.setLayout(borderLayout26);
     deviceTable115.setOffsetNid(18);
     deviceTable115.setNumCols(12);
-    deviceTable115.setNumRows(14);
+    deviceTable115.setNumRows(13);
     deviceTable115.setIdentifier("");
     deviceTable115.setColumnNames(new String[] {"97", "98", "99", "100", "101", "102", "103", "104", "105", "106", "107", "108"});
     deviceTable115.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable115.setDisplayRowNumber(true);
     jPanel27.setLayout(borderLayout27);
     deviceTable1110.setOffsetNid(23);
     deviceTable1110.setNumCols(12);
-    deviceTable1110.setNumRows(14);
+    deviceTable1110.setNumRows(13);
     deviceTable1110.setIdentifier("");
     deviceTable1110.setColumnNames(new String[] {"157", "158", "159", "160", "161", "162", "163", "164", "165", "16", "167", "168"});
     deviceTable1110.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable1110.setDisplayRowNumber(true);
     jPanel215.setLayout(borderLayout215);
     deviceTable111.setOffsetNid(14);
     deviceTable111.setNumCols(12);
-    deviceTable111.setNumRows(14);
+    deviceTable111.setNumRows(13);
     deviceTable111.setIdentifier("");
     deviceTable111.setColumnNames(new String[] {"49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60"});
     deviceTable111.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable111.setDisplayRowNumber(true);
     jPanel28.setLayout(borderLayout28);
     deviceTable110.setOffsetNid(13);
     deviceTable110.setNumCols(12);
-    deviceTable110.setNumRows(14);
+    deviceTable110.setNumRows(13);
     deviceTable110.setIdentifier("");
     deviceTable110.setColumnNames(new String[] {"37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48"});
     deviceTable110.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable110.setDisplayRowNumber(true);
     deviceTable1111.setOffsetNid(24);
     deviceTable1111.setNumCols(12);
-    deviceTable1111.setNumRows(14);
+    deviceTable1111.setNumRows(13);
     deviceTable1111.setIdentifier("");
     deviceTable1111.setColumnNames(new String[] {"169", "170", "171", "172", "173", "174", "175", "175", "177", "178", "179", "180"});
     deviceTable1111.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable1111.setDisplayRowNumber(true);
     jPanel214.setLayout(borderLayout214);
     jPanel213.setLayout(borderLayout213);
     jPanel211.setLayout(borderLayout211);
     deviceTable113.setOffsetNid(16);
     deviceTable113.setNumCols(12);
-    deviceTable113.setNumRows(14);
+    deviceTable113.setNumRows(13);
     deviceTable113.setIdentifier("");
     deviceTable113.setColumnNames(new String[] {"73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84"});
     deviceTable113.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable113.setDisplayRowNumber(true);
     jPanel25.setLayout(borderLayout25);
     deviceTable116.setOffsetNid(19);
     deviceTable116.setNumCols(12);
-    deviceTable116.setNumRows(14);
+    deviceTable116.setNumRows(13);
     deviceTable116.setIdentifier("");
     deviceTable116.setColumnNames(new String[] {"109", "110", "111", "112", "113", "114", "115", "116", "117", "118", "119", "120"});
     deviceTable116.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable116.setDisplayRowNumber(true);
     jPanel3.setLayout(borderLayout19);
     jPanel24.setLayout(borderLayout24);
     jPanel210.setLayout(borderLayout210);
     deviceTable114.setOffsetNid(17);
     deviceTable114.setNumCols(12);
-    deviceTable114.setNumRows(14);
+    deviceTable114.setNumRows(13);
     deviceTable114.setIdentifier("");
     deviceTable114.setColumnNames(new String[] {"85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96"});
     deviceTable114.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable114.setDisplayRowNumber(true);
     jPanel212.setLayout(borderLayout212);
     deviceTable117.setOffsetNid(20);
     deviceTable117.setNumCols(12);
-    deviceTable117.setNumRows(14);
+    deviceTable117.setNumRows(13);
     deviceTable117.setIdentifier("");
     deviceTable117.setColumnNames(new String[] {"121", "122", "123", "124", "125", "126", "127", "128", "129", "130", "131", "132"});
     deviceTable117.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable117.setDisplayRowNumber(true);
     jPanel22.setLayout(borderLayout22);
     deviceTable112.setOffsetNid(15);
     deviceTable112.setNumCols(12);
-    deviceTable112.setNumRows(14);
+    deviceTable112.setNumRows(13);
     deviceTable112.setIdentifier("");
     deviceTable112.setColumnNames(new String[] {"61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72"});
     deviceTable112.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable112.setDisplayRowNumber(true);
     jPanel21.setLayout(borderLayout21);
     deviceTable18.setOffsetNid(11);
     deviceTable18.setNumCols(12);
-    deviceTable18.setNumRows(14);
+    deviceTable18.setNumRows(13);
     deviceTable18.setIdentifier("");
     deviceTable18.setColumnNames(new String[] {"13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"});
     deviceTable18.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable18.setDisplayRowNumber(true);
     deviceTable19.setOffsetNid(12);
     deviceTable19.setNumCols(12);
-    deviceTable19.setNumRows(14);
+    deviceTable19.setNumRows(13);
     deviceTable19.setIdentifier("");
     deviceTable19.setColumnNames(new String[] {"25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"});
     deviceTable19.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable19.setDisplayRowNumber(true);
     jPanel29.setLayout(borderLayout29);
     deviceTable119.setOffsetNid(22);
     deviceTable119.setNumCols(12);
-    deviceTable119.setNumRows(14);
+    deviceTable119.setNumRows(13);
     deviceTable119.setIdentifier("");
     deviceTable119.setColumnNames(new String[] {"145", "146", "147", "148", "149", "150", "151", "152", "153", "154", "155", "156"});
     deviceTable119.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable119.setDisplayRowNumber(true);
     jPanel20.setLayout(borderLayout20);
     deviceTable17.setOffsetNid(10);
     deviceTable17.setNumCols(12);
-    deviceTable17.setNumRows(14);
+    deviceTable17.setNumRows(13);
     deviceTable17.setIdentifier("");
     deviceTable17.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
     deviceTable17.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable17.setDisplayRowNumber(true);
     deviceTable118.setOffsetNid(21);
     deviceTable118.setNumCols(12);
-    deviceTable118.setNumRows(14);
+    deviceTable118.setNumRows(13);
     deviceTable118.setIdentifier("");
     deviceTable118.setColumnNames(new String[] {"133", "134", "135", "136", "137", "138", "139", "140", "141", "142", "143", "144"});
     deviceTable118.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable118.setDisplayRowNumber(true);
     jPanel23.setLayout(borderLayout23);
     deviceTable1112.setOffsetNid(25);
     deviceTable1112.setNumCols(12);
-    deviceTable1112.setNumRows(14);
+    deviceTable1112.setNumRows(13);
     deviceTable1112.setIdentifier("");
     deviceTable1112.setColumnNames(new String[] {"181", "182", "183", "184", "185", "186", "187", "188", "189", "190", "191", "192"});
     deviceTable1112.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"
-        });
+        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable1112.setDisplayRowNumber(true);
     jPanel16.setLayout(borderLayout15);
     jPanel19.setLayout(borderLayout18);
     deviceTable10.setOffsetNid(36);
     deviceTable10.setNumCols(12);
-    deviceTable10.setNumRows(46);
+    deviceTable10.setNumRows(45);
     deviceTable10.setIdentifier("");
     deviceTable10.setColumnNames(new String[] {"109", "110", "111", "112", "113", "114", "115", "116", "117", "118", "119", "120"});
     deviceTable10.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable10.setEditable(false);
     deviceTable10.setDisplayRowNumber(true);
     deviceTable6.setOffsetNid(32);
     deviceTable6.setNumCols(12);
-    deviceTable6.setNumRows(46);
+    deviceTable6.setNumRows(45);
     deviceTable6.setIdentifier("");
     deviceTable6.setColumnNames(new String[] {"61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72"});
     deviceTable6.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable6.setEditable(false);
     deviceTable6.setDisplayRowNumber(true);
     jPanel13.setLayout(borderLayout12);
     deviceTable9.setOffsetNid(35);
     deviceTable9.setNumCols(12);
-    deviceTable9.setNumRows(46);
+    deviceTable9.setNumRows(45);
     deviceTable9.setIdentifier("");
     deviceTable9.setColumnNames(new String[] {"97", "98", "99", "100", "101", "102", "103", "104", "105", "106", "107", "108"});
     deviceTable9.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable9.setEditable(false);
     deviceTable9.setDisplayRowNumber(true);
@@ -367,72 +351,72 @@ public class RFXPRConfigSetup extends DeviceSetup {
     jPanel12.setLayout(borderLayout11);
     deviceTable3.setOffsetNid(29);
     deviceTable3.setNumCols(12);
-    deviceTable3.setNumRows(46);
+    deviceTable3.setNumRows(45);
     deviceTable3.setIdentifier("");
     deviceTable3.setColumnNames(new String[] {"25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"});
     deviceTable3.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable3.setEditable(false);
     deviceTable3.setDisplayRowNumber(true);
     deviceTable1.setOffsetNid(27);
     deviceTable1.setNumCols(12);
-    deviceTable1.setNumRows(46);
+    deviceTable1.setNumRows(45);
     deviceTable1.setIdentifier("");
     deviceTable1.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
     deviceTable1.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable1.setEditable(false);
     deviceTable1.setDisplayRowNumber(true);
     deviceTable16.setOffsetNid(42);
     deviceTable16.setNumCols(12);
-    deviceTable16.setNumRows(46);
+    deviceTable16.setNumRows(45);
     deviceTable16.setIdentifier("");
     deviceTable16.setColumnNames(new String[] {"181", "182", "183", "184", "185", "186", "187", "188", "189", "190", "191", "192"});
     deviceTable16.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable16.setEditable(false);
     deviceTable16.setDisplayRowNumber(true);
     jPanel7.setLayout(borderLayout6);
     deviceTable11.setOffsetNid(37);
     deviceTable11.setNumCols(12);
-    deviceTable11.setNumRows(46);
+    deviceTable11.setNumRows(45);
     deviceTable11.setIdentifier("");
     deviceTable11.setColumnNames(new String[] {"121", "122", "123", "124", "125", "126", "127", "128", "129", "130", "131", "132"});
     deviceTable11.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable11.setEditable(false);
     deviceTable11.setDisplayRowNumber(true);
     deviceTable5.setOffsetNid(31);
     deviceTable5.setNumCols(12);
-    deviceTable5.setNumRows(46);
+    deviceTable5.setNumRows(45);
     deviceTable5.setIdentifier("");
     deviceTable5.setColumnNames(new String[] {"49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60"});
     deviceTable5.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable5.setEditable(false);
     deviceTable5.setDisplayRowNumber(true);
@@ -440,58 +424,58 @@ public class RFXPRConfigSetup extends DeviceSetup {
     jPanel14.setLayout(borderLayout13);
     deviceTable8.setOffsetNid(34);
     deviceTable8.setNumCols(12);
-    deviceTable8.setNumRows(46);
+    deviceTable8.setNumRows(45);
     deviceTable8.setIdentifier("");
     deviceTable8.setColumnNames(new String[] {"85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96"});
     deviceTable8.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable8.setEditable(false);
     deviceTable8.setDisplayRowNumber(true);
     deviceTable7.setOffsetNid(33);
     deviceTable7.setNumCols(12);
-    deviceTable7.setNumRows(46);
+    deviceTable7.setNumRows(45);
     deviceTable7.setIdentifier("");
     deviceTable7.setColumnNames(new String[] {"73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84"});
     deviceTable7.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable7.setEditable(false);
     deviceTable7.setDisplayRowNumber(true);
     jPanel4.setLayout(borderLayout3);
     deviceTable15.setOffsetNid(41);
     deviceTable15.setNumCols(12);
-    deviceTable15.setNumRows(46);
+    deviceTable15.setNumRows(45);
     deviceTable15.setIdentifier("");
     deviceTable15.setColumnNames(new String[] {"169", "170", "171", "172", "173", "174", "175", "176", "177", "178", "179", "180"});
     deviceTable15.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable15.setEditable(false);
     deviceTable15.setDisplayRowNumber(true);
     deviceTable14.setOffsetNid(40);
     deviceTable14.setNumCols(12);
-    deviceTable14.setNumRows(46);
+    deviceTable14.setNumRows(45);
     deviceTable14.setIdentifier("");
     deviceTable14.setColumnNames(new String[] {"157", "158", "159", "160", "161", "162", "163", "164", "165", "166", "167", "168"});
     deviceTable14.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable14.setEditable(false);
     deviceTable14.setDisplayRowNumber(true);
@@ -500,43 +484,43 @@ public class RFXPRConfigSetup extends DeviceSetup {
     jPanel11.setLayout(borderLayout10);
     deviceTable4.setOffsetNid(30);
     deviceTable4.setNumCols(12);
-    deviceTable4.setNumRows(46);
+    deviceTable4.setNumRows(45);
     deviceTable4.setIdentifier("");
     deviceTable4.setColumnNames(new String[] {"37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48"});
     deviceTable4.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable4.setEditable(false);
     deviceTable4.setDisplayRowNumber(true);
     deviceTable12.setOffsetNid(38);
     deviceTable12.setNumCols(12);
-    deviceTable12.setNumRows(46);
+    deviceTable12.setNumRows(45);
     deviceTable12.setIdentifier("");
     deviceTable12.setColumnNames(new String[] {"133", "134", "135", "136", "137", "138", "139", "140", "141", "142", "143", "144"});
     deviceTable12.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable12.setEditable(false);
     deviceTable12.setDisplayRowNumber(true);
     deviceTable13.setOffsetNid(39);
     deviceTable13.setNumCols(12);
-    deviceTable13.setNumRows(46);
+    deviceTable13.setNumRows(45);
     deviceTable13.setIdentifier("");
     deviceTable13.setColumnNames(new String[] {"145", "146", "147", "148", "149", "150", "151", "152", "153", "154", "155", "156"});
     deviceTable13.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable13.setEditable(false);
     deviceTable13.setDisplayRowNumber(true);
