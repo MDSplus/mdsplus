@@ -826,11 +826,11 @@ class RFXTimingSetup extends DeviceSetup
             {
                 //super.paintComponent(g);
                 showSignals(g, getSize());
+                setPreferredSize(new Dimension(500, mpbDecoders.size() * 5 * SIGNAL_HEIGHT + SIGNAL_HEIGHT));
             }
         };
-        waves.setPreferredSize(new Dimension(500, mpbDecoders.size() * 5 * SIGNAL_HEIGHT + SIGNAL_HEIGHT));
         JScrollPane scroll = new JScrollPane(waves);
-        scroll.setPreferredSize(new Dimension(550, 300));
+        scroll.setPreferredSize(new Dimension(500, 300));
         getContentPane().add(scroll, "North");
         JPanel jp = new JPanel();
         JButton cancelB = new JButton("Cancel");
