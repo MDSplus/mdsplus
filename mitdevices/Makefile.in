@@ -16,7 +16,8 @@ INSTALL=@top_srcdir@/conf/install-sh -c
 MOTIF_LIBS = @MOTIF_LD_LDARC@ @XM_LIBS@ @MOTIF_LD_LDSHARE@ @LIBXP@ @LIBXEXT@
 UIL=@UIL@ -I$(top_srcdir)/include
 MATH_LIBS=-L$(top_srcdir)/lib -lMdsMath
-
+LIBDC1394_LIBS=-L@LIBDC1394@libdc1394/.libs/ -ldc1394_control
+LIBDC1394_INCS=-I@LIBDC1394@
 UIDS = \
 @MAKEUIDDIR@A12.uid \
 @MAKEUIDDIR@A14.uid \
@@ -190,6 +191,10 @@ OBJECTS = $(SOURCES:.c=.o)
 
 IO_OBJECTS = $(IO_SOURCES:.c=.o)
 
+DC1394_SOURCES = dc1394_support.c
+
+DC1394_OBJECTS = $(DC1394_SOURCES:.c=.o)
+
 EXPORTS = MitDevices.exports
 
 
@@ -197,7 +202,8 @@ all :  @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ \
        @MAKESHLIBDIR@libMitDevices@SHARETYPE@ \
        @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@ \
        @MAKELIBDIR@libMitDevices.a \
-       @MITDEVICESIO_TARGETS@ $(UIDS)
+       @MITDEVICESIO_TARGETS@ $(UIDS) \
+       @DC1394_SUPPORT@
 
 
 depend:
@@ -739,3 +745,12 @@ MitDevices.exports: MitDevices.def
                -L/usr/local/rsi/idl/bin/bin.linux.x86/ -lidl \
                -L/usr/X11R6/lib -lXm -lXp -lXpm -lXext -lXt -lSM -lICE -lX11 \
                -ldl -ltermcap -lrt -lm -lpthread
+#
+# Support for libdc1394 connected cameras
+#
+@DC1394_SUPPORT@ : dc1394_support.o
+	$(LD) -o $@ @LINKSHARED@  dc1394_support.o $(LIBDC1394_LIBS)
+
+
+dc1394_support.o : dc1394_support.c
+	$(CC) -c -o $@ $(CFLAGS) $< $(LIBDC1394_INCS)
