@@ -4,7 +4,6 @@ Linux*)
 #
 # Linux post install script
 #
-#
 # Add /usr/local/mdsplus/lib to /etc/ld.so.conf
 #
 echo Configuring mdsplus libraries
