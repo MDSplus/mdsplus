@@ -13,6 +13,10 @@ AutoReqProv: no
 requires: openmotif
 %endif
 
+%ifos OSF1
+AutoReqPRov: no
+%endif
+
 %description
 Main libraries and routines to get MDS operational
 

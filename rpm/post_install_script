@@ -38,7 +38,10 @@ fi
 echo Adding MDSplus login scripts
 ln -s /usr/local/mdsplus/etc/profile.d/mdsplus.* /etc/profile.d/
 echo Creating sample /etc/mdsip.hosts file for mdsip server to user mapping
-if [ -r /etc/mdsip.hosts ]; then cp /usr/local/mdsplus/etc/mdsip.hosts /etc/
+if [ -r /etc/mdsip.hosts ]; then
+  cp /usr/local/mdsplus/etc/mdsip.hosts /etc/
+fi
+;;
 OSF1*)
 #
 # Compaq TruUNIX post install script
@@ -82,6 +85,9 @@ else
   echo "source /usr/local/mdsplus/etc/profile.d/mdsplus.csh" >> /etc/csh.login
 fi
 echo Creating sample /etc/mdsip.hosts file for mdsip server to user mapping
-if [ -r /etc/mdsip.hosts ]; then cp /usr/local/mdsplus/etc/mdsip.hosts /etc/ ;;
+if [ -r /etc/mdsip.hosts ]; then 
+  cp /usr/local/mdsplus/etc/mdsip.hosts /etc/ 
+fi
+;;
 esac
-cp /usr/local/mdsplus/rpm/post_uninstall_script /usr/local/mdsplus_post_uninstall_script;;
+cp /usr/local/mdsplus/rpm/post_uninstall_script /usr/local/mdsplus_post_uninstall_script
