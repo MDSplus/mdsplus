@@ -33,9 +33,9 @@ EXPORTS = mdsipshr.export
 all : @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ \
       $(modules) \
       @MAKEBINDIR@ @MAKELIBDIR@ @MAKEETCDIR@ \
+      @MAKELIBDIR@libMdsIpShr.a @MAKELIBDIR@libMdsIpUtil.a \
       @MAKEBINDIR@mdsiptest @MAKEBINDIR@mdsip \
-      @MAKEBINDIR@mdsipd @MAKEETCDIR@mdsip.hosts \
-      @MAKELIBDIR@libMdsIpShr.a @MAKELIBDIR@libMdsIpUtil.a 
+      @MAKEBINDIR@mdsipd @MAKEETCDIR@mdsip.hosts 
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES) mdsip_u.c
