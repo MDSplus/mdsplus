@@ -518,6 +518,7 @@ then
         IDL_INC="-I$IDL_DIR/external"
         IDL_LIB=$IDL_LD
         IDLMDSEVENT="idlmdsevent"
+	IDLMDSWIDGETS="idlmdswidgets"
         AC_MSG_RESULT(have idl $IDL_INC)
 else
         IDL_INC=""
@@ -593,6 +594,7 @@ AC_SUBST(HUP_TO_XINETD)
 AC_SUBST(IDL_INC)
 AC_SUBST(IDL_LIB)
 AC_SUBST(IDLMDSEVENT)
+AC_SUBST(IDLMDSWIDGETS)
 AC_SUBST(IDLSQL)
 AC_SUBST(JAR)
 AC_SUBST(JAVAC)
@@ -667,6 +669,7 @@ dwscope/Makefile
 gen_device/Makefile
 hdf5/Makefile
 idlmdsevent/Makefile
+idlmdswidgets/Makefile
 idlsql/Makefile
 javaclient/Makefile
 javadispatcher/Makefile
