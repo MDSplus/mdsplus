@@ -64,6 +64,7 @@ complex *FindFactors(complex *poles, double fc, int n, double gain)
     int i, j;
     double A, currA;	
     complex *Ak;
+    complex temp, temp1;
 /* Ak :denominators of single factors */
 
     
@@ -83,19 +84,25 @@ complex *FindFactors(complex *poles, double fc, int n, double gain)
 	for(j = 0; j < n; j++)
 	{
 	    if(j != i)
+	    {
 		Ak[i] = MulC(Ak[i], SubC(poles[i], poles[j]));
+	    }
+
 	    if((n % 2 && (j % 2 || j == 0)) || (!(n % 2) && !(j % 2)))
 	    {
 		if(j == 0 && n % 2)
 		    currA = -poles[j].re;
 		else
 		    currA = poles[j].re * poles[j].re + poles[j].im * poles[j].im;
+		    
 		Ak[i].re /= currA;
 		Ak[i].im /= currA;
 	    } 
 	}
 	Ak[i].re *= fc;
 	Ak[i].im *= fc;
+	
+	
     } 	    	
     return Ak;
 }

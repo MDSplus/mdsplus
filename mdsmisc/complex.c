@@ -34,6 +34,14 @@ complex SubC(complex c1, complex c2)
 complex MulC(complex c1, complex c2)
 {
     complex ris;
+
+//This ckeck is required to avoid floating point underflow!!
+    if(fabs(c1.re) < 1E-30) c1.re = 0;
+    if(fabs(c2.re) < 1E-30) c2.re = 0;
+    if(fabs(c1.im) < 1E-30) c1.im = 0;
+    if(fabs(c2.im) < 1E-30) c2.im = 0;
+    
+    
     ris.re = c1.re * c2.re - c1.im * c2.im;
     ris.im = c1.re * c2.im + c2.re * c1.im;
     return ris;

@@ -31,9 +31,7 @@
 
 struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size, float *cut_off)
 { 
-    static struct descriptor_xd out_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0},
-				    data_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0},
-				    delta_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
+    static struct descriptor_xd out_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
 
     DESCRIPTOR_A(data_d, sizeof(float), DTYPE_FLOAT, 0, 0);
     DESCRIPTOR_SIGNAL(signal_d, 1, 0, 0);
@@ -50,9 +48,11 @@ struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size, float 
 	time_at_0_d = {sizeof(float), DTYPE_FLOAT, CLASS_S, 0};
 
 	
-    int status, num_samples, num_poles = 10, start_idx, end_idx;
+    int status, num_samples, num_poles = 10, start_idx, end_idx, i;
     float fc, delta, dummy, *filtered_data, start, end, time_at_0;
-    Filter *filter;
+    float phs_steep, delay;
+    float *mod, *phs;
+    static Filter *filter;
 
 
     signal_d.data = (struct descriptor *)&data_d;
@@ -77,22 +77,57 @@ struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size, float 
 
     fc = 1/ (in_dim[1] - in_dim[0]);
     filter = ButtwInvar(cut_off, &dummy, &dummy, &dummy, &fc, &num_poles);
+    
     filtered_data = (float *)malloc(num_samples * sizeof(float));
+    mod = (float *)malloc(sizeof(float) * 1000);
+    phs = (float *)malloc(sizeof(float) * 1000);
+    TestFilter(filter, fc, 1000, mod, phs);
+    for(i = 0; i < 1000 - 1  && phs[i] > phs[i+1]; i++);
+    if(i > 1 && i < 1000)
+    {
+    	phs_steep = (phs[0] - phs[i])/((i/1000.) * fc/2.);
+       	delay = phs_steep/(2*PI);
+    }
+    free((char *)mod);
+    free((char *)phs);
+    
+    
     DoFilter(filter, in_data, filtered_data, &num_samples);
     FreeFilter(filter);
     data_d.pointer = (char *)filtered_data;
     data_d.arsize = num_samples * sizeof(float);
-    start = in_dim[0];
-    end = in_dim[num_samples - 1];
+    start = in_dim[0]-delay;
+    end = in_dim[num_samples - 1]-delay;
     delta = in_dim[1] - in_dim[0];
     start_idx = 0;
     end_idx = num_samples - 1;
-    time_at_0 = in_dim[0];
+    time_at_0 = in_dim[0] - delay;
 
     MdsCopyDxXd((struct descriptor *)&signal_d, &out_xd);
     free((char *)filtered_data);
+    
+    
+    
+    
     return &out_xd;
 }
 
+void PrintFilter(Filter *filter)
+{
+    int i, j;
+
+    for(i = 0; i < filter->num_parallels; i++)
+    {
+	//if(filter->units[i].den_degree > 0)
+	{
+	    for(j = 0; j < filter->units[i].num_degree; j++)
+		printf("%f ", filter->units[i].num[j]);
+	    for(j = 0; j < filter->units[i].den_degree; j++)
+		printf("%f ", filter->units[i].den[j]);
+		
+	    printf("\n");
+	}
+    }
+}
 
 

@@ -165,7 +165,7 @@ void 	DoFilterResample(Filter *filter, float *in, float *out, int *n_s, int *sta
 
 
 /* Free storage */
-    for(i = 0; i < filter->num_parallels; i++)
+   for(i = 0; i < filter->num_parallels; i++)
 	if(filter->units[i].den_degree > 0)
 	    free((char *)history[i]);
     free((char *)history);
@@ -372,3 +372,4 @@ static void NormalizeFilter(Filter *filter)
 	}
     }
 }
+

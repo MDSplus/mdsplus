@@ -117,6 +117,7 @@ static complex *FindButtwPoles(double Wp, double Ws, double ap, double as, doubl
     l10 = log(10.);
     fc2 = fc * fc;
 
+
     if(*N == 0)
     {
 	*gain = 1;
