@@ -567,6 +567,7 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in)
     DESCRIPTOR_NID(niddsc,0);
     struct descriptor ans_d = {0, DTYPE_T, CLASS_S, 0};
     struct descriptor phasenum_d = {sizeof(int), DTYPE_L, CLASS_S, 0};
+    char *status_text = MdsGetMsg(job->status);
 
     status = TreeOpen(job->tree,job->shot,0);
     if (status & 1)
@@ -575,23 +576,23 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in)
    	niddsc.pointer = (char *)&job->nid;
     	status = TdiGetNci(&niddsc,&fullpath_d,&fullpath MDS_END_ARG);
     	StrAppend(&fullpath,&nullstr);
-   	msg = malloc(fullpath.length + 1024 + strlen(MdsGetMsg(job->status)));
+   	msg = malloc(fullpath.length + 1024 + strlen(status_text));
 	if(job->server && *job->server)		
     	   sprintf(msg,"%s %d %d %d %d %d %s %d %s %s; %s",job->tree,job->shot,job->phase,
 					  job->nid,job->on,job->mode,job->server,
-					  job->status, fullpath.pointer, Now(), MdsGetMsg(job->status));
+					  job->status, fullpath.pointer, Now(), status_text);
         else
     	   sprintf(msg,"%s %d %d %d %d %d unknown %d %s %s; %s",job->tree,job->shot,job->phase,
 					  job->nid,job->on,job->mode,
-					  job->status, fullpath.pointer, Now(), MdsGetMsg(job->status));
+					  job->status, fullpath.pointer, Now(), status_text);
    	StrFree1Dx(&fullpath);
     }
     else
     {
-       msg = malloc(1024 + strlen(MdsGetMsg(job->status)));
+       msg = malloc(1024 + strlen(status_text));
        sprintf(msg,"%s %d %d %d %d %d %s %d unknown %s; %s",job->tree,job->shot,job->phase,
 					  job->nid,job->on,job->mode,job->server,
-					  job->status, Now(), MdsGetMsg(job->status));
+					  job->status, Now(), status_text);
     }
   status = SendReply(job_in, SrvJobFINISHED,1,strlen(msg),msg);
   if (msg)
