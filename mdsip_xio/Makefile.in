@@ -149,7 +149,7 @@ install:
 	$(LD) -o $@ @LINKSHARED@ $(CLIENT_OBJECTS) $(LDFLAGS)
 
 @MAKEBINDIR@mdsip : $(SERVER_OBJECTS)
-	$(CC) -o $@ $(SERVER_OBJECTS) $(LDFLAGS) -L$(top_srcdir)/lib -lMdsIpShr -lMdsShr -lTdiShr
+	$(CC) -o $@ $(SERVER_OBJECTS) $(LDFLAGS) -L$(top_srcdir)/lib -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr
 
 makefile-header:  
 	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@ globus_xio > makefile-header
