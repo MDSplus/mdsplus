@@ -3,12 +3,14 @@
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ctype.h>
+#ifndef _WINDOWS
 #include <unistd.h>
+#include <sys/mman.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <usagedef.h>
 #include <errno.h>
-#include <sys/mman.h>
 #include <fcntl.h>
 
 #define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
