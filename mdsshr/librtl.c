@@ -1720,3 +1720,43 @@ void TranslateLogicalFree(char *value)
 	free(value);
 }
 
+#define LOBYTE(x) ((unsigned char)((x) & 0xFF))
+#define HIBYTE(x) ((unsigned char)((x) >> 8))
+
+static unsigned short icrc1(unsigned short crc)
+{
+  int i;
+  unsigned short ans=crc;
+  for (i=0;i<8;i++)
+  {
+    if (ans & 0x8000)
+    {
+      ans <<= 1;
+      ans = ans ^ 4129;
+    }
+    else
+      ans <<= 1;
+  }
+  return ans;
+}
+
+unsigned short Crc(unsigned int len, unsigned char *bufptr)
+{
+  static unsigned short icrctb[256],init=0;
+  static unsigned char rchr[256];
+  static unsigned it[16]={0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
+  unsigned short j,cword=0;
+  if (!init)
+  {
+    init=1;
+    for (j=0;j<256;j++)
+    {
+      icrctb[j]=icrc1(j << 8);
+      rchr[j]=(uchar)(it[j & 0xF] << 4 | it[j >> 4]);
+    }
+  }
+  for (j=0;j<len;j++)
+    cword = icrctb[bufptr[j] ^ HIBYTE(cword)] ^ LOBYTE(cword) << 8;
+  return cword;
+}
+
