@@ -352,6 +352,8 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	if (po)
 	{
           memcpy(po,pi,sizeof(struct descriptor_a));
+          if (pi->aflags.coeff)
+            po->a0 = (char *)a0_of(in_ptr);
           for (i=0;i<pi->dimct;i++)
           {
             if (pi->aflags.coeff)
