@@ -390,8 +390,9 @@ public class RFXTimesSetup extends DeviceSetup {
         "if(_CLOSE_IS_TC_state == 1) tcl(\'set node \\\\CLOSE_IS_TC/on\'); else " +
     "tcl(\'set node \\\\CLOSE_IS_TC /off\'); 1;"
         });
-    deviceButtons1.setCheckMessages(new String[] {"None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None",
-        "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None"});
+    deviceButtons1.setCheckMessages(new String[] {"None1", "None2", "None3", "None4", "None5", "None6", "None7", "None8", "None9", "None0", "None11", "None12", "None13", "None14", "None15", "None16", "None17", "None18",
+        "None19", "None20", "None21", "None22", "None23", "None24", "None25", "None26", "None27", "None28", "None29", "None30", "None31", "None32", "None33", "None34",
+        "None35", "None36", "None37"});
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jPanel1, BorderLayout.CENTER);
     jPanel1.add(jPanel2, null);
