@@ -43,16 +43,16 @@
 ;-
 
 
-function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,quiet=quiet,status=status
+function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,quiet=quiet,status=status,socket=socket
 
   forward_function mdsIsClient,mdsIdlImage,mds$socket,MdsRoutinePrefix,MdsIPImage,MdsGetAnsFN
   MdsCheckArg,expression,type="STRING",name="expression"
   ;; note that MdsIpShr version of MdsValue had 32 arguments in addition
   ;; to expression
 
-  if (mdsIsClient()) then begin
+  if (mdsIsClient(socket=socket)) then begin
 
-    sock = mds$socket(status=status,quiet=quiet)
+    sock = mds$socket(status=status,quiet=quiet, socket=socket)
     if not status then return,0
     n = n_params()
     Mds$SendArg,sock,n,0,expression
@@ -159,7 +159,9 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
         endif else begin
           if (status ne 0) then begin
             msg = mdsgetmsg(status)
-          endif else msg = 'Error evaluating expression'
+          endif else begin
+              msg = 'Error evaluating expression'
+          endelse
         endelse
       endif else begin
         msg = 'Error in call external'

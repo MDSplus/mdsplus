@@ -1,6 +1,63 @@
-pro set_database, dbname
-  status = mdsvalue("SetDatabase('"+ dbname+"')")
+function dbinfo, dbname, host, name, user, pass, mdshost
+  name = dbname
+  host = 'red'
+  user = 'test'
+  pass = 'pfcworld'
+  mdshost = 'alcserv1:9000'
+  return, 1
 end
+
+pro MDSDbDisconnect
+   defsysv,'!MDSDB_SOCKET',exists=old_sock
+   if (not old_sock) then begin
+       defsysv, '!MDSDB_SOCKET', -1
+       defsysv, '!MDSDB_HOST', ''
+   endif
+   MdsDisconnect, socket=!MDSDB_SOCKET
+   !MDSDB_SOCKET = -1
+   !MDSDB_HOST = ""
+end
+
+pro MDSDbConnect, host
+   defsysv,'!MDSDB_SOCKET',exists=old_sock
+   if (not old_sock) then begin
+       defsysv, '!MDSDB_SOCKET', -1
+       defsysv, '!MDSDB_HOST', ''
+   endif
+   if (!MDSDB_HOST ne host) then begin
+       MDSDbDisconnect
+   endif
+   if (host ne "" and host ne "local") then begin
+       socket=-1
+       MdsConnect, host, socket=socket
+       !MDSDB_SOCKET = socket
+       !MDSDB_HOST=host
+   endif
+end
+
+pro set_database, dbname, status=status, quiet=quiet
+  status = dbinfo(dbname, host, name, user, pass, mdshost)
+  MDSDbconnect, mdshost
+  status = mdsvalue("DBLogin($, $, $)", host, user, pass, socket=!MDSDB_SOCKET)
+  if (not status) then begin
+      if not (keyword_set(quiet)) then begin
+          Message, "Error logging on to DbHost "+host, /continue
+      endif else begin
+          Message, "Error logging on to DbHost "+host, /continue, /noprint
+      endelse
+      return
+  endif
+  status = mdsvalue("SetDatabase('"+ name+"')", socket=!MDSDB_SOCKET)
+  if (not status) then begin
+      if not (keyword_set(quiet)) then begin
+          Message, "Error attaching to database "+name, /continue
+      endif else begin
+          Message, "Error attaching to database "+name, /continue, /noprint
+      endelse
+      return
+  endif
+end
+
 ;
 ; function which replaces on '?' with the string of an idl variable
 ; it should check that the variable is a scalar
@@ -115,7 +172,7 @@ if (debug) then $
 ; now execute the query
 ; !!!  if it is a string it is a database error
 ;
-count = mdsvalue(expr)
+count = mdsvalue(expr, socket=!MDSDB_SOCKET)
 if type(count) eq 7 then begin
 ; error = MdsValue('_dberror')
 ; status = MdsValue('_dbstatus')
@@ -139,13 +196,14 @@ endif else begin
       print, "        Count: ", count    
     for i = num_inputs+1, n_params()-1 do begin
         arg = 'a'+string(i, format="(I3.3)")
-        cmd = arg+' = MDSVALUE("_'+arg+'")'
+        cmd = arg+' = MDSVALUE("_'+arg+'",socket=!MDSDB_SOCKET)'
         status = execute(cmd)
     endfor
 ;
 ; free all the tdi variables returned by DSQL
 ;
-;    dummy = MdsValue("DeAllocate('_A%%%')")
+    if (not debug) then $
+      dummy = MdsValue("DeAllocate('_A%%%')",socket=!MDSDB_SOCKET)
 ;
 ; return the number of row
 ;

@@ -6,25 +6,6 @@ case (!version.os) of
 endcase
 end
 
-Function MdsIPImage
-;Path to shared library
-  case !version.os of
-    'vms' : if float(strmid(!version.release,0,3)) ge 5.2 then return,'mdsipshr_ieee' else return,'mdsipshr'
-    'windows' : return,'mdsipshr'
-	'Win32'	: return,'mdsipshr'
-    'AIX' : return,'libMdsIpShr.lib'
-    'IRIX' : return,'libMdsIpShr.so'
-    'OSF' : return,'libMdsIpShr.so'
-    'sunos' : return,'libMdsIpShr.so'
-    'hp-ux' : begin
-              if getenv('MDS_SHLIB_PATH') eq '' then setenv_,'MDS_SHLIB_PATH=/usr/local/lib'
-              return,getenv('MDS_SHLIB_PATH')+'/libMdsIpShr.sl'
-              end
-    'MacOS': return,!dir+'libMdsIpShr.lib'
-    'linux': return,'libMdsIpShr.so'
-    else  : message,'MDS is not supported on this platform',/IOERROR 
-  endcase
-end
 
 function MdsRoutinePrefix
 ;Descriptors or argc/argv convention?
@@ -49,19 +30,6 @@ Pro MdsMemCpy,outvar,inptr,num
   return
 end
 
-function mds$socket,quiet=quiet,status=status
-  sockmin=1l-(!version.os eq 'MacOS')
-  sock=sockmin-1
-  defsysv,'!MDS_SOCKET',exists=old_sock
-  if not old_sock then defsysv,'!MDS_SOCKET',sock else tmp = execute('sock=!MDS_SOCKET')
-  if sock lt sockmin then begin
-    status = 0
-    if not keyword_set(quiet) then message,'Use MDS$CONNECT to connect to a host.',/continue
-    return,0
-  endif
-  status = 1
-  return,sock
-end
 
 function IsWindows
   return,!version.os eq 'windows' or !version.os eq 'Win32'
@@ -155,9 +123,10 @@ end
 ;*/
 
 
-pro mdsconnect,host,status=status,quiet=quiet,port=port
+pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
   on_error,2
-  mdsdisconnect,/quiet
+  if (not keyword_set(socket)) then $
+    mdsdisconnect,/quiet
   if n_elements(port) ne 0 then begin
     setenv_,'mdsip='+strtrim(port,2)
   endif else if getenv('mdsip') eq '' then begin
@@ -168,10 +137,14 @@ pro mdsconnect,host,status=status,quiet=quiet,port=port
   sockmin=1l-(!version.os eq 'MacOS')
   if (sock ge sockmin) then begin
     status = 1
-    x=execute('!MDS_SOCKET = sock')
+    if not keyword_set(socket) then $
+      x=execute('!MDS_SOCKET = sock') $
+    else $
+      socket = sock
   endif else begin
     if not keyword_set(quiet) then message,'Error connecting to '+host,/IOERROR
     status = 0
   endelse
   return
 end
+
