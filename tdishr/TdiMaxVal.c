@@ -679,7 +679,7 @@ int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
 { type *outp = (type *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  count = 0;\
+  int count = 0;\
   for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
     for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
       double result = 0;\
@@ -701,7 +701,7 @@ int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
 { type *outp = (type *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  count = 0;\
+  int count = 0;\
   for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
     for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
       double result = 0;\
@@ -718,7 +718,7 @@ int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
             CvtConvertFloat(&resulti,DTYPE_DOUBLE,outp++,dtype,0);}\
           else {\
             CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
-            CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);}\
+            CvtConvertFloat(&roprand,DTYPE_F,outp++,dtype,0);\
           }\
         }\
       }\
@@ -748,16 +748,16 @@ int Tdi3Accumulate(struct descriptor *in, struct descriptor *mask,
     case DTYPE_O: Operate(octaword,ozero,1,
 			TdiAddOctaword(pi0, &result, &result); *outp++ = result;,
 			continue)
-    case DTYPE_F:  OperateFsum(float,DTYPE_F)
-    case DTYPE_FS: OperateFsum(float,DTYPE_FS)
-    case DTYPE_G:  OperateFsum(double,DTYPE_G)
-    case DTYPE_D:  OperateFsum(double,DTYPE_D)
-    case DTYPE_FT: OperateFsum(double,DTYPE_FT)
-    case DTYPE_FC:  OperateFsumc(float,DTYPE_F)
-    case DTYPE_FSC: OperateFsumc(float,DTYPE_FS)
-    case DTYPE_GC:  OperateFsumc(double,DTYPE_G)
-    case DTYPE_DC:  OperateFsumc(double,DTYPE_D)
-    case DTYPE_FTC: OperateFsumc(double,DTYPE_FT)
+    case DTYPE_F:  OperateFaccum(float,DTYPE_F)
+    case DTYPE_FS: OperateFaccum(float,DTYPE_FS)
+    case DTYPE_G:  OperateFaccum(double,DTYPE_G)
+    case DTYPE_D:  OperateFaccum(double,DTYPE_D)
+    case DTYPE_FT: OperateFaccum(double,DTYPE_FT)
+    case DTYPE_FC:  OperateFaccumc(float,DTYPE_F)
+    case DTYPE_FSC: OperateFaccumc(float,DTYPE_FS)
+    case DTYPE_GC:  OperateFaccumc(double,DTYPE_G)
+    case DTYPE_DC:  OperateFaccumc(double,DTYPE_D)
+    case DTYPE_FTC: OperateFaccumc(double,DTYPE_FT)
     default: return TdiINVDTYDSC;
   }
   return 1;
