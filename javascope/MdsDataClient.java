@@ -445,7 +445,7 @@ public class MdsDataClient extends MdsConnection
 		    case Descriptor.DTYPE_LONG:
 		        return desc.int_data[0];
 		    case Descriptor.DTYPE_CHAR:
-		        throw new MdsIOException("Cannot convert a string to float");
+		        throw new MdsIOException("Cannot convert a string to int");
 		    case Descriptor.DTYPE_CSTRING:
 		        if((desc.status & 1) == 0)
 		            throw new MdsIOException(desc.error);
@@ -453,6 +453,77 @@ public class MdsDataClient extends MdsConnection
 	            throw new MdsIOException("Data type code "+ desc.dtype+" unsupported");
 	    }
     }
+
+
+    /**
+     * Evaluate an MdsPlus expression which return an short value
+     *
+     * @param expr expression to evaluate
+     * @return integer value returned by the expression evaluation
+     * @exception MdsIOException if an I/0 or an expression evaluation error occurs
+     */
+    public short getShort(String expr) throws MdsIOException {
+
+      Descriptor desc = MdsValue(expr);
+      switch (desc.dtype) {
+        case Descriptor.DTYPE_BYTE:
+          return (short) desc.byte_data[0];
+        case Descriptor.DTYPE_SHORT:
+          return (short) desc.short_data[0];
+        case Descriptor.DTYPE_FLOAT:
+          throw new MdsIOException("Cannot convert a float to short");
+        case Descriptor.DTYPE_LONG:
+          throw new MdsIOException("Cannot convert a int to short");
+        case Descriptor.DTYPE_CHAR:
+          throw new MdsIOException("Cannot convert a string to short");
+        case Descriptor.DTYPE_CSTRING:
+          if ( (desc.status & 1) == 0)
+            throw new MdsIOException(desc.error);
+        default:
+          throw new MdsIOException("Data type code " + desc.dtype +
+                                   " unsupported");
+      }
+    }
+
+    /**
+     * Evaluate an MdsPlus expression which return a short array
+     *
+     * @param expr expression to evaluate
+     * @return float array value returned by the expression evaluation
+     * @exception MdsIOException if an I/0 or an expression evaluation error occurs
+     */
+    public short[] getShortArray(String expr) throws MdsIOException
+    {
+        Descriptor desc = MdsValue(expr);
+        short out_data[] = null;
+
+        switch(desc.dtype)
+        {
+                case Descriptor.DTYPE_FLOAT:
+                    throw new MdsIOException("Cannot convert a float to short array");
+                case Descriptor.DTYPE_LONG:
+                case Descriptor.DTYPE_ULONG:
+                    throw new MdsIOException("Cannot convert a long to short array");
+                case Descriptor.DTYPE_DOUBLE:
+                    throw new MdsIOException("Cannot convert a double to short array");
+                case Descriptor.DTYPE_CHAR:
+                case Descriptor.DTYPE_BYTE:
+                    out_data = new short[desc.byte_data.length];
+                    for(int i = 0; i < desc.byte_data.length; i++)
+                            out_data[i] = (short)desc.byte_data[i];
+                    return out_data;
+                case Descriptor.DTYPE_SHORT:
+                case Descriptor.DTYPE_USHORT:
+                   return desc.short_data;
+                case Descriptor.DTYPE_CSTRING:
+                    if((desc.status & 1) == 0)
+                        throw new MdsIOException(desc.error);
+                 default:
+                    throw new MdsIOException("Data type code "+ desc.dtype+" unsupported");
+         }
+    }
+
+
 
     /**
      * Evaluate an MdsPlus expression which return an long value
@@ -482,6 +553,7 @@ public class MdsDataClient extends MdsConnection
 	            throw new MdsIOException("Data type code "+ desc.dtype+" unsupported");
 	    }
     }
+
 
 
     /**
