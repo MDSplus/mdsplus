@@ -1217,7 +1217,7 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField111.setNumCols(20);
         deviceField111.setLabelString("X:");
         deviceField111.setOffsetNid(1107);
-        deviceChannel2.setLabelString("Delta_Ip");
+        deviceChannel2.setLabelString("Bv_add");
         deviceChannel2.setOffsetNid(1109);
         deviceChannel2.setInSameLine(true);
         deviceChannel2.setUpdateIdentifier("");
@@ -1408,7 +1408,7 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField112116.setLabelString("Y:");
         deviceField112116.setNumCols(80);
         deviceField112116.setIdentifier("");
-        deviceChannel213.setLabelString("Bv_add");
+        deviceChannel213.setLabelString("Delta_Ip");
         deviceChannel213.setOffsetNid(1113);
         deviceChannel213.setInSameLine(true);
         deviceChannel213.setUpdateIdentifier("");
