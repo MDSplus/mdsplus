@@ -5,9 +5,8 @@
 import java.awt.*;
 import javax.swing.JPanel;
 import javax.swing.*;
-import javax.swing.border.*;
-//import com.symantec.itools.javax.swing.borders.EtchedBorder;
-import javax.swing.border.*;
+import javax.swing.border.*
+//3import com.symantec.itools.javax.swing.borders.EtchedBorder;
 
 public class RFXPConfigSetup extends DeviceSetup
 {
@@ -89,7 +88,7 @@ public class RFXPConfigSetup extends DeviceSetup
 		deviceField9.setEditable(false);
 		JPanel2.add(deviceField9);
 		deviceField10.setNumCols(4);
-		deviceField10.setOffsetNid(1);
+		deviceField10.setOffsetNid(14);
 		deviceField10.setLabelString("Bias Window (s):");
 		deviceField10.setEditable(false);
 		JPanel2.add(deviceField10);
@@ -184,7 +183,7 @@ public class RFXPConfigSetup extends DeviceSetup
 	DeviceField deviceField12 = new DeviceField();
 	DeviceField deviceField13 = new DeviceField();
 	//com.symantec.itools.javax.swing.borders.EtchedBorder etchedBorder1 = new com.symantec.itools.javax.swing.borders.EtchedBorder();
-	EtchedBorder etchedBorder1 = new com.symantec.itools.javax.swing.borders.EtchedBorder();
+	EtchedBorder etchedBorder1 = new EtchedBorder();
 	DeviceField deviceField14 = new DeviceField();
 	//}}
 
