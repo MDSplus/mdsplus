@@ -2414,7 +2414,8 @@ int libffs(int *position, int *size, char *base, int *find_position)
   int i;
   int status = 0;
   int *bits = (int *)(base + (*position)/8); 
-  for (i=(*position) % 8;i<*size;i++)
+  int top_bit_to_check = ((*size)+*position)-((*position)/8)*8;
+  for (i=(*position) % 8;i<top_bit_to_check;i++)
   {
     if (*bits & (1 << i))
     {
