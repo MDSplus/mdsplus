@@ -109,7 +109,7 @@ static char *GetRegistry(char *where, char *pathname)
   HKEY regkey2=(HKEY)0;
   HKEY regkey3=(HKEY)0;
   unsigned char *path = NULL;
-  if ( (RegOpenKeyEx(where,"SOFTWARE",0,KEY_READ,&regkey1) == ERROR_SUCCESS) &&
+  if ( (RegOpenKeyEx((HKEY)where,"SOFTWARE",0,KEY_READ,&regkey1) == ERROR_SUCCESS) &&
        (RegOpenKeyEx(regkey1,"MIT",0,KEY_READ,&regkey2) == ERROR_SUCCESS) &&
        (RegOpenKeyEx(regkey2,"MDSplus",0,KEY_READ,&regkey3) == ERROR_SUCCESS) )
   {
@@ -137,9 +137,9 @@ static char *GetRegistry(char *where, char *pathname)
 
 char *TranslateLogical(char *pathname)
 {
-	char *path = GetRegistry(HKEY_CURRENT_USER, pathname);
+	char *path = GetRegistry((char *)HKEY_CURRENT_USER, pathname);
 	if (!path)
-		path = GetRegistry(HKEY_LOCAL_MACHINE, pathname);
+		path = GetRegistry((char *)HKEY_LOCAL_MACHINE, pathname);
 	return path;
 }
 
@@ -1421,6 +1421,7 @@ unsigned int StrMatchWild(struct descriptor *candidate, struct descriptor *patte
       } 
     }   
   }
+  return StrNOMATCH;
 }
 
 #ifdef MAX
