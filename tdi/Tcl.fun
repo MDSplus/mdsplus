@@ -1,6 +1,6 @@
 public fun Tcl(in _command)
 {
-  if (!allocated(_tcl$$initialized))
+  if (!allocated(public _tcl$$initialized))
   {
     public _tcl$$initialized = Mdsdcl->mdsdcl_do_command('set command tcl');
   }
