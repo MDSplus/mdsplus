@@ -1,5 +1,7 @@
 public fun Dt196Init(IN _board, IN _activeChans, IN _trigSrc, IN _clockSource, IN _clockFreq, IN _preTrig, IN _postTrig)
 {
+  write(*, "starting Dt196Init\n");
+
   _mask='';
   for (_i=0; _i<96; _i++) {
     if (_i < _activeChans) {
@@ -8,15 +10,7 @@ public fun Dt196Init(IN _board, IN _activeChans, IN _trigSrc, IN _clockSource, I
       _mask = _mask//'0';
     }
   }
-  if (_preTrig == 0) {
-   Dt200WriteMaster(_board, 'set.trig '//_trigSrc//' falling', 1);
-  } else {
-    if (_preTrig < 10*1024) {
-      write(*, 'Pre trig must be either 0 or > 10K');
-      _preTrig = 1024*10;
-    }
-    Dt200WriteMaster(_board, 'set.event event0 '//_trigSrc//' falling;get.event event0', 1);
-  }
+  Dt200WriteMaster(_board, 'set.event event0 '//_trigSrc//' rising;get.event event0', 1);
   Dt200WriteMaster(_board, "setChannelMask "//_mask);
   if (_clockSource == 'INT') {
     Dt200WriteMaster(_board, "setInternalClock "//LONG(_clockFreq));

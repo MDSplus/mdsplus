@@ -83,8 +83,8 @@ public fun dt216__store(as_is _nid, optional _method)
    Get setup info
   *************************************/
   _num_chans=MdsValue('Dt200GetNumChans($)',_board);
-  _pre_trig = MdsValue('Dt200GetPreSamples($)', _board);
-  _post_trig = MdsValue('Dt200GetPostSamples($)', _board);
+  _pre_trig = MdsValue('Dt216GetPreSamples($)', _board);
+  _post_trig = MdsValue('Dt216GetPostSamples($)', _board);
 
    _first_idx = - _pre_trig;
   _last_idx = _post_trig;

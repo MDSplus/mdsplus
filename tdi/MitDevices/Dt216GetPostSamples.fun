@@ -1,4 +1,4 @@
-public fun Dt196GetPostSamples(in _board)
+public fun Dt216GetPostSamples(in _board)
 {
   _ans = Dt200WriteMaster(_board, "getNumSamples");
   if (extract(0,6,_ans) != 'ACQ32:') {
