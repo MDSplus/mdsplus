@@ -808,11 +808,13 @@ static int TreeWriteNci(TREE_INFO *info)
     int numnodes = info->header->nodes - info->edit->first_in_mem;
     int i;
     char nci_bytes[42];
-    for (i = 0; i < numnodes && (status & 1); i++)
+    int nbytes = sizeof(nci_bytes);
+    int offset;
+    for (i = 0,offset = info->edit->first_in_mem * nbytes; i < numnodes && (status & 1); i++,offset += nbytes)
     {
-      lseek(info->nci_file->put,(info->edit->first_in_mem + i) * sizeof(nci_bytes),SEEK_SET);
+      lseek(info->nci_file->put,offset,SEEK_SET);
       TreeSerializeNciOut(&info->edit->nci[i],nci_bytes);
-      status = (write(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
+      status = (write(info->nci_file->put,nci_bytes,nbytes) == nbytes) ? TreeNORMAL : TreeFAILURE;
       if (status & 1)
         info->edit->first_in_mem++;
     }
