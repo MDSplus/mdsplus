@@ -41,7 +41,7 @@ $RPM_INSTALL_PREFIX/mdsplus/rpm/post_install_script
 %postun
 
 MDSPLUS_DIR=`cat /etc/.mdsplus_dir`
-$MDSPLUS_DIR/mdsplus/local/mdsplus_post_uninstall_script
+$MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 
 %files
 %defattr(-,root,root)
