@@ -31,6 +31,7 @@ PARTS = \
         @D3D_PACKAGE@ \
         wfevent \
         setevent \
+        mdsremote \
         @JAVA_APS@ \
         @IDLSQL@ \
 	@IDLMDSEVENT@
