@@ -90,6 +90,7 @@
 #else
 #define INVALID_SOCKET -1
 #ifndef vxWorks
+#include <fcntl.h>
 #include <sys/time.h>
 #endif
 #include <sys/types.h>

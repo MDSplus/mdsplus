@@ -2,7 +2,6 @@
 #ifndef min
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
-#define xxxxUNIX_SERVER
 
 static unsigned char message_id = 1;
 Message *GetMdsMsg(SOCKET sock, int *status);
@@ -203,6 +202,17 @@ void MdsIpFree(void *ptr)
 }
 #endif
 
+#if !defined(_VMS) && !defined(_WIN32) && !defined(vxWorks)
+static struct timeval connectTimer = {0,0};
+
+int SetMdsConnectTimeout(int sec)
+{
+  int old = connectTimer.tv_sec;
+  connectTimer.tv_sec = sec;
+  return old;
+}
+#endif
+
 static SOCKET ConnectToPort(char *host, char *service)
 {
   int status;
@@ -285,8 +295,42 @@ static SOCKET ConnectToPort(char *host, char *service)
 #else
   memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
 #endif
-  status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
-  if (status < 0)
+#if !defined(_VMS) && !defined(_WIN32) && !defined(vxWorks)
+  if (connectTimer.tv_sec)
+  {
+    status = fcntl(s,F_SETFL,O_NONBLOCK);
+    status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
+    if ((status == INVALID_SOCKET) && (errno == EINPROGRESS))
+    {
+      fd_set readfds;
+      fd_set exceptfds;
+      fd_set writefds;
+      FD_ZERO(&readfds);
+      FD_SET(s,&readfds);
+      FD_ZERO(&exceptfds);
+      FD_SET(s,&exceptfds);
+      FD_ZERO(&writefds);
+      FD_SET(s,&writefds);
+      status = select(FD_SETSIZE, &readfds, &writefds, &exceptfds, &connectTimer);
+      if (status == 0)
+      {
+        printf("Error in connect to service\n: Timeout on connection\n");
+        shutdown(s,2);
+        close(s);
+        return INVALID_SOCKET;
+      }
+    }
+    if (status == INVALID_SOCKET)
+    {
+      shutdown(s,2);
+      close(s);
+    }
+    else
+      fcntl(s,F_SETFL,0);
+  } else
+#endif
+    status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
+  if (status == INVALID_SOCKET)
   {
     perror("Error in connect to service\n");
     return INVALID_SOCKET;
