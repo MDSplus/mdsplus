@@ -187,11 +187,11 @@ typedef struct {
 
         __u8    fifo_status;
 
-	__u8	DMA_byte_count[2];
+	__u8	DMA_byte_count[3];
 
 	__u8	additional_sense_length;
 
-        __u8    zero2[2];
+        __u8    zero2[3];
 
 	__u8	additional_sense_code;
 
@@ -1062,14 +1062,14 @@ static int JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status
 static int Jorway73ATranslateIosb( int isdatacmd, int reqbytcnt, J73ASenseData *sense, int scsi_status )
 {
   int status;
-  int bytcnt = reqbytcnt - ((int)sense->DMA_byte_count[1])+
-    (((int)sense->DMA_byte_count[0])<<8);
+  int bytcnt = reqbytcnt - (int)(((unsigned int)sense->DMA_byte_count[2])+
+    (((unsigned int)sense->DMA_byte_count[1])<<8) +
+    (((unsigned int)sense->DMA_byte_count[0])<<16));
  
   if (Verbose)
   {
-    printf("SCSI Sense data:  code=%d,valid=%d,sense_key=%d,DMA byte count=%d\n\n",sense->code,sense->valid,
-	   sense->sense_key, ((int)sense->DMA_byte_count[1])+
-	   (((int)sense->DMA_byte_count[1])<<8));
+    printf("SCSI Sense data:  code=%d,valid=%d,sense_key=%d,DMA byte count=%d, additonal sense code=%d\n\n",sense->code,sense->valid,
+	   sense->sense_key, bytcnt, sense->additional_sense_code);
 	   /*
     printf("     Main status register:\n\n");
     printf("                  bdmd=%d,dsne=%d,bdsq=%d,snex=%d,crto=%d,to=%d,no_x=%d,no_q=%d\n\n",
