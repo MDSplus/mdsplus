@@ -114,7 +114,6 @@ static BYTE JorwayModes[2][2][4] = {
 #define	JORWAYMODE(mode, enhanced, multisample)	JorwayModes[multisample][enhanced][mode]
 #define	KSMODE(mode)				mode
 
-static Jorway73ATranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status );
 
 //-----------------------------------------------------------
 // local function prototypes
@@ -185,6 +184,7 @@ static void str2upcase( char *str );
 //-----------------------------------------------------------
 static void 		Blank( UserParams *user );
 static int 		JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status );
+static int              Jorway73ATranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status );
 static int 		KsTranslateIosb( RequestSenseData *sense, int scsi_status );
 
 //-----------------------------------------------------------
@@ -737,8 +737,59 @@ static int Jorway73ADoIo(
         char sensretlen;
         int online;
         int enhanced;
-	CDBCamacDataCommand( DATAcommand );
-	CDBCamacNonDataCommand( NONDATAcommand );
+
+	struct {
+	  __u8	opcode;
+	  
+	  __u8	f     : 5;
+	  __u8	lu    : 3;
+	  
+	  __u8	n     : 5;
+	  __u8  bs    : 1;
+	  __u8	m     : 2;
+	  
+	  __u8	a     : 4;
+	  __u8	zero1  : 4;
+	  
+	  __u8	transfer_len;
+	  __u8	zero2;
+	} NONDATAcommand = {1,0,0,0,0,0,0,0,0,0};
+	struct {
+	  __u8	opcode;
+	  
+	  __u8	f     : 5;
+	  __u8	lu    : 3;
+	  
+	  __u8	n     : 5;
+	  __u8    bs    : 1;
+	  __u8	m     : 2;
+	  
+	  __u8	a     : 4;
+	  __u8	zero1  : 4;
+	  
+	  __u8	transfer_len;
+	  __u8	zero2;
+	} ShortDATAcommand = {1,0,0,0,0,0,0,0,0,0};
+	struct {
+	  __u8	opcode;
+
+	  __u8  zero1 : 5;
+	  __u8  lu    : 3;
+	  
+	  __u8	f     : 5;
+	  __u8	zero2 : 3;
+	  
+	  __u8	n     : 5;
+	  __u8  bs    : 1;
+	  __u8	m     : 2;
+	  
+	  __u8	a     : 4;
+	  __u8	zero3 : 4;
+	  
+	  __u8  zero4;
+	  __u8	transfer_len[2];
+	  __u8	zero5;
+	} LongDATAcommand = {0x21,0,0,0,0,0,0,0,0,0};
 
 	if( MSGLVL(FUNCTION_NAME) )
 		printf( "%s()\n", J_ROUTINE_NAME );
@@ -763,46 +814,39 @@ static int Jorway73ADoIo(
 	IsDataCommand = (F & 0x08) ? FALSE : TRUE;
 
 	if( IsDataCommand ) {
-		union {
-			BYTE	     b[4];
-			unsigned int l;
-		} transfer_len;
-
-		DATAcommand.f     = F;
-		DATAcommand.bs    = Mem == 24;
-		DATAcommand.n     = Key.slot;
-		DATAcommand.m     = JORWAYMODE(dmode, enhanced, Count > 1);
-		DATAcommand.a     = A;
-		DATAcommand.sncx  = 0;
-		DATAcommand.scs   = 0;
-
-		reqbytcnt = transfer_len.l    = Count * ((Mem == 24) ? 4 : 2);
-#	if 	JORWAY_DISCONNECT
-#		ifdef SG_BIG_BUFF
-			DATAcommand.dd = transfer_len.l > SG_BIG_BUFF;
-#		else
-			DATAcommand.dd = transfer_len.l > 4096;
-#		endif
-#	else
-		DATAcommand.dd    = 0;
-#	endif
-		DATAcommand.crate = Key.crate;
-		DATAcommand.sp    = HIGHWAY_SERIAL;
-
-		DATAcommand.transfer_len[0] = transfer_len.b[2];	// NB! order reversal
-		DATAcommand.transfer_len[1] = transfer_len.b[1];
-		DATAcommand.transfer_len[2] = transfer_len.b[0];
-
-                cmd = (unsigned char *)&DATAcommand;
-                cmdlen = sizeof(DATAcommand);
-                direction = (F < 8) ? 1 : 2;
+	  union {
+	    BYTE	     b[4];
+	    unsigned int l;
+	  } transfer_len;
+	  reqbytcnt = transfer_len.l    = Count * ((Mem == 24) ? 4 : 2);
+          direction = (F < 8) ? 1 : 2;
+          if (reqbytcnt < 256)	    {
+	    cmd = (char *)&ShortDATAcommand;
+	    cmdlen = sizeof(ShortDATAcommand);
+	    ShortDATAcommand.f     = F;
+	    ShortDATAcommand.bs    = Mem == 24;
+	    ShortDATAcommand.n     = Key.slot;
+	    ShortDATAcommand.m     = JORWAYMODE(dmode, enhanced, Count > 1);
+	    ShortDATAcommand.a     = A;
+	    ShortDATAcommand.transfer_len = transfer_len.l;
+	  }
+	  else {
+	    cmd = (char *)&LongDATAcommand;
+	    cmdlen = sizeof(LongDATAcommand);
+	    LongDATAcommand.f     = F;
+	    LongDATAcommand.bs    = Mem == 24;
+	    LongDATAcommand.n     = Key.slot;
+	    LongDATAcommand.m     = JORWAYMODE(dmode, enhanced, Count > 1);
+	    LongDATAcommand.a     = A;
+	    LongDATAcommand.transfer_len[0] = transfer_len.b[1];
+	    LongDATAcommand.transfer_len[1] = transfer_len.b[0];
+   
+	  }
 	}
 	else {
-		NONDATAcommand.bytes[1] = F;
-		NONDATAcommand.bytes[2] = Key.slot;
-		NONDATAcommand.bytes[3] = A;
-		NONDATAcommand.bytes[4] = (HIGHWAY_SERIAL << 7) | Key.crate;
-
+		NONDATAcommand.f = F;
+		NONDATAcommand.n = Key.slot;
+		NONDATAcommand.a = A;
 		cmd = (unsigned char *)&NONDATAcommand;
 		cmdlen = sizeof(NONDATAcommand);
                 direction = 0;
