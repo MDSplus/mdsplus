@@ -10,10 +10,12 @@ void __MB(){return;}
 #include <winreg.h>
 #else /* WIN32 */
 
-#if defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux__)
-#include <dlfcn.h>
-#elif defined(__hpux)
+#if defined(__hpux)
 #include <dl.h>
+#define SHARELIB_TYPE ".sl"
+#else
+#include <dlfcn.h>
+#define SHARELIB_TYPE ".so"
 #endif
 
 #include <unistd.h>
@@ -793,119 +795,7 @@ static char *GetRegistryPath(char *pathname)
   RegCloseKey(regkey3);
   return (char *)path;
 }
-/*
-typedef struct findFileCtx { HANDLE hand;
-		             char *path;
-                             char *pathstart;
-                             char *pathend;
-                             char *name;
-		             char *searchname;
-                           } FindFileCtx;
 
-static int FindNextInPath(FindFileCtx *ffctx,WIN32_FIND_DATA *fdata)
-{
-  while((ffctx->hand == INVALID_HANDLE_VALUE) && (ffctx->path < ffctx->pathend))
-  {
-    char filename[512];
-    strcpy(filename,ffctx->path);
-    strcat(filename,ffctx->name);
-    ffctx->hand = FindFirstFile(filename, fdata);
-    if (ffctx->hand == INVALID_HANDLE_VALUE)
-    {
-      ffctx->path += strlen(ffctx->path);
-      while ((ffctx->path < ffctx->pathend) && (*ffctx->path == '\0')) ffctx->path++;
-    }
-  }
-  return (ffctx->hand != INVALID_HANDLE_VALUE);
-}
-
-int LibFindFile(struct descriptor *filespec, struct descriptor *result, void **ctx)
-{
-  BOOL status = FALSE;
-  WIN32_FIND_DATA fdata;
-  FindFileCtx *ffctx = *(FindFileCtx **)ctx;
-  if (ffctx == NULL)
-  {
-    ffctx = malloc(sizeof(FindFileCtx));
-    ffctx->searchname = MdsDescrToCstring(filespec);
-    ffctx->hand = FindFirstFile(ffctx->searchname, &fdata);
-    ffctx->pathstart = NULL;
-    if (ffctx->hand == INVALID_HANDLE_VALUE)
-    {
-      ffctx->name=strchr(ffctx->searchname,':');
-      if (ffctx->name != NULL)
-      {
-        *ffctx->name = '\0';
-        ffctx->name++;
-        ffctx->path = ffctx->pathstart = GetRegistryPath(ffctx->searchname);
-        if (ffctx->path != NULL)
-        {
-          char *delim;
-          ffctx->pathend = ffctx->path + strlen(ffctx->path);
-          while((delim=strrchr(ffctx->path,';')) != NULL) *delim='\0';
-          status = FindNextInPath(ffctx,&fdata);
-        }
-      }
-    }
-    else
-    {
-      char *delim;
-      status = TRUE;
-      ffctx->path = ffctx->searchname;
-      if ((delim=strrchr(ffctx->path,'\\')) != NULL)
-        *(delim + 1) = '\0';
-    }
-    if (status == TRUE)
-      *ctx = (void *)ffctx;
-  }
-  else
-  {
-    status = FindNextFile(ffctx->hand, &fdata);
-    if (!status)
-    {
-      FindClose(ffctx->hand);
-      status = FindNextInPath(ffctx,&fdata);
-    }
-  }
-  if (status) {
-    struct descriptor pathdsc = {0,DTYPE_T,CLASS_S,0};
-    struct descriptor namedsc = {0,DTYPE_T,CLASS_S,0};
-    pathdsc.length = (unsigned short)strlen(ffctx->path);
-    pathdsc.pointer = ffctx->path;
-    namedsc.length = (unsigned short)strlen(fdata.cFileName);
-    namedsc.pointer = fdata.cFileName;
-	StrCopyDx(result, &pathdsc);
-    StrAppend(result,&namedsc);
-  }
-  else
-  {
-    if (ffctx->pathstart) free(ffctx->pathstart);
-    free(ffctx->searchname);
-    free(ffctx);
-    *ctx = NULL;
-  }
-  return (int)status;
-}
-
-int LibFindFileRecurseCaseBlind(struct descriptor *filespec, struct descriptor *result, void **ctx)
-{
-  return LibFindFile(filespec, result, ctx);
-}
-
-int LibFindFileEnd(void **ctx)
-{
-  FindFileCtx *ffctx = *(FindFileCtx **)ctx;
-  if (ffctx != NULL)
-  {
-    FindClose(ffctx->hand);
-    if (ffctx->pathstart) free(ffctx->pathstart);
-    free(ffctx->searchname);
-    free(ffctx);
-    *ctx = NULL;
-  }
-  return 1;
-}
-*/
 int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, FARPROC *symbol_value)
 {
   char *c_filename = MdsDescrToCstring(filename);
@@ -1035,7 +925,20 @@ unsigned int LibCallg(void **arglist, unsigned int (*routine)())
   return 0;
 }
 
-#if defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux__)
+#if defined(__hpux)
+static void *dlopen(char *filename, int flags)
+{
+  return (void *)shl_load(filename,BIND_DEFERRED | BIND_NOSTART | DYNAMIC_PATH,0);
+}
+
+void *dlsym(void *handle, char *name)
+{
+  void *symbol = NULL;
+  int s = shl_findsym((shl_t *)&handle,name,0,&symbol_value);
+  return symbol;
+}
+#endif
+
 int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
 {
   char *c_filename = MdsDescrToCstring(filename);
@@ -1044,11 +947,11 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   *symbol_value = NULL;
   strcpy(full_filename,"lib");
   strcat(full_filename,c_filename);
-  strcat(full_filename,".so");
+  strcat(full_filename,SHARELIB_TYPE);
   handle = dlopen(full_filename,RTLD_LAZY);
   if (handle == NULL) {
     strcpy(full_filename,c_filename);
-    strcat(full_filename,".so");
+    strcat(full_filename,SHARELIB_TYPE);
     handle = dlopen(full_filename,RTLD_LAZY);
   }
   if (handle != NULL)
@@ -1065,37 +968,6 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     return 1;  
 }
 
-#else /* __osf__ */
-int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
-{
-  char *c_filename = MdsDescrToCstring(filename);
-  char *full_filename = malloc(strlen(c_filename) + 10);
-  shl_t handle;
-  *symbol_value = NULL;
-  strcpy(full_filename,"lib");
-  strcat(full_filename,c_filename);
-  strcat(full_filename,".sl");
-  handle = shl_load(full_filename,BIND_DEFERRED | BIND_NOSTART | DYNAMIC_PATH,0);
-  if (handle == NULL)
-  {
-    strcpy(full_filename,c_filename);
-    strcat(full_filename,".sl");
-    handle = shl_load(full_filename,BIND_DEFERRED | BIND_NOSTART | DYNAMIC_PATH,0);
-  }
-  if (handle != NULL)
-  {
-    char *c_symbol = MdsDescrToCstring(symbol);
-    int s = shl_findsym(&handle,c_symbol,0,symbol_value);
-    free(c_symbol);
-  }
-  free(c_filename);
-  free(full_filename);
-  if (*symbol_value == NULL)
-    return LibKEYNOTFOU;
-  else
-    return 1;  
-}
-#endif
 int LibSpawn(struct descriptor *cmd, struct descriptor *in, struct descriptor *out)
 {
   printf("LibSpawn not yet supported\n");
