@@ -32,8 +32,8 @@ clean:
 	- rm @MAKELIBDIR@libMdsLib_client.a
 	- rm @MAKELIBDIR@libMdsLib@SHARETYPE@
 	- rm @MAKELIBDIR@libMdsLib.a
-	- rm @MAKELIBDIR@mdslib_?test
-	- rm @MAKELIBDIR@mdslib_?remotetest
+	- rm @MAKEBINDIR@mdslib_?test
+	- rm @MAKEBINDIR@mdslib_?remotetest
 
 install:
 	if [ ! -d @libdir@ ] ; then \
