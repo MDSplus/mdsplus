@@ -14,6 +14,7 @@ RemoteAccess.o
 
 ../shlib/libTreeShr.so : $(OBJECTS) ../shlib
 	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm -L../shlib -lMdsShr
+	- rm so_locations
 
 ../shlib :
 	mkdir ../shlib

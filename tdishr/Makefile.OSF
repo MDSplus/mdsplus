@@ -78,12 +78,16 @@ TdiXxx.o \
 TdiYaccSubs.o \
 TdiYacc.o
 
-libTdiShr.so : $(OBJECTS)
-	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm -L../mdsshr -lMdsShr -L../treeshr -lTreeShr
+../shlib/libTdiShr.so : $(OBJECTS) ../shlib
+	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm -L../shlib -lMdsShr -lTreeShr
+	- rm so_locations
+
+../shlib :
+	mkdir ../shlib
 
 clean :
 	- rm *.o
-	- rm *.so
+	- rm ../shlib/libTdiShr.so
 	- rm so_locations
 	- rm .depend
 
