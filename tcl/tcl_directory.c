@@ -323,6 +323,7 @@ int   TclDirectory()
                             if (partlen)
                                {
                                 pathnam = TreeGetPath(head_nid);
+                                partC[partlen] = 0;
                                 sprintf(textLine,fmtConglom2,pathnam,partC);
                                 TclTextOut(textLine);
                                 TreeFree(pathnam);
