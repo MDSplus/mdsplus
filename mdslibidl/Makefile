@@ -4,7 +4,9 @@ OBJECTS = MdsLibIdl.o
 
 EXPORTS = mdslibidl.export
 
-../shlib/libMdsLibIdl.$(SHARE_TYPE) : $(OBJECTS) ../shlib
+mdslibidl : ../shlib ../shlib/libMdsLibIdl.$(SHARE_TYPE)
+
+../shlib/libMdsLibIdl.$(SHARE_TYPE) : $(OBJECTS) 
 	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -L../shlib -lMdsShr -lTdiShr -lTreeShr -lc -lm
 
 ../shlib :
