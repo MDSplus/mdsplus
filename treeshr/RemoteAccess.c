@@ -1031,6 +1031,7 @@ static int io_write_remote(int fd, void *buff, size_t count)
 
 int MDS_IO_WRITE(int fd, void *buff, size_t count)
 {
+  if (count == 0) return 0;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
     return (FDS[fd-1].socket == -1) ? write(FDS[fd-1].fd,buff,count) : io_write_remote(fd,buff,count);
@@ -1071,6 +1072,7 @@ static ssize_t io_read_remote(int fd, void *buff, size_t count)
 
 ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
 {
+  if (count == 0) return 0; 
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
     return (FDS[fd-1].socket == -1) ? read(FDS[fd-1].fd,buff,count) : io_read_remote(fd,buff,count);
   else
@@ -1253,10 +1255,11 @@ static int io_rename_remote(char *host, char *filename_old, char *filename_new)
   if (sock != -1)
   {
     int info[] = {0};
-    char *names = strcpy(malloc(info[0]),filename_old);
+    char *names;
     int status;
-    strcpy(&names[strlen(filename_old)+1],filename_new);
     info[0]=strlen(filename_old)+1+strlen(filename_new)+1;
+    names = strcpy(malloc(info[0]),filename_old);    
+    strcpy(&names[strlen(filename_old)+1],filename_new);
     status = SendArg(sock,MDS_IO_RENAME_K,0,0,0,sizeof(info)/sizeof(int),info,names);
     if (status & 1)
     {

@@ -49,6 +49,13 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #ifdef _WIN32
 #include <windows.h>
 #else
+#include <fcntl.h>
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+#ifndef O_RANDOM
+#define O_RANDOM 0
+#endif
 static int CopyFile(char *src, char *dst, int dont_replace);
 #endif
 
@@ -191,7 +198,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
 	    strcat(srcfile,name);
           }
 	  strcat(srcfile,type);
-          if (stat(srcfile,&stat_info) == 0)
+          if (MDS_IO_EXISTS(srcfile))
             break;
           else
 		  {
@@ -229,7 +236,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
               if (j >= 0)
 	      {
                 dstfile[j] = 0;
-                if (stat(dstfile,&stat_info) == 0)
+                if (MDS_IO_EXISTS(dstfile))
 		{
                   dstfile[j] = delim[0];
                   strcat(dstfile,type);
@@ -241,7 +248,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
 	    {
 	      if (strcmp(dstfile+strlen(dstfile)-1,TREE_PATH_DELIM) == 0)
                 *(dstfile+strlen(dstfile)-1) = 0;
-              if (stat(dstfile,&stat_info) == 0)
+              if (MDS_IO_EXISTS(dstfile))
               {
                 strcat(dstfile,TREE_PATH_DELIM);
                 strcat(dstfile,name);
@@ -277,6 +284,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
 #if !defined(_WIN32)
 static int CopyFile(char *src, char *dst, int dont_replace)
 {
+  /*
   int status=0;
   char *cmd = (char *)malloc(strlen(src)+strlen(dst) + 100);
   sprintf(cmd,"cp %s %s",src,dst);
@@ -289,5 +297,36 @@ static int CopyFile(char *src, char *dst, int dont_replace)
   }
   free(cmd);
   return status == 0;
+  */
+  int status = TreeFAILURE;
+
+  int src_fd = MDS_IO_OPEN(src,O_RDONLY | O_BINARY | O_RANDOM, 0);
+  if (src_fd != -1)
+  {
+    off_t src_len = MDS_IO_LSEEK(src_fd, 0, SEEK_END);
+    int dst_fd = MDS_IO_OPEN(dst,O_RDWR | O_CREAT | O_TRUNC, 0664);
+    if (dst_fd != -1)
+    {
+      MDS_IO_LSEEK(src_fd, 0, SEEK_SET);
+      MDS_IO_LOCK(src_fd,0,src_len,1);
+      if (src_len > 0)
+      {
+        void *buff = malloc(src_len);
+        size_t bytes_read = MDS_IO_READ(src_fd,buff,(size_t)src_len);
+        if (bytes_read == src_len)
+	{
+          int bytes_written = MDS_IO_WRITE(dst_fd,buff,(size_t)src_len);
+          if (bytes_written == src_len)
+            status = TreeSUCCESS;
+        }
+        if (buff)
+          free(buff);
+      }
+      MDS_IO_LOCK(src_fd,0,src_len,0);
+      MDS_IO_CLOSE(dst_fd);
+    }
+    MDS_IO_CLOSE(src_fd);
+  }
+  return status;
 }
 #endif
