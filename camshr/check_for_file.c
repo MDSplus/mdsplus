@@ -47,7 +47,7 @@ int check_for_file( char *FileName )
 	if( MSGLVL(FUNCTION_NAME) )
 		printf( "check_for_file('%s')\n", FileName );
 
-	if( (fd = Open(FileName, O_RDONLY)) == ERROR ) { 	// file does not exist, yet
+	if( (fd = Open(FileName, O_RDONLY)) < 0 ) { 	// file does not exist, yet
 		status = FILE_ERROR;							// :<
 		goto Filecheck_Exit;
 	}
