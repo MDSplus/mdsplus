@@ -640,6 +640,6 @@ extern int TreeFindTag(PINO_DATABASE *db, NODE *node, char *treename, char **sea
 extern int TreeCallHook(TreeshrHookType operation, TREE_INFO *info);
 extern int TreeEstablishRundownEvent(TREE_INFO *info);
 extern DATA_FILE *TreeGetVmDatafile();
-
+extern int TreeOpenNciW(TREE_INFO *info);
 
 #endif
