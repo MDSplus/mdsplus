@@ -11,8 +11,6 @@
 #ifdef HAVE_READLINE_READLINE_H
 #include <readline/readline.h>
 #include <readline/history.h>
-#else
-#define bfgets fgets_with_edit
 #endif
 
 extern int TdiExecute();
@@ -219,8 +217,16 @@ static void tdiputs(char *line)
    if (line[line_d.length-1]=='\n') line_d.length--;
    TdiExecute(&write_it,&line_d,&ans MDS_END_ARG);
 }
-#ifdef HAVE_READLINE_READLINE_H
+#ifndef HAVE_READLINE_READLINE_H
 /* Routine to replace fgets using readline on stdin */
+static char *readline(char *prompt)
+{
+  if (prompt) printf("%s ",prompt);
+  return fgets(malloc(1024),1023,stdin);
+}
+
+static void add_history(char *string){return;}
+#endif
 char *bfgets(char *s, int size, FILE *stream, char *prompt)
 {
    char *rep;
@@ -238,4 +244,3 @@ char *bfgets(char *s, int size, FILE *stream, char *prompt)
    } else
      return(fgets(s,size,stream));
 }
-#endif
