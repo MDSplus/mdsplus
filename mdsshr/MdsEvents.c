@@ -883,6 +883,8 @@ int MDSEventCan(int eventid)
     int i, j, k, curr_id, prev_id, use_local, local_eventid;
     struct PrivateEventInfo *evinfo;
 
+    if(eventid < 0) return 0;
+
     initializeLocalRemote(1, &use_local);
     if(num_receive_servers > 0)
 	canEventRemote(eventid);
