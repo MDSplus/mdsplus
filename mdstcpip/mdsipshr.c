@@ -393,13 +393,13 @@ int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, in
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
   if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) {
     *eventid = *(int *)ansarg.ptr;
-#ifdef _WIN32
+/*#ifdef _WIN32
     et->eventid = *(int *)ansarg.ptr;
     if (et->thread_handle == NULL)
     et->thread_handle = CreateThread((LPSECURITY_ATTRIBUTES)NULL, 0, (LPTHREAD_START_ROUTINE)MdsDispatchEvent, (LPVOID)sock, (DWORD)NULL, &et->thread_id);
     et->event_count++;
 #endif
-  }
+*/  }
   if (ansarg.ptr) free(ansarg.ptr);
   return status;
 }

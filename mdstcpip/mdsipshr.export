@@ -21,3 +21,5 @@ MakeDescrip
 MakeDescripWithLength
 SendMdsMsg
 GetMdsMsg
+GetMdsMsgOOB
+
