@@ -1563,10 +1563,13 @@ time_t LibCvtTim(int *time_in,double *t)
     _int64 time_local;
     double time_d;
     struct tm *tmval;
+    time_t time_int;
     time_t dummy=0;
     tmval = localtime(&dummy);
     memcpy(&time_local,time_in,sizeof(time_local));
     time_d = ((double)(time_local >> 24)) * 1.6777216 - 3.5067168e+09;
+    time_int = (time_t)time_d;
+    tmval = localtime(&time_int);
 #ifdef USE_TM_GMTOFF
     t_out = (time_d > 0 ? time_d : 0) - tmval->tm_gmtoff;
 #else
