@@ -17,9 +17,10 @@ public fun T2Control__store(as_is _nid, optional _method)
     private _N_PAR1_NAME = 13;
     private _N_PAR1_VALUE = 14; 
 
-	private _N_INPUT_1 = 109;
-	private _N_OUTPUT_1 = 173;
-	private _N_MODES_1 = 205;
+    private _N_INPUT_1 = 109;
+    private _N_OUTPUT_1 = 173;
+    private _N_MODES_1 = 205;
+    private _N_CURRENT_1= 269;
 
 
 write(*, 'T2Control store');
@@ -35,7 +36,7 @@ write(*, 'T2Control store');
 	}
 	write(*, 'Frequency: ', _frequency);
 	_period = 1. / _frequency;
-	_n_samples =  MdsValue('size(Feedback->getDacSignal:dsc(0, 0))');
+	_n_samples =  MdsValue('size(Feedback->getDacSignal:dsc(0,0))');
 	_n_pretrigger =  MdsValue('Feedback->getPreTriggerSamples()');
 	write(*, 'Num recorded samples = ', _n_samples);
 	_n_samples--;
@@ -47,6 +48,7 @@ write(*, 'T2Control store');
 	_dim = make_dim(make_window(0, _n_samples, _trigger - _n_pretrigger * _period), _clock);
 	for(_c = 0; _c < 64; _c++)
 	{
+write(*, _c);
 			_sig_nid =  DevHead(_nid) + _N_INPUT_1  + _c;
 			_data = MdsValue('Feedback->getAdcSignal:dsc($1, $2)', _c / 64, mod(_c,64));
 			_status = DevPutSignal(_sig_nid, 0, 10/2048., word(_data), 0, _n_samples, _dim);
@@ -59,8 +61,9 @@ write(*, 'T2Control store');
 	}
 	for(_c = 0; _c < 32; _c++)
 	{
+write(*, _c);
 			_sig_nid =  DevHead(_nid) + _N_OUTPUT_1  + _c;
-			_data = MdsValue( 'Feedback->getDacSignal:dsc(0,$1)', _c);
+			_data = MdsValue( 'Feedback->getDacSignal:dsc(0, $1)', _c);
 
 			_status = DevPutSignal(_sig_nid, -2048, 5/2048., word(_data), 0, _n_samples, _dim);
 			if(! _status)
@@ -69,10 +72,24 @@ write(*, 'T2Control store');
 
 			}
 	}
+	for(_c = 0; _c < 32; _c++)
+	{
+write(*, _c);
+		_sig_nid =  DevHead(_nid) + _N_CURRENT_1  + _c;
+		_data = MdsValue('Feedback->getAdcSignal:dsc($1, $2)', 1, _c);
+		_status = DevPutSignal(_sig_nid, 0, 10/2048., word(_data), 0, _n_samples, _dim);
+		if(! _status)
+		{
+			write(*, 'Error writing data in pulse file for CURRENT channel ', _c);
+			DevLogErr(_nid, 'Error writing data in pulse file ');
+
+		}
+	}
 	_n_samples =  MdsValue('size(Feedback->getMode:dsc(0, 1))');
 	_dim = make_dim(make_window(0, _n_samples, _trigger), _clock);
 	for(_c = 0; _c < 32; _c++)
 	{
+write(*, _c);
 		_data = MdsValue( 'Feedback->getMode:dsc($1, 1)', _c);
 		_status = DevPut(_nid, _N_MODES_1  + 2 * _c, _data);
 		if(! _status)
