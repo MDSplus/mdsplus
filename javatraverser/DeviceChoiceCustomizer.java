@@ -9,7 +9,7 @@ public class DeviceChoiceCustomizer extends DeviceCustomizer implements Customiz
 {
     DeviceChoice bean = null;
     PropertyChangeSupport listeners = new PropertyChangeSupport(this);
-    TextField labelString, identifier;
+    TextField labelString, identifier, updateIdentifier;
     TextArea itemsArea, codesArea;
     Label itemsLabel, codesLabel;
     Choice nids, mode;
@@ -94,6 +94,10 @@ public class DeviceChoiceCustomizer extends DeviceCustomizer implements Customiz
         jp1 = new Panel();
         jp1.add(new Label("Opt. identifier: "));
         jp1.add(identifier = new TextField(bean.getIdentifier(), 20));
+        jp1.add(new Label("Update identifier: "));
+        jp1.add(updateIdentifier = new TextField(bean.getUpdateIdentifier(), 20));
+        
+        
         jp.add(jp1, "South");
         
         add(jp, "Center");
@@ -136,6 +140,7 @@ public class DeviceChoiceCustomizer extends DeviceCustomizer implements Customiz
                 }
                 
                 bean.setIdentifier(identifier.getText());
+                bean.setUpdateIdentifier(updateIdentifier.getText());
                 listeners.firePropertyChange(null, null, null);
             }
         });

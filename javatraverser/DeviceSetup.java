@@ -16,6 +16,7 @@ public class DeviceSetup extends JDialog
     protected String [] methods;
     JMenuItem pop_items[];
     JPopupMenu pop_methods = null;
+    Hashtable updateHash = new Hashtable();
     
     
     
@@ -115,6 +116,17 @@ public class DeviceSetup extends JDialog
         {
             ((DeviceComponent)device_components.elementAt(i)).setSubtree(subtree);
             ((DeviceComponent)device_components.elementAt(i)).configure(baseNid);
+            String currUpdateId = ((DeviceComponent)device_components.elementAt(i)).getUpdateId(this);
+            if(currUpdateId != null && !currUpdateId.equals(""))
+            {
+                Vector components = (Vector)updateHash.get(currUpdateId);
+                if(components == null)
+                {
+                    components = new Vector();
+                    updateHash.put(currUpdateId, components);
+                }
+                components.addElement(device_components.elementAt(i));
+            }
         }
         if(methods != null && methods.length > 0)
         {
@@ -257,6 +269,17 @@ public class DeviceSetup extends JDialog
 		}
 		return 1;
 	}
+	
+	public void fireUpdate(String id, Data val)
+	{
+	    Vector components = (Vector)updateHash.get(id);
+	    if(components != null)
+	    {
+	        for(int i = 0; i < components.size(); i++)
+	            ((DeviceComponent)components.elementAt(i)).fireUpdate(id, val);
+	    }
+	}
+	
 }       
         
  

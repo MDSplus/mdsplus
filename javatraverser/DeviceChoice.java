@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class DeviceChoice extends DeviceComponent
 {
@@ -71,6 +72,15 @@ public class DeviceChoice extends DeviceComponent
         int data_value;
         initializing = true;
         displayData(data, is_on);
+        comboB.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                if(initializing || updateIdentifier == null || updateIdentifier.equals("")) return;
+                String currItem = (String)comboB.getSelectedItem();
+                master.fireUpdate(updateIdentifier, new StringData(currItem));
+            }
+        });
         initializing = false;
     }        
                

@@ -27,6 +27,7 @@ public class DeviceChoiceBeanInfo extends SimpleBeanInfo
                property("showState", "Enable state check box"),
                property("convert", "Enable code conversion"),
                property("choiceItems", "String items"),
+               property("updateIdentifier", "Update identifier"),
                property("identifier", "Optional identifier")
 
             };

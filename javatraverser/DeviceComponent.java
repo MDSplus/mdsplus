@@ -12,6 +12,7 @@ public abstract class DeviceComponent extends JPanel
     protected boolean curr_on, init_on;
     protected NidData nidData;
     protected String identifier;
+    protected String updateIdentifier;
     private boolean is_initialized = false;
     
     void setSubtree(RemoteTree subtree) {this.subtree = subtree; }
@@ -25,6 +26,11 @@ public abstract class DeviceComponent extends JPanel
         this.identifier = identifier;
     }
     public String getIdentifier() {return identifier; }
+    public void setUpdateIdentifier(String updateIdentifier)
+    {
+        this.updateIdentifier = updateIdentifier;
+    }
+    public String getUpdateIdentifier() {return updateIdentifier; }
     
     
     public void configure(int baseNid) 
@@ -114,8 +120,14 @@ public abstract class DeviceComponent extends JPanel
         }
     }
         
-        
-        
+//Event handling in DW setup
+    DeviceSetup master;
+    public String getUpdateId(DeviceSetup master)
+    {
+        this.master = master;
+        return updateIdentifier;
+    }
+    public void fireUpdate(String updateId, Data newExpr){}
     
     //To be subclassed
     protected abstract void initializeData(Data data, boolean is_on);

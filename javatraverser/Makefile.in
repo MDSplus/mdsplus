@@ -25,7 +25,9 @@ Aurora14Setup.java \
 ACQD265Setup.java \
 NI6071ESetup.java\
 PELLETSetup.java\
-RFXTimesSetup.java
+RFXTimesSetup.java\
+RFXPConfigSetup.java\
+RFXPSetupSetup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
@@ -52,6 +54,7 @@ DependencyData.java\
 DeviceComponent.java\
 DeviceSetup.java\
 DeviceSetupBeanInfo.java\
+DeviceWave.java\
 DimensionData.java\
 DispatchData.java\
 DispatchEditor.java\
