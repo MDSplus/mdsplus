@@ -2,6 +2,22 @@ FUN PUBLIC PTDATA(IN _pointname,OPTIONAL IN _shot, OPTIONAL OUT _error, OPTIONAL
 
 {
 	IF (NOT PRESENT(_shot)) _shot=$SHOT;
+
+	if (NOT ALLOCATED(PUBLIC __ptdata_pointname))
+	{	
+/*	   write (*,"NOT ALLOCATED\n\r"); */
+	   PUBLIC __ptdata_pointname = "";
+	   PUBLIC __ptdata_shot = -999;
+        }
+
+/*	write (*,"have now: ",PUBLIC __ptdata_pointname,"  WANT: ",_pointname,"\n\r"); */
+	IF ( (_pointname eq __ptdata_pointname) &&
+	     (_shot eq __ptdata_shot) )
+	{	
+/*	  write (*,"Returning cached signal\n\r"); */
+	  return(PUBLIC __ptdata_signal);
+        }
+
 	_error=0;
 	_npts=0;
 
@@ -28,7 +44,11 @@ FUN PUBLIC PTDATA(IN _pointname,OPTIONAL IN _shot, OPTIONAL OUT _error, OPTIONAL
 
 	    if ((_error == 0) || (_error == 4)) {
 		/* calling program must trap less points returned than asked */
-		return(MAKE_SIGNAL(MAKE_WITH_UNITS(_f,_units),,MAKE_DIM(*,MAKE_WITH_UNITS(_t,"ms"))));
+/*	        PUBLIC __ptdata_signal=MAKE_SIGNAL(MAKE_WITH_UNITS(_f,_units),,MAKE_DIM(*,MAKE_WITH_UNITS(_t,"ms"))); */
+	        PUBLIC __ptdata_shot = _shot;
+                PUBLIC __ptdata_pointname = _pointname;
+/*		write (*,"CACHED: ",PUBLIC __ptdata_pointname,"\n\r"); */
+		return(PUBLIC __ptdata_signal);
 	    } else {
 	    	_errmes="                                                                         ";
 	    	_stat=libMdsD3D->mdspterror_(_error,DESCR(_errmes));
