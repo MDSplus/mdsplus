@@ -1,5 +1,5 @@
 SHELL=/bin/sh
-F77=@F77@
+FC=@F77@
 LD=@LD@
 top_srcdir=@top_srcdir@
 exec_prefix=@exec_prefix@

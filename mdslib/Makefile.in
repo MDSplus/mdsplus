@@ -1,5 +1,6 @@
 SHELL=/bin/sh
 CC=@CC@
+FC=@F77@
 LD=@LD@
 top_srcdir=@top_srcdir@
 exec_prefix=@exec_prefix@
@@ -69,8 +70,8 @@ MdsLib_client.o : MdsLib.c
 	$(CC) -o $@ $(CFLAGS) mdslib_ctest.c -L@MAKELIBDIR@ -lMdsLib $(LIBS)
 
 @MAKEBINDIR@mdslib_ftest : mdslib_ftest.f 
-	f77 -o $@ $(FFLAGS) mdslib_ftest.f -L@MAKELIBDIR@ -lMdsLib -lTreeShr $(LIBS)
+	$(FC) -o $@ $(FFLAGS) mdslib_ftest.f -L@MAKELIBDIR@ -lMdsLib -lTreeShr $(LIBS)
 
 @MAKEBINDIR@mdslib_fremotetest : mdslib_fremotetest.f
-	f77 -o $@ $(FFLAGS) mdslib_fremotetest.f -L@MAKELIBDIR@ -lMdsLib $(LIBS)
+	$(FC) -o $@ $(FFLAGS) mdslib_fremotetest.f -L@MAKELIBDIR@ -lMdsLib $(LIBS)
 
