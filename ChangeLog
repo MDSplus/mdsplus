@@ -1,5 +1,1543 @@
-Version 1.6-2
+Version 1.7-0
 
+
+2004-11-29 12:34  twf
+
+	* mdsmisc/mdsmisc.vcproj, mdssql/MdsSql.def, mdssql/mdssql.vcproj,
+	mdsshr/librtl.c:
+	
+	Windows update
+
+2004-11-29 12:22  twf
+
+	* mdsplus.sln, Setup/Setup.vdproj, javascope/javascope.vcproj,
+	idlsql/idlsql.vcproj, javadispatcher/javadispatcher.vcproj:
+	
+	Windows update
+
+2004-11-29 12:21  twf
+
+	* javatraverser/: jWebTree.mak, jWebTree.vcproj, javatraverser.mak,
+	javatraverser.vcproj, servlet-2_3-fcs-classfiles.zip:
+	
+	Update for windows
+
+2004-11-26 12:51  manduchi
+
+	* javatraverser/L6810Setup.java:
+	
+	fIX
+
+2004-11-26 12:38  manduchi
+
+	* javatraverser/L6810Setup.java:
+	
+	fIX
+
+2004-11-26 12:19  manduchi
+
+	* javatraverser/L6810Setup.java:
+	
+	Fix
+
+2004-11-26 12:05  manduchi
+
+	* javatraverser/L6810Setup.java:
+	
+	Fix
+
+2004-11-26 11:56  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	Fix typos
+
+2004-11-26 03:43  manduchi
+
+	* javatraverser/: Devicebeans.jar, L6810Setup.java:
+	
+	Fised initial version
+
+2004-11-25 12:19  manduchi
+
+	* tdi/RfxDevices/K3115__init.fun:
+	
+	Fixt time test
+
+2004-11-25 10:55  manduchi
+
+	* tdi/RfxDevices/: EM_EQU_TEST__init.fun, L5613__add.fun,
+	RFXGClock__init.fun:
+	
+	Fixes
+
+2004-11-25 09:12  manduchi
+
+	* tdi/RfxDevices/: EM_GAIN__add.fun, EM_GAIN__init.fun:
+	
+	Mod
+
+2004-11-25 08:12  manduchi
+
+	* javatraverser/: DEQUSetupSetup.java, Makefile.in,
+	RFXVISetupSetup.java:
+	
+	Added L6810 DW setup
+
+2004-11-25 07:58  manduchi
+
+	* javatraverser/EM_GAINSetup.java:
+	
+	Mod
+
+2004-11-24 18:05  twf
+
+	* mdsmisc/: MdsMisc.def, mdsmisc.def:
+	
+	Add more entry points
+
+2004-11-24 11:47  manduchi
+
+	* javamds/JavaTrav.c:
+	
+	Minor fixes
+
+2004-11-24 11:45  manduchi
+
+	* javatraverser/: DatabaseException.java, Devicebeans.jar:
+	
+	Report status in Database Exception
+
+2004-11-24 11:32  manduchi
+
+	* javamds/: JavaTrav.c, javamds.c:
+	
+	Fix memory leak
+
+2004-11-24 09:45  manduchi
+
+	* javatraverser/EM_EQU_TESTSetup.java:
+	
+	Fix
+
+2004-11-24 08:24  manduchi
+
+	* tdi/RfxDevices/: EM_EQU_TEST__add.fun, EM_EQU_TEST__init.fun,
+	EM_GAIN__init.fun:
+	
+	Fix
+
+2004-11-24 08:22  manduchi
+
+	* javatraverser/: DEQUSetupSetup.java, EM_EQU_TESTSetup.java:
+	
+	Add equ test setup
+
+2004-11-24 07:34  manduchi
+
+	* tdi/RfxDevices/EM_GAIN__init.fun:
+	
+	Fix
+
+2004-11-24 04:33  manduchi
+
+	* tdi/RfxDevices/: EM_GAIN__add.fun, EM_GAIN__init.fun,
+	L5613__init.fun:
+	
+	Fix
+
+2004-11-23 10:39  manduchi
+
+	* javatraverser/: DeviceField.java, T2ControlSetup.java:
+	
+	Minor fix
+
+2004-11-23 09:53  manduchi
+
+	* tdi/RfxDevices/: EM_EQU_TEST__add.fun, EM_EQU_TEST__init.fun:
+	
+	Equ test device
+
+2004-11-23 09:51  manduchi
+
+	* tdi/RfxDevices/: DEQUSetup__add.fun, EM_GAIN__add.fun:
+	
+	Fix
+
+2004-11-23 08:33  manduchi
+
+	* tdi/RfxDevices/EM_GAIN__add.fun:
+	
+	mod
+
+2004-11-23 08:29  manduchi
+
+	* javatraverser/EM_GAINSetup.java:
+	
+	Mod
+
+2004-11-22 13:01  manduchi
+
+	* tdi/RfxDevices/DEQUSetup__add.fun:
+	
+	Mod
+
+2004-11-22 12:54  manduchi
+
+	* tdi/RfxDevices/: DEQUSetup__add.fun, LASER_ND__check.fun,
+	LASER_ND__dump.fun, LASER_ND__init.fun, LASER_ND__store.fun:
+	
+	Fix
+
+2004-11-22 12:46  manduchi
+
+	* javatraverser/: DEQUSetupSetup.java, RFXMOPSetup.java:
+	
+	Add DEQU timing setup
+
+2004-11-22 10:49  manduchi
+
+	* tdi/RfxDevices/: EM_GAIN__init.fun, RFXMOP__SendMOP.fun,
+	RFXVIConfig__store.fun:
+	
+	fix
+
+2004-11-19 07:44  manduchi
+
+	* tdi/RfxDevices/: RFXMOP__OPCSend.fun, RFXMOP__SendMOP.fun:
+	
+	Remove OPCSend replace by SendMOP
+
+2004-11-19 03:20  manduchi
+
+	* tdi/RfxDevices/AAGain.fun:
+	
+	Changed gains
+
+2004-11-18 11:48  manduchi
+
+	* tdi/RfxDevices/DEQUSetup__add.fun:
+	
+	Add DEQU acquisition timing configuration device
+
+2004-11-18 10:04  manduchi
+
+	* tdi/RfxDevices/: EM_GAIN__init.fun, K3115__init.fun,
+	L5613__add.fun, RFXVIConfig__store.fun:
+	
+	Fix OPC communication
+
+2004-11-18 09:34  manduchi
+
+	* tdi/RfxDevices/OPCRead.fun:
+	
+	Remove debug comment
+
+2004-11-18 08:41  manduchi
+
+	* tdi/RfxDevices/OPCRead.fun:
+	
+	Fix
+
+2004-11-18 08:36  manduchi
+
+	* javatraverser/L5613Setup.java:
+	
+	Fix channel names
+
+2004-11-18 08:20  manduchi
+
+	* tdi/RfxDevices/EDAMSetup__add.fun:
+	
+	Fix field names
+
+2004-11-17 11:02  manduchi
+
+	* camshr/: KsM.c, KsS.c, get_scsi_device_number.c:
+	
+	Fix
+
+2004-11-17 10:12  manduchi
+
+	* javatraverser/TRCHSetup.java:
+	
+	Fix
+
+2004-11-17 09:17  manduchi
+
+	* javatraverser/RFXTimingSetup.java:
+	
+	Last fix
+
+2004-11-17 08:57  manduchi
+
+	* javatraverser/RFXTimingSetup.java:
+	
+	Evaluate Data
+
+2004-11-17 08:31  manduchi
+
+	* javatraverser/: DeviceField.java, EDAMSetupSetup.java:
+	
+	Fix
+
+2004-11-17 08:06  manduchi
+
+	* javatraverser/: DeviceComponent.java, DeviceField.java,
+	EDAMSetupSetup.java:
+	
+	Minor fixes
+
+2004-11-17 06:02  manduchi
+
+	* javatraverser/EDAMSetupSetup.java,
+	tdi/RfxDevices/EDAMSetup__add.fun:
+	
+	Fix
+
+2004-11-17 05:22  manduchi
+
+	* javatraverser/: EDAMSetupSetup.java, Makefile.in,
+	RFXClockSetup.java, RFXDClockSetup.java, RFXGClockSetup.java,
+	RFXPulseSetup.java:
+	
+	DW setup form EDAM configuration device
+
+2004-11-17 05:20  manduchi
+
+	* tdi/RfxDevices/EDAMSetup__add.fun:
+	
+	Configuration device for RFX EDAM subsystem
+
+2004-11-16 11:34  manduchi
+
+	* tdi/RfxDevices/StopStartVmeSch.fun:
+	
+	New fun
+
+2004-11-16 07:39  manduchi
+
+	* javascope/MdsDataClient.java:
+	
+	fix
+
+2004-11-15 08:25  manduchi
+
+	* tdi/RfxDevices/K3115__init.fun:
+	
+	More error messages
+
+2004-11-15 06:01  manduchi
+
+	* tdi/RfxDevices/DevLogErr.fun:
+	
+	Fix error reporting
+
+2004-11-15 05:57  manduchi
+
+	* javadispatcher/jServer.java:
+	
+	Handle Error reporting
+
+2004-11-15 05:27  manduchi
+
+	* javascope/Makefile.in:
+	
+	Fix
+
+2004-11-15 05:08  manduchi
+
+	* tdi/RfxDevices/: DevLogErr.fun, DevSetDoingNid.fun:
+	
+	Handle Error reporting in jServer
+
+2004-11-12 11:58  manduchi
+
+	* tdi/RfxDevices/: K3115__init.fun, K3115__reset.fun:
+	
+	
+	:wq
+
+2004-11-12 11:25  manduchi
+
+	* tdi/RfxDevices/: EM_GAIN__add.fun, RFXControl__init.fun,
+	TRCF__init.fun:
+	
+	iMore diagnostic messages
+
+2004-11-11 08:23  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	added LASER_NDSetup.java
+
+2004-11-11 08:17  manduchi
+
+	* javatraverser/LASER_NDSetup.java:
+	
+	Add Setup for Neodimium Laser
+
+2004-11-11 08:14  manduchi
+
+	* tdi/RfxDevices/: TCPCheckAnswer.fun, TCPCloseConnection.fun,
+	TCPOpenConnection.fun, TCPReadFloat.fun, TCPReadInt.fun,
+	TCPReadString.fun, TCPRecvData.fun, TCPSendCommand.fun,
+	TCPSendData.fun, TCPtest.fun:
+	
+	Add socket communication function
+
+2004-11-11 08:13  manduchi
+
+	* tdi/RfxDevices/: LASER_NDSendCommand.fun, LASER_ND__add.fun,
+	LASER_ND__check.fun, LASER_ND__dump.fun, LASER_ND__init.fun,
+	LASER_ND__reset.fun, LASER_ND__store.fun, LASER_ND__trigger.fun:
+	
+	Add Neodimium Laser operations
+
+2004-11-11 05:14  manduchi
+
+	* javatraverser/ACQD265Setup.java:
+	
+	
+	Fix window dimensions on Linux
+
+2004-11-11 04:58  manduchi
+
+	* javatraverser/ACQD265Setup.java:
+	
+	Fix window size
+
+2004-11-10 12:22  manduchi
+
+	* tdi/RfxDevices/RFXVIConfig__add.fun:
+	
+	Fix
+
+2004-11-10 12:07  manduchi
+
+	* javatraverser/: Makefile.in, RFXVIConfigSetup.java:
+	
+	Added RFX VI_CONFIG DW setup
+
+2004-11-10 12:06  manduchi
+
+	* tdi/RfxDevices/: L5613__add.fun, L5613__init.fun,
+	RFXVIConfig__add.fun, RFXVIConfig__store.fun:
+	
+	Added RFX VI_CONFIG devices
+
+2004-11-10 10:47  manduchi
+
+	* tdi/RfxDevices/RFXVISetup__add.fun:
+	
+	Added RFX VI Setup device
+
+2004-11-10 10:46  manduchi
+
+	* javatraverser/: Makefile.in, RFXVISetupSetup.java:
+	
+	Added RFX VI Setup
+
+2004-11-08 12:09  shseo
+
+	* tdi/KbsiDevices/E1429__add.fun:
+	
+	test access
+
+2004-11-08 11:53  shseo
+
+	* tdi/KbsiDevices/E1429__add.fun:
+	
+	test access
+
+2004-11-08 10:17  twf
+
+	* kbsidevices/DeviceBits.java, kbsidevices/E1429Setup.java,
+	kbsidevices/E1564Setup.java, kbsidevices/Tkvx4244_32.dll,
+	kbsidevices/VX4244Setup.java, kbsidevices/hpe1429_32.dll,
+	kbsidevices/hpe1564_32.dll, tdi/KbsiDevices/E1429__add.fun,
+	tdi/KbsiDevices/E1429__arm.fun, tdi/KbsiDevices/E1429__close.fun,
+	tdi/KbsiDevices/E1429__error.fun, tdi/KbsiDevices/E1429__init.fun,
+	tdi/KbsiDevices/E1429__open.fun, tdi/KbsiDevices/E1429__setup.fun,
+	tdi/KbsiDevices/E1429__status.fun,
+	tdi/KbsiDevices/E1429__store.fun, tdi/KbsiDevices/E1564__add.fun,
+	tdi/KbsiDevices/E1564__arm.fun, tdi/KbsiDevices/E1564__close.fun,
+	tdi/KbsiDevices/E1564__error.fun, tdi/KbsiDevices/E1564__init.fun,
+	tdi/KbsiDevices/E1564__open.fun, tdi/KbsiDevices/E1564__setup.fun,
+	tdi/KbsiDevices/E1564__setup_old.fun,
+	tdi/KbsiDevices/E1564__status.fun,
+	tdi/KbsiDevices/E1564__store.fun, tdi/KbsiDevices/VX244__error.fun,
+	tdi/KbsiDevices/VX4244__add.fun, tdi/KbsiDevices/VX4244__arm.fun,
+	tdi/KbsiDevices/VX4244__close.fun,
+	tdi/KbsiDevices/VX4244__error.fun,
+	tdi/KbsiDevices/VX4244__init.fun, tdi/KbsiDevices/VX4244__open.fun,
+	tdi/KbsiDevices/VX4244__setup.fun,
+	tdi/KbsiDevices/VX4244__status.fun,
+	tdi/KbsiDevices/VX4244__store.fun:
+	
+	Add kbsi devices
+
+2004-11-08 09:01  manduchi
+
+	* tdi/RfxDevices/: J221__init.fun, TR6_3__init.fun:
+	
+	Fixes
+
+2004-11-08 06:25  manduchi
+
+	* javatraverser/: J221Setup.java, Makefile.in:
+	
+	DW setup for Jorway J221
+
+2004-11-08 06:24  manduchi
+
+	* tdi/RfxDevices/: J221__add.fun, J221__init.fun,
+	J221__trigger.fun:
+	
+	Jorway J221 support methods
+
+2004-11-05 04:40  manduchi
+
+	* tdi/RfxDevices/: CHVPS__turn_off.fun, IPC901__init.fun,
+	IPC901__store.fun:
+	
+	Current IPC901 working version
+
+2004-11-04 12:41  manduchi
+
+	* javatraverser/EM_GAINSetup.java:
+	
+	Fix
+
+2004-11-04 04:48  manduchi
+
+	* tdi/RfxDevices/: CADH__add.fun, IPC901__trigger.fun:
+	
+	Trigger Method for IPC901
+
+2004-11-04 04:31  manduchi
+
+	* mdsshr/librtl.c:
+	
+	Use nanosleep instead of sleep in LibWait for UNIX
+
+2004-11-03 04:56  manduchi
+
+	* javatraverser/: CHVPSSetup.java, CHVPS_SETSetup.java:
+	
+	fix
+
+2004-11-03 04:24  manduchi
+
+	* tdi/RfxDevices/: CHVPSResetCommand.fun, CHVPS__init_all.fun,
+	CHVPS__init_oll.fun, CHVPS__reset.fun, CHVPS__trigger.fun,
+	CHVPS__turn_off.fun:
+	
+	Add CHVPS operations
+
+2004-11-03 03:03  manduchi
+
+	* tdi/RfxDevices/: CHVPSResetCommand.fun, CHVPSSendCommand.fun,
+	CHVPS__init.fun, IPC901__init.fun, TR6_3__init.fun:
+	
+	CHVPS fix
+
+2004-11-02 11:22  manduchi
+
+	* javatraverser/: CHVPSSetup.java, CHVPS_SETSetup.java:
+	
+	add CHVPS dw Setup
+
+2004-11-02 11:07  manduchi
+
+	* tdi/RfxDevices/: CHVPSResetCommand.fun, CHVPSSendCommand.fun,
+	CHVPS_SET__add.fun, CHVPS_SET__init.fun, CHVPS__add.fun,
+	CHVPS__init.fun, CHVPS__init_all.fun, CHVPS__init_oll.fun,
+	EM_GAIN__init.fun:
+	
+	Add Caen High Voltage Power Supply device
+
+2004-11-02 10:54  manduchi
+
+	* tdi/RfxDevices/: CADH__add.fun, CADH__init.fun, CADH__store.fun,
+	CADH__trigger.fun:
+	
+	Added CADH support
+
+2004-11-02 10:53  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	Added CADHSetup
+
+2004-11-02 10:52  manduchi
+
+	* javatraverser/CADHSetup.java:
+	
+	CADH device setup
+
+2004-11-02 08:57  manduchi
+
+	* javatraverser/TRCHSetup.java:
+	
+	Change window dimension
+
+2004-11-02 08:34  twf
+
+	* rpm/post_install_script.in:
+	
+	fusiongrid kit fix
+
+2004-11-02 07:34  twf
+
+	* rpm/post_install_script.in:
+	
+	Fusiongrid fix
+
+2004-11-02 07:27  twf
+
+	* rpm/post_uninstall_script:
+	
+	fusiongrid fix
+
+2004-11-01 16:23  twf
+
+	* mdsip_xio/: mdsipd, mdsipsd:
+	
+	fix for fusiongrid
+
+2004-11-01 16:22  twf
+
+	* rpm/fusiongrid-mdsip.xinetd:
+	
+	Fix for fusiongrid
+
+2004-11-01 13:45  twf
+
+	* rpm/post_install_script.in:
+	
+	fusiongrid changes
+
+2004-11-01 13:02  twf
+
+	* rpm/post_uninstall_script:
+	
+	fusiongrid changes
+
+2004-11-01 12:51  twf
+
+	* rpm/post_install_script.in:
+	
+	Fix for fusiongrid rpm
+
+2004-11-01 11:17  twf
+
+	* rpm/: Makefile.in, post_install_script.in:
+	
+	fusiongrid kit fixes
+
+2004-10-28 15:43  twf
+
+	* rpm/: fusiongrid-mdsip.xinetd, fusiongrid-mdsips.xinetd:
+	
+	Fusiongrid fix
+
+2004-10-28 15:42  twf
+
+	* mdsip_xio/: Makefile.in, mdsipd, mdsipsd:
+	
+	Add mdsipsd
+
+2004-10-28 15:26  twf
+
+	* rpm/post_install_script.in:
+	
+	Fix fusiongrid install
+
+2004-10-28 14:46  twf
+
+	* rpm/: fusiongrid-mdsip.xinetd, fusiongrid-mdsips.xinetd,
+	globus-gatekeeper.xinetd, globus-gridftp.xinetd:
+	
+	Add fusiongrid xinetd files
+
+2004-10-28 14:36  twf
+
+	* tdi/roam/: check_access.fun, check_access_file.fun,
+	check_access_jobmanager.fun, check_access_mdsips.fun:
+	
+	Add roam access checking functions
+
+2004-10-28 08:27  manduchi
+
+	* javatraverser/: EM_GAINSetup.java, FR10Setup.java,
+	T2ControlSetup.java:
+	
+	Add Electromagnetic Gain Setup
+
+2004-10-28 08:15  manduchi
+
+	* tdi/RfxDevices/: EM_GAIN__add.fun, EM_GAIN__init.fun:
+	
+	Add Electromagnetic gain device
+
+2004-10-28 05:48  manduchi
+
+	* javadispatcher/javadispatcher.mak:
+	
+	Make jDispatcher and jServer
+
+2004-10-28 05:47  manduchi
+
+	* javatraverser/javatraverser.mak:
+	
+	Build jTraverser once for all!
+
+2004-10-28 04:24  manduchi
+
+	* javatraverser/DeviceWave.java:
+	
+	Report table contents as expected in apply()
+
+2004-10-28 04:17  manduchi
+
+	* javatraverser/: E1463Setup.java, MPBDecoderSetup.java:
+	
+	Enlarge windows for Linux
+
+2004-10-27 09:09  twf
+
+	* html/links/index.shtml:
+	
+	Fix mailing list url
+
+2004-10-26 09:44  twf
+
+	* rpm/post_install_script.in:
+	
+	Add fusiongrid support
+
+2004-10-25 09:34  twf
+
+	* mdsip_xio/README:
+	
+	Fix README comments
+
+2004-10-25 09:29  twf
+
+	* mdsip_xio/mdsip_close_cb.c:
+	
+	delete proxy file after disconnect
+
+2004-10-25 09:01  twf
+
+	* mdsip_xio/: Makefile.in, mdsip_authenticate_cb.c:
+	
+	release peer_name buffer
+
+2004-10-25 09:00  twf
+
+	* configure, configure.in:
+	
+	Add roam
+
+2004-10-25 07:54  manduchi
+
+	* camshr/xlate_logicalname.c:
+	
+	Fix the check in the returned status of lookup_entry. It caused
+	occasional Segmentation Faults.
+
+2004-10-22 15:34  twf
+
+	* roam/: Makefile.in, roam_check_access.c, roam_gridmap_callout.c:
+	
+	Add globus/roam extensions
+
+2004-10-22 14:55  twf
+
+	* treeshr/TreeOpen.c:
+	
+	Fix segfault with zero length tree files
+
+2004-10-22 09:37  manduchi
+
+	* javatraverser/CompileTree.java:
+	
+	Workaround for unresolved nodes in TdiCompile
+
+2004-10-21 09:09  manduchi
+
+	* javatraverser/: Makefile.in, RFXMOPSetup.java,
+	RFXTimingSetup.java:
+	
+	Fix
+
+2004-10-21 08:24  manduchi
+
+	* tdi/RfxDevices/DIO2Encoder__trigger.fun:
+	
+	Fix
+
+2004-10-21 08:15  manduchi
+
+	* tdi/RfxDevices/: DIO2EncoderHWInit.fun, DIO2Encoder__init.fun:
+	
+	Fix
+
+2004-10-21 07:59  manduchi
+
+	* javatraverser/RFXTimingSetup.java:
+	
+	Fix
+
+2004-10-21 07:51  manduchi
+
+	* javatraverser/DIO2EncoderSetup.java:
+	
+	Fix nids
+
+2004-10-21 03:44  manduchi
+
+	* tdi/RfxDevices/: DIO2EncoderHWInit.fun, DIO2Encoder__add.fun,
+	DIO2Encoder__init.fun:
+	
+	Specify also termination
+
+2004-10-21 03:44  manduchi
+
+	* javatraverser/DIO2EncoderSetup.java:
+	
+	Specify also Termination
+
+2004-10-20 12:46  twf
+
+	* mdsip_xio/: mdsip_authenticate_cb.c, mdsip_initialize_io.c:
+	
+	gt3 fix, use gss_display_name instead of gss_export_name
+
+2004-10-20 12:17  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Order changed
+
+2004-10-20 07:36  manduchi
+
+	* tdi/RfxDevices/DIO2__add.fun:
+	
+	Put the initial value for RIGGER_1 and TRIGGER_2
+
+2004-10-20 07:35  manduchi
+
+	* javatraverser/: RFXTimesSetup.java, RFXTimingSetup.java,
+	jTraverser.java:
+	
+	Minor improvements
+
+2004-10-20 03:35  manduchi
+
+	* tdi/RfxDevices/: DIO2EncoderHWInit.fun, DIO2__store.fun:
+	
+	Fixed recorded times
+
+2004-10-19 12:53  manduchi
+
+	* tdi/RfxDevices/: DIO2EncoderHWInit.fun, DIO2Encoder__init.fun,
+	TimingRegisterEventTime.fun:
+	
+	Fix event generation
+
+2004-10-19 10:58  manduchi
+
+	* tdi/RfxDevices/TimingGetEvents.fun:
+	
+	Fix
+
+2004-10-19 10:41  manduchi
+
+	* tdi/RfxDevices/: RFXTimes__add.fun, TimingGetEvents.fun:
+	
+	Use RFX events
+
+2004-10-19 08:11  manduchi
+
+	* javatraverser/: DisplayTags.java, NodeDisplayTags.java,
+	ParameterEditor.java:
+	
+	Allow tag display and parameter editing
+
+2004-10-19 06:04  manduchi
+
+	* tdi/RfxDevices/RFXTimes__add.fun:
+	
+	New times for RFX
+
+2004-10-19 06:03  manduchi
+
+	* javatraverser/: DataEditor.java, DeviceField.java,
+	NodeBeanInfo.java, RFXClockSetup.java, RFXDClockSetup.java,
+	RFXGClockSetup.java, RFXPulseSetup.java, RFXTimesSetup.java,
+	RFXTimingSetup.java, jTraverser.java:
+	
+	Timing improvements
+
+2004-10-14 11:28  twf
+
+	* mdsip_xio/mdsip_connect.c:
+	
+	Use host authorization
+
+2004-10-12 10:19  twf
+
+	* configure, configure.in, javatraverser/Makefile.in:
+	
+	Add with-jdk option
+
+2004-10-12 10:11  twf
+
+	* configure, configure.in:
+	
+	add --with-jdk option
+
+2004-10-11 09:36  manduchi
+
+	* tdi/RfxDevices/: Aurora14__trigger.fun, IPC901__add.fun,
+	IPC901__init.fun, IPC901__store.fun:
+	
+	Fix names
+
+2004-10-11 09:36  manduchi
+
+	* javatraverser/IPC901Setup.java:
+	
+	Fix field name
+
+2004-10-11 09:15  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	Added device in Makefile.in
+
+2004-10-08 09:32  manduchi
+
+	* javascope/: MdsConnection.java, MdsDataProvider.java,
+	WaveInterface.java:
+	
+	Fix data provider
+
+2004-10-08 08:15  manduchi
+
+	* tdi/RfxDevices/: AAGain.fun, ABGain.fun:
+	
+	New gains
+
+2004-10-06 12:28  manduchi
+
+	* javamds/JavaTrav.c:
+	
+	Removed another message
+
+2004-10-06 12:24  manduchi
+
+	* javamds/JavaTrav.c:
+	
+	Removed log message
+
+2004-10-06 05:16  manduchi
+
+	* javatraverser/CompileTree.java:
+	
+	Handle devices whiose structure has changed
+
+2004-10-06 04:27  manduchi
+
+	* javatraverser/: RFXANSALDOSetup.java, RFXMOPSetup.java,
+	javatraverser.mak:
+	
+	Change Ansaldo and Mop Setup
+
+2004-10-05 08:29  manduchi
+
+	* tdi/RfxDevices/: LASER_RUSendCommand.fun, LASER_RU__add.fun,
+	LASER_RU__check.fun, LASER_RU__dump.fun, LASER_RU__init.fun,
+	LASER_RU__reset.fun, LASER_RU__trigger.fun, RS232GetError.fun:
+	
+	Fix and test Ruby laser operation
+
+2004-10-04 08:10  manduchi
+
+	* tdi/RfxDevices/: TR6_3__init.fun, TR6_3__store.fun,
+	TR6_3__trigger.fun:
+	
+	TR6_3 debugged and tested
+
+2004-10-01 10:37  manduchi
+
+	* javatraverser/: ACQD265Setup.java, LASER_RUSetup.java,
+	WE7116Setup.java, WE7275Setup.java, WEGroupSetup.java:
+	
+	add ruby laser setup
+
+2004-10-01 04:13  manduchi
+
+	* tdi/RfxDevices/: LASER_RUSendCommand.fun, LASER_RU__add.fun,
+	LASER_RU__check.fun, LASER_RU__dump.fun, LASER_RU__init.fun,
+	LASER_RU__reset.fun, LASER_RU__trigger.fun, OPCAsyncGet.fun,
+	RFXANSALDO__add.fun, RFXMOP__add.fun, RS232Close.fun,
+	RS232GetError.fun, RS232Open.fun, RS232Read.fun, RS232Write.fun,
+	WE7116__init.fun, WE7116__store.fun, WE7275__init.fun,
+	WE7275__store.fun:
+	
+	Add ruby laser and RS232 function
+
+2004-10-01 03:34  manduchi
+
+	* tdi/RfxDevices/TR6_3__trigger.fun:
+	
+	Added trigger to TR6_3
+
+2004-10-01 03:22  manduchi
+
+	* javatraverser/: IPC901Setup.java, Makefile.in:
+	
+	Added IRPOM IPC901 device
+
+2004-10-01 03:19  manduchi
+
+	* javatraverser/: T2ControlSetup.java, TR6_3Setup.java:
+	
+	Added TR6_3 device setup
+
+2004-10-01 03:06  manduchi
+
+	* tdi/RfxDevices/: Aurora14__init.fun, T2Control__init.fun,
+	T2Control__store.fun, TR6_3__add.fun, TR6_3__init.fun,
+	TR6_3__store.fun:
+	
+	New JOERGER TR6 device
+
+2004-09-28 10:35  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	fix vaxg client
+
+2004-09-24 05:00  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Fix
+
+2004-09-24 04:35  manduchi
+
+	* javascope/: DataCacheObject.java, MultiWaveform.java,
+	WaveInterface.java, WaveformContainer.java:
+	
+	Fix signal cache bug
+
+2004-09-23 03:47  manduchi
+
+	* tdi/RfxDevices/: DIO2HWSetClockChan.fun, DIO2HWSetDClockChan.fun,
+	DIO2HWSetGClockChan.fun, DIO2HWSetPulseChan.fun, DIO2__init.fun,
+	IPC901__add.fun:
+	
+	Fixed rounding error
+
+2004-09-22 11:39  manduchi
+
+	* tdi/RfxDevices/K3115__reset.fun:
+	
+	added K3115__reset function:
+
+2004-09-22 10:44  jas
+
+	* tdi/MitDevices/: Dt196GetVoltCoef.fun, Dt196GetVoltOffset.fun,
+	dt196__store.fun, dt216__init.fun, dt_acq16__store.fun:
+	
+	Reconcile versions of D-Tacq drivers
+
+2004-09-21 10:34  jas
+
+	* mitdevices/DT196.uil:
+	
+	Bus menus still wrong
+
+2004-09-20 15:17  jas
+
+	* mitdevices/DT196.uil:
+	
+	Fix trigger routing bus menus
+
+2004-09-20 05:38  manduchi
+
+	* javadispatcher/: Makefile.in, jServer.java:
+	
+	Fix message display
+
+2004-09-20 04:31  manduchi
+
+	* javadispatcher/: Makefile.in, jServer.template:
+	
+	Added jServer in Makefile
+
+2004-09-15 10:53  twf
+
+	* mdsip_xio/: mdsip.h, mdsip_arglen.c, mdsip_authenticate_cb.c,
+	mdsip_become_user.c, mdsip_close_cb.c, mdsip_compatible_api.c,
+	mdsip_initialize_io.c, mdsip_new_client.c, mdsip_process_message.c,
+	t.c:
+	
+	Add group support to mdsip
+
+2004-09-15 10:33  manduchi
+
+	* tdi/RfxDevices/: IPC901__add.fun, IPC901__init.fun,
+	IPC901__store.fun:
+	
+	Added IPC901 support
+
+2004-09-13 11:14  manduchi
+
+	* javatraverser/K3115Setup.java:
+	
+	Tuning
+
+2004-09-13 11:10  manduchi
+
+	* javatraverser/K3115Setup.java:
+	
+	Tuning
+
+2004-09-13 11:04  manduchi
+
+	* javatraverser/K3115Setup.java:
+	
+	Tuning
+
+2004-09-13 10:57  manduchi
+
+	* javatraverser/K3115Setup.java:
+	
+	Tuning
+
+2004-09-13 09:58  manduchi
+
+	* javatraverser/K3115Setup.java:
+	
+	Tuning
+
+2004-09-13 09:23  manduchi
+
+	* javatraverser/K3115Setup.java:
+	
+	Tuning
+
+2004-09-13 09:07  manduchi
+
+	* javatraverser/K3115Setup.java:
+	
+	Tuning
+
+2004-09-13 08:58  manduchi
+
+	* javatraverser/K3115Setup.java:
+	
+	Tuning K3115
+
+2004-09-10 23:40  jas
+
+	* hdf5/MDSplus2HDF5.c:
+	
+	mangle member names to have '_' at the back
+
+2004-09-10 01:00  jas
+
+	* hdf5/MDSplus2HDF5.c:
+	
+	add more types and change name mangling
+
+2004-09-09 16:36  twf
+
+	* mdsip_xio/mdsip_authenticate_cb.c:
+	
+	Add tdi authentication
+
+2004-09-09 14:05  twf
+
+	* tdi/urlencode.fun:
+	
+	Add urlencode function
+
+2004-09-09 02:27  manduchi
+
+	* tdi/RfxDevices/: PXD114__add.fun, PXD114__store.fun:
+	
+	Store trigger times
+
+2004-09-07 11:35  manduchi
+
+	* tdi/RfxDevices/T2Control__init.fun:
+	
+	last version
+
+2004-09-07 11:33  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Last fixes
+
+2004-09-07 05:36  manduchi
+
+	* tdi/RfxDevices/: NI6071E__add.fun, NI6071E__init.fun,
+	NI6071E__store.fun:
+	
+	Other fixes
+
+2004-09-07 03:54  manduchi
+
+	* javatraverser/DeviceDispatch.java:
+	
+	Still a fix
+
+2004-09-06 12:37  manduchi
+
+	* tdi/RfxDevices/: NI6071E__add.fun, NI6071E__init.fun,
+	NI6071E__store.fun:
+	
+	Changed device behaviour
+
+2004-09-06 12:36  manduchi
+
+	* javatraverser/: DeviceDispatch.java, NI6071ESetup.java:
+	
+	Fixed DeviceDispatch's bug, imporved NI6071 interface
+
+2004-09-06 09:47  manduchi
+
+	* javatraverser/K3115Setup.java:
+	
+	Tuning K3115 DW SETUP
+
+2004-09-06 09:34  manduchi
+
+	* javatraverser/K3115Setup.java:
+	
+	Tuning K3115 DW SETUP
+
+2004-09-06 09:00  manduchi
+
+	* javatraverser/: FR10Setup.java, K3115Setup.java:
+	
+	Added K3115 DW SETUP
+
+2004-09-06 06:11  manduchi
+
+	* tdi/RfxDevices/: PXD114__init.fun, PXD114__store.fun:
+	
+	Remove test code
+
+2004-09-05 12:52  jas
+
+	* hdf5/: MDSplus2HDF5.c, Makefile.in:
+	
+	Adding MDSplus2HDF5 converter program
+
+2004-09-02 07:22  manduchi
+
+	* tdi/RfxDevices/: DevLogErr.fun, PXD114__init.fun,
+	getLastError.fun:
+	
+	Error management for JET - MDSplus interface
+
+2004-09-01 10:18  twf
+
+	* actions/Makefile.in:
+	
+	Add MdsIpShr to actmon build
+
+2004-09-01 09:25  twf
+
+	* mdsip_xio/Makefile.in:
+	
+	Add TreeShr to mdsip build
+
+2004-08-31 15:00  twf
+
+	* html/documentation/reference/shot_display.php:
+	
+	Fix page reference
+
+2004-08-31 14:43  twf
+
+	* html/software/download.php:
+	
+	New menus
+
+2004-08-31 14:39  twf
+
+	* html/: documentation/reference/browser.php,
+	documentation/reference/menu.shtml,
+	documentation/reference/shot_display.php,
+	intro/platforms_contents.html:
+	
+	Add PHP
+
+2004-08-31 14:04  twf
+
+	* php/: browser.php, shot_display.php:
+	
+	Add some examples
+
+2004-08-31 13:45  twf
+
+	* php/: README, sample.php:
+	
+	new php support
+
+2004-08-31 13:27  twf
+
+	* php/: build.sh, config.m4, mdsplus.c, mdsplus.php, php_mdsplus.h,
+	sample.php:
+	
+	PHP extension for mdsplus
+
+2004-08-31 10:45  twf
+
+	* javascope/jScope.properties:
+	
+	Change default data server for CMOD
+
+2004-08-27 09:26  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Fix SRB locking code
+
+2004-08-26 14:18  twf
+
+	* tcl/tcl_set_callbacks.c:
+	
+	include pthread.h
+
+2004-08-26 13:01  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Fix SRB locking code
+
+2004-08-26 12:47  twf
+
+	* mdsshr/MdsPk.c:
+	
+	Fix for MaxOSX
+
+2004-08-26 12:42  twf
+
+	* mdsshr/MdsPk.c:
+	
+	Fix for MacOSX
+
+2004-08-26 12:23  twf
+
+	* mdsshr/MdsPk.c:
+	
+	Fix for MacOSX
+
+2004-08-26 11:39  twf
+
+	* mdsshr/MdsPk.c:
+	
+	workaround for compiler bug on MacOSX
+
+2004-08-26 11:29  twf
+
+	* mdsshr/MdsPk.c:
+	
+	Include config.h
+
+2004-08-26 08:55  twf
+
+	* mdstcpip/mdsip_u.c, mdsip_xio/mdsip_process_message.c:
+	
+	Fix BSD handling
+
+2004-08-26 08:53  twf
+
+	* include/ncidef.h:
+	
+	No need for big endian definitions
+
+2004-08-26 06:17  manduchi
+
+	* camshr/: KsS.c, parse_crate_db.c:
+	
+	Set to zero last byte in Command byte array
+
+2004-08-25 16:16  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	SRB fix
+
+2004-08-25 16:15  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Fix BSD support
+
+2004-08-25 15:52  jas
+
+	* mitdevices/DT216.uil:
+	
+	fix trigger and clock routing menus
+
+2004-08-25 13:45  twf
+
+	* configure, configure.in:
+	
+	Add SRB support
+
+2004-08-25 13:41  twf
+
+	* treeshr/Makefile.in, treeshr/RemoteAccess.c, include/config.h.in:
+	
+	Add SRB support
+
+2004-08-25 11:36  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Add SRB support
+
+2004-08-25 10:35  twf
+
+	* html/documentation/: beginners/readwrite_contents.shtml,
+	reference/c.shtml, reference/c2.shtml:
+	
+	Update from Justin?
+
+2004-08-25 09:44  jas
+
+	* mitdevices/DT216.uil:
+	
+	dt216 store and init actions nid offset wrong
+
+2004-08-25 09:41  twf
+
+	* include/ncidef.h:
+	
+	Make sure config.h included
+
+2004-08-25 09:29  twf
+
+	* tcl/: tcl_create_pulse.c, tcl_directory.c, tcl_set_node.c:
+	
+	big endian fix
+
+2004-08-24 14:54  twf
+
+	* treeshr/: TreeGetNci.c, TreeGetRecord.c, TreeOpen.c,
+	TreeRenameNode.c, TreeSerializeNci.c, TreeSetNci.c:
+	
+	Include config.h since other includes depend on it
+
+2004-08-24 14:46  twf
+
+	* treeshr/TreePutRecord.c:
+	
+	include config.h
+
+2004-08-24 09:07  twf
+
+	* mdsip_xio/mdsip_process_message.c, mdstcpip/mdsip_u.c,
+	treeshr/RemoteAccess.c:
+	
+	Fix for BSD derivatives
+
+2004-08-24 08:45  twf
+
+	* mdsip_xio/Makefile.in:
+	
+	Fix object list for server
+
+2004-08-24 08:36  twf
+
+	* mdsip_xio/mdsip_process_message.c:
+	
+	Fix for big endian systems with distributed client access
+
+2004-08-24 08:25  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	Fix for big endian systems with distributed client access
+
+2004-08-24 08:14  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Fix for big endian systems with distributed client access
+
+2004-08-23 15:47  twf
+
+	* servershr/ServerBuildDispatchTable.c:
+	
+	check shot number before allocating nids storage
+
+2004-08-20 13:49  jas
+
+	* idl/: sql_insert.pro, sql_update.pro:
+	
+	Old database helper routines
+
+2004-08-20 10:43  jas
+
+	* mitdevices/: DT216.uil, DT216.uil:
+	
+	active channel choices wrong
+
+2004-08-20 10:35  jas
+
+	* tdi/MitDevices/dt216__add.fun:
+	
+	default the dt216 active channels to 16
+
+2004-08-20 10:27  jas
+
+	* mitdevices/DT216.uil, mitdevices/Makefile.in,
+	tdi/MitDevices/MitDevices.fun, tdi/MitDevices/dt216__add.fun,
+	tdi/MitDevices/dt216__init.fun,
+	tdi/MitDevices/dt216__part_name.fun,
+	tdi/MitDevices/dt216__store.fun:
+	
+	New D-Tacq high speed card
+
+2004-08-18 15:36  jas
+
+	* mdsshr/MdsEvents.c:
+	
+	Don't keep trying if you can not get a message que
+
+2004-08-10 10:43  twf
+
+	* tdi/MitDevices/jrg_tr1612_24_bit_data_read.fun:
+	
+	Update from Washington
+
+2004-08-09 13:07  twf
+
+	* tdi/: MitDevices/jrg_tr1612_24_bit_data_read.fun,
+	MitDevices/jrg_tr1612__init.fun, MitDevices/jrg_tr1612__store.fun,
+	dev_support/DevPutValue.fun:
+	
+	Updates from Washington
+
+2004-08-09 13:06  jas
+
+	* ChangeLog:
+	
+	New MDSplus release 1.6-2
 
 2004-08-06 15:21  jas
 
