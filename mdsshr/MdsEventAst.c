@@ -22,9 +22,7 @@ static idptr head,tail;
 #endif
 
 #ifdef HAVE_STDARG_H
-mdseventast(name,astadr)
-char *name;
-void (*astadr)();
+mdseventast(char *name, void (*astadr)(), ...)
 #else
 mdseventast(va_alist)
 va_dcl
