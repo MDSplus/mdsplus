@@ -37,6 +37,18 @@ pro MdsOpen,tree,shot,quiet=quiet,status=status
 
   forward_function mdsIsClient,mdsIdlImage,mds$socket,MdsRoutinePrefix,MdsIPImage,IsWindows
 
+  if (n_params() ne 2 or n_elements(tree) eq 0 or n_elements(shot) eq 0) then begin
+    message,'Must specify valid tree and shot to open',/continue,noprint=keyword_set(quiet)
+    status = 0
+    return
+  endif
+
+  if (strcompress(tree,/remove) eq '') then begin
+    message,'Must specify valid tree name',/continue,noprint=keyword_set(quiet)
+    status = 0
+    return
+  endif
+
   if (mdsIsClient()) then begin
 
     ON_ERROR,2                  ;RETURN TO CALLER IF ERROR
