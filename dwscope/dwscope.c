@@ -287,7 +287,7 @@ int       main(int argc, String *argv)
   MrmType   class;
   static XrmOptionDescRec options[] = {{"-defaults", "*defaults", XrmoptionSepArg, NULL}};
   static XtResource resources[] = {{"defaults", "Defaults", XtRString, sizeof(String), 0, XtRString,
-				    "my.scope"}};
+				    "*"}};
   Cursor    cursor;
   int       r;
   int       c;
@@ -319,9 +319,7 @@ int       main(int argc, String *argv)
     { printf("Problem loading UID\n");
       exit(1);
     }
-#ifdef __VMS
   SetDirMask(XtNameToWidget(TopWidget,"*file_dialog"),&defaultfile,0);
-#endif
 
   XtVaSetValues(Pane[0], XmNleftAttachment, XmATTACH_FORM, NULL);
   for (c = 1; c < NumPanes; c++)

@@ -822,6 +822,22 @@ void SetDirMask(Widget w, String *file, XmAnyCallbackStruct *callback_data)
   XtVaSetValues(w, XmNdirMask, mask, NULL);
   XmStringFree(mask);
   str$free1_dx(&wild);
+#else
+  if (*file)
+  {
+    XmString mask;
+    char *tmpfile = strcpy(malloc(strlen(*file)+1),*file);
+    char *pos = strrchr(tmpfile,'/');
+    if (pos)
+    {
+      if (strchr(pos,'*') == 0)
+        pos[1]=0;
+    }
+    mask = XmStringCreateSimple(tmpfile);
+    free(tmpfile);
+    XtVaSetValues(w, XmNdirMask, mask, NULL);
+    XmStringFree(mask);
+  }
 #endif
 }
 
