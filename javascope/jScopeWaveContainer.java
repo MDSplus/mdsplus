@@ -787,8 +787,13 @@ class jScopeWaveContainer extends WaveformContainer
 	        if(str.indexOf("Scope.data_server_address:") != -1)
 	        {
 		        server_name = str.substring("Scope.data_server_address: ".length(), str.length());
-                //if(main_scope.applet_type != jScope.PURE_APPLET)
-                //    main_scope.server_diag.addServerIp(data_server_address);
+                int idx = server_name.indexOf("|");
+                if(idx != -1)
+                {
+                    String user = server_name.substring(0, idx);
+                    if(!user.equals(System.getProperty("user.name")))
+                        server_name = System.getProperty("user.name") + server_name.substring(idx, server_name.length());
+                }
 		        continue;	
 	        }
 					

@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.lang.*;
+import java.util.*;
 import java.awt.event.*;
 import java.awt.print.*;
 import javax.swing.*;
@@ -83,6 +85,49 @@ public class jScope extends jScope_1
         return (new jScopeWaveContainer_2(rows, def_values));
     }
   
+
+  public void InitProperties()
+  {
+    try
+    {
+        rb = ResourceBundle.getBundle("jScope");
+    } 
+    catch( MissingResourceException e)
+    {
+        System.out.println(e);
+    }
+  }
+ 
+  private void GetPropertiesValue()
+  {
+    if(rb == null) return;
+    Properties p = System.getProperties();
+    
+    try {
+        curr_directory = rb.getString("jScope.directory");
+    }
+    catch(MissingResourceException e){}
+    try {
+        default_server = (String)rb.getString("jScope.default_server");
+    }
+    catch(MissingResourceException e){}
+    try {
+        String cache_directory = (String)rb.getString("jScope.cache_directory");
+        p.put("Signal.cache_directory", cache_directory);
+    }
+    catch(MissingResourceException e){}
+    try {
+        String cache_size = (String)rb.getString("jScope.cache_size");
+        p.put("Signal.cache_size", cache_size);
+    }
+    catch(MissingResourceException e){}
+    try {
+        String f_name = (String)rb.getString("jScope.save_selected_points");
+        p.put("jScope.save_selected_points", f_name);
+    }
+    catch(MissingResourceException e){}
+  }
+
 
   protected void PrintAllWaves()
   {

@@ -674,8 +674,8 @@ class Mds {
         if(idx != -1)
         {
             user = provider.substring(0, idx);
-            if(user.equals("<Automatic>"))
-                user = System.getProperty("user.name");
+            if(!user.equals(System.getProperty("user.name")))
+                user = "JAVA_USER";
         }
         return user;
     }

@@ -48,8 +48,8 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   private JTextField     shot_t, signal_expr;
   private JButton        apply_b;
   private JFileChooser    file_diag = new JFileChooser();
-    private String        curr_directory;//, curr_file_name;
-    private String        last_directory;//, last_file_name;
+  protected String        curr_directory;//, curr_file_name;
+  protected String        last_directory;//, last_file_name;
   private JLabel	        point_pos, print_icon;
   private JTextField	    info_text, net_text;
   private WindowDialog  win_diag;
@@ -370,14 +370,14 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     setBounds(spos_x, spos_y, 750, 550);
 
 
-    if(IsNewJVMVersion())
-    {
+    //if(IsNewJVMVersion())
+    //{
         InitProperties();
         GetPropertiesValue();
-    } else {
-        InitProperties_VM11();
-        GetPropertiesValue_VM11();
-    }
+    //} else {
+    //    InitProperties_VM11();
+    //    GetPropertiesValue_VM11();
+    //}
     
     font_dialog   = new FontSelection(this, "Waveform Font Selection");
     setup_default = new SetupDefaults(this, "Default Setup", def_values);
@@ -808,7 +808,8 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   {
         wave_panel.InvalidateDefaults();
   }
-  
+
+/*
   public void InitProperties()
   {
     try
@@ -850,9 +851,9 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     }
     catch(MissingResourceException e){}
   }
+  */
   
-  
-  public void InitProperties_VM11()
+  public void InitProperties()//_VM11()
   {
     try
     {
@@ -872,7 +873,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   }
   
   
-  private void GetPropertiesValue_VM11()
+  private void GetPropertiesValue()//_VM11()
   {    
     if(prb == null) return;
     
@@ -2268,7 +2269,7 @@ class ServerDialog extends JDialog implements ActionListener
     private DefaultListModel list_model = new DefaultListModel();
     private JButton add_b, remove_b, cancel_b;
             JLabel server_label, user_label;
-            JTextField server_ip, user;
+            JTextField server_ip;
             JCheckBox automatic;
     jScope_1 dw;
 
@@ -2311,41 +2312,12 @@ class ServerDialog extends JDialog implements ActionListener
 	    server_ip = new JTextField(20);
 	    gridbag.setConstraints(server_ip, c);
 	    getContentPane().add(server_ip);
-
-
-
-	    c.anchor = GridBagConstraints.WEST;	
-	    c.fill =  GridBagConstraints.NONE;
-	    c.gridheight = 1;
-	    c.gridwidth = 1;	
-	    user_label = new JLabel("User ");
-	    gridbag.setConstraints(user_label, c);
-	    getContentPane().add(user_label);
-
-
-	    user = new JTextField(20);
-	    gridbag.setConstraints(user, c);
-	    getContentPane().add(user);
-	    
-
 	    
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.fill =  GridBagConstraints.BOTH;
-	    automatic = new JCheckBox("Automatic");
+	    automatic = new JCheckBox("Get user name from host");
 	    gridbag.setConstraints(automatic, c);
 	    getContentPane().add(automatic);
-	    automatic.addChangeListener(
-	    	new ChangeListener()
-	        {
-	            public void stateChanged(ChangeEvent e)
-	            {
-	                boolean state = !((JCheckBox)e.getSource()).isSelected();	                
-	                user_label.setEnabled(state);
-	                user.setEditable(state);
-	                
-	            }
-	        });
-
 	    
 	    JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));			
 	    add_b = new JButton("Add");
@@ -2425,9 +2397,18 @@ class ServerDialog extends JDialog implements ActionListener
     {
 	    int i;
 	    JMenuItem new_ip;
+
+
+        int idx = ip.indexOf("|");
+        if(idx != -1)
+        {
+            String user = ip.substring(0, idx);
+            if(!user.equals(System.getProperty("user.name")))
+                ip = System.getProperty("user.name") + ip.substring(idx, ip.length());
+        }
+	
 	
 	    Enumeration e = list_model.elements();	
-	    //String items[] = signal_list.getItems();
 	    boolean found = false;
 	    while(e.hasMoreElements())
 	    {   
@@ -2476,19 +2457,9 @@ class ServerDialog extends JDialog implements ActionListener
 	    
 	    if(ob == add_b && server_ip.getText() != null && server_ip.getText().trim().length() != 0)
 	    {
-	        int i;
-	        JMenuItem new_ip;
-	        String user_name = null;
-	        
+	       	        
 	        if(automatic.isSelected())
-	        {
-	           user_name = new String("<Automatic>");//System.getProperty("user.name");
-	        } else 
-	            if(user.getText() != null && user.getText().trim().length() != 0)
-	                user_name = user.getText().trim();
-	        
-	        if(user_name != null)
-                addServerIp(user_name+"|"+server_ip.getText().trim());	  
+                addServerIp(System.getProperty("user.name")+"|"+server_ip.getText().trim());	  
             else
                 addServerIp(server_ip.getText().trim());
 	     

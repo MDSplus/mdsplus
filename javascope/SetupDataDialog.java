@@ -8,6 +8,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 
+
+
 //*****
 //Form di visualizzazione della configurazione della
 //wave selezionata
@@ -1726,27 +1728,21 @@ import javax.swing.event.*;
 
    private  void applyWaveform()
    {
-        Thread t = new Thread() {
-            public void run() { 
-                setName("Apply Waveform Thread");
-                if(checkSetup() == 0)
-                {       
-                    setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                    try
-                    {
-                        String full_error = main_scope.wave_panel.Refresh(wave, "Update ");
-                        wave.setPointSignalIndex(signalList.getSignalSelect());
-		                if(full_error != null)
-		                    JOptionPane.showMessageDialog(SetupDataDialog.this, full_error, "alert", JOptionPane.ERROR_MESSAGE); 	         
-	                } catch (Throwable e) {	        
-	                    main_scope.SetStatusLabel("Error during apply: "+e);	    
-	                }
-                    setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                } else
-	                wave.Erase();
-            }
-        };
-        t.start();
+        if(checkSetup() == 0)
+        {       
+            setCursor(new Cursor(Cursor.WAIT_CURSOR));
+            try
+            {
+                String full_error = main_scope.wave_panel.Refresh(wave, "Update ");
+                wave.setPointSignalIndex(signalList.getSignalSelect());
+		        if(full_error != null)
+		            JOptionPane.showMessageDialog(SetupDataDialog.this, full_error, "alert", JOptionPane.ERROR_MESSAGE); 	         
+	        } catch (Throwable e) {	        
+	            main_scope.SetStatusLabel("Error during apply: "+e);	    
+	        }
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        } else
+	        wave.Erase();
    }
 	    	
    public void actionPerformed(ActionEvent e)
