@@ -5,7 +5,6 @@ import java.lang.*;
 import java.util.*;
 //import com.apple.mrj.*;
 
-
 public class jScope extends Frame implements ActionListener, ItemListener, WindowListener
 //							,MRJQuitHandler, MRJOpenDocumentHandler 
 {
@@ -58,7 +57,7 @@ public class jScope extends Frame implements ActionListener, ItemListener, Windo
   static String         MACfile;
   private String	config_file, last_config_file;
   private String	server_ip1;
-  private String[]	server_ip_list; 
+  static  String[]	server_ip_list; 
   private ServerDialog  server_diag;
   static  WaveInterface wi_source;
   static  boolean	not_sup_local = false;
@@ -182,18 +181,6 @@ public class jScope extends Frame implements ActionListener, ItemListener, Windo
   public jScope()
   {
     
-    server_diag = new ServerDialog((Frame)this, "Server list");
-    server_diag.addServerIp("Local");
-    
-    if(server_ip_list == null) {
-	server_diag.addServerIp("150.178.3.80");
-	server_ip_list = server_diag.getServerIpList();
-    }
-    else
-	server_diag.addServerIpList(server_ip_list);
-		
-
-//    setSize(750,550);
     setBounds(spos_x, spos_y, 750, 550);
     spos_x += 10;
     spos_y += 30;
@@ -298,12 +285,11 @@ public class jScope extends Frame implements ActionListener, ItemListener, Windo
     fast_network_i.addItemListener(this);        
     servers_m  = new Menu("Servers");
     network_m.add(servers_m);
-    addServers();
     servers_m.addActionListener(this);
     server_list_i  = new MenuItem("Edit server list ...");
     network_m.add(server_list_i);
     server_list_i.addActionListener(this);
-        
+    
     point_pos = new Label("[0.000000000, 0.000000000]");    
     setup =  new Setup(this, point_pos);
     draw_pan = new WavePanel(setup);
@@ -372,9 +358,9 @@ public class jScope extends Frame implements ActionListener, ItemListener, Windo
     panel1.add("South", panel2);
 
     add("South",panel1);
-    
+   
     initDataServer();
-    setDataServerLabel();
+
   }
   
   static void writeLine(BufferedWriter out, String prompt, String value)
@@ -435,7 +421,8 @@ public class jScope extends Frame implements ActionListener, ItemListener, Windo
     Properties props = System.getProperties();
     String is_local = props.getProperty("data.is_local");
     String ip_addr = props.getProperty("data.address");
-    
+  
+    server_diag = new ServerDialog((Frame)this, "Server list");   
     if(ip_addr != null || (is_local != null && is_local.equals("no")))
     {   		               
 	if(ip_addr == null)
@@ -469,6 +456,8 @@ public class jScope extends Frame implements ActionListener, ItemListener, Windo
 	    setup.data_server_address = DEFAULT_IP_SERVER;
 	} 
      }
+     setDataServerLabel();
+
   }
 
   public void setDataServerLabel()
@@ -486,7 +475,7 @@ public class jScope extends Frame implements ActionListener, ItemListener, Windo
     info_text.setText(" Status: " + msg);
   }
   
-  private void addServers()
+  private void addServers1()
   {
      MenuItem item;
      
@@ -1056,8 +1045,8 @@ public class jScope extends Frame implements ActionListener, ItemListener, Windo
      {
 	server_diag.Show();
 	server_ip_list = server_diag.getServerIpList();
-//	servers_m.removeAll();
-//	addServers();
+	//servers_m.removeAll();
+	//addServers();
      }
 
      if(ob == pub_variables_i)
@@ -1530,7 +1519,20 @@ class ServerDialog extends ScopePositionDialog {
 
         c.gridwidth = GridBagConstraints.REMAINDER;
     	gridbag.setConstraints(p, c);
-	add(p);	
+	add(p);
+	
+		
+
+	if(dw.server_ip_list == null) {
+	    addServerIp("Local");	
+	    addServerIp(jScope.DEFAULT_IP_SERVER);
+	    dw.server_ip_list = getServerIpList();
+	}
+	else
+	    addServerIpList(dw.server_ip_list);
+		
+			
+					
     }
 
     public void Show()
@@ -1542,14 +1544,27 @@ class ServerDialog extends ScopePositionDialog {
     
     public void addServerIp(String ip)
     {
-	server_list.add(ip);
+	int i;
+	MenuItem new_ip;
+	
+	String items[] = server_list.getItems();
+	for(i = 0 ; i < items.length; i++)
+	    if(items[i].equals(ip)) break;
+	if(i == items.length) {
+	    server_list.add(ip);
+	    new_ip = new MenuItem(ip);
+	    dw.servers_m.add(new_ip);
+	    new_ip.addActionListener(dw);
+	    dw.server_ip_list = items;
+	}
     }
     
     public void addServerIpList(String[] ip_list)
     {
-	server_list.add("Local");
+	//server_list.add("Local");
 	for(int i = 0; i < ip_list.length; i++) 
-	    server_list.add(ip_list[i]);
+	    addServerIp(ip_list[i]);
+	   // server_list.add(ip_list[i]);
     }
 
     public String[] getServerIpList()
