@@ -13,6 +13,11 @@
 #  invoke the job with the shot number as $1 redirecting stdout and err
 #    to the end of the log file
 #  insert a done status line for this shot
+#
+# param 1 = file-spec of batch job
+# param 2 = shot number
+# param 3 = PRE (create lock file only)
+# 
 
 FILE=`basename $1 ".sh"`
 if [ "x$MDS_LOGS" = "x" ]; then
@@ -21,7 +26,16 @@ fi
 if [ -d "$MDS_LOGS" -a -w "$MDS_LOGS" ]; then 
     LOG="$MDS_LOGS/$FILE.$2.log"
     CUMULATIVE_LOG="$MDS_LOGS/$FILE.log"
-    lockfile "$LOG.lock"
+    if [ -e ${LOG}.lock ]
+    then
+       if [ "$3" = "PRE" ]; then exit 0; fi
+    elif [ "$3" = "PRE" ]
+    then
+       touch ${LOG}.lock
+       exit 0;
+    else
+      lockfile "$LOG.lock"
+    fi
     echo ">>>>>>>>>>>>>>>>>>>>>   $2  >>>>>>>>>>>>>>>>>>>>" >> $LOG
     echo `date`: Job $1 beginning on `hostname` >> $LOG
     /usr/bin/time -a -f "Elapsed %E\tUser %U\tSystem %S"  -o $LOG $1 $2 < /dev/null >>$LOG 2>&1
