@@ -69,6 +69,7 @@ then
     MDSPLUS_DIR=`/bin/cat /etc/.mdsplus_dir`
   fi
 fi
+export MDSPLUS_DIR
 if ( test "$temp_sym_name" != "") 
 then
   eval temp_sym_old_value=$`echo $temp_sym_name`
