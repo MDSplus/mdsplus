@@ -772,6 +772,15 @@ int TdiSaveContext(void *ptr[6])
     return 1;
 }
 
+int TdiDeleteContext(void *ptr[6])
+{
+    if (ptr[1]) LibDeleteVmZone(&ptr[1]);
+    if (ptr[2]) LibDeleteVmZone(&ptr[2]);
+    if (ptr[4]) LibDeleteVmZone(&ptr[4]);
+    if (ptr[5]) LibDeleteVmZone(&ptr[5]);
+    return 1;
+}
+
 /*-------------------------------------------------------------
         Restore variable context
 */
