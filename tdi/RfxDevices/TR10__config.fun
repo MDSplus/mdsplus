@@ -41,5 +41,5 @@ public fun TR10__config(as_is _nid, optional _method)
 		_status = TR10HWConfig(_board_id);
 	}
 
-   write(*, "TR10 Configured = ", _status);
+   write(*, "TR10 Correctly Configured =", _status);
 }
