@@ -108,9 +108,9 @@ install:
 	        chmod 755 @libdir@; \
 	fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libio@SHARETYPE@ @libdir@
-        if test @SHARETYPE@ != .a ; then \
-          $(INSTALL) -m 644  @MAKELIBDIR@libio.a @libdir@; \
-        fi;
+	if (test @SHARETYPE@ != .a) then \
+	  $(INSTALL) -m 644  @MAKELIBDIR@libio.a @libdir@; \
+	fi;
 
 @MAKESHLIBDIR@libio@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
