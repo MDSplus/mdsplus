@@ -20,16 +20,16 @@ fi
 mkdir mdskit$globuskit
 cd mdskit$globuskit
 cvs -d :pserver:`whoami`@www.mdsplus.org:/mdsplus/repos -Q checkout -r $tag mdsplus
-mv mdsplus mdsplus$globuskit-$version-$release
+mv mdsplus mdsplus$globuskit-$version
 find . -name CVS -exec rm -Rf {} \; > /dev/null 2> /dev/null
-tar cf $HOME/rpm/SOURCES/mdsplus$globuskit-$version.tar mdsplus$globuskit-$version-$release 
+tar cf $HOME/rpm/SOURCES/mdsplus$globuskit-$version.tar mdsplus$globuskit-$version 
 gzip -f $HOME/rpm/SOURCES/mdsplus$globuskit-$version.tar
 echo "s/#GLOBUS#/$globuskit/g" > tmp.sed
 echo "s+#ENABLEGLOBUS#+$enableglobus+g" >> tmp.sed
 echo "s/#VERSION#/$version/g" >> tmp.sed
 echo "s/#RELEASE#/$release/g" >> tmp.sed
 cat tmp.sed
-sed -f tmp.sed mdsplus$globuskit-$version-$release/rpm/rpm.spec > rpm.spec 
+sed -f tmp.sed mdsplus$globuskit-$version/rpm/rpm.spec > rpm.spec 
 rpmbuild -ba rpm.spec
 cd ..
 rm -Rf mdskit$globuskit
