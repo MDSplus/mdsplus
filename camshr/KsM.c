@@ -80,6 +80,7 @@ static int KsMultiIo(
                     Data, xfer_len.l, 
                     (char *)&sense, sizeof(sense), &sb_out_len,&transfer_len);
   LastIosb.bytcnt = (unsigned short)(transfer_len & 0xFFFF);
+  LastIosb.lbytcnt = (unsigned short)(transfer_len >> 16);
   status = KsTranslateIosb(&sense,status);
   if (iosb) *iosb=LastIosb;
   
