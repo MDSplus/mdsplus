@@ -179,9 +179,13 @@ STATIC_ROUTINE char *now(char *buf)
 {
   time_t tim = time(0);
   tim = time(0);
+#ifdef HAVE_WINDOWS_H
+  return ctime(&tim);
+#else
   ctime_r(&tim,buf);
   buf[strlen(buf)-1]=0;
   return buf;
+#endif
 }
 
 STATIC_ROUTINE void ActionDone(int idx)
