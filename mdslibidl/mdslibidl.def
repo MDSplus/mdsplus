@@ -1,0 +1,10 @@
+LIBRARY	MdsLibIdl
+CODE	PRELOAD MOVEABLE DISCARDABLE
+DATA	PRELOAD SINGLE
+EXPORTS
+;
+IdlMdsClose
+IdlMdsOpen
+IdlMdsPut
+IdlMdsSetDefault
+IdlMdsValue

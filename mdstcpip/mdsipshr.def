@@ -1,0 +1,27 @@
+LIBRARY	TreeShr
+CODE	PRELOAD MOVEABLE DISCARDABLE
+DATA	PRELOAD SINGLE
+EXPORTS
+;
+MdsValue
+MdsPut
+MdsOpen
+MdsClose
+MdsSetDefault
+MdsEventAst
+MdsEventCan
+MdsDispatchEvent
+;ConnectToPort
+ConnectToMds
+ConnectToMdsEvents
+DisconnectFromMds
+IdlMdsClose
+IdlConnectToMds
+IdlDisconnectFromMds
+IdlMdsOpen
+IdlMdsSetDefault
+IdlGetAnsInfo
+Idlmemcpy
+IdlSendArg
+MakeDescrip
+MakeDescripWithLength
