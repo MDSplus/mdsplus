@@ -16,7 +16,7 @@ function EventImage
           end
         endif
         if strlen(file) eq 0 then $
-          file = findfile('/usr/local/lib/libIdlMdsEvent.sl')
+          file = (findfile('/usr/local/lib/libIdlMdsEvent.sl'))[0]
         if strlen(file) eq 0 then $
            message, 'Could not find libIdlMdsEvent.sl in SHLIB_PATH'
         ans = file
