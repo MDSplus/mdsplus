@@ -13,6 +13,7 @@
 #include        <unistd.h>
 #elif defined(_WIN32)
 #include        <io.h>
+#include        <libroutines.h>
 #define isatty(a) _isatty(a)
 #elif defined(HAVE_VXWORKS_H)
 #include 	<time.h>
@@ -169,7 +170,6 @@ char  *MdsGetMsg(	/* Return: addr of "status" string	*/
      static char text[512];
      int (*getmsg)(int,char **,char **,char **);
      int   max;
-     char  *facilityText;
      struct stsText  *stsText;
 
      if (sts == 1)
@@ -184,7 +184,6 @@ char  *MdsGetMsg(	/* Return: addr of "status" string	*/
        {
          if ((sts & 0xfffffff8) == (stsText[i].stsL_num & 0xfffffff8))
          {
-           char *ptr;
            sprintf(text,"%%%s-%s-%s, %s",facnam,severity[sts&0x7],stsText[i].stsA_name,stsText[i].stsA_text);
            break;
          }

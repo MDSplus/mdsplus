@@ -715,7 +715,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 			{
 				jstrings[i] = (*env)->GetObjectArrayElement(env, jobjects, i);
 				strings[i] = (*env)->GetStringUTFChars(env, jstrings[i], 0);
-				if(maxlen < strlen(strings[i])) maxlen = strlen(strings[i]);
+				if(maxlen < (int)strlen(strings[i])) maxlen = (int)strlen(strings[i]);
 			}
 			array_d->pointer = (char *)malloc(length * maxlen);
 			memset(array_d->pointer, ' ',length * maxlen);
