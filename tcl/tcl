@@ -1,2 +1,0 @@
-$MDSPLUS/bin/mdsdcl	\
-    -prep "set command tcl_commands -prompt=\"TCL> \" -def_file=\"*.tcl\""

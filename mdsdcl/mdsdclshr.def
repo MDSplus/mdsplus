@@ -1,8 +1,0 @@
-LIBRARY	Mdsdcl
-CODE	PRELOAD MOVEABLE DISCARDABLE
-DATA	PRELOAD SINGLE
-EXPORTS
-;
-mdsdcl_do_command
-mdsdcl_get_input
-mdsdcl_get_input_nosymbols
