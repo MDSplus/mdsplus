@@ -2028,7 +2028,7 @@ static void  WriteDatabase(String dbname, Boolean zoom)
     fprintf(file, "Scope.print_event: %s\n", ScopePrintEvent);
     fprintf(file, "Scope.print_portrait: %d\n", ScopePrintPortrait);
     fprintf(file, "Scope.print_window_title: %d\n", ScopePrintWindowTitle);
-    fprintf(file, "Scope.printer: %d\n",ScopePrinter);
+    fprintf(file, "Scope.printer: %s\n",ScopePrinter);
 /*
     fprintf(file, "Scope.print_to_file: %d\n", ScopePrintToFile);
 */
