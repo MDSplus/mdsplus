@@ -73,8 +73,24 @@ pro Mds$SendArg,sock,n,idx,arg
   dims = lonarr(8)
   if ndims gt 0 then for i=1,ndims do dims(i-1) = s(i)
   dtype = s(ndims + 1)
-  dtypes =  [0,2,7,8,10,11,12,14,0]
-  lengths = [0,1,2,4,4,8,8,1,0]
+;IDL_TYP_UNDEF           0
+;IDL_TYP_BYTE            1
+;IDL_TYP_INT             2
+;IDL_TYP_LONG            3
+;IDL_TYP_FLOAT           4
+;IDL_TYP_DOUBLE          5
+;IDL_TYP_COMPLEX         6
+;IDL_TYP_STRING          7
+;IDL_TYP_STRUCT          8
+;IDL_TYP_DCOMPLEX        9
+;IDL_TYP_PTR             10
+;IDL_TYP_OBJREF          11
+;IDL_TYP_UINT            12
+;IDL_TYP_ULONG           13
+;IDL_TYP_LONG64          14
+;IDL_TYP_ULONG64         15
+  dtypes =  [0,2,7,8,10,11,12,14,0,0,0,0,3,4,9,5]
+  lengths = [0,1,2,4, 4, 8, 8, 1,0,0,0,0,2,4,8,8]
   length = lengths(dtype)
   dtype = dtypes(dtype)
   if dtype eq 14 then begin

@@ -94,9 +94,11 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
           2: answer = answer
           3: answer = fix(answer)
           4: answer = long(answer)
+          5: answer = ulong64(answer)
           6: answer = byte(answer)
           7: answer = fix(answer)
           8: answer = long(answer)
+          9: answer = long64(answer)
           10: answer = float(answer)
           11: answer = double(answer)
           12: answer = complex(answer)
