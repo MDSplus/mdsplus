@@ -38,6 +38,15 @@ write(*, 'Address: ', _address);
 	DevLogErr(_nid, "Cannot initialize GPIB");
 	abort();
     }
+
+    if(_mem_def == '2')
+    {
+	_command3 = 'MSK 3;MEM 1;J 1;DA 8; RUN';
+	write(*, _command3);
+    	if_error(GPIBWriteW(_id, _command3),(DevLogErr(_nid, "Error in GPIB Write"); abort();));
+	wait(1); 
+    }
+
     if_error(GPIBWriteW(_id, _command1),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
     if_error(GPIBWrite(_id, _command2),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
 

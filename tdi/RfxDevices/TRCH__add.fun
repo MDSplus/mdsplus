@@ -22,8 +22,8 @@ public fun TRCH__add(in _path, out _nidout)
         DevAddNode(_cn // ':END_IDX', 'NUMERIC', *, *, _nid);
         DevAddNode(_cn // ':DATA', 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     }
-    DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 50,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
-    DevAddAction(_path//':STORE_ACTION', 'STORE','STORE', 50,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 50,'CAMAC_SERVER',_path, _nid);
+    DevAddAction(_path//':STORE_ACTION', 'STORE','STORE', 50,'CAMAC_SERVER',_path, _nid);
     DevAddEnd();
 }
 

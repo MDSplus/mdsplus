@@ -53,12 +53,18 @@ write(*, _pts);
     _dim1 = make_dim(make_window(0, _n_scans - 1, _trig_time), make_range(*,*,_synch_time));
     _dim2 = make_dim(make_window(0, _pts - 1, 0),  make_range(*,*,1));
 
+
+	wait(1);
 write(*, 'prima di GPIBWrite'); 
-    _command = 'BDSINT 1,1, ' // trim(adjustl(_pts));    
+    _command = 'BDSINT 1,1,' // trim(adjustl(_pts));    
     if_error(GPIBWrite(_id, _command),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
-write(*, 'prima di ReadShorts');
+    _command = 'BDSINT 1,1,' // trim(adjustl(_pts));    
+    if_error(GPIBWrite(_id, _command),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
+write(*, 'prima di ReadShorts', _command);
+wait(1);
     _line = if_error(GPIBReadShorts(_id, _pts), (DevLogErr(_nid, "Error in GPIB Read"); abort();)); 
 write(*, 'dopo di ReadShorts');
+write(*,_line);
 
     _back_nid = DevHead(_nid) + _N_BACK;
 
@@ -76,6 +82,9 @@ write(*,_command);
    	if_error(GPIBWrite(_id, _command),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
 write(*, 'Scritto command');
     	_line = if_error(GPIBReadShorts(_id, _pts), (DevLogErr(_nid, "Error in GPIB Read"); abort();));
+
+if(_i == 1) write(*, _line);
+
 	_lines = [_lines, _line];
     }
     _data_nid = DevHead(_nid) + _N_DATA;

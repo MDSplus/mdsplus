@@ -16,6 +16,6 @@ write(*,'PARTE VMEWaves__add');
     DevAddNode(_cn//':WAVE_X', 'NUMERIC', *, *,_nid);
     DevAddNode(_cn//':WAVE_Y', 'NUMERIC', *, *,_nid);
   }
-  DevAddAction(_path//':INIT_ACTION','INIT','INIT',50,'VME_SERVER',getnci(_path, 'fullpath'),_nid);
+  DevAddAction(_path//':INIT_ACTION','INIT','INIT',50,'VME_SERVER',_path,_nid);
   DevAddEnd();
 }
