@@ -1,0 +1,12 @@
+#!/bin/sh
+if ( test -r $HOME/.scope_printers )
+then
+	cat $HOME/.scope_printers
+else 
+  if ( test -r $MDSPLUS_DIR/local/scope_printers )
+  then
+	cat $MDSPLUS_DIR/local/scope_printers
+  else
+	grep '|' /etc/printcap | awk -F\| '{print $1}'
+  fi
+fi
