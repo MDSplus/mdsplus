@@ -55,15 +55,17 @@ sparc-sun-solaris2*)  LINKSHARED="-G -B symbolic -R \$(exec_prefix)/lib";
          LINKSHARED="-Wl,-G -symbolic -Wl,-R,\$(exec_prefix)/lib";
          LD_LDSHARE="-Wl,-B,dynamic";
          LD_LDARC="-Wl,-B,static";
+         LDSHARE="-Wl,-B,dynamic";
+         LDARC="-Wl,-B,static";
+         CFLAGS="$CFLAGS -fpic";
        else 
          LD_LDARC="-B static ";
          LD_LDSHARE="-B dynamic ";
+         LDSHARE="-B dynamic";
+         LDARC="-B static";
        fi;
-       CFLAGS="$CFLAGS -fpic";
        FFLAGS="$FFLAGS -fpic";
        IDL_BIN_SUF="solaris2.sparc"
-       LDSHARE="-Wl,-B,dynamic";
-       LDARC="-Wl,-B,static";
        LIBPATH="LD_LIBRARY_PATH";
        SHARETYPE=".so";;
 alpha-dec-osf*) CFLAGS="$CFLAGS -pthread";
