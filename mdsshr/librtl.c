@@ -491,9 +491,14 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   char *full_symbol, *full_filename;
   SYM_TYPE type;
   char *c_symbol = MdsDescrToCstring(symbol), *c_filename;
+
   full_symbol = malloc(strlen(c_symbol) + 2);
+#ifdef AXPVME
+  strcpy(&full_symbol[0], c_symbol);
+#else
   full_symbol[0] = '_';
   strcpy(&full_symbol[1], c_symbol);
+#endif
   status = symFindByName(sysSymTbl, full_symbol, (char **)symbol_value, &type);
   if(status == ERROR)
     {
@@ -508,9 +513,10 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     }
   free(full_symbol);
   free(c_symbol);
-  if(status == ERROR)
+  if(status == ERROR) {
+
     return LibKEYNOTFOU;
-  else
+  } else
     return 1;  
 }
 
