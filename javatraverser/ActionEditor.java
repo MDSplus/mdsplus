@@ -161,11 +161,11 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
     
     public void setEditable(boolean editable)
     {
-	this.editable = editable;
-	if(task_edit != null) task_edit.setEditable(editable);
-	if(dispatch_edit != null) dispatch_edit.setEditable(editable);
-	if(expr_edit != null) expr_edit.setEditable(editable);
-	if(notify_edit != null) notify_edit.setEditable(editable);
+	    this.editable = editable;
+	    if(task_edit != null) task_edit.setEditable(editable);
+	    if(dispatch_edit != null) dispatch_edit.setEditable(editable);
+	    if(expr_edit != null) expr_edit.setEditable(editable);
+	    if(notify_edit != null) notify_edit.setEditable(editable);
     }
 	
 }	

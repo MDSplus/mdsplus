@@ -69,6 +69,12 @@ public class DeviceSetup extends JDialog
     }
     public void configure(RemoteTree subtree, int baseNid)
     {
+        NidData oldNid = null; 
+        try {
+            oldNid = subtree.getDefault(Tree.context);
+            subtree.setDefault(new NidData(baseNid), Tree.context);
+        }catch(Exception exc){}
+ 
         this.baseNid = baseNid;
         this.subtree = subtree;  
         
@@ -157,6 +163,9 @@ public class DeviceSetup extends JDialog
                 }*/
             });
         }
+        try {
+            subtree.setDefault(oldNid, Tree.context);
+        }catch(Exception exc){}
                 
     }
     

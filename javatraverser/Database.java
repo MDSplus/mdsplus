@@ -32,6 +32,10 @@ public class Database implements RemoteTree{
     {
         this.is_readonly = readonly;
     }
+    public Data evaluateData(Data data, int ctx) throws DatabaseException
+    {
+        return evaluateSimpleData(data, ctx);
+    }
     final public String getName() {return name; }
     final public int getShot() {return shot;}
     public boolean isOpen() {return is_open; }
@@ -44,6 +48,7 @@ public class Database implements RemoteTree{
     public native void quit(int ctx)throws DatabaseException;
     public native Data getData(NidData nid, int ctx) throws DatabaseException;
     public native Data evaluateData(NidData nid, int ctx) throws DatabaseException;
+    public native Data evaluateSimpleData(Data data, int ctx) throws DatabaseException;
     public native void putData(NidData nid, Data data, int ctx) throws DatabaseException;
     //public native DatabaseInfo getInfo(); throws DatabaseException;
     public native NodeInfo getInfo(NidData nid, int ctx) throws DatabaseException;

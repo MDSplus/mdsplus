@@ -4,16 +4,16 @@ public class NidData extends IntData implements NodeId
 {
     public static Data getData(int datum)
     {
-	return new NidData(datum);
+	    return new NidData(datum);
     }
     public NidData()
     {
-	dtype = DTYPE_NID;
+	    dtype = DTYPE_NID;
     }
     public NidData(int nid)
     {
-	dtype = DTYPE_NID;
-	datum = nid;
+	    dtype = DTYPE_NID;
+	    datum = nid;
     }
     public int getInt()
     {
@@ -23,5 +23,10 @@ public class NidData extends IntData implements NodeId
     public void incrementNid()
     {
         datum++;
+    }
+    public boolean equals(Object obj)
+    {
+        if(!(obj instanceof NidData)) return false;
+        return datum == ((NidData)obj).datum;
     }
 }

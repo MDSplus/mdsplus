@@ -48,6 +48,9 @@ public class RangeEditor extends JPanel implements Editor
 	{
 	    this.range = new RangeData(null, null, null);
 	}
+	begin_edit.setData(range.getBegin());
+	end_edit.setData(range.getEnd());
+	delta_edit.setData(range.getDelta());
 	reset();
     }
     

@@ -27,23 +27,23 @@ public class TRCHSetup extends DeviceSetup
 		deviceField1.setOffsetNid(1);
 		deviceField1.setLabelString("CAMAC Name: ");
 		getContentPane().add(deviceField1);
-		deviceField1.setBounds(0,12,264,36);
-		deviceField2.setNumCols(40);
+		deviceField1.setBounds(0,12,300,36);
+		deviceField2.setNumCols(38);
 		deviceField2.setTextOnly(true);
 		deviceField2.setOffsetNid(2);
 		deviceField2.setLabelString("Comment:");
 		getContentPane().add(deviceField2);
-		deviceField2.setBounds(0,48,516,36);
+		deviceField2.setBounds(0,48,528,36);
 		deviceField3.setNumCols(35);
 		deviceField3.setOffsetNid(6);
 		deviceField3.setLabelString("Trig.  Source:");
 		getContentPane().add(deviceField3);
-		deviceField3.setBounds(0,120,492,40);
+		deviceField3.setBounds(0,120,516,40);
 		deviceField4.setNumCols(35);
 		deviceField4.setOffsetNid(7);
 		deviceField4.setLabelString("Clock source:");
 		getContentPane().add(deviceField4);
-		deviceField4.setBounds(0,156,480,40);
+		deviceField4.setBounds(0,156,516,40);
 		deviceChoice1.setOffsetNid(5);
 		{
 			String[] tempString = new String[2];
@@ -53,7 +53,7 @@ public class TRCHSetup extends DeviceSetup
 		}
 		deviceChoice1.setLabelString("Clock mode:");
 		getContentPane().add(deviceChoice1);
-		deviceChoice1.setBounds(0,84,192,36);
+		deviceChoice1.setBounds(24,84,192,36);
 		deviceChoice2.setChoiceFloatValues(new float[] {(float)1000000.0,(float)500000.0,(float)250000.0,(float)125000.0,(float)50000.0,(float)10000.0,(float)5000.0});
 		deviceChoice2.setOffsetNid(8);
 		{
@@ -69,9 +69,9 @@ public class TRCHSetup extends DeviceSetup
 		}
 		deviceChoice2.setLabelString("Frequency (Hz): ");
 		getContentPane().add(deviceChoice2);
-		deviceChoice2.setBounds(180,84,192,40);
+		deviceChoice2.setBounds(228,84,192,40);
 		getContentPane().add(deviceDispatch1);
-		deviceDispatch1.setBounds(288,12,136,40);
+		deviceDispatch1.setBounds(360,12,136,40);
 		deviceChoice3.setOffsetNid(3);
 		{
 			String[] tempString = new String[2];

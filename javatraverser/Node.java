@@ -267,8 +267,19 @@ public class Node
     void rename(String new_name) throws DatabaseException, RemoteException 
     {
         experiment.renameNode(nid, new_name, Tree.context);
-	info = experiment.getInfo(nid, Tree.context);
+	    info = experiment.getInfo(nid, Tree.context);
     }
+
+    void renameLast(String newName)throws Exception
+    {
+        String prevName = getFullPath();
+        int curr;
+        for(curr = prevName.length()-1; curr > 0 && prevName.charAt(curr) != ':' && prevName.charAt(curr) != '.'; curr--);
+        String newFullName = prevName.substring(0, curr + 1)+ newName;
+        rename(newFullName);
+    }
+        
+
 
     private ImageIcon loadIcon(String gifname)
     {
@@ -304,7 +315,7 @@ public class Node
 	return tree_label;
     }
 
-    public String toString() {return getFullPath(); }
+    public String toString() {return getName(); }
    
 }
     

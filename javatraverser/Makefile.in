@@ -17,7 +17,13 @@ RFXClockSetup.java \
 RFXPulseSetup.java \
 RFXDClockSetup.java \
 RFXGClockSetup.java \
-MPBEncoderSetup.java
+MPBEncoderSetup.java \
+RFXTimingSetup.java \
+MPBRecorderSetup.java \
+TRCFSetup.java
+
+
+
 
 SOURCES = ActionData.java\
 ActionEditor.java\

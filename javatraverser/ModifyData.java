@@ -127,13 +127,16 @@ public class ModifyData extends NodeEditor implements ActionListener
 		window_edit.setEditable(is_editable);
 		break;	
 	    case NodeInfo.USAGE_AXIS:
-		if(range_edit == null)
-		    range_edit = new RangeEditor((RangeData)data);
-		else
-		    range_edit.setData(data);
+	    if(data instanceof RangeData)
+	    {
+		    if(range_edit == null)
+		        range_edit = new RangeEditor((RangeData)data);
+		    else
+		        range_edit.setData(data);
     		replace(range_edit);
-		range_edit.setEditable(is_editable);
-		break;	
+		    range_edit.setEditable(is_editable);
+		    break;
+		}
 	    default : 
 		if(data_edit == null)
 		    data_edit = new DataEditor(data, frame);

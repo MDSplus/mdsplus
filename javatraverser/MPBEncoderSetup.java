@@ -121,6 +121,8 @@ public class MPBEncoderSetup extends DeviceSetup
 		deviceField18.setOffsetNid(23);
 		deviceField18.setLabelString("Trigger time: ");
 		deviceChannel8.add(deviceField18);
+		channels.setSelectedIndex(0);
+		channels.setSelectedComponent(deviceChannel1);
 		channels.setTitleAt(0,"Chan 1");
 		channels.setTitleAt(1,"Chan 2");
 		channels.setTitleAt(2,"Chan 3");

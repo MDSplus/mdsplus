@@ -30,7 +30,6 @@ public class MPBDecoderSetup extends DeviceSetup
 		deviceField1.setBounds(0,12,240,36);
 		getContentPane().add(deviceDispatch1);
 		deviceDispatch1.setBounds(468,12,131,40);
-		deviceChoice2.setBounds(408,48,200,34);
 		deviceChoice1.setOffsetNid(4);
 		{
 			String[] tempString = new String[10];
@@ -573,12 +572,12 @@ public class MPBDecoderSetup extends DeviceSetup
 		deviceField17.setLabelString("Hold: ");
 		JPanel17.add(deviceField17);
 		deviceField18.setNumCols(8);
-		deviceField18.setOffsetNid(10);
+		deviceField18.setOffsetNid(66);
 		deviceField18.setLabelString("Event: ");
 		JPanel17.add(deviceField18);
 		JPanel18.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		deviceChannel5.add(JPanel18);
-		deviceChoice39.setOffsetNid(13);
+		deviceChoice39.setOffsetNid(69);
 		{
 			String[] tempString = new String[7];
 			tempString[0] = "NONE";
@@ -592,7 +591,7 @@ public class MPBDecoderSetup extends DeviceSetup
 		}
 		deviceChoice39.setLabelString("Gating: ");
 		JPanel18.add(deviceChoice39);
-		deviceChoice40.setOffsetNid(14);
+		deviceChoice40.setOffsetNid(70);
 		{
 			String[] tempString = new String[11];
 			tempString[0] = "TCN-1";
@@ -681,6 +680,8 @@ public class MPBDecoderSetup extends DeviceSetup
 		}
 		deviceChoice47.setLabelString("Output Mode: ");
 		JPanel20.add(deviceChoice47);
+		JTabbedPane1.setSelectedIndex(0);
+		JTabbedPane1.setSelectedComponent(deviceChannel1);
 		JTabbedPane1.setTitleAt(0,"Channel 1");
 		JTabbedPane1.setTitleAt(1,"Channel 2");
 		JTabbedPane1.setTitleAt(2,"Channel 3");
@@ -691,8 +692,6 @@ public class MPBDecoderSetup extends DeviceSetup
 			tempString[0] = "init";
 			deviceButtons1.setMethods(tempString);
 		}
-		JTabbedPane1.setSelectedIndex(0);
-		JTabbedPane1.setSelectedComponent(deviceChannel1);
 		getContentPane().add(deviceButtons1);
 		deviceButtons1.setBounds(192,336,281,40);
 		deviceChoice2.setOffsetNid(6);
@@ -704,6 +703,7 @@ public class MPBDecoderSetup extends DeviceSetup
 		}
 		deviceChoice2.setLabelString("Synch. Scalers: ");
 		getContentPane().add(deviceChoice2);
+		deviceChoice2.setBounds(408,48,200,34);
 		//}}
 	}
 

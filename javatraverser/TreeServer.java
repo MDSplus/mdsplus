@@ -83,6 +83,12 @@ class TreeServer extends UnicastRemoteObject implements RemoteTree
         Data data = tree.evaluateData(nid, 0);
         return data;
     }
+    public Data evaluateData(Data inData, int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        Data data = tree.evaluateData(inData, 0);
+        return data;
+    }
     public void putData(NidData nid, Data data, int ctx) throws DatabaseException 
     {
         setContext(ctx);

@@ -57,6 +57,7 @@ public class RFXGClockSetup extends DeviceSetup
 		getContentPane().add(deviceChoice1);
 		deviceChoice1.setBounds(12,96,252,40);
 		deviceField5.setNumCols(20);
+		deviceField5.setTextOnly(true);
 		deviceField5.setOffsetNid(6);
 		deviceField5.setLabelString("Event: ");
 		getContentPane().add(deviceField5);

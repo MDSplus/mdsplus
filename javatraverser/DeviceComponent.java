@@ -35,6 +35,9 @@ public abstract class DeviceComponent extends JPanel
             try {
                 init_data = curr_data = subtree.getData(nidData, Tree.context);
             }catch(Exception e) {init_data = curr_data = null;}
+            
+            
+            
         }
         else init_data = null;
         //if(mode != DISPATCH)
@@ -67,6 +70,13 @@ public abstract class DeviceComponent extends JPanel
         if(mode == DATA)
         {
             curr_data = getData();
+/*            if(curr_data instanceof PathData)
+            {
+                try {
+                    curr_data = subtree.resolve((PathData)curr_data, Tree.context);
+                }catch(Exception exc){}
+            }
+  */          
             try {
               subtree.putData(nidData, curr_data, Tree.context);
             } catch(Exception e) 

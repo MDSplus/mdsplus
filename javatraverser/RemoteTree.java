@@ -17,6 +17,7 @@ public interface RemoteTree extends Remote {
     public void quit(int ctx) throws RemoteException, DatabaseException;
     public Data getData(NidData nid, int ctx)  throws RemoteException, DatabaseException;
     public Data evaluateData(NidData nid, int ctx)  throws RemoteException, DatabaseException;
+    public Data evaluateData(Data data, int ctx)  throws RemoteException, DatabaseException;
     public void putData(NidData nid, Data data, int ctx)  throws RemoteException, DatabaseException;
     //public native DatabaseInfo getInfo(); throws DatabaseException;
     public NodeInfo getInfo(NidData nid, int ctx)  throws RemoteException, DatabaseException;

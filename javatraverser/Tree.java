@@ -46,6 +46,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     JDialog rename_dialog;
     JTextField new_node_name;
 	JTextField add_device_type, add_device_name;
+	Hashtable nodeHash = new Hashtable();
+	String lastName;
     
 // Temporary, to vercome Java's bugs on inner classes
     JMenuItem open_b, close_b, quit_b; 
@@ -293,40 +295,40 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     
     private void open_ok()
     {
-	String exp = open_exp.getText(), shot_t = open_shot.getText();
-	if(exp == null || exp.length() == 0)
-	{
-	    JOptionPane.showMessageDialog(open_dialog, "Missing experiment name", "Error opening tree", 
-		JOptionPane.WARNING_MESSAGE);
+	    String exp = open_exp.getText(), shot_t = open_shot.getText();
+	    if(exp == null || exp.length() == 0)
+	    {
+	        JOptionPane.showMessageDialog(open_dialog, "Missing experiment name", "Error opening tree", 
+		    JOptionPane.WARNING_MESSAGE);
+	        repaint();
+	        return;
+	    }
+	    int shot;
+	    if(shot_t == null || shot_t.length() == 0) 
+	    {
+	        JOptionPane.showMessageDialog(open_dialog, "Wrong shot number", "Error opening tree",
+		    JOptionPane.WARNING_MESSAGE);
+	        return;
+	    }
+	    try{
+	    shot = Integer.parseInt(shot_t);
+	    } catch(Exception e)	{
+	        JOptionPane.showMessageDialog(curr_tree, "Wrong shot number", "Error opening tree",
+		    JOptionPane.WARNING_MESSAGE);
+	        return;
+	    }
+	    if(open_edit.isSelected() && open_readonly.isSelected())
+	    {
+	        JOptionPane.showMessageDialog(curr_tree, "Tree cannot be open in both edit and readonly mode", "Error opening tree",
+		    JOptionPane.WARNING_MESSAGE);
+	        return;
+	    }
+	    if(is_editable != open_edit.isSelected())
+	        pop = null;
+	    open(exp.toUpperCase(), shot, open_edit.isSelected(), open_readonly.isSelected());
+	    open_dialog.setVisible(false);
+	    frame.pack();
 	    repaint();
-	    return;
-	}
-	int shot;
-	if(shot_t == null || shot_t.length() == 0) 
-	{
-	    JOptionPane.showMessageDialog(open_dialog, "Wrong shot number", "Error opening tree",
-		 JOptionPane.WARNING_MESSAGE);
-	    return;
-	}
-	try{
-	   shot = Integer.parseInt(shot_t);
-	} catch(Exception e)	{
-	    JOptionPane.showMessageDialog(curr_tree, "Wrong shot number", "Error opening tree",
-		 JOptionPane.WARNING_MESSAGE);
-	    return;
-	}
-	if(open_edit.isSelected() && open_readonly.isSelected())
-	{
-	    JOptionPane.showMessageDialog(curr_tree, "Tree cannot be open in both edit and readonly mode", "Error opening tree",
-		 JOptionPane.WARNING_MESSAGE);
-	    return;
-	}
-	if(is_editable != open_edit.isSelected())
-	    pop = null;
-	open(exp.toUpperCase(), shot, open_edit.isSelected(), open_readonly.isSelected());
-	open_dialog.setVisible(false);
-	frame.pack();
-	repaint();
 	
     }
 	
@@ -334,135 +336,184 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     
     public void open(String exp, int shot, boolean editable, boolean readonly)
     {
-	int i;  
-	Node top_node = null;
-	JTree prev_tree = curr_tree;
-	
-//first we need to check if the tree is already open
-	RemoteTree loop_exp = null;
-	for(i = 0; i < trees.size(); i++)
-	{
-	    loop_exp = (RemoteTree)experiments.elementAt(i);
+	    int i;  
+	    Node top_node = null;
+	    JTree prev_tree = curr_tree;
+    	
+    //first we need to check if the tree is already open
+	    RemoteTree loop_exp = null;
+	    for(i = 0; i < trees.size(); i++)
+	    {
+	        loop_exp = (RemoteTree)experiments.elementAt(i);
+	        try {
+	            if(loop_exp.getName().equals(exp) && loop_exp.getShot() == shot)
+		        break;
+		    }catch(Exception exc){}
+	    }
+	    if(i < trees.size())
+	    {
+	        trees.removeElementAt(i);
+	        experiments.removeElementAt(i);
+	    }	
+    	
+	    String remote_tree_ip = System.getProperty("remote_tree.ip");
+	    if(remote_tree_ip == null)
+	    {
+	        is_remote = false;
+	        curr_experiment = new Database();
+	    }
+	    else
+	    {
+	        is_remote = true;
+            if (System.getSecurityManager() == null) 
+                System.setSecurityManager(new RMISecurityManager()
+                    {
+                        public void checkConnect(String host, int port){}
+                        public void checkPropertiesAccess() {}
+                        public void checkLink(String lib){}
+                        public void checkRead(String file){}
+                        public void checkRead(FileDescriptor fd){}
+                        public void checkRead(String file, Object context){}
+                        public void checkPropertyAccess(String property) {}
+                    });
+            String name = "//" + remote_tree_ip + "/TreeServer";
+            try {
+                curr_experiment = (RemoteTree) Naming.lookup(name);
+            }catch(Exception exc)
+            {
+	            JOptionPane.showMessageDialog(frame, exc.getMessage(), "Error opening remote "+exp, JOptionPane.ERROR_MESSAGE);
+	            return;
+	        }
+	    }
 	    try {
-	        if(loop_exp.getName().equals(exp) && loop_exp.getShot() == shot)
-		    break;
-		}catch(Exception exc){}
-	}
-	if(i < trees.size())
-	{
-	    trees.removeElementAt(i);
-	    experiments.removeElementAt(i);
-	}	
-	
-	String remote_tree_ip = System.getProperty("remote_tree.ip");
-	if(remote_tree_ip == null)
-	{
-	    is_remote = false;
-	    curr_experiment = new Database();
-	}
-	else
-	{
-	    is_remote = true;
-        if (System.getSecurityManager() == null) 
-            System.setSecurityManager(new RMISecurityManager()
-                {
-                    public void checkConnect(String host, int port){}
-                    public void checkPropertiesAccess() {}
-                    public void checkLink(String lib){}
-                    public void checkRead(String file){}
-                    public void checkRead(FileDescriptor fd){}
-                    public void checkRead(String file, Object context){}
-                    public void checkPropertyAccess(String property) {}
-                });
-        String name = "//" + remote_tree_ip + "/TreeServer";
-        try {
-            curr_experiment = (RemoteTree) Naming.lookup(name);
+            curr_experiment.setTree(exp, shot);        
+            curr_experiment.setEditable(editable);
+            curr_experiment.setReadonly(readonly);
         }catch(Exception exc)
         {
-	        JOptionPane.showMessageDialog(frame, exc.getMessage(), "Error opening remote "+exp, JOptionPane.ERROR_MESSAGE);
+            System.err.println("Error in RMI communication: "+ exc);
+        }
+
+	    //curr_experiment = new Database(exp, shot);
+	    //curr_experiment.is_editable = editable;
+	    //curr_experiment.is_readonly = readonly;
+	    try {
+	        Tree.context = curr_experiment.open();
+	        top_node = new Node(curr_experiment, this);
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(frame, e.getMessage(), "Error opening "+exp, JOptionPane.ERROR_MESSAGE);
 	        return;
 	    }
-	}
-	try {
-        curr_experiment.setTree(exp, shot);        
-        curr_experiment.setEditable(editable);
-        curr_experiment.setReadonly(readonly);
-    }catch(Exception exc)
-    {
-        System.err.println("Error in RMI communication: "+ exc);
-    }
-
-	//curr_experiment = new Database(exp, shot);
-	//curr_experiment.is_editable = editable;
-	//curr_experiment.is_readonly = readonly;
-	try {
-	    Tree.context = curr_experiment.open();
-	    top_node = new Node(curr_experiment, this);
-	} catch (Exception e) {
-	    JOptionPane.showMessageDialog(frame, e.getMessage(), "Error opening "+exp, JOptionPane.ERROR_MESSAGE);
-	    return;
-	}
 
 
-	top = new DefaultMutableTreeNode(top_node);
-	try {
-	    top_node.expand();
-	} catch(Exception e) {System.out.println("Error expanding tree "+e);}
-	Node[]members = top_node.getMembers();
-	for(i = 0; i < members.length; i++)
-	    top.add(new DefaultMutableTreeNode(members[i]));
-	Node sons[] = top_node.getSons();
-	for(i = 0; i < sons.length; i++)
-	    top.add(new DefaultMutableTreeNode(sons[i]));
-	curr_tree = new JTree(top);
-	
-	if(is_angled_style)
-	    curr_tree.putClientProperty("JTree.lineStyle", "Angled");
-	
-	curr_tree.setEditable(false);
-	curr_tree.setCellRenderer(new TreeCellRenderer()
-	{
-	    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected,
-		    boolean expanded, boolean boh, int row, boolean leaf)
+	    top = new DefaultMutableTreeNode(top_node);
+	    nodeHash.put(top, top_node);
+	    try {
+	        top_node.expand();
+	    } catch(Exception e) {System.out.println("Error expanding tree "+e);}
+	    Node[]members = top_node.getMembers();
+	    for(i = 0; i < members.length; i++)
 	    {
-		Node node = (Node)(((DefaultMutableTreeNode)value).getUserObject());
-		return node.getIcon();
+	        DefaultMutableTreeNode currNode;
+	        top.add(currNode = new DefaultMutableTreeNode(members[i]));
+	        nodeHash.put(currNode, members[i]);
 	    }
-	});
-	curr_tree.addTreeSelectionListener(this); 
-	curr_tree.addMouseListener(this);
-	curr_tree.getSelectionModel().setSelectionMode(
-	    TreeSelectionModel.SINGLE_TREE_SELECTION);
-	setViewportView(curr_tree);
-	trees.push(curr_tree);
-	experiments.push(curr_experiment);
-	try {
-	    is_editable = curr_experiment.isEditable();
-	}catch(Exception exc){is_editable = false;}
-	frame.reportChange(exp,shot,editable,readonly);
+	    Node sons[] = top_node.getSons();
+	    for(i = 0; i < sons.length; i++)
+	    {
+	        DefaultMutableTreeNode currNode;
+	        top.add(currNode = new DefaultMutableTreeNode(sons[i]));
+	        nodeHash.put(currNode, sons[i]);
+	    }
+	    curr_tree = new JTree(top);
+    	
+	    if(is_angled_style)
+	        curr_tree.putClientProperty("JTree.lineStyle", "Angled");
+    	
+	    // GAB curr_tree.setEditable(false);
+	    try {
+	        if(curr_experiment.isEditable())
+	            curr_tree.setEditable(true);
+	        else
+	            curr_tree.setEditable(false);
+	    }catch(Exception exc){curr_tree.setEditable(false);}
+	    curr_tree.setCellRenderer(new TreeCellRenderer()
+	    {
+	        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected,
+		        boolean expanded, boolean boh, int row, boolean leaf)
+	        {
+	            Object usrObj = ((DefaultMutableTreeNode)value).getUserObject();
+	            Node node;
+	            if(usrObj instanceof String)
+	            {
+	                node = (Node)nodeHash.get(value);
+	                String newName = (((String)usrObj).trim()).toUpperCase();
+	                if(lastName == null || !lastName.equals(newName))
+	                {
+	                    lastName = newName;
+	                    if(newName.length() > 12 || newName.length() == 0)
+	                    {
+	                        JOptionPane.showMessageDialog(frame, "Node name lengh must be between 1 and 12 characters",
+		                    "Error renaming node", JOptionPane.WARNING_MESSAGE);
+		                }
+		                else
+		                {
+		                    try {
+		                        node.renameLast(newName);
+		                    }catch(Exception exc)
+		                    {
+                                JOptionPane.showMessageDialog(frame, "Error renaming node: "+ exc,
+		                        "Error renaming node", JOptionPane.WARNING_MESSAGE);
+		                    }
+		                }
+		            }
+	                ((DefaultMutableTreeNode)value).setUserObject(node);
+	            }
+	            else
+		            node = (Node)usrObj;
+		        return node.getIcon();
+	        }
+	    });
+	    curr_tree.addTreeSelectionListener(this); 
+	    curr_tree.addMouseListener(this);
+	    curr_tree.getSelectionModel().setSelectionMode(
+	        TreeSelectionModel.SINGLE_TREE_SELECTION);
+	    setViewportView(curr_tree);
+	    trees.push(curr_tree);
+	    experiments.push(curr_experiment);
+	    try {
+	        is_editable = curr_experiment.isEditable();
+	    }catch(Exception exc){is_editable = false;}
+	    frame.reportChange(exp,shot,editable,readonly);
     }
     
     
     public void valueChanged(TreeSelectionEvent e) 
     {
-	DefaultMutableTreeNode tree_node = (DefaultMutableTreeNode)e.getPath().getLastPathComponent();
-	if(tree_node.isLeaf())
-	{
-	    curr_node = (Node)tree_node.getUserObject();
-	    Node sons[], members[];
-	    DefaultMutableTreeNode last_node = null;
-	    try {
-		curr_node.expand();
-	    } catch(Exception exc) {System.out.println("Error expanding tree " + exc);}
-	    sons = curr_node.getSons();
-	    members = curr_node.getMembers();
-	    for(int i = 0; i < members.length; i++)
-		tree_node.add(last_node = new DefaultMutableTreeNode(members[i])); 
-	    for(int i = 0; i < sons.length; i++)
-		tree_node.add(last_node = new DefaultMutableTreeNode(sons[i]));
-	    if(last_node != null)
-		curr_tree.expandPath(new TreePath(last_node.getPath()));
-	}
+	    DefaultMutableTreeNode tree_node = (DefaultMutableTreeNode)e.getPath().getLastPathComponent();
+	    if(tree_node.isLeaf())
+	    {
+	        curr_node = (Node)tree_node.getUserObject();
+	        Node sons[], members[];
+	        DefaultMutableTreeNode last_node = null;
+	        try {
+		        curr_node.expand();
+	        } catch(Exception exc) {System.out.println("Error expanding tree " + exc);}
+	        sons = curr_node.getSons();
+	        members = curr_node.getMembers();
+	        for(int i = 0; i < members.length; i++)
+	        {
+		        tree_node.add(last_node = new DefaultMutableTreeNode(members[i]));
+		        nodeHash.put(last_node, members[i]);
+		    }
+	        for(int i = 0; i < sons.length; i++)
+	        {
+		        tree_node.add(last_node = new DefaultMutableTreeNode(sons[i]));
+		        nodeHash.put(last_node, sons[i]);
+		    }
+	        if(last_node != null)
+		    curr_tree.expandPath(new TreePath(last_node.getPath()));
+	    }
     }
     
     
@@ -721,6 +772,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 			break;
 		}
 		new_tree_node = new DefaultMutableTreeNode(new_node);
+		nodeHash.put(new_tree_node, new_node);
 		DefaultTreeModel tree_model = (DefaultTreeModel)curr_tree.getModel();
 		tree_model.insertNodeInto(new_tree_node, curr_tree_node, i);
 		//curr_tree.makeVisible(new TreePath(new_tree_node.getPath()));
@@ -767,6 +819,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 			    break;
 		    }
 		    new_tree_node = new DefaultMutableTreeNode(new_node);
+		    nodeHash.put(new_tree_node, new_node);
 		    DefaultTreeModel tree_model = (DefaultTreeModel)curr_tree.getModel();
 		    tree_model.insertNodeInto(new_tree_node, curr_tree_node, i);
 		    curr_tree.makeVisible(new TreePath(new_tree_node.getPath()));

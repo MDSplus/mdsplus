@@ -56,6 +56,7 @@ public class RFXDClockSetup extends DeviceSetup
 		getContentPane().add(deviceChoice1);
 		deviceChoice1.setBounds(12,96,252,40);
 		deviceField5.setNumCols(20);
+		deviceField5.setTextOnly(true);
 		deviceField5.setOffsetNid(6);
 		deviceField5.setLabelString("Event: ");
 		getContentPane().add(deviceField5);
@@ -64,7 +65,7 @@ public class RFXDClockSetup extends DeviceSetup
 		deviceField6.setOffsetNid(8);
 		deviceField6.setLabelString("Delay: ");
 		getContentPane().add(deviceField6);
-		deviceField6.setBounds(12,144,264,40);
+		deviceField6.setBounds(12,144,288,40);
 		deviceField7.setNumCols(15);
 		deviceField7.setOffsetNid(11);
 		deviceField7.setLabelString("Duration: ");
@@ -74,7 +75,7 @@ public class RFXDClockSetup extends DeviceSetup
 		deviceField8.setOffsetNid(9);
 		deviceField8.setLabelString("Frequency 1: ");
 		getContentPane().add(deviceField8);
-		deviceField8.setBounds(0,180,252,40);
+		deviceField8.setBounds(0,180,276,40);
 		deviceField9.setNumCols(15);
 		deviceField9.setOffsetNid(10);
 		deviceField9.setLabelString("Frequency 2: ");
