@@ -40,5 +40,5 @@ install:
         fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libRemCamShr@SHARETYPE@ @libdir@
 	if [ ! -a "@libdir@libCamShr@SHARETYPE@]" ; then \
-          ln -sf libRemCamShr@SHARETYPE@ @libdir@/libCamShr.so \
+          ln -sf libRemCamShr@SHARETYPE@ @libdir@/libCamShr@SHARETYPE@ \
 	fi
