@@ -682,7 +682,7 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
       FILE *ntreef;
       TREE_INFO *info_ptr = (*dblist)->tree_info;
       char *nfilenam = strcpy(malloc(strlen(info_ptr->filespec)+2),info_ptr->filespec);
-      /*      trim_excess_nodes(info_ptr); */
+      trim_excess_nodes(info_ptr); 
       header_pages = (sizeof(TREE_HEADER) + 511) / 512;
       node_pages = (info_ptr->header->nodes * sizeof(NODE) + 511) / 512;
       tags_pages = (info_ptr->header->tags * 4 + 511) / 512;
@@ -741,26 +741,26 @@ static void trim_excess_nodes(TREE_INFO *info_ptr)
     {
       if (node_ptr == (NODE *) ((char *) nodes_ptr + *free_ptr))
       {
-	if (node_ptr->parent)
-	{
-	  *free_ptr += node_ptr->parent;
-	  (parent_of(node_ptr))->child = 0;
-	}
-	else
-	  *free_ptr = -1;
+		  if (node_ptr->parent)
+		  {
+			  *free_ptr += node_ptr->parent;
+			  (parent_of(node_ptr))->child = 0;
+		  }
+		  else
+			  *free_ptr = -1;
       }
       else
       {
-        NODE *p = parent_of(node_ptr);
-        NODE *c = child_of(node_ptr);
-	if (p)
-	{
-          link_it(p->child,c,p);
-        }
-	if (c)
-	{
-          link_it(c->parent,p,c);
-        }
+		  NODE *p = parent_of(node_ptr);
+		  NODE *c = child_of(node_ptr);
+		  if (p)
+		  {
+			  link_it(p->child,c,p);
+		  }
+		  if (c)
+		  {
+			  link_it(c->parent,p,c);
+		  }
       }
     }
     *nodecount_ptr = nodes;
