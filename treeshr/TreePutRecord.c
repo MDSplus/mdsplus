@@ -376,7 +376,7 @@ int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
     TreeCallHook(OpenDataFileWrite, info,0);
   return status;
 }
-
+#define BUFFERED_IO
 #ifdef BUFFERED_IO
 static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr)
 {
