@@ -3,6 +3,13 @@ module XmdsInput_UIL
     version = 
     "v1.0"
 
+procedure
+	XmdsCreateExprField;
+
+value
+	XmdsNnid : argument("nid",integer);
+	XmdsNnidOffset : argument("nidOffset",integer);
+
 identifier data_offset;
            end_offset;
            idx_time_offset;
@@ -56,8 +63,8 @@ object
             {
             XmToggleButton onoff;
             XmToggleButton usetimes;
-            XmdsExprField start_idx;
-            XmdsExprField end_idx;
+            user_defined start_idx;
+            user_defined end_idx;
             XmLabel path;
             };
         };
@@ -91,7 +98,7 @@ object
             };
         };
 
-    start_idx: XmdsExprField 
+    start_idx: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -105,13 +112,13 @@ object
             };
         };
 
-    end_idx: XmdsExprField 
+    end_idx: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
             XmNtopAttachment = XmATTACH_FORM;
             XmNleftAttachment = XmATTACH_WIDGET;
-            XmNleftWidget = XmdsExprField start_idx;
+            XmNleftWidget = user_defined start_idx;
             XmNcolumns = 12;
             XmNleftOffset = 3;
             XmdsNnid = 0;
@@ -125,7 +132,7 @@ object
             {
             XmNtopAttachment = XmATTACH_FORM;
             XmNleftAttachment = XmATTACH_WIDGET;
-            XmNleftWidget = XmdsExprField end_idx;
+            XmNleftWidget = user_defined end_idx;
             XmNleftOffset = 5;
             XmNuserData = data_offset;
             };

@@ -3,6 +3,12 @@ module DIGCHANS
     version = 
     "v1.0"
 
+procedure
+	XmdsCreateExprField;
+
+value
+	XmdsNnid : argument("nid",integer);
+
 identifier
     c_nid;
     c_name;
@@ -148,7 +154,7 @@ object
                     };
                 };
             XmToggleButtonGadget on_off_button;
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -157,7 +163,7 @@ object
                     XmdsNnid = c_startidx_nid;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {

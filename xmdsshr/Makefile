@@ -51,10 +51,10 @@ xmdsshr : ../shlib \
 	uil -o $@ xmds_usage_icons.uil
 
 ../uid/XmdsDigChans.uid : XmdsDigChans.uil
-	uil -wmd ../shlib/xmdsuil.wmd -o $@ XmdsDigChans.uil
+	uil -o $@ XmdsDigChans.uil
 
 ../uid/XmdsInput.uid : XmdsInput.uil
-	uil -wmd ../shlib/xmdsuil.wmd -o $@ XmdsInput.uil
+	uil -o $@ XmdsInput.uil
 
 ../uid/XmdsXdBox.uid : XmdsXdBox.uil
 	uil -o $@ XmdsXdBox.uil
