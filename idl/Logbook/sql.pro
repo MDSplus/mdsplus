@@ -7,7 +7,7 @@ PRO	SQL
     file = 'libIdlSql.so'
   endif else begin
 	entry = '_IDLSQL'
-	file = getenv('SYBASE')+'/idl/sql.so'
+	file = 'libIdlSql.sl'
   endelse
 
   LINKIMAGE_ONCE,'DSQL',file,1,entry+'_DYNAMIC',	/KEYWORDS,MIN_ARGS=1
