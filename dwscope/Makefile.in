@@ -48,7 +48,8 @@ install:
                         
 
 @MAKEBINDIR@dwscope_remote : dwscope.o dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o
-	$(CC) -o $@ dwscope.o  dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o -L@MAKELIBDIR@ -lMdsIpShr $(MLIBS)
+	$(CC) -o $@ dwscope.o  dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o \
+              -L@MAKELIBDIR@ @LDARC@ -lXmdsShr @LDSHARE@ -lMdsIpShr $(MLIBS)
 
 @MAKEUIDDIR@dwscope.uid : dwscope.uil
 	uil -o $@ dwscope.uil
