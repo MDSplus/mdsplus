@@ -487,7 +487,7 @@ c	implicit none
 	character pointname*10
 	integer*4 ier
 c	character*(*) apass
-	character apass*255
+	character apass*512
 
 	IARRAY.NREQ  = 0
 

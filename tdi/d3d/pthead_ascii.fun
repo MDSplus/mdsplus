@@ -24,7 +24,7 @@ FUN PUBLIC PTHEAD_ASCII(IN _pointname, OPTIONAL IN _shot, OPTIONAL OUT _error)
 		_error=-1;
 	}
 	if (_error == 0) {
-		_ascii=REPEAT(" ",255);
+		_ascii=REPEAT(" ",1024);
 		_stat=libMdsD3D->mdsptheada_(_shot,_pointname//"          ",REF(_error),REF(_ascii));
 	}
 
