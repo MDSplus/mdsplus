@@ -175,7 +175,7 @@ int i;
 	Limitation: This method is for 32-bit machine only.
 	Limitation: Low-order bits are not random.
 */
-#define ran (Tdi_RandomSeed = Tdi_RandomSeed * 69069 + 1)
+#define Randomize Tdi_RandomSeed = Tdi_RandomSeed * 69069 + 1
 
 int			Tdi3Random(
 struct descriptor_a	*out_ptr)
@@ -189,36 +189,37 @@ int	i;
 	switch (out_ptr->dtype) {
 	default : status = TdiINVDTYDSC; break;
 
-#define LoadRandom(type,value) { type *ptr = (type *)out_ptr->pointer; for (i=0;i<n;i++) ptr[i] = (type)(value);}
-#define LoadRandomFloat(dtype,type,value) { type *ptr = (type *)out_ptr->pointer; \
-                     for (i=0;i<n;i++) {double val = value; CvtConvertFloat(&val,DTYPE_NATIVE_DOUBLE,&ptr[i],dtype,0);}}
+#define LoadRandom(type,shift) { type *ptr = (type *)out_ptr->pointer; int ranval; for (i=0;i<n;i++) \
+   Randomize; ranval = Tdi_RandomSeed >> shift; ptr[i] = (type)(ranval);}
+#define LoadRandomFloat(dtype,type,value) { type *ptr = (type *)out_ptr->pointer; double val; \
+                     for (i=0;i<n;i++) {Randomize; val = value; CvtConvertFloat(&val,DTYPE_NATIVE_DOUBLE,&ptr[i],dtype,0);}}
 
 	/*********************
 	WARNING falls through.
 	*********************/
 	case DTYPE_O : case DTYPE_OU : n += n;
 	case DTYPE_Q : case DTYPE_QU : n += n;
-	case DTYPE_L : case DTYPE_LU : LoadRandom(int,ran); break;
-	case DTYPE_W : case DTYPE_WU : LoadRandom(short,ran >> 16) break;
-	case DTYPE_B : case DTYPE_BU : LoadRandom(char,ran >> 24) break;
+	case DTYPE_L : case DTYPE_LU : LoadRandom(int,0); break;
+	case DTYPE_W : case DTYPE_WU : LoadRandom(short,16) break;
+	case DTYPE_B : case DTYPE_BU : LoadRandom(char,24) break;
 
 	/*********************
 	WARNING falls through.
 	*********************/
 	case DTYPE_FC : n += n;
-	case DTYPE_F :  LoadRandomFloat(DTYPE_F, float, ran * norm + half); break;
+	case DTYPE_F :  LoadRandomFloat(DTYPE_F, float, Tdi_RandomSeed * norm + half); break;
 
 	case DTYPE_FSC : n += n;
-        case DTYPE_FS : LoadRandomFloat(DTYPE_FS, float, ran * norm + half); break;
+        case DTYPE_FS : LoadRandomFloat(DTYPE_FS, float, Tdi_RandomSeed * norm + half); break;
 
 	case DTYPE_DC : n += n;
-	case DTYPE_D : LoadRandomFloat(DTYPE_D, double, (ran * norm + ran) * norm + half); break;
+	case DTYPE_D : LoadRandomFloat(DTYPE_D, double, (Tdi_RandomSeed * norm + Tdi_RandomSeed) * norm + half); break;
 
 	case DTYPE_GC : n += n;
-	case DTYPE_G : LoadRandomFloat(DTYPE_G, double, (ran * norm + ran) * norm + half); break;
+	case DTYPE_G : LoadRandomFloat(DTYPE_G, double, (Tdi_RandomSeed * norm + Tdi_RandomSeed) * norm + half); break;
 
 	case DTYPE_FTC : n += n;
-	case DTYPE_FT : LoadRandomFloat(DTYPE_FT, double, (ran * norm + ran) * norm + half); break;
+	case DTYPE_FT : LoadRandomFloat(DTYPE_FT, double, (Tdi_RandomSeed * norm + Tdi_RandomSeed) * norm + half); break;
 
 	}
 	return status;

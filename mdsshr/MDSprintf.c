@@ -93,8 +93,8 @@ void  MdsSetOutputFunctions(
    ,int (*NEWvfprintf)()
    )
    {
-    MDSvprintf = (NEWvprintf==(void *)-1) ? vprintf : NEWvprintf;
-    MDSvfprintf = (NEWvfprintf==(void *)-1) ? vfprintf : NEWvfprintf;
+    MDSvprintf = ((void *)NEWvprintf==(void *)-1) ? vprintf : NEWvprintf;
+    MDSvfprintf = ((void *)NEWvfprintf==(void *)-1) ? vfprintf : NEWvfprintf;
     return;
    }
 
