@@ -46,7 +46,9 @@ int main(int argc, char **argv)
       default: ;
       }
     }
-    TreeOpen("main",-1,0);
+    setenv("gen_device_path","/tmp",0);
+    TreeOpenNew("gen_device",-1);
+    unsetenv("gen_device_path");
     printf("Parsing device description\n");
     gen_deviceparse();
 
