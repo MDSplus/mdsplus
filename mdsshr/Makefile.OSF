@@ -8,6 +8,7 @@ OBJECTS = \
 	MdsPk.o \
 	MdsCompareXd.o \
 	MdsCompress.o \
+	dummies.o \
 	librtl.o
 
 ../shlib/libMdsShr.so : $(OBJECTS) ../shlib
