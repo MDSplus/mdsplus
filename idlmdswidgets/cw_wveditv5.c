@@ -31,8 +31,8 @@ typedef struct _IdlEventRec {
 
 extern float csval_();
 extern void csakm_();
-extern void mskrv1();
-extern void mskrv2();
+extern void mskrv1_();
+extern void mskrv2_();
 
 static Atom XA_TARGETS;
 static Atom XA_X_AXIS;
@@ -705,7 +705,7 @@ static void Fit(Widget w, int stub, XmdsWavedrawFitCBStruct *cb)
           float *s = (float *)XtMalloc(spline_points * sizeof(float));
           int i;
           int ics=0;
-          mskrv1(&spline_points, spline_x, spline_y, &zero, &zero, xp, yp, temp, s, &zero, &three);
+          mskrv1_(&spline_points, spline_x, spline_y, &zero, &zero, xp, yp, temp, s, &zero, &three);
           for (i=knotidx[0];i<end_point && knotid < spline_points;i++)
           {
             if (i < knotidx[knotid])
@@ -715,7 +715,7 @@ static void Fit(Widget w, int stub, XmdsWavedrawFitCBStruct *cb)
                 float d = (float)(i-knotidx[knotid-1])/(float)(knotidx[knotid]-knotidx[knotid-1]);
                 float s1 = s[knotid-1] + d * (s[knotid] - s[knotid-1]);
                 float t = s1/s[spline_points-1];
-                mskrv2(&t,&cb->x[i],&cb->y[i],&spline_points,spline_x,spline_y,xp,yp,s,&zero,&ics,&zero);
+                mskrv2_(&t,&cb->x[i],&cb->y[i],&spline_points,spline_x,spline_y,xp,yp,s,&zero,&ics,&zero);
                 cb->x[i] = max(xmin,min(xmax,cb->x[i]));
                 cb->y[i] = max(ymin,min(ymax,cb->y[i]));
               }
