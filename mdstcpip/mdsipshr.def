@@ -31,3 +31,4 @@ GetAnswerInfo
 SendArg
 ArgLen
 MdsIpFree
+SetSocketOptions

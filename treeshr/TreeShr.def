@@ -40,6 +40,8 @@ TreeFindNodeEnd
 _TreeFindNodeEnd
 TreeFindNodeTags
 _TreeFindNodeTags
+TreeFindNodeTagsDsc
+_TreeFindNodeTagsDsc
 TreeFindNodeWild
 _TreeFindNodeWild
 TreeFindTagEnd
