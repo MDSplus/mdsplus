@@ -78,10 +78,15 @@ UilConst.h : xmdsuil.wml
 
 clean :
 	- rm *.o
+	- rm ../bin/wmdcreate
 	- rm ../shlib/libXmdsShr.a
 	- rm ../shlib/libXmdsShr.$(SHARE_TYPE)
 	- rm .depend
 	- rm ../shlib/xmdsuil.wmd
+	- rm ../uid/xmds_usage_icons.uid
+	- rm ../uid/XmdsDigChans.uid
+	- rm ../uid/XmdsInput.uid
+	- rm ../uid/XmdsXdBox.uid
 
 .depend :
 	find *.c -exec $(MAKE_DEPEND)

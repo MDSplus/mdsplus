@@ -118,7 +118,7 @@ static XtResource resources[] =
 Widget XmdsCreateDigChans(Widget parent,String name,ArgList args,Cardinal argcount)
 {
   XmdsDigChansPart info = {4,-1,0,0,1,2,3,1};
-  static String hierarchy_name[] = {{"XmdsDigChans.uid"}};
+  static String hierarchy_name[] = {"XmdsDigChans.uid"};
   MrmHierarchy drm_hierarchy;
   MrmType class;
   int i;

@@ -1418,7 +1418,7 @@ object
             XmNscrollBarDisplayPolicy = XmAS_NEEDED;
             XmNscrollBarPlacement = XmBOTTOM_RIGHT;
             XmNworkWindow = XmBulletinBoard arg_box;
-            XmNvisualPolicy = XmSTATIC;
+            XmNvisualPolicy = 0;
             };
         controls
             {

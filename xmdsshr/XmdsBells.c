@@ -37,10 +37,6 @@ int XmdsBells(int *number_of_bells )
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-#ifdef __linux__
-char * _Xsetlocale() { printf("_Xsetlocale called.\n"); return NULL;}
-#endif
-
 int XmdsBells(int *num_bells)
 {
   static Display *display = 0;

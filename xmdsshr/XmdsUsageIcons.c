@@ -81,7 +81,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 void XmdsUsageIconsInitialize(Widget w)
 {
-  static String hierarchy_name[] = {{"xmds_usage_icons.uid"}};
+  static String hierarchy_name[] = {"xmds_usage_icons.uid"};
   static MrmHierarchy mrm_hierarchy;
   int usage;
   int usages;
