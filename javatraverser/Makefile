@@ -1,51 +1,113 @@
-include $(MAKE_OPTIONS)
+# Generated automatically from Makefile.in by configure.
+SHELL=/bin/sh
+top_srcdir=..
+JAVADIR = $(top_srcdir)/java/classes
+JAVAC = /usr/bin/javac
+JAR = /usr/bin/jar
 
-JFLAGS = -g   -d ../java/classes
+SOURCES = ActionData.java\
+ActionEditor.java\
+ApdData.java\
+ArgEditor.java\
+ArrayData.java\
+AtomicData.java\
+AxisEditor.java\
+ByteArray.java\
+ByteData.java\
+CallData.java\
+CompoundData.java\
+ConditionData.java\
+ConglomData.java\
+Data.java\
+DataEditor.java\
+DataId.java\
+DataListener.java\
+Database.java\
+DatabaseException.java\
+DependencyData.java\
+DimensionData.java\
+DispatchData.java\
+DispatchEditor.java\
+DisplayData.java\
+DisplayNci.java\
+DoubleArray.java\
+DoubleData.java\
+Editor.java\
+EventData.java\
+ExprEditor.java\
+FloatArray.java\
+FloatData.java\
+FunctionData.java\
+IllegalDataException.java\
+IntArray.java\
+IntData.java\
+LabeledExprEditor.java\
+MethodData.java\
+MethodEditor.java\
+ModifyData.java\
+NidData.java\
+Node.java\
+NodeBeanInfo.java\
+NodeDataPropertyEditor.java\
+NodeDisplayData.java\
+NodeDisplayNci.java\
+NodeEditor.java\
+NodeId.java\
+NodeInfo.java\
+NodeInfoPropertyEditor.java\
+NodeModifyData.java\
+NodePropertyEditor.java\
+OctaArray.java\
+OctaData.java\
+ParameterData.java\
+PathData.java\
+ProcedureData.java\
+ProcedureEditor.java\
+ProgramData.java\
+ProgramEditor.java\
+QuadArray.java\
+QuadData.java\
+RangeData.java\
+RangeEditor.java\
+RoutineData.java\
+RoutineEditor.java\
+ShortArray.java\
+ShortData.java\
+SignalData.java\
+StringData.java\
+SyntaxException.java\
+TaskEditor.java\
+Tree.java\
+TreeDialog.java\
+TreeNode.java\
+UnsupportedDataException.java\
+WindowData.java\
+WindowEditor.java\
+WithErrorData.java\
+WithUnitsData.java\
+jTraverser.java\
 
-CLASSES = ../java/classes/*.java
+CLASSES = *.class
 
+all: $(top_srcdir)/bin/ $(top_srcdir)/bin/jTraverser $(top_srcdir)/java/ $(top_srcdir)/java/classes \
+     $(top_srcdir)/java/classes/jTraverser.jar
 
-javatraverser : ../java ../java/classes ../java/classes/jTraverser.class 
-	@ echo javaTraverser done
+clean: ; rm $(CLASSES) $(top_srcdir)/bin/jTraverser $(top_srcdir)/java/classes/jTraverser.jar
 
+depend: ; @ :
 
-../java : ; mkdir ../java
+$(top_srcdir)/java/ : ; mkdir $(top_srcdir)/java/
 
-../java/classes : ; mkdir ../java/classes
+$(top_srcdir)/java/classes : ; mkdir $(top_srcdir)/java/classes
 
-../java/classes/jTraverser.class :ActionData.java \
-               			  ActionEditor.java              DispatchEditor.java            NodeDataPropertyEditor.java    RoutineData.java\
-				  ApdData.java                   DisplayData.java               NodeDisplayData.java           RoutineEditor.java\
-				  ArgEditor.java                 DisplayNci.java                NodeDisplayNci.java            ShortArray.java\
-				  ArrayData.java                 DoubleArray.java               NodeEditor.java                ShortData.java\
-				  AtomicData.java                DoubleData.java                NodeId.java                    SignalData.java\
-				  AxisEditor.java                Editor.java                    NodeInfo.java                  StringData.java\
-				  ByteArray.java                 EventData.java                 NodeInfoPropertyEditor.java    SyntaxException.java\
-				  ByteData.java                  ExprEditor.java                NodeModifyData.java            TaskEditor.java\
-				  CallData.java                  FloatArray.java                NodePropertyEditor.java        Tree.java\
-				  CompoundData.java              FloatData.java                 OctaArray.java                 TreeDialog.java\
-				  ConditionData.java             FunctionData.java              OctaData.java                  TreeNode.java\
-				  ConglomData.java               IllegalDataException.java      ParameterData.java             UnsupportedDataException.java\
-				  Data.java                      IntArray.java                  PathData.java                  WindowData.java\
-				  DataEditor.java                IntData.java                   ProcedureData.java             WindowEditor.java\
-				  DataId.java                    LabeledExprEditor.java         ProcedureEditor.java           WithErrorData.java\
-				  DataListener.java              MethodData.java                ProgramData.java               WithUnitsData.java\
-				  Database.java                  MethodEditor.java              ProgramEditor.java             jTraverser.java\
-				  DatabaseException.java         ModifyData.java                QuadArray.java\
-				  DependencyData.java            NidData.java                   QuadData.java\
-				  DimensionData.java             Node.java                      RangeData.java
-	javac $(JFLAGS) *.java
-	cp *.gif ../java/classes
+$(top_srcdir)/java/classes/jTraverser.jar: jTraverser.class
+	$(JAR) c0f $@ $(CLASSES)
 
+jTraverser.class: 	$(SOURCES)
+	env CLASSPATH=$(top_srcdir)/java/classes/MRJClasses.zip $(JAVAC) -g $(SOURCES)
 
+$(top_srcdir)/bin/ : ; mkdir $(top_srcdir)/bin/
 
-clean :
-	rm $(CLASSES)
-	rm *.o
-
-.depend :
-	echo no depend needed
-
-
-
-
+$(top_srcdir)/bin/jTraverser : jTraverser.template
+	sed "s|MAKEJAVADIR|`cd $(top_srcdir)/java/;pwd`|g" jTraverser.template | sed "s|libdir|`cd ${exec_prefix}/lib;pwd`|g" > $@
+	chmod a+x $@
