@@ -3,7 +3,7 @@
   - ensure all data types covered
 */
 
-#include "MdsLib.h"
+#include "mdslib.h"
 #ifdef __VMS
 extern int MDS$OPEN();
 extern int MDS$CLOSE();
@@ -195,6 +195,36 @@ int descr (int *dtype, void *data, int *dim1, ...)
   return retval;
 }
 
+
+int cdescr (int dtype, void *data, ...)
+{
+    void *arglist[MAXARGS];
+    va_list incrmtr;
+    int dsc;
+    int status;
+    int argidx=1;
+    arglist[argidx++] = (void *)&dtype;
+    arglist[argidx++] = (void *)data;
+
+    va_start(incrmtr, data);
+
+    dsc = 1;  /* initialize ok */
+    for ( ; dsc != 0; )
+    {
+      dsc = va_arg(incrmtr, int);
+      arglist[argidx++] = (void *)&dsc;
+    }
+
+    if (dtype == DTYPE_CSTRING)
+      {
+	dsc = va_arg(incrmtr, int);
+	arglist[argidx++] = (void *)&dsc;
+      }
+    arglist[argidx++] = MdsEND_ARG;
+    *(int *)&arglist[0] = argidx; 
+    status = LibCallg(arglist,descr);
+    return(&status);
+}
 
 
 void MdsDisconnect()

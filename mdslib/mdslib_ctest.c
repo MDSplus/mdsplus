@@ -1,4 +1,4 @@
-#include "MdsLib.h"
+#include "mdslib.h"
 
 
 void main(int argc, char *argv[]);
@@ -168,6 +168,12 @@ void main(int argc, char *argv[])
 
   dsc = descr(&dtype_cstring,string,&null,&stringlength);
   status = MdsValue("FINDSIG('TSTE_CORE')",&dsc,&null,&returnlength);
+  printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
+  printf("FINDSIG(TSTE_CORE): %s\n",string);
+
+  printf("=================== TEST 8 ======================\n");
+
+  status = MdsValue("FINDSIG('TSTE_CORE')",cdescr(DTYPE_CSTRING,string,0,stringlength),&null,&returnlength);
   printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
   printf("FINDSIG(TSTE_CORE): %s\n",string);
 
