@@ -3,7 +3,7 @@ prefix=@prefix@
 top_srcdir=@top_srcdir@
 RM=$(top_srcdir)/devscripts/rm_if
 JAVADIR = @MAKEJAVADIR@classes
-JAVAC = @JAVAC@
+JAVAC = @JAVAC@ -classpath .:../java/classes/jScope.jar:../java/classes/jTraverser.jar
 JAR = @JAR@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
