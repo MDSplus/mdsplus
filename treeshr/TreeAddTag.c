@@ -70,6 +70,7 @@ int _TreeAddTag(void *dbid, int nid_in, char *tagnam)
   size_t    len;
   char      tag[24];
   int       i;
+  int       tmp;
 
 /************************************************
 First we make sure tree is open for editting and
@@ -175,7 +176,8 @@ the tag name specified does not already exist.
 *********************************************/
 
   memcpy(tag_info.name,tag,sizeof(tag));
-  tag_info.node_idx = node_ptr - dblist->tree_info->node;
+  tmp = node_ptr - dblist->tree_info->node;
+  tag_info.node_idx = swapint(tmp);
   tag_info.tag_link = node_ptr->tag_link;
 
 /*******************************************************
@@ -229,8 +231,9 @@ the tag name specified does not already exist.
  number of defined tags in the tree.
 ******************************************/
 
-  node_ptr->tag_link = tags + 1;
-  dblist->tree_info->header->tags = tags + 1;
+  tags++;
+  node_ptr->tag_link = swapint((char *)&tags);
+  dblist->tree_info->header->tags = tags;
   dblist->modified = 1;
   return TreeNORMAL;
 
