@@ -71,6 +71,8 @@ EOF
   fi
 fi
 
+JDK_DIR="$jdk_dir"
+
 AC_ARG_WITH(xio,
 	[  --with-xio=globus-location:flavor  use globus xio for mdsip communications],
           MDSTCPIP="mdsip_xio roam"
@@ -750,6 +752,7 @@ AC_SUBST(JAR)
 AC_SUBST(JAVAC)
 AC_SUBST(JAVA_APS)
 AC_SUBST(JDK_CFLAGS)
+AC_SUBST(JDK_DIR)
 AC_SUBST(JVM)
 AC_SUBST(LD)
 AC_SUBST(LDSHARE)
