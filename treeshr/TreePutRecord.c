@@ -418,7 +418,7 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
 {
   int       status = TreeNORMAL;
   int       bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
-  info->data_file->record_header->node_number = swapint((char *)&nodenum);
+  LoadInt(nodenum, (char *)&info->data_file->record_header->node_number);
   memset(&info->data_file->record_header->rfa,0,sizeof(RFA));
   while (bytes_to_put && (status & 1))
   {
