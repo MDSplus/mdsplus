@@ -6,7 +6,7 @@ public fun chs_a14__add(in _path, out _nidout)
      based CAMAC controller.
   ********************************************************************/
   DevAddStart(_path,'CHS_A14',33,_nidout);
-  DevAddNode(_path//':NAME','TEXT',*,*,_nid);
+  DevAddNode(_path//':DIGNUM','NUMERIC',1,'/noshot_write',_nid);
   DevAddNode(_path//':COMMENT','TEXT',*,*,_nid);
   DevAddNode(_path//':CLOCK_DIVIDE','NUMERIC',1,'/noshot_write',_nid);
   DevAddNode(_path//':EXT_CLOCK_IN','AXIS',*,'/noshot_write',_nid);

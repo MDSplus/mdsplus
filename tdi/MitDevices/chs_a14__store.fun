@@ -1,6 +1,7 @@
 public fun chs_a14__store(as_is _nid, optional _method)
 {
   _debug = 0;
+  _dignum = DevNodeRef(_nid,1);
   _ext_clock = DevNodeRef(_nid,4);
   _trigger   = DevNodeRef(_nid,5);
   _special_dimension = DevNodeRef(_nid,8);
@@ -21,7 +22,7 @@ public fun chs_a14__store(as_is _nid, optional _method)
   _VME_BS_LWORD = 0x03000000;
   _VME_DENSE    = 0x10000000;
   _mode = _VME_UDATA | _VME_D16 | _VME_BS_LWORD | _VME_DENSE;
-  _addr         = 0x10500000;
+  _addr         = 0x10500004 + _dignum * 8;
   _status = MdsVme->VmePioRead("/dev/dmaex0",val(_addr),val(_mode),val(4),ref(_sr),ref(_bytes_read));
   if (_debug) write(*,"_sr=",_sr);
   /**********************************
@@ -42,9 +43,13 @@ public fun chs_a14__store(as_is _nid, optional _method)
   */
   _sr_mode = (_sr >> 8) & 0x7;
   if (_debug) write(*,"_sr_mode=",_sr_mode);
+  _sr_mode = 0;
   _sr_big_ram = (_sr >> 15) & 1;
   if (_debug) write(*,"_sr_big_ram=",_sr_big_ram);
+  _sr_big_ram = 0;
   _sr_clock_speed = _sr & 0x7;
+  if (_debug) write(*,"_sr_clock_speed=",_sr_clock_speed);
+  _sr_clock_speed = 0;
   _clock_divide = ([1,2,4,10,20,40,100])[_sr_clock_speed];
   _dt = 1E-6 * _clock_divide;
   if (_debug) write(*,"_dt=",_dt);
@@ -54,8 +59,8 @@ public fun chs_a14__store(as_is _nid, optional _method)
   _memptr = 0;
   switch (_sr_mode)
   {
-    case(0) {_min_idx = 0;_max_idx = _pts ? _pts : _memsize_idx - 1;_start_addr = 0;break;}
-    case(4) {_min_idx = 0;_max_idx = _pts ? _pts : _memsize_idx - 1;_start_addr = 0;break;}
+    case(0) {_min_idx = 0;_max_idx = _pts ? _pts : _memsize_idx ;_start_addr = 0;break;}
+    case(4) {_min_idx = 0;_max_idx = _pts ? _pts : _memsize_idx ;_start_addr = 0;break;}
     case(1) {_min_idx = _pts - _memsize_idx; _max_idx = _pts - 1; _start_addr = _memptr - _pts; break;}
     case(2) {_min_idx = 0; _max_idx = _memptr ? _memptr - 1 : _memsize_idx; _start_addr = 0; break;}
     case(3) {_min_idx = 0; _max_idx = _memptr ? _memptr - 1 : _memsize_idx; _start_addr = 0; break;}
@@ -97,16 +102,18 @@ public fun chs_a14__store(as_is _nid, optional _method)
       _lbound = min(max(_lbound,_min_idx),_max_idx);
       _ubound = if_error(long(data(_endidx)),_max_idx);
       _ubound = min(max(_ubound,_lbound),_max_idx);
+      _lbound += _lbound mod 2;
       _samples = _ubound - _lbound + 1;
+      _samples += _samples mod 2;
       _offset = ([0,0,0,0,-2048,-2048,-2048,-2048])[_range & 7];
       _coefficient = ([2.5/4096,5./4096,5./4096,10./4096,5./4096,10./4096,10./4096,20./4096])[_range & 7];
       if (_samples > 0)
       {
-        _addr =  0x10700000 + _chan * 0x40000 + _start_addr + _lbound;
+        _addr =  0x10700000 + (_dignum-1) * (6 * 0x40000) + _chan * 0x40000 + _start_addr + _lbound;
         _samples_read = 0;
-        _data = set_range(_lbound : _ubound,zero(_samples,0w));
+        _data = zero(_samples,0w);
         _status = MdsVme->VmePioRead("/dev/dmaex0",val(_addr),val(_mode),val(_samples * 2),ref(_data),ref(_bytes_read));
-        _data = _data & 4095;
+        _data = set_range(_lbound : _ubound,_data & 4095uw);
         if (_is_special_dimension)
           _dim_str = _special_dim_name;
         else if (_sr_mode == 0 || _sr_mode == 1)

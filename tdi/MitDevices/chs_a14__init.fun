@@ -1,5 +1,6 @@
 public fun chs_a14__init(as_is _nid, optional _method)
 {
+  _dignum         = DevNodeRef(_nid,1);
   _clock_divide = DevNodeRef(_nid,3);
   _ext_clock    = DevNodeRef(_nid,4);
   _pts          = DevNodeRef(_nid,6);
@@ -23,6 +24,6 @@ public fun chs_a14__init(as_is _nid, optional _method)
   _VME_BS_LWORD = 0x03000000;
   _VME_DENSE    = 0x10000000;
   _mode = _VME_UDATA | _VME_D16 | _VME_BS_LWORD | _VME_DENSE;
-  _addr         = 0x10500000;
+  _addr         = 0x10500000 + _dignum * 8;
   return(MdsVme->VmePioWrite("/dev/dmaex0",val(_addr),val(_mode),val(4),_sr,ref(_bytes_written)));
 }
