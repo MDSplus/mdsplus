@@ -123,7 +123,7 @@ Widget XmdsCreateNidOptionMenu(Widget parent,String name,ArgList args,Cardinal a
   for (idx = 0,s = info->labels,v = info->values; s && *s && v && *v; s++,v++,idx++)
   {
     String expression = "";
-    XmStringGetLtoR(*v,XmSTRING_DEFAULT_CHARSET,&expression);
+    expression = XmStringUnparse(*v, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
     {
       static EMPTYXD(empty_xd);
       struct descriptor_xd *xd = (struct descriptor_xd *) XtMalloc(sizeof(empty_xd));
