@@ -36,7 +36,7 @@ int TclWfevent()
     if (setjmp(environment) == 0)
     {
       MDSEventAst(event.dscA_pointer, EventOccurred, environment, &eventid);
-      LibWait(&forever);
+      while (1) LibWait(&forever);
     }
     else if (eventid >= 0)
     {
