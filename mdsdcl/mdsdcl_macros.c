@@ -337,7 +337,7 @@ int   mdsdcl_do_macro()		/* Return: status			*/
 
         do {
             sts = mdsdcl_do_command(0);
-           }  while (sts & 1);
+           }  while ((sts & 1) || (sts == CLI_STS_NOCOMD));
 
         if (sts == MDSDCL_STS_INDIRECT_EOF)
             continue;

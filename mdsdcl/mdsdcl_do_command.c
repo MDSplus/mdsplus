@@ -86,7 +86,7 @@ int mdsdcl_do_command(
             sts = mdsdcl_do_command("__CMDLINE__");
             for ( ; ctrl->depth > startDepth ; )
                 sts = mdsdcl_do_command(0);
-            return(sts);
+            return((sts == MDSDCL_STS_INDIRECT_EOF) ? 1 : sts);
            }
        }
     else
