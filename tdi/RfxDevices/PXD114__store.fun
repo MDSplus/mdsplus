@@ -137,15 +137,11 @@ _status = 1;
 	for(_s = 1; _s < _num_segments; _s++)
 	{
 		_start_time = _trig_time + _trig_times[_s] - _trig_times[0] + _seg_time_ofs;
-write(*, 'Start time: ',_start_time);
 		_end_time = _start_time + _seg_time;
-write(*, 'End time: ',_end_time);
 		_start_times = [_start_times, _start_time];
 		_end_times = [_end_times, _end_time];
 		_periods = [_periods, _period];
 	}
-
-write(*, 'Start times: ', _start_times);
 
 	_clock = make_range(_start_times, _end_times, _periods);
 	_dim = make_dim(make_window(0, (_act_seg_len * _num_segments) - 1, ft_float(_trig_time)), _clock);

@@ -42,7 +42,7 @@ public fun PXD114__init(as_is _nid, optional _method)
 	}
 
 	DevNodeCvt(_nid, _N_TRIG_EDGE, ['POSITIVE', 'NEGATIVE'], [0, 1], _trig_edge = 0);
-	DevNodeCvt(_nid, _N_TRIG_COUPL, ['AC', 'DC', 'GND'], [0, 1,2], _trig_coupl = 1);
+	DevNodeCvt(_nid, _N_TRIG_COUPL, ['DC', 'AC', 'GND'], [0, 1,2], _trig_coupl = 1);
 	DevNodeCvt(_nid, _N_TRIG_IMP, [50,1000000], [0, 1], _trig_imp = 1);
 
 	_trig_time = if_error(data(DevNodeRef(_nid, _N_TRIG_TIME)), _INVALID);
@@ -86,7 +86,7 @@ public fun PXD114__init(as_is _nid, optional _method)
 		DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_INPUT_IMP, 
 				[50,1000000],[0,1], _chan_input_imp = 1);
 		DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_RANGE, 
-				[1,20,40],[0,1,2], _chan_range = 0);
+				[0.04,0.08,0.16,0.4,0.8,1.6,4,8],[0,1,2,3,4,5,6,7], _chan_range = 0);
 		_chan_offset = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_OFFSET)), _INVALID);
 		if(_chan_offset == _INVALID)
 		{
