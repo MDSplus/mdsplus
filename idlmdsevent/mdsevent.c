@@ -30,7 +30,9 @@ Invoked from MDSEVENT.PRO
 
 ------------------------------------------------------------------------------*/
 #include <ipdesc.h>
-#include <mdsshr.h>
+
+extern int MDSEventAst();
+extern int MDSEventCan();
 
 typedef struct _event_struct { int stub_id;
                                int base_id;
