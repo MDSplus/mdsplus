@@ -127,17 +127,17 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
     int  dims[8];
     int numbytes;
     int *dptr;
-	unsigned char totargs = (unsigned char)(numargs+6);
+    unsigned char totargs = (unsigned char)(numargs+6);
     jobid = RegisterJob(msgid,retstatus,ast,astparam,before_ast,sock);
     cmd[offset] = ')';
     cmd[offset+1] = '\0';
-	if (addr == 0)
-	{
+    if (addr == 0)
+    {
       struct sockaddr_in addr_struct;
-	  int len;
+      int len;
       if (getsockname(sock,(struct sockaddr *)&addr_struct,&len) == 0)
         addr = *(int *)&addr_struct.sin_addr;
-	}
+    }
     SndArgChk(sock, idx++, DTYPE_CSTRING, totargs, (short)strlen(cmd), 0, 0, cmd);
     SndArgChk(sock, idx++, DTYPE_LONG,    totargs, (short)4, 0, 0, (char *)&addr);
     SndArgChk(sock, idx++, DTYPE_SHORT,   totargs, 2, 0, 0, (char *)&port);

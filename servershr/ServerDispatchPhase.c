@@ -108,13 +108,12 @@ static pthread_cond_t JobWaitCondition;
 static pthread_mutex_t JobWaitMutex;
 
 
-static char *Server(char *srv)
+static char *Server(char *out, char *srv)
 {
-	static char server[33];
 	int i;
-	for (i=0;i<32;i++) server[i] = srv[i] == ' ' ? 0 : srv[i];
-	server[i] = 0;
-	return server;
+	for (i=0;i<32;i++) out[i] = srv[i] == ' ' ? 0 : srv[i];
+	out[i] = 0;
+	return out;
 }
 
 void SendMonitor(int mode, int idx)
@@ -270,10 +269,11 @@ static void Before(int idx)
   SendMonitor(MonitorDoing, idx);
   if (Output)
   {
+    char server[33];
     static DESCRIPTOR(fao_s, "!%T !AS is beginning action !AS");
     char *path;
     path = TreeGetMinimumPath((int *)&zero,actions[idx].nid);
-	sprintf(logmsg,"%s, %s is beginning action %s",now(),Server(actions[idx].server),path);
+	sprintf(logmsg,"%s, %s is beginning action %s",now(),Server(server,actions[idx].server),path);
 	TreeFree(path);
     (*Output)(logmsg);
   }
@@ -319,8 +319,9 @@ static void AbortRange(int s,int e)
   {
     if (actions[i].dispatched && !actions[i].done)
     {
+      char server[33];
       int one = 1;
-      ServerAbortServer(Server(actions[i].server),one);
+      ServerAbortServer(Server(server,actions[i].server),one);
     }
   }
 }
@@ -406,26 +407,27 @@ static char *DetailProc(int full)
     {
       if (actions[i].dispatched && !actions[i].done && ((int)actions[i].doing == doing))
       {
-		char *path;
+        char *path;
+        char server[33];
         path = TreeGetMinimumPath((int *)&zero,actions[i].nid);
         if (first)
         {
-		  msglen = 4096;
-		  msg = (char *)malloc(4096);
-		  strcpy(msg,"Waiting on:");
+          msglen = 4096;
+          msg = (char *)malloc(4096);
+          strcpy(msg,"Waiting on:");
           first = 0;
         }
-        sprintf(msg1,"\n	%s %s %s\n",path,actions[i].doing ? "in progress on" : "dispatched to",Server(actions[i].server));
-		TreeFree(path);
-		if (msglen < (strlen(msg) + strlen(msg1) + 1))
-		{
-			char *oldmsg = msg;
-			msg = (char *)malloc(msglen + 4096);
-			msglen += 4096;
-			strcpy(msg,oldmsg);
-			free(msg);
-		}
-		strcat(msg,msg1);
+        sprintf(msg1,"\n	%s %s %s\n",path,actions[i].doing ? "in progress on" : "dispatched to",Server(server,actions[i].server));
+        TreeFree(path);
+        if (msglen < (strlen(msg) + strlen(msg1) + 1))
+        {
+          char *oldmsg = msg;
+          msg = (char *)malloc(msglen + 4096);
+          msglen += 4096;
+          strcpy(msg,oldmsg);
+          free(msg);
+        }
+        strcat(msg,msg1);
       }
     }
   }
@@ -526,12 +528,13 @@ static void Dispatch(int i)
 {
   int status;
   char logmsg[1024];
+  char server[33];
   if (i < 0)
   {
     char *path;
     i = -1-i;
     path = TreeGetMinimumPath((int *)&zero,actions[i].nid);
-    sprintf(logmsg,"%s, Dispatching node %s to %s",now(),path,Server(actions[i].server));
+    sprintf(logmsg,"%s, Dispatching node %s to %s",now(),path,Server(server,actions[i].server));
     TreeFree(path);
     (*Output)(logmsg);
     return;
@@ -549,7 +552,7 @@ static void Dispatch(int i)
   }
   else
   {
-    status = ServerDispatchAction(0, Server(actions[i].server), tree, shot, actions[i].nid, ActionDone, (void *)i, &actions[i].status,
+    status = ServerDispatchAction(0, Server(server,actions[i].server), tree, shot, actions[i].nid, ActionDone, (void *)i, &actions[i].status,
                                     Before);
     if (status & 1)
       actions[i].dispatched = 1;

@@ -30,6 +30,6 @@ void (*)(struct dsc$descriptor *)SERVER$GET_DETAIL_PROC()
 
 ------------------------------------------------------------------------------*/
 
-static void (*DetailProc)();
-void ServerSetDetailProc(void (*detail_proc)()) { DetailProc = detail_proc;}
-void (*ServerGetDetailProc())() { return DetailProc;}
+static char *(*DetailProc)() = 0;
+void ServerSetDetailProc(char *(*detail_proc)()) { DetailProc = detail_proc;}
+char * (*ServerGetDetailProc())() { return DetailProc;}

@@ -88,6 +88,7 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
   {
   case SrvAbort:
     {
+      ServerSetDetailProc(0);
       KillThread();
       AbortJob(GetCurrentJob());
       ReleaseCurrentJob();
@@ -275,6 +276,7 @@ static void *Worker(void *arg)
     if (job)
     {
       char *save_text;
+      ServerSetDetailProc(0);
       SetCurrentJob(job);
       if ((job->h.flags & SrvJobBEFORE_NOTIFY) != 0)
         SendReply(job,SrvJobSTARTING,1,0,0);
@@ -469,13 +471,33 @@ static int ShowCurrentJob(struct descriptor_xd *ans)
   char *ans_c;
   struct descriptor ans_d = {0, DTYPE_T, CLASS_S, 0};
   if (job_text == 0)
-    job_text = "Inactive";
-  ans_c = malloc(100+strlen(job_text));
-  LogPrefix(ans_c);
-  strcat(ans_c,job_text);
+  {
+    ans_c = malloc(120);
+    LogPrefix(ans_c);
+    strcat(ans_c,"Inactive");
+  }
+  else
+  {
+    char * (*detail_proc)(int);
+    char * detail;
+    if (((detail_proc = ServerGetDetailProc()) != 0) && ((detail = (*detail_proc)(1))!=0))
+    {
+      ans_c = malloc(100+strlen(job_text)+strlen(detail));
+      LogPrefix(ans_c);
+      strcat(ans_c,job_text);
+      strcat(ans_c,detail);
+    }
+    else
+    {
+      ans_c = malloc(100+strlen(job_text));
+      LogPrefix(ans_c);
+      strcat(ans_c,job_text);
+    }
+  }
   ans_d.length = strlen(ans_c);
   ans_d.pointer = ans_c;
   MdsCopyDxXd(&ans_d,ans);
+  free(ans_c);
   return 1;
 }
 
