@@ -1,0 +1,9 @@
+LIBRARY	tdishrext
+EXPORTS
+;
+rMdsOpen
+rMdsClose
+rMdsDisconnect
+rMdsList
+rMdsValue
+rMdsCurrent
