@@ -27,6 +27,7 @@
 	Pack Macro timings				3.25	3.50		3.40
 	Unpack Macro timings				3.01	3.07		3.02
 */
+#include <config.h>
 #include <STATICdef.h>
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 STATIC_CONSTANT unsigned int masks[33] = {0,
