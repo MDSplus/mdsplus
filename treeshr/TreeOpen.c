@@ -1181,6 +1181,7 @@ int       _TreeOpenEdit(void **dbid, char *tree_in, int shot_in)
 	    (*dblist)->open_readonly = 0;
 	    info->root = info->node;
 	    (*dblist)->default_node = info->root;
+            TreeOpenNciW(info);
 	  }
 	}
 	else

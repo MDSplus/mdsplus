@@ -61,7 +61,7 @@ int TreeTurnOff(int nid) { return _TreeTurnOff(DBID, nid);}
 
 int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci);
 
-static int OpenNciW(TREE_INFO *info);
+int TreeOpenNciW(TREE_INFO *info);
 static int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state);
 static int UnlockNci(TREE_INFO *info, int node_num);
 static int SetNodeParentState(PINO_DATABASE *db, NODE *node, NCI *nci, unsigned int state);
@@ -196,12 +196,6 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
   if OK so far then
   fill in the rab and read the record
 ******************************************/
-  if ((info->edit != 0) && info->edit->nci == 0 && ((info->nci_file == 0) || (info->nci_file->put == 0)))
-  {
-    status = OpenNciW(info);
-    if (!(status & 1))
-      return status;
-  }
   if ((info->edit == 0) || (node_num < info->edit->first_in_mem))
   {
 #ifdef __VMS
@@ -209,7 +203,7 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
 #else /* __VMS */
     if ((info->nci_file == 0) || (info->nci_file->put == 0))
 #endif
-      status = OpenNciW(info);
+      status = TreeOpenNciW(info);
     if (status & 1)
     {
       nci_num = node_num + 1;
@@ -243,7 +237,7 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
 
 /*------------------------------------------------------------------------------
 
-		Name: OpenNciW
+		Name: TreeOpenNciW
 
 		Type:   C function
 
@@ -271,7 +265,7 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
 
 
 +-----------------------------------------------------------------------------*/
-static int OpenNciW(TREE_INFO *info)
+int TreeOpenNciW(TREE_INFO *info)
 {
   int       status;
 
@@ -392,7 +386,7 @@ static int OpenNciW(TREE_INFO *info)
 		rab.rab$b_rac = RAB$C_SEQ;
 		status = sys$put(&rab, 0, 0);
 		if (status & 1)
-		  return OpenNciW(info);
+		  return TreeOpenNciW(info);
 	      }
 	    }
 	  }
