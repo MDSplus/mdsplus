@@ -14,7 +14,7 @@ X_EXTRA_LIBS=@X_EXTRA_LIBS@
 X_PRE_LIBS=@X_PRE_LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 MOTIF_LIBS = @MOTIF_LDARC@ @XM_LIBS@ @MOTIF_LDSHARE@ @LIBXP@ @LIBXEXT@
-MLIBS = $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) @LIBPTHREAD@ $(LIBS)
+MLIBS = $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS)
 SOURCES = dwscope.c dwscopesubs.c dwpad.c RemoteDummies.c evaluate.c
 OBJECTS = $(SOURCES:.c=.o) evaluate_local.o
 
