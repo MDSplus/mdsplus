@@ -72,6 +72,7 @@ public class DeviceSetup extends JDialog
         setSize(width, height);
         //getContentPane().setLayout(new BorderLayout());
     }
+
     public void configure(RemoteTree subtree, int baseNid)
     {
         NidData oldNid = null;
@@ -322,5 +323,42 @@ public class DeviceSetup extends JDialog
 	    }
 	}
 
+        public static void activateDeviceSetup(String deviceName, String experiment, int shot, String rootName, int x, int y)
+        {
+          Database tree = new Database(experiment, shot);
+          try {
+            tree.open();
+          }catch(Exception exc) {
+              JOptionPane.showMessageDialog(null,
+                                            "Error opening tree " + experiment + " shot " + shot + ": " + exc, "Error in Device Setup",JOptionPane.ERROR_MESSAGE);
+              return;
+          }
+          NidData nid;
+          try {
+            nid = tree.resolve(new PathData(rootName), 0);
+          }catch(Exception exc) {
+              JOptionPane.showMessageDialog(null,
+                                            "Cannot find node " + rootName + ": " + exc, "Error in Device Setup",JOptionPane.ERROR_MESSAGE);
+              return;
+          }
+          try {
+            String deviceClassName = deviceName +"Setup";
+            Class deviceClass = Class.forName(deviceClassName);
+            DeviceSetup ds = (DeviceSetup)deviceClass.newInstance();
+            ds.configure(tree, nid.getInt());
+            if(ds.getContentPane().getLayout() != null)
+              ds.pack();
+            ds.setLocation(x,y);
+            ds.show();
+          }catch(Exception exc) {
+               JOptionPane.showMessageDialog(null,
+                                             "Cannot activate Setup dir device " + deviceName + ": " + exc, "Error in Device Setup",JOptionPane.ERROR_MESSAGE);
+           }
+        }
+        public static void main(String args[])
+        {
+          DeviceSetup.activateDeviceSetup("T2Control", "T2", -1, "\\T2", 100, 100);
+        }
 }
+
 

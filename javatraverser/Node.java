@@ -19,7 +19,7 @@ public class Node
     NodeBeanInfo bean_info = null;
     Tree hierarchy;
     static Node copiedNode = null;
-    
+
     public Node(RemoteTree experiment, Tree hierarchy) throws DatabaseException, RemoteException
     {
 	    this.experiment = experiment;
@@ -31,7 +31,7 @@ public class Node
 	    sons = new Node[0];
 	    members = new Node[0];
     }
-    
+
     public Node(RemoteTree experiment, Tree hierarchy, Node parent, boolean is_member, NidData nid)
     {
 	    this.experiment = experiment;
@@ -40,37 +40,37 @@ public class Node
 	    this.parent = parent;
 	    try {
 	        info = experiment.getInfo(nid, Tree.context);
-	    }catch(Exception e) 
+	    }catch(Exception e)
 	    {
 	        System.out.println("Error getting info " + e);
 	    }
 	    sons = new Node[0];
 	    members = new Node[0];
-	    
+
     }
-    
+
     public void setSubtree() throws DatabaseException, RemoteException
     {
         experiment.setSubtree(nid, Tree.context);
 	    try {
 	        info = experiment.getInfo(nid, Tree.context);
 	        tree_label = null;
-	    }catch(Exception e) 
+	    }catch(Exception e)
 	    {
 	        System.out.println("Error getting info " + e);
 	    }
     }
-    
+
     public void updateData() throws DatabaseException, RemoteException
     {
 	data = experiment.getData(nid, Tree.context);
     }
-    
+
     public void updateInfo() throws DatabaseException, RemoteException
     {
 	    info = experiment.getInfo(nid, Tree.context);
     }
-    
+
     public void expand() throws DatabaseException, RemoteException
     {
 	    int i;
@@ -85,7 +85,7 @@ public class Node
 	    for(i = 0; i < members_nid.length; i++)
 	        members[i] = new Node(experiment, hierarchy, this, true, members_nid[i]);
     }
-    
+
     public void setDefault() throws DatabaseException, RemoteException
     {
 	    experiment.setDefault(nid, Tree.context);
@@ -97,32 +97,32 @@ public class Node
 	    else
 	        experiment.setOn(nid, true, Tree.context);
     }
-    
+
     public void turnOn()
     {
 	try {
 	    experiment.setOn(nid, true, Tree.context);
 	}catch(Exception e) {System.out.println("Error turning on " + e.getMessage());}
-    }    
+    }
     public void turnOff()
     {
 	try {
 	    experiment.setOn(nid, false, Tree.context);
 	}catch(Exception e) {System.out.println("Error turning on " + e.getMessage());}
-    }    
-    
+    }
+
     public void doAction() throws DatabaseException, RemoteException
     {
         try {
             experiment.doAction(nid, Tree.context);
         }catch(Exception e) {
-		    JOptionPane.showMessageDialog(null, e.getMessage(), 
+		    JOptionPane.showMessageDialog(null, e.getMessage(),
 		        "Error executing message", JOptionPane.WARNING_MESSAGE);
 		}
-        
+
     }
-    
-    public void setData(Data data) throws DatabaseException, RemoteException 
+
+    public void setData(Data data) throws DatabaseException, RemoteException
     {
 	this.data = data;
 	experiment.putData(nid, data, Tree.context);
@@ -148,13 +148,13 @@ public class Node
 	 }catch (Exception e) {System.out.println("Error checking state "+e);}
 	 return false;
     }
-    public void setupDevice() 
+    public void setupDevice()
     {
         ConglomData conglom = null;
         try{
             conglom = (ConglomData)experiment.getData(nid, Tree.context);
         } catch(Exception e) {
- 		    JOptionPane.showMessageDialog(FrameRepository.frame, e.getMessage(), 
+ 		    JOptionPane.showMessageDialog(FrameRepository.frame, e.getMessage(),
 		        "Error in device setup 1", JOptionPane.WARNING_MESSAGE);
         }
         if(conglom != null)
@@ -178,17 +178,17 @@ public class Node
                     return;
                 }catch(Exception e)
                 {
- 		            JOptionPane.showMessageDialog(FrameRepository.frame, e.getMessage(), 
-		                "Error in device setup " + e, JOptionPane.WARNING_MESSAGE);
+ 		            JOptionPane.showMessageDialog(FrameRepository.frame, e.getMessage(),
+		                "Error in device setup: " + e, JOptionPane.WARNING_MESSAGE);
 		            e.printStackTrace();
 		            return;
                 }
             }
         }
- 		JOptionPane.showMessageDialog(null, "Missing model in descriptor", 
+ 		JOptionPane.showMessageDialog(null, "Missing model in descriptor",
 		        "Error in device setup 3", JOptionPane.WARNING_MESSAGE);
     }
-        
+
     public boolean isDefault()
     {
 	NidData curr_nid = null;
@@ -198,7 +198,7 @@ public class Node
 	return curr_nid.datum == nid.datum;
     }
     public int getUsage() {return info.usage; }
-    
+
     public NodeBeanInfo getBeanInfo()
     {
 	if(bean_info == null)
@@ -207,11 +207,11 @@ public class Node
     }
     public String [] getTags() {
         try {
-            return experiment.getTags(nid, Tree.context); 
+            return experiment.getTags(nid, Tree.context);
         }catch(Exception exc){return null; }
     }
-        
-        
+
+
     public void setTags(String[] tags) throws DatabaseException, RemoteException
     {
 	experiment.setTags(nid, tags, Tree.context);
@@ -222,15 +222,15 @@ public class Node
 	    try {
 		info = experiment.getInfo(nid, Tree.context);
 	    } catch (Exception e) {System.out.println("Error getting NCI " + e); }
-	return info.getFullPath(); 
+	return info.getFullPath();
     }
-    public String getName() 
+    public String getName()
     {
     	if(info == null)
 	    try {
 		info = experiment.getInfo(nid, Tree.context);
 	    } catch (Exception e) {System.out.println("Error getting NCI " + e); }
-	return info.getName(); 
+	return info.getName();
     }
     public Node[] getSons() {return sons; }
     public Node[] getMembers() {return members; }
@@ -273,7 +273,7 @@ public class Node
 		    info = experiment.getInfo(nid, Tree.context);
 	        new_nid = experiment.addDevice(name, type, Tree.context);
 	    } finally {
-	        experiment.setDefault(prev_default, Tree.context); 
+	        experiment.setDefault(prev_default, Tree.context);
 	    }
 	    Node newNode = new Node(experiment, hierarchy, this, true, new_nid);
 	    if(name.charAt(0) == '.')
@@ -295,8 +295,8 @@ public class Node
 	    return newNode;
     }
 
-	 
-	 
+
+
     public Node addChild(String name) throws DatabaseException, RemoteException
     {
 	NidData prev_default = experiment.getDefault(Tree.context), new_nid;
@@ -309,7 +309,7 @@ public class Node
 	experiment.setDefault(prev_default, Tree.context);
 	return new Node(experiment, hierarchy, this, true, new_nid);
     }
-	 
+
     public int startDelete()
     {
 	NidData []nids = {nid};
@@ -318,7 +318,7 @@ public class Node
 	}catch(Exception e) {System.out.println("Starting delete: " + e.getMessage());}
 	return 0;
     }
-    
+
     public void executeDelete()
     {
 	NidData []nids = {nid};
@@ -326,8 +326,8 @@ public class Node
 	    experiment.executeDelete(Tree.context);
 	}catch(Exception e) {System.out.println("Error executing delete: " + e.getMessage());}
     }
-    
-    void rename(String new_name) throws DatabaseException, RemoteException 
+
+    void rename(String new_name) throws DatabaseException, RemoteException
     {
         experiment.renameNode(nid, new_name, Tree.context);
 	    info = experiment.getInfo(nid, Tree.context);
@@ -341,7 +341,7 @@ public class Node
         String newFullName = prevName.substring(0, curr + 1)+ newName;
         rename(newFullName);
     }
-        
+
 
 
     private ImageIcon loadIcon(String gifname)
@@ -349,7 +349,7 @@ public class Node
       String base = System.getProperty("icon_base");
       return (base == null) ? new ImageIcon(ClassLoader.getSystemResource(gifname)) : new ImageIcon(base + "/" + gifname);
     }
-        
+
     public JLabel getIcon()
     {
         if(info == null) return null;
@@ -371,7 +371,7 @@ public class Node
 	    case NodeInfo.USAGE_SUBTREE: icon = loadIcon("subtree.gif");break;
 	    case NodeInfo.USAGE_COMPOUND_DATA: icon = loadIcon("compound.gif");break;
 	}
-	
+
 	if(is_member)
 	    tree_label = new TreeNode(this, ": " + info.name, icon);
 	else
@@ -380,7 +380,7 @@ public class Node
     }
 
     public String toString() {return getName(); }
-   
+
     static public void pasteSubtree(Node fromNode, Node toNode, boolean isMember)
     {
         DefaultMutableTreeNode savedTreeNode = Tree.getCurrTreeNode();
@@ -404,7 +404,7 @@ public class Node
             }
             else
             {
-                Node newNode = Tree.addNode(fromNode.getUsage(), 
+                Node newNode = Tree.addNode(fromNode.getUsage(),
                     (isMember?":":".")+getUniqueName(fromNode.getName().trim(), usedNames), toNode);
                 if(newNode == null) return;
                 newNode.expand();
@@ -424,12 +424,12 @@ public class Node
             }
         }catch(Exception exc)
  		{
- 		    JOptionPane.showMessageDialog(FrameRepository.frame, ""+exc, 
+ 		    JOptionPane.showMessageDialog(FrameRepository.frame, ""+exc,
 		        "Error copying subtree", JOptionPane.WARNING_MESSAGE);
 		}
-        Tree.setCurrTreeNode(savedTreeNode);        
+        Tree.setCurrTreeNode(savedTreeNode);
     }
- 
+
     public static void copySubtreeContent(Node fromNode, Node toNode)
     {
         try {
@@ -451,9 +451,9 @@ public class Node
             copySubtreeContent(fromNode.sons[i], toNode.sons[i]);
         for(int i = 0; i < fromNode.members.length; i++)
             copySubtreeContent(fromNode.members[i], toNode.members[i]);
-    }    
-    
-    
+    }
+
+
     public static String getUniqueName(String name, String [] usedNames)
     {
         int i;
@@ -475,10 +475,9 @@ public class Node
         }
         return "XXXXXXX"; //Dummy name, hopefully will never reach this
     }
-            
+
 }
-    
-        
-	
-	
-	    	    
+
+
+
+
