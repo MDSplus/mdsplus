@@ -104,6 +104,7 @@ public class CAMERASetup extends DeviceSetup {
     flowLayout3.setHgap(0);
     flowLayout3.setVgap(0);
     deviceField1.setOffsetNid(1);
+    deviceField1.setTextOnly(true);
     deviceField1.setLabelString("Comment: ");
     deviceField1.setNumCols(35);
     deviceField1.setIdentifier("");

@@ -349,7 +349,8 @@ public class Node
     private ImageIcon loadIcon(String gifname)
     {
       String base = System.getProperty("icon_base");
-      return (base == null) ? new ImageIcon(ClassLoader.getSystemResource(gifname)) : new ImageIcon(base + "/" + gifname);
+//      return (base == null) ? new ImageIcon(ClassLoader.getSystemResource(gifname)) : new ImageIcon(base + "/" + gifname);
+      return (base == null) ? new ImageIcon(getClass().getClassLoader().getResource(gifname)) : new ImageIcon(base + "/" + gifname);
     }
 
     public JLabel getIcon()

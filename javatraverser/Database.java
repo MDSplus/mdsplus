@@ -8,26 +8,35 @@ public class Database implements RemoteTree{
     boolean is_editable = false;
     static {
         try {
-	    System.loadLibrary("JavaMds");
-	    }catch(Throwable e) {System.out.println("Cannot load library " + e); }
+          System.loadLibrary("mdsshr");
+          System.loadLibrary("mdsipshr");
+          System.loadLibrary("treeshr");
+          System.loadLibrary("tdishr");
+          System.loadLibrary("javamds");
+	    }
+            catch(Throwable e)
+            {
+              System.out.println("Cannot load library " + e);
+              e.printStackTrace();
+            }
     }
     public Database() {super();}
     public Database(String name, int shot)
     {
 	this.name = name.toUpperCase();
-	this.shot = shot;	
+	this.shot = shot;
     }
     public void setTree(String name, int shot)
     {
         this.name = name.toUpperCase();
         this.shot = shot;
     }
-    
+
     public void setEditable(boolean editable)
     {
         this.is_editable = editable;
     }
-    
+
     public void setReadonly(boolean readonly)
     {
         this.is_readonly = readonly;
@@ -82,6 +91,5 @@ public class Database implements RemoteTree{
     public native void setCurrentShot(String experiment, int shot);
     public native String getOriginalPartName(NidData nid) throws DatabaseException;
     public native void setFlags(NidData nid, int flags) throws DatabaseException;
-  }  
-    
-    
+  }
+

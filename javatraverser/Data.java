@@ -1,5 +1,5 @@
 //package jTraverser;
-/** Abstract class Data defines the general concept of data. At this level only a list of 
+/** Abstract class Data defines the general concept of data. At this level only a list of
 DataListeners is maintained, as well as methods to notify a data change to the element of this list.
 */
 import java.util.*;
@@ -16,21 +16,29 @@ public abstract class Data implements Serializable
 */    int dclass;
     int dtype;
     Vector data_listeners = new Vector();
-    public Data() 
+    public Data()
     {
         if(!library_loaded)
         {
             library_loaded = true;
             try {
-	        System.loadLibrary("JavaMds");
-	        }catch(Throwable e) {}
+              System.loadLibrary("mdsshr");
+              System.loadLibrary("mdsipshr");
+              System.loadLibrary("treeshr");
+              System.loadLibrary("tdishr");
+              System.loadLibrary("javamds");
+	        }catch(Throwable e)
+                {
+                  System.out.println("Load library "+e);
+                  e.printStackTrace();
+                }
 	    }
     }
     native static public Data fromExpr(String text_descr);
     native public String toString();
     native static public int evaluate(String expression);
-    
-    
+
+
     public void AddDataListener(DataListener dl)
     {
 	data_listeners.addElement(dl);
@@ -40,33 +48,33 @@ public abstract class Data implements Serializable
 	for(int i = 0; i < data_listeners.size(); i++)
 	    ((DataListener)(data_listeners.elementAt(i))).DataChanged(this);
     }
-    public int getInt() throws IllegalDataException		    
+    public int getInt() throws IllegalDataException
     {
-	throw new IllegalDataException("Conversion to int not supported", this); 
+	throw new IllegalDataException("Conversion to int not supported", this);
     }
-    public float getFloat() throws IllegalDataException	    
+    public float getFloat() throws IllegalDataException
     {
 	throw new IllegalDataException("Conversion to float not supported", this);
     }
-    public double getDouble() throws IllegalDataException	    
+    public double getDouble() throws IllegalDataException
     {
 	throw new IllegalDataException("Conversion to double not supported", this);
     }
-    public int[] getIntArray() throws IllegalDataException		    
+    public int[] getIntArray() throws IllegalDataException
     {
-	throw new IllegalDataException("Conversion to int array not supported", this); 
+	throw new IllegalDataException("Conversion to int array not supported", this);
     }
-    public float[] getFloatArray() throws IllegalDataException	  
+    public float[] getFloatArray() throws IllegalDataException
     {
-	throw new IllegalDataException("Conversion to float array not supported", this); 
+	throw new IllegalDataException("Conversion to float array not supported", this);
     }
-    public double[] getDoubleArray() throws IllegalDataException	  
+    public double[] getDoubleArray() throws IllegalDataException
     {
-	throw new IllegalDataException("Conversion to double array not supported", this); 
+	throw new IllegalDataException("Conversion to double array not supported", this);
     }
-    public String getString() throws IllegalDataException		    
+    public String getString() throws IllegalDataException
     {
-	throw new IllegalDataException("Conversion to String not supported", this); 
+	throw new IllegalDataException("Conversion to String not supported", this);
     }
     abstract boolean isAtomic();
 
@@ -107,15 +115,14 @@ public abstract class Data implements Serializable
     public static final int DTYPE_WITH_UNITS = 211;
     public static final int DTYPE_CALL = 212;
     public static final int DTYPE_WITH_ERROR = 213;
-    
-    
+
+
     public static final int CLASS_S = 1;
     public static final int CLASS_D = 2;
     public static final int CLASS_A = 4;
     public static final int CLASS_R = 194;
     public static final int CLASS_APD = 196;
 }
-    
-	
-	
-    
+
+
+
