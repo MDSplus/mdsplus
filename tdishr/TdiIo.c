@@ -76,7 +76,8 @@ static int TdiGetUnit(struct descriptor *in_ptr, FILE **unit)
 		string = DATE_TIME([quadword time])
 */
 TdiRefStandard(Tdi1DateTime)
-int	len, time[2] = {0,0}, *ptime;
+int	time[2] = {0,0}, *ptime;
+unsigned short len;
 static unsigned char dtype = (unsigned char)DTYPE_T;
 static unsigned short length = 23;
 
@@ -89,7 +90,7 @@ static unsigned short length = 23;
 	else ptime = 0;
 	if (status & 1) status = MdsGet1DxS(&length, &dtype, out_ptr);
 	if (status & 1) status = LibSysAscTim(&len, out_ptr->pointer, ptime, 0);
-	if (status & 1) out_ptr->pointer->length = (unsigned short)len;
+	if (status & 1) out_ptr->pointer->length = len;
 	return status;
 }
 /*----------------------------------------------
