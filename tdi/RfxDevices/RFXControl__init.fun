@@ -64,7 +64,7 @@ write(*, 'RFXControl init');
 
 	write(*, 'Frequency: ', _frequency);
 	_period = 1. / _frequency;
-	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackPeriod', float(_period));
+	_status = MdsValue('variables->setFloatVariable($1, $2)', 'feedbackPeriod', float(_period));
 
 
 	_sys_duration = data(DevNodeRef(_nid, _N_SYS_DURAT));
@@ -75,7 +75,11 @@ write(*, 'RFXControl init');
 	}
 
 	write(*, 'System duration: ', _sys_duration);
-	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackSystemDuration', float(_sys_duration));
+
+
+	_status = MdsValue('variables->setFloatVariable($1, $2)', 'feedbackSystemDuration', float(_sys_duration));
+
+	write(*, 'SET');
 
 	_contr_duration = data(DevNodeRef(_nid, _N_CONTR_DURAT));
 	if(_contr_duration <= 0)
@@ -90,7 +94,7 @@ write(*, 'RFXControl init');
 	}
 
 	write(*, 'Control duration: ', _contr_duration);
-	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackControlDuration', float(_contr_duration));
+	_status = MdsValue('variables->setFloatVariable($1, $2)', 'feedbackControlDuration', float(_contr_duration));
 
 write(*, 'LEGGO TRIG1');
 	_trig1_time = data(DevNodeRef(_nid, _N_TRIG1_TIME));
@@ -103,9 +107,9 @@ write(*, _trig1_time);
 	}
 
 	write(*, 'Trigger 1 time: ', _trig1_time);
-	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackTrig1Time', float(_trig1_time));
+	_status = MdsValue('variables->setFloatVariable($1, $2)', 'feedbackTrig1Time', float(_trig1_time));
 	write(*, 'Trigger 2 time: ', _trig2_time);
-	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackTrig2Time', float(_trig2_time));
+	_status = MdsValue('variables->setFloatVariable($1, $2)', 'feedbackTrig2Time', float(_trig2_time));
 
 
 
@@ -122,7 +126,7 @@ write(*, _trig1_time);
 
 	_start_time = data(DevNodeRef(_nid, _N_PRE_TIME));
  	write(*, 'Start sampling time: ', _start_time);
-	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackPreTriggerSamples', long( - _start_time * _frequency));
+	_status = MdsValue('variables->setIntVariable($1, $2)', 'feedbackPreTriggerSamples', long( - _start_time * _frequency));
 
 
 	_end_time = data(DevNodeRef(_nid, _N_POST_TIME));
@@ -133,7 +137,7 @@ write(*, _trig1_time);
 	}
 
 	write(*, 'End sampling time: ', _end_time);
-	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackPostTriggerSamples', long(_end_time * _frequency));
+	_status = MdsValue('variables->setIntVariable($1, $2)', 'feedbackPostTriggerSamples', long(_end_time * _frequency));
 
 
 
@@ -144,7 +148,7 @@ write(*, _trig1_time);
 		abort();
 	}
 	write(*, 'Trig1 Control: ', _control_idx);
-	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackTrig1Control', long(_control_idx));
+	_status = MdsValue('variables->setIntVariable($1, $2)', 'feedbackTrig1Control', long(_control_idx));
 
 	_control_idx = data(DevNodeRef(_nid, _N_TRIG2_CONTROL));
 	if(_control_idx < 0 || _control_idx > _MAX_CONTROLS)
@@ -157,59 +161,60 @@ write(*, _trig1_time);
 
 
 	write(*, 'Trig2 Control: ', _control_idx);
-	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackTrig2Control', long(_control_idx));
+	_status = MdsValue('variables->setIntVariable($1, $2)', 'feedbackTrig2Control', long(_control_idx));
 
 
 
 	_in_calibration = data(DevNodeRef(_nid, _N_IN_CALIB));
 /*	write(*, 'Calibration: ', _calibration);*/
-	_status = MdsValue('Feedback->setInputCalibration($1, $2)', float(_in_calibration), 192);
+	_status = MdsValue('support->setInputCalibration($1, $2)', float(_in_calibration), 192);
 	
 	_out_calibration = data(DevNodeRef(_nid, _N_OUT_CALIB));
 /*	write(*, 'Calibration: ', _calibration);*/
-	_status = MdsValue('Feedback->setOutputCalibration($1, $2)', float(_out_calibration), 96);
+	_status = MdsValue('support->setOutputCalibration($1, $2)', float(_out_calibration), 96);
 
 
 	_zero_start = data(DevNodeRef(_nid, _N_ZERO_START));
 	write(*, 'Zero Start: ', _zero_start);
-	_status = MdsValue('Feedback->setFloatVariable("feedbackAutozeroStart", $1)', float(_zero_start));
+	_status = MdsValue('variables->setFloatVariable("feedbackAutozeroStart", $1)', float(_zero_start));
 	_zero_end = data(DevNodeRef(_nid, _N_ZERO_END));
-	_status = MdsValue('Feedback->setFloatVariable("feedbackAutozeroEnd", $1)', float(_zero_end));
+	_status = MdsValue('variables->setFloatVariable("feedbackAutozeroEnd", $1)', float(_zero_end));
 	write(*, 'Zero End: ', _zero_end);
 
 
 	_ramp_trigger = data(DevNodeRef(_nid, _N_RAMP_TRIGGER));
-	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackRampDownTrigger', long(_ramp_trigger));
+	_status = MdsValue('variables->setIntVariable($1, $2)', 'feedbackRampDownTrigger', long(_ramp_trigger));
 
 	_ramp_slope = data(DevNodeRef(_nid, _N_RAMP_SLOPE));
-	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackRampDownSlope', float(_ramp_slope));
+	_status = MdsValue('variables->setFloatVariable($1, $2)', 'feedbackRampDownSlope', float(_ramp_slope));
 
     DevNodeCvt(_nid, _N_FEEDFORWARD, ['DISABLED', 'ENABLED'], [0,1], _feedforward = 0);
-	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackFeedForward', long(_feedforward));
+	_status = MdsValue('variables->setIntVariable($1, $2)', 'feedbackFeedForward', long(_feedforward));
 
 	
     for(_par = 0; _par < _NUM_PARAMETERS; _par++)
 	{
 
 		_par_name = data(DevNodeRef(_nid, _N_PAR1_NAME + _par * 2));
+
 	    if(DevIsOn(DevNodeRef(_nid, _N_PAR1_VALUE + _par * 2)))
 		{
 			_par_value = data(DevNodeRef(_nid, _N_PAR1_VALUE + _par * 2));
 			if(size(_par_value) > 1)
-				_status = MdsValue('Feedback->setFloatArray($1, $2, $3)', 'feedback'//_par_name, float(_par_value), size(_par_value));
+				_status = MdsValue('variables->setFloatArray($1, $2, $3)', 'feedback'//_par_name, float(_par_value), size(_par_value));
 			else
-				_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedback'//_par_name, float(_par_value));
+				_status = MdsValue('variables->setFloatVariable($1, $2)', 'feedback'//_par_name, float(_par_value));
 		}
 		else
-			_status = MdsValue('Feedback->setFloatVariable($1, 0.)', 'feedback'//_par_name//'Length');
+			_status = MdsValue('variables->setFloatVariable($1, 0.)', 'feedback'//_par_name//'Length');
 
 	}
 
 
 	_routine_name= data(DevNodeRef(_nid, _N_ROUTINE_NAME));
 	write(*, _routine_name);
-	_status = MdsValue('feedback->stop'// _routine_name // '()');
-	_status = MdsValue('feedback->start'// _routine_name // '()');
+	_status = MdsValue('eda3->stop'// _routine_name // '()');
+	_status = MdsValue('eda3->start'// _routine_name // '()');
 
     MdsDisconnect();
     return (1);

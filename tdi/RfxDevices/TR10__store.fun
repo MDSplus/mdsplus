@@ -28,6 +28,8 @@ public fun TR10__store(as_is _nid, optional _method)
 
 	_max_samples = _2M;
 
+write(*, 'TR10 STORE');
+
      _board_id=if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
     if(_board_id == _INVALID)
     {
@@ -66,6 +68,7 @@ public fun TR10__store(as_is _nid, optional _method)
 	}
 	else
 	{
+write(*, 'TR10 START STORE');
 		_handle = TR10HWStartStore(_nid, _board_id, _pts);
 		if(_handle == -1)
 		{
@@ -93,6 +96,7 @@ public fun TR10__store(as_is _nid, optional _method)
 			}
 			else
 			{
+write(*, 'TR10 READ CHAN');
 				_data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts);					  }						
 
 	/* Build signal */
