@@ -360,7 +360,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
 {
   int       status = TreeNORMAL;
   int       bytes_to_put = swapint((char *)&nci_ptr->DATA_INFO.DATA_LOCATION.record_length);
-  info->data_file->record_header->node_number = nodenum;
+  info->data_file->record_header->node_number = swapint((char *)&nodenum);
   memset(&info->data_file->record_header->rfa,0,sizeof(RFA));
   while (bytes_to_put && (status & 1))
   {
@@ -373,6 +373,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
       eof = lseek(info->data_file->put,0,SEEK_END);
       bytes_to_put -= bytes_this_time;
       info->data_file->record_header->rlength = (unsigned short)(bytes_this_time + 10);
+      info->data_file->record_header->rlength = swapshort((char *)&info->data_file->record_header->rlength);
       status = (write(info->data_file->put,(void *) info->data_file->record_header,sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
                     ? TreeNORMAL : TreeFAILURE;
       status = (write(info->data_file->put,(void *) (((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put), bytes_this_time) == bytes_this_time)
