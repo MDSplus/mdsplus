@@ -1002,7 +1002,9 @@ public class MdsDataProvider implements DataProvider
         //To shot evaluation don't execute check
         //if a pulse file is open
         CheckConnection();
-        return GetLongArray(in);
+        try {
+          return GetLongArray(in);
+        }catch(Exception exc){return null;}
     }
 
 
