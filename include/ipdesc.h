@@ -1,4 +1,5 @@
 /*  CMS REPLACEMENT HISTORY, Element IPDESC.H */
+/*  *22   12-JAN-1999 16:13:39 JMS "Removed function prototypes for MdsOpen, MdsValue etc. */
 /*  *21   21-APR-1998 11:16:34 TWF "Add MakeDescripWidthLen" */
 /*  *20   17-APR-1998 10:57:54 TWF "Add MakeDescr prototype" */
 /*  *19   17-APR-1998 10:56:53 TWF "Add MakeDescr prototype" */
@@ -54,14 +55,9 @@ extern SOCKET ConnectToMds();
 extern SOCKET ConnectToMdsEvents();
 extern int  SendArg();
 extern int  GetAnswerInfo();
-extern int   MdsValue();
-extern int   MdsPut();
 extern int   DisconnectFromMds();
 extern struct descrip *MakeDescrip();
 extern struct descrip *MakeDescripWithLength();
-extern int   MdsOpen();
-extern int   MdsSetDefault();
-extern int   MdsClose();
 extern int   MdsEventAst();
 extern int   MdsEventCan();
 #else
@@ -71,14 +67,9 @@ extern int  SendArg(SOCKET s,unsigned char i,char dtype,unsigned char nargs,shor
                                  char *ptr);
 extern int   GetAnswerInfo(SOCKET s, char *dtype, short *len, char *ndims, int *dims, 
 			  int *nbytes, void * *dptr);
-extern int   MdsValue(SOCKET sock, char *,...);
-extern int   MdsPut(SOCKET sock, char *node, char *expression,...);
 extern int   DisconnectFromMds(SOCKET sock);
 extern struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype, char ndims, int *dims, void *ptr);
 extern struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype, int length, char ndims, int *dims, void *ptr);
-extern int   MdsOpen(SOCKET sock, char *tree, int shot);
-extern int   MdsSetDefault(SOCKET sock, char *node);
-extern int   MdsClose(SOCKET sock);
 extern int   MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, void **eventid);
 extern int   MdsEventCan(SOCKET sock, void *eventid);
 #endif
