@@ -49,5 +49,5 @@ int ServerDispatchAction(int efn, char *server, char *tree, int shot, int nid,
   msg.shot = shot;
   msg.nid = nid;
   ServerSetLinkDownHandler(link_down_handler);
-  return ServerSendMessage(efn, 0, server, action, sizeof(msg), (char *)&msg, retstatus, ast, astprm, before_ast, netid);
+  return ServerSendMessage(0, server, action, sizeof(msg), (char *)&msg, retstatus, ast, astprm, before_ast, netid);
 }
