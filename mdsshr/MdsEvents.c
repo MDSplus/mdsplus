@@ -533,8 +533,8 @@ static int sendRemoteEvent(char *evname, int data_len, char *data)
     dsc.ndims = 0;
     dsc.length = data_len;
 
-    sprintf(expression, "MdsShr->MDS$EVENT(\"%s\", ref($))", evname);
-    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    sprintf(expression, "setevent(\"%s\", $)", evname);
+   status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
 	  status = (*rtn) (remote_id, expression, &dsc, &ansarg, NULL);
     return status;
