@@ -527,12 +527,12 @@ static void WaitForJob()
 {
   pthread_mutex_lock(&JobWaitMutex);
 #ifdef HAVE_WINDOWS_H
-  status = pthread_cond_timedwait(&JobWaitCondition, 100);
+  status = pthread_cond_timedwait(&JobWaitCondition, 1000);
 #else
   {
-    struct timespec hundred_millisec = {0,100000000};
+    struct timespec one_sec = {1,0};
     struct timespec abstime;
-    pthread_get_expiration_np(&hundred_millisec,&abstime);
+    pthread_get_expiration_np(&one_sec,&abstime);
     pthread_cond_timedwait( &JobWaitCondition, &JobWaitMutex, &abstime);
   }
 #endif
