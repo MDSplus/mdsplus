@@ -2,6 +2,7 @@
 #define SERVERSHRP_H
 #include <config.h>
 #ifdef HAVE_WINDOWS_H
+#include <windows.h>
 typedef void *pthread_t;
 extern int pthread_lock_global_np();
 extern int pthread_unlock_global_np();
@@ -15,6 +16,9 @@ extern int pthread_cond_wait();
 extern int pthread_create();
 extern int pthread_cleanup_push();
 extern int pthread_cleanup_pop();
+extern int pthread_detach();
+extern BOOL pthread_mutex_destroy();
+extern BOOL pthread_cond_destroy();
 #define close closesocket
 #else
 #include <pthread.h>

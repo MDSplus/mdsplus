@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <process.h>
+#include <stdio.h>
 #define ETIMEDOUT 42
 
 int pthread_mutex_init(HANDLE *mutex);
@@ -7,10 +8,20 @@ void pthread_mutex_lock(HANDLE *mutex);
 void pthread_mutex_unlock(HANDLE *mutex);
 
 
+void pthread_detach(HANDLE *thread)
+{
+	return;
+}
+
 int pthread_cond_init(HANDLE *cond)
 {
   *cond = CreateEvent(NULL,TRUE,FALSE,NULL);
   return (*cond == NULL);
+}
+
+BOOL pthread_cond_destroy(HANDLE *cond)
+{
+   return CloseHandle(*cond);
 }
 
 int pthread_cond_signal(HANDLE *cond)
@@ -56,6 +67,10 @@ int pthread_mutex_init(HANDLE *mutex)
   return (*mutex == NULL);
 }
 
+BOOL pthread_mutex_destroy(HANDLE *mutex)
+{
+  return CloseHandle(*mutex);
+}
 
 static HANDLE global_mutex = NULL;
 void pthread_unlock_global_np()

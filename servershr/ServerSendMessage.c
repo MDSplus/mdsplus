@@ -37,6 +37,7 @@ int ServerSendMessage();
 #include <stdio.h>
 #if defined(HAVE_WINDOWS_H)
 #include <windows.h>
+#define random rand
 #define close closesocket
 #else
 #include <sys/socket.h>
