@@ -163,10 +163,16 @@ int 		KsTranslateIosb( RequestSenseData *sense, int scsi_status );
 // local, global
 //-----------------------------------------------------------
 static TranslatedIosb	LastIosb;
-
+static int Verbose = 0;
 //-----------------------------------------------------------
 // helper routines
 //-----------------------------------------------------------
+int CamVerbose(int mode)
+{
+  Verbose = mode;
+  return 1;
+}
+
 int CamQ( TranslatedIosb *iosb )			// CAM$Q_SCSI()
 {
 	TranslatedIosb	*iosb_use;
@@ -680,14 +686,36 @@ static int CamAssign( char *Name, CamKey *Key )
 CamAssign_Exit:
 	return status;
 }
-
-//-----------------------------------------------------------
 // extract CAMAC status info for Jorway highways
 //-----------------------------------------------------------
-int JorwayTranslateIosb( SenseData *sense, int scsi_status )
+JorwayTranslateIosb( SenseData *sense, int scsi_status )
 {
   int status;
-	LastIosb.x=0;
+  if (Verbose)
+  {
+    printf("SCSI Sense data:  code=%d,valid=%d,sense_key=%d,word count deficit=%d\n\n",sense->code,sense->valid,
+                               sense->sense_key,
+                                                ((int)sense->word_count_defect[2])+
+                                                (((int)sense->word_count_defect[1])<<8)+
+                                                (((int)sense->word_count_defect[0])<<16));
+    printf("     Main status register:\n\n");
+    printf("                  bdmd=%d,dsne=%d,bdsq=%d,snex=%d,crto=%d,to=%d,no_x=%d,no_q=%d\n\n",
+                            sense->main_status_reg.bdmd,sense->main_status_reg.dsne,sense->main_status_reg.bdsq,
+                            sense->main_status_reg.snex,sense->main_status_reg.crto,sense->main_status_reg.to,
+                            sense->main_status_reg.no_x,sense->main_status_reg.no_q);
+    printf("     Serial status register:\n\n");
+    printf("                  cret=%d,timos=%d,rpe=%d,hdrrec=%d,cmdfor=%d,rnre1=%d,rnrg1=%d,snex=%d,hngd=%d\n",
+                            sense->serial_status_reg.cret,sense->serial_status_reg.timos,sense->serial_status_reg.rpe,
+                            sense->serial_status_reg.hdrrec,sense->serial_status_reg.cmdfor,
+                            sense->serial_status_reg.rnre1,sense->serial_status_reg.rnrg1,
+                            sense->serial_status_reg.snex,sense->serial_status_reg.hngd);
+    printf("                  sync=%d,losyn=%d,rerr=%d,derr=%d\n\n",sense->serial_status_reg.sync,
+                            sense->serial_status_reg.losyn,sense->serial_status_reg.rerr,
+                            sense->serial_status_reg.derr);
+    printf("                  Additional Sense Code=%d,slot=%d,crate=%d\n\n",sense->additional_sense_code,
+                              sense->slot_high_bit * 16 + sense->slot,sense->crate);
+  }
+        LastIosb.x=0;
         LastIosb.q=0;
         LastIosb.err=0;
         LastIosb.lpe=0;
