@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# This is an example spawn wrapper for MDSplus.
+# If the environment variable MDSPLUS_SPAWN_WRAPPER
+# is defined then calls to LibSpawn will go invoke
+# a wrapper script defined by this environment variable
+# to "screen" attempts to spawn command procedures.
+#
+user=`id -un`
+if (test "$user" = "nobody")
+then
+  echo $user attempted to spawn
+  exit 1
+else
+  $*
+fi
