@@ -225,6 +225,7 @@ public class RFXControlSetup extends DeviceSetup {
   DeviceField deviceField2 = new DeviceField();
   DeviceField deviceField14 = new DeviceField();
   DeviceDispatch deviceDispatch1 = new DeviceDispatch();
+  DeviceField deviceField15 = new DeviceField();
   public RFXControlSetup() {
     try {
       jbInit();
@@ -243,9 +244,9 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField1.setOffsetNid(1);
     deviceField1.setTextOnly(true);
     deviceField1.setLabelString("Comment: ");
-    deviceField1.setNumCols(50);
+    deviceField1.setNumCols(30);
     deviceField1.setIdentifier("");
-    deviceField1.setBounds(new Rectangle(4, 9, 729, 31));
+    deviceField1.setBounds(new Rectangle(4, 9, 468, 31));
     deviceField3.setOffsetNid(9);
     deviceField3.setLabelString("Trig1 time:");
     deviceField3.setNumCols(22);
@@ -947,26 +948,26 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField2113.setIdentifier("");
     jPanel1.setLayout(gridLayout3);
     gridLayout3.setRows(4);
-    deviceTable3.setOffsetNid(1040);
+    deviceTable3.setOffsetNid(1050);
     deviceTable3.setLabelString("Controllo 1");
     deviceTable3.setNumCols(5);
     deviceTable3.setNumRows(1);
     deviceTable3.setIdentifier("");
     deviceTable3.setColumnNames(new String[] {"Par1", "Par2", "Par3", "Par4", "Par5"});
     jPanel8.setLayout(flowLayout1);
-    deviceTable6.setOffsetNid(1042);
+    deviceTable6.setOffsetNid(1052);
     deviceTable6.setLabelString("Controllo 2:");
     deviceTable6.setNumCols(5);
     deviceTable6.setNumRows(1);
     deviceTable6.setIdentifier("");
     deviceTable6.setColumnNames(new String[] {"Par2", "Par2", "Par3", "Par4", "Par5"});
-    deviceTable5.setOffsetNid(1044);
+    deviceTable5.setOffsetNid(1054);
     deviceTable5.setLabelString("Controllo 3:");
     deviceTable5.setNumCols(5);
     deviceTable5.setNumRows(1);
     deviceTable5.setIdentifier("");
     deviceTable5.setColumnNames(new String[] {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5"});
-    deviceTable4.setOffsetNid(1046);
+    deviceTable4.setOffsetNid(1056);
     deviceTable4.setLabelString("Controllo 4");
     deviceTable4.setNumCols(5);
     deviceTable4.setNumRows(1);
@@ -1000,6 +1001,12 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField14.setIdentifier("");
     deviceField14.setBounds(new Rectangle(388, 222, 376, 30));
     deviceDispatch1.setBounds(new Rectangle(510, 74, 130, 31));
+    deviceField15.setOffsetNid(2);
+    deviceField15.setTextOnly(true);
+    deviceField15.setLabelString("VME IP: ");
+    deviceField15.setNumCols(15);
+    deviceField15.setIdentifier("");
+    deviceField15.setBounds(new Rectangle(476, 9, 271, 30));
     this.getContentPane().add(deviceField1, null);
     this.getContentPane().add(deviceField3, null);
     this.getContentPane().add(deviceField5, null);
@@ -1048,6 +1055,7 @@ public class RFXControlSetup extends DeviceSetup {
     this.getContentPane().add(deviceField12, null);
     this.getContentPane().add(deviceField13, null);
     this.getContentPane().add(deviceDispatch1, null);
+    this.getContentPane().add(deviceField15, null);
     jPanel1.add(deviceTable3, null);
     jPanel1.add(deviceTable6, null);
     jPanel1.add(deviceTable5, null);
