@@ -729,6 +729,7 @@ int LibResetVmZone(ZoneList **zone)
   return 1;
 }
 
+
 int LibFreeVm(int *len, void **vm, ZoneList **zone)
 {
   VmList *list = NULL;
@@ -749,6 +750,11 @@ int LibFreeVm(int *len, void **vm, ZoneList **zone)
   return 1;
 }
 
+int libfreevm_(int *len, void **vm, ZoneList **zone)
+{
+  return(LibFreeVm(len, vm, zone));
+}
+
 int LibGetVm(int *len, void **vm, ZoneList **zone)
 {
   VmList *list = malloc(sizeof(VmList));
@@ -763,6 +769,11 @@ int LibGetVm(int *len, void **vm, ZoneList **zone)
     } else (*zone)->vm = list;
   }
   return (*vm != NULL);
+}
+
+int libgetvm_(int *len, void **vm, ZoneList **zone)
+{
+  return(LibGetVm(len, vm, zone));
 }
 
 int LibEstablish()
