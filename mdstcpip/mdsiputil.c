@@ -458,7 +458,11 @@ int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *
     *ndims = 0;
     *numbytes = 0;
     *dptr = 0;
-    if (*m) free(*m);
+    if (*m) 
+    {
+      free(*m);
+      *m=0;
+    }
     return 0;
   }
   if ((*m)->h.ndims)
