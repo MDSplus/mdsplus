@@ -52,19 +52,12 @@ int   mdsdcl_set_command(		/* Return: status		*/
     sts = cli_get_value("TABLE",&dsc_table);
     if (sts & 1)
        {
+        int i;
+        for (i=0;i<dsc_table.dscW_length;i++)
+          dsc_table.dscA_pointer[i] = _tolower(dsc_table.dscA_pointer[i]);
+        if (!strstr(dsc_table.dscA_pointer,"_commands"))
+          str_concat(&dsc_table,&dsc_table,"_commands",0);
         sts = LibFindImageSymbol(&dsc_table,&dsc_table,&newTable);
-        if ((~sts & 1) && (dsc_table.dscW_length < 10))
-           {
-            str_concat(&dsc_table,&dsc_table,"_commands",0);
-            sts = LibFindImageSymbol(&dsc_table,&dsc_table,&newTable);
-            if (~sts & 1)
-	    {
-              int i;
-              for (i=0;i<dsc_table.dscW_length;i++)
-                dsc_table.dscA_pointer[i] = _tolower(dsc_table.dscA_pointer[i]);
-              sts = LibFindImageSymbol(&dsc_table,&dsc_table,&newTable);
-            }
-           }
         if (~sts & 1)
             return(MdsMsg(sts,"Failed to open table %s",
                 dsc_table.dscA_pointer));
