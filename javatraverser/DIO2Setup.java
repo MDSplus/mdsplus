@@ -1531,7 +1531,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceField102.setOffsetNid(129);
 		deviceField102.setLabelString("Event: ");
 		JPanel46.add(deviceField102);
-		deviceChoice54.setOffsetNid(128);
+		deviceChoice54.setOffsetNid(135);
 		{
 			String[] tempString = new String[2];
 			tempString[0] = "HIGH";
