@@ -1,4 +1,4 @@
-CFLAGS = -c -I../include -g -assume noaligned_objects -D_NO_DPS -D_NO_DXm
+CFLAGS = -c -I../include -g -D_NO_DXm
 
 OBJECTS_DWSCOPE = \
 dwscope.o \
@@ -27,6 +27,7 @@ all : ../bin/dwscope \
 	uil -o $@ dwpad.uil
  
 clean :
+	- rm .depend
 	- rm *.o
 	- rm ../bin/dwscope
 	- rm ../uid/dwscope.uid
