@@ -45,6 +45,18 @@ Define verb qrep
 	qualifier octal,nonnegatable
 	qualifier decimal,nonnegatable,default
 	qualifier memory,nonnegatable,value(required)
+Define verb fqrep
+        routine ccl_fqrep
+        parameter p1,label=module
+        qualifier address,default,nonnegatable,value(default=0)
+        qualifier function,default,nonnegatable,value(default=0)
+        qualifier count,nonnegatable,value(required)
+        qualifier data,nonnegatable,value(required,list)
+        qualifier hex,nonnegatable
+        qualifier binary,nonnegatable
+        qualifier octal,nonnegatable
+        qualifier decimal,nonnegatable,default
+        qualifier memory,nonnegatable,value(required)
 Define verb qscan
 	routine ccl_qscan
 	parameter p1,label=module
@@ -58,7 +70,19 @@ Define verb qscan
 	qualifier decimal,nonnegatable,default
 	qualifier memory,nonnegatable,value(required)
 Define verb qstop
-	routine ccl_qstop
+        routine ccl_qstop
+        parameter p1,label=module
+        qualifier address,default,nonnegatable,value(default=0)
+        qualifier function,default,nonnegatable,value(default=0)
+        qualifier count,nonnegatable,value(required)
+        qualifier data,nonnegatable,value(required,list)
+        qualifier hex,nonnegatable
+        qualifier binary,nonnegatable
+        qualifier octal,nonnegatable
+        qualifier decimal,nonnegatable,default
+        qualifier memory,nonnegatable,value(required)
+Define verb fqstop
+	routine ccl_fqstop
 	parameter p1,label=module
 	qualifier address,default,nonnegatable,value(default=0)
 	qualifier function,default,nonnegatable,value(default=0)
@@ -83,7 +107,7 @@ Define verb stop
 	qualifier memory,nonnegatable,value(required)
         qualifier enhanced											       !3
 Define verb fstop												       !3
-	routine ccl_stop											       !3
+	routine ccl_fstop											       !3
 	parameter p1,label=module										       !3
 	qualifier address,default,nonnegatable,value(default=0)							       !3
 	qualifier function,default,nonnegatable,value(default=0)						       !3
