@@ -73,6 +73,7 @@ char  *cdatime(
     int   usrtime		/* <r> time in seconds			*/
    )
    {
+    int   year;
     struct tm  *t;
     time_t  bintim;
     static char  datimbuf[22];
@@ -80,8 +81,11 @@ char  *cdatime(
     bintim = usrtime ? usrtime : time(0);
     t = localtime(&bintim);	/* Fill in "tm" structure		*/
 
-    sprintf(datimbuf,"%02d-%s-19%02d %02d:%02d:%02d",
-        t->tm_mday,month[t->tm_mon],t->tm_year,
+    year = t->tm_year;
+    if (year < 70)  year += 100;	/* Y2K	*/
+    year += 1900;
+    sprintf(datimbuf,"%02d-%s-%04d %02d:%02d:%02d",
+        t->tm_mday,month[t->tm_mon],year,
         t->tm_hour,t->tm_min,t->tm_sec);
     return(datimbuf);
    }
