@@ -70,6 +70,7 @@ JNIEXPORT jobject JNICALL Java_Data_fromExpr
    struct descriptor source_d = {0, DTYPE_T, CLASS_S, 0};
    jobject ris, exc;
 
+
    source_d.length = strlen(source);
    source_d.pointer = (char *)source;
    status = TdiCompile(&source_d, &out_xd MDS_END_ARG);

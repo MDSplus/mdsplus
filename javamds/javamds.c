@@ -133,9 +133,10 @@ static float MdsGetFloat(char *in)
     return ris;
 }
 
-static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
+static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte, int is_double)
 {
     float *float_ris = NULL;
+    double *double_ris = NULL;
     int *int_ris = NULL;
 	char *byte_ris = NULL;
     int status, dim, i;
@@ -153,10 +154,21 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
 		in_d.length = strlen(expanded_in);
 		in_d.pointer = expanded_in;
 	}
+	else if(is_double)
+	{
+		expanded_in = malloc(strlen(in) + 16);
+		sprintf(expanded_in, "ft_float((%s))", in);
+		in_d.length = strlen(expanded_in);
+		in_d.pointer = expanded_in;
+	}
 	else
 	{
-		in_d.length = strlen(in);
-		in_d.pointer = in;
+		expanded_in = malloc(strlen(in) + 16);
+		sprintf(expanded_in, "long((%s))", in);
+		in_d.length = strlen(expanded_in);
+		in_d.pointer = expanded_in;
+/*		in_d.length = strlen(in);
+		in_d.pointer = in;*/
 	}
     status = TdiCompile(&in_d, &xd MDS_END_ARG);
 	if(is_float) free(expanded_in);
@@ -174,7 +186,7 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
     }
     if(xd.pointer->class != CLASS_A)
     {
-		if(!is_float) /*Legal only if used to retrieve the shot number*/
+		if(!is_float && !is_double) /*Legal only if used to retrieve the shot number*/
 		{
 			int_ris = malloc(sizeof(int));
 			switch(xd.pointer->dtype)
@@ -195,7 +207,7 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
 		return 0;
 	}
  	arr_ptr = (struct descriptor_a *)xd.pointer;
-	if(arr_ptr->dtype == DTYPE_F || 
+/*	if(arr_ptr->dtype == DTYPE_F || 
 		arr_ptr->dtype == DTYPE_D ||
 		arr_ptr->dtype == DTYPE_G ||
 		arr_ptr->dtype == DTYPE_H) 
@@ -203,9 +215,12 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
 		status = TdiFloat(&xd, &xd MDS_END_ARG);
 		arr_ptr = (struct descriptor_a *)xd.pointer;
 	}
+	*/
 	*out_dim = dim = arr_ptr->arsize/arr_ptr->length;
     if(is_float)
         float_ris = (float *)malloc(sizeof(float) * dim);
+	else if(is_double)
+		double_ris = (double *)malloc(sizeof(double) * dim);
     else if(is_byte)
 		byte_ris = malloc(dim);
 	else
@@ -216,6 +231,8 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
 		for(i = 0; i < dim; i++)
 		    if(is_float)
 		    	float_ris[i] = ((char *)arr_ptr->pointer)[i];
+			else if(is_double)
+				double_ris[i] = ((char *)arr_ptr->pointer)[i];
 		    else if(is_byte)
 		    	byte_ris[i] = ((char *)arr_ptr->pointer)[i];
 			else
@@ -226,6 +243,8 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
 		for(i = 0; i < dim; i++)
 		    if(is_float)
 		    	float_ris[i] = ((short *)arr_ptr->pointer)[i];
+			else if(is_double)
+				double_ris[i] = ((char *)arr_ptr->pointer)[i];
 		    else if(is_byte)
 		    	byte_ris[i] = (char)(((short *)arr_ptr->pointer)[i]);
 			else
@@ -236,6 +255,8 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
 		for(i = 0; i < dim; i++)
 		    if(is_float)
 		    	float_ris[i] = (float)(((int *)arr_ptr->pointer)[i]);
+			if(is_double)
+		    	double_ris[i] = (double)(((int *)arr_ptr->pointer)[i]);
 		    else if(is_byte)
 		    	byte_ris[i] = ((int *)arr_ptr->pointer)[i];
 			else
@@ -246,11 +267,27 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
 		for(i = 0; i < dim; i++)
 		    if(is_float)
 		    	float_ris[i] = ((float *)arr_ptr->pointer)[i];
+			else if(is_double)
+		    	double_ris[i] = (double)((float *)arr_ptr->pointer)[i];
 		    else if(is_byte)
 		    	byte_ris[i] = (char)(((float *)arr_ptr->pointer)[i]);
 			else
 		    	int_ris[i] = (int)(((float *)arr_ptr->pointer)[i]);
 		break;
+	case DTYPE_FT :
+		for(i = 0; i < dim; i++)
+		    if(is_float)
+		    	float_ris[i] = (float)((double *)arr_ptr->pointer)[i];
+			else if(is_double)
+			{
+		    	double_ris[i] = ((double *)arr_ptr->pointer)[i];
+			}
+		    else if(is_byte)
+		    	byte_ris[i] = (char)(((double *)arr_ptr->pointer)[i]);
+			else
+		    	int_ris[i] = (int)(((double *)arr_ptr->pointer)[i]);
+		break;
+
 	case DTYPE_D :
 	case DTYPE_G :
 	default:	strcpy(error_message, "Not a supported type");
@@ -260,6 +297,8 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
     error_message[0] = 0;
     if(is_float)
     	return float_ris;
+	else if(is_double)
+		return double_ris;
     else if(is_byte) 
 		return byte_ris;
 	return int_ris;
@@ -304,7 +343,7 @@ JNIEXPORT jfloatArray JNICALL Java_LocalDataProvider_GetFloatArrayNative(JNIEnv 
     int dim;
     float *out_ptr;
     
-	out_ptr = MdsGetArray((char *)in_char, &dim, 1, 0);
+	out_ptr = MdsGetArray((char *)in_char, &dim, 1, 0, 0);
     (*env)->ReleaseStringUTFChars(env, in, in_char);
     if(error_message[0]) /*Return a dummy vector without elements*/
     {
@@ -312,6 +351,25 @@ JNIEXPORT jfloatArray JNICALL Java_LocalDataProvider_GetFloatArrayNative(JNIEnv 
     }
     jarr = (*env)->NewFloatArray(env, dim);
     (*env)->SetFloatArrayRegion(env, jarr, 0, dim, out_ptr);
+    return jarr;
+}
+
+JNIEXPORT jdoubleArray JNICALL Java_LocalDataProvider_GetDoubleArrayNative(JNIEnv *env, jobject obj, jstring in)
+{
+    jdoubleArray jarr;
+    float zero = 0.;
+    const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
+    int dim;
+    double *out_ptr;
+    
+	out_ptr = MdsGetArray((char *)in_char, &dim, 0, 0, 1);
+    (*env)->ReleaseStringUTFChars(env, in, in_char);
+    if(error_message[0]) /*Return a dummy vector without elements*/
+    {
+		return NULL;
+    }
+    jarr = (*env)->NewDoubleArray(env, dim);
+    (*env)->SetDoubleArrayRegion(env, jarr, 0, dim, out_ptr);
     return jarr;
 }
 
@@ -324,7 +382,7 @@ JNIEXPORT jintArray JNICALL Java_LocalDataProvider_GetIntArray(JNIEnv *env, jobj
     int *out_ptr;
 
     in_char = (*env)->GetStringUTFChars(env, in, 0);
-    out_ptr = MdsGetArray((char *)in_char, &dim, 0, 0);
+    out_ptr = MdsGetArray((char *)in_char, &dim, 0, 0, 0);
     (*env)->ReleaseStringUTFChars(env, in, in_char);
     if(error_message[0]) /*Return a dummy vector without elements*/
     {
@@ -343,7 +401,7 @@ JNIEXPORT jbyteArray JNICALL Java_LocalDataProvider_GetByteArray(JNIEnv *env, jo
     int *out_ptr;
 
 	in_char = (*env)->GetStringUTFChars(env, in, 0);
- 	out_ptr = MdsGetArray((char *)in_char, &dim, 0, 1);
+ 	out_ptr = MdsGetArray((char *)in_char, &dim, 0, 1, 0);
     (*env)->ReleaseStringUTFChars(env, in, in_char);
     if(error_message[0]) /*Return a dummy vector without elements*/
     {
