@@ -17,18 +17,17 @@ public fun T2Control__store(as_is _nid, optional _method)
     private _N_PAR1_NAME = 13;
     private _N_PAR1_VALUE = 14; 
 
-    private _N_ZERO_START = 105;
-    private _N_ZERO_END = 106;
-    private _N_ZERO = 107;
-    private _N_MAPPING_ID = 108;
-    private _N_MAPPING = 109;
 
+    private _N_ZERO_START = 109;
+    private _N_ZERO_END = 110;
+    private _N_ZERO = 111;
+    private _N_MAPPING_ID = 112;
+    private _N_MAPPING = 113;
 
-
-    private _N_INPUT_1 = 110;
-    private _N_OUTPUT_1 = 174;
-    private _N_MODES_1 = 206;
-    private _N_CURRENT_1= 270;
+    private _N_INPUT_1 = 114;
+    private _N_OUTPUT_1 = 178;
+    private _N_MODES_1 = 210;
+    private _N_CURRENT_1= 274;
 
 /*    private _N_INPUT_1 = 109;
     private _N_OUTPUT_1 = 173;

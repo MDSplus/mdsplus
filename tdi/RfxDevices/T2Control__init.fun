@@ -16,11 +16,11 @@ public fun T2Control__init(as_is _nid, optional _method)
     private _N_PAR1_NAME = 13;
     private _N_PAR1_VALUE = 14; 
 
-    private _N_ZERO_START = 105;
-    private _N_ZERO_END = 106;
-    private _N_ZERO = 107;
-    private _N_MAPPING_ID = 108;
-    private _N_MAPPING = 109;
+    private _N_ZERO_START = 109;
+    private _N_ZERO_END = 110;
+    private _N_ZERO = 111;
+    private _N_MAPPING_ID = 112;
+    private _N_MAPPING = 113;
 
 
 

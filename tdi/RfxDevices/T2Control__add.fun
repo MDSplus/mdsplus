@@ -3,7 +3,7 @@ public fun T2Control__add(in _path, out _nidout)
 write(*,'T2Control__add'); 
 /*    DevAddStart(_path, 'T2Control', 301, _nidout);*/
 /*    DevAddStart(_path, 'T2Control', 291, _nidout); */
-    DevAddStart(_path, 'T2Control', 304, _nidout);
+    DevAddStart(_path, 'T2Control', 308, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -123,6 +123,11 @@ write(*,'T2Control__add');
     DevAddNode(_path // ':PAR45_VAL', 'NUMERIC', zero([32,32],0.), *, _nid);
     DevAddNode(_path // ':PAR46_NAME', 'TEXT', "ModeControlKd", *, _nid);
     DevAddNode(_path // ':PAR46_VAL', 'NUMERIC', zero([32,32],0.), *, _nid);
+
+    DevAddNode(_path // ':PAR47_NAME', 'TEXT', "ExcludedModeN1", *, _nid);
+    DevAddNode(_path // ':PAR47_VAL', 'NUMERIC', 1000, *, _nid);
+    DevAddNode(_path // ':PAR48_NAME', 'TEXT', "ExcludedModeN2", *, _nid);
+    DevAddNode(_path // ':PAR48_VAL', 'NUMERIC', 1000, *, _nid);
 
     DevAddNode(_path // ':ZERO_START', 'NUMERIC', 0.1, *, _nid);
     DevAddNode(_path // ':ZERO_END', 'NUMERIC', 0.05, *, _nid);
