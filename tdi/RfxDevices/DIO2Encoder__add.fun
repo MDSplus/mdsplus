@@ -1,7 +1,7 @@
 public fun DIO2Encoder__add(in _path, out _nidout)
 {
     write(*, _path);
-    DevAddStart(_path, 'DIO2Encoder', 71, _nidout);
+    DevAddStart(_path, 'DIO2Encoder', 75, _nidout);
     DevAddNode(_path // ':BOARD_ID', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':SW_MODE', 'TEXT', 'LOCAL', *, _nid);
     DevAddNode(_path // ':IP_ADDR', 'TEXT', *, *, _nid);
@@ -22,9 +22,14 @@ public fun DIO2Encoder__add(in _path, out _nidout)
         DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
     	DevAddNode(_cn // ':EVENT_NAME', 'TEXT', *, *, _nid);
         DevAddNode(_cn // ':EVENT', 'NUMERIC', 1., *, _nid);
-        DevAddNode(_cn // ':EVENT_TIME', 'NUMERIC', *, *, _nid);
+        DevAddNode(_cn // ':EVENT_TIME', 'NUMERIC', 0, *, _nid);
  
 	}
+    _cn = _path // '.CHANNEL_SW';
+    DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
+    DevAddNode(_cn // ':EVENT_NAME', 'TEXT', *, *, _nid);
+    DevAddNode(_cn // ':EVENT', 'NUMERIC', 1., *, _nid);
+    DevAddNode(_cn // ':EVENT_TIME', 'NUMERIC', 0, *, _nid);
     DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 50,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }
