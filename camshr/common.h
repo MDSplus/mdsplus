@@ -105,6 +105,7 @@ enum	{ OFF, ON };				// crate offline/online command
 #define JORWAY 				1
 #define	KINSYSCO			2
 #define JORWAY_OLD			3
+#define JORWAY_73A                      4
 
 // highway status
 #define HWY_GOOD			0

@@ -105,10 +105,15 @@ int QueryHighwayType( char *serial_hwy_driver )
 
 		if( foundHost && foundVendor ) {
 			if( strstr(tmpVendor, "JORWAY") ) {
+                          if (strstr(tmpModel,"73A"))
+                            highwayType = JORWAY_73A;
+                          else
+			    {
 				if( atoi(tmpRev) >= 12 )
 					highwayType = JORWAY;
 				else
 					highwayType = JORWAY_OLD;
+			    }
 			}
 			else {
 				if( strstr(tmpVendor, "KINSYSCO") )
