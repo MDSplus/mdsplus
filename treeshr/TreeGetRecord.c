@@ -15,7 +15,7 @@
 
 static int OpenDatafileR(TREE_INFO *info);
 static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree);
-static int GetDatafile(TREE_INFO *info_ptr, unsigned short *rfa, int *buffer_size, char *record, int *retsize,int *nodenum);
+static int GetDatafile(TREE_INFO *info_ptr, unsigned char *rfa, int *buffer_size, char *record, int *retsize,int *nodenum);
 
 static int Rec2Dsc(char *in, struct descriptor_xd *out_dsc_ptr);
 
@@ -345,12 +345,12 @@ DATA_FILE *TreeGetVmDatafile()
   return datafile_ptr;
 }
 
-static int GetDatafile(TREE_INFO *info, unsigned short *rfa_in, int *buffer_size, char *record, int *retsize,int *nodenum)
+static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size, char *record, int *retsize,int *nodenum)
 {
   int status = 1;
   int buffer_space = *buffer_size;
   int       first = 1;
-  unsigned short rfa[3];
+  unsigned char rfa[6];
 #ifdef __VMS
   struct RAB *rab_ptr = info_ptr->tree_info$a_data_file_ptr->$a_getrab;
   RFA      *rab_rfa = (RFA *) rab_ptr->rab$w_rfa;
@@ -416,25 +416,16 @@ static int GetDatafile(TREE_INFO *info, unsigned short *rfa_in, int *buffer_size
 
   *retsize = 0;
   memcpy(rfa,rfa_in,sizeof(rfa));
-  while ((rfa[0] || rfa[1] || rfa[2]) && buffer_space && (status & 1))
+  while ((rfa[0] || rfa[1] || rfa[2] || rfa[3] || rfa[4] || rfa[5]) && buffer_space && (status & 1))
   {
     RECORD_HEADER hdr;
     int rfa_l = RfaToSeek(rfa);
 
-	fseek(info->data_file->get,rfa_l,SEEK_SET);
+    fseek(info->data_file->get,rfa_l,SEEK_SET);
     if ((fread((void *)&hdr,12,1,info->data_file->get) == 1))
     {
-     unsigned int partlen = min(32755, buffer_space);
-#ifdef _big_endian
-     int tmpInt;
-     short tmpShort;
-     hdr.node_number = swapint((char *)&hdr.node_number);
-     tmpInt = swapint((char *)&hdr.rfa);
-     memcpy(&hdr.rfa,&tmpInt,sizeof(int));
-     tmpShort = swapshort(((char *)&hdr.rfa)+4);
-     memcpy(&hdr.rfa.rfa[4],&tmpShort,sizeof(short));
-#endif
-     if (first)
+      unsigned int partlen = min(32755, buffer_space);
+      if (first)
         *nodenum = hdr.node_number;
       else if (*nodenum != hdr.node_number)
       {
@@ -446,7 +437,7 @@ static int GetDatafile(TREE_INFO *info, unsigned short *rfa_in, int *buffer_size
         bptr += partlen;
         buffer_space -= partlen;
 
-		*retsize = *retsize + partlen;
+	*retsize = *retsize + partlen;
         memcpy(rfa,&hdr.rfa,sizeof(rfa));
       }
       else

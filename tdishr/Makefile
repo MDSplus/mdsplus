@@ -1,4 +1,4 @@
-CFLAGS = -c -I../include -g
+include $(MAKE_OPTIONS)
 
 OBJECTS = \
 CvtConvertFloat.o \
@@ -78,17 +78,15 @@ TdiXxx.o \
 TdiYaccSubs.o \
 TdiYacc.o
 
-../shlib/libTdiShr.so : $(OBJECTS) ../shlib
-	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm -L../shlib -lMdsShr -lTreeShr
-	- rm so_locations
+../shlib/libTdiShr.$(SHARE_TYPE) : $(OBJECTS) ../shlib
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc -lm -L../shlib -lMdsShr -lTreeShr
 
 ../shlib :
 	mkdir ../shlib
 
 clean :
 	- rm *.o
-	- rm ../shlib/libTdiShr.so
-	- rm so_locations
+	- rm ../shlib/libTdiShr.$(SHARE_TYPE)
 	- rm .depend
 
 TdiLex.c : TdiLex.x
@@ -100,7 +98,6 @@ tdiyacc.h : TdiYacc.y
 depend : .depend
 
 .depend : TdiLex.c TdiYacc.c
-	- rm .depend
-	find *.c -exec cc -I../include -M {} > .depend \;
+	find *.c -exec $(MAKE_DEPEND)
 
 include .depend
