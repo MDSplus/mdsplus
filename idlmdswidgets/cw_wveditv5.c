@@ -170,7 +170,7 @@ static void cw_wvedit_size_func(unsigned long stub, int width, int height)
 }
 
 int CW_WVEDIT(unsigned long *parent_id,unsigned long *stub_id,int *cols, int *rows, Widget *plots, Widget *wavedraw_w, 
-              struct descriptor extra_buttons[], int num_extra)
+              struct descriptor *extra_buttons, int num_extra)
 {
   short class;
   static  String hierarchy_name[] = {"cw_wvedit.uid"};
@@ -233,9 +233,9 @@ int CW_WVEDIT(unsigned long *parent_id,unsigned long *stub_id,int *cols, int *ro
                              {XmNactivateCallback, (long)user_button_callback_list}};
         char *tmp;
         user_button_callback_list[0].closure = (XtPointer)*stub_id;
-        tmp = XtMalloc(extra_buttons[i].length+1);
-        memcpy(tmp, extra_buttons[i].pointer, extra_buttons[i].length);
-        tmp[extra_buttons[i].length] = 0;
+        tmp = XtMalloc(extra_buttons->length+1);
+        memcpy(tmp, extra_buttons->pointer+i*extra_buttons->length, extra_buttons->length);
+        tmp[extra_buttons->length] = 0;
         args[0].value = (long)XmStringCreateSimple(tmp);
         args[1].value = (long)tmp;
         b = XmCreatePushButton(pw, "", args, XtNumber(args));
