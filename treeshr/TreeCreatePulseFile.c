@@ -67,7 +67,7 @@ int       _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids
   if (numnids_in == 0)
   {
     void       *ctx = 0;
-    for (num = 0; num < 256 && TreeFindTagWild("TOP", &nids[num], &ctx); num++);
+    for (num = 0; num < 256 && _TreeFindTagWild(dbid, "TOP", &nids[num], &ctx); num++);
   }
   else
   {
@@ -97,7 +97,7 @@ int       _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids
       {
         NCI_ITM itmlst[] = {{sizeof(name)-1, NciNODE_NAME, 0, 0}, {0, NciEND_OF_LIST, 0, 0}};
         itmlst[0].pointer = name;
-        status = TreeGetNci(nids[i], itmlst);
+        status = _TreeGetNci(dbid, nids[i], itmlst);
         name[12] = 0;
         for (j=11;j>0;j--) if (name[j] == 0x20) name[j] = '\0';
       }

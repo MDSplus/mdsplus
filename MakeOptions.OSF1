@@ -1,5 +1,8 @@
 CFLAGS = -I../include -g
 MOTIF_CFLAGS = -I../include -g -D_NO_DXm
+WML = /usr/examples/motif/wml/wml 
+WML_INCLUDE = -I/usr/examples/motif/wml
+WMD_RULE = ../bin/wmdcreate ; ../bin/wmdcreate -o ../shlib/xmdsuil.wmd
 SHARE_TYPE = so
 MAKE_DEPEND = cc $(CFLAGS) -M {} > .depend \;
 LD_SHARED_LIB_OPTIONS = -shared -no_archive

@@ -4,6 +4,7 @@ OBJECTS = \
 dummies.o \
 TreeAddNode.o \
 TreeCreatePulseFile.o \
+TreeDeletePulseFile.o \
 TreeFindNode.o \
 TreeFindTagWild.o \
 TreeGetDbi.o \

@@ -1121,7 +1121,6 @@ static int FindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *t
 			   return TreeTNF;
 	  }
   }
-    return status;
 }
 
 static int BsearchCompare(const void *this_one, const void *compare_one)

@@ -96,7 +96,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 		  {
 		  case 2: *(short *)dptr->pointer = swapshort(dptr->pointer); break;
 		  case 4: *(int *)dptr->pointer = swapint(dptr->pointer); break;
-		  case 8: *(int *)dptr->pointer = swapint(dptr->pointer); break;
+		  case 8: *(int *)dptr->pointer = swapint(dptr->pointer); 
 		          ((int *)dptr->pointer)[1] = swapint(dptr->pointer+sizeof(int)); break;
 		  }
   	        }
@@ -512,7 +512,7 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
 	    {
 	    case 2: *(short *)po->pointer = swapshort(po->pointer); break;
             case 4: *(int *)po->pointer = swapint(po->pointer); break;
-            case 8: *(int *)po->pointer = swapint(po->pointer); break;
+            case 8: *(int *)po->pointer = swapint(po->pointer); 
 	            ((int *)po->pointer)[1] = swapint(po->pointer + sizeof(int)); break;
 	    }
 	  }
