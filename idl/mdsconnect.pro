@@ -17,7 +17,7 @@ Function MdsIPImage
     'OSF' : return,'libMdsIpShr.so'
     'sunos' : return,'libMdsIpShr.so'
     'hp-ux' : begin
-              if getenv('MDS_SHLIB_PATH') eq '' then setenv_,'MDS_SHLIB_PATH=/usr/lib'
+              if getenv('MDS_SHLIB_PATH') eq '' then setenv_,'MDS_SHLIB_PATH=/usr/local/lib'
               return,getenv('MDS_SHLIB_PATH')+'/libMdsIpShr.sl'
               end
     'MacOS': return,!dir+'libMdsIpShr.lib'
@@ -84,8 +84,8 @@ pro Mds$SendArg,sock,n,idx,arg
       length = max(strlen(arg))
       arg = temporary(byte(arg))
       arg = temporary(reform(arg, n_elements(arg)))
-      i = where(arg eq 0b,n)
-      if (n gt 0) then arg[i]=32b
+      ispace = where(arg eq 0b,nspace)
+      if (nspace gt 0) then arg[ispace]=32b
     endif else begin
       argByVal = 1b 
       length = strlen(arg)
