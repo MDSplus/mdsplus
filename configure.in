@@ -442,19 +442,32 @@ if test "$mdsplus_ok" = yes; then
     fi
 fi
 
-AC_CACHE_CHECK([for timezone and daylight externals], mdsplus_cv_have_timezone, 
-    AC_TRY_LINK([#include <time.h>], [long z2 = timezone - daylight*3600;], 
-        mdsplus_cv_have_timezone=yes, mdsplus_cv_have_timezone=no))
-    if test "$mdsplus_cv_have_timezone" = yes; then
-        AC_DEFINE(HAVE_TIMEZONE)
-    else
-        AC_CACHE_CHECK([for tm_gmtoff in struct tm], mdsplus_cv_tm_gmtoff_in_tm,
-            AC_TRY_LINK([#include <time.h>], [struct tm tim; tim.tm_gmtoff = 0;],
-            mdsplus_cv_tm_gmtoff_in_tm=yes,mdsplus_cv_tm_gmtoff_in_tm=no))
-    fi
-    if test "$mdsplus_cv_tm_gmtoff_in_tm" = yes; then
+#AC_CACHE_CHECK([for timezone and daylight externals], mdsplus_cv_have_timezone, 
+#    AC_TRY_LINK([#include <time.h>], [long z2 = timezone - daylight*3600;], 
+#        mdsplus_cv_have_timezone=yes, mdsplus_cv_have_timezone=no))
+#    if test "$mdsplus_cv_have_timezone" = yes; then
+#        AC_DEFINE(HAVE_TIMEZONE)
+#    else
+#        AC_CACHE_CHECK([for tm_gmtoff in struct tm], mdsplus_cv_tm_gmtoff_in_tm,
+#            AC_TRY_LINK([#include <time.h>], [struct tm tim; tim.tm_gmtoff = 0;],
+#            mdsplus_cv_tm_gmtoff_in_tm=yes,mdsplus_cv_tm_gmtoff_in_tm=no))
+#    fi
+#    if test "$mdsplus_cv_tm_gmtoff_in_tm" = yes; then
+#        AC_DEFINE(USE_TM_GMTOFF)
+#    fi
+AC_CACHE_CHECK([for tm_gmtoff in struct tm], mdsplus_cv_tm_gmtoff_in_tm,
+     AC_TRY_LINK([#include <time.h>], [struct tm tim; tim.tm_gmtoff = 0;],
+         mdsplus_cv_tm_gmtoff_in_tm=yes,mdsplus_cv_tm_gmtoff_in_tm=no))
+     if test "$mdsplus_cv_tm_gmtoff_in_tm" = yes; then
         AC_DEFINE(USE_TM_GMTOFF)
-    fi
+     else
+       AC_CACHE_CHECK([for timezone and daylight externals], mdsplus_cv_have_timezone, 
+          AC_TRY_LINK([#include <time.h>], [long z2 = timezone - daylight*3600;], 
+             mdsplus_cv_have_timezone=yes, mdsplus_cv_have_timezone=no))
+          if test "$mdsplus_cv_have_timezone" = yes; then
+            AC_DEFINE(HAVE_TIMEZONE)
+          fi
+     fi
 
 AC_MSG_CHECKING(for semun union declaration)
 AC_TRY_COMPILE([#include <sys/types.h>

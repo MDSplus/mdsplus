@@ -6621,58 +6621,20 @@ echo "${ECHO_T}$mdsplus_ok" >&6
     fi
 fi
 
-echo "$as_me:$LINENO: checking for timezone and daylight externals" >&5
-echo $ECHO_N "checking for timezone and daylight externals... $ECHO_C" >&6
-if test "${mdsplus_cv_have_timezone+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-#include "confdefs.h"
-#include <time.h>
-#ifdef F77_DUMMY_MAIN
-#  ifdef __cplusplus
-     extern "C"
-#  endif
-   int F77_DUMMY_MAIN() { return 1; }
-#endif
-int
-main ()
-{
-long z2 = timezone - daylight*3600;
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  mdsplus_cv_have_timezone=yes
-else
-  echo "$as_me: failed program was:" >&5
-cat conftest.$ac_ext >&5
-mdsplus_cv_have_timezone=no
-fi
-rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-fi
-echo "$as_me:$LINENO: result: $mdsplus_cv_have_timezone" >&5
-echo "${ECHO_T}$mdsplus_cv_have_timezone" >&6
-    if test "$mdsplus_cv_have_timezone" = yes; then
-        cat >>confdefs.h <<\_ACEOF
-#define HAVE_TIMEZONE 1
-_ACEOF
-
-    else
-        echo "$as_me:$LINENO: checking for tm_gmtoff in struct tm" >&5
+#AC_CACHE_CHECK([for timezone and daylight externals], mdsplus_cv_have_timezone,
+#    AC_TRY_LINK([#include <time.h>], [long z2 = timezone - daylight*3600;],
+#        mdsplus_cv_have_timezone=yes, mdsplus_cv_have_timezone=no))
+#    if test "$mdsplus_cv_have_timezone" = yes; then
+#        AC_DEFINE(HAVE_TIMEZONE)
+#    else
+#        AC_CACHE_CHECK([for tm_gmtoff in struct tm], mdsplus_cv_tm_gmtoff_in_tm,
+#            AC_TRY_LINK([#include <time.h>], [struct tm tim; tim.tm_gmtoff = 0;],
+#            mdsplus_cv_tm_gmtoff_in_tm=yes,mdsplus_cv_tm_gmtoff_in_tm=no))
+#    fi
+#    if test "$mdsplus_cv_tm_gmtoff_in_tm" = yes; then
+#        AC_DEFINE(USE_TM_GMTOFF)
+#    fi
+echo "$as_me:$LINENO: checking for tm_gmtoff in struct tm" >&5
 echo $ECHO_N "checking for tm_gmtoff in struct tm... $ECHO_C" >&6
 if test "${mdsplus_cv_tm_gmtoff_in_tm+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -6717,13 +6679,64 @@ rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 fi
 echo "$as_me:$LINENO: result: $mdsplus_cv_tm_gmtoff_in_tm" >&5
 echo "${ECHO_T}$mdsplus_cv_tm_gmtoff_in_tm" >&6
-    fi
-    if test "$mdsplus_cv_tm_gmtoff_in_tm" = yes; then
+     if test "$mdsplus_cv_tm_gmtoff_in_tm" = yes; then
         cat >>confdefs.h <<\_ACEOF
 #define USE_TM_GMTOFF 1
 _ACEOF
 
-    fi
+     else
+       echo "$as_me:$LINENO: checking for timezone and daylight externals" >&5
+echo $ECHO_N "checking for timezone and daylight externals... $ECHO_C" >&6
+if test "${mdsplus_cv_have_timezone+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+#include "confdefs.h"
+#include <time.h>
+#ifdef F77_DUMMY_MAIN
+#  ifdef __cplusplus
+     extern "C"
+#  endif
+   int F77_DUMMY_MAIN() { return 1; }
+#endif
+int
+main ()
+{
+long z2 = timezone - daylight*3600;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  mdsplus_cv_have_timezone=yes
+else
+  echo "$as_me: failed program was:" >&5
+cat conftest.$ac_ext >&5
+mdsplus_cv_have_timezone=no
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: $mdsplus_cv_have_timezone" >&5
+echo "${ECHO_T}$mdsplus_cv_have_timezone" >&6
+          if test "$mdsplus_cv_have_timezone" = yes; then
+            cat >>confdefs.h <<\_ACEOF
+#define HAVE_TIMEZONE 1
+_ACEOF
+
+          fi
+     fi
 
 echo "$as_me:$LINENO: checking for semun union declaration" >&5
 echo $ECHO_N "checking for semun union declaration... $ECHO_C" >&6
