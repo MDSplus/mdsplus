@@ -129,7 +129,7 @@ write(*, 'T2Control init');
 
 
 	
-    for(_par = 0; _par < 46; _par++)
+    for(_par = 0; _par < 48; _par++)
 	{
 
 
