@@ -26,7 +26,9 @@
 #ifndef HAVE_VXWORKS_H
 #define const
 #endif
-#define ROPRAND(fptr) (*(unsigned short *)(fptr) == 0x8000)
+extern int IsRoprand();
+#define ROPRAND(fptr) IsRoprand(DTYPE_NATIVE_FLOAT,fptr)
+/* #define ROPRAND(fptr) (*(unsigned short *)(fptr) == 0x8000) */
 
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
