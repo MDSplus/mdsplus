@@ -3,6 +3,126 @@ Microsoft Developer Studio Workspace File, Format Version 5.00
 
 ###############################################################################
 
+Project: "cdu"=.\cdu\cdu.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name cdushr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "cdushr"=.\cdu\cdushr.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mdsdcl"=.\mdsdcl\mdsdcl.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name cdushr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsdclshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mdsdclshr"=.\mdsdcl\mdsdclshr.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name cdushr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mdsipshr"=.\mdstcpip\mdsipshr.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "mdsiptest"=.\mdstcpip\mdsiptest.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsipshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mdslibidl"=.\mdslibidl\mdslibidl.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "mdsshr"=.\mdsshr\mdsshr.dsp - Package Owner=<4>
 
 Package=<5>
@@ -11,6 +131,81 @@ Package=<5>
 
 Package=<4>
 {{{
+}}}
+
+###############################################################################
+
+Project: "remcam"=.\remcam\remcam.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsipshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "tcl_commands"=.\tcl\tcl_commands.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name cdushr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsdclshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "tdishr"=.\tdishr\tdishr.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "tditest"=.\tditest\tditest.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
 }}}
 
 ###############################################################################
