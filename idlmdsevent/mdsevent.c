@@ -130,7 +130,7 @@ int IDLMdsEvent(int argc, void * *argv)
       if (!XTINPUTID && (sock >= 0)) {
         Widget w1, w2;
         IDL_WidgetGetStubIds(parent_rec, (unsigned long *)&w1, (unsigned long *)&w2);
-        XTINPUTID = XtAppAddInput(XtWidgetToApplicationContext(w1), sock,  (XtPointer)XtInputExceptMask, MdsDispatchEvent, (void *)sock);
+        XTINPUTID = XtAppAddInput(XtWidgetToApplicationContext(w1), sock,  (XtPointer)XtInputReadMask, MdsDispatchEvent, (void *)sock);
       }
 #endif
       e->stub_id = *stub_id;
