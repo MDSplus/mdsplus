@@ -1040,15 +1040,25 @@ typedef struct {
   char **env_strs;
   int  num_env;
   int  next_index;
+  int  next_dir_index; /* index intor env_strs to put the next directory to search */
   DIR  *dir_ptr;
 } FindFileCtx;
 
 
-static  int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx);
-static char *FindNextFile(FindFileCtx *ctx);
+static int FindFile(struct descriptor *filespec, struct descriptor *result, int **ctx, int recursively);
+static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx);
 static int FindFileEnd(FindFileCtx *ctx);
+static char *FindNextFile(FindFileCtx *ctx, int recursively);
 
 extern int LibFindFile(struct descriptor *filespec, struct descriptor *result, int **ctx)
+{
+  return FindFile(filespec, result, ctx, 0);
+}
+extern int LibFindFileR(struct descriptor *filespec, struct descriptor *result, int **ctx)
+{
+  return FindFile(filespec, result, ctx, 1);
+}
+static int FindFile(struct descriptor *filespec, struct descriptor *result, int **ctx, int recursively)
 {
   unsigned int status;
   char *ans;
@@ -1057,7 +1067,7 @@ extern int LibFindFile(struct descriptor *filespec, struct descriptor *result, i
     if ((status&1) ==0)
       return status;
   }
-  ans = FindNextFile((FindFileCtx *)*ctx);
+  ans = FindNextFile((FindFileCtx *)*ctx, recursively);
   if (ans != 0) {
     if (result->pointer != 0)
       free(result->pointer);
@@ -1067,7 +1077,6 @@ extern int LibFindFile(struct descriptor *filespec, struct descriptor *result, i
   else {
     status = 0;
     LibFindFileEnd(ctx);    
-    /* find file end */
   }
   return status;
 }
@@ -1091,6 +1100,7 @@ static int FindFileEnd(FindFileCtx *ctx)
     free (ctx->file);
     for (i=0; i<ctx->num_env; i++)
       free(ctx->env_strs[i]);
+    free(ctx->env_strs);
     free(ctx);
   }
   return 1;
@@ -1110,6 +1120,7 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx)
 
   CSTRING_FROM_DESCRIPTOR(fspec, filespec)
 
+  lctx->next_index = lctx->next_dir_index = 0;
   colon = index(fspec, ':');
   if (colon == 0) {
     lctx->env = 0;
@@ -1139,6 +1150,17 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx)
     char *semi;
     env = getenv(lctx->env);
     if (env != 0) {
+      if (env[strlen(env)-1] != ';') {
+        char *tmp = malloc(strlen(env)+2);
+        strcpy(tmp, env);
+	strcat(tmp, ";");
+        env = tmp;
+      }
+      else {
+	char *tmp = malloc(strlen(env)+1);
+        strcpy(tmp, env);
+        env = tmp;
+      }
       for(semi=index(env, ';'); semi!= 0; num++, semi=index(semi+1, ';'));
       if (num > 0) {
         char *ptr;
@@ -1153,13 +1175,14 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx)
           ptr=cptr+1;
 	}
       }
+      free(env);
     }
   }
   lctx->dir_ptr = 0;
   return 1;
 }
 
-static char *FindNextFile(FindFileCtx *ctx)
+static char *FindNextFile(FindFileCtx *ctx, int recursively)
 {
   char *ans;
   struct dirent *dp;
@@ -1167,14 +1190,40 @@ static char *FindNextFile(FindFileCtx *ctx)
   int found = 0;
   while (! found) {
     while (ctx->dir_ptr==0)
-      if (ctx->next_index < ctx->num_env)
+      if (ctx->next_index < ctx->num_env) {
         ctx->dir_ptr=opendir(ctx->env_strs[ctx->next_index++]);
+	ctx->next_dir_index = ctx->next_index;
+      }
       else
         return 0;
     dp = readdir(ctx->dir_ptr);
     if (dp != NULL) {
       DESCRIPTOR_FROM_CSTRING(filename, dp->d_name)
       found = StrMatchWild(&filename, &ctx->wild_descr)&1;
+      if (recursively) {
+        if ((strcmp(dp->d_name, ".") != 0) && (strcmp(dp->d_name, "..") != 0)) {
+          char *tmp_dirname;
+	  DIR *tmp_dir;
+	  tmp_dirname = malloc(strlen(ctx->env_strs[ctx->next_index-1])+2+strlen(dp->d_name));
+          strcpy(tmp_dirname, ctx->env_strs[ctx->next_index-1]);
+          strcat(tmp_dirname, "/");
+	  strcat(tmp_dirname, dp->d_name);
+	  tmp_dir = opendir(tmp_dirname);
+	  if (tmp_dir != NULL) {
+	    int i;
+	    char **tmp;
+	    closedir(tmp_dir);
+	    ctx->env_strs = realloc(ctx->env_strs, sizeof(char*)*(ctx->num_env+1));
+	    for(i=ctx->next_dir_index; i<ctx->num_env; i++)
+	      ctx->env_strs[i+1] = ctx->env_strs[i];
+	    ctx->env_strs[ctx->next_dir_index] = tmp_dirname;
+	    ctx->num_env++;
+	    ctx->next_dir_index++;
+	  }
+          else
+	    free(tmp_dirname);
+	}
+      }
     }
     else {
      closedir(ctx->dir_ptr);
