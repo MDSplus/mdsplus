@@ -17,12 +17,6 @@ LDFLAGS=@LDFLAGS@
 LIBS=@GLOBUS_LIBS@ @LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @MEMCHKLIB@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
-ifeq "@SHARETYPEMOD@x" "x"
-	modules =
-else
-	modules = @MAKESHLIBDIR@libMdsIpShr@SHARETYPEMOD@ 
-endif
-
 SOURCES = \
 	mdsipshr.c mdsiputil.c vmshpwd.c mdsip_socket_io.c $(COMPRESSION_SOURCES)
 
@@ -31,11 +25,12 @@ OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = mdsipshr.export
 
 all : @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ \
-      $(modules) \
+      @MAKESHLIBDIR@libMdsIpShr@SHARETYPEMOD@ \
       @MAKEBINDIR@ @MAKELIBDIR@ @MAKEETCDIR@ \
       @MAKELIBDIR@libMdsIpShr.a @MAKELIBDIR@libMdsIpUtil.a \
       @MAKEBINDIR@mdsiptest @MAKEBINDIR@mdsip \
-      @MAKEBINDIR@mdsipd @MAKEETCDIR@mdsip.hosts 
+      @MAKEBINDIR@mdsipd @MAKEETCDIR@mdsip.hosts \
+	@MAKEBINDIR@mkdirhier
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES) mdsip_u.c
@@ -62,6 +57,7 @@ install:
         endif
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsip	@bindir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsipd	@bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@mkdirhier @bindir@
 	if test "@SHARETYPE@" != ".a" ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpShr.a @libdir@; \
 		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpUtil.a @libdir@; \
