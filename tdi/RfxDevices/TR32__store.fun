@@ -1,6 +1,5 @@
-public fun TR10__store(as_is _nid, optional _method)
+public fun TR32__store(as_is _nid, optional _method)
 {
-    private _K_CONG_NODES = 45;
     private _N_HEAD = 0;
     private _N_BOARD_ID = 1;
     private _N_SW_MODE = 2;
@@ -13,20 +12,21 @@ public fun TR10__store(as_is _nid, optional _method)
     private _N_FREQUENCY = 9;
     private _N_USE_TIME = 10;
     private _N_PTS = 11;
-    private _K_NODES_PER_CHANNEL = 6;
-    private _N_CHANNEL_0= 12;
-    private _N_CHAN_START_TIME = 1;
-    private _N_CHAN_END_TIME = 2;
-    private _N_CHAN_START_IDX = 3;
-    private _N_CHAN_END_IDX = 4;
-    private _N_CHAN_DATA = 5;
-    private _N_INIT_ACTION = 48;
-    private _N_STORE_ACTION = 49;
-    private _2M = 2097152;
+    private _N_TRIG_EDGE = 12;
+    private _K_NODES_PER_CHANNEL = 7;
+    private _N_CHANNEL_0= 13;
+    private _N_CHAN_RANGE = 1;
+    private _N_CHAN_START_TIME = 2;
+    private _N_CHAN_END_TIME = 3;
+    private _N_CHAN_START_IDX = 4;
+    private _N_CHAN_END_IDX = 5;
+    private _N_CHAN_DATA = 6;
+    private _64M = 67108864;
+
     private _INVALID = 10E20;
 
 
-	_max_samples = _2M;
+	_max_samples = _64M;
 
      _board_id=if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
     if(_board_id == _INVALID)
@@ -57,25 +57,25 @@ public fun TR10__store(as_is _nid, optional _method)
 
 	if(_remote)
 	{
-	    _handle = MdsValue('TR10HWStartStore(0, $1, $2)', _board_id, _pts);
+	    _handle = MdsValue('TR32HWStartStore(0, $1, $2)', _board_id, _pts);
 		if(_handle == -1)
 		{
-			DevLogErr(_nid, 'TR10 device not in STOP state. Board ID: '//_board_id);
+			DevLogErr(_nid, 'TR32 device not in STOP state. Board ID: '//_board_id);
 			abort();
 		}
 	}
 	else
 	{
-		_handle = TR10HWStartStore(_nid, _board_id, _pts);
+		_handle = TR32HWStartStore(_nid, _board_id, _pts);
 		if(_handle == -1)
 		{
-			DevLogErr(_nid, 'TR10 device not in STOP state. Board ID: '//_board_id);
+			DevLogErr(_nid, 'TR32 device not in STOP state. Board ID: '//_board_id);
 			abort();
 		}
 	}
     
 	
-	for(_i = 0; _i < 16; _i++)
+	for(_i = 0; _i < 4; _i++)
     {
         if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 +(_i *  _K_NODES_PER_CHANNEL))))
         { 
@@ -89,17 +89,25 @@ public fun TR10__store(as_is _nid, optional _method)
 	/* Read data */
 			if(_remote)
 			{
-				_data = MdsValue('TR10HWReadChan($1, $2, $3, $4, $5)', _handle, (_i + 1), _start_idx, _end_idx, _pts);	
+				_data = MdsValue('TR32HWReadChan($1, $2, $3, $4, $5)', _handle, (_i + 1), _start_idx, _end_idx, _pts);	
 			}
 			else
 			{
-				_data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts);					  }						
+				_data = TR32HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts);					  
+			}						
+
+			DevNodeCvt(_nid,  _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_RANGE, 
+			['0.125','0.15625','0.25','0.3125','0.5','0.625','1','1.25','2','2.5','4','5','8','10'],
+			[0.125,0.15625,0.25,0.3125,0.5,0.625,1.,1.25,2.,2.5,4.,5.,8.,10.],
+			 _range = 10.);
+
+
 
 	/* Build signal */
 			_dim = make_dim(make_window(_start_idx, _end_idx - 1, _trig), _clock);
 			_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
 
-			_status = DevPutSignal(_sig_nid, 0, 10/32768., word(_data), 0, _end_idx - _start_idx - 1, _dim);
+			_status = DevPutSignal(_sig_nid, 0, _range/8192., word(_data), 0, _end_idx - _start_idx - 1, _dim);
 			if(! _status)
 			{
 				DevLogErr(_nid, 'Error writing data in pulse file');
@@ -109,11 +117,11 @@ public fun TR10__store(as_is _nid, optional _method)
     }
 	if(_remote)
 	{
-		MdsValue('TR10HWClose($1)', _handle);
+		MdsValue('TR32HWClose($1)', _handle);
 		MdsDisconnect();
 	}
 	else
-		TR10HWClose(_handle);
+		TR32HWClose(_handle);
 
     return(1);
 }
