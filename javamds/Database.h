@@ -233,6 +233,14 @@ JNIEXPORT void JNICALL Java_Database_setDefault
 
 /*
  * Class:     Database
+ * Method:    setFlags
+ * Signature: (LNidData;I)V
+ */
+JNIEXPORT void JNICALL Java_Database_setFlags
+  (JNIEnv *, jobject, jobject, jint);
+
+/*
+ * Class:     Database
  * Method:    setOn
  * Signature: (LNidData;ZI)V
  */

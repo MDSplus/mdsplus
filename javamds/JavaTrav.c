@@ -151,6 +151,35 @@ sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path")
 
 }
 
+JNIEXPORT jint JNICALL Java_Database_openNew
+  (JNIEnv *env, jobject obj)
+{
+  int status;
+  jfieldID name_fid, readonly_fid, editable_fid, shot_fid;
+  jclass cls = (*env)->GetObjectClass(env, obj);
+  const char *name;
+  jobject jname;
+  int is_editable, is_readonly, shot;
+static char buf[1000];
+ 
+/* //printf("Parte Open\n");*/
+
+
+  name_fid =  (*env)->GetFieldID(env, cls, "name", "Ljava/lang/String;");
+  shot_fid = (*env)->GetFieldID(env, cls, "shot", "I");
+  jname = (*env)->GetObjectField(env, obj, name_fid);
+  name = (*env)->GetStringUTFChars(env, jname, 0);
+  shot = (*env)->GetIntField(env, obj, shot_fid);
+  status = TreeOpenNew((char *)name, shot);
+  (*env)->ReleaseStringUTFChars(env, jname, name);
+
+sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));
+  if(!(status & 1))
+    RaiseException(env, buf);/*//MdsGetMsg(status));*/
+  return 0;
+
+}
+
 
 JNIEXPORT void JNICALL Java_Database_write
   (JNIEnv *env, jobject obj, jint context)
@@ -364,6 +393,26 @@ JNIEXPORT void JNICALL Java_Database_putData
 	//printf("PUT RECORD: %s\n", MdsGetMsg(status));
 	if(!(status & 1))
 	    RaiseException(env, MdsGetMsg(status));
+}
+
+
+JNIEXPORT void JNICALL Java_Database_setFlags
+  (JNIEnv *env, jobject obj, jobject jnid, jint flags)
+{
+  int nid, status;
+  static int nci_flags;
+  static int nci_flags_len = sizeof(int);
+  struct nci_itm nci_list[] =  {{4, NciSET_FLAGS, &nci_flags,&nci_flags_len},
+   {NciEND_OF_LIST, 0, 0, 0}};
+
+  jfieldID nid_fid;
+  jclass cls = (*env)->GetObjectClass(env, jnid);
+  nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+  nid = (*env)->GetIntField(env, jnid, nid_fid);
+  nci_flags = flags;
+  status = TreeSetNci(nid, nci_list);
+  if(!(status & 1))
+      RaiseException(env, MdsGetMsg(status));
 }
 
 
@@ -823,7 +872,6 @@ JNIEXPORT void JNICALL Java_Database_setOn
 
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
-
   if(on)
      status = TreeTurnOn(nid);
   else
@@ -831,7 +879,7 @@ JNIEXPORT void JNICALL Java_Database_setOn
      status = TreeTurnOff(nid);
   if(!(status & 1))
   {
-	/*printf("\nTreeTurnOn status: %d %s", status, MdsGetMsg(status));*/
+	printf("Failed %s status: %d %s\n", TreeGetPath(nid), status, MdsGetMsg(status));
 
       RaiseException(env, MdsGetMsg(status));
   }
@@ -913,10 +961,14 @@ JNIEXPORT jobject JNICALL Java_Database_addDevice
   jvalue args[1];
   char mypath[512], mymodel[512];
 
+  int tempNid;
 
   strcpy(mypath, path);
 
   strcpy(mymodel, model);
+
+  TreeGetDefaultNid(&tempNid);
+ 
   status = TreeAddConglom((char *)mypath, (char *)mymodel, &nid);
   (*env)->ReleaseStringUTFChars(env, jpath, path);
   (*env)->ReleaseStringUTFChars(env, jmodel, model);
