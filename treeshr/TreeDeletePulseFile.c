@@ -151,7 +151,7 @@ static int  TreeDeleteTreeFiles(char *tree, int shot)
       {
         if (*part == ' ') 
           part++;
-        else if ((path[i] == ' ' || path[i] == ';' || path[i] == 0) && strlen(part))
+        else if ((path[i] == ';' || path[i] == 0) && strlen(part))
         {
 	  path[i] = 0;
           sfile = strcpy(malloc(strlen(part)+strlen(name)+strlen(type)+2),part);

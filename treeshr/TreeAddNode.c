@@ -726,7 +726,7 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
         if (num != (external_pages*512)) goto error_exit;
 	status = TreeWriteNci(info_ptr);
 	if ((status & 1) == 0) goto error_exit;
-	MDS_IO_REMOVE(info_ptr->filespec);
+	    MDS_IO_REMOVE(info_ptr->filespec);
         MDS_IO_CLOSE(ntreefd);
         MDS_IO_RENAME(nfilenam,info_ptr->filespec);
 #ifdef HAVE_VXWORKS_H

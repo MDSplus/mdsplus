@@ -142,16 +142,16 @@ static char *GetRegistry(char *where, char *pathname)
     unsigned long valsize;
     if (RegQueryValueEx(regkey3,pathname,0,&valtype,NULL,&valsize) == ERROR_SUCCESS)
     {
-	  int plen;
-	  valsize += 2;
+      int plen;
+	    valsize += 2;
       path = malloc(valsize+1);
       RegQueryValueEx(regkey3,pathname,0,&valtype,path,&valsize);
-	  plen = strlen(path);
-	  if (path[plen-1] != '\\')
-	  {
-		  path[plen++] = '\\';
-		  path[plen] = '\0';
-	  }
+	    plen = strlen(path);
+//	  if (path[plen-1] != '\\')
+//	  {
+//		  path[plen++] = '\\';
+//		  path[plen] = '\0';
+//	  }
     }
   }
   if (regkey1) RegCloseKey(regkey1);

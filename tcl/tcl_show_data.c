@@ -517,7 +517,7 @@ int TclShowData()
             if (sts & 1)
                {
                 str_free1_dx(&out_line);
-                sts = CvtDxT((struct descriptor *) & data,1);
+                sts = CvtDxT((struct descriptor *) (&data),1);
                 if (sts & 1 == 0)
                   TclTextOut("   Error displaying data");
                }

@@ -1,4 +1,8 @@
 #include "mdsip.h"
+int CloseSocket(SOCKET s);
+extern int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob);
+extern char ClientType(void);
+extern void FlipHeader(MsgHdr *header);
 #ifdef GLOBUS
 #ifdef __VMS
 #include <descrip.h>

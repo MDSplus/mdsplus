@@ -616,6 +616,8 @@ extern int MDS_IO_WRITE(int fd, void *buff, size_t count);
 extern ssize_t MDS_IO_READ(int fd, void *buff, size_t count);
 extern int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode);
 extern int MDS_IO_EXISTS(char *filename);
+extern int MDS_IO_REMOVE(char *filename);
+extern int MDS_IO_RENAME(char *oldname, char *newname);
 
 
 #endif

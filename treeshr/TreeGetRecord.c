@@ -285,7 +285,7 @@ static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size,
     status = TreeLockDatafile(info, 1, rfa_l);
     if (status & 1)
     {
-      status = MDS_IO_LSEEK(info->data_file->get,rfa_l,SEEK_SET);
+      _int64 offset = MDS_IO_LSEEK(info->data_file->get,rfa_l,SEEK_SET);
       status = (MDS_IO_READ(info->data_file->get,(void *)&hdr,12) == 12) ? TreeSUCCESS : TreeFAILURE;
       if (status & 1)
       {
