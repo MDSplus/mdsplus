@@ -1,19 +1,22 @@
-import java.awt.Dialog;
-import java.awt.Frame;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import java.awt.event.*;
 
 
-public class ProfileDialog extends Dialog
+public class ProfileDialog extends JDialog
 {
     static final String TITLE[] = {"X profile", "Y profile", "Pixel time profile"};
     private WaveformContainer profile_container;
     int row[] = {3};
     Waveform wave[] = new Waveform[3];
     Waveform w_profile_line = null;
+    private String name;
+    private jScopeMultiWave source_profile = null;
     
-    ProfileDialog(Frame f, String title)
+    ProfileDialog(jScopeMultiWave source_profile)
     {
-        super(f, title, false);
+        this.source_profile = source_profile;
+        setTitle("Profile Dialog");
         profile_container = new WaveformContainer(row, false);
         WavePopup wp = new WavePopup();
         profile_container.setPopupMenu(wp);
@@ -23,11 +26,12 @@ public class ProfileDialog extends Dialog
             wave[i].SetTitle(TITLE[i]);
         }
         profile_container.add(wave);
-        add(profile_container);
+        getContentPane().add(profile_container);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) 
             {
-                Waveform.setSendProfile(false);
+                if(ProfileDialog.this.source_profile != null)
+                    ProfileDialog.this.source_profile.setSendProfile(false);
                 dispose();
             }
         });
@@ -49,7 +53,7 @@ public class ProfileDialog extends Dialog
         profile_container.update();        
     }
 
-    public void updateProfileLine(int pixels_line[])
+    public synchronized void updateProfileLine(int pixels_line[])
     {
         float x[] = new float[pixels_line.length];
         float xt[] = new float[pixels_line.length];
@@ -64,10 +68,19 @@ public class ProfileDialog extends Dialog
         w_profile_line.Update(xt, x);
     }
     
-    public void updateProfiles(int pixels_x[], int start_pixel_x, 
-                               int pixels_y[], int start_pixel_y,
-                               int pixels_signal[], float frames_time[])
+    public synchronized void updateProfiles(String name,
+                                            int pixels_x[], int start_pixel_x, 
+                                            int pixels_y[], int start_pixel_y,
+                                            int pixels_signal[], float frames_time[])
     {
+        float x_null[] = {0.0F, 0.1F};
+        float y_null[] = {0.0F, 0.0F};
+        
+        if(!name.equals(this.name))
+        {
+            this.name = new String(name);
+            setTitle("Profile Dialog - "+name);
+        }
         
         if(pixels_x != null && pixels_x.length > 0)
         {
@@ -79,7 +92,7 @@ public class ProfileDialog extends Dialog
                 xt[i] = (float)start_pixel_x + i;
             }
             wave[0].Update(xt, x);
-       }
+        } 
         
         if(pixels_x != null && pixels_x.length > 0)
         {
@@ -91,7 +104,7 @@ public class ProfileDialog extends Dialog
                 yt[i] = (float)start_pixel_y + i;
             }
             wave[1].Update(yt, y);
-        }
+        } 
         
         
         if(pixels_signal != null && pixels_x.length > 0 &&
@@ -103,6 +116,6 @@ public class ProfileDialog extends Dialog
                 s[i] = (float)(pixels_signal[i] & 0xff);
             }
             wave[2].Update(frames_time, s);
-        }
+        } 
     }
 }

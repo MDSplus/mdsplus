@@ -22,6 +22,8 @@ class Frames extends Canvas {
     private int[] frames_pixel_array;
     private Rectangle frames_pixel_roi;
     private int x_measure_pixel = 0, y_measure_pixel = 0;
+    private float ft[] = null;
+    private Point sel_point = null;
     
     Frames()
     {
@@ -65,6 +67,7 @@ class Frames extends Canvas {
         frame_time.removeAllElements();
         tracker = null;
     }
+     
      
     public int getNumFrame()
     {
@@ -124,7 +127,6 @@ class Frames extends Canvas {
         }
         return true;
     }
-
 
     public boolean AddFrame(Image img, float t)
     {
@@ -364,12 +366,16 @@ class Frames extends Canvas {
         if(frame_time == null || frame_time.size() == 0)
             return null;
             
-        float frames_time[] = new float[frame_time.size()];
-        for(int i = 0; i < frame_time.size(); i++)
+        if(ft == null)
         {
-            frames_time[i] = ((Float)frame_time.elementAt(i)).floatValue();
+            //float frames_time[] = new float[frame_time.size()];
+            ft = new float[frame_time.size()];
+            for(int i = 0; i < frame_time.size(); i++)
+            {
+                ft[i] = ((Float)frame_time.elementAt(i)).floatValue();
+            }
         }
-        return frames_time;
+        return ft;
     }
     
     
@@ -383,6 +389,7 @@ class Frames extends Canvas {
         return t_out;
     }
     
+    //return point position in the show frame
     public Point getImagePoint(Point p, Dimension d)
     {
         Point p_out = new Point(0, 0);
@@ -407,32 +414,46 @@ class Frames extends Canvas {
             double ratio_x = (double)fr_dim.width/ dim.width;
             double ratio_y = (double)fr_dim.height/ dim.height;
             
-            p_out.x = (int) (ratio_x * p.x);
+            p_out.x = (int) (ratio_x * p.x + ratio_x/2);
            
-            /*
-            if(p_out.x > view_dim.width-1)
+           
+            if(p_out.x > (dim.width-1)*ratio_x)
             {
-                p_out.x = view_dim.width-1;
-                p.x = fr_dim.width;
-            }
-            */
-            
-            p_out.y = (int) (ratio_y * p.y);
-            
-            /*
-            if(p_out.y > view_dim.height-1)
+                p_out.x = 0;
+                p_out.y = 0;
+            } 
+            else
             {
-                p_out.y = view_dim.height-1;
-                p.y = fr_dim.height;
+                                        
+                p_out.y = (int) (ratio_y * p.y + ratio_y/2);
+                    
+                if(p_out.y > (dim.height-1)*ratio_y)
+                {
+                    p_out.x = 0;
+                    p_out.y = 0;
+                }
             }
-            */
         }
-        
         return p_out;
     }
     
-    
-    public Point GetFramePoint(Point p, Dimension d)
+    public void setFramePoint(Point sel_point, Dimension d)
+    {
+        this.sel_point = getFramePoint(new Point(sel_point.x, sel_point.y), d);
+    }
+
+    public Point getFramePoint(Dimension d)
+    {
+        if(sel_point != null)
+           return getImagePoint(new Point(sel_point.x, sel_point.y), d);
+        else
+           return new Point(0, 0);
+    }
+
+
+    //return pixel position in the frame
+    //Argument point is fit to frame dimension
+    public Point getFramePoint(Point p, Dimension d)
     {
         Point p_out = new Point(0, 0);
         Dimension fr_dim = getFrameSize(curr_frame_idx, d);
@@ -523,6 +544,7 @@ class Frames extends Canvas {
                               ((Image)frame.elementAt(idx)).getHeight(this));
     }
     
+    /*returm frame image pixel dimension*/
     public Dimension getFrameSize(int idx, Dimension d)
     {
         int width, height;
@@ -554,7 +576,7 @@ class Frames extends Canvas {
     
     public void setMeasurePoint(int x_pixel, int y_pixel, Dimension d)
     {
-        Point mp = GetFramePoint(new Point(x_pixel, y_pixel), d);
+        Point mp = getFramePoint(new Point(x_pixel, y_pixel), d);
         x_measure_pixel = mp.x;
         y_measure_pixel = mp.y;
     }
@@ -588,6 +610,11 @@ class Frames extends Canvas {
         zoom_rect.height = (int)(ratio_y * r.height + 0.5);
         zoom_rect.x += ratio_x * r.x + 0.5;
         zoom_rect.y += ratio_y * r.y + 0.5;
+        
+        if(zoom_rect.width == 0)
+            zoom_rect.width = 1;
+        if(zoom_rect.height == 0)
+            zoom_rect.height = 1;
                 
         curr_frame_idx = idx;
     }
@@ -626,6 +653,23 @@ class Frames extends Canvas {
     public void Resize()
     {
        zoom_rect = null;
+    }
+    
+    public int getNextFrameIdx()
+    {
+        if(curr_frame_idx + 1 == getNumFrame())
+            return curr_frame_idx;
+        else
+            return curr_frame_idx + 1;
+        
+    }
+
+    public int getLastFrameIdx()
+    {
+        if(curr_frame_idx - 1 < 0)
+            return 0;
+        else
+            return curr_frame_idx - 1;
     }
     
     public int GetFrameIdx()

@@ -170,110 +170,132 @@ public  class WaveformMetrics {
     
     public Vector ToPolygons(Signal sig, Dimension d)
     {
-	int i, j, curr_num_points, curr_x, start_x, max_points;
-	float  max_y, min_y, curr_y;
-	Vector curr_vect = new Vector(5);
-	int xpoints[], ypoints[];
-	Polygon curr_polygon;
-	int pol_idx = 0;
-	min_y = max_y = sig.y[0];
-	xpoints = new int[sig.n_points];
-	ypoints = new int[sig.n_points];
-	curr_num_points = 0;
-	i = j = 0;
-	if(x_log || y_log)
-	{
-	    start_x = XPixel(sig.x[0], d);
-	    while(j < sig.n_points)
+	    int i, j, curr_num_points, curr_x, start_x, max_points;
+	    float  max_y, min_y, curr_y;
+	    Vector curr_vect = new Vector(5);
+	    int xpoints[], ypoints[];
+	    Polygon curr_polygon = null;
+	    int pol_idx = 0;
+	    min_y = max_y = sig.y[0];
+	    xpoints = new int[sig.n_points];
+	    ypoints = new int[sig.n_points];
+	    curr_num_points = 0;
+	    i = j = 0;
+        int end_point = sig.n_points;
+	    
+	    	    
+	    if(x_log || y_log)
 	    {
-		for(j = i+1; j < sig.n_points && 
-		    (pol_idx >= sig.n_nans || j != sig.nans[pol_idx])&& 
-		    (curr_x = XPixel(sig.x[j], d)) == start_x; j++)
-		{
-		    curr_y = sig.y[j];
-		    if(curr_y < min_y) min_y = curr_y;
-		    if(curr_y > max_y) max_y = curr_y;
-		}
-		if(max_y > min_y)
-		{
-		    xpoints[curr_num_points] = xpoints[curr_num_points + 1] = start_x;
-		    ypoints[curr_num_points] = YPixel(min_y, d);
-		    ypoints[curr_num_points + 1] = YPixel(max_y, d);
-		    curr_num_points +=2;
-		}
-		else
-		{
-		    xpoints[curr_num_points] = start_x;
-		    ypoints[curr_num_points] = YPixel(max_y, d);
-		    curr_num_points++;
-		}
-		if(j == sig.n_points || Float.isNaN(sig.y[j])) 
-		{
-		    curr_polygon = new Polygon(xpoints, ypoints, curr_num_points);
-		    curr_vect.addElement(curr_polygon);
-		    pol_idx++;
-		    curr_num_points = 0;
-		    if(j < sig.n_points)  //need to raise pen
-		    {
-			while(j < sig.n_points && Float.isNaN(sig.y[j]))
-			    j++;
-		    }
-		}
-		if(j < sig.n_points)
-		{
-		    start_x = XPixel(sig.x[j], d);
-		    max_y = min_y = sig.y[j];
-		    i = j;
-		}
+	        double xmax_nolog = Math.pow(10, xmax);
+            double xmin_nolog = Math.pow(10, xmin);
+
+	        for(i = 0; i < sig.n_points && sig.x[i] < xmin_nolog; i++);
+	        if(i > 0) i--;
+	        min_y = max_y = sig.y[i];
+	        j = i+1;
+
+	        start_x = XPixel(sig.x[i], d);
+	        while(j < end_point)//sig.n_points  && sig.x[j] < xmax_nolog)
+	        {
+		        for(j = i+1; j < sig.n_points && 
+		            (pol_idx >= sig.n_nans || j != sig.nans[pol_idx])&& 
+		            (curr_x = XPixel(sig.x[j], d)) == start_x; j++)
+		        {
+		            curr_y = sig.y[j];
+		            if(curr_y < min_y) min_y = curr_y;
+		            if(curr_y > max_y) max_y = curr_y;
+		        }
+		        if(max_y > min_y)
+		        {
+		            xpoints[curr_num_points] = xpoints[curr_num_points + 1] = start_x;
+		            ypoints[curr_num_points] = YPixel(min_y, d);
+		            ypoints[curr_num_points + 1] = YPixel(max_y, d);
+		            curr_num_points +=2;
+		        }
+		        else
+		        {
+		            xpoints[curr_num_points] = start_x;
+		            ypoints[curr_num_points] = YPixel(max_y, d);
+		            curr_num_points++;
+		        }
+		        if(j == sig.n_points || j == end_point || Float.isNaN(sig.y[j]))// || sig.x[j] >= xmax_nolog) 
+		        {
+		            curr_polygon = new Polygon(xpoints, ypoints, curr_num_points);
+		            curr_vect.addElement(curr_polygon);
+		            pol_idx++;
+		            curr_num_points = 0;
+		            if(j < sig.n_points)  //need to raise pen
+		            {
+			            while(j < sig.n_points && Float.isNaN(sig.y[j]))
+			                j++;
+		            }
+		        }
+		        if(j < end_point)//sig.n_points)
+		        {
+		            start_x = XPixel(sig.x[j], d);
+		            max_y = min_y = sig.y[j];
+		            i = j;
+		            if(sig.x[j] > xmax)
+		                end_point = j + 1;
+		        }
+	        }
 	    }
-	}
-	else // Not using logaritmic scales
-	{
-	    ComputeFactors(d);
-	    start_x = XPixel(sig.x[0]);
-	    while(j < sig.n_points)
+	    else // Not using logaritmic scales
 	    {
-		for(j = i+1; j < sig.n_points && //!Float.isNaN(sig.y[j]) && 
-		    (pol_idx >= sig.n_nans || j != sig.nans[pol_idx])&& 
-		    (curr_x = XPixel(sig.x[j])) == start_x; j++)
-		{
-		    curr_y = sig.y[j];
-		    if(curr_y < min_y) min_y = curr_y;
-		    if(curr_y > max_y) max_y = curr_y;
-		}
-		if(max_y > min_y)
-		{
-		    xpoints[curr_num_points] = xpoints[curr_num_points + 1] = start_x;
-		    ypoints[curr_num_points] = YPixel(min_y);
-		    ypoints[curr_num_points + 1] = YPixel(max_y);
-		    curr_num_points +=2;
-		}
-		else
-		{
-		    xpoints[curr_num_points] = start_x;
-		    ypoints[curr_num_points] = YPixel(max_y);
-		    curr_num_points++;
-		}
-		if(j == sig.n_points || Float.isNaN(sig.y[j])) 
-		{
-		    curr_polygon = new Polygon(xpoints, ypoints, curr_num_points);
-		    curr_vect.addElement(curr_polygon);
-		    pol_idx++;
-		    curr_num_points = 0;
-		    if(j < sig.n_points)  //need to raise pen
-		    {
-			while(j < sig.n_points && Float.isNaN(sig.y[j]))
-			    j++;
-		    }
-		}
-		if(j < sig.n_points)
-		{
-		    start_x = XPixel(sig.x[j]);
-		    max_y = min_y = sig.y[j];
-		    i = j;
-		}
+	        ComputeFactors(d);
+
+	        for(i = 0; i < sig.n_points && sig.x[i] < xmin; i++);
+	        if(i > 0) i--;
+	        min_y = max_y = sig.y[i];
+	        j = i+1;
+
+	        start_x = XPixel(sig.x[i]);
+	        
+	        while(j < end_point)//sig.n_points && sig.x[j] < xmax + dt)
+	        {
+		        for(j = i+1; j < sig.n_points && //!Float.isNaN(sig.y[j]) && 
+		            (pol_idx >= sig.n_nans || j != sig.nans[pol_idx])&& 
+		            (curr_x = XPixel(sig.x[j])) == start_x; j++)
+		        {
+		            curr_y = sig.y[j];
+		            if(curr_y < min_y) min_y = curr_y;
+		            if(curr_y > max_y) max_y = curr_y;
+		        }
+		        if(max_y > min_y)
+		        {
+		            xpoints[curr_num_points] = xpoints[curr_num_points + 1] = start_x;
+		            ypoints[curr_num_points] = YPixel(min_y);
+		            ypoints[curr_num_points + 1] = YPixel(max_y);
+		            curr_num_points +=2;
+		        }
+		        else
+		        {
+		            xpoints[curr_num_points] = start_x;
+		            ypoints[curr_num_points] = YPixel(max_y);
+		            curr_num_points++;
+		        }
+		        if(j == sig.n_points || j >= end_point || Float.isNaN(sig.y[j]))// || sig.x[j] >= xmax) 
+		        {
+		            curr_polygon = new Polygon(xpoints, ypoints, curr_num_points);
+		            curr_vect.addElement(curr_polygon);
+		            pol_idx++;
+		            curr_num_points = 0;
+		            if(j < sig.n_points)  //need to raise pen
+		            {
+			            while(j < sig.n_points && Float.isNaN(sig.y[j]))
+			                j++;
+		            }
+		        }
+		        if(j < end_point)//sig.n_points)
+		        {
+		            start_x = XPixel(sig.x[j]);
+		            max_y = min_y = sig.y[j];
+		            i = j;
+		            if(sig.x[j] > xmax)
+		                end_point = j + 1;
+		        }
+	        }
 	    }
-	}
-	return curr_vect;
+	    return curr_vect;
     }	
 }

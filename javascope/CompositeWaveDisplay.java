@@ -4,18 +4,33 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.lang.NumberFormatException;
 import java.util.*;
+import java.awt.print.*;
+import javax.swing.*;
 
-public class CompositeWaveDisplay extends Applet implements WaveContainerListener
+
+public class CompositeWaveDisplay extends JApplet implements WaveContainerListener
 {
-    private CheckboxGroup pointer_mode;
+    private ButtonGroup       pointer_mode = new ButtonGroup();
     private WaveformContainer wave_container;
-    private boolean automatic_color = false;
-    private boolean isApplet = true;
-    private Label point_pos;
+    private boolean           automatic_color = false;
+    private boolean           isApplet = true;
+    private JLabel            point_pos;
+    private int               print_scaling = 100;
+    private boolean           fixed_legend = false;
+    static  private JFrame    f = null;
+    PrinterJob                prnJob;
+    PageFormat                pf;
 
     public static void main(String args[])
     {
         Component cd = createWindow("prova");
+        ((CompositeWaveDisplay)cd).testSignal((CompositeWaveDisplay)cd);
+        ((CompositeWaveDisplay)cd).showWindow(50, 50, 500, 400);
+    }
+    
+    
+    private void testSignal(CompositeWaveDisplay cd)
+    {
         float y[] = new float[1000], y1[] = new float[1000], y2[] = new float[1000], x [] = new float[1000];
         for(int i = 0; i < 1000; i++)
         {
@@ -47,16 +62,14 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
         ((CompositeWaveDisplay)cd).addSignal(x, y, 1,1,"green", "seno");
         ((CompositeWaveDisplay)cd).addSignal(x, y1, 1,1,"red", "coseno");
         ((CompositeWaveDisplay)cd).addSignal(x, y2, 2,1,"blue", "seno**2");
-        ((CompositeWaveDisplay)cd).showWindow(50, 50, 500, 400);
     }
     
     public static CompositeWaveDisplay createWindow(String title)
     {
-        Frame f;
-        if(title != null)
-            f = new Frame(title);
+       if(title != null)
+            f = new JFrame(title);
         else
-            f = new Frame();
+            f = new JFrame();
  
         f.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {e.getWindow().dispose(); }
@@ -64,7 +77,7 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
         
         CompositeWaveDisplay cwd = new CompositeWaveDisplay(false);
         cwd.init();
-        f.add(cwd);
+        f.getContentPane().add(cwd);
         return cwd;
     }
 
@@ -94,11 +107,9 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
         wave_container.setPopupMenu(wave_popup);
         wave_container.SetMode(Waveform.MODE_ZOOM);
                 
-        setLayout(new BorderLayout());
+        getContentPane().setLayout(new BorderLayout());
               
-    
-        pointer_mode = new CheckboxGroup();    
-        Checkbox point = new Checkbox("Point", pointer_mode, false);
+        JRadioButton point = new JRadioButton("Point", false);
         point.addItemListener(new ItemListener ()
 		    {
 		       public void itemStateChanged(ItemEvent e)
@@ -106,7 +117,8 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
 		           wave_container.SetMode(Waveform.MODE_POINT);
 		       }
 		    });
-        Checkbox zoom  = new Checkbox("Zoom", pointer_mode, true);
+
+        JRadioButton zoom  = new JRadioButton("Zoom", true);
         zoom.addItemListener(new ItemListener ()
 		    {
 		       public void itemStateChanged(ItemEvent e)
@@ -114,7 +126,8 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
 		           wave_container.SetMode(Waveform.MODE_ZOOM);
 		       }
 		    });
-        Checkbox pan  = new Checkbox("Pan", pointer_mode, false);
+
+        JRadioButton pan  = new JRadioButton("Pan", false);
         pan.addItemListener(new ItemListener ()
 		    {
 		       public void itemStateChanged(ItemEvent e)
@@ -122,40 +135,74 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
 		           wave_container.SetMode(Waveform.MODE_PAN);
 		       }
 		    });
-	
-		    
-		    
-            Panel panel1 = new Panel();
-            panel1.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 3));
-            panel1.add(point);
-            panel1.add(zoom);
-            panel1.add(pan);
 
-            Panel panel = new Panel();
-            panel.setLayout(new BorderLayout());
-            panel.add("West", panel1);
-            if(!isApplet)
-            {            
-                point_pos = new Label("[0.000000000, 0.000000000]");
-                point_pos.setFont(new Font("Courier", Font.PLAIN, 12));
-                panel.add("Center", point_pos);
-            }
+        pointer_mode.add(point);
+        pointer_mode.add(zoom);
+        pointer_mode.add(pan);
+
+        JPanel panel1 = new JPanel();
+        panel1.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 3));
+        panel1.add(point);
+        panel1.add(zoom);
+        panel1.add(pan);
+	
+        JPanel panel = new JPanel()
+        {
+            public void print(Graphics g){}
+            public void printAll(Graphics g){}
+        };    
             
-            Button print = new Button("Print");
-            print.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        print();
-                    }
-                });
-            panel.add("East", print);    
+        panel.setLayout(new BorderLayout());
+        panel.add("West", panel1);
+        if(!isApplet)
+        {            
+            point_pos = new JLabel("[0.000000000, 0.000000000]");
+            point_pos.setFont(new Font("Courier", Font.PLAIN, 12));
+            panel.add("Center", point_pos);
+
+
+            prnJob = PrinterJob.getPrinterJob();
+            pf = prnJob.defaultPage();
+	    pf.setOrientation(PageFormat.LANDSCAPE);
+	    Paper p = pf.getPaper();
+	    p.setSize(595.2239, 841.824);
+	    p.setImageableArea(13.536, 12.959, 567.288, 816.6239);
+	    pf.setPaper(p);
+	
+	    JButton print = new JButton("Print");
+	    print.addActionListener(new ActionListener()
+		{
+		    public void actionPerformed(ActionEvent e)
+		    { 			
+			javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
+				public void actionPerformed(ActionEvent ae) 
+				{
+				    try 
+					{
+					pf = prnJob.pageDialog(pf);
+					if(prnJob.printDialog())
+					    {
+						System.out.println("Stampo");
+						prnJob.setPrintable(wave_container, pf);
+						prnJob.print();
+					    }
+					} 
+				    catch (Exception ex){}
+				}
+			});
+			t.setRepeats(false);
+			t.start();
+			
+		    }
+		});
+	    panel.add("East", print);    
+	}
+
+        getContentPane().add("Center", wave_container);//, BorderLayout.CENTER);
+        getContentPane().add("South", panel);//, BorderLayout.SOUTH);
             
-            add(wave_container, BorderLayout.CENTER);
-            add(panel, BorderLayout.SOUTH);
-            
-            if(isApplet) getSignalsParameter();
-            wave_container.update();
+        if(isApplet) getSignalsParameter();
+        wave_container.update();
     }
     
     public void setSize(int width, int height)
@@ -164,7 +211,14 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
         validate();
     }
                     
-    
+
+    private boolean translateToBoolean(String value)
+    {
+        if(value.toUpperCase().equals("TRUE"))
+            return  true;
+        else
+            return false;            
+    }
         
     
     private void getSignalsParameter()
@@ -173,9 +227,32 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
         String sig_param;
         String sig_attr = "SIGNAL_";
         int i = 1;
-        String global_autentication, signal_autentication, autentication;
+        String global_autentication, signal_autentication, autentication, param;
 
         global_autentication = getParameter("AUTENTICATION");
+        param = getParameter("PRINT_SCALING");
+        if(param != null)
+        {
+            try {
+                print_scaling = Integer.parseInt(param);
+            } catch (NumberFormatException e){}
+        }
+
+        param = getParameter("FIXED_LEGEND");
+        if(param != null)
+        {
+            fixed_legend = translateToBoolean(param);
+            wave_container.setLegendMode(MultiWaveform.LEGEND_BOTTOM);
+        }
+        
+        param = getParameter("PRINT_WITH_LEGEND");
+        if(param != null)
+            wave_container.setPrintWithLegend(translateToBoolean(param));
+
+        param = getParameter("PRINT_BW");
+        if(param != null)
+            wave_container.setPrintBW(translateToBoolean(param));
+
 
         while((sig_param = getParameter(sig_attr + i)) != null)
         {
@@ -220,9 +297,12 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
                     name = getParameterValue(sig_param, "name");
                     if(name != null)
                         s.setName(name);
-                    else
-                        s.setName(url);
-                    
+                    else 
+                    {
+                        int idx = url.indexOf("/") + 2;
+                        idx = url.indexOf("/", idx) + 1;
+                        s.setName(url.substring(idx, url.length()));
+                    }
                     row = getParameterValue(sig_param, "row");
                     col = getParameterValue(sig_param, "col");
                     if(row != null && col != null)
@@ -297,8 +377,18 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
         Signal sig = new Signal(x, y);
         
         if(color != null)
-            sig.setColorIdx(Waveform.ColorNameToIndex(color));
-        if(label != null)
+	{
+	    if(color.equals("Automatic"))
+	    {
+		automatic_color = true;
+	    }
+	    else
+	    {
+		automatic_color = false;
+		sig.setColorIdx(Waveform.ColorNameToIndex(color));
+	    }
+	}
+        if(label != null && label.length() != 0)
             sig.setName(label);
             
         addSignal(sig, row, column);
@@ -310,11 +400,9 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
     public void showWindow(int x, int y, int width, int height)
     {
         wave_container.update();
-        Component f = getParent();
-        if(f instanceof Frame);
-        ((Frame)f).pack();
-        ((Frame)f).setBounds(new Rectangle(x, y, width, height));
-        ((Frame)f).show();
+        ((JFrame)f).pack();
+        ((JFrame)f).setBounds(new Rectangle(x, y, width, height));
+        ((JFrame)f).show();
     }
 
 
@@ -329,38 +417,63 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
         {
             w = (MultiWaveform)c;
             if(automatic_color)
-                s.setColorIdx(w.GetSignalCount());
+                s.setColorIdx(w.GetShowSignalCount());
             w.addSignal(s);
         } else {
             w = (MultiWaveform)wave_container.CreateWaveComponent();
             w.addSignal(s);
+            w.setLegendMode(MultiWaveform.LEGEND_BOTTOM);
             wave_container.add(w, row, col);
         }
         if(isApplet) showStatus("Add "+s.getName()+" col "+col+" row "+row);
         w.Update();
     }
-    
-    
-    public void print()//Graphics g)
-    {
 
-        PrintJob p = getToolkit().getPrintJob(null, "Print", null);
-        if(p != null)
-        //if(g instanceof PrintGraphics)
-        {
-	        System.out.println("------- IN PRINT --------");
-	        Graphics g = p.getGraphics();
-	        Dimension dim = p.getPageDimension();
-	      //  Dimension dim = new Dimension(500, 700);
-	        System.out.println("------- OK --------");
-	        //PrintGraphics pg = (PrintGraphics)g; 
-	        //PrintJob p = pg.getPrintJob();
-	        //Dimension dim = p.getPageDimension();
+    /*
+    public void print()
+    {
+	 PrintJob pg = getToolkit().getPrintJob(f, "Print Scope", System.getProperties());
+	 if(pg != null)
+	    {
+	        Graphics g = pg.getGraphics();
+	        Dimension dim = pg.getPageDimension();
+	        int st_x = 0, st_y = 0;
 	        
-	        wave_container.PrintAll(g, 0, 0, dim.width, dim.height); 
+	        //Fix page dimension and margin error on Window System
+	        if(!System.getProperty("os.name").equals("Mac OS"))
+	        {
+		    st_x = 10;
+		    dim.width -= 2*st_x;
+		    st_x = 15;
+                
+		    st_y = 10;
+		    dim.height -= 2*st_y;
+	        }
+		System.out.println(" "+dim);
+//	        wave_container.PrintAll(g, st_x, st_y, dim.height, dim.width); 
 	        g.dispose();
-	        p.end();
-	    }
+	        pg.end();
+	    }	    
+     }
+    
+    public void print(Graphics g)
+    {
+        Dimension dim = new Dimension();
+        Dimension applet_size = getSize();
+        
+        if(print_scaling != 100)
+        {
+	        System.out.println("Proporzionale " + this.getBounds());
+	        float ratio = (float)applet_size.width/applet_size.height;
+	        dim.width = (int)(applet_size.width/100.* print_scaling);
+	        dim.height = (int)(ratio * dim.width);
+        } else {
+	        dim.width = 530;
+	        dim.height = 816;
+        }
+
+	wave_container.PrintAll(g, 0, 0, dim.width, dim.height); 
     }
+    */
 }
 

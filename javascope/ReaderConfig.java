@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.net.*;
+import javax.swing.*;
 
 
 class ReaderConfig extends Reader
@@ -20,6 +21,7 @@ class ReaderConfig extends Reader
         in.close();
         
     }
+  
             
     ReaderConfig(FileReader fr) throws IOException
     {

@@ -3,14 +3,15 @@ import java.awt.*;
 //import java.awt.font.*;
 import java.awt.event.*;
 import java.util.Vector;
+import javax.swing.*;
 import java.io.*;
 
 
-public class FontSelection extends ScopePositionDialog {
-    Label fontLabel, sizeLabel, styleLabel, testLabel;
-    Button ok, cancel, apply;
+public class FontSelection extends JDialog implements ActionListener, ItemListener{
+    JLabel fontLabel, sizeLabel, styleLabel, testLabel;
+    JButton ok, cancel, apply;
     FontPanel fontC;
-    Choice fonts, sizes, styles;
+    JComboBox fonts, sizes, styles;
     int index = 0;
     String fontchoice = "fontchoice";
     int stChoice = 0;
@@ -20,6 +21,7 @@ public class FontSelection extends ScopePositionDialog {
     String envfonts[];
     String size_l[];
     String style_l[];
+    
 
     public FontSelection(Frame dw, String title) {
         super(dw, title, true);
@@ -27,14 +29,14 @@ public class FontSelection extends ScopePositionDialog {
         
 	    main_scope = (jScope)dw;
 
-        setLayout( new BorderLayout(5, 5) );
+        getContentPane().setLayout( new BorderLayout(5, 5) );
 
-        Panel topPanel = new Panel();
-        Panel fontPanel = new Panel();
-        Panel sizePanel = new Panel();
-        Panel stylePanel = new Panel();
-        Panel sizeAndStylePanel = new Panel();
-        Panel buttonPanel = new Panel();
+        JPanel topPanel = new JPanel();
+        JPanel fontPanel = new JPanel();
+        JPanel sizePanel = new JPanel();
+        JPanel stylePanel = new JPanel();
+        JPanel sizeAndStylePanel = new JPanel();
+        JPanel buttonPanel = new JPanel();
 
         topPanel.setLayout( new BorderLayout(5, 5));
         fontPanel.setLayout( new GridLayout( 2, 1 ) );
@@ -48,25 +50,25 @@ public class FontSelection extends ScopePositionDialog {
         sizeAndStylePanel.add( BorderLayout.CENTER, stylePanel );
         topPanel.add( BorderLayout.CENTER, sizeAndStylePanel );
 
-        add( BorderLayout.NORTH, topPanel );
+        getContentPane().add( BorderLayout.NORTH, topPanel );
 
-        fontLabel = new Label();
+        fontLabel = new JLabel();
         fontLabel.setText("Fonts");
         Font newFont = getFont();
         fontLabel.setFont(newFont);
-        fontLabel.setAlignment(Label.CENTER);
+        fontLabel.setHorizontalAlignment(SwingConstants.CENTER);
         fontPanel.add(fontLabel);
 
-        sizeLabel = new Label();
+        sizeLabel = new JLabel();
         sizeLabel.setText("Sizes");
         sizeLabel.setFont(newFont);
-        sizeLabel.setAlignment(Label.CENTER);
+        sizeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         sizePanel.add(sizeLabel);
 
-        styleLabel = new Label();
+        styleLabel = new JLabel();
         styleLabel.setText("Styles");
         styleLabel.setFont(newFont);
-        styleLabel.setAlignment(Label.CENTER);
+        styleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         stylePanel.add(styleLabel);
 
 //        if(System.getProperty("java.version").equals("1.2.2"))
@@ -77,20 +79,14 @@ public class FontSelection extends ScopePositionDialog {
             envfonts = getToolkit().getFontList();
         
         
-        fonts = new Choice();
-        for ( int i = 1; i < envfonts.length; i++ ) {
-            fonts.addItem(envfonts[i]);
-        }
+        fonts = new JComboBox(envfonts);
                
         fonts.addItemListener(this);
         fontchoice = envfonts[0];
         fontPanel.add(fonts);
 
         size_l = new String[]{ "10", "12", "14", "16", "18"};
-        sizes = new Choice();
-        for ( int i = 0; i < size_l.length; i++ ) {
-            sizes.addItem(size_l[i]);
-        }
+        sizes = new JComboBox(size_l);
         
         sizes.addItemListener(this);
         sizePanel.add(sizes);
@@ -100,39 +96,35 @@ public class FontSelection extends ScopePositionDialog {
                                 "BOLD",
                                 "ITALIC",
                                 "BOLD & ITALIC"};
-        styles = new Choice();
-        for ( int i = 0; i < style_l.length; i++ ) {
-            styles.addItem(style_l[i]);
-        }
+        styles = new JComboBox(style_l);
 
         styles.addItemListener(this);
         stylePanel.add(styles);
 
         fontC = new FontPanel();
         fontC.setBackground(Color.white);
-        add( BorderLayout.CENTER, fontC);
+        getContentPane().add( BorderLayout.CENTER, fontC);
 
-	      ok = new Button("Ok");
+	      ok = new JButton("Ok");
 	      ok.addActionListener(this);	
           buttonPanel.add(ok);
 
-          apply = new Button("Apply");
+          apply = new JButton("Apply");
 	      apply.addActionListener(this);	
           buttonPanel.add(apply);
 
-	      cancel = new Button("Cancel");
+	      cancel = new JButton("Cancel");
 	      cancel.addActionListener(this);	
           buttonPanel.add(cancel);
-	    		
-	      
-          add( BorderLayout.SOUTH, buttonPanel);
+          getContentPane().add( BorderLayout.SOUTH, buttonPanel);
+	      pack();
     }
     
     private void setFontChoice()
     {
-        fonts.select(fontchoice);
-        styles.select(stChoice);
-        sizes.select(siChoice);
+        fonts.setSelectedItem(fontchoice);
+        styles.setSelectedIndex(stChoice);
+        sizes.setSelectedItem(siChoice);
     }
     
     public Font StringToFont(String f)
@@ -235,7 +227,7 @@ public class FontSelection extends ScopePositionDialog {
 }
 
 
-class FontPanel extends Panel {
+class FontPanel extends JPanel {
 
     Font thisFont;
 

@@ -134,5 +134,8 @@ public String GetDefaultXLabel(String in_y[]) throws IOException
 }
 
 public String GetDefaultYLabel(String in_y[]){return null;}
+public boolean supportsCompression(){return false;}
+public void setCompression(boolean state){}
+public boolean useCompression(){return false;}
 }
 								

@@ -8,8 +8,10 @@ public class WaveformEvent extends AWTEvent {
     static final int STATUS_INFO      = AWTEvent.RESERVED_ID_MAX + 3;
     static final int BROADCAST_SCALE  = AWTEvent.RESERVED_ID_MAX + 4;
     static final int COPY_PASTE       = AWTEvent.RESERVED_ID_MAX + 5;
-    static final int EVENT_UPDATE     = AWTEvent.RESERVED_ID_MAX + 8;
-    static final int PROFILE_UPDATE   = AWTEvent.RESERVED_ID_MAX + 9;
+    static final int COPY_CUT         = AWTEvent.RESERVED_ID_MAX + 6;
+    static final int EVENT_UPDATE     = AWTEvent.RESERVED_ID_MAX + 7;
+    static final int PROFILE_UPDATE   = AWTEvent.RESERVED_ID_MAX + 8;
+    static final int POINT_IMAGE_UPDATE     = AWTEvent.RESERVED_ID_MAX + 9;
     
     int    signal_idx;
     int    pixel_value;
@@ -17,7 +19,7 @@ public class WaveformEvent extends AWTEvent {
     double point_y;
     double delta_x;
     double delta_y;
-    String signal_name;
+    String name;
     String status_info;
     int    pixels_x[];
     int    start_pixel_x;
@@ -28,6 +30,7 @@ public class WaveformEvent extends AWTEvent {
     float  frames_time[];
     float  x_value = Float.NaN;
     float  time_value = Float.NaN;
+    boolean is_mb2 = false;
 
     public WaveformEvent (Object source, int event_id, String status_info) 
     {
@@ -62,17 +65,25 @@ public class WaveformEvent extends AWTEvent {
         this.pixel_value = pixel_value;
     }
 
-    public WaveformEvent (Object source, int pixels_x[], int start_pixel_x, 
-                                         int pixels_y[], int start_pixel_y,
-                                         int pixels_signal[], float frames_time[]) 
+    public WaveformEvent (Object source, 
+                            String name,
+                            int pixels_x[], int start_pixel_x, 
+                            int pixels_y[], int start_pixel_y,
+                            int pixels_signal[], float frames_time[]) 
     {
         super(source, PROFILE_UPDATE);
+        this.name = name;
         this.pixels_x = pixels_x;
         this.pixels_y = pixels_y;
         this.pixels_signal = pixels_signal;
         this.frames_time = frames_time;
         this.start_pixel_x = start_pixel_x;
         this.start_pixel_y = start_pixel_y;
+    }
+
+    public void setIsMB2(boolean is_mb2)
+    {
+	this.is_mb2 = is_mb2;
     }
     
     public void setPixelsLine(int p_line[])
@@ -130,7 +141,8 @@ public class WaveformEvent extends AWTEvent {
 				        "]", 80);
 
 	        case WaveformEvent.POINT_UPDATE:
-                if(s == null)
+ 	        case WaveformEvent.POINT_IMAGE_UPDATE:
+               if(s == null)
                 {
 	                if(!w.IsImage())
 	                {

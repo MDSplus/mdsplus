@@ -2,14 +2,16 @@ import java.applet.*;
 import java.awt.*;
 import java.net.URL;
 import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.plaf.*;
 
-public class WaveDisplay extends Applet
+public class WaveDisplay extends JApplet
 {
     Waveform w;
     WavePopup wave_popup;
-    private Frame frame;
+    private JFrame frame;
 
-    WaveDisplay(Frame f)
+    WaveDisplay(JFrame f)
     {
         frame = f;
         init();
@@ -17,7 +19,8 @@ public class WaveDisplay extends Applet
     
     public void init()
     {
-        Panel panel = new Panel();
+        JPanel panel = new JPanel();
+        panel.setOpaque(false);
         w = new Waveform();
         
             float x[] = new float[1000];
@@ -32,7 +35,7 @@ public class WaveDisplay extends Applet
         w.Update(s);
 
         wave_popup = new WavePopup();
-        add(wave_popup);
+        getContentPane().add(wave_popup);
         panel.addMouseListener( new MouseAdapter()
 	        {
 	           public void mousePressed(MouseEvent e)
@@ -47,8 +50,8 @@ public class WaveDisplay extends Applet
         w.SetGridMode(Grid.IS_DOTTED, false, false);
         panel.setLayout(new BorderLayout());
         panel.add(w, BorderLayout.CENTER);
-        setLayout(new BorderLayout());
-        add(panel, BorderLayout.CENTER);
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(panel, BorderLayout.CENTER);
     }
 
     /**
@@ -130,9 +133,9 @@ public class WaveDisplay extends Applet
 
     static void main(String argc[])
     {
-        Frame f = new Frame();
+        JFrame f = new JFrame();
         WaveDisplay wd = new WaveDisplay(f);
-        f.add(wd);
+        f.getContentPane().add(wd);
         f.pack();
         f.setSize(300, 300);
         f.show();

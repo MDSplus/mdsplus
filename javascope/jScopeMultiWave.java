@@ -14,13 +14,12 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
     public jScopeMultiWave(DataProvider dp, jScopeDefaultValues def_values)
     {
 	    super();
-	    wi = new MdsWaveInterface(dp, def_values);
-	    wi.wave = this;
+	    wi = new MdsWaveInterface(this, dp, def_values);
     }
     
     public void processNetworkEvent(NetworkEvent e)
     {
-         System.out.println("Evento su waveform "+e.name);
+         //System.out.println("Evento su waveform "+e.name);
          WaveformEvent we = new WaveformEvent(this, WaveformEvent.EVENT_UPDATE,  "Update on event " + e.name);
          dispatchWaveformEvent(we);
 //         Refresh();
@@ -38,10 +37,13 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
             error = wi.Update();
             if(error == null)
                 jScopeWaveUpdate();
+            else
+                Update(wi);
         } 
         catch (IOException e) 
         {
             wi.error = e.getMessage();
+            Update(wi);
         }
         
     	SetMode(curr_mode);
@@ -54,24 +56,36 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
     {
         Erase();
         wi.Erase();
-        System.gc();
+     //   System.gc();
+    }
+    
+    private String getBriefError(String er, boolean brief)
+    {
+        if(brief)
+        {
+            int idx = (er.indexOf('\n') == -1 ? er.length() : er.indexOf('\n'));
+            er = er.substring(0, idx);
+        }
+        return er;
     }
     
     public String Refresh(boolean add_sig, boolean brief_error)
     {
         
         String error;
-        
-        AddEvent();
-//        wi.SetMainShot(main_s);
-        error = Refresh();
-        if(error != null)
+        try
         {
-            int idx = (error.indexOf('\n') == -1 ? error.length() : error.indexOf('\n'));
-            if(brief_error)
-                error = error.substring(0, idx)+"\n";
-        } else
-            error = wi.GetErrorString(add_sig, brief_error);
+            AddEvent();
+            error = Refresh();
+            if(error != null)
+                error = getBriefError(error, brief_error);
+            else
+                error = wi.GetErrorString(add_sig, brief_error);
+        } 
+        catch(IOException e)
+        {
+            error = e.getMessage();
+        }
         
         return error;
     }
@@ -118,16 +132,16 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
 	    String error = wi.GetErrorTitle();
 	    if(error == null)
 	        super.title = wi.title;
-	    else
-	        super.title = error;
+	    else 
+	        super.title = getBriefError(error, true);
 	    
-        super.make_legend = wi.make_legend;
+        super.show_legend = wi.show_legend;
 	    super.legend_x = wi.legend_x;
         super.legend_y = wi.legend_y;
         super.is_image = wi.is_image;
         super.frames = wi.frames;
 
-        System.gc();
+       // System.gc();
 
 	    if(wi.signals != null)
 	    {
@@ -162,11 +176,32 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
             signals.removeAllElements();
 	        not_drawn = true;
 	        frame = 0;
+	        Update();
 	        return;
 	    }
 	        	        
 	    Erase();
 
+    }
+
+    protected Color getSignalColor(int i)
+    {
+        if(i > wi.num_waves) return Color.black;
+        return colors[wi.colors_idx[i] % Waveform.colors.length];
+    }
+
+    public int GetMarker(int idx)
+    {
+        if(idx < wi.num_waves)
+        {
+            return wi.markers[idx] ;
+        }
+        return 0;
+    }
+
+    public int getSignalCount()
+    {
+        return wi.num_waves;
     }
 
     public String[] GetSignalsName()
@@ -184,75 +219,34 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
         Signal sig;
         wi.setSignalState(label, state);
         super.SetSignalState(label, state);
-        /*
-        if(signals != null)
+    }
+    
+    protected String getSignalInfo(int i)
+    {
+        String s;
+        String name = (wi.in_label[i] != null && wi.in_label[i].length() > 0) ? wi.in_label[i] : wi.in_y[i]; 
+        String er = wi.w_error[i] != null ? " ERROR " : "";
+        if(wi.shots != null) {
+            s = name+" "+wi.shots[i] + er;
+        } else {
+            s = name + er;
+        }
+        Signal sign = (Signal)signals.elementAt(i);
+        if(sign != null && sign.getType() == Signal.TYPE_2D)
         {
-            for(int i = 0; i < signals.size(); i++)
+            switch(sign.getMode())
             {
-                sig = (Signal)signals.elementAt(i);
-                if(sig == null) continue;
-                if(sig.getName().equals(label))
-                {
-                    sig.setInterpolate(state);
-                    sig.setMarker(Signal.NONE);
-                    if(mode == Waveform.MODE_POINT && curr_point_sig_idx == i)
-                    {
-                        Dimension d = getSize();
-                        double  curr_x = wm.XValue(end_x, d),
-	                            curr_y = wm.YValue(end_y, d); 
-                        FindPointY(curr_x, curr_y, true);
-                        return;
-                    }
-                }
+                case Signal.MODE_YTIME:s = s + " [Y-TIME X = "+ Waveform.ConvertToString(sign.getXData(), false)+" ]";break;
+                case Signal.MODE_XY:s = s + " [X-Y T = "+ Waveform.ConvertToString(sign.getTime(), false)+" ]";break;
+                case Signal.MODE_YX:s = s + " [Y-X T = "+ Waveform.ConvertToString(sign.getTime(), false)+" ]";break;
             }
         }
-        */
+        return s;
     }
 
-    
-    protected void DrawLegend(Graphics g, Point p)
+    protected boolean isSignalShow(int i)
     {
-        int h = g.getFont().getSize() + 2, k = 0;
-        Color prev_col = g.getColor();
-        Point pts[] = new Point[1];
-        String s, er;
-        pts[0] = new Point();
-        
-        wi.legend_x = p.x;
-        wi.legend_y = p.y;
-        
-        for(int i = 0, py = p.y ; i < wi.num_waves; i++)
-        {
-            if(!wi.interpolates[i] && wi.markers[i] == Signal.NONE)
-                continue;
-            py += h;    
-            //g.setColor(wi.colors[i]);
-            g.setColor(colors[wi.colors_idx[i] % colors.length]);
-            pts[0].x = p.x - marker_width/2;
-            pts[0].y = py - marker_width/2;
-            DrawMarkers(g, pts, 1, wi.markers[i], 1);
-            String name = (wi.in_label[i] != null && wi.in_label[i].length() > 0) ? wi.in_label[i] : wi.in_y[i]; 
-            er = wi.w_error[i] != null ? " ERROR " : "";
-            if(wi.shots != null) {
-                s = name+" "+wi.shots[i] + er;
-            } else {
-                s = name + er;
-            }
-            Signal sign = (Signal)signals.elementAt(i);
-            if(sign != null && sign.getType() == Signal.TYPE_2D)
-            {
-                switch(sign.getMode())
-                {
-                    case Signal.MODE_YTIME:s = s + " [Y-TIME X = "+ Waveform.ConvertToString(sign.getXData(), false)+" ]";break;
-                    case Signal.MODE_XY:s = s + " [X-Y T = "+ Waveform.ConvertToString(sign.getTime(), false)+" ]";break;
-                    case Signal.MODE_YX:s = s + " [Y-X T = "+ Waveform.ConvertToString(sign.getTime(), false)+" ]";break;
-                }
-            }
-
-            g.drawString(s, p.x + marker_width, py);
-        }
-       
-        g.setColor(prev_col);
+       return wi.GetSignalState(i);
     }
 
 
@@ -274,29 +268,22 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
 	            (float)orig_xmin, (float)orig_xmax, update_timestamp, mode == MODE_PAN, this);
     }	
 
-    public WaveInterface GetWaveInterface()
-    {
-        if(wi == null)
-	        return null;
-        return new MdsWaveInterface((MdsWaveInterface)wi);
-    }    
-
-    public void AddEvent(String event)
+    public void AddEvent(String event)  throws IOException
     {
         wi.AddEvent(this, event);
     }
 
-    public void RemoveEvent(String event)
+    public void RemoveEvent(String event)  throws IOException
     {
         wi.AddEvent(this, event);
     }
 
-    public void AddEvent()
+    public void AddEvent()  throws IOException
     {
         wi.AddEvent(this);
     }
 
-    public void RemoveEvent()
+    public void RemoveEvent()  throws IOException
     {
         wi.RemoveEvent(this);
     }
@@ -304,7 +291,11 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
     public void removeNotify()
     {
         //System.out.println("Rimuovo jScopeMultiWave");
-        RemoveEvent();
+        try {
+            RemoveEvent();
+        } 
+        catch(IOException e){}
+
         this.wi = null;
         signals = null;
         orig_signals = null;

@@ -23,7 +23,7 @@ public class WaveInterface
     public boolean modified = true;
    
     boolean reversed = false;
-    boolean make_legend = false;
+    boolean show_legend = false;
     double legend_x, legend_y;
      
     public  int     markers_step[];
@@ -79,7 +79,7 @@ public class WaveInterface
 	y_log = wi.y_log;
 	is_image = wi.is_image;
 	use_jai = wi.use_jai;
-	make_legend = wi.make_legend;
+	show_legend = wi.show_legend;
 	reversed = wi.reversed;
 	legend_x = wi.legend_x;
 	legend_y = wi.legend_y;
@@ -317,6 +317,7 @@ public class WaveInterface
         horizontal_flip = false;
         vertical_flip = false;
         frames = null;
+        show_legend = false;
     }
     
     static void WriteLine(PrintWriter out, String prompt, String value)
@@ -376,23 +377,21 @@ public class WaveInterface
     
     
     
-    private void CreateWaveInterface(DataProvider dp)//, Waveform wave)
+    private void CreateWaveInterface(DataProvider dp)
     {
-     this.wave = wave;
-    //controller = c;
-	//full_flag = false;
-	full_flag = true;
-	this.dp = dp;
-	experiment = null;
-	shots = null;
-	in_xmin = in_xmax = in_ymin = in_ymax = in_title = null; 
-	in_xlabel = in_ylabel = in_timemax = in_timemin= null;
-	markers = null;
-	interpolates = null;
-	du = null;  
-	x_log = y_log = false;
-	make_legend = false;
-	reversed = false;
+        this.wave = wave;
+	    full_flag = true;
+	    this.dp = dp;
+	    experiment = null;
+	    shots = null;
+	    in_xmin = in_xmax = in_ymin = in_ymax = in_title = null; 
+	    in_xlabel = in_ylabel = in_timemax = in_timemin= null;
+	    markers = null;
+	    interpolates = null;
+	    du = null;  
+	    x_log = y_log = false;
+	    show_legend = false;
+	    reversed = false;
     }
 
    
@@ -409,10 +408,11 @@ public class WaveInterface
         
         if(num_waves != 0)
         {
+            int ns = (num_shot == 0) ? 1 : num_shot;
             for(int i = 0; i < num_waves; i++)
                 if(name.equals(in_y[i]) || name.equals(in_label[i]))
                 {
-                    for(int j = i; j < i + num_shot; j++)
+                    for(int j = i; j < i + ns; j++)
                     {
                         interpolates[j] = state;
                         markers[i] = Signal.NONE;
@@ -422,14 +422,14 @@ public class WaveInterface
         }
     }
 
-    public void ShowLegend(boolean state){make_legend = state;}
+    public void ShowLegend(boolean state){show_legend = state;}
     public void setModified(boolean state){modified = state;};
 
     public void SetLegendPosition(double x, double y)
     {
         legend_x = x;
         legend_y = y;
-        make_legend = true;
+        show_legend = true;
     }
 
 
@@ -481,6 +481,15 @@ public class WaveInterface
         }
         
         return error_title;
+    }
+
+    public boolean GetSignalState(int i)
+    {
+        boolean state = false;
+        //int idx = i * (num_shot > 0 ? num_shot : 1);
+        if(i < num_waves)
+           state = (interpolates[i] || (markers[i] != Signal.NONE));
+        return state;
     }
     
     public boolean[] GetSignalsState()
@@ -606,7 +615,7 @@ public class WaveInterface
 	        new_in_low_err[i] = "";
     	    new_markers[i] = 0;
 	        new_markers_step[i] = 1;
-	        new_colors_idx[i] = i;
+	        new_colors_idx[i] = i % Waveform.colors.length;
 	        new_interpolates[i] = true;
 	        new_evaluated[i] = false;
 	        if(shots != null)
@@ -648,6 +657,7 @@ public class WaveInterface
 				(experiment != null && experiment.trim().length() > 0)) )
 	    {
 	        error = "Missing shot or Y or X values";
+	        signals = null;
 	        return 0;
 	    }    
 
@@ -812,12 +822,6 @@ public class WaveInterface
 		        if(signals[curr_wave] == null)
 		        {
 		            w_error[curr_wave] = curr_error;
-		            /*
-		            if(error == null)
-			            error = curr_error;
-		            else
-			            error = error + "\n" + curr_error;
-			        */
 		        }
 		        else
 		        {
@@ -967,7 +971,6 @@ public class WaveInterface
         {
             we = new WaveformEvent(wave, "Loading single or multi frame image");
             wave.dispatchWaveformEvent(we);
-//            controller.DisplayFrameLoad("Loading single or multi frame image");
             if( (buf = dp.GetAllFrames(in_y[0])) != null )
             {
                 flipFrames(buf);
@@ -979,7 +982,6 @@ public class WaveInterface
                 } else {
                     we = new WaveformEvent(wave, "Decoding frame");
                     wave.dispatchWaveformEvent(we);
-//                    controller.DisplayFrameLoad("Decoding frame");
                     frames.WaitLoadFrame();
                 }
                 buf = null;
@@ -1012,7 +1014,6 @@ public class WaveInterface
                         continue;
                     we = new WaveformEvent(wave, "Loading frame "+(j+1)+"/"+f_time.length);
                     wave.dispatchWaveformEvent(we);
-//                    controller.DisplayFrameLoad("Frame "+(j+1)+"/"+f_time.length);
                     buf = dp.GetFrameAt(in_y[0], j);
                     if(buf == null)
                     {
@@ -1032,7 +1033,7 @@ public class WaveInterface
             }
             if(frames != null)
                 frames.setName(in_y[0]);
-            System.gc();
+//            System.gc();
         } catch (Exception e) {
             curr_error = " Load Frames error "+e; 
         }
@@ -1177,9 +1178,16 @@ public class WaveInterface
     	    if(x_data != null && x_data.length == 1)
     	        out_signal.setXData(x_data[0]);
 	      }
-	    } else
-    	    out_signal = new Signal(curr_x, curr_y, min_len);
-    	    
+	    } else {
+	       // if(full_flag || wave_signals == null || wave_signals.length <= curr_wave || wave_signals[curr_wave] == null)
+	       // {
+    	        out_signal = new Signal(curr_x, curr_y, min_len);
+    	   // } else {
+    	   //     out_signal = wave_signals[curr_wave];
+    	   //     out_signal.setAxis(curr_x, curr_y, min_len);
+    	   // }
+    	}
+    	
 	    if(xmin != -HUGE)
 	        out_signal.xmin = out_signal.saved_xmin = xmin;
 	    if(xmax != HUGE)
@@ -1323,6 +1331,7 @@ class AsynchUpdater  extends Thread
     }
     public synchronized void run()
     {
+        setName("Asybch Update Thread");
         while(true)
         {
 	        while(wi.request_pending)

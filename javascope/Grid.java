@@ -61,7 +61,7 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
  	if(yrange <= 0)
 	    yrange = (double)1E-3 ;
 
-    	if(mode == IS_X)
+    if(mode == IS_X)
 	{
 	    grid_step = grid_step_x;
 	    curr_max = xmax + 0.1 * xrange;
@@ -81,6 +81,8 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 	    is_log = ylog;
 
 	}
+	
+	
 	if(step > 1)
 	{
 	    greater = true;
@@ -192,6 +194,7 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 	        g.setColor(Color.black);
 	        
 	    wm = _wm;
+/*
 	    if(font == null)
 	    {
 	        font = g.getFont();
@@ -202,7 +205,7 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 	    {
 	        g.setFont(font);
 	    }
-	    
+*/	    
 	    fm = g.getFontMetrics();
 	    
 	    if(int_xlabels)
@@ -343,6 +346,7 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 				        curr_dim, d.height - label_height);
 			        }
 			    }
+	            g.drawRect(label_width, 0, d.width - label_width-1, d.height - label_height); 
 		    }
 		    
 	        g.setColor(prev_col);
@@ -357,7 +361,6 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
         } //End if check is_image
 
 	
-	    g.drawRect(label_width, 0, d.width - label_width-1, d.height - label_height); 
 	    if(x_label != null) 
 	        g.drawString(x_label, (d.width - fm.stringWidth(x_label))/2, d.height - label_descent);	        
 	    if(y_label != null)

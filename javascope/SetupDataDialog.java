@@ -4,23 +4,80 @@ import java.awt.event.*;
 import java.net.*;
 import java.lang.Integer;
 import java.util.Vector;
+import javax.swing.*;
+import javax.swing.event.*;
+
 
 //*****
 //Form di visualizzazione della configurazione della
 //wave selezionata
 //*****
- class SetupDataDialog extends ScopePositionDialog {
+ class SetupDataDialog extends JDialog implements ActionListener, 
+                                                  ItemListener,
+                                                  KeyListener
+ {
  
-   private Choice       show_type;
-   private Label	    lab;
+   private JLabel	    lab;
    private SError	    error_w;
-   private ErrorMessage	error_msg;
+  // private ErrorMessage	error_msg;
    private jScope	    main_scope;
-//   private WaveSetup    setup;       
    private ExpandExp    expand_expr;
    private SList	    signalList;
    private jScopeMultiWave    wave;	    
    public  MdsWaveInterface   wi;
+   
+    JCheckBox title_b = new JCheckBox("Title");
+    JTextField title = new JTextField(50);
+    JButton expand = new JButton("Expand Expr.");
+    JLabel sig_label = new JLabel();
+    JTextField signal_label = new JTextField(50);
+    JButton error = new JButton("Error");
+    JLabel y_lab = new JLabel();
+    JTextField y_expr = new JTextField(58);
+    JCheckBox y_min_b = new JCheckBox("Y min");
+    JTextField y_min = new JTextField(10);
+    JLabel pix_y_min = new JLabel();
+    JCheckBox y_max_b = new JCheckBox("Y max");
+    JTextField y_max = new JTextField(10);
+    JLabel pix_y_max = new JLabel();
+    JCheckBox image_b = new JCheckBox("Is image");
+    JCheckBox use_jai_b = new JCheckBox("Use JAI");
+    JLabel x_lab = new JLabel();
+    JTextField x_expr = new JTextField(58);
+    JCheckBox x_log = new JCheckBox("Log scale");
+    JCheckBox x_label_b = new JCheckBox("X Label");
+    JTextField x_label = new JTextField(20);
+    JCheckBox y_log = new JCheckBox("Log scale");
+    JCheckBox y_label_b = new JCheckBox("Y Label");
+    JTextField y_label = new JTextField(20);
+    JCheckBox x_min_b = new JCheckBox("X min");
+    JCheckBox time_min_b = new JCheckBox("T min");
+    JLabel pix_x_max = new JLabel();
+    JTextField x_min = new JTextField(10);
+    JTextField time_min = new JTextField(10);
+    JCheckBox x_max_b = new JCheckBox("X max");
+    JCheckBox time_max_b = new JCheckBox("T max");
+    JLabel pix_x_min = new JLabel();
+    JTextField x_max = new JTextField(10);
+    JTextField time_max = new JTextField(10);
+    JCheckBox keep_ratio_b = new JCheckBox("Keep ratio");
+    JCheckBox experiment_b = new JCheckBox("Experiment");
+    JTextField experiment = new JTextField(20);
+    JCheckBox shot_b = new JCheckBox("Shot");
+    JTextField shot = new JTextField(25);
+    JCheckBox horizontal_flip_b = new JCheckBox("Horizontal flip");
+    JCheckBox upd_event_b = new JCheckBox("Update event");
+    JTextField upd_event = new JTextField(20);
+    JCheckBox def_node_b = new JCheckBox("Default node");
+    JTextField def_node = new JTextField(20);
+    JCheckBox vertical_flip_b = new JCheckBox("Vertical Flip");
+    JPanel p9 = new JPanel(new BorderLayout(2,2));
+    JButton ok = new JButton("Ok");
+    JButton apply = new JButton("Apply");
+    JButton reset = new JButton("Reset");
+    JButton erase = new JButton("Erase");
+    JButton cancel = new JButton("Cancel");
+   
      
    static final int  LINE = 0, POINT = 1, BOTH = 2, NONE = 3;
    static final int  BROWSE_X = 0, BROWSE_Y = 1;
@@ -62,29 +119,8 @@ import java.util.Vector;
 	            return false;
 	    } else
 	        if(ws.label != null  && ws.label.length() != 0)
-	            return false;
-	    
+	            return false;   
 	    return true;
-	    
-/*	    
-	    if(x_expr != null && y_expr != null){
-		    if(!y_expr.equals(ws.y_expr) || !x_expr.equals(ws.x_expr)) 
-		        return false;
-		    else
-		        return true;
-	    } else {
-		    if(x_expr != null)
-		        if(!x_expr.equals(ws.x_expr) || ws.y_expr != null) 
-			        return false;
-		        else
-			        return true;
-		    else
-		        if(!y_expr.equals(ws.y_expr) || ws.x_expr != null) 
-			        return false;
-		        else
-			        return true;
-	     }
-*/
 	}
     
        public void copy(Data ws)
@@ -108,197 +144,224 @@ import java.util.Vector;
    }
    
    
-   class SError extends ScopePositionDialog {
+   class SError extends JDialog implements ActionListener 
+   {
 
-       private TextField e_up, e_low;
-       private Button ok, cancel;
-       private Data ws;
+      private JTextField e_up, e_low;
+      private JButton ok, cancel;
+      private Data ws;
     
-       SError(Frame fw) {
-       
-	  super(fw, "Error Setup", true); 	
-	  super.setFont(new Font("Helvetica", Font.PLAIN, 10)); 
-	  setResizable(false);   
-	    
-	  Label label;
-		    
-	  GridBagConstraints c = new GridBagConstraints();
-	  GridBagLayout gridbag = new GridBagLayout();
-	  setLayout(gridbag);        
-    
-	  c.insets = new Insets(4, 4, 4, 4);
-	  c.fill = GridBagConstraints.BOTH;
-	  
-    
-	  c.gridwidth = GridBagConstraints.BOTH;
-	  label = new Label("Error up");
-	  gridbag.setConstraints(label, c);
-	  add(label);
-		    
-	  c.gridwidth = GridBagConstraints.REMAINDER;
-	  e_up = new TextField(40);
-	  gridbag.setConstraints(e_up, c);
-	  add(e_up);
-    
-	  c.gridwidth = GridBagConstraints.BOTH;
-	  label = new Label("Error low");
-	  gridbag.setConstraints(label, c);
-	  add(label);
-		    
-	  c.gridwidth = GridBagConstraints.REMAINDER;
-	  e_low = new TextField(40);
-	  gridbag.setConstraints(e_low, c);
-	  add(e_low);
-    
-	  Panel p = new Panel();
-	  p.setLayout(new FlowLayout(FlowLayout.CENTER));
-	    
-	  ok = new Button("Ok");
-	  ok.addActionListener(this);	
-	  p.add(ok);
-    
-	  cancel = new Button("Cancel");
-	  cancel.addActionListener(this);	
-	  p.add(cancel);
-			    
-	  c.gridwidth = GridBagConstraints.REMAINDER;
-	  gridbag.setConstraints(p, c);
-	  add(p);
-	     
+      SError(Frame fw) 
+      {               
+	        super(fw, "Error Setup", true); 	
+//	        super.setFont(new Font("Helvetica", Font.PLAIN, 10)); 
+	        setResizable(false);   
+        	    
+	        JLabel label;
+        		    
+	        GridBagConstraints c = new GridBagConstraints();
+	        GridBagLayout gridbag = new GridBagLayout();
+	        getContentPane().setLayout(gridbag);        
+            
+	        c.insets = new Insets(4, 4, 4, 4);
+	        c.fill = GridBagConstraints.BOTH;
+        	             
+	        c.gridwidth = GridBagConstraints.BOTH;
+	        label = new JLabel("Error up");
+	        gridbag.setConstraints(label, c);
+	        getContentPane().add(label);
+        		    
+	        c.gridwidth = GridBagConstraints.REMAINDER;
+	        e_up = new JTextField(40);
+	        gridbag.setConstraints(e_up, c);
+	        getContentPane().add(e_up);
+            
+	        c.gridwidth = GridBagConstraints.BOTH;
+	        label = new JLabel("Error low");
+	        gridbag.setConstraints(label, c);
+	        getContentPane().add(label);
+        		    
+	        c.gridwidth = GridBagConstraints.REMAINDER;
+	        e_low = new JTextField(40);
+	        gridbag.setConstraints(e_low, c);
+	        getContentPane().add(e_low);
+            
+	        JPanel p = new JPanel();
+	        p.setLayout(new FlowLayout(FlowLayout.CENTER));
+        	    
+	        ok = new JButton("Ok");
+	        ok.addActionListener(this);	
+	        p.add(ok);
+            
+	        cancel = new JButton("Cancel");
+	        cancel.addActionListener(this);	
+	        p.add(cancel);
+        			    
+	        c.gridwidth = GridBagConstraints.REMAINDER;
+	        gridbag.setConstraints(p, c);
+	        getContentPane().add(p);
+            pack();
        } 
 	  
        public void resetError()
        {
-	 e_up.setText("");
-	 e_low.setText("");
+	        e_up.setText("");
+	        e_low.setText("");
        }
        
        
        public void setError(Data ws_in)
        {
-	 ws = ws_in;
-	 resetError();
-	 if(ws.up_err != null)
-	    e_up.setText(ws.up_err);
-	 if(ws.up_err != null)
-	    e_low.setText(ws.low_err);
+	        ws = ws_in;
+	        resetError();
+	        if(ws.up_err != null)
+	            e_up.setText(ws.up_err);
+	        if(ws.up_err != null)
+	            e_low.setText(ws.low_err);
        }
       
     
        public void actionPerformed(ActionEvent e)
        {
-	 Object ob = e.getSource();	
-    
-	 if(ob == ok) { 
-	   ws.up_err   = new String(e_up.getText());
-	   ws.low_err  = new String(e_low.getText());
-	   setVisible(false);	    
-	 }
-	 if(ob == cancel)
-	   setVisible(false);    
+	        Object ob = e.getSource();	
+            
+	        if(ob == ok) { 
+	        ws.up_err   = new String(e_up.getText());
+	        ws.low_err  = new String(e_low.getText());
+	        setVisible(false);	    
+	        }
+	        if(ob == cancel)
+	        setVisible(false);    
        }
    }   
 
-   class SList extends Container implements ActionListener, KeyListener, ItemListener, TextListener {
-    private List             sig_list;
-    private Choice           show_type, color, marker;
-    private TextField	     marker_step_t;
+
+   class SList extends JPanel implements ItemListener, 
+                                         TextListener 
+   {
+    private JList            sig_list;
+    private DefaultListModel list_model = new DefaultListModel();
+    private JComboBox        show_type, color, marker;
+    private JTextField	     marker_step_t;
     private Vector	         signals = new Vector();
     private String	         shot_str;
-    private int		         shots[]=null, list_num_shot = 0;  //{jScope.UNDEF_SHOT}, list_num_shot = 1;
+    private int		         shots[]=null, list_num_shot = 0;  
     private int              sel_signal = -1;
     private int              UNDEF_SHOT     = -99999;
     
-      public SList() {
+    public SList() 
+    {
+	    BorderLayout bl= new BorderLayout(25,1);
+	    setLayout(bl );
 
-	BorderLayout bl= new BorderLayout(25,1);
-	setLayout(bl );
+	    lab = new JLabel("Signals list");
+	    add("North", lab);
 
-	lab = new Label("Signals list");
-	add("North", lab);
+	    sig_list = new JList(list_model);
+        JScrollPane scroll_sig_list = new JScrollPane(sig_list);
+        sig_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        sig_list.addListSelectionListener(
+	        new ListSelectionListener()
+	        {
+                public void valueChanged(ListSelectionEvent e)
+                {
+                    SList.this.sel_signal = ((JList)e.getSource()).getSelectedIndex() - 1;
+                    SList.this.signalSelect(sel_signal);
+                }
+	        });
 
-	sig_list = new List(8, false);
-	sig_list.addItemListener(this);
-	sig_list.addKeyListener(this);
-	add("Center",sig_list);	
+	    
+	    sig_list.addKeyListener( 
+	        new KeyAdapter()
+	        {
+	            public void keyPressed(KeyEvent e)
+	            {
+	                char key  = e.getKeyChar();
+	                if(key == KeyEvent.VK_DELETE)
+		                removeSignalSetup();	
+	            }
+	        });
+	    add("Center",scroll_sig_list);	
 
-	Panel p = new Panel(new GridLayout(4,1));
+	    JPanel p = new JPanel(new GridLayout(4,1));
 
-	GridBagLayout gridbag = new GridBagLayout();
-	GridBagConstraints c = new GridBagConstraints();
-	
-	c.gridwidth = 1;			
-	c.gridheight = 1;			
-	c.fill =  GridBagConstraints.HORIZONTAL;
-	c.gridwidth = GridBagConstraints.REMAINDER;
-	c.insets = new Insets(5,5,5,5);
+	    GridBagLayout gridbag = new GridBagLayout();
+	    GridBagConstraints c = new GridBagConstraints();
+    	
+	    c.gridwidth = 1;			
+	    c.gridheight = 1;			
+	    c.fill =  GridBagConstraints.HORIZONTAL;
+	    c.gridwidth = GridBagConstraints.REMAINDER;
+	    c.insets = new Insets(5,5,5,5);
 
         p.setLayout(gridbag);		
 
-    	show_type = new Choice();
-	show_type.addItem("Line"); 
-	show_type.addItem("No Line"); 
-	show_type.addItemListener(this);
-	gridbag.setConstraints(show_type, c);
-	p.add(show_type);	
 
-	color = new Choice();
-	SetColorList();	
-	color.addItemListener(this);
-	gridbag.setConstraints(color, c);
-	p.add(color);	
+        show_type = new JComboBox();
+	    show_type.addItem("Line"); 
+	    show_type.addItem("No Line"); 
+	    show_type.addItemListener(this);
+	    gridbag.setConstraints(show_type, c);
+	    p.add(show_type);	
 
-	marker = new Choice();
-	for(int i = 0; i < Signal.markerList.length; i++)
-	    marker.addItem(Signal.markerList[i]);
-	/*
-	marker.addItem("No Marker"); 
-	marker.addItem("Square"); 
-	marker.addItem("Circle"); 
-	marker.addItem("Cross");
-	marker.addItem("Triangle");      
-	marker.addItem("Point");
-	*/
-	marker.addItemListener(this);
-	gridbag.setConstraints(marker, c);
-	p.add(marker);
-	
-	c.gridwidth = 1;
-	lab = new Label("M.Step");
-	gridbag.setConstraints(lab, c);
-	p.add(lab);
-	
-	c.fill =  GridBagConstraints.NONE;
-	c.gridwidth = GridBagConstraints.REMAINDER;	
-	marker_step_t = new TextField(3);
-	marker_step_t.addTextListener(this);
-	gridbag.setConstraints(marker_step_t, c);
-	p.add(marker_step_t);
-	
-	add("East", p);
-	
-    	lab = new Label("");
-	add("South", lab);
-	
-	setOptionState(false);
+	    color = new JComboBox();
+	    SetColorList();	
+	    color.addItemListener(this);
+	    gridbag.setConstraints(color, c);
+	    p.add(color);	
 
-      }
+	    marker = new JComboBox();
+	    for(int i = 0; i < Signal.markerList.length; i++)
+	        marker.addItem(Signal.markerList[i]);
+
+	    marker.addItemListener(this);
+	    gridbag.setConstraints(marker, c);
+	    p.add(marker);
+    	
+	    c.gridwidth = 1;
+	    lab = new JLabel("M.Step");
+	    gridbag.setConstraints(lab, c);
+	    p.add(lab);
+    	
+	    c.fill =  GridBagConstraints.NONE;
+	    c.gridwidth = GridBagConstraints.REMAINDER;	
+	    marker_step_t = new JTextField(3);
+	    //marker_step_t.addTextListener(this);
+	    gridbag.setConstraints(marker_step_t, c);
+	    p.add(marker_step_t);
+    	
+	    add("East", p);
+    	
+    	lab = new JLabel("");
+	    add("South", lab);
+    	
+	    setOptionState(false);
+
+   }
       
       public void setSignalSelect(int sig)
       {
 	    sel_signal = sig;
       }
       
+      public int getSignalSelect()
+      {
+	    return sel_signal;
+      }
+      
       
       private void signalSelect(int sig)
       {
+        if(sig+1 >= sig_list.getModel().getSize())
+            return;
 	    sel_signal = sig;
-        sig_list.select(sel_signal + 1);
+        sig_list.setSelectedIndex(sel_signal + 1);
         if(sig >= 0)
-            putSignalSetup((Data)signals.elementAt(sel_signal));
+            if(sel_signal < signals.size())
+                putSignalSetup((Data)signals.elementAt(sel_signal));
         else
         	resetSignalSetup();
-	    setOptionState(sig >= 0);  
+	    setOptionState(sel_signal >= 0);  
       }
       
       private void setOptionState(boolean state)
@@ -319,11 +382,11 @@ import java.util.Vector;
       public void SetColorList()
       {
 	    String[] colors_name = main_scope.color_dialog.GetColorsName();
-	    color.removeAll();
+	    color.removeAllItems();
 	    if(colors_name != null)
 	    {
 	        for(int i = 0; i < colors_name.length; i++)
-		    color.addItem(colors_name[i]);
+		        color.addItem(colors_name[i]);
 	    }
       }   
 
@@ -355,8 +418,9 @@ import java.util.Vector;
     	    start_idx = (sel_signal/num_shot) * num_shot; // Divisione intera
 	        end_idx   = start_idx + num_shot; 
 	        for (i = 0; i < num_signal; i++)
-		    if(i >= start_idx && i < end_idx) { 
-		        sig_list.remove(start_idx + 1);
+		    if(i >= start_idx && i < end_idx) 
+		    { 
+		        list_model.removeElementAt(start_idx + 1);
 		        signals.removeElementAt(start_idx);
 		    }	     	     
 	    }
@@ -368,12 +432,12 @@ import java.util.Vector;
      
      private void setMarkerTextState(int marker_idx)
      {
-	if(marker_idx > 0 && marker_idx < 5)
-	    marker_step_t.setEditable(true);
-	else {
-	    marker_step_t.setText("1");
-	    marker_step_t.setEditable(false);
-	}
+	    if(marker_idx > 0 && marker_idx < 5)
+	        marker_step_t.setEditable(true);
+	    else {
+	        marker_step_t.setText("1");
+	        marker_step_t.setEditable(false);
+	    }
      }
 
      public void putSignalSetup(Data ws)
@@ -391,11 +455,11 @@ import java.util.Vector;
 	        y_expr.setText(ws.y_expr);
 	    else
 	        y_expr.setText("");      
-	    show_type.select((ws.interpolate ? 0 : 1));
-	    marker.select(ws.marker);
+	    show_type.setSelectedIndex((ws.interpolate ? 0 : 1));
+	    marker.setSelectedIndex(ws.marker);
 	    marker_step_t.setText(""+ws.marker_step);
 	    setMarkerTextState(ws.marker);			 
-	    color.select(ws.color_idx);
+	    color.setSelectedIndex(ws.color_idx);
 	    if(error_w.isVisible())
 	        error_w.setError(ws);	
       }	
@@ -405,11 +469,11 @@ import java.util.Vector;
         signal_label.setText("");
 	    x_expr.setText("");      
 	    y_expr.setText("");      
-	    show_type.select(0);
-	    marker.select(0);
+	    show_type.setSelectedIndex(0);
+	    marker.setSelectedIndex(0);
 	    marker_step_t.setText("1");
 	    setMarkerTextState(0);			 
-	    color.select(0);      
+	    color.setSelectedIndex(0);      
       }
       
 
@@ -555,13 +619,12 @@ import java.util.Vector;
 		    else
 		        list_num_shot = 1;
 		    shot_str = in_shot;
-		    //shots  = main_scope.evaluateShot(in_shot);
 		    shots = wi.GetShotArray(in_shot);
 		    if(shots == null)
 		    {
 		        shot_str = null;
 		    } else {
-		        if(image_b.getState())
+		        if(image_b.isSelected())
 		        {
 		            if(shots.length > 1)
 		            {
@@ -651,8 +714,8 @@ import java.util.Vector;
 	 public void signalListRefresh()
 	 {
 //	    if(sig_list.getItemCount() > 1)
-		sig_list.removeAll();
-	    sig_list.add("Select this item to add new expression");
+		list_model.removeAllElements();
+	    list_model.addElement("Select this item to add new expression");
         if(signals.size() == 0) return;
 	    for(int i = 0; i < signals.size(); i++)
 		    signalListAdd((Data)signals.elementAt(i));
@@ -665,14 +728,14 @@ import java.util.Vector;
 	    if(ws.shot != UNDEF_SHOT)
 	    {
     		if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
-		    sig_list.add("Y : " + ws.y_expr + " Shot : " + ws.shot);
-		else
-		    sig_list.add("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : " + ws.shot);	
+		        list_model.addElement("Y : " + ws.y_expr + " Shot : " + ws.shot);
+		    else
+		        list_model.addElement("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : " + ws.shot);	
 	    } else {
-		if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
-		    sig_list.add("Y : " + ws.y_expr + " Shot : Undef");
-		else
-		    sig_list.add("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : Undef");	
+		    if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
+		        list_model.addElement("Y : " + ws.y_expr + " Shot : Undef");
+		    else
+		        list_model.addElement("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : Undef");	
 	    }
 	  }
 	  
@@ -680,15 +743,15 @@ import java.util.Vector;
 	  {
 	    if(ws.shot != UNDEF_SHOT)
 	    {
-		if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
-		    sig_list.replaceItem("Y : " + ws.y_expr + " Shot : " + ws.shot, idx);
-		else
-		    sig_list.replaceItem("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : " + ws.shot, idx);	
+		    if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
+		        list_model.setElementAt("Y : " + ws.y_expr + " Shot : " + ws.shot, idx);
+		    else
+		        list_model.setElementAt("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : " + ws.shot, idx);	
 	    } else {
-		if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
-		    sig_list.replaceItem("Y : " + ws.y_expr + " Shot : Undef", idx);
-		else
-		    sig_list.replaceItem("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : Undef", idx);	
+		    if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
+		        list_model.setElementAt("Y : " + ws.y_expr + " Shot : Undef", idx);
+		    else
+		        list_model.setElementAt("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : Undef", idx);	
 	    }
 	}
 
@@ -724,125 +787,91 @@ import java.util.Vector;
     	 }		  	      
       }
      
-      public void actionPerformed(ActionEvent e) 
-      {}
-      public void keyReleased(KeyEvent e)
-      {}
-      public void keyTyped(KeyEvent e)
-      {}
-      
-      public void keyPressed(KeyEvent e)
-      {
-	Object ob = e.getSource();
-	char key  = e.getKeyChar();
-        
-	if(key == KeyEvent.CHAR_UNDEFINED)
-	     return;
-	     
-
-	if(key == KeyEvent.VK_DELETE)
-	{
-	    if(ob == sig_list)
-		removeSignalSetup();	
-	}
-      }
+//      public void actionPerformed(ActionEvent e) {}
       
       public void itemStateChanged(ItemEvent e)
       {
 	    Object ob = e.getSource();
 
-    	if(ob == sig_list)
-	    {
-           sel_signal = sig_list.getSelectedIndex() - 1;
-           signalList.signalSelect(sel_signal);
-	    } 
-
-	if(ob instanceof Checkbox)
-	    DefaultButtonChange(ob);
+	    if(ob instanceof JCheckBox)
+	        DefaultButtonChange(ob);
 
     	if(sel_signal == -1)
-	    return;
-	    
-	if(ob == marker) {
-	    int m_idx =  marker.getSelectedIndex();
-	    ((Data)signals.elementAt(sel_signal)).marker = m_idx;
-	    setMarkerTextState(m_idx);
+	        return;
+        	    
+	    if(ob == marker) 
+	    {
+	        int m_idx =  marker.getSelectedIndex();
+	        ((Data)signals.elementAt(sel_signal)).marker = m_idx;
+	        setMarkerTextState(m_idx);
     	}	
 
-	if(ob == show_type) {
-	    ((Data)signals.elementAt(sel_signal)).interpolate = show_type.getSelectedIndex() == 0 ? true : false;
-	}	
+	    if(ob == show_type) {
+	        ((Data)signals.elementAt(sel_signal)).interpolate = show_type.getSelectedIndex() == 0 ? true : false;
+	    }	
 
-	if(ob == color) {
-	    ((Data)signals.elementAt(sel_signal)).color_idx = color.getSelectedIndex();       
-	}
+	    if(ob == color) {
+	        ((Data)signals.elementAt(sel_signal)).color_idx = color.getSelectedIndex();       
+	    }
       
       }
    }
 
 
-  class ExpandExp extends ScopePositionDialog { 
+  class ExpandExp extends JDialog implements ActionListener { 
 
-  private Label lab_x, lab_y;
-  private TextArea x_expr, y_expr;
-  private Button ok, cancel;
+  private JLabel lab_x, lab_y;
+  private JTextArea x_expr, y_expr;
+  private JButton ok, cancel;
   private SetupDataDialog  conf_dialog;
  
      ExpandExp(Frame _fw, SetupDataDialog conf_diag)
      {
-	super(_fw, "Expand Expression Dialog", false);
-	super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
-	setModal(true);
-	conf_dialog = conf_diag;
-	GridBagLayout gridbag = new GridBagLayout();
-	GridBagConstraints c = new GridBagConstraints();
-	Insets insets = new Insets(4, 4, 4, 4);
-    
-	setLayout(gridbag);		
-    
-	  c.anchor = GridBagConstraints.NORTH;
-	  c.fill =  GridBagConstraints.BOTH;
-	  c.gridwidth = 1;
-	  c.gridheight = 1;
-	  lab_y = new Label("Y");
-	  gridbag.setConstraints(lab_y, c);
-	  add(lab_y);		 	
-    
-	  c.gridheight = 11;
-	  c.gridwidth = GridBagConstraints.REMAINDER;
-	  y_expr = new TextArea(10,80);
-	  gridbag.setConstraints(y_expr, c);
-	  add(y_expr);
-	  
-	  c.anchor = GridBagConstraints.NORTH;
-	  c.fill =  GridBagConstraints.BOTH;
-	  c.gridwidth = 1;
-	  c.gridheight = 1;
-	  lab_x = new Label("X");	  
-	  gridbag.setConstraints(lab_x, c);
-	  add(lab_x);		 	
-    
-	  c.gridheight = 11;
-	  c.gridwidth = GridBagConstraints.REMAINDER;
-	  x_expr = new TextArea(10,80);
-	  gridbag.setConstraints(x_expr, c);
-	  add(x_expr);
-    
-	  Panel p = new Panel();
-	  p.setLayout(new FlowLayout(FlowLayout.CENTER));
+	    super(_fw, "Expand Expression Dialog", false);
+//	    super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
+	    setModal(true);
+	    conf_dialog = conf_diag;
+  
+        
+	    getContentPane().setLayout(new BorderLayout());		
+
+        JPanel p1 = new JPanel();
+        p1.setLayout(new BoxLayout(p1, BoxLayout.Y_AXIS));
+
+        JPanel p2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	    lab_y = new JLabel("Y Expression:");
+	    p2.add(lab_y);		 	
+        p1.add(p2);
+        
+	    y_expr = new JTextArea(10,50);
+	    y_expr.setBorder(BorderFactory.createLoweredBevelBorder());
+	    p1.add(y_expr);
+    	  
+        JPanel p3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	    lab_x = new JLabel("X Expression:");	  
+	    p3.add(lab_x);		 	
+        p1.add(p3);
+        
+	    x_expr = new JTextArea(10,50);
+	    x_expr.setBorder(BorderFactory.createLoweredBevelBorder());
+	    p1.add(x_expr);
+        
+	    JPanel p = new JPanel();
+	    p.setLayout(new FlowLayout(FlowLayout.CENTER));
+    	    
+	    ok = new JButton("Ok");
+	    ok.addActionListener(this);	
+	    p.add(ok);
+        
+	    cancel = new JButton("Cancel");
+	    cancel.addActionListener(this);	
+	    p.add(cancel);
+    			    	    
+	    getContentPane().add("Center", p1); 
+	    getContentPane().add("South", p); 
 	    
-	  ok = new Button("Ok");
-	  ok.addActionListener(this);	
-	  p.add(ok);
-    
-	  cancel = new Button("Cancel");
-	  cancel.addActionListener(this);	
-	  p.add(cancel);
-			    
-	  c.gridwidth = GridBagConstraints.REMAINDER;
-	  gridbag.setConstraints(p, c);
-	  add(p);
-    
+	    pack();
+	    
      }
      
      /**
@@ -850,13 +879,13 @@ import java.util.Vector;
      */
      public void setExpressionString(String x, String y)
      {
-        if(image_b.getState())
+        if(image_b.isSelected())
         {
-	        lab_x.setText("Frames");	  
-	        lab_y.setText("Times");	              
+	        lab_x.setText("Times Expression:");	  
+	        lab_y.setText("Frames Expression:");	              
         } else {
-	        lab_x.setText("X");	  
-	        lab_y.setText("Y");	              
+	        lab_x.setText("X Expression:");	  
+	        lab_y.setText("Y Expression:");	              
         }
         
 	    if(x != null)
@@ -867,13 +896,13 @@ import java.util.Vector;
      
      public void actionPerformed(ActionEvent e)
      {
-	 Object ob = e.getSource();	
+	    Object ob = e.getSource();	
     
-	 if(ob == ok) {
-	    conf_dialog.x_expr.setText(x_expr.getText());
-	    conf_dialog.y_expr.setText(y_expr.getText());
-	 }
-	 setVisible(false);	   
+	    if(ob == ok) {
+	        conf_dialog.x_expr.setText(x_expr.getText());
+	        conf_dialog.y_expr.setText(y_expr.getText());
+	    }
+	    setVisible(false);	   
      }      
 
   }
@@ -883,198 +912,144 @@ import java.util.Vector;
    public SetupDataDialog(Frame fw, String frame_title) {
 
       super(fw, frame_title, false);
-      super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
+//      super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
       setModal(true);
       setResizable(false);    
 
-      main_scope = (jScope)fw;
-      error_w = new SError(fw);
-      error_msg = new ErrorMessage(fw);
+      main_scope  = (jScope)fw;
+      error_w     = new SError(fw);
+//      error_msg   = new ErrorMessage(fw);
       expand_expr = new ExpandExp(fw, this);	    
 
-
-		//{{INIT_CONTROLS
-			setLayout(null);
-		setSize(730,405);
+		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		setVisible(false);
-		title_b.setLabel("Title");
-		add(title_b);
-		title_b.setBounds(6,24,60,20);
-		add(title);
-		title.setBounds(78,24,546,20);
-		expand.setLabel("Expand Expr.");
-		add(expand);
-		expand.setBackground(java.awt.Color.lightGray);
-		expand.setBounds(636,24,84,20);
-		sig_label.setText("Signal Label");
-		add(sig_label);
-		sig_label.setBounds(6,48,72,20);
-		add(signal_label);
-		signal_label.setBounds(78,48,546,20);
-		error.setLabel("Error");
-		add(error);
-		error.setBackground(java.awt.Color.lightGray);
-		error.setBounds(636,48,84,20);
 		
+		JPanel p1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		p1.add(title_b);
+		p1.add(title);
+		p1.add(expand);
+		expand.setBackground(Color.lightGray);
+		
+		JPanel p2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		sig_label.setText("Signal Label");
+		p2.add(sig_label);
+		p2.add(signal_label);
+		p2.add(error);
+		error.setBackground(Color.lightGray);
+		
+		JPanel p3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		y_lab.setText("Y");
-		add(y_lab);
-		y_lab.setBounds(10,73,12,20);
-		add(y_expr);
-		y_expr.setBounds(28,72,596,20);
+		p3.add(y_lab);
+		p3.add(y_expr);
+		p3.add(y_log);
+        
+        JPanel p4 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		p4.add(y_label_b);
+		p4.add(y_label);
 
-
-		pix_y_min.setText("Pix Y min");
-		add(pix_y_min);
-		pix_y_min.setBounds(321,96,52,20);
+		pix_y_min.setText("Pixel Y min");
+		p4.add(pix_y_min);
         pix_y_min.setVisible(false);
 
-		pix_y_max.setText("Pix Y max");
-		add(pix_y_max);
-		pix_y_max.setBounds(477,96,56,20);
+		p4.add(y_min_b);
+		p4.add(y_min);
+		
+		pix_y_max.setText("Pixel Y max");
+		p4.add(pix_y_max);
         pix_y_max.setVisible(false);
-
-
-		y_min_b.setLabel("Y min");
-		add(y_min_b);
-		y_min_b.setBounds(321,96,52,20);
-		add(y_min);
-		y_min.setBounds(376,96,92,20);
-		y_max_b.setLabel("Y max");
-		add(y_max_b);
-		y_max_b.setBounds(477,96,56,20);
-		add(y_max);
-		y_max.setBounds(532,96,92,20);
 		
-		image_b.setLabel("Is Image");
-		add(image_b);
-		image_b.setBounds(636,96,84,20);
+		p4.add(y_max_b);
+		p4.add(y_max);
 		
-		use_jai_b.setLabel("Use JAI");
-		add(use_jai_b);
-		use_jai_b.setBounds(636,120,84,20);
+		p4.add(image_b);
 		
+		JPanel p5 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		x_lab.setText("X");
-		add(x_lab);
-		x_lab.setBounds(9,121,12,20);
-		add(x_expr);
+		p5.add(x_lab);
+		p5.add(x_expr);
 
-		time_min_b.setLabel("t min");
-		add(time_min_b);
-		time_min_b.setBounds(321,120,52,20);
-		add(time_min);
-		time_min.setBounds(376,120,92,20);
+		p5.add(time_min_b);
         time_min_b.setVisible(false);
+		p5.add(time_min);
         time_min.setVisible(false);
 
-		time_max_b.setLabel("t max");
-		add(time_max_b);
-		time_max_b.setBounds(477,120,56,20);
-		add(time_max);
-		time_max.setBounds(532,120,92,20);
+		p5.add(time_max_b);
+		p5.add(time_max);
         time_max_b.setVisible(false);
         time_max.setVisible(false);
 		
-		x_log.setLabel("Log scale");
-		add(x_log);
-		x_log.setBounds(636,120,84,20);
-		x_label_b.setLabel("X Label");
-		add(x_label_b);
-		x_label_b.setBounds(6,144,66,20);
-		add(x_label);
-		x_label.setBounds(86,144,232,20);
-		y_log.setLabel("Log scale");
-		add(y_log);
-		y_log.setBounds(636,72,84,20);
-		y_label_b.setLabel("Y Label");
-		add(y_label_b);
-		y_label_b.setBounds(6,96,63,20);
-		add(y_label);
-		y_label.setBounds(86,96,232,20);
+		p5.add(x_log);
 		
+		p5.add(use_jai_b);
+        use_jai_b.setVisible(false);
 
-		pix_x_min.setText("Pix X min");
-		add(pix_x_min);
-		pix_x_min.setBounds(322,145,52,20);
+        JPanel p6 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		p6.add(x_label_b);
+		p6.add(x_label);
+
+		pix_x_min.setText("Pixel X min");
+		p6.add(pix_x_min);
 		pix_x_min.setVisible(false);
 
-		pix_x_max.setText("Pix X max");
-		add(pix_x_max);
-		pix_x_max.setBounds(478,144,54,20);
+		p6.add(x_min_b);
+		p6.add(x_min);
+		
+		pix_x_max.setText("Pixel X max");
+		p6.add(pix_x_max);
 		pix_x_max.setVisible(false);
 
-		keep_ratio_b.setLabel("Keep ratio");
-		add(keep_ratio_b);
-		keep_ratio_b.setBounds(636,145,84,20);
+		p6.add(x_max_b);
+		p6.add(x_max);
 
-		x_min_b.setLabel("X min");
-		add(x_min_b);
-		x_min_b.setBounds(322,145,52,20);
-		add(x_min);
-		x_min.setBounds(376,144,92,20);
-		x_max_b.setLabel("X max");
-		add(x_max_b);
-		x_max_b.setBounds(478,144,54,20);
-		add(x_max);
-		x_max.setBounds(533,144,91,19);
+		p6.add(keep_ratio_b);
+		keep_ratio_b.setVisible(false);
 		
-		experiment_b.setLabel("Experiment");
-		add(experiment_b);
-		experiment_b.setBounds(6,168,76,20);
-		add(experiment);
-		experiment.setBounds(86,168,232,20);
-		shot_b.setLabel("Shot");
-		add(shot_b);
-		shot_b.setBounds(322,168,48,20);
-		add(shot);
-		shot.setBounds(377,169,247,20);
+		JPanel p7 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		p7.add(experiment_b);
+		p7.add(experiment);
+		p7.add(shot_b);
+		p7.add(shot);
 		
-	    horizontal_flip_b.setLabel("Horizontal flip");
-		add(horizontal_flip_b);
-		horizontal_flip_b.setBounds(636,169,86,20);
+		p7.add(horizontal_flip_b);
+		horizontal_flip_b.setVisible(false);
 		
-		upd_event_b.setLabel("Update event");
-		add(upd_event_b);
-		upd_event_b.setBounds(6,192,90,20);
-		add(upd_event);
-		upd_event.setBounds(96,192,222,20);
-		def_node_b.setLabel("Default node");
-		add(def_node_b);
-		def_node_b.setBounds(322,192,96,20);
-		add(def_node);
-		def_node.setBounds(417,192,207,20);
+		JPanel p8 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		p8.add(upd_event_b);
+		p8.add(upd_event);
+		p8.add(def_node_b);
+		p8.add(def_node);
 
-	    vertical_flip_b.setLabel("Vertical flip");
-		add(vertical_flip_b);
-		vertical_flip_b.setBounds(636,192,84,20);
+		p8.add(vertical_flip_b);
+        vertical_flip_b.setVisible(false);
 
-		panel1.setLayout(null);
-		add(panel1);
-		panel1.setBounds(12,365,660,40);
-		ok.setLabel("Ok");
-		panel1.add(ok);
-		ok.setBackground(java.awt.Color.lightGray);
-		ok.setBounds(12,12,48,20);
-		apply.setLabel("Apply");
-		panel1.add(apply);
-		apply.setBackground(java.awt.Color.lightGray);
-		apply.setBounds(159,12,48,20);
-		reset.setLabel("Reset");
-		panel1.add(reset);
-		reset.setBackground(java.awt.Color.lightGray);
-		reset.setBounds(306,12,48,20);
-		erase.setLabel("Erase");
-		panel1.add(erase);
-		erase.setBackground(java.awt.Color.lightGray);
-		erase.setBounds(453,12,48,20);
-		cancel.setLabel("Cancel");
-		panel1.add(cancel);
-		cancel.setBackground(java.awt.Color.lightGray);
-		cancel.setBounds(600,12,48,20);
-			//}}
-
+        p9.setBorder(BorderFactory.createLoweredBevelBorder());
         signalList = new SList(); 
-		add(signalList);
-		signalList.setBounds(6,215,720,160);
+		p9.add("Center", signalList);
+
+        JPanel p10 = new JPanel();
+		p10.setLayout(new FlowLayout());
+		p10.setBounds(12,347,660,40);
+		p10.add(ok);
+		ok.setBackground(Color.lightGray);
+		p10.add(apply);
+		apply.setBackground(Color.lightGray);
+		p10.add(reset);
+		reset.setBackground(Color.lightGray);
+		p10.add(erase);
+		erase.setBackground(Color.lightGray);
+		p10.add(cancel);
+		cancel.setBackground(Color.lightGray);
+
+		getContentPane().add(p1);
+		getContentPane().add(p2);
+		getContentPane().add(p3);
+		getContentPane().add(p4);
+		getContentPane().add(p5);
+		getContentPane().add(p6);
+		getContentPane().add(p7);
+		getContentPane().add(p8);
+		getContentPane().add(p9);
+		getContentPane().add(p10);
 
       title_b.addItemListener(this);
       expand.addActionListener(this);
@@ -1102,7 +1077,7 @@ import java.util.Vector;
       experiment.addKeyListener(this);
       shot_b.addItemListener(this);      
       shot.addKeyListener(this);
-      shot.addFocusListener(this);
+      //shot.addFocusListener(this);
       upd_event_b.addItemListener(this);
       def_node_b.addItemListener(this);      
       ok.addActionListener(this);
@@ -1110,72 +1085,20 @@ import java.util.Vector;
       reset.addActionListener(this);
       erase.addActionListener(this);
       cancel.addActionListener(this);
+      pack();
    }
    
-   	//{{DECLARE_CONTROLS
-	java.awt.Checkbox title_b = new java.awt.Checkbox();
-	java.awt.TextField title = new java.awt.TextField();
-	java.awt.Button expand = new java.awt.Button();
-	java.awt.Label sig_label = new java.awt.Label();
-	java.awt.TextField signal_label = new java.awt.TextField();
-	java.awt.Button error = new java.awt.Button();
-	java.awt.Label y_lab = new java.awt.Label();
-	java.awt.TextField y_expr = new java.awt.TextField();
-	java.awt.Checkbox y_min_b = new java.awt.Checkbox();
-	java.awt.TextField y_min = new java.awt.TextField();
-	java.awt.Label pix_y_min = new java.awt.Label();
-	java.awt.Checkbox y_max_b = new java.awt.Checkbox();
-	java.awt.TextField y_max = new java.awt.TextField();
-	java.awt.Label pix_y_max = new java.awt.Label();
-	java.awt.Checkbox image_b = new java.awt.Checkbox();
-	java.awt.Checkbox use_jai_b = new java.awt.Checkbox();
-	java.awt.Label x_lab = new java.awt.Label();
-	java.awt.TextField x_expr = new java.awt.TextField();
-	java.awt.Checkbox x_log = new java.awt.Checkbox();
-	java.awt.Checkbox x_label_b = new java.awt.Checkbox();
-	java.awt.TextField x_label = new java.awt.TextField();
-	java.awt.Checkbox y_log = new java.awt.Checkbox();
-	java.awt.Checkbox y_label_b = new java.awt.Checkbox();
-	java.awt.TextField y_label = new java.awt.TextField();
-	java.awt.Checkbox x_min_b = new java.awt.Checkbox();
-	java.awt.Checkbox time_min_b = new java.awt.Checkbox();
-	java.awt.Label pix_x_max = new java.awt.Label();
-	java.awt.TextField x_min = new java.awt.TextField();
-	java.awt.TextField time_min = new java.awt.TextField();
-	java.awt.Checkbox x_max_b = new java.awt.Checkbox();
-	java.awt.Checkbox time_max_b = new java.awt.Checkbox();
-	java.awt.Label pix_x_min = new java.awt.Label();
-	java.awt.TextField x_max = new java.awt.TextField();
-	java.awt.TextField time_max = new java.awt.TextField();
-	java.awt.Checkbox keep_ratio_b = new java.awt.Checkbox();
-	java.awt.Checkbox experiment_b = new java.awt.Checkbox();
-	java.awt.TextField experiment = new java.awt.TextField();
-	java.awt.Checkbox shot_b = new java.awt.Checkbox();
-	java.awt.TextField shot = new java.awt.TextField();
-	java.awt.Checkbox horizontal_flip_b = new java.awt.Checkbox();
-	java.awt.Checkbox upd_event_b = new java.awt.Checkbox();
-	java.awt.TextField upd_event = new java.awt.TextField();
-	java.awt.Checkbox def_node_b = new java.awt.Checkbox();
-	java.awt.TextField def_node = new java.awt.TextField();
-	java.awt.Checkbox vertical_flip_b = new java.awt.Checkbox();
-	java.awt.Panel panel1 = new java.awt.Panel();
-	java.awt.Button ok = new java.awt.Button();
-	java.awt.Button apply = new java.awt.Button();
-	java.awt.Button reset = new java.awt.Button();
-	java.awt.Button erase = new java.awt.Button();
-	java.awt.Button cancel = new java.awt.Button();
-	//}}
 
     public void Show(Waveform w, int col, int row)
     {
-      pack();
       wave = (jScopeMultiWave)w;
       wi = wave.wi;
-      wi = new MdsWaveInterface(wave.wi.dp, wave.wi.def_vals);
+      wi = new MdsWaveInterface(wave, wave.wi.dp, wave.wi.def_vals);
       wi.defaults = wave.wi.defaults;
-      wi.wave = wave;
       putWindowSetup((MdsWaveInterface)wave.wi);
-      setPosition(w.getParent());
+      updateDataSetup();
+      setLocationRelativeTo(w.getParent());
+      this.signalList.signalSelect(wave.GetSelectedSignal());
       setTitle("Wave Setup for column " + col + " row " + row);
       show(); 
    }
@@ -1200,48 +1123,48 @@ import java.util.Vector;
                                                       (1 << MdsWaveInterface.B_y_min));
     
         
-	title_b.setState(state);
+	title_b.setSelected(state);
 	title.setEditable(!state); 
-	shot_b.setState(state); 
+	shot_b.setSelected(state); 
 	shot.setEditable(!state); 
-	experiment_b.setState(state); 
+	experiment_b.setSelected(state); 
 	experiment.setEditable(!state);
-	if(image_b.getState())
+	if(image_b.isSelected())
 	{
-	    time_max_b.setState(state); 
+	    time_max_b.setSelected(state); 
 	    time_max.setEditable(!state); 
-	    time_min_b.setState(state); 
+	    time_min_b.setSelected(state); 
 	    time_min.setEditable(!state);
 
-	    y_max_b.setState(false); 
+	    y_max_b.setSelected(false); 
 	    y_max.setEditable(true); 
-	    y_min_b.setState(false); 
+	    y_min_b.setSelected(false); 
 	    y_min .setEditable(true); 
 
-	    x_max_b.setState(false); 
+	    x_max_b.setSelected(false); 
 	    x_max.setEditable(true); 
-	    x_min_b.setState(false); 
+	    x_min_b.setSelected(false); 
 	    x_min.setEditable(true);
 	
 	} else {
 
-	    y_max_b.setState(state); 
+	    y_max_b.setSelected(state); 
 	    y_max.setEditable(!state); 
-	    y_min_b.setState(state); 
+	    y_min_b.setSelected(state); 
 	    y_min .setEditable(!state); 
 
-	    x_max_b.setState(state); 
+	    x_max_b.setSelected(state); 
 	    x_max.setEditable(!state); 
-	    x_min_b.setState(state); 
+	    x_min_b.setSelected(state); 
 	    x_min.setEditable(!state);
 	}
-	x_label_b.setState(state); 
+	x_label_b.setSelected(state); 
 	x_label.setEditable(!state); 
-	y_label_b.setState(state);  
+	y_label_b.setSelected(state);  
 	y_label.setEditable(!state);
-	upd_event_b.setState(state);
+	upd_event_b.setSelected(state);
 	upd_event.setEditable(!state);
-    def_node_b.setState(state);
+    def_node_b.setSelected(state);
     def_node.setEditable(!state);
     PutDefaultValues();
    } 
@@ -1253,35 +1176,35 @@ import java.util.Vector;
 	    switch(i)
 	    {
 		case MdsWaveInterface.B_title:
-		    title_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
+		    title_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);break; 
 		case MdsWaveInterface.B_shot:
-		    shot_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
+		    shot_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);break; 
 		case MdsWaveInterface.B_exp:
-		    experiment_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
+		    experiment_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);break; 
 		case MdsWaveInterface.B_x_max:
-		    if(image_b.getState())
-		        time_max_b.setState(((flags & (1<<i)) == 1<<i)?true:false);
+		    if(image_b.isSelected())
+		        time_max_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);
 		    else        
-		        x_max_b.setState(((flags & (1<<i)) == 1<<i)?true:false);
+		        x_max_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);
 		break; 
 		case MdsWaveInterface.B_x_min:
-		    if(image_b.getState())
-		        time_min_b.setState(((flags & (1<<i)) == 1<<i)?true:false); 
+		    if(image_b.isSelected())
+		        time_min_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false); 
 		    else
-		        x_min_b.setState(((flags & (1<<i)) == 1<<i)?true:false);
+		        x_min_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);
 		break; 
 		case MdsWaveInterface.B_x_label:
-		    x_label_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
+		    x_label_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);break; 
 		case MdsWaveInterface.B_y_max:
-		    y_max_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
+		    y_max_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);break; 
 		case MdsWaveInterface.B_y_min:
-		    y_min_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
+		    y_min_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);break; 
 		case MdsWaveInterface.B_y_label:
-		    y_label_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break;  
+		    y_label_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);break;  
 		case MdsWaveInterface.B_event:
-		    upd_event_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break;  
+		    upd_event_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);break;  
 		case MdsWaveInterface.B_default_node:
-		    def_node_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break;  
+		    def_node_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);break;  
 	    }
 	}       
    }
@@ -1290,100 +1213,68 @@ import java.util.Vector;
    {
        int value = 0;
        
-	if  (title_b.getState())	 value |= 1<<MdsWaveInterface.B_title; 
+	if  (title_b.isSelected())	 value |= 1<<MdsWaveInterface.B_title; 
 				    else value &= ~(1<<MdsWaveInterface.B_title); 
-	if  (shot_b.getState()  )	 value |= 1<<MdsWaveInterface.B_shot  ; 
+	if  (shot_b.isSelected()  )	 value |= 1<<MdsWaveInterface.B_shot  ; 
 				    else value &= ~(1<<MdsWaveInterface.B_shot); 
-	if  (experiment_b.getState() )	 value |= 1<<MdsWaveInterface.B_exp ; 
+	if  (experiment_b.isSelected() )	 value |= 1<<MdsWaveInterface.B_exp ; 
 				    else value &= ~(1<<MdsWaveInterface.B_exp);
-	if(image_b.getState())
+	if(image_b.isSelected())
 	{
-	    if  (time_max_b.getState() )	 value |= 1<<MdsWaveInterface.B_x_max ; 
+	    if  (time_max_b.isSelected() )	 value |= 1<<MdsWaveInterface.B_x_max ; 
 				    else value &= ~(1<<MdsWaveInterface.B_x_max); 
-	    if  (time_min_b.getState() )	 value |= 1<<MdsWaveInterface.B_x_min ;
+	    if  (time_min_b.isSelected() )	 value |= 1<<MdsWaveInterface.B_x_min ;
 				    else value &= ~(1<<MdsWaveInterface.B_x_min);
 	}
 	else
 	{
-	    if  (x_max_b.getState() )	 value |= 1<<MdsWaveInterface.B_x_max ; 
+	    if  (x_max_b.isSelected() )	 value |= 1<<MdsWaveInterface.B_x_max ; 
 				    else value &= ~(1<<MdsWaveInterface.B_x_max); 
-	    if  (x_min_b.getState() )	 value |= 1<<MdsWaveInterface.B_x_min ;
+	    if  (x_min_b.isSelected() )	 value |= 1<<MdsWaveInterface.B_x_min ;
 				    else value &= ~(1<<MdsWaveInterface.B_x_min);
 	}
-	if  (x_label_b.getState() )	 value |= 1<<MdsWaveInterface.B_x_label ; 
+	if  (x_label_b.isSelected() )	 value |= 1<<MdsWaveInterface.B_x_label ; 
 				    else value &= ~(1<<MdsWaveInterface.B_x_label); 
-	if  (y_max_b.getState() )        value |= 1<<MdsWaveInterface.B_y_max ; 
+	if  (y_max_b.isSelected() )        value |= 1<<MdsWaveInterface.B_y_max ; 
 				    else value &= ~(1<<MdsWaveInterface.B_y_max); 
-	if  (y_min_b.getState() )	 value |= 1<<MdsWaveInterface.B_y_min ; 
+	if  (y_min_b.isSelected() )	 value |= 1<<MdsWaveInterface.B_y_min ; 
 				    else value &= ~(1<<MdsWaveInterface.B_y_min); 
-	if  (y_label_b.getState() )	 value |= 1<<MdsWaveInterface.B_y_label ; 
+	if  (y_label_b.isSelected() )	 value |= 1<<MdsWaveInterface.B_y_label ; 
 				    else value &= ~(1<<MdsWaveInterface.B_y_label);
-	if  (upd_event_b.getState() )	 value |= 1<<MdsWaveInterface.B_event ; 
+	if  (upd_event_b.isSelected() )	 value |= 1<<MdsWaveInterface.B_event ; 
 				    else value &= ~(1<<MdsWaveInterface.B_event);
-	if  (def_node_b.getState() )	 value |= 1<<MdsWaveInterface.B_default_node ; 
+	if  (def_node_b.isSelected() )	 value |= 1<<MdsWaveInterface.B_default_node ; 
 				    else value &= ~(1<<MdsWaveInterface.B_default_node);
 	return (value);  
    }
-/*
-   public void putDefaultValues(MdsWaveInterface wi)
-   {
-    
-        boolean def_flag;
-        
-	    defaultButtonOperation(title, def_flag = title_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_title, def_flag, wi));
-	    putShotValue(shot_b.getState());
-	    defaultButtonOperation(experiment, def_flag = experiment_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_exp, def_flag, wi));
-	    if(image_b.getState())
-	    {
-	        defaultButtonOperation(time_max, def_flag = time_max_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_x_max, def_flag, wi));
-	        if(!def_flag)
-	            time_max.setText(wi.cin_timemax);
-	        defaultButtonOperation(time_min, def_flag = time_min_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_x_min, def_flag, wi));
-	        if(!def_flag)
-	            time_min.setText(wi.cin_timemin);
-	        x_min.setText(wi.cin_xmin);
-	        x_max.setText(wi.cin_xmax);
-	    } else {
-	        defaultButtonOperation(x_max, def_flag = x_max_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_x_max, def_flag, wi));
-	        defaultButtonOperation(x_min, def_flag = x_min_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_x_min, def_flag, wi));
-	    }
-	    defaultButtonOperation(x_label, def_flag = x_label_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_x_label, def_flag, wi));
-	    defaultButtonOperation(y_max, def_flag = y_max_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_y_max, def_flag, wi));
-	    defaultButtonOperation(y_min, def_flag = y_min_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_y_min, def_flag, wi));
-	    defaultButtonOperation(y_label, def_flag = y_label_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_y_label, def_flag, wi));
-	    defaultButtonOperation(upd_event, def_flag = upd_event_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_event, def_flag, wi));
-	    defaultButtonOperation(def_node,  def_flag = def_node_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_default_node, def_flag, wi));    
-
-   }
-*/
 
    public void PutDefaultValues()
    { 
         boolean def_flag;
         
-	    defaultButtonOperation(title, def_flag = title_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_title, def_flag));
-	    putShotValue(shot_b.getState());
-	    defaultButtonOperation(experiment, def_flag = experiment_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_exp, def_flag));
-	    if(image_b.getState())
+	    defaultButtonOperation(title, def_flag = title_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_title, def_flag));
+	    putShotValue(shot_b.isSelected());
+	    defaultButtonOperation(experiment, def_flag = experiment_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_exp, def_flag));
+	    if(image_b.isSelected())
 	    {
-	        defaultButtonOperation(time_max, def_flag = time_max_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
+	        defaultButtonOperation(time_max, def_flag = time_max_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
 	        if(!def_flag)
 	            time_max.setText(wi.cin_timemax);
-	        defaultButtonOperation(time_min, def_flag = time_min_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
+	        defaultButtonOperation(time_min, def_flag = time_min_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
 	        if(!def_flag)
 	            time_min.setText(wi.cin_timemin);
 	        x_min.setText(wi.cin_xmin);
 	        x_max.setText(wi.cin_xmax);
 	    } else {
-	        defaultButtonOperation(x_max, def_flag = x_max_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
-	        defaultButtonOperation(x_min, def_flag = x_min_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
+	        defaultButtonOperation(x_max, def_flag = x_max_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
+	        defaultButtonOperation(x_min, def_flag = x_min_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
 	    }
-	    defaultButtonOperation(x_label, def_flag = x_label_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_label, def_flag));
-	    defaultButtonOperation(y_max, def_flag = y_max_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_y_max, def_flag));
-	    defaultButtonOperation(y_min, def_flag = y_min_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_y_min, def_flag));
-	    defaultButtonOperation(y_label, def_flag = y_label_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_y_label, def_flag));
-	    defaultButtonOperation(upd_event, def_flag = upd_event_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_event, def_flag));
-	    defaultButtonOperation(def_node,  def_flag = def_node_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_default_node, def_flag));    
+	    defaultButtonOperation(x_label, def_flag = x_label_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_label, def_flag));
+	    defaultButtonOperation(y_max, def_flag = y_max_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_y_max, def_flag));
+	    defaultButtonOperation(y_min, def_flag = y_min_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_y_min, def_flag));
+	    defaultButtonOperation(y_label, def_flag = y_label_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_y_label, def_flag));
+	    defaultButtonOperation(upd_event, def_flag = upd_event_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_event, def_flag));
+	    defaultButtonOperation(def_node,  def_flag = def_node_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_default_node, def_flag));    
    }
    
    public void putWindowSetup(MdsWaveInterface wi)      
@@ -1424,13 +1315,13 @@ import java.util.Vector;
 	this.wi.cin_ylabel      = wi.cin_ylabel;
 	this.wi.legend_x        = wi.legend_x;
 	this.wi.legend_y        = wi.legend_y;
-    this.wi.make_legend     = wi.make_legend;
+    this.wi.show_legend     = wi.show_legend;
     this.wi.reversed        = wi.reversed;
-    image_b.setState(wi.is_image);
-    use_jai_b.setState(wi.use_jai);
-    keep_ratio_b.setState(wi.keep_ratio);
-    horizontal_flip_b.setState(wi.horizontal_flip);
-    vertical_flip_b.setState(wi.vertical_flip);
+    image_b.setSelected(wi.is_image);
+    use_jai_b.setSelected(wi.use_jai);
+    keep_ratio_b.setSelected(wi.keep_ratio);
+    horizontal_flip_b.setSelected(wi.horizontal_flip);
+    vertical_flip_b.setSelected(wi.vertical_flip);
 
 
 	setDefaultFlags(wi.defaults);
@@ -1442,8 +1333,8 @@ import java.util.Vector;
         signal_label.setText("");
         x_expr.setText("");
         y_expr.setText("");
-	    x_log.setState(wi.x_log);
-	    y_log.setState(wi.y_log);
+	    x_log.setSelected(wi.x_log);
+	    y_log.setSelected(wi.y_log);
 //	}
 //	else {
  //       x_expr.setText("");
@@ -1459,7 +1350,6 @@ import java.util.Vector;
    
   private void setImageDialog(boolean state)
   {
-   // eraseForm();
     if(state)
     {
         sig_label.setVisible(false);
@@ -1481,23 +1371,24 @@ import java.util.Vector;
 		y_max_b.setVisible(false);
 		y_min_b.setVisible(false);
 
-
         x_log.setVisible(false);
         y_log.setVisible(false); 
-        signalList.setVisible(false);
+        signalList.setVisible(false);        
+        p9.setVisible(false);        
         error.setVisible(false);
         use_jai_b.setVisible(true);
         keep_ratio_b.setVisible(true);
         horizontal_flip_b.setVisible(true);
         vertical_flip_b.setVisible(true);
-        panel1.setBounds(12,215,660,40);
+//        panel1.setBounds(12,197,660,40);
 		y_lab.setText("Frames");
-		y_lab.setBounds(10,73,35,20);
-		y_expr.setBounds(47,72,577,20);
+//		y_lab.setBounds(10,55,35,20);
+//		y_expr.setBounds(47,54,577,20);
 		x_lab.setText("Times");
-		x_lab.setBounds(10,121,35,20);
-		x_expr.setBounds(47,120,271,20);
-		setSize(730,255);
+//		x_lab.setBounds(10,103,35,20);
+        x_expr.setColumns(24);
+//		x_expr.setBounds(47,102,271,20);
+		//setSize(730,255);
     } else {
 
         sig_label.setVisible(true);
@@ -1521,25 +1412,27 @@ import java.util.Vector;
         x_log.setVisible(true);
         y_log.setVisible(true); 
         signalList.setVisible(true);        
+        p9.setVisible(true);        
         error.setVisible(true);
         x_lab.setVisible(true);
         use_jai_b.setVisible(false);
         keep_ratio_b.setVisible(false);
         horizontal_flip_b.setVisible(false);
         vertical_flip_b.setVisible(false);
-		panel1.setBounds(12,365,660,40);
+//		panel1.setBounds(12,347,660,40);
 		y_lab.setText("Y");
-		add(y_lab);
-		y_lab.setBounds(10,73,12,20);
-		y_expr.setBounds(28,72,596,20);
+//		getContentPane().add(y_lab);
+//		y_lab.setBounds(10,55,12,20);
+//		y_expr.setBounds(28,54,596,20);
 		x_lab.setText("X");
-		x_lab.setBounds(10,121,12,20);
-		x_expr.setBounds(28,120,596,20);
-
-		setSize(730,405);
-
+//		x_lab.setBounds(10,103,12,20);
+        x_expr.setColumns(58);
+//		x_expr.setBounds(28,102,596,20);
+        //pack();
+		//setSize(730,405);
     }
-    
+    pack();
+    validate();
   }
 
   public void eraseForm()
@@ -1594,28 +1487,28 @@ import java.util.Vector;
 	if(!main_scope.equalsString(title.getText(),   wave_wi.cin_title))    return true;	
 	if(!main_scope.equalsString(x_max.getText(),   wave_wi.cin_xmax))     return true;
 	if(!main_scope.equalsString(x_min.getText(),   wave_wi.cin_xmin))     return true;
-	if(image_b.getState())
+	if(image_b.isSelected())
 	{
 	    if(!main_scope.equalsString(time_max.getText(),   wave_wi.cin_timemax))     return true;
 	    if(!main_scope.equalsString(time_min.getText(),   wave_wi.cin_timemin))     return true;
 	}
 	
 	if(!main_scope.equalsString(x_label.getText(), wave_wi.cin_xlabel))   return true;
-	if(x_log.getState() != wave_wi.x_log)				                  return true;
+	if(x_log.isSelected() != wave_wi.x_log)				                  return true;
 	if(!main_scope.equalsString(y_max.getText(),   wave_wi.cin_ymax))     return true;
 	if(!main_scope.equalsString(y_min.getText(),   wave_wi.cin_ymin))     return true;
 	if(!main_scope.equalsString(y_label.getText(), wave_wi.cin_ylabel))   return true;	
-	if(y_log.getState() != wave_wi.y_log)				                      return true;		
+	if(y_log.isSelected() != wave_wi.y_log)				                      return true;		
     if(!main_scope.equalsString(shot.getText(),   wave_wi.cin_shot))          return true;	
     if(!main_scope.equalsString(upd_event.getText(),   wave_wi.cin_upd_event))  return true;	
     if(!main_scope.equalsString(def_node.getText(),    wave_wi.cin_def_node))   return true;	
 	if(!main_scope.equalsString(experiment.getText(), wave_wi.cexperiment))   return true;
 	if(getDefaultFlags() != wave_wi.defaults)				                  return true;	
-	if(image_b.getState() != wave_wi.is_image)				                  return true;		
-	if(use_jai_b.getState() != wave_wi.use_jai)				                  return true;		
-	if(keep_ratio_b.getState() != wave_wi.keep_ratio)				          return true;		
-	if(horizontal_flip_b.getState() != wave_wi.horizontal_flip)				  return true;		
-	if(vertical_flip_b.getState() != wave_wi.vertical_flip)				      return true;		
+	if(image_b.isSelected() != wave_wi.is_image)				                  return true;		
+	if(use_jai_b.isSelected() != wave_wi.use_jai)				                  return true;		
+	if(keep_ratio_b.isSelected() != wave_wi.keep_ratio)				          return true;		
+	if(horizontal_flip_b.isSelected() != wave_wi.horizontal_flip)				  return true;		
+	if(vertical_flip_b.isSelected() != wave_wi.vertical_flip)				      return true;		
 
     for(int i = 0 ; i < wave_wi.num_waves; i++)
 	{
@@ -1628,7 +1521,7 @@ import java.util.Vector;
 	return false;
     }
 
-    private void update()
+    private void updateDataSetup()
     {        
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
         try
@@ -1643,34 +1536,34 @@ import java.util.Vector;
    private void updateGlobalWI()
    {
     
-      if(!experiment_b.getState() && !main_scope.equalsString(experiment.getText(), wi.cexperiment))
+      if(!experiment_b.isSelected() && !main_scope.equalsString(experiment.getText(), wi.cexperiment))
 	    wi.cexperiment   = experiment.getText();	
-      if(!shot_b.getState() && !main_scope.equalsString(shot.getText(),   wi.cin_shot))
+      if(!shot_b.isSelected() && !main_scope.equalsString(shot.getText(),   wi.cin_shot))
 	    wi.cin_shot      = shot.getText();	
-      if(!upd_event_b.getState() && !main_scope.equalsString(upd_event.getText(),   wi.cin_upd_event))
+      if(!upd_event_b.isSelected() && !main_scope.equalsString(upd_event.getText(),   wi.cin_upd_event))
 	    wi.cin_upd_event      = upd_event.getText();	
-      if(!def_node_b.getState() && !main_scope.equalsString(def_node.getText(),   wi.cin_def_node))
+      if(!def_node_b.isSelected() && !main_scope.equalsString(def_node.getText(),   wi.cin_def_node))
 	    wi.cin_def_node       = def_node.getText();
 
-      if(!time_max_b.getState() && !main_scope.equalsString(time_max.getText(),   wi.cin_timemax))
+      if(!time_max_b.isSelected() && !main_scope.equalsString(time_max.getText(),   wi.cin_timemax))
 	    wi.cin_timemax      = time_max.getText();
-      if(!time_min_b.getState() && !main_scope.equalsString(time_min.getText(),   wi.cin_timemin))
+      if(!time_min_b.isSelected() && !main_scope.equalsString(time_min.getText(),   wi.cin_timemin))
 	    wi.cin_timemin      = time_min.getText();
 	    
-      if(!x_max_b.getState() && !main_scope.equalsString(x_max.getText(),   wi.cin_xmax))
+      if(!x_max_b.isSelected() && !main_scope.equalsString(x_max.getText(),   wi.cin_xmax))
 	    wi.cin_xmax      = x_max.getText();
-      if(!x_min_b.getState() && !main_scope.equalsString(x_min.getText(),   wi.cin_xmin))
+      if(!x_min_b.isSelected() && !main_scope.equalsString(x_min.getText(),   wi.cin_xmin))
 	    wi.cin_xmin      = x_min.getText();
 	    
-      if(!y_max_b.getState() && !main_scope.equalsString(y_max.getText(),   wi.cin_ymax))
+      if(!y_max_b.isSelected() && !main_scope.equalsString(y_max.getText(),   wi.cin_ymax))
 	    wi.cin_ymax      = y_max.getText();
-      if(!y_min_b.getState() && !main_scope.equalsString(y_min.getText(),   wi.cin_ymin))
+      if(!y_min_b.isSelected() && !main_scope.equalsString(y_min.getText(),   wi.cin_ymin))
 	    wi.cin_ymin      = y_min.getText();
-      if(!title_b.getState() && !main_scope.equalsString(title.getText(),   wi.cin_title))
+      if(!title_b.isSelected() && !main_scope.equalsString(title.getText(),   wi.cin_title))
 	    wi.cin_title     = title.getText();
-      if(!x_label_b.getState() && !main_scope.equalsString(x_label.getText(), wi.cin_xlabel))
+      if(!x_label_b.isSelected() && !main_scope.equalsString(x_label.getText(), wi.cin_xlabel))
 	    wi.cin_xlabel    = x_label.getText();
-      if(!y_label_b.getState() && !main_scope.equalsString(y_label.getText(), wi.cin_ylabel))
+      if(!y_label_b.isSelected() && !main_scope.equalsString(y_label.getText(), wi.cin_ylabel))
 	    wi.cin_ylabel    = y_label.getText();
 	    
    }
@@ -1686,17 +1579,17 @@ import java.util.Vector;
  	  if(num_signal == 0)
  	  {
 //	      wave.wi = new MdsWaveInterface(main_scope.db, wave.controller, main_scope.def_values);
-//	      wi.is_image = image_b.getState();
-//	      wi.use_jai = use_jai_b.getState();
+//	      wi.is_image = image_b.isSelected();
+//	      wi.use_jai = use_jai_b.isSelected();
 	      return 1;
       }
 
 	  wi.modified = isChanged(s);
-	  wi.is_image = image_b.getState();
-	  wi.use_jai = use_jai_b.getState();
-	  wi.keep_ratio = keep_ratio_b.getState();
-	  wi.horizontal_flip = horizontal_flip_b.getState();
-	  wi.vertical_flip = vertical_flip_b.getState();
+	  wi.is_image = image_b.isSelected();
+	  wi.use_jai = use_jai_b.isSelected();
+	  wi.keep_ratio = keep_ratio_b.isSelected();
+	  wi.horizontal_flip = horizontal_flip_b.isSelected();
+	  wi.vertical_flip = vertical_flip_b.isSelected();
 	  
 	  if(!wi.modified)
 	  {
@@ -1737,8 +1630,8 @@ import java.util.Vector;
 	  wi.in_xlabel      = new String(x_label.getText());
 	  wi.in_ylabel      = new String(y_label.getText());
 	    
-	  wi.x_log        = x_log.getState();
-	  wi.y_log        = y_log.getState();
+	  wi.x_log        = x_log.isSelected();
+	  wi.y_log        = y_log.isSelected();
 	  wi.full_flag    = !main_scope.wave_panel.GetFastNetworkState();
 	  wi.num_shot     = signalList.getNumShot();
 	  wi.defaults     = getDefaultFlags();
@@ -1808,22 +1701,22 @@ import java.util.Vector;
 	    if(def_exp ^ def_shot)
 	    {
 	        if(!def_shot) {
-		        error_msg.addMessage("Experiment defined but undefined shot\n");
-		        error = 1;
+		        JOptionPane.showMessageDialog(null, "Experiment defined but undefined shot", "alert", JOptionPane.ERROR_MESSAGE); 
+                return 1;
 		    }    
 		    /*
-	        if(!def_exp && !setup.data_server_address.equals("Ftu data") && !image_b.getState()) {	    
+	        if(!def_exp && !setup.data_server_address.equals("Ftu data") && !image_b.isSelected()) {	    
 		        error_msg.addMessage("Shot defined but undefined experiment\n");
 	            error = 1;
 	        }
 	        */
 	    }
 
-	    update();
+	    updateDataSetup();
 	
 	    if(updateWI() != 0)
 	    {
-	        error_msg.addMessage("Nothing to evaluate\n");
+		    JOptionPane.showMessageDialog(null, "Nothing to evaluate", "alert", JOptionPane.ERROR_MESSAGE); 
 	        error = 1;
 	    }
     	
@@ -1834,15 +1727,27 @@ import java.util.Vector;
 
    private  void applyWaveform()
    {
-      if(checkSetup() == 0)
-      {
-         setCursor(new Cursor(Cursor.WAIT_CURSOR));
-         main_scope.EvaluateWave(wave, shot.getText(), false);
-         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-      } else {
-	     error_msg.showMessage();
-	     wave.Erase();
-	  }
+        Thread t = new Thread() {
+            public void run() { 
+                setName("Apply Waveform Thread");
+                if(checkSetup() == 0)
+                {       
+                    setCursor(new Cursor(Cursor.WAIT_CURSOR));
+                    try
+                    {
+                        String full_error = main_scope.wave_panel.Refresh(wave, "Update ");
+                        wave.setPointSignalIndex(signalList.getSignalSelect());
+		                if(full_error != null)
+		                    JOptionPane.showMessageDialog(SetupDataDialog.this, full_error, "alert", JOptionPane.ERROR_MESSAGE); 	         
+	                } catch (Throwable e) {	        
+	                    main_scope.SetStatusLabel("Error during apply: "+e);	    
+	                }
+                    setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                } else
+	                wave.Erase();
+            }
+        };
+        t.start();
    }
 	    	
    public void actionPerformed(ActionEvent e)
@@ -1855,7 +1760,7 @@ import java.util.Vector;
       if(ob == erase) {
 	    eraseForm();
 //	    wave.wi = new MdsWaveInterface(main_scope.db, main_scope.def_values);
-//	    wave.wi.is_image = image_b.getState();
+//	    wave.wi.is_image = image_b.isSelected();
 	    wave.jScopeErase();
       }
 		
@@ -1866,44 +1771,39 @@ import java.util.Vector;
 	
       if(ob == apply || ob == ok)
       {
-	    applyWaveform();
-	    if(ob == ok) {
-	       signalList.reset();
-	       setVisible(false);
-	    }	
-      }
+            applyWaveform();
+            if(ob == ok) 
+            {
+                signalList.reset();
+                setVisible(false);
+            }
+	   }
  
-      if(ob == reset) {
-	    signalList.reset();
-	    putWindowSetup((MdsWaveInterface)wave.wi); 	
+      if(ob == reset) 
+      {
+	        signalList.reset();
+	        putWindowSetup((MdsWaveInterface)wave.wi); 	
       }
       
       if(ob == error && y_expr.getText().trim().length() != 0)
       {
-	    update();
-	    signalList.updateError();
-	    error_w.pack();
-	    error_w.setPosition(this);
-	    error_w.show();
+	        updateDataSetup();
+	        signalList.updateError();
+	        error_w.setLocationRelativeTo(this);
+	        error_w.show();
       }
       
       if(ob == expand)
       {	
-	    expand_expr.setExpressionString(x_expr.getText(), y_expr.getText());
-	    expand_expr.pack();
-	    expand_expr.setPosition(this);
-	    expand_expr.show();
-      }
-      
-      
-//      if(ob == x_browser)
-//	    browse_x_w.Show();
-	
-//      if(ob == y_browser)
-//	    browse_y_w.Show();
-	
+	        expand_expr.setExpressionString(x_expr.getText(), y_expr.getText());
+	        expand_expr.setLocationRelativeTo(this);
+	        expand_expr.show();
+      }	
    }
 
+   public void keyReleased(KeyEvent e){}
+   public void keyTyped(KeyEvent e){}
+   
    public void keyPressed(KeyEvent e)
    {
       Object ob = e.getSource();
@@ -1916,7 +1816,7 @@ import java.util.Vector;
      if(key == KeyEvent.VK_ENTER)
      { 
 	    if(ob == y_expr || ob == x_expr || ob == shot || ob == experiment || ob == signal_label) {
-	      update();
+	      updateDataSetup();
         } 
      }
       
@@ -1934,47 +1834,44 @@ import java.util.Vector;
       } 
    }
    
-   private void  defaultButtonOperation(TextField text, boolean state, String val)
+   private void  defaultButtonOperation(JTextField text, boolean state, String val)
    {
-	if(state) {
-	    text.setForeground(Color.blue);
-	    text.setEditable(false);
-	} else {
-	    text.setForeground(Color.black);		
-	    text.setEditable(true);
-	}   
-	if(val != null && val.trim().length() != 0)	    
-	    text.setText(val);
-	else 
-	    text.setText("");
+	    if(state) {
+	        text.setForeground(Color.blue);
+	        text.setEditable(false);
+	    } else {
+	        text.setForeground(Color.black);		
+	        text.setEditable(true);
+	    }   
+	    if(val != null && val.trim().length() != 0)	    
+	        text.setText(val);
+	    else 
+	        text.setText("");
    }
    
    private void putShotValue(boolean def_flag)
-   {
-    
-    if(def_flag)
-        wi.defaults |= (1 << MdsWaveInterface.B_shot);
-    else
-        wi.defaults &= ~(1 << MdsWaveInterface.B_shot);
-    
-	//switch(main_scope.getUsedShotIdx(def_flag))
-	switch(wi.GetShotIdx())
+   {    
+        if(def_flag)
+            wi.defaults |= (1 << MdsWaveInterface.B_shot);
+        else
+            wi.defaults &= ~(1 << MdsWaveInterface.B_shot);
+        
+	    switch(wi.GetShotIdx())
         {
-		case 0:  
-		    shot.setForeground(Color.black);
-		    shot.setEditable(true);
-		break;
-		case 1: 
-		    shot.setForeground(Color.blue);
-		    shot.setEditable(false);
-		break;
-		case 2:
-		    shot.setForeground(Color.red);
-		    shot.setEditable(false);
-		break;
-	    }
-//	    shot.setText(main_scope.getUsedShot(def_flag, wi));
-	    shot.setText(wi.GetUsedShot());	 
+		    case 0:  
+		        shot.setForeground(Color.black);
+		        shot.setEditable(true);
+		    break;
+		    case 1: 
+		        shot.setForeground(Color.blue);
+		        shot.setEditable(false);
+		    break;
+		    case 2:
+		        shot.setForeground(Color.red);
+		        shot.setEditable(false);
+		    break;
+        }
+        shot.setText(wi.GetUsedShot());	 
    }
 
    private void  DefaultButtonChange(Object ob)
@@ -1983,51 +1880,46 @@ import java.util.Vector;
 	boolean def_flag;
    
 	if(ob == title_b)
-	    defaultButtonOperation(title, def_flag = title_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_title, def_flag));
+	    defaultButtonOperation(title, def_flag = title_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_title, def_flag));
     if(ob == shot_b) 
-	    putShotValue(shot_b.getState());
+	    putShotValue(shot_b.isSelected());
 	if(ob == experiment_b)
-	    defaultButtonOperation(experiment, def_flag = experiment_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_exp, def_flag));
+	    defaultButtonOperation(experiment, def_flag = experiment_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_exp, def_flag));
 	if(ob == upd_event_b)
-	    defaultButtonOperation(upd_event, def_flag = upd_event_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_event, def_flag));
+	    defaultButtonOperation(upd_event, def_flag = upd_event_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_event, def_flag));
 	if(ob == def_node_b)
-	    defaultButtonOperation(def_node, def_flag = def_node_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_default_node, def_flag));
+	    defaultButtonOperation(def_node, def_flag = def_node_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_default_node, def_flag));
 	if(ob == x_max_b)
-	    defaultButtonOperation(x_max, def_flag = x_max_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
+	    defaultButtonOperation(x_max, def_flag = x_max_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
 	if(ob == x_min_b)
-	    defaultButtonOperation(x_min, def_flag = x_min_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
+	    defaultButtonOperation(x_min, def_flag = x_min_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
 	if(ob == time_max_b)
-	    defaultButtonOperation(time_max, def_flag = time_max_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
+	    defaultButtonOperation(time_max, def_flag = time_max_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
 	if(ob == time_min_b)
-	    defaultButtonOperation(time_min, def_flag = time_min_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
+	    defaultButtonOperation(time_min, def_flag = time_min_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
 	if(ob == x_label_b)
-	    defaultButtonOperation(x_label, def_flag = x_label_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_label, def_flag));
+	    defaultButtonOperation(x_label, def_flag = x_label_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_label, def_flag));
 	if(ob == y_max_b)
-	    defaultButtonOperation(y_max, def_flag = y_max_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_y_max, def_flag));
+	    defaultButtonOperation(y_max, def_flag = y_max_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_y_max, def_flag));
 	if(ob == y_min_b)
-	    defaultButtonOperation(y_min, def_flag = y_min_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_y_min, def_flag));
+	    defaultButtonOperation(y_min, def_flag = y_min_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_y_min, def_flag));
 	if(ob == y_label_b)
-	    defaultButtonOperation(y_label, def_flag = y_label_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_y_label, def_flag));
-
+	    defaultButtonOperation(y_label, def_flag = y_label_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_y_label, def_flag));
    }
 
    public void itemStateChanged(ItemEvent e)
    {
 	    Object ob = e.getSource();
-	
-
-	    if(ob instanceof Checkbox)
+	    if(ob instanceof JCheckBox)
 	    {
 	        if(ob == image_b)
             {
                 eraseForm();
-                setImageDialog(image_b.getState());
+                setImageDialog(image_b.isSelected());
                 return;
             }
-
 	        DefaultButtonChange(ob);
         }
-	    
     }   
 }
 

@@ -199,7 +199,7 @@ public class Signal
     /**
      * Signal name
      */
-    protected String  name = "Unnamed";
+    protected String  name;
 
     /**
      * Signal marker
@@ -301,7 +301,7 @@ public class Signal
     public Signal(float _x[], float _y[], String name)
     {
         this(_x, _y);
-        setName(name);
+	setName(new String(name));
     }	
 
     /**
@@ -591,20 +591,21 @@ public class Signal
     
     public float getTime(){return curr_time_xy_plot;}
     public float getXData(){return curr_data_yt_plot;}
+    public int   getNumPoints(){return n_points;}
 
     public void setTime(float curr_time_xy_plot){this.curr_time_xy_plot = curr_time_xy_plot;}
     public void setXData(float curr_data_yt_plot){this.curr_data_yt_plot = curr_data_yt_plot;}
 
-    public void showXY(float t)
+    public void showXY(int mode, float t)
     {        
-        if(curr_time_xy_plot == t) return;
+        if(curr_time_xy_plot == t && mode == this.mode ) return;
         int i = getArrayIndex(time, t);
-        showXY(i);
+        showXY(mode, i);
     }
 
-    public void showXY(int idx)
+    public void showXY(int mode , int idx)
     {        
-        if(idx >= time.length || idx == curr_time_xy_idx) return;
+        if((idx >= time.length || idx == curr_time_xy_idx) && mode == this.mode ) return;
 
         curr_time_xy_plot = time[idx];
         curr_time_xy_idx = idx;
@@ -707,7 +708,7 @@ public class Signal
         {
            int idx = curr_time_xy_idx;
            idx = (idx + 1) % time.length;
-           showXY(idx);
+           showXY(mode, idx);
         }
     }
     
@@ -717,7 +718,7 @@ public class Signal
         {
            int idx = curr_time_xy_idx - 1;
            if(idx < 0) idx = time.length - 1;
-           showXY(idx);
+           showXY(mode, idx);
         }
     }
 
@@ -763,7 +764,10 @@ public class Signal
             break;
             case MODE_XY:
             case MODE_YX:
-                setMode(mode, time[0]);
+                float v = time[0];
+                if(!Float.isNaN(curr_time_xy_plot))
+                    v = curr_time_xy_plot;
+                setMode(mode, v);
             break;
         }
     }
@@ -772,7 +776,7 @@ public class Signal
     {
         if(type == TYPE_1D)
             return;
-        this.mode = mode;
+                
         switch(mode)
         {
             case MODE_YTIME:
@@ -780,10 +784,11 @@ public class Signal
             break;
             case MODE_YX:
             case MODE_XY:
-                showXY(value);
+                showXY(mode, value);
             break;
         }
-    }
+        this.mode = mode;
+}
 
     /**
      * Sets all signal attributs.
@@ -800,7 +805,7 @@ public class Signal
 	    this.marker_step = marker_step;
 	    this.interpolate = interpolate;
 	    this.color_idx = color_idx;
-		this.name = name;
+	    this.name = new String(name);
     }
 
     /**
@@ -869,7 +874,11 @@ public class Signal
      * 
      * @param name signal name
      */
-    public void setName(String name){this.name = name;}
+    public void setName(String name)
+    {
+	if(name != null && name.length() != 0)
+	    this.name = new String(name);
+    }
 
     /**
      * Get marker type.
@@ -884,7 +893,12 @@ public class Signal
      * 
      * @return marker step
      */
-    public int getMarkerStep(){return marker_step;}
+    public int getMarkerStep()
+    {
+	    if(marker == POINT)
+	            return 1;
+        return marker_step;
+    }
 
     /**
      * Get interpolate flag
@@ -1108,6 +1122,19 @@ public class Signal
 	  
     }
 
+
+    public void setAttributes(Signal s)
+    {
+        this.color = s.getColor();
+        this.color_idx = s.getColorIdx();
+        this.gain = s.getGain();
+        this.interpolate = s.getInterpolate();
+        this.marker = s.getMarker();
+        this.marker_step = s.getMarkerStep();
+        this.offset = s.getOffset();
+        this.name = s.getName();
+    }
+
     /**
      * Add a asymmetric error bar.
      * 
@@ -1307,7 +1334,13 @@ public class Signal
     {
 	AutoscaleX();
 	AutoscaleY();
-    }	 
+    }
+    
+    private boolean find_NaN = false;
+    public boolean findNaN()
+    {
+        return find_NaN;
+    }
 
     /**
      * Return index of nearest signal point to aurgumet 
@@ -1358,12 +1391,22 @@ public class Signal
 
         min_idx = 0;
         min_dist = Double.MAX_VALUE;
-	    for( i = 0;  i < n_points - 1; i++)
+        find_NaN = false;
+	for( i = 0;  i < n_points - 1; i++)
         {
-            if(curr_x > x[i] && curr_x < x[i + 1] || curr_x < x[i] && curr_x > x[i + 1])
+            if(Float.isNaN(y[i]))
             {
-	            curr_dist = (curr_x - x[i])*(curr_x - x[i]) + (curr_y - y[i])*(curr_y - y[i]) + 
-	                        (curr_x - x[i+1])*(curr_x - x[i+1]) + (curr_y - y[i+1])*(curr_y - y[i+1]);
+                find_NaN = true;
+                continue;
+            }
+            
+            if(curr_x > x[i] && curr_x < x[i + 1] || curr_x < x[i] && curr_x > x[i + 1] 
+            || x[i] == x[i + 1])
+            {
+	            curr_dist = (curr_x - x[i])*(curr_x - x[i]) + (curr_y - y[i])*(curr_y - y[i]);
+                //Patch to elaborate strange RFX signal (roprand bar error signal)
+	            if(x[i] != x[i+1] && !Float.isNaN(y[i + 1])) 
+	                curr_dist += (curr_x - x[i+1])*(curr_x - x[i+1]) + (curr_y - y[i+1])*(curr_y - y[i+1]);
 	            if(curr_dist < min_dist)
 	            {
 	                min_dist = curr_dist;

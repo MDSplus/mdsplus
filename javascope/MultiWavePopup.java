@@ -1,4 +1,3 @@
-import java.awt.CheckboxMenuItem;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -6,34 +5,36 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
-import java.awt.MenuItem;
-import java.awt.Panel;
-import java.awt.TextField;
-import java.awt.Label;
-import java.awt.Menu;
-import java.awt.CheckboxMenuItem;
+import javax.swing.JMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JCheckBoxMenuItem;
 
 
 
 public class MultiWavePopup extends WavePopup {
 	protected MultiWaveform   wave = null;
-	protected MenuItem legend, remove_legend;
-    protected Menu signalList;
+	protected JMenuItem legend, remove_legend;
+    protected JMenu signalList;
 	
     public MultiWavePopup()
     {
         super();
         
-	    this.insert(legend = new MenuItem("Position legend"), 0);
+	    insert(legend = new JMenuItem("Position legend"), 0);
 	    legend.addActionListener(new ActionListener()
 	        {
                 public void actionPerformed(ActionEvent e)
 	            {
-	                PositionLegend(new Point(curr_x, curr_y));	    
+	                if(!wave.isFixedLegend() || !wave.IsShowLegend())
+	                    PositionLegend(new Point(curr_x, curr_y));
+	                else
+	                  if(wave.isFixedLegend())
+	                    RemoveLegend();    
 	            }
 	        });
 	    legend.setEnabled(false);
-        insert(remove_legend = new MenuItem("Remove legend"), 1);
+        //insert(remove_legend = new JMenuItem("Remove legend"), 1);
+        remove_legend = new JMenuItem("Remove legend");
 	    remove_legend.addActionListener(new ActionListener()
 	        {
                 public void actionPerformed(ActionEvent e)
@@ -43,7 +44,8 @@ public class MultiWavePopup extends WavePopup {
 	        });
 	    remove_legend.setEnabled(false);
 
-	    insert(signalList = new Menu("Signals"), 2);
+	    //insert(signalList = new Menu("Signals"), 2);
+	    signalList = new JMenu("Signals");
 	    signalList.setEnabled(false);
 
         
@@ -65,22 +67,27 @@ public class MultiWavePopup extends WavePopup {
 	    super.SetMenuItem(is_image);
         if(!is_image)
         {
-	       insert(legend, 0);	
-           insert(remove_legend, 1);
-           insert(signalList, 2);
+	       insert(legend, 0);
+	       if(wave.isFixedLegend())
+	       {
+             insert(signalList, 1);
+             legend.setText("Show Legend");
+           } else {
+             insert(remove_legend, 1);
+             insert(signalList, 2);
+           }
         }
 	}
 	
 	protected void SetSignalMenu()
 	{
 	    super.SetSignalMenu();
-        if(wave.GetSignalCount() == 0)
+        if(wave.GetShowSignalCount() == 0)
         {
 	       legend.setEnabled(false);
            remove_legend.setEnabled(false); 
            signalList.setEnabled(false); 
         }
-	    
 	}
 		
 	protected void InitOptionMenu()
@@ -95,7 +102,7 @@ public class MultiWavePopup extends WavePopup {
                 return;
         
             boolean state = (wave.mode == Waveform.MODE_POINT || 
-                              wave.GetSignalCount() == 1);
+                              wave.GetShowSignalCount() == 1);
             
             markerList.setEnabled(state);
             colorList.setEnabled(state);	
@@ -103,29 +110,29 @@ public class MultiWavePopup extends WavePopup {
             set_point.setEnabled(wave.mode == Waveform.MODE_POINT);
             
             if(state) {
-                if(wave.GetSignalCount() == 1)
+                if(wave.GetShowSignalCount() == 1)
                     sig_idx = 0;
                 else
-                    sig_idx = wave.PointSignalIndex();
+                    sig_idx = wave.GetSelectedSignal();
                     
                 interpolate_f.setState(wave.GetInterpolate(sig_idx));
                 boolean state_m = state && (wave.GetMarker(sig_idx) != Signal.NONE 
                                         && wave.GetMarker(sig_idx) != Signal.POINT);
                 markerStep.setEnabled(state_m);
-                SelectListItem(markerList, wave.GetMarker(sig_idx));
+                SelectListItem(markerList_bg, wave.GetMarker(sig_idx));
 
                 int st;
                 for(st = 0; st < Signal.markerStepList.length; st++)
                       if(Signal.markerStepList[st] == wave.GetMarkerStep(sig_idx))
                         break;
-                SelectListItem(markerStep, st);
+                SelectListItem(markerStep_bg, st);
 
-                SelectListItem(colorList, wave.GetColorIdx(sig_idx));
+                SelectListItem(colorList_bg, wave.GetColorIdx(sig_idx));
 
             } else
                 markerStep.setEnabled(false);
                         
-            CheckboxMenuItem ob;
+            JCheckBoxMenuItem ob;
             if(s_name != null)
             {
                 signalList.removeAll();        
@@ -133,7 +140,7 @@ public class MultiWavePopup extends WavePopup {
 	            legend.setEnabled(s_name.length != 0);
                 for(int i = 0; i < s_name.length; i++)
                 {
-                    signalList.add(ob = new CheckboxMenuItem(s_name[i]));
+                    signalList.add(ob = new JCheckBoxMenuItem(s_name[i]));
                     ob.setState(s_state[i]);
 	                ob.addItemListener(new ItemListener()
 	                {
@@ -141,16 +148,28 @@ public class MultiWavePopup extends WavePopup {
 	                    {
 	                        Object target = e.getSource();
 
-	                        SetSignalState(((CheckboxMenuItem)target).getLabel(), 
-	                                        ((CheckboxMenuItem)target).getState());
+	                        SetSignalState(((JCheckBoxMenuItem)target).getText(), 
+	                                        ((JCheckBoxMenuItem)target).getState());
                             wave.Repaint(true);
 	                    }
 	                });
                 }
             }
            
-           if(wave.IsShowLegend())
-            	remove_legend.setEnabled(true);
+           if(wave.isFixedLegend())
+           {
+                if(wave.IsShowLegend())
+                    legend.setText("Hide Legend");
+                else
+                    legend.setText("Show Legend");
+           } else {
+                legend.setText("Position Legend");
+                if(wave.IsShowLegend())
+            	    remove_legend.setEnabled(true);
+                else
+            	    remove_legend.setEnabled(false);
+           }
+           
 	}
 	
 
@@ -163,7 +182,7 @@ public class MultiWavePopup extends WavePopup {
 
     protected void SetInterpolate(boolean state)
     {
-        wave.SetInterpolate(wave.PointSignalIndex(), state);
+        wave.SetInterpolate(wave.GetSelectedSignal(), state);
     }
 
     public void SetSignalState(String label, boolean state)
@@ -171,34 +190,22 @@ public class MultiWavePopup extends WavePopup {
         wave.SetSignalState(label, state);
     }
 
-    public boolean SetMarker(int idx)
+    public void SetMarker(int idx)
     {
-        if(wave.GetMarker(wave.PointSignalIndex()) != idx)
-        {
-            wave.SetMarker(wave.PointSignalIndex(), idx);
-            return false;
-        }
-	    return true;
+        if(wave.GetMarker(wave.GetSelectedSignal()) != idx)
+            wave.SetMarker(wave.GetSelectedSignal(), idx);
     }
 
-    public boolean SetMarkerStep(int step)
+    public void SetMarkerStep(int step)
     {
-        if(wave.GetMarkerStep(wave.PointSignalIndex()) != step)
-        {
-            wave.SetMarkerStep(wave.PointSignalIndex(), step);
-            return false;
-        }
-	    return true;
+        if(wave.GetMarkerStep(wave.GetSelectedSignal()) != step)
+            wave.SetMarkerStep(wave.GetSelectedSignal(), step);
     }
 
-    public boolean SetColor(int idx)
+    public void SetColor(int idx)
     {
-        if(wave.GetColorIdx(wave.PointSignalIndex()) != idx)
-        {
-            wave.SetColorIdx(wave.PointSignalIndex(), idx);
-            return false;
-        }
-	    return true;
+        if(wave.GetColorIdx(wave.GetSelectedSignal()) != idx)
+            wave.SetColorIdx(wave.GetSelectedSignal(), idx);
     }
 
 }

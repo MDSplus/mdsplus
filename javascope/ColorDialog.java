@@ -3,18 +3,23 @@ import java.awt.event.*;
 import java.lang.*;
 import java.util.Vector;
 import java.util.ResourceBundle;
+import java.util.PropertyResourceBundle;
 import java.util.MissingResourceException;
+import java.util.Hashtable;
 import java.io.*;
+import javax.swing.*;
+import javax.swing.event.*;
 
-
-class ColorDialog extends ScopePositionDialog  {
-    List colorList;
-    TextField colorName;
+class ColorDialog extends JDialog implements ActionListener, ItemListener
+{
+    JList colorList;
+    DefaultListModel listModel = new DefaultListModel();
+    JTextField colorName;
     Choice color;
-    Slider red, green, blue;
-    Button ok, reset, cancel, add, erase;
+    JSlider red, green, blue;
+    JButton ok, reset, cancel, add, erase;
     jScope main_scope;
-    Label label;
+    JLabel label;
     Canvas color_test;
     int red_i, green_i, blue_i;
     boolean changed = false;
@@ -45,32 +50,42 @@ class ColorDialog extends ScopePositionDialog  {
 
 	    main_scope = (jScope)dw;
 	    
-	    GetPropertiesValue();
+        if(jScope.IsNewJVMVersion())
+	        GetPropertiesValue();
+	    else
+            GetPropertiesValue_VM11();
 	    
         GridBagConstraints c = new GridBagConstraints();
         GridBagLayout gridbag = new GridBagLayout();
-        setLayout(gridbag);        
+        getContentPane().setLayout(gridbag);        
 
 	    c.insets = new Insets(4, 4, 4, 4);
         c.fill = GridBagConstraints.BOTH;
 
         c.gridwidth = GridBagConstraints.REMAINDER;
-	    label = new Label("Color list customization");
+	    label = new JLabel("Color list customization");
         gridbag.setConstraints(label, c);
-        add(label);
+        getContentPane().add(label);
 
 //	    Panel p0 = new Panel();
 //      p0.setLayout(new FlowLayout(FlowLayout.LEFT));
 				
 	    c.gridwidth = GridBagConstraints.BOTH;
-	    label = new Label("Name");
+	    label = new JLabel("Name");
         gridbag.setConstraints(label, c);
-        add(label);
+        getContentPane().add(label);
     		
-	    colorName = new TextField(15);
-	    colorName.addKeyListener(this);			
+	    colorName = new JTextField(15);
+	    colorName.addKeyListener(
+	        new KeyAdapter()
+	        {
+                public void keyPressed(KeyEvent e)
+                {
+                    keyPressedAction(e);
+	            }
+	        });			
         gridbag.setConstraints(colorName, c);
-        add(colorName);
+        getContentPane().add(colorName);
 
         if(GetNumColor() == 0)
             ColorSetItems(Waveform.COLOR_NAME, Waveform.COLOR_SET);
@@ -85,88 +100,153 @@ class ColorDialog extends ScopePositionDialog  {
 
 	    color.addItemListener(this);
 	    gridbag.setConstraints(color, c);
-	    add(color);	
+	    getContentPane().add(color);	
 
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    color_test = new Canvas();
 //	color_test.setBounds(10,10,10,10);
 	    color_test.setBackground(Color.black);	      	      
         gridbag.setConstraints(color_test, c);
-	    add(color_test);
+	    getContentPane().add(color_test);
 	
 
 	    c.gridwidth = 2;
 	    c.gridheight = 5;
-	    colorList = new List(12, false);
-	    colorList.addItemListener(this);
-	    colorList.addKeyListener(this);			
-        gridbag.setConstraints(colorList, c);
-        add(colorList);
+	    colorList = new JList(listModel);
+	    JScrollPane scrollColorList = new JScrollPane(colorList);
+        colorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        colorList.addListSelectionListener(
+	        new ListSelectionListener()
+	        {
+                public void valueChanged(ListSelectionEvent e)
+                {
+                    int color_idx = ((JList)e.getSource()).getSelectedIndex();
+	                Item c_item = (Item)color_set.elementAt(color_idx);
+	                ColorDialog.this.SetSliderToColor(c_item.color);
+	                ColorDialog.this.colorName.setText(c_item.name);    	  
+                }
+	        });
+	    colorList.addKeyListener(
+	        new KeyAdapter()
+	        {
+                public void keyPressed(KeyEvent e)
+                {
+                    keyPressedAction(e);
+	            }
+	        });				
+        gridbag.setConstraints(scrollColorList, c);
+        getContentPane().add(scrollColorList);
 
-	    label = new Label("Red");
+	    label = new JLabel("Red");
+	    //label.setForeground(Color.red);
 	    c.gridheight = 1;
         gridbag.setConstraints(label, c);
-        add(label);
+        getContentPane().add(label);
+
+        Hashtable labelTable = new Hashtable();
+        labelTable.put( new Integer( 0 ), new JLabel("0") );
+        labelTable.put( new Integer( 64 ), new JLabel("64") );
+        labelTable.put( new Integer( 128 ), new JLabel("128") );
+        labelTable.put( new Integer( 192 ), new JLabel("192") );
+        labelTable.put( new Integer( 255 ), new JLabel("255") );
 				
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.gridheight = 1;
-	    red  = new Slider(Slider.HORIZONTAL, Slider.POS_LABEL_UP, 0, 0, 255);
-	    red.addAdjustmentListener(this);
+	    red  = new JSlider(SwingConstants.HORIZONTAL, 0, 255, 0);
+        red.setMinorTickSpacing(8);
+        red.setPaintTicks(true);
+        red.setPaintLabels(true);
+        red.setLabelTable( labelTable );
+        red.setBorder(BorderFactory.createEmptyBorder(0,0,20,0));
+	    red.addChangeListener(
+	        new ChangeListener()
+	        {
+	            public void stateChanged(ChangeEvent e)
+	            {
+                    ColorDialog.this.colorValueChanged(e);
+	            }
+	        });
         gridbag.setConstraints(red, c);
-        add(red);
+        getContentPane().add(red);
 
 	    c.gridwidth = GridBagConstraints.BOTH;
-	    label = new Label("Green");
+	    label = new JLabel("Green");
+	    //label.setForeground(Color.green);
 	    c.gridheight = 1;
         gridbag.setConstraints(label, c);
-        add(label);
+        getContentPane().add(label);
 				
 	    c.gridwidth = GridBagConstraints.REMAINDER;
-    	green = new Slider(Slider.HORIZONTAL, Slider.POS_LABEL_UP, 0, 0, 255);
-	    green.addAdjustmentListener(this);
+    	green = new JSlider(SwingConstants.HORIZONTAL, 0, 255, 0);
+        green.setMinorTickSpacing(8);
+        green.setPaintTicks(true);
+        green.setPaintLabels(true);
+        green.setLabelTable( labelTable );
+        green.setBorder(BorderFactory.createEmptyBorder(0,0,20,0));
+	    green.addChangeListener(
+	        new ChangeListener()
+	        {
+	            public void stateChanged(ChangeEvent e)
+	            {
+                    ColorDialog.this.colorValueChanged(e);
+	            }
+	        });
         gridbag.setConstraints(green, c);
-        add(green);
+        getContentPane().add(green);
 
 	    c.gridwidth = GridBagConstraints.BOTH;
-	    label = new Label("Blue");
+	    label = new JLabel("Blue");
+	    //label.setForeground(Color.blue);
 	    c.gridheight = 1;
         gridbag.setConstraints(label, c);
-        add(label);
-		
+        getContentPane().add(label);
+        		
 	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    blue  = new Slider(Slider.HORIZONTAL, Slider.POS_LABEL_UP, 0, 0, 255);
-	    blue.addAdjustmentListener(this);
+	    blue  = new JSlider(SwingConstants.HORIZONTAL, 0, 255, 0);
+        blue.setMinorTickSpacing(8);
+        blue.setPaintTicks(true);
+        blue.setPaintLabels(true);
+        blue.setLabelTable( labelTable );
+        blue.setBorder(BorderFactory.createEmptyBorder(0,0,20,0));
+	    blue.addChangeListener(
+	        new ChangeListener()
+	        {
+	            public void stateChanged(ChangeEvent e)
+	            {
+                    ColorDialog.this.colorValueChanged(e);
+	            }
+	        });
         gridbag.setConstraints(blue, c);
-        add(blue);
+        getContentPane().add(blue);
 	
-	    Panel p1 = new Panel();
+	    JPanel p1 = new JPanel();
         p1.setLayout(new FlowLayout(FlowLayout.CENTER));
     	
-	    ok = new Button("Ok");
+	    ok = new JButton("Ok");
 	    ok.addActionListener(this);	
         p1.add(ok);
 
-    	add = new Button("Add");
+    	add = new JButton("Add");
 	    add.addActionListener(this);	
         p1.add(add);
 
-	    erase = new Button("Erase");
+	    erase = new JButton("Erase");
 	    erase.addActionListener(this);	
         p1.add(erase);
 
-	    reset = new Button("Reset");
+	    reset = new JButton("Reset");
 	    reset.addActionListener(this);	
         p1.add(reset);
 				    		
 
-	    cancel = new Button("Cancel");
+	    cancel = new JButton("Cancel");
 	    cancel.addActionListener(this);	
         p1.add(cancel);
 
     	c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(p1, c);
-	    add(p1);
-	 
+	    getContentPane().add(p1);
+        pack();	 
      }
  
      
@@ -178,27 +258,35 @@ class ColorDialog extends ScopePositionDialog  {
        
        if(rb == null) return;
        try {
-        
-       //prop = rb.getString("jScope.reversed");
-       //if(prop != null && ( prop.equals("true") || prop.equals("false")))
-       //{
-       //  prop_reversed = new Boolean(prop).booleanValue();
-       //}
- 
-       while(true) {
-           prop = rb.getString("jScope.item_color_"+i);
-           String name = new String(prop.substring(0, len = prop.indexOf(",")));
-		   Color cr = StringToColor(new String(prop.substring(len + 2, prop.length())));
-		   InsertItemAt(name, cr, i);
-           i++;
-       }
-
-       
+            while(true) {
+                prop = (String)rb.getString("jScope.item_color_"+i);
+                String name = new String(prop.substring(0, len = prop.indexOf(",")));
+		        Color cr = StringToColor(new String(prop.substring(len + 2, prop.length())));
+		        InsertItemAt(name, cr, i);
+                i++;
+            }
        } catch(MissingResourceException e){}
        
     }     
      
      
+    private void GetPropertiesValue_VM11()
+    {
+       PropertyResourceBundle prb = main_scope.prb;
+       String prop;
+       int i = 0, len;
+       
+       if(prb == null) return;
+ 
+       while(true) {
+           prop = (String)prb.handleGetObject("jScope.item_color_"+i);
+           if(prop == null) break;
+           String name = new String(prop.substring(0, len = prop.indexOf(",")));
+		   Color cr = StringToColor(new String(prop.substring(len + 2, prop.length())));
+		   InsertItemAt(name, cr, i);
+           i++;
+       }
+    }     
      
     private Vector CopyColorItemsVector(Vector in)
     {
@@ -213,9 +301,9 @@ class ColorDialog extends ScopePositionDialog  {
 	    setColorItemToList();
 //	color_set_clone = (Vector)color_set.clone();
 	    color_set_clone = CopyColorItemsVector(color_set);
-	    pack();
-	    setPosition(f);
-    	show();	
+	   
+	    this.setLocationRelativeTo(f);
+    	setVisible(true);	
     }
          
     
@@ -323,22 +411,13 @@ class ColorDialog extends ScopePositionDialog  {
     public void itemStateChanged(ItemEvent e)
     {
     	Object ob = e.getSource();
-	
-	if(ob == colorList)
-	{
-        int color_idx = colorList.getSelectedIndex();
-	    Item c_item = (Item)color_set.elementAt(color_idx);
-	    SetSliderToColor(c_item.color);
-	    colorName.setText(c_item.name);    	  
-	}
-	
-	if(ob == color)
-	{
-        int color_idx = color.getSelectedIndex();
-	    colorName.setText(Waveform.COLOR_NAME[color_idx]);
-	    SetSliderToColor(Waveform.COLOR_SET[color_idx]);
-	    
-	}
+	    if(ob == color)
+	    {
+            int color_idx = color.getSelectedIndex();
+	        colorName.setText(Waveform.COLOR_NAME[color_idx]);
+	        SetSliderToColor(Waveform.COLOR_SET[color_idx]);
+    	    
+	    }
     }
     
     public void removeAllColorItems()
@@ -385,30 +464,31 @@ class ColorDialog extends ScopePositionDialog  {
         int i;
 	    if(name == null || name.length() == 0)
 	        return;
+	    
     	Item c_item = new Item(name, color);
 	    String c_name[] = GetColorsName();
-	        for(i = 0; c_name != null && i < c_name.length && !c_name[i].equals(name); i++);
+	    for(i = 0; c_name != null && i < c_name.length && !c_name[i].equals(name); i++);
 	    if(c_name == null || i == c_name.length) {
 	        color_set.addElement(c_item);
-	        colorList.add(name);
+	        listModel.addElement(name);
 	    }	    
 	    else
 	        color_set.setElementAt(c_item, i);	    	
    }
     
-   public void keyPressed(KeyEvent e)
+   public void keyPressedAction(KeyEvent e)
    {
       Object ob = e.getSource();
       char key  = e.getKeyChar();
         
-     if(key == KeyEvent.CHAR_UNDEFINED)
-	 return;		  	      	
+      if(key == KeyEvent.CHAR_UNDEFINED)
+	    return;		  	      	
 
       if(key == KeyEvent.VK_DELETE)
       {
 	    if(ob == colorList) {
 	        int idx = colorList.getSelectedIndex();
-            colorList.remove(idx);
+            listModel.remove(idx);
 	        color_set.removeElementAt(idx);
 	   	    colorName.setText("");
 	    }
@@ -423,15 +503,15 @@ class ColorDialog extends ScopePositionDialog  {
         
     public void setColorItemToList()
     {
-	if(colorList.getItemCount() > 0)    
-	    colorList.removeAll();
-	for(int i = 0; i < color_set.size(); i++)
-	{	    
-	    colorList.add(((Item)color_set.elementAt(i)).name);
-	}   
+	    if(listModel.getSize() > 0)    
+	        listModel.clear();
+	    for(int i = 0; i < color_set.size(); i++)
+	    {	    
+	        listModel.addElement(((Item)color_set.elementAt(i)).name);
+	    }   
     }
     
-    public void adjustmentValueChanged(AdjustmentEvent e)
+    public void colorValueChanged(ChangeEvent e)
     {
 	    color_test.setBackground(getColor());
 	    color_test.repaint();	      	      
@@ -439,15 +519,15 @@ class ColorDialog extends ScopePositionDialog  {
     
     private Color StringToColor(String str)
     {
-	int pos;
-	String tmp = str.substring(str.indexOf("=") + 1, pos = str.indexOf(","));
-	int r = new Integer(tmp).intValue();
-	tmp = str.substring(pos + 3, pos = str.indexOf(",", pos + 1));
-	int g = new Integer(tmp).intValue();
-	tmp = str.substring(pos + 3, str.indexOf("]", pos + 1));
-	int b = new Integer(tmp).intValue();
-	int c = (r<<16 | g << 8 | b);
-	return(new Color(c));
+	    int pos;
+	    String tmp = str.substring(str.indexOf("=") + 1, pos = str.indexOf(","));
+	    int r = new Integer(tmp).intValue();
+	    tmp = str.substring(pos + 3, pos = str.indexOf(",", pos + 1));
+	    int g = new Integer(tmp).intValue();
+	    tmp = str.substring(pos + 3, str.indexOf("]", pos + 1));
+	    int b = new Integer(tmp).intValue();
+	    int c = (r<<16 | g << 8 | b);
+	    return(new Color(c));
     }
 
     
@@ -475,9 +555,13 @@ class ColorDialog extends ScopePositionDialog  {
 	    //in configuration file
 	    if(GetNumColor() == 0)
 	    {
-	        if(main_scope.rb != null)
+	        if(main_scope.rb != null || main_scope.prb != null)
 	        {
-	            GetPropertiesValue();
+	            if(main_scope.rb != null)
+	                GetPropertiesValue();
+	            else
+	                GetPropertiesValue_VM11();
+	            
 	        } else {
                 ColorSetItems(Waveform.COLOR_NAME, Waveform.COLOR_SET);
             }
@@ -498,53 +582,53 @@ class ColorDialog extends ScopePositionDialog  {
     }
     
  
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) 
+    {
 
-	Object ob = e.getSource();
-	int i;
-    
-	if (ob == ok)
-	{
-	    if(ob == ok) {
-		    color_set_clone = null;
-    		setVisible(false);
+	    Object ob = e.getSource();
+	    int i;
+        
+	    if (ob == ok)
+	    {
+	        if(ob == ok) {
+		        color_set_clone = null;
+    		    setVisible(false);
+	        }
+	        AddUpdateItem(colorName.getText(), getColor());	    	
+	        SetColorVector();
+            main_scope.UpdateColors();
+            main_scope.RepaintAllWaves();
+        }
+    	
+	    if(ob == add)
+	    {
+	        AddUpdateItem(colorName.getText(), getColor());	    	
 	    }
-	    AddUpdateItem(colorName.getText(), getColor());	    	
-	    SetColorVector();
-        main_scope.UpdateColors();
-        main_scope.RepaintAllWaves();
-    }
-	
-	if(ob == add)
-	{
-	    AddUpdateItem(colorName.getText(), getColor());	    	
-	}
 
-	if(ob == erase)
-	{ 
-	    colorName.setText("");
-	    removeAllColorItems();
-	    if(colorList.getItemCount() > 0)    
-		    colorList.removeAll();
-		AddUpdateItem(Waveform.COLOR_NAME[0], Waveform.COLOR_SET[0]);
-	    SetColorVector();
-	}
-		
-	if (ob == reset)
-	{
-	    color_set = CopyColorItemsVector(color_set_clone);
-	    setColorItemToList();
-	    SetColorVector();
-	}  
+	    if(ob == erase)
+	    { 
+	        colorName.setText("");
+	        removeAllColorItems();
+	        if(listModel.getSize() > 0)    
+		        listModel.clear();
+		    AddUpdateItem(Waveform.COLOR_NAME[0], Waveform.COLOR_SET[0]);
+	        SetColorVector();
+	    }
+    		
+	    if (ob == reset)
+	    {
+	        color_set = CopyColorItemsVector(color_set_clone);
+	        setColorItemToList();
+	        SetColorVector();
+	    }  
 
-	if (ob == cancel)
-	{
-	    color_set = CopyColorItemsVector(color_set_clone);
-	    setColorItemToList();
-	    SetColorVector();
-	    color_set_clone = null;
-	    setVisible(false);
-	}
-	//main_scope.validate();
+	    if (ob == cancel)
+	    {
+	        color_set = CopyColorItemsVector(color_set_clone);
+	        setColorItemToList();
+	        SetColorVector();
+	        color_set_clone = null;
+	        setVisible(false);
+	    }
     }
 }

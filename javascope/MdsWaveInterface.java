@@ -20,21 +20,11 @@ class MdsWaveInterface extends WaveInterface {
     public boolean default_is_update = true;
     jScopeDefaultValues def_vals;
     
-    static int main_shots[];
-    static String main_shot_str;
-    public static boolean main_shot_evaluated = false;
-
-
-//    public MdsWaveInterface(DataProvider dp/*, WaveSetup c*/, jScopeDefaultValues def_vals)
-//    {
-//        super(dp);//, c);
-//        this.def_vals = def_vals;
-//    }
-
-    public MdsWaveInterface(DataProvider dp, jScopeDefaultValues def_vals)
+    public MdsWaveInterface(Waveform wave, DataProvider dp, jScopeDefaultValues def_vals)
     {
-        super(dp);//, null);
+        super(dp);
         setDefaultsValues(def_vals);
+        this.wave = wave;
     }
     
     public void setDefaultsValues(jScopeDefaultValues def_vals)
@@ -47,42 +37,42 @@ class MdsWaveInterface extends WaveInterface {
 
    public String GetDefaultValue(int i, boolean def_flag)
    {
-	String out = null;
-   
-	switch(i)
+	    String out = null;
+       
+	    switch(i)
         {
-	    case MdsWaveInterface.B_title:
-	      out = def_flag  ? def_vals.title_str : cin_title; break; 
-	    case MdsWaveInterface.B_shot:
-	      out  = def_flag ? def_vals.shot_str : cin_shot;break; 
-	    case MdsWaveInterface.B_exp:
-	      out =  def_flag ? def_vals.experiment_str : cexperiment;break; 
-	    case MdsWaveInterface.B_x_max:
-	        if(is_image)
-	            out  = def_flag ? def_vals.xmax : cin_timemax;
-	        else
-	            out  = def_flag ? def_vals.xmax : cin_xmax; 
-	    break;	    
-	    case MdsWaveInterface.B_x_min:
-	        if(is_image)
-	            out  = def_flag ? def_vals.xmin : cin_timemin;
-	        else
-	            out  = def_flag ? def_vals.xmin : cin_xmin; 
-	    break; 
-	    case MdsWaveInterface.B_x_label:
-	      out =  def_flag ? def_vals.xlabel : cin_xlabel;break; 
-	    case MdsWaveInterface.B_y_max:
-	      out =  def_flag ? def_vals.ymax : cin_ymax; break; 
-	    case MdsWaveInterface.B_y_min:
-	      out =  def_flag ? def_vals.ymin : cin_ymin; break; 
-	    case MdsWaveInterface.B_y_label:
-	      out =  def_flag ? def_vals.ylabel : cin_ylabel;break; 
-	    case MdsWaveInterface.B_event:
-	      out =  def_flag ? def_vals.upd_event_str : cin_upd_event;break; 
-	    case MdsWaveInterface.B_default_node:
-	      out =  def_flag ? def_vals.def_node_str : cin_def_node;break; 
-	}
-	return out;
+	        case MdsWaveInterface.B_title:
+	        out = def_flag  ? def_vals.title_str : cin_title; break; 
+	        case MdsWaveInterface.B_shot:
+	        out  = def_flag ? def_vals.shot_str : cin_shot;break; 
+	        case MdsWaveInterface.B_exp:
+	        out =  def_flag ? def_vals.experiment_str : cexperiment;break; 
+	        case MdsWaveInterface.B_x_max:
+	            if(is_image)
+	                out  = def_flag ? def_vals.xmax : cin_timemax;
+	            else
+	                out  = def_flag ? def_vals.xmax : cin_xmax; 
+	        break;	    
+	        case MdsWaveInterface.B_x_min:
+	            if(is_image)
+	                out  = def_flag ? def_vals.xmin : cin_timemin;
+	            else
+	                out  = def_flag ? def_vals.xmin : cin_xmin; 
+	        break; 
+	        case MdsWaveInterface.B_x_label:
+	        out =  def_flag ? def_vals.xlabel : cin_xlabel;break; 
+	        case MdsWaveInterface.B_y_max:
+	        out =  def_flag ? def_vals.ymax : cin_ymax; break; 
+	        case MdsWaveInterface.B_y_min:
+	        out =  def_flag ? def_vals.ymin : cin_ymin; break; 
+	        case MdsWaveInterface.B_y_label:
+	        out =  def_flag ? def_vals.ylabel : cin_ylabel;break; 
+	        case MdsWaveInterface.B_event:
+	        out =  def_flag ? def_vals.upd_event_str : cin_upd_event;break; 
+	        case MdsWaveInterface.B_default_node:
+	        out =  def_flag ? def_vals.def_node_str : cin_def_node;break; 
+	    }
+	    return out;
    } 
 
 
@@ -159,53 +149,19 @@ class MdsWaveInterface extends WaveInterface {
 	2 main scope defined shot
   */
   
-  public int GetShotIdx()
-  {  
-    if(UseDefaultShot())
-    {
-	    if(main_shot_str != null && main_shot_str.length() != 0)
-	    //if(main_shot != null && main_shot.length > 0)
-	        return 2;
-	    else
-	        return 1;
-    } else
-	    return 0;
-  }
-
-/*
-  public void SetMainShot(String main_shot_str, int main_shots[])
-  {
-    this.main_shot_str = main_shot_str;
-    this.main_shots = main_shots;
-  }
-*/
-    static void SetMainShot(String main_shot)
-    {
-        if(main_shot != null && main_shot_str == null || 
-            !(main_shot != null && main_shot.trim().equals(main_shot_str) && main_shot_evaluated))
+    public int GetShotIdx()
+    {  
+        String main_shot_str = ((jScopeWaveContainer)(wave.getParent())).getMainShotStr();
+        if(UseDefaultShot())
         {
-            main_shot_str = main_shot.trim();
-            main_shot_evaluated = false;
-        }
+	        if(main_shot_str != null && main_shot_str.length() != 0)
+	            return 2;
+	        else
+	            return 1;
+        } else
+	        return 0;
     }
     
-    static int[] GetMainShot(){return main_shots;}
-    
-    public int[] EvaluateMainShot() throws IOException//String main_shot_str)
-    {
-        if( main_shot_str != null && !main_shot_evaluated) 
-        {
-            main_shots = GetShotArray(main_shot_str);
-            if(error == null)
-            {
-                //this.main_shot_str = main_shot_str.trim();
-                main_shot_evaluated = true;
-            } else
-                main_shot_evaluated = false;
-        }
-        return main_shots;
-    }
-
   public String GetUsedShot()
   {
     String out = null;
@@ -214,10 +170,11 @@ class MdsWaveInterface extends WaveInterface {
 	{
 	    case 0: out = cin_shot; break;
 	    case 1: out = this.def_vals.shot_str;break;
-	    case 2: out = main_shot_str; break;
+	    case 2: out = ((jScopeWaveContainer)(wave.getParent())).getMainShotStr(); break;
 	}
 	return out;  
   }
+  
   
   public String Update() throws IOException
   {
@@ -226,25 +183,25 @@ class MdsWaveInterface extends WaveInterface {
         UpdateDefault();
      else {
         signals = null;
-        num_waves = 0;
      }
      return error;
   }
 
   public void UpdateShot() throws IOException
   {
-	int curr_shots[] = null, l = 0;
+	int curr_shots[] = null, l = 0, curr_num_shot;
   
     error = null;
     
     if(UseDefaultShot())
     {
+            String main_shot_str = ((jScopeWaveContainer)(wave.getParent())).getMainShotStr();
 	    if(main_shot_str != null && main_shot_str.length() != 0)
-	      if(!main_shot_evaluated)
-	        curr_shots =  EvaluateMainShot();
-	      else
-	        curr_shots = main_shots;
-	    else {
+	    {
+            curr_shots = ((jScopeWaveContainer)(wave.getParent())).getMainShots();
+            if(curr_shots == null)
+                error = "Main Shot evaluation error: " + ((jScopeWaveContainer)(wave.getParent())).getMainShotError(true);
+	    } else {
 	      if(def_vals.is_evaluated)
 	        curr_shots =  def_vals.shots;
 	      else 
@@ -261,31 +218,33 @@ class MdsWaveInterface extends WaveInterface {
 	  curr_shots = GetShotArray(cin_shot);
 	}
 	
+/*	
 	if(error != null)
 	    return;
+*/	
 	
-//	if((curr_shots == null || curr_shots[0] == UNDEF_SHOT )&& main_shots != null)
-//	    curr_shots = main_shots;
-  
-	if(curr_shots == null)// || curr_shots[0] == UNDEF_SHOT)
+	if(curr_shots == null)
 	{
-	    //curr_shots = new int[1];
-	    //curr_shots[0] = UNDEF_SHOT;
+	    curr_num_shot = 1;
 	    shots = null;
-	    //signals = null;
-	    return;
-	}
+	    if(num_shot == 0) return;
+	} else
+	    curr_num_shot = curr_shots.length;
+
+
   	
 	//Check current shot list and wave interface shot list
 	if(shots != null && shots.length == curr_shots.length)
+	{
 	    for(l = 0; l < curr_shots.length; l++)
 		if(curr_shots[l] != shots[l])
 		    break;
 		    
-	if(l == curr_shots.length)
-    {
-        shots = curr_shots;
-	    return;
+	    if(l == curr_shots.length)
+        {
+            shots = curr_shots;
+	        return;
+        }
     }
 	modified     = true;
 	
@@ -293,12 +252,12 @@ class MdsWaveInterface extends WaveInterface {
 	int num_expr;
 	if(num_shot == 0)
     {
-	    num_signal = num_waves * curr_shots.length;
+	    num_signal = num_waves * curr_num_shot;
 	    num_expr = num_waves;
     } 
     else 
     {
-	    num_signal = num_waves / num_shot * curr_shots.length;
+	    num_signal = num_waves / num_shot * curr_num_shot;
 	    num_expr = num_waves / num_shot;
     }
 
@@ -314,33 +273,40 @@ class MdsWaveInterface extends WaveInterface {
 	int[]     markers_step = new int[num_signal];
 	int[]     colors_idx   = new int[num_signal];
 	boolean[] interpolates = new boolean[num_signal];
-	int[]     shots        = new int[num_signal];				
+	int[]     shots = null;
+	if(curr_shots != null)
+	    shots = new int[num_signal];				
 
+    int sig_idx = (this.num_shot == 0) ? 1 : this.num_shot;
 	for(int i = 0, k = 0; i < num_expr; i++)      
 	{
-	    for(int j = 0; j < curr_shots.length; j++, k++)
+	    for(int j = 0; j < curr_num_shot; j++, k++)
 	    {
-		in_label[k]     = this.in_label[i * this.num_shot];
-		in_x[k]         = this.in_x[i * this.num_shot];
-		in_y[k]         = this.in_y[i * this.num_shot];
-		if(j < 	this.num_shot)
-		{	
-		    markers[k]	    = this.markers[i * this.num_shot + j];	  
-		    markers_step[k] = this.markers_step[i * this.num_shot + j];	  
-		    interpolates[k] = this.interpolates[i * this.num_shot + j];
-		    shots[k]        = curr_shots[j];
-		    in_up_err[k]    = this.in_up_err[i * this.num_shot + j];	    
-		    in_low_err[k]   = this.in_low_err[i * this.num_shot + j];	    
-		    colors_idx[k]   = this.colors_idx[i * this.num_shot + j];
-		} else {
-		    markers[k]	    = this.markers[i * this.num_shot];	  
-		    markers_step[k] = this.markers_step[i * this.num_shot];	  
-		    interpolates[k] = this.interpolates[i * this.num_shot];
-		    in_up_err[k]    = this.in_up_err[i * this.num_shot];	    
-		    in_low_err[k]   = this.in_low_err[i * this.num_shot];	    
-		    shots[k]        = curr_shots[j];
-		    colors_idx[k]   = k;
- 		}
+		    in_label[k]     = this.in_label[i * sig_idx];
+		    in_x[k]         = this.in_x[i * sig_idx];
+		    in_y[k]         = this.in_y[i * sig_idx];
+		    if(j < 	this.num_shot)
+		    {	
+		        markers[k]	    = this.markers[i * this.num_shot + j];	  
+		        markers_step[k] = this.markers_step[i * this.num_shot + j];	  
+		        interpolates[k] = this.interpolates[i * this.num_shot + j];
+		        if(curr_shots != null)
+		            shots[k]        = curr_shots[j];
+		        in_up_err[k]    = this.in_up_err[i * this.num_shot + j];	    
+		        in_low_err[k]   = this.in_low_err[i * this.num_shot + j];	    
+		        colors_idx[k]   = this.colors_idx[i * this.num_shot + j];
+		    } else {
+		        markers[k]	    = this.markers[i * this.num_shot];	  
+		        markers_step[k] = this.markers_step[i * this.num_shot];	  
+		        interpolates[k] = this.interpolates[i * this.num_shot];
+		        in_up_err[k]    = this.in_up_err[i * this.num_shot];	    
+		        in_low_err[k]   = this.in_low_err[i * this.num_shot];
+		        colors_idx[k]   = this.colors_idx[i * this.num_shot];
+		        if(curr_shots != null)
+		            shots[k]        = curr_shots[j];
+		            
+//		        colors_idx[k]   = k % Waveform.colors.length;
+ 		    }
 	    }
 	}
 	
@@ -354,7 +320,11 @@ class MdsWaveInterface extends WaveInterface {
 	this.colors_idx   = colors_idx;
 	this.interpolates = interpolates;
 	this.shots        = shots;
-	this.num_shot     = curr_shots.length;
+	if(shots != null)
+	    this.num_shot     = curr_num_shot;
+	else
+	    this.num_shot = 1;
+	num_waves = num_signal;
   }
 
   
@@ -363,11 +333,7 @@ class MdsWaveInterface extends WaveInterface {
 	    int int_data[] = null;
 	
 	    if(in_shots == null || in_shots.trim().length() == 0)
-	    {
-	        //int_data = new int[1];
-	        //int_data[0] = jScope.UNDEF_SHOT;
 	        return int_data;
-	    }
 	
 	    dp.Update(null, 0);
 	    int_data = dp.GetIntArray(in_shots);
@@ -381,8 +347,6 @@ class MdsWaveInterface extends WaveInterface {
 		        else
 		            error = "Shot syntax error\n";
 	        }
-	        //int_data = new int[1];
-	        //int_data[0] = UNDEF_SHOT;
 	    }
 	    return int_data;
    }
@@ -390,207 +354,204 @@ class MdsWaveInterface extends WaveInterface {
   
     public MdsWaveInterface(MdsWaveInterface wi)
     {
-       
-//    controller = wi.controller;
-	full_flag = wi.full_flag;
-	provider = wi.provider;
-	num_waves = wi.num_waves;
-	num_shot  = wi.num_shot;
-	defaults  = wi.defaults;
-	modified = true;
-	in_grid_mode = wi.in_grid_mode;
-	x_log = wi.x_log;
-	y_log = wi.y_log;
-	is_image = wi.is_image;
-	use_jai = wi.use_jai;
-	keep_ratio = wi.keep_ratio;
-	vertical_flip = wi.vertical_flip;
-	horizontal_flip = wi.horizontal_flip;	
-	make_legend = wi.make_legend;
-	reversed = wi.reversed;
-	legend_x = wi.legend_x;
-	legend_y = wi.legend_y;
-	in_label = new String[num_waves];
-	in_x = new String[num_waves];
-	in_y = new String[num_waves];
-	in_up_err = new String[num_waves];
-	in_low_err = new String[num_waves];
-	markers = new int[num_waves];
-	markers_step = new int[num_waves];
-	colors_idx = new int[num_waves];
-	interpolates = new boolean[num_waves];
-	if(wi.in_shot == null || wi.in_shot.trim().length() == 0)
-	    shots = wi.shots = null;
-	else
-	    shots = new int[num_waves];
-	
-	for(int i = 0; i < num_waves; i++)
-	{
-	    if(wi.in_label[i] != null)
-		in_label[i] = new String(wi.in_label[i]);
+	    full_flag = wi.full_flag;
+	    provider = wi.provider;
+	    num_waves = wi.num_waves;
+	    num_shot  = wi.num_shot;
+	    defaults  = wi.defaults;
+	    modified = true;
+	    in_grid_mode = wi.in_grid_mode;
+	    x_log = wi.x_log;
+	    y_log = wi.y_log;
+	    is_image = wi.is_image;
+	    use_jai = wi.use_jai;
+	    keep_ratio = wi.keep_ratio;
+	    vertical_flip = wi.vertical_flip;
+	    horizontal_flip = wi.horizontal_flip;	
+	    show_legend = wi.show_legend;
+	    reversed = wi.reversed;
+	    legend_x = wi.legend_x;
+	    legend_y = wi.legend_y;
+	    in_label = new String[num_waves];
+	    in_x = new String[num_waves];
+	    in_y = new String[num_waves];
+	    in_up_err = new String[num_waves];
+	    in_low_err = new String[num_waves];
+	    markers = new int[num_waves];
+	    markers_step = new int[num_waves];
+	    colors_idx = new int[num_waves];
+	    interpolates = new boolean[num_waves];
+	    if(wi.in_shot == null || wi.in_shot.trim().length() == 0)
+	        shots = wi.shots = null;
 	    else
-		in_label[i] = null;
-	    if(wi.in_x[i] != null)
-		in_x[i] = new String(wi.in_x[i]);
+	        shots = new int[num_waves];
+    	
+	    for(int i = 0; i < num_waves; i++)
+	    {
+	        if(wi.in_label[i] != null)
+		    in_label[i] = new String(wi.in_label[i]);
+	        else
+		    in_label[i] = null;
+	        if(wi.in_x[i] != null)
+		    in_x[i] = new String(wi.in_x[i]);
+	        else
+		    in_x[i] = null;
+	        if(wi.in_y[i] != null)
+		    in_y[i] = new String(wi.in_y[i]);
+	        else
+		    in_y[i] = null;
+	        if(wi.in_up_err[i] != null)
+		    in_up_err[i] = new String(wi.in_up_err[i]);
+	        else
+		    in_up_err[i] = null;
+	        if(wi.in_low_err[i] != null)
+		    in_low_err[i] = new String(wi.in_low_err[i]);
+	        else
+		    in_low_err[i] = null;
+	    }
+    	
+
+	    for(int i = 0; i < num_waves; i++)
+	    {
+	        markers[i] = wi.markers[i];
+	        markers_step[i] = wi.markers_step[i];
+	        colors_idx[i] = wi.colors_idx[i];
+	        interpolates[i] = wi.interpolates[i];
+	        if(wi.shots != null)
+	        shots[i] = wi.shots[i];
+	    }
+
+	    if(wi.in_xmin != null)
+	        in_xmin = new String(wi.in_xmin);
 	    else
-		in_x[i] = null;
-	    if(wi.in_y[i] != null)
-		in_y[i] = new String(wi.in_y[i]);
+	        in_xmin = null;
+	    if(wi.in_ymin != null)
+	        in_ymin = new String(wi.in_ymin);
 	    else
-		in_y[i] = null;
-	    if(wi.in_up_err[i] != null)
-		in_up_err[i] = new String(wi.in_up_err[i]);
+	        in_ymin = null;	
+	    if(wi.in_xmax != null)
+	        in_xmax = new String(wi.in_xmax);
 	    else
-		in_up_err[i] = null;
-	    if(wi.in_low_err[i] != null)
-		in_low_err[i] = new String(wi.in_low_err[i]);
+	        in_xmax = null;
+	    if(wi.in_ymax != null)
+	        in_ymax = new String(wi.in_ymax);
 	    else
-		in_low_err[i] = null;
-	}
-	
+	        in_ymax = null;
+    	    
+	    if(wi.in_timemax != null)
+	        in_timemax = new String(wi.in_timemax);
+	    else
+	        in_timemax = null;
+	    if(wi.in_timemin != null)
+	        in_timemin = new String(wi.in_timemin);
+	    else
+	        in_timemin = null;
 
-	for(int i = 0; i < num_waves; i++)
-	{
-	    markers[i] = wi.markers[i];
-	    markers_step[i] = wi.markers_step[i];
-	    colors_idx[i] = wi.colors_idx[i];
-	    interpolates[i] = wi.interpolates[i];
-	    if(wi.shots != null)
-	       shots[i] = wi.shots[i];
-	}
+    			
+	    if(wi.in_shot != null)
+	        in_shot = new String(wi.in_shot);
+	    else
+	        in_shot = null;
+	    if(wi.experiment != null)
+	        experiment = new String(wi.experiment);
+	    else
+	        experiment = null;
+	    if(wi.in_title != null)
+	        in_title = new String(wi.in_title);
+	    else
+	        in_title = null;
+	    if(wi.in_xlabel != null)
+	        in_xlabel = new String(wi.in_xlabel);
+	    else
+	        in_xlabel = null;
+	    if(wi.in_ylabel != null)
+	        in_ylabel = new String(wi.in_ylabel);
+	    else
+	        in_ylabel = null;	
 
-	if(wi.in_xmin != null)
-	    in_xmin = new String(wi.in_xmin);
-	else
-	    in_xmin = null;
-	if(wi.in_ymin != null)
-	    in_ymin = new String(wi.in_ymin);
-	else
-	    in_ymin = null;	
-	if(wi.in_xmax != null)
-	    in_xmax = new String(wi.in_xmax);
-	else
-	    in_xmax = null;
-	if(wi.in_ymax != null)
-	    in_ymax = new String(wi.in_ymax);
-	else
-	    in_ymax = null;
-	    
-	if(wi.in_timemax != null)
-	    in_timemax = new String(wi.in_timemax);
-	else
-	    in_timemax = null;
-	if(wi.in_timemin != null)
-	    in_timemin = new String(wi.in_timemin);
-	else
-	    in_timemin = null;
-
-			
-	if(wi.in_shot != null)
-	    in_shot = new String(wi.in_shot);
-	else
-	    in_shot = null;
-	if(wi.experiment != null)
-	    experiment = new String(wi.experiment);
-	else
-	    experiment = null;
-	if(wi.in_title != null)
-	    in_title = new String(wi.in_title);
-	else
-	    in_title = null;
-	if(wi.in_xlabel != null)
-	    in_xlabel = new String(wi.in_xlabel);
-	else
-	    in_xlabel = null;
-	if(wi.in_ylabel != null)
-	    in_ylabel = new String(wi.in_ylabel);
-	else
-	    in_ylabel = null;	
-
-/*
-	if(wi.in_upd_event != null)
-	    in_upd_event = new String(wi.in_upd_event);
-	else
-	    in_upd_event = null;
-*/
-	if(wi.in_def_node != null)
-	    in_def_node = new String(wi.in_def_node);
-	else
-	    in_def_node = null;
+    /*
+	    if(wi.in_upd_event != null)
+	        in_upd_event = new String(wi.in_upd_event);
+	    else
+	        in_upd_event = null;
+    */
+	    if(wi.in_def_node != null)
+	        in_def_node = new String(wi.in_def_node);
+	    else
+	        in_def_node = null;
 
 
-	if(wi.cin_xmin != null)
-	    cin_xmin = new String(wi.cin_xmin);
-	else
-	    cin_xmin = null;
-	if(wi.cin_ymin != null)
-	    cin_ymin = new String(wi.cin_ymin);
-	else
-	    cin_ymin = null;	
-	if(wi.cin_xmax != null)
-	    cin_xmax = new String(wi.cin_xmax);
-	else
-	    cin_xmax = null;
-	if(wi.cin_ymax != null)
-	    cin_ymax = new String(wi.cin_ymax);
-	else
-	    cin_ymax = null;
+	    if(wi.cin_xmin != null)
+	        cin_xmin = new String(wi.cin_xmin);
+	    else
+	        cin_xmin = null;
+	    if(wi.cin_ymin != null)
+	        cin_ymin = new String(wi.cin_ymin);
+	    else
+	        cin_ymin = null;	
+	    if(wi.cin_xmax != null)
+	        cin_xmax = new String(wi.cin_xmax);
+	    else
+	        cin_xmax = null;
+	    if(wi.cin_ymax != null)
+	        cin_ymax = new String(wi.cin_ymax);
+	    else
+	        cin_ymax = null;
 
-	if(wi.cin_timemax != null)
-	    cin_timemax = new String(wi.cin_timemax);
-	else
-	    cin_timemax = null;
-	if(wi.cin_timemin != null)
-	    cin_timemin = new String(wi.cin_timemin);
-	else
-	    cin_timemin = null;
+	    if(wi.cin_timemax != null)
+	        cin_timemax = new String(wi.cin_timemax);
+	    else
+	        cin_timemax = null;
+	    if(wi.cin_timemin != null)
+	        cin_timemin = new String(wi.cin_timemin);
+	    else
+	        cin_timemin = null;
 
 
-	if(wi.cin_shot != null)
-	    cin_shot = new String(wi.cin_shot);
-	else
-	    cin_shot = null;
-	if(wi.cexperiment != null)
-	    cexperiment = new String(wi.cexperiment);
-	else
-	    cexperiment = null;
-	if(wi.cin_title != null)
-	    cin_title = new String(wi.cin_title);
-	else
-	    cin_title = null;
-	if(wi.cin_xlabel != null)
-	    cin_xlabel = new String(wi.cin_xlabel);
-	else
-	    cin_xlabel = null;
-	if(wi.cin_ylabel != null)
-	    cin_ylabel = new String(wi.cin_ylabel);
-	else
-	    cin_ylabel = null;	
+	    if(wi.cin_shot != null)
+	        cin_shot = new String(wi.cin_shot);
+	    else
+	        cin_shot = null;
+	    if(wi.cexperiment != null)
+	        cexperiment = new String(wi.cexperiment);
+	    else
+	        cexperiment = null;
+	    if(wi.cin_title != null)
+	        cin_title = new String(wi.cin_title);
+	    else
+	        cin_title = null;
+	    if(wi.cin_xlabel != null)
+	        cin_xlabel = new String(wi.cin_xlabel);
+	    else
+	        cin_xlabel = null;
+	    if(wi.cin_ylabel != null)
+	        cin_ylabel = new String(wi.cin_ylabel);
+	    else
+	        cin_ylabel = null;	
 
-	if(wi.error != null)
-	    error = new String(wi.error);
-	else
+	    if(wi.error != null)
+	        error = new String(wi.error);
+	    else
+	        error = null;
+
+	    if(wi.cin_upd_event != null)
+	        cin_upd_event = new String(wi.cin_upd_event);
+	    else
+	        cin_upd_event = null;
+
+	    if(wi.cin_def_node != null)
+	        cin_def_node = new String(wi.cin_def_node);
+	    else
+	        cin_def_node = null;
+    	
+//	    main_shot_evaluated = wi.main_shot_evaluated;    	
+//        main_shot_str = wi.main_shot_str;
+//	    main_shots = wi.main_shots;
+    	
+	    def_vals = wi.def_vals;
+    	    	
 	    error = null;
-
-	if(wi.cin_upd_event != null)
-	    cin_upd_event = new String(wi.cin_upd_event);
-	else
-	    cin_upd_event = null;
-
-	if(wi.cin_def_node != null)
-	    cin_def_node = new String(wi.cin_def_node);
-	else
-	    cin_def_node = null;
-	
-	main_shot_evaluated = wi.main_shot_evaluated;    	
-    main_shot_str = wi.main_shot_str;
-	main_shots = wi.main_shots;
-	
-	def_vals = wi.def_vals;
-	    	
-	error = null;
-	SetDataProvider(wi.dp);
-	
+	    SetDataProvider(wi.dp);	
     }	
 
 
@@ -654,7 +615,7 @@ class MdsWaveInterface extends WaveInterface {
     {
 	    super.SetDataProvider(_dp);
 	    default_is_update = false;
-		main_shot_evaluated = false;
+//		main_shot_evaluated = false;
     }
 
    public void Erase()
@@ -699,12 +660,12 @@ class MdsWaveInterface extends WaveInterface {
 //	        shots[i]	    = UNDEF_SHOT;
 	        markers[i]      = 0;
 	        markers_step[i] = 1;
-    	    colors_idx[i]   = i;
+    	    colors_idx[i]   = i % Waveform.colors.length;
 	        interpolates[i] = true;
 	    }
     }
 
-    public void AddEvent(NetworkEventListener w)
+    public void AddEvent(NetworkEventListener w) throws IOException
     {
         int bit = MdsWaveInterface.B_event;
         boolean def_flag = ((defaults & (1<<bit)) == 1<<bit);      
@@ -715,7 +676,7 @@ class MdsWaveInterface extends WaveInterface {
         }
     }
 
-    public void RemoveEvent(NetworkEventListener w)
+    public void RemoveEvent(NetworkEventListener w)  throws IOException
     {
         if(in_upd_event != null)
         {
@@ -724,12 +685,12 @@ class MdsWaveInterface extends WaveInterface {
         }
     }
 
-    public void RemoveEvent(NetworkEventListener w, String event)
+    public void RemoveEvent(NetworkEventListener w, String event)  throws IOException
     {
         dp.removeNetworkEventListener(w, event);
     }
    
-    public void AddEvent(NetworkEventListener w, String event)
+    public void AddEvent(NetworkEventListener w, String event) throws IOException
     {   
         
        if( in_upd_event != null && in_upd_event.length() != 0)
@@ -749,9 +710,10 @@ class MdsWaveInterface extends WaveInterface {
                 }
             }
         } else 
-            if(event != null && event.length() != 0) { 
-                in_upd_event = event;
+            if(event != null && event.length() != 0) 
+            { 
                 dp.addNetworkEventListener(w, event);
+                in_upd_event = event;
             }
     }
 
@@ -777,7 +739,7 @@ class MdsWaveInterface extends WaveInterface {
 	    {
 	        WaveInterface.WriteLine(out,prompt + "x_log: "           , ""+x_log);
 	        WaveInterface.WriteLine(out,prompt + "y_log: "           , ""+y_log);
-	        if(make_legend) {
+	        if(show_legend) {
 	            WaveInterface.WriteLine(out,prompt + "legend: "           , "("+legend_x+","+legend_y+")");
 	        }
 	    } else {
@@ -891,9 +853,9 @@ class MdsWaveInterface extends WaveInterface {
 		            
 		            if(str.indexOf(".legend:") != -1)
 		            {
-		                make_legend = true;
-		                legend_x = Integer.parseInt(str.substring(str.indexOf("(") + 1, str.indexOf(",")));
-		                legend_y = Integer.parseInt(str.substring(str.indexOf(",") + 1, str.indexOf(")")));
+		                show_legend = true;
+		                legend_x = Double.valueOf(str.substring(str.indexOf("(") + 1, str.indexOf(","))).doubleValue();
+		                legend_y = Double.valueOf(str.substring(str.indexOf(",") + 1, str.indexOf(")"))).doubleValue();
 		                continue;		
 		            }
 		            

@@ -4,6 +4,15 @@ import java.io.*;
 class DemoProvider implements DataProvider 
 {
     String error = null;
+
+    public void disconnect(){}
+    public boolean supportsCompression(){return false;}
+    public void setCompression(boolean state){}
+    public boolean useCompression(){return false;}
+    public boolean supportsCache(){return false;}
+    public void    enableCache(boolean state){}
+    public boolean isCacheEnabled(){return false;}
+    public void    freeCache(){}
     
     public void SetEnvironment(String exp)
     {
@@ -87,6 +96,12 @@ class DemoProvider implements DataProvider
     {
     }
     public void removeNetworkEventListener(NetworkEventListener l, String event)
+    {
+    }
+    public void    addNetworkTransferListener(NetworkTransferListener l)
+    {
+    }
+    public void    removeNetworkTransferListener(NetworkTransferListener l)
     {
     }
     public String GetDefaultTitle(String in_y[])

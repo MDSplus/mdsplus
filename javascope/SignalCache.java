@@ -28,18 +28,27 @@ public class SignalCache {
         } catch (NumberFormatException e){}
         
         if(cache_directory == null)
+        {
             cache_directory = System.getProperty("user.home")+ File.separator + "jScopeCache";
+            System.getProperties().put("Signal.cache_directory", cache_directory);
+            
+        }
         File f = new File(cache_directory);
         if(!f.exists() || !f.isDirectory()) 
             f.mkdir();
-        cache_size = getCacheSize();
+        cache_size = initializeCache();
     } catch (NoSuchAlgorithmException e)
     {
         System.out.println(""+e);
     }
  }
- 
+
  public long getCacheSize()
+ {
+    return cache_size;
+ }
+ 
+ public long initializeCache()
  {
     long last_modified;
     long size = 0L;
@@ -75,14 +84,16 @@ public class SignalCache {
      return out.toString();
  }
 
- public void putCacheData(String expression, String experiment, int shot, Object data)
+ public void putCacheData(String provider, String expression, String experiment, int shot, Object data)
  {
-    if(expression == null || data == null) return;
+    if(provider == null || expression == null || data == null) return;
     
     if(experiment == null) 
         experiment = "";
         
-    String name = expression.toUpperCase()+experiment.toUpperCase()+shot;
+    String name = provider.trim().toUpperCase()+
+                  expression.trim().toUpperCase()+
+                  experiment.trim().toUpperCase()+shot;
     
     if(isInCache(name)) return;
     
@@ -106,15 +117,16 @@ public class SignalCache {
     } catch (IOException e) {System.out.println(e);}
  }
 
- public Object getCacheData(String expression,String experiment, int shot)
+ public Object getCacheData(String provider, String expression, String experiment, int shot)
  {
-    if(expression == null) return null;
+    if(provider == null || expression == null) return null;
 
     if(experiment == null) 
         experiment = "";
-
-    String name = expression.toUpperCase()+experiment.toUpperCase()+shot;
     
+    String name = provider.trim().toUpperCase()+
+                  expression.trim().toUpperCase()+
+                  experiment.trim().toUpperCase()+ shot;
     if(!isInCache(name)) return null;
     
     String cache_file = cache_directory + File.separator + cacheFileName(name);
@@ -157,24 +169,25 @@ public class SignalCache {
     purge_modified = min_last_modified + (max_last_modified  - min_last_modified)/2;
  }
  
+ public void freeCache()
+ {
+    String name;
+    File fc;
+    File f = new File(cache_directory);
+    String list[] = f.list();
+    for(int i = 0; i < list.length; i++)
+    {
+        name = cache_directory + File.separator + list[i];
+        fc = new File(name);
+        fc.delete();
+    }
+    cache_size = 0;
+ }
+ 
  public boolean isInCache(String name)
  {
     String cache_name = cacheFileName(name);
     File f = new File(cache_directory + File.separator + cache_name);
     return f.exists();
  }
- 
- public static void main(String[] arg)
- {
-    SignalCache sc = new SignalCache();
-    
-    
-    sc.putCacheData("emra_it", "rfx", 12450, new Signal());
- 
-    Signal pippo = (Signal)sc.getCacheData("emra_it", "rfx", 12450);
-    
-    pippo = pippo;
-
- }
- 
 }

@@ -1,19 +1,20 @@
 import java.io.*;
 import java.net.*;
-import java.awt.*;
 import java.awt.List;
 import java.awt.event.*;
 import java.lang.*;
 import java.util.*;
 import java.awt.event.KeyEvent;
 import java.awt.print.*;
+import javax.swing.*;
+import java.awt.*;
 //import com.apple.mrj.*;
 
 
-public class jScope extends Frame implements ActionListener, ItemListener, 
+public class jScope extends JFrame implements ActionListener, ItemListener, 
                              WindowListener, WaveContainerListener, 
-                             NetworkEventListener
-//							,MRJQuitHandler, MRJOpenDocumentHandler 
+                             NetworkEventListener, NetworkTransferListener
+//			                ,MRJQuitHandler, MRJOpenDocumentHandler 
 {
  
    public  static final int MAX_NUM_SHOT   = 30;
@@ -24,41 +25,38 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   /** Default server */
   static final String DEFAULT_SERVER = "Demo server";
   /**Main menu bar*/
-  private MenuBar       mb;
+  private JMenuBar       mb;
   /**Menus on menu bar */
-  private Menu          edit_m, pointer_mode_m, customize_m, autoscale_m, print_m, network_m;
-	  Menu		servers_m;
+  private JMenu          edit_m, pointer_mode_m, customize_m, autoscale_m, print_m, network_m;
+	      JMenu		     servers_m;
   /**Menu items on menu edit_m */	  
-  private MenuItem      exit_i, win_i;
-  private MenuItem      default_i, use_i, pub_variables_i, save_as_i, use_last_i, 
+  private JMenuItem      exit_i, win_i;
+  private JMenuItem      default_i, use_i, pub_variables_i, save_as_i, use_last_i, 
                         save_i, color_i, print_all_i,  open_i, 
                         close_i, server_list_i,  font_i, 
-                        print_i, page_i;
-  private CheckboxMenuItem  brief_error_i;			
+                        print_i, page_i, free_cache_i;
+  private JCheckBoxMenuItem  brief_error_i;			
   /**Menu item on menu pointer_mode_m */	  
-  private MenuItem	zoom_i, point_i, copy_i, pan_i;
+  private JMenuItem	zoom_i, point_i, copy_i, pan_i;
   /**Menu item on menu autoscale_m */	    
-  private MenuItem	all_i, allY_i;
+  private JMenuItem	all_i, allY_i;
    
-  private Panel         panel, panel1;
-  private CheckboxGroup pointer_mode = new CheckboxGroup();
-  private Checkbox      zoom, point, copy, pan;
-  private CheckboxMenuItem  fast_network_i;
-  private Label         shot_l, lab;
-  private TextField     shot_t, signal_expr;
-  private Button        apply_b;
-  private FileDialog    file_diag;
-  private String        curr_directory, curr_file_name;
-  private String        last_directory, last_file_name;
-  private Label	        point_pos;
-  private TextField	    info_text, net_text;
-  private ErrorMessage  error_msg;
-  private ErrorMessage  warning_msg;
+  private JPanel         panel, panel1;
+  private ButtonGroup   pointer_mode = new ButtonGroup();
+  private JRadioButton  zoom, point, copy, pan;
+  private JCheckBoxMenuItem  fast_network_i, enable_compression_i, use_cache_i;
+  private JLabel         shot_l, lab;
+  private JTextField     shot_t, signal_expr;
+  private JButton        apply_b;
+  private JFileChooser    file_diag = new JFileChooser();
+    private String        curr_directory;//, curr_file_name;
+    private String        last_directory;//, last_file_name;
+  private JLabel	        point_pos, print_icon;
+  private JTextField	    info_text, net_text;
   private WindowDialog  win_diag;
   public  ColorDialog	color_dialog;
   public  FontSelection font_dialog;
           jScopeWaveContainer     wave_panel;
-  DataProvider		db;
   SetupDefaults     setup_default;
   PubVarDialog      pub_var_diag;
   static int		num_scope = 0;
@@ -69,20 +67,19 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   static  boolean	not_sup_local = false;
   private Thread	printThread;
   private boolean	executing_update = false;
-  private Frame		main_scope;
+  private JFrame    main_scope;
   PrinterJob        prnJob;
   PageFormat        pf;
-  ResourceBundle    rb = null;
+  ResourceBundle rb = null;
+  PropertyResourceBundle prb = null;
   String            default_server=DEFAULT_SERVER;
   boolean           is_playing = false;
   int height = 500, width = 700, xpos = 50, ypos = 50;
   jScopeDefaultValues def_values = new jScopeDefaultValues();
-  SetupDataDialog setup_dialog;
-  
+  SetupDataDialog setup_dialog;  
   static SignalCache sc = new SignalCache();
-  
-  
-  
+  JProgressBar progress_bar;
+
   private boolean modified = false;
   
   static public boolean is_debug = false;
@@ -91,217 +88,37 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     
     public void run()
     {
+        setName("Print Thread");
         Rectangle r = getBounds();
-        
 	    PrintJob pg = getToolkit().getPrintJob(main_scope, "Print Scope", System.getProperties());
-	    if(pg != null)
+        if(pg != null)
 	    {
 	        Graphics g = pg.getGraphics();
 	        Dimension dim = pg.getPageDimension();
-//	        wave_panel.PrintAll(g, dim.height, dim.width, curr_grid_mode); 
-	        wave_panel.PrintAll(g, 0, 0, dim.height, dim.width); 
+	        int st_x = 0, st_y = 0;
+	        
+	        //Fix page dimension and margin error on Window System
+	        if(!System.getProperty("os.name").equals("Mac OS"))
+	        {
+                st_x = 10;
+                dim.width -= 2*st_x;
+                st_x = 15;
+                
+                st_y = 10;
+                dim.height -= 2*st_y;
+	        }
+	        wave_panel.PrintAll(g, st_x, st_y, dim.height, dim.width); 
 	        g.dispose();
 	        pg.end();
 	    }	    
      }
   }
 
-/*   
-	    
-  class PubVarDialog extends ScopePositionDialog {
+  class PubVarDialog extends JDialog implements ActionListener {
 
        private Vector name_list = new Vector();
        private Vector expr_list = new Vector();
-       private Button apply, cancel, save, reset;
-       jScope dw;
-    
-       PubVarDialog(Frame fw) {
-       
-	  super(fw, "Public Variables", false); 	
-	  //super.setFont(new Font("Helvetica", Font.PLAIN, 12));
-	  dw = (jScope)fw; 
-	  setResizable(false);   	    
-		    
-	  GridBagConstraints c = new GridBagConstraints();
-	  GridBagLayout gridbag = new GridBagLayout();
-	  setLayout(gridbag);        
-    
-	  c.insets = new Insets(2, 2, 2, 2);
-	  c.fill = GridBagConstraints.NONE;
-    
-	  c.anchor = GridBagConstraints.CENTER;
-	  c.gridwidth = 1;
-	  Label lab = new Label("Name");
-	  gridbag.setConstraints(lab, c);
-	  add(lab);
-	  
-	  c.gridwidth = GridBagConstraints.REMAINDER;
-	  lab = new Label("Expression");
-   	  gridbag.setConstraints(lab, c);
-	  add(lab);
-
-	  TextField txt;
-	  c.anchor = GridBagConstraints.WEST;
-	  c.fill = GridBagConstraints.BOTH;
-	  for(int i = 0; i < MAX_VARIABLE; i++)
-	  {
-	      c.gridwidth = 1;
-	      txt = new TextField(10);
-	      gridbag.setConstraints(txt, c);
-	      add(txt);
-	      
-	      c.gridwidth = GridBagConstraints.REMAINDER;
-	      txt = new TextField(30);
-	      gridbag.setConstraints(txt, c);
-	      add(txt);
-	  }
-
-      Panel p = new Panel();
-	  p.setLayout(new FlowLayout(FlowLayout.CENTER));
-	    
-	  apply = new Button("Apply");
-	  apply.addActionListener(this);	
-	  p.add(apply);
-
-	  save = new Button("Save");
-	  save.addActionListener(this);	
-	  p.add(save);
-    
-	  reset = new Button("Reset");
-	  reset.addActionListener(this);	
-	  p.add(reset);
-    
-	  cancel = new Button("Cancel");
-	  cancel.addActionListener(this);	
-	  p.add(cancel);
-
-			    
-	  c.gridwidth = GridBagConstraints.REMAINDER;
-	  gridbag.setConstraints(p, c);
-	  add(p);
-	     
-      } 
-       
-      public String getPublicVar()
-      {
-	    String txt1, txt2, str;
-	    StringBuffer buf = new StringBuffer();
-      
-	    for (int i = 2; i < MAX_VARIABLE * 2; i+=2)
-	    {
-		    txt1 = ((TextField) getComponent(i)).getText();
-		    txt2 = ((TextField) getComponent(i+1)).getText();
-		    if(txt1.length() != 0 && txt2.length() != 0) {
-		        if(txt1.indexOf("_") != 0)
-			        str = "public _"+txt1+" = "+txt2+";";
-		        else
-			        str = "public "+txt1+" = "+txt2+";";
-		        buf.append(str);
-		    }		
-	    }
-	    return (new String(buf));
-       }
-       
-       
-       private void SavePubVar()
-       {
-	    String txt1, txt2, str;
-      
-	        for (int i = 2, j = 0; i < MAX_VARIABLE * 2; i+=2, j++)
-	        {
-		        txt1 = ((TextField) getComponent(i)).getText();
-		        txt2 = ((TextField) getComponent(i+1)).getText();
-		        if(txt1.length() != 0 && txt2.length() != 0) {
-		            name_list.insertElementAt(new String(txt1), j);
-		            expr_list.insertElementAt(new String(txt2), j);
-		        }		
-	        }
-        }
-       
-       private void SetPubVar()
-       {      
-	        for (int i = 2, j = 0; j < name_list.size(); i+=2, j++)
-	        {
-		        ((TextField)getComponent(i)).setText((String)name_list.elementAt(j));
-		        ((TextField)getComponent(i+1)).setText((String)expr_list.elementAt(j));
-	        }
-       }
-       	         
-       public void Show()
-       {
-	       pack();
-	       setPosition(dw);
-	       SetPubVar();   
-	       show();
-       }
-       
-       public void actionPerformed(ActionEvent e)
-       {
-	        Object ob = e.getSource();	
-    
-	        if(ob == apply) { 
-	            //getPublicVar();
-	            //dw.db.SetEnvironment(getPublicVar());
-	            //if(dw.db.ErrorString() != null) {
-	            //    dw.error_msg.setMessage(dw.db.ErrorString()+"\n");
-	           //     dw.error_msg.showMessage();
-	          //  } else
-	                dw.setPublicVariables(getPublicVar());
-	                dw.UpdateAllWaves();	    
-	        }
-	        
-	        if(ob == save)
-	            SavePubVar();
-	            
-	        if(ob == reset)
-	            SetPubVar();
-
-	        if(ob == cancel)
-	            setVisible(false);	   
-    
-       }
-       
-       public void ToFile(PrintWriter out, String prompt)
-       {
-	        for(int i = 0; i < name_list.size() ; i++)
-            {
-	            out.println(prompt + i + ": " + name_list.elementAt(i) 
-	                                            + " = " + expr_list.elementAt(i));		
-            }
-	        out.println("");
-        }
-       
-              
-    public String FromFile(ReaderConfig in, String prompt) throws IOException
-    {
-    	String str;
-	    String error = null;
-
-        in.reset();
-	    while((str = in.readLine()) != null) {
-	        if(str.indexOf(prompt) != -1)
-	        {
-		        int len;
-		        int i = new Integer(str.substring("Scope.public_variable_".length(), len = str.indexOf(":"))).intValue();
-		        String name = new String(str.substring(len  + 2, len = str.indexOf("=")));
-		        String expr = new String(str.substring(len + 2, str.length()));
-		        name_list.insertElementAt(name.trim(), i);
-		        expr_list.insertElementAt(expr.trim(), i);
-		        
-		        continue;
-	        }
-	    }
-	    return error;
-     }
-  }
-  
-*/
-
-  class PubVarDialog extends ScopePositionDialog {
-
-       private Vector name_list = new Vector();
-       private Vector expr_list = new Vector();
-       private Button apply, cancel, save, reset;
+       private JButton apply, cancel, save, reset;
        jScope dw;
        boolean is_pv_apply = false;
     
@@ -314,61 +131,61 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 		    
 	  GridBagConstraints c = new GridBagConstraints();
 	  GridBagLayout gridbag = new GridBagLayout();
-	  setLayout(gridbag);        
+	  getContentPane().setLayout(gridbag);        
     
 	  c.insets = new Insets(2, 2, 2, 2);
 	  c.fill = GridBagConstraints.NONE;
     
 	  c.anchor = GridBagConstraints.CENTER;
 	  c.gridwidth = 1;
-	  Label lab = new Label("Name");
+	  JLabel lab = new JLabel("Name");
 	  gridbag.setConstraints(lab, c);
-	  add(lab);
+	  getContentPane().add(lab);
 	  
 	  c.gridwidth = GridBagConstraints.REMAINDER;
-	  lab = new Label("Expression");
+	  lab = new JLabel("Expression");
    	  gridbag.setConstraints(lab, c);
-	  add(lab);
+	  getContentPane().add(lab);
 
-	  TextField txt;
+	  JTextField txt;
 	  c.anchor = GridBagConstraints.WEST;
 	  c.fill = GridBagConstraints.BOTH;
 	  for(int i = 0; i < MAX_VARIABLE; i++)
 	  {
 	      c.gridwidth = 1;
-	      txt = new TextField(10);
+	      txt = new JTextField(10);
 	      gridbag.setConstraints(txt, c);
-	      add(txt);
+	      getContentPane().add(txt);
 	      
 	      c.gridwidth = GridBagConstraints.REMAINDER;
-	      txt = new TextField(30);
+	      txt = new JTextField(30);
 	      gridbag.setConstraints(txt, c);
-	      add(txt);
+	      getContentPane().add(txt);
 	  }
 
-      Panel p = new Panel();
+      JPanel p = new JPanel();
 	  p.setLayout(new FlowLayout(FlowLayout.CENTER));
 	    
-	  apply = new Button("Apply");
+	  apply = new JButton("Apply");
 	  apply.addActionListener(this);	
 	  p.add(apply);
 
-	  save = new Button("Save");
+	  save = new JButton("Save");
 	  save.addActionListener(this);	
 	  p.add(save);
     
-	  reset = new Button("Reset");
+	  reset = new JButton("Reset");
 	  reset.addActionListener(this);	
 	  p.add(reset);
     
-	  cancel = new Button("Cancel");
+	  cancel = new JButton("Cancel");
 	  cancel.addActionListener(this);	
 	  p.add(cancel);
 
 			    
 	  c.gridwidth = GridBagConstraints.REMAINDER;
 	  gridbag.setConstraints(p, c);
-	  add(p);
+	  getContentPane().add(p);
 	     
       } 
        
@@ -376,11 +193,12 @@ public class jScope extends Frame implements ActionListener, ItemListener,
       {
 	    String txt1, txt2, str;
 	    StringBuffer buf = new StringBuffer();
+	    Container p = getContentPane();
       
 	    for (int i = 2; i < MAX_VARIABLE * 2; i+=2)
 	    {
-		    txt1 = ((TextField) getComponent(i)).getText();
-		    txt2 = ((TextField) getComponent(i+1)).getText();
+		    txt1 = ((JTextField) p.getComponent(i)).getText();
+		    txt2 = ((JTextField) p.getComponent(i+1)).getText();
 		    if(txt1.length() != 0 && txt2.length() != 0) {
 		        if(txt1.indexOf("_") != 0)
 			        str = "public _"+txt1+" = "+txt2+";";
@@ -396,7 +214,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
       public String getPublicVar()
       {
         
-        if(is_pv_apply) return getCurrentPublicVar();
+             if(is_pv_apply) return getCurrentPublicVar();
         
 	    String txt1, txt2, str;
 	    StringBuffer buf = new StringBuffer();
@@ -421,13 +239,15 @@ public class jScope extends Frame implements ActionListener, ItemListener,
        
        private void SavePubVar()
        {
-	        String txt1, txt2, str;
+	    String txt1, txt2, str;
             name_list.removeAllElements();
             expr_list.removeAllElements();
+	    Container p = getContentPane();
+
 	        for (int i = 2, j = 0; i < MAX_VARIABLE * 2; i+=2, j++)
 	        {
-		        txt1 = ((TextField) getComponent(i)).getText();
-		        txt2 = ((TextField) getComponent(i+1)).getText();
+		        txt1 = ((JTextField) p.getComponent(i)).getText();
+		        txt2 = ((JTextField) p.getComponent(i+1)).getText();
 		        if(txt1.length() != 0 && txt2.length() != 0) {
 		            name_list.insertElementAt(new String(txt1), j);
 		            expr_list.insertElementAt(new String(txt2), j);
@@ -437,20 +257,21 @@ public class jScope extends Frame implements ActionListener, ItemListener,
        
        private void SetPubVar()
        {      
-	        for (int i = 2, j = 0; j < name_list.size(); i+=2, j++)
+	        Container p = getContentPane();
+		for (int i = 2, j = 0; j < name_list.size(); i+=2, j++)
 	        {
-		        ((TextField)getComponent(i)).setText((String)name_list.elementAt(j));
-		        ((TextField)getComponent(i+1)).setText((String)expr_list.elementAt(j));
+		        ((JTextField)p.getComponent(i)).setText((String)name_list.elementAt(j));
+		        ((JTextField)p.getComponent(i+1)).setText((String)expr_list.elementAt(j));
 	        }
        }
        	         
        public void Show()
        {
            is_pv_apply = true;
-	       pack();
-	       setPosition(dw);
-	       SetPubVar();   
-	       show();
+		   SetPubVar();   
+           pack();
+           setLocationRelativeTo(dw);
+           setVisible(true);
        }
        
        public void actionPerformed(ActionEvent e)
@@ -458,12 +279,6 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	        Object ob = e.getSource();	
     
 	        if(ob == apply) {
-	            //getPublicVar();
-	            //dw.db.SetEnvironment(getCurrentPublicVar());
-	            //if(dw.db.ErrorString() != null) {
-	            //    dw.error_msg.setMessage(dw.db.ErrorString()+"\n");
-	            //    dw.error_msg.showMessage();
-	           // } else
 	             dw.setPublicVariables(getPublicVar());
 	             dw.UpdateAllWaves();	    
 	        }
@@ -523,8 +338,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   }
 	    
   public jScope(int spos_x, int spos_y)
-  {    
-    
+  {
+        
     Properties props = System.getProperties();
     String debug = props.getProperty("debug");
     if(debug != null && debug.equals("true"))
@@ -537,11 +352,12 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     {
         InitProperties();
         GetPropertiesValue();
+    } else {
+        InitProperties_VM11();
+        GetPropertiesValue_VM11();
     }
     
     font_dialog   = new FontSelection(this, "Waveform Font Selection");
-    error_msg     = new ErrorMessage(this);
-    warning_msg   = new ErrorMessage(this, ErrorMessage.WARNING_TYPE);
     setup_default = new SetupDefaults(this, "Default Setup", def_values);
     color_dialog  = new ColorDialog(this, "Color Configuration Dialog");
     pub_var_diag  = new PubVarDialog(this);
@@ -557,7 +373,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
         p.setImageableArea(13.536, 12.959, 567.288, 816.6239);
         pf.setPaper(p);
     }    
-    setLayout(new BorderLayout());
+    getContentPane().setLayout(new BorderLayout());
     //setFont(new Font("Helvetica", Font.PLAIN, 12));
     setBackground(Color.lightGray);
     
@@ -568,176 +384,238 @@ public class jScope extends Frame implements ActionListener, ItemListener,
  //     MRJApplicationUtils.registerQuitHandler(this);
  //   }
 
-    mb = new MenuBar();
-    setMenuBar(mb);
-    edit_m = new Menu("File");
+    mb = new JMenuBar();
+    //setJMenuBar(mb);
+    getContentPane().add("North", mb);
+    edit_m = new JMenu("File");
     mb.add(edit_m);
-    open_i = new MenuItem("New Window", new MenuShortcut(KeyEvent.VK_N));
+    open_i = new JMenuItem("New Window");
+    open_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
     edit_m.add(open_i);	
     open_i.addActionListener(this);
 
-    close_i = new MenuItem("Close", new MenuShortcut(KeyEvent.VK_Q)); 
+    close_i = new JMenuItem("Close");
+    close_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
     edit_m.add(close_i);
     close_i.addActionListener(this);    
 
-    exit_i = new MenuItem("Exit", new MenuShortcut(KeyEvent.VK_E));
+    exit_i = new JMenuItem("Exit");
+    exit_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
     edit_m.add(exit_i);	
     exit_i.addActionListener(this);
 
-    pointer_mode_m = new Menu("Pointer mode");
+    pointer_mode_m = new JMenu("Pointer mode");
     mb.add(pointer_mode_m);
-    point_i = new MenuItem("Point", new MenuShortcut(KeyEvent.VK_1));
+    point_i = new JMenuItem("Point");
+    point_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.CTRL_MASK));
     point_i.addActionListener(this);
     pointer_mode_m.add(point_i);
-    zoom_i  = new MenuItem("Zoom", new MenuShortcut(KeyEvent.VK_2));
+    zoom_i  = new JMenuItem("Zoom");
+    zoom_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, ActionEvent.CTRL_MASK));
     pointer_mode_m.add(zoom_i);
     zoom_i.addActionListener(this);
-    pan_i  = new MenuItem("Pan", new MenuShortcut(KeyEvent.VK_3));
+    pan_i  = new JMenuItem("Pan");
+    pan_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3, ActionEvent.CTRL_MASK));
     pointer_mode_m.add(pan_i);
     pan_i.addActionListener(this);
-    copy_i  = new MenuItem("Copy", new MenuShortcut(KeyEvent.VK_4));
+    copy_i  = new JMenuItem("Copy");
+    copy_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_4, ActionEvent.CTRL_MASK));
     pointer_mode_m.add(copy_i);
     copy_i.addActionListener(this);
     pointer_mode_m.add(copy_i);
 
-    print_m = new Menu("Print");
+    print_m = new JMenu("Print");
     mb.add(print_m);
-    print_all_i = new MenuItem("Print all ...");
+    print_all_i = new JMenuItem("Print all ...");
     print_m.add(print_all_i);
     print_all_i.addActionListener(this);
     mb.add(print_m);
     
-    customize_m = new Menu("Customize");
+    customize_m = new JMenu("Customize");
     mb.add(customize_m);    
-    default_i = new MenuItem("Global Settings ...", new MenuShortcut(KeyEvent.VK_G));
+    default_i = new JMenuItem("Global Settings ...");
+    default_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
     customize_m.add(default_i);
     default_i.addActionListener(this);    
-    win_i = new MenuItem("Window ...", new MenuShortcut(KeyEvent.VK_W));
+    win_i = new JMenuItem("Window ...");
+    win_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
     win_i.addActionListener(this);        
     customize_m.add(win_i);
     if(IsNewJVMVersion())
     {
-        print_i = new MenuItem("Printer ...", new MenuShortcut(KeyEvent.VK_P));
+        print_i = new JMenuItem("Printer ...");
+        print_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
         customize_m.add(print_i);
         print_i.addActionListener(this);
 
-        page_i = new MenuItem("Page setup ...", new MenuShortcut(KeyEvent.VK_J));
+        page_i = new JMenuItem("Page setup ...");
+        page_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J, ActionEvent.CTRL_MASK));
         customize_m.add(page_i);
         page_i.addActionListener(this);
     }
-    font_i = new MenuItem("Font selection ...", new MenuShortcut(KeyEvent.VK_F));
+    font_i = new JMenuItem("Font selection ...");
+    font_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
     font_i.addActionListener(this);    
     customize_m.add(font_i);
-    color_i = new MenuItem("Colors List ...", new MenuShortcut(KeyEvent.VK_O));
+    color_i = new JMenuItem("Colors List ...");
+    color_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
     color_i.addActionListener(this);    
     customize_m.add(color_i);
-    pub_variables_i = new MenuItem("Public variables ...", new MenuShortcut(KeyEvent.VK_U));
+    pub_variables_i = new JMenuItem("Public variables ...");
+    pub_variables_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, ActionEvent.CTRL_MASK));
     pub_variables_i.addActionListener(this);    
     customize_m.add(pub_variables_i);
-    brief_error_i = new CheckboxMenuItem("Brief Error", true);
+    brief_error_i = new JCheckBoxMenuItem("Brief Error", true);
     brief_error_i.addItemListener(this);        
     customize_m.add(brief_error_i);
 
-    customize_m.add(new MenuItem("-"));
-    use_last_i = new MenuItem("Use last saved settings");
+    customize_m.add(new JSeparator());
+    use_last_i = new JMenuItem("Use last saved settings");
     customize_m.add(use_last_i);
     use_last_i.addActionListener(this);
 
-    use_i = new MenuItem("Use saved settings from ...");
+    use_i = new JMenuItem("Use saved settings from ...");
     customize_m.add(use_i);
     use_i.addActionListener(this);
 
-    customize_m.add(new MenuItem("-"));
-    save_i = new MenuItem("Save current settings");
+    customize_m.add(new JSeparator());
+    save_i = new JMenuItem("Save current settings");
     customize_m.add(save_i);
     save_i.addActionListener(this);
     
-    save_as_i = new MenuItem("Save current settings as ...");
+    save_as_i = new JMenuItem("Save current settings as ...");
     customize_m.add(save_as_i);
     save_as_i.addActionListener(this);
 
-    autoscale_m = new Menu("Autoscale");
+    autoscale_m = new JMenu("Autoscale");
     mb.add(autoscale_m);
-    all_i = new MenuItem("All", new MenuShortcut(KeyEvent.VK_B));
+    all_i = new JMenuItem("All");
+    all_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.CTRL_MASK));
     all_i.addActionListener(this);
     autoscale_m.add(all_i);
-    allY_i  = new MenuItem("All Y", new MenuShortcut(KeyEvent.VK_Y));
+    allY_i  = new JMenuItem("All Y");
+    allY_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
     autoscale_m.add(allY_i);
     allY_i.addActionListener(this);
     
-    network_m = new Menu("Network");
+    network_m = new JMenu("Network");
     mb.add(network_m);
-    fast_network_i = new CheckboxMenuItem("Fast network access", false);
+
+    fast_network_i = new JCheckBoxMenuItem("Fast network access", false);
     network_m.add(fast_network_i);
-    fast_network_i.addItemListener(this);        
-    servers_m  = new Menu("Servers");
+    fast_network_i.addItemListener(this);
+
+    use_cache_i = new JCheckBoxMenuItem("Enable signals cache", false);
+    network_m.add(use_cache_i);
+    use_cache_i.addItemListener(this);
+
+    free_cache_i = new JMenuItem("Free cache");
+    network_m.add(free_cache_i);
+    free_cache_i.addActionListener(new ActionListener()
+	    {
+	        public void actionPerformed(ActionEvent e)
+            {
+                String cache_directory = System.getProperty("Signal.cache_directory");
+                Object[] options = { "OK", "CANCEL" };
+                int opt = JOptionPane.showOptionDialog(null, "Remove all files in jScope cache directory "+ cache_directory, "Warning", 
+                            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                            null, options, options[0]);
+	            if (opt == JOptionPane.OK_OPTION)
+	                    wave_panel.freeCache();
+	        }
+	    }
+	);
+
+
+
+    enable_compression_i = new JCheckBoxMenuItem("Enable compression", false);
+    network_m.add(enable_compression_i);
+    enable_compression_i.addItemListener(this);
+
+    servers_m  = new JMenu("Servers");
     network_m.add(servers_m);
     servers_m.addActionListener(this);
-    server_list_i  = new MenuItem("Edit server list ...");
+    server_list_i  = new JMenuItem("Edit server list ...");
     network_m.add(server_list_i);
     server_list_i.addActionListener(this);
     
-    point_pos = new Label("[0.000000000, 0.000000000]");
+    point_pos = new JLabel("[0.000000000, 0.000000000]");
     point_pos.setFont(new Font("Courier", Font.PLAIN, 12));
-    info_text = new TextField(" Status : ", 65);
-     
+    info_text = new JTextField(" Status : ", 85);
+    info_text.setBorder(BorderFactory.createLoweredBevelBorder());
+
+    JPanel progress_pan = new JPanel(new FlowLayout(2,0,0));
+    progress_bar = new JProgressBar(0, 100);
+    progress_bar.setBorder(BorderFactory.createLoweredBevelBorder());
+    progress_bar.setStringPainted(true);
+    progress_pan.add(progress_bar);
+   // print_icon = new JLabel();
+   // print_icon.setIcon(new ImageIcon("print2.gif"));
+   // progress_pan.add(print_icon);
+    
+    
     setup_dialog = new SetupDataDialog(this, "Setup");
     
     int rows[] = {1,0,0,0};
-    wave_panel = new jScopeWaveContainer(rows, db, def_values);
+    //wave_panel = new jScopeWaveContainer(rows, db, def_values);
+    wave_panel = new jScopeWaveContainer(rows, def_values);
                                      
     wave_panel.addWaveContainerListener(this);
         
-    
-    
-    
     wave_panel.SetParams(Waveform.MODE_ZOOM,
                                 setup_default.getGridMode(), 
+                                setup_default.getLegendMode(), 
                                 setup_default.getXLines(),
                                 setup_default.getYLines(), 
                                 setup_default.getReversed());
                                 
     wave_panel.setPopupMenu(new jScopeWavePopup(setup_dialog));
     
-    add("Center", wave_panel);
+    getContentPane().add("Center", wave_panel);
 
     
-    panel = new Panel();
+    panel = new JPanel();
     panel.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
-    shot_l = new Label("Shot");
+    shot_l = new JLabel("Shot");
     
-    shot_t = new TextField(10);
+    shot_t = new JTextField(10);
     shot_t.addActionListener(this);
     shot_t.addFocusListener( new FocusAdapter()
         {
            public void focusLost(FocusEvent e)
            {
-                MdsWaveInterface.SetMainShot(shot_t.getText().trim());
+                wave_panel.setMainShotStr(shot_t.getText().trim());
            }
         }
     );
     
-    apply_b  = new Button("Apply");
+    apply_b  = new JButton("Apply");
     apply_b.addActionListener(this);
-    point = new Checkbox("Point", pointer_mode, false);
+    
+    point = new JRadioButton("Point");//, pointer_mode, false);
     point.addItemListener(this);
-    zoom  = new Checkbox("Zoom", pointer_mode, true);
+    zoom  = new JRadioButton("Zoom", true);//, pointer_mode, true);
     zoom.addItemListener(this);
-    pan  = new Checkbox("Pan", pointer_mode, false);
+    pan  = new JRadioButton("Pan");//, pointer_mode, false);
     pan.addItemListener(this);
-    copy  = new Checkbox("Copy", pointer_mode, false);
+    copy  = new JRadioButton("Copy");//, pointer_mode, false);
     copy.addItemListener(this);
+
+    pointer_mode.add(point);
+    pointer_mode.add(zoom);
+    pointer_mode.add(pan);
+    pointer_mode.add(copy);
 
     panel.add(point);
     panel.add(zoom);
     panel.add(pan);
-    panel.add(copy);    
+    panel.add(copy);
     panel.add(shot_l);
     panel.add(shot_t);    
     panel.add(apply_b);
-    panel.add(new Label(" Signal: "));
+    panel.add(new JLabel(" Signal: "));
 
-    Panel panel3 = new Panel();
+    JPanel panel3 = new JPanel();
     GridBagLayout gridbag = new GridBagLayout();
     GridBagConstraints c = new GridBagConstraints();
     Insets insets = new Insets(2,2,2,2);
@@ -749,33 +627,35 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     c.weightx = 1.0; 	
     c.gridwidth = 1;	
  
-    signal_expr  = new TextField(25);
+    signal_expr  = new JTextField(25);
     signal_expr.addActionListener(this);
 
     gridbag.setConstraints(signal_expr, c);
     panel3.add(signal_expr);
 
-    Panel panel4 = new Panel(new BorderLayout());
+    JPanel panel4 = new JPanel(new BorderLayout());
     panel4.add("West", panel);
     panel4.add("Center", panel3);
     
 
-    Panel panel2 = new Panel();
-    
+    JPanel panel2 = new JPanel();
+   
     panel2.setLayout(new BorderLayout());
+    panel2.add(BorderLayout.WEST, progress_pan);        
     panel2.add(BorderLayout.CENTER, info_text);    
-    panel2.add(BorderLayout.EAST, net_text  = new TextField(" Data server :", 30));
+    panel2.add(BorderLayout.EAST, net_text  = new JTextField(" Data server :", 25));
+    net_text.setBorder(BorderFactory.createLoweredBevelBorder());
     info_text.setEditable(false);
     net_text.setEditable(false);
      
        
-    panel1 = new Panel();
+    panel1 = new JPanel();
     panel1.setLayout(new BorderLayout());
     panel1.add("North", panel4);
     panel1.add("Center", point_pos);
     panel1.add("South", panel2);
 
-    add("South",panel1);
+    getContentPane().add("South",panel1);
        
     color_dialog.SetReversed(setup_default.getReversed());
 
@@ -783,7 +663,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     {
         Thread mon_mem = new MonMemory();           
         mon_mem.start();        
-	    Button exec_gc = new Button("Exec gc");
+	    JButton exec_gc = new JButton("Exec gc");
 	    exec_gc.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -803,6 +683,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   {
                  public void run() 
                     {
+                        setName("Monitor Thread");
                         try
                         {
                         while(true)
@@ -843,49 +724,77 @@ public class jScope extends Frame implements ActionListener, ItemListener,
         System.out.println(e);
     }
   }
-  
+ 
   private void GetPropertiesValue()
   {
     if(rb == null) return;
+    Properties p = System.getProperties();
     
     try {
         curr_directory = rb.getString("jScope.directory");
-        default_server = rb.getString("jScope.default_server");
-        String cache_directory = rb.getString("jScope.cache_directory");
-        String cache_size = rb.getString("jScope.cache_size");
-        Properties p = System.getProperties();
+    }
+    catch(MissingResourceException e){}
+    try {
+        default_server = (String)rb.getString("jScope.default_server");
+    }
+    catch(MissingResourceException e){}
+    try {
+        String cache_directory = (String)rb.getString("jScope.cache_directory");
         p.put("Signal.cache_directory", cache_directory);
+    }
+    catch(MissingResourceException e){}
+    try {
+        String cache_size = (String)rb.getString("jScope.cache_size");
         p.put("Signal.cache_size", cache_size);
+    }
+    catch(MissingResourceException e){}
+    try {
+        String f_name = (String)rb.getString("jScope.save_selected_points");
+        p.put("jScope.save_selected_points", f_name);
     }
     catch(MissingResourceException e){}
   }
   
   
-  public void EvaluateWave(jScopeMultiWave w, String shot, boolean add_sig)
+  public void InitProperties_VM11()
   {
-        int wave_mode;
-    
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        //wave_mode = w.GetMode();
-	    //w.SetMode(Waveform.MODE_WAIT);
-	    SetStatusLabel("Update signals for shots " + shot);
-        try
-        {
-           // String full_error = wave_panel.EvaluateWave(w, add_sig);
-            String full_error = wave_panel.Refresh(w, "Update ");
-		    if(full_error != null)
-		        error_msg.ShowErrorMessage(this, full_error);
-	        //if(!add_sig)
-	        //    w.SetErrorTitle();
-	         
-	        SetStatusLabel("Wave is up to date");
-	    } catch (Throwable e) {	        
-	        SetStatusLabel("Error during apply: "+e);	    
-	    }
-	    //w.SetMode(wave_mode);
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+    try
+    {
+        String f_name = System.getProperty("user.home")+ File.separator + "jScope.properties";
+        if(is_debug)
+            System.out.println("Properties file "+f_name);
+        prb = new PropertyResourceBundle(new FileInputStream(f_name));
+    } 
+    catch( FileNotFoundException e)
+    {
+        System.out.println(e);
     }
+    catch( IOException e)
+    {
+        System.out.println(e);
+    }
+  }
+  
+  
+  private void GetPropertiesValue_VM11()
+  {    
+    if(prb == null) return;
     
+    curr_directory = (String)prb.handleGetObject("jScope.directory");
+    default_server = (String)prb.handleGetObject("jScope.default_server");
+    String cache_directory = (String)prb.handleGetObject("jScope.cache_directory");
+    String cache_size = (String)prb.handleGetObject("jScope.cache_size");
+    String f_name = (String)prb.handleGetObject("jScope.save_selected_points");
+    Properties p = System.getProperties();
+    if(cache_directory != null)
+        p.put("Signal.cache_directory", cache_directory);
+    if(cache_size != null)
+        p.put("Signal.cache_size", cache_size);
+    if(f_name != null)
+        p.put("jScope.save_selected_points", f_name);
+  }
+  
+  
   PropertyResourceBundle res_values;
     
   private boolean IsIpAddress(String addr)
@@ -901,66 +810,28 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   {
     String is_local = null;
     String ip_addr = null;
+    String srv_name;
 
     Properties props = System.getProperties();
     is_local = props.getProperty("data.is_local");
     ip_addr = props.getProperty("data.address");
-    server_diag = new ServerDialog((Frame)this, "Server list");  
+    server_diag = new ServerDialog(this, "Server list");  
     
-    wave_panel.RemoveAllEvents(this);
     
     if(ip_addr != null || is_local == null || (is_local != null && is_local.equals("no")))
-    {   		               
+    {
 	    if(ip_addr == null)
-	    {
-	        wave_panel.SetServerName(default_server);
-	    } else {
-	        wave_panel.SetServerName(ip_addr);
+	        srv_name = default_server;
+	    else {
+	        srv_name = ip_addr;
 	        server_diag.addServerIp(ip_addr);
 	    }
-	    
-        if(IsIpAddress(wave_panel.GetServerName())) {
-		    fast_network_i.setEnabled(true);
-	        db = new NetworkProvider(wave_panel.GetServerName());
-	    } else
-	        SetDataServer(wave_panel.GetServerName());
     }
-    else {
-	    if(!not_sup_local)
-	    {
-	        try {
-		        db = new LocalProvider();
-		        wave_panel.SetFastNetworkState(false);				
-		        fast_network_i.setState(wave_panel.GetFastNetworkState());
-		        fast_network_i.setEnabled(false);
-		        wave_panel.SetServerName("Local");
-	        } catch (Throwable ex) {
-		        not_sup_local = true;
-		        servers_m.getItem(0).setEnabled(false); //local server sempre indice 0
-		        wave_panel.SetServerName(default_server);
-                if(IsIpAddress(default_server)) {
-		            fast_network_i.setEnabled(true);
-	                db = new NetworkProvider(default_server);
-	            } else
-	                SetDataServer(wave_panel.GetServerName());
-	        }
-	    } else {
-	        servers_m.getItem(0).setEnabled(false); //local server sempre indice 0
-	        wave_panel.SetServerName(default_server);
-            if(IsIpAddress(default_server)) {
-		        fast_network_i.setEnabled(true);
-	            db = new NetworkProvider(default_server);
-	        } else
-	            SetDataServer(wave_panel.GetServerName());
-	    } 
-     }
-
-     if(IsIpAddress(wave_panel.GetServerName()))
-        wave_panel.ChangeDataProvider(db);
-
-     wave_panel.RemoveAllEvents(this);
-     setDataServerLabel();
+    else
+        srv_name = "Local";
      
+     if(SetDataServer(srv_name) != null && !srv_name.equals(default_server))
+        SetDataServer(default_server);
   }
 
 
@@ -975,6 +846,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   public void SetStatusLabel(String msg)
   {
     //setup.SetStatusLabel(msg);
+    //System.out.println(">>>>>>>>>>>> E' in event dispatch thread "+SwingUtilities.isEventDispatchThread());
+    //System.out.println(">>>>>>>>>>>> view Status "+msg);
     info_text.setText(" Status: " + msg);
   }
   
@@ -987,11 +860,11 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   
   private void addServers()
   {
-     MenuItem item;
+     JMenuItem item;
      
      for(int i = 0; i < server_ip_list.length; i++) 
      {
-	    item = new MenuItem(server_ip_list[i]);
+	    item = new JMenuItem(server_ip_list[i]);
 	    servers_m.add(item);
 	    item.addActionListener(this);
      } 
@@ -1055,9 +928,11 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     
   public void UpdateAllWaves()
   {
-      apply_b.setLabel("Abort");
-      setPublicVariables(pub_var_diag.getPublicVar());
-      wave_panel.StartUpdate(shot_t.getText());
+	   executing_update = true;
+       apply_b.setText("Abort");
+       setPublicVariables(pub_var_diag.getPublicVar());
+       wave_panel.initMdsWaveInterface();
+       wave_panel.StartUpdate();
   }
   
   
@@ -1092,6 +967,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 //	    } 
 	
 	    if(conf_file == null || conf_file.length() == 0) return;
+
+	    last_directory = new String(conf_file);
 	
 	    f = new File(conf_file);    
 	    if(f.exists()) f.delete();   
@@ -1109,19 +986,28 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   {
 	if(modified)
 	{
-	    warning_msg.setLabels("Save change to the configuration file before closing ?", 
-				  "Don't Save", "Cancel", "Save");
-	    warning_msg.showMessage();
-	    switch(warning_msg.getState())
+	    Object[] options = {"Save",
+                            "Don't Save",
+                            "Cancel"};
+        int opt = JOptionPane.showOptionDialog(null,
+            "Save change to the configuration file before closing ?",
+            "Warning",
+            JOptionPane.YES_NO_CANCEL_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            options,
+            options[0]);
+
+        switch(opt)
 	    {
-		case 3:
-		    if(config_file == null)
-			    SaveAs();
-		    else
-			    SaveConfiguration(config_file);	
-		case 1:
-		    exitScope();
-		break;
+		    case JOptionPane.YES_OPTION:
+		        if(config_file == null)
+			        SaveAs();
+		        else
+			        SaveConfiguration(config_file);	
+		    case JOptionPane.NO_OPTION:
+		        exitScope();
+		    break;
 	    }
 	} else {
         exitScope();
@@ -1132,7 +1018,10 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   {
      //removeAll();
      //setVisible(false);
-     wave_panel.RemoveAllEvents(this);  
+     try 
+     {
+        wave_panel.RemoveAllEvents(this);  
+     } catch(IOException e){}
      dispose();
      num_scope--;
      System.gc();
@@ -1140,66 +1029,103 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   
   private void SaveAs()
   {
-	    file_diag = new FileDialog(this, "Save current setting as", FileDialog.SAVE);
 	    if(curr_directory != null)
-	        file_diag.setDirectory(curr_directory);
-        file_diag.pack();
-        file_diag.show();
-	    String d = file_diag.getDirectory();
-	    String f = file_diag.getFile();
-	    if(f != null && f.trim().length() != 0 && 
-	       d != null && d.trim().length() != 0)
-	    {
-            curr_directory = d;
-	        curr_file_name = f;
-	        last_directory = new String(curr_directory);
-	        last_file_name = new String(curr_file_name); 
-	        config_file = curr_directory + curr_file_name;
-	    } else
-	        config_file = null;
+	        file_diag.setCurrentDirectory(new File(curr_directory));
 
-	    if(config_file != null)
-	        SaveConfiguration(config_file);	
-	    file_diag = null;
+//	    int returnVal = file_diag.showSaveDialog(this);
+
+        javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                int returnVal = file_diag.showSaveDialog(jScope.this);
+                if (returnVal == JFileChooser.APPROVE_OPTION) 
+                {
+                        File file = file_diag.getSelectedFile();
+                        String d = file.getAbsolutePath();
+	                String f = file.getName();
+	                if(f != null && f.trim().length() != 0 && 
+	                    d != null && d.trim().length() != 0)
+	                {
+                            curr_directory = d;
+	                    config_file = curr_directory;
+	                } else
+	                    config_file = null;
+	                if(config_file != null)
+	                    SaveConfiguration(config_file);	
+	            }
+             }
+        });
+        t.setRepeats(false);
+        t.start();
   }
-  
+
   private void LoadConfigurationFrom()
   {
-	file_diag = new FileDialog(this, "Use saved setting from", FileDialog.LOAD);      
+     
+
 	if(curr_directory != null)
-	    file_diag.setDirectory(curr_directory); 
-    file_diag.pack();
-    file_diag.show();
-	String d = file_diag.getDirectory();
-	String f = file_diag.getFile();
-	if(f != null && f.trim().length() != 0 && d != null && d.trim().length() != 0)
-	{ 
-//	   last_directory = curr_directory;
-//	   last_file_name = curr_file_name; 
-	   curr_directory = d;
-	   curr_file_name = f;
-//	   config_file = curr_directory + curr_file_name;
-       LoadConf(curr_directory + curr_file_name );//config_file);
-	} else
-	   config_file = null;
-	file_diag =  null;      
+	    file_diag.setCurrentDirectory(new File(curr_directory));
+
+	//int returnVal = file_diag.showOpenDialog(this);
+
+    javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
+        public void actionPerformed(ActionEvent ae) {
+            int returnVal = file_diag.showOpenDialog(jScope.this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) 
+	        {    	    
+                File file = file_diag.getSelectedFile();
+                String d = file.getAbsolutePath();
+	            String f = file.getName();
+	            if(f != null && f.trim().length() != 0 && d != null && d.trim().length() != 0)
+	            { 
+	                curr_directory = d;
+			        config_file = curr_directory;
+                    LoadConf();
+	            }
+	        }     
+	    }
+    });
+    t.setRepeats(false);
+    t.start();
   }
   
   public String SetDataServer(String new_data_server)
   {
     String error = null;
     
-    if((error = wave_panel.SetDataServer(new_data_server)) == null)
+    if((error = wave_panel.SetDataServer(new_data_server, this)) != null)
     {
-        //UpdateAllWaves(false); Update all waves on user request
-        setDataServerLabel();
-        fast_network_i.setState(wave_panel.GetFastNetworkState());
-        fast_network_i.setEnabled(wave_panel.SupportFastNetwork());
-    } else {
-        error_msg.setMessage(error);
-        error_msg.showMessage();
+		JOptionPane.showMessageDialog(null, error, "alert", JOptionPane.ERROR_MESSAGE); 
     }   
+
+    if(!wave_panel.supportsLocalProvider())
+	    servers_m.getItem(0).setEnabled(false); //local server sempre indice 0
+    else
+	    servers_m.getItem(0).setEnabled(true); //local server sempre indice 0
+          
+    
+    fast_network_i.setEnabled(wave_panel.supportsFastNetwork());
+    fast_network_i.setState(wave_panel.GetFastNetworkState());
+    	
+    enable_compression_i.setEnabled(wave_panel.supportsCompression());
+    enable_compression_i.setState(wave_panel.compressionEnable());
+
+    if(wave_panel.supportsCache())
+    {
+        use_cache_i.setEnabled(true);
+        use_cache_i.setState(wave_panel.isCacheEnabled());
+        free_cache_i.setEnabled(true);        
+    } else {
+        use_cache_i.setEnabled(false);
+        free_cache_i.setEnabled(false);
+    }
+    
+    setDataServerLabel();
+		
 	return error;    
+  }
+  
+  private void updateServerMenu()
+  {
   }
 
   public void UpdateFont()
@@ -1220,29 +1146,39 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
     	boolean is_changed = false;
     	
-	    if((is_changed = setup_default.IsChanged(def_values)))
+    	try
+    	{
+        	
+	        if((is_changed = setup_default.IsChanged(def_values)))
+	        {
+	            wave_panel.RemoveAllEvents(this);
+	            setup_default.SaveDefaultConfiguration(def_values);
+	            InvalidateDefaults();
+ 	            wave_panel.AddAllEvents(this);
+	            UpdateAllWaves();
+	        } else
+	            setup_default.SaveDefaultConfiguration(def_values);
+    	        
+	        wave_panel.SetParams(wave_panel.GetMode(), 
+                                setup_default.getGridMode(), 
+                                setup_default.getLegendMode(), 
+                                setup_default.getXLines(),
+                                setup_default.getYLines(), 
+                                setup_default.getReversed());
+                                                             
+
+	        color_dialog.SetReversed(setup_default.getReversed());
+    	    
+	        UpdateColors();
+
+	        if(!is_changed)
+	            RepaintAllWaves();
+	            
+	    } 
+	    catch (IOException e) 
 	    {
-	        wave_panel.RemoveAllEvents(this);
-	        setup_default.SaveDefaultConfiguration(def_values);
-	        InvalidateDefaults();
- 	        wave_panel.AddAllEvent(this);
-	        UpdateAllWaves();
-	    } else
-	        setup_default.SaveDefaultConfiguration(def_values);
-	        
-        wave_panel.SetParams(wave_panel.GetMode(), 
-                             setup_default.getGridMode(), 
-                             setup_default.getXLines(),
-                             setup_default.getYLines(), 
-                             setup_default.getReversed());
-                                                         
-
-	    color_dialog.SetReversed(setup_default.getReversed());
-	    
-	    UpdateColors();
-
-	    if(!is_changed)
-	      RepaintAllWaves();
+		    JOptionPane.showMessageDialog(null, e.getMessage(), "alert", JOptionPane.ERROR_MESSAGE); 
+	    }
   }
   
   private void PrintAllWaves()
@@ -1255,37 +1191,22 @@ public class jScope extends Frame implements ActionListener, ItemListener,
                 System.out.println("Error on printing");
             }
         } else {
-    	    error_msg.setMessage("Print on event is available on jdk 1.2 or later\n");
-    	    error_msg.showMessage();
+		    JOptionPane.showMessageDialog(null, "Print on event is available on jdk 1.2 or later", 
+		                                  "alert", JOptionPane.ERROR_MESSAGE); 
         }
   }
   
-/*
-  private String SetStrSize(String s, int size)
-  {
-	    StringBuffer sb = new StringBuffer(size);
-	
-	    sb.append(s.substring(0, ((s.length() < size) ? s.length() : size)));
 
-    	if(sb.length() < size)
-	    {
-	        for(int i = sb.length(); i < size; i++)
-		    sb.append(" ");
-	    }	
-	    return (new String(sb));
-  }
-
-*/
   public void processWaveContainerEvent(WaveContainerEvent e)
   {
      String s = null;
 	 int event_id = e.getID();
-	 	 
+
 	 switch(event_id)
 	 {
 	    case WaveContainerEvent.END_UPDATE:
 	    case WaveContainerEvent.KILL_UPDATE:
-	        apply_b.setLabel("Apply");
+	        apply_b.setText("Apply");
 	        executing_update = false;
 	    case WaveContainerEvent.START_UPDATE:
 	        SetStatusLabel(e.info);
@@ -1295,7 +1216,6 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	        WaveformEvent we = (WaveformEvent)e.we;
 	        jScopeMultiWave w = (jScopeMultiWave)we.getSource();
 	        MdsWaveInterface  wi = (MdsWaveInterface)w.wi;
-	      //  wi.signal_select = we.signal_idx;
 	        int we_id = we.getID();
 	        
 	        switch(we_id)
@@ -1305,6 +1225,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	            break;
     	        case WaveformEvent.MEASURE_UPDATE:
 	            case WaveformEvent.POINT_UPDATE:
+	            case WaveformEvent.POINT_IMAGE_UPDATE:
        	            s = we.toString();
 	                if(wi.shots != null)
 	                {
@@ -1324,34 +1245,53 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	 }        
   }
 
+    public void processNetworkTransferEvent(NetworkEvent e)
+    {
+        if(e.info != null)
+        {
+            progress_bar.setString(e.info);
+        } else {
+            int v = (int)((float)e.current_size/e.total_size * 100.);
+            progress_bar.setValue(v);
+            progress_bar.setString(""+v+"%");
+        }
+    }
+
   public void processNetworkEvent(NetworkEvent e)
   {     
      String print_event = wave_panel.GetPrintEvent();
      String event = wave_panel.GetEvent();
      
+     setMainShot();
      if(e.name.equals(event))
-        wave_panel.StartUpdate(shot_t.getText());
+        wave_panel.StartUpdate();
      if(e.name.equals(print_event))
-        wave_panel.StartPrint(shot_t.getText(),  prnJob,  pf);
+        wave_panel.StartPrint(prnJob,  pf);
   }
 
     
   public void actionPerformed(ActionEvent e) {
 
     Object ob = e.getSource();
-    
+    String action_cmd = null;
     
     if(ob != open_i)
         wave_panel.RemoveSelection();
     
-    if(ob instanceof MenuItem)
-    {
-	    if(((MenuItem)ob).getParent() == servers_m)
+    if(ob instanceof AbstractButton)
+        action_cmd = ((AbstractButton)ob).getModel().getActionCommand();	        
+
+	if(action_cmd != null)
+	{
+	    StringTokenizer act = new StringTokenizer(action_cmd);
+	    String action = act.nextToken();
+
+	    if(action.equals("SET_SERVER"))
 	    {
-	        String server = ((MenuItem)ob).getLabel();
-	        if(!wave_panel.GetServerName().equals(server) )
+	        String value = action_cmd.substring(action.length()+1);
+	        if(!wave_panel.GetServerName().equals(value) )
 	        {
-	            SetDataServer(new String(server));
+	            SetDataServer(new String(value));
     	    }
         }
     }
@@ -1364,26 +1304,20 @@ public class jScope extends Frame implements ActionListener, ItemListener,
             error = wave_panel.AddSignal(sig);
         if(error != null)
         {
-            error_msg.ShowErrorMessage(this, error);
+		    JOptionPane.showMessageDialog(null, error, "alert", JOptionPane.ERROR_MESSAGE); 
         }      
     }
 
     
     if(ob == apply_b || ob == shot_t)
-    {
-        MdsWaveInterface.SetMainShot(shot_t.getText().trim());
-        
+    {        
     	if(executing_update) 
     	{
-	        if(ob == apply_b){
+	        if(ob == apply_b)
 	            wave_panel.AbortUpdate();
-//                isUpdateAllWaves = false;
-//                apply_b.setLabel("Apply");
-//		        abort = true;
-//		        SetStatusLabel("Aborted up to date");
-	        }	
 	    } else {
-	        executing_update = true;
+	        if (ob == shot_t)
+                wave_panel.setMainShotStr(shot_t.getText().trim());
     	    UpdateAllWaves();
 	    }	     
     }
@@ -1393,56 +1327,78 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    if(color_dialog == null) 
 	        color_dialog = new ColorDialog(this, "Color Configuration Dialog");
     	
-	    color_dialog.ShowColorDialog(wave_panel);
+        javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                jScope.this.color_dialog.ShowColorDialog(jScope.this.wave_panel);
+            }
+        });
+        t.setRepeats(false);
+        t.start();
     }
 
     if(ob == font_i)
     {
-	    font_dialog.pack();
-	    font_dialog.setPosition(wave_panel);
-	    font_dialog.show();
+	    font_dialog.setLocationRelativeTo(this);
+        javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+	            font_dialog.setVisible(true);
+            }
+        });
+        t.setRepeats(false);
+        t.start();
     }
 
     if(ob == default_i)
     {
-	    setup_default.pack();
-	    setup_default.setPosition(wave_panel);
-	    setup_default.Show(def_values);	    
+	    
+	    setup_default.setLocationRelativeTo(this);
+        javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+	            setup_default.Show(jScope.this.def_values);	    
+            }
+        });
+        t.setRepeats(false);
+        t.start();
     }
     
     
     if (ob == win_i)
     {
-	    if(win_diag == null) {
+        
+        
+        if(win_diag == null) 
 	        win_diag = new WindowDialog(this, "Window");
-        } 
-	    win_diag.ShowWindowDialog();
-        win_diag.pack();
-	    win_diag.setPosition(this);
-        win_diag.show();
-	    if(win_diag.changed)
-	    {
-	        wave_panel.ResetDrawPanel(win_diag.out_row);
-	        wave_panel.update();
-	        UpdateColors();
-	        UpdateFont();
-	    }
+      
+	    
+        javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                boolean returnFlag = win_diag.ShowWindowDialog();
+	            if(returnFlag)
+	            {
+	                wave_panel.ResetDrawPanel(win_diag.out_row);
+	                wave_panel.update();
+	                UpdateColors();
+	                UpdateFont();
+	            }
+            }
+        });
+        t.setRepeats(false);
+        t.start();
     }
 
     if (ob == use_last_i)
     {
-	    if(last_file_name != null && last_file_name.trim().length() != 0 && 
-	       last_directory != null && last_directory.trim().length() != 0)
+	    if(last_directory != null && last_directory.trim().length() != 0)
 	    {
 	        curr_directory = last_directory;
-	        curr_file_name = last_file_name; 
-	        //config_file = curr_directory + curr_file_name;  
-	        LoadConf(curr_directory + curr_file_name);//config_file);
+		    config_file = curr_directory;
+	        LoadConf();
 	    }		
     }
     
     if (ob == use_i)
     {
+ 
 	    LoadConfigurationFrom();
     }
 
@@ -1465,13 +1421,16 @@ public class jScope extends Frame implements ActionListener, ItemListener,
             {
                 public void run() 
                 {
+                     setName("Print All Thread");
                      PrintAllWaves();
                 }
             };
             print_page.start();        
-       } else {   
+       } 
+       else 
+       {   
    	        main_scope = this;
-            printThread = new PrintThread();
+		    printThread = new PrintThread();
 	        printThread.start();
        }
     }
@@ -1482,6 +1441,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
         {
           public void run() 
           {
+              setName("Page  Dialog Thread");
 	         pf = prnJob.pageDialog(pf);
           }
         };
@@ -1495,6 +1455,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
         {
           public void run() 
           {
+             setName("Print Dialog Thread");
              prnJob.printDialog();
           }
         };
@@ -1504,17 +1465,26 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     if (ob == exit_i) {
 	    if(num_scope > 1)
 	    {
-	        warning_msg.setLabels("Close all open scope", "Close this", "Cancel", "Close all");
-	        warning_msg.showMessage();
-	        switch(warning_msg.getState())
+	        Object[] options = {"Close this",
+                              "Close all",
+                              "Cancel"};
+           int opt = JOptionPane.showOptionDialog(null,
+              "Close all open scopes?",
+              "Warning",
+              JOptionPane.YES_NO_CANCEL_OPTION,
+              JOptionPane.QUESTION_MESSAGE,
+              null,
+              options,
+              options[0]);
+	        switch(opt)
 	        {
-		        case 1:
+		        case JOptionPane.YES_OPTION :
 		            closeScope();
 		        break;
-		        case 2:
-		        break;
-		        case 3:
+		        case JOptionPane.NO_OPTION:
 		            System.exit(0);
+		        break;
+		        case JOptionPane.CANCEL_OPTION:
 		        break;
 	        }
 	    } else {
@@ -1531,11 +1501,11 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     
     if (ob == open_i)
     {
-	        num_scope++;
-	        Rectangle r = getBounds();
-	        jScope new_scope = new jScope(r.x+5, r.y+40);
-	        new_scope.wave_panel.SetCopySource(wave_panel.GetCopySource());
-	        new_scope.startScope(null);
+	    num_scope++;
+	    Rectangle r = getBounds();
+	    jScope new_scope = new jScope(r.x+5, r.y+40);
+	    new_scope.wave_panel.SetCopySource(wave_panel.GetCopySource());
+	    new_scope.startScope(null);
     }		
 
     if (ob == all_i)
@@ -1550,44 +1520,52 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
      if (ob == copy_i) 
      {
-//	    wave_mode = Waveform.MODE_COPY;
 	    wave_panel.SetMode(Waveform.MODE_COPY);
-	    copy.setState(true);
+	    copy.getModel().setSelected(true);
      }
      
      if (ob == zoom_i)
      {
-//	    wave_mode = Waveform.MODE_ZOOM;
 	    wave_panel.SetMode(Waveform.MODE_ZOOM);
-	    zoom.setState(true);
+	    zoom.getModel().setSelected(true);
      }
 
      if (ob == point_i)
      {
-//	    wave_mode = Waveform.MODE_POINT;
 	    wave_panel.SetMode(Waveform.MODE_POINT);
-	    point.setState(true);
+	    point.getModel().setSelected(true);
      }
 
      if (ob == pan_i)
      {
-//	    wave_mode = Waveform.MODE_PAN;
 	    wave_panel.SetMode(Waveform.MODE_PAN);
-	    pan.setState(true);
+	    pan.getModel().setSelected(true);
      }
 
      if(ob == server_list_i)
      {
-	    server_diag.Show();
-	    server_ip_list = server_diag.getServerIpList();
+        javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+        	    server_diag.Show();
+        	    server_ip_list = server_diag.getServerIpList();
+            }
+        });
+        t.setRepeats(false);
+        t.start();
      }
 
      if(ob == pub_variables_i)
      {
-	    pub_var_diag.Show();
+        javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+	            pub_var_diag.Show();
+            }
+        });
+        t.setRepeats(false);
+        t.start();
+//	    pub_var_diag.Show();
      }
 
-     error_msg.showMessage();  
   } 
   
   
@@ -1597,102 +1575,80 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 //	for(int i = 0; i < wi.colors_idx.length; i++)
 //	    wi.colors[i] = color_dialog.GetColorAt(wi.colors_idx[i]);
    }
-  /*
-   public void setScopeAllMode(int mode, int grid_mode, 
-                               int x_grid_lines, int y_grid_lines,
-                               boolean reversed)   
-   {
-      boolean int_label = (grid_mode == 2 ? false : true);
-      
- //     wave_panel.waves[0].SetFont(font_dialog.font);
-   
-      for(int i = 0; i < wave_panel.num_waves; i++)
-      {
-	    wave_panel.waves[i].SetReversed(reversed);
-	    wave_panel.waves[i].SetMode(mode);
-	    wave_panel.waves[i].SetGridMode(grid_mode, int_label, int_label);
-	    wave_panel.waves[i].SetGridSteps(x_grid_lines, y_grid_lines);
-      }
-   }
-   
-   public void setGridLines(int x_grid_lines, int y_grid_lines)
-   {
-      for(int i = 0; i < wave_panel.num_waves; i++)
-      {
-	    wave_panel.waves[i].SetGridSteps(x_grid_lines, y_grid_lines);
-      }
-   }
-   public void setWaveMode(int mode)
-   {
-      if(wi_source != null && wave_panel.waves[0].mode == Waveform.MODE_COPY && mode != Waveform.MODE_COPY)
-      {
-        wi_source = null;
-        setup.RemoveSelection();
-      }
-      
-      for(int i = 0; i < wave_panel.num_waves; i++)
-      {
-	    wave_panel.waves[i].SetMode(mode);
-      }
-   }
-   
-   public void setGridMode(int grid_mode)
-   {
-      boolean int_label = (grid_mode == 2 ? false : true);
 
-      for(int i = 0; i < wave_panel.num_waves; i++)
-      {
-	 wave_panel.waves[i].SetGridMode(grid_mode, int_label, int_label);
-      }
-   }
-   */
    public void itemStateChanged(ItemEvent e)
    {
       
      Object ob = e.getSource();
-  
-     if (ob == copy) 
-     {
-//	wave_mode = Waveform.MODE_COPY;
-	    wave_panel.SetMode(Waveform.MODE_COPY);
-     }
-     
-     if (ob == zoom)
-     {
-//	wave_mode = Waveform.MODE_ZOOM;
-	    wave_panel.SetMode(Waveform.MODE_ZOOM);
-     }
 
-     if (ob == point)
+     try
      {
-//	wave_mode = Waveform.MODE_POINT;
-	    wave_panel.SetMode(Waveform.MODE_POINT);
-     }
+        if(ob == fast_network_i)
+        {
+	        wave_panel.SetFastNetworkState(fast_network_i.getState());
+        }
+         
+        if(ob == enable_compression_i)
+        {
+            wave_panel.setCompression(enable_compression_i.getState(), this);
+        }
+         
+        if(ob == brief_error_i)
+        {
+	        wave_panel.SetBriefError(brief_error_i.getState());
+        }
+         
+        if(ob == use_cache_i)
+        {
+	        wave_panel.enableCache(use_cache_i.getState());
+        }
 
-     if (ob == pan)
-     {
-//	wave_mode = Waveform.MODE_PAN;
-	    wave_panel.SetMode(Waveform.MODE_PAN);
-     }
-/*
-     if (ob == grid_mode)
-     {
-	    curr_grid_mode = grid_mode.getSelectedIndex();
-	    setGridMode(curr_grid_mode);	
-     }
-*/
+        if(e.getStateChange() != ItemEvent.SELECTED)
+            return;
+      
+        if (ob == copy) 
+        {
+	        wave_panel.SetMode(Waveform.MODE_COPY);
+        }
+         
+        if (ob == zoom)
+        {
+	        wave_panel.SetMode(Waveform.MODE_ZOOM);
+        }
+
+        if (ob == point)
+        {
+	        wave_panel.SetMode(Waveform.MODE_POINT);
+        }
+
+        if (ob == pan)
+        {
+	        wave_panel.SetMode(Waveform.MODE_PAN);
+        }
+    }
+	catch (IOException ev) 
+	{
+		JOptionPane.showMessageDialog(null, ev.getMessage(), "alert", JOptionPane.ERROR_MESSAGE); 
+	}        
 
 
-     if(ob == fast_network_i)
-     {
-	    wave_panel.SetFastNetworkState(fast_network_i.getState());
-     }
-     
-     if(ob == brief_error_i)
-     {
-	    wave_panel.SetBriefError(brief_error_i.getState());
-     }
   }
+  
+  private String setMainShot()
+  {
+    /*
+        String error = null;
+        try
+        {
+            error = wave_panel.evaluateMainShot(shot_t.getText().trim());
+        } 
+        catch (IOException e) 
+        {
+		     error = e + "\n";
+        }
+        */
+        return null;                
+  }  
   
   public void SetWindowTitle(String info)
   {
@@ -1775,24 +1731,37 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   {
     Reset();
     if(line != null)
-	   error_msg.setMessage("File configuration syntax error\n Line : "+line+"\n");
+		JOptionPane.showMessageDialog(null, "File configuration syntax error\n Line : "+line, 
+		                                  "alert", JOptionPane.ERROR_MESSAGE); 
     else
-	   error_msg.setMessage("File configuration syntax error\n");        
-    error_msg.showMessage();
+	   JOptionPane.showMessageDialog(null, "File configuration syntax error " + "<" + config_file + ">", 
+		                                  "alert", JOptionPane.ERROR_MESSAGE); 
   }
   
-  public void LoadConf(String in)
+  public void LoadConf()
   {
-    ReaderConfig rc = null;
-    config_file = in;
-    try {
-        LoadConf(rc = new ReaderConfig(new FileReader(in)));
-    } catch (IOException e){
-        if(rc != null)
-            LoadConfError(rc.readCurrLine());
-        else
-            LoadConfError(null);
-     }
+
+      if(config_file == null) return;
+
+       //    Thread ld_cnf = new Thread()
+       //     {
+	   //	      String in;
+       //         public void run() 
+       //         {
+		            ReaderConfig rc = null;
+		            try {
+			            LoadConf(rc = new ReaderConfig(new FileReader(config_file)));
+		            } catch (IOException e){
+			            if(rc != null)
+			                LoadConfError(rc.readCurrLine());
+			            else
+			                LoadConfError(null);
+		            }
+         //       }
+
+         //  };
+
+         //  ld_cnf.start();        
   }
 
   public void LoadConf(ReaderConfig in)
@@ -1800,41 +1769,21 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     String curr_dsa = wave_panel.GetServerName();
     String error = null;
     
-    wave_panel.RemoveAllEvents(this);
     wave_panel.EraseAllWave();
     if((error = LoadFromFile(in)) == null)
     { 
-//	    if(applet_type != PURE_APPLET)
-//	        fast_network_i.setState(wave_panel.GetFastNetworkState());
-//	    setup.updateHeight();	
-//	    setup.SetFastNetworkAll(setup.fast_network_access);
 	    setBounds(xpos, ypos, width, height);
         UpdateColors();
         UpdateFont();
 	    wave_panel.update();	
 	    validate();
-//	    wave_panel.UpdateWavePanel();
-//        wave_panel.SetParams(Waveform.MODE_ZOOM, 
-//                               setup_default.getGridMode(), 
-//                               setup_default.getXLines(),
-//                               setup_default.getYLines(), 
-//                               setup_default.getReversed());
-
 	    if(wave_panel.GetServerName() != null && !curr_dsa.equals(wave_panel.GetServerName()))
-        {
-	        wave_panel.SetDataServer(wave_panel.GetServerName());
-    	    server_diag.addServerIp(wave_panel.GetServerName());
-    	}
-	    else 
-	    {
-	        wave_panel.SetServerName(curr_dsa);
-	    }
-    	UpdateAllWaves();
-    	setDataServerLabel();
-    	wave_panel.AddAllEvent(this);    
+    	        server_diag.addServerIp(wave_panel.GetServerName());
+            SetDataServer(wave_panel.GetServerName());
+   	    UpdateAllWaves();
     } else {
-        error_msg.setMessage(error+"\n");
-        LoadConfError(in.readCurrLine());
+	    JOptionPane.showMessageDialog(null, error, "alert", JOptionPane.ERROR_MESSAGE); 
+            LoadConfError(in.readCurrLine());
     }
     SetWindowTitle("");
     System.gc();
@@ -1843,8 +1792,11 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
   public void startScope(String file)
   {
-//        if(file != null)
-//	        config_file = new String(file);
+        if(file != null)
+	    {
+	       config_file = new String(file);
+	       LoadConf();
+	    }
         MACfile = null;    
 //        pack();
 //        if(file == null) 
@@ -1859,6 +1811,14 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   {
     String file = null;    
     
+    try {
+            UIManager.setLookAndFeel(
+                UIManager.getCrossPlatformLookAndFeelClassName());
+    } catch (Exception e) { }
+
+   // RepaintManager.setCurrentManager(new VerboseRepaintManager());
+
+
     jScope win = new jScope(100, 100);
     
     win.pack();
@@ -1866,14 +1826,14 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	win.setSize(750, 550);
     if(args.length == 1) {
         win.show();  
-	    file = new String(args[0]); 
-	    win.LoadConf(args[0]);
+        file = new String(args[0]); 
+	//win.LoadConf(args[0]);
     }
     
     if(MACfile != null) {
         win.show();  
-	    file = new String(MACfile); 
-	    win.LoadConf(MACfile);
+	file = new String(MACfile); 
+	    //  win.LoadConf(MACfile);
     }
     
     num_scope++;
@@ -1883,8 +1843,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
   public void windowClosing(WindowEvent e)
   {
-    num_scope--;
-    if(num_scope == 0)
+    if(num_scope == 1)
        System.exit(0);
     else
        exitScope();
@@ -1932,26 +1891,27 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    new_scope.setSize(750, 550);
 	    new_scope.show();
 	    new_scope.wave_panel.SetCopySource(wave_panel.GetCopySource());
-	    new_scope.LoadConf(MACfile);
-	    new_scope.startScope(file.toString());
+	    //new_scope.LoadConf(MACfile);
+	    new_scope.startScope(MACfile);
       }
    
    }
 
 }
 
-class WindowDialog extends ScopePositionDialog {
+class WindowDialog extends JDialog implements ActionListener 
+{
     
-    TextField titleText, iconText, eventText, printEventText;
-    Slider row_1, row_2, row_3, row_4;
-    Button ok, apply, cancel;
+    JTextField titleText, iconText, eventText, printEventText;
+    JSlider row_1, row_2, row_3, row_4;
+    JButton ok, apply, cancel;
     jScope parent;
-    Label label;
+    JLabel label;
     int out_row[] = new int[4];
     int in_row[];
     boolean changed = false;	
 
-    WindowDialog(Frame dw, String title) {
+    WindowDialog(JFrame dw, String title) {
 
         super(dw, title, true);
 	    setResizable(false);
@@ -1963,84 +1923,112 @@ class WindowDialog extends ScopePositionDialog {
 
         GridBagConstraints c = new GridBagConstraints();
         GridBagLayout gridbag = new GridBagLayout();
-        setLayout(gridbag);        
+        getContentPane().setLayout(gridbag);        
 
 	    c.insets = new Insets(4, 4, 4, 4);
         c.fill = GridBagConstraints.BOTH;
 
         c.gridwidth = GridBagConstraints.REMAINDER;
-	    label = new Label("Rows in Column");
+	    label = new JLabel("Rows in Column");
         gridbag.setConstraints(label, c);
-        add(label);
+        getContentPane().add(label);
 
- 	    Panel p = new Panel();
+ 	    JPanel p = new JPanel();
         p.setLayout(new FlowLayout(FlowLayout.LEFT));
         c.gridwidth = GridBagConstraints.BOTH;
 	
-	    row_1 = new Slider(Slider.VERTICAL, Slider.POS_LABEL_LEFT, 1, 1, 16);	
-	    row_2 = new Slider(Slider.VERTICAL, Slider.POS_LABEL_LEFT, 0, 0, 16);
-	    row_3 = new Slider(Slider.VERTICAL, Slider.POS_LABEL_LEFT, 0, 0, 16);
-	    row_4 = new Slider(Slider.VERTICAL, Slider.POS_LABEL_LEFT, 0, 0, 16);	
+	    row_1 = new JSlider(JSlider.VERTICAL,  1, 16, 1);
+        //row_1.setMajorTickSpacing(4);
+        row_1.setMinorTickSpacing(1);
+        row_1.setPaintTicks(true);
+        row_1.setPaintLabels(true);
+        Hashtable labelTable = new Hashtable();
+        labelTable.put( new Integer( 1 ), new JLabel("1") );
+        labelTable.put( new Integer( 4 ), new JLabel("4") );
+        labelTable.put( new Integer( 8 ), new JLabel("8") );
+        labelTable.put( new Integer( 12 ), new JLabel("12") );
+        labelTable.put( new Integer( 16 ), new JLabel("16") );
+        row_1.setLabelTable( labelTable );
+        
+        row_1.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
+        row_2 = new JSlider(JSlider.VERTICAL,  0, 16, 0);
+        row_2.setMajorTickSpacing(4);
+        row_2.setMinorTickSpacing(1);
+        row_2.setPaintTicks(true);
+        row_2.setPaintLabels(true);
+        row_2.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
+	    row_3 = new JSlider(JSlider.VERTICAL,  0, 16, 0);
+        row_3.setMajorTickSpacing(4);
+        row_3.setMinorTickSpacing(1);
+        row_3.setPaintTicks(true);
+        row_3.setPaintLabels(true);
+        row_3.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
+	    row_4 = new JSlider(JSlider.VERTICAL,  0, 16, 0);	
+        row_4.setMajorTickSpacing(4);
+        row_4.setMinorTickSpacing(1);
+        row_4.setPaintTicks(true);
+        row_4.setPaintLabels(true);
+        row_4.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
 	
 	    c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(p, c);
-	    add(p);
+	    getContentPane().add(p);
         p.add(row_1);
         p.add(row_2);
         p.add(row_3);
         p.add(row_4);
 
 	    c.gridwidth = GridBagConstraints.BOTH;
-	    label = new Label("Title");
+	    label = new JLabel("Title");
         gridbag.setConstraints(label, c);
-        add(label);
+        getContentPane().add(label);
     		
 	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    titleText = new TextField(40);
+	    titleText = new JTextField(40);
         gridbag.setConstraints(titleText, c);
-        add(titleText);
+        getContentPane().add(titleText);
 
     	c.gridwidth = GridBagConstraints.BOTH;
-	    label = new Label("Update event");
+	    label = new JLabel("Update event");
         gridbag.setConstraints(label, c);
-        add(label);
+        getContentPane().add(label);
   
 		  		
 	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    eventText = new TextField(40);
+	    eventText = new JTextField(40);
         gridbag.setConstraints(eventText, c);
-        add(eventText);
+        getContentPane().add(eventText);
 
     	c.gridwidth = GridBagConstraints.BOTH;
-	    label = new Label("Print event");
+	    label = new JLabel("Print event");
         gridbag.setConstraints(label, c);
-        add(label);
+        getContentPane().add(label);
   
 		  		
 	    c.gridwidth = GridBagConstraints.REMAINDER;
-	    printEventText = new TextField(40);
+	    printEventText = new JTextField(40);
         gridbag.setConstraints(printEventText, c);
-        add(printEventText);
+        getContentPane().add(printEventText);
 
-	    Panel p1 = new Panel();
+	    JPanel p1 = new JPanel();
         p1.setLayout(new FlowLayout(FlowLayout.CENTER));
     			
-	    ok = new Button("Ok");
+	    ok = new JButton("Ok");
 	    ok.addActionListener(this);	
         p1.add(ok);
         
-        cancel = new Button("Cancel");
+        cancel = new JButton("Cancel");
 	    cancel.addActionListener(this);	
         p1.add(cancel);
 
     	c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(p1, c);
-	    add(p1);
-	 
+	    getContentPane().add(p1);
+	    pack();
      }
  
 
-    public void ShowWindowDialog()
+    public boolean ShowWindowDialog()
     {
         changed = false;
 	    if(parent.wave_panel.GetTitle() != null)
@@ -2056,62 +2044,75 @@ class WindowDialog extends ScopePositionDialog {
 	    row_2.setValue(in_row[1]);
 	    row_3.setValue(in_row[2]);
 	    row_4.setValue(in_row[3]);
+
+	    setLocationRelativeTo(parent);
+        show();
+        
+        return changed;
     }
        
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) 
+    {
 
-	Object ob = e.getSource();
-    
-	if (ob == ok || ob == apply)
-	{    
-	    parent.wave_panel.SetTitle(new String(titleText.getText()));
-	    
-	    String event = new String(eventText.getText().trim());
-	    parent.wave_panel.SetEvent(parent, event);
-	    
-	    event = new String(printEventText.getText().trim());
-	    parent.wave_panel.SetPrintEvent(parent, event);
-	    
-	    parent.SetWindowTitle("");
-//	    if(parent.wave_panel.sel_wave != null)
-//	    {
-//	        parent.wave_panel.sel_wave.DeselectWave();
-//	        parent.wave_panel.sel_wave = null;
-//	    }
-	    out_row[0] = row_1.getValue();
-	    out_row[1] = row_2.getValue();
-	    out_row[2] = row_3.getValue();
-	    out_row[3] = row_4.getValue();
-	    
-	    for(int i = 0; i < 4; i++)
-	        if(out_row[i] != in_row[i])
+	    Object ob = e.getSource();
+        
+        try
+        {
+            
+	        if (ob == ok || ob == apply)
+	        {    
+	            parent.wave_panel.SetTitle(new String(titleText.getText()));
+        	    
+	            String event = new String(eventText.getText().trim());
+	            parent.wave_panel.SetEvent(parent, event);
+        	    
+	            event = new String(printEventText.getText().trim());
+	            parent.wave_panel.SetPrintEvent(parent, event);
+        	    
+	            parent.SetWindowTitle("");
+    	        
+	            out_row[0] = row_1.getValue();
+	            out_row[1] = row_2.getValue();
+	            out_row[2] = row_3.getValue();
+	            out_row[3] = row_4.getValue();
+        	    
+	            for(int i = 0; i < 4; i++)
+	                if(out_row[i] != in_row[i])
+	                {
+	                    changed = true;
+	                    break;
+	                }
+        	        
+	            in_row = null;
+
+	            if(ob == ok)
+		            setVisible(false);
+    		
+            }  
+
+            if (ob == cancel)
 	        {
-	            changed = true;
-	            break;
+	            setVisible(false);
 	        }
-	        
-	    in_row = null;
-
-	    if(ob == ok)
-		    setVisible(false);
-    }  
-
-    if (ob == cancel)
-	{
-	    setVisible(false);
-	}
+	    }
+	    catch (IOException ev) 
+	    {
+		    JOptionPane.showMessageDialog(null, ev.getMessage(), "alert", JOptionPane.ERROR_MESSAGE); 
+	    }        
     }  
 }
 
 
-class ServerDialog extends ScopePositionDialog {
-    private List server_list;
-    private Button add_b, remove_b, cancel_b;
-    private Label server_label;
-    private TextField server_ip;
+class ServerDialog extends JDialog implements ActionListener
+{
+    private JList server_list;
+    private DefaultListModel list_model = new DefaultListModel();
+    private JButton add_b, remove_b, cancel_b;
+    private JLabel server_label;
+    private JTextField server_ip;
     jScope dw;
 
-    ServerDialog(Frame _dw, String title)
+    ServerDialog(JFrame _dw, String title)
     {
         super(_dw, title, true);
 	    dw = (jScope)_dw;
@@ -2122,63 +2123,69 @@ class ServerDialog extends ScopePositionDialog {
 	    GridBagConstraints c = new GridBagConstraints();
 	    Insets insets = new Insets(4, 4, 4, 4);
 
-	    setLayout(gridbag);		
+	    getContentPane().setLayout(gridbag);		
 	    c.insets = insets;
 
 	    c.anchor = GridBagConstraints.WEST;	
         c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.fill =  GridBagConstraints.BOTH;
 	    c.gridheight = 10;
-	    server_list = new List(5, false);
-	    server_list.addItemListener(this);
-	    server_list.addKeyListener(this);
-	    gridbag.setConstraints(server_list, c);
-	    add(server_list);
+	    server_list = new JList(list_model);//5, false);
+	    JScrollPane scrollServerList = new JScrollPane(server_list);
+        server_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	    //server_list.addItemListener(this);
+	    //server_list.addKeyListener(this);
+	    gridbag.setConstraints(scrollServerList, c);
+	    getContentPane().add(scrollServerList);
 
 	    c.anchor = GridBagConstraints.WEST;	
 	    c.fill =  GridBagConstraints.NONE;
 	    c.gridheight = 1;
 	    c.gridwidth = 1;	
-	    server_label = new Label("Ip Server ");
+	    server_label = new JLabel("Ip Server ");
 	    gridbag.setConstraints(server_label, c);
-	    add(server_label);
+	    getContentPane().add(server_label);
  
         c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.fill =  GridBagConstraints.BOTH;
-	    server_ip = new TextField(20);
+	    server_ip = new JTextField(20);
 	    gridbag.setConstraints(server_ip, c);
-	    add(server_ip);
+	    getContentPane().add(server_ip);
 
-	    Panel p = new Panel(new FlowLayout(FlowLayout.CENTER));			
-	    add_b = new Button("Add");
+	    JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));			
+	    add_b = new JButton("Add");
 	    add_b.addActionListener(this);
 	    p.add(add_b);
       	
-	    remove_b = new Button("Remove");
+	    remove_b = new JButton("Remove");
 	    remove_b.addActionListener(this);
 	    p.add(remove_b);
 
-	    cancel_b = new Button("Cancel");
+	    cancel_b = new JButton("Cancel");
 	    cancel_b.addActionListener(this);
 	    p.add(cancel_b);
 
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(p, c);
-	    add(p);
+	    getContentPane().add(p);
 	
-		
-
 	    if(dw.server_ip_list == null) {
 	        addServerIp("Local");	
 //	        addServerIp("Jet data");	
 //	        addServerIp("Ftu data");
-	        GetPropertiesValue();
+            if(jScope.IsNewJVMVersion())
+	            GetPropertiesValue();
+	        else
+                GetPropertiesValue_VM11();
+
 	        addServerIp(dw.default_server);
 	    }
 	    else
 	    {
 	        addServerIpList(dw.server_ip_list);
-	    }						
+	    }
+	    
+	    pack();
     }
 
     private void GetPropertiesValue()
@@ -2187,39 +2194,62 @@ class ServerDialog extends ScopePositionDialog {
        String prop;
        int i = 1;
        
-
        if(rb == null) return;
        try {
-       while(true) {
-           prop = rb.getString("jScope.data_server_"+i);
-	       addServerIp(prop);
-	       i++;
-       } 
+        while(true) {
+            prop = (String)rb.getString("jScope.data_server_"+i);
+	        addServerIp(prop);
+	        i++;
+        } 
        }catch(MissingResourceException e){}
     }
 
+    private void GetPropertiesValue_VM11()
+    {
+       PropertyResourceBundle prb = dw.prb;
+       String prop;
+       int i = 1;
+       
+
+       if(prb == null) return;
+       while(true) {
+           prop = (String)prb.handleGetObject("jScope.data_server_"+i);
+           if(prop == null) break;
+	       addServerIp(prop);
+	       i++;
+       } 
+    }
 
     public void Show()
-    {
-	    pack();
-	    setPosition(dw);
+    {    
+	    setLocationRelativeTo(dw);
 	    show();
     }
     
     public void addServerIp(String ip)
     {
 	    int i;
-	    MenuItem new_ip;
+	    JMenuItem new_ip;
 	
-	    String items[] = server_list.getItems();
-	    for(i = 0 ; i < items.length; i++)
-	        if(items[i].equals(ip)) break;
-	    if(i == items.length) {
-	        server_list.add(ip);
-	        new_ip = new MenuItem(ip);
+	    Enumeration e = list_model.elements();	
+	    //String items[] = signal_list.getItems();
+	    boolean found = false;
+	    while(e.hasMoreElements())
+	    {   
+	        if(((String)e.nextElement()).equals(ip))
+	        {
+	            found = true;
+	            break;
+	        }
+	    }
+	    if(!found)
+	    {
+	        list_model.addElement(ip);
+	        new_ip = new JMenuItem(ip);
 	        dw.servers_m.add(new_ip);
+	        new_ip.setActionCommand("SET_SERVER " + ip);
 	        new_ip.addActionListener(dw);
-	        dw.server_ip_list = server_list.getItems();
+	        dw.server_ip_list = getServerIpList();//server_list.getItems();
 	    }
     }
     
@@ -2233,7 +2263,12 @@ class ServerDialog extends ScopePositionDialog {
 
     public String[] getServerIpList()
     {
-	    return server_list.getItems();
+	    Enumeration e = list_model.elements();
+	    String out[] = new String[list_model.size()];
+	    for(int i = 0; e.hasMoreElements(); i++)
+	        out[i] = ((String)e.nextElement());
+	    return out;
+	    //return server_list.get .getItems();
     }
 	        
     public void actionPerformed(ActionEvent event)
@@ -2247,27 +2282,32 @@ class ServerDialog extends ScopePositionDialog {
 	    if(ob == add_b)
 	    {
 	        int i;
-	        MenuItem new_ip;
-	    
+	        JMenuItem new_ip;
+
+            addServerIp(server_ip.getText());
+	    /*
 	        String items[] = server_list.getItems();
 	        for(i = 0 ; i < items.length; i++)
 		        if(items[i].equals(server_ip.getText())) break;
 	        if(i == items.length) {
 		        server_list.add(server_ip.getText());
-		        new_ip = new MenuItem(server_ip.getText());
+		        new_ip = new JMenuItem(server_ip.getText());
 		        dw.servers_m.add(new_ip);
 		        new_ip.addActionListener(dw);
 	        }
+	     */
+	     
 	    }
 	
 	    if(ob == remove_b)
 	    {
 	        int idx = server_list.getSelectedIndex();
-	        if(idx >= 0) {
-		        server_list.remove(idx);
+	        if(idx > 0) {
+		        list_model.removeElementAt(idx);
 		        dw.servers_m.remove(idx);
 	        }
 	    }
     }
 }
+
 

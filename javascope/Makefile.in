@@ -7,65 +7,23 @@ JAVAC = @JAVAC@
 JAR = @JAR@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
-SOURCES = FtuProvider.java\
-Base64.java\
-ColorDialog.java\
-DataCached.java\
-DataProvider.java\
-DemoProvider.java\
-ErrorMessage.java\
-FontSelection.java\
-Frames.java\
-Grid.java\
-JetDataProvider.java\
-JiDataSource.java\
-JiDim.java\
-JiNcSource.java\
-JiNcVar.java\
-JiNcVarByte.java\
-JiNcVarChar.java\
-JiNcVarDouble.java\
-JiNcVarFloat.java\
-JiNcVarImp.java\
-JiNcVarInt.java\
-JiNcVarShort.java\
-JiSlab.java\
-JiSlabIterator.java\
-JiVar.java\
-JiVarImpl.java\
-LocalProvider.java\
-MultiWaveform.java\
-NetworkEvent.java\
-NetworkEventListener.java\
-NetworkEventManager.java\
-NetworkProvider.java\
-ProfileDialog.java\
-RandomAccessData.java\
-ReaderConfig.java\
-RotateFilter.java\
-RowColumnContainer.java\
-RowColumnLayout.java\
-ScopePositionDialog.java\
-SetupDataDialog.java\
-SetupDefaults.java\
-Signal.java\
-SignalCache.java\
-Slider.java\
-WaveContainerEvent.java\
-WaveContainerListener.java\
-WaveInterface.java\
-WavePopup.java\
-Waveform.java\
-WaveformContainer.java\
-WaveformEvent.java\
-WaveformListener.java\
-WaveformManager.java\
-WaveformMetrics.java\
-jScopeDefaultValues.java\
-jScopeMultiWave.java\
-jScopeWaveContainer.java\
-jScopeWavePopup.java\
-jScope.java
+SOURCES =  Base64.java                   JiNcVarByte.java              NetworkEvent.java             WaveContainerListener.java\
+ColorDialog.java              JiNcVarChar.java              NetworkEventListener.java     WaveDisplay.java\
+CompositeWaveDisplay.java     JiNcVarDouble.java            NetworkEventManager.java      WaveInterface.java\
+DataAccess.java               JiNcVarFloat.java             NetworkProvider.java          WavePopup.java\
+DataAccessURL.java            JiNcVarImp.java               NetworkTransferListener.java  Waveform.java\
+DataCached.java               JiNcVarInt.java               ProfileDialog.java            WaveformContainer.java\
+DataProvider.java             JiNcVarShort.java             RandomAccessData.java         WaveformEvent.java\
+DemoProvider.java             JiSlab.java                   RdaAccess.java                WaveformEventListener.java\
+FontSelection.java            JiSlabIterator.java           ReaderConfig.java             WaveformListener.java\
+Frames.java                   JiVar.java                    RotateFilter.java             WaveformManager.java\
+FtuProvider.java              JiVarImpl.java                RowColumnContainer.java       WaveformMetrics.java\
+Grid.java                     LocalProvider.java            RowColumnLayout.java          jScope.java\
+JetDataProvider.java          MdsAccess.java                SetupDataDialog.java          jScopeDefaultValues.java\
+JiDataSource.java             MdsWaveInterface.java         SetupDefaults.java            jScopeMultiWave.java\
+JiDim.java                    MultiWavePopup.java           Signal.java                   jScopeWaveContainer.java\
+JiNcSource.java               MultiWaveform.java            SignalCache.java              jScopeWavePopup.java\
+JiNcVar.java                  NetworTransferListener.java   WaveContainerEvent.java
 
 CLASSES = $(SOURCES:.java=.class)
 
@@ -91,11 +49,14 @@ install:
 
 @MAKEJAVADIR@classes : ; mkdir @MAKEJAVADIR@classes
 
-@MAKEJAVADIR@classes/jScope.jar: jScope.class
+@MAKEJAVADIR@classes/jScope.jar: jScope.class CompositeWaveDisplay.class
 	$(JAR) c0f $@ *.class
 
 jScope.class: 	$(SOURCES)
 	$(JAVAC) -g jScope.java
+
+CompositeWaveDisplay.class: 	$(SOURCES)
+	$(JAVAC) -g CompositeWaveDisplay.java
 
 @MAKEBINDIR@ : ; mkdir @MAKEBINDIR@
 

@@ -4,8 +4,11 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import java.awt.geom.*;
+import javax.swing.border.*;
+import javax.swing.*;
+import java.awt.Insets;
 
-public class Waveform extends Canvas 
+public class Waveform extends JComponent
 {
 
     public static final Color[]  COLOR_SET = {Color.black, Color.blue, Color.cyan, Color.darkGray,
@@ -28,13 +31,15 @@ public class Waveform extends Canvas
 	public static final int MODE_WAIT = 5; 
 	private static final int MIN_W = 10;
 	private static final int MIN_H = 10;
-	private static final int MIN_W_S = 50; 
-	private static final int MIN_H_S = 30;
+	
+	public static final int NO_PRINT = 0;
+	public static final int PRINT = 2;
 
     protected Signal waveform_signal;
     
     protected static Color colors[];
     protected static String colors_name[];
+    protected static boolean colors_changed = true;
     
     protected WaveformMetrics wm;	
     protected boolean not_drawn; 
@@ -46,7 +51,7 @@ public class Waveform extends Canvas
     protected int prev_point_y;
     protected Grid grid;
     protected Color  crosshair_color;	
-    protected Rectangle curr_rect;
+    protected Rectangle curr_rect = null;
     protected int start_x;
     protected int start_y; 
     protected int end_x;
@@ -58,7 +63,7 @@ public class Waveform extends Canvas
     protected Rectangle wave_b_box;
     protected String x_label, y_label, title;
     protected int mode, grid_mode;
-    protected boolean ext_update, dragging,  copy_selected = false, resizing = true;
+    protected boolean dragging,  copy_selected = false, resizing = true;
     protected int pan_x, pan_y;
     protected double pan_delta_x, pan_delta_y;
     protected int update_timestamp;
@@ -68,7 +73,7 @@ public class Waveform extends Canvas
     protected boolean first_set_point;	
     protected int marker_width;
     protected boolean x_log, y_log;	
-    protected boolean is_mb2;
+    protected boolean is_mb2, is_mb3;
     protected boolean int_xlabel = true, int_ylabel = true;
     protected Rectangle curr_display_limits;
     protected Cursor def_cursor;
@@ -82,7 +87,8 @@ public class Waveform extends Canvas
     protected boolean show_measure = false;
     private boolean change_limits = false;
     
-    private double wave_point_x = 0, wave_point_y = 0;
+    protected double wave_point_x = 0, wave_point_y = 0;
+    protected double curr_point;  
 
 // Variables for image capability
     protected int frame = 0;
@@ -92,18 +98,22 @@ public class Waveform extends Canvas
     protected boolean is_playing = false;
     protected Frames frames;
     protected double frame_time = 0;
-    protected String f_error = null;
-    protected Thread play_frame;
+    protected String wave_error = null;
 
     private static boolean bug_image = true;
     
     private Vector waveform_listener = new Vector();
-    private WaveformEvent we = null;
+    //protected WaveformEvent we = null;
     
     private Vector undo_zoom = new Vector();
-    private float frames_time[] = null; 
-    static private boolean send_profile = false;
-
+    private boolean send_profile = false;
+    
+    protected Border unselect_border;
+    protected Border select_border;
+    private boolean border_changed = false;
+    private javax.swing.Timer play_timer;
+	private boolean restart_play = false;
+     
     class ZoomRegion
     {
         double start_xs; 
@@ -120,33 +130,48 @@ public class Waveform extends Canvas
         }
     }
 
+    static int ixxxx = 0;
     public Waveform(Signal s)
     {
-	    super();
-	    update_timestamp = 0;
-	    x_log = y_log = false;
-	    Dimension d = getSize();
+	    this();
 	    waveform_signal = new Signal(s, 1000);
- // Reshape al piu' con 1000 punti
-	    first_set_point = true;
+//      Reshape al piu' con 1000 punti
 	    not_drawn = true;
 	    double xmax = MaxXSignal(), xmin = MinXSignal(), ymax = MaxYSignal(), ymin = MinYSignal();
-	    curr_rect = null;
-	    mode = MODE_ZOOM;
-	    prev_point_x = prev_point_y = -1;
-	    ext_update = dragging = false;
-	    grid_mode = Grid.IS_DOTTED;
-	    marker_width = MARKER_WIDTH; 
-	    setMouse();		
-	    SetDefaultColors();
 	}
 
     public Waveform()
     {
-	    update_timestamp = 0;
+        setName("Waveform_"+(ixxxx++));      
+        setBorder(BorderFactory.createLoweredBevelBorder());
+        setSelectBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED,
+                                                        Color.red,
+                                                        Color.red));
+                                                        
+        
+        play_timer = new javax.swing.Timer(200, new ActionListener() {
+            public void actionPerformed(ActionEvent evt)
+            {
+                frame = frames.getNextFrameIdx();
+                if(frame == frames.getNumFrame() - 1)
+                    frame = 0;
+                repaint();
+                                    
+                if(mode == MODE_POINT)
+                {
+                    sendUpdateEvent();
+                    if(send_profile)
+                        sendProfileEvent();
+                }
+            }    
+        });
+        
+
+	    prev_point_x = prev_point_y = -1;
+        update_timestamp = 0;
     	waveform_signal = null;
 	    mode = MODE_ZOOM;
-	    ext_update = dragging = false;
+	    dragging = false;
 	    grid_mode = Grid.IS_DOTTED;
 	    first_set_point = true;
 	    marker_width = MARKER_WIDTH;
@@ -162,6 +187,7 @@ public class Waveform extends Canvas
 	    int exp;
 	    String out;
 	    abs_f = Math.abs(f);
+	    if(abs_f != Double.POSITIVE_INFINITY)
 	    {
 	        if(abs_f > 1000.)
 	        {
@@ -185,6 +211,8 @@ public class Waveform extends Canvas
 		                out = out.substring(0, i+1);
 		            }
 	            }
+    	 } else {
+    	    out = ((f > 0) ? "+" : "-") + "inf";    	    
     	 }
 	     out.trim();
 	     return out;
@@ -226,16 +254,55 @@ public class Waveform extends Canvas
         } 
         not_drawn = true;
         repaint();
-        //Repaint(true);
     }
     
-    static public void SetFont(Font f)
+    protected Dimension getLegendDimension(Graphics g)
     {
-        font = f;
+        return new Dimension(0, 0);
     }
+
+    protected int getRightSize(){return 0;}
+    protected int getBottomSize(){return 0;}
+
+
+    protected Dimension getPrintWaveSize(Dimension dim)
+    {
+       // Dimension dim = getSize();
+        return new Dimension(dim.width - getRightSize()
+                            , dim.height - getBottomSize());
+    }
+
+    protected Dimension getWaveSize()
+    {
+        Dimension dim = getSize();
+        Insets i = getInsets();
+        return new Dimension(dim.width - getRightSize() - i.top - i.bottom
+                            , dim.height - getBottomSize() - i.right - i.left);
+    }
+    
+    static public void SetFont(Font f){font = f;}
+    
+    public void setFont(Graphics g)
+    {
+        Font f = g.getFont();
+        if(font == null || !font.equals(f))
+        {
+	        if(font == null)
+	        {
+	            font = g.getFont();
+	            font = new Font(font.getName(), font.getStyle(), 10);
+	            g.setFont(font);
+	        }
+	        else
+	            g.setFont(font);
+        }
+    }
+    
+    static boolean isColorsChanged(){return colors_changed;}
 
     static public void SetColors(Color _colors[], String _colors_name[])
     {
+        colors_changed = true;
 	    colors = _colors;
 	    colors_name = _colors_name;
     }
@@ -245,30 +312,35 @@ public class Waveform extends Canvas
         return wm;
     }
     
-    public String[] GetColorsName()
+    static public String[] getColorsName()
     {
+        colors_changed = false;
         return colors_name;
     }
     
-    public Color[] GetColors()
+    static public Color[] getColors()
     {
+        colors_changed = false;
         return colors;
     }
 
     public int GetColorIdx(){return (waveform_signal != null ? waveform_signal.getColorIdx() : 0);}
+
     public void SetColorIdx(int idx)
     {
-        if(waveform_signal != null) {
+        if(waveform_signal != null)
+        {
             idx = idx % colors.length;
             waveform_signal.setColorIdx(idx);
         }
     }
     
-    public int getSignalType(){return (waveform_signal != null ? waveform_signal.getType() : -1 ); }
-    public Signal GetSignal(){return waveform_signal;}
-    public boolean GetInterpolate(){return (waveform_signal != null ? waveform_signal.getInterpolate() : true );}
-    public int GetMarker(){return (waveform_signal != null ? waveform_signal.getMarker() : 0 );}
-    public int GetMarkerStep(){return (waveform_signal != null ? waveform_signal.getMarkerStep() : 0 );}
+    public int      getSignalType() {return (waveform_signal != null ? waveform_signal.getType() : -1 ); }
+    public Signal   GetSignal()     {return waveform_signal;}
+    public boolean  GetInterpolate(){return (waveform_signal != null ? waveform_signal.getInterpolate() : true );}
+    public int      GetMarker()     {return (waveform_signal != null ? waveform_signal.getMarker() : 0 );}
+    public int      GetMarkerStep() {return (waveform_signal != null ? waveform_signal.getMarkerStep() : 0 );}
+
     public void SetMarkerStep(int step)
     {
         if(waveform_signal != null) {
@@ -293,14 +365,13 @@ public class Waveform extends Canvas
     {
         if(waveform_signal != null && waveform_signal.getType() == Signal.TYPE_2D)
         {
-            waveform_signal.setMode(mode);
+           waveform_signal.setMode(mode);
+           Update();
+           //dispatchWaveformEvent(we);
+           //we = null;
         }
     }
-        
-    public boolean isDoubleBuffered() {
-        return true;
-    }
-    
+
 
     public void SetSignalState(boolean state)
     {
@@ -311,7 +382,7 @@ public class Waveform extends Canvas
         }
     }
     
-    public int GetSignalCount()
+    public int GetShowSignalCount()
     {
         if(waveform_signal != null)
             return 1;
@@ -321,22 +392,23 @@ public class Waveform extends Canvas
         
     public Dimension getMinimumSize()
     {
-        return new Dimension(MIN_W, MIN_H);
+	    Insets i = getInsets();        
+        return new Dimension(MIN_W + i.right + i.left, 
+                             MIN_H + i.top + i.bottom);
     }
 
     public void SetPointMeasure()
     {
+        Dimension d = getWaveSize();
         if(is_image)
         {
             mark_point_x = (double) end_x;
             mark_point_y = (double) end_y;
-            frames.setMeasurePoint(end_x, end_y, getSize());
+            frames.setMeasurePoint(end_x, end_y, d);
         } else {
-            Dimension d = getSize();
             double curr_x = wm.XValue(end_x, d);
 	        double curr_y = wm.YValue(end_y, d);	
 		
-	        //curr_y = FindPointY(curr_x, curr_y, true);
 	        Point p = FindPoint(curr_x, curr_y, true);
         
             mark_point_x = curr_x = wave_point_x;
@@ -344,66 +416,41 @@ public class Waveform extends Canvas
         }
     }
     
-    public void StopFrame()
+    public String  getIntervalPoints()
     {
-        try
-        {
-	        if(is_image && is_playing && play_frame != null)
-	        {
-	            is_playing = false;
-	            play_frame.join();
-	            play_frame = null;
-	        }
-	    } catch (InterruptedException e){}
+        Dimension d = getWaveSize();
+    	double curr_x = wm.XValue(end_x, d);
+	    double curr_y = wm.YValue(end_y, d);	
+		
+	    Point p = FindPoint(curr_x, curr_y, false);
+
+    	curr_x = wave_point_x;
+	    curr_y = wave_point_y;	
+        
+        return " "+ mark_point_x + " " + mark_point_y + " " + curr_x + " " + curr_y;
+    }
+
+    synchronized public void StopFrame()
+    {
+	    if(is_image && is_playing)
+	    {
+	        is_playing = false;
+	        play_timer.stop();
+	    }
     }
     
     public void PlayFrame()
     {        
-        if(!is_playing)
-        {
-            if(frames != null && frames.getNumFrame() != 0)
-            {
-                is_playing = true;
-                play_frame = new Thread()
-                {
-                    
-                    public void run() 
-                    {
-                        Graphics g = getGraphics();
-                        Dimension d = getSize();
-                        try
-                        {
-                        while(is_playing)
-                        {
-                            for(int i = 0; i < frames.getNumFrame() && is_playing; i++)
-                            {
-                                frame = i;
-                                paint(g);
-                                if(mode == MODE_POINT) 
-                                {                                
-                                    we = new WaveformEvent(Waveform.this, WaveformEvent.POINT_UPDATE, frames.GetTime(i), 0, 0, 0, 0, Waveform.this.GetSelectedSignal());
-                                    dispatchWaveformEvent(we);
-                                }    
-                                paint(g);
-                                waitTime(100);
-                            }
-                        }
-                        g.dispose();
-                        }catch(InterruptedException e){};
-                    }
-                    
-                    synchronized void waitTime(long t) throws InterruptedException
-                    {
-                        wait(t);
-                    }
-                };
-                play_frame.start();
-            }
-        }
+	    if(!is_playing)
+	    {
+	        is_playing = true;
+	        play_timer.start();
+	    }
     }
     
-    static public void setSendProfile(boolean state){send_profile = state;}
-    static public boolean sendProfile(){return send_profile;}
+    
+    public void setSendProfile(boolean state){send_profile = state;}
+    public boolean isSendProfile(){return send_profile;}
     
    
     private void setMouse()
@@ -413,133 +460,143 @@ public class Waveform extends Canvas
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e)
             {
-                boolean update_frame = false;
+                Insets i = getInsets();
                 just_deselected = false;
-                int x = e.getX();
-                int y = e.getY();
-                
+                Dimension d = getWaveSize();
+                                
                 requestFocus();
-                
-                if(mode == MODE_COPY)
+                                
+                is_mb2 = is_mb3 = false;
+                                
+	        if((e.getModifiers() & Event.ALT_MASK) != 0) 
+	            is_mb2 = true;
+	        else	                
+	           if((e.getModifiers() & Event.META_MASK) != 0) //Se e' MB3
+	              is_mb3 = true; 
+	                
+                if(mode == MODE_COPY && !is_mb3)
                 {
-                    if(IsCopySelected())
-                        SetCopySelected(false);
-		            we = new WaveformEvent(w, WaveformEvent.COPY_PASTE);
-                    dispatchWaveformEvent(we);
-                    we = null;
+                    if(is_mb2)
+                    {
+                        if(!IsCopySelected())
+                        {
+                            sendPasteEvent();
+                        }                            
+                    } else {
+                        sendCutEvent();
+                    }
                     return;
                 }
-                
-	            if((e.getModifiers() & Event.ALT_MASK) != 0) 
-	            {
-	                is_mb2 = true;
-	                
-	                /*
-		            if(mode == MODE_POINT) 
-		            {
-		                we = new WaveformEvent(w, WaveformEvent.BROADCAST_SCALE);
-		                dispatchWaveformEvent(we);
-		                //we = null;
-		            }
-		            */
-	            }
-	            else
-	                is_mb2 = false;
-	                
-	            if((e.getModifiers() & Event.META_MASK) != 0) //Se e' MB3
+
+		    if(is_mb3)//e.isPopupTrigger())
 	            {
 	                Waveform.this.getParent().dispatchEvent(e);
+	                return;
 	            }
 	            else
-	            {	
+	            {
+                        int x = e.getX() - i.right;
+                        int y = e.getY() - i.top;
+	                
    	                if(mode != MODE_POINT)
 		                update_timestamp++;
 		                
-    	            start_x = end_x = prev_point_x = orig_x = x;
+    	                start_x = end_x = prev_point_x = orig_x = x;
 	                start_y = end_y = prev_point_y = orig_y = y;
 	                dragging = true;
 	                first_set_point = true;
+	                
+	                setMousePoint();
+	                
 	                if(mode == MODE_PAN && waveform_signal != null)
 		                waveform_signal.StartTraslate();
+	                
 	                if(mode == MODE_POINT && waveform_signal != null)
-                        //Repaint(false);
-		                repaint();
-		                
-	            }
-	            
-//              if(is_image)
-                if(mode == MODE_POINT)
-                {
-                        
+		                repaint();		                
+
                     if((e.getModifiers() & Event.CTRL_MASK) != 0)
                     {
                         if(is_image)
                         {
 	                        if(frames != null && frames.GetFrameIdx() > 0)
 	                        {
-	                            update_frame = true;
-	                            frame = frames.GetFrameIdx() -1;
+	                            frame = frames.getLastFrameIdx();
 	                        }
 	                    } else {
 	                        Signal s = GetSignal();
-	                        s.decShow();
-	                        Repaint(true);
+	                        if(s.getType() == Signal.TYPE_2D)
+	                        {
+	                            s.decShow();
+	                            not_drawn = true;
+	                            repaint();
+	                        }
 	                    }
 	                }
-    	                
+            	                
                     if((e.getModifiers() & Event.SHIFT_MASK) != 0)
                     {
                         if(is_image)
                         {
 	                        if(frames != null)
 	                        {
-	                            update_frame = true;
-	                            frame = frames.GetFrameIdx() + 1;
+	                            frame = frames.getNextFrameIdx();
 	                        } 
 	                    } else {
 	                        Signal s = GetSignal();
-	                        s.incShow();
-	                        Repaint(true);
+	                        if(s.getType() == Signal.TYPE_2D)
+	                        {
+	                            s.incShow();
+	                            not_drawn = true;
+	                            repaint();
+                            }
 	                    }
                     }                      
                         
-	                //if(update_frame)
-	                if(is_image && frames != null)
-	                {
-	                    //Graphics g = getGraphics();
-                        //we = new WaveformEvent(w, WaveformEvent.POINT_UPDATE, frames.GetFrameTime(), 0, 0, 0, GetSelectedSignal()); 
-		                //dispatchWaveformEvent(we);
-		                // we = null;
-	                    if(!frames.contain(new Point(start_x, start_y), getSize()))
-	                        return;
-    		               
-		                Repaint(false);
-	                    //paint(g);
-	                    //g.dispose();
-	                }
-                } else {
-                   end_x = end_y = 0;
-                   show_measure = false;
-                }
+                    if(mode == MODE_POINT)
+                    { 
+	                    if(is_image && frames != null)
+	                    {
+	                      //  if(!frames.contain(new Point(start_x, start_y), d))
+	                      //      return;
+        	                        
+	                        not_drawn = false;
+	                        repaint();
+	                    }
+                        sendUpdateEvent();
+                    } else {
+                        end_x = end_y = 0;
+                        show_measure = false;
+                    }
+                }               
             }
         
             public void mouseReleased(MouseEvent e)
             {
-//	            double start_xs, end_xs, start_ys, end_ys;
+                Insets i = getInsets();
 	            int idx;
-	            Dimension d = getSize();
-	
-                int x = e.getX();
-                int y = e.getY();
-                
-                frames_time = null;
-                
+	            Dimension d = getWaveSize();
+	                                
 	            dragging = false;
-	            if((e.getModifiers() & Event.META_MASK) != 0) //Se e' MB3
+
+		    int x = e.getX() - i.right;
+		    int y = e.getY() - i.top;	                
+	                
+	            if(mode == MODE_POINT && is_image && frames != null)
+	            {
+	                /*Save current point position*/
+	                frames.setFramePoint(new Point(end_x, end_y), d);
+	            }
+
+	            if(is_mb3)//e.isPopupTrigger()) //Se e' MB3
+	            {
+			//    Waveform.this.getParent().dispatchEvent(e);
+	                return;
+	            }
+
+	            if((waveform_signal == null && !is_image) ||
+	               (frames == null && is_image))
 	                return;
 
-	            if(waveform_signal == null && !is_image)
-	                return;
 	
 	            if(mode == MODE_ZOOM && x != orig_x && y != orig_y)
 	            {
@@ -549,6 +606,7 @@ public class Waveform extends Canvas
 	                }
 	                not_drawn = true;
 	            }
+	            
 	            if(mode == MODE_ZOOM && zoom_on_mb1 && x == orig_x  && y == orig_y && !is_image)
 	            {
 	                if((e.getModifiers() & Event.ALT_MASK) != 0)
@@ -556,54 +614,42 @@ public class Waveform extends Canvas
 	                else
 		                Resize(x, y, true);
 	            }
+	            
 	            if(mode == MODE_PAN && !is_image)
 	            {
 	                NotifyZoom(MinXSignal(), MaxXSignal(), MinYSignal(), MaxYSignal(), update_timestamp);
                     grid = null;
 	                not_drawn = true;
 	            }
-	            if(mode == MODE_POINT && !is_image)
-	            {
-	                double  curr_x = wm.XValue(end_x, d);
-	                double  curr_y = wm.YValue(end_y, d); //Cesare 03-02-00
-		                    //curr_y = wm.XValue(end_y, d); ???
-    		                    
-	                //curr_y = FindPointY(curr_x, curr_y, first_set_point);
-	                Point p = FindPoint(curr_x, curr_y, first_set_point);
-    	                
-	                curr_x = wave_point_x;//wm.XValue(p.x, d);
-	                curr_y = wave_point_y;//wm.YValue(p.y, d); 
-    	                
-                    we = new WaveformEvent(w, WaveformEvent.POINT_UPDATE, curr_x, curr_y, 0, 0, 0, GetSelectedSignal());
-                    Signal s = GetSignal();
-                    we.setTimeValue(s.getTime());
-                    we.setXValue(s.getXData());
-		            dispatchWaveformEvent(we);
-		            we = null;
-	            }
 	            
 	            prev_point_x = prev_point_y = -1;
 	            if(!is_image)
 	                curr_rect = null;
 		        dragging = false;
-	            //repaint();
-	            Graphics g = getGraphics();
-                paint(g);//Cesare prova 
-                g.dispose();
+	            repaint();
+                if(is_image && restart_play)
+                {
+                    play_timer.start();
+                    restart_play = false;
+	            }
+	            
             }
         });
         
         addMouseMotionListener(new MouseMotionAdapter() {            
 	        public void mouseDragged(MouseEvent e)
-            {
-                
-                if(is_image && is_playing) return;
+            {                
+	            if(waveform_signal == null && !is_image || is_mb2)
+	                return;
 
- 	            Dimension d = getSize();
+                //if(is_image && is_playing) return;
+
+                Insets i = getInsets();
+ 	            Dimension d = getWaveSize();
                
 	            int curr_width, curr_height;
-                int x = e.getX();
-                int y = e.getY();
+                int x = e.getX() - i.right;
+                int y = e.getY() - i.top;
                 
                 if(x >= d.width)
                     x = d.width - 2;
@@ -614,50 +660,69 @@ public class Waveform extends Canvas
                 if(y < 1)    
                     y = 1;
 
-	            if((e.getModifiers() & Event.META_MASK) != 0) //Se e' MB3
+	            if((e.getModifiers() & Event.META_MASK) != 0 || is_mb3 || e.isPopupTrigger()) //Se e' MB3
 	                return;
 
-	            if(waveform_signal == null && !is_image)
-	                return;
 
 	            if(mode == MODE_ZOOM && x < orig_x)
-	                 start_x = x;
-	            else
-	                 end_x = x;
-	            if(mode == MODE_ZOOM && y < orig_y)
-	                 start_y = y;
-	            else
-	                 end_y = y;
-                
-	            if(mode == MODE_ZOOM)// && x > start_x && y > start_y)
 	            {
-	                                    
-	                if(is_image && frames != null)
-	                {   
-	                    if(!frames.contain(new Point(start_x, start_y), d))
-	                        return;
-                        Point p_pos = new Point(end_x, end_y);
-	                    Point p = frames.GetFramePoint(p_pos, d);
-	                    end_x = p_pos.x;
-	                    end_y = p_pos.y;
+	                 start_x = x;
+	                 end_x = orig_x;
+	            } else {
+	                 end_x = x;
+	                 start_x = orig_x;
+	            }
+	            
+	            if(mode == MODE_ZOOM && y < orig_y)
+	            {
+	                 end_y = orig_y;
+	                 start_y = y;
+	            } else {
+	                 end_y = y;
+	                 start_y = orig_y;
+                }
+
+	            if(is_image && frames != null)
+	            { 
+	                /*Chech if point is out of the image*/
+	                if(mode == MODE_ZOOM && !frames.contain(new Point(start_x, start_y), d))
+	                    return;
+	                setMousePoint();
+	            }
+	            
+	            if(mode == MODE_ZOOM)
+	            {
+                    if(is_image && is_playing)
+                    {
+                        restart_play = true;
+                        play_timer.stop();
 	                }
 	                
 	                if(curr_rect == null)
-		                //curr_rect = new Rectangle(start_x, start_y, x - start_x, y - start_y);
+	                {
 		                curr_rect = new Rectangle(start_x, start_y, end_x - start_x, end_y - start_y);
-	                else
-//		                curr_rect.setSize(end_x - start_x, end_y - start_y);
+	                } else {
 		                curr_rect.setBounds(start_x, start_y, end_x - start_x, end_y - start_y);
-                    //Repaint(false);
+                    } 
+	                not_drawn = false;
 	                repaint();
+	            
 	            }
 	            else
 	                curr_rect = null;
-	            if(mode == MODE_POINT) {
-		            dispatchWaveformEvent(we);
-                    Repaint(false);
-	                //repaint();
+
+	            if(mode == MODE_POINT)
+	            {
+	                not_drawn = false;
+	        //  repaint();
+		    //  System.out.println("-----------------------------------------------------");
+		    //	System.out.println("Dragged Paint Immediately on "+getName()+" "+getBounds());
+	                sendUpdateEvent();
+			        paintImmediately(0,0,d.width,d.height);
+	                if(is_image && send_profile)
+	                    sendProfileEvent();
 	            }
+	            
 	            if(mode == MODE_PAN && !is_image)
 	            {
 	                if(wm.x_log)
@@ -670,7 +735,6 @@ public class Waveform extends Canvas
 		                pan_delta_y = wm.YValue(start_y, d) - wm.YValue(end_y, d);
 	                not_drawn = false;
 	                repaint();
-                    //Repaint(true);
 	            }
             }
         });
@@ -683,7 +747,7 @@ public class Waveform extends Canvas
 	    update_timestamp = 0;
     	waveform_signal = null;
 	    mode = MODE_ZOOM;
-	    ext_update = dragging = false;
+	    dragging = false;
 //	    interpolate = true;
 	    first_set_point = true;
 //	    marker = Signal.NONE; 
@@ -698,7 +762,6 @@ public class Waveform extends Canvas
 	    y_label = null;
 	    not_drawn = true;
 	    repaint();
-//	    Repaint(true);
     }
 	
 	public boolean undoZoomPendig(){return undo_zoom.size() > 0;}
@@ -731,37 +794,38 @@ public class Waveform extends Canvas
     
     public void SelectWave()
     {
-        int w = getSize().width;//getWidth();
-        int h = getSize().height;//getHeight();
-        Graphics g = getGraphics();
-        g.setColor(Color.red);
-        g.drawRect(0, 0, w - 1, h - 1);
-        is_select = true;   
+        if(!is_select)
+        {
+            is_select = true;
+            border_changed = true;
+            unselect_border = getBorder();
+            if(!unselect_border.getBorderInsets(this).equals(select_border.getBorderInsets(this)))
+                not_drawn = true;
+            setBorder(select_border);
+        }
     }
     
     public void DeselectWave()
     {
-        int w = getSize().width;//getWidth();
-        int h = getSize().height;//getHeight();
-        Graphics g = getGraphics();
-        g.setColor(Color.black);
-        g.drawRect(0, 0, w - 1, h - 1);
-        is_select = false;       
+        is_select = false;
+        border_changed = true;
+        if(!unselect_border.getBorderInsets(this).equals(select_border.getBorderInsets(this)))
+            not_drawn = true;
+        setBorder(unselect_border);
     }
     
-    
-    public void Repaint(boolean not_drawn)
-    {
-	    //not_drawn = true;
-	    this.not_drawn = not_drawn;
-        Graphics g = getGraphics();
-        this.paint(g);
-        g.dispose();
-	    //repaint();
-    }
-  	
+      	
   	public void Update(float x[], float y[])
   	{
+  	    wave_error = null;
+  	    if(x.length <=1 || y.length <= 1)
+  	    {
+  	        wave_error = " Less than two points";
+            waveform_signal = null;
+            Update();
+  	        return;
+  	    }
+  	    
   	    if(waveform_signal == null)
   	    {
   	        Update(new Signal(x, y));
@@ -771,14 +835,13 @@ public class Waveform extends Canvas
     	    curr_rect = null;
 	        prev_point_x = prev_point_y = -1;
 	        not_drawn = true;
-	        //repaint();
-	        Repaint(true);
+	        repaint();
   	    }
   	}
   	
 	synchronized public void Update(Signal s)
     {
-
+        wave_error = null;
 	    if(mode == MODE_PAN)
 	        mode = MODE_ZOOM;
 	    update_timestamp++;
@@ -789,7 +852,6 @@ public class Waveform extends Canvas
 	    prev_point_x = prev_point_y = -1;
 	    not_drawn = true;
 	    repaint();
-	    //Repaint(true);
     }
 
    	public void Update()
@@ -809,7 +871,6 @@ public class Waveform extends Canvas
 	    prev_point_x = prev_point_y = -1;
 	    not_drawn = true;
 	    repaint();
-	    //Repaint(true);
     }
     
     public void UpdateImage(Frames frames)
@@ -820,7 +881,6 @@ public class Waveform extends Canvas
  	    prev_point_x = prev_point_y = -1;
 	    not_drawn = true;
 	    repaint();
-	    //Repaint(true);
     }
     
     public void SetGridMode(int grid_mode, boolean int_xlabel, boolean int_ylabel)
@@ -833,6 +893,20 @@ public class Waveform extends Canvas
 	    not_drawn = true;
 	    //repaint();
     }
+
+    private void setMousePoint()
+    {
+        if(is_image && frames != null)
+        {
+            Dimension d = getWaveSize();
+            Point p_pos; 
+            p_pos = new Point(end_x, end_y);
+	        frames.getFramePoint(p_pos, d);
+	        end_x = p_pos.x;
+	        end_y = p_pos.y;
+	    }
+    }
+
 
    protected void SetMode(int mod)
    {
@@ -856,18 +930,31 @@ public class Waveform extends Canvas
 		        setCursor(def_cursor);
 		    break;
 	    }	
-	    if(waveform_signal != null || is_image) {
+	    if(waveform_signal != null || is_image) 
+	    {
+            if(mode == MODE_POINT && is_image && frames != null)
+            {
+                Point p = frames.getFramePoint(getWaveSize());
+                end_x = p.x;
+                end_y = p.y;                
+            }
 	        repaint();
-            //Repaint(false);
+	        if(mode == MODE_POINT)
+	        {
+	//            sendUpdateEvent();
+	            if(is_image && send_profile)
+	                sendProfileEvent();
+	        }
         }
     }
 
+
     void DrawWave(Dimension d)
     {
-	    Integer ic;
- 	//Dimension d = getSize();
-	    int i, x[] = new int[waveform_signal.n_points],
-	    y[] = new int[waveform_signal.n_points];
+	    int i;
+	    int x[] = new int[waveform_signal.n_points];
+	    int y[] = new int[waveform_signal.n_points];
+	    
 	    points = new Point[waveform_signal.n_points];
 	    for(i = 0; i < waveform_signal.n_points; i++)
 	    {
@@ -881,14 +968,59 @@ public class Waveform extends Canvas
 	    end_y = y[0];
     }
 
-    
-    public void paint(Graphics g)
+/*
+    void DrawWave(Dimension d)
     {
-        if(execute_print) return;
-        paint(g, getSize(), false);
+	    int i, j , x_p, y_p;
+	    
+        Vector points_v = new Vector();	    
+	    int x_all[] = new int[waveform_signal.n_points];
+	    int y_all[] = new int[waveform_signal.n_points];
+	    
+	   // points = new Point[waveform_signal.n_points];
+	    x_all[0] = wm.XPixel(waveform_signal.x[0], d);
+	    y_all[0] = wm.YPixel(waveform_signal.y[0], d);
+
+	    for(i = 1, j = 1; i < waveform_signal.n_points; i++)
+	    {
+	        x_all[j] = wm.XPixel(waveform_signal.x[i], d);
+	        y_all[j] = wm.YPixel(waveform_signal.y[i], d);
+	        if(x_all[j - 1] == x_all[j] && y_all[j - 1] == y_all[j])
+	            continue;
+	        //points[i] = new Point(x[i], y[i]);
+	        points_v.addElement(new Point(x_all[j], y_all[j]));
+	        j++;
+	    }
+	    
+	    int x[] = new int[j];
+	    int y[] = new int[j];
+	    
+	    System.arraycopy(x_all, 0, x, 0, j);
+	    System.arraycopy(y_all, 0, y, 0, j);
+	    
+	    points = new Point[points_v.size()];
+	    points_v.copyInto(points);
+	    num_points = j;
+	    System.out.println("Punti disegnati "+j+" punti totali "+waveform_signal.n_points);
+	    //num_points = waveform_signal.n_points;
+	    polygon = new Polygon(x, y, i); 
+	    end_x = x[0];
+	    end_y = y[0];
     }
-        
-    synchronized public void PaintImage(Graphics g, Dimension d, boolean print_flag)
+*/
+    private String getTitle()
+    {
+	   String tit;
+	            
+	   if(wave_error != null)
+	      tit = title + wave_error;
+	   else
+	      tit = title;
+	      
+	   return tit;
+    }
+       
+    synchronized public void PaintImage(Graphics g, Dimension d, int print_mode)
     {        
        if(frames != null)
        {
@@ -901,16 +1033,10 @@ public class Waveform extends Canvas
 
  //	   if(resizing) // If new Grid and WaveformMatrics have not been computed before
 //	   {
-	        String tit;
-	            
-	        if(f_error != null)
-	            tit = f_error;
-	        else
-	            tit = title;
 	    
 		    grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, 
-		                    tit, grid_step_x, grid_step_y, int_xlabel, int_ylabel, reversed);
-		    grid.font = font;
+		                    getTitle(), grid_step_x, grid_step_y, int_xlabel, int_ylabel, reversed);
+		    //grid.font = font;
 		    //resizing = false; 
 //	   }
 //	   else
@@ -919,35 +1045,24 @@ public class Waveform extends Canvas
        if(!is_min_size)
 	      grid.paint(g, d, this, null);
 
-       DrawBorder(g, d, print_flag);
    }
 
-
-    private void DrawBorder(Graphics g, Dimension d, boolean print_flag)
-    {
-
-        if(!copy_selected || print_flag)
-	    {
-	        if(reversed && !print_flag)
-	            g.setColor(Color.white);
-	        else
-		        g.setColor(Color.black);
-	    } else
-	        if(is_image && copy_selected)
-	            g.setColor(Color.blue);
-	        
-        if( !(print_flag && grid_mode == Grid.IS_NONE) )
-	            g.drawRect(0, 0, d.width - 1, d.height - 1);
-        
-    }
 
     private double xmax = 1, ymax = 1, xmin = 0, ymin = 0;
     boolean is_min_size;
     
-    protected void PaintSignal(Graphics g, Dimension d, boolean print_flag)
+    protected void PaintSignal(Graphics g, Dimension dim, int print_mode)
     {
+        Dimension d;
+	
+	    if(print_mode == NO_PRINT)
+            d = getWaveSize();
+        else
+            d = getPrintWaveSize(dim);
         
 	        xmax = 1; ymax = 1; xmin = 0; ymin = 0;
+            
+           // g.clipRect(0, 0, d.width, d.height);
 
 	        if(mode != MODE_PAN || dragging == false)
 	        {
@@ -968,8 +1083,8 @@ public class Waveform extends Canvas
 	        {
 	            change_limits = false;
 		        grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, 
-		                    title, grid_step_x, grid_step_y, int_xlabel, int_ylabel, reversed);
-		        grid.font = font;
+		                    getTitle(), grid_step_x, grid_step_y, int_xlabel, int_ylabel, reversed);
+		        //grid.font = font;
 		    //}
 		    //if(resizing ||  wm == null)
 		    //{
@@ -982,9 +1097,9 @@ public class Waveform extends Canvas
 //		        resizing = false;
 		    
 	    
-	        if(!copy_selected || print_flag)
+	        if(!copy_selected || print_mode != NO_PRINT)
 	        {
-	            if(reversed && !print_flag)
+	            if(reversed && print_mode == NO_PRINT)
 	                g.setColor(Color.black);
 	            else
 		            g.setColor(Color.white);
@@ -997,8 +1112,6 @@ public class Waveform extends Canvas
             if(!is_min_size)
 	            grid.paint(g, d, this, wm);
 
-            DrawBorder(g, d, print_flag);
-
 	        if(waveform_signal != null)
 	        {
 	            wave_b_box = new Rectangle(wm.XPixel(MinXSignal(), d),
@@ -1006,12 +1119,114 @@ public class Waveform extends Canvas
 		        wm.XPixel(MaxXSignal(), d) - wm.XPixel(MinXSignal(), d) + 1,
 		        wm.YPixel(MinYSignal(), d) - wm.YPixel(MaxYSignal(), d) + 1);
 
-                if(!print_flag)
+                if(print_mode == NO_PRINT)
 		            g.clipRect(curr_display_limits.width, 0, 
 		                                  d.width - curr_display_limits.width, d.height - curr_display_limits.height);
-    	        DrawSignal(g, d);
+    	        DrawSignal(g, d, print_mode);
 	        }
     }
+  
+    //Send Waveform event routines
+    public void sendPasteEvent()
+    {
+        WaveformEvent we = new WaveformEvent(this, WaveformEvent.COPY_PASTE);
+        dispatchWaveformEvent(we);
+    }
+
+    public void sendCutEvent()
+    {
+        WaveformEvent we = new WaveformEvent(this, WaveformEvent.COPY_CUT);
+        dispatchWaveformEvent(we);
+    }
+
+    public void sendUpdateEvent()
+    {
+
+        double curr_x, curr_y;
+        WaveformEvent we;
+        Dimension d = getWaveSize();
+
+        if(is_image)
+        {
+	        if(frames != null && frames.getNumFrame() != 0)
+	        {
+	            Point p = frames.getFramePoint(new Point(end_x, end_y), d);
+
+                we = new WaveformEvent(this, WaveformEvent.POINT_UPDATE,
+                                    p.x, p.y, 
+                                    frames.GetFrameTime(), 0, 
+                                    frames.getPixel(frames.GetFrameIdx(),p.x, p.y), 0);
+
+                dispatchWaveformEvent(we);
+            }
+        } else {      
+	        if(waveform_signal != null && wm != null)
+//	                && mode == MODE_POINT 
+//	                && !not_drawn && !is_min_size)
+	        {
+
+        	        
+    	            curr_x = wm.XValue(end_x, d);
+	            curr_y = wm.YValue(end_y, d);	
+        		
+	            Point p = FindPoint(curr_x, curr_y, first_set_point);
+	            first_set_point = false;
+
+    	            curr_x = curr_point = wave_point_x;
+	            curr_y = wave_point_y;
+
+		    //System.out.println("Curr point "+curr_point+" on "+getName());
+                    
+	            double dx = 0, dy = 0;
+                    int event_id;
+                            
+		        dx = curr_x - mark_point_x;
+		        dy = curr_y - mark_point_y;
+                        
+                if(show_measure)
+                    event_id = WaveformEvent.MEASURE_UPDATE;
+                else
+                    event_id = WaveformEvent.POINT_UPDATE;
+                        
+                we = new WaveformEvent(this, event_id, curr_x, curr_y, dx, dy, 0, GetSelectedSignal());
+                Signal s = GetSignal();
+                we.setTimeValue(s.getTime());
+                we.setXValue(s.getXData());
+		        we.setIsMB2(is_mb2);
+				
+                dispatchWaveformEvent(we);
+            }
+        }
+    }
+
+    public void sendProfileEvent()
+    {
+	    if(frames != null && frames.getNumFrame() != 0)
+	    {
+	        WaveformEvent we;
+	        Dimension d = getWaveSize();
+	        Point p = frames.getFramePoint(new Point(end_x, end_y), d);
+
+	        we = new WaveformEvent(this,
+		                            frames.getName(),
+		                            frames.getPixelsX(p.y), 
+		                            frames.getStartPixelX(), 
+		                            frames.getPixelsY(p.x), 
+		                            frames.getStartPixelY(),
+		                            frames.getPixelsSignal(p.x, p.y),
+		                            frames.getFramesTime());
+	        if(show_measure) 
+	        {
+                Point p_pos = new Point((int)mark_point_x, (int)mark_point_y);
+	            Point mp = frames.getFramePoint(p_pos, d);
+		        we.setPixelsLine(frames.getPixelsLine(mp.x, mp.y, p.x, p.y));
+            }
+                            
+            dispatchWaveformEvent(we);
+        }
+    }
+
+    
 
     private void ImageActions(Graphics g, Dimension d)
     {
@@ -1020,71 +1235,35 @@ public class Waveform extends Canvas
 
  
 	    if(frames != null && frames.getNumFrame() != 0 && 
-	        (mode == MODE_POINT || mode == MODE_ZOOM) 
+	            (mode == MODE_POINT || mode == MODE_ZOOM) 
 	            && !not_drawn && !is_min_size
 	            || ( frames != null && send_profile && prev_frame != frame))
 	    {
-	        if(/*dragging &&*/!is_playing )//&& !ext_update) 
-            {
-             
-                Point p_pos = new Point(end_x, end_y);
-	            Point p = frames.GetFramePoint(p_pos, d);
-	            end_x = p_pos.x;
-	            end_y = p_pos.y;
-	            
-                if(!ext_update)
-                {
 
-                    we = new WaveformEvent(this, WaveformEvent.POINT_UPDATE,
-                                       p.x, p.y, frames.GetFrameTime(), 0, 
-                                       frames.getPixel(frames.GetFrameIdx(),p.x, p.y), 0);
-                
-		            dispatchWaveformEvent(we);
-		        }
-		        
+	        //if(!is_playing ) 
+            {
+             		        
                 if(mode == MODE_POINT)
                 {
-                    
                     Color prev_color = g.getColor();
 		            g.setColor(crosshair_color);
+		            
 	                g.drawLine(0, end_y, d.width, end_y);
 	                g.drawLine(end_x, 0, end_x, d.height);
-	                
+                    
+                        	                
 	                if(show_measure)
 	                {
 		                g.setColor(Color.green);
 		                Point mp = frames.getMeasurePoint(d);
-	                    //g.drawLine((int)mark_point_x ,(int) mark_point_y, end_x, end_y);
 	                    g.drawLine(mp.x , mp.y, end_x, end_y);
 	                }
-
 	                g.setColor(prev_color);
-
-	                if(send_profile)
-	                {
-	                    if(frames_time == null)
-	                        frames_time = frames.getFramesTime();
-	                    
-		                we = new WaveformEvent(this, 
-		                                     frames.getPixelsX(p.y), frames.getStartPixelX(), 
-		                                     frames.getPixelsY(p.x), frames.getStartPixelY(),
-		                                     frames.getPixelsSignal(p.x, p.y),
-		                                     frames_time);
-		                if(show_measure) 
-		                {
-                            p_pos = new Point((int)mark_point_x, (int)mark_point_y);
-	                        Point mp = frames.GetFramePoint(p_pos, d);
-	                        //Point mp = frames.getMeasurePoint(d);
-		                    we.setPixelsLine(frames.getPixelsLine(mp.x, mp.y, p.x, p.y));
-                        }
-		                dispatchWaveformEvent(we);
-	                }
 	            }
             }
         }
     }
-    
-    
+
     private void SignalActions(Graphics g, Dimension d)
     {
         double curr_x, curr_y;
@@ -1093,65 +1272,38 @@ public class Waveform extends Canvas
 	    if(waveform_signal != null && mode == MODE_POINT 
 	            && !not_drawn && !is_min_size)
 	    {
-    	    curr_x = wm.XValue(end_x, d);
+
+		/*
+	        if(curr_point < waveform_signal.x[0])
+		    curr_point = waveform_signal.x[0];
+		//xrange = waveform_signal.x[waveform_signal.n_points - 1] - waveform_signal.x[0];
+          	end_x = wm.XPixel(curr_point, d);
+	        */
+
+		curr_x = curr_point;// wm.XValue(end_x, d);
 	        curr_y = wm.YValue(end_y, d);	
 		
-	        //curr_y = FindPointY(curr_x, curr_y, first_set_point);
+		//System.out.println("Draw point "+curr_point+" on "+getName());
+
 	        Point p = FindPoint(curr_x, curr_y, first_set_point);
 	        first_set_point = false;
 
-    	    curr_x = wave_point_x;//wm.XValue(p.x, d);
-	        curr_y = wave_point_y;//wm.YValue(p.y, d);	
-
-	        if(!ext_update)
-	        {
-	            double dx = 0, dy = 0;
-                int event_id;
-                    
-		        dx = curr_x - mark_point_x;
-                dy = curr_y - mark_point_y;
-                
-                if(show_measure)
-                    event_id = WaveformEvent.MEASURE_UPDATE;
-                else
-                    event_id = WaveformEvent.POINT_UPDATE;
-                
-                we = new WaveformEvent(this, event_id, curr_x, curr_y, dx, dy, 0, GetSelectedSignal());
-                Signal s = GetSignal();
-                we.setTimeValue(s.getTime());
-                we.setXValue(s.getXData());
-                
-		        dispatchWaveformEvent(we);
-
-            }
-	        //plot_y = wm.YPixel(curr_y, d);
-	        //plot_x = FindPointX(curr_x, curr_y);
-	    
-            Color prev_color = g.getColor();
-	        if(crosshair_color != null)
+		if(p != null)
+		{    
+		    curr_x = wave_point_x;
+		    curr_y = wave_point_y;	
+            
+		    Color prev_color = g.getColor();
+		    if(crosshair_color != null)
 		        g.setColor(crosshair_color);
 
-	        g.drawLine(0, p.y, d.width, p.y);
-	        g.drawLine(p.x, 0, p.x, d.height);
-	        g.setColor(prev_color);
-	        prev_point_x = p.x;
-	        prev_point_y = p.y;
-
-/*	        
-	        if(show_measure)
-		    {
-		        Color c = g.getColor();
-		        g.setColor(Color.red);
-		        int mark_px = wm.XPixel(mark_point_x, d);
-		        int mark_py = wm.YPixel(mark_point_y, d);
-//		        g.drawLine(mark_point_x, 0, mark_point_x, d.height);
-//		        g.drawLine(0, mark_point_y, d.width, mark_point_y);
-		        g.drawLine(mark_px, 0, mark_px, d.height);
-		        g.drawLine(0, mark_py, d.width, mark_py);
-		        g.setColor(c);
-		        
-		    } 
-*/	        
+		    g.drawLine(0, p.y, d.width, p.y);
+		    g.drawLine(p.x, 0, p.x, d.height);
+            
+		    g.setColor(prev_color);
+		    prev_point_x = p.x;
+		    prev_point_y = p.y;
+		}
         }
 	
 	    if(mode == MODE_PAN && dragging && waveform_signal != null)
@@ -1169,78 +1321,115 @@ public class Waveform extends Canvas
 	        g.clipRect(wave_b_box.x, wave_b_box.y, wave_b_box.width, wave_b_box.height);
 	        DrawSignal(g);
 	    }
-
-        if(is_select)
-        {
-	        g.setColor(Color.red);
-	        g.drawRect(0, 0, d.width - 1, d.height - 1);
-	        g.setColor(Color.black);
-        }	        
+    }
     
+    public void setSelectBorder(Border border)
+    {
+        select_border = border;
+    }
+    
+
+    public void Repaint(boolean state)
+    {        
+        not_drawn = state;
+        repaint();
     }
 
-
-    synchronized public void paint(Graphics g, Dimension d, boolean print_flag)
+    public void paintComponent(Graphics g)
+    //public void paint(Graphics g)
     {
-
-        execute_print = print_flag;
+	//System.out.println("PAINT on "+getName());
+        if(execute_print) return;
+        Insets i = this.getInsets();
+        Dimension d = getSize();
+        paint(g, d, NO_PRINT);
+    }
+    
+    
+    synchronized public void paint(Graphics g, Dimension d, int print_mode)
+    {
+        execute_print = (print_mode != NO_PRINT);
+        Insets i = this.getInsets();
+        setFont(g);
+        Dimension dim;
 
         if(not_drawn || prev_width != d.width 
-		    || prev_height!= d.height || print_flag 
+		    || prev_height!= d.height || execute_print 
 		    || (is_image && prev_frame != frame))
 	    {
 	        not_drawn = false;
 	        
-	        resizing =  prev_width != d.width || prev_height!= d.height || print_flag ;
+	        if(print_mode == NO_PRINT)
+	        {
+	            
+ 	            resizing =  prev_width != d.width || prev_height!= d.height;
 
-            if(resizing)
-            {
-                if(is_image && frames != null)
+                if(resizing)
                 {
-                    Point p = frames.GetFramePoint(new Point(end_x, end_y), new Dimension(prev_width, prev_height));
-                    p = frames.getImagePoint(p, d);
-                    end_x = p.x;
-                    end_y = p.y;
+                    if(is_image && frames != null)
+                    {
+                        Point p = frames.getFramePoint(new Point(end_x, end_y), new Dimension(prev_width, prev_height));
+                        p = frames.getImagePoint(p, d);
+                        end_x = p.x;
+                        end_y = p.y;
+                    }
                 }
+                
+                dim = getWaveSize();
+	            if(dim.width < MIN_W || dim.height < MIN_H)
+                    is_min_size = true;
+                else
+                    is_min_size = false;
+                    
+//	            if(resizing || off_image == null)
+	            {
+	                if(bug_image)
+	                {
+	                    bug_image = false;
+	                    off_image = createImage(1, 1);
+	                    off_graphics = off_image.getGraphics();
+	                    off_graphics.drawString("", 0, 0);
+	                    off_graphics.dispose();
+	                }
+	                off_image = createImage(d.width, d.height);
+	                off_graphics = off_image.getGraphics();
+	                setFont(off_graphics);
+  	                paintBorder(off_graphics);
+  	                border_changed = false;
+                    off_graphics.translate(i.right, i.top);
+  	            }
+	        } else {
+	            resizing = true;
+	            dim = d;
+	            off_graphics = g;
+                off_graphics.drawRect(0, 0, d.width-1, d.height-1);
             }
 
-	        if(d.width < MIN_W + MIN_W_S || d.height < MIN_H + MIN_H_S)
-                is_min_size = true;
-            else
-                is_min_size = false;
-
-//	        if(!print_flag) 
-//	            g.clipRect(0, 0, d.width, d.height);
-	        
-	        if(!print_flag)
-	        {
-	            if(bug_image)
-	            {
-	                bug_image = false;
-	                off_image = createImage(1, 1);
-	                off_graphics = off_image.getGraphics();
-	                off_graphics.drawString("", 0, 0);
-	                off_graphics.dispose();
-	            }
-	            off_image = createImage(d.width, d.height);
-	            off_graphics = off_image.getGraphics();
-	        } else
-	            off_graphics = g;
-
+            off_graphics.setClip(0, 0, dim.width, dim.height);
             if(!is_image)
-                PaintSignal(off_graphics, d, print_flag);
-            else {
-                PaintImage(off_graphics, d, print_flag);
-	        }
-  
-//            if(!print_flag)
-//	            off_graphics.clipRect(0, 0, d.width, d.height);
+                PaintSignal(off_graphics, d, print_mode);
+            else 
+                PaintImage(off_graphics, d, print_mode);
 	        
-	        prev_width = d.width;
-	        prev_height = d.height;
-	    } 
-	
-	    if(print_flag) {
+	        if(print_mode == NO_PRINT)
+	        {
+                off_graphics.translate(-i.right, -i.top);
+                off_graphics.setClip(0, 0, d.width, d.height);
+  	         	        
+	            prev_width = d.width;
+	            prev_height = d.height;
+	        }
+     } else {
+        if(border_changed)
+        {
+  	        paintBorder(off_graphics);
+  	        border_changed = false;
+  	    }
+     }
+
+
+		
+	    if(execute_print) {
 	        execute_print = false;
 	        System.gc();
 	        return;
@@ -1248,9 +1437,10 @@ public class Waveform extends Canvas
 	 
 	    if(!(mode == MODE_PAN && dragging && waveform_signal != null) || is_image ) 
 	    {
-//	        g.clipRect(0, 0, d.width, d.height);
-	        g.drawImage(off_image, 0, 0, this);
+	       g.drawImage(off_image, 0, 0, this);
         }
+     
+        g.translate(i.right, i.top);
 
 	    if(mode == MODE_ZOOM)
 	    {
@@ -1266,64 +1456,68 @@ public class Waveform extends Canvas
 	                    g.setColor(Color.black);
 	            }
 	    	    g.drawRect(curr_rect.x, curr_rect.y, curr_rect.width, curr_rect.height);
-	        }
+	       }
 	    }
    
         if(is_image)
-            ImageActions(g, d);
-        else
-            SignalActions(g, d);
-            
+            ImageActions(g, d = getWaveSize());
+        else 
+            SignalActions(g, d = getWaveSize());
+        
 	    if(show_measure && mode == MODE_POINT)
 		{
-		        int mark_px, mark_py;
-		        Color c = g.getColor();
-		        g.setColor(Color.red);
-		        if(is_image)
-		        {
-		            mark_px = (int)mark_point_x;
-		            mark_py = (int)mark_point_y;
-		            Point mp = frames.getMeasurePoint(d);
-		            mark_px = mp.x;
-		            mark_py = mp.y;		          
-		        } else {
-		            mark_px = wm.XPixel(mark_point_x, d);
-		            mark_py = wm.YPixel(mark_point_y, d);
-		        }
+		    int mark_px, mark_py;
+		    Color c = g.getColor();
+		    g.setColor(Color.red);
+		    if(is_image)
+		    {
+		        mark_px = (int)mark_point_x;
+		        mark_py = (int)mark_point_y;
+		        Point mp = frames.getMeasurePoint(d);
+		        mark_px = mp.x;
+		        mark_py = mp.y;		          
+		    } else {
+		        mark_px = wm.XPixel(mark_point_x, d);
+		        mark_py = wm.YPixel(mark_point_y, d);
+		    }
 		        
-//		        g.drawLine(mark_point_x, 0, mark_point_x, d.height);
-//		        g.drawLine(0, mark_point_y, d.width, mark_point_y);
-		        g.drawLine(mark_px, 0, mark_px, d.height);
-		        g.drawLine(0, mark_py, d.width, mark_py);
-		        g.setColor(c);
-		        
+		    g.drawLine(mark_px, 0, mark_px, d.height);
+		    g.drawLine(0, mark_py, d.width, mark_py);
+		    g.setColor(c);
 		} 
+        g.translate(-i.right, -i.top);	
     }
 
 
     protected int GetSelectedSignal() {return 0;}
     
-    protected Point FindPoint(Signal s, double curr_x, double curr_y)
+    protected Point FindPoint(Signal s, double curr_x, double curr_y) 
     {
-        double x = 0.0, y = 0.0;
+            double x = 0.0, y = 0.0;
         
-	    int idx = s.FindClosestIdx(curr_x, curr_y);
-        if(curr_x > s.getXmax() || curr_x < s.getXmin() )
-        {
+            if(s == null) return null;
+        
+            int idx = s.FindClosestIdx(curr_x, curr_y);
+            if(curr_x > s.getXmax() || curr_x < s.getXmin() || idx == s.getNumPoints() - 1)
+            {
 	    	    y = s.y[idx];
 	    	    x = s.x[idx];
 	    }
 	    else
 	    {
-	        if(s.getMarker() != Signal.NONE && !s.getInterpolate())
+	        if(s.getMarker() != Signal.NONE && !s.getInterpolate() || s.findNaN())
 	        {
 	            double val;
 	            boolean increase = s.x[idx] < s.x[idx+1];
-	            
+	            	            
 	            if(increase)
 	                val = s.x[idx] +  (s.x[idx+1] - s.x[idx])/2;
 	            else
 	                val = s.x[idx + 1] +  (s.x[idx] - s.x[idx + 1])/2;
+
+                //Patch to elaborate strange RFX signal (roprand bar error signal)
+	            if(s.x[idx] == s.x[idx+1] && !Float.isNaN(s.y[idx+1]))
+                    val += curr_x;
 	            
 	            if(curr_x < val)
 	            {
@@ -1335,14 +1529,19 @@ public class Waveform extends Canvas
 	            }
 	        } else {
 	            x = curr_x;
+		    try {
 	            y = s.y[idx] + (s.y[idx+1] - s.y[idx]) * (x - s.x[idx])/
 	                                                     (s.x[idx+1] - s.x[idx]);
-		    }
-        }
-        wave_point_x = x;
-        wave_point_y = y;
-        Dimension d = getSize();
-        return new Point(wm.XPixel(x, d), wm.YPixel(y, d));
+		    } catch (ArrayIndexOutOfBoundsException e) 
+			{
+			    System.out.println("Excepion on "+getName()+" "+s.x.length+ " "+idx);
+			}
+	        }
+	    }
+	    wave_point_x = x;
+	    wave_point_y = y;
+	    Dimension d = getWaveSize();
+	    return new Point(wm.XPixel(x, d), wm.YPixel(y, d));
     }
 
     protected Point FindPoint(double curr_x, double curr_y, boolean is_first)
@@ -1396,25 +1595,11 @@ public class Waveform extends Canvas
     
     protected boolean DrawFrame(Graphics g, Dimension d, int frame_idx)
     {
-       f_error = null;
+       wave_error = null;
        Object img;
        Graphics2D g2 = (Graphics2D) g;
        //Graphics g2 = (Graphics) g;
       
-            
- //      System.out.println("Frame " + frame_idx);
-                                        
-//       g2.setBackground(getBackground());
-       
-       //g2.clearRect(0, 0, d.width, d.height);
-       
-//      g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-  //                          RenderingHints.VALUE_ANTIALIAS_ON);
- //      g2.setRenderingHint(RenderingHints.KEY_RENDERING,
- //                           RenderingHints.VALUE_RENDER_QUALITY);
-
-       //img = img.getScaledInstance(d.width, d.height, Image.SCALE_DEFAULT);
-
        if(mode == MODE_ZOOM && curr_rect != null)
        {
            
@@ -1422,22 +1607,12 @@ public class Waveform extends Canvas
            frame_idx = frames.GetFrameIdx();
            frames.SetZoomRegion(frame_idx, d, rect);
            curr_rect = null;
-       } else {       
-	        if(ext_update)
-	        {
-	            int f_idx = frames.GetFrameIdxAtTime((float)frame_time);
-	            if(f_idx != -1 && f_idx != frame)
-	            {
-	                frame_idx = f_idx;
-	                frame = f_idx;
-	            }
-	        }
-	   }
+       }
        img = frames.GetFrame(frame_idx, d);
 	   
        if(img == null)
        {
-           f_error = "No frame at time " + frames.GetTime(frame_idx);
+           wave_error = " No frame at time " + frames.GetTime(frame_idx);
            return false;
        }
        
@@ -1472,11 +1647,10 @@ public class Waveform extends Canvas
 
     protected void DrawSignal(Graphics g)
     {
-        DrawSignal(g, getSize());
+        DrawSignal(g, getWaveSize(), NO_PRINT);
     }
     
-    //protected void DrawSignal(Graphics g, Dimension d)
-    protected void DrawSignal(Graphics g, Dimension d)
+    protected void DrawSignal(Graphics g, Dimension d, int print_mode)
     {	
 	    Shape prev_clip = g.getClip();
 	    DrawWave(d);
@@ -1492,9 +1666,11 @@ public class Waveform extends Canvas
         if(waveform_signal.getMarker() != Signal.NONE)
 	        DrawMarkers(g, points, num_points, waveform_signal.getMarker(), 
 	                                           waveform_signal.getMarkerStep());
+	    /* ???????????????????/
         if(waveform_signal.error)
 	        DrawError(off_graphics, d, waveform_signal);
-	    g.setClip(prev_clip);
+	    */    
+	    //g.setClip(prev_clip);
 	        
     }
     
@@ -1535,8 +1711,6 @@ public class Waveform extends Canvas
 
     protected void DrawMarkers(Graphics g, Point pnt[], int n_pnt, int marker, int step)
     {
-	        if(marker == Signal.POINT)
-	            step = 1;
             for(int i = 0; i < n_pnt; i += step)
             {
 	            switch(marker)  
@@ -1592,51 +1766,54 @@ public class Waveform extends Canvas
 	        g.drawLine(x - 2, low, x+2, low);
 	    }
    }
- 	
-
     
 	public void UpdatePoint(double curr_x)
 	{
 		double xrange;
-		Dimension d = getSize();
-		Graphics g = getGraphics();
-			
+		Dimension d = getWaveSize();
+		Insets i = getInsets();
+
+        if(curr_x == curr_point && !dragging) return;
+        curr_point = curr_x;
+	
+	//System.out.println("Update Curr point "+curr_point+" on "+getName());
+
+
         if(!is_image)
         {
-            if(wm == null) return;
+           // if(wm == null) { System.out.println("wm == null"); return;}
             
-		    if(dragging || mode != MODE_POINT || waveform_signal == null)
+	   // if(dragging || mode != MODE_POINT || waveform_signal == null)
+	    if(mode != MODE_POINT || waveform_signal == null)
 			    return;
-			
+			/*
 			if(waveform_signal.getType() == Signal.TYPE_2D && 
 			   (waveform_signal.getMode() ==  Signal.MODE_XY || waveform_signal.getMode() ==  Signal.MODE_YX))
 			{
-			    waveform_signal.showXY((float)curr_x);
-    	        not_drawn = true;
-			}// else 
+			    waveform_signal.showXY(waveform_signal.getMode(), (float)curr_x);
+			    not_drawn = true;
+			}// else
+			*/
+		    /*
 			{    
 		        if(curr_x < waveform_signal.x[0])
 			        curr_x = waveform_signal.x[0];
 		        xrange = waveform_signal.x[waveform_signal.n_points - 1] - waveform_signal.x[0];
           		end_x = wm.XPixel(curr_x, d);
-            }
-            
-		    ext_update = true;
-		    paint(g);
-//		    repaint();
-		    ext_update = false;
+			}
+		    */
+		    //repaint();
+		    paintImmediately(0, 0, d.width,d.height);
 		} else {
-		    if(!is_playing)
+		    if(frames != null && !is_playing)
 		    {
-		        frame_time = curr_x;
+		        frame = frames.GetFrameIdxAtTime((float)curr_x);
 			    not_drawn = true;
-//		        repaint();
-			    ext_update = true;
-		        paint(g);
-		        ext_update = false;
-	        }
+		        repaint();
+		        if(send_profile)
+		            sendProfileEvent();
+		    }
 		}
-		g.dispose();
 	}
 
 	
@@ -1645,8 +1822,6 @@ public class Waveform extends Canvas
 	int timestamp) {}
 
     protected void ReportLimits(ZoomRegion r, boolean add_undo)    
-    //double start_xs, double end_xs, double start_ys, 
-	//double end_ys)
     {
         
 	    if(add_undo)
@@ -1668,15 +1843,16 @@ public class Waveform extends Canvas
 	        	    
     }
 
- 
+ /*
     public void update(Graphics g)
     {
- 	    if((mode == MODE_ZOOM && curr_rect == null) || 
-		    (mode == MODE_POINT && prev_point_x == -1))
-	        super.update(g);
-	    else
+ 	    //if((mode == MODE_ZOOM && curr_rect == null) || 
+	  	//    (mode == MODE_POINT && prev_point_x == -1))
+	    //    super.update(g);
+	    //else
 	        paint(g);
     }
+ */
     public void Autoscale()
     {
         if(is_image && frames != null && frames.getNumFrame() != 0)
@@ -1754,7 +1930,7 @@ public class Waveform extends Canvas
 
     protected void Resize(int x, int y, boolean enlarge)
     {
-	    Dimension d = getSize();
+	    Dimension d = getWaveSize();
 	    double  curr_x = wm.XValue(x, d),
 		curr_y = wm.YValue(y, d),
 		prev_xmax = wm.XMax(), 
@@ -1805,7 +1981,7 @@ public class Waveform extends Canvas
     public void performZoom()
     {
 	    double start_xs, end_xs, start_ys, end_ys;
-	    Dimension d = getSize();
+	    Dimension d = getWaveSize();
         
         start_xs = wm.XValue(start_x, d);
 	    end_xs = wm.XValue(end_x, d);
@@ -1825,8 +2001,19 @@ public class Waveform extends Canvas
         undo_zoom.removeAllElements();
 	    wm = null;
 	    not_drawn = true;
+        if(mode == MODE_POINT && is_image && frames != null)
+        {
+            Point p = frames.getFramePoint(getWaveSize());
+            end_x = p.x;
+            end_y = p.y;                
+        }   
 	    repaint();
-	    //Repaint(true);
+	    if(mode == MODE_POINT)
+	    {
+	        sendUpdateEvent();
+	        if(is_image && send_profile)
+	            sendProfileEvent();
+	    }
     }
     
     public void SetCopySelected(boolean selec)
@@ -1834,7 +2021,6 @@ public class Waveform extends Canvas
 	    copy_selected = selec;
 	    not_drawn = true;
 	    repaint();
-	    //Repaint(true);
     }
     
     public boolean IsCopySelected() {return copy_selected; }
@@ -1893,6 +2079,7 @@ public class Waveform extends Canvas
         
     protected synchronized void dispatchWaveformEvent(WaveformEvent e) 
     {
+        if(e == null) return;
         if (waveform_listener != null) 
         {
             for(int i = 0; i < waveform_listener.size(); i++)
@@ -1901,5 +2088,5 @@ public class Waveform extends Canvas
             }
         }
     }
-    
+
 }

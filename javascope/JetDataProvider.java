@@ -2,12 +2,13 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.awt.*;
+import javax.swing.*;
 import java.awt.event.*;
 import java.lang.InterruptedException;
 
 class JetDataProvider implements DataProvider
 {
-    
+
     String experiment;
     int shot;
     String username, passwd;
@@ -20,35 +21,34 @@ class JetDataProvider implements DataProvider
     int content_len;
     private String last_url_name;
     private float [] last_y, last_x, last_xdata;
-    Dialog inquiry_dialog;
-    Frame owner_f;
+    JDialog inquiry_dialog;
+    JFrame owner_f;
     static final int LOGIN_OK = 1, LOGIN_ERROR = 2, LOGIN_CANCEL = 3;
     private int login_status;
     private boolean evaluate_url = false;
-    private String url_source = "http://data.jet.uk/";    
-    TextField user_text, passwd_text;
-    private SignalCache sc = null;
+    private String url_source = "http://data.jet.uk/";
+
+    JTextField user_text; 
+    JPasswordField passwd_text;
 
     JetDataProvider() {this(null, null);}
-   
+
     JetDataProvider(String username, String passwd)
     {
         String credentials = username+":"+passwd;
         try{
             encoded_credentials = translator.encode(credentials);
-            sc = new SignalCache();
         }catch(Exception e){}
     }
-     
+
     public int GetLoginStatus()
     {
         return login_status;
     }
-    
+
     public void setEvaluateUrl(boolean state)
     {
         evaluate_url = state;
-        sc = null;
     }
 
     public void setUrlSource(String url_source)
@@ -57,8 +57,15 @@ class JetDataProvider implements DataProvider
         System.out.println(url_source);
     }
 
-    
-    synchronized void InquireCredentials(Frame f)
+    public boolean supportsCompression(){return false;}
+    public void setCompression(boolean state){}
+    public boolean useCompression(){return false;}
+
+    public boolean supportsCache(){return false;}
+    public void    enableCache(boolean state){}
+    public boolean isCacheEnabled(){return false;}
+
+    synchronized void InquireCredentials(JFrame f)
     {
         if(login_status == LOGIN_CANCEL)
         {
@@ -67,22 +74,22 @@ class JetDataProvider implements DataProvider
         }
         login_status = LOGIN_OK;
         owner_f = f;
-        inquiry_dialog = new Dialog(f, "JET data server login", true);
-        
-        inquiry_dialog.setLayout(new BorderLayout());
-        Panel p = new Panel();
-        p.add(new Label("Username: "));
-        user_text = new TextField(15);
+        inquiry_dialog = new JDialog(f, "JET data server login", true);
+
+        inquiry_dialog.getContentPane().setLayout(new BorderLayout());
+        JPanel p = new JPanel();
+        p.add(new JLabel("Username: "));
+        user_text = new JTextField(15);
         p.add(user_text);
-        inquiry_dialog.add(p, "North");
-        p = new Panel();
-        p.add(new Label("Password: "));
-        passwd_text = new TextField(15);
+        inquiry_dialog.getContentPane().add(p, "North");
+        p = new JPanel();
+        p.add(new JLabel("Password: "));
+        passwd_text = new JPasswordField(15);
         passwd_text.setEchoChar('*');
         p.add(passwd_text);
-        inquiry_dialog.add(p, "Center");
-        p = new Panel();
-        Button ok_b = new Button("Ok");
+        inquiry_dialog.getContentPane().add(p, "Center");
+        p = new JPanel();
+        JButton ok_b = new JButton("Ok");
         ok_b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
                 {
@@ -95,7 +102,7 @@ class JetDataProvider implements DataProvider
                         login_status = LOGIN_ERROR;
                         return;
                     }
-                        
+
                     String credentials = username+":"+passwd;
                     try{
                         encoded_credentials = translator.encode(credentials);
@@ -109,7 +116,7 @@ class JetDataProvider implements DataProvider
                         login_status = LOGIN_OK;
                 }});
         p.add(ok_b);
-        Button clear_b = new Button("Clear");
+        JButton clear_b = new JButton("Clear");
         clear_b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
                 {
@@ -117,7 +124,7 @@ class JetDataProvider implements DataProvider
                     passwd_text.setText("");
                 }});
         p.add(clear_b);
-        Button cancel_b = new Button("Cancel");
+        JButton cancel_b = new JButton("Cancel");
         cancel_b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
                 {
@@ -125,14 +132,14 @@ class JetDataProvider implements DataProvider
                     inquiry_dialog.setVisible(false);
                 }});
         p.add(cancel_b);
-        inquiry_dialog.add(p, "South");
+        inquiry_dialog.getContentPane().add(p, "South");
         inquiry_dialog.pack();
         Rectangle r = f.getBounds();
         inquiry_dialog.setLocation(r.x + r.width/2 - inquiry_dialog.getBounds().width/2,
 			r.y + r.height/2 - inquiry_dialog.getBounds().height/2);
         inquiry_dialog.show();
     }
-    
+
    boolean checkPasswd(String encoded_credentials)
    {
             this.encoded_credentials = encoded_credentials;
@@ -157,7 +164,7 @@ class JetDataProvider implements DataProvider
         return true;
    }
 
-   
+
    boolean checkPasswd(String username, String passwd)
    {
         String credentials = username+":"+passwd;
@@ -169,13 +176,16 @@ class JetDataProvider implements DataProvider
     public String GetDefaultTitle(String in_y[]){return null;}
     public String GetDefaultXLabel(String in_y[]){return null;}
     public String GetDefaultYLabel(String in_y[]){return null;}
-    public float[] GetFrameTimes(String in_frame){return null;} 
-    public byte[] GetFrameAt(String in_frame, int frame_idx){return null;} 
-    public byte[]  GetAllFrames(String in_frame){return null;} 
-    
-    
+    public float[] GetFrameTimes(String in_frame){return null;}
+    public byte[] GetFrameAt(String in_frame, int frame_idx){return null;}
+    public byte[]  GetAllFrames(String in_frame){return null;}
+
+
     public void SetEnvironment(String s) {}
-    public void Update(String experiment, int shot) 
+    public void disconnect(){}
+    public void freeCache(){}
+    
+    public void Update(String experiment, int shot)
     {
         this.experiment = experiment;
         this.shot = shot;
@@ -183,19 +193,19 @@ class JetDataProvider implements DataProvider
     }
     public String GetString(String in) {return in; }
     public float GetFloat(String in){ return new Float(in).floatValue(); }
-    
+
     public float[] GetFloatArray(String in)
     {
         error_string = null;
         boolean is_time = in.startsWith("TIME:", 0);
         boolean is_xdata = in.startsWith("X:", 0);
         if(is_time)
-            in = in.substring(5);    
+            in = in.substring(5);
         if(is_xdata)
             in = in.substring(2);
 
         String url_name;
-        
+
         if(evaluate_url)
         {
             url_name = in;
@@ -208,15 +218,15 @@ class JetDataProvider implements DataProvider
                 url_name = st.nextToken() + "/" + shot ;
                 while(st.hasMoreTokens())
                     url_name = url_name + st.nextToken();
-            } else
+            }
+//            url_name = in;
+            else
                 url_name = experiment + "/" + shot + "/" + in;
-                
         }
-        
-    
+
         if(last_url_name != null && url_name.equals(last_url_name))
         {
-            if(is_time) 
+            if(is_time)
                 return last_x;
             else
                 if(is_xdata)
@@ -226,29 +236,7 @@ class JetDataProvider implements DataProvider
         }
         else
         {
-            last_url_name = null;
             last_x = last_y = last_xdata = null;
-
-            if(sc != null && !evaluate_url)
-            {
-                if(is_time)
-                {
-                    last_x = (float[])sc.getCacheData("TIME:"+in, experiment, shot);
-                    if(last_x != null)
-                        return last_x;
-                } else
-                    if(is_xdata)
-                    {
-                        last_xdata = (float[])sc.getCacheData("X:"+in, experiment, shot);
-                        if(last_xdata != null)
-                            return last_xdata;
-                    } else {
-                        last_y = (float[])sc.getCacheData("Y:"+in, experiment, shot);
-                        if(last_y != null)
-                            return last_y;
-                    }
-            }
-
             try{
                 last_url_name = url_name;
                 URLConnection urlcon;
@@ -271,9 +259,26 @@ class JetDataProvider implements DataProvider
                 br.close();
 
                 JiNcSource jns = new JiNcSource("myname", new RandomAccessData(buffer));
-                JiVar jvarTime = jns.getVar("TIME"), 
-                      jvarData = jns.getVar("SIGNAL"),
-                      jvarXData = jns.getVar("X");
+
+                JiVar jvarData = jns.getVar("SIGNAL");
+                int ndims = jvarData.getDims().length;
+                JiDim jdimTime = jvarData.getDims()[ndims-1];
+                JiVar jvarTime = jns.getVar(jdimTime.mName);
+
+
+                JiDim jdimXData = null;
+                JiVar jvarXData = null;
+                if (ndims >= 2){
+                    jdimXData = jvarData.getDims()[ndims-2];
+                    if (jdimXData != null){
+                        jvarXData = jns.getVar(jdimXData.mName);
+                    }
+                }
+
+
+//                JiVar jvarTime = jns.getVar("TIME"),
+//                      jvarData = jns.getVar("SIGNAL"),
+//                      jvarXData = jns.getVar("X");
 
                 JiDim[] dims = jvarTime.getDims();
                 double[] time = jvarTime.readDouble(dims);
@@ -281,34 +286,24 @@ class JetDataProvider implements DataProvider
                 for(int i = 0; i < time.length; i++)
                     last_x[i] = (float)time[i];
                 time = null;
-                
-                
+
                 dims = jvarData.getDims();
                 last_y = jvarData.readFloat(dims);
-                
+
                 if(jvarXData != null)
                 {
                     dims = jvarXData.getDims();
                     last_xdata = jvarXData.readFloat(dims);
                 }
-                
-                if(sc != null && !evaluate_url)
-                {
-                    sc.putCacheData("TIME:"+in, experiment, shot, last_x);    
-                    sc.putCacheData("Y:"+in, experiment, shot, last_y);
-                    if(last_xdata != null)
-                        sc.putCacheData("X:"+in, experiment, shot, last_xdata);    
-                }
-                
-            }
-            catch(Exception e)
+
+            }catch(Exception e)
             {
                 error_string = "Error reading URL " + url_name + " : " + e;
                 last_url_name = null;
                 return null;
             }
-            
-            if(is_time) 
+
+            if(is_time)
                 return last_x;
             else
                 if(is_xdata)
@@ -317,7 +312,7 @@ class JetDataProvider implements DataProvider
                     return last_y;
         }
     }
-        
+
  public int[] GetIntArray(String in)
  {
     error_string = null;
@@ -374,18 +369,19 @@ class JetDataProvider implements DataProvider
  {
     return "TIME:" + in;
  }
- 
+
  public String GetXDataSpecification(String in)
  {
     return "X:" + in;
  }
- 
- 
+
+
  public String ErrorString() { return error_string; }
- public boolean SupportsAsynch() { return false; } 
- public void addNetworkEventListener(NetworkEventListener l, String event){} 
- public void removeNetworkEventListener(NetworkEventListener l, String event){} 
- 
+ public boolean SupportsAsynch() { return false; }
+ public void addNetworkEventListener(NetworkEventListener l, String event){}
+ public void removeNetworkEventListener(NetworkEventListener l, String event){}
+ public void    addNetworkTransferListener(NetworkTransferListener l){}
+ public void    removeNetworkTransferListener(NetworkTransferListener l){}
 //b2JhcmFuYTpjbHVibGF0aW5v
 
 
@@ -399,12 +395,12 @@ public static void main(String args[])
     y = dp.GetFloatArray("PPF/40000/MAGN/BPOL");
     x = dp.GetFloatArray("TIME:PPF/40000/MAGN/BPOL");
     xdata = dp.GetFloatArray("X:PPF/40000/MAGN/BPOL");
-    
+
     for(int i = 0; i < x.length; i++)
         System.out.println(x[i] + "  " +y[i]);
-           
+
     System.out.println("Num. points: "+y.length);
  }
- 
+
 }
 

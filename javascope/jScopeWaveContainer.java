@@ -9,22 +9,25 @@ import java.awt.Point;
 import java.awt.Cursor;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Component;
 import java.awt.FileDialog;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.Date;
-import java.awt.print.*;
 import java.io.*;
+import javax.swing.*;
+import java.awt.print.*;
 
 
-class jScopeWaveContainer extends WaveformContainer implements Printable
+class jScopeWaveContainer extends WaveformContainer 
 {
     private   static final int MAX_COLUMN = 4;       
 
               DataProvider dp;
     private   jScopeDefaultValues def_vals;
     private   boolean   fast_network_access = false;
-    private   boolean   support_fast_network = false;
+    private   boolean   supports_fast_network = false;
+    private   boolean   supports_local = true;
     private   String    title = null;
     private   String    server_name = null;
     private   String    event = null;
@@ -34,69 +37,85 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     private   int	    grid_mode = 0, x_lines_grid = 3, y_lines_grid = 3;
     private   boolean   brief_error = true;
     private   int       columns;
-    private   UpdateWaves	updateThread;
-    private   boolean      abort;
+    private   UpdW      updateThread;
+    private   boolean   abort;
     private   boolean   add_sig = false;
     private   ProfileDialog profile_dialog;
-
+    private   int       main_shots[] = null;
+    private   String    main_shot_str = null;
+    private   boolean   main_shot_changed = false;
+    private   String    main_shot_error = null;
+    private   jScopeMultiWave profile_source = null;
+              MdsWaveInterface mds_wi[];
      
-    class UpdateWaves extends Thread {
+
+    class UpdW extends Thread  
+    {
+        boolean pending = false;
   
-
-    synchronized public void run()
-    {
-        
-      jScopeMultiWave w;  
-      Date date = new Date();
-      long start, end;
-      int curr_mode;
-      WaveContainerEvent wce = null;
-         
-      while(true)
-      {
-        
-        try {
-            wait();
-        } catch (InterruptedException e){}
-
-        date = new Date();
-        start = date.getTime();
-        
-        wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, "Start Update");
-        jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
-	    
-        try
+        synchronized public void run()
         {
- 	    
-	        UpdateAllWave();
- 	    
-	        if(!abort)
-                wce = new WaveContainerEvent(this, WaveContainerEvent.END_UPDATE, "All waveforms are up to date");
-	        else
-                wce = new WaveContainerEvent(this, WaveContainerEvent.KILL_UPDATE, "Aborted up to date");
-            jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
+                      
+            Date date = new Date();
+            long start, end;
+            WaveContainerEvent wce = null;
 
-	    	    
-            date = new Date();
-            end = date.getTime();
-            if(jScope.is_debug)
-                System.out.println("Durata "+(end-start)+" ms ");
-	    	    
-	    } catch(Throwable e ) {
-            wce = new WaveContainerEvent(this, WaveContainerEvent.KILL_UPDATE, "Error during apply " + e);
-            jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
-	    }    
-        System.gc();
-      }
-    }     
-     
-    synchronized public void StartUpdate()
-    {
-          notify();
-    }
+              
+            setName("Update Thread");
+
+            while(true)
+            {
+                    
+                try {
+                            
+                    if(!pending)
+                        wait();
+                    pending = false;
+
+
+                    date = new Date();
+                    start = date.getTime();
+                            
+                    wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, "Start Update");
+                    jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
+                    	    
+                    try
+                    {
+                               
+	                    UpdateAllWave();
+                         	
+                        date = new Date();
+                        end = date.getTime();
+                         	     	    
+	                    if(!abort)
+                                wce = new WaveContainerEvent(this, WaveContainerEvent.END_UPDATE, "All waveforms are up to date < "+(end-start)+" ms >");
+	                    else
+                                wce = new WaveContainerEvent(this, WaveContainerEvent.KILL_UPDATE, " Aborted ");
+
+                        jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
+                    	    	    
+	                } 
+	                catch(Throwable e) 
+	                {
+                        wce = new WaveContainerEvent(this, WaveContainerEvent.KILL_UPDATE, "Error during apply " + e);
+                        jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
+	                }
+                } catch (InterruptedException e){}
+            }
+        }     
+         
+        synchronized public void StartUpdate()
+        {
+            pending = true;
+            notify();
+        }
         
-  }
-       
+    }
+
+    public jScopeWaveContainer(int rows[], jScopeDefaultValues def_vals)
+    {
+        this(rows, null, def_vals);
+    }
 
        
     public jScopeWaveContainer(int rows[], DataProvider dp, jScopeDefaultValues def_vals)
@@ -106,8 +125,9 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         this.dp = dp; 
         Component c[] = CreateWaveComponents(getComponentNumber());
         AddComponents(c);
-        updateThread = new UpdateWaves();
+        updateThread = new UpdW();
         updateThread.start();
+        setBackground(Color.white);
     }
     
    protected Component[] CreateWaveComponents(int num)
@@ -117,6 +137,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         for(int i = 0; i < c.length;i++)
         {
 	       wave = new jScopeMultiWave(dp, def_vals);
+	       wave.wi.full_flag = !GetFastNetworkState();
 	       wave.addWaveformListener(this);
 	       SetWaveParams(wave);
            c[i] = wave;
@@ -124,11 +145,28 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         return c;
     }
     
+    public void initMdsWaveInterface()
+    {
+        jScopeMultiWave w;
+        
+        mds_wi = new MdsWaveInterface[getGridComponentCount()];
+	    for(int i = 0, k = 0; i < 4; i++)
+	    {
+	        for(int j = 0; j < rows[i]; j++, k++) 
+		    {
+		        w = (jScopeMultiWave)getGridComponent(k);
+		        if(w != null)
+		            mds_wi[k] = (MdsWaveInterface)w.wi;
+		    }
+	    }
+    }
+    
     
     public void ChangeDataProvider(DataProvider dp)
     {
         jScopeMultiWave w;
-        this.dp = dp;
+                 
+        main_shot_changed = true;
 	    for(int i = 0; i < getGridComponentCount(); i++)
         {
 	        w = (jScopeMultiWave)GetWavePanel(i);
@@ -167,7 +205,6 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	  ((jScopeMultiWave)dest).wi = mwi;
 	  ((jScopeMultiWave)dest).wi.SetDataProvider(dp);
 	  ((jScopeMultiWave)dest).wi.wave = dest;
-	  //((jScopeMultiWave)dest).Refresh();
 	  Refresh((jScopeMultiWave)dest, "Copy in");
 	  
     }
@@ -177,10 +214,70 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     public String GetPrintEvent(){return print_event;}
     public String GetServerName(){return server_name;}
     
-    public void SetTitle(String title){this.title = title;}
-    public void SetServerName(String server_name){this.server_name = server_name;}
-    public boolean SupportFastNetwork(){return support_fast_network;}
-    public void SetBriefError(boolean brief_error){this.brief_error = brief_error;}
+    public void    SetTitle(String title){this.title = title;}
+    public void    SetServerName(String server_name){this.server_name = server_name;}
+    public boolean supportsFastNetwork(){return supports_fast_network;}
+    public boolean supportsLocalProvider(){return supports_local;}
+    
+    public boolean supportsCompression()
+    {
+        if(dp != null)
+            return dp.supportsCompression();
+        else
+            return false;
+    }
+    
+    
+    public boolean compressionEnable()
+    {
+        if(dp != null)
+            return dp.useCompression();
+        else
+            return false;
+    }
+
+    public void setCompression(boolean state, NetworkEventListener l) throws IOException
+    {
+        if(dp != null && dp.supportsCompression() && dp.useCompression() != state) 
+        {
+            RemoveAllEvents(l);
+            dp.disconnect();
+            dp.setCompression(state);
+            AddAllEvents(l);
+        }
+    }
+    
+    public void freeCache()
+    {
+        dp.freeCache();
+    }
+
+    
+    public boolean supportsCache()
+    {
+        if(dp != null)
+            return dp.supportsCache();
+        else
+            return false;
+    }
+
+    public void enableCache(boolean state)
+    {
+        if(dp != null)
+            dp.enableCache(state);
+    }
+
+    public boolean isCacheEnabled()
+    {
+        if(dp != null)
+            return dp.isCacheEnabled();
+        else
+            return false;
+    }
+
+
+    
+  public void SetBriefError(boolean brief_error){this.brief_error = brief_error;}
     
   public void PrintAllWaves(PrinterJob prnJob, PageFormat pf) throws PrinterException
   {
@@ -192,13 +289,14 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     public void processWaveformEvent(WaveformEvent e) 
     {
         super.processWaveformEvent(e);
-        Waveform w = (Waveform)e.getSource();
+        jScopeMultiWave w = (jScopeMultiWave)e.getSource();
         switch(e.getID())
         {
             case WaveformEvent.PROFILE_UPDATE:
                 if(profile_dialog != null && profile_dialog.isShowing())
                 {
-                    profile_dialog.updateProfiles(e.pixels_x, e.start_pixel_x, 
+                    profile_dialog.updateProfiles(e.name,
+                                                  e.pixels_x, e.start_pixel_x, 
                                                   e.pixels_y, e.start_pixel_y,
                                                   e.pixels_signal, e.frames_time);
                     if(e.pixels_line != null)
@@ -211,46 +309,23 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         }
     }
 
-    public void ShowProfileDialog()
+    public void ShowProfileDialog(jScopeMultiWave wave)
     {
         if(profile_dialog != null && profile_dialog.isVisible())
             profile_dialog.dispose();
         //if(profile_dialog == null)
         {
-            profile_dialog = new ProfileDialog((Frame)this.getParent(), "Profile Dialog");
+            profile_dialog = new ProfileDialog(wave);
             profile_dialog.pack();
             profile_dialog.setSize(200, 300);
-            Waveform.setSendProfile(true);
-        }
-        /*if(profile_dialog.isShowing())
-        {
-            Waveform.setSendProfile(false);
-            profile_dialog.setVisible(false);
-        }
-        else*/
+            if(profile_source != null)
+                profile_source.setSendProfile(false);
+            wave.setSendProfile(true);
+            profile_source = wave;
             profile_dialog.show();
+            wave.sendProfileEvent();
+        }
     }
-
-    public int print(Graphics g, PageFormat pf, int pageIndex)
-        throws PrinterException {
-        
-        int st_x;
-        
-        if(pageIndex > 0) return Printable.NO_SUCH_PAGE;
-        
-        if(pf.getOrientation() == PageFormat.LANDSCAPE)
-            st_x = (int)(pf.getImageableX()) + 15;
-        else
-            st_x = (int)(pf.getImageableX() - 13.);
-        PrintAll(g, st_x, 
-                    (int)(pf.getImageableY() - 13.),
-                    (int)(pf.getImageableHeight()), 
-                    (int)(pf.getImageableWidth())
-                 ); 
-        System.gc();
-        return Printable.PAGE_EXISTS;
-    }
-
    
    
   public void PrintAll(Graphics g, int st_x, int st_y, int height, int width)
@@ -276,7 +351,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	     fm = g.getFontMetrics();
 	     
 	     st_y += fm.getHeight() + 6;
-	     height -= st_y;
+	     height -= st_y + 30;
          
          s_width = fm.stringWidth(title);
 
@@ -286,39 +361,114 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	super.PrintAll(g, st_x, st_y, height, width);  
  }         
   
-
-
-  public void StartUpdate(String main_shot)
+  public void StartUpdate()
   {
-      MdsWaveInterface.SetMainShot(main_shot);
+      if(!updateThread.isAlive())
+      {
+        updateThread = new UpdW();
+        updateThread.start();
+      }
       updateThread.StartUpdate();
   }
 
-  public void StartPrint(String main_shot, PrinterJob prnJob, PageFormat pf)
+  public void StartPrint(PrinterJob prnJob, PageFormat pf)
   {
     try
     {
-      MdsWaveInterface.SetMainShot(main_shot);
+      initMdsWaveInterface();
       UpdateAllWave();
       PrintAllWaves(prnJob, pf);
     } catch (InterruptedException e){}
       catch (PrinterException e){}
       catch (Exception e){}
   }
-
   
-  public void WaitUpdate() throws InterruptedException
+  public int[] getMainShots()
   {
-      updateThread.join();
+     try
+     {
+        if(main_shot_changed)
+            evaluateMainShot(main_shot_str);
+     } catch (IOException e){}
+     return main_shots;
+  }
+  
+  public String getMainShotStr()
+  {
+    try
+    {
+        if(main_shot_changed)
+            evaluateMainShot(main_shot_str);
+    } catch (IOException e){}
+    return main_shot_str;
   }
 
+  public void setMainShotStr(String main_shot_str)
+  {
+    if(main_shot_str == null || !main_shot_str.equals(this.main_shot_str))
+       main_shot_changed = true;
+    this.main_shot_str = main_shot_str;
+  }
+
+  public String getMainShotError(boolean brief)
+  {
+    //if(brief)
+    //    return main_shot_error.substring(0, main_shot_error.indexOf("\n"));
+    //else
+        return main_shot_error;
+  }
+
+  public void evaluateMainShot(String in_shots) throws IOException
+  {
+        String error = null;
+	    int int_data[] = null;
+
+        main_shot_error = null;
+        
+	    if(in_shots == null || in_shots.trim().length() == 0)
+	    {
+	        main_shot_error = "Main shot value Undefine";
+            main_shots = null;
+            main_shot_str = null;
+	        return;
+        }
+        
+//        if(main_shot_str != null && main_shot_str.equals(in_shots) && main_shots != null)
+//            return null;
+
+        main_shots = null;
+        main_shot_str = null;
+	
+	    dp.Update(null, 0);
+	    int_data = dp.GetIntArray(in_shots);
+	    if( int_data == null || int_data.length == 0 || int_data.length > MdsWaveInterface.MAX_NUM_SHOT)
+	    {
+	        if(int_data != null && int_data.length > MdsWaveInterface.MAX_NUM_SHOT)
+                error = "Too many shots. Max shot list elements " + MdsWaveInterface.MAX_NUM_SHOT +"\n";
+	        else {
+		        if(dp.ErrorString() != null)	    
+		            main_shot_error = dp.ErrorString();
+		        else
+		            main_shot_error = "Shot syntax error\n";
+	        }
+	    }
+	    
+	    if(main_shot_error == null)
+	    {
+	        main_shot_changed = false;
+                main_shots = int_data;
+	    }
+        main_shot_str = in_shots.trim();
+  }
+
+  
   public void AbortUpdate()
   {
         abort = true;
   }
 
 
-  public void RemoveAllEvents(NetworkEventListener l)
+  public void RemoveAllEvents(NetworkEventListener l)  throws IOException
   {
      jScopeMultiWave w;
      MdsWaveInterface wi; 
@@ -342,7 +492,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
      }
   }
    
-  public synchronized void AddAllEvent(NetworkEventListener l)
+  public synchronized void AddAllEvents(NetworkEventListener l)  throws IOException
   {
      jScopeMultiWave w;
      MdsWaveInterface wi; 
@@ -366,6 +516,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
      }
   }
 
+
     public void InvalidateDefaults()
     {           
         jScopeMultiWave w;
@@ -379,8 +530,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		    }
 	    }
     }
-
-    
+   
     public boolean GetFastNetworkState()
     {
         return fast_network_access;
@@ -393,8 +543,11 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	    for(int i = 0; i < getComponentNumber(); i++)
         {
 	        w = (jScopeMultiWave)getGridComponent(i);
-	        if(w != null && w.wi != null )
+	        if(w != null && w.wi != null ) {
 		       w.wi.full_flag = !state;
+		       w.wi.setModified(true);
+		       //Refresh(w, "Refresh");
+		    }
 		}
     }    
 
@@ -408,120 +561,137 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		       w.Erase();
 		}
     }
-    
+        
     public synchronized void UpdateAllWave() throws Exception
     {
         jScopeMultiWave w;
         WaveContainerEvent wce;
         
         int curr_mode = GetMode();
-	    SetMode(Waveform.MODE_WAIT);
+	    //SetMode(Waveform.MODE_WAIT);
     	setCursor(new Cursor(Cursor.WAIT_CURSOR));
-
+    	
         try
         {
-	        abort = false;
+
+            if(mds_wi == null)
+                abort = true;
+            else
+	            abort = false;
 	    	
-	    	if(def_vals.public_variables != null)
+	    	if(def_vals != null && def_vals.public_variables != null) 
 	    	    dp.SetEnvironment(def_vals.public_variables);
-	    	    
+	    	 
+
 	        for(int i = 0, k = 0; i < 4 && !abort; i++)
 	        {
-		        for(int j = 0; j < getComponentsInColumn(i); j++, k++) 
+	            for(int j = 0; j < rows[i]; j++, k++) 
 		        {
-		            w = (jScopeMultiWave)getGridComponent(k);
-		            ((MdsWaveInterface)w.wi).Update();
+		            if(mds_wi[k] != null)
+		                mds_wi[k].Update();
+		            //w = (jScopeMultiWave)getGridComponent(k);
+		            //((MdsWaveInterface)w.wi).Update();
 		        }
 	        }
 
-	    //    Initialize wave evaluation
-	    for(int i = 0, k = 0; i < 4 && !abort; i++)
-	    {
-		    for(int j = 0; j < rows[i] && !abort; j++, k++) 
-		    {
-		        w = (jScopeMultiWave)getGridComponent(k);
-		        if( w.wi!= null && w.wi.error == null)
+	        //    Initialize wave evaluation
+	        for(int i = 0, k = 0; i < 4 && !abort; i++)
+	        {
+		        for(int j = 0; j < rows[i] && !abort; j++, k++) 
 		        {
-			        //setup.SetStatusLabel("Start Evaluate column " + (i + 1) + " row " + (j + 1));
-                    wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, 
-                                         "Start Evaluate column " + (i + 1) + " row " + (j + 1));
-                    jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
-			        w.wi.StartEvaluate();
+		        // w = (jScopeMultiWave)getGridComponent(k);
+		        // if( w.wi!= null && w.wi.error == null)
+		            if(mds_wi[k] != null && mds_wi[k].error == null)
+		            {
+			            wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, 
+							        "Start Evaluate column " + (i + 1) + " row " + (j + 1));
+                        dispatchWaveContainerEvent(wce);
+			            //w.wi.StartEvaluate();
+			            mds_wi[k].StartEvaluate();
+		            }
 		        }
-		    }
-	    }
-	    
-	    //     Evaluate main shot
-	    
-	    int main_shots[] = MdsWaveInterface.GetMainShot();
-    
-	    if(main_shots != null)// && main_shots[0] != WaveInterface.UNDEF_SHOT)
-	    {
-		    for(int l = 0; l < main_shots.length && !abort; l++)
-		    {
-		        for(int i = 0, k = 0; i < 4 && !abort; i++)
-		        {
-			        for(int j = 0; j < rows[i] && !abort; j++, k++)
-			        {
-		                w = (jScopeMultiWave)getGridComponent(k);
-			            MdsWaveInterface wi = (MdsWaveInterface)w.wi;
-			            if(wi != null && wi.error == null && wi.num_waves != 0 && wi.UseDefaultShot())
-			            {
-				            //setup.SetStatusLabel("Update signal column " + (i + 1) + " row " + (j + 1) + " main shot " + 
-							//				main_shots[l]);										    
-                            wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, 
-                                        "Update signal column " + (i + 1) + " row " + (j + 1) + " main shot " + main_shots[l]);
-                            jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
-				            wi.EvaluateShot(main_shots[l]);			
-				        }
-			        }
-			    } 
-		    }
-	    }
-	    
-	    // Evaluate evaluate other shot	
-    
-	    for(int i = 0, k = 0; i < 4 && !abort; i++)
-	    {
-		    for(int j = 0; j < rows[i] && !abort; j++, k++) 
-		    {
-		        w = (jScopeMultiWave)getGridComponent(k);
-                if(w.wi != null && w.wi.error == null && w.wi.num_waves != 0)
-                {
-			        //setup.SetStatusLabel("Evaluate wave column " + (i + 1) + " row " + (j + 1));
-                    wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, 
-                              "Evaluate wave column " + (i + 1) + " row " + (j + 1));
-                    jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
-			        w.wi.EvaluateOthers();
-		        }		    
-		    }
-	    }	    
- 	    
- 	    //SetAllErrorTitle();
+	        }
 
-	    for(int i = 0, k = 0; i < 4 && !abort; i++)
-	    {
-		    for(int j = 0; j < rows[i] && !abort; j++, k++) 
-		    {
-		        w = (jScopeMultiWave)getGridComponent(k);
-		        if(w.wi != null)
-			        w.Update(w.wi);
-		    }
-        }
         
-        System.gc();
-	    SetMode(curr_mode);
-    	setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	        if(main_shots != null)
+	        {
+		        for(int l = 0; l < main_shots.length && !abort; l++)
+		        {
+		            for(int i = 0, k = 0; i < 4 && !abort; i++)
+		            {
+			            for(int j = 0; j < rows[i] && !abort; j++, k++)
+			            {
+    //		                w = (jScopeMultiWave)getGridComponent(k);
+    //			            MdsWaveInterface wi = (MdsWaveInterface)w.wi;
+    //			            if(wi != null && wi.error == null && wi.num_waves != 0 && wi.UseDefaultShot())
+			                if(mds_wi[k] != null && mds_wi[k].error == null && mds_wi[k].num_waves != 0 && mds_wi[k].UseDefaultShot())
+			                {
+					            wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, 
+								                "Update signal column " + (i + 1) + " row " + (j + 1) + 
+								                " main shot " + main_shots[l]);
+					            dispatchWaveContainerEvent(wce);
+    //				            wi.EvaluateShot(main_shots[l]);			
+				                mds_wi[k].EvaluateShot(main_shots[l]);			
+				            }
+			            }
+			        } 
+		        }
+	        }
+    	    
+	        // Evaluate evaluate other shot	
         
-        } catch (Exception e) {
-            System.gc();
-	        SetMode(curr_mode);
-    	    setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            throw(new Exception("Error in WavePanel Update "+e));
+	        for(int i = 0, k = 0; i < 4 && !abort; i++)
+	        {
+		        for(int j = 0; j < rows[i] && !abort; j++, k++) 
+		        {
+		    //      w = (jScopeMultiWave)getGridComponent(k);
+            //      if(w.wi != null && w.wi.error == null && w.wi.num_waves != 0)
+			        if(mds_wi[k] != null && mds_wi[k].error == null && mds_wi[k].num_waves != 0)
+                    {
+                        wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, 
+                                "Evaluate wave column " + (i + 1) + " row " + (j + 1));
+                        dispatchWaveContainerEvent(wce);
+			        //    w.wi.EvaluateOthers();
+			            mds_wi[k].EvaluateOthers();
+    			        
+		            }		    
+		        }
+	        }	    
+
+            SwingUtilities.invokeLater(new Runnable() 
+            {
+                public void run()
+                {
+                    jScopeMultiWave wx;
+	                for(int i = 0, k = 0; i < 4 && !abort; i++)
+	                {
+		                for(int j = 0; j < rows[i] && !abort; j++, k++) 
+		                {
+	    	                wx = (jScopeMultiWave)getGridComponent(k);
+	    	                if(wx.wi != null)
+			                    wx.Update(wx.wi);
+		                }
+                    }
+                }
+             });
+            
+             mds_wi = null;
+            
+	 //       System.gc();
+	//        SetMode(curr_mode);
+
+	        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        
+        } catch (Exception e) 
+        {
+   //       System.gc();
+  //        SetMode(curr_mode);
+  	        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            throw(new Exception(""+e));
         }
     }
 
-    private String AddRemoveEvent(NetworkEventListener l, String curr_event, String event)
+    private String AddRemoveEvent(NetworkEventListener l, String curr_event, String event)  throws IOException
     {
         if(curr_event != null && curr_event.length() != 0)
         {
@@ -549,12 +719,12 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
          return null;
     }
 
-    public void SetEvent(NetworkEventListener l, String event)
+    public void SetEvent(NetworkEventListener l, String event) throws IOException
     {
         this.event = AddRemoveEvent(l, this.event, event);
     }
     
-    public void SetPrintEvent(NetworkEventListener l, String print_event)
+    public void SetPrintEvent(NetworkEventListener l, String print_event) throws IOException
     {
         this.print_event = AddRemoveEvent(l, this.print_event, print_event);
     }
@@ -566,10 +736,8 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	    String error = null;
 	    int read_rows[] = {0,0,0,0};
 
-//	    for(int i=0; i < 4; i++)
-//	        rows[i] = 0;
      
-        in.reset();
+            in.reset();
 	    while((str = in.readLine()) != null) 
 	    {
 	        //if(str.trim().length() != 0 && str.indexOf("Scope") != 0) 
@@ -643,26 +811,10 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		        continue;		
 	        }		
 
-/*
-	        if(str.indexOf("Scope.font:") != -1)
-	        {
-	            font = StringToFont(str.substring(prompt.length()+1));
-	        }
-	    
-	        if(str.indexOf(Scope.item_color_) != -1)
-	        {
-		        int len;
-		        int i = new Integer(str.substring("Scope.item_color_".length(), len = str.indexOf(":"))).intValue();
-		        String name = new String(str.substring(len  + 2, len = str.indexOf(",")));
-		        Color cr = StringToColor(new String(str.substring(len + 2, str.length())));
-		        insertItemAt(name, cr, i);
-		        continue;
-	        }
-*/	        
 	        if(str.indexOf("Scope.reversed:") != -1)
-            {
-                reversed = new Boolean(str.substring("Scope.reversed: ".length(), str.length())).booleanValue();
-            }
+                {
+                   reversed = new Boolean(str.substring("Scope.reversed: ".length(), str.length())).booleanValue();
+                }
 	    
 	        if(str.indexOf("Scope.global_1_1") == 0)
 	        {
@@ -734,14 +886,14 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	    ResetDrawPanel(read_rows);
 	    jScopeMultiWave w;
 	    
-        for(int c = 0, k = 0; c < 4 ; c++)
+            for(int c = 0, k = 0; c < 4 ; c++)
 		{
 		    for(int r = 0; r < read_rows[c]; r++)
 		    {
 		        w = (jScopeMultiWave)getGridComponent(k);
-			    w.wi.FromFile(in, "Scope.plot_"+(r+1)+"_"+(c+1));
+			w.wi.FromFile(in, "Scope.plot_"+(r+1)+"_"+(c+1));
 //                setColor(wave_panel.waves[k].wi);
-			    k++;
+			k++;
 			    //setup.SetStatusLabel("Load wave configuration column "+(c+1)+" row "+(r+1));	    
 		    }
 		}
@@ -780,11 +932,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	    }
 	
 	    if(error == null)
-	    {
 	        UpdateHeight();
-//	        UpdateRowColumn();
-//	        SetDataServer(server_name);
-	    }
 	    
 	    return error;
     }
@@ -830,59 +978,70 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         return false;
   }
 
-    public String SetDataServer(String new_data_server)
+    public String SetDataServer(String new_data_server, NetworkEventListener l)
     {
 	    boolean change = false;  
-	    DataProvider old_dp = dp;
+	    //DataProvider old_dp = dp;
+	    DataProvider new_dp = null;
 	    String error = null;
 	    
 	    if(new_data_server == null || new_data_server.trim().length() == 0)
 	        return "Defined null or empty data server name";
 	    
-        if(new_data_server.equals("Local"))
+        if(new_data_server.equals("Local") && supports_local)
         {
 	        try {
-		        dp = new LocalProvider();
+		        new_dp = new LocalProvider();
 		        fast_network_access = false;
-		        support_fast_network = false;
+		        supports_fast_network = false;
+		        supports_local = true;
 		        change = true;	
 	        } catch (Throwable ex) {
-		        dp = old_dp;
-		    //setup.data_server_address = old_ip;
+		        supports_local = false;
 		        error = "Local data access is not supported on this platform";
 		        change = false;
 	        }
-	    }
+	    } 
+	    
 //Gabriele 26/10/99
         if(new_data_server.equals("Jet data"))
         {
-            dp = new JetDataProvider();
-            ((JetDataProvider)dp).InquireCredentials((Frame)this.getParent());
-            if(((JetDataProvider)dp).GetLoginStatus() != JetDataProvider.LOGIN_OK)
+            new_dp = new JetDataProvider();
+            Container c = this;
+            while(c != null && !(c instanceof JFrame))
+                c = c.getParent();
+            ((JetDataProvider)new_dp).InquireCredentials((JFrame)c);//(JFrame)this.getParent().getParent());
+            int option = ((JetDataProvider)new_dp).GetLoginStatus();
+            switch(option)
             {
-                if(old_dp == null)
-                    SetServerName("Not connected");
-                change = false;
-            } else {
-		        fast_network_access = false;
-		        support_fast_network = false;
-                change = true;
+                case JetDataProvider.LOGIN_OK :
+		            fast_network_access = false;
+		            supports_fast_network = false;
+                    change = true;
+                break;
+                case JetDataProvider.LOGIN_ERROR :
+                    if(dp == null)
+                        SetServerName("Not connected");
+                    return "Invallid Login";
+                case JetDataProvider.LOGIN_CANCEL :
+                    if(dp == null)
+                        SetServerName("Not connected");
+                     return null;         
             }
         } 
-
+    
         if(new_data_server.indexOf("Ftu data") != -1)
         {
             try
             {
 	            String ip = new_data_server.substring(new_data_server.indexOf(":")+1, new_data_server.length());
-                dp = new FtuProvider(ip);
+                new_dp = new FtuProvider(ip);
                 fast_network_access = false;
-		        support_fast_network = true;
+		        supports_fast_network = true;
                 change = true;
             } 
             catch (IOException ex) 
             {
-		        dp = old_dp;
 		        error = "Ftu data server error :" + ex.getMessage();
 		        change = false;
             }
@@ -890,24 +1049,45 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 
         if(new_data_server.equals("Demo server"))
         {
-            dp = new DemoProvider();
+            new_dp = new DemoProvider();
  		    fast_network_access = false;
-		    support_fast_network = false;
+		    supports_fast_network = false;
             change = true;
         }
 
         if(!change && IsIpAddress(new_data_server))
         {
-	        dp = new NetworkProvider(new_data_server);
+	        new_dp = new NetworkProvider(new_data_server);
             fast_network_access = false;
-		    support_fast_network = true;
+		    supports_fast_network = true;
             change = true;
         }
 
 	    if(change) 
 	    {
-            SetServerName(new_data_server);
-            ChangeDataProvider(dp);
+	        try
+	        {
+	            RemoveAllEvents(l);
+	        
+	            if(dp != null) {
+                    dp.removeNetworkTransferListener((NetworkTransferListener)l);
+                    dp.disconnect();
+                }
+                
+	            dp = new_dp;
+                if(dp != null)
+                    dp.addNetworkTransferListener((NetworkTransferListener)l);
+                    
+                SetServerName(new_data_server);
+                ChangeDataProvider(dp);
+                AddAllEvents(l);
+            } 
+            catch (IOException e) 
+            {
+                SetServerName("Disconnected < "+new_data_server+" >");
+                dp = null;
+                error = e.getMessage();
+            }
 	    } else
             error = "Data server "+ new_data_server +" not defined\n";        
 	    
@@ -924,10 +1104,12 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
             
 
         if(sel_wave.wi == null)
-            sel_wave.wi = new MdsWaveInterface(dp, def_vals);
-        else
+            sel_wave.wi = new MdsWaveInterface(sel_wave, dp, def_vals);
+        else {
             old_wi = new MdsWaveInterface((MdsWaveInterface)sel_wave.wi);
-            
+            old_wi.wave = sel_wave;
+        }
+        
         if(sel_wave.wi.AddSignal(expr)) 
         {
             add_sig = true;
@@ -1032,190 +1214,98 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	    return error;
     }    
     
-
-    private Frame GetParentFrame(Container c)
-    {
-        if(c instanceof Frame || c == null)
-            return (Frame)c;
-        else
-            return GetParentFrame(c.getParent());
-        
-    }
-
-/*   
     public void SaveAsText(jScopeMultiWave w)
     {
         if(w == null || w.wi == null || w.wi.signals.length == 0) return;
+                
+        JFileChooser file_diag = new JFileChooser();
         
-        Frame f = GetParentFrame(this);
+        int returnVal = file_diag.showSaveDialog(this);
         
-	    FileDialog file_diag = new FileDialog(f, "Save signals as", FileDialog.SAVE);
-        file_diag.pack();
-        file_diag.show();
-	    String txtsig_file = null;
-	    if(file_diag.getDirectory() != null &&  file_diag.getFile() != null)
-	        txtsig_file = file_diag.getDirectory() + file_diag.getFile();
-	    if(txtsig_file != null)
-	    {
-            String s = "", s1="", s2="";
-            boolean no_more_point;
-            StringBuffer space = new StringBuffer();
-            
-            try {
-	            BufferedWriter out = new BufferedWriter(new FileWriter(txtsig_file));
-	            for(int l = 0 ; l < 3; l++)
-	            {
-	                for(int i = 0; i < w.wi.signals.length; i++)
-                    {
-                        switch(l)
+        if (returnVal == JFileChooser.APPROVE_OPTION) 
+        {    	  
+	        File file = file_diag.getSelectedFile();
+	        String txtsig_file = file.getAbsolutePath();
+	        if(txtsig_file != null)
+	        {
+                String s = "", s1="", s2="";
+                boolean more_point, new_line;
+                StringBuffer space = new StringBuffer();
+                
+                try {
+	                BufferedWriter out = new BufferedWriter(new FileWriter(txtsig_file));
+	                for(int l = 0 ; l < 3; l++)
+	                {
+	                    for(int i = 0; i < w.wi.signals.length; i++)
                         {
-                           case 0 : s = "x : " + w.wi.in_x[i]; break;
-                           case 1 : s = "y : " + w.wi.in_y[i]; break;
-                           case 2 : s = "Shot : " + w.wi.shots[i]; break;
+                            switch(l)
+                            {
+                            case 0 : s = "x : "    + ((w.wi.in_x != null && w.wi.in_x.length > 0) ? w.wi.in_x[i]: "None"); break;
+                            case 1 : s = "y : "    + ((w.wi.in_y != null && w.wi.in_y.length > 0) ? w.wi.in_y[i]: "None"); break;
+                            case 2 : s = "Shot : " + ((w.wi.shots != null && w.wi.shots.length > 0) ? ""+w.wi.shots[i] : "None"); break;
+                            }
+                            out.write(s, 0, (s.length() < 34) ? s.length() : 34);
+                            space.setLength(0);
+                            for(int u = 0; u < 35 - s.length(); u++)
+                                space.append(' ');
+                            out.write(space.toString());
                         }
-                        out.write(s, 0, (s.length() < 34) ? s.length() : 34);
-                        space.setLength(0);
-                        for(int u = 0; u < 35 - s.length(); u++)
-                            space.append(' ');
-                        out.write(space.toString());
+	                    out.newLine();
                     }
-	                out.newLine();
-                }
-	            
-	            out.newLine();
-                no_more_point = true;
-                int j = 0;
-                while(no_more_point)
-                {
-                    no_more_point = false;
+    	            
+                    more_point = true;
+                    int j = 0;
+                    double xmax = w.GetWaveformMetrics().XMax();
+                    double xmin = w.GetWaveformMetrics().XMin();
+                    int start_idx[] = new int[w.wi.signals.length];
+                    
 	                for(int i = 0; i < w.wi.signals.length; i++)
+	                    start_idx[i] = 0;
+    	                
+                    while(more_point)
                     {
-                        if(j < w.wi.signals[i].x.length)
+                        more_point = false;
+	                    for(int i = 0; i < w.wi.signals.length; i++)
                         {
-                            no_more_point = true;
-                            s1 = ""+w.wi.signals[i].x[j];
-                            s2 = ""+w.wi.signals[i].y[j];
-                        } else {
                             s1 = "";
                             s2 = "";
-                        }
-                        out.write(s1);
-                        space.setLength(0);
-                        for(int u = 0; u < 15 - s1.length(); u++)
-                            space.append(' ');
-                        space.append(' ');
-                        out.write(space.toString());
-                        out.write(" ");
-                        out.write(s2);
-                        space.setLength(0);
-                        for(int u = 0; u < 18 - s2.length(); u++)
-                            space.append(' ');
-                        out.write(space.toString());                            
-                    }
-	                out.newLine();
-                    j++;
-                }                
-	            out.close();
-	        } catch (IOException e) {
-	            System.out.println(e);
-	        }
-	    }
-	    file_diag = null;
-    }
-
- */
-    public void SaveAsText(jScopeMultiWave w)
-    {
-        
-        
-        if(w == null || w.wi == null || w.wi.signals.length == 0) return;
-        
-        Frame f = GetParentFrame(this);
-        
-	    FileDialog file_diag = new FileDialog(f, "Save signals as", FileDialog.SAVE);
-        file_diag.pack();
-        file_diag.show();
-	    String txtsig_file = file_diag.getDirectory() + file_diag.getFile();
-	    if(txtsig_file != null)
-	    {
-            String s = "", s1="", s2="";
-            boolean more_point, new_line;
-            StringBuffer space = new StringBuffer();
-            
-            try {
-	            BufferedWriter out = new BufferedWriter(new FileWriter(txtsig_file));
-	            for(int l = 0 ; l < 3; l++)
-	            {
-	                for(int i = 0; i < w.wi.signals.length; i++)
-                    {
-                        switch(l)
-                        {
-                           case 0 : s = "x : "    + ((w.wi.in_x != null && w.wi.in_x.length > 0) ? w.wi.in_x[i]: "None"); break;
-                           case 1 : s = "y : "    + ((w.wi.in_y != null && w.wi.in_y.length > 0) ? w.wi.in_y[i]: "None"); break;
-                           case 2 : s = "Shot : " + ((w.wi.shots != null && w.wi.shots.length > 0) ? ""+w.wi.shots[i] : "None"); break;
-                        }
-                        out.write(s, 0, (s.length() < 34) ? s.length() : 34);
-                        space.setLength(0);
-                        for(int u = 0; u < 35 - s.length(); u++)
-                            space.append(' ');
-                        out.write(space.toString());
-                    }
-	                out.newLine();
-                }
-	            
-                more_point = true;
-                int j = 0;
-                double xmax = w.GetWaveformMetrics().XMax();
-                double xmin = w.GetWaveformMetrics().XMin();
-                int start_idx[] = new int[w.wi.signals.length];
-                
-	            for(int i = 0; i < w.wi.signals.length; i++)
-	                start_idx[i] = 0;
-	                
-                while(more_point)
-                {
-                    more_point = false;
-	                for(int i = 0; i < w.wi.signals.length; i++)
-                    {
-                        s1 = "";
-                        s2 = "";
-                        if(w.wi.signals[i] != null && w.wi.signals[i].x != null)
-                        {
-                            for(j = start_idx[i]; j < w.wi.signals[i].x.length; j++) 
+                            if(w.wi.signals[i] != null && w.wi.signals[i].x != null)
                             {
-                                if(w.wi.signals[i].x[j] > xmin &&
-                                   w.wi.signals[i].x[j] < xmax)
-                                {   
-                                    more_point = true;
-                                    s1 = ""+w.wi.signals[i].x[j];
-                                    s2 = ""+w.wi.signals[i].y[j];
-                                    start_idx[i] = j+1;
-                                    break;
-                                } 
+                                for(j = start_idx[i]; j < w.wi.signals[i].x.length; j++) 
+                                {
+                                    if(w.wi.signals[i].x[j] > xmin &&
+                                    w.wi.signals[i].x[j] < xmax)
+                                    {   
+                                        more_point = true;
+                                        s1 = ""+w.wi.signals[i].x[j];
+                                        s2 = ""+w.wi.signals[i].y[j];
+                                        start_idx[i] = j+1;
+                                        break;
+                                    } 
+                                }
                             }
+                            out.write(s1);
+                            space.setLength(0);
+                            for(int u = 0; u < 15 - s1.length(); u++)
+                                space.append(' ');
+                            space.append(' ');
+                            out.write(space.toString());
+                            out.write(" ");
+                            out.write(s2);
+                            space.setLength(0);
+                            for(int u = 0; u < 18 - s2.length(); u++)
+                                space.append(' ');
+                            out.write(space.toString());                            
                         }
-                        out.write(s1);
-                        space.setLength(0);
-                        for(int u = 0; u < 15 - s1.length(); u++)
-                            space.append(' ');
-                        space.append(' ');
-                        out.write(space.toString());
-                        out.write(" ");
-                        out.write(s2);
-                        space.setLength(0);
-                        for(int u = 0; u < 18 - s2.length(); u++)
-                            space.append(' ');
-                        out.write(space.toString());                            
-                    }
-	                out.newLine();
-                }                
-	            out.close();
+	                    out.newLine();
+                    }                
+	                out.close();
 
-	        } catch (IOException e) {
-	            System.out.println(e);
+	            } catch (IOException e) {
+	                System.out.println(e);
+	            }
 	        }
 	    }
 	    file_diag = null;
     }
- 
 }

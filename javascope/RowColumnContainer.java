@@ -1,4 +1,4 @@
-import java.awt.Canvas;
+//import java.awt.Canvas;
 import java.awt.Panel;
 import java.awt.Component;
 import java.awt.Point;
@@ -12,6 +12,9 @@ import java.util.Vector;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.*;
+import java.lang.reflect.InvocationTargetException;
+//import javax.swing.JButton;
 
 /**
  * RowColumnContainer object is a component that can contain other AWT 
@@ -22,7 +25,7 @@ import java.awt.event.MouseEvent;
  * @see RowColumnLayout
  */
 
-public class RowColumnContainer extends Container 
+public class RowColumnContainer extends JComponent
 {
 
    /**
@@ -56,9 +59,9 @@ public class RowColumnContainer extends Container
 
    private Point split_pos = null;
    
-   class ResizeButton extends Canvas {
+   class Btm extends Component {
     
-	    ResizeButton()
+	    Btm()
 	    {
 	        setBackground(Color.lightGray);
 	        setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
@@ -68,7 +71,6 @@ public class RowColumnContainer extends Container
 	    {
 	        Rectangle d = getBounds();
 	        g.draw3DRect(0, 0, d.width-1, d.height-1, true);
-	        g.dispose();
 	    }
 	    public void print(Graphics g){}
 	    public void printAll(Graphics g){}
@@ -79,6 +81,7 @@ public class RowColumnContainer extends Container
      */
      public RowColumnContainer()
      {
+        setName("RowColumnContainer");
         row_col_layout = new RowColumnLayout(rows);
         setLayout(row_col_layout);	
      }
@@ -98,7 +101,8 @@ public class RowColumnContainer extends Container
         
       int i, j, k;
       int num_component;  
-        
+      
+      setName("RowColumnContainer");
       if(rows == null || rows.length == 0)
         throw new IllegalArgumentException("Defined null or empty row column container");
 
@@ -112,10 +116,10 @@ public class RowColumnContainer extends Container
            	 
       num_component = getComponentNumber();
       
-      ResizeButton b; 	 
+      Btm b; 	 
       for(i = 0; i < num_component - 1; i++)
       {
-	     add(b = new ResizeButton());
+	     add(b = new Btm());
 	     setListener(b);
       }
 
@@ -126,14 +130,14 @@ public class RowColumnContainer extends Container
         add(c);
         validate();
       }
-    }
-
+   }
+   
    /**
     * Enable event capability on resize button
     * 
     * @param b a resize button
     */
-   private void setListener(Canvas b)
+   private void setListener(Component b)
    {
     
 	   b.addMouseListener(new MouseAdapter()
@@ -141,7 +145,7 @@ public class RowColumnContainer extends Container
                 public  void mouseReleased(MouseEvent e)
                 {
                     Component ob = e.getComponent();
-                    if(ob instanceof ResizeButton)
+                    if(ob instanceof Btm)
 	                    row_col_layout.ResizeRowColumn(ob, e.getPoint().x, e.getPoint().y);	
                 }
     
@@ -150,7 +154,7 @@ public class RowColumnContainer extends Container
                     Component ob = e.getComponent();
                     int	 m_button = e.getModifiers();
 
-                    if(ob instanceof Canvas)
+                    if(ob instanceof Btm)
                     {
 	                    if((m_button & MouseEvent.BUTTON2_MASK) == MouseEvent.BUTTON2_MASK)
 	                    {
@@ -267,7 +271,7 @@ public class RowColumnContainer extends Container
    public void add(Component c, int row, int col)
    {
         int new_rows[], cmp_idx = 0, i;
-        ResizeButton b;
+        Btm b;
         int rrow = row, rcol = col;
     
         if(getGridComponent(row, col) != null)
@@ -327,7 +331,7 @@ public class RowColumnContainer extends Container
 	        super.add(c, cmp_idx);
 	    else
 	        super.add(c);	    
-	    super.add(b = new ResizeButton(), 0);
+	    super.add(b = new Btm(), 0);
 	    setListener(b);
 	    
  //       update(); row column update must be programmer owner
@@ -342,7 +346,7 @@ public class RowColumnContainer extends Container
     * @see RowColumnLayout
     */
    public void update()
-   {
+   {      
       row_col_layout.SetRowColumn(rows, ph, pw);
       validate();   
    }
@@ -393,12 +397,32 @@ public class RowColumnContainer extends Container
      * @param n the index of the component to get.
      * @return the n<sup>th</sup> component in this container.
      * @exception ArrayIndexOutOfBoundsException if the n<sup>th</sup> value does not exist.
-     */
-   public Component getGridComponent(int n)
-   {
-       return super.getComponent(getGridComponentCount() - 1 + n);
-   }
-
+     * Need not be called from AWT thread. */
+    
+    /*
+     Component cmp_xxx;
+     int cmp_xxx_idx;
+     public Component getGridComponent(int n)
+    {
+	cmp_xxx_idx = n;
+	try {
+        SwingUtilities.invokeAndWait(new Runnable() {
+                public void run() {
+	           System.out.println( " get grid component e in dispatcher thread "+SwingUtilities.isEventDispatchThread());
+                    cmp_xxx = getComponent(getGridComponentCount() - 1 + cmp_xxx_idx);
+                }
+            });
+	} catch(InterruptedException e){}
+	  catch(InvocationTargetException  e){}
+          return cmp_xxx;
+     }
+    */
+     public Component getGridComponent(int n)
+     {
+ //       System.out.println( " get grid component e in dispatcher thread "+SwingUtilities.isEventDispatchThread());
+        return getComponent(getGridComponentCount() - 1 + n);
+     }
+    
     /** 
      * Gets the (row, col) component in this container.
      * @param row component index in the column
@@ -425,7 +449,7 @@ public class RowColumnContainer extends Container
       if(idx < 0)
         return null;
       
-      return super.getComponent(idx);
+      return getComponent(idx);
       
    }
    
@@ -513,7 +537,7 @@ public class RowColumnContainer extends Container
         int curr_rows[] = this.rows;//row_col_layout.GetRows();
         int col;
         int idx_w = getGridComponentCount() - 1;
-        ResizeButton b;
+        Btm b;
         int idx = 0;
         
         if(curr_rows.length > rows.length)
@@ -536,7 +560,7 @@ public class RowColumnContainer extends Container
                 {
                     for(int k = 0; k < rows[i]; k++)
                     {
-	                    add(b = new ResizeButton(), 0);
+	                    add(b = new Btm(), 0);
 	                    setListener(b);
 	                    add(c[idx++]);
                     }
@@ -556,7 +580,7 @@ public class RowColumnContainer extends Container
                         for(int k = curr_rows[i]; k < rows[i]; k++)
                         {
 	                        add(c[idx++], idx_w);	                        
-	                        add(b = new ResizeButton(), 0);
+	                        add(b = new Btm(), 0);
 	                        setListener(b);
 	                        idx_w++;
                         }                    
@@ -738,5 +762,6 @@ public class RowColumnContainer extends Container
         for(int i = 0; i < getGridComponentCount(); i++)
 	        getGridComponent(i).repaint();
     }      
+
 }
 

@@ -3,28 +3,29 @@ import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import javax.swing.*;
 
 
-public class WavePopup extends PopupMenu implements  ItemListener {
+public class WavePopup extends JPopupMenu implements  ItemListener {
 		
 	protected Waveform   wave = null;
-	protected MenuItem autoscale, autoscaleY, autoscaleAll, autoscaleAllY,
+	protected JSeparator sep2;
+	protected JMenuItem autoscale, autoscaleY, autoscaleAll, autoscaleAllY,
 		      allSameScale, allSameXScale, allSameXScaleAutoY, allSameYScale,
-		      resetScales, resetAllScales, sep2, playFrame,
+		      resetScales, resetAllScales, playFrame,
 		      set_point, undo_zoom; 
-	protected Menu markerList, colorList, markerStep;
-	protected CheckboxMenuItem interpolate_f;
+	protected JMenu markerList, colorList, markerStep, signal_2d;
+	protected JCheckBoxMenuItem interpolate_f;
+	protected JRadioButtonMenuItem plot_y_time, plot_x_y, plot_y_x;
 
-	protected Menu signal_2d;
-	protected CheckboxMenuItem plot_y_time, plot_x_y, plot_y_x;
+	protected ButtonGroup markerList_bg, colorList_bg, markerStep_bg, signal_2d_bg;
 	
-	protected Panel setup_dialog = null;
 	protected int curr_x, curr_y;
 	protected Container parent;
 
     public WavePopup()
     {	    
-	    set_point = new MenuItem("Set Point");
+	    set_point = new JMenuItem("Set Point");
 	    set_point.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -35,53 +36,61 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	    );
 
 	    
-	    add(markerList = new Menu("Markers"));	
-	    CheckboxMenuItem ob;
+	    add(markerList = new JMenu("Markers"));	
+	    JRadioButtonMenuItem ob;
+        markerList_bg = new ButtonGroup();	 
 	 
         for(int i = 0; i < Signal.markerList.length; i++)
         {
-            markerList.add(ob = new CheckboxMenuItem(Signal.markerList[i]));
+            markerList_bg.add(ob = new JRadioButtonMenuItem(Signal.markerList[i]));
+            ob.getModel().setActionCommand("MARKER "+i);
+            markerList.add(ob);
             ob.addItemListener(this);
-        }
-        
-	    markerList.setEnabled(false);	    
-	    add(markerStep = new Menu("Marker step"));
+        }      
+	    markerList.setEnabled(false);
+	    
+        markerStep_bg = new ButtonGroup();	 
+	    add(markerStep = new JMenu("Marker step"));
         for(int i = 0; i < Signal.markerStepList.length; i++)
         {
-            markerStep.add(ob = new CheckboxMenuItem(""+Signal.markerStepList[i]));
+            markerStep_bg.add(ob = new JRadioButtonMenuItem(""+Signal.markerStepList[i]));
+            ob.getModel().setActionCommand("MARKER_STEP "+i);
+            markerStep.add(ob);
             ob.addItemListener(this);
         }
 	    markerStep.setEnabled(false);
-	    add(colorList = new Menu("Colors"));
+	    
+	    add(colorList = new JMenu("Colors"));
 	    colorList.setEnabled(false);
-        add(interpolate_f = new CheckboxMenuItem("Interpolate", false));
+	    
+        add(interpolate_f = new JCheckBoxMenuItem("Interpolate", false));
 	    interpolate_f.setEnabled(false);
         interpolate_f.addItemListener(this);
         
-        signal_2d = new Menu("signal 2D");
-        signal_2d.add(plot_y_time = new CheckboxMenuItem("Plot y & time"));
+        signal_2d_bg = new ButtonGroup();	 
+        signal_2d = new JMenu("signal 2D");
+        signal_2d.add(plot_y_time = new JRadioButtonMenuItem("Plot y & time"));
+        signal_2d_bg.add(plot_y_time);
         plot_y_time.addItemListener(new ItemListener()
 	    {
             public void itemStateChanged(ItemEvent e)
 	        {
-	            Object target = e.getSource();
 	            wave.setSignalMode(Signal.MODE_YTIME);
-                wave.Update();
 	        }
 	    });
         
-        signal_2d.add(plot_x_y = new CheckboxMenuItem("Plot x & y"));
+        signal_2d.add(plot_x_y = new JRadioButtonMenuItem("Plot x & y"));
+        signal_2d_bg.add(plot_x_y);
         plot_x_y.addItemListener(new ItemListener()
 	    {
             public void itemStateChanged(ItemEvent e)
 	        {
-	            Object target = e.getSource();
 	            wave.setSignalMode(Signal.MODE_XY);
-                wave.Update();
 	        }
 	    });
 
-        signal_2d.add(plot_y_x = new CheckboxMenuItem("Plot y & x"));
+        signal_2d.add(plot_y_x = new JRadioButtonMenuItem("Plot y & x"));
+        signal_2d_bg.add(plot_y_x);
         plot_y_x.addItemListener(new ItemListener()
 	    {
             public void itemStateChanged(ItemEvent e)
@@ -93,8 +102,8 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	    });
 
     
-	    add(sep2 = new MenuItem("-"));
-	    add(autoscale = new MenuItem("Autoscale"));
+	    add(sep2 = new JSeparator());
+	    add(autoscale = new JMenuItem("Autoscale"));
 	    autoscale.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -104,7 +113,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	        }
 	    );
 	    
-	    add(autoscaleY = new MenuItem("Autoscale Y"));
+	    add(autoscaleY = new JMenuItem("Autoscale Y"));
 	    autoscaleY.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -114,7 +123,8 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	        }
 	    );
 	    
-	    add(autoscaleAll = new MenuItem("Autoscale all", new MenuShortcut(KeyEvent.VK_B)));
+	    add(autoscaleAll = new JMenuItem("Autoscale all"));
+        autoscaleAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.CTRL_MASK));
 	    autoscaleAll.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -128,7 +138,8 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	    );
 	    
 	    
-	    add(autoscaleAllY = new MenuItem("Autoscale all Y", new MenuShortcut(KeyEvent.VK_Y)));
+	    add(autoscaleAllY = new JMenuItem("Autoscale all Y"));
+        autoscaleAllY.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
 	    autoscaleAllY.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -138,7 +149,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	        }
 	    );
 	    
-	    add(allSameScale = new MenuItem("All same scale"));
+	    add(allSameScale = new JMenuItem("All same scale"));
 	    allSameScale.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -148,7 +159,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	        }
 	    );
 	    
-	    add(allSameXScale = new MenuItem("All same X scale"));
+	    add(allSameXScale = new JMenuItem("All same X scale"));
 	    allSameXScale.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -158,7 +169,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	        }
 	    );
 	    
-	    add(allSameXScaleAutoY = new MenuItem("All same X scale (auto Y)"));
+	    add(allSameXScaleAutoY = new JMenuItem("All same X scale (auto Y)"));
 	    allSameXScaleAutoY.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -168,7 +179,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	        }
 	    );
 	    
-	    add(allSameYScale = new MenuItem("All same Y scale"));
+	    add(allSameYScale = new JMenuItem("All same Y scale"));
 	    allSameYScale.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -178,7 +189,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	        }
 	    );
 	    
-	    add(resetScales = new MenuItem("Reset scales"));
+	    add(resetScales = new JMenuItem("Reset scales"));
 	    resetScales.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -188,7 +199,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	        }
 	    );
 	    
-	    add(resetAllScales = new MenuItem("Reset all scales"));
+	    add(resetAllScales = new JMenuItem("Reset all scales"));
 	    resetAllScales.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -198,7 +209,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	        }
 	    );
 
-	    add(undo_zoom = new MenuItem("Undo Zoom"));
+	    add(undo_zoom = new JMenuItem("Undo Zoom"));
 	    undo_zoom.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -210,7 +221,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	    
 	    
 	
-	    playFrame = new MenuItem();
+	    playFrame = new JMenuItem();
 	    playFrame.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -224,39 +235,33 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	    );
     }
 	
-	protected void SelectListItem(Menu m, int idx)
+	protected void SelectListItem(ButtonGroup bg, int idx)
 	{
-        for(int i = 0; i < m.getItemCount(); i++)
-	        ((CheckboxMenuItem)m.getItem(i)).setState(false);
-	    if(idx < m.getItemCount())
-            ((CheckboxMenuItem)m.getItem(idx)).setState(true);
-	}
-	
-	protected int GetSelectedItem(Menu m, Object ob)
-	{
-	    int idx = 0;
-	    for(int i = 0; i < m.getItemCount(); i++)
-	    {
-	        if(m.getItem(i) == ob) {
-	            idx = i;
-	            continue;
-	        }
-	        if(((CheckboxMenuItem)m.getItem(i)).getState())
-	            ((CheckboxMenuItem)m.getItem(i)).setState(false);
-	    }
-	    return idx;
+	    int i;
+	    JRadioButtonMenuItem b = null;
+	    Enumeration e;
+	    
+        for (e = bg.getElements(), i = 0 ; e.hasMoreElements() && i <= idx; i++) 
+             b = (JRadioButtonMenuItem)e.nextElement();
+	    if(b != null)
+	        bg.setSelected(b.getModel(), true);
 	}
 
     protected void InitColorMenu()
     {
+        if(!Waveform.isColorsChanged() && colorList_bg != null) return;
+                
 	    colorList.removeAll();
 
-        String[] colors_name = wave.GetColorsName();
-	    CheckboxMenuItem ob = null;
+        String[] colors_name = Waveform.getColorsName();
+	    JRadioButtonMenuItem ob = null;
+        colorList_bg = new ButtonGroup();	 
 	    if(colors_name != null)
 	    {
 	        for(int i = 0; i < colors_name.length; i++) {
-                colorList.add(ob = new CheckboxMenuItem(colors_name[i]));
+                colorList.add(ob = new JRadioButtonMenuItem(colors_name[i]));
+                ob.getModel().setActionCommand("COLOR_LIST "+i);
+                colorList_bg.add(ob);
                 ob.addItemListener(this);
             }
 	    }
@@ -270,14 +275,14 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	   
 	   if(is_image)
 	   {
-           colorList.setLabel("Colors");                      
+           colorList.setText("Colors");                      
            add(colorList);	
 	       add(playFrame);
 	       add(sep2);
 	       add(autoscale);
 	       if(parent instanceof WaveformManager)           
 	       {
-	            autoscaleAll.setLabel("Autoscale all images");
+	            autoscaleAll.setText("Autoscale all images");
 	            add(autoscaleAll);
 	       }
            if(wave.mode == Waveform.MODE_POINT)// && wave.sendProfile())
@@ -287,7 +292,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
        } else {
         
            add(markerList);
-           colorList.setLabel("Colors");
+           colorList.setText("Colors");
            add(colorList);	
            add(markerStep);
            add(interpolate_f);
@@ -296,7 +301,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	       add(autoscaleY);
 	       if(parent instanceof WaveformManager)           
 	       {
-	            autoscaleAll.setLabel("Autoscale all");
+	            autoscaleAll.setText("Autoscale all");
 	            add(autoscaleAll);
 	            add(autoscaleAllY);
 	            add(allSameScale);
@@ -308,18 +313,18 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	       add(resetScales);
 	       add(undo_zoom);
 	       
-           if(wave.mode == Waveform.MODE_POINT || wave.GetSignalCount() == 1)
+           if(wave.mode == Waveform.MODE_POINT || wave.GetShowSignalCount() == 1)
            {
                 if(wave.getSignalType() == Signal.TYPE_2D) {
                     insert(signal_2d, 4);
-                    plot_y_time.setState(false);
-                    plot_x_y.setState(false);
-                    plot_y_x.setState(false);
+                    //plot_y_time.setState(false);
+                    //plot_x_y.setState(false);
+                    //plot_y_x.setState(false);
                     switch (wave.getSignalMode())
                     {
-                        case Signal.MODE_YTIME : plot_y_time.setState(true); break;
-                        case Signal.MODE_XY : plot_x_y.setState(true); break;
-                        case Signal.MODE_YX : plot_y_x.setState(true); break;
+                        case Signal.MODE_YTIME : signal_2d_bg.setSelected(plot_y_time.getModel(), true); break;
+                        case Signal.MODE_XY    : signal_2d_bg.setSelected(plot_x_y.getModel(), true); break;
+                        case Signal.MODE_YX    : signal_2d_bg.setSelected(plot_y_x.getModel(), true); break;
                     }
                 }
            }     
@@ -336,7 +341,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	    SetMenuItem(true);
 	    boolean state = (wave.frames != null && wave.frames.getNumFrame() != 0);
         colorList.setEnabled(state);	
-        SelectListItem(colorList, wave.GetColorIdx());
+        SelectListItem(colorList_bg, wave.GetColorIdx());
 	    playFrame.setEnabled(state);
         set_point.setEnabled(state);
 	}
@@ -346,17 +351,15 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	    int sig_idx;
 	    
 	    SetMenuItem(false);
-	    
-        
-        if(wave.GetSignalCount() != 0)
+	    if(wave.GetShowSignalCount() != 0)
         {
            InitOptionMenu(); 	
         } else {
-            markerList.setEnabled(false);
-            colorList.setEnabled(false);	
-            interpolate_f.setEnabled(false);
-            markerStep.setEnabled(false);
-            set_point.setEnabled(false);
+           markerList.setEnabled(false);
+           colorList.setEnabled(false);	
+           interpolate_f.setEnabled(false);
+           markerStep.setEnabled(false);
+           set_point.setEnabled(false);
        }
        undo_zoom.setEnabled(wave.undoZoomPendig());
    
@@ -365,7 +368,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	
 	protected void InitOptionMenu()
 	{
-            boolean state = (wave.GetSignalCount() == 1);
+            boolean state = (wave.GetShowSignalCount() == 1);
             markerList.setEnabled(state);
             colorList.setEnabled(state);	
             interpolate_f.setEnabled(state);
@@ -375,15 +378,15 @@ public class WavePopup extends PopupMenu implements  ItemListener {
                 interpolate_f.setState(wave.GetInterpolate());
                 boolean state_m = (wave.GetMarker() != Signal.NONE);
                 markerStep.setEnabled(state_m);
-                SelectListItem(markerList, wave.GetMarker());
+                SelectListItem(markerList_bg, wave.GetMarker());
 
                 int st;
                 for(st = 0; st < Signal.markerStepList.length; st++)
                       if(Signal.markerStepList[st] == wave.GetMarkerStep())
                         break;
-                SelectListItem(markerStep, st);
+                SelectListItem(markerStep_bg, st);
 
-                SelectListItem(colorList, wave.GetColorIdx());
+                SelectListItem(colorList_bg, wave.GetColorIdx());
 
             } else
                 markerStep.setEnabled(false);
@@ -391,15 +394,16 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 		
     public void Show(Waveform w, int x, int y)
     {
-        parent = (Container)this.getParent();
+     //   parent = (Container)this.getParent();
         
        // if(wave != w)
-       // {
+        {
  	        wave = w;
  	        SetMenu();
-       // } else
-            if(!w.IsImage())
-                InitOptionMenu();
+        }
+       //else
+       //     if(!w.IsImage())
+       //         InitOptionMenu();
 
         SetMenuLabel();
      
@@ -407,26 +411,26 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	    curr_y = y;
 	    show(w, x, y );	
      }
-
+     
     protected void SetMenuLabel()
     {
         if(!wave.IsImage())
         {	    
-            if(wave.ShowMeasure())
-                set_point.setLabel("Deselect Point");
-            else
-                set_point.setLabel("Set Point");
+            if(wave.ShowMeasure()) {
+                set_point.setText("Deselect Point");
+            } else
+                set_point.setText("Set Point");
         } else {
             
             if(wave.ShowMeasure())// && wave.sendProfile())
-                set_point.setLabel("Deselect Point");
+                set_point.setText("Deselect Point");
             else
-                set_point.setLabel("Set Point");
+                set_point.setText("Set Point");
 
             if(wave.is_playing)
-	            playFrame.setLabel("Stop play");
+	            playFrame.setText("Stop play");
 	        else 
-	            playFrame.setLabel("Start play");
+	            playFrame.setText("Start play");
 	    }
     }
 
@@ -444,34 +448,27 @@ public class WavePopup extends PopupMenu implements  ItemListener {
         wave.SetInterpolate(state);
     }
 
-    protected boolean SetMarker(int idx)
+    protected void SetMarker(int idx)
     {
         if(wave.GetMarker() != idx)
-        {
             wave.SetMarker(idx);
-            return false;
-        }
-	    return true;
     }
 
-    protected boolean SetMarkerStep(int step)
+    protected void SetMarkerStep(int step)
     {
         if(wave.GetMarkerStep() != step)
-        {
             wave.SetMarkerStep(step);
-            return false;
-        }
-	    return true;
+    }
+    
+    public void setParent(Container parent)
+    {
+        this.parent = parent;
     }
 
-    protected boolean SetColor(int idx)
+    protected void SetColor(int idx)
     {
         if(wave.GetColorIdx() != idx)
-        {
             wave.SetColorIdx(idx);
-            return false;
-        }
-	    return true;
     }
 
     public void SetDeselectPoint(Waveform w)
@@ -495,56 +492,47 @@ public class WavePopup extends PopupMenu implements  ItemListener {
     {
 	    Object target = e.getSource();
 	    
-	    if(target instanceof CheckboxMenuItem)
+	    if(target == interpolate_f)
 	    {
-	        CheckboxMenuItem cb = (CheckboxMenuItem)target;
-	        Menu parent = (Menu)cb.getParent();
+            SetInterpolate(((JCheckBoxMenuItem)target).getState()); 	            
+            wave.Repaint(true);
+            return;
+	    }
+	    
+	    if(target instanceof JRadioButtonMenuItem && e.getStateChange() == ItemEvent.SELECTED)
+	    {
+	        JRadioButtonMenuItem cb = (JRadioButtonMenuItem)target;            
+            String action_cmd = cb.getModel().getActionCommand();
 	        
-	        if(target == interpolate_f)
+	        if(action_cmd == null)
+	            return;
+	            
+	        StringTokenizer act = new StringTokenizer(action_cmd);
+	        String action = act.nextToken();
+	        int    idx    = Integer.parseInt(act.nextToken());
+	        
+	        if(action.equals("MARKER"))
 	        {
-                SetInterpolate(((CheckboxMenuItem)target).getState()); 	            
-                wave.Repaint(true);
+	            SetMarker(idx);
+	            markerStep.setEnabled(!(wave.GetMarker() == Signal.NONE || 
+	                                    wave.GetMarker() == Signal.POINT));
+	            wave.Repaint(true);
+	            return;
 	        }
 	        
-	        if(parent == markerList)
+	        if(action.equals("MARKER_STEP"))
 	        {
-	            int idx = 0;
-	            idx = GetSelectedItem(parent, cb);
-	            if(idx < parent.getItemCount())
-	            {       
-	                if(SetMarker(idx)) {
-	                    cb.setState(true);
-	                }
-	                markerStep.setEnabled(!(wave.GetMarker() == Signal.NONE || 
-	                                        wave.GetMarker() == Signal.POINT));
-	            }
-	            wave.Repaint(true);	                
+	           SetMarkerStep(Signal.markerStepList[idx]);
+	           wave.Repaint(true);	                
+	           return;
 	        }
 
-	        if(parent == markerStep)
+	        if(action.equals("COLOR_LIST"))
 	        {
-	            int idx = 0;
-	            idx = GetSelectedItem(parent, cb);
-	            if(idx < parent.getItemCount())
-	            {
-	                if(SetMarkerStep(Signal.markerStepList[idx]))
-	                    cb.setState(true);	                
-	            }
-	            wave.Repaint(true);	                
-	        }
-
-	        
-	        if(parent == colorList)
-	        {
-	            int idx = 0;
-	            idx = GetSelectedItem(parent, cb);
-	            if(idx < parent.getItemCount())
-	            {  
-	               if(SetColor(idx))
-	                  cb.setState(true);	               
-	            }
-	            wave.Repaint(true);	                
-	        }
+	           SetColor(idx);
+	           wave.Repaint(true);	                
+	           return;
+	        }	       
 	    }
 	}   
 }

@@ -867,7 +867,7 @@ public class RowColumnLayout implements LayoutManager {
 	        for(int j = 0; j < row[i]; j++) {
 		        Component c = parent.getComponent(b_comp + k);
 		        if (c.isVisible()) {
-		            Dimension d = c.getPreferredSize();                
+		            Dimension d = c.getSize();//c.getPreferredSize();                
 		            x = previousWidth;
 		            d.width = currWidth;
 		            //if(i != column - 1)
@@ -887,7 +887,8 @@ public class RowColumnLayout implements LayoutManager {
 		                    if(d.width < by_pos + 8)
 		                       p = d.width - 1;
 			                b.setBounds(x + d.width - p,  c.getBounds().y + c.getBounds().height - 2, 8, 4 );
-			            }    
+			            }
+			            b.invalidate();
 		            }
 		        }
 		        k++;
@@ -915,7 +916,7 @@ public class RowColumnLayout implements LayoutManager {
 	    for(int j = 0; j < row[col_idx]; j++) {
 	        Component c = parent.getComponent(b_comp + k);
             if (c.isVisible()) {
-                Dimension d = c.getPreferredSize();                
+                Dimension d = c.getSize();//c.getPreferredSize();                
 		        y += previousHeight;
 		        d.height = (int)(currMaxHeight * percent_height[k]);
 		        if(j != row[col_idx] - 1) 	     
