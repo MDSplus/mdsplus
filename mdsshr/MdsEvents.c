@@ -1203,6 +1203,75 @@ static void getServerDefinition(char *env_var, char **servers, int *num_servers,
     }
 }
 
+#ifdef GLOBUS
+static void handleRemoteEvent(SOCKET sock);
+
+static void KillHandler() {}
+
+static void handleRemoteAst()
+{
+  static DESCRIPTOR(library_d,"MdsIpShr");
+  static DESCRIPTOR(routine_d,"Poll");
+  int status;
+  void (*rtn)(void (*)(SOCKET));
+  status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+  if(!(status & 1))
+  {
+    printf("%s\n", MdsGetMsg(status));
+    return;
+  }
+  (*rtn)(handleRemoteEvent);
+}
+
+static int RegisterRead(SOCKET sock)
+{
+  static DESCRIPTOR(library_d,"MdsIpShr");
+  static DESCRIPTOR(routine_d,"RegisterRead");
+  int status;
+  int (*rtn)(SOCKET);
+  status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+  if(!(status & 1))
+  {
+    printf("%s\n", MdsGetMsg(status));
+    return;
+  }
+  return ((*rtn)(sock));
+}
+  
+static void handleRemoteEvent(SOCKET sock)
+{
+  char buf[16];
+  struct descriptor 
+  library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
+  routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsg"};
+  int status, i;
+  int (*rtn)();
+  Message *m;
+  status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+  if(!(status & 1))
+  {
+    printf("handleRemoteEvent error: %s\n", MdsGetMsg(status));
+    return;
+  }
+  m = ((Message *(*)())(*rtn))(sock, &status);
+  if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo)))
+  {
+    MdsEventInfo *event = (MdsEventInfo *)m->bytes;
+    ((void (*)())(*event->astadr))(event->astprm,  12, event->data);
+  }
+  if (m) free(m);
+}
+
+#else
+  
+static void KillHandler()
+{
+  external_shutdown = 1;
+  write(fds[1], "x", 1);
+  pthread_join(external_thread, &dummy);
+  external_shutdown = 0;
+  external_thread_created = 0;
+}
 
 static void handleRemoteAst()
 {
@@ -1252,7 +1321,7 @@ static void handleRemoteAst()
  	}
     }
 }
-
+#endif
 
 static int searchOpenServer(char *server) 
 /* Avoid doing MdsConnect on a server already connected before */
@@ -1319,13 +1388,7 @@ static void initializeLocalRemote(int receive_events, int *use_local)
         if (status & 1)
         {
 	    if(external_thread_created)
-	    {
-	    	external_shutdown = 1;
-	    	write(fds[1], "x", 1);
-	    	pthread_join(external_thread, &dummy);
-	    	external_shutdown = 0;
-                external_thread_created = 0;
-	    }	
+              KillHandler();
 	    for(i = 0; i < num_servers; i++)
 	    {
 		if(receive_events)
@@ -1379,19 +1442,17 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
     {
 /* if external_thread running, it must be killed before sending messages over socket */
 	if(external_thread_created)
-	{
-	    external_shutdown = 1;
-	    write(fds[1], "x", 1);
-	    pthread_join(external_thread, &dummy);
-	    external_shutdown = 0;
-	    external_thread_created = 0;
-	}
+          KillHandler();
 	newRemoteId(eventid);
 	for(i = 0; i < num_receive_servers; i++)
 	{
 	    if(receive_sockets[i])
 	    { 
 		status = (*rtn) (receive_sockets[i], eventnam, astadr, astprm, &curr_eventid);
+#ifdef GLOBUS
+		if (status & 1)
+                  RegisterRead(receive_sockets[i]);
+#endif
 	        setRemoteId(*eventid, i, curr_eventid);
 	    }
 	}
@@ -1561,16 +1622,12 @@ static int canEventRemote(int eventid)
     /* kill external thread before sending messages over the socket */
     if(status & 1)
     {
-    	external_shutdown = 1;
-    	write(fds[1], "x", 1);
-    	pthread_join(external_thread, &dummy);
-    	external_shutdown = 0;
-	external_thread_created = 0;
-	for(i = 0; i < num_receive_servers; i++)
-	{
-	    if(receive_sockets[i]) status = (*rtn) (receive_sockets[i], getRemoteId(eventid, i));
-	}
-	startRemoteAstHandler();
+      KillHandler();
+      for(i = 0; i < num_receive_servers; i++)
+      {
+	if(receive_sockets[i]) status = (*rtn) (receive_sockets[i], getRemoteId(eventid, i));
+      }
+      startRemoteAstHandler();
     }
     return status;
 }
