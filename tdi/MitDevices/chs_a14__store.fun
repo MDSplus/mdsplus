@@ -14,7 +14,7 @@ public fun chs_a14__store(as_is _nid, optional _method)
   /***********************************
    Get status register
   ************************************/
-  _setting = chs_vme_readwords(0x106c0000,128);
+  _settings = chs_vme_readwords(0x106c0000,128);
   if (_debug) write(*,"Settings = ",_settings);
   _sr = long(_settings[8+_dignum*16]) & 0xffff;
   if (_debug) write(*,"_sr=",_sr);
