@@ -90,9 +90,29 @@ int   mdsdcl_wait()		/* Return:  status			*/
     signal(SIGALRM,no_op);		/* declare handler routine	*/
     sigpause(SIGALRM);
 #else
+    {
+#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
+#define pthread_condattr_default NULL
+#define pthread_mutexattr_default NULL
+#endif
+      static pthread_cond_t wait_cond;
+      static pthread_mutex_t wait_mutex;
+      static int initialized = 0;
+      struct timespec delta_time = {nsec,millisec},abstime;
+      if (!initialized)
+      {
+        pthread_cond_init(&wait_cond,pthread_condattr_default);
+        pthread_mutex_init(&wait_mutex,pthread_mutexattr_default);
+        initialized = 1;
+      }
+      pthread_get_expiration_np(&delta_time,&abstime);
+      pthread_cond_timedwait(&wait_cond,&wait_mutex,&abstime);
+    }
+    /*
     timer.tv_sec = nsec;
     timer.tv_nsec = millisec * 1000000;
     pthread_delay_np(&timer);
+    */
 #endif
     sts = 1;
 #endif
