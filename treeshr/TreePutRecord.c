@@ -303,19 +303,16 @@ static int CopyToRecord(NCI *nci,
 	{
 	 case CLASS_S:
 	 case CLASS_D:
-	  nci->length = io_dscr_ptr->l_length;
+	  nci->length = out_ptr->length + 8;
 	  nci->dtype = out_ptr->dtype;
 	  nci->class = CLASS_S;
-	  if (nci->length - sizeof(struct descriptor) < sizeof(nci->DATA_INFO.DATA_IN_RECORD.data))
+	  if (out_ptr->length < sizeof(nci->DATA_INFO.DATA_IN_RECORD.data))
 	  {
-	    data_len = nci->length - sizeof(struct descriptor);
-            nci->length = data_len + 8;
 	    nci->data_in_att_block = 1;
-            memcpy(nci->DATA_INFO.DATA_IN_RECORD.data, out_ptr->pointer, data_len);
+            memcpy(nci->DATA_INFO.DATA_IN_RECORD.data, out_ptr->pointer, out_ptr->length);
 	  }
 	  else
 	  {           
-            nci->DATA_INFO.DATA_LOCATION.record_length = nci->length;
 	    nci->length = 0;
 	    status = PointerToOffset(io_dscr_ptr->pointer, (unsigned int *)&nci->length);
 #if  !(defined(_WINDOWS))
@@ -328,6 +325,7 @@ static int CopyToRecord(NCI *nci,
             }
 #endif
 	    nci->data_in_att_block = 0;
+            nci->DATA_INFO.DATA_LOCATION.record_length = io_dscr_ptr->l_length;
 	  }
 	  break;
 
@@ -337,7 +335,6 @@ static int CopyToRecord(NCI *nci,
 	 case CLASS_XS:
 	 case CLASS_APD:
 	 case CLASS_CA:
-	  nci->DATA_INFO.DATA_LOCATION.record_length = io_dscr_ptr->l_length;
 	  nci->dtype = out_ptr->dtype;
 	  nci->class = (out_ptr->class == CLASS_XD) ? CLASS_XS : out_ptr->class;
 	  nci->data_in_att_block = 0;
@@ -352,19 +349,12 @@ static int CopyToRecord(NCI *nci,
               MdsFree1Dx(&tempxd, NULL);
             }
 #endif
+	  nci->DATA_INFO.DATA_LOCATION.record_length = io_dscr_ptr->l_length;
 	  break;
 
 	 default:
 	  status = LibINVSTRDES;
 	}
-      }
-      else
-      {
-	nci->length = io_dscr_ptr->l_length;
-	nci->dtype = io_dscr_ptr->dtype;
-	nci->class = (io_dscr_ptr->class == CLASS_XD) ? CLASS_XS : io_dscr_ptr->class;
-	nci->data_in_att_block = 0;
-	nci->DATA_INFO.DATA_LOCATION.record_length = nci->length;
       }
     }
     else
