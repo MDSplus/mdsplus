@@ -224,19 +224,20 @@ void mdsip_authenticate_cb(
     mdsip_host_to_ipaddr(ctx->host,&ctx->addr,&dummy);
     if (ctx->options->security_level > 0)
     {
-      gss_buffer_desc                         buffer_desc = GSS_C_EMPTY_BUFFER;
-      gss_buffer_t                            buffer = &buffer_desc;
+      gss_buffer_desc                         peer_name_buffer = GSS_C_EMPTY_BUFFER;
       OM_uint32                               status;
       globus_xio_driver_t driver = (globus_xio_driver_t)ctx->options->gsi_driver;
       globus_result_t res;
-      gss_name_t name;
+      gss_name_t peer;
       res = globus_xio_handle_cntl((globus_xio_handle_t)xio_handle, 
 				   driver, 
 				   GLOBUS_XIO_GSI_GET_PEER_NAME, 
-				   &name);
+				   &peer);
       mdsip_test_result(xio_handle,res,ctx,"mdsip_authenticate_cb");
-      res = gss_display_name(&status, name, buffer, GLOBUS_NULL);
-      ctx->remote_user=strcpy(malloc(strlen((char *)buffer->value)+1),(char *)buffer->value);
+      res = gss_display_name(&status, peer, &peer_name_buffer, GLOBUS_NULL);
+      gss_release_name(&status,&peer);
+      ctx->remote_user=strcpy(malloc(strlen((char *)peer_name_buffer.value)+1),(char *)peer_name_buffer.value);
+      gss_release_buffer(&status,&peer_name_buffer);
     }
     else
     {

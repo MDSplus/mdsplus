@@ -152,7 +152,7 @@ install:
 	$(CC) -o $@ $(SERVER_OBJECTS) $(LDFLAGS) -L$(top_srcdir)/lib -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr
 
 makefile-header:  
-	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@ globus_xio > makefile-header
+	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio > makefile-header
 
 @MAKEBINDIR@ :
 	mkdir @MAKEBINDIR@
