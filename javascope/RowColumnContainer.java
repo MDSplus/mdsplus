@@ -1,3 +1,4 @@
+/* $Id$ */
 import java.awt.Panel;
 import java.awt.Component;
 import java.awt.Point;

@@ -1,3 +1,4 @@
+/* $Id$ */
 import java.awt.Dimension;
 import java.io.IOException;
 

@@ -13,6 +13,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2002/04/24 09:06:17  manduchi
+ * Added Asdex Data Provider
+ *
  * Revision 1.2  2002/04/09 16:25:41  jgk
  * Fixed zoming-bug in TWU support classes.
  *

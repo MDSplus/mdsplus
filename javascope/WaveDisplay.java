@@ -1,3 +1,4 @@
+/* $Id$ */
 import java.awt.*;
 import java.net.URL;
 import java.awt.event.*;

@@ -1,3 +1,4 @@
+/* $Id$ */
 import java.lang.Integer;
 import java.awt.*;
 import java.awt.event.*;
@@ -6,7 +7,8 @@ import javax.swing.*;
 import java.io.*;
 
 
-public class FontSelection extends JDialog implements ActionListener, ItemListener{
+public class FontSelection extends JDialog implements ActionListener, ItemListener
+{
     JLabel fontLabel, sizeLabel, styleLabel, testLabel;
     JRadioButton  application_i, waveform_i;
     

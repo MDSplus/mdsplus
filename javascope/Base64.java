@@ -1,3 +1,4 @@
+/* $Id$ */
 class Base64
 {
     static byte []Base64Alphabet = new String("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=").getBytes();

@@ -1,8 +1,10 @@
+/* $Id$ */
 
 import java.io.*;
 import java.util.*;
 
-public interface JiVar {
+public interface JiVar 
+{
 	public static final int Byte = 1;
 	public static final int Char = 2;
 	public static final int Short = 3;

@@ -1,3 +1,4 @@
+/* $Id$ */
 import java.util.Properties;
 
 public class jScope

@@ -1,8 +1,9 @@
+/* $Id$ */
 import java.awt.AWTEvent;
 import java.awt.Event;
 
-public class WaveformEvent extends AWTEvent {
-
+public class WaveformEvent extends AWTEvent 
+{
     static final int POINT_UPDATE         = AWTEvent.RESERVED_ID_MAX + 1;
     static final int MEASURE_UPDATE       = AWTEvent.RESERVED_ID_MAX + 2;
     static final int STATUS_INFO          = AWTEvent.RESERVED_ID_MAX + 3;

@@ -1,3 +1,4 @@
+/* $Id$ */
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import java.awt.event.*;

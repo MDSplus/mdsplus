@@ -1,4 +1,6 @@
-class jScopeDefaultValues {
+/* $Id$ */
+class jScopeDefaultValues 
+{
    int	  shots[];
    String xmin, xmax, ymax, ymin;
    String title_str, xlabel, ylabel;
@@ -6,8 +8,7 @@ class jScopeDefaultValues {
    String upd_event_str, def_node_str;
    boolean is_evaluated = false;
    String public_variables = null;
-   
-   
+
    public void Reset()
    {
         shots = null;

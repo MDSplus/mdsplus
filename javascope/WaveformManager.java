@@ -1,3 +1,4 @@
+/* $Id$ */
 import java.awt.Point;
 
 /**
@@ -7,8 +8,8 @@ import java.awt.Point;
  * 
  * @see WaveformContainer
  */
-public interface  WaveformManager   {    
-
+public interface  WaveformManager
+{
     /**
      * Autoscale operation on all waveforms
      * 

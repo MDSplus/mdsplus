@@ -1,6 +1,8 @@
+/* $Id$ */
 import java.io.*;
 
-public class JiDim {
+public class JiDim 
+{
 	public int mStart, mCount, mStride;
 	public String mName;
 

@@ -1,8 +1,10 @@
+/* $Id$ */
 import java.security.*;
 import java.io.*;
 
 
-public class SignalCache {
+public class SignalCache 
+{
  private long min_last_modified = Long.MAX_VALUE;    
  private long max_last_modified = Long.MIN_VALUE;
  private long purge_modified = 0L;

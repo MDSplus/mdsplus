@@ -1,8 +1,9 @@
+/* $Id$ */
 import java.awt.AWTEvent;
 import java.awt.Event;
 
-public class WaveContainerEvent extends AWTEvent {
-
+public class WaveContainerEvent extends AWTEvent 
+{
     static final int START_UPDATE   = AWTEvent.RESERVED_ID_MAX + 4;
     static final int END_UPDATE     = AWTEvent.RESERVED_ID_MAX + 5;
     static final int KILL_UPDATE    = AWTEvent.RESERVED_ID_MAX + 6;

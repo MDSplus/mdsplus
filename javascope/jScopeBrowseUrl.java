@@ -1,3 +1,4 @@
+/* $Id$ */
  import javax.swing.border.*; 
  import javax.swing.colorchooser.*; 
  import javax.swing.filechooser.*; 

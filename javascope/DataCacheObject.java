@@ -1,3 +1,4 @@
+/* $Id$ */
 import java.io.Serializable;
 
 class DataCacheObject implements Serializable

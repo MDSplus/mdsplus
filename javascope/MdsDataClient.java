@@ -1,3 +1,4 @@
+/* $Id$ */
 public class MdsDataClient
 {
     private MdsConnection mds;

@@ -1,7 +1,9 @@
+/* $Id$ */
 import java.io.*;
 import java.util.*;
 
-abstract class JiNcVarImp {
+abstract class JiNcVarImp 
+{
 	protected JiNcVar mParent;
 	protected RandomAccessData mRFile;
 	protected long mOffset;

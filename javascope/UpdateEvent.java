@@ -1,3 +1,4 @@
+/* $Id$ */
 import java.awt.AWTEvent;
 import java.awt.Event;
 
@@ -8,8 +9,8 @@ import java.awt.Event;
  * @see UpdateEventListener
  * @see DataProvider
  */
-public class UpdateEvent extends AWTEvent {
-
+public class UpdateEvent extends AWTEvent 
+{
     /**
      * The name of the event just received.
      */

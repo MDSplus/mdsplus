@@ -1,3 +1,4 @@
+/* $Id$ */
 import java.awt.AWTEvent;
 import java.awt.Event;
 

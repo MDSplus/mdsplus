@@ -1,9 +1,10 @@
+/* $Id$ */
 
 import java.io.*;
 import java.util.*;
 
-public abstract class JiVarImpl implements JiVar {
-
+public abstract class JiVarImpl implements JiVar 
+{
 	protected JiDataSource mSource;	// Source object for this variable
 	protected String mName;
 	protected int mType = 0;

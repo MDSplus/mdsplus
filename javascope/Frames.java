@@ -1,10 +1,11 @@
+/* $Id$ */
 import java.awt.*;
 import java.io.*;
 import java.awt.image.*;
 import java.util.*;
 
-class Frames extends Canvas {
-    
+class Frames extends Canvas 
+{
     static final int ROI = 20;
     Vector frame = new Vector();
     Vector frame_time = new Vector();

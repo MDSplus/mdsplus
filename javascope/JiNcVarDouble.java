@@ -1,7 +1,9 @@
+/* $Id$ */
 import java.io.*;
 import java.util.*;
 
-class JiNcVarDouble extends JiNcVarImp {
+class JiNcVarDouble extends JiNcVarImp 
+{
 	public JiNcVarDouble(RandomAccessData in, JiNcVar parent, long offset)
 	  {
 	  super(in, parent, offset);

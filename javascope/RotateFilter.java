@@ -1,4 +1,6 @@
-/*
+/* 
+ * $Id$ 
+ *
  * Copyright (c) 1995, 1996 Sun Microsystems, Inc. All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software
@@ -19,8 +21,8 @@ import java.awt.image.ImageFilter;
 import java.util.Hashtable;
 import java.awt.Rectangle;
 
-public class RotateFilter extends ImageFilter {
-
+public class RotateFilter extends ImageFilter 
+{
     private static ColorModel defaultRGB = ColorModel.getRGBdefault();
 
     private double angle;

@@ -1,7 +1,9 @@
+/* $Id$ */
 import java.util.*;
 import java.io.*;
 
-public class JiNcSource implements JiDataSource {
+public class JiNcSource implements JiDataSource 
+{
 	private int mRecs = 0;
 	private JiDim[] mDimArray;
 	private JiNcVar[] mGattArray;

@@ -1,3 +1,4 @@
+/* $Id$ */
 import java.awt.*;
 import java.util.Vector;
 import java.awt.image.*;

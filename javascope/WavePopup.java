@@ -1,3 +1,4 @@
+/* $Id$ */
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -6,8 +7,8 @@ import java.util.*;
 import javax.swing.*;
 
 
-public class WavePopup extends JPopupMenu implements  ItemListener {
-		
+public class WavePopup extends JPopupMenu implements  ItemListener 
+{
 	protected Waveform   wave = null;
 	protected SetupWaveformParams setup_params;
 	protected JSeparator sep2;
