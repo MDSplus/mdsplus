@@ -35,10 +35,14 @@
 #endif
 
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
+#define SetFlagsCompressionLevel(flags,level) flags = ((flags & ~0x1e) | (level << 1))
+#define GetFlagsCompressionLevel(flags,level) level = ((flags & ~0x1e) >> 1)
+
 extern char *MdsDescrToCstring();
 extern void MdsFree();
 extern void SetSocketOptions();
-extern void SetCompression();
+extern int SetCompressionLevel();
+extern int GetCompressionLevel();
 
 typedef ARRAY_COEFF(char,7) ARRAY_7;
 
@@ -54,7 +58,7 @@ typedef struct _client { SOCKET sock;
                          MdsEventList *event;
 			 void         *tdicontext[6];
                          int addr;
-                         int use_compression;
+                         int compression_level;
                          struct _client *next;
                        } Client;
 
@@ -71,11 +75,11 @@ static char *portname;
 static short port;
 static char mode;
 static int flags;
-static int UseCompression = 1;
-#define IS_SERVICE 2
+static int MaxCompressionLevel;
+#define IS_SERVICE 0x200
 
 static void DefineTdi(char *execute_string, char dtype, short length, void *value);
-static void ParseCommand(int argc, char **argv,char **portname, short *port, char **hostfile, char *mode, int *flags);
+static void ParseCommand(int argc, char **argv,char **portname, short *port, char **hostfile, char *mode, int *flags, int *compression_level);
 extern int TdiSaveContext();
 extern int TdiRestoreContext();
 extern int TdiExecute();
@@ -213,7 +217,7 @@ static void InitializeService()
 int main( int argc, char **argv) 
 {
   CommandParsed = 1;
-  ParseCommand(argc, argv, &portname, &port, &hostfile, &mode, &flags);
+  ParseCommand(argc, argv, &portname, &port, &hostfile, &mode, &flags, &MaxCompressionLevel);
   if (flags & IS_SERVICE)
   {
     SERVICE_TABLE_ENTRY srvcTable[] = {{ServiceName(),(LPSERVICE_MAIN_FUNCTION)ServiceMain},{NULL,NULL}};
@@ -330,8 +334,7 @@ int main(int argc, char **argv)
   /* DebugBreak(); */
   FD_ZERO(&fdactive);
   if (!CommandParsed) 
-    ParseCommand(argc, argv, &portname, &port, &hostfile, &mode, &flags);
-  UseCompression = (flags & SUPPORTS_COMPRESSION);
+    ParseCommand(argc, argv, &portname, &port, &hostfile, &mode, &flags, &MaxCompressionLevel);
   if (IsService)
     InitializeService();
   else
@@ -497,6 +500,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     Client *c;
     time_t tim;
     int m_status;
+    int user_compression_level;
     m.h.msglen = sizeof(MsgHdr);
     hp = gethostbyaddr((char *)&sin->sin_addr,sizeof(sin->sin_addr),AF_INET);
     m_user = GetMdsMsg(sock,&status);
@@ -512,7 +516,13 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     timestr[strlen(timestr)-1] = 0;
     if (hp) ok = CheckClient(hp->h_name,user_p);
     if (ok == 0) ok = CheckClient((char *)inet_ntoa(sin->sin_addr),user_p);
-    m_status = m.h.status = (ok & 1) ? (1 | (UseCompression ? SUPPORTS_COMPRESSION : 0)) : 0;
+    if (ok & 1)
+    {
+      user_compression_level = m_user->h.status & 0xf;
+      if (user_compression_level > MaxCompressionLevel)
+        user_compression_level = MaxCompressionLevel;
+    }
+    m_status = m.h.status = (ok & 1) ? (1 | (user_compression_level << 1)) : 0;
     m.h.client_type = m_user->h.client_type;
     SetSocketOptions(sock);
     SendMdsMsg(sock,&m,0);
@@ -526,7 +536,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
         new->context.tree = 0;
         new->message_id = 0;
         new->event = 0;
-        new->use_compression = UseCompression ? ((m_user->h.status & SUPPORTS_COMPRESSION) == SUPPORTS_COMPRESSION) : 0;
+        new->compression_level = user_compression_level;
         for (i=0;i<6;i++)
 	      new->tdicontext[i] = NULL;
         for (i=0;i<MAX_ARGS;i++)
@@ -542,7 +552,10 @@ static void AddClient(int sock,struct sockaddr_in *sin)
 	  pid = getpid();
     }
     else
+    {
+      SetFlagsCompressionLevel(flags,user_compression_level);
       pid = SpawnWorker(sock);
+    }
     if (hp)
       printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr,sock, pid, user_p, hp->h_name, inet_ntoa(sin->sin_addr));
     else
@@ -818,7 +831,7 @@ static void ClientEventAst(MdsEventList *e, int len, char *data)
       for(i = len; i < 12; i++)
         info->data[i] = 0;
       info->eventid = e->jeventid;
-      SetCompression(c->use_compression);
+      SetCompressionLevel(c->compression_level);
       SendMdsMsg(c->sock, m, 0);
       free(m);
     }
@@ -832,7 +845,7 @@ static void ClientEventAst(MdsEventList *e, int len, char *data)
       for(i = len; i < 12; i++)
         e->info->data[i] = 0;
       memcpy(m->bytes,e->info,e->info_len);
-      SetCompression(c->use_compression);
+      SetCompressionLevel(c->compression_level);
       SendMdsMsg(c->sock, m, MSG_OOB);
       free(m);
     }
@@ -942,9 +955,18 @@ static void ExecuteMessage(Client *c)
     DefineTdi("public $REMADDR=$",DTYPE_LONG,4,&c->addr);
     DefineTdi("public $PORTNAME=$",DTYPE_T,(short)strlen(portname),portname);
     ResetErrors();
+    SetCompressionLevel(c->compression_level);
     status = LibCallg(&c->nargs, TdiExecute);
     if (status & 1) status = TdiData(xd,&ans MDS_END_ARG);
-    if (!(status & 1)) GetErrorText(status,&ans);
+    if (!(status & 1)) 
+      GetErrorText(status,&ans);
+    else if (GetCompressionLevel() != c->compression_level)
+    {
+      c->compression_level = GetCompressionLevel();
+      if (c->compression_level > MaxCompressionLevel)
+        c->compression_level = MaxCompressionLevel;
+      SetCompressionLevel(c->compression_level);
+    }
     SendResponse(c,status,ans.pointer);
     MdsFree1Dx(xd,NULL);
 	MdsFree1Dx(&ans,NULL);
@@ -1113,7 +1135,6 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
       }
       break;
   }
-  SetCompression(c->use_compression);
   SendMdsMsg(c->sock, m, 0);
   free(m);
 }
@@ -1264,8 +1285,8 @@ static void PrintHelp(char *option)
   printf("      -i                 Install service (WINNT only)\n");
   printf("      -r                 Remove service (WINNT only)\n");
   printf("      -h hostfile        Specify alternate mdsip.hosts file\n");
-  printf("      -c                 Disable compression\n");
-  printf("      +c                 Enable compression (default)\n\n");
+  printf("      -c [level]         Specify maximum zlip compression level, 0=nocompression,1-9 fastest/least to slowest/most, 0-default\n");
+  printf("      +c                 Allow compression up to maximum level 9\n\n");
   printf("    more verbose switches are also permitted:\n\n");
   printf("      --port port|service\n");
   printf("      --multi\n");
@@ -1274,12 +1295,12 @@ static void PrintHelp(char *option)
   printf("      --remove\n");
   printf("      --hostfile hostfile\n");
   printf("      --nocompression\n");
-  printf("      --compression\n\n");
+  printf("      --compression [level,default=9]\n\n");
   printf("  Deprecated Format:\n\n    mdsip port|service [multi|server|install|install_server|install_multi|remove] [hostfile]\n");
   exit(1);
 } 
 
-static int ParseOption(char *option, char **argv, int argc, char **portname, short *port, char **hostfile, char *mode, int *flags)
+static int ParseOption(char *option, char **argv, int argc, char **portname, short *port, char **hostfile, char *mode, int *flags, int *compression_level)
 {
   int increment = 0;
   if (strcmp(option,"port") == 0)
@@ -1326,11 +1347,11 @@ static int ParseOption(char *option, char **argv, int argc, char **portname, sho
   }
   else if (strcmp(option,"nocompression") == 0)
   {
-    *flags = *flags & (~SUPPORTS_COMPRESSION);
+    *compression_level = 0;
   }
   else if (strcmp(option,"compression") == 0)
   {
-    *flags = *flags | SUPPORTS_COMPRESSION;
+    if (argc > 0 && *argv[0] >= '0' && *argv[0] <= '9') *compression_level = atoi(argv[0]); else *compression_level = 6;
   }
   else
   {
@@ -1381,13 +1402,13 @@ static void SetMode(char modein,char *mode)
   }
 }
 
-static void ParseCommand(int argc, char **argv,char **portname, short *port, char **hostfile, char *mode, int *flags)
+static void ParseCommand(int argc, char **argv,char **portname, short *port, char **hostfile, char *mode, int *flags, int *compression_level)
 {
   int i;
   if (argc < 2) PrintHelp(0);
   *port = 0;
   *mode = 0;
-  *flags = SUPPORTS_COMPRESSION;
+  *flags = 0;
   *hostfile = 0;
   for (i=1;i<argc;i++)
   {
@@ -1408,10 +1429,10 @@ static void ParseCommand(int argc, char **argv,char **portname, short *port, cha
 	  case 'i': SetMode('i',mode); break;
           case 'r': SetMode('r',mode); break;
 	  case 'h': if (argc > (i+1)) {i++; *hostfile = strcpy((char *)malloc(strlen(argv[i])+1),argv[i]);} else PrintHelp(0); break;
-	  case 'c': *flags = *flags & (~SUPPORTS_COMPRESSION); break;
-	  case '-': i += ParseOption(&option[2],&argv[i+1],argc-i-1,portname,port,hostfile,mode,flags); break;
+          case 'c': if (argc > (i+1) && *argv[i+1] >= '0' && *argv[i+1] <= '9') {i++; *compression_level = atoi(argv[i]);} else *compression_level=0; break;
+	  case '-': i += ParseOption(&option[2],&argv[i+1],argc-i-1,portname,port,hostfile,mode,flags,compression_level); break;
 #ifdef HAVE_WINDOWS_H
-          case 'F': *flags = atoi(argv[++i]); break;
+          case 'F': *flags = atoi(argv[++i]); GetFlagsCompressionLevel(*flags,*compression_level); break;
           case 'W': i += 2; break;
 #endif
 	  default: PrintHelp(option); break;
@@ -1425,7 +1446,7 @@ static void ParseCommand(int argc, char **argv,char **portname, short *port, cha
         }
         switch ( option[1] )
 	{
-	  case 'c': *flags = *flags | SUPPORTS_COMPRESSION; break;
+	  case 'c': *compression_level=9; break;
           default: PrintHelp(option); break;
         }
         break;
@@ -1455,6 +1476,11 @@ static void ParseCommand(int argc, char **argv,char **portname, short *port, cha
         break;
     }
   }
+  if (*compression_level < 0)
+    *compression_level = 0;
+  else if (*compression_level > 9)
+    *compression_level = 9;
+  SetFlagsCompressionLevel(*flags,*compression_level);
   if (*hostfile == 0) *hostfile = strcpy((char *)malloc(strlen(DEFAULT_HOSTFILE)+1),DEFAULT_HOSTFILE);
   if (*port == 0)
   {

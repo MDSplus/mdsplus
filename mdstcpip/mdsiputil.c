@@ -5,12 +5,12 @@
 
 static unsigned char message_id = 1;
 #ifdef NOCOMPRESSION
-static int UseCompression = 0;
-#define compress(a,b,c,d) -1
+static int CompressionLevel = 0;
+#define compress2(a,b,c,d,e) -1
 #define uncompress(a,b,c,d) -1
 #else
-static int UseCompression = 1;
-extern int compress();
+static int CompressionLevel = 0;
+extern int compress2();
 extern int uncompress();
 #endif
 Message *GetMdsMsg(SOCKET sock, int *status);
@@ -32,11 +32,17 @@ extern int inet_addr();
 extern int MdsDispatchEvent();
 #endif
 
-void SetCompression(int on)
+int SetCompressionLevel(int level)
 {
-  UseCompression = on;
+  int old_level = CompressionLevel;
+  CompressionLevel = level;
+  return old_level;
 }
 
+int GetCompressionLevel()
+{
+  return CompressionLevel;
+}
 void SetSocketOptions(SOCKET s)
 {
   int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
@@ -284,6 +290,7 @@ static SOCKET ConnectToPort(char *host, char *service)
     m->h.length = strlen(user_p);
     m->h.msglen = sizeof(MsgHdr) + m->h.length;
     m->h.dtype = DTYPE_CSTRING;
+    m->h.status = CompressionLevel;
     m->h.ndims = 0;
     memcpy(m->bytes,user_p,m->h.length);
     status = SendMdsMsg(s,m,0);
@@ -304,8 +311,7 @@ static SOCKET ConnectToPort(char *host, char *service)
           DisconnectFromMds(s);
           return INVALID_SOCKET;
         }
-        if (!SupportsCompression(m->h.status))
-          UseCompression = 0;
+        CompressionLevel = (m->h.status & 0x1e) >> 1;
       }
     }
     else
@@ -621,14 +627,15 @@ int SendMdsMsg(SOCKET sock, Message *m, int oob)
   unsigned long clength = 0; 
   Message *cm = 0;
   int status;
-  if (len > 0 && UseCompression && m->h.client_type != SENDCAPABILITIES)
+  printf("Compression level is %d\n",CompressionLevel);
+  if (len > 0 && CompressionLevel > 0 && m->h.client_type != SENDCAPABILITIES)
   {
 	  clength = len;
 	  cm = (Message *)malloc(m->h.msglen + 4);
   }
   if (!oob) FlushSocket(sock);
   if (m->h.client_type == SENDCAPABILITIES)
-    m->h.status = SUPPORTS_COMPRESSION;
+    m->h.status = CompressionLevel;
   if ((m->h.client_type & SwapEndianOnServer) != 0)
   {
     if (Endian(m->h.client_type) != Endian(ClientType()))
@@ -639,13 +646,13 @@ int SendMdsMsg(SOCKET sock, Message *m, int oob)
   }
   else
     m->h.client_type = ClientType();
-  if (clength && compress(cm->bytes+4,&clength,m->bytes,len) == 0 && clength < len)
+  if (clength && compress2(cm->bytes+4,&clength,m->bytes,len,CompressionLevel) == 0 && clength < len)
   {
-	cm->h = m->h;
-	cm->h.client_type |= COMPRESSED;
-	memcpy(cm->bytes,&cm->h.msglen,4);
-	cm->h.msglen = clength + 4 + sizeof(MsgHdr);
-	status = SendBytes(sock, (char *)cm, cm->h.msglen, oob);
+    cm->h = m->h;
+    cm->h.client_type |= COMPRESSED;
+    memcpy(cm->bytes,&cm->h.msglen,4);
+    cm->h.msglen = clength + 4 + sizeof(MsgHdr);
+    status = SendBytes(sock, (char *)cm, cm->h.msglen, oob);
   }
   else
 	  status = SendBytes(sock, (char *)m, len + sizeof(MsgHdr), oob);

@@ -12,4 +12,4 @@
 #       $2 = log directory (directory must exist)
 #       $3 = optional alternate mdsip.hosts file
 . /usr/local/mdsplus/etc/profile.d/mdsplus.sh
-exec /usr/local/mdsplus/bin/mdsip -p $1 -h ${3:-/etc/mdsip.hosts} -c >> $2/access 2>> $2/errors
+exec /usr/local/mdsplus/bin/mdsip -p $1 -h ${3:-/etc/mdsip.hosts} -c 9 >> $2/access 2>> $2/errors

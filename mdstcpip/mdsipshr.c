@@ -452,6 +452,26 @@ unsigned long WINAPI MdsDispatchEvent(SOCKET sock)
 #endif
 }
 
+int MdsSetCompression(SOCKET sock, int level)
+{
+  int old_level;
+  int status;
+  if (level < 0)
+    level = 0;
+  else if (level > 9)
+    level = 9;
+  old_level = SetCompressionLevel(level);
+  if (sock != INVALID_SOCKET) 
+  {
+    char expression[128];
+    struct descrip ans;
+    sprintf(expression,"MdsSetCompression(%d)",level);
+    status = MdsValue(sock,expression,&ans,0);
+    if (ans.ptr != 0) free(ans.ptr);
+  }
+  return old_level;
+}
+
 #ifndef vxWorks
 
 int  IdlMdsClose(int lArgc, void * * lpvArgv)
@@ -561,4 +581,12 @@ int  IdlSendArg(int lArgc, void * * lpvArgv)
   UnBlockSig(SIGALRM);
   return status;
 }
+
+int IdlSetCompressionLevel(int lArgc, void * * lpvArgv)
+{
+/*  status = call_external('mdsipshr','IdlSetCompressionLevel', sock_l, level_l, value=[1b,1b])
+*/
+  return MdsSetCompression((SOCKET)lpvArgv[0],(int)lpvArgv[1]);
+}
+
 #endif //vxWorks
