@@ -203,6 +203,8 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,char
           status = TreeFILE_NOT_FOUND;
       }
     }
+    else
+      RemoteAccessDisconnect(socket,0);
     if (ans.ptr) MdsIpFree(ans.ptr);
   }
   if (status & 1)
