@@ -386,7 +386,6 @@ OpcTimeoutOf
 OpcTiny
 OpcTransfer
 OpcTranslate
-OpcTranspose
 OpcTransposeMul
 OpcTrim
 OpcUbound
@@ -847,7 +846,6 @@ TdiTimeoutOf
 TdiTiny
 TdiTransfer
 TdiTranslate
-TdiTranspose
 TdiTransposeMul
 TdiTrim
 TdiUbound
