@@ -192,7 +192,7 @@ void main(int argc, char *argv[])
   printf("=================== TEST 9 ======================\n");
 
   sresult = 1000;
-  dsc = descr(&dtype_float,&thomsondata,&sresult,&null);
+  dsc = descr(&dtype_float,thomsondata,&sresult,&null);
   shot = 100;
   status = MdsOpen("ELECTRONS",&shot);
   if (status & 1) 

@@ -43,13 +43,15 @@ static int CamMulti(char *routine, struct descriptor *name, int *a, int *f, int 
   int bytes = (*mem == 16) ? 2 : 4;
 
   while(status && (to_do > 0)) {
-    int this_count = min(*count*bytes, 65535) / bytes;
+    int this_count = min(to_do*bytes, 65535);
+    this_count  /= bytes;
     status = DoCamMulti(routine, name, a, f, &this_count, buf, mem, (short *)iosb);
     if (status&1) {
       buf += iosb[1];
       to_do -= iosb[1]/bytes;
     }
   }
+  return status;
 }
 
 static int DoCamMulti(char *routine, struct descriptor *name, int *a, int *f, int *count, void *data, int *mem, short *iosb)
