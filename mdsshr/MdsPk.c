@@ -101,8 +101,18 @@ void      MdsUnpk(char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int
   int      hold,
               full,
               max;
+#ifdef _big_endian
+  char     *ppack_c = (char *)ppack;
+  char     tmp_c = ppack_c[0];
+  ppack_c[0] = ppack_c[3];
+  ppack_c[3] = tmp_c;
+  tmp_c = ppack_c[1];
+  ppack_c[1] = ppack_c[2];
+  ppack_c[2] = tmp_c;
+#endif
   *bit_ptr += size * nitems;
 /*32-bit data*/
+  
   if (test == 0)
   {
     if ((off & 7) == 0)
