@@ -79,6 +79,6 @@ extern struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dt
 extern int   MdsOpen(SOCKET sock, char *tree, int shot);
 extern int   MdsSetDefault(SOCKET sock, char *node);
 extern int   MdsClose(SOCKET sock);
-extern int   MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int *eventid);
-extern int   MdsEventCan(SOCKET sock, int eventid);
+extern int   MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, void **eventid);
+extern int   MdsEventCan(SOCKET sock, void *eventid);
 #endif
