@@ -65,6 +65,14 @@ typedef int mode_t;
 #define DEFAULT_HOSTFILE "/etc/mdsip.hosts"
 #endif
 
+#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
+#define pthread_attr_default NULL
+#define pthread_mutexattr_default NULL
+#define pthread_condattr_default NULL
+#else
+#undef select
+#endif
+
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
 #ifndef O_BINARY
@@ -106,6 +114,11 @@ extern int SetFD();
 extern int ClearFD();
 
 static int CheckClient(char *hostnum_c, char *host_c, char *user_c);
+static void lock_client_list();
+static void unlock_client_list();
+static void lock_ast();
+static void unlock_ast();
+
 typedef ARRAY_COEFF(char,7) ARRAY_7;
 
 typedef struct _context { void *tree;
@@ -811,11 +824,13 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
         new->addr = *(int *)&sin->sin_addr;
 #endif
         new->next = NULL;
+        lock_client_list();
         for (c=ClientList; c && c->next; c = c->next);
         if (c) 
           c->next = new;
         else
           ClientList = new;
+        unlock_client_list();
        }
 
        RegisterRead(sock);
@@ -871,6 +886,16 @@ static void RemoveClient(Client *c)
   void *tdi_context[6];
   Client *p,*nc;
   MdsEventList *e,*nexte;
+  lock_client_list();
+  for (p=0,nc=ClientList; nc && nc!=c; p=nc,nc=nc->next);
+  if (nc == c)
+  {
+    if (p)
+      p->next = c->next;
+    else
+      ClientList = c->next;
+  }
+  unlock_client_list();
   ClearFD(c->sock);
   CloseSocket(c->sock);
   FreeDescriptors(c);
@@ -895,14 +920,6 @@ static void RemoveClient(Client *c)
   TdiSaveContext(tdi_context);
   TdiDeleteContext(c->tdicontext);
   TdiRestoreContext(tdi_context);
-  for (p=0,nc=ClientList; nc && nc!=c; p=nc,nc=nc->next);
-  if (nc == c)
-  {
-    if (p)
-      p->next = c->next;
-    else
-      ClientList = c->next;
-  }
   free(c);
   if (ClientList == 0 && !multi) exit(0);
 }
@@ -1265,16 +1282,25 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data)
 {
   Client *c;
   int i;
+  char client_type,compression_level;
+  lock_ast();
+  lock_client_list();
   for (c=ClientList; c && (c->sock != e->sock); c = c->next);
   if (c)
   {
-    if (CType(c->client_type) == JAVA_CLIENT)
+    client_type=c->client_type;
+    compression_level=c->compression_level;
+  }
+  unlock_client_list();
+  if (c)
+  {
+    if (CType(client_type) == JAVA_CLIENT)
     {
       JMdsEventInfo *info;
       int len = sizeof(MsgHdr) + sizeof(JMdsEventInfo);
       Message *m = malloc(len);
 	  m->h.ndims = 0;
-      m->h.client_type = c->client_type;
+      m->h.client_type = client_type;
       m->h.msglen = len;
       m->h.dtype = DTYPE_EVENT_NOTIFY;
       info = (JMdsEventInfo *)m->bytes;
@@ -1282,23 +1308,23 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data)
       for(i = data_len; i < 12; i++)
         info->data[i] = 0;
       info->eventid = e->jeventid;
-      SetCompressionLevel(c->compression_level);
-      SendMdsMsg(c->sock, m, 0);
+      SetCompressionLevel(compression_level);
+      SendMdsMsg(e->sock, m, 0);
       free(m);
     }
     else
     {
       Message *m = malloc(sizeof(MsgHdr) + e->info_len);
       m->h.ndims = 0;
-      m->h.client_type = c->client_type;
+      m->h.client_type = client_type;
       m->h.msglen = sizeof(MsgHdr) + e->info_len;
       m->h.dtype = DTYPE_EVENT_NOTIFY;
       if (data_len > 0) memcpy(e->info->data, data, (data_len<12)?data_len:12); 
       for(i = data_len; i < 12; i++)
         e->info->data[i] = 0;
       memcpy(m->bytes,e->info,e->info_len);
-      SetCompressionLevel(c->compression_level);
-      SendMdsMsg(c->sock, m, MSG_OOB);
+      SetCompressionLevel(compression_level);
+      SendMdsMsg(e->sock, m, MSG_OOB);
       free(m);
     }
   }
@@ -1310,6 +1336,7 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data)
     if (e->info_len > 0) free(e->info);
     free(e);
   }
+  unlock_ast();
 }
 
 static void ExecuteMessage(Client *c)
@@ -1634,6 +1661,60 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
   }
   SendMdsMsg(c->sock, m, 0);
   free(m);
+}
+
+static int client_mutex_initialized = 0;
+static pthread_mutex_t client_mutex;
+
+static void lock_client_list()
+{
+
+  if(!client_mutex_initialized)
+  {
+    client_mutex_initialized = 1;
+    pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_lock(&client_mutex);
+}
+
+static void unlock_client_list()
+{
+
+  if(!client_mutex_initialized)
+  {
+    client_mutex_initialized = 1;
+    pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_unlock(&client_mutex);
+}
+
+static int ast_mutex_initialized = 0;
+static pthread_mutex_t ast_mutex;
+
+static void lock_ast()
+{
+
+  if(!ast_mutex_initialized)
+  {
+    ast_mutex_initialized = 1;
+    pthread_mutex_init(&ast_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_lock(&ast_mutex);
+}
+
+static void unlock_ast()
+{
+
+  if(!ast_mutex_initialized)
+  {
+    ast_mutex_initialized = 1;
+    pthread_mutex_init(&ast_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_unlock(&ast_mutex);
 }
 
 static int CreateMdsPort(short port, int multi_in)
