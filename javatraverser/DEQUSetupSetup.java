@@ -66,7 +66,7 @@ public class DEQUSetupSetup extends DeviceSetup {
   }
   private void jbInit() throws Exception {
     this.setWidth(597);
-    this.setHeight(597);
+    this.setHeight(200);
     this.setDeviceType("DEQUSetup");
     this.setDeviceProvider("150.178.3.33");
     this.setDeviceTitle("EQU device timing setup");

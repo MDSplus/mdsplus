@@ -66,6 +66,7 @@ public class LASER_NDSetup extends DeviceSetup {
     deviceField2.setIdentifier("");
     jPanel5.setLayout(flowLayout3);
     flowLayout3.setAlignment(FlowLayout.LEFT);
+    deviceButtons1.setMethods(new String[] {"init", "trigger", "dump", "reset", "check"});
     jPanel2.add(deviceField1, null);
     jPanel2.add(deviceDispatch1, null);
     jPanel1.add(jPanel2, null);
