@@ -1910,7 +1910,7 @@ pro do_query, ctx, custom=custom
     dummy = dsql('set rowcount 0')
 ;    sql_finish
     if(not status) then begin
-      X_Complain, ["SQL Error",error,"No records selected..." ]
+      X_Complain, ["SQL Error",string(error),"No records selected..." ]
       return
     endif
     if (count gt 0) then begin
