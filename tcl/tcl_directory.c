@@ -1,3 +1,4 @@
+#include 	<config.h>
 #include        "tclsysdef.h"
 #include        <ncidef.h>
 #include        <usagedef.h>
