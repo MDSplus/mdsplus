@@ -397,7 +397,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField121.setOffsetNid(858);
     deviceField123.setOffsetNid(856);
     deviceField123.setLabelString("Out Id:");
-    deviceField123.setNumCols(2);
+    deviceField123.setNumCols(4);
     deviceField123.setIdentifier("");
     deviceField120.setIdentifier("");
     deviceField120.setNumCols(4);
@@ -409,7 +409,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField122.setIdentifier("");
     deviceField1211.setOffsetNid(848);
     deviceField1211.setLabelString("Out Id:");
-    deviceField1211.setNumCols(2);
+    deviceField1211.setNumCols(4);
     deviceField1211.setIdentifier("");
     gridLayout4.setColumns(1);
     gridLayout4.setRows(4);
@@ -427,12 +427,12 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField128.setOffsetNid(854);
     deviceField127.setOffsetNid(832);
     deviceField127.setLabelString("Out Id:");
-    deviceField127.setNumCols(2);
+    deviceField127.setNumCols(4);
     deviceField127.setIdentifier("");
     jPanel2.setLayout(gridLayout4);
     deviceField16.setOffsetNid(840);
     deviceField16.setLabelString("Out Id:");
-    deviceField16.setNumCols(2);
+    deviceField16.setNumCols(4);
     deviceField16.setIdentifier("");
     deviceField18.setOffsetNid(844);
     deviceField18.setLabelString("Ang. vel.: ");

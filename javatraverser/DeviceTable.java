@@ -344,7 +344,7 @@ public class DeviceTable extends DeviceComponent
             public void setValueAt(Object value, int row, int col)
             {
               int itemIdx;
-                if(rowNames.length > 0 || displayRowNumber)
+                if((rowNames != null && rowNames.length > 0) || displayRowNumber)
                   itemIdx = row * numCols + col - 1;
                 else
                   itemIdx = row * numCols + col;
