@@ -67,6 +67,8 @@ public class RFXTimesSetup extends DeviceSetup {
   DeviceField deviceField20 = new DeviceField();
   DeviceField deviceField21 = new DeviceField();
   DeviceField deviceField22 = new DeviceField();
+  DeviceField deviceField23 = new DeviceField();
+  DeviceField deviceField24 = new DeviceField();
   public RFXTimesSetup() {
     try {
       jbInit();
@@ -221,10 +223,10 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField118.setLabelString("T_CLOSE_PPSC2");
     deviceField118.setOffsetNid(7);
     gridLayout2.setColumns(1);
-    gridLayout2.setRows(15);
+    gridLayout2.setRows(16);
     gridLayout2.setVgap(-5);
     gridLayout3.setColumns(1);
-    gridLayout3.setRows(15);
+    gridLayout3.setRows(16);
     gridLayout3.setVgap(-5);
     deviceField119.setPreferredWidth(-1);
     deviceField119.setDisplayEvaluated(false);
@@ -243,7 +245,7 @@ public class RFXTimesSetup extends DeviceSetup {
     jPanel3.setLayout(gridLayout4);
     gridLayout4.setColumns(1);
     gridLayout4.setHgap(0);
-    gridLayout4.setRows(15);
+    gridLayout4.setRows(16);
     gridLayout4.setVgap(-5);
     deviceField1111.setOffsetNid(19);
     deviceField1111.setLabelString("T_CLOSE_TNSR");
@@ -403,11 +405,13 @@ public class RFXTimesSetup extends DeviceSetup {
         "if(_START_INV_TC_state == 1) tcl(\'set node \\\\EN_INV_TC/on\'); else " +
     "tcl(\'set node \\\\EN_INV_TC /off\'); 1;",
         "if(_START_PWM_TC_state == 1) tcl(\'set node \\\\FOR_PWM_TC/on\'); else " +
-    "tcl(\'set node \\\\FOR_PWM_TC /off\'); 1;"
+    "tcl(\'set node \\\\FOR_PWM_TC /off\'); 1;",
+        "if(_START_TF_state == 1) tcl(\'set node \\\\ENABLE_PR/on\'); else tcl(\'set " +
+    "node \\\\ENABLE_PR/off\'); 1;"
         });
     deviceButtons1.setCheckMessages(new String[] {"Item1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9", "Item 10", "Item 11", "Item 12", "Item 13", "Item 14", "Item 15",
         "Item 16", "Item 17", "Item 18", "Item 19", "Item 20", "Item 21", "Item 22", "Item 23", "Item 24", "Item 25", "Item 26", "Item 27", "Item 28", "Item 29",
-        "Item 30", "Item 31", "Item 32", "Item 33", "Item 34", "Item 35", "Item 36", "Item 37", "Item 38"});
+        "Item 30", "Item 31", "Item 32", "Item 33", "Item 34", "Item 35", "Item 36", "Item 37", "Item 38", "Item 39"});
     deviceField1.setOffsetNid(35);
     deviceField1.setLabelString("T_STOP_CHOP_TC");
     deviceField1.setNumCols(5);
@@ -448,6 +452,16 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField22.setNumCols(5);
     deviceField22.setIdentifier("");
     deviceField22.setShowState(true);
+    deviceField23.setOffsetNid(47);
+    deviceField23.setLabelString("T_START_PR");
+    deviceField23.setNumCols(5);
+    deviceField23.setIdentifier("START_PR");
+    deviceField23.setShowState(true);
+    deviceField24.setOffsetNid(48);
+    deviceField24.setLabelString("T_STOP_PR");
+    deviceField24.setNumCols(5);
+    deviceField24.setIdentifier("STOP_PR");
+    deviceField24.setShowState(true);
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jPanel1, BorderLayout.CENTER);
     jPanel1.add(jPanel2, null);
@@ -486,6 +500,7 @@ public class RFXTimesSetup extends DeviceSetup {
     jPanel2.add(deviceField14, null);
     jPanel2.add(deviceField3, null);
     jPanel2.add(deviceField20, null);
+    jPanel2.add(deviceField23, null);
     jPanel4.add(deviceField115, null);
     jPanel4.add(deviceField114, null);
     jPanel4.add(deviceField113, null);
@@ -498,6 +513,7 @@ public class RFXTimesSetup extends DeviceSetup {
     jPanel4.add(deviceField1, null);
     jPanel4.add(deviceField9, null);
     jPanel4.add(deviceField21, null);
+    jPanel4.add(deviceField24, null);
   }
 
 }
