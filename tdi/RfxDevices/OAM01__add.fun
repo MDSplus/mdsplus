@@ -72,6 +72,6 @@ public fun OAM01__add(in _path, out _nidout) {     DevAddStart(_path, 'OAM01', 5
 
 
     DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 50,'GPIB_SERVER', getnci(_path, 'fullpath'), _nid);     
-    DevAddAction(_path//':OFF_ACTION', 'OFF','OFF', 50,'GPIB_SERVER', getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path//':OFF_ACTION', 'STORE','OFF', 50,'GPIB_SERVER', getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 } 
