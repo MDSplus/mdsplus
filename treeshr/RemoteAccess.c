@@ -14,7 +14,9 @@
 #define lseek _lseek
 #else
 #include <unistd.h>
+#ifndef HAVE_VXWORKS_H
 #include <pthread.h>
+#endif
 #endif
 #include <time.h>
 #include <fcntl.h>
@@ -52,7 +54,7 @@ extern int LibFindImageSymbol();
 static void LockMdsShrMutex(){}
 static void UnlockMdsShrMutex(){}
 #endif
-#ifdef HAVE_WXVORKS_H
+#ifdef HAVE_VXWORKS_H
 #define pthread_mutex_t int
 static void LockMdsShrMutex(){}
 static void UnlockMdsShrMutex(){}
