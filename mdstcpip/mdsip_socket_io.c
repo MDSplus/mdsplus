@@ -14,7 +14,6 @@
             *socketParamPtr;  /* For a pointer to an occ.*/
 #else
 #include <syslog.h>
-#include <libio.h>
 #include <sys/param.h>
 #endif
 #include <stdio.h>
