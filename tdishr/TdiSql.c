@@ -295,7 +295,7 @@ int 	rblob;
 				}
 				buf = SYB_dbdata(dbproc, j+1);
 				ind = buf == (void *)NULL;
-				if (bufs[j].syb_type == 0) {
+				if ((bufs[j].syb_type == 0) || (bufs[j].len == 0)) {
 					bufs[j].syb_type = SYB_dbcoltype(dbproc, j+1);
 					bufs[j].len = SYB_dbdatlen(dbproc, j+1);
 				}
@@ -443,6 +443,12 @@ int 	rblob;
 							}
 						
 							AppendAnswer(j, buf, len, dtype);
+						}
+                                                else {
+						  buf = (char *)default_date;
+						  dtype = DTYPE_T;
+						  len = strlen(default_date);
+						  AppendAnswer(j, buf, len, dtype);
 						}
 					}
                                         break;
