@@ -28,7 +28,7 @@ public class RFXTimesSetup extends DeviceSetup
 		deviceField1.setShowState(true);
 		deviceField1.setIdentifier("CLOSE_PMSS");
 		deviceField1.setOffsetNid(1);
-		deviceField1.setLabelString("T_CLOSE_PMSS    ");
+		deviceField1.setLabelString("T_CLOSE_PNSS    ");
 		JPanel1.add(deviceField1);
 		deviceField2.setNumCols(8);
 		deviceField2.setShowState(true);

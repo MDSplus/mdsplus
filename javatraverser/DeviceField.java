@@ -111,8 +111,7 @@ public class DeviceField extends DeviceComponent
         else
             textF.setText("");
         label.setEnabled(is_on);
-        textF.setEditable(editable);
-        //textF.setEnabled(is_on);
+        textF.setEditable(is_on & editable);
     }
     
     

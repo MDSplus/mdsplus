@@ -1,8 +1,8 @@
 public fun RFXTimes__add(in _path, out _nidout)
 {
     DevAddStart(_path, 'RFXTimes', 35, _nidout);
-    DevAddNode(_path // ':CLOSE_PMSS', 'NUMERIC', *, *, _nid);
-	tcl('add tag '//_path //':CLOSE_PMSS T_CLOSE_PMSS');
+    DevAddNode(_path // ':CLOSE_PNSS', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':CLOSE_PNSS T_CLOSE_PNSS');
     DevAddNode(_path // ':CLOSE_PP1', 'NUMERIC', *, *, _nid);
 	tcl('add tag ' // _path // ':CLOSE_PP1 T_CLOSE_PP1');
     DevAddNode(_path // ':CLOSE_PP2', 'NUMERIC', *, *, _nid);
