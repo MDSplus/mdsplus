@@ -16,13 +16,25 @@ extern int TdiCompile();
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #ifdef _WINDOWS
-#define sighold(a)
-#define sigrelse(a)
-#endif
+#define BlockSig(a)
+#define UnBlockSig(a)
+#else
+static int BlockSig(int sig_number)
+{
+  sigset_t newsigset;
+  sigemptyset(&newsigset);
+  sigaddset(&newsigset,sig_number);
+  return sigprocmask(SIG_BLOCK, &newsigset, NULL);
+}
 
-#ifdef _LINUX
-#define sighold(a)
-#define sigrelse(a)
+static int UnBlockSig(int sig_number)
+{
+  sigset_t newsigset;
+  sigemptyset(&newsigset);
+  sigaddset(&newsigset,sig_number);
+  return sigprocmask(SIG_UNBLOCK, &newsigset, NULL);
+}
+
 #endif
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
@@ -30,19 +42,19 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 int IdlMdsClose(int argc, void **argv)
 {
   int status;
-  sighold(SIGALRM);
+  BlockSig(SIGALRM);
   if (argc > 1)
     status = TreeClose((char *)argv[0],(int)argv[1]);
-  sigrelse(SIGALRM);
+  UnBlockSig(SIGALRM);
   return status;
 }
 
 int IdlMdsOpen(int argc, void **argv)
 {
   int status;
-  sighold(SIGALRM);
+  BlockSig(SIGALRM);
   status = TreeOpen((char *)argv[0],(int)argv[1],0);
-  sigrelse(SIGALRM);
+  UnBlockSig(SIGALRM);
   return status;
 }
 
@@ -50,9 +62,9 @@ int IdlMdsSetDefault(int argc, void **argv)
 {
   int status;
   int nid;
-  sighold(SIGALRM);
+  BlockSig(SIGALRM);
   status = TreeSetDefault((char *)argv[0],&nid);
-  sigrelse(SIGALRM);
+  UnBlockSig(SIGALRM);
   return status;
 }
 
@@ -152,7 +164,7 @@ int IdlMdsValue(int argc, void **argv)
   EMPTYXD(tmp);
   int argidx = 1;
   int i;
-  sighold(SIGALRM);
+  BlockSig(SIGALRM);
   expression.length = strlen((char *)argv[0]);
   expression.pointer = (char *)argv[0];
   arglist[argidx++] = (void *)&expression;
@@ -287,7 +299,7 @@ int IdlMdsValue(int argc, void **argv)
       arrayArgs[i].pointer = 0;
     }
   }
-  sigrelse(SIGALRM);
+  UnBlockSig(SIGALRM);
   return status;
 }
 
@@ -300,7 +312,7 @@ int IdlMdsPut(int argc, void **argv)
   int argidx = 1;
   int i;
   int nid;
-  sighold(SIGALRM);
+  BlockSig(SIGALRM);
   status = TreeFindNode((char *)argv[0],&nid);
   if (status & 1)
   {
@@ -329,7 +341,7 @@ int IdlMdsPut(int argc, void **argv)
       }
     }
   }
-  sigrelse(SIGALRM);
+  UnBlockSig(SIGALRM);
   return status;
 }
 
