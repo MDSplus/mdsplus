@@ -277,6 +277,12 @@ public class DeviceField extends DeviceComponent
 
     public boolean supportsState(){return showState;}
 
+    public void setBounds(int x, int y, int width, int height)
+    {
+      System.out.println("SET BOUNDS");
+      super.setBounds(x,y,width,height);
+      setPreferredSize(new Dimension(width, height));
+    }
 
 }
 
