@@ -59,7 +59,7 @@ IPC901Setup.java \
 CADHSetup.java \
 J221Setup.java \
 L6810Setup.java \
-FXVISetupSetup.java \
+RFXVISetupSetup.java \
 RFXVIConfigSetup.java \
 LASER_NDSetup.java\
 EDAMSetupSetup.java\
