@@ -32,6 +32,7 @@ IDL_BIN_SUF=""
 
 CFLAGS="$CFLAGS -I\$(top_srcdir)/include"
 FFLAGS="$FFLAGS -I\$(top_srcdir)/include"
+uiddir = "/usr/lib/X11/uid"
 
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
@@ -229,18 +230,6 @@ AC_CHECK_FUNC(nis_local_host,mdsplus_ok=yes,mdsplus_ok=no)
 if test $mdsplus_ok = yes; then
 		 AC_DEFINE(USE_NIS)
 fi
-if test "$enable_protected" = yes -o "$enable_protected" = on ; then
-		 AC_DEFINE(PROTECTED)
-		 AC_CHECKING(...making protected library...)
-else
-		 AC_CHECKING(...making trusted library...)
-fi
-if test "$enable_nocell" = yes -o "$enable_nocell" = on ; then
-		 AC_DEFINE(NOCELL)
-		 AC_CHECKING(...ipcs standalone - no cell...)
-else
-		 AC_CHECKING(...ipcs part of a cell...)
-fi
 
 dnl Check for Sybase
 AC_MSG_CHECKING(for SYBASE open/client)
@@ -321,6 +310,7 @@ AC_SUBST(LIBPATH)
 AC_SUBST(MAKEBINDIR)
 AC_SUBST(MAKELIBDIR)
 AC_SUBST(MAKEUIDDIR)
+AC_SUBST(uiddir)
 AC_SUBST(MAKEETCDIR)
 AC_SUBST(MAKEJAVADIR)
 AC_SUBST(LDSHARE)
@@ -353,8 +343,6 @@ AC_SUBST(XM_LIBS)
 AC_SUBST(LD)
 AC_SUBST(FOR_LDFLAGS)
 AC_SUBST(SIZEOF_INT_P)
-AC_LINK_FILES(ipcs/include/ipcs, include/ipcs)
-AC_LINK_FILES(include/config.h, ipcs/include/ipcs/config.h)
 AC_OUTPUT(Makefile
 envsyms
 actions/Makefile 
@@ -364,12 +352,6 @@ d3dshr/Makefile
 dwscope/Makefile 
 idlmdsevent/Makefile
 idlsql/Makefile
-ipcs/Makefile 
-ipcs/lib/Makefile 
-ipcs/grandpa/Makefile 
-ipcs/netmailer/Makefile 
-ipcs/applications/Makefile 
-ipcs/events/Makefile 
 javamds/Makefile 
 javascope/Makefile
 javatraverser/Makefile
