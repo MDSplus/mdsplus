@@ -1722,7 +1722,7 @@ int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
 
 int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
 {
-  int status;
+  int status = 1;
   int i, j, use_local;    
   int name_already_in_use;
   char *eventnam;
