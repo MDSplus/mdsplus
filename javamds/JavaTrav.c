@@ -79,12 +79,11 @@ struct descriptor_xd *getDeviceFields(char *deviceName)
 
 static void RaiseException(JNIEnv *env, char *msg, int status)
 {
-    char fullMsg[512];
+    char fullMsg[2048];
    jclass exc = (*env)->FindClass(env, "DatabaseException");
-
    sprintf(fullMsg, "%d:%s", status, msg);
-	(*env)->ExceptionClear(env);
-   (*env)->ThrowNew(env, exc, fullMsg);
+  (*env)->ExceptionClear(env);
+  (*env)->ThrowNew(env, exc, fullMsg);
    /* //free(msg);*/
 }
  
@@ -152,9 +151,9 @@ static char buf[1000];
  /*  //printf("Aperto\n");*/
 
 /*//report(MdsGetMsg(status));*/
-sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));
+//sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));
   if(!(status & 1))
-    RaiseException(env, buf, status);/*//MdsGetMsg(status));*/
+    RaiseException(env, MdsGetMsg(status), status);/*//MdsGetMsg(status));*/
   return 0;
 
 }
