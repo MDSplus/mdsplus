@@ -758,7 +758,7 @@ MitDevices.exports: MitDevices.def
 # Support for libdc1394 connected cameras
 #
 @DC1394_SUPPORT@ : dc1394_support.o
-	$(LD) -o $@ @LINKSHARED@  dc1394_support.o $(LIBDC1394_LIBS)
+	$(LD) -o $@ @LINKSHARED@  dc1394_support.o $(LIBDC1394_LIBS) $(LIBS)
 
 
 dc1394_support.o : dc1394_support.c
