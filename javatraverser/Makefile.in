@@ -39,6 +39,7 @@ WE7116Setup.java \
 WE7275Setup.java \
 WEGroupSetup.java \
 RFXControlSetup.java \
+T2ControlSetup.java \
 TR32Setup.java
 
 SOURCES = ActionData.java\
