@@ -2,13 +2,10 @@
 #include <string.h>
 #include  <stdlib.h>
 
-#define Dummy(name,status)\
-int name()\
-{\
-  int stat = status;\
-  if (!(stat & 1))\
-    printf("%s not currently implemented\n",#name);\
-  return stat;\
+int MdsEventCan()
+{
+  int stat = 0;
+  if (!(stat & 1))
+    printf("%s not currently implemented\n","MdsEventCan");
+  return stat;
 }
-
-Dummy(MdsEventCan, 0)

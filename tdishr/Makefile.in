@@ -111,7 +111,7 @@ install:
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@  -lTreeShr -lMdsShr $(LIBS)
 
 @MAKELIBDIR@libTdiShr.a : $(OBJECTS)
-	$(AR) -r $@ $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
 @MAKELIBDIR@ :

@@ -58,11 +58,11 @@ install:
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) 
 
 @MAKELIBDIR@libMdsIpShr.a : $(OBJECTS)
-	$(AR) -r $@ $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
 @MAKELIBDIR@libMdsIpUtil.a : mdsiputil.o
-	$(AR) -r $@ mdsiputil.o
+	$(AR) -cr $@ mdsiputil.o
 	@RANLIB@ $@
 
 @MAKELIBDIR@ :

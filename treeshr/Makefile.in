@@ -59,7 +59,7 @@ install:
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsShr $(LIBS)
 
 @MAKELIBDIR@libTreeShr.a : $(OBJECTS)
-	$(AR) -r $@ $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
 @MAKELIBDIR@ :

@@ -51,7 +51,7 @@ install:
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS)  -L@MAKELIBDIR@ -lipcs $(LIBS)
 
 @MAKELIBDIR@libMdsShr.a : $(OBJECTS)
-	$(AR) -r $@ $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
 @MAKELIBDIR@ :

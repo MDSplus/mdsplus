@@ -105,7 +105,7 @@ install:
            -L@MAKELIBDIR@ -lMdsShr -lTdiShr -lTreeShr $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS)
 
 @MAKELIBDIR@libXmdsShr.a : $(OBJECTS)
-	$(AR) -r $@ $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
 @MAKELIBDIR@xmdsuil.wmd : $(WMD_RULE)
