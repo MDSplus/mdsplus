@@ -1,8 +1,0 @@
-LIBRARY	Mdsdcl
-EXPORTS
-;
-mdsdcl_do_command
-mdsdcl_get_input
-mdsdcl_get_input_nosymbols
-mdsdcl_set_command
-mdsdcl_ctrl_address
