@@ -146,7 +146,7 @@ char *TranslateLogical(char *pathname)
 int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag)
 {
   char *cmd_c = MdsDescrToCstring(cmd);
-  int status = _spawnlp(waitflag ? _P_WAIT : _P_NOWAIT, cmd_c, cmd_c, NULL);
+  int status = _spawnlp(waitFlag ? _P_WAIT : _P_NOWAIT, cmd_c, cmd_c, NULL);
   free(cmd_c);
   return (status == 0);
 }
