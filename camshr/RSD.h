@@ -18,7 +18,7 @@ typedef struct {
 	__u8	eom        : 1;
 	__u8	fm         : 1;
 
-	__u8	information_long[4];
+	__u32	information_long;
 
 	__u8	sense_length;
 
@@ -52,7 +52,6 @@ typedef struct {
 		} csr;
 	} u1;
 
-        __u16    reserved_2;
 
 	union {
 		__u32				staesr;
