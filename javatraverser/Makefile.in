@@ -70,9 +70,9 @@ CHVPSSetup.java\
 CHVPS_SETSetup.java\
 RFXParametersSetup.java\
 CAMERASetup.java\
-FLU_GAINSetup.java
-
-
+FLU_GAINSetup.java\
+DFLUSetupSetup.java\
+EM_FLU_TESTSetup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
@@ -182,7 +182,7 @@ WithUnitsData.java\
 jTraverser.java\
 DecompileTree.java\
 CompileTree.java \
-LoadsPulse.java
+LoadPulse.java
 
 GIFS = DeviceApply.gif \
        DeviceChoice.gif \
