@@ -817,16 +817,27 @@ static void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, c
 #define OU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,unsigned int,pb,numb,sprintf(text,"%#x%08x%08x%08x",ip[3],ip[2],ip[1],ip[0]);ip +=4)
 #define Q_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,unsigned int,pb,numb,sprintf(text,"%#x%08x",ip[1],ip[0]);ip += 2)
 #define O_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,unsigned int,pb,numb,sprintf(text,"%#x%08x%08x%08x",ip[3],ip[2],ip[1],ip[0]);ip +=4)
+#if DTYPE_F == DTYPE_NATIVE_FLOAT
 #define F_T(lena,pa,lenb,pb,numb)   FLOAT_TO_TEXT(DTYPE_F,pa,pb,numb,lenb,'E'); status=1
 #define FS_T(lena,pa,lenb,pb,numb)  FLOAT_TO_TEXT(DTYPE_FS,pa,pb,numb,lenb,'S'); status=1
 #define D_T(lena,pa,lenb,pb,numb)   DOUBLE_TO_TEXT(DTYPE_D,pa,pb,numb,lenb,'D'); status=1
-#define G_T(lena,pa,lenb,pb,numb)   DOUBLE_TO_TEXT(DTYPE_G,pa,pb,numb,lenb,'G'); status=1
 #define FT_T(lena,pa,lenb,pb,numb)  DOUBLE_TO_TEXT(DTYPE_FT,pa,pb,numb,lenb,'T'); status=1
 #define FC_T(lena,pa,lenb,pb,numb)  FLOATC_TO_TEXT(DTYPE_F,pa,pb,numb,lenb,'E'); status=1
 #define FSC_T(lena,pa,lenb,pb,numb) FLOATC_TO_TEXT(DTYPE_FS,pa,pb,numb,lenb,'S'); status=1
 #define DC_T(lena,pa,lenb,pb,numb)  DOUBLEC_TO_TEXT(DTYPE_D,pa,pb,numb,lenb,'D'); status=1
-#define GC_T(lena,pa,lenb,pb,numb)  DOUBLEC_TO_TEXT(DTYPE_G,pa,pb,numb,lenb,'G'); status=1
 #define FTC_T(lena,pa,lenb,pb,numb) DOUBLEC_TO_TEXT(DTYPE_FT,pa,pb,numb,lenb,'T'); status=1
+#else
+#define F_T(lena,pa,lenb,pb,numb)   FLOAT_TO_TEXT(DTYPE_F,pa,pb,numb,lenb,'F'); status=1
+#define FS_T(lena,pa,lenb,pb,numb)  FLOAT_TO_TEXT(DTYPE_FS,pa,pb,numb,lenb,'E'); status=1
+#define D_T(lena,pa,lenb,pb,numb)   DOUBLE_TO_TEXT(DTYPE_D,pa,pb,numb,lenb,'V'); status=1
+#define FT_T(lena,pa,lenb,pb,numb)  DOUBLE_TO_TEXT(DTYPE_FT,pa,pb,numb,lenb,'D'); status=1
+#define FC_T(lena,pa,lenb,pb,numb)  FLOATC_TO_TEXT(DTYPE_F,pa,pb,numb,lenb,'F'); status=1
+#define FSC_T(lena,pa,lenb,pb,numb) FLOATC_TO_TEXT(DTYPE_FS,pa,pb,numb,lenb,'E'); status=1
+#define DC_T(lena,pa,lenb,pb,numb)  DOUBLEC_TO_TEXT(DTYPE_D,pa,pb,numb,lenb,'V'); status=1
+#define FTC_T(lena,pa,lenb,pb,numb) DOUBLEC_TO_TEXT(DTYPE_FT,pa,pb,numb,lenb,'D'); status=1
+#endif
+#define G_T(lena,pa,lenb,pb,numb)   DOUBLE_TO_TEXT(DTYPE_G,pa,pb,numb,lenb,'G'); status=1
+#define GC_T(lena,pa,lenb,pb,numb)  DOUBLEC_TO_TEXT(DTYPE_G,pa,pb,numb,lenb,'G'); status=1
 /******* Text to Text ***************/
 #define TEXT_TO_TEXT(pa,lena,pb,lenb,numb) \
   {char *ip = (char*)pa; char *op = (char *)pb; int i=numb; while(i-- > 0) {\
