@@ -1,4 +1,5 @@
-PARTS = mdsshr \
+PARTS = cdu \
+	mdsshr \
 	treeshr \
 	tdishr \
 	tditest \
