@@ -43,6 +43,8 @@
 #include <strroutines.h>
 #include <libroutines.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
 static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci);

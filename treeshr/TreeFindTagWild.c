@@ -36,6 +36,8 @@ TreeFindTagEnd(void **ctx);
 #include <stdlib.h>
 #include <string.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern void *DBID;
 typedef struct tag_search
 {

@@ -62,6 +62,7 @@ typedef ARRAY_COEFF(char, 1) array_coef;
 #pragma member_alignment restore
 #endif
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
   int       MdsGet1DxA(struct descriptor_a * in_ptr, unsigned short *length_ptr, unsigned char *dtype_ptr,
 			            struct descriptor_xd *out_xd)

@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define LibVM_FIRST_FIT      1
 #define LibVM_BOUNDARY_TAGS  1
 #define LibVM_EXTEND_AREA    32

@@ -12,6 +12,7 @@
 #include <starlet.h>
 #endif
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define read_nci \

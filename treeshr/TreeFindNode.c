@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern void *DBID;
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))

@@ -37,6 +37,8 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 #include <strroutines.h>
 #include <mds_stdarg.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 #define  count(num) va_start(incrmtr, nid_dsc); \
                      for (num=1; (num < 256) && (va_arg(incrmtr, struct descriptor *) != MdsEND_ARG);  num++)
   

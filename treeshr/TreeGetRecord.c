@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 

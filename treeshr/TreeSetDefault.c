@@ -1,6 +1,8 @@
 #include <treeshr.h>
 #include "treeshrp.h"
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern void *DBID;
 
 int TreeSetDefault(char *path, int *nid) { return _TreeSetDefault(DBID,path,nid);}

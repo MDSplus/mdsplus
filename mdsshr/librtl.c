@@ -30,7 +30,7 @@ void __MB(){return;}
 #include <libroutines.h>
 #include <mds_stdarg.h>
 #include <librtl_messages.h>
-
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #ifndef va_count
 #define  va_count(narg) va_start(incrmtr, first); \
                         for (narg=1; (narg < 256) && (va_arg(incrmtr, struct descriptor *) != MdsEND_ARG); narg++)
