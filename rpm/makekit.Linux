@@ -1,0 +1,6 @@
+#/bin/sh
+#
+mv $HOME/mdsplus $HOME/mdsplus-1.0
+( cd $HOME ; tar zcf $HOME/rpm/SOURCES/mdsplus-1.0.tar.gz --exclude CVS mdsplus-1.0/ )
+mv $HOME/mdsplus-1.0 $HOME/mdsplus
+rpm -ba $HOME/mdsplus/rpm/mdsplus.rpm.spec
