@@ -30,7 +30,7 @@
 #include <vxWorks.h>
 #include <ioLib.h>
 #define I_NREAD FIONREAD
-#elif !defined(__sparc__)
+#elif !defined(__sparc__) && !defined(__QNX__)
 #include <stropts.h>
 #endif
 #endif
@@ -42,6 +42,8 @@
 #elif defined(_WIN32)
 #include <errno.h>
 #include <time.h>
+#elif defined (__QNX__)
+#include <errno.h>
 #else
 #ifndef HAVE_VXWORKS_H
 #include <sys/errno.h>
