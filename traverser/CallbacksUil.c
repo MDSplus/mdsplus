@@ -546,7 +546,7 @@ static ListTreeItem *FindParentItemByNid(Widget tree, int nid)
 static ListTreeItem *FindChildItemByNid(Widget tree, ListTreeItem *parent, int nid)
 {
   ListTreeItem *itm;
-  Boolean found;
+  Boolean found = 0;
 
   if (nid==0) return parent;
   for (itm=parent->firstchild; itm && !found; ) {
