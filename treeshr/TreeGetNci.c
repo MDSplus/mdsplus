@@ -26,7 +26,6 @@
 #define break_on_no_node if (!node_exists) {status = TreeNNF; break; }
 #define set_retlen(length) if (itm->buffer_length < (int)length) { status = TreeBUFFEROVF; break; } else retlen=length
 
-static int IsChild(NODE *node);
 static char *GetPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs);
 static const char *nonode = "<no-node>   ";
 static int OpenNciR(TREE_INFO *info);
@@ -216,7 +215,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 	  case NciPARENT_RELATIONSHIP:
 		  break_on_no_node;
 		  set_retlen(4);
-		  *(unsigned int *) itm->pointer = (IsChild(node) & 1) ? NciK_IS_CHILD : NciK_IS_MEMBER;
+		  *(unsigned int *) itm->pointer = (TreeIsChild(node) & 1) ? NciK_IS_CHILD : NciK_IS_MEMBER;
 		  break;
 	  case NciCONGLOMERATE_NIDS:
 		  break_on_no_node;
@@ -337,7 +336,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 			  for (; node->parent; node = parent_of(node))
 			  {
 				  int i;
-				  part[0] = IsChild(node) ? '.' : ':';
+				  part[0] = TreeIsChild(node) ? '.' : ':';
 				  for (i=0;i<sizeof(NODE_NAME) && node->name[i] != ' ';i++);
 				  strncpy(&part[1],node->name,i);
 				  part[i+1]='\0';
@@ -387,7 +386,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 				  for (ancestor = node; ancestor->parent && (default_node != ancestor); ancestor = parent_of(ancestor))
 				  {
 					  int i;
-					  part[0] = IsChild(ancestor) ? '.' : ':';
+					  part[0] = TreeIsChild(ancestor) ? '.' : ':';
 					  for (i=0;i<sizeof(NODE_NAME) && ancestor->name[i] != ' ';i++);
 					  strncpy(&part[1],ancestor->name,i);
 					  part[i+1]='\0';
@@ -526,7 +525,7 @@ static char *GetPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs)
 			temp = part;
 			part = string;
 			string = temp;
-			part[0] = IsChild(node) ? '.' : ':';
+			part[0] = TreeIsChild(node) ? '.' : ':';
 			for (i=0;i<sizeof(NODE_NAME) && node->name[i] != ' ';i++);
 			strncpy(&part[1],node->name,i);
 			part[i+1]='\0';
@@ -549,7 +548,7 @@ static char *GetPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs)
 	return string;
 }
 
-static int IsChild(NODE *node)
+int TreeIsChild(NODE *node)
 {
 	NODE *n = 0;
 	if (node->parent)
