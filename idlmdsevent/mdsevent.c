@@ -40,8 +40,10 @@ typedef struct _event_struct { int stub_id;
                                char name[28];
                                char value[12];
                                int loc_event_id;
+#ifdef WIN32
 							   void *thread_handle;
 							   DWORD thread_id;
+#endif
                                struct _event_struct *next;
                              } EventStruct;
 
@@ -93,8 +95,10 @@ int IDLMdsEventCan(int argc, void * *argv)
     for (e=EventList,p=0;e && e->loc_event_id != eventid; p=e,e=e->next);
     if (e)
 	{
+#ifdef WIN32
 		if (e->thread_handle)
 			TerminateThread(e->thread_handle, 0);
+#endif
 		if (p)
 			p->next = e->next;
 		else
