@@ -24,6 +24,7 @@ public fun OAM01__calib ( as_is _nid, optional _method )
 
 
 
+
 	_status = 1 ;
 	_gpib_ctrl = '' ;
 	_gpib_ctrl = if_error ( data ( DevNodeRef ( _nid, __GPIB_CTRL ) ), _status = 0 ) ;

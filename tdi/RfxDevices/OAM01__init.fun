@@ -23,6 +23,7 @@ public fun OAM01__init ( as_is _nid, optional _method )
 
 
 
+
 	/* Ricavo il nid della testa del conglomerato */
 
 	_nid_head = getnci ( _nid, 'nid_number' ) ;
