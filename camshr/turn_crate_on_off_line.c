@@ -36,7 +36,12 @@ int turn_crate_on_off_line( char *crate_name, int state )
 	char					controller[12], *pController;
 	short 					SCCdata;
 	int						i, status = SUCCESS;		// optimistic ...
+        int idx;
 	TranslatedIosb 			iosb;
+        extern struct CRATE *CRATEdb;
+        int online;
+        int enhanced;
+        int crateStatus;
 
 	if( MSGLVL(FUNCTION_NAME) )
 		printf( "turn_crate_on_off_line('%s'=>%s)\n", crate_name, (state == ON) ? "ON" : "off" );
@@ -50,7 +55,7 @@ int turn_crate_on_off_line( char *crate_name, int state )
 	sprintf( &controller[0], "%.6s:N30", crate_name );
 
 	// lookup name -- make sure a valid device
-	if( lookup_entry( CRATE_DB, crate_name ) < 0 ) {		// lookup actual device num
+	if( (idx = lookup_entry( CRATE_DB, crate_name )) < 0 ) {		// lookup actual device num
 		if( MSGLVL(IMPORTANT) )
 			fprintf( stderr, "no such crate in 'crate.db'\n" );
 
@@ -81,6 +86,16 @@ int turn_crate_on_off_line( char *crate_name, int state )
 					16,				// mem == 16-bit data
 					&iosb			// *iosb
 					);
+        if (status & 1)
+	{
+ 	  status = get_crate_status(pController, &crateStatus);
+  	  online = ((crateStatus & 0x1000) != 0x1000)    ? TRUE  : FALSE;
+	  if( !crateStatus || crateStatus == 0x3 )
+		online = FALSE;
+          CRATEdb[idx].online = online ? '1' : '0';
+  	  enhanced = (online && (crateStatus & 0x4000)) ? TRUE  : FALSE;
+          CRATEdb[idx].enhanced = enhanced ? '1' : '0';          
+        }
 
 //-----------------------------------------------------------
 TurnCrateOnOffLine_Exit:

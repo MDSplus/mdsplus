@@ -11,13 +11,14 @@
 
 //-------------------------------------------------------------------------
 // form of data in crate.db:
-// 		GKB509:001:2
+// 		GKB509:001:2:1:1
 //      ^^^^^^ ^^^ ^
-//      ||||||  |  |
-// 		GK||||	|  |  == constants
-// 		  B|||	|  |  == scsi host adapter
-// 		   5||	|  |  == scsi id
-// 		    09 / \ |  == camac crate number
+//      ||||||  |  |||  |  | | \ online (1=online, 0=not) 
+//              |  |||  |  | \ enhanced (1=enhanced, 0=not)
+// 		GK||||	|  |      == constants
+// 		  B|||	|  |      == scsi host adapter
+// 		   5||	|  |      == scsi id
+// 		    09 / \ |      == camac crate number
 //             001 |  == dev/sg#
 //                 2  == type, e.g. KineticSystems
 //-------------------------------------------------------------------------
@@ -41,7 +42,11 @@ struct CRATE {
 	char				DSFname[3];	// devive special file name, eg '/dev/sg#', eg 001
 	char				r2;			// ':'
 	char				HwyType;	// e.g. Jorway, KineticSystems
-	char				r3;			// room for '\n'
+        char                            r3;             // ':'
+        char                            enhanced;             // '1'=enhanced '0'=not
+        char                            r4;             // ':'
+        char                            online;             // '1'=online '0'=not
+	char				r5;			// room for '\n'
 };
 #define	CRATE_ENTRY	sizeof(struct CRATE)
 
@@ -51,6 +56,8 @@ struct Crate_ {
 	char	name[7];
 	int		device;
 	int		type;
+        int             enhanced;
+        int             online;
 } Crate;
 
 #endif

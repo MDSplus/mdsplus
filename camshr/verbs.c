@@ -773,7 +773,7 @@ int AddCrate()
 	}		// else OK
 
 	// make an entry line, with online and enhanced set as undefined
-	sprintf( line, "%-.6s:...:.\n",
+	sprintf( line, "%-.6s:...:.:.:.\n",
 		phy_name.pointer
 		);
 

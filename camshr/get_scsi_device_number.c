@@ -31,7 +31,7 @@
 // and return O/S specific device number, eg '/dev/sg#'
 // returns '/dev/sg#' value; if non-existant, parse_crate_db() returns -1
 //-------------------------------------------------------------------------
-int get_scsi_device_number( char *highway_name )
+int get_scsi_device_number( char *highway_name, int *enhanced, int *online )
 {
 	char				highway[5];						// temp copy
 	int					device_num, i;
@@ -63,6 +63,8 @@ int get_scsi_device_number( char *highway_name )
 
 	parse_crate_db( CRATEdb+i, &crate );				// get data from db
 	device_num = crate.device;							// extract dev num from db
+        *enhanced = crate.enhanced;
+        *online = crate.online;
 
 GetScsiDeviceNumber_Exit:
 	if( MSGLVL(DETAILS) ) {

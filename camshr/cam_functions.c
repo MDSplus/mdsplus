@@ -548,6 +548,8 @@ static int JorwayDoIo(
         int reqbytcnt = 0;
         SenseData sense;
         char sensretlen;
+        int online;
+        int enhanced;
 	CDBCamacDataCommand( DATAcommand );
 	CDBCamacNonDataCommand( NONDATAcommand );
 
@@ -556,14 +558,18 @@ static int JorwayDoIo(
 //printf( "%s(iosb is %sNULL)\n", J_ROUTINE_NAME, (iosb)?"NOT ":"" );		// [2002.12.13]
 
 	sprintf(dev_name, "GK%c%d", Key.scsi_port, Key.scsi_address);
-        if( (scsiDevice = get_scsi_device_number( dev_name )) < 0 ) {
+        if( (scsiDevice = get_scsi_device_number( dev_name, &enhanced, &online )) < 0 ) {
 		if( MSGLVL(IMPORTANT) )
 			fprintf( stderr, "%s(): error -- no scsi device found for '%s'\n", J_ROUTINE_NAME, dev_name );
 
 		status = NO_DEVICE;
 		goto JorwayDoIo_Exit;
 	}
+        if (!online && Key.slot != 30)
+          return CamOFFLINE;
 
+        if (!Enhanced)
+          enhanced = 0;
 	if( MSGLVL(DETAILS) )
 		printf( "%s(): device '%s' = '/dev/sg%d'\n", J_ROUTINE_NAME, dev_name, scsiDevice );
 
@@ -578,7 +584,7 @@ static int JorwayDoIo(
 		DATAcommand.f     = F;
 		DATAcommand.bs    = Mem == 24;
 		DATAcommand.n     = Key.slot;
-		DATAcommand.m     = JORWAYMODE(dmode, Enhanced);
+		DATAcommand.m     = JORWAYMODE(dmode, enhanced);
 		DATAcommand.a     = A;
 		DATAcommand.sncx  = 0;
 		DATAcommand.scs   = 0;

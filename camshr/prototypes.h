@@ -129,7 +129,7 @@ int  get_crate_status( char *crate_name, int *crate_status );
 int  get_db_file_size( char *FileName );
 int  get_file_count( int dbType );
 char *get_file_name( char *filename );
-int  get_scsi_device_number( char *highway_name );
+int  get_scsi_device_number( char *highway_name, int *enhanced, int *online );
 int  issort( void *data, int size, int esize,
 			 int (*compare)(const void *key1, const void *key2));
 int JorwayTranslateIosb( SenseData *sense, int scsi_status );
