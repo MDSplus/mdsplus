@@ -136,15 +136,15 @@ static void check_nid(PINO_DATABASE *dblist, NID *nid, int *count)
       node_to_nid(dblist, descendent, (&nid));
       check_nid(dblist, &nid, count);
     }
-    if (node->conglomerate_elt)
+    if (swapshort((char *)&node->conglomerate_elt))
     {
       NID       elt_nid;
       NODE     *elt_node;
       unsigned short elt_num = 1;
-      elt_nid.node = nid->node - node->conglomerate_elt + 1;
+      elt_nid.node = nid->node - swapshort((char *)&node->conglomerate_elt) + 1;
       elt_nid.tree = nid->tree;
       nid_to_node(dblist, (&elt_nid), elt_node);
-      for (; elt_node->conglomerate_elt == elt_num; elt_nid.node++, elt_num++, elt_node++)
+      for (; swapshort((char *)&elt_node->conglomerate_elt) == elt_num; elt_nid.node++, elt_num++, elt_node++)
 	check_nid(dblist, &elt_nid, count);
     }
   }
@@ -195,6 +195,7 @@ extern void       _TreeDeleteNodeExecute(void *dbid)
   TREE_EDIT *edit = dblist->tree_info->edit;
   static int sizeof_nci = sizeof(NCI);
   static int sizeof_nodename = sizeof(node->name);
+  static int zero = 0;
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
@@ -270,7 +271,7 @@ extern void       _TreeDeleteNodeExecute(void *dbid)
     else
       memcpy(edit->nci + nid.node - edit->first_in_mem, &empty_nci, sizeof(struct nci));
     memcpy(node->name,"deleted node",sizeof(node->name));
-    node->conglomerate_elt = 0;
+    LoadShort(zero,node->conglomerate_elt);
     node->member = 0;
     node->brother = 0;
     node->usage = 0;

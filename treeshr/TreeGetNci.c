@@ -172,7 +172,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 	  case NciCONGLOMERATE_ELT:
 		  break_on_no_node;
 		  set_retlen(sizeof(node->conglomerate_elt));
-		  if (node->conglomerate_elt)
+		  if (swapshort((char *)&node->conglomerate_elt))
 			  *(unsigned short *) itm->pointer = swapshort((char *)&node->conglomerate_elt);
 		  else
 			  *(unsigned short *) itm->pointer = 0;
@@ -228,7 +228,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  break;
 	  case NciCONGLOMERATE_NIDS:
 		  break_on_no_node;
-		  if (node->conglomerate_elt)
+		  if (swapshort((char *)&node->conglomerate_elt))
 		  {
 			  out_nid = nid;
 			  out_nid.node -= (swapshort((char *)&node->conglomerate_elt) - 1);
@@ -314,7 +314,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  break;
 	  case NciORIGINAL_PART_NAME:
 		  break_on_no_node;
-		  if (node->conglomerate_elt)
+		  if (swapshort((char *)&node->conglomerate_elt))
 		  {
                           struct descriptor string_d = {0, DTYPE_T, CLASS_D, 0};
 			  DESCRIPTOR_NID(nid_dsc,0);
