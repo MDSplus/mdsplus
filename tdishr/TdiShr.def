@@ -1,8 +1,14 @@
 LIBRARY	TdiShr
+
 CODE	PRELOAD MOVEABLE DISCARDABLE
+
 DATA	PRELOAD SINGLE
+
 EXPORTS
+
 ;
+
+CvtConvertFloat
 OpcRoprand
 OpcRydberg
 OpcShot
@@ -797,11 +803,13 @@ TdiReplicate
 TdiResetPrivate
 TdiResetPublic
 TdiReshape
+TdiRestoreContext
 TdiReturn
 TdiRewind
 TdiRms
 TdiRoutineOf
 TdiRrSpacing
+TdiSaveContext
 TdiScale
 TdiScan
 TdiSelectedIntKind
