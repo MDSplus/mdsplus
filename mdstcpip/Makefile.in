@@ -111,3 +111,6 @@ endif
 
 @MAKEETCDIR@mdsip.hosts : mdsip.hosts
 	cp mdsip.hosts @MAKEETCDIR@mdsip.hosts
+
+@MAKEBINDIR@mkdirhier : mkdirhier
+	cp mkdirhier @MAKEBINDIR@mkdirhier
