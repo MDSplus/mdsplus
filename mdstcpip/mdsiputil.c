@@ -711,17 +711,17 @@ static void FlipData(Message *m)
   switch (m->h.dtype)
   {
 #ifndef __CRAY
-    case DTYPE_FLOAT:          for (i=0,ptr=m->bytes;i<num;i++,ptr += m->h.length) FlipBytes(m->h.length,ptr); break;
+    case DTYPE_FLOAT:          /* for (i=0,ptr=m->bytes;i<num;i++,ptr += m->h.length) FlipBytes(m->h.length,ptr); break; */
     case DTYPE_DOUBLE:
     case DTYPE_COMPLEX:
-    case DTYPE_COMPLEX_DOUBLE: for (i=0,ptr=m->bytes;i<(num * m->h.length/4);i++,ptr += 4) FlipBytes(4,ptr); break;
+    case DTYPE_COMPLEX_DOUBLE: /* for (i=0,ptr=m->bytes;i<(num * m->h.length/4);i++,ptr += 4) FlipBytes(4,ptr); break; */
 #endif
+    case DTYPE_LONGLONG:
+    case DTYPE_ULONGLONG:  /* for (i=0,ptr=m->bytes;i<(num * m->h.length/4);i++,ptr += 4) FlipBytes(4,ptr); break; */
     case DTYPE_USHORT:
     case DTYPE_SHORT:  
     case DTYPE_ULONG:
     case DTYPE_LONG:       for (i=0,ptr=m->bytes;i<num;i++,ptr += m->h.length) FlipBytes(m->h.length,ptr); break;
-    case DTYPE_LONGLONG:
-    case DTYPE_ULONGLONG:  for (i=0,ptr=m->bytes;i<(num * m->h.length/4);i++,ptr += 4) FlipBytes(4,ptr); break;
   }
 }
 
