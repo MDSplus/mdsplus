@@ -166,7 +166,7 @@ static SOCKET AddConnection(char *server)
    SOCKET nsock;
 	
 /* Extract the ip and port numbers */
-   if( (status = HostToIp(server,&ip,&port)) == INVALID_SOCKET)  {
+   if( (status = HostToIp((server[0] == '_') ? &server[1] : server,&ip,&port)) == INVALID_SOCKET)  {
       printf("hostname [%s] invalid, No Connection\n",server);
       return(INVALID_SOCKET);
    }
