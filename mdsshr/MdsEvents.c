@@ -756,7 +756,7 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
     initializeLocalRemote(1, &use_local);
     if(num_receive_servers > 0)
 	eventAstRemote(eventnam, astadr, astprm, eventid);
-    if(!use_local) return;
+    if(!use_local) return 1;
 
 
     /* Local stuff */
@@ -941,7 +941,7 @@ static int sendRemoteEvent(char *evname, int data_len, char *data)
 	routine_d = {DTYPE_T, CLASS_S, 8, "MdsValue"};
     int status, i;
     char expression[256];
-    EMPTYXD(ansarg);
+    struct descrip ansarg;
     struct descrip desc;
 
 /*struct descrip { char dtype;
@@ -955,7 +955,7 @@ static int sendRemoteEvent(char *evname, int data_len, char *data)
     desc.ptr = data;
     desc.length = data_len;
     desc.ndims = 0;
-
+    ansarg.ptr = 0;
     sprintf(expression, "setevent(\"%s\", $)", evname);
     status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
@@ -964,7 +964,7 @@ static int sendRemoteEvent(char *evname, int data_len, char *data)
 	{
 	    curr_rtn = rtn;
 	    if(send_sockets[i]) status = (*curr_rtn) (send_sockets[i], expression, &desc, &ansarg, NULL);
-	    MdsFree1Dx(&ansarg, 0);
+	    if (ansarg.ptr) free(ansarg.ptr);
 	}
     }
     return status;
