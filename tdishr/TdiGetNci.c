@@ -28,9 +28,6 @@
 #define EOL {0,NciEND_OF_LIST,0,0}
 #define NID_NUMBER -1
 #define RECORDIDX -2
-#ifndef vxWorks
-#define const
-#endif
 #include <string.h>
 #include <stdlib.h>
 #include <ncidef.h>
@@ -227,7 +224,7 @@ unsigned short                  maxlen = 0;
 	if (status & 1) status = TdiData(list[1], &tmp MDS_END_ARG);
 	if (status & 1) status = TdiUpcase(&tmp, &string MDS_END_ARG);
 	if (status & 1) {
-		key_ptr = (struct item *)bsearch(&string, table, numtab, siztab, (int (*)(const void *,const void *))compare);
+	  key_ptr = (struct item *)bsearch(&string, table, numtab, siztab, (int (*)(const void *,const void *))compare);
 		if (key_ptr == 0) status = TdiBAD_INDEX;
 	}
 	StrFree1Dx(&string);
