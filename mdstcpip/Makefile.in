@@ -15,11 +15,12 @@ SOURCES = \
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = mdsipshr.export
 
-all : @MAKEBINDIR@ @MAKELIBDIR@ @MAKEETCDIR@ \
+all : @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ \
+      @MAKEBINDIR@ @MAKELIBDIR@ @MAKEETCDIR@ \
       @MAKEBINDIR@mdsiptest @MAKEBINDIR@mdsip \
       @MAKEBINDIR@mdsipd @MAKEETCDIR@mdsip.hosts \
-      @MAKELIBDIR@libMdsIpShr.a @MAKELIBDIR@libMdsIpUtil.a \
-      @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@
+      @MAKELIBDIR@libMdsIpShr.a @MAKELIBDIR@libMdsIpUtil.a
+      
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES) mdsip_u.c
