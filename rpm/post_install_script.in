@@ -44,7 +44,7 @@ then
   GPT_LOCATION=$MDSPLUS_DIR
   export GPT_LOCATION
   export GLOBUS_LOCATION
-  $GPT_LOCATION/sbin/gpt-postinstall --force
+  $GPT_LOCATION/sbin/gpt-postinstall --force >/dev/null 2>/dev/null
   if [ ! -r $MDSPLUS_DIR/local/roam.env ]
   then
     echo "ROAM_SERVER roam.fusiongrid.org" > $MDSPLUS_DIR/local/roam.env
