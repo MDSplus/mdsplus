@@ -71,7 +71,9 @@ STATIC_ROUTINE int TdiInterlude  (int opcode, struct descriptor **newdsc, int (*
             break;
           case DTYPE_D:
           case DTYPE_G:
-	  case DTYPE_T:
+#if SIZE_OF_INT_P == 8
+      	  case DTYPE_T:
+#endif
           case DTYPE_FC:
 	  case DTYPE_FSC:
             if (f_regs)
