@@ -7,7 +7,6 @@ import java.net.*;
 class Descriptor {
 public    static final byte MAX_DIM = 8;
 public    static final byte DTYPE_CSTRING = 14;
-public    static final byte JAVA_CLIENT = 3;
 public    static final byte DTYPE_CHAR = 6;
 public    static final byte DTYPE_SHORT = 7;
 public    static final byte DTYPE_LONG = 8;
@@ -356,15 +355,10 @@ class Mds {
 class MdsMessage extends Object
 {
 
-final byte MAX_DIM = 8;
-//final byte DTYPE_CSTRING = 14;
-final byte JAVA_CLIENT = 4;
-//final byte DTYPE_CHAR = 6;
-//final byte DTYPE_SHORT = 7;
-//final byte DTYPE_LONG = 8;
-//final byte DTYPE_FLOAT = 10;
-
- static   int msgid = 0;
+public    static final byte BIG_ENDIAN_MASK = (byte)0x80;
+public    static final byte SWAP_ENDIAN_ON_SERVER_MASK = (byte)0x40;
+public    static final byte JAVA_CLIENT = 3 | BIG_ENDIAN_MASK | SWAP_ENDIAN_ON_SERVER_MASK;
+static   int msgid = 0;
     	  int msglen;
 public    int status;
 public    short length;
@@ -376,6 +370,7 @@ public    byte client_type;
 public    byte ndims;
 public    int dims[];
 public    byte body[];
+private   boolean swap = false;
     
 public MdsMessage(String s)
 {
@@ -385,11 +380,11 @@ public MdsMessage(String s)
     nargs = 0;
     descr_idx = 0;
     ndims = 0;
-    dims = new int[MAX_DIM];
-    for(int i = 0; i < MAX_DIM; i++)
+    dims = new int[Descriptor.MAX_DIM];
+    for(int i = 0; i < Descriptor.MAX_DIM; i++)
 	dims[i] = 0;
     dtype = Descriptor.DTYPE_CSTRING;
-    client_type = (byte)(JAVA_CLIENT - 128);
+    client_type = JAVA_CLIENT;
     body = s.getBytes();
 }
 
@@ -419,7 +414,7 @@ public void Send(DataOutputStream dos) throws IOException
     dos.writeByte(dtype);
     dos.writeByte(client_type);
     dos.writeByte(ndims);
-    for(int i = 0; i < MAX_DIM; i++)
+    for(int i = 0; i < Descriptor.MAX_DIM; i++)
 	dos.writeInt(dims[i]);
     dos.write(body, 0, length);
     dos.flush();
@@ -429,24 +424,29 @@ public void Send(DataOutputStream dos) throws IOException
 	 
 public void Receive(DataInputStream dis)throws IOException
 {
+    byte msglen_b[] = new byte[4];
+    byte status_b[] = new byte[4];
+    byte length_b[] = new byte[2];
     byte bytes[];
     int i1, i2;
-    bytes = new byte[4];
-    ReadBuf(bytes, dis);
-    msglen = ToInt(bytes);
-    ReadBuf(bytes, dis);
-    status = ToInt(bytes);
-    bytes = new byte[2];
-    ReadBuf(bytes, dis);
-    length = ToShort(bytes);
+    ReadBuf(msglen_b, dis);
+    ReadBuf(status_b, dis);
+    ReadBuf(length_b, dis);
     nargs = dis.readByte();
     descr_idx = dis.readByte();
     message_id = dis.readByte();
     dtype = dis.readByte();
     client_type = dis.readByte();
+    System.out.println("Client type = "+(new Integer(client_type)).toString());
     ndims = dis.readByte();
+    swap = ((client_type & BIG_ENDIAN_MASK) != BIG_ENDIAN_MASK);
+    System.out.println(swap);
+    msglen = ToInt(msglen_b);
+    System.out.println("msglen = "+(new Integer(msglen)).toString());
+    status = ToInt(status_b);
+    length = ToShort(length_b);
     bytes = new byte[4];
-    for(int i = 0; i < MAX_DIM; i++)
+    for(int i = 0; i < Descriptor.MAX_DIM; i++)
     {
         ReadBuf(bytes, dis);
         dims[i] = ToInt(bytes);
@@ -485,28 +485,32 @@ public void Receive(DataInputStream dis)throws IOException
 }
 private int ToInt(byte bytes[]) throws IOException
 {
-    Flip(bytes, 4);
+    if (swap)
+      Flip(bytes, 4);
     ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
     DataInputStream dis = new DataInputStream(bis);
     return dis.readInt();
 }
 private short ToShort(byte bytes[]) throws IOException
 {
-    Flip(bytes, 2);
+    if (swap)
+      Flip(bytes, 2);
     ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
     DataInputStream dis = new DataInputStream(bis);
     return dis.readShort();
 }
 private float ToFloat(byte bytes[]) throws IOException
 {
-    //Flip(bytes, 4);
+    if (swap)
+      Flip(bytes, 4);
     ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
     DataInputStream dis = new DataInputStream(bis);
     return dis.readFloat();
 }
 public int[] ToIntArray() throws IOException
 {
-    Flip(body, 4);
+    if (swap)
+      Flip(body, 4);
     ByteArrayInputStream bis = new ByteArrayInputStream(body);
     DataInputStream dis = new DataInputStream(bis);
     int out[] = new int[body.length / 4];
@@ -516,7 +520,8 @@ public int[] ToIntArray() throws IOException
 }
 public short[] ToShortArray() throws IOException
 {
-    Flip(body, 2);
+    if (swap)
+      Flip(body, 2);
     ByteArrayInputStream bis = new ByteArrayInputStream(body);
     DataInputStream dis = new DataInputStream(bis);
     short out[] = new short[body.length / 2];
@@ -526,7 +531,8 @@ public short[] ToShortArray() throws IOException
 }
 public float[] ToFloatArray() throws IOException
 {
-    //Flip(body, 4);
+    if (swap)
+      Flip(body, 4);
     ByteArrayInputStream bis = new ByteArrayInputStream(body);
     DataInputStream dis = new DataInputStream(bis);
     float out[] = new float[body.length / 4];
