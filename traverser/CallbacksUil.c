@@ -417,8 +417,12 @@ static ListTreeItem *Open(Widget tree, int nid)
   int parent;
   if (nid == 0) {
     item = ListTreeFirstItem(tree);
-    if (!item->open) 
-      add_descendents(tree, item, nid);
+    if (item) {
+      if (!item->open) 
+	add_descendents(tree, item, nid);
+    }
+    else
+      item = add_item(tree, NULL, 0);  /* add the top with no parent */
     return item;
   }
   parent = parent_nid(nid);
@@ -511,7 +515,7 @@ static ListTreeItem *FindParentItemByNid(Widget tree, int nid)
   static DESCRIPTOR_NID(nid_dsc, &c_nid);
   int parent_nid;
   c_nid = nid;  
-  parent_nid = ReadInt(getnci, &nid_dsc MDS_END_ARG);
+  parent_nid = (nid==0) ? 0 : ReadInt(getnci, &nid_dsc MDS_END_ARG);
   return Open(tree,(parent_nid>0)? parent_nid : 0);
 }
 
@@ -970,6 +974,7 @@ void CloseTree( Widget w, XtPointer client_data, XtPointer call_data)
       ListTreeRefreshOff(tree);
       if ((status&1) && (top != NULL)) ListTreeDelete(tree, top);
       Init(tree);
+      ListTreeRefreshOn(tree);
     }
 }
 
