@@ -35,6 +35,7 @@ PARTS = \
         math \
         wfevent \
         setevent \
+        mdsmisc \
 	rpm \
         manpages \
         @D3D_PACKAGE@ \
