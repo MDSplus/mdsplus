@@ -24,6 +24,8 @@ public class jServer extends MdsIp {
 
   static final int ServerABORT    = 0xfe18032;
 
+  public static int doingNid;
+
   Vector retSocketsV = new Vector();
   Database mdsTree = null;
   ActionQueue actionQueue = new ActionQueue();
@@ -348,7 +350,10 @@ public class jServer extends MdsIp {
         lastTree = tree;
         lastShot = shot;
       }
-
+      doingNid = nid.getInt();
+      try {
+        Data.evaluate("DevSetDoingNid(" + doingNid + ")");
+      }catch(Exception exc){}
       try {
         name = mdsTree.getInfo(nid, 0).getFullPath();
       }
