@@ -1,0 +1,12 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MSSQLServer\Client]
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MSSQLServer\Client\DB-Lib]
+"AutoAnsiToOem"="OFF"
+"UseIntlSettings"="OFF"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MSSQLServer\Client\ConnectTo]
+"your-sqlserver-name-here"="DBNMPNTW,\\\\your-sqlserver-name-here\\pipe\\sql\\query"
+"DSQUERY"="DBNMPNTW"
+
