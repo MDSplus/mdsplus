@@ -100,7 +100,6 @@ typedef struct _mdsip_options_t
   int  shared_ctx;
   int  rcvbuf;
   int  sndbuf;
-  int  delegation;
   void *gsi_driver;
   void *tcp_driver;
   char server_type;

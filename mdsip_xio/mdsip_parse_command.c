@@ -13,7 +13,6 @@ static int help(char *command)
           "  -h       display this help information\n"
           "  -H       specifies the hostfile which maps remote users to local accounts\n"
           "           Default is /etc/mdsip.hosts\n"
-          "  -d       enable certificate delegation (not compatible with gt2 based clients)\n"
           "  -s       specifies the security level as follows:\n\n"
           "      0 use username@hostname authentication (default)\n"
           "      1 use certificates for authentication, data sent in clear\n"
@@ -42,7 +41,6 @@ int mdsip_parse_command(int argc, char **argv, mdsip_options_t *options)
   options->rcvbuf=32768;
   options->sndbuf=32768;
   options->server_type = mdsip_server_type();
-  options->delegation=0;
   if (argc < 2)
   {
     return help(argv[0]);
@@ -112,10 +110,6 @@ int mdsip_parse_command(int argc, char **argv, mdsip_options_t *options)
     else if (strcmp(argv[ctr], "-shared") == 0)
     {
       options->shared_ctx = 1;
-    }
-    else if (strcmp(argv[ctr], "-d") == 0)
-    {
-      options->delegation = 1;
     }
     else if (strcmp(argv[ctr], "-rcvbuf") == 0)
     {
