@@ -62,8 +62,8 @@ value
     DT200_PRE_TRIG :  28;
     DT200_INPUTS :  29;
     DT200_N_NODES_PER_INPUT :  5;
-    DT200_INIT_ACTION :  509;
-    DT200_STORE_ACTION :  510;
+    DT200_INIT_ACTION :  109;
+    DT200_STORE_ACTION :  110;
     FILTER_LABEL :  compound_string("Coeffs");
 
 list BaseStyle : arguments {
