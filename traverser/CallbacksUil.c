@@ -960,11 +960,41 @@ void CloseTree( Widget w, XtPointer client_data, XtPointer call_data)
 {
     Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
     ListTreeItem *top = ListTreeFirstItem(tree);
-    int status = TreeClose(NULL, NULL);
-    ListTreeRefreshOff(tree);
-    if ((status&1) && (top != NULL)) ListTreeDelete(tree, top);
-    Init(tree);
-    ListTreeRefreshOn(tree);
+    static char *getediting = "GETDBI('OPEN_FOR_EDIT') &&  GETDBI('MODIFIED')";
+    if (ReadInt(getediting MDS_END_ARG)) {
+      Widget write_dlog = XtNameToWidget(BxFindTopShell(w), "*.writeDialog");
+      XtManageChild(write_dlog);
+    }
+    else {
+      int status = TreeClose(NULL, NULL);
+      ListTreeRefreshOff(tree);
+      if ((status&1) && (top != NULL)) ListTreeDelete(tree, top);
+      Init(tree);
+      ListTreeRefreshOn(tree);
+    }
+}
+
+void WriteTree( Widget w, XtPointer client_data, XtPointer call_data)
+{
+    int status;
+    int write = *(int *)client_data;
+    if (write) {
+      status = TreeWriteTree(0, 0);
+      if (status)
+	status = TreeClose(NULL, NULL);
+    }
+    else
+      status = TreeQuitTree(0, 0);
+    if (status&1) {
+      Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
+      ListTreeItem *top = ListTreeFirstItem(tree);
+      ListTreeRefreshOff(tree);
+      if ((status&1) && (top != NULL)) ListTreeDelete(tree, top);
+      Init(tree);
+      ListTreeRefreshOn(tree);
+    } 
+    else
+      XmdsComplain(BxFindTopShell(w), "Error writing or quiting from tree");
 }
 
 void open_tree(Widget w, char *tree, int shot)
@@ -1073,14 +1103,9 @@ Boolean add_node(Widget w, ListTreeItem *parent, char *name, int usage, ListTree
   if (usage == TreeUSAGE_DEVICE) {
     status = 0;
     if (device_type) {
-      char *path = malloc(strlen(full_path)+2);
-      strcpy(path, "\\");
-      strcat(path, full_path);
       notify_on = FALSE;
-      status = TreeAddConglom(path, device_type, &new_nid);
+      status = TreeAddConglom(full_path, device_type, &new_nid);
       notify_on = TRUE;
-
-      free(path);
       if (!(status&1))
 	XmdsComplain(BxFindTopShell(w), "Error adding device");
     }

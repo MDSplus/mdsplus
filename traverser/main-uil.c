@@ -82,6 +82,7 @@ extern void SetUsage(Widget, XtPointer, XtPointer);
 extern void AddDeviceDismiss(Widget, XtPointer, XtPointer);
 extern void CreateAddDevice(Widget, XtPointer, XtPointer);
 extern void AddDevice(Widget, XtPointer, XtPointer);
+extern void WriteTree(Widget, XtPointer, XtPointer);
 
 /*
  * Function prototypes for routines located in utilities file
@@ -161,7 +162,7 @@ int main(int argc, char **argv)
     MrmHierarchy HierarchyID;
     MrmType MrmWClass;
     static char *UidFile [] = { BX_UID_FILE_NAME };
-    MRMRegisterArg NamesList[30];
+    MRMRegisterArg NamesList[31];
     Cardinal Nlac;
     Nlac = 0;
     NamesList[Nlac].name = "CloseTree";
@@ -224,6 +225,8 @@ int main(int argc, char **argv)
     NamesList[Nlac++].value = (XtPointer) CreateAddDevice;
     NamesList[Nlac].name = "AddDevice";
     NamesList[Nlac++].value = (XtPointer) AddDevice;
+    NamesList[Nlac].name = "WriteTree";
+    NamesList[Nlac++].value = (XtPointer) WriteTree;
     NamesList[Nlac].name = NULL;
     NamesList[Nlac].value = NULL;
     

@@ -136,6 +136,7 @@ procedure MessageClear();
 procedure AddDeviceDismiss();
 procedure CreateAddDevice();
 procedure AddDevice();
+procedure WriteTree(integer);
 
 list BaseStyle : arguments {
 };
@@ -214,6 +215,7 @@ object writeDialog : XmMessageDialog widget {
          managed XmPushButton pushButton15;
     };
     callbacks {
+        XmNokCallback = procedure WriteTree(1);
     };
 };
 
@@ -229,6 +231,7 @@ object pushButton15 : XmPushButton widget {
          unmanaged XmPopupMenu rightButtonMenu;
     };
     callbacks {
+        XmNactivateCallback = procedure WriteTree(0);
     };
 };
 
