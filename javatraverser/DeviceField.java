@@ -4,6 +4,7 @@ import java.awt.*;
 
 public class DeviceField extends DeviceComponent
 {
+    Data data;
     public boolean textOnly = false;
     public boolean showState = false;
     public boolean displayEvaluated = false;
@@ -84,8 +85,27 @@ public class DeviceField extends DeviceComponent
         initializing = false;
     }       
     
+    void postApply()
+    {
+        if(editable || !displayEvaluated || data == null) return; 
+        //Nothing to do if the field is not editable and displays evaulated data
+        String textString;
+        try {
+            textString = Tree.dataToString(subtree.evaluateData(data, 0));
+        }catch(Exception exc){textString = Tree.dataToString(data);}
+        if(textString != null)
+        {
+            if(textOnly && textString.charAt(0) == '"')
+                textF.setText(textString.substring(1, textString.length() - 1));
+            else
+                textF.setText(textString);
+        }
+    }
+    
+    
     protected void displayData(Data data, boolean is_on)
     {
+        this.data = data;
         initial_state = is_on;
         if(showState)
             checkB.setSelected(is_on);

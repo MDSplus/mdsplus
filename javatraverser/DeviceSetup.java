@@ -223,6 +223,10 @@ public class DeviceSetup extends JDialog
                     JOptionPane.WARNING_MESSAGE);
             }
         }
+        for(int i = 0; i < num_components; i++)
+        {
+            ((DeviceComponent)device_components.elementAt(i)).postApply();
+        }
         fireDataChangeEvent();
         try {
             subtree.setDefault(oldNid, Tree.context);

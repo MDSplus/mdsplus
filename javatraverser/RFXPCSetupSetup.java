@@ -4,9 +4,9 @@
 
 import java.awt.*;
 
-public class RFXPSetupSetup extends DeviceSetup
+public class RFXPCSetupSetup extends DeviceSetup
 {
-	public RFXPSetupSetup(Frame parent)
+	public RFXPCSetupSetup(Frame parent)
 	{
 		super(parent);
 		
@@ -18,9 +18,9 @@ public class RFXPSetupSetup extends DeviceSetup
 		//{{INIT_CONTROLS
 		setDeviceProvider("150.178.3.101");
 		setDeviceTitle("RFX Waveform setup");
-		setDeviceType("RFXPSetup");
+		setDeviceType("RFXPCSetup");
 		getContentPane().setLayout(null);
-		setSize(586,378);
+		setSize(582,387);
 		deviceField1.setNumCols(20);
 		deviceField1.setTextOnly(true);
 		deviceField1.setOffsetNid(1);
@@ -38,23 +38,23 @@ public class RFXPSetupSetup extends DeviceSetup
 		}
 		deviceChoice1.setLabelString("Control:");
 		getContentPane().add(deviceChoice1);
-		deviceChoice1.setBounds(48,48,180,40);
-		deviceWave1.setUpdateExpression("AAMaxValue(_window, $, _config)");
+		deviceChoice1.setBounds(12,48,180,40);
+		deviceWave1.setUpdateExpression("AAMaxValue(_pcwindow, $, _pcconfig)");
 		deviceWave1.setUpdateIdentifier("WAVE");
 		deviceWave1.setOffsetNid(3);
 		getContentPane().add(deviceWave1);
-		deviceWave1.setBounds(12,84,564,240);
+		deviceWave1.setBounds(12,96,564,240);
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(168,336,281,40);
-		deviceField2.setNumCols(6);
-		deviceField2.setIdentifier("window");
+		deviceButtons1.setBounds(168,348,281,40);
+		deviceField2.setNumCols(3);
+		deviceField2.setIdentifier("pcwindow");
 		deviceField2.setOffsetNid(8);
 		deviceField2.setLabelString("Window: ");
 		deviceField2.setDisplayEvaluated(true);
 		deviceField2.setEditable(false);
 		getContentPane().add(deviceField2);
-		deviceField2.setBounds(360,48,216,40);
-		deviceField3.setIdentifier("config");
+		deviceField2.setBounds(432,48,132,40);
+		deviceField3.setIdentifier("pcconfig");
 		deviceField3.setTextOnly(true);
 		deviceField3.setOffsetNid(9);
 		deviceField3.setLabelString("Config.:");
@@ -62,15 +62,22 @@ public class RFXPSetupSetup extends DeviceSetup
 		deviceField3.setEditable(false);
 		getContentPane().add(deviceField3);
 		deviceField3.setBounds(372,12,204,40);
+		deviceField4.setTextOnly(true);
+		deviceField4.setOffsetNid(10);
+		deviceField4.setLabelString("Enabled units: ");
+		deviceField4.setDisplayEvaluated(true);
+		deviceField4.setEditable(false);
+		getContentPane().add(deviceField4);
+		deviceField4.setBounds(192,48,228,40);
 		//}}
 	}
 
-	public RFXPSetupSetup()
+	public RFXPCSetupSetup()
 	{
 		this((Frame)null);
 	}
 
-	public RFXPSetupSetup(String sTitle)
+	public RFXPCSetupSetup(String sTitle)
 	{
 		this();
 		setTitle(sTitle);
@@ -78,7 +85,7 @@ public class RFXPSetupSetup extends DeviceSetup
 
 	static public void main(String args[])
 	{
-		(new RFXPSetupSetup()).setVisible(true);
+		(new RFXPCSetupSetup()).setVisible(true);
 	}
 
 	public void addNotify()
@@ -107,6 +114,7 @@ public class RFXPSetupSetup extends DeviceSetup
 	DeviceButtons deviceButtons1 = new DeviceButtons();
 	DeviceField deviceField2 = new DeviceField();
 	DeviceField deviceField3 = new DeviceField();
+	DeviceField deviceField4 = new DeviceField();
 	//}}
 
 }

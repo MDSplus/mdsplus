@@ -132,13 +132,13 @@ public abstract class DeviceComponent extends JPanel
         return updateIdentifier;
     }
     public void fireUpdate(String updateId, Data newExpr){}
-    
     //To be subclassed
     protected abstract void initializeData(Data data, boolean is_on);
     protected abstract void displayData(Data data, boolean is_on);
     protected abstract Data getData();
     protected abstract boolean getState();
     public void postConfigure(){}
+    void postApply(){}
 }
 
 
