@@ -155,15 +155,6 @@ then
     fi
   fi
 fi
-fi
-;;
-*)
-if (test "$MDSplusSrv" = "y")
-then
-    kill -HUP `ps -e | grep inetd | grep -v grep | awk '{print $1}'`
-fi
-;;
-esac
 if [ ! -r $MDSPLUS_DIR/local/mdsplus_post_uninstall_script ]
 then
   cp $MDSPLUS_DIR/rpm/post_uninstall_script $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
