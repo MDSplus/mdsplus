@@ -15,6 +15,10 @@ alpha-dec-osf*) : ${CC=cc};
 sparc-sun-solaris2*) : ${CC=cc};;
 esac
 
+if test "$enable_nodebug" = yes -o "$enable_nodebug" = on ; then
+  : ${CFLAGS=""};
+fi
+
 dnl Check out the compiler
 AC_PROG_CC
 
