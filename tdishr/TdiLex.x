@@ -142,9 +142,9 @@ ing
 		exponent	[E|F|D|G|H|S|T] [+|-] 0-9...
 	NEED to size based on exponent range and number of digits.
 */
-static DESCRIPTOR(dfghst_dsc, "DFGHSTdfghst");
+static DESCRIPTOR(dfghst_dsc, "DFGHSTVdfghstv");
 static DESCRIPTOR(e_dsc, "E");
-static DESCRIPTOR(valid_dsc, "+-.0123456789DEFGHST \t");
+static DESCRIPTOR(valid_dsc, "+-.0123456789DEFGHSTV \t");
 
 static int ConvertFloating(struct descriptor_s *str, struct descriptor_r *out_d)
 {
@@ -182,6 +182,7 @@ static struct {
 	unsigned char	dtype;
 } table[] = {
 		{4,	DTYPE_FLOAT},
+                {8,	DTYPE_DOUBLE},
 		{8,	DTYPE_D},
 		{8,	DTYPE_G},
 		{16,	DTYPE_H},
@@ -204,11 +205,12 @@ static struct {
 	idx = StrFindFirstInSet(&str_dsc, &dfghst_dsc);
 	if (idx) { switch (tst = str[idx-1]) {
   	  case 'D' :	type = 1;	break;
-	  case 'G' :	type = 2;	break;
-	  case 'H' :	type = 3;	break;
-	  case 'F' :	type = 4;	break;
-	  case 'S' :	type = 5;	break;
-	  case 'T' : 	type = 6;	break;
+          case 'V' :    type = 2;       break;
+	  case 'G' :	type = 3;	break;
+	  case 'H' :	type = 4;	break;
+	  case 'F' :	type = 5;	break;
+	  case 'S' :	type = 6;	break;
+	  case 'T' : 	type = 7;	break;
 	  }
           str[idx-1] = 'E';
         }
@@ -693,9 +695,9 @@ int		cur = 0, limit;
 %o 4000
 anum		[A-Za-z$_0-9]
 name		[A-Za-z$_]{anum}*
-exponent	[DdEeFfGgHhSsTt][\-+]?[0-9]+
+exponent	[DdEeFfGgHhSsTtVv][\-+]?[0-9]+
 integer		[0-9][0-9A-Za-z]*
-flt0		[0-9]+"."/[^0-9DdEeFfGgHhSsTt.]
+flt0		[0-9]+"."/[^0-9DdEeFfGgHhSsTtVv.]
 flt1		[0-9]*"."[0-9]+
 flt2		[0-9]+"."[0-9]*{exponent}
 flt3		"."?[0-9]+{exponent}

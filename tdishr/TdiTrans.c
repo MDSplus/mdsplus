@@ -51,6 +51,11 @@
 */
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
+
+#define MaskTrue ((*(char *)&endiantest == 1) ? (pi0[0] & 1) : (pi0[leni-1] & 1))
+
+static int endiantest = 1;
+
 extern  unsigned short
 	OpcAccumulate,
 	OpcFirstLoc,
@@ -81,9 +86,9 @@ extern int TdiMasterData();
 
 static DESCRIPTOR_A(		arr0,sizeof(int),DTYPE_L,0,sizeof(int));
 static unsigned char		zero_val = 0;
-static int			one_val = 1;
+static unsigned char		one_val = 1;
 static struct descriptor	zero = {sizeof(zero_val),DTYPE_BU,CLASS_S,(char *)&zero_val};
-static struct descriptor	one = {sizeof(one_val),DTYPE_L,CLASS_S,(char *)&one_val};
+static struct descriptor	one = {sizeof(one_val),DTYPE_BU,CLASS_S,(char *)&one_val};
 
 TdiRefStandard(Tdi1Trans)
 struct descriptor		*pmask = &one;
@@ -390,7 +395,7 @@ int	leni = in_ptr->length, stepi0 = leni * step0, stepi1 = leni * step1, stepi2 
 	for (pi2 = in_ptr->pointer,	j2 = count2; --j2 >= 0; pi2 += stepi2) {
 	for (pi1 = pi2,				j1 = count1; --j1 >= 0; pi1 += stepi1) {
 		for (pi0 = pi1,			j0 = count0; --j0 >= 0; pi0 += stepi0)
-			if (!(*pi0 & 1)) break;
+			if (!MaskTrue) break;
 		*pout++ = (char)(j0 < 0);
 	}
 	}
@@ -418,7 +423,7 @@ int	leni = in_ptr->length, stepi0 = leni * step0, stepi1 = leni * step1, stepi2 
 	for (pi2 = in_ptr->pointer,	j2 = count2; --j2 >= 0; pi2 += stepi2) {
 	for (pi1 = pi2,				j1 = count1; --j1 >= 0; pi1 += stepi1) {
 		for (pi0 = pi1,			j0 = count0; --j0 >= 0; pi0 += stepi0)
-			if (*pi0 & 1) break;
+			if (MaskTrue) break;
 		*pout++ = (char)(j0 >= 0);
 	}
 	}
@@ -449,7 +454,7 @@ int	leni = in_ptr->length, stepi0 = leni * step0, stepi1 = leni * step1, stepi2 
 	for (pi1 = pi2,				j1 = count1; --j1 >= 0; pi1 += stepi1) {
 		result = 0;
 		for (pi0 = pi1,			j0 = count0; --j0 >= 0; pi0 += stepi0)
-			if (*pi0 & 1) ++result;
+			if (MaskTrue) ++result;
 		*pout++ = result;
 	}
 	}
@@ -474,10 +479,10 @@ char	*pi0, *pi1, *pi2, *pin = in_ptr->pointer, *pout = out_ptr->pointer;
 int	j0, j1, j2;
 int	leni = in_ptr->length, stepi0 = leni * step0, stepi1 = leni * step1, stepi2 = leni *step2;
 
-	for (			pi2 = pin,	j2 = count2; --j2 >= 0; pi2 -= stepi2) {
+	for (			pi2 = pin,	j2 = count2; --j2 >= 0; pi2 += stepi2) {
 		for	(	pi1 = pi2,	j1 = count1; --j1 >= 0; pi1 += stepi1) {
 			for (	pi0 = pi1,	j0 = count0; --j0 >= 0; pi0 += stepi0)
-				if (*pi0 & 1) break;
+				if (MaskTrue) break;
 			if (j0 >= 0) *(pout + (pi0 - pin)/leni) = 1;
 		}
 	}
@@ -503,10 +508,10 @@ int	j0, j1, j2;
 int	leni = in_ptr->length, stepi0 = leni * step0, stepi1 = leni * step1, stepi2 = leni *step2;
 int	size = leni * count0 * count1 * count2;
 
-	for (		pi2 = pin + size - 1,	j2 = count2; --j2 >= 0; pi2 -= stepi2) {
+	for (		pi2 = pin + size - leni,	j2 = count2; --j2 >= 0; pi2 -= stepi2) {
 		for	(	pi1 = pi2,	j1 = count1; --j1 >= 0; pi1 -= stepi1) {
 			for (	pi0 = pi1,	j0 = count0; --j0 >= 0; pi0 -= stepi0)
-				if (*pi0 & 1) break;
+				if (MaskTrue) break;
 			if (j0 >= 0) *(pout + (pi0 - pin)/leni) = 1;
 		}
 	}

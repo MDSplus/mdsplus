@@ -9,12 +9,24 @@ extern void CvtConvertFloat();
 extern int IsRoprand();
 
 #define TWO_32 (double)4294967296.
-double WideIntToDouble(unsigned int *bin, int size, int is_signed)
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+#define max(a,b) (((a) < (b)) ? (b) : (a))
+
+static int endiantest = 1;
+
+double WideIntToDouble(unsigned int *bin_in, int size, int is_signed)
 {
   int i;
   double factor;
   double ans=0.0;
-  int negative = is_signed && (bin[size-1] & 0x80000000);
+  unsigned int bin[16];
+  int negative;
+  if (*(char *)&endiantest == 1) {
+    memcpy(bin,bin_in,size * sizeof(int));
+  } else {
+    for (i=0;i<size;i++) bin[i] = bin_in[size - i - 1];
+  }
+  negative = is_signed && (bin[size-1] & 0x80000000);
   for (i=0,factor=1.;i<size;i++, factor = (i < 4) ? factor * TWO_32 : 0)
     ans += ((negative ? ~bin[i] : bin[i]) * factor);
   if (negative)
@@ -29,10 +41,16 @@ void DoubleToWideInt(double *in, int size, unsigned int *out)
   double factor;
   double tmp;
   for (i=size-1,tmp = negative ? -1 - *in : *in,factor=pow(2.0,32. * (size-1));i>=0;tmp -= out[i--] * factor, factor /= TWO_32)
-    out[i] = (int)(tmp/factor);
+    out[i] = (int)((tmp/factor) + .49999999999);
   if (negative)
     for (i=0;i<size;i++)
       out[i] = ~out[i];
+  if (*(char *)&endiantest != 1)
+  {
+    unsigned int tmp[16];
+    for (i=0;i<size;i++) tmp[i]=out[i];
+    for (i=0;i<size;i++) out[i]=tmp[size-i-1];
+  }
 }
 
 /****** Identity conversions handled before big switch *********/
@@ -90,16 +108,33 @@ void DoubleToWideInt(double *in, int size, unsigned int *out)
 #define L_W(lena,pa,lenb,pb,numb) CONVERT_BINARY(int,short,pa,pb,numb)
 /************* Extended binary conversions *************************/
 #define CONVERT_BINARY_ZETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; unsigned int *op = (unsigned int *)pb; \
-                   while (numb-- > 0) {*op++ = (unsigned int)*ip++; for(i=1;i<nints;i++) *op++ = (unsigned int)0;} status = 1;}
+                   if (*(char *)&endiantest) {\
+		     while (numb-- > 0) {*op++ = (unsigned int)*ip++; for(i=1;i<nints;i++) *op++ = (unsigned int)0;}\
+                   } else {\
+		     while (numb-- > 0) {for(i=1;i<nints;i++) *op++ = (unsigned int)0; *op++ = (unsigned int)*ip++; }\
+                   } status = 1;}
 #define CONVERT_BINARY_SETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; int *op = (int *)pb; \
-                   while (numb-- > 0) {int extend = (*ip < 0) ? -1 : 0; *op++ = (int)*ip++; for(i=1;i<nints;i++) *op++ = extend;}\
-                   status = 1;}
-#define CONVERT_BINARY_SMALLER(pa,pb,numb,lena,lenb) {int i; while(numb-- > 0) {for (i=0;i<lenb;i++) *pb++ = pa[i]; pa += lena;}\
+                   if (*(char *)&endiantest) {\
+		     while (numb-- > 0) {int extend = (*ip < 0) ? -1 : 0; *op++ = (int)*ip++; for(i=1;i<nints;i++) *op++ = extend;}\
+                   } else {\
+		     while (numb-- > 0) {int extend = (*ip < 0) ? -1 : 0; for(i=1;i<nints;i++) *op++ = extend; *op++ = (int)*ip++; }\
+                   } status = 1;}
+#define CONVERT_BINARY_SMALLER(pa,pb,numb,lena,lenb) {int i; char little=*(char *)&endiantest; \
+                   while(numb-- > 0) {for (i=0;i<lenb;i++) *pb++ = pa[little ? i : (i+lena-lenb)]; pa += lena;}\
                    status = 1;} 
-#define CONVERT_BINARY_LARGER_ZEXTEND(pa,pb,numb,lena,lenb) {int i; while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++; \
-                             for (i=lena; i<lenb; i++) *pb++ = (char)0;} status = 1;} 
-#define CONVERT_BINARY_LARGER_SEXTEND(pa,pb,numb,lena,lenb) {int i; while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++; \
-                             for (i=lena; i<lenb; i++) *pb++ = (char)((pa[-1] < 0) ? -1 : 0);} status = 1;} 
+#define CONVERT_BINARY_LARGER_ZEXTEND(pa,pb,numb,lena,lenb) {int i; if (*(char *)&endiantest) {\
+	       while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++;\
+	       for (i=lena; i<lenb; i++) *pb++ = (char)0;}} else {\
+	       while(numb-- > 0) {for (i=0;i<lena;i++) pb[lenb - i - 1] = pa[lena - i - 1];\
+	       for (i=lena; i<lenb; i++) pb[lenb - i - 1] = (char)0; pb += lenb; pa += lena;}}\
+  	       status = 1;} 
+
+#define CONVERT_BINARY_LARGER_SEXTEND(pa,pb,numb,lena,lenb) {int i;if (*(char *)&endiantest) {\
+	       while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++; \
+	       for (i=lena; i<lenb; i++) *pb++ = (char)((pa[-1] < 0) ? -1 : 0);}} else {\
+	       while(numb-- > 0) {for (i=0;i<lena;i++) pb[lenb - i - 1] = pa[lena - i - 1];\
+               for (i=lena; i<lenb; i++) pb[lenb - i - 1] = (char)((pa[0] < 0) ? -1 : 0); pb += lenb; pa += lena;}}\
+               status = 1;} 
 #define BU_QU(lena,pa,lenb,pb,numb) CONVERT_BINARY_ZETEND(unsigned char,pa,pb,numb,2)
 #define BU_OU(lena,pa,lenb,pb,numb) CONVERT_BINARY_ZETEND(unsigned char,pa,pb,numb,4)
 #define WU_QU(lena,pa,lenb,pb,numb) CONVERT_BINARY_ZETEND(unsigned short,pa,pb,numb,2)
@@ -302,90 +337,90 @@ void DoubleToWideInt(double *in, int size, unsigned int *out)
 #define O_GC(lena,pa,lenb,pb,numb) LBINARY_TO_DOUBLEC(pa,pb,numb,4,1,DTYPE_G)
 #define O_FTC(lena,pa,lenb,pb,numb) LBINARY_TO_DOUBLEC(pa,pb,numb,4,1,DTYPE_FT)
 /*************** Float to Binary ****************************************/
-#define FLOAT_TO_BINARY(itype,pa,pb,numb,to)  \
+#define FLOAT_TO_BINARY(itype,pa,pb,numb,to,mino,maxo)  \
   {int i=numb; float *ip=(float*)pa; to *op=(to*)pb; \
    while (i-- > 0) { float tmp; \
      if (itype != DTYPE_FLOAT) CvtConvertFloat(ip++, itype, &tmp, DTYPE_FLOAT,0); else tmp = *ip++; \
-     *op++ = (to)tmp;} status = 1;}
+     *op++ = (to)max((float)((to)mino),min((float)((to)maxo),tmp));} status = 1;}
 
-#define DOUBLE_TO_BINARY(itype,pa,pb,numb,to)  \
+#define DOUBLE_TO_BINARY(itype,pa,pb,numb,to,mino,maxo)  \
   {int i=numb; double *ip=(double*)pa; to *op=(to*)pb; \
    while (i-- > 0) { double tmp; \
      if (itype != DTYPE_DOUBLE) CvtConvertFloat(ip++, itype, &tmp, DTYPE_DOUBLE,0); else tmp = *ip++; \
-     *op++ = (to)tmp;} status = 1;}
+     *op++ = (to)max((double)((to)mino),min((double)((to)maxo),tmp));} status = 1;}
 
-#define FLOATC_TO_BINARY(itype,pa,pb,numb,to)  \
+#define FLOATC_TO_BINARY(itype,pa,pb,numb,to,mino,maxo)  \
   {int i=numb; float *ip=(float*)pa; to *op=(to*)pb; \
    while (i-- > 0) { float tmp; \
      if (itype != DTYPE_FLOAT) CvtConvertFloat(ip++, itype, &tmp, DTYPE_FLOAT,0); else tmp = *ip++; \
-     *op++ = (to)tmp; ip++;} status = 1;}
+     *op++ = (to)max((float)((to)mino),min((float)((to)maxo),tmp)); ip++;} status = 1;}
 
-#define DOUBLEC_TO_BINARY(itype,pa,pb,numb,to)  \
+#define DOUBLEC_TO_BINARY(itype,pa,pb,numb,to,mino,maxo)  \
   {int i=numb; double *ip=(double*)pa; to *op=(to*)pb; \
    while (i-- > 0) { double tmp; \
      if (itype != DTYPE_DOUBLE) CvtConvertFloat(ip++, itype, &tmp, DTYPE_DOUBLE,0); else tmp = *ip++; \
-     *op++ = (to)tmp; ip++;} status = 1;}
+     *op++ = (to)max((double)((to)mino),min((double)((to)maxo),tmp)); ip++;} status = 1;}
 
-#define F_BU(lena,pa,lenb,pb,numb) FLOAT_TO_BINARY(DTYPE_F,pa,pb,numb,unsigned char)
-#define F_WU(lena,pa,lenb,pb,numb) FLOAT_TO_BINARY(DTYPE_F,pa,pb,numb,unsigned short)
-#define F_LU(lena,pa,lenb,pb,numb) FLOAT_TO_BINARY(DTYPE_F,pa,pb,numb,unsigned int)
-#define F_B(lena,pa,lenb,pb,numb)  FLOAT_TO_BINARY(DTYPE_F,pa,pb,numb,char)
-#define F_W(lena,pa,lenb,pb,numb)  FLOAT_TO_BINARY(DTYPE_F,pa,pb,numb,short)
-#define F_L(lena,pa,lenb,pb,numb)  FLOAT_TO_BINARY(DTYPE_F,pa,pb,numb,int)
-#define FS_BU(lena,pa,lenb,pb,numb) FLOAT_TO_BINARY(DTYPE_FS,pa,pb,numb,unsigned char)
-#define FS_WU(lena,pa,lenb,pb,numb) FLOAT_TO_BINARY(DTYPE_FS,pa,pb,numb,unsigned short) 
-#define FS_LU(lena,pa,lenb,pb,numb) FLOAT_TO_BINARY(DTYPE_FS,pa,pb,numb,unsigned int)
-#define FS_B(lena,pa,lenb,pb,numb)  FLOAT_TO_BINARY(DTYPE_FS,pa,pb,numb,char)
-#define FS_W(lena,pa,lenb,pb,numb)  FLOAT_TO_BINARY(DTYPE_FS,pa,pb,numb,short)
-#define FS_L(lena,pa,lenb,pb,numb)  FLOAT_TO_BINARY(DTYPE_FS,pa,pb,numb,int)
-#define D_BU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_D,pa,pb,numb,unsigned char)
-#define D_WU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_D,pa,pb,numb,unsigned short)
-#define D_LU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_D,pa,pb,numb,unsigned int)
-#define D_B(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_D,pa,pb,numb,char)
-#define D_W(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_D,pa,pb,numb,short)
-#define D_L(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_D,pa,pb,numb,int)
-#define G_BU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_G,pa,pb,numb,unsigned char)
-#define G_WU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_G,pa,pb,numb,unsigned short)
-#define G_LU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_G,pa,pb,numb,unsigned int)
-#define G_B(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_G,pa,pb,numb,char)
-#define G_W(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_G,pa,pb,numb,short)
-#define G_L(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_G,pa,pb,numb,int)
-#define FT_BU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_FT,pa,pb,numb,unsigned char)
-#define FT_WU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_FT,pa,pb,numb,unsigned short)
-#define FT_LU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_FT,pa,pb,numb,unsigned int)
-#define FT_B(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_FT,pa,pb,numb,char)
-#define FT_W(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_FT,pa,pb,numb,short)
-#define FT_L(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_FT,pa,pb,numb,int)
-#define FC_BU(lena,pa,lenb,pb,numb) FLOATC_TO_BINARY(DTYPE_F,pa,pb,numb,unsigned char)
-#define FC_WU(lena,pa,lenb,pb,numb) FLOATC_TO_BINARY(DTYPE_F,pa,pb,numb,unsigned short)
-#define FC_LU(lena,pa,lenb,pb,numb) FLOATC_TO_BINARY(DTYPE_F,pa,pb,numb,unsigned int)
-#define FC_B(lena,pa,lenb,pb,numb)  FLOATC_TO_BINARY(DTYPE_F,pa,pb,numb,char)
-#define FC_W(lena,pa,lenb,pb,numb)  FLOATC_TO_BINARY(DTYPE_F,pa,pb,numb,short)
-#define FC_L(lena,pa,lenb,pb,numb)  FLOATC_TO_BINARY(DTYPE_F,pa,pb,numb,int)
-#define FSC_BU(lena,pa,lenb,pb,numb) FLOATC_TO_BINARY(DTYPE_FS,pa,pb,numb,unsigned char)
-#define FSC_WU(lena,pa,lenb,pb,numb) FLOATC_TO_BINARY(DTYPE_FS,pa,pb,numb,unsigned short) 
-#define FSC_LU(lena,pa,lenb,pb,numb) FLOATC_TO_BINARY(DTYPE_FS,pa,pb,numb,unsigned int)
-#define FSC_B(lena,pa,lenb,pb,numb)  FLOATC_TO_BINARY(DTYPE_FS,pa,pb,numb,char)
-#define FSC_W(lena,pa,lenb,pb,numb)  FLOATC_TO_BINARY(DTYPE_FS,pa,pb,numb,short)
-#define FSC_L(lena,pa,lenb,pb,numb)  FLOATC_TO_BINARY(DTYPE_FS,pa,pb,numb,int)
-#define DC_BU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_D,pa,pb,numb,unsigned char)
-#define DC_WU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_D,pa,pb,numb,unsigned short)
-#define DC_LU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_D,pa,pb,numb,unsigned int)
-#define DC_B(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_D,pa,pb,numb,char)
-#define DC_W(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_D,pa,pb,numb,short)
-#define DC_L(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_D,pa,pb,numb,int)
-#define GC_BU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_G,pa,pb,numb,unsigned char)
-#define GC_WU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_G,pa,pb,numb,unsigned short)
-#define GC_LU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_G,pa,pb,numb,unsigned int)
-#define GC_B(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_G,pa,pb,numb,char)
-#define GC_W(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_G,pa,pb,numb,short)
-#define GC_L(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_G,pa,pb,numb,int)
-#define FTC_BU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_FT,pa,pb,numb,unsigned char)
-#define FTC_WU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_FT,pa,pb,numb,unsigned short)
-#define FTC_LU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_FT,pa,pb,numb,unsigned int)
-#define FTC_B(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_FT,pa,pb,numb,char)
-#define FTC_W(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_FT,pa,pb,numb,short)
-#define FTC_L(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_FT,pa,pb,numb,int)
+#define F_BU(lena,pa,lenb,pb,numb) FLOAT_TO_BINARY(DTYPE_F,pa,pb,numb,unsigned char,0,0xff)
+#define F_WU(lena,pa,lenb,pb,numb) FLOAT_TO_BINARY(DTYPE_F,pa,pb,numb,unsigned short,0,0xffff)
+#define F_LU(lena,pa,lenb,pb,numb) FLOAT_TO_BINARY(DTYPE_F,pa,pb,numb,unsigned int,0,0xffffffff)
+#define F_B(lena,pa,lenb,pb,numb)  FLOAT_TO_BINARY(DTYPE_F,pa,pb,numb,char,0x80,0x7f)
+#define F_W(lena,pa,lenb,pb,numb)  FLOAT_TO_BINARY(DTYPE_F,pa,pb,numb,short,0x8000,0x7fff)
+#define F_L(lena,pa,lenb,pb,numb)  FLOAT_TO_BINARY(DTYPE_F,pa,pb,numb,int,0x80000000,0x7fffffff)
+#define FS_BU(lena,pa,lenb,pb,numb) FLOAT_TO_BINARY(DTYPE_FS,pa,pb,numb,unsigned char,0,0xff)
+#define FS_WU(lena,pa,lenb,pb,numb) FLOAT_TO_BINARY(DTYPE_FS,pa,pb,numb,unsigned short,0,0xffff) 
+#define FS_LU(lena,pa,lenb,pb,numb) FLOAT_TO_BINARY(DTYPE_FS,pa,pb,numb,unsigned int,0,0xffffffff)
+#define FS_B(lena,pa,lenb,pb,numb)  FLOAT_TO_BINARY(DTYPE_FS,pa,pb,numb,char,0x80,0x7f)
+#define FS_W(lena,pa,lenb,pb,numb)  FLOAT_TO_BINARY(DTYPE_FS,pa,pb,numb,short,0x8000,0x7fff)
+#define FS_L(lena,pa,lenb,pb,numb)  FLOAT_TO_BINARY(DTYPE_FS,pa,pb,numb,int,0x80000000,0x7fffffff)
+#define D_BU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_D,pa,pb,numb,unsigned char,0,0xff)
+#define D_WU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_D,pa,pb,numb,unsigned short,0,0xffff)
+#define D_LU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_D,pa,pb,numb,unsigned int,0,0xffffffff)
+#define D_B(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_D,pa,pb,numb,char,0x80,0x7f)
+#define D_W(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_D,pa,pb,numb,short,0x8000,0x7fff)
+#define D_L(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_D,pa,pb,numb,int,0x80000000,0x7fffffff)
+#define G_BU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_G,pa,pb,numb,unsigned char,0,0xff)
+#define G_WU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_G,pa,pb,numb,unsigned short,0,0xffff)
+#define G_LU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_G,pa,pb,numb,unsigned int,0,0xffffffff)
+#define G_B(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_G,pa,pb,numb,char,0x80,0x7f)
+#define G_W(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_G,pa,pb,numb,short,0x8000,0x7fff)
+#define G_L(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_G,pa,pb,numb,int,0x80000000,0x7fffffff)
+#define FT_BU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_FT,pa,pb,numb,unsigned char,0,0xff)
+#define FT_WU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_FT,pa,pb,numb,unsigned short,0,0xffff)
+#define FT_LU(lena,pa,lenb,pb,numb) DOUBLE_TO_BINARY(DTYPE_FT,pa,pb,numb,unsigned int,0,0xffffffff)
+#define FT_B(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_FT,pa,pb,numb,char,0x80,0x7f)
+#define FT_W(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_FT,pa,pb,numb,short,0x8000,0x7fff)
+#define FT_L(lena,pa,lenb,pb,numb)  DOUBLE_TO_BINARY(DTYPE_FT,pa,pb,numb,int,0x80000000,0x7fffffff)
+#define FC_BU(lena,pa,lenb,pb,numb) FLOATC_TO_BINARY(DTYPE_F,pa,pb,numb,unsigned char,0,0xff)
+#define FC_WU(lena,pa,lenb,pb,numb) FLOATC_TO_BINARY(DTYPE_F,pa,pb,numb,unsigned short,0,0xffff)
+#define FC_LU(lena,pa,lenb,pb,numb) FLOATC_TO_BINARY(DTYPE_F,pa,pb,numb,unsigned int,0,0xffffffff)
+#define FC_B(lena,pa,lenb,pb,numb)  FLOATC_TO_BINARY(DTYPE_F,pa,pb,numb,char,0x80,0x7f)
+#define FC_W(lena,pa,lenb,pb,numb)  FLOATC_TO_BINARY(DTYPE_F,pa,pb,numb,short,0x8000,0x7fff)
+#define FC_L(lena,pa,lenb,pb,numb)  FLOATC_TO_BINARY(DTYPE_F,pa,pb,numb,int,0x80000000,0x7fffffff)
+#define FSC_BU(lena,pa,lenb,pb,numb) FLOATC_TO_BINARY(DTYPE_FS,pa,pb,numb,unsigned char,0,0xff)
+#define FSC_WU(lena,pa,lenb,pb,numb) FLOATC_TO_BINARY(DTYPE_FS,pa,pb,numb,unsigned short,0,0xffff) 
+#define FSC_LU(lena,pa,lenb,pb,numb) FLOATC_TO_BINARY(DTYPE_FS,pa,pb,numb,unsigned int,0,0xffffffff)
+#define FSC_B(lena,pa,lenb,pb,numb)  FLOATC_TO_BINARY(DTYPE_FS,pa,pb,numb,char,0x80,0x7f)
+#define FSC_W(lena,pa,lenb,pb,numb)  FLOATC_TO_BINARY(DTYPE_FS,pa,pb,numb,short,0x8000,0x7fff)
+#define FSC_L(lena,pa,lenb,pb,numb)  FLOATC_TO_BINARY(DTYPE_FS,pa,pb,numb,int,0x80000000,0x7fffffff)
+#define DC_BU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_D,pa,pb,numb,unsigned char,0,0xff)
+#define DC_WU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_D,pa,pb,numb,unsigned short,0,0xffff)
+#define DC_LU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_D,pa,pb,numb,unsigned int,0,0xffffffff)
+#define DC_B(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_D,pa,pb,numb,char,0x80,0x7f)
+#define DC_W(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_D,pa,pb,numb,short,0x8000,0x7fff)
+#define DC_L(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_D,pa,pb,numb,int,0x80000000,0x7fffffff)
+#define GC_BU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_G,pa,pb,numb,unsigned char,0,0xff)
+#define GC_WU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_G,pa,pb,numb,unsigned short,0,0xffff)
+#define GC_LU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_G,pa,pb,numb,unsigned int,0,0xffffffff)
+#define GC_B(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_G,pa,pb,numb,char,0x80,0x7f)
+#define GC_W(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_G,pa,pb,numb,short,0x8000,0x7fff)
+#define GC_L(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_G,pa,pb,numb,int,0x80000000,0x7fffffff)
+#define FTC_BU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_FT,pa,pb,numb,unsigned char,0,0xff)
+#define FTC_WU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_FT,pa,pb,numb,unsigned short,0,0xffff)
+#define FTC_LU(lena,pa,lenb,pb,numb) DOUBLEC_TO_BINARY(DTYPE_FT,pa,pb,numb,unsigned int,0,0xffffffff)
+#define FTC_B(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_FT,pa,pb,numb,char,0x80,0x7f)
+#define FTC_W(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_FT,pa,pb,numb,short,0x8000,0x7fff)
+#define FTC_L(lena,pa,lenb,pb,numb)  DOUBLEC_TO_BINARY(DTYPE_FT,pa,pb,numb,int,0x80000000,0x7fffffff)
 
 /*********** Float to Long Binary ********************/
 #define FLOAT_TO_LBINARY(itype,pa,pb,numb,size)  \
@@ -588,11 +623,8 @@ static void FLOAT_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, cha
       char *pe;
       int width;
       int prec;
-      float tmp;
-      if (itype != DTYPE_FLOAT) 
-        CvtConvertFloat(ip++,itype,&tmp,DTYPE_FLOAT,0);
-      else 
-        tmp=*ip++;
+      double tmp;
+      CvtConvertFloat(ip++,itype,&tmp,DTYPE_DOUBLE,0);
       width = lenb < 13 ? lenb : 13;
       prec = width - 7;
       if (prec < 0) prec = 0;
