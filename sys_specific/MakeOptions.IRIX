@@ -1,0 +1,10 @@
+CFLAGS = -I../include -signed -g 
+MOTIF_CFLAGS = -I../include -g -D_NO_DXm
+WMD_RULE = ../bin/wmdcreate ; ../bin/wmdcreate -o ../shlib/xmdsuil.wmd
+WML = touch UilConst.h 
+SHARE_TYPE = so
+MAKE_DEPEND = cc $(CFLAGS) -M {} > .depend \;
+LD_SHARED_LIB_OPTIONS = -shared
+MOTIF_LIBS = -lMrm -lXm
+X11_LIBS = -lXt -lX11
+EXPORT_SYMBOLS = -exports

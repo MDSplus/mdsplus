@@ -1,0 +1,13 @@
+CFLAGS = -I../include -g
+MOTIF_CFLAGS = -I../include -g -D_NO_DXm
+WML = ln -sf /usr/examples/motif/wml/tokens.dat . ; /usr/examples/motif/wml/wml xmdsuil.wml ; rm wml-uil.* wml.report
+WML_INCLUDE = -I/usr/examples/motif/wml
+WMD_RULE = ../bin/wmdcreate ; ../bin/wmdcreate -o ../shlib/xmdsuil.wmd
+SHARE_TYPE = so
+MAKE_DEPEND = cc $(CFLAGS) -M {} > .depend \;
+LD_SHARED_LIB_OPTIONS = -shared -no_archive
+STATIC_LIB = -no_so
+SHARED_LIB = -so_archive
+MOTIF_LIBS = -lMrm -lXm
+X11_LIBS = -lXt -lX11
+RANLIB = ranlib $@

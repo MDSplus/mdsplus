@@ -1,0 +1,10 @@
+#
+# Shared image path
+#
+LD_LIBRARY_PATH $MDSPLUS/shlib
+#
+# Motif development kit
+#
+MOTIFHOME /opt/motif/scomd12s
+source $MOTIFHOME/share/src/setup/csh-env
+UIDPATH $UIDPATH\:$MDSPLUS/uid/%U
