@@ -1143,8 +1143,12 @@ unsigned int StrMatchWild(struct descriptor *candidate, struct descriptor *patte
   }
 }
 
-#ifndef MAX
+#ifdef MAX
+#undef MAX
+#endif
 #define MAX(a,b) (a) > (b) ? (a) : (b)
+#ifdef MIN
+#undef MIN
 #endif
 #define MIN(a,b) (a) < (b) ? (a) : (b)
 
