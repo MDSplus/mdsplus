@@ -17,7 +17,6 @@ public class RFXControlSetup extends DeviceSetup {
   DeviceField deviceField4 = new DeviceField();
   DeviceField deviceField5 = new DeviceField();
   DeviceField deviceField6 = new DeviceField();
-  DeviceDispatch deviceDispatch1 = new DeviceDispatch();
   DeviceField deviceField7 = new DeviceField();
   DeviceField deviceField8 = new DeviceField();
   DeviceField deviceField9 = new DeviceField();
@@ -225,6 +224,7 @@ public class RFXControlSetup extends DeviceSetup {
   DeviceField deviceField13 = new DeviceField();
   DeviceField deviceField2 = new DeviceField();
   DeviceField deviceField14 = new DeviceField();
+  DeviceDispatch deviceDispatch1 = new DeviceDispatch();
   public RFXControlSetup() {
     try {
       jbInit();
@@ -266,7 +266,6 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField6.setNumCols(5);
     deviceField6.setIdentifier("post_sampling_time");
     deviceField6.setBounds(new Rectangle(256, 74, 229, 30));
-    deviceDispatch1.setBounds(new Rectangle(499, 74, 130, 31));
     deviceField7.setOffsetNid(3);
     deviceField7.setLabelString("Frequency: ");
     deviceField7.setNumCols(15);
@@ -1000,6 +999,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField14.setNumCols(6);
     deviceField14.setIdentifier("");
     deviceField14.setBounds(new Rectangle(388, 222, 376, 30));
+    deviceDispatch1.setBounds(new Rectangle(510, 74, 130, 31));
     this.getContentPane().add(deviceField1, null);
     this.getContentPane().add(deviceField3, null);
     this.getContentPane().add(deviceField5, null);
