@@ -32,6 +32,7 @@ extern char *ctime();
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 extern char *MdsDescrToCstring();
 extern void MdsFree();
+extern void SetSocketOptions();
 
 typedef ARRAY_COEFF(char,7) ARRAY_7;
 
@@ -559,6 +560,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
       ok = 1;
     m.h.status = ok & 1;
     m.h.client_type = m_user->h.client_type;
+    SetSocketOptions(sock);
     SendMdsMsg(sock,&m,0);
 	if (NO_SPAWN)
 	{
@@ -1159,9 +1161,7 @@ static int CreateMdsPort(char *service, int multi_in)
   }
   sp = getservbyport(sin.sin_port,"tcp");
   PortName = strcpy((char *)malloc(strlen(sp ? sp->s_name :service)+1),sp ? sp->s_name : service);
-  setsockopt(s, SOL_SOCKET,SO_RCVBUF,(char *)&recvbuf,sizeof(long));
-  setsockopt(s, SOL_SOCKET,SO_SNDBUF,(char *)&sendbuf,sizeof(long));
-  setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&one, sizeof(one));  
+  SetSocketOptions(s);
   status = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&multi_in,sizeof(1));
   if (status < 0)
   {

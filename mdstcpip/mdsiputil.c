@@ -35,6 +35,15 @@ extern int inet_addr();
 extern int MdsDispatchEvent();
 #endif
 
+void SetSocketOptions(SOCKET s)
+{
+  int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
+  int one = 1;
+  setsockopt(s, SOL_SOCKET,SO_RCVBUF,&recvbuf,sizeof(int));
+  setsockopt(s, SOL_SOCKET,SO_SNDBUF,&sendbuf,sizeof(int));
+  setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&one, sizeof(one));
+}
+
 static char ClientType(void)
 {
   static char ctype = 0;
@@ -303,12 +312,10 @@ static SOCKET ConnectToPort(char *host, char *service)
       return INVALID_SOCKET;
     }
   }
-  setsockopt(s, SOL_SOCKET,SO_RCVBUF,(void *)&recvbuf,sizeof(recvbuf));
-  setsockopt(s, SOL_SOCKET,SO_SNDBUF,(void *)&sendbuf,sizeof(sendbuf));
+  SetSocketOptions(s);
 #ifndef _WIN32
   setsockopt(s, SOL_SOCKET,SO_OOBINLINE,(void *)&one,sizeof(one));
 #endif
-  setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&one, sizeof(one));
 #ifdef MULTINET
   sys$qiow(0,s,IO$_SETMODE | IO$M_ATTNAST,0,0,0,MdsDispatchEvent,s,0,0,0,0);
 #endif
