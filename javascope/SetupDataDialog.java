@@ -798,9 +798,8 @@ import java.lang.Integer;
 	
 	if(error == 1)
 	    error_msg.showMessage();
-	else
-	    if(ob == ok)
-		setVisible(false);		
+	if(ob == ok)
+	    setVisible(false);		
       }
       
       if(ob == reset)
