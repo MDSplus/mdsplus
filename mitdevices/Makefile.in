@@ -16,7 +16,7 @@ INSTALL=@top_srcdir@/conf/install-sh -c
 MOTIF_LIBS = @MOTIF_LD_LDARC@ @XM_LIBS@ @MOTIF_LD_LDSHARE@ @LIBXP@ @LIBXEXT@
 UIL=@UIL@ -I$(top_srcdir)/include
 MATH_LIBS=-L$(top_srcdir)/lib -lMdsMath
-LIBDC1394_LIBS=-L@LIBDC1394@libdc1394/.libs/ -ldc1394_control
+LIBDC1394_LIBS=-L@LIBDC1394@libdc1394/.libs/ -ldc1394_control -lraw1394
 LIBDC1394_INCS=-I@LIBDC1394@
 UIDS = \
 @MAKEUIDDIR@A12.uid \
