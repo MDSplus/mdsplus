@@ -207,10 +207,10 @@ static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
     case DTYPE_CHAR   : strcpy(newexpression,"BYTE"); break;
     case DTYPE_USHORT : strcpy(newexpression,"WORD_UNSIGNED"); break;
     case DTYPE_SHORT  : strcpy(newexpression,"WORD"); break;
-    case DTYPE_ULONG  : strcpy(newexpression,"ULONG"); break;
+    case DTYPE_ULONG  : strcpy(newexpression,"LONG_UNSIGNED"); break;
     case DTYPE_LONG   : strcpy(newexpression,"LONG"); break;
     case DTYPE_FLOAT  : strcpy(newexpression,"F_FLOAT"); break;
-    case DTYPE_DOUBLE : strcpy(newexpression,"DBLE"); break;
+    case DTYPE_DOUBLE : strcpy(newexpression,"D_FLOAT"); break;
     }
 
   strcat(newexpression, "((");
