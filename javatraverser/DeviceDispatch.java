@@ -40,7 +40,6 @@ public class DeviceDispatch extends DeviceComponent
         NodeInfo nodeInfos[] = new NodeInfo[num_components];
         for(i = num_actions = 0; i < num_components; i++)
         {
-            currNid.incrementNid();
             try {
                 nodeInfos[i] = subtree.getInfo(currNid);
             }catch(DatabaseException e)
@@ -50,13 +49,13 @@ public class DeviceDispatch extends DeviceComponent
             }
             if(nodeInfos[i].getUsage() == NodeInfo.USAGE_ACTION)
                 num_actions++;
+            currNid.incrementNid();
         }
         actions = new Data[num_actions];
         dispatch_fields = new DeviceDispatchField[num_actions];
         currNid = new NidData(nidData.getInt());
         for(i = j = num_actions = 0; i < num_components; i++)
         {
-            currNid.incrementNid();
             if(nodeInfos[i].getUsage() == NodeInfo.USAGE_ACTION)
             {
                 try
@@ -69,10 +68,11 @@ public class DeviceDispatch extends DeviceComponent
                 }
                 dispatch_fields[j] = new DeviceDispatchField();
                 dispatch_fields[j].setSubtree(subtree);
-                dispatch_fields[j].setOffsetNid(i+1);
+                dispatch_fields[j].setOffsetNid(i);
                 dispatch_fields[j].configure(nidData.getInt());
                 j++;
             }
+            currNid.incrementNid();
         }
         for(i = 0; i < num_components; i++)
         {

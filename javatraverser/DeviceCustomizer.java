@@ -28,7 +28,7 @@ public class DeviceCustomizer extends Panel
    static String lastDeviceType = null;
    static String lastDeviceProvider = null;
    static String [] lastFields;
-   static NetworkProvider deviceProvider;
+   static MdsDataProvider deviceProvider;
     
     
     String dummies[] = {":NAME", ":COMMENT",":ACT_CHANNELS", ":CLOCK_MODE",
@@ -61,7 +61,7 @@ public class DeviceCustomizer extends Panel
 		String linFields = "";
 		if(deviceProvider == null || !deviceProvider.equals(DeviceSetupBeanInfo.beanDeviceProvider))
         {
-		    deviceProvider = new NetworkProvider(DeviceSetupBeanInfo.beanDeviceProvider);
+		    deviceProvider = new MdsDataProvider(DeviceSetupBeanInfo.beanDeviceProvider);
 		}
         try{
 		    linFields = deviceProvider.GetString("JavaGetDeviceFields(\""+ 

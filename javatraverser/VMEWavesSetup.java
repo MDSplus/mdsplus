@@ -5,6 +5,7 @@
 import java.awt.*;
 import javax.swing.JScrollPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 
 public class VMEWavesSetup extends DeviceSetup
 {
@@ -18,11 +19,9 @@ public class VMEWavesSetup extends DeviceSetup
 		// what Visual Cafe can generate, or Visual Cafe may be unable to back
 		// parse your Java file into its visual environment.
 		//{{INIT_CONTROLS
-		setDeviceProvider("150.178.3.250");
-		setDeviceTitle("VME Waveform Generator");
-		setDeviceType("VMEWaves");
+		setDeviceTitle("VME waveform generator");
 		getContentPane().setLayout(null);
-		setSize(463,428);
+		setSize(518,373);
 		comment.setNumCols(15);
 		comment.setTextOnly(true);
 		comment.setOffsetNid(1);
@@ -41,17 +40,30 @@ public class VMEWavesSetup extends DeviceSetup
 		vme_ip.setLabelString("VME IP:");
 		getContentPane().add(vme_ip);
 		vme_ip.setBounds(228,48,216,24);
-		JScrollPane1.setOpaque(true);
-		getContentPane().add(JScrollPane1);
-		JScrollPane1.setBounds(24,96,432,264);
-		JPanel1.setLayout(new GridLayout(16,1,0,0));
-		JScrollPane1.getViewport().add(JPanel1);
-		JPanel1.setBounds(0,0,426,2064);
+		{
+			String[] tempString = new String[2];
+			tempString[0] = "VME IP address must be defined";
+			tempString[1] = "Base frequency must be defined and positive";
+			deviceButtons1.setCheckMessages(tempString);
+		}
+		{
+			String[] tempString = new String[2];
+			tempString[0] = "len(_vme_ip) > 0";
+			tempString[1] = "_base_freq > 0";
+			deviceButtons1.setCheckExpressions(tempString);
+		}
+		getContentPane().add(deviceButtons1);
+		deviceButtons1.setBounds(120,312,281,40);
+		getContentPane().add(deviceDispatch1);
+		deviceDispatch1.setBounds(312,12,131,40);
+		getContentPane().add(JTabbedPane1);
+		JTabbedPane1.setBounds(36,108,468,180);
 		deviceChannel1.setInSameLine(true);
 		deviceChannel1.setOffsetNid(4);
 		deviceChannel1.setLabelString("ch1");
 		deviceChannel1.setBorderVisible(true);
-		JPanel1.add(deviceChannel1);
+		JTabbedPane1.add(deviceChannel1);
+		deviceChannel1.setBounds(2,24,463,153);
 		JPanel2.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel1.add(JPanel2);
 		JPanel3.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -74,7 +86,8 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel2.setOffsetNid(9);
 		deviceChannel2.setLabelString("ch2");
 		deviceChannel2.setBorderVisible(true);
-		JPanel1.add(deviceChannel2);
+		JTabbedPane1.add(deviceChannel2);
+		deviceChannel2.setBounds(2,24,463,153);
 		JPanel4.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel2.add(JPanel4);
 		JPanel5.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -97,7 +110,8 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel3.setOffsetNid(14);
 		deviceChannel3.setLabelString("ch3");
 		deviceChannel3.setBorderVisible(true);
-		JPanel1.add(deviceChannel3);
+		JTabbedPane1.add(deviceChannel3);
+		deviceChannel3.setBounds(2,24,463,153);
 		JPanel6.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel3.add(JPanel6);
 		JPanel7.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -120,7 +134,8 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel4.setOffsetNid(19);
 		deviceChannel4.setLabelString("ch4");
 		deviceChannel4.setBorderVisible(true);
-		JPanel1.add(deviceChannel4);
+		JTabbedPane1.add(deviceChannel4);
+		deviceChannel4.setBounds(2,24,463,153);
 		JPanel8.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel4.add(JPanel8);
 		JPanel9.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -143,7 +158,8 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel5.setOffsetNid(24);
 		deviceChannel5.setLabelString("ch5");
 		deviceChannel5.setBorderVisible(true);
-		JPanel1.add(deviceChannel5);
+		JTabbedPane1.add(deviceChannel5);
+		deviceChannel5.setBounds(2,24,463,153);
 		JPanel10.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel5.add(JPanel10);
 		JPanel11.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -166,7 +182,8 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel6.setOffsetNid(29);
 		deviceChannel6.setLabelString("ch6");
 		deviceChannel6.setBorderVisible(true);
-		JPanel1.add(deviceChannel6);
+		JTabbedPane1.add(deviceChannel6);
+		deviceChannel6.setBounds(2,24,463,153);
 		JPanel12.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel6.add(JPanel12);
 		JPanel13.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -189,7 +206,8 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel7.setOffsetNid(34);
 		deviceChannel7.setLabelString("ch7");
 		deviceChannel7.setBorderVisible(true);
-		JPanel1.add(deviceChannel7);
+		JTabbedPane1.add(deviceChannel7);
+		deviceChannel7.setBounds(2,24,463,153);
 		JPanel14.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel7.add(JPanel14);
 		JPanel15.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -208,34 +226,12 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceField28.setOffsetNid(38);
 		deviceField28.setLabelString("Y:");
 		JPanel14.add(deviceField28);
-		deviceChannel8.setInSameLine(true);
-		deviceChannel8.setOffsetNid(39);
-		deviceChannel8.setLabelString("ch8");
-		deviceChannel8.setBorderVisible(true);
-		JPanel1.add(deviceChannel8);
-		JPanel16.setLayout(new GridLayout(3,1,0,0));
-		deviceChannel8.add(JPanel16);
-		JPanel17.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		JPanel16.add(JPanel17);
-		deviceField29.setOffsetNid(40);
-		deviceField29.setLabelString("Trig. Time");
-		JPanel17.add(deviceField29);
-		deviceField30.setOffsetNid(41);
-		deviceField30.setLabelString("Freq:");
-		JPanel17.add(deviceField30);
-		deviceField31.setNumCols(30);
-		deviceField31.setOffsetNid(42);
-		deviceField31.setLabelString("X:");
-		JPanel16.add(deviceField31);
-		deviceField32.setNumCols(30);
-		deviceField32.setOffsetNid(43);
-		deviceField32.setLabelString("Y:");
-		JPanel16.add(deviceField32);
 		deviceChannel9.setInSameLine(true);
 		deviceChannel9.setOffsetNid(44);
 		deviceChannel9.setLabelString("ch9");
 		deviceChannel9.setBorderVisible(true);
-		JPanel1.add(deviceChannel9);
+		JTabbedPane1.add(deviceChannel9);
+		deviceChannel9.setBounds(2,24,463,153);
 		JPanel18.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel9.add(JPanel18);
 		JPanel19.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -254,11 +250,36 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceField36.setOffsetNid(48);
 		deviceField36.setLabelString("Y:");
 		JPanel18.add(deviceField36);
+		deviceChannel8.setInSameLine(true);
+		deviceChannel8.setOffsetNid(39);
+		deviceChannel8.setLabelString("ch8");
+		deviceChannel8.setBorderVisible(true);
+		JTabbedPane1.add(deviceChannel8);
+		deviceChannel8.setBounds(2,24,463,153);
+		JPanel16.setLayout(new GridLayout(3,1,0,0));
+		deviceChannel8.add(JPanel16);
+		JPanel17.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
+		JPanel16.add(JPanel17);
+		deviceField29.setOffsetNid(40);
+		deviceField29.setLabelString("Trig. Time");
+		JPanel17.add(deviceField29);
+		deviceField30.setOffsetNid(41);
+		deviceField30.setLabelString("Freq:");
+		JPanel17.add(deviceField30);
+		deviceField31.setNumCols(30);
+		deviceField31.setOffsetNid(42);
+		deviceField31.setLabelString("X:");
+		JPanel16.add(deviceField31);
+		deviceField32.setNumCols(30);
+		deviceField32.setOffsetNid(43);
+		deviceField32.setLabelString("Y:");
+		JPanel16.add(deviceField32);
 		deviceChannel10.setInSameLine(true);
 		deviceChannel10.setOffsetNid(49);
 		deviceChannel10.setLabelString("ch10");
 		deviceChannel10.setBorderVisible(true);
-		JPanel1.add(deviceChannel10);
+		JTabbedPane1.add(deviceChannel10);
+		deviceChannel10.setBounds(2,24,463,153);
 		JPanel20.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel10.add(JPanel20);
 		JPanel21.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -281,7 +302,8 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel11.setOffsetNid(54);
 		deviceChannel11.setLabelString("ch11");
 		deviceChannel11.setBorderVisible(true);
-		JPanel1.add(deviceChannel11);
+		JTabbedPane1.add(deviceChannel11);
+		deviceChannel11.setBounds(2,24,463,153);
 		JPanel22.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel11.add(JPanel22);
 		JPanel23.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -304,7 +326,8 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel12.setOffsetNid(59);
 		deviceChannel12.setLabelString("ch12");
 		deviceChannel12.setBorderVisible(true);
-		JPanel1.add(deviceChannel12);
+		JTabbedPane1.add(deviceChannel12);
+		deviceChannel12.setBounds(2,24,463,153);
 		JPanel24.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel12.add(JPanel24);
 		JPanel25.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -327,7 +350,8 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel13.setOffsetNid(64);
 		deviceChannel13.setLabelString("ch13");
 		deviceChannel13.setBorderVisible(true);
-		JPanel1.add(deviceChannel13);
+		JTabbedPane1.add(deviceChannel13);
+		deviceChannel13.setBounds(2,24,463,153);
 		JPanel26.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel13.add(JPanel26);
 		JPanel27.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -350,7 +374,8 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel14.setOffsetNid(69);
 		deviceChannel14.setLabelString("ch14");
 		deviceChannel14.setBorderVisible(true);
-		JPanel1.add(deviceChannel14);
+		JTabbedPane1.add(deviceChannel14);
+		deviceChannel14.setBounds(2,24,463,153);
 		JPanel28.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel14.add(JPanel28);
 		JPanel29.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -373,7 +398,8 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel15.setOffsetNid(74);
 		deviceChannel15.setLabelString("ch15");
 		deviceChannel15.setBorderVisible(true);
-		JPanel1.add(deviceChannel15);
+		JTabbedPane1.add(deviceChannel15);
+		deviceChannel15.setBounds(2,24,463,153);
 		JPanel30.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel15.add(JPanel30);
 		JPanel31.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -396,7 +422,8 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel16.setOffsetNid(79);
 		deviceChannel16.setLabelString("ch16");
 		deviceChannel16.setBorderVisible(true);
-		JPanel1.add(deviceChannel16);
+		JTabbedPane1.add(deviceChannel16);
+		deviceChannel16.setBounds(2,24,463,153);
 		JPanel32.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel16.add(JPanel32);
 		JPanel33.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -415,22 +442,24 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceField64.setOffsetNid(83);
 		deviceField64.setLabelString("Y:");
 		JPanel32.add(deviceField64);
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "VME IP address must be defined";
-			tempString[1] = "Base frequency must be defined and positive";
-			deviceButtons1.setCheckMessages(tempString);
-		}
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "len(_vme_ip) > 0";
-			tempString[1] = "_base_freq > 0";
-			deviceButtons1.setCheckExpressions(tempString);
-		}
-		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(96,384,281,40);
-		getContentPane().add(deviceDispatch1);
-		deviceDispatch1.setBounds(312,12,131,40);
+		JTabbedPane1.setSelectedIndex(0);
+		JTabbedPane1.setSelectedComponent(deviceChannel1);
+		JTabbedPane1.setTitleAt(0,"1  ");
+		JTabbedPane1.setTitleAt(1,"2  ");
+		JTabbedPane1.setTitleAt(2,"3  ");
+		JTabbedPane1.setTitleAt(3,"4  ");
+		JTabbedPane1.setTitleAt(4,"5  ");
+		JTabbedPane1.setTitleAt(5,"6  ");
+		JTabbedPane1.setTitleAt(6,"7  ");
+		JTabbedPane1.setTitleAt(7,"8  ");
+		JTabbedPane1.setTitleAt(8,"9  ");
+		JTabbedPane1.setTitleAt(9,"10  ");
+		JTabbedPane1.setTitleAt(10,"11  ");
+		JTabbedPane1.setTitleAt(11,"12  ");
+		JTabbedPane1.setTitleAt(12,"13  ");
+		JTabbedPane1.setTitleAt(13,"14  ");
+		JTabbedPane1.setTitleAt(14,"15  ");
+		JTabbedPane1.setTitleAt(15,"16  ");
 		//}}
 	}
 
@@ -480,8 +509,9 @@ public class VMEWavesSetup extends DeviceSetup
 	DeviceField comment = new DeviceField();
 	DeviceField base_freq = new DeviceField();
 	DeviceField vme_ip = new DeviceField();
-	javax.swing.JScrollPane JScrollPane1 = new javax.swing.JScrollPane();
-	javax.swing.JPanel JPanel1 = new javax.swing.JPanel();
+	DeviceButtons deviceButtons1 = new DeviceButtons();
+	DeviceDispatch deviceDispatch1 = new DeviceDispatch();
+	javax.swing.JTabbedPane JTabbedPane1 = new javax.swing.JTabbedPane();
 	DeviceChannel deviceChannel1 = new DeviceChannel();
 	javax.swing.JPanel JPanel2 = new javax.swing.JPanel();
 	javax.swing.JPanel JPanel3 = new javax.swing.JPanel();
@@ -531,13 +561,6 @@ public class VMEWavesSetup extends DeviceSetup
 	DeviceField deviceField26 = new DeviceField();
 	DeviceField deviceField27 = new DeviceField();
 	DeviceField deviceField28 = new DeviceField();
-	DeviceChannel deviceChannel8 = new DeviceChannel();
-	javax.swing.JPanel JPanel16 = new javax.swing.JPanel();
-	javax.swing.JPanel JPanel17 = new javax.swing.JPanel();
-	DeviceField deviceField29 = new DeviceField();
-	DeviceField deviceField30 = new DeviceField();
-	DeviceField deviceField31 = new DeviceField();
-	DeviceField deviceField32 = new DeviceField();
 	DeviceChannel deviceChannel9 = new DeviceChannel();
 	javax.swing.JPanel JPanel18 = new javax.swing.JPanel();
 	javax.swing.JPanel JPanel19 = new javax.swing.JPanel();
@@ -545,6 +568,13 @@ public class VMEWavesSetup extends DeviceSetup
 	DeviceField deviceField34 = new DeviceField();
 	DeviceField deviceField35 = new DeviceField();
 	DeviceField deviceField36 = new DeviceField();
+	DeviceChannel deviceChannel8 = new DeviceChannel();
+	javax.swing.JPanel JPanel16 = new javax.swing.JPanel();
+	javax.swing.JPanel JPanel17 = new javax.swing.JPanel();
+	DeviceField deviceField29 = new DeviceField();
+	DeviceField deviceField30 = new DeviceField();
+	DeviceField deviceField31 = new DeviceField();
+	DeviceField deviceField32 = new DeviceField();
 	DeviceChannel deviceChannel10 = new DeviceChannel();
 	javax.swing.JPanel JPanel20 = new javax.swing.JPanel();
 	javax.swing.JPanel JPanel21 = new javax.swing.JPanel();
@@ -594,8 +624,6 @@ public class VMEWavesSetup extends DeviceSetup
 	DeviceField deviceField62 = new DeviceField();
 	DeviceField deviceField63 = new DeviceField();
 	DeviceField deviceField64 = new DeviceField();
-	DeviceButtons deviceButtons1 = new DeviceButtons();
-	DeviceDispatch deviceDispatch1 = new DeviceDispatch();
 	//}}
 
 }
