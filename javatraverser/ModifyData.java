@@ -169,8 +169,6 @@ public class ModifyData extends NodeEditor implements ActionListener
 	} catch(Exception e) 
 	    {
 		JOptionPane.showMessageDialog(frame, e.getMessage(), "Error writing datafile", JOptionPane.ERROR_MESSAGE);
-	
-	System.out.println("Fatto errore");
 		return false;
 	    }
 	return true;

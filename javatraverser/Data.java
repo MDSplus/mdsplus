@@ -7,7 +7,7 @@ import java.util.*;
 abstract class Data 
 {
     static {
-	System.loadLibrary("JavaMds");
+	System.loadLibrary("javamds");
     }
 
     int dclass;

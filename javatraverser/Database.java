@@ -7,7 +7,7 @@ public class Database {
     boolean is_readonly = false;
     boolean is_editable = false;
     static {
-	System.loadLibrary("JavaMds");
+	System.loadLibrary("javamds");
     }
     public Database(String name, int shot)
     {

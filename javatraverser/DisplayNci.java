@@ -102,7 +102,6 @@ public class DisplayNci extends NodeEditor implements ActionListener
 		case Data.DTYPE_CALL: dtype = "DTYPE_CALL"; break;
 		case Data.DTYPE_WITH_ERROR: dtype = "DTYPE_WITH_ERROR"; break;
 	    }
-	    System.out.println(info.dclass);
 	    switch(info.dclass) {
 		case Data.CLASS_S: dclass = "CLASS_S"; break;
 		case Data.CLASS_D: dclass = "CLASS_D"; break;

@@ -1,3 +1,4 @@
+
 package jTraverser;
 import javax.swing.*;
 
@@ -46,7 +47,6 @@ public class Node
     public void expand() throws DatabaseException
     {
 	int i;
-	
 	NidData sons_nid[] = tree.getSons(nid);
 	NidData members_nid[] = tree.getMembers(nid);
 	sons = new Node[sons_nid.length];
