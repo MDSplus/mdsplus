@@ -58,6 +58,8 @@ IDI_ICON1               ICON    DISCARDABLE     "logbook.ico"
 IDI_ICON2               ICON    DISCARDABLE     "grandpa_icon.ico"
 IDI_ICON3               ICON    DISCARDABLE     "Tcl.ico"
 IDI_ICON4               ICON    DISCARDABLE     "Tdi.ico"
+IDI_ICON5               ICON    DISCARDABLE     "traverser.ico"
+IDI_ICON6               ICON    DISCARDABLE     "scope.ico"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
