@@ -223,7 +223,7 @@ public class RFXTimesSetup extends DeviceSetup
 		deviceField33.setLabelString("T_OPEN_BPS       ");
 		JPanel1.add(deviceField33);
 		{
-			String[] tempString = new String[34];
+			String[] tempString = new String[33];
 			tempString[0] = "xx";
 			tempString[1] = "xx";
 			tempString[2] = "xx";
@@ -257,11 +257,10 @@ public class RFXTimesSetup extends DeviceSetup
 			tempString[30] = "xx";
 			tempString[31] = "xx";
 			tempString[32] = "xx";
-			tempString[33] = "xx";
 			deviceButtons1.setCheckMessages(tempString);
 		}
 		{
-			String[] tempString = new String[34];
+			String[] tempString = new String[33];
 			tempString[0] = "if(_CLOSE_TNSI_state == 1) tcl('set node \\\\CLOSE_TNSI /on'); else tcl('set node \\\\CLOSE_TNSI /off'); 1;";
 			tempString[1] = "if(_CLOSE_TNSR_state == 1) tcl('set node \\\\CLOSE_TNSR /on'); else tcl('set node \\\\CLOSE_TNSR /off'); 1;";
 			tempString[2] = "if(_CLOSE_TNST_state == 1) tcl('set node \\\\CLOSE_TNST /on'); else tcl('set node \\\\CLOSE_TNST /off'); 1;";
@@ -295,7 +294,6 @@ public class RFXTimesSetup extends DeviceSetup
 			tempString[30] = "if(_START_PV_state == 1 && _STOP_PV_state == 1) { tcl('set node \\\\ENABLE_PV /on'); } else { tcl('set node \\\\ENABLE_PV /off'); } 1;";
 			tempString[31] = "if(_OPEN_BPS_state == 1) tcl('set node \\\\OPEN_BPS /on'); else tcl('set node \\\\OPEN_BPS/off'); 1;";
 			tempString[32] = "if(_CLOSE_PMSS_state == 1) tcl('set node \\\\CLOSE_PMSS /on'); else tcl('set node \\\\CLOSE_PMSS /off'); 1;";
-			tempString[33] = "if(_OPEN_BPS_state == 1) tcl('set node \\\\PRE_OPEN_BPS /on'); else tcl('set node \\\\PRE_OPEN_BPS/off'); 1;";
 			deviceButtons1.setCheckExpressions(tempString);
 		}
 		getContentPane().add(deviceButtons1);

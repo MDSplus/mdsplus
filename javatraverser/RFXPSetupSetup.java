@@ -20,13 +20,13 @@ public class RFXPSetupSetup extends DeviceSetup
 		setDeviceTitle("RFX Waveform setup");
 		setDeviceType("RFXPSetup");
 		getContentPane().setLayout(null);
-		setSize(592,382);
+		setSize(586,378);
 		deviceField1.setNumCols(20);
 		deviceField1.setTextOnly(true);
 		deviceField1.setOffsetNid(1);
 		deviceField1.setLabelString("Comment: ");
 		getContentPane().add(deviceField1);
-		deviceField1.setBounds(36,24,324,36);
+		deviceField1.setBounds(12,12,372,36);
 		deviceChoice1.setUpdateIdentifier("WAVE");
 		deviceChoice1.setOffsetNid(2);
 		{
@@ -38,14 +38,30 @@ public class RFXPSetupSetup extends DeviceSetup
 		}
 		deviceChoice1.setLabelString("Control:");
 		getContentPane().add(deviceChoice1);
-		deviceChoice1.setBounds(396,24,180,40);
-		deviceWave1.setUpdateExpression("($==\"Current\")?12500:(($==\"Voltage\")?1350:10)");
+		deviceChoice1.setBounds(48,48,180,40);
+		deviceWave1.setUpdateExpression("AAMaxValue(_window, $, _config)");
 		deviceWave1.setUpdateIdentifier("WAVE");
 		deviceWave1.setOffsetNid(3);
 		getContentPane().add(deviceWave1);
-		deviceWave1.setBounds(24,72,564,240);
+		deviceWave1.setBounds(12,84,564,240);
 		getContentPane().add(deviceButtons1);
 		deviceButtons1.setBounds(168,336,281,40);
+		deviceField2.setNumCols(6);
+		deviceField2.setIdentifier("window");
+		deviceField2.setOffsetNid(8);
+		deviceField2.setLabelString("Window: ");
+		deviceField2.setDisplayEvaluated(true);
+		deviceField2.setEditable(false);
+		getContentPane().add(deviceField2);
+		deviceField2.setBounds(360,48,216,40);
+		deviceField3.setIdentifier("config");
+		deviceField3.setTextOnly(true);
+		deviceField3.setOffsetNid(9);
+		deviceField3.setLabelString("Config.:");
+		deviceField3.setDisplayEvaluated(true);
+		deviceField3.setEditable(false);
+		getContentPane().add(deviceField3);
+		deviceField3.setBounds(372,12,204,40);
 		//}}
 	}
 
@@ -89,6 +105,8 @@ public class RFXPSetupSetup extends DeviceSetup
 	DeviceChoice deviceChoice1 = new DeviceChoice();
 	DeviceWave deviceWave1 = new DeviceWave();
 	DeviceButtons deviceButtons1 = new DeviceButtons();
+	DeviceField deviceField2 = new DeviceField();
+	DeviceField deviceField3 = new DeviceField();
 	//}}
 
 }

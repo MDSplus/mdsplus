@@ -15,6 +15,7 @@ public class DeviceFieldCustomizer extends DeviceCustomizer implements Customize
     Checkbox showState;
     Checkbox textOnly;
     Checkbox editable;
+    Checkbox displayEvaluated;
     
     public DeviceFieldCustomizer()
     {
@@ -53,6 +54,7 @@ public class DeviceFieldCustomizer extends DeviceCustomizer implements Customize
         nids.select(offsetNid);
         jp.add(jp1);
         jp1 = new Panel();
+        jp1.add(displayEvaluated = new Checkbox("Display Evaluated: ", bean.getDisplayEvaluated()));
         jp1.add(new Label("Opt. identifier: "));
         jp1.add(identifier = new TextField(bean.getIdentifier(), 20));
         jp.add(jp1);
@@ -69,6 +71,7 @@ public class DeviceFieldCustomizer extends DeviceCustomizer implements Customize
                 bean.setTextOnly(textOnly.getState());
                 bean.setEditable(editable.getState());
                 bean.setShowState(showState.getState());
+                bean.setDisplayEvaluated(displayEvaluated.getState());
                 bean.setOffsetNid(nids.getSelectedIndex() + 1);
                 bean.setIdentifier(identifier.getText());
                 listeners.firePropertyChange(null, null, null);

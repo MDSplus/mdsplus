@@ -128,6 +128,15 @@ public class DeviceSetup extends JDialog
                 components.addElement(device_components.elementAt(i));
             }
         }
+        
+        //A secod turn in order to carry out actions which need inter-component info
+        for(int i = 0; i < num_components; i++)
+        {
+            ((DeviceComponent)device_components.elementAt(i)).postConfigure();
+        }
+        
+        
+        
         if(methods != null && methods.length > 0)
         {
             pop_methods = new JPopupMenu("Methods");
@@ -232,6 +241,29 @@ public class DeviceSetup extends JDialog
         for(int i = 0; i < num_listeners; i++)
             ((DataChangeListener)dataChangeListeners.elementAt(i)).dataChanged(new DataChangeEvent(this, 0, null));
     }
+    
+    public void updateIdentifiers()
+    {
+        StringBuffer varExpr = new StringBuffer();
+        for(int idx = 0; idx < device_components.size(); idx++)
+        {
+            String currId = ((DeviceComponent)(device_components.elementAt(idx))).getIdentifier();
+            if(currId != null)
+            {
+                Data currData = ((DeviceComponent)(device_components.elementAt(idx))).getData();
+                if(currData != null)
+                    varExpr.append("_"+currId+ " = " + Tree.dataToString(currData) + ";");
+                int currState;
+                if(((DeviceComponent)(device_components.elementAt(idx))).getState())
+                    varExpr.append("_"+currId+ "_state = 1; ");
+                else
+                    varExpr.append("_"+currId+ "_state = 0; ");
+            }
+        }
+        if(device_components.size() > 0)
+            Data.evaluate(varExpr.toString());
+    }
+        
     
     public int check(String expressions[], String [] messages)
     {

@@ -6,7 +6,7 @@ public class DeviceField extends DeviceComponent
 {
     public boolean textOnly = false;
     public boolean showState = false;
-    public boolean editable = true;
+    public boolean displayEvaluated = false;
     public String labelString = "";
     public int numCols = 10;
     private boolean initial_state;
@@ -20,6 +20,8 @@ public class DeviceField extends DeviceComponent
     public int getNumCols() {return numCols; }
     public void setEditable(boolean editable) {this.editable = editable;}
     public boolean getEditable() { return editable; }
+    public boolean getDisplayEvaluated() {return displayEvaluated;}
+    public void setDisplayEvaluated(boolean displayEvaluated){this.displayEvaluated = displayEvaluated;}
     public void setLabelString(String labelString) 
     {
         this.labelString = labelString; 
@@ -87,7 +89,15 @@ public class DeviceField extends DeviceComponent
             checkB.setSelected(is_on);
         if(data != null)
         {
-            String textString = Tree.dataToString(data);
+            String textString;
+            if(displayEvaluated)
+            {
+                try {
+                    textString = Tree.dataToString(subtree.evaluateData(data, 0));
+                }catch(Exception exc){textString = Tree.dataToString(data);}
+            }
+            else
+                textString = Tree.dataToString(data);
             if(textString != null)
             {
                 if(textOnly && textString.charAt(0) == '"')

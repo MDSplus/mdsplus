@@ -31,6 +31,7 @@ public class DeviceFieldBeanInfo extends SimpleBeanInfo
                property("identifier", "Optional field identifier"),
                property("showState", "Display on/off state"),
                property("editable", "Text field editable"),
+               property("displayEvaluated", "Display evaluated data")
             };
             return props;
         }catch(IntrospectionException e)

@@ -13,6 +13,7 @@ public abstract class DeviceComponent extends JPanel
     protected NidData nidData;
     protected String identifier;
     protected String updateIdentifier;
+    protected boolean editable = true;
     private boolean is_initialized = false;
     
     void setSubtree(RemoteTree subtree) {this.subtree = subtree; }
@@ -83,14 +84,17 @@ public abstract class DeviceComponent extends JPanel
                     curr_data = subtree.resolve((PathData)curr_data, Tree.context);
                 }catch(Exception exc){}
             }
-  */          
-            try {
-              subtree.putData(nidData, curr_data, Tree.context);
-            } catch(Exception e) 
+  */         
+            if(editable)
             {
-                System.out.println("Error writing device data: " + e);
-                System.out.println(curr_data);
-                throw e;
+                try {
+                subtree.putData(nidData, curr_data, Tree.context);
+                } catch(Exception e) 
+                {
+                    System.out.println("Error writing device data: " + e);
+                    System.out.println(curr_data);
+                    throw e;
+                }
             }
         }
         if(mode != DISPATCH)
@@ -134,6 +138,7 @@ public abstract class DeviceComponent extends JPanel
     protected abstract void displayData(Data data, boolean is_on);
     protected abstract Data getData();
     protected abstract boolean getState();
+    public void postConfigure(){}
 }
 
 

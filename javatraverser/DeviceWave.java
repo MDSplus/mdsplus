@@ -115,7 +115,13 @@ public class DeviceWave extends DeviceComponent
                 //return (new Float(currVal)).toString();
                 return (nf.format(currVal));
             }
-            public boolean isCellEditable(int row, int col){return true;}
+            public boolean isCellEditable(int row, int col)
+            {
+                if(!waveEditable) return false;
+                if(row == 0 && col == 0) return false;
+                if(row == waveX.length - 1 && col == 0) return false;
+                return true;
+            }
             public void removeTableModelListener(TableModelListener l){}
             public void setValueAt(Object val, int row, int col)
             {
@@ -136,7 +142,12 @@ public class DeviceWave extends DeviceComponent
                 }
                 if(col == 0)
                 {
-                     waveX[row] = valFloat;
+                    if(valFloat > maxX)
+                        waveX[row] = maxX;
+                    else if(valFloat < minX)
+                        waveX[row] = minX;
+                    else
+                        waveX[row] = valFloat;
                     if(row == 0 || row == waveX.length - 1) return;
                     if(waveX[row] < waveX[row - 1] + MIN_STEP)
                         waveX[row] = waveX[row - 1] + (float)MIN_STEP;
@@ -144,7 +155,14 @@ public class DeviceWave extends DeviceComponent
                         waveX[row] = waveX[row + 1] - (float)MIN_STEP;
                 }
                  else
-                    waveY[row] = valFloat;
+                 {
+                    if(valFloat > maxY)
+                        waveY[row] = maxY;
+                    else if(valFloat < minY)
+                        waveY[row] = minY;
+                    else
+                        waveY[row] = valFloat;
+                 }
                 waveEditor.setWaveform(waveX, waveY, minY, maxY);
             }
         });
@@ -179,6 +197,7 @@ public class DeviceWave extends DeviceComponent
         editCB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
+                waveEditable = editCB.isSelected();
                 waveEditor.setEditable(editCB.isSelected());
             }
         });
@@ -291,6 +310,7 @@ public class DeviceWave extends DeviceComponent
             waveXOld[i] = waveX[i];
             waveYOld[i] = waveY[i];
         }
+        updateLimits();
         displayData(data, is_on);   
         initializing = false;
     }
@@ -495,6 +515,10 @@ public class DeviceWave extends DeviceComponent
                         newExprStr += newVal;
                 }
                 //System.out.println(newExprStr);
+                
+                //Update first current id TDI variables
+                master.updateIdentifiers();
+                //Compute new Max
                 Data newData = subtree.evaluateData(subtree.dataFromExpr(newExprStr), 0);
                 maxY = newData.getFloat();
                 //System.out.println(""+maxY);

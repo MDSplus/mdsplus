@@ -150,6 +150,7 @@ public class CompileTree extends Thread
                 if(dataNode != null)
                 {
                     String dataStr = dataNode.getData();
+                    
                     Data data = null;
                     try {
                         data = Data.fromExpr(dataStr);

@@ -105,7 +105,7 @@ public class RFXPConfigSetup extends DeviceSetup
 		JPanel3.add(deviceField13);
 		//$$ etchedBorder1.move(24,417);
 		deviceField16.setOffsetNid(21);
-		deviceField16.setLabelString("PTCB Voltage: ");
+		deviceField16.setLabelString("PTCB Voltage(KV): ");
 		getContentPane().add(deviceField16);
 		deviceField16.setBounds(12,360,276,40);
 		deviceField14.setNumCols(8);
