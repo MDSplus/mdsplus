@@ -65,10 +65,7 @@ Public fun dt200__add(in _path, out _nidout)
 
   /* and the default actions */
   DevAddAction(_path//':INIT_ACTION','INIT','INIT',50,'CAMAC_SERVER',_path,_nid);
-  write(*, "add the store action");
   DevAddAction(_path//':STORE_ACTION','STORE','STORE',50,'CAMAC_SERVER',_path,_nid);
-  write(*, "call DevAddEnd");
   DevAddEnd();
-  write(*, "return a 1");
   return (1);
 }
