@@ -97,23 +97,29 @@ class RFXTimingSetup extends DeviceSetup
     class Device
     {
         String path;
+        String comment = "";
         int type;
         boolean initialHigh = false;
         Data []times;
         float [] freqs;
         public Device(int type, String path, Data [] times, float [] freqs, boolean initialHigh)
         {
+            this(type, path, times, freqs, initialHigh, "");
+        }
+            public Device(int type, String path, Data [] times, float [] freqs, boolean initialHigh, String comment)
+        {
             this.path = path;
             this.type = type;
             this.times = times;
             this.freqs = freqs;
             this.initialHigh = initialHigh;
+            this.comment = comment;
         }
         public void draw(Graphics g, int idx, float start, float convFact, int endX,
             String decPath, int decChan) throws IllegalDataException, DatabaseException, java.rmi.RemoteException
         {
            if(decPath == null)
-             g.drawString(path, 0, idx * SIGNAL_HEIGHT - WAVE_HEIGHT - LINE_HEIGHT - 4);
+             g.drawString(path+" "+comment, 0, idx * SIGNAL_HEIGHT - WAVE_HEIGHT - LINE_HEIGHT - 4);
           else
            g.drawString(path + "    Decoder:" + decPath + "   Chan"+ (decChan), 0, idx * SIGNAL_HEIGHT - WAVE_HEIGHT - LINE_HEIGHT - 4);
             switch(type) {
@@ -399,6 +405,7 @@ class RFXTimingSetup extends DeviceSetup
               int DIO2_CHAN_CLOCK = 13;
               int DIO2_CHAN_TRIGGER_1 = 14;
               int DIO2_CHAN_TRIGGER_2 = 15;
+              int DIO2_CHAN_COMMENT = 16;
 
               int baseNid = ( (NidData) rfxDeviceNids.elementAt(idx)).getInt();
               for (int chan = 0; chan < 8; chan++)
@@ -413,6 +420,15 @@ class RFXTimingSetup extends DeviceSetup
                       chan * DIO2_NODES_PER_CHANNEL +
                       DIO2_CHANNEL_0 + DIO2_CHAN_FUNCTION), Tree.context)).
                       getString();
+                  String comment;
+                  try {
+                      comment = (subtree.getData(new NidData(baseNid +
+                      chan * DIO2_NODES_PER_CHANNEL +
+                      DIO2_CHANNEL_0 + DIO2_CHAN_COMMENT), Tree.context)).
+                      getString();
+                  System.out.println(comment);
+                  }catch(Exception exc){comment = "";
+                  }
                   if(function.equals("CLOCK"))
                   {
                     float freq = (subtree.evaluateData(new NidData(baseNid +
@@ -421,7 +437,7 @@ class RFXTimingSetup extends DeviceSetup
 
                     Device device = new Device(RFX_CLOCK,
                         subtree.getInfo((NidData)rfxDeviceNids.elementAt(idx), Tree.context).getFullPath() + " CHAN " + (chan + 1),
-                        new Data[]{}, new float[]{freq}, false);
+                        new Data[]{}, new float[]{freq}, false, comment);
                     dio2Devices.addElement(device);
                   }
                   else if(function.equals("PULSE"))
@@ -482,12 +498,12 @@ class RFXTimingSetup extends DeviceSetup
                       if(init1High != init2High)
                         device = new Device(RFX_PULSE,
                                             subtree.getInfo( (NidData) rfxDeviceNids.elementAt(idx), Tree.context).getFullPath() + " CHAN " + (chan + 1),
-                                            new Data[]{trig1, trig2}, new float[]{}, init1High);
+                                            new Data[]{trig1, trig2}, new float[]{}, init1High, comment);
 
                       else
                         device = new Device(RFX_PULSE,
                                            subtree.getInfo( (NidData) rfxDeviceNids.elementAt(idx), Tree.context).getFullPath() + " CHAN " + (chan + 1),
-                                           new Data[]{}, new float[]{}, init1High);
+                                           new Data[]{}, new float[]{}, init1High, comment);
 
                       dio2Devices.addElement(device);
                     }catch(Exception exc) {System.out.println(exc);}
@@ -554,12 +570,12 @@ class RFXTimingSetup extends DeviceSetup
                         if(init1High != init2High)
                           device = new Device(RFX_GCLOCK,
                                               subtree.getInfo( (NidData) rfxDeviceNids.elementAt(idx), Tree.context).getFullPath() + " CHAN " + (chan + 1),
-                                              new Data[]{trig1, trig2}, new float[]{freq}, init1High);
+                                              new Data[]{trig1, trig2}, new float[]{freq}, init1High, comment);
 
                         else
                           device = new Device(RFX_GCLOCK,
                                              subtree.getInfo( (NidData) rfxDeviceNids.elementAt(idx), Tree.context).getFullPath() + " CHAN " + (chan + 1),
-                                             new Data[]{}, new float[]{freq}, init1High);
+                                             new Data[]{}, new float[]{freq}, init1High, comment);
 
                         dio2Devices.addElement(device);
                       }catch(Exception exc) {System.out.println(exc);}
@@ -632,12 +648,12 @@ class RFXTimingSetup extends DeviceSetup
                       if(init1High != init2High)
                         device = new Device(RFX_DCLOCK,
                                             subtree.getInfo( (NidData) rfxDeviceNids.elementAt(idx), Tree.context).getFullPath() + " CHAN " + (chan + 1),
-                                            new Data[]{trig1, trig2}, new float[]{freq1, freq2}, init1High);
+                                            new Data[]{trig1, trig2}, new float[]{freq1, freq2}, init1High, comment);
 
                       else
                         device = new Device(RFX_DCLOCK,
                                            subtree.getInfo( (NidData) rfxDeviceNids.elementAt(idx), Tree.context).getFullPath() + " CHAN " + (chan + 1),
-                                           new Data[]{}, new float[]{freq1, freq2}, init1High);
+                                           new Data[]{}, new float[]{freq1, freq2}, init1High, comment);
 
                       dio2Devices.addElement(device);
                     }catch(Exception exc) {System.out.println(exc);}

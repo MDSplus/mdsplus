@@ -210,26 +210,26 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField1.setLabelString("T_STOP_CHOP_TC");
     deviceField1.setNumCols(5);
     deviceField1.setIdentifier("STOP_CHOP_TC");
-    deviceField1.setShowState(true);
+    deviceField1.setShowState(false);
     jPanel17.setBorder(titledBorder9);
     jPanel17.setLayout(gridLayout15);
     deviceField3.setOffsetNid(37);
     deviceField3.setLabelString("T_STOP_PWM_TC");
     deviceField3.setNumCols(5);
     deviceField3.setIdentifier("STOP_PWM_TC");
-    deviceField3.setShowState(true);
+    deviceField3.setShowState(false);
     gridLayout16.setColumns(1);
     gridLayout16.setRows(8);
     deviceField18.setOffsetNid(42);
     deviceField18.setLabelString("T_STOP_INV_TC_REF");
     deviceField18.setNumCols(5);
     deviceField18.setIdentifier("STOP_INV_TC_REF");
-    deviceField18.setShowState(true);
+    deviceField18.setShowState(false);
     deviceField20.setOffsetNid(43);
     deviceField20.setLabelString("T_START_PWM_TC_REF");
     deviceField20.setNumCols(5);
     deviceField20.setIdentifier("START_FWD_TC_REF");
-    deviceField20.setShowState(true);
+    deviceField20.setShowState(false);
     deviceField15.setDisplayEvaluated(false);
     deviceField15.setShowState(true);
     deviceField15.setIdentifier("START_INV_TC");
@@ -240,11 +240,11 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField9.setLabelString("T_START_INV_TC_REF");
     deviceField9.setNumCols(5);
     deviceField9.setIdentifier("START_INV_TC_REF");
-    deviceField9.setShowState(true);
+    deviceField9.setShowState(false);
     jPanel18.setBorder(titledBorder10);
     jPanel18.setDebugGraphicsOptions(0);
     jPanel18.setLayout(gridLayout16);
-    deviceField16.setShowState(true);
+    deviceField16.setShowState(false);
     deviceField16.setIdentifier("STOP_INV_TC");
     deviceField16.setNumCols(5);
     deviceField16.setLabelString("T_STOP_INV_TC");
@@ -254,7 +254,7 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField21.setLabelString("T_STOP_PWM_TC_REF");
     deviceField21.setNumCols(5);
     deviceField21.setIdentifier("STOP_FWD_TC_REF");
-    deviceField21.setShowState(true);
+    deviceField21.setShowState(false);
     deviceField2.setOffsetNid(36);
     deviceField2.setLabelString("T_START_PWM_TC");
     deviceField2.setNumCols(5);
@@ -408,7 +408,7 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField24.setLabelString("T_STOP_PR");
     deviceField24.setNumCols(5);
     deviceField24.setIdentifier("STOP_PR");
-    deviceField24.setShowState(true);
+    deviceField24.setShowState(false);
     gridLayout10.setColumns(1);
     gridLayout10.setRows(2);
     jPanel14.setBorder(titledBorder4);
@@ -454,7 +454,7 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField22.setLabelString("T_OPEN_IS_TC");
     deviceField22.setNumCols(5);
     deviceField22.setIdentifier("OPEN_IS_TC");
-    deviceField22.setShowState(true);
+    deviceField22.setShowState(false);
     deviceField1114.setOffsetNid(38);
     deviceField1114.setLabelString("T_CLOSE_IS_TC");
     deviceField1114.setNumCols(5);
@@ -517,7 +517,7 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField27.setLabelString("T_INSRT_PTCB_1");
     deviceField27.setOffsetNid(15);
     jPanel25.setLayout(borderLayout3);
-    deviceField28.setShowState(true);
+    deviceField28.setShowState(false);
     deviceField28.setIdentifier("STOP_GP");
     deviceField28.setNumCols(5);
     deviceField28.setLabelString("T_STOP_GP");
@@ -680,7 +680,7 @@ public class RFXTimesSetup extends DeviceSetup {
         });
  deviceButtons1.setCheckMessages(new String[] {"Item1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9", "Item 10", "Item 11", "Item 12", "Item 13", "Item 14", "Item 15",
         "Item 16", "Item 17", "Item 18", "Item 19", "Item 20", "Item 21", "Item 22", "Item 23", "Item 24", "Item 25", "Item 26", "Item 27", "Item 28", "Item 29",
-        "Item 30", "Item 31", "Item 32", "Item 33", "Item 34", "Item 35", "Item 36", "Item 37", "Item 38"});
+        "Item 30", "Item 31", "Item 32", "Item 33", "Item 34", "Item 35", "Item 36"});
     jPanel5.add(deviceButtons1,  BorderLayout.SOUTH);
   }
 
