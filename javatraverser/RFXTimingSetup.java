@@ -322,7 +322,7 @@ class RFXTimingSetup extends DeviceSetup
               else if (model.equals("\"DIO2Encoder\""))
               {
 
-                int DIO2_ENC_NODES_PER_CHANNEL = 4;
+                int DIO2_ENC_NODES_PER_CHANNEL = 5;
                 int DIO2_ENC_CHANNEL_0 = 6;
                 int DIO2_ENC_CHAN_EVENT_NAME = 1;
                 int DIO2_ENC_CHAN_EVENT = 2;
