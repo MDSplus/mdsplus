@@ -25,7 +25,7 @@ dwscopesubs.o
 
 ../bin/dwscope_remote : $(OBJECTS_DWSCOPE) evaluate.o RemoteDummies.o
 	cc -o $@ $(OBJECTS_DWSCOPE)  evaluate.o RemoteDummies.o \
-                                                -lm -L../shlib -no_so -lXmdsShr -so_archive -lMdsIpShr $(MOTIF_LIBS) $(X11_LIBS)
+                  -L../shlib $(STATIC_LIB) -lXmdsShr $(SHARED_LIB) -lMdsIpShr $(MOTIF_LIBS) $(X11_LIBS) -lm
 
 ../uid/dwscope.uid : dwscope.uil
 	uil -o $@ dwscope.uil
