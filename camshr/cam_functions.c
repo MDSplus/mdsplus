@@ -175,6 +175,28 @@ static int  KsMultiIo(  CamKey 			Key,
 						int 			Enhanced 
 						);
 
+typedef struct {
+	__u8	code        :  7;
+	__u8	valid       :  1;
+
+	__u8	segment_no;
+
+	__u8	sense_key   :  4;
+	__u8	zero1       :  4;
+
+        __u8    fifo_status;
+
+	__u8	DMA_byte_count[2];
+
+	__u8	additional_sense_length;
+
+        __u8    zero2[2];
+
+	__u8	additional_sense_code;
+
+	__u8	zero3[5];
+
+} J73ASenseData;
 static int	CamAssign( char *Name, CamKey *Key );
 static int  NOT_SUPPORTED();
 static void str2upcase( char *str );
@@ -184,7 +206,7 @@ static void str2upcase( char *str );
 //-----------------------------------------------------------
 static void 		Blank( UserParams *user );
 static int 		JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status );
-static int              Jorway73ATranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status );
+static int              Jorway73ATranslateIosb( int datacmd, int reqbytcnt, J73ASenseData *sense, int scsi_status );
 static int 		KsTranslateIosb( RequestSenseData *sense, int scsi_status );
 
 //-----------------------------------------------------------
@@ -733,7 +755,7 @@ static int Jorway73ADoIo(
         int direction;
         unsigned int bytcnt;
         int reqbytcnt = 0;
-        SenseData sense;
+        J73ASenseData sense;
         char sensretlen;
         int online;
         int enhanced;
@@ -855,7 +877,8 @@ static int Jorway73ADoIo(
         status = scsi_io( scsiDevice, direction, cmd, cmdlen, Data, reqbytcnt, (unsigned char *)&sense,
 			  sizeof(sense), &sensretlen, &bytcnt);
         scsi_lock(scsiDevice,0);
-        status = Jorway73ATranslateIosb(reqbytcnt,&sense,status);
+        if (cmd == (unsigned char *)&NONDATAcommand)
+        status = Jorway73ATranslateIosb(IsDataCommand, reqbytcnt,&sense,status);
 	if ( iosb ) *iosb = LastIosb;					// [2002.12.11]
 
 
@@ -1032,19 +1055,18 @@ static int JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status
 
 // extract CAMAC status info for Jorway highways
 //-----------------------------------------------------------
-static int Jorway73ATranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status )
+static int Jorway73ATranslateIosb( int isdatacmd, int reqbytcnt, J73ASenseData *sense, int scsi_status )
 {
   int status;
-  int bytcnt = reqbytcnt - ((int)sense->word_count_defect[2])+
-    (((int)sense->word_count_defect[1])<<8)+
-    (((int)sense->word_count_defect[0])<<16);
+  int bytcnt = reqbytcnt - ((int)sense->DMA_byte_count[1])+
+    (((int)sense->DMA_byte_count[0])<<8);
  
   if (Verbose)
   {
-    printf("SCSI Sense data:  code=%d,valid=%d,sense_key=%d,word count deficit=%d\n\n",sense->code,sense->valid,
-	   sense->sense_key, ((int)sense->word_count_defect[2])+
-	   (((int)sense->word_count_defect[1])<<8)+
-	   (((int)sense->word_count_defect[0])<<16));
+    printf("SCSI Sense data:  code=%d,valid=%d,sense_key=%d,DMA byte count=%d\n\n",sense->code,sense->valid,
+	   sense->sense_key, ((int)sense->DMA_byte_count[1])+
+	   (((int)sense->DMA_byte_count[1])<<8));
+	   /*
     printf("     Main status register:\n\n");
     printf("                  bdmd=%d,dsne=%d,bdsq=%d,snex=%d,crto=%d,to=%d,no_x=%d,no_q=%d\n\n",
                             sense->main_status_reg.bdmd,sense->main_status_reg.dsne,sense->main_status_reg.bdsq,
@@ -1061,88 +1083,97 @@ static int Jorway73ATranslateIosb( int reqbytcnt, SenseData *sense, int scsi_sta
                             sense->serial_status_reg.derr);
     printf("                  Additional Sense Code=%d,slot=%d,crate=%d\n\n",sense->additional_sense_code,
                               sense->slot_high_bit * 16 + sense->slot,sense->crate);
+	   */
   }
-	LastIosb.bytcnt = (unsigned short)(bytcnt & 0xffff);
-        LastIosb.lbytcnt = (unsigned short)(bytcnt >> 16);
-        LastIosb.x=0;
-        LastIosb.q=0;
-        LastIosb.err=0;
-        LastIosb.lpe=0;
-        LastIosb.tpe=0;
-        LastIosb.no_sync=0;
-        LastIosb.tmo=0;
-        LastIosb.adnr=0;
-        LastIosb.list=0;
-
-	if( MSGLVL(FUNCTION_NAME) )
-		printf( "%s()\n", JT_ROUTINE_NAME );
-
-	if( MSGLVL(DETAILS) ) {
-		printf( "%s(): scsi status 0x%x\n", JT_ROUTINE_NAME, scsi_status );
+    LastIosb.x=0;
+    LastIosb.q=0;
+    LastIosb.err=0;
+    LastIosb.lpe=0;
+    LastIosb.tpe=0;
+    LastIosb.no_sync=0;
+    LastIosb.tmo=0;
+    LastIosb.adnr=0;
+    LastIosb.list=0;
+    LastIosb.bytcnt = (unsigned short)(bytcnt & 0xffff);
+    LastIosb.lbytcnt = (unsigned short)(bytcnt >> 16);
+    status = CamSCCFAIL;
+    if (isdatacmd) {
+      switch (scsi_status) {
+      case 0:
+	LastIosb.x=1;
+	LastIosb.q=1;
+	LastIosb.err=0;
+	LastIosb.lpe=0;
+	LastIosb.tpe=0;
+	LastIosb.no_sync=0;
+	LastIosb.tmo=0;
+	LastIosb.adnr=0;
+	LastIosb.list=0;
+        status = CamDONE_Q;
+	break;
+      case 2:
+	LastIosb.x=sense->additional_sense_code != 0x44;
+	LastIosb.q=sense->additional_sense_code != 0x80;
+	LastIosb.err=0;
+	LastIosb.lpe=sense->additional_sense_code==0x47;
+	LastIosb.tpe=sense->additional_sense_code==0x47;
+	LastIosb.no_sync=0;
+	LastIosb.tmo=0;
+	LastIosb.adnr=sense->additional_sense_code==0x4;
+	LastIosb.list=0;
+        switch (sense->additional_sense_code){
+	case 0x44: status = CamDONE_NOX; break;
+	case 0x80: status = CamDONE_NOQ; break;
 	}
+	break;
+      }
+    }
+    else {
+      switch (scsi_status) {
+      case 0:
+	LastIosb.x=1;
+	LastIosb.q=0;
+	LastIosb.err=0;
+	LastIosb.lpe=0;
+	LastIosb.tpe=0;
+	LastIosb.no_sync=0;
+	LastIosb.tmo=0;
+	LastIosb.adnr=0;
+	LastIosb.list=0;
+	status = CamDONE_NOQ;
+	break;
+      case 2:
+	LastIosb.x=0;
+	LastIosb.q=0;
+	LastIosb.err=0;
+	LastIosb.lpe=sense->additional_sense_code==0x47;
+	LastIosb.tpe=sense->additional_sense_code==0x47;
+	LastIosb.no_sync=0;
+	LastIosb.tmo=0;
+	LastIosb.adnr=sense->additional_sense_code==0x4;
+	LastIosb.list=0;
+        switch (sense->additional_sense_code){
+	case 0x44: status = CamDONE_NOX; break;
+	case 0x80: status = CamDONE_NOQ; break;
+	}
+	break;
+      case 4:
+	LastIosb.x=1;
+	LastIosb.q=1;
+	LastIosb.err=0;
+	LastIosb.lpe=0;
+	LastIosb.tpe=0;
+	LastIosb.no_sync=0;
+	LastIosb.tmo=0;
+	LastIosb.adnr=0;
+	LastIosb.list=0;
+	status = CamDONE_Q;
+	break;
+      }
+    }
 
-        LastIosb.q = !sense->main_status_reg.no_q;
-        LastIosb.x = !sense->main_status_reg.no_x;
-	status = CamSERTRAERR;
-        switch (scsi_status) {
-        case 0:
-          status = 1;
-          break;
-	case 1: {
-          switch(sense->sense_key) {
-            case SENSE_HARDWARE_ERROR:
-              if (sense->additional_sense_code == SENSE2_NOX) {
-                LastIosb.q = 0;
-                LastIosb.x = 0;
-                if (sense->main_status_reg.snex)
-                  status = CamSCCFAIL;
-                else
-                  status = CamDONE_NOX;
-              }
-              else if (sense->additional_sense_code == SENSE2_NOQ) {
-                LastIosb.q = 0;
-                status = CamDONE_NOQ;
-              }
-              else {
-                LastIosb.err = 1;
-                LastIosb.tmo = sense->main_status_reg.to | sense->serial_status_reg.timos;
-                LastIosb.no_sync = sense->serial_status_reg.losyn | sense->serial_status_reg.sync;
-                LastIosb.lpe = LastIosb.tpe = sense->serial_status_reg.rpe;
-              }
-              break;  
-            case SENSE_SHORT_TRANSFER:
-              LastIosb.q = 0;
-              status = CamDONE_NOQ;
-              break;
-            case SENSE_UNIT_ATTENTION:
-              LastIosb.q = !sense->main_status_reg.no_q;
-              LastIosb.x = !sense->main_status_reg.no_x;
-              LastIosb.tmo = sense->main_status_reg.to | sense->serial_status_reg.timos;
-              LastIosb.no_sync = sense->serial_status_reg.losyn | sense->serial_status_reg.sync;
-              LastIosb.lpe = LastIosb.tpe = sense->serial_status_reg.rpe;
-              LastIosb.err = LastIosb.lpe || LastIosb.no_sync || LastIosb.tmo;
-              if (LastIosb.err) break;
-              if (!LastIosb.x)
-                status = CamDONE_NOX;
-              else if (!LastIosb.q)
-                status = CamDONE_NOQ;
-              else
-                status = CamDONE_Q;
-              break;
-             }
-	}
-        break;
-	case 2: 
-              if (!LastIosb.x)
-                status = CamDONE_NOX;
-              else if (!LastIosb.q)
-                status = CamDONE_NOQ;
-              else
-                status = CamDONE_Q;
-              break;
-	}
-        LastIosb.status = (unsigned short)status&0xffff;
-	return status;
+    LastIosb.status = (unsigned short)status&0xffff;
+    return status;
 }
 
 //-----------------------------------------------------------
