@@ -224,10 +224,10 @@ typedef struct node
 #ifdef EMPTY_NODE
 #ifdef _big_endian
 static const NODE empty_node = {{'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '}, 
-                                sizeof(NODE), 0, 0, -(int)sizeof(NODE), 0, 0, 0, 0};
+                                sizeof(NODE) << 24, 0, 0, ((-(int)sizeof(NODE)) << 24) | 0xffffff, 0, 0, 0, 0};
 #else
 static const NODE empty_node = {{'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '}, 
-                                sizeof(NODE) << 24, 0, 0, ((-(int)sizeof(NODE)) << 24) | 0xffffff, 0, 0, 0, 0};
+                                sizeof(NODE), 0, 0, -(int)sizeof(NODE), 0, 0, 0, 0};
 #endif
 #endif
 
