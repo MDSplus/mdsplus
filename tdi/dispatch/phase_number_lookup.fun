@@ -1,0 +1,22 @@
+/*	 PHASE_NUMBER_LOOKUP.FUN
+; PURPOSE:	Return index number of phase
+;               for use with MIT Dispatch/Serve
+; CATEGORY:	CMOD (site customizable)
+; CALLING SEQUENCE: phase_number = PHASE_NUMBER_LOOKUP(string)
+; INPUTS:	 phase name.
+; OPTIONAL INPUT PARAMETERS: --
+; KEYWORD PARAMETERS: --
+; OUTPUTS:	--
+; OPTIONAL OUTPUT PARAMETERS: --
+; COMMON BLOCKS: --
+; SIDE EFFECTS: --
+; RESTRICTIONS: --
+; PROCEDURE:	--
+; MODIFICATION HISTORY:
+;	TWF 3-AUG-1992 Initial coding.
+*/
+FUN PUBLIC PHASE_NUMBER_LOOKUP(IN _IN_PHASE) {
+    IF (!ALLOCATED(PUBLIC _$$$PHASE_NAMES)) LOAD_PHASES();
+    RETURN(KIND(EVALUATE(_IN_PHASE)) == 14 ? PUBLIC _$$$PHASE_VALUES[BSEARCH(UPCASE(_IN_PHASE),PUBLIC _$$$PHASE_NAMES,0)] : 
+                                             LONG(_IN_PHASE));
+}
