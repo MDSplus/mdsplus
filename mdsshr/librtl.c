@@ -1216,6 +1216,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   char *tmp_error2 = 0;
   int dlopen_mode = RTLD_LAZY;
   int lib_offset=3;
+  char *old_fis_error=FIS_Error;
   
   *symbol_value = NULL;
 
@@ -1233,13 +1234,8 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
 #endif
   if (strncmp(c_filename+strlen(c_filename)-strlen(SHARELIB_TYPE),SHARELIB_TYPE,strlen(SHARELIB_TYPE)))
     strcat(full_filename,SHARELIB_TYPE);
-  if (FIS_Error)
-  {
-    free(FIS_Error);
-    FIS_Error = 0;
-  }
-#ifdef linux
   dlopen_lock();
+#ifdef linux
   dlopen_mode = RTLD_NOW | RTLD_GLOBAL;
 #endif
   handle = dlopen(full_filename,dlopen_mode);
@@ -1252,7 +1248,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
       tmp_error2 = dlerror();
       if (tmp_error2 == NULL) tmp_error2="";
       tmp_error2 = strcpy((char *)malloc(strlen(tmp_error2)+1),tmp_error2);
-      handle = dlopen(&full_filename[0],dlopen_mode);
+      handle = dlopen(&full_filename[lib_offset],dlopen_mode);
     }
   }
   if (handle != NULL)
@@ -1276,9 +1272,9 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
       strlen(full_filename)*2+strlen(tmp)+strlen(tmp_error1)+strlen(tmp_error2)+10)),
       "Error loading library:\n\t %s - %s\n\t %s - %s\n\t%s - %s\n",c_filename,tmp_error1,full_filename,tmp_error2,&full_filename[3],tmp);
   }
-#ifdef linux
+  if (old_fis_error != FIS_Error)
+    free(old_fis_error);
   dlopen_unlock();
-#endif
   if (tmp_error1)
     free(tmp_error1);
   if (tmp_error2)
