@@ -7,8 +7,11 @@
 #include        <smg$routines.h>
 #else
 #include        <malloc.h>
-#include        <curses.h>
-#include        <term.h>
+#ifdef CURSES
+#include        <curses.h>				/*  */
+#include        <term.h>				/*  */
+#endif
+#include        <sys/types.h>
 #include        <termios.h>
 #endif
 
@@ -33,6 +36,22 @@
 #define CTRL_H  0x08
 #define CTRL_U  0x15
 #define ESC     0x1B
+
+#ifndef CURSES
+#define KEY_DOWN  0402		/* from curses.h			*/
+#define KEY_UP    0403
+#define KEY_LEFT  0404
+#define KEY_RIGHT 0405
+static char  key_up[] =    "\033OA";
+static char  key_down[] =  "\033OB";
+static char  key_right[] = "\033OC";
+static char  key_left[] =  "\033OD";
+static char  save_cursor[] =    "\0337";
+static char  restore_cursor[] = "\0338";
+static char  cursor_left[] =  "\010";
+static char  cursor_right[] = "\033[C";
+static char  clr_eol[] =      "\033[K";
+#endif
 
 static int   insert_mode = 1;	/* flag					*/
 static int   icnt;		/* number of lines read			*/
@@ -431,7 +450,7 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
 /*
 /*    for ( ; ; )
 /*       {
-/*        fgets_with_edit(usrline,sizeof(usrline),fp);
+/*        fgets_with_edit(usrline,sizeof(usrline),fp,"Enter> ");
 /*        printf("--> Line = '%s'\n\n",usrline);
 /*       }
 /*   }							/*  */

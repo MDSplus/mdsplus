@@ -114,8 +114,8 @@ char  *MdsGetMsg(	/* Return: addr of "status" string	*/
     int   sts			/* <r> sts value			*/
    )
    {
+    int   i;
     int   max;
-	int i;
     char  *facilityText;
     struct stsText  *stsText;
     static char  text[72];
