@@ -127,7 +127,10 @@ public class DeviceTable extends DeviceComponent
             public int getColumnCount()
             {
                 if(displayRowNumber)
-                    return numCols + 1;
+                {
+
+                  return numCols + 1;
+                }
                 else
                     return numCols;
             }
