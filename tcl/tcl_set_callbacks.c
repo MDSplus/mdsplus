@@ -113,6 +113,11 @@ static void AppendOut(char *text)
 	strcat(saved_output,"\n");
 }
 
+static void StatusOut(int status)
+{
+  AppendOut(MdsGetMsg(status));
+}
+
 void TclSaveOut()
 {
 	if (saved_output)
@@ -120,7 +125,7 @@ void TclSaveOut()
 		free(saved_output);
 		saved_output = 0;
 	}
-	TclSetCallbacks(AppendOut,AppendOut,NodeTouched);
+	TclSetCallbacks(StatusOut,AppendOut,NodeTouched);
 }
 
 int TclOutLen()
