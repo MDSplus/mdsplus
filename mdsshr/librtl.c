@@ -1045,6 +1045,11 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   strcat(full_filename,c_filename);
   strcat(full_filename,".so");
   handle = dlopen(full_filename,RTLD_LAZY);
+  if (handle == NULL) {
+    strcpy(full_filename,c_filename);
+    strcat(full_filename,".so");
+    handle = dlopen(full_filename,RTLD_LAZY);
+  }
   if (handle != NULL)
   {
     char *c_symbol = MdsDescrToCstring(symbol);
