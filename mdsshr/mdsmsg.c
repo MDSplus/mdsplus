@@ -23,6 +23,8 @@
 #include        "tdimessages.h"
 #include        "treeshr.h"
 
+extern void StrCopyDx();
+
 /**********************************************************************
 * MDSMSG.C --
 *
@@ -155,6 +157,14 @@ char  *MdsGetMsg(	/* Return: addr of "status" string	*/
    }
 
 
+void MdsGetMsgDsc(int status, struct descriptor *out)
+{
+	static struct descriptor tmp = {0,DTYPE_T,CLASS_S,0};
+	tmp.dscA_pointer = MdsGetMsg(status);
+	tmp.dscW_length = strlen(tmp.dscA_pointer);
+	StrCopyDx(out,&tmp);
+	return;
+}
 
 	/****************************************************************
 	 * setMdsMsgFlag:

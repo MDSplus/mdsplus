@@ -38,6 +38,7 @@ MdsSerializeDscOut
 MdsSerializeDscOutZ
 MdsSetCurrentShotId
 MdsGetMsg
+MdsGetMsgDsc
 MdsMsg
 MdsXpand
 StrAppend
