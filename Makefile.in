@@ -34,6 +34,7 @@ PARTS = \
         wfevent \
         setevent \
 	rpm \
+        manpages \
         @D3D_PACKAGE@ \
         @JAVA_APS@ \
         @IDLSQL@ \

@@ -4511,6 +4511,7 @@ javaclient/Makefile
 javamds/Makefile 
 javascope/Makefile
 javatraverser/Makefile
+manpages/Makefile
 math/Makefile 
 math/csint.f 
 math/umach.f 
@@ -4700,6 +4701,7 @@ javaclient/Makefile
 javamds/Makefile 
 javascope/Makefile
 javatraverser/Makefile
+manpages/Makefile
 math/Makefile 
 math/csint.f 
 math/umach.f 
