@@ -1196,7 +1196,7 @@ STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, int size, int mode)
   return ret;
 }
 
-int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode)
+int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in)
 {
   int status = TreeFAILURE;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
@@ -1204,6 +1204,8 @@ int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode)
     LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
     if (FDS[fd-1].socket == -1)
     {
+      int mode=mode_in &  0x3;
+      int nowait=mode_in & 0x8;
 #if defined (_WIN32)
       int LockStart = (int)(offset >= 0 ? offset : lseek(FDS[fd-1].fd,0,SEEK_END));
       int LockSize = size;
@@ -1242,11 +1244,11 @@ int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode)
         flock_info.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
         flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
         flock_info.l_len = (mode == 0) ? 0 : size;
-        status = (fcntl(FDS[fd-1].fd,F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
+        status = (fcntl(FDS[fd-1].fd,nowait ? F_SETLK : F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
 #endif
     }
     else
-      status = io_lock_remote(fd,offset,size,mode);
+      status = io_lock_remote(fd,offset,size,mode_in);
     UnlockMdsShrMutex(&IOMutex);
   }
   return status; 

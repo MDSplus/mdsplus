@@ -31,6 +31,7 @@ extern char *index(char *str,char c);
 #endif
 #include <sys/resource.h>
 #endif
+#include "treeshrp.h"
 
 
 #ifdef __toupper
@@ -789,7 +790,7 @@ char *MaskReplace(char *path_in,char *tree,int shot)
 }  
 
 
-static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,char **resnam_out, int report)
+static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,char **resnam_out, int report, int edit_flag)
 {
   int fd = -1;
   char *path;
@@ -848,7 +849,7 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
         }
         else
         {
-          fd = MDS_IO_OPEN(resnam,O_RDONLY,0);
+          fd = MDS_IO_OPEN(resnam,edit_flag ? O_RDWR : O_RDONLY,0);
 #if (defined(__osf__) || defined(__linux) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX) || defined(__APPLE__)) && !defined(HAVE_VXWORKS_H)
           info->channel = (MDS_IO_SOCKET(fd) == -1) ? fd : 0;
 #endif
@@ -869,8 +870,16 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
     */
     free(path);
   }
+  if (fd != -1 && strcmp(type,TREE_TREEFILE_TYPE) == 0 && edit_flag)
+  {
+    if (!(MDS_IO_LOCK(fd,1,1,10) & 1))
+    {
+      MDS_IO_CLOSE(fd);
+      fd = -2;
+    }
+  }   
   if (resnam_out)
-    *resnam_out = fd != -1 ? resnam : 0;
+    *resnam_out = fd >= 0 ? resnam : 0;
   else if (resnam)
     free(resnam);
   return fd;
@@ -900,17 +909,18 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, in
   int       status;
 
   char *resnam;
-  *fd = OpenOne(info, tree, shot, TREE_TREEFILE_TYPE, 0, &resnam, report);
-  if (*fd != -1)
+  *fd = OpenOne(info, tree, shot, TREE_TREEFILE_TYPE, 0, &resnam, report, edit_flag);
+  switch (*fd)
   {
+  case -1: status = TreeFILE_NOT_FOUND; break;
+  case -2: status = TreeOPEN_EDIT & 0xfffffffa; break;
+  default:
     info->alq = (int)MDS_IO_LSEEK(*fd, 0, SEEK_END) / 512;
     MDS_IO_LSEEK(*fd, 0, SEEK_SET);
     status = TreeNORMAL;
     info->filespec=resnam;
     *nomap = info->channel == 0;
   }
-  else 
-    status = TreeFILE_NOT_FOUND;
   return status;
 }
 
@@ -1207,18 +1217,18 @@ int       _TreeOpenNew(void **dbid, char *tree_in, int shot_in)
         info->flush = ((*dblist)->shotid == -1);
         info->treenam = strcpy(malloc(strlen(tree)+1),tree);
         info->shot = (*dblist)->shotid;
-        fd = OpenOne(info, tree, (*dblist)->shotid, TREE_TREEFILE_TYPE, 1, &info->filespec, 0);
+        fd = OpenOne(info, tree, (*dblist)->shotid, TREE_TREEFILE_TYPE, 1, &info->filespec, 0, 0);
         if (fd != -1)
         {
           char *resnam = 0;
           MDS_IO_CLOSE(fd);
-          fd = OpenOne(info, tree, (*dblist)->shotid, TREE_NCIFILE_TYPE, 1, &resnam, 0);
+          fd = OpenOne(info, tree, (*dblist)->shotid, TREE_NCIFILE_TYPE, 1, &resnam, 0, 0);
           if (resnam)
             free(resnam);
           if (fd != -1)
           {
             MDS_IO_CLOSE(fd);
-            fd = OpenOne(info, tree, (*dblist)->shotid, TREE_DATAFILE_TYPE, 1, &resnam, 0);
+            fd = OpenOne(info, tree, (*dblist)->shotid, TREE_DATAFILE_TYPE, 1, &resnam, 0, 0);
             if (resnam)
               free(resnam);
             if (fd != -1)
@@ -1292,7 +1302,7 @@ struct descriptor *TreeFileName(char *tree, int shot)
   char *ans;
   TREE_INFO dummy_info;
 
-  fd = OpenOne(&dummy_info, tree, shot, TREE_TREEFILE_TYPE, 0, &ans, 0);
+  fd = OpenOne(&dummy_info, tree, shot, TREE_TREEFILE_TYPE, 0, &ans, 0, 0);
   if (fd != -1) {
     MDS_IO_CLOSE(fd);
     ans_dsc.pointer = ans;

@@ -714,7 +714,9 @@ void mdsip_process_message(void *io_handle, mdsip_client_t *c, mdsip_message_t *
         int status;
         _int64 offset = *(_int64 *)&(message->h.dims[2]);
         int size = message->h.dims[4];
-        int mode = message->h.dims[5];
+        int mode_in = message->h.dims[5];
+        int mode = mode_in & 0x3;
+        int nowait = mode_in & 0x8;
         DESCRIPTOR_LONG(ans_d,0);
 #if defined (_WIN32)
         if (mode > 0)
@@ -730,7 +732,7 @@ void mdsip_process_message(void *io_handle, mdsip_client_t *c, mdsip_message_t *
         flock_info.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
         flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
         flock_info.l_len = (mode == 0) ? 0 : size;
-        status = (fcntl(fd,F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
+        status = (fcntl(fd,nowait ? F_SETLK : F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
 #endif
         ans_d.pointer = (char *)&status;
         SendResponse(io_handle,c,1,(struct descriptor *)&ans_d);
