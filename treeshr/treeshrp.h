@@ -16,44 +16,57 @@
 *********************************************/
 
 
-#ifdef __DECC
+#if defined(_VMS) || defined(__osf__)
 #pragma member_alignment save
 #pragma nomember_alignment
-#define swapint(in) in
-#define swapshort(in) in
-#endif
-
-#if defined(__hpux__) || defined(__irix__)
-#if defined(__hpux__)
+#elif defined(__hpux__)
 #pragma HP_ALIGN NOPADDING PUSH
 #elif defined(__irix__)
 #pragma pack(1)
+#elif defined(_WINDOWS)
+#pragma pack(push,enter_include,1)
 #endif
-static int swapint(int in)
+
+#if defined(_big_endian)
+
+static int swapint(char *in_c)
 {
   int out;
   char *out_c = (char *)&out;
-  char *in_c = (char *)&in;
   int i;
   for (i=0;i<4;i++) out_c[3-i] = in_c[i];
   return out;
 }
 
-static int swapshort(short in)
+static int swapshort(char *in_c)
 {
   short out;
   char *out_c = (char *)&out;
-  char *in_c = (char *)&in;
   int i;
   for (i=0;i<2;i++) out_c[1-i] = in_c[i];
   return out;
 }
-#endif
 
-#ifdef _MSC_VER
-#pragma pack(push,enter_include,1)
-#define swapint(in) in
-#define swapshort(in) in
+#else
+
+static int swapint(char *in_c)
+{
+  int out;
+  char *out_c = (char *)&out;
+  int i;
+  for (i=0;i<4;i++) out_c[i] = in_c[i];
+  return out;
+}
+
+static int swapshort(char *in_c)
+{
+  short out;
+  char *out_c = (char *)&out;
+  int i;
+  for (i=0;i<2;i++) out_c[i] = in_c[i];
+  return out;
+}
+
 #endif
 
 #define bitassign(bool,value,mask) value = (bool) ? (value) | (mask) : (value) & ~(mask)
@@ -226,11 +239,11 @@ static const NODE empty_node = {{'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e
  and linkages and end up with node pointers
  *****************************************************/
 
-#define parent_of(a)  (NODE *)((a)->parent  ? (char *)(a) + swapint((a)->parent)  : 0)
-#define member_of(a)  (NODE *)((a)->member  ? (char *)(a) + swapint((a)->member)  : 0)
-#define child_of(a)   (NODE *)((a)->child   ? (char *)(a) + swapint((a)->child)   : 0)
-#define brother_of(a) (NODE *)((a)->brother ? (char *)(a) + swapint((a)->brother) : 0)
-#define link_of(a,b)  swapint((char *)(a) - (char *)(b))
+#define parent_of(a)  (NODE *)((a)->parent  ? (char *)(a) + swapint((char *)&((a)->parent))  : 0)
+#define member_of(a)  (NODE *)((a)->member  ? (char *)(a) + swapint((char *)&((a)->member))  : 0)
+#define child_of(a)   (NODE *)((a)->child   ? (char *)(a) + swapint((char *)&((a)->child))   : 0)
+#define brother_of(a) (NODE *)((a)->brother ? (char *)(a) + swapint((char *)&((a)->brother)) : 0)
+#define link_it(out,a,b)  out = (char *)(a) - (char *)(b); out = swapint((char *)&out)
 
 
 /********************************************
@@ -303,19 +316,16 @@ typedef struct record_header
 }         RECORD_HEADER;
 
 
-#ifdef __DECC
+#if defined(__VMS) || defined(__osf__)
 #pragma member_alignment restore
-#endif
-
-#ifdef _MSC_VER
+#elif defined(__hpux__)
+#pragma HP_ALIGN POP
+#elif defined(__irix__)
+#pragma pack(0)
+#elif defined(_WINDOWS)
 #pragma pack(pop,enter_include)
 #endif
 
-#if defined(__hpux__)
-#pragma HP_ALIGN POP
-#elid defined(__irix__)
-#pragma pack(0)
-#endif
 
 
 /*****************************************************

@@ -431,7 +431,7 @@ static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *su
 
 		  for (i = 0; i < info->header->externals; i++)
 		  {
-			  NODE     *external_node = info->node + swapint(info->external[i]);
+			  NODE     *external_node = info->node + swapint((char *)&info->external[i]);
 			  char *subtree = strncpy(malloc(sizeof(NODE_NAME)+1),external_node->name,sizeof(NODE_NAME));
 			  char *blank = strchr(subtree,32);
                           subtree[sizeof(NODE_NAME)] = '\0';
@@ -1067,7 +1067,7 @@ static void SubtreeNodeConnect(NODE *parent, NODE *subtreetop)
 	if (child_of(grandparent) == parent)
 	{
 		SetPageModifiable(grandparent);
-		grandparent->child = link_of(subtreetop, grandparent);
+		link_it(grandparent->child,subtreetop, grandparent);
 		SetPageNomodifiable(grandparent);
 	}
 	else
@@ -1077,16 +1077,16 @@ static void SubtreeNodeConnect(NODE *parent, NODE *subtreetop)
 		if (brother_of(bro))
 		{
 			SetPageModifiable(bro);
-			bro->brother = link_of(subtreetop, bro);
+			link_it(bro->brother, subtreetop, bro);
 			SetPageNomodifiable(bro);
 		}
 	}
 	SetPageModifiable(subtreetop);
 	memcpy(subtreetop->name, parent->name, sizeof(subtreetop->name));
-	subtreetop->parent = link_of(grandparent, subtreetop);
+	link_it(subtreetop->parent, grandparent, subtreetop);
 	if (parent->brother)
 	  {
-		subtreetop->brother = link_of(brother_of(parent), subtreetop);
+		link_it(subtreetop->brother, brother_of(parent), subtreetop);
 	  }
 	SetPageNomodifiable(subtreetop);
 	return;

@@ -614,7 +614,7 @@ static void FixupNciIn(NCI *nci)
   unsigned char *flagsc_p = ((unsigned char *)nci) + sizeof(nci->flags);
   int i; 
   
-  nci->flags = swapint(nci->flags);
+  nci->flags = swapint((char *)&nci->flags);
   flags = *flagsc_p;
   *flagsc_p = 0;
   for (i=0;i<8;i++)
@@ -622,24 +622,24 @@ static void FixupNciIn(NCI *nci)
       if (flags & (1 << (7-i)))
         (*flagsc_p) = (*flagsc_p) | (1 << i);
   }
-  nci->time_inserted[0] = swapint(nci->time_inserted[0]);
-  nci->time_inserted[1] = swapint(nci->time_inserted[1]);
-  nci->owner_identifier = swapint(nci->owner_identifier);
-  nci->length = swapint(nci->length);
-  nci->status = swapint(nci->status);
+  nci->time_inserted[0] = swapint((char *)&nci->time_inserted[0]);
+  nci->time_inserted[1] = swapint((char *)&nci->time_inserted[1]);
+  nci->owner_identifier = swapint((char *)&nci->owner_identifier);
+  nci->length = swapint((char *)&nci->length);
+  nci->status = swapint((char *)&nci->status);
   if (nci->data_in_att_block)
   {
   }
   else if (nci->error_on_put)
   {
-    nci->DATA_INFO.ERROR_INFO.error_status = swapint(nci->DATA_INFO.ERROR_INFO.error_status);
-    nci->DATA_INFO.ERROR_INFO.stv = swapint(nci->DATA_INFO.ERROR_INFO.stv);
+    nci->DATA_INFO.ERROR_INFO.error_status = swapint((char *)&nci->DATA_INFO.ERROR_INFO.error_status);
+    nci->DATA_INFO.ERROR_INFO.stv = swapint((char *)&nci->DATA_INFO.ERROR_INFO.stv);
   }
   else
   {
-    *(int *)nci->DATA_INFO.DATA_LOCATION.rfa = swapint(*(int *)nci->DATA_INFO.DATA_LOCATION.rfa);
-    *(short *)&nci->DATA_INFO.DATA_LOCATION.rfa[2] = swapshort(*(short *)&nci->DATA_INFO.DATA_LOCATION.rfa[2]);
-    nci->DATA_INFO.DATA_LOCATION.record_length = swapint(nci->DATA_INFO.DATA_LOCATION.record_length);
+    *(int *)nci->DATA_INFO.DATA_LOCATION.rfa = swapint((char *)nci->DATA_INFO.DATA_LOCATION.rfa);
+    *(short *)&nci->DATA_INFO.DATA_LOCATION.rfa[2] = swapshort((char *)&nci->DATA_INFO.DATA_LOCATION.rfa[2]);
+    nci->DATA_INFO.DATA_LOCATION.record_length = swapint((char *)&nci->DATA_INFO.DATA_LOCATION.record_length);
   }    
 }
 

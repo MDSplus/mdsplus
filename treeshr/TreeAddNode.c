@@ -145,10 +145,12 @@ int TreeInsertChild(NODE *parent_ptr,NODE *child_ptr,int  sort)
   NODE *pre_ptr;
   NODE *tmp_ptr;
   status = 1;                                                                        /* Assume success */
-  child_ptr->parent = link_of(parent_ptr,child_ptr);                          /* fill in the parent pointer */
+  link_it(child_ptr->parent,parent_ptr,child_ptr);                          /* fill in the parent pointer */
   child_ptr->brother = 0;                                                     /* Assume it will be only child */
   if (parent_ptr->child == 0)                                                 /* If first child */
-    parent_ptr->child = link_of(child_ptr,parent_ptr);                        /*   hook it up */
+  {
+    link_it(parent_ptr->child,child_ptr,parent_ptr);                        /*   hook it up */
+  }
   else                                                                               /* else */
   {
     if (sort)
@@ -158,23 +160,25 @@ int TreeInsertChild(NODE *parent_ptr,NODE *child_ptr,int  sort)
           pre_ptr = tmp_ptr,tmp_ptr = brother_of(tmp_ptr));
       if (pre_ptr == 0)                                                               /*   if this will be first child */
       {
-        child_ptr->brother = link_of(child_of(parent_ptr),child_ptr);          /*     make bro old first child */
-        parent_ptr->child = link_of(child_ptr,parent_ptr);                     /*     make it first child  */
+        link_it(child_ptr->brother,child_of(parent_ptr),child_ptr);          /*     make bro old first child */
+        link_it(parent_ptr->child,child_ptr,parent_ptr);                     /*     make it first child  */
       }
       else                                                                            /*   else */
       {
         if (pre_ptr->brother == 0)                                             /*     if it will be last child */
           child_ptr->brother = 0;                                              /*       it has no brother */
         else                                                                          /*     else */
-          child_ptr->brother = link_of(brother_of(pre_ptr),child_ptr);         /*       its bro is the previous's bro */
-        pre_ptr->brother = link_of(child_ptr,pre_ptr);                         /*     the previous's bro is this one */
+	{
+          link_it(child_ptr->brother,brother_of(pre_ptr),child_ptr);         /*       its bro is the previous's bro */
+        }
+        link_it(pre_ptr->brother,child_ptr,pre_ptr);                         /*     the previous's bro is this one */
       }
     }
     else
     {
       for(tmp_ptr = child_of(parent_ptr);tmp_ptr->brother;                    /*    Find last child */
           tmp_ptr = brother_of(tmp_ptr));
-      tmp_ptr->brother = link_of(child_ptr,tmp_ptr);                           /*   make this child its brother */
+      link_it(tmp_ptr->brother,child_ptr,tmp_ptr);                           /*   make this child its brother */
     }
   }
   return status;                                                                     /* return the status */
@@ -191,10 +195,12 @@ int TreeInsertMember(NODE *parent_ptr,NODE *member_ptr,int  sort)
  Executable:
 */
       status = 1;                                                                        /* Assume success */
-      member_ptr->parent = link_of(parent_ptr,member_ptr);                        /* fill in the parent pointer */
+      link_it(member_ptr->parent,parent_ptr,member_ptr);                        /* fill in the parent pointer */
       member_ptr->brother = 0;                                                    /* Assume it will be only member*/
       if (parent_ptr->member == 0)                                                /* If first member*/
-        parent_ptr->member = link_of(member_ptr,parent_ptr);                      /*   hook it up */
+      {
+        link_it(parent_ptr->member,member_ptr,parent_ptr);                      /*   hook it up */
+      }
       else                                                                               /* else */
       {
         if (sort)
@@ -204,23 +210,25 @@ int TreeInsertMember(NODE *parent_ptr,NODE *member_ptr,int  sort)
             pre_ptr = tmp_ptr, tmp_ptr = brother_of(tmp_ptr));
          if (pre_ptr == 0)                                                               /*   if this will be first child */
          {
-           member_ptr->brother = link_of(member_of(parent_ptr),member_ptr);       /*     make bro old first child */
-           parent_ptr->member = link_of(member_ptr,parent_ptr);                   /*     make it first child  */
+           link_it(member_ptr->brother,member_of(parent_ptr),member_ptr);       /*     make bro old first child */
+           link_it(parent_ptr->member,member_ptr,parent_ptr);                   /*     make it first child  */
          }
          else                                                                            /*   else */
          {
            if (pre_ptr->brother == 0)                                             /*     if it will be last child */
              member_ptr->brother = 0;                                             /*       it has no brother */
            else                                                                          /*     else */
-             member_ptr->brother = link_of(brother_of(pre_ptr),member_ptr);       /*       its bro is the previous's bro */
-           pre_ptr->brother = link_of(member_ptr,pre_ptr);                        /*     the previous's bro is this one */
+	   {
+             link_it(member_ptr->brother,brother_of(pre_ptr),member_ptr);       /*       its bro is the previous's bro */
+           }
+           link_it(pre_ptr->brother,member_ptr,pre_ptr);                        /*     the previous's bro is this one */
          }
         }
         else
         {
          for(tmp_ptr = member_of(parent_ptr);                                            /*    Find last member */
             tmp_ptr->brother;tmp_ptr = brother_of(tmp_ptr));
-         tmp_ptr->brother = link_of(member_ptr,tmp_ptr);                          /*   make this child its brother */
+         link_it(tmp_ptr->brother,member_ptr,tmp_ptr);                          /*   make this child its brother */
         }
       }
       return status;                                                                     /* return the status */

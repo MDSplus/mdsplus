@@ -317,14 +317,16 @@ static int copy_dx(
       {
 	struct descriptor_a *pi = (struct descriptor_a *) in_ptr;
 	struct descriptor_a *po = (struct descriptor_a *) out_dsc_ptr;
-	bytes = sizeof(struct descriptor_a)
+	bytes = align(sizeof(struct descriptor_a)
 		+ (pi->aflags.coeff ? sizeof(char *) + sizeof(int) * pi->dimct : 0)
-		+ (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0);
+		+ (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0),sizeof(void *));
 	if (po)
 	{
 	  _MOVC3(bytes, (char *) pi, (char *) po);
 	  if (pi->pointer)
-	    po->pointer = (char *) po + bytes;
+  	    po->pointer = (char *)po + (align(((unsigned int)((char *)po + bytes)),sizeof(void *)) - (unsigned int)po);
+          else
+            po->pointer = NULL;
 	}
 
       /***************************

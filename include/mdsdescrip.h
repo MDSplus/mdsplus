@@ -1,42 +1,35 @@
-/*  CMS REPLACEMENT HISTORY, Element MDSDESCRIP.H */
-/*  *20    4-SEP-1996 08:09:18 TWF "take out packing" */
-/*  *19   22-AUG-1996 10:04:30 TWF "Add complex native formats" */
-/*  *18   22-AUG-1996 10:01:23 TWF "Add complex native formats" */
-/*  *17   22-AUG-1996 08:44:50 TWF "Add DTYPE_FLOAT and DTYPE_DOUBLE" */
-/*  *16   12-AUG-1996 14:55:05 TWF "Add ieee support" */
-/*  *15    2-AUG-1996 08:17:53 TWF "Use int instead of long" */
-/*  *14   24-JUL-1996 09:28:28 TWF "port to Windows/Unix" */
-/*  *13   24-JUL-1996 08:43:31 TWF "Align bit fields correctly" */
-/*  *12    2-JUL-1996 11:05:03 TWF "Can't use unnamed fields with VC++" */
-/*  *11    2-JUL-1996 10:17:04 TWF "Can't use unnamed fields with VC++" */
-/*  *10    2-JUL-1996 10:10:01 TWF "Can't use unnamed fields with VC++" */
-/*  *9     2-JUL-1996 09:49:25 TWF "Unnamed fields need placeholders on some compilers" */
-/*  *8     1-JUL-1996 15:10:11 TWF "Unnamed fields need placeholders on some compilers" */
-/*  *7     1-JUL-1996 15:08:39 TWF "Unnamed fields need placeholders on some compilers" */
-/*  *6     1-JUL-1996 14:57:14 TWF "Unnamed fields need placeholders on some compilers" */
-/*  *5    20-JUN-1996 10:37:24 TWF "Port to Unix/Windows" */
-/*  *4    18-JUN-1996 08:46:29 TWF "Port to Unix/Windows" */
-/*  *3    17-JUN-1996 15:44:53 TWF "Port to Unix/Windows" */
-/*  *2    17-JUN-1996 15:37:41 TWF "Port to Unix/Windows" */
-/*  *1    12-JUN-1996 10:37:50 TWF "Unix/Windows port" */
-/*  CMS REPLACEMENT HISTORY, Element MDSDESCRIP.H */
 #ifndef MDSDESCRIP_H_DEFINED
 #define MDSDESCRIP_H_DEFINED 1
 
+#ifdef _little_endian
+#undef _little_endian
+#endif
 
-#ifdef __VMS
+#ifdef _big_endian
+#undef _big_endian
+#endif
+
+#if defined(__VMS)
 #pragma member_alignment save
 #pragma nomember_alignment
 #endif  /* __VMS */
-#ifdef _MSC_VER
+
+#if defined(__VMS) || defined(__osf__) || defined(_WINDOWS)
+#define _little_endian
+#elif defined(__hpux__) || defined (__irix__)
+#define _big_endian
+#endif
+
+#ifdef _WINDOWS
 #define __fill_name__ fill
 #define __fill_value__ 0,
 #define __char_align__ char
-#else /* _MSC_VER */
+#else /* _WINDOWS */
 #define __char_align__
 #define __fill_name__
 #define __fill_value__
-#endif /* _MSC_VER */
+#endif /* _WINDOWS */
+
 /*
  *	Descriptor Prototype - each class of descriptor consists of at least the following fields:
  */
