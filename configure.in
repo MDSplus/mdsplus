@@ -465,6 +465,7 @@ mdsvme/Makefile
 mitdevices/Makefile 
 remcam/Makefile 
 rpm/Makefile
+rpm/envsyms
 servershr/Makefile 
 setevent/Makefile
 tcl/Makefile 
