@@ -605,6 +605,10 @@ extern int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 where);
 extern int TreeUnLockDatafile(TREE_INFO *info, int readonly, _int64 where);
 extern int MDS_IO_SOCKET(int fd);
 extern int MDS_IO_FD(int fd);
+#ifdef _WIN32
+typedef int mode_t;
+typedef int ssize_t;
+#endif
 extern int MDS_IO_OPEN(char *filename, int options, mode_t mode);
 extern int MDS_IO_CLOSE(int fd);
 extern _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence);

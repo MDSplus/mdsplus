@@ -1,8 +1,11 @@
+#include <config.h>
 #ifdef HAVE_WINDOWS_H
+#include <windows.h>
 #include <io.h>
 #define write _write
 #define lseek _lseek
 #endif
+#include <time.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <string.h>
@@ -156,7 +159,6 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,char
 {
   char *resnam = 0;
   char *colon = 0;
-  int slen;
   int socket;
   logname[strlen(logname)-2] = '\0';
   socket = RemoteAccessConnect(logname,1);
@@ -947,7 +949,6 @@ static _int64 io_lseek_remote(int fd, _int64 offset, int whence)
 
 _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
 {
-  int status;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
     return (FDS[fd-1].socket == -1) ? lseek(FDS[fd-1].fd,(off_t)offset,whence) : io_lseek_remote(fd,offset,whence);
@@ -986,7 +987,6 @@ static int io_write_remote(int fd, void *buff, size_t count)
 
 int MDS_IO_WRITE(int fd, void *buff, size_t count)
 {
-  int status;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
     return (FDS[fd-1].socket == -1) ? write(FDS[fd-1].fd,buff,count) : io_write_remote(fd,buff,count);
@@ -1027,7 +1027,6 @@ static ssize_t io_read_remote(int fd, void *buff, size_t count)
 
 ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
 {
-  int status;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
     return (FDS[fd-1].socket == -1) ? read(FDS[fd-1].fd,buff,count) : io_read_remote(fd,buff,count);
@@ -1077,14 +1076,14 @@ int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode)
         static int LockStart;
         static int LockSize;
         if (mode > 0)
-	{
-          LockStart = offset >= 0 ? offset : lseek(fd,0,SEEK_END);
-  	  LockSize = size;
-  	  status = ( (LockFile((HANDLE)_get_osfhandle(FDS[fd-1].fd), LockStart, 0, LockSize, 0) == 0) && 
+        {
+          LockStart = (int)(offset >= 0 ? offset : lseek(fd,0,SEEK_END));
+  	      LockSize = size;
+  	      status = ( (LockFile((HANDLE)_get_osfhandle(FDS[fd-1].fd), LockStart, 0, LockSize, 0) == 0) && 
                      (GetLastError() != ERROR_LOCK_VIOLATION) ) ? TreeFAILURE : TreeSUCCESS;
         }
         else
-	  status = UnlockFile((HANDLE)_get_osfhandle(FDS[fd-1].fd),LockStart, 0, LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
+	        status = UnlockFile((HANDLE)_get_osfhandle(FDS[fd-1].fd),LockStart, 0, LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
 #elif defined (HAVE_VXWORKS_H)
         status = TreeSUCCESS;
 #else
@@ -1179,7 +1178,6 @@ static int io_remove_remote(char *host, char *filename)
 int MDS_IO_REMOVE(char *filename)
 {
   int status;
-  struct stat statbuf;
   int socket = -1;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename,&hostpart,&filepart);
@@ -1225,7 +1223,6 @@ static int io_rename_remote(char *host, char *filename_old, char *filename_new)
 int MDS_IO_RENAME(char *filename_old, char *filename_new)
 {
   int status;
-  struct stat statbuf;
   int socket = -1;
   char *hostpart_old, *filepart_old, *hostpart_new, *filepart_new;
   char *tmp_old = ParseFile(filename_old,&hostpart_old,&filepart_old);
