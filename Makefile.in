@@ -78,7 +78,7 @@ depend:
 MISC_PARTS = tdi idl trees setup.sh setup.csh java LabView include rpm
 
 install: 
-	mkdirhier @exec_prefix@
+	mkdirhier @exec_prefix@/local
 	cdir=`pwd`;\
 	for dir in $(PARTS) ; do\
 	  cd $${dir}; make install; cd $$cdir;\
