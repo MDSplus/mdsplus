@@ -59,7 +59,7 @@ install:
 
 
 @MAKESHLIBDIR@libTreeShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
-	$(LD) -o $@ $LINKSHARED $(OBJECTS) $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
 
 @MAKELIBDIR@libTreeShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)

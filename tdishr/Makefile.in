@@ -113,7 +113,7 @@ install:
 	fi;
 
 @MAKESHLIBDIR@libTdiShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
-	$(LD) -o $@ $LINKSHARED $(OBJECTS) $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
 
 @MAKELIBDIR@libTdiShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
