@@ -29,6 +29,7 @@
 +-----------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
+#include <mdstypes.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <ncidef.h>

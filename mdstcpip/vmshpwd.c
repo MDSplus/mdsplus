@@ -152,7 +152,7 @@ void reverse_buf (char *buf, int size);
 
 /** RELATIVELY GLOBAL variables **/
 
-unsigned int 		MAXINT = 4294967295;	/* Largest 32 bit number */
+unsigned int 		MAXINT = 4294967295LU;	/* Largest 32 bit number */
 unsigned int 		a = 59;	/* 2^64 - 59 is the biggest quadword prime */
 QUAD			P;	/* P = 2^64 - 59 */
                         	
