@@ -130,6 +130,7 @@ void Logout_Sybase() {
 /*------------------------------CONNECT--------------------------------------*/
 int	Login_Sybase(char *host, char *user, char *pass)
 {
+	int siz;
 
 #ifdef RETRY_CONNECTS
  int try;
@@ -157,6 +158,11 @@ int	Login_Sybase(char *host, char *user, char *pass)
   }
 #endif
   DBSETLAPP(loginrec, "MdsSql");
+//  DBSETLPACKET(loginrec, 8192);
+ // DBSETOPT(dbproc, DBBUFFER, "0") ;
+  dbclropt(dbproc, DBBUFFER, "0") ;
+
+
 #ifdef RETRY_CONNECTS
 #ifdef  __VMS
 extern void decc$sleep();
@@ -174,6 +180,9 @@ extern void decc$sleep();
      dbproc = dbopen(loginrec, host);
 #endif
   if (!dbproc) return 0;
+     siz = dbgetpacket ( dbproc );
+	   dbclropt(dbproc, DBBUFFER, "0") ;
+
   return SUCCEED;
 }
 /*------------------------------DYNAMIC--------------------------------------*/
@@ -226,7 +235,7 @@ close:
 	DBSTATUS = status;
 	return status;
 }
-
+/*
 DBINT   (*USERSQL_dbconvert)() = 0;
 int   (*USERSQL_dbnumcols)() = 0;
 char *   (*USERSQL_dbcolname)() = 0;
@@ -234,7 +243,7 @@ DBINT   (*USERSQL_dbdatlen)() = 0;
 BYTE *   (*USERSQL_dbdata)() = 0;
 int   (*USERSQL_dbcoltype)() = 0;
 
-int DBLIB_Initialize() {
+void DBLIB_Initialize() {
   USERSQL_dbconvert = &dbconvert;
   USERSQL_dbnumcols = &dbnumcols;
   USERSQL_dbcolname = &dbcolname;
@@ -242,3 +251,4 @@ int DBLIB_Initialize() {
   USERSQL_dbdata = &dbdata;
   USERSQL_dbcoltype = &dbcoltype;
 }
+*/
