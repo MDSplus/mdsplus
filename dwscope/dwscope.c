@@ -151,7 +151,7 @@ static void  ManageWaveforms();
 static void  RemoveZeros(String string, int *length);
 static void  Unbusy();
 static void  ClearWaveform(WaveInfo *info);
-static void  RestoreDatabase(String dbname);
+static void  RestoreDatabase(String dbname, Widget w);
 static void  WriteDatabase(String dbname,Boolean zoom);
 static void  GetNewLimits(WaveInfo *info, float **xmin, float **xmax, float **ymin, float **ymax);
 static void  SetWindowTitles();
@@ -344,7 +344,7 @@ int       main(int argc, String *argv)
     XtManageChildren(children,num);
   }
   XtManageChild(MainWidget);
-  RestoreDatabase(defaultfile);
+  RestoreDatabase(defaultfile, MainWidget);
   cursor = XCreateFontCursor(XtDisplay(TopWidget), XC_crosshair);
   for (i = 0; i < NumSashs; i++)
     XDefineCursor(XtDisplay(TopWidget), XtWindow(Sash[i]), cursor);
@@ -770,7 +770,7 @@ static void /*XtCallbackProc*/Restore(Widget w, int *option, XmFileSelectionBoxC
                   int       length = strlen(filename);
                   if (length)
                   {
-                    RestoreDatabase(filename);
+                    RestoreDatabase(filename, w);
                     if (defaultfile) 
                       XtFree(defaultfile);
                     defaultfile = filename;
@@ -782,7 +782,7 @@ static void /*XtCallbackProc*/Restore(Widget w, int *option, XmFileSelectionBoxC
              break;
            }
     case 1:
-            RestoreDatabase(defaultfile);
+            RestoreDatabase(defaultfile, TopWidget);
             break;
     case 2: 
             { Widget w = XtNameToWidget(TopWidget,"*file_dialog");
@@ -1887,7 +1887,7 @@ static void  ClearWaveform(WaveInfo *info)
 		info->step_plot, XmdsNcount, 0, XmdsNtitle, "", NULL);
 }
 
-static void  RestoreDatabase(String dbname)
+static void  RestoreDatabase(String dbname, Widget w)
 {
   int       c;
   int       r;
@@ -1904,6 +1904,8 @@ static void  RestoreDatabase(String dbname)
   XtVaGetValues(PlotsWidget,XmNchildren,&widgets,XmNnumChildren,&num,NULL);
   XtUnmanageChildren(widgets, num);
   XParseGeometry(GetResource(scopedb, "Scope.geometry", "600x500+200+200"), &x, &y, &width, &height);
+  if (x >= WidthOfScreen(XtScreen(w))) x =  WidthOfScreen(XtScreen(w))-50;
+  if ((y + height) > HeightOfScreen(XtScreen(w))) y = HeightOfScreen(XtScreen(w)) - height - 50;
   SetFont(GetResource(scopedb,"Scope.font","-*-NEW CENTURY SCHOOLBOOK-MEDIUM-R-*--*-120-*-*-*-*-ISO8859-1"));
   ReplaceString(&ScopeTitle, GetResource(scopedb, "Scope.title", "\"MDS Scope\""), 0);
   ReplaceString(&ScopeIcon, GetResource(scopedb, "Scope.icon_name", "\"Scope\""), 0);
