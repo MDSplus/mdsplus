@@ -599,7 +599,9 @@ struct msqid_ds {int msg_qnum; int msg_stime; int msg_rtime; int msg_ctime;};
 #include <sys/socket.h>
 #include <unistd.h>
 #include <signal.h>
+#ifndef HAVE_VXWORKS_H
 #include <pthread.h>
+#endif
 #ifdef __hpux
 #undef select
 #endif
