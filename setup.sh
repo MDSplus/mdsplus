@@ -11,3 +11,4 @@ awkcmd="$awkcmd"'" else " $1 "=" $2 substr($3,2) "$" $1 "; fi; export " $1 ";"  
 awkcmd="$awkcmd"'else if (($1 !~ /^#.*/) && (substr($3,1,1) == ">")) print "if (test \"$" $1 "\" = \"\") then " $1 "=" $2 "; " '
 awkcmd="$awkcmd"'" else " $1 "=$" $1 substr($3,2) $2 "; fi; export " $1 ";" }'
 eval `/bin/awk "$awkcmd" $setup_file`
+unset awkcmd
