@@ -87,6 +87,8 @@ public class TR32Setup extends DeviceSetup {
   DeviceField deviceField21 = new DeviceField();
   DeviceChoice deviceChoice13 = new DeviceChoice();
   DeviceChoice deviceChoice14 = new DeviceChoice();
+  DeviceField deviceField22 = new DeviceField();
+  DeviceChoice deviceChoice15 = new DeviceChoice();
   public TR32Setup() {
     try {
       jbInit();
@@ -96,8 +98,8 @@ public class TR32Setup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(785);
-    this.setHeight(500);
+    this.setWidth(723);
+    this.setHeight(540);
     this.setDeviceType("TR32");
     this.setDeviceProvider("150.178.3.101");
     this.setDeviceTitle("INCAA TR32 CPCI Transient Recorder");
@@ -145,7 +147,7 @@ public class TR32Setup extends DeviceSetup {
     deviceChoice2.setChoiceItems(new String[] {"RISING", "FALLING"});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
-    deviceChoice2.setBounds(new Rectangle(461, 143, 184, 35));
+    deviceChoice2.setBounds(new Rectangle(196, 136, 184, 35));
     deviceChoice3.setChoiceIntValues(null);
     deviceChoice3.setChoiceFloatValues(null);
     deviceChoice3.setOffsetNid(5);
@@ -161,7 +163,7 @@ public class TR32Setup extends DeviceSetup {
     deviceChoice4.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
     deviceChoice4.setUpdateIdentifier("");
     deviceChoice4.setIdentifier("");
-    deviceChoice4.setBounds(new Rectangle(463, 107, 190, 35));
+    deviceChoice4.setBounds(new Rectangle(8, 136, 190, 35));
     deviceChoice5.setChoiceIntValues(null);
     deviceChoice5.setChoiceFloatValues(new float[] {(float)3000000.0,(float)1500000.0,(float)1000000.0,(float)500000.0,(float)200000.0,(float)100000.0,(float)50000.0,(float)20000.0,(float)10000.0,(float)5000.0,(float)2000.0,(float)1000.0,(float)500.0,(float)200.0,(float)100.0});
     deviceChoice5.setOffsetNid(9);
@@ -169,8 +171,8 @@ public class TR32Setup extends DeviceSetup {
     deviceChoice5.setChoiceItems(new String[] {"3E6", "1.5E6", "1E6", "500E3", "200E3", "100E3", "50E3", "20E3", "10E3", "5E3", "2E3", "1E3", "500", "200", "100"});
     deviceChoice5.setUpdateIdentifier("");
     deviceChoice5.setIdentifier("");
-    deviceChoice5.setBounds(new Rectangle(205, 144, 208, 35));
-    jTabbedPane1.setBounds(new Rectangle(10, 179, 758, 238));
+    deviceChoice5.setBounds(new Rectangle(476, 105, 208, 35));
+    jTabbedPane1.setBounds(new Rectangle(9, 209, 702, 238));
     jPanel1.setLayout(gridLayout1);
     gridLayout1.setColumns(1);
     gridLayout1.setRows(4);
@@ -199,7 +201,7 @@ public class TR32Setup extends DeviceSetup {
     deviceButtons1.setCheckExpressions(null);
     deviceButtons1.setCheckMessages(null);
     deviceButtons1.setMethods(new String[] {"INIT", "TRIGGER", "STORE"});
-    deviceButtons1.setBounds(new Rectangle(213, 426, 301, 36));
+    deviceButtons1.setBounds(new Rectangle(213, 454, 301, 36));
     jPanel3.setLayout(flowLayout2);
     flowLayout2.setHgap(5);
     flowLayout2.setVgap(10);
@@ -384,21 +386,34 @@ public class TR32Setup extends DeviceSetup {
     deviceChoice13.setIdentifier("");
     deviceChoice14.setChoiceIntValues(null);
     deviceChoice14.setChoiceFloatValues(null);
-    deviceChoice14.setOffsetNid(10);
+    deviceChoice14.setOffsetNid(12);
     deviceChoice14.setLabelString("Use Time:");
     deviceChoice14.setChoiceItems(new String[] {"TRUE", "FALSE"});
     deviceChoice14.setUpdateIdentifier("");
     deviceChoice14.setIdentifier("");
-    deviceChoice14.setBounds(new Rectangle(23, 144, 172, 35));
+    deviceChoice14.setBounds(new Rectangle(11, 172, 172, 35));
+    deviceField22.setOffsetNid(10);
+    deviceField22.setLabelString("Clock Division:");
+    deviceField22.setNumCols(6);
+    deviceField22.setIdentifier("");
+    deviceField22.setBounds(new Rectangle(457, 141, 207, 30));
+    deviceChoice15.setChoiceIntValues(null);
+    deviceChoice15.setChoiceFloatValues(null);
+    deviceChoice15.setOffsetNid(11);
+    deviceChoice15.setLabelString("Clock Termination:");
+    deviceChoice15.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+    deviceChoice15.setUpdateIdentifier("");
+    deviceChoice15.setIdentifier("");
+    deviceChoice15.setBounds(new Rectangle(421, 171, 238, 35));
     this.getContentPane().add(deviceField3, null);
     this.getContentPane().add(deviceChoice3, null);
     jPanel3.add(deviceField7, null);
     jPanel3.add(deviceField6, null);
     jPanel3.add(deviceChoice6, null);
-    jPanel1.add(deviceChannel1, null);
-    deviceChannel1.add(jPanel3, null);
     jPanel1.add(deviceChannel2, null);
     deviceChannel2.add(jPanel6, null);
+    jPanel1.add(deviceChannel1, null);
+    deviceChannel1.add(jPanel3, null);
     jPanel6.add(deviceField12, null);
     jPanel6.add(deviceField13, null);
     jPanel6.add(deviceChoice9, null);
@@ -412,32 +427,26 @@ public class TR32Setup extends DeviceSetup {
     jPanel4.add(deviceField8, null);
     jPanel4.add(deviceField9, null);
     jPanel4.add(deviceChoice7, null);
-    this.getContentPane().add(jTabbedPane1, null);
-    jTabbedPane1.add(jPanel1, "Channels (Time)");
     jTabbedPane1.add(jPanel2, "Channels (Samples)");
-    jPanel2.add(deviceChannel5, null);
-    deviceChannel5.add(jPanel7, null);
+    jTabbedPane1.add(jPanel1, "Channels (Time)");
     jPanel7.add(deviceField14, null);
     jPanel7.add(deviceField15, null);
     jPanel7.add(deviceChoice10, null);
     jPanel2.add(deviceChannel6, null);
     deviceChannel6.add(jPanel8, null);
+    jPanel2.add(deviceChannel5, null);
+    deviceChannel5.add(jPanel7, null);
     jPanel8.add(deviceField16, null);
     jPanel8.add(deviceField17, null);
     jPanel8.add(deviceChoice11, null);
     jPanel2.add(deviceChannel7, null);
-    this.getContentPane().add(deviceButtons1, null);
-    this.getContentPane().add(deviceChoice4, null);
+    deviceChannel7.add(jPanel9, null);
     this.getContentPane().add(deviceDispatch1, null);
     this.getContentPane().add(deviceField4, null);
     this.getContentPane().add(deviceField5, null);
     this.getContentPane().add(deviceField1, null);
     this.getContentPane().add(deviceChoice1, null);
     this.getContentPane().add(deviceField2, null);
-    this.getContentPane().add(deviceChoice5, null);
-    this.getContentPane().add(deviceChoice14, null);
-    this.getContentPane().add(deviceChoice2, null);
-    deviceChannel7.add(jPanel9, null);
     jPanel9.add(deviceField18, null);
     jPanel9.add(deviceField19, null);
     jPanel9.add(deviceChoice12, null);
@@ -446,6 +455,14 @@ public class TR32Setup extends DeviceSetup {
     jPanel10.add(deviceField20, null);
     jPanel10.add(deviceField21, null);
     jPanel10.add(deviceChoice13, null);
+    this.getContentPane().add(deviceField22, null);
+    this.getContentPane().add(deviceChoice15, null);
+    this.getContentPane().add(deviceButtons1, null);
+    this.getContentPane().add(deviceChoice5, null);
+    this.getContentPane().add(deviceChoice4, null);
+    this.getContentPane().add(deviceChoice2, null);
+    this.getContentPane().add(deviceChoice14, null);
+    this.getContentPane().add(jTabbedPane1, null);
     jTabbedPane1.setSelectedComponent(jPanel1);
   }
 
