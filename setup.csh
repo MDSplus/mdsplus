@@ -7,4 +7,4 @@
 #
 set os=`uname`
 set cwd=`pwd`
-eval `awk '{ if ($1 == "source") print $0 ";" ; else if ($1 == ".") print "" ; else if ($1 !~ /^#.*/) print "setenv " $1 "=" $2 ";"}' envsyms sys_specific/envsyms.$os`
+eval `awk '{ if ($1 == "source") print $0 ";" ; else if ($1 == ".") print "" ; else if ($1 !~ /^#.*/) print "setenv " $1 " " $2 ";"}' envsyms sys_specific/envsyms.$os`
