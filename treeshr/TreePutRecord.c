@@ -27,10 +27,6 @@
 
 
 +-----------------------------------------------------------------------------*/
-#ifdef _WIN32
-#include <windows.h>
-#include <io.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -52,16 +48,21 @@
 #ifndef O_RANDOM
 #define O_RANDOM 0
 #endif
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#include <io.h>
+#endif
 
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
 static int timezone = 0;
 #endif
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-#ifndef vxWorks
-#define min(a,b) (((a) < (b)) ? (a) : (b))
+#ifdef min
+#undef min
 #endif
+#define min(a,b) (((a) < (b)) ? (a) : (b))
 
 static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci);
 static int FixupNid(NID *nid, unsigned char *tree, struct descriptor *path);
@@ -95,7 +96,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   int       length = 0;
   int       shot_open;
   compress_utility = utility_update == 2;
-#if !defined(_WINDOWS) && !defined(vxWorks)
+#if !defined(HAVE_WINDOWS_H) && !defined(vxWorks)
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -130,7 +131,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
         unsigned int m1;
         unsigned int m2 = 10000000;
         unsigned int zero[2] = {0,0};
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
         unsigned int addin[2] = {0x7c9567,0x4beb4000};
         unsigned int time_inserted[2];
 #else
@@ -145,7 +146,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 #endif
         m1 = (unsigned int)time(NULL) - timezone;
 	LibEmul(&m1,&m2,zero,temp);
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
         AddQuadword(temp,addin,time_inserted);
         local_nci.time_inserted[0] = time_inserted[1];
         local_nci.time_inserted[1] = time_inserted[0];
@@ -352,11 +353,7 @@ int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
       df_ptr->get = 0;
     if (status & 1)
     {
-#ifdef vxWorks
       df_ptr->put = open(filename,O_RDWR | O_BINARY | O_RANDOM, 0);
-#else
-      df_ptr->put = open(filename,O_RDWR | O_BINARY | O_RANDOM);
-#endif
       status = (df_ptr->put == -1) ? TreeFAILURE : TreeNORMAL;
       if (df_ptr->put == -1)
         df_ptr->put = 0;
@@ -470,7 +467,7 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
   return status;
 }
 
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 #define swapquad(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[1]; iptr[1]=stmp;}
 #else
 #define swapquad(in) 

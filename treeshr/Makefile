@@ -30,7 +30,7 @@ EXPORTS = TreeShr.export
 treeshr : ../shlib ../shlib/libTreeShr.$(SHARE_TYPE) ../shlib/libTreeShr.a
 
 ../shlib/libTreeShr.$(SHARE_TYPE) : $(OBJECTS) 
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -L../shlib -lMdsShr
+	$(LD) -o $@ -g $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -L../shlib -lMdsShr
 
 ../shlib/libTreeShr.a : $(OBJECTS)
 	$(AR) -r $@ $(OBJECTS)

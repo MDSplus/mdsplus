@@ -1,6 +1,3 @@
-#ifdef _WIN32
-#include <io.h>
-#endif
 #include <stdlib.h>
 #include <string.h>
 #include <mdsdescrip.h>
@@ -8,7 +5,9 @@
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ctype.h>
-#ifndef _WIN32
+#ifdef _WIN32
+#include <io.h>
+#else
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -17,16 +16,19 @@
 #include <ncidef.h>
 #include <errno.h>
 #include <fcntl.h>
-#ifdef INCREASE_FILE_LIMIT
+
+#ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>
 #endif
+
+
 #ifdef __toupper
 #undef __toupper
 #endif
+#define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #ifdef __tolower
 #undef __tolower
 #endif
-#define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
 
@@ -249,15 +251,15 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 					free(local_info->edit);
 				}
 
-	  /********************************************************
-	   For each tree in the linked list, first the pages must be
+       /********************************************************
+       For each tree in the linked list, first the pages must be
        remapped to the pagefile using sys$cretva before they can
        be freed for general use. This automatically unmaps the
        tree section file pages. Once the section is unmapped the
        I/O channel can be deassigned. Then the virtual memory
        can be deallocated using lib$free_vm_page.
        Finally the tree information block memory can be released.
-      *********************************************************/
+       *********************************************************/
 
 				while (local_info)
 				{
@@ -646,7 +648,7 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
 	char name[32];
 	int i;
 	char *resnam = 0;
-#ifdef INCREASE_FILE_LIMIT
+#ifdef HAVE_SYS_RESOURCE_H
         static int initialized = 0;
         if (!initialized)
 	{
@@ -776,8 +778,7 @@ static void SwapBytesInt(char *in)
   in[2] = tmp;
 }
   
-#ifdef _big_endian
-
+#ifdef WORDS_BIGENDIAN
 void FixupHeader(TREE_HEADER *hdr)
 {
   char flags = ((char *)hdr)[1];
@@ -788,7 +789,8 @@ void FixupHeader(TREE_HEADER *hdr)
   SwapBytesInt((char *)&hdr->externals);
   SwapBytesInt((char *)&hdr->nodes);
 }
-
+#else
+#define FixupHeader(arg)
 #endif
 
 static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote_file)
@@ -812,19 +814,18 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
 		else
 		{
 
-#if defined(__osf__) && !defined(vxWorks)
+#if defined(xxxxx__osf__) && !defined(vxWorks)
 
                         void *addr = mmap(info->section_addr[0],info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE | MAP_FIXED, 
                             info->channel, 0);
                         status = addr != (void *)-1;
                         if (!status)
                           printf("Error mapping file - errno = %d\n",errno);
-#elif defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX)
-#if defined(__sun) || defined(__sgi)
+#else /* defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX) */
+#ifndef MAP_FILE
 #define MAP_FILE 0
 #endif
-                        info->section_addr[0] = mmap(0,info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE, 
-                            info->channel, 0);
+                        info->section_addr[0] = mmap(0,info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE, info->channel, 0);
                         status = info->section_addr[0] != (void *)-1;
                         if (!status)
                           printf("Error mapping file - errno = %d\n",errno);
@@ -844,9 +845,7 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
 		{
 			info->blockid = TreeBLOCKID;
 			info->header = (TREE_HEADER *) info->section_addr[0];
-#ifdef _big_endian
                         FixupHeader(info->header);
-#endif
 			info->node = (NODE *) (info->section_addr[0] + ((sizeof(TREE_HEADER) + 511) / 512) * 512);
 			info->tags = (int *) (((char *)info->node) + ((info->header->nodes * sizeof(NODE) + 511) / 512) * 512);
 			info->tag_info = (TAG_INFO *) (((char *)info->tags) + ((info->header->tags * 4 + 511) / 512) * 512);
@@ -863,7 +862,7 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
 static int GetVmForTree(TREE_INFO *info)
 {
 	int status;
-#if (defined(__osf__) || defined(__hpux)) && !defined(vxWorks)
+#if defined(_SC_PAGE_SIZE)
 #define PAGE_SIZE sysconf(_SC_PAGE_SIZE)/512
 #elif !defined(PAGE_SIZE)
 #define PAGE_SIZE 1

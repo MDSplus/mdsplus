@@ -61,7 +61,7 @@ static FILE *CreateShotIdFile(char *experiment)
 #ifdef _WINDOWS
     strcat(pathname,"\\");
 #else
-    strcat(pathname,"//");
+    strcat(pathname,"/");
 #endif
     strcat(pathname,"shotid.sys");
     file = fopen(pathname,"w+b");
@@ -119,7 +119,7 @@ int       TreeGetCurrentShotId(char *experiment)
     {
       status = fread(&shot,sizeof(shot),1,file) == 1;
       fclose(file);
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
       if (status & 1)
       {
         int lshot = shot;
@@ -156,7 +156,7 @@ int       TreeSetCurrentShotId(char *experiment, int shot)
     if (file)
     {
       int lshot = shot;
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
       int i;
       char *optr = (char *)&lshot;
       char *iptr = (char *)&shot;

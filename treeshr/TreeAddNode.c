@@ -636,14 +636,10 @@ static int one = 1;
 static int zero = 0;
 
 #ifdef WORDS_BIGENDIAN
-static TREE_HEADER *HeaderOut(TREE_HEADER *hdr, TREE_HEADER *out)
+static TREE_HEADER *HeaderOut(TREE_HEADER *hdr)
 {
   static TREE_HEADER ans;
-  out = *hdr;
-  {
-    char flags = (hdr->sort_children ? 1 : 0) | (hdr->sort_members ? 2 : 0);
-    ((char *)&out)[1] = flags;
-  }
+  ((char *)&ans)[1] = (char)((hdr->sort_children ? 1 : 0) | (hdr->sort_members ? 2 : 0));
   ans.free = swapint((char *)&hdr->free);
   ans.tags = swapint((char *)&hdr->tags);
   ans.externals = swapint((char *)&hdr->externals);
