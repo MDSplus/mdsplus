@@ -1117,7 +1117,7 @@ static int Jorway73ATranslateIosb( int isdatacmd, int reqbytcnt, J73ASenseData *
 	break;
       case 1:
 	LastIosb.x=sense->additional_sense_code != 0x44;
-        if (sense->sense_key == 9)
+        if (sense->sense_key == 9 || (sense->sense_key == 4 && sense->additional_sense_code == 0))
 	{
           LastIosb.q=0;
           status = CamDONE_NOQ;
