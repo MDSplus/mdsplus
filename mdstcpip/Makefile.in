@@ -51,8 +51,8 @@ install:
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsip	@bindir@
 	if test "@SHARETYPE@" != ".a" ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpShr.a @libdir@
-		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpUtil.a @libdir@
+		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpShr.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpUtil.a @libdir@; \
 	fi;
 
 @MAKEBINDIR@ :
