@@ -1,7 +1,10 @@
 PRO	SQL
   if !version.os eq 'vms' or !version.os eq 'Win32' then begin
     entry = 'IDLSQL'
-	file = 'IDLSQL'
+    file = 'IDLSQL'
+  endif else if !version.os eq 'OSF' then begin
+    entry = 'IDLSQL'
+    file = 'libIdlSql.so'
   endif else begin
 	entry = '_IDLSQL'
 	file = getenv('SYBASE')+'/idl/sql.so'

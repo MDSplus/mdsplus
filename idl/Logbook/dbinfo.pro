@@ -40,8 +40,19 @@ function dbinfo, dbname, host, conn, dbtype, dbuser, dbpass
   SQL
   dbtype ="SYBASE"
   host=getenv("SYBASE_HOST")
+  if (strlen(host) eq 0) then host = "eagle"
+  catch, err
+  if (err ne 0) then begin
+    dbuser=getenv("USER")
+    dbpass="PFCWORLD"
+    return, 1
+  endif
+  OPENR,1,getenv('HOME')+'/'+host+".sybase_login"
   dbuser=''
   dbpass=''
+  readf,1,dbuser
+  readf,1,dbpass
+  close, 1
   conn = ["USE "+dbname, "SET TEXTSIZE 8192"]
   return, 1
 end
