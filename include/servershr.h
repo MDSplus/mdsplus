@@ -30,7 +30,7 @@ extern int ServerDispatchCommand(int *id, char *server, char *cli, char *command
                         void (*ast)(), void *astprm, int *retstatus, void (*before_ast)());
 extern int ServerSetLinkDownHandler(void (*handler)());
 extern void ServerSetDetailProc(char *(*detail_proc)(int));
-extern char *(*ServerGetDetailProc())();
+extern char *(*ServerGetDetailProc())(int);
 extern int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact_in,
                           int sync, void (*output_rtn)(), char *monitor);
 extern int ServerFailedEssential(void *vtable,int reset);

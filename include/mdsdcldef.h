@@ -114,6 +114,8 @@ int   mdsdcl_get_input_nosymbols(	/* Return: status		*/
    );
 int   mdsdcl_close_indirect_all();
 
+int mdsdcl_openIndirectLevel( char *);
+
 
 	/****************************************************************
 	 * Status codes:
