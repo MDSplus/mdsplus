@@ -42,6 +42,7 @@
 #define KEY_UP    0403
 #define KEY_LEFT  0404
 #define KEY_RIGHT 0405
+#define setupterm(A,B,IERR)  (*IERR=1, 0)
 static char  key_up[] =    "\033OA";
 static char  key_down[] =  "\033OB";
 static char  key_right[] = "\033OC";

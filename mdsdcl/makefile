@@ -27,13 +27,14 @@ mdsdcl_tables.c:	mdsdcl_tables.ocld
 libMdsdcl.a:	$(OBJFILES)
 		$(RANLIB)
 
-../shlib/libMdsdcl.$(SHARE_TYPE):	mdsdcl_tables.o  libMdsdcl.a
+../shlib/libMdsdcl.$(SHARE_TYPE):	mdsdcl_tables.o  libMdsdcl.a \
+					../cdu/libCdu.a
 	$(LD)  -o $@ $(LFLAGS)	\
 		$(LD_SHARED_LIB_OPTIONS)	\
 		mdsdcl_tables.o		\
 		$(EXPORT_SYMBOLS) libMdsdcl.a	\
 		$(EXPORT_SYMBOLS)  $(MDSPLUS)/cdu/libCdu.a	\
-		-lMdsShr  -lcurses -lc
+		-lMdsShr  -lc
 
 ../bin/mdsdcl:	mdsdcl.o  ../shlib/libMdsdcl.$(SHARE_TYPE)
 	$(CC) $(CFLAGS) -o $@ $(LFLAGS) mdsdcl.o	\
