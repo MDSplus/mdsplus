@@ -6,7 +6,8 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@ @LIBM@
+LIBS=-L@MAKELIBDIR@  -lTreeShr -lMdsShr @LIBS@ @LIBM@
+
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
@@ -88,27 +89,31 @@ TdiYaccSubs.c \
 TdiYacc.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = TdiShr.export
+EXPORTS = TdiShr.exports
 
-all: @MAKELIBDIR@ @MAKELIBDIR@libTdiShr@SHARETYPE@ @MAKELIBDIR@libTdiShr.a
+all: @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libTdiShr@SHARETYPE@ @MAKELIBDIR@libTdiShr.a
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean:
 	- rm *.o
-	- rm @MAKELIBDIR@libTdiShr.*
+	- rm @MAKESHLIBDIR@libTdiShr@SHARETYPE@
+	- rm @MAKELIBDIR@libTdiShr.a
 
 install:
 	if [ ! -d @libdir@ ] ; then \
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 644  @MAKELIBDIR@libTdiShr.a @libdir@
 	$(INSTALL) -m 755  @MAKELIBDIR@libTdiShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsShr@SHARETYPE@ @libdir@
+	if test "@SHARETYPE@" != ".a" ; then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libTdiShr.a @libdir@
+	fi;
 
-@MAKELIBDIR@libTdiShr@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@  -lTreeShr -lMdsShr $(LIBS)
+@MAKESHLIBDIR@libTdiShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
+	@MAKESHARED@
 
 @MAKELIBDIR@libTdiShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
@@ -117,3 +122,7 @@ install:
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
 
+@MAKESHLIBDIR_RULE@
+
+TdiShr.exports: TdiShr.def
+	sed -e /LIBRARY/\;/\;/d TdiShr.def > $@

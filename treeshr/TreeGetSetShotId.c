@@ -35,7 +35,9 @@ int TreeGetCurrentShotId(experiment,shot)
 extern void TranslateLogicalFree();
 extern int TreeGetCurrentShotIdRemote();
 extern int TreeSetCurrentShotIdRemote();
+#ifndef index
 extern char *index();
+#endif
 
 extern char *TranslateLogical();
 
