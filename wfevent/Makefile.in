@@ -32,4 +32,4 @@ install:
 	mkdir @MAKEBINDIR@
 
 @MAKEBINDIR@wfevent : $(OBJECTS)
-	$(CC) -o $@ $(OBJECTS)  -L@MAKELIBDIR@ -lMdsShr -lipcs $(LIBS)
+	$(CC) -o $@ $(CFLAGS) $(OBJECTS)  -L@MAKELIBDIR@ -lMdsShr -lipcs $(LIBS)
