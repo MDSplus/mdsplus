@@ -65,12 +65,11 @@ public class RFXPMSetupSetup extends DeviceSetup
 		deviceField2.setEditable(false);
 		getContentPane().add(deviceField2);
 		deviceField2.setBounds(252,48,120,40);
-		deviceField4.setTextOnly(true);
-		deviceField3.setBounds(192,96,204,40);
 		deviceField7.setOffsetNid(11);
 		deviceField7.setLabelString("PTCB Voltage (V):");
 		getContentPane().add(deviceField7);
 		deviceField7.setBounds(372,48,240,40);
+		deviceField4.setTextOnly(true);
 		deviceField4.setOffsetNid(10);
 		deviceField4.setLabelString("Enabled units: ");
 		deviceField4.setDisplayEvaluated(true);
@@ -96,6 +95,7 @@ public class RFXPMSetupSetup extends DeviceSetup
 		deviceField3.setDisplayEvaluated(true);
 		deviceField3.setEditable(false);
 		getContentPane().add(deviceField3);
+		deviceField3.setBounds(192,96,204,40);
 		//}}
 	}
 
@@ -140,11 +140,11 @@ public class RFXPMSetupSetup extends DeviceSetup
 	DeviceWave deviceWave1 = new DeviceWave();
 	DeviceButtons deviceButtons1 = new DeviceButtons();
 	DeviceField deviceField2 = new DeviceField();
+	DeviceField deviceField7 = new DeviceField();
 	DeviceField deviceField4 = new DeviceField();
 	DeviceField deviceField5 = new DeviceField();
 	DeviceField deviceField6 = new DeviceField();
 	DeviceField deviceField3 = new DeviceField();
-	DeviceField deviceField7 = new DeviceField();
 	//}}
 
 }

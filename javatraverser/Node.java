@@ -4,6 +4,7 @@ import java.net.URL;
 import java.rmi.*;
 import java.rmi.RemoteException.*;
 import javax.swing.tree.*;
+import java.awt.*;
 public class Node
 {
     RemoteTree experiment;
@@ -166,11 +167,13 @@ public class Node
                     String deviceClassName = model.getString()+"Setup";
                     Class deviceClass = Class.forName(deviceClassName);
                     DeviceSetup ds = (DeviceSetup)deviceClass.newInstance();
+                    Dimension prevDim = ds.getSize();
                     ds.addDataChangeListener(hierarchy);
                     ds.configure(experiment, nid.getInt());
                     if(ds.getContentPane().getLayout() != null)
                         ds.pack();
                     ds.setLocation(hierarchy.getMousePosition());
+                    ds.setSize(prevDim);
                     ds.show();
                     return;
                 }catch(Exception e)

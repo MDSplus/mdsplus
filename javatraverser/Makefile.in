@@ -30,7 +30,8 @@ L5613Setup.java\
 RFXTimesSetup.java\
 RFXPConfigSetup.java\
 RFXPMSetupSetup.java\
-RFXPCSetupSetup.java
+RFXPCSetupSetup.java \
+TR10Setup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
