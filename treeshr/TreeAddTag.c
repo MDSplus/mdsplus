@@ -177,7 +177,7 @@ the tag name specified does not already exist.
 
   memcpy(tag_info.name,tag,sizeof(tag));
   tmp = node_ptr - dblist->tree_info->node;
-  tag_info.node_idx = swapint(tmp);
+  tag_info.node_idx = swapint((char *)&tmp);
   tag_info.tag_link = node_ptr->tag_link;
 
 /*******************************************************
