@@ -953,7 +953,7 @@ STATIC_ROUTINE void setHandle()
 	    msgKey++;
 #endif
 	if(pthread_create(&thread, pthread_attr_default, handleMessage, 0) !=  0)
-	    perror("pthread_create");
+	    perror("setHandle:pthread_create");
       UnlockMdsShrMutex(&msgIdMutex);
     } 
 }
@@ -1117,7 +1117,7 @@ STATIC_ROUTINE int createThread(pthread_t *thread, void (*rtn)(), void *par)
   if(pthread_create(thread, pthread_attr_default, (void *(*)(void *))rtn, par) !=  0)
   {
     status = 0;
-    perror("pthread_create");
+    perror("createThread:pthread_create");
   }
   return status;
 }
