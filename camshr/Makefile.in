@@ -11,8 +11,11 @@ LIBS=-L@MAKESHLIBDIR@ @LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 LIBRARYNAME=CamShr
 
-MAJOR	=	$(shell awk '{split($$0,a,"_"); print a[2];}' CVS/Tag)
-MINOR	=	$(shell awk '{split($$0,a,"_"); print a[3];}' CVS/Tag)
+#MAJOR	=	$(shell awk '{split($$0,a,"_"); print a[2];}' CVS/Tag)
+#MINOR	=	$(shell awk '{split($$0,a,"_"); print a[3];}' CVS/Tag)
+
+MAJOR = 1
+MINOR = 8
 
 SOURCES	= \
 		add_entry.c              \
