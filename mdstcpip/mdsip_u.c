@@ -223,7 +223,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     Client *c;
     time_t tim;
     m.h.msglen = sizeof(MsgHdr);
-    hp = gethostbyaddr(&sin->sin_addr,sizeof(sin->sin_addr),AF_INET);
+    hp = gethostbyaddr((char *)&sin->sin_addr,sizeof(sin->sin_addr),AF_INET);
     m_user = GetMdsMsg(sock,&status);
     if ((status & 1) && (m_user) && (m_user->h.dtype == DTYPE_CSTRING))
     {
@@ -747,9 +747,9 @@ static int CreateMdsPort(char *service, int multi_in)
     printf("unknown service: %s/tcp\n",service);
     exit(1);
   }
-  setsockopt(s, SOL_SOCKET,SO_RCVBUF,&recvbuf,sizeof(long));
-  setsockopt(s, SOL_SOCKET,SO_SNDBUF,&sendbuf,sizeof(long));  
-  status = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &multi_in,sizeof(1));
+  setsockopt(s, SOL_SOCKET,SO_RCVBUF,(char *)&recvbuf,sizeof(long));
+  setsockopt(s, SOL_SOCKET,SO_SNDBUF,(char *)&sendbuf,sizeof(long));  
+  status = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&multi_in,sizeof(1));
   if (status < 0)
   {
     printf("Error setting socket options\n");
@@ -784,7 +784,7 @@ static int ConnectToInet(char *service)
   int status = 1; /* sys$assign(&INET, &s, 0, 0); */
   if (!(status & 1)) { exit(status);}
   FD_SET(s,&fdactive);
-  if ((status=getpeername(s, &sin, &n)) < 0)
+  if ((status=getpeername(s, (struct sockaddr *)&sin, &n)) < 0)
   {
     perror("Error getting peer name");
     exit(0);
