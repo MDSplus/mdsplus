@@ -37,7 +37,6 @@ public fun Dt200Init(IN _board, IN _activeChans, IN _trigSrc, IN _clockSource, I
     Dt200WriteMaster(_board, "setEvent AI E2 EV_TRIGGER_FALLING "//_trigSrc);
     Dt200WriteMaster(_board, "setEvent AI E3 EV_NONE");
   }
-  Dt200WriteMaster(_board, "setArm");
   return(1);
 }
 

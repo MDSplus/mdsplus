@@ -1,6 +1,10 @@
-public fun Dt200WriteMaster(in _board, in _cmd) 
+fun Dt200WriteMaster(in _board, in _str)
 {
-  write (*, "acqcmd -b "//text(_board,1)//" "//_cmd);
-  return(1);
+  _brd = char(_board+ichar('0'));
+  _devname = "/dev/acq32/acq32."//_brd//".m"//_brd;
+  _lun = fopen(_devname, "r+");
+  write(_lun, _str);
+  _ans = read(_lun);
+  fclose(_lun);
+  return(_ans);
 }
-
