@@ -31,10 +31,13 @@ size_t FREAD( void *ptr, size_t size, size_t nmemb, FILE *stream)
   int chunk_size;
   int this_chunk=0;
 
+  printf("entering FREAD(ptr, %d, %d, stream\n", size, nmemb);
   while ((samples_to_read != 0) && (this_chunk >= 0)) {
 
     chunk_size = MIN(MAX_CHUNK_SIZE/size, samples_to_read);
+    printf("  fread(ptr, %d %d, stream)=", size, chunk_size);
     this_chunk = fread(ptr, size, chunk_size, stream);
+    printf(" %d\n", this_chunk);
 
     if (this_chunk <= 0){
             fprintf(stderr, "fread returned zero, quit at %d\n",
