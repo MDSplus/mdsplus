@@ -1166,7 +1166,7 @@ MAKELIBDIR="\$(top_srcdir)/lib/"
 MAKEUIDDIR="\$(top_srcdir)/uid/"
 MAKEETCDIR="\$(top_srcdir)/etc/"
 MAKEJAVADIR="\$(top_srcdir)/java/"
-if test "$MAKELIBDIR"="$MAKESHLIBDIR"; then
+if test "$MAKELIBDIR" = "$MAKESHLIBDIR"; then
 	MAKESHLIBDIR_RULE=""
 else
 	MAKESHLIBDIR_RULE="$MAKESHLIBDIR : ; mkdir $MAKESHLIBDIR"
