@@ -176,11 +176,11 @@ struct descriptor  {
             ((struct descriptor *)(d))->dscW_length<=1024)
 #else
 #define ALIGN_MASK(x)  (sizeof(x) - 1)
-#define is_cdescr(d)  ((d) && ((int)(d) & ALIGN_MASK(void *))==0 &&	\
+#define is_cdescr(d)  ((d) && ((long)(d) & ALIGN_MASK(void *))==0 &&	\
             ((struct descriptor *)(d))->dscB_dtype==DSC_K_DTYPE_T && \
             ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_S && \
             ((struct descriptor *)(d))->dscW_length<=1024)
-#define is_ddescr(d)  ((d) && ((int)(d) & ALIGN_MASK(void *))==0 &&	\
+#define is_ddescr(d)  ((d) && ((long)(d) & ALIGN_MASK(void *))==0 &&	\
             ((struct descriptor *)(d))->dscB_dtype==DSC_K_DTYPE_T && \
             ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_D && \
             ((struct descriptor *)(d))->dscW_length<=1024)
