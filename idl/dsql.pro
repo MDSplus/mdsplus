@@ -94,7 +94,7 @@ function BreakupStringAnswer, str, count
 end
 
 function dsql, $
-               query, a001, a002, a003, a004, a005, a006, a007, a008, a009, $
+               lquery, a001, a002, a003, a004, a005, a006, a007, a008, a009, $
                a010, a011, a012, a013, a014, a015, a016, a017, a018, a019, $
                a020, a021, a022, a023, a024, a025, a026, a027, a028, a029, $
                a030, a031, a032, a033, a034, a035, a036, a037, a038, a039, $
@@ -113,6 +113,7 @@ function dsql, $
                date=date, quiet=quiet, status=status, count=count, $
                error=error, debug=debug, _extra=ex
 
+query = lquery
 status = 1
 debug = keyword_set(debug)
 if (debug) then $
