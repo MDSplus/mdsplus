@@ -285,7 +285,7 @@ public class WaveInterface
 	    else
 		curr_y = dp.GetDoubleArray("JAVA_RESAMPLE("+ "FLOAT("+in_y[curr_wave]+ "), " +
 		   "FLOAT("+in_x[curr_wave]+ "), " + limits + ")");	
-	    if(curr_y != null && in_up_err != null && 
+	    if(curr_y != null && curr_y.length > 1 && in_up_err != null && 
 		    in_up_err[curr_wave] != null && (in_up_err[curr_wave].trim()).length() != 0)
 	    {
 		if(full_flag)
@@ -293,7 +293,7 @@ public class WaveInterface
 		else
 		    up_err = dp.GetDoubleArray("JAVA_RESAMPLE("+ "FLOAT("+in_up_err[curr_wave]+ "), " +
 		      "FLOAT("+in_x[curr_wave]+ "), " + limits + ")");
-		if(up_err == null)
+		if(up_err == null || up_err.length <= 1)
 			curr_y = null;			
 	    }
 	    if(curr_y != null && in_low_err != null && 
@@ -304,7 +304,7 @@ public class WaveInterface
 		else
 		    low_err = dp.GetDoubleArray("JAVA_RESAMPLE("+ "FLOAT("+in_low_err[curr_wave]+ "), " +
 		      "FLOAT("+in_x[curr_wave]+ "), " + limits + ")");
-		if(low_err == null)
+		if(low_err == null || low_err.length <= 1)
 			curr_y = null;			
 	    }
 	    if(curr_y != null) 
@@ -312,14 +312,14 @@ public class WaveInterface
 		if(full_flag)
 		{
 		    curr_x = dp.GetDoubleArray(in_x[curr_wave]);
-		    if(curr_x == null)
+		    if(curr_x == null || curr_x.length <= 1)
 			curr_y = null;
 		}
 		else
 		{
 		    curr_x = dp.GetDoubleArray("JAVA_DIM(FLOAT("+ in_x[curr_wave]+ "), " +
 			limits + ")"); 
-		    if(curr_x == null)
+		    if(curr_x == null || curr_x.length <= 1)
 			curr_y = null;
 		    else
 		    {
@@ -337,7 +337,7 @@ public class WaveInterface
 	    else
 		curr_y = dp.GetDoubleArray("JAVA_RESAMPLE("+ "FLOAT("+in_y[curr_wave]+ "), "+
 		    "FLOAT(DIM_OF("+in_y[curr_wave]+")), "+ limits + ")");
-	    if(curr_y != null && in_up_err != null && in_up_err[curr_wave] != null 
+	    if(curr_y != null && curr_y.length > 1 && in_up_err != null && in_up_err[curr_wave] != null 
 		    && (in_up_err[curr_wave].trim()).length() != 0)
 	    {
 		if(full_flag)
@@ -345,7 +345,7 @@ public class WaveInterface
 		else
 		    up_err = dp.GetDoubleArray("JAVA_RESAMPLE(FLOAT("+ in_up_err[curr_wave]+ "), DIM_OF(FLOAT("+
 			in_y[curr_wave] + ")), "+limits +")");
-		if(up_err == null)
+		if(up_err == null || up_err.length <= 1)
 		    curr_y = null;
 	    
 	    }				
@@ -358,7 +358,7 @@ public class WaveInterface
 		    low_err = dp.GetDoubleArray("JAVA_RESAMPLE(FLOAT("+in_low_err[curr_wave] +
 			 "), DIM_OF(FLOAT("+ in_y[curr_wave] + ")),"+ limits + ")");
 			
-		if(low_err == null)
+		if(low_err == null || low_err.length <= 1)
 		    curr_y = null;
 	    }				
 		
@@ -370,7 +370,7 @@ public class WaveInterface
 		{
 		    curr_x = dp.GetDoubleArray("JAVA_DIM(FLOAT(DIM_OF("+ in_y[curr_wave]+ 
 			")), "+ limits + ")"); 
-		    if(curr_x != null)
+		    if(curr_x != null || curr_y.length <= 1)
 		    {
 			expanded_x = new double[curr_y.length];
 			x_samples = ExpandTimes(curr_x, expanded_x);

@@ -143,7 +143,7 @@ waveforms.
     {	
 	int i, j, x[], y[];
 	Point curr_points[];
-	Dimension d = getSize();
+	Dimension d = size();
 		
 	int step, num_steps;
 	for(i = 0; i < num_signals; i++)
@@ -186,7 +186,7 @@ waveforms.
 	    if(markers != null && markers[i] != NONE)
 	    	DrawMarkers(g, curr_points, signals[i].n_points, markers[i]);
 	    if(signals[i].error)
-		DrawError(g, getSize(), signals[i]);
+		DrawError(g, size(), signals[i]);
 	}
     }
 

@@ -534,7 +534,7 @@ public class Waveform extends Canvas
 	update_timestamp = 0;
 	x_log = y_log = false;
 	controller = c;
-	Dimension d = getSize();
+	Dimension d = size();
 	waveform_signal = new Signal(s, 1000);
  // Reshape al piu' con 1000 punti
 	first_set_point = true;
@@ -661,7 +661,7 @@ public class Waveform extends Canvas
     void DrawWave()
     {
 	Integer ic;
- 	Dimension d = getSize();
+ 	Dimension d = size();
 	int i, x[] = new int[waveform_signal.n_points],
 	y[] = new int[waveform_signal.n_points];
 	points = new Point[waveform_signal.n_points];
@@ -682,7 +682,7 @@ public class Waveform extends Canvas
 
 	Float fc_x, fc_y;
 	int idx, plot_y;
-	Dimension d = getSize();
+	Dimension d = size();
 	Graphics g1;
 	double curr_x, curr_y, xmax = 1, ymax = 1, xmin = 0, ymin = 0;
 	if(not_drawn || prev_width != d.width 
@@ -821,7 +821,7 @@ public class Waveform extends Canvas
 
     protected void DrawSignal(Graphics g)
     {	
-	Dimension d = getSize();
+	Dimension d = size();
 	Shape prev_clip = g.getClip();
 	DrawWave();
 	
@@ -830,7 +830,7 @@ public class Waveform extends Canvas
         if(marker != NONE)
 	DrawMarkers(g, points, num_points, marker);
         if(waveform_signal.error)
-	    DrawError(off_graphics, getSize(), waveform_signal);
+	    DrawError(off_graphics, size(), waveform_signal);
 	g.setClip(prev_clip);
     }	
     protected double MaxXSignal() {return waveform_signal.xmax;}
@@ -942,7 +942,7 @@ public class Waveform extends Canvas
 	public void UpdatePoint(double curr_x)
 	{
 		double xrange;
-		Dimension d = getSize();
+		Dimension d = size();
 		if(dragging || mode != MODE_POINT || waveform_signal == null)
 			return;
 		if(curr_x < waveform_signal.x[0])
@@ -987,7 +987,7 @@ public class Waveform extends Canvas
 	    repaint();
 	if(mode == MODE_PAN)
 	{
-	    Dimension d = getSize();
+	    Dimension d = size();
 	    if(wm.x_log)
 		pan_delta_x = wm.XValue(start_x, d)/wm.XValue(end_x, d);
 	    else
@@ -1014,7 +1014,7 @@ public class Waveform extends Canvas
 	if(waveform_signal == null)
 	    return true;
 	
-	Dimension d = getSize();
+	Dimension d = size();
 	if(mode == MODE_ZOOM && x > start_x && y > start_y)
 	{
 

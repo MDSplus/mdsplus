@@ -41,7 +41,7 @@ class Slider extends Panel implements AdjustmentListener {
     orientation   = orie;
     mode_show     = LABEL_CURSOR;
     mode_pos      = mode;
-    Insets insets = getInsets();
+    Insets insets = insets();
  
     setLayout(null);
     
@@ -69,7 +69,7 @@ class Slider extends Panel implements AdjustmentListener {
      lab.setFont(new Font("Helvetica", Font.PLAIN, 12)) ; 
   }
 
-  public Insets getInsets()
+  public Insets insets()
   {
      return new Insets(5,5,5,8);
   }	 
@@ -92,7 +92,7 @@ class Slider extends Panel implements AdjustmentListener {
   public void paintSlider() 
   {
 
-     Insets insets = getInsets();
+     Insets insets = insets();
      String str    = new String("" + max_val);
      int x=0, y=0;
     
@@ -125,7 +125,7 @@ class Slider extends Panel implements AdjustmentListener {
 
 
 
-   public Dimension getMinimumSize() {
+   public Dimension minimumSize() {
 	if ((getSize().width == 0) || (getSize().height == 0)) {
 		setSize(width_size, height_size);
 	}	      
@@ -134,7 +134,7 @@ class Slider extends Panel implements AdjustmentListener {
 
   public  void mySetSize(int width, int height)
   {
-      Insets insets = getInsets();
+      Insets insets = insets();
       w_scr = width;
       h_scr = height;
  
@@ -172,7 +172,7 @@ class Slider extends Panel implements AdjustmentListener {
   private void updateLabel()
   {
 
-     Insets insets = getInsets();
+     Insets insets = insets();
      int val = value - min_val;
 
      int x=0, y=0;	

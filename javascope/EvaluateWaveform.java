@@ -65,7 +65,7 @@ import java.awt.*;
 	int  s_range, s_curr; 
 	int error_cd = 0;
 	byte[] shots_str;	
-	byte[] shot_str = new byte[8];
+	byte[] shot_str = new byte[20];
     	int i = 0, k = 0, j = 0;
 	boolean interval_flag = false;
 	
@@ -78,7 +78,7 @@ import java.awt.*;
 	in_shots = in_shots.concat(new String("F"));    
     	shots_str = in_shots.getBytes();	
 	
-	for(i = 0, k = 0;  i < in_shots.length() && error_cd == 0 && k < 8; i++)
+	for(i = 0, k = 0;  i < in_shots.length() && error_cd == 0 && k < 20; i++)
        	{
 	    if(j > WaveSetupData.MAX_NUM_SHOT)
 	    {
