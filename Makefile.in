@@ -72,7 +72,7 @@ full_clean:
 depend:
 	cdir=`pwd`;\
 	for dir in $(PARTS) ; do\
-	  cd $${dir}; make depend; cd $$cdir;\
+	  cd $${dir}; make depend > /dev/null 2> /dev/null; cd $$cdir;\
 	done
 
 MISC_PARTS = tdi idl trees setup.sh setup.csh java LabView include rpm
