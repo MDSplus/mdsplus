@@ -27,7 +27,7 @@ if [ -r $MDSPLUS_DIR/setup/grid-security.tgz ]
 then
   if [ ! -r /etc/grid-security ]
   then
-    cd /etc
+    cd /
     tar xzf $MDSPLUS_DIR/setup/grid-security.tgz
   fi
 fi
@@ -40,13 +40,13 @@ then
     echo "include $MDSPLUS_DIR/local/roam.env" > $MDSPLUS_DIR/local/envsyms
     echo "MYPROXY_SERVER cert.fusiongrid.org" >> $MDSPLUS_DIR/local/envsyms
   fi
-  GLOBUS_LOCATIOON=$MDSPLUS_DIR
-  GPT_LOCATION=$MDSPLUS_DIR
-  export GPT_LOCATION
-  export GLOBUS_LOCATION
-  $GPT_LOCATION/sbin/gpt-postinstall --force >/dev/null 2>/dev/null
   if [ ! -r $MDSPLUS_DIR/local/roam.env ]
   then
+    GLOBUS_LOCATIOON=$MDSPLUS_DIR
+    GPT_LOCATION=$MDSPLUS_DIR
+    export GPT_LOCATION
+    export GLOBUS_LOCATION
+    $GPT_LOCATION/sbin/gpt-postinstall --force 
     echo "ROAM_SERVER roam.fusiongrid.org" > $MDSPLUS_DIR/local/roam.env
     echo "ROAM_SITE_RESOURCE MYSITE" >> $MDSPLUS_DIR/local/roam.env
     echo "ROAM_MDSIPS_RESOURCE MYDATA" >> $MDSPLUS_DIR/local/roam.env
