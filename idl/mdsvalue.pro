@@ -102,7 +102,8 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
           10: answer = float(answer)
           11: answer = double(answer)
           12: answer = complex(answer)
-          else: message,'Data type '+string(dtype)+'  is not supported',/continue
+          13: answer = dcomplex(answer)
+          else: message,'Data type '+string(fix(dtype))+'  is not supported',/continue
         endcase
         MdsMemCpy,answer,ansptr,numbytes
 	if (dtype eq 6) then begin

@@ -115,6 +115,7 @@ pro Mds$SendArg,sock,n,idx,arg
 end
 
 pro mds$connect,host,status=status,quiet=quiet,port=port
+  on_error,2
   mds$disconnect,/quiet
   if n_elements(port) ne 0 then begin
     setenv_,'mdsip='+strtrim(port,2)
@@ -155,6 +156,7 @@ end
 
 
 pro mdsconnect,host,status=status,quiet=quiet,port=port
+  on_error,2
   mdsdisconnect,/quiet
   if n_elements(port) ne 0 then begin
     setenv_,'mdsip='+strtrim(port,2)
