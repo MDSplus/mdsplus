@@ -8,16 +8,20 @@
 #include <mds_stdarg.h>
 #include <librtl_messages.h>
 
+char *MdsDescrToCstring(struct descriptor *in);
+int StrFree1Dx(struct descriptor *out);
+int StrGet1Dx(unsigned short *len, struct descriptor *out);
+int StrCopyDx(struct descriptor *out, struct descriptor *in);
+int StrAppend(struct descriptor *out, struct descriptor *tail);
+
 #if defined(WIN32)
 #pragma warning (disable : 4100 4201 4115 4214 4514)
-#include <process.h>
 #include <windows.h>
-#include <tchar.h>
-#include <wtypes.h>
-#include <winreg.h>
+#include <process.h>
 
 #define RTLD_LAZY 0
 #define SHARELIB_PREFIX ""
+#define SHARELIB_TYPE ""
 
 static void *dlopen(char *filename, int flags)
 {
@@ -27,6 +31,137 @@ static void *dlopen(char *filename, int flags)
 static void *dlsym(void *handle, char *name)
 {
   return (void *)GetProcAddress((HINSTANCE)handle, name);
+}
+
+typedef struct _dir
+{
+	char *path;
+	HANDLE handle;
+} DIR;
+
+struct dirent
+{
+	char *d_name;
+};
+
+static DIR *opendir(char *path)
+{
+	DIR *dir = 0;
+	int info = GetFileAttributes(path);
+	if ((info != 0xFFFFFFFF) && ((info & FILE_ATTRIBUTE_DIRECTORY) != 0))
+	{
+		dir = (DIR *)malloc(sizeof(DIR)+strlen(path)+3);
+		dir->path = ((char *)dir)+sizeof(DIR);
+		strcpy(dir->path,path);
+		strcat(dir->path,(dir->path[strlen(dir->path)-1] == '\\') ? "*" : "\\*");
+		dir->handle = 0;
+	}
+	return dir;
+}
+
+static void closedir(DIR *dir)
+{
+	if (dir)
+		free(dir);
+}
+
+struct dirent *readdir(DIR *dir)
+{
+	static struct dirent ans;
+	static WIN32_FIND_DATA fdata;
+	if (dir->handle == 0)
+	{
+
+		dir->handle = FindFirstFile(dir->path, &fdata);
+		if (dir->handle == INVALID_HANDLE_VALUE)
+			dir->handle = 0;
+	}
+	else
+	{
+		if (!FindNextFile(dir->handle, &fdata))
+		{
+	      FindClose(dir->handle);
+		  dir->handle = 0;
+		}
+	}
+	if (dir->handle != 0)
+	{
+		ans.d_name = fdata.cFileName;
+		return &ans;
+	}
+	else
+		return 0;
+}
+
+char *index(char *str, char c)
+{
+	int pos = strcspn(str,&c);
+	return (pos == 0) ? ((str[0] == c) ? str : 0) : &str[pos];
+}
+
+char *TranslateLogical(char *pathname)
+{
+  HKEY regkey1,regkey2,regkey3;
+  unsigned char *path = NULL;
+  if ( (RegOpenKeyEx(HKEY_LOCAL_MACHINE,"SOFTWARE",0,KEY_READ,&regkey1) == ERROR_SUCCESS) &&
+       (RegOpenKeyEx(regkey1,"MIT",0,KEY_READ,&regkey2) == ERROR_SUCCESS) &&
+       (RegOpenKeyEx(regkey2,"MDSplus",0,KEY_READ,&regkey3) == ERROR_SUCCESS) )
+  {
+    unsigned long valtype;
+    unsigned long valsize;
+    if (RegQueryValueEx(regkey3,pathname,0,&valtype,NULL,&valsize) == ERROR_SUCCESS)
+    {
+	  int plen;
+	  valsize += 2;
+      path = malloc(valsize);
+      RegQueryValueEx(regkey3,pathname,0,&valtype,path,&valsize);
+	  plen = strlen(path);
+	  if (path[plen-1] != '\\')
+	  {
+		  path[plen++] = '\\';
+		  path[plen] = '\0';
+	  }
+    }
+  }
+  RegCloseKey(regkey1);
+  RegCloseKey(regkey2);
+  RegCloseKey(regkey3);
+  return (char *)path;
+}
+
+int LibSpawn(struct descriptor *cmd, struct descriptor *in, struct descriptor *out)
+{
+  char *cmd_c = MdsDescrToCstring(cmd);
+  int status = _spawnlp(_P_WAIT, cmd_c, cmd_c, NULL);
+  free(cmd_c);
+  return (status == 0);
+}
+
+int LibWait(float *secs)
+{
+  int msec = (int)(*secs*1000.);
+  Sleep(msec);
+  return 1;
+}
+
+unsigned int LibCallg(void **arglist, FARPROC *routine)
+{
+  int a_idx;
+
+  unsigned int retval;
+  for (a_idx=*(int *)arglist; a_idx > 0; a_idx--)
+  {
+
+	  void *arg = arglist[a_idx];
+    __asm mov eax, arg
+
+	__asm push eax
+  }
+  __asm call routine
+  __asm mov retval, eax
+  for (a_idx=*(int *)arglist; a_idx > 0; a_idx--) __asm pop eax
+
+  return retval;
 }
 
 #else /* WIN32 */
@@ -59,7 +194,115 @@ void *dlsym(void *handle, char *name)
 #define SHARELIB_TYPE ".so"
 #endif
 
+char *TranslateLogical(char *name)
+{
+	char *env = getenv(name);
+	return env ? strcpy(malloc(strlen(env)+1,env) : 0;
+}
+unsigned int LibCallg(void **arglist, unsigned int (*routine)())
+{
+  switch (*(int *)arglist & 0xff)
+  {
+    case 0:  return (*routine)();
+    case 1:  return (*routine)(arglist[1]);
+    case 2:  return (*routine)(arglist[1],arglist[2]);
+    case 3:  return (*routine)(arglist[1],arglist[2],arglist[3]);
+    case 4:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4]);
+    case 5:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5]);
+    case 6:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6]);
+    case 7:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7]);
+    case 8:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8]);
+    case 9:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9]);
+    case 10: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10]);
+    case 11: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11]);
+    case 12: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12]);
+    case 13: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13]);
+    case 14: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14]);
+    case 15: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15]);
+    case 16: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16]);
+    case 17: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17]);
+    case 18: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18]);
+    case 19: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19]);
+    case 20: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20]);
+    case 21: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21]);
+    case 22: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22]);
+    case 23: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23]);
+    case 24: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24]);
+    case 25: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25]);
+    case 26: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25],arglist[26]);
+    case 27: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25],arglist[26],arglist[27]);
+    case 28: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25],arglist[26],arglist[27],arglist[28]);
+    case 29: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25],arglist[26],arglist[27],arglist[28],arglist[29]);
+    case 30: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25],arglist[26],arglist[27],arglist[28],arglist[29],arglist[30]);
+    case 31: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25],arglist[26],arglist[27],arglist[28],arglist[29],arglist[30],arglist[31]);
+    case 32: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25],arglist[26],arglist[27],arglist[28],arglist[29],arglist[30],arglist[31],arglist[32]);
+    default: printf("Error - currently no more than 32 arguments supported on external calls\n");
+  }
+  return 0;
+}
+
+int LibSpawn(struct descriptor *cmd, struct descriptor *in, struct descriptor *out)
+{
+  printf("LibSpawn not yet supported\n");
+  return 0;
+}
+
+int LibWait(float *secs)
+{
+  sleep((unsigned int)*secs);
+  return 1;
+}
+
 #endif
+
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #ifndef va_count
 #define  va_count(narg) va_start(incrmtr, first); \
@@ -75,11 +318,6 @@ typedef struct _ZoneList { VmList *vm;
 			 } ZoneList;
 
 ZoneList *MdsZones=NULL;
-
-int StrFree1Dx(struct descriptor *out);
-int StrGet1Dx(unsigned short *len, struct descriptor *out);
-int StrCopyDx(struct descriptor *out, struct descriptor *in);
-int StrAppend(struct descriptor *out, struct descriptor *tail);
 
 void MdsFree(void *ptr)
 {
@@ -807,243 +1045,6 @@ int StrReplace(struct descriptor *dest, struct descriptor *src, int *start_idx, 
   return status;
 }
 
-#if  defined(_WIN32)
-int LibSpawn(struct descriptor *cmd, struct descriptor *in, struct descriptor *out)
-{
-  char *cmd_c = MdsDescrToCstring(cmd);
-  int status = _spawnlp(_P_WAIT, cmd_c, cmd_c, NULL);
-  free(cmd_c);
-  return (status == 0);
-}
-
-int LibWait(float *secs)
-{
-  int msec = (int)(*secs*1000.);
-  Sleep(msec);
-  return 1;
-}
-
-static char *GetRegistryPath(char *pathname)
-{
-  HKEY regkey1,regkey2,regkey3;
-  unsigned char *path = NULL;
-  if ( (RegOpenKeyEx(HKEY_LOCAL_MACHINE,"SOFTWARE",0,KEY_READ,&regkey1) == ERROR_SUCCESS) &&
-       (RegOpenKeyEx(regkey1,"MIT",0,KEY_READ,&regkey2) == ERROR_SUCCESS) &&
-       (RegOpenKeyEx(regkey2,"MDSplus",0,KEY_READ,&regkey3) == ERROR_SUCCESS) )
-  {
-    unsigned long valtype;
-    unsigned long valsize;
-    if (RegQueryValueEx(regkey3,pathname,0,&valtype,NULL,&valsize) == ERROR_SUCCESS)
-    {
-	  int plen;
-	  valsize += 2;
-      path = malloc(valsize);
-      RegQueryValueEx(regkey3,pathname,0,&valtype,path,&valsize);
-	  plen = strlen(path);
-	  if (path[plen-1] != '\\')
-	  {
-		  path[plen++] = '\\';
-		  path[plen] = '\0';
-	  }
-    }
-  }
-  RegCloseKey(regkey1);
-  RegCloseKey(regkey2);
-  RegCloseKey(regkey3);
-  return (char *)path;
-}
-
-unsigned int LibCallg(void **arglist, FARPROC *routine)
-{
-  int a_idx;
-
-  unsigned int retval;
-  for (a_idx=*(int *)arglist; a_idx > 0; a_idx--)
-  {
-
-	  void *arg = arglist[a_idx];
-    __asm mov eax, arg
-
-	__asm push eax
-  }
-  __asm call routine
-  __asm mov retval, eax
-  for (a_idx=*(int *)arglist; a_idx > 0; a_idx--) __asm pop eax
-
-  return retval;
-}
-#elif defined(__unix__) || defined (unix) || defined(__unix)
-unsigned int LibCallg(void **arglist, unsigned int (*routine)())
-{
-  switch (*(int *)arglist & 0xff)
-  {
-    case 0:  return (*routine)();
-    case 1:  return (*routine)(arglist[1]);
-    case 2:  return (*routine)(arglist[1],arglist[2]);
-    case 3:  return (*routine)(arglist[1],arglist[2],arglist[3]);
-    case 4:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4]);
-    case 5:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5]);
-    case 6:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6]);
-    case 7:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7]);
-    case 8:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8]);
-    case 9:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9]);
-    case 10: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10]);
-    case 11: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11]);
-    case 12: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12]);
-    case 13: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13]);
-    case 14: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14]);
-    case 15: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15]);
-    case 16: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16]);
-    case 17: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17]);
-    case 18: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17],arglist[18]);
-    case 19: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17],arglist[18],arglist[19]);
-    case 20: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17],arglist[18],arglist[19],arglist[20]);
-    case 21: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21]);
-    case 22: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22]);
-    case 23: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23]);
-    case 24: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24]);
-    case 25: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
-                    arglist[25]);
-    case 26: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
-                    arglist[25],arglist[26]);
-    case 27: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
-                    arglist[25],arglist[26],arglist[27]);
-    case 28: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
-                    arglist[25],arglist[26],arglist[27],arglist[28]);
-    case 29: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
-                    arglist[25],arglist[26],arglist[27],arglist[28],arglist[29]);
-    case 30: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
-                    arglist[25],arglist[26],arglist[27],arglist[28],arglist[29],arglist[30]);
-    case 31: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
-                    arglist[25],arglist[26],arglist[27],arglist[28],arglist[29],arglist[30],arglist[31]);
-    case 32: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
-                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
-                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
-                    arglist[25],arglist[26],arglist[27],arglist[28],arglist[29],arglist[30],arglist[31],arglist[32]);
-    default: printf("Error - currently no more than 32 arguments supported on external calls\n");
-  }
-  return 0;
-}
-
-int LibSpawn(struct descriptor *cmd, struct descriptor *in, struct descriptor *out)
-{
-  printf("LibSpawn not yet supported\n");
-  return 0;
-}
-
-int LibWait(float *secs)
-{
-  sleep((unsigned int)*secs);
-  return 1;
-}
-#endif
-
-#if defined(_WIN32)
-typedef struct _dir
-{
-	char *path;
-	HANDLE handle;
-} DIR;
-
-struct dirent
-{
-	char *d_name;
-};
-
-static DIR *opendir(char *path)
-{
-	DIR *dir = 0;
-	int info = GetFileAttributes(path);
-	if ((info != 0xFFFFFFFF) && ((info & FILE_ATTRIBUTE_DIRECTORY) != 0))
-	{
-		dir = (DIR *)malloc(sizeof(DIR)+strlen(path)+3);
-		dir->path = ((char *)dir)+sizeof(DIR);
-		strcpy(dir->path,path);
-		strcat(dir->path,(dir->path[strlen(dir->path)-1] == '\\') ? "*" : "\\*");
-		dir->handle = 0;
-	}
-	return dir;
-}
-
-static void closedir(DIR *dir)
-{
-	if (dir)
-		free(dir);
-}
-
-struct dirent *readdir(DIR *dir)
-{
-	static struct dirent ans;
-	static WIN32_FIND_DATA fdata;
-	if (dir->handle == 0)
-	{
-
-		dir->handle = FindFirstFile(dir->path, &fdata);
-		if (dir->handle == INVALID_HANDLE_VALUE)
-			dir->handle = 0;
-	}
-	else
-	{
-		if (!FindNextFile(dir->handle, &fdata))
-		{
-	      FindClose(dir->handle);
-		  dir->handle = 0;
-		}
-	}
-	if (dir->handle != 0)
-	{
-		ans.d_name = fdata.cFileName;
-		return &ans;
-	}
-	else
-		return 0;
-}
-
-char *index(char *str, char c)
-{
-	int pos = strcspn(str,&c);
-	return (pos == 0) ? ((str[0] == c) ? str : 0) : &str[pos];
-}
-#endif
-
 typedef struct {
   char *env;
   char *file;
@@ -1164,12 +1165,8 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int cas
     int num = 0;
     char *env;
     char *semi;
-#if defined(_WIN32)
 	char *env_sav;
-	env = env_sav = GetRegistryPath(lctx->env);
-#else
-    env = getenv(lctx->env);
-#endif
+	env = env_sav = TranslateLogical(lctx->env);
     if (env != 0) {
       if (env[strlen(env)-1] != ';') {
 		  char *tmp = malloc(strlen(env)+2);
@@ -1182,9 +1179,7 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int cas
 		  strcpy(tmp, env);
 		  env = tmp;
       }
-#if defined(_WIN32)
 	  free(env_sav);
-#endif
       for(semi=(char *)index(env, ';'); semi!= 0; num++, semi=(char *)index(semi+1, ';'));
       if (num > 0) {
 		  char *ptr;
