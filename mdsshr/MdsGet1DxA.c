@@ -89,7 +89,7 @@ typedef ARRAY_COEFF(char, 1) array_coef;
     *(struct descriptor_a *) out_dsc = *(struct descriptor_a *) in_dsc;
     out_dsc->length = *length_ptr;
     out_dsc->dtype = *dtype_ptr;
-    out_dsc->pointer = (char *) out_dsc + dsc_size;
+    out_dsc->pointer = (char *) out_dsc + align(dsc_size,align_size);
     out_dsc->arsize = new_arsize;
     if (out_dsc->aflags.coeff)
     {

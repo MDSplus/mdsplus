@@ -264,16 +264,15 @@ static int copy_dx(
 		+ (pi->aflags.coeff ? sizeof(char *) + sizeof(int) * pi->dimct : 0)
 		+ (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0);
         align_size = (pi->dtype == DTYPE_T) ? 1 : pi->length;
-        bytes = align(dscsize, align_size);
+	bytes = dscsize + pi->arsize + align_size;
 	if (po)
 	{
 	  _MOVC3(dscsize, (char *) pi, (char *) po);
-	  po->pointer = (char *) po + bytes;
+	  po->pointer = (char *)align(((unsigned int)((char *)po + dscsize)),align_size);
 	  _MOVC3(pi->arsize, pi->pointer, po->pointer);
 	  if (pi->aflags.coeff)
 	    po->a0 = po->pointer + (pi->a0 - pi->pointer);
 	}
-	bytes = align(bytes + pi->arsize, sizeof(void *));
 	if (pi->arsize > compression_threshold)
 	  compressible = 1;
       }
