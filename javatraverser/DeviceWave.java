@@ -204,7 +204,6 @@ public class DeviceWave extends DeviceComponent
         NidData currNid;
         Data currData;
         float []currX, currY;
-        
         //Min X
         try {
             currNid = new NidData(nidData.getInt() + 1);
@@ -233,11 +232,10 @@ public class DeviceWave extends DeviceComponent
         
         //Prepare waveX and waveY
         Data xData, yData;
-        
         try {
-            yData = subtree.evaluateData(Data.fromExpr("FLOAT(" + data.toString() + ")"), 0);
+            yData = subtree.evaluateData(subtree.dataFromExpr("FLOAT(" + subtree.dataToString(data) + ")"), 0);
             currY = yData.getFloatArray();
-            xData = subtree.evaluateData(Data.fromExpr("FLOAT(DIM_OF(" + data.toString() + "))"), 0);
+            xData = subtree.evaluateData(subtree.dataFromExpr("FLOAT(DIM_OF(" + subtree.dataToString(data) + "))"), 0);
             currX = xData.getFloatArray();
         }catch(Exception exc)
         {
@@ -254,7 +252,6 @@ public class DeviceWave extends DeviceComponent
                 "The stored signal lies outside the valid X range. Hit apply to override the incorrect values.", 
                 "Incorret waveform limits", JOptionPane.WARNING_MESSAGE);
         }
-            
         //set extreme points, if not present
         int nPoints = currX.length;
             
@@ -287,7 +284,6 @@ public class DeviceWave extends DeviceComponent
             waveX[currIdx] = maxX;
             waveY[currIdx] = 0;
         }
-        
         waveXOld = new float[waveX.length];   
         waveYOld = new float[waveX.length];   
         for(int i = 0; i < waveX.length; i++)
@@ -499,7 +495,7 @@ public class DeviceWave extends DeviceComponent
                         newExprStr += newVal;
                 }
                 //System.out.println(newExprStr);
-                Data newData = subtree.evaluateData(Data.fromExpr(newExprStr), 0);
+                Data newData = subtree.evaluateData(subtree.dataFromExpr(newExprStr), 0);
                 maxY = newData.getFloat();
                 //System.out.println(""+maxY);
                 if(maxYVisible)

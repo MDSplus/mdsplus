@@ -9,7 +9,7 @@ public class Database implements RemoteTree{
     static {
         try {
 	    System.loadLibrary("JavaMds");
-	    }catch(Exception e) {System.out.println("Cannot load library " + e); }
+	    }catch(Throwable e) {System.out.println("Cannot load library " + e); }
     }
     public Database() {super();}
     public Database(String name, int shot)
@@ -72,8 +72,8 @@ public class Database implements RemoteTree{
     public native void doDeviceMethod(NidData nid, String method, int ctx) throws DatabaseException;
     public native NidData [] getWild(int usage_mask, int ctx) throws DatabaseException;
     public native int create(int shot) throws DatabaseException;
-    public String dataToString(Data data){return "ERROR this method cannot be called";}
-    public Data dataFromExpr(String expr){return null;}
+    public String dataToString(Data data){return data.toString();}
+    public Data dataFromExpr(String expr){return Data.fromExpr(expr);}
     public native long saveContext();
     public native void restoreContext(long context);
     public int getCurrentShot() { return getCurrentShot(name);}

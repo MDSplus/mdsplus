@@ -244,7 +244,6 @@ class RFXTimingSetup extends DeviceSetup
         rfxDeviceNids = new Vector();
         mpbDecoderNids = new Vector();
         errorStrings = new Vector();
-
         NidData []deviceNids = null;
         try {
             try {
@@ -262,7 +261,7 @@ class RFXTimingSetup extends DeviceSetup
             try {
                 if(!subtree.isOn(deviceNids[idx], Tree.context)) continue;
                 ConglomData conglom = (ConglomData)subtree.getData(deviceNids[idx], Tree.context);
-                String model = conglom.getModel().toString();
+                String model = subtree.dataToString(conglom.getModel());
                 if(model.equals("\"MPBRecorder\""))
                     recorderNid = deviceNids[idx];
                 if(model.equals("\"RFXClock\"") || model.equals("\"RFXDClock\"") ||
@@ -304,7 +303,10 @@ class RFXTimingSetup extends DeviceSetup
         for(int idx = 0; idx < rfxDeviceCongloms.size(); idx++)
         {
             ConglomData conglom = (ConglomData)rfxDeviceCongloms.elementAt(idx);
-            String model = conglom.getModel().toString();
+            String model;
+            try {
+                model = subtree.dataToString(conglom.getModel());
+            }catch(Exception exc){continue;}
             if(model.equals("\"RFXClock\""))
             {
                 try {
@@ -373,18 +375,18 @@ class RFXTimingSetup extends DeviceSetup
                         String outputMode = (subtree.evaluateData(new NidData(((NidData)rfxDeviceNids.elementAt(idx)).getInt() +
                             N_PULSE_OUTPUT_MODE), Tree.context)).getString();
 
-                        Data trig1 = Data.fromExpr("" + trigTime + " + " + delay);
+                        Data trig1 = subtree.dataFromExpr("" + subtree.dataToString(trigTime) + " + " + subtree.dataToString(delay));
                         Device device;
                         if(outputMode.equals("DOUBLE TOGGLE: INITIAL HIGH"))
                         {
-                            Data trig2 = Data.fromExpr("" + trigTime + " + " + delay +"+"+duration );
+                            Data trig2 = subtree.dataFromExpr("" + subtree.dataToString(trigTime) + " + " + subtree.dataToString(delay) +"+"+subtree.dataToString(duration) );
                             device = new Device(RFX_PULSE, 
                                 subtree.getInfo((NidData)rfxDeviceNids.elementAt(idx), Tree.context).getFullPath(),
                                 new Data[]{trig1, trig2}, new float[]{}, true);
                         }
                         else if(outputMode.equals("DOUBLE TOGGLE: INITIAL LOW"))
                         {
-                            Data trig2 = Data.fromExpr("" + trigTime + " + " + delay +"+"+duration );
+                            Data trig2 = subtree.dataFromExpr("" + subtree.dataToString(trigTime) + " + " + subtree.dataToString(delay) +"+"+subtree.dataToString(duration) );
                             device = new Device(RFX_PULSE, 
                                 subtree.getInfo((NidData)rfxDeviceNids.elementAt(idx), Tree.context).getFullPath(),
                                 new Data[]{trig1, trig2}, new float[]{}, false);
@@ -463,12 +465,12 @@ class RFXTimingSetup extends DeviceSetup
                             N_DCLOCK_DURATION), Tree.context);
                         
                         Device device;
-                        Data trig1 = Data.fromExpr("" + trigTime + " + " + delay);
+                        Data trig1 = subtree.dataFromExpr("" + subtree.dataToString(trigTime) + " + " + subtree.dataToString(delay));
                         if(outputMode.equals("DOUBLE SWITCH: TOGGLE") ||
                             outputMode.equals("DOUBLE SWITCH: HIGH PULSES") ||
                             outputMode.equals("DOUBLE SWITCH: LOW PULSES"))
                         {
-                            Data trig2 = Data.fromExpr("" + trigTime + " + " + delay + " + " + duration);
+                            Data trig2 = subtree.dataFromExpr("" + subtree.dataToString(trigTime) + " + " + subtree.dataToString(delay) + " + " + subtree.dataToString(duration));
                             device = new Device(RFX_DCLOCK, 
                                 subtree.getInfo((NidData)rfxDeviceNids.elementAt(idx), Tree.context).getFullPath(),
                                 new Data[]{trig1, trig2}, new float[]{freq1.getFloat(), freq2.getFloat()}, true);
@@ -536,12 +538,13 @@ class RFXTimingSetup extends DeviceSetup
                             N_GCLOCK_DURATION), Tree.context);
                         
                         Device device;
-                        Data trig1 = Data.fromExpr("" + trigTime + " + " + delay);
+                        Data trig1 = subtree.dataFromExpr("" + subtree.dataToString(trigTime) + " + " + subtree.dataToString(delay));
                         if(outputMode.equals("DOUBLE SWITCH: TOGGLE") ||
                             outputMode.equals("DOUBLE SWITCH: HIGH PULSES") ||
                             outputMode.equals("DOUBLE SWITCH: LOW PULSES"))
                         {
-                            Data trig2 = Data.fromExpr("" + trigTime + " + " + delay + " + " + duration);
+                            Data trig2 = subtree.dataFromExpr("" + subtree.dataToString(trigTime) + " + " + 
+                                subtree.dataToString(delay) + " + " + subtree.dataToString(duration));
                             device = new Device(RFX_GCLOCK, 
                                 subtree.getInfo((NidData)rfxDeviceNids.elementAt(idx), Tree.context).getFullPath(),
                                 new Data[]{trig1, trig2}, new float[]{freq.getFloat()}, true);
@@ -686,7 +689,7 @@ class RFXTimingSetup extends DeviceSetup
             int shot = subtree.getShot();
             RemoteTree exp;
             boolean currentOpen = false;
-            if(shot == -1)
+            if(shot == -1 && !Tree.isRemote())
             {
                 try {
                     exp = new Database(subtree.getName(), 0);
@@ -818,7 +821,7 @@ class RFXTimingSetup extends DeviceSetup
                     case 0: return evNames[row];
                     case 1: 
                         try {
-                            return subtree.evaluateData(evTimes[row], Tree.context).toString();
+                            return subtree.dataToString(subtree.evaluateData(evTimes[row], Tree.context));
                         }catch(Exception exc){return "";}
                     //return evTimes[row].toString();
                     case 2: return evRecTimes[row];

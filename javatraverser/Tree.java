@@ -48,6 +48,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	JTextField add_device_type, add_device_name;
 	static Hashtable nodeHash = new Hashtable();
 	String lastName;
+	public static boolean isRemote(){return is_remote;}
     
 // Temporary, to vercome Java's bugs on inner classes
     JMenuItem open_b, close_b, quit_b; 

@@ -141,10 +141,12 @@ public class ModifyData extends NodeEditor
 	    onoff.setText("Node is On   ");
 	else
 	    onoff.setText("Node is Off  ");
-	if(is_editable)
-	    frame.setTitle("Modify data of " + node.getName());
-	else
-	    frame.setTitle("Display data of " + node.getName());
+	try {
+	    if(is_editable)
+	        frame.setTitle("Modify data of " + node.getInfo().getFullPath());
+	    else
+	        frame.setTitle("Display data of " + node.getInfo().getFullPath());
+	}catch(Exception exc){}
 
 	tags.setText(tagList(node.getTags()));
 

@@ -218,7 +218,7 @@ class TreeServer extends UnicastRemoteObject implements RemoteTree
     
     public static void main(String args[])
     {
-        if (System.getSecurityManager() == null)
+       // if (System.getSecurityManager() == null)
             System.setSecurityManager(new RMISecurityManager()
                 {
                     public void checkLink(String lib){}
