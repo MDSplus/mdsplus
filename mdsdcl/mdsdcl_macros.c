@@ -17,6 +17,7 @@
 *   mdsdcl_show_macro:  Display any or all macros
 *
 * History:
+*  28-Apr-2000  TRG  makeCmdlineMacro: new function.
 *  07-Jan-1998  TRG  mdsdcl_do_macro: new function.
 *  30-Dec-1997  TRG  Create.
 *
@@ -91,6 +92,7 @@ static struct _mdsdcl_macro  *get_macro( /* Return: addr of struct	*/
 		 *======================================================*/
     m = ctrl->macro.list + ctrl->macro.numMacros++;
     m->name = STRING_ALLOC(name);
+    m->isOpen = 0;
     m->lines = (char **)malloc(INCR);
     m->maxLines = INCR / sizeof(char *);
     m->numLines = 0;
@@ -361,6 +363,8 @@ int   makeCmdlineMacro(
     if (!ctrl->tbladr[0])  mdsdcl_initialize(ctrl);
 
     m = get_macro(macroName);
-    m->lines[m->numLines++] = cmdline;
+    for ( ; m->numLines>0 ; )
+        free(m->lines[--m->numLines]);		/* free previous lines	*/
+    m->lines[m->numLines++] = STRING_ALLOC(cmdline);
     return(1);
    }

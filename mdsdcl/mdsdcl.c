@@ -8,16 +8,14 @@
 * The MDSDCL command line interpreter, main routine.
 *
 * History:
-*  26-Apr-2000  TRG  Treat cmdline as special-case "macro", via
-*                     makeCmdlineMacro.  Will allow processing of "@".
+*  01-May-2000  TRG  Revert to previous: indirect commands on cmdline now
+*                     handled inside mdsdcl_do_command.
 *  04-Dec-1997  TRG  Create.
 *
 **********************************************************************/
 
 
 extern int   mdsdcl_do_command();
-extern int   makeCmdlineMacro( char *macroName , char *cmdline );
-extern struct _mdsdcl_ctrl  *mdsdcl_ctrl_address();
 
 
 #define CMD_PREP    1		/* Table-initialization command		*/
@@ -40,11 +38,9 @@ void  main(
     int   i,k;
     int   sts;
     char  *p;
-    struct _mdsdcl_ctrl  *ctrl;
     static DYNAMIC_DESCRIPTOR(dsc_cmdline);
 
     set_pgmname(argv[0]);
-    ctrl = mdsdcl_ctrl_address();
 
 		/*=======================================================
 		 * Command-line arguments ?
@@ -95,18 +91,8 @@ void  main(
                         str_append(&dsc_cmdline,argv[++i]);
                    }
                }
-            makeCmdlineMacro("__CMDLINE__",dsc_cmdline.dscA_pointer);
-            sts = mdsdcl_do_command("__CMDLINE__");
-            for ( ; ctrl->depth > 0 ; )
-               {
-                sts = mdsdcl_do_command(0);
-                {
-                 struct _mdsdcl_io  *io;
-
-                 io = ctrl->ioLevel + ctrl->depth;	/* for debug only*/
-                }
-               }
-            exit(0);
+            sts = mdsdcl_do_command(dsc_cmdline.dscA_pointer);
+            exit(sts);
            }
        }
 

@@ -12,6 +12,7 @@
 * from within main().
 *
 * History:
+*  01-May-2000  TRG  Check for "@" indirect command in "command" param.
 *  06-May-1998  TRG  Remove "verify" display:  moved to "get_input".
 *  10-Nov-1997  TRG  Adapted from original VMS-only source code.
 *
@@ -36,9 +37,11 @@ int mdsdcl_do_command(
     void  *command		/* <r:opt> command -- cstring or dsc	*/
    )
    {
-    int tblidx;
-    int sts;
+    int   startDepth;
+    int   sts;
+    int   tblidx;
     int tried_indirect = 0;
+    char  *p;
     struct _mdsdcl_io  *io;
     static char  doMacro[12];
     static DYNAMIC_DESCRIPTOR(dsc_cmd);
@@ -57,11 +60,9 @@ int mdsdcl_do_command(
 /*                        MDSDCL$OUT_OF_BAND_AST,ctrl);	/*  */
 #endif
 
-    if (!ctrl->tbladr[0])  mdsdcl_initialize(ctrl);
-    tblidx = ctrl->tables;
-
     if (!doMacro[0])
        {			/* first time ...			*/
+        if (!ctrl->tbladr[0])  mdsdcl_initialize(ctrl);
         sprintf(doMacro,"DO %cMACRO ",QUALIFIER_CHARACTER);
        }
 
@@ -71,6 +72,22 @@ int mdsdcl_do_command(
         str_trim(&io->last_command,command);
         str_copy_dx(&dsc_cmd,&io->last_command);
         mdsdcl_insert_symbols(io->ioParameter,&dsc_cmd);
+
+			/*=================================================
+			 * If "@" appears in optional "command" param,
+			 *  create and execute a fake macro so that it
+			 *  will be handled correctly ...
+			 *================================================*/
+        p = dsc_cmd.dscA_pointer;
+        if (*p == '@')
+           {
+            makeCmdlineMacro("__CMDLINE__",p);
+            startDepth = ctrl->depth;
+            sts = mdsdcl_do_command("__CMDLINE__");
+            for ( ; ctrl->depth > startDepth ; )
+                sts = mdsdcl_do_command(0);
+            return(sts);
+           }
        }
     else
        {
@@ -81,6 +98,7 @@ int mdsdcl_do_command(
 		/*-------------------------------------------------------
 		 * Try each table in turn ...
 		 *------------------------------------------------------*/
+    tblidx = ctrl->tables;
     for ( ; tblidx>0 ; tblidx--)
        {
         sts = mdsdcl_dcl_parse(&dsc_cmd,ctrl,tblidx);
