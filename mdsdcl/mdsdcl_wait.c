@@ -35,7 +35,7 @@ int   mdsdcl_wait()		/* Return:  status			*/
     int   sts;
 #if defined(vms)
     int   efn;
-    unsigned long  bintim[2];
+    unsigned int   bintim[2];
 #else
     int   day,hr,min,sec,millisec;
     int   nsec;

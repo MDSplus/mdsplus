@@ -68,10 +68,10 @@ static int   lib_cvt_dx_dx(	/* Returns:  status			*/
             sprintf(string,"%.14lg",*(double *)p);
             break;
         case DTYPE_L:
-            sprintf(string,"%d",*(long *)p);
+            sprintf(string,"%d",*(int *)p);
             break;
         case DTYPE_LU:
-            sprintf(string,"%u",*(unsigned long *)p);
+            sprintf(string,"%u",*(unsigned int *)p);
             break;
         case DTYPE_W:
             sprintf(string,"%d",*(short *)p);

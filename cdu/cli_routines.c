@@ -35,7 +35,7 @@ static struct cduVerb  *currentTable;	/* addr of current table	*/
 static struct cduVerb  *currentSyntax;	/* addr of current verb/syntax	*/
 static struct cduParam  *currentParameters;	/* current Parameters	*/
 static struct cduQualifier  *currentQualifiers; /* current Qualifiers	*/
-static long  paramId;			/* current param Id# (1-based)	*/
+static int   paramId;			/* current param Id# (1-based)	*/
 
 static struct cmd_struct  *cmdVerb;	/* lookup list			*/
 static struct cmd_struct  *cmdParam;	/* lookup list			*/
@@ -344,7 +344,7 @@ static int   readCliValueList(	/* Return: status			*/
 	/*****************************************************************
 	 * set_value:
 	 *****************************************************************/
-static long  set_value(		/* Return: CLI_STS_xxxx			*/
+static int   set_value(		/* Return: CLI_STS_xxxx			*/
     char  **pp			/* <m> current location in cmd line	*/
    ,struct cduValue  *val	/* <m> the value struct			*/
    )
@@ -461,7 +461,7 @@ static long  set_value(		/* Return: CLI_STS_xxxx			*/
 	/****************************************************************
 	 * cli_process_qualifier:
 	 ****************************************************************/
-static long  cli_process_qualifier(	/* Return: status		*/
+static int   cli_process_qualifier(	/* Return: status		*/
     char  **pp			/* <m> current pos within cmdstring	*/
    )
 
@@ -522,7 +522,7 @@ static long  cli_process_qualifier(	/* Return: status		*/
 	/****************************************************************
 	 * cli_process_parameter:
 	 ****************************************************************/
-static long  cli_process_parameter(	/* Return: status		*/
+static int   cli_process_parameter(	/* Return: status		*/
     char  **pp			/* <m> current pos within cmdstring	*/
    )
 

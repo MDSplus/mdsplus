@@ -23,7 +23,7 @@
 
 
 struct cduValue {
-        long  valL_flags;	/* flags: built-in or user-defined type	*/
+        int   valL_flags;	/* flags: built-in or user-defined type	*/
         char  *valA_default;	/* default value string			*/
         struct cduKeyword  *valA_userType;	/* user-defined "type"	*/
         struct descriptor  val_dsc;		/* "Value" string	*/
@@ -40,35 +40,35 @@ struct cduValue {
 		 *------------------------------------------------------*/
 struct cduParam  {
         char  *prmA_name;
-        long  prmL_flags;
+        int   prmL_flags;
         char  *prmA_label;
         char  *prmA_prompt;
         struct cduValue  *prmA_value;
-        long  prmL_status;		/* processing status		*/
+        int   prmL_status;		/* processing status		*/
        };
 struct cduQualifier  {
         char  *qualA_name;
-        long  qualL_flags;
+        int   qualL_flags;
         char  *qualA_label;
         void  *qualA_syntax;
         struct cduValue  *qualA_value;
-        long  qualL_status;		/* processing status		*/
+        int   qualL_status;		/* processing status		*/
        };
 struct cduKeyword  {
         char  *keyA_name;
-        long  keyL_flags;
+        int   keyL_flags;
         char  *keyA_label;
         void  *keyA_syntax;
         struct cduValue  *keyA_value;
-        long  keyL_status;
+        int   keyL_status;
        };
 struct cduEntity  {
         char  *entA_name;
-        long  entL_flags;
+        int   entL_flags;
         char  *entA_label;
         void  *entA_entity_specific;
         struct cduValue  *entA_value;
-        long  entL_status;
+        int   entL_status;
        };
 		/*-------------------------------------------------------
 		 * Verb and Syntax share the same structure, cduVerb
@@ -118,7 +118,7 @@ int   cli_error(		/* Display only				*/
 int   cliToken(
     char  **pp			/* <m> addr of ptr to char string	*/
    ,struct descriptor *dsc_ret	/* <w> return token here		*/
-   ,long  flags			/* <r> cli flags, describing data type	*/
+   ,int   flags			/* <r> cli flags, describing data type	*/
    );
 struct cmd_struct  *make_lookup_keyword( /* Return: addr of cmd_struct	*/
     struct cduKeyword  keywordList[]	/* <r> keyword list		*/

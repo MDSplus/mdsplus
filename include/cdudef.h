@@ -111,13 +111,13 @@
 	 	 * structures ...
 		 *=======================================================*/
 struct valueClause {
-        long  valL_flags;	/* flags: built-in or user-defined type	*/
+        int   valL_flags;	/* flags: built-in or user-defined type	*/
         char  *valA_default;	/* default value string			*/
         char  *valA_userType;	/* name of  user-defined "type"		*/
        };
 struct paramClause  {
         char  *prmA_name;
-        long  prmL_flags;
+        int   prmL_flags;
         char  *prmA_label;
         char  *prmA_prompt;
         struct valueClause  *prmA_value;
@@ -133,14 +133,14 @@ struct verblist  {
        };
 struct keyword  {
         char  *keyA_name;
-        long  keyL_flags;
+        int   keyL_flags;
         char  *keyA_label;
         char  *keyA_syntax;
         struct valueClause  *keyA_value;
        };
 struct qualifier  {
         char  *qualA_name;
-        long  qualL_flags;
+        int   qualL_flags;
         char  *qualA_label;
         char  *qualA_syntax;
         struct valueClause  *qualA_value;

@@ -49,7 +49,7 @@ static struct cmd_struct  monthList[13] = {
 	 * cdate:
 	 **************************************************************/
 char  *cdate(
-    long  usrtime		/* <r> time in seconds			*/
+    int   usrtime		/* <r> time in seconds			*/
    )
    {
     struct tm  *t;
@@ -70,7 +70,7 @@ char  *cdate(
 	 * cdatime:
 	 ************************************************************/
 char  *cdatime(
-    long  usrtime		/* <r> time in seconds			*/
+    int   usrtime		/* <r> time in seconds			*/
    )
    {
     struct tm  *t;
@@ -93,10 +93,10 @@ char  *cdatime(
 	 * qdatime:
 	 ************************************************************/
 char  *qdatime(usrtime)
-long  usrtime[2];		/* Quad-word, passed by reference	*/
+int   usrtime[2];		/* Quad-word, passed by reference	*/
    {
     int   numArgs;
-    long  *q;			/* Ptr to quadword			*/
+    int   *q;			/* Ptr to quadword			*/
     static char  qdatimbuf[24];
     struct {
             short year;
@@ -145,7 +145,7 @@ int   asc2time(
    ,time_t  *bintim		/* <w> time integer			*/
    )
    {
-    long  k;
+    int   k;
     char  *p,*p2;
     time_t  ktim;
     struct tm  tm;
@@ -285,12 +285,15 @@ int   asc2time(
 * Routines for interactive i/o, with type-ahead.
 *
 * History:
+*  09-Jun-1998  TRG  getString: Use str_copy_dx to set dsc_val string.
+*                    getLine:   Use str_copy_dx to set dsc_val string.
+*  20-May-1998  TRG  startNextToken: fgets becomes fgets_with_edit.
 *  14-Oct-1996  TRG  getCmd: new function.
-*  28-Feb-1995  TRG   getString_linePtr: new function.
-*  15-Aug-1994  TRG   successReturn: Return ascToken in dsc_flag.
-*  13-Aug-1994  TRG   Prompt may be C-string, as well as Descriptor.
-*  12-Aug-1994  TRG   Added getString.
-*  02-Aug-1994  TRG   Create.  Based on das$idl_tic.c.
+*  28-Feb-1995  TRG  getString_linePtr: new function.
+*  15-Aug-1994  TRG  successReturn: Return ascToken in dsc_flag.
+*  13-Aug-1994  TRG  Prompt may be C-string, as well as Descriptor.
+*  12-Aug-1994  TRG  Added getString.
+*  02-Aug-1994  TRG  Create.  Based on das$idl_tic.c.
 *
 *********************************************************************/
 
@@ -308,7 +311,7 @@ struct inputStruct  {
 union allTypes  {
         char  c;		/* TYP_BYTE				*/
         short i;		/* TYP_INT				*/
-        long  l;		/* TYP_LONG				*/
+        int   l;		/* TYP_LONG				*/
         float f;		/* TYP_FLOAT				*/
         double d;		/* TYP_DOUBLE				*/
         char  *s;		/* TYP_STRING				*/
@@ -633,8 +636,9 @@ static char  *startNextToken(
    )
    {
     int   k;
+    int   len;
     char  *p;
-    char  promptString[80];
+    char  promptString[256];
     char  *linePtr;
     struct inputStruct  *ip;
     struct descriptor  *dsc;
@@ -648,6 +652,8 @@ static char  *startNextToken(
 		 *-------------------------------------------------------*/
         if (dsc_prompt && ip->isatty)
            {			/*..only if in interactive mode		*/
+            sprintf(promptString,"%s",inIdx ? "TT:" : "");
+            len = strlen(promptString);
             if (is_cdescr(dsc_prompt))
                {
                 dsc = dsc_prompt;
@@ -659,20 +665,36 @@ static char  *startNextToken(
                 p = (char *)dsc_prompt;
                 k = strlen(p);
                }
-            if (k >= sizeof(promptString))
-                k = sizeof(promptString) - 1;
-            strncpy(promptString,p,k);
-            promptString[k] = '\0';
+            if ((len+k) >= sizeof(promptString))
+                k = sizeof(promptString) - len - 1;
+            strncpy(promptString+len,p,k);
+            len += k;
+            promptString[len] = '\0';
 
             if (defStr[0])
-                printf("%s%s [%s]:  ",inIdx?"TT:":"",promptString,defStr);
+               {
+                k = strlen(defStr);
+                if (((len+3)+k) >= sizeof(promptString))
+                    k = sizeof(promptString) - (len+3) - 1;
+                if (k > 0)
+                   {
+                    promptString[len++] = ' ';
+                    promptString[len++] = '[';
+                    strncpy(promptString+len,defStr,k);
+                    len += k;
+                    promptString[len++] = ']';
+                   }
+               }
+
+            if ((len+3) >= sizeof(promptString))
+                promptString[len] = '\0';
             else
-                printf("%s%s",inIdx?"TT:":"",promptString);
+                strcpy(promptString+len,":  ");
            }
 		/*---------------------------------------------------------
 		 * Read next line from current input ...
 		 *--------------------------------------------------------*/
-        if (fgets(ip->line,sizeof(ip->line),ip->fp))
+        if (fgets_with_edit(ip->line,sizeof(ip->line),ip->fp,promptString))
            {
             ip->lineno++;
             if (ip->isatty)
@@ -849,18 +871,7 @@ int   getString(
             continue;
            }
 
-        k = strlen(token);
-        if (k < dsc_val->dscW_length)
-           {
-            strcpy(dsc_val->dscA_pointer,token);
-            memset(dsc_val->dscA_pointer+k,'\0',dsc_val->dscW_length-k);
-           }
-        else
-           {
-            strncpy(dsc_val->dscA_pointer,token,dsc_val->dscW_length);
-            if (k > dsc_val->dscW_length)
-                dasmsg(0,"getString: *WARN* token is truncated");
-           }
+        str_copy_dx(dsc_val,&dsc_token);
         return(successReturn(linePtr,0));
        }
    }
@@ -971,9 +982,9 @@ int   getDouble(
 	 ****************************************************************/
 int   getLong(
     void  *dsc_prompt		/* <r> string or descr: prompt string	*/
-   ,long  *val			/* <m> data value			*/
-   ,long  *valMin		/* <opt:r> lower data limit		*/
-   ,long  *valMax		/* <opt:r> upper data limit		*/
+   ,int   *val			/* <m> data value			*/
+   ,int   *valMin		/* <opt:r> lower data limit		*/
+   ,int   *valMax		/* <opt:r> upper data limit		*/
    ,struct descriptor  *dsc_userFlag	/* <opt:w> 1-char "flag"	*/
    )
    {
@@ -1000,7 +1011,7 @@ int   getLong(
 
     sts = getDouble(dsc_prompt,&v,&vmin,&vmax,(numArgs>4)?dsc_userFlag:0);
     if (sts & 1)
-        *val = (long)v;
+        *val = (int )v;
     else
         dasmsg(0,"getLong: err sts from getDouble");
 
@@ -1053,35 +1064,6 @@ int   getFloat(
 
 
 	/**************************************************************
-	 * main:
-	 **************************************************************/
-/*main()
-/*   {
-/*    int   sts;
-/*    static double val;
-/*    static double xmin= -100.0, xmax=100.0;
-/*    static char  flag[4];
-/*    static $DESCRIPTOR(dsc_flag,flag);
-/*    static $DESCRIPTOR(dsc_prompt,"Enter value >  ");
-/*
-/*    for ( ; ; )
-/*       {
-/*        sts = getDouble(&dsc_prompt,&val,&xmin,&xmax,&dsc_flag);
-/*        if (~sts & 1)
-/*           {
-/*            printf("--> error from getDouble\n\n");
-/*            continue;
-/*           }
-/*        printf("    val=%.6g",val);
-/*        if (flag[0] != ' ')
-/*            printf("  flag='%s'",flag);
-/*        printf("\n\n");
-/*       }
-/*   }							/*  */
-
-
-
-	/**************************************************************
 	 * getFilename:
 	 **************************************************************/
 int   getFilename(
@@ -1099,9 +1081,9 @@ int   getFilename(
 	 ******************************************************************/
 int   getEqualsLong(
     void  *dsc_prompt		/* <r> string or descr: prompt string	*/
-   ,long  *val			/* <m> data value			*/
-   ,long  *valMin		/* <opt:r> lower data limit		*/
-   ,long  *valMax		/* <opt:r> upper data limit		*/
+   ,int   *val			/* <m> data value			*/
+   ,int   *valMin		/* <opt:r> lower data limit		*/
+   ,int   *valMax		/* <opt:r> upper data limit		*/
    ,struct descriptor  *dsc_userFlag	/* <opt:w> 1-char "flag"	*/
    )
    {
@@ -1309,28 +1291,36 @@ int   getLine(
     if (!linePtr)
         return(0);			/*---------------> error return	*/
 
-    k = strlen(linePtr);
-    if (k < dsc_val->dscW_length)
-       {
-        strcpy(dsc_val->dscA_pointer,linePtr);
-        memset(dsc_val->dscA_pointer+k,'\0',dsc_val->dscW_length-k);
-       }
-    else if (is_ddescr(dsc_val))
-       {
-        if (dsc_val->dscA_pointer)  free(dsc_val->dscA_pointer);
-        dsc_val->dscW_length = (k/incr + 1) * incr;
-        dsc_val->dscA_pointer = malloc(dsc_val->dscW_length);
-        if (!dsc_val->dscA_pointer)
-            exit(dasmsg(0,"Out of space!"));
-        strcpy(dsc_val->dscA_pointer,linePtr);
-        memset(dsc_val->dscA_pointer+k,'\0',dsc_val->dscW_length-k);
-       }
-    else
-       {
-        strncpy(dsc_val->dscA_pointer,linePtr,dsc_val->dscW_length);
-        if (k > dsc_val->dscW_length)
-            dasmsg(0,"successReturn: *WARN* line is truncated");
-       }
+    str_copy_dx(dsc_val,linePtr);
     clearnext(0);			/* clear current line		*/
     return(1);
    }
+
+
+
+	/**************************************************************
+	 * main:
+	 **************************************************************/
+/*main()
+/*   {
+/*    int   sts;
+/*    static double val;
+/*    static double xmin= -100.0, xmax=100.0;
+/*    static char  flag[4];
+/*    static $DESCRIPTOR(dsc_flag,flag);
+/*    static $DESCRIPTOR(dsc_prompt,"Enter value >  ");
+/*
+/*    for ( ; ; )
+/*       {
+/*        sts = getDouble(&dsc_prompt,&val,&xmin,&xmax,&dsc_flag);
+/*        if (~sts & 1)
+/*           {
+/*            printf("--> error from getDouble\n\n");
+/*            continue;
+/*           }
+/*        printf("    val=%.6g",val);
+/*        if (flag[0] != ' ')
+/*            printf("  flag='%s'",flag);
+/*        printf("\n\n");
+/*       }
+/*   }							/*  */

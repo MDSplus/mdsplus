@@ -219,6 +219,7 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
     static int   key_table_id;
     int   flags;
     short wlen;
+    struct descriptor  *dscPtr;
     static DYNAMIC_DESCRIPTOR(dsc_cmdline);
     static struct descriptor dsc_prompt = {0,DSC_K_DTYPE_T,DSC_K_CLASS_S,0};
 #else
@@ -293,10 +294,14 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
 		/*=======================================================
 		 * VMS only: read using smg routine ...
 		 *======================================================*/
-    dsc_prompt.dscA_pointer = prompt ? prompt : "Command> ";
-    dsc_prompt.dscW_length = strlen(dsc_prompt.dscA_pointer);
+    dscPtr = prompt ? &dsc_prompt : 0;
+    if (dscPtr)
+       {
+        dsc_prompt.dscA_pointer = prompt ? prompt : "Command> ";
+        dsc_prompt.dscW_length = strlen(dsc_prompt.dscA_pointer);
+       }
     sts = smg$read_composed_line(&keyboard_id,0,
-                &dsc_cmdline,&dsc_prompt,&wlen);
+                &dsc_cmdline,dscPtr,&wlen);
     if (~sts & 1)
        {
         dasmsg(sts,"Error from smg$read_composed_string");

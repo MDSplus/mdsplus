@@ -15,15 +15,13 @@
 ***********************************************************************/
 
 
-#ifdef vms
-extern noshare char  *sys_errlist[];
-extern noshare int  sys_nerr;
-#else
-#ifndef linux
-extern char  *sys_errlist[];
-extern int  sys_nerr;
-#endif
-#endif
+/*#ifdef vms
+/*extern noshare char  *sys_errlist[];
+/*extern noshare int  sys_nerr;
+/*#else
+/*extern char  *sys_errlist[];
+/*extern int  sys_nerr;
+/*#endif						/*  */
 
 
 	/***************************************************************
@@ -58,18 +56,18 @@ int   dasmsg(			/* Return: status from user		*/
     va_list  ap;		/* argument ptr				*/
     static int   nerr;
 
-    if (!nerr)
-#ifdef __ERRNO_MAX
-        nerr = __ERRNO_MAX;
-#elif vms
-       {
-        nerr = &(char  **)sys_nerr - sys_errlist;	/* ..strange..	*/
-        if (nerr != 36)
-            printf("\ndasmsg: nerr=%d\n\n",nerr);
-       }
-#else
-        nerr = sys_nerr;
-#endif
+/*    if (!nerr)
+/*#ifdef __ERRNO_MAX
+/*        nerr = __ERRNO_MAX;
+/*#elif vms
+/*       {
+/*        nerr = &(char  **)sys_nerr - sys_errlist;	/* ..strange..	*/
+/*        if (nerr != 36)
+/*            printf("\ndasmsg: nerr=%d\n\n",nerr);
+/*       }
+/*#else
+/*        nerr = sys_nerr;
+/*#endif						/*  */
 
     va_start(ap,fmt);		/* Initialize ap			*/
     i = vsprintf(txt,fmt,ap);
@@ -78,7 +76,8 @@ int   dasmsg(			/* Return: status from user		*/
 
     if (sts)
         fprintf(stderr,"\r%s:  %s\n    sts=%.70s\n",pgmname(),txt,
-            (sts>0 && sts<nerr) ? sys_errlist[sts] : msgText(sts));
+/*            (sts>0 && sts<nerr) ? sys_errlist[sts] : msgText(sts)); /* */
+            msgText(sts));
     else
         fprintf(stderr,"\r%s:  %s\n",pgmname(),txt);
     return(sts);

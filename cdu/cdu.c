@@ -150,7 +150,7 @@ static int   cdu_lookup(	/* Returns: cmd id#			*/
    ,struct cmd_struct  *cmdlist	/* <r> list of commands			*/
    ,char  *parentString		/* <r:opt> not used			*/
    ,int   flags			/* <r:opt> not used			*/
-   ,long  *ucontext		/* <m:opt> not used			*/
+   ,int   *ucontext		/* <m:opt> not used			*/
    )
    {
     int   i,k;
@@ -164,7 +164,7 @@ static int   cdu_lookup(	/* Returns: cmd id#			*/
 		 *------------------------------------------------------*/
 
     l2u(userString,*p);
-    k = (long)cmdlist[0].cmdA_string;	/* full dim of array		*/
+    k = (int)cmdlist[0].cmdA_string;	/* full dim of array		*/
 
     for (i=1 ; i<k ; i++)
        {
@@ -302,7 +302,7 @@ static void  show_value(
    )
    {
     int   i,k;
-    long  mask;
+    int   mask;
     static char  *maskText[] = {
                      "USER_DEFINED_TYPE","FILE","NUMBER","QUOTED_STRING"
                     ,"DATETIME","REST_OF_LINE","DELTATIME<notSupported>"
@@ -339,7 +339,7 @@ static void  show_parameter(	/* informational only			*/
    )
    {
     int   i,k;
-    long  mask;
+    int   mask;
     char  *p;
 
     printf("  %s:",prm->prmA_name);
@@ -383,7 +383,7 @@ static void  show_qualifier(	/* informational only			*/
    )
    {
     int   i,k;
-    long  mask;
+    int   mask;
     char  *p;
 
     printf("  Qualifier %-8s:",q->qualA_name);
@@ -429,7 +429,7 @@ static void  show_type(
    {
     int   i;
     int   idx;
-    long  mask;
+    int   mask;
     char  *p;
     struct keyword  *key;
 
@@ -469,7 +469,7 @@ static void  show_verb(		/* Informational only			*/
    )
    {
     int   i,k;
-    long  mask;
+    int   mask;
     char  *p;
 
     printf("\n%s %s",
@@ -515,7 +515,7 @@ static void  show_verb(		/* Informational only			*/
 	 ***************************************************************/
 static struct valueClause  *cmd_value()	/* Return: addr of structure	*/
    {
-    long  mask;
+    int   mask;
     int   opt;
     char  cmd[32];
     char  *p;

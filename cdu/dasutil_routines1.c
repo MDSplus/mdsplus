@@ -75,8 +75,8 @@ int cmd_lookup(
 	char  **s,		/* <m> Ptr within command string	*/
 	struct cmd_struct  cmdlist[], /* <r> Command-list struct	*/
 	char  parentString[],	/* <r:opt> for use with error msg	*/
-	long  flags,		/* <r:opt> 1=NoErrMsg			*/
-	long  *ucontext		/* <m:opt> Allows continuation of "lookup"*/
+	int   flags,		/* <r:opt> 1=NoErrMsg			*/
+	int   *ucontext		/* <m:opt> Allows continuation of "lookup"*/
 	)
    {
     int   i,j,k,isave,icount,ilast;
@@ -87,7 +87,7 @@ int cmd_lookup(
     int   noMoreSpecificMsg;
     char  *wc;			/* Flag: set if wildcards are present	*/
     char  *cmd;
-    long  *context;		/* Local copy of the optional "ucontext" */
+    int   *context;		/* Local copy of the optional "ucontext" */
     int   first;		/* first idx, adjusted by "context"	*/
 
     if (!s)
@@ -304,7 +304,7 @@ int   show_timer()
     fprintf(stderr,"elapsed=%g cpu=%g\n",
         difftime(now,time_start),(clock()-cpu_start)/CLOCKS_PER_SEC );
 #else
-    long emsec,umsec,smsec;		/* milliseconds			*/
+    int   emsec,umsec,smsec;		/* milliseconds			*/
 
     gettimeofday(&nowTime,0);
     if (getrusage(RUSAGE_SELF,&rnow))
@@ -428,8 +428,8 @@ char  *u2ln(
 	 * bcd2i:  Convert BCD (Binary Coded Decimal) value to int.
 	 * i2bcd:  Convert int to BCD.
 	 *****************************************************************/
-long  bcd2i(
-    unsigned long  bcd	/* <r> bcd val, 4 bits per digit, max 8 digits	*/
+int   bcd2i(
+    unsigned int   bcd	/* <r> bcd val, 4 bits per digit, max 8 digits	*/
    )
    {
     int   ival;
@@ -442,8 +442,8 @@ long  bcd2i(
    }
 
 
-long  i2bcd(		/* bcd val, 4 bits per digit, max 8 digits	*/
-    unsigned long  ival	/* <r> integer value to convert			*/
+int   i2bcd(		/* bcd val, 4 bits per digit, max 8 digits	*/
+    unsigned int   ival	/* <r> integer value to convert			*/
    )
    {
     unsigned int   bcd;
@@ -647,12 +647,12 @@ int   tknlen(
 int   ascToken(
     char  **s		/* <m> Addr of ptr to input string		*/
    ,struct descriptor  *dsc_token	/* <w> return token here	*/
-   ,long  *utknLen	/* <w:opt> token length				*/
+   ,int   *utknLen	/* <w:opt> token length				*/
    ,char  optAlph[]	/* <r:opt> User-defined alph extensions		*/
    )
    {
     int   sts;
-    long  tknLen;
+    int   tknLen;
     char  *p;
     static char  defaultAlph[] = "0123456789_-$";
     char  *alphExtensions;
@@ -683,7 +683,7 @@ int   ascToken(
 int   nextToken(
     char  **s,			/* <m> addr of ptr to char string	*/
     struct descriptor  *dsc_token,	/* <w> return token here	*/
-    long  *utknLen,		/* <w:opt> token length <longword>	*/
+    int   *utknLen,		/* <w:opt> token length <longword>	*/
     char  wildcards[],		/* <r:opt> str of acceptable wildcard chrs*/
     char  alphExtensions[]	/* <r:opt> extensions to default alphnum */
    )
@@ -692,7 +692,7 @@ int   nextToken(
     int   n;
     char  tmp[1024];
     unsigned int   maxLen;
-    unsigned long  tknLen;
+    unsigned int   tknLen;
     char  quoteMark;
     char  *wc;
     char  *acceptAlph;
@@ -809,14 +809,14 @@ int   nextToken(
 int   longToken(
     char  **s,			/* <m> addr of ptr to char string	*/
     struct descriptor  *dsc_token,	/* <w> return token here	*/
-    long  *utknLen,		/* <w:opt> token length <longword>	*/
-    long  *uval			/* <w:opt> return long value here	*/
+    int   *utknLen,		/* <w:opt> token length <longword>	*/
+    int   *uval			/* <w:opt> return int  value here	*/
    )
    {
     char  *p,*p2;
     int   n;
     char  *token;
-    long  tknLen;
+    int   tknLen;
     char  plusSign;
 
     token = dsc_token->dscA_pointer;
@@ -876,13 +876,13 @@ int   longToken(
 int   doubleToken(
     char  **s,			/* <m> addr of ptr to char string	*/
     struct descriptor  *dsc_token,	/* <w> return token here	*/
-    long  *utknLen,		/* <w:opt> token length <longword>	*/
+    int   *utknLen,		/* <w:opt> token length <longword>	*/
     double *uval		/* <w:opt> return double value here	*/
    )
    {
     char  *p;
     char  *token;
-    long  tknLen;
+    int   tknLen;
     char  utilString[80];
     static struct descriptor  dsc_utilString = {
             sizeof(utilString)-1,DSC_K_DTYPE_T,DSC_K_CLASS_S,0 };
@@ -944,7 +944,7 @@ int   doubleToken(
 int   ascFilename(
     char  **s			/* <m> addr from which to start search	*/
    ,struct descriptor  *dsc		/* <w> return token here	*/
-   ,long  *utknLen		/* <w:opt> length of token		*/
+   ,int   *utknLen		/* <w:opt> length of token		*/
    )
    {
 #ifdef vms
@@ -964,12 +964,12 @@ int   ascFilename(
 int   deltatimeToken(		/* Returns: status			*/
     char  **pp			/* <m> addr of ptr to char string	*/
    ,struct descriptor *dsc	/* <w> return token here		*/
-   ,long  *utknlen		/* <w:opt> token length <longword>	*/
-   ,long  *uval			/* <w:opt> return deltatime <sec> here	*/
+   ,int   *utknlen		/* <w:opt> token length <longword>	*/
+   ,int   *uval			/* <w:opt> return deltatime <sec> here	*/
    )
    {
     int   k;
-    long  kk;
+    int   kk;
     int   day,hr,min,sec,hund;
     int   sts;
     char  *p;
@@ -1065,12 +1065,12 @@ int   deltatimeToken(		/* Returns: status			*/
 int   equalsAscToken(
     char  **s		/* <m> addr from which to start search		*/
    ,struct descriptor  *dsc		/* <w> return token here	*/
-   ,long  *utknLen	/* <w:opt> length of token (2-byte word)	*/
+   ,int   *utknLen	/* <w:opt> length of token (2-byte word)	*/
    ,char  optAlph[]	/* <r:opt> User-defined alph extensions		*/
    )
    {
     int   sts;
-    long  tknLen;
+    int   tknLen;
     char  *p;
 
     p = nonblank(*s);
@@ -1099,13 +1099,13 @@ int   equalsAscToken(
 int   equalsLongToken(
     char  **s,			/* <m> addr of ptr to char string	*/
     struct descriptor  *dsc_token,	/* <w> return token here	*/
-    long  *utknLen,		/* <w:opt> token length <longword>	*/
-    long  *uval			/* <w:opt> return long value here	*/
+    int   *utknLen,		/* <w:opt> token length <longword>	*/
+    int   *uval			/* <w:opt> return int  value here	*/
    )
    {
     int   sts;
-    long  val;
-    long  tknLen;
+    int   val;
+    int   tknLen;
     char  *p;
 
     p = nonblank(*s);
@@ -1137,13 +1137,13 @@ int   equalsLongToken(
 int   equalsDoubleToken(
     char  **s,			/* <m> addr of ptr to char string	*/
     struct descriptor  *dsc_token,	/* <w> return token here	*/
-    long  *utknLen,		/* <w:opt> token length <longword>	*/
+    int   *utknLen,		/* <w:opt> token length <longword>	*/
     double *uval		/* <w:opt> return double value here	*/
    )
    {
     int   sts;
     double val;
-    long  tknLen;
+    int   tknLen;
     char  *p;
 
     p = nonblank(*s);
@@ -1175,7 +1175,7 @@ int   equalsDoubleToken(
 int   equalsAscFilename(
     char  **s		/* <m> addr from which to start search		*/
    ,struct descriptor  *dsc		/* <w> return token here	*/
-   ,long  *utknLen	/* <w:opt> length of token			*/
+   ,int   *utknLen	/* <w:opt> length of token			*/
    )
    {
     int   sts;

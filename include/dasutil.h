@@ -24,7 +24,7 @@
 #define NO_BEMORESPECIFIC 4	/* "flags": supress "be more specific"	*/
 
 struct cmd_struct  {
-        long  cmdL_id;		/* command id #				*/
+        int   cmdL_id;		/* command id #				*/
         char  *cmdA_string;	/* command text				*/
        };
 
@@ -32,8 +32,8 @@ int cmd_lookup(
 	char  **s,		/* <m> Ptr within command string	*/
 	struct cmd_struct  cmdlist[], /* <r> Command-list struct	*/
 	char  parentString[],	/* <r:opt> for use with error msg	*/
-	long  flags,		/* <r:opt> 1=NoErrMsg			*/
-	long  *ucontext		/* <m:opt> Allows continuation of "lookup"*/
+	int   flags,		/* <r:opt> 1=NoErrMsg			*/
+	int   *ucontext		/* <m:opt> Allows continuation of "lookup"*/
 	);
 
 		/*======================================================
@@ -126,11 +126,11 @@ char  *u2ln(
     char  from[],	/* <r> source string				*/
     int   n		/* <r> number of characters in from[]		*/
    );
-long  bcd2i(
-    unsigned long  bcd	/* <r> bcd val, 4 bits per digit, max 8 digits	*/
+int   bcd2i(
+    unsigned int   bcd	/* <r> bcd val, 4 bits per digit, max 8 digits	*/
    );
-long  i2bcd(		/* bcd val, 4 bits per digit, max 8 digits	*/
-    unsigned long  ival	/* <r> integer value to convert			*/
+int   i2bcd(		/* bcd val, 4 bits per digit, max 8 digits	*/
+    unsigned int   ival	/* <r> integer value to convert			*/
    );
 
 int   wildcard_match(
@@ -242,61 +242,61 @@ int   tknlen(
 int   ascToken(
     char  **s		/* <m> Addr of ptr to input string		*/
    ,struct descriptor  *dsc_token	/* <w> return token here	*/
-   ,long  *utknLen	/* <w:opt> token length				*/
+   ,int   *utknLen	/* <w:opt> token length				*/
    ,char  optAlph[]	/* <r:opt> User-defined alph extensions		*/
    );
 int   nextToken(
     char  **s,			/* <m> addr of ptr to char string	*/
     struct descriptor  *dsc_token,	/* <w> return token here	*/
-    long  *utknLen,		/* <w:opt> token length <longword>	*/
+    int   *utknLen,		/* <w:opt> token length <longword>	*/
     char  wildcards[],		/* <r:opt> str of acceptable wildcard chrs*/
     char  alphExtensions[]	/* <r:opt> extensions to default alphnum */
    );
 int   longToken(
     char  **s,			/* <m> addr of ptr to char string	*/
     struct descriptor  *dsc_token,	/* <w> return token here	*/
-    long  *utknLen,		/* <w:opt> token length <longword>	*/
-    long  *uval			/* <w:opt> return long value here	*/
+    int   *utknLen,		/* <w:opt> token length <longword>	*/
+    int   *uval			/* <w:opt> return int  value here	*/
    );
 int   doubleToken(
     char  **s,			/* <m> addr of ptr to char string	*/
     struct descriptor  *dsc_token,	/* <w> return token here	*/
-    long  *utknLen,		/* <w:opt> token length <longword>	*/
+    int   *utknLen,		/* <w:opt> token length <longword>	*/
     double *uval		/* <w:opt> return double value here	*/
    );
 int   ascFilename(
     char  **s			/* <m> addr from which to start search	*/
    ,struct descriptor  *dsc		/* <w> return token here	*/
-   ,long  *utknLen		/* <w:opt> length of token		*/
+   ,int   *utknLen		/* <w:opt> length of token		*/
    );
 int   deltatimeToken(		/* Returns: status			*/
     char  **pp			/* <m> addr of ptr to char string	*/
    ,struct descriptor *dsc	/* <w> return token here		*/
-   ,long  *utknlen		/* <w:opt> token length <longword>	*/
-   ,long  *val			/* <w:opt> return deltatime <sec> here	*/
+   ,int   *utknlen		/* <w:opt> token length <longword>	*/
+   ,int   *val			/* <w:opt> return deltatime <sec> here	*/
    );
 int   equalsAscToken(
     char  **s		/* <m> addr from which to start search		*/
    ,struct descriptor  *dsc		/* <w> return token here	*/
-   ,long  *utknLen	/* <w:opt> length of token (2-byte word)	*/
+   ,int   *utknLen	/* <w:opt> length of token (2-byte word)	*/
    ,char  optAlph[]	/* <r:opt> User-defined alph extensions		*/
    );
 int   equalsLongToken(
     char  **s,			/* <m> addr of ptr to char string	*/
     struct descriptor  *dsc_token,	/* <w> return token here	*/
-    long  *utknLen,		/* <w:opt> token length <longword>	*/
-    long  *uval			/* <w:opt> return long value here	*/
+    int   *utknLen,		/* <w:opt> token length <longword>	*/
+    int   *uval			/* <w:opt> return int  value here	*/
    );
 int   equalsDoubleToken(
     char  **s,			/* <m> addr of ptr to char string	*/
     struct descriptor  *dsc_token,	/* <w> return token here	*/
-    long  *utknLen,		/* <w:opt> token length <longword>	*/
+    int   *utknLen,		/* <w:opt> token length <longword>	*/
     double *uval		/* <w:opt> return double value here	*/
    );
 int   equalsAscFilename(
     char  **s		/* <m> addr from which to start search		*/
    ,struct descriptor  *dsc		/* <w> return token here	*/
-   ,long  *utknLen	/* <w:opt> length of token			*/
+   ,int   *utknLen	/* <w:opt> length of token			*/
    );
 
 #define clear_buffer(P,N)  memset(P,0,N)
@@ -339,9 +339,9 @@ int   getDouble(
    );
 int   getLong(
     void  *dsc_prompt		/* <r> string or descr: prompt string	*/
-   ,long  *val			/* <m> data value			*/
-   ,long  *valMin		/* <opt:r> lower data limit		*/
-   ,long  *valMax		/* <opt:r> upper data limit		*/
+   ,int   *val			/* <m> data value			*/
+   ,int   *valMin		/* <opt:r> lower data limit		*/
+   ,int   *valMax		/* <opt:r> upper data limit		*/
    ,struct descriptor  *dsc_userFlag	/* <opt:w> 1-char "flag"	*/
    );
 int   getFloat(
@@ -357,9 +357,9 @@ int   getFilename(
    );
 int   getEqualsLong(
     void  *dsc_prompt		/* <r> string or descr: prompt string	*/
-   ,long  *val			/* <m> data value			*/
-   ,long  *valMin		/* <opt:r> lower data limit		*/
-   ,long  *valMax		/* <opt:r> upper data limit		*/
+   ,int   *val			/* <m> data value			*/
+   ,int   *valMin		/* <opt:r> lower data limit		*/
+   ,int   *valMax		/* <opt:r> upper data limit		*/
    ,struct descriptor  *dsc_userFlag	/* <opt:w> 1-char "flag"	*/
    );
 int   getEqualsString(
@@ -414,9 +414,9 @@ char  *trnlnm(
    );
 char  *machine_name();
 
-char  *cdate(long  usrtime);
-char  *cdatime(long  usrtime);
-char  *qdatime(long  usrtime[]);		/* vms only		*/
+char  *cdate(int   usrtime);
+char  *cdatime(int   usrtime);
+char  *qdatime(int   usrtime[]);		/* vms only		*/
 char  *now();
 int   asc2time(
     char  ascString[]		/* <r> DateString: dd-mmm-yy[yy] hh:mm:ss */

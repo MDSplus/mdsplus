@@ -75,7 +75,7 @@ int   cli_error(		/* Display only				*/
 int   cliToken(
     char  **pp			/* <m> addr of ptr to char string	*/
    ,struct descriptor *dsc_ret	/* <w> return token here		*/
-   ,long  flags			/* <r> cli flags, describing data type	*/
+   ,int   flags			/* <r> cli flags, describing data type	*/
    )
    {
     int   k;
