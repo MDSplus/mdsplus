@@ -244,6 +244,18 @@ public class K3115Setup
   JPanel jPanel18 = new JPanel();
   DeviceDispatch deviceDispatch1 = new DeviceDispatch();
   FlowLayout flowLayout21 = new FlowLayout();
+  JPanel jPanel19 = new JPanel();
+  JPanel jPanel20 = new JPanel();
+  JPanel jPanel21 = new JPanel();
+  JPanel jPanel22 = new JPanel();
+  JPanel jPanel23 = new JPanel();
+  JPanel jPanel24 = new JPanel();
+  FlowLayout flowLayout22 = new FlowLayout();
+  FlowLayout flowLayout23 = new FlowLayout();
+  FlowLayout flowLayout24 = new FlowLayout();
+  FlowLayout flowLayout25 = new FlowLayout();
+  FlowLayout flowLayout26 = new FlowLayout();
+  FlowLayout flowLayout27 = new FlowLayout();
 
 
 
@@ -260,8 +272,8 @@ public class K3115Setup
     border1 = BorderFactory.createEtchedBorder(Color.white,new Color(142, 142, 142));
     titledBorder1 = new TitledBorder(border1," GENERAL ");
     border2 = BorderFactory.createLineBorder(SystemColor.controlText,2);
-    this.setWidth(686);
-    this.setHeight(686);
+    this.setWidth(668);
+    this.setHeight(668);
     this.setDeviceType("K3115");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("K3115 : programmable waveform generator");
@@ -287,7 +299,7 @@ public class K3115Setup
     jLabel2.setText("Comment :");
     deviceField2.setOffsetNid(2);
     deviceField2.setTextOnly(true);
-    deviceField2.setNumCols(45);
+    deviceField2.setNumCols(46);
     deviceField2.setIdentifier("");
     jPanel4.setLayout(flowLayout3);
     flowLayout3.setAlignment(FlowLayout.LEFT);
@@ -303,7 +315,7 @@ public class K3115Setup
     deviceChoice1.setUpdateIdentifier("");
     deviceChoice1.setIdentifier("");
     jLabel4.setFont(new java.awt.Font("Dialog", 1, 11));
-    jLabel4.setPreferredSize(new Dimension(90, 15));
+    jLabel4.setPreferredSize(new Dimension(100, 15));
     jLabel4.setHorizontalAlignment(SwingConstants.RIGHT);
     jLabel4.setText("Wave Mode :");
     deviceChoice2.setChoiceIntValues(null);
@@ -323,7 +335,7 @@ public class K3115Setup
     jLabel5.setHorizontalAlignment(SwingConstants.RIGHT);
     jLabel5.setText("Source :");
     deviceField3.setOffsetNid(5);
-    deviceField3.setNumCols(45);
+    deviceField3.setNumCols(46);
     deviceField3.setIdentifier("");
     jPanel8.setLayout(flowLayout5);
     flowLayout5.setAlignment(FlowLayout.LEFT);
@@ -341,7 +353,7 @@ public class K3115Setup
     deviceChoice3.setUpdateIdentifier("");
     deviceChoice3.setIdentifier("");
     jLabel7.setFont(new java.awt.Font("Dialog", 1, 11));
-    jLabel7.setPreferredSize(new Dimension(90, 15));
+    jLabel7.setPreferredSize(new Dimension(100, 15));
     jLabel7.setHorizontalAlignment(SwingConstants.RIGHT);
     jLabel7.setText("Frequency (Hz) :");
     deviceChoice4.setChoiceIntValues(null);
@@ -429,7 +441,7 @@ public class K3115Setup
     jLabel17.setPreferredSize(new Dimension(70, 15));
     jLabel17.setVerifyInputWhenFocusTarget(true);
     jLabel17.setHorizontalAlignment(SwingConstants.RIGHT);
-    jLabel17.setText("Range :");
+    jLabel17.setText("Range (V) :");
     jLabel18.setFont(new java.awt.Font("Dialog", 1, 11));
     jLabel18.setText("Time Mode :");
     deviceChoice10.setChoiceIntValues(null);
@@ -542,7 +554,7 @@ public class K3115Setup
     jLabel114.setPreferredSize(new Dimension(70, 15));
     jLabel114.setVerifyInputWhenFocusTarget(true);
     jLabel114.setHorizontalAlignment(SwingConstants.RIGHT);
-    jLabel114.setText("Range :");
+    jLabel114.setText("Range (V) :");
     jPanel114.setLayout(gridLayout8);
     jPanel114.setPreferredSize(new Dimension(550, 130));
     flowLayout16.setAlignment(FlowLayout.LEFT);
@@ -613,7 +625,7 @@ public class K3115Setup
     jLabel117.setPreferredSize(new Dimension(70, 15));
     jLabel117.setVerifyInputWhenFocusTarget(true);
     jLabel117.setHorizontalAlignment(SwingConstants.RIGHT);
-    jLabel117.setText("Range :");
+    jLabel117.setText("Range (V) :");
     deviceChoice15.setIdentifier("");
     deviceChoice15.setUpdateIdentifier("");
     deviceChoice15.setChoiceItems(new String[] {"BIPOLAR", "UNIPOLAR"});
@@ -720,7 +732,7 @@ public class K3115Setup
     jLabel1114.setPreferredSize(new Dimension(70, 15));
     jLabel1114.setVerifyInputWhenFocusTarget(true);
     jLabel1114.setHorizontalAlignment(SwingConstants.RIGHT);
-    jLabel1114.setText("Range :");
+    jLabel1114.setText("Range (V) :");
     CH01panel.setLayout(flowLayout1119);
     CH01panel.setBorder(BorderFactory.createLineBorder(Color.gray,1));
     CH01panel.setPreferredSize(new Dimension(560, 140));
@@ -779,7 +791,7 @@ public class K3115Setup
     jLabel11110.setPreferredSize(new Dimension(70, 15));
     jLabel11110.setVerifyInputWhenFocusTarget(true);
     jLabel11110.setHorizontalAlignment(SwingConstants.RIGHT);
-    jLabel11110.setText("Range :");
+    jLabel11110.setText("Range (V) :");
     deviceChoice110.setChoiceIntValues(null);
     deviceChoice110.setChoiceFloatValues(null);
     deviceChoice110.setOffsetNid(38);
@@ -900,7 +912,7 @@ public class K3115Setup
     jLabel11116.setPreferredSize(new Dimension(70, 15));
     jLabel11116.setVerifyInputWhenFocusTarget(true);
     jLabel11116.setHorizontalAlignment(SwingConstants.RIGHT);
-    jLabel11116.setText("Range :");
+    jLabel11116.setText("Range (V) :");
     CH06panel.setLayout(flowLayout11118);
     CH06panel.setBorder(BorderFactory.createLineBorder(Color.gray,1));
     CH06panel.setPreferredSize(new Dimension(560, 140));
@@ -941,13 +953,25 @@ public class K3115Setup
     flowLayout6.setHgap(5);
     flowLayout6.setVgap(5);
     jPanel21114.setMinimumSize(new Dimension(72, 45));
-    jPanel21114.setPreferredSize(new Dimension(70, 45));
-    jPanel2116.setPreferredSize(new Dimension(70, 45));
+    jPanel21114.setPreferredSize(new Dimension(67, 45));
+    jPanel2116.setPreferredSize(new Dimension(67, 45));
     jPanel17.setLayout(flowLayout20);
     jPanel17.setPreferredSize(new Dimension(-11, 10));
     jPanel18.setPreferredSize(new Dimension(-11, 10));
     deviceDispatch1.setLayout(flowLayout21);
     deviceDispatch1.setFont(new java.awt.Font("Dialog", 1, 11));
+    jPanel19.setPreferredSize(new Dimension(-11, 10));
+    jPanel19.setLayout(flowLayout27);
+    jPanel20.setPreferredSize(new Dimension(-11, 10));
+    jPanel20.setLayout(flowLayout26);
+    jPanel21.setPreferredSize(new Dimension(-11, 10));
+    jPanel21.setLayout(flowLayout25);
+    jPanel22.setPreferredSize(new Dimension(-11, 10));
+    jPanel22.setLayout(flowLayout24);
+    jPanel23.setPreferredSize(new Dimension(-11, 10));
+    jPanel23.setLayout(flowLayout23);
+    jPanel24.setPreferredSize(new Dimension(-11, 10));
+    jPanel24.setLayout(flowLayout22);
     jPanel2.add(jLabel1, null);
     jPanel2.add(deviceField1, null);
     jPanel2.add(deviceDispatch1, null);
@@ -975,6 +999,7 @@ public class K3115Setup
     voltagesCH02panel.add(deviceField4, null);
 
     setupCH02panel.add(jLabel17, null);
+    setupCH02panel.add(jPanel20, null);
     setupCH02panel.add(jPanel26, null);
     jPanel26.add(deviceChoice10, null);
     setupCH02panel.add(jLabel19, null);
@@ -990,6 +1015,7 @@ public class K3115Setup
     CH03panel.add(deviceChannel3, null);
     deviceChannel3.add(jPanel114, null);
     setupCH03panel.add(jLabel114, null);
+    setupCH03panel.add(jPanel21, null);
     setupCH03panel.add(jPanel210, null);
     jPanel210.add(deviceChoice13, null);
     setupCH03panel.add(jLabel111, null);
@@ -1011,6 +1037,7 @@ public class K3115Setup
     voltagesCH04panel.add(deviceField8, null);
 
     setupCH04panel.add(jLabel117, null);
+    setupCH04panel.add(jPanel22, null);
     setupCH04panel.add(jPanel216, null);
     jPanel216.add(deviceChoice14, null);
     setupCH04panel.add(jLabel119, null);
@@ -1026,6 +1053,7 @@ public class K3115Setup
     CH01panel.add(deviceChannel5, null);
     deviceChannel5.add(jPanel1110, null);
     setupCH01panel.add(jLabel1114, null);
+    setupCH01panel.add(jPanel19, null);
     setupCH01panel.add(jPanel2111, null);
     jPanel2111.add(deviceChoice18, null);
     setupCH01panel.add(jLabel1116, null);
@@ -1051,6 +1079,7 @@ public class K3115Setup
     voltagesCH05panel.add(deviceField12, null);
 
     setupCH05panel.add(jLabel11110, null);
+    setupCH05panel.add(jPanel23, null);
     setupCH05panel.add(jPanel2116, null);
     jPanel2116.add(deviceChoice112, null);
     setupCH05panel.add(jLabel11112, null);
@@ -1068,6 +1097,7 @@ public class K3115Setup
     CH06panel.add(deviceChannel7, null);
     deviceChannel7.add(jPanel1117, null);
     setupCH06panel.add(jLabel11116, null);
+    setupCH06panel.add(jPanel24, null);
     setupCH06panel.add(jPanel21114, null);
     jPanel21114.add(deviceChoice115, null);
     setupCH06panel.add(jLabel11119, null);
