@@ -398,6 +398,13 @@ static int  ___MdsOpen(char *tree, int *shot)
   return 1;
 }
 
+static int ___MdsSetSocket(int *newsocket)
+{
+  int oldsocket = mdsSocket;
+  mdsSocket = *newsocket;
+  return oldsocket;
+}
+int MdsSetSocket(int *newsocket) { return ___MdsSetSocket(newsocket);}
 
 #ifdef __VMS
 int  MdsClose(struct dsc$descriptor *treedsc, int *shot)
@@ -1645,11 +1652,13 @@ static int zero = 0;
 static SOCKET ___MdsConnect();
 static void ___MdsDisconnect();
 static int ___MdsClose();
+static int ___MdsSetSocket();
 static int ___MdsSetDefault();
 static int ___MdsOpen();
 SOCKET WINAPI MdsConnectVB(char *host) { return ___MdsConnect(host);}
 void WINAPI MdsDisconnectVB() { ___MdsDisconnect();}
-int WINAPI MdsCloseVB(char *tree, int *shot) { return ___MdsClose(tree,shot);}
+int  WINAPI MdsCloseVB(char *tree, int *shot) { return ___MdsClose(tree,shot);}
+int  WINAPI MdsSetSocketVB(int *newsocket) { return ___MdsSetSocketVB(newsocket);}
 int  WINAPI MdsSetDefaultVB(char *node) { return ___MdsSetDefault(node);}
 int  WINAPI MdsOpenVB(char *tree, int *shot) { return ___MdsOpen(tree,shot);}
 int WINAPI descr1VB(int *dtype, void *value)
@@ -1740,6 +1749,7 @@ and c then donot define the macro.
 #define FortranMdsDisconnect mdsdisconnect_
 #define FortranMdsOpen mdsopen_
 #define FortranMdsSetDefault mdssetdefault_
+#define FortranMdsSetSocket mdssetsocket_
 #define MdsPut mdsput_
 #define MdsValue mdsvalue_
 #define MdsPut2 mdsput2_
@@ -1750,6 +1760,7 @@ and c then donot define the macro.
 #define FortranMdsDisconnect mdsdisconnect
 #define FortranMdsOpen mdsopen
 #define FortranMdsSetDefault mdssetdefault
+#define FortranMdsSetSocket  mdssetsocket
 #define MdsPut mdsput
 #define MdsValue mdsvalue
 #define MdsPut2 mdsput2
@@ -1760,6 +1771,7 @@ int descr (int *dtype, void *data, int *dim1, ...);
 static SOCKET ___MdsConnect(char *host);
 static void ___MdsDisconnect();
 static int  ___MdsClose(char *tree, int *shot);
+static int  ___MdsSetSocket(int *newsocket);
 static int  ___MdsSetDefault(char *node);
 static int  ___MdsOpen(char *tree, int *shot);
 
@@ -1769,6 +1781,10 @@ SOCKET FortranMdsConnect(char *host) { return ___MdsConnect(host);}
 
 #ifdef FortranMdsDisconnect
 void FortranMdsDisconnect() { ___MdsDisconnect();}
+#endif
+
+#ifdef FortranMdsSetSocket
+int FortranMdsSetSocket(int *newsocket) { return __MdsSetSocket(newsocket);}
 #endif
 
 #ifdef FortranMdsClose
