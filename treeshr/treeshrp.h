@@ -116,7 +116,7 @@ typedef struct nci
     {
       unsigned char file_level;
       unsigned char file_version;
-      unsigned short rfa[3];
+      unsigned char rfa[6];
       unsigned int record_length;
     }         DATA_LOCATION;
     struct
@@ -306,12 +306,14 @@ efficiently.
 ************************************/
 typedef struct
 {
-  char      rfa[6];
+  unsigned char rfa[6];
 }         RFA;
 
+#ifdef RFA_MACROS
 #define RfaToSeek(rfa) (((*(unsigned int *)rfa - 1) * 512) + (*(unsigned short *)&((char *)rfa)[4] & 0x1ff))
 #define SeekToRfa(seek,rfa) {*(unsigned int *)rfa = (unsigned int)(seek/512 + 1); \
                              *(unsigned short *)&(((char *)rfa)[4]) = (unsigned short)(seek % 512);}
+#endif
 
 /****************************************
 RECORD_HEADER

@@ -29,6 +29,7 @@ static int IsChild(NODE *node);
 static char *GetPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs);
 static const char *nonode = "<no-node>   ";
 static int OpenNciR(TREE_INFO *info);
+extern int RfaToSeek(unsigned char *rfa);
 
 extern void *DBID;
 
@@ -638,8 +639,6 @@ static void FixupNciIn(NCI *nci)
   }
   else
   {
-    *(int *)nci->DATA_INFO.DATA_LOCATION.rfa = swapint((char *)nci->DATA_INFO.DATA_LOCATION.rfa);
-    *(short *)&nci->DATA_INFO.DATA_LOCATION.rfa[2] = swapshort((char *)&nci->DATA_INFO.DATA_LOCATION.rfa[2]);
     nci->DATA_INFO.DATA_LOCATION.record_length = swapint((char *)&nci->DATA_INFO.DATA_LOCATION.record_length);
   }    
 }
@@ -772,4 +771,25 @@ static int OpenNciR(TREE_INFO *info)
 void TreeFree(void *ptr)
 {
   free(ptr);
+}
+
+int RfaToSeek(unsigned char *rfa)
+{
+  int ans = (((unsigned int)rfa[0] << 9) |
+            ((unsigned int)rfa[1] << 17) |
+            ((unsigned int)rfa[2] << 25) |
+            ((unsigned int)rfa[4]) |
+            (((unsigned int)rfa[5] & 1) << 8)) - 512;
+  return ans;
+}
+
+void SeekToRfa(unsigned int seek, unsigned char *rfa)
+{
+  int tmp = seek + 512;
+  rfa[0] = (tmp >> 9) & 0xff;
+  rfa[1] = (tmp >> 17) & 0xff;
+  rfa[2] = (tmp >> 25) & 0x7f;
+  rfa[3] = 0;
+  rfa[4] = tmp & 0xff;
+  rfa[5] = tmp >> 8 & 0x1;
 }
