@@ -1,3 +1,5 @@
+/* define  RETRY_CONNECTS to have the code retry connects on login when
+   there is a failure */
 /***********************************************************************/
 #define MAXPARSE 16384
 #include <stdlib.h>
@@ -38,9 +40,20 @@ static void strcatn(char *dst, const char *src, int max)
     strncpy(&dst[dstlen], src, max-srclen-1);
 }
 
+/*
+   Prototypes for Err_Handler and Msg_Handler slightly different between
+   SQLSERVER and SYBASE
+*/
+#ifdef Win32
+#define cnst const
+#else
+#define cnst
+#define DBUSMALLINT int
+#endif
+
 /*------------------------------ERROR HANDLER--------------------------------*/
-static int Err_Handler(PDBPROCESS dbproc, int severity, int dberr, int oserr, 
-					   const char *dberrstr, const char *oserrstr)
+static int Err_Handler(DBPROCESS *dbproc, int severity, int dberr, int oserr, 
+					   cnst char *dberrstr, cnst char *oserrstr)
 {
         /* if we have run out of licences then return cancel
            so we can wait and try again */
@@ -49,7 +62,11 @@ static int Err_Handler(PDBPROCESS dbproc, int severity, int dberr, int oserr,
         }
 	if (!dbproc) return INT_CANCEL;
 	if (DBDEAD(dbproc)) return INT_CANCEL;
+#ifdef WIN32
         if (dberr != SQLEPWD  ) {
+#else
+        if (dberr != SYBERDNR  ) {
+#endif
           strcatn(DBMSGTEXT, dberrstr, MAXMSG);
           strcatn(DBMSGTEXT, "\n", MAXMSG);
       	  if (oserr != DBNOERR) {
@@ -62,8 +79,8 @@ static int Err_Handler(PDBPROCESS dbproc, int severity, int dberr, int oserr,
 
 
 /*------------------------------MESSAGE HANDLER------------------------------*/
-static int Msg_Handler(PDBPROCESS dbproc, DBINT msgno, int msgstate, int severity, 
-					   const char *msgtext, const char *servername, const char *procname, 
+static int Msg_Handler(DBPROCESS *dbproc, DBINT msgno, int msgstate, int severity, 
+					   cnst char *msgtext, cnst char *servername, cnst char *procname, 
 					   DBUSMALLINT line)
 {
         char msg[512];
@@ -123,13 +140,22 @@ int	Login_Sybase(char *host, char *user, char *pass)
   dbmsghandle(Msg_Handler);
   dberrhandle(Err_Handler);
   loginrec = dblogin();
+#ifdef Win32
   if (user == 0) {
 	  DBSETLSECURE(loginrec);
   } else {
+#endif
 	DBSETLUSER(loginrec, user);
 	DBSETLPWD(loginrec, pass);
+#ifdef Win32
   }
+#endif
   DBSETLAPP(loginrec, "IDLSQL");
+#ifdef RETRY_CONNECTS
+#ifdef  __VMS
+extern void decc$sleep();
+#define Sleep decc$sleep()
+#endif
   for (try = 0; ((dbproc==0) && (try < 10)); try++) {
      DBMSGTEXT[0] = 0;
      dbproc = dbopen(loginrec, host);
@@ -137,8 +163,12 @@ int	Login_Sybase(char *host, char *user, char *pass)
         Sleep(100);
      }
   }
-	if (!dbproc) return 0;
-	return SUCCEED;
+#else
+     DBMSGTEXT[0] = 0;
+     dbproc = dbopen(loginrec, host);
+#endif
+  if (!dbproc) return 0;
+  return SUCCEED;
 }
 /*------------------------------DYNAMIC--------------------------------------*/
 int	SQL_DYNAMIC(USER_GETS, USER_PUTS, ptext, user_args, prows)
@@ -186,5 +216,6 @@ int	SQL_DYNAMIC(USER_GETS, USER_PUTS, ptext, user_args, prows)
 		dbcancel(dbproc);
 	}
 close:
+	DBSTATUS = status;
 	return status;
 }

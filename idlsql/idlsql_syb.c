@@ -21,10 +21,10 @@ typedef struct {
 extern void FLOAT_TO_IEEE();
 extern void IEEE_TO_FLOAT();
 extern void CvtConvertFloat();
-static float CVTSF(float *in)
+static float CVTSF(float in)
 {
   float ans;
-  CvtConvertFloat(in, DSC$K_DTYPE_FS, &ans, DSC$K_DTYPE_F);
+  CvtConvertFloat(&in, DSC$K_DTYPE_FS, &ans, DSC$K_DTYPE_F);
   return ans;
 }
 static double CVTTD(double in)
@@ -569,6 +569,12 @@ static IDL_KW_PAR kw_list[] = {
 	user_args.c = IDL_KWGetParams(argc, argv_in, argk, kw_list, argv, 1) - 1;
 	IDL_ENSURE_STRING(argv[0]);
 	IDL_ENSURE_SCALAR(argv[0]);
+        if (strchr(argv[0]->value.str.s, ';')) {
+          strcpy(hold, "Only one SQL statement allowed per call (no ';'s");
+   	  result.value.l = rows;
+          set_them(-1, 0); 
+          return &result;
+        }
 	status = SQL_DYNAMIC(
 		Gets,	/*routine to fill markers	*/
 		Puts,	/*routine to store selctions	*/
