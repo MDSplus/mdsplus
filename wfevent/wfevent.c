@@ -15,9 +15,9 @@ void EventOccurred(void *astprm, int len, char *data)
 	char sdate[20];
     char *s = strncpy((char *)malloc(len+1),data,len);
     s[len] = 0;
-    printf("%s %s,Event %s occurred with data = \\%s\\\n",_strdate(sdate),_strtime(stime),(char *)astprm,s);
+    printf("Event %s occurred with data = \\%s\\\n",(char *)astprm,s);
   }
-//  exit(0);
+  exit(0);
 }
 
 main(int argc, char **argv)
