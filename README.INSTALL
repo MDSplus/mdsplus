@@ -4,10 +4,10 @@ repository.
 To access the cvs repository do the following:
 
 1) set the environment variable CVSROOT to the following:
-	:pserver:MDSguest@lost.pfc.mit.edu:/mdsplus/repos
+	:pserver:MDSguest@www.mdsplus.org:/mdsplus/repos
 2) login to cvs using the password MDSguest
     # cvs login
-    (Logging in to MDSguest@lost.pfc.mit.edu)
+    (Logging in to MDSguest@www.mdsplus.org)
     CVS password: MDSguest
 3) checkout the mdsplus system
     # cvs checkout mdsplus
