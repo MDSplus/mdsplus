@@ -60,7 +60,7 @@ static int KsSingleIo(
   Command[4] = NAFhi(Key.slot, A, F);
   Command[5] = NAFlo(Key.slot, A, F);
   
-  direction = ((F & 0x08) == 0) ? 0 : ((F < 8) ? 1 : 2);
+  direction = ((F & 0x08) == 0) ? ((F < 8) ? 1 : 2) : 0;
   
   // talk to the physical device
   status = scsi_io( scsiDevice, direction, Command, sizeof(Command),
