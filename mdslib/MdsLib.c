@@ -1115,7 +1115,7 @@ int MdsValue(char *expression, ...)
 
       status = TdiData(xd1.pointer,&xd2 MDS_END_ARG);
 
-      if (status & 1 && xd2.length != 0) 
+      if (status & 1 && xd2.pointer != 0) 
 	{      
 	  int templen = (xd2.pointer)->length;
 	  status = TdiCvt(&xd2,dsc,&xd3 MDS_END_ARG);
