@@ -12,6 +12,8 @@
 * from within main().
 *
 * History:
+*  25-Feb-2003  TRG  If mdsdcl_dcl_parse() returns CLI_STS_NOCOMD (i.e.
+*                     blank line) try again -- do not return.
 *  13-Apr-2001  TRG  Remove check for indirect files.
 *                    Report "No such command" if final sts = CLI_STS_IVQUAL.
 *  06-Apr-2001  TRG  Revised handling of indirect commands.
@@ -106,7 +108,10 @@ int mdsdcl_do_command(
 		 *------------------------------------------------------*/
     for ( ; tblidx>0 ; tblidx--)
        {
-        stsParse = mdsdcl_dcl_parse(&dsc_cmd,ctrl,tblidx);
+        do {
+            stsParse = mdsdcl_dcl_parse(&dsc_cmd,ctrl,tblidx);
+           }  while(stsParse == CLI_STS_NOCOMD);
+				/* 25-Feb-03: ignore blank lines -- TRG	*/
         if (~stsParse & 1)
            {
             if ((stsParse == CLI_STS_EOF) || (stsParse == CLI_STS_NOCOMD))
