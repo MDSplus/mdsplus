@@ -69,6 +69,8 @@ static char path_reference;
 
 static int Dsc2Rec(struct descriptor *inp, struct descriptor_xd *out_dsc_ptr);
 
+extern int PutRecordRemote();
+
 extern void *DBID;
 int       TreePutRecord(int nid, struct descriptor *descriptor_ptr, int utility_update) {
   return _TreePutRecord(DBID,nid,descriptor_ptr,utility_update);}
@@ -95,6 +97,8 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
     return TreeNOT_OPEN;
   if (dblist->open_readonly)
     return TreeREADONLY;
+  if (dblist->remote)
+    return PutRecordRemote(dblist,nid,descriptor_ptr,utility_update);
   shot_open = (dblist->shotid != -1);
   nid_to_tree_nidx(dblist, nid_ptr, info_ptr, nidx);
   if (info_ptr)

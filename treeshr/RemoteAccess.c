@@ -15,6 +15,8 @@ struct descrip { char dtype;
                  void *ptr;
                };
 
+static struct descrip empty_ans;
+
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
 extern char *TranslateLogical(char *);
@@ -105,6 +107,16 @@ static int MdsValue0(int socket, char *exp, struct descrip *ans)
   return (*MdsValue)(socket, exp, ans, 0);
 } 
   
+static int MdsValue1(int socket, char *exp, struct descrip *arg1, struct descrip *ans)
+{
+  if (MdsValue == 0)
+  {
+    int status = FindImageSymbol("MdsValue",(void **)&MdsValue);
+    if (!(status & 1)) return status;
+  }
+  return (*MdsValue)(socket, exp, arg1, ans, 0);
+} 
+  
 int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,int status)
 {
   int len = strlen(tree);
@@ -129,7 +141,7 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,int 
       socket = ConnectToMds(logname);
       if (socket != -1)
       {
-        struct descrip ans;
+        struct descrip ans = empty_ans;
         char *exp = malloc(strlen(subtree_list ? subtree_list : tree)+100);
         sprintf(exp,"TreeOpen('%s',%d)",subtree_list ? subtree_list : tree,dblist->shotid);
         status =  MdsValue0(socket, exp, &ans);
@@ -159,6 +171,7 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,int 
             }
 	  }
         }
+        if (ans.ptr) free(ans.ptr);
       }
     }
     TranslateLogicalFree(logname);
@@ -173,12 +186,26 @@ int SetStackSizeRemote(PINO_DATABASE *dblist, int stack_size)
 
 int CloseTreeRemote(PINO_DATABASE *dblist, int call_hook)
 {
-	return 1;
+  struct descrip ans = empty_ans;
+  int status;
+  char exp[512];
+  sprintf(exp,"TreeClose('%s',%d)",dblist->experiment,dblist->shotid);
+  status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+  if (ans.ptr)
+  {
+    status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
+    free(ans.ptr);
+  }
+  DisconnectFromMds(dblist->tree_info->channel);
+  if (dblist->tree_info && dblist->tree_info->treenam) free(dblist->tree_info->treenam);
+  if (dblist->tree_info) free(dblist->tree_info);
+  dblist->tree_info = 0;
+  return status;
 }
 
 int GetRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor_xd *dsc)
 {
-  struct descrip ans;
+  struct descrip ans = empty_ans;
   int status;
   char exp[512];
   sprintf(exp,"SerializeOut(`getnci(%d,'RECORD'))",nid_in);
@@ -190,12 +217,13 @@ int GetRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor_xd *dsc
     else
       status = TreeNODATA;
   }
+  if (ans.ptr) free(ans.ptr);
   return status;
 }
 
 int FindNodeRemote(PINO_DATABASE *dblist, char *path, int *outnid)
 {
-  struct descrip ans;
+  struct descrip ans = empty_ans;
   int status;
   char *exp = malloc(strlen(path)+32);
   sprintf(exp,"getnci(%s,'nid_number')",path);
@@ -207,20 +235,34 @@ int FindNodeRemote(PINO_DATABASE *dblist, char *path, int *outnid)
     else
       status = TreeNNF;
   }
+  if (ans.ptr) free(ans.ptr);
   return status;
 }
 
 struct _FindNodeStruct { int *nids;
                          int num;
+                         int *ptr;
                        };
+
+int FindNodeEndRemote(PINO_DATABASE *dblist, void **ctx_inout)
+{
+  struct _FindNodeStruct *ctx = (struct _FindNodeStruct *)*ctx_inout;
+  if (ctx)
+  {
+    free(ctx->ptr);
+    free(ctx);
+    *ctx_inout = 0;
+  }
+  return 1;
+}
+
 int FindNodeWildRemote(PINO_DATABASE *dblist, char *path, int *nid_out, void **ctx_inout, int usage_mask)
 {
   int status = TreeNORMAL;
   struct _FindNodeStruct *ctx = (struct _FindNodeStruct *)*ctx_inout;
   if (!ctx)
   {
-    struct descrip ans;
-    int status = 0;
+    struct descrip ans = empty_ans;
     char *exp = malloc(strlen(path)+50);
     sprintf(exp,"TreeFindNodeWild('%s',%d)",path,usage_mask);
     status = MdsValue0(dblist->tree_info->channel,exp,&ans);
@@ -228,9 +270,8 @@ int FindNodeWildRemote(PINO_DATABASE *dblist, char *path, int *nid_out, void **c
     {
       if (ans.ptr)
       {
-        ctx = malloc(sizeof(struct _FindNodeStruct) + ans.dims[0] * sizeof(int));
-        ctx->nids = (int *)((char *)ctx + sizeof(struct _FindNodeStruct));
-        memcpy(ctx->nids,ans.ptr,ans.dims[0] * sizeof(int));
+        ctx = malloc(sizeof(struct _FindNodeStruct));
+        ctx->nids = ctx->ptr = (int *)ans.ptr;
         ctx->num = ans.dims[0];
         *ctx_inout = (void *)ctx;
       }
@@ -248,22 +289,11 @@ int FindNodeWildRemote(PINO_DATABASE *dblist, char *path, int *nid_out, void **c
     }
     else
     {
-      free(ctx);
-      *ctx_inout = 0;
+      FindNodeEndRemote(dblist, ctx_inout);
       status = TreeNMN;
     }
   }
   return status;
-}
-
-int FindNodeEndRemote(PINO_DATABASE *dblist, void **ctx_in)
-{
-  if (*ctx_in)
-  {
-    free(*ctx_in);
-    *ctx_in = 0;
-  }
-  return 1;
 }
 
 char *FindNodeTagsRemote(PINO_DATABASE *dblist, int nid_in, void **ctx_ptr)
@@ -278,13 +308,34 @@ char *AbsPathRemote(PINO_DATABASE *dblist, char *inpath)
 
 int SetDefaultNidRemote(PINO_DATABASE *dblist, int nid)
 {
-	return 1;
+  struct descrip ans = empty_ans;
+  char exp[512];
+  int status;
+  sprintf(exp,"SetDefaultNid(%d)",nid);
+  status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+  if (ans.ptr)
+  {
+    status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
+    free(ans.ptr);
+  }
+  return status;
 }
 
 int GetDefaultNidRemote(PINO_DATABASE *dblist, int *nid)
 {
-	return 1;
+  struct descrip ans = empty_ans;
+  int status = MdsValue0(dblist->tree_info->channel,"GetDefaultNid()",&ans);
+  if (ans.ptr)
+  {
+    if (ans.dtype == DTYPE_L)
+      *nid = *(int *)ans.ptr;
+    else
+      status = 0;
+    free(ans.ptr);
+  }  
+  return status;
 }
+
 int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm)
 {
   NID nid = *(NID *)&nid_in;
@@ -294,7 +345,6 @@ int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm)
   for (itm = nci_itm; itm->code != NciEND_OF_LIST && status & 1; itm++)
   {
     char    *getnci_str = NULL;
-    char *string = NULL;
     switch (itm->code)
     {
     case NciDEPTH:               getnci_str = "getnci(%d,'depth')"; break;
@@ -361,3 +411,29 @@ int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm)
   }
   return status;
 }
+
+int PutRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor *dsc, int utility_update)
+{
+  EMPTYXD(out);
+  int status = MdsSerializeDscOut(dsc,&out);
+  if (status & 1)
+  {
+    struct descrip ans = empty_ans;
+    struct descrip data = {DTYPE_B,1,{0,0,0,0,0,0,0},1,0};
+    char exp[512];
+    sprintf(exp,"TreePutRecord(%d, SerializeIn($), %d)",nid_in,utility_update);
+    data.dims[0] = ((struct descriptor_a *)out.pointer)->arsize;
+    data.ptr = out.pointer->pointer;
+    status = MdsValue1(dblist->tree_info->channel,exp,&data,&ans);
+    if (ans.ptr)
+    {
+      if (ans.dtype == DTYPE_L)
+        status = *(int *)ans.ptr;
+      else
+        status = 0;
+      free(ans.ptr);
+    }  
+  }
+  return status;
+}
+
