@@ -4,12 +4,19 @@
 #include <signal.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <mds_stdarg.h>
+#include <libroutines.h>
 
 extern int TdiExecute();
 extern int TdiData();
 extern int TdiCvt();
 extern int TdiCompile();
+
+#ifdef _WINDOWS
+#define sighold(a)
+#define sigrelse(a)
+#endif
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
@@ -54,7 +61,6 @@ typedef struct {
 
 static void *MakeDescr(int idx, int *argsize, void *bytes)
 {
-  struct descriptor *ans;
   if (argsize[0] == 0)
   {
     scalarArgs[idx].class = CLASS_S;
