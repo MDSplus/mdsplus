@@ -485,7 +485,8 @@ public class Setup extends Object implements WaveSetup {
 
 		    jScope.writeLine(out, "Scope.plot_" + r + "_" + c + ".height: "          , ""+w[k].getSize().height );
 		    jScope.writeLine(out, "Scope.plot_" + r + "_" + c + ".grid_mode: "       , ""+w[k].grid_mode);
-		    w[k].wi.toFile(out, "Scope.plot_" + r + "_" + c + ".", main_scope);
+            if(w[k].wi != null)
+		        w[k].wi.toFile(out, "Scope.plot_" + r + "_" + c + ".", main_scope);
 		    k++;
 		}
 	    }

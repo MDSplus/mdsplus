@@ -975,6 +975,16 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 		error_msg.addMessage("Local data access is not supported on this platform");
 		change = false;
 	    }
+//Gabriele 26/10/99
+        else
+        if(setup.data_server_address.equals("Jet data"))
+        {
+            db = new JetDataProvider();
+            ((JetDataProvider)db).InquireCredentials(this);
+            change = true;
+        }
+//	    
+	    
         else {
 	    fast_network_i.setEnabled(setup.fast_network_access);		
 	    db = new NetworkProvider(setup.data_server_address);
@@ -1699,6 +1709,7 @@ class ServerDialog extends ScopePositionDialog {
 
 	if(dw.server_ip_list == null) {
 	    addServerIp("Local");	
+	    addServerIp("Jet data");	
 	    addServerIp(jScope.DEFAULT_IP_SERVER);
 //	    dw.server_ip_list = getServerIpList();
 	}

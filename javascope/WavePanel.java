@@ -134,6 +134,7 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
       int hpan = 15, wpan = 15;
       
       /* Fix page dimension  bug on Mac OS */
+      /*
       if(System.getProperties().getProperty("os.name").equals("Mac OS"))
       {
 	    hpan = 5;
@@ -147,7 +148,12 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
 	    height -= 2 * hpan;
 	    width  -= 2 * wpan;
       }
-       
+      */
+      
+	  dy1 = hpan;
+	  height -= 2 * hpan;
+	  width  -= 2 * wpan;
+      
       for(i = 0 ; i < setup.columns; i++)
       {	  
 	    dy2 += (int)(height * ((RowColumnLayout)getLayout()).getPercentWidth(i));

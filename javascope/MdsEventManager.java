@@ -7,12 +7,12 @@ class MdsEventManager {
     
     private Vector mdsEventList     = new Vector();
 
-    static class MdsEventItem
+    static class EventItem
     {
         String  name;
         Vector  listener = new Vector();
     
-        MdsEventItem (String name, MdsEventListener l)
+        EventItem (String name, MdsEventListener l)
         {
             this.name = name;
             listener.addElement((Object) l);
@@ -27,19 +27,19 @@ class MdsEventManager {
     public synchronized int AddEvent(MdsEventListener l, String event_name)
     {
        int i, eventid = -1;
-       MdsEventItem mdsEventItem; 
+       EventItem mdsEventItem; 
         
         for(i = 0; i < mdsEventList.size() && 
-                        !((MdsEventItem)mdsEventList.elementAt(i)).name.equals(event_name);
-        /*System.out.println("Add "+((MdsEventItem)mdsEventList.elementAt(i)).name+" "+i),*/ i++);
+                        !((EventItem)mdsEventList.elementAt(i)).name.equals(event_name);
+        /*System.out.println("Add "+((EventItem)mdsEventList.elementAt(i)).name+" "+i),*/ i++);
         if(i == mdsEventList.size())
         {
-            mdsEventItem = new MdsEventItem(event_name, l);
+            mdsEventItem = new EventItem(event_name, l);
             mdsEventList.addElement((Object)mdsEventItem);
 	        eventid = mdsEventList.size() - 1;
         } else {
-            if(!((MdsEventItem)mdsEventList.elementAt(i)).listener.contains((Object)l))
-                ((MdsEventItem)mdsEventList.elementAt(i)).listener.addElement(l);
+            if(!((EventItem)mdsEventList.elementAt(i)).listener.contains((Object)l))
+                ((EventItem)mdsEventList.elementAt(i)).listener.addElement(l);
         }     
 
         return eventid;
@@ -48,16 +48,16 @@ class MdsEventManager {
     public synchronized int RemoveEvent(MdsEventListener l, String event_name)
     {
         int i, eventid = -1;
-        MdsEventItem mdsEventItem; 
+        EventItem mdsEventItem; 
 
     
         for(i = 0; i < mdsEventList.size() && 
-                        !((MdsEventItem)mdsEventList.elementAt(i)).name.equals(event_name);
-            /*System.out.println("Remove "+((MdsEventItem)mdsEventList.elementAt(i)).name+" "+i),*/i++);
+                        !((EventItem)mdsEventList.elementAt(i)).name.equals(event_name);
+            /*System.out.println("Remove "+((EventItem)mdsEventList.elementAt(i)).name+" "+i),*/i++);
         if(i < mdsEventList.size())
         {
-            ((MdsEventItem)mdsEventList.elementAt(i)).listener.removeElement(l);
-            if(((MdsEventItem)mdsEventList.elementAt(i)).listener.size() == 0)
+            ((EventItem)mdsEventList.elementAt(i)).listener.removeElement(l);
+            if(((EventItem)mdsEventList.elementAt(i)).listener.size() == 0)
             {
                 mdsEventList.removeElementAt(i);
                 eventid = i;
@@ -68,7 +68,7 @@ class MdsEventManager {
     
     public synchronized void FireEvent(int eventid)
     {
-        MdsEventItem mdsEventItem = ((MdsEventItem)mdsEventList.elementAt(eventid));
+        EventItem mdsEventItem = ((EventItem)mdsEventList.elementAt(eventid));
         Vector mdsEventListener = mdsEventItem.listener;
         MdsEvent e = new MdsEvent(this, mdsEventItem.name, eventid);
     

@@ -627,7 +627,7 @@ public class WaveInterface
 		    du.start();
 		}
 		else 
-		    du.resume();
+		    du.Notify();
 	    }
 	    else
 		DynamicUpdate(w);    
@@ -1109,16 +1109,24 @@ public void run()
 {
     while(true)
     {
-	while(wi.request_pending)
-	{
-	    wi.request_pending = false;
-	    wi.DynamicUpdate(w);
-	}
-	suspend();
+	    while(wi.request_pending)
+	    {
+	        wi.request_pending = false;
+	        wi.DynamicUpdate(w);
+	    }
+	    try {
+	        wait();
+	    } catch (InterruptedException e){}
     }
+}
+public synchronized void Notify()
+{
+    notify();
+}
+    
 }
     	
 
-}   
+
 				    				
 			

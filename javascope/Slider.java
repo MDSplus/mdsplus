@@ -70,7 +70,7 @@ class Slider extends Panel implements AdjustmentListener {
   public void setAutoFontSize()
   {
     if(width_size > 0)
-     lab.setFont(new Font("Helvetica", Font.PLAIN, font_size)) ; 
+        lab.setFont(new Font("Helvetica", Font.PLAIN, font_size)) ; 
   }
 
   public Insets setInsets()
@@ -110,7 +110,7 @@ class Slider extends Panel implements AdjustmentListener {
   {
 
      String str    = new String("" + max_val);
-     int x=0, y=0;
+     int x = 0, y = 0;
     
      setSize(width_size , height_size);
 
@@ -136,7 +136,7 @@ class Slider extends Panel implements AdjustmentListener {
        }	
      } 
      scr_slide.setBounds(x, y, w_scr, h_scr);
-     lab.setSize(max_lab_size, font_size);	
+     lab.setSize(max_lab_size + 2, font_size + 2);	
    }
 /*
    public Dimension getPreferedSize()

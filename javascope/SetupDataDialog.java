@@ -865,38 +865,6 @@ import java.util.Vector;
 
   }
 
-   class UpdWaveforThread extends Thread
-   {
-        public void  run()
-        {
-            setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            try
-            {
-	            wave.SetMode(Waveform.MODE_WAIT);
-                if(checkSetup() == 0)
-                {
-	                main_scope.SetStatusLabel("Update signals for shots " + shot.getText());
-	                String e = setup.UpdateWave(wave);
-	                if(e != null) {
-	                    if(main_scope.briefError())
-		                    error_msg.addMessage(e);
-	                    else
-		                    error_msg.setMessage(e);
-	                    error_msg.showMessage();
-	                }  
-	                main_scope.SetStatusLabel("Wave is up to date");
-                } else
-	                error_msg.showMessage();       	
-	            wave.SetMode(main_scope.wave_mode);
-                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-	        } catch (Throwable e) {	        
-	            wave.SetMode(main_scope.wave_mode);
-                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-	            main_scope.SetStatusLabel("Unrecoverable error during apply");	    
-	        }
-        }
-   }
-
 
 
    public SetupDataDialog(Frame fw, String frame_title) {
@@ -1520,10 +1488,6 @@ import java.util.Vector;
 
    private  void applyWaveform()
    {
-/*
-     UpdWaveforThread upd = new UpdWaveforThread();
-     upd.start();
-*/
      setCursor(new Cursor(Cursor.WAIT_CURSOR));
      try
      {

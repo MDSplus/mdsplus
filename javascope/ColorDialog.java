@@ -305,7 +305,7 @@ class ColorDialog extends ScopePositionDialog  {
 	for(i = 0; c_name != null && i < c_name.length && !c_name[i].equals(name); i++);
 	if(c_name == null || i == c_name.length) {
 	    color_set.addElement(c_item);
-	    colorList.addItem(name);
+	    colorList.add(name);
 	}	    
 	else
 	    color_set.setElementAt(c_item, i);	    	
@@ -341,13 +341,14 @@ class ColorDialog extends ScopePositionDialog  {
 	    colorList.removeAll();
 	for(int i = 0; i < color_set.size(); i++)
 	{	    
-	    colorList.addItem(((Item)color_set.elementAt(i)).name);
+	    colorList.add(((Item)color_set.elementAt(i)).name);
 	}   
     }
     
     public void adjustmentValueChanged(AdjustmentEvent e)
     {
-	color_test.setBackground(getColor());
+	    color_test.setBackground(getColor());
+	    color_test.repaint();	      	      
     }
     
     private Color StringToColor(String str)

@@ -332,12 +332,12 @@ class Mds {
     DataInputStream dis;
     DataOutputStream dos; 
     public String error; 
-    MdsReceiveThread receiveThread;
+    MRT receiveThread;
 
     public Mds () {sock = null; dis = null; dos = null; provider = null;}
     public Mds (String _provider) {sock = null; dis = null; dos = null; provider = _provider;}
 
-class ProcessMdsEventThread extends Thread
+class PMET extends Thread //Process Mds Event Thread
 {
     int eventid;
     
@@ -354,7 +354,7 @@ class ProcessMdsEventThread extends Thread
     
     }
 	
-	class MdsReceiveThread extends Thread
+	class MRT extends Thread // Mds Receive Thread
 	{
         MdsMessage message;
 
@@ -368,7 +368,7 @@ class ProcessMdsEventThread extends Thread
 	                curr_message.Receive(dis);
 	                if(curr_message.dtype == Descriptor.DTYPE_EVENT) {
 //	                    System.out.println("Ricevuto evento");
-                        ProcessMdsEventThread PMdsEvent = new ProcessMdsEventThread();
+                        PMET PMdsEvent = new PMET();
                         PMdsEvent.SetEventid(curr_message.body[12]);
                         PMdsEvent.start();
 	                } else {
@@ -473,7 +473,7 @@ class ProcessMdsEventThread extends Thread
 	    message.Send(dos);
 	    message.Receive(dis);
 	    
-	    receiveThread = new MdsReceiveThread();
+	    receiveThread = new MRT();
 	    receiveThread.start();
 	    
 	} catch(UnknownHostException e) {error="pdigi1 unknown"; return 0;}

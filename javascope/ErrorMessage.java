@@ -18,7 +18,7 @@ class ErrorMessage extends ScopePositionDialog {
     boolean is_message_show = false;
     private int msg_type;
     private int state = 0;
-    
+    static ErrorMessage errmsg;
     ErrorMessage(Frame fw)
     {
 	super(fw, "Message", true);
@@ -30,9 +30,18 @@ class ErrorMessage extends ScopePositionDialog {
 	setLayout(new GridLayout(10, 5, 0, 0));    
     }
     
+    public static void ShowErrorMessage(Frame f, String msg)
+    {
+        if(errmsg == null)
+            errmsg = new ErrorMessage(f, ERROR_TYPE);
+        errmsg.setMessage(msg);
+        errmsg.showMessage();
+    }
+    
+    
     ErrorMessage(Frame fw, int _msg_type)
     {
-	super(fw, "Error Setup", true);
+	super(fw, "Error message", true);
 	setResizable(true);	
 	msg_type = _msg_type;
 	f = fw; 	
