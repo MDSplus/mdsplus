@@ -2,7 +2,7 @@ PRO	SQL
   if !version.os eq 'vms' or !version.os eq 'Win32' then begin
     entry = 'IDLSQL'
     file = 'IDLSQL'
-  endif else if !version.os eq 'OSF' then begin
+  endif else if !version.os eq 'OSF' or !version.os eq 'sunos' then begin
     entry = 'IDLSQL'
     file = 'libIdlSql.so'
   endif else begin
