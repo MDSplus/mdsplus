@@ -79,7 +79,7 @@ write(*, 'T2Control init');
 
 
 	_end_time = data(DevNodeRef(_nid, _N_POST_TIME));
-	if(_end_time <= _start_time
+	if(_end_time <= _start_time)
 	{
 		write(*, 'Invalid end sampling time ', _end_time);
 		return(0);
