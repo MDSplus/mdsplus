@@ -15,8 +15,6 @@ public class RFXAxiControlSetup extends DeviceSetup
 {
     BorderLayout borderLayout1 = new BorderLayout();
     DeviceButtons deviceButtons1 = new DeviceButtons();
-    JPanel jPanel1 = new JPanel();
-    DeviceField deviceField1 = new DeviceField();
     JTabbedPane jTabbedPane1 = new JTabbedPane();
     DeviceWave deviceWave1 = new DeviceWave();
     DeviceWave deviceWave2 = new DeviceWave();
@@ -29,6 +27,12 @@ public class RFXAxiControlSetup extends DeviceSetup
     DeviceWave deviceWave9 = new DeviceWave();
     DeviceWave deviceWave10 = new DeviceWave();
     DeviceWave deviceWave11 = new DeviceWave();
+    JPanel jPanel1 = new JPanel();
+    JPanel jPanel2 = new JPanel();
+    DeviceField deviceField1 = new DeviceField();
+    GridLayout gridLayout1 = new GridLayout();
+    JPanel jPanel3 = new JPanel();
+    DeviceField deviceField2 = new DeviceField();
     public RFXAxiControlSetup()
     {
         try
@@ -48,11 +52,6 @@ public class RFXAxiControlSetup extends DeviceSetup
       this.setDeviceProvider("localhost");
       this.setDeviceTitle("Axisymmetric Control Setup");
       this.getContentPane().setLayout(borderLayout1);
-      deviceField1.setOffsetNid(1);
-      deviceField1.setTextOnly(true);
-      deviceField1.setLabelString("Comment: ");
-      deviceField1.setNumCols(30);
-      deviceField1.setIdentifier("");
       deviceWave1.setOffsetNid(3);
       deviceWave1.setIdentifier("");
       deviceWave1.setUpdateExpression("");
@@ -86,9 +85,18 @@ public class RFXAxiControlSetup extends DeviceSetup
       deviceWave11.setOffsetNid(63);
       deviceWave11.setIdentifier("");
       deviceWave11.setUpdateExpression("");
-      this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
-      this.getContentPane().add(jPanel1, BorderLayout.NORTH);
-      jPanel1.add(deviceField1, null);
+      deviceField1.setOffsetNid(1);
+        deviceField1.setTextOnly(true);
+        deviceField1.setLabelString("Comment: ");
+        deviceField1.setNumCols(30);
+        deviceField1.setIdentifier("");
+        jPanel1.setLayout(gridLayout1);
+        gridLayout1.setColumns(1);
+        gridLayout1.setRows(2);
+        deviceField2.setOffsetNid(68);
+        deviceField2.setLabelString("Bv_Gain");
+        deviceField2.setIdentifier("");
+        this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
       this.getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
       jTabbedPane1.add(deviceWave1,   "BV_add");
       jTabbedPane1.add(deviceWave2,   "Delta_Ip");
@@ -101,6 +109,11 @@ public class RFXAxiControlSetup extends DeviceSetup
       jTabbedPane1.add(deviceWave9,   "I_FS6_add");
       jTabbedPane1.add(deviceWave10,   "I_FS7_add");
       jTabbedPane1.add(deviceWave11,   "I_FS8_add");
+        this.getContentPane().add(jPanel1, BorderLayout.NORTH);
+        jPanel1.add(jPanel2, null);
+        jPanel2.add(deviceField1, null);
+        jPanel1.add(jPanel3, null);
+        jPanel3.add(deviceField2, null);
     }
 
 }
