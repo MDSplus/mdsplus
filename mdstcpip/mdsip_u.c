@@ -529,7 +529,7 @@ static int CheckClient(char *host_c, char *user_c)
       if (line_c[0] != '#')
       {
         line_d.length = strlen(line_c) - 2;
-	      StrElement(&access_id,&zero,&delimiter,&line_d);
+	StrElement(&access_id,&zero,&delimiter,&line_d);
         StrElement(&local_user,&one,&delimiter,&line_d);
         CompressString(&access_id,1);
         if (access_id.length)
@@ -1291,8 +1291,9 @@ static int CreateMdsPort(short port, int multi_in)
   long sendbuf=5000,recvbuf=5000;
   SOCKET s;
   int status;
+  char multistr[] = "MULTI";
   if (multi)
-    CheckClient(0,"MULTI");
+    CheckClient(0,multistr);
   s = socket(AF_INET, SOCK_STREAM, 0);
   if (s == -1)
   {
