@@ -50,7 +50,9 @@ public abstract class jScopeBrowseSignals extends jScopeBrowseUrl
             });
 
         pack();
-        setSize(480,700);
+
+        setSize(p.getPreferredSize().width +50,
+                Toolkit.getDefaultToolkit().getScreenSize().height -80);
     }
 
     abstract protected String getSignal(String url);
