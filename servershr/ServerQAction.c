@@ -9,6 +9,12 @@
 #include <netinet/in.h>
 #include "servershrp.h"
 
+#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
+#define pthread_attr_default NULL
+#else
+#undef select
+#endif
+
 typedef struct _MonitorList { int addr;
                               short port;
                               struct _MonitorList *next;

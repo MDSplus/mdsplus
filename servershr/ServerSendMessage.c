@@ -41,6 +41,8 @@ int ServerSendMessage();
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
+#else
+#undef select
 #endif
 
 extern char *TranslateLogical(char *);
