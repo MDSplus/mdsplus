@@ -65,15 +65,30 @@ public class DeviceWaveCustomizer extends DeviceCustomizer implements Customizer
         doneButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
+                boolean oldMinXVisible = bean.getMinXVisible();
                 bean.setMinXVisible(minXVisible.getState());
+                listeners.firePropertyChange("minXVisible", oldMinXVisible, bean.getMinXVisible());
+                boolean oldMaxXVisible = bean.getMaxXVisible();
                 bean.setMaxXVisible(maxXVisible.getState());
+                listeners.firePropertyChange("maxXVisible", oldMaxXVisible, bean.getMaxXVisible());
+                boolean oldMinYVisible = bean.getMinYVisible();
                 bean.setMinYVisible(minYVisible.getState());
+                listeners.firePropertyChange("minYVisible", oldMinYVisible, bean.getMinYVisible());
+                boolean oldMaxYVisible = bean.getMaxYVisible();
                 bean.setMaxYVisible(maxYVisible.getState());
+                listeners.firePropertyChange("maxYVisible", oldMaxYVisible, bean.getMaxYVisible());
+                int oldOffsetNid = bean.getOffsetNid();
                 bean.setOffsetNid(nids.getSelectedIndex() + 1);
+                listeners.firePropertyChange("offsetNid", oldOffsetNid, bean.getOffsetNid());
+                String oldIdentifier = bean.getIdentifier();
                 bean.setIdentifier(identifier.getText());
+                listeners.firePropertyChange("identifier", oldIdentifier, bean.getIdentifier());
+                String oldUpdateIdentifier = bean.getIdentifier();
                 bean.setUpdateIdentifier(updateIdentifier.getText().trim());
+                listeners.firePropertyChange("updateIdentifier", oldUpdateIdentifier, bean.getUpdateIdentifier());
+                String oldUpdateExpression = bean.getUpdateExpression();
                 bean.setUpdateExpression(updateExpression.getText().trim());
-                listeners.firePropertyChange(null, null, null);
+                listeners.firePropertyChange("updateExpression", oldUpdateExpression, bean.getUpdateExpression());
             }
         });
         add(jp,"South");

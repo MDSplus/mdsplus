@@ -70,16 +70,33 @@ public class DeviceChannelCustomizer extends DeviceCustomizer implements Customi
         doneButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
+                String oldLabelString = bean.getLabelString();
                 bean.setLabelString(labelString.getText());
+                listeners.firePropertyChange("labelString", oldLabelString, bean.getLabelString());
+                boolean oldState = bean.getState();
                 bean.setBorderVisible(showBorder.getState());
+                listeners.firePropertyChange("state", oldState, bean.getState());
+                boolean oldShowState = bean.getShowState();
                 bean.setShowState(showState.getState());
+                listeners.firePropertyChange("showState", oldShowState, bean.getShowState());
+                boolean oldInSameLine = bean.getInSameLine();
                 bean.setInSameLine(inSameLine.getState());
+                listeners.firePropertyChange("inSameLine", oldInSameLine, bean.getInSameLine());
+                int oldOffsetNid = bean.getOffsetNid();
                 bean.setOffsetNid(nids.getSelectedIndex() + 1);
+                listeners.firePropertyChange("offsetNid", oldOffsetNid, bean.getOffsetNid());
+                int oldLines = bean.getLines();
                 bean.setLines((new Integer(lines.getText())).intValue());
+                listeners.firePropertyChange("lines", oldLines, bean.getLines());
+                int oldColumns = bean.getColumns();
                 bean.setColumns((new Integer(columns.getText())).intValue());
+                listeners.firePropertyChange("columns", oldColumns, bean.getColumns());
+                String oldUpdateIdentifier = bean.getUpdateIdentifier();
                 bean.setUpdateIdentifier(updateId.getText());
+                listeners.firePropertyChange("updateIdentifier", oldUpdateIdentifier, bean.getUpdateIdentifier());
+                String oldShowVal = bean.getShowVal();
                 bean.setShowVal(showVal.getText());
-                listeners.firePropertyChange(null, null, null);
+                listeners.firePropertyChange("showVal", oldShowVal, bean.getShowVal());
             }
         });
         add(jp,"South");

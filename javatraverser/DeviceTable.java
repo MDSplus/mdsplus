@@ -11,7 +11,7 @@ public class DeviceTable extends DeviceComponent
 //    int preferredHeight = 100;
     int numRows = 3;
     int numCols = 3;
-    String columnNames[];
+    String columnNames[] = new String[0];
     boolean state = true;
     String labelString = "";
     boolean initializing = false;

@@ -1,22 +1,8 @@
-Name: DeviceApply.class
-Java-Bean: True
-
-Name: DeviceCancel.class
-Java-Bean: True
-
-Name: DeviceChoice.class
-Java-Bean: True
 
 Name: DeviceDispatch.class
 Java-Bean: True
 
 Name: DeviceField.class
-Java-Bean: True
-
-Name: DeviceOk.class
-Java-Bean: True
-
-Name: DeviceReset.class
 Java-Bean: True
 
 Name: DeviceSetup.class
@@ -26,5 +12,14 @@ Name: DeviceChannel.class
 Java-Bean: True
 
 Name: DeviceButtons.class
+Java-Bean: True
+
+Name: DeviceTable.class
+Java-Bean: True
+
+Name: DeviceWave.class
+Java-Bean: True
+
+Name: DeviceChoice.class
 Java-Bean: True
 

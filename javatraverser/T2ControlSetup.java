@@ -53,7 +53,6 @@ public class T2ControlSetup extends DeviceSetup
 		}
 		deviceChoice1.setLabelString("Initial Control");
 		deviceChoice1.setConvert(true);
-		deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)5});
 		getContentPane().add(deviceChoice1);
 		deviceChoice1.setBounds(12,156,276,40);
 		deviceChoice2.setOffsetNid(7);

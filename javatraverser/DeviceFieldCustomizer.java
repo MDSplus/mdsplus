@@ -63,21 +63,37 @@ public class DeviceFieldCustomizer extends DeviceCustomizer implements Customize
         jp = new Panel();
         jp.add(doneButton = new Button("Apply"));
         doneButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                bean.setLabelString(labelString.getText());
-                String colStr = numCols.getText();
-                bean.setNumCols(Integer.parseInt(colStr));
-                bean.setTextOnly(textOnly.getState());
-                bean.setEditable(editable.getState());
-                bean.setShowState(showState.getState());
-                bean.setDisplayEvaluated(displayEvaluated.getState());
-                bean.setOffsetNid(nids.getSelectedIndex() + 1);
-                bean.setIdentifier(identifier.getText());
-                //listeners.firePropertyChange(null, null, null);
-            }
-        });
-        add(jp,"South");
+        public void actionPerformed(ActionEvent e)
+        {
+            if(bean == null) return;
+            String oldLabel = bean.getLabelString();
+            bean.setLabelString(labelString.getText());
+            listeners.firePropertyChange("labelString", oldLabel, bean.getLabelString());
+            String colStr = numCols.getText();
+            int oldCols = bean.getNumCols();
+            bean.setNumCols(Integer.parseInt(colStr));
+            listeners.firePropertyChange("numCols", oldCols, bean.getNumCols());
+            boolean oldTextOnly = bean.getTextOnly();
+            bean.setTextOnly(textOnly.getState());
+            listeners.firePropertyChange("textOnly", oldTextOnly, bean.getTextOnly());
+            boolean oldEditable = bean.getEditable();
+            bean.setEditable(editable.getState());
+            listeners.firePropertyChange("editable", oldEditable, bean.getEditable());
+            boolean oldShowState = bean.getShowState();
+            bean.setShowState(showState.getState());
+            listeners.firePropertyChange("showState", oldShowState, bean.getShowState());
+            boolean oldDisplayEvaluated = bean.getDisplayEvaluated();
+            bean.setDisplayEvaluated(displayEvaluated.getState());
+            listeners.firePropertyChange("displayEvaluated", oldDisplayEvaluated, bean.getDisplayEvaluated());
+            int oldOffsetNid = bean.getOffsetNid();
+            bean.setOffsetNid(nids.getSelectedIndex() + 1);
+            listeners.firePropertyChange("offsetNid", oldOffsetNid, bean.getOffsetNid());
+            String oldIdentifier = bean.getIdentifier();
+            bean.setIdentifier(identifier.getText());
+            listeners.firePropertyChange("identifier", oldIdentifier, bean.getIdentifier());
+         }
+      });
+      add(jp,"South");
     }
 
     public void addPropertyChangeListener(PropertyChangeListener l)

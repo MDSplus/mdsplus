@@ -18,7 +18,7 @@ public class DeviceChoice extends DeviceComponent
     public void setChoiceItems(String choiceItems[]) 
     {
         this.choiceItems = choiceItems;
-        if(comboB.getItemCount() > 0) 
+        if(comboB != null && comboB.getItemCount() > 0) 
             comboB.removeAllItems();
         if(choiceItems != null)
         {
@@ -29,7 +29,10 @@ public class DeviceChoice extends DeviceComponent
         }
     }
     public String [] getChoiceItems() {return choiceItems; }
-    public void setChoiceIntValues(int choiceIntValues[]) {this.choiceIntValues = choiceIntValues; }
+    public void setChoiceIntValues(int choiceIntValues[]) 
+    {
+        this.choiceIntValues = choiceIntValues; 
+    }
     public int [] getChoiceIntValues() {return choiceIntValues; }
     public void setChoiceFloatValues(float choiceFloatValues[]) {this.choiceFloatValues = choiceFloatValues; }
     public float [] getChoiceFloatValues() {return choiceFloatValues; }

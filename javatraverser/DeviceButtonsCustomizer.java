@@ -127,8 +127,12 @@ public class DeviceButtonsCustomizer extends Panel implements Customizer
                     messages[i] = (String)(messagesV.elementAt(i));
                     expressions[i] = (String)(expressionsV.elementAt(i));
                 }
+                String []oldCheckMessages = bean.getCheckMessages();
                 bean.setCheckMessages(messages);
+                listeners.firePropertyChange("checkMessages", oldCheckMessages, bean.getCheckMessages());
+                String []oldCheckExpressions = bean.getCheckExpressions();
                 bean.setCheckExpressions(expressions);
+                listeners.firePropertyChange("checkExpressions", oldCheckExpressions, bean.getCheckExpressions());
                 String method_list = methods.getText();
                 //System.out.println(method_list);
                 StringTokenizer st = new StringTokenizer(method_list, " ,;");
@@ -143,7 +147,10 @@ public class DeviceButtonsCustomizer extends Panel implements Customizer
                         //System.out.println(methods[i]);
                         i++;
                     }
+                    String []oldMethods = bean.getMethods();
                     bean.setMethods(methods);
+                    listeners.firePropertyChange("methods", oldMethods, bean.getMethods());
+
                 }
             }
         });

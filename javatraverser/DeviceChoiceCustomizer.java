@@ -15,10 +15,10 @@ public class DeviceChoiceCustomizer extends DeviceCustomizer implements Customiz
     Choice nids, mode;
     Button doneButton;
     Checkbox showState;
-    
+
     public DeviceChoiceCustomizer()
     {
-    }        
+    }
     public void setObject(Object o)
     {
         bean = (DeviceChoice)o;
@@ -33,9 +33,9 @@ public class DeviceChoiceCustomizer extends DeviceCustomizer implements Customiz
         jp1.add(showState = new Checkbox("Show state: ", bean.getShowState()));
         jp1.add(new Label("Offset nid: "));
         jp1.add(nids = new Choice());
-        
+
         String names[] = getDeviceFields();
-        
+
         if(names != null)
         for(int i = 0; i < names.length; i++)
             nids.add(names[i]);
@@ -85,32 +85,47 @@ public class DeviceChoiceCustomizer extends DeviceCustomizer implements Customiz
         jp1.add(codesLabel = new Label("Codes: "));
         jp1.add(codesArea = new TextArea(5, 4));
         if(convert && choiceIntValues != null)
+        {
             for(int i = 0; i < choiceIntValues.length; i++)
                 codesArea.append((new Integer(choiceIntValues[i])).toString() + "\n");
-        codesLabel.setEnabled(false);
-        codesArea.setEnabled(false);
-                
+        }
+        else
+        {
+            codesLabel.setEnabled(false);
+            codesArea.setEnabled(false);
+        }
+
         jp.add(jp1, "Center");
         jp1 = new Panel();
         jp1.add(new Label("Opt. identifier: "));
         jp1.add(identifier = new TextField(bean.getIdentifier(), 20));
         jp1.add(new Label("Update identifier: "));
         jp1.add(updateIdentifier = new TextField(bean.getUpdateIdentifier(), 20));
-        
-        
+
+
         jp.add(jp1, "South");
-        
+
         add(jp, "Center");
         jp = new Panel();
         jp.add(doneButton = new Button("Apply"));
         doneButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
+                String oldLabelString = bean.getLabelString();
                 bean.setLabelString(labelString.getText());
+                listeners.firePropertyChange("labelString", oldLabelString, bean.getLabelString());
+                boolean oldShowState = bean.getShowState();
                 bean.setShowState(showState.getState());
+                listeners.firePropertyChange("showState", oldShowState, bean.getShowState());
+                int oldOffsetNid = bean.getOffsetNid();
                 bean.setOffsetNid(nids.getSelectedIndex() + 1);
+                listeners.firePropertyChange("offsetNid", oldOffsetNid, bean.getOffsetNid());
                 int curr_idx = mode.getSelectedIndex();
-                switch(curr_idx) 
+                boolean oldConvert = bean.getConvert();
+                String[] oldChoiceItems = bean.getChoiceItems();
+                float [] oldChoiceFloatValues = bean.getChoiceFloatValues();
+                int[] oldChoiceIntValues = bean.getChoiceIntValues();
+                switch(curr_idx)
                 {
                     case 0: //String
                         bean.setConvert(false);
@@ -130,23 +145,28 @@ public class DeviceChoiceCustomizer extends DeviceCustomizer implements Customiz
                         bean.setChoiceIntValues(null);
                         bean.setChoiceFloatValues(convertFloat(itemsArea.getText()));
                         break;
-                    case 3: //Code    
+                    case 3: //Code
                         bean.setConvert(true);
                         bean.setChoiceItems(convertText(itemsArea.getText()));
-                        bean.setChoiceIntValues(null);
                         bean.setChoiceFloatValues(null);
                         bean.setChoiceIntValues(convertInt(codesArea.getText()));
                         break;
                 }
-                
+                listeners.firePropertyChange("convert", oldConvert, bean.getConvert());
+                listeners.firePropertyChange("choiceItems", oldChoiceItems, bean.getChoiceItems());
+                listeners.firePropertyChange("choiceFloatValues", oldChoiceFloatValues, bean.getChoiceFloatValues());
+                listeners.firePropertyChange("choiceIntValues", oldChoiceIntValues, bean.getChoiceIntValues());
+                String oldIdentifier = bean.getIdentifier();
                 bean.setIdentifier(identifier.getText());
+                listeners.firePropertyChange("identifier", oldIdentifier, bean.getIdentifier());
+                String oldUpdateIdentifier = bean.getUpdateIdentifier();
                 bean.setUpdateIdentifier(updateIdentifier.getText());
-                listeners.firePropertyChange(null, null, null);
+                listeners.firePropertyChange("updateIdentifier", oldUpdateIdentifier, bean.getUpdateIdentifier());
             }
         });
         add(jp,"South");
     }
-    
+
     protected String [] convertText(String inText)
     {
         int i = 0;
@@ -156,7 +176,7 @@ public class DeviceChoiceCustomizer extends DeviceCustomizer implements Customiz
             items[i++] = st.nextToken();
         return items;
     }
-    
+
     protected int [] convertInt(String inText)
     {
         String [] items = convertText(inText);
@@ -165,7 +185,7 @@ public class DeviceChoiceCustomizer extends DeviceCustomizer implements Customiz
             out[i] = (new Integer(items[i])).intValue();
         return out;
     }
-    
+
     protected float [] convertFloat(String inText)
     {
         String [] items = convertText(inText);
@@ -174,17 +194,17 @@ public class DeviceChoiceCustomizer extends DeviceCustomizer implements Customiz
             out[i] = (new Float(items[i])).floatValue();
         return out;
     }
-    
-    
-    
+
+
+
     public void addPropertyChangeListener(PropertyChangeListener l)
     {
         listeners.addPropertyChangeListener(l);
     }
-    
+
     public void removePropertyChangeListener(PropertyChangeListener l)
     {
         listeners.removePropertyChangeListener(l);
     }
   }
-        
+

@@ -80,7 +80,6 @@ public class TRCHSetup extends DeviceSetup
 			deviceChoice3.setChoiceItems(tempString);
 		}
 		deviceChoice3.setLabelString("Num. Channels:");
-		deviceChoice3.setChoiceIntValues(new int[] {(int)3,(int)6});
 		getContentPane().add(deviceChoice3);
 		deviceChoice3.setBounds(0,192,156,40);
 		deviceChoice4.setOffsetNid(4);
@@ -91,7 +90,6 @@ public class TRCHSetup extends DeviceSetup
 			deviceChoice4.setChoiceItems(tempString);
 		}
 		deviceChoice4.setLabelString("Chan.Offset:");
-		deviceChoice4.setChoiceIntValues(new int[] {(int)0,(int)1});
 		getContentPane().add(deviceChoice4);
 		deviceChoice4.setBounds(156,192,122,40);
 		deviceChoice5.setOffsetNid(9);
@@ -121,7 +119,7 @@ public class TRCHSetup extends DeviceSetup
 		JScrollPane1.setVisible(false);
 		JPanel1.setLayout(new GridLayout(6,1,0,0));
 		JScrollPane1.getViewport().add(JPanel1);
-		JPanel1.setBounds(0,0,498,246);
+		JPanel1.setBounds(0,0,493,186);
 		deviceChannel1.setInSameLine(true);
 		deviceChannel1.setOffsetNid(11);
 		deviceChannel1.setLabelString("Ch1:");
@@ -212,7 +210,7 @@ public class TRCHSetup extends DeviceSetup
 		JScrollPane2.setVisible(false);
 		JPanel2.setLayout(new GridLayout(6,1,0,0));
 		JScrollPane2.getViewport().add(JPanel2);
-		JPanel2.setBounds(0,0,498,246);
+		JPanel2.setBounds(0,0,493,186);
 		deviceChannel7.setInSameLine(true);
 		deviceChannel7.setOffsetNid(11);
 		deviceChannel7.setLabelString("Ch1:");
