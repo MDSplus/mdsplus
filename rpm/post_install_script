@@ -4,6 +4,7 @@ then
   MDSPLUS_DIR=$RPM_INSTALL_PREFIX/mdsplus
 else
   if [ -r /etc/.mdsplus_dir]
+  then
     MDSPLUS_DIR=`cat /etc/.mdsplus_dir`
   else
     MDSPLUS_DIR=/usr/local/mdsplus
