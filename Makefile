@@ -14,7 +14,8 @@ PARTS = mdsshr \
 	tcl \
 	traverser \
 	actions \
-	mdslib
+	mdslib \
+	d3dshr
 
 all :
 	- cdir=`pwd`; \
