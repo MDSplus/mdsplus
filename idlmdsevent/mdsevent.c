@@ -29,7 +29,6 @@ EventStruct *MDSEVENT(int *base_id, int *stub_id, struct dsc$descriptor *name)
 Invoked from MDSEVENT.PRO
 
 ------------------------------------------------------------------------------*/
-#include <windows.h>
 #include <ipdesc.h>
 
 typedef struct _event_struct { int stub_id;
@@ -40,17 +39,26 @@ typedef struct _event_struct { int stub_id;
                                char value[12];
                              } EventStruct;
 
+#ifdef WIN32
+#include <windows.h>
 extern void IDL_WidgetStubLock(int lock);
 extern char *IDL_WidgetStubLookup(int id);
 extern void IDL_WidgetIssueStubEvent(char *stub_rec, EventStruct *e);
 extern void IDL_WidgetGetStubIds(char *stub_rec, HWND *wid1, HWND *wid2);
+#else
+#include <X11/Intrinsic.h>
+#include <stdio.h>
+extern XtInputCallbackProc MdsDispatchEvent();
+static XtInputId XTINPUTID=0;
+#endif
 
 static void EventAst(EventStruct *e);
+#include <export.h>
 
 int IDLMdsEventCan(int argc, void * *argv)
 {
 	SOCKET sock = (SOCKET)argv[0];
-	int    eventid = (int)argv[1];
+	unsigned long eventid = (unsigned long)argv[1];
 	return MdsEventCan(sock, (void *)eventid);
 }
 
@@ -70,10 +78,14 @@ EventStruct *IDLMdsEvent(int argc, void * *argv)
         && (stub_rec = IDL_WidgetStubLookup(*stub_id)))
     {
 //	  IDL_WidgetSetStubIds(stub_rec, parent_rec, parent_rec);  
+      if (!XTINPUTID) {
+        Widget w1, w2;
+        IDL_WidgetGetStubIds(parent_rec, (unsigned long *)&w1, (unsigned long *)&w2);
+        XTINPUTID = XtAppAddInput(XtWidgetToApplicationContext(w1), sock,  (XtPointer)XtInputExceptMask, MdsDispatchEvent, sock);
+      }
       e->stub_id = *stub_id;
       e->base_id = *base_id;
-
-	  strncpy(e->name, name, sizeof(e->name));
+      strncpy(e->name, name, sizeof(e->name));
 
       IDL_WidgetStubLock(FALSE);
       return e;
@@ -90,10 +102,30 @@ static void EventAst(EventStruct *e)
   IDL_WidgetStubLock(TRUE);
   if ((stub_rec = IDL_WidgetStubLookup(e->stub_id)) && (base_rec = IDL_WidgetStubLookup(e->base_id)))
   {
+#ifdef WIN32
 	HWND wid1, wid2;
 	IDL_WidgetGetStubIds(stub_rec, &wid1, &wid2);
-    IDL_WidgetIssueStubEvent(stub_rec, e);
+#endif
+        IDL_WidgetIssueStubEvent(stub_rec, (IDL_LONG)e);
+#ifdef WIN32
 	PostMessage(wid1, WM_MOUSEMOVE, (WPARAM)NULL, (LPARAM)NULL);
+#else
+  {
+    Widget top;
+    Widget w;
+    IDL_WidgetGetStubIds(base_rec, (unsigned long *)&top, (unsigned long *)&w);
+    if (w)
+    {
+      XClientMessageEvent event;
+      event.type = ClientMessage;
+      event.display = XtDisplay(top);
+      event.window = XtWindow(top);
+      event.format = 8;
+      XSendEvent(XtDisplay(top),XtWindow(top),TRUE,0,(XEvent *)&event);
+      XFlush(XtDisplay(top));
+    }
+  }
+#endif
   }
 
   IDL_WidgetStubLock(FALSE);
