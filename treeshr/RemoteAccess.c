@@ -390,7 +390,10 @@ char *AbsPathRemote(PINO_DATABASE *dblist, char *inpath)
   char *retans = 0;
   int status;
   char *tag = 0;
-  sprintf(exp,"TreeAbsPath(\"%s\")",inpath);
+  if (LeadingBackslash(inpath))
+    sprintf(exp,"TreeAbsPath(\"\\%s\")",inpath);
+  else
+    sprintf(exp,"TreeAbsPath(\"%s\")",inpath);
   status = MdsValue0(dblist->tree_info->channel,exp,&ans);
   free(exp);
   if (ans.ptr)
