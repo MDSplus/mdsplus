@@ -346,7 +346,7 @@ static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id)
   EventUpdate(client_data, source, id);
 }
 
-void SetupEventInput(XtAppContext app_context)
+void SetupEventInput(XtAppContext app_context, Widget w)
 {
   sys$clref(EventEfn);
   XtAppAddInput(app_context, EventEfn, 0, DoEventUpdate, 0);
@@ -566,26 +566,34 @@ void CloseDataSources()
   while (TreeClose(NULL,0) & 1);
 }  
 
+static XtAppContext this_app_context;
+static Widget this_widget;
+
 static void  EventAst(Boolean *received)
 {
+  XClientMessageEvent event;
+  *received = 1;
+  XtAppAddTimeOut(this_app_context, 1, (XtTimerCallbackProc)EventUpdate, 0);
+  event.type = ClientMessage;
+  event.display = XtDisplay(this_widget);
+  event.window = XtWindow(this_widget);
+  event.format = 8;
+  XSendEvent(XtDisplay(this_widget),XtWindow(this_widget),TRUE,0,(XEvent *)&event);
+  XFlush(XtDisplay(this_widget));
 }
 
 void SetupEvent(String event, Boolean *received, void **id)
 {
   if (*id)
-  {
-  }
+    MDSEventCan(*id);
   if (strlen(event))
-  {
-  }
+    MDSEventAst(event,EventAst,received,id);
 }
 
-static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id)
+void SetupEventInput(XtAppContext app_context, Widget w)
 {
-}
-
-void SetupEventInput(XtAppContext app_context)
-{
+  this_app_context = app_context;
+  this_widget = w;
 }
 
 #elif defined(_RPC)
@@ -725,7 +733,7 @@ Boolean EvaluateText(String text, String error_prefix, String *text_ret, String 
 }
 void CloseDataSources(){}  
 void SetupEvent(String event, Boolean *received, void **id){}
-void SetupEventInput(XtAppContext app_context){}
+void SetupEventInput(XtAppContext app_context, Widget w){}
 
 #elif defined(_DUMMY_)
 #include <math.h>
@@ -813,7 +821,7 @@ static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id)
 {
 }
 
-void SetupEventInput(XtAppContext app_context)
+void SetupEventInput(XtAppContext app_context, Widget w)
 {
 }
 
@@ -1052,7 +1060,7 @@ static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id)
   EventUpdate(client_data, source, id);
 }
 
-void SetupEventInput(XtAppContext app_context)
+void SetupEventInput(XtAppContext app_context, Widget w)
 {
   XtAppAddInput(app_context, ConnectEvents(), (XtPointer)XtInputExceptMask, DoEventUpdate, 0);
 }

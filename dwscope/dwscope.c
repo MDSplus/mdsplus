@@ -282,8 +282,9 @@ extern void XmdsManageChildCallback();
 extern void XmdsRegisterWidgetCallback();
 extern void XmdsUnmanageChildCallback();
 
-extern void  SetupEvent(String event, Boolean *received, void **id);
-extern void SetupEventInput(XtAppContext app_context);
+extern void  
+SetupEvent(String event, Boolean *received, void **id);
+extern void SetupEventInput(XtAppContext app_context, Widget w);
 extern Boolean ConvertSelectionToWave(Widget w, Atom result_type, unsigned int length, XtPointer header, WaveInfo *info);
 extern Boolean ConvertWaveToSelection(Widget w, String prefix, WaveInfo *wave, Atom target, Atom *type, XtPointer *header,
 				                unsigned int *length, int *format);
@@ -554,7 +555,7 @@ int       main(int argc, String *argv)
     }
   BusyWindow = CreateBusyWindow(PlotsWidget);
   XtAddEventHandler(PlotsWidget, ButtonPressMask | ButtonReleaseMask, False, (XtEventHandler)Setup, 0);
-  SetupEventInput(AppContext);
+  SetupEventInput(AppContext,TopWidget);
   XtVaSetValues(TopWidget, XtNiconPixmap, 
     XCreatePixmapFromBitmapData(XtDisplay(TopWidget), XtWindow(TopWidget), (char *)dwscope_icon_bits, dwscope_icon_width, 
       dwscope_icon_height, BlackPixelOfScreen(XtScreen(TopWidget)), WhitePixelOfScreen(XtScreen(TopWidget)), 1), NULL);
