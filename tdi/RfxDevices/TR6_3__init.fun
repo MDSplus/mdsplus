@@ -60,14 +60,18 @@ public fun TR6_3__init(as_is _nid, optional _method)
 		_trig=if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), (DevLogErr(_nid, "Cannot resolve trigger"); abort();));
 			
 /* Clock stuff  */
+
     DevNodeCvt(_nid, _N_CLOCK_MODE, ['INTERNAL', 'EXTERNAL'], [1,0], _int_clock = 0);
     if(_int_clock)
     {
          DevNodeCvt(_nid, _N_FREQUENCY, [3E6,2E6,1E6,1E5],[0,1,2,3], _clk_code = 0);
 		_control_w2 = _control_w2 | _clk_code;
          _freq = data(DevNodeRef(_nid, _N_FREQUENCY));
-         _clock_val = make_range(*,*,1./ _freq);
+ 
+
+        _clock_val = make_range(*,*,1./ _freq);
     	 DevPut(_nid, _N_CLOCK_SOURCE, _clock_val);
+	_clock_ok = 1;
     }
     else
     {
@@ -78,7 +82,6 @@ public fun TR6_3__init(as_is _nid, optional _method)
    }
    if(!_clock_ok)
    	abort();
-write(*,'PIMBA');
     DevNodeCvt(_nid, _N_USE_TIME, ['TRUE', 'FALSE'], [1,0], _time_cvt=0);
     _pts = 0;
 	_pre_samples = 0;
@@ -115,7 +118,6 @@ write(*,'PIMBA');
 			if(_curr_pts > _pts) _pts = long(_curr_pts);
         }
     }
-write(*,'PIMBA1');
 
 	/* If BURST mode we need to define the memory portion used for each segment */
 	if(_burst) 

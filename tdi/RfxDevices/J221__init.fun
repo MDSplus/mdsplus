@@ -16,7 +16,6 @@ public fun J221__init(as_is _nid, optional _method)
 
 	private _INVALID = 1E20;
 
-write(*, 'J221');
     _name = if_error(data(DevNodeRef(_nid, _N_NAME)), "");
 	if(_name == "")
 	{
@@ -100,9 +99,9 @@ write(*, 'J221');
 				{
 					_delta_samples = long(_delta[_idx]/_period + 0.5);
 					if(_idx == 0)
-						_curr_repetition = _repetition[_idx];
+					    _curr_repetition = _repetition[_idx] - 1;
 					else
-						_curr_repetition = _repetition[_idx] + 1;
+					    _curr_repetition = _repetition[_idx] + 1;
 
 					for(_i = 0; _i < _curr_repetition; _i++)
 					{
@@ -209,8 +208,11 @@ write(*, 'J221');
 	}
 
 
-write(*, 'SET POINTS: ', _set_points);
+/*write(*, 'SET POINTS: ', _set_points);
 write(*, 'OUTPUTS: ', _output);
+*/
+    _set_points = [_set_points, 16777215L];         
+    _output = [_output, 0W];
 
 /* Reset */
 	_w = 0;
@@ -227,18 +229,21 @@ write(*, 'OUTPUTS: ', _output);
 
 /* Set MAR to first sample */
 	_w = 0;
-    DevCamChk(_name, CamPiow(_name, 2, 16, _w, 16),1,1); 
+    DevCamChk(_name, CamPiow(_name, 0, 9, _w, 16),1,1); 
 
 /* Write set points */
-	DevCamChk(_name, CamQstopw(_name, 1, 16, size(_set_point), _set_point, 24), 1, *);
+	DevCamChk(_name, CamQstopw(_name, 1, 16, size(_set_points), _set_points, 24), 1, *);
 	
 /* Set MAR to first sample */
 	_w = 0;
-    DevCamChk(_name, CamPiow(_name, 2, 16, _w, 16),1,1); 
+    DevCamChk(_name, CamPiow(_name, 0, 9, _w, 16),1,1); 
 
 /* Write output */
 	DevCamChk(_name, CamQstopw(_name, 0, 16, size(_output), _output, 16), 1, *);
 	
+/* Set MAR to first sample */
+	_w = 0;
+    DevCamChk(_name, CamPiow(_name, 0, 9, _w, 16),1,1); 
 
 /* Enable External start */
 	_w = 0;
