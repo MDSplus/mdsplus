@@ -76,7 +76,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define BITSY 6			/*number of bits in y 0-32*/
 #define MASK(bits)  ((unsigned int)0xffffffff >> (32 - bits))
 #define YFIELD(y) ((unsigned int)(y) & MASK(BITSY))
-#define XFIELD(x) ((unsigned int)(x) & MASK(BITSX) << BITSY)
+#define XFIELD(x) (((unsigned int)(x) & MASK(BITSX)) << BITSY)
 #define X_AND_Y(x,y) (XFIELD(x) | YFIELD(y))
 #define X_OF_INT(val) (((unsigned int)(val) >> BITSY) & MASK(BITSX))
 #define Y_OF_INT(val) ((unsigned int)(val) & MASK(BITSY))
@@ -305,6 +305,9 @@ Do this in runs.
   ******************************/
     if (*bit_ptr + xe * ye + xn * yn > limit)
       return LibSTRTRU;
+    printf("MASK(BITSY)=%d/%x,YFIELD(yn)=%d/%x/nMASK(BITSX)=%d/%x,XFIELD(xn-1)=%d/%x/nxn-1=%d/%x,yn=%d/%x,X_AND_Y(xn-1,yn)=%d/%x\n",
+    MASK(BITSY),MASK(BITSY),YFIELD(yn),YFIELD(yn),MASK(BITSX),MASK(BITSX),XFIELD(xn-1),XFIELD(xn-1),xn-1,xn-1,yn,yn,X_AND_Y(xn-1,yn),
+    X_AND_Y(xn-1,yn));
     header.n = X_AND_Y(xn - 1,yn);
     header.e = X_AND_Y(xe,ye - 1);
     MdsPk((char *) &FIELDSY, &FIELDSX, (int *) ppack, (int *) &header, (int *) bit_ptr);
