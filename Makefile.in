@@ -47,6 +47,7 @@ PARTS = \
 	@MDSSQL@ \
         @IDLSQL@ \
 	@IDLMDSEVENT@ \
+        @IDLMDSWIDGETS@ \
 	@MDSVME@ \
 	@HDF5_APS@
 
