@@ -36,10 +36,12 @@ make install
 rm -rf $RPM_BUILD_ROOT
 
 %post 
-/usr/local/mdsplus/rpm/post_install_script
+$RPM_INSTALL_PREFIX/mdsplus/rpm/post_install_script
 
 %postun
-/usr/local/mdsplus_post_uninstall_script
+
+MDSPLUS_DIR=`cat /etc/.mdsplus_dir`
+$MDSPLUS_DIR/mdsplus/local/mdsplus_post_uninstall_script
 
 %files
 %defattr(-,root,root)
@@ -57,7 +59,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/local/mdsplus/tdi
 /usr/local/mdsplus/trees
 /usr/local/mdsplus/uid
-%dir /usr/local/mdsplus/local
+%dir /usr/local/mdsplus/local/tdi
 
 %changelog
 * Wed Aug 29 2000 Basil P. DUVAL <basil.duval@epfl.ch>
