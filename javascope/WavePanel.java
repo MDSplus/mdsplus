@@ -123,7 +123,7 @@ class WavePanel extends Panel implements  Printable, MouseMotionListener, MouseL
 
      setup.num_waves     = new_num_waves;
      setup.waves         = new_waves;
-     System.gc();
+//     System.gc();
      validate();
   }
   

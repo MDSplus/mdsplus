@@ -89,7 +89,7 @@ public synchronized void Update(String exp, int s)
 {
     error = null;
     if(exp == null || exp.length() == 0)  { experiment = null; open = true; return;}
-    if(experiment == null || !experiment.equals(exp) || s != shot)
+    if(s != shot || experiment == null || !experiment.equals(exp) )
     {
     
 //System.out.println("OPEN!");    
@@ -340,14 +340,16 @@ class Mds {
      * Constructor.
      */
     String provider;
+    String host;
+    int port;
     Socket sock;  
     DataInputStream dis;
     DataOutputStream dos; 
     public String error; 
     MRT receiveThread;
 
-    public Mds () {sock = null; dis = null; dos = null; provider = null;}
-    public Mds (String _provider) {sock = null; dis = null; dos = null; provider = _provider;}
+    public Mds () {sock = null; dis = null; dos = null; provider = null; port = 8000; host = null;}
+    public Mds (String _provider) {sock = null; dis = null; dos = null; provider = _provider; port = 8000; host = null;}
 
 class PMET extends Thread //Process Mds Event Thread
 {
@@ -471,12 +473,20 @@ class PMET extends Thread //Process Mds Event Thread
 	    if(provider == null)
 	    {
 //System.out.println("Create Socket");
-		sock = new Socket("150.178.3.193",8000);
+		    sock = new Socket("150.178.3.193",8000);
 	    }
 	    else
-		sock = new Socket(provider,8000);
+	    {
+	        int idx = 0;
+	        if((idx = provider.indexOf(":")) != -1)
+	        {
+	            host = provider.substring(0, idx);
+	            port = Integer.parseInt(provider.substring(idx+1, provider.length())); 
+		    } else
+		        host = provider;
+		    sock = new Socket(host,port);
 //System.out.println("Socket Created");		
-				
+		}		
 	    dis = new DataInputStream(new BufferedInputStream(
 		sock.getInputStream()));
 	    dos = new DataOutputStream(new BufferedOutputStream(
@@ -488,7 +498,8 @@ class PMET extends Thread //Process Mds Event Thread
 	    receiveThread = new MRT();
 	    receiveThread.start();
 	    
-	} catch(UnknownHostException e) {error="Data provider: "+ provider +" unknown"; return 0;}
+	} catch(NumberFormatException e){error="Data provider syntax error "+ provider + " (host:port)"; return 0;}
+	  catch(UnknownHostException e) {error="Data provider: "+ host + " port " + port +" unknown"; return 0;}
 	  catch(IOException e) { error = "Could not get IO for " +provider+ e; return 0;}
 
 
@@ -636,35 +647,38 @@ public synchronized void Receive(DataInputStream dis)throws IOException
     byte length_b[] = new byte[2];
     byte bytes[];
     int i1, i2;
+    
+    //System.out.println(swap);
+
     ReadBuf(msglen_b, dis);
     ReadBuf(status_b, dis);
     ReadBuf(length_b, dis);
+        
     nargs = dis.readByte();
     descr_idx = dis.readByte();
     message_id = dis.readByte();
     dtype = dis.readByte();
     client_type = dis.readByte();
-    //System.out.println("Client type = "+(new Integer(client_type)).toString());
-    ndims = dis.readByte();
     swap = ((client_type & BIG_ENDIAN_MASK) != BIG_ENDIAN_MASK);
-    //System.out.println(swap);
+    //System.out.println("Client type = "+(new Integer(client_type)).toString());
     msglen = ToInt(msglen_b);
-    //System.out.println("msglen = "+(new Integer(msglen)).toString());
     status = ToInt(status_b);
-    length = ToShort(length_b);
+    length = ToShort(length_b);                
+    ndims = dis.readByte();
     bytes = new byte[4];
     for(int i = 0; i < Descriptor.MAX_DIM; i++)
     {
         ReadBuf(bytes, dis);
         dims[i] = ToInt(bytes);
-    }   
+    }           
+    //System.out.println("msglen = "+(new Integer(msglen)).toString());
     if(msglen > 48)
     {
         body = new byte[msglen - 48];
         ReadBuf(body, dis);
     }
     else
-	body = new byte[0];
+	    body = new byte[0];
  }	
  private void Flip(byte bytes[], int size)
  {
@@ -690,6 +704,8 @@ public synchronized void Receive(DataInputStream dis)throws IOException
 	}
     }
 }
+
+
 private int ToInt(byte bytes[]) throws IOException
 {
     if (swap)

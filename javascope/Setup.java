@@ -93,13 +93,14 @@ public class Setup extends Object implements WaveSetup {
     {
         int n_error = 0;
 
+        w.error_flag = false;
 		if(w.wi != null)
 		{
-            if(w.wi.num_waves == 0)
-            {
-			    if(w.wi.error != null)
-			        w.SetTitle(jScope.GetFirstLine(w.wi.error));
-                    return;
+                if(w.wi.num_waves == 0)
+                {
+			        if(w.wi.error != null)
+			            w.SetTitle(jScope.GetFirstLine(new String(w.wi.error)));
+                        return;
 		        }
 		        for(int ii = 0; ii < w.wi.num_waves; ii++)
 		        {		                
@@ -149,26 +150,6 @@ public class Setup extends Object implements WaveSetup {
     }
         
         
-    public void WaveCheckError(int k)
-    {
-	//if(waves[k].wi == null || waves[k].wi.shots == null || waves[k].wi.shots[0] == jScope.UNDEF_SHOT) {
-	  if(waves[k].wi == null ) {
-		waves[k].SetTitle("Error during evaluate wave");
-//	    else
-//		waves[k].SetTitle("Undefined Shot");
-        waves[k].Erase();
-	    return;	
-	}
-	if(waves[k].wi.error != null) {
-	    String str;
-	    int idx = waves[k].wi.error.indexOf("\n");
-	    if(idx != -1)
-		str = waves[k].wi.error.substring(0, idx);
-	    else
-		str = waves[k].wi.error;
-	    waves[k].SetTitle(str);
-	}
-    }
 
     
     
@@ -274,6 +255,7 @@ public class Setup extends Object implements WaveSetup {
    {
 	WaveInterface wi = wave.wi;
 	
+	wave.error_flag = false;
 	if(wi == null)
 	    return "Undefine signal to evaluate";
 	    
@@ -387,9 +369,8 @@ public class Setup extends Object implements WaveSetup {
 	    main_scope.updateShotWI(((MultiWaveform)w).wi);
 	    if(((MultiWaveform)w).wi != null)
 	        ((MultiWaveform)w).wi.modified = true; 
-	    UpdateWave((MultiWaveform)w);	    
-	    //WaveCheckError(GetWaveIndex(w));
 	    SetErrorTitle(((MultiWaveform)w));
+	    UpdateWave((MultiWaveform)w);	    
 	    main_scope.SetStatusLabel("Wave row " + p.x + " column "+ p.y + " refreshed");	    
 	    w.SetMode(main_scope.wave_mode);
     }    

@@ -27,8 +27,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
    static final int[] markerStepList = new int[]{1, 5, 10, 20, 50, 100};
 	                                              
 	                                              
-  /** Default server ip address */
-  static final String DEFAULT_SERVER = "150.178.3.80";
+  /** Default server */
+  static final String DEFAULT_SERVER = "Demo server";
   /**Main menu bar*/
   private MenuBar       mb;
   /**Menus on menu bar */
@@ -80,7 +80,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   static  boolean	not_sup_local = false;
   private int		main_shots[];
   private String    main_shot_str, curr_main_shot_str;
-  private Thread	updateThread;
+  private UpdateWaves	updateThread;
   private Thread	printThread;
   private boolean	abort = false, isUpdateAllWaves = false;
   private Frame		main_scope;
@@ -90,7 +90,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   String            url_path;
   String            user_name;
   URLDialog         url_diag;
-
+  ResourceBundle    rb = null;
+  String            default_server=DEFAULT_SERVER;
 
   class PrintThread extends Thread {
     public void run()
@@ -114,14 +115,17 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   
     boolean and_print;
   
-  
-    UpdateWaves(boolean and_print)
-    {
-        this.and_print = and_print;
-    }
+      
     
-    public void run()
+    synchronized public void run()
     {
+        
+      while(true)
+      {
+        
+        try {
+            wait();
+        } catch (InterruptedException e){}
         
 	    isUpdateAllWaves = true;
 	    SetStatusLabel("");
@@ -133,83 +137,79 @@ public class jScope extends Frame implements ActionListener, ItemListener,
         {
 	    updateMainShot();
 	    
-	    //    Update WaveInterface with new shot
+	    //    Update WaveInterface with new shot and default values
 	    
 	    for(int i = 0, k = 0; i < 4 && !abort; i++)
 	    {
 		    for(int j = 0; j < setup.rows[i]; j++, k++) 
 		    {
-		        
 		        setup_default.updateDefaultWI(setup.waves[k].wi);
 		        updateShotWI(setup.waves[k].wi);
 		    }
 	    }
 	    
-		//SetAllEvents();
 	    
-	    //    Initialize wave evaluation
-	    
+	    //    Initialize wave evaluation	    
 	    for(int i = 0, k = 0; i < 4 && !abort; i++)
 	    {
-		for(int j = 0; j < setup.rows[i] && !abort; j++, k++) 
-		{
-		    if(setup.waves[k].wi != null)
+		    for(int j = 0; j < setup.rows[i] && !abort; j++, k++) 
 		    {
-			setup.waves[k].wi.StartEvaluate();
-			SetStatusLabel("Start Evaluate column " + (i + 1) + " row " + (j + 1));
-			if(setup.waves[k].wi.error != null)	    
-			    setup.waves[k].SetTitle(GetFirstLine(setup.waves[k].wi.error));
+		        if(setup.waves[k].wi != null)
+		        {
+			        setup.waves[k].wi.StartEvaluate();
+			        SetStatusLabel("Start Evaluate column " + (i + 1) + " row " + (j + 1));
+		        }
 		    }
-		}
 	    }
 	    
 	    //     Evaluate main shot
+
 	    
-	    if(main_shots != null)
+	    if(main_shots != null && main_shots[0] != UNDEF_SHOT)
 	    {
-		for(int l = 0; l < main_shots.length && !abort; l++)
-		{
-		    for(int i = 0, k = 0; i < 4 && !abort; i++)
+		    for(int l = 0; l < main_shots.length && !abort; l++)
 		    {
-			for(int j = 0; j < setup.rows[i] && !abort; j++, k++)
-			{
-			    if(setup.waves[k].wi != null && setup.waves[k].wi.num_waves != 0 && setup.waves[k].wi.UseDefaultShot())
-			    {
-				//if(setup.waves[k].wi.error == null)
-				{
-				    setup.waves[k].wi.EvaluateShot(main_shots[l]);			
-				    SetStatusLabel("Update signal column " + (i + 1) + " row " + (j + 1) + " main shot " + 
+		        for(int i = 0, k = 0; i < 4 && !abort; i++)
+		        {
+			        for(int j = 0; j < setup.rows[i] && !abort; j++, k++)
+			        {
+			            if(setup.waves[k].wi != null && setup.waves[k].wi.num_waves != 0 && setup.waves[k].wi.UseDefaultShot())
+			            {
+				            setup.waves[k].wi.EvaluateShot(main_shots[l]);			
+				            SetStatusLabel("Update signal column " + (i + 1) + " row " + (j + 1) + " main shot " + 
 											main_shots[l]);										    
-				    if(setup.waves[k].wi.error != null)	    
-					    setup.waves[k].SetTitle(GetFirstLine(setup.waves[k].wi.error));
-				}
-			    }
-			} 
+				        }
+			        }
+			    } 
 		    }
-		}
 	    }
 	    
-	    // Evaluate eventual other shot	
+	    // Evaluate evaluate other shot	
     
 	    for(int i = 0, k = 0; i < 4 && !abort; i++)
 	    {
-		for(int j = 0; j < setup.rows[i] && !abort; j++, k++) 
-		{
-		    //if(setup.waves[k].wi != null && setup.waves[k].wi.error == null)
-            if(setup.waves[k].wi != null && setup.waves[k].wi.num_waves != 0)
-            {
-			    setup.waves[k].wi.EvaluateOthers();
-			    SetStatusLabel("Evaluate Other column " + (i + 1) + " row " + (j + 1));
-			    setup.waves[k].Update(setup.waves[k].wi);
-			    if(setup.waves[k].wi.error != null)	    
-			        setup.waves[k].SetTitle(GetFirstLine(setup.waves[k].wi.error));
+		    for(int j = 0; j < setup.rows[i] && !abort; j++, k++) 
+		    {
+                if(setup.waves[k].wi != null && setup.waves[k].wi.num_waves != 0)
+                {
+			        setup.waves[k].wi.EvaluateOthers();
+			        SetStatusLabel("Evaluate Other column " + (i + 1) + " row " + (j + 1));
+		        }		    
 		    }
-		}
-	    }
-	    
- 	    apply_b.setLabel("Apply");
+	    }	    
  	    
  	    setup.SetAllErrorTitle();
+
+	    for(int i = 0, k = 0; i < 4 && !abort; i++)
+	    {
+		    for(int j = 0; j < setup.rows[i] && !abort; j++, k++) 
+		    {
+		        if(setup.waves[k].wi != null)
+			        setup.waves[k].Update(setup.waves[k].wi);
+		    }
+        }
+ 
+  	    apply_b.setLabel("Apply");
  	    
 	    setup.SetAllWaveformPointer(wave_mode);
 	    if(!abort)
@@ -220,13 +220,11 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     	jScope.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	    isUpdateAllWaves = false;
 	    
-	    
 	    if(and_print && !abort)
 	    {
 	        jScope.this.printAllWaves();
 	    }
-	    
-	    
+	    	    
 
 	    } catch(Throwable e ) {
 	        isUpdateAllWaves = false;      
@@ -235,7 +233,15 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 		    SetStatusLabel("Unrecoverable error during apply");	        
     	    jScope.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	    }    
-     }     
+      }
+    }     
+     
+    synchronized public void StartUpdate(boolean and_print)
+    {
+          this.and_print = and_print;
+          notify();
+    }
+    
   }
    
 	    
@@ -433,12 +439,22 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     setSize(750, 550);
     setBounds(spos_x, spos_y, 750, 550);
 
+    if(!is_applet)
+    {
+        InitProperties();
+        GetPropertiesValue();
+    }
+
     font_dialog   = new FontSelection(this, "Waveform Font Selection");
     error_msg     = new ErrorMessage(this);
     warning_msg   = new ErrorMessage(this, ErrorMessage.WARNING_TYPE);
-    color_dialog  = new ColorDialog(this, "Color Configuration Dialog");
     setup_default = new SetupDefaults(this, "Default Setup");
+    color_dialog  = new ColorDialog(this, "Color Configuration Dialog");
     pub_var_diag  = new PubVarDialog(this);
+
+    updateThread = new UpdateWaves();
+    updateThread.start();
+    
 
     if(System.getProperty("java.version").indexOf("1.2") != -1 && !is_applet)
     {
@@ -657,7 +673,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     
     panel2.setLayout(new BorderLayout());
     panel2.add(BorderLayout.CENTER, info_text = new TextField(" Status : ", 65));    
-    panel2.add(BorderLayout.EAST, net_text  = new TextField(" Data server :", 25));
+    panel2.add(BorderLayout.EAST, net_text  = new TextField(" Data server :", 30));
     info_text.setEditable(false);
     net_text.setEditable(false);
      
@@ -679,13 +695,43 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   public void setAsDemoScope()
   {
         setup.data_server_address = "Demo server";
-        setDataServerLabel();
-        db = new DemoProvider();
-        fast_network_i.setEnabled(false);
+        this.setDataServer(setup.data_server_address);
         this.setTitle("jScope Demo Applet");
-        setup.ChangeDataProvider();
   }
   
+  public void InitProperties()
+  {
+    try
+    {
+        /*
+        String prop_f;
+        File f = new File("jScope_p.properties");
+        if(f.exists())
+            prop_f = "jScope";
+        else {
+            prop_f = "jScope";
+            System.out.println(prop_f);
+        }
+        */
+        rb = ResourceBundle.getBundle("jScope");
+    } 
+    catch( MissingResourceException e){
+        
+        System.out.println(e);
+        }
+  }
+  
+  private void GetPropertiesValue()
+  {
+    if(rb == null) return;
+    
+
+    try {
+    curr_directory = rb.getString("jScope.directory");
+    default_server = rb.getString("jScope.default_server");
+    }catch(MissingResourceException e){}
+    
+  }
   
   
   public void SetRemoveMdsEvent(MdsEventListener w)
@@ -860,18 +906,20 @@ public class jScope extends Frame implements ActionListener, ItemListener,
         server_diag = new ServerDialog((Frame)this, "Server list");  
     }
     
-    if(ip_addr != null || (is_local != null && is_local.equals("no")))
+//    if(ip_addr != null || (is_local != null && is_local.equals("no")))
+    if(ip_addr != null || is_local == null || (is_local != null && is_local.equals("no")))
     {   		               
 	    if(ip_addr == null)
 	    {
-	        setup.data_server_address = DEFAULT_SERVER;
+	        setup.data_server_address = default_server;
 	    } else {
 	        setup.data_server_address = ip_addr;
 	        server_diag.addServerIp(ip_addr);
 	    }
-        if(IsIpAddress(setup.data_server_address))
+        if(IsIpAddress(setup.data_server_address)) {
+		    fast_network_i.setEnabled(true);
 	        db = new NetworkProvider(setup.data_server_address);
-	    else
+	    } else
 	        setDataServer(setup.data_server_address);
     }
     else {
@@ -886,24 +934,26 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	        } catch (Throwable ex) {
 		        not_sup_local = true;
 		        servers_m.getItem(0).setEnabled(false); //local server sempre indice 0
-		        setup.data_server_address = DEFAULT_SERVER;
-                if(IsIpAddress(DEFAULT_SERVER))
-	                db = new NetworkProvider(DEFAULT_SERVER);
-	            else
+		        setup.data_server_address = default_server;
+                if(IsIpAddress(default_server)) {
+		            fast_network_i.setEnabled(true);
+	                db = new NetworkProvider(default_server);
+	            } else
 	                setDataServer(setup.data_server_address);
 	        }
 	    } else {
 	        if(!is_applet) 
 	            servers_m.getItem(0).setEnabled(false); //local server sempre indice 0
-	        setup.data_server_address = DEFAULT_SERVER;
-            if(IsIpAddress(DEFAULT_SERVER))
-	            db = new NetworkProvider(DEFAULT_SERVER);
-	        else
+	        setup.data_server_address = default_server;
+            if(IsIpAddress(default_server)) {
+		        fast_network_i.setEnabled(true);
+	            db = new NetworkProvider(default_server);
+	        } else
 	            setDataServer(setup.data_server_address);
 	    } 
      }
 
- //    if(IsIpAddress(DEFAULT_SERVER))
+ //    if(IsIpAddress(default_server))
      setup.ChangeDataProvider();
 
      setDataServerLabel();
@@ -1110,7 +1160,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 //    } else
         if(!equalsString(main_shot_str, curr_main_shot_str)) { 
 	        main_shots = evaluateShot(main_shot_str);
-	        if(main_shots[0] != jScope.UNDEF_SHOT)
+//	        if(main_shots[0] != jScope.UNDEF_SHOT)
 	            curr_main_shot_str = main_shot_str;
 	    }
   }
@@ -1233,9 +1283,11 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     //setScopeAllMode(wave_mode, setup_default.getGridMode(), 
     //                           setup_default.getXLines(),
     //                           setup_default.getYLines());
-    System.gc();
-    updateThread = new UpdateWaves(and_print);
-    updateThread.start();
+//    System.gc();
+//    updateThread = new UpdateWaves(and_print);
+      updateThread.StartUpdate(and_print);
+//    updateThread.notify();
+//    updateThread.start();
   }
   
   private int SplitWavesPanel()
@@ -1397,8 +1449,6 @@ public class jScope extends Frame implements ActionListener, ItemListener,
      else 
         if(new_data_server.equals("Jet data"))
         {
-		    fast_network_i.setEnabled(false);
-		    setup.fast_network_access = false;
             db = new JetDataProvider();
             ((JetDataProvider)db).InquireCredentials(this);
             if(((JetDataProvider)db).GetLoginStatus() != JetDataProvider.LOGIN_OK)
@@ -1406,37 +1456,52 @@ public class jScope extends Frame implements ActionListener, ItemListener,
                 if(old_db == null)
                     setup.data_server_address = "Not connected";
                 change = false;
-            } else
+            } else {
+		        fast_network_i.setEnabled(false);
+		        setup.fast_network_access = false;
                 change = true;
+            }
         } 
-        else 
-            if(new_data_server.equals("Ftu data"))
+        else  
+        {
+            //if(new_data_server.equals("Ftu data"))
+            if(new_data_server.indexOf("Ftu data") != -1)
             {
  		        fast_network_i.setEnabled(true);
 	            fast_network_i.setState(setup.fast_network_access);
-                db = new FtuProvider("192.107.51.30");
+	            String ip = new_data_server.substring(new_data_server.indexOf(":")+1, new_data_server.length());
+                //db = new FtuProvider("192.107.51.30");
+                db = new FtuProvider(ip);
                 change = true;
-            }
-        
-//	    
-	    
-            else {
-                if(!is_applet)
+            } 
+            else 
+            {
+                if(new_data_server.equals("Demo server"))
                 {
-	                fast_network_i.setEnabled(true);
+                    setup.fast_network_access = false;
+ 		            fast_network_i.setEnabled(false);
 	                fast_network_i.setState(setup.fast_network_access);
+                    db = new DemoProvider();
+                    change = true;
                 }
-                if(IsIpAddress(new_data_server))
+                else 
                 {
-	                db = new NetworkProvider(new_data_server);
-	                change = true;
-	            } else {
-	                error_msg.setMessage("Data server "+ new_data_server +" not defined\n");        
-                    error_msg.showMessage();
+                    if(!is_applet)
+                    {
+	                    fast_network_i.setEnabled(true);
+	                    fast_network_i.setState(setup.fast_network_access);
+                    }
+                    if(IsIpAddress(new_data_server))
+                    {
+	                    db = new NetworkProvider(new_data_server);
+	                    change = true;
+	                } else {
+	                    error_msg.setMessage("Data server "+ new_data_server +" not defined\n");        
+                        error_msg.showMessage();
+	                }
 	            }
 	        }
-	    
-	    
+	    }
 	if(change) {
         setup.data_server_address = new_data_server;
         setup.ChangeDataProvider();
@@ -1475,7 +1540,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	        String server = ((MenuItem)ob).getLabel();
 	        if(!setup.data_server_address.equals(server) )
 	        {
-	            ((MenuItem)ob).setEnabled(setDataServer(new String(server)));
+	            setDataServer(new String(server));
     	    }
         }
     }
@@ -2366,145 +2431,161 @@ class ServerDialog extends ScopePositionDialog {
     ServerDialog(Frame _dw, String title)
     {
         super(_dw, title, true);
-	dw = (jScope)_dw;
-	setResizable(false);
-	//super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
+	    dw = (jScope)_dw;
+	    setResizable(false);
+	    //super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
 
-	GridBagLayout gridbag = new GridBagLayout();
-	GridBagConstraints c = new GridBagConstraints();
-	Insets insets = new Insets(4, 4, 4, 4);
+	    GridBagLayout gridbag = new GridBagLayout();
+	    GridBagConstraints c = new GridBagConstraints();
+	    Insets insets = new Insets(4, 4, 4, 4);
 
-	setLayout(gridbag);		
-	c.insets = insets;
+	    setLayout(gridbag);		
+	    c.insets = insets;
 
-	c.anchor = GridBagConstraints.WEST;	
+	    c.anchor = GridBagConstraints.WEST;	
         c.gridwidth = GridBagConstraints.REMAINDER;
-	c.fill =  GridBagConstraints.BOTH;
-	c.gridheight = 10;
-	server_list = new List(5, false);
-	server_list.addItemListener(this);
-	server_list.addKeyListener(this);
-	gridbag.setConstraints(server_list, c);
-	add(server_list);
+	    c.fill =  GridBagConstraints.BOTH;
+	    c.gridheight = 10;
+	    server_list = new List(5, false);
+	    server_list.addItemListener(this);
+	    server_list.addKeyListener(this);
+	    gridbag.setConstraints(server_list, c);
+	    add(server_list);
 
-	c.anchor = GridBagConstraints.WEST;	
-	c.fill =  GridBagConstraints.NONE;
-	c.gridheight = 1;
-	c.gridwidth = 1;	
-	server_label = new Label("Ip Server ");
-	gridbag.setConstraints(server_label, c);
-	add(server_label);
+	    c.anchor = GridBagConstraints.WEST;	
+	    c.fill =  GridBagConstraints.NONE;
+	    c.gridheight = 1;
+	    c.gridwidth = 1;	
+	    server_label = new Label("Ip Server ");
+	    gridbag.setConstraints(server_label, c);
+	    add(server_label);
  
-    c.gridwidth = GridBagConstraints.REMAINDER;
-	c.fill =  GridBagConstraints.BOTH;
-	server_ip = new TextField(20);
-	gridbag.setConstraints(server_ip, c);
-	add(server_ip);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+	    c.fill =  GridBagConstraints.BOTH;
+	    server_ip = new TextField(20);
+	    gridbag.setConstraints(server_ip, c);
+	    add(server_ip);
 
-	Panel p = new Panel(new FlowLayout(FlowLayout.CENTER));			
-	add_b = new Button("Add");
-	add_b.addActionListener(this);
-	p.add(add_b);
+	    Panel p = new Panel(new FlowLayout(FlowLayout.CENTER));			
+	    add_b = new Button("Add");
+	    add_b.addActionListener(this);
+	    p.add(add_b);
       	
-	remove_b = new Button("Remove");
-	remove_b.addActionListener(this);
-	p.add(remove_b);
+	    remove_b = new Button("Remove");
+	    remove_b.addActionListener(this);
+	    p.add(remove_b);
 
-	cancel_b = new Button("Cancel");
-	cancel_b.addActionListener(this);
-	p.add(cancel_b);
+	    cancel_b = new Button("Cancel");
+	    cancel_b.addActionListener(this);
+	    p.add(cancel_b);
 
-    c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints(p, c);
-	add(p);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(p, c);
+	    add(p);
 	
 		
 
-	if(dw.server_ip_list == null) {
-	    addServerIp("Local");	
-	    addServerIp("Jet data");	
-	    addServerIp("Ftu data");	
-	    addServerIp(jScope.DEFAULT_SERVER);
-//	    dw.server_ip_list = getServerIpList();
-	}
-	else
-	{
-	    addServerIpList(dw.server_ip_list);
-	}	
-			
-					
+	    if(dw.server_ip_list == null) {
+	        addServerIp("Local");	
+//	        addServerIp("Jet data");	
+//	        addServerIp("Ftu data");
+	        if(!dw.is_applet)
+	            GetPropertiesValue();
+	        addServerIp(dw.default_server);
+	    }
+	    else
+	    {
+	        addServerIpList(dw.server_ip_list);
+	    }						
     }
+
+    private void GetPropertiesValue()
+    {
+       ResourceBundle rb = dw.rb;
+       String prop;
+       int i = 1;
+       
+
+       if(rb == null) return;
+       try {
+       while(true) {
+           prop = rb.getString("jScope.data_server_"+i);
+	       addServerIp(prop);
+	       i++;
+       } 
+       }catch(MissingResourceException e){}
+    }
+
 
     public void Show()
     {
-	pack();
-	setPosition(dw);
-	show();
+	    pack();
+	    setPosition(dw);
+	    show();
     }
     
     public void addServerIp(String ip)
     {
-	int i;
-	MenuItem new_ip;
+	    int i;
+	    MenuItem new_ip;
 	
-	String items[] = server_list.getItems();
-	for(i = 0 ; i < items.length; i++)
-	    if(items[i].equals(ip)) break;
-	if(i == items.length) {
-	    server_list.add(ip);
-	    new_ip = new MenuItem(ip);
-	    dw.servers_m.add(new_ip);
-	    new_ip.addActionListener(dw);
-	    dw.server_ip_list = server_list.getItems();
-	}
-	
+	    String items[] = server_list.getItems();
+	    for(i = 0 ; i < items.length; i++)
+	        if(items[i].equals(ip)) break;
+	    if(i == items.length) {
+	        server_list.add(ip);
+	        new_ip = new MenuItem(ip);
+	        dw.servers_m.add(new_ip);
+	        new_ip.addActionListener(dw);
+	        dw.server_ip_list = server_list.getItems();
+	    }
     }
     
     public void addServerIpList(String[] ip_list)
     {
-	//server_list.add("Local");
-	for(int i = 0; i < ip_list.length; i++) 
-	    addServerIp(ip_list[i]);
+	    //server_list.add("Local");
+	    for(int i = 0; i < ip_list.length; i++) 
+	        addServerIp(ip_list[i]);
 	   // server_list.add(ip_list[i]);
     }
 
     public String[] getServerIpList()
     {
-	return server_list.getItems();
+	    return server_list.getItems();
     }
 	        
     public void actionPerformed(ActionEvent event)
     { 
 
-      Object ob = event.getSource();
+        Object ob = event.getSource();
       
-	if(ob == cancel_b)
-	    setVisible(false);
+	    if(ob == cancel_b)
+	        setVisible(false);
 	    
-	if(ob == add_b)
-	{
-	    int i;
-	    MenuItem new_ip;
+	    if(ob == add_b)
+	    {
+	        int i;
+	        MenuItem new_ip;
 	    
-	    String items[] = server_list.getItems();
-	    for(i = 0 ; i < items.length; i++)
-		if(items[i].equals(server_ip.getText())) break;
-	    if(i == items.length) {
-		server_list.add(server_ip.getText());
-		new_ip = new MenuItem(server_ip.getText());
-		dw.servers_m.add(new_ip);
-		new_ip.addActionListener(dw);
+	        String items[] = server_list.getItems();
+	        for(i = 0 ; i < items.length; i++)
+		        if(items[i].equals(server_ip.getText())) break;
+	        if(i == items.length) {
+		        server_list.add(server_ip.getText());
+		        new_ip = new MenuItem(server_ip.getText());
+		        dw.servers_m.add(new_ip);
+		        new_ip.addActionListener(dw);
+	        }
 	    }
-	}
 	
-	if(ob == remove_b)
-	{
-	    int idx = server_list.getSelectedIndex();
-	    if(idx >= 0) {
-		server_list.remove(idx);
-		dw.servers_m.remove(idx);
+	    if(ob == remove_b)
+	    {
+	        int idx = server_list.getSelectedIndex();
+	        if(idx >= 0) {
+		        server_list.remove(idx);
+		        dw.servers_m.remove(idx);
+	        }
 	    }
-	}
     }
 }
 

@@ -68,7 +68,8 @@ waveforms.
 	    super.y_label = wi.ylabel;
 	    super.x_log = wi.x_log;
 	    super.y_log = wi.y_log;
-	    super.title = wi.title;
+	    if(!error_flag)
+	        super.title = wi.title;
         super.make_legend = wi.make_legend;
 	    super.legend_x = -1;
         super.legend_y = -1;

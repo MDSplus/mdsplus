@@ -2,6 +2,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.lang.*;
 import java.util.Vector;
+import java.util.ResourceBundle;
+import java.util.MissingResourceException;
 import java.io.*;
 
 
@@ -51,7 +53,10 @@ class ColorDialog extends ScopePositionDialog  {
 	    //super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
 
 	    main_scope = (jScope)dw;
-	
+	    
+	    if(!main_scope.is_applet)
+	        GetPropertiesValue();
+	    
         GridBagConstraints c = new GridBagConstraints();
         GridBagLayout gridbag = new GridBagLayout();
         setLayout(gridbag);        
@@ -80,7 +85,8 @@ class ColorDialog extends ScopePositionDialog  {
 //      gridbag.setConstraints(p0, c);
 //	    add(p0);
 
-        ColorSetItems(COLOR_NAME, COLOR_SET);
+        if(GetNumColor() == 0)
+            ColorSetItems(COLOR_NAME, COLOR_SET);
 	    setColorVector();
         GetColorsName();
 	    color = new Choice();
@@ -187,6 +193,32 @@ class ColorDialog extends ScopePositionDialog  {
 	
 	 
      }
+ 
+     
+    private void GetPropertiesValue()
+    {
+       ResourceBundle rb = main_scope.rb;
+       String prop;
+       int i = 0, len;
+       
+       if(rb == null) return;
+       try {
+        
+       prop = rb.getString("jScope.reversed");
+       if(prop != null && ( prop.equals("true") || prop.equals("false")))
+         reversed = new Boolean(prop).booleanValue();
+ 
+       while(true) {
+           prop = rb.getString("jScope.item_color_"+i);
+           String name = new String(prop.substring(0, len = prop.indexOf(",")));
+		   Color cr = StringToColor(new String(prop.substring(len + 2, prop.length())));
+		   insertItemAt(name, cr, i);
+           i++;
+       }
+       } catch(MissingResourceException e){}
+    }     
+     
+     
      
     private Vector copyColorItemsVector(Vector in)
     {
@@ -338,8 +370,8 @@ class ColorDialog extends ScopePositionDialog  {
     
     public void insertItemAt(String name, Color color, int idx)
     {
-	Item c_item = new Item(name, color);
-	color_set.insertElementAt(c_item, idx);		
+	    Item c_item = new Item(name, color);
+	    color_set.insertElementAt(c_item, idx);		
     }
     
    private Color getColor()

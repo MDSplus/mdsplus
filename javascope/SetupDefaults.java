@@ -1,5 +1,6 @@
 import java.io.*;
 import java.awt.*;
+import java.util.*;
 import java.awt.event.*;
 import java.net.*;
 import java.lang.Integer;
@@ -36,7 +37,10 @@ public class SetupDefaults extends ScopePositionDialog {
       setResizable(false);
 
             
-      main_scope = (jScope)fw; 	
+      main_scope = (jScope)fw;
+      
+      if(!main_scope.is_applet)
+        GetPropertiesValue();
   
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints c = new GridBagConstraints();
@@ -152,9 +156,15 @@ public class SetupDefaults extends ScopePositionDialog {
     panel.add(lab);
             
     grid_mode = new Choice();
+    
+    for(int i = 0; i < Grid.GRID_MODE.length; i++)
+        grid_mode.addItem(Grid.GRID_MODE[i]);
+
+/*
     grid_mode.addItem("Dotted"); 
     grid_mode.addItem("Gray"); 
     grid_mode.addItem("None");
+*/
     grid_mode.addItemListener(this);
     grid_mode.select(curr_grid_mode);	      	
     panel.add(grid_mode);
@@ -205,6 +215,49 @@ public class SetupDefaults extends ScopePositionDialog {
       cancel.addActionListener(this);
       gridbag.setConstraints(cancel, c);
       add(cancel);
+   }
+   
+   private int IsGridMode(String mode)
+   {
+        for(int i = 0; i < Grid.GRID_MODE.length ; i++)
+            if(Grid.GRID_MODE[i].equals(mode))
+                return i;
+        return -1;
+   }
+   
+   
+   private void GetPropertiesValue()
+   {
+       ResourceBundle rb = main_scope.rb;
+       String prop;
+       int val = 0;
+       
+       if(rb == null) return;
+   
+       try {
+       prop = rb.getString("jScope.reversed");
+       if(prop != null && ( prop.equals("true") || prop.equals("false")))
+         reversed = new Boolean(prop).booleanValue();
+       
+       prop = rb.getString("jScope.grid_mode");
+       if(prop != null && (val = IsGridMode(prop)) > 0)
+         curr_grid_mode =  val;
+       
+       prop = rb.getString("jScope.x_grid");
+       try
+       {
+         val = Integer.parseInt(prop);
+         x_curr_lines_grid = val > Grid.MAX_GRID ? Grid.MAX_GRID : val;
+       } catch (NumberFormatException e) {}
+       
+       prop = rb.getString("jScope.y_grid");
+       try
+       {
+         val = Integer.parseInt(prop);
+         y_curr_lines_grid = val > Grid.MAX_GRID ? Grid.MAX_GRID : val;
+       } catch (NumberFormatException e) {}
+       
+       } catch(MissingResourceException e){}
    }
    
    public int getGridMode()
@@ -291,14 +344,14 @@ public class SetupDefaults extends ScopePositionDialog {
 	  curr_grid_mode    = grid_mode.getSelectedIndex();
 	  reversed          = reversed_b.getState();
 	  x_curr_lines_grid = new Integer(x_grid_lines.getText().trim()).intValue();
-	  if(x_curr_lines_grid > 10) {
-	    x_curr_lines_grid = 10;
-	    x_grid_lines.setText("10");
+	  if(x_curr_lines_grid > Grid.MAX_GRID) {
+	    x_curr_lines_grid = Grid.MAX_GRID;
+	    x_grid_lines.setText(""+Grid.MAX_GRID);
 	  }
 	  y_curr_lines_grid = new Integer(y_grid_lines.getText().trim()).intValue();
-	  if(y_curr_lines_grid > 10) {
-	    y_curr_lines_grid = 10;
-	    y_grid_lines.setText("10");
+	  if(y_curr_lines_grid > Grid.MAX_GRID) {
+	    y_curr_lines_grid = Grid.MAX_GRID;
+	    y_grid_lines.setText(""+Grid.MAX_GRID);
 	  }
     } 
     
@@ -502,7 +555,22 @@ public class SetupDefaults extends ScopePositionDialog {
 	}
 	return error;
    }
-    
+   
+   public boolean isChanged()
+   { 
+    if(!main_scope.equalsString(shot.getText(),   shot_str))    return true;	
+    if(!main_scope.equalsString(experiment.getText(), experiment_str))    return true;	
+    if(!main_scope.equalsString(upd_event.getText(), upd_event_str))    return true;	
+    if(!main_scope.equalsString(def_node.getText(), def_node_str))    return true;	
+    if(!main_scope.equalsString(title.getText(),   title_str))    return true;	
+	if(!main_scope.equalsString(x_max.getText(),   xmax))     return true;
+	if(!main_scope.equalsString(x_min.getText(),   xmin))     return true;
+	if(!main_scope.equalsString(x_label.getText(), xlabel))     return true;
+	if(!main_scope.equalsString(y_max.getText(),   ymax))     return true;
+	if(!main_scope.equalsString(y_min.getText(),   ymin))     return true;
+	if(!main_scope.equalsString(y_label.getText(), ylabel))     return true;
+    return false;
+   }
 
     
    public void actionPerformed(ActionEvent e)
@@ -517,19 +585,23 @@ public class SetupDefaults extends ScopePositionDialog {
 
       if(ob == apply || ob == ok)
       {
-	    main_scope.RemoveAllEvents();
-	    saveDefaultConfiguration();
- 	    main_scope.SetAllEvents();
 	    if(ob == ok)
 	        setVisible(false);
-	    shots = main_scope.evaluateShot(shot_str);
 	    main_scope.color_dialog.setReversed(getReversed());
+	    if(isChanged())
+	    {
+	        main_scope.RemoveAllEvents();
+	        saveDefaultConfiguration();
+ 	        main_scope.SetAllEvents();
+	        shots = main_scope.evaluateShot(shot_str);
+	        main_scope.UpdateAllWaves(false);
+	    } else
+	        saveDefaultConfiguration();
         main_scope.setScopeAllMode(main_scope.wave_mode, getGridMode(), 
                                                          getXLines(),
                                                          getYLines(), 
                                                          getReversed());
 	    
-	    main_scope.UpdateAllWaves(false);
      }
       
       if(ob == reset)
