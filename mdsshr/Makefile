@@ -12,7 +12,9 @@ OBJECTS = \
 	MdsXdRoutines.o \
 	MdsPk.o
 
-../shlib/libMdsShr.$(SHARE_TYPE) : $(OBJECTS) ../shlib
+mdsshr : ../shlib ../shlib/libMdsShr.$(SHARE_TYPE)
+
+../shlib/libMdsShr.$(SHARE_TYPE) : $(OBJECTS) 
 	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc
 
 ../shlib :

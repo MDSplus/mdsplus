@@ -78,7 +78,9 @@ TdiXxx.o \
 TdiYaccSubs.o \
 TdiYacc.o
 
-../shlib/libTdiShr.$(SHARE_TYPE) : $(OBJECTS) ../shlib
+tdishr : ../shlib ../shlib/libTdiShr.$(SHARE_TYPE)
+
+../shlib/libTdiShr.$(SHARE_TYPE) : $(OBJECTS) 
 	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc -lm -L../shlib -lMdsShr -lTreeShr
 
 ../shlib :

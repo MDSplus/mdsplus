@@ -31,7 +31,8 @@ XmdsXdBoxDialog.o \
 XmdsXdBoxDialogButton.o \
 XmdsXdBoxOnOffButton.o
 
-all :	../shlib/libXmdsShr.$(SHARE_TYPE) \
+xmdsshr : ../shlib \
+	../shlib/libXmdsShr.$(SHARE_TYPE) \
 	../shlib/xmdsuil.wmd \
         ../uid \
 	../uid/xmds_usage_icons.uid \
@@ -41,6 +42,9 @@ all :	../shlib/libXmdsShr.$(SHARE_TYPE) \
 
 ../uid :
 	mkdir ../uid
+
+../shlib :
+	mkdir ../shlib
 
 ../uid/xmds_usage_icons.uid : xmds_usage_icons.uil
 	uil -o $@ xmds_usage_icons.uil

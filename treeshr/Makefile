@@ -17,7 +17,9 @@ TreeSetDefault.o \
 TreeSetNci.o \
 RemoteAccess.o
 
-../shlib/libTreeShr.$(SHARE_TYPE) : $(OBJECTS) ../shlib
+treeshr : ../shlib ../shlib/libTreeShr.$(SHARE_TYPE)
+
+../shlib/libTreeShr.$(SHARE_TYPE) : $(OBJECTS) 
 	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(MISALIGN_LD_FLAGS) $(OBJECTS) -lc -L../shlib -lMdsShr
 
 ../shlib :
