@@ -286,12 +286,13 @@ extern void       _TreeDeleteNodeExecute(void *dbid)
     }
     if (firstempty)
     {
+      int tmp;
       link_it(node->parent, firstempty, node);
+      tmp = -swapint((char *)&node->parent);
+      firstempty->child = swapint((char *)&tmp);
     }
     else
       node->parent = 0;
-    if (firstempty)
-      firstempty->child = -node->parent;
     prevnode = node;
   }
   dblist->modified = 1;
