@@ -7,9 +7,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.*;
 
-public class ACQD265Setup extends DeviceSetup
+public class ACQD240Setup extends DeviceSetup
 {
-	public ACQD265Setup(Frame parent)
+	public ACQD240Setup(Frame parent)
 	{
  	  super(parent);
           initComponents();
@@ -23,8 +23,8 @@ public class ACQD265Setup extends DeviceSetup
 		// what Visual Cafe can generate, or Visual Cafe may be unable to back
 		// parse your Java file into its visual environment.
 		//{{INIT_CONTROLS
-		setDeviceTitle("Acqiris Digitizer Model DC265");
-		setDeviceType("ACQD265");
+		setDeviceTitle("Acqiris Digitizer Model DC240");
+		setDeviceType("ACQD240");
 		getContentPane().setLayout(null);
 		setSize(600,592);
 		name_label.setText("Name:");
@@ -179,10 +179,18 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChoice4.setLabelString("Ck. Mode:");
 		getContentPane().add(deviceChoice4);
 		deviceChoice4.setBounds(7,70,205,30);
-		deviceChoice5.setChoiceFloatValues(new float[] {(float)100.0,(float)200.0,(float)250.0,(float)400.0,(float)500.0,(float)1000.0,(float)2000.0,(float)2500.0,(float)4000.0,(float)5000.0,(float)10000.0,(float)20000.0,(float)25000.0,(float)40000.0,(float)50000.0,(float)100000.0,(float)200000.0,(float)250000.0,(float)400000.0,(float)500000.0,(float)1000000.0,(float)2000000.0,(float)2500000.0,(float)4000000.0,(float)5000000.0,(float)1.0E7,(float)2.0E7,(float)2500000.0,(float)4.0E7,(float)5.0E7,(float)1.0E8,(float)2.0E8,(float)2.5E8,(float)4.0E8,(float)5.0E8});
-		deviceChoice5.setOffsetNid(8);
+		deviceChoice5.setChoiceFloatValues(new float[] {
+                    (float)1.0E2,(float)2.0E2,(float)2.5E2,(float)4.0E2,(float)5.0E2,
+                    (float)1.0E3,(float)2.0E3,(float)2.5E3,(float)4.0E3,(float)5.0E3,
+                    (float)1.0E4,(float)2.0E4,(float)2.5E4,(float)4.0E4,(float)5.0E4,
+                    (float)1.0E5,(float)2.0E5,(float)2.5E5,(float)4.0E5,(float)5.0E5,
+                    (float)1.0E6,(float)2.0E6,(float)2.5E6,(float)4.0E6,(float)5.0E6,
+                    (float)1.0E7,(float)2.0E7,(float)2.5E7,(float)4.0E7,(float)5.0E7,
+                    (float)1.0E8,(float)2.0E8,(float)2.5E8,(float)4.0E8,(float)5.0E8,
+                    (float)1.0E9,(float)2.0E9,(float)2.5E9});
+ 		deviceChoice5.setOffsetNid(8);
 		{
-			String[] tempString = new String[35];
+			String[] tempString = new String[38];
 			tempString[0] = "100";
 			tempString[1] = "200";
 			tempString[2] = "250";
@@ -218,6 +226,9 @@ public class ACQD265Setup extends DeviceSetup
 			tempString[32] = "250E6";
 			tempString[33] = "400E6";
 			tempString[34] = "500E6";
+                        tempString[35] = "1E9";
+                        tempString[36] = "2E9";
+                        tempString[37] = "2.5E9";
 			deviceChoice5.setChoiceItems(tempString);
 		}
 		deviceChoice5.setLabelString("Freq. :");
@@ -235,7 +246,7 @@ public class ACQD265Setup extends DeviceSetup
 		getContentPane().add(JLabel8);
 		JLabel8.setBounds(324,72,23,30);
 		getContentPane().add(JTabbedPane1);
-		JTabbedPane1.setBounds(8,357,529,188);
+		JTabbedPane1.setBounds(8,357,549,188);
 		JPanel9.setAlignmentX(0.498925F);
 		JPanel9.setLayout(null);
 		JTabbedPane1.add(JPanel9);
@@ -338,12 +349,26 @@ public class ACQD265Setup extends DeviceSetup
 		}
 		deviceChoice33.setLabelString(" ");
 		deviceChannel14.add(deviceChoice33);
+		JPanel3.setAlignmentX(0.498925F);
+		JPanel3.setLayout(null);
+		JTabbedPane1.add(JPanel3);
+		JPanel3.setBackground(new java.awt.Color(204,204,204));
+		JPanel3.setBounds(2,24,524,161);
+		JPanel3.setVisible(false);
+		JPanel4.setAlignmentY(0.0F);
+		JPanel4.setLayout(new BoxLayout(JPanel4,BoxLayout.X_AXIS));
+		JPanel3.add(JPanel4);
+		JPanel4.setBounds(22,0,465,15);
+		JLabel9.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+		JLabel9.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+		JLabel9.setText("                      Full Scale  (V)              Offset  (V)                     Coupling                     Bandwidth");
+		JPanel4.add(JLabel9);
 		deviceChannel15.setInSameLine(true);
 		deviceChannel15.setOffsetNid(32);
 		deviceChannel15.setLabelString("Ch03");
 		deviceChannel15.setLayout(new BorderLayout(0,0));
-		JPanel9.add(deviceChannel15);
-		deviceChannel15.setBounds(6,83,524,44);
+		JPanel3.add(deviceChannel15);
+		deviceChannel15.setBounds(6,15,524,44);
 		deviceChoice64.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
 		deviceChoice64.setOffsetNid(33);
 		{
@@ -386,8 +411,8 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel16.setOffsetNid(38);
 		deviceChannel16.setLabelString("Ch04");
 		deviceChannel16.setLayout(new BorderLayout(0,0));
-		JPanel9.add(deviceChannel16);
-		deviceChannel16.setBounds(6,117,524,44);
+		JPanel3.add(deviceChannel16);
+		deviceChannel16.setBounds(6,49,524,44);
 		deviceChoice65.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
 		deviceChoice65.setOffsetNid(39);
 		{
@@ -426,25 +451,25 @@ public class ACQD265Setup extends DeviceSetup
 		}
 		deviceChoice37.setLabelString(" ");
 		deviceChannel16.add(deviceChoice37);
-		JPanel3.setAlignmentX(0.498925F);
-		JPanel3.setLayout(null);
-		JTabbedPane1.add(JPanel3);
-		JPanel3.setBackground(new java.awt.Color(204,204,204));
-		JPanel3.setBounds(2,24,524,161);
-		JPanel3.setVisible(false);
-		JPanel4.setAlignmentY(0.0F);
-		JPanel4.setLayout(new BoxLayout(JPanel4,BoxLayout.X_AXIS));
-		JPanel3.add(JPanel4);
-		JPanel4.setBounds(22,0,465,15);
-		JLabel9.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-		JLabel9.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-		JLabel9.setText("                      Full Scale  (V)              Offset  (V)                     Coupling                     Bandwidth");
-		JPanel4.add(JLabel9);
+		JPanel7.setAlignmentX(0.498925F);
+		JPanel7.setLayout(null);
+		JTabbedPane1.add(JPanel7);
+		JPanel7.setBackground(new java.awt.Color(204,204,204));
+		JPanel7.setBounds(2,24,524,161);
+		JPanel7.setVisible(false);
+		JPanel8.setAlignmentY(0.0F);
+		JPanel8.setLayout(new BoxLayout(JPanel8,BoxLayout.X_AXIS));
+		JPanel7.add(JPanel8);
+		JPanel8.setBounds(22,0,465,15);
+		JLabel11.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+		JLabel11.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+		JLabel11.setText("                      Full Scale  (V)              Offset  (V)                     Coupling                     Bandwidth");
+		JPanel8.add(JLabel11);
 		deviceChannel1.setInSameLine(true);
 		deviceChannel1.setOffsetNid(44);
 		deviceChannel1.setLabelString("Ch05");
 		deviceChannel1.setLayout(new BorderLayout(0,0));
-		JPanel3.add(deviceChannel1);
+		JPanel7.add(deviceChannel1);
 		deviceChannel1.setBounds(6,15,524,44);
 		deviceChoice66.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
 		deviceChoice66.setOffsetNid(45);
@@ -488,7 +513,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel2.setOffsetNid(50);
 		deviceChannel2.setLabelString("Ch06");
 		deviceChannel2.setLayout(new BorderLayout(0,0));
-		JPanel3.add(deviceChannel2);
+		JPanel7.add(deviceChannel2);
 		deviceChannel2.setBounds(6,49,524,44);
 		deviceChoice67.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
 		deviceChoice67.setOffsetNid(51);
@@ -528,12 +553,26 @@ public class ACQD265Setup extends DeviceSetup
 		}
 		deviceChoice9.setLabelString(" ");
 		deviceChannel2.add(deviceChoice9);
+		JPanel5.setAlignmentX(0.498925F);
+		JPanel5.setLayout(null);
+		JTabbedPane1.add(JPanel5);
+		JPanel5.setBackground(new java.awt.Color(204,204,204));
+		JPanel5.setBounds(2,24,524,161);
+		JPanel5.setVisible(false);
+		JPanel6.setAlignmentY(0.0F);
+		JPanel6.setLayout(new BoxLayout(JPanel6,BoxLayout.X_AXIS));
+		JPanel5.add(JPanel6);
+		JPanel6.setBounds(22,0,465,15);
+		JLabel10.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+		JLabel10.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+		JLabel10.setText("                      Full Scale  (V)              Offset  (V)                     Coupling                     Bandwidth");
+		JPanel6.add(JLabel10);
 		deviceChannel3.setInSameLine(true);
 		deviceChannel3.setOffsetNid(56);
 		deviceChannel3.setLabelString("Ch07");
 		deviceChannel3.setLayout(new BorderLayout(0,0));
-		JPanel3.add(deviceChannel3);
-		deviceChannel3.setBounds(6,83,524,44);
+		JPanel5.add(deviceChannel3);
+		deviceChannel3.setBounds(6,15,524,44);
 		deviceChoice68.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
 		deviceChoice68.setOffsetNid(57);
 		{
@@ -576,8 +615,8 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel4.setOffsetNid(62);
 		deviceChannel4.setLabelString("Ch08");
 		deviceChannel4.setLayout(new BorderLayout(0,0));
-		JPanel3.add(deviceChannel4);
-		deviceChannel4.setBounds(6,117,524,44);
+		JPanel5.add(deviceChannel4);
+		deviceChannel4.setBounds(6,49,524,44);
 		deviceChoice69.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
 		deviceChoice69.setOffsetNid(63);
 		{
@@ -616,25 +655,25 @@ public class ACQD265Setup extends DeviceSetup
 		}
 		deviceChoice13.setLabelString(" ");
 		deviceChannel4.add(deviceChoice13);
-		JPanel5.setAlignmentX(0.498925F);
-		JPanel5.setLayout(null);
-		JTabbedPane1.add(JPanel5);
-		JPanel5.setBackground(new java.awt.Color(204,204,204));
-		JPanel5.setBounds(2,24,524,161);
-		JPanel5.setVisible(false);
-		JPanel6.setAlignmentY(0.0F);
-		JPanel6.setLayout(new BoxLayout(JPanel6,BoxLayout.X_AXIS));
-		JPanel5.add(JPanel6);
-		JPanel6.setBounds(22,0,465,15);
-		JLabel10.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-		JLabel10.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-		JLabel10.setText("                      Full Scale  (V)              Offset  (V)                     Coupling                     Bandwidth");
-		JPanel6.add(JLabel10);
+		JPanel11.setAlignmentX(0.498925F);
+		JPanel11.setLayout(null);
+		JTabbedPane1.add(JPanel11);
+		JPanel11.setBackground(new java.awt.Color(204,204,204));
+		JPanel11.setBounds(2,24,524,161);
+		JPanel11.setVisible(false);
+		JPanel12.setAlignmentY(0.0F);
+		JPanel12.setLayout(new BoxLayout(JPanel12,BoxLayout.X_AXIS));
+		JPanel11.add(JPanel12);
+		JPanel12.setBounds(22,0,465,15);
+		JLabel12.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+		JLabel12.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+		JLabel12.setText("                      Full Scale  (V)              Offset  (V)                     Coupling                     Bandwidth");
+		JPanel12.add(JLabel12);
 		deviceChannel5.setInSameLine(true);
 		deviceChannel5.setOffsetNid(68);
 		deviceChannel5.setLabelString("Ch09");
 		deviceChannel5.setLayout(new BorderLayout(0,0));
-		JPanel5.add(deviceChannel5);
+		JPanel11.add(deviceChannel5);
 		deviceChannel5.setBounds(6,15,524,44);
 		deviceChoice70.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
 		deviceChoice70.setOffsetNid(69);
@@ -678,7 +717,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel6.setOffsetNid(74);
 		deviceChannel6.setLabelString("Ch10");
 		deviceChannel6.setLayout(new BorderLayout(0,0));
-		JPanel5.add(deviceChannel6);
+		JPanel11.add(deviceChannel6);
 		deviceChannel6.setBounds(6,49,524,44);
 		deviceChoice71.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
 		deviceChoice71.setOffsetNid(75);
@@ -718,12 +757,26 @@ public class ACQD265Setup extends DeviceSetup
 		}
 		deviceChoice17.setLabelString(" ");
 		deviceChannel6.add(deviceChoice17);
+		JPanel13.setAlignmentX(0.498925F);
+		JPanel13.setLayout(null);
+		JTabbedPane1.add(JPanel13);
+		JPanel13.setBackground(new java.awt.Color(204,204,204));
+		JPanel13.setBounds(2,24,524,161);
+		JPanel13.setVisible(false);
+		JPanel14.setAlignmentY(0.0F);
+		JPanel14.setLayout(new BoxLayout(JPanel14,BoxLayout.X_AXIS));
+		JPanel13.add(JPanel14);
+		JPanel14.setBounds(22,0,465,15);
+		JLabel13.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+		JLabel13.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+		JLabel13.setText("                      Full Scale  (V)              Offset  (V)                     Coupling                     Bandwidth");
+		JPanel14.add(JLabel13);
 		deviceChannel7.setInSameLine(true);
 		deviceChannel7.setOffsetNid(80);
 		deviceChannel7.setLabelString("Ch11");
 		deviceChannel7.setLayout(new BorderLayout(0,0));
-		JPanel5.add(deviceChannel7);
-		deviceChannel7.setBounds(6,83,524,44);
+		JPanel13.add(deviceChannel7);
+		deviceChannel7.setBounds(6,15,524,44);
 		deviceChoice72.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
 		deviceChoice72.setOffsetNid(81);
 		{
@@ -766,8 +819,8 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel8.setOffsetNid(86);
 		deviceChannel8.setLabelString("Ch12");
 		deviceChannel8.setLayout(new BorderLayout(0,0));
-		JPanel5.add(deviceChannel8);
-		deviceChannel8.setBounds(6,117,524,44);
+		JPanel13.add(deviceChannel8);
+		deviceChannel8.setBounds(6,49,524,44);
 		deviceChoice73.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
 		deviceChoice73.setOffsetNid(87);
 		{
@@ -806,25 +859,26 @@ public class ACQD265Setup extends DeviceSetup
 		}
 		deviceChoice21.setLabelString(" ");
 		deviceChannel8.add(deviceChoice21);
-		JPanel7.setAlignmentX(0.498925F);
-		JPanel7.setLayout(null);
-		JTabbedPane1.add(JPanel7);
-		JPanel7.setBackground(new java.awt.Color(204,204,204));
-		JPanel7.setBounds(2,24,524,161);
-		JPanel7.setVisible(false);
-		JPanel8.setAlignmentY(0.0F);
-		JPanel8.setLayout(new BoxLayout(JPanel8,BoxLayout.X_AXIS));
-		JPanel7.add(JPanel8);
-		JPanel8.setBounds(22,0,465,15);
-		JLabel11.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-		JLabel11.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-		JLabel11.setText("                      Full Scale  (V)              Offset  (V)                     Coupling                     Bandwidth");
-		JPanel8.add(JLabel11);
+		JPanel15.setAlignmentX(0.498925F);
+		JPanel15.setLayout(null);
+		JTabbedPane1.add(JPanel15);
+		JPanel15.setBackground(new java.awt.Color(204,204,204));
+		JPanel15.setBounds(2,24,524,161);
+		JPanel15.setVisible(false);
+		JPanel16.setAlignmentY(0.0F);
+		JPanel16.setLayout(new BoxLayout(JPanel16,BoxLayout.X_AXIS));
+		JPanel15.add(JPanel16);
+		JPanel16.setBounds(22,0,465,15);
+		JLabel14.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+		JLabel14.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+		JLabel14.setText("                      Full Scale  (V)              Offset  (V)                     Coupling                     Bandwidth");
+		JPanel16.add(JLabel14);
+		JLabel14.setForeground(new java.awt.Color(102,102,153));
 		deviceChannel9.setInSameLine(true);
 		deviceChannel9.setOffsetNid(92);
 		deviceChannel9.setLabelString("Ch13");
 		deviceChannel9.setLayout(new BorderLayout(0,0));
-		JPanel7.add(deviceChannel9);
+		JPanel15.add(deviceChannel9);
 		deviceChannel9.setBounds(6,15,524,44);
 		deviceChoice74.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
 		deviceChoice74.setOffsetNid(93);
@@ -868,7 +922,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel10.setOffsetNid(98);
 		deviceChannel10.setLabelString("Ch14");
 		deviceChannel10.setLayout(new BorderLayout(0,0));
-		JPanel7.add(deviceChannel10);
+		JPanel15.add(deviceChannel10);
 		deviceChannel10.setBounds(6,49,524,44);
 		deviceChoice75.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
 		deviceChoice75.setOffsetNid(99);
@@ -908,665 +962,6 @@ public class ACQD265Setup extends DeviceSetup
 		}
 		deviceChoice25.setLabelString(" ");
 		deviceChannel10.add(deviceChoice25);
-		deviceChannel11.setInSameLine(true);
-		deviceChannel11.setOffsetNid(104);
-		deviceChannel11.setLabelString("Ch15");
-		deviceChannel11.setLayout(new BorderLayout(0,0));
-		JPanel7.add(deviceChannel11);
-		deviceChannel11.setBounds(6,83,524,44);
-		deviceChoice76.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
-		deviceChoice76.setOffsetNid(105);
-		{
-			String[] tempString = new String[7];
-			tempString[0] = "50e-3";
-			tempString[1] = "100e-3";
-			tempString[2] = "200e-3";
-			tempString[3] = "500e-3";
-			tempString[4] = "1";
-			tempString[5] = "2";
-			tempString[6] = "5 ";
-			deviceChoice76.setChoiceItems(tempString);
-		}
-		deviceChoice76.setLabelString(" ");
-		deviceChannel11.add(deviceChoice76);
-		deviceField29.setNumCols(8);
-		deviceField29.setOffsetNid(106);
-		deviceChannel11.add(deviceField29);
-		deviceChoice26.setOffsetNid(107);
-		{
-			String[] tempString = new String[4];
-			tempString[0] = "DC 1M";
-			tempString[1] = "AC 1M";
-			tempString[2] = "DC 50ohm";
-			tempString[3] = "AC 50ohm";
-			deviceChoice26.setChoiceItems(tempString);
-		}
-		deviceChoice26.setLabelString(" ");
-		deviceChannel11.add(deviceChoice26);
-		deviceChoice27.setOffsetNid(108);
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "LIMIT ON";
-			tempString[1] = "LIMIT OFF";
-			deviceChoice27.setChoiceItems(tempString);
-		}
-		deviceChoice27.setLabelString(" ");
-		deviceChannel11.add(deviceChoice27);
-		deviceChannel12.setInSameLine(true);
-		deviceChannel12.setOffsetNid(110);
-		deviceChannel12.setLabelString("Ch16");
-		deviceChannel12.setLayout(new BorderLayout(0,0));
-		JPanel7.add(deviceChannel12);
-		deviceChannel12.setBounds(6,117,524,44);
-		deviceChoice77.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
-		deviceChoice77.setOffsetNid(111);
-		{
-			String[] tempString = new String[7];
-			tempString[0] = "50e-3";
-			tempString[1] = "100e-3";
-			tempString[2] = "200e-3";
-			tempString[3] = "500e-3";
-			tempString[4] = "1";
-			tempString[5] = "2";
-			tempString[6] = "5 ";
-			deviceChoice77.setChoiceItems(tempString);
-		}
-		deviceChoice77.setLabelString(" ");
-		deviceChannel12.add(deviceChoice77);
-		deviceField31.setNumCols(8);
-		deviceField31.setOffsetNid(112);
-		deviceChannel12.add(deviceField31);
-		deviceChoice28.setOffsetNid(113);
-		{
-			String[] tempString = new String[4];
-			tempString[0] = "DC 1M";
-			tempString[1] = "AC 1M";
-			tempString[2] = "DC 50ohm";
-			tempString[3] = "AC 50ohm";
-			deviceChoice28.setChoiceItems(tempString);
-		}
-		deviceChoice28.setLabelString(" ");
-		deviceChannel12.add(deviceChoice28);
-		deviceChoice29.setOffsetNid(114);
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "LIMIT ON";
-			tempString[1] = "LIMIT OFF";
-			deviceChoice29.setChoiceItems(tempString);
-		}
-		deviceChoice29.setLabelString(" ");
-		deviceChannel12.add(deviceChoice29);
-		JPanel11.setAlignmentX(0.498925F);
-		JPanel11.setLayout(null);
-		JTabbedPane1.add(JPanel11);
-		JPanel11.setBackground(new java.awt.Color(204,204,204));
-		JPanel11.setBounds(2,24,524,161);
-		JPanel11.setVisible(false);
-		JPanel12.setAlignmentY(0.0F);
-		JPanel12.setLayout(new BoxLayout(JPanel12,BoxLayout.X_AXIS));
-		JPanel11.add(JPanel12);
-		JPanel12.setBounds(22,0,465,15);
-		JLabel12.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-		JLabel12.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-		JLabel12.setText("                      Full Scale  (V)              Offset  (V)                     Coupling                     Bandwidth");
-		JPanel12.add(JLabel12);
-		deviceChannel17.setInSameLine(true);
-		deviceChannel17.setOffsetNid(116);
-		deviceChannel17.setLabelString("Ch17");
-		deviceChannel17.setLayout(new BorderLayout(0,0));
-		JPanel11.add(deviceChannel17);
-		deviceChannel17.setBounds(6,15,524,44);
-		deviceChoice78.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
-		deviceChoice78.setOffsetNid(117);
-		{
-			String[] tempString = new String[7];
-			tempString[0] = "50e-3";
-			tempString[1] = "100e-3";
-			tempString[2] = "200e-3";
-			tempString[3] = "500e-3";
-			tempString[4] = "1";
-			tempString[5] = "2";
-			tempString[6] = "5 ";
-			deviceChoice78.setChoiceItems(tempString);
-		}
-		deviceChoice78.setLabelString(" ");
-		deviceChannel17.add(deviceChoice78);
-		deviceField41.setNumCols(8);
-		deviceField41.setOffsetNid(118);
-		deviceChannel17.add(deviceField41);
-		deviceChoice38.setOffsetNid(119);
-		{
-			String[] tempString = new String[4];
-			tempString[0] = "DC 1M";
-			tempString[1] = "AC 1M";
-			tempString[2] = "DC 50ohm";
-			tempString[3] = "AC 50ohm";
-			deviceChoice38.setChoiceItems(tempString);
-		}
-		deviceChoice38.setLabelString(" ");
-		deviceChannel17.add(deviceChoice38);
-		deviceChoice39.setOffsetNid(120);
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "LIMIT ON";
-			tempString[1] = "LIMIT OFF";
-			deviceChoice39.setChoiceItems(tempString);
-		}
-		deviceChoice39.setLabelString(" ");
-		deviceChannel17.add(deviceChoice39);
-		deviceChannel18.setInSameLine(true);
-		deviceChannel18.setOffsetNid(122);
-		deviceChannel18.setLabelString("Ch18");
-		deviceChannel18.setLayout(new BorderLayout(0,0));
-		JPanel11.add(deviceChannel18);
-		deviceChannel18.setBounds(6,49,524,44);
-		deviceChoice79.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
-		deviceChoice79.setOffsetNid(123);
-		{
-			String[] tempString = new String[7];
-			tempString[0] = "50e-3";
-			tempString[1] = "100e-3";
-			tempString[2] = "200e-3";
-			tempString[3] = "500e-3";
-			tempString[4] = "1";
-			tempString[5] = "2";
-			tempString[6] = "5 ";
-			deviceChoice79.setChoiceItems(tempString);
-		}
-		deviceChoice79.setLabelString(" ");
-		deviceChannel18.add(deviceChoice79);
-		deviceField43.setNumCols(8);
-		deviceField43.setOffsetNid(124);
-		deviceChannel18.add(deviceField43);
-		deviceChoice40.setOffsetNid(125);
-		{
-			String[] tempString = new String[4];
-			tempString[0] = "DC 1M";
-			tempString[1] = "AC 1M";
-			tempString[2] = "DC 50ohm";
-			tempString[3] = "AC 50ohm";
-			deviceChoice40.setChoiceItems(tempString);
-		}
-		deviceChoice40.setLabelString(" ");
-		deviceChannel18.add(deviceChoice40);
-		deviceChoice41.setOffsetNid(126);
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "LIMIT ON";
-			tempString[1] = "LIMIT OFF";
-			deviceChoice41.setChoiceItems(tempString);
-		}
-		deviceChoice41.setLabelString(" ");
-		deviceChannel18.add(deviceChoice41);
-		deviceChannel19.setInSameLine(true);
-		deviceChannel19.setOffsetNid(128);
-		deviceChannel19.setLabelString("Ch19");
-		deviceChannel19.setLayout(new BorderLayout(0,0));
-		JPanel11.add(deviceChannel19);
-		deviceChannel19.setBounds(6,83,524,44);
-		deviceChoice80.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
-		deviceChoice80.setOffsetNid(129);
-		{
-			String[] tempString = new String[7];
-			tempString[0] = "50e-3";
-			tempString[1] = "100e-3";
-			tempString[2] = "200e-3";
-			tempString[3] = "500e-3";
-			tempString[4] = "1";
-			tempString[5] = "2";
-			tempString[6] = "5 ";
-			deviceChoice80.setChoiceItems(tempString);
-		}
-		deviceChoice80.setLabelString(" ");
-		deviceChannel19.add(deviceChoice80);
-		deviceField45.setNumCols(8);
-		deviceField45.setOffsetNid(130);
-		deviceChannel19.add(deviceField45);
-		deviceChoice42.setOffsetNid(131);
-		{
-			String[] tempString = new String[4];
-			tempString[0] = "DC 1M";
-			tempString[1] = "AC 1M";
-			tempString[2] = "DC 50ohm";
-			tempString[3] = "AC 50ohm";
-			deviceChoice42.setChoiceItems(tempString);
-		}
-		deviceChoice42.setLabelString(" ");
-		deviceChannel19.add(deviceChoice42);
-		deviceChoice43.setOffsetNid(132);
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "LIMIT ON";
-			tempString[1] = "LIMIT OFF";
-			deviceChoice43.setChoiceItems(tempString);
-		}
-		deviceChoice43.setLabelString(" ");
-		deviceChannel19.add(deviceChoice43);
-		deviceChannel20.setInSameLine(true);
-		deviceChannel20.setOffsetNid(134);
-		deviceChannel20.setLabelString("Ch20");
-		deviceChannel20.setLayout(new BorderLayout(0,0));
-		JPanel11.add(deviceChannel20);
-		deviceChannel20.setBounds(6,117,524,44);
-		deviceChoice81.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
-		deviceChoice81.setOffsetNid(135);
-		{
-			String[] tempString = new String[7];
-			tempString[0] = "50e-3";
-			tempString[1] = "100e-3";
-			tempString[2] = "200e-3";
-			tempString[3] = "500e-3";
-			tempString[4] = "1";
-			tempString[5] = "2";
-			tempString[6] = "5 ";
-			deviceChoice81.setChoiceItems(tempString);
-		}
-		deviceChoice81.setLabelString(" ");
-		deviceChannel20.add(deviceChoice81);
-		deviceField47.setNumCols(8);
-		deviceField47.setOffsetNid(136);
-		deviceChannel20.add(deviceField47);
-		deviceChoice44.setOffsetNid(137);
-		{
-			String[] tempString = new String[4];
-			tempString[0] = "DC 1M";
-			tempString[1] = "AC 1M";
-			tempString[2] = "DC 50ohm";
-			tempString[3] = "AC 50ohm";
-			deviceChoice44.setChoiceItems(tempString);
-		}
-		deviceChoice44.setLabelString(" ");
-		deviceChannel20.add(deviceChoice44);
-		deviceChoice45.setOffsetNid(138);
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "LIMIT ON";
-			tempString[1] = "LIMIT OFF";
-			deviceChoice45.setChoiceItems(tempString);
-		}
-		deviceChoice45.setLabelString(" ");
-		deviceChannel20.add(deviceChoice45);
-		JPanel13.setAlignmentX(0.498925F);
-		JPanel13.setLayout(null);
-		JTabbedPane1.add(JPanel13);
-		JPanel13.setBackground(new java.awt.Color(204,204,204));
-		JPanel13.setBounds(2,24,524,161);
-		JPanel13.setVisible(false);
-		JPanel14.setAlignmentY(0.0F);
-		JPanel14.setLayout(new BoxLayout(JPanel14,BoxLayout.X_AXIS));
-		JPanel13.add(JPanel14);
-		JPanel14.setBounds(22,0,465,15);
-		JLabel13.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-		JLabel13.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-		JLabel13.setText("                      Full Scale  (V)              Offset  (V)                     Coupling                     Bandwidth");
-		JPanel14.add(JLabel13);
-		deviceChannel21.setInSameLine(true);
-		deviceChannel21.setOffsetNid(140);
-		deviceChannel21.setLabelString("Ch21");
-		deviceChannel21.setLayout(new BorderLayout(0,0));
-		JPanel13.add(deviceChannel21);
-		deviceChannel21.setBounds(6,15,524,44);
-		deviceChoice82.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
-		deviceChoice82.setOffsetNid(141);
-		{
-			String[] tempString = new String[7];
-			tempString[0] = "50e-3";
-			tempString[1] = "100e-3";
-			tempString[2] = "200e-3";
-			tempString[3] = "500e-3";
-			tempString[4] = "1";
-			tempString[5] = "2";
-			tempString[6] = "5 ";
-			deviceChoice82.setChoiceItems(tempString);
-		}
-		deviceChoice82.setLabelString(" ");
-		deviceChannel21.add(deviceChoice82);
-		deviceField49.setNumCols(8);
-		deviceField49.setOffsetNid(142);
-		deviceChannel21.add(deviceField49);
-		deviceChoice46.setOffsetNid(143);
-		{
-			String[] tempString = new String[4];
-			tempString[0] = "DC 1M";
-			tempString[1] = "AC 1M";
-			tempString[2] = "DC 50ohm";
-			tempString[3] = "AC 50ohm";
-			deviceChoice46.setChoiceItems(tempString);
-		}
-		deviceChoice46.setLabelString(" ");
-		deviceChannel21.add(deviceChoice46);
-		deviceChoice47.setOffsetNid(144);
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "LIMIT ON";
-			tempString[1] = "LIMIT OFF";
-			deviceChoice47.setChoiceItems(tempString);
-		}
-		deviceChoice47.setLabelString(" ");
-		deviceChannel21.add(deviceChoice47);
-		deviceChannel22.setInSameLine(true);
-		deviceChannel22.setOffsetNid(146);
-		deviceChannel22.setLabelString("Ch22");
-		deviceChannel22.setLayout(new BorderLayout(0,0));
-		JPanel13.add(deviceChannel22);
-		deviceChannel22.setBounds(6,49,524,44);
-		deviceChoice83.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
-		deviceChoice83.setOffsetNid(147);
-		{
-			String[] tempString = new String[7];
-			tempString[0] = "50e-3";
-			tempString[1] = "100e-3";
-			tempString[2] = "200e-3";
-			tempString[3] = "500e-3";
-			tempString[4] = "1";
-			tempString[5] = "2";
-			tempString[6] = "5 ";
-			deviceChoice83.setChoiceItems(tempString);
-		}
-		deviceChoice83.setLabelString(" ");
-		deviceChannel22.add(deviceChoice83);
-		deviceField51.setNumCols(8);
-		deviceField51.setOffsetNid(148);
-		deviceChannel22.add(deviceField51);
-		deviceChoice48.setOffsetNid(149);
-		{
-			String[] tempString = new String[4];
-			tempString[0] = "DC 1M";
-			tempString[1] = "AC 1M";
-			tempString[2] = "DC 50ohm";
-			tempString[3] = "AC 50ohm";
-			deviceChoice48.setChoiceItems(tempString);
-		}
-		deviceChoice48.setLabelString(" ");
-		deviceChannel22.add(deviceChoice48);
-		deviceChoice49.setOffsetNid(150);
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "LIMIT ON";
-			tempString[1] = "LIMIT OFF";
-			deviceChoice49.setChoiceItems(tempString);
-		}
-		deviceChoice49.setLabelString(" ");
-		deviceChannel22.add(deviceChoice49);
-		deviceChannel23.setInSameLine(true);
-		deviceChannel23.setOffsetNid(152);
-		deviceChannel23.setLabelString("Ch23");
-		deviceChannel23.setLayout(new BorderLayout(0,0));
-		JPanel13.add(deviceChannel23);
-		deviceChannel23.setBounds(6,83,524,44);
-		deviceChoice84.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
-		deviceChoice84.setOffsetNid(153);
-		{
-			String[] tempString = new String[7];
-			tempString[0] = "50e-3";
-			tempString[1] = "100e-3";
-			tempString[2] = "200e-3";
-			tempString[3] = "500e-3";
-			tempString[4] = "1";
-			tempString[5] = "2";
-			tempString[6] = "5 ";
-			deviceChoice84.setChoiceItems(tempString);
-		}
-		deviceChoice84.setLabelString(" ");
-		deviceChannel23.add(deviceChoice84);
-		deviceField53.setNumCols(8);
-		deviceField53.setOffsetNid(154);
-		deviceChannel23.add(deviceField53);
-		deviceChoice50.setOffsetNid(155);
-		{
-			String[] tempString = new String[4];
-			tempString[0] = "DC 1M";
-			tempString[1] = "AC 1M";
-			tempString[2] = "DC 50ohm";
-			tempString[3] = "AC 50ohm";
-			deviceChoice50.setChoiceItems(tempString);
-		}
-		deviceChoice50.setLabelString(" ");
-		deviceChannel23.add(deviceChoice50);
-		deviceChoice51.setOffsetNid(156);
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "LIMIT ON";
-			tempString[1] = "LIMIT OFF";
-			deviceChoice51.setChoiceItems(tempString);
-		}
-		deviceChoice51.setLabelString(" ");
-		deviceChannel23.add(deviceChoice51);
-		deviceChannel24.setInSameLine(true);
-		deviceChannel24.setOffsetNid(158);
-		deviceChannel24.setLabelString("Ch24");
-		deviceChannel24.setLayout(new BorderLayout(0,0));
-		JPanel13.add(deviceChannel24);
-		deviceChannel24.setBounds(6,117,524,44);
-		deviceChoice85.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
-		deviceChoice85.setOffsetNid(159);
-		{
-			String[] tempString = new String[7];
-			tempString[0] = "50e-3";
-			tempString[1] = "100e-3";
-			tempString[2] = "200e-3";
-			tempString[3] = "500e-3";
-			tempString[4] = "1";
-			tempString[5] = "2";
-			tempString[6] = "5 ";
-			deviceChoice85.setChoiceItems(tempString);
-		}
-		deviceChoice85.setLabelString(" ");
-		deviceChannel24.add(deviceChoice85);
-		deviceField55.setNumCols(8);
-		deviceField55.setOffsetNid(160);
-		deviceChannel24.add(deviceField55);
-		deviceChoice52.setOffsetNid(161);
-		{
-			String[] tempString = new String[4];
-			tempString[0] = "DC 1M";
-			tempString[1] = "AC 1M";
-			tempString[2] = "DC 50ohm";
-			tempString[3] = "AC 50ohm";
-			deviceChoice52.setChoiceItems(tempString);
-		}
-		deviceChoice52.setLabelString(" ");
-		deviceChannel24.add(deviceChoice52);
-		deviceChoice53.setOffsetNid(162);
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "LIMIT ON";
-			tempString[1] = "LIMIT OFF";
-			deviceChoice53.setChoiceItems(tempString);
-		}
-		deviceChoice53.setLabelString(" ");
-		deviceChannel24.add(deviceChoice53);
-		JPanel15.setAlignmentX(0.498925F);
-		JPanel15.setLayout(null);
-		JTabbedPane1.add(JPanel15);
-		JPanel15.setBackground(new java.awt.Color(204,204,204));
-		JPanel15.setBounds(2,24,524,161);
-		JPanel15.setVisible(false);
-		JPanel16.setAlignmentY(0.0F);
-		JPanel16.setLayout(new BoxLayout(JPanel16,BoxLayout.X_AXIS));
-		JPanel15.add(JPanel16);
-		JPanel16.setBounds(22,0,465,15);
-		JLabel14.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-		JLabel14.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-		JLabel14.setText("                      Full Scale  (V)              Offset  (V)                     Coupling                     Bandwidth");
-		JPanel16.add(JLabel14);
-		JLabel14.setForeground(new java.awt.Color(102,102,153));
-		deviceChannel25.setInSameLine(true);
-		deviceChannel25.setOffsetNid(164);
-		deviceChannel25.setLabelString("Ch25");
-		deviceChannel25.setLayout(new BorderLayout(0,0));
-		JPanel15.add(deviceChannel25);
-		deviceChannel25.setBounds(6,15,524,44);
-		deviceChoice86.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
-		deviceChoice86.setOffsetNid(165);
-		{
-			String[] tempString = new String[7];
-			tempString[0] = "50e-3";
-			tempString[1] = "100e-3";
-			tempString[2] = "200e-3";
-			tempString[3] = "500e-3";
-			tempString[4] = "1";
-			tempString[5] = "2";
-			tempString[6] = "5 ";
-			deviceChoice86.setChoiceItems(tempString);
-		}
-		deviceChoice86.setLabelString(" ");
-		deviceChannel25.add(deviceChoice86);
-		deviceField57.setNumCols(8);
-		deviceField57.setOffsetNid(166);
-		deviceChannel25.add(deviceField57);
-		deviceChoice54.setOffsetNid(167);
-		{
-			String[] tempString = new String[4];
-			tempString[0] = "DC 1M";
-			tempString[1] = "AC 1M";
-			tempString[2] = "DC 50ohm";
-			tempString[3] = "AC 50ohm";
-			deviceChoice54.setChoiceItems(tempString);
-		}
-		deviceChoice54.setLabelString(" ");
-		deviceChannel25.add(deviceChoice54);
-		deviceChoice55.setOffsetNid(168);
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "LIMIT ON";
-			tempString[1] = "LIMIT OFF";
-			deviceChoice55.setChoiceItems(tempString);
-		}
-		deviceChoice55.setLabelString(" ");
-		deviceChannel25.add(deviceChoice55);
-		deviceChannel26.setInSameLine(true);
-		deviceChannel26.setOffsetNid(170);
-		deviceChannel26.setLabelString("Ch26");
-		deviceChannel26.setLayout(new BorderLayout(0,0));
-		JPanel15.add(deviceChannel26);
-		deviceChannel26.setBounds(6,49,524,44);
-		deviceChoice87.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
-		deviceChoice87.setOffsetNid(171);
-		{
-			String[] tempString = new String[7];
-			tempString[0] = "50e-3";
-			tempString[1] = "100e-3";
-			tempString[2] = "200e-3";
-			tempString[3] = "500e-3";
-			tempString[4] = "1";
-			tempString[5] = "2";
-			tempString[6] = "5 ";
-			deviceChoice87.setChoiceItems(tempString);
-		}
-		deviceChoice87.setLabelString(" ");
-		deviceChannel26.add(deviceChoice87);
-		deviceField59.setNumCols(8);
-		deviceField59.setOffsetNid(172);
-		deviceChannel26.add(deviceField59);
-		deviceChoice56.setOffsetNid(173);
-		{
-			String[] tempString = new String[4];
-			tempString[0] = "DC 1M";
-			tempString[1] = "AC 1M";
-			tempString[2] = "DC 50ohm";
-			tempString[3] = "AC 50ohm";
-			deviceChoice56.setChoiceItems(tempString);
-		}
-		deviceChoice56.setLabelString(" ");
-		deviceChannel26.add(deviceChoice56);
-		deviceChoice57.setOffsetNid(174);
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "LIMIT ON";
-			tempString[1] = "LIMIT OFF";
-			deviceChoice57.setChoiceItems(tempString);
-		}
-		deviceChoice57.setLabelString(" ");
-		deviceChannel26.add(deviceChoice57);
-		deviceChannel27.setInSameLine(true);
-		deviceChannel27.setOffsetNid(176);
-		deviceChannel27.setLabelString("Ch27");
-		deviceChannel27.setLayout(new BorderLayout(0,0));
-		JPanel15.add(deviceChannel27);
-		deviceChannel27.setBounds(6,83,524,44);
-		deviceChoice88.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
-		deviceChoice88.setOffsetNid(177);
-		{
-			String[] tempString = new String[7];
-			tempString[0] = "50e-3";
-			tempString[1] = "100e-3";
-			tempString[2] = "200e-3";
-			tempString[3] = "500e-3";
-			tempString[4] = "1";
-			tempString[5] = "2";
-			tempString[6] = "5 ";
-			deviceChoice88.setChoiceItems(tempString);
-		}
-		deviceChoice88.setLabelString(" ");
-		deviceChannel27.add(deviceChoice88);
-		deviceField61.setNumCols(8);
-		deviceField61.setOffsetNid(178);
-		deviceChannel27.add(deviceField61);
-		deviceChoice58.setOffsetNid(179);
-		{
-			String[] tempString = new String[4];
-			tempString[0] = "DC 1M";
-			tempString[1] = "AC 1M";
-			tempString[2] = "DC 50ohm";
-			tempString[3] = "AC 50ohm";
-			deviceChoice58.setChoiceItems(tempString);
-		}
-		deviceChoice58.setLabelString(" ");
-		deviceChannel27.add(deviceChoice58);
-		deviceChoice59.setOffsetNid(180);
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "LIMIT ON";
-			tempString[1] = "LIMIT OFF";
-			deviceChoice59.setChoiceItems(tempString);
-		}
-		deviceChoice59.setLabelString(" ");
-		deviceChannel27.add(deviceChoice59);
-		deviceChannel28.setInSameLine(true);
-		deviceChannel28.setOffsetNid(182);
-		deviceChannel28.setLabelString("Ch28");
-		deviceChannel28.setLayout(new BorderLayout(0,0));
-		JPanel15.add(deviceChannel28);
-		deviceChannel28.setBounds(6,117,524,44);
-		deviceChoice89.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
-		deviceChoice89.setOffsetNid(183);
-		{
-			String[] tempString = new String[7];
-			tempString[0] = "50e-3";
-			tempString[1] = "100e-3";
-			tempString[2] = "200e-3";
-			tempString[3] = "500e-3";
-			tempString[4] = "1";
-			tempString[5] = "2";
-			tempString[6] = "5 ";
-			deviceChoice89.setChoiceItems(tempString);
-		}
-		deviceChoice89.setLabelString(" ");
-		deviceChannel28.add(deviceChoice89);
-		deviceField63.setNumCols(8);
-		deviceField63.setOffsetNid(184);
-		deviceChannel28.add(deviceField63);
-		deviceChoice60.setOffsetNid(185);
-		{
-			String[] tempString = new String[4];
-			tempString[0] = "DC 1M";
-			tempString[1] = "AC 1M";
-			tempString[2] = "DC 50ohm";
-			tempString[3] = "AC 50ohm";
-			deviceChoice60.setChoiceItems(tempString);
-		}
-		deviceChoice60.setLabelString(" ");
-		deviceChannel28.add(deviceChoice60);
-		deviceChoice61.setOffsetNid(186);
-		{
-			String[] tempString = new String[2];
-			tempString[0] = "LIMIT ON";
-			tempString[1] = "LIMIT OFF";
-			deviceChoice61.setChoiceItems(tempString);
-		}
-		deviceChoice61.setLabelString(" ");
-		deviceChannel28.add(deviceChoice61);
 		JTabbedPane1.setSelectedIndex(0);
 		JTabbedPane1.setSelectedComponent(JPanel9);
 		JTabbedPane1.setTitleAt(0,"Board 1");
@@ -1601,12 +996,12 @@ public class ACQD265Setup extends DeviceSetup
 		//}}
 	}
 
-	public ACQD265Setup()
+	public ACQD240Setup()
 	{
 		this((Frame)null);
 	}
 
-	public ACQD265Setup(String sTitle)
+	public ACQD240Setup(String sTitle)
 	{
 		this();
 		setTitle(sTitle);
@@ -1621,7 +1016,7 @@ public class ACQD265Setup extends DeviceSetup
 
 	static public void main(String args[])
 	{
-		(new ACQD265Setup()).setVisible(true);
+		(new ACQD240Setup()).setVisible(true);
 	}
 
 	public void addNotify()
