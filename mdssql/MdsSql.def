@@ -10,3 +10,5 @@ dbcolname
 dbcoltype
 dbdatlen
 dbdata
+Logout_Sybase
+GetDBStatus

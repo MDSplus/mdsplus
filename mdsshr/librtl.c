@@ -3,6 +3,7 @@
 #include <libroutines.h>
 #include <mds_stdarg.h>
 #include <librtl_messages.h>
+#include <mdsshr.h>
 #define _GNU_SOURCE /* glibc2 needs this */
 #if defined(__sparc__)
 #include "/usr/include/sys/types.h"
@@ -2540,7 +2541,7 @@ STATIC_ROUTINE char *GetTdiLogical(char *name)
   {
     ans = strncpy(malloc(ans_d.length+1),ans_d.pointer,ans_d.length);
     ans[ans_d.length]=0;
-    MdsFree1Dx(&ans_d);
+    MdsFree1Dx(&ans_d,NULL);
   }
   else
     ans = 0;

@@ -99,7 +99,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib &quot;$(SQL_DIR)\DevTools\Lib\ntwdblib.lib&quot;"
 				OutputFile="$(OutDir)/mdssql.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -151,9 +151,6 @@
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
 		</Filter>
-		<File
-			RelativePath="..\..\Program Files\Microsoft Visual Studio\VC98\Lib\NTWDBLIB.LIB">
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
