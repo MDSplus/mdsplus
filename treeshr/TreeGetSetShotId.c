@@ -99,17 +99,13 @@ int       TreeGetCurrentShotId(char *experiment)
   char *path = 0;
   char *exp = strcpy(malloc(strlen(experiment)+6),experiment);
   int i;
+  int slen;
   for (i=0;exp[i] != '\0';i++)
     exp[i] = _ToLower(exp[i]);
   strcat(exp,"_path");
   path = TranslateLogical(exp);
-  if (path)
-  {
-    int slen = strlen(path);
-    if ((slen > 2) && (path[slen-1] == ':') && (path[slen-2] == ':'))
-      status = TreeGetCurrentShotIdRemote(experiment, path, &shot);
-    TranslateLogicalFree(path);
-  }
+  if (path && ((slen = strlen(path)) > 2) && (path[slen-1] == ':') && (path[slen-2] == ':'))
+    status = TreeGetCurrentShotIdRemote(experiment, path, &shot);
   else
   {
     FILE *file = OpenShotIdFile(experiment,"rb");
@@ -129,6 +125,8 @@ int       TreeGetCurrentShotId(char *experiment)
 #endif
     }
   }
+  if (path)
+    TranslateLogicalFree(path);
   free(exp);
   return (status & 1) ? shot : 0;
 }
@@ -138,18 +136,14 @@ int       TreeSetCurrentShotId(char *experiment, int shot)
   int status = 0;
   char *path = 0;
   char *exp = strcpy(malloc(strlen(experiment)+6),experiment);
+  int slen;
   int i;
   for (i=0;exp[i] != '\0';i++)
     exp[i] = _ToLower(exp[i]);
   strcat(exp,"_path");
   path = TranslateLogical(exp);
-  if (path)
-  {
-    int slen = strlen(path);
-    if ((slen > 2) && (path[slen-1] == ':') && (path[slen-2] == ':'))
-      status = TreeSetCurrentShotIdRemote(experiment, path, shot);
-    TranslateLogicalFree(path);
-  }
+  if (path && ((slen = strlen(path)) > 2) && (path[slen-1] == ':') && (path[slen-2] == ':'))
+    status = TreeSetCurrentShotIdRemote(experiment, path, shot);
   else
   {
     FILE *file = OpenShotIdFile(experiment,"r+b");
@@ -166,6 +160,8 @@ int       TreeSetCurrentShotId(char *experiment, int shot)
       fclose(file);
     }
   }
+  if (path)
+    TranslateLogicalFree(path);
   free(exp);
   return status;
 }
