@@ -48,6 +48,7 @@ int descr (int *dtype, void *data, int *dim1, ...)
 
   struct descriptor *dsc = &descrs[next];
   int retval;
+  int totsize = *dim1;
 
   dsc->dtype = *dtype;
   switch (dsc->dtype)
@@ -64,8 +65,8 @@ int descr (int *dtype, void *data, int *dim1, ...)
     default : 
       break;
   }
-  dsc->length = dtype_length(dsc);
   dsc->pointer = (char *)data;
+  dsc->length = dtype_length(dsc);
 
   if (*dim1 == 0) 
   {
@@ -108,22 +109,24 @@ int descr (int *dtype, void *data, int *dim1, ...)
       for (i = 1; i<ndim; i++) 
       {
 	adsc->m[i] = *(va_arg(incrmtr, int *));
+	totsize = totsize * adsc->m[i];
       }
       for (i = ndim; i<MAXDIM; i++)
       {
 	adsc->m[i] = 0;
       }
-    }
+      adsc->arsize = totsize * adsc->length;
+   }
     else 
     {
       struct descriptor_a *adsc = (struct descriptor_a *)dsc;
       adsc->class = CLASS_A;
-  
+      adsc->arsize = totsize * adsc->length;
       adsc->dimct = 1;
       if (ndim < 1) printf("(descr.c) WARNING: requested ndim<1, forcing to 1.\n");
     }
       
-
+ 
 
   }
   retval = next+1;
@@ -226,7 +229,6 @@ int MdsValue(char *expression, ...)
       descnum = va_arg(incrmtr, int *);
       dsc = &descrs[*descnum-1];
       arg = MakeIpDescrip(arg, dsc);
-      printf("Got next arg!\n");
 
     }
 
@@ -240,7 +242,7 @@ int MdsValue(char *expression, ...)
       struct descrip exparg;
       struct descrip *arg = &exparg;
 
-      arg = MakeIpDescrip(arg, dsc);
+      /*      arg = MakeIpDescrip(arg, dsc);  */
 
       status = GetAnswerInfo(mdsSocket, &arg->dtype, &len, &arg->ndims, arg->dims, &numbytes, &dptr);
 
@@ -267,8 +269,12 @@ int MdsValue(char *expression, ...)
 	      break;
 */
   	    case DTYPE_CHAR : 
+	      memcpy(dsc->pointer, (char *) dptr, numbytes);
+	      break;
+
   	    case DTYPE_CSTRING:
 	      memcpy(dsc->pointer, (char *) dptr, numbytes);
+	      ((char *)dsc->pointer)[numbytes]=0;
 	      break;
 
   	    case DTYPE_SHORT : 
@@ -350,6 +356,7 @@ int MdsValue(char *expression, ...)
 	  {
 	
   	    case DTYPE_CHAR : 
+	    case DTYPE_CSTRING: 
 	      memcpy(dsc->pointer, (char *) (*mdsValueAnswer.pointer).pointer, numbytes);
 	      break;
 
@@ -579,3 +586,38 @@ int  MdsClose(char *tree, int shot)
 
 }
 
+
+
+int  MdsSetDefault(char *node)
+{
+
+  if (mdsSocket > 0) {
+
+#ifdef _UNIX_SERVER
+    static char *expression = "TreeSetDefault($)";
+#else
+    static char *expression = "MDSLIB->MDS$SET_DEFAULT($)";
+#endif
+
+    long answer;
+    int null = NULL;
+    int dtype_long = DTYPE_LONG;
+    int dtype_cstring = DTYPE_CSTRING;
+    int d1 = descr(&dtype_cstring, node, &null);
+    int d2 = descr(&dtype_long, &answer, &null);
+    int status = MdsValue(expression, &d1, &d2, &null);
+    if ((status & 1))
+    {
+      return *(int *)&answer;
+    }  else
+      return 0;
+  }
+
+  else 
+
+  {
+
+    return TreeSetDefault(node);
+  }
+
+}
