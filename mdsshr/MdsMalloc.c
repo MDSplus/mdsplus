@@ -8,6 +8,7 @@
 #undef malloc
 #undef free
 #undef realloc
+#undef calloc
 #endif
 #include <stdlib.h>
 #ifndef HAVE_VXWORKS_H
