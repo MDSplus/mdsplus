@@ -1,6 +1,6 @@
-public fun PXD14__add(in _path, out _nidout)
+public fun PXD114__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'PXD14', 40, _nidout);
+    DevAddStart(_path, 'PXD114', 40, _nidout);
     DevAddNode(_path // ':NAME', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':TRIG_SOURCE', 'TEXT', 'EXTERNAL', *, _nid);

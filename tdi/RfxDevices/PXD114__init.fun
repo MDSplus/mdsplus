@@ -1,4 +1,4 @@
-public fun PXD14__init(as_is _nid, optional _method)
+public fun PXD114__init(as_is _nid, optional _method)
 {
 	private _N_HEAD = 0;
 	private _N_NAME = 1;
@@ -78,6 +78,8 @@ public fun PXD14__init(as_is _nid, optional _method)
 	}
 
 
+
+
 	for(_c = 0; _c < 4; _c++)
 	{
 		
@@ -94,13 +96,16 @@ public fun PXD14__init(as_is _nid, optional _method)
 		DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_COUPLING, 
 				['DC', 'AC', 'GND'],[0,1,2], _chan_coupling = 0);
 
-		_status = LECROY_PXD114->PXDConfigureChannel(_handle, _chan, _chan_input_imp, _chan_range, 
-			FLOAT(_chan_offset), _chan_coupling);
 
 		write(*, 'Input Imp.: ', _chan_input_imp);
 		write(*, 'Range: ', _chan_range);
 		write(*, 'Offset: ', _chan_offset);
 		write(*, 'Coupling: ', _chan_coupling);
+
+
+
+		_status = LECROY_PXD114->PXDConfigureChannel(_handle, _c, _chan_input_imp, _chan_range, 
+			FLOAT(_chan_offset), _chan_coupling);
 
 		if(_status != 1)
 		{
