@@ -1,0 +1,23 @@
+
+# -------------------------------------------------------------
+
+The "TwuTests" directory.
+
+This directory contains a number of stand-alone java programs.
+These programs implement tests on some of the TWU* classes of
+jScope, in particular on some of the trickier methods in these
+classes.
+
+The test codes should be used stand-alone; they should NOT be 
+linked-in with the main jScope code.
+
+The makefile drives the compilation and running of these tests,
+but the tests can also easily be run by hand, e.g. as follows:
+
+    javac -sourcepath .. -d . TestTWUFetchOptions.java
+    java  TestTWUFetchOptions.java
+
+J.G.Krom j.krom@fz-juelich.de
+2003-10-31
+
+# -------------------------------------------------------------
