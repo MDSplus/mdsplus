@@ -35,7 +35,7 @@ void *mdsip_connect(char *host)
     mdsip_test_status(0,result,"mdsip_connect globus_xio_stack_init");
     if (result != GLOBUS_SUCCESS) return 0;
     result = globus_xio_stack_init(&stack_gsi, NULL);
-    mdsip_test_status(0,result,"mdsip_connect globus_xio_stack_inite");
+    mdsip_test_status(0,result,"mdsip_connect globus_xio_stack_init");
     if (result != GLOBUS_SUCCESS) return 0;
     result = globus_xio_stack_push_driver(stack_tcp, tcp_driver);
     mdsip_test_status(0,result,"mdsip_connect globus_xio_stack_push_driver");
@@ -67,6 +67,12 @@ void *mdsip_connect(char *host)
   {
     result = globus_xio_attr_cntl(attr,gsi_driver,GLOBUS_XIO_GSI_SET_DELEGATION_MODE,
 				  GLOBUS_XIO_GSI_DELEGATION_MODE_FULL);
+    mdsip_test_status(0,result,"mdsip_connect globus_xio_attr_cntl");
+    if (result != GLOBUS_SUCCESS) return 0;
+    result = globus_xio_attr_cntl(attr,
+			 gsi_driver,
+			 GLOBUS_XIO_GSI_SET_AUTHORIZATION_MODE,
+			 GLOBUS_XIO_GSI_HOST_AUTHORIZATION);
     mdsip_test_status(0,result,"mdsip_connect globus_xio_attr_cntl");
     if (result != GLOBUS_SUCCESS) return 0;
   }
