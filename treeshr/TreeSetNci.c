@@ -198,6 +198,9 @@ int _TreeFlushReset(void *dbid,  int nid)
 int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
 {
   int       status;
+
+  status = TreeLockNci(info,0,node_num);
+  if (!(status & 1)) return status;
   status = TreeNORMAL;
 
 /******************************************
@@ -213,10 +216,7 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
     if ((info->nci_file == 0) || (info->nci_file->put == 0))
     status = TreeOpenNciW(info, 0);
     if (status & 1)
-    {
-      status = TreeLockNci(info,0,node_num);
-      if (status & 1)
-      {
+    {      
         char nci_bytes[42];
 	MDS_IO_LSEEK(info->nci_file->put,node_num * sizeof(nci_bytes),SEEK_SET);
 	status = (MDS_IO_READ(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
@@ -224,7 +224,6 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
           TreeSerializeNciIn(nci_bytes,nci);
 	if (!(status & 1))
           TreeUnLockNci(info,0,node_num);
-      }
     }
   }
   else
@@ -467,10 +466,6 @@ int _TreeTurnOn(void *dbid, int nid_in)
   if (~status & 1)
     return status;
       
-  status = TreeLockNci(info, 0, node_num);
-  if (~status & 1)
-    return status;
-
   if (nci.flags & NciM_STATE)
   {
     bitassign(0,nci.flags,NciM_STATE);
