@@ -71,20 +71,16 @@ write(*,'RFXControl__add');
 	}
     for (_c = 1; _c <= 9; _c++)
     {
-        DevAddNode(_path // ':NET_IN_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // ':USER_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     }
-    for (_c = 10; _c <= 64; _c++)
+    for (_c = 10; _c <= 99; _c++)
     {
-        DevAddNode(_path // ':NET_IN_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // ':USER_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
-    for (_c = 1; _c <= 9; _c++)
+    for (_c = 100; _c <= 128; _c++)
     {
-        DevAddNode(_path // ':NET_OUT_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // ':USER_' // TEXT(_c, 3) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     }
-    for (_c = 10; _c <= 64; _c++)
-    {
-        DevAddNode(_path // ':NET_OUT_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
-	}
     for (_c = 1; _c <= 9; _c++)
     {
        DevAddNode(_path // ':MODE_MOD_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
