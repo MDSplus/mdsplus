@@ -63,6 +63,7 @@ static int QJob(SrvJob *job);
 static void FreeJob(SrvJob *job);
 static void SetCurrentJob(SrvJob *job);
 static SrvJob *GetCurrentJob();
+static SrvJob *LastJob();
 static char *Now();
 static void RemoveClient(SrvJob *job);
 extern int MdsGetClientAddr();
@@ -111,6 +112,18 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
   int status;
   switch (*op)
   {
+  case SrvRemoveLast:
+    {
+      SrvJob *job = LastJob();
+      if(job)
+      {
+	FreeJob(job);
+	status = 1;
+      }
+      else
+	status = 0;
+      break;
+    }
   case SrvAbort:
     {
       ServerSetDetailProc(0);
@@ -129,6 +142,7 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
     }
   case SrvAction:
     {
+
       SrvActionJob job;
       job.h.addr  = MdsGetClientAddr();
       job.h.port  = *port;
@@ -236,6 +250,24 @@ static int QJob(SrvJob *job)
   UnlockQueue();
   return StartThread();
 }
+
+static SrvJob *LastJob()
+{
+  SrvJob *job, *ret_job;
+  LockQueue();
+  job = LastQueueEntry;
+  if (job && job->h.previous)
+  {
+    LastQueueEntry = job->h.previous;
+    LastQueueEntry->h.next = 0;
+    ret_job = job;
+  }
+  else
+    ret_job = 0;
+  UnlockQueue();
+  return ret_job;
+}
+
 
 static SrvJob *NextJob(int wait)
 {
@@ -493,9 +525,48 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in)
 {
   int status;
   SrvMonitorJob *job = (SrvMonitorJob *)job_in;
-  char msg[1024];
-//  sprintf(msg,"%s %d %d %d %d %s",job->tree,job->shot,job->nid,job->on,job->mode,job->server);
-  sprintf(msg,"%s %d %d %d %d %d %s %d",job->tree,job->shot,job->phase,job->nid,job->on,job->mode,job->server,job->status);
+ 
+// char msg[1024];
+// sprintf(msg,"%s %d %d %d %d %s",job->tree,job->shot,job->nid,job->on,job->mode,job->server);
+
+    char *msg;
+    struct descriptor fullpath = {0, DTYPE_T, CLASS_D, 0};
+    DESCRIPTOR(fullpath_d,"FULLPATH");
+    DESCRIPTOR(nullstr,"\0");
+    DESCRIPTOR_NID(niddsc,0);
+    struct descriptor ans_d = {0, DTYPE_T, CLASS_S, 0};
+
+    status = TreeOpen(job->tree,job->shot,0);
+    if (status & 1)
+    {
+
+   	niddsc.pointer = (char *)&job->nid;
+    	status = TdiGetNci(&niddsc,&fullpath_d,&fullpath MDS_END_ARG);
+    	StrAppend(&fullpath,&nullstr);
+   	msg = malloc(fullpath.length + 1024);
+
+	if(job->server)		
+    	   sprintf(msg,"%s %d %d %d %d %d %s %d %s %s",job->tree,job->shot,job->phase,
+					  job->nid,job->on,job->mode,job->server,
+					  job->status, fullpath.pointer, Now());
+        else
+    	   sprintf(msg,"%s %d %d %d %d %d unknown %d %s %s",job->tree,job->shot,job->phase,
+					  job->nid,job->on,job->mode,
+					  job->status, fullpath.pointer, Now());
+ 
+
+   	StrFree1Dx(&fullpath);
+    }
+    else
+    {
+       msg = malloc(1024);
+       sprintf(msg,"%s %d %d %d %d %d %s %d unknown %s",job->tree,job->shot,job->phase,
+					  job->nid,job->on,job->mode,job->server,
+					  job->status, Now());
+    }
+
+
+
   status = SendReply(job_in, SrvJobFINISHED,1,strlen(msg),msg);
   if (!(status & 1))
   {

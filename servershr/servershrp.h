@@ -38,6 +38,7 @@ extern void pthread_unlock_global_np();
 #define SrvMonitor     7           /**** Broadcast messages to action monitors ***/
 #define SrvShow        8           /**** Request current status of server ***/
 #define SrvStop        9           /**** Stop server ***/
+#define SrvRemoveLast  10          /**** Remove last entry in the queue if jobs pending ***/
 
 #define MonitorBuildBegin 1
 #define MonitorBuild      2
