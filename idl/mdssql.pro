@@ -1,5 +1,21 @@
 @mdsconnect.pro
-
+;function dbinfo, dbname, host, name, user, pass, mdshost
+;  name = dbname
+;  host = 'red'
+;  user = 'test'
+;  pass = 'pfcworld'
+;  mdshost = 'local'
+;  return, 1
+;end
+;
+; function to return the information used to connect to
+; a particular database from this node.
+; note that if the mdshost is the server that has the database
+; locally, then the  host can be blank.
+;
+; alternatively the mdshost can be 'local' and we will use
+; a local copy of dblib to access the host over the network.
+;
 function dbinfo, dbname, host, name, user, pass, mdshost
 ;  host=getenv("SYBASE_HOST")
 ;  if (strlen(host) eq 0) then host = "red.psfc.mit.edu"
@@ -100,7 +116,35 @@ function QuoteQuotes, qry
   return, qry
 end
 
-  
+function BreakupStringAnswer, str, count
+    sz = size(str)
+    if n_elements(sz) eq 3 then $
+      str = [str]
+	leftover=''
+	for i = 0, n_elements(str)-1 do begin
+		tmp = strsplit(str(i), string(1b), /extract)
+		if leftover ne '' then begin
+		  tmp[0] = leftover+tmp[0]
+		  leftover = ''
+		endif
+		if strpos(str(i), string(1b), /reverse_search) ne strlen(str(i))-1 then begin
+			leftover = tmp[n_elements(tmp)-1]
+            if(n_elements(tmp) gt 1) then $
+			  tmp = tmp(0:n_elements(tmp)-2) $
+			else begin
+			  tmp = leftover
+			  leftover = ''
+			endelse
+		endif
+		if (i eq 0) then begin
+			answer = tmp
+		endif else begin
+			answer = [answer, tmp]
+		endelse
+	endfor
+	return, answer
+end
+
 function dsql, $
                query, a001, a002, a003, a004, a005, a006, a007, a008, a009, $
                a010, a011, a012, a013, a014, a015, a016, a017, a018, a019, $
@@ -126,7 +170,7 @@ debug = keyword_set(debug)
 if (debug) then $
   print, "MDS DSQL query", query
 ;
-; first replace all the non quoted '?' with their coresponding 
+; first replace all the non quoted '?' with their coresponding
 ; input arguments.
 ; find all the quotes and ?
 ; and sort out the un quoted ?s
@@ -140,18 +184,18 @@ if (n_elements(idxs) gt 1) then begin
         if strlen(looking_for) eq  0 then begin
             case (chr) of
                 '?' : begin
-                        ids = [ids, i]  
+                        ids = [ids, i]
                 end
-                '"' : 
+                '"' :
                 "'" : begin
-                    looking_for = chr 
+                    looking_for = chr
                 end
                 default:
             endcase
         endif else begin
             if (chr eq looking_for) then $
               looking_for = ""
-        endelse        
+        endelse
     endfor
 
     if n_elements(ids) gt 1 then begin
@@ -182,7 +226,7 @@ if (debug) then $
   print, "        Query: "+query+"***"
 ;
 ; Now build an expression to pass to mdsvalue with trailing output tdi
-; variables named _Annn where Annn is the output argument name 
+; variables named _Annn where Annn is the output argument name
 ;
 expr = "DSQL('"+query+"'"
 arg = 0
@@ -199,8 +243,9 @@ if (debug) then $
 ; !!!  if it is a string it is a database error
 ;
 count = mdsvalue(expr, socket=!MDSDB_SOCKET)
-if type(count) eq 7 then begin
-; error = MdsValue('_dberror')
+sz = size(count)
+if (sz(n_elements(sz)-2) eq 7) then begin
+
 ; status = MdsValue('_dbstatus')
     error = 0
     status = 0
@@ -214,16 +259,26 @@ endif else begin
 ;
 ;  for each of the output arguments
 ;    build an expression which sets the argument to the variable of
-;    the constructed name 
+;    the constructed name
 ;    (Annn = MdsValue("_Annn")
 ;  !!! what about error checking!
 ;
     if (debug) then $
-      print, "        Count: ", count    
+      print, "        Count: ", count
     for i = num_inputs+1, n_params()-1 do begin
         arg = 'a'+string(i, format="(I3.3)")
         cmd = arg+' = MDSVALUE("_'+arg+'",socket=!MDSDB_SOCKET)'
         status = execute(cmd)
+;
+; check if it is  a string.  If so parse
+; out the delimiters (1b)
+;
+		cmd = 'sz = size('+arg+')'
+		status = execute(cmd)
+		if (sz(n_elements(sz)-2) eq 7) then begin
+		  cmd = arg+' = BreakupStringAnswer('+arg+',count)'
+		  status = execute(cmd)
+		endif
     endfor
 ;
 ; free all the tdi variables returned by DSQL
