@@ -19,6 +19,6 @@
 # Changes to this file take effect immediately without restarting inetd or
 # any other service. They do not effect existing connections however.
 #
-/o=grid/o=national fusion collaboratory/ou=mit/cn=thomas w. fredian/email=twf@psfc.mit.edu | twf
+/O=Grid/O=National Fusion Collaboratory/OU=MIT/CN=Thomas W. Fredian/Email=twf@psfc.mit.edu | twf
 * | MAP_TO_LOCAL
 * | nobody 
