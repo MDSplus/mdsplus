@@ -41,7 +41,7 @@ long testClose(char *tree, int shot)
 
 long testScalarString(char *expression, char *expected, int length)
 {
-  char *string = malloc(length);
+  char *string = malloc(length+1);
   int dsc = descr(&dtype_cstring,string, &null, &length);
   printf("Checking to see if '%s' is '%s'", expression, expected);
   status = MdsValue(expression, &dsc, &null, &returnlength);
@@ -113,6 +113,7 @@ void TestTdi()
   float arg1 = 1.234567;
   float arg2 = 2.345678;
   int sresult = 10;
+  char *machine = getenv("MACHINE");
 
   printf("\n*** TDI TESTS ***\n");
 
@@ -144,7 +145,8 @@ void TestTdi()
   if (status & 1) status = status && (sqrt(result1*result1)-(arg1*arg2) < 1.e-7);
   report(status);
 
-  report(testScalarString("MACHINE()", getenv("MACHINE"), strlen(getenv("MACHINE"))));
+  machine = machine ? machine : "";
+  report(testScalarString("MACHINE()", machine, strlen(machine)));
 }
   
 
