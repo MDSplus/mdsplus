@@ -826,3 +826,49 @@ static void str2upcase( char *str )
 
 //-----------------------------------------------------------
 static int NOT_SUPPORTED() { printf("reference to unsupported call made\n"); return FAILURE; }
+
+int CamSetMAXBUF(char *Name, int new)
+{
+  int scsiDevice,enhanced,online;
+  CamKey Key;
+  int status = CamAssign( Name, &Key );
+  if (status & 1)
+  {
+    char dev_name[20];
+    sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address, Key.crate);
+    if( (scsiDevice = get_scsi_device_number( dev_name, &enhanced, &online )) < 0 )
+    {
+      return -1;
+    }
+    else
+      return SGSetMAXBUF(scsiDevice,new);
+  }
+  else
+  {
+    printf("Module: %s not defined\n",Name);
+    return -1;
+  }
+}
+
+int CamGetMAXBUF(char *Name)
+{
+  int scsiDevice,enhanced,online;
+  CamKey Key;
+  int status = CamAssign( Name, &Key );
+  if (status & 1)
+  {
+    char dev_name[20];
+    sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address, Key.crate);
+    if( (scsiDevice = get_scsi_device_number( dev_name, &enhanced, &online )) < 0 )
+    {
+      return -1;
+    }
+    else
+      return SGGetMAXBUF(scsiDevice);
+  }
+  else
+  {
+      printf("Module: %s not defined\n",Name);
+      return -1;
+  }
+}

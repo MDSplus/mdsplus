@@ -41,17 +41,56 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 
-#define MAXBUF  100000
 #define ROUTINE_NAME "scsi_io"
 
 #ifndef SG_FLAG_MMAP_IO
 #define SG_FLAG_MMAP_IO 4
 #endif
 
+#define MIN_MAXBUF 65538
+
+static int FDS[10] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}; 
+static int MAXBUF[10] = {MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF,MIN_MAXBUF};
+static int BUFFSIZE[10] = {0,0,0,0,0,0,0,0,0,0};
+static int OpenScsi(int scsiDevice, char **buff_out);
+
+int SGSetMAXBUF(int scsiDevice, int new)
+{
+  int old=-1;
+  char *bufptr;
+  int fd = -1;
+  if (scsiDevice >= 0 || scsiDevice <=9)
+  {
+    old=MAXBUF[scsiDevice];
+    if (new >= MIN_MAXBUF)
+    {
+      int pagesize = getpagesize();
+      int reqsize = ((new + pagesize -1) / pagesize) * pagesize;
+      MAXBUF[scsiDevice]=reqsize;
+      if (FDS[scsiDevice] != -1)
+      {
+	close(FDS[scsiDevice]);
+	FDS[scsiDevice]=-1;
+      }
+      fd = OpenScsi(scsiDevice,&bufptr);
+      if ((fd != -1) && (BUFFSIZE[scsiDevice] != MAXBUF[scsiDevice]))
+        fprintf(stderr,"Did not get requested buffer size, requested = %d, got = %d\n",MAXBUF[scsiDevice],BUFFSIZE[scsiDevice]);
+    }
+  }
+  return old;
+}
+
+int SGGetMAXBUF(int scsiDevice)
+{
+  if (scsiDevice >= 0 || scsiDevice <= 9)
+    return BUFFSIZE[scsiDevice] ? BUFFSIZE[scsiDevice] : MAXBUF[scsiDevice];
+  else
+    return -1;
+}
+
 static int OpenScsi(int scsiDevice, char **buff_out)
 {
   char *buff = 0;
-  static int FDS[10] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}; 
   static char *BUFFS[10] = {0,0,0,0,0,0,0,0,0,0};
   int fd = -1;
   if (scsiDevice >= 0 || scsiDevice <= 9)
@@ -73,21 +112,20 @@ static int OpenScsi(int scsiDevice, char **buff_out)
       }
       else
       {
-        int reqsize = MAXBUF;
-        int gotsize;
+        int reqsize = MAXBUF[scsiDevice];
         int pagesize = getpagesize();
         reqsize = ((reqsize + pagesize -1) / pagesize) * pagesize;
 	if( ( ioctl(fd, SG_SET_RESERVED_SIZE, &reqsize) < 0) ||
-	    ( ioctl(fd, SG_GET_RESERVED_SIZE, &gotsize) < 0) ||
-            ( gotsize < reqsize))   
+	    ( ioctl(fd, SG_GET_RESERVED_SIZE, &BUFFSIZE[scsiDevice]) < 0) ||
+	    ( BUFFSIZE[scsiDevice] < MIN_MAXBUF ))
         {
-	  fprintf( stderr, "%s(): could NOT allocate %d byte kernel buffer, max is %d\n", ROUTINE_NAME, reqsize, gotsize );
+	  fprintf( stderr, "%s(): could NOT allocate %d byte kernel buffer, max is %d\n", ROUTINE_NAME, reqsize, BUFFSIZE[scsiDevice] );
           close(fd);
           fd = -1;
 	}
         else
 	{
-          buff = mmap(0,gotsize,(PROT_READ | PROT_WRITE),MAP_SHARED, fd,0);
+          buff = mmap(0,BUFFSIZE[scsiDevice],(PROT_READ | PROT_WRITE),MAP_SHARED, fd,0);
           if (buff == 0)
 	  {
             fprintf( stderr, "%(): error in mmap to scsi buffer, errno = %d\n", ROUTINE_NAME, errno);
@@ -121,9 +159,9 @@ int scsi_io(int scsiDevice, int direction, unsigned char *cmdp,
   struct sg_io_hdr sghdr = {'S'};
   if (sb_out_len != 0)
     *sb_out_len = 0;
-  if (buflen > MAXBUF)
+  if (buflen > MAXBUF[scsiDevice])
   {
-    fprintf( stderr, "%s(): buffer size (%d) too large, must be less than %d\n",ROUTINE_NAME,buflen,MAXBUF);
+    fprintf( stderr, "%s(): buffer size (%d) too large, must be less than %d\n",ROUTINE_NAME,buflen,MAXBUF[scsiDevice]);
   }
   else
   {
