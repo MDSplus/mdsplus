@@ -26,6 +26,7 @@ public abstract class DeviceComponent extends JPanel
     }
     public String getIdentifier() {return identifier; }
     
+    
     public void configure(int baseNid) 
     {
         this.baseNid = baseNid;

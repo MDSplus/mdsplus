@@ -15,6 +15,7 @@ public class DeviceTable extends DeviceComponent
     boolean state = true;
     String labelString = "";
     boolean initializing = false;
+    boolean editable = true;
             
     protected JScrollPane scroll;
     protected JTable table;
@@ -68,6 +69,8 @@ public class DeviceTable extends DeviceComponent
     
     public String getLabelString() {return labelString;}
     
+    public void setEditable(boolean state) {editable = state;}
+    public boolean getEditable() {return editable;}
     
     
     public DeviceTable()
@@ -109,7 +112,7 @@ public class DeviceTable extends DeviceComponent
                     return items[id];
                  }catch(Exception exc) {return null; }
             }
-            public boolean isCellEditable(int row, int col) {return  true; }
+            public boolean isCellEditable(int row, int col) {return  editable; }
             public void setValueAt(Object value, int row, int col) 
             {
                 items[row * numCols + col] = (String)value;
@@ -152,8 +155,11 @@ public class DeviceTable extends DeviceComponent
             if(i % numCols == numCols - 1)
             {
                 dataString += "]";
-                if(items[i+1] != null && !items[i+1].equals(""))
+                if(i < n_data - 1 && items[i+1] != null && !items[i+1].equals(""))
                     dataString += ",";
+                else
+                   if(i == n_data - 1)
+                     dataString += "]";
             }
             else
                 dataString += ",";
