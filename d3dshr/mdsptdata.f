@@ -465,7 +465,7 @@ c	implicit none
 	character pointname*10
 	integer*4 ier
 c	character*(*) apass
-	character apass*512
+	character apass*255
 
 	IARRAY.NREQ  = 0
 
@@ -765,7 +765,9 @@ c	pointname='33LS_V_ACC'
 	write (6,*) 'NPT: ',npt
 	write (6,*) 'IER: ',ier
 	write (6,*) 'UNITS: ',units
-                                                           
+
+	if (npt.gt.100) npt=100
+
 	do i=1,npt
 	  write (6,*) i,f(i),t(i)
 	enddo
