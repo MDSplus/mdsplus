@@ -41,7 +41,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 
-#define MAXBUF 65536
+#define MAXBUF 2000000
 #define ROUTINE_NAME "scsi_io"
 
 #ifndef SG_FLAG_MMAP_IO
@@ -67,7 +67,9 @@ static int OpenScsi(int scsiDevice, char **buff_out)
       sprintf(devnam,"/dev/sg%d", scsiDevice);
       if ( (fd = open(devnam, O_RDWR)) < 0 )
       {
-	fprintf( stderr, "%s(): Need read/write permissions for \"%s\".[%d]\n", ROUTINE_NAME, devnam, errno);
+        char msg[512];
+        sprintf(msg,"%s(): Error opening device \"%s\"",ROUTINE_NAME,devnam); 
+        perror(msg);
       }
       else
       {
@@ -79,7 +81,7 @@ static int OpenScsi(int scsiDevice, char **buff_out)
 	    ( ioctl(fd, SG_GET_RESERVED_SIZE, &gotsize) < 0) ||
             ( gotsize < reqsize))   
         {
-	  fprintf( stderr, "%s(): could NOT allocate %d byte kernel buffer\n", ROUTINE_NAME, reqsize );
+	  fprintf( stderr, "%s(): could NOT allocate %d byte kernel buffer, max is %d\n", ROUTINE_NAME, reqsize, gotsize );
           close(fd);
           fd = -1;
 	}

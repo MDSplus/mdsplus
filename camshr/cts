@@ -1,3 +1,2 @@
 #!/bin/sh
-fdir=`echo $0 | sed s/mdscts//`
-`echo $0 | sed s/mdscts//`mdsdcl -prep 'set command cts_commands -prompt="CTS> " -def_file="*.cts"' $1 $2 $3 $4 $5 $6 $7 $8
+`dirname $0`/mdsdcl -prep 'set command cts_commands -prompt="CTS> " -def_file="*.cts"' $1 $2 $3 $4 $5 $6 $7 $8
