@@ -2,9 +2,6 @@
 MDSPLUS_DIR=`cat /etc/.mdsplus_dir`
 export MDSPLUS_DIR
 . $MDSPLUS_DIR/setup.sh
-GLOBUS_LOCATION=$MDSPLUS_DIR
-export GLOBUS_LOCATION
-. $GLOBUS_LOCATION/etc/globus-user-env.sh
 MDS_PATH=$MDSPLUS_DIR/local/tdi\;$MDS_PATH
 export MDS_PATH
 $MDSPLUS_DIR/bin/mdsip -s 0 -H /etc/mdsip.hosts >> /var/log/mdsip.log 2>> /var/log/mdsip.error
