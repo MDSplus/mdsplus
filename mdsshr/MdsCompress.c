@@ -54,6 +54,10 @@ The expansion routine "xentry":
 #include <strroutines.h>
 #include <librtl_messages.h>
 
+#ifndef _WIN32
+typedef long long _int64;
+#endif
+
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 typedef ARRAY_COEFF(char, 1) array_coef;
@@ -147,9 +151,9 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
     Second is dummy for expansion function.
     ASSUME compressor fails gracefully and only changes *pdat data.
     **************************************************************/
-      prec = (record_four *) align((long)((char *) pwork + sizeof(record_four)),sizeof(void *));
+      prec = (record_four *) align((_int64)((char *) pwork + sizeof(record_four)),sizeof(void *));
       pca1 = (array_coef *) ((char *) prec + sizeof(rec0));
-      pdat = (struct descriptor_a *) align((long)((char *) pca1 + asize),sizeof(void *));
+      pdat = (struct descriptor_a *) align((_int64)((char *) pca1 + asize),sizeof(void *));
       pcmp = (char *) pdat + sizeof(struct descriptor_a);
       plim = porig->pointer + porig->arsize - sizeof(opcode);
       if (pcmp >= plim)
