@@ -3,7 +3,7 @@ include makefile-header
 top_srcdir=@top_srcdir@
 RM=$(top_srcdir)/devscripts/rm_if
 SHELL=/bin/sh
-CFLAGS = $(GLOBUS_CFLAGS) $(GLOBUS_INCLUDES) -I$(top_srcdir)/include
+CFLAGS = @CFLAGS@ $(GLOBUS_CFLAGS) $(GLOBUS_INCLUDES) -I$(top_srcdir)/include
 LDFLAGS = $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
 EXPORTS = mdsipshr.export
 INSTALL=@top_srcdir@/conf/install-sh -c
@@ -155,7 +155,7 @@ makefile-header:
 	mkdir @MAKEBINDIR@
 
 @MAKEBINDIR@mdsiptest : t.c @MAKELIBDIR@libMdsIpShr@SHARETYPE@
-	$(CC) -o $@ $(CFLAGS) t.c -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
+	$(CC) -o $@ $(CFLAGS) t.c -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS) $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
 
 @MAKEBINDIR@mdsipd : mdsipd
 	cp mdsipd @MAKEBINDIR@mdsipd
