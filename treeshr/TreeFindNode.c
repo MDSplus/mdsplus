@@ -202,7 +202,9 @@ static int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **n
   {
     case BROTHER_TYPE_NOWILD:
     {
-      for (node = search->node ? brother_of(node) : child_of(node); node && !compare(node); node = brother_of(node));
+      for (node = *node_in_out,node = search->node ? brother_of(node) : child_of(node); node && !compare(node); node = brother_of(node));
+      if (node == 0)
+        for (node = *node_in_out,node = search->node ? brother_of(node) : member_of(node); node && !compare(node); node = brother_of(node));
       break;
     }
     case BROTHER_TYPE:
@@ -212,7 +214,9 @@ static int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **n
     }
     case MEMBER_TYPE_NOWILD:
     {
-      for (node = search->node ? brother_of(node) : member_of(node); node && !compare(node); node = brother_of(node));
+      for (node = *node_in_out, node = search->node ? brother_of(node) : member_of(node); node && !compare(node); node = brother_of(node));
+      if (node == 0)
+        for (node = *node_in_out, node = search->node ? brother_of(node) : child_of(node); node && !compare(node); node = brother_of(node));
       break;
     }
     case MEMBER_TYPE:
