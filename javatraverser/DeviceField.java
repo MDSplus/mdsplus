@@ -18,6 +18,7 @@ public class DeviceField extends DeviceComponent
     JPanel jp;
     protected boolean isGridBag = false;
 
+    protected String initialField;
 
 
     private boolean reportingChange = false;
@@ -82,6 +83,8 @@ public class DeviceField extends DeviceComponent
     {
         initializing = true;
         initial_state = is_on;
+
+        initialField =  Tree.dataToString(data);
 
        Container parent = getParent();
        if(parent.getLayout() == null)
@@ -191,7 +194,7 @@ public class DeviceField extends DeviceComponent
             if(displayEvaluated)
             {
                 try {
-                    textString = Tree.dataToString(subtree.evaluateData(data, 0));
+                    initialField = textString = Tree.dataToString(subtree.evaluateData(data, 0));
                 }catch(Exception exc){textString = Tree.dataToString(data);}
             }
             else
@@ -281,6 +284,14 @@ public class DeviceField extends DeviceComponent
     {
       super.setBounds(x,y,width,height);
       setPreferredSize(new Dimension(width, height));
+    }
+
+    protected boolean isDataChanged()
+    {
+      if(displayEvaluated)
+        return !(textF.getSize().equals(initialField));
+      else
+        return true;
     }
 
 }

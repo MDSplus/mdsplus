@@ -93,7 +93,7 @@ public abstract class DeviceComponent extends JPanel
                 }catch(Exception exc){}
             }
   */
-            if(editable)
+            if(editable && isDataChanged())
             {
                 try {
                 subtree.putData(nidData, curr_data, Tree.context);
@@ -171,6 +171,7 @@ public abstract class DeviceComponent extends JPanel
 
     protected void dataChanged(int offsetNid, Object data){}
     protected void stateChanged(int offsetNid, boolean state){}
+    protected boolean isDataChanged() {return true;}
 }
 
 
