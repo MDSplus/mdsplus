@@ -2096,6 +2096,7 @@ int NumActivePrivateEvents()
     if(private_info[i].active) num++;
   }
   UnlockMdsShrMutex(&privateMutex);
+  return num;
 }
 
 void DumpSharedEventInfo()
