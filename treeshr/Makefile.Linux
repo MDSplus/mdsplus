@@ -27,11 +27,7 @@ RemoteAccess.o
 treeshr : ../shlib ../shlib/libTreeShr.$(SHARE_TYPE)
 
 ../shlib/libTreeShr.$(SHARE_TYPE) : $(OBJECTS) 
-<<<<<<< Makefile
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(MISALIGN_LD_FLAGS) $(OBJECTS) -L../shlib -lMdsShr
-=======
 	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc -L../shlib -lMdsShr
->>>>>>> 1.15
 
 ../shlib :
 	mkdir ../shlib
