@@ -34,14 +34,16 @@ class TwuSingleSignal
     private boolean   isAbscissa            = false ;
 
     // A constructor that is useful for main signals.
-    public TwuSingleSignal (TwuDataProvider dp, String src)
+    public
+    TwuSingleSignal (TwuDataProvider dp, String src)
     {
         provider = dp;
         source = src;
     }
 
     // A constructor that derives an abscissa signal from a main signal.
-    public TwuSingleSignal (TwuDataProvider dp, TwuSingleSignal prnt)
+    public
+    TwuSingleSignal (TwuDataProvider dp, TwuSingleSignal prnt)
     {
         provider = dp;
         mainSignal = prnt ;
@@ -49,7 +51,8 @@ class TwuSingleSignal
     }
 
     // And a constructor that is mainly useful for testing purposes.
-    public TwuSingleSignal (TWUProperties fakedSignal)
+    public
+    TwuSingleSignal (TWUProperties fakedSignal)
     {
         provider = null;
         properties = fakedSignal ;
@@ -219,37 +222,40 @@ class TwuSingleSignal
         // which can used _almost_ just like the real thing.
     }
 
-    // these public routines returning private variables are supposed
-    // to protect those vars from accidental overwriting.
-
-    public boolean dataReady      ()
+    public boolean
+    dataReady()
     {
         return dataAvailable ;   // note: you should also check for error !!!
     }
 
-    public boolean propertiesReady()
+    public boolean
+    propertiesReady()
     {
         return propertiesAvailable ; // ditto.
     }
 
-    public boolean error()
+    public boolean
+    error()
     {
         return error ;
     }
 
-    public Exception getError()
+    public Exception
+    getError()
     {
         return errorSource ;
     }
 
-    public float [] getData (TWUFetchOptions opt )
+    public float []
+    getData (TWUFetchOptions opt )
         throws IOException
     {
         setFetchOptions (opt) ;
         return getData() ;
     }
 
-    public float [] getData ( ) throws IOException
+    public float []
+    getData ( ) throws IOException
     {
         if (dataAvailable)
           return data ;
@@ -270,7 +276,8 @@ class TwuSingleSignal
         return data ;
     }
 
-    public void setFetchOptions (TWUFetchOptions opt)
+    public void
+    setFetchOptions (TWUFetchOptions opt)
         throws IOException
     {
         doClip (opt);
@@ -287,23 +294,16 @@ class TwuSingleSignal
         data = null ;
     }
 
-    private void doClip (TWUFetchOptions opt)
+    private void
+    doClip (TWUFetchOptions opt)
         throws IOException
     {
-//         if (fakeAbscissa)
-//           return ;
-        // there *is* no abscissa so there aren't any properties
-        // (and certainly no length)!
-        //
-        // Oh?
-        // What is then the purpose of this FakeTWUProperties object ?
-        // JG Krom 2003-10-28
-
         int length = getTWUProperties(shotOfTheProperties).LengthTotal();
         opt.clip (length);
     }
 
-    private void fetchBulkData() throws Exception
+    private void
+    fetchBulkData() throws Exception
     {
         if (! fetchOptionsAvailable)
           throwError ("unspecified fetch options (internal error)");
@@ -321,7 +321,8 @@ class TwuSingleSignal
         dataAvailable = true ;
     }
 
-    protected float[] doFetch(TWUFetchOptions opt)
+    protected float[]
+    doFetch(TWUFetchOptions opt)
     {
         ConnectionEvent ce;
         ce = makeConnectionEvent("Start Loading "+ (isAbscissa ? "X" : "Y"));
@@ -360,7 +361,6 @@ class TwuSingleSignal
         DispatchConnectionEvent(makeConnectionEvent(null, 0, 0));
         return bulk.error() ? null : bulk.getBulkData() ;
     }
-
 
     private void 
     createScalarData()
@@ -409,7 +409,8 @@ class TwuSingleSignal
     }
 
 
-    private void throwError (String msg)
+    private void
+    throwError (String msg)
         throws Exception
     {
         error = true ;
@@ -417,21 +418,23 @@ class TwuSingleSignal
         throw errorSource ;
     }
 
-    private void checkForError ()
+    private void
+    checkForError ()
         throws Exception
     {
         checkForError (this);
     }
 
-    static
-    private void checkForError (TwuSingleSignal sig)
+    static private void
+    checkForError (TwuSingleSignal sig)
         throws Exception
     {
         if (sig!= null && sig.error)
           throw( (Exception) sig.errorSource.fillInStackTrace() ) ;
     }
 
-    protected static void handleException (Exception e) 
+    protected static void
+    handleException (Exception e) 
     {
         if (Waveform.is_debug) 
           e.printStackTrace (System.out) ;
