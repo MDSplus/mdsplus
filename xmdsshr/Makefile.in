@@ -81,7 +81,7 @@ install:
 	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsXdBox.uid @uiddir@
 	$(INSTALL) -m 755  @MAKELIBDIR@libXmdsShr@SHARETYPE@ @libdir@
 	if test "@SHARETYPE@" != ".a" ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libXmdsShr.a @libdir@
+		$(INSTALL) -m 644  @MAKELIBDIR@libXmdsShr.a @libdir@; \
 	fi;
 
 @MAKEUIDDIR@:
