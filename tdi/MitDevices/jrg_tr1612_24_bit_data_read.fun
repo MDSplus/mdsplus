@@ -5,10 +5,12 @@ public fun jrg_tr1612_24_bit_data_read(in _name, in _chan_number, in _first_samp
  * Function to read Joerger Model TR (or "TR1612") data in 24 bit mode
  *
  * BAN/MBF 23-SEP-2003
+ * BAN/MBF  4-AUG-2004 Changed all CamPiow calls to 24 bit;
+ *		Fixes bug with 18 bit data values in F17/A1
  */
 
 /* set digitizer for readout at first memory location */	    
-DevCamChk(_name,CamPiow(_name,1wu,17wu,_first_sample,16wu),1,1);
+DevCamChk(_name,CamPiow(_name,1wu,17wu,_first_sample,24wu),1,1);
 
 _samples_to_read = _last_sample - _first_sample + 1;
 
