@@ -28,7 +28,7 @@ public fun TR10__store(as_is _nid, optional _method)
 
     _tr10_read_bug = 0;
     _tr10_bug_message = " for chan ";
-
+    _tr10_status = 0;
 
 	_max_samples = _2M;
 
@@ -100,7 +100,7 @@ write(*, 'TR10 START STORE');
 			}
 			else
 			{
-				_data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts);	
+				_data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts, _tr10_status);	
 				
 				/* TEST FOR TR10 READOUT BUG */
 				_bug_idx = 0;
@@ -113,7 +113,7 @@ write(*, 'TR10 START STORE');
 				   
 				}
 				if(_bug_idx > 0)
-				    _tr10_bug_message = _tr10_bug_message // _i //' ('//_bug_idx // '), ';
+				    _tr10_bug_message = _tr10_bug_message // _i //' ('//_tr10_status// '), ';
 				/**********************/
 			}						
 

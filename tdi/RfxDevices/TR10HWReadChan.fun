@@ -1,4 +1,4 @@
-public fun TR10HWReadChan(in _handle, in _chan, in _start_idx, in _end_idx, in _pts)
+public fun TR10HWReadChan(in _handle, in _chan, in _start_idx, in _end_idx, in _pts, inout _status)
 {
 	
 	private _2M = 2097152;
@@ -38,7 +38,7 @@ public fun TR10HWReadChan(in _handle, in _chan, in _start_idx, in _end_idx, in _
 	_data = zero(_n_samples+32, 0W);
 
 /* Read channel */
-	TR10->TR10_Mem_Read_DMA(val(_handle), val(byte(_chan)), val(long(_act_sample)), ref(_data), val(_n_samples));
+	_status = TR10->TR10_Mem_Read_DMA(val(_handle), val(byte(_chan)), val(long(_act_sample)), ref(_data), val(_n_samples));
 
 	return(_data[_start_ofs:(_end_idx - _start_idx + _start_ofs)]);
 }
