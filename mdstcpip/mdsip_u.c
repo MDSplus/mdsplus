@@ -146,7 +146,6 @@ static int SpawnWorker(SOCKET sock)
 	char cmd[512];
 	sprintf(cmd,"%s %s worker %d %d","mdsip_service",portname,GetCurrentProcessId(),sock);
 	startupinfo.cb = sizeof(startupinfo);
-	//DebugBreak();
     status = CreateProcess(_pgmptr,cmd,NULL,NULL,FALSE,0,NULL,NULL,&startupinfo, &pinfo);
 	CloseHandle(pinfo.hProcess);
 	CloseHandle(pinfo.hThread);
@@ -327,7 +326,6 @@ int main(int argc, char **argv)
   struct timeval timeout = {1,0};
   InitializeSockets();
   FD_ZERO(&fdactive);
-  //DebugBreak();
   if (argc <= 1 && !IsService)
   {
     printf("Usage: mdsip portname|portnumber [multi|install|remove] [hostfile]\n");
@@ -554,7 +552,6 @@ static void AddClient(int sock,struct sockaddr_in *sin)
       else
         ClientList = new;
 	}
-	//DebugBreak();
     pid = SpawnWorker(sock);
     if (hp)
       printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr,sock, pid, user_p, hp->h_name, inet_ntoa(sin->sin_addr));
