@@ -72,7 +72,7 @@ public class DecompileTree
             Element docSon = (Element) document.createElement("node");
             tree.appendChild(docSon);
             NidData prevNid = null;
-            recDecompile(sons[i], docSon, false);
+            recDecompile(sons[i], docSon, false, isFull);
          }
         NidData [] members;
         try {
@@ -93,7 +93,7 @@ public class DecompileTree
             }catch(Exception exc){System.err.println(exc);}
             tree.appendChild(docMember);
             NidData prevNid = null;
-             recDecompile(members[i], docMember, false);
+             recDecompile(members[i], docMember, false, isFull);
         }
         TransformerFactory transFactory = TransformerFactory.newInstance();
         try {
@@ -109,7 +109,7 @@ public class DecompileTree
 
 
 
-    static void recDecompile(NidData nid, Element node, boolean isDeviceField)
+    static void recDecompile(NidData nid, Element node, boolean isDeviceField, boolean isFull)
     {
         try {
             NidData prevNid = mdsTree.getDefault(0);
@@ -130,7 +130,7 @@ public class DecompileTree
             if(isDeviceField) //Handle device field display
             {
                 Data data = null;
-                if(info.isSetup())
+                if(info.isSetup() || isFull)
                 {
                     try {
                         data = mdsTree.getData(nid, 0);
@@ -208,23 +208,17 @@ public class DecompileTree
                 for(int i = 0; i < subtreeNodes.size(); i++)
                 {
                     Element currNode = (Element) document.createElement("node");
-                    recDecompile((NidData)subtreeNodes.elementAt(i), currNode, false);
+                    recDecompile((NidData)subtreeNodes.elementAt(i), currNode, false, isFull);
                 }
                 for(int i = 0; i < subtreeMembers.size(); i++)
                 {
                     Element currNode = (Element) document.createElement("member");
-                    recDecompile((NidData)subtreeMembers.elementAt(i), currNode, false);
+                    recDecompile((NidData)subtreeMembers.elementAt(i), currNode, false, isFull);
                 }
 
             } //End management of device fields
             else
             {
-              if(info.getName().startsWith("TCAC07"))
-                 {
-                 int i=0;
-                 i ++;
-                 }
-
 
                 node.setAttribute("NAME", info.getName());
                 if(info.getUsage() == NodeInfo.USAGE_DEVICE || info.getUsage() == NodeInfo.USAGE_COMPOUND_DATA)
@@ -334,7 +328,7 @@ public class DecompileTree
                      // int numFields = info.getConglomerateNids() - 1;
                       int numFields = info.getConglomerateNids();
                         for(int i = 1; i < numFields; i++)
-                            recDecompile(new NidData(nid.getInt() + i), node, true);
+                            recDecompile(new NidData(nid.getInt() + i), node, true, isFull);
                     }
                     else
                     {
@@ -342,7 +336,7 @@ public class DecompileTree
                         {
                             Element docSon = (Element) document.createElement("node");
                             node.appendChild(docSon);
-                            recDecompile(sons[i], docSon, false);
+                            recDecompile(sons[i], docSon, false, isFull);
                         }
                         NidData [] members;
                         try {
@@ -359,7 +353,7 @@ public class DecompileTree
                             else
                                 docMember = (Element) document.createElement("member");
                             node.appendChild(docMember);
-                            recDecompile(members[i], docMember, false);
+                            recDecompile(members[i], docMember, false, isFull);
                         }
                     }
                 }
