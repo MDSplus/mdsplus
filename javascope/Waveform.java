@@ -1075,23 +1075,28 @@ public class Waveform extends JComponent
 	        num_points = waveform_signal.n_points;
 	        
 	    int x[] = new int[waveform_signal.n_points];
-	    int y[] = new int[waveform_signal.n_points];
-	    
+	    int y[] = new int[waveform_signal.n_points];	    
 	    points = new Point[waveform_signal.n_points];
-	    for(i = 0; i < waveform_signal.n_points; i +=2)
-	    {
-	        x[i] = wm.XPixel(waveform_signal.x[i], d);
-	        y[i] = wm.YPixel(waveform_signal.y[i], d);
-	        points[i] = new Point(x[i], y[i]);
-	    }
 	    
 	    if(curr_mode == Signal.MODE_STEP)
+        {
 	        for(i = 1; i < waveform_signal.n_points - 1; i +=2)
 	        {
 	            x[i] = x[i-1];
 	            y[i] = y[i+1];
 	            points[i] = new Point(x[i-1], y[i+1]);
 	        }
+        }
+        else
+        {       
+	        for(i = 0; i < waveform_signal.n_points; i++)
+	        {
+	            x[i] = wm.XPixel(waveform_signal.x[i], d);
+	            y[i] = wm.YPixel(waveform_signal.y[i], d);
+	            points[i] = new Point(x[i], y[i]);
+	        }
+        }
+	    
 	    //num_points = waveform_signal.n_points;
 	    polygon = new Polygon(x, y, i); 
 	    end_x = x[0];
