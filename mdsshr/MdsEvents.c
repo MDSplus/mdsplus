@@ -154,7 +154,9 @@ static int getSemId()
         }
         else
 	{
-          status = semctl(semId,0,SETVAL,1);
+          union semun { int val; struct semid_ds *buf; unsigned short *array;} arg;
+          arg.val = 1;
+          status = semctl(semId,0,SETVAL,arg);
           if (status == -1)
             perror("Error accessing locking semaphore");
         }
