@@ -189,8 +189,13 @@ int	i;
 
         if (Tdi_RandomSeed == 1234567)
 	{
+#ifdef HAVE_WINDOWS_H
+          srand(time(0)+getpid());
+          Tdi_RandomSeed = rand();
+#else
           srandom(time(0)+getpid());
           Tdi_RandomSeed = random();
+#endif
         }
 	N_ELEMENTS(out_ptr, n);
 	switch (out_ptr->dtype) {
