@@ -272,8 +272,8 @@ public class K3115Setup
     border1 = BorderFactory.createEtchedBorder(Color.white,new Color(142, 142, 142));
     titledBorder1 = new TitledBorder(border1," GENERAL ");
     border2 = BorderFactory.createLineBorder(SystemColor.controlText,2);
-    this.setWidth(681);
-    this.setHeight(681);
+    this.setWidth(706);
+    this.setHeight(706);
     this.setDeviceType("K3115");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("K3115 : programmable waveform generator");
@@ -393,7 +393,7 @@ public class K3115Setup
     jScrollPane1.setPreferredSize(new Dimension(600, 219));
     jPanel16.setLayout(gridLayout2);
     jPanel16.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-    jPanel16.setPreferredSize(new Dimension(600, 900));
+    jPanel16.setPreferredSize(new Dimension(600, 820));
     jLabel14.setText("CH 02 :");
     jLabel14.setFont(new java.awt.Font("Dialog", 1, 11));
     deviceField6.setOffsetNid(21);
@@ -461,12 +461,12 @@ public class K3115Setup
     jPanel111.setLayout(gridLayout7);
     CH02panel.setLayout(flowLayout110);
     CH02panel.setBorder(BorderFactory.createLineBorder(Color.gray,1));
-    CH02panel.setPreferredSize(new Dimension(560, 140));
+    CH02panel.setPreferredSize(new Dimension(560, 120));
     timesCH02panel.setLayout(flowLayout18);
     voltagesCH02panel.setLayout(flowLayout111);
     jLabel19.setFont(new java.awt.Font("Dialog", 1, 11));
     jLabel19.setText("Polarity :");
-    jPanel111.setPreferredSize(new Dimension(560, 130));
+    jPanel111.setPreferredSize(new Dimension(560, 120));
     flowLayout110.setAlignment(FlowLayout.LEFT);
     flowLayout110.setHgap(5);
     flowLayout110.setVgap(5);
@@ -556,7 +556,7 @@ public class K3115Setup
     jLabel114.setHorizontalAlignment(SwingConstants.RIGHT);
     jLabel114.setText("Range (Vpp) :");
     jPanel114.setLayout(gridLayout8);
-    jPanel114.setPreferredSize(new Dimension(560, 130));
+    jPanel114.setPreferredSize(new Dimension(560, 120));
     flowLayout16.setAlignment(FlowLayout.LEFT);
     flowLayout16.setHgap(5);
     flowLayout16.setVgap(5);
@@ -574,7 +574,7 @@ public class K3115Setup
     flowLayout115.setVgap(5);
     CH03panel.setLayout(flowLayout115);
     CH03panel.setBorder(BorderFactory.createLineBorder(Color.gray,1));
-    CH03panel.setPreferredSize(new Dimension(560, 140));
+    CH03panel.setPreferredSize(new Dimension(560, 120));
     flowLayout116.setAlignment(FlowLayout.LEFT);
     flowLayout116.setHgap(5);
     flowLayout116.setVgap(5);
@@ -594,7 +594,7 @@ public class K3115Setup
     flowLayout118.setVgap(5);
     CH04panel.setLayout(flowLayout119);
     CH04panel.setBorder(BorderFactory.createLineBorder(Color.gray,1));
-    CH04panel.setPreferredSize(new Dimension(560, 140));
+    CH04panel.setPreferredSize(new Dimension(560, 120));
     flowLayout119.setAlignment(FlowLayout.LEFT);
     flowLayout119.setHgap(5);
     flowLayout119.setVgap(5);
@@ -656,7 +656,7 @@ public class K3115Setup
     jLabel1110.setHorizontalAlignment(SwingConstants.RIGHT);
     jLabel1110.setText("Times :");
     jPanel117.setLayout(gridLayout9);
-    jPanel117.setPreferredSize(new Dimension(560, 130));
+    jPanel117.setPreferredSize(new Dimension(560, 120));
     flowLayout1113.setAlignment(FlowLayout.LEFT);
     flowLayout1113.setHgap(5);
     flowLayout1113.setVgap(5);
@@ -726,7 +726,7 @@ public class K3115Setup
     flowLayout1117.setHgap(5);
     flowLayout1117.setAlignment(FlowLayout.LEFT);
     jPanel1110.setLayout(gridLayout10);
-    jPanel1110.setPreferredSize(new Dimension(560, 130));
+    jPanel1110.setPreferredSize(new Dimension(560, 120));
     timesCH01panel.setLayout(flowLayout1116);
     jLabel1114.setFont(new java.awt.Font("Dialog", 1, 11));
     jLabel1114.setPreferredSize(new Dimension(80, 15));
@@ -735,7 +735,7 @@ public class K3115Setup
     jLabel1114.setText("Range (Vpp) :");
     CH01panel.setLayout(flowLayout1119);
     CH01panel.setBorder(BorderFactory.createLineBorder(Color.gray,1));
-    CH01panel.setPreferredSize(new Dimension(560, 140));
+    CH01panel.setPreferredSize(new Dimension(560, 120));
     gridLayout10.setRows(3);
     gridLayout10.setVgap(0);
     jLabel1115.setText("CH 01 :");
@@ -808,7 +808,7 @@ public class K3115Setup
     flowLayout122.setAlignment(FlowLayout.RIGHT);
     CH05panel.setLayout(flowLayout11117);
     CH05panel.setBorder(BorderFactory.createLineBorder(Color.gray,1));
-    CH05panel.setPreferredSize(new Dimension(560, 140));
+    CH05panel.setPreferredSize(new Dimension(560, 120));
     flowLayout11114.setAlignment(FlowLayout.LEFT);
     flowLayout11114.setHgap(5);
     flowLayout11114.setVgap(5);
@@ -835,7 +835,7 @@ public class K3115Setup
     flowLayout11115.setHgap(5);
     flowLayout11115.setAlignment(FlowLayout.LEFT);
     jPanel1114.setLayout(gridLayout11);
-    jPanel1114.setPreferredSize(new Dimension(560, 130));
+    jPanel1114.setPreferredSize(new Dimension(560, 120));
     flowLayout11116.setAlignment(FlowLayout.LEFT);
     flowLayout11116.setHgap(5);
     flowLayout11116.setVgap(5);
@@ -915,7 +915,7 @@ public class K3115Setup
     jLabel11116.setText("Range (Vpp) :");
     CH06panel.setLayout(flowLayout11118);
     CH06panel.setBorder(BorderFactory.createLineBorder(Color.gray,1));
-    CH06panel.setPreferredSize(new Dimension(560, 140));
+    CH06panel.setPreferredSize(new Dimension(560, 120));
     jLabel11117.setFont(new java.awt.Font("Dialog", 1, 11));
     jLabel11117.setPreferredSize(new Dimension(80, 15));
     jLabel11117.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -937,7 +937,7 @@ public class K3115Setup
     jLabel11118.setPreferredSize(new Dimension(80, 15));
     jLabel11118.setFont(new java.awt.Font("Dialog", 1, 11));
     jPanel1117.setLayout(gridLayout12);
-    jPanel1117.setPreferredSize(new Dimension(560, 130));
+    jPanel1117.setPreferredSize(new Dimension(560, 120));
     flowLayout111113.setAlignment(FlowLayout.LEFT);
     flowLayout111113.setHgap(5);
     flowLayout111113.setVgap(5);
@@ -960,17 +960,17 @@ public class K3115Setup
     jPanel18.setPreferredSize(new Dimension(-11, 10));
     deviceDispatch1.setLayout(flowLayout21);
     deviceDispatch1.setFont(new java.awt.Font("Dialog", 1, 11));
-    jPanel19.setPreferredSize(new Dimension(-2, 10));
+    jPanel19.setPreferredSize(new Dimension(-11, 10));
     jPanel19.setLayout(flowLayout27);
-    jPanel20.setPreferredSize(new Dimension(-2, 10));
+    jPanel20.setPreferredSize(new Dimension(-11, 10));
     jPanel20.setLayout(flowLayout26);
-    jPanel21.setPreferredSize(new Dimension(-2, 10));
+    jPanel21.setPreferredSize(new Dimension(-11, 10));
     jPanel21.setLayout(flowLayout25);
-    jPanel22.setPreferredSize(new Dimension(-2, 10));
+    jPanel22.setPreferredSize(new Dimension(-11, 10));
     jPanel22.setLayout(flowLayout24);
-    jPanel23.setPreferredSize(new Dimension(-2, 10));
+    jPanel23.setPreferredSize(new Dimension(-11, 10));
     jPanel23.setLayout(flowLayout23);
-    jPanel24.setPreferredSize(new Dimension(-2, 10));
+    jPanel24.setPreferredSize(new Dimension(-11, 10));
     jPanel24.setLayout(flowLayout22);
     jPanel2.add(jLabel1, null);
     jPanel2.add(deviceField1, null);
