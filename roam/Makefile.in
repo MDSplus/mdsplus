@@ -48,7 +48,7 @@ install:
                 chmod 755 @libdir@; \
         fi;
 	if [ ! -d @bindir@ ] ; then \
-		mkdir @bindir@;
+		mkdir @bindir@; \
 		chmod 755 @bindir@; \
 	fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ @libdir@
