@@ -8,7 +8,7 @@ LDFLAGS=@LDFLAGS@
 LIBS=@LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
-SOURCES = tditest.o
+SOURCES = tditest.c
 OBJECTS = $(SOURCES:.c=.o)
 
 all : @MAKEBINDIR@ @MAKEBINDIR@tditest
