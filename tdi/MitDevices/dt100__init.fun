@@ -18,7 +18,7 @@ public fun DT100__INIT(as_is _nid, optional _method)
     Abort();
   }
   _mem_size = DevNodeRef(_nid, 6);
-  _chansize = _mem_size*1024*1024 / _active_chans;
+  _chansize = _mem_size*1024*1024 / 2 / _active_chans;
   _chansize = if_error(min(_chansize, DevNodeRef(_nid, 8)*1024), _chansize);
 
   _cmd = 'Dt100Init('//_board//','//_active_chans//','//DevNodeRef(_nid, 9)//','//_chansize//')';
