@@ -521,7 +521,10 @@ static void ResetFdactive(int rep, int sock, fd_set *active)
   FD_SET(sock,active);
   lock_client_list();
   for (c=ClientList;c;c=c->next) 
-    FD_SET(c->reply_sock,active);
+  {
+    if (c->reply_sock >= 0)
+      FD_SET(c->reply_sock,active);
+  }
   unlock_client_list();
   printf("reset fdactive in ResetFdactive\n");
   return;
@@ -571,7 +574,7 @@ static void *Worker(void *sockptr)
         lock_client_list();
         for (c=ClientList,next=c ? c->next : 0; c && (c->reply_sock < 0 || !FD_ISSET(c->reply_sock,&readfds)); c=next,next=c ? c->next : 0);
 	unlock_client_list();
-        if (c && FD_ISSET(c->reply_sock,&readfds))
+        if (c && c->reply_sock >= 0 && FD_ISSET(c->reply_sock,&readfds))
 	{
           int reply_sock = c->reply_sock;
           last_client_addr=c->addr;
@@ -596,13 +599,16 @@ static void *Worker(void *sockptr)
 
 int ServerBadSocket(int socket)
 {
-  int tablesize = FD_SETSIZE;
-  fd_set fdactive;
-  int status;
-  struct timeval timeout = {0,1000};
-  FD_ZERO(&fdactive);
-  FD_SET(socket,&fdactive);
-  status = select(tablesize,&fdactive,0,0,&timeout);
+  int status = 1;
+  if (socket >= 0)
+  {
+    int tablesize = FD_SETSIZE;
+    fd_set fdactive;
+    struct timeval timeout = {0,1000};
+    FD_ZERO(&fdactive);
+    FD_SET(socket,&fdactive);
+    status = select(tablesize,&fdactive,0,0,&timeout);
+  }
   return status == 1;
 }
 
@@ -719,12 +725,12 @@ static void RemoveClient(Client *c, fd_set *fdactive)
   Job *j;
   int found = 1;
   int sock = c->send_sock;
-  if (fdactive)
-    FD_CLR(c->reply_sock,fdactive);
   if (c->reply_sock >= 0)
   {
     shutdown(c->reply_sock,2);
     close(c->reply_sock);
+    if (fdactive)
+      FD_CLR(c->reply_sock,fdactive);
   }
   if (c->send_sock >= 0)
   {
@@ -821,7 +827,8 @@ static void AcceptClient(int reply_sock, struct sockaddr_in *sin, fd_set *fdacti
   if (c)
   {
     c->reply_sock = reply_sock;
-    FD_SET(reply_sock,fdactive);
+    if (reply_sock >= 0)
+      FD_SET(reply_sock,fdactive);
   }
   else
   {
