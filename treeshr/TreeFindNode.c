@@ -1114,7 +1114,7 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tre
 	  case 0:	return TreeTNF;
 	  case 1: if (BsearchCompare((void *)&tsearch, (void *)tsearch.info->tags) == 0)
 			  {
-				  *nodeptr = tsearch.info->node + tsearch.info->tag_info->node_idx;
+				  *nodeptr = tsearch.info->node + swapint((char *)&tsearch.info->tag_info->node_idx);
                                   *tagidx = 1;
 				  return TreeNORMAL;
 			  }
