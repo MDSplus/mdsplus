@@ -308,10 +308,10 @@ class TwuSingleSignal
         if (! fetchOptionsAvailable)
           throwError ("unspecified fetch options (internal error)");
 
-        if (fetchOptions.total == -1 )
+        if (fetchOptions.getTotal() == -1 )
           doClip(fetchOptions); // just in case ...
 
-        if (fetchOptions.total <=  1 )
+        if (fetchOptions.getTotal() <=  1 )
         {
             createScalarData ();
             return ;
@@ -328,9 +328,10 @@ class TwuSingleSignal
         ce = makeConnectionEvent("Start Loading "+ (isAbscissa ? "X" : "Y"));
         DispatchConnectionEvent(ce);
 
-        TWUSignal bulk = new TWUSignal (properties, opt.start, opt.step, opt.total);
+        TWUSignal bulk = new TWUSignal (properties, 
+                                        opt.getStart(), opt.getStep(), opt.getTotal());
 
-        return SimplifiedGetFloats(bulk, isAbscissa, opt.total);
+        return SimplifiedGetFloats(bulk, isAbscissa, opt.getTotal());
     }
 
     private float [] 
@@ -366,7 +367,7 @@ class TwuSingleSignal
     createScalarData()
     {
         // an extra check to see if it really is a scalar
-        if (fetchOptions.total == 1)
+        if (fetchOptions.getTotal() == 1)
         {
             // return an (almost) empty array so there won't be
             // an error ; also, TwuWaveData.GetTitle() will
