@@ -14,12 +14,15 @@ extern unsigned short OpcCompile;
 #include <libroutines.h>
 #include <tdimessages.h>
 #include <mdsshr.h>
-#if HAVE_PTHREAD_LOCK_GLOBAL_NP
 #include <pthread.h>
+#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
+#define pthread_attr_default NULL
+#define pthread_mutexattr_default NULL
+#define pthread_condattr_default NULL
 #else
-extern void pthread_lock_global_np();
-extern void pthread_unlock_global_np();
+#undef select
 #endif
+
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
@@ -55,7 +58,16 @@ static DESCRIPTOR(compile_zone,"TDI Compile Zone");
 	if (status & 1) {
                 if (text_ptr->length > 0)
 		{
-                  pthread_lock_global_np();
+                  static  int yacc_mutex_initialized = 0;
+                  static  pthread_mutex_t yacc_mutex;
+
+                  if(!yacc_mutex_initialized)
+                  {
+	            yacc_mutex_initialized = 1;
+	            pthread_mutex_init(&yacc_mutex, pthread_mutexattr_default);
+                  }
+                  pthread_mutex_lock(&yacc_mutex);
+
 		  if (!TdiRefZone.l_zone) status = LibCreateVmZone(&TdiRefZone.l_zone,0,0,0,0,0,0,0,0,0,&compile_zone);
 
 		  /****************************************
@@ -83,7 +95,7 @@ static DESCRIPTOR(compile_zone,"TDI Compile Zone");
 			else status = MdsCopyDxXd((struct descriptor *)TdiRefZone.a_result, out_ptr);
 		  }
 		  LibResetVmZone(&TdiRefZone.l_zone);
-                  pthread_unlock_global_np();
+                  pthread_mutex_unlock(&yacc_mutex);
                 }
                 else
                   MdsFree1Dx(out_ptr,NULL);
