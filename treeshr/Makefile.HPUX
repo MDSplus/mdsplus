@@ -1,5 +1,4 @@
-CFLAGS = -c +z -Ae  -Wl,+b,. -Wl,+s +u1 -D__hpux__ -I../include -I. -g 
-CC = cc
+CFLAGS = -c +z -Ae  -Wl,+b,. -Wl,+s +u1 -D__hpux__ -D_big_endian -I../include -I. -g 
 
 OBJECTS = \
 dummies.o \

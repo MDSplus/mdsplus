@@ -274,9 +274,16 @@ static int zero=0;
 #define emul lib##$emul
 extern int emul();
 #else
-#define swapquad(in) if (!littleendian) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[1]; iptr[1]=stmp;}
-#define swapocta(in) if (!littleendian) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[3]; iptr[3]=stmp; \
+
+#ifdef _big_endian
+#define swapquad(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[1]; iptr[1]=stmp;}
+#define swapocta(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[3]; iptr[3]=stmp; \
                                                                    stmp=iptr[1]; iptr[1]=iptr[2]; iptr[2]=stmp;}
+#else
+#define swapquad(in)
+#define swapocta(in)
+#endif
+
 static int emul(int *m1, int *m2, int *add, int *out)
 {
   _int64 m1_64 = *m1;
@@ -297,12 +304,17 @@ int TdiMultiplyQuadword(int *in1, int *in2, int *out)
   int tmp[3];
   int in1l[2];
   int in2l[2];
-  static int endiantest=1;
-  int littleendian = (int)*(char *)&endiantest;
-  in1l[0] = littleendian ? in1[0] : in1[1];
-  in1l[1] = littleendian ? in1[1] : in1[0];
-  in2l[0] = littleendian ? in2[0] : in2[1];
-  in2l[1] = littleendian ? in2[1] : in2[0];
+#ifdef _big_endian
+  in1l[0] = in1[1];
+  in1l[1] = in1[0];
+  in2l[0] = in2[1];
+  in2l[1] = in2[0];
+#else
+  in1l[0] = in1[0];
+  in1l[1] = in1[1];
+  in2l[0] = in2[0];
+  in2l[1] = in2[1];
+#endif
   emul(&in2l[0],&in1l[0],&zero,&tmp[0]);
   swapquad(&tmp[0])
   emul(&in2l[1],&in1l[0],&tmp[1],&tmp[1]);
@@ -325,16 +337,27 @@ int TdiMultiplyOctaword(int *in1, int *in2, int *out)
   int in2l[4];
   int tmp2[4];
   int tmp3[4];
-  static int endiantest=1;
-  int littleendian = (int)*(char *)&endiantest;
-  in1l[0] = littleendian ? in1[0] : in1[3];
-  in1l[1] = littleendian ? in1[1] : in1[2];
-  in1l[2] = littleendian ? in1[2] : in1[1];
-  in1l[3] = littleendian ? in1[3] : in1[0];
-  in2l[0] = littleendian ? in2[0] : in2[3];
-  in2l[1] = littleendian ? in2[1] : in2[2];
-  in2l[2] = littleendian ? in2[2] : in2[1];
-  in2l[3] = littleendian ? in2[3] : in2[0];
+
+#ifdef _big_endian
+  in1l[0] = in1[3];
+  in1l[1] = in1[2];
+  in1l[2] = in1[1];
+  in1l[3] = in1[0];
+  in2l[0] = in2[3];
+  in2l[1] = in2[2];
+  in2l[2] = in2[1];
+  in2l[3] = in2[0];
+#else
+  in1l[0] = in1[0];
+  in1l[1] = in1[1];
+  in1l[2] = in1[2];
+  in1l[3] = in1[3];
+  in2l[0] = in2[0];
+  in2l[1] = in2[1];
+  in2l[2] = in2[2];
+  in2l[3] = in2[3];
+#endif
+
   emul(&in2l[0],in1l,&zero,&tmp[0]);
   swapquad(&tmp[0]);
   emul(&in2l[1],in1l,&tmp[1],&tmp[1]);
@@ -380,7 +403,11 @@ int TdiMultiplyOctaword(int *in1, int *in2, int *out)
   {
     memcpy(tmp2,&tmp[2],8);
     swapquad(tmp2);
-    TdiAddQuadword(littleendian ? in2 : in2+2 ,tmp2,&tmp[2]);
+#ifdef _big_endian
+    TdiAddQuadword(in2+2 ,tmp2,&tmp[2]);
+#else
+    TdiAddQuadword(in2 ,tmp2,&tmp[2]);
+#endif
     swapquad(&tmp[2]);
   }
   if (in1l[2] < 0)
@@ -398,15 +425,26 @@ int TdiMultiplyOctaword(int *in1, int *in2, int *out)
   {
     memcpy(tmp2,&tmp[2],8);
     swapquad(tmp2);
-    TdiAddQuadword(littleendian ? in1 : in1+2 ,tmp2,&tmp[2]);
+#ifdef _big_endian
+    TdiAddQuadword(in1+2 ,tmp2,&tmp[2]);
+#else
+    TdiAddQuadword(in1 ,tmp2,&tmp[2]);
+#endif
     swapquad(&tmp[2]);
   }
   if (in2l[2] < 0)
     tmp[3] += in1l[0];
-  out[0] = littleendian ? tmp[0] : tmp[3];
-  out[1] = littleendian ? tmp[1] : tmp[2];
-  out[2] = littleendian ? tmp[2] : tmp[1];
-  out[3] = littleendian ? tmp[3] : tmp[0];
+#ifdef _big_endian
+  out[0] = tmp[3];
+  out[1] = tmp[2];
+  out[2] = tmp[1];
+  out[3] = tmp[0];
+#else
+  out[0] = tmp[0];
+  out[1] = tmp[1];
+  out[2] = tmp[2];
+  out[3] = tmp[3];
+#endif
   return 1;
 }
 
@@ -414,8 +452,6 @@ int TdiAddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
 {
   int i;
   int carry=0;
-  static int endiantest = 1;
-  int littleendian = (int)*(char *)&endiantest;
   unsigned int la[2];
   unsigned int lb[2];
   la[0] = a[0];
@@ -438,8 +474,6 @@ int TdiAddOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)
 {
   int i;
   int carry=0;
-  static int endiantest = 1;
-  int littleendian = (int)*(char *)&endiantest;
   unsigned int la[4];
   unsigned int lb[4];
   memcpy(la,a,16);
@@ -460,8 +494,6 @@ int TdiSubtractQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
 {
   int i;
   int status;
-  static int endiantest = 1;
-  int littleendian = (int)*(char *)&endiantest;
   unsigned int lb[2];
   unsigned int sub[2];
   lb[0] = b[0];
@@ -484,8 +516,6 @@ int TdiSubtractOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)
 {
   int i;
   int status;
-  static int endiantest = 1;
-  int littleendian = (int)*(char *)&endiantest;
   unsigned int lb[4];
   unsigned int sub[4];
   memcpy(lb,b,16);

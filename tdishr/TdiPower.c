@@ -8,7 +8,6 @@
 */
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 #include <mdsdescrip.h>
-#include <mdsdescrip.h>
 #include "tdinelements.h"
 #include <tdimessages.h>
 #include <string.h>
@@ -112,28 +111,27 @@ struct descriptor	duno;
 */
 typedef struct {int q0,q1;} lquad;
 
-int			Tdi3Merge(
-struct descriptor_a	*pdtrue,
-struct descriptor_a	*pdfalse,
-struct descriptor_a	*pdmask,
-struct descriptor_a	*pdout)
+int Tdi3Merge(struct descriptor_a *pdtrue, struct descriptor_a *pdfalse, struct descriptor_a *pdmask,struct descriptor_a *pdout)
 {
-int	len = pdout->length;
-char	*po = pdout->pointer;
-int	n = 0, status = 1;
+  int	len = pdout->length;
+  char	*po = pdout->pointer;
+  int	n = 0, status = 1;
 
-int	stept = pdtrue->class == CLASS_A ? len : 0;
-char	*pt = pdtrue->pointer;
-int	stepf = pdfalse->class == CLASS_A ? len : 0;
-char	*pf = pdfalse->pointer;
+  int	stept = pdtrue->class == CLASS_A ? len : 0;
+  char	*pt = pdtrue->pointer;
+  int	stepf = pdfalse->class == CLASS_A ? len : 0;
+  char	*pf = pdfalse->pointer;
 
-int	stepm = pdmask->class == CLASS_A ? pdmask->length : 0;
-static int endiantest = 1;
-char	*pm = (*(char *)&endiantest == 1) ? pdmask->pointer : (pdmask->pointer + pdmask->length - 1);
-char    *pc;
-short   *ps;
-int    *pl;
-lquad    *pq;
+  int	stepm = pdmask->class == CLASS_A ? pdmask->length : 0;
+#ifdef _big_endian
+  char	*pm = pdmask->pointer + pdmask->length - 1;
+#else
+  char	*pm = pdmask->pointer;
+#endif
+  char    *pc;
+  short   *ps;
+  int    *pl;
+  lquad    *pq;
 
 	N_ELEMENTS(pdout, n);
 	if (status & 1) switch (len) {

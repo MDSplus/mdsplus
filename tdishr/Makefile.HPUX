@@ -1,5 +1,4 @@
-CFLAGS = -c +z +u1 -Ae -D__hpux__ -I../include -g 
-CC = cc
+CFLAGS = -c +z +u1 -Ae -D__hpux__ -D_big_endian -I../include -g 
 
 OBJECTS = \
 CvtConvertFloat.o \

@@ -12,8 +12,6 @@ extern int IsRoprand();
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define max(a,b) (((a) < (b)) ? (b) : (a))
 
-static int endiantest = 1;
-
 double WideIntToDouble(unsigned int *bin_in, int size, int is_signed)
 {
   int i;
@@ -21,11 +19,13 @@ double WideIntToDouble(unsigned int *bin_in, int size, int is_signed)
   double ans=0.0;
   unsigned int bin[16];
   int negative;
-  if (*(char *)&endiantest == 1) {
-    memcpy(bin,bin_in,size * sizeof(int));
-  } else {
-    for (i=0;i<size;i++) bin[i] = bin_in[size - i - 1];
-  }
+
+#ifdef _big_endian
+  for (i=0;i<size;i++) bin[i] = bin_in[size - i - 1];
+#else
+  memcpy(bin,bin_in,size * sizeof(int));
+#endif
+
   negative = is_signed && (bin[size-1] & 0x80000000);
   for (i=0,factor=1.;i<size;i++, factor = (i < 4) ? factor * TWO_32 : 0)
     ans += ((negative ? ~bin[i] : bin[i]) * factor);
@@ -45,12 +45,15 @@ void DoubleToWideInt(double *in, int size, unsigned int *out)
   if (negative)
     for (i=0;i<size;i++)
       out[i] = ~out[i];
-  if (*(char *)&endiantest != 1)
+
+#ifdef _big_endian
   {
     unsigned int tmp[16];
     for (i=0;i<size;i++) tmp[i]=out[i];
     for (i=0;i<size;i++) out[i]=tmp[size-i-1];
   }
+#endif
+
 }
 
 /****** Identity conversions handled before big switch *********/
@@ -107,34 +110,46 @@ void DoubleToWideInt(double *in, int size, unsigned int *out)
 #define L_B(lena,pa,lenb,pb,numb) CONVERT_BINARY(int,char,pa,pb,numb)
 #define L_W(lena,pa,lenb,pb,numb) CONVERT_BINARY(int,short,pa,pb,numb)
 /************* Extended binary conversions *************************/
-#define CONVERT_BINARY_ZETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; unsigned int *op = (unsigned int *)pb; \
-                   if (*(char *)&endiantest) {\
-		     while (numb-- > 0) {*op++ = (unsigned int)*ip++; for(i=1;i<nints;i++) *op++ = (unsigned int)0;}\
-                   } else {\
-		     while (numb-- > 0) {for(i=1;i<nints;i++) *op++ = (unsigned int)0; *op++ = (unsigned int)*ip++; }\
-                   } status = 1;}
-#define CONVERT_BINARY_SETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; int *op = (int *)pb; \
-                   if (*(char *)&endiantest) {\
-		     while (numb-- > 0) {int extend = (*ip < 0) ? -1 : 0; *op++ = (int)*ip++; for(i=1;i<nints;i++) *op++ = extend;}\
-                   } else {\
-		     while (numb-- > 0) {int extend = (*ip < 0) ? -1 : 0; for(i=1;i<nints;i++) *op++ = extend; *op++ = (int)*ip++; }\
-                   } status = 1;}
-#define CONVERT_BINARY_SMALLER(pa,pb,numb,lena,lenb) {int i; char little=*(char *)&endiantest; \
-                   while(numb-- > 0) {for (i=0;i<lenb;i++) *pb++ = pa[little ? i : (i+lena-lenb)]; pa += lena;}\
-                   status = 1;} 
-#define CONVERT_BINARY_LARGER_ZEXTEND(pa,pb,numb,lena,lenb) {int i; if (*(char *)&endiantest) {\
-	       while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++;\
-	       for (i=lena; i<lenb; i++) *pb++ = (char)0;}} else {\
-	       while(numb-- > 0) {for (i=0;i<lena;i++) pb[lenb - i - 1] = pa[lena - i - 1];\
-	       for (i=lena; i<lenb; i++) pb[lenb - i - 1] = (char)0; pb += lenb; pa += lena;}}\
-  	       status = 1;} 
 
-#define CONVERT_BINARY_LARGER_SEXTEND(pa,pb,numb,lena,lenb) {int i;if (*(char *)&endiantest) {\
-	       while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++; \
-	       for (i=lena; i<lenb; i++) *pb++ = (char)((pa[-1] < 0) ? -1 : 0);}} else {\
+#ifdef _big_endian
+
+#define CONVERT_BINARY_ZETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; unsigned int *op = (unsigned int *)pb; \
+                   while (numb-- > 0) {for(i=1;i<nints;i++) *op++ = (unsigned int)0; *op++ = (unsigned int)*ip++; }\
+                   status = 1;}
+#define CONVERT_BINARY_SETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; int *op = (int *)pb; \
+                   while (numb-- > 0) {int extend = (*ip < 0) ? -1 : 0; for(i=1;i<nints;i++) *op++ = extend; *op++ = (int)*ip++; }\
+                   status = 1;}
+#define CONVERT_BINARY_SMALLER(pa,pb,numb,lena,lenb) {int i; \
+                   while(numb-- > 0) {for (i=0;i<lenb;i++) *pb++ = pa[i+lena-lenb]; pa += lena;}\
+                   status = 1;} 
+#define CONVERT_BINARY_LARGER_ZEXTEND(pa,pb,numb,lena,lenb) {int i; \
 	       while(numb-- > 0) {for (i=0;i<lena;i++) pb[lenb - i - 1] = pa[lena - i - 1];\
-               for (i=lena; i<lenb; i++) pb[lenb - i - 1] = (char)((pa[0] < 0) ? -1 : 0); pb += lenb; pa += lena;}}\
+	       for (i=lena; i<lenb; i++) pb[lenb - i - 1] = (char)0; pb += lenb; pa += lena;}\
+  	       status = 1;} 
+#define CONVERT_BINARY_LARGER_SEXTEND(pa,pb,numb,lena,lenb) {int i;\
+	       while(numb-- > 0) {for (i=0;i<lena;i++) pb[lenb - i - 1] = pa[lena - i - 1];\
+               for (i=lena; i<lenb; i++) pb[lenb - i - 1] = (char)((pa[0] < 0) ? -1 : 0); pb += lenb; pa += lena;}\
                status = 1;} 
+#else
+#define CONVERT_BINARY_ZETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; unsigned int *op = (unsigned int *)pb; \
+                   while (numb-- > 0) {*op++ = (unsigned int)*ip++; for(i=1;i<nints;i++) *op++ = (unsigned int)0;}\
+                   status = 1;}
+#define CONVERT_BINARY_SETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; int *op = (int *)pb; \
+                   while (numb-- > 0) {int extend = (*ip < 0) ? -1 : 0; *op++ = (int)*ip++; for(i=1;i<nints;i++) *op++ = extend;}\
+                   status = 1;}
+#define CONVERT_BINARY_SMALLER(pa,pb,numb,lena,lenb) {int i; \
+                   while(numb-- > 0) {for (i=0;i<lenb;i++) *pb++ = pa[i]; pa += lena;}\
+                   status = 1;} 
+#define CONVERT_BINARY_LARGER_ZEXTEND(pa,pb,numb,lena,lenb) {int i; \
+	       while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++;\
+	       for (i=lena; i<lenb; i++) *pb++ = (char)0;}\
+  	       status = 1;} 
+#define CONVERT_BINARY_LARGER_SEXTEND(pa,pb,numb,lena,lenb) {int i;\
+	       while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++; \
+	       for (i=lena; i<lenb; i++) *pb++ = (char)((pa[-1] < 0) ? -1 : 0);}\
+               status = 1;} 
+#endif
+
 #define BU_QU(lena,pa,lenb,pb,numb) CONVERT_BINARY_ZETEND(unsigned char,pa,pb,numb,2)
 #define BU_OU(lena,pa,lenb,pb,numb) CONVERT_BINARY_ZETEND(unsigned char,pa,pb,numb,4)
 #define WU_QU(lena,pa,lenb,pb,numb) CONVERT_BINARY_ZETEND(unsigned short,pa,pb,numb,2)

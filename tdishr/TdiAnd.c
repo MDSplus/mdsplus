@@ -61,8 +61,6 @@ typedef struct { int longword[4]; } octaword;
   struct descriptor_a *outa = (struct descriptor_a *)out;\
   int scalars = 0;\
   unsigned int nout;\
-  static int endiantest = 1;\
-  char little = *(char *)&endiantest;\
   switch (out->class)\
   {\
     case CLASS_S:\
@@ -113,16 +111,19 @@ typedef struct { int longword[4]; } octaword;
   break;\
 }
 
+#ifdef _big_endian
+#define setPointers in1p += (size-1); in2p += (size-1);
+#else
+#define setPointers
+#endif
+
 #define OperateSpecial(type,operator) \
 {\
   char *in1p = (char *)in1->pointer;\
   char *in2p = (char *)in2->pointer;\
   char *outp = (char *)out->pointer;\
   int size = sizeof(type);\
-  if (!little) {\
-    in1p += (size-1);\
-    in2p += (size-1);\
-  }\
+  setPointers\
   switch (scalars)\
   {\
     case 0: while (nout--) {*outp++ = (char)(1 & (*in1p operator *in2p)); in1p += size; in2p += size;} break; \
@@ -139,10 +140,7 @@ typedef struct { int longword[4]; } octaword;
   char *in2p = (char *)in2->pointer;\
   char *outp = (char *)out->pointer;\
   int size = sizeof(type);\
-  if (!little) {\
-    in1p += (size-1);\
-    in2p += (size-1);\
-  }\
+  setPointers\
   switch (scalars)\
   {\
     case 0: while (nout--) {*outp++ = (char)(1 & ~(*in1p operator *in2p)); in1p += size; in2p += size;} break; \

@@ -52,9 +52,11 @@
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 
-#define MaskTrue ((*(char *)&endiantest == 1) ? (pi0[0] & 1) : (pi0[leni-1] & 1))
-
-static int endiantest = 1;
+#ifdef _big_endian
+#define MaskTrue (pi0[leni-1] & 1)
+#else
+#define MaskTrue (pi0[0] & 1)
+#endif
 
 extern  unsigned short
 	OpcAccumulate,

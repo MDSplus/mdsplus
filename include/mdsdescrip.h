@@ -1,24 +1,10 @@
 #ifndef MDSDESCRIP_H_DEFINED
 #define MDSDESCRIP_H_DEFINED 1
 
-#ifdef _little_endian
-#undef _little_endian
-#endif
-
-#ifdef _big_endian
-#undef _big_endian
-#endif
-
 #if defined(__VMS)
 #pragma member_alignment save
 #pragma nomember_alignment
 #endif  /* __VMS */
-
-#if defined(__VMS) || defined(__osf__) || defined(_WINDOWS)
-#define _little_endian
-#elif defined(__hpux__) || defined (__irix__)
-#define _big_endian
-#endif
 
 #ifdef _WINDOWS
 #define __fill_name__ fill

@@ -410,22 +410,27 @@ char n1c;
 		case DTYPE_QU :
 		case DTYPE_O :
 		case DTYPE_OU :
-		  {     static int endiantest = 1;
-                        char littleendian = *(char *)&endiantest;
-			cptr = c0;
+                        cptr = c0;
 			j = in_ptr->length;
-			bptr = littleendian ? (in_ptr->pointer+j) : (in_ptr->pointer - 1);
+#ifdef _big_endian
+			bptr = in_ptr->pointer - 1;
 			while (--j >= 0) {
-				*cptr++ = htab[( *(littleendian ? --bptr : ++bptr) >> 4) & 15];
+				*cptr++ = htab[( *(++bptr) >> 4) & 15];
 				*cptr++ = htab[*bptr & 15];
 			}
+#else
+			bptr = in_ptr->pointer + j;
+			while (--j >= 0) {
+				*cptr++ = htab[( *(--bptr) >> 4) & 15];
+				*cptr++ = htab[*bptr & 15];
+			}
+#endif
 			while (cdsc.pointer < cptr-1 && *cdsc.pointer == '0') {cdsc.pointer++;}
 			cdsc.length = (unsigned short)(cptr - cdsc.pointer);
 			{struct descriptor	sdsc = {0,DTYPE_T,CLASS_S,0};
                                 sdsc.length = (unsigned short)strlen(TdiREF_CAT[dtype].name);
                                 sdsc.pointer = TdiREF_CAT[dtype].name;
 				status = StrConcat(out_ptr, out_ptr, &HEX, &cdsc, &sdsc MDS_END_ARG);
-			}
 		  }
 			break;
 

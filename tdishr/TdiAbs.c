@@ -79,8 +79,14 @@ static octaword octazero = {0,0,0,0};
                 out[i].longword[1].int32[1]=in[i].longword[1].int32[1];
 #define abs128 if (in[i].longword[1].int32[1] < 0) TdiSubtractOctaword(&octazero,&in[i],&out[i]); else { copy128; }
 #define not64 out[i].int32[0] = ~in[i].int32[0]; out[i].int32[1] = ~in[i].int32[1]
-#define bool64 out[i]=(unsigned char)(1 & in[i].int32[little ? 0 : 1])
-#define bool128 out[i]=(unsigned char)(1 & in[i].longword[0].int32[little ? 0 : 3])
+
+#ifdef _big_endian
+#define bool64 out[i]=(unsigned char)(1 & in[i].int32[1])
+#define bool128 out[i]=(unsigned char)(1 & in[i].longword[0].int32[3])
+#else
+#define bool64 out[i]=(unsigned char)(1 & in[i].int32[0])
+#define bool128 out[i]=(unsigned char)(1 & in[i].longword[0].int32[0])
+#endif
 
 static const int roprand = 0x8000;
 
@@ -705,8 +711,6 @@ int       Tdi3Logical(struct descriptor *in_ptr,
   int status;
   register i;
   struct descriptor *dummy = kind;
-  static int endiantest = 1;
-  char little = *(char *)&endiantest;
   status = TdiUnary(in_ptr,out_ptr,&out_count);
   if (status != 1) return status;
 
@@ -765,9 +769,6 @@ int       Tdi3Not(struct descriptor *in_ptr,
   int out_count = 1;
   int status;
   register i;
-  static int endiantest = 1;
-  char little = *(char *)&endiantest;
-
   status = TdiUnary(in_ptr,out_ptr,&out_count);
   if (status != 1) return status;
 

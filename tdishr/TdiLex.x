@@ -463,18 +463,16 @@ int			length, is_signed, status = 1, tst, type;
 
 	if (status & 1)
         {
-          int endianTest = 1;
-          if (*(char *)&endianTest != 1)
+#ifdef _big_endian
+          int i;
+          unsigned char *ptr = mark_ptr->rptr->pointer;
+          for (i=0;i<length/2;i++)
           {
-            int i;
-            unsigned char *ptr = mark_ptr->rptr->pointer;
-            for (i=0;i<length/2;i++)
-            {
-              unsigned char sav = ptr[i];
-              ptr[i] = ptr[length - i - 1];
-              ptr[length - i - 1] = sav;
-            }
+            unsigned char sav = ptr[i];
+            ptr[i] = ptr[length - i - 1];
+            ptr[length - i - 1] = sav;
           }
+#endif
           return(LEX_VALUE);
         }
 	TdiRefZone.l_status = status;

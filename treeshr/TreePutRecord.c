@@ -764,14 +764,16 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
   return status;
 }
 
-#define swapquad(in) if (!littleendian) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[1]; iptr[1]=stmp;}
+#ifdef _big_endian
+#define swapquad(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[1]; iptr[1]=stmp;}
+#else
+#define swapquad(in) 
+#endif
 
 static int AddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
 {
   int i;
   int carry=0;
-  static int endiantest = 1;
-  int littleendian = (int)*(char *)&endiantest;
   unsigned int la[2];
   unsigned int lb[2];
   la[0] = a[0];
