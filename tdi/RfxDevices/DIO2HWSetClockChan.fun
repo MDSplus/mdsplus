@@ -12,10 +12,7 @@ public fun DIO2HWSetClockChan(in _nid, in _board_id, in _channel, in _frequency,
 
 
 	_period = 1./_frequency;
-	_tot_cycles = long(_period / 1E-7);
-/*	_cycles_1 = long(_tot_cycles * _duty_cycle / 100.) + 1; Cesare */ 
-/*	_cycles_2 = long(_tot_cycles - _cycles_1 + 2); Cesare
-          */ 
+	_tot_cycles = long(_period / 1E-7 + 0.5);
 
 	_cycles_1 = long(_tot_cycles * _duty_cycle / 100.) - 1; 
 	if(_cycles_1 < 0) _cycles_1 = 0;
@@ -23,7 +20,6 @@ public fun DIO2HWSetClockChan(in _nid, in _board_id, in _channel, in _frequency,
 	_cycles_2 = long(_tot_cycles - _cycles_1 - 2); 
 	if(_cycles_2 < 0) _cycles_2 = 0;
 
-/*	_cycles = [_cycles_1, _cycles_2, 2,2]; Cesare*/
 
 	_cycles = [_cycles_1, _cycles_2, 0, 0];
 

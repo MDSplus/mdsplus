@@ -5,8 +5,8 @@ public fun IPC901__add(in _path, out _nidout)
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':WAVE_LEN_1', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':WAVE_LEN_2', 'NUMERIC', 0, *, _nid);
-    DevAddNode(_path // ':TRIG_MODE', 'TEXT', *, *, _nid);
-    DevAddNode(_path // ':TRIG_SOURCE', 'NUMERIC', "INTERNAL", *, _nid);
+    DevAddNode(_path // ':TRIG_MODE', 'TEXT', "INTERNAL", *, _nid);
+    DevAddNode(_path // ':TRIG_SOURCE', 'NUMERIC', *, *, _nid);
 	DevAddNode(_path // ':N_SAMPLES', 'NUMERIC', 1024, *, _nid);
     DevAddNode(_path // ':ACQ_MODE', 'TEXT', "MEASURE", *, _nid);
     DevAddNode(_path // ':STORE_FLAG', 'TEXT', "ENABLED", *, _nid);

@@ -86,42 +86,22 @@ public fun DIO2HWSetDClockChan(in _nid, in _board_id, in _channel, in _trig_mode
 
 
 /* Timing setting */
-/*
-Cesare
-
-	_delay_cycles = long(_delay / 1E-7 +1);
-	_duration_cycles = long(_duration / 1E-7 +1);
-
-	_period_1 = 1./_frequency_1;
-	_tot_cycles_1 = long(_period_1 / 1E-7);
-	_cycles_11 = _tot_cycles_1 /2;
-	_cycles_12 = _tot_cycles_1 - _cycles_11;
-	_cycles_11++;
-	_cycles_12++;
-
-	_period_2 = 1./_frequency_2;
-	_tot_cycles_2 = long(_period_2 / 1E-7);
-	_cycles_21 = _tot_cycles_2 /2;
-	_cycles_22 = _tot_cycles_2 - _cycles_21;
-	_cycles_21++;
-	_cycles_22++;
-*/
-	_delay_cycles = long(_delay / 1E-7) - 1 ;
+	_delay_cycles = long(_delay / 1E-7  + 0.5) - 1 ;
         if(_delay_cycles < 0)	_delay_cycles = 0;
  
-	_duration_cycles = long(_duration / 1E-7) - 1;
+	_duration_cycles = long(_duration / 1E-7 + 0.5) - 1;
         if(_duration_cycles < 0) _duration_cycles = 0;
 
 
 	_period_1 = 1./_frequency_1;
-	_tot_cycles_1 = long(_period_1 / 1E-7);
+	_tot_cycles_1 = long(_period_1 / 1E-7 + 0.5);
 	_cycles_11 = _tot_cycles_1 / 2;
 	_cycles_12 = _tot_cycles_1 - _cycles_11;
 	_cycles_11--;
 	_cycles_12--;
 
 	_period_2 = 1./_frequency_2;
-	_tot_cycles_2 = long(_period_2 / 1E-7);
+	_tot_cycles_2 = long(_period_2 / 1E-7 + 0.5);
 	_cycles_21 = _tot_cycles_2 /2;
 	_cycles_22 = _tot_cycles_2 - _cycles_21;
 	_cycles_21--;

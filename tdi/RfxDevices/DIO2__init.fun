@@ -151,7 +151,7 @@ write("HWINIT: ", _status);
 					abort();
 				}
 
-				_period = long((1. / _frequency) / 1E-7) * 1E-7;
+				_period = long((1. / _frequency) / 1E-7 + 0.5) * 1E-7;
 				_clock_expr = 'BUILD_RANGE(*,*,' // _period // ')';
  	    		DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_CLOCK, compile(_clock_expr));
 			}
@@ -328,7 +328,7 @@ write(*, "------> Event time ", _event_time);
 				_trig1_expr = _trig_path // ' + ' // _delay_path;
 				_trig2_expr = _trig_path // ' + ' // _delay_path // ' + ' // _duration_path;
 
-				_period = long((1. / _frequency) / 1E-7) * 1E-7;
+				_period = long((1. / _frequency) / 1E-7 + 0.5) * 1E-7;
 
 				_clock_expr = 'BUILD_RANGE(' // _trig1_expr // ', ' // _trig2_expr // ', ' // _period // ')';
  	    		DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_CLOCK, compile(_clock_expr));
@@ -419,8 +419,8 @@ write(*, "------> Event time ", _event_time);
 				_trig1_expr = _trig_path // ' + ' // _delay_path;
 				_trig2_expr = _trig_path // ' + ' // _delay_path // ' + ' // _duration_path;
 
-				_period_1 = long((1. / _frequency_1) / 1E-7) * 1E-7;
-				_period_2 = long((1. / _frequency_2) / 1E-7) * 1E-7;
+				_period_1 = long((1. / _frequency_1) / 1E-7 + 0.5) * 1E-7;
+				_period_2 = long((1. / _frequency_2) / 1E-7 + 0.5) * 1E-7;
 
   	    			DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER_1, compile(_trig1_expr));
   	    			DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER_2, compile(_trig2_expr));

@@ -88,13 +88,11 @@ public fun DIO2HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 
 
 /* Timing setting */
-/*	_delay_cycles = long(_delay / 1E-7 +1); Cesare */
-/*	_duration_cycles = long(_duration / 1E-7 + 1); Cesare */
 
-	_delay_cycles = long(_delay / 1E-7) - 2;
+	_delay_cycles = long(_delay / 1E-7 + 0.5) - 2;
 	if( _delay_cycles < 0 ) _delay_cycles = 0;
 
-	_duration_cycles = long(_duration / 1E-7) - 1;
+	_duration_cycles = long(_duration / 1E-7 + 0.5) - 1;
 	if( _duration_cycles < 0 ) _duration_cycles = 0;
 
 	_cycles = [long(0),long(0),long(0),long(0)]; 

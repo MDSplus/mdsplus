@@ -88,34 +88,19 @@ public fun DIO2HWSetGClockChan(in _nid, in _board_id, in _channel, in _trig_mode
 
 
 /* Timing setting */
-/*
-Cesare
-	_delay_cycles = long(_delay / 1E-7 +1);
-	_duration_cycles = long(_duration / 1E-7 +1);
-
-	_period = 1./_frequency;
-	_tot_cycles = long(_period / 1E-7);
-	_cycles_1 = _tot_cycles /2;
-	_cycles_2 = _tot_cycles - _cycles_1;
-	_cycles_1++;
-	_cycles_2++;
-*/
-	_delay_cycles = long(_delay / 1E-7) - 1 ;
+	_delay_cycles = long(_delay / 1E-7 + 0.5) - 1 ;
         if(_delay_cycles < 0)	_delay_cycles = 0;
  
-	_duration_cycles = long(_duration / 1E-7) - 1;
+	_duration_cycles = long(_duration / 1E-7 + 0.5) - 1;
         if(_duration_cycles < 0) _duration_cycles = 0;
 
 	_period = 1./_frequency;
-	_tot_cycles = long(_period / 1E-7);
+	_tot_cycles = long(_period / 1E-7 + 0.5);
 	_cycles_1 = _tot_cycles /2;
 	_cycles_2 = _tot_cycles - _cycles_1;
 	_cycles_1--;
 	_cycles_2--;
 
-/* Cesare
-	_cycles = [long(2), long(2), long(_cycles_1), long(_cycles_2)];
-*/
 	_cycles = [long(1), long(1), long(_cycles_1), long(_cycles_2)];
 
 	write(*,'------>',_cycles);
