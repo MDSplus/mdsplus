@@ -64,9 +64,11 @@ public class JiNcVar extends JiVarImpl {
 	  }  
 	/**
 	 * Get a attribute named 'name'
-	 *
-	 * @exception BadVariableException
+	 * 
+	 * @param name attribute name
 	 * @return the attribute named 'name'
+	 * @exception IOException
+	 * @exception java.io.IOException
 	 */
 	public JiVar getAtt(String name) throws IOException
 	  {
@@ -95,9 +97,11 @@ public class JiNcVar extends JiVarImpl {
 	  }  
 	/**
 	 * Get a dimension named 'name'
-	 *
-	 * @exception IOException
+	 * 
+	 * @param name string name
 	 * @return the dimension named 'name'
+	 * @exception IOException
+	 * @exception java.io.IOException
 	 */
 	public JiDim getDim(String name) throws IOException
 	  {

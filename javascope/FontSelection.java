@@ -141,7 +141,6 @@ public class FontSelection extends ScopePositionDialog {
         String style;
         int pos, i;
         
-        
         if(f.indexOf("java.awt.Font[") == -1)
             return null;
         
@@ -160,15 +159,17 @@ public class FontSelection extends ScopePositionDialog {
         return new Font(fontchoice, stChoice, Integer.parseInt(siChoice));
     }
 
-    public int fromFile(ReaderConfig in, String prompt) throws IOException
+    public String fromFile(ReaderConfig in, String prompt) throws IOException
     {
     	String str;
-	    int error = 0;
-
+	    String error = null;
+    
+        in.reset();
 	    while((str = in.readLine()) != null) {
 	        if(str.indexOf(prompt) != -1)
 	        {
 	            font = StringToFont(str.substring(prompt.length()+1));
+	            break;
 	        }
 	    }
 	    
@@ -184,9 +185,11 @@ public class FontSelection extends ScopePositionDialog {
     public void toFile(PrintWriter out, String prompt)
     {
         if(font != null)
-	        jScope.writeLine(out, prompt +": ", font.toString());		
+	        out.println(prompt +": " + font.toString());		
+	    out.println("");
     }
-
+    
+    
     public Font GetFont()
     {
             fontchoice = (String)fonts.getSelectedItem();
@@ -218,7 +221,8 @@ public class FontSelection extends ScopePositionDialog {
 	    if (ob == ok || ob == apply)
 	    {
             font = GetFont();
-            main_scope.setup.SetFontToWaves(font);
+            main_scope.UpdateFont();
+            main_scope.RepaintAllWaves();
 	        if(ob == ok)
 		        setVisible(false);
         }  

@@ -3,6 +3,7 @@ import java.net.*;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.InterruptedException;
 
 class JetDataProvider implements DataProvider
 {
@@ -23,6 +24,8 @@ class JetDataProvider implements DataProvider
     Frame owner_f;
     static final int LOGIN_OK = 1, LOGIN_ERROR = 2, LOGIN_CANCEL = 3;
     private int login_status;
+    private boolean evaluate_url = false;
+    private String url_source = "http://data.jet.uk/";
     
     TextField user_text, passwd_text;
     
@@ -41,11 +44,29 @@ class JetDataProvider implements DataProvider
         return login_status;
     }
     
-    void InquireCredentials(Frame f)
+    public void setEvaluateUrl(boolean state)
     {
+        evaluate_url = state;
+    }
+
+    public void setUrlSource(String url_source)
+    {
+        this.url_source = url_source;
+        System.out.println(url_source);
+    }
+
+    
+    synchronized void InquireCredentials(Frame f)
+    {
+        if(login_status == LOGIN_CANCEL)
+        {
+            login_status = LOGIN_OK;
+            return;
+        }
         login_status = LOGIN_OK;
         owner_f = f;
         inquiry_dialog = new Dialog(f, "JET data server login", true);
+        
         inquiry_dialog.setLayout(new BorderLayout());
         Panel p = new Panel();
         p.add(new Label("Username: "));
@@ -67,7 +88,8 @@ class JetDataProvider implements DataProvider
                     passwd = passwd_text.getText();
                     if(!checkPasswd(username, passwd))
                     {
-                        ErrorMessage.ShowErrorMessage(owner_f, "Incorrect password");
+                        inquiry_dialog.setTitle("JET data server login ERROR");
+//da mettere exception  ErrorMessage.ShowErrorMessage(owner_f, "Incorrect password");
                         login_status = LOGIN_ERROR;
                         return;
                     }
@@ -102,20 +124,20 @@ class JetDataProvider implements DataProvider
                 }});
         p.add(cancel_b);
         inquiry_dialog.add(p, "South");
-        Rectangle r = f.getBounds();
         inquiry_dialog.pack();
+        Rectangle r = f.getBounds();
         inquiry_dialog.setLocation(r.x + r.width/2 - inquiry_dialog.getBounds().width/2,
 			r.y + r.height/2 - inquiry_dialog.getBounds().height/2);
         inquiry_dialog.show();
     }
-        
-   boolean checkPasswd(String username, String passwd)
+    
+   boolean checkPasswd(String encoded_credentials)
    {
-        String credentials = username+":"+passwd;
-        try{
-            encoded_credentials = translator.encode(credentials);
+            this.encoded_credentials = encoded_credentials;
+            System.out.println(encoded_credentials);
+            try{
             URLConnection urlcon;
-            url = new URL("http://data.jet.uk/");
+            url = new URL(url_source);
             urlcon = url.openConnection();
             urlcon.setRequestProperty("Authorization", "Basic "+encoded_credentials);
             br = new BufferedInputStream(urlcon.getInputStream());
@@ -126,12 +148,20 @@ class JetDataProvider implements DataProvider
             while(num_read_bytes < content_len)
                 num_read_bytes += br.read(buffer, num_read_bytes, buffer.length - num_read_bytes);
             br.close();
-        }catch(Exception e){return false;}
+        }catch(Exception e){System.out.println(e);return false;}
         String out = new String(buffer);
         if(out.indexOf("incorrect password") != -1)
             return false;
         return true;
-    }
+   }
+
+   
+   boolean checkPasswd(String username, String passwd)
+   {
+        String credentials = username+":"+passwd;
+        encoded_credentials = translator.encode(credentials);
+        return checkPasswd(encoded_credentials);
+   }
 //DataProvider implementation
 
     public String GetDefaultTitle(String in_y[]){return null;}
@@ -150,7 +180,8 @@ class JetDataProvider implements DataProvider
         error_string = null;
     }
     public String GetString(String in) {return in; }
-    public float GetFloat(String in){ return new Float(in).floatValue(); } 
+    public float GetFloat(String in){ return new Float(in).floatValue(); }
+    
     public float[] GetFloatArray(String in)
     {
         error_string = null;
@@ -159,16 +190,25 @@ class JetDataProvider implements DataProvider
             in = in.substring(5);
             
         String url_name;
-        if(experiment == null)
+        
+        if(evaluate_url)
         {
-           StringTokenizer st = new StringTokenizer(in, "/", true);
-           url_name = st.nextToken() + "/" + shot ;
-           while(st.hasMoreTokens())
-            url_name = url_name + st.nextToken();
-        }    
-//            url_name = in;
+            url_name = in;
+        }
         else
-            url_name = experiment + "/" + shot + "/" + in;
+        {
+            if(experiment == null)
+            {
+                StringTokenizer st = new StringTokenizer(in, "/", true);
+                url_name = st.nextToken() + "/" + shot ;
+                while(st.hasMoreTokens())
+                    url_name = url_name + st.nextToken();
+            }    
+//            url_name = in;
+            else
+                url_name = experiment + "/" + shot + "/" + in;
+        }
+    
         if(last_url_name != null && url_name.equals(last_url_name))
         {
             if(is_time) 
@@ -182,7 +222,7 @@ class JetDataProvider implements DataProvider
             try{
                 last_url_name = url_name;
                 URLConnection urlcon;
-                url = new URL("http://data.jet.uk/" + url_name);
+                url = new URL(url_source + url_name);
                 urlcon = url.openConnection();
                 //urlcon.setRequestProperty("Connection", "Keep-Alive");
                 urlcon.setRequestProperty("Authorization", "Basic "+encoded_credentials);
@@ -282,19 +322,19 @@ class JetDataProvider implements DataProvider
  }
  public String ErrorString() { return error_string; }
  public boolean SupportsAsynch() { return false; } 
- public void addMdsEventListener(MdsEventListener l, String event){} 
- public void removeMdsEventListener(MdsEventListener l, String event){} 
+ public void addNetworkEventListener(NetworkEventListener l, String event){} 
+ public void removeNetworkEventListener(NetworkEventListener l, String event){} 
  
 
 
 
 public static void main(String args[])
 {
-    System.out.println("\nStart readout PPF/40000/MAGN/IPL");
+    System.out.println("\nStart readout PPF/40000/MAGN/IPLA");
     JetDataProvider dp = new JetDataProvider("obarana", "clublatino");
+    dp.setEvaluateUrl(true);
     float x[], y[];
     y = dp.GetFloatArray("PPF/40000/MAGN/IPLA");
-    if(true) return;
     x = dp.GetFloatArray("TIME:PPF/40000/MAGN/IPLA");
         
     for(int i = 0; i < x.length; i++)

@@ -13,7 +13,7 @@ public interface JiVar {
 	/**
 	 * Get a attribute named 'name'
 	 *
-	 * @exception BadVariableException
+	 * @exception IOException
 	 * @return the attribute named 'name'
 	 */
 	public JiVar getAtt(String name) throws IOException;

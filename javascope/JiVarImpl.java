@@ -16,7 +16,7 @@ public abstract class JiVarImpl implements JiVar {
 	/**
 	 * Get a attribute named 'name'
 	 *
-	 * @exception BadVariableException
+	 * @exception IOException
 	 * @return the attribute named 'name'
 	 */
 	public abstract JiVar getAtt(String name) throws IOException;

@@ -8,8 +8,8 @@ interface DataProvider {
     public String GetXSpecification(String in);
     public String ErrorString();
     public boolean SupportsAsynch();
-    public void   addMdsEventListener(MdsEventListener l, String event);
-    public void   removeMdsEventListener(MdsEventListener l, String event);
+    public void   addNetworkEventListener(NetworkEventListener l, String event);
+    public void   removeNetworkEventListener(NetworkEventListener l, String event);
     public String GetDefaultTitle(String in_y[]);
     public String GetDefaultXLabel(String in_y[]);
     public String GetDefaultYLabel(String in_y[]);

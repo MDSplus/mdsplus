@@ -5,7 +5,7 @@ import java.io.*;
 import java.util.*;
 
   
- class Grid {
+public class Grid {
     WaveformMetrics wm;
     boolean reversed = false;
     int x_dim, y_dim;
@@ -190,15 +190,7 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 	        g.setColor(Color.white);
 	    else
 	        g.setColor(Color.black);
-	//Varibili per la stampa PS
-	int grid_lines_x[] = new int[4*x_dim];
-	int grid_lines_y[] = new int[4*y_dim];
-    float ylabel_offset_ps[] = new float[y_dim];
-    float ycurr_dim[] = new float[y_dim];
-    float xlabel_offset_ps[] = new float[x_dim];
-    float xcurr_dim[] = new float[x_dim];
-    boolean dash_flag = false;
-
+	        
 	    wm = _wm;
 	    if(font == null)
 	    {
@@ -253,13 +245,6 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 
 	    prev_col = g.getColor();
 
-
-        switch(mode)  {
-		    case IS_DOTTED : dash_flag = true; break;
-		    case IS_GRAY   : dash_flag = false; break;
-		    case IS_NONE   : dash_flag = false; break;
-        }
-
         if(wm != null)
         {
 	    for(i = 0; i < y_dim; i++)
@@ -268,36 +253,14 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 	        switch(mode)  
 	        {
 		    case IS_DOTTED :
-		        if(!w.waveformPrint)
-		        {
-			        if(dim <= d.height - label_height)
-	    		        for(j = label_width; j < d.width; j+=4)
-			    	        g.fillRect(j, dim, 1, 1);
-			    } 
-			    else 
-			    {
-			        if(dim <= d.height - label_height)
-			        {
-			            grid_lines_y[i*4] = label_width;
-			            grid_lines_y[i*4 + 1] = d.width;
-			            grid_lines_y[i*4 + 2] = grid_lines_y[i*4 + 3] = dim;
-			        }
-			    }
+			    if(dim <= d.height - label_height)
+	    		    for(j = label_width; j < d.width; j+=4)
+			    	    g.fillRect(j, dim, 1, 1);
 			break;
 		    case IS_GRAY :
  			    g.setColor(Color.lightGray);
- 			    if(!w.waveformPrint)
- 			    {
-			        if(dim <= d.height - label_height)
-			            g.drawLine(label_width,dim,d.width, dim);
-			    } else {
-			        if(dim <= d.height - label_height)
-			        {
-			            grid_lines_y[i*4] = label_width;
-			            grid_lines_y[i*4 + 1] = d.width;
-			            grid_lines_y[i*4 + 2] = grid_lines_y[i*4 + 3] = dim;
-			        }
-			    }
+			    if(dim <= d.height - label_height)
+			        g.drawLine(label_width,dim,d.width, dim);
 			break;
 		    case IS_NONE :
 			    if(dim <= d.height - label_height)
@@ -338,65 +301,25 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 			                ylabel_offset = 2;
 		            }
 		    
-                    if(!w.waveformPrint)
-		                g.drawString(Waveform.ConvertToString(y_values[i], wm.YLog()), ylabel_offset, curr_dim);
-		            else {
-		                ylabel_offset_ps[i] = ylabel_offset;
-		                ycurr_dim[i] = curr_dim;
-	                }
+		            g.drawString(Waveform.ConvertToString(y_values[i], wm.YLog()), ylabel_offset, curr_dim);
 		        }
     	    }
 	    }
         
-        if(w.waveformPrint)
-        {
-            try {
-	            w.DrawSegments(grid_lines_y, y_dim, dash_flag);
-	            for(i = 0; i < y_dim; i++)
-	                w.DrawString((float)ylabel_offset_ps[i], 
-	                         (float)ycurr_dim[i],
-	                         Waveform.ConvertToString(y_values[i], wm.YLog()), false);
-                if(y_label != null)
-	                w.DrawString(4+fm.getHeight(), (d.height + fm.stringWidth(y_label))/2, y_label, true);            
-	        } catch (IOException e)
-	        {
-			        System.out.println(e);
-	        }
-	    }
 	
 	    for(i = 0; i < x_dim; i++)
 	    {
 	        dim = wm.XPixel(x_values[i], d);
 	        switch(mode)  {
 		    case IS_DOTTED:	
-                if(!w.waveformPrint)
-                {
-			        if(dim >= label_width)
-	    		        for(j = 0; j < d.height - label_height; j+=4)
-			                g.fillRect(dim, j, 1, 1);
-			    } 
-			    else
-			    {
-			        if(dim >= label_width) {
-			            grid_lines_x[i*4] = grid_lines_x[i*4 + 1] = dim;
-			            grid_lines_x[i*4 + 2] = label_height;
-			            grid_lines_x[i*4 + 3] = d.height;
-			        }
-			    }
+			    if(dim >= label_width)
+	    		    for(j = 0; j < d.height - label_height; j+=4)
+			            g.fillRect(dim, j, 1, 1);
 			break;
 		    case IS_GRAY :
 			    g.setColor(Color.lightGray);
-                if(!w.waveformPrint)
-                {
 			        if(dim >= label_width)
 			            g.drawLine(dim, 0, dim, d.height - label_height);
-			    } else {
-			        if(dim >= label_width) {
-			            grid_lines_x[i*4] = grid_lines_x[i*4 + 1] = dim;
-			            grid_lines_x[i*4 + 2] = label_height;
-			            grid_lines_x[i*4 + 3] = d.height;
-			        }
-			    }
 			break;
 		    case IS_NONE :
 			    if(dim >= label_width)
@@ -427,44 +350,22 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 	        curr_dim = dim -  fm.stringWidth(curr_string)/2;
 	        if(curr_dim >= label_width && dim + fm.stringWidth(curr_string)/2 < d.width)
 	        {
-                if(!w.waveformPrint)
-	    	        g.drawString(curr_string, curr_dim, d.height - fm.getHeight()/10 - label_descent);
-		        else {
-		            xlabel_offset_ps[i] = (float)d.height /*- fm.getHeight()*/ - label_descent;
-		            xcurr_dim[i] = curr_dim;
-                }        
+	    	   g.drawString(curr_string, curr_dim, d.height - fm.getHeight()/10 - label_descent);
 	        }
 	    }
 	
-        if(w.waveformPrint)
-        {
-            try {
-	            w.DrawSegments(grid_lines_x, x_dim, dash_flag);
-	            for(i = 0; i < x_dim; i++)
-	                w.DrawString((float)xcurr_dim[i],
-	                         (float)xlabel_offset_ps[i], 
-	                         Waveform.ConvertToString(x_values[i], wm.YLog()), false);
-	            if(title != null)
-	                w.DrawString((d.width - fm.stringWidth(title))/2, fm.getAscent() + d.height/40, title, false);
-	            if(x_label != null) 
-	                w.DrawString((d.width - fm.stringWidth(x_label))/2, d.height - label_descent, x_label, false);
-	        } catch (IOException e) {
-			        System.out.println(e);
-	        }
-	    }
         } //End if check is_image
 
 	
-        if(!w.waveformPrint) {
-	        g.drawRect(label_width, 0, d.width - label_width-1, d.height - label_height); 
+	    g.drawRect(label_width, 0, d.width - label_width-1, d.height - label_height); 
 	    if(x_label != null) 
 	        g.drawString(x_label, (d.width - fm.stringWidth(x_label))/2, d.height - label_descent);	        
 	    if(y_label != null)
 	        g.drawImage(vert_label, 2, (d.height - fm.stringWidth(y_label))/2, w);
 	    if(title != null)
 	        g.drawString(title, (d.width - fm.stringWidth(title))/2, fm.getAscent() + d.height/40);
+    
     }
- }
         
 
     public Rectangle GetBoundingBox(Dimension d)

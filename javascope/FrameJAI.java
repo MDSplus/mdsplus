@@ -10,7 +10,6 @@ import javax.media.jai.RenderedOp;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.TiledImage;
 import com.sun.media.jai.codec.ByteArraySeekableStream;
-import javax.media.jai.widget.ScrollingImagePanel;
 
 
 class FrameJAI extends Frames
@@ -19,6 +18,8 @@ class FrameJAI extends Frames
 //    boolean perform_zoom = false;
     float x_ratio = 0.1F;
     float y_ratio = 0.1F;
+ //   Frame f = new Frame();
+ //   ScrollingImagePanel sim = null;
     
     
     FrameJAI()

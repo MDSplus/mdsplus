@@ -1,11 +1,11 @@
 import java.awt.*;
 import java.io.*;
 import java.awt.image.*;
+import java.util.Vector;
 
 public class WaveInterface
 {
-    WaveSetup controller;
-
+    public Waveform wave;
     public boolean full_flag;
     public int     num_waves;
     public boolean x_log, y_log;
@@ -14,22 +14,20 @@ public class WaveInterface
     // Prameter used to evaluate waveform
     public String  in_xmin, in_xmax, in_ymax, in_ymin, in_timemax, in_timemin;
     public String  in_title, in_xlabel, in_ylabel;
-    public String  in_def_node, in_upd_event, experiment, last_upd_event;
+    public String  experiment;
     public int     in_grid_mode;
     public int     height; 
 
-    // Configuration parameter
-    public String cin_xmin, cin_xmax, cin_ymax, cin_ymin, cin_timemax, cin_timemin;
-    public String cin_title, cin_xlabel, cin_ylabel;
-    public String cin_def_node, cin_upd_event, cexperiment;
-
+    public String in_shot;
+    public int num_shot = 1;
+    public boolean modified = true;
+   
     boolean reversed = false;
     boolean make_legend = false;
-    int legend_x, legend_y;
+    double legend_x, legend_y;
      
     public  int     markers_step[];
     public  int     markers[];
-    public  Color   colors[];
     public  int     colors_idx[];
     public  boolean interpolates[];
     public  int     shots[];
@@ -40,7 +38,7 @@ public class WaveInterface
     public  Signal  signals[];
     public  float   xmax, xmin, ymax, ymin, timemax, timemin; 
     public  String  title, xlabel, ylabel;
-    private DataProvider dp;
+    protected DataProvider dp;
     
 // Used for asynchronous Update  
     public boolean asynch_update = true;  
@@ -52,28 +50,20 @@ public class WaveInterface
     float orig_xmin, orig_xmax;
     private boolean evaluated[];
     
-    public String in_shot, cin_shot;
-    public int defaults = 0xffffffff;
-    public int num_shot = 1;
-    public boolean modified = true;
-    static final int B_shot = 8, B_x_min = 12, B_x_max = 13, B_y_min = 14, B_y_max = 15,
-		             B_title = 16, B_x_label = 10, B_y_label = 11, B_exp = 7, B_event = 17,
-		             B_default_node = 9;
-    boolean default_update = false;
-
-    static final float HUGE = (float)1E8;
-    static final int MAX_POINTS = 1000;
-
     
-    boolean is_image = false;
+    static final float HUGE = (float)1E8;
+    static final int   MAX_POINTS = 1000;
+   
+    protected boolean is_image = false;
     boolean use_jai = false;
     int     signal_select = -1;
-    Frames frames;
+    Frames  frames;
 
     
-    
+    /*
     public WaveInterface(WaveInterface wi)
     {
+        
     controller = wi.controller;
 	full_flag = wi.full_flag;
 	provider = wi.provider;
@@ -265,37 +255,147 @@ public class WaveInterface
 	    	
 	error = null;
 	dp = wi.dp;
+	
     }	
-
+    */
     
-    public WaveInterface(DataProvider _dp, WaveSetup c)
+    public WaveInterface()
     {
-    controller = c;
+        CreateWaveInterface(null);//, null);
+    }    
+
+   // public WaveInterface(DataProvider dp)//, WaveSetup c)
+  //  {
+ //       CreateWaveInterface(dp);//, c);
+ //   }
+
+
+    public WaveInterface(DataProvider dp)
+    {
+        CreateWaveInterface(dp);
+    }
+    
+    public void Erase()
+    {
+        num_waves = 0;
+        in_label = null; 
+        in_x = null; 
+        in_y = null; 
+        in_up_err = null; 
+        in_low_err = null;    
+        in_xmin = null; 
+        in_xmax = null; 
+        in_ymax = null; 
+        in_ymin = null; 
+        in_timemax = null; 
+        in_timemin = null;
+        in_title = null; 
+        in_xlabel = null; 
+        in_ylabel = null;
+        experiment = null;
+        in_shot = null;
+        num_shot = 1;
+        modified = true;    
+        markers_step = null;
+        markers = null;
+        colors_idx = null;
+        interpolates = null;
+        shots = null;
+        error = null;
+        curr_error = null;
+        w_error = null;
+        signals = null;
+        title = null; 
+        xlabel = null; 
+        ylabel = null;
+        is_image = false;
+        use_jai = false;
+        frames = null;
+    }
+    
+    static void WriteLine(PrintWriter out, String prompt, String value)
+    {
+	    if(value != null && !value.equals("null") && value.length() != 0)
+	    {
+		    out.println(prompt + value);
+	    }
+    }
+    
+
+    static String TrimString(String s)
+    {
+	    String  s_new = new String();
+	    int     new_pos = 0, old_pos = 0;
+	    while((new_pos = s.indexOf(" ", old_pos)) != -1)
+	    {
+	        s_new = s_new.concat(s.substring(old_pos, new_pos));
+	        old_pos = new_pos + " ".length();			  
+	    }
+	    s_new = s_new.concat(s.substring(old_pos, s.length()));
+	    return s_new;
+    }
+    
+
+    static String RemoveNewLineCode(String s)
+    {
+	    String  y_new = new String();
+	    int     new_pos = 0, old_pos = 0;
+	
+	    s = TrimString(s);
+	    while((new_pos = s.indexOf("|||", old_pos)) != -1)
+	    {
+	        y_new = y_new.concat(s.substring(old_pos, new_pos));
+	        old_pos = new_pos + "|||".length();			  
+	        y_new += '\n';
+	    }
+	    y_new = y_new.concat(s.substring(old_pos, s.length()));
+	    return y_new;
+    }
+     
+    static String AddNewLineCode(String s)
+    {
+	    String  s_new = new String();
+	    int     new_pos = 0, old_pos = 0;
+	
+	    if(s == null) return null;
+	    while((new_pos = s.indexOf("\n", old_pos)) != -1)
+	    {
+	        s_new = s_new.concat(s.substring(old_pos, new_pos));
+	        old_pos = new_pos + "\n".length();			  
+	        s_new += "|||";
+	    }
+	    s_new = s_new.concat(s.substring(old_pos, s.length()));
+	    return s_new;
+    }
+    
+    
+    
+    private void CreateWaveInterface(DataProvider dp)//, Waveform wave)
+    {
+     this.wave = wave;
+    //controller = c;
 	//full_flag = false;
 	full_flag = true;
-	dp = _dp;
+	this.dp = dp;
 	experiment = null;
 	shots = null;
 	in_xmin = in_xmax = in_ymin = in_ymax = in_title = null; 
 	in_xlabel = in_ylabel = in_timemax = in_timemin= null;
 	markers = null;
-	colors = null;
 	interpolates = null;
 	du = null;  
 	x_log = y_log = false;
 	make_legend = false;
 	reversed = false;
     }
-    
-    public boolean UseDefaultShot()
-    {
-	    return ((defaults & (1 << B_shot)) != 0);	    
-    }
-    
+
    
     public void SetDataProvider(DataProvider _dp)
     {
-	dp = _dp;
+	    dp = _dp;
+		error = null;
+		curr_error = null;
+		w_error = null;
     }
 
     public void setWaveState(String name, boolean state)
@@ -309,14 +409,73 @@ public class WaveInterface
                     for(int j = i; j < i + num_shot; j++)
                     {
                         interpolates[j] = state;
-                        markers[i] = Waveform.NONE;
+                        markers[i] = Signal.NONE;
                     }
                     return;
                 }
         }
     }
 
+    public void ShowLegend(boolean state){make_legend = state;}
 
+    public void SetLegendPosition(double x, double y)
+    {
+        legend_x = x;
+        legend_y = y;
+        make_legend = true;
+    }
+
+
+    private String GetFirstLine(String str)
+    {
+	    int idx = str.indexOf("\n");
+	    if(idx != -1)
+	        return str.substring(0, idx);
+	    else
+	        return str;
+    }
+
+    public  String GetErrorTitle()
+    {
+        int n_error = 0;
+        String error_title = null;
+
+        if( num_waves == 0 || ( is_image &&  frames == null))
+        {
+			if( error != null)
+			error_title = GetFirstLine(new String(  error));
+            return error_title;
+		}
+
+		     
+		for(int ii = 0; ii <   num_waves; ii++)
+		{   		                
+		    if(  w_error != null &&   w_error[ii] != null)
+			n_error++;               
+	    }
+			 
+	    if(  error == null &&  n_error > 1 && n_error ==   num_waves)
+	    {
+		    error_title = "Evaluation error on all signals";
+	    } 
+		else 
+		{
+		    if(  error != null)
+			    error_title =  error;
+			else 
+			{
+			    if(n_error == 1 && num_waves == 1)
+			    {
+			        error_title = GetFirstLine(  w_error[0]);
+			    } else
+			        if(n_error > 0)
+			            error_title = "< Evaluation error on " + n_error + " signal"+ (n_error > 1 ? "s":"") +" >";
+			}    
+        }
+        
+        return error_title;
+    }
+    
     public boolean[] getSignalsState()
     {
         boolean state[] = null;
@@ -325,19 +484,20 @@ public class WaveInterface
         {
             state = new boolean[num_waves/num_shot];
             for(int i = 0, j = 0; i < num_waves; i+= num_shot)
-                state[j++] = (interpolates[i] || (markers[i] != Waveform.NONE));
+                state[j++] = (interpolates[i] || (markers[i] != Signal.NONE));
         }
         return state;
     }
 
-    public String[] getSignalsName()
+    public String[] GetSignalsName()
     {
         String name[] = null, s;
         
         if(num_waves != 0)
         {
-            name = new String[num_waves/num_shot];
-            for(int i = 0, j = 0; i < num_waves; i+= num_shot)
+            int ns = (num_shot > 0 ? num_shot : 1);
+            name = new String[num_waves/ns];
+            for(int i = 0, j = 0; i < num_waves; i+= ns)
             {
                 s = (in_label[i] != null && in_label[i].length() != 0) ? in_label[i] : in_y[i];
                 name[j++] = s;
@@ -346,7 +506,7 @@ public class WaveInterface
         return name;
     }
     
-    public boolean addSignal(String s, Color cls[])
+    public boolean AddSignal(String s)
     {
         int new_num_waves;
         
@@ -355,7 +515,7 @@ public class WaveInterface
             for(int i = 0; i < num_waves; i++)
                 if(s.equals(in_y[i]))
                     return false;
-            new_num_waves = num_waves + num_shot;
+            new_num_waves = num_waves + (num_shot != 0 ? num_shot : 1);
         } else 
             new_num_waves = 1;
         
@@ -367,12 +527,12 @@ public class WaveInterface
 	    String new_in_low_err[] = new String[new_num_waves];
     	int new_markers[] = new int[new_num_waves];
 	    int new_markers_step[] = new int[new_num_waves];
-	    Color new_colors[] = new Color[new_num_waves];
 	    int new_colors_idx[] = new int[new_num_waves];
 	    boolean new_interpolates[] = new boolean[new_num_waves];
 	    int new_shots[] = null;
 	    if(shots != null) 
 	        new_shots = new int[new_num_waves];
+	    
 	    boolean new_evaluated[] = new boolean[new_num_waves];
 	    Signal new_signals[] = new Signal[new_num_waves];    
 	    String new_w_error[] = new String[new_num_waves];    
@@ -386,10 +546,9 @@ public class WaveInterface
 	        new_in_low_err[i] = in_low_err[i];
     	    new_markers[i] = markers[i];
 	        new_markers_step[i] = markers_step[i];
-	        new_colors[i] = colors[i];
 	        new_colors_idx[i] = colors_idx[i];
 	        new_interpolates[i] = interpolates[i];
-	        if(new_shots != null)
+	        if(shots != null)
 	            new_shots[i] = shots[i];
 	        if(evaluated != null)
 	            new_evaluated[i] = evaluated[i];
@@ -413,14 +572,13 @@ public class WaveInterface
 	        new_in_low_err[i] = "";
     	    new_markers[i] = 0;
 	        new_markers_step[i] = 1;
-	        new_colors_idx[i] = i % cls.length;
-	        new_colors[i] = cls[new_colors_idx[i]];
+	        new_colors_idx[i] = i;
 	        new_interpolates[i] = true;
 	        new_evaluated[i] = false;
-	        if(new_shots != null)
+	        if(shots != null)
 	            new_shots[i] = shots[i - num_shot];
 //	        else
-//	            new_shots[i] = jScope.UNDEF_SHOT;
+//	            new_shots[i] = UNDEF_SHOT;
         }
 
         in_label = new_in_label;
@@ -430,7 +588,6 @@ public class WaveInterface
 	    in_low_err = new_in_low_err;
 	    markers = new_markers;
 	    markers_step = new_markers_step;
-	    colors = new_colors;
 	    colors_idx = new_colors_idx;
 	    interpolates = new_interpolates;
 	    shots = new_shots;
@@ -449,94 +606,80 @@ public class WaveInterface
     
     public synchronized int StartEvaluate()
     {
- 	error = null;
+ 	    error = null;
 		
-	evaluated = null;
+	    evaluated = null;
 
-	if((in_y == null || in_x == null) || (shots == null && 
+	    if((in_y == null || in_x == null) || (shots == null && 
 				(experiment != null && experiment.trim().length() > 0)) )
-	{
-	    error = "Missing shot or Y or X values";
-	    return 0;
-	}    
+	    {
+	        error = "Missing shot or Y or X values";
+	        return 0;
+	    }    
 
-	num_waves = in_y.length;
+	    num_waves = in_y.length;
 	
-    if(!is_image)
-	    signals = new Signal[num_waves];    
+        if(!is_image)
+	        signals = new Signal[num_waves];    
 
-	evaluated = new boolean[num_waves];
-    w_error = new String[num_waves];
+	    evaluated = new boolean[num_waves];
+        w_error = new String[num_waves];
     
-	if(in_x != null && num_waves != in_x.length)
-	{
-	    error = "X values are different from Y values";
-	    return 0;
-	}
+	    if(in_x != null && num_waves != in_x.length)
+	    {
+	        error = "X values are different from Y values";
+	        return 0;
+	    }
 	
-	if(shots != null)
-	    dp.Update(experiment, shots[0]);
-	else
-	    dp.Update(null, 0);
+	    if(shots != null)
+	        dp.Update(experiment, shots[0]);
+	    else
+	        dp.Update(null, 0);
 	
-	if(dp.ErrorString() != null)
-	{
-	    error = dp.ErrorString();
-	    return 0;
-	}
+	    if(dp.ErrorString() != null)
+	    {
+	        error = dp.ErrorString();
+	        return 0;
+	    }
 		
-//compute limits
-	if(in_xmin != null && (in_xmin.trim()).length() != 0)
-	{
-	    xmin = dp.GetFloat(in_xmin);
-	    if(dp.ErrorString() != null)
+    //compute limits
+	    if(in_xmin != null && (in_xmin.trim()).length() != 0)
 	    {
-		error = dp.ErrorString();
-		return 0;
+	        xmin = dp.GetFloat(in_xmin);
+	        if(dp.ErrorString() != null)
+	        {
+		        error = dp.ErrorString();
+		        return 0;
+	        }
 	    }
-	}
-	else
-	    xmin = (!is_image) ? -HUGE : -1;
-	if(in_xmax != null && (in_xmax.trim()).length() != 0)
-	{
-	    xmax = dp.GetFloat(in_xmax);
-	    if(dp.ErrorString() != null)
+	    else
+	        xmin = (!is_image) ? -HUGE : -1;
+	    if(in_xmax != null && (in_xmax.trim()).length() != 0)
 	    {
-		error = dp.ErrorString();
-		return 0;
+	        xmax = dp.GetFloat(in_xmax);
+	        if(dp.ErrorString() != null)
+	        {
+		        error = dp.ErrorString();
+		        return 0;
+	        }
 	    }
-	}
-	else
-	    xmax = (!is_image) ? HUGE : -1;
-	if(in_ymax != null && (in_ymax.trim()).length() != 0)
-	{
-	    ymax = dp.GetFloat(in_ymax);
-	    if(dp.ErrorString() != null)
+	    else
+	        xmax = (!is_image) ? HUGE : -1;
+	    if(in_ymax != null && (in_ymax.trim()).length() != 0)
 	    {
-		error = dp.ErrorString();
-		return 0;
+	        ymax = dp.GetFloat(in_ymax);
+	        if(dp.ErrorString() != null)
+	        {
+		        error = dp.ErrorString();
+		        return 0;
+	        }
 	    }
-	}
-	else
-	    ymax = (!is_image) ? HUGE : -1;
+	    else
+	        ymax = (!is_image) ? HUGE : -1;
 	    
-  	if(in_ymin != null && (in_ymin.trim()).length() != 0)
-	{
-	    ymin = dp.GetFloat(in_ymin);
-	    if(dp.ErrorString() != null)
+  	    if(in_ymin != null && (in_ymin.trim()).length() != 0)
 	    {
-		error = dp.ErrorString();
-		return 0;
-	    }
-	}
-	else
-	    ymin = (!is_image) ? -HUGE : -1;
-
-	if(is_image)
-	{
-	    if(in_timemax != null && (in_timemax.trim()).length() != 0)
-	    {
-	        timemax = dp.GetFloat(in_timemax);
+	        ymin = dp.GetFloat(in_ymin);
 	        if(dp.ErrorString() != null)
 	        {
 		        error = dp.ErrorString();
@@ -544,60 +687,74 @@ public class WaveInterface
 	        }
 	    }
 	    else
-	        timemax = HUGE;
+	        ymin = (!is_image) ? -HUGE : -1;
 
-  	    if(in_timemin != null && (in_timemin.trim()).length() != 0)
+	    if(is_image)
 	    {
-	        timemin = dp.GetFloat(in_timemin);
-	        if(dp.ErrorString() != null)
+	        if(in_timemax != null && (in_timemax.trim()).length() != 0)
 	        {
-		        error = dp.ErrorString();
-		        return 0;
+	            timemax = dp.GetFloat(in_timemax);
+	            if(dp.ErrorString() != null)
+	            {
+		            error = dp.ErrorString();
+		            return 0;
+	            }
 	        }
-	    }
-	    else
-	        timemin =  -HUGE;
-    }
+	        else
+	            timemax = HUGE;
+
+  	        if(in_timemin != null && (in_timemin.trim()).length() != 0)
+	        {
+	            timemin = dp.GetFloat(in_timemin);
+	            if(dp.ErrorString() != null)
+	            {
+		            error = dp.ErrorString();
+		            return 0;
+	            }
+	        }
+	        else
+	            timemin =  -HUGE;
+        }
 	       
 	//Compute title, x label, y_label
-	if(in_title != null && (in_title.trim()).length() != 0)
-	{
-	    title = dp.GetString(in_title);
-	    if(title == null)
+	    if(in_title != null && (in_title.trim()).length() != 0)
 	    {
-		error = dp.ErrorString();
-		return 0;
-	    }
-	} 
-	else
-	    title = dp.GetDefaultTitle(in_y);
+	        title = dp.GetString(in_title);
+	        if(title == null)
+	        {
+		        error = dp.ErrorString();
+		        return 0;
+	        }
+	    }    
+	    else
+	        title = dp.GetDefaultTitle(in_y);
 	    
-	if(in_xlabel != null && (in_xlabel.trim()).length() != 0)
-	{
-	    xlabel = dp.GetString(in_xlabel);
-	    if(xlabel == null)
+	    if(in_xlabel != null && (in_xlabel.trim()).length() != 0)
 	    {
-		error = dp.ErrorString();
-		return 0;
-	    }
-	}	
-	else
-	    xlabel = dp.GetDefaultXLabel(in_y);
+	        xlabel = dp.GetString(in_xlabel);
+	        if(xlabel == null)
+	        {
+		        error = dp.ErrorString();
+		        return 0;
+	        }
+	    }	
+	    else
+	        xlabel = dp.GetDefaultXLabel(in_y);
 	    
-	if(in_ylabel != null && (in_ylabel.trim()).length() != 0)
-	{
-	    ylabel = dp.GetString(in_ylabel);
-	    if(ylabel == null)
+	    if(in_ylabel != null && (in_ylabel.trim()).length() != 0)
 	    {
-		error = dp.ErrorString();
-		return 0;
-	    }
-	}	
-	else
-	    ylabel = dp.GetDefaultYLabel(in_y);
+	        ylabel = dp.GetString(in_ylabel);
+	        if(ylabel == null)
+	        {
+		        error = dp.ErrorString();
+		        return 0;
+	        }
+	    }	
+	    else
+	        ylabel = dp.GetDefaultYLabel(in_y);
       
       
-	return 1;
+	    return 1;
     } 
 	     
 	
@@ -613,7 +770,7 @@ public class WaveInterface
     	for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
 	    {
 	        if(shots[curr_wave] == shot && 
-	            (interpolates[curr_wave] || this.markers[curr_wave] != Waveform.NONE))
+	            (interpolates[curr_wave] || this.markers[curr_wave] != Signal.NONE))
 	        {
 	            w_error[curr_wave] = null;
 		        evaluated[curr_wave] = true;
@@ -658,32 +815,26 @@ public class WaveInterface
 
     	for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
 	    {
-	    if(!evaluated[curr_wave] &&  
-	            (interpolates[curr_wave] || this.markers[curr_wave] != Waveform.NONE))
-	    {
-	    w_error[curr_wave] = null;    
-		evaluated[curr_wave] = true;
-		signals[curr_wave] = GetSignal(curr_wave, (float)-1E8, (float)1E8);
-		if(signals[curr_wave] == null)
-		{
-	        w_error[curr_wave] = curr_error;
+	        if(!evaluated[curr_wave] &&  
+	           !(!interpolates[curr_wave] && this.markers[curr_wave] == Signal.NONE))
+	        {
+	            w_error[curr_wave] = null;    
+		        evaluated[curr_wave] = true;
+		        signals[curr_wave] = GetSignal(curr_wave, (float)-1E8, (float)1E8);
+		        if(signals[curr_wave] == null)
+		        {
+	                w_error[curr_wave] = curr_error;
 
-		/*    
-		    if(error == null)
-			error = curr_error;
-		    else
-			error = error + "\n" + curr_error;
-	    */
-		}
-		else
-		{
-		    if(xmin != -HUGE) signals[curr_wave].xmin = xmin;
-		    if(xmax !=  HUGE) signals[curr_wave].xmax = xmax;
-		    if(ymin != -HUGE) signals[curr_wave].ymin = ymin;
-		    if(ymax !=  HUGE) signals[curr_wave].ymax = ymax;	
-		}
-	    }    	    
-	}
+		        }
+		        else
+		        {
+		            if(xmin != -HUGE) signals[curr_wave].xmin = xmin;
+		            if(xmax !=  HUGE) signals[curr_wave].xmax = xmax;
+		            if(ymin != -HUGE) signals[curr_wave].ymin = ymin;
+		            if(ymax !=  HUGE) signals[curr_wave].ymax = ymax;	
+		        }
+	        }    	    
+	    }
     }
 
     private void CreateNewFramesClass()
@@ -721,7 +872,7 @@ public class WaveInterface
         int j = 0, i = 0;
         curr_error = null;
         byte buf[];
-        
+        WaveformEvent we;
 
 	    if(in_y[0] == null)
 	    {
@@ -739,30 +890,39 @@ public class WaveInterface
 
         try
         {
-            controller.DisplayFrameLoad("Loading single or multi frame image");
+            we = new WaveformEvent(wave, "Loading single or multi frame image");
+            wave.dispatchWaveformEvent(we);
+//            controller.DisplayFrameLoad("Loading single or multi frame image");
             if( (buf = dp.GetAllFrames(in_y[0])) != null )
             {
                 CreateNewFramesClass();
-                if(!frames.AddMultiFrame(buf, controller, timemin, timemax))
+                if(!frames.AddMultiFrame(buf, timemin, timemax))
                 {
 	                curr_error = " Can't decode multi frame image "; 
                     frames = null;
                 } else {
-                    controller.DisplayFrameLoad("Decoding frame");
+                    we = new WaveformEvent(wave, "Decoding frame");
+                    wave.dispatchWaveformEvent(we);
+//                    controller.DisplayFrameLoad("Decoding frame");
                     frames.WaitLoadFrame();
                 }
                 buf = null;
             } 
             else 
             {
-	            if(in_x[0] == null || in_x[0].length() == 0)
+                String mframe_error = dp.ErrorString();
+
+ 	            if(in_x[0] == null || in_x[0].length() == 0)
                     f_time =  dp.GetFrameTimes(in_y[0]);
                 else
                     f_time = dp.GetFloatArray(in_x[0]);        
         
                 if(f_time == null)
                 {
-	                curr_error = " Frame times not found "; 
+                    if(mframe_error != null)
+                        curr_error = " Pulse file or image file not found\nRead on pulse file error\n"+mframe_error+"\nFrame times read error";
+                    else
+	                    curr_error = " Image file not found "; 
 	        
 	                if(dp.ErrorString() != null)
 	                    curr_error = curr_error +"\n"+dp.ErrorString();
@@ -774,7 +934,9 @@ public class WaveInterface
                 {
                     if(f_time[j] < timemin || f_time[j] > timemax)
                         continue;
-                    controller.DisplayFrameLoad("Frame "+(j+1)+"/"+f_time.length);
+                    we = new WaveformEvent(wave, "Loading frame "+(j+1)+"/"+f_time.length);
+                    wave.dispatchWaveformEvent(we);
+//                    controller.DisplayFrameLoad("Frame "+(j+1)+"/"+f_time.length);
                     buf = dp.GetFrameAt(in_y[0], j);
                     if(buf == null)
                     {
@@ -792,7 +954,7 @@ public class WaveInterface
                     frames = null;
                 }
             }
-          System.gc();
+            System.gc();
         } catch (Exception e) {
             curr_error = " Load Frames error "+e; 
         }
@@ -801,147 +963,147 @@ public class WaveInterface
     private Signal GetSignal(int curr_wave, float xmin, float xmax)
     {			    
 		
-	String limits = "FLOAT("+new Float(xmin).toString()+"), " +		    		    
-	    "FLOAT("+new Float(xmax).toString()+")";
-	if(experiment != null && experiment.trim().length() > 0)    			    		    
-	    dp.Update(experiment, shots[curr_wave]);
-	else
-	    if(shots != null && shots.length != 0)
-	        dp.Update(null, shots[curr_wave]);
+	    String limits = "FLOAT("+new Float(xmin).toString()+"), " +		    		    
+	                        "FLOAT("+new Float(xmax).toString()+")";
+	    if(experiment != null && experiment.trim().length() > 0)    			    		    
+	        dp.Update(experiment, shots[curr_wave]);
 	    else
-	        dp.Update(null, 0);
+	        if(shots != null && shots.length != 0)
+	            dp.Update(null, shots[curr_wave]);
+	        else
+	            dp.Update(null, 0);
 	    
-	if(dp.ErrorString() != null)
-	{
-	    error = dp.ErrorString();
-	    return null;
-	}
-	
-	if(in_y[curr_wave] == null)
-	{
-	    curr_error = "Missing Y value";
-	    return null;
-	}
-	float curr_y[] = null, curr_x[] = null, up_err[] = null,
-	    low_err[] = null, expanded_x[] = null;
-	int x_samples = 0;
-	
-	if(in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0)
-	{
-		curr_y = dp.GetFloatArray(in_y[curr_wave]);
-	
-	    if(curr_y != null && curr_y.length > 1 && in_up_err != null && 
-		    in_up_err[curr_wave] != null && (in_up_err[curr_wave].trim()).length() != 0)
+	    if(dp.ErrorString() != null)
 	    {
-		    up_err = dp.GetFloatArray(in_up_err[curr_wave]);
-		if(up_err == null || up_err.length <= 1)
-			curr_y = null;			
+	        error = dp.ErrorString();
+	        return null;
 	    }
-	    if(curr_y != null && in_low_err != null && 
-		    in_low_err[curr_wave] != null && (in_low_err[curr_wave].trim()).length() != 0)
+	
+	    if(in_y[curr_wave] == null)
 	    {
-		    low_err = dp.GetFloatArray(in_low_err[curr_wave]);
-		if(low_err == null || low_err.length <= 1)
-			curr_y = null;			
+	        curr_error = "Missing Y value";
+	        return null;
 	    }
-	    if(curr_y != null) 
+	    float curr_y[] = null, curr_x[] = null, up_err[] = null,
+	        low_err[] = null, expanded_x[] = null;
+	    int x_samples = 0;
+	
+	    if(in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0)
 	    {
-		    curr_x = dp.GetFloatArray(in_x[curr_wave]);
-		    if(curr_x == null || curr_x.length <= 1)
-			curr_y = null;
+		    curr_y = dp.GetFloatArray(in_y[curr_wave]);
+	
+	        if(curr_y != null && curr_y.length > 1 && in_up_err != null && 
+		        in_up_err[curr_wave] != null && (in_up_err[curr_wave].trim()).length() != 0)
+	        {
+		        up_err = dp.GetFloatArray(in_up_err[curr_wave]);
+		        if(up_err == null || up_err.length <= 1)
+			        curr_y = null;			
+	        }
+	        if(curr_y != null && in_low_err != null && 
+		        in_low_err[curr_wave] != null && (in_low_err[curr_wave].trim()).length() != 0)
+	        {
+		        low_err = dp.GetFloatArray(in_low_err[curr_wave]);
+		        if(low_err == null || low_err.length <= 1)
+			        curr_y = null;			
+	        }
+	        if(curr_y != null) 
+	        {
+		        curr_x = dp.GetFloatArray(in_x[curr_wave]);
+		        if(curr_x == null || curr_x.length <= 1)
+			        curr_y = null;
+	        }
 	    }
-	}
-	else // Campo X non definito
-	{
-	    if(full_flag)
-		curr_y = dp.GetFloatArray(in_y[curr_wave]);
-	    else
-		curr_y = dp.GetFloatArray("JavaResample("+ "FS_FLOAT("+in_y[curr_wave]+ "), "+
-		    "FLOAT(DIM_OF("+in_y[curr_wave]+")), "+ limits + ")");
+	    else // Campo X non definito
+	    {
+	        if(full_flag)
+		        curr_y = dp.GetFloatArray(in_y[curr_wave]);
+	        else
+		        curr_y = dp.GetFloatArray("JavaResample("+ "FLOAT("+in_y[curr_wave]+ "), "+
+		                    "FLOAT(DIM_OF("+in_y[curr_wave]+")), "+ limits + ")");
 		
 		
-	    if(curr_y != null && curr_y.length > 1 && in_up_err != null && in_up_err[curr_wave] != null 
-		    && (in_up_err[curr_wave].trim()).length() != 0)
-	    {
-		if(full_flag)
-		    up_err = dp.GetFloatArray(in_up_err[curr_wave]);
-		else
-		    up_err = dp.GetFloatArray("JavaResample(FS_FLOAT("+ in_up_err[curr_wave]+ "), DIM_OF(FLOAT("+
-			in_y[curr_wave] + ")), "+limits +")");
-		if(up_err == null || up_err.length <= 1)
-		    curr_y = null;
+	        if(curr_y != null && curr_y.length > 1 && in_up_err != null && in_up_err[curr_wave] != null 
+		        && (in_up_err[curr_wave].trim()).length() != 0)
+	        {
+		        if(full_flag)
+		            up_err = dp.GetFloatArray(in_up_err[curr_wave]);
+		        else
+		            up_err = dp.GetFloatArray("JavaResample(FLOAT("+ in_up_err[curr_wave]+ "), DIM_OF(FLOAT("+
+			    in_y[curr_wave] + ")), "+limits +")");
+		        if(up_err == null || up_err.length <= 1)
+		            curr_y = null;
 	    
-	    }				
-	    if(curr_y != null && in_low_err != null && 
-		    in_low_err[curr_wave] != null && (in_low_err[curr_wave].trim()).length() != 0)
-	    {
-		if(full_flag)
-		    low_err = dp.GetFloatArray(in_low_err[curr_wave]);
-		else
-		    low_err = dp.GetFloatArray("JavaResample(FS_FLOAT("+in_low_err[curr_wave] +
-			 "), DIM_OF(FLOAT("+ in_y[curr_wave] + ")),"+ limits + ")");
+	        }				
+	        if(curr_y != null && in_low_err != null && 
+		        in_low_err[curr_wave] != null && (in_low_err[curr_wave].trim()).length() != 0)
+	        {
+		        if(full_flag)
+		            low_err = dp.GetFloatArray(in_low_err[curr_wave]);
+		        else
+		            low_err = dp.GetFloatArray("JavaResample(FLOAT("+in_low_err[curr_wave] +
+			            "), DIM_OF(FLOAT("+ in_y[curr_wave] + ")),"+ limits + ")");
 			
-		if(low_err == null || low_err.length <= 1)
-		    curr_y = null;
-	    }				
+		        if(low_err == null || low_err.length <= 1)
+		            curr_y = null;
+	        }				
 		
-	    if(curr_y != null)
-	    {
-		if(full_flag)
+	        if(curr_y != null)
+	        {
+		        if(full_flag)
 //		    curr_x = dp.GetFloatArray("DIM_OF("+in_y[curr_wave]+")");
-		    curr_x = dp.GetFloatArray(dp.GetXSpecification(in_y[curr_wave]));
-		else
-		{
-		    curr_x = dp.GetFloatArray("JavaDim(FS_FLOAT(DIM_OF("+ in_y[curr_wave]+ 
-			")), "+ limits + ")"); 
-		    if(curr_x != null && curr_x.length > 1)
-		    {
-			expanded_x = new float[curr_y.length];
-			x_samples = ExpandTimes(curr_x, expanded_x);
-			curr_x = expanded_x;
-		    }
-		}
-		if(curr_x == null)
-		    curr_y = null;
+		            curr_x = dp.GetFloatArray(dp.GetXSpecification(in_y[curr_wave]));
+		        else
+		        {
+		            curr_x = dp.GetFloatArray("JavaDim(FLOAT(DIM_OF("+ in_y[curr_wave]+ 
+			        ")), "+ limits + ")"); 
+		            if(curr_x != null && curr_x.length > 1)
+		            {   
+			            expanded_x = new float[curr_y.length];
+			            x_samples = ExpandTimes(curr_x, expanded_x);
+			            curr_x = expanded_x;
+		            }
+		        }
+		        if(curr_x == null)
+		            curr_y = null;
+	        }
 	    }
-	}
-	if(curr_x == null || curr_y == null)
-	{
-	    curr_error = dp.ErrorString();
-	    return null;
-	}
-	int min_len;
+	    if(curr_x == null || curr_y == null)
+	    {
+	        curr_error = dp.ErrorString();
+	        return null;
+	    }
+	    int min_len;
 	// Se e' definito il campo x si assume full_flag true
-	if(full_flag || (in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0))
-	    min_len  = curr_y.length;
-	else
-	{ 
-	    if(curr_y.length < x_samples)
-		min_len = curr_y.length;
+	    if(full_flag || (in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0))
+	        min_len  = curr_y.length;
 	    else
-		min_len = x_samples;
-	}	
+	    { 
+	        if(curr_y.length < x_samples)
+		        min_len = curr_y.length;
+	        else
+		        min_len = x_samples;
+	    }	
 	
     	Signal out_signal = new Signal(curr_x, curr_y, min_len);
-	if(xmin != -HUGE)
-	    out_signal.xmin = out_signal.saved_xmin = xmin;
-	if(xmax != HUGE)
-	    out_signal.xmax = out_signal.saved_xmax = xmax;    
+	    if(xmin != -HUGE)
+	        out_signal.xmin = out_signal.saved_xmin = xmin;
+	    if(xmax != HUGE)
+	        out_signal.xmax = out_signal.saved_xmax = xmax;    
     
-	if(in_ymax != null && (in_ymax.trim()).length() != 0)
-	    out_signal.ymax = out_signal.saved_ymax = ymax;
-	if(out_signal.xmin > out_signal.xmax)
-	    out_signal.xmin = out_signal.xmax;
-	if(in_ymin != null && (in_ymin.trim()).length() != 0)
-	    out_signal.ymin = out_signal.saved_ymin = ymin;
-	if(out_signal.ymin > out_signal.ymax)
-	    out_signal.ymin = out_signal.ymax;
-	out_signal.up_error = up_err;
-        out_signal.low_error = low_err;
+	    if(in_ymax != null && (in_ymax.trim()).length() != 0)
+	        out_signal.ymax = out_signal.saved_ymax = ymax;
+	    if(out_signal.xmin > out_signal.xmax)
+	        out_signal.xmin = out_signal.xmax;
+	    if(in_ymin != null && (in_ymin.trim()).length() != 0)
+	        out_signal.ymin = out_signal.saved_ymin = ymin;
+	    if(out_signal.ymin > out_signal.ymax)
+	        out_signal.ymin = out_signal.ymax;
+	    out_signal.up_error = up_err;
+            out_signal.low_error = low_err;
         if(up_err != null)
-    	out_signal.error = true;
+    	    out_signal.error = true;
         if(up_err != null && low_err != null)
-    	out_signal.asym_error = true;
+    	    out_signal.asym_error = true;
         return out_signal;
     }
     
@@ -987,14 +1149,16 @@ public class WaveInterface
     }
 
 
-    void AsynchUpdate(Signal sigs[], float xmin, float xmax, 
+    void AsynchUpdate(/*Signal sigs[],*/ Vector sigs, float xmin, float xmax, 
 	float _orig_xmin, float _orig_xmax, int timestamp, boolean panning, MultiWaveform w)
     {
 	int curr_wave;
 	boolean needs_update = false;
 	if(full_flag)
 	    return;
-	wave_signals = sigs;
+	wave_signals = new Signal[sigs.size()];
+	for(int i = 0; i < sigs.size(); i++)
+	    wave_signals[i] = (Signal)sigs.elementAt(i);
 	wave_xmin = xmin;
 	wave_xmax = xmax;
 	wave_timestamp = timestamp;
@@ -1040,522 +1204,10 @@ public class WaveInterface
 	    }
 	}
 	if(needs_update && saved_timestamp == wave_timestamp)
-	    w.UpdateSignals(wave_signals, wave_signals.length, wave_timestamp);
+	    w.UpdateSignals(wave_signals, wave_timestamp);
+	    //w.UpdateSignals(wave_signals, wave_signals.length, wave_timestamp);
     }
 
-    private String addNewLineCode(String s)
-    {
-	    String  s_new = new String();
-	    int     new_pos = 0, old_pos = 0;
-	
-	    if(s == null) return null;
-	    while((new_pos = s.indexOf("\n", old_pos)) != -1)
-	    {
-	        s_new = s_new.concat(s.substring(old_pos, new_pos));
-	        old_pos = new_pos + "\n".length();			  
-	        s_new += "|||";
-	    }
-	    s_new = s_new.concat(s.substring(old_pos, s.length()));
-	    return s_new;
-    }
- 
-
-    public void toFile(PrintWriter out, String prompt, jScope main_scope)
-    { 
-	    int exp, exp_n, sht, sht_n, cnum_shot; 
-
- 	    cnum_shot = num_shot;
-	    if(UseDefaultShot())
-	    {
-	        if(cin_shot != null && cin_shot.length()> 0)
-		        cnum_shot = (main_scope.evaluateShot(cin_shot)).length;
-	        else
-		        cnum_shot = 1;
-	    }
- 
-	    jScope.writeLine(out, prompt + "x_label: "         , cin_xlabel);
-	    jScope.writeLine(out, prompt + "y_label: "         , cin_ylabel);
-	    if(!is_image)
-	    {
-	        jScope.writeLine(out, prompt + "x_log: "           , ""+x_log);
-	        jScope.writeLine(out, prompt + "y_log: "           , ""+y_log);
-	        if(make_legend) {
-	            jScope.writeLine(out, prompt + "legend: "           , "("+legend_x+","+legend_y+")");
-	        }
-	    } else {
-	        jScope.writeLine(out, prompt + "is_image: "           , ""+is_image);
-	        jScope.writeLine(out, prompt + "use_jai: "           , ""+use_jai);
-	    }    
-	    
-	    jScope.writeLine(out, prompt + "experiment: "      , cexperiment);
-	    jScope.writeLine(out, prompt + "event: "           , cin_upd_event);
-	    jScope.writeLine(out, prompt + "default_node: "    , cin_def_node);
-
-	    if(cnum_shot != 0) {
-	        int nshot;
-	        if(UseDefaultShot())
-	            nshot = num_shot;
-	        else
-	            nshot = cnum_shot;
-	        jScope.writeLine(out, prompt + "num_expr: "        , ""+num_waves/cnum_shot);
-	    } else
-	        jScope.writeLine(out, prompt + "num_expr: "        , ""+num_waves);
-	
-	    jScope.writeLine(out, prompt + "num_shot: "        , ""+cnum_shot);
-	    jScope.writeLine(out, prompt + "shot: "            , cin_shot);
-	    jScope.writeLine(out, prompt + "ymin: "            , cin_ymin);
-	    jScope.writeLine(out, prompt + "ymax: "            , cin_ymax);
-	    jScope.writeLine(out, prompt + "xmin: "            , cin_xmin);
-	    jScope.writeLine(out, prompt + "xmax: "            , cin_xmax);
-        if(is_image)
-        {
-	        jScope.writeLine(out, prompt + "time_min: "            , cin_timemin);
-	        jScope.writeLine(out, prompt + "time_max: "            , cin_timemax);
-        }
-	    jScope.writeLine(out, prompt + "title: "           , cin_title);
-	    jScope.writeLine(out, prompt + "global_defaults: " , ""+defaults);
-	
-		    
-	    for(exp = 0, exp_n = 1; exp < num_waves; exp += num_shot, exp_n++)
-	    {
-	        jScope.writeLine(out, prompt + "label"     + "_" + exp_n + ": " , in_label[exp]);
-	        jScope.writeLine(out, prompt + "x_expr"     + "_" + exp_n + ": " , addNewLineCode(in_x[exp]));
-	        jScope.writeLine(out, prompt + "y_expr"     + "_" + exp_n + ": " , addNewLineCode(in_y[exp]));
-	        
-	        if(!is_image)
-	        {
-	            jScope.writeLine(out, prompt + "up_error"   + "_" + exp_n + ": " , in_up_err[exp]);
-	            jScope.writeLine(out, prompt + "low_error"  + "_" + exp_n + ": " , in_low_err[exp]);
-			
-	            for(sht = 0, sht_n = 1; sht < cnum_shot; sht++, sht_n++)
-	            {			    
-		            jScope.writeLine(out, prompt + "interpolate"+"_"+exp_n+"_"+sht_n+": ",""+interpolates[exp + sht]);								    
-		            jScope.writeLine(out, prompt + "color"      +"_"+exp_n+"_"+sht_n+": ",""+colors_idx[exp + sht]);
-		            jScope.writeLine(out, prompt + "marker"     +"_"+exp_n+"_"+sht_n+": ",""+markers[exp + sht]);
-		            jScope.writeLine(out, prompt + "step_marker"+"_"+exp_n+"_"+sht_n+": ",""+markers_step[exp + sht]);
-	            }
-	        }
-	    } 
-    }
-    
-    private String trimString(String s)
-    {
-	String  s_new = new String();
-	int     new_pos = 0, old_pos = 0;
-	while((new_pos = s.indexOf(" ", old_pos)) != -1)
-	{
-	    s_new = s_new.concat(s.substring(old_pos, new_pos));
-	    old_pos = new_pos + " ".length();			  
-	}
-	s_new = s_new.concat(s.substring(old_pos, s.length()));
-	return s_new;
-    }
-
-    private String removeNewLineCode(String s)
-    {
-	String  y_new = new String();
-	int     new_pos = 0, old_pos = 0;
-	
-	s = trimString(s);
-	while((new_pos = s.indexOf("|||", old_pos)) != -1)
-	{
-	    y_new = y_new.concat(s.substring(old_pos, new_pos));
-	    old_pos = new_pos + "|||".length();			  
-	    y_new += '\n';
-	}
-	y_new = y_new.concat(s.substring(old_pos, s.length()));
-	return y_new;
-    }
-    
-    private void createVector()
-    {
-    in_label = new String[num_waves];      
-	shots	 = new int[num_waves];
-	in_y	 = new String[num_waves];
-	in_x	 = new String[num_waves];
-	in_up_err    = new String[num_waves];
-	in_low_err   = new String[num_waves];
-	markers      = new int[num_waves];
-	markers_step = new int[num_waves];
-	colors_idx   = new int[num_waves];
-	colors       = new Color[num_waves];
-	interpolates = new boolean[num_waves];
-	
-	for(int i = 0; i < num_waves; i++)
-	{
-	    shots[i]	    = jScope.UNDEF_SHOT;
-	    markers[i]      = 0;
-	    markers_step[i] = 1;
-    	colors_idx[i]   = i % 12;
-	    interpolates[i] = true;
-	}
-    }
-    
-
-    public int fromFile(ReaderConfig in, String prompt, jScope main_scope) throws IOException
-    { 
-	    String str;
-	    int error = 0, len, pos, num_expr = 0;
-	    boolean shot_evaluated = false;
-	    int sh[] = null;
-     
-	    while((str = in.readLine()) != null) 
-	    {
-	        if(str.indexOf(prompt) == 0)
-	        {
-		        len =  str.indexOf(":") + 2;
-
-		        if(str.indexOf(".height:") != -1)
-		        {
-		            height = new Integer(str.substring(len, str.length())).intValue();
-		            continue;		
-		        }
-
-		
-		        if(str.indexOf(".grid_mode:") != -1)
-		        {
-		            in_grid_mode = new Integer(str.substring(len, str.length())).intValue();
-		            continue;		
-		        }
-		
-		        if(str.indexOf(".x_label:") != -1)
-		        {
-		            cin_xlabel = str.substring(len, str.length());
-		            continue;		
-		        }
-		        if(str.indexOf(".y_label:") != -1)
-		        {
-		            cin_ylabel = str.substring(len, str.length());
-		            continue;		
-		        }
-		        
-		            if(str.indexOf(".x_log:") != -1)
-		            {
-		                x_log = new Boolean(str.substring(len, str.length())).booleanValue();
-		                continue;		
-		            }
-		            if(str.indexOf(".y_log:") != -1)
-		            {
-		                y_log = new Boolean(str.substring(len, str.length())).booleanValue();
-		                continue;		
-		            }
-		            
-		            if(str.indexOf(".legend:") != -1)
-		            {
-		                make_legend = true;
-		                legend_x = Integer.parseInt(str.substring(str.indexOf("(") + 1, str.indexOf(",")));
-		                legend_y = Integer.parseInt(str.substring(str.indexOf(",") + 1, str.indexOf(")")));
-		                continue;		
-		            }
-		            
-		            if(str.indexOf(".is_image:") != -1)
-		            {
-		                is_image = new Boolean(str.substring(len, str.length())).booleanValue();
-		                continue;		
-		            }		            
-		        
-		            if(str.indexOf(".use_jai:") != -1)
-		            {
-		                use_jai = new Boolean(str.substring(len, str.length())).booleanValue();
-		                continue;		
-		            }		            
-		        
-		        
-		        
-		        if(str.indexOf(".experiment:") != -1)
-		        {
-		            cexperiment = str.substring(len, str.length());
-		            continue;		
-		        }
-		        
-		        if(str.indexOf(".shot:") != -1)
-		        {
-		            cin_shot = str.substring(len, str.length());
-		            sh = main_scope.evaluateShot(cin_shot);
-		    
-		            if(sh.length == num_shot)
-		            {
-			            for(int i = 0, k = 0; i < num_expr; i++)
-			                for(int j = 0; j < num_shot; j++)
-			                {
-				                shots[k] = sh[j];
-				                k++;
-			                }
-		            } else
-			            shot_evaluated = true;
-		            continue;		
-		        }
-		        if(str.indexOf(".x:") != -1)
-		        {
-		            String x_str = str.substring(len, str.length());
-				
-		            x_str = removeNewLineCode(x_str);
-		            if(in_x == null || in_x.length == 0)
-			            in_x = new String[1];
-		            in_x[0] = x_str;
-		            continue;		
-		        }
-		        if(str.indexOf(".y:") != -1)
-		        {
-		            num_shot = 1;
-		            String y_str = str.substring(len, str.length());
-		            String x_str = null;
-
-		            y_str = removeNewLineCode(y_str);
-		    
-		            if(in_x != null && in_x.length != 0)
-			            x_str = in_x[0];
-																	    
-		            if(y_str.indexOf("[") == 0 && y_str.toLowerCase().indexOf("$roprand") != -1)
-		            {
-		
-			            pos = y_str.toLowerCase().indexOf(",$roprand");
-			            do {
-			                num_expr++;
-			                pos += ",$roprand".length();
-			            } while((pos = y_str.toLowerCase().indexOf(",$roprand", pos)) != -1 );
-			            num_expr++;
-		            } else {
-			            num_expr = 1;
-		            }
-		    
-		            num_waves = num_expr * num_shot;
-		            createVector();
-
-		            if(num_expr == 1) {
-			            in_y[0] = y_str;
-			            if( in_y[0].toLowerCase().indexOf("multitrace") != -1)
-			            {
-			                in_y[0] =  in_y[0].substring(in_y[0].indexOf("\\") + 1, in_y[0].indexOf("\")"));  
-			            }
-			            if(x_str != null)
-			                in_x[0] = new String(x_str);
-			            else
-			                in_x[0] = null;
-		    
-		                } else {
-		                    int pos_x = (x_str != null) ? x_str.indexOf("[") : 0;
-		                    int pos_y = y_str.indexOf("[");			  
-		                    int i, j;			
-			                for(i = 0; i < (num_expr - 1) * num_shot; i += num_shot)
-			                {
-			                    in_y[i] = y_str.substring(pos_y + 1, pos_y = y_str.toLowerCase().indexOf(",$roprand", pos_y));
-			                    if(x_str != null) {
-				                    if(x_str.indexOf(",0", pos_x) != -1)
-				                    in_x[i] = x_str.substring(pos_x  + 1, pos_x =  x_str.indexOf(",0", pos_x));			    			
-			                    }
-			                    if(in_y[i].toLowerCase().indexOf("multitrace") != -1)
-			                    {
-				                    in_y[i] =  in_y[i].substring(in_y[i].indexOf("\\") + 1, in_y[i].indexOf("\")"));  
-			                    }
-			                    for(j = 1; j < num_shot; j++)
-			                    {
-				                    in_y[i+j] = new String(in_y[i]);
-				                    in_x[i+j] = new String(in_x[i]);				
-			                    }
-			                    pos_y += ",$roprand".length();
-			                    pos_x += ",0".length();
-			                }
-			                in_y[i] = y_str.substring(pos_y + 1,  y_str.indexOf("]", pos_y));
-			                if(x_str != null)
-			                    in_x[i] = x_str.substring(pos_x + 1, x_str.indexOf("]", pos_x));			    			
-			                for(j = 1; j < num_shot; j++)
-			                {
-			                    in_y[i+j] = new String(in_y[i]);
-			                    in_x[i+j] = new String(in_x[i]);				
-			                }
-		                }    
-		                continue;		
-		            }
-		            if(str.indexOf(".num_expr:") != -1)
-		            {
-		                num_expr = new Integer(str.substring(len, str.length())).intValue();
-		                num_expr = (num_expr > 0) ? num_expr : 1;						
-		                if(num_shot != 0) {
-			                num_waves = num_expr * num_shot;
-			                createVector();
-			                if(shot_evaluated)
-			                {
-			                    if(sh.length == num_shot)
-			                    {
-				                    for(int i = 0, k = 0; i < num_expr; i++)
-				                    for(int j = 0; j < num_shot; j++)
-				                    {
-					                    shots[k] = sh[j];
-					                    k++;
-				                    }
-			                    } 			    
-			                }
-		                 }
-		                 continue;		
-		            }		    
-		            if(str.indexOf(".num_shot:") != -1)
-		            {
-		
-		                num_shot = new Integer(str.substring(len, str.length())).intValue();
-		                num_shot = (num_shot > 0) ? num_shot : 1;			
-		                if(num_expr != 0) {
-			                num_waves = num_expr * num_shot;
-			                createVector();
-			                if(shot_evaluated)
-			                {
-			                    if(sh.length == num_shot)
-			                    {
-				                    for(int i = 0, k = 0; i < num_expr; i++)
-				                        for(int j = 0; j < num_shot; j++)
-				                        {
-					                        shots[k] = sh[j];
-					                        k++;
-				                        }
-			                    } 			    
-			                }
-		                }
-		                continue;		
-		            }
-		            if(str.indexOf(".global_defaults:") != -1)
-		            {
-		                defaults = new Integer(str.substring(len, str.length())).intValue();
-		                continue;		
-		            }		    
-		            if((pos = str.indexOf(".label_")) != -1)
-		            {			
-		                pos += ".label_".length();
-		                int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
-		                in_label[expr_idx] = str.substring(pos + 2, str.length());
-		                for(int j = 1; j < num_shot; j++)
-			                in_label[expr_idx + j] = in_label[expr_idx];			
-		                continue;		
-		            }		    
-		            if((pos = str.indexOf(".x_expr_")) != -1)
-		            {			
-		                pos += ".x_expr_".length();
-		                int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
-		                in_x[expr_idx] = removeNewLineCode(str.substring(pos + 2, str.length()));
-		                for(int j = 1; j < num_shot; j++)
-			                in_x[expr_idx + j] = in_x[expr_idx];			
-		                continue;		
-		            }		    
-		            if((pos = str.indexOf(".y_expr_")) != -1)
-		            {			
-		                pos += ".y_expr_".length();
-		                int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
-		                in_y[expr_idx] = removeNewLineCode(str.substring(pos + 2, str.length()));
-		                for(int j = 1; j < num_shot; j++)
-			            in_y[expr_idx + j] = in_y[expr_idx];			
-		                continue;		
-		            }
-		            
-		                if((pos = str.indexOf(".up_error_")) != -1)
-		                {			
-		                    pos += ".up_error_".length();
-		                    int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
-		                    in_up_err[expr_idx] = str.substring(pos + 2, str.length());
-		                    for(int j = 1; j < num_shot; j++)
-			                    in_up_err[expr_idx + j] = in_up_err[expr_idx];			
-		                    continue;		
-		                }		    
-		                if((pos = str.indexOf(".low_error_")) != -1)
-		                {			
-		                    pos += ".low_error_".length();
-		                    int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
-		                    in_low_err[expr_idx] = str.substring(pos + 2, str.length());
-		                    for(int j = 1; j < num_shot; j++)
-			                    in_low_err[expr_idx + j] = in_low_err[expr_idx];			
-		                    continue;		
-		                }
-		
-		                if((pos = str.indexOf(".interpolate_")) != -1)
-		                {			
-		                    pos += ".interpolate_".length();
-		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
-		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
-		                    interpolates[expr_idx *  num_shot + shot_idx] = 
-						    new Boolean(str.substring(pos + 2, str.length())).booleanValue();
-		                    continue;		
-		                }
-		                
-		                if((pos = str.indexOf(".color_")) != -1)
-		                {
-		                    pos += ".color_".length();
-		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
-		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
-		                    try {			
-		                        int c_idx = new Integer(str.substring(pos + 2, str.length())).intValue();
-		                        colors_idx[expr_idx *  num_shot + shot_idx] = c_idx;
-		                    } catch(Exception e) { colors_idx[expr_idx *  num_shot + shot_idx] = 0;}
-		                    continue;		
-		                }
-		                if((pos = str.indexOf(".marker_")) != -1)
-		                {			
-		                    pos += ".marker_".length();
-		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
-		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
-		                    markers[expr_idx *  num_shot + shot_idx] = 
-						    new Integer(str.substring(pos + 2, str.length())).intValue();
-		                    continue;		
-		                }
-		
-		                if((pos = str.indexOf(".step_marker_")) != -1)
-		                {			
-		                    pos += ".step_marker_".length();
-		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
-		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
-		                    markers_step[expr_idx *  num_shot + shot_idx] = 
-						    new Integer(str.substring(pos + 2, str.length())).intValue();
-		                    continue;		
-		                }
-					
-		            if(str.indexOf(".title:") != -1)
-		            {
-		                cin_title = str.substring(len, str.length());
-		                continue;		
-		            }
-		            if(str.indexOf(".ymin:") != -1)
-		            {
-		                cin_ymin = str.substring(len, str.length());
-		                continue;		
-		            }
-		            if(str.indexOf(".ymax:") != -1)
-		            {
-		                cin_ymax = str.substring(len, str.length());
-		                continue;		
-		            }
-		            if(str.indexOf(".xmin:") != -1)
-		            {
-		                cin_xmin = str.substring(len, str.length());
-		                continue;		
-		            }
-		            if(str.indexOf(".xmax:") != -1)
-		            {
-		                cin_xmax = str.substring(len, str.length());
-		                continue;
-		            }
-                    if(str.indexOf(".time_min:") != -1)
-		            {
-		                cin_timemin = str.substring(len, str.length());
-		                continue;		
-		            }
-		            if(str.indexOf(".time_max:") != -1)
-		            {
-		                cin_timemax = str.substring(len, str.length());
-		                continue;		
-		            }
-		            if(str.indexOf(".default_node:") != -1)
-		            {
-		                cin_def_node = str.substring(len, str.length());
-		                continue;		
-		            }
-		            if(str.indexOf(".event:") != -1)
-		            {
-		                cin_upd_event = str.substring(len, str.length());
-		                continue;		
-		            }
-	            }
-	        }
-		
-	        return error;
-        }	 
-	      	        
     }		
 	
 class AsynchUpdater  extends Thread
@@ -1563,29 +1215,29 @@ class AsynchUpdater  extends Thread
     WaveInterface wi;
     MultiWaveform w;
     
-public AsynchUpdater(WaveInterface _wi, MultiWaveform _w)
-{
-    wi = _wi;
-    w = _w;
-}
-public void run()
-{
-    while(true)
+    public AsynchUpdater(WaveInterface _wi, MultiWaveform _w)
     {
-	    while(wi.request_pending)
-	    {
-	        wi.request_pending = false;
-	        wi.DynamicUpdate(w);
-	    }
-	    try {
-	        wait();
-	    } catch (InterruptedException e){}
+        wi = _wi;
+        w = _w;
     }
-}
-public synchronized void Notify()
-{
-    notify();
-}
+    public synchronized void run()
+    {
+        while(true)
+        {
+	        while(wi.request_pending)
+	        {
+	            wi.request_pending = false;
+	            wi.DynamicUpdate(w);
+	        }
+	        try {
+	            wait();
+	        } catch (InterruptedException e){}
+        }
+    }
+    public synchronized void Notify()
+    {
+        notify();
+    }
     
 }
     	

@@ -79,10 +79,10 @@ class DemoProvider implements DataProvider
     {
         return false;
     }
-    public void addMdsEventListener(MdsEventListener l, String event)
+    public void addNetworkEventListener(NetworkEventListener l, String event)
     {
     }
-    public void removeMdsEventListener(MdsEventListener l, String event)
+    public void removeNetworkEventListener(NetworkEventListener l, String event)
     {
     }
     public String GetDefaultTitle(String in_y[])

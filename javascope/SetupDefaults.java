@@ -13,12 +13,19 @@ public class SetupDefaults extends ScopePositionDialog {
    TextField        def_node, upd_event;
    Button           ok, cancel, reset, erase, apply;
    Label            lab;
-   int	  shots[];
+   
    jScope main_scope;
+   
+   jScopeDefaultValues def_vals;
+   
+   /*
+   int	  shots[];
    String xmin, xmax, ymax, ymin;
    String title_str, xlabel, ylabel;
    String experiment_str, shot_str;
    String upd_event_str, def_node_str;
+   */
+   
    boolean reversed;
    
    private Panel         panel;
@@ -28,19 +35,18 @@ public class SetupDefaults extends ScopePositionDialog {
    int	   curr_grid_mode = 0, x_curr_lines_grid = 3, y_curr_lines_grid = 3;
    private boolean is_changed = false; 
 
-   public SetupDefaults(Frame fw, String frame_title) 
+   public SetupDefaults(Frame fw, String frame_title, jScopeDefaultValues def_vals) 
    {
 
       super(fw, frame_title, true);
 //      super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
       setModal(true);
       setResizable(false);
-
-            
+      
+//      this.def_vals = def_vals;      
       main_scope = (jScope)fw;
       
-      if(!main_scope.is_applet)
-        GetPropertiesValue();
+      GetPropertiesValue();
   
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints c = new GridBagConstraints();
@@ -312,97 +318,102 @@ public class SetupDefaults extends ScopePositionDialog {
    private void initialize()      
    { 
 	    eraseForm();	    
-	    setTextValue(title, title_str);
-	    setTextValue(y_label, ylabel);
-	    setTextValue(x_label, xlabel);
-        setTextValue(y_max, ymax);
-        setTextValue(y_min, ymin);
-        setTextValue(x_max, xmax);
-        setTextValue(x_min, xmin);
-	    setTextValue(experiment, experiment_str);
-	    setTextValue(shot, shot_str);		
-	    setTextValue(upd_event, upd_event_str);
-	    setTextValue(def_node, def_node_str);		
+	    setTextValue(title, def_vals.title_str);
+	    setTextValue(y_label, def_vals.ylabel);
+	    setTextValue(x_label, def_vals.xlabel);
+        setTextValue(y_max, def_vals.ymax);
+        setTextValue(y_min, def_vals.ymin);
+        setTextValue(x_max, def_vals.xmax);
+        setTextValue(x_min, def_vals.xmin);
+	    setTextValue(experiment, def_vals.experiment_str);
+	    setTextValue(shot, def_vals.shot_str);		
+	    setTextValue(upd_event, def_vals.upd_event_str);
+	    setTextValue(def_node, def_vals.def_node_str);		
 	    grid_mode.select(curr_grid_mode);
 	    x_grid_lines.setText(""+x_curr_lines_grid);
 	    y_grid_lines.setText(""+y_curr_lines_grid);
 	    reversed_b.setState(reversed);
    }
    
-   private void saveDefaultConfiguration()
+   public void SaveDefaultConfiguration(jScopeDefaultValues def_vals)
    {
 
-      experiment_str	= new String(experiment.getText());
-      shot_str		    = new String(shot.getText());
-      xmax		        = new String(x_max.getText());
-      xmin		        = new String(x_min.getText());
-      ymax		        = new String(y_max.getText());
-      ymin		        = new String(y_min.getText());
-      title_str		    = new String(title.getText());
-      xlabel		    = new String(x_label.getText());
-      ylabel		    = new String(y_label.getText());
-      upd_event_str  	= new String(upd_event.getText());
-      def_node_str	    = new String(def_node.getText());
+      def_vals.experiment_str	= new String(experiment.getText());
+      def_vals.shot_str		    = new String(shot.getText());
+      def_vals.xmax		        = new String(x_max.getText());
+      def_vals.xmin		        = new String(x_min.getText());
+      def_vals.ymax		        = new String(y_max.getText());
+      def_vals.ymin		        = new String(y_min.getText());
+      def_vals.title_str		= new String(title.getText());
+      def_vals.xlabel		    = new String(x_label.getText());
+      def_vals.ylabel		    = new String(y_label.getText());
+      def_vals.upd_event_str  	= new String(upd_event.getText());
+      def_vals.def_node_str	    = new String(def_node.getText());
 	  curr_grid_mode    = grid_mode.getSelectedIndex();
 	  reversed          = reversed_b.getState();
+	  
 	  x_curr_lines_grid = new Integer(x_grid_lines.getText().trim()).intValue();
 	  if(x_curr_lines_grid > Grid.MAX_GRID) {
 	    x_curr_lines_grid = Grid.MAX_GRID;
 	    x_grid_lines.setText(""+Grid.MAX_GRID);
 	  }
+	  
 	  y_curr_lines_grid = new Integer(y_grid_lines.getText().trim()).intValue();
 	  if(y_curr_lines_grid > Grid.MAX_GRID) {
 	    y_curr_lines_grid = Grid.MAX_GRID;
 	    y_grid_lines.setText(""+Grid.MAX_GRID);
 	  }
+	  def_vals.is_evaluated = false;
     } 
     
-   public String getDefaultValue(int i, boolean def_flag, WaveInterface wi)
+    /*
+   public String getDefaultValue(int i, boolean def_flag, MdsWaveInterface wi)
    {
 	String out = null;
    
 	switch(i)
         {
-	    case WaveInterface.B_title:
-	      out = def_flag  ? title_str : wi.cin_title; break; 
-	    case WaveInterface.B_shot:
-	      out  = def_flag ? shot_str : wi.cin_shot;break; 
-	    case WaveInterface.B_exp:
-	      out =  def_flag ? experiment_str : wi.cexperiment;break; 
-	    case WaveInterface.B_x_max:
+	    case MdsWaveInterface.B_title:
+	      out = def_flag  ? def_vals.title_str : wi.cin_title; break; 
+	    case MdsWaveInterface.B_shot:
+	      out  = def_flag ? def_vals.shot_str : wi.cin_shot;break; 
+	    case MdsWaveInterface.B_exp:
+	      out =  def_flag ? def_vals.experiment_str : wi.cexperiment;break; 
+	    case MdsWaveInterface.B_x_max:
 	        if(wi.is_image)
-	            out  = def_flag ? xmax : wi.cin_timemax;
+	            out  = def_flag ? def_vals.xmax : wi.cin_timemax;
 	        else
-	            out  = def_flag ? xmax : wi.cin_xmax; 
+	            out  = def_flag ? def_vals.xmax : wi.cin_xmax; 
 	    break;	    
-	    case WaveInterface.B_x_min:
+	    case MdsWaveInterface.B_x_min:
 	        if(wi.is_image)
-	            out  = def_flag ? xmin : wi.cin_timemin;
+	            out  = def_flag ? def_vals.xmin : wi.cin_timemin;
 	        else
-	            out  = def_flag ? xmin : wi.cin_xmin; 
+	            out  = def_flag ? def_vals.xmin : wi.cin_xmin; 
 	    break; 
-	    case WaveInterface.B_x_label:
-	      out =  def_flag ? xlabel : wi.cin_xlabel;break; 
-	    case WaveInterface.B_y_max:
-	      out =  def_flag ? ymax : wi.cin_ymax; break; 
-	    case WaveInterface.B_y_min:
-	      out =  def_flag ? ymin : wi.cin_ymin; break; 
-	    case WaveInterface.B_y_label:
-	      out =  def_flag ? ylabel : wi.cin_ylabel;break; 
-	    case WaveInterface.B_event:
-	      out =  def_flag ? upd_event_str : wi.cin_upd_event;break; 
-	    case WaveInterface.B_default_node:
-	      out =  def_flag ? def_node_str : wi.cin_def_node;break; 
+	    case MdsWaveInterface.B_x_label:
+	      out =  def_flag ? def_vals.xlabel : wi.cin_xlabel;break; 
+	    case MdsWaveInterface.B_y_max:
+	      out =  def_flag ? def_vals.ymax : wi.cin_ymax; break; 
+	    case MdsWaveInterface.B_y_min:
+	      out =  def_flag ? def_vals.ymin : wi.cin_ymin; break; 
+	    case MdsWaveInterface.B_y_label:
+	      out =  def_flag ? def_vals.ylabel : wi.cin_ylabel;break; 
+	    case MdsWaveInterface.B_event:
+	      out =  def_flag ? def_vals.upd_event_str : wi.cin_upd_event;break; 
+	    case MdsWaveInterface.B_default_node:
+	      out =  def_flag ? def_vals.def_node_str : wi.cin_def_node;break; 
 	}
 	return out;
    } 
+   */
    
-   
-  
-   public void  updateDefaultWI(WaveInterface wi)
+  /*
+   public void  updateDefaultWI(MdsWaveInterface wi)
    {
       boolean def_flag;
       int bit;
+      
       
       if(wi == null) return;
 
@@ -412,19 +423,19 @@ public class SetupDefaults extends ScopePositionDialog {
       
       wi.default_update = true;
       
-      bit = WaveInterface.B_title;
+      bit = MdsWaveInterface.B_title;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       wi.in_title      = getDefaultValue(bit, def_flag, wi);
       
-      bit = WaveInterface.B_shot;
+      bit = MdsWaveInterface.B_shot;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       wi.in_shot       = getDefaultValue(bit ,  def_flag, wi); 
       
-      bit =WaveInterface.B_exp;
+      bit =MdsWaveInterface.B_exp;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       wi.experiment = getDefaultValue(bit , def_flag , wi);
       
-      bit = WaveInterface.B_x_max;
+      bit = MdsWaveInterface.B_x_max;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       if(wi.is_image) {
         wi.in_timemax  = getDefaultValue(bit , def_flag , wi);
@@ -432,7 +443,7 @@ public class SetupDefaults extends ScopePositionDialog {
       } else
         wi.in_xmax = getDefaultValue(bit , def_flag , wi);
       
-      bit = WaveInterface.B_x_min;
+      bit = MdsWaveInterface.B_x_min;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       if(wi.is_image) {
         wi.in_timemin  = getDefaultValue(bit , def_flag , wi);
@@ -440,69 +451,74 @@ public class SetupDefaults extends ScopePositionDialog {
       } else
         wi.in_xmin = getDefaultValue(bit , def_flag , wi);
       
-      bit = WaveInterface.B_x_label;
+      bit = MdsWaveInterface.B_x_label;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       wi.in_xlabel     = getDefaultValue(bit , def_flag , wi); 
 
-      bit = WaveInterface.B_y_max;
+      bit = MdsWaveInterface.B_y_max;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       wi.in_ymax       = getDefaultValue(bit , def_flag , wi); 
       
-      bit = WaveInterface.B_y_min;
+      bit = MdsWaveInterface.B_y_min;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       wi.in_ymin       = getDefaultValue(bit , def_flag, wi); 
 
-      bit = WaveInterface.B_y_label;
+      bit = MdsWaveInterface.B_y_label;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       wi.in_ylabel     = getDefaultValue(bit , def_flag , wi); 
 
-      bit = WaveInterface.B_default_node;
+      bit = MdsWaveInterface.B_default_node;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       wi.in_def_node = getDefaultValue(bit , def_flag , wi);
       
-      bit = WaveInterface.B_event;
+      bit = MdsWaveInterface.B_event;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);      
       wi.in_upd_event = getDefaultValue(bit , def_flag , wi);
       
    }
    
-   public String GetEvent(WaveInterface wi)
+   
+   public String GetEvent1(MdsWaveInterface wi)
    {
       if(wi == null) return null;
-      int bit = WaveInterface.B_event;
-      boolean def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);      
-      return getDefaultValue(bit , def_flag , wi);
+      int bit = MdsWaveInterface.B_event;
+      boolean def_flag =    (( wi.defaults & (1<<bit)) == 1<<bit);      
+      return wi.GetDefaultValue(bit , def_flag);
    }
- 
+ */
 
-   public void  Show()
+   public void  Show( jScopeDefaultValues def_vals)
    {
+    this.def_vals = def_vals;
 	initialize();
 	show();
    }
    
+   /*
    
-   public void toFile(PrintWriter out, String prompt)
+   public void ToFile(PrintWriter out, String prompt)
    {
-	jScope.writeLine(out, prompt + "experiment: " , experiment_str);
-	jScope.writeLine(out, prompt + "event: " , upd_event_str);
-	jScope.writeLine(out, prompt + "default_node: " , def_node_str);
-	jScope.writeLine(out, prompt + "shot: "       , shot_str);
-	jScope.writeLine(out, prompt + "title: "      , title_str);
-	jScope.writeLine(out, prompt + "xmax: "       , xmax);
-	jScope.writeLine(out, prompt + "xmin: "       , xmin);
-	jScope.writeLine(out, prompt + "x_label: "    , xlabel);
-	jScope.writeLine(out, prompt + "ymax: "       , ymax);
-	jScope.writeLine(out, prompt + "ymin: "       , ymin);
-	jScope.writeLine(out, prompt + "y_label: "    , ylabel);
-    jScope.writeLine(out, prompt + "reversed: "      , ""+reversed);
+	out.println(prompt + "experiment: "   + def_vals.experiment_str);
+	out.println(prompt + "event: "        + def_vals.upd_event_str);
+	out.println(prompt + "default_node: " + def_vals.def_node_str);
+	out.println(prompt + "shot: "         + def_vals.shot_str);
+	out.println(prompt + "title: "        + def_vals.title_str);
+	out.println(prompt + "xmax: "         + def_vals.xmax);
+	out.println(prompt + "xmin: "         + def_vals.xmin);
+	out.println(prompt + "x_label: "      + def_vals.xlabel);
+	out.println(prompt + "ymax: "         + def_vals.ymax);
+	out.println(prompt + "ymin: "         + def_vals.ymin);
+	out.println(prompt + "y_label: "      + def_vals.ylabel);
+    out.println(prompt + "reversed: "     + ""+reversed);
+    out.println();
    }
 
-   public int fromFile(ReaderConfig in, String prompt) throws IOException
+   public String fromFile(ReaderConfig in, String prompt) throws IOException
    {
 	String str;
-	int error = 0;
-     
+	String error = 0;
+    
+    in.reset();
 	while((str = in.readLine()) != null) {
 	  
 	    if(str.indexOf("Scope.global_1_1") == 0)
@@ -511,66 +527,68 @@ public class SetupDefaults extends ScopePositionDialog {
 
 		if(str.indexOf(".xmax:") != -1)
 		{
-		    xmax = str.substring(len, str.length());
+		    def_vals.xmax = str.substring(len, str.length());
 		    continue;		
 		}
 		if(str.indexOf(".xmin:") != -1)
 		{
-		    xmin = str.substring(len, str.length());
+		    def_vals.xmin = str.substring(len, str.length());
 		    continue;		
 		}
 				
 		if(str.indexOf(".x_label:") != -1)
 		{
-		    xlabel = str.substring(len, str.length());
+		    def_vals.xlabel = str.substring(len, str.length());
 		    continue;		
 		}
 		if(str.indexOf(".ymax:") != -1)
 		{
-		    ymax = str.substring(len, str.length());
+		    def_vals.ymax = str.substring(len, str.length());
 		    continue;		
 		}
 		if(str.indexOf(".ymin:") != -1)
 		{
-		    ymin = str.substring(len, str.length());
+		    def_vals.ymin = str.substring(len, str.length());
 		    continue;		
 		}
 		if(str.indexOf(".y_label:") != -1)
 		{
-		    ylabel = str.substring(len, str.length());
+		    def_vals.ylabel = str.substring(len, str.length());
 		    continue;		
 		}
 		if(str.indexOf(".experiment:") != -1)
 		{
-		    experiment_str = str.substring(len, str.length());
+		    def_vals.experiment_str = str.substring(len, str.length());
 		    continue;		
 		}
 		if(str.indexOf(".title:") != -1)
 		{
-		    title_str = str.substring(len, str.length());
+		    def_vals.title_str = str.substring(len, str.length());
 		    continue;		
 		}
 		if(str.indexOf(".shot:") != -1)
 		{
-		    shot_str = str.substring(len, str.length());
-		    if(shot_str.indexOf("_shots") != -1) 
-			shot_str  =  shot_str.substring(shot_str.indexOf("[")+1, shot_str.indexOf("]")); 
-		    shots = main_scope.evaluateShot(shot_str);
-		    continue;		
+		    def_vals.shot_str = str.substring(len, str.length());
+		    if(def_vals.shot_str.indexOf("_shots") != -1) 
+			def_vals.shot_str  =  def_vals.shot_str.substring(def_vals.shot_str.indexOf("[")+1, def_vals.shot_str.indexOf("]")); 
+//aa		    def_vals.shots = main_scope.evaluateShot(def_vals.shot_str);
+            def_vals.is_evaluated = false;
+            continue;		
 		}		
 		if(str.indexOf(".event:") != -1)
 		{
-		    upd_event_str = str.substring(len, str.length());
+		    def_vals.upd_event_str = str.substring(len, str.length());
 		    continue;		
 		}
 		if(str.indexOf(".default_node:") != -1)
 		{
-		    def_node_str = str.substring(len, str.length());
+		    def_vals.def_node_str = str.substring(len, str.length());
 		    continue;		
 		}
 	    if(str.indexOf(".reversed:") != -1)
         {
             reversed = new Boolean(str.substring(len, str.length())).booleanValue();
+            continue;
         }
 	    
 	    }
@@ -578,20 +596,21 @@ public class SetupDefaults extends ScopePositionDialog {
 	}
 	return error;
    }
+   */
    
-   public boolean isChanged()
+   public boolean IsChanged(jScopeDefaultValues def_vals)
    { 
-    if(!main_scope.equalsString(shot.getText(),   shot_str))    return true;	
-    if(!main_scope.equalsString(experiment.getText(), experiment_str))    return true;	
-    if(!main_scope.equalsString(upd_event.getText(), upd_event_str))    return true;	
-    if(!main_scope.equalsString(def_node.getText(), def_node_str))    return true;	
-    if(!main_scope.equalsString(title.getText(),   title_str))    return true;	
-	if(!main_scope.equalsString(x_max.getText(),   xmax))     return true;
-	if(!main_scope.equalsString(x_min.getText(),   xmin))     return true;
-	if(!main_scope.equalsString(x_label.getText(), xlabel))     return true;
-	if(!main_scope.equalsString(y_max.getText(),   ymax))     return true;
-	if(!main_scope.equalsString(y_min.getText(),   ymin))     return true;
-	if(!main_scope.equalsString(y_label.getText(), ylabel))     return true;
+    if(!main_scope.equalsString(shot.getText(),   def_vals.shot_str))    return true;	
+    if(!main_scope.equalsString(experiment.getText(), def_vals.experiment_str))    return true;	
+    if(!main_scope.equalsString(upd_event.getText(), def_vals.upd_event_str))    return true;	
+    if(!main_scope.equalsString(def_node.getText(), def_vals.def_node_str))    return true;	
+    if(!main_scope.equalsString(title.getText(),   def_vals.title_str))    return true;	
+	if(!main_scope.equalsString(x_max.getText(),   def_vals.xmax))     return true;
+	if(!main_scope.equalsString(x_min.getText(),   def_vals.xmin))     return true;
+	if(!main_scope.equalsString(x_label.getText(), def_vals.xlabel))     return true;
+	if(!main_scope.equalsString(y_max.getText(),   def_vals.ymax))     return true;
+	if(!main_scope.equalsString(y_min.getText(),   def_vals.ymin))     return true;
+	if(!main_scope.equalsString(y_label.getText(), def_vals.ylabel))     return true;
     return false;
    }
 
@@ -610,25 +629,30 @@ public class SetupDefaults extends ScopePositionDialog {
       {
 	    if(ob == ok)
 	        setVisible(false);
+	    
+	    main_scope.UpdateDefaultValues();
+	    
+	    /*    
 	    main_scope.color_dialog.setReversed(reversed_b.getState());
 	    if((is_changed = isChanged()))
 	    {
-	        main_scope.RemoveAllEvents();
-	        saveDefaultConfiguration();
- 	        main_scope.SetAllEvents();
-	        shots = main_scope.evaluateShot(shot_str);
+	        main_scope.wave_panel.RemoveAllEvents();
+	        SaveDefaultConfiguration();
+ 	        main_scope.wave_panel.AddAllEvent();
+ 	        main_scope.InvalidateDefaults();
 	        main_scope.UpdateAllWaves(false);
 	    } else
 	        saveDefaultConfiguration();
-        main_scope.setScopeAllMode(main_scope.wave_mode, getGridMode(), 
-                                                         getXLines(),
-                                                         getYLines(), 
-                                                         getReversed());
+            main_scope.wave_panel.SetParams(main_scope.wave_panel.GetMode(), 
+                                                   getGridMode(), 
+                                                   getXLines(),
+                                                   getYLines(), 
+                                                   getReversed());
                                                          
 	    
 	    if(!is_changed)
 	      main_scope.RepaintAllWaves();
-	    
+	    */
      }
       
       if(ob == reset)

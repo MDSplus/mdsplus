@@ -35,15 +35,6 @@ class ColorDialog extends ScopePositionDialog  {
 	    color = c; 
 	}
     }
-    public static final Color[]  COLOR_SET = {Color.black, Color.blue, Color.cyan, Color.darkGray,
-					     Color.gray, Color.green, Color.lightGray, 
-					     Color.magenta, Color.orange, Color.pink, 
-					     Color.red, Color.yellow};
-	
-    public static final String[] COLOR_NAME = {"Black", "Blue", "Cyan", "DarkGray",
-					     "Gray", "Green", "LightGray", 
-					     "Magenta", "Orange", "Pink", 
-					     "Red", "Yellow"};
 
     ColorDialog(Frame dw, String title)
     {
@@ -54,8 +45,7 @@ class ColorDialog extends ScopePositionDialog  {
 
 	    main_scope = (jScope)dw;
 	    
-	    if(!main_scope.is_applet)
-	        GetPropertiesValue();
+	    GetPropertiesValue();
 	    
         GridBagConstraints c = new GridBagConstraints();
         GridBagLayout gridbag = new GridBagLayout();
@@ -83,98 +73,99 @@ class ColorDialog extends ScopePositionDialog  {
         add(colorName);
 
         if(GetNumColor() == 0)
-            ColorSetItems(COLOR_NAME, COLOR_SET);
-	    setColorVector();
+            ColorSetItems(Waveform.COLOR_NAME, Waveform.COLOR_SET);
+                
+	    SetColorVector();
         GetColorsName();
+        
 	    color = new Choice();
-	    for(int i = 1; i < color_name.length; i++)
+	    for(int i = 0; i < color_name.length; i++)
 	        color.addItem(color_name[i]);
 	        
 
-	color.addItemListener(this);
-	gridbag.setConstraints(color, c);
-	add(color);	
+	    color.addItemListener(this);
+	    gridbag.setConstraints(color, c);
+	    add(color);	
 
-	c.gridwidth = GridBagConstraints.REMAINDER;
-	color_test = new Canvas();
+	    c.gridwidth = GridBagConstraints.REMAINDER;
+	    color_test = new Canvas();
 //	color_test.setBounds(10,10,10,10);
-	color_test.setBackground(Color.black);	      	      
+	    color_test.setBackground(Color.black);	      	      
         gridbag.setConstraints(color_test, c);
-	add(color_test);
+	    add(color_test);
 	
 
-	c.gridwidth = 2;
-	c.gridheight = 5;
-	colorList = new List(12, false);
-	colorList.addItemListener(this);
-	colorList.addKeyListener(this);			
+	    c.gridwidth = 2;
+	    c.gridheight = 5;
+	    colorList = new List(12, false);
+	    colorList.addItemListener(this);
+	    colorList.addKeyListener(this);			
         gridbag.setConstraints(colorList, c);
         add(colorList);
 
-	label = new Label("Red");
-	c.gridheight = 1;
+	    label = new Label("Red");
+	    c.gridheight = 1;
         gridbag.setConstraints(label, c);
         add(label);
 				
-	c.gridwidth = GridBagConstraints.REMAINDER;
-	c.gridheight = 1;
-	red  = new Slider(Slider.HORIZONTAL, Slider.POS_LABEL_UP, 0, 0, 255);
-	red.addAdjustmentListener(this);
+	    c.gridwidth = GridBagConstraints.REMAINDER;
+	    c.gridheight = 1;
+	    red  = new Slider(Slider.HORIZONTAL, Slider.POS_LABEL_UP, 0, 0, 255);
+	    red.addAdjustmentListener(this);
         gridbag.setConstraints(red, c);
         add(red);
 
-	c.gridwidth = GridBagConstraints.BOTH;
-	label = new Label("Green");
-	c.gridheight = 1;
+	    c.gridwidth = GridBagConstraints.BOTH;
+	    label = new Label("Green");
+	    c.gridheight = 1;
         gridbag.setConstraints(label, c);
         add(label);
 				
-	c.gridwidth = GridBagConstraints.REMAINDER;
-	green = new Slider(Slider.HORIZONTAL, Slider.POS_LABEL_UP, 0, 0, 255);
-	green.addAdjustmentListener(this);
+	    c.gridwidth = GridBagConstraints.REMAINDER;
+    	green = new Slider(Slider.HORIZONTAL, Slider.POS_LABEL_UP, 0, 0, 255);
+	    green.addAdjustmentListener(this);
         gridbag.setConstraints(green, c);
         add(green);
 
-	c.gridwidth = GridBagConstraints.BOTH;
-	label = new Label("Blue");
-	c.gridheight = 1;
+	    c.gridwidth = GridBagConstraints.BOTH;
+	    label = new Label("Blue");
+	    c.gridheight = 1;
         gridbag.setConstraints(label, c);
         add(label);
 		
-	c.gridwidth = GridBagConstraints.REMAINDER;
-	blue  = new Slider(Slider.HORIZONTAL, Slider.POS_LABEL_UP, 0, 0, 255);
-	blue.addAdjustmentListener(this);
+	    c.gridwidth = GridBagConstraints.REMAINDER;
+	    blue  = new Slider(Slider.HORIZONTAL, Slider.POS_LABEL_UP, 0, 0, 255);
+	    blue.addAdjustmentListener(this);
         gridbag.setConstraints(blue, c);
         add(blue);
 	
-	Panel p1 = new Panel();
+	    Panel p1 = new Panel();
         p1.setLayout(new FlowLayout(FlowLayout.CENTER));
     	
-	ok = new Button("Ok");
-	ok.addActionListener(this);	
+	    ok = new Button("Ok");
+	    ok.addActionListener(this);	
         p1.add(ok);
 
     	add = new Button("Add");
-	add.addActionListener(this);	
+	    add.addActionListener(this);	
         p1.add(add);
 
-	erase = new Button("Erase");
-	erase.addActionListener(this);	
+	    erase = new Button("Erase");
+	    erase.addActionListener(this);	
         p1.add(erase);
 
-	reset = new Button("Reset");
-	reset.addActionListener(this);	
+	    reset = new Button("Reset");
+	    reset.addActionListener(this);	
         p1.add(reset);
 				    		
 
-	cancel = new Button("Cancel");
-	cancel.addActionListener(this);	
+	    cancel = new Button("Cancel");
+	    cancel.addActionListener(this);	
         p1.add(cancel);
 
     	c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(p1, c);
-	add(p1);
-	
+	    add(p1);
 	 
      }
  
@@ -198,7 +189,7 @@ class ColorDialog extends ScopePositionDialog  {
            prop = rb.getString("jScope.item_color_"+i);
            String name = new String(prop.substring(0, len = prop.indexOf(",")));
 		   Color cr = StringToColor(new String(prop.substring(len + 2, prop.length())));
-		   insertItemAt(name, cr, i);
+		   InsertItemAt(name, cr, i);
            i++;
        }
 
@@ -209,38 +200,37 @@ class ColorDialog extends ScopePositionDialog  {
      
      
      
-    private Vector copyColorItemsVector(Vector in)
+    private Vector CopyColorItemsVector(Vector in)
     {
-	Vector out = new Vector(in.size());
-	for(int i = 0; i < in.size(); i++)
-	    out.addElement(new Item(((Item)in.elementAt(i)).name, ((Item)in.elementAt(i)).color));
-	return out;   
+	    Vector out = new Vector(in.size());
+	    for(int i = 0; i < in.size(); i++)
+	        out.addElement(new Item(((Item)in.elementAt(i)).name, ((Item)in.elementAt(i)).color));
+	    return out;   
     }
     
     public void ShowColorDialog(Component f)
     {
-	setColorItemToList();
+	    setColorItemToList();
 //	color_set_clone = (Vector)color_set.clone();
-	color_set_clone = copyColorItemsVector(color_set);
-	pack();
-	setPosition(f);
+	    color_set_clone = CopyColorItemsVector(color_set);
+	    pack();
+	    setPosition(f);
     	show();	
     }
          
     
-    public void setReversed(boolean reversed)
+    public void SetReversed(boolean reversed)
     {
       if(this.reversed != reversed)
       {
         this.reversed = reversed;
-        reversedColor(color_name, color_vector);
-	    setColorVector();
+        ReversedColor(color_name, color_vector);
+	    SetColorVector();
         GetColorsName();
-//        main_scope.RepaintAllWaves();
       }
     }
 
-    private void reversedColor(String[] color_name, Color[] colors)
+    private void ReversedColor(String[] color_name, Color[] colors)
     {
 	    for(int i = 0; i < color_name.length; i++)
 	    {
@@ -261,7 +251,6 @@ class ColorDialog extends ScopePositionDialog  {
 	            }
 	        }
 	    }
-	    main_scope.setup.sd.SetColorList(); 
     }
     
     public void ColorSetItems(String[] color_name, Color[] colors)
@@ -337,7 +326,7 @@ class ColorDialog extends ScopePositionDialog  {
 	
 	if(ob == colorList)
 	{
-            int color_idx = colorList.getSelectedIndex();
+        int color_idx = colorList.getSelectedIndex();
 	    Item c_item = (Item)color_set.elementAt(color_idx);
 	    SetSliderToColor(c_item.color);
 	    colorName.setText(c_item.name);    	  
@@ -345,19 +334,19 @@ class ColorDialog extends ScopePositionDialog  {
 	
 	if(ob == color)
 	{
-            int color_idx = color.getSelectedIndex();
-	    colorName.setText(COLOR_NAME[color_idx]);
-	    SetSliderToColor(COLOR_SET[color_idx]);
+        int color_idx = color.getSelectedIndex();
+	    colorName.setText(Waveform.COLOR_NAME[color_idx]);
+	    SetSliderToColor(Waveform.COLOR_SET[color_idx]);
 	    
 	}
     }
     
     public void removeAllColorItems()
     {
-	color_set.removeAllElements();
+	    color_set.removeAllElements();
     }
     
-    public void insertItemAt(String name, Color color, int idx)
+    public void InsertItemAt(String name, Color color, int idx)
     {
 	    Item c_item = new Item(name, color);
 	    color_set.insertElementAt(c_item, idx);		
@@ -368,7 +357,7 @@ class ColorDialog extends ScopePositionDialog  {
       return new Color(red.getValue(), green.getValue(), blue.getValue());
    }
    
-   public  Color[] setColorVector()
+   public  Color[] SetColorVector()
    {
       color_vector = new Color[color_set.size()];
     
@@ -377,7 +366,7 @@ class ColorDialog extends ScopePositionDialog  {
       return color_vector;
    }
    
-   public Color[] getColors()
+   public Color[] GetColors()
    {
        return color_vector;
    }
@@ -462,48 +451,52 @@ class ColorDialog extends ScopePositionDialog  {
     }
 
     
-    public int fromFile(ReaderConfig in, String prompt) throws IOException
+    public String fromFile(ReaderConfig in, String prompt) throws IOException
     {
     	String str;
-	    int error = 0;
+	    String error = null;
 	    removeAllColorItems();
 
+        in.reset();
 	    while((str = in.readLine()) != null) {
 
 	        if(str.indexOf(prompt) != -1)
 	        {
 		        int len;
-		        int i = new Integer(str.substring("Scope.item_color_".length(), len = str.indexOf(":"))).intValue();
+		        int i = new Integer(str.substring(prompt.length(), len = str.indexOf(":"))).intValue();
 		        String name = new String(str.substring(len  + 2, len = str.indexOf(",")));
 		        Color cr = StringToColor(new String(str.substring(len + 2, str.length())));
-		        insertItemAt(name, cr, i);
+		        InsertItemAt(name, cr, i);
 		        continue;
 	        }
 	    }
 	    
+	    //Set default color list if not defined color
+	    //in configuration file
 	    if(GetNumColor() == 0)
 	    {
 	        if(main_scope.rb != null)
 	        {
 	            GetPropertiesValue();
 	        } else {
-                ColorSetItems(COLOR_NAME, COLOR_SET);
-	            setColorVector();
-                GetColorsName();
+                ColorSetItems(Waveform.COLOR_NAME, Waveform.COLOR_SET);
             }
 	    }
+	    SetColorVector();
+        GetColorsName();
 	    return error;
     }
     
     
     public void toFile(PrintWriter out, String prompt)
     {
-	for(int i = 0; i < GetNumColor(); i++)
+	    for(int i = 0; i < GetNumColor(); i++)
         {
-	    jScope.writeLine(out, prompt + i + ": " , GetNameAt(i) + "," + GetColorAt(i));		
+	        out.println(prompt + i + ": " + GetNameAt(i) + "," + GetColorAt(i));
         }
+	    out.println("");
     }
-
+    
  
     public void actionPerformed(ActionEvent e) {
 
@@ -517,9 +510,9 @@ class ColorDialog extends ScopePositionDialog  {
     		setVisible(false);
 	    }
 	    AddUpdateItem(colorName.getText(), getColor());	    	
-	    setColorVector();
-	    main_scope.setup.sd.SetColorList(); 
-	    main_scope.RepaintAllWaves();
+	    SetColorVector();
+        main_scope.UpdateColors();
+        main_scope.RepaintAllWaves();
     }
 	
 	if(ob == add)
@@ -533,22 +526,22 @@ class ColorDialog extends ScopePositionDialog  {
 	    removeAllColorItems();
 	    if(colorList.getItemCount() > 0)    
 		    colorList.removeAll();
-		AddUpdateItem(COLOR_NAME[0], COLOR_SET[0]);
-	    setColorVector();
+		AddUpdateItem(Waveform.COLOR_NAME[0], Waveform.COLOR_SET[0]);
+	    SetColorVector();
 	}
 		
 	if (ob == reset)
 	{
-	    color_set = copyColorItemsVector(color_set_clone);
+	    color_set = CopyColorItemsVector(color_set_clone);
 	    setColorItemToList();
-	    setColorVector();
+	    SetColorVector();
 	}  
 
 	if (ob == cancel)
 	{
-	    color_set = copyColorItemsVector(color_set_clone);
+	    color_set = CopyColorItemsVector(color_set_clone);
 	    setColorItemToList();
-	    setColorVector();
+	    SetColorVector();
 	    color_set_clone = null;
 	    setVisible(false);
 	}

@@ -4,7 +4,7 @@ import java.awt.event.*;
 import java.util.*;
 
  
- class WaveformMetrics {
+public  class WaveformMetrics {
     static double MAX_VALUE = 10000.;//(double)Integer.MAX_VALUE;
     static double MIN_VALUE = -10000.;//(double)Integer.MIN_VALUE;
     static int INT_MAX_VALUE = (int)MAX_VALUE; 

@@ -7,15 +7,15 @@ import java.util.Vector;
 
 
 class Descriptor {
-public    static final byte MAX_DIM = 8;
+public    static final byte MAX_DIM       = 8;
 public    static final byte DTYPE_CSTRING = 14;
-public    static final byte DTYPE_CHAR = 6;
-public    static final byte DTYPE_SHORT = 7;
-public    static final byte DTYPE_LONG = 8;
-public    static final byte DTYPE_BYTE = 2;
-public    static final byte DTYPE_FLOAT = 10;
-public    static final byte DTYPE_WORDU = 3;
-public    static final byte DTYPE_EVENT = 99;
+public    static final byte DTYPE_CHAR    = 6;
+public    static final byte DTYPE_SHORT   = 7;
+public    static final byte DTYPE_LONG    = 8;
+public    static final byte DTYPE_BYTE    = 2;
+public    static final byte DTYPE_FLOAT   = 10;
+public    static final byte DTYPE_WORDU   = 3;
+public    static final byte DTYPE_EVENT   = 99;
 
 
 public    byte dtype;
@@ -34,7 +34,7 @@ public class NetworkProvider implements DataProvider {
     int shot;
     boolean open, connected;
     Mds mds;
-    MdsEventManager mdsEventManager = new MdsEventManager();
+    NetworkEventManager event_manager = new NetworkEventManager();
     public String error;
     
 
@@ -100,14 +100,44 @@ private String GetExperimentName(String in_frame)
 
 public byte[] GetAllFrames(String in_frame)
 {
-    String exp = GetExperimentName(in_frame);
+    byte img_buf[], out[] = null;
+    float time[];
+    int   shape[];
+    
+    if(!CheckOpen())
+	    return null;
+    
+    String in = "dim_of("+in_frame+")";
+    time = GetFloatArray(in);
+    if(time == null) return null;
+
+    in = "eshape(data("+in_frame+"))";
+    shape = GetIntArray(in);
+    if(shape == null) return null;
+    
+    in = in_frame;
+    img_buf = GetByteArray(in);
+    if(img_buf == null) return null;
         
-//    String in = "*GetFrameAt(\""+ exp +"\",\" "+ in_frame +"\","+shot + ", " + "0 )";
-    String in = "JavaGetAllFrames(\""+ exp +"\",\" "+ in_frame +"\","+shot +  " )";
-//    if(!CheckOpen())
-//	    return null;
-    Descriptor desc = mds.MdsValue(in);
-    return GetByteArray(desc);
+    try
+    {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream d = new DataOutputStream(b);
+    
+        for(int i = 0; i < shape.length; i++)
+            d.writeInt(shape[i]);
+
+        for(int i = 0; i < time.length; i++)
+            d.writeFloat(time[i]);
+
+        d.write(img_buf);
+        img_buf = null;
+        out = b.toByteArray();
+        d.close();
+        System.gc();
+    } catch (IOException e) { System.out.println("Errore"+e);}
+    
+    return out;
 }
 
 public float[]  GetFrameTimes(String in_frame)
@@ -146,12 +176,12 @@ public byte[] GetFrameAt(String in_frame, int frame_idx)
     
 //    if(!CheckOpen())
 //	    return null;
-    Descriptor desc = mds.MdsValue(in);
-    return GetByteArray(desc);
+    return GetByteArray(in);
 }
 
-private byte[] GetByteArray(Descriptor desc)
+private byte[] GetByteArray(String in)
 {
+    Descriptor desc = mds.MdsValue(in);
     switch(desc.dtype)  {
 	    case Descriptor.DTYPE_FLOAT:
 	    case Descriptor.DTYPE_LONG: 
@@ -246,7 +276,7 @@ public synchronized float GetFloat(String in)
 		case Descriptor.DTYPE_CHAR:
 		    error = "Cannot convert a string to float";
 		    return 0;
-		case desc.DTYPE_CSTRING:
+		case Descriptor.DTYPE_CSTRING:
 		    error = desc.error;
 		    return 0;
 	}
@@ -377,12 +407,16 @@ private boolean NotYetNumber(String in)
     return ris;
 }
 
-public synchronized void addMdsEventListener(MdsEventListener l, String event_name)
+public synchronized void addNetworkEventListener(NetworkEventListener l, String event_name)
         
 {
     
     int eventid;
     String error;
+    
+    
+    if(event_name == null || event_name.trim().length() == 0)
+        return;
     
     if(!connected)
     {
@@ -393,16 +427,17 @@ public synchronized void addMdsEventListener(MdsEventListener l, String event_na
       } else
          connected = true;
     }
-    if((eventid = mdsEventManager.AddEvent(l, event_name)) != -1)
-	    mds.MdsSetEvent(event_name, eventid);
+    if((eventid = event_manager.AddEvent(l, event_name)) != -1)
+	   mds.MdsSetEvent(event_name, eventid);
 }
 
-public synchronized void removeMdsEventListener(MdsEventListener l, String event_name)
-        
+public synchronized void removeNetworkEventListener(NetworkEventListener l, String event_name)       
 {
-
    int eventid;
    String error;
+
+    if(event_name == null || event_name.trim().length() == 0)
+        return;
    
     if(!connected)
     {
@@ -413,12 +448,12 @@ public synchronized void removeMdsEventListener(MdsEventListener l, String event
       } else
          connected = true;
     } 
-   if((eventid = mdsEventManager.RemoveEvent(l, event_name)) != -1)
+   if((eventid = event_manager.RemoveEvent(l, event_name)) != -1)
 	    mds.MdsRemoveEvent(event_name, eventid);
 }
 
 protected synchronized void processActionEvent(int eventid) {
-    mdsEventManager.FireEvent(eventid);
+    event_manager.FireEvent(eventid);
 }
 
 //} fine network	      

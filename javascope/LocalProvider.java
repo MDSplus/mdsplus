@@ -11,8 +11,8 @@ public class LocalProvider implements DataProvider {
     native public int[] GetIntArray(String in);
     native public String ErrorString();
     public boolean SupportsAsynch() { return false; }
-    public void addMdsEventListener(MdsEventListener l, String event){}
-    public void removeMdsEventListener(MdsEventListener l, String event){}
+    public void addNetworkEventListener(NetworkEventListener l, String event){}
+    public void removeNetworkEventListener(NetworkEventListener l, String event){}
     public String GetDefaultTitle(String in_y[]){return null;}
     public String GetDefaultXLabel(String in_y[]){return null;}
     public String GetDefaultYLabel(String in_y[]){return null;}

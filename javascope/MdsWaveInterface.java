@@ -1,0 +1,1198 @@
+import java.io.*;
+import java.awt.*;
+
+class MdsWaveInterface extends WaveInterface {
+ 
+    static final int MAX_NUM_SHOT = 30;
+ 
+    public String  in_def_node, in_upd_event, last_upd_event;
+ 
+    // Configuration parameter
+    public String cin_xmin, cin_xmax, cin_ymax, cin_ymin, cin_timemax, cin_timemin;
+    public String cin_title, cin_xlabel, cin_ylabel;
+    public String cin_def_node, cin_upd_event, cexperiment;
+
+    public String in_shot, cin_shot;
+    public int defaults = 0xffffffff;
+    static final int B_shot = 8, B_x_min = 12, B_x_max = 13, B_y_min = 14, B_y_max = 15,
+		             B_title = 16, B_x_label = 10, B_y_label = 11, B_exp = 7, B_event = 17,
+		             B_default_node = 9;
+    public boolean default_is_update = true;
+    jScopeDefaultValues def_vals;
+    
+    static int main_shots[];
+    static String main_shot_str;
+    public static boolean main_shot_evaluated = false;
+
+
+//    public MdsWaveInterface(DataProvider dp/*, WaveSetup c*/, jScopeDefaultValues def_vals)
+//    {
+//        super(dp);//, c);
+//        this.def_vals = def_vals;
+//    }
+
+    public MdsWaveInterface(DataProvider dp, jScopeDefaultValues def_vals)
+    {
+        super(dp);//, null);
+        this.def_vals = def_vals;
+    }
+    
+    public void setDefaultsValues(jScopeDefaultValues def_vals)
+    {
+        this.def_vals = def_vals;
+        default_is_update = false;
+        this.def_vals.is_evaluated = false;
+    }
+    
+
+   public String GetDefaultValue(int i, boolean def_flag)
+   {
+	String out = null;
+   
+	switch(i)
+        {
+	    case MdsWaveInterface.B_title:
+	      out = def_flag  ? def_vals.title_str : cin_title; break; 
+	    case MdsWaveInterface.B_shot:
+	      out  = def_flag ? def_vals.shot_str : cin_shot;break; 
+	    case MdsWaveInterface.B_exp:
+	      out =  def_flag ? def_vals.experiment_str : cexperiment;break; 
+	    case MdsWaveInterface.B_x_max:
+	        if(is_image)
+	            out  = def_flag ? def_vals.xmax : cin_timemax;
+	        else
+	            out  = def_flag ? def_vals.xmax : cin_xmax; 
+	    break;	    
+	    case MdsWaveInterface.B_x_min:
+	        if(is_image)
+	            out  = def_flag ? def_vals.xmin : cin_timemin;
+	        else
+	            out  = def_flag ? def_vals.xmin : cin_xmin; 
+	    break; 
+	    case MdsWaveInterface.B_x_label:
+	      out =  def_flag ? def_vals.xlabel : cin_xlabel;break; 
+	    case MdsWaveInterface.B_y_max:
+	      out =  def_flag ? def_vals.ymax : cin_ymax; break; 
+	    case MdsWaveInterface.B_y_min:
+	      out =  def_flag ? def_vals.ymin : cin_ymin; break; 
+	    case MdsWaveInterface.B_y_label:
+	      out =  def_flag ? def_vals.ylabel : cin_ylabel;break; 
+	    case MdsWaveInterface.B_event:
+	      out =  def_flag ? def_vals.upd_event_str : cin_upd_event;break; 
+	    case MdsWaveInterface.B_default_node:
+	      out =  def_flag ? def_vals.def_node_str : cin_def_node;break; 
+	}
+	return out;
+   } 
+
+
+
+   public void  UpdateDefault()
+   {
+      boolean def_flag;
+      int bit;      
+      
+      if(default_is_update) return;
+      default_is_update = true;
+      
+      bit = MdsWaveInterface.B_title;
+      def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+      in_title      = GetDefaultValue(bit, def_flag);
+      
+      bit = MdsWaveInterface.B_shot;
+      def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+      in_shot       = GetDefaultValue(bit ,  def_flag); 
+      
+      bit =MdsWaveInterface.B_exp;
+      def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+      experiment = GetDefaultValue(bit , def_flag );
+      
+      bit = MdsWaveInterface.B_x_max;
+      def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+      if(is_image) {
+        in_timemax  = GetDefaultValue(bit , def_flag );
+        in_xmax = cin_xmax;
+      } else
+        in_xmax = GetDefaultValue(bit , def_flag );
+      
+      bit = MdsWaveInterface.B_x_min;
+      def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+      if(is_image) {
+        in_timemin  = GetDefaultValue(bit , def_flag );
+        in_xmin = cin_xmin;
+      } else
+        in_xmin = GetDefaultValue(bit , def_flag );
+      
+      bit = MdsWaveInterface.B_x_label;
+      def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+      in_xlabel     = GetDefaultValue(bit , def_flag ); 
+
+      bit = MdsWaveInterface.B_y_max;
+      def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+      in_ymax       = GetDefaultValue(bit , def_flag ); 
+      
+      bit = MdsWaveInterface.B_y_min;
+      def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+      in_ymin       = GetDefaultValue(bit , def_flag); 
+
+      bit = MdsWaveInterface.B_y_label;
+      def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+      in_ylabel     = GetDefaultValue(bit , def_flag ); 
+
+      bit = MdsWaveInterface.B_default_node;
+      def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+      in_def_node = GetDefaultValue(bit , def_flag );
+      
+      /*
+      bit = MdsWaveInterface.B_event;
+      def_flag =    ((defaults & (1<<bit)) == 1<<bit);      
+      in_upd_event = GetDefaultValue(bit , def_flag );
+      */
+   }
+   
+  
+  /**
+    Check which shot string the wave interface 
+    used:
+	0 wave setup defined shot;
+	1 global setting defined shot
+	2 main scope defined shot
+  */
+  
+  public int GetShotIdx()
+  {  
+    if(UseDefaultShot())
+    {
+	    if(main_shot_str != null && main_shot_str.length() != 0)
+	    //if(main_shot != null && main_shot.length > 0)
+	        return 2;
+	    else
+	        return 1;
+    } else
+	    return 0;
+  }
+
+/*
+  public void SetMainShot(String main_shot_str, int main_shots[])
+  {
+    this.main_shot_str = main_shot_str;
+    this.main_shots = main_shots;
+  }
+*/
+    static void SetMainShot(String main_shot)
+    {
+        if(main_shot != null && main_shot_str == null || 
+            !(main_shot != null && main_shot.trim().equals(main_shot_str) && main_shot_evaluated))
+        {
+            main_shot_str = main_shot.trim();
+            main_shot_evaluated = false;
+        }
+    }
+    
+    static int[] GetMainShot(){return main_shots;}
+    
+    public int[] EvaluateMainShot()//String main_shot_str)
+    {
+        if( main_shot_str != null && !main_shot_evaluated) 
+        {
+            main_shots = GetShotArray(main_shot_str);
+            if(error == null)
+            {
+                //this.main_shot_str = main_shot_str.trim();
+                main_shot_evaluated = true;
+            } else
+                main_shot_evaluated = false;
+        }
+        return main_shots;
+    }
+
+  public String GetUsedShot()
+  {
+    String out = null;
+  
+	switch(GetShotIdx())
+	{
+	    case 0: out = cin_shot; break;
+	    case 1: out = this.def_vals.shot_str;break;
+	    case 2: out = main_shot_str; break;
+	}
+	return out;  
+  }
+  
+  public String Update()
+  {
+     UpdateShot();
+     if(error == null)
+        UpdateDefault();
+     else {
+        signals = null;
+        num_waves = 0;
+     }
+     return error;
+  }
+
+  public void UpdateShot()
+  {
+	int curr_shots[] = null, l = 0;
+  
+    error = null;
+    
+    if(UseDefaultShot())
+    {
+	    if(main_shot_str != null && main_shot_str.length() != 0)
+	      if(!main_shot_evaluated)
+	        curr_shots =  EvaluateMainShot();
+	      else
+	        curr_shots = main_shots;
+	    else {
+	      if(def_vals.is_evaluated)
+	        curr_shots =  def_vals.shots;
+	      else 
+	      {
+	        curr_shots = GetShotArray(def_vals.shot_str);
+	        if(error == null) 
+	        {
+	          def_vals.shots = curr_shots; 
+	          def_vals.is_evaluated = true;
+	        }
+	      }  
+	    }
+	} else {
+	  curr_shots = GetShotArray(cin_shot);
+	}
+	
+	if(error != null)
+	    return;
+	
+//	if((curr_shots == null || curr_shots[0] == UNDEF_SHOT )&& main_shots != null)
+//	    curr_shots = main_shots;
+  
+	if(curr_shots == null)// || curr_shots[0] == UNDEF_SHOT)
+	{
+	    //curr_shots = new int[1];
+	    //curr_shots[0] = UNDEF_SHOT;
+	    shots = null;
+	    //signals = null;
+	    return;
+	}
+  	
+	//Check current shot list and wave interface shot list
+	if(shots != null && shots.length == curr_shots.length)
+	    for(l = 0; l < curr_shots.length; l++)
+		if(curr_shots[l] != shots[l])
+		    break;
+		    
+	if(l == curr_shots.length) return;
+  
+	modified     = true;
+	
+	int num_signal; 
+	int num_expr;
+	if(num_shot == 0)
+    {
+	    num_signal = num_waves * curr_shots.length;
+	    num_expr = num_waves;
+    } 
+    else 
+    {
+	    num_signal = num_waves / num_shot * curr_shots.length;
+	    num_expr = num_waves / num_shot;
+    }
+
+	if(num_signal == 0)
+	    return;
+		
+    String[]  in_label     = new String[num_signal];
+    String[]  in_x         = new String[num_signal];
+	String[]  in_y         = new String[num_signal];
+	String[]  in_up_err    = new String[num_signal];
+	String[]  in_low_err   = new String[num_signal];
+	int[]     markers      = new int[num_signal];
+	int[]     markers_step = new int[num_signal];
+	int[]     colors_idx   = new int[num_signal];
+	boolean[] interpolates = new boolean[num_signal];
+	int[]     shots        = new int[num_signal];				
+
+	for(int i = 0, k = 0; i < num_expr; i++)      
+	{
+	    for(int j = 0; j < curr_shots.length; j++, k++)
+	    {
+		in_label[k]     = this.in_label[i * this.num_shot];
+		in_x[k]         = this.in_x[i * this.num_shot];
+		in_y[k]         = this.in_y[i * this.num_shot];
+		if(j < 	this.num_shot)
+		{	
+		    markers[k]	    = this.markers[i * this.num_shot + j];	  
+		    markers_step[k] = this.markers_step[i * this.num_shot + j];	  
+		    interpolates[k] = this.interpolates[i * this.num_shot + j];
+		    shots[k]        = curr_shots[j];
+		    in_up_err[k]    = this.in_up_err[i * this.num_shot + j];	    
+		    in_low_err[k]   = this.in_low_err[i * this.num_shot + j];	    
+		    colors_idx[k]   = this.colors_idx[i * this.num_shot + j];
+		} else {
+		    markers[k]	    = this.markers[i * this.num_shot];	  
+		    markers_step[k] = this.markers_step[i * this.num_shot];	  
+		    interpolates[k] = this.interpolates[i * this.num_shot];
+		    in_up_err[k]    = this.in_up_err[i * this.num_shot];	    
+		    in_low_err[k]   = this.in_low_err[i * this.num_shot];	    
+		    shots[k]        = curr_shots[j];
+		    colors_idx[k]   = k;
+ 		}
+	    }
+	}
+	
+	this.in_label     = in_label;
+	this.in_x         = in_x;
+	this.in_y         = in_y;
+	this.in_up_err    = in_up_err;
+	this.in_low_err   = in_low_err;
+	this.markers      = markers;
+	this.markers_step = markers_step;
+	this.colors_idx   = colors_idx;
+	this.interpolates = interpolates;
+	this.shots        = shots;
+	this.num_shot     = curr_shots.length;
+  }
+
+  
+    public int[] GetShotArray(String in_shots)
+    {
+	    int int_data[] = null;
+	
+	    if(in_shots == null || in_shots.length() == 0)
+	    {
+	        //int_data = new int[1];
+	        //int_data[0] = jScope.UNDEF_SHOT;
+	        return int_data;
+	    }
+	
+	    dp.Update(null, 0);
+	    int_data = dp.GetIntArray(in_shots);
+	    if( int_data == null || int_data.length == 0 || int_data.length > MAX_NUM_SHOT)
+	    {
+	        if(int_data != null && int_data.length > MAX_NUM_SHOT)
+                error = "Too many shots. Max shot list elements " + MAX_NUM_SHOT +"\n";
+	        else {
+		        if(dp.ErrorString() != null)	    
+		            error = dp.ErrorString();
+		        else
+		            error = "Shot syntax error\n";
+	        }
+	        //int_data = new int[1];
+	        //int_data[0] = UNDEF_SHOT;
+	    }
+	    return int_data;
+   }
+  
+  
+    public MdsWaveInterface(MdsWaveInterface wi)
+    {
+       
+//    controller = wi.controller;
+	full_flag = wi.full_flag;
+	provider = wi.provider;
+	num_waves = wi.num_waves;
+	num_shot  = wi.num_shot;
+	defaults  = wi.defaults;
+	modified = true;
+	in_grid_mode = wi.in_grid_mode;
+	x_log = wi.x_log;
+	y_log = wi.y_log;
+	is_image = wi.is_image;
+	use_jai = wi.use_jai;
+	make_legend = wi.make_legend;
+	reversed = wi.reversed;
+	legend_x = wi.legend_x;
+	legend_y = wi.legend_y;
+	in_label = new String[num_waves];
+	in_x = new String[num_waves];
+	in_y = new String[num_waves];
+	in_up_err = new String[num_waves];
+	in_low_err = new String[num_waves];
+	markers = new int[num_waves];
+	markers_step = new int[num_waves];
+	colors_idx = new int[num_waves];
+	interpolates = new boolean[num_waves];
+	if(wi.in_shot == null || wi.in_shot.trim().length() == 0)
+	    shots = wi.shots = null;
+	else
+	    shots = new int[num_waves];
+	
+	for(int i = 0; i < num_waves; i++)
+	{
+	    if(wi.in_label[i] != null)
+		in_label[i] = new String(wi.in_label[i]);
+	    else
+		in_label[i] = null;
+	    if(wi.in_x[i] != null)
+		in_x[i] = new String(wi.in_x[i]);
+	    else
+		in_x[i] = null;
+	    if(wi.in_y[i] != null)
+		in_y[i] = new String(wi.in_y[i]);
+	    else
+		in_y[i] = null;
+	    if(wi.in_up_err[i] != null)
+		in_up_err[i] = new String(wi.in_up_err[i]);
+	    else
+		in_up_err[i] = null;
+	    if(wi.in_low_err[i] != null)
+		in_low_err[i] = new String(wi.in_low_err[i]);
+	    else
+		in_low_err[i] = null;
+	}
+	
+
+	for(int i = 0; i < num_waves; i++)
+	{
+	    markers[i] = wi.markers[i];
+	    markers_step[i] = wi.markers_step[i];
+	    colors_idx[i] = wi.colors_idx[i];
+	    interpolates[i] = wi.interpolates[i];
+	    if(wi.shots != null)
+	       shots[i] = wi.shots[i];
+	}
+
+	if(wi.in_xmin != null)
+	    in_xmin = new String(wi.in_xmin);
+	else
+	    in_xmin = null;
+	if(wi.in_ymin != null)
+	    in_ymin = new String(wi.in_ymin);
+	else
+	    in_ymin = null;	
+	if(wi.in_xmax != null)
+	    in_xmax = new String(wi.in_xmax);
+	else
+	    in_xmax = null;
+	if(wi.in_ymax != null)
+	    in_ymax = new String(wi.in_ymax);
+	else
+	    in_ymax = null;
+	    
+	if(wi.in_timemax != null)
+	    in_timemax = new String(wi.in_timemax);
+	else
+	    in_timemax = null;
+	if(wi.in_timemin != null)
+	    in_timemin = new String(wi.in_timemin);
+	else
+	    in_timemin = null;
+
+			
+	if(wi.in_shot != null)
+	    in_shot = new String(wi.in_shot);
+	else
+	    in_shot = null;
+	if(wi.experiment != null)
+	    experiment = new String(wi.experiment);
+	else
+	    experiment = null;
+	if(wi.in_title != null)
+	    in_title = new String(wi.in_title);
+	else
+	    in_title = null;
+	if(wi.in_xlabel != null)
+	    in_xlabel = new String(wi.in_xlabel);
+	else
+	    in_xlabel = null;
+	if(wi.in_ylabel != null)
+	    in_ylabel = new String(wi.in_ylabel);
+	else
+	    in_ylabel = null;	
+
+/*
+	if(wi.in_upd_event != null)
+	    in_upd_event = new String(wi.in_upd_event);
+	else
+	    in_upd_event = null;
+*/
+	if(wi.in_def_node != null)
+	    in_def_node = new String(wi.in_def_node);
+	else
+	    in_def_node = null;
+
+
+	if(wi.cin_xmin != null)
+	    cin_xmin = new String(wi.cin_xmin);
+	else
+	    cin_xmin = null;
+	if(wi.cin_ymin != null)
+	    cin_ymin = new String(wi.cin_ymin);
+	else
+	    cin_ymin = null;	
+	if(wi.cin_xmax != null)
+	    cin_xmax = new String(wi.cin_xmax);
+	else
+	    cin_xmax = null;
+	if(wi.cin_ymax != null)
+	    cin_ymax = new String(wi.cin_ymax);
+	else
+	    cin_ymax = null;
+
+	if(wi.cin_timemax != null)
+	    cin_timemax = new String(wi.cin_timemax);
+	else
+	    cin_timemax = null;
+	if(wi.cin_timemin != null)
+	    cin_timemin = new String(wi.cin_timemin);
+	else
+	    cin_timemin = null;
+
+
+	if(wi.cin_shot != null)
+	    cin_shot = new String(wi.cin_shot);
+	else
+	    cin_shot = null;
+	if(wi.cexperiment != null)
+	    cexperiment = new String(wi.cexperiment);
+	else
+	    cexperiment = null;
+	if(wi.cin_title != null)
+	    cin_title = new String(wi.cin_title);
+	else
+	    cin_title = null;
+	if(wi.cin_xlabel != null)
+	    cin_xlabel = new String(wi.cin_xlabel);
+	else
+	    cin_xlabel = null;
+	if(wi.cin_ylabel != null)
+	    cin_ylabel = new String(wi.cin_ylabel);
+	else
+	    cin_ylabel = null;	
+
+	if(wi.error != null)
+	    error = new String(wi.error);
+	else
+	    error = null;
+
+	if(wi.cin_upd_event != null)
+	    cin_upd_event = new String(wi.cin_upd_event);
+	else
+	    cin_upd_event = null;
+
+	if(wi.cin_def_node != null)
+	    cin_def_node = new String(wi.cin_def_node);
+	else
+	    cin_def_node = null;
+	
+	main_shot_evaluated = wi.main_shot_evaluated;    	
+    main_shot_str = wi.main_shot_str;
+	main_shots = wi.main_shots;
+	
+	def_vals = wi.def_vals;
+	    	
+	error = null;
+	SetDataProvider(wi.dp);
+	
+    }	
+
+
+    public boolean UseDefaultShot()
+    {
+	    return ((defaults & (1 << B_shot)) != 0);	    
+    }
+    
+   
+    public String GetErrorString(boolean add_sig, boolean brief_error)
+    {
+       String full_error = null;
+       
+       if(num_waves == 0) return null;
+       
+	   if(!is_image)
+	   {
+	        int i;
+	        int idx = 0;
+	        
+	        String e;
+	        
+	        if(add_sig)
+	            i = num_waves - 1;
+	        else
+	            i = 0;
+	        
+	        for(; i < num_waves; i++)
+	        {
+	            e = w_error[i];
+	            if(e != null) 
+	            {
+	                e = "<Wave "+(i+1)+ "> " + e;
+	                if(brief_error)
+	                {
+	                    idx = e.indexOf('\n');
+	                    if(idx < 0)
+	                        idx = e.length();
+	                }
+	                if(full_error == null)
+	                {
+	                    if(brief_error)
+		                    full_error = e.substring(0, idx) + "\n";
+	                    else 
+		                    full_error = e + "\n";
+	                } 
+	                else 
+	                {
+	                    if(brief_error)
+		                    full_error = full_error + e.substring(0, idx) + "\n";
+		                else
+		                    full_error = full_error + e + "\n";
+		            }
+		        }
+		    }
+        }
+        return full_error;
+    }
+    
+    public void SetDataProvider(DataProvider _dp)
+    {
+	    super.SetDataProvider(_dp);
+	    default_is_update = false;
+		main_shot_evaluated = false;
+    }
+
+   public void Erase()
+    {
+        super.Erase();
+        in_def_node = null;  
+        in_upd_event = null;  
+        last_upd_event = null;
+        cin_xmin = null;  
+        cin_xmax = null;  
+        cin_ymax = null;  
+        cin_ymin = null;  
+        cin_timemax = null;  
+        cin_timemin = null;
+        cin_title = null;  
+        cin_xlabel = null;  
+        cin_ylabel = null;
+        cin_def_node = null;  
+        cin_upd_event = null;  
+        cexperiment = null;
+        in_shot = null;  
+        cin_shot = null;
+        defaults = 0xffffffff;
+        default_is_update = false;
+    }
+   
+    public void CreateVector()
+    {
+        in_label = new String[num_waves];      
+	    shots	 = new int[num_waves];
+	    in_y	 = new String[num_waves];
+	    in_x	 = new String[num_waves];
+	    in_up_err    = new String[num_waves];
+	    in_low_err   = new String[num_waves];
+	    markers      = new int[num_waves];
+	    markers_step = new int[num_waves];
+	    colors_idx   = new int[num_waves];
+	    interpolates = new boolean[num_waves];
+	
+	    for(int i = 0; i < num_waves; i++)
+	    {
+//	        shots[i]	    = UNDEF_SHOT;
+	        markers[i]      = 0;
+	        markers_step[i] = 1;
+    	    colors_idx[i]   = i;
+	        interpolates[i] = true;
+	    }
+    }
+
+    public void AddEvent(NetworkEventListener w)
+    {
+        int bit = MdsWaveInterface.B_event;
+        boolean def_flag = ((defaults & (1<<bit)) == 1<<bit);      
+        String new_event = GetDefaultValue(bit , def_flag );
+        if(in_upd_event == null || !in_upd_event.equals(new_event))
+        {
+            AddEvent(w, new_event);
+        }
+    }
+
+    public void RemoveEvent(NetworkEventListener w)
+    {
+        if(in_upd_event != null)
+        {
+            dp.removeNetworkEventListener(w, in_upd_event);
+            in_upd_event = null;
+        }
+    }
+
+    public void RemoveEvent(NetworkEventListener w, String event)
+    {
+        dp.removeNetworkEventListener(w, event);
+    }
+   
+    public void AddEvent(NetworkEventListener w, String event)
+    {   
+        
+       if( in_upd_event != null && in_upd_event.length() != 0)
+       {
+            if(event == null || event.length() == 0)
+            {
+                dp.removeNetworkEventListener(w, in_upd_event);
+                in_upd_event = null;
+            } 
+            else 
+            {
+                if(!in_upd_event.equals(event))
+                {
+                    dp.removeNetworkEventListener(w, in_upd_event);
+                    dp.addNetworkEventListener(w, event);
+                    in_upd_event = event;
+                }
+            }
+        } else 
+            if(event != null && event.length() != 0) { 
+                in_upd_event = event;
+                dp.addNetworkEventListener(w, event);
+            }
+    }
+
+    public void ToFile(PrintWriter out, String prompt)
+    { 
+	    int exp, exp_n, sht, sht_n, cnum_shot; 
+
+ 	    cnum_shot = num_shot;
+	    if(UseDefaultShot())
+	    {
+	        if(cin_shot != null && cin_shot.length()> 0)
+		        cnum_shot = (GetShotArray(cin_shot)).length;
+	        else
+		        cnum_shot = 1;
+	    }
+
+	    WaveInterface.WriteLine(out,prompt + "x_label: "         , cin_xlabel);
+	    WaveInterface.WriteLine(out,prompt + "y_label: "         , cin_ylabel);
+	    if(!is_image)
+	    {
+	        WaveInterface.WriteLine(out,prompt + "x_log: "           , ""+x_log);
+	        WaveInterface.WriteLine(out,prompt + "y_log: "           , ""+y_log);
+	        if(make_legend) {
+	            WaveInterface.WriteLine(out,prompt + "legend: "           , "("+legend_x+","+legend_y+")");
+	        }
+	    } else {
+	       WaveInterface.WriteLine(out,prompt + "is_image: "           , ""+is_image);
+	       WaveInterface.WriteLine(out,prompt + "use_jai: "           , ""+use_jai);
+	    }    
+	    
+	   WaveInterface.WriteLine(out,prompt + "experiment: "      , cexperiment);
+	   WaveInterface.WriteLine(out,prompt + "event: "           , cin_upd_event);
+	   WaveInterface.WriteLine(out,prompt + "default_node: "    , cin_def_node);
+
+	    if(cnum_shot != 0) {
+	        int nshot;
+	        if(UseDefaultShot())
+	            nshot = num_shot;
+	        else
+	            nshot = cnum_shot;
+	       WaveInterface.WriteLine(out,prompt + "num_expr: "        , ""+num_waves/cnum_shot);
+	    } else
+	       WaveInterface.WriteLine(out,prompt + "num_expr: "        , ""+num_waves);
+	
+	   WaveInterface.WriteLine(out,prompt + "num_shot: "        , ""+cnum_shot);
+	   WaveInterface.WriteLine(out,prompt + "shot: "            , cin_shot);
+	   WaveInterface.WriteLine(out,prompt + "ymin: "            , cin_ymin);
+	   WaveInterface.WriteLine(out,prompt + "ymax: "            , cin_ymax);
+	   WaveInterface.WriteLine(out,prompt + "xmin: "            , cin_xmin);
+	   WaveInterface.WriteLine(out,prompt + "xmax: "            , cin_xmax);
+        if(is_image)
+        {
+	       WaveInterface.WriteLine(out,prompt + "time_min: "            , cin_timemin);
+	       WaveInterface.WriteLine(out,prompt + "time_max: "            , cin_timemax);
+        }
+	   WaveInterface.WriteLine(out,prompt + "title: "           , cin_title);
+	   WaveInterface.WriteLine(out,prompt + "global_defaults: " , ""+defaults);
+	
+		    
+	    for(exp = 0, exp_n = 1; exp < num_waves; exp += num_shot, exp_n++)
+	    {
+	       WaveInterface.WriteLine(out,prompt + "label"     + "_" + exp_n + ": " , in_label[exp]);
+	       WaveInterface.WriteLine(out,prompt + "x_expr"     + "_" + exp_n + ": " , AddNewLineCode(in_x[exp]));
+	       WaveInterface.WriteLine(out,prompt + "y_expr"     + "_" + exp_n + ": " , AddNewLineCode(in_y[exp]));
+	        
+	        if(!is_image)
+	        {
+	           WaveInterface.WriteLine(out,prompt + "up_error"   + "_" + exp_n + ": " , in_up_err[exp]);
+	           WaveInterface.WriteLine(out,prompt + "low_error"  + "_" + exp_n + ": " , in_low_err[exp]);
+			
+	            for(sht = 0, sht_n = 1; sht < cnum_shot; sht++, sht_n++)
+	            {			    
+		           WaveInterface.WriteLine(out,prompt + "interpolate"+"_"+exp_n+"_"+sht_n+": ",""+interpolates[exp + sht]);								    
+		           WaveInterface.WriteLine(out,prompt + "color"      +"_"+exp_n+"_"+sht_n+": ",""+colors_idx[exp + sht]);
+		           WaveInterface.WriteLine(out,prompt + "marker"     +"_"+exp_n+"_"+sht_n+": ",""+markers[exp + sht]);
+		           WaveInterface.WriteLine(out,prompt + "step_marker"+"_"+exp_n+"_"+sht_n+": ",""+markers_step[exp + sht]);
+	            }
+	        }
+	    } 
+    }
+    
+    
+    public int FromFile(ReaderConfig in, String prompt) throws IOException
+    { 
+	    String str;
+	    int error = 0, len, pos, num_expr = 0;
+	    boolean shot_evaluated = false;
+	    int sh[] = null;
+     
+        in.reset();
+        Erase();
+	    while((str = in.readLine()) != null) 
+	    {
+	        if(str.indexOf(prompt) == 0)
+	        {
+		        len =  str.indexOf(":") + 2;
+
+		        if(str.indexOf(".height:") != -1)
+		        {
+		            height = new Integer(str.substring(len, str.length())).intValue();
+		            continue;		
+		        }
+
+		
+		        if(str.indexOf(".grid_mode:") != -1)
+		        {
+		            in_grid_mode = new Integer(str.substring(len, str.length())).intValue();
+		            continue;		
+		        }
+		
+		        if(str.indexOf(".x_label:") != -1)
+		        {
+		            cin_xlabel = str.substring(len, str.length());
+		            continue;		
+		        }
+		        if(str.indexOf(".y_label:") != -1)
+		        {
+		            cin_ylabel = str.substring(len, str.length());
+		            continue;		
+		        }
+		        
+		            if(str.indexOf(".x_log:") != -1)
+		            {
+		                x_log = new Boolean(str.substring(len, str.length())).booleanValue();
+		                continue;		
+		            }
+		            if(str.indexOf(".y_log:") != -1)
+		            {
+		                y_log = new Boolean(str.substring(len, str.length())).booleanValue();
+		                continue;		
+		            }
+		            
+		            if(str.indexOf(".legend:") != -1)
+		            {
+		                make_legend = true;
+		                legend_x = Integer.parseInt(str.substring(str.indexOf("(") + 1, str.indexOf(",")));
+		                legend_y = Integer.parseInt(str.substring(str.indexOf(",") + 1, str.indexOf(")")));
+		                continue;		
+		            }
+		            
+		            if(str.indexOf(".is_image:") != -1)
+		            {
+		                is_image = new Boolean(str.substring(len, str.length())).booleanValue();
+		                continue;		
+		            }		            
+		        
+		            if(str.indexOf(".use_jai:") != -1)
+		            {
+		                use_jai = new Boolean(str.substring(len, str.length())).booleanValue();
+		                continue;		
+		            }		            
+		        
+		        
+		        
+		        if(str.indexOf(".experiment:") != -1)
+		        {
+		            cexperiment = str.substring(len, str.length());
+		            continue;		
+		        }
+		        
+		        if(str.indexOf(".shot:") != -1)
+		        {
+		            cin_shot = str.substring(len, str.length());
+		            sh = GetShotArray(cin_shot);
+		    
+		            if(sh.length == num_shot)
+		            {
+			            for(int i = 0, k = 0; i < num_expr; i++)
+			                for(int j = 0; j < num_shot; j++)
+			                {
+				                shots[k] = sh[j];
+				                k++;
+			                }
+		            } else
+			            shot_evaluated = true;
+		            continue;		
+		        }
+		        if(str.indexOf(".x:") != -1)
+		        {
+		            String x_str = str.substring(len, str.length());
+				
+		            x_str = RemoveNewLineCode(x_str);
+		            if(in_x == null || in_x.length == 0)
+			            in_x = new String[1];
+		            in_x[0] = x_str;
+		            continue;		
+		        }
+		        if(str.indexOf(".y:") != -1)
+		        {
+		            num_shot = 1;
+		            String y_str = str.substring(len, str.length());
+		            String x_str = null;
+
+		            y_str = RemoveNewLineCode(y_str);
+		    
+		            if(in_x != null && in_x.length != 0)
+			            x_str = in_x[0];
+																	    
+		            if(y_str.indexOf("[") == 0 && y_str.toLowerCase().indexOf("$roprand") != -1)
+		            {
+		
+			            pos = y_str.toLowerCase().indexOf(",$roprand");
+			            do {
+			                num_expr++;
+			                pos += ",$roprand".length();
+			            } while((pos = y_str.toLowerCase().indexOf(",$roprand", pos)) != -1 );
+			            num_expr++;
+		            } else {
+			            num_expr = 1;
+		            }
+		    
+		            num_waves = num_expr * num_shot;
+		            CreateVector();
+
+		            if(num_expr == 1) {
+			            in_y[0] = y_str;
+			            if( in_y[0].toLowerCase().indexOf("multitrace") != -1)
+			            {
+			                in_y[0] =  in_y[0].substring(in_y[0].indexOf("\\") + 1, in_y[0].indexOf("\")"));  
+			            }
+			            if(x_str != null)
+			                in_x[0] = new String(x_str);
+			            else
+			                in_x[0] = null;
+		    
+		                } else {
+		                    int pos_x = (x_str != null) ? x_str.indexOf("[") : 0;
+		                    int pos_y = y_str.indexOf("[");			  
+		                    int i, j;			
+			                for(i = 0; i < (num_expr - 1) * num_shot; i += num_shot)
+			                {
+			                    in_y[i] = y_str.substring(pos_y + 1, pos_y = y_str.toLowerCase().indexOf(",$roprand", pos_y));
+			                    if(x_str != null) {
+				                    if(x_str.indexOf(",0", pos_x) != -1)
+				                    in_x[i] = x_str.substring(pos_x  + 1, pos_x =  x_str.indexOf(",0", pos_x));			    			
+			                    }
+			                    if(in_y[i].toLowerCase().indexOf("multitrace") != -1)
+			                    {
+				                    in_y[i] =  in_y[i].substring(in_y[i].indexOf("\\") + 1, in_y[i].indexOf("\")"));  
+			                    }
+			                    for(j = 1; j < num_shot; j++)
+			                    {
+				                    in_y[i+j] = new String(in_y[i]);
+				                    in_x[i+j] = new String(in_x[i]);				
+			                    }
+			                    pos_y += ",$roprand".length();
+			                    pos_x += ",0".length();
+			                }
+			                in_y[i] = y_str.substring(pos_y + 1,  y_str.indexOf("]", pos_y));
+			                if(x_str != null)
+			                    in_x[i] = x_str.substring(pos_x + 1, x_str.indexOf("]", pos_x));			    			
+			                for(j = 1; j < num_shot; j++)
+			                {
+			                    in_y[i+j] = new String(in_y[i]);
+			                    in_x[i+j] = new String(in_x[i]);				
+			                }
+		                }    
+		                continue;		
+		            }
+		            if(str.indexOf(".num_expr:") != -1)
+		            {
+		                num_expr = new Integer(str.substring(len, str.length())).intValue();
+		                num_expr = (num_expr > 0) ? num_expr : 1;						
+		                if(num_shot != 0) {
+			                num_waves = num_expr * num_shot;
+			                CreateVector();
+			                if(shot_evaluated)
+			                {
+			                    if(sh.length == num_shot)
+			                    {
+				                    for(int i = 0, k = 0; i < num_expr; i++)
+				                    for(int j = 0; j < num_shot; j++)
+				                    {
+					                    shots[k] = sh[j];
+					                    k++;
+				                    }
+			                    } 			    
+			                }
+		                 }
+		                 continue;		
+		            }		    
+		            if(str.indexOf(".num_shot:") != -1)
+		            {
+		
+		                num_shot = new Integer(str.substring(len, str.length())).intValue();
+		                num_shot = (num_shot > 0) ? num_shot : 1;			
+		                if(num_expr != 0) {
+			                num_waves = num_expr * num_shot;
+			                CreateVector();
+			                if(shot_evaluated)
+			                {
+			                    if(sh.length == num_shot)
+			                    {
+				                    for(int i = 0, k = 0; i < num_expr; i++)
+				                        for(int j = 0; j < num_shot; j++)
+				                        {
+					                        shots[k] = sh[j];
+					                        k++;
+				                        }
+			                    } 			    
+			                }
+		                }
+		                continue;		
+		            }
+		            if(str.indexOf(".global_defaults:") != -1)
+		            {
+		                defaults = new Integer(str.substring(len, str.length())).intValue();
+		                continue;		
+		            }		    
+		            if((pos = str.indexOf(".label_")) != -1)
+		            {			
+		                pos += ".label_".length();
+		                int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
+		                in_label[expr_idx] = str.substring(pos + 2, str.length());
+		                for(int j = 1; j < num_shot; j++)
+			                in_label[expr_idx + j] = in_label[expr_idx];			
+		                continue;		
+		            }		    
+		            if((pos = str.indexOf(".x_expr_")) != -1)
+		            {			
+		                pos += ".x_expr_".length();
+		                int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
+		                in_x[expr_idx] = RemoveNewLineCode(str.substring(pos + 2, str.length()));
+		                for(int j = 1; j < num_shot; j++)
+			                in_x[expr_idx + j] = in_x[expr_idx];			
+		                continue;		
+		            }		    
+		            if((pos = str.indexOf(".y_expr_")) != -1)
+		            {			
+		                pos += ".y_expr_".length();
+		                int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
+		                in_y[expr_idx] = RemoveNewLineCode(str.substring(pos + 2, str.length()));
+		                for(int j = 1; j < num_shot; j++)
+			            in_y[expr_idx + j] = in_y[expr_idx];			
+		                continue;		
+		            }
+		            
+		                if((pos = str.indexOf(".up_error_")) != -1)
+		                {			
+		                    pos += ".up_error_".length();
+		                    int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
+		                    in_up_err[expr_idx] = str.substring(pos + 2, str.length());
+		                    for(int j = 1; j < num_shot; j++)
+			                    in_up_err[expr_idx + j] = in_up_err[expr_idx];			
+		                    continue;		
+		                }		    
+		                if((pos = str.indexOf(".low_error_")) != -1)
+		                {			
+		                    pos += ".low_error_".length();
+		                    int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
+		                    in_low_err[expr_idx] = str.substring(pos + 2, str.length());
+		                    for(int j = 1; j < num_shot; j++)
+			                    in_low_err[expr_idx + j] = in_low_err[expr_idx];			
+		                    continue;		
+		                }
+		
+		                if((pos = str.indexOf(".interpolate_")) != -1)
+		                {			
+		                    pos += ".interpolate_".length();
+		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
+		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
+		                    interpolates[expr_idx *  num_shot + shot_idx] = 
+						    new Boolean(str.substring(pos + 2, str.length())).booleanValue();
+		                    continue;		
+		                }
+		                
+		                if((pos = str.indexOf(".color_")) != -1)
+		                {
+		                    pos += ".color_".length();
+		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
+		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
+		                    try {			
+		                        int c_idx = new Integer(str.substring(pos + 2, str.length())).intValue();
+		                        colors_idx[expr_idx *  num_shot + shot_idx] = c_idx;
+		                    } catch(Exception e) { colors_idx[expr_idx *  num_shot + shot_idx] = 0;}
+		                    continue;		
+		                }
+		                if((pos = str.indexOf(".marker_")) != -1)
+		                {			
+		                    pos += ".marker_".length();
+		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
+		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
+		                    markers[expr_idx *  num_shot + shot_idx] = 
+						    new Integer(str.substring(pos + 2, str.length())).intValue();
+		                    continue;		
+		                }
+		
+		                if((pos = str.indexOf(".step_marker_")) != -1)
+		                {			
+		                    pos += ".step_marker_".length();
+		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
+		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
+		                    markers_step[expr_idx *  num_shot + shot_idx] = 
+						    new Integer(str.substring(pos + 2, str.length())).intValue();
+		                    continue;		
+		                }
+					
+		            if(str.indexOf(".title:") != -1)
+		            {
+		                cin_title = str.substring(len, str.length());
+		                continue;		
+		            }
+		            if(str.indexOf(".ymin:") != -1)
+		            {
+		                cin_ymin = str.substring(len, str.length());
+		                continue;		
+		            }
+		            if(str.indexOf(".ymax:") != -1)
+		            {
+		                cin_ymax = str.substring(len, str.length());
+		                continue;		
+		            }
+		            if(str.indexOf(".xmin:") != -1)
+		            {
+		                cin_xmin = str.substring(len, str.length());
+		                continue;		
+		            }
+		            if(str.indexOf(".xmax:") != -1)
+		            {
+		                cin_xmax = str.substring(len, str.length());
+		                continue;
+		            }
+                    if(str.indexOf(".time_min:") != -1)
+		            {
+		                cin_timemin = str.substring(len, str.length());
+		                continue;		
+		            }
+		            if(str.indexOf(".time_max:") != -1)
+		            {
+		                cin_timemax = str.substring(len, str.length());
+		                continue;		
+		            }
+		            if(str.indexOf(".default_node:") != -1)
+		            {
+		                cin_def_node = str.substring(len, str.length());
+		                continue;		
+		            }
+		            if(str.indexOf(".event:") != -1)
+		            {
+		                cin_upd_event = str.substring(len, str.length());
+		                continue;		
+		            }
+	            }
+	        }
+		
+	        return error;
+        }	 
+	      	        
+    }		
+

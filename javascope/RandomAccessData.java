@@ -2,13 +2,11 @@ import java.io.*;
 /**
  * Insert the type's description here.
  * Creation date: (12/10/99 18:49:35)
- * @author: 
  */
 public class RandomAccessData {
    byte buffer[];
    int position = 0;
-   
-   
+      
 /**
  * RandomAccessData constructor comment.
  */

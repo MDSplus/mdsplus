@@ -61,14 +61,24 @@ abstract class JiNcVarImp {
 
 	  // Lack of unsigned types make this a real pain...
 	  int count = 0;
-	  for (int i=0; i < bytes.length; i+=4){
-	      int val = (((int)bytes[i] & 0xff) << 24) +
-		(((int)bytes[i+1] & 0xff) << 16) +
-		  (((int)bytes[i+2] & 0xff) << 8) +
-		   ((int)bytes[i+3] & 0xff);
-	      floats[count++] = Float.intBitsToFloat(val);
-	  }
-	  }  
+//	  for (int i=0; i < bytes.length; i+=4){
+//	      int val = (((int)bytes[i] & 0xff) << 24) +
+//		(((int)bytes[i+1] & 0xff) << 16) +
+//		  (((int)bytes[i+2] & 0xff) << 8) +
+//		   ((int)bytes[i+3] & 0xff);
+//	      floats[count++] = Float.intBitsToFloat(val);
+//	  }
+      int ix = 0;
+      while (ix < bytes.length)
+      {
+        int val = (((int)bytes[ix++] & 0xff) << 24) +
+                  (((int)bytes[ix++] & 0xff) << 16) +
+                  (((int)bytes[ix++] & 0xff) << 8) +
+                  ((int)bytes[ix++] & 0xff);
+        floats[count++] = Float.intBitsToFloat(val);
+       }
+	}  
+
 	public static void convertInts(byte[] bytes, int[] ints)
 	  throws IOException
 	  {

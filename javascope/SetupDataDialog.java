@@ -11,29 +11,16 @@ import java.util.Vector;
 //*****
  class SetupDataDialog extends ScopePositionDialog {
  
- 
-   //TextField		    title, shot, experiment;
-   // TextField		    x_max, x_min, x_label, y_expr, signal_label;
-   //TextField		    y_max, y_min, y_label, x_expr;
-   //TextField            upd_event, def_node;
-   //private Button       browser, error, y_browser, expand;
-   //private Button       ok, cancel, reset, erase, apply, x_browser, add_shot;
-   //private Checkbox	    x_log, y_log, opt_network;
-   //private Checkbox	    title_b, shot_b, experiment_b, x_max_b, x_min_b, 
-//			            x_label_b, y_max_b, y_min_b, y_label_b, def_node_b,
-//			            upd_event_b, image_b;  
    private Choice       show_type;
    private Label	    lab;
    private SError	    error_w;
    private ErrorMessage	error_msg;
    private jScope	    main_scope;
-   private Setup        setup;       
+//   private WaveSetup    setup;       
    private ExpandExp    expand_expr;
    private SList	    signalList;
-   private MultiWaveform    wave;	    
-   public  WaveInterface    wi;
-   //static  BrowseSig	    browse_x_w, browse_y_w;
-  
+   private jScopeMultiWave    wave;	    
+   public  MdsWaveInterface   wi;
      
    static final int  LINE = 0, POINT = 1, BOTH = 2, NONE = 3;
    static final int  BROWSE_X = 0, BROWSE_Y = 1;
@@ -210,90 +197,7 @@ import java.util.Vector;
 	 if(ob == cancel)
 	   setVisible(false);    
        }
-   }
-   
-   class BrowseSig extends ScopePositionDialog {
-       private Button dismiss;
-       private List   sig_list;
-       private int    type;
-       private Frame  dw;
-       final int  BROWSE_X = 0, BROWSE_Y = 1;
-       
-       BrowseSig(Frame fw, String title, int _type) {	
-	      super(fw, title, true); 	
-	      //super.setFont(new Font("Helvetica", Font.PLAIN, 10));
-	      dw = fw;
-	      type = _type;
-          setResizable(false);
-	 
-	      BorderLayout bl= new BorderLayout(25,1);
-	      setLayout(bl);
-  
-	      sig_list = new List(8, false);
-	      sig_list.addItemListener(this);
-	      add("Center",sig_list);
-	      LoadSignal(main_scope.getSignalsFile());	
-
-	      dismiss = new Button("Dismiss");
-	      dismiss.addActionListener(this);
-	      add("South", dismiss);	  		    	     
-       } 
-       
-       public void LoadSignal(String file_list)
-       {
-	        BufferedReader in;
-	        String str;
-	   
-	        try {
-	   	        in = new BufferedReader(new FileReader(file_list));
-		        while((str = in.readLine()) != null) 
-		        {
-		            sig_list.add(str);
-		        }
-	        } catch (IOException e) {
-		        //error_msg.addMessage("Signal list file must be specified\n jScope ");
-	        }
-       }
-       
-       private void SetSignalString()
-       {
-       
-	        String sig = sig_list.getSelectedItem();
-	        if(sig != null) {
-		        if(type == BROWSE_X)
-		            x_expr.setText(sig);
-		    if(type == BROWSE_Y)
-		            y_expr.setText(sig);
-	        } 
-       }
-       
-       	         
-       public void Show()
-       {
-	        pack();
-	        setPosition(dw);
-	        show();
-       }
-       
-       public void actionPerformed(ActionEvent e)
-       {
-	        Object ob = e.getSource();	
-    
-	        if(ob == dismiss)  
-	            setVisible(false);	   
-       }
-       
-       public void itemStateChanged(ItemEvent e)
-       { 
-	        Object ob = e.getSource();
-
-    	    if(ob == sig_list)
-	            SetSignalString();
-       }
-   
-  }
-
-
+   }   
 
    class SList extends Container implements ActionListener, KeyListener, ItemListener, TextListener {
     private List             sig_list;
@@ -301,9 +205,9 @@ import java.util.Vector;
     private TextField	     marker_step_t;
     private Vector	         signals = new Vector();
     private String	         shot_str;
-    private int		         shots[]={jScope.UNDEF_SHOT}, list_num_shot = 1;
+    private int		         shots[]=null, list_num_shot = 0;  //{jScope.UNDEF_SHOT}, list_num_shot = 1;
     private int              sel_signal = -1;
-
+    private int              UNDEF_SHOT     = -99999;
     
       public SList() {
 
@@ -345,8 +249,8 @@ import java.util.Vector;
 	p.add(color);	
 
 	marker = new Choice();
-	for(int i = 0; i < jScope.markerList.length; i++)
-	    marker.addItem(jScope.markerList[i]);
+	for(int i = 0; i < Signal.markerList.length; i++)
+	    marker.addItem(Signal.markerList[i]);
 	/*
 	marker.addItem("No Marker"); 
 	marker.addItem("Square"); 
@@ -406,7 +310,10 @@ import java.util.Vector;
       
       public int getNumShot()
       {
-	    return shots.length;
+        if(shots != null)
+	        return shots.length;
+	    else
+	        return 0;
       }
       
       public void SetColorList()
@@ -436,8 +343,12 @@ import java.util.Vector;
      public void removeSignalSetup()
      {
 	    int i, sig_idx, start_idx, end_idx;
-	    int num_shot = shots.length;
+	    int num_shot = 1;
 	    int num_signal = signals.size();  		
+          	
+          	
+        if(shots != null && shots.length > 0)  	
+          	num_shot = shots.length;
           	
 	    if(sel_signal != -1) 
 	    {
@@ -536,6 +447,7 @@ import java.util.Vector;
       
 	    if(wi != null)
 	    {
+	        /*
 	        shots = new int[wi.num_shot];
 	    
 	        if(wi.shots == null)
@@ -544,7 +456,15 @@ import java.util.Vector;
 	        else
 	            for(int i = 0; i < wi.num_shot; i++)
 		            shots[i] = wi.shots[i];
-		
+		    */
+		    
+		    if(wi.shots != null)
+		    {
+	            shots = new int[wi.num_shot];
+	            for(int i = 0; i < wi.num_shot; i++)
+		            shots[i] = wi.shots[i];
+		    }
+		    
 	        list_num_shot = wi.num_shot;
 	        shot_str = wi.in_shot;
 	    
@@ -563,7 +483,7 @@ import java.util.Vector;
 		        if(wi.shots != null)
 		            ws.shot = wi.shots[i];
 		        else
-		            ws.shot = jScope.UNDEF_SHOT;
+		            ws.shot = UNDEF_SHOT;
 		        addSignalSetup(ws);       
 	        }
 	        signalListRefresh();	    
@@ -601,18 +521,18 @@ import java.util.Vector;
 	        String x_e =  new String(x_expr.getText() == null ? "" : x_expr.getText()) ; 
 	        String y_e =  new String(y_expr.getText());
 
-	        if(shots.length != 0)
+	        if(shots != null && shots.length != 0)
 	        {
 		        for (int i = 0; i < shots.length; i++, ws = getSignalSetup())
 		        {
 		            ws.shot = shots[i];
 		            ws.color_idx = color_idx;
-		            color_idx = (color_idx + 1) % setup.main_scope.color_dialog.GetNumColor();
+		            color_idx = (color_idx + 1) % main_scope.color_dialog.GetNumColor();
 		            addSignalSetup(ws);
 		            signalListAdd(ws);
 		        }	
 	        } else {
-		        ws.shot = jScope.UNDEF_SHOT;
+		        ws.shot = UNDEF_SHOT;
 		        addSignalSetup(ws);
 		        signalListAdd(ws);
 	        } 
@@ -631,7 +551,8 @@ import java.util.Vector;
 		    else
 		        list_num_shot = 1;
 		    shot_str = in_shot;
-		    shots  = main_scope.evaluateShot(in_shot);
+		    //shots  = main_scope.evaluateShot(in_shot);
+		    shots = wi.GetShotArray(in_shot);
 		    if(shots == null)
 		    {
 		        shot_str = null;
@@ -681,25 +602,30 @@ import java.util.Vector;
        public void updateSignals()
        {
 	        int i, j, sig_idx, start_idx, end_idx;
-	        int num_shot = shots.length;
+	        int num_shot = 1;
 	        int num_signal = signals.size(); 
+      
       
 	        if(findSignalSetup(getSignalSetup()) != -1)
 	            return;	
           	
+
 	        if(sel_signal != -1) 
 	        {
+                if(shots != null && shots.length > 0)
+                    num_shot = shots.length;
+	            
 	            start_idx = (sel_signal/num_shot) * num_shot; // Divisione intera
 	            end_idx   = start_idx + num_shot; 
 
-	
 	            for (i = 0,  j = 0 ; i < num_signal; i++)
-		        if(i >= start_idx && i < end_idx)  {
-		            ((Data)signals.elementAt(i)).label = signal_label.getText();
-		            ((Data)signals.elementAt(i)).x_expr = x_expr.getText();
-		            ((Data)signals.elementAt(i)).y_expr = y_expr.getText();
-		            signalListReplace(i + 1, (Data)signals.elementAt(i));
-		        }		
+		            if(i >= start_idx && i < end_idx)
+		            {
+		                ((Data)signals.elementAt(i)).label     = signal_label.getText();
+		                ((Data)signals.elementAt(i)).x_expr    = x_expr.getText();
+		                ((Data)signals.elementAt(i)).y_expr    = y_expr.getText();
+		                signalListReplace(i + 1, (Data)signals.elementAt(i));
+		            }		
 	            signalSelect(start_idx);
 	        }
 	    }
@@ -725,7 +651,7 @@ import java.util.Vector;
 	  private void signalListAdd(Data ws)
 	  {
 	  
-	    if(ws.shot != jScope.UNDEF_SHOT)
+	    if(ws.shot != UNDEF_SHOT)
 	    {
     		if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
 		    sig_list.add("Y : " + ws.y_expr + " Shot : " + ws.shot);
@@ -741,7 +667,7 @@ import java.util.Vector;
 	  
 	  private void signalListReplace(int idx, Data ws)
 	  {
-	    if(ws.shot != jScope.UNDEF_SHOT)
+	    if(ws.shot != UNDEF_SHOT)
 	    {
 		if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
 		    sig_list.replaceItem("Y : " + ws.y_expr + " Shot : " + ws.shot, idx);
@@ -821,7 +747,7 @@ import java.util.Vector;
 	    } 
 
 	if(ob instanceof Checkbox)
-	    defaultButtonChange(ob);
+	    DefaultButtonChange(ob);
 
     	if(sel_signal == -1)
 	    return;
@@ -955,265 +881,6 @@ import java.util.Vector;
       error_msg = new ErrorMessage(fw);
       expand_expr = new ExpandExp(fw, this);	    
 
-/*     
-      GridBagLayout gridbag = new GridBagLayout();
-      GridBagConstraints c = new GridBagConstraints();
-      Insets insets = new Insets(2,2,2,2);
-
-      setLayout(gridbag);		
-      c.insets = insets;
-      c.anchor = GridBagConstraints.WEST;	
-      c.fill =  GridBagConstraints.HORIZONTAL;
-      c.weightx = 1.0; 	
-      c.gridwidth = 1;	
-      title_b = new Checkbox("Title");
-      title_b.addItemListener(this);
-      gridbag.setConstraints(title_b, c);
-      add(title_b);
- 
-      c.gridwidth = 5;	
-      title = new TextField(40);
-      gridbag.setConstraints(title, c);
-      add(title);
-      		 	
-      c.fill =  GridBagConstraints.NONE;
-      c.gridwidth = GridBagConstraints.REMAINDER;
-      c.gridheight = 1;
-      expand = new Button("Expand Expr.");	
-      expand.addActionListener(this);
-      gridbag.setConstraints(expand, c);
-      add(expand);	      	
-
-
-      c.fill =  GridBagConstraints.HORIZONTAL;
-      c.gridwidth = 1;
-      lab = new Label("Signal Label");
-      gridbag.setConstraints(lab, c);
-      add(lab);		 	
-
-      c.gridwidth = 5;
-//      c.fill =  GridBagConstraints.HORIZONTAL;
-      signal_label = new TextField();
-      signal_label.addKeyListener(this);
-      gridbag.setConstraints(signal_label, c);
-      add(signal_label);
-
-//      c.gridwidth = 1;
-      c.gridwidth = GridBagConstraints.REMAINDER;
-      error = new Button("Error...");
-      error.addActionListener(this);
-      gridbag.setConstraints(error, c);
-      add(error);
-
-
-      c.fill =  GridBagConstraints.HORIZONTAL;
-      c.gridwidth = 1;
-      lab = new Label("Y");
-      gridbag.setConstraints(lab, c);
-      add(lab);		 	
-
-      c.gridwidth = 5;
-      y_expr = new TextField();
-      y_expr.addKeyListener(this);
-      gridbag.setConstraints(y_expr, c);
-      add(y_expr);
-
-	                
-      c.gridwidth = GridBagConstraints.REMAINDER;
-      y_log = new Checkbox("Log Scale", null, false); 		 	
-      gridbag.setConstraints(y_log, c);
-      add(y_log);
-       
-      c.gridwidth = 1;
-      y_label_b = new Checkbox("Y Label");
-      y_label_b.addItemListener(this);
-      gridbag.setConstraints(y_label_b, c);
-      add(y_label_b);	
-
-      y_label = new TextField(25);		 	
-      gridbag.setConstraints(y_label, c);
-      add(y_label);	
-
-      y_min_b = new Checkbox("Y min");
-      y_min_b.addItemListener(this);
-      gridbag.setConstraints(y_min_b, c);
-      add(y_min_b);	
-
-      y_min = new TextField(10);		 	
-      y_min.addKeyListener(this);
-      gridbag.setConstraints(y_min, c);
-      add(y_min);	
-
-      y_max_b = new Checkbox("Y max");
-      y_max_b.addItemListener(this);
-      gridbag.setConstraints(y_max_b, c);
-      add(y_max_b);	
-	 	
-      y_max = new TextField(10);
-      y_max.addKeyListener(this);
-      gridbag.setConstraints(y_max, c);
-      add(y_max);	
-
-      c.fill =  GridBagConstraints.NONE;
-      c.gridwidth = GridBagConstraints.REMAINDER;
-      
-//      y_browser = new Button("Browse...");
-//      y_browser.addActionListener(this);
-//      gridbag.setConstraints(y_browser, c);
-//      add(y_browser);	
-
-      image_b = new Checkbox("Is image");
-      image_b.addItemListener(this);
-      gridbag.setConstraints(image_b, c);
-      add(image_b);	
-
-
-      c.fill =  GridBagConstraints.HORIZONTAL;
-      c.gridwidth = 1;
-      lab = new Label("X");
-      gridbag.setConstraints(lab, c);
-      add(lab);		 	
-
-      c.gridwidth = 5;
-      x_expr = new TextField(30);
-      x_expr.addKeyListener(this);
-      gridbag.setConstraints(x_expr, c);
-      add(x_expr);		 	
-
-      c.fill =  GridBagConstraints.NONE;
-      c.gridwidth = GridBagConstraints.REMAINDER;
-      x_log = new Checkbox("Log Scale", null, false); 		 	
-      gridbag.setConstraints(x_log, c);
-      add(x_log);
-
-      c.fill =  GridBagConstraints.HORIZONTAL;
-      c.gridwidth = 1;
-      x_label_b = new Checkbox("X Label");
-      x_label_b.addItemListener(this);
-      gridbag.setConstraints(x_label_b, c);
-      add(x_label_b);	
-
-      x_label = new TextField(25);		 	
-      gridbag.setConstraints(x_label, c);
-      add(x_label);	
-
-      x_min_b = new Checkbox("X min");
-      x_min_b.addItemListener(this);
-      gridbag.setConstraints(x_min_b, c);
-      add(x_min_b);	
-
-      x_min = new TextField(10);		 	
-      x_min.addKeyListener(this);
-      gridbag.setConstraints(x_min, c);
-      add(x_min);	
-
-      x_max_b = new Checkbox("X max");
-      x_max_b.addItemListener(this);
-      gridbag.setConstraints(x_max_b, c);
-      add(x_max_b);	
-	 	
-      c.fill =  GridBagConstraints.NONE;
-      c.gridwidth = GridBagConstraints.REMAINDER;
-      x_max = new TextField(10);
-      x_max.addKeyListener(this);
-      gridbag.setConstraints(x_max, c);
-      add(x_max);	
-
-//      c.fill =  GridBagConstraints.NONE;
-//      c.gridwidth = GridBagConstraints.REMAINDER;
-//      x_browser = new Button("Browse...");
-//      x_browser.addActionListener(this);
-//      gridbag.setConstraints(x_browser, c);
-//      add(x_browser);
- 
-      c.fill =  GridBagConstraints.HORIZONTAL;			          		
-      c.gridwidth = 1;
-      experiment_b = new Checkbox("Experiment");
-      experiment_b.addItemListener(this);
-      gridbag.setConstraints(experiment_b, c);
-      add(experiment_b);	
-      
-      experiment = new TextField(25);
-      experiment.addKeyListener(this);
-      gridbag.setConstraints(experiment, c);
-      add(experiment);	
-
-      c.fill =  GridBagConstraints.NONE;
-      shot_b = new Checkbox("Shot");
-      shot_b.addItemListener(this);      
-      gridbag.setConstraints(shot_b, c);
-      add(shot_b);	
-
-      c.gridwidth = GridBagConstraints.REMAINDER;
-      shot = new TextField(35);
-      shot.addKeyListener(this);
-      shot.addFocusListener(this);
-      gridbag.setConstraints(shot, c);
-      add(shot);
-
-
-      c.fill =  GridBagConstraints.HORIZONTAL;			          		
-      c.gridwidth = 1;
-      upd_event_b = new Checkbox("Update event");
-      upd_event_b.addItemListener(this);
-      gridbag.setConstraints(upd_event_b, c);
-      add(upd_event_b);	
-      
-      upd_event = new TextField(25);
-      gridbag.setConstraints(upd_event, c);
-      add(upd_event);	
-
-      c.fill =  GridBagConstraints.NONE;
-      def_node_b = new Checkbox("Default node");
-      def_node_b.addItemListener(this);      
-      gridbag.setConstraints(def_node_b, c);
-      add(def_node_b);	
-
-      c.gridwidth = GridBagConstraints.REMAINDER;
-      def_node = new TextField(35);
- //     def_node.addKeyListener(this);
- //     def_node.addFocusListener(this);
-      gridbag.setConstraints(def_node, c);
-      add(def_node);
-
-      c.fill =  GridBagConstraints.BOTH;
-      signalList = new SList(); 
-      gridbag.setConstraints(signalList, c);
-      add(signalList);	
-      	
-      c.fill   = GridBagConstraints.NONE;     
-      c.anchor = GridBagConstraints.CENTER;
-      c.gridwidth = 1;
-      ok = new Button("Ok");
-      ok.addActionListener(this);
-      gridbag.setConstraints(ok, c);
-      add(ok);	
-      	
-      apply = new Button("Apply");
-      apply.addActionListener(this);
-      gridbag.setConstraints(apply, c);
-      add(apply);	
-
-      c.gridwidth = 2;
-      reset = new Button("Reset");
-      reset.addActionListener(this);
-      gridbag.setConstraints(reset, c);
-      add(reset);	
-
-      erase = new Button("Erase");
-      erase.addActionListener(this);
-      gridbag.setConstraints(erase, c);
-      add(erase);	
-
-      c.gridwidth = GridBagConstraints.REMAINDER;
-      cancel = new Button("Cancel");
-      cancel.addActionListener(this);
-      gridbag.setConstraints(cancel, c);
-      add(cancel);
-      
-//      browse_x_w = new BrowseSig(fw, "X signal Broser", BROWSE_X);
-//      browse_y_w = new BrowseSig(fw, "Y signal Broser", BROWSE_Y);
-*/
 
 		//{{INIT_CONTROLS
 			setLayout(null);
@@ -1473,27 +1140,24 @@ import java.util.Vector;
 	java.awt.Button cancel = new java.awt.Button();
 	//}}
 
-   
-   
-   
-   
-   
-   public void Show(MultiWaveform w, Setup _setup)
-   {
-      setup = _setup;
+    public void Show(Waveform w, int col, int row)
+    {
       pack();
-      wi = new WaveInterface(setup.main_scope.db, w.controller);
-      wave = w;
-      putWindowSetup(w.wi);
+      wave = (jScopeMultiWave)w;
+      wi = wave.wi;
+      wi = new MdsWaveInterface(wave.wi.dp, wave.wi.def_vals);
+      wi.defaults = wave.wi.defaults;
+      wi.wave = wave;
+      putWindowSetup((MdsWaveInterface)wave.wi);
       setPosition(w.getParent());
-      Point p = setup.GetWavePos(w);
-      setTitle("Wave Setup for column " + p.x + " row " + p.y);
+      setTitle("Wave Setup for column " + col + " row " + row);
       show(); 
    }
    
+   
    public void SetColorList()
    {
-	signalList.SetColorList();
+	    signalList.SetColorList();
    }
 
    public void selectSignal(int sig)
@@ -1506,8 +1170,8 @@ import java.util.Vector;
     boolean state = true;
     wi.defaults = 0xffffffff;
     if(wi.is_image)
-        wi.defaults = wi.defaults &  ~( (1 << WaveInterface.B_y_max) + 
-                                        (1 << WaveInterface.B_y_min));
+        wi.defaults = wi.defaults &  ~( (1 << MdsWaveInterface.B_y_max) + 
+                                                      (1 << MdsWaveInterface.B_y_min));
     
         
 	title_b.setState(state);
@@ -1553,7 +1217,7 @@ import java.util.Vector;
 	upd_event.setEditable(!state);
     def_node_b.setState(state);
     def_node.setEditable(!state);
-    putDefaultValues();
+    PutDefaultValues();
    } 
      
    private void setDefaultFlags(int flags)
@@ -1562,35 +1226,35 @@ import java.util.Vector;
 	{
 	    switch(i)
 	    {
-		case WaveInterface.B_title:
+		case MdsWaveInterface.B_title:
 		    title_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
-		case WaveInterface.B_shot:
+		case MdsWaveInterface.B_shot:
 		    shot_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
-		case WaveInterface.B_exp:
+		case MdsWaveInterface.B_exp:
 		    experiment_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
-		case WaveInterface.B_x_max:
+		case MdsWaveInterface.B_x_max:
 		    if(image_b.getState())
 		        time_max_b.setState(((flags & (1<<i)) == 1<<i)?true:false);
 		    else        
 		        x_max_b.setState(((flags & (1<<i)) == 1<<i)?true:false);
 		break; 
-		case WaveInterface.B_x_min:
+		case MdsWaveInterface.B_x_min:
 		    if(image_b.getState())
 		        time_min_b.setState(((flags & (1<<i)) == 1<<i)?true:false); 
 		    else
 		        x_min_b.setState(((flags & (1<<i)) == 1<<i)?true:false);
 		break; 
-		case WaveInterface.B_x_label:
+		case MdsWaveInterface.B_x_label:
 		    x_label_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
-		case WaveInterface.B_y_max:
+		case MdsWaveInterface.B_y_max:
 		    y_max_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
-		case WaveInterface.B_y_min:
+		case MdsWaveInterface.B_y_min:
 		    y_min_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
-		case WaveInterface.B_y_label:
+		case MdsWaveInterface.B_y_label:
 		    y_label_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break;  
-		case WaveInterface.B_event:
+		case MdsWaveInterface.B_event:
 		    upd_event_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break;  
-		case WaveInterface.B_default_node:
+		case MdsWaveInterface.B_default_node:
 		    def_node_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break;  
 	    }
 	}       
@@ -1600,88 +1264,125 @@ import java.util.Vector;
    {
        int value = 0;
        
-	if  (title_b.getState())	 value |= 1<<WaveInterface.B_title; 
-				    else value &= ~(1<<WaveInterface.B_title); 
-	if  (shot_b.getState()  )	 value |= 1<<WaveInterface.B_shot  ; 
-				    else value &= ~(1<<WaveInterface.B_shot); 
-	if  (experiment_b.getState() )	 value |= 1<<WaveInterface.B_exp ; 
-				    else value &= ~(1<<WaveInterface.B_exp);
+	if  (title_b.getState())	 value |= 1<<MdsWaveInterface.B_title; 
+				    else value &= ~(1<<MdsWaveInterface.B_title); 
+	if  (shot_b.getState()  )	 value |= 1<<MdsWaveInterface.B_shot  ; 
+				    else value &= ~(1<<MdsWaveInterface.B_shot); 
+	if  (experiment_b.getState() )	 value |= 1<<MdsWaveInterface.B_exp ; 
+				    else value &= ~(1<<MdsWaveInterface.B_exp);
 	if(image_b.getState())
 	{
-	    if  (time_max_b.getState() )	 value |= 1<<WaveInterface.B_x_max ; 
-				    else value &= ~(1<<WaveInterface.B_x_max); 
-	    if  (time_min_b.getState() )	 value |= 1<<WaveInterface.B_x_min ;
-				    else value &= ~(1<<WaveInterface.B_x_min);
+	    if  (time_max_b.getState() )	 value |= 1<<MdsWaveInterface.B_x_max ; 
+				    else value &= ~(1<<MdsWaveInterface.B_x_max); 
+	    if  (time_min_b.getState() )	 value |= 1<<MdsWaveInterface.B_x_min ;
+				    else value &= ~(1<<MdsWaveInterface.B_x_min);
 	}
 	else
 	{
-	    if  (x_max_b.getState() )	 value |= 1<<WaveInterface.B_x_max ; 
-				    else value &= ~(1<<WaveInterface.B_x_max); 
-	    if  (x_min_b.getState() )	 value |= 1<<WaveInterface.B_x_min ;
-				    else value &= ~(1<<WaveInterface.B_x_min);
+	    if  (x_max_b.getState() )	 value |= 1<<MdsWaveInterface.B_x_max ; 
+				    else value &= ~(1<<MdsWaveInterface.B_x_max); 
+	    if  (x_min_b.getState() )	 value |= 1<<MdsWaveInterface.B_x_min ;
+				    else value &= ~(1<<MdsWaveInterface.B_x_min);
 	}
-	if  (x_label_b.getState() )	 value |= 1<<WaveInterface.B_x_label ; 
-				    else value &= ~(1<<WaveInterface.B_x_label); 
-	if  (y_max_b.getState() )        value |= 1<<WaveInterface.B_y_max ; 
-				    else value &= ~(1<<WaveInterface.B_y_max); 
-	if  (y_min_b.getState() )	 value |= 1<<WaveInterface.B_y_min ; 
-				    else value &= ~(1<<WaveInterface.B_y_min); 
-	if  (y_label_b.getState() )	 value |= 1<<WaveInterface.B_y_label ; 
-				    else value &= ~(1<<WaveInterface.B_y_label);
-	if  (upd_event_b.getState() )	 value |= 1<<WaveInterface.B_event ; 
-				    else value &= ~(1<<WaveInterface.B_event);
-	if  (def_node_b.getState() )	 value |= 1<<WaveInterface.B_default_node ; 
-				    else value &= ~(1<<WaveInterface.B_default_node);
+	if  (x_label_b.getState() )	 value |= 1<<MdsWaveInterface.B_x_label ; 
+				    else value &= ~(1<<MdsWaveInterface.B_x_label); 
+	if  (y_max_b.getState() )        value |= 1<<MdsWaveInterface.B_y_max ; 
+				    else value &= ~(1<<MdsWaveInterface.B_y_max); 
+	if  (y_min_b.getState() )	 value |= 1<<MdsWaveInterface.B_y_min ; 
+				    else value &= ~(1<<MdsWaveInterface.B_y_min); 
+	if  (y_label_b.getState() )	 value |= 1<<MdsWaveInterface.B_y_label ; 
+				    else value &= ~(1<<MdsWaveInterface.B_y_label);
+	if  (upd_event_b.getState() )	 value |= 1<<MdsWaveInterface.B_event ; 
+				    else value &= ~(1<<MdsWaveInterface.B_event);
+	if  (def_node_b.getState() )	 value |= 1<<MdsWaveInterface.B_default_node ; 
+				    else value &= ~(1<<MdsWaveInterface.B_default_node);
 	return (value);  
    }
-
-   public void putDefaultValues()
+/*
+   public void putDefaultValues(MdsWaveInterface wi)
    {
+    
         boolean def_flag;
         
-	    defaultButtonOperation(title, def_flag = title_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_title, def_flag, wi));
+	    defaultButtonOperation(title, def_flag = title_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_title, def_flag, wi));
 	    putShotValue(shot_b.getState());
-	    defaultButtonOperation(experiment, def_flag = experiment_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_exp, def_flag, wi));
+	    defaultButtonOperation(experiment, def_flag = experiment_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_exp, def_flag, wi));
 	    if(image_b.getState())
 	    {
-	        defaultButtonOperation(time_max, def_flag = time_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_max, def_flag, wi));
+	        defaultButtonOperation(time_max, def_flag = time_max_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_x_max, def_flag, wi));
 	        if(!def_flag)
 	            time_max.setText(wi.cin_timemax);
-	        defaultButtonOperation(time_min, def_flag = time_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_min, def_flag, wi));
+	        defaultButtonOperation(time_min, def_flag = time_min_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_x_min, def_flag, wi));
 	        if(!def_flag)
 	            time_min.setText(wi.cin_timemin);
 	        x_min.setText(wi.cin_xmin);
 	        x_max.setText(wi.cin_xmax);
 	    } else {
-	        defaultButtonOperation(x_max, def_flag = x_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_max, def_flag, wi));
-	        defaultButtonOperation(x_min, def_flag = x_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_min, def_flag, wi));
+	        defaultButtonOperation(x_max, def_flag = x_max_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_x_max, def_flag, wi));
+	        defaultButtonOperation(x_min, def_flag = x_min_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_x_min, def_flag, wi));
 	    }
-	    defaultButtonOperation(x_label, def_flag = x_label_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_label, def_flag, wi));
-	    defaultButtonOperation(y_max, def_flag = y_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_max, def_flag, wi));
-	    defaultButtonOperation(y_min, def_flag = y_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_min, def_flag, wi));
-	    defaultButtonOperation(y_label, def_flag = y_label_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_label, def_flag, wi));
-	    defaultButtonOperation(upd_event, def_flag = upd_event_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_event, def_flag, wi));
-	    defaultButtonOperation(def_node,  def_flag = def_node_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_default_node, def_flag, wi));    
-   }
+	    defaultButtonOperation(x_label, def_flag = x_label_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_x_label, def_flag, wi));
+	    defaultButtonOperation(y_max, def_flag = y_max_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_y_max, def_flag, wi));
+	    defaultButtonOperation(y_min, def_flag = y_min_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_y_min, def_flag, wi));
+	    defaultButtonOperation(y_label, def_flag = y_label_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_y_label, def_flag, wi));
+	    defaultButtonOperation(upd_event, def_flag = upd_event_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_event, def_flag, wi));
+	    defaultButtonOperation(def_node,  def_flag = def_node_b.getState(), main_scope.setup_default.getDefaultValue(MdsWaveInterface.B_default_node, def_flag, wi));    
 
-   public void putWindowSetup(WaveInterface wi)      
+   }
+*/
+
+   public void PutDefaultValues()
+   { 
+        boolean def_flag;
+        
+	    defaultButtonOperation(title, def_flag = title_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_title, def_flag));
+	    putShotValue(shot_b.getState());
+	    defaultButtonOperation(experiment, def_flag = experiment_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_exp, def_flag));
+	    if(image_b.getState())
+	    {
+	        defaultButtonOperation(time_max, def_flag = time_max_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
+	        if(!def_flag)
+	            time_max.setText(wi.cin_timemax);
+	        defaultButtonOperation(time_min, def_flag = time_min_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
+	        if(!def_flag)
+	            time_min.setText(wi.cin_timemin);
+	        x_min.setText(wi.cin_xmin);
+	        x_max.setText(wi.cin_xmax);
+	    } else {
+	        defaultButtonOperation(x_max, def_flag = x_max_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
+	        defaultButtonOperation(x_min, def_flag = x_min_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
+	    }
+	    defaultButtonOperation(x_label, def_flag = x_label_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_label, def_flag));
+	    defaultButtonOperation(y_max, def_flag = y_max_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_y_max, def_flag));
+	    defaultButtonOperation(y_min, def_flag = y_min_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_y_min, def_flag));
+	    defaultButtonOperation(y_label, def_flag = y_label_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_y_label, def_flag));
+	    defaultButtonOperation(upd_event, def_flag = upd_event_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_event, def_flag));
+	    defaultButtonOperation(def_node,  def_flag = def_node_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_default_node, def_flag));    
+   }
+   
+   public void putWindowSetup(MdsWaveInterface wi)      
    {	
 	boolean def_flag;
-	
+		
 	if(wi == null) {
 	    eraseForm();	    
 	    return;
 	}
 
+
     if(wi.is_image)
-        wi.defaults = wi.defaults &  ~( (1 << WaveInterface.B_y_max) + 
-                                        (1 << WaveInterface.B_y_min));
+        wi.defaults = wi.defaults &  ~( (1 << MdsWaveInterface.B_y_max) + 
+                                                (1 << MdsWaveInterface.B_y_min));
 
     setImageDialog(wi.is_image);
 
 	this.wi.cexperiment     = wi.cexperiment;	
 	this.wi.cin_shot        = wi.cin_shot;	
+	
 	this.wi.cin_upd_event   = wi.cin_upd_event;	
+
+	this.wi.in_upd_event    = wi.in_upd_event;	
+	
 	this.wi.last_upd_event  = wi.last_upd_event;	
 	this.wi.cin_def_node    = wi.cin_def_node;	
     this.wi.cin_xmax        = wi.cin_xmax;
@@ -1703,7 +1404,7 @@ import java.util.Vector;
     use_jai_b.setState(wi.use_jai);
 
 	setDefaultFlags(wi.defaults);
-	putDefaultValues();
+	PutDefaultValues();
 	
 
 //    if(!wi.is_image)
@@ -1844,7 +1545,8 @@ import java.util.Vector;
 
     public boolean isChanged(Data s[])
     {
-	WaveInterface wave_wi = wave.wi;
+        
+	MdsWaveInterface wave_wi = (MdsWaveInterface)wave.wi;
 
     	if(wave_wi == null) return true;
 	
@@ -1883,11 +1585,13 @@ import java.util.Vector;
 	    if(!main_scope.equalsString(s[i].up_err,  wave_wi.in_up_err[i]))   return true;
 	    if(!main_scope.equalsString(s[i].low_err, wave_wi.in_low_err[i]))  return true;
 	}
+	
 	return false;
     }
 
     private void update()
     {
+        
         Cursor c_cursor = getCursor();
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
         try
@@ -1898,10 +1602,12 @@ import java.util.Vector;
 	        main_scope.SetStatusLabel("Error during update list"+e);	    
             setCursor(c_cursor);
 	    }
+	   
     }
 
    private void updateGlobalWI()
    {
+    
       if(!experiment_b.getState() && !main_scope.equalsString(experiment.getText(), wi.cexperiment))
 	    wi.cexperiment   = experiment.getText();	
       if(!shot_b.getState() && !main_scope.equalsString(shot.getText(),   wi.cin_shot))
@@ -1931,6 +1637,7 @@ import java.util.Vector;
 	    wi.cin_xlabel    = x_label.getText();
       if(!y_label_b.getState() && !main_scope.equalsString(y_label.getText(), wi.cin_ylabel))
 	    wi.cin_ylabel    = y_label.getText();
+	    
    }
 
    private int updateWI()
@@ -1943,9 +1650,9 @@ import java.util.Vector;
 
  	  if(num_signal == 0)
  	  {
-	      wave.wi = new WaveInterface(main_scope.db, wave.controller);
-	      wi.is_image = image_b.getState();
-	      wi.use_jai = use_jai_b.getState();
+//	      wave.wi = new MdsWaveInterface(main_scope.db, wave.controller, main_scope.def_values);
+//	      wi.is_image = image_b.getState();
+//	      wi.use_jai = use_jai_b.getState();
 	      return 1;
       }
 
@@ -1955,7 +1662,7 @@ import java.util.Vector;
 	  
 	  if(!wi.modified)
 	  {
-//		wave.wi.full_flag = !main_scope.GetFastNetworkState();
+		wave.wi.full_flag = !main_scope.wave_panel.GetFastNetworkState();
         if(wi.is_image)
             return 0;
 
@@ -1964,7 +1671,7 @@ import java.util.Vector;
 		    wave.wi.markers[i]      = s[i].marker;
 		    wave.wi.markers_step[i] = s[i].marker_step;
 		    wave.wi.interpolates[i] = s[i].interpolate;
-		    wave.wi.colors[i]       = main_scope.color_dialog.GetColorAt(s[i].color_idx);
+//		    wave.wi.colors[i]       = main_scope.color_dialog.GetColorAt(s[i].color_idx);
 		    wave.wi.colors_idx[i]   = s[i].color_idx;
 		    wave.wi.in_label[i]     = s[i].label;
 		}
@@ -1978,7 +1685,8 @@ import java.util.Vector;
 	  wi.experiment     = new String(experiment.getText());	
 	  wi.in_shot        = new String(shot.getText());	
 	  wi.in_def_node    = new String(def_node.getText());	
-      wi.in_upd_event   = new String(upd_event.getText());
+     // wi.in_upd_event   = new String(upd_event.getText());
+     // wi.cin_upd_event   = new String(upd_event.getText());
 	  wi.in_xmax        = new String(x_max.getText());
 	  wi.in_xmin        = new String(x_min.getText());
 
@@ -1993,7 +1701,7 @@ import java.util.Vector;
 	    
 	  wi.x_log        = x_log.getState();
 	  wi.y_log        = y_log.getState();
-	  wi.full_flag    = !main_scope.GetFastNetworkState();
+	  wi.full_flag    = !main_scope.wave_panel.GetFastNetworkState();
 	  wi.num_shot     = signalList.getNumShot();
 	  wi.defaults     = getDefaultFlags();
      
@@ -2005,7 +1713,6 @@ import java.util.Vector;
       wi.in_low_err   = new String[num_signal];
       wi.markers      = new int[num_signal];
       wi.markers_step = new int[num_signal];	  
-      wi.colors       = new Color[num_signal];
       wi.colors_idx   = new int[num_signal];
       wi.interpolates = new boolean[num_signal];
       
@@ -2033,13 +1740,13 @@ import java.util.Vector;
 		            wi.in_up_err[i] = new String(s[i].up_err);
 	            if(s[i].low_err != null)      
 		            wi.in_low_err[i] = new String(s[i].low_err);	    
-	            wi.colors[i]       = main_scope.color_dialog.GetColorAt(s[i].color_idx);
+//	            wi.colors[i]       = main_scope.color_dialog.GetColorAt(s[i].color_idx);
 	            wi.colors_idx[i]   = s[i].color_idx;
 	        }
 	      }
 	      
-	      if(wi.shots[0] == jScope.UNDEF_SHOT)
-	   	     wi.shots = null;
+	      //if(wi.shots[0] == jScope.UNDEF_SHOT)
+	   	  //   wi.shots = null;
 
 	  	    
 	      wave.wi = wi;
@@ -2066,10 +1773,12 @@ import java.util.Vector;
 		    error_msg.addMessage("Experiment defined but undefined shot\n");
 		    error = 1;
 		}    
+		/*
 	    if(!def_exp && !setup.data_server_address.equals("Ftu data") && !image_b.getState()) {	    
 		    error_msg.addMessage("Shot defined but undefined experiment\n");
 	        error = 1;
 	    }
+	    */
 	}
 
 	update();
@@ -2087,12 +1796,12 @@ import java.util.Vector;
 
    private  void applyWaveform()
    {
-     if(checkSetup() == 0)
-     {
-        main_scope.evaluateWave(wave, shot.getText(), false);
+      if(checkSetup() == 0)
+      {
+         main_scope.EvaluateWave(wave, shot.getText(), false);
       } else {
 	     error_msg.showMessage();
-	     wave.Erase();
+	     //wave.super().Erase();
 	  }
    }
 	    	
@@ -2105,9 +1814,9 @@ import java.util.Vector;
 
       if(ob == erase) {
 	    eraseForm();
-//	    wave.wi = new WaveInterface(main_scope.db);
+//	    wave.wi = new MdsWaveInterface(main_scope.db, main_scope.def_values);
 //	    wave.wi.is_image = image_b.getState();
-//	    wave.Erase();
+	    wave.jScopeErase();
       }
 		
       if(ob == cancel) {
@@ -2126,7 +1835,7 @@ import java.util.Vector;
  
       if(ob == reset) {
 	    signalList.reset();
-	    putWindowSetup(wave.wi); 	
+	    putWindowSetup((MdsWaveInterface)wave.wi); 	
       }
       
       if(ob == error && y_expr.getText().trim().length() != 0)
@@ -2202,7 +1911,14 @@ import java.util.Vector;
    
    private void putShotValue(boolean def_flag)
    {
-	switch(main_scope.getUsedShotIdx(def_flag))
+    
+    if(def_flag)
+        wi.defaults |= (1 << MdsWaveInterface.B_shot);
+    else
+        wi.defaults &= ~(1 << MdsWaveInterface.B_shot);
+    
+	//switch(main_scope.getUsedShotIdx(def_flag))
+	switch(wi.GetShotIdx())
         {
 		case 0:  
 		    shot.setForeground(Color.black);
@@ -2217,39 +1933,41 @@ import java.util.Vector;
 		    shot.setEditable(false);
 		break;
 	    }
-	    shot.setText(main_scope.getUsedShot(def_flag, wi));
+//	    shot.setText(main_scope.getUsedShot(def_flag, wi));
+	    shot.setText(wi.GetUsedShot());	 
    }
 
-   private void  defaultButtonChange(Object ob)
+   private void  DefaultButtonChange(Object ob)
    {
+    
 	boolean def_flag;
    
 	if(ob == title_b)
-	    defaultButtonOperation(title, def_flag = title_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_title, def_flag, wi));
+	    defaultButtonOperation(title, def_flag = title_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_title, def_flag));
     if(ob == shot_b) 
 	    putShotValue(shot_b.getState());
 	if(ob == experiment_b)
-	    defaultButtonOperation(experiment, def_flag = experiment_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_exp, def_flag, wi));
+	    defaultButtonOperation(experiment, def_flag = experiment_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_exp, def_flag));
 	if(ob == upd_event_b)
-	    defaultButtonOperation(upd_event, def_flag = upd_event_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_event, def_flag, wi));
+	    defaultButtonOperation(upd_event, def_flag = upd_event_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_event, def_flag));
 	if(ob == def_node_b)
-	    defaultButtonOperation(def_node, def_flag = def_node_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_default_node, def_flag, wi));
+	    defaultButtonOperation(def_node, def_flag = def_node_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_default_node, def_flag));
 	if(ob == x_max_b)
-	    defaultButtonOperation(x_max, def_flag = x_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_max, def_flag, wi));
+	    defaultButtonOperation(x_max, def_flag = x_max_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
 	if(ob == x_min_b)
-	    defaultButtonOperation(x_min, def_flag = x_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_min, def_flag, wi));
+	    defaultButtonOperation(x_min, def_flag = x_min_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
 	if(ob == time_max_b)
-	    defaultButtonOperation(time_max, def_flag = time_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_max, def_flag, wi));
+	    defaultButtonOperation(time_max, def_flag = time_max_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
 	if(ob == time_min_b)
-	    defaultButtonOperation(time_min, def_flag = time_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_min, def_flag, wi));
+	    defaultButtonOperation(time_min, def_flag = time_min_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
 	if(ob == x_label_b)
-	    defaultButtonOperation(x_label, def_flag = x_label_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_label, def_flag, wi));
+	    defaultButtonOperation(x_label, def_flag = x_label_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_x_label, def_flag));
 	if(ob == y_max_b)
-	    defaultButtonOperation(y_max, def_flag = y_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_max, def_flag, wi));
+	    defaultButtonOperation(y_max, def_flag = y_max_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_y_max, def_flag));
 	if(ob == y_min_b)
-	    defaultButtonOperation(y_min, def_flag = y_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_min, def_flag, wi));
+	    defaultButtonOperation(y_min, def_flag = y_min_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_y_min, def_flag));
 	if(ob == y_label_b)
-	    defaultButtonOperation(y_label, def_flag = y_label_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_label, def_flag, wi));
+	    defaultButtonOperation(y_label, def_flag = y_label_b.getState(), wi.GetDefaultValue(MdsWaveInterface.B_y_label, def_flag));
 
    }
 
@@ -2267,7 +1985,7 @@ import java.util.Vector;
                 return;
             }
 
-	        defaultButtonChange(ob);
+	        DefaultButtonChange(ob);
         }
 	    
     }   
