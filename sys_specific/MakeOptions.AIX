@@ -1,4 +1,4 @@
-CFLAGS = -I../include -g -Dunix -D_big_endian -qchars=signed
+CFLAGS = -I../include -g -D_big_endian -qchars=signed
 MOTIF_CFLAGS = -I../include -g -D_NO_DXm
 WMD_RULE = ../bin/wmdcreate ; ../bin/wmdcreate -o ../shlib/xmdsuil.wmd
 WML = touch UilConst.h 
