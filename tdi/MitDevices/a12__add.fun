@@ -4,7 +4,7 @@ public fun a12__add(in _path, out _nidout)
   DevAddNode(_path//':NAME','TEXT',*,*,_nid);
   DevAddNode(_path//':COMMENT','TEXT',*,*,_nid);
   DevAddNode(_path//':EXT_CLOCK_IN','AXIS',*,'/noshot_write',_nid);
-  DevAddNode(_path//':STOP_TRIG','AXIS',0.,'/noshot_write',_nid);
+  DevAddNode(_path//':STOP_TRIG','NUMERIC',0.,'/noshot_write',_nid);
   for (_c=1;_c<7;_c++)
   {
     _cn = _path//':INPUT_'//TEXT(_c,1);
