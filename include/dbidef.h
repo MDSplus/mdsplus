@@ -3,6 +3,8 @@
 /*  *2    16-FEB-1990 10:28:18 TWF "Add itmlst struct" */
 /*  *1    28-FEB-1989 14:55:59 TWF "Item codes for TreeGetDbi" */
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element DBIDEF.H */
+#ifndef DBIDEF_H
+#define DBIDEF_H
 /**********************************
  Item list codes for TreeGetDbi
 **********************************/
@@ -25,3 +27,4 @@ typedef struct dbi_itm
 	unsigned char *pointer;
 	int *return_length_address;
 } DBI_ITM;
+#endif

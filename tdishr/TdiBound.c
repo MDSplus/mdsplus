@@ -16,6 +16,7 @@
 
 	Ken Klare, LANL P-4	(c)1989,1990,1991,1992
 */
+#include <mdsdescrip.h>
 #include <tdimessages.h>
 #include <mdsshr.h>
 #include <stdlib.h>

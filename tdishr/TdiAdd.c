@@ -261,6 +261,8 @@ int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2, struct descript
 typedef __int64 _int64;
 #elif defined(__osf__)
 typedef long _int64;
+#elif defined(__hpux__)
+typedef long long _int64;
 #endif
 
 static int zero=0;

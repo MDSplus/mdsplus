@@ -200,19 +200,20 @@ extern TreeCANCEL;
 
 #endif
 
-#ifndef __DESCRIP_LOADED
+#ifndef MDSDESCRIP_H_DEFINED
 struct descriptor;
 struct descriptor_a;
-#endif
-
-#ifndef TDESCRIP_H_DEFINED
 struct descriptor_r;
 struct descriptor_xd;
 #endif
 
+#ifndef DBIDEF_H
 struct dbi_itm;
+#endif
 
+#ifndef NCIDEF_H
 struct nci_itm;
+#endif
 
 /******************* Prototypes for TREESHR routines *********************/
 

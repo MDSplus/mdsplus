@@ -15,6 +15,7 @@
 #define	P_UNARY	12	/*unary: NEGATE(!) IGNORE_UNDEFINED(?) IGNORE_STATUS(~)*/
 #define	P_TIGHT	16	/*strongest: path <event> and parentheses*/
 
+#include <mdsdescrip.h>
 #include "tdirefstandard.h"
 #include <strroutines.h>
 #include <tdimessages.h>

@@ -7,6 +7,9 @@
     TreeSetNci
 **************************************/
 
+#ifndef NCIDEF_H
+#define NCIDEF_H
+
 #define NciEND_OF_LIST          0
 #define NciSET_FLAGS            1
 #define NciCLEAR_FLAGS          2
@@ -85,3 +88,4 @@ typedef struct nci_itm
 	unsigned char *pointer;
 	int *return_length_address;
 } NCI_ITM;
+#endif
