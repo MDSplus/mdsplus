@@ -18,13 +18,15 @@ user_syb.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = IdlSql.export
 
-all : @MAKELIBDIR@ @MAKELIBDIR@libIdlSql@SHARETYPE@ @MAKELIBDIR@libIdlSql.a
+all : @MAKELIBDIR@ @MAKELIBDIR@libIdlSql@SHARETYPE@ @MAKELIBDIR@libIdlSql.a  @MAKEBINDIR@ @MAKEBINDIR@logbook
 
 clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
 	@ $(RM) @MAKELIBDIR@libIdlSql@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libIdlSql.a
+	@ $(RM) @MAKEBINDIR@logbook
+
 
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -36,6 +38,7 @@ install:
         fi;
 	$(INSTALL) -m 644  @MAKELIBDIR@libIdlSql.a @libdir@
 	$(INSTALL) -m 755  @MAKELIBDIR@libIdlSql@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKEBINDIR@logbook @bindir@
 
 @MAKELIBDIR@libIdlSql@SHARETYPE@ : $(OBJECTS) 
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ $(LDFLAGS) $(LIBS)
@@ -46,3 +49,10 @@ install:
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
+
+@MAKEBINDIR@ :
+	mkdir @MAKEBINDIR@
+
+@MAKEBINDIR@logbook:     logbook
+	cp logbook $@
+	chmod +x $@
