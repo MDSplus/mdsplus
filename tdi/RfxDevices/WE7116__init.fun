@@ -1,6 +1,5 @@
 public fun WE7116__init(as_is _nid, optional _method)
 {
-
     private _K_CONG_NODES =     197;
     private _N_HEAD =			0;
     private _N_COMMENT =		1;
