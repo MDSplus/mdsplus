@@ -5,7 +5,6 @@
 #               $setup_file
 #               ./envsyms
 #               $MDSPLUS_DIR/etc/envsyms
-#               /usr/local/mdsplus/etc/envsyms
 #
 #
 # The definition file should contain the following types of lines:
@@ -62,6 +61,13 @@
 #            . $HOME/myscript.csh
 #
 #
+if (test "$MDSPLUS_DIR" = "")
+then
+  MDSPLUS_DIR=/usr/local/mdsplus
+  if ( test -r /etc/.mdsplus_dir )
+    MDSPLUS_DIR=`/bin/cat /etc/.mdsplus_dir`
+  fi
+fi
 if ( test "$temp_sym_name" != "") 
 then
   eval temp_sym_old_value=$`echo $temp_sym_name`
@@ -100,12 +106,7 @@ else
         then
           temp_file=$MDSPLUS_DIR/etc/envsyms
         else 
-          if ( test -r /usr/local/mdsplus/etc/envsyms ) 
-          then
-            temp_file=/usr/local/mdsplus/etc/envsyms
-          else
-            temp_file=asdjklasdjasdjlkasd
-          fi
+          temp_file=asdjklasdjasdjlkasd
         fi
       fi
     fi
@@ -116,9 +117,9 @@ else
     then
       temp_setup_script=./setup.sh
     else 
-      if ( test -r /usr/local/mdsplus/setup.sh )
+      if ( test -r $MDSPLUS_DIR/setup.sh )
       then
-        temp_setup_script=/usr/local/mdsplus/setup.sh
+        temp_setup_script=$MDSPLUS_DIR/setup.sh
       else
         temp_setup_script=unknown_setup_script
       fi
