@@ -2,17 +2,17 @@ include $(MAKE_OPTIONS)
 LFLAGS = -L$(MDSPLUS)/shlib
 
 OBJFILES = 		\
-libMdsdcl.a(mdsdcl_dcl_parse.o)		\
-libMdsdcl.a(mdsdcl_do_command.o)	\
-libMdsdcl.a(mdsdcl_dummy.o)		\
-libMdsdcl.a(mdsdcl_general.o)		\
-libMdsdcl.a(mdsdcl_get_input.o)		\
-libMdsdcl.a(mdsdcl_initialize.o)	\
-libMdsdcl.a(mdsdcl_insert_symbols.o)	\
-libMdsdcl.a(mdsdcl_macros.o)		\
-libMdsdcl.a(mdsdcl_set_command.o)	\
-libMdsdcl.a(mdsdcl_spawn.o)		\
-libMdsdcl.a(mdsdcl_wait.o)
+mdsdcl_dcl_parse.o		\
+mdsdcl_do_command.o	\
+mdsdcl_dummy.o		\
+mdsdcl_general.o		\
+mdsdcl_get_input.o		\
+mdsdcl_initialize.o	\
+mdsdcl_insert_symbols.o	\
+mdsdcl_macros.o		\
+mdsdcl_set_command.o	\
+mdsdcl_spawn.o		\
+mdsdcl_wait.o
 
 EXPORTS = mdsdclshr.export
 
@@ -29,6 +29,7 @@ mdsdcl_tables.c:	mdsdcl_tables.ocld
 	../bin/cdu < mdsdcl_tables.ocld
 
 libMdsdcl.a:	$(OBJFILES)
+		$(AR) -r libMdsdcl.a $(OBJFILES)
 		$(RANLIB)
 
 ../shlib/libMdsdcl.$(SHARE_TYPE):	mdsdcl_tables.o  libMdsdcl.a \
