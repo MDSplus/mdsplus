@@ -633,8 +633,10 @@ static int zero = 0;
 static TREE_HEADER *HeaderOut(TREE_HEADER *hdr, TREE_HEADER *out)
 {
   *out = *hdr;
-  char flags = (hdr->sort_children ? 1 : 0) | (hdr->sort_members ? 2 : 0);
-  ((char *)out)[1] = flags;
+  {
+    char flags = (hdr->sort_children ? 1 : 0) | (hdr->sort_members ? 2 : 0);
+    ((char *)out)[1] = flags;
+  }
   out->free = swapint((char *)&hdr->free);
   out->tags = swapint((char *)&hdr->tags);
   out->externals = swapint((char *)&hdr->externals);
