@@ -97,13 +97,14 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
     {
       if (out_dsc->dscB_class == CLASS_CA)
       {
-	out_dsc->dscA_a0 = out_dsc->dscA_pointer + ((int) out_dsc->dscW_length) *
-		       ((int) in_dsc->dscA_a0 / ((int) in_dsc->dscW_length));
+        int offset = ((int) out_dsc->dscW_length) * ((int) in_dsc->dscA_a0 / ((int) in_dsc->dscW_length));
+	out_dsc->dscA_a0 = out_dsc->dscA_pointer + offset;
       }
       else
       {
-	out_dsc->dscA_a0 = out_dsc->dscA_pointer + ((int) out_dsc->dscW_length) *
+        int offset = ((int) out_dsc->dscW_length) *
 		       (((char *)in_dsc->dscA_a0 - (char *)in_dsc->dscA_pointer) / ((int) in_dsc->dscW_length));
+	out_dsc->dscA_a0 = out_dsc->dscA_pointer + offset;
       }
       for (i = 0; i < out_dsc->dscB_dimct; i++)
 	out_dsc->dscL_m[i] = in_dsc->dscL_m[i];
