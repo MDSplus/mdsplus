@@ -7,9 +7,10 @@ import java.util.*;
 abstract class Data 
 {
     static {
-	System.loadLibrary("JavaMds");
+        try {
+	    System.loadLibrary("JavaMds");
+	    }catch(Exception e) {System.out.println("Cannot load library " + e); }
     }
-
     int dclass;
     int dtype;
     Vector data_listeners = new Vector();

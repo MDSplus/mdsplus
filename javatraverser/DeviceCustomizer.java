@@ -4,9 +4,9 @@ import java.util.*;
 
 public class DeviceCustomizer extends Panel
 {
-   public static void main(String args[])
+  /* public static void main(String args[])
    {
-//        NetworkProvider np = new NetworkProvider("150.178.3.80");
+        NetworkProvider np = new NetworkProvider("150.178.3.80");
 
         int i;
         
@@ -21,7 +21,7 @@ public class DeviceCustomizer extends Panel
         String []fields = new DeviceCustomizer().getDeviceFields();
         for(int i = 0; i < fields.length; i++)
             System.out.println(fields[i]);
-*/   }
+}*/  
     
  
    static String lastDeviceType = null;
@@ -37,7 +37,7 @@ public class DeviceCustomizer extends Panel
     ".CHANNEL_2:DATA",".CHANNEL_3",".CHANNEL_3:START", ".CHANNEL_3:END", 
     ".CHANNEL_3:DATA",".CHANNEL_4", ".CHANNEL_4:START", ".CHANNEL_4:END", 
     ".CHANNEL_4:DATA"};
-    protected String[] getDeviceFields()
+    public String[] getDeviceFields()
     {
         if(DeviceSetupBeanInfo.beanDeviceType == null)
         {
