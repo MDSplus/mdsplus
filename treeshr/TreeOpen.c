@@ -431,7 +431,7 @@ static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *su
 
 		  for (i = 0; i < info->header->externals; i++)
 		  {
-			  NODE     *external_node = info->node + info->external[i];
+			  NODE     *external_node = info->node + swapint(info->external[i]);
 			  char *subtree = strncpy(malloc(sizeof(NODE_NAME)+1),external_node->name,sizeof(NODE_NAME));
 			  char *blank = strchr(subtree,32);
                           subtree[sizeof(NODE_NAME)] = '\0';
@@ -687,7 +687,7 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,char *op
 					strcat(resnam,TREE_PATH_DELIM);
 				strcat(resnam,name);
 				strcat(resnam,type);
-#ifdef __osf__
+#if defined(__osf__) || defined(__hpux__)
 				info->channel = open(resnam,O_RDONLY);
 				file = info->channel ? fdopen(info->channel,"rb") : NULL;
 #else
@@ -822,6 +822,27 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, in
 	return status;
 }
 
+static void SwapBytesInt(char *in)
+{
+  char tmp = in[0];
+  in[0] = in[3];
+  in[3] = tmp;
+  tmp = in[1];
+  in[1] = in[2];
+  in[2] = tmp;
+}
+  
+void FixupHeader(TREE_HEADER *hdr)
+{
+  char flags = ((char *)hdr)[1];
+  hdr->sort_children = flags & 1;
+  hdr->sort_members = flags & 2;
+  SwapBytesInt((char *)&hdr->free);
+  SwapBytesInt((char *)&hdr->tags);
+  SwapBytesInt((char *)&hdr->externals);
+  SwapBytesInt((char *)&hdr->nodes);
+}
+
 static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote_file)
 {
 	int       status;
@@ -880,8 +901,17 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
 			status = sys$crmpsc(info->section_addr, retadr, 0, edit_flag == 0 ? SEC$M_GBL : SEC$M_CRF | SEC$M_WRT,
 				TreeSectionName(info), 0, 0, info->channel, info->alq, 0, 0, 0);
 #elif defined(__osf__)
-		        status = mmap(info->section_addr[0],info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE | MAP_FIXED, 
-                            info->channel, 0) != (void *)-1;
+                        void *addr = mmap(info->section_addr[0],info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE | MAP_FIXED, 
+                            info->channel, 0);
+                        status = addr != (void *)-1;
+                        if (!status)
+                          printf("Error mapping file - errno = %d\n",errno);
+#elif defined(__hpux__)
+                        info->section_addr[0] = mmap(0,info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE, 
+                            info->channel, 0);
+                        status = info->section_addr[0] != (void *)-1;
+                        if (!status)
+                          printf("Error mapping file - errno = %d\n",errno);
 #endif
                 }
 		/***********************************************
@@ -895,8 +925,11 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
 
 		if (status & 1)
 		{
+                        int endianTest = 1;
+                        int bigEndian = *(char *)endianTest == 0;
 			info->blockid = TreeBLOCKID;
 			info->header = (TREE_HEADER *) info->section_addr[0];
+                        if (bigEndian) FixupHeader(info->header);
 			info->node = (NODE *) (info->section_addr[0] + ((sizeof(TREE_HEADER) + 511) / 512) * 512);
 			info->tags = (int *) (((char *)info->node) + ((info->header->nodes * sizeof(NODE) + 511) / 512) * 512);
 			info->tag_info = (TAG_INFO *) (((char *)info->tags) + ((info->header->tags * 4 + 511) / 512) * 512);
@@ -922,7 +955,7 @@ static int GetVmForTree(TREE_INFO *info)
 
 #if defined(__ALPHA) && defined(__VMS)
 	int PAGE_SIZE=64;
-#elif defined(__osf__)
+#elif defined(__osf__) || defined(__hpux__)
 	int PAGE_SIZE = sysconf(_SC_PAGE_SIZE)/512;
 #else
 	int PAGE_SIZE=1;
@@ -1052,7 +1085,9 @@ static void SubtreeNodeConnect(NODE *parent, NODE *subtreetop)
 	memcpy(subtreetop->name, parent->name, sizeof(subtreetop->name));
 	subtreetop->parent = link_of(grandparent, subtreetop);
 	if (parent->brother)
+	  {
 		subtreetop->brother = link_of(brother_of(parent), subtreetop);
+	  }
 	SetPageNomodifiable(subtreetop);
 	return;
 }

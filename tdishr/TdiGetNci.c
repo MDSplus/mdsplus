@@ -172,7 +172,8 @@ struct descriptor_a		*holda_ptr=0;
 struct descriptor_d		string = EMPTY_D;
 struct descriptor_xd	nids = EMPTY_XD, tmp = EMPTY_XD, holdxd = EMPTY_XD;
 struct item			*key_ptr=0;
-int				class=0, j, step, outcount = 0;
+int				class=0, j, outcount = 0;
+unsigned short step;
 int				dtype=0, flag, nelem=0, retlen, len=0;
 int 				nid;
 char				*hold_ptr=0, *dat_ptr=0;
@@ -255,7 +256,7 @@ void			*pctx = NULL;
 	********************/
 	if (status & 1) {
 		step = key_ptr->item_length == 0 ? sizeof(struct descriptor_xd) : key_ptr->item_length;
-		status = MdsGet1DxA((struct descriptor_a *)&arr0, (unsigned short *)&step, &key_ptr->item_dtype, &holdxd);
+		status = MdsGet1DxA((struct descriptor_a *)&arr0, &step, &key_ptr->item_dtype, &holdxd);
 	}
 	if (status & 1) {
 		holda_ptr = (struct descriptor_a *)holdxd.pointer;
@@ -303,7 +304,7 @@ more:		switch (dtype) {
 		****************************/
 		if ((unsigned int)(outcount * step) >= holda_ptr->arsize) {
 			holda_ptr->arsize *= 2;
-			if (status & 1) status = MdsGet1DxA(holda_ptr, (unsigned short *)&step,&key_ptr->item_dtype, &tmp);
+			if (status & 1) status = MdsGet1DxA(holda_ptr, &step,&key_ptr->item_dtype, &tmp);
 			if (status & 1) {
                                 memset(tmp.pointer->pointer, 255,holda_ptr->arsize);
 				memcpy(tmp.pointer->pointer, holda_ptr->pointer, holda_ptr->arsize/2);

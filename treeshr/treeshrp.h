@@ -19,10 +19,25 @@
 #ifdef __DECC
 #pragma member_alignment save
 #pragma nomember_alignment
+#define swapint(in) in
+#endif
+
+#ifdef __hpux__
+#pragma HP_ALIGN NOPADDING PUSH
+static int swapint(int in)
+{
+  int out;
+  char *out_c = (char *)&out;
+  char *in_c = (char *)&in;
+  int i;
+  for (i=0;i<4;i++) out_c[3-i] = in_c[i];
+  return out;
+}
 #endif
 
 #ifdef _MSC_VER
 #pragma pack(push,enter_include,1)
+#define swapint(in) in
 #endif
 
 typedef struct nci
@@ -175,7 +190,7 @@ typedef struct node
   int       member;
   int       brother;
   int       child;
-  unsigned char usage;	/* Not used yet */
+  unsigned char usage;
   unsigned short conglomerate_elt;
   char      fill;
   unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
@@ -189,11 +204,11 @@ static const NODE empty_node = {{'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e
  and linkages and end up with node pointers
  *****************************************************/
 
-#define parent_of(a)  (NODE *)((a)->parent  ? (char *)(a) + (a)->parent  : 0)
-#define member_of(a)  (NODE *)((a)->member  ? (char *)(a) + (a)->member  : 0)
-#define child_of(a)   (NODE *)((a)->child   ? (char *)(a) + (a)->child   : 0)
-#define brother_of(a) (NODE *)((a)->brother ? (char *)(a) + (a)->brother : 0)
-#define link_of(a,b)  (char *)(a) - (char *)(b)
+#define parent_of(a)  (NODE *)((a)->parent  ? (char *)(a) + swapint((a)->parent)  : 0)
+#define member_of(a)  (NODE *)((a)->member  ? (char *)(a) + swapint((a)->member)  : 0)
+#define child_of(a)   (NODE *)((a)->child   ? (char *)(a) + swapint((a)->child)   : 0)
+#define brother_of(a) (NODE *)((a)->brother ? (char *)(a) + swapint((a)->brother) : 0)
+#define link_of(a,b)  swapint((char *)(a) - (char *)(b))
 
 /*****************************************************
   Search structures
@@ -576,12 +591,17 @@ extern int TreeFindTag(PINO_DATABASE *db, NODE *node, char *treename, char **sea
 extern int TreeCallHook(TreeshrHookType operation, TREE_INFO *info);
 extern int TreeEstablishRundownEvent(TREE_INFO *info);
 extern DATA_FILE *TreeGetVmDatafile();
+
 #ifdef __DECC
 #pragma member_alignment restore
 #endif
 
 #ifdef _MSC_VER
 #pragma pack(pop,enter_include)
+#endif
+
+#ifdef __hpux__
+#pragma HP_ALIGN POP
 #endif
 
 #endif
