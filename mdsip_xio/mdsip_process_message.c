@@ -671,10 +671,18 @@ void mdsip_process_message(void *io_handle, mdsip_client_t *c, mdsip_message_t *
     case MDS_IO_LSEEK_K:
       {
         int fd = message->h.dims[1];
-        off_t offset = (off_t)*(_int64 *)&message->h.dims[2];
+        off_t offset;
         int whence = message->h.dims[4];
-      	_int64 ans = (_int64)lseek(fd,offset,whence);
+      	_int64 ans;
         struct descriptor ans_d = {8, DTYPE_Q, CLASS_S, 0};
+#ifdef _big_endian
+        int tmp;
+        tmp = message->h.dims[2];
+        message->h.dims[2] = message->h.dims[3];
+        message->h.dims[3] = tmp;
+#endif
+        offset = (off_t)*(_int64 *)&message->h.dims[2];
+        ans = (_int64)lseek(fd,offset,whence);
         ans_d.pointer = (char *)&ans;
         SendResponse(io_handle,c, 1, (struct descriptor *)&ans_d);
 	      break;
@@ -712,13 +720,14 @@ void mdsip_process_message(void *io_handle, mdsip_client_t *c, mdsip_message_t *
       {
         int fd = message->h.dims[1];
         int status;
-        _int64 offset = *(_int64 *)&(message->h.dims[2]);
+        _int64 offset;
         int size = message->h.dims[4];
         int mode_in = message->h.dims[5];
         int mode = mode_in & 0x3;
         int nowait = mode_in & 0x8;
         DESCRIPTOR_LONG(ans_d,0);
 #if defined (_WIN32)
+        offset = *(_int64 *)&(message->h.dims[2]);
         if (mode > 0)
           status = ( (LockFile((HANDLE)_get_osfhandle(fd), (int)offset, (int)(offset >> 32), size, 0) == 0) && 
                      (GetLastError() != ERROR_LOCK_VIOLATION) ) ? TreeFAILURE : TreeSUCCESS;
@@ -728,6 +737,12 @@ void mdsip_process_message(void *io_handle, mdsip_client_t *c, mdsip_message_t *
         status = TreeSUCCESS;
 #else
         struct flock flock_info;
+#ifdef _big_endian
+        status = message->h.dims[2];
+        message->h.dims[2] = message->h.dims[3];
+        message->h.dims[3] = status;
+#endif
+        offset = *(_int64 *)&(message->h.dims[2]);
         flock_info.l_type = (mode == 0) ? F_UNLCK : ((mode == 1) ? F_RDLCK : F_WRLCK);
         flock_info.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
         flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
