@@ -25,6 +25,7 @@ public fun TRCH__init(as_is _nid, optional _method)
     private _3M = 3145728;
 
     _name = DevNodeRef(_nid, _N_NAME);
+
     DevCamChk(_name, CamPiow(_name, 0,28, _dummy=0, 16),1,1); 
 
     DevNodeCvt(_nid, _N_CHANNELS, [3,6], [0,1], _chans = 0);
@@ -89,12 +90,15 @@ public fun TRCH__init(as_is _nid, optional _method)
         abort();
     }
 
+
+
     DevPut(_nid, _N_PTS, _pts);
     _status=DevCamChk(_name, CamPiow(_name, 1,16, _pts,24),1,*); 
 
     _status = DevCamChk(_name, CamPiow(_name, 0,11, _dummy=0, 16),1,1); 
 
     _status = DevCamChk(_name, CamPiow(_name, 0,25, _dummy=0, 16),1,1); 
+
 
     return (1);
 }

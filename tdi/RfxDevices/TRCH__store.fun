@@ -28,6 +28,7 @@ public fun TRCH__store(as_is _nid, optional _method)
     private _500K = 524288;
 
     _name = DevNodeRef(_nid, _N_NAME);
+
     DevCamChk(_name, CamPiow(_name, 2,0, _control=0, 16),1,1);
     _not_stopped = ((_control >> 13) &3);
     if (_not_stopped != 0)
@@ -42,35 +43,43 @@ public fun TRCH__store(as_is _nid, optional _method)
     _clock = execute('evaluate(`_clock)');
     _pts = data(DevNodeRef(_nid, _N_PTS));
 
-    
+
     DevCamChk(_name, CamPiow(_name, 0,0,_base_mar=0, 24),1,1);
 
+ /* 
+    _base_mar = _base_mar & 0xffffff;
+ */
+
 /* TACON */
-/* TACON DEL TACON */    
-/*    _ticks = long((_trig + 5. - 200E-6)/slope_of(_clock) + 0.5);*/
-    _ticks = long((_trig + 5.D0)/slope_of(_clock) + 0.5);
+    _ticks = long((_trig + 5. - 200E-6)/slope_of(_clock) + 0.5);
+/*  _ticks = long((_trig + 5.D0)/slope_of(_clock) + 0.5);*/
     _ticks = 2*(_ticks + _pts);
     _ticks = mod(_ticks, _1M);
 
+
+
     write(*, 'MAR STIMATO: ', _ticks);
-    write(*, 'MAR: ', _base_mar);
+    write(*, 'MAR LETTO: ', _base_mar);
 
-    if(_base_mar > _1M)
-    {
-/*DevLogErr(_nid, 'MAR Readout error');
+/*
+    _base_mar = _ticks;
 */
-/*	_base_mar = (_base_mar & 0x0003ffffUL)|(_ticks & 0xfffc0000UL); */
-	_base_mar = _ticks;
-        write(*, 'MAR CORRETTO: ', _base_mar);
-
-    }
 
 
+    if( _base_mar >  _1M )
+    {
+/*
+	if( _ticks < 65535 )
+	   _base_mar = ( _base_mar & 0xFFFF );
+	else
+*/
+	   _base_mar = ( _ticks & 0xFF0000 ) + ( _base_mar & 0xFFFF );
+
+      	write(*, 'MAR CORRETTO: ', _base_mar);
+    }	
 
 /* FINE TACON */
 
-    _base_mar = _base_mar & 0x000fffff;	 
-    write(*, "MAR1 = ", _base_mar);
     write(*, "PTS = ", _pts);
 
 
@@ -98,7 +107,10 @@ public fun TRCH__store(as_is _nid, optional _method)
 				_mar = _mar |(_i   << 20);
 			else
 				_mar = (_mar + mod(_i, 2))|((_i /2)<<20);
+
     			DevCamChk(_name, CamPiow(_name, 0,16,_mar, 24),1,1);
+			
+
 	/*		DevCamChk(_name, CamFStopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *); */
 			DevCamChk(_name, CamQstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);
 			_dim = make_dim(make_window(_start_idx, _end_idx - 1, _trig), _clock);
