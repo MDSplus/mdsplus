@@ -7,6 +7,7 @@
 #include <ctype.h>
 #ifdef _WIN32
 #include <io.h>
+extern char *index(char *str,char c);
 #else
 #include <unistd.h>
 #include <sys/mman.h>
