@@ -70,7 +70,7 @@ public fun OAM01__init ( as_is _nid, optional _method )
 		DevLogErr ( _nid, 'Invalid GPIB identifier' ) ; 
 		abort ( ) ;
     	}
-	write ( *, 'init id: ', _gpib_id ) ;
+
 
 
 

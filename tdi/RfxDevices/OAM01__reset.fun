@@ -64,7 +64,7 @@ public fun OAM01__reset ( as_is _nid, optional _method )
 		DevLogErr ( _nid, 'Invalid GPIB identifier' ) ; 
 		abort ( ) ;
     	}
-	write ( *, 'reset id: ', _gpib_id ) ;
+
 
 
 
