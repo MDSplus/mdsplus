@@ -919,7 +919,7 @@ char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
     if (*ctx == 0)
     {
       nid_to_node(dblist, nid, node_ptr);
-      *ctx = node_ptr->tag_link;
+      *ctx = swapint((char *)&node_ptr->tag_link);
     }
     else if (*ctx == -1)
     {
@@ -932,7 +932,7 @@ char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
       for (i=0;i<sizeof(TAG_NAME) && name[i] != ' ';i++);
       answer = strncpy(malloc(i+1),name,i);
       answer[i]='\0';
-      *ctx = (info_ptr->tag_info + *ctx - 1)->tag_link;
+      *ctx = swapint((char *)&(info_ptr->tag_info + *ctx - 1)->tag_link);
       if (*ctx == 0)
 	*ctx = -1;
     }
