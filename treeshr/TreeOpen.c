@@ -835,8 +835,8 @@ static void SwapBytesInt(char *in)
 void FixupHeader(TREE_HEADER *hdr)
 {
   char flags = ((char *)hdr)[1];
-  hdr->sort_children = flags & 1;
-  hdr->sort_members = flags & 2;
+  hdr->sort_children = (flags & 1) != 0;
+  hdr->sort_members = (flags & 2) != 0;
   SwapBytesInt((char *)&hdr->free);
   SwapBytesInt((char *)&hdr->tags);
   SwapBytesInt((char *)&hdr->externals);

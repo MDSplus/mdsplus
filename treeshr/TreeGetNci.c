@@ -608,6 +608,31 @@ int _TreeIsOn(void *dbid, int nid)
 }
 
 
+static void FixupNciIn(NCI *nci)
+{
+  unsigned int flags = swapint(nci->NCI_FLAG_WORD.flags);
+  unsigned char *flagsc_p = ((unsigned char *)nci) + sizeof(nci->NCI_FLAG_WORD.flags);
+  int i;
+  nci->NCI_FLAG_WORD.flags = 0;
+  for (i=0;i<32;i++)
+  {
+    if (flags & (1 << (31 - i)))
+        nci->NCI_FLAG_WORD.flags |= (1 << i);  
+  }
+  flags = *flagsc_p;
+  *flagsc_p = 0;
+  for (i=0;i<8;i++)
+  {
+      if (flags & (1 << (7-i)))
+        (*flagsc_p) = (*flagsc_p) | (1 << i);
+  }
+  nci->time_inserted[0] = swapint(nci->time_inserted[0]);
+  nci->time_inserted[1] = swapint(nci->time_inserted[1]);
+  nci->owner_identifier = swapint(nci->owner_identifier);
+  nci->length = swapint(nci->length);
+  nci->status = swapint(nci->status);
+}
+
 int GetNciW(TREE_INFO *info, int node_num, NCI *nci)
 {
 	int       status = 1;
@@ -636,6 +661,10 @@ int GetNciW(TREE_INFO *info, int node_num, NCI *nci)
 #else
 			fseek(info->nci_file->get, node_num * sizeof(NCI), SEEK_SET);
 			fread((void *)nci,sizeof(NCI),1,info->nci_file->get);
+#if defined(__hpux__)
+			FixupNciIn(nci);
+#endif
+
 #endif
 		}
 	}
