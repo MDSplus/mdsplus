@@ -2,6 +2,8 @@ MDS_PATH	$MDSPLUS_DIR/tdi
 UIDPATH		$MDSPLUS_DIR/uid/%U <:
 IDL_PATH	\+$MDSPLUS_DIR/idl <:
 PATH		$MDSPLUS_DIR/bin >:
+MANPATH		$MDSPLUS_DIR/man >:
+@LIBPATH@       $MDSPLUS_DIR/lib >:
 include         $MDSPLUS_DIR/local/envsyms
 include         /etc/mdsplus.conf
 include         $HOME/.mdsplus
