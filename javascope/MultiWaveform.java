@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.*;
+import java.io.*;
 
 
 public class MultiWaveform extends Waveform implements MdsEventListener
@@ -161,87 +162,117 @@ waveforms.
 		waveform_signal.ymin = signals[i].ymin;
 	}
     }	
- 
 
     protected void DrawSignal(Graphics g)
+    {
+        DrawSignal(g, getSize());
+    }
+
+
+    //protected void DrawSignal(Graphics g, Dimension d)
+    public void DrawSignal(Graphics g, Dimension d)
     {	
 	int i, j, x[], y[];
 	Point curr_points[];
-	Dimension d = getSize();
 	Vector segments = null;
+	//Cesare Stampa
 		
 	int step, num_steps;
-	for(i = 0; i < num_signals; i++)
+    try
 	{
-	    if(signals[i] == null) continue;
-	    g.setColor(colors[i % num_colors]);
-	    if(mode == MODE_PAN && dragging && signals[i].n_points > 100) //dragging large signals
+
+	    for(i = 0; i < num_signals; i++)
 	    {
-		x = new int[signals[i].n_points];
-		y = new int[signals[i].n_points];
-		curr_points = new Point[signals[i].n_points];
-		step = signals[i].n_points/100;
-		num_steps = 100;
-		for(j = 0; j < num_steps; j++)
-		{
-		    x[j] = wm.XPixel(signals[i].x[step*j], d);
-		    y[j] = wm.YPixel(signals[i].y[step*j], d);
-		    curr_points[j] = new Point(x[j], y[j]);	
-		}
-		if(interpolates == null || interpolates[i])
-		    for(int jj = 0; jj < num_steps -1; jj++)
-			if(!Double.isNaN(signals[i].y[step*jj]) && 
-			    !Double.isNaN(signals[i].y[step*(jj+1)]))
-			    g.drawLine( x[jj], y[jj], x[jj+1], y[jj+1]);
-	    }
-	    else // not dragging
-	    {
-		segments = wm.ToPolygons(signals[i], d);
-		Polygon curr_polygon;
-		if(interpolates == null || interpolates[i])
-		    for(int k = 0; k < segments.size(); k++)
-		    {
-			curr_polygon = (Polygon)segments.elementAt(k);
-			g.drawPolyline(curr_polygon.xpoints, curr_polygon.ypoints, curr_polygon.npoints);
+	        if(signals[i] == null) continue;
+	        g.setColor(colors[i % num_colors]);
+	        if(mode == MODE_PAN && dragging && signals[i].n_points > 100) //dragging large signals
+	        {
+		        x = new int[signals[i].n_points];
+		        y = new int[signals[i].n_points];
+		        curr_points = new Point[signals[i].n_points];
+		        step = signals[i].n_points/100;
+		        num_steps = 100;
+		        for(j = 0; j < num_steps; j++)
+		        {
+		            x[j] = wm.XPixel(signals[i].x[step*j], d);
+		            y[j] = wm.YPixel(signals[i].y[step*j], d);
+		            curr_points[j] = new Point(x[j], y[j]);	
+		        }
+		        if(interpolates == null || interpolates[i])
+		            for(int jj = 0; jj < num_steps -1; jj++)
+			            if(!Double.isNaN(signals[i].y[step*jj]) && 
+			                !Double.isNaN(signals[i].y[step*(jj+1)]))
+			                    g.drawLine( x[jj], y[jj], x[jj+1], y[jj+1]);
+	        }
+	        else // not dragging
+	        {
+		        segments = wm.ToPolygons(signals[i], d);
+		        Polygon curr_polygon;
+
+	            if(waveformPrint)
+	            {
+	                Color c = g.getColor();
+	                printfid.write("gsave\n");
+	                printfid.write(""+c.getRed() + " " +
+	                                 +c.getGreen() + " " +
+	                                 +c.getBlue()+" setrgbcolor\n");
+	                printfid.write("gsave\n");
+	            }
+		    
+		        if(interpolates == null || interpolates[i])
+		            for(int k = 0; k < segments.size(); k++)
+		            {
+			            curr_polygon = (Polygon)segments.elementAt(k);
+			            if(!waveformPrint)
+			                g.drawPolyline(curr_polygon.xpoints, curr_polygon.ypoints, curr_polygon.npoints);
+			            else {
+			                DrawLines(curr_polygon);
+			        }
 		    }
 	    }
 	    
 	    if(dragging && mode == MODE_PAN)
-		return;    
+		    return;    
 	    if(markers != null && markers[i] != NONE)
 		if(markers_step != null && markers_step[i] != 0)
 		    DrawMarkers(g, segments, markers[i], markers_step[i]);
 		else
 		    DrawMarkers(g, segments, markers[i], 1);
 	    if(signals[i].error)
-		DrawError(g, getSize(), signals[i]);
+	        DrawError(g, d, signals[i]);
+		    //DrawError(g, getSize(), signals[i]);
+		if(waveformPrint)
+	          printfid.write("grestore\n");
+	}
+	} catch (IOException e) {
+	    System.out.println(e);
 	}
     }
 
-    protected void DrawMarkers(Graphics g, Vector segments, int mark_type, int step)
+    protected void DrawMarkers(Graphics g, Vector segments, int mark_type, int step) throws IOException
     {
-	int num_points, num_segments = segments.size();
-	int i;
-	Point points[];
-	Polygon curr_polygon;
+	    int num_points, num_segments = segments.size();
+	    int i;
+	    Point points[];
+	    Polygon curr_polygon;
 	
-	for(i = num_points = 0; i < num_segments; i++)
-	    num_points += ((Polygon)segments.elementAt(i)).npoints;
+	    for(i = num_points = 0; i < num_segments; i++)
+	        num_points += ((Polygon)segments.elementAt(i)).npoints;
 	
-	points = new Point[num_points];
-	for(i = 0; i < num_points; i++)
-	    points[i] = new Point();
-	for(i = num_points = 0; i < num_segments; i++)
-	{
-	    curr_polygon = (Polygon)segments.elementAt(i);
-	    for(int j = 0; j < curr_polygon.npoints; j+= step)
+	    points = new Point[num_points];
+	    for(i = 0; i < num_points; i++)
+	        points[i] = new Point();
+	    for(i = num_points = 0; i < num_segments; i++)
 	    {
-		points[num_points].x = curr_polygon.xpoints[j];
-		points[num_points].y = curr_polygon.ypoints[j];
-		num_points++;
+	        curr_polygon = (Polygon)segments.elementAt(i);
+	        for(int j = 0; j < curr_polygon.npoints; j+= step)
+	        {
+		        points[num_points].x = curr_polygon.xpoints[j];
+		        points[num_points].y = curr_polygon.ypoints[j];
+		        num_points++;
     	    }
-	}
-	DrawMarkers(g, points, num_points, mark_type);
+	    }
+	    DrawMarkers(g, points, num_points, mark_type);
     }
         
     
@@ -481,6 +512,8 @@ public WaveInterface GetWaveInterface()
 	return null;
     return new WaveInterface(wi);
 }    
+
+
 
 
 }

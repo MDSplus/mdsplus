@@ -124,53 +124,66 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
      validate();
   }
   
-  public void printAll(Graphics g, int height, int width)
-  {
+    public void printAll(Graphics g, int height, int width, int mode)
+    {
       int i, j, k = 0;
-      Image curr_image, new_image;
-      ImageFilter filter = new RotateFilter(-Math.PI/2);
-      ImageProducer producer;
-      int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0, sx2 = 0, sy2 = 0;
-      int hpan = 15, wpan = 15;
-      
-      /* Fix page dimension  bug on Mac OS */
-      /*
-      if(System.getProperties().getProperty("os.name").equals("Mac OS"))
-      {
-	    hpan = 5;
-	    wpan = 0;
-	    width  -= 45;
-	    height += 25;
-	    height -= 2 * hpan;
-	    dy1 = hpan;	
-      } else {	    		      
-	    dy1 = hpan;
-	    height -= 2 * hpan;
-	    width  -= 2 * wpan;
-      }
-      */
-      
-	  dy1 = hpan;
+      int hpan = 40, wpan = 40, pix = 1;
+           
 	  height -= 2 * hpan;
 	  width  -= 2 * wpan;
-      
-      for(i = 0 ; i < setup.columns; i++)
-      {	  
-	    dy2 += (int)(height * ((RowColumnLayout)getLayout()).getPercentWidth(i));
-	    for(j =0, dx2 = width + wpan; j < setup.rows[i]; j++)
-	    {
-	      curr_image = setup.waves[k].GetImage();
-	      new_image = createImage(new FilteredImageSource(curr_image.getSource(), filter));
-	      sx2 = new_image.getWidth(this);
-	      sy2 = new_image.getHeight(this);
-	      dx1 = dx2 - (int)(width * ((RowColumnLayout)getLayout()).getPercentHeight(k)) + 1;	      	      
-	      g.drawImage(new_image, dx1, dy1, dx2, dy2, 0, 0, sx2, sy2, this);
-	      dx2 = dx1;
+	  
+	  if(mode == 2) // Grid mode
+	    pix = 0;
+           
+      int curr_height = 0;
+      int curr_width = 0;  
+      int px = 0;
+      int py = 0;
+      int pos = 0;
+      g.clipRect(0, 0, width, height);
+      for(i = k = 0, px = hpan ; i < setup.columns; i++)
+      {
+	    g.translate(px, 0);
+        curr_width = (int)(width * ((RowColumnLayout)getLayout()).getPercentWidth(i) + 0.5);
+	    for(j = pos = 0, py = wpan; j < setup.rows[i]; j++)
+	    {	        
+	      curr_height = (int)(height * ((RowColumnLayout)getLayout()).getPercentHeight(k) + 0.5);
+	      g.translate(0, py);
+	      if(j == setup.rows[i] - 1 && pos + curr_height != height)
+	        curr_height = height - pos;
+	      g.setClip(0, 0, curr_width, curr_height);
+	      setup.waves[k].paint(g, new Dimension(curr_width,curr_height), true);
+	      py = curr_height - pix;
+	      pos += (curr_height - pix);
 	      k++;
 	    }
-	    dy1 = dy2;	  
+        px = curr_width - pix;	    
+	    g.translate(0, -pos - wpan + py);
       }
-
+    }
+    
+    
+    
+    
+    
+    
+    public void printAll(String ps_file, String main_title, int resolution)
+    {
+      int i, j, k = 0;
+     	  
+	  try {
+        for(i = 0 ; i < setup.columns; i++) {
+	       for(j =0; j < setup.rows[i]; j++, k++)
+	       {
+	           setup.waves[k].Print(new File(ps_file), getSize(), 0, "", main_title, resolution);
+	       }
+	    }
+	   
+	    MultiWaveform.PrintClose();
+      } catch (IOException e)
+      {
+        System.out.println(e);
+      }
   }
      
   public  void mouseReleased(MouseEvent e)

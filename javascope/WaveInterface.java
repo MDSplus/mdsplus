@@ -108,7 +108,8 @@ public class WaveInterface
 	    colors[i] = wi.colors[i];
 	    colors_idx[i] = wi.colors_idx[i];
 	    interpolates[i] = wi.interpolates[i];
-	    shots[i] = wi.shots[i];
+	    if(wi.shots != null)
+	       shots[i] = wi.shots[i];
 	}
 
 	if(wi.in_xmin != null)
@@ -265,6 +266,7 @@ public class WaveInterface
 	    error = dp.ErrorString();
 	    return 0;
 	}
+		
 //compute limits
 	if(in_xmin != null && (in_xmin.trim()).length() != 0)
 	{
@@ -321,7 +323,8 @@ public class WaveInterface
 	    }
 	} 
 	else
-	    title = null;
+	    title = dp.GetDefaultTitle(in_y);
+	    
 	if(in_xlabel != null && (in_xlabel.trim()).length() != 0)
 	{
 	    xlabel = dp.GetString(in_xlabel);
@@ -332,7 +335,8 @@ public class WaveInterface
 	    }
 	}	
 	else
-	    xlabel = null;
+	    xlabel = dp.GetDefaultXLabel(in_y);
+	    
 	if(in_ylabel != null && (in_ylabel.trim()).length() != 0)
 	{
 	    ylabel = dp.GetString(in_ylabel);
@@ -343,7 +347,7 @@ public class WaveInterface
 	    }
 	}	
 	else
-	    ylabel = null;
+	    ylabel = dp.GetDefaultYLabel(in_y);
       
 	return 1;
     } 
@@ -418,8 +422,11 @@ public class WaveInterface
 	if(experiment != null && experiment.trim().length() > 0)    			    		    
 	    dp.Update(experiment, shots[curr_wave]);
 	else
-	    dp.Update(null, 0);
-	
+	    if(shots != null && shots.length != 0)
+	        dp.Update(null, shots[curr_wave]);
+	    else
+	        dp.Update(null, 0);
+	    
 	if(dp.ErrorString() != null)
 	{
 	    error = dp.ErrorString();

@@ -118,6 +118,10 @@ class JetDataProvider implements DataProvider
     }
 //DataProvider implementation
 
+    public String GetDefaultTitle(String in_y[]){return null;}
+    public String GetDefaultXLabel(String in_y[]){return null;}
+    public String GetDefaultYLabel(String in_y[]){return null;}
+    
     public void SetEnvironment(String s) {}
     public void Update(String experiment, int shot) 
     {

@@ -191,76 +191,75 @@ import java.util.Vector;
        final int  BROWSE_X = 0, BROWSE_Y = 1;
        
        BrowseSig(Frame fw, String title, int _type) {	
-	  super(fw, title, false); 	
-	  //super.setFont(new Font("Helvetica", Font.PLAIN, 10));
-	  dw = fw;
-	  type = _type;
-    	  setResizable(false);
-	  
-	  BorderLayout bl= new BorderLayout(25,1);
-	  setLayout(bl);
+	      super(fw, title, true); 	
+	      //super.setFont(new Font("Helvetica", Font.PLAIN, 10));
+	      dw = fw;
+	      type = _type;
+          setResizable(false);
+	 
+	      BorderLayout bl= new BorderLayout(25,1);
+	      setLayout(bl);
   
-	  sig_list = new List(8, false);
-	  sig_list.addItemListener(this);
-	  add("Center",sig_list);
-	  LoadSignal(main_scope.getSignalsFile());	
+	      sig_list = new List(8, false);
+	      sig_list.addItemListener(this);
+	      add("Center",sig_list);
+	      LoadSignal(main_scope.getSignalsFile());	
 
-	  dismiss = new Button("Dismiss");
-	  dismiss.addActionListener(this);
-	  add("South", dismiss);
-	    	  		    	     
+	      dismiss = new Button("Dismiss");
+	      dismiss.addActionListener(this);
+	      add("South", dismiss);	  		    	     
        } 
        
        public void LoadSignal(String file_list)
        {
-	   BufferedReader in;
-	   String str;
+	        BufferedReader in;
+	        String str;
 	   
-	   try {
-	   	in = new BufferedReader(new FileReader(file_list));
-		while((str = in.readLine()) != null) 
-		{
-		    sig_list.add(str);
-		}
-	   } catch (IOException e) {
-		//error_msg.addMessage("Signal list file must be specified\n jScope ");
-	   }
+	        try {
+	   	        in = new BufferedReader(new FileReader(file_list));
+		        while((str = in.readLine()) != null) 
+		        {
+		            sig_list.add(str);
+		        }
+	        } catch (IOException e) {
+		        //error_msg.addMessage("Signal list file must be specified\n jScope ");
+	        }
        }
        
        private void SetSignalString()
        {
        
-	   String sig = sig_list.getSelectedItem();
-	   if(sig != null) {
-		if(type == BROWSE_X)
-		    x_expr.setText(sig);
-		if(type == BROWSE_Y)
-		    y_expr.setText(sig);
-	   } 
+	        String sig = sig_list.getSelectedItem();
+	        if(sig != null) {
+		        if(type == BROWSE_X)
+		            x_expr.setText(sig);
+		    if(type == BROWSE_Y)
+		            y_expr.setText(sig);
+	        } 
        }
        
        	         
        public void Show()
        {
-	   pack();
-	   setPosition(dw);
-	   show();
+	        pack();
+	        setPosition(dw);
+	        show();
        }
        
        public void actionPerformed(ActionEvent e)
        {
-	 Object ob = e.getSource();	
+	        Object ob = e.getSource();	
     
-	 if(ob == dismiss)  
-	    setVisible(false);	   
+	        if(ob == dismiss)  
+	            setVisible(false);	   
        }
        
        public void itemStateChanged(ItemEvent e)
        { 
-	  Object ob = e.getSource();
+	        Object ob = e.getSource();
 
-    	  if(ob == sig_list)
-	    SetSignalString();
+    	    if(ob == sig_list)
+	            SetSignalString();
        }
    
   }
@@ -576,13 +575,15 @@ import java.util.Vector;
 	    if((shot_str == null && in_shot != null && in_shot.length()!= 0) || 
 	       (shot_str != null && !shot_str.equals(in_shot)))
 	    {
-		if(shots != null)
-		    list_num_shot = shots.length;
-		shot_str = in_shot;
-		shots  = main_scope.evaluateShot(in_shot);
-		return true;
+		    if(shots != null)
+		        list_num_shot = shots.length;
+		    shot_str = in_shot;
+		    shots  = main_scope.evaluateShot(in_shot);
+		    if(shots == null)
+		        shot_str = null;
+		    return true;
 	    } else
-		return false;	    
+		    return false;	    
        }
 
 

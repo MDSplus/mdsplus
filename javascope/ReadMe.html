@@ -155,10 +155,10 @@ defined in the setup form. If no particular evaluation is required, simply
 return <i>new Float(in).floatValue()</i>.
 <p><i>public float[] GetFloatArray(String in)</i>: called each time a signal
 must be read. The argument is the specification given in Y field of the
-setup form. Its interpretation is left to this method.<i></i>
+setup form. Its interpretation is left to this method.
 <p><i>public int[] GetIntArray(String in)</i>: called to evaluate shot
 number(s). The argument to be evaluated is the content of the bottom <i>shot</i>
-field, possibly defining an array of shot numbers.<i></i>
+field, possibly defining an array of shot numbers.
 <p><i>public String GetXSpecification(String in)</i>: called when data
 must be retrieved, but no specification of the X axis is given. Most systems,
 in fact provide some method for evaluating x axis, based on the specification
@@ -166,9 +166,17 @@ of the signal. The returned string is then passed to <i>GetFloatArray</i>
 to retrieve x values.
 <p><i>public String ErrorString()</i>: if <i>GetFloatArray</i> returns
 null, jScope assumes that an error occurred in data retrievel, and calls
-<i>ErrorString</i> to get the description of the error, in order to display
-it on a popup window.
-<p>The following methods refer to more specialized tasks, currently supported
+<i>ErrorString</i>
+to get the description of the error, in order to display it on a popup
+window.
+<p><i>public String GetDefaultTitle(String in_y[])</i>
+<br><i>public String GetDefaultXLabel(String in_y[])</i>
+<br><i>public String GetDefaultYLabel(String in_y[])</i>
+<br>These methods are called when fields title, x label and y label, repectively,
+are left empty. The argument is&nbsp; the content of the y value field.
+If no default label is defined, these methods return null.
+<br>&nbsp;
+<br>The following methods refer to more specialized tasks, currently supported
 by MDSplus. Implement them as follows:
 <p>public boolean SupportsAsynch() { return false; }
 <br>public void addMdsEventListener(MdsEventListener l, String event){}

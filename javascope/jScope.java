@@ -26,7 +26,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   /**Menu items on menu edit_m */	  
   private MenuItem      exit_i, win_i;
   private MenuItem      default_i, use_i, pub_variables_i, save_as_i, use_last_i, save_i, color_i,
-			print_all_i, open_i, close_i, server_list_i;
+			print_all_i, save_as_ps_i, open_i, close_i, server_list_i;
   private CheckboxMenuItem  brief_error_i;			
   /**Menu item on menu pointer_mode_m */	  
   private MenuItem	zoom_i, point_i, copy_i, pan_i;
@@ -55,6 +55,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   DataProvider		db;
   Setup	                setup; 
   SetupDefaults         setup_default;
+  PubVarDialog  pub_var_diag;
   static int		num_scope = 0;
   static String         MACfile;
   private String	config_file, last_config_file;
@@ -64,7 +65,6 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   static  boolean	not_sup_local = false;
   private int		main_shots[];
   private String        main_shot_str, curr_main_shot_str;
-  private PubVarDialog  pub_var_diag;
   private Thread	updateThread;
   private Thread	printThread;
   private boolean	abort = false, isUpdateAllWaves = false;
@@ -73,15 +73,17 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   class PrintThread extends Thread {
     public void run()
     {
+        Rectangle r = getBounds();
+        
 	    PrintJob pg = getToolkit().getPrintJob(main_scope, "Print Scope", System.getProperties());
 	    if(pg != null)
 	    {
 	        Graphics g = pg.getGraphics();
 	        Dimension dim = pg.getPageDimension();
-	        draw_pan.printAll(g, dim.height, dim.width); 
+	        draw_pan.printAll(g, dim.height, dim.width, curr_grid_mode); 
 	        g.dispose();
 	        pg.end();
-	    }	
+	    }	    
     }
   }
 
@@ -195,7 +197,9 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    
   class PubVarDialog extends ScopePositionDialog {
 
-       private Button apply, cancel;
+       private Vector name_list = new Vector();
+       private Vector expr_list = new Vector();
+       private Button apply, cancel, save, reset;
        jScope dw;
     
        PubVarDialog(Frame fw) {
@@ -239,69 +243,141 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	      add(txt);
 	  }
 
-    	  Panel p = new Panel();
+      Panel p = new Panel();
 	  p.setLayout(new FlowLayout(FlowLayout.CENTER));
 	    
 	  apply = new Button("Apply");
 	  apply.addActionListener(this);	
 	  p.add(apply);
+
+	  save = new Button("Save");
+	  save.addActionListener(this);	
+	  p.add(save);
+    
+	  reset = new Button("Reset");
+	  reset.addActionListener(this);	
+	  p.add(reset);
     
 	  cancel = new Button("Cancel");
 	  cancel.addActionListener(this);	
 	  p.add(cancel);
+
 			    
 	  c.gridwidth = GridBagConstraints.REMAINDER;
 	  gridbag.setConstraints(p, c);
 	  add(p);
 	     
-       } 
+      } 
        
-       public String getPublicVar()
-       {
+      public String getPublicVar()
+      {
 	    String txt1, txt2, str;
 	    StringBuffer buf = new StringBuffer();
       
 	    for (int i = 2; i < MAX_VARIABLE * 2; i+=2)
 	    {
-		txt1 = ((TextField) getComponent(i)).getText();
-		txt2 = ((TextField) getComponent(i+1)).getText();
-		if(txt1.length() != 0 && txt2.length() != 0) {
-		    if(txt1.indexOf("_") != 0)
-			str = "public _"+txt1+" = "+txt2+";";
-		    else
-			str = "public "+txt1+" = "+txt2+";";
-		    buf.append(str);
-		}		
+		    txt1 = ((TextField) getComponent(i)).getText();
+		    txt2 = ((TextField) getComponent(i+1)).getText();
+		    if(txt1.length() != 0 && txt2.length() != 0) {
+		        if(txt1.indexOf("_") != 0)
+			        str = "public _"+txt1+" = "+txt2+";";
+		        else
+			        str = "public "+txt1+" = "+txt2+";";
+		        buf.append(str);
+		    }		
 	    }
 	    return (new String(buf));
        }
        
        
+       private void SavePubVar()
+       {
+	    String txt1, txt2, str;
+      
+	        for (int i = 2, j = 0; i < MAX_VARIABLE * 2; i+=2, j++)
+	        {
+		        txt1 = ((TextField) getComponent(i)).getText();
+		        txt2 = ((TextField) getComponent(i+1)).getText();
+		        if(txt1.length() != 0 && txt2.length() != 0) {
+		            name_list.insertElementAt(new String(txt1), j);
+		            expr_list.insertElementAt(new String(txt2), j);
+		        }		
+	        }
+        }
+       
+       private void SetPubVar()
+       {      
+	        for (int i = 2, j = 0; j < name_list.size(); i+=2, j++)
+	        {
+		        ((TextField)getComponent(i)).setText((String)name_list.elementAt(j));
+		        ((TextField)getComponent(i+1)).setText((String)expr_list.elementAt(j));
+	        }
+       }
        	         
        public void Show()
        {
-	   pack();
-	   setPosition(dw);
-	   show();
+	       pack();
+	       setPosition(dw);
+	       SetPubVar();   
+	       show();
        }
        
        public void actionPerformed(ActionEvent e)
        {
-	 Object ob = e.getSource();	
+	        Object ob = e.getSource();	
     
-	 if(ob == apply) { 
-	   getPublicVar();
-	   dw.db.SetEnvironment(getPublicVar());
-	   if(dw.db.ErrorString() != null) {
-	     dw.error_msg.setMessage(dw.db.ErrorString()+"\n");
-	     dw.error_msg.showMessage();
-	   } else
-	    dw.UpdateAllWaves();	    
-	 }
-	 if(ob == cancel)
-	   setVisible(false);	   
+	        if(ob == apply) { 
+	            getPublicVar();
+	            dw.db.SetEnvironment(getPublicVar());
+	            if(dw.db.ErrorString() != null) {
+	                dw.error_msg.setMessage(dw.db.ErrorString()+"\n");
+	                dw.error_msg.showMessage();
+	            } else
+	                dw.UpdateAllWaves();	    
+	        }
+	        
+	        if(ob == save)
+	            SavePubVar();
+	            
+	        if(ob == reset)
+	            SetPubVar();
+
+	        if(ob == cancel)
+	            setVisible(false);	   
     
        }
+       
+       public void toFile(BufferedWriter out, String prompt)
+       {
+	        for(int i = 0; i < name_list.size() ; i++)
+            {
+	            jScope.writeLine(out, prompt + i + ": " , name_list.elementAt(i) 
+	                                            + " = " + expr_list.elementAt(i));		
+            }
+        }
+       
+              
+    public int fromFile(BufferedReader in, String prompt) throws IOException
+    {
+    	String str;
+	    int error = 0;
+
+	    while((str = in.readLine()) != null) {
+
+	        if(str.indexOf(prompt) != -1)
+	        {
+		        int len;
+		        int i = new Integer(str.substring("Scope.public_variable_".length(), len = str.indexOf(":"))).intValue();
+		        String name = new String(str.substring(len  + 2, len = str.indexOf("=")));
+		        String expr = new String(str.substring(len + 2, str.length()));
+		        name_list.insertElementAt(name.trim(), i);
+		        expr_list.insertElementAt(expr.trim(), i);
+		        
+		        continue;
+	        }
+	    }
+	    return error;
+     }
   }
 	    
   public jScope()
@@ -361,9 +437,15 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
     print_m = new Menu("Print");
     mb.add(print_m);
-    print_all_i = new MenuItem("Print All");
+    print_all_i = new MenuItem("Print all ...");
     print_m.add(print_all_i);
     print_all_i.addActionListener(this);
+    mb.add(print_m);
+    
+    //save_as_ps_i = new MenuItem("Save as PostScript ...");
+    //print_m.add(save_as_ps_i);
+    //save_as_ps_i.addActionListener(this);
+
     
     customize_m = new Menu("Customize");
     mb.add(customize_m);    
@@ -573,7 +655,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   
   public String getSignalsFile()
   {
-    return new String("prova.dat");
+    return new String("e:\\jScope\\jScope4.1\\signals_list.dat");
   }
   
   private void initDataServer()
@@ -887,7 +969,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
   public void UpdateAllWaves()
   {
-
+    System.gc();
     updateThread = new UpdateWaves();
     updateThread.start();	
   }
@@ -964,32 +1046,39 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	
 	if(setup.data_server_address.equals("Local"))
 	    try {
-		db = new LocalProvider();
-		setup.fast_network_access = false;
-		fast_network_i.setState(setup.fast_network_access);
-		fast_network_i.setEnabled(false);
-		change = true;	
+		    db = new LocalProvider();
+		    setup.fast_network_access = false;
+		    fast_network_i.setState(setup.fast_network_access);
+		    fast_network_i.setEnabled(false);
+		    change = true;	
 	    } catch (Throwable ex) {
-		db = old_db;
-		setup.data_server_address = old_ip;
-		error_msg.addMessage("Local data access is not supported on this platform");
-		change = false;
+		    db = old_db;
+		    setup.data_server_address = old_ip;
+		    error_msg.addMessage("Local data access is not supported on this platform");
+		    change = false;
 	    }
 //Gabriele 26/10/99
-        else
+     else 
         if(setup.data_server_address.equals("Jet data"))
         {
             db = new JetDataProvider();
             ((JetDataProvider)db).InquireCredentials(this);
             change = true;
-        }
+        } 
+        else 
+            if(setup.data_server_address.equals("Ftu data"))
+            {
+                db = new FtuProvider("192.107.51.30");
+                change = true;
+            }
+        
 //	    
 	    
-        else {
-	    fast_network_i.setEnabled(setup.fast_network_access);		
-	    db = new NetworkProvider(setup.data_server_address);
-	    change = true;
-	}
+            else {
+	            fast_network_i.setEnabled(setup.fast_network_access);		
+	            db = new NetworkProvider(setup.data_server_address);
+	            change = true;
+	        }
 	    
 	setDataServerLabel();
 	    
@@ -1090,13 +1179,26 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     if (ob == save_as_i)
     {
 	SaveAs();
-    }    
-
+    }
+    
     if (ob == print_all_i)
     {
-	   main_scope = this;
+   	   main_scope = this;
        printThread = new PrintThread();
-	   printThread.start();	
+	   printThread.start();	     
+    }
+    
+    if (ob == save_as_ps_i)
+    {
+	    String ps_file;
+	    FileDialog ps_diag = new FileDialog(this, "Save to PostScript", FileDialog.SAVE);
+        ps_diag.pack();
+        ps_diag.show();
+        ps_file = ps_diag.getDirectory() + ps_diag.getFile();
+	    if(ps_file != null)
+	    {
+	        draw_pan.printAll(ps_file, setup.title, 75);
+	    }
     }
 
     if (ob == exit_i) {
@@ -1108,6 +1210,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    {
 		case 1:
 		    closeScope();
+		    System.gc();
 		break;
 		case 2:
 		break;
@@ -1118,7 +1221,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	} else {
 	    closeScope();
 	    if(num_scope == 0)
-		System.exit(0);
+		    System.exit(0);
+	    System.gc();
 	}
     }
     
@@ -1200,7 +1304,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
      if(ob == pub_variables_i)
      {
-	pub_var_diag.Show();
+	    pub_var_diag.Show();
      }
 
      error_msg.showMessage();  
@@ -1326,6 +1430,10 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	        in = new BufferedReader(new FileReader(conf_file));
 	        error = setup_default.fromFile(in, "Scope.global_1_1");
 	        in.close();
+	        in = new BufferedReader(new FileReader(conf_file));
+	        if(error == 0)
+	            error = pub_var_diag.fromFile(in, "Scope.public_variable_");
+	        in.close();	        
 	        if(error == 0)
 	        {
     
@@ -1710,6 +1818,7 @@ class ServerDialog extends ScopePositionDialog {
 	if(dw.server_ip_list == null) {
 	    addServerIp("Local");	
 	    addServerIp("Jet data");	
+	    addServerIp("Ftu data");	
 	    addServerIp(jScope.DEFAULT_IP_SERVER);
 //	    dw.server_ip_list = getServerIpList();
 	}

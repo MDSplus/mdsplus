@@ -474,7 +474,9 @@ public class Setup extends Object implements WaveSetup {
 	    jScope.writeLine(out, "Scope.data_server_address: ",    data_server_address);		    
 
 	    main_scope.color_dialog.toFile(out, "Scope.item_color_");
-	    main_scope.setup_default.toFile(out, "Scope.global_1_1.");	    
+	    main_scope.setup_default.toFile(out, "Scope.global_1_1.");
+        main_scope.pub_var_diag.toFile(out, "Scope.public_variable_");
+
 				    	    	    
 	    for(int i = 0, c = 1, k = 0; i < columns; i++,c++)
 	    {

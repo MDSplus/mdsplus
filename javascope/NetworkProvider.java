@@ -75,6 +75,10 @@ protected void finalize()
 	status = mds.DisconnectFromMds(err);
 }
 
+public String GetDefaultTitle(String in_y[]){return null;}
+public String GetDefaultXLabel(String in_y[]){return null;}
+public String GetDefaultYLabel(String in_y[]){return null;}
+
 public synchronized String ErrorString() { return error; }
 
 public String GetXSpecification(String yspec) {return "DIM_OF("+yspec+")";}
@@ -105,18 +109,20 @@ public synchronized String GetString(String in)
     {
     	if(!CheckOpen())
 	    return null;
-	Descriptor desc = mds.MdsValue(in);
-	switch(desc.dtype)  {
-	    case Descriptor.DTYPE_CHAR:
-		return desc.strdata;
-	    case Descriptor.DTYPE_FLOAT:
-		error = "Cannot convert a float to string";
-		return null;
-	    case Descriptor.DTYPE_CSTRING:
-		return desc.error;
-	}
+	    Descriptor desc = mds.MdsValue(in);
+	    switch(desc.dtype)  {
+	        case Descriptor.DTYPE_CHAR:
+		        return desc.strdata;
+	        case Descriptor.DTYPE_FLOAT:
+		        error = "Cannot convert a float to string";
+		    return null;
+	            case Descriptor.DTYPE_CSTRING:
+		    return desc.error;
+	    }
+	    return null;
     }
-    return new String(in.getBytes(), 1, in.length() - 2);    
+    else
+        return new String(in.getBytes(), 1, in.length() - 2);    
 }
 
 public synchronized void SetEnvironment(String in)
@@ -476,7 +482,7 @@ class PMET extends Thread //Process Mds Event Thread
 	    receiveThread = new MRT();
 	    receiveThread.start();
 	    
-	} catch(UnknownHostException e) {error="pdigi1 unknown"; return 0;}
+	} catch(UnknownHostException e) {error="Data provider: "+ provider +" unknown"; return 0;}
 	  catch(IOException e) { error = "Could not get IO for " +provider+ e; return 0;}
 
 

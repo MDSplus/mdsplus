@@ -13,4 +13,7 @@ public class LocalProvider implements DataProvider {
     public boolean SupportsAsynch() { return false; }
     public void addMdsEventListener(MdsEventListener l, String event){}
     public void removeMdsEventListener(MdsEventListener l, String event){}
+    public String GetDefaultTitle(String in_y[]){return null;}
+    public String GetDefaultXLabel(String in_y[]){return null;}
+    public String GetDefaultYLabel(String in_y[]){return null;}
     }	    

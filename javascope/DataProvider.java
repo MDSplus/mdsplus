@@ -10,4 +10,7 @@ interface DataProvider {
     public boolean SupportsAsynch();
     public void addMdsEventListener(MdsEventListener l, String event);
     public void removeMdsEventListener(MdsEventListener l, String event);
+    public String GetDefaultTitle(String in_y[]);
+    public String GetDefaultXLabel(String in_y[]);
+    public String GetDefaultYLabel(String in_y[]);
     }	    

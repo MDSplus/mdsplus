@@ -283,13 +283,6 @@ import java.util.*;
 	}
 	return curr_vect;
     }	
-	      
-		     
-			    
-				   
-					  
-						        
-	
 }
 
 
@@ -461,6 +454,7 @@ import java.util.*;
     }
 
     
+    
     public void paint(Graphics g, Dimension d, Waveform w, WaveformMetrics _wm)
     {
 	int i,j, dim, num_steps, curr_dim;
@@ -468,6 +462,14 @@ import java.util.*;
 	FontMetrics fm;
 	double curr_step;
 	String curr_string;
+	//Varibili per la stampa PS
+	int grid_lines_x[] = new int[4*x_dim];
+	int grid_lines_y[] = new int[4*y_dim];
+    float ylabel_offset_ps[] = new float[y_dim];
+    float ycurr_dim[] = new float[y_dim];
+    float xlabel_offset_ps[] = new float[x_dim];
+    float xcurr_dim[] = new float[x_dim];
+    boolean dash_flag = false;
 
 	wm = _wm;
 	if(font == null)
@@ -515,25 +517,51 @@ import java.util.*;
 	    ImageProducer producer = new FilteredImageSource(
 		label_image.getSource(), filter);
 	    vert_label = w.createImage(producer); 
-
-        }
+     }
 
 
 	prev_col = g.getColor();
+
+
+    switch(mode)  {
+		case IS_DOTTED : dash_flag = true; break;
+		case IS_GRAY   : dash_flag = false; break;
+		case IS_NONE   : dash_flag = false; break;
+    }
 
 	for(i = 0; i < y_dim; i++)
 	{
 	    dim = wm.YPixel(y_values[i], d);
 	    switch(mode)  {
 		case IS_DOTTED :
-			if(dim <= d.height - label_height)
+		    if(!w.waveformPrint)
+		    {
+			    if(dim <= d.height - label_height)
 	    		    for(j = label_width; j < d.width; j+=4)
-			    	g.fillRect(j, dim, 1, 1);
+			    	    g.fillRect(j, dim, 1, 1);
+			} 
+			else 
+			{
+			    if(dim <= d.height - label_height) {
+			        grid_lines_y[i*4] = label_width;
+			        grid_lines_y[i*4 + 1] = d.width;
+			        grid_lines_y[i*4 + 2] = grid_lines_y[i*4 + 3] = dim;
+			    }
+			}
 			break;
 		case IS_GRAY :
  			g.setColor(Color.lightGray);
-			if(dim <= d.height - label_height)
-			    g.drawLine(label_width,dim,d.width, dim);
+ 			if(!w.waveformPrint)
+ 			{
+			    if(dim <= d.height - label_height)
+			        g.drawLine(label_width,dim,d.width, dim);
+			} else {
+			    if(dim <= d.height - label_height) {
+			        grid_lines_y[i*4] = label_width;
+			        grid_lines_y[i*4 + 1] = d.width;
+			        grid_lines_y[i*4 + 2] = grid_lines_y[i*4 + 3] = dim;
+			    }
+			}
 			break;
 		case IS_NONE :
 			if(dim <= d.height - label_height)
@@ -556,40 +584,83 @@ import java.util.*;
 			    }
 			}
 		}
+		
 	    g.setColor(prev_col);
   	    if(dim <= d.height - label_height)
 	    {
-		curr_dim = dim + fm.getHeight()/2;
-		if((curr_dim - fm.getAscent() >= 0) && (curr_dim + fm.getDescent() <= d.height))
-		{
-		    int ylabel_offset = 0;
-		    if(y_label != null)
-			ylabel_offset = fm.getHeight();
-		    if(int_ylabels)
+		    curr_dim = dim + fm.getHeight()/2;
+		    if((curr_dim - fm.getAscent() >= 0) && (curr_dim + fm.getDescent() <= d.height))
 		    {
-			if(mode == Grid.IS_NONE)
-			    ylabel_offset += d.width/40;
-			else
-			    ylabel_offset = 2;
-		    }
+		        int ylabel_offset = 1;
+		        if(y_label != null)
+			        ylabel_offset = fm.getHeight();
+		        if(int_ylabels)
+		        {
+			        if(mode == Grid.IS_NONE)
+			            ylabel_offset += d.width/40;
+			        else
+			            ylabel_offset = 2;
+		        }
 		    
-		    g.drawString(Waveform.ConvertToString(y_values[i], wm.YLog()), ylabel_offset, curr_dim);
-		}
+                if(!w.waveformPrint)
+		            g.drawString(Waveform.ConvertToString(y_values[i], wm.YLog()), ylabel_offset, curr_dim);
+		        else {
+		            ylabel_offset_ps[i] = ylabel_offset;
+		            ycurr_dim[i] = curr_dim;
+	            }
+		    }
     	    }
 	}
+    
+    if(w.waveformPrint)
+    {
+        try {
+	        w.DrawSegments(grid_lines_y, y_dim, dash_flag);
+	        for(i = 0; i < y_dim; i++)
+	            w.DrawString((float)ylabel_offset_ps[i], 
+	                         (float)ycurr_dim[i],
+	                         Waveform.ConvertToString(y_values[i], wm.YLog()), false);
+            if(y_label != null)
+	            w.DrawString(4+fm.getHeight(), (d.height + fm.stringWidth(y_label))/2, y_label, true);            
+	    } catch (IOException e) {
+			        System.out.println(e);
+	    }
+	
+	}
+	
 	for(i = 0; i < x_dim; i++)
 	{
 	    dim = wm.XPixel(x_values[i], d);
 	    switch(mode)  {
 		case IS_DOTTED:	
-			if(dim >= label_width)
+            if(!w.waveformPrint)
+            {
+			    if(dim >= label_width)
 	    		    for(j = 0; j < d.height - label_height; j+=4)
-			        g.fillRect(dim, j, 1, 1);
+			            g.fillRect(dim, j, 1, 1);
+			} 
+			else
+			{
+			    if(dim >= label_width) {
+			        grid_lines_x[i*4] = grid_lines_x[i*4 + 1] = dim;
+			        grid_lines_x[i*4 + 2] = label_height;
+			        grid_lines_x[i*4 + 3] = d.height;
+			    }
+			}
 			break;
 		case IS_GRAY :
 			g.setColor(Color.lightGray);
-			if(dim >= label_width)
-			    g.drawLine(dim, 0, dim, d.height - label_height);
+            if(!w.waveformPrint)
+            {
+			    if(dim >= label_width)
+			        g.drawLine(dim, 0, dim, d.height - label_height);
+			} else {
+			    if(dim >= label_width) {
+			        grid_lines_x[i*4] = grid_lines_x[i*4 + 1] = dim;
+			        grid_lines_x[i*4 + 2] = label_height;
+			        grid_lines_x[i*4 + 3] = d.height;
+			    }
+			}
 			break;
 		case IS_NONE :
 			if(dim >= label_width)
@@ -617,20 +688,47 @@ import java.util.*;
 	    g.setColor(prev_col);
 	    curr_string = Waveform.ConvertToString(x_values[i], wm.XLog());
 	    curr_dim = dim - fm.stringWidth(curr_string)/2;
-	    if(curr_dim >= label_width && 
-		    dim + fm.stringWidth(curr_string)/2 < d.width)
-	    	g.drawString(curr_string, curr_dim, 
-				d.height /*- fm.getHeight()*/ - label_descent);
+	    if(curr_dim >= label_width && dim + fm.stringWidth(curr_string)/2 < d.width)
+	    {
+            if(!w.waveformPrint)
+	    	    g.drawString(curr_string, curr_dim, d.height /*- fm.getHeight()*/ - label_descent);
+		    else {
+		        xlabel_offset_ps[i] = (float)d.height /*- fm.getHeight()*/ - label_descent;
+		        xcurr_dim[i] = curr_dim;
+            }        
+	    }
 	}
-	g.drawRect(label_width, 0, d.width - label_width-1, d.height - label_height); 
-	if(x_label != null)
-	    g.drawString(x_label, (d.width - fm.stringWidth(x_label))/2, d.height - label_descent);
-	if(y_label != null)
-	    g.drawImage(vert_label, 0, (d.height - fm.stringWidth(y_label))/2, w);
-	if(title != null)
-	    g.drawString(title, (d.width - fm.stringWidth(title))/2, 
-		fm.getAscent() + d.height/40);	
+	
+    if(w.waveformPrint)
+    {
+        try {
+	        w.DrawSegments(grid_lines_x, x_dim, dash_flag);
+	        for(i = 0; i < x_dim; i++)
+	            w.DrawString((float)xcurr_dim[i],
+	                         (float)xlabel_offset_ps[i], 
+	                         Waveform.ConvertToString(x_values[i], wm.YLog()), false);
+	        if(title != null)
+	            w.DrawString((d.width - fm.stringWidth(title))/2, fm.getAscent() + d.height/40, title, false);
+	        if(x_label != null) 
+	            w.DrawString((d.width - fm.stringWidth(x_label))/2, d.height - label_descent, x_label, false);
+	    } catch (IOException e) {
+			        System.out.println(e);
+	    }
+	
+	}
+	
+	
+    if(!w.waveformPrint) {
+	    g.drawRect(label_width, 0, d.width - label_width-1, d.height - label_height); 
+	    if(x_label != null) 
+	        g.drawString(x_label, (d.width - fm.stringWidth(x_label))/2, d.height - label_descent);	        
+	    if(y_label != null)
+	        g.drawImage(vert_label, 2, (d.height - fm.stringWidth(y_label))/2, w);
+	    if(title != null)
+	        g.drawString(title, (d.width - fm.stringWidth(title))/2, fm.getAscent() + d.height/40);
     }
+ }
+        
 
     public Rectangle GetBoundingBox(Dimension d)
     {
@@ -679,6 +777,9 @@ public class Waveform extends Canvas
 	MODE_COPY = 4, MODE_WAIT = 5;
     Cursor def_cursor;
 
+    static float dashes_ps[];
+    static int num_dashes_ps;
+    static float offset_dashes_ps;
 
 
     public Waveform(WaveSetup c, Signal s)
@@ -702,6 +803,10 @@ public class Waveform extends Canvas
 	marker = NONE;
 	marker_width = 6; 
 	setMouse();
+	float dashe[] = new float[2];
+	dashe[0] = 1;
+	dashe[1] = 2;
+	SetDashes(0,dashe,2);
   }
 
     public Waveform(WaveSetup c)
@@ -718,6 +823,11 @@ public class Waveform extends Canvas
 	marker_width = 6;
 	x_log = y_log = false;
 	setMouse();
+	float dashe[] = new float[2];
+	dashe[0] = 1;
+	dashe[1] = 2;
+	SetDashes(0,dashe,2);
+
     }
  
     static String ConvertToString(double f, boolean is_log)
@@ -857,6 +967,7 @@ public class Waveform extends Canvas
 	            prev_point_x = prev_point_y = -1;
 	            repaint();
 	            dragging = false;
+	            System.gc(); //Prova per MAC
             }
         });
         
@@ -1005,10 +1116,10 @@ public class Waveform extends Canvas
 	    repaint();
     }
 
-    void DrawWave()
+    void DrawWave(Dimension d)
     {
 	Integer ic;
- 	Dimension d = getSize();
+ 	//Dimension d = getSize();
 	int i, x[] = new int[waveform_signal.n_points],
 	y[] = new int[waveform_signal.n_points];
 	points = new Point[waveform_signal.n_points];
@@ -1024,50 +1135,69 @@ public class Waveform extends Canvas
 	end_y = y[0];
     }
 
+    private boolean execute_print = false;
     public void paint(Graphics g)
+    {
+        if(execute_print) return;
+        paint(g, getSize(), false);
+    }
+
+    public void paint(Graphics g, Dimension d, boolean print_flag)
     {
 
 	Float fc_x, fc_y;
 	int idx, plot_y;
-	Dimension d = getSize();
+	//Dimension d = getSize();
 	Graphics g1;
 	double curr_x, curr_y, xmax = 1, ymax = 1, xmin = 0, ymin = 0;
+
+    execute_print = print_flag;   
 	if(not_drawn || prev_width != d.width 
-		|| prev_height!= d.height )
+		|| prev_height!= d.height || print_flag )
 	{
 	    not_drawn = false;
-	    g.clipRect(0, 0, d.width, d.height);
+	    if(!print_flag)
+	        g.clipRect(0, 0, d.width, d.height);
+	    
 	    prev_width = d.width;
 	    prev_height = d.height;
 	    if(mode != MODE_PAN || dragging == false)
 	    {
-		if(waveform_signal != null)
-		{
-		    xmax = MaxXSignal();
-		    xmin = MinXSignal();
-		    ymax = MaxYSignal();
-		    ymin = MinYSignal();
-		}
+		    if(waveform_signal != null)
+		    {
+		        xmax = MaxXSignal();
+		        xmin = MinXSignal();
+		        ymax = MaxYSignal();
+		        ymin = MinYSignal();
+		    }
 	    }
-	    off_image = createImage(d.width, d.height);
-	    off_graphics = off_image.getGraphics(); 
+	    
+	    //CESARE  stampa
+	    if(!print_flag)
+	    {
+	        off_image = createImage(d.width, d.height);
+	        off_graphics = off_image.getGraphics();
+	    } else
+	        off_graphics = g;
+	    
 	    if(!resizing) // If new Grid and WaveformMatrics have not been computed before
 	    {
-		grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, 
-		    title, grid_step_x, grid_step_y, int_xlabel, int_ylabel);
-		curr_display_limits = new Rectangle();
-		grid.GetLimits(off_graphics, curr_display_limits, y_log);
-		wm = new WaveformMetrics(xmax, xmin, ymax, ymin, curr_display_limits, d, x_log, y_log);
+		    grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, 
+		                    title, grid_step_x, grid_step_y, int_xlabel, int_ylabel);
+		    curr_display_limits = new Rectangle();
+		    grid.GetLimits(off_graphics, curr_display_limits, y_log);
+		    wm = new WaveformMetrics(xmax, xmin, ymax, ymin, curr_display_limits, d, x_log, y_log);
 	    }
 	    else
-		resizing = false;
-	    if(!selected)
-		off_graphics.setColor(Color.white);
+		    resizing = false;
+	    if(!selected || print_flag)
+		    off_graphics.setColor(Color.white);
 	    else
-		off_graphics.setColor(Color.lightGray);
+		    off_graphics.setColor(Color.lightGray);
 	    off_graphics.fillRect(0, 0, d.width, d.height);
 	    off_graphics.setColor(Color.black);
-	    off_graphics.drawRect(0, 0, d.width - 1, d.height - 1);
+	    if( !(print_flag && grid_mode == Grid.IS_NONE) )
+	        off_graphics.drawRect(0, 0, d.width - 1, d.height - 1);
 	    grid.paint(off_graphics, d, this, wm);
 	    if(waveform_signal != null)
 	    {
@@ -1077,19 +1207,22 @@ public class Waveform extends Canvas
 		    wm.YPixel(MinYSignal(), d) - wm.YPixel(MaxYSignal(), d) + 1);
 
 	        //off_graphics.clipRect(wave_b_box.x, wave_b_box.y, wave_b_box.width, wave_b_box.height);
-		off_graphics.clipRect(curr_display_limits.width, 0, 
-		    d.width - curr_display_limits.width, d.height - curr_display_limits.height);
-    	        DrawSignal(off_graphics);
+            if(!print_flag)
+		        off_graphics.clipRect(curr_display_limits.width, 0, 
+		            d.width - curr_display_limits.width, d.height - curr_display_limits.height);
+    	    //DrawSignal(off_graphics);
+    	    DrawSignal(off_graphics, d);
 	    }
-	    off_graphics.clipRect(0, 0, d.width, d.height);
+        if(!print_flag)
+	        off_graphics.clipRect(0, 0, d.width, d.height);
 	}
 	if(mode == MODE_ZOOM)
 	{
 	    if(curr_rect != null)
 	    {
 	    	g.clearRect(start_x, start_y, prev_clip_w, prev_clip_h);
-		g1 = g.create();
-	  	g1.clipRect(start_x, start_y, prev_clip_w + 4, prev_clip_h + 4);
+		    g1 = g.create();
+	  	    g1.clipRect(start_x, start_y, prev_clip_w + 4, prev_clip_h + 4);
 	    	g1.drawImage(off_image, 0, 0, this);	
 	    	prev_clip_w = curr_clip_w;
 	    	prev_clip_h = curr_clip_h;
@@ -1099,7 +1232,7 @@ public class Waveform extends Canvas
 	    {
 		//g.clipRect(0, 0, d.width, d.height);
 		//Cesare
-		    if(off_image != null)
+		    if(off_image != null && !print_flag)
 	            g.drawImage(off_image, 0, 0, this);
 	    }
 	}
@@ -1107,14 +1240,14 @@ public class Waveform extends Canvas
 	    g.drawImage(off_image, 0, 0, this);
 	if(waveform_signal != null && mode == MODE_POINT && !not_drawn)
 	{
-    	    curr_x = wm.XValue(end_x, d);
+    	curr_x = wm.XValue(end_x, d);
 	    curr_y = wm.YValue(end_y, d);	
 		
 	    curr_y = FindPointY(curr_x, curr_y, first_set_point);
 	    first_set_point = false;
 
 	    if(dragging && !ext_update && controller != null)
-		controller.DisplayCoords(this, curr_x, curr_y, GetSelectedSignal(), is_mb2);
+		    controller.DisplayCoords(this, curr_x, curr_y, GetSelectedSignal(), is_mb2);
 
 	    plot_y = wm.YPixel(curr_y, d);
 
@@ -1123,18 +1256,18 @@ public class Waveform extends Canvas
 	    else
 	    {
 	    	g.clearRect(0, prev_point_y - 4, d.width, 8);
-		g1 = g.create(0, 0, d.width, d.height);
-		g1.clipRect(0, prev_point_y - 4, d.width, 8);
+		    g1 = g.create(0, 0, d.width, d.height);
+		    g1.clipRect(0, prev_point_y - 4, d.width, 8);
 	        g1.drawImage(off_image, 0, 0, this);
 	    	g.clearRect(prev_point_x - 4, 0, 8, d.height);
-		g1 = g.create(0, 0, d.width, d.height);
-		g1.clipRect(prev_point_x - 4, 0, 8, d.height);
+		    g1 = g.create(0, 0, d.width, d.height);
+		    g1.clipRect(prev_point_x - 4, 0, 8, d.height);
 	        g1.drawImage(off_image, 0, 0, this);
 	        //g.drawImage(off_image, 0, 0, this);
 	    }
-            Color prev_color = g.getColor();
+        Color prev_color = g.getColor();
 	    if(crosshair_color != null)
-		g.setColor(crosshair_color);
+		    g.setColor(crosshair_color);
 	    Rectangle rect = grid.GetBoundingBox(d);
 	    Shape shape = g.getClip();
 	    g.setClip(rect.x, rect.y, rect.width, rect.height);
@@ -1144,7 +1277,7 @@ public class Waveform extends Canvas
 	    g.setColor(prev_color);
 	    prev_point_x = end_x;
 	    prev_point_y = plot_y;
-    	}
+    }
 	
 	if(mode == MODE_PAN && dragging && waveform_signal != null)
 	{   
@@ -1158,6 +1291,7 @@ public class Waveform extends Canvas
 	    g.clipRect(wave_b_box.x, wave_b_box.y, wave_b_box.width, wave_b_box.height);
 	    DrawSignal(g);
 	}
+	execute_print = false;
     }
 
     protected int GetSelectedSignal() {return 0;} 
@@ -1173,19 +1307,44 @@ public class Waveform extends Canvas
     }	
 
     protected void DrawSignal(Graphics g)
+    {
+        DrawSignal(g, getSize());
+    }
+    
+    //protected void DrawSignal(Graphics g, Dimension d)
+    public void DrawSignal(Graphics g, Dimension d)
     {	
-	Dimension d = getSize();
-	Shape prev_clip = g.getClip();
-	DrawWave();
-	
-	if(interpolate)
-	    g.drawPolygon(polygon);
-        if(marker != NONE)
-	DrawMarkers(g, points, num_points, marker);
-        if(waveform_signal.error)
-	    DrawError(off_graphics, getSize(), waveform_signal);
-	g.setClip(prev_clip);
-    }	
+	    Shape prev_clip = g.getClip();
+	    DrawWave(d);
+	    
+	    try
+	    {
+	        if(waveformPrint)
+	        {
+	            Color c = g.getColor();
+	            printfid.write("gsave\n");
+	            printfid.write(""+c.getRed() + " " +
+	                             +c.getGreen() + " " +
+	                             +c.getBlue()+" setrgbcolor\n");
+	            
+	        }
+	        
+	        if(interpolate)
+	            g.drawPolygon(polygon);
+            if(marker != NONE)
+	            DrawMarkers(g, points, num_points, marker);
+            if(waveform_signal.error)
+	            DrawError(off_graphics, d /*getSize()*/, waveform_signal);
+	        g.setClip(prev_clip);
+	        
+	        if(waveformPrint)
+	            printfid.write("grestore\n");
+
+	    } catch (IOException e) {
+	        System.out.println(e);
+	    }
+    }
+    
     protected double MaxXSignal() 
     {
 	if(waveform_signal == null)
@@ -1223,61 +1382,143 @@ public class Waveform extends Canvas
     protected void HandleCopy() {}
     protected void HandlePaste() {}
 
-    protected void DrawMarkers(Graphics g, Point pnt[], int n_pnt, int mode)
+    protected void DrawMarkers(Graphics g, Point pnt[], int n_pnt, int mode) throws IOException
     {
 
-	for(int i = 0; i < n_pnt; i++)
-	{
-	    switch(mode)  {
-	    	case CIRCLE : 
-		    g.drawOval(pnt[i].x - marker_width/2,
-		    pnt[i].y - marker_width/2, marker_width, marker_width);
-		    break;
-		case SQUARE :
-		    g.drawRect(pnt[i].x - marker_width/2,
-		    pnt[i].y - marker_width/2, marker_width, marker_width);
-		    break;
-		case TRIANGLE :
-		    g.drawLine( pnt[i].x - marker_width/2,
-		    pnt[i].y + marker_width/2, pnt[i].x,
-		    pnt[i].y - marker_width/2);
-		    g.drawLine( pnt[i].x + marker_width/2,
-		    pnt[i].y + marker_width/2, pnt[i].x,
-		    pnt[i].y - marker_width/2);
-		    g.drawLine( pnt[i].x - marker_width/2,
-		    pnt[i].y + marker_width/2, pnt[i].x + marker_width/2,
-		    pnt[i].y + marker_width/2);
-		    break;
-		case CROSS :
-		    g.drawLine(pnt[i].x, pnt[i].y - marker_width/2,
-			pnt[i].x, pnt[i].y + marker_width/2);
-		    g.drawLine(pnt[i].x - marker_width/2, pnt[i].y,
-			pnt[i].x + marker_width/2, pnt[i].y);
-		    break;
-		case POINT :
-		    g.fillRect(pnt[i].x - 1,
-			pnt[i].y - 1, 3,3);
-		    break;
+        if(!waveformPrint)
+        {
+	        for(int i = 0; i < n_pnt; i++)
+	        {
+	            switch(mode)  
+	            {
+	    	        case CIRCLE : 
+		                g.drawOval(pnt[i].x - marker_width/2,
+		                pnt[i].y - marker_width/2, marker_width, marker_width);
+		            break;
+		            case SQUARE :
+		                g.drawRect(pnt[i].x - marker_width/2,
+		                pnt[i].y - marker_width/2, marker_width, marker_width);
+		            break;
+		            case TRIANGLE :
+		                g.drawLine( pnt[i].x - marker_width/2,
+		                pnt[i].y + marker_width/2, pnt[i].x,
+		                pnt[i].y - marker_width/2);
+		                g.drawLine( pnt[i].x + marker_width/2,
+		                pnt[i].y + marker_width/2, pnt[i].x,
+		                pnt[i].y - marker_width/2);
+		                g.drawLine( pnt[i].x - marker_width/2,
+		                pnt[i].y + marker_width/2, pnt[i].x + marker_width/2,
+		                pnt[i].y + marker_width/2);
+		            break;
+		            case CROSS :
+		                g.drawLine(pnt[i].x, pnt[i].y - marker_width/2,
+			            pnt[i].x, pnt[i].y + marker_width/2);
+		                g.drawLine(pnt[i].x - marker_width/2, pnt[i].y,
+			            pnt[i].x + marker_width/2, pnt[i].y);
+		                break;
+		            case POINT :
+		                g.fillRect(pnt[i].x - 1, pnt[i].y - 1, 3,3);
+		            break;
+	            }
+            }
+	    } else {
+	        Color c = g.getColor();
+	        printfid.write("gsave\n");
+	        printfid.write(""+c.getRed() + " " +
+	                     +c.getGreen() + " " +
+	                     +c.getBlue()+" setrgbcolor\n");
+	        
+	        DrawPSMarkers(pnt, n_pnt, mode);             
+	        printfid.write("grestore\n");
 	    }
-	}
+    }
+    
+    protected void DrawPSMarkers(Point pnt[], int num, int mode) throws IOException
+    {
+		int dim = marker_width;
+        SetScale(0);
+        printfid.write("gsave\n");
+        printfid.write(""+(1. / resinc)+" "+(1. / resinc)+" scale\n");
+        for (int i = 0; i < num; i++)
+        {
+//            if (((rectangle[i].x >= 0 && rectangle[i].x < width) ||
+//	            (rectangle[i].x + rectangle[i].width >= 0 && rectangle[i].x + rectangle[i].width < width)) &&
+//	            ((rectangle[i].y < height && rectangle[i].y > 0) ||
+//	            (rectangle[i].y + rectangle[i].height < height && rectangle[i].y + rectangle[i].height > 0)))
+
+	/* Test to see if rectangle points are in the grid.  If not, do not draw the rectangle.
+	   Note that theoretically the points could be outside the grid, yet some of it's sides
+	   could be in the grid.  However, for our application, this test is good enough. */
+
+	        switch(mode)  {
+	    	    case CIRCLE : 
+	                printfid.write(""+pnt[i].x+" "+
+	                              (11 * resolution - pnt[i].y)+" "+
+	                              dim + " docircle\n");
+                    break;	    	    
+		        case SQUARE :
+	                printfid.write(""+(pnt[i].x - dim/2)+" "+
+	                              (11 * resolution - pnt[i].y + dim/2)+" "+
+	                              dim+" "+ dim + " dorectangle\n");
+		            break;
+		        case TRIANGLE :
+	                printfid.write(""+pnt[i].x+" "+
+	                              (11 * resolution - pnt[i].y)+" "+
+	                              2*dim + " dotriangle\n");
+                    break;	    	    
+		        case CROSS :
+	                printfid.write(""+pnt[i].x+" "+
+	                              (11 * resolution - pnt[i].y)+" "+
+	                              dim + " docross\n");
+                    break;	    	    	        
+		        case POINT :
+		            dim = 2;
+	                printfid.write(""+(pnt[i].x - dim/2)+" "+
+	                               (11 * resolution - pnt[i].y + dim/2)+" "+
+	                                dim+" "+ dim + " dorectangle\n");
+		        break;
+		    }
+        }
+        printfid.write("grestore\n");
     }
 
-    void DrawError(Graphics g, Dimension d, Signal sig)
+    void DrawError(Graphics g, Dimension d, Signal sig) throws IOException
     {
-	int up, low, x;
-	for(int i = 0; i < sig.n_points; i++)
-	{
-	    up = wm.YPixel(sig.up_error[i] + sig.y[i], d);
-	    if(!sig.asym_error)
-		low = wm.YPixel(sig.y[i] - sig.up_error[i], d);	
-	    else
-		low = wm.YPixel(sig.y[i] - sig.low_error[i], d);
-	    x = wm.XPixel(sig.x[i], d);
-	    g.drawLine(x, up, x, low);
-	    g.drawLine(x - 2, up,x+2, up);
-	    g.drawLine(x - 2, low, x+2, low);
-	}
-    }
+	    int up, low, x, y;
+	    if(waveformPrint)
+	    {
+	        Color c = g.getColor();
+	        printfid.write("gsave\n");
+	        printfid.write(""+c.getRed() + " " +
+	                         +c.getGreen() + " " +
+	                         +c.getBlue()+" setrgbcolor\n");
+	    }
+	    for(int i = 0; i < sig.n_points; i++)
+	    {
+	        up = wm.YPixel(sig.up_error[i] + sig.y[i], d);
+	        if(!sig.asym_error)
+		        low = wm.YPixel(sig.y[i] - sig.up_error[i], d);	
+	        else
+		        low = wm.YPixel(sig.y[i] - sig.low_error[i], d);
+	        x = wm.XPixel(sig.x[i], d);
+	        if(!waveformPrint)
+	        {
+	            g.drawLine(x, up, x, low);
+	            g.drawLine(x - 2, up,x+2, up);
+	            g.drawLine(x - 2, low, x+2, low);
+	        } else {
+	            y = wm.XPixel(sig.y[i], d);
+	            //try {
+                if ((x >= 0 && x < d.width) || (y < d.height && y > 0))
+	                printfid.write(""+x+" "+(int)(11 * resolution - up)+" "+(int)(11 * resolution - low)+" dobarerror\n");
+	            //} catch (IOException e) {
+	            //    System.out.println(e);
+	            //}
+	        }
+	    }
+ 	    if(waveformPrint)
+	        printfid.write("grestore\n");
+   }
  	
 
     
@@ -1467,6 +1708,676 @@ public class Waveform extends Canvas
 
     public Image GetImage() {return off_image; }
 
+
+
+  public void SetDashes(int offset, float dashes[],int num)
+  {
+    int i;
+    float count = 0;
+    dashes_ps = new float[2];
+    for (i = 0; i < num; i++)
+        dashes_ps[i] = dashes[i];
+    num_dashes_ps = num;
+    offset_dashes_ps = offset;
+  }
+
+  static void DrawSegments(int crosshairs[],int num, boolean dash_flag) throws IOException
+  {
+    int i;
+    float dashes[] = new float[num_dashes_ps];
+    float offset_dashes = offset_dashes_ps * resinc;
+    
+        printfid.write("gsave\n");
+        printfid.write("newpath\n");
+        if (dash_flag) {
+            for (i = 0; i < num_dashes_ps; i++) dashes[i] = dashes_ps[i] * resinc;
+            printfid.write("[");
+            for (i = 0; i < num_dashes_ps - 1; i++)
+                printfid.write(""+ dashes[i] + " ");
+            if (num_dashes_ps != 0)
+                printfid.write(""+ dashes[num_dashes_ps-1]);
+            printfid.write("] "+offset_dashes+" setdash\n");
+        }
+        float old_scale = scale;// booo cesare
+        scale = 1;
+        printfid.write(""+(1. / resinc)+" "+(1. / resinc)+" scale\n");
+        printfid.write(.25+" setlinewidth\n");	/* Width for grid lines*/
+        for (i = 0; i < num * 4; i = i + 4)
+        {
+            printfid.write(""+(int) (crosshairs[i] * scale  * resinc)+" "+
+	            ((int) (11 * resolution) - (int) (crosshairs[i + 2] * scale * resinc)) + " mv\n");
+            printfid.write(""+(int) (crosshairs[i + 1] * scale * resinc)+" "+
+	            ((int) (11 * resolution) - (int) (crosshairs[i + 3] * scale * resinc))+" ln\n");
+            printfid.write("stroke\n");
+        }
+        scale = old_scale;
+        printfid.write("grestore\n");
+        if (dash_flag) 
+            printfid.write("[] 0 setdash\n");
+  }
+
+static boolean   waveformPrint = false;
+static int   resolution = 75;
+static float scale,width,height;
+static float fontsize;
+static float resinc;
+static int   scaled = 0;
+static BufferedWriter printfid;
+static int   xorigin =0,yorigin = 0;
+static float xoffset = 0,yoffset = 0;
+static float x,y;
+static float rotate,width_limit,height_limit;
+static short swidth,sheight;
+static float margin = (float).375;
+
+private int XtBorderWidth(int w)
+{
+    return 0;
+}
+
+
+private void SetScale(int scaleit) throws IOException
+{
+  if (scaleit == scaled)
+    return;
+
+  scaled = scaleit;
+
+  if (scaleit != 0)
+  {
+    printfid.write("gsave\n");
+    printfid.write(""+0.+" "+(825. * (1. - scale))+" translate\n");
+	/* Grid y values are set to ylimit-y (decwindows y are reversed from
+	   postscript), but the ylimit, normally 825, changes due to scale */
+    printfid.write(""+scale+" "+scale+" scale\n");
+  }
+  else
+    printfid.write("grestore\n");
+}
+
+
+
+public void Print( File filefid,
+                  Dimension dim_inp,
+                  int inp_rotate,
+		          String title, 
+		          String window_title, 
+		          int inp_resolution) throws IOException
+
+// if inp_rotate = 0 then print in direction that allows greatest magnification
+//   if inp_rotate = 1 then print in portrait position
+//   if inp_rotate = 2 then print in landscape position 
+
+// If multiple plot on a single page, the first plot printed must be the one located at top left hand corner. 
+
+{
+
+
+//  temporanea
+    int w = 0;
+
+  String libname = System.getProperty("MDS_LIB_PS");
+
+  int inp_total_width = dim_inp.width;
+  int inp_total_height = dim_inp.height;
+  
+  //String libname = new String("e:\\jScope\\jScope4.1\\Lib\\MDS_LIB.PS");
+  //String libname = new String("c:\\Utenti\\Cesare\\JAVA\\jScope4.1\\Lib\\MDS_LIB.PS");
+  BufferedReader libfid;
+//  static unsigned long fatom;
+  float xstart,ystart,xend,yend;
+//  XFontStruct *fs = waveformFontStruct(w);
+  int first_frame = 0;
+  int i;
+  char fontinfo = 0;
+  int fontsize = 12;
+  
+  if(libname == null)
+  {
+	  throw new IOException("Undefined property name MDS_LIB_PS");   
+  }
+
+  if (filefid == null)
+    return;
+
+  if(printfid == null)
+  {
+        printfid = new BufferedWriter(new FileWriter(filefid));
+        String fontname;
+        first_frame = 1;
+        if (inp_rotate == 1)
+        {				 //Portrait 
+            rotate = 0;
+        }
+        else if (inp_rotate == 2)
+        {				// Landscape //
+            rotate = 90;
+        }
+        else
+        {
+            if (((inp_total_height > 0) ? inp_total_height : getSize().height) >= ((inp_total_width > 0) ? inp_total_width : getSize().width) )
+	            rotate = 0;
+            else
+	            rotate = 90;
+        }
+
+        if (inp_resolution > 0) resolution = inp_resolution;
+
+        resinc = (float)(resolution / 75.);
+
+        if (rotate == 0)
+        {
+            width_limit = (float) ((8.5 - 2. * margin) * resolution);
+            height_limit = (float) ((11. - 2. * margin) * resolution);
+        }
+        else
+        {
+            width_limit = (float) ((11. - 2. * margin) * resolution);
+            height_limit = (float) ((8.5 - 2. * margin) * resolution);
+        }
+
+        Rectangle r = getBounds();
+        xorigin = r.x;
+        yorigin = r.y;
+
+        width = ((inp_total_width > 0) ? inp_total_width : getSize().width  * resinc);
+        height = ((inp_total_height > 0) ? inp_total_height : getSize().height  * resinc);
+        scale = Math.min(width_limit / width,height_limit / height);	// Scale to full size of page 
+        width = width * scale;
+        height = height * scale;
+
+
+        File f = new File(libname);
+        if(!f.exists() || f.length() == 0)
+            return;
+
+        libfid = new BufferedReader(new FileReader(libname));
+        char char_lib[] = new char[(int)f.length()];
+        libfid.read(char_lib);
+        
+        printfid.write("%%!PS-Adobe-3.0 EPSF-3.0\n");
+        {
+            float llx = (float)(((width_limit - width) * 72. / resolution) / 2 + margin * 72);
+            float urx = (float)(llx + width * 72. / resolution);
+            float lly = (float)(((height_limit - height) * 72. / resolution) / 2 + margin * 72);
+            float ury = (float)(lly + height * 72. / resolution);
+            if (rotate == 0)
+                printfid.write("%%BoundingBox: "+llx+" "+lly+" "+urx+" "+ury +"\n");
+            else
+                printfid.write("%%BoundingBox: "+lly+" "+llx+" "+ury+" "+urx+"\n");
+
+
+            printfid.write(char_lib);  
+
+
+            fontsize = (int)(13. * 2. / 3.);      // 2/3 gives the actual height of characters. 
+//          fatom = XInternAtom (XtDisplay(w), "FAMILY_NAME", False);
+//          if (!fatom) 
+            fontname = new String("Courier");
+//          else
+//          {
+//              Selezione del Font
+//
+//              for (i = 0; i < fs->n_properties; i++)
+//	                if (fs->properties[i].name == fatom) 
+//                  {
+//	                    fontinfo = XGetAtomName(XtDisplay(w), fs->properties[i].card32);
+//                      break;
+//	                }
+//              strcpy(fontname,fontinfo);
+//              XtFree(fontinfo);
+//              if (strstr(fontname,"New Century Schoolbook"))
+//                  strcpy(fontname,"NewCenturySchlbk");
+//              while (strstr(fontname," ")) strncpy(strstr(fontname," "),"-",1);
+//              fatom = XInternAtom (XtDisplay(w), "WEIGHT_NAME", False);
+//              for (i = 0; i < fs->n_properties; i++)
+//	                if (fs->properties[i].name == fatom) 
+//                  {
+//	                    fontinfo = XGetAtomName(XtDisplay(w), fs->properties[i].card32);
+//                      break;
+//	                }
+//              if (strstr(fontinfo,"Bold")) strcat(fontname,"-Bold");
+//                  XtFree(fontinfo);
+//              fatom = XInternAtom (XtDisplay(w), "FULL_NAME", False);
+//              for (i = 0; i < fs->n_properties; i++)
+//	                if (fs->properties[i].name == fatom) 
+//                  {
+//	                    fontinfo = XGetAtomName(XtDisplay(w), fs->properties[i].card32);
+ //                     break;
+//	                }
+//              if (strstr(fontinfo,"Italic"))
+//              {
+//                  if (!strstr(fontname,"-Bold")) strcat(fontname,"-"); 
+//	                strcat(fontname,"Italic");
+//              }
+//              if (strstr(fontinfo,"Oblique"))
+//              {
+//	                if (!strstr(fontname,"-Bold")) strcat(fontname,"-"); 
+//	                strcat(fontname,"Oblique");
+//              }
+//              if (!strcmp(fontname,"Times") || !strcmp(fontname,"NewCenturySchlbk"))
+//                  strcat(fontname,"-Roman");
+//              XtFree(fontinfo);
+//          }
+//FINE SELEZIONE FONT //
+
+// DIMENSIONE FONT
+//          fatom = XInternAtom (XtDisplay(w), "POINT_SIZE", False);
+//          for (i = 0; i < fs->n_properties; i++)
+//              if (fs->properties[i].name == fatom) break;
+//          if (fatom) fontsize = fontsize * fs->properties[i].card32 / 120.;
+//
+            fontsize = 8; // Fissa a 12
+      
+            if (rotate != 0)
+                printfid.write(""+(11. * 72. - (11. - 8.5) * 72. / 2.)+" "+((11. - 8.5) * 72. / 2.)+" translate\n");
+            // Rotation is around origin, so must move origin for proper plot position //
+            printfid.write(""+rotate+" rotate\n");
+
+// GESTIONE WINDOW TITLE
+            if (window_title != null && window_title.length() != 0)
+            // If window title, allow space at top of plot for printing window title. //
+            {
+                float yscale = (float)( 1. - fontsize * 1.5 * 1.25 / (height - 1.));
+                int lentit = window_title.length();
+
+                printfid.write("/"+fontname+" findfont\n");
+                printfid.write(""+(fontsize * 1.5)+" scalefont\n");	// Specify 13 as fontsize (see note on fontsize) //
+                printfid.write("setfont\n");
+
+                byte window_title_ch[] = window_title.getBytes();
+                for ( i = 0; i < window_title.length(); i++)
+                    if (window_title_ch[i] == '(' || window_title_ch[i] == ')' || window_title_ch[i] == '\\') 
+                        lentit++;
+                {
+                    String print_title;
+                    byte print_title_ch[] = new byte[lentit];
+                    lentit = 0;
+                    for ( i = 0; i < window_title.length(); i++)
+                    {
+                        if (window_title_ch[i] == '(' || window_title_ch[i] == ')' || window_title_ch[i] == '\\')
+	                        print_title_ch[lentit++] = (byte) '\\';
+	                    print_title_ch[lentit++] = window_title_ch[i];
+                    }
+                    //print_title[lentit] = 0;
+                    print_title = new String(print_title_ch);
+
+       	            if (rotate != 0) 
+	                {
+	                    float y1 = XtBorderWidth(w) * scale;
+	                    if (inp_total_height == 0)
+	                        y1 =(float)( -(72. * (11. - 2. * margin) - height) / 2. - 72. * margin);
+	                    else
+	                        y1 = (float)( -(72. * (11. - 2. * margin) - height) / 2. - y1 * resinc - 72. * margin);
+
+                        printfid.write("("+print_title+")"+
+                                (height_limit * 72. / resolution + 72. * 2. * margin) + " " +
+	                            (height - y1 - 1.125 * 1.5 * fontsize)+" centershow\n");
+
+	                    // Scale so bottom of plot still at same place, //
+                        printfid.write(""+1.+" "+yscale+" scale\n");
+                        printfid.write(""+0.+" "+(y1 * (yscale - 1))+" translate\n");
+	                }
+	                else
+	                {
+                        printfid.write(""+print_title+" "+
+                                (width_limit * 72. / resolution + 72. * 2. * margin)+" "+
+                                (ury - 1.125 * fontsize)+" centershow\n");
+
+                        // Scale so bottom of plot still at same place, //
+                        printfid.write(""+1.+" "+yscale+" scale\n");
+	                }
+	            }
+            } //END window title
+        }
+
+        printfid.write(""+.72 / .75+" "+.72 / .75+" scale\n");
+
+        printfid.write(""+.75+" setlinewidth\n");	// Set line width so it generates a true 1/75 //
+        // .72/.75 should work, but it doesn't. //
+        xoffset = xorigin * scale;
+        yoffset = yorigin * scale;
+
+        printfid.write("/fontsize "+fontsize * 1.5 / scale+" def\n");	// Fontsize definition needed for overlayshow //
+        printfid.write("/"+fontname+" findfont\n");
+        printfid.write(""+fontsize * 1.5 / scale+" scalefont\n");	// Specify 13 as fontsize (see note on fontsize) //
+        printfid.write("setfont\n");
+    }
+  
+    Rectangle r = getBounds();
+    xorigin = r.x;
+    yorigin = r.y;
+
+    x = (xorigin + XtBorderWidth(w)) * scale - xoffset;
+    y = (yorigin + XtBorderWidth(w)) * scale - yoffset;
+
+    if (inp_total_width == 0)
+        x = (float)((resolution * (8.5 - 2. * margin) - width) / 2. + resolution * margin);
+    else
+        x = (float)((resolution * (8.5 - 2. * margin) - width) / 2. + x * resinc + resolution * margin);
+
+    if (inp_total_height == 0)
+        y =(float)( -(resolution * (11. - 2. * margin) - height) / 2. - resolution * margin);
+    else
+        y = (float)(-(resolution * (11. - 2. * margin) - height) / 2. - y * resinc - resolution * margin);
+
+    printfid.write("gsave\n");
+    printfid.write(""+x / resinc+" "+y / resinc+" translate\n");	// Center plot //
+ 
+    swidth = (short)(getSize().width * resinc * scale);
+    sheight = (short)(getSize().height * resinc * scale);
+
+    printfid.write("gsave\n");
+    printfid.write(""+(1. / resinc)+" "+(1. / resinc)+" scale\n");
+
+    xstart = ((inp_total_width == 0) ? -1 : - (int) (XtBorderWidth(w)) * scale);
+    xend = ((inp_total_width == 0) ? (int) (getSize().width * scale) : getSize().width * scale);
+    ystart = (float)(11. * 75. - ((inp_total_height == 0) ? (int) (getSize().height * scale) : (XtBorderWidth(w) + getSize().height ) * scale));
+    yend = (float)( 11. * 75. + ((inp_total_height == 0) ? 1. : (int) (XtBorderWidth(w)) * scale));
+
+
+    if (inp_total_width != 0 && (inp_total_width > getSize().width  + 4 || 
+      inp_total_height > getSize().height + 4))
+    {
+        float xtest = xorigin*scale;
+        float ytest = yorigin*scale;
+
+        printfid.write("gsave\n");
+        printfid.write(""+resinc+" "+resinc+" scale\n");
+        printfid.write(""+(.75*3)+" setlinewidth\n");  // Thick border around multi-frame //
+
+        // The following mess draws finds borders that intersect at the //
+        // corners and draws them in succession to obtain rounded corners. //
+
+        if (xoffset == xtest &&
+            Math.abs((yoffset/scale + inp_total_height) - (yorigin + getSize().height)) > 5)
+        {
+            printfid.write(""+xstart+" "+ystart+" moveto\n");
+            printfid.write(""+xstart+" "+yend+" lineto\n");
+            if (yoffset == ytest)
+            {
+                printfid.write(""+xend+" "+yend+" lineto\n");
+                if (Math.abs((xoffset/scale + inp_total_width) - (xorigin + getSize().width)) < 5)
+                    printfid.write(""+xend+" "+ystart+" lineto\n");
+            } 
+            else if (Math.abs((xoffset/scale + inp_total_width) - (xorigin + getSize().width)) < 5)
+            {
+                printfid.write("stroke\n");
+                printfid.write(""+xend+" "+yend+" moveto\n");
+                printfid.write(""+xend+" "+ystart+" lineto\n");
+            }
+            printfid.write("stroke\n");
+        } 
+        else if (yoffset == ytest && (xoffset != xtest ||
+                        Math.abs((yoffset/scale + inp_total_height) - (yorigin + getSize().height)) > 5))
+        {
+            printfid.write(""+xstart+" "+yend+" moveto\n");
+            printfid.write(""+xend+" "+yend+" lineto\n");
+            if (Math.abs((xoffset/scale + inp_total_width) - (xorigin + getSize().width)) < 5)
+            {
+                printfid.write(""+xend+" "+ystart+" lineto\n");
+                if (Math.abs((yoffset/scale + inp_total_height) - (yorigin + getSize().height)) < 5)
+                                printfid.write(""+xstart+" "+ystart+" lineto\n");
+             } 
+             else if (Math.abs((yoffset/scale + inp_total_height) - (yorigin + getSize().height)) < 5)
+             {
+                printfid.write("stroke\n");
+                printfid.write(""+xstart+" "+ystart+"moveto\n");
+                printfid.write(""+xend+" "+ystart+" lineto\n");
+             }
+             printfid.write("stroke\n");
+          } 
+          else if (Math.abs((xoffset/scale + inp_total_width) - (xorigin + getSize().width)) < 5)
+          {
+             printfid.write(""+xend+" "+yend+" moveto\n");
+             printfid.write(""+xend+" "+ystart+" lineto\n");
+             if (Math.abs((yoffset/scale + inp_total_height) - (yorigin + getSize().height)) < 5)
+                printfid.write(""+xstart+" "+ystart+" lineto\n");
+             if (xoffset == xtest) printfid.write(""+xstart+" "+yend+" lineto\n");
+                printfid.write("stroke\n");
+           }
+           else if (Math.abs((yoffset/scale + inp_total_height) - (yorigin + getSize().height)) < 5)
+           {
+              printfid.write(""+xend+" "+ystart+" moveto\n");
+              printfid.write(""+xstart+" "+ystart+" lineto\n");
+              if (xoffset == xtest) printfid.write(""+xstart+" "+yend+" lineto\n");
+              if (yoffset == ytest) printfid.write(""+xend+" "+yend+" lineto\n");
+              printfid.write("stroke\n");
+           }
+           printfid.write("grestore\n");
+        }
+
+
+        if (title != null && title.length() != 0)
+		     // If title, allow space at bottom of plot for printing title.//
+        {
+            float yscale1 = (float)(1. - fontsize * 1.5 * 1.25 * resinc / (sheight - 1.));
+		    // Scale so top of plot still at same place, //
+            float yoffset1 = (float)(11 * resolution * (1. - yscale1));
+
+            float xscale1 = (float)(1. - fontsize * 1.5 * 1.25 * resinc / (swidth - 1.));
+		    // Scale so top of plot still at same place, //
+            float xoffset1 = (float)((8.5 -2. * margin)* resolution * (1. - xscale1));
+            
+		    // but bottom appears raised from original spot. //
+		    printfid.write("%! ridimensione\n");
+            printfid.write(""+/*xoffset1*/ 0.+" "+yoffset1+" translate\n");
+            printfid.write(""+/*xscale1*/1.+" "+yscale1+" scale\n");
+        }
+
+        printfid.write(""+resinc+" "+resinc+" scale\n");
+        printfid.write(""+ xstart +" "+ ystart+ " "+( xend - xstart)+" "+(yend - ystart)+" dorectangleclip\n");
+
+        waveformPrint = true;        
+        Dimension d = new Dimension(swidth, sheight);
+	    grid.paint(off_graphics, d, this, wm);
+        DrawSignal(off_graphics, d);
+        waveformPrint = false;
+
+        SetScale(0);
+        printfid.write("grestore\n");	// To clear clipping region //
+
+    
+    if (title != null  && title.length() != 0)
+    {
+        int length = title.length();
+        //int twidth = XTextWidth(waveformFontStruct(w), title, length);
+        int twidth = length * 13;
+        float x1 = Math.max(0, ((int) getSize().width - twidth) / 2);
+        float y1 = (float)((11 * 75. - (getSize().height - 1) + (.25 * fontsize) / 2.));
+        //float middle = x + twidth/2 - XTextWidth(waveformFontStruct(w),title,1)/2.;
+        float middle = (float)(x1 + twidth/2 - 13/2.);
+        //int i;
+        SetScale(1);
+        for (i = 0; i < length; i++)
+        {
+            char c[] = new char[2];
+            printfid.write(""+(middle+(x1-middle)/scale)+" "+y1+" moveto\n");
+            c[0] = title.charAt(i);
+            //c[0]=title[i];
+            //c[1]=0;
+            //x += XTextWidth(waveformFontStruct(w), c, 1);
+            x1 += 13;
+            if (c[0] == '(' || c[0] == ')' || c[0] == '\\')
+                printfid.write("(\\"+c+") show\n");
+            else
+                printfid.write("("+c+") show\n");
+        }
+        SetScale(0);    
+     }
+
+     printfid.write("grestore\n");
+}
+
+static void PrintClose() throws IOException
+{
+    printfid.write("\nshowpage\n");
+    printfid.close();
+    printfid = null;
+}
+
+private boolean compare_sign(int a, int b) {
+    return ((a)>0 && (b)>0) ? true : (((a)<0 && (b)<0) ? true : false);
+}
+
+public void DrawLines(Polygon p) throws IOException
+{
+    boolean pen_down = true;
+    boolean plot;
+    int lastpoint = 0;
+    int np = 0;
+    int ymin, ymax, imin, imax;
+    int i = 1;
+    
+    int kp = p.npoints;
+    
+    SetScale(0);
+    printfid.write(""+(1. / resinc)+" "+(1. / resinc)+" scale\n");
+    for (i = 1; i < kp; i++)
+    {
+      if (pen_down)
+      {
+	    plot = (p.xpoints[lastpoint] != p.xpoints[i] || p.ypoints[lastpoint] != p.ypoints[i]);
+	    if (plot && i+1 < kp)
+	    {
+	        while (i < kp - 2 && p.xpoints[i + 1] == p.xpoints[i] && p.ypoints[i + 1] == p.ypoints[i])
+	            i++;
+	        if (p.xpoints[i + 1] == p.xpoints[i] && p.xpoints[lastpoint] == p.xpoints[i])
+	        {
+	            ymin = ymax = p.ypoints[lastpoint];
+	            imin = imax = lastpoint;
+	            while (p.xpoints[i] == p.xpoints[i + 1] && i < kp - 2)
+	            {
+	                if (ymax < p.ypoints[i])
+	                {
+		                ymax = p.ypoints[i];
+		                imax = i;
+	                }
+	                if (ymin > p.ypoints[i])
+	                {
+		                ymin = p.ypoints[i];
+		                imin = i;
+	                }
+	                i++;
+	            }
+	            if (ymin < p.ypoints[i] && imin != lastpoint)
+	            {
+	                printfid.write(""+(p.xpoints[lastpoint] - p.xpoints[imin])+" "+(p.ypoints[imin] - p.ypoints[lastpoint])+"\n");
+	                np++;
+	                lastpoint = imin;
+	                if (np == 100)
+	                {
+		                printfid.write(""+np+" "+p.xpoints[lastpoint]+" "+(11 * resolution - p.ypoints[lastpoint])+" v\n");
+		                np = 0;
+	                }
+	            }
+	            if (ymax > p.ypoints[i] && imax != lastpoint)
+	            {
+	                printfid.write(""+(p.xpoints[lastpoint] - p.xpoints[imax])+" "+(p.ypoints[imax] - p.ypoints[lastpoint])+"\n");
+	                np++;
+	                lastpoint = imax;
+	                if (np == 100)
+	                {
+		                printfid.write(""+np+" "+p.xpoints[lastpoint]+" "+(11 * resolution - p.ypoints[lastpoint])+" v\n");
+		                np = 0;
+	                }
+	            }
+	        }
+	        else if (p.ypoints[i + 1] == p.ypoints[i] && p.ypoints[lastpoint] == p.ypoints[i])	        
+	            plot = !compare_sign(p.xpoints[i + 1] - p.xpoints[i],p.xpoints[i] - p.xpoints[lastpoint]);
+	        else
+	            plot = (p.ypoints[i + 1] == p.ypoints[i] || p.ypoints[lastpoint] == p.ypoints[i] ||
+		    (float) (p.xpoints[i + 1] - p.xpoints[i]) / (float) (p.ypoints[i + 1] - p.ypoints[i]) !=
+		    (float) (p.xpoints[i] - p.xpoints[lastpoint]) / (float) (p.ypoints[i] - p.ypoints[lastpoint]));
+	    }
+	    if (plot)
+	    {
+	        printfid.write(""+(p.xpoints[lastpoint] - p.xpoints[i])+" "+(p.ypoints[i] - p.ypoints[lastpoint])+"\n");
+	        np++;
+	        lastpoint = i;
+	        if (np == 100)
+	        {
+	            printfid.write(""+np+" "+p.xpoints[lastpoint]+" "+(11 * resolution - p.ypoints[lastpoint])+" v\n");
+	            np = 0;
+	        }
+	    }
+      }
+      if ((i+1 < kp) && 
+      ((p.xpoints[i] < 0 && p.xpoints[i + 1] < 0) || (p.xpoints[i] > width && p.xpoints[i + 1] > width) ||
+	  (p.ypoints[i] < 0 && p.ypoints[i + 1] < 0) || (p.ypoints[i] > height && p.ypoints[i + 1] > height)))
+	/* Skip lines that occur outside of grid.  Algorithm eliminates most, but not all. */
+      {
+	    if (np != 0)
+	    {
+	        if (lastpoint != i)
+	        {
+	            printfid.write(""+(p.xpoints[lastpoint] - p.xpoints[i])+" "+(p.ypoints[i] - p.ypoints[lastpoint])+"\n");
+	            np++;
+	        }
+	        printfid.write(""+np+" "+p.xpoints[i]+" "+(11 * resolution - p.ypoints[i])+" v\n");
+	        np = 0;
+	    }
+	    pen_down = false;
+      }
+      else if (!pen_down)
+      {
+	    printfid.write(""+(p.xpoints[i - 1] - p.xpoints[i])+" "+(p.ypoints[i] - p.ypoints[i - 1])+"\n");
+	    np = 1;
+	    pen_down = true;
+	    lastpoint = i;
+      }
+    }
+    if (np != 0)
+    {
+      printfid.write(""+np+" "+p.xpoints[lastpoint]+" "+(11 * resolution - p.ypoints[lastpoint])+" v\n");
+   
+    }
+    printfid.write("grestore\n");
+  }
+
+  public void DrawString(float x, float y, String label, boolean rotate_flag) throws IOException
+  {
+        byte label_ch[] = label.getBytes();
+        int i, lenlab = label.length();
+        printfid.write("gsave\n");
+        for (i = 0; i < label.length(); i++)
+            if (label_ch[i] == '(' || label_ch[i] == ')' || label_ch[i] == '\\') lenlab++;
+        {
+
+            String print_label;
+            byte print_label_ch[] = new byte[lenlab];
+            lenlab = 0;
+            for ( i = 0; i < label.length(); i++)
+            {
+                if (label_ch[i] == '(' || label_ch[i] == ')' || label_ch[i] == '\\')
+	                print_label_ch[lenlab++] = (byte)'\\';
+	            print_label_ch[lenlab++] = label_ch[i];
+            }
+            print_label = new String(print_label_ch);
+            SetScale(1);
+            if (x < 0)
+               printfid.write("("+print_label+") "+(-x*2)+" "+(825. - y) + " centershow\n");
+            else
+            {
+               printfid.write(""+x+" "+(825. - y)+" moveto\n");
+               if(rotate_flag)
+                    printfid.write("90 rotate\n");
+               for (i = 0; i < lenlab; i++)
+               {
+                  char c;
+                  c = print_label.charAt(i);
+                  if (c == '\\')
+                  {
+	                 c = print_label.charAt(++i);
+                     printfid.write("(\\"+ c +") show\n");
+	              }
+                  else
+                     printfid.write("("+ c +") show\n");
+	            }
+              }
+          }
+        printfid.write("grestore\n");
+   }
 
 }
 
