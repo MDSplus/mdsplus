@@ -234,7 +234,8 @@ void mdsip_authenticate_cb(
 				   driver, 
 				   GLOBUS_XIO_GSI_GET_PEER_NAME, 
 				   &name);
-      gss_export_name(&status, name, buffer);
+      mdsip_test_result(xio_handle,res,ctx,"mdsip_authenticate_cb");
+      res = gss_display_name(&status, name, buffer, GLOBUS_NULL);
       ctx->remote_user=strcpy(malloc(strlen((char *)buffer->value)+1),(char *)buffer->value);
     }
     else

@@ -86,12 +86,18 @@ void  mdsip_initialize_io(mdsip_options_t *options)
       case 1: level=GLOBUS_XIO_GSI_PROTECTION_LEVEL_NONE; break;
       case 2: level=GLOBUS_XIO_GSI_PROTECTION_LEVEL_INTEGRITY; break;
       case 3: level=GLOBUS_XIO_GSI_PROTECTION_LEVEL_PRIVACY; break;
+    default: fprintf(stderr,"Invalid security level: %d\n",options->security_level);
+             exit(1);
     }
     globus_xio_attr_cntl(server_attr, 
 		    	 gsi_driver, 
 			 GLOBUS_XIO_GSI_SET_PROTECTION_LEVEL, 
 			 level);
 
+    globus_xio_attr_cntl(server_attr,
+			 gsi_driver,
+			 GLOBUS_XIO_GSI_SET_AUTHORIZATION_MODE,
+			 GLOBUS_XIO_GSI_NO_AUTHORIZATION);
     globus_xio_attr_cntl(server_attr, 
 		         gsi_driver, 
 			 GLOBUS_XIO_GSI_SET_DELEGATION_MODE, 
