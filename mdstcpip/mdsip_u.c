@@ -14,6 +14,7 @@
 #include <mds_stdarg.h>
 #if (!defined(HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H))
 #include <pthread.h>
+#include <sys/wait.h>
 #endif
 #ifdef HAVE_VXWORKS_H
 #include <vxWorks.h>
@@ -325,6 +326,8 @@ static int BecomeUser(char *remuser, struct descriptor *user)
 }
 #else
 
+static void sigchld_handler(int num);
+
 static int BecomeUser(char *remuser, struct descriptor *local_user)
 {
   int ok = 1;
@@ -350,7 +353,7 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
        char *mds_path = getenv("MDS_PATH");
        if (mode == 'I')
        {
-         signal(SIGCHLD,SIG_IGN);
+         signal(SIGCHLD,sigchld_handler);
          pid = fork();
        }
        else
@@ -400,9 +403,66 @@ int mdsip(int portIn, char modeIn,  int compressionIn)
   MaxCompressionLevel = compressionIn;
 
 #else
+static void sigchld_handler(int num)
+                    {
+                      sigset_t set, oldset;
+                      pid_t pid;
+                      int status, exitstatus;
+
+                      /* block other incoming SIGCHLD signals */
+                      sigemptyset(&set);
+                      sigaddset(&set, SIGCHLD);
+                      sigprocmask(SIG_BLOCK, &set, &oldset);
+
+                      /* wait for child */
+                      while((pid = waitpid((pid_t)-1, &status, WNOHANG)) > 0)
+                        {
+			  /*
+                          if(WIFEXITED(status))
+                            {
+                              exitstatus = WEXITSTATUS(status);
+
+                              fprintf(stderr, 
+                                      "Parent: child exited, pid = %d, exit status = %d\n", 
+                                      (int)pid, exitstatus);
+                            }
+                          else if(WIFSIGNALED(status))
+                            {
+                              exitstatus = WTERMSIG(status);
+
+                              fprintf(stderr,
+                                      "Parent: child terminated by signal %d, pid = %d\n",
+                                      exitstatus, (int)pid);
+                            }
+                          else if(WIFSTOPPED(status))
+                            {
+                              exitstatus = WSTOPSIG(status);
+
+                              fprintf(stderr,
+                                      "Parent: child stopped by signal %d, pid = %d\n",
+                                      exitstatus, (int)pid);
+                            }
+                          else
+                            {
+                              fprintf(stderr,
+                                      "Parent: child exited magically, pid = %d\n",
+                                      (int)pid);
+                            }
+			  */
+                        }
+
+                      /* re-install the signal handler (some systems need this) */
+                      signal(SIGCHLD, sigchld_handler);
+                      
+                      /* and unblock it */
+                      sigemptyset(&set);
+                      sigaddset(&set, SIGCHLD);
+                      sigprocmask(SIG_UNBLOCK, &set, &oldset);
+                    }
 
 int main(int argc, char **argv)
 {
+  signal(SIGCHLD,sigchld_handler);
   InitializeSockets();
   /* DebugBreak(); */
   if (!CommandParsed) 
