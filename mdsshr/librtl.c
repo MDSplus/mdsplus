@@ -417,7 +417,7 @@ int LibInsertTree(struct node **treehead,char *symbol_ptr, int *control_flags, i
 static int MdsInsertTree(struct bbtree_info *bbtree_ptr)
 {
 
-#define currentnode (bbtree_ptr->currentnode)
+#define currentNode (bbtree_ptr->currentnode)
 #define ALLOCATE    (*(bbtree_ptr->alloc_routine))
 /*
 #define left_of(node_ptr) (node_ptr->left ? (struct node *)((int)(node_ptr) + node_ptr->left) : 0)
@@ -433,19 +433,19 @@ static int MdsInsertTree(struct bbtree_info *bbtree_ptr)
     struct node *down_left;
     struct node *down_right;
 
-    if (currentnode == 0)
+    if (currentNode == 0)
     {
 	if (!(ALLOCATE(bbtree_ptr->keyname, &save_current, bbtree_ptr->user_context) & 1)) return 0;
-	currentnode = save_current;
-	currentnode->left = 0;
-	currentnode->right = 0;
-	currentnode->bal = 0;
+	currentNode = save_current;
+	currentNode->left = 0;
+	currentNode->right = 0;
+	currentNode->bal = 0;
 	bbtree_ptr->new_node = save_current;
 	bbtree_ptr->foundintree = 1;
 	return 0;
     }
-    save_current = currentnode;
-    if ((in_balance = (*(bbtree_ptr->compare_routine))(bbtree_ptr->keyname, currentnode, bbtree_ptr->user_context)) <= 0)
+    save_current = currentNode;
+    if ((in_balance = (*(bbtree_ptr->compare_routine))(bbtree_ptr->keyname, currentNode, bbtree_ptr->user_context)) <= 0)
     {
 	if ( (in_balance == 0) && (!(bbtree_ptr->controlflags & 1)) )
 	{
@@ -453,28 +453,28 @@ static int MdsInsertTree(struct bbtree_info *bbtree_ptr)
 	    bbtree_ptr->foundintree = 3;
 	    return 1;
 	}
-	currentnode = left_of(currentnode);
+	currentNode = left_of(currentNode);
 	in_balance = MdsInsertTree(bbtree_ptr);
 	if ( (bbtree_ptr->foundintree == 3) || (bbtree_ptr->foundintree == 0) ) return 1;
-	down_left = currentnode;
-	currentnode = save_current;
-	currentnode->left = offset_of(currentnode,down_left);
+	down_left = currentNode;
+	currentNode = save_current;
+	currentNode->left = offset_of(currentNode,down_left);
 	if (in_balance) return 1;
 	else
 	{
-	    currentnode->bal--;
-	    if (currentnode->bal == 0) return 1;
+	    currentNode->bal--;
+	    if (currentNode->bal == 0) return 1;
 	    else
 	    {
-		if (currentnode->bal & 1) return 0;
-		down_left = left_of(currentnode);
+		if (currentNode->bal & 1) return 0;
+		down_left = left_of(currentNode);
 		if (down_left->bal < 0)
 		{
-		    currentnode->left = offset_of(currentnode,right_of(down_left));
-		    down_left->right = offset_of(down_left,currentnode);
-		    currentnode->bal = 0;
-		    currentnode = down_left;
-		    currentnode->bal = 0;
+		    currentNode->left = offset_of(currentNode,right_of(down_left));
+		    down_left->right = offset_of(down_left,currentNode);
+		    currentNode->bal = 0;
+		    currentNode = down_left;
+		    currentNode->bal = 0;
 		    return 1;
 		}
 		else
@@ -482,14 +482,14 @@ static int MdsInsertTree(struct bbtree_info *bbtree_ptr)
 		    down_right = right_of(down_left);
 		    down_left->right = offset_of(down_left,left_of(down_right));
 		    down_right->left = offset_of(down_right,down_left);
-		    currentnode->left = offset_of(currentnode,right_of(down_right));
-		    down_right->right = offset_of(down_right,currentnode);
-		    currentnode->bal = 0;
+		    currentNode->left = offset_of(currentNode,right_of(down_right));
+		    down_right->right = offset_of(down_right,currentNode);
+		    currentNode->bal = 0;
 		    down_left->bal = 0;
 		    if (down_right->bal > 0) down_left->bal = -1;
-		    else if (down_right->bal < 0) currentnode->bal = 1;
-		    currentnode = down_right;
-		    currentnode->bal = 0;
+		    else if (down_right->bal < 0) currentNode->bal = 1;
+		    currentNode = down_right;
+		    currentNode->bal = 0;
 		    return 1;
 		}
 	    }
@@ -497,30 +497,30 @@ static int MdsInsertTree(struct bbtree_info *bbtree_ptr)
     }
     else
     {
-	currentnode = right_of(currentnode);
+	currentNode = right_of(currentNode);
 	in_balance = MdsInsertTree(bbtree_ptr);
 	if ( (bbtree_ptr->foundintree == 3) || (bbtree_ptr->foundintree == 0) ) return 1;
-	down_right = currentnode;
-	currentnode = save_current;
-	currentnode->right = offset_of(currentnode,down_right);
+	down_right = currentNode;
+	currentNode = save_current;
+	currentNode->right = offset_of(currentNode,down_right);
 	if (in_balance)
 	    return 1;
 	else
 	{
-	    currentnode->bal++;
-	    if (currentnode->bal == 0)
+	    currentNode->bal++;
+	    if (currentNode->bal == 0)
 		return 1;
 	    else
 	    {
-		if (currentnode->bal & 1) return 0;
-		down_right = right_of(currentnode);
+		if (currentNode->bal & 1) return 0;
+		down_right = right_of(currentNode);
 		if (down_right->bal > 0)
 		{
-		    currentnode->right = offset_of(currentnode,left_of(down_right));
-		    down_right->left = offset_of(down_right,currentnode);
-		    currentnode->bal = 0;
-		    currentnode = down_right;
-		    currentnode->bal = 0;
+		    currentNode->right = offset_of(currentNode,left_of(down_right));
+		    down_right->left = offset_of(down_right,currentNode);
+		    currentNode->bal = 0;
+		    currentNode = down_right;
+		    currentNode->bal = 0;
 		    return 1;
 		}
 		else
@@ -528,21 +528,21 @@ static int MdsInsertTree(struct bbtree_info *bbtree_ptr)
 		    down_left = left_of(down_right);
 		    down_right->left = offset_of(down_right,right_of(down_left));
 		    down_left->right = offset_of(down_left,down_right);
-		    currentnode->right = offset_of(currentnode,left_of(down_left));
-		    down_left->left = offset_of(down_left,currentnode);
-		    currentnode->bal = 0;
+		    currentNode->right = offset_of(currentNode,left_of(down_left));
+		    down_left->left = offset_of(down_left,currentNode);
+		    currentNode->bal = 0;
 		    down_right->bal = 0;
 		    if (down_left->bal < 0) down_right->bal = 1;
-		    else if (down_left->bal > 0) currentnode->bal = -1;
-		    currentnode = down_left;
-		    currentnode->bal = 0;
+		    else if (down_left->bal > 0) currentNode->bal = -1;
+		    currentNode = down_left;
+		    currentNode->bal = 0;
 		    return 1;
 		}
 	    }
 	}
     }
 }
-#undef currentnode
+#undef currentNode
 
 int LibLookupTree(struct node **treehead, int *symbolstring, int (*compare_rtn)(), struct node **blockaddr)
 {
