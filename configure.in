@@ -29,6 +29,7 @@ LD=ld
 LD_LDARC=""
 LD_LDSHARE=""
 IDL_BIN_SUF=""
+MDSVME=""
 
 CFLAGS="$CFLAGS -I\$(top_srcdir)/include"
 FFLAGS="$FFLAGS -I\$(top_srcdir)/include"
@@ -94,6 +95,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="-lfor";
        FEXECLIBDIR="-L";
+       MDSVME="mdsvme";
        SHARETYPE=".so";;
 *linux*) CFLAGS="$CFLAGS -fpic";
        FFLAGS="$FFLAGS -fpic";
@@ -395,6 +397,8 @@ AC_SUBST(LD)
 AC_SUBST(FOR_LDFLAGS)
 AC_SUBST(SIZEOF_INT_P)
 AC_SUBST(FEXECLIBDIR)
+AC_SUBST(MDSVME)
+
 AC_OUTPUT(Makefile
 envsyms
 actions/Makefile 
@@ -416,6 +420,7 @@ mdslibidl/Makefile
 mdsremote/Makefile
 mdsshr/Makefile 
 mdstcpip/Makefile 
+mdsvme/Makefile
 mitdevices/Makefile 
 remcam/Makefile 
 servershr/Makefile 
