@@ -105,7 +105,6 @@ void main(int argc, char *argv[])
   printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
   printf("experiment: %s\n",string);
 
-  printf("DESCR BEFORE SIZE(ATIME): %d\n",dscrsize);
   status = MdsValue("SIZE(\\ATIME)",&dscrsize,&null,&returnlength);
   printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
   printf("result: %d\n",sizeresult);
@@ -139,6 +138,7 @@ void main(int argc, char *argv[])
 	int j;
 	for (j=0;j<sy;j++) printf("i: %d, j: %d, data: %f \n",i,j,(data+j)[i]);
       }
+    free(data);
   }
   
 
@@ -160,8 +160,23 @@ void main(int argc, char *argv[])
 
   printf("=================== TEST 6 ======================\n");
 
-  status = MdsValue("1.",&dsc1,&null,&null);
+  status = MdsValue("1.",&dsc1,&null,&returnlength);  /* DO NOT USE &null as last argument because then null!=0 !! */
   printf("MdsValue status: %d  (NO RETURN LENGTH IN ARGUMENT LIST)\n", status);
   printf("result: %f\n",arg1);
+
+  printf("=================== TEST 7 ======================\n");
+
+  dsc = descr(&dtype_cstring,string,&null,&stringlength);
+  status = MdsValue("FINDSIG('TSTE_CORE')",&dsc,&null,&returnlength);
+  printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
+  printf("FINDSIG(TSTE_CORE): %s\n",string);
+
+
+  printf("=================== TIMING TEST ======================\n");
+
+
+  for (i=0;i<500;i++) status = MdsValue("FINDSIG('\\TSTE_CORE')",&dscrstring,&null,&returnlength);
+
+  exit(0);
 
 }
