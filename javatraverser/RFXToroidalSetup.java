@@ -110,14 +110,14 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceChoice6.setChoiceFloatValues(null);
     deviceChoice6.setOffsetNid(4);
     deviceChoice6.setLabelString("Selection Bank CPU1:");
-    deviceChoice6.setChoiceItems(new String[] {"8mF", "16mF", "NONE"});
+    deviceChoice6.setChoiceItems(new String[] {"8mF", "16mF"});
     deviceChoice6.setUpdateIdentifier("");
     deviceChoice6.setIdentifier("");
     deviceChoice5.setChoiceIntValues(null);
     deviceChoice5.setChoiceFloatValues(null);
     deviceChoice5.setOffsetNid(7);
     deviceChoice5.setLabelString("Selection Bank CPU2:");
-    deviceChoice5.setChoiceItems(new String[] {"8mF", "16mF", "NONE"});
+    deviceChoice5.setChoiceItems(new String[] {"8mF", "16mF"});
     deviceChoice5.setUpdateIdentifier("");
     deviceChoice5.setIdentifier("");
     deviceTable1.setOffsetNid(8);
