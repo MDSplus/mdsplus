@@ -22,7 +22,7 @@ public class DIO2Setup extends DeviceSetup
 		setDeviceTitle("INCAA DIO2 timing module - decoder configuration");
 		setDeviceType("DIO2");
 		getContentPane().setLayout(new BorderLayout(0,0));
-		setSize(693,392);
+		setSize(792,392);
 		JPanel1.setLayout(new BorderLayout(0,0));
 		getContentPane().add(BorderLayout.NORTH, JPanel1);
 		JPanel50.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -55,12 +55,11 @@ public class DIO2Setup extends DeviceSetup
 		JPanel50.add(deviceChoice2);
 		JPanel51.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		JPanel1.add(BorderLayout.CENTER, JPanel51);
-		deviceField3.setNumCols(30);
+		deviceField3.setNumCols(60);
 		deviceField3.setTextOnly(true);
 		deviceField3.setOffsetNid(4);
 		deviceField3.setLabelString("Comment: ");
 		JPanel51.add(deviceField3);
-		JPanel51.add(deviceDispatch1);
 		JPanel52.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		JPanel1.add(BorderLayout.SOUTH, JPanel52);
 		deviceField116.setTextOnly(true);
@@ -80,18 +79,20 @@ public class DIO2Setup extends DeviceSetup
 		deviceField117.setOffsetNid(138);
 		deviceField117.setLabelString("Synch. event: ");
 		JPanel52.add(deviceField117);
+		JPanel52.add(deviceDispatch1);
 		{
-			String[] tempString = new String[3];
+			String[] tempString = new String[4];
 			tempString[0] = "INIT";
 			tempString[1] = "TRIGGER";
 			tempString[2] = "STORE";
+			tempString[3] = "RESET";
 			deviceButtons1.setMethods(tempString);
 		}
 		getContentPane().add(BorderLayout.SOUTH, deviceButtons1);
 		getContentPane().add(BorderLayout.CENTER, JTabbedPane1);
 		JPanel2.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(JPanel2);
-		JPanel2.setBounds(2,24,688,202);
+		JPanel2.setBounds(2,24,787,203);
 		JPanel2.setVisible(false);
 		deviceChannel1.setInSameLine(true);
 		deviceChannel1.setLines(-1);
@@ -268,7 +269,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel2.add(BorderLayout.NORTH, deviceChoice3);
 		JPanel8.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(JPanel8);
-		JPanel8.setBounds(2,24,688,202);
+		JPanel8.setBounds(2,24,787,203);
 		JPanel8.setVisible(false);
 		deviceChannel6.setInSameLine(true);
 		deviceChannel6.setLines(-1);
@@ -445,7 +446,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel8.add(BorderLayout.NORTH, deviceChoice16);
 		JPanel14.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(JPanel14);
-		JPanel14.setBounds(2,24,688,202);
+		JPanel14.setBounds(2,24,787,203);
 		JPanel14.setVisible(false);
 		deviceChannel11.setInSameLine(true);
 		deviceChannel11.setLines(-1);
@@ -622,7 +623,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel14.add(BorderLayout.NORTH, deviceChoice23);
 		JPanel20.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(JPanel20);
-		JPanel20.setBounds(2,24,688,202);
+		JPanel20.setBounds(2,24,787,203);
 		JPanel20.setVisible(false);
 		deviceChannel16.setInSameLine(true);
 		deviceChannel16.setLines(-1);
@@ -799,7 +800,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel20.add(BorderLayout.NORTH, deviceChoice30);
 		JPanel26.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(JPanel26);
-		JPanel26.setBounds(2,24,688,202);
+		JPanel26.setBounds(2,24,787,203);
 		JPanel26.setVisible(false);
 		deviceChannel21.setInSameLine(true);
 		deviceChannel21.setLines(-1);
@@ -976,7 +977,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel26.add(BorderLayout.NORTH, deviceChoice37);
 		JPanel32.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(JPanel32);
-		JPanel32.setBounds(2,24,688,202);
+		JPanel32.setBounds(2,24,787,203);
 		JPanel32.setVisible(false);
 		deviceChannel26.setInSameLine(true);
 		deviceChannel26.setLines(-1);
@@ -1153,7 +1154,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel32.add(BorderLayout.NORTH, deviceChoice44);
 		JPanel38.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(JPanel38);
-		JPanel38.setBounds(2,24,688,202);
+		JPanel38.setBounds(2,24,787,203);
 		JPanel38.setVisible(false);
 		deviceChannel31.setInSameLine(true);
 		deviceChannel31.setLines(-1);
@@ -1330,7 +1331,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel38.add(BorderLayout.NORTH, deviceChoice51);
 		JPanel44.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(JPanel44);
-		JPanel44.setBounds(2,24,688,202);
+		JPanel44.setBounds(2,24,787,203);
 		JPanel44.setVisible(false);
 		deviceChannel36.setInSameLine(true);
 		deviceChannel36.setLines(-1);
@@ -1562,11 +1563,11 @@ public class DIO2Setup extends DeviceSetup
 	DeviceChoice deviceChoice2 = new DeviceChoice();
 	javax.swing.JPanel JPanel51 = new javax.swing.JPanel();
 	DeviceField deviceField3 = new DeviceField();
-	DeviceDispatch deviceDispatch1 = new DeviceDispatch();
 	javax.swing.JPanel JPanel52 = new javax.swing.JPanel();
 	DeviceField deviceField116 = new DeviceField();
 	DeviceChoice deviceChoice59 = new DeviceChoice();
 	DeviceField deviceField117 = new DeviceField();
+	DeviceDispatch deviceDispatch1 = new DeviceDispatch();
 	DeviceButtons deviceButtons1 = new DeviceButtons();
 	javax.swing.JTabbedPane JTabbedPane1 = new javax.swing.JTabbedPane();
 	javax.swing.JPanel JPanel2 = new javax.swing.JPanel();

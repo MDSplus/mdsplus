@@ -63,12 +63,12 @@ public class DIO2EncoderSetup extends DeviceSetup
 		JPanel51.add(deviceDispatch1);
 		JPanel2.setLayout(new BorderLayout(0,0));
 		getContentPane().add(BorderLayout.CENTER,JPanel2);
-		JPanel3.setBounds(0,0,698,697);
+		JPanel3.setBounds(0,0,698,527);
 		JPanel2.add(JScrollPane1);
 		JViewport1.setExtentSize(new java.awt.Dimension(521,656));
 		JViewport1.setViewSize(new java.awt.Dimension(505,656));
 		JScrollPane1.getViewport().add(JViewport1);
-		JViewport1.setBounds(0,0,698,697);
+		JViewport1.setBounds(0,0,698,527);
 		JPanel3.setLayout(new GridLayout(17,1,0,0));
 		JViewport1.add(JPanel3);
 		deviceChannel1.setInSameLine(true);
