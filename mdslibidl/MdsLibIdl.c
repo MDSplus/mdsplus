@@ -110,12 +110,13 @@ static void *MakeDescr(int idx, int *argsize, void *bytes)
       {
 	int j;
 	IDL_STRING *str;
-        int num;
+        int num = 1;
         unsigned short maxlen;
 	arrayArgs[idx].dtype = DTYPE_T;
-        for (i=0,str = (IDL_STRING *)bytes,num=0,maxlen=0;i<arrayArgs[idx].dimct;i++)
-          for (j=0;j<arrayArgs[idx].m[i];j++,str++,num++)
-            if (str->slen > maxlen) maxlen = str->slen;
+        for (i=0,str = (IDL_STRING *)bytes;i<arrayArgs[idx].dimct;i++)
+          num = num * arrayArgs[idx].m[i];
+        for (i=0,str = (IDL_STRING *)bytes,maxlen=0;i<num;i++)
+          if (str->slen > maxlen) maxlen = str->slen;
         arrayArgs[idx].length = maxlen;
         arrayArgs[idx].arsize = maxlen * num;
         if (arrayArgs[idx].arsize > 0)
