@@ -33,7 +33,7 @@ c
 
 
 c   COMMENT OUT THE NEXT LINE TO TEST LOCAL ACCESS
-      call MdsConnect('gemini.gat.com')
+      status = MdsConnect('gemini.gat.com')
 
       dsc = descr(IDTYPE_FLOAT,result,0)
       status = MdsValue('1.'//CHAR(0),dsc,0,)
@@ -122,6 +122,6 @@ c   COMMENT OUT THE NEXT LINE TO TEST LOCAL ACCESS
       write (6,*) 'MdsSetDefault("\MAIN::TOP"): ',status
 
 c   COMMENT OUT THE NEXT LINE TO TEST LOCAL ACCESS
-      call MdsDisconnect
+      status = MdsDisconnect
 c23456789012345678901234567890123456789012345678901234567890123456789012
       end
