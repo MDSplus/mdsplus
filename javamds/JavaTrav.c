@@ -1014,6 +1014,7 @@ static int doAction(int nid)
 
 		curr_rec_ptr = (struct descriptor_r *)((struct descriptor_action *)curr_rec_ptr)->task;
 	if(!curr_rec_ptr) return 0;
+
 	switch(curr_rec_ptr->dtype) {
 	case DTYPE_PROGRAM:
 		program_d_ptr = (struct descriptor_program *)curr_rec_ptr;
@@ -1068,7 +1069,11 @@ static int doAction(int nid)
 		status = TdiEvaluate(&call_d, &xd1 MDS_END_ARG);
 		MdsFree1Dx(&xd1, 0);
 		break;
-	default: status = 0;
+	case DTYPE_FUNCTION:
+		status = TdiData(curr_rec_ptr, &xd MDS_END_ARG);
+		break;
+
+		default: status = 0;
 	}
 	MdsFree1Dx(&xd, 0);
 	return status;
