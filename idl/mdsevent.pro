@@ -110,9 +110,7 @@ function mdsevent_get_value, id
 end
 
 function esocket
-  forward_function mds$socket
-  defsysv,'!MDS_SOCKET',exists=old_sock
-  if old_sock then sock = mds$socket() else sock = -1
+  if mdsisclient() then sock = call_function("mds$socket") else sock = -1
   return,sock
 end
 
