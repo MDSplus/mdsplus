@@ -3,7 +3,27 @@ module a12
     version = 
     "v1.0"
 
-object
+procedure
+	XmdsCreateExprField;
+	XmdsCreateDigChans;
+	XmdsCreateXdBoxOnOffButton;
+	XmdsCreateOkButton;
+	XmdsCreateCancelButton;
+	XmdsCreateResetButton;
+	XmdsCreateApplyButton;
+
+value
+	XmdsNnid : argument("nid",integer);
+	XmdsNnidOffset : argument("nidOffset",integer);
+	XmdsNdefaultQuote : argument("defaultQuote",boolean);
+	XmdsNautoQuote : argument("autoQuote",boolean);
+	XmdsNchannels : argument("channels",integer);
+	XmdsNdataNidOffset : argument("dataNidOffset",integer);
+        XmdsNstartIdxNidOffset : argument("startIdxNidOffset",integer);
+        XmdsNendIdxNidOffset : argument("endIdxNidOffset",integer);
+        XmdsNnodesPerChannel : argument("nodesPerChannel",integer);
+
+ object
     A12: XmBulletinBoardDialog 
         {
         arguments
@@ -26,7 +46,7 @@ object
                     XmNy = 10;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -51,7 +71,7 @@ object
                     XmNy = 40;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -76,7 +96,7 @@ object
                     XmNy = 105;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -99,7 +119,7 @@ object
                     XmNy = 72;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -112,7 +132,7 @@ object
                     XmNy = 70;
                     };
                 };
-            XmdsDigChans 
+            user_defined procedure XmdsCreateDigChans 
                 {
                 arguments
                     {
@@ -129,7 +149,7 @@ object
                     XmNheight = 245;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -141,7 +161,7 @@ object
                     XmdsNnidOffset = A12$N_INIT_ACTION;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -153,7 +173,7 @@ object
                     XmdsNnidOffset = A12$N_STORE_ACTION;
                     };
                 };
-            XmdsOkButton
+            user_defined procedure XmdsCreateOkButton
                 {
                 arguments
                     {
@@ -161,7 +181,7 @@ object
                     XmNy = 440;
                     };
                 };
-            XmdsApplyButton
+            user_defined procedure XmdsCreateApplyButton
                 {
                 arguments
                     {
@@ -169,7 +189,7 @@ object
                     XmNy = 440;
                     };
                 };
-            XmdsResetButton
+            user_defined procedure XmdsCreateResetButton
                 {
                 arguments
                     {
@@ -177,7 +197,7 @@ object
                     XmNy = 440;
                     };
                 };
-            XmdsCancelButton
+            user_defined procedure XmdsCreateCancelButton
                 {
                 arguments
                     {
