@@ -347,6 +347,7 @@ static int BecomeUser(char *remuser, struct descriptor *user)
        char *cmd = strcpy(malloc(homelen+10),"HOME=");
        char *mds_path = getenv("MDS_PATH");
        initgroups(pwd->pw_name,pwd->pw_gid);
+       status = setgid(pwd->pw_gid);
        status = setuid(pwd->pw_uid);
        strcat(cmd,pwd->pw_dir);
        putenv(cmd);
