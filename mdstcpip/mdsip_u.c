@@ -102,7 +102,7 @@ extern int TdiResetPublic();
 extern int TdiResetPrivate();
 extern char *TranslateLogical();
 
-static int CreateMdsPort(short port, int multi, int dofork);
+static int CreateMdsPort(short port, int multi);
 static void AddClient(int socket, struct sockaddr_in *sin,char *dn);
 static void RemoveClient(Client *c);
 static void ProcessMessage(Client *c, Message *message);
@@ -344,15 +344,28 @@ static int BecomeUser(char *remuser, struct descriptor *user)
     }
     if (pwd)
     {
+       int pid = 0;
        int homelen = strlen(pwd->pw_dir); 
        char *cmd = strcpy(malloc(homelen+10),"HOME=");
        char *mds_path = getenv("MDS_PATH");
-       initgroups(pwd->pw_name,pwd->pw_gid);
-       status = setgid(pwd->pw_gid);
-       status = setuid(pwd->pw_uid);
-       strcat(cmd,pwd->pw_dir);
-       putenv(cmd);
+       if (mode == 'I')
+       {
+         signal(SIGCHLD,SIG_IGN);
+         pid = fork();
+       }
+       else
+         pid = getpid();
+       if (!pid)
+       {
+         initgroups(pwd->pw_name,pwd->pw_gid);
+         status = setgid(pwd->pw_gid);
+         status = setuid(pwd->pw_uid);
+         strcat(cmd,pwd->pw_dir);
+         putenv(cmd);
        /* DO NOT FREE CMD --- putenv requires it to stay allocated */
+       }
+       else
+         status = 0;
     }
     MdsFree(luser);
     ok = (status == 0) ? 1 : 2;
@@ -389,6 +402,7 @@ int main(int argc, char **argv)
     ParseCommand(argc, argv, &Portname, &port, &hostfile, &mode, &flags, &MaxCompressionLevel);
 
 #endif
+  printf("starting process - pid = %d\n",getpid());
 
   MdsSetServerPortname(Portname);
   if (IsService)
@@ -418,7 +432,7 @@ int main(int argc, char **argv)
      char multistr[] = "MULTI";
        CheckClient(0,multistr);
     }
-    serverSock = CreateMdsPort(port,1,mode == 'I');
+    serverSock = CreateMdsPort(port,1);
     shut = 0;
     if (IsService)
     {
@@ -594,6 +608,11 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
     time_t tim;
     int m_status;
     int user_compression_level;
+#ifndef HAVE_VXWORKS_H
+    pid = getpid();
+#else
+    pid = taskIdSelf();
+#endif
     m.h.msglen = sizeof(MsgHdr);
     m_user = GetMdsMsg(sock,&status);
     if ((status & 1) && (m_user) && (m_user->h.dtype == DTYPE_CSTRING))
@@ -627,6 +646,8 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
     m.h.client_type = m_user ? m_user->h.client_type : 0; 
     if (m_user)
       free(m_user);
+    if (mode == 'I' && pid == getpid())
+      return;
     SetSocketOptions(sock);
     SendMdsMsg(sock,&m,0);
     if (NO_SPAWN)
@@ -656,11 +677,6 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
        }
 
        RegisterRead(sock);
-#ifndef HAVE_VXWORKS_H
-      pid = getpid();
-#else
-      pid = taskIdSelf();
-#endif
 
     }
     else
@@ -1305,9 +1321,9 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
   free(m);
 }
 
-static int CreateMdsPort(short port, int multi_in, int dofork)
+static int CreateMdsPort(short port, int multi_in)
 {
-  return CreateListener(port,AddClient,DoMessage,dofork);
+  return CreateListener(port,AddClient,DoMessage);
 }
 
 void ResetErrors()

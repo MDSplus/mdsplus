@@ -84,9 +84,15 @@ static void (*DoMessage)(SOCKET) = 0;
 
 #ifdef GLOBUS
 
-void ReadCallback(void *socket, globus_io_handle_t *handle, globus_result_t result, globus_byte_t *buf, globus_size_t nbytes)
+void ReadCallback(void *sock, globus_io_handle_t *handle, globus_result_t result, globus_byte_t *buf, globus_size_t nbytes)
 {
-  (*DoMessage)((SOCKET)socket);
+  if (result == GLOBUS_SUCCESS)
+    (*DoMessage)((SOCKET)sock);
+  else
+  {
+    CloseSocket((SOCKET)sock);
+    exit(0);
+  }
 }
 
 void RegisterRead(SOCKET s)
@@ -102,86 +108,68 @@ void RegisterRead(SOCKET s)
   }
 }
 
-void ConnectReceived(void *callback_arg, globus_io_handle_t *listener_handle, globus_result_t result)
+void ConnectReceived(void *callback_arg, globus_io_handle_t *listener_handle, globus_result_t result_in)
 {
-  int dofork = (int)callback_arg;
-  int doaccept = 1;
-  int dolisten = 1;
-  if (dofork)
+  int pid = getpid();
+  SOCKET s;
+  int host = 0;
+  unsigned short port = 0;
+  globus_io_handle_t *handle = NewHandle(&s);
+  globus_result_t result;
+  globus_io_attr_t attr;
+  globus_io_tcp_get_attr(listener_handle,&attr);
+  if ((result = globus_io_tcp_accept(listener_handle,&attr,handle)) != GLOBUS_SUCCESS)
   {
-    int pid = 0;
-    signal(SIGCHLD,SIG_IGN);
-    pid = fork();
-    if (!pid)
-    {
-      CloseSocket(listener_handle);
-      dolisten = 0;
-    }
-    else
-      doaccept = 0;
-  }
-  if (doaccept)
-  {
-    SOCKET s;
-    int host = 0;
-    unsigned short port = 0;
-    globus_io_handle_t *handle = NewHandle(&s);
-    globus_result_t result;
-    globus_io_attr_t attr;
-    globus_io_tcp_get_attr(listener_handle,&attr);
-    if ((result = globus_io_tcp_accept(listener_handle,&attr,handle)) != GLOBUS_SUCCESS)
-    {
-      globus_object_t *  err = globus_error_get(result);
-      if (globus_object_type_match(
-  		GLOBUS_IO_ERROR_TYPE_AUTHENTICATION_FAILED,
+    globus_object_t *  err = globus_error_get(result);
+    if (globus_object_type_match(
+		GLOBUS_IO_ERROR_TYPE_AUTHENTICATION_FAILED,
 	        globus_object_get_type(err)))
-      {
+    {
 	    globus_libc_printf("client: authentication failed\n");
-      }
-      else if (globus_object_type_match(
-		   GLOBUS_IO_ERROR_TYPE_AUTHORIZATION_FAILED,
-	           globus_object_get_type(err)))
-      {
-	    globus_libc_printf("client: authorization failed\n");
-      }
-      else if (globus_object_type_match(
-	           GLOBUS_IO_ERROR_TYPE_NO_CREDENTIALS,
-	           globus_object_get_type(err)))
-      {
-	    globus_libc_printf("client: failure: no credentials\n");
-      }
-      else
-      {
-	    globus_libc_printf("client: accept() failed, result=%p, port=%d\n",result,port);
-      }
-      globus_object_free(err);
+    }
+    else if (globus_object_type_match(
+       GLOBUS_IO_ERROR_TYPE_AUTHORIZATION_FAILED,
+       globus_object_get_type(err)))
+    {
+       globus_libc_printf("client: authorization failed\n");
+    }
+    else if (globus_object_type_match(
+       GLOBUS_IO_ERROR_TYPE_NO_CREDENTIALS,
+       globus_object_get_type(err)))
+    {
+       globus_libc_printf("client: failure: no credentials\n");
     }
     else
     {
+       globus_libc_printf("client: accept() failed, result=%p, port=%d\n",result,port);
+    }
+    globus_object_free(err);
+  }
+  else
+  {
 /*
       globus_io_tcp_get_remote_address(handle,&host,&port);
 */
-      gss_ctx_id_t context = 0;
-      OM_uint32 minor_status = 0;
-      gss_name_t src_name = 0;
-      gss_name_t targ_name = 0;
-      int lifetime = 0;
-      unsigned int status;
-      gss_buffer_desc gss_buffer;
-      gss_OID gss_oid = 0;
-      char name[4096];
-      gss_buffer.length=4096;
-      gss_buffer.value=name;
-      globus_io_tcp_get_security_context(handle,&context);
-      gss_inquire_context(&minor_status, context, &src_name, &targ_name, 0, 0,0,0,0);
-      gss_display_name(&minor_status,src_name,&gss_buffer,&gss_oid);
-      AddClient(s,0,(char *)gss_buffer.value);
-    }
+    gss_ctx_id_t context = 0;
+    OM_uint32 minor_status = 0;
+    gss_name_t src_name = 0;
+    gss_name_t targ_name = 0;
+    int lifetime = 0;
+    unsigned int status;
+    gss_buffer_desc gss_buffer;
+    gss_OID gss_oid = 0;
+    char name[4096];
+    gss_buffer.length=4096;
+    gss_buffer.value=name;
+    globus_io_tcp_get_security_context(handle,&context);
+    gss_inquire_context(&minor_status, context, &src_name, &targ_name, 0, 0,0,0,0);
+    gss_display_name(&minor_status,src_name,&gss_buffer,&gss_oid);
+    (*AddClient)(s,0,(char *)gss_buffer.value);
   }
-  if (dolisten)
+  if (pid == getpid())
   {
-    if (dofork) sleep(1);
-    globus_io_tcp_register_listen(listener_handle,ConnectReceived,(void *)dofork);
+    sleep(1);
+    globus_io_tcp_register_listen(listener_handle,ConnectReceived,(void *)0);
   }
 }
 
@@ -195,7 +183,8 @@ void Poll(int shut,int IsWorker,int IsService, SOCKET serverSock)
 
 static globus_bool_t AuthenticationCallback(void *arg, globus_io_handle_t *handle, globus_result_t result, char *identity, gss_ctx_id_t *context_handle)
 {
-  printf("AuthenticationCallback from identity %s\n",identity);
+/*  printf("AuthenticationCallback from identity %s\n",identity);
+ */
   return 1;
 }
 
@@ -203,7 +192,7 @@ static globus_bool_t AuthenticationCallback(void *arg, globus_io_handle_t *handl
 fd_set FdActive() { return fdactive; }
 #endif
 
-SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *), void (*DoMessage_in)(SOCKET s),int dofork)
+SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *), void (*DoMessage_in)(SOCKET s))
 {
   SOCKET s;
 #ifndef GLOBUS
@@ -264,7 +253,7 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
     exit(1);
   }
   globus_io_tcpattr_destroy(&attr);
-  globus_io_tcp_register_listen(handle,ConnectReceived,(void *)dofork);
+  globus_io_tcp_register_listen(handle,ConnectReceived,(void *)0);
 #endif
   return s;
 }
@@ -504,8 +493,9 @@ SOCKET Connect(char *host, unsigned short port)
   if (host[0]=='_')
   {
     globus_io_secure_authorization_data_initialize(&auth_data);
+    globus_io_secure_authorization_data_set_identity(&auth_data,"/O=Grid/O=National Fusion Collaboratory/OU=MIT/CN=LBNL-MDSplusDataServer");
     globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
-    globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_SELF,&auth_data);
+    globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_IDENTITY,&auth_data);
     globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
   }
   if ((result = globus_io_tcp_connect((host[0] == '_') ? &host[1] : host,htons(port),&attr,handle)) != GLOBUS_SUCCESS)

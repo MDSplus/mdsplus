@@ -645,7 +645,7 @@ Message *GetMdsMsg(SOCKET sock, int *status)
     if (CType(header.client_type) > CRAY_CLIENT || header.ndims > MAX_DIMS)
     {
       CloseSocket(sock);
-      fprintf(stderr,"\rGetMdsMsg shutdown socket %d: too many EINTR's",sock);
+      fprintf(stderr,"\rGetMdsMsg shutdown socket %d: bad msg header\n",sock);
       *status = 0;
       return 0;
     }  
