@@ -383,7 +383,6 @@ static void ExecuteMessage(void *io_handle, mdsip_client_t *c)
       return;
     }
   }
-  printf("ExecuteMessage, uid=%d\n",getuid());
   if (StrCompare(c->descrip[0],&eventastreq) == 0)
   {
     DESCRIPTOR_LONG(eventiddsc,0);
@@ -466,8 +465,8 @@ static void ExecuteMessage(void *io_handle, mdsip_client_t *c)
   }
   else
   {
-    void  *old_context;
-    void *tdi_context[6];
+    void  *old_context=0;
+    void *tdi_context[6]={0,0,0,0,0,0};
     EMPTYXD(ans);
     if (c->options->shared_ctx)
     {
