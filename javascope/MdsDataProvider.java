@@ -249,6 +249,7 @@ public class MdsDataProvider implements DataProvider
             
             if(error != null)
             {
+                _jscope_set = false;
                 error = null;
                 return 1;
             }
@@ -396,7 +397,7 @@ public class MdsDataProvider implements DataProvider
         {
             String expr;
             if(_jscope_set)
-                expr = "dim_of(_jscope_"+v_idx+")";
+                expr = "dim_of(_jscope_"+v_idx+", 1)";
             else
             {
                 _jscope_set = true;
@@ -419,12 +420,20 @@ public class MdsDataProvider implements DataProvider
                 expr = "( _jscope_"+v_idx+" = ("+in_y+"), help_of(_jscope_"+v_idx+"))";
                 var_idx++;
             }
-            return GetDefaultTitle(expr);
+            
+            String out = GetDefaultTitle(expr);
+            
+            if(out == null )
+                _jscope_set = false;
+            
+            return out;
             //return GetDefaultTitle(in_y);
         }
         
         public String GetXLabel() throws IOException
         {
+            String out = null;
+            
             if(in_x == null || in_x.length() == 0)
             {
                 String expr;
@@ -435,8 +444,9 @@ public class MdsDataProvider implements DataProvider
                     _jscope_set = true;
                     expr = "( _jscope_"+v_idx+" = ("+in_y+"), Units(dim_of(_jscope_"+v_idx+", 1)))";
                     var_idx++;
-                }    
-                return GetDefaultXLabel(expr);
+                }
+                
+                out = GetDefaultXLabel(expr);
                 //return GetDefaultXLabel(in_y);
             }
             else
@@ -453,8 +463,13 @@ public class MdsDataProvider implements DataProvider
                 }                          
                 return GetDefaultYLabel(expr);
                 */
-                return GetDefaultYLabel("Units("+in_x+")");
+                out = GetDefaultYLabel("Units("+in_x+")");
             }
+            
+            if(out == null )
+                _jscope_set = false;
+            
+            return out;
         }
         
         public String GetYLabel() throws IOException
@@ -468,7 +483,12 @@ public class MdsDataProvider implements DataProvider
                 expr = "( _jscope_"+v_idx+" = ("+in_y+"), Units(_jscope_"+v_idx+"))";
                 var_idx++;
             }                          
-            return GetDefaultYLabel(expr);
+            String out = GetDefaultYLabel(expr);
+            
+            if(out == null )
+                _jscope_set = false;
+            
+            return out;
             //return GetDefaultYLabel(in_y);
         }
         
@@ -484,8 +504,12 @@ public class MdsDataProvider implements DataProvider
                 var_idx++;
             }    
             
-            return GetDefaultZLabel(expr);
- //           return GetDefaultZLabel(in_y);
+            String out = GetDefaultZLabel(expr);
+            if(out == null )
+                _jscope_set = false;
+            
+            return out;
+            //           return GetDefaultZLabel(in_y);
         }
     }
              
@@ -914,23 +938,30 @@ public class MdsDataProvider implements DataProvider
 	    case Descriptor.DTYPE_FLOAT:
 	        out = desc.float_data;
 	        break;
+	    case Descriptor.DTYPE_DOUBLE: 
+	        out = new float[desc.double_data.length];
+	        for(int i = 0; i < desc.double_data.length; i++)
+		        out[i] = (float)desc.double_data[i];
+	        break;
 	    case Descriptor.DTYPE_LONG: 
-	        float[] out_data = new float[desc.int_data.length];
+	        out = new float[desc.int_data.length];
 	        for(int i = 0; i < desc.int_data.length; i++)
-		    out_data[i] = (float)desc.int_data[i];
-		    out = out_data;
+		        out[i] = (float)desc.int_data[i];
 	        break;
 	    case Descriptor.DTYPE_CHAR:
 	        error = "Cannot convert a string to float array";
-	        return null;
+	        break;
 	    case Descriptor.DTYPE_CSTRING:
 	        if((desc.status & 1) == 0)
 	            error = desc.error;
-	        return null;
+	         break;
+	    default :
+	        error = "Data type code : "+desc.dtype+ " not yet supported ";
         }	
 
         return out;
     }        
+  
     
     public long[] GetShots(String in) throws IOException
     {
@@ -970,6 +1001,8 @@ public class MdsDataProvider implements DataProvider
 	        if((desc.status & 1) == 0)
 	            error = desc.error;
 	        return null;
+	    default :
+	        error = "Data type code : "+desc.dtype+ " not yet supported ";
         }	
         return null;
     }
@@ -994,6 +1027,8 @@ public class MdsDataProvider implements DataProvider
 	        if((desc.status & 1) == 0)
 	            error = desc.error;
 	        return null;
+	    default :
+	        error = "Data type code : "+desc.dtype+ " not yet supported ";
         }	
         return null;
     }

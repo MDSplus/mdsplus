@@ -906,8 +906,11 @@ public class Signal
         if(this.type == Signal.TYPE_1D)
             return;
 
-        curr_time_xy_plot = Float.NaN;
+        curr_time_xy_plot = Float.NaN;        
         curr_data_yt_plot = Float.NaN;
+        curr_time_xy_idx = -1;
+        curr_data_yt_idx = -1;
+
               
         switch(mode)
         {

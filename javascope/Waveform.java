@@ -439,10 +439,9 @@ public class Waveform extends JComponent
                 waveform_signal.setMode2D(mode);
             else
                 if(waveform_signal.getType() == Signal.TYPE_1D)
-                    waveform_signal.setMode1D(mode);
-           Update();
-           //dispatchWaveformEvent(we);
-           //we = null;
+                    waveform_signal.setMode1D(mode);                   
+	        not_drawn = true;
+	        repaint();          
         }
     }
 
@@ -945,7 +944,7 @@ public class Waveform extends JComponent
 
    	public void Update()
     {
-	    wm = null;
+        wm = null;
     	curr_rect = null;
 	    prev_point_x = prev_point_y = -1;
 	    not_drawn = true;
@@ -1224,7 +1223,7 @@ public class Waveform extends JComponent
                         break;
                             case Signal.MODE_YX:
                                 orizLabel = waveform_signal.getZlabel();
-                             //   vertLabel = waveform_signal.getYlabel();
+                             // vertLabel = waveform_signal.getYlabel();
                             break;
                         }
 	                }
@@ -1232,10 +1231,8 @@ public class Waveform extends JComponent
 	        }
 	    
 	        if(resizing || grid == null || wm == null || change_limits)
-	        {
-	            change_limits = false;
-	            
-	            
+	        {          
+	            change_limits = false;	            	            
 		        grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, orizLabel, vertLabel, 
 		                    sigTitle, wave_error, grid_step_x, grid_step_y, int_xlabel, int_ylabel, reversed);
 		        curr_display_limits = new Rectangle();
@@ -1244,8 +1241,14 @@ public class Waveform extends JComponent
 		                                 d, x_log, y_log, 0, 0);
 	        }
 	        else
+	        {
+	            grid.updateValues(orizLabel, vertLabel, 
+		                          sigTitle, wave_error, 
+		                          grid_step_x, grid_step_y, 
+		                          int_xlabel, int_ylabel, 
+		                          reversed);
 	            grid.setLabels(sigTitle, orizLabel, vertLabel);
-		    
+		    }
 	    
 	        if(!copy_selected || print_mode != NO_PRINT)
 	        {
@@ -2170,14 +2173,13 @@ public class Waveform extends JComponent
 	    Dimension d = getWaveSize();
         
         start_xs = wm.XValue(start_x, d);
-	    end_xs = wm.XValue(end_x, d);
+	    end_xs   = wm.XValue(end_x, d);
         start_ys = wm.YValue(start_y, d);
-        end_ys = wm.YValue(end_y, d);	
+        end_ys   = wm.YValue(end_y, d);	
         //NotifyZoom(start_xs, end_xs, start_ys, end_ys, update_timestamp);
 	    
 	    ZoomRegion r = new ZoomRegion(start_xs, end_xs, start_ys, end_ys);
-        ReportLimits(r, true);
-        
+        ReportLimits(r, true);        
     }
     
     public void SetTitle(String title){this.title = title;}

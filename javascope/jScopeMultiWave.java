@@ -148,6 +148,11 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
                 Update(wi.signals);	    
                 return;
             }
+            else
+            {
+                Update();
+                return;
+            }
         }
 	    
 	    if(wi.is_image && wi.frames != null)

@@ -112,13 +112,14 @@ public class MultiWaveform extends Waveform
     
     public boolean exists(Signal s)
     {
-	if(s == null) return true;
+	    if(s == null) return true;
 
-	if(s.getName() == null || s.getName().length() == 0)
-	{
-	    s.setName("Signal_"+signals.size());
-	    return false;
-	}
+	    if(s.getName() == null || s.getName().length() == 0)
+	    {
+	        s.setName("Signal_"+signals.size());
+	        return false;
+	    }
+	    
         for(int i = 0; i < signals.size(); i++)
         {
             Signal s1 = (Signal)signals.elementAt(i);
@@ -542,6 +543,9 @@ public class MultiWaveform extends Waveform
 	            super.Update(waveform_signal);
 	            if(wi != null)
 	                wi.ContinuousUpdate(signals, this); //for handling continuous signals
+	        } else {
+                not_drawn = true;
+	            repaint();
 	        }
 	    }
 	    else
@@ -1077,7 +1081,8 @@ public class MultiWaveform extends Waveform
                }
           }
        }
-       Update();
+	   not_drawn = true;
+	   repaint();
     }
     
     public void setSignalMode(int mode)

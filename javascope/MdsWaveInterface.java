@@ -590,7 +590,6 @@ class MdsWaveInterface extends WaveInterface
 	                if(error == null)
 		                EvaluateOthers();
 	            }
-
 	            //modified = (error != null);
             }
         } 

@@ -75,6 +75,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 		        int x = e.getX();
 		        int y = e.getY();
 		        
+		        
 		        if(wave_popup != null)
 		        {
 		            Point p = new Point();	
@@ -83,10 +84,10 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
                     
                     if(wp_size.height == 0 || wp_size.width == 0)
                     {
-		                wave_popup.Show(w, x, y, 0, 0);
+                        wave_popup.Show(w, x, y, 0, 0);
                         wp_size = wave_popup.getSize();
                     }
-                    
+                 
 	                while(co != null)
 	                {
 	                    p.x += co.getLocation().x;
