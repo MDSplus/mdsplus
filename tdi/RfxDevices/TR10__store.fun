@@ -67,10 +67,8 @@ public fun TR10__store(as_is _nid, optional _method)
 	else
 	{
 
-write(*, 'PARTE START STORE');
 
 		_handle = TR10HWStartStore(_nid, _board_id, _pts);
-write(*, 'FINISCE START STORE');
 		if(_handle == -1)
 			abort();
 	}
@@ -91,14 +89,10 @@ write(*, 'FINISCE START STORE');
 			if(_remote)
 			{
 				_data = MdsValue('TR10HWReadChan($1, $2, $3, $4, $5)', _handle, (_i + 1), _start_idx, _end_idx, _pts);	
-				write(*, 'Letti remoti ', size(_data));
 			}
 			else
 			{
-				write(*, 'PARTE READCHAN');
-				_data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts);	
-				write(*, 'FINISCE READCHAN', size(_data));
-			}						
+				_data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts);					  }						
 
 	/* Build signal */
 			_dim = make_dim(make_window(_start_idx, _end_idx, _trig), _clock);

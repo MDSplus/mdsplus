@@ -21,7 +21,7 @@ public fun TR10HWStartStore(in _nid, in _board_id, in _pts)
 
 
 	/* Check if at stop state */
-	if(_act_pts < _pts)
+	if(_act_pts < _pts - 32)
 	{
 		/*DevLogErr(_nid, "TR10 device not at STOP state, board ID = "// _board_id);*/
 		write(*, "TR10 device not at STOP state, board ID = "// _board_id);

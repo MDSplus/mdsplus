@@ -9,13 +9,10 @@ public fun TR10HWReadChan(in _handle, in _chan, in _start_idx, in _end_idx, in _
 	_act_sample = long(0);
 	TR10->TR10_Trg_GetActShotSamples(val(_handle), ref(_act_sample));
 
-write(*, 'ACT SAMPLE ', _act_sample);
 
 	_act_pts = long(0);
 	TR10->TR10_Trg_GetActPostSamples(val(_handle), ref(_act_pts));
-
-write(*, 'ACT PTS ', _act_pts);
-	if(_act_pts < _pts)
+	if(_act_pts < _pts - 32)
 	{
 	    write(*, "LESS PTS THAN EXPECTED!!!!!: ", _act_pts, _pts);
 	}
@@ -28,9 +25,6 @@ write(*, 'ACT PTS ', _act_pts);
 	    write(*, "LESS DATA THAT EXPECTED!!!!!: ", _act_sample, _pts - _start_idx);
 	    _act_sample = 0;
 	}
-
-
-  write(*, 'NUOVO ACT SAMPLE ', _act_sample);
 /* Allocate buffer */
 
 /* Make sure starting address and data length are multiple of 32 */
@@ -43,13 +37,9 @@ write(*, 'ACT PTS ', _act_pts);
 
 	_data = zero(_n_samples+32, 0W);
 
-write(*, 'MEMREAD', _chan, _act_sample, _n_samples);
-
 /* Read channel */
 	TR10->TR10_Mem_Read_DMA(val(_handle), val(byte(_chan)), val(long(_act_sample)), ref(_data), val(_n_samples));
 
-
-write(*, 'LETTO');
 	return(_data[_start_ofs:(_end_idx - _start_idx + _start_ofs)]);
 }
 

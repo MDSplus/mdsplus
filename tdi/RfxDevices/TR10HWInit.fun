@@ -31,15 +31,10 @@ public fun TR10HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 
 
 
-write(*, 'HWINIT',_board_id, _clock_div, _pts);
-
-
 
 /* Initialize Library if the first time */
     if_error(_TR10_initialized, (TR10->TR10_InitLibrary(); public _TR10_initialized = 1;));
 	
-write(*, 'INITIALIZED');
-
 
 /* Open device */
 	_handle = 0L;
@@ -51,12 +46,9 @@ write(*, 'INITIALIZED');
 		return(0);
 	}
 
-write(*, 'OPEN');
-
 /* Reset module */
 	TR10->TR10_Reset(val(_handle));
 
-write(*, 'RESET');
 
 /* Set clock functions */
 	if(_clock_div == 0) /*_clock_div == 0 means external clock */
@@ -67,8 +59,6 @@ write(*, 'RESET');
 
 	TR10->TR10_Clk_SetClockMode(val(_handle), val(_clock_source), val(_TR10_CLK_NO_EXT_CLOCK),
 		val(0B), val(_TR10_CLK_RISING_EDGE), val(_TR10_CLK_TERMINATION_OFF), val(long(_clock_div)));
-		
-write(*, 'CLOCK_SET');
 		  
 /* Set Trigger function */
 	if(_ext_trig)
@@ -81,18 +71,13 @@ write(*, 'CLOCK_SET');
 		val(_TR10_TRG_EXT_OUT_ON), val(_TR10_TRG_RISING_EDGE), val(_TR10_TRG_TERMINATION_OFF),
 		val(_TR10_TRG_SYNCHRONOUS), val(0B));
 
-write(*, 'TRIGGER_SET');
-
 /* Set Post Trigger Samples */
 	TR10->TR10_Trg_SetPostSamples(val(_handle), val(long(_pts)));
-
-write(*, 'PTS_SET');
 
 
 /* Start sampling */
 	TR10->TR10_Cmd_StartSampling(val(_handle));
 
-write(*, 'STARTED');
 
 
 
