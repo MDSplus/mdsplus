@@ -1725,7 +1725,7 @@ static void task_change_type_proc(Widget w,int *tag)
   Widget task_dlog;
 
   for (task_dlog = w;
-       task_dlog && WigetNameCmp(task_dlog,"task_dlog");
+       task_dlog && WidgetNameCmp(task_dlog,"task_dlog");
        task_dlog = task_dlog->core.parent);
 
   if (task_dlog)
