@@ -9,7 +9,7 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
     DeviceTable bean = null;
     Object obj;
     PropertyChangeSupport listeners = new PropertyChangeSupport(this);
-    TextField labelString, identifier, numCols, numRows, columnNames;
+    TextField labelString, identifier, numCols, numRows, columnNames, rowNames;
     Choice nids;
     Button doneButton;
     Checkbox displayRowNumC;
@@ -62,8 +62,7 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
         jp.add(jp1);
         jp1 = new Panel();
         jp1.add(new Label("Column Names: "));
-        //jp1.add(columnNames = new TextField(bean.getIdentifier(), 40));
-        columnNames = new TextField(40);
+        columnNames = new TextField(30);
         String []colNamesArray = bean.getColumnNames();
         String cnames = "";
         if(colNamesArray != null)
@@ -74,6 +73,19 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
         columnNames.setText(cnames);
 
         jp1.add(columnNames);
+        jp.add(jp1);
+
+        jp1 = new Panel();
+        jp1.add(new Label("Row Names: "));
+        rowNames = new TextField(30);
+        String[] rowNamesArray = bean.getRowNames();
+        cnames = "";
+        if (rowNamesArray != null) {
+          for (int i = 0; i < rowNamesArray.length; i++)
+            cnames += rowNamesArray[i] + " ";
+        }
+        rowNames.setText(cnames);
+        jp1.add(rowNames);
 
         jp.add(jp1);
 
@@ -109,6 +121,15 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
                 String []oldColumnNames = bean.getColumnNames();
                 bean.setColumnNames(colNames);
                 listeners.firePropertyChange("columnNames", oldColumnNames, bean.getColumnNames());
+
+                st = new StringTokenizer(rowNames.getText(), " ,");
+                String rowNames[] = new String[st.countTokens()];
+                idx = 0;
+                while(st.hasMoreTokens())
+                    rowNames[idx++] = st.nextToken();
+                String []oldRowNames = bean.getRowNames();
+                bean.setRowNames(rowNames);
+                listeners.firePropertyChange("rowNames", oldRowNames, bean.getRowNames());
             }
         });
         add(jp,"South");

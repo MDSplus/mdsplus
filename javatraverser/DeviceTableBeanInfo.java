@@ -15,7 +15,7 @@ public class DeviceTableBeanInfo extends SimpleBeanInfo
     {
         return loadImage("DeviceTable.gif");
     }
-    
+
     public BeanDescriptor getBeanDescriptor()
     {
         return new BeanDescriptor(DeviceTable.class, DeviceTableCustomizer.class);
@@ -30,6 +30,7 @@ public class DeviceTableBeanInfo extends SimpleBeanInfo
                property("numRows", "Number of rows"),
                property("identifier", "Optional field identifier"),
                property("columnNames", "Column names"),
+               property("rowNames", "Row names"),
                property("editable", "Editable"),
                property("displayRowNumber", "displayRowNumber")
             };
@@ -40,5 +41,5 @@ public class DeviceTableBeanInfo extends SimpleBeanInfo
             return super.getPropertyDescriptors();
         }
     }
-    
+
 }

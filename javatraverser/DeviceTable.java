@@ -12,6 +12,7 @@ public class DeviceTable extends DeviceComponent
     int numRows = 3;
     int numCols = 3;
     String columnNames[] = new String[0];
+    String rowNames[] = new String[0];
     boolean state = true;
     String labelString = "";
     boolean initializing = false;
@@ -42,12 +43,6 @@ public class DeviceTable extends DeviceComponent
 */    public void setNumRows(int numRows)
     {
         this.numRows = numRows;
-        items = new String[numRows * numCols];
-        if(numRows > 3)
-          table.setPreferredScrollableViewportSize(new Dimension(200, 70));
-        else
-          table.setPreferredScrollableViewportSize(new Dimension(200, numRows* table.getRowHeight()));
-        redisplay();
     }
     public int getNumRows(){ return numRows; }
 
@@ -66,6 +61,14 @@ public class DeviceTable extends DeviceComponent
     }
 
     public String [] getColumnNames() {return columnNames; }
+
+    public void setRowNames(String [] rowNames)
+    {
+        this.rowNames = rowNames;
+        redisplay();
+    }
+
+    public String [] getRowNames() {return rowNames; }
 
     public void setLabelString(String labelString)
     {
@@ -107,13 +110,19 @@ public class DeviceTable extends DeviceComponent
     public void initializeData(Data data, boolean is_on)
     {
         initializing = true;
-        String decompiled = Tree.dataToString(data);
+        String decompiled = "";
+        try {
+            decompiled = Tree.dataToString(subtree.evaluateData(data, 0));
+        }catch(Exception exc){System.err.println(exc);}
         StringTokenizer st = new StringTokenizer(decompiled, " ,[]");
         items = new String[numCols * numRows];
         int idx = 0;
         while( idx < numCols * numRows && st.hasMoreTokens())
             items[idx++] = st.nextToken();
         label.setText(labelString);
+        
+        
+        
         table.setModel(new AbstractTableModel() {
             public int getColumnCount()
             {
@@ -125,7 +134,7 @@ public class DeviceTable extends DeviceComponent
             public int getRowCount() {return numRows; }
             public String getColumnName(int idx)
             {
-                if(displayRowNumber)
+                if(displayRowNumber || rowNames.length > 0)
                 {
                     if(idx == 0)
                         return "";
@@ -146,8 +155,27 @@ public class DeviceTable extends DeviceComponent
                     {
                         try {
                             return items[row * numCols + col - 1];
-                        }catch(Exception exc) {return null; }
+                        }catch(Exception exc) {return ""; }
                     }
+                }
+                else if(rowNames.length > 0)
+                {
+                  if (col == 0) {
+                    try {
+                      return rowNames[row];
+                    }
+                    catch (Exception exc) {
+                      return "";
+                    }
+                  }
+                  else {
+                    try {
+                      return items[row * (numCols-1) + col - 1];
+                    }
+                    catch (Exception exc) {
+                      return "";
+                    }
+                  }
                 }
                 else
                 {
@@ -168,11 +196,17 @@ public class DeviceTable extends DeviceComponent
             {
                 if(displayRowNumber)
                     items[row * numCols + col - 1] = (String)value;
+                else if(rowNames.length > 0)
+                    items[row * (numCols - 1) + col - 1] = (String)value;
+                
                 else
                     items[row * numCols + col] = (String)value;
                 fireTableCellUpdated(row, col);
             }});
-        //table.setPreferredScrollableViewportSize(new Dimension(preferredWidth, preferredHeight));
+        if(numRows < 10)
+            table.setPreferredScrollableViewportSize(new Dimension(numCols* 35, numRows* table.getRowHeight()));
+        else
+            table.setPreferredScrollableViewportSize(new Dimension(numCols* 35, 100));
         initializing = false;
     }
 
@@ -187,6 +221,14 @@ public class DeviceTable extends DeviceComponent
         int idx = 0;
         while( idx < numCols * numRows && st.hasMoreTokens())
             items[idx++] = st.nextToken();
+        for(int i = 0; i < numCols; i++)
+        {
+            table.getColumnModel().getColumn(i).setMinWidth(6);
+            table.getColumnModel().getColumn(i).setPreferredWidth(6);
+            table.getColumnModel().getColumn(i).setWidth(6);
+            System.out.println(table.getColumnModel().getColumn(i).getWidth());
+        }
+        table.repaint();
         redisplay();
     }
     public boolean getState(){return state; }
