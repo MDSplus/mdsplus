@@ -17,7 +17,11 @@ int yyleng; extern unsigned char yytext[];
 int yymorfg;
 extern unsigned char *yysptr, yysbuf[];
 int yytchar;
+#ifdef vxWorks
+FILE *yyin = 0, *yyout = 0;
+#else
 FILE *yyin = {stdin}, *yyout = {stdout};
+#endif
 extern int yylineno;
 struct yysvf { 
 	struct yywork *yystoff;
@@ -705,7 +709,16 @@ int		cur = 0, limit;
 }
 # define YYNEWLINE 10
 yylex(){
+
 int nstr; extern int yyprevious;
+#ifdef vxWorks
+if(!yyin)
+    yyin = fdopen(0, "r");
+if(!yyout)
+    yyout = fdopen(1, "w");
+#endif
+
+
 while((nstr = yylook()) >= 0)
 yyfussy: switch(nstr){
 case 0:

@@ -10,14 +10,19 @@
 	ASSUMES all slopes same sign and (end-start)*slope >= 0.
 	NEED to watch for rounding/precision problems.
 */
-#define HUGE 0x1FFFFFFF
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 #include <tdimessages.h>
 #include "tdirefstandard.h"
+#ifdef vxWorks
+#undef MAX
+#endif
+
 #include <stdlib.h>
 #include <mdsshr.h>
+
+#define HUGE 0x1FFFFFFF
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 

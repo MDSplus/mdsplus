@@ -49,7 +49,6 @@ int Tdi3Iand(struct descriptor *in1, struct descriptor *in2, struct descriptor *
 
 
 #include <mdsdescrip.h>
-#include <mdsdescrip.h>
 #include <string.h>
 #include <tdimessages.h>
 
@@ -222,7 +221,11 @@ int Tdi3##name(struct descriptor *in1, struct descriptor *in2, struct descriptor
   return 1;\
 }
 
-#define not
+#define not ~
+common(Inand,&)
+common(InandNot,& ~)
+common(Inor,|)
+common(InorNot,| ~)
 common(Iand,&)
 common(IandNot,& ~)
 common(Ior,|)
@@ -230,25 +233,3 @@ common(IorNot,| ~)
 common(Ieor,^)
 common(IeorNot,^ ~)
 #undef not
-#define not ~
-common(Inand,&)
-common(InandNot,& ~)
-common(Inor,|)
-common(InorNot,| ~)
-/*  CMS REPLACEMENT HISTORY, Element Tdi3Iand.C */
-/*  *15   26-AUG-1996 16:34:16 TWF "Fix compile warnings" */
-/*  *14   16-AUG-1996 14:40:44 TWF "Add ieee support" */
-/*  *13    1-AUG-1996 17:21:21 TWF "Use int instead of long" */
-/*  *12   29-JUL-1996 11:55:29 TWF "Fix inor_not" */
-/*  *11   29-JUL-1996 09:57:43 TWF "Fix OperateSpecial" */
-/*  *10   26-JUL-1996 12:25:45 TWF "Special handling for alpha and vms" */
-/*  *9     9-JUL-1996 14:59:58 TWF "Fix octaword case" */
-/*  *8     9-JUL-1996 14:49:24 TWF "Fix octaword case" */
-/*  *7    24-JUN-1996 12:10:19 TWF "Port to Unix/Windows" */
-/*  *6    17-OCT-1995 16:17:02 TWF "use <builtins.h> form" */
-/*  *5    19-OCT-1994 12:26:34 TWF "Use TDI$MESSAGES" */
-/*  *4    19-OCT-1994 10:34:49 TWF "No longer support VAXC" */
-/*  *3    15-NOV-1993 10:09:47 TWF "Add memory block" */
-/*  *2    15-NOV-1993 09:42:23 TWF "Add memory block" */
-/*  *1     9-NOV-1993 16:14:31 MRL "Tdi3Iand.C" */
-/*  CMS REPLACEMENT HISTORY, Element Tdi3Iand.C */

@@ -1,5 +1,5 @@
 #include <mdsdescrip.h>
-#include <mdsdescrip.h>
+/*#include <mdsdescrip.h>*/
 #include <string.h>
 #include <math.h>
 #include <tdimessages.h>
@@ -12,52 +12,11 @@ extern void CvtConvertFloat();
 extern int IsRoprand();
 
 #define TWO_32 (double)4294967296.
+#ifndef vxWorks
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define max(a,b) (((a) < (b)) ? (b) : (a))
-
-double WideIntToDouble(unsigned int *bin_in, int size, int is_signed)
-{
-  int i;
-  double factor;
-  double ans=0.0;
-  unsigned int bin[16];
-  int negative;
-
-#ifdef _big_endian
-  for (i=0;i<size;i++) bin[i] = bin_in[size - i - 1];
-#else
-  memcpy(bin,bin_in,size * sizeof(int));
 #endif
 
-  negative = is_signed && (bin[size-1] & 0x80000000);
-  for (i=0,factor=1.;i<size;i++, factor = (i < 4) ? factor * TWO_32 : 0)
-    ans += ((negative ? ~bin[i] : bin[i]) * factor);
-  if (negative)
-    ans = -1 - ans;
-  return ans;
-}
-
-void DoubleToWideInt(double *in, int size, unsigned int *out)
-{
-  int negative = *in < 0;
-  int i;
-  double factor;
-  double tmp;
-  for (i=size-1,tmp = negative ? -1 - *in : *in,factor=pow(2.0,32. * (size-1));i>=0;tmp -= out[i--] * factor, factor /= TWO_32)
-    out[i] = (int)((tmp/factor) + .49999999999);
-  if (negative)
-    for (i=0;i<size;i++)
-      out[i] = ~out[i];
-
-#ifdef _big_endian
-  {
-    unsigned int tmp[16];
-    for (i=0;i<size;i++) tmp[i]=out[i];
-    for (i=0;i<size;i++) out[i]=tmp[size-i-1];
-  }
-#endif
-
-}
 
 /****** Identity conversions handled before big switch *********/
 #define BU_BU(lena,pa,lenb,pb,numb)
@@ -621,6 +580,14 @@ void DoubleToWideInt(double *in, int size, unsigned int *out)
    strncpy((nfill <= 0) ? op : op+nfill, (nfill <= 0) ? text-nfill : text, (nfill <= 0) ? lenb : n); \
    if (nfill > 0) memset(op,32,nfill); op += lenb;} status = 1;}
 
+/******************* CODE *********************/
+  void DoubleToWideInt();
+  double WideIntToDouble();
+
+
+
+
+
 static void FLOAT_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
 {
   float *ip = (float*)pa;
@@ -983,4 +950,48 @@ same:	if (classa) memmove((void*)pb, (void*)pa, numb*lenb);
 	}
   }
   return status;
+}
+
+double WideIntToDouble(unsigned int *bin_in, int size, int is_signed)
+{
+  int i;
+  double factor;
+  double ans=0.0;
+  unsigned int bin[16];
+  int negative;
+
+#ifdef _big_endian
+  for (i=0;i<size;i++) bin[i] = bin_in[size - i - 1];
+#else
+  memcpy(bin,bin_in,size * sizeof(int));
+#endif
+
+  negative = is_signed && (bin[size-1] & 0x80000000);
+  for (i=0,factor=1.;i<size;i++, factor = (i < 4) ? factor * TWO_32 : 0)
+    ans += ((negative ? ~bin[i] : bin[i]) * factor);
+  if (negative)
+    ans = -1 - ans;
+  return ans;
+}
+
+void DoubleToWideInt(double *in, int size, unsigned int *out)
+{
+  int negative = *in < 0;
+  int i;
+  double factor;
+  double tmp;
+  for (i=size-1,tmp = negative ? -1 - *in : *in,factor=pow(2.0,32. * (size-1));i>=0;tmp -= out[i--] * factor, factor /= TWO_32)
+    out[i] = (int)((tmp/factor) + .49999999999);
+  if (negative)
+    for (i=0;i<size;i++)
+      out[i] = ~out[i];
+
+#ifdef _big_endian
+  {
+    unsigned int tmp[16];
+    for (i=0;i<size;i++) tmp[i]=out[i];
+    for (i=0;i<size;i++) out[i]=tmp[size-i-1];
+  }
+#endif
+
 }
