@@ -71,6 +71,7 @@ class TWUDataProvider implements DataProvider
 
 
     public void SetEnvironment(String s) {}
+    public void SetDefaultNid(String s) {}
     public void disconnect(){}
     public void freeCache(){}
     

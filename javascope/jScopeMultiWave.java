@@ -29,14 +29,11 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
     public void Refresh()
     {
         
-        if(wi.isAddSignal())
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        try
         {
-            setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            try
-            {
-                AddEvent();
-            } catch (IOException e){}
-        }
+            AddEvent();
+        } catch (IOException e){}
         
         Thread p = new Thread() {
             public void run()
@@ -47,8 +44,7 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
 	                public void run() {
 		            jScopeWaveUpdate();
 	                }
-	            });
-                
+	            });                
             }
         };
         p.start();
@@ -71,25 +67,10 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
         return er;
     }
     
-    public void Refresh_xxx(boolean add_sig)//, boolean brief_error)
-    {
-        
-        String error;
-        try
-        {
-            setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            AddEvent();
-            Refresh();
-       } 
-        catch(IOException e)
-        {
-            error = e.getMessage();
-        }
-    }
-
     public void jScopeWaveUpdate()
     {
         String out_error;
+        
         if(wi.isAddSignal())
         {
             out_error = ((MdsWaveInterface)wi).getErrorString(true);
@@ -99,7 +80,7 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
         else
             out_error = ((MdsWaveInterface)wi).getErrorTitle(true);
         
-        if(out_error != null && ((MdsWaveInterface)wi).prev_wi != null)
+        if(out_error != null && ((MdsWaveInterface)wi).prev_wi != null) 
         {
             //reset to previous configuration
             ((MdsWaveInterface)wi).prev_wi.error = ((MdsWaveInterface)wi).error;            
@@ -108,8 +89,11 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
                 ((MdsWaveInterface)wi).prev_wi.setAddSignal(true);                    
             wi = ((MdsWaveInterface)wi).prev_wi;
             ((MdsWaveInterface)wi).prev_wi = null;
-        } else
+        }
+        else 
+        {
             ((MdsWaveInterface)wi).prev_wi = null;
+        }
         Update(wi);
         WaveformEvent e = new WaveformEvent(this, WaveformEvent.END_UPDATE);
         dispatchWaveformEvent(e);

@@ -394,7 +394,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener {
                 markerStep.setEnabled(false);
 	}
 		
-    public void Show(Waveform w, int x, int y)
+    public void Show(Waveform w, int x, int y, int tran_x, int tran_y)
     {
      //   parent = (Container)this.getParent();
         
@@ -411,7 +411,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener {
      
 	    curr_x = x;
 	    curr_y = y;
-	    show(w, x, y );	
+	    show(w, x - tran_x, y - tran_y );	
      }
      
     protected void SetMenuLabel()

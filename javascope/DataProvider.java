@@ -3,6 +3,7 @@ import java.io.IOException;
 interface DataProvider 
     {
         public void    SetEnvironment(String exp) throws IOException;
+        public void    SetDefaultNid(String path);
         public void    Update(String exp, int s);
         public String  GetString(String in) throws IOException;
         public float   GetFloat(String in) throws IOException;

@@ -10,6 +10,8 @@ public class NetworkProvider implements DataProvider
 {
     String provider;
     String experiment;
+    String default_node;
+    private boolean def_node_changed = false;
     int shot;
     boolean open, connected;
     MdsConnection mds;
@@ -215,13 +217,12 @@ public class NetworkProvider implements DataProvider
         }
         */
         if(s != shot || experiment == null || experiment.length() == 0 || !experiment.equals(exp) )
-        {    
-    //System.out.println("OPEN!");    
-    //	if(open)
-    //	    mds.MdsValue("MDSLIB->MDS$CLOSE()");
+        {
+          //  System.out.println("Close "+experiment+ " "+shot);
 	        experiment = ((exp != null && exp.trim().length() >  0) ? exp : null);
 	        shot = s;    	
 	        open = false;
+          //  System.out.println("Open "+experiment+ " "+s);
         }
     }
 
@@ -256,10 +257,11 @@ public class NetworkProvider implements DataProvider
     {
 
         error = null;
-        Update(null , 0);
-        if(!CheckOpen()) {
-	    error = "Cannot open data server";
-	    return;
+        //Update(null , 0);
+        if(!CheckOpen()) 
+        {
+	        error = "Cannot connetion to data server";
+	        return;
         }
         Descriptor desc = mds.MdsValue(in);
         switch(desc.dtype)  {
@@ -268,6 +270,19 @@ public class NetworkProvider implements DataProvider
 	                error = desc.error;
         }
     }
+    
+    
+    public synchronized void SetDefaultNid(String in)
+    {
+        if(in != null) in = in.trim();
+        if(in != null && !(default_node != null && in.equals(default_node))
+           || (in == null && default_node != null) )
+        {
+          default_node = (in != null && in.length() == 0) ? null : in;
+          def_node_changed = true;
+        } 
+    }
+    
     	
     public synchronized float GetFloat(String in)  throws IOException
     {
@@ -462,13 +477,19 @@ public class NetworkProvider implements DataProvider
         }	
         if(!open && experiment != null)
         {
+            //System.out.println("Open tree "+experiment+ " shot "+ shot);
 	        Descriptor descr = mds.MdsValue("JavaOpen(\""+experiment+"\"," + shot +")");
 	        if(descr.dtype != Descriptor.DTYPE_CSTRING
 		        && descr.dtype == Descriptor.DTYPE_LONG && descr.int_data != null 
 		        && descr.int_data.length > 0 && (descr.int_data[0]%2 == 1))
 	        {
+	            if(default_node != null)
+	                descr = mds.MdsValue("TreeSetDefault(\""+default_node+"\")");
+	            else
+	                descr = mds.MdsValue("TreeSetDefault(\"\\\\"+experiment+"::TOP\")");
+	            
 	            open = true;
-//	            return true;
+	            def_node_changed = false;
 	        }
 	        else
 	        {
@@ -480,14 +501,15 @@ public class NetworkProvider implements DataProvider
 	            return false;
 	        }
         }
-        if(open)
+        if(open && def_node_changed)
         {
-	        Descriptor descr = mds.MdsValue("TreeSetDefault(_jscope_def_node)");
-	        if(descr.dtype == Descriptor.DTYPE_CSTRING)
-	        {
-	            error = mds.error;
-	            return false;
-	        }
+	       Descriptor  descr;
+	       if(default_node != null)	       
+	            descr = mds.MdsValue("TreeSetDefault(\""+default_node+"\")");
+	       else
+	            descr = mds.MdsValue("TreeSetDefault(\"\\\\"+experiment+"::TOP\")");
+	       
+	       def_node_changed = false;
         }
         return true;  
     }

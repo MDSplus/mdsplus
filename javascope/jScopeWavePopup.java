@@ -60,7 +60,6 @@ class jScopeWavePopup extends MultiWavePopup {
 	        {
 	            public void actionPerformed(ActionEvent e)
 	            {
-	                ((jScopeMultiWave)wave).wi.setModified(true);
 	                ((jScopeWaveContainer)jScopeWavePopup.this.parent).Refresh(((jScopeMultiWave)wave), "Refresh ");
 	            }
 	        }

@@ -431,12 +431,7 @@ static int T_messageType;
 	});
 	
 	jScopeCreate(spos_x, spos_y);
-	
-  
-		//{{REGISTER_LISTENERS
-		SymContainer aSymContainer = new SymContainer();
-		this.addContainerListener(aSymContainer);
-		//}}
+	  
 	}
 	    
   public void jScopeCreate(int spos_x, int spos_y)
@@ -1107,6 +1102,11 @@ static int T_messageType;
         this.SetWindowTitle("");
     }
 
+    public boolean isChange()
+    {
+        return modified || wave_panel.isChange();
+    }
+
 
     public void SaveConfiguration(String conf_file)    
     {
@@ -1150,7 +1150,7 @@ static int T_messageType;
   
   public void closeScope()
   {
-	if(modified)
+	if(isChange())
 	{
         switch( saveWarning())
 	    {
@@ -1213,7 +1213,7 @@ static int T_messageType;
 
   private void LoadConfigurationFrom()
   {
-    if(modified)
+    if(isChange())
     {
         switch( saveWarning())
 	    {
@@ -1495,7 +1495,6 @@ static int T_messageType;
         if(sig != null && sig.trim().length() != 0)
         {
             wave_panel.AddSignal(sig);
-            setChange(true);
         }
     }
 
@@ -1859,9 +1858,9 @@ static int T_messageType;
 	    f_name = "Untitled";
   
 	if(wave_panel.GetTitle() != null)
-	    setTitle(" - " + wave_panel.GetTitle() + " - " + f_name + (modified ? " (changed)" : "") + " " + info);
+	    setTitle(" - " + wave_panel.GetTitle() + " - " + f_name + (isChange() ? " (changed)" : "") + " " + info);
 	else
-	    setTitle("- Scope - " + f_name + (modified ? " (changed)" : "") + " " + info);
+	    setTitle("- Scope - " + f_name + (isChange() ? " (changed)" : "") + " " + info);
 	
   }
   

@@ -46,7 +46,7 @@ public class WaveDisplay extends JApplet implements WaveformListener
 	           {
 	                Waveform w = (Waveform)e.getSource();
     	            if(wave_popup != null && w.GetMode() != Waveform.MODE_COPY)
-		                wave_popup.Show(w, e.getX(), e.getY());
+		                wave_popup.Show(w, e.getX(), e.getY(), 0, 0);
 		       }
 	        });
 

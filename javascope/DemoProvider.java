@@ -14,6 +14,10 @@ class DemoProvider implements DataProvider
     public boolean isCacheEnabled(){return false;}
     public void    freeCache(){}
     
+    public void SetDefaultNid(String exp)
+    {
+        error = null;
+    }
     public void SetEnvironment(String exp)
     {
         error = null;

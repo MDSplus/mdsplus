@@ -81,7 +81,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
                     
                     if(wp_size.height == 0 || wp_size.width == 0)
                     {
-		                wave_popup.Show(w, x, y);
+		                wave_popup.Show(w, x, y, 0, 0);
                         wp_size = wave_popup.getSize();
                     }
                     
@@ -92,12 +92,14 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	                    co = co.getParent();
 	                }
 
+                    int tran_x = 0;
+                    int tran_y = 0;
 		            if(y + p.y + wp_size.height > scr_dim.height)
-		                y -= y + p.y + wp_size.height - scr_dim.height + 20;
+		                tran_y = y + p.y + wp_size.height - scr_dim.height + 20;
 		            if(x + p.x + wp_size.width > scr_dim.width)
-		                x -= x + p.x + wp_size.width - scr_dim.width + 20;
+		                tran_x = x + p.x + wp_size.width - scr_dim.width + 20;
     		            
-		            wave_popup.Show(w, x, y);
+		            wave_popup.Show(w, x, y, tran_x, tran_y);
                  }
 	          }
 	     });

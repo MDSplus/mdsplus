@@ -50,7 +50,7 @@ class jScopeWaveContainer extends WaveformContainer
               MdsWaveInterface mds_wi[];
     private   String    save_as_txt_directory = null;
     private   jScopeBrowseSignals browse_sig = null;
-     
+    private   boolean modified; 
 
     class UpdW extends Thread  
     {
@@ -514,7 +514,7 @@ class jScopeWaveContainer extends WaveformContainer
         main_shots = null;
         main_shot_str = null;
 	
-	    dp.Update(null, 0);
+//	    dp.Update(null, 0);
 	    int_data = dp.GetIntArray(in_shots);
 	    if( int_data == null || int_data.length == 0 || int_data.length > MdsWaveInterface.MAX_NUM_SHOT)
 	    {
@@ -1161,7 +1161,9 @@ class jScopeWaveContainer extends WaveformContainer
 	    return error;
     }
     
-    public void AddSignal(String tree, String shot, String expr)
+    // with_error == true => Signals is added also if an error occurs 
+    // during its evaluation
+    public void AddSignal(String tree, String shot, String expr, boolean with_error)
     {
         MdsWaveInterface new_wi = null;
         jScopeMultiWave sel_wave = (jScopeMultiWave)GetSelectPanel();
@@ -1169,11 +1171,13 @@ class jScopeWaveContainer extends WaveformContainer
         if(sel_wave.wi == null)
         {
             sel_wave.wi = new MdsWaveInterface(sel_wave, dp, def_vals);
-            ((MdsWaveInterface)sel_wave.wi).prev_wi = new MdsWaveInterface(sel_wave, dp, def_vals);
+            if(!with_error)
+                ((MdsWaveInterface)sel_wave.wi).prev_wi = new MdsWaveInterface(sel_wave, dp, def_vals);
         } else {
             new_wi = new MdsWaveInterface((MdsWaveInterface)sel_wave.wi);
             new_wi.wave = sel_wave;
-            new_wi.prev_wi = (MdsWaveInterface)sel_wave.wi;
+            if(!with_error)
+                new_wi.prev_wi = (MdsWaveInterface)sel_wave.wi;
             sel_wave.wi = new_wi;
         }
         if(tree != null &&
@@ -1195,15 +1199,21 @@ class jScopeWaveContainer extends WaveformContainer
         if(sel_wave.wi.AddSignal(expr)) 
         {
             add_sig = true;
+            modified = true;
             Refresh(sel_wave, "Add signal to");
             update();
             add_sig = false;
 	    }
     }
+    
+    public boolean isChange()
+    {
+        return modified;
+    }
 
     public void AddSignal(String expr)
     {
-        AddSignal(null, null, expr);
+        AddSignal(null, null, expr, false);
     }
 
     public void ToFile(PrintWriter out, String prompt) throws IOException
@@ -1285,15 +1295,19 @@ class jScopeWaveContainer extends WaveformContainer
 	    
         WaveContainerEvent wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, label+" wave row " + p.x + " column " + p.y);
         jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
-	        
-	    //String error = w.Refresh(add_sig, brief_error);
-	    //w.Refresh(add_sig);//, brief_error);
+	    
+	    //If is added a signal to waveform only signal added
+	    //is evaluated, in the other cases, refresh from popup menu
+	    //or event update, all signals in the waveform must be
+	    //evaluated
+	    if(!add_sig)
+	        ((jScopeMultiWave)w).wi.setModified(true);
+
 	    w.Refresh();
 	    
         if(add_sig)
             resetSplitPosition();
 
-	    //return error;
     }    
         
     public void SaveAsText(jScopeMultiWave w, boolean all)

@@ -543,13 +543,18 @@ public class WaveInterface
 		if(modified)
 	        evaluated = null;
 
-	    if((in_y == null || in_x == null) || (shots == null && 
-				(experiment != null && experiment.trim().length() > 0)) )
+	    if((in_y == null || in_x == null))
 	    {
-	        error = "Missing shot or Y or X values";
+	        error = "Missing Y or X values";
 	        signals = null;
 	        return 0;
-	    }    
+	    }
+	    
+	    if((shots == null && (experiment != null && experiment.trim().length() > 0)) )
+	    {
+	        error = "Missing shot value";
+	        signals = null;
+	    }
 
 	    num_waves = in_y.length;
 	
@@ -576,7 +581,8 @@ public class WaveInterface
 	            i++;
 	            dp.Update(experiment, shots[i]);
 	        } while( i < shots.length && dp.ErrorString() != null);
-	    } else
+	    }
+	    else
 	        dp.Update(null, 0);
 	
 	    if(dp.ErrorString() != null)
@@ -914,7 +920,7 @@ public class WaveInterface
 	    if(in_shots == null || in_shots.trim().length() == 0)
 	        return int_data;
 	
-	    dp.Update(null, 0);
+//	    dp.Update(null, 0);
 	    int_data = dp.GetIntArray(in_shots);
 	    if( int_data == null || int_data.length == 0 || int_data.length > MAX_NUM_SHOT)
 	    {

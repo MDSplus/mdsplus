@@ -203,6 +203,7 @@ class JetDataProvider implements DataProvider
     public byte[]  GetAllFrames(String in_frame){return null;}
     
     public void SetEnvironment(String s) {}
+    public void SetDefaultNid(String s) {}
     public void disconnect(){}
     
     public void Update(String experiment, int shot)

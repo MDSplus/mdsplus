@@ -58,4 +58,5 @@ public class LocalProvider extends NetworkProvider implements DataProvider {
     {
         return null;
     }
+    public void SetDefaultNid(String s) {}
 }	    

@@ -188,10 +188,7 @@ class MdsWaveInterface extends WaveInterface {
      if(error == null)
      {
         UpdateDefault();
-        if(in_def_node != null)
-            this.dp.SetEnvironment("_jscope_def_node = \"\\"+ in_def_node +"\"");
-        else
-            this.dp.SetEnvironment("_jscope_def_node = \"\"");        
+        dp.SetDefaultNid(in_def_node);
      } else {
         signals = null;
      }
