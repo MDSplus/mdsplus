@@ -879,6 +879,7 @@ JNIEXPORT void JNICALL Java_Database_setOn
 
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
+
   if(on)
      status = TreeTurnOn(nid);
   else

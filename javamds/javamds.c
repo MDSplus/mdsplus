@@ -224,8 +224,10 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte, int 
     else if(is_byte)
 		byte_ris = malloc(dim);
 	else
+	{
         int_ris = (int *)malloc(sizeof(int) * dim);
-    switch(arr_ptr->dtype) {
+	}
+		switch(arr_ptr->dtype) {
 	case DTYPE_BU:
 	case DTYPE_B : 
 		for(i = 0; i < dim; i++)
@@ -253,14 +255,18 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte, int 
 	case DTYPE_LU:
 	case DTYPE_L : 
 		for(i = 0; i < dim; i++)
+		{
 		    if(is_float)
 		    	float_ris[i] = (float)(((int *)arr_ptr->pointer)[i]);
-			if(is_double)
+			else if(is_double)
 		    	double_ris[i] = (double)(((int *)arr_ptr->pointer)[i]);
 		    else if(is_byte)
 		    	byte_ris[i] = ((int *)arr_ptr->pointer)[i];
 			else
+			{
 		    	int_ris[i] = ((int *)arr_ptr->pointer)[i];
+			}
+		}
 		break;
 	case DTYPE_F : 
 	case DTYPE_FS :
@@ -383,8 +389,10 @@ JNIEXPORT jintArray JNICALL Java_LocalDataProvider_GetIntArray(JNIEnv *env, jobj
     int dim;
     int *out_ptr;
 
-    in_char = (*env)->GetStringUTFChars(env, in, 0);
-    out_ptr = MdsGetArray((char *)in_char, &dim, 0, 0, 0);
+
+
+   in_char = (*env)->GetStringUTFChars(env, in, 0);
+     out_ptr = MdsGetArray((char *)in_char, &dim, 0, 0, 0);
     (*env)->ReleaseStringUTFChars(env, in, in_char);
     if(error_message[0]) /*Return a dummy vector without elements*/
     {
@@ -392,8 +400,9 @@ JNIEXPORT jintArray JNICALL Java_LocalDataProvider_GetIntArray(JNIEnv *env, jobj
     }
     jarr = (*env)->NewIntArray(env, dim);
     (*env)->SetIntArrayRegion(env, jarr, 0, dim, out_ptr);
+	
 	free((char *)out_ptr);
-    return jarr;
+   return jarr;
 }
 JNIEXPORT jbyteArray JNICALL Java_LocalDataProvider_GetByteArray(JNIEnv *env, jobject obj, jstring in)
 {
