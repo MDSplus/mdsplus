@@ -5,6 +5,7 @@ interface DataProvider {
     public float GetFloat(String in);
     public float[] GetFloatArray(String in);
     public int[] GetIntArray(String in);
+    public String GetXSpecification(String in);
     public String ErrorString();
     public boolean SupportsAsynch();
     public void addMdsEventListener(MdsEventListener l, String event);

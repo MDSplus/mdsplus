@@ -352,7 +352,8 @@ public class WaveInterface
     public synchronized void EvaluateShot(int shot)
     {
 	    int curr_wave;
-
+        if(xmin > xmax) xmin = xmax;
+        if(ymin > ymax) ymin = ymax;
     	for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
 	    {
 	        if(shots[curr_wave] == shot)
@@ -436,55 +437,27 @@ public class WaveInterface
 	
 	if(in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0)
 	{
-//	    if(full_flag)
 		curr_y = dp.GetFloatArray(in_y[curr_wave]);
-//	    else 
-//		curr_y = dp.GetFloatArray("JAVA_RESAMPLE("+ "FLOAT("+in_y[curr_wave]+ "), " +
-//		   "FLOAT("+in_x[curr_wave]+ "), " + limits + ")");
 	
 	    if(curr_y != null && curr_y.length > 1 && in_up_err != null && 
 		    in_up_err[curr_wave] != null && (in_up_err[curr_wave].trim()).length() != 0)
 	    {
-//		if(full_flag)
 		    up_err = dp.GetFloatArray(in_up_err[curr_wave]);
-//		else
-//		    up_err = dp.GetFloatArray("JAVA_RESAMPLE("+ "FLOAT("+in_up_err[curr_wave]+ "), " +
-//		      "FLOAT("+in_x[curr_wave]+ "), " + limits + ")");
 		if(up_err == null || up_err.length <= 1)
 			curr_y = null;			
 	    }
 	    if(curr_y != null && in_low_err != null && 
 		    in_low_err[curr_wave] != null && (in_low_err[curr_wave].trim()).length() != 0)
 	    {
-//		if(full_flag)
 		    low_err = dp.GetFloatArray(in_low_err[curr_wave]);
-//		else
-//		    low_err = dp.GetFloatArray("JAVA_RESAMPLE("+ "FLOAT("+in_low_err[curr_wave]+ "), " +
-//		      "FLOAT("+in_x[curr_wave]+ "), " + limits + ")");
 		if(low_err == null || low_err.length <= 1)
 			curr_y = null;			
 	    }
 	    if(curr_y != null) 
 	    {
-//		if(full_flag)
-//		{
 		    curr_x = dp.GetFloatArray(in_x[curr_wave]);
 		    if(curr_x == null || curr_x.length <= 1)
 			curr_y = null;
-//		}
-//		else
-//		{
-//		    curr_x = dp.GetFloatArray("JAVA_DIM(FLOAT("+ in_x[curr_wave]+ "), " +
-//			limits + ")"); 
-//		    if(curr_x == null || curr_x.length <= 1)
-//			curr_y = null;
-//		    else
-//		    {
-//			expanded_x = new float[curr_y.length];
-//			x_samples = ExpandTimes(curr_x, expanded_x);
-//			curr_x = expanded_x;
-//		    }
-//		}
 	    }
 	}
 	else // Campo X non definito
@@ -494,6 +467,8 @@ public class WaveInterface
 	    else
 		curr_y = dp.GetFloatArray("JavaResample("+ "FLOAT("+in_y[curr_wave]+ "), "+
 		    "FLOAT(DIM_OF("+in_y[curr_wave]+")), "+ limits + ")");
+		
+		
 	    if(curr_y != null && curr_y.length > 1 && in_up_err != null && in_up_err[curr_wave] != null 
 		    && (in_up_err[curr_wave].trim()).length() != 0)
 	    {
@@ -522,7 +497,8 @@ public class WaveInterface
 	    if(curr_y != null)
 	    {
 		if(full_flag)
-		    curr_x = dp.GetFloatArray("DIM_OF("+in_y[curr_wave]+")");
+//		    curr_x = dp.GetFloatArray("DIM_OF("+in_y[curr_wave]+")");
+		    curr_x = dp.GetFloatArray(dp.GetXSpecification(in_y[curr_wave]));
 		else
 		{
 		    curr_x = dp.GetFloatArray("JavaDim(FLOAT(DIM_OF("+ in_y[curr_wave]+ 
@@ -563,8 +539,12 @@ public class WaveInterface
     
 	if(in_ymax != null && (in_ymax.trim()).length() != 0)
 	    out_signal.ymax = out_signal.saved_ymax = ymax;
+	if(out_signal.xmin > out_signal.xmax)
+	    out_signal.xmin = out_signal.xmax;
 	if(in_ymin != null && (in_ymin.trim()).length() != 0)
 	    out_signal.ymin = out_signal.saved_ymin = ymin;
+	if(out_signal.ymin > out_signal.ymax)
+	    out_signal.ymin = out_signal.ymax;
 	out_signal.up_error = up_err;
         out_signal.low_error = low_err;
         if(up_err != null)

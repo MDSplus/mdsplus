@@ -2,6 +2,7 @@ public class LocalProvider implements DataProvider {
     static {
 	System.loadLibrary("JavaMds");
     }
+    public String GetXSpecification(String yspec) {return "DIM_OF("+yspec+")";}
     native public void SetEnvironment(String exp);
     native public void Update(String exp, int s);
     native public String GetString(String in);

@@ -35,26 +35,6 @@ public class NetworkProvider implements DataProvider {
     MdsEventManager mdsEventManager = new MdsEventManager();
     public String error;
     
-/*
-    private Vector mdsEventList     = new Vector();
-
-static class MdsEventItem
-{
-    String  name;
-    Vector  listener = new Vector();
-    
-    MdsEventItem (String name, MdsEventListener l)
-    {
-        this.name = name;
-        listener.addElement((Object) l);
-    }
-    
-    public String toString()
-    {
-        return name;
-    }
-}
-*/
 
 public NetworkProvider()
 {
@@ -96,6 +76,8 @@ protected void finalize()
 }
 
 public synchronized String ErrorString() { return error; }
+
+public String GetXSpecification(String yspec) {return "DIM_OF("+yspec+")";}
 
 public boolean SupportsAsynch() { return true; }
 
@@ -704,6 +686,7 @@ private int ToInt(byte bytes[]) throws IOException
     DataInputStream dis = new DataInputStream(bis);
     return dis.readInt();
 }
+
 private short ToShort(byte bytes[]) throws IOException
 {
     if (swap)

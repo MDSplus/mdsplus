@@ -64,6 +64,7 @@ Integer inte;
 	saved_xmax = xmax;
 	if(xmax <= xmin)
 	    saved_xmax = xmax = xmin+(float)1E-6;
+	if(_ymin > _ymax) _ymin = _ymax;
 	saved_ymin = ymin = _ymin;
 	saved_ymax = ymax = _ymax;
  	CheckIncreasingX();

@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
+
 //public class Waveform extends Canvas 
 //{
 
@@ -30,10 +31,13 @@ import java.util.*;
     public WaveformMetrics(double _xmax, double _xmin, 
 	double _ymax, double _ymin, Rectangle limits, Dimension d, boolean _x_log, boolean _y_log)
     {
-	int ylabel_width = limits.width, xlabel_height = limits.height;
+     	int ylabel_width = limits.width, xlabel_height = limits.height;
 	double delta_x, delta_y;
 	int border_y;
 	
+	
+	if(_ymin > _ymax) _ymin = _ymax;
+	if(_xmin > _xmax) _xmin = _xmax;
 	start_x = ylabel_width;
     	x_log = _x_log;
 	y_log = _y_log;
@@ -326,6 +330,8 @@ import java.util.*;
     private int BuildGrid(double val[], int mode, double xmax, double ymax, double xmin, 
 	double ymin, boolean xlog, boolean ylog)
     {
+    if(ymax < ymin) ymax = ymin + 1E-10;   
+     if(xmax < xmin) xmax = xmin + 1E-10;   
 	double step, curr, curr_max, curr_min, xrange = xmax - xmin, yrange = ymax - ymin;
 	boolean greater = false;
 	boolean is_log;
