@@ -1060,9 +1060,17 @@ static void ProcessMessage(Client *c, Message *message)
     {
     case MDS_IO_OPEN_K:
       {
-	      int fd = open(message->bytes,message->h.dims[1] | O_BINARY | O_RANDOM,message->h.dims[2]);
+        int fd;
+        char *filename = (char *)message->bytes;
+        char *ptr;
         DESCRIPTOR_LONG(fd_d,0);
         fd_d.pointer = (char *)&fd;
+        fd = open(filename,message->h.dims[1] | O_BINARY | O_RANDOM,message->h.dims[2]);
+        if (fd == -1)
+	{
+          while (fd == -1 && ((ptr = index(filename,'\\')) != 0)) *ptr='/';
+          fd = open(filename,message->h.dims[1] | O_BINARY | O_RANDOM,message->h.dims[2]);
+        }
         SendResponse(c, 1, (struct descriptor *)&fd_d);
 	      break;
       }
