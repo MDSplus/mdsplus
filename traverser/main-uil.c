@@ -34,16 +34,6 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define DECLARE_BX_GLOBALS
 
 /*
- * Global declarations are now stored in "MAIN-UIL.H"
- *
- * If DECLARE_BX_GLOBALS is defined then this header file
- * declares the globals, otherwise it just externs them.
- */
-
-#include "MAIN-UIL.H"
-
-
-/*
  * Application name and class definition
  */
 #define BX_APP_NAME "builderProduct"
