@@ -5,4 +5,4 @@ void XmdsInitialize(){}
 void XmdsResetAllXds(){}
 void XmdsXdsAreValid(){}
 void XmdsApplyAllXds(){}
-extern WidgetClass xmdsWaveformWidgetClass = (WidgetClass)&xmdsWaveformClassRec;
+WidgetClass xmdsWaveformWidgetClass = (WidgetClass)&xmdsWaveformClassRec;

@@ -440,7 +440,7 @@ static XtWorkProcId UpdateWaveformsWorkProcID;
 int       main(int argc, String *argv)
 {
   int       i;
-  static String hierarchy_names[] = {{"dwscope.uid"}};
+  static String hierarchy_names[] = {"dwscope.uid"};
   String fallback_resources[] = {"*default_label.labelString: Default node:",
                                  "*exp_label.labelString: Experiment:",
 				 "*brief_errors.set: true",NULL};

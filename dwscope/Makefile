@@ -25,7 +25,7 @@ dwscopesubs.o
 
 ../bin/dwscope_remote : $(OBJECTS_DWSCOPE) evaluate.o RemoteDummies.o
 	$(CC) -o $@ $(OBJECTS_DWSCOPE)  evaluate.o RemoteDummies.o \
-                  -L../shlib $(STATIC_LIB) -lXmdsShr $(SHARED_LIB) -lMdsIpShr $(MOTIF_LIBS) $(X11_LIBS) -lm
+                  -L../shlib $(STATIC_LIB) -lXmdsShr $(SHARED_LIB) -lMdsIpShr $(MOTIF_LIBS) $(X11_LIBS) -lm $(DLD)
 
 ../uid/dwscope.uid : dwscope.uil
 	uil -o $@ dwscope.uil
@@ -43,6 +43,7 @@ clean :
 	- rm .depend
 	- rm *.o
 	- rm ../bin/dwscope
+	- rm ../bin/dwscope_remote
 	- rm ../uid/dwscope.uid
 	- rm ../bin/dwpad
 	- rm ../uid/dwpad.uid

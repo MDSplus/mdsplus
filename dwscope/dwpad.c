@@ -200,7 +200,7 @@ int       main(int argc, char **argv)
  Local variables:                                                             */
 
   int       i;
-  static String hierarchy_name[] = {{"dwpad.uid"},{"dwscope.uid"}};
+  static String hierarchy_name[] = {"dwpad.uid","dwscope.uid"};
   String fallback_resources[] = {"*default_label.labelString: Default node:",
                                  "*exp_label.labelString: Experiment:", NULL};
   static MrmRegisterArg callbacks[] = {{"Exit", (char *)Exit},
