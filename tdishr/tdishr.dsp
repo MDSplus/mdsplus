@@ -369,6 +369,10 @@ SOURCE=.\TdiSubscript.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\TdiThreadSafe.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\TdiTrans.c
 # End Source File
 # Begin Source File
