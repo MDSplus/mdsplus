@@ -46,4 +46,4 @@ extern void MdsUnpk(char *nbits, int *nitems, int pack[], int items[], int *bit)
 extern int MdsXpand(int *nitems, struct descriptor_a *pack, struct descriptor_a *items, int *bit);
 extern int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid);
 extern int MDSEventCan(int eventid);
-extern int MDSEvent(char *evname);
+extern int MDSEvent(char *evname, int num_bytes, char *data);
