@@ -26,11 +26,11 @@ int mdsdcl___execute(struct descriptor_s *niddsc_ptr, InExecuteStruct *setup)
   for (line=strtok(setup->verbs,"\n");line;line=strtok(0,"\n"))
   {
     char cmd[128];
-    strcat(cmd,"set command ");
+    strcpy(cmd,"set command ");
     strcat(cmd,line);
     return_on_error(mdsdcl_do_command(cmd),status);
   }
-  for (line=strtok(setup->verbs,"\n");line;line=strtok(0,"\n"))
+  for (line=strtok(setup->commands,"\n");line;line=strtok(0,"\n"))
   {
     if (strlen(line))
       return_on_error(mdsdcl_do_command(line),status);
