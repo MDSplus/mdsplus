@@ -1066,17 +1066,17 @@ echo $ac_n "checking for presence of java jdk in /usr/java""... $ac_c" 1>&6
 echo "configure:1067: checking for presence of java jdk in /usr/java" >&5
 jdk_found=0
 jdk_dir=""
-jdk_dirs=`find /usr/java -name 'jdk*' -type d -maxdepth 1 >/dev/null`
+jdk_dirs=`find /usr/java -name 'jdk*' -type d -maxdepth 1 2>/dev/null`
 if test $? = 0; then 
-  for i in $jdk_dirs; do 
-    tmp = `ls -d $i/include >/dev/null 2>/dev/null`;
-    if test $? = 0; then
+  for i in $jdk_dirs; do
+    tmp=`ls -d $i/include >/dev/null 2>/dev/null`;
+    if test $? = 0 && test $jdk_found = 0; then
       jdk_found=1;
-      jdk_dir=$i; 
+      jdk_dir=$i;
     fi;
   done;
 fi
-if test $jdk_found = 0; then
+if test $jdk_found = 1; then
   echo "$ac_t""found. Will use $jdk_dir" 1>&6;
 else
   echo "$ac_t""not found" 1>&6;
