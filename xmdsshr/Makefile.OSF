@@ -71,6 +71,6 @@ depend : .depend
 
 .depend :
 	- rm .depend
-	find *.c -exec cc -I../include -M {} > .depend \;
+	find *.c -exec cc -DMDS_EXTENSION -I../include -I. -I/usr/examples/motif/wml -M {} > .depend \;
 
 include .depend
