@@ -4,6 +4,7 @@ LD=@LD@
 top_srcdir=@top_srcdir@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
+FFLAGS=@FFLAGS@
 LDFLAGS=@LDFLAGS@
 LIBS=@LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
