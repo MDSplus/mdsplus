@@ -47,7 +47,8 @@ public fun TRCH__store(as_is _nid, optional _method)
 
 /* TACON */
 /* TACON DEL TACON */    
-    _ticks = long((_trig + 5. - 200E-6)/slope_of(_clock) + 0.5);
+/*    _ticks = long((_trig + 5. - 200E-6)/slope_of(_clock) + 0.5);*/
+    _ticks = long((_trig + 5.D0)/slope_of(_clock) + 0.5);
     _ticks = 2*(_ticks + _pts);
     _ticks = mod(_ticks, _1M);
 
@@ -58,7 +59,8 @@ public fun TRCH__store(as_is _nid, optional _method)
     {
 /*DevLogErr(_nid, 'MAR Readout error');
 */
-	_base_mar = (_base_mar & 0x0003ffffUL)|(_ticks & 0xfffc0000UL); 
+/*	_base_mar = (_base_mar & 0x0003ffffUL)|(_ticks & 0xfffc0000UL); */
+	_base_mar = _ticks;
         write(*, 'MAR CORRETTO: ', _base_mar);
 
     }
