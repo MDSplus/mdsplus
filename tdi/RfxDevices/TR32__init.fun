@@ -94,7 +94,7 @@ public fun TR32__init(as_is _nid, optional _method)
 
     DevNodeCvt(_nid, _N_USE_TIME, ['TRUE', 'FALSE'], [1,0], _time_cvt=0);
     _pts = 0;
-	_ranges = [];
+    _ranges = [];
     for(_i = 0; _i < 4; _i++)
     {
         if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 +(_i *  _K_NODES_PER_CHANNEL))))

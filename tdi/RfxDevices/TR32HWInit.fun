@@ -50,9 +50,15 @@ public fun TR32HWInit(in _nid, in _board_id, in _ext_clock, in _clock_div, in _p
 
 /* Set clock functions */
 	if(_ext_clock) 
+	{
+		_clock_div_mode = byte(_TR32_CLK_SUB_SAMPLE);
 		_clock_source = byte(_TR32_CLK_SOURCE_EXTERNAL);
+	}
 	else
+	{
+		_clock_div_mode = byte(_TR32_CLK_DIVIDE);
 		_clock_source = byte(_TR32_CLK_SOURCE_INTERNAL);
+	}
 
 
 	if(_clk_termination)
@@ -68,7 +74,7 @@ write(*, 'prova init ');
 
 
 	TR32->TR32_Clk_SetClock(val(_handle), val(_clock_source), val(_TR32_CLK_NO_EXT_CLOCK),
-		val(_TR32_CLK_DIVIDE), val(_TR32_CLK_RISING_EDGE), val(_clock_termination), val(long(data(_clock_div))));
+		val(_clock_div_mode), val(_TR32_CLK_RISING_EDGE), val(_clock_termination), val(long(data(_clock_div))));
 		  
 /* Set Trigger function */
 	if(_ext_trig)
@@ -80,6 +86,9 @@ write(*, 'prova init ');
 		_trig_edge_mode = _TR32_TRG_FALLING_EDGE;
 	else
 		_trig_edge_mode = _TR32_TRG_RISING_EDGE;
+
+write(*, 'TRIG_EDGE:', _trig_edge_mode);
+
 
 	TR32->TR32_Trg_SetTrigger(val(_handle), val(_trig_mode), val(0B), val(0B),
 		val(_TR32_TRG_EXT_OUT_ON), val(_trig_edge_mode), val(_TR32_TRG_TERMINATION_OFF),

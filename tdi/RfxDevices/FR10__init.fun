@@ -140,9 +140,6 @@ public fun FR10__init(as_is _nid, optional _method)
         DevLogErr(_nid, 'Negative PTS value');
         abort();
     }
-
-    _pts = int(_pts)/32 * 32 + 32;
-
     DevPut(_nid, _N_PTS, _pts);
 
 

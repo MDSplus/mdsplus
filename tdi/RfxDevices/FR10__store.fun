@@ -107,6 +107,11 @@ public fun FR10__store(as_is _nid, optional _method)
 			_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
 
 			_status = DevPutSignal(_sig_nid, 0, 10/2048., word(_data), 0, _end_idx - _start_idx - 1, _dim);
+
+
+/*
+			_status = DevPutSignal(_sig_nid, 0, 10/32768., word(_data), 0, _end_idx - _start_idx - 1, _dim);
+*/
 			if(! _status)
 			{
 				DevLogErr(_nid, 'Error writing data in pulse file');
