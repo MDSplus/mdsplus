@@ -10,12 +10,12 @@ public fun FR10HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 	private _FR10_TRG_NO_PXI_OUT =			byte(0x7);
 	private _FR10_TRG_EXT_OUT_OFF =			byte(0x0);
 	private _FR10_TRG_EXT_OUT_ON =			byte(0x1);
-	private _FR10_TRG_RISING_EDGE =			byte(0x1);
-	private _FR10_TRG_FALLING_EDGE =		byte(0x0);
+	private _FR10_TRG_RISING_EDGE =			byte(0x0);
+	private _FR10_TRG_FALLING_EDGE =		byte(0x1);
 	private _FR10_TRG_TERMINATION_ON =		byte(0x1);
 	private _FR10_TRG_TERMINATION_OFF=		byte(0x0);
-	private _FR10_TRG_SYNCHRONOUS =			byte(0x1);
-	private _FR10_TRG_ASYNCHRONOUS =		byte(0x0);
+	private _FR10_TRG_SYNCHRONOUS =			byte(0x0);
+	private _FR10_TRG_ASYNCHRONOUS =		byte(0x1);
 
 	private _FR10_CLK_SOURCE_INTERNAL =		byte(0x0);
 	private _FR10_CLK_SOURCE_PXI	=		byte(0x1);
@@ -70,7 +70,7 @@ public fun FR10HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 		_trig_edge_mode = _FR10_TRG_RISING_EDGE;
 
 	FR10->FR10_Trg_SetTrigger(val(_handle), val(_trig_mode), val(0B), val(_FR10_TRG_NO_PXI_OUT),
-		val(_FR10_TRG_EXT_OUT_ON), val(_trig_edge_mode), val(_FR10_TRG_TERMINATION_OFF),
+		val(_FR10_TRG_EXT_OUT_ON), val(_trig_edge_mode), val(_FR10_TRG_TERMINATION_ON),
 		val(_FR10_TRG_SYNCHRONOUS));
 
 /* Set Post Trigger Samples */
