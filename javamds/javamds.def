@@ -45,4 +45,4 @@ Java_Data_toString
 Java_Data_evaluate
 Java_Data_fromExpr
 getDeviceFields
-
+deviceSetup
