@@ -97,8 +97,6 @@ MDSprintf
 MDSfprintf
 libgetvm_
 libfreevm_
-MSISetPATH
-MSIUnsetPATH
 MdsUsageString
 MdsClassString
 MdsDtypeString
@@ -106,3 +104,4 @@ LibDeleteVmZone
 MdsRelease
 LockMdsShrMutex
 UnlockMdsShrMutex
+
