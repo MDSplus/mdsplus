@@ -1,6 +1,6 @@
 include $(MAKE_OPTIONS)
 
-
+CFLAGS = $(JAVA_CFLAGS)
 OBJECTS = javamds.o ServerSupport.o JavaData.o JavaTrav.o
 EXPORTS = javamds.export
 
