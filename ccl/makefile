@@ -12,7 +12,7 @@ ccl_commands.c:	ccl_commands.ocld
 	../bin/cdu < ccl_commands.ocld
 
 ../shlib/ccl_commands.$(SHARE_TYPE):	ccl_commands.o  ccl_dummy.o
-	$(CC) $(CFLAGS) -o $@ $(LD_SHARED_LIB_OPTIONS)	\
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS)	\
 			ccl_commands.o ccl_dummy.o  -lc
 
 ../bin/ccl:	ccl
