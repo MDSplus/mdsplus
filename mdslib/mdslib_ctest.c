@@ -9,6 +9,7 @@ void main(int argc, char *argv[])
   int shot;
   char string[50];
   float result[10], result1;
+  float thomsondata[1000];
   int dsc,dsc1,dsc2,dscr,dscrsize,dscrstring,i;
   short int sizeresult;
   struct descrip ans;
@@ -30,8 +31,10 @@ void main(int argc, char *argv[])
     {0., 31., 28., 31., 30., 31., 30., 31., 31., 30., 31., 30., 31.},
     {0., 31., 29., 31., 30., 31., 30., 31., 31., 30., 31., 30., 31.}};
 
-
   for (i=0;i<10;i++) result[i]=0;
+
+  for (i=0;i<1000;i++) thomsondata[i] = 12345.678;
+
 
   dsc = descr(&dtype_float,result,&sresult,&null);
   dsc1 = descr(&dtype_float,&arg1,&null);
@@ -122,16 +125,16 @@ void main(int argc, char *argv[])
   
   dsc = descr(&dtype_float, testmulti, &sx, &sy, &null); 
 
-  status = MdsPut("\\TOP:ONE_NUMBER","$",&dsc,&null);
+  status = MdsPut("\\TOP:NEMPROF","$",&dsc,&null);
   printf("Putting: %f\n",testmulti[0][2]);
-  printf("Status putting \\TOP:ONE_NUMBER: %d\n",status);
+  printf("Status putting \\TOP:NEMPROF: %d\n",status);
 
 
   if (status & 1) 
   {
     float *data = malloc(sx*sy * sizeof(float));
     dsc = descr(&dtype_float, data, &sx, &sy, &null);
-    status = MdsValue("\\TOP:ONE_NUMBER",&dsc,&null,&returnlength);
+    status = MdsValue("\\TOP:NEMPROF",&dsc,&null,&returnlength);
     printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
     for (i=0;i<sx;i++)
       {
@@ -142,6 +145,7 @@ void main(int argc, char *argv[])
   }
   
 
+  
   printf("=================== TEST 5 ======================\n");
 
   printf("Status setting default: %d\n",MdsSetDefault("\\TOP.RESULTS.AEQDSK"));
@@ -156,7 +160,7 @@ void main(int argc, char *argv[])
   status = MdsValue("$DEFAULT",&dscrstring,&null,&returnlength);
   printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
   printf("default: %s\n",string);
-
+  
 
   printf("=================== TEST 6 ======================\n");
 
@@ -165,23 +169,51 @@ void main(int argc, char *argv[])
   printf("result: %f\n",arg1);
 
   printf("=================== TEST 7 ======================\n");
-
+    
   dsc = descr(&dtype_cstring,string,&null,&stringlength);
   status = MdsValue("FINDSIG('TSTE_CORE')",&dsc,&null,&returnlength);
   printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
   printf("FINDSIG(TSTE_CORE): %s\n",string);
+  
 
   printf("=================== TEST 8 ======================\n");
 
-  status = MdsValue("FINDSIG('TSTE_CORE')",cdescr(DTYPE_CSTRING,string,0,stringlength),&null,&returnlength);
-  printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
-  printf("FINDSIG(TSTE_CORE): %s\n",string);
+  sresult = 1000;
+  dsc = descr(&dtype_float, &thomsondata, &sresult, &null);
+  status = MdsOpen("EFIT01", &shot);
+  if (status & 1)
+    {
+      status = MdsPut("\\TOP:ONE_NUMBER","$",&dsc,&null);
+      printf("Putting: %f\n",thomsondata[0]);
+      printf("Status putting \\TOP:ONE_NUMBER: %d\n",status);
+    }
+  
 
+  printf("=================== TEST 9 ======================\n");
+
+  sresult = 1000;
+  dsc = descr(&dtype_float,&thomsondata,&sresult,&null);
+  shot = 100;
+  status = MdsOpen("ELECTRONS",&shot);
+  if (status & 1) 
+    {
+      status = MdsPut("\\TSTE_CORE","BUILD_SIGNAL($,*,*)",&dsc,&null);
+    }
+  printf("Status putting thomson data: %d\n",status);
+  
 
   printf("=================== TIMING TEST ======================\n");
 
 
   for (i=0;i<500;i++) status = MdsValue("FINDSIG('\\TSTE_CORE')",&dscrstring,&null,&returnlength);
+  
+  /*  printf("=================== CDESCR TEST ======================\n");
+
+  status = MdsValue("FINDSIG('TSTE_CORE')",cdescr(DTYPE_CSTRING,string,0,stringlength),&null,&returnlength);
+  printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
+  printf("FINDSIG(TSTE_CORE): %s\n",string);
+  */
+
 
   exit(0);
 
