@@ -41,13 +41,16 @@ public class WaveformEditor extends Waveform
             {
                 int newIdx = -1;
                 float currX = convertX(e.getX());
+                float currY = convertY(e.getY());
                 float minDist = currentX[currentX.length-1] - currentX[0];
                 int prevIdx = -1;
                 for(int i = closestIdx = 0; i < currentX.length; i++)
                 {
                     if(prevIdx == -1 && i < currentX.length - 1 && currentX[i + 1] > currX)
                         prevIdx = i;
-                    float currDist = (float)Math.abs(currX - currentX[i]);
+                    //(float currDist = (float)Math.abs(currX - currentX[i]);
+                    float currDist = (currX - currentX[i])*(currX - currentX[i])+
+                       (currY - currentY[i])*(currY - currentY[i]); 
                     if( currDist < minDist)
                     {
                         minDist = currDist;
