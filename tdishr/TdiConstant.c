@@ -1,0 +1,135 @@
+/*	Tdi1Constant.C
+	Get descriptor of a constant value.
+	Note $NARG (number of arguments) is in Tdi1Var.
+	Note $VALUE (raw of signal, data of param) is in TdiGetData.
+	They are not constants, but context values.
+
+	Ken Klare, LANL P-4	(c)1989,1990,1992
+*/
+#include "tdireffunction.h"
+#include "tdirefstandard.h"
+#include <mdsshr.h>
+extern int MdsCopyDxXd();
+TdiRefStandard(Tdi1Constant)
+struct	TdiFunctionStruct_c {
+	char	*name;		   /*string to compile/decompile	*/
+	int	(*f1)();	   /*routine to check arguments	*/
+	int	(*f2)();	   /*routine to set conversions	*/
+	struct descriptor *constantxd; /*xd to constant */
+	unsigned char i1;	/*input minimum cat		*/
+	unsigned char i2;	/*input maximum cat		*/
+	unsigned char o1;	/*output minimum cat		*/
+	unsigned char o2;	/*output maximum cat		*/
+	unsigned char m1;	/*minimum arguments		*/
+	unsigned char m2;	/*maximum arguments		*/
+	unsigned int token;	/*YACC-LEX token for this entry	*/
+};
+struct TdiFunctionStruct_c *fun_ptr = (struct TdiFunctionStruct_c *)&TdiRefFunction[opcode];
+
+	status = MdsCopyDxXd(fun_ptr->constantxd, out_ptr);
+	return status;
+}
+/*------------------------------------------------
+	Descriptor definitions of constants, MKS.
+
+	Valid units (*=basic +=supplementary):
+	m	meter*
+	kg	kilogram*
+	s	second*
+	A	ampere*
+	K	kelvin*
+	mol	mole*
+	cd	candela*
+	rad	radian+
+	sr	steradian+
+	Hz	hertz
+	J	joule
+	N	newton
+	Pa	pascal
+	W	watt
+	C	coulomb
+	V	volt
+	(omega)	ohm
+	S	siemens
+	F	farad
+	Wb	weber
+	H	henry
+	T	tesla
+	lm	lumen
+	lx	lux
+	Bq	becquerel
+	Gy	gray
+
+Major sources:
+"The 1986 Adjustment of the Fundamental Physical Constants..." by Cohen and Taylor
+"1980 Revised NRL Plasma Formulary" by Book.
+	NEED to remove / ** / when ANSI C permits sharp-sharp
+*/
+typedef void			(*MISSING)();
+typedef	unsigned char		BU;
+typedef	float			FLOAT;
+typedef struct {float x,y;}	FLOAT_COMPLEX;
+typedef unsigned int		FROP;
+#define DTYPE_FROP	DTYPE_F
+
+#define DATUM(type, x, data) \
+	static type			d##x = data;\
+	struct descriptor	Tdi3##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x}
+
+#define DERR(type, x, data, error) \
+	static type			d##x = data;\
+        static type			e##x = error;\
+	static struct descriptor	dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
+	static struct descriptor	de##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&e##x};\
+        DESCRIPTOR_WITH_ERROR(Tdi3##x,&dd##x,&de##x)
+
+#define UNITS(type, x, data, units) \
+	static type			d##x = data;\
+	static struct descriptor	dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
+	static DESCRIPTOR(		du##x, units);\
+	DESCRIPTOR_WITH_UNITS(Tdi3##x,&dd##x,&du##x)
+
+#define UERR(type, x, data, error, units) \
+	static type			d##x = data;\
+	static type			e##x = error;\
+	static DESCRIPTOR(du##x, units);\
+	static struct descriptor	dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
+	static struct descriptor	de##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&e##x};\
+        static DESCRIPTOR_WITH_ERROR(dwe##x,&dd##x,&de##x);\
+	DESCRIPTOR_WITH_UNITS(Tdi3##x,&dwe##x,&du##x)
+
+#define II {(float)0., (float)1.}
+#define RR 0x8000
+DATUM(FLOAT,	2Pi,		(float)6.2831853072				);/*	circumference/radius	*/
+UERR (FLOAT,	A0,		(float)5.29177249e-11,	(float)0.00000024e-11,	"m"	);/*a0	Bohr radius		*/
+DERR (FLOAT,	Alpha,		(float)7.29735308e-3,	(float)0.00000033e-3		);/*	fine-structure constant	*/
+UERR (FLOAT,	Amu,		(float)1.6605402e-27,	(float)0.0000010e-27,	"kg"	);/*	u atomic mass unit, unified*/
+UNITS(FLOAT,	C,		(float)299792458.,			"m/s"	);/*	c speed of light(exact)	*/
+UNITS(FLOAT,	Cal,		(float)4.1868,				"J"	);/*	calorie			*/
+DATUM(FLOAT,	Degree,	(float).01745329252				);/*	pi/180			*/
+UNITS(FLOAT,	Epsilon0,	(float)8.854187817e-12,		"F/m"	);/*	permitivity of vacuum(exact)*/
+UERR (FLOAT,	Ev,		(float)1.60217733e-19,	(float)0.00000049e-19,	"J/eV"	);/*	eV electron volt	*/
+DATUM(BU,	False,		0					);/*	logically false		*/
+UERR (FLOAT,	Faraday,	(float)9.6485309e4,	(float)0.0000029e4,	"C/mol"	);/*F	Faraday constant	*/
+UERR (FLOAT,	G,		(float)6.67259e-11,	(float)0.00085,	"m^3/s^2/kg");/*G gravitational constant*/
+UERR (FLOAT,	Gas,		(float)8.314510,	(float)0.000070,	"J/K/mol");/*R	gas constant		*/
+UNITS(FLOAT,	Gn,		(float)9.80665,			"m/s^2"	);/*gn	acceleration of gravity(exact)*/
+UERR (FLOAT,	H,		(float)6.6260755e-34,	(float)0.0000040,	"J*s"	);/*h	Planck constant		*/
+UERR (FLOAT,	Hbar,		(float)1.05457266e-34,	(float)0.00000063,	"J*s"	);/*hbar h/(2pi)		*/
+DATUM(FLOAT_COMPLEX,	I,		II					);/*i	imaginary		*/
+UERR (FLOAT,	K,		(float)1.380658e-23,	(float)0.000012e-23,	"J/K"	);/*k	Boltzmann constant	*/
+UERR (FLOAT,	Me,		(float)9.1093897e-31,	(float)0.0000054e-31,	"kg"	);/*me	mass of electron	*/
+DATUM(MISSING,	Missing,	0					);/*	missing argument	*/
+UERR (FLOAT,	Mp,		(float)1.6726231e-27,	(float)0.0000010e-27,	"kg"	);/*mp	mass of proton		*/
+UNITS(FLOAT,	Mu0,		(float)12.566370614e-7,		"N/A^2"	);/*	permeability of vacuum(exact)*/
+UERR (FLOAT,	N0,		(float)2.686763e25,	(float)0.000023e25,	"/m^3"	);/*n0	Loschmidt's number (STP)*/
+UERR (FLOAT,	Na,		(float)6.0221367e23,	(float)0.0000036e23,	"/mol"	);/*NA or L Avogadro number	*/
+UNITS(FLOAT,	P0,		(float)1.01325e5,			"Pa"	);/*atm	atmospheric pressure(exact)*/
+DATUM(FLOAT,	Pi,		(float)3.1415926536				);/*	circumference/diameter	*/
+UERR (FLOAT,	Qe,		(float)1.60217733e-19,	(float)0.000000493-19,	"C"	);/*e	charge on electron	*/
+UERR (FLOAT,	Re,		(float)2.81794092e-15,	(float)0.00000038e-15,	"m"	);/*re	classical electron radius*/
+DATUM(FROP,	Roprand,	RR					);/*	reserved operand	*/
+UERR (FLOAT,	Rydberg,	(float)1.0973731534e7,	(float)0.0000000013e7,	"/m"	);/*Rinf Rydberg constant	*/
+UNITS(FLOAT,	T0,		(float)273.16,				"K"	);/*?	standard temperature	*/
+UNITS(FLOAT,	Torr,		(float)1.3332e2,			"Pa"	);/*?torr 1mm Hg pressure	*/
+DATUM(BU,	True,		1					);/*	logically true		*/
