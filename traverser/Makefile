@@ -1,4 +1,4 @@
-CFLAGS = -c -I../include -I. -g
+include $(MAKE_OPTIONS)
 
 OBJECTS = \
 	main-uil.o \
@@ -13,7 +13,7 @@ all : ../bin/traverser \
 	../uid/traverser.uid
 
 ../bin/traverser : $(OBJECTS) ../bin
-	cc -o $@ $(OBJECTS)  -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr -lMrm -lXm -lXt -lX11 
+	 cc -o $@ $(OBJECTS)  -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr $(MOTIF_LIBS) $(X11_LIBS)
 
 ../bin :
 	mkdir ../bin
@@ -26,13 +26,11 @@ clean :
 	- rm ../bin/traverser
 	- rm ../uid/traverser.uid
 	- rm .depend
-	- rm *~
 
 depend : .depend
 
 .depend :
-	- rm .depend
-	find *.c -exec cc -DMDS_EXTENSION -I../include -I.  -M {} > .depend \;
+	find *.c -exec $(MAKE_DEPEND)
 
 include .depend
 
