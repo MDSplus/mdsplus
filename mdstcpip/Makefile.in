@@ -18,14 +18,15 @@ EXPORTS = mdsipshr.export
 all : @MAKEBINDIR@ @MAKELIBDIR@ @MAKEETCDIR@ \
       @MAKEBINDIR@mdsiptest @MAKEBINDIR@mdsip \
       @MAKEBINDIR@mdsipd @MAKEETCDIR@mdsip.hosts \
-      @MAKELIBDIR@libMdsIpShr.a @MAKELIBDIR@libMdsIpUtil.a
+      @MAKELIBDIR@libMdsIpShr.a @MAKELIBDIR@libMdsIpUtil.a \
+      @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES) mdsip_u.c
 
 clean :
 	- rm *.o
-	- rm @MAKELIBDIR@libMdsIpShr.$(SHARE_TYPE)
+	- rm @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@
 	- rm @MAKELIBDIR@libMdsIpShr.a
 	- rm @MAKELIBDIR@libMdsIpUtil.a
 	- rm @MAKEBINDIR@mdsiptest
@@ -37,24 +38,26 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpShr.a @libdir@
-	$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpUtil.a @libdir@
-	$(INSTALL) -m 755  @MAKELIBDIR@libMdsIpShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsip	@bindir@
+	if test "@SHARETYPE@" != ".a" ; then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpShr.a @libdir@
+		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpUtil.a @libdir@
+	fi;
 
 @MAKEBINDIR@ :
 	mkdir @MAKEBINDIR@
 
 @MAKEBINDIR@mdsiptest : t.c @MAKELIBDIR@libMdsIpShr@SHARETYPE@
-	$(CC) -o $@ $(CFLAGS) t.c -L@MAKELIBDIR@ -lMdsIpShr $(LIBS)
+	$(CC) -o $@ $(CFLAGS) t.c -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS)
 
 @MAKEBINDIR@mdsip : mdsip_u.c
-	$(CC) -o $@ $(CFLAGS) mdsip_u.c -L@MAKELIBDIR@ -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
+	$(CC) -o $@ $(CFLAGS) mdsip_u.c -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
 
 @MAKEBINDIR@mdsipd : mdsipd
 	cp mdsipd @MAKEBINDIR@mdsipd
 
-@MAKELIBDIR@libMdsIpShr@SHARETYPE@ : $(OBJECTS)
+@MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ : $(OBJECTS)
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) 
 
 @MAKELIBDIR@libMdsIpShr.a : $(OBJECTS)
