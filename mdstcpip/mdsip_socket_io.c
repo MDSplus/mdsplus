@@ -4,7 +4,7 @@ extern int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob);
 extern char ClientType(void);
 extern void FlipHeader(MsgHdr *header);
 #ifdef GLOBUS
-#ifdef __VMS
+#if defined(__VMS)
 #include <descrip.h>
 #include <impdef.h>
 #include <netdb.h>
@@ -16,29 +16,29 @@ extern void FlipHeader(MsgHdr *header);
         unsigned char  family;
         }    socketParamType, /* For one occurance */
             *socketParamPtr;  /* For a pointer to an occ.*/
-#else
+#elif !defined(WIN32)
 #include <syslog.h>
 #include <sys/param.h>
+#include <pwd.h>
+#include <unistd.h>
+#include <sys/uio.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/file.h>
+#include <sys/ioctl.h>
+#include <sys/signal.h>
+#include <sys/wait.h>
 #endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <fcntl.h>
-#include <pwd.h>
-#include <unistd.h>
 #include <errno.h>
 #include <signal.h>
 #include <sys/types.h>
-#include <sys/uio.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h>
 #include <time.h>
 #include <sys/stat.h>
-#include <sys/file.h>
-#include <sys/ioctl.h>
-#include <sys/signal.h>
-#include <sys/wait.h>
 #include "globus_io.h"
 #include "globus_l_io.h"
 struct handle_struct { globus_io_handle_t handle;
@@ -189,7 +189,11 @@ void ConnectReceived(void *callback_arg, globus_io_handle_t *listener_handle, gl
   }
   if (pid == getpid())
   {
+#ifdef WIN32
+    _sleep(1000);
+#else
     sleep(1);
+#endif
     globus_io_tcp_register_listen(listener_handle,ConnectReceived,(void *)0);
   }
 }
@@ -572,7 +576,10 @@ int CloseSocket(SOCKET s)
 #endif
 }
 
-#if defined(_WIN32) && !defined(GLOBUS)
+#if defined(_WIN32)
+#ifdef GLOBUS
+Message *GetMdsMsgOOB(SOCKET sock,int *status){return 0;}
+#else
 Message *GetMdsMsgOOB(SOCKET sock, int *status)
 {
   MsgHdr header;
@@ -637,8 +644,15 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
   return (*status & 1) ? msg : 0;
 }
 #endif
+#endif
 
-#ifdef GLOBUS
+#if defined(GLOBUS)
+#ifdef WIN32
+globus_result_t globus_io_tcp_accept_inetd(globus_io_attr_t *attr,   globus_io_handle_t *handle)
+{
+  return -1;
+}
+#else
 globus_result_t globus_io_tcp_accept_inetd(globus_io_attr_t *attr,   globus_io_handle_t *handle)
 {
   static FILE *   fdin;
@@ -766,7 +780,7 @@ globus_result_t globus_io_tcp_accept_inetd(globus_io_attr_t *attr,   globus_io_h
   }
   return GLOBUS_SUCCESS;
 }
-
+#endif
 #endif
 
 int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *), void (*DoMessage_in)(SOCKET s))
@@ -826,7 +840,9 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
   AddClient = AddClient_in;
   DoMessage = DoMessage_in;
   (*AddClient)(s,&sin,MGetName(handle));
+#ifndef WIN32
   chown(getenv("X509_USER_PROXY"),getuid(),getgid());
+#endif
   return -1;
 #endif
 }
