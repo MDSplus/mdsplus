@@ -149,7 +149,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
     **************************************************************/
       prec = (record_four *) align((long)((char *) pwork + sizeof(record_four)),sizeof(void *));
       pca1 = (array_coef *) ((char *) prec + sizeof(rec0));
-      pdat = (struct descriptor_a *) ((char *) pca1 + asize);
+      pdat = (struct descriptor_a *) align((long)((char *) pca1 + asize),sizeof(void *));
       pcmp = (char *) pdat + sizeof(struct descriptor_a);
       plim = porig->pointer + porig->arsize - sizeof(opcode);
       if (pcmp >= plim)
