@@ -1,5 +1,5 @@
 CFLAGS = +z -Ae -Wl,+s -I../include -g +DA1.1 +DS1.1
-MOTIF_CFLAGS = +z -Ae -I../include -I/usr/include/X11R6 -g -D_NO_DXm
+MOTIF_CFLAGS = $(CFLAGS) -I/usr/include/X11R6 -D_NO_DXm
 WMD_RULE=xmdsuil-bigendian.wmd ; cp xmdsuil-bigendian.wmd ../shlib/xmdsuil.wmd
 SHARE_TYPE = sl
 MAKE_DEPEND = cc $(CFLAGS) -P -Wp,-M {} 2> .depend \; ; rm *.i
