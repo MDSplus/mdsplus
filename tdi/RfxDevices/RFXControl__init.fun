@@ -20,7 +20,6 @@ public fun RFXControl__init(as_is _nid, optional _method)
     private _N_ZERO = 17;
     private _N_MAPPING_ID = 18;
     private _N_MAPPING = 19;
-    private _N_ROUTINE_NAME = 15;
     private _N_N_ADC_IN = 16;
     private _N_N_DAC_OUT = 17;
     private _N_N_NET_IN = 18;
@@ -28,13 +27,13 @@ public fun RFXControl__init(as_is _nid, optional _method)
 	private _N_RAMP_SLOPE = 20;
 	private _N_RAMP_TRIGGER = 21;
 	private _N_FEEDFORWARD = 22;
-	private _N_N_ADC_IN = 23;
-	private _N_N_DAC_OUT = 24;
-	private _N_N_NET_IN = 25;
-	private _N_N_NET_OUT = 26;
-	private _N_N_MODES = 27;
+    	private _N_ROUTINE_NAME = 23;
+	private _N_N_ADC_IN = 24;
+	private _N_N_DAC_OUT = 25;
+	private _N_N_NET_IN = 26;
+	private _N_N_NET_OUT = 27;
+	private _N_N_MODES = 28;
 	
-	private _N_ROUTINE_NAME = 28;
 	private _N_ADC_IN_1 = 29;
 	private _N_DAC_OUT_1 = 221;
 	private _N_NET_IN_1 = 317;
