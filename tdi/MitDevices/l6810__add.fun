@@ -18,7 +18,7 @@ public fun L6810__add(in _path, out _nidout)
     DevAddNode(_cn//':ENDIDX','NUMERIC',*,'/noshot_write',_nid);
     DevAddNode(_cn//':FULL_SCALE', 'NUMERIC', 10.24, '/noshot_write', _nid);
     DevAddNode(_cn//':SRC_CPLING', 'NUMERIC', 0, '/noshot_write', _nid);
-    DevAddNode(_cn//':OFFSET', 'NUMERIC', 0, '/noshot_write', _nid);
+    DevAddNode(_cn//':OFFSET', 'NUMERIC', 128BU, '/noshot_write', _nid);
   }
   DevAddAction(_path//':INIT_ACTION','INIT','INIT',50,'CAMAC_SERVER',_path,_nid);
   DevAddAction(_path//':STORE_ACTION','STORE','STORE',50,'CAMAC_SERVER',_path,_nid);

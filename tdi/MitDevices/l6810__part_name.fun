@@ -1,6 +1,6 @@
 public fun L6810__PART_NAME(as_is _nid, optional in _method)
 {
-  _name = ([
+  private _names = [
   '',
   ':NAME',
   ':COMMENT',
@@ -10,7 +10,7 @@ public fun L6810__PART_NAME(as_is _nid, optional in _method)
   ':MEMORIES',
   ':SEGMENTS',
   ':ACTIVE_MEM',
-  ':ACTIVE_CHANS'
+  ':ACTIVE_CHANS',
   ':INPUT_1',
   ':INPUT_1:STARTIDX',
   ':INPUT_1:ENDIDX',
@@ -36,6 +36,7 @@ public fun L6810__PART_NAME(as_is _nid, optional in _method)
   ':INPUT_4:SRC_CPLING',
   ':INPUT_4:OFFSET',
   ':INIT_ACTION',
-  ':STORE_ACTION'])[getnci(_nid,'conglomerate_elt')-1];
+  ':STORE_ACTION'];
+  private _name = _names[getnci(_nid,'conglomerate_elt')-1];
   return(trim(_name));
 }

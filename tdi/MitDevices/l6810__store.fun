@@ -1,8 +1,6 @@
 public fun l6810__store(as_is _nid, optional _method)
 {
 
-  write (*, "first line of store");
-
 /* node offsets in the conglomerate */
 private _K_CONG_NODES = 36;
 Private _N_HEAD = 0;
@@ -61,6 +59,36 @@ Private _F1_FREQ = 30;
 Private _f2_freq = 31;
 Private _mem_size = 32;
 
+  /* 
+     routine to read 1 channel from the 6810
+     note that CamQstopw calls a routine which knows how to do
+     I/Os > 64K bytes
+   */
+  Private fun ReadChannel( in _name , in _chan, in _segs, in _samples_per_segment, in _drop, in _samples_to_read, 
+                                  OUT _channel_data )
+  {
+   DevCamChk(_name,CamPiow(_name, 5, 16, _d = 0, 16), 1, *);
+    DevCamChk(_name,CamPiow(_name, 6, 16, _d = 0, 16), 1, *);
+    DevCamChk(_name,CamPiow(_name, 7, 16, _d = 0, 16), 1, *);
+    _ans_expr = "";
+    for (_seg=0; _seg<_segs; _seg++) {
+      DevCamChk(_name,CamPiow(_name, _chan+1, 18, _seg, 16), 1, *);
+      l6810_wait(_name);
+      for (_i=0; _i<_drop; _i++) {
+        DevCamChk(_name,CamPiow(_name, 0, 2, _dummy, 16), 1, *);
+      }
+      _seg_var = '_seg_'//trim(adjustl(_seg));
+      _cmd = "DevCamChk(_name, CamQstopw(_name, 0, 2, _samples_per_segment,"//_seg_var//",16),1,*)";
+      _status = execute(_cmd);
+      _exp = "_ans_expr = _ans_expr //'" // _seg_var // ((_seg < (_segs-1)) ? ",'" : "' ");
+      _status = execute(_exp);
+    }
+    _a_expr = "_channel_data = [" // _ans_expr // "]";
+    _status = execute(_a_expr);
+    
+   return(1);
+  }
+
 /*
   Arrays of setup constants
 */
@@ -76,7 +104,6 @@ Private _coeffs = [100E-6, 250E-6, 500E-6, 1E-3, 2.5E-3, 6.26E-3, 12.5E-3, 25E-3
        get the name
        get the trigger
   ************************************/
-  write (*, "starting actual store ");
     _name      = DevNodeRef(_nid,_N_NAME);
   _trigger   = DevNodeRef(_nid,_N_STOP_TRIG);
 
@@ -84,7 +111,6 @@ Private _coeffs = [100E-6, 250E-6, 500E-6, 1E-3, 2.5E-3, 6.26E-3, 12.5E-3, 25E-3
    See if digitizer is done digitizing
   ************************************/
   DevCamChk(_name,CamPiow(_name,0,8,_d=0,16),1,*);
-  write (*, "did first i/o");
   if (!CamXandQ())
   {
     write(*,'%CAMERR, module '//_name//', Device not triggered');
@@ -96,12 +122,7 @@ Private _coeffs = [100E-6, 250E-6, 500E-6, 1E-3, 2.5E-3, 6.26E-3, 12.5E-3, 25E-3
   *************************************/
 /*  _setup = byte(66); */
   DevCamChk(_name,CamPiow(_name, 0, 18, _d=0, 16), 1, *);
-  write(*, "did 2");
   DevCamChk(_name, CamStopw(_name, 1, 2, 33, _setup, 16), 1, *);
-  write(*, "did 3");
-
-  write (*, "setup is ");
-  write (*, _setup); 
 
   /*************************************
     if internal clock then get the frequency 
@@ -115,12 +136,8 @@ Private _coeffs = [100E-6, 250E-6, 500E-6, 1E-3, 2.5E-3, 6.26E-3, 12.5E-3, 25E-3
   }
   _segs = _setup[_NUM_SEG_LO] + _setup[_NUM_SEG_HI]*256;
   _drop = (_setup[_ACTIVE_CHAN] == 4) ? 2 : (_setup[_ACTIVE_CHAN] == 2) ? 5 : 10;
-  write (*, "setup[_samps_per_seg] = "// _setup[_SAMPS_PER_SEG]);
   _samples_per_segment = ISHFT(1L,_setup[_SAMPS_PER_SEG])*1024L - _drop;
   _samples_per_channel = _samples_per_segment*_segs;
-  write (*, "samps/seg ="//_samples_per_segment);
-  write (*, "segs = "//_segs);
-  write (*, "samps/chan = "//_samples_per_channel);
   _post_trig = _samples_per_channel;
   _min_idx = 0;
   _max_idx = _samples_per_channel - 2;
@@ -140,22 +157,29 @@ Private _coeffs = [100E-6, 250E-6, 500E-6, 1E-3, 2.5E-3, 6.26E-3, 12.5E-3, 25E-3
       _endidx   = DevNodeRef(_nid,_chan_nid_offset+_N_CHAN_ENDIDX);
       _lbound = if_error(long(data(_startidx)),0);
       _lbound = min(max(_lbound,0),_samples_per_channel-1);
-      write(*, "Lbound is "//_lbound);
       _ubound = if_error(long(data(_endidx)),_max_idx);
       _ubound = min(max(_ubound,_lbound),_samples_per_channel);
-      write(*, "UBound is "//_ubound);
       _samples_to_read = _ubound - _lbound + 1;
-      write(*, _name, _chan, _segs, _samples_per_segment, _drop, _samples_to_read);
-      _status = l6810_ReadChannel(_name, _chan, _segs, _samples_per_segment, _drop, _samples_to_read, _channel_data);
+      _status = ReadChannel(_name, _chan, _segs, _samples_per_segment, _drop, _samples_to_read, _channel_data);
       _coefficient = _coeffs[_setup[_SENSITIVITY+_chan]];
       _offset =  _setup[_C1_OFF+_chan] * 16 * -1;
       if (_segs != 1) {
-        1;
+        _dim_expr = '['; 
+        _clock = execute('decompile(`_clk)');
+        _trig = execute('decompile(`_trigger)');
+        _seglen = _samples_per_segment+1;
+        for (_i=0; _i<_segs; _i++) {
+          _dim_expr = _dim_expr // 'make_dim(make_window('//_drop//','
+                      //_seglen//','//_trig//'['  // _i // ']),'
+                      //_clock//') ' // ((_i < _segs-1) ? ',' : ']');
+        }
+/*          _dim = compile(_dim_expr); */
+        _dim = compile("set_range(0 : "//_ubound//","//_dim_expr//")");
       }
       else {
         _dim = make_dim(make_window(_lbound,_ubound,_trigger),_clk);
-      }      
-      DevPutSignal(_chan_nid, _offset, 10./4096, _channel_data[_lbound : _ubound], _lbound, _ubound, _dim);
+      }
+      _stat = DevPutSignal(_chan_nid, _offset, 10./4096, _channel_data[_lbound : _ubound], _lbound, _ubound, _dim);
     }
   }
   return(1);
