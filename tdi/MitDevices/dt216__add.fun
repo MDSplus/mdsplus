@@ -21,7 +21,7 @@ Public fun dt216__add(in _path, out _nidout)
   /* data acquisition */
 
   DevAddNode(_path//':DAQ_MEM', 'NUMERIC', 1024, '/noshot_write', _nid);
-  DevAddNode(_path//':ACTIVE_CHAN', 'NUMERIC', 96, '/noshot_write', _nid);
+  DevAddNode(_path//':ACTIVE_CHAN', 'NUMERIC', 16, '/noshot_write', _nid);
   DevAddNode(_path//':TRIG_SRC', 'TEXT', 'DI3', '/noshot_write', _nid);
   DevAddNode(_path//':POST_TRIG','NUMERIC',64,'/noshot_write',_nid);
   DevAddNode(_path//':PRE_TRIG','NUMERIC',0,'/noshot_write',_nid);
