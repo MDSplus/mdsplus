@@ -73,7 +73,7 @@ int mit_dclock__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup *setup, Eve
     }
     dt1 = setup->load*period*2;
     dt2 = setup->hold*period*2;
-    status = TdiCompile(&output_exp, &dt1_dsc, &dt2_dsc, &gate_dsc, &out);
+    status = TdiCompile(&output_exp, &dt1_dsc, &dt2_dsc, &gate_dsc, &out MDS_END_ARG);
     if (status&1) {
       static int output_nid;
       static DESCRIPTOR_NID(output_dsc,(char *)&output_nid);

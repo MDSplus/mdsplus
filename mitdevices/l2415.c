@@ -44,12 +44,12 @@ int l2415___store(struct descriptor *niddsc, InStoreStruct *setup)
   range_nid = setup->head_nid + L2415_N_RANGE;
   pio(26,0,0);   /* convert output voltage to digital */
   qrep(0,0,1,&voltage); /* read it when we get q back */
-  TdiCompile(&volt_expr, &voltage_dsc, &polarity_dsc, &range_dsc, &out_xd);
+  TdiCompile(&volt_expr, &voltage_dsc, &polarity_dsc, &range_dsc, &out_xd MDS_END_ARG);
   volt_out_nid = setup->head_nid + L2415_N_VOLT_OUT;
   return_on_error(TreePutRecord(volt_out_nid, (struct descriptor *)&out_xd, 0), status);
   pio(26,1,0);   /* convert output current to digital */
   qrep(0,0,1,&current); /* read it when we get q back */
-  TdiCompile(&current_expr, &current_dsc, &range_dsc, &out_xd);
+  TdiCompile(&current_expr, &current_dsc, &range_dsc, &out_xd MDS_END_ARG);
   curr_out_nid = setup->head_nid + L2415_N_CURR_OUT;
   return_on_error(TreePutRecord(curr_out_nid, (struct descriptor *)&out_xd, 0), status);
   /* turn it off */

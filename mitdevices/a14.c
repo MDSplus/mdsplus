@@ -277,18 +277,17 @@ int a14___store(struct descriptor *niddsc, InStoreStruct *setup)
                    if (setup->dimension)
                      MdsCopyDxXd(setup->dimension,&dimension);
                    else if (setup->ext_clock_in)
-                     TdiCompile(&post_ext,&start_d,&end_d,&trigger_nid_dsc,setup->ext_clock_in,(sr.mode==0)?&zero_d :&one_d,
-                                 &dimension);
+                     TdiCompile(&post_ext,&start_d,&end_d,&trigger_nid_dsc,setup->ext_clock_in,(sr.mode==0)?&zero_d :&one_d, &dimension MDS_END_ARG);
                    else
-                     TdiCompile(&post_int,&start_d,&end_d,&trigger_nid_dsc,&dt_dsc,(sr.mode==0)?&zero_d :&one_d, &dimension);
+                     TdiCompile(&post_int,&start_d,&end_d,&trigger_nid_dsc,&dt_dsc,(sr.mode==0)?&zero_d :&one_d, &dimension MDS_END_ARG);
                    break;
           case 3:  
                    if (setup->dimension)
                      MdsCopyDxXd(setup->dimension,&dimension);
                    else if (setup->ext_clock_in)
-                     TdiCompile(&burst_time_ext,&trigger_nid_dsc,&pts_dsc,setup->ext_clock_in,&clock_divide_dsc,&dimension);
+                     TdiCompile(&burst_time_ext,&trigger_nid_dsc,&pts_dsc,setup->ext_clock_in,&clock_divide_dsc,&dimension MDS_END_ARG);
                    else
-                     TdiCompile(&burst_time_int,&trigger_nid_dsc,&pts_dsc,&dt_dsc,&dimension);
+                     TdiCompile(&burst_time_int,&trigger_nid_dsc,&pts_dsc,&dt_dsc,&dimension MDS_END_ARG);
                    break;
           default: if (setup->dimension)
                      MdsCopyDxXd(setup->dimension,&dimension);

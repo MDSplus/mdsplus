@@ -120,7 +120,7 @@ int values;
 int num_to_read;
 int comment_nid = setup->head_nid + L3512A_N_COMMENT;
 
-  if ((TdiKind(setup->duration,&kind_dsc) & 1) && (kind <= 10 || kind == DTYPE_FS))
+  if ((TdiKind(setup->duration,&kind_dsc MDS_END_ARG) & 1) && (kind <= 10 || kind == DTYPE_FS))
   {
     int duration_nid = setup->head_nid + L3512A_N_DURATION;
     return_on_error(DevFloat(&duration_nid,&duration),status);

@@ -95,7 +95,7 @@ static int GetSetup(Dptr niddsc_ptr, Dptr method, DecoderSetup *setup, EventMask
     if (gate)
     {
       static DESCRIPTOR(out_expression,"$1 + [$2,$3]");
-      TdiCompile(&out_expression,&trigger_nid_dsc,&gate_start_dsc,&gate_end_dsc, &out);
+      TdiCompile(&out_expression,&trigger_nid_dsc,&gate_start_dsc,&gate_end_dsc, &out MDS_END_ARG);
     }
     else
     {
