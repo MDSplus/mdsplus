@@ -404,6 +404,7 @@ static int StartReceiver(short *port_out)
   if (!ThreadRunning)
   {
     status = pthread_create(&thread, pthread_attr_default, Worker, (void *)&sock);
+    pthread_detach(thread);
     if (status != 0)
     {
       perror("error creating dispatch receiver thread\n");

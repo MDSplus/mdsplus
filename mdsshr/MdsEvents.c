@@ -133,6 +133,7 @@ static char *getEnvironmentVar(char *name)
 
 
 static void cleanup(int);
+static void handleRemoteAst();
 
 static int getSemId()
 {
@@ -197,7 +198,6 @@ static int releaseLock()
   return semLocked ? semSet(0) : 1;
 }
 
-     
 static int attachSharedInfo()
 {
     int i;
@@ -375,16 +375,21 @@ static void removeMessage(int key)
     if(status == -1) perror("msgctl");
 }
  
+static int createThread(pthread_t *thread, void (*rtn)(), void *par)
+{
+  int status = 1;
+  if(pthread_create(thread, pthread_attr_default, (void *(*)(void *))rtn, par) !=  0)
+  {
+    status = 0;
+    perror("pthread_create");
+  }
+  return status;
+}
 
-static void createThread(void (*rtn)(), void *par)
+static void startRemoteAstHandler()
 {
     pipe(fds);
-    external_thread_created = 0;
-    if(pthread_create(&external_thread, pthread_attr_default, (void *(*)(void *))rtn, par) !=  0)
-	perror("pthread_create");
-    else
-        external_thread_created = 1;
-
+    external_thread_created = createThread(&external_thread, handleRemoteAst,0);
 }
 	
 
@@ -462,6 +467,7 @@ static void *handleMessage(void * dummy)
     	    {
 	        if(private_info[i].active && !strcmp(event_name, private_info[i].name))
 		{
+                    pthread_t thread;
 /*		    (*(private_info[i].astadr))(private_info[i].astprm, data_len, data);*/
 /* Do not execute ast routine directly, rather launch a thread for doing it */
 
@@ -473,8 +479,9 @@ static void *handleMessage(void * dummy)
 		    {
 			arg_d->data = malloc(data_len);
 			memcpy(arg_d->data, data, data_len);
-		    } /* will be freed by the ExecuteAst */
-		    createThread(executeAst, arg_d);
+			} /* will be freed by the ExecuteAst */
+		    createThread(&thread, executeAst, arg_d);
+                    pthread_detach(thread);
 		}
 	    }
 	}
@@ -756,7 +763,7 @@ static void initializeLocalRemote(int receive_events, int *use_local)
 			send_servers[i] = servers[i];
 		}
 	    }
-	    createThread(handleRemoteAst, 0);
+	    startRemoteAstHandler();
 	}
 	else printf(MdsGetMsg(status));
     }
@@ -798,7 +805,7 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
 /* now external thread must be created in any case */
         if (status & 1)
 	{
-	    createThread(handleRemoteAst, 0);
+	    startRemoteAstHandler();
 	    external_count++;
 	}
     }
@@ -934,7 +941,7 @@ static int canEventRemote(int eventid)
 	{
 	    if(receive_sockets[i]) status = (*rtn) (receive_sockets[i], getRemoteId(eventid, i));
 	}
-	createThread(handleRemoteAst, 0);
+	startRemoteAstHandler();
     }
     return status;
 }
