@@ -84,7 +84,7 @@ public class DeviceField extends DeviceComponent
         initializing = true;
         initial_state = is_on;
 
-        initialField =  Tree.dataToString(data);
+        //initialField =  Tree.dataToString(data);
 
        Container parent = getParent();
        if(parent.getLayout() == null)
@@ -288,7 +288,7 @@ public class DeviceField extends DeviceComponent
 
     protected boolean isDataChanged()
     {
-      if(displayEvaluated)
+      if(displayEvaluated && initialField != null)
         return !(textF.getSize().equals(initialField));
       else
         return true;

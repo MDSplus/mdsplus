@@ -157,6 +157,7 @@ public class EDAMSetupSetup extends DeviceSetup
     deviceField1.setLabelString("Trigger Event: ");
     deviceField1.setNumCols(25);
     deviceField1.setIdentifier("");
+    deviceField1.setEditable(false);
     deviceField1.setDisplayEvaluated(true);
     deviceField2.setOffsetNid(38);
     deviceField2.setLabelString("Trigger delay: ");
@@ -167,6 +168,7 @@ public class EDAMSetupSetup extends DeviceSetup
     deviceField3.setLabelString("DClock Event: ");
     deviceField3.setNumCols(25);
     deviceField3.setIdentifier("");
+    deviceField3.setEditable(false);
     deviceField3.setDisplayEvaluated(true);
     deviceField4.setOffsetNid(33);
     deviceField4.setLabelString("DClock delay: ");
@@ -196,6 +198,7 @@ public class EDAMSetupSetup extends DeviceSetup
     deviceField10.setLabelString("DClock Event: ");
     deviceField10.setNumCols(25);
     deviceField10.setIdentifier("");
+    deviceField10.setEditable(false);
     deviceField10.setDisplayEvaluated(true);
     deviceField12.setOffsetNid(25);
     deviceField12.setLabelString("DClock frequency 1: ");
@@ -219,12 +222,14 @@ public class EDAMSetupSetup extends DeviceSetup
     deviceField17.setLabelString("DClock Event: ");
     deviceField17.setNumCols(25);
     deviceField17.setIdentifier("");
+    deviceField17.setEditable(false);
     deviceField17.setDisplayEvaluated(true);
     deviceField18.setOffsetNid(17);
     deviceField18.setTextOnly(true);
     deviceField18.setLabelString("Trigger Event: ");
     deviceField18.setNumCols(25);
     deviceField18.setIdentifier("");
+    deviceField18.setEditable(false);
     deviceField18.setDisplayEvaluated(true);
     deviceField19.setOffsetNid(15);
     deviceField19.setLabelString("DClock frequency 1: ");
@@ -252,6 +257,7 @@ public class EDAMSetupSetup extends DeviceSetup
     deviceField114.setLabelString("DClock Event: ");
     deviceField114.setNumCols(25);
     deviceField114.setIdentifier("");
+    deviceField114.setEditable(false);
     deviceField114.setDisplayEvaluated(true);
     deviceField116.setOffsetNid(5);
     deviceField116.setLabelString("DClock frequency 1: ");
@@ -275,12 +281,14 @@ public class EDAMSetupSetup extends DeviceSetup
     deviceField1111.setLabelString("DClock Event: ");
     deviceField1111.setNumCols(25);
     deviceField1111.setIdentifier("");
+    deviceField1111.setEditable(false);
     deviceField1111.setDisplayEvaluated(true);
     deviceField1112.setOffsetNid(47);
     deviceField1112.setTextOnly(true);
     deviceField1112.setLabelString("Trigger Event: ");
     deviceField1112.setNumCols(25);
     deviceField1112.setIdentifier("");
+    deviceField1112.setEditable(false);
     deviceField1112.setDisplayEvaluated(true);
     deviceField1113.setOffsetNid(45);
     deviceField1113.setLabelString("DClock frequency 1: ");
@@ -308,6 +316,7 @@ public class EDAMSetupSetup extends DeviceSetup
     deviceField1118.setLabelString("DClock Event: ");
     deviceField1118.setNumCols(25);
     deviceField1118.setIdentifier("");
+    deviceField1118.setEditable(false);
     deviceField1118.setDisplayEvaluated(true);
     deviceField11110.setOffsetNid(55);
     deviceField11110.setLabelString("DClock frequency 1: ");
