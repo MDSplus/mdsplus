@@ -32,13 +32,14 @@ int ServerSendMessage();
 #include <ipdesc.h>
 #include <string.h>
 #include <servershr.h>
+#define _NO_SERVER_SEND_MESSAGE_PROTO
 #include "servershrp.h"
 #include <stdio.h>
 #if defined(HAVE_WINDOWS_H)
 #include <windows.h>
 typedef void *pthread_t;
 #else
-#include <socket.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <sys/time.h>

@@ -109,8 +109,10 @@ typedef struct { int shot;
                  int status;
                } DispatchEvent;
 
+#ifndef _NO_SERVER_SEND_MESSAGE_PROTO
 extern int ServerSendMessage( pthread_cond_t *condition, char *server, int op, int *retstatus, 
                          void (*ast)(), void *astparam, void (*before_ast)(),
   int numargs_in, ...);
+#endif
 extern int ServerConnect(char *);
 #endif
