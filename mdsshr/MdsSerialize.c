@@ -952,7 +952,7 @@ int MdsSerializeDscOutZ(struct descriptor *in,
   }
   if (compressible_out) *compressible_out = compressible;
   if (length_out) *length_out = length;
-  if (reclen_out && !data_in_altbuf) *reclen_out = reclen;
+  if (reclen_out) *reclen_out = reclen;
   if (dtype_out) *dtype_out = dtype;
   if (class_out) *class_out = class;
   if (data_in_altbuf_out) *data_in_altbuf_out = data_in_altbuf;
