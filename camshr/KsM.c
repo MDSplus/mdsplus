@@ -73,7 +73,7 @@ static int KsMultiIo(
   Command[7] = xfer_len.b[MID];
   Command[8] = xfer_len.b[LO];
   
-  direction = ((F & 0x08) == 0) ? 0 : ((F < 8) ? 1 : 2);
+  direction = ((F & 0x08) == 0) ? ((F < 8) ? 1 : 2) : 0;
   
   // talk to the physical device
   status = scsi_io( scsiDevice, direction, Command, sizeof(Command),

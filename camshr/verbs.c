@@ -556,60 +556,60 @@ int ShowCrate()
 			for( i = 0; i < numOfCrates; ++i ) {
 				parse_crate_db(CRATEdb+i, pCr8);
 				if(  wildcard_match( wild.pointer, pCr8->name, 0,0,0 ) ) {
-					moduleFound = FALSE;
-
-					for( j = 0; j < numOfModules; ++j ) {
-						parse_cts_db(CTSdb+j, pMod);
-						sprintf(tmp, "GK%c%d%02d",
-							pMod->adapter + 'A',
-							pMod->id,
-							pMod->crate
-							);
-
-						if( strcmp(tmp, pCr8->name) == EQUAL ) {
-							if( pMod->slot == 30 ) {	// found a crate controller
-								moduleFound = TRUE;
-								break;
-							}
-						}
-					} // end of for(modules) ...
-
-					if( moduleFound ) {
-						crateStatus = 0;
-
-						if(MSGLVL(8)) 
-							printf("checking '%s'\n", pCr8->name);
-
-						status = get_crate_status(pCr8->name, &crateStatus);
-
-						if( MSGLVL(DETAILS) )
-							printf("gcs(%s) returned %d, crate 0x%x\n", pCr8->name, status, crateStatus);
-
-						if( status == SUCCESS ) {
-//							online = !(crateStatus & 0x3c00)    ? TRUE  : FALSE;				// [2002.12.09]
-//							online = !(crateStatus & 0x1000)    ? TRUE  : FALSE;				// [2002.12.09]
-							online = ((crateStatus & 0x1000) != 0x1000)    ? TRUE  : FALSE;				// [2002.12.09]
-							if( !crateStatus || crateStatus == 0x3 )	// [2001.09.10]			// [2002.12.09]
-								online = FALSE;													// [2002.12.09]
-							sprintf(colorON,  "%s", (online)    ? GREEN : RED);
-
-//							enhanced = (online && (crateStatus & 0x4030)) ? TRUE  : FALSE;		// [2002.12.09]
-							enhanced = (online && (crateStatus & 0x4000)) ? TRUE  : FALSE;		// [2002.12.09]
-							sprintf(colorENH, "%s", (enhanced)  ? GREEN : RED);
-
-							printf("%s:   %s%c%s   .   .   %s%c%s",
-								pCr8->name,
-								colorON,  (online)   ? '*' : 'X', NORMAL,
-								colorENH, (enhanced) ? '*' : '-', NORMAL
-								);
-							if( MSGLVL(4) )
-								printf( "  0x%04x", crateStatus );
-							printf("\n");
-						}
-					} // end of if(moduleFound) ...
-					else {
-						printf("%.6s:   .   .   .   .\n", pCr8->name);
-					}
+				  //					moduleFound = FALSE;
+				  //
+				  //					for( j = 0; j < numOfModules; ++j ) {
+				  //						parse_cts_db(CTSdb+j, pMod);
+				  //						sprintf(tmp, "GK%c%d%02d",
+				  //							pMod->adapter + 'A',
+				  //							pMod->id,
+				  //							pMod->crate
+				  //							);
+				  //
+				  //						if( strcmp(tmp, pCr8->name) == EQUAL ) {
+				  //							if( pMod->slot == 30 ) {	// found a crate controller
+				  //								moduleFound = TRUE;
+				  //								break;
+				  //							}
+				  //						}
+				  //					} // end of for(modules) ...
+				  moduleFound = TRUE;
+				  if( moduleFound ) {
+				    crateStatus = 0;
+				    
+				    if(MSGLVL(8)) 
+				      printf("checking '%s'\n", pCr8->name);
+				    
+				    status = get_crate_status(pCr8->name, &crateStatus);
+				    
+				    if( MSGLVL(DETAILS) )
+				      printf("gcs(%s) returned %d, crate 0x%x\n", pCr8->name, status, crateStatus);
+				    
+				    if( status == SUCCESS ) {
+				      //							online = !(crateStatus & 0x3c00)    ? TRUE  : FALSE;				// [2002.12.09]
+				      //							online = !(crateStatus & 0x1000)    ? TRUE  : FALSE;				// [2002.12.09]
+				      online = ((crateStatus & 0x1000) != 0x1000)    ? TRUE  : FALSE;				// [2002.12.09]
+				      if( !crateStatus || crateStatus == 0x3 )	// [2001.09.10]			// [2002.12.09]
+					online = FALSE;													// [2002.12.09]
+				      sprintf(colorON,  "%s", (online)    ? GREEN : RED);
+				      
+				      //							enhanced = (online && (crateStatus & 0x4030)) ? TRUE  : FALSE;		// [2002.12.09]
+				      enhanced = (online && (crateStatus & 0x4000)) ? TRUE  : FALSE;		// [2002.12.09]
+				      sprintf(colorENH, "%s", (enhanced)  ? GREEN : RED);
+				      
+				      printf("%s:   %s%c%s   .   .   %s%c%s",
+					     pCr8->name,
+					     colorON,  (online)   ? '*' : 'X', NORMAL,
+					     colorENH, (enhanced) ? '*' : '-', NORMAL
+					     );
+				      if( MSGLVL(4) )
+					printf( "  0x%04x", crateStatus );
+				      printf("\n");
+				    }
+				  } // end of if(moduleFound) ...
+				  else {
+				    printf("%.6s:   .   .   .   .\n", pCr8->name);
+				  }
 				} // end of if(wildcard) ...
 			} // end of for(crates) ...
 		} // crates, but no modules (ie no controllers)
