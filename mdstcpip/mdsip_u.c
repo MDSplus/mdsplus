@@ -14,11 +14,12 @@
 #include <pthread.h>
 #endif
 #include "mdsip.h"
-extern char *ctime();
+//extern char *ctime();
 #define MAX_ARGS 256
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#if defined(_WIN32)
+#if defined(HAVE_WINDOWS_H)
+#include <windows.h>
 #include <process.h>
 #else
 #ifndef SOCKET_ERROR
@@ -111,6 +112,17 @@ static char *ServiceName()
 	return name;
 }
 
+static void RedirectOutput(int pid)
+{
+	char file[120];
+	if (pid)
+	  sprintf(file,"C:\\MDSIP_%s[%d].log",portname,pid);
+	else
+	  sprintf(file,"C:\\MDSIP_%s.log",portname);
+	freopen(file,"a",stdout);
+	freopen(file,"a",stderr);
+}
+
 static void StartWorker(char **argv)
 {
   HANDLE sharedMemHandle;
@@ -126,6 +138,7 @@ static void StartWorker(char **argv)
   PortName = portname;
   sharedMemHandle = OpenFileMapping(FILE_MAP_READ, FALSE, ServiceName());
   workerShutdown = (int *)MapViewOfFile(sharedMemHandle, FILE_MAP_READ, 0, 0, sizeof(int));
+  RedirectOutput(GetCurrentProcessId());
 }
 
 static void InitWorkerCommunications()
@@ -140,8 +153,9 @@ static int SpawnWorker(SOCKET sock)
 	BOOL status;
 	static STARTUPINFO startupinfo;
 	PROCESS_INFORMATION pinfo;
-	char cmd[512];
-	sprintf(cmd,"%s %s worker %d %d","mdsip_service",portname,GetCurrentProcessId(),sock);
+	char cmd[1024];
+	sprintf(cmd,"%s %s worker %d %d","mdsip_service",
+		portname,GetCurrentProcessId(),sock);
 	startupinfo.cb = sizeof(startupinfo);
     status = CreateProcess(_pgmptr,cmd,NULL,NULL,FALSE,0,NULL,NULL,&startupinfo, &pinfo);
 	CloseHandle(pinfo.hProcess);
@@ -181,15 +195,12 @@ VOID WINAPI serviceHandler(DWORD fdwControl)
 
 }
 
+
 static void InitializeService()
 {
-	char file[120];
-        hService = RegisterServiceCtrlHandler(ServiceName(),(LPHANDLER_FUNCTION) serviceHandler);
-        SetThisServiceStatus(SERVICE_START_PENDING,1000);
-	strcpy(file,"C:\\");
-	strcat(file,ServiceName());
-	strcat(file,".log");
-	freopen(file, "a", stdout );
+    hService = RegisterServiceCtrlHandler(ServiceName(),(LPHANDLER_FUNCTION) serviceHandler);
+    SetThisServiceStatus(SERVICE_START_PENDING,1000);
+    RedirectOutput(0);
 }
 
 int main( int argc, char **argv) 
