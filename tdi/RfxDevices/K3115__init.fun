@@ -283,8 +283,8 @@ public fun K3115__init(as_is _nid, optional _method)
 				if(_wave_mode == _ACYCLIC)
 				{
 				    _len = size(_new_rsgn);
-				    if(_len > 1000)
-					_len = 1000;
+				    if(_len > 1020)
+					_len = 1020;
 				    _new_rsgn = [ _new_rsgn[*: _len ], zero(1023 - _len, 0) ];                             
 				} 
 		

@@ -1,6 +1,6 @@
 public fun L5613__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'L5613', 13, _nidout);
+    DevAddStart(_path, 'L5613', 15, _nidout);
     DevAddNode(_path // ':NAME', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':MODEL', 'TEXT', *, *, _nid);
@@ -15,5 +15,6 @@ public fun L5613__add(in _path, out _nidout)
    	DevAddNode(_cn // ':INPUT', 'NUMERIC', *, *, _nid);
    	DevAddNode(_cn // ':RANGE', 'NUMERIC', *, *, _nid);
     DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 50,'CAMAC_SERVER', getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path//':OFF_ACTION', 'STORE', 'OFF', 50,'CAMAC_SERVER', getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }
