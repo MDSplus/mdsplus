@@ -23,9 +23,15 @@
 #define a0_of(ptr)        ((unsigned int)swapint(&ptr[16]))
 #define m_of(ptr)         (&ptr[20])
 #define LoadChar(in,outp)  (outp)[0] = ((char *)&in)[0]
+#ifdef _big_endian
+#define LoadShort(in,outp) (outp)[0] = ((char *)&in)[1]; (outp)[1] = ((char *)&in)[0]
+#define LoadInt(in,outp)   (outp)[0] = ((char *)&in)[3]; (outp)[1] = ((char *)&in)[2]; \
+                           (outp)[2] = ((char *)&in)[1]; (outp)[3] = ((char *)&in)[0]
+#else
 #define LoadShort(in,outp) (outp)[0] = ((char *)&in)[0]; (outp)[1] = ((char *)&in)[1]
 #define LoadInt(in,outp)   (outp)[0] = ((char *)&in)[0]; (outp)[1] = ((char *)&in)[1]; \
                            (outp)[2] = ((char *)&in)[2]; (outp)[3] = ((char *)&in)[3]
+#endif
 #define set_aflags(ptr,in)  ptr[10] = (inp->aflags.binscale << 3)  | (inp->aflags.redim << 4) | (inp->aflags.column << 5) \
                                      | (inp->aflags.coeff << 6) | (inp->aflags.bounds << 7)
 #define offset(ptr)       *(unsigned int *)&ptr
