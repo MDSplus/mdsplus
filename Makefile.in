@@ -32,8 +32,8 @@ PARTS = \
         tcl \
         tdic \
         traverser \
-        actions \
         mdslib \
+        actions \
         math \
         mitdevices \
         wfevent \
