@@ -113,7 +113,7 @@ static void unlock_client_list();
 static void lock_job_list();
 static void unlock_job_list();
 
-int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, 
+int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, int *socket,
                          void (*ast)(), void *astparam, void (*before_ast)(),
   int numargs_in, struct descrip *p1, struct descrip *p2, struct descrip *p3, struct descrip *p4,
                   struct descrip *p5, struct descrip *p6, struct descrip *p7, struct descrip *p8) 
@@ -140,6 +140,7 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
     int *dptr;
     void *mem=0;
     unsigned char totargs = (unsigned char)(numargs+6);
+    if (socket) *socket = sock;
     jobid = RegisterJob(msgid,retstatus,ast,astparam,before_ast,sock);
     if (op == SrvMonitor && numargs == 8 && p6->dtype == DTYPE_LONG && *(int *)p6->ptr == MonitorCheckin)
       MonJob = jobid;

@@ -39,7 +39,7 @@ int ServerMonitorCheckin(char *server, void (*ast)(), void *astprm)
   char *cstring = "";
   int zero = 0;
   int mode = MonitorCheckin;
-  return ServerSendMessage(0, server, SrvMonitor, 0, ast, astprm, 0, 
+  return ServerSendMessage(0, server, SrvMonitor, 0, 0, ast, astprm, 0, 
                     8,MakeDescrip(&p1,DTYPE_CSTRING,0,0,cstring),
                       MakeDescrip(&p2,DTYPE_LONG,0,0,&zero),
                       MakeDescrip(&p3,DTYPE_LONG,0,0,&zero),

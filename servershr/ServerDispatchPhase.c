@@ -71,10 +71,12 @@ extern int TdiErrorlogsOf();
 extern int TdiGetLong();
 extern int ProgLoc;
 
+static void DoDispatch(int idx);
 static void Dispatch(int idx);
 void SendMonitor(int mode, int idx);
 static void SendReply(int nid, char *message);
 static void ActionDone(int idx);
+static void DoActionDone(int idx);
 static void Before(int idx);
 static int AbortHandler( unsigned sig_args[], unsigned mech_args[]);
 static void SetActionRanges(int phase);
@@ -84,6 +86,10 @@ static int NoOutstandingActions(int s,int e);
 static void RecordStatus(int s,int e);
 static void Dispatch(int i);
 static void WaitForActions(int conditionals);
+static void lock_action_done();
+static void unlock_action_done();
+static void lock_dispatch();
+static void unlock_dispatch();
 
 static const int zero = 0;
 
@@ -105,11 +111,8 @@ static int last_c;
 static int first_g;
 static int last_g;
 static int WaitForAll;
-static int WorkerThreadRunning = 0;
-static pthread_t WorkerThread;
 static pthread_cond_t JobWaitCondition;
 static pthread_mutex_t JobWaitMutex;
-
 
 static char *Server(char *out, char *srv)
 {
@@ -141,7 +144,7 @@ void SendMonitor(int mode, int idx)
       else
         server[i] = cptr[i];
     server[i] = 0;
-    MonitorOn = ServerSendMessage(0, Monitor, SrvMonitor, 0, 0, 0, 0, 8, 
+    MonitorOn = ServerSendMessage(0, Monitor, SrvMonitor, 0, 0, 0, 0, 0, 8, 
                       MakeDescrip(&p1,DTYPE_CSTRING,0,0,tree), 
                       MakeDescrip(&p2,DTYPE_LONG,0,0,&table->shot),
                       MakeDescrip(&p3,DTYPE_LONG,0,0,&actions[idx].phase),
@@ -196,6 +199,7 @@ static void ActionDone(int idx)
   static char expression[60];
   static struct descriptor expression_d = {0, DTYPE_T, CLASS_S, expression};
   static EMPTYXD(xd);
+  lock_action_done();
   if (idx >= 0)
   {
     niddsc.pointer = (char *)&actions[idx].nid;
@@ -207,8 +211,6 @@ static void ActionDone(int idx)
       free(event);
     }
     SendMonitor(MonitorDone, idx);
-    actions[idx].done = 1;
-    actions[idx].recorded = 0;
     path = TreeGetMinimumPath((int *)&zero,actions[idx].nid);
     if (actions[idx].status & 1)
       sprintf(logmsg,"%s, Action %s completed",now(),path);
@@ -235,21 +237,25 @@ static void ActionDone(int idx)
           if ((dstat = TdiGetLong(actions[cidx].condition,&doit)) & 1)
           {
             if (doit)
+	    {
               Dispatch(cidx);
+            }
             else
             {
               actions[cidx].status = ServerNOT_DISPATCHED;
-   	      ActionDone(cidx);
+   	      DoActionDone(cidx);
             }
           }
           else if (dstat != TdiUNKNOWN_VAR)
           {
             actions[cidx].status = ServerINVALID_DEPENDENCY;
-            ActionDone(cidx);
+            DoActionDone(cidx);
           }
         }
       }
     }
+    actions[idx].done = 1;
+    actions[idx].recorded = 0;
   }
   if ( WaitForAll ? NoOutstandingActions(first_g,last_g) && NoOutstandingActions(first_c,last_c)
                     : (AbortInProgress ? 1 : NoOutstandingActions(first_g,last_g)) )
@@ -258,6 +264,7 @@ static void ActionDone(int idx)
     pthread_cond_signal(&JobWaitCondition);
     pthread_mutex_unlock(&JobWaitMutex);
   }
+  unlock_action_done();
   return;
 }
 
@@ -339,8 +346,10 @@ static int NoOutstandingActions(int s,int e)
 {
   int i;
   for (i=s;i<e;i++)
+  {
     if (actions[i].dispatched && !actions[i].done)
       return 0;
+  }
   return 1;
 }
 
@@ -464,6 +473,7 @@ int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact,
   actions = table->actions;
   num_actions = table->num;
   AbortInProgress = 0;
+  WaitForAll = 0;
   table->failed_essential = 0;
   phasenam_d.length = strlen(phasenam);
   phasenam_d.pointer = phasenam;
@@ -511,8 +521,10 @@ int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact,
       ProgLoc = 6010;
       SetGroup(sync);
       ProgLoc = 6011;
+      lock_action_done();
       for (i=first_g;i<last_g;i++)
          Dispatch(i);
+      unlock_action_done();
       ProgLoc = 6012;
       WaitForActions(0);
       first_g = last_g;
@@ -534,7 +546,7 @@ int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact,
       if (!actions[i].done)
       {
         actions[i].status = ServerCANT_HAPPEN;
-	ActionDone(i);
+	DoActionDone(i);
       }
     }
     ProgLoc = 6015;
@@ -563,43 +575,126 @@ static void Dispatch(int i)
   int status;
   char logmsg[1024];
   char server[33];
-  if (i < 0)
+  lock_dispatch();
   {
-    char *path;
-    i = -1-i;
-    path = TreeGetMinimumPath((int *)&zero,actions[i].nid);
-    sprintf(logmsg,"%s, Dispatching node %s to %s",now(),path,Server(server,actions[i].server));
-    TreeFree(path);
-    (*Output)(logmsg);
-    return;
+    actions[i].done = 0;
+    actions[i].doing = 0;
+    actions[i].dispatched = 0;
+    if (Output)
+    {
+      char *path;
+      path = TreeGetMinimumPath((int *)&zero,actions[i].nid);
+      sprintf(logmsg,"%s, Dispatching node %s to %s",now(),path,Server(server,actions[i].server));
+      TreeFree(path);
+      (*Output)(logmsg);
+    }
+    ProgLoc = 7001;
+    SendMonitor(MonitorDispatched, i);
+    ProgLoc = 7002;
+    if (noact)
+      {
+	actions[i].status = status = 1;
+	DoActionDone(i);
+      }
+    else
+      {
+	status = ServerDispatchAction(0, Server(server,actions[i].server), tree, shot, actions[i].nid, ActionDone, (void *)i, &actions[i].status, 
+				      &actions[i].netid, Before);
+	ProgLoc = 7003;
+	if (status & 1)
+	  actions[i].dispatched = 1;
+      }
+    ProgLoc = 7004;
+    if (!(status & 1))
+      {
+	actions[i].status = status;
+	DoActionDone(i);
+      }
+    ProgLoc = 7005;
   }
-  actions[i].done = 0;
-  actions[i].doing = 0;
-  actions[i].dispatched = 0;
-  if (Output)
-      Dispatch(-1-i);
-  ProgLoc = 7001;
-  SendMonitor(MonitorDispatched, i);
-  ProgLoc = 7002;
-  if (noact)
-  {
-    actions[i].status = status = 1;
-    ActionDone(i);
-  }
-  else
-  {
-    status = ServerDispatchAction(0, Server(server,actions[i].server), tree, shot, actions[i].nid, ActionDone, (void *)i, &actions[i].status,
-                                    Before);
-    ProgLoc = 7003;
-    if (status & 1)
-      actions[i].dispatched = 1;
-  }
-  ProgLoc = 7004;
-  if (!(status & 1))
-  {
-    actions[i].status = status;
-    ActionDone(i);
-  }
-  ProgLoc = 7005;
+  unlock_dispatch();
 }
 
+static int action_done_mutex_initialized = 0;
+static pthread_mutex_t action_done_mutex;
+
+static void lock_action_done()
+{
+
+  if(!action_done_mutex_initialized)
+  {
+    action_done_mutex_initialized = 1;
+    pthread_mutex_init(&action_done_mutex, pthread_mutexattr_default);
+  }
+  pthread_mutex_lock(&action_done_mutex);
+}
+
+static void unlock_action_done()
+{
+
+  if(!action_done_mutex_initialized)
+  {
+    action_done_mutex_initialized = 1;
+    pthread_mutex_init(&action_done_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_unlock(&action_done_mutex);
+}
+
+static void DoActionDone(int i)
+{
+  pthread_t thread;
+#ifndef HAVE_WINDOWS_H
+  size_t ssize;
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
+  pthread_create(&thread, &attr, (void *)(void *)ActionDone, (void *)i);
+  pthread_attr_destroy(&attr);
+#else
+  pthread_create(&thread, pthread_attr_default , (void *)(void *)ActionDone, (void *)i);
+#endif
+  return;
+}
+
+static int dispatch_mutex_initialized = 0;
+static pthread_mutex_t dispatch_mutex;
+
+static void lock_dispatch()
+{
+
+  if(!dispatch_mutex_initialized)
+  {
+    dispatch_mutex_initialized = 1;
+    pthread_mutex_init(&dispatch_mutex, pthread_mutexattr_default);
+  }
+  pthread_mutex_lock(&dispatch_mutex);
+}
+
+static void unlock_dispatch()
+{
+
+  if(!dispatch_mutex_initialized)
+  {
+    dispatch_mutex_initialized = 1;
+    pthread_mutex_init(&dispatch_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_unlock(&dispatch_mutex);
+}
+
+static void DoDispatch(int i)
+{
+  pthread_t thread;
+#ifndef HAVE_WINDOWS_H
+  size_t ssize;
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
+  pthread_create(&thread, &attr, (void *)(void *)Dispatch, (void *)i);
+  pthread_attr_destroy(&attr);
+#else
+  pthread_create(&thread, pthread_attr_default , (void *)(void *)Dispatch, (void *)i);
+#endif
+  return;
+}

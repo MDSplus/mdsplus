@@ -250,7 +250,7 @@ int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table)
         int on = actions[i].on;
         char *server = "";
         mode = i ? (i == (num_actions - 1) ? MonitorBuildEnd : MonitorBuild) : MonitorBuildBegin;
-        if (!(ServerSendMessage(0, monitor_name, SrvMonitor, 0, 0, 0, 0, 8, 
+        if (!(ServerSendMessage(0, monitor_name, SrvMonitor, 0, 0, 0, 0, 0, 8, 
                       MakeDescrip(&p1,DTYPE_CSTRING,0,0,tree), 
                       MakeDescrip(&p2,DTYPE_LONG,0,0,&(*table_ptr)->shot),
                       MakeDescrip(&p3,DTYPE_LONG,0,0,&actions[i].phase),

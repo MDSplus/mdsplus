@@ -134,7 +134,7 @@ typedef struct { int shot;
                } DispatchEvent;
 
 #ifndef _NO_SERVER_SEND_MESSAGE_PROTO
-extern int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, 
+extern int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, int *socket,
                          void (*ast)(), void *astparam, void (*before_ast)(),
   int numargs_in, ...);
 #endif

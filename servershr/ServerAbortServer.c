@@ -36,5 +36,5 @@ int SERVER$ABORT_SERVER( struct dsc$descriptor *server )
 int ServerAbortServer(char *server, int flush)
 { 
   struct descrip p1;
-  return ServerSendMessage(0, server, SrvAbort, 0, 0, 0, 0, 1,MakeDescrip(&p1,DTYPE_LONG,0,0,&flush));
+  return ServerSendMessage(0, server, SrvAbort, 0, 0, 0, 0, 0, 1,MakeDescrip(&p1,DTYPE_LONG,0,0,&flush));
 }

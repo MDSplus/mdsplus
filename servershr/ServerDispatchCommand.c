@@ -38,6 +38,6 @@ int ServerDispatchCommand(int *id, char *server, char *cli, char *command,
                         void (*ast)(), void *astprm, int *retstatus, void (*before_ast)())
 { 
   struct descrip p1,p2;
-  return ServerSendMessage(id, server, SrvCommand, retstatus, ast, astprm, before_ast, 
+  return ServerSendMessage(id, server, SrvCommand, retstatus, 0, ast, astprm, before_ast, 
                     2,MakeDescrip(&p1,DTYPE_CSTRING,0,0,cli),MakeDescrip(&p2,DTYPE_CSTRING,0,0,command));
 }

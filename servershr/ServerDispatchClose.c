@@ -32,9 +32,17 @@ int SERVER$DISPATCH_CLOSE(DispatchTable *table)
 
 #include <servershr.h>
 #include "servershrp.h"
+static char *Server(char *out, char *srv)
+{
+	int i;
+	for (i=0;i<32;i++) out[i] = srv[i] == ' ' ? 0 : srv[i];
+	out[i] = 0;
+	return out;
+}
 
 int ServerDispatchClose(void *vtable)
 { 
+  char server[33];
   DispatchTable *table = (DispatchTable *)vtable;
   int i;
   ActionInfo *action = table->actions;
@@ -44,7 +52,7 @@ int ServerDispatchClose(void *vtable)
     if (action[i].dispatched && !action[i].closed)
     {
       int j;
-      ServerCloseTrees(action[i].server);
+      ServerCloseTrees(Server(server,action[i].server));
       for (j=i+1;j<num_actions;j++)
       {
         if (action[i].netid == action[j].netid)

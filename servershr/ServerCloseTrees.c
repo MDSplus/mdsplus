@@ -35,5 +35,5 @@ int SERVER$CLOSE_TREES( struct dsc$descriptor *server )
 
 int ServerCloseTrees(char *server)
 { 
-  return ServerSendMessage(0, server, SrvClose, 0, 0, 0, 0, 0);
+  return ServerSendMessage(0, server, SrvClose, 0, 0, 0, 0, 0, 0);
 }
