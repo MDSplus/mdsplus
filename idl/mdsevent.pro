@@ -68,6 +68,7 @@ function mdsevent_func,ev
 end
 
 pro mdsevent_can,id
+  forward_function mds$socket
     e = mdsevent_getevi(id)
     dummy=call_external(EventImage(),'IDLMdsEventCan',mds$socket(),e.event_id,value=[1,1])
   ;  dummy=call_external(decw$image(/xt),'XtFree',e.event_ptr,value=[1])
@@ -75,6 +76,7 @@ pro mdsevent_can,id
 end
 
 function mdsevent,parent,name
+  forward_function mds$socket
   stub = widget_base(parent)
   event_struct=call_external(EventImage(),'IDLMdsEvent',mds$socket(), parent, stub, name, value=[1,0,0,1])
   widget_control,stub,kill_notify='mdsevent_can',set_uvalue=event_struct,event_func='mdsevent_func'
