@@ -357,6 +357,9 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
          pid = getpid();
        if (!pid || mode != 'I')
        {
+#ifdef GLOBUS
+         chown(getenv("X509_USER_PROXY"),pwd->pw_uid,pwd->pw_gid);
+#endif
          initgroups(pwd->pw_name,pwd->pw_gid);
          status = setgid(pwd->pw_gid);
          status = setuid(pwd->pw_uid);

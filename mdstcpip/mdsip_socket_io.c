@@ -658,6 +658,32 @@ globus_result_t globus_io_tcp_accept_inetd(globus_io_attr_t *attr,   globus_io_h
                 token_status);
 	exit(0);
   }
+  if (handle->delegated_credential)
+  {
+    char *delcname;
+    char *x509_delegate;
+    minor_status = 0xdee0;
+    major_status = gss_inquire_cred(&minor_status,
+				    handle->delegated_credential,
+				    (gss_name_t *)&delcname,
+				    NULL,
+				    NULL,
+				    NULL);
+    if (major_status == GSS_S_COMPLETE)
+    {
+      if (minor_status == 0xdee1 && delcname)
+      {
+        char *cp;
+        cp = strchr(delcname,'=');
+        cp++;
+        unsetenv("X509_USER_KEY");
+        unsetenv("X509_USER_CERT");
+        unsetenv("X509_USER_PROXY");
+        setenv("X509_USER_PROXY",cp,1);
+      }
+    }
+  }
+
   result = globus_i_io_setup_nonblocking(handle);
   if(handle->securesocket_attr.channel_mode !=
        GLOBUS_IO_SECURE_CHANNEL_MODE_CLEAR)
@@ -744,6 +770,7 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
   AddClient = AddClient_in;
   DoMessage = DoMessage_in;
   (*AddClient)(s,&sin,GetName(handle));
+  chown(getenv("X509_USER_PROXY"),getuid(),getgid());
   return -1;
 #endif
 }
