@@ -1,0 +1,57 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=@LD@
+prefix=@prefix@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+RM=$(top_srcdir)/devscripts/rm_if
+CFLAGS=@CFLAGS@ @GLOBUS_CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@ @LIBDL@ 
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = boxsmooth.c \
+          bwfilter.c  \
+          getnidarray.c  \
+          getreferences.c  \
+          resample.c  \
+          step_resample.c
+
+OBJECTS = $(SOURCES:.c=.o)
+EXPORTS = MdsMisc.exports
+
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsMisc@SHARETYPE@ @MAKELIBDIR@libMdsMisc.a
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
+
+clean :
+	@ $(RM) $(OBJECTS)
+	@ $(RM) so_locations
+	@ $(RM) @MAKELIBDIR@libMdsMisc.a 
+	@ $(RM) @MAKESHLIBDIR@libMdsMisc@SHARETYPE@ 
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdirhier @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsMisc@SHARETYPE@ @libdir@
+	if (test @SHARETYPE@ != .a) then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libMdsMisc.a @libdir@; \
+	fi;
+
+@MAKESHLIBDIR@libMdsMisc@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
+
+@MAKELIBDIR@libMdsMisc.a : $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
+	@RANLIB@ $@
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@
+
+@MAKESHLIBDIR_RULE@
+
+MdsMisc.exports: MdsMisc.def
+	sed -e /LIBRARY/\;/\;/d MdsMisc.def > $@
