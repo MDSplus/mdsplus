@@ -6,7 +6,7 @@ c	Fortran include file for MdsLib
 
 c23456789012345678901234567890123456789012345678901234567890123456789012
 	integer descr, MdsValue, MdsConnect, MdsOpen, MdsPut, MdsClose
-	integer MdsSetDefault
+	integer MdsSetDefault, MdsDisconnect
 	integer descr2, MdsValue2, MdsPut2, MdsSetSocket
         integer IDTYPE_UNSIGNED_BYTE, IDTYPE_BYTE
         integer IDTYPE_UNSIGNED_SHORT, IDTYPE_SHORT
