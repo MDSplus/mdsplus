@@ -1,9 +1,34 @@
+@mdsconnect.pro
+
 function dbinfo, dbname, host, name, user, pass, mdshost
+;  host=getenv("SYBASE_HOST")
+;  if (strlen(host) eq 0) then host = "red.psfc.mit.edu"
+;  catch, err
+;  if (err ne 0) then begin
+;    catch,/cancel
+;    spawn,'\whoami',result
+;    dbuser = result[n_elements(result)-1]
+;    dbpass="PFCWORLD"
+;    name = dbname
+;    mdshost='red'
+;    return, 1
+;  endif
+  OPENR,1,getenv('HOME')+'/'+dbname+".sybase_login"
+  mdshost=''
+  host = ''
+  user=''
+  pass=''
+  readf,1,mdshost
+  readf,1,host
+  readf,1,user
+  readf,1,pass
   name = dbname
-  host = 'red'
-  user = 'test'
-  pass = 'pfcworld'
-  mdshost = 'alcserv1:9000'
+  close, 1
+;  name = dbname
+;  host = 'red'
+;  user = 'test'
+;  pass = 'pfcworld'
+;  mdshost = 'red.psfc.mit.edu'
   return, 1
 end
 
@@ -35,7 +60,7 @@ pro MDSDbConnect, host
    endif
 end
 
-pro set_database, dbname, status=status, quiet=quiet
+pro set_database, dbname, status=status, quiet=quiet,debug=debug
   status = dbinfo(dbname, host, name, user, pass, mdshost)
   MDSDbconnect, mdshost
   status = mdsvalue("DBLogin($, $, $)", host, user, pass, socket=!MDSDB_SOCKET)
@@ -47,8 +72,9 @@ pro set_database, dbname, status=status, quiet=quiet
       endelse
       return
   endif
-  status = mdsvalue("SetDatabase('"+ name+"')", socket=!MDSDB_SOCKET)
-  if (not status) then begin
+;  status = mdsvalue("SetDatabase('"+ name+"')", socket=!MDSDB_SOCKET)
+  status = dsql('USE ?', name)
+  if (status ne 0) then begin
       if not (keyword_set(quiet)) then begin
           Message, "Error attaching to database "+name, /continue
       endif else begin
