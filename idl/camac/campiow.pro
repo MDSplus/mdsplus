@@ -12,8 +12,8 @@ pro CAMPIOW,MODULE,A,F,DATA,MEM,IOSB
 	IOSB = !CAM_IOSB
         data = MdsValue('_data');
 	CAMCHECK,piostat
-	if (!CAM_XSTATE le 0L) then if (!CAM_XSTATE ne CamX(IOSB)) then $
+	if (!CAM_XSTATE le 0L) then if ((!CAM_XSTATE and 1) ne CamX(IOSB)) then $
 		message,string('module,A,F,bad_X: ',MODULE,A,F,CamX(IOSB))
-	if (!CAM_QSTATE le 0L) then if (!CAM_QSTATE ne CamQ(IOSB)) then $
+	if (!CAM_QSTATE le 0L) then if ((!CAM_QSTATE and 1) ne CamQ(IOSB)) then $
 		message,string('module,A,F,bad_Q: ',MODULE,A,F,CamQ(IOSB))
 end

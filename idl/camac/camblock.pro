@@ -29,8 +29,8 @@ pro CAMBLOCK,entry,MODULE,A,F,TC,DATA,MEM,IOSB
 	end
 	;*** CSTATE does not seem to enforce X or Q but we do on request ***
 	;note: CAM$X and CAM$Q give -1 for true
-	if (!CAM_XSTATE le 0L) then if (!CAM_XSTATE ne CAMX(IOSB)) then $
+	if (!CAM_XSTATE le 0L) then if ((!CAM_XSTATE and 1) ne CAMX(IOSB)) then $
 		message,string(entry,' module,A,F,bad_X: ',MODULE,A,F,CamX(IOSB))
-	if (!CAM_QSTATE le 0L) then if (!CAM_QSTATE ne CAMQ(IOSB)) then $
+	if (!CAM_QSTATE le 0L) then if ((!CAM_QSTATE and 1) ne CAMQ(IOSB)) then $
 		message,string(entry,' module,A,F,bad_Q: ',MODULE,A,F,CAMQ(IOSB))
 end
