@@ -43,3 +43,4 @@ extern int StrTrim();
 extern int StrUpcase();
 
 #endif
+
