@@ -18,6 +18,8 @@ struct descrip { char dtype;
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
 extern char *TranslateLogical(char *);
+extern void TranslateLogicalFree(char *);
+extern int LibFindImageSymbol();
 
 static int FindImageSymbol(char *name, void **sym)
 {
@@ -108,8 +110,6 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,int 
   int len = strlen(tree);
   char tree_lower[13];
   char pathname[32];
-  char *path;
-  char name[32];
   int i;
   char *resnam = 0;
   char *logname;
@@ -229,7 +229,7 @@ int FindNodeWildRemote(PINO_DATABASE *dblist, char *path, int *nid_out, void **c
       if (ans.ptr)
       {
         ctx = malloc(sizeof(struct _FindNodeStruct) + ans.dims[0] * sizeof(int));
-        ctx->nids = (int *)((char *)ctx) + sizeof(struct _FindNodeStruct);
+        ctx->nids = (int *)((char *)ctx + sizeof(struct _FindNodeStruct));
         memcpy(ctx->nids,ans.ptr,ans.dims[0] * sizeof(int));
         ctx->num = ans.dims[0];
         *ctx_inout = (void *)ctx;
@@ -290,7 +290,6 @@ int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm)
   NID nid = *(NID *)&nid_in;
   int       status = TreeNORMAL;
   NCI_ITM  *itm;
-  int       i;
   struct descrip ans;
   for (itm = nci_itm; itm->code != NciEND_OF_LIST && status & 1; itm++)
   {
@@ -299,7 +298,7 @@ int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm)
     switch (itm->code)
     {
     case NciDEPTH:               getnci_str = "getnci(%d,'depth')"; break;
-    case NciGET_FLAGS:           getnci_str = "getnci(%d,'flags')"; break;
+    case NciGET_FLAGS:           getnci_str = "getnci(%d,'get_flags')"; break;
     case NciTIME_INSERTED:       getnci_str = "getnci(%d,'time_inserted')"; break;
     case NciOWNER_ID:            getnci_str = "getnci(%d,'owner')"; break;
     case NciCLASS:               getnci_str = "getnci(%d,'class')"; break;
@@ -313,7 +312,7 @@ int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm)
     case NciIO_STV:              getnci_str = "getnci(%d,'io_stv')"; break;
     case NciRFA:                 getnci_str = "getnci(%d,'rfa')"; break;
     case NciCONGLOMERATE_ELT:    getnci_str = "getnci(%d,'conglomerate_elt')"; break;
-    case NciPARENT:              getnci_str = "getnci(getnci(%d,'parent')"; break;
+    case NciPARENT:              getnci_str = "getnci(getnci(%d,'parent'),'nid_number')"; break;
     case NciBROTHER:             getnci_str = "getnci(getnci(%d,'brother'),'nid_number')"; break;
     case NciMEMBER:              getnci_str = "getnci(getnci(%d,'member'),'nid_number')"; break;
     case NciCHILD:               getnci_str = "getnci(getnci(%d,'child'),'nid_number')"; break;
