@@ -77,7 +77,9 @@ then
     eval $temp_sym_name='`echo $temp_sym_value`'
     export $temp_sym_name
   else
-    if ! echo $temp_sym_old_value | grep -q $temp_sym_value ; then
+    if echo $temp_sym_old_value | grep -q $temp_sym_value ; then
+      :
+    else
       case $temp_direction in
       '>')
         eval $temp_sym_name='`echo ${temp_sym_old_value}${temp_delim}${temp_sym_value}`'
