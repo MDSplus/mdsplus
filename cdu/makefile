@@ -4,7 +4,8 @@ OBJFILES =		\
 	cli_routines.o		\
 	cli_util.o		\
 	dasutil_routines1.o	\
-	dasutil_routines2.o
+	dasutil_routines2.o	\
+	dasutil_routines3.o
 
 all:	libCdu.a  cdu
 

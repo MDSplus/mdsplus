@@ -40,6 +40,6 @@ int TclSetCurrent()
        }
 
     if ((sts & 1) != 1)
-        TclMsg(sts,"Error inside TclSetCurrent",0);
+        mdsMsg(sts,"Error inside TclSetCurrent",0);
     return sts;
    }

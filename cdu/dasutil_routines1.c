@@ -929,7 +929,7 @@ int   str_append(			/* Return: status		*/
        {
         dsc = source;
         p = dsc->dscA_pointer;
-        k = strlen(p);
+        k = p ? strlen(p) : 0;
         if (k > dsc->dscW_length)
             k = dsc->dscW_length;
        }

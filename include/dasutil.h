@@ -1,4 +1,5 @@
 #include        <stdarg.h>
+#include        <stdio.h>
 #include        <string.h>
 #include        <time.h>
 
@@ -408,6 +409,13 @@ char  *now();
 int   asc2time(
     char  ascString[]		/* <r> DateString: dd-mmm-yy[yy] hh:mm:ss */
    ,time_t  *bintim		/* <w> time integer			*/
+   );
+
+char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
+    char  usrline[]		/* <w> user's input buffer		*/
+   ,int   maxlen		/* <r> length of input buffer		*/
+   ,FILE  *fp			/* <r> file pointer			*/
+   ,char  *prompt		/* <r:opt> prompt string		*/
    );
 
 #endif

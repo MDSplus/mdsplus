@@ -24,8 +24,9 @@ libMdsdcl.a:	libMdsdcl.a( $(OBJFILES) )
 		ranlib libMdsdcl.a
 
 ../shlib/libMdsdcl.$(SHARE_TYPE):	libMdsdcl.a
-	$(CC) $(CFLAGS)  -o $@ $(LD_SHARED_LIB_OPTIONS) -lc	\
-		mdsdcl_tables.o  libMdsdcl.a  $(MDSPLUS)/cdu/libCdu.a
+	$(CC) $(CFLAGS)  -o $@ $(LD_SHARED_LIB_OPTIONS)	\
+		mdsdcl_tables.o  libMdsdcl.a  $(MDSPLUS)/cdu/libCdu.a \
+		-lcurses -lc
 
 mdsdcl:	mdsdcl.o  ../shlib/libMdsdcl.$(SHARE_TYPE)
 	$(CC) $(CFLAGS) -o $@ $(LFLAGS) $@.o -lMdsdcl		\

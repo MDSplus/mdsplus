@@ -137,12 +137,10 @@ static int   readInputLine(	/* Return: status			*/
 
     io = ctrl->ioLevel + ctrl->depth;
     fp = io->fp;
-    if (io->isatty)
-        printf("%s",prompt);
 
     if (fp)
        {			/* If it's not a macro			*/
-        p = fgets(line,sizeof(line),fp);
+        p = fgets_with_edit(line,sizeof(line),fp,prompt);
         if (!p)
            {
             sts = closeIndirectLevel();

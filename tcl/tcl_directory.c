@@ -8,6 +8,7 @@
 * TclDirectory:  Perform directory function.
 *
 * History:
+*  24-Feb-1998  TRG  Add TreeFree() after calls to TreeFindNodeTags().
 *  20-Jan-1998  TRG  Create.  Ported from original mds code.
 *
 ************************************************************************/
@@ -199,10 +200,11 @@ int   TclDirectory()
                        }
                     TclTextOut("  ");
                     pathnam = TreeGetPath(parent_nid);
-                    last_parent_nid = parent_nid;
                     TclTextOut(pathnam);
+                    TreeFree(pathnam);		/* free the string	*/
                     TclTextOut("  ");
                     found = 0;
+                    last_parent_nid = parent_nid;
                     previous_relationship = relationship;
                    }
                 found++;
@@ -224,6 +226,7 @@ int   TclDirectory()
                        {
                         str_concat(&dsc_outline,&dsc_outline,
                                 (first_tag?" tags: \\":",\\"),tagnam,0);
+                        TreeFree(tagnam);
                         first_tag = 0;
                        }
                     TclTextOut(dsc_outline.dscA_pointer);
@@ -318,6 +321,7 @@ int   TclDirectory()
                                 pathnam = TreeGetPath(head_nid);
                                 sprintf(textLine,fmtConglom2,pathnam,partC);
                                 TclTextOut(textLine);
+                                TreeFree(pathnam);
                                }
                            }
                        }
