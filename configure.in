@@ -176,6 +176,7 @@ AC_CHECK_LIB(pthread,pthread_kill,LIBPTHREAD="-lpthread",AC_CHECK_LIB(cma,pthrea
 AC_CHECK_LIB(exc,__Ots_CSpecificHandler,LIBPTHREAD="$LIBPTHREAD -lexc")
 AC_CHECK_LIB(pthread,pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL_NP))
 AC_CHECK_LIB(pthread,__pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL_NP))
+AC_CHECK_LIB(readline,readline,LIBREADLINE="-lreadline",LIBREADLINE="")
 
 if test "$enable_d3d" = yes -o "$enable_d3d" = on ; then
   AC_MSG_CHECKING(...D3DLIB_PATH...)
@@ -374,6 +375,7 @@ AC_SUBST(LIBDLD)
 AC_SUBST(LIBM)
 AC_SUBST(LIBNSL)
 AC_SUBST(LIBPTHREAD)
+AC_SUBST(LIBREADLINE)
 AC_SUBST(LIBRESOLV)
 AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBXP)
