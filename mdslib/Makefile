@@ -14,11 +14,11 @@ mdslib : ../bin ../shlib ../shlib/libMdsLib.$(SHARE_TYPE)  mdslib_ctest  mdslib_
 ../shlib :
 	mkdir ../shlib
 
-mdslib_ctest : mdslib_ctest.o ../shlib/libMdsLib.$(SHARE_TYPE)
-	cc -o $@ $(CFLAGS) mdslib_ctest.c -I../include -L../shlib -lMdsLib
+mdslib_ctest : mdslib_ctest.c ../shlib/libMdsLib.$(SHARE_TYPE)
+	cc -o $@ $(CFLAGS) mdslib_ctest.c -L../shlib -lMdsLib
 
 mdslib_ftest : mdslib_ftest.f ../shlib/libMdsLib.$(SHARE_TYPE)
-	f77 -o $@ mdslib_ftest.f -g -V +es +U -v -I../include -Wl,-L../shlib -lMdsLib
+	f77 -o $@ $(FFLAGS) mdslib_ftest.f -Wl,-L../shlib -lMdsLib
 
 clean :
 	- rm *.o
