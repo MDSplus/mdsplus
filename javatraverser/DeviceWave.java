@@ -82,6 +82,16 @@ public class DeviceWave extends DeviceComponent
                     scroll.getViewport().setViewPosition(new Point(0, rowY));
                     
                 }
+                if(maxYVisible)
+                {
+                    try {
+                        maxY = (new Float(maxYField.getText()).floatValue());
+                        for(int i = 0; i < waveY.length; i++)
+                            if(waveY[i] > maxY)
+                                waveY[i] = maxY;
+                        
+                    }catch(Exception exc){}
+                }
                 table.repaint();
             }
         });
@@ -460,6 +470,12 @@ public class DeviceWave extends DeviceComponent
                         "Incorret limit", JOptionPane.WARNING_MESSAGE);
                 }
             }
+            for(int i = 0; i < waveX.length; i++)
+            {
+                if(waveY[i] > maxY)
+                    waveY[i] = maxY;
+            }
+            repaint();
         }
     }
                 
