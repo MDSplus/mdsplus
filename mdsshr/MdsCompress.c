@@ -70,7 +70,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 	The inner routine scans some classes and tries to compress arrays.
 	If successful returns 1, if unsuccessful returns NORMAL.
 */
-  int       compress(
+static  int       compress(
 		               struct descriptor *pcimage,
 		               struct descriptor *pcentry,
 		               int delta,
