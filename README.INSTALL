@@ -30,6 +30,12 @@ the d3 access library, libd3. Then invoke configure as follows:
 
 ./configure --enable-d3d
 
+You can build the Motif applications using the static libraries so that the binaries
+can be used on systems where Motif is not installed. To enable the use of static Motif
+libraries use the --enable-staticmotif flag:
+
+./configure --enable-staticmotif
+
 Certain optional packages installed on system may be incompatible with some or
 all of the MDSplus package. We will try to keep a list of potential problems
 found in this document along with possible workarounds.

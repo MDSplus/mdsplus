@@ -179,6 +179,21 @@ if test "$enable_d3d" = yes -o "$enable_d3d" = on ; then
   fi
 fi
 
+AC_MSG_CHECKING(if we are supposed to use static motif libraries)
+if test "$enable_staticmotif" = yes -o "$enable_d3d" = on ; then
+  AC_MSG_RESULT(yes)
+  MOTIF_LDARC=$LDARC;
+  MOTIF_LDSHARE=$LDSHARE;
+  MOTIF_LD_LDARC=$LD_LDARC;
+  MOTIF_LD_LDSHARE=$LD_LDSHARE;
+else
+  AC_MSG_RESULT(no)
+  MOTIF_LDARC="";
+  MOTIF_LDSHARE="";
+  MOTIF_LD_LDARC="";
+  MOTIF_LD_LDSHARE="";
+fi
+  
 dnl Checks for header files.
 AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/filio.h netdb.h resolv.h dlfcn.h dl.h vxWorks.h windows.h sys/resource.h)
 
@@ -330,6 +345,10 @@ AC_SUBST(LDSHARE)
 AC_SUBST(LDARC)
 AC_SUBST(LD_LDSHARE)
 AC_SUBST(LD_LDARC)
+AC_SUBST(MOTIF_LDSHARE)
+AC_SUBST(MOTIF_LDARC)
+AC_SUBST(MOTIF_LD_LDSHARE)
+AC_SUBST(MOTIF_LD_LDARC)
 
 AC_SUBST(LIBDL)
 AC_SUBST(LIBDLD)
