@@ -76,6 +76,12 @@ void *mdsip_connect(char *host)
   result = globus_xio_attr_cntl(attr,tcp_driver,GLOBUS_XIO_TCP_SET_RCVBUF,MDSIP_RCVBUF);
   mdsip_test_status(0,result,"mdsip_connect SET_RCVBUF");
   if (result != GLOBUS_SUCCESS) return 0;
+  result = globus_xio_attr_cntl(attr,tcp_driver,GLOBUS_XIO_TCP_SET_NODELAY,GLOBUS_TRUE);
+  mdsip_test_status(0,result,"mdsip_connect SET_NODELAY");
+  if (result != GLOBUS_SUCCESS) return 0;
+  result = globus_xio_attr_cntl(attr,tcp_driver,GLOBUS_XIO_TCP_SET_KEEPALIVE,GLOBUS_TRUE);
+  mdsip_test_status(0,result,"mdsip_connect SET_KEEPALIVE");
+  if (result != GLOBUS_SUCCESS) return 0;
   result = globus_xio_open(xio_handle, contact_string, attr);
   mdsip_test_status(0,result,"mdsip_connect globus_xio_open");
   if (result != GLOBUS_SUCCESS) 

@@ -62,6 +62,14 @@ void  mdsip_initialize_io(mdsip_options_t *options)
 			       tcp_driver,
 			       GLOBUS_XIO_TCP_SET_SNDBUF,
 			       options->sndbuf);
+    res = globus_xio_attr_cntl(server_attr,
+			       tcp_driver,
+			       GLOBUS_XIO_TCP_SET_NODELAY,
+			       GLOBUS_TRUE);
+    res = globus_xio_attr_cntl(server_attr,
+			       tcp_driver,
+			       GLOBUS_XIO_TCP_SET_KEEPALIVE,
+			       GLOBUS_TRUE);
 
   }
 
