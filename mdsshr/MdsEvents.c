@@ -67,28 +67,37 @@ STATIC_ROUTINE void EventThreadProc(struct event_struct *event)
 	
 }
 
-int MDSEventAst(char *eventnam, void (*astadr)(void *,int,char *), void *astprm, int *eventid)
+int MDSEventAst(char *eventnam_in, void (*astadr)(void *,int,char *), void *astprm, int *eventid)
 {
-	struct event_struct *event = (struct event_struct *)malloc(sizeof(struct event_struct));
+  struct event_struct *event = (struct event_struct *)malloc(sizeof(struct event_struct));
 
-    int use_local;    
+  int use_local;    
+  char *eventnam;
+  int status = 1;
+  int i;
+  if(!eventnam_in || !*eventnam_in) return 1;
+  eventnam = strcpy(malloc(strlen(eventnam_in)+1),eventnam_in);
+  for (i=0;i<strlen(eventnam);i++) eventnam[i]=toupper(eventnam[i]);
+  initializeLocalRemote(1, &use_local);
+  if(num_receive_servers > 0)
+    eventAstRemote(eventnam, astadr, astprm, eventid);
+  if(use_local)
+  {
 
-    if(!eventnam || !*eventnam) return 1;
-    initializeLocalRemote(1, &use_local);
-    if(num_receive_servers > 0)
-	    eventAstRemote(eventnam, astadr, astprm, eventid);
-    if(!use_local) return 1;
-
-	/* Local stuff */
-
-	*eventid = (int)event;
-	event->eventnam = strcpy(malloc(strlen(eventnam)+1),eventnam);
-	event->astadr = astadr;
-	event->astprm = astprm;
-	event->event = CreateEvent(NULL, TRUE, FALSE, eventnam);
-	if (event->event == NULL) return(0);
-	event->thread = _beginthread( (void(*)(void *))EventThreadProc, 0, (void *)event);
-	return(event->thread != -1);
+    /* Local stuff */
+    
+    *eventid = (int)event;
+    event->eventnam = eventnam;
+    event->astadr = astadr;
+    event->astprm = astprm;
+    event->event = CreateEvent(NULL, TRUE, FALSE, eventnam);
+    if (event->event == NULL) return(0);
+    event->thread = _beginthread( (void(*)(void *))EventThreadProc, 0, (void *)event);
+    status = event->thread != -1;
+  }
+  else
+    free(eventnam);
+  return status;
 }
 
 STATIC_ROUTINE int canEventRemote(int eventid)
@@ -173,19 +182,25 @@ int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
   return 1;
 }
 
-int MDSEvent(char *evname, int data_len, char *data)
+int MDSEvent(char *evname_in, int data_len, char *data)
 {
-	HANDLE handle = OpenEvent(EVENT_ALL_ACCESS,0,evname);
-	int use_local;
-    initializeLocalRemote(0, &use_local);
-    if(num_send_servers > 0)
-	sendRemoteEvent(evname, data_len, data);
-    if(!use_local) return 1;
-
-	if (handle != NULL)
-		PulseEvent(handle);
-	CloseHandle(handle);
-	return 1;
+  int use_local;
+  char *evname;
+  int i;
+  initializeLocalRemote(0, &use_local);
+  evname = strcpy(malloc(strlen(evname_in)+1),evname_in);
+  for (i=0;i<strlen(evname);i++) evname[i]=toupper(evname[i]);
+  if(num_send_servers > 0)
+    sendRemoteEvent(evname, data_len, data);
+  if(use_local)
+  {
+    HANDLE handle = OpenEvent(EVENT_ALL_ACCESS,0,evname);
+    if (handle != NULL)
+      PulseEvent(handle);
+    CloseHandle(handle);
+  }
+  free(evname);
+  return 1;
 
 }
 
@@ -1702,45 +1717,49 @@ int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
     return(1);
 }
 
-int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
+int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
 {
-    int status;
-    int i, j, use_local;    
-    int name_already_in_use;
-
-    *eventid = -1;
-    if(!eventnam || !*eventnam) return 1;
-    initializeLocalRemote(1, &use_local);
-    if(num_receive_servers > 0)
-	eventAstRemote(eventnam, astadr, astprm, eventid);
-    if(!use_local) return 1;
-
-
+  int status;
+  int i, j, use_local;    
+  int name_already_in_use;
+  char *eventnam;
+  *eventid = -1;
+  if(!eventnam_in || !*eventnam_in) return 1;
+  eventnam = strcpy(malloc(strlen(eventnam_in)+1),eventnam_in);
+  for (i=0;i<strlen(eventnam);i++) eventnam[i]=toupper(eventnam[i]);
+  initializeLocalRemote(1, &use_local);
+  if(num_receive_servers > 0)
+    eventAstRemote(eventnam, astadr, astprm, eventid);
+  if(use_local)
+  {
     /* Local stuff */
 
     /* First check wether the same name is already in use */
     for(i = 0; i < MAX_EVENTNAMES; i++)
-	if(private_info[i].active && !strcmp(eventnam, private_info[i].name))
-	    break;
+      if(private_info[i].active && !strcmp(eventnam, private_info[i].name))
+	break;
     if(i < MAX_EVENTNAMES)
-	name_already_in_use = 1;
+      name_already_in_use = 1;
     else
-	name_already_in_use = 0;
+      name_already_in_use = 0;
 
 
     /* define internal event dispatching structure */ 
     LockMdsShrMutex(&privateMutex,&privateMutex_initialized);
     for(i = 0; i < MAX_EVENTNAMES; i++)
-	if(private_info[i].active && !strcmp(eventnam, private_info[i].name) &&
-		private_info[i].astadr == astadr && private_info[i].astprm == astprm)
-	     break;
+      if(private_info[i].active && !strcmp(eventnam, private_info[i].name) &&
+	 private_info[i].astadr == astadr && private_info[i].astprm == astprm)
+	break;
     if(i == MAX_EVENTNAMES) /* if no previous MdsEventAst to that event made by the process */
     {
-	for(i = 0; i < MAX_EVENTNAMES && private_info[i].active; i++);
-	if(i == MAX_EVENTNAMES) /* if no free private event slot found */
-	    return 0;
-	strncpy(private_info[i].name, eventnam, MAX_EVENTNAME_LEN - 1);
-	private_info[i].active = 1;
+      for(i = 0; i < MAX_EVENTNAMES && private_info[i].active; i++);
+      if(i == MAX_EVENTNAMES) /* if no free private event slot found */
+      {
+        status = 0;
+        goto cleanup;
+      }
+      strncpy(private_info[i].name, eventnam, MAX_EVENTNAME_LEN - 1);
+      private_info[i].active = 1;
     }
     private_info[i].astadr = astadr;
     private_info[i].astprm = (void *)(void *)astprm;
@@ -1754,7 +1773,10 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 	setLocalId(*eventid, i);
 
     if(name_already_in_use)
-	return 1;
+    {
+      status = 1;
+      goto cleanup;
+    }
 
     setHandle();
 
@@ -1763,54 +1785,60 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 
     if(!shared_info)
     {
-	if(attachSharedInfo() == -1)
-	{
-	    releaseLock();
-	    return 0;
-	}
+      if(attachSharedInfo() == -1)
+      {
+	releaseLock();
+        status = 0;
+        goto cleanup;
+      }
     }
     LockMdsShrMutex(&sharedMutex,&sharedMutex_initialized);
 /* Find first free SharedEventInfo slot */
     for(i = 0; i < MAX_ACTIVE_EVENTS && shared_info[i].nameid != -1; i++);
     if(i == MAX_ACTIVE_EVENTS) /* If no free SharedEventInfo slot foud */
     {
-	releaseLock();
-        UnlockMdsShrMutex(&sharedMutex);
-	return 0;
+      releaseLock();
+      UnlockMdsShrMutex(&sharedMutex);
+      status = 0;
+      goto cleanup;
     }
     shared_info[i].msgkey = msgKey;
 /* Check wether the same name previously used */
     for(j = 0; j < MAX_EVENTNAMES; j++)
-	if(shared_name[j].refcount > 0 && !strcmp(shared_name[j].name, eventnam))
-	    break;
+      if(shared_name[j].refcount > 0 && !strcmp(shared_name[j].name, eventnam))
+	break;
     if(j == MAX_EVENTNAMES) /* if the name is not yet active */
     {
-	for(j = 0; j < MAX_EVENTNAMES && shared_name[j].refcount > 0; j++);
-	if(j == MAX_EVENTNAMES) /* If event names slot full */
-	{
-	    releaseLock();
-            UnlockMdsShrMutex(&sharedMutex);
-	    return 0;
-	}
-	strncpy(shared_name[j].name, eventnam, MAX_EVENTNAME_LEN - 1);
-	shared_name[j].first_id = i;
-	shared_info[i].next_id = -1;
+      for(j = 0; j < MAX_EVENTNAMES && shared_name[j].refcount > 0; j++);
+      if(j == MAX_EVENTNAMES) /* If event names slot full */
+      {
+	releaseLock();
+	UnlockMdsShrMutex(&sharedMutex);
+        status = 0;
+        goto cleanup;
+      }
+      strncpy(shared_name[j].name, eventnam, MAX_EVENTNAME_LEN - 1);
+      shared_name[j].first_id = i;
+      shared_info[i].next_id = -1;
     }
     else
     {
-	shared_info[i].next_id = shared_name[j].first_id;
-	shared_name[j].first_id = i;
+      shared_info[i].next_id = shared_name[j].first_id;
+      shared_name[j].first_id = i;
     }
 	
 
     shared_name[j].refcount++;
     shared_info[i].nameid = j;
-
+    
     releaseLock();
     UnlockMdsShrMutex(&sharedMutex);
-
+    
     attachExitHandler(cleanup);
-    return 1;
+  }
+ cleanup:
+  free(eventnam);
+  return status;
 }
 
 STATIC_ROUTINE int canEventRemote(int eventid)
@@ -1956,40 +1984,48 @@ STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
     return status;
 }
 
-int MDSEvent(char *evname, int data_len, char *data)
+int MDSEvent(char *evname_in, int data_len, char *data)
 {
-    int i, j, name_idx, curr_id, use_local;
-    
-    initializeLocalRemote(0, &use_local);
-    if(num_send_servers > 0)
-	sendRemoteEvent(evname, data_len, data);
-    if(!use_local) return 1;
+  int i, j, name_idx, curr_id, use_local;
+  char *evname;
+  int status = 1;
+  initializeLocalRemote(0, &use_local);
+  evname = strcpy(malloc(strlen(evname_in)+1),evname_in);
+  for (i=0;i<strlen(evname);i++) evname[i]=toupper(evname[i]);
+  if(num_send_servers > 0)
+    sendRemoteEvent(evname, data_len, data);
+  if(use_local)
+  {
 
 /* Local stuff */
     getLock();
     if(!shared_info)
     {
-	if(attachSharedInfo() == -1)
-	{
-	    releaseLock();
-	    return 0;
-	}
+      if(attachSharedInfo() == -1)
+      {
+	releaseLock();
+        status = 0;
+        goto cleanup2;
+      }
     }
 
     /* Search event name in the event name list */
     LockMdsShrMutex(&sharedMutex,&sharedMutex_initialized);
     for(name_idx = 0; name_idx < MAX_EVENTNAMES && (shared_name[name_idx].refcount == 0 
-	|| strcmp(shared_name[name_idx].name, evname)); name_idx++);
+      || strcmp(shared_name[name_idx].name, evname)); name_idx++);
     if(name_idx < MAX_EVENTNAMES)
     {
-	for(curr_id = shared_name[name_idx].first_id; curr_id != -1;
-		curr_id = shared_info[curr_id].next_id)
-	    sendMessage(evname, shared_info[curr_id].msgkey, data_len, data);
+      for(curr_id = shared_name[name_idx].first_id; curr_id != -1;
+	  curr_id = shared_info[curr_id].next_id)
+	sendMessage(evname, shared_info[curr_id].msgkey, data_len, data);
     }
 
     releaseLock();
     UnlockMdsShrMutex(&sharedMutex);
-    return 0;
+  }
+ cleanup2:
+  free(evname);
+  return status;
 }
 		    
 
