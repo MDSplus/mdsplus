@@ -1848,7 +1848,7 @@ echo "configure:1845: checking ...D3DLIB_PATH..." >&5
 		 D3D_PACKAGE="\$(D3D_PACKAGE)";
 		 D3DLIB="-L$D3DLIB_PATH";
                  echo "$ac_t""$D3DLIB" 1>&6
-  elseXpGetDocumentData
+  else
 		 echo "$ac_t""libd3.a or libd3$SHARETYPE not found in $D3DLIB_PATH" 1>&6
                  exit 0
   fi
@@ -1861,13 +1861,13 @@ if test "$enable_staticmotif" = yes -o "$enable_d3d" = on ; then
   MOTIF_LDARC=$LDARC;
   MOTIF_LDSHARE="$LDSHARE";
   MOTIF_LD_LDARC=$LD_LDARC;
-  MOTIF_LDXpGetDocumentData_LDSHARE="$LD_LDSHARE";
+  MOTIF_LD_LDSHARE="$LD_LDSHARE";
 else
   echo "$ac_t""no" 1>&6
   MOTIF_LDARC="";
   MOTIF_LDSHARE="";
   MOTIF_LD_LDARC="";
-  MOTIXpGetDocumentDataF_LD_LDSHARE="";
+  MOTIF_LD_LDSHARE="";
 fi
   
 echo $ac_n "checking how to run the C preprocessor""... $ac_c" 1>&6

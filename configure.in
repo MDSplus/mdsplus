@@ -185,7 +185,7 @@ if test "$enable_d3d" = yes -o "$enable_d3d" = on ; then
 		 D3D_PACKAGE="\$(D3D_PACKAGE)";
 		 D3DLIB="-L$D3DLIB_PATH";
                  AC_MSG_RESULT($D3DLIB)
-  elseXpGetDocumentData
+  else
 		 AC_MSG_RESULT(libd3.a or libd3$SHARETYPE not found in $D3DLIB_PATH)
                  exit 0
   fi
@@ -197,13 +197,13 @@ if test "$enable_staticmotif" = yes -o "$enable_d3d" = on ; then
   MOTIF_LDARC=$LDARC;
   MOTIF_LDSHARE="$LDSHARE";
   MOTIF_LD_LDARC=$LD_LDARC;
-  MOTIF_LDXpGetDocumentData_LDSHARE="$LD_LDSHARE";
+  MOTIF_LD_LDSHARE="$LD_LDSHARE";
 else
   AC_MSG_RESULT(no)
   MOTIF_LDARC="";
   MOTIF_LDSHARE="";
   MOTIF_LD_LDARC="";
-  MOTIXpGetDocumentDataF_LD_LDSHARE="";
+  MOTIF_LD_LDSHARE="";
 fi
   
 dnl Checks for header files.
