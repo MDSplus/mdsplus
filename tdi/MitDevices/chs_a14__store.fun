@@ -21,8 +21,9 @@ public fun chs_a14__store(as_is _nid, optional _method)
   _VME_BS_LWORD = 0x03000000;
   _VME_DENSE    = 0x10000000;
   _mode = _VME_UDATA | _VME_D16 | _VME_BS_LWORD | _VME_DENSE;
-  _addr         = 0x10500004 + _dignum * 8;
-  _status = MdsVme->PioRead("/dev/vmp0",val(_addr),val(_mode),val(4),ref(_sr));
+  _settings = zero(128,0w)
+  _status = MdsVme->PioRead("/dev/vmp0",val(106c0000),val(_mode),val(128),ref(_settings));
+  _sr = long(_settings[9+_dignum*16]) | (long(_settings[17+_dignum*16]) << 16)
   if (_debug) write(*,"_sr=",_sr);
   /**********************************
    Get the PTS
@@ -42,13 +43,11 @@ public fun chs_a14__store(as_is _nid, optional _method)
   */
   _sr_mode = (_sr >> 8) & 0x7;
   if (_debug) write(*,"_sr_mode=",_sr_mode);
-  _sr_mode = 0;
+  _sr_mode = 0; /**** Only mode 0 supported by cinos ***/
   _sr_big_ram = (_sr >> 15) & 1;
   if (_debug) write(*,"_sr_big_ram=",_sr_big_ram);
-  _sr_big_ram = 0;
   _sr_clock_speed = _sr & 0x7;
   if (_debug) write(*,"_sr_clock_speed=",_sr_clock_speed);
-  _sr_clock_speed = 0;
   _clock_divide = ([1,2,4,10,20,40,100])[_sr_clock_speed];
   _dt = 1E-6 * _clock_divide;
   if (_debug) write(*,"_dt=",_dt);

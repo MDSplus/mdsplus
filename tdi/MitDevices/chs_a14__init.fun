@@ -24,6 +24,9 @@ public fun chs_a14__init(as_is _nid, optional _method)
   _VME_BS_LWORD = 0x03000000;
   _VME_DENSE    = 0x10000000;
   _mode = _VME_UDATA | _VME_D16 | _VME_BS_LWORD | _VME_DENSE;
-  _addr         = 0x10500000 + _dignum * 8;
-  return(MdsVme->VmePioWrite("/dev/dmaex0",val(_addr),val(_mode),val(4),_sr,ref(_bytes_written)));
+  _settings = zero(128,0w);
+  MdsVme->PioRead("/dev/vmp0",val(0x106e0000),val(_mode),val(128),_settings);
+  _settings = [_settings[0:(8+_dignum*16)],word(_sr & 0xffff),_settings[(10+_dignum*16):(16+_dignum*16)],
+               word(_sr >> 16),_settings[(18+_dignum*16) : *]];
+  return(MdsVme->PioWrite("/dev/vmp0",val(0x106e0000),val(_mode),val(128),_settings));
 }
