@@ -17,5 +17,5 @@
 
 public fun unix_submit(in _file)
 {
-  TCL("spawn/nowait unix_submit.sh "//_file//" "//$SHOT);
+  TCL("spawn/nowait unix_submit "//_file//" "//$SHOT);
 }
