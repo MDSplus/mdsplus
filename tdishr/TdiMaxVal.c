@@ -179,7 +179,6 @@ int TdiGtQ();
 { int *outp = (int *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  count = -1;\
   for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
     for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
       double result = start;\
@@ -201,25 +200,25 @@ int Tdi3MaxLoc(struct descriptor *in, struct descriptor *mask,
 	       struct descriptor *out,int count0, int count1, int count2,
 	       int step0, int step1, int step2)
 {
-  int count;
+  int count=-1;
   SetupArgs
   switch (in->dtype)
   {
-    case DTYPE_T:  OperateL(int,(int)pi1;count = -1,Tdi3Gt(pi0,*(int *)result),
+    case DTYPE_T:  OperateL(int,(int)pi1,Tdi3Gt(pi0,*(int *)result),
 		         result = (int)pi0;count = j0;,*outp++ = count)
-    case DTYPE_B:  OperateL(char,(char)-127;count = -1,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_BU: OperateL(unsigned char,(unsigned char)0;count = 0,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_W:  OperateL(short,(short)-32768;count = -1,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_WU: OperateL(unsigned short,(unsigned short)0;count = 0,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_L:  OperateL(int,-2147483647;count = -1,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_LU: OperateL(unsigned int,(unsigned int)0;count = 0,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_Q: OperateL(quadword,minquad;count = -1,TdiGtQ(pi0,&result,0),
+    case DTYPE_B:  OperateL(char,(char)-127,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_BU: OperateL(unsigned char,(unsigned char)0,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_W:  OperateL(short,(short)-32768,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_WU: OperateL(unsigned short,(unsigned short)0,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_L:  OperateL(int,-2147483647,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_LU: OperateL(unsigned int,(unsigned int)0,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_Q: OperateL(quadword,minquad,TdiGtQ(pi0,&result,1),
 			result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_QU: OperateL(quadword,uminquad;count = 0,TdiGtQ(pi0,&result,1),
+    case DTYPE_QU: OperateL(quadword,uminquad,TdiGtQ(pi0,&result,0),
 			result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_O: OperateL(octaword,minocta;count = -1,TdiGtO(pi0,&result,0),
+    case DTYPE_O: OperateL(octaword,minocta,TdiGtO(pi0,&result,1),
 			result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_OU: OperateL(octaword,uminocta;count = 0,TdiGtO(pi0,&result,1),
+    case DTYPE_OU: OperateL(octaword,uminocta,TdiGtO(pi0,&result,0),
 			result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_F:  OperateFloc(float,DTYPE_F  ,-HUGE,>)
     case DTYPE_FS: OperateFloc(float,DTYPE_FS ,-HUGE,>)
@@ -239,21 +238,21 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
   SetupArgs
   switch (in->dtype)
   {
-    case DTYPE_T:  OperateL(int,(int)pi1;count = -1,Tdi3Lt(pi0,*(int *)result),
+    case DTYPE_T:  OperateL(int,(int)pi1,Tdi3Lt(pi0,*(int *)result),
 		         result = (int)pi0;count = j0;,*outp++ = count)
-    case DTYPE_B:  OperateL(char,(char)127;count = -1,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_BU: OperateL(unsigned char,(unsigned char)255;count = -1,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_W:  OperateL(short,(short)32767;count = -1,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_WU: OperateL(unsigned short,(unsigned short)0xffff;count = -1,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_L:  OperateL(int,(int)2147483647;count = -1,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_LU: OperateL(unsigned int,(unsigned int)0xffffffff;count = -1,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_QU: OperateL(quadword,maxquad;count = -1,TdiLtQ(pi0,&result,0),
+    case DTYPE_B:  OperateL(char,(char)127,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_BU: OperateL(unsigned char,(unsigned char)255,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_W:  OperateL(short,(short)32767,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_WU: OperateL(unsigned short,(unsigned short)0xffff,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_L:  OperateL(int,(int)2147483647,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_LU: OperateL(unsigned int,(unsigned int)0xffffffff,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_QU: OperateL(quadword,maxquad,TdiLtQ(pi0,&result,0),
 			result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_Q: OperateL(quadword,umaxquad;count = -1,TdiLtQ(pi0,&result,1),
+    case DTYPE_Q: OperateL(quadword,umaxquad,TdiLtQ(pi0,&result,1),
 			result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_OU: OperateL(octaword,maxocta;count = -1,TdiLtO(pi0,&result,0),
+    case DTYPE_OU: OperateL(octaword,maxocta,TdiLtO(pi0,&result,0),
 			result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_O: OperateL(octaword,umaxocta;count = -1,TdiLtO(pi0,&result,1),
+    case DTYPE_O: OperateL(octaword,umaxocta,TdiLtO(pi0,&result,1),
 			result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_F:  OperateFloc(float,DTYPE_F  ,HUGE,<)
     case DTYPE_FS: OperateFloc(float,DTYPE_FS ,HUGE,<)
