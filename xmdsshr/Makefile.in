@@ -54,7 +54,7 @@ all:    @MAKEUIDDIR@ \
         @MAKEUIDDIR@XmdsXdBox.uid \
 	@MAKELIBDIR@ \
         @MAKELIBDIR@libXmdsShr.a \
-	@MAKELIBDIR@libXmdsShr@SHARETYPE@
+	@MAKESHLIBDIR@libXmdsShr@SHARETYPE@
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -62,7 +62,7 @@ depend:
 clean :
 	- rm *.o
 	- rm @MAKELIBDIR@libXmdsShr.a
-	- rm @MAKELIBDIR@libXmdsShr@SHARETYPE@
+	- rm @MAKESHLIBDIR@libXmdsShr@SHARETYPE@
 	- rm @MAKEUIDDIR@xmdsuil.wmd
 	- rm @MAKEUIDDIR@xmds_usage_icons.uid
 	- rm @MAKEUIDDIR@XmdsDigChans.uid
@@ -79,8 +79,10 @@ install:
 	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsDigChans.uid @uiddir@
 	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsInput.uid @uiddir@
 	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsXdBox.uid @uiddir@
-	$(INSTALL) -m 644  @MAKELIBDIR@libXmdsShr.a @libdir@
 	$(INSTALL) -m 755  @MAKELIBDIR@libXmdsShr@SHARETYPE@ @libdir@
+	if test "@SHARETYPE@" != ".a" ; then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libXmdsShr.a @libdir@
+	fi;
 
 @MAKEUIDDIR@:
 	mkdir @MAKEUIDDIR@
@@ -100,9 +102,9 @@ install:
 @MAKEUIDDIR@XmdsXdBox.uid : XmdsXdBox.uil
 	$(UIL) -o $@ XmdsXdBox.uil
 
-@MAKELIBDIR@libXmdsShr@SHARETYPE@ : $(OBJECTS)
+@MAKESHLIBDIR@libXmdsShr@SHARETYPE@ : $(OBJECTS)
 	- $(LD) -o $@ @LINKSHARED@ $(OBJECTS) \
-           -L@MAKELIBDIR@ -lMdsShr -lTdiShr -lTreeShr $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS)
+           -L@MAKESHLIBDIR@ -lMdsShr -lTdiShr -lTreeShr $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS)
 
 @MAKELIBDIR@libXmdsShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
