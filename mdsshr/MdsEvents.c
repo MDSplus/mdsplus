@@ -1987,7 +1987,6 @@ int MDSEvent(char *evname, int data_len, char *data)
 
     releaseLock();
     UnlockMdsShrMutex(&sharedMutex);
-    printf("%d, MDSEvent returned\n",pthread_self());
     return 0;
 }
 		    
