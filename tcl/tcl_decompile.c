@@ -28,12 +28,13 @@ int TclDecompile()
     int   sts;
     char  *p;
     static DYNAMIC_DESCRIPTOR(dsc_string);
+    static DYNAMIC_DESCRIPTOR(path_string);
     static struct descriptor_xd xd = {0, 0, CLASS_XD, 0, 0};
 
-    str_free1_dx(&dsc_string);
-    cli_get_value("PATH",&dsc_string);
-    sts = TreeFindNode(dsc_string.dscA_pointer,&nid);
-    str_free1_dx(&dsc_string);
+    str_free1_dx(&path_string);
+    cli_get_value("PATH",&path_string);
+    sts = TreeFindNode(path_string.dscA_pointer,&nid);
+    str_free1_dx(&path_string);
     if (sts & 1)
        {
         sts = TreeGetRecord(nid,&xd);
@@ -49,6 +50,7 @@ int TclDecompile()
                 TclTextOut(p);
                 free(p);
                }
+            StrFree1Dx(&dsc_string); /* need to use mdsplus free */
            }
        }
     if (~sts & 1)
