@@ -3,30 +3,7 @@ module a14
     version = 
     "v1.0"
 
-procedure
-	XmdsCreateExprField;
-	XmdsCreateDigChans;
-	XmdsCreateXdBoxOnOffButton;
-	XmdsCreateOkButton;
-	XmdsCreateCancelButton;
-	XmdsCreateResetButton;
-	XmdsCreateApplyButton;
-        XmdsCreateXdBoxDialogButton;
-        XmdsCreateNidOptionMenu;
-
-value
-	XmdsNnid : argument("nid",integer);
-	XmdsNnidOffset : argument("nidOffset",integer);
-	XmdsNdefaultQuote : argument("defaultQuote",boolean);
-	XmdsNautoQuote : argument("autoQuote",boolean);
-	XmdsNchannels : argument("channels",integer);
-	XmdsNdataNidOffset : argument("dataNidOffset",integer);
-        XmdsNstartIdxNidOffset : argument("startIdxNidOffset",integer);
-        XmdsNendIdxNidOffset : argument("endIdxNidOffset",integer);
-        XmdsNnodesPerChannel : argument("nodesPerChannel",integer);
-        XmdsNlabelStrings : argument("labelStrings",string_table);
-        XmdsNvalueStrings : argument("valueStrings",string_table);
-
+include file "XmdsWidgets.uil";
 
 object
     A14: XmBulletinBoardDialog 

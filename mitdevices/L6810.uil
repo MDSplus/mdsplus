@@ -34,30 +34,7 @@ names = case_sensitive
 !(BX) bx_info("c_makefile", "MAKEFILE-C.MMS", true )
 !(BX) bx_info("app_defaults", "APP-DEFAULTS.DAT", true )
 
-procedure
-	XmdsCreateExprField;
-	XmdsCreateDigChans;
-	XmdsCreateXdBoxOnOffButton;
-	XmdsCreateOkButton;
-	XmdsCreateCancelButton;
-	XmdsCreateResetButton;
-	XmdsCreateApplyButton;
-        XmdsCreateXdBoxDialogButton;
-        XmdsCreateNidOptionMenu;
-
-value
-	XmdsNnid : argument("nid",integer);
-	XmdsNnidOffset : argument("nidOffset",integer);
-	XmdsNdefaultQuote : argument("defaultQuote",boolean);
-	XmdsNautoQuote : argument("autoQuote",boolean);
-	XmdsNchannels : argument("channels",integer);
-	XmdsNdataNidOffset : argument("dataNidOffset",integer);
-        XmdsNstartIdxNidOffset : argument("startIdxNidOffset",integer);
-        XmdsNendIdxNidOffset : argument("endIdxNidOffset",integer);
-        XmdsNnodesPerChannel : argument("nodesPerChannel",integer);
-        XmdsNlabelStrings : argument("labelStrings",string_table);
-        XmdsNvalueStrings : argument("valueStrings",string_table);
-        XmdsNputOnApply : argument("putOnApply",boolean);
+include file "XmdsWidgets.uil";
 
 value
     DEVICE_NID :  -1;
