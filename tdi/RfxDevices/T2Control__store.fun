@@ -35,7 +35,7 @@ write(*, 'T2Control store');
 	}
 	write(*, 'Frequency: ', _frequency);
 	_period = 1. / _frequency;
-	_n_samples =  MdsValue('size(Feedback->getDacSignal:dsc(0))');
+	_n_samples =  MdsValue('size(Feedback->getDacSignal:dsc(0, 0))');
 	_n_pretrigger =  MdsValue('Feedback->getPreTriggerSamples()');
 	write(*, 'Num recorded samples = ', _n_samples);
 	_n_samples--;
