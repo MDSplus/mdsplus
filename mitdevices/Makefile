@@ -60,7 +60,7 @@ UIDS = \
 ../uid/UMCCD.uid \
 ../uid/U_OF_M_SPECT.uid
 
-all : $(UIDS)
+mitdevices : $(UIDS)
 
 clean:
 	- rm $(UIDS)
