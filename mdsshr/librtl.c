@@ -2159,7 +2159,7 @@ char *MdsRelease()
     int major = 0;
     int minor = 0;
     int sub = 0;
-    int status = sscanf(tag,"$Name$",&major,&minor,&sub);
+    int status = sscanf(&tag[1],"Name: release-%d-%d-%d",&major,&minor,&sub);
     if (status == 0)
       strcpy(rel,"MDSplus, beta version");
     else if (status == 1)
