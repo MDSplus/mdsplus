@@ -24,19 +24,44 @@ int FCLOSE(FILE *fd)
 {
   return fclose(fd);
 }
+
 size_t FREAD( void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
   int samples_to_read = nmemb;
   int chunk_size;
   int this_chunk=0;
-  while ((samples_to_read > 0) && (this_chunk >= 0)) {
+
+  while ((samples_to_read != 0) && (this_chunk >= 0)) {
+
     chunk_size = MIN(MAX_CHUNK_SIZE/size, samples_to_read);
     this_chunk = fread(ptr, size, chunk_size, stream);
+
+    if (this_chunk <= 0){
+            fprintf(stderr, "fread returned zero, quit at %d\n",
+                     nmemb-samples_to_read);
+            break;
+    }
+
     ptr += this_chunk*size;
     samples_to_read -= this_chunk;
   }
-  return ((this_chunk==0) ? nmemb : this_chunk);
-}
+
+  return nmemb-samples_to_read;
+} 
+
+/* size_t FREAD( void *ptr, size_t size, size_t nmemb, FILE *stream) */
+/* { */
+/*   int samples_to_read = nmemb; */
+/*   int chunk_size; */
+/*   int this_chunk=0; */
+/*   while ((samples_to_read > 0) && (this_chunk >= 0)) { */
+/*     chunk_size = MIN(MAX_CHUNK_SIZE/size, samples_to_read); */
+/*     this_chunk = fread(ptr, size, chunk_size, stream); */
+/*     ptr += this_chunk*size; */
+/*     samples_to_read -= this_chunk; */
+/*   } */
+/*   return ((this_chunk==0) ? nmemb : this_chunk); */
+/* } */
 
 size_t FWRITE( void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
