@@ -1,0 +1,104 @@
+module MIT_CLOCK_UIL
+    names = case_sensitive
+
+include file "XmdsWidgets.uil";
+
+object
+    MIT_CLOCK: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNborderWidth = 1;
+            XmNresizePolicy = XmRESIZE_GROW;
+            XmNautoUnmanage = false;
+            XmNdialogTitle = 
+            compound_string("MIT MPB Decoder Single Speed Clock");
+            XmNnoResize = true;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 10;
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 130;
+                    XmNy = 10;
+                    XmNcolumns = 32;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = -1;
+                    XmdsNnidOffset = 1;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 40;
+                    XmNlabelString = 
+                    compound_string("Frequency (Hz):");
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 130;
+                    XmNy = 40;
+                    XmNcolumns = 18;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = -1;
+                    XmdsNnidOffset = 2;
+                    };
+                };
+            user_defined procedure XmdsCreateOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 80;
+                    };
+                };
+            user_defined procedure XmdsCreateApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 116;
+                    XmNy = 80;
+                    };
+                };
+            user_defined procedure XmdsCreateResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 246;
+                    XmNy = 80;
+                    };
+                };
+            user_defined procedure XmdsCreateCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 376;
+                    XmNy = 80;
+                    };
+                };
+            };
+        };
+
+end module;
+

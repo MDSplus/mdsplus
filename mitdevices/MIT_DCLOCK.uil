@@ -1,0 +1,163 @@
+module MIT_CLOCK_UIL
+    names = case_sensitive
+
+include file "XmdsWidgets.uil";
+
+object
+    MIT_DCLOCK: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNborderWidth = 1;
+            XmNresizePolicy = XmRESIZE_GROW;
+            XmNautoUnmanage = false;
+            XmNdialogTitle = 
+            compound_string("MIT MPB Decoder 2 Speed Clock");
+            XmNnoResize = true;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 10;
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 130;
+                    XmNy = 10;
+                    XmNcolumns = 32;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = -1;
+                    XmdsNnidOffset = 1;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 40;
+                    XmNlabelString = 
+                    compound_string("Frequency 1(Hz):");
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 130;
+                    XmNy = 40;
+                    XmNcolumns = 18;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = -1;
+                    XmdsNnidOffset = 2;
+                    };
+                };
+            user_defined procedure XmdsCreateOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 9;
+                    XmNy = 140;
+                    };
+                };
+            user_defined procedure XmdsCreateApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 122;
+                    XmNy = 140;
+                    };
+                };
+            user_defined procedure XmdsCreateResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 246;
+                    XmNy = 140;
+                    };
+                };
+            user_defined procedure XmdsCreateCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 374;
+                    XmNy = 140;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 70;
+                    XmNlabelString = 
+                    compound_string("Frequency 2(Hz):");
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 130;
+                    XmNy = 70;
+                    XmNcolumns = 18;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = -1;
+                    XmdsNnidOffset = 3;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 100;
+                    XmNlabelString = 
+                    compound_string("Gate:");
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 130;
+                    XmNy = 100;
+                    XmNcolumns = 18;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = -1;
+                    XmdsNnidOffset = 4;
+                    };
+                };
+            user_defined procedure XmdsCreateOnOffToggleButton 
+                {
+                arguments
+                    {
+                    XmNx = 298;
+                    XmNy = 98;
+                    XmdsNnidOffset = 4;
+                    XmNlabelString = 
+                    compound_string("Rising Edge");
+                    XmdsNputOnApply = true;
+                    XmdsNnid = -1;
+                    };
+                };
+            };
+        };
+
+end module;
+

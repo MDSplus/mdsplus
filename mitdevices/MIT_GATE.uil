@@ -1,0 +1,221 @@
+module MIT_PULSE_UIL
+    names = case_sensitive
+
+include file "XmdsWidgets.uil";
+
+object
+    MIT_GATE: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNborderWidth = 1;
+            XmNresizePolicy = XmRESIZE_GROW;
+            XmNautoUnmanage = false;
+            XmNdialogTitle = 
+            compound_string("MIT MPB Decoder Gate");
+            XmNnoResize = true;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 10;
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 130;
+                    XmNy = 10;
+                    XmNcolumns = 32;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = -1;
+                    XmdsNnidOffset = 1;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 40;
+                    XmNlabelString = 
+                    compound_string("Trigger in (absolute):");
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 155;
+                    XmNy = 40;
+                    XmNcolumns = 18;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = -1;
+                    XmdsNnidOffset = 4;
+                    };
+                };
+            user_defined procedure XmdsCreateOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 240;
+                    };
+                };
+            user_defined procedure XmdsCreateApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 124;
+                    XmNy = 240;
+                    };
+                };
+            user_defined procedure XmdsCreateResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 253;
+                    XmNy = 240;
+                    };
+                };
+            user_defined procedure XmdsCreateCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 370;
+                    XmNy = 240;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 70;
+                    XmNlabelString = 
+                    compound_string("Gate start(absolute):");
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 155;
+                    XmNy = 70;
+                    XmNcolumns = 18;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = -1;
+                    XmdsNnidOffset = 7;
+                    };
+                };
+            user_defined procedure XmdsCreateNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 29;
+                    XmNy = 160;
+                    XmdsNnidOffset = 3;
+                    XmNlabelString = 
+                    compound_string("Output mode:");
+                    XmdsNlabelStrings = string_table(
+                        compound_string("Toggle (initial high) "),
+                        
+                        compound_string("Toggle (initial low) "));
+                    XmdsNnid = -1;
+                    XmdsNvalueStrings = string_table(
+                        compound_string("2 "),
+                        
+                        compound_string("3 "));
+                    };
+                };
+            user_defined procedure XmdsCreateNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 22;
+                    XmNy = 193;
+                    XmdsNnidOffset = 2;
+                    XmNlabelString = 
+                    compound_string("Trigger mode:");
+                    XmdsNlabelStrings = string_table(
+                        compound_string("Event"),
+                        
+                        compound_string("Rising Trigger "),
+                        
+                        compound_string("Falling Trigger"),
+                        
+                        compound_string("Software Trigger "));
+                    XmdsNnid = -1;
+                    XmdsNvalueStrings = string_table(
+                        compound_string("0 "),
+                        
+                        compound_string("1 "),
+                        
+                        compound_string("2 "),
+                        
+                        compound_string("3 "));
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 100;
+                    XmNlabelString = 
+                    compound_string("Gate duration:");
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 155;
+                    XmNy = 100;
+                    XmNcolumns = 18;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = -1;
+                    XmdsNnidOffset = 6;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 130;
+                    XmNlabelString = 
+                    compound_string("Event name(s):");
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 155;
+                    XmNy = 130;
+                    XmNcolumns = 18;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = -1;
+                    XmdsNnidOffset = 5;
+                    };
+                };
+            };
+        };
+
+end module;
+
