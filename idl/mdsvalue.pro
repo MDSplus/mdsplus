@@ -103,6 +103,14 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
           else: message,'Data type '+string(dtype)+'  is not supported',/continue
         endcase
         MdsMemCpy,answer,ansptr,numbytes
+	if (dtype eq 6) then begin
+	  ; signed char data type, value is < 0 
+	  i = where(answer gt 127b,n)
+	  if (n gt 0) then begin
+	    answer = fix(answer)
+	    answer[i] = answer[i] - 256 
+          endif
+	endif
       endelse
       if not (status and 1) then begin
         if keyword_set(quiet) then message,answer,/noprint,/continue else message,answer,/continue
