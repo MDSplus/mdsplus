@@ -28,6 +28,7 @@ hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib -I\$(top_srcdir)/include
        LDARC="-Wl,-a archive";
        LINKSHARED="-b";
        FOR_LDFLAGS="-v -L/usr/lib/pa1.1 -lcl -lf";
+       LIBPATH="SHLIB_PATH";
        SHARETYPE=".sl";;
 mips*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -cckr -signed -D_BSD_SIGNALS -KPIC";
        FFLAGS="$FFLAGS -I\$(top_srcdir)/include -cckr -signed -D_BSD_SIGNALS -KPIC";
@@ -35,6 +36,7 @@ mips*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -cckr -signed -D_BSD_SIGNALS -KP
        LDARC="-B static ";
        LINKSHARED="-shared -rpath $(exec_prefix)/lib";
        FOR_LDFLAGS="";
+       LIBPATH="LD_LIBRARY_PATH";
        SHARETYPE=".so";;
 sparc-sun-solaris2*)  LINKSHARED="-G -B symbolic -R $(exec_prefix)/lib";
        if test $CC = gcc; then
@@ -46,12 +48,14 @@ sparc-sun-solaris2*)  LINKSHARED="-G -B symbolic -R $(exec_prefix)/lib";
        LDSHARE="-Wl,-B,dynamic";
        LDARC="-Wl,-B,static";
        FOR_LDFLAGS="";
+       LIBPATH="LD_LIBRARY_PATH";
        SHARETYPE=".so";;
 alpha-dec-osf*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -pthread";
        FFLAGS="$FFLAGS -I\$(top_srcdir)/include";
        LDSHARE="-Wl,-so_archive ";
        LDARC="-Wl,-no_so ";
        LINKSHARED="-shared -rpath $(exec_prefix)/lib";
+       LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="-lfor";
        SHARETYPE=".so";;
 *linux*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -fpic";
@@ -59,6 +63,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -pthread";
        LDSHARE="-shared ";
        LDARC="-static ";
        LINKSHARED="-shared ";
+       LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
        SHARETYPE=".so";;
 *aix*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include";
@@ -67,6 +72,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -pthread";
        LDARC="";
        FOR_LDFLAGS="";
        LINKSHARED="$(exec_prefix)/lib";
+       LIBPATH="LIBPATH";
        SHARETYPE=".a";;
 *windows*)     CFLAGS="$CFLAGS -I\$(top_srcdir)/include";
        LDSHARE="";
@@ -79,6 +85,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -pthread";
        LDSHARE="";
        LDARC="";
        LINKSHARED="$(exec_prefix)/lib";
+       LIBPATH="LD_LIBRARY_PATH";
        SHARETYPE=".so";;
 esac
 
@@ -230,6 +237,7 @@ AC_SUBST(JAR)
 AC_SUBST(JAVAC)
 AC_SUBST(JAVA_APS)
 AC_SUBST(JDK_CFLAGS)
+AC_SUBST(LIBPATH)
 AC_SUBST(MAKEBINDIR)
 AC_SUBST(MAKELIBDIR)
 AC_SUBST(MAKEUIDDIR)
@@ -254,7 +262,8 @@ AC_SUBST(FOR_LDFLAGS)
 AC_SUBST(SIZEOF_INT_P)
 AC_LINK_FILES(ipcs/include/ipcs, include/ipcs)
 AC_LINK_FILES(include/config.h, ipcs/include/ipcs/config.h)
-AC_OUTPUT(Makefile 
+AC_OUTPUT(Makefile
+envsyms
 actions/Makefile 
 ccl/Makefile 
 cdu/Makefile 

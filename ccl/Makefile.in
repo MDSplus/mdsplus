@@ -33,7 +33,7 @@ install:
 	$(INSTALL) -m 755  @MAKEBINDIR@ccl @bindir@
 
 ccl_commands.c:	ccl_commands.ocld
-	@MAKEBINDIR@cdu < ccl_commands.ocld
+	env @LIBPATH@=@MAKELIBDIR@ @MAKEBINDIR@cdu < ccl_commands.ocld
 	$(MAKE) depend
 
 @MAKELIBDIR@ccl_commands@SHARETYPE@:	$(OBJECTS)

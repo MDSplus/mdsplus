@@ -68,7 +68,7 @@ install:
 	chmod +x $@
 
 tcl_commands.c:	tcl_commands.ocld
-	@MAKEBINDIR@cdu < tcl_commands.ocld
+	env @LIBPATH@=@MAKELIBDIR@ @MAKEBINDIR@cdu < tcl_commands.ocld
 	$(MAKE) depend
 
 @MAKELIBDIR@tcl_commands@SHARETYPE@:	$(OBJECTS) tcl_commands.o

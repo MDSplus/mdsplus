@@ -45,7 +45,7 @@ install:
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsdcl	@bindir@
 
 mdsdcl_tables.c:	mdsdcl_tables.ocld
-	@MAKEBINDIR@cdu < mdsdcl_tables.ocld
+	env @LIBPATH@=@MAKELIBDIR@ @MAKEBINDIR@cdu < mdsdcl_tables.ocld
 
 @MAKELIBDIR@libMdsdcl.a:	$(OBJECTS)
 		$(AR) -cr $@ $(OBJECTS)
