@@ -77,6 +77,7 @@ public class TR10Setup extends DeviceSetup
 		}
 		deviceChoice1.setLabelString("Clock mode:");
 		JPanel6.add(deviceChoice1);
+		deviceChoice2.setChoiceFloatValues(new float[] {(float)200000.0,(float)100000.0,(float)50000.0,(float)20000.0,(float)10000.0,(float)5000.0,(float)2000.0,(float)1000.0,(float)500.0,(float)200.0,(float)100.0});
 		deviceChoice2.setOffsetNid(9);
 		{
 			String[] tempString = new String[11];
