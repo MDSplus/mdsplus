@@ -655,7 +655,7 @@ static int CheckClient(char *host_c, char *user_c)
     {
       if (line_c[0] != '#')
       {
-        line_d.length = strlen(line_c) - 2;
+        line_d.length = strlen(line_c) - 1;
 	StrElement(&access_id,&zero,&delimiter,&line_d);
         StrElement(&local_user,&one,&delimiter,&line_d);
         CompressString(&access_id,1);
