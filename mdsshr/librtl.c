@@ -137,7 +137,7 @@ char *TranslateLogical(char *pathname)
 	return path;
 }
 
-int LibSpawn(struct descriptor *cmd, struct descriptor *in, struct descriptor *out)
+int LibSpawn(struct descriptor *cmd)
 {
   char *cmd_c = MdsDescrToCstring(cmd);
   int status = _spawnlp(_P_WAIT, cmd_c, cmd_c, NULL);
@@ -177,6 +177,7 @@ unsigned int LibCallg(void **arglist, FARPROC *routine)
 #include <unistd.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <errno.h>
 
 #define SHARELIB_PREFIX "lib"
 
@@ -201,6 +202,20 @@ void *dlsym(void *handle, char *name)
 #include <dlfcn.h>
 #define SHARELIB_TYPE ".so"
 #endif
+
+static char *nonblank( char *p)
+{
+  if (!p) return(0);
+  for ( ; *p && isspace(*p) ; p++);
+  return(*p ? p : 0);
+}
+
+static char  *blank( char *p)
+{
+  if (!p) return(0);
+  for ( ; *p && !isspace(*p) ; p++);
+  return(*p ? p : 0);
+}
 
 char *TranslateLogical(char *name)
 {
@@ -297,10 +312,47 @@ unsigned int LibCallg(void **arglist, unsigned int (*routine)())
   return 0;
 }
 
-int LibSpawn(struct descriptor *cmd, struct descriptor *in, struct descriptor *out)
+int LibSpawn(struct descriptor *cmd)
 {
-  printf("LibSpawn not yet supported\n");
-  return 0;
+  pid_t  pid,xpid;
+  int   sts;
+  pid = fork();
+  if (!pid)
+  {
+    static char  *arglist[4];
+    char  *p;
+    char *cmdstring = MdsDescrToCstring(cmd);
+    arglist[0] = nonblank(cmdstring);
+    p = blank(arglist[0]);
+    if (p)
+    {
+      *p = '\0';
+      p = nonblank(p+1);
+    }
+    arglist[1] = p;
+    sts = execvp(arglist[0],arglist);
+    arglist[3] = 0;
+    arglist[2] = arglist[1];
+    arglist[1] = arglist[0];
+    arglist[0] = "sh";
+    sts = execvp("/bin/sh",arglist);
+    fprintf(stderr,"\n+++ *ERR* should never have gotten here!\n");
+    perror("from inside mdsdcl_spawn()");
+    fprintf(stderr,"\n");
+    exit(1);
+  }
+  if (pid == -1)
+  {
+    fprintf(stderr,"Error %d from fork()\n",errno);
+    return(0);
+  }
+  for ( ; ; )
+  {
+    xpid = wait(&sts);
+    if (xpid == pid)
+      break;
+  }
+  return 1;
 }
 
 int LibWait(float *secs)
@@ -588,7 +640,7 @@ int LibEstablish()
   return 1;
 }
 
-int LibSysAscTim(unsigned short *len, struct descriptor *str, unsigned int *time_in, unsigned int flags)
+int LibSysAscTim(unsigned short *len, struct descriptor *str, unsigned int *time_in)
 {
   time_t bintim;
   char *time_str;
@@ -1011,10 +1063,7 @@ int StrElement(struct descriptor *dest, int *num, struct descriptor *delim, stru
   return status;
 }
 
-int StrTranslate(struct descriptor *dest, 
-                  struct descriptor *src, 
-                  struct descriptor *tran,
-                  struct descriptor *match)
+int StrTranslate(struct descriptor *dest, struct descriptor *src, struct descriptor *tran, struct descriptor *match)
 {
   char *dst = (char *)malloc(src->length);
   int i;
