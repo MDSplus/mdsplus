@@ -75,6 +75,9 @@ Widget XmdsCreateXdBoxDialog(Widget parent,char *name,ArgList args,Cardinal argc
 			    {XmNoverrideRedirect,0},
 			    {XmNdeleteResponse, XmDESTROY}};
 
+  Arg *sub_args;
+  int i, cnt;
+
   String new_name = XtMalloc(strlen(name) + 7);
 
   /*------------------------------------------------------------------------------
@@ -91,8 +94,21 @@ Widget XmdsCreateXdBoxDialog(Widget parent,char *name,ArgList args,Cardinal argc
     Create the widget with the
     users arguments.  And realize the
     hidden shell.
+
+    first copy the input arguments removing
+    XmNx and XmNy
    *************************************/
-  widg = XtCreateWidget(name,xmdsXdBoxWidgetClass,hidden,args,argcount);
+  sub_args = (Arg *)XtMalloc(sizeof(Arg)*argcount);
+  for (i=0, cnt=0; i < argcount; i++) {
+    if ((strcmp(args[i].name, XmNx) != 0) &&
+        (strcmp(args[i].name, XmNy) != 0)) {
+      sub_args[cnt].name = args[i].name;
+      sub_args[cnt++].value = args[i].value;
+    }
+  }
+  widg = XtCreateWidget(name,xmdsXdBoxWidgetClass,hidden,sub_args, cnt);
+  XtFree((XtPointer)sub_args);
+
   /*************************************
      Add a callback to load the dialog
      box when it is popped up
