@@ -979,8 +979,10 @@ STATIC_ROUTINE void setHandle()
 	while((msgId = msgget(msgKey, 0777 | IPC_CREAT | IPC_EXCL)) == -1)
 	  if (errno == EEXIST)
 	    msgKey++;
-	  else
+	  else {
 	    perror("setHandle:msgget fail - check MSGMNI");
+            break;
+	  }
 #endif
 	if(pthread_create(&thread, pthread_attr_default, handleMessage, 0) !=  0)
 	    perror("setHandle:pthread_create");
