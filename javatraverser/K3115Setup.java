@@ -13,30 +13,30 @@ import javax.swing.border.*;
 
 public class K3115Setup
     extends DeviceSetup {
-  JPanel jPanel1 = new JPanel();
+  JPanel generalpanel = new JPanel();
   GridLayout gridLayout1 = new GridLayout();
-  JPanel jPanel2 = new JPanel();
+  JPanel generalROW1panel = new JPanel();
   FlowLayout flowLayout1 = new FlowLayout();
   JLabel jLabel1 = new JLabel();
   DeviceField deviceField1 = new DeviceField();
-  JPanel jPanel3 = new JPanel();
+  JPanel generalROW2panel = new JPanel();
   FlowLayout flowLayout2 = new FlowLayout();
   JLabel jLabel2 = new JLabel();
   DeviceField deviceField2 = new DeviceField();
-  JPanel jPanel4 = new JPanel();
+  JPanel generalROW3panel = new JPanel();
   FlowLayout flowLayout3 = new FlowLayout();
   JLabel jLabel3 = new JLabel();
   DeviceChoice deviceChoice1 = new DeviceChoice();
   JLabel jLabel4 = new JLabel();
   DeviceChoice deviceChoice2 = new DeviceChoice();
   JPanel jPanel5 = new JPanel();
-  JPanel jPanel6 = new JPanel();
+  JPanel clockpanel = new JPanel();
   GridLayout gridLayout3 = new GridLayout();
-  JPanel jPanel7 = new JPanel();
+  JPanel clockROW2panel = new JPanel();
   FlowLayout flowLayout4 = new FlowLayout();
   JLabel jLabel5 = new JLabel();
   DeviceField deviceField3 = new DeviceField();
-  JPanel jPanel8 = new JPanel();
+  JPanel clockROW1panel = new JPanel();
   FlowLayout flowLayout5 = new FlowLayout();
   JLabel jLabel6 = new JLabel();
   DeviceChoice deviceChoice3 = new DeviceChoice();
@@ -256,6 +256,14 @@ public class K3115Setup
   FlowLayout flowLayout25 = new FlowLayout();
   FlowLayout flowLayout26 = new FlowLayout();
   FlowLayout flowLayout27 = new FlowLayout();
+  JScrollPane jScrollPane2 = new JScrollPane();
+  JPanel jPanel27 = new JPanel();
+  GridLayout gridLayout4 = new GridLayout();
+  JScrollPane jScrollPane3 = new JScrollPane();
+  JPanel jPanel28 = new JPanel();
+  GridLayout gridLayout13 = new GridLayout();
+  JPanel jPanel30 = new JPanel();
+  GridLayout gridLayout14 = new GridLayout();
 
 
 
@@ -278,9 +286,8 @@ public class K3115Setup
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("K3115 : programmable waveform generator");
     this.getContentPane().setLayout(borderLayout1);
-    jPanel1.setLayout(gridLayout1);
-    gridLayout1.setRows(3);
-    jPanel2.setLayout(flowLayout1);
+    generalpanel.setLayout(gridLayout1);
+    generalROW1panel.setLayout(flowLayout1);
     flowLayout1.setAlignment(FlowLayout.LEFT);
     jLabel1.setFont(new java.awt.Font("Dialog", 1, 11));
     jLabel1.setPreferredSize(new Dimension(90, 15));
@@ -291,7 +298,7 @@ public class K3115Setup
     deviceField1.setTextOnly(true);
     deviceField1.setNumCols(20);
     deviceField1.setIdentifier("");
-    jPanel3.setLayout(flowLayout2);
+    generalROW2panel.setLayout(flowLayout2);
     flowLayout2.setAlignment(FlowLayout.LEFT);
     jLabel2.setFont(new java.awt.Font("Dialog", 1, 11));
     jLabel2.setPreferredSize(new Dimension(90, 15));
@@ -301,7 +308,7 @@ public class K3115Setup
     deviceField2.setTextOnly(true);
     deviceField2.setNumCols(46);
     deviceField2.setIdentifier("");
-    jPanel4.setLayout(flowLayout3);
+    generalROW3panel.setLayout(flowLayout3);
     flowLayout3.setAlignment(FlowLayout.LEFT);
     jLabel3.setFont(new java.awt.Font("Dialog", 1, 11));
     jLabel3.setPreferredSize(new Dimension(90, 15));
@@ -326,9 +333,8 @@ public class K3115Setup
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
     jPanel5.setLayout(borderLayout2);
-    jPanel6.setLayout(gridLayout3);
-    gridLayout3.setRows(2);
-    jPanel7.setLayout(flowLayout4);
+    clockpanel.setLayout(gridLayout3);
+    clockROW2panel.setLayout(flowLayout4);
     flowLayout4.setAlignment(FlowLayout.LEFT);
     jLabel5.setFont(new java.awt.Font("Dialog", 1, 11));
     jLabel5.setPreferredSize(new Dimension(90, 15));
@@ -337,7 +343,7 @@ public class K3115Setup
     deviceField3.setOffsetNid(5);
     deviceField3.setNumCols(46);
     deviceField3.setIdentifier("");
-    jPanel8.setLayout(flowLayout5);
+    clockROW1panel.setLayout(flowLayout5);
     flowLayout5.setAlignment(FlowLayout.LEFT);
     flowLayout5.setHgap(5);
     flowLayout5.setVgap(5);
@@ -363,15 +369,15 @@ public class K3115Setup
     deviceChoice4.setChoiceItems(new String[] {"10E3", "5E3", "2.5E3", "1E3", "500", "250", "100", "50"});
     deviceChoice4.setUpdateIdentifier("");
     deviceChoice4.setIdentifier("");
-    jPanel4.setPreferredSize(new Dimension(388, 40));
-    jPanel8.setMinimumSize(new Dimension(313, 45));
-    jPanel8.setPreferredSize(new Dimension(382, 40));
-    jPanel6.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(142, 142, 142))," CLOCK "));
-    jPanel6.setMinimumSize(new Dimension(313, 90));
-    jPanel6.setPreferredSize(new Dimension(684, 120));
+    generalROW3panel.setPreferredSize(new Dimension(388, 40));
+    clockROW1panel.setMinimumSize(new Dimension(313, 45));
+    clockROW1panel.setPreferredSize(new Dimension(382, 40));
+    clockpanel.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(142, 142, 142))," CLOCK "));
+    clockpanel.setMinimumSize(new Dimension(313, 90));
+    clockpanel.setPreferredSize(new Dimension(684, 120));
     jPanel5.setMinimumSize(new Dimension(369, 270));
-    jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(142, 142, 142))," GENERAL "));
-    jPanel1.setPreferredSize(new Dimension(696, 160));
+    generalpanel.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(142, 142, 142))," GENERAL "));
+    generalpanel.setPreferredSize(new Dimension(696, 160));
     jPanel10.setLayout(flowLayout6);
     jPanel11.setLayout(flowLayout7);
     jPanel12.setLayout(flowLayout8);
@@ -393,7 +399,7 @@ public class K3115Setup
     jScrollPane1.setPreferredSize(new Dimension(600, 219));
     jPanel16.setLayout(gridLayout2);
     jPanel16.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-    jPanel16.setPreferredSize(new Dimension(600, 880));
+    jPanel16.setPreferredSize(new Dimension(600, 1000));
     jLabel14.setText("CH 02 :");
     jLabel14.setFont(new java.awt.Font("Dialog", 1, 11));
     deviceField6.setOffsetNid(21);
@@ -487,7 +493,7 @@ public class K3115Setup
     deviceField4.setIdentifier("");
     gridLayout2.setHgap(0);
     gridLayout2.setRows(6);
-    gridLayout2.setVgap(5);
+    gridLayout2.setVgap(10);
     jPanel15.setLayout(flowLayout13);
     flowLayout13.setHgap(0);
     flowLayout13.setVgap(0);
@@ -735,7 +741,7 @@ public class K3115Setup
     jLabel1114.setText("Range (Vpp) :");
     CH01panel.setLayout(flowLayout1119);
     CH01panel.setBorder(BorderFactory.createLineBorder(Color.gray,1));
-    CH01panel.setPreferredSize(new Dimension(560, 120));
+    CH01panel.setPreferredSize(new Dimension(560, 150));
     gridLayout10.setRows(3);
     gridLayout10.setVgap(0);
     jLabel1115.setText("CH 01 :");
@@ -972,18 +978,27 @@ public class K3115Setup
     jPanel23.setLayout(flowLayout23);
     jPanel24.setPreferredSize(new Dimension(-11, 10));
     jPanel24.setLayout(flowLayout22);
-    jPanel2.add(jLabel1, null);
-    jPanel2.add(deviceField1, null);
-    jPanel2.add(deviceDispatch1, null);
-    jPanel1.add(jPanel2, null);
-    jPanel1.add(jPanel3, null);
-    jPanel1.add(jPanel4, null);
-    jPanel4.add(jLabel3, null);
-    jPanel4.add(jPanel10, null);
+    jPanel27.setLayout(gridLayout4);
+    gridLayout4.setRows(2);
+    gridLayout3.setRows(1);
+    jScrollPane2.setBorder(BorderFactory.createEmptyBorder());
+    jPanel28.setLayout(gridLayout13);
+    gridLayout13.setRows(3);
+    gridLayout1.setRows(1);
+    jPanel30.setLayout(gridLayout14);
+    gridLayout14.setRows(3);
+    jScrollPane3.setBorder(BorderFactory.createEmptyBorder());
+    generalROW1panel.add(jLabel1, null);
+    generalROW1panel.add(deviceField1, null);
+    generalROW1panel.add(deviceDispatch1, null);
+    generalpanel.add(jScrollPane3, null);
+    jScrollPane3.getViewport().add(jPanel30, null);
+    generalROW3panel.add(jLabel3, null);
+    generalROW3panel.add(jPanel10, null);
     jPanel10.add(jPanel17, null);
     jPanel10.add(deviceChoice1, null);
-    jPanel4.add(jLabel4, null);
-    jPanel4.add(jPanel11, null);
+    generalROW3panel.add(jLabel4, null);
+    generalROW3panel.add(jPanel11, null);
     jPanel11.add(deviceChoice2, null);
     this.getContentPane().add(jPanel9, BorderLayout.CENTER);
     jPanel9.add(jPanel14, null);
@@ -1114,21 +1129,33 @@ public class K3115Setup
     timesCH06panel.add(jLabel11117, null);
     timesCH06panel.add(deviceField14, null);
 
-    jPanel7.add(jLabel5, null);
-    jPanel7.add(deviceField3, null);
-    jPanel6.add(jPanel8, null);
-    jPanel5.add(jPanel6, BorderLayout.CENTER);
-    jPanel8.add(jLabel6, null);
-    jPanel8.add(jPanel12, null);
+    clockROW2panel.add(jLabel5, null);
+    clockROW2panel.add(deviceField3, null);
+    clockpanel.add(jScrollPane2, null);
+    jScrollPane2.getViewport().add(jPanel27, null);
+    jPanel27.add(clockROW1panel, null);
+    jPanel5.add(clockpanel, BorderLayout.CENTER);
+    clockROW1panel.add(jLabel6, null);
+    clockROW1panel.add(jPanel12, null);
     jPanel12.add(jPanel18, null);
     jPanel12.add(deviceChoice3, null);
-    jPanel8.add(jLabel7, null);
-    jPanel8.add(jPanel13, null);
+    clockROW1panel.add(jLabel7, null);
+    clockROW1panel.add(jPanel13, null);
     jPanel13.add(deviceChoice4, null);
-    jPanel5.add(jPanel1, BorderLayout.NORTH);
-    jPanel6.add(jPanel7, null);
-    jPanel3.add(jLabel2, null);
-    jPanel3.add(deviceField2, null);
+    jPanel27.add(clockROW2panel, null);
+    jPanel5.add(generalpanel, BorderLayout.NORTH);
+    generalROW2panel.add(jLabel2, null);
+    generalROW2panel.add(deviceField2, null);
+
+
+
+
+    jPanel27.add(clockROW2panel, null);
+    jPanel27.add(clockROW1panel, null);
+
+    jPanel30.add(generalROW1panel, null);
+    jPanel30.add(generalROW2panel, null);
+    jPanel30.add(generalROW3panel, null);
 
 
 
