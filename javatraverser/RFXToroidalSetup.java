@@ -126,8 +126,8 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceTable1.setNumRows(12);
     deviceTable1.setIdentifier("");
     deviceTable1.setColumnNames(new String[] {"Sect.1", "Sect.2", "Sect.3", "Sect.4", "Sect.5", "Sect.6"});
-    deviceTable1.setRowNames(new String[] {"ls_chinit_st", "ch2_lockt_ls", "irel_ls", "hs_chinit_st", "ch1_lockt_hs", "irel_hs", "ith_inv_on", "ith_inv_endf", "s0_iac", "s0_reg_vac",
-        "s0_reg_iac", "s0_iac_lim", "s0_reg_vac_lim"});
+    deviceTable1.setRowNames(new String[] {"ls_chinit_st", "ch2_lockt_ls", "irel_ls", "hs_chinit_st", "ch1_lockt_hs", "irel_hs", "ith_inv_on", "ith_inv_endf", "s0_reg_iac",
+        "s0_reg_vac", "s0_reg_iac_lim", "s0_reg_vac_lim"});
     deviceTable1.setDisplayRowNumber(true);
     deviceTable1.setPreferredColumnWidth(70);
     deviceTable1.setPreferredHeight(100);
@@ -137,8 +137,8 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceTable2.setPreferredHeight(100);
     deviceTable2.setPreferredColumnWidth(70);
     deviceTable2.setDisplayRowNumber(true);
-    deviceTable2.setRowNames(new String[] {"ls_chinit_st", "ch2_lockt_ls", "irel_ls", "hs_chinit_st", "ch1_lockt_hs", "irel_hs", "ith_inv_on", "ith_inv_endf", "s0_iac", "s0_reg_vac",
-        "s0_reg_iac", "s0_iac_lim", "s0_reg_vac_lim"});
+    deviceTable2.setRowNames(new String[] {"ls_chinit_st", "ch2_lockt_ls", "irel_ls", "hs_chinit_st", "ch1_lockt_hs", "irel_hs", "ith_inv_on", "ith_inv_endf", "s0_reg_iac",
+        "s0_reg_vac", "s0_reg_iac_lim", "s0_reg_vac_lim"});
     deviceTable2.setColumnNames(new String[] {"Sect.1", "Sect.2", "Sect.3", "Sect.4", "Sect.5", "Sect.6"});
     deviceTable2.setIdentifier("");
     deviceTable2.setNumRows(12);
