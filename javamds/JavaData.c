@@ -475,7 +475,8 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
     dtype = (*env)->GetIntField(env, obj, dtype_fid),
     dclass = (*env)->GetIntField(env, obj, dclass_fid);
 
-    switch(dclass) {
+	
+	switch(dclass) {
       case CLASS_S :
 	desc = (struct descriptor *)malloc(sizeof(struct descriptor));
         desc->class = dclass;
@@ -658,7 +659,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	descs_fid = (*env)->GetFieldID(env, cls, "descs", "[LData;");
         jdescs = (*env)->GetObjectField(env, obj, descs_fid);
 	ndescs = (*env)->GetArrayLength(env, jdescs);
-	record_d = (struct descriptor_r *)malloc(sizeof(struct descriptor_r) + (ndescs - 1) * sizeof(void *));
+	record_d = (struct descriptor_r *)malloc(sizeof(struct descriptor_r) + ndescs * sizeof(void *));
 	memcpy(record_d, &template_rec, sizeof(struct descriptor_r));
 	record_d->dtype = dtype;
 	record_d->length = 0;
@@ -710,6 +711,9 @@ void FreeDescrip(struct descriptor *desc)
 
   if(!desc)
     return;
+
+printf("FreeDescrip class %d dtype %d\n", desc->class, desc->dtype);
+
   switch(desc->class) {
     case CLASS_S : free(desc->pointer); break;
     case CLASS_A : free(((struct descriptor_a *)desc)->pointer); break;

@@ -14,7 +14,7 @@
 extern struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj);
 extern jobject DescripToObject(JNIEnv *env, struct descriptor *desc);
 extern void FreeDescrip(struct descriptor *desc);
-
+extern int TdiData();
 extern int TdiCompile();
 
 struct descriptor_xd *getDeviceFields(char *deviceName)
@@ -216,11 +216,49 @@ JNIEXPORT jobject JNICALL Java_Database_getData
 /* //  printf("\nletti %d bytes", xd.l_length);*/
 /*
   status = TdiDecompile(&xd, &out_xd MDS_END_ARG);
-  printf("\nEnd TdiDecompile");
+printf("\nEnd TdiDecompile");
 out_xd.pointer->pointer[out_xd.pointer->length - 1] = 0;
 printf(out_xd.pointer->pointer);*/
  
 
+  if(!(status & 1))
+    {
+      RaiseException(env, MdsGetMsg(status));
+      return NULL;
+    }
+  if(!xd.pointer)
+    return NULL;
+
+
+  ris = DescripToObject(env, xd.pointer);
+   
+  MdsFree1Dx(&xd, NULL);
+  return ris;
+}
+
+JNIEXPORT jobject JNICALL Java_Database_evaluateData
+ (JNIEnv *env, jobject obj, jobject jnid)
+{
+  int nid, status;
+  jfieldID nid_fid;
+  jclass cls;
+  EMPTYXD(xd);
+  EMPTYXD(out_xd);
+  jobject ris;
+
+  cls = (*env)->GetObjectClass(env, jnid);
+  nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+  nid = (*env)->GetIntField(env, jnid, nid_fid);
+
+  status = TreeGetRecord(nid, &xd);
+  if(!(status & 1))
+    {
+      RaiseException(env, MdsGetMsg(status));
+      return NULL;
+    }
+  if(!xd.pointer)
+    return NULL;
+  status = TdiData(&xd, &xd MDS_END_ARG);
   if(!(status & 1))
     {
       RaiseException(env, MdsGetMsg(status));
@@ -542,7 +580,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getSons
   if(num_nids > 0)
 	free((char *)nids);
 
-  /*printf("\nEnd getSons");*/
+//printf("\nEnd getSons");
   return jnids;
 }
 
@@ -553,16 +591,15 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getWild
 {
   int i, num_nids = 0;
   void *ctx = 0;
-  int *nids = (int *)malloc(MAX_NODES * sizeof(int));
+  int nids[MAX_NODES];
 
   jobject jnids, jnid;
-  jclass cls;
+  jclass cls = (*env)->FindClass(env, "NidData");
   jmethodID constr;
   jvalue args[1];
   int status;
 
 
-  cls = (*env)->FindClass(env, "NidData");
   while (((status = TreeFindNodeWild("***",&nids[num_nids],&ctx,1 << usage_mask)) & 1) && (num_nids < MAX_NODES))
   {
 	  num_nids++;
@@ -576,10 +613,11 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getWild
       jnid = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
       (*env)->SetObjectArrayElement(env, jnids, i, jnid);
     }
-  free((char *)nids);
+
   return jnids;
 
 }
+
 
 JNIEXPORT jobjectArray JNICALL Java_Database_getMembers
   (JNIEnv *env, jobject obj, jobject jnid)
@@ -672,7 +710,7 @@ JNIEXPORT void JNICALL Java_Database_setOn
      status = TreeTurnOff(nid);
   if(!(status & 1))
   {
-      printf("\nTreeTurnOn status: %d %s", status, MdsGetMsg(status));
+	printf("\nTreeTurnOn status: %d %s", status, MdsGetMsg(status));
       RaiseException(env, MdsGetMsg(status));
   }
 }	
