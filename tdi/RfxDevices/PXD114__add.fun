@@ -1,6 +1,6 @@
 public fun PXD114__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'PXD114', 40, _nidout);
+    DevAddStart(_path, 'PXD114', 41, _nidout);
     DevAddNode(_path // ':NAME', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':TRIG_SOURCE', 'TEXT', 'EXTERNAL', *, _nid);
@@ -24,6 +24,7 @@ public fun PXD114__add(in _path, out _nidout)
 		DevAddNode(_cn // ':COUPLING', 'TEXT', 'DC', *, _nid);
         DevAddNode(_cn // ':DATA', 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     }
+    DevAddNode(_path // ':TRIGGERS', 'NUMERIC', *, *, _nid);
     DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 50,'PCI_SERVER', getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path//':STORE_ACTION', 'STORE','STORE', 50,'PCI_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();

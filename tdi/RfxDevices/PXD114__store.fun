@@ -25,6 +25,8 @@ public fun PXD114__store(as_is _nid, optional _method)
 	private _N_CHAN_COUPLING = 4;
 	private _N_CHAN_DATA = 5;
 
+	private _N_TRIGGERS = 38;
+
 	private _INVALID = 10E20;
 write(*, 'Start PDX114 STORE');
 	_name = if_error(data(DevNodeRef(_nid, _N_NAME)), 'INVALID');
@@ -95,24 +97,6 @@ write(*, 'Start PDX114 STORE');
 
 write(*, 'Act. seg. len: ', _act_seg_len);
 write(*, 'Num segments: ', _num_segments);
-/*_seg1 = [];
-_trig_times = [];
-for(_i =0; _i < _num_segments; _i++)
-{
-	_time = ft_float(_i * 50E-3);
-	_trig_times = [_trig_times,_time];
-}
-
-
-for(_i = 0; _i < _num_segments *_act_seg_len; _i++)
-{
-	_seg = word(sin(float(_i)/_num_segments * 3.14)* 100.);
-	_seg1 = [_seg1, _seg];
-}
-
-_status = 1;
-
-*/
 
 	if(_status == -1)
 	{
@@ -124,6 +108,10 @@ _status = 1;
     	DevLogErr(_nid, "Error reading device samples");
 		abort();
 	}
+
+
+	DevPut(_nid, _N_TRIGGERS, _trig_times);
+
 
 	_period = 1./_act_samp_freq;
 	_seg_time = _act_seg_len / FT_FLOAT(_act_samp_freq);
