@@ -1352,3 +1352,10 @@ int       _TreeOpenNew(void **dbid, char *tree_in, int shot_in)
     _TreeWriteTree(dbid, 0, 0);
   return status;
 }
+
+void *TreeSwitchDbid(void *dbid)
+{
+  void *old_dbid = DBID;
+  DBID = dbid;
+  return old_dbid;
+}
