@@ -572,7 +572,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     }
     else
       ok = 1;
-    m.h.status = (ok & 1) | SUPPORTS_COMPRESSION;
+    m.h.status = (ok & 1) ? (1 | SUPPORTS_COMPRESSION) : 0;
     m.h.client_type = m_user->h.client_type;
     SetSocketOptions(sock);
     SendMdsMsg(sock,&m,0);
