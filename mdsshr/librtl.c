@@ -312,6 +312,8 @@ unsigned int LibCallg(void **arglist, unsigned int (*routine)())
   return 0;
 }
 
+
+#ifndef vxWorks
 int LibSpawn(struct descriptor *cmd)
 {
   pid_t  pid,xpid;
@@ -355,11 +357,45 @@ int LibSpawn(struct descriptor *cmd)
   return 1;
 }
 
+#endif
+#ifdef vxWorks
+
+#include <vxWorks.h>
+#include <wdLib.h>
+#include <semLib.h>
+
+
+static WDOG_ID wd;
+static SEM_ID sem;
+
+static void TimerExpired(int par)
+{
+  semGive(sem);
+}
+
+static void sleep(unsigned int secs)
+{
+  if((sem = semBCreate(SEM_Q_FIFO, SEM_EMPTY)) == NULL)
+    return;
+  if((wd = wdCreate()) == NULL)
+    return;
+
+  wdStart(wd, sysClkRateGet() * secs, (FUNCPTR)TimerExpired, 0);
+  semTake(sem, WAIT_FOREVER);
+  wdDelete(wd);
+  semDelete(sem);
+}
+
+#endif
+
+
 int LibWait(float *secs)
 {
   sleep((unsigned int)*secs);
   return 1;
 }
+
+
 
 #endif
 
@@ -394,6 +430,64 @@ char *MdsDescrToCstring(struct descriptor *in)
 
 int LibSigToRet(){return 1;}
 
+#ifdef vxWorks
+#include <symLib.h>
+#include <taskLib.h>
+
+int LibSpawn(struct descriptor *cmd)
+{
+/* In vxWorks it is possible to spawn function calls */
+
+    char *funcall = MdsDescrToCstring(cmd);
+    extern SYMTAB_ID sysSymTbl;
+    int status;
+    char *full_funcall;
+    SYM_TYPE type;
+    FUNCPTR fun;
+
+    full_funcall = malloc(strlen(funcall) + 2);
+    full_funcall[0] = '_';
+    strcpy(&full_funcall[1], funcall);
+    status = symFindByName(sysSymTbl, full_funcall, (char **)fun, &type);
+    if(status == ERROR)
+	return 0; /* Failed function lookup */
+    sp(fun, 0,0,0,0,0,0,0,0,0);
+    free(full_funcall);
+    free(funcall);
+    return 0;
+}
+
+int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
+{
+  extern SYMTAB_ID sysSymTbl;
+  int status;
+  char *full_symbol, *full_filename;
+  SYM_TYPE type;
+  char *c_symbol = MdsDescrToCstring(symbol), *c_filename;
+  full_symbol = malloc(strlen(c_symbol) + 2);
+  full_symbol[0] = '_';
+  strcpy(&full_symbol[1], c_symbol);
+  status = symFindByName(sysSymTbl, full_symbol, (char **)symbol_value, &type);
+  if(status == ERROR)
+    {
+      c_filename =  MdsDescrToCstring(filename);
+      full_filename = malloc(strlen(c_filename) + 3);
+      strcpy(full_filename, c_filename);
+      strcpy(&full_filename[strlen(c_filename)], ".o");
+      ld(1,0,full_filename);
+      status = symFindByName(sysSymTbl, full_symbol, (char **)symbol_value, &type);
+      free(c_filename);
+      free(full_filename);
+    }
+  free(full_symbol);
+  free(c_symbol);
+  if(status == ERROR)
+    return LibKEYNOTFOU;
+  else
+    return 1;  
+}
+
+#else
 int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
 {
   char *c_filename = MdsDescrToCstring(filename);
@@ -422,6 +516,8 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   else
     return 1;  
 }
+
+#endif
 
 int StrConcat( struct descriptor *out, struct descriptor *first, ...)
 {
@@ -504,9 +600,15 @@ int StrGet1Dx(unsigned short *len, struct descriptor *out)
 
 #if defined(__alpha) && defined(__vms)
 typedef __int64 _int64;
-#elif defined(__unix__) || defined(unix) || defined(__unix)
+#elif defined(__unix__) || defined(unix) || defined(__unix) ||defined (vxWorks)
 typedef long long _int64;
 #endif
+
+#ifdef vxWorks
+static int timezone = 0;
+#endif
+
+
 
 int LibEmul(int *m1, int *m2, int *add, _int64 *prod)
 {
@@ -646,7 +748,9 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, unsigned int *time
   char *time_str;
   char time_out[23];
   unsigned short slen=sizeof(time_out);
+#ifndef vxWorks
   tzset();
+#endif
   if (time_in)
   {
     unsigned int tmp = (time_in[0] >> 24) | (time_in[1] << 8);
@@ -1041,8 +1145,8 @@ unsigned int StrMatchWild(struct descriptor *candidate, struct descriptor *patte
 
 #ifndef MAX
 #define MAX(a,b) (a) > (b) ? (a) : (b)
-#define MIN(a,b) (a) < (b) ? (a) : (b)
 #endif
+#define MIN(a,b) (a) < (b) ? (a) : (b)
 
 int StrElement(struct descriptor *dest, int *num, struct descriptor *delim, struct descriptor *src)
 {

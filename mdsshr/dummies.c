@@ -1,8 +1,8 @@
-#include  <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include  <stdlib.h>
 
-#define Dummy(name,status) \
+#define Dummy(name,status)\
 int name()\
 {\
   int stat = status;\
@@ -11,4 +11,4 @@ int name()\
   return stat;\
 }
 
-Dummy(MdsEventCan,0)
+Dummy(MdsEventCan, 0)

@@ -8,6 +8,8 @@
 #elif defined(_WIN32)
 #include        <io.h>
 #define isatty(a) _isatty(a)
+#elif defined(vxWorks)
+#include 	<time.h>
 #else
 #include        <sys/time.h>
 #endif
