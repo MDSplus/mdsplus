@@ -1346,7 +1346,7 @@ static int ParseOption(char *option, char **argv, int argc, char **portname, sho
   return increment;
 }
 
-void SetMode(char modein,char *mode)
+static void SetMode(char modein,char *mode)
 {
   int multiple = 0;
   switch (modein)
