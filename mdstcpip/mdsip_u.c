@@ -434,13 +434,9 @@ static int CheckClient(char *host_c, char *user_c)
     static struct descriptor local_user = {0,DTYPE_T,CLASS_D,0};
     static struct descriptor access_id = {0,DTYPE_T,CLASS_D,0};
     static DESCRIPTOR(delimiter,"|");
-    if (multi)
+    strncpy(match_c,user_c,255);
+    if (host_c)
     {
-      strcpy(match_c,"MULTI");
-    }
-    else
-    {
-      strncpy(match_c,user_c,255);
       strncat(match_c,"@",255);
       strncat(match_c,host_c,255);
     }
@@ -451,7 +447,7 @@ static int CheckClient(char *host_c, char *user_c)
       if (line_c[0] != '#')
       {
         line_d.length = strlen(line_c) - 2;
-	    StrElement(&access_id,&zero,&delimiter,&line_d);
+	      StrElement(&access_id,&zero,&delimiter,&line_d);
         StrElement(&local_user,&one,&delimiter,&line_d);
         CompressString(&access_id,1);
         if (access_id.length)
@@ -459,7 +455,7 @@ static int CheckClient(char *host_c, char *user_c)
           if (access_id.pointer[0] != '!')
           {
             if (StrMatchWild(&match,&access_id) & 1)
-				ok = BecomeUser(user_c,&local_user);
+              ok = (multi && host_c) ? 1 : BecomeUser(user_c,&local_user);
           }
           else
           {
@@ -511,13 +507,8 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     tim = time(0);
     timestr = ctime(&tim);
     timestr[strlen(timestr)-1] = 0;
-    if (!multi)
-    {
-      if (hp) ok = CheckClient(hp->h_name,user_p);
-      if (ok == 0) ok = CheckClient((char *)inet_ntoa(sin->sin_addr),user_p);
-    }
-    else
-      ok = 1;
+    if (hp) ok = CheckClient(hp->h_name,user_p);
+    if (ok == 0) ok = CheckClient((char *)inet_ntoa(sin->sin_addr),user_p);
     m_status = m.h.status = (ok & 1) ? (1 | (UseCompression ? SUPPORTS_COMPRESSION : 0)) : 0;
     m.h.client_type = m_user->h.client_type;
     SetSocketOptions(sock);
@@ -1135,7 +1126,7 @@ static int CreateMdsPort(short port, int multi_in)
   int s;
   int status;
   if (multi)
-    CheckClient(0,0);
+    CheckClient(0,"MULTI");
   s = socket(AF_INET, SOCK_STREAM, 0);
   if (s == -1)
   {
