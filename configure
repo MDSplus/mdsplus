@@ -1049,7 +1049,7 @@ sparc-sun-solaris2*)
          LDARC="-B static";
          CFLAGS="$CFLAGS -Kpic";
        fi;
-       FFLAGS="$FFLAGS -pic";
+       FFLAGS="$FFLAGS -PIC";
        IDL_BIN_SUF="solaris2.sparc"
        LIBPATH="LD_LIBRARY_PATH";
        SHARETYPE=".so";;
