@@ -26,7 +26,7 @@ write(*, 'T2Control store');
     _vme_ip = DevNodeRef(_nid, _N_VME_IP);
     _cmd = 'MdsConnect("'//_vme_ip//'")';
     execute(_cmd);
-	_trigger = data(DevNodeRef(_nid, _N_TRIG1_TIME));
+	_trigger = data(DevNodeRef(_nid, _N_TRIG_TIME));
 	_frequency = data(DevNodeRef(_nid, _N_FREQUENCY));
 	if(_frequency <= 0)
 	{
@@ -57,19 +57,6 @@ write(*, 'T2Control store');
 
 			}
 	}
-	for(_c = 0; _c < 64; _c++)
-	{
-			_sig_nid =  DevHead(_nid) + _N_FILTERED_1  + _c;
-			_data = MdsValue('Feedback->getFilteredAdcSignal:dsc($1, $2)', _c / 64, mod(_c,64));
-			_status = DevPutSignal(_sig_nid, 0, 10/2048., word(_data), 0, _n_samples, _dim);
-			if(! _status)
-			{
-				write(*, 'Error writing data in pulse file for channel ', _c);
-				DevLogErr(_nid, 'Error writing data in pulse file ');
-
-			}
-	}
-
 	for(_c = 0; _c < 32; _c++)
 	{
 			_sig_nid =  DevHead(_nid) + _N_OUTPUT_1  + _c;
