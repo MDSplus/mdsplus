@@ -38,7 +38,9 @@ UNDEF(Tdi1OnError)
 UNDEF(Tdi1Project)
 UNDEF(Tdi1Promote)
 UNDEF(Tdi1RandomSeed)
+     /*
 UNDEF(Tdi1Read)
+     */
 UNDEF(Tdi1Rebin)
 UNDEF(Tdi1Reshape)
 UNDEF(Tdi1Rewind)

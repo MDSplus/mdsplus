@@ -55,20 +55,35 @@ static unsigned short len = sizeof(int);
 */
 static int TdiPutUnit(FILE *unit, struct descriptor_xd *out_ptr)
 {
-  struct descriptor unit_d = {sizeof(unit),DTYPE_T,CLASS_S,0};
-  unit_d.pointer = (char *)&unit;
+  struct descriptor unit_d = {0,DTYPE_T,CLASS_S,0};
+  unit_d.length = unit != 0 ? sizeof(unit) : 0;
+  unit_d.pointer = unit != 0 ? (char *)&unit : 0;
   return MdsCopyDxXd(&unit_d, out_ptr);
 }
 /*----------------------------------------------
 	Internal routine to input a unit
 */
-static int TdiGetUnit(struct descriptor *in_ptr, FILE **unit)
+static int TdiGetOutUnit(struct descriptor *in_ptr, FILE **unit)
 {
    int status;
    static struct descriptor unit_d = {0,DTYPE_T,CLASS_D,0};
    status = TdiEvaluate(in_ptr, &unit_d MDS_END_ARG);
    if (unit_d.length != sizeof(*unit))
      *unit = stdout;
+   else
+     *unit = *(FILE **)unit_d.pointer;
+   return status;
+}
+/*----------------------------------------------
+	Internal routine to input a unit
+*/
+static int TdiGetInUnit(struct descriptor *in_ptr, FILE **unit)
+{
+   int status;
+   static struct descriptor unit_d = {0,DTYPE_T,CLASS_D,0};
+   status = TdiEvaluate(in_ptr, &unit_d MDS_END_ARG);
+   if (unit_d.length != sizeof(*unit))
+     *unit = stdin;
    else
      *unit = *(FILE **)unit_d.pointer;
    return status;
@@ -102,7 +117,7 @@ TdiRefStandard(Tdi1Fclose)
 FILE	*unit;
 int	err;
 
-        TdiGetUnit(list[0], &unit);
+        TdiGetOutUnit(list[0], &unit);
 	err = fclose(unit);
 	return TdiPutLong((int *)&err, out_ptr);
 }
@@ -116,7 +131,7 @@ TdiRefStandard(Tdi1Fseek)
 FILE	*unit;
 int	offset = 0, origin = 0, err;
         
-        status = TdiGetUnit(list[0], &unit);
+        status = TdiGetOutUnit(list[0], &unit);
 	if (status & 1 && narg > 1) status = TdiGetLong(list[1], &offset);
 	if (status & 1 && narg > 2) status = TdiGetLong(list[2], &origin);
 	if (status & 1) {
@@ -133,7 +148,7 @@ TdiRefStandard(Tdi1Ftell)
 FILE	*unit;
 int	pos;
 
-	TdiGetUnit(list[0], &unit);
+	TdiGetOutUnit(list[0], &unit);
 	pos = ftell(unit);
 	status = TdiPutLong((int *)&pos, out_ptr);
 	return status;
@@ -215,7 +230,7 @@ static DESCRIPTOR(dSYS$OUTPUT, "SYS$OUTPUT");
 	if (initialized == 0) initialized = LibGetDvi(&DVI$_DEVBUFSIZ, 0, &dSYS$OUTPUT, &width, 0, 0);
 #endif
 
-	status = TdiGetUnit(list[0], &unit);
+	status = TdiGetOutUnit(list[0], &unit);
 	if (status & 1) for (j = 1; j < narg; ++j) {
 		stat1 = TdiEvaluate(list[j], &tmp MDS_END_ARG);
 		if (!(stat1 & 1)) pd = (struct descriptor *)&dBAD;
@@ -269,4 +284,30 @@ none:			stat1 = TdiDecompile(&tmp, &tmp MDS_END_ARG);
 	if (status & 1) status = TdiPutLong((int *)&bytes, out_ptr);
 	MdsFree1Dx(&tmp, NULL);
 	return status;
+}
+/*----------------------------------------------
+	Read string from terminal or file unit.
+		string = READ(unit)
+	Unit * is standard input.
+
+*/
+TdiRefStandard(Tdi1Read)
+int	bytes = 0;
+FILE	*unit = 0;
+  status = TdiGetInUnit(list[0], &unit);
+  if (status & 1) 
+  {
+    char line[4096];
+    char *ans;
+    struct descriptor line_d = { 0, DTYPE_T, CLASS_S, 0};
+    ans = fgets(line,sizeof(line),unit);
+    if (ans)
+    {
+      line_d.length = strlen(line)-1;
+      line_d.pointer = line;
+      status = MdsCopyDxXd(&line_d,out_ptr);
+    }
+    else status = 0;
+  }
+  return status;
 }

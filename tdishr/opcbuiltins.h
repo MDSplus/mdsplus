@@ -317,7 +317,7 @@ OPC (	RandomSeed,	RANDOM_SEED ,	RandomSeed, undef,	undef,		L,L,	L,L,	0,1,	OK+U	)
 OPC (	DtypeRange,	DTYPE_RANGE ,	DtypeRange, undef,	undef,		BU,HC,	BU,HC,	2,3,	RANGE+S+U )/*;%	a:b:[c] a..b..[c]	*/
 OPC (	Rank,	RANK ,		Scalar,Any,		Rank,		XX,YY,	L,L,	1,1,	OK	)/*;fex	(a)			*/
 OPC (	RawOf,	RAW_OF ,		RawOf,	undef,		undef, SIGNAL,SIGNAL,	XX,YY,	1,1,	OK+I	)/*;mds	(signal)		*/
-OPC (	Read,	READ ,		Read,	undef,		undef,		XX,YY,	L,L,	2,254,	OK+U	)/*;%	(unit|*,fmt|*,arg...)	*/
+OPC (	Read,	READ ,		Read,	undef,		undef,		XX,YY,	T,T,	1,1,	OK	)/*;%	(unit|*,fmt|*,arg...)	*/
 OPC (	Real,	REAL ,		Same,	Real,		undef,		F,H,	F,H,	1,2,	OK+I	)/*;f9	(a,[kind])		*/
 OPC (	Rebin,	REBIN ,		Rebin,	undef,		undef,		BU,HC,	BU,HC,	2,4,	OK	)/*;	(a,size1,...)		*/
 OPC (	Ref,	REF ,		Else,	undef,		undef,		XX,YY,	XX,YY,	1,1,	OK	)/*;vax	(any)			*/
