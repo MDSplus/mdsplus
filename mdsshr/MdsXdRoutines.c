@@ -130,6 +130,7 @@ static int copy_dx(
               j,
               size;
   struct descriptor *in_ptr = (struct descriptor *) in_dsc_ptr;
+  int align_size;
   while (in_ptr && in_ptr->dtype == DTYPE_DSC)
     in_ptr = (struct descriptor *) in_ptr->pointer;
   if (in_ptr)
@@ -155,16 +156,19 @@ static int copy_dx(
 	  in.length = path.length;
 	  in.pointer = path.pointer;
 	}
+        align_size = (in.dtype == DTYPE_T && in.length) ? 1 : in.length;
 	if (po)
 	{
 	  *po = in;
 	  po->class = CLASS_S;
-	  po->pointer = (char *) po + sizeof(in);
-	  _MOVC3(in.length, (char *) in.pointer, (char *) po->pointer);
+	  po->pointer = in.length ? ((char *)po + (align(((unsigned int)((char *)po + sizeof(struct descriptor))),align_size)
+                   - (unsigned int)po)) : 0;
+	  if (in.length)
+            _MOVC3(in.length, (char *) in.pointer, (char *) po->pointer);
 	}
 	if (path.pointer)
 	  StrFree1Dx(&path);
-	bytes = align(sizeof(struct descriptor_s) + in.length,sizeof(void *));
+	bytes = sizeof(struct descriptor_s) + in.length + align_size;
       }
       break;
 
