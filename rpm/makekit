@@ -1,7 +1,7 @@
 #/bin/sh
 #
 cd $HOME
-set rev=1.1
+set rev=1.2
 mkdir mdskit
 cd mdskit
 cvs -d :pserver:`whoami`@lost.psfc.mit.edu:/mdsplus/repos -Q checkout mdsplus
