@@ -3,6 +3,7 @@ CC=@CC@
 LD=@LD@
 prefix=@prefix@
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
@@ -21,9 +22,10 @@ depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean :
-	rm *.o
-	rm @MAKELIBDIR@libMdsVme.a
-	rm @MAKESHLIBDIR@libMdsVme@SHARETYPE@
+	@ $(RM) $(OBJECTS)
+	@ $(RM) so_locations
+	@ $(RM) @MAKELIBDIR@libMdsVme.a
+	@ $(RM) @MAKESHLIBDIR@libMdsVme@SHARETYPE@
 
 install:
 	if [ ! -d @libdir@ ] ; then \

@@ -2,6 +2,7 @@ SHELL=/bin/sh
 CC=@CC@
 LD=@LD@
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@ @JDK_CFLAGS@
@@ -19,8 +20,9 @@ depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean:
-	- rm *.o
-	- rm @MAKELIBDIR@libJavaMds@SHARETYPE@
+	@ $(RM) $(CLASSES)
+	@ $(RM) so_locations
+	@ $(RM) @MAKELIBDIR@libJavaMds@SHARETYPE@
 
 
 install:

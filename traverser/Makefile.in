@@ -1,6 +1,7 @@
 SHELL=/bin/sh
 CC=@CC@
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 X_CFLAGS=@X_CFLAGS@
@@ -35,9 +36,9 @@ depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean :
-	- rm *.o
-	- rm @MAKEBINDIR@traverser
-	- rm @MAKEUIDDIR@traverser.uid
+	@ $(RM) $(OBJECTS)
+	@ $(RM) @MAKEBINDIR@traverser
+	@ $(RM) @MAKEUIDDIR@traverser.uid
 
 
 install:

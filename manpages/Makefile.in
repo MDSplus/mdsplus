@@ -1,24 +1,30 @@
 SHELL=/bin/sh
 CC=@CC@
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 GROFF_FLAGS=@GROFF_MAN_FLAGS@
 
-all : $(top_srcdir)/man/man1 \
-      $(top_srcdir)/man/man1/mdsplus.1.gz \
-      $(top_srcdir)/man/man1/traverser.1.gz \
-      $(top_srcdir)/man/man5 \
-      $(top_srcdir)/man/man5/mdsplus.conf.5.gz \
-      $(top_srcdir)/man/man5/.mdsplus.5.gz \
-      $(top_srcdir)/man/man5/mdsip.hosts.5.gz
+manpages = $(top_srcdir)/man/man1/mdsplus.1.gz \
+           $(top_srcdir)/man/man1/traverser.1.gz \
+           $(top_srcdir)/man/man5/mdsplus.conf.5.gz \
+           $(top_srcdir)/man/man5/.mdsplus.5.gz \
+           $(top_srcdir)/man/man5/mdsip.hosts.5.gz
+
+directories = $(top_srcdir)/man/man1 \
+              $(top_srcdir)/man/man5
+
+all : $(directories) $(manpages)
 
 
 depend:
 	@ :
 
 clean :
-	- rm -R $(top_srcdir)/man
+	@ $(RM) $(manpages)
+	@ $(RM) $(directories)
+	@ $(RM) $(top_srcdir)/man
 
 install: 
 	- mkdirhier $(exec_prefix)/man/man1

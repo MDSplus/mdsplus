@@ -1,5 +1,6 @@
 SHELL=/bin/sh
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 exec_prefix=@exec_prefix@
 JAVADIR = @MAKEJAVADIR@classes
 JAVAC = @JAVAC@
@@ -20,12 +21,17 @@ CompoundData.java\
 ConditionData.java\
 ConglomData.java\
 Data.java\
+DataChangeEvent.java\
+DataChangeListener.java\
 DataEditor.java\
 DataId.java\
 DataListener.java\
 Database.java\
 DatabaseException.java\
 DependencyData.java\
+DeviceComponent.java\
+DeviceSetup.java\
+DeviceSetupBeanInfo.java\
 DimensionData.java\
 DispatchData.java\
 DispatchEditor.java\
@@ -38,6 +44,7 @@ EventData.java\
 ExprEditor.java\
 FloatArray.java\
 FloatData.java\
+FrameRepository.java\
 FunctionData.java\
 IllegalDataException.java\
 IntArray.java\
@@ -88,7 +95,7 @@ WithErrorData.java\
 WithUnitsData.java\
 jTraverser.java
 
-CLASSES = *.class
+CLASSES = $(SOURCES:.java=.class)
 
 GIFS = DeviceApply.gif \
        DeviceChoice.gif \
@@ -116,7 +123,10 @@ GIFS = DeviceApply.gif \
 all: @MAKEBINDIR@ @MAKEBINDIR@jTraverser @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/jTraverser.jar
 
-clean: ; rm $(CLASSES) @MAKEBINDIR@jTraverser @MAKEJAVADIR@classes/jTraverser.jar
+clean:
+	@ $(RM) $(CLASSES) *\$*.class
+	@ $(RM) @MAKEBINDIR@jTraverser
+	@ $(RM) @MAKEJAVADIR@classes/jTraverser.jar
 
 depend: ; @ :
 
@@ -143,68 +153,3 @@ jTraverser.class: 	$(SOURCES)
 @MAKEBINDIR@jTraverser : jTraverser.template
 	sed "s|MAKEJAVADIR|`cd @MAKEJAVADIR@;pwd`|g" jTraverser.template | sed "s|libdir|`cd @libdir@;pwd`|g" > $@
 	chmod a+x $@
-@MAKEJAVADIR@classes/DeviceApply.gif : DeviceApply.gif
-	cp DeviceApply.gif $@
-
-@MAKEJAVADIR@classes/DeviceChoice.gif : DeviceChoice.gif
-	cp DeviceChoice.gif $@
-
-@MAKEJAVADIR@classes/DeviceReset.gif : DeviceReset.gif
-	cp DeviceReset.gif $@
-
-@MAKEJAVADIR@classes/compound.gif : compound.gif
-	cp compound.gif $@
-
-@MAKEJAVADIR@classes/signal.gif : signal.gif
-	cp signal.gif $@
-
-@MAKEJAVADIR@classes/text.gif : text.gif
-	cp text.gif $@
-
-@MAKEJAVADIR@classes/DeviceButtons.gif : DeviceButtons.gif
-	cp DeviceButtons.gif $@
-
-@MAKEJAVADIR@classes/DeviceDispatch.gif : DeviceDispatch.gif
-	cp DeviceDispatch.gif $@
-
-@MAKEJAVADIR@classes/DeviceSetup.gif : DeviceSetup.gif
-	cp DeviceSetup.gif $@
-
-@MAKEJAVADIR@classes/device.gif : device.gif
-	cp device.gif $@
-
-@MAKEJAVADIR@classes/structure.gif : structure.gif
-	cp structure.gif $@
-
-@MAKEJAVADIR@classes/window.gif : window.gif
-	cp window.gif $@
-
-@MAKEJAVADIR@classes/DeviceCancel.gif : DeviceCancel.gif
-	cp DeviceCancel.gif $@
-
-@MAKEJAVADIR@classes/DeviceField.gif : DeviceField.gif
-	cp DeviceField.gif $@
-
-@MAKEJAVADIR@classes/action.gif : action.gif
-	cp action.gif $@
-
-@MAKEJAVADIR@classes/dispatch.gif : dispatch.gif
-	cp dispatch.gif $@
-
-@MAKEJAVADIR@classes/subtree.gif : subtree.gif
-	cp subtree.gif $@
-
-@MAKEJAVADIR@classes/DeviceChannel.gif : DeviceChannel.gif
-	cp DeviceChannel.gif $@
-
-@MAKEJAVADIR@classes/DeviceOk.gif : DeviceOk.gif
-	cp DeviceOk.gif $@
-
-@MAKEJAVADIR@classes/axis.gif : axis.gif
-	cp axis.gif $@
-
-@MAKEJAVADIR@classes/numeric.gif : numeric.gif
-	cp numeric.gif $@
-
-@MAKEJAVADIR@classes/task.gif : task.gif
-	cp task.gif $@

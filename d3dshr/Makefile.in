@@ -2,6 +2,7 @@ SHELL=/bin/sh
 FC=@F77@
 LD=@LD@
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 FFLAGS=@FFLAGS@ @D3D_FFLAGS@
@@ -19,8 +20,8 @@ depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean :
-	- rm *.o
-	- rm @MAKELIBDIR@libMdsD3D@SHARETYPE@
+	@ $(RM) $(OBJECTS)
+	@ $(RM) @MAKELIBDIR@libMdsD3D@SHARETYPE@
 
 install:
 	if [ ! -d @libdir@ ] ; then \

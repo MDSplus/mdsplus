@@ -2,6 +2,7 @@ SHELL=/bin/sh
 CC=@CC@
 LD=@LD@
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
@@ -28,10 +29,12 @@ EXPORTS = mdsdclshr.export
 all:	@MAKELIBDIR@ @MAKEBINDIR@ @MAKELIBDIR@libMdsdcl.a  @MAKELIBDIR@libMdsdcl@SHARETYPE@ @MAKEBINDIR@mdsdcl
 
 clean:
-	- rm @MAKELIBDIR@libMdsdcl.a @MAKELIBDIR@libMdsdcl@SHARETYPE@
-	- rm @MAKEBINDIR@mdsdcl
-	- rm  *.o
-	- rm mdsdcl_tables.c
+	@ $(RM) $(OBJECTS)
+	@ $(RM) so_locations
+	@ $(RM) mdsdcl_tables.c
+	@ $(RM) @MAKELIBDIR@libMdsdcl.a
+	@ $(RM) @MAKELIBDIR@libMdsdcl@SHARETYPE@
+	@ $(RM) @MAKEBINDIR@mdsdcl
 
 depend: 
 	 @makedepend -- $(CFLAGS) -- $(SOURCES) mdsdcl_tables.c mdsdcl.c

@@ -2,6 +2,7 @@ SHELL=/bin/sh
 LD=@LD@
 FC=@F77@
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 FFLAGS=@FFLAGS@
@@ -49,8 +50,9 @@ depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean:
-	- rm *.o
-	- rm @MAKELIBDIR@libMdsMath@SHARETYPE@
+	@ $(RM) $(OBJECTS)
+	@ $(RM) so_locations
+	@ $(RM) @MAKELIBDIR@libMdsMath@SHARETYPE@
 
 install:
 	if [ ! -d @libdir@ ] ; then \

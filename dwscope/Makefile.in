@@ -1,6 +1,7 @@
 SHELL=/bin/sh
 CC=@CC@
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 X_CFLAGS=@X_CFLAGS@
@@ -14,8 +15,8 @@ X_PRE_LIBS=@X_PRE_LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 MOTIF_LIBS = @MOTIF_LDARC@ @XM_LIBS@ @MOTIF_LDSHARE@ @LIBXP@ @LIBXEXT@
 MLIBS = $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS)
-SOURCES = dwscope.c dwscopesubs.c dwpad.c
-OBJECTS = $(SOURCES:.c=.o)
+SOURCES = dwscope.c dwscopesubs.c dwpad.c RemoteDummies.c evaluate.c
+OBJECTS = $(SOURCES:.c=.o) evaluate_local.o
 
 all : @MAKEBINDIR@ @MAKEBINDIR@dwscope @MAKEUIDDIR@dwscope.uid @MAKEBINDIR@dwpad @MAKEUIDDIR@dwpad.uid @MAKEBINDIR@dwscope_remote
 
@@ -23,12 +24,12 @@ depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean :
-	- rm *.o
-	- rm @MAKEBINDIR@dwscope
-	- rm @MAKEBINDIR@dwscope_remote
-	- rm @MAKEUIDDIR@dwscope.uid
-	- rm @MAKEBINDIR@dwpad
-	- rm @MAKEUIDDIR@dwpad.uid
+	@ $(RM) $(OBJECTS)
+	@ $(RM) @MAKEBINDIR@dwscope
+	@ $(RM) @MAKEBINDIR@dwscope_remote
+	@ $(RM) @MAKEUIDDIR@dwscope.uid
+	@ $(RM) @MAKEBINDIR@dwpad
+	@ $(RM) @MAKEUIDDIR@dwpad.uid
 
 install:
 	if [ ! -d @libdir@ ] ; then \

@@ -9,6 +9,7 @@ COMPRESSION_SWITCH=
 #COMPRESSION_SWITCH=-DNOCOMPRESSION
 
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@ $(COMPRESSION_SWITCH)
@@ -35,14 +36,15 @@ depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES) mdsip_u.c
 
 clean :
-	- rm *.o
-	- rm @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@
-	- rm @MAKELIBDIR@libMdsIpShr.a
-	- rm @MAKELIBDIR@libMdsIpUtil.a
-	- rm @MAKEBINDIR@mdsiptest
-	- rm @MAKEBINDIR@mdsip
-	- rm @MAKEBINDIR@mdsipd
-	- rm @MAKEETCDIR@mdsip.hosts
+	@ $(RM) $(OBJECTS) $(COMPRESSION_OBJECTS)
+	@ $(RM) so_locations
+	@ $(RM) @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@
+	@ $(RM) @MAKELIBDIR@libMdsIpShr.a
+	@ $(RM) @MAKELIBDIR@libMdsIpUtil.a
+	@ $(RM) @MAKEBINDIR@mdsiptest
+	@ $(RM) @MAKEBINDIR@mdsip
+	@ $(RM) @MAKEBINDIR@mdsipd
+	@ $(RM) @MAKEETCDIR@mdsip.hosts
 
 install:
 	if [ ! -d @libdir@ ] ; then \

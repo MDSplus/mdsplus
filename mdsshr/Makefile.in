@@ -35,7 +35,8 @@ depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean :
-	@ find . -name '*.o' -exec $(RM) {} \;
+	@ $(RM) $(OBJECTS)
+	@ $(RM) so_locations
 	@ $(RM) @MAKELIBDIR@libMdsShr.a 
 	@ $(RM) @MAKESHLIBDIR@libMdsShr@SHARETYPE@ 
 

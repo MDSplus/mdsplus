@@ -1,6 +1,7 @@
 SHELL=/bin/sh
 CC=@CC@
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
@@ -24,8 +25,8 @@ install:
 	$(INSTALL) -m 755  @MAKEBINDIR@setevent @bindir@
 
 clean :
-	- rm *.o
-	- rm @MAKEBINDIR@setevent
+	@ $(RM) $(OBJECTS)
+	@ $(RM) @MAKEBINDIR@setevent
 
 @MAKEBINDIR@setevent : $(OBJECTS)
 	$(CC) -o $@ $(OBJECTS) $(CFLAGS) -L@MAKELIBDIR@ -lMdsShr $(LIBS)

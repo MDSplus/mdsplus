@@ -2,6 +2,7 @@ SHELL=/bin/sh
 CC=@CC@
 LD=@LD@
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
@@ -46,16 +47,17 @@ SOURCES = 			\
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = tcl_commands.export
 
-all:	@MAKEBINDIR@tcl @MAKELIBDIR@libtcl_commands@SHARETYPE@
+all:	@MAKEBINDIR@mdstcl @MAKELIBDIR@libtcl_commands@SHARETYPE@
 
 depend: 
 	 @makedepend -- $(CFLAGS) -- $(SOURCES) tcl_commands.c
 
 clean:
-	- rm @MAKEBINDIR@tcl
-	- rm @MAKELIBDIR@libtcl_commands@SHARETYPE@
-	- rm tcl_commands.c
-	- rm *.o
+	@ $(RM) $(OBJECTRS)
+	@ $(RM) so_locations
+	@ $(RM) tcl_commands.c
+	@ $(RM) @MAKEBINDIR@mdstcl
+	@ $(RM) @MAKELIBDIR@libtcl_commands@SHARETYPE@
 
 install:
 	if [ ! -d @libdir@ ] ; then \
@@ -63,9 +65,9 @@ install:
                 chmod 755 @libdir@; \
         fi;
 	$(INSTALL) -m 755  @MAKELIBDIR@libtcl_commands@SHARETYPE@ @libdir@
-	$(INSTALL) -m 755  @MAKEBINDIR@tcl @bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@mdstcl @bindir@
 
-@MAKEBINDIR@tcl:	tcl
+@MAKEBINDIR@mdstcl:	tcl
 	cp  tcl $@
 	chmod +x $@
 

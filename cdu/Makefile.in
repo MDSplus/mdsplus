@@ -2,6 +2,7 @@ SHELL=/bin/sh
 CC=@CC@
 LD=@LD@
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
@@ -24,9 +25,9 @@ MAIN_OBJECTS = $(MAIN_SOURCES:.c=.o)
 all:	@MAKELIBDIR@ @MAKELIBDIR@libCdu.a @MAKEBINDIR@cdu
 
 clean:
-	- rm @MAKEBINDIR@cdu
-	- rm @MAKELIBDIR@libCdu.a
-	- rm *.o
+	@ $(RM) $(LIB_OBJECTS) $(MAIN_OBJECTS)
+	@ $(RM) @MAKEBINDIR@cdu
+	@ $(RM) @MAKELIBDIR@libCdu.a
 
 depend:
 	 @makedepend -- $(CFLAGS) -- $(LIB_SOURCES) $(MAIN_SOURCES)

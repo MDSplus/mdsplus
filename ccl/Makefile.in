@@ -2,6 +2,7 @@ SHELL=/bin/sh
 CC=@CC@
 LD=@LD@
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
@@ -13,13 +14,14 @@ SOURCES = ccl_commands.c ccl_verbs.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = ccl_commands.export
 
-all:	@MAKELIBDIR@ @MAKELIBDIR@ccl_commands@SHARETYPE@  @MAKEBINDIR@ @MAKEBINDIR@ccl
+all:	@MAKELIBDIR@ @MAKELIBDIR@libccl_commands@SHARETYPE@  @MAKEBINDIR@ @MAKEBINDIR@mdsccl
 
 clean:
-	- rm @MAKELIBDIR@ccl_commands@SHARETYPE@
-	- rm -f *.o
-	- rm -f @MAKEBINDIR@ccl
-	- rm ccl_commands.c
+	@ $(RM) $(OBJECTS)
+	@ $(RM) so_locations
+	@ $(RM) ccl_commands.c
+	@ $(RM) @MAKELIBDIR@libccl_commands@SHARETYPE@
+	@ $(RM) @MAKEBINDIR@mdsccl
 
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -29,17 +31,17 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKELIBDIR@ccl_commands@SHARETYPE@ @libdir@
-	$(INSTALL) -m 755  @MAKEBINDIR@ccl @bindir@
+	$(INSTALL) -m 755  @MAKELIBDIR@libccl_commands@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKEBINDIR@mdsccl @bindir@
 
 ccl_commands.c:	ccl_commands.ocld
 	env @LIBPATH@=@MAKELIBDIR@ @MAKEBINDIR@cdu < ccl_commands.ocld
 	$(MAKE) depend
 
-@MAKELIBDIR@ccl_commands@SHARETYPE@:	$(OBJECTS)
+@MAKELIBDIR@libccl_commands@SHARETYPE@:	$(OBJECTS)
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
 
-@MAKEBINDIR@ccl:	ccl
+@MAKEBINDIR@mdsccl:	ccl
 	cp ccl $@
 	chmod +x $@
 

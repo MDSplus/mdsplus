@@ -1,5 +1,6 @@
 SHELL=/bin/sh
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 exec_prefix=@exec_prefix@
 JAVADIR = @MAKEJAVADIR@classes
 JAVAC = @JAVAC@
@@ -21,7 +22,9 @@ MdsPlus.class
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/MdsPlus.jar
 
-clean: ; rm $(CLASSES) @MAKEJAVADIR@classes/MdsPlus.jar
+clean: 
+	@ $(RM) $(CLASSES)
+	@ $(RM) @MAKEJAVADIR@classes/MdsPlus.jar
 
 depend: ; @ :
 

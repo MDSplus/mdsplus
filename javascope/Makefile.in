@@ -1,5 +1,6 @@
 SHELL=/bin/sh
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 JAVADIR = @MAKEJAVADIR@classes
 JAVAC = @JAVAC@
 JAR = @JAR@
@@ -41,11 +42,14 @@ WaveInterface.java\
 Waveform.java\
 jScope.java
 
-CLASSES = *.class
+CLASSES = $(SOURCES:.java=.class)
 
 all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/jScope.jar
 
-clean: ; rm $(CLASSES) @MAKEBINDIR@jScope @MAKEJAVADIR@classes/jScope.jar
+clean: 
+	@ $(RM) $(CLASSES)
+	@ $(RM) @MAKEBINDIR@jScope
+	@ $(RM) @MAKEJAVADIR@classes/jScope.jar
 
 depend: ; @ :
 

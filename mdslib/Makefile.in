@@ -3,6 +3,7 @@ CC=@CC@
 FC=@F77@
 LD=@LD@
 top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
@@ -30,14 +31,14 @@ depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean:
-	- rm *.o
-	- rm @MAKELIBDIR@libMdsLib_client@SHARETYPE@
-	- rm @MAKELIBDIR@libMdsLib_client.a
-	- rm @MAKELIBDIR@libMdsLib@SHARETYPE@
-	- rm @MAKELIBDIR@libMdsLib.a
-	- rm @MAKEBINDIR@mdslib_?test
-	- rm @MAKEBINDIR@mdslib_?remotetest
-	- rm @MAKEBINDIR@dtype_test
+	@ $(RM) $(OBJECTS) $(OBJECTS_CLIENT)
+	@ $(RM) so_locations
+	@ $(RM) @MAKELIBDIR@libMdsLib_client@SHARETYPE@
+	@ $(RM) @MAKELIBDIR@libMdsLib_client.a
+	@ $(RM) @MAKELIBDIR@libMdsLib@SHARETYPE@
+	@ $(RM) @MAKELIBDIR@libMdsLib.a
+	@ $(RM) @MAKEBINDIR@/mdslib_*test
+	@ $(RM) @MAKEBINDIR@dtype_test
 
 install:
 	if [ ! -d @libdir@ ] ; then \
