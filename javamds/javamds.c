@@ -117,10 +117,11 @@ static float MdsGetFloat(char *in)
 }
 
 
-static void *MdsGetArray(char *in, int *out_dim, int is_float)
+static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
 {
     float *float_ris = NULL;
     int *int_ris = NULL;
+	char *byte_ris = NULL;
     int status, dim, i;
     struct descriptor in_d = {0,DTYPE_T,CLASS_S,0};
     EMPTYXD(xd);
@@ -191,7 +192,9 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float)
 		*out_dim = dim = arr_ptr->arsize/arr_ptr->length;
     if(is_float)
         float_ris = (float *)malloc(sizeof(float) * dim);
-    else
+    else if(is_byte)
+		byte_ris = malloc(dim);
+	else
         int_ris = (int *)malloc(sizeof(int) * dim);
     switch(arr_ptr->dtype) {
 	case DTYPE_BU:
@@ -199,7 +202,9 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float)
 		for(i = 0; i < dim; i++)
 		    if(is_float)
 		    	float_ris[i] = ((char *)arr_ptr->pointer)[i];
-		    else
+		    else if(is_byte)
+		    	byte_ris[i] = ((char *)arr_ptr->pointer)[i];
+			else
 		    	int_ris[i] = ((char *)arr_ptr->pointer)[i];
 		break;
 	case DTYPE_WU:
@@ -207,15 +212,19 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float)
 		for(i = 0; i < dim; i++)
 		    if(is_float)
 		    	float_ris[i] = ((short *)arr_ptr->pointer)[i];
-		    else
-		    	int_ris[i] = ((short *)arr_ptr->pointer)[i];
+		    else if(is_byte)
+		    	byte_ris[i] = ((short *)arr_ptr->pointer)[i];
+			else
+				int_ris[i] = ((short *)arr_ptr->pointer)[i];
 		break;
 	case DTYPE_LU:
 	case DTYPE_L : 
 		for(i = 0; i < dim; i++)
 		    if(is_float)
 		    	float_ris[i] = ((int *)arr_ptr->pointer)[i];
-		    else
+		    else if(is_byte)
+		    	byte_ris[i] = ((int *)arr_ptr->pointer)[i];
+			else
 		    	int_ris[i] = ((int *)arr_ptr->pointer)[i];
 		break;
 	case DTYPE_F : 
@@ -223,12 +232,14 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float)
 		for(i = 0; i < dim; i++)
 		    if(is_float)
 		    	float_ris[i] = ((float *)arr_ptr->pointer)[i];
-		    else
+		    else if(is_byte)
+		    	byte_ris[i] = ((float *)arr_ptr->pointer)[i];
+			else
 		    	int_ris[i] = ((float *)arr_ptr->pointer)[i];
 		break;
 	case DTYPE_D :
 	case DTYPE_G :
-	default:	strcpy(error_message, "Not a supported type PAPPERO");
+	default:	strcpy(error_message, "Not a supported type");
 			return NULL;
     }
 
@@ -237,7 +248,8 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float)
     error_message[0] = 0;
     if(is_float)
     	return float_ris;
-    else
+    else if(is_byte) 
+		return byte_ris;
 	return int_ris;
 }
 
@@ -283,7 +295,7 @@ JNIEXPORT jfloatArray JNICALL Java_LocalProvider_GetFloatArray(JNIEnv *env, jobj
     float *out_ptr;
 
 
-    out_ptr = MdsGetArray((char *)in_char, &dim, 1);
+    out_ptr = MdsGetArray((char *)in_char, &dim, 1, 0);
 
     (*env)->ReleaseStringUTFChars(env, in, in_char);
 
@@ -305,7 +317,7 @@ JNIEXPORT jintArray JNICALL Java_LocalProvider_GetIntArray(JNIEnv *env, jobject 
     int *out_ptr;
 
     in_char = (*env)->GetStringUTFChars(env, in, 0);
-    out_ptr = MdsGetArray((char *)in_char, &dim, 0);
+    out_ptr = MdsGetArray((char *)in_char, &dim, 0, 0);
  
     (*env)->ReleaseStringUTFChars(env, in, in_char);
 
@@ -315,6 +327,30 @@ JNIEXPORT jintArray JNICALL Java_LocalProvider_GetIntArray(JNIEnv *env, jobject 
     }
     jarr = (*env)->NewIntArray(env, dim);
     (*env)->SetIntArrayRegion(env, jarr, 0, dim, out_ptr);
+    return jarr;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_LocalProvider_GetByteArray(JNIEnv *env, jobject obj, jstring in)
+{
+    jbyteArray jarr;
+    float zero = 0.;
+    const char *in_char;
+    int dim;
+    int *out_ptr;
+
+	
+	in_char = (*env)->GetStringUTFChars(env, in, 0);
+
+ 	out_ptr = MdsGetArray((char *)in_char, &dim, 0, 1);
+ 
+    (*env)->ReleaseStringUTFChars(env, in, in_char);
+
+    if(error_message[0]) //Return a dummy vector without elements
+    {
+	return NULL;
+    }
+    jarr = (*env)->NewByteArray(env, dim);
+    (*env)->SetByteArrayRegion(env, jarr, 0, dim, (char *)out_ptr);
     return jarr;
 }
 
@@ -364,11 +400,11 @@ void createWindow(char *name, int idx)
 			sprintf(classpath, "%s%c%s", vm_args.classpath, PATH_SEPARATOR, curr_classpath);
 			vm_args.classpath = classpath;
 		}
-		res = JNI_CreateJavaVM(&jvm, (void *)&env, &vm_args);
+		res = JNI_CreateJavaVM(&jvm, &env, &vm_args);
 		if(res < 0)
 		{
 			printf("\nCannot create Java VM!!\n");
-			return;
+			return ;
 		}
 	}
 	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
@@ -470,6 +506,4 @@ void showWindow(int obj_idx, int x, int y, int width, int height)
 
 
 
-
-	
- 
+

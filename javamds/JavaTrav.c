@@ -598,7 +598,10 @@ JNIEXPORT void JNICALL Java_Database_setOn
   else
      status = TreeTurnOff(nid);
   if(!(status & 1))
+  {
+	printf("\nTreeTurnOn status: %d %s", status, MdsGetMsg(status));
       RaiseException(env, MdsGetMsg(status));
+  }
 }	
 	
 JNIEXPORT jobject JNICALL Java_Database_resolve
