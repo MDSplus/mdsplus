@@ -539,20 +539,7 @@ object toggleButton : XmToggleButton widget {
         XmNvalueChangedCallback = procedure SetUsage(USAGE_ACTION);
     };
 };
-!
-!object toggleButton1 : XmToggleButton widget {
-!    arguments {
-!        XmNlabelString = compound_string("device...");
-!        XmNwidth = 83;
-!        XmNheight = 26;
-!    };
-!    controls {
-!    };
-!    callbacks {
-!        XmNvalueChangedCallback = procedure SetUsage(USAGE_DEVICE);
-!    };
-!};
-!
+
 object toggleButton2 : XmToggleButton widget {
     arguments {
         XmNlabelString = compound_string("dispatch");
@@ -731,7 +718,7 @@ object addDeviceDialog : XmMessageDialog widget {
     };
     callbacks {
         XmNcancelCallback = procedure AddDeviceDismiss();
-        XmNokCallback = procedure AddNodeApply();
+        XmNokCallback = procedure AddNode();
     };
 };
 
