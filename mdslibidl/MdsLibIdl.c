@@ -195,8 +195,6 @@ int IdlMdsValue(int argc, void **argv)
       else if (mdsValueAnswer.pointer->dtype == DTYPE_D ||
                mdsValueAnswer.pointer->dtype == DTYPE_G ||
                mdsValueAnswer.pointer->dtype == DTYPE_FT ||
-               mdsValueAnswer.pointer->dtype == DTYPE_Q ||
-               mdsValueAnswer.pointer->dtype == DTYPE_QU ||
                mdsValueAnswer.pointer->dtype == DTYPE_O ||
                mdsValueAnswer.pointer->dtype == DTYPE_OU)
       {
@@ -231,12 +229,14 @@ int IdlMdsValue(int argc, void **argv)
       {
         switch (mdsValueAnswer.pointer->dtype)
 		{
-	    case DTYPE_B:
+	case DTYPE_B:  strcpy((char *)argv[2],"if answer gt 127 then answer = fix(answer)-256");
         case DTYPE_BU: strcpy((char *)argv[1],"answer = 0b"); break; 
-        case DTYPE_W:
-        case DTYPE_WU: strcpy((char *)argv[1],"answer = 0"); break;
-        case DTYPE_L:
-        case DTYPE_LU: strcpy((char *)argv[1],"answer = 0L"); break;
+        case DTYPE_W: strcpy((char *)argv[1],"answer = 0"); break;
+        case DTYPE_WU: strcpy((char *)argv[1],"answer = 0U"); break;
+        case DTYPE_L:  strcpy((char *)argv[1],"answer = 0L"); break;
+        case DTYPE_LU: strcpy((char *)argv[1],"answer = 0UL"); break;
+        case DTYPE_Q:  strcpy((char *)argv[1],"answer = 0LL"); break;
+        case DTYPE_QU: strcpy((char *)argv[1],"answer = 0ULL"); break;
         case DTYPE_FLOAT: strcpy((char *)argv[1],"answer = 0.0"); break;
         case DTYPE_DOUBLE: strcpy((char *)argv[1],"answer = double(0.0)"); break;
         case DTYPE_FLOAT_COMPLEX: strcpy((char *)argv[1],"answer = complex(0.0)"); break;
@@ -266,12 +266,14 @@ int IdlMdsValue(int argc, void **argv)
         dims[strlen(dims)-1]=')';
         switch (mdsValueAnswer.pointer->dtype)
 	{
-	case DTYPE_B:
+	case DTYPE_B: strcpy((char *)argv[2],"if max(answer) gt 127 then answer = fix(answer)-256");
         case DTYPE_BU: strcpy((char *)argv[1],"answer = bytarr"); strcat((char *)argv[1],dims); break; 
-        case DTYPE_W:
-        case DTYPE_WU: strcpy((char *)argv[1],"answer = intarr"); strcat((char *)argv[1],dims); break;
-        case DTYPE_L:
-        case DTYPE_LU: strcpy((char *)argv[1],"answer = lonarr"); strcat((char *)argv[1],dims); break;
+        case DTYPE_W: strcpy((char *)argv[1],"answer = intarr"); strcat((char *)argv[1],dims); break;
+        case DTYPE_WU: strcpy((char *)argv[1],"answer = uintarr"); strcat((char *)argv[1],dims); break;
+        case DTYPE_L: strcpy((char *)argv[1],"answer = lonarr"); strcat((char *)argv[1],dims); break;
+        case DTYPE_LU: strcpy((char *)argv[1],"answer = ulonarr"); strcat((char *)argv[1],dims); break;
+        case DTYPE_Q: strcpy((char *)argv[1],"answer = lon64arr"); strcat((char *)argv[1],dims); break;
+        case DTYPE_QU: strcpy((char *)argv[1],"answer = ulon64arr"); strcat((char *)argv[1],dims); break;
         case DTYPE_FLOAT: strcpy((char *)argv[1],"answer = fltarr"); strcat((char *)argv[1],dims); break;
         case DTYPE_DOUBLE: strcpy((char *)argv[1],"answer = dblarr"); strcat((char *)argv[1],dims); break;
         case DTYPE_FLOAT_COMPLEX: strcpy((char *)argv[1],"answer = complexarr"); strcat((char *)argv[1],dims); break;
