@@ -137,9 +137,13 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
         tzset();
         m1 = (unsigned int)time(NULL) - timezone;
 	LibEmul(&m1,&m2,zero,temp);
+#ifdef _big_endian
         AddQuadword(temp,addin,time_inserted);
-        local_nci.time_inserted[0] = time_inserted[0];
-        local_nci.time_inserted[1] = time_inserted[1];
+        local_nci.time_inserted[0] = time_inserted[1];
+        local_nci.time_inserted[1] = time_inserted[0];
+#else
+        AddQuadword(temp,addin,local_nci.time_inserted);
+#endif
       }
       if (!(open_status & 1))
       {
