@@ -26,7 +26,7 @@ static int initialized = 0;
 static void FlipHeader(MsgHdr *header);
 static void FlipData(Message *m);
 
-#ifdef _UCX
+#if defined( _UCX) || defined(_WIN32) 
 #else
 extern int inet_addr();
 #endif

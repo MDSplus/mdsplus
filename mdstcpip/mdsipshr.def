@@ -10,7 +10,7 @@ MdsClose
 MdsSetDefault
 MdsEventAst
 MdsEventCan
-MdsDispatchEvent
+;MdsDispatchEvent
 ;ConnectToPort
 ConnectToMds
 ConnectToMdsEvents

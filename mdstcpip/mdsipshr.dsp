@@ -103,5 +103,9 @@ SOURCE=.\mdsipshr.def
 
 SOURCE=.\mdsiputil.c
 # End Source File
+# Begin Source File
+
+SOURCE=.\vmshpwd.c
+# End Source File
 # End Target
 # End Project
