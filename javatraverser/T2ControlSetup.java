@@ -112,6 +112,7 @@ public class T2ControlSetup extends DeviceSetup
 		JTabbedPane1.add(JPanel2);
 		JPanel2.setBounds(2,24,475,165);
 		deviceField8.setNumCols(2);
+		deviceField8.setIdentifier("n1");
 		deviceField8.setOffsetNid(20);
 		deviceField8.setLabelString("N 1:");
 		JPanel2.add(deviceField8);
@@ -128,6 +129,7 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField11.setLabelString("Phase (Rad):");
 		JPanel2.add(deviceField11);
 		deviceField36.setNumCols(2);
+		deviceField36.setIdentifier("n2");
 		deviceField36.setOffsetNid(28);
 		deviceField36.setLabelString("N 2:");
 		JPanel2.add(deviceField36);
@@ -144,6 +146,7 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField39.setLabelString("Phase (Rad):");
 		JPanel2.add(deviceField39);
 		deviceField40.setNumCols(2);
+		deviceField40.setIdentifier("n3");
 		deviceField40.setOffsetNid(36);
 		deviceField40.setLabelString("N 3:");
 		JPanel2.add(deviceField40);
@@ -160,6 +163,7 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField43.setLabelString("Phase (Rad):");
 		JPanel2.add(deviceField43);
 		deviceField44.setNumCols(2);
+		deviceField44.setIdentifier("n4");
 		deviceField44.setOffsetNid(44);
 		deviceField44.setLabelString("N 4:");
 		JPanel2.add(deviceField44);
@@ -197,6 +201,7 @@ public class T2ControlSetup extends DeviceSetup
 		JTabbedPane1.add(JPanel4);
 		JPanel4.setBounds(2,24,475,165);
 		deviceField17.setNumCols(2);
+		deviceField17.setIdentifier("id1");
 		deviceField17.setOffsetNid(62);
 		deviceField17.setLabelString("Out id:");
 		JPanel4.add(deviceField17);
@@ -213,6 +218,7 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField20.setLabelString("Phi:");
 		JPanel4.add(deviceField20);
 		deviceField21.setNumCols(2);
+		deviceField21.setIdentifier("id2");
 		deviceField21.setOffsetNid(70);
 		deviceField21.setLabelString("Out id:");
 		JPanel4.add(deviceField21);
@@ -229,6 +235,7 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField24.setLabelString("Phi:");
 		JPanel4.add(deviceField24);
 		deviceField25.setNumCols(2);
+		deviceField25.setIdentifier("id3");
 		deviceField25.setOffsetNid(78);
 		deviceField25.setLabelString("Out id:");
 		JPanel4.add(deviceField25);
@@ -245,6 +252,7 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField28.setLabelString("Phi:");
 		JPanel4.add(deviceField28);
 		deviceField29.setNumCols(2);
+		deviceField29.setIdentifier("id4");
 		deviceField29.setOffsetNid(86);
 		deviceField29.setLabelString("Out id:");
 		JPanel4.add(deviceField29);
@@ -265,6 +273,30 @@ public class T2ControlSetup extends DeviceSetup
 		JTabbedPane1.setTitleAt(1,"Rot. Perturbation");
 		JTabbedPane1.setTitleAt(2,"Mode Control");
 		JTabbedPane1.setTitleAt(3,"Ind.Perturbation");
+		{
+			String[] tempString = new String[8];
+			tempString[0] = "N1 must be between 1 and 32";
+			tempString[1] = "N2 must be between 1 and 32";
+			tempString[2] = "N4 must be between 1 and 32";
+			tempString[3] = "N3 must be between 1 and 32";
+			tempString[4] = "Id 1 must be between 1 and 16";
+			tempString[5] = "Id 2 must be between 1 and 16";
+			tempString[6] = "Id 3 must be between 1 and 16";
+			tempString[7] = "Id 4 must be between 1 and 16";
+			deviceButtons1.setCheckMessages(tempString);
+		}
+		{
+			String[] tempString = new String[8];
+			tempString[0] = "_n1 > 0 && _n1 < 33";
+			tempString[1] = "_n2 > 0 && _n2 < 33";
+			tempString[2] = "_n4 > 0 && _n4< 33";
+			tempString[3] = "_n3 > 0 && _n3< 33";
+			tempString[4] = "_id1 > 0 && _id1 < 16";
+			tempString[5] = "_id2 > 0 && _id2 < 16";
+			tempString[6] = "_id3 > 0 && _id3 < 16";
+			tempString[7] = "_id4 > 0 && _id4 < 16";
+			deviceButtons1.setCheckExpressions(tempString);
+		}
 		{
 			String[] tempString = new String[3];
 			tempString[0] = "INIT";
