@@ -526,9 +526,10 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in)
   int status;
   SrvMonitorJob *job = (SrvMonitorJob *)job_in;
  
+/*
 // char msg[1024];
 // sprintf(msg,"%s %d %d %d %d %s",job->tree,job->shot,job->nid,job->on,job->mode,job->server);
-
+*/
     char *msg;
     struct descriptor fullpath = {0, DTYPE_T, CLASS_D, 0};
     DESCRIPTOR(fullpath_d,"FULLPATH");
