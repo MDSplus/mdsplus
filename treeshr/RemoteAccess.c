@@ -437,7 +437,7 @@ int GetDefaultNidRemote(PINO_DATABASE *dblist, int *nid)
   {
     if (ans.dtype == DTYPE_L)
       *nid = *(int *)ans.ptr;
-    else
+    else if (status & 1)
       status = 0;
     MdsIpFree(ans.ptr);
   }  
@@ -613,7 +613,7 @@ int PutRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor *dsc, i
     {
       if (ans.dtype == DTYPE_L)
         status = *(int *)ans.ptr;
-      else
+      else if (status & 1)
         status = 0;
       MdsIpFree(ans.ptr);
     }  
