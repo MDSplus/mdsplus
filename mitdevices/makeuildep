@@ -1,0 +1,5 @@
+#!/bin/ksh
+FILE=$1
+FILE=${FILE##*/}
+FILE=${FILE%.uil}
+echo ../uid/${FILE}.uid : ${FILE}.uil \; uil -wmd ../shlib/xmdsuil.wmd -o ../uid/${FILE}.uid ${FILE}.uil
