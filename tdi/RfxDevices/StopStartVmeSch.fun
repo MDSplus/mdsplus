@@ -11,17 +11,16 @@ public fun StopStartVmeSch(in _node)
       MdsDisconnect();
    }
 
-   if(_node == "EDA2" || _node == "ALL")
+   if(_node == "DEQU" || _node == "ALL")
    {	
-      write(*, "Il rack VME EDA2 non e' strato ancora abilitato");
-/*
-      MdsConnect("150.178.34.xxx");
-      write(*,"Stop e start dello scheduler su EDA2"); 
+
+      MdsConnect("150.178.34.45");
+      write(*,"Stop e start dello scheduler su DEQU"); 
       MdsValue("VmeStateMachine->engdaStop()");
       wait(1);
-      MdsValue('VmeStateMachine->engdaStart("R2","150.178.34.130", val(xxxx), val(1))');
+      MdsValue('VmeStateMachine->engdaStart("R2","150.178.34.130", val(2014), val(1))');
       MdsDisconnect();
-*/
+
    }
 
 
@@ -34,6 +33,30 @@ public fun StopStartVmeSch(in _node)
       MdsValue('VmeStateMachine->engdaStart("R3","150.178.34.130", val(2009), val(1))');
       MdsDisconnect();
    }
+
+
+   if(_node == "DFLU" || _node == "ALL")
+   {	
+
+      MdsConnect("150.178.34.46");
+      write(*,"Stop e start dello scheduler su DEQU"); 
+      MdsValue("VmeStateMachine->engdaStop()");
+      wait(1);
+      MdsValue('VmeStateMachine->engdaStart("R4","150.178.34.130", val(2015), val(1))');
+      MdsDisconnect();
+
+   }
+
+   if(_node == "MHD_BR" || _node == "ALL")
+   {	
+      MdsConnect("150.178.34.27");
+      write(*,"Stop e start dello scheduler su MHD_BR"); 
+      MdsValue("VmeStateMachine->engdaStop()");
+      wait(2);
+      MdsValue('VmeStateMachine->engdaStart("R5","150.178.34.130", val(2012), val(1))');
+      MdsDisconnect();
+   }
+
 
    if(_node == "MHD_AC" || _node == "ALL")
    {	
@@ -52,16 +75,6 @@ public fun StopStartVmeSch(in _node)
       MdsValue("VmeStateMachine->engdaStop()");
       wait(2);
       MdsValue('VmeStateMachine->engdaStart("R7","150.178.34.130", val(2011), val(1))');
-      MdsDisconnect();
-   }
-
-   if(_node == "MHD_BR" || _node == "ALL")
-   {	
-      MdsConnect("150.178.34.27");
-      write(*,"Stop e start dello scheduler su MHD_BR"); 
-      MdsValue("VmeStateMachine->engdaStop()");
-      wait(2);
-      MdsValue('VmeStateMachine->engdaStart("R5","150.178.34.130", val(2012), val(1))');
       MdsDisconnect();
    }
 

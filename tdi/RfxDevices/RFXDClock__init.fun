@@ -262,10 +262,26 @@ public fun RFXDClock__init(as_is _nid, optional _method)
 
 
     if(_output_mode >=3)
+    {
+write(*, 'CACCA');
+    	_start_times = [-10000, _trigger_time + _real_delay, _trigger_time + _real_delay + _real_duration];
+    	_end_times = [_trigger_time + _real_delay_r, _trigger_time + _real_delay + _real_duration_r, _LARGE_TIME];
+	_deltas = [_effective_period1, _effective_period2, _effective_period1];
+	
+write(*, 'CACCA');
+	
+    	_axis = make_range(_start_times, _end_times, _deltas);
+    
+write(*, 'CACCA');
+ /*   
 		_axis = compile('MAKE_RANGE([-10000,'//f_float(_trigger_time)//'+'//f_float(_real_delay)//','// 
 		f_float(_trigger_time)//'+'//f_float(_real_delay)//'+'//f_float(_real_duration)//'],['//f_float(_trigger_time)//'+'//f_float(_real_delay_r)//','//
 			f_float(_trigger_time)//'+'//f_float(_real_delay)//'+'//f_float(_real_duration_r)//', `_LARGE_TIME],['//
-			f_float(_effective_period1)//','//f_float(_effective_period2)//','//f_float(_effective_period1)//'])');
+			ft_float(_effective_period1)//','//ft_float(_effective_period2)//','//ft_float(_effective_period1)//'])');
+
+*/
+
+	}
 	else
 		_axis = compile('MAKE_RANGE([-HUGE(0.), '//f_float(_trigger_time)//'+'//f_float(_real_delay)//'],['//
 			f_float(_trigger_time)//'+'//f_float(_real_delay_r)//',10000],['//

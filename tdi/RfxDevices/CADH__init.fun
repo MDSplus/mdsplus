@@ -40,7 +40,9 @@ public fun CADH__init(as_is _nid, optional _method)
 	    DevLogErr(_nid, "Cannot resolve clock"); 
 	    abort();
   	}
-	_clock_val = execute('`_clk');
+/*	_clock_val = execute('`_clk');
+*/	_clock_val = evaluate(_clk);
+	write(*, _clock_val);
 	_clk = 0;
     }
     else
