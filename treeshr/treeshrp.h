@@ -3,6 +3,8 @@
 
 /************* Data structures internal to TREESHR ***********/
 
+#include <stdio.h>
+
 #include <mdsdescrip.h>
 #include <treeshr_hooks.h>
 
@@ -423,7 +425,6 @@ in doing I/O to the tree files.
 #define TREE_TREEFILE_TYPE ".tree"
 
 
-#include <stdio.h>
 
 /********************************************
 The NCI_FILE structure contains the stuff
