@@ -56,6 +56,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
   int       nidx;
   int       retsize;
   int       nodenum;
+  MdsFree1Dx(dsc,NULL);
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
 
