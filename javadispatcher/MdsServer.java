@@ -70,7 +70,7 @@ class MdsServer extends MdsConnection
  	                int id = 0;
 	                int flags = 0;
 	                int status = 0;
-                    try
+                        try
 	                {
 	                    try {
 	                        id = Integer.decode(buf.nextToken()).intValue();
@@ -86,6 +86,12 @@ class MdsServer extends MdsConnection
 	                        msg_len = Integer.decode(buf.nextToken()).intValue();
 	                    }catch(Exception exc) {msg_len = 0; }
 
+                            if(msg_len > 10000)
+                            {
+                                System.err.println("VALORE ASSURDO msg_len: " + msg_len);
+                                System.err.println("per messaggio: " + head);
+                                msg_len = 0;
+                            }
 	                    if(msg_len > 0)
 	                    {
 	                        byte msg[] = new byte[msg_len];
@@ -100,6 +106,7 @@ class MdsServer extends MdsConnection
 	                catch (Exception e)
 	                {
 	                    System.out.println("Bad Message "+head);
+                            e.printStackTrace();
 	                    se = new MdsServerEvent(this, id, flags, status);
 	                    dispatchMdsServerEvent(se);
 	                }
