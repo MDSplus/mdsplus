@@ -1211,11 +1211,24 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   char *tmp_error1 = 0;
   char *tmp_error2 = 0;
   int dlopen_mode = RTLD_LAZY;
+  int lib_offset=3;
   
   *symbol_value = NULL;
-  strcpy(full_filename,"lib");
-  strcat(full_filename,c_filename);
-  strcat(full_filename,SHARELIB_TYPE);
+
+#ifdef HAVE_WINDOWS_H
+  strcpy(full_filename,c_filename);
+  lib_offset=0;
+#else
+  if (strncmp(c_filename,"lib",3))
+  {
+    strcpy(full_filename,"lib");
+    strcat(full_filename,c_filename);
+  }
+  else
+    strcpy(full_filename,c_filename);
+#endif
+  if (strncmp(c_filename+strlen(c_filename)-strlen(SHARELIB_TYPE),SHARELIB_TYPE,strlen(SHARELIB_TYPE)))
+    strcat(full_filename,SHARELIB_TYPE);
   if (FIS_Error)
   {
     free(FIS_Error);
@@ -1225,17 +1238,17 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   dlopen_lock();
   dlopen_mode = RTLD_NOW | RTLD_GLOBAL;
 #endif
-  handle = dlopen(c_filename,dlopen_mode);
+  handle = dlopen(full_filename,dlopen_mode);
   if (handle == NULL) {
     tmp_error1 = dlerror();
     if (tmp_error1 == NULL) tmp_error1="";
     tmp_error1 = strcpy((char *)malloc(strlen(tmp_error1)+1),tmp_error1);
-    handle = dlopen(full_filename,dlopen_mode);
+    handle = dlopen(c_filename,dlopen_mode);
     if (handle == NULL) {
       tmp_error2 = dlerror();
       if (tmp_error2 == NULL) tmp_error2="";
       tmp_error2 = strcpy((char *)malloc(strlen(tmp_error2)+1),tmp_error2);
-      handle = dlopen(&full_filename[3],dlopen_mode);
+      handle = dlopen(&full_filename[0],dlopen_mode);
     }
   }
   if (handle != NULL)
