@@ -1,4 +1,5 @@
 #include        <stdio.h>
+#include        <mdsdescrip.h>
 #include        <mdsshr.h>
 #include        "mdsdcl.h"
 #ifdef vms
