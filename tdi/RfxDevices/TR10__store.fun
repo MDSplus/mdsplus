@@ -27,6 +27,7 @@ public fun TR10__store(as_is _nid, optional _method)
 
 
     _tr10_read_bug = 0;
+    _tr10_bug_message = " for chan ";
 
 
 	_max_samples = _2M;
@@ -102,13 +103,18 @@ write(*, 'TR10 START STORE');
 				_data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts);	
 				
 				/* TEST FOR TR10 READOUT BUG */
-				if(sum(_data) == 0)
+				_bug_idx = 0;
+				while((sum(_data) == 0)&&(_bug_idx < 4))
 				{
+				    _bug_idx++;
 				    _tr10_read_bug = 1;
 				    wait(0.5);
 				    _data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts);	
 				   
 				}
+				if(_bug_idx > 0)
+				    _tr10_bug_message = _tr10_bug_message // _i //' ('//_bug_idx // '), ';
+				/**********************/
 			}						
 
 	/* Build signal */
@@ -133,7 +139,7 @@ write(*, 'TR10 START STORE');
 
 	if(_tr10_read_bug)
 	{
-		DevLogErr(_nid, 'TR10 Readout error!!!!');
+		DevLogErr(_nid, 'TR10 Readout error'//_tr10_bug_message);
 		abort();
 	
 	}
