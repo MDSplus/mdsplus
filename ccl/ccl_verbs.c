@@ -102,11 +102,6 @@ static int ParseQualifiers()
     printf("BADMEM: bad value for /MEMORY. Use 16 or 24.\n");
     return 0;
   }
-  if ((Count * ((Mem == 24) ? 4 : 2)) > 65535)
-  {
-    printf("Count too large, max=32767 for 16 bit, 16383 for 24 bit\n");
-    return 0;
-  }
   if (D) free(D);
   D = malloc(Count * ((Mem == 24) ? 4 : 2));
   d16 = (short *)D;
@@ -219,7 +214,7 @@ int ccl_show_module()
 int ccl_show_status()
 {
   printf("Last status = 0x%x, iosb status = 0x%x, bytcnt = %d, %s, %s\n",
-	 LastStatus, iosb.condition, iosb.bytcnt,(CamX(&iosb) & 1) ? "X=1" : "X=0", (CamQ(&iosb) & 1) ? "Q=1" : "Q=0");
+	 LastStatus, iosb.condition, CamBytcnt(&iosb),(CamX(&iosb) & 1) ? "X=1" : "X=0", (CamQ(&iosb) & 1) ? "Q=1" : "Q=0");
   return 1;
 }
 
