@@ -83,6 +83,7 @@ struct descriptor_d		image = EMPTY_D, entry = EMPTY_D;
 struct descriptor_xd	tmp[253];
 struct descriptor		*new[256];
 unsigned short			code;
+int                             geterror = 0;
 
 	LibEstablish(TdiFaultHandler);
 	if (list[0])	status = TdiData(list[0], &image MDS_END_ARG);
@@ -98,7 +99,11 @@ unsigned short			code;
 		if (status != TdiUNKNOWN_VAR) goto done;
 		status = TdiFindImageSymbol((struct descriptor_d *)&def_image, &entry, &routine);
 	}
-	else	status = TdiFindImageSymbol(&image, &entry, &routine);
+	else
+        {
+        	status = TdiFindImageSymbol(&image, &entry, &routine);
+                if (!(status & 1)) geterror = 1;
+        }
 
 	/**********************************************
 	Requires: image found and routine symbol found.
@@ -211,5 +216,7 @@ ident:
  }
 done:	StrFree1Dx(&entry);
 	StrFree1Dx(&image);
+if (geterror)
+     printf("%s\n",LibFindImageSymbolErrString());
 	return status;
 }
