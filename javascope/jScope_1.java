@@ -87,7 +87,6 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 
   private boolean modified = false;
   
-  static public boolean is_debug = false;
 
     // LookAndFeel class names
     static String macClassName =
@@ -433,7 +432,12 @@ static int T_messageType;
 	
 	jScopeCreate(spos_x, spos_y);
 	
-  }
+  
+		//{{REGISTER_LISTENERS
+		SymContainer aSymContainer = new SymContainer();
+		this.addContainerListener(aSymContainer);
+		//}}
+	}
 	    
   public void jScopeCreate(int spos_x, int spos_y)
   {
@@ -442,11 +446,7 @@ static int T_messageType;
     help_dialog = new jScopeHelpDialog(this);
     main_scope = this;
 
-    Properties props = System.getProperties();
-    String debug = props.getProperty("debug");
-    if(debug != null && debug.equals("true"))
-        is_debug = true;
-    
+   
     setBounds(spos_x, spos_y, 750, 550);
 
     InitProperties();
@@ -827,7 +827,7 @@ static int T_messageType;
        
     color_dialog.SetReversed(setup_default.getReversed());
 
-    if(is_debug)
+    if(jScope.is_debug)
     {
         Thread mon_mem = new MonMemory();           
         mon_mem.start();        
@@ -914,7 +914,7 @@ static int T_messageType;
     {
         if((f_name = findFileInClassPath("jScope.properties")) != null)
         {
-            if(is_debug)
+            if(jScope.is_debug)
                 System.out.println("Properties file "+ f_name);
             js_prop = new Properties();
             js_prop.load(new FileInputStream(f_name));
@@ -1135,7 +1135,7 @@ static int T_messageType;
 	    Object[] options = {"Save",
                             "Don't Save",
                             "Cancel"};
-        return JOptionPane.showOptionDialog(null,
+        int val = JOptionPane.showOptionDialog(null,
             "Save change to the configuration file before closing ?",
             "Warning",
             JOptionPane.YES_NO_CANCEL_OPTION,
@@ -1143,6 +1143,8 @@ static int T_messageType;
             null,
             options,
             options[0]);
+            
+        return val;
             
   }
   
@@ -1156,7 +1158,8 @@ static int T_messageType;
 		        if(config_file == null)
 			        SaveAs();
 		        else
-			        SaveConfiguration(config_file);	
+			        SaveConfiguration(config_file);
+			    break;
 		    case JOptionPane.NO_OPTION:
 		        exitScope();
 		    break;
@@ -2137,6 +2140,21 @@ static int T_messageType;
 	}
 
     }
+
+	class SymContainer extends java.awt.event.ContainerAdapter
+	{
+		public void componentAdded(java.awt.event.ContainerEvent event)
+		{
+			Object object = event.getSource();
+			if (object == jScope_1.this)
+				jScope1_componentAdded(event);
+		}
+	}
+
+	void jScope1_componentAdded(java.awt.event.ContainerEvent event)
+	{
+		// to do: code goes here.
+	}
 }
 
 class WindowDialog extends JDialog implements ActionListener 

@@ -1718,7 +1718,8 @@ import javax.swing.event.*;
 	    {
 	        if(!def_shot) {
 		        JOptionPane.showMessageDialog(null, "Experiment defined but undefined shot", "alert", JOptionPane.ERROR_MESSAGE); 
-                return 1;
+                //return 1;
+                error = 1;
 		    }    
 		    /*
 	        if(!def_exp && !setup.data_server_address.equals("Ftu data") && !image_b.isSelected()) {	    
