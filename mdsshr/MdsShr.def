@@ -72,3 +72,4 @@ dasmsg
 set_pgmname
 TranslateLogical
 TranslateLogicalFree
+TranslateLogicalXd
