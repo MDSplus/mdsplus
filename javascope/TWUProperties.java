@@ -12,6 +12,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2002/04/26 11:42:38  jgk
+ * Changed End-Of-Line marker from Windows- to CVS standard.
+ *
  * Revision 1.3  2002/04/24 09:06:17  manduchi
  * Added Asdex Data Provider
  *
@@ -25,9 +28,9 @@ import java.util.Properties;
 
 public class TWUProperties
 {
-    private URL        signalURL   = null;
-    private Properties signalProps = new Properties();
-    private boolean    textRead    = false;
+    private   URL        signalURL   = null;
+    protected Properties signalProps = new Properties();
+    private   boolean    textRead    = false;
     
     /* -------------------------------------------------------------------- */
     // Constructors
@@ -172,28 +175,28 @@ public class TWUProperties
     hasAbscissa0()
     {
         String abscissa = signalProps.getProperty("Abscissa.URL.0");
-        return ((abscissa == null) ? false : ( ! abscissa.equals("None"))) ;
+        return ((abscissa == null) ? false : ( ! abscissa.equalsIgnoreCase("None"))) ;
     }
 
     public boolean
     hasAbscissa1()
     {
         String abscissa = signalProps.getProperty("Abscissa.URL.1");
-        return ((abscissa == null) ? false : ( ! abscissa.equals("None"))) ;
+        return ((abscissa == null) ? false : ( ! abscissa.equalsIgnoreCase("None"))) ;
     }
 
     public boolean
     Incrementing()
     {
         String equidistant = signalProps.getProperty("Equidistant");
-        return (equidistant!=null) && equidistant.equals("incrementing") ;
+        return (equidistant!=null) && equidistant.equalsIgnoreCase("incrementing") ;
     }
 
     public boolean
     Decrementing()
     {
         String equidistant = signalProps.getProperty("Equidistant");
-        return (equidistant!=null) && equidistant.equals("decrementing") ;
+        return (equidistant!=null) && equidistant.equalsIgnoreCase("decrementing") ;
     }
 
     public boolean
@@ -241,21 +244,21 @@ public class TWUProperties
     FQAbscissaName()
     {
         String abs = signalProps.getProperty("Abscissa.URL.0");
-        return ((abs==null || abs.equals("None")) ? null : abs);
+        return ((abs==null || abs.equalsIgnoreCase("None")) ? null : abs);
     }
 
     public String
     FQAbscissa0Name()
     {
         String abs = signalProps.getProperty("Abscissa.URL.0");
-        return ((abs==null || abs.equals("None")) ? null : abs);
+        return ((abs==null || abs.equalsIgnoreCase("None")) ? null : abs);
     }
 
     public String
     FQAbscissa1Name()
     {
         String abs = signalProps.getProperty("Abscissa.URL.1");
-        return ((abs==null || abs.equals("None")) ? null : abs);
+        return ((abs==null || abs.equalsIgnoreCase("None")) ? null : abs);
     }
 
     /* -------------------------------------------------------------------- */
@@ -354,6 +357,22 @@ public class TWUProperties
 
         System.out.println();
     }
+
+}
+
+
+class FakeTWUProperties extends TWUProperties {
+  public FakeTWUProperties (int len) {
+    super (null) ;
+    signalProps.put ("TWU.properties.version", "0.7");
+    signalProps.put ("Dimensions", "1");
+    signalProps.put ("Length.total",       String.valueOf(len) );
+    signalProps.put ("Length.dimension.0", String.valueOf(len) );
+    signalProps.put ("Equidistant", "Incrementing");
+    signalProps.put ("Signal.Minimum", "0.0");
+
+    signalProps.put ("Signal.Maximum", String.valueOf( (double)(len-1) ) );
+  }
 }
 
 /* ------------------------------------------------------------------------ */
