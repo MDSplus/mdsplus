@@ -143,7 +143,7 @@ int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
 	    new_ptr->name[i]=' ';
           free(node_name);
 	  new_ptr->child = 0;
-	  new_ptr->conglomerate_elt = *conglom_index;
+	  new_ptr->conglomerate_elt = swapint((char *)conglom_index);
 	  if (node_type == BROTHER_TYPE_NOWILD)
 	  {
 	    status = TreeInsertChild(parent, new_ptr, dblist->tree_info->header->sort_children);
