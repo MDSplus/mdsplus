@@ -471,14 +471,14 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
 
 static int LockStart;
 static int LockSize;
-int TreeLockDatafile(TREE_INFO *info, int readonly, int offset)
+int TreeLockDatafile(TREE_INFO *info, int readonly, off_t offset)
 {
 	LockStart = offset >= 0 ? offset : _lseek(info->data_file->put,0,SEEK_END);
 	LockSize = offset >= 0 ? 12 : 0x7fffffff;
 	return LockFile((HANDLE)_get_osfhandle(readonly ? info->data_file->get : info->data_file->put), LockStart, 0,
 	   LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
 }
-int TreeUnLockDatafile(TREE_INFO *info, int readonly, int offset)
+int TreeUnLockDatafile(TREE_INFO *info, int readonly, off_t offset)
 {
   return UnlockFile((HANDLE)_get_osfhandle(readonly ? info->data_file->get : info->data_file->put), LockStart, 0,
 	   LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
