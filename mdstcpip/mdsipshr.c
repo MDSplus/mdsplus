@@ -1,4 +1,7 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIPSHR.C */
+/*  *101  15-JUN-1998 15:49:03 TWF "Select buffer size" */
+/*  *100  21-APR-1998 11:16:39 TWF "Zero length" */
+/*  *99   17-APR-1998 10:08:48 TWF "Pass length to sendarg" */
 /*  *98   14-APR-1998 14:17:43 TWF "fix negative bytes_remaining" */
 /*  *97   14-APR-1998 11:58:43 TWF "Reduce maxdims and return length field" */
 /*  *96    7-APR-1998 10:10:59 TWF "Support VAXG client (from epfl)" */
@@ -80,7 +83,7 @@
 /*  *20   10-JUN-1994 11:57:37 TWF "Handle 64bit pointers" */
 /*  *19   10-JUN-1994 11:23:03 TWF "Take out multinet" */
 /*  *18   10-JUN-1994 09:55:49 TWF "fix" */
-/*  *17    9-JUN-1994 16:19:04 TWF "Use int instead of long" */
+/*  *17    9-JUN-1994 16:19:04 TWF "Use int32 instead of long" */
 /*  *16    7-JUN-1994 15:46:30 TWF "ultrix" */
 /*  *15    7-JUN-1994 15:23:57 TWF "Add ultrix support" */
 /*  *14    6-JUN-1994 10:18:48 TWF "Flush pipe if possible" */
@@ -104,6 +107,9 @@
 
 static unsigned char message_id = 1;
 Message *GetMdsMsg(SOCKET sock, int *status);
+#ifdef _WIN32
+Message *GetMdsMsgOOB(SOCKET sock, int *status);
+#endif
 int SendMdsMsg(SOCKET sock, Message *m, int oob);
 
 static int initialized = 0;
@@ -114,7 +120,7 @@ static char ClientType(void)
   if (!ctype)
   {
     union { int i;
-            char  c[sizeof(int)];
+            char  c[sizeof(double)];
             float x;
             double d;
           } client_test;
@@ -290,6 +296,7 @@ int MdsValueFtotSize (struct descrip *dataarg)
 {
   int totsize = 0;
   if (dataarg->ndims == 0) {
+    printf("MDSvalueF: scalar\n");
     totsize=1;
   } else { 
     int i;
@@ -340,6 +347,7 @@ int  MdsValueF(SOCKET sock, char *expression, double *data, int maxsize, int *re
 	free(newdata);
 	break;
     default :
+	printf ("MDSValueF: Can't handle type: %u\n", dataarg.dtype);
 	status=0;
 	break;
     }
@@ -363,6 +371,7 @@ int  MdsValueC(SOCKET sock, char *expression, char *data, int *retsize)
 	memcpy(data, (char *) dataarg.ptr, ArgLen(&dataarg)*sizeof(char));
 	break;
     default :
+	printf ("MDSValueC: Can't handle type: %u\n", dataarg.dtype);
 	status=0;
 	break;
     }
@@ -385,6 +394,7 @@ int  MdsValueI(SOCKET sock, char *expression, int *data)
 	memcpy(data, (int *) dataarg.ptr, ArgLen(&dataarg));
 	break;
     default :
+	printf ("MDSValueI: Can't handle type: %u\n", dataarg.dtype);
 	status=0;
 	break;
     }
@@ -517,7 +527,22 @@ int  MdsSetDefault(SOCKET sock, char *node)
   return status;
 }
 
-int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, void **eventid)
+#ifdef _WIN32
+typedef struct _EventThread {
+	SOCKET sock;
+	HANDLE thread_handle;
+	DWORD  thread_id;
+	int    eventid;
+	int    event_count;
+	struct _EventThread *next;
+} EventThread;
+
+static EventThread *eThreads = NULL;
+
+unsigned long WINAPI MdsDispatchEvent(SOCKET sock);
+#endif
+
+int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 {
   struct descrip eventnamarg;
   struct descrip infoarg;
@@ -525,31 +550,73 @@ int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, vo
   MdsEventInfo info;
   int size = sizeof(info);
   int status;
+#ifdef _WIN32
+  for (et=eThreads; eThreads && et->sock != sock; et = et->next);
+  if (et == NULL) {
+	  et =  (EventThread *)malloc(sizeof(EventThread));
+      et->sock = sock;
+	  et->event_count = 0;
+	  et->next = eThreads;
+	  et->thread_handle = NULL;
+	  eThreads = et;
+  }
+#endif
   info.astadr = (void (*)(void *,int ,char *))astadr;
   info.astprm = astprm;
   status = MdsValue(sock, EVENTASTREQUEST, MakeDescrip((struct descrip *)&eventnamarg,DTYPE_CSTRING,0,0,eventnam), 
 			      MakeDescrip((struct descrip *)&infoarg,DTYPE_UCHAR,1,&size,&info),
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
-  if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) *eventid = *(void **)ansarg.ptr;
+  if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) {
+    *eventid = *(int *)ansarg.ptr;
+#ifdef _WIN32
+    et->eventid = *(int *)ansarg.ptr;
+    if (et->thread_handle == NULL)
+    et->thread_handle = CreateThread((LPSECURITY_ATTRIBUTES)NULL, 0, (LPTHREAD_START_ROUTINE)MdsDispatchEvent, (LPVOID)sock, (DWORD)NULL, &et->thread_id);
+    et->event_count++;
+#endif
+  }
   if (ansarg.ptr) free(ansarg.ptr);
   return status;
 }
 
-int  MdsEventCan(SOCKET sock, void *eventid)
+int  MdsEventCan(SOCKET sock, int eventid)
 {
+#ifdef _WIN32
+  EventThread *et, *prev;
+#endif
   struct descrip eventarg;
-  struct descrip ansarg;
+  struct descrip ansarg = {0,0,0,0};
   int status = MdsValue(sock, EVENTCANREQUEST, MakeDescrip((struct descrip *)&eventarg,DTYPE_LONG,0,0,&eventid), 
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
   if (ansarg.ptr) free(ansarg.ptr);
+#ifdef _WIN32
+  for (prev=NULL,et=eThreads; et && (et->sock != sock); prev = et,et = et->next);
+  if (et) {
+	et->event_count--;
+	if (et->event_count == 0)
+	  closesocket(et->sock);
+      if (prev)
+		  prev->next = et->next;
+	  else
+		  eThreads = et->next;
+  }
+#endif
   return status;
 }
 
+#ifdef _WIN32
+unsigned long WINAPI MdsDispatchEvent(SOCKET sock)
+#else
 void MdsDispatchEvent(SOCKET sock)
+#endif
 {
   int status;
   Message  *m;
+#ifdef _WIN32
+  while ((m = GetMdsMsgOOB(sock,&status)) != 0)
+#else
   if ((m = GetMdsMsg(sock,&status)) != 0)
+#endif
   {
     if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo)))
     {
@@ -560,6 +627,9 @@ void MdsDispatchEvent(SOCKET sock)
     sys$qiow(0,sock,IO$_SETMODE | IO$M_ATTNAST,0,0,0,MdsDispatchEvent,sock,0,0,0,0);
 #endif
   }
+#ifdef _WIN32
+  return 0;
+#endif
 }
 
 static SOCKET ConnectToPort(char *host, char *service)
@@ -570,8 +640,9 @@ static SOCKET ConnectToPort(char *host, char *service)
   struct hostent *hp;
   struct servent *sp;
   static int one=1;
-  long sendbuf = 32768,recvbuf = 32768;
+  long sendbuf = SEND_BUF_SIZE,recvbuf = RECV_BUF_SIZE;
 
+  
   hp = gethostbyname(host);
 #ifdef _WIN32
   if ((hp == NULL) && (WSAGetLastError() == WSANOTINITIALISED))
@@ -585,13 +656,7 @@ static SOCKET ConnectToPort(char *host, char *service)
 #endif
   if (hp == NULL)
   {
-    int addr = inet_addr(host);
-    if (addr != INADDR_NONE)
-    hp = gethostbyaddr((void *) &addr, (int) sizeof(addr), AF_INET);
-  }
-  if (hp == NULL)
-  {
-    printf("Error in MDSplus ConnectToPort: %s unknown\n",host);
+    printf("Error: %s unknown\n",host);
     return INVALID_SOCKET;
   }
   s = socket(AF_INET, SOCK_STREAM, 0);
@@ -606,7 +671,7 @@ static SOCKET ConnectToPort(char *host, char *service)
   }
   if (sp == NULL || sp->s_port == 0)
   {
-    printf("Error in MDSplus ConnectToPort: Unknown service: %s\nSet environment variable %s if port is known\n",service,service);
+    printf("Unknown service: %s\nSet environment variable %s if port is known\n",service,service);
     return INVALID_SOCKET;
   }
   sin.sin_family = AF_INET;
@@ -644,14 +709,14 @@ static SOCKET ConnectToPort(char *host, char *service)
       m = GetMdsMsg(s,&status);
       if (!(status & 1))
       {
-        printf("Error in MDSplus ConnectToPort connect to service\n");
+        printf("Error in connect to service\n");
         return INVALID_SOCKET;
       }
       else
       {
         if (!m->h.status)
         {
-          printf("MDSplus ConnectToPort: Access denied\n");
+          printf("Access denied\n");
           free(m);
           DisconnectFromMds(s);
           return INVALID_SOCKET;
@@ -660,13 +725,15 @@ static SOCKET ConnectToPort(char *host, char *service)
     }
     else
     {
-      printf("MDSplus ConnectToPort: Error in user verification\n");
+      printf("Error in user verification\n");
       return INVALID_SOCKET;
     }
   }
   setsockopt(s, SOL_SOCKET,SO_RCVBUF,(void *)&recvbuf,sizeof(recvbuf));
   setsockopt(s, SOL_SOCKET,SO_SNDBUF,(void *)&sendbuf,sizeof(sendbuf));
+#ifndef _WIN32
   setsockopt(s, SOL_SOCKET,SO_OOBINLINE,(void *)&one,sizeof(one));
+#endif
   setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&one, sizeof(one));
 #ifdef MULTINET
   sys$qiow(0,s,IO$_SETMODE | IO$M_ATTNAST,0,0,0,MdsDispatchEvent,s,0,0,0,0);
@@ -699,7 +766,7 @@ int  GetAnswerInfo(SOCKET sock, char *dtype, short *length, char *ndims, int *di
     for (i=0;i<m->h.ndims;i++)
     {
 #ifdef __CRAY
-      dims[i] = i % 2 ? m->h.dims[i/2] & 0xffffffff : m->h.dims[i/2] >> 32;
+      dims[i] = i % 2 ? m->h.dims[i/2] >> 32 : m->h.dims[i/2] & 0xffffffff;
 #else
       dims[i] = m->h.dims[i];
 #endif
@@ -760,8 +827,13 @@ int *dims, char *bytes)
   m->h.length = length;
   m->h.ndims = ndims;
 #ifdef __CRAY
-  for (i=0;i<4;i++)
-    m->h.dims[i] = ((ndims > i * 2) ? (dims[i * 2] << 32) : 0) | ((ndims > (i * 2 + 1)) ? (dims[i * 2 + 1]) : 0); 
+  for (i=0;i<MAX_DIMS;i++)
+  {
+    if (i % 2)
+      m->h.dims[i/2] |= i < ndims ? (dims[i] << 32) : 0;
+    else
+      m->h.dims[i/2] = dims[i];
+  }
 #else
   for (i=0;i<MAX_DIMS;i++) m->h.dims[i] = i < ndims ? dims[i] : 0;
 #endif
@@ -813,7 +885,7 @@ static void FlipHeader(MsgHdr *header)
   Flip32(header->msglen);
   Flip32(header->status);
   Flip16(header->length);
-  for (i=0;i<MAX_DIMS;i++) FlipBytes(4,((char *)header->dims)+4*i);
+  for (i=0;i<MAX_DIMS/2;i++) FlipBytes(sizeof(header->dims[i]),(char *)&header->dims[i]);
 #else
   FlipBytes(4,(char *)&header->msglen);
   FlipBytes(4,(char *)&header->status);
@@ -831,7 +903,7 @@ static void FlipData(Message *m)
   for (i=0;i<MAX_DIMS;i++)
   {
 #ifdef __CRAY
-    dims[i] = i % 2 ? m->h.dims[i/2] & 0xffffffff : m->h.dims[i/2] >> 32;
+    dims[i] = i % 2 ? m->h.dims[i/2] >> 32 : m->h.dims[i/2] & 0xffffffff;
 #else
     dims[i] = m->h.dims[i];
 #endif
@@ -926,7 +998,7 @@ Message *GetMdsMsg(SOCKET sock, int *status)
       }
       else
       {
-        perror("MDSplus GETMSG recv error");
+        perror("GETMSG recv error");
         printf("errno = %d\n",errno);
       }
     }
@@ -963,6 +1035,128 @@ Message *GetMdsMsg(SOCKET sock, int *status)
   }
   return msg;
 }
+
+#ifdef _WIN32
+Message *GetMdsMsgOOB(SOCKET sock, int *status)
+{
+  static MsgHdr header;
+  static Message *msg = 0;
+  int msglen = 0;
+  static struct timeval timer = {10,0};
+
+  int tablesize = FD_SETSIZE;
+
+  int nbytes;
+  int selectstat=0;
+  char last;
+  char *bptr = (char *)&header;
+  fd_set readfds;
+  fd_set exceptfds;
+  int bytes_remaining = sizeof(MsgHdr);
+    unsigned short flags = MSG_OOB;
+	DWORD oob_data;
+	int stat;
+  FD_ZERO(&readfds);
+  FD_SET(sock,&readfds);
+  FD_ZERO(&exceptfds);
+  FD_SET(sock,&exceptfds);
+  *status = 0;
+  if (msg)
+  {
+    free(msg);
+    msg = 0;
+  }
+
+/*
+#ifdef MULTINET
+  while (((msglen == 0) || bytes_remaining) && 
+          (lib$ast_in_prog() || ((selectstat = select(tablesize, 0, 0, &exceptfds, &timer)) > 0)))
+#else
+  while (((msglen == 0) || bytes_remaining) && 
+          ((selectstat = select(tablesize, 0, 0, &exceptfds, NULL)) != 0))
+#endif
+*/
+  selectstat = select(tablesize, 0, 0, &exceptfds, NULL);
+  nbytes = recv(sock, &last, 1, flags);
+  stat = 	ioctlsocket(sock,SIOCATMARK,&oob_data);
+  while (bytes_remaining > 1) 
+  {
+/*    unsigned short flags = 0; */
+
+    if (selectstat == -1 && errno == 4) continue;
+    if (msglen == 0)
+    {
+        nbytes = recv(sock, bptr, bytes_remaining, 0);
+      if (nbytes == 0)
+	  { 
+        *status = 0;
+        return 0;
+      }
+      else if (nbytes > 0)
+      {
+        bytes_remaining -= nbytes;
+        bptr += nbytes;
+        if (bytes_remaining == 0)
+        {
+          if ( Endian(header.client_type) != Endian(ClientType()) ) FlipHeader(&header);
+#ifdef DEBUG
+          printf("msglen = %d\nstatus = %d\nlength = %d\nnargs = %d\ndescriptor_idx = %d\nmessage_id = %d\ndtype = %d\n",
+               header.msglen,header.status,header.length,header.nargs,header.descriptor_idx,header.message_id,header.dtype);
+          printf("client_type = %d\nndims = %d\n",header.client_type,header.ndims);
+#endif
+          if (CType(header.client_type) > CRAY_CLIENT || header.ndims > MAX_DIMS)
+          {
+            *status = 0;
+            return 0;
+          }  
+          msglen = header.msglen;
+          bytes_remaining = msglen - sizeof(MsgHdr);
+          msg = malloc(msglen);
+          msg->h = header;
+          bptr = msg->bytes;
+        }
+      }
+      else
+      {
+        perror("GETMSG recv error");
+        printf("errno = %d\n",errno);
+      }
+    }
+    else
+    {
+      int bytes_this_time = min(bytes_remaining,BUFSIZ);
+      nbytes = recv(sock, bptr, bytes_this_time, 0);
+#ifdef DEBUG
+      {int i;
+      for (i=0;i<nbytes;i++)
+        printf("byte(%d) = 0x%x\n",i,bptr[i]);
+      }
+#endif
+      if (nbytes > 0)
+      {
+        bytes_remaining -= nbytes;
+        bptr += nbytes;
+      }
+      else
+      {
+	*status = 0;
+        return 0;
+      }
+    }
+  }
+  if (msglen && (bytes_remaining==1))
+  {
+	*bptr = last;
+    if ( Endian(header.client_type) != Endian(ClientType()) ) FlipData(msg);
+    *status = 1;
+  }
+  else
+  {
+    perror("Select problem");
+  }
+  return msg;
+}
+#endif
 
 int  IdlMdsClose(int lArgc, void * * lpvArgv)
 {
