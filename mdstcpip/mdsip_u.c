@@ -144,9 +144,9 @@ static int SpawnWorker(SOCKET sock)
 	static STARTUPINFO startupinfo;
 	PROCESS_INFORMATION pinfo;
 	char cmd[512];
-	char *name = _pgmptr;
-	sprintf(cmd,"%s %s worker %d %d",_pgmptr,portname,GetCurrentProcessId(),sock);
+	sprintf(cmd,"%s %s worker %d %d","mdsip_service",portname,GetCurrentProcessId(),sock);
 	startupinfo.cb = sizeof(startupinfo);
+	//DebugBreak();
     status = CreateProcess(_pgmptr,cmd,NULL,NULL,FALSE,0,NULL,NULL,&startupinfo, &pinfo);
 	CloseHandle(pinfo.hProcess);
 	CloseHandle(pinfo.hThread);
@@ -253,7 +253,14 @@ static void InstallService()
 	  strcat(file," ");
 	  strcat(file,portname);
 	  strcat(file," service ");
-	  strcat(file,hostfile);
+	  if (strchr(hostfile,' '))
+	  {
+		  strcat(file,"\"");
+		  strcat(file,hostfile);
+		  strcat(file,"\"");
+	  }
+	  else
+	    strcat(file,hostfile);
 	  hService = CreateService(hSCManager, ServiceName(), ServiceName(), 0, SERVICE_WIN32_OWN_PROCESS,
 	  SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, file, NULL, NULL, NULL, NULL, NULL);
 	  if (hService == NULL)
