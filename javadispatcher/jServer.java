@@ -147,7 +147,7 @@ public class jServer extends MdsIp {
           }
 
           public void run() {
-              int status = doSimpleAction(action.getNid(), action.getTree(),
+               int status = doSimpleAction(action.getNid(), action.getTree(),
                                           action.getShot());
               if (!aborted) {
                   retStatus = status;
@@ -200,7 +200,7 @@ public class jServer extends MdsIp {
     String command = "", compositeCommand = "";
     try {
       command = new String(messages[0].body);
-      System.out.println("Command: " + command);
+      //System.out.println("Command: " + command);
       if (command.startsWith("ServerQAction")) {
         InetAddress address = InetAddress.getByAddress(messages[1].body);
         DataInputStream dis = new DataInputStream(new ByteArrayInputStream(
@@ -222,8 +222,8 @@ public class jServer extends MdsIp {
                 body));
             int nid = dis.readInt();
 
-            System.out.println("SrvAction " + id + " " + tree + " " + shot +
-                               " " + nid);
+          //  System.out.println("SrvAction " + id + " " + tree + " " + shot +
+          //                     " " + nid);
             actionQueue.enqueueAction(new ActionDescriptor(new NidData(nid), address, port, id,
                 tree, shot));
             break;
@@ -233,13 +233,13 @@ public class jServer extends MdsIp {
                 messages[6].body));
             int flushInt = dis.readInt();
                 boolean flush = (flushInt != 0);
-            System.out.println("SrvAbort " + id + " " + flush);
+           // System.out.println("SrvAbort " + id + " " + flush);
             worker.abortCurrentAction();
             //answer = "" + id + " " + SrvJobABORTED + " 1 0";
             //writeAnswer(address, port, answer);
             break;
           case SrvClose:
-            System.out.println("SrvClose " + id);
+            //System.out.println("SrvClose " + id);
             String answer = "" + id + " " + SrvJobFINISHED + " 1 0";
             if(mdsTree != null)
             {
@@ -257,20 +257,20 @@ public class jServer extends MdsIp {
                 body));
             shot = dis.readInt();
 
-            System.out.println("SrvCreatePulse " + id + " " + tree + " " + shot);
+            //System.out.println("SrvCreatePulse " + id + " " + tree + " " + shot);
             answer = "" + id + " " + SrvJobFINISHED + " 1 0";
             writeAnswer(address, port, answer);
             break;
           case SrvCommand:
             String cli = new String(messages[6].body);
             command = new String(messages[7].body);
-            System.out.println("SrvCommand " + id + " " + cli + " " + command);
+            //System.out.println("SrvCommand " + id + " " + cli + " " + command);
             break;
           case SrvSetLogging:
-            System.out.println("SrvSetLogging " + id);
+            //System.out.println("SrvSetLogging " + id);
             break;
           case SrvStop:
-            System.out.println("SrvStop " + id);
+            //System.out.println("SrvStop " + id);
             break;
           default:
             System.out.println("Unknown Operation: " + operation);
@@ -337,6 +337,7 @@ public class jServer extends MdsIp {
   int doSimpleAction(NidData nid,  String tree, int shot)
   {
     int status;
+    String name = "";
     try {
       if (mdsTree == null || !tree.equals(lastTree) || shot != lastShot)
       {
@@ -347,11 +348,24 @@ public class jServer extends MdsIp {
         lastTree = tree;
         lastShot = shot;
       }
+
+      try {
+        name = mdsTree.getInfo(nid, 0).getFullPath();
+      }
+      catch (Exception exc) {
+        System.err.println("Cannot resolve action name");
+        name = "";
+      }
+
+      System.out.println("" + new Date() + ", Doing " + name + " in " +
+                         tree + " shot " + shot);
+
       mdsTree.doAction(nid, 0);
+      System.out.println(""+new Date()+ ", Done " + name + " in " + tree + " shot " + shot);
       status = 1;
     }catch(Exception exc)
     {
-      System.err.println("Error executing action: " + exc);
+      System.out.println(""+new Date()+ ", Failed " + name + " in " + tree + " shot " + shot + ": " + exc);
       status = 0;
     }
     return status;

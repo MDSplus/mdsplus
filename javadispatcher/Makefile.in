@@ -16,7 +16,7 @@ InfoServer.java         MdsServer.java          NetworkEvent.java       jDispatc
 
 CLASSES = $(SOURCES:.java=.class)
 
-all:	@MAKEBINDIR@ @MAKEBINDIR@jDispatcherIp @MAKEBINDIR@jDispatchMonitor @MAKEJAVADIR@ @MAKEJAVADIR@classes  @MAKEJAVADIR@classes/jDispatcher.jar 
+all:	@MAKEBINDIR@ @MAKEBINDIR@jDispatcherIp @MAKEBINDIR@jDispatchMonitor  @MAKEBINDIR@jServer @MAKEJAVADIR@ @MAKEJAVADIR@classes  @MAKEJAVADIR@classes/jDispatcher.jar 
 
 clean: 
 	@ $(RM) *.class
