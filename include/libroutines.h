@@ -37,6 +37,7 @@ extern int LibFindFile();
 extern int LibFindFileEnd();
 extern int LibFindFileRecurseCaseBlind();
 extern int LibFindImageSymbol();
+extern char *LibFindImageSymbolErrString();
 extern char *LibFindImageSymbolErrStr();
 extern int LibFindVmZone();
 extern int LibFreeVm();
