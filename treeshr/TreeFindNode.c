@@ -1081,6 +1081,7 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tre
   int len = min(taglen,sizeof(TAG_NAME));
   int i;
   int *idx;
+  int status;
   struct tag_search tsearch;
   memset(tsearch.tag,32,sizeof(TAG_NAME));
   for (i=0;i<len;i++)
@@ -1134,7 +1135,7 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tre
     ********************************************************/
       switch (tsearch.info->header->tags)
       {
-	  case 0:	return TreeTNF;
+	  case 0:	status = TreeTNF;
 	  case 1: if (BsearchCompare((void *)&tsearch, (void *)tsearch.info->tags) == 0)
 			  {
 				  *nodeptr = tsearch.info->node + swapint((char *)&tsearch.info->tag_info->node_idx);
@@ -1142,7 +1143,7 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tre
 				  return TreeNORMAL;
 			  }
 		      else
-			    return TreeTNF;
+			    status = TreeTNF;
        default:
 		   if ((idx = bsearch((const void *)&tsearch, (const void *)tsearch.info->tags, 
 			   tsearch.info->header->tags, sizeof(int), BsearchCompare)) != 0)
@@ -1152,8 +1153,24 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tre
 			   return TreeNORMAL;
 		   }
 		   else
-			   return TreeTNF;
-	  }
+			   status = TreeTNF;
+      }
+      if (status == TreeTNF && tree == 0)
+      {
+        char *tag;
+        void *ctx=0;
+        int nid;
+        NODE *node;
+        NID *nidptr=(NID *)&nid;
+        tag = TreeFindTagWild(tagnam, &nid, &ctx);
+        if (tag)
+	{
+          status = TreeNORMAL;
+          nid_to_node(db, nidptr, node);
+          *nodeptr = node;
+        }
+        TreeFindTagEnd(&ctx);
+      }
   }
 }
 
