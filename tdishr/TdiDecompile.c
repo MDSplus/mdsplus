@@ -226,6 +226,7 @@ char	*pdec, *plast, *pexp, *ppass;
 		case 'H' :
 		case 'S' :
 		case 'T' :
+	        case 'V' :
 			*pwas++ = repl;
 			if (*pwas == '+') *pwas++ = ' ';
 			else if (*pwas == '-') pwas++;
