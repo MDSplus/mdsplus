@@ -71,8 +71,9 @@ public class DecompileTree
         {
             Element docSon = (Element) document.createElement("node");
             tree.appendChild(docSon);
+            NidData prevNid = null;
             recDecompile(sons[i], docSon, false);
-        }
+         }
         NidData [] members;
         try {
             members = mdsTree.getMembers(topNid, 0);
@@ -91,9 +92,9 @@ public class DecompileTree
                     docMember = (Element) document.createElement("member");
             }catch(Exception exc){System.err.println(exc);}
             tree.appendChild(docMember);
-            recDecompile(members[i], docMember, false);
+            NidData prevNid = null;
+             recDecompile(members[i], docMember, false);
         }
-
         TransformerFactory transFactory = TransformerFactory.newInstance();
         try {
             Transformer transformer = transFactory.newTransformer();
@@ -111,6 +112,9 @@ public class DecompileTree
     static void recDecompile(NidData nid, Element node, boolean isDeviceField)
     {
         try {
+            NidData prevNid = mdsTree.getDefault(0);
+            mdsTree.setDefault(nid, 0);
+
             NodeInfo info = null;
             try {
                 info = mdsTree.getInfo(nid, 0);
@@ -354,6 +358,7 @@ public class DecompileTree
                     }
                 }
             }
+            mdsTree.setDefault(prevNid, 0);
         }catch(Exception exc)
         {
             System.err.println(exc);
