@@ -30,12 +30,13 @@ write(*, 'T2Control store');
 	write(*, 'Frequency: ', _frequency);
 	_period = 1. / _frequency;
 	_n_samples =  MdsValue('size(Feedback->getDacSignal:dsc(0))');
+	_n_pretrigger =  MdsValue('Feedback->getPreTriggerSamples()');
 	write(*, 'Num recorded samples = ', _n_samples);
 	_n_samples--;
     _clock = make_range(*,*, _period);
 
  	/* Build signal dimension */
-	_dim = make_dim(make_window(0, _n_samples, _trigger), _clock);
+	_dim = make_dim(make_window(0, _n_samples, _trigger - _n_pretrigger * _period), _clock);
 	for(_c = 0; _c < 64; _c++)
 	{
 			_sig_nid =  DevHead(_nid) + _N_INPUT_1  + _c;
