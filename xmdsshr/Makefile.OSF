@@ -1,0 +1,40 @@
+CFLAGS = -c -I../include -g -assume noaligned_objects -D_NO_DPS
+
+OBJECTS = \
+XmdsBells.o \
+XmdsComplain.o \
+XmdsDeviceSetup.o \
+XmdsDigChans.o \
+XmdsDisplay.o \
+XmdsExpr.o \
+XmdsGetPutNid.o \
+XmdsGetSetOptionIdx.o \
+XmdsInitialize.o \
+XmdsInput.o \
+XmdsInputs.o \
+XmdsNidOptionMenu.o \
+XmdsOkButtons.o \
+XmdsOnOffToggleButton.o \
+XmdsPath.o \
+XmdsPopupMenuPosition.o \
+XmdsSetSubvalues.o \
+XmdsSupport.o \
+XmdsUsageIcons.o \
+XmdsWavedraw.o \
+XmdsWaveform.o \
+XmdsWidgetCallbacks.o \
+XmdsXdBox.o \
+XmdsXdBoxDialog.o \
+XmdsXdBoxDialogButton.o \
+XmdsXdBoxOnOffButton.o
+
+libXmdsShr.so : $(OBJECTS)
+	ld -o $@ -shared -no_archive $(OBJECTS) \
+             -lc -lm -L../mdsplus/mdsshr -lMdsShr \
+                   -lots -L../mdsplus/tdishr -lTdiShr -L../mdsplus/treeshr -lTreeShr \
+		-lMrm -lXm -lXt -lX11
+
+clean :
+	- rm *.o
+	- rm *.so
+	- rm so_locations
