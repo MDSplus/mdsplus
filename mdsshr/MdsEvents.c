@@ -32,7 +32,7 @@ int MDSEvent(char *evname){}
 
 
 #define SEM_ID 12
-#define SHMEM_ID 73
+#define SHMEM_ID 75
 #define MSG_ID 500
 
 /* Shared memory organization: 
@@ -43,8 +43,8 @@ int MDSEvent(char *evname){}
 
 
 #define MAX_EVENTNAME_LEN 64 	 /* Maximum number of characters in event name */
-#define MAX_ACTIVE_EVENTS 1024   /* Maximum number events concurrently dealt with by processes */
-#define MAX_EVENTNAMES 	  1024   /* Maximum number of different event names */
+#define MAX_ACTIVE_EVENTS 5000   /* Maximum number events concurrently dealt with by processes */
+#define MAX_EVENTNAMES 	  1000   /* Maximum number of different event names */
 
 #define MAX_DATA_LEN 64		 /* Maximum number of bytes to be broadcasted by events */
 
@@ -143,7 +143,7 @@ static int attachSharedInfo()
 {
     int i;
     int size = sizeof(struct SharedEventInfo) * MAX_ACTIVE_EVENTS + 
-	sizeof(struct SharedEventName) * MAX_EVENTNAMES;
+	sizeof(struct SharedEventName) * MAX_EVENTNAMES + 2 * sizeof(int);
     shmId = shmget(SHMEM_ID, size, 0777 | IPC_CREAT |IPC_EXCL);
     if(shmId != -1) /* If shared memory memory region not created yet, it must be intialized */
     { 
@@ -543,7 +543,7 @@ static int sendRemoteEvent(char *evname, int data_len, char *data)
 
 int MDSEvent(char *evname, int data_len, char *data)
 {
-    int i, j;
+    int i, j, name_idx;
     
     initializeLocalRemote();
     if(remote_id)
@@ -560,10 +560,15 @@ int MDSEvent(char *evname, int data_len, char *data)
 	}
     }
 
-    for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
+    /* Search event name in the event name list */
+    for(name_idx = 0; name_idx < MAX_EVENTNAMES && (shared_name[name_idx].refcount == 0 
+	|| strcmp(shared_name[name_idx].name, evname)); name_idx++);
+    if(name_idx < MAX_EVENTNAMES)
     {
-	if(shared_info[i].nameid >= 0 && !strcmp(evname, shared_name[shared_info[i].nameid].name))
-	    sendMessage(evname, shared_info[i].msgkey, data_len, data);
+    	for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
+		//if(shared_info[i].nameid >= 0 && !strcmp(evname, shared_name[shared_info[i].nameid].name))
+	    if(shared_info[i].nameid == name_idx)
+	    	sendMessage(evname, shared_info[i].msgkey, data_len, data);
     }
 
     releaseLock();
