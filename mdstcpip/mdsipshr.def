@@ -41,3 +41,10 @@ MdsSetClientAddr
 MdsGetServerPortname
 MdsGetClientAddr
 GetAnswerInfoTS
+CloseSocket
+RegisterRead
+FdActive
+ConnectToInet
+SetFD
+ClearFD
+CreateListener
