@@ -620,13 +620,8 @@ int  MdsPut(char *pathname, char *expression, ...)
 
   if (mdsSocket > 0)   /* CLIENT/SERVER */
   {
-#ifdef _UNIX_SERVER
     static char *putexpprefix = "TreePut(";
     static char *argplace = "$,";
-#else
-    static char *putexpprefix = "MDSLIB->MDS$PUT(";
-    static char *argplace = "descr($),";
-#endif
     char *putexp;
     struct descrip putexparg;
     struct descrip exparg;
@@ -730,11 +725,7 @@ int  MdsOpen(char *tree, int *shot)
     int dtype_long = DTYPE_LONG;
     int null = 0;
 
-#ifdef _UNIX_SERVER
     static char *expression = "TreeOpen($,$)";
-#else
-    static char *expression = "MDSLIB->MDS$OPEN($,$)";
-#endif
 
     length = strlen(tree);
     d1 = descr(&dtype_cstring,tree,&null,&length);
@@ -780,11 +771,7 @@ int  MdsClose(char *tree, int *shot)
     int dtype_long = DTYPE_LONG;
     int null = 0;
 
-#ifdef _UNIX_SERVER
     static char *expression = "TreeClose($,$)";
-#else
-    static char *expression = "MDSLIB->MDS$CLOSE($,$)";
-#endif
 
     length = strlen(tree);
     d1 = descr(&dtype_cstring,tree,&null,&length);
@@ -821,11 +808,7 @@ int  MdsSetDefault(char *node)
 
   if (mdsSocket > 0) {
 
-#ifdef _UNIX_SERVER
     static char *expression = "TreeSetDefault($)";
-#else
-    static char *expression = "MDSLIB->MDS$SET_DEFAULT($)";
-#endif
 
     long answer;
     int length = strlen(node);
