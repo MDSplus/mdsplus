@@ -1058,17 +1058,21 @@ public class Waveform extends Canvas
     
     public void SelectWave()
     {
+        int w = getSize().width;//getWidth();
+        int h = getSize().height;//getHeight();
         Graphics g = getGraphics();
         g.setColor(Color.red);
-        g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+        g.drawRect(0, 0, w - 1, h - 1);
         is_select = true;   
     }
     
     public void DeselectWave()
     {
+        int w = getSize().width;//getWidth();
+        int h = getSize().height;//getHeight();
         Graphics g = getGraphics();
         g.setColor(Color.black);
-        g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+        g.drawRect(0, 0, w - 1, h - 1);
         is_select = false;
         
     }

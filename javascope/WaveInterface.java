@@ -255,7 +255,7 @@ public class WaveInterface
         if(num_waves != 0)
         {
             for(int i = 0; i < num_waves; i++)
-                if(name.equals(in_y[i]))
+                if(name.equals(in_y[i]) || name.equals(in_label[i]))
                 {
                     for(int j = i; j < i + num_shot; j++)
                     {
@@ -283,13 +283,16 @@ public class WaveInterface
 
     public String[] getSignalsName()
     {
-        String name[] = null;
+        String name[] = null, s;
         
         if(num_waves != 0)
         {
             name = new String[num_waves/num_shot];
             for(int i = 0, j = 0; i < num_waves; i+= num_shot)
-                name[j++] = in_y[i];
+            {
+                s = (in_label[i] != null && in_label[i].length() != 0) ? in_label[i] : in_y[i];
+                name[j++] = s;
+            }
         }
         return name;
     }

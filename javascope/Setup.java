@@ -637,9 +637,9 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	autoscale.addActionListener(this);
 	add(autoscaleY = new MenuItem("Autoscale Y"));
 	autoscaleY.addActionListener(this);
-	add(autoscaleAll = new MenuItem("Autoscale all"));
+	add(autoscaleAll = new MenuItem("Autoscale all", new MenuShortcut(KeyEvent.VK_B)));
 	autoscaleAll.addActionListener(this);
-	add(autoscaleAllY = new MenuItem("Autoscale all Y"));
+	add(autoscaleAllY = new MenuItem("Autoscale all Y", new MenuShortcut(KeyEvent.VK_Y)));
 	autoscaleAllY.addActionListener(this);
 	add(allSameScale = new MenuItem("All same scale"));
 	allSameScale.addActionListener(this);
@@ -740,16 +740,23 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	            legend.setEnabled(s_name.length != 0);
                 for(int i = 0; i < s_name.length; i++)
                 {
-                    signalList.add(ob = new CheckboxMenuItem(s_name[i], s_state[i]));
+                    signalList.add(ob = new CheckboxMenuItem(s_name[i]));
+                    ob.setState(s_state[i]);
                     ob.addItemListener(this);
                 }
             }
             
             if(w.wi.make_legend)
             	remove_legend.setEnabled(true);
-        } else
+        } else {
             signalList.setEnabled(false);
-        
+            markerList.setEnabled(false);
+            colorList.setEnabled(false);	
+            interpolate_f.setEnabled(false);
+            markerStep.setEnabled(false);
+	        legend.setEnabled(false);
+            remove_legend.setEnabled(false);
+        }
         
         
 	    curr_x = x;

@@ -1,6 +1,6 @@
 import java.lang.Integer;
 import java.awt.*;
-import java.awt.font.*;
+//import java.awt.font.*;
 import java.awt.event.*;
 import java.util.Vector;
 import java.io.*;
@@ -69,8 +69,13 @@ public class FontSelection extends ScopePositionDialog {
         styleLabel.setAlignment(Label.CENTER);
         stylePanel.add(styleLabel);
 
-        GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        envfonts = gEnv.getAvailableFontFamilyNames();
+//        if(System.getProperty("java.version").equals("1.2.2"))
+//        {
+//            GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//            envfonts = gEnv.getAvailableFontFamilyNames();
+//        } else {
+            envfonts = getToolkit().getFontList();
+//        }
         
         fonts = new Choice();
         for ( int i = 1; i < envfonts.length; i++ ) {
@@ -241,8 +246,8 @@ class FontPanel extends Panel {
     }
 
     public void paint (Graphics g) {
-        int w = getWidth();
-        int h = getHeight();
+        int w = getSize().width;//getWidth();
+        int h = getSize().height;//getHeight();
 
         g.setColor(Color.darkGray);
         g.setFont(thisFont);

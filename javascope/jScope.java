@@ -6,6 +6,7 @@ import java.lang.*;
 import java.util.Vector;
 import java.util.Properties;
 //import com.apple.mrj.*;
+import java.awt.event.KeyEvent;
 
 public class jScope extends Frame implements ActionListener, ItemListener, 
                              WindowListener 
@@ -425,28 +426,28 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     setMenuBar(mb);
     edit_m = new Menu("File");
     mb.add(edit_m);
-    open_i = new MenuItem("New Window");
+    open_i = new MenuItem("New Window", new MenuShortcut(KeyEvent.VK_N));
     edit_m.add(open_i);	
     open_i.addActionListener(this);
-    close_i = new MenuItem("Close"); 
+    close_i = new MenuItem("Close", new MenuShortcut(KeyEvent.VK_Q)); 
     edit_m.add(close_i);	
     close_i.addActionListener(this);    
-    exit_i = new MenuItem("Exit");
+    exit_i = new MenuItem("Exit", new MenuShortcut(KeyEvent.VK_E));
     edit_m.add(exit_i);	
     exit_i.addActionListener(this);
 
     pointer_mode_m = new Menu("Pointer mode");
     mb.add(pointer_mode_m);
-    point_i = new MenuItem("Point");
+    point_i = new MenuItem("Point", new MenuShortcut(KeyEvent.VK_Z));
     point_i.addActionListener(this);
     pointer_mode_m.add(point_i);
-    zoom_i  = new MenuItem("Zoom");
+    zoom_i  = new MenuItem("Zoom", new MenuShortcut(KeyEvent.VK_X));
     pointer_mode_m.add(zoom_i);
     zoom_i.addActionListener(this);
-    pan_i  = new MenuItem("Pan");
+    pan_i  = new MenuItem("Pan", new MenuShortcut(KeyEvent.VK_C));
     pointer_mode_m.add(pan_i);
     pan_i.addActionListener(this);
-    copy_i  = new MenuItem("Copy");
+    copy_i  = new MenuItem("Copy", new MenuShortcut(KeyEvent.VK_V));
     pointer_mode_m.add(copy_i);
     copy_i.addActionListener(this);
     pointer_mode_m.add(copy_i);
@@ -465,19 +466,19 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     
     customize_m = new Menu("Customize");
     mb.add(customize_m);    
-    default_i = new MenuItem("Global Settings ...");
+    default_i = new MenuItem("Global Settings ...", new MenuShortcut(KeyEvent.VK_G));
     customize_m.add(default_i);
     default_i.addActionListener(this);    
-    win_i = new MenuItem("Window ...");
+    win_i = new MenuItem("Window ...", new MenuShortcut(KeyEvent.VK_W));
     win_i.addActionListener(this);        
     customize_m.add(win_i);
-    font_i = new MenuItem("Font selection ...");
+    font_i = new MenuItem("Font selection ...", new MenuShortcut(KeyEvent.VK_F));
     font_i.addActionListener(this);    
     customize_m.add(font_i);
-    color_i = new MenuItem("Colors List ...");
+    color_i = new MenuItem("Colors List ...", new MenuShortcut(KeyEvent.VK_O));
     color_i.addActionListener(this);    
     customize_m.add(color_i);
-    pub_variables_i = new MenuItem("Public variables ...");
+    pub_variables_i = new MenuItem("Public variables ...", new MenuShortcut(KeyEvent.VK_P));
     pub_variables_i.addActionListener(this);    
     customize_m.add(pub_variables_i);
     brief_error_i = new CheckboxMenuItem("Brief Error", true);
@@ -503,10 +504,10 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
     autoscale_m = new Menu("Autoscale");
     mb.add(autoscale_m);
-    all_i = new MenuItem("All");
+    all_i = new MenuItem("All", new MenuShortcut(KeyEvent.VK_B));
     all_i.addActionListener(this);
     autoscale_m.add(all_i);
-    allY_i  = new MenuItem("All Y");
+    allY_i  = new MenuItem("All Y", new MenuShortcut(KeyEvent.VK_Y));
     autoscale_m.add(allY_i);
     allY_i.addActionListener(this);
     
