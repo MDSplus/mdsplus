@@ -17,12 +17,13 @@ public class jTraverser extends JFrame implements ActionListener
     JMenuItem open, close, quit;
     JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_task_b, add_text_b,
 	add_window_b, add_axis_b, add_device_b, add_child_b, add_subtree_b, delete_node_b, modify_tags_b,
-	rename_node_b, turn_on_b, turn_off_b, display_data_b, display_nci_b, modify_data_b,
+	rename_node_b, turn_on_b, turn_off_b, display_data_b, display_nci_b, display_tags_b, modify_data_b,
 	set_default_b, setup_device_b, do_action_b, outline_b, tree_b, copy_b, paste_b;
 
-    TreeDialog display_data_d = null, modify_data_d = null, display_nci_d = null;
+    TreeDialog display_data_d = null, modify_data_d = null, display_nci_d = null, display_tags_d = null;
     DisplayData display_data;
     DisplayNci display_nci;
+    DisplayTags display_tags;
     ModifyData modify_data;
     /**
      * Constructor.
@@ -107,8 +108,10 @@ public class jTraverser extends JFrame implements ActionListener
 	turn_off_b.addActionListener(this);
 	curr_menu.add(display_data_b = new JMenuItem("Display Data"));
 	display_data_b.addActionListener(this);
-	curr_menu.add(display_nci_b = new JMenuItem("Display Nci"));
-	display_nci_b.addActionListener(this);
+    curr_menu.add(display_nci_b = new JMenuItem("Display Nci"));
+    display_nci_b.addActionListener(this);
+    curr_menu.add(display_tags_b = new JMenuItem("Display Tags"));
+    display_tags_b.addActionListener(this);
 	curr_menu.add(modify_data_b = new JMenuItem("Modify Data"));
 	modify_data_b.addActionListener(this);
 	curr_menu.add(set_default_b = new JMenuItem("Set Default"));
@@ -160,9 +163,9 @@ public void actionPerformed(ActionEvent e)
     if(source == (Object)add_signal_b) tree.addNode(NodeInfo.USAGE_SIGNAL);
     if(source == (Object)add_task_b)tree.addNode(NodeInfo.USAGE_TASK);
     if(source == (Object)add_text_b) tree.addNode(NodeInfo.USAGE_TEXT);
+    if(source == (Object)add_child_b) tree.addNode(NodeInfo.USAGE_STRUCTURE);
     if(source == (Object)add_window_b) tree.addNode(NodeInfo.USAGE_WINDOW);
     if(source == (Object)add_axis_b)tree.addNode(NodeInfo.USAGE_AXIS);
-    if(source == (Object)add_child_b) tree.addNode(NodeInfo.USAGE_STRUCTURE);
     if(source == (Object)add_subtree_b) tree.addSubtree();
     if(source == (Object)delete_node_b) tree.deleteNode();
     if(source == (Object)modify_tags_b) tree.modifyTags();
@@ -200,16 +203,29 @@ public void actionPerformed(ActionEvent e)
     }
     if(source == (Object)display_nci_b)
     {
-	    if(tree.getCurrentNode() == null) return;
-	    if(display_nci_d == null)
-	    {
-	        display_nci_d = new TreeDialog(display_nci = new DisplayNci());
-	        display_nci.setFrame(display_nci_d);
-	    }
-	    display_nci.setNode(tree.getCurrentNode());
-	    display_nci_d.pack();
-	    display_nci_d.setLocation(new Point(50,50));
-	    display_nci_d.show();
+        if(tree.getCurrentNode() == null) return;
+        if(display_nci_d == null)
+        {
+            display_nci_d = new TreeDialog(display_nci = new DisplayNci());
+            display_nci.setFrame(display_nci_d);
+        }
+        display_nci.setNode(tree.getCurrentNode());
+        display_nci_d.pack();
+        display_nci_d.setLocation(new Point(50,50));
+        display_nci_d.show();
+    }
+    if(source == (Object)display_tags_b)
+    {
+        if(tree.getCurrentNode() == null) return;
+        if(display_tags_d == null)
+        {
+            display_tags_d = new TreeDialog(display_tags = new DisplayTags());
+            display_tags.setFrame(display_tags_d);
+        }
+        display_tags.setNode(tree.getCurrentNode());
+        display_tags_d.pack();
+        display_tags_d.setLocation(new Point(50,50));
+        display_tags_d.show();
     }
     if(source == (Object)modify_data_b)
     {

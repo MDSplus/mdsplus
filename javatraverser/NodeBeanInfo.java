@@ -8,12 +8,12 @@ public class NodeBeanInfo extends SimpleBeanInfo
     int usage;
     RemoteTree experiment;
     String name;
-    
+
     /* This constructor is intended to be used only by the traverser and not
-    by a standard Bean Bulder, which  considers only the class to discriminate the 
+    by a standard Bean Bulder, which  considers only the class to discriminate the
     corresponding BeanInfo object */
     public NodeBeanInfo(RemoteTree experiment, int usage, String name)
-    {	
+    {
 	this.experiment  = experiment;
 	this.usage = usage;
 	this.name = name;
@@ -43,7 +43,7 @@ public class NodeBeanInfo extends SimpleBeanInfo
       // per ora non definisco customizers
 	return new BeanDescriptor(Node.class, null);
     }
-    static PropertyDescriptor property(String name, String description) 
+    static PropertyDescriptor property(String name, String description)
 	throws IntrospectionException
     {
 	PropertyDescriptor p = new PropertyDescriptor(name, Node.class);
@@ -67,18 +67,20 @@ public class NodeBeanInfo extends SimpleBeanInfo
 	}catch(Exception exc){return false;}
 	return true;
     }
-	    
-	
+
+
     public PropertyDescriptor[] getPropertyDescriptors()
     {
 	try {
 		PropertyDescriptor[] props = {
 		    property("data", "Display Data"),
-		    property("info", "Display Nci"),
+            property("info", "Display Nci"),
+            property("info", "Display Tags"),
 		    property("data", "Modify Data")};
 		props[0].setPropertyEditorClass(NodeDisplayData.class);
-		props[1].setPropertyEditorClass(NodeDisplayNci.class);
-		props[2].setPropertyEditorClass(NodeModifyData.class);
+        props[1].setPropertyEditorClass(NodeDisplayNci.class);
+        props[2].setPropertyEditorClass(NodeDisplayTags.class);
+		props[3].setPropertyEditorClass(NodeModifyData.class);
 		return props;
 	} catch(IntrospectionException e)
 	{ return super.getPropertyDescriptors();}
@@ -91,7 +93,7 @@ public class NodeBeanInfo extends SimpleBeanInfo
 	md.setShortDescription(description);
 	return md;
     }
-    
+
     public MethodDescriptor[] getMethodDescriptors()
     {
 	try{
@@ -101,11 +103,10 @@ public class NodeBeanInfo extends SimpleBeanInfo
 		    method("setDefault", "Set Default"),
 		    method("doAction", "Do Action")};
 		return methods;
-	} catch (Exception e) 
+	} catch (Exception e)
 	{
 	    return super.getMethodDescriptors();
 	}
     }
-}    
-	    
-	
+}
+
