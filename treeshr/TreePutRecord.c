@@ -54,6 +54,7 @@ extern RMS$_WER;
 #pragma extern_model restore
 #endif /* __VMS */
 
+#define min(a,b) (((a) < (b)) ? (a) : (b))
 
 static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci);
 static int FixupNid(NID *nid, unsigned char *tree, struct descriptor *path);

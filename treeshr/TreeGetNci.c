@@ -727,3 +727,8 @@ static int OpenNciR(TREE_INFO *info)
 	}
 	return status;
 }
+
+void TreeFree(void *ptr)
+{
+  free(ptr);
+}

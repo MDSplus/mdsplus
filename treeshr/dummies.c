@@ -30,4 +30,3 @@ DummyArgs(TreeAddTag,int,(int nid,char *tag),1)
 DummyArgs(TreeRemoveNodesTags,int,(int nid),1)
 
 Dummy(TreeWait,1)
-void TreeFree(void *ptr) { free(ptr);}
