@@ -970,7 +970,6 @@ void CloseTree( Widget w, XtPointer client_data, XtPointer call_data)
       ListTreeRefreshOff(tree);
       if ((status&1) && (top != NULL)) ListTreeDelete(tree, top);
       Init(tree);
-      ListTreeRefreshOn(tree);
     }
 }
 
