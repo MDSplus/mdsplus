@@ -277,9 +277,9 @@ public fun RFXGClock__init(as_is _nid, optional _method)
         
     if(_output_mode >=3)
 		_axis = compile('MAKE_RANGE('//_trigger_time//'+'//_delay//','// 
-			_trigger_time//'+'//_delay//'+'//_duration//','// _period//')');
+			_trigger_time//'+'//_delay//'+'//_duration//','// _effective_period//')');
 	else
-		_axis = compile('MAKE_RANGE('//_trigger_time//'+'//_delay//',HUGE(0.),'// _period//')');
+		_axis = compile('MAKE_RANGE('//_trigger_time//'+'//_delay//',HUGE(0.),'// _effective_period//')');
 
    write(*, _axis);
 	DevPut(_nid, _N_CLOCK, _axis); 
