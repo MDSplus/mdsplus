@@ -1067,7 +1067,7 @@ sparc-sun-solaris2*)
          LDARC="-Wl,-B,static";
          CFLAGS="$CFLAGS -fpic";
        else 
-         LINKSHARED="-G -B symbolic -R \\\$\$LD_LIBRARY_PATH:/usr/local/mdsplus/lib:\$(exec_prefix)/lib";
+         LINKSHARED="-G -R \\\$\$LD_LIBRARY_PATH:/usr/local/mdsplus/lib:\$(exec_prefix)/lib";
          LD_LDARC="-B static ";
          LD_LDSHARE="-B dynamic ";
          LDSHARE="-B dynamic";
