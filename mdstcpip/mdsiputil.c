@@ -540,8 +540,8 @@ static void FlushSocket(SOCKET sock)
   FD_SET(sock,&readfds);
   FD_ZERO(&writefds);
   FD_SET(sock,&writefds);
-  while((((status = select(FD_SETSIZE, &readfds, &writefds, 0, &timout)) > 0) && FD_ISSET(sock,&readfds)) ||
-	       (status == -1 && errno == EINTR) && tries < 10)
+  while(((((status = select(FD_SETSIZE, &readfds, &writefds, 0, &timout)) > 0) && FD_ISSET(sock,&readfds)) ||
+	       (status == -1 && errno == EINTR)) && tries < 10)
   {
     tries++;
     if (FD_ISSET(sock,&readfds))
