@@ -35,5 +35,12 @@ extern int MdsFree1Dx(struct descriptor_xd *dsc, void **zone);
 extern int MdsMsg(int sts, char fmt[], ...);
 extern void MdsPk(char *nbits, int *nitems, int pack[], int items[], int *bit);
 extern int  MdsSetCurrentShotId(char *experiment,int shot);
+extern int MdsSerializeDscIn(char *in, struct descriptor_xd *out);
+extern int MdsSerializeDscOutZ(struct descriptor *in,struct descriptor_xd *out,
+    int (*fixupNid)(), void *fixupNidArg, int (*fixupPath)(),
+    void *fixupPathArg, int compress, int *compressible,
+    unsigned int *length, unsigned int *reclen,  unsigned char *dtype,
+    unsigned char *class, int  altbuflen, void *altbuf, int *data_in_altbuf);
+extern int MdsSerializeDscOut(struct descriptor *in,struct descriptor_xd *out);
 extern void MdsUnpk(char *nbits, int *nitems, int pack[], int items[], int *bit);
 extern int MdsXpand(int *nitems, struct descriptor_a *pack, struct descriptor_a *items, int *bit);
