@@ -71,3 +71,5 @@ str_trim
 pgmname
 dasmsg
 set_pgmname
+TranslateLogical
+TranslateLogicalFree

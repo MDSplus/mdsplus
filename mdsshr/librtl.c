@@ -99,11 +99,11 @@ char *index(char *str, char c)
 	return (pos == 0) ? ((str[0] == c) ? str : 0) : &str[pos];
 }
 
-char *TranslateLogical(char *pathname)
+static char *GetRegistry(char *where, char *pathname)
 {
   HKEY regkey1,regkey2,regkey3;
   unsigned char *path = NULL;
-  if ( (RegOpenKeyEx(HKEY_LOCAL_MACHINE,"SOFTWARE",0,KEY_READ,&regkey1) == ERROR_SUCCESS) &&
+  if ( (RegOpenKeyEx(where,"SOFTWARE",0,KEY_READ,&regkey1) == ERROR_SUCCESS) &&
        (RegOpenKeyEx(regkey1,"MIT",0,KEY_READ,&regkey2) == ERROR_SUCCESS) &&
        (RegOpenKeyEx(regkey2,"MDSplus",0,KEY_READ,&regkey3) == ERROR_SUCCESS) )
   {
@@ -113,7 +113,7 @@ char *TranslateLogical(char *pathname)
     {
 	  int plen;
 	  valsize += 2;
-      path = malloc(valsize);
+      path = malloc(valsize+1);
       RegQueryValueEx(regkey3,pathname,0,&valtype,path,&valsize);
 	  plen = strlen(path);
 	  if (path[plen-1] != '\\')
@@ -127,6 +127,14 @@ char *TranslateLogical(char *pathname)
   RegCloseKey(regkey2);
   RegCloseKey(regkey3);
   return (char *)path;
+}
+
+char *TranslateLogical(char *pathname)
+{
+	char *path = GetRegistry(HKEY_CURRENT_USER, pathname);
+	if (!path)
+		path = GetRegistry(HKEY_LOCAL_MACHINE, pathname);
+	return path;
 }
 
 int LibSpawn(struct descriptor *cmd, struct descriptor *in, struct descriptor *out)
@@ -1264,3 +1272,7 @@ static char *_FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind)
   return ans;
 }
 
+void TranslateLogicalFree(char *value)
+{
+	free(value);
+}

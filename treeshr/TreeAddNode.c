@@ -711,9 +711,9 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
       ntreef = fopen(nfilenam,"wb");
       if (ntreef)
       {
-        TREE_HEADER tmp;
         size_t num;
 #ifdef _big_endian
+        TREE_HEADER tmp;
         num = fwrite(HeaderOut(info_ptr->header,&tmp),512,header_pages,ntreef);
 #else
         num = fwrite(info_ptr->header,512,header_pages,ntreef);

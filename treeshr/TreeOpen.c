@@ -23,6 +23,9 @@
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
+extern char *TranslateLogical(char *);
+extern void TranslateLogicalFree(char *);
+
 int treeshr_errno = 0;
 
 extern int MdsEventCan();
@@ -621,32 +624,6 @@ int _TreeSetStackSize(void **dbid, int size)
 	return old_size;
 }
 
-#ifdef _WIN32
-#include <wtypes.h>
-#include <winreg.h>
-char *GetRegistryPath(char *pathname)
-{
-	HKEY regkey1,regkey2,regkey3;
-	unsigned char *path = NULL;
-	if ( (RegOpenKeyEx(HKEY_LOCAL_MACHINE,"SOFTWARE",0,KEY_READ,&regkey1) == ERROR_SUCCESS) &&
-		(RegOpenKeyEx(regkey1,"MIT",0,KEY_READ,&regkey2) == ERROR_SUCCESS) &&
-		(RegOpenKeyEx(regkey2,"MDSplus",0,KEY_READ,&regkey3) == ERROR_SUCCESS) )
-	{
-		unsigned long valtype;
-		unsigned long valsize;
-		if (RegQueryValueEx(regkey3,pathname,0,&valtype,NULL,&valsize) == ERROR_SUCCESS)
-		{
-			path = malloc(++valsize);
-			RegQueryValueEx(regkey3,pathname,0,&valtype,path,&valsize);
-		}
-	}
-	RegCloseKey(regkey1);
-	RegCloseKey(regkey2);
-	RegCloseKey(regkey3);
-	return (char *)path;
-}
-#endif
-
 static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,char **resnam_out)
 {
 	FILE *file = 0;
@@ -662,16 +639,14 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
 	tree_lower[i]=0;
 	strcpy(pathname,tree_lower);
 	strcat(pathname,TREE_PATH_SUFFIX);
-#if defined(_WIN32)
-	path = GetRegistryPath(pathname);
-#else
-	path = getenv(pathname);
-#endif
+	path = TranslateLogical(pathname);
 	if (path)
 	{
 		char *part;
 		int pathlen = strlen(path);
-		path = strcpy(malloc(pathlen+1),path);
+		char *npath = strcpy(malloc(pathlen+1),path);
+		TranslateLogicalFree(path);
+		path = npath;
 		if (shot < 0)
 			sprintf(name,"%s_model",tree_lower);
 		else if (shot < 1000)
