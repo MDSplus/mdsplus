@@ -63,6 +63,8 @@ extern int TdiUbound();
 extern int TdiDtypeRange();
 extern int TdiNint();
 extern int TdiDataWithUnits();
+extern int TdiWindowOf();
+extern int TdiSubtract();
 
 typedef struct {int x[2];} quadw;
 

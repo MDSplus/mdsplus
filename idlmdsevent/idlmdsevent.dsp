@@ -41,6 +41,7 @@ RSC=rc.exe
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
 # ADD CPP /nologo /MT /W3 /GX /O2 /I "$(IDL_DIR)\external" /I "..\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
@@ -100,7 +101,7 @@ SOURCE=..\idl\mdssetevent.pro
 # End Group
 # Begin Source File
 
-SOURCE=C:\RSI\IDL52\idl32.lib
+SOURCE="$(IDL_DIR)\idl32.lib"
 # End Source File
 # Begin Source File
 

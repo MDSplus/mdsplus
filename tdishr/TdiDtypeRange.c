@@ -44,6 +44,7 @@ extern int Tdi3Ramp();
 extern int Tdi3Multiply();
 extern int Tdi3Add();
 extern int TdiMasterData();
+extern int TdiNint();
 
 extern struct descriptor *TdiItoXSpecial;
 

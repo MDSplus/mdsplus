@@ -135,7 +135,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "javamds"=.\javascope\javamds.dsp - Package Owner=<4>
+Project: "javamds"=.\javamds\javamds.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -152,6 +152,18 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name treeshr
     End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "javatraverser"=.\javatraverser\javatraverser.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
 }}}
 
 ###############################################################################

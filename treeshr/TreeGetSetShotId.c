@@ -30,6 +30,12 @@ int TreeGetCurrentShotId(experiment,shot)
 #include <mdsshr.h>
 #include <libroutines.h>
 #include <strroutines.h>
+#include <stdlib.h>
+
+extern void TranslateLogicalFree();
+extern int TreeGetCurrentShotIdRemote();
+extern int TreeSetCurrentShotIdRemote();
+extern char *index();
 
 extern char *TranslateLogical();
 

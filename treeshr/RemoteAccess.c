@@ -385,7 +385,6 @@ void FindTagEndRemote(void **ctx_inout)
 {
   TAG_SEARCH **ctx = (TAG_SEARCH **)ctx_inout;
   struct descrip ans = empty_ans;
-  char exp[512];
   int status;
   int first_time = 0;
   if (*ctx != (TAG_SEARCH *)0)

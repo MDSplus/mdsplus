@@ -52,6 +52,12 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern void *DBID;
 
+extern int SetNciRemote();
+extern int TreeFlushOffRemote();
+extern int TreeFlushResetRemote();
+extern int TreeTurnOnRemote();
+extern int TreeTurnOffRemote();
+
 int TreeSetNci(int nid, NCI_ITM *nci_itm_ptr) { return _TreeSetNci(DBID, nid, nci_itm_ptr);}
 int TreeFlushOff(int nid) { return _TreeFlushOff(DBID, nid);}
 int TreeFlushReset(int nid) { return _TreeFlushReset(DBID, nid);}

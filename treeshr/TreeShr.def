@@ -112,3 +112,5 @@ _TreeVerify
 TreeWait
 TreeWriteTree
 _TreeWriteTree
+TreeGetCurrentShotId
+TreeSetCurrentShotId

@@ -400,6 +400,8 @@ extern int _TreeVerify();
 	extern int TreeWait();
 extern int TreeWriteTree();
 extern int _TreeWriteTree();
+extern int TreeGetCurrentShotId();
+extern int TreeSetCurrentShotId();
 
 #else
 
@@ -516,6 +518,8 @@ extern int _TreeVerify(void *dbid);
 extern int TreeWait();
 extern int TreeWriteTree(char *tree, int shot);
 extern int _TreeWriteTree(void **dbid, char *tree, int shot);
+extern int TreeGetCurrentShotId(char *experiment);
+extern int TreeSetCurrentShotId(char *experiment, int shot);
 
 #endif
 
