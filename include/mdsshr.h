@@ -48,3 +48,6 @@ extern int MDSEventAst(char *eventnam, void (*astadr)(void *,int,char *), void *
 extern int MDSEventCan(int eventid);
 extern int MDSEvent(char *evname, int num_bytes, char *data);
 extern int MDSWfevent(char *evname, int buflen, char *data, int *datlen);
+extern char  *MdsDtypeString( int  id );
+extern char  *MdsClassString( int  id );
+extern char  *MdsUsageString( int  id );

@@ -84,6 +84,9 @@
 #define NciRFA		 35
 #define NciIO_STATUS           36
 #define NciIO_STV              37
+#define NciDTYPE_STR           38
+#define NciUSAGE_STR           39
+#define NciCLASS_STR           40
 typedef struct nci_itm
 {
 	short int buffer_length;
