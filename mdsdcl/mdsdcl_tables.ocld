@@ -102,6 +102,8 @@ Define verb DO
         DISALLOW  INDIRECT AND REPEAT
 Define verb EXIT
 	Routine mdsdcl_exit
+Define verb QUIT
+	Routine mdsdcl_exit
 Define verb FINISH
 	Routine MDSDCL_FINISH
 Define verb HELP

@@ -30,13 +30,13 @@ libMdsdcl.a:	$(OBJFILES)
 ../shlib/libMdsdcl.$(SHARE_TYPE):	mdsdcl_tables.o  libMdsdcl.a
 	$(CC) $(CFLAGS)  -o $@ $(LFLAGS)		\
 		$(LD_SHARED_LIB_OPTIONS)		\
-		mdsdcl_tables.o		\
-		libMdsdcl.a  $(MDSPLUS)/cdu/libCdu.a	\
-		-lMdsShr  -lTreeShr  -lTdiShr  -lcurses -lc
+		mdsdcl_tables.o  libMdsdcl.a	\
+		-lMdsShr  -lTreeShr  -lTdiShr 	\
+		$(MDSPLUS)/cdu/libCdu.a  -lcurses  -lc
 
 ../bin/mdsdcl:	mdsdcl.o  ../shlib/libMdsdcl.$(SHARE_TYPE)
 	$(CC) $(CFLAGS) -o $@ $(LFLAGS) mdsdcl.o	\
-		-lMdsdcl -lMdsShr  $(MDSPLUS)/cdu/libCdu.a
+		-lMdsdcl -lMdsShr
 
 .depend:
 	touch .depend

@@ -3,6 +3,11 @@
 #define vms    1
 #endif
 #endif
+#ifdef __unix
+#ifndef unix
+#define unix    1
+#endif
+#endif
 
 #define _DESCRIPTOR_PREFIXES   1
 #include        <mdsdescrip.h>
