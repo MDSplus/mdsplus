@@ -143,10 +143,10 @@ char *TranslateLogical(char *pathname)
 	return path;
 }
 
-int LibSpawn(struct descriptor *cmd)
+int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag)
 {
   char *cmd_c = MdsDescrToCstring(cmd);
-  int status = _spawnlp(_P_WAIT, cmd_c, cmd_c, NULL);
+  int status = _spawnlp(waitflag ? _P_WAIT : _P_NOWAIT, cmd_c, cmd_c, NULL);
   free(cmd_c);
   return (status == 0);
 }
@@ -187,6 +187,8 @@ unsigned int LibCallg(void **arglist, FARPROC *routine)
 #include <sys/types.h>
 #include <dirent.h>
 #include <errno.h>
+#include <signal.h>
+#include <sys/wait.h>
 
 #ifdef HAVE_DL_H
 #include <dl.h>
@@ -318,47 +320,75 @@ unsigned int LibCallg(void **arglist, unsigned int (*routine)())
 
 
 #ifndef HAVE_VXWORKS_H
-int LibSpawn(struct descriptor *cmd)
+static void  child_done(	/* Return: meaningless sts		*/
+    int   sig			/* <r> signal number			*/
+   )
+   {
+    if (sig == SIGCHLD)
+        fprintf(stdout,"--> Process completed\n");
+    else
+        fprintf(stderr,"--> child_done: *NOTE*  sig=0x%08X\n",sig);
+
+    return;
+   }
+
+int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
 {
   pid_t  pid,xpid;
+  char *cmdstring = MdsDescrToCstring(cmd);
   int   sts;
+  signal(SIGCHLD,notifyFlag ? child_done : SIG_DFL);
   pid = fork();
   if (!pid)
-  {
+  {		/*-------------> child process: execute cmd	*/
     static char  *arglist[4];
     char  *p;
-    char *cmdstring = MdsDescrToCstring(cmd);
-    arglist[0] = nonblank(cmdstring);
-    p = blank(arglist[0]);
-    if (p)
+    if (cmd->length == 0)
     {
-      *p = '\0';
-      p = nonblank(p+1);
+      arglist[0] = getenv("SHELL");
+      arglist[1] = 0;
+      sts = execvp(arglist[0],arglist);
     }
-    arglist[1] = p;
-    sts = execvp(arglist[0],arglist);
-    arglist[3] = 0;
-    arglist[2] = arglist[1];
-    arglist[1] = arglist[0];
-    arglist[0] = "sh";
-    sts = execvp("/bin/sh",arglist);
-    fprintf(stderr,"\n+++ *ERR* should never have gotten here!\n");
-    perror("from inside mdsdcl_spawn()");
-    fprintf(stderr,"\n");
-    exit(1);
+    else
+    {
+      arglist[0] = nonblank(cmdstring);
+      p = blank(arglist[0]);
+      if (p)
+      {
+        *p = '\0';
+        p = nonblank(p+1);
+      }
+      arglist[1] = p;
+      sts = execvp(arglist[0],arglist);
+      printf("\nChild process:  try again ...\n");
+      arglist[3] = 0;
+      arglist[2] = arglist[1];
+      arglist[1] = arglist[0];
+      arglist[0] = "sh";
+      sts = execvp("/bin/sh",arglist);
+      fprintf(stderr,"\n+++ *ERR* should never have gotten here!\n");
+      perror("from inside mdsdcl_spawn()");
+      fprintf(stderr,"\n");
+      exit(1);
+    }
   }
+  /*-------------> parent process ...		*/
   if (pid == -1)
   {
     fprintf(stderr,"Error %d from fork()\n",errno);
     return(0);
   }
-  for ( ; ; )
+  if (waitflag)
   {
-    xpid = wait(&sts);
-    if (xpid == pid)
+    for ( ; ; )
+    {
+      xpid = wait(&sts);
+      if (xpid == pid)
       break;
+    }
   }
-  return 1;
+  free(cmdstring);
+  return sts;
 }
 
 #endif
@@ -457,7 +487,7 @@ int LibSigToRet(){return 1;}
 #include <symLib.h>
 #include <taskLib.h>
 
-int LibSpawn(struct descriptor *cmd)
+int LibSpawn(struct descriptor *cmd,int waitFlag, int notifyFlag)
 {
 /* In vxWorks it is possible to spawn function calls */
 
