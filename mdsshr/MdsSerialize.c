@@ -76,15 +76,6 @@ static short swapshort(char *in_c)
 
 #else
 
-static _int64 swapquad(char *in_c)
-{
-  _int64 out;
-  char *out_c = (char *)&out;
-  int i;
-  for (i=0;i<8;i++) out_c[i] = in_c[i];
-  return out;
-}
-
 static int swapint(char *in_c)
 {
   int out;
@@ -94,7 +85,7 @@ static int swapint(char *in_c)
   return out;
 }
 
-static int swapshort(char *in_c)
+static short swapshort(char *in_c)
 {
   short out;
   char *out_c = (char *)&out;
@@ -130,6 +121,7 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	  *po = in;
 	  po->pointer = (char *) (po + 1);
           memcpy(po->pointer,in_ptr+8,in.length);
+#if defined(WORDS_BIGENDIAN)
           if (po->length > 1 && po->dtype != DTYPE_T)
 	  {
 	    switch (po->length)
@@ -139,6 +131,7 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
             case 8: *(_int64 *)po->pointer = swapquad(po->pointer); break;
 	    }
 	  }
+#endif
 	}
 	bytes_out = align(sizeof(struct descriptor) + in.length,sizeof(void *));
         bytes_in = 8 + in.length;
@@ -186,10 +179,12 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	  {
 	    po->pointer = (unsigned char *) po + bytes_out;
             memcpy(po->pointer,&in_ptr[12+pi->ndesc*4],pi->length);
+#if defined(WORDS_BIGENDIAN)
             if (po->dtype == DTYPE_FUNCTION && po->length == 2)
 	      {
                 *(short *)po->pointer = swapshort((char *)po->pointer);
               }
+#endif
 	  }
 	}
 	bytes_out = align(bytes_out + pi->length,sizeof(void *));
@@ -256,6 +251,7 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
           memcpy(po->pointer,&in_ptr[bytes_in],pi->arsize);
 	  if (pi->aflags.coeff)
 	    po->a0 = po->pointer + (a0_of(in_ptr) - pointer_of(in_ptr));
+#if defined(WORDS_BIGENDIAN)
           if (po->dtype != DTYPE_T)
 	  {
             int i;
@@ -278,6 +274,7 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	      break;
 	    }
 	  }
+#endif
 	}
 	bytes_out += pi->arsize;
         bytes_in += pi->arsize;
@@ -525,11 +522,13 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
           if (inp->length)
 	  {
             memcpy(out_ptr,((char *)inp)+offset(inp->pointer),inp->length);
+#if defined(WORDS_BIGENDIAN)
             if (inp->dtype == DTYPE_FUNCTION && inp->length == 2)
 			{
 			  short value = swapshort((char *)out_ptr);
-              memcpy(out_ptr,&value,2);
+                          memcpy(out_ptr,&value,2);
 			}
+#endif
           }
           out_ptr += inp->length;
         }
