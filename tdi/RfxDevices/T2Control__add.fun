@@ -118,14 +118,11 @@ write(*,'T2Control__add');
 
 
     DevAddNode(_path // ':PAR44_NAME', 'TEXT', "ModeControlKp", *, _nid);
-    DevAddNode(_path // ':PAR44_VAL', 'NUMERIC', 
-		[0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0., 0.], *, _nid);
+    DevAddNode(_path // ':PAR44_VAL', 'NUMERIC', zero([32,32],0.), *, _nid);
     DevAddNode(_path // ':PAR45_NAME', 'TEXT', "ModeControlKi", *, _nid);
-    DevAddNode(_path // ':PAR45_VAL', 'NUMERIC', 
-		[0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0., 0.], *, _nid);
+    DevAddNode(_path // ':PAR45_VAL', 'NUMERIC', zero([32,32],0.), *, _nid);
     DevAddNode(_path // ':PAR46_NAME', 'TEXT', "ModeControlKd", *, _nid);
-    DevAddNode(_path // ':PAR46_VAL', 'NUMERIC', 
-		[0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0., 0.], *, _nid);
+    DevAddNode(_path // ':PAR46_VAL', 'NUMERIC', zero([32,32],0.), *, _nid);
 
     DevAddNode(_path // ':ZERO_START', 'NUMERIC', 0.1, *, _nid);
     DevAddNode(_path // ':ZERO_END', 'NUMERIC', 0.05, *, _nid);
