@@ -407,6 +407,8 @@ public class TR32Setup extends DeviceSetup {
     jPanel10.add(deviceField110, null);
     jPanel10.add(deviceField14, null);
     jPanel10.add(deviceChoice11, null);
+    jPanel2.add(deviceChannel8, null);
+    deviceChannel8.add(jPanel7, null);
     jPanel2.add(deviceChannel7, null);
     deviceChannel7.add(jPanel8, null);
     jPanel8.add(deviceField15, null);
@@ -415,8 +417,6 @@ public class TR32Setup extends DeviceSetup {
     jPanel9.add(deviceField18, null);
     jPanel9.add(deviceField19, null);
     jPanel9.add(deviceChoice13, null);
-    jPanel2.add(deviceChannel8, null);
-    deviceChannel8.add(jPanel7, null);
     jTabbedPane1.add(jPanel1, "Channels (Time)");
     jPanel7.add(deviceField16, null);
     jPanel7.add(deviceField20, null);
