@@ -104,6 +104,9 @@
 
 static unsigned char message_id = 1;
 Message *GetMdsMsg(SOCKET sock, int *status);
+#ifdef _WIN32
+Message *GetMdsMsgOOB(SOCKET sock, int *status);
+#endif
 int SendMdsMsg(SOCKET sock, Message *m, int oob);
 
 static int initialized = 0;
@@ -517,39 +520,100 @@ int  MdsSetDefault(SOCKET sock, char *node)
   return status;
 }
 
+#ifdef _WIN32
+typedef struct _EventThread {
+	SOCKET sock;
+	HANDLE thread_handle;
+	DWORD  thread_id;
+	int    eventid;
+	int    event_count;
+	struct _EventThread *next;
+} EventThread;
+
+static EventThread *eThreads = NULL;
+
+unsigned long WINAPI MdsDispatchEvent(SOCKET sock);
+#endif
+
 int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, void **eventid)
 {
+#ifdef _WIN32
+  EventThread *et;
+#endif
+
   struct descrip eventnamarg;
   struct descrip infoarg;
   struct descrip ansarg;
   MdsEventInfo info;
   int size = sizeof(info);
   int status;
+#ifdef _WIN32
+  for (et=eThreads; eThreads && et->sock != sock; et = et->next);
+  if (et == NULL) {
+	  et =  (EventThread *)malloc(sizeof(EventThread));
+      et->sock = sock;
+	  et->event_count = 0;
+	  et->next = eThreads;
+	  et->thread_handle = NULL;
+	  eThreads = et;
+  }
+#endif
   info.astadr = (void (*)(void *,int ,char *))astadr;
   info.astprm = astprm;
   status = MdsValue(sock, EVENTASTREQUEST, MakeDescrip((struct descrip *)&eventnamarg,DTYPE_CSTRING,0,0,eventnam), 
 			      MakeDescrip((struct descrip *)&infoarg,DTYPE_UCHAR,1,&size,&info),
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
-  if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) *eventid = *(void **)ansarg.ptr;
+  if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) {
+    *eventid = *(void **)ansarg.ptr;
+#ifdef _WIN32
+    et->eventid = *(int *)ansarg.ptr;
+    if (et->thread_handle == NULL)
+    et->thread_handle = CreateThread((LPSECURITY_ATTRIBUTES)NULL, 0, (LPTHREAD_START_ROUTINE)MdsDispatchEvent, (LPVOID)sock, (DWORD)NULL, &et->thread_id);
+    et->event_count++;
+#endif
+  }
   if (ansarg.ptr) free(ansarg.ptr);
   return status;
 }
 
 int  MdsEventCan(SOCKET sock, void *eventid)
 {
+#ifdef _WIN32
+  EventThread *et, *prev;
+#endif
   struct descrip eventarg;
-  struct descrip ansarg;
+  struct descrip ansarg = {0,0,0,0};
   int status = MdsValue(sock, EVENTCANREQUEST, MakeDescrip((struct descrip *)&eventarg,DTYPE_LONG,0,0,&eventid), 
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
   if (ansarg.ptr) free(ansarg.ptr);
+#ifdef _WIN32
+  for (prev=NULL,et=eThreads; et && (et->sock != sock); prev = et,et = et->next);
+  if (et) {
+	et->event_count--;
+	if (et->event_count == 0)
+	  closesocket(et->sock);
+      if (prev)
+		  prev->next = et->next;
+	  else
+		  eThreads = et->next;
+  }
+#endif
   return status;
 }
 
+#ifndef _WIN32
 void MdsDispatchEvent(SOCKET sock)
+#else
+unsigned long WINAPI MdsDispatchEvent(SOCKET sock)
+#endif
 {
   int status;
   Message  *m;
+#ifndef _WIN32
   if ((m = GetMdsMsg(sock,&status)) != 0)
+#else
+  while ((m = GetMdsMsgOOB(sock,&status)) != 0)
+#endif
   {
     if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo)))
     {
@@ -560,6 +624,9 @@ void MdsDispatchEvent(SOCKET sock)
     sys$qiow(0,sock,IO$_SETMODE | IO$M_ATTNAST,0,0,0,MdsDispatchEvent,sock,0,0,0,0);
 #endif
   }
+#ifdef _WIN32
+  return 0;
+#endif
 }
 
 static SOCKET ConnectToPort(char *host, char *service)
@@ -666,7 +733,9 @@ static SOCKET ConnectToPort(char *host, char *service)
   }
   setsockopt(s, SOL_SOCKET,SO_RCVBUF,(void *)&recvbuf,sizeof(recvbuf));
   setsockopt(s, SOL_SOCKET,SO_SNDBUF,(void *)&sendbuf,sizeof(sendbuf));
+#ifndef _WIN32
   setsockopt(s, SOL_SOCKET,SO_OOBINLINE,(void *)&one,sizeof(one));
+#endif
   setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&one, sizeof(one));
 #ifdef MULTINET
   sys$qiow(0,s,IO$_SETMODE | IO$M_ATTNAST,0,0,0,MdsDispatchEvent,s,0,0,0,0);
@@ -963,6 +1032,117 @@ Message *GetMdsMsg(SOCKET sock, int *status)
   }
   return msg;
 }
+
+#ifdef _WIN32
+Message *GetMdsMsgOOB(SOCKET sock, int *status)
+{
+  static MsgHdr header;
+  static Message *msg = 0;
+  int msglen = 0;
+  static struct timeval timer = {10,0};
+
+  int tablesize = FD_SETSIZE;
+
+  int nbytes;
+  int selectstat=0;
+  char last;
+  char *bptr = (char *)&header;
+  fd_set readfds;
+  fd_set exceptfds;
+  int bytes_remaining = sizeof(MsgHdr);
+    unsigned short flags = MSG_OOB;
+	DWORD oob_data;
+	int stat;
+  FD_ZERO(&readfds);
+  FD_SET(sock,&readfds);
+  FD_ZERO(&exceptfds);
+  FD_SET(sock,&exceptfds);
+  *status = 0;
+  if (msg)
+  {
+    free(msg);
+    msg = 0;
+  }
+
+  selectstat = select(tablesize, 0, 0, &exceptfds, NULL);
+  nbytes = recv(sock, &last, 1, flags);
+  stat = 	ioctlsocket(sock,SIOCATMARK,&oob_data);
+  while (bytes_remaining > 1) 
+  {
+    if (selectstat == -1 && errno == 4) continue;
+    if (msglen == 0)
+    {
+        nbytes = recv(sock, bptr, bytes_remaining, 0);
+      if (nbytes == 0)
+	  { 
+        *status = 0;
+        return 0;
+      }
+      else if (nbytes > 0)
+      {
+        bytes_remaining -= nbytes;
+        bptr += nbytes;
+        if (bytes_remaining == 0)
+        {
+          if ( Endian(header.client_type) != Endian(ClientType()) ) FlipHeader(&header);
+#ifdef DEBUG
+          printf("msglen = %d\nstatus = %d\nlength = %d\nnargs = %d\ndescriptor_idx = %d\nmessage_id = %d\ndtype = %d\n",
+               header.msglen,header.status,header.length,header.nargs,header.descriptor_idx,header.message_id,header.dtype);
+          printf("client_type = %d\nndims = %d\n",header.client_type,header.ndims);
+#endif
+          if (CType(header.client_type) > CRAY_CLIENT || header.ndims > MAX_DIMS)
+          {
+            *status = 0;
+            return 0;
+          }  
+          msglen = header.msglen;
+          bytes_remaining = msglen - sizeof(MsgHdr);
+          msg = malloc(msglen);
+          msg->h = header;
+          bptr = msg->bytes;
+        }
+      }
+      else
+      {
+        perror("GETMSG recv error");
+        printf("errno = %d\n",errno);
+      }
+    }
+    else
+    {
+      int bytes_this_time = min(bytes_remaining,BUFSIZ);
+      nbytes = recv(sock, bptr, bytes_this_time, 0);
+#ifdef DEBUG
+      {int i;
+      for (i=0;i<nbytes;i++)
+        printf("byte(%d) = 0x%x\n",i,bptr[i]);
+      }
+#endif
+      if (nbytes > 0)
+      {
+        bytes_remaining -= nbytes;
+        bptr += nbytes;
+      }
+      else
+      {
+	*status = 0;
+        return 0;
+      }
+    }
+  }
+  if (msglen && (bytes_remaining==1))
+  {
+	*bptr = last;
+    if ( Endian(header.client_type) != Endian(ClientType()) ) FlipData(msg);
+    *status = 1;
+  }
+  else
+  {
+    perror("Select problem");
+  }
+  return msg;
+}
+#endif
 
 int  IdlMdsClose(int lArgc, void * * lpvArgv)
 {
