@@ -5,7 +5,7 @@
 #include "treeshrp.h"
 #include <treeshr.h>
 #include <librtl_messages.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include <string.h>
 
 #include <stdlib.h>
