@@ -38,21 +38,12 @@ static int DoCamMulti(char *routine, char *name, int a, int f, int count, void *
 static int CamMulti(char *routine, char *name, int a, int f, int count, void *data, int mem, unsigned short *iosb)    
 {
   int status = 1;
-  int to_do = count;
-  char  *buf = (char *)data;
-  int bytes = (mem == 16) ? 2 : 4;
 
   iosb = (iosb) ? iosb : (unsigned short *)&RemCamLastIosb;
 
-  while(status && (to_do > 0)) {
-    int this_count = min(to_do*bytes, 65535);
-    this_count  /= bytes;
-    status = DoCamMulti(routine, name, a, f, this_count, buf, mem, (short *)iosb);
-    if (status&1) {
-      buf += iosb[1];
-      to_do -= iosb[1]/bytes;
-    }
-  }
+  status = DoCamMulti(routine, name, a, f, count, data, mem, (short *)&RemCamLastIosb);
+  if (iosb)
+    memcpy(iosb,&RemCamLastIosb,sizeof(RemCamLastIosb));
   return status;
 }
 
