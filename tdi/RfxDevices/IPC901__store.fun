@@ -7,7 +7,7 @@ public fun IPC901__store(as_is _nid, optional _method)
     private _N_WAVE_LEN_2 = 4;
     private _N_TRIG_MODE = 5;
     private _N_TRIG_SOURCE = 6;
-    private _N_N_SAMPLES = 7;
+    private _N_END_TIME = 7;
     private _N_ACQ_MODE = 8;
     private _N_STORE_FLAG = 9;
     private _N_DAC_GAIN = 10;
@@ -142,12 +142,13 @@ public fun IPC901__store(as_is _nid, optional _method)
 
 	_division = _fir_cut_off * _soft_decim * _hard_decim;
 
-	_n_samples = if_error(data(DevNodeRef(_nid, _N_N_SAMPLES)), _INVALID);
-	if(_n_samples == _INVALID)
+	_end_time = if_error(data(DevNodeRef(_nid, _N_N_END_TIME)), _INVALID);
+	if(_end_time == _INVALID)
 	{
     	DevLogErr(_nid, "Invalid number of samples specification");
  		abort();
 	}
+	_num_samples = _end_time/4E-6 + 0.5;
 	_period = _division / 250E3;
 
     DevNodeCvt(_nid, _N_ACQ_MODE, ["CALIBRATION", "MEASURE"],[0,1], _acq_mode = _INVALID);

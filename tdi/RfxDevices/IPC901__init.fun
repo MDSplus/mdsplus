@@ -7,7 +7,7 @@ public fun IPC901__init(as_is _nid, optional _method)
     private _N_WAVE_LEN_2 = 4;
     private _N_TRIG_MODE = 5;
     private _N_TRIG_SOURCE = 6;
-    private _N_N_SAMPLES = 7;
+    private _N_END_TIME = 7;
     private _N_ACQ_MODE = 8;
     private _N_STORE_FLAG = 9;
     private _N_DAC_GAIN = 10;
