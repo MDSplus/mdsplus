@@ -28,13 +28,13 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField1.setOffsetNid(1);
 		deviceField1.setLabelString("Comment: ");
 		getContentPane().add(deviceField1);
-		deviceField1.setBounds(12,12,432,40);
-		deviceField2.setNumCols(8);
+		deviceField1.setBounds(0,12,432,40);
+		deviceField2.setNumCols(12);
 		deviceField2.setTextOnly(true);
 		deviceField2.setOffsetNid(2);
 		deviceField2.setLabelString("VME IP:");
 		getContentPane().add(deviceField2);
-		deviceField2.setBounds(444,12,178,40);
+		deviceField2.setBounds(420,12,228,40);
 		deviceField3.setNumCols(8);
 		deviceField3.setOffsetNid(3);
 		deviceField3.setLabelString("Frequency (Hz): ");
@@ -142,8 +142,14 @@ public class T2ControlSetup extends DeviceSetup
 		JTabbedPane1.setTitleAt(0,"Intelligent Shell");
 		JTabbedPane1.setTitleAt(1,"Rotating Perturbation");
 		JTabbedPane1.setTitleAt(2,"Mode Control");
+		{
+			String[] tempString = new String[2];
+			tempString[0] = "INIT";
+			tempString[1] = "STORE";
+			deviceButtons1.setMethods(tempString);
+		}
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(180,396,281,40);
+		deviceButtons1.setBounds(168,396,336,40);
 		getContentPane().add(deviceDispatch1);
 		deviceDispatch1.setBounds(516,60,131,40);
 		//}}
