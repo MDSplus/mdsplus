@@ -138,7 +138,7 @@ static char  *NidToTree(int   nid)
          **************************************************************/
 static void  PutOnRemainingList(Server *s)
    {
-	int i;
+    int   i;
     static char  fmt[] = "Error creating pulse %s on server %s, will try\
  another server";
     char  msg[128];

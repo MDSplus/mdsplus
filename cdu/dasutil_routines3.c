@@ -1,7 +1,7 @@
 #include        <stdio.h>
 #include        <string.h>
-#include		<stdlib.h>
-#include		<ctype.h>
+#include        <stdlib.h>
+#include        <ctype.h>
 #include        "dasutil.h"
 
 #if defined(vms)
@@ -12,12 +12,12 @@
 #define read _read
 #else
 #include        <malloc.h>
+#include        <sys/types.h>
+#include        <termios.h>
 #ifdef CURSES
 #include        <curses.h>				/*  */
 #include        <term.h>				/*  */
 #endif
-#include        <sys/types.h>
-#include        <termios.h>
 #endif
 
 /***********************************************************************
@@ -192,8 +192,8 @@ static int   setupterm(
     *ierr = 1;
     return(0);
    }
-#endif		/* CURSES	*/
-#endif   	/* vms		*/
+#endif		/* !CURSES	*/
+#endif   	/* !vms		*/
 
 
 

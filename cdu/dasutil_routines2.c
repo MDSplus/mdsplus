@@ -1,4 +1,6 @@
-#ifdef _WIN32
+#if defined(vms)
+#include        <varargs.h>
+#elif defined (_WIN32)
 #include <io.h>
 #define isatty _isatty
 #endif
@@ -8,10 +10,6 @@
 #include        <stdio.h>
 #include        <string.h>
 #include        <time.h>
-#ifdef vms
-#include        <varargs.h>
-#endif
-
 
 /***********************************************************************
 * CDATE.C --
@@ -345,16 +343,14 @@ extern int   lib$get_foreign();
 	 ***************************************************************/
 static void  __initialize()
    {
-#ifdef vms
-    short  len;
-#endif
-
     if (inputStruct[0].fp)
         return;				/*---------------------> return	*/
 
 #ifdef vms
     if (!dsc_cmdLine.dscA_pointer[0])
        {
+        short len;
+
         lib$get_foreign(&dsc_cmdLine,0,&len);
         dsc_cmdLine.dscA_pointer[len] = '\0';
        }
@@ -506,11 +502,11 @@ void  putNext(
 static void  clearAll()
    {
     FILE  *fp;
+    char  *linePtr;
+    char  *p;
 #ifdef vms
     char  filename[128];
 #endif
-    char  *linePtr;
-    char  *p;
 
     for ( ; inIdx ; inIdx--)
        {

@@ -233,20 +233,8 @@ char  *s,*t;
         if (i = toupper(*s) - toupper(*t))  break;
     return(i);
    }
-#include        <stdio.h>
 #include        "dasutil.h"
-
-/*************************************************************************
-* init_timer.c
-*
-* Routines to show resource usage:  init_timer, show_timer.
-*
-* History:
-*  10-Mar-1993  TRG   Create.
-*
-**************************************************************************/
-
-
+#include        <stdio.h>
 #include        <errno.h>
 #if defined(vms)
 #include        <lib$routines.h>
@@ -263,6 +251,16 @@ static struct timeval  startTime;
 static struct timeval  nowTime;
 #endif
 
+/*************************************************************************
+* init_timer.c
+*
+* Routines to show resource usage:  init_timer, show_timer.
+*
+* History:
+*  10-Mar-1993  TRG   Create.
+*
+**************************************************************************/
+
 
 
 	/*****************************************************************
@@ -273,8 +271,8 @@ int   init_timer()
 #if defined(vms)
     lib$init_timer();
 #elif defined(_WIN32)
-	cpu_start = clock();
-	time_start = time(&time_start);
+    cpu_start = clock();
+    time_start = time(&time_start);
 #else
     gettimeofday(&startTime,0);
     if (getrusage(RUSAGE_SELF,&base))
@@ -294,9 +292,11 @@ int   show_timer()
     lib$show_timer();
     printf("\n");
 #elif defined(_WIN32)
-	time_t now;
-	now = time(&now);
-	fprintf(stderr,"elapsed=%g cpu=%g",difftime(now,time_start),(clock()-cpu_start)/CLOCKS_PER_SEC );
+    time_t now;
+
+    now = time(&now);
+    fprintf(stderr,"elapsed=%g cpu=%g\n",
+        difftime(now,time_start),(clock()-cpu_start)/CLOCKS_PER_SEC );
 #else
     long emsec,umsec,smsec;		/* milliseconds			*/
 
@@ -929,49 +929,6 @@ int   doubleToken(
     *s = p;
     return(1);
    }
-
-
-
-	/***************************************************************
-	 * main:
-	 ***************************************************************/
-/*main()
-/*   {
-/*    static char  token[128];
-/*    static char  line[128];
-/*    static DESCRIPTOR(dsc_line,line);
-/*    static DESCRIPTOR(dsc_token,token);
-/*    static int   flag;			/* for lib$get_foreign		*/
-/*    long  tknLen;
-/*    int   sts;
-/*    char  *p;
-/*    char  *wc;
-/*    int   val;
-/*    static char wildcards[] = "*%#";
-/*
-/*    printf("Wildcards?  <N>  ");
-/*    wc = yesno(0) ? wildcards : 0;
-/*
-/*    for ( ; ; )
-/*       {
-/*        printf("\nEnter >  ");
-/*        if (!fgets(line,sizeof(line),stdin))
-/*           {
-/*            printf(" Quitting?  ");
-/*            if (yesno(0))
-/*                exit();
-/*           }
-/*        for (p=line ; ; )
-/*           {
-/*            if (longToken(&p,&dsc_token,&tknLen,&val))
-/*                printf("   length=%-3d '%s'  integer=%d\n",tknLen,token,val);
-/*            else if (nextToken(&p,&dsc_token,&tknLen,wc,NIL))
-/*                printf("   length=%-3d '%s'\n",tknLen,token);
-/*            else
-/*                break;			/* out of loop			*/
-/*           }
-/*       }
-/*   }						/*  */
 
 
 
