@@ -1,3 +1,15 @@
+/*  CMS REPLACEMENT HISTORY, Element MDSIPUTIL.C */
+/*  *10   22-OCT-1999 13:48:09 TWF "don't use timeout on vms" */
+/*  *9    22-OCT-1999 13:45:37 TWF "don't use timeout on vms" */
+/*  *8    22-OCT-1999 13:45:16 TWF "don't use timeout on vms" */
+/*  *7    22-OCT-1999 13:41:17 TWF "Add login capability" */
+/*  *6    21-OCT-1999 10:39:56 TWF "Add password handling" */
+/*  *5     4-JUN-1999 10:22:04 TWF "Do not let message_id become zero" */
+/*  *4     8-APR-1999 16:06:35 TWF "Add ucx support" */
+/*  *3     8-APR-1999 15:47:05 TWF "Add ucx support" */
+/*  *2     8-APR-1999 15:33:54 TWF "Add ucx support" */
+/*  *1     8-APR-1999 15:24:52 TWF "common utility routines" */
+/*  CMS REPLACEMENT HISTORY, Element MDSIPUTIL.C */
 #include "mdsip.h"
 #ifndef min
 #define min(a,b) (((a) < (b)) ? (a) : (b))

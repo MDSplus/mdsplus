@@ -235,7 +235,7 @@ switch (encrypt) {
 
  	/* Use a blank padded username */
 	strncpy(uname, username->pointer, r5);
-	username->pointer = (char *)&uname;
+	username->pointer = (char *)uname;
 	username->length = 12;
 	break;
 
