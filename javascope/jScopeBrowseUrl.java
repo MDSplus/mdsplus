@@ -109,9 +109,15 @@ public class jScopeBrowseUrl extends JDialog
 
     }
 
+
+    final static String u_agent = "jScopeBrowseUrl.java ($Revision$) for "+jScope.VERSION;
+
     protected void setPage(URL url) throws IOException
     {
         url_con = url.openConnection();
+
+        url_con.setRequestProperty("User-Agent",u_agent);
+
         mime_type = url_con.getContentType();
 
         // Assume (like browsers) that missing mime-type indicates text/html.
