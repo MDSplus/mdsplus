@@ -41,8 +41,8 @@ extern int TdiFindImageSymbol(  );
 extern int TdiGetLong(  );
 extern int TdiPutIdent(  );
 
-static int TdiInterlude  (int opcode, struct descriptor **newdsc, int (*routine)(  ), unsigned int (*called)(  ),
-                          int *result, int *max)
+static int TdiInterlude  (int opcode, struct descriptor **newdsc, int (*routine)(  ), unsigned int *(*called)(  ),
+                          void **result, int *max)
 {
 #if  defined(__ALPHA) && defined(__VMS)
         int f_regs = (*(int *)routine == 0x23FF0000) ? 0 : 1;
@@ -165,7 +165,7 @@ fort:			tmp[ntmp] = EMPTY_XD;
 			origin[ntmp++] = (unsigned char)j;
 		}
 	}
-        if (status &1) status = TdiInterlude(opcode,newdsc, routine, LibCallg, (int *)result,&max);
+        if (status &1) status = TdiInterlude(opcode,newdsc, routine, (void *)LibCallg, (void **)result,&max);
 	if (!out_ptr) goto skip;
 	if (status & 1) switch (opcode) {
 	case DTYPE_DSC :
