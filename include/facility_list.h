@@ -20,6 +20,7 @@
 #define MDSDCL_FACILITY        0x4001
 #define CLI_FACILITY           0x4002
 #define CCL_FACILITY           0x4003
+#define SERVERSHR_FACILITY     0x0FE1
 #define TCL_FACILITY           0x4004
 #define TDI_FACILITY           0x0FD3
 #define TREESHR_FACILITY       0x0FD1

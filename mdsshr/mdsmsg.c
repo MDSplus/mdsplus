@@ -22,6 +22,7 @@
 #include        "librtl_messages.h"
 #include        "tdimessages.h"
 #include        "treeshr.h"
+#include        "servershr.h"
 
 extern void StrCopyDx();
 
@@ -73,6 +74,12 @@ static int   getFacility(	/* Return: num entries in stsText[]	*/
         *stsText = ccl_stsText;		/* point to array		*/
         *facilityText = "CCL_FACILITY";
         max = sizeof(ccl_stsText)/sizeof(ccl_stsText[0]);
+       }
+    else if (facility == SERVERSHR_FACILITY)
+       {
+        *stsText = servershr_stsText;		/* point to array		*/
+        *facilityText = "SERVERSHR_FACILITY";
+        max = sizeof(servershr_stsText)/sizeof(servershr_stsText[0]);
        }
     else if (facility == TDI_FACILITY)
        {
