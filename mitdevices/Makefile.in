@@ -728,3 +728,12 @@ MitDevices.exports: MitDevices.def
 @MAKEUIDDIR@UMCCD.uid : UMCCD.uil ; $(UIL) -o @MAKEUIDDIR@UMCCD.uid UMCCD.uil
 @MAKEUIDDIR@U_OF_M_SPECT.uid : U_OF_M_SPECT.uil ; $(UIL) -o @MAKEUIDDIR@U_OF_M_SPECT.uid U_OF_M_SPECT.uil
 
+#
+# This build must be done on a glibc 2.2.2 system (RedHat 7.x) or idl will have undefined references
+#
+@MAKESHLIBDIR@libIDL.so : callidl.c
+	cc -o @MAKESHLIBDIR@libIDL.so callidl.c -shared \
+               -I/usr/local/rsi/idl/external \
+               -L/usr/local/rsi/idl/bin/bin.linux.x86/ -lidl \
+               -L/usr/X11R6/lib -lXm -lXp -lXpm -lXext -lXt -lSM -lICE -lX11 \
+               -ldl -ltermcap -lrt -lm -lpthread

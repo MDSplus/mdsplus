@@ -11,29 +11,21 @@ static char *GetNextCmd (char **cmds);
 
 static int idl_initialized = 0;
 
-static int (*IDL_Execute)(int num, char *cmds[]);
-static int (*IDL_ExecuteStr)(char *cmd);
-static int (*IDL_Init) (int options, int *argc, char *argv[]);
-#define IDL_INIT_NOTTYEDIT 32
+static int (*execute)(char *cmd);
 
 static void InitIdl()
 {
   int zero;
   if (!idl_initialized)
   {
-    DESCRIPTOR(image,"idl");
-    DESCRIPTOR(idl_execute,"IDL_Execute");
-    DESCRIPTOR(idl_executestr,"IDL_ExecuteStr");
-    DESCRIPTOR(idl_init,"IDL_Init");
+    DESCRIPTOR(image,"IDL");
+    DESCRIPTOR(execute_d,"execute");
     int status;
-    status = LibFindImageSymbol(&image,&idl_init,&IDL_Init);
+    status = LibFindImageSymbol(&image,&execute_d,&execute);
     if (status & 1)
-    {
-      (*IDL_Init)(IDL_INIT_NOTTYEDIT,&zero,0);
-      LibFindImageSymbol(&image,&idl_execute,&IDL_Execute);
-      LibFindImageSymbol(&image,&idl_executestr,&IDL_ExecuteStr);
+      status = (*execute)("print,'IDL Activated'") == 0;
+    if (status & 1)
       idl_initialized = 1;
-    }
     else
       printf("Error activating IDL");
   }
@@ -41,14 +33,11 @@ static void InitIdl()
 
 int idl___execute(struct descriptor *niddsc, InExecuteStruct *setup)
 {
-  int ctx = 0;
-  int first;
   static char *initialize[] = {"close,/all","!ERROR = 0","retall"};
-  static int c_nids[IDL_K_CONG_NODES];
   int status = IDL$_ERROR;
-  char *ptr;
   char *cmd;
   char *cmds;
+  int i;
 
   if (idl_initialized == 0) {
     InitIdl();
@@ -57,12 +46,10 @@ int idl___execute(struct descriptor *niddsc, InExecuteStruct *setup)
   if (idl_initialized == 0) {
     return status;
   }
-
-  status = (*IDL_Execute)(sizeof(initialize)/sizeof(initialize[0]), initialize) == 0;
-  if (! status) return status;
+  for (i=0;i<sizeof(initialize)/sizeof(initialize[0]);i++) (*execute)(initialize[i]);
 
   for (cmds = setup->commands; status && (cmd = GetNextCmd(&cmds));)
-    status = (*IDL_ExecuteStr)(cmd) == 0;
+    status = (*execute)(cmd) == 0;
 
   if (status==0) status = IDL$_ERROR;
   return status;
