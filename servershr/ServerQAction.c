@@ -364,7 +364,10 @@ static void DoSrvAction(SrvJob *job_in)
     ans_dsc.pointer = (char *)&retstatus; 
     TreeSetDefaultNid(0);
     if (Logging)
-      printf("%s, %s\n",Now(),current_job_text);
+      {
+	  printf("%s, %s\n",Now(),current_job_text);
+	  fflush(stdout);
+      }
     status = TdiDoTask(&nid_dsc,&ans_dsc MDS_END_ARG);
     if (status & 1)
       status = retstatus;

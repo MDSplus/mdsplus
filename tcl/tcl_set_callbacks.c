@@ -76,7 +76,10 @@ void TclTextOut(		/* Returns: void			*/
     if (TextOut)
         (*TextOut) (text);
     else
+      {
         printf("%s\n",text?text:"");
+        fflush(stdout);
+      }
    }
 
 
