@@ -44,9 +44,15 @@ all :
 clean :
 	cdir=`pwd`; \
 	for dir in $(PARTS) ; do\
+           echo Cleaning $${dir};\
 	  if (test -d $${dir}) then \
 	    cd $${dir};\
-	    make DEPEND=/dev/null clean;\
+	    if (test -f Makefile.`uname`) then \
+	      make='make -f Makefile.'`uname`;\
+            else\
+	      make=make;\
+            fi;\
+            $$make DEPEND=/dev/null clean;\
 	    cd $$cdir;\
           fi;\
 	done

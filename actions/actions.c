@@ -67,7 +67,7 @@ int       main(int argc, String *argv)
   static struct { String tree;
                   int    shot;
                 } db;
-  static String hierarchy_names[] = {{"actions.uid"}};
+  static String hierarchy_names[] = {"actions.uid"};
   static MrmRegisterArg register_list[] = {{"Modify",(char *)Modify},
                                            {"Refresh",(char *)Refresh},
                                            {"Exit",(char *)Exit},
