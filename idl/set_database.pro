@@ -88,6 +88,10 @@ IF event.type EQ 0 THEN BEGIN
       RETURN
    ENDIF
 
+   If event.ch eq 10 then begin
+     return
+   endif
+
       ; Get the current text in the widget and find its length.
 
    Widget_Control, event.id, Get_Value=text
@@ -97,15 +101,7 @@ IF event.type EQ 0 THEN BEGIN
       ; Store the password and return asterisks.
 
 ;   selection = Widget_Info(event.id, /Text_Select)
-   Widget_Control, event.id, Set_Text_Select=[event.offset-1,event.offset]
-
-      ; Insert the character at the proper location.
-
-   Widget_Control, event.id, /Use_Text_Select, Set_Value='*'
-
-      ; Update the current insertion point in the text widget.
-
-   Widget_Control, event.id, Set_Text_Select=event.offset + 1
+   Widget_Control, event.id, set_value=replicate('*', length), Set_Text_Select=event.offset + 1
 
       ; Store the password.
 
@@ -274,6 +270,7 @@ function CreateNewDBFile, file, dbname
   ctx = *ptr
   ptr_free, ptr
   if (ctx.status) then begin
+    help, file
     openw, lun, file, /get_lun, err=err
     if (err ne 0) then begin
       x = dialog_message("SetDatabase - error creating file "+file)
@@ -292,7 +289,7 @@ function CreateNewDBFile, file, dbname
     printf, lun, ctx. password1
     close, lun
     free_lun, lun
-    file_chmod, file, a_read=0, a_write=0,/o_read, /o_write
+    file_chmod, file, '0600'o
     return, 1
   endif else $
     return, 0
