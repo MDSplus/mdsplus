@@ -8,9 +8,20 @@
 //	specifically:
 //			CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
-// Thu Apr 12 15:01:47 EDT 2001 -- added memory map support for SetCrate cmd
-//
-//#define DEBUG 1
+//	$Id$
+//-------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------
+// Thu Apr 12 15:01:47 EDT 2001 -- added memory map support for setcrate cmd
+// Wed Sep  5 11:39:41 EDT 2001	-- added dynamic debug printout control
+// Thu Sep 13 16:01:19 EDT 2001	-- fixed 'show/crate' code - now works with
+// 									power turned off or non-existant highway
+// Fri Nov  2 15:56:27 EST 2001	-- 'cleanup'
+// Fri Jan 25 15:56:16 EST 2002	-- fixed 'show' using wildcard characters
+// Wed Feb 20 12:46:12 EST 2002	-- 'removed' memory leak
+// Fri Feb 22 10:56:55 EST 2002	-- restructured 'deassign()'
+//-------------------------------------------------------------------------
+
 #define	NEED_WARM_N_FUZZY	1
 
 //-------------------------------------------------------------------------
@@ -25,6 +36,8 @@
 #include <unistd.h>
 #include <mdsdcldef.h>
 #include <clidef.h>
+
+#include <math.h>
 
 #include <fcntl.h>
 #include <sys/types.h>
@@ -61,6 +74,7 @@ extern struct CRATE		*CRATEdb;
 //-------------------------------------------------------------------------
 extern int  cli_get_value();
 extern int  cli_present();
+extern int  StrMatchWild();
 
 //-------------------------------------------------------------------------
 // helper routine
@@ -103,9 +117,9 @@ int Assign()
 
 	// check to see if db file exists
 	if( check_for_file(CTS_DB_FILE) != SUCCESS ) {	// does not exist, yet
-		// try to create it
+		// try to creat (sic) it
 		if( (fd = Creat(CTS_DB_FILE, 0666)) == ERROR ) {
-			status = FILE_ERROR;
+			status = FAILURE;				// FILE_ERROR;		[2001.07.12]
 			goto Assign_Exit;				// we're done  :<
 		}
 		else
@@ -115,28 +129,30 @@ int Assign()
 	// check to see if db file is memory mapped
 	if( CTSdbFileIsMapped == FALSE ) {				// is not, so try
 		if( map_data_file(CTS_DB) != SUCCESS ) {	// we're dead in the water
-			status = MAP_ERROR;
+			status = FAILURE;		// MAP_ERROR;		[2001.07.12]
 			goto Assign_Exit;
 		}
 	}
 
 	// get current db file count
 	if( (numOfEntries = get_file_count(CTS_DB)) < 0 ) {
-		status = FILE_ERROR;
+		status = FAILURE;			// FILE_ERROR;		[2001.07.12]
 		goto Assign_Exit;
 	}
 
 	if( numOfEntries ) {		// 1 or more
 		if( lookup_entry(CTS_DB, log_name.pointer) >= 0 ) {	// duplicate !
-			fprintf( stderr, "duplicate module name '%s' -- not allowed\n", log_name.pointer );
-			status = DUPLICATE;
+			if( MSGLVL(IMPORTANT) )
+				fprintf( stderr, "duplicate module name '%s' -- not allowed\n", log_name.pointer );
+
+			status = FAILURE;		// DUPLICATE;		[2001.07.12]
 			goto Assign_Exit;
 		}
 	}
 
 	// get db file size
 	if( (dbFileSize = get_db_file_size(CTS_DB_FILE)) == ERROR ) {
-		status = FILE_ERROR;
+		status = FAILURE;			// FILE_ERROR;		[2001.07.12]
 		goto Assign_Exit;
 	}
 	dbFileSize /= MODULE_ENTRY;	// .. current maximum number of possible module entries
@@ -144,7 +160,7 @@ int Assign()
 	// do we need to expand db file?
 	if( (dbFileSize == 0) || (numOfEntries == dbFileSize) ) {		// ... yes
 		if( expand_db(CTS_DB, numOfEntries) != SUCCESS ) {			// expand ...
-			status = EXPAND_ERROR;									// ... failure
+			status = FAILURE;		// EXPAND_ERROR; [2001.07.12]	// ... failure
 			goto Assign_Exit;
 		}
 	}		// else OK
@@ -168,28 +184,32 @@ int Assign()
 
 	// add it ...
 	if( add_entry(CTS_DB, line) != SUCCESS ) {
-		status = ASSIGN_ERROR;
+		status = FAILURE;		// ASSIGN_ERROR;		[2001.07.12]
 		goto Assign_Exit;
 	}
 
 #if NEED_WARM_N_FUZZY
 	// write to a buffer file for a warm fuzzy ...
 	if( (fd = Creat("buffer.db", 0666)) == ERROR ) {
-		perror("creat()");
-		status = FILE_ERROR;
+		if( MSGLVL(ALWAYS) )
+			perror("creat()");
+
+		status = FAILURE;		// FILE_ERROR;			[2001.07.12]
 		goto Assign_Exit;
 	}
 
 	rc = write(fd, line, sizeof(line));
 	close(fd);
 	if( rc != sizeof(line) ) {
-		perror("write()");
-		status = FILE_ERROR;
+		if( MSGLVL(ALWAYS) )
+			perror("write()");
+
+		status = FAILURE;		// FILE_ERROR;			[2001.07.12]
 	}
 #endif
 
 Assign_Exit:			// we're done, so out'a here!
-	if( MSGLVL(9) ) {
+	if( MSGLVL(DETAILS) ) {
 		printf("Assign(): "); ShowStatus(status);
 	}
 
@@ -207,24 +227,31 @@ int Autoconfig()
 	int		status = SUCCESS;		// optimistic
 	FILE	*fp;
 
-	// check to see if db file exists
-	if( check_for_file(CRATE_DB_FILE) != SUCCESS ) {		// does not exist
-		fprintf(stderr, "crate.db does not exist\n");
-		status = FILE_ERROR;
-		goto AutoConfig_Exit;								// we're done  :<
+	int j;
+	int found, retries;
+
+	// check to see if db file memory mapped
+	if( CRATEdbFileIsMapped == FALSE ) {			// is not, so try
+		if( map_data_file(CRATE_DB) != SUCCESS ) {	// we're dead in the water
+			if( MSGLVL(IMPORTANT) )
+				fprintf( stderr, "error memory mapping crate db file\n" );
+
+			status = MAP_ERROR;
+			goto AutoConfig_Exit;							// we're done  :<
+		}
 	}
 
 	// get current db file count
-	if( (numOfEntries = get_file_count(CRATE_DB)) < 0 ) {	// nothing to do ...
+	if( (numOfEntries = get_file_count(CRATE_DB)) <= 0 ) {	// nothing to do ...
 		status = FILE_ERROR;
 		goto AutoConfig_Exit;								// we're done  :<
 	}
-	if( MSGLVL(9) )
-		printf("found %d entries\n", numOfEntries);
 
 	// open file for read-only
 	if( (fp = Fopen(CRATE_DB_FILE, "r")) == NULL ) {
-		fprintf( stderr, "crate.db does not exist\n" );
+		if( MSGLLV(2) )
+			fprintf( stderr, "crate.db does not exist\n" );
+
 		status = FILE_ERROR;
 		goto AutoConfig_Exit;
 	}
@@ -236,18 +263,29 @@ int Autoconfig()
 		fscanf(fp, "%s", line);								// get a crate.db entry
 		sprintf(pHighwayName, "%.6s", line);				// trim it
 
-		if( MSGLVL(9) )
-			printf("checking '%s'\n",pHighwayName);
-
-		if( map_scsi_device(pHighwayName) != SUCCESS ) {	// map it if possible
-			fprintf( stderr, "error mapping scsi devices\n" );
-			status = ERROR;
-			goto AutoConfig_Exit;
+		// NB! this is a work-around -- seems necessary for the moment
+		for( j = 0; j < 2; j++ ) {
+			if( map_scsi_device(pHighwayName) != SUCCESS ) {	// map it if possible
+				if( MSGLVL(IMPORTANT) )
+					fprintf( stderr, "error mapping scsi device '%s'\n", pHighwayName );
+			}
 		}
+
+// NB! this is a work-around -- seems necessary for the moment	[2001.11.02] -- see above
+//		retries = 2;	// maximum retry count
+//		found = FALSE;
+//		while( !found && retries-- ) {
+//			if( (found = map_scsi_device(pHighwayName)) != SUCCESS ) {	// map it if possible
+//				fprintf( stderr, "error mapping scsi device '%s'\n", pHighwayName );
+//			}
+//		}
+
 	}
 	// end of for()...
 
 AutoConfig_Exit:
+	status = SUCCESS;
+
 	return status;
 } 
 
@@ -256,167 +294,119 @@ AutoConfig_Exit:
 //-------------------------------------------------------------------------
 int Deassign()
 {
-	char			db_tmp[CRATE_NAME_SIZE], line[MODULE_ENTRY], name[32], temp[32];
-	int 			i, index, j, modules_to_deassign, modulesDeassigned, numOfEntries; 
+	char			db_tmp[33];
+	int 			i, index, modulesToDeassign, modulesDeassigned, numOfEntries, physical_name; 
 	int				status = SUCCESS;
 	struct Module_	Mod, *pMod;
-	struct t_mod 	*element, *head, *tail;
 
 	static DESCRIPTOR( physical, "PHYSICAL" );
 
 	static DESCRIPTOR( modname_p, "MODULE" );
 	static DYNAMIC_DESCRIPTOR( modname );
 
-	pMod = &Mod;							// point to some actual storage
-	element = head = tail = NULL;			// initialize list pointers
+	static DYNAMIC_DESCRIPTOR( wild );
+
+	struct descriptor pattern;
 
 	// get user data
-	cli_get_value( &modname_p, &modname );
-	str_upcase( &modname, &modname );
+	cli_get_value( &modname_p, &wild );
+	StrUpcase( &wild, &wild );
 
-	// make sure db file exists
-	if( check_for_file(CTS_DB_FILE) != SUCCESS ) {		// failure
-		fprintf( stderr, "db file '%s' does not exist\n", CTS_DB_FILE );
-		status = FILE_ERROR;
-		goto Deassign_Exit;
-	}
+	physical_name = cli_present(&physical) & 1;
+
+	if( MSGLVL(DETAILS) )
+		printf("Deassign(): %s module: <%s>\n", physical_name ? "physical" : "logical", wild.pointer);
 
 	// check to see if db file memory mapped
-	if( CTSdbFileIsMapped == FALSE ) {				// is not, so try
+	if( CTSdbFileIsMapped == FALSE ) {				// is not, so try ...
 		if( map_data_file(CTS_DB) != SUCCESS ) {	// we're dead in the water
-			status = MAP_ERROR;
+			status = MAP_ERROR;						// [2002.02.21]
 			goto Deassign_Exit;
 		}
 	}
 
 	// get number of current entries
 	if( (numOfEntries = get_file_count(CTS_DB)) == 0 ) {	// no entries in cts db file
-		fprintf( stderr, "db file empty, no entries to remove\n" );
-		status = DEASSIGN_ERROR;
+		if( MSGLVL(IMPORTANT) )
+			fprintf( stderr, "db file empty, no entries to remove\n" );
+
+		status = DEASSIGN_ERROR;					// [2002.02.21]
 		goto Deassign_Exit;
 	}
 
-	modules_to_deassign = modulesDeassigned = 0;	// initialize counts
+	// if we get this far, then there are modules in the database
+	modulesToDeassign = modulesDeassigned = 0;	// initialize counts
+	pMod = &Mod;				// point to some actual storage
 
-	// check if '/physical' switch present
-	if( cli_present(&physical) & 1 ) {		// physical module name
-		if( MSGLVL(9) )
-			printf("Deassign(): physical module: <%s>\n", modname.pointer);
-
+	// first, we need to count the number to deassign ...
+	for( i = 0; i < numOfEntries; ++i ) {	// scan entire list
 		// look up module name(s). NB! more than one logical name may be
 		// assigned to the same, unique physical name.
-		for( i = 0; i < numOfEntries; ++i ) {
+		parse_cts_db( CTSdb+i, pMod );		// extract info from db
+
+		memset(db_tmp, ' ', 32);	// clear out buffer
+		db_tmp[33] = '\0';			// ensure buffer 'ends'
+
+		if( physical_name ) 		// physical name
+			sprintf( db_tmp, "GK%c%d%02d:N%d",
+				pMod->adapter + 'A', 
+				pMod->id, 
+				pMod->crate,
+				pMod->slot
+				);
+		else 						// logical name 
+			sprintf( db_tmp, "%s", pMod->name );
+
+		// prepare for 'wild' match
+		pattern.pointer = db_tmp;
+		pattern.length  = strlen(db_tmp);
+
+		if( StrMatchWild( &pattern, &wild ) & 1 ) {
+			++modulesToDeassign;	//
+		}
+	} // end of for() loop, all entries checked
+
+	// now actually remove them
+	while( modulesToDeassign ) {
+		for( i = 0; i < get_file_count(CTS_DB); ++i ) {
+			// look up module name(s). NB! more than one logical name may be
+			// assigned to the same, unique physical name.
 			parse_cts_db( CTSdb+i, pMod );		// extract info from db
 
-			sprintf( db_tmp, "GK%c%d%02d",
-				pMod->adapter, 
-				pMod->id, 
-				pMod->crate 
-				);
+			memset(db_tmp, ' ', 32);	// clear out buffer
+			db_tmp[33] = '\0';			// ensure buffer 'ends'
 
-			if( strncmp(db_tmp, modname.pointer, CRATE_NAME_SIZE) == EQUAL ) {	// found a match
-				if( MSGLVL(9) )
-					printf("d(%2d): p->adapter <%c>  id <%d>  crate <%2d>  slot <%2d> ==> <%-.32s>\n",
-						i+1, pMod->adapter, pMod->id, pMod->crate, pMod->slot, pMod->name
-						);
+			if( physical_name ) 		// physical name
+				sprintf( db_tmp, "GK%c%d%02d:N%d",
+					pMod->adapter + 'A', 
+					pMod->id, 
+					pMod->crate,
+					pMod->slot
+					);
+			else 						// logical name 
+				sprintf( db_tmp, "%s", pMod->name );
 
-				// allocate a list element
-				if( (element = (struct t_mod *)malloc(sizeof(struct t_mod))) == NULL ) {
-					perror("malloc()");
-					status = NO_MEMORY;
+			// prepare for 'wild' match
+			pattern.pointer = db_tmp;
+			pattern.length  = strlen(db_tmp);
+
+			if( StrMatchWild( &pattern, &wild ) & 1 ) {
+				if( remove_entry(CTS_DB, i) != SUCCESS ) {	// removal failed
+					status = DEASSIGN_ERROR;				// [2002.02.21]
 					goto Deassign_Exit;
 				}
-
-				// trim and populate element members
-				sprintf(temp, "%-.32s", pMod->name);
-				strtok(temp," ");			// trim trailing spaces
-				strcpy(element->mod_name,temp);
-				element->next = NULL;		// NB! important to mark end of current list
-
-				// adjust list pointers as appropriate
-				if( head == NULL )
-					tail = head = element;			// first element only
-				else
-					tail = tail->next = element;	// adjust pointers
-
-				modules_to_deassign++;				// increment count
-
-			} // ... end of search thru db file
-		} // ... end of for() loop
-	} // end of '/physical' processing
-	else {									// logical module name
-		if( MSGLVL(9) )
-			printf("Deassign(): logical  module: <%s>\n", modname.pointer);
-
-		// allocate a list element
-		if( (element = (struct t_mod *)malloc(sizeof(struct t_mod))) == NULL ) {
-			perror("malloc()");
-			status = NO_MEMORY;
-			goto Deassign_Exit;
+				else 
+					++modulesDeassigned;	// keep track of successes :)
+			}
 		}
 
-		// assign values to element members
-		strcpy(element->mod_name, modname.pointer);
-		element->next = NULL;				// NB! important to mark end of current list
-
-		head = element;						// only one
-
-		modules_to_deassign = 1;			// logical names are unique
-	}
-
-	// remove 'em
-	if( modules_to_deassign ) {				// at least one
-		element = head;						// start at the beginning
-		for( i = 0; i < modules_to_deassign; ++i ) {
-			if( (index = lookup_entry(CTS_DB, element->mod_name)) >= 0 ) {	// module does exist
-				if( remove_entry(CTS_DB, index) != SUCCESS ) {				// removal failed
-					status = DEASSIGN_ERROR;
-					goto Deassign_Exit;
-				}
-			}
-			else {							// no such module
-				fprintf( stderr, "deassign(): entry '%s' not found\n", pMod->name);
-				status = DEASSIGN_ERROR;
-				goto Deassign_Exit;
-			}
-
-			modulesDeassigned++;			// successful
-			element = element->next;		// point to next one
-		}
-	}
-	else {
-		fprintf( stderr, "deassign(): no entries found\n" );
-		status = DEASSIGN_ERROR;
-		goto Deassign_Exit;
-	}
-
-	if( MSGLVL(9) ) {
-		if(modules_to_deassign) {
-		printf("+++++++++++++++++++++++++++\n");
-			for(element=head; element!= NULL; element=element->next) {
-				printf("mod name: '%s'\n", element->mod_name);
-			}
-		printf("+++++++++++++++++++++++++++\n");
-		}
+		--modulesToDeassign;				// one less to remove ...
 	}
 
 Deassign_Exit:
-	// free allocated memory
-	element = head;
-	while( element != NULL) {
-		tail = element->next;
-		free(element);
-		element = tail;
-	}
-
-	if( MSGLVL(9) ) {
+	if( MSGLVL(DETAILS) ) {
 		printf("Deassign(%d): ", modulesDeassigned); ShowStatus(status);
 	}
-	if( modulesDeassigned != modules_to_deassign )	// not all modules deassigned
-		status = DEASSIGN_ERROR;
-	else
-		if( MSGLVL(9) )
-			printf("all entries(%d) deassigned !!!\n", modulesDeassigned);
 
 	return status;
 }  
@@ -425,7 +415,7 @@ Deassign_Exit:
 //-------------------------------------------------------------------------
 int Noop()
 { 
-	if( MSGLVL(9) )
+	if( MSGLVL(DETAILS) )
 		printf("Noop() invoked -- not implemented\n");
 
 	return SUCCESS; 
@@ -443,7 +433,7 @@ int ResetHighway()
 
 	cli_get_value( &crate_p, &wild );
 
-	if( MSGLVL(9) )
+	if( MSGLVL(DETAILS) )
 		printf("ResetHighway() invoked -- not implemented\n");
 
 	return SUCCESS;
@@ -471,23 +461,18 @@ int SetCrate()
 	cli_get_value( &crate_p, &wild );
 	str_upcase( &wild, &wild );
 
-	// check to see if db file exists
-	if( check_for_file(CRATE_DB_FILE) != SUCCESS ) {	// does not exist -- nothing to show
-		fprintf(stderr, "crate.db does not exist\n");
-		status = FILE_ERROR;
-		goto SetCrate_Exit;								// we're done  :<
-	}
-
 	// check to see if db file memory mapped
 	if( CRATEdbFileIsMapped == FALSE ) {			// is not, so try
 		if( map_data_file(CRATE_DB) != SUCCESS ) {	// we're dead in the water
-			fprintf( stderr, "error memory mapping crate db file\n" );
-			status = MAP_ERROR;
+			if( MSGLVL(IMPORTANT) )
+				fprintf( stderr, "error memory mapping crate db file\n" );
+
+			status = FAILURE;		// MAP_ERROR;		[2001.07.12]
 			goto SetCrate_Exit;
 		}
 	}
 
-	status = turn_crate_on_off_line( wild.pointer, 1 );
+	status = turn_crate_on_off_line( wild.pointer, (on) ? ON : OFF );
 
 SetCrate_Exit:
 	return SUCCESS;
@@ -495,14 +480,12 @@ SetCrate_Exit:
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-//
+// show crate status, using crates in 'crate.db' file
 //-------------------------------------------------------------------------
-#define GREEN	2
-#define	RED		1
 int ShowCrate()
 {
-  char			colorENH[9], colorON[9];//, NORMAL[] = "\033[0m";
-	char tmp[7];
+	char			colorENH[9], colorON[9];
+	char tmp[7]; char tmp2[11];
 	int				enhanced, i, j, online, moduleFound, numOfCrates, numOfModules;
 	int				crateStatus;
 	int				status;
@@ -516,40 +499,35 @@ int ShowCrate()
 	static DYNAMIC_DESCRIPTOR( wild );
 	static DYNAMIC_DESCRIPTOR( crate );
 
+	if( ScsiSystemStatus() == 0 ) {
+		status = SUCCESS;			// this is the function's status
+		printf("scsi system is %sdown!%s\n", RED, NORMAL);
+		goto ShowCrate_Exit;
+	}
+	if( MSGLVL(DETAILS) ) printf("scsi system is %sup!%s\n", GREEN, NORMAL);
+
 	// user input
 	cli_get_value( &crate_p, &wild );
 	str_upcase( &wild, &wild );
 
-	// check crate.db status ...
-	// check to see if crate db file exists
-	if( check_for_file(CRATE_DB_FILE) != SUCCESS ) {	// does not exist -- nothing to show
-		fprintf(stderr, "crate.db does not exist\n");
-		status = FILE_ERROR;
-		goto ShowCrate_Exit;							// we're done  :<
-	}
-
 	// check to see if crate db file memory mapped
 	if( CRATEdbFileIsMapped == FALSE ) {				// is not, so try
 		if( map_data_file(CRATE_DB) != SUCCESS ) {		// we're dead in the water
-			fprintf( stderr, "error memory mapping crate.db file\n" );
-			status = MAP_ERROR;
+			if( MSGLVL(IMPORTANT) )
+				fprintf( stderr, "error memory mapping crate.db file\n" );
+
+			status = FAILURE;		// MAP_ERROR;		[2001.07.12]
 			goto ShowCrate_Exit;
 		}
-	}
-
-	// check cts.db status ...
-	// check to see if module db file exists
-	if( check_for_file(CTS_DB_FILE) != SUCCESS ) {		// does not exist -- nothing to show
-		fprintf(stderr, "cts.db does not exist\n");
-		status = FILE_ERROR;
-		goto ShowCrate_Exit;							// we're done  :<
 	}
 
 	// check to see if module db file memory mapped
 	if( CTSdbFileIsMapped == FALSE ) {					// is not, so try
 		if( map_data_file(CTS_DB) != SUCCESS ) {		// we're dead in the water
-			fprintf( stderr, "error memory mapping cts.db file\n" );
-			status = MAP_ERROR;
+			if( MSGLVL(IMPORTANT) )
+				fprintf( stderr, "error memory mapping cts.db file\n" );
+
+			status = FAILURE;		// MAP_ERROR;		[2001.07.12]
 			goto ShowCrate_Exit;
 		}
 	}
@@ -565,13 +543,13 @@ int ShowCrate()
 		if( (numOfModules = get_file_count(CTS_DB)) > 0 ) {	// maybe some crates controllers ..
 			for( i = 0; i < numOfCrates; ++i ) {
 				parse_crate_db(CRATEdb+i, pCr8);
-				if( wildcard_match( wild.pointer, pCr8->name, 0,0,0 ) ) {
+				if(  wildcard_match( wild.pointer, pCr8->name, 0,0,0 ) ) {
 					moduleFound = FALSE;
 
 					for( j = 0; j < numOfModules; ++j ) {
 						parse_cts_db(CTSdb+j, pMod);
 						sprintf(tmp, "GK%c%d%02d",
-							pMod->adapter,
+							pMod->adapter + 'A',
 							pMod->id,
 							pMod->crate
 							);
@@ -584,24 +562,34 @@ int ShowCrate()
 						}
 					} // end of for(modules) ...
 
-
 					if( moduleFound ) {
-						if( ( status = get_crate_status(pCr8->name, &crateStatus) ) == 0 ) {
-							online = !(crateStatus & 0x3c00)              ? TRUE  : FALSE;
-							sprintf(colorON,  "\033[01;3%dm", (online)    ? GREEN : RED);
+						crateStatus = 0;
+
+						if(MSGLVL(8)) 
+							printf("checking '%s'\n", pCr8->name);
+
+						status = get_crate_status(pCr8->name, &crateStatus);
+
+						if( MSGLVL(DETAILS) )
+							printf("gcs(%s) returned %d, crate 0x%x\n", pCr8->name, status, crateStatus);
+
+						if( status == SUCCESS ) {
+							online = !(crateStatus & 0x3c00)    ? TRUE  : FALSE;
+							if( !crateStatus || crateStatus == 0x3 )	// [2001.09.10]
+								online = FALSE;
+							sprintf(colorON,  "%s", (online)    ? GREEN : RED);
 
 							enhanced = (online && (crateStatus & 0x4030)) ? TRUE  : FALSE;
-							sprintf(colorENH, "\033[01;3%dm", (enhanced)  ? GREEN : RED);
+							sprintf(colorENH, "%s", (enhanced)  ? GREEN : RED);
 
-							if( 1 )
-							printf("%s:   %s%c%s   .   .   %s%c%s\n",
+							printf("%s:   %s%c%s   .   .   %s%c%s",
 								pCr8->name,
 								colorON,  (online)   ? '*' : 'X', NORMAL,
 								colorENH, (enhanced) ? '*' : '-', NORMAL
 								);
-#if 0
-printf("SC(): pCrateStatus 0x%x\n",crateStatus);
-#endif
+							if( MSGLVL(4) )
+								printf( "  0x%04x", crateStatus );
+							printf("\n");
 						}
 					} // end of if(moduleFound) ...
 					else {
@@ -623,7 +611,7 @@ ShowCrate_Exit:
 //-------------------------------------------------------------------------
 int ShowModule()
 {
-	char	db_tmp[CRATE_NAME_SIZE];
+	char	db_tmp[33];		// enough space for a logical name and a cstring terminator	[2002.02.20]
 	int 	i, numOfEntries, status = SUCCESS;
 
 	static DESCRIPTOR( physical, "PHYSICAL" );
@@ -635,25 +623,26 @@ int ShowModule()
 	static DESCRIPTOR( heading2, "==== ================================ ========== ========================================" );
 
 	static DYNAMIC_DESCRIPTOR( wild );
-
 	struct Module_	Mod, *pMod;
+	
+	struct descriptor pattern;
 
 	int format = cli_present(&format_p) & 1;
+	int physical_name = cli_present(&physical) & 1;	// 2002.01.16
 
 	cli_get_value( &module_p, &wild );
+	StrUpcase( &wild, &wild );						// convert to upper case
 
-	if( cli_present(&physical) & 1 ) {	// display in physical module order
-printf("ShowModule(): in physical order\n");
-	}
-	else {								// display in logical module order
-printf("ShowModule(): in logical order\n");
-	}
+	if( MSGLVL(DETAILS) )
+		printf("ShowModule(): in %s order\n", (physical_name) ? "physical" : "logical" );
 
 	// check to see if db file memory mapped
 	if( CTSdbFileIsMapped == FALSE ) {				// is not, so try
 		if( map_data_file(CTS_DB) != SUCCESS ) {	// we're dead in the water
-			fprintf( stderr, "error memory mapping database file\n" );
-			status = MAP_ERROR;
+			if( MSGLVL(IMPORTANT) )
+				fprintf( stderr, "error memory mapping database file\n" );
+
+			status = FAILURE;		// MAP_ERROR;		[2001.07.12]
 			goto Showmodule_Exit;
 		}
 	}
@@ -666,29 +655,39 @@ printf("ShowModule(): in logical order\n");
 		for( i = 0; i < numOfEntries; ++i ) {
 			parse_cts_db( CTSdb+i, pMod );		// extract info from db
 
-			sprintf( db_tmp, "GK%c%d%02d", 
-				pMod->adapter,
-				pMod->id,
-				pMod->crate
-				);
+			memset(db_tmp, ' ', 32);
+			db_tmp[33] = '\0';
 
-			if( wildcard_match( wild.pointer, db_tmp, 0,0,0 ) ) {
+			if( physical_name ) 		// duh, physical name
+				sprintf( db_tmp, "GK%c%d%02d:N%d", 
+					pMod->adapter + 'A', pMod->id, pMod->crate, pMod->slot
+					);
+			else
+				sprintf( db_tmp, "%s", pMod->name );
+
+			pattern.pointer = db_tmp;
+			pattern.length  = strlen(db_tmp);
+
+			if( StrMatchWild( &pattern, &wild ) & 1 ) {
+//				printf( "%s%3d: %.84s<%s\n", CYAN, i+1, (char *)CTSdb+(i * MODULE_ENTRY), NORMAL );	// fancy, with color
 				printf( "%3d: %.84s<\n", i+1, (char *)CTSdb+(i * MODULE_ENTRY) );
 			}
-		}
+		} // end of for() loop
 
 		printf( "%s\n", heading2.pointer );
 	}
 	else {
-		fprintf( stderr, "db file is empty, no modules to show\n" );
-		status = ERROR;
+		if( MSGLVL(IMPORTANT) )
+			fprintf( stderr, "db file is empty, no modules to show\n" );
+
+		status = SUCCESS;		// Not necessarily an ERROR;	[2002.02.19]
 		goto Showmodule_Exit;
 	}
-
+	
 Showmodule_Exit:
-#ifdef DEBUG
-printf("ShowModule(): "); ShowStatus(status);
-#endif
+	if( MSGLVL(DETAILS) ) {
+		printf("ShowModule(): "); ShowStatus(status);
+	}
 
 	return status;
 }
@@ -710,42 +709,42 @@ int AddCrate()
 	cli_get_value( &phy_name_p, &phy_name );
 	str_upcase( &phy_name, &phy_name );
 
-	// check to see if db file exists
-	if( check_for_file(CRATE_DB_FILE) != SUCCESS ) {	// does not exist, yet
-		// try to create it
-		if( (fd = Creat(CRATE_DB_FILE, 0666)) == ERROR ) {
-			status = FILE_ERROR;
-			goto AddCrate_Exit;				// we're done  :<
+	// [2002.01.08]
+	if( CRATEdbFileIsMapped == FALSE ) {					// ... no
+		if( check_for_file(CRATE_DB_FILE) != SUCCESS ) {	// ... no
+			if( (fd = Creat(CRATE_DB_FILE, 0666)) == ERROR ) {	// no
+				status = FAILURE;
+				goto AddCrate_Exit;
+			}
+			else
+				close(fd);										// yes
 		}
-		else
-			close(fd);
-	}
 
-	// check to see if db file is memory mapped
-	if( CRATEdbFileIsMapped == FALSE ) {				// is not, so try
-		if( map_data_file(CRATE_DB) != SUCCESS ) {		// we're dead in the water
+		if( map_data_file(CRATE_DB) != SUCCESS ) {			// failure :(
 			status = MAP_ERROR;
 			goto AddCrate_Exit;
-		}
+		} 													// else OK :)
 	}
 
 	// get current db file count
 	if( (numOfEntries = get_file_count(CRATE_DB)) == FILE_ERROR ) {
-		status = FILE_ERROR;
+		status = FAILURE;			// FILE_ERROR;		[2001.07.12]
 		goto AddCrate_Exit;
 	}
 
 	if( numOfEntries ) {		// 1 or more
 		if( lookup_entry(CRATE_DB, phy_name.pointer) >= 0 ) {			// duplicate !
-			fprintf( stderr, "duplicate crate name '%.6s' -- not allowed\n", phy_name.pointer );
-			status = DUPLICATE;
+			if( MSGLVL(IMPORTANT) )
+				fprintf( stderr, "duplicate crate name '%.6s' -- not allowed\n", phy_name.pointer );
+
+			status = FAILURE;		// DUPLICATE;		[2001.07.12]
 			goto AddCrate_Exit;
 		}
 	}
 
 	// get db file size
 	if( (dbFileSize = get_db_file_size(CRATE_DB_FILE)) == ERROR ) {
-		status = FILE_ERROR;
+		status = FAILURE;			// FILE_ERROR;		[2001.07.12]
 		goto AddCrate_Exit;
 	}
 	dbFileSize /= CRATE_ENTRY;	// .. current maximum number of possible crate entries
@@ -753,7 +752,7 @@ int AddCrate()
 	// do we need to expand db file?
 	if( (dbFileSize == 0) || (numOfEntries == dbFileSize) ) {				// ... yes
 		if( (status = expand_db(CRATE_DB, numOfEntries)) != SUCCESS ) {		// expand
-			status = EXPAND_ERROR;											// failure
+			status = FAILURE;	// EXPAND_ERROR; [2001.07.12]											// failure
 			goto AddCrate_Exit;
 		}
 	}		// else OK
@@ -765,14 +764,14 @@ int AddCrate()
 
 	// add it ...
 	if( (status = add_entry(CRATE_DB, line)) != SUCCESS ) {
-		status = ASSIGN_ERROR;
+		status = FAILURE;			// ASSIGN_ERROR;		[2001.07.12]
 		goto AddCrate_Exit;
 	}
 
 AddCrate_Exit:
-#ifdef DEBUG
-printf("AddCrate(): "); ShowStatus(status);
-#endif
+	if( MSGLVL(DETAILS) ) {
+		printf("AddCrate(): "); ShowStatus(status);
+	}
 
 //ShowCrate();
 	return status;
@@ -797,45 +796,43 @@ int DelCrate()
 	// trim it...
 	sprintf(crateName, "%.6s", phy_name.pointer);
 
-	// make sure db file exists
-	if( check_for_file(CRATE_DB_FILE) != SUCCESS ) {	// failure
-		fprintf( stderr, "db file '%s' does not exist\n", CRATE_DB_FILE );
-		status = FILE_ERROR;
-		goto DelCrate_Exit;
-	}
-
 	// check to see if db file memory mapped
 	if( CRATEdbFileIsMapped == FALSE ) {			// is not, so try
 		if( map_data_file(CRATE_DB) != SUCCESS ) {	// we're dead in the water
-			status = MAP_ERROR;
+			status = FAILURE;		// MAP_ERROR;		[2001.07.12]
 			goto DelCrate_Exit;
 		}
 	}
 
 	// get number of current entries
 	if( (numOfEntries = get_file_count(CRATE_DB)) == 0 ) {	// no entries in crate db file
-		fprintf( stderr, "db file empty, no entries to remove\n" );
-		status = DELCRATE_ERROR;
+		if( MSGLVL(IMPORTANT) )
+			fprintf( stderr, "db file empty, no entries to remove\n" );
+
+		status = FAILURE;		// DELCRATE_ERROR;		[2001.07.12]
 		goto DelCrate_Exit;
 	}
 
 	// try to remove from crate.db
 	if( (index = lookup_entry(CRATE_DB, crateName)) >= 0 ) {	// module does exist
 		if( remove_entry(CRATE_DB, index) != SUCCESS ) {		// removal failed
-			status = DELCRATE_ERROR;
+			status = FAILURE;		// DELCRATE_ERROR;		[2001.07.12]
 			goto DelCrate_Exit;
 		}
 	}
 	else {		// no such module
-		fprintf( stderr, "delcrate(): entry '%s' not found\n", crateName);
-		status = DELCRATE_ERROR;
+		if( MSGLVL(IMPORTANT) )
+			fprintf( stderr, "delcrate(): entry '%s' not found\n", crateName);
+
+		status = FAILURE;		// DELCRATE_ERROR;		[2001.07.12]
 		goto DelCrate_Exit;
 	}
 
 DelCrate_Exit:
-#ifdef DEBUG
-printf("DelCrate() status = %d\n", status);
-#endif
+	if( MSGLVL(DETAILS) ) {
+		printf("DelCrate() status = %d\n", status);
+	}
+
 	return SUCCESS;
 }
 
