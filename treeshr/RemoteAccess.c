@@ -842,33 +842,51 @@ static int  GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, i
 static int io_open_remote(char *host, char *filename, int options, mode_t mode, int *sock)
 {
   int fd = -1;
-  *sock = RemoteAccessConnect(host, 1);
-  if (*sock != -1)
+  int try_again = 1;
+  while(try_again)
   {
-    int status;
-    int info[3];
-    info[0]=strlen(filename)+1;
-    info[1]=options;
-    info[2]=(int)mode;
-    status = SendArg(*sock,MDS_IO_OPEN_K,0,0,0,sizeof(info)/sizeof(int),info,filename);
-    if (status & 1)
+    *sock = RemoteAccessConnect(host, 1);
+    if (*sock != -1)
     {
-      char dtype;
-      short length;
-      char ndims;
-      int dims[7];
-      int numbytes;
-      void *dptr;
-      void *msg = 0;
-      if ((GetAnswerInfoTS(*sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1) && (length == sizeof(fd)))
-        memcpy(&fd,dptr,sizeof(fd));
-      if (msg)
-        free(msg);
-      if (fd == -1)
-        RemoteAccessDisconnect(*sock,0);
+      int status;
+      int info[3];
+      info[0]=strlen(filename)+1;
+      info[1]=options;
+      info[2]=(int)mode;
+      status = SendArg(*sock,MDS_IO_OPEN_K,0,0,0,sizeof(info)/sizeof(int),info,filename);
+      if (status & 1)
+      {
+	char dtype;
+	short length;
+	char ndims;
+	int dims[7];
+	int numbytes;
+	void *dptr;
+	void *msg = 0;
+	int sts;
+	if (((sts=GetAnswerInfoTS(*sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg)) & 1) && (length == sizeof(fd)))
+	  {
+	    memcpy(&fd,dptr,sizeof(fd));
+	    try_again = 0;
+	  }
+	else
+	  printf("Err in GetAnswerInfoTS in io_open_remote: status = %d, length = %d\n",sts,length);
+	if (msg)
+	  free(msg);
+	if (fd == -1)
+	  RemoteAccessDisconnect(*sock,0);
+      }
+      else
+      {
+	printf("Err in SendArg in io_open_remote: status = %d\n",status);
+	RemoteAccessDisconnect(*sock,1);
+      }
     }
     else
-      RemoteAccessDisconnect(*sock,1);
+    {
+      printf("Error connecting to host /%s/ in io_open_remote\n",host);
+      try_again = 0;
+    }
   }
   return fd;
 }
