@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <string.h>
+#include <mdstypes.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
