@@ -1060,7 +1060,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
 sparc-sun-solaris2*)  
        if test $CC = gcc; then
 	 LD=gcc;
-         LINKSHARED="-Wl,-G -symbolic -Wl,-R,\\\$\$LD_LIBRARY_PATH:/usr/local/mdsplus/lib:\$(exec_prefix)/lib";
+         LINKSHARED="-Wl,-G -symbolic -Wl,-R,/usr/local/mdsplus/lib:\$(exec_prefix)/lib";
          LD_LDSHARE="-Wl,-B,dynamic";
          LD_LDARC="-Wl,-B,static";
          LDSHARE="-Wl,-B,dynamic";
