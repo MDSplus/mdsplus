@@ -759,3 +759,30 @@ TdiRefStandard(Tdi1ShowPrivate)
 TdiRefStandard(Tdi1ShowPublic)
 	return wild((int (*)())show_one, narg, list, &public, out_ptr);
 }
+
+
+int TdiSaveContext(void *ptr[6])
+{
+    ptr[0] = (void *)private.head;
+    ptr[1] = private.head_zone;
+    ptr[2] = private.data_zone;
+    ptr[3] = (void *)public.head;
+    ptr[4] = public.head_zone;
+    ptr[5] = public.data_zone;
+    return 1;
+}
+
+/*-------------------------------------------------------------
+        Restore variable context
+*/
+int TdiRestoreContext(void *ptr[6])
+{
+    private.head = (node_type *)ptr[0];
+    private.head_zone = ptr[1];
+    private.data_zone = ptr[2];
+    public.head = ptr[3];
+    public.head_zone = (node_type *)ptr[4];
+    public.data_zone = ptr[5];
+    return 1;
+}
+
