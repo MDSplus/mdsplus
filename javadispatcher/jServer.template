@@ -1,0 +1,8 @@
+#!/bin/sh
+#!
+#
+env \
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MDSPLUS_DIR/lib \
+SHLIB_PATH=$MDSPLUS_DIR/lib \
+CLASSPATH=$HOME:$MDSPLUS_DIR/java/classes/jScope.jar:$MDSPLUS_DIR/java/classes/jTraverser.jar:$MDSPLUS_DIR/java/classes/jDispatcher.jar:$MDSPLUS_DIR/java/classes: \
+java jServer $1

@@ -11,7 +11,7 @@ SOURCES = Action.java   MdsHelper.java          MdsServerEvent.java     NetworkL
 ActionServer.java       MdsIp.java              MdsServerListener.java  Server.java             jDispatcherIp.java \
 Balancer.java           MdsMonitor.java         MonitorEvent.java       ServerEvent.java \
 MdsMonitorEvent.java    MonitorListener.java    ServerListener.java \
-InfoServer.java         MdsServer.java          NetworkEvent.java       jDispatchMonitor.java
+InfoServer.java         MdsServer.java          NetworkEvent.java       jDispatchMonitor.java	jServer.java
 
 
 CLASSES = $(SOURCES:.java=.class)
@@ -40,7 +40,7 @@ install:
 
 @MAKEJAVADIR@classes : ; mkdir @MAKEJAVADIR@classes
 
-@MAKEJAVADIR@classes/jDispatcher.jar: jDispatcherIp.class jDispatchMonitor.class
+@MAKEJAVADIR@classes/jDispatcher.jar: jDispatcherIp.class jDispatchMonitor.class jServer.class
 	$(JAR) c0f $@ *.class
 
 jDispatcherIp.class: 	$(SOURCES)
@@ -48,6 +48,9 @@ jDispatcherIp.class: 	$(SOURCES)
 
 jDispatchMonitor.class: 	$(SOURCES)
 	$(JAVAC) -g jDispatchMonitor.java
+
+jServer.class: 	$(SOURCES)
+	$(JAVAC) -g jServer.java
 
 @MAKEBINDIR@ : ; mkdir @MAKEBINDIR@
 
@@ -57,5 +60,9 @@ jDispatchMonitor.class: 	$(SOURCES)
 
 @MAKEBINDIR@jDispatchMonitor : jDispatchMonitor.template
 	cp jDispatchMonitor.template $@
+	chmod a+x $@
+
+@MAKEBINDIR@jServer : jServer.template
+	cp jServer.template $@
 	chmod a+x $@
 
