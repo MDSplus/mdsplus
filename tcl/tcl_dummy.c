@@ -5,7 +5,6 @@
 
 dummy(TclLink)
 dummy(TreeMarkIncludes)
-dummy(TclPutExpression)
 dummy(TclCommand)
 dummy(TclRundownTree)
 dummy(TclSetEvent)

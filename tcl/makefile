@@ -19,6 +19,7 @@ OBJFILES = 			\
 	libTcl.a(tcl_do_method.o)	\
 	libTcl.a(tcl_do_node.o)	\
 	libTcl.a(tcl_edit.o)		\
+	libTcl.a(tcl_put_expression.o)		\
 	libTcl.a(tcl_remove_tag.o)	\
 	libTcl.a(tcl_rename.o)		\
 	libTcl.a(tcl_set_callbacks.o)	\
