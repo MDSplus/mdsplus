@@ -14,7 +14,6 @@
 #include <pthread.h>
 #endif
 #include "mdsip.h"
-//extern char *ctime();
 #define MAX_ARGS 256
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))

@@ -1,25 +1,6 @@
-/*  CMS REPLACEMENT HISTORY, Element MDSIPUTIL.C */
-/*  *10   22-OCT-1999 13:48:09 TWF "don't use timeout on vms" */
-/*  *9    22-OCT-1999 13:45:37 TWF "don't use timeout on vms" */
-/*  *8    22-OCT-1999 13:45:16 TWF "don't use timeout on vms" */
-/*  *7    22-OCT-1999 13:41:17 TWF "Add login capability" */
-/*  *6    21-OCT-1999 10:39:56 TWF "Add password handling" */
-/*  *5     4-JUN-1999 10:22:04 TWF "Do not let message_id become zero" */
-/*  *4     8-APR-1999 16:06:35 TWF "Add ucx support" */
-/*  *3     8-APR-1999 15:47:05 TWF "Add ucx support" */
-/*  *2     8-APR-1999 15:33:54 TWF "Add ucx support" */
-/*  *1     8-APR-1999 15:24:52 TWF "common utility routines" */
-/*  CMS REPLACEMENT HISTORY, Element MDSIPUTIL.C */
 #include "mdsip.h"
 #ifndef min
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#endif
-
-#ifdef _WIN32
-#define ioctl ioctlsocket
-#define I_NREAD FIONREAD
-#else
-#include <stropts.h>
 #endif
 
 static unsigned char message_id = 1;
@@ -42,7 +23,7 @@ static int initialized = 0;
 static void FlipHeader(MsgHdr *header);
 static void FlipData(Message *m);
 
-#if defined( _UCX) || defined(_WIN32) 
+#if defined( _UCX) || defined(_WIN32)
 #else
 extern int inet_addr();
 #endif
@@ -172,11 +153,11 @@ static SOCKET ConnectToPort(char *host, char *service)
 #ifdef _WIN32
   if ((hp == NULL) && (WSAGetLastError() == WSANOTINITIALISED))
   {
-	  WSADATA wsaData;
-	  WORD wVersionRequested;
-	  wVersionRequested = MAKEWORD(1,1);
-	  WSAStartup(wVersionRequested,&wsaData);
-	  hp = gethostbyname(host);
+    WSADATA wsaData;
+    WORD wVersionRequested;
+    wVersionRequested = MAKEWORD(1,1);
+    WSAStartup(wVersionRequested,&wsaData);
+    hp = gethostbyname(host);
   }
 #endif
   if (hp == NULL)
@@ -229,8 +210,10 @@ static SOCKET ConnectToPort(char *host, char *service)
     return INVALID_SOCKET;
   }
   sin.sin_family = AF_INET;
-#ifdef vxWorks
+#if defined( vxWorks )
   memcpy(&sin.sin_addr, &addr, sizeof(addr));
+#elif defined(ANET)
+  memcpy(&sin.sin_addr, hp->h_addr, sizeof(sin.sin_addr));
 #else
   memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
 #endif
@@ -283,9 +266,9 @@ static SOCKET ConnectToPort(char *host, char *service)
 	int bsize=128;
 	char *user_p = GetUserName(user,&bsize) ? user : "Windows User";
 #elif __MWERKS__
-	static char user[128];
-	int bsize=128;
-	char *user_p = "Macintosh User";
+        static char user[128];
+        int bsize=128;
+        char *user_p = "Macintosh User";
 #else
     static char user[L_cuserid];
     char *user_p;
@@ -314,15 +297,15 @@ static SOCKET ConnectToPort(char *host, char *service)
       }
       else
       {
-        if (!m->h.status)
+        if (!(m->h.status & 1))
         {
           printf("MDSplus ConnectToPort: Access denied\n");
           free(m);
           DisconnectFromMds(s);
           return INVALID_SOCKET;
         }
-	if (!SupportsCompression(m->h.status))
-	  UseCompression = 0;
+        if (!SupportsCompression(m->h.status))
+          UseCompression = 0;
       }
     }
     else
@@ -339,6 +322,90 @@ static SOCKET ConnectToPort(char *host, char *service)
   sys$qiow(0,s,IO$_SETMODE | IO$M_ATTNAST,0,0,0,MdsDispatchEvent,s,0,0,0,0);
 #endif
   return s;
+}
+
+int HostToIp(char *host, int *addr, short *port)
+{
+  int status;
+  struct hostent *hp = NULL;
+  struct servent *sp;
+
+  char hostpart[256] = {0};
+  char portpart[256] = {0};
+
+  sscanf(host,"%[^:]:%s",hostpart,portpart);
+  if (strlen(portpart) == 0)
+    strcpy(portpart,"mdsip");
+
+  if (strcmp(hostpart, "local") == 0) {
+    *addr = 0;
+    *port = 0;
+    return 1;
+  }
+#ifndef vxWorks
+  hp = gethostbyname(host);
+#endif
+#ifdef _WIN32
+  if ((hp == NULL) && (WSAGetLastError() == WSANOTINITIALISED))
+  {
+    WSADATA wsaData;
+    WORD wVersionRequested;
+    wVersionRequested = MAKEWORD(1,1);
+    WSAStartup(wVersionRequested,&wsaData);
+    hp = gethostbyname(host);
+  }
+#endif
+  if (hp == NULL)
+  {
+    *addr = inet_addr(host);
+#ifndef vxWorks
+    if (*addr != 0xffffffff)
+      hp = gethostbyaddr((void *) addr, (int) sizeof(* addr), AF_INET);
+#endif
+  }
+#ifdef vxWorks
+  if (*addr == 0xffffffff)
+#else
+  if (hp == NULL)
+#endif
+  {
+    printf("Error in MDSplus ConnectToPort: %s unknown\n",host);
+    return INVALID_SOCKET;
+  }
+#ifdef vxWorks
+  if (atoi(service) == 0)
+  {
+    *port=8000;
+  }
+  else
+    *port = (short)atoi(service);
+#else
+  if (atoi(portpart) == 0)
+  {
+    sp = getservbyname(portpart,"tcp");
+    if (sp != NULL)
+      *port = sp->s_port;
+    else
+    {
+      char *portc = getenv(portpart);
+      *port = (portc == NULL) ? 8000 : (short)atoi(portc);
+    }
+  }
+  else
+    *port = (short)atoi(portpart);
+#endif
+  if (*port == 0)
+  {
+    printf("Error in MDSplus ConnectToPort: Unknown service: %s\nSet environment variable %s if port is known\n",portpart,portpart);
+    return INVALID_SOCKET;
+  }
+/* for vxWorks addr is already filled in */
+#ifdef ANET
+  memcpy(addr, hp->h_addr, sizeof(*addr));
+#else
+  memcpy(addr, hp->h_addr_list[0], sizeof(*addr));
+#endif
+  return 1;
 }
 
 SOCKET  ConnectToMds(char *host)
@@ -451,6 +518,11 @@ int *dims, char *bytes)
   return status;
 }
 
+#if (defined(_UCX) || defined(ANET)) && (__CRTL_VER < 70000000)
+static void FlushSocket(SOCKET sock)
+{
+}
+#else
 static void FlushSocket(SOCKET sock)
 {
   struct timeval timout = {0,1};
@@ -487,6 +559,7 @@ static void FlushSocket(SOCKET sock)
     FD_CLR(sock,&writefds);
   }
 }
+#endif
 
 static int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int oob)
 {
@@ -517,18 +590,18 @@ static int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob)
   int tries = 0;
   while (bytes_to_recv > 0 && (tries < 10))
   {
-	int bytes_recv;
+    int bytes_recv;
     int bytes_this_time = min(bytes_to_recv,BUFSIZ);
     bytes_recv = recv(sock, bptr, bytes_to_recv, oob ? MSG_OOB : 0);
     if (bytes_recv <= 0)
     {
       if (errno != EINTR)
         return 0;
-	  tries++;
+      tries++;
     }
     else
     {
-	  tries = 0;
+      tries = 0;
       bytes_to_recv -= bytes_recv;
       bptr += bytes_recv;
     }
@@ -761,4 +834,3 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
   return (*status & 1) ? msg : 0;
 }
 #endif
-

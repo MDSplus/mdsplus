@@ -1,4 +1,17 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIP.H */
+/*  *84   21-JUN-2000 13:35:57 TWF "Error getting peer name" */
+/*  *83   21-JUN-2000 11:09:48 TWF "Make same as unix" */
+/*  *82   21-JUN-2000 10:33:18 TWF "Add compression" */
+/*  *81   21-JUN-2000 09:32:45 TWF "Add compression" */
+/*  *80   21-JUN-2000 09:25:20 TWF "Add compression" */
+/*  *79   21-JUN-2000 09:22:40 TWF "Add compression" */
+/*  *78   20-JUN-2000 16:42:39 TWF "Add compression" */
+/*  *77   20-JUN-2000 16:39:33 TWF "Add compression" */
+/*  *76    8-MAY-2000 11:16:50 TWF "Change buffer sizes" */
+/*  *75   10-MAR-2000 15:16:05 TWF "" */
+/*  *74   10-MAR-2000 14:40:38 TWF "Add JAPAN ANET support" */
+/*  *73   10-MAR-2000 10:26:32 TWF "Add Japan ANET Support" */
+/*  *72   10-MAR-2000 10:04:18 TWF "Add Japan ANET support" */
 /*  *71   22-OCT-1999 16:36:11 TWF "Fix multinet" */
 /*  *70   22-OCT-1999 15:56:57 TWF "don't include fcntl on vms" */
 /*  *69   22-OCT-1999 12:05:21 TWF "Make same as unix" */
@@ -71,6 +84,32 @@
 /*  *2    17-MAY-1994 15:09:57 TWF "Put IPDESC.H in MDS$ROOT:[SYSLIB]" */
 /*  *1    17-MAY-1994 09:31:48 TWF "Include for MDSIPSHR" */
 /*  CMS REPLACEMENT HISTORY, Element MDSIP.H */
+#ifdef ANET
+#include "ANETP_SOCK_ROUTINES.H"
+#include "ANETP_TYPES.H"
+#include "ANETP_SOCKET.H"
+#include "ANETP_IN.H"
+#include "ANETP_NETDB.H"
+#include "ANETP_TIME.H"
+#define INVALID_SOCKET -1
+#define FD_ZERO(set) memset(set,0,sizeof(fd_set))
+#define FD_SET(s,set) lib$insv(&1,&s,&1,set)
+#define FD_CLR(s,set) lib$insv(&0,&s,&1,set)
+#define FD_ISSET(s,set) lib$extv(&s,&1,set)
+#define FD_SETSIZE 16
+#define TCP_NODELAY 1
+#include <errno.h>
+#else
+#if defined(_WIN32) || defined(__VMS)
+#define I_NREAD FIONREAD
+#endif
+
+#if defined(_WIN32)
+#define ioctl ioctlsocket
+#else
+#include <sys/ioctl.h>
+#endif
+
 #if defined(__sgi) || defined(sun)
 #define memcpy(a,b,c) bcopy(b,a,c)
 #include <errno.h>
@@ -110,6 +149,7 @@
 #endif
 #ifdef _AIX /* IBM AIX */
 #include <sys/select.h>
+#endif
 #endif
 
 #include <stdio.h>
@@ -163,17 +203,18 @@
 #include <lib$routines.h>
 #endif
 
-#ifdef __VMS
-#define SEND_BUF_SIZE 5000
-#define RECV_BUF_SIZE 5000
-#else
 #define SEND_BUF_SIZE 32768
 #define RECV_BUF_SIZE 32768
+
+#if defined(__VMS) || defined(WIN32) || defined(__linux__) || defined(_NO_SIGHOLD)
+#define sighold(arg)
+#define sigrelse(arg)
 #endif
 
 #ifdef  MULTINET
 #define close socket_close
 #define perror socket_perror
+#define ioctl socket_ioctl
 #endif
 
 #ifdef __CRAY
