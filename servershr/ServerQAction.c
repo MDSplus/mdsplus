@@ -530,7 +530,13 @@ static int StartThread()
   }
   if (WorkerThreadRunning == 0)
   {
-    status = pthread_create(&WorkerThread, pthread_attr_default, Worker, 0);
+    pthread_attr_t att;
+    unsigned long ssize = 0;
+    pthread_attr_init(&att);
+    printf("getstacksize status = %d\n",pthread_attr_getstacksize(&att,&ssize));
+    printf("default stack size is %d\n",&ssize);
+    printf("setstack status = %d\n",pthread_attr_setstacksize(&att,0xfffff));
+    status = pthread_create(&WorkerThread,&att, Worker, 0);
     if (status)
     {
       perror("Error creating pthread");
