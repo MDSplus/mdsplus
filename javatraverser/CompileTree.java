@@ -10,6 +10,13 @@ public class CompileTree extends Thread
     Database tree;
     String experiment;
     int shot;
+    
+    //originalNames and renamedNames keep info about nodes to be renamed
+    Vector renamedDevices = new Vector();
+    Vector renamedFieldNids = new Vector();
+    Vector newNames = new Vector();
+    
+    
     public static void main(String args[])
     {
         String experiment;
@@ -98,6 +105,23 @@ public class CompileTree extends Thread
                 recCompile((Element)currNode);
         }
         
+        
+        //handle renamed nodes
+        for(int i = 0; i < newNames.size(); i++)
+        {
+            String newName = (String)newNames.elementAt(i);
+            String deviceName = (String)renamedDevices.elementAt(i);
+            String offsetStr = (String)renamedFieldNids.elementAt(i);
+            try {
+                int deviceOffset = Integer.parseInt(offsetStr);
+                NidData deviceNid = tree.resolve(new PathData(deviceName), 0);
+                NidData renamedNid = new NidData(deviceNid.getInt()+deviceOffset);
+                tree.renameNode(renamedNid, newName, 0);
+            }catch(Exception exc)
+            {
+                System.out.println("Error renaming node of " + deviceName + " to " + newName + " : " + exc);
+            }
+        }
         try {
             tree.write(0);
             tree.close(0);
@@ -120,6 +144,8 @@ public class CompileTree extends Thread
             success = false;
             if(type.equals("data")) 
             {
+                Element parentNode = (Element)node.getParentNode();
+                boolean isDeviceField = node.getNodeName().equals("field");
                 Text dataNode = (Text)node.getFirstChild();
                 if(dataNode != null)
                 {
@@ -133,13 +159,47 @@ public class CompileTree extends Thread
                     }
                     try {
                         nid = tree.getDefault(0);
-                        tree.putData(nid, data, 0);
+                        if(isDeviceField)
+                        {
+                            Data oldData;
+                            try {
+                                oldData = tree.getData(nid, 0);
+                            }catch(Exception exc) {oldData = null; }
+                            if(oldData == null || !dataStr.equals(oldData.toString()))
+                                tree.putData(nid, data, 0);
+                        }
+                        else
+                            tree.putData(nid, data, 0);
                     }catch(Exception exc)
                     {
                         System.out.println("Error writing data: " + exc);
                     }
                 }
                 return;
+            }
+
+            //First handle renamed nodes: they do not need to be created, but to be renamed
+            String originalDevice = node.getAttribute("DEVICE");
+            String deviceOffsetStr = node.getAttribute("OFFSET_NID");
+            if(originalDevice != null && deviceOffsetStr != null && 
+                !originalDevice.equals("") && !deviceOffsetStr.equals(""))
+            {
+                String newName;
+                try {
+                    newName = (tree.getInfo(parentNid, 0)).getFullPath();
+                }catch(Exception exc)
+                {
+                    System.err.println("Error getting renamed path: " + exc);
+                    return;
+                }
+                if(type.equals("node"))
+                    newName += "." + name;
+                else
+                    newName += ":" + name;
+                newNames.addElement(newName);
+                renamedDevices.addElement(originalDevice);
+                renamedFieldNids.addElement(deviceOffsetStr);
+                return; //No descedents for a renamed node
             }
 
             if(type.equals("node"))
@@ -263,6 +323,7 @@ public class CompileTree extends Thread
                         //System.out.println("Error setting state of node " + name + " : " + exc);
                     }
                 }
+                
                 //Descend
                 NodeList nodes = node.getChildNodes();
                 for(int i = 0; i < nodes.getLength(); i++)
