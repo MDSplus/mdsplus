@@ -264,7 +264,7 @@ int32 MdsValueFtotSize (struct descrip *dataarg)
 {
   int32 totsize = 0;
   if (dataarg->ndims == 0) {
-    printf("MDSvalueF: scalar\n");
+    /*    printf("MDSvalueF: scalar\n"); */
     totsize=1;
   } else { 
     int i;
@@ -314,8 +314,11 @@ int32 PASCAL MdsValueF(SOCKET sock, char *expression, double *data, int32 maxsiz
         memcpy(data, newdata, fullsize);
 	free(newdata);
 	break;
+    case DTYPE_CSTRING : 
+      /*      printf("ERROR: %s\n",dataarg.ptr); */
+      break;
     default :
-	printf ("MDSValueF: Can't handle type: %u\n", dataarg.dtype);
+      /*	printf ("MDSValueF: Can't handle type: %u\n", dataarg.dtype);*/
 	status=0;
 	break;
     }
@@ -340,7 +343,7 @@ int32 PASCAL MdsValueC(SOCKET sock, char *expression, char *data, int *retsize)
 	memcpy(data, (char *) dataarg.ptr, ArgLen(&dataarg)*sizeof(char));
 	break;
     default :
-	printf ("MDSValueC: Can't handle type: %u\n", dataarg.dtype);
+      /*	printf ("MDSValueC: Can't handle type: %u\n", dataarg.dtype);*/
 	status=0;
 	break;
     }
@@ -364,7 +367,7 @@ int32 PASCAL MdsValueI(SOCKET sock, char *expression, int32 *data)
 	memcpy(data, (int32 *) dataarg.ptr, ArgLen(&dataarg));
 	break;
     default :
-	printf ("MDSValueI: Can't handle type: %u\n", dataarg.dtype);
+      /*	printf ("MDSValueI: Can't handle type: %u\n", dataarg.dtype);*/
 	status=0;
 	break;
     }

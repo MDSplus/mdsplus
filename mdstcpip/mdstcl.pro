@@ -130,17 +130,8 @@ function mdstcl_create_pulse,tree,shot,auto=auto
   if (stat) then begin
     print,'Creating pulse file: ',tree,' ',shot
     stat=mds$value('treeshr->tree$create_pulse_file($)',long(shot))
-    print,'Status creating pulse: ',stat
     mds$close,tree,-1
-    if ((tree eq 'D3D') and (shot ne -1)) then begin
-      stat=mdstcl_set_current_shot('D3D',shot)
-      if (keyword_set(auto)) then begin
-	print,'Waiting for event PHDF ',getenv("MACHINE")
-	spawn,'/d/llnl_res/bin/wait_for_evt PHDF',result
-      endif
-      mdstcl_auto_load,shot
-    endif
-  endif else print,'COULD NOT FIND MODEL FOR TREE: ',tree
+  endif
   return,stat
 end
 
