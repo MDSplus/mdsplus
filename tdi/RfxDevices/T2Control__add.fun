@@ -1,7 +1,7 @@
 public fun T2Control__add(in _path, out _nidout)
 {
 write(*,'T2Control__add'); 
-    DevAddStart(_path, 'T2Control', 296, _nidout);
+    DevAddStart(_path, 'T2Control', 269, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
