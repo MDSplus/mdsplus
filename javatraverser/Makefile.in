@@ -70,6 +70,8 @@ CHVPSSetup.java\
 CHVPS_SETSetup.java\
 RFXParametersSetup.java\
 CAMERASetup.java\
+FLU_GAINSetup.java
+
 
 
 SOURCES = ActionData.java\

@@ -235,7 +235,7 @@ public class FLU_GAINSetup extends DeviceSetup {
     this.setHeight(750);
     this.setDeviceType("FLU_GAIN");
     this.setDeviceProvider("150.178.3.33");
-    this.setDeviceTitle("Electomagnetic  Fuctuation Gain & Front-end HARDWARE Configuration");
+    this.setDeviceTitle("Electomagnetic Gain & Front-end HARDWARE Configuration");
     this.getContentPane().setLayout(borderLayout1);
     jPanel1.setLayout(gridLayout1);
     gridLayout1.setRows(3);
@@ -296,9 +296,9 @@ public class FLU_GAINSetup extends DeviceSetup {
     flowLayout5.setAlignment(FlowLayout.LEFT);
     flowLayout5.setHgap(0);
     flowLayout5.setVgap(0);
-    jLabel1.setText("Channel        Att.              Linear Name                  Lin. " +
-    "Calib.                  Int. Name                    Int. Calib  " +
-    "            Int Gain ");
+    jLabel1.setText("Channel      Att.            Linear Name                Lin. " +
+    "Calib.               Int. Name                  Int. Calib  " +
+    "          Int Gain ");
     deviceField3.setOffsetNid(6);
     deviceField3.setTextOnly(true);
     deviceField3.setIdentifier("");

@@ -8,11 +8,11 @@ public class Database implements RemoteTree{
     boolean is_editable = false;
     static {
         try {
-          System.loadLibrary("mdsshr");
-          System.loadLibrary("mdsipshr");
-          System.loadLibrary("treeshr");
-          System.loadLibrary("tdishr");
-          System.loadLibrary("javamds");
+            System.loadLibrary("MdsShr");
+            System.loadLibrary("MdsIpShr");
+            System.loadLibrary("TreeShr");
+            System.loadLibrary("TdiShr");
+            System.loadLibrary("JavaMds");
 	    }
             catch(Throwable e)
             {
