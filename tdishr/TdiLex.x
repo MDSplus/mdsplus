@@ -513,17 +513,14 @@ struct marker		*mark_ptr)
 			unsigned short alen = (unsigned short)strlen(apath);
 			StrCopyR(&abs_dsc,&alen,apath);
 			TreeFree(apath);
-			if (status & 1)
-			{
-				MAKE_S(DTYPE_PATH, abs_dsc.length, mark_ptr->rptr);
-				_MOVC3(abs_dsc.length, abs_dsc.pointer, (char *)mark_ptr->rptr->pointer);
-			}
-			else
-			{
-				TdiRefZone.l_status = status;
-				token = LEX_ERROR;
-			}
-			StrFree1Dx(&abs_dsc);
+			MAKE_S(DTYPE_PATH, abs_dsc.length, mark_ptr->rptr);
+			_MOVC3(abs_dsc.length, abs_dsc.pointer, (char *)mark_ptr->rptr->pointer);
+                        StrFree1Dx(&abs_dsc);
+                }
+		else
+		{
+		  TdiRefZone.l_status = 0;
+	          token = LEX_ERROR;
 		}
 	}
         free(str_l);
