@@ -200,7 +200,10 @@ char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
     status = 1;
   }
   else
+  {
+    *ctx = 0;
     status = TreeNMT;
+  }
   return (status & 1) ? answer : NULL;
 }
 /****************************************
