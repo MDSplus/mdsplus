@@ -54,7 +54,6 @@ public fun TR32__store(as_is _nid, optional _method)
     _clock = execute('evaluate(`_clock)');
     _pts = data(DevNodeRef(_nid, _N_PTS));
 
-
 	if(_remote)
 	{
 	    _handle = MdsValue('TR32HWStartStore(0, $1, $2)', _board_id, _pts);
@@ -74,7 +73,6 @@ public fun TR32__store(as_is _nid, optional _method)
 		}
 	}
     
-	
 	for(_i = 0; _i < 4; _i++)
     {
         if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 +(_i *  _K_NODES_PER_CHANNEL))))
@@ -103,7 +101,7 @@ public fun TR32__store(as_is _nid, optional _method)
 			_dim = make_dim(make_window(_start_idx, _end_idx - 1, _trig), _clock);
 			_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
 
-			_status = DevPutSignal(_sig_nid, 0, _range/8192., word(_data), 0, _end_idx - _start_idx - 1, _dim);
+			_status = DevPutSignal(_sig_nid, 0, _range/32768., word(_data), 0, _end_idx - _start_idx - 1, _dim);
 			if(! _status)
 			{
 				DevLogErr(_nid, 'Error writing data in pulse file');
@@ -111,6 +109,8 @@ public fun TR32__store(as_is _nid, optional _method)
 			}
 		}
     }
+
+
 	if(_remote)
 	{
 		MdsValue('TR32HWClose($1)', _handle);

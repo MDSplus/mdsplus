@@ -32,7 +32,7 @@ public fun TR32HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 
 
 /* Initialize Library if the first time */
-    if_error(_TR32_initialized, (TR32->TR32_InitLibrary(); public _TR32_initialized = 1;));
+    if_error(_TR32_initialized, (write(*, 'INITIALIZE');TR32->TR32_InitLibrary(); public _TR32_initialized = 1;));
 	
 
 /* Open device */
@@ -78,8 +78,10 @@ public fun TR32HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 
 /* Set Channel input range */ 
 	for (_c = 1; _c <= 4; _c++)
+{
+	write(*,  'Range: ', _ranges[_c - 1]);
 		TR32->TR32_Rng_SetChannelRange(val(_handle), val(byte(_c)), val(word(_ranges[_c - 1]))); 
-	
+}	
 
 /* Start sampling */
 	TR32->TR32_Cmd_StartSampling(val(_handle));
