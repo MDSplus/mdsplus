@@ -155,7 +155,7 @@ int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
 	  else
 	  {
 	    status = TreeInsertMember(parent, new_ptr, dblist->tree_info->header->sort_members);
-            new_ptr->usage = usage;
+            new_ptr->usage = ((usage <= TreeUSAGE_MAXIMUM) && (usage >= 0)) ? usage : TreeUSAGE_ANY;
 	  }
           node_to_nid(dblist, new_ptr, ((NID *)nid_out));
 	}
