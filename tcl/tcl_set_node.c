@@ -31,7 +31,7 @@ int TclSetNode()
     nodename = dsc_nodename.dscA_pointer;
     log = cli_present("LOG") & 1;
 
-    usageMask = TreeUSAGE_ANY;
+    usageMask = -1;
     while ((status = TreeFindNodeWild(nodename,&nid,&ctx,usageMask)) & 1)
        {
         switch (cli_present("SUBTREE"))
