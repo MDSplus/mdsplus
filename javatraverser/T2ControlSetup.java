@@ -535,16 +535,17 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField57.setBounds(300,204,180,40);
 		deviceChoice3.setOffsetNid(108);
 		{
-			String[] tempString = new String[2];
-			tempString[0] = "16 Coils";
-			tempString[1] = "8 Coils";
+			String[] tempString = new String[3];
+			tempString[0] = "16 Equally Spaced Coils";
+			tempString[1] = "16 Coils";
+			tempString[2] = "8 Coils";
 			deviceChoice3.setChoiceItems(tempString);
 		}
 		deviceChoice3.setLabelString("Map:");
 		deviceChoice3.setConvert(true);
-		deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)2});
+		deviceChoice3.setChoiceIntValues(new int[] {});
 		getContentPane().add(deviceChoice3);
-		deviceChoice3.setBounds(516,204,132,40);
+		deviceChoice3.setBounds(480,204,228,40);
 		//}}
 	}
 
