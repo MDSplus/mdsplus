@@ -902,6 +902,16 @@ int MdsSerializeDscOutZ(struct descriptor *in,
 	class = CLASS_S;
 	length = out_ptr->length + 8;
         memcpy(altbuf, out_ptr->pointer, out_ptr->length);
+        if (dtype != DTYPE_T)
+        {
+	  switch (out_ptr->length)
+	  {
+	    case 2: *(short *)altbuf = swapshort((char *)altbuf); break;
+            case 4: *(int *)altbuf = swapint((char *)altbuf); break;
+            case 8: *(int *)altbuf = swapint((char *)altbuf); 
+	            ((int *)altbuf)[1] = swapint(((char *)altbuf) + sizeof(int)); break;
+	  }
+        }
       }
       else
       {
