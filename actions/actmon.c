@@ -172,7 +172,7 @@ static void Exit(Widget w, int *tag, XtPointer callback_data)
 
 typedef struct serverList {
 	char *server;
-	char *path;
+	char path[512];
 	struct serverList *next;
 } ServerList;
 
@@ -207,7 +207,6 @@ static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct *cb)
   XmStringGetLtoR(cb->item, XmSTRING_DEFAULT_CHARSET, &choice);
   if (strlen(choice) < 32) return;
   sprintf(message, "Are you sure you want to abort the action:\n%s\nRunning on server %s ?", choice, server->server);
-  server->path = realloc(server->path, strlen(choice)+1);
   strcpy(server->path, choice);
   text = XmStringCreateLtoR(message, XmSTRING_DEFAULT_CHARSET);
   XtVaSetValues(dialog, XmNmessageString, text, NULL);
@@ -319,7 +318,7 @@ static void EventUpdate(LinkedEvent *event)
     }
 }  
 
-static int FindServer(char *name)
+static int FindServer(char *name, ServerList **srv)
 {
   ServerList *prev, *ptr, *newPtr;
   int idx;
@@ -333,7 +332,7 @@ static int FindServer(char *name)
     XmString item;
     newPtr = (ServerList *)XtMalloc(sizeof(ServerList));
     newPtr->server = (char *)XtMalloc(strlen(name)+1);
-    newPtr->path = NULL;
+    strcpy(newPtr->path, "");
     newPtr->next = ptr;
     strcpy(newPtr->server, name);
     if (prev)
@@ -345,11 +344,13 @@ static int FindServer(char *name)
     XmStringFree(item);
     ptr = newPtr;
   }
+  *srv = ptr;
   return idx;
 }
   
 static void PutLog(char *time, char  *mode, char *status, char *server, char *path)
 {
+  ServerList *srv;
   char text[2048];
   XmString item;
   int items;
@@ -370,16 +371,20 @@ static void PutLog(char *time, char  *mode, char *status, char *server, char *pa
   }
   if (!CurrentWidgetOff) {
     if(strcmp(mode, "DOING")==0) {
-      int idx = FindServer(server);
+      int idx = FindServer(server, &srv);
+      strcpy(srv->path, path);
       sprintf(text, "%-20.20s %s %12d %s", server, time, current_shot, path);
       item = XmStringCreateSimple(text);
       XmListReplaceItemsPos(CurrentWidget, &item, 1, idx);
       XmStringFree(item);
     } else if (strcmp(mode, "DONE")==0) {
-      int idx = FindServer(server);
-      item = XmStringCreateSimple(server);
-      XmListReplaceItemsPos(CurrentWidget, &item, 1, idx);
-      XmStringFree(item);
+      int idx = FindServer(server,&srv);
+      if (strcmp(srv->path, path) == 0) {
+	strcpy(srv->path, "");
+	item = XmStringCreateSimple(server);
+	XmListReplaceItemsPos(CurrentWidget, &item, 1, idx);
+	XmStringFree(item);
+      }
     }
   }
   XFlush(XtDisplay(CurrentWidget));
