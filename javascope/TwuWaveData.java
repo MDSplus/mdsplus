@@ -28,7 +28,6 @@ class TwuWaveData
     private float           xmax            = 0.0f  ;
     private float           xmin            = 0.0f  ;
     private int             n_points        =  0    ;
-    private TwuDataProvider provider        = null  ;
 
     public TwuWaveData()
     {
@@ -49,17 +48,16 @@ class TwuWaveData
         in_y = (in_y != null && in_y.trim().length() != 0) ? in_y.trim() : null;
         in_x = (in_x != null && in_x.trim().length() != 0) ? in_x.trim() : null;
 
-        provider = dp ;
         shotOfThisData  = dp.shot;
         mainSignal_name = in_y ;
         abscissa_X_name = in_x ;
 
-        mainSignal = new TwuSingleSignal (provider, mainSignal_name) ;
+        mainSignal = new TwuSingleSignal (dp, mainSignal_name) ;
 
         if  (abscissa_X_name != null)
-          abscissa_X = new TwuSingleSignal (provider, abscissa_X_name);
+          abscissa_X = new TwuSingleSignal (dp, abscissa_X_name);
         else
-          abscissa_X = new TwuSingleSignal (provider, mainSignal);
+          abscissa_X = new TwuSingleSignal (dp, mainSignal);
 
     }
 
@@ -365,7 +363,7 @@ class TwuWaveData
         {
             try
             {
-                title = mainSignal.ScalarToTitle(provider);
+                title = mainSignal.ScalarToTitle(shotOfThisData);
             }
             catch (IOException e)
             {

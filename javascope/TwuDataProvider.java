@@ -27,10 +27,9 @@ import java.lang.InterruptedException;
 class TwuDataProvider
     implements DataProvider
 {
-    protected String provider_url = "ipptwu.ipp.kfa-juelich.de";
-    protected String experiment;
+    private   String experiment;
     protected long   shot;
-    protected String error_string;
+    private String error_string;
     private transient Vector   connection_listener = new Vector();
     private String user_agent;
     private TwuWaveData lastWaveData = null ;
@@ -101,70 +100,12 @@ class TwuDataProvider
             }
             catch (IOException e)
             {
-                if (error_string==null)
-                  error_string = "No Such Signal : " + GetSignalPath(in_y, shot, provider_url, experiment) ;
+                setErrorstring("No Such Signal : " + 
+                               TwuNameServices.GetSignalPath(in_y, shot) );
                 //throw new IOException ("No Such Signal");
             }
         }
         return lastWaveData ;
-    }
-
-    //  ----------------------------------------------------------
-    //     abscissa / signal properties / path utility methods
-    //  ----------------------------------------------------------
-
-    static
-    protected synchronized String 
-    GetSignalPath(String in, long shot, String provider_url, String experiment)
-    {
-        if(IsFullURL(in))
-          return in;
-        else
-        {
-            // Hashed_URLs
-            // Check if signal path is in the format
-            //   //url_server_address/experiment/shotGroup/#####/signal_path
-
-            if(TwuNameServices.isHashedURL(in))
-              return TwuNameServices.hashed2shot(in,shot);
-
-            // If not, then it is of the old jScope internal format 
-            //   url_server_address//group/signal_path
-            // (Continue handling them; they could come out of .jscp files)
-            
-            String p_url = GetURLserver(in);
-            if(p_url == null)
-              p_url = provider_url;
-            else
-              in = in.substring(in.indexOf("//")+2, in.length());
-
-            StringTokenizer st = new StringTokenizer(in, "/");
-            String full_url = "http://"+p_url+"/"+experiment+"/"+st.nextToken()+
-                "/"+shot;
-            while(st.hasMoreTokens())
-              full_url += "/"+st.nextToken();
-            return full_url;
-        }
-    }
-
-    static
-    private boolean IsFullURL(String in)
-    {
-        in = in.toLowerCase();
-        return (in.startsWith("http://") || in.startsWith("//") ) && in.indexOf("#")==-1 ;
-    }
-
-    static 
-    private String GetURLserver(String in)
-    { 
-        // Find the servername, if it follows the (early) jScope internal
-        // convention that it is encoded before the double slash.
-        int idx;
-        String out = null;
-        if((idx = in.indexOf("//")) != -1)
-          out = in.substring(0, idx);
-
-        return out;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -172,7 +113,8 @@ class TwuDataProvider
     public synchronized float[] GetFloatArray(String in)
     {
         boolean is_time;
-        error_string = null;
+        resetErrorstring(null);
+
         if(in.startsWith("TIME:", 0))
         {
             is_time = true;
@@ -189,7 +131,7 @@ class TwuDataProvider
         }
         catch (  IOException e ) 
         { 
-            error_string = e.toString() ; 
+            resetErrorstring(e.toString());
             data = null ; 
         }
         return data ;
@@ -218,7 +160,7 @@ class TwuDataProvider
 
     public long[] GetShots(String in)
     {
-        error_string = null;
+        resetErrorstring(null);
         long [] result;
         String curr_in = in.trim();
         if(curr_in.startsWith("[", 0))
@@ -271,7 +213,8 @@ class TwuDataProvider
                 catch(Exception e){}
             }
         }
-        error_string = "Error parsing shot number(s)";
+        resetErrorstring("Error parsing shot number(s)");
+        
         return null;
     }
 
@@ -313,9 +256,29 @@ class TwuDataProvider
     {
         this.experiment = experiment;
         this.shot = shot;
-        error_string = null;
+        resetErrorstring(null);
         lastWaveData = null;
     }
+
+    protected synchronized String
+    getExperiment()
+    {
+        return experiment;
+    }
+    
+    protected synchronized void
+    setErrorstring(String newErrStr)
+    {
+        if(error_string==null)
+          error_string = newErrStr;
+    }
+    
+    protected synchronized void
+    resetErrorstring(String newErrStr)
+    {
+        error_string = newErrStr;
+    }
+    
 
     public TwuDataProvider()
     {

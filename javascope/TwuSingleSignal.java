@@ -69,12 +69,10 @@ class TwuSingleSignal
         return  new ConnectionEvent (provider, info) ;
     }
 
-
     private void 
     setErrorString(String errmsg)
     {
-        if (provider.error_string==null)
-          provider.error_string = errmsg;
+        provider.setErrorstring(errmsg);
     }
     
 
@@ -175,8 +173,8 @@ class TwuSingleSignal
           throwError ("No input signal set !");
 
         String propsurl = 
-            TwuDataProvider.GetSignalPath (source, shotOfTheProperties, 
-                                           provider.provider_url, provider.experiment) ;
+            TwuNameServices.GetSignalPath (source, shotOfTheProperties);
+
         fetch_my_Properties (propsurl, "Y");
     }
 
@@ -372,10 +370,10 @@ class TwuSingleSignal
     }
 
     public String 
-    ScalarToTitle(TwuDataProvider dp) 
+    ScalarToTitle(long requestedShot) 
         throws Exception
     {
-        TWUProperties props = getTWUProperties(dp.shot);
+        TWUProperties props = getTWUProperties(requestedShot);
         // makes sure that the properties are really fetched.
         // although they should already have been if this method is called.
 
