@@ -1499,25 +1499,30 @@ CreateAddDevice( Widget w, XtPointer client_data, XtPointer call_data)
   int num;
   Widget top;
   usage = TreeUSAGE_DEVICE;
-  top = XtNameToWidget(BxFindTopShell(w), "*.addDeviceDialog");
-  if (!devices_loaded) {
-  static Arg args[] = {
-                        {XmNarmCallback, 0}
-                      };
-    int i;
-    Widget rb;
-    int status = GetSupportedDevices(&devnames, &imagenames, &num);
-    static XtCallbackRec device_changed_list[] = {{(XtCallbackProc)SetDeviceType, 0},{0,0}};
-    args[0].value = (long)device_changed_list;
-    rb = XtNameToWidget(top, "*.ad_radioBox1");
-    for (i=0; i<num; i++) {
-      
-      Widget w = XmCreateToggleButton(rb, devnames[i], args, 1);
-      XtManageChild(w);
-    }
-    devices_loaded = True;
-  }
-  XtManageChild(top);
+   if (num_selected != 1) 
+     XmdsComplain(w, "select exactly one node as parent before choosing add node");
+   else {
+     add_target = selections[0];
+     top = XtNameToWidget(BxFindTopShell(w), "*.addDeviceDialog");
+     if (!devices_loaded) {
+       static Arg args[] = {
+	 {XmNarmCallback, 0}
+       };
+       int i;
+       Widget rb;
+       int status = GetSupportedDevices(&devnames, &imagenames, &num);
+       static XtCallbackRec device_changed_list[] = {{(XtCallbackProc)SetDeviceType, 0},{0,0}};
+       args[0].value = (long)device_changed_list;
+       rb = XtNameToWidget(top, "*.ad_radioBox1");
+       for (i=0; i<num; i++) {
+	 
+	 Widget w = XmCreateToggleButton(rb, devnames[i], args, 1);
+	 XtManageChild(w);
+       }
+       devices_loaded = True;
+     }
+     XtManageChild(top);
+   }
 }
 
 void
