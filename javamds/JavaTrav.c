@@ -283,7 +283,6 @@ JNIEXPORT jobject JNICALL Java_Database_evaluateSimpleData
  (JNIEnv *env, jobject obj, jobject jdata, jint context)
 {
 	int status;
-	jfieldID nid_fid;
 	jobject ris;
 	EMPTYXD(xd);
 

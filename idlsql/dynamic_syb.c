@@ -9,6 +9,10 @@
 #include <sybfront.h>
 #include <sybdb.h>
 #else
+#define _LPCBYTE_DEFINED
+typedef unsigned char BYTE;
+typedef       BYTE *LPBYTE;
+typedef const LPBYTE         LPCBYTE ;
 #include <windows.h>
 #include <sqlfront.h>
 #include <sqldb.h>
