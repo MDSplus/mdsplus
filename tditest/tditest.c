@@ -46,7 +46,7 @@ int main(int argc, char **argv)
   static char expr[MAXEXPR] = "WRITE(_OUTPUT_UNIT,`DECOMPILE(`";
 */
   static char expr[MAXEXPR] = "";
-  static struct descriptor expr_dsc = {0, DTYPE_T, CLASS_S, (char *)&expr};
+  static struct descriptor expr_dsc = {0, DTYPE_T, CLASS_S, (char *)expr};
   static EMPTYXD(ans);
   static EMPTYXD(output_unit);
   static DESCRIPTOR(out_unit_stdout,"PUBLIC _OUTPUT_UNIT=*");
