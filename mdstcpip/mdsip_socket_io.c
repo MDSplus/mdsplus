@@ -57,7 +57,7 @@ static fd_set fdactive;
 void ZeroFD() { FD_ZERO(&fdactive);}
 void SetFD(SOCKET sock) { FD_SET(sock,&fdactive);}
 void ClearFD(SOCKET sock) { FD_CLR(sock,&fdactive);}
-void RegisterRead(SOCKET sock){};
+void RegisterRead(SOCKET sock){}
 #endif
 
 
@@ -572,6 +572,8 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
     perror("Error getting peer name");
     exit(0);
   }
+  AddClient = AddClient_in;
+  DoMessage = DoMessage_in;
   (*AddClient)(s,&sin,0);
   return -1;
 #else
