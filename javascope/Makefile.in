@@ -56,7 +56,7 @@ SignalsBoxDialog.java	    SignalBox.java		MdsDataClient.java	    MdsIOException.
 
 CLASSES = $(SOURCES:.java=.class)
 
-all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/docs @MAKEJAVADIR@classes/jScope.jar  @MAKEJAVADIR@classes/WaveDisplay.jar docs 
+all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/docs @MAKEJAVADIR@classes/jScope.jar  @MAKEJAVADIR@classes/WaveDisplay.jar docs  @MAKEJAVADIR@classes/jScope.properties
 
 clean: 
 	@ $(RM) *.class
@@ -85,7 +85,10 @@ install:
 @MAKEJAVADIR@classes/jScope.jar: jScope.class CompositeWaveDisplay.class
 	$(JAR) c0f $@ *.class
 
-@MAKEJAVADIR@classes/WaveDisplay.jar: $(APPLETSOURCES)
+@MAKEJAVADIR@classes/jScope.properties: jScope.properties
+	cp jScope.properties ../java/classes
+
+MAKEJAVADIR@classes/WaveDisplay.jar: $(APPLETSOURCES)
 	rm *.class
 	$(JAVAC) -g  $(APPLETSOURCES) 
 	$(JAR) c0f $@ *.class
