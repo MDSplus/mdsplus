@@ -1,4 +1,4 @@
-fun Dt200GetNumSamples(in _board)
+public fun Dt200GetNumSamples(in _board)
 {
   _ans = Dt200WriteMaster(_board, "getNumSamples");
   if (extract(0,6,_ans) != 'ACQ32:') {

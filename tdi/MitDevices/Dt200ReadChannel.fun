@@ -1,6 +1,5 @@
 public fun Dt200Readchannel(in _board, in _channel, in _start, in _end, in _inc, optional  _coeffs)
 {
-  write (*, "starting ReadChannel");
   _samples = Dt200GetNumSamples(_board);
   if (_samples <= 0) {
     write(*, "no samples taken");

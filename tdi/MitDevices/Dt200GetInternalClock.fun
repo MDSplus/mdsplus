@@ -1,4 +1,4 @@
-fun Dt200GetInternalClock(in _board)
+public fun Dt200GetInternalClock(in _board)
 {
   _ans = Dt200WriteMaster(_board, "getInternalClock");
   if (extract(0,6,_ans) != 'ACQ32:') {

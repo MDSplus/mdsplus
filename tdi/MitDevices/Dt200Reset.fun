@@ -1,5 +1,6 @@
 public fun Dt200Reset(in _board)
 {
+  Dt200WriteMaster(_board, "setAbort");
   Dt200WriteMaster(_board, "fireEvent AI E1");
   Dt200WriteMaster(_board, "fireEvent AI E2");
   Dt200WriteMaster(_board, "fireEvent AI E3");

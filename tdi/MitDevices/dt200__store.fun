@@ -132,9 +132,5 @@ public fun dt200__store(as_is _nid, optional _method)
       DevPutSignalNoBounds(_chan_nid, _offset, 10./(32*1024), _data, _dim);
     }
   }
-  /* 
-    Tell the remote end to reset all the tdi variables etc...
-  _dummy = MdsValue('reset_public(),reset_private()');
-  */
   return(1);
 }
