@@ -1,6 +1,6 @@
 //package jTraverser;
 
-class ApdData extends Data
+public class ApdData extends Data
 {
     Data[] descs;
     

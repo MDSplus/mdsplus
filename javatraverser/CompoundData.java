@@ -1,6 +1,6 @@
 //package jTraverser;
 
-class CompoundData extends Data
+public class CompoundData extends Data
 {
     Data[] descs;
     int opcode = 0;

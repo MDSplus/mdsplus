@@ -4,7 +4,7 @@ DataListeners is maintained, as well as methods to notify a data change to the e
 */
 import java.util.*;
 
-abstract class Data 
+public abstract class Data 
 {
     static {
         try {

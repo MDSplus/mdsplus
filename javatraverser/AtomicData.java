@@ -1,6 +1,6 @@
 //package jTraverser;
 
-class AtomicData extends Data
+public class AtomicData extends Data
 {
     public AtomicData()
     {

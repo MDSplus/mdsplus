@@ -27,6 +27,7 @@ public class Database {
     public native void close()throws DatabaseException;
     public native void quit()throws DatabaseException;
     public native Data getData(NidData nid) throws DatabaseException;
+    public native Data evaluateData(NidData nid) throws DatabaseException;
     public native void putData(NidData nid, Data data) throws DatabaseException;
     //public native DatabaseInfo getInfo(); throws DatabaseException;
     public native NodeInfo getInfo(NidData nid) throws DatabaseException;
