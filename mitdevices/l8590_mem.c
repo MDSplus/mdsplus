@@ -116,6 +116,11 @@ int l8590_mem___store(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
     printf("Total samples too large for L8590_MEM: %s --- %d\n",setup->name,total_samps);
     total_samps = 32767;
   }
+
+  if (!(TreeIsOn(setup->head_nid + L8590_MEM_N_COMMENT) & 1)) {
+    total_samps = total_chans*2000;
+  }
+
   if (total_samps) {
     int chan;
     int chan_idx;
