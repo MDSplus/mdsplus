@@ -442,6 +442,9 @@ public class MdsDataClient extends MdsConnection
                         return (int)desc.byte_data[0];
 		    case Descriptor.DTYPE_FLOAT:
 		        return (int)desc.float_data[0];
+                    case Descriptor.DTYPE_SHORT:
+                    case Descriptor.DTYPE_USHORT:
+                        return (int)desc.short_data[0];
 		    case Descriptor.DTYPE_LONG:
 		        return desc.int_data[0];
 		    case Descriptor.DTYPE_CHAR:
