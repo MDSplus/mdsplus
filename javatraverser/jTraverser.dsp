@@ -79,5 +79,9 @@ CFG=jTraverser - Java Virtual Machine Debug
 
 !ENDIF 
 
+# Begin Source File
+
+SOURCE=.\javatraverser.mak
+# End Source File
 # End Target
 # End Project

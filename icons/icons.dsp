@@ -106,5 +106,21 @@ SOURCE=.\icons.rc
 
 SOURCE=.\logbook.ico
 # End Source File
+# Begin Source File
+
+SOURCE=.\scope.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\Tcl.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\Tdi.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\traverser.ico
+# End Source File
 # End Target
 # End Project

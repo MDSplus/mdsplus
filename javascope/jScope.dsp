@@ -78,5 +78,9 @@ CFG=jScope - Java Virtual Machine Debug
 
 !ENDIF 
 
+# Begin Source File
+
+SOURCE=.\javascope.mak
+# End Source File
 # End Target
 # End Project

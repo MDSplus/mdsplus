@@ -19,6 +19,7 @@ TreeCompressDatafile
 _TreeCompressDatafile
 TreeCreatePulseFile
 _TreeCreatePulseFile
+TreeCreateTreeFiles
 TreeDeleteNodeExecute
 _TreeDeleteNodeExecute
 TreeDeleteNodeGetNid

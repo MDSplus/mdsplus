@@ -306,7 +306,7 @@ define type stop_type												       ! 82
 define syntax stop_server											       ! 82 
         Routine TclDispatch_stop_server									       ! 82
         parameter p1,prompt="What",value(required,type=stop_type)						       ! 82 
-        parameter p2,label=server,prompt="Server",value(required,list)						       ! 82 
+        parameter p2,label=servnam,prompt="Server",value(required,list)						       ! 82 
 define verb verify												       ! 59 
 	Routine TclVerifyTree											       ! 62
 define verb WFEVENT												       ! 59 

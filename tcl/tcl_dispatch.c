@@ -171,7 +171,7 @@ int TclDispatch_stop_server()
    {
     int sts = 1;
     static DYNAMIC_DESCRIPTOR(ident);
-    while (sts & 1 && cli_get_value("SERVER",&ident) & 1)
+    while (sts & 1 && cli_get_value("SERVNAM",&ident) & 1)
         sts = ServerStopServer(ident.dscA_pointer);
     if (~sts & 1)
         MdsMsg(sts,"Error from ServerStopServer");

@@ -42,7 +42,6 @@ extern void TranslateLogicalFree(char *);
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-static int  TreeCreateTreeFiles(char *tree, int shot, int source_shot);
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -127,7 +126,7 @@ int       _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids
   return retstatus;
 }
 
-static int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
+int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
 {
   int len = strlen(tree);
   char tree_lower[13];
@@ -172,21 +171,21 @@ static int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
       {
         if (*part == ' ') 
           part++;
-        else if ((path[i] == ' ' || path[i] == ';' || path[i] == 0) && strlen(part))
+        else if ((path[i] == ';' || path[i] == 0) && strlen(part))
         {
-	  path[i] = 0;
+	      path[i] = 0;
           srcfile = strcpy(malloc(strlen(part)+strlen(name)+strlen(type)+2),part);
-	  if (strcmp(srcfile+strlen(srcfile)-1,TREE_PATH_DELIM))
-	    strcat(srcfile,TREE_PATH_DELIM);
-	  strcat(srcfile,name);
-	  strcat(srcfile,type);
+	      if (strcmp(srcfile+strlen(srcfile)-1,TREE_PATH_DELIM))
+	        strcat(srcfile,TREE_PATH_DELIM);
+	      strcat(srcfile,name);
+	      strcat(srcfile,type);
           if (stat(srcfile,&stat_info) == 0)
             break;
           else
-	  {
+		  {
             free(srcfile);
             srcfile = 0;
-	    part = &path[i+1];
+	        part = &path[i+1];
           }
         }
       }
@@ -203,7 +202,7 @@ static int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
         {
           if (*part == ' ') 
 			  part++;
-          else if ((path[i] == ' ' || path[i] == ';' || path[i] == 0) && strlen(part))
+          else if ((path[i] == ';' || path[i] == 0) && strlen(part))
           {
 			  path[i] = 0;
 			  dstfile = strcpy(malloc(strlen(part)+strlen(name)+strlen(type)+2),part);
