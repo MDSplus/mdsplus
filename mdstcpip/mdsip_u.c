@@ -827,6 +827,7 @@ static void FreeDescriptors(Client *c)
 
 static void RemoveClient(Client *c)
 {
+  void *tdi_context[6];
   Client *p,*nc;
   MdsEventList *e,*nexte;
   ClearFD(c->sock);
@@ -846,16 +847,13 @@ static void RemoveClient(Client *c)
   if (c->context.tree)
   {
     void  *old_context;
-    void *tdi_context[6];
     old_context = TreeSwitchDbid(c->context.tree);
     TreeClose(0,0);
     c->context.tree = TreeSwitchDbid(old_context);
-    TdiSaveContext(tdi_context);
-    TdiRestoreContext(c->tdicontext);
-    TdiResetPublic(MdsEND_ARG);
-    TdiResetPrivate(MdsEND_ARG);
-    TdiRestoreContext(tdi_context);
   }
+  TdiSaveContext(tdi_context);
+  TdiDeleteContext(c->tdicontext);
+  TdiRestoreContext(tdi_context);
   for (p=0,nc=ClientList; nc && nc!=c; p=nc,nc=nc->next);
   if (nc == c)
   {
