@@ -86,12 +86,35 @@ WithErrorData.java\
 WithUnitsData.java\
 jTraverser.java
 
-CLASSES = jTraverser/*.class
+CLASSES = *.class
 
-all: @MAKEBINDIR@ @MAKEBINDIR@jTraverser @MAKEJAVADIR@ @MAKEJAVADIR@classes \
+GIFS = @MAKEJAVADIR@classes/DeviceApply.gif \
+       @MAKEJAVADIR@classes/DeviceChoice.gif \
+       @MAKEJAVADIR@classes/DeviceReset.gif \
+       @MAKEJAVADIR@classes/compound.gif \
+       @MAKEJAVADIR@classes/signal.gif \
+       @MAKEJAVADIR@classes/text.gif \
+       @MAKEJAVADIR@classes/DeviceButtons.gif \
+       @MAKEJAVADIR@classes/DeviceDispatch.gif \
+       @MAKEJAVADIR@classes/DeviceSetup.gif \
+       @MAKEJAVADIR@classes/device.gif \
+       @MAKEJAVADIR@classes/structure.gif \
+       @MAKEJAVADIR@classes/window.gif \
+       @MAKEJAVADIR@classes/DeviceCancel.gif \
+       @MAKEJAVADIR@classes/DeviceField.gif \
+       @MAKEJAVADIR@classes/action.gif \
+       @MAKEJAVADIR@classes/dispatch.gif \
+       @MAKEJAVADIR@classes/subtree.gif \
+       @MAKEJAVADIR@classes/DeviceChannel.gif \
+       @MAKEJAVADIR@classes/DeviceOk.gif \
+       @MAKEJAVADIR@classes/axis.gif \
+       @MAKEJAVADIR@classes/numeric.gif \
+       @MAKEJAVADIR@classes/task.gif
+
+all: @MAKEBINDIR@ @MAKEBINDIR@jTraverser @MAKEJAVADIR@ @MAKEJAVADIR@classes $(GIFS) \
      @MAKEJAVADIR@classes/jTraverser.jar
 
-clean: ; rm $(CLASSES) @MAKEBINDIR@jTraverser @MAKEJAVADIR@classes/jTraverser.jar
+clean: ; rm $(CLASSES) rm $(TARG_GIFS) @MAKEBINDIR@jTraverser @MAKEJAVADIR@classes/jTraverser.jar
 
 depend: ; @ :
 
@@ -107,14 +130,79 @@ install:
 
 @MAKEJAVADIR@classes : ; mkdir @MAKEJAVADIR@classes
 
-@MAKEJAVADIR@classes/jTraverser.jar: jTraverser/jTraverser.class
+@MAKEJAVADIR@classes/jTraverser.jar: jTraverser.class
 	$(JAR) c0f $@ $(CLASSES)
 
-jTraverser/jTraverser.class: 	$(SOURCES)
-	env CLASSPATH=@MAKEJAVADIR@classes/MRJClasses.zip $(JAVAC) -g -d . $(SOURCES)
+jTraverser.class: 	$(SOURCES)
+	env CLASSPATH=@MAKEJAVADIR@classes/MRJClasses.zip:. $(JAVAC) -g -d . $(SOURCES)
 
 @MAKEBINDIR@ : ; mkdir @MAKEBINDIR@
 
 @MAKEBINDIR@jTraverser : jTraverser.template
 	sed "s|MAKEJAVADIR|`cd @MAKEJAVADIR@;pwd`|g" jTraverser.template | sed "s|libdir|`cd @libdir@;pwd`|g" > $@
 	chmod a+x $@
+@MAKEJAVADIR@classes/DeviceApply.gif : DeviceApply.gif
+	cp DeviceApply.gif $@
+
+@MAKEJAVADIR@classes/DeviceChoice.gif : DeviceChoice.gif
+	cp DeviceChoice.gif $@
+
+@MAKEJAVADIR@classes/DeviceReset.gif : DeviceReset.gif
+	cp DeviceReset.gif $@
+
+@MAKEJAVADIR@classes/compound.gif : compound.gif
+	cp compound.gif $@
+
+@MAKEJAVADIR@classes/signal.gif : signal.gif
+	cp signal.gif $@
+
+@MAKEJAVADIR@classes/text.gif : text.gif
+	cp text.gif $@
+
+@MAKEJAVADIR@classes/DeviceButtons.gif : DeviceButtons.gif
+	cp DeviceButtons.gif $@
+
+@MAKEJAVADIR@classes/DeviceDispatch.gif : DeviceDispatch.gif
+	cp DeviceDispatch.gif $@
+
+@MAKEJAVADIR@classes/DeviceSetup.gif : DeviceSetup.gif
+	cp DeviceSetup.gif $@
+
+@MAKEJAVADIR@classes/device.gif : device.gif
+	cp device.gif $@
+
+@MAKEJAVADIR@classes/structure.gif : structure.gif
+	cp structure.gif $@
+
+@MAKEJAVADIR@classes/window.gif : window.gif
+	cp window.gif $@
+
+@MAKEJAVADIR@classes/DeviceCancel.gif : DeviceCancel.gif
+	cp DeviceCancel.gif $@
+
+@MAKEJAVADIR@classes/DeviceField.gif : DeviceField.gif
+	cp DeviceField.gif $@
+
+@MAKEJAVADIR@classes/action.gif : action.gif
+	cp action.gif $@
+
+@MAKEJAVADIR@classes/dispatch.gif : dispatch.gif
+	cp dispatch.gif $@
+
+@MAKEJAVADIR@classes/subtree.gif : subtree.gif
+	cp subtree.gif $@
+
+@MAKEJAVADIR@classes/DeviceChannel.gif : DeviceChannel.gif
+	cp DeviceChannel.gif $@
+
+@MAKEJAVADIR@classes/DeviceOk.gif : DeviceOk.gif
+	cp DeviceOk.gif $@
+
+@MAKEJAVADIR@classes/axis.gif : axis.gif
+	cp axis.gif $@
+
+@MAKEJAVADIR@classes/numeric.gif : numeric.gif
+	cp numeric.gif $@
+
+@MAKEJAVADIR@classes/task.gif : task.gif
+	cp task.gif $@

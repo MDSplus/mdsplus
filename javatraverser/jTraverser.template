@@ -4,4 +4,4 @@
 #
 env \
 CLASSPATH=libdir/jTraverser.jar:libdir/MRJClasses.zip:MAKEJAVADIR/classes/jTraverser.jar:MAKEJAVADIR/classes/MRJClasses.zip \
-java jTraverser.jTraverser $1 $2 $3 $4 $5 $6 $7
+java -Dicon_base=MAKEJAVADIR/classes jTraverser $1 $2 $3 $4 $5 $6 $7
