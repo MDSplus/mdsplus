@@ -11,6 +11,7 @@
 * MDSDCL_DCL_PARSE.C --
 *
 * History:
+*  13-Apr-2001  TRG  For indirect files, put filename inside double-quotes.
 *  08-Nov-1997  TRG  Create.
 *
 ************************************************************************/
@@ -38,6 +39,7 @@ int   mdsdcl_dcl_parse(		/* Returns CLI_STS_xxx status	*/
     static char  *cmd;			/* addr of private cmd string	*/
     static int   maxcmd;		/* current length of cmd[]	*/
     static char  doIndirect[16];
+    static DYNAMIC_DESCRIPTOR(dsc_filename);
 #ifdef vms
     extern mdsdcl$dcl_parse_handler();
 #endif
@@ -51,7 +53,7 @@ int   mdsdcl_dcl_parse(		/* Returns CLI_STS_xxx status	*/
 
     if (!doIndirect[0])
        {			/* first time ...			*/
-        sprintf(doIndirect,"DO %cINDIRECT ",QUALIFIER_CHARACTER);
+        sprintf(doIndirect,"DO %cINDIRECT",QUALIFIER_CHARACTER);
        }
 
 		/*-------------------------------------------------------
@@ -81,8 +83,13 @@ int   mdsdcl_dcl_parse(		/* Returns CLI_STS_xxx status	*/
            {
             p = nonblank(p+1);		/* skip the '@'			*/
             nbytes = sizeof(doIndirect) - 1;
+            if (!ascFilename(&p,&dsc_filename,0))
+                return(MdsMsg(MDSDCL_STS_INDIRECT_ERROR,
+                        "Illegal filename: %s",p?p:""));
+            nbytes += strlen(dsc_filename.dscA_pointer) + 3;
+						/* 2 quotes + blank	*/
            }
-        nbytes += strlen(p);
+        nbytes += p ? strlen(p) : 0;
 
         if (nbytes > maxcmd)
            {		/*----- allocate enough space for cmd[] ------*/
@@ -97,7 +104,11 @@ int   mdsdcl_dcl_parse(		/* Returns CLI_STS_xxx status	*/
                }
             }
 
-        sprintf(cmd,"%s%s",indirect_flag?doIndirect:"",p?p:"");
+        if (indirect_flag)
+            sprintf(cmd,"%s \"%s\" %s",
+                    doIndirect,dsc_filename.dscA_pointer,p?p:"");
+        else
+            strcpy(cmd,p?p:"");
 
         sts = cli_dcl_parse(cmd,ctrl->tbladr[tabidx-1],
             mdsdcl_get_input,mdsdcl_get_input,&ctrl->prompt);

@@ -96,10 +96,13 @@ Define verb DO
 	Parameter P7, label=p6
 	Parameter P8, label=p7
 	Qualifier MACRO,DEFAULT
-	Qualifier INDIRECT
+	Qualifier INDIRECT,SYNTAX=DO_INDIRECT
         Qualifier REPEAT,VALUE(TYPE=$NUMBER)
         DISALLOW  MACRO AND INDIRECT
         DISALLOW  INDIRECT AND REPEAT
+Define syntax DO_INDIRECT
+	Routine mdsdcl_do_macro
+	Parameter P1,label=NAME,PROMPT="Filename",VALUE(REQUIRED,TYPE=$REST_OF_LINE)
 Define verb EXIT
 	Routine mdsdcl_exit
 Define verb QUIT

@@ -12,6 +12,8 @@
 * from within main().
 *
 * History:
+*  13-Apr-2001  TRG  Remove check for indirect files.
+*                    Report "No such command" if final sts = CLI_STS_IVQUAL.
 *  06-Apr-2001  TRG  Revised handling of indirect commands.
 *                    Restore "verify" display to within mdsdcl_do_command.
 *  06-May-1998  TRG  Remove "verify" display:  moved to "get_input".
@@ -92,8 +94,6 @@ int mdsdcl_do_command(
         str_trim(&io->last_command,command);
         str_copy_dx(&dsc_cmd,&io->last_command);
         mdsdcl_insert_symbols(io->ioParameter,&dsc_cmd);
-        if (*(char *)dsc_cmd.dscA_pointer == '@')
-            str_replace(&dsc_cmd,&dsc_cmd,0,1,"do/indirect ");
        }
     else
        {
@@ -149,6 +149,12 @@ int mdsdcl_do_command(
        {			/* Try to dispatch the macro ...	*/
         sts = cli_dispatch(ctrl);
        }
+    else if (sts == CLI_STS_IVQUAL)
+       {
+        MdsMsg(0,"No such command");	/* CLI_STS_IVQUAL msg is suppressed
+					 *  by cli_process_qualifier() */
+       }
+
     if (~sts & 1)
         mdsdcl_close_indirect_all();
 

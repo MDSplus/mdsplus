@@ -14,8 +14,7 @@
 * Basic input routine for MDSDCL ...
 *
 * History:
-*  06-Apr-2001  TRG  Make mdsdcl_openIndirectLevel globally defined
-*                    Replace leading "@" by "do/indirect" in command line.
+*  13-Apr-2001  TRG  Make mdsdcl_openIndirectLevel globally defined
 *  22-Dec-1997  TRG  Create.
 *
 *************************************************************************/
@@ -329,10 +328,6 @@ static int   really_get_input(		/* Return: status		*/
         mdsdcl_insert_symbols(dsc_cmd,io->ioParameter);
 
         p = nonblank(dsc_cmd->dscA_pointer);
-        if (p && *p=='@')
-           {
-            str_replace(dsc_cmd,dsc_cmd,0,1,"do/indirect ");
-           }
        }
 
     return(1);
