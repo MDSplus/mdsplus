@@ -65,7 +65,9 @@ full_clean:
 	@ ./devscripts/rm_if uid
 	@ ./devscripts/rm_if config.cache
 	@ ./devscripts/rm_if config.log
-	@ ./devscripts/rm_if `find . -name '*.in' | awk '{if ($$1 != "./configure.in") print substr($$1,0,length($$1)-3)}'`
+	@ ./devscripts/rm_if `find . -name '*.in' | \
+	      grep -v configure.in | grep -v makekit.in | \
+	      awk '{print substr($$1,0,length($$1)-3)}'`
 
 depend:
 	cdir=`pwd`;\
