@@ -38,6 +38,19 @@ public fun dt_acq16__store(as_is _nid, optional _method)
    See if digitizer is done digitizing
   ************************************/
 
+  if (Dt200IsAcq216(_board)) {
+    _tries=0;
+    while(_tries++ < 60) {
+      _state = MdsValue('Dt200WriteMaster($, "getState")', _board);
+      if (_state == "ACQ32:4 ST_POSTPROCESS") {
+        wait(1.);
+      } else {
+        break;
+      }
+    }
+    write (*, "It took "//_tries//" seconds to post process");
+  }
+
   _state = MdsValue('Dt200WriteMaster($, "getState")', _board);
   if (_state != "ACQ32:0 ST_STOP") {
     write(*, '%DT200ERR, board '//_board//' Device not triggered');
@@ -85,7 +98,6 @@ public fun dt_acq16__store(as_is _nid, optional _method)
       endif
    Endfor
   ************************************************************/       
-  _offset = 0.0;
 
   for (_chan=0; _chan < _num_chans; _chan++)
   {
@@ -128,7 +140,7 @@ public fun dt_acq16__store(as_is _nid, optional _method)
       WRITE(*, "About to write channel "//_chan+1);
       write (*, size(_data));
 */
-      DevPutSignalNoBounds(_chan_nid, _offset, 2.5/(2^15), _data, _dim);
+      DevPutSignalNoBounds(_chan_nid, Dt200GetVoltOffset(_board), Dt200GetVoltCoef(_board), _data, _dim);
     }
   }
   return(1);
