@@ -1462,7 +1462,7 @@ static char *_FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind)
 #ifdef _LINUX
     if (dp != NULL)
     {
-      if( dp->dtype)
+      if( dp->d_dtype)
       {
         dp = (struct dirent *)(((char *)dp)-1);
       }
