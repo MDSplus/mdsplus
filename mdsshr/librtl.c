@@ -37,6 +37,29 @@ static void *dlsym(void *handle, char *name)
   return (void *)GetProcAddress((HINSTANCE)handle, name);
 }
 
+static char *dlerror()
+{
+  static LPTSTR *error_string = 0;
+  DWORD last_error=GetLastError();
+  if (error_string)
+  {
+    LocalFree((HLOCAL)error_string);
+    error_string = 0;
+  }
+  FormatMessage( 
+    FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+    FORMAT_MESSAGE_FROM_SYSTEM | 
+    FORMAT_MESSAGE_IGNORE_INSERTS,
+    NULL,
+    GetLastError(),
+    0, // Default language
+    (LPTSTR) &error_string,
+    0,
+    NULL 
+  );
+  return error_string == NULL ? "" : error_string;
+}
+
 typedef struct _dir
 {
 	char *path;
@@ -865,22 +888,28 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   char *c_filename = MdsDescrToCstring(filename);
   char *full_filename = malloc(strlen(c_filename) + 10);
   void *handle;
+  char *dlopen_error=0;
   *symbol_value = NULL;
   strcpy(full_filename,"lib");
   strcat(full_filename,c_filename);
   strcat(full_filename,SHARELIB_TYPE);
   handle = dlopen(full_filename,RTLD_LAZY);
   if (handle == NULL) {
-    strcpy(full_filename,c_filename);
-    strcat(full_filename,SHARELIB_TYPE);
-    handle = dlopen(full_filename,RTLD_LAZY);
+    if (strcmp(c_filename,"MdsFunctions"))
+      dlopen_error = dlerror();
+    handle = dlopen(&full_filename[3],RTLD_LAZY);
   }
   if (handle != NULL)
   {
     char *c_symbol = MdsDescrToCstring(symbol);
     *symbol_value = dlsym(handle,c_symbol);
+    if (!symbol_value)
+      printf("error finding symbol %s, %s\n",c_symbol,dlerror());
     free(c_symbol);
   }
+  else if (strcmp(c_filename,"MdsFunctions"))
+    printf("Error opening library %s, %s\nError opening library %s, %s\n",full_filename,dlopen_error,
+       &full_filename[3],dlerror());
   free(c_filename);
   free(full_filename);
   if (*symbol_value == NULL)
