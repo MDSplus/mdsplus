@@ -8,7 +8,13 @@
 ;
 ; OPTIONAL INPUT PARAMETERS: --
 ;               _since-time-string   - date to start from
-;                                      default '1-JAN-1992'
+;                                      default '1/1/92'
+;               format must be:
+;                  'today'
+;		   'tomorrow'
+;                  'yesterday'
+;                  'mm/dd/yy [hh:mm]'
+;
 ; OUTPUTS:      --
 ; OPTIONAL OUTPUT PARAMETERS: --
 ; COMMON BLOCKS: --
@@ -21,7 +27,7 @@
 FUN     PUBLIC HOURS_SINCE(IN _time, OPTIONAL IN _since) {
   _DELTA = 0Q;
   _ANS = 0.0;
-  if (not PRESENT(_since)) _since = '1-JAN-1992';
+  if (not PRESENT(_since)) _since = '1/1/92';
   _stat = MdsShr->LibConvertDateString( _since,REF(_DELTA));
   _q_times = _time - _delta;
   _q_times = _q_times / 100000Q;  /* hundredths of a second */
