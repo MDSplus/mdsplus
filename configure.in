@@ -100,23 +100,27 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LDARC="-Wl,-no_so ";
        LD_LDARC="-no_so ";
        LD_LDSHARE="-so_archive ";
-       LINKSHARED="-shared -rpath \\\$\$LD_LIBRARY_PATH:\$(exec_prefix)/lib";
+       LINKSHARED="-shared -rpath \\\$\$LD_LIBRARY_PATH:/usr/local/mdsplus/lib:\$(exec_prefix)/lib";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="-lfor";
        FEXECLIBDIR="-L";
        MDSVME="mdsvme";
-       SHARETYPE=".so";;
+       SHARETYPE=".so";
+       jni_inc_dir="/usr/include/java";
+       jni_md_inc_dir="/usr/include/java/`uname -m`";;
 *linux*) CFLAGS="$CFLAGS -fpic";
        FFLAGS="$FFLAGS -fpic -Wno-globals -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
        LD_LDARC="-Bstatic ";
-       LINKSHARED="-shared -rpath \\\$\$LD_LIBRARY_PATH:\$(exec_prefix)/lib";
+       LINKSHARED="-shared -rpath \\\$\$LD_LIBRARY_PATH:/usr/local/mdsplus/lib:\$(exec_prefix)/lib";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
-       SHARETYPE=".so";;
+       SHARETYPE=".so";
+       jni_inc_dir="/usr/java/jdk1.3/include";
+       jni_md_inc_dir="/usr/java/jdk1.3/include/linux";;
 *aix*) CFLAGS="$CFLAGS";
        FFLAGS="$FFLAGS";
        LDSHARE="";
@@ -228,12 +232,11 @@ AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/fi
 AC_CHECK_HEADERS(dlfcn.h dl.h vxWorks.h windows.h sys/resource.h readline/readline.h)
 
 dnl Check for jdk files
-AC_CHECK_FILE(/usr/include/java/jni.h,JDK_CFLAGS="-I/usr/include/java")
-jni_md_inc="/usr/include/java/`uname -m`/jni_md.h"
-AC_CHECK_FILE($jni_md_inc,JDK_CFLAGS="$JDK_CFLAGS -I/usr/include/java/`uname -m`")
+AC_CHECK_FILE($jni_inc_dir/jni.h,JDK_CFLAGS="-I$jni_inc_dir")
+AC_CHECK_FILE($jni_md_inc_dir/jni_md.h,JDK_CFLAGS="$JDK_CFLAGS -I$jni_md_inc_dir")
 if test "$JDK_CFLAGS"
 then
-  JAVA_APS="$(JAVA_APS)"
+  JAVA_APS="\$(JAVA_APS)"
 else
   JAVA_APS=""
 fi
