@@ -13,6 +13,7 @@
 #include        "clidef.h"
 #include        "tcldef.h"
 #include        "ccldef.h"
+#include        "treeshr.h"
 
 /**********************************************************************
 * MDSMSG.C --
@@ -64,6 +65,12 @@ static char  *statusText(	/* Return: addr of "status" string	*/
         stsText = tcl_stsText;		/* point to array		*/
         facilityText = "TCL_FACILITY";
         max = sizeof(tcl_stsText)/sizeof(tcl_stsText[0]);
+       }
+    else if (facility == TREESHR_FACILITY)
+       {
+        stsText = treeshr_stsText;	/* point to array		*/
+        facilityText = "TREESHR_FACILITY";
+        max = sizeof(treeshr_stsText)/sizeof(treeshr_stsText[0]);
        }
     else
        {
