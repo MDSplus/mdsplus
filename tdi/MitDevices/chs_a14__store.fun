@@ -16,7 +16,7 @@ public fun chs_a14__store(as_is _nid, optional _method)
   ************************************/
   _setting = chs_vme_readwords(0x106c0000,128);
   if (_debug) write(*,"Settings = ",_settings);
-  _sr = (long(_settings[8+_dignum*16]) & 0xffff) | (long(_settings[12+_dignum*16]) << 16);
+  _sr = long(_settings[8+_dignum*16]) & 0xffff;
   if (_debug) write(*,"_sr=",_sr);
   /**********************************
    Get the PTS
@@ -26,7 +26,7 @@ public fun chs_a14__store(as_is _nid, optional _method)
    Get the ADC ranges
   **********************************/
   _range = (long(_settings[10+_dignum*16]) & 0xffff) | (long(_settings[12+_dignum*16]) << 16);
-  if (_debug) write(*,"_range=,_range);
+  if (_debug) write(*,"_range=",_range);
   _sr_mode = (_sr >> 8) & 0x7;
   if (_debug) write(*,"_sr_mode=",_sr_mode);
   _sr_mode = 0; /**** Only mode 0 supported by cinos ***/
