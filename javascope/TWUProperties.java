@@ -7,6 +7,7 @@
  * 
  * This class handles the properties 'file' as used in the TEC Web-Umbrella.
  *
+ * NOTE:
  * The TWU* classes (with TWU in three capitals) are written so that they 
  * can also be used in other java based applications and not only by jScope.  
  * Please keep the code of these separate of jScope specific elements.
@@ -19,7 +20,12 @@
  *
  * $Id$
  *
+ * ------------------------------------------------------------------------ 
  * $Log$
+ * Revision 1.17  2002/11/28 11:56:51  jgk
+ * Some unimportant changes to the comment texts, in effect
+ * going back to the situation of revision 1.13.
+ *
  * Revision 1.16  2002/11/12 17:18:29  manduchi
  * Added support for waveform editing
  *
