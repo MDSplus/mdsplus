@@ -111,7 +111,7 @@ static BYTE JorwayModes[2][2][4] = {
 };
 
 #define	JORWAY_DISCONNECT			0
-#define	JORWAYMODE(multisample, mode, enhanced)	JorwayModes[enhanced][mode][multisample]
+#define	JORWAYMODE(mode, enhanced, multisample)	JorwayModes[multisample][enhanced][mode]
 #define	KSMODE(mode)				mode
 
 //-----------------------------------------------------------
