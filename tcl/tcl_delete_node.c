@@ -76,20 +76,25 @@ int TclDeleteNode()
     void  *ctx;
     static DYNAMIC_DESCRIPTOR(dsc_nodnam);
     static DYNAMIC_DESCRIPTOR(dsc_out);
-
+    int status = 1;
     while (cli_get_value("NODENAME",&dsc_nodnam) & 1)
        {
         ctx = 0;
         nodename = dsc_nodnam.dscA_pointer;
         l2u(nodename,0);
-        while (TreeFindNodeWild(nodename,&nid,&ctx,usageMask) & 1)
+        while (TreeFindNodeWild(nodename,&nid,&ctx,usageMask) & 1 && (status & 1))
            {
             nids++;
-            TreeDeleteNodeInitialize(nid,&count,reset);
+            status = TreeDeleteNodeInitialize(nid,&count,reset);
             reset = 0;
            }
         TreeFindNodeEnd(&ctx);
        }
+    if (status == TreeNOEDIT)
+    {
+      TclTextOut("Tree must be open for edit to delete nodes.");
+      return 1;
+    }
     if (!count)
        {
         TclTextOut("No nodes found.");
