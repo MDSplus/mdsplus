@@ -30,7 +30,7 @@ mdsshr : ../shlib ../shlib/libMdsShr.$(SHARE_TYPE) ../shlib/libMdsShr.a
 
 clean :
 	rm *.o
-	rm ../shlib/libMdsShr.$(SHARE_TYPE)
+	rm ../shlib/libMdsShr.*
 	rm .depend
 
 .depend :
