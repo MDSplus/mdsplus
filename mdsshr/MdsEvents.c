@@ -975,7 +975,7 @@ static int sendRemoteEvent(char *evname, int data_len, char *data)
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 8, "MdsValue"};
-    int status, i;
+    int status, i, tmp_status;
     char expression[256];
     struct descrip ansarg;
     struct descrip desc;
@@ -987,19 +987,30 @@ static int sendRemoteEvent(char *evname, int data_len, char *data)
 		 void *ptr;
 	       };
 */
-    desc.dtype = DTYPE_T;
+    desc.dtype = DTYPE_B;
     desc.ptr = data;
-    desc.length = data_len;
-    desc.ndims = 0;
+    desc.length = 1;
+    desc.ndims = 1;
+    desc.dims[0] = data_len;
     ansarg.ptr = 0;
-    sprintf(expression, "setevent(\"%s\", $)", evname);
+    sprintf(expression, "setevent(\"%s\"%s)", evname,data_len > 0 ? ",$" : "");
     status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
     {
 	for(i = 0; i < num_send_servers; i++)
 	{
 	    curr_rtn = rtn;
-	    if(send_sockets[i]) status = (*curr_rtn) (send_sockets[i], expression, &desc, &ansarg, NULL);
+	    if(send_sockets[i])
+            {
+              if (data_len > 0)
+                tmp_status = (*curr_rtn) (send_sockets[i], expression, &desc, &ansarg, NULL);
+              else
+                tmp_status = (*curr_rtn) (send_sockets[i], expression, &ansarg, NULL);
+            }
+            if (tmp_status & 1)
+              tmp_status = (ansarg.ptr != NULL) ? *(int *)ansarg.ptr : 0;
+            if (!(tmp_status & 1))
+              status = tmp_status;
 	    if (ansarg.ptr) free(ansarg.ptr);
 	}
     }
