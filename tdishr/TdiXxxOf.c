@@ -272,7 +272,7 @@ static unsigned char omits[] = {
 			else status=MdsCopyDxXd((struct descriptor *)&tmp, out_ptr);
 			break;
 		case DTYPE_SIGNAL :
-			if (index >= ((struct descriptor_signal *)pa)->ndesc-2
+			if (index > ((struct descriptor_signal *)pa)->ndesc-3
 			|| ((struct descriptor_signal *)pa)->dimensions[index] == 0) {
                                 struct descriptor_s index_dsc = {sizeof(int), DTYPE_L, CLASS_S, 0};
                                 index_dsc.pointer = (char *)&index;
