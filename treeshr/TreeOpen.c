@@ -6,6 +6,7 @@
 #include "treeshrp.h"
 #include <ctype.h>
 #include <mds_stdarg.h>
+#include <libroutines.h>
 #ifdef _WIN32
 #include <io.h>
 extern char *index(char *str,char c);
