@@ -241,6 +241,8 @@ public class Node
 	    try {
 	        if(info == null)
 		    info = experiment.getInfo(nid, Tree.context);
+                if(usage == NodeInfo.USAGE_STRUCTURE && !name.startsWith(".") && !name.startsWith(":"))
+                  name ="." +  name;
 	        new_nid = experiment.addNode(name, usage, Tree.context);
 	    } finally {
 	        experiment.setDefault(prev_default, Tree.context); }
