@@ -94,12 +94,12 @@ public class MdsConnection
 	                    synchronized (this)
 	                    {
 	                        message = curr_message;
-	                        notify();
+	                        if(pending_count == 0) notify();
 	                    }
 	                    
 	                    curr_message = null;
-	                    if(pending_count == 0)
-	                        MdsConnection.this.NotifyMessage();
+	                    //if(pending_count == 0)
+	                      //  MdsConnection.this.NotifyMessage();
 	                }
         	    }
 	        } 
