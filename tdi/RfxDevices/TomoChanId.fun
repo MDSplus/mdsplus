@@ -9,7 +9,7 @@ public fun TomoChanId(in _logical, in _enable, in _table)
     /* VME CHANNEL */
     _id +=  ((( _table[ 3, _logical -1] - 1) & 0x3UQ) << 5);
     /* DIODE */
-    _id +=  ((  _table[ 4, _logical -1] & 0x1FFUQ)      << 7);
+    _id +=  ((  _table[ 4, _logical -1] & 0x1FF)      << 7);
     /* AMPLIFIER TYPE */
     _id +=  (((_table[ 5, _logical -1]) & 0x1FUQ)      << 16); 
     /* AMPLIFIER ID */

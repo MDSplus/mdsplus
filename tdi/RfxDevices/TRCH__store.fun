@@ -111,8 +111,8 @@ public fun TRCH__store(as_is _nid, optional _method)
     			DevCamChk(_name, CamPiow(_name, 0,16,_mar, 24),1,1);
 			
 
-			DevCamChk(_name, CamFStopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *); 
-	/*		DevCamChk(_name, CamQstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);*/
+	/*		DevCamChk(_name, CamFStopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *); */
+			DevCamChk(_name, CamQstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);
 			_dim = make_dim(make_window(_start_idx, _end_idx - 1, d_float(_trig)), _clock);
 			_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
 			_status = DevPutSignal(_sig_nid, 0, 10/2048., word(_data), 0, _end_idx - _start_idx - 1, _dim);
