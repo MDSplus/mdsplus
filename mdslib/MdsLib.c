@@ -146,7 +146,6 @@ int descr (int *dtype, void *data, int *dim1, ...)
 	 dsc->length = *va_arg(incrmtr, int *);
     }
 
-
   }
   else 
   {
@@ -169,7 +168,7 @@ int descr (int *dtype, void *data, int *dim1, ...)
      * list of dimensions there will be an int * to the length of each string in the array
      */
 
-    if (dsc->dtype == DTYPE_CSTRING && dsc->length == 0) 
+    if (dsc->dtype == DTYPE_CSTRING) /*  && dsc->length == 0)  */
     {
 	 dsc->length = *va_arg(incrmtr, int *);
     }
@@ -178,7 +177,7 @@ int descr (int *dtype, void *data, int *dim1, ...)
     if (ndim > 1) 
     {
       int i;
-      array_coeff *adsc = (array_coeff *)dsc;  /* &&& CAN I DO DYNAMIC NUMBER OF DIMENSIONS HERE??? */
+      array_coeff *adsc = (array_coeff *)dsc;  
       adsc->class = CLASS_A;
   
       if (ndim > MAXDIM) 
@@ -221,6 +220,7 @@ int descr (int *dtype, void *data, int *dim1, ...)
   return retval;
 }
 
+#ifndef _VMS
 #ifndef _CLIENT_ONLY
 int *cdescr (int dtype, void *data, ...)
 {
@@ -253,6 +253,7 @@ int *cdescr (int dtype, void *data, ...)
     status = LibCallg(arglist,descr);
     return(&status);
 }
+#endif
 #endif
 
 void MdsDisconnect()
@@ -310,7 +311,7 @@ struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
   else 
   {
     int i;
-    array_coeff *adsc = (array_coeff *)dsc;  /* &&& CAN I DO DYNAMIC NUMBER OF DIMENSIONS HERE??? */
+    array_coeff *adsc = (array_coeff *)dsc;  
     int dims[MAXDIM];
     int num = adsc->arsize/adsc->length;
     int *m = &num;
@@ -322,36 +323,24 @@ struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
   return arg;
 }
 
-
-int MdsValueLength(int numbytes, struct descriptor *dsc)
+int MdsValueLength(struct descriptor *dsc)
 {
   int length;
-
-  switch (dsc->class) 
-    {
+  switch (dsc->class)
+  {
     case CLASS_S:
     case CLASS_D:
-      if (dsc->dtype == DTYPE_CSTRING) 
-	{
-	  length = MIN(numbytes, dsc->length);
-	}
-      else
-	{
-	  length = numbytes / dtype_length(dsc); 
-	}
+      length = dsc->length;
       break;
-
     case CLASS_A:
-      length = numbytes / (*(struct descriptor_a *)dsc).length;
+      length = ((struct descriptor_a *)dsc)->arsize;
       break;
-
     default:
       length = 0;
-    }
-  return length;
-
+      break;
+  }
+  return(length);
 }
-
 
 char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
 {
@@ -384,35 +373,71 @@ char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
 
 }
 
-void MdsValueSet(struct descriptor *dsc, void *answerptr, int numbytes)
+void MdsValueMove(int source_length, char *source_array, char fill, int dest_length, char *dest_array)
 {
-  int status;
+  int i;
+  memcpy(dest_array, source_array, MIN(source_length, dest_length));
+  for (i=0; i<dest_length-source_length; i++)
+  {
+    dest_array[source_length+i] = fill;
+  }
+}
 
-  status = (numbytes > 0);
-  if (status) 
+void MdsValueCopy(int dim, int length, char fill, char *in, int *in_m, char *out, int *out_m)
+{
+  int i;
+  if (dim == 1)
+    MdsValueMove(length * in_m[0], in, fill, length * out_m[0], out);
+  else
+  {
+    int in_increment = length;
+    int out_increment = length;
+    for (i=0; i<dim-1; i++)
     {
-      switch (dsc->class)
-	{
-	case CLASS_S:
-	case CLASS_D:
-	  numbytes = MIN(numbytes, dsc->length);
-	  break;
-	case CLASS_A:
-	  numbytes = MIN(numbytes, 
-			 (int)((struct descriptor_a *)dsc)->arsize);
-	  break;
-	default:
-	  status = 0;
-	}
+      in_increment *= in_m[i];
+      out_increment *= out_m[i];
     }
+    for (i=0; i<in_m[dim-1] && i < out_m[dim-1]; i++)
+      MdsValueCopy(dim-1, length, fill, in + in_increment * i, in_m, out + out_increment * i, out_m);
+  }
+}
 
-  if (status & 1) 
-    { 
-      memcpy(dsc->pointer, (char *) answerptr, numbytes);
-      if (dsc->dtype == DTYPE_CSTRING && numbytes < dsc->length) 
-	strcpy(dsc->pointer+numbytes, "\0");
+void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int *length)
+{
+  int fill = (outdsc->dtype == DTYPE_CSTRING) ? 32 : 0;
+  if ( (indsc->class == CLASS_A) &&
+       (outdsc->class == CLASS_A) &&
+       (((struct descriptor_a *)outdsc)->dimct > 1) &&
+       (((struct descriptor_a *)outdsc)->dimct == ((struct descriptor_a *)indsc)->dimct) )
+  {
+    array_coeff *in_a = (array_coeff *) indsc;
+    array_coeff *out_a = (array_coeff *) outdsc;
+    MdsValueMove(0,0,fill,MdsValueLength(outdsc),out_a->pointer);
+    MdsValueCopy(out_a->dimct, in_a->length, fill, in_a->pointer, in_a->m, out_a->pointer, out_a->m);
+  }
+  else
+  {
+    MdsValueMove(MdsValueLength(indsc), indsc->pointer, fill, MdsValueLength(outdsc), outdsc->pointer);
+  }
+
+  if (length) 
+  {
+    if (indsc->class == CLASS_A) 
+      *length = MIN( ((struct descriptor_a *)outdsc)->arsize / outdsc->length, 
+		     ((struct descriptor_a *)indsc)->arsize / indsc->length);
+    else 
+    {
+      if (indsc->dtype == DTYPE_CSTRING)
+      {
+	*length = MIN(outdsc->length, indsc->length);
+      }
+      else
+      {
+	*length = MIN(outdsc->length / dtype_length(outdsc), 
+		      indsc->length / dtype_length(indsc));
+      }
     }
-    
+  }
 }
 
 
@@ -502,9 +527,7 @@ int MdsValue(char *expression, ...)
 	{
 	  printf("I: %d    BAD DESCRIPTOR!!!\n",i);
 	}
-
     }
-
 
     if (status & 1)
     {
@@ -516,16 +539,49 @@ int MdsValue(char *expression, ...)
 
       arg = MakeIpDescrip(arg, dscAnswer);
       status = GetAnswerInfo(mdsSocket, &arg->dtype, &len, &arg->ndims, arg->dims, &numbytes, &dptr);
-      if (status & 1) MdsValueSet(dscAnswer, dptr, numbytes);
-      if (length && numbytes) {
-	if (arg->ndims == 0 ) 
-	  {
-	    *length = MdsValueLength(numbytes,dscAnswer);
-	  }
-	else {
+
+      /**  Make a "regular" descriptor out of the returned IpDescrip.
+       **  Cannot use LibCallg to call descr() because it will not be
+       **  present for client-only library.
+       **/
+
+      if (status & 1) 
+      {
+	int ansdescr;
+	int dims[MAX_DIMS];
+	int null = 0;
+	int dtype = arg->dtype;
+	int dlen = len;
+
+	for (i=0; i<arg->ndims; i++) dims[i] = (int)arg->dims[i];
+
+	if (arg->dtype == DTYPE_CSTRING && arg->ndims > 0 && dlen != dscAnswer->length)
+	{
+	  /** rewrite string array so that it gets copied to answer descriptor dscAnswer correctly **/
 	  int i;
-	  for (i=0;i<arg->ndims;i++) *length = *length + arg->dims[i];
+	  int nelements = numbytes/len;
+	  int s = nelements * dscAnswer->length;
+	  char *dnew = (char *) malloc(s);
+	  for (i=0; i<s; i++) dnew[i]=32;  /*fill*/
+	  for (i=0; i<nelements; i++) memcpy(dnew+(i*dscAnswer->length), (char *) dptr+(i*len), len);
+	  /*	  if (dptr) free(dptr); */  /*** &&& WHY DO I GET A SEGFAULT HERE ??? ***/
+	  dptr = dnew;
+	  dlen = dscAnswer->length;
 	}
+
+	switch (arg->ndims)
+	{
+	  case 0: ansdescr = descr(&dtype, dptr, &null, &dlen); break;
+	  case 1: ansdescr = descr(&dtype, dptr, &dims[0], &null, &dlen); break;
+	  case 2: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &null, &dlen); break;
+	  case 3: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &null, &dlen); break;
+	  case 4: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &null, &dlen); break;
+	  case 5: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &null, &dlen); break;
+	  case 6: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5], &null, &dlen); break;
+	  case 7: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5], &dims[6], &null, &dlen); break;
+	}
+
+	MdsValueSet(dscAnswer, descrs[ansdescr-1], length);
       }
     }
 
@@ -574,30 +630,20 @@ int MdsValue(char *expression, ...)
 
       if (status & 1) 
 	{      
+	  int templen = (xd2.pointer)->length;
 	  status = TdiCvt(&xd2,dsc,&xd3 MDS_END_ARG);
+	  /**  get string length right if scalar string (if answer descriptor has longer
+	   **  length than returned value, then make sure the length is the length of the 
+           **  returned value
+           **/
+	  if ((xd3.pointer)->dtype == DTYPE_CSTRING && (xd3.pointer->class != CLASS_A)) 
+	    (xd3.pointer)->length = MIN(templen, (xd3.pointer)->length);
 	}
       
       if (status & 1) 
       {
-	int numbytes;
-	switch ((*xd3.pointer).class)
-	{
-	  case CLASS_S:
-	  case CLASS_D:
-	                 numbytes = (*xd3.pointer).length;
-			 break;
-	  case CLASS_A:
-	                 numbytes = (*(struct descriptor_a *)xd3.pointer).arsize;
-			 break;
-	  default:
-	                 status = 0;
-	}
+	MdsValueSet(dsc, &(*xd3.pointer), length);
 
-	if (status & 1) 
-	  {
-	    MdsValueSet(dsc, (*xd3.pointer).pointer, numbytes);
-	    if (length && numbytes) *length = MdsValueLength(numbytes,xd3.pointer);
-	  }
 	MdsFree1Dx(&xd1, NULL);
 	MdsFree1Dx(&xd2, NULL);
 	MdsFree1Dx(&xd3, NULL);  /* is answerptr still valid after calling this??? */
@@ -798,7 +844,7 @@ int  MdsOpen(char *tree, int *shot)
     {
       return *(int *)&answer; 
     } else 
-      return 0;  /*&&& should I return status here?  It looks messed up. &&& */
+      return 0;  
   }
   else 
 #ifdef _CLIENT_ONLY
@@ -864,7 +910,7 @@ int  MdsClose(char *tree, int *shot)
     {
       return *(int *)&answer; 
     } else 
-      return 0;  /*&&& should I return status here?  It looks messed up. &&& */
+      return 0;  
   }
   else 
 #ifdef _CLIENT_ONLY
