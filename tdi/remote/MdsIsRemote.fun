@@ -1,3 +1,3 @@
 fun public MdsIsRemote() {
-  return(mdsremote->MdsIsRemote());
+  return(MdsRemote->MdsIsRemote());
 }
