@@ -19,6 +19,12 @@ if test "$enable_nodebug" = yes -o "$enable_nodebug" = on ; then
   : ${CFLAGS=""};
 fi
 
+if test "$enable_memcheck" = yes -o "$enable_memcheck" = on ; then
+  MEMCHK="-Dmalloc=MdsMALLOC -Dfree=MdsFREE -Drealloc=MdsREALLOC"
+else
+  MEMCHK=""
+fi
+
 dnl Check out the compiler
 AC_PROG_CC
 
@@ -35,7 +41,7 @@ LD_LDSHARE=""
 IDL_BIN_SUF=""
 MDSVME=""
 
-CFLAGS="$CFLAGS -I\$(top_srcdir)/include"
+CFLAGS="$CFLAGS $MEMCHK -I\$(top_srcdir)/include"
 FFLAGS="$FFLAGS -I\$(top_srcdir)/include"
 
 case "$exec_prefix" in
