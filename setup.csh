@@ -7,6 +7,7 @@
 #
 #
 set file="envsyms"
+set op=""
 if ( $1 != "" ) then
 if ( $1 == "unset" ) then
 set op=$1
