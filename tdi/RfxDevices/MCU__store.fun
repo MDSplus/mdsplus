@@ -19,7 +19,7 @@ public fun MCU__store(as_is _nid, optional _method)
 	 _filter_position = zero(7, 0W);
 
 
-	_status = MCUtcpip->MCU_config_values (ref(_ip_addr), ref(_man_position), ref(_filter_position));
+	_status = TcpClient->MCU_config_values (ref(_ip_addr), ref(_man_position), ref(_filter_position));
 
 	if(_status < 0)
 	{

@@ -61,7 +61,7 @@ public fun XRAY__init(as_is _nid, optional _method)
 	    abort();
 	}
 
-	DevNodeCvt(_nid, _N_HOR_HEAD, ["INTERNAL", "EXTERNAL"],[2, 1], _trig_mode = 2);
+	DevNodeCvt(_nid, _N_TRIG_MODE, ["INTERNAL", "EXTERNAL"],[2, 1], _trig_mode = 2);
 
 
 	_trig = if_error( data(DevNodeRef(_nid, _N_TRIG_SOURCE)), (_status = 1) );
