@@ -353,25 +353,25 @@ InitializePixmaps(ListTreeWidget w)
   if (w->list.Closed.bitmap == XtUnspecifiedPixmap)
     w->list.Closed.bitmap = XCreateBitmapFromData(XtDisplay((Widget) w),
       RootWindowOfScreen(XtScreen((Widget) w)),
-      folder_bits, folder_width, folder_height);
+      (char *)folder_bits, folder_width, folder_height);
   MakePixmap(w, &w->list.Closed);
 
   if (w->list.Open.bitmap == XtUnspecifiedPixmap)
     w->list.Open.bitmap = XCreateBitmapFromData(XtDisplay((Widget) w),
       RootWindowOfScreen(XtScreen((Widget) w)),
-      folderopen_bits, folderopen_width, folderopen_height);
+      (char *)folderopen_bits, folderopen_width, folderopen_height);
   MakePixmap(w, &w->list.Open);
 
   if (w->list.Leaf.bitmap == XtUnspecifiedPixmap)
     w->list.Leaf.bitmap = XCreateBitmapFromData(XtDisplay((Widget) w),
       RootWindowOfScreen(XtScreen((Widget) w)),
-      document_bits, document_width, document_height);
+      (char *)document_bits, document_width, document_height);
   MakePixmap(w, &w->list.Leaf);
 
   if (w->list.LeafOpen.bitmap == XtUnspecifiedPixmap)
     w->list.LeafOpen.bitmap = XCreateBitmapFromData(XtDisplay((Widget) w),
       RootWindowOfScreen(XtScreen((Widget) w)),
-      document_bits, document_width, document_height);
+      (char *)document_bits, document_width, document_height);
   MakePixmap(w, &w->list.LeafOpen);
 
   w->list.pixWidth = w->list.Closed.width;
@@ -1642,7 +1642,7 @@ CountChildren(ListTreeWidget w, ListTreeItem *item, int x, int y)
   return y;
 }
 
-void
+static void
 CountAll(ListTreeWidget w)
 {
   int x,y;

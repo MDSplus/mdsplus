@@ -556,7 +556,7 @@ int       main(int argc, String *argv)
   XtAddEventHandler(PlotsWidget, ButtonPressMask | ButtonReleaseMask, False, (XtEventHandler)Setup, 0);
   SetupEventInput(AppContext);
   XtVaSetValues(TopWidget, XtNiconPixmap, 
-    XCreatePixmapFromBitmapData(XtDisplay(TopWidget), XtWindow(TopWidget), dwscope_icon_bits, dwscope_icon_width, 
+    XCreatePixmapFromBitmapData(XtDisplay(TopWidget), XtWindow(TopWidget), (char *)dwscope_icon_bits, dwscope_icon_width, 
       dwscope_icon_height, BlackPixelOfScreen(XtScreen(TopWidget)), WhitePixelOfScreen(XtScreen(TopWidget)), 1), NULL);
   SetupEvent("DWSCOPE_CLOSE_FILES", &CloseDataSourcesEventReceived,&cds_id);
   XmProcessTraversal(XtNameToWidget(MainWidget,"*override_shot"),XmTRAVERSE_CURRENT);
