@@ -79,7 +79,7 @@ TdiYaccSubs.o \
 TdiYacc.o
 
 libTdiShr.so : $(OBJECTS)
-	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm -L../mdsshr -lMdsShr -lots -L../treeshr -lTreeShr
+	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm -L../mdsshr -lMdsShr -L../treeshr -lTreeShr
 
 clean :
 	- rm *.o
@@ -88,6 +88,7 @@ clean :
 	- rm TdiLex.c
 	- rm TdiYacc.c
 	- rm tdiyacc.h
+	- rm .depend
 
 TdiLex.c : TdiLex.x
 	lex -t TdiLex.x > $@
@@ -95,8 +96,10 @@ TdiLex.c : TdiLex.x
 tdiyacc.h : TdiYacc.y
 	yacc -d TdiYacc.y ; mv y.tab.h $@
 
-depend : TdiLex.c TdiYacc.c
-	- rm .depend.OSF
-	find *.c -exec cc -I../include -M {} > .depend.OSF \;
+depend : .depend
 
-include .depend.OSF
+.depend : TdiLex.c TdiYacc.c
+	- rm .depend
+	find *.c -exec cc -I../include -M {} > .depend \;
+
+include .depend
