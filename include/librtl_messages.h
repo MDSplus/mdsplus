@@ -30,6 +30,8 @@ extern StrNOMATCH;
 extern StrNOELEM;
 #define StrINVDELIM STR$_INVDELIM
 extern StrINVDELIM;
+#define StrSTRTOOLON STR$_STRTOOLON
+extern StrSTRTOOLON;
 #define SsINTOVF SS$_INTOVF
 extern SsINTOVF;
 #pragma extern_model restore
@@ -45,6 +47,7 @@ extern SsINTOVF;
 #define StrNOMATCH   0x248208
 #define StrNOELEM    0x248218
 #define StrINVDELIM  0x248210
+#define StrSTRTOOLON 0x248074
 #define SsINTOVF     0x00047C
 #endif
 
