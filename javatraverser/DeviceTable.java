@@ -16,6 +16,8 @@ public class DeviceTable extends DeviceComponent
     String labelString = "";
     boolean initializing = false;
     boolean editable = true;
+    boolean displayRowNumber = false;
+    
             
     protected JScrollPane scroll;
     protected JTable table;
@@ -72,6 +74,17 @@ public class DeviceTable extends DeviceComponent
     public void setEditable(boolean state) {editable = state;}
     public boolean getEditable() {return editable;}
     
+    public void setDisplayRowNumber(boolean displayRowNumber)
+    {
+        this.displayRowNumber = displayRowNumber;
+    }
+    
+    public boolean getDisplayRowNumber()
+    {
+        return displayRowNumber;
+    }
+    
+    
     
     public DeviceTable()
     {
@@ -98,24 +111,61 @@ public class DeviceTable extends DeviceComponent
             items[idx++] = st.nextToken();
         label.setText(labelString);
         table.setModel(new AbstractTableModel() {
-            public int getColumnCount() {return numCols; }
+            public int getColumnCount() 
+            {
+                if(displayRowNumber)
+                    return numCols + 1;
+                else
+                    return numCols;
+            }
             public int getRowCount() {return numRows; }
             public String getColumnName(int idx)
             {
-                return columnNames[idx];
+                if(displayRowNumber)
+                {
+                    if(idx == 0) 
+                        return "";
+                    else
+                        return columnNames[idx - 1];
+                }
+                else
+                    return columnNames[idx];
             }
             
             public Object getValueAt(int row, int col)
             {
-                int id = row * numCols + col;
-                 try {
-                    return items[id];
-                 }catch(Exception exc) {return null; }
+                if(displayRowNumber)
+                {
+                    if(col == 0)
+                        return "" + (row + 1);
+                    else
+                    {
+                        try {
+                            return items[row * numCols + col - 1];
+                        }catch(Exception exc) {return null; }
+                    }
+                }
+                else
+                {
+                    try {
+                        return items[row * numCols + col];
+                    }catch(Exception exc) {return null; }
+                }
             }
-            public boolean isCellEditable(int row, int col) {return  editable; }
+            public boolean isCellEditable(int row, int col) 
+            {
+                if(displayRowNumber && col == 0)
+                    return false;
+                else
+                    return editable;
+            }
+                    
             public void setValueAt(Object value, int row, int col) 
             {
-                items[row * numCols + col] = (String)value;
+                if(displayRowNumber)
+                    items[row * numCols + col - 1] = (String)value;
+                else
+                    items[row * numCols + col] = (String)value;
                 fireTableCellUpdated(row, col);
             }});
         //table.setPreferredScrollableViewportSize(new Dimension(preferredWidth, preferredHeight));

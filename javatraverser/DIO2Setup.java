@@ -280,7 +280,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel8.setVisible(false);
 		deviceChannel6.setInSameLine(true);
 		deviceChannel6.setLines(-1);
-		deviceChannel6.setOffsetNid(24);
+		deviceChannel6.setOffsetNid(23);
 		deviceChannel6.setLabelString("On:");
 		deviceChannel6.setLayout(new BorderLayout(0,0));
 		JPanel8.add(BorderLayout.CENTER, deviceChannel6);
@@ -464,7 +464,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel14.setVisible(false);
 		deviceChannel11.setInSameLine(true);
 		deviceChannel11.setLines(-1);
-		deviceChannel11.setOffsetNid(41);
+		deviceChannel11.setOffsetNid(39);
 		deviceChannel11.setLabelString("On:");
 		deviceChannel11.setLayout(new BorderLayout(0,0));
 		JPanel14.add(BorderLayout.CENTER, deviceChannel11);
@@ -648,7 +648,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel20.setVisible(false);
 		deviceChannel16.setInSameLine(true);
 		deviceChannel16.setLines(-1);
-		deviceChannel16.setOffsetNid(58);
+		deviceChannel16.setOffsetNid(55);
 		deviceChannel16.setLabelString("On:");
 		deviceChannel16.setLayout(new BorderLayout(0,0));
 		JPanel20.add(BorderLayout.CENTER, deviceChannel16);
@@ -832,7 +832,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel26.setVisible(false);
 		deviceChannel21.setInSameLine(true);
 		deviceChannel21.setLines(-1);
-		deviceChannel21.setOffsetNid(75);
+		deviceChannel21.setOffsetNid(71);
 		deviceChannel21.setLabelString("On:");
 		deviceChannel21.setLayout(new BorderLayout(0,0));
 		JPanel26.add(BorderLayout.CENTER, deviceChannel21);
@@ -1016,7 +1016,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel32.setVisible(false);
 		deviceChannel26.setInSameLine(true);
 		deviceChannel26.setLines(-1);
-		deviceChannel26.setOffsetNid(92);
+		deviceChannel26.setOffsetNid(87);
 		deviceChannel26.setLabelString("On:");
 		deviceChannel26.setLayout(new BorderLayout(0,0));
 		JPanel32.add(BorderLayout.CENTER, deviceChannel26);
@@ -1200,7 +1200,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel38.setVisible(false);
 		deviceChannel31.setInSameLine(true);
 		deviceChannel31.setLines(-1);
-		deviceChannel31.setOffsetNid(109);
+		deviceChannel31.setOffsetNid(103);
 		deviceChannel31.setLabelString("On:");
 		deviceChannel31.setLayout(new BorderLayout(0,0));
 		JPanel38.add(BorderLayout.CENTER, deviceChannel31);
@@ -1384,7 +1384,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel44.setVisible(false);
 		deviceChannel36.setInSameLine(true);
 		deviceChannel36.setLines(-1);
-		deviceChannel36.setOffsetNid(126);
+		deviceChannel36.setOffsetNid(119);
 		deviceChannel36.setLabelString("On:");
 		deviceChannel36.setLayout(new BorderLayout(0,0));
 		JPanel44.add(BorderLayout.CENTER, deviceChannel36);

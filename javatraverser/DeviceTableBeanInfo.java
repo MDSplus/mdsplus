@@ -30,7 +30,8 @@ public class DeviceTableBeanInfo extends SimpleBeanInfo
                property("numRows", "Number of rows"),
                property("identifier", "Optional field identifier"),
                property("columnNames", "Column names"),
-               property("editable", "Editable")                
+               property("editable", "Editable"),
+               property("displayRowNumber", "displayRowNumber")
             };
             return props;
         }catch(IntrospectionException e)

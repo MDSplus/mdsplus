@@ -13,6 +13,7 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
     TextField labelString, identifier, numCols, numRows, columnNames;
     Choice nids;
     Button doneButton;
+    Checkbox displayRowNumC;
     
     public DeviceTableCustomizer()
     {
@@ -45,14 +46,19 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
         
         String names[] = getDeviceFields();
         
+        
         if(names != null)
         for(int i = 0; i < names.length; i++)
             nids.addItem(names[i]);
         int offsetNid = bean.getOffsetNid();
         if(offsetNid > 0) offsetNid--;
-        nids.select(offsetNid);
+        try {
+            nids.select(offsetNid);
+        }catch(Exception exc){}
         jp1.add(new Label("Opt. identifier: "));
         jp1.add(identifier = new TextField(bean.getIdentifier(), 15));
+        jp1.add(displayRowNumC = new Checkbox("Display row num.", bean.getDisplayRowNumber()));
+        
         
         jp.add(jp1);
         jp1 = new Panel();
@@ -72,6 +78,7 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
                 bean.setNumRows(Integer.parseInt(numRows.getText()));
                 bean.setOffsetNid(nids.getSelectedIndex() + 1);
                 bean.setIdentifier(identifier.getText());
+                bean.setDisplayRowNumber(displayRowNumC.getState());
                 listeners.firePropertyChange(null, null, null);
                 StringTokenizer st = new StringTokenizer(columnNames.getText(), " ,");
                 String colNames[] = new String[st.countTokens()];
