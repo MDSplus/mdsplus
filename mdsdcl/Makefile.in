@@ -21,6 +21,7 @@ mdsdcl_insert_symbols.c	\
 mdsdcl_tables.c		\
 mdsdcl_macros.c		\
 mdsdcl_set_command.c	\
+mdsdcl_show_vm.c        \
 mdsdcl_spawn.c		\
 mdsdcl_wait.c
 

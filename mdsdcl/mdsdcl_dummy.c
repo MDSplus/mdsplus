@@ -1,7 +1,7 @@
 #include        <stdio.h>
 
 #define dummy(a) \
-    int a(){printf("Routine %s not implemented yet\n",#a);return 0;}
+    int a(){printf("Routine %s not implemented on this platform\n",#a);return 0;}
 
 dummy(MDSDCL_ACTIVATE_IMAGE)
 dummy(MDSDCL_ATTACH)
@@ -19,7 +19,6 @@ dummy(MDSDCL_SET_INTERRUPT)
 dummy(MDSDCL_SET_LIBRARY)
 dummy(MDSDCL_SHOW_KEY)
 dummy(MDSDCL_SHOW_LIBRARY)
-dummy(MDSDCL_SHOW_VM)
 
 
 #ifdef vms
