@@ -1,9 +1,71 @@
+--------------------Configuration: mdsipshr - Win32 Release--------------------
+Begining build with project "E:\mdsplus\mdstcpip\mdsipshr.dsp", at root.
+Active configuration is Win32 (x86) Dynamic-Link Library (based on Win32 (x86) Dynamic-Link Library)
+
+Project's tools are:
+			"32-bit C/C++ Compiler for 80x86" with flags "/nologo /MT /W3 /GX /O2 /I "../include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /Fp"Release/mdsipshr.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c "
+			"OLE Type Library Maker" with flags "/nologo /D "NDEBUG" /mktyplib203 /o NUL /win32 "
+			"Win32 Resource Compiler" with flags "/l 0x409 /d "NDEBUG" "
+			"Browser Database Maker" with flags "/nologo /o"Release/mdsipshr.bsc" "
+			"COFF Linker for 80x86" with flags "wsock32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /incremental:no /pdb:"Release/mdsipshr.pdb" /machine:I386 /def:".\mdsipshr.def" /out:"../Release/mdsipshr.dll" /implib:"Release/mdsipshr.lib" "
+			"Custom Build" with flags ""
+			"<Component 0xa>" with flags ""
+
+Creating temp file "C:\TEMP\RSPAB.tmp" with contents </nologo /MT /W3 /GX /O2 /I "../include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /Fp"Release/mdsipshr.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"E:\mdsplus\mdstcpip\mdsipshr.c"
+"E:\mdsplus\mdstcpip\mdsiputil.c"
+>
+Creating command line "cl.exe @C:\TEMP\RSPAB.tmp" 
+Creating temp file "C:\TEMP\RSPAC.tmp" with contents <wsock32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /incremental:no /pdb:"Release/mdsipshr.pdb" /machine:I386 /def:".\mdsipshr.def" /out:"../Release/mdsipshr.dll" /implib:"Release/mdsipshr.lib" 
+.\Release\mdsipshr.obj
+.\Release\mdsiputil.obj>
+Creating command line "link.exe @C:\TEMP\RSPAC.tmp" 
+Compiling...
+mdsipshr.c
+E:\mdsplus\mdstcpip\mdsipshr.c(144) : warning C4013: 'ArgLen' undefined; assuming extern returning int
+E:\mdsplus\mdstcpip\mdsipshr.c(144) : warning C4761: integral size mismatch in argument; conversion supplied
+E:\mdsplus\mdstcpip\mdsipshr.c(221) : warning C4761: integral size mismatch in argument; conversion supplied
+E:\mdsplus\mdstcpip\mdsipshr.c(224) : warning C4761: integral size mismatch in argument; conversion supplied
+E:\mdsplus\mdstcpip\mdsipshr.c(228) : warning C4761: integral size mismatch in argument; conversion supplied
+mdsiputil.c
+Linking...
+   Creating library Release/mdsipshr.lib and object Release/mdsipshr.exp
+--------------------Configuration: idlmdsevent - Win32 Release--------------------
+Begining build with project "E:\mdsplus\idlmdsevent\idlmdsevent.dsp", at root.
+Active configuration is Win32 (x86) Dynamic-Link Library (based on Win32 (x86) Dynamic-Link Library)
+
+Project's tools are:
+			"32-bit C/C++ Compiler for 80x86" with flags "/nologo /MT /W3 /GX /O2 /I "$(IDL_DIR)\external" /I "..\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /Fp"Release/idlmdsevent.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c "
+			"OLE Type Library Maker" with flags "/nologo /D "NDEBUG" /mktyplib203 /o NUL /win32 "
+			"Win32 Resource Compiler" with flags "/l 0x409 /d "NDEBUG" "
+			"Browser Database Maker" with flags "/nologo /o"Release/idlmdsevent.bsc" "
+			"COFF Linker for 80x86" with flags "kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /incremental:no /pdb:"Release/idlmdsevent.pdb" /machine:I386 /def:".\idlmdsevent.def" /out:"../Release/idlmdsevent.dll" /implib:"Release/idlmdsevent.lib" "
+			"Custom Build" with flags ""
+			"<Component 0xa>" with flags ""
+
+Creating temp file "C:\TEMP\RSPAD.tmp" with contents </nologo /MT /W3 /GX /O2 /I "C:\RSI\IDL52\external" /I "..\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /Fp"Release/idlmdsevent.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"E:\mdsplus\idlmdsevent\mdsevent.c"
+>
+Creating command line "cl.exe @C:\TEMP\RSPAD.tmp" 
+Creating temp file "C:\TEMP\RSPAE.tmp" with contents <kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /incremental:no /pdb:"Release/idlmdsevent.pdb" /machine:I386 /def:".\idlmdsevent.def" /out:"../Release/idlmdsevent.dll" /implib:"Release/idlmdsevent.lib" 
+.\Release\mdsevent.obj
+C:\RSI\IDL52\idl32.lib
+\mdsplus\mdstcpip\Release\mdsipshr.lib>
+Creating command line "link.exe @C:\TEMP\RSPAE.tmp" 
+Compiling...
+mdsevent.c
+Linking...
+   Creating library Release/idlmdsevent.lib and object Release/idlmdsevent.exp
+
+
+
+idlmdsevent.dll - 0 error(s), 5 warning(s)
 --------------------Configuration: idlmdsevent - Win32 Debug--------------------
 Begining build with project "E:\mdsplus\idlmdsevent\idlmdsevent.dsp", at root.
 Active configuration is Win32 (x86) Dynamic-Link Library (based on Win32 (x86) Dynamic-Link Library)
 
 Project's tools are:
-			"32-bit C/C++ Compiler for 80x86" with flags "/nologo /MTd /W3 /Gm /GX /Zi /Od /I "c:\rsi\idl52\external" /I "..\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /Fp"Debug/idlmdsevent.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /c "
+			"32-bit C/C++ Compiler for 80x86" with flags "/nologo /MTd /W3 /Gm /GX /Zi /Od /I "$(IDL_DIR)\external" /I "..\include" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /Fp"Debug/idlmdsevent.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /c "
 			"OLE Type Library Maker" with flags "/nologo /D "_DEBUG" /mktyplib203 /o NUL /win32 "
 			"Win32 Resource Compiler" with flags "/l 0x409 /d "_DEBUG" "
 			"Browser Database Maker" with flags "/nologo /o"Debug/idlmdsevent.bsc" "
@@ -15,3 +77,57 @@ Project's tools are:
 
 
 idlmdsevent.dll - 0 error(s), 0 warning(s)
+--------------------Configuration: idlsql - Win32 Release--------------------
+Begining build with project "E:\mdsplus\idlsql\idlsql.dsp", at root.
+Active configuration is Win32 (x86) Dynamic-Link Library (based on Win32 (x86) Dynamic-Link Library)
+
+Project's tools are:
+			"32-bit C/C++ Compiler for 80x86" with flags "/nologo /MT /W3 /GX /O2 /I "%SQL_DIR%\DevTools\Include" /I "%IDL_DIR%\external" /I "..\include" /I "$(SQL_DIR)\DevTools\Include" /I "$(IDL_DIR)\external" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "DBNTWIN32" /Fp"Release/idlsql.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c "
+			"OLE Type Library Maker" with flags "/nologo /D "NDEBUG" /mktyplib203 /o NUL /win32 "
+			"Win32 Resource Compiler" with flags "/l 0x409 /d "NDEBUG" "
+			"Browser Database Maker" with flags "/nologo /o"Release/idlsql.bsc" "
+			"COFF Linker for 80x86" with flags "kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /incremental:no /pdb:"Release/idlsql.pdb" /machine:I386 /def:".\IdlSql.def" /out:"../Release/idlsql.dll" /implib:"Release/idlsql.lib" "
+			"Custom Build" with flags ""
+			"<Component 0xa>" with flags ""
+
+Creating temp file "C:\TEMP\RSPAF.tmp" with contents </nologo /MT /W3 /GX /O2 /I "%SQL_DIR%\DevTools\Include" /I "%IDL_DIR%\external" /I "..\include" /I "C:\Mssql7\DevTools\Include" /I "C:\RSI\IDL52\external" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "DBNTWIN32" /Fp"Release/idlsql.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"E:\mdsplus\idlsql\user_syb.c"
+"E:\mdsplus\idlsql\idlsql_syb.c"
+"E:\mdsplus\idlsql\dynamic_syb.c"
+>
+Creating command line "cl.exe @C:\TEMP\RSPAF.tmp" 
+Creating temp file "C:\TEMP\RSPB0.tmp" with contents <kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /incremental:no /pdb:"Release/idlsql.pdb" /machine:I386 /def:".\IdlSql.def" /out:"../Release/idlsql.dll" /implib:"Release/idlsql.lib" 
+C:\RSI\IDL52\idl32.lib
+C:\MSSQL7\DevTools\Lib\ntwdblib.lib
+.\Release\user_syb.obj
+.\Release\idlsql_syb.obj
+.\Release\dynamic_syb.obj>
+Creating command line "link.exe @C:\TEMP\RSPB0.tmp" 
+Compiling...
+user_syb.c
+idlsql_syb.c
+E:\mdsplus\idlsql\idlsql_syb.c(116) : warning C4305: 'initializing' : truncation from 'const double ' to 'float '
+dynamic_syb.c
+Linking...
+   Creating library Release/idlsql.lib and object Release/idlsql.exp
+
+
+
+idlsql.dll - 0 error(s), 1 warning(s)
+--------------------Configuration: idlsql - Win32 Debug--------------------
+Begining build with project "E:\mdsplus\idlsql\idlsql.dsp", at root.
+Active configuration is Win32 (x86) Dynamic-Link Library (based on Win32 (x86) Dynamic-Link Library)
+
+Project's tools are:
+			"32-bit C/C++ Compiler for 80x86" with flags "/nologo /MTd /W3 /Gm /GX /Zi /Od /I "$(SQL_DIR)\DevTools\Include" /I "$(IDL_DIR)\external" /I "..\include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "DBNTWIN32" /Fp"Debug/idlsql.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /c "
+			"OLE Type Library Maker" with flags "/nologo /D "_DEBUG" /mktyplib203 /o NUL /win32 "
+			"Win32 Resource Compiler" with flags "/l 0x409 /d "_DEBUG" "
+			"Browser Database Maker" with flags "/nologo /o"Debug/idlsql.bsc" "
+			"COFF Linker for 80x86" with flags "kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /incremental:yes /pdb:"Debug/idlsql.pdb" /debug /machine:I386 /def:".\IdlSql.def" /out:"../Debug/idlsql.dll" /implib:"Debug/idlsql.lib" /pdbtype:sept "
+			"Custom Build" with flags ""
+			"<Component 0xa>" with flags ""
+
+
+
+
+idlsql.dll - 0 error(s), 0 warning(s)
