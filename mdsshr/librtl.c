@@ -18,6 +18,7 @@
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$ $Name$";
 
 extern int MdsCopyDxXd();
+static char *GetTdiLogical(char *name);
 
 char *MdsDescrToCstring(struct descriptor *in);
 int StrFree1Dx(struct descriptor *out);
@@ -229,7 +230,12 @@ char *TranslateLogical(char *pathname)
 {
 	char *path = GetRegistry((char *)HKEY_CURRENT_USER, pathname);
 	if (!path)
-		path = GetRegistry((char *)HKEY_LOCAL_MACHINE, pathname);
+	{
+	  path = GetRegistry((char *)HKEY_LOCAL_MACHINE, pathname);
+          if (!path)
+            path = GetTdiLogical(char *pathname);
+	}
+
 	return path;
 }
 
@@ -672,7 +678,10 @@ static char  *blank( char *p)
 char *TranslateLogical(char *name)
 {
 	char *env = getenv(name);
-	return env ? strcpy(malloc(strlen(env)+1),env) : 0;
+	env = env ? strcpy(malloc(strlen(env)+1),env) : 0;
+        if (!env)
+          env = GetTdiLogical(name);
+	return env;
 }
 unsigned int LibCallg(void **arglist, unsigned int (*routine)())
 {
@@ -2465,4 +2474,34 @@ struct descriptor *MdsReleaseDsc()
     ans.length = strlen(ans.pointer);
   }
   return &ans;
+}
+
+static char *GetTdiLogical(char *name)
+{
+  int status;
+  char *ans = 0;
+  static int (*TdiExecute)()=0;
+  static DESCRIPTOR(exp,"data(ENV($))");
+  struct descriptor name_d = {0,DTYPE_T,CLASS_S,0};
+  struct descriptor ans_d = {0,DTYPE_T,CLASS_D,0};
+  static DESCRIPTOR(image,"TdiShr");
+  static DESCRIPTOR(routine,"TdiExecute");
+  if (TdiExecute == 0)
+  {
+    status = LibFindImageSymbol((struct descriptor *)&image,(struct descriptor *)&routine,(void **)&TdiExecute);
+    if (!(status & 1))
+      return 0;
+  }
+  name_d.length = strlen(name);
+  name_d.pointer = name;
+  status = (TdiExecute)(&exp,&name_d, &ans_d MDS_END_ARG);
+  if (status & 1)
+  {
+    ans = strncpy(malloc(ans_d.length+1),ans_d.pointer,ans_d.length);
+    ans[ans_d.length]=0;
+    MdsFree1Dx(&ans_d);
+  }
+  else
+    ans = 0;
+  return ans;
 }
