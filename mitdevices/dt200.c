@@ -29,7 +29,6 @@ int DT200__DW_SETUP( struct descriptor *niddsc, struct descriptor *methoddsc, Wi
 { 
   static String uids[] = {"DT200.uid"};
   static int nid;
-  //  static MrmRegisterArg uilnames[] = {{"nid",(XtPointer)0},{"Load",(XtPointer)ManageChild}};
   static MrmRegisterArg uilnames[] = {
 	{"nid",(XtPointer)0},
 	{"ManageChild",(XtPointer)ManageChild},
