@@ -9,6 +9,7 @@ MdsSetDefault
 MdsEventAst
 MdsEventCan
 ;MdsDispatchEvent
+MdsSetCompression
 ;ConnectToPort
 ConnectToMds
 ConnectToMdsEvents
@@ -21,6 +22,7 @@ IdlMdsSetDefault
 IdlGetAnsInfo
 Idlmemcpy
 IdlSendArg
+IdlSetCompressionLevel
 MakeDescrip
 MakeDescripWithLength
 SendMdsMsg
@@ -30,5 +32,6 @@ SendArg
 ArgLen
 MdsIpFree
 SetSocketOptions
-SetCompression
+GetCompressionLevel
+SetCompressionLevel
 HostToIp

@@ -43,6 +43,7 @@ extern short ArgLen();
 extern int Lgihpwd();
 extern Message *GetMdsMsg();
 extern Message *GetMdsMsgOOB();
+extern int SetCompressionLevel(int level);
 
 #define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 

@@ -39,6 +39,7 @@ int TreeCreatePulseFile(int shotid,int numnids, int *nids)
 
 extern char *TranslateLogical(char *);
 extern void TranslateLogicalFree(char *);
+extern void MaskReplace(char *path, char *tree, int shot);
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
