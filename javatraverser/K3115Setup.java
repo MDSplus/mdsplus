@@ -278,8 +278,8 @@ public class K3115Setup
     border1 = BorderFactory.createEtchedBorder(Color.white,new Color(142, 142, 142));
     titledBorder1 = new TitledBorder(border1," GENERAL ");
     border2 = BorderFactory.createLineBorder(SystemColor.controlText,2);
-    this.setWidth(681);
-    this.setHeight(681);
+    this.setWidth(723);
+    this.setHeight(723);
     this.setDeviceType("K3115");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("K3115 : programmable waveform generator");
@@ -395,6 +395,7 @@ public class K3115Setup
     jPanel14.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140))," CHANNELS "));
     jPanel14.setLayout(gridLayout6);
     jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    jScrollPane1.setBorder(BorderFactory.createEmptyBorder());
     jScrollPane1.setPreferredSize(new Dimension(600, 219));
     jPanel16.setLayout(gridLayout2);
     jPanel16.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
