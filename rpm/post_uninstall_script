@@ -2,13 +2,23 @@
 case "`uname`" in
 Linux*)
 #
-# Linux post install script
+# Linux post uninstall script
 #
 #
 # Remove profile.d scripts
 #
 rm /etc/profile.d/mdsplus.csh
-rm /etc/profile.d/mdsplus.sh
+rm /etc/profile.d/mdsplus.sh;;
+OSF1*)
 #
+# Compaq TruUNIX post uninstall script
+#
+echo Removing mdsplus library symbolic links
+/bin/rm `ls -l /usr/local/lib/*.so | /bin/grep '\-\> /usr/local/mdsplus/lib' | /bin/awk '{print "/usr/local/lib/" $9}'`
+echo Removing mdsplus from login scripts
+/bin/cp /etc/profile /etc/profile.before_mdsplus_removal
+/bin/grep -v "^. /usr/local/mdsplus/etc/profile.d/mdsplus.sh" /etc/profile.before_mdsplus_removal > /etc/profile
+/bin/cp /etc/csh.login /etc/csh.login.before_mdsplus_removal
+/bin/grep -v "^source /usr/local/mdsplus/etc/profile.d/mdsplus.csh" /etc/csh.login.before_mdsplus_removal > /etc/csh.login ;;
 esac
 rm /usr/local/mdsplus_post_uninstall_script
