@@ -878,6 +878,23 @@ int _TreeFindNodeEnd(void *dbid, void **ctx_in)
   return status;
 }
 
+
+int TreeFindNodeTagsDsc(int nid_in, void **ctx_ptr, struct descriptor *tag)
+{
+  int status;
+  char *tagname = TreeFindNodeTags(nid_in, ctx_ptr);
+  if (tagname)
+  {
+    struct descriptor tagd = {0,DTYPE_T,CLASS_S,0};
+    tagd.length = strlen(tagname);
+    tagd.pointer = tagname;
+    StrCopyDx(tag,&tagd);
+    status = 1;
+  }
+  else
+    status = 0;
+}
+
 char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
