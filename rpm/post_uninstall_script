@@ -19,6 +19,24 @@ else
   /bin/cp /etc/profile /etc/profile.before_mdsplus_removal
   /bin/grep -v "^. $MDSPLUS_DIR/setup.sh" /etc/profile.before_mdsplus_removal > /etc/profile
 fi
+if ( test -L /etc/profile.d/globus.sh ); then
+  rm -f /etc/profile.d/globus.sh
+fi
+if ( test -L /etc/profile.d/globus.csh ); then
+  rm -f /etc/profile.d/globus.csh
+fi
+if ( test -r /etc/xinetd.d/globus-gatekeeper ); then
+  rm -f /etc/xinetd.d/globus-gatekeeper
+fi
+if ( test -r /etc/xinetd.d/globus-gridftp ); then
+  rm -f /etc/xinetd.d/globus-grdiftp
+fi
+if ( test -r /etc/xinetd.d/mdsip ); then
+  rm -f /etc/xinetd.d/mdsip
+fi
+if ( test -r /etc/xinetd.d/mdsips ); then
+  rm -f /etc/xinetd.d/mdsips
+fi
 if (test -r $MDSPLUS_DIR/local/mdsplus_post_uninstall_script)
 then
   rm $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
