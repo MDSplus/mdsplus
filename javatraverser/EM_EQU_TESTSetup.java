@@ -154,7 +154,7 @@ public class EM_EQU_TESTSetup extends DeviceSetup {
     jPanel8.setLayout(gridLayout3);
     jLabel1.setPreferredSize(new Dimension(474, 15));
     jLabel1.setRequestFocusEnabled(true);
-    jLabel1.setText("   CRAD       F-END ID                  GAIN                     " +
+    jLabel1.setText("   CARD      F-END ID                  GAIN                     " +
     "                    Linear ADC                              Integral " +
     "ADC");
     deviceField12.setOffsetNid(6);

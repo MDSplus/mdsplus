@@ -55,7 +55,12 @@ public class DEQUSetupSetup extends DeviceSetup {
   DeviceField deviceField19 = new DeviceField();
   DeviceField deviceField110 = new DeviceField();
   JPanel jPanel12 = new JPanel();
-  GridLayout gridLayout4 = new GridLayout();
+  JPanel jPanel13 = new JPanel();
+  JPanel jPanel14 = new JPanel();
+  GridLayout gridLayout5 = new GridLayout();
+  JPanel jPanel15 = new JPanel();
+  JPanel jPanel16 = new JPanel();
+  FlowLayout flowLayout6 = new FlowLayout();
   public DEQUSetupSetup() {
     try {
       jbInit();
@@ -65,7 +70,7 @@ public class DEQUSetupSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(700);
+    this.setWidth(800);
     this.setHeight(250);
     this.setDeviceType("DEQUSetup");
     this.setDeviceProvider("150.178.3.33");
@@ -123,7 +128,7 @@ public class DEQUSetupSetup extends DeviceSetup {
     deviceField9.setLabelString("Stop Acq: ");
     flowLayout3.setAlignment(FlowLayout.CENTER);
     flowLayout3.setHgap(0);
-    flowLayout3.setVgap(0);
+    flowLayout3.setVgap(5);
     deviceField10.setOffsetNid(12);
     deviceField10.setLabelString("Duration: ");
     deviceField10.setNumCols(15);
@@ -189,7 +194,11 @@ public class DEQUSetupSetup extends DeviceSetup {
     deviceField110.setLabelString("Event: ");
     deviceField110.setOffsetNid(18);
     deviceField110.setTextOnly(true);
-    jPanel12.setLayout(gridLayout4);
+    jPanel12.setLayout(flowLayout6);
+    gridLayout3.setRows(3);
+    jPanel3.setLayout(gridLayout5);
+    gridLayout5.setRows(3);
+    flowLayout6.setAlignment(FlowLayout.LEFT);
     this.getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
     jTabbedPane1.add(jPanel1,   "TRCF ACQ");
     this.getContentPane().add(deviceButtons1,  BorderLayout.SOUTH);
@@ -205,15 +214,19 @@ public class DEQUSetupSetup extends DeviceSetup {
     jPanel2.add(jPanel8, null);
     jPanel2.add(jPanel10, null);
     jTabbedPane1.add(jPanel4,   "TRIGGER");
+    jPanel4.add(jPanel13, null);
     jPanel4.add(jPanel11, null);
     jPanel11.add(deviceField17, null);
     jPanel11.add(deviceField15, null);
     jPanel11.add(deviceField16, null);
+    jPanel4.add(jPanel14, null);
     jTabbedPane1.add(jPanel3, "AUTO ZERO");
+    jPanel3.add(jPanel15, null);
     jPanel3.add(jPanel12, null);
     jPanel12.add(deviceField110, null);
     jPanel12.add(deviceField18, null);
     jPanel12.add(deviceField19, null);
+    jPanel3.add(jPanel16, null);
     jPanel1.add(jPanel5, null);
     jPanel5.add(deviceField1, null);
     jPanel5.add(deviceField2, null);

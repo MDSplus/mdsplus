@@ -399,6 +399,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField8.setIdentifier("");
     deviceField8.setEditable(false);
     deviceField32.setOffsetNid(10);
+    deviceField32.setTextOnly(true);
     deviceField32.setNumCols(12);
     deviceField32.setIdentifier("");
     deviceField32.setEditable(false);
@@ -416,6 +417,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField33.setIdentifier("");
     deviceField33.setNumCols(12);
     deviceField33.setOffsetNid(21);
+    deviceField33.setTextOnly(true);
     deviceField11.setEditable(false);
     deviceField11.setIdentifier("");
     deviceField11.setNumCols(12);
@@ -452,6 +454,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField34.setIdentifier("");
     deviceField34.setNumCols(12);
     deviceField34.setOffsetNid(32);
+    deviceField34.setTextOnly(true);
     deviceField16.setEditable(false);
     deviceField16.setIdentifier("");
     deviceField16.setNumCols(12);
@@ -488,6 +491,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField35.setIdentifier("");
     deviceField35.setNumCols(12);
     deviceField35.setOffsetNid(43);
+    deviceField35.setTextOnly(true);
     deviceField111.setEditable(false);
     deviceField111.setIdentifier("");
     deviceField111.setNumCols(12);
@@ -524,6 +528,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField36.setIdentifier("");
     deviceField36.setNumCols(12);
     deviceField36.setOffsetNid(54);
+    deviceField36.setTextOnly(true);
     deviceField116.setEditable(false);
     deviceField116.setIdentifier("");
     deviceField116.setNumCols(12);
@@ -560,6 +565,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField37.setIdentifier("");
     deviceField37.setNumCols(12);
     deviceField37.setOffsetNid(65);
+    deviceField37.setTextOnly(true);
     deviceField1111.setEditable(false);
     deviceField1111.setIdentifier("");
     deviceField1111.setNumCols(12);
@@ -596,6 +602,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField38.setIdentifier("");
     deviceField38.setNumCols(12);
     deviceField38.setOffsetNid(76);
+    deviceField38.setTextOnly(true);
     deviceField1116.setEditable(false);
     deviceField1116.setIdentifier("");
     deviceField1116.setNumCols(12);
@@ -633,6 +640,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField39.setIdentifier("");
     deviceField39.setNumCols(12);
     deviceField39.setOffsetNid(87);
+    deviceField39.setTextOnly(true);
     flowLayout18.setVgap(0);
     flowLayout18.setHgap(0);
     deviceField11110.setIdentifier("");
@@ -669,6 +677,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField310.setIdentifier("");
     deviceField310.setNumCols(12);
     deviceField310.setOffsetNid(98);
+    deviceField310.setTextOnly(true);
     flowLayout110.setVgap(0);
     flowLayout110.setHgap(0);
     deviceField11115.setIdentifier("");
@@ -705,6 +714,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField311.setIdentifier("");
     deviceField311.setNumCols(12);
     deviceField311.setOffsetNid(109);
+    deviceField311.setTextOnly(true);
     flowLayout112.setVgap(0);
     flowLayout112.setHgap(0);
     deviceField111110.setIdentifier("");
@@ -741,6 +751,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField312.setIdentifier("");
     deviceField312.setNumCols(12);
     deviceField312.setOffsetNid(120);
+    deviceField312.setTextOnly(true);
     flowLayout114.setVgap(0);
     flowLayout114.setHgap(0);
     deviceField111115.setIdentifier("");
@@ -777,6 +788,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField313.setIdentifier("");
     deviceField313.setNumCols(12);
     deviceField313.setOffsetNid(131);
+    deviceField313.setTextOnly(true);
     flowLayout116.setVgap(0);
     flowLayout116.setHgap(0);
     deviceField1111110.setIdentifier("");
@@ -814,6 +826,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField314.setIdentifier("");
     deviceField314.setNumCols(12);
     deviceField314.setOffsetNid(142);
+    deviceField314.setTextOnly(true);
     flowLayout118.setVgap(0);
     flowLayout118.setHgap(0);
     deviceField1111115.setIdentifier("");
@@ -850,6 +863,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField315.setIdentifier("");
     deviceField315.setNumCols(12);
     deviceField315.setOffsetNid(153);
+    deviceField315.setTextOnly(true);
     flowLayout1110.setVgap(0);
     flowLayout1110.setHgap(0);
     deviceField11111110.setIdentifier("");
@@ -886,6 +900,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField316.setIdentifier("");
     deviceField316.setNumCols(12);
     deviceField316.setOffsetNid(164);
+    deviceField316.setTextOnly(true);
     flowLayout1112.setVgap(0);
     flowLayout1112.setHgap(0);
     deviceField11111115.setIdentifier("");
@@ -922,6 +937,7 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField317.setIdentifier("");
     deviceField317.setNumCols(12);
     deviceField317.setOffsetNid(175);
+    deviceField317.setTextOnly(true);
     flowLayout1114.setVgap(0);
     flowLayout1114.setHgap(0);
     deviceField111111110.setIdentifier("");
