@@ -2,14 +2,13 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
+import java.awt.print.*;
 
 
-class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
+class WavePanel extends Panel implements  Printable, MouseMotionListener, MouseListener {
 
    final static int MAX_COLUMN = 4;
 
-   GridLayout         col_grid;
-   GridLayout         row_grid; 
    MultiWaveform      wave;
    Label              coords;
    RowColumnLayout    row_col_layout;
@@ -126,15 +125,72 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
   }
   
   
-    public void printAll(Graphics g, int height, int width, int mode)
+    public int print(Graphics g, PageFormat pf, int pageIndex)
+        throws PrinterException {
+        
+        int st_x;
+        
+        if(pageIndex > 0) return Printable.NO_SUCH_PAGE;
+        
+        if(pf.getOrientation() == PageFormat.LANDSCAPE)
+            st_x = (int)(pf.getImageableX()) + 15;
+        else
+            st_x = (int)(pf.getImageableX() - 13.);
+        printAll(g, st_x, 
+                    (int)(pf.getImageableY() - 13.),
+                    (int)(pf.getImageableHeight()), 
+                    (int)(pf.getImageableWidth())
+                 ); 
+        System.gc();
+        return Printable.PAGE_EXISTS;
+    }
+
+  
+    public void printAll(Graphics g, int st_x, int st_y, int height, int width)
     {
       int i, j, k = 0;
-      int hpan = 40, wpan = 40, pix = 1;
+      int pix = 1;
+
+/*
            
-	  height -= 2 * hpan;
-	  width  -= 2 * wpan;
+      if(!System.getProperty("java.version").equals("1.2.2"))
+      {
+	    height -= 2 * hpan;
+	    width  -= 2 * wpan;
+	  } else
+	    hpan =  wpan = 0;
+*/	  
+ //     g.clipRect(0, 0, width, height + 5);
 	  
-	  if(mode == 2) // Grid mode
+	  if(setup.title != null && setup.title.length() != 0)
+	  {
+	     Font font = setup.waves[0].font;
+	     FontMetrics fm;
+	     int s_width;
+
+	     if(font == null)
+	     {
+	        font = g.getFont();
+	        font = new Font(font.getName(), font.getStyle(), 18);
+	        g.setFont(font);
+	     }
+	     else
+	     {
+	        font = new Font(font.getName(), font.getStyle(), 18);
+	        g.setFont(font);
+	     }
+	     
+	     fm = g.getFontMetrics();
+	     
+	     st_y += fm.getHeight() + 6;
+	     height -= st_y;
+         
+         s_width = fm.stringWidth(setup.title);
+
+         g.drawString(setup.title, st_x + (width - s_width)/2, st_y - 2);
+	  }
+	  
+	  if(setup.waves[0].grid_mode == 2)//Grid.IS_NONE  mode
 	    pix = 0;
            
       int curr_height = 0;
@@ -142,12 +198,11 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
       int px = 0;
       int py = 0;
       int pos = 0;
-      g.clipRect(0, 0, width, height);
-      for(i = k = 0, px = hpan ; i < setup.columns; i++)
+      for(i = k = 0, px = st_x ; i < setup.columns; i++)
       {
 	    g.translate(px, 0);
         curr_width = (int)(width * ((RowColumnLayout)getLayout()).getPercentWidth(i) + 0.5);
-	    for(j = pos = 0, py = wpan; j < setup.rows[i]; j++)
+	    for(j = pos = 0, py = st_y; j < setup.rows[i]; j++)
 	    {	        
 	      curr_height = (int)(height * ((RowColumnLayout)getLayout()).getPercentHeight(k) + 0.5);
 	      g.translate(0, py);
@@ -160,7 +215,7 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
 	      k++;
 	    }
         px = curr_width - pix;	    
-	    g.translate(0, -pos - wpan + py);
+	    g.translate(0, -pos - st_y + py);
       }
     }
     

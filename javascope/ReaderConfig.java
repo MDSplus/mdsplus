@@ -49,6 +49,15 @@ class ReaderConfig extends Reader
         else
             return null;
     }
+
+    public String readCurrLine()
+    {
+        if(curr_line-1 >= 0 && curr_line-1 < line_buf.size())
+            return (String)line_buf.elementAt(curr_line-1);
+        else
+            return null;
+    }
+
     
     public void close()
     {

@@ -241,9 +241,10 @@ public class WaveInterface
     
     public boolean UseDefaultShot()
     {
-	return ((defaults & (1 << B_shot)) != 0);	    
+	    return ((defaults & (1 << B_shot)) != 0);	    
     }
     
+   
     public void SetDataProvider(DataProvider _dp)
     {
 	dp = _dp;
@@ -297,7 +298,7 @@ public class WaveInterface
         return name;
     }
     
-    public boolean addSignal(String s)
+    public boolean addSignal(String s, Color cls[])
     {
         int new_num_waves;
         
@@ -349,6 +350,9 @@ public class WaveInterface
 	            new_signals[i] = signals[i];
 	    }
 	    
+	    int last_color_idx; 
+	    
+	        
 	    for(int i= num_waves; i < new_num_waves; i++)
 	    {
 	        new_in_label[i] = "";
@@ -358,8 +362,8 @@ public class WaveInterface
 	        new_in_low_err[i] = "";
     	    new_markers[i] = 0;
 	        new_markers_step[i] = 1;
-	        //new_colors[i] = colors[i - num_shot];
-	        new_colors_idx[i] = 0;
+	        new_colors_idx[i] = i % cls.length;
+	        new_colors[i] = cls[new_colors_idx[i]];
 	        new_interpolates[i] = true;
 	        new_evaluated[i] = false;
 	        if(new_shots != null)
@@ -858,9 +862,14 @@ public class WaveInterface
 	    jScope.writeLine(out, prompt + "event: "           , cin_upd_event);
 	    jScope.writeLine(out, prompt + "default_node: "    , cin_def_node);
 
-	    if(cnum_shot != 0)
+	    if(cnum_shot != 0) {
+	        int nshot;
+	        if(UseDefaultShot())
+	            nshot = num_shot;
+	        else
+	            nshot = cnum_shot;
 	        jScope.writeLine(out, prompt + "num_expr: "        , ""+num_waves/cnum_shot);
-	    else
+	    } else
 	        jScope.writeLine(out, prompt + "num_expr: "        , ""+num_waves);
 	
 	    jScope.writeLine(out, prompt + "num_shot: "        , ""+cnum_shot);

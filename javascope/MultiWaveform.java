@@ -275,7 +275,7 @@ waveforms.
 	    }
 	    
 	    if(dragging && mode == MODE_PAN)
-		    return;    
+		    continue;//return;    
 	    if(markers != null && markers[i] != NONE)
 		if(markers_step != null && markers_step[i] != 0)
 		    DrawMarkers(g, segments, markers[i], markers_step[i]);

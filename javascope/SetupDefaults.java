@@ -375,7 +375,16 @@ public class SetupDefaults extends ScopePositionDialog {
       bit = WaveInterface.B_event;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);      
       wi.in_upd_event = getDefaultValue(bit , def_flag , wi);
-   }   
+   }
+   
+   public String GetEvent(WaveInterface wi)
+   {
+      if(wi == null) return null;
+      int bit = WaveInterface.B_event;
+      boolean def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);      
+      return getDefaultValue(bit , def_flag , wi);
+   }
+ 
 
    public void  Show()
    {
@@ -489,13 +498,14 @@ public class SetupDefaults extends ScopePositionDialog {
 
       if(ob == apply || ob == ok)
       {
+	    main_scope.RemoveAllEvents();
 	    saveDefaultConfiguration();
+ 	    main_scope.SetAllEvents();
 	    if(ob == ok)
 	        setVisible(false);
-	        shots = main_scope.evaluateShot(shot_str);
-	        main_scope.RemoveAllEvents();
-	        main_scope.UpdateAllWaves();
-      }
+	    shots = main_scope.evaluateShot(shot_str);
+	    main_scope.UpdateAllWaves(false);
+     }
       
       if(ob == reset)
       {

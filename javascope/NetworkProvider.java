@@ -515,7 +515,7 @@ class PMET extends Thread //Process Mds Event Thread
     {
        MdsMessage event_can = new MdsMessage(MdsMessage.EVENTCANREQUEST);
        MdsMessage event_msg = new MdsMessage(event);
-       MdsMessage event_id = new MdsMessage(""+idx);
+       MdsMessage event_id = new MdsMessage((byte)idx);
  //      System.out.println("Remove event "+event+" "+idx);
 	   try {
 	     event_can.descr_idx = 0;

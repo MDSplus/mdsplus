@@ -73,9 +73,9 @@ public class FontSelection extends ScopePositionDialog {
 //        {
 //            GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
 //            envfonts = gEnv.getAvailableFontFamilyNames();
-//        } else {
+//        } else
             envfonts = getToolkit().getFontList();
-//        }
+        
         
         fonts = new Choice();
         for ( int i = 1; i < envfonts.length; i++ ) {
@@ -140,6 +140,10 @@ public class FontSelection extends ScopePositionDialog {
         String s;
         String style;
         int pos, i;
+        
+        
+        if(f.indexOf("java.awt.Font[") == -1)
+            return null;
         
         fontchoice = f.substring("java.awt.Font[Family=".length(), pos = f.indexOf(","));
         pos++;

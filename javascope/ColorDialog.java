@@ -18,6 +18,7 @@ class ColorDialog extends ScopePositionDialog  {
     boolean changed = false;
     Vector color_set = new Vector();
     Vector color_set_clone;
+    Color color_vector[];
     
         
     static class Item {
@@ -175,6 +176,7 @@ class ColorDialog extends ScopePositionDialog  {
 	add(p1);
 	
 	defaultColorSet();
+	setColorVector();
 	 
      }
      
@@ -288,6 +290,20 @@ class ColorDialog extends ScopePositionDialog  {
       return new Color(red.getValue(), green.getValue(), blue.getValue());
    }
    
+   public  Color[] setColorVector()
+   {
+      color_vector = new Color[color_set.size()];
+    
+      for(int i = 0; i < color_set.size(); i++)
+        color_vector[i] = ((Item)color_set.elementAt(i)).color;
+      return color_vector;
+   }
+   
+   public Color[] getColors()
+   {
+       return color_vector;
+   }
+   
    private void SetSliderToColor(Color c)
    {
 	red.setValue(c.getRed());
@@ -299,18 +315,18 @@ class ColorDialog extends ScopePositionDialog  {
    
    private void AddUpdateItem(String name, Color color)
    {
-      int i;
-	if(name == null || name.length() == 0)
-	    return;
+        int i;
+	    if(name == null || name.length() == 0)
+	        return;
     	Item c_item = new Item(name, color);
-	String c_name[] = GetColorsName();
-	for(i = 0; c_name != null && i < c_name.length && !c_name[i].equals(name); i++);
-	if(c_name == null || i == c_name.length) {
-	    color_set.addElement(c_item);
-	    colorList.add(name);
-	}	    
-	else
-	    color_set.setElementAt(c_item, i);	    	
+	    String c_name[] = GetColorsName();
+	        for(i = 0; c_name != null && i < c_name.length && !c_name[i].equals(name); i++);
+	    if(c_name == null || i == c_name.length) {
+	        color_set.addElement(c_item);
+	        colorList.add(name);
+	    }	    
+	    else
+	        color_set.setElementAt(c_item, i);	    	
    }
     
    public void keyPressed(KeyEvent e)
@@ -323,17 +339,18 @@ class ColorDialog extends ScopePositionDialog  {
 
       if(key == KeyEvent.VK_DELETE)
       {
-	 if(ob == colorList) {
-	   int idx = colorList.getSelectedIndex();
-           colorList.remove(idx);
-	   color_set.removeElementAt(idx);	   
-	 }
+	    if(ob == colorList) {
+	        int idx = colorList.getSelectedIndex();
+            colorList.remove(idx);
+	        color_set.removeElementAt(idx);
+	   	    colorName.setText("");
+	    }
       }
       if(key == KeyEvent.VK_ENTER)
       { 
-	 if(ob == colorName) {
-	    AddUpdateItem(colorName.getText(), getColor());	    
-	 }
+	    if(ob == colorName) {
+	        AddUpdateItem(colorName.getText(), getColor());	    
+	    }
       }	 	
    }
         
@@ -406,13 +423,14 @@ class ColorDialog extends ScopePositionDialog  {
 	if (ob == ok)
 	{
 	    if(ob == ok) {
-		color_set_clone = null;
+		    color_set_clone = null;
     		setVisible(false);
 	    }
 	    AddUpdateItem(colorName.getText(), getColor());	    	
+	    setColorVector();
 	    main_scope.setup.sd.SetColorList(); 
 	    main_scope.RepaintAllWaves();
-        }
+    }
 	
 	if(ob == add)
 	{
@@ -421,19 +439,26 @@ class ColorDialog extends ScopePositionDialog  {
 
 	if(ob == erase)
 	{ 
+	    colorName.setText("");
 	    removeAllColorItems();
 	    if(colorList.getItemCount() > 0)    
-		colorList.removeAll();
+		    colorList.removeAll();
+		AddUpdateItem(COLOR_NAME[0], COLOR_SET[0]);
+	    setColorVector();
 	}
 		
 	if (ob == reset)
 	{
 	    color_set = copyColorItemsVector(color_set_clone);
-	    setColorItemToList();	
+	    setColorItemToList();
+	    setColorVector();
 	}  
 
 	if (ob == cancel)
 	{
+	    color_set = copyColorItemsVector(color_set_clone);
+	    setColorItemToList();
+	    setColorVector();
 	    color_set_clone = null;
 	    setVisible(false);
 	}

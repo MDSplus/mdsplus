@@ -13,7 +13,7 @@ public class Setup extends Object implements WaveSetup {
     public jScope main_scope;
     public int wave_idx;
     
-    String title, event;
+    String title, event, print_event;
     String data_server_address;
     int num_conf = 0;
     int columns = 1;
@@ -107,6 +107,7 @@ public class Setup extends Object implements WaveSetup {
 		waves[k].SetTitle("Error during evaluate wave");
 //	    else
 //		waves[k].SetTitle("Undefined Shot");
+        waves[k].Erase();
 	    return;	
 	}
 	if(waves[k].wi.error != null) {
@@ -124,9 +125,9 @@ public class Setup extends Object implements WaveSetup {
     
     public void ChangeDataProvider()
     {
-	for(int i = 0; i < waves.length; i++)
-	    if(waves[i].wi != null)
-		waves[i].wi.SetDataProvider(main_scope.db);
+	    for(int i = 0; i < waves.length; i++)
+	        if(waves[i].wi != null)
+		        waves[i].wi.SetDataProvider(main_scope.db);
     }
 
 
@@ -144,24 +145,48 @@ public class Setup extends Object implements WaveSetup {
 	return (new String(sb));
     }
 
-    public void DisplayCoords(Waveform w, double curr_x, double curr_y, int sig_idx, boolean broadcast)
+    public void DisplayCoords(Waveform w, double curr_x, double curr_y, 
+                              double dx, double dy, int sig_idx, 
+                              boolean measure, boolean broadcast)
     { 
         if(coords_label != null)
 	    {   
+	        String s;
 	        signal_idx = sig_idx;
 	        WaveInterface  wi = ((MultiWaveform)w).wi;
+	        
+	        if(measure)
+	        {
+	         double dx_f;
+	         
+	         if(Math.abs(dx) < 1.e-20)
+	            dx_f = 1.e-20;
+	         else
+	            dx_f = Math.abs(dx);
+	         
+            s = SetStrSize("[" + Waveform.ConvertToString(curr_x, false) + ", " 
+				               + Waveform.ConvertToString(curr_y, false) + "; dx "
+				               + Waveform.ConvertToString(dx, false) + "; dy "
+				               + Waveform.ConvertToString(dy, false) + "; 1/dx "
+				               + Waveform.ConvertToString(1./dx_f, false) +
+				               "]", 80);
+
+	        } else {
+	            s = SetStrSize("[" + Waveform.ConvertToString(curr_x, false) + ", " 
+				                    + Waveform.ConvertToString(curr_y, false) + "]", 30);
+	        }
+	        
 	        if(wi.shots != null)
 	        {
-		        coords_label.setText(SetStrSize("[" + Waveform.ConvertToString(curr_x, false) + ", " 
-				 + Waveform.ConvertToString(curr_y, false) + "]", 30) +
+		        coords_label.setText( s +
 		            " Expr : " + wi.in_y[sig_idx] +  
 		            " Shot = " + wi.shots[sig_idx]);
 	        } else {
-		        coords_label.setText(SetStrSize("[" + Waveform.ConvertToString(curr_x, false) + ", " 
-				 + Waveform.ConvertToString(curr_y, false) + "]", 30) +
+		        coords_label.setText(s +
 		            " Expr : " + wi.in_y[sig_idx]);  
 	        }
-	        if(true)
+	        //if(broadcast)
+	        if(true) //Like Scope always broadcast
 		        UpdatePoints(curr_x, w);
 	        else
 		        w.UpdatePoint(curr_x);
@@ -184,7 +209,7 @@ public class Setup extends Object implements WaveSetup {
     
     public void NotifyChange(Waveform dest, Waveform source)    
     {
-	  ((MultiWaveform)dest).wi = main_scope.wi_source;
+	  ((MultiWaveform)dest).wi = new WaveInterface(main_scope.wi_source);
 	  Refresh(dest, "");
     }
    
@@ -404,9 +429,15 @@ public class Setup extends Object implements WaveSetup {
 		title = str.substring("Scope.title: ".length(), str.length());
 		continue;
 	    }
-	    if(str.indexOf("Scope.title_event:") == 0) {
-		event = str.substring("Scope.title_event: ".length(), str.length());
-		continue;	
+
+	    if(str.indexOf("Scope.update_event:") == 0) {
+		event = str.substring("Scope.update_event: ".length(), str.length());
+		continue;
+	    }
+
+	    if(str.indexOf("Scope.print_event:") == 0) {
+		print_event = str.substring("Scope.print_event: ".length(), str.length());
+		continue;
 	    }
 
 	    if(str.indexOf("Scope.fast_network_access:") != -1)
@@ -472,7 +503,7 @@ public class Setup extends Object implements WaveSetup {
 		    width_percent[0] = (float)(((width_percent[0] == 0) ? 1000 : width_percent[0])/1000.);
 	    }
 	} else
-	    error = 1;
+	    error = 0;
 	return error;
     }
     
@@ -530,10 +561,23 @@ public class Setup extends Object implements WaveSetup {
 	        
 	        out.write("Scope.geometry: " + width + "x" + height + "+" + ypos + "+" + xpos);
 	        out.newLine();
+
 	        if(title != null) {
 		        out.write("Scope.title: " + title);
 		        out.newLine();
-	        }	    
+	        }
+
+	        if(this.event != null) {
+		        out.write("Scope.update_event: " + event);
+		        out.newLine();
+	        }
+
+	        if(this.print_event != null) {
+		        out.write("Scope.print_event: " + print_event);
+		        out.newLine();
+	        }
+
+        
 	        out.write("Scope.columns: " + columns);
 	        out.newLine();
 
@@ -601,7 +645,7 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	
 	add(setup = new MenuItem("Setup data source..."));
 	setup.addActionListener(this);
-	add(selectWave = new MenuItem("Select wave"));
+	add(selectWave = new MenuItem("Select wave panel"));
 	selectWave.addActionListener(this);
 	add(legend = new MenuItem("Position legend"));
 	legend.addActionListener(this);
@@ -685,13 +729,13 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
     public void Show(MultiWaveform w, int x, int y)
     {
         if(controller.sel_wave == w)
-            selectWave.setLabel("Deselect wave");
+            selectWave.setLabel("Deselect wave panel");
         else
-            selectWave.setLabel("Select wave");
+            selectWave.setLabel("Select wave panel");
 
         
         signalList.removeAll();
-        if(w.wi != null)
+        if(w.wi != null && w.wi.num_waves != 0)
         {
             String s_name[] = w.wi.getSignalsName();
             boolean s_state[] = w.wi.getSignalsState();
@@ -703,12 +747,14 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
             markerList.setEnabled(state);
             colorList.setEnabled(state);	
             interpolate_f.setEnabled(state);
-            interpolate_f.setState(w.wi.interpolates[controller.signal_idx]);
-            
-            boolean state_m = state && (w.wi.markers[controller.signal_idx] != Waveform.NONE 
+            if(state) {
+                interpolate_f.setState(w.wi.interpolates[controller.signal_idx]);
+                boolean state_m = state && (w.wi.markers[controller.signal_idx] != Waveform.NONE 
                                         && w.wi.markers[controller.signal_idx] != Waveform.POINT);
-            markerStep.setEnabled(state_m);
-
+                markerStep.setEnabled(state_m);
+            } else
+                markerStep.setEnabled(false);
+            
             if(state)
             {
                 SelectListItem(markerList, w.wi.markers[controller.signal_idx]);

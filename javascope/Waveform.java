@@ -480,7 +480,6 @@ import java.util.*;
 	else
 	{
 	    g.setFont(font);
-	    fm = g.getFontMetrics();
 	}
 	    
 	    fm = g.getFontMetrics();
@@ -786,7 +785,8 @@ public class Waveform extends Canvas
     boolean make_legend = false;
     double legend_x;
     double legend_y;
-
+    int mark_point_x, mark_point_y;
+    boolean show_measure = false;
 
     public Waveform(WaveSetup c, Signal s)
     {
@@ -876,6 +876,8 @@ public class Waveform extends Canvas
     {
         font = f;
     }
+  
+    
    
     private void setMouse()
     {
@@ -915,6 +917,21 @@ public class Waveform extends Canvas
 		                HandleCopy();
 		                return;
 	                }
+	                //Cesare prova
+	                if(mode == MODE_POINT && (e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
+	                {
+	                    if((e.getModifiers() & Event.CTRL_MASK) != 0)
+	                    {
+	                        show_measure = true;
+	                    }   
+	                    else {
+	                        show_measure = false; 
+	                        not_drawn = true;
+	                    }
+	                    
+	                }
+	                
+	                
     	            start_x = end_x = prev_point_x = x;
 	                start_y = end_y = prev_point_y = y;
 	                prev_clip_w = curr_clip_w = prev_clip_h = curr_clip_h = 0;
@@ -968,17 +985,21 @@ public class Waveform extends Canvas
 	            }
 	            if(mode == MODE_POINT)
 	            {
+
 	                double  curr_x = wm.XValue(end_x, d),
-		            curr_y = wm.XValue(end_y, d);
-		    
+	                        curr_y = wm.YValue(end_y, d); //Cesare 03-02-00
+		                    //curr_y = wm.XValue(end_y, d); ???
+		                    
+                    show_measure = false;
 	                curr_y = FindPointY(curr_x, curr_y, first_set_point);
-	                controller.DisplayCoords(w, curr_x, curr_y, GetSelectedSignal(), is_mb2);
+	                controller.DisplayCoords(w, curr_x, curr_y, 0, 0, 
+	                                         GetSelectedSignal(),
+	                                         show_measure, is_mb2);
 	            }
 	            curr_rect = null;
 	            prev_point_x = prev_point_y = -1;
 	            repaint();
 	            dragging = false;
-	            System.gc(); //Prova per MAC
             }
         });
         
@@ -1010,8 +1031,17 @@ public class Waveform extends Canvas
 	            }
 	            else
 	                curr_rect = null;
-	            if(mode == MODE_POINT) 
+	            if(mode == MODE_POINT) {
+	                //Cesare prova
+	                if((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
+	                {
+	                    if((e.getModifiers() & Event.CTRL_MASK) == 0)
+	                    {
+	                        show_measure = false; 
+	                    }               
+	                }
 	                repaint();
+	            }
 	            if(mode == MODE_PAN)
 	            {
 	                Dimension d = getSize();
@@ -1236,7 +1266,7 @@ public class Waveform extends Canvas
 	    
 	    //CESARE  stampa
 	    if(!print_flag)
-	    {
+	    {    
 	        off_image = createImage(d.width, d.height);
 	        off_graphics = off_image.getGraphics();
 	    } else
@@ -1284,7 +1314,7 @@ public class Waveform extends Canvas
     	        Point p = new Point();
     	        if(legend_x == -1 || ((mode == MODE_ZOOM || mode == MODE_PAN)
     	                               && prev_width == d.width 
-		                               && prev_height == d.height))
+		                               && prev_height == d.height) && !print_flag)
     	           initLegendPos();
                 p.x = wm.XPixel(legend_x, d);
                 p.y = wm.YPixel(legend_y, d);
@@ -1297,15 +1327,28 @@ public class Waveform extends Canvas
 	    prev_width = d.width;
 	    prev_height = d.height;
 	    
+	} 
+	
+	if(print_flag) {
+	    execute_print = false;
+	    System.gc();
+	    return;
 	}
+	
+	if(!(mode == MODE_PAN && dragging && waveform_signal != null))
+	    g.drawImage(off_image, 0, 0, this);
+
+	
 	if(mode == MODE_ZOOM)
 	{
 	    if(curr_rect != null)
 	    {
+	        /*
 	    	g.clearRect(start_x, start_y, prev_clip_w, prev_clip_h);
 		    g1 = g.create();
 	  	    g1.clipRect(start_x, start_y, prev_clip_w + 4, prev_clip_h + 4);
-	    	g1.drawImage(off_image, 0, 0, this);	
+	    	g1.drawImage(off_image, 0, 0, this);
+	    	*/
 	    	prev_clip_w = curr_clip_w;
 	    	prev_clip_h = curr_clip_h;
 	    	g.drawRect(curr_rect.x, curr_rect.y, curr_rect.width, curr_rect.height);
@@ -1314,29 +1357,52 @@ public class Waveform extends Canvas
 	    {
 		//g.clipRect(0, 0, d.width, d.height);
 		//Cesare
-		    if(off_image != null && !print_flag)
+		   if(off_image != null && !print_flag)
 	            g.drawImage(off_image, 0, 0, this);
 	    }
 	}
-	else
-	    g.drawImage(off_image, 0, 0, this);
+//	else
+//	    g.drawImage(off_image, 0, 0, this);
+	    
+    
 	if(waveform_signal != null && mode == MODE_POINT && !not_drawn)
 	{
     	curr_x = wm.XValue(end_x, d);
 	    curr_y = wm.YValue(end_y, d);	
 		
 	    curr_y = FindPointY(curr_x, curr_y, first_set_point);
+	    if(first_set_point && show_measure)
+	    {
+	        mark_point_x = end_x;
+	        mark_point_y = wm.YPixel(FindPointY(curr_x, curr_y, first_set_point), d);
+	    }
 	    first_set_point = false;
 
-	    if(dragging && !ext_update && controller != null)
-		    controller.DisplayCoords(this, curr_x, curr_y, GetSelectedSignal(), is_mb2);
+	    if(dragging && !ext_update && controller != null) {
+	        
+	        double dx = 0, dy = 0;
+	        if(show_measure)
+		    {
+		        Color c = g.getColor();
+		        g.setColor(Color.red);
+		        g.drawLine(mark_point_x, 0, mark_point_x, d.height);
+		        g.drawLine(0, mark_point_y, d.width, mark_point_y);
+		        g.setColor(c);
+		        
+		        dx = curr_x - wm.XValue(mark_point_x, d);
+		        dy = curr_y - wm.YValue(mark_point_y, d);
+		    } 
 
+		    controller.DisplayCoords(this, curr_x, curr_y, dx, dy, GetSelectedSignal(), show_measure, is_mb2);
+        }
 	    plot_y = wm.YPixel(curr_y, d);
-
+	    
+/*
 	    if(prev_point_x == -1)
 	        g.drawImage(off_image, 0, 0, this);
 	    else
 	    {
+	        
 	    	g.clearRect(0, prev_point_y - 4, d.width, 8);
 		    g1 = g.create(0, 0, d.width, d.height);
 		    g1.clipRect(0, prev_point_y - 4, d.width, 8);
@@ -1344,18 +1410,21 @@ public class Waveform extends Canvas
 	    	g.clearRect(prev_point_x - 4, 0, 8, d.height);
 		    g1 = g.create(0, 0, d.width, d.height);
 		    g1.clipRect(prev_point_x - 4, 0, 8, d.height);
-	        g1.drawImage(off_image, 0, 0, this);
+	        g1.drawImage(off_image, 0, 0, this);        
 	        //g.drawImage(off_image, 0, 0, this);
 	    }
+*/
         Color prev_color = g.getColor();
 	    if(crosshair_color != null)
 		    g.setColor(crosshair_color);
+		/*    
 	    Rectangle rect = grid.GetBoundingBox(d);
 	    Shape shape = g.getClip();
 	    g.setClip(rect.x, rect.y, rect.width, rect.height);
+	    */
 	    g.drawLine(0,plot_y, d.width, plot_y);
 	    g.drawLine(end_x, 0, end_x, d.height);
-	    g.setClip(shape);
+	    //g.setClip(shape);
 	    g.setColor(prev_color);
 	    prev_point_x = end_x;
 	    prev_point_y = plot_y;
@@ -1368,7 +1437,7 @@ public class Waveform extends Canvas
 			MinYSignal(), curr_display_limits, d, wm.x_log, wm.y_log);
 
 	    g.setColor(Color.white);
-	    g.fillRect(0, 0, d.width, d.height);
+	    g.fillRect(1, 1, d.width-2, d.height-2);
 	    g.setColor(Color.black);
 	    g.clipRect(wave_b_box.x, wave_b_box.y, wave_b_box.width, wave_b_box.height);
 	    DrawSignal(g);
@@ -1382,7 +1451,7 @@ public class Waveform extends Canvas
 	  g.setColor(Color.black);
     }	    
 	
-	execute_print = false;
+	System.gc();
     }
 
     protected int GetSelectedSignal() {return 0;} 
