@@ -7,7 +7,7 @@ else
   then
 	cat $MDSPLUS_DIR/local/scope_printers
   else
-    awk -F\| '{\
+    /bin/awk -F\| '{\
       if (match($0,/^#/) != 0 || match($0,/^[:blank:]*$/) != 0) \
         next; \
       while (match($0,/\\[:blank:]*$/) != 0) \
@@ -26,6 +26,6 @@ else
       }\
       else\
         print $1;\
-    }' /etc/printcap | awk -F: '{print $1;}' -
+    }' /etc/printcap | /bin/awk -F: '{print $1;}' -
   fi
 fi
