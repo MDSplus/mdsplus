@@ -1,4 +1,4 @@
-	/*	TdiLex.x
+	/*	TdiLex
 	Lexical analysis to parse tokens for TdiYacc.y.
 	Definition section precedes rule section.
 
@@ -465,12 +465,12 @@ int			length, is_signed, status = 1, tst, type;
           if (*(char *)&endianTest != 1)
           {
             int i;
-            char *ptr = mark_ptr->rptr->pointer;
+            unsigned char *ptr = mark_ptr->rptr->pointer;
             for (i=0;i<length/2;i++)
             {
-              char sav = ptr[i];
+              unsigned char sav = ptr[i];
               ptr[i] = ptr[length - i - 1];
-              prt[length - i - 1] = sav;
+              ptr[length - i - 1] = sav;
             }
           }
           return(LEX_VALUE);
