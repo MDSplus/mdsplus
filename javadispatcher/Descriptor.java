@@ -23,6 +23,7 @@ class Descriptor
 
     public    byte   dtype;
     public    float  float_data[];
+    public    double  double_data[];
     public	  int    int_data[];
     public    byte   byte_data[];
     public	  String strdata;

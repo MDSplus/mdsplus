@@ -6,17 +6,22 @@ class jDispatcherIp extends MdsIp
     jDispatcher dispatcher;
     int shot;
     static Vector servers = new Vector();
+    String treeName;
+
+    Database tree;
     
     public void setDispatcher(jDispatcher dispatcher) {this.dispatcher = dispatcher; }
-    public jDispatcherIp(int port, jDispatcher dispatcher)
+    public jDispatcherIp(int port, jDispatcher dispatcher, String treeName)
     {
         super(port);
         this.dispatcher = dispatcher;
+        this.treeName = treeName;
+        tree = new Database(treeName, -1);
     }
     
     public MdsMessage handleMessage(MdsMessage [] messages)
     {
-        
+        int ris = -1;
         if(messages.length < 8 || messages[2].dtype != Descriptor.DTYPE_SHORT 
             || messages[1].dtype != Descriptor.DTYPE_LONG || 
             messages[6].dtype != Descriptor.DTYPE_CSTRING ||
@@ -29,18 +34,43 @@ class jDispatcherIp extends MdsIp
         {
             try {
                 String cli = messages[6].ToString();
-                doCommand(messages[7].ToString().toUpperCase());
+                ris = doCommand(messages[7].ToString().toUpperCase());
             }catch (Exception exc) 
             {
                 return new MdsMessage(exc.getMessage(), null);
             } 
         }
-        MdsMessage msg =  new MdsMessage((byte)1);
-        msg.status = 1;
-        return msg;
+        if(ris < 0) //i.e. if any command except get current
+        {
+            MdsMessage msg =  new MdsMessage((byte)1);
+            msg.status = 1;
+            return msg;
+        }
+        else
+        {
+            byte []buf = new byte[4];
+            buf[0] = (byte)((ris >> 24)& 0xFF);
+            buf[1] = (byte)((ris >> 16)& 0xFF);
+            buf[2] = (byte)((ris >> 8)& 0xFF);
+            buf[3] = (byte)(ris& 0xFF);
+
+            
+            
+/*    public MdsMessage(byte descr_idx, byte dtype, 
+                        byte nargs, 
+                        int dims[], 
+                        byte body[])
+  */          
+            
+            
+            MdsMessage msg =  new MdsMessage((byte)0, (byte)Data.DTYPE_L, (byte)0, new int[]{1}, buf);
+            msg.status = 1;
+            return msg;
+        }
+        
     }
     
-    protected void doCommand(String command)
+    protected int doCommand(String command)
     {
         StringTokenizer st = new StringTokenizer(command, "/ ");
         try {
@@ -95,17 +125,59 @@ class jDispatcherIp extends MdsIp
                 }catch(Exception ex) {throw new Exception("Invalid command"); }
                 dispatcher.abortAction(nid);
             }
-            else
-                throw new Exception("Invalid Command");
+            else if(first_part.equals("GET"))
+            {
+                String second_part = st.nextToken();
+                if(second_part.equals("CURRENT"))
+                {
+                    return getCurrentShot();
+                }
+                else throw new Exception("Invalid Command");
+            }
+            else if(first_part.equals("INCREMENT"))
+            {
+                String second_part = st.nextToken();
+                if(second_part.equals("CURRENT"))
+                {
+                    incrementCurrentShot();
+                }
+                else throw new Exception("Invalid Command");
+            }
+            else throw new Exception("Invalid Command");
+            return -1;
         }catch (Exception exc) 
         {
             System.out.println("Invalid command: "+command);
+            return -1;
         }
     }
 
+    int getCurrentShot()
+    {
+        try {
+            return tree.getCurrentShot(treeName);
+        }catch(Exception exc){return -1;}
+    }
+    
+    void incrementCurrentShot()
+    {
+        try {
+            int shot = tree.getCurrentShot(treeName);
+            tree.setCurrentShot(shot + 1);
+        }catch(Exception exc)
+        {
+            System.err.println("Error incrementing current shot");
+        }
+    }
+    
 
     public static void main(String args[])
     {
+        String treeName;
+        if(args.length >= 1)
+            treeName = args[0];
+        else
+            treeName = "RFX";
         Balancer balancer = new Balancer();
         jDispatcher dispatcher = new jDispatcher(balancer);
         dispatcher.addServer(new InfoServer());
@@ -160,7 +232,11 @@ class jDispatcherIp extends MdsIp
             dispatcher.setDefaultServer(server);
         }catch(Exception exc){}
           
-        jDispatcherIp dispatcherIp = new jDispatcherIp(port, dispatcher);
+        jDispatcherIp dispatcherIp = new jDispatcherIp(port, dispatcher, treeName);
+        
+        //dispatcherIp.incrementCurrentShot();
+        //int shot = dispatcherIp.getCurrentShot();
+        
         dispatcherIp.start();
         try {
         dispatcherIp.getListenThread().join();

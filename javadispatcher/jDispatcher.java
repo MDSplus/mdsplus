@@ -572,31 +572,31 @@ class jDispatcher implements ServerListener
             seq_dispatched.removeElementAt(0);
         }
     } 
-public void setDefaultServer(Server server)
-{
-    balancer.setDefaultServer(server);
-}
+    public void setDefaultServer(Server server)
+    {
+        balancer.setDefaultServer(server);
+    }
 
-public static void main(String args[])
-{
-    Server server;
-    Balancer balancer = new Balancer();
-    jDispatcher dispatcher = new jDispatcher(balancer);
-    dispatcher.addServer(new InfoServer("disp_test"));
-    dispatcher.addServer(server = new ActionServer("disp_test", "150.178.3.47:8002", "server_1"));
-    dispatcher.addServer(new ActionServer("disp_test", "150.178.3.47:8004", "server_1"));
-    dispatcher.addServer(new ActionServer("disp_test", "150.178.3.47:8005", "server_2"));
-    dispatcher.addServer(new ActionServer("disp_test", "150.178.3.47:8006", "server_2"));
-    dispatcher.addServer(new ActionServer("disp_test", "150.178.3.47:8007", "server_3"));
-    dispatcher.addServer(new ActionServer("disp_test", "150.178.3.47:8008", "server_3"));
-    balancer.setDefaultServer(server);
-    dispatcher.collectDispatchInformation();
-    dispatcher.beginSequence(2);
-    dispatcher.startPhase("INITIALIZATION");
-    dispatcher.waitPhase();
-    dispatcher.endSequence(2);
-    System.exit(0);
-}
+    public static void main(String args[])
+    {
+        Server server;
+        Balancer balancer = new Balancer();
+        jDispatcher dispatcher = new jDispatcher(balancer);
+        dispatcher.addServer(new InfoServer("disp_test"));
+        dispatcher.addServer(server = new ActionServer("disp_test", "150.178.3.47:8002", "server_1"));
+        dispatcher.addServer(new ActionServer("disp_test", "150.178.3.47:8004", "server_1"));
+        dispatcher.addServer(new ActionServer("disp_test", "150.178.3.47:8005", "server_2"));
+        dispatcher.addServer(new ActionServer("disp_test", "150.178.3.47:8006", "server_2"));
+        dispatcher.addServer(new ActionServer("disp_test", "150.178.3.47:8007", "server_3"));
+        dispatcher.addServer(new ActionServer("disp_test", "150.178.3.47:8008", "server_3"));
+        balancer.setDefaultServer(server);
+        dispatcher.collectDispatchInformation();
+        dispatcher.beginSequence(2);
+        dispatcher.startPhase("INITIALIZATION");
+        dispatcher.waitPhase();
+        dispatcher.endSequence(2);
+        System.exit(0);
+    }
 
 
 }
