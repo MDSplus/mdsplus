@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\Release"
+			OutputDirectory="../Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -41,12 +41,12 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib $(MATLAB_DIR)\extern\lib\win32\microsoft\msvc60\libmex.lib $(MATLAB_DIR)\extern\lib\win32\microsoft\msvc60\libmx.lib"
-				OutputFile="../Release/mdsipmex.dll"
+				OutputFile="$(OutDir)/mdsipmex.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\mdsipmex.def"
 				ProgramDatabaseFile=".\Release/mdsipmex.pdb"
-				ImportLibrary=".\Release/mdsipmex.lib"/>
+				ImportLibrary="$(OutDir)/mdsipmex.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"
@@ -71,7 +71,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\Debug"
+			OutputDirectory="../Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -99,13 +99,13 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib $(MATLAB_DIR)\extern\lib\win32\microsoft\msvc60\libmex.lib $(MATLAB_DIR)\extern\lib\win32\microsoft\msvc60\libmx.lib"
-				OutputFile="../Debug/mdsipmex.dll"
+				OutputFile="$(OutDir)/mdsipmex.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\mdsipmex.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/mdsipmex.pdb"
-				ImportLibrary=".\Debug/mdsipmex.lib"/>
+				ProgramDatabaseFile="$(IntDir)/mdsipmex.pdb"
+				ImportLibrary="$(OutDir)/mdsipmex.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"

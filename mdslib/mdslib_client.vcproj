@@ -40,13 +40,13 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib"
-				OutputFile="../Release/mdslib_client.dll"
+				OutputFile="$(OutDir)/mdslib_client.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\MdsLib.def"
 				ProgramDatabaseFile=".\mdslib_client/Release/mdslib_client.pdb"
 				SubSystem="2"
-				ImportLibrary=".\mdslib_client/Release/mdslib_client.lib"/>
+				ImportLibrary="$(OutDir)/mdslib_client.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"
@@ -97,14 +97,14 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib"
-				OutputFile="../Debug/mdslib_client.dll"
+				OutputFile="$(OutDir)/mdslib_client.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\MdsLib.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\mdslib_client/Debug/mdslib_client.pdb"
+				ProgramDatabaseFile="$(IntDir)/mdslib_client.pdb"
 				SubSystem="2"
-				ImportLibrary=".\mdslib_client/Debug/mdslib_client.lib"/>
+				ImportLibrary="$(OutDir)/mdslib_client.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"

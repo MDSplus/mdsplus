@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\Debug"
+			OutputDirectory="../Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -39,14 +39,14 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib $(IDL_DIR)\bin\bin.x86\idl32.lib"
-				OutputFile="../Debug/idlmdsevent.dll"
+				OutputFile="$(OutDir)/idlmdsevent.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\idlmdsevent.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/idlmdsevent.pdb"
+				ProgramDatabaseFile="$(IntDir)/idlmdsevent.pdb"
 				SubSystem="2"
-				ImportLibrary=".\Debug/idlmdsevent.lib"/>
+				ImportLibrary="$(OutDir)/idlmdsevent.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -71,7 +71,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\Release"
+			OutputDirectory="../Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -98,13 +98,13 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib $(IDL_DIR)\bin\bin.x86\idl32.lib"
-				OutputFile="../Release/idlmdsevent.dll"
+				OutputFile="$(OutDir)/idlmdsevent.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\idlmdsevent.def"
-				ProgramDatabaseFile=".\Release/idlmdsevent.pdb"
+				ProgramDatabaseFile=""
 				SubSystem="2"
-				ImportLibrary=".\Release/idlmdsevent.lib"/>
+				ImportLibrary="$(OutDir)/idlmdsevent.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"

@@ -1,9 +1,8 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by icons.rc
 //
 #define IDI_ICON1                       101
-#define IDI_ICON2                       103
 #define IDI_ICON3                       106
 #define IDI_ICON4                       107
 #define IDI_ICON5                       108

@@ -38,13 +38,14 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib libg2c.a libgcc.a"
-				OutputFile="../Release/MdsMath.dll"
+				OutputFile="$(OutDir)/MdsMath.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="$(G77_DIR)/lib"
 				ModuleDefinitionFile=".\MdsMath.def"
-				ProgramDatabaseFile=".\Release/MdsMath.pdb"
+				ProgramDatabaseFile="$(IntDir)/MdsMath.pdb"
 				SubSystem="2"
-				ImportLibrary=".\Release/MdsMath.lib"/>
+				ImportLibrary="$(OutDir)/MdsMath.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"
@@ -93,15 +94,15 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="libg2c.a libgcc.a odbc32.lib odbccp32.lib"
-				OutputFile="../Debug/MdsMath.dll"
+				OutputFile="$(OutDir)/MdsMath.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="e:\g77\lib"
+				AdditionalLibraryDirectories="$(G77_DIR)/lib"
 				ModuleDefinitionFile=".\MdsMath.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/MdsMath.pdb"
+				ProgramDatabaseFile="$(IntDir)/MdsMath.pdb"
 				SubSystem="2"
-				ImportLibrary=".\Debug/MdsMath.lib"/>
+				ImportLibrary="$(OutDir)/MdsMath.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"

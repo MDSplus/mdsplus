@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\Debug"
+			OutputDirectory="../Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -39,14 +39,14 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile=".\Debug/mdsjet.dll"
+				OutputFile="$(OutDir)/mdsjet.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\mdsjet.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/mdsjet.pdb"
+				ProgramDatabaseFile="$(IntDir)/mdsjet.pdb"
 				SubSystem="2"
-				ImportLibrary=".\Debug/mdsjet.lib"/>
+				ImportLibrary="$(OutDir)/mdsjet.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -71,7 +71,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\Release"
+			OutputDirectory="../Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -98,13 +98,13 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="./jetrdaapi.lib odbc32.lib odbccp32.lib"
-				OutputFile=".\Release/mdsjet.dll"
+				OutputFile="$(OutDir)/mdsjet.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\mdsjet.def"
 				ProgramDatabaseFile=".\Release/mdsjet.pdb"
 				SubSystem="2"
-				ImportLibrary=".\Release/mdsjet.lib"/>
+				ImportLibrary="$(OutDir)/mdsjet.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"

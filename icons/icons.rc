@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -27,18 +27,18 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
@@ -54,12 +54,11 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON    DISCARDABLE     "logbook.ico"
-IDI_ICON2               ICON    DISCARDABLE     "grandpa_icon.ico"
-IDI_ICON3               ICON    DISCARDABLE     "Tcl.ico"
-IDI_ICON4               ICON    DISCARDABLE     "Tdi.ico"
-IDI_ICON5               ICON    DISCARDABLE     "traverser.ico"
-IDI_ICON6               ICON    DISCARDABLE     "scope.ico"
+IDI_ICON1               ICON                    "logbook.ico"
+IDI_ICON3               ICON                    "Tcl.ico"
+IDI_ICON4               ICON                    "Tdi.ico"
+IDI_ICON5               ICON                    "traverser.ico"
+IDI_ICON6               ICON                    "scope.ico"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 

@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\Release"
+			OutputDirectory="../Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -41,11 +41,11 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="../Release/mdslib.dll"
+				OutputFile="$(OutDir)/mdslib.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\MdsLib.def"
-				ImportLibrary=".\Release/mdslib.lib"/>
+				ImportLibrary="$(OutDir)/mdslib.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"
@@ -70,7 +70,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\Debug"
+			OutputDirectory="../Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -98,13 +98,13 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="../Debug/mdslib.dll"
+				OutputFile="$(OutDir)/mdslib.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\MdsLib.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/mdslib.pdb"
-				ImportLibrary=".\Debug/mdslib.lib"/>
+				ProgramDatabaseFile="$(IntDir)/mdslib.pdb"
+				ImportLibrary="$(OutDir)/mdslib.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"

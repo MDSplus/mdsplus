@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\Release"
+			OutputDirectory="../Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -40,13 +40,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ../mdsshr/Release/mdsshr.lib ../treeshr/Release/Treeshr.lib ../tdishr/Release/Tdishr.lib $(JDK_DIR)\lib\jvm.lib"
-				OutputFile="../Release/javamds.dll"
+				AdditionalDependencies="odbc32.lib odbccp32.lib $(JDK_DIR)\lib\jvm.lib"
+				OutputFile="$(OutDir)/javamds.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\javamds.def"
 				ProgramDatabaseFile=".\Release/javamds.pdb"
-				ImportLibrary=".\Release/javamds.lib"/>
+				ImportLibrary="$(OutDir)/javamds.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"
@@ -71,7 +71,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\Debug"
+			OutputDirectory="../Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -98,14 +98,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ..\mdsshr\Debug\mdsshr.lib ..\treeshr\Debug\treeshr.lib ..\tdishr\Debug\tdishr.lib $(JDK_DIR)\lib\jvm.lib"
-				OutputFile="../Debug/javamds.dll"
+				AdditionalDependencies="odbc32.lib odbccp32.lib $(JDK_DIR)\lib\jvm.lib"
+				OutputFile="$(OutDir)/javamds.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\javamds.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/javamds.pdb"
-				ImportLibrary=".\Debug/javamds.lib"/>
+				ProgramDatabaseFile="$(IntDir)/javamds.pdb"
+				ImportLibrary="$(OutDir)/javamds.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"

@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\Debug"
+			OutputDirectory="../Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -37,14 +37,15 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="../Debug/icons.dll"
+				OutputFile="$(OutDir)/icons.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				ModuleDefinitionFile=".\icons.def"
+				ModuleDefinitionFile=""
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/icons.pdb"
+				ProgramDatabaseFile="$(IntDir)/icons.pdb"
 				SubSystem="2"
-				ImportLibrary=".\Debug/icons.lib"/>
+				ResourceOnlyDLL="TRUE"
+				ImportLibrary="$(OutDir)/icons.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -69,7 +70,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\Release"
+			OutputDirectory="../Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -94,13 +95,14 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="../Release/icons.dll"
+				OutputFile="$(OutDir)/icons.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				ModuleDefinitionFile=".\icons.def"
-				ProgramDatabaseFile=".\Release/icons.pdb"
+				ModuleDefinitionFile=""
+				ProgramDatabaseFile=""
 				SubSystem="2"
-				ImportLibrary=".\Release/icons.lib"/>
+				ResourceOnlyDLL="TRUE"
+				ImportLibrary="$(OutDir)/icons.lib"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"
@@ -132,19 +134,13 @@
 			RelativePath=".\Tdi.ico">
 		</File>
 		<File
-			RelativePath=".\dummy.c">
-		</File>
-		<File
-			RelativePath=".\grandpa_icon.ico">
-		</File>
-		<File
-			RelativePath=".\icons.def">
-		</File>
-		<File
 			RelativePath=".\icons.rc">
 		</File>
 		<File
 			RelativePath=".\logbook.ico">
+		</File>
+		<File
+			RelativePath="resource.h">
 		</File>
 		<File
 			RelativePath=".\scope.ico">
