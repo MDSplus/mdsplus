@@ -1,4 +1,4 @@
-public fun A14__PART_NAME(as_is _nid, optional in _method)
+public fun CHS_A14__PART_NAME(as_is _nid, optional in _method)
 {
   _name = ([
   '',
