@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.*;
 import javax.swing.border.*;
 //import com.symantec.itools.javax.swing.borders.EtchedBorder;
+import javax.swing.border.*;
 
 public class RFXPConfigSetup extends DeviceSetup
 {
@@ -60,14 +61,17 @@ public class RFXPConfigSetup extends DeviceSetup
 		deviceField5.setTextOnly(true);
 		deviceField5.setOffsetNid(7);
 		deviceField5.setLabelString("PM Units: ");
+		deviceField5.setEditable(false);
 		JPanel1.add(deviceField5);
 		deviceField7.setTextOnly(true);
 		deviceField7.setOffsetNid(8);
-		deviceField7.setLabelString("PM Config: ");
+		deviceField7.setLabelString("PM Connection: ");
+		deviceField7.setEditable(false);
 		JPanel1.add(deviceField7);
 		deviceField8.setNumCols(4);
 		deviceField8.setOffsetNid(10);
 		deviceField8.setLabelString("PM Window (s): ");
+		deviceField8.setEditable(false);
 		JPanel1.add(deviceField8);
 		JPanel2.setBorder(etchedBorder1);
 		JPanel2.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -76,15 +80,18 @@ public class RFXPConfigSetup extends DeviceSetup
 		deviceField6.setNumCols(15);
 		deviceField6.setTextOnly(true);
 		deviceField6.setOffsetNid(11);
-		deviceField6.setLabelString("PC Units: ");
+		deviceField6.setLabelString("Bias Units: ");
+		deviceField6.setEditable(false);
 		JPanel2.add(deviceField6);
 		deviceField9.setTextOnly(true);
 		deviceField9.setOffsetNid(12);
-		deviceField9.setLabelString("PC Config: ");
+		deviceField9.setLabelString("Bias Connection: ");
+		deviceField9.setEditable(false);
 		JPanel2.add(deviceField9);
 		deviceField10.setNumCols(4);
 		deviceField10.setOffsetNid(1);
-		deviceField10.setLabelString("PC Window (s):");
+		deviceField10.setLabelString("Bias Window (s):");
+		deviceField10.setEditable(false);
 		JPanel2.add(deviceField10);
 		JPanel3.setBorder(etchedBorder1);
 		JPanel3.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -94,14 +101,17 @@ public class RFXPConfigSetup extends DeviceSetup
 		deviceField11.setTextOnly(true);
 		deviceField11.setOffsetNid(15);
 		deviceField11.setLabelString("PV Units: ");
+		deviceField11.setEditable(false);
 		JPanel3.add(deviceField11);
 		deviceField12.setTextOnly(true);
 		deviceField12.setOffsetNid(16);
 		deviceField12.setLabelString("PV Config: ");
+		deviceField12.setEditable(false);
 		JPanel3.add(deviceField12);
 		deviceField13.setNumCols(4);
 		deviceField13.setOffsetNid(18);
 		deviceField13.setLabelString("PV Window (s):");
+		deviceField13.setEditable(false);
 		JPanel3.add(deviceField13);
 		//$$ etchedBorder1.move(24,417);
 		deviceField16.setOffsetNid(21);

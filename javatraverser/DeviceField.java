@@ -75,6 +75,8 @@ public class DeviceField extends DeviceComponent
                     boolean state = checkB.isSelected();
                     if(label != null)
                         label.setEnabled(state);
+                    if(textF != null)
+                        textF.setEditable(state);
                 }
             });
         }
