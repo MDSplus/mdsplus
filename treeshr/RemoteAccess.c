@@ -295,7 +295,7 @@ int FindNodeRemote(PINO_DATABASE *dblist, char *path, int *outnid)
   struct descrip ans = empty_ans;
   int status;
   char *exp = malloc(strlen(path)+32);
-  sprintf(exp,"getnci(%s,'nid_number')",path);
+  sprintf(exp,"getnci(%s%s,'nid_number')",path[0] == '-' ? "." : "",path);
   status = MdsValue0(dblist->tree_info->channel,exp,&ans);
 
   free(exp);
