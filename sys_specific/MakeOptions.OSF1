@@ -12,3 +12,7 @@ SHARED_LIB = -so_archive
 MOTIF_LIBS = -lMrm -lXm
 X11_LIBS = -lXt -lX11
 RANLIB = ranlib $@
+D3LIBOPTIONS = -L/c/osf/lib -ld3 -lc -lfor
+FPREPROCESSOR = -P
+MATHFFLAGS = -g -I../include -Wl,-L../shlib -DBIT64
+MATHLDFLAGS = -lfor -lc -lm 
