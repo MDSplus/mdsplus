@@ -735,8 +735,8 @@ void mdsip_process_message(void *io_handle, mdsip_client_t *c, mdsip_message_t *
         int mode = mode_in & 0x3;
         int nowait = mode_in & 0x8;
         DESCRIPTOR_LONG(ans_d,0);
-#if defined (_WIN32)
         offset = *(_int64 *)&(message->h.dims[2]);
+#if defined (_WIN32)
         if (mode > 0)
           status = ( (LockFile((HANDLE)_get_osfhandle(fd), (int)offset, (int)(offset >> 32), size, 0) == 0) && 
                      (GetLastError() != ERROR_LOCK_VIOLATION) ) ? TreeFAILURE : TreeSUCCESS;
