@@ -30,7 +30,7 @@ class InfoServer implements Server
     {
         if(model_database != null)
         try {
-            model_database.close();
+            model_database.close(0);
         }catch(Exception exc) {System.out.println("Error opening " + tree + " shot " + shot);}
     }
     
@@ -52,20 +52,20 @@ class InfoServer implements Server
         }
         NidData[]nids = null;
         try {
-            nids = model_database.getWild(NodeInfo.USAGE_ACTION);
+            nids = model_database.getWild(NodeInfo.USAGE_ACTION, 0);
         }catch(Exception exc) {return null; } 
         if(nids == null) return null;
         int [] nid_array = new int[nids.length];
         for(int i = num_actions = 0; i < nids.length; i++)
         {
             try{
-                NodeInfo info = model_database.getInfo(nids[i]);
+                NodeInfo info = model_database.getInfo(nids[i], 0);
                 //check dispatch and task fields
-                ActionData action_data = (ActionData)model_database.getData(nids[i]);
+                ActionData action_data = (ActionData)model_database.getData(nids[i], 0);
                 if(action_data.getDispatch() == null || action_data.getTask() == null)
                     continue;
                 action = new Action(action_data, nids[i].getInt(), info.getName(), 
-                    model_database.isOn(nids[i]));
+                    model_database.isOn(nids[i], 0));
                 action_vect.addElement(action);
                 nid_array[num_actions] = nids[i].getInt();
                 action_table.put(new Integer(nids[i].getInt()), action_data);
@@ -103,7 +103,7 @@ class InfoServer implements Server
         {
             NidData nid = null;
             try {
-                nid = model_database.resolve((PathData)data);
+                nid = model_database.resolve((PathData)data, 0);
                 action_d = (ActionData)action_table.get(new Integer(nid.getInt()));
             }catch(Exception exc) {return data; }
             if(action_d == null)

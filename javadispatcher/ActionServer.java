@@ -105,7 +105,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                                 {
                                     if(enqueued_actions.size() > 0)
                                     {
-                                        while((action = (Action)enqueued_actions.elementAt(0)) != null)
+                                        while(enqueued_actions.size() > 0 && (action = (Action)enqueued_actions.elementAt(0)) != null)
                                         {
                                             processAborted(action);
                                             enqueued_actions.removeElementAt(0);
@@ -185,7 +185,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                     timer.start();
                 }
                 
-                
+              
                 break;
             case MdsServerEvent.SrvJobFINISHED :
                 timer.stop();

@@ -68,6 +68,7 @@ class MdsServer extends MdsConnection
 	                    //continue;
 	                    break;
 	                }
+	                
 	                String head = new String(header);
 	                StringTokenizer buf = new StringTokenizer(head, " \0");
  	                int id = 0;
@@ -228,7 +229,8 @@ class MdsServer extends MdsConnection
     public Descriptor sendMessage(int id, int op, boolean before_notify, Vector args, boolean wait) throws IOException
     {
         String cmd = new String("ServerQAction");
-        int flags = before_notify?SrvJobBEFORE_NOTIFY:0;
+        //int flags = before_notify?SrvJobBEFORE_NOTIFY:0;
+        int flags = before_notify?SrvJobBEFORE_NOTIFY:SrvJobAFTER_NOTIFY;
 
         if(args == null)
             args = new Vector();
