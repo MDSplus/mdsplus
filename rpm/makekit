@@ -4,7 +4,7 @@ cd $HOME
 set rev=1.1
 mkdir mdskit
 cd mdskit
-cvs -d :pserver:`whoami`@lost.pfc.mit.edu:/mdsplus/repos -Q checkout mdsplus
+cvs -d :pserver:`whoami`@lost.psfc.mit.edu:/mdsplus/repos -Q checkout mdsplus
 mv mdsplus mdsplus-$rev
 find . -name CVS -exec rm -Rf {} \;
 tar cf $HOME/rpm/SOURCES/mdsplus-$rev.tar mdsplus-$rev 
