@@ -519,7 +519,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 
     //Copy image to clipborad can be done only with
     //java release 1.4
-    if(AboutWindow.javaVersion.indexOf("1.4") != -1)
+//    if(AboutWindow.javaVersion.indexOf("1.4") != -1)
     {
         JMenuItem cb_copy = new JMenuItem("Copy to Clipboard");
         cb_copy.addActionListener(new ActionListener()

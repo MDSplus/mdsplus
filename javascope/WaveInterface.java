@@ -742,7 +742,7 @@ public class WaveInterface
 	        return 0;
 	    }
 
-	    if(shots != null)
+	    if(shots != null && shots.length > 0)
 	    {
 	        int i = 0;
 	        do
