@@ -28,7 +28,6 @@ dummy(TclRundownTree)
 dummy(TclDispatch_set_server)
 dummy(TclSetEvent)
 dummy(TclShowCurrent)
-/*dummy(TclShowData)		/*  */
 dummy(TclShowDB)
 dummy(TclDispatch_show_server)
 dummy(TclDispatch_start_server)
