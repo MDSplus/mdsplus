@@ -1,0 +1,25 @@
+gsmatch=lequal,1,0
+sybase_device:[sybase.lib]libsybdb.olb/lib
+symbol_vector=( DBBIND=procedure,-
+                DBCANCEL=procedure,-
+                DBCMD=procedure,-
+                DBCOLLEN=procedure,-
+                DBCOLNAME=procedure,-
+                DBCOLTYPE=procedure,-
+                DBCONVERT=procedure,-
+                DBDATA=procedure,-
+                DBDATLEN=procedure,-
+                DBDEAD=procedure,-
+                DBERRHANDLE=procedure,-
+                DBEXIT=procedure,-
+                DBINIT=procedure,-
+                DBLOGIN=procedure,-
+                DBLOGINFREE=procedure,-
+                DBMSGHANDLE=procedure,-
+                DBNEXTROW=procedure,-
+                DBNUMCOLS=procedure,-
+                DBOPEN=procedure,-
+                DBRESULTS=procedure,-
+                DBSETLNAME=procedure,-
+                DBSQLEXEC=procedure,-
+                DBUSE=procedure)

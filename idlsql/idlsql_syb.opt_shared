@@ -1,0 +1,7 @@
+objlib/INC=idlsql_syb
+objlib/LIB
+gsmatch=lequal,1,0
+sys$share:idltransfer/share
+universal=IDLSQL_DYNAMIC, IDLSQL_INTERACTIVE, IDLSQL_LOGIN, IDLSQL_LOGOUT, IDLSQL_SETDBTYPE
+multinet_socket_library/share
+sys$share:dblib.exe/share

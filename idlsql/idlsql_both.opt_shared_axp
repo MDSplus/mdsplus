@@ -1,0 +1,9 @@
+gsmatch=lequal,1,0
+objlib /inc=idlsql_both
+symbol_vector=(IDLSQL_DYNAMIC=procedure,-
+	       IDLSQL_INTERACTIVE=procedure, -
+	       IDLSQL_LOGIN=procedure, -
+	       IDLSQL_LOGOUT=procedure, -
+	       IDLSQL_SETDBTYPE=procedure -
+)
+sys$share:idltransfer.exe /share
