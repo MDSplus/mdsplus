@@ -11,12 +11,12 @@ setenv subtree_path $main_path/subtree
 #
 # Shared image path
 #
-setenv LD_LIBRARY_PATH $MDSPLUS/shlib
+setenv SHLIB_PATH $MDSPLUS/shlib
 #
 # UID path
 #
 setenv UIDPATH $MDSPLUS/uid/%U
 #
-# IDL path
+# Make Options
 #
-setenv IDL_PATH $MDSPLUS/idl
+setenv MAKE_OPTIONS $MDSPLUS/MakeOptions.`uname`

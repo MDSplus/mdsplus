@@ -1,7 +1,5 @@
-CFLAGS = -I../include -g
-SHARE_TYPE = so
-MAKE_DEPEND = cc $(CFLAGS) -M {} > .depend \;
-LD_OPTIONS = -shared -no_archive
+include $(MAKE_OPTIONS)
+include .depend
 
 OBJECTS = \
 	dummies.o \
@@ -29,5 +27,3 @@ depend : .depend
 
 .depend :
 	- find *.c -exec $(MAKE_DEPEND)
-
-include .depend
