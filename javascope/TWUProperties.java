@@ -16,6 +16,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2002/05/07 11:24:31  jgk
+ * Improvement to the Units() method.
+ *
  * Revision 1.5  2002/05/06 16:02:05  jgk
  * Suggested by  Marco van de Giessen <A.P.M.vandeGiessen@phys.uu.nl>:
  * - equalsIgnoreCase() is more generally useful than equals().
@@ -69,8 +72,10 @@ public class TWUProperties
 
             URLConnection con = signalURL.openConnection();
             con.setRequestProperty("User-Agent",actual_user_agent);
-        
-            if(con.getContentType().indexOf("text") >=0)
+            String mime_type = con.getContentType();
+
+            // Assume (like browsers) that missing mime-type indicates text/html.
+            if(mime_type==null || mime_type.indexOf("text") >=0)
             {
                 signalProps.load(con.getInputStream());
                 textRead = true;

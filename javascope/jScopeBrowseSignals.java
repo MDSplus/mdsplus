@@ -61,11 +61,17 @@ public abstract class jScopeBrowseSignals extends jScopeBrowseUrl
     protected void setPage(URL url) throws IOException
     {
         super.setPage(url);
-        if(prev_type == null || prev_type.equals(mime_type))
+
+        boolean equal
+            = (prev_type==null) ? (mime_type == null)
+                                : (mime_type != null  && prev_type.equals(mime_type));
+        if(equal)
           return;
 
         prev_type = mime_type;
-        if(mime_type.indexOf("text") != -1)
+
+        // Assume (like browsers) that missing mime-type indicates text/html.
+        if(mime_type==null || mime_type.indexOf("text") != -1)
         {
             add_sig.setText("Add signal");
             add_sig.setEnabled(true);
@@ -90,7 +96,7 @@ public abstract class jScopeBrowseSignals extends jScopeBrowseUrl
             String shot = (with_shot) ? getShot() : null;
             if(sig_path != null)
             {
-                boolean is_image = (mime_type.indexOf("image") != -1);
+                boolean is_image = (mime_type!=null && mime_type.indexOf("image") != -1);
                 wave_panel.AddSignal(getTree(), shot, "", sig_path, true, is_image);
             }
         }

@@ -114,7 +114,8 @@ public class jScopeBrowseUrl extends JDialog
         url_con = url.openConnection();
         mime_type = url_con.getContentType();
 
-        if(mime_type.indexOf("text") != -1)
+        // Assume (like browsers) that missing mime-type indicates text/html.
+        if(mime_type==null || mime_type.indexOf("text") != -1)
           html.setPage(url);
         else
         {

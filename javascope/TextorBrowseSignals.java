@@ -15,7 +15,9 @@ public class TextorBrowseSignals extends jScopeBrowseSignals
     protected String getSignal(String url_name)
     {
         String sig_path = null, curr_line;
-        boolean is_image = (mime_type.indexOf("image") != -1);
+
+        // Assume (like browsers) that missing mime-type indicates text/html.
+        boolean is_image = (mime_type!=null && mime_type.indexOf("image") != -1);
         
         try
         {
