@@ -50,13 +50,13 @@ pro Mds$SendArg,sock,n,idx,arg
   dtype = s(ndims + 1) 
   dtypes =  [0,2,7,8,10,11,12,14,0] 
   lengths = [0,1,2,4,4,8,8,1,0] 
+  length = lengths(dtype)
   dtype = dtypes(dtype) 
   if dtype eq 14 then begin
     length = strlen(arg)
     argByVal = 1b
     if !version.os eq 'windows' then argByVal = 0b
   endif else begin
-    length = lengths(dtype)
     argByVal = 0b
   endelse
   x = call_external(MdsIPImage(),MdsRoutinePrefix()+'SendArg',sock,idx,dtype,n,length,ndims,dims,arg,value=[1b,1b,1b,1b,1b,1b,0b,argByVal]) 
