@@ -57,10 +57,9 @@ the_rest : ../shlib/libXmdsShr.sl \
 	uil -wmd xmdsuil.wmd -o $@ $<
 
 ../shlib/libXmdsShr.sl : $(OBJECTS)
-	ld -o $@ -b $(OBJECTS) -lc -lm \
-          -L/usr/lib/X11R6 -L../shlib -lMdsShr -lTdiShr -lTreeShr \
+	ld -o $@ +s -b $(OBJECTS) -lc -lm \
+          -L/usr/lib/X11R6 -L/usr/lib/Motif1.2 -L../shlib -lMdsShr -lTdiShr -lTreeShr \
 	  -lXm -lXt -lX11
-	- rm so_locations
 
 xmdsuil.wmd : xmdsuil.wml wmldbcreate-xmdsshr.c
 	- rm -R wmltemp
