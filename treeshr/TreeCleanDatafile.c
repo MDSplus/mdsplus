@@ -1,3 +1,4 @@
+#include <STATICdef.h>
 #include <string.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -7,7 +8,7 @@
 extern void *DBID;
 
 
-static int RewriteDatafile(void **dbid, char *tree, int shot, int compress)
+STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compress)
 {
   int status;
   void *dbid1 = 0, *dbid2 = 0;
@@ -43,7 +44,7 @@ static int RewriteDatafile(void **dbid, char *tree, int shot, int compress)
               int i;
               for (i=0;i<info1->header->nodes;i++)
               {
-                static EMPTYXD(xd);
+                STATIC_CONSTANT EMPTYXD(xd);
                 NCI nci;
                 TreeGetNciW(info1, i, &nci);
                 TreePutNci(info2, i, &nci, 1);

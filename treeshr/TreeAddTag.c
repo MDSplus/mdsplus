@@ -27,6 +27,7 @@
 
 
 +-----------------------------------------------------------------------------*/
+#include <STATICdef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <mdsdescrip.h>
@@ -34,7 +35,7 @@
 #include "treeshrp.h"
 
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern void *DBID;
 

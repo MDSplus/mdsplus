@@ -1,4 +1,5 @@
 #include "mdsip.h"
+#include <STATICdef.h>
 int CloseSocket(SOCKET s);
 extern int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob);
 extern char ClientType(void);
@@ -50,7 +51,7 @@ struct handle_struct { globus_io_handle_t handle;
                      };
 static struct handle_struct iohandles[512];
 
-static void InitGlobus()
+STATIC_ROUTINE void InitGlobus()
 {
   static int initialized = 0;
   int i;
@@ -65,7 +66,7 @@ static void InitGlobus()
   }
 }
 
-static globus_io_handle_t *NewHandle(SOCKET *sock) 
+STATIC_ROUTINE globus_io_handle_t *NewHandle(SOCKET *sock) 
 {
   int i;
   InitGlobus();
@@ -82,12 +83,12 @@ static globus_io_handle_t *NewHandle(SOCKET *sock)
   return 0;
 }
 
-static globus_io_handle_t *GetHandle(SOCKET sock)
+STATIC_ROUTINE globus_io_handle_t *GetHandle(SOCKET sock)
 {
   return  ((sock < 512 && sock > 0 && iohandles[sock-1].in_use) ? &iohandles[sock-1].handle : (globus_io_handle_t *)0);
 }
 
-static void ReleaseHandle(SOCKET sock)
+STATIC_ROUTINE void ReleaseHandle(SOCKET sock)
 {
   if (sock < 512 && sock > 0 && iohandles[sock-1].in_use) iohandles[sock-1].in_use = 0;
 }
@@ -105,8 +106,8 @@ void RegisterRead(SOCKET sock){}
 
 
 void SetSocketOptions(SOCKET s, int reuse);
-static void (*AddClient)(SOCKET,void *,char *) = 0;
-static void (*DoMessage)(SOCKET) = 0;
+STATIC_ROUTINE void (*AddClient)(SOCKET,void *,char *) = 0;
+STATIC_ROUTINE void (*DoMessage)(SOCKET) = 0;
 
 #ifdef GLOBUS
 
@@ -213,7 +214,7 @@ void Poll(void (*DoMessage_in)(SOCKET s))
   while (1) globus_poll_blocking();
 }
 
-static globus_bool_t AuthenticationCallback(void *arg, globus_io_handle_t *handle, globus_result_t result, char *identity, gss_ctx_id_t *context_handle)
+STATIC_ROUTINE globus_bool_t AuthenticationCallback(void *arg, globus_io_handle_t *handle, globus_result_t result, char *identity, gss_ctx_id_t *context_handle)
 {
 /*
   printf("AuthenticationCallback from identity %s\n",identity);
@@ -229,7 +230,7 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
 {
   SOCKET s;
 #ifndef GLOBUS
-  static struct sockaddr_in sin;
+  struct sockaddr_in sin;
   int one=1;
   int status;
   AddClient = AddClient_in;
@@ -247,6 +248,7 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
   }
   FD_SET(s,&fdactive);
   SetSocketOptions(s,1);
+  memset(&sin,0,sizeof(sin));
   sin.sin_port = port;
   sin.sin_family = AF_INET;
   sin.sin_addr.s_addr = INADDR_ANY;
@@ -266,7 +268,7 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
   unsigned short netport = htons(port);
   globus_io_handle_t *handle = NewHandle(&s);
   globus_io_secure_authorization_data_t  auth_data;
-  static int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
+  STATIC_CONSTANT int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
   globus_result_t result;
   globus_io_attr_t attr;
   globus_io_tcpattr_init(&attr);
@@ -405,7 +407,7 @@ int SocketSend(SOCKET s, char *bptr, int num, int oob)
 void SetSocketOptions(SOCKET s, int reuse)
 {
 #ifndef GLOBUS
-  static int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
+  STATIC_CONSTANT int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
   int one = 1;
   int len;
   static int debug_winsize=0;
@@ -455,7 +457,7 @@ SOCKET MConnect(char *host, unsigned short port)
   SOCKET s;
   int status;
 #ifndef GLOBUS
-  static struct sockaddr_in sin;
+  struct sockaddr_in sin;
   struct hostent *hp = NULL;
   int addr;
 #ifndef HAVE_VXWORKS_H
@@ -539,7 +541,7 @@ SOCKET MConnect(char *host, unsigned short port)
   globus_io_handle_t *handle = NewHandle(&s);
   globus_result_t result;
   globus_io_secure_authorization_data_t  auth_data;
-  static int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
+  STATIC_CONSTANT int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
   globus_io_attr_t attr;
   globus_io_tcpattr_init(&attr);
   globus_io_attr_set_socket_rcvbuf(&attr,recvbuf);
@@ -594,7 +596,7 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
   MsgHdr header;
   Message *msg = 0;
   int msglen = 0;
-  static struct timeval timer = {10,0};
+  STATIC_CONSTANT struct timeval timer = {10,0};
 
   int tablesize = FD_SETSIZE;
 
@@ -806,7 +808,7 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
 {
   SOCKET s=-1;
 #ifndef GLOBUS
-  static struct sockaddr_in sin;
+  struct sockaddr_in sin;
   int n = sizeof(sin);
   int status = 1;
 #ifdef _VMS
@@ -828,7 +830,7 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
 #else
   globus_io_handle_t *handle = NewHandle(&s);
   globus_io_secure_authorization_data_t  auth_data;
-  static int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
+  STATIC_CONSTANT int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
   globus_io_attr_t attr;
   globus_result_t result = 0;
   int host[4];

@@ -1,3 +1,4 @@
+#include <STATICdef.h>
 #include <libroutines.h>
 #include <treeshr_hooks.h>
 #include <ncidef.h>
@@ -6,9 +7,9 @@
 
 int TreeCallHook(TreeshrHookType htype, TREE_INFO *info, int nid)
 {
-  static DESCRIPTOR(image,"TreeShrHooks");
-  static DESCRIPTOR(rtnname,"Notify");
-  static int (*Notify)(TreeshrHookType,char *, int,int) = 0;
+  STATIC_CONSTANT DESCRIPTOR(image,"TreeShrHooks");
+  STATIC_CONSTANT DESCRIPTOR(rtnname,"Notify");
+  STATIC_THREADSAFE int (*Notify)(TreeshrHookType,char *, int,int) = 0;
   int status = 1;
 #ifndef HAVE_VXWORKS_H
   if (Notify != (int (*)(TreeshrHookType,char *,int,int))-1)

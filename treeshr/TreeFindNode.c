@@ -1,10 +1,11 @@
+#include <STATICdef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strroutines.h>
 #include <treeshr.h>
 #include "treeshrp.h"
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern void *DBID;
 
@@ -13,17 +14,17 @@ extern void *DBID;
 #endif
 
 
-static int IsMember(NODE *node);
-static int Compare(char *string, int len, char *matchstring, int mlen);
-static int CompareWild(char *string, int len, char *matchstring, int mlen);
-static NODE *Pop(SEARCH_CONTEXT *search);
-static void Push(SEARCH_CONTEXT *search, NODE *node);
-static int Parse(SEARCH_CONTEXT *ctx, int wild);
-static void ParseAction(SEARCH_CONTEXT *ctx, char **tree, int *treelen, int tokencnt, char *tokenptr, SEARCH_TYPE param);
-static int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **node_in_out);
-static char *AbsPath(void *dbid, char *inpath, int nid_in);
-static char *Treename(PINO_DATABASE *dblist, int nidin);
-static int BsearchCompare(const void *this_one, const void *compare_one);
+STATIC_ROUTINE int IsMember(NODE *node);
+STATIC_ROUTINE int Compare(char *string, int len, char *matchstring, int mlen);
+STATIC_ROUTINE int CompareWild(char *string, int len, char *matchstring, int mlen);
+STATIC_ROUTINE NODE *Pop(SEARCH_CONTEXT *search);
+STATIC_ROUTINE void Push(SEARCH_CONTEXT *search, NODE *node);
+STATIC_ROUTINE int Parse(SEARCH_CONTEXT *ctx, int wild);
+STATIC_ROUTINE void ParseAction(SEARCH_CONTEXT *ctx, char **tree, int *treelen, int tokencnt, char *tokenptr, SEARCH_TYPE param);
+STATIC_ROUTINE int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **node_in_out);
+STATIC_ROUTINE char *AbsPath(void *dbid, char *inpath, int nid_in);
+STATIC_ROUTINE char *Treename(PINO_DATABASE *dblist, int nidin);
+STATIC_ROUTINE int BsearchCompare(const void *this_one, const void *compare_one);
 
 
 int TreeFindNode(char *path, int *outnid) { return _TreeFindNode(DBID,path,outnid); }
@@ -193,7 +194,7 @@ int _TreeFindNodeWild(void *dbid, char *path, int *nid_out, void **ctx_inout, in
   return status;
 }
 
-static int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **node_in_out)
+STATIC_ROUTINE int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **node_in_out)
 {
   int tagidx;
   NODE *node = *node_in_out;
@@ -338,7 +339,7 @@ static int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **n
   of nodes to be looked at.  When the Q
   is empty returns 0.
 ***************************************/
-static NODE *Pop(SEARCH_CONTEXT *search)
+STATIC_ROUTINE NODE *Pop(SEARCH_CONTEXT *search)
 {
   NODE *ans;
   NODELIST *ptr;
@@ -358,7 +359,7 @@ static NODE *Pop(SEARCH_CONTEXT *search)
      pushes a node onto the que of places that need 
    to be explored in the future of this *** search.
 *****************************************************/
-static void Push(SEARCH_CONTEXT *search, NODE *node)
+STATIC_ROUTINE void Push(SEARCH_CONTEXT *search, NODE *node)
 {
   NODELIST *node_list = malloc(sizeof(NODELIST));
   node_list->next = 0;
@@ -372,7 +373,7 @@ static void Push(SEARCH_CONTEXT *search, NODE *node)
   }
 }
 
-static int Compare(char *string, int len, char *matchstring, int mlen)
+STATIC_ROUTINE int Compare(char *string, int len, char *matchstring, int mlen)
 {
   int i;
   int match;
@@ -388,7 +389,7 @@ static int Compare(char *string, int len, char *matchstring, int mlen)
   return match;
 }
 
-static int CompareWild(char *string, int len, char *matchstring, int mlen)
+STATIC_ROUTINE int CompareWild(char *string, int len, char *matchstring, int mlen)
 {
   int i;
   int j;
@@ -415,7 +416,7 @@ static int CompareWild(char *string, int len, char *matchstring, int mlen)
   return match && j==slen;
 }
 
-static int IsMember(NODE *node)
+STATIC_ROUTINE int IsMember(NODE *node)
 {
   NODE *n = 0;
   if (node->parent)
@@ -423,7 +424,7 @@ static int IsMember(NODE *node)
   return n == node;
 }
 
-static int Parse(SEARCH_CONTEXT *ctx, int wild)
+STATIC_ROUTINE int Parse(SEARCH_CONTEXT *ctx, int wild)
 {
   int tokencnt;
   char *tokenptr;
@@ -827,7 +828,7 @@ path name check for the
   return status;
 }
 
-static void ParseAction(SEARCH_CONTEXT *ctx, char **tree, int *treelen, int tokencnt, char *tokenptr, SEARCH_TYPE param)
+STATIC_ROUTINE void ParseAction(SEARCH_CONTEXT *ctx, char **tree, int *treelen, int tokencnt, char *tokenptr, SEARCH_TYPE param)
 {
   switch (param)
   {
@@ -986,7 +987,7 @@ char *_TreeAbsPath(void *dbid, char *inpath)
   return answer;
 }
 
-static char *AbsPath(void *dbid, char *inpath, int nid_in)
+STATIC_ROUTINE char *AbsPath(void *dbid, char *inpath, int nid_in)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   SEARCH_CONTEXT ctx[MAX_SEARCH_LEVELS];
@@ -1066,7 +1067,7 @@ static char *AbsPath(void *dbid, char *inpath, int nid_in)
   return answer;
 }
 
-static char *Treename(PINO_DATABASE *dblist, int nid_in)
+STATIC_ROUTINE char *Treename(PINO_DATABASE *dblist, int nid_in)
 {
   TREE_INFO *info;
   NID nid = *(NID *)&nid_in;
@@ -1179,7 +1180,7 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tre
   return status;
 }
 
-static int BsearchCompare(const void *this_one, const void *compare_one)
+STATIC_ROUTINE int BsearchCompare(const void *this_one, const void *compare_one)
 {
   struct tag_search *tsearch = (struct tag_search *)this_one;
   unsigned char *tag = (tsearch->info->tag_info + swapint((char *)compare_one))->name;

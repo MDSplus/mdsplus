@@ -29,18 +29,19 @@ int TreeDeleteNodeInitialize(NID *nid,int *count,reset)
 
 
 ------------------------------------------------------------------------------*/
+#include <STATICdef.h>
 #include <string.h>
 #include <stdlib.h>
 #include <treeshr.h>
 #include "treeshrp.h"
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern void *DBID;
 
 static unsigned char *TREE_DELETE_LIST = 0;
 
-static void check_nid(PINO_DATABASE *dblist, NID *nid, int *count);
+STATIC_ROUTINE void check_nid(PINO_DATABASE *dblist, NID *nid, int *count);
 
 int TreeDeleteNodeGetNid(int *nid)
 {
@@ -100,17 +101,17 @@ int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset)
   return TreeNORMAL;
 }
 
-static int getbit(int bitnum)
+STATIC_ROUTINE int getbit(int bitnum)
 {
   return TREE_DELETE_LIST[bitnum/8] & (1 << (bitnum % 8));
 }
 
-static void setbit(int bitnum)
+STATIC_ROUTINE void setbit(int bitnum)
 {
   TREE_DELETE_LIST[bitnum/8] |= (1 << (bitnum % 8));
 }
 
-static void check_nid(PINO_DATABASE *dblist, NID *nid, int *count)
+STATIC_ROUTINE void check_nid(PINO_DATABASE *dblist, NID *nid, int *count)
 {
   int       bitnum = nid->node;
   if (!getbit(bitnum))

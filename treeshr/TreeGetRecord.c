@@ -25,7 +25,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 static int OpenDatafileR(TREE_INFO *info);
 static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree);
-static int GetDatafile(TREE_INFO *info_ptr, unsigned char *rfa, int *buffer_size, char *record, int *retsize,int *nodenum);
+static int GetDatafile(TREE_INFO *info_ptr, unsigned char *rfa, int *buffer_size, char *record, int *retsize,int *nodenum, unsigned char flags);
 
 int MdsSerializeDscIn(char *in, struct descriptor_xd *out_dsc_ptr);
 
@@ -121,10 +121,10 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 	      {
                 int length = nci.DATA_INFO.DATA_LOCATION.record_length;
                 char *data = malloc(length);
-		status = GetDatafile(info, nci.DATA_INFO.DATA_LOCATION.rfa,&length,data,&retsize,&nodenum);
+		status = GetDatafile(info, nci.DATA_INFO.DATA_LOCATION.rfa,&length,data,&retsize,&nodenum,nci.flags2);
                 if (!(status & 1))
                   status = TreeBADRECORD;
-		else if ((retsize != length) || (nodenum != nidx))
+		else if (!(nci.flags2 & NciM_NON_VMS) && ((retsize != length) || (nodenum != nidx)))
 		  status = TreeBADRECORD;
                 else
 	          status = (MdsSerializeDscIn(data,dsc) & 1) ? TreeNORMAL : TreeBADRECORD;
@@ -268,49 +268,88 @@ DATA_FILE *TreeGetVmDatafile()
   return datafile_ptr;
 }
 
-static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size, char *record, int *retsize,int *nodenum)
+static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size, char *record, int *retsize,int *nodenum,unsigned char flags)
 {
   int status = 1;
   int buffer_space = *buffer_size;
   int       first = 1;
   unsigned char rfa[6];
   char *bptr = (char *)record;
-
   *retsize = 0;
   memcpy(rfa,rfa_in,sizeof(rfa));
-  while ((rfa[0] || rfa[1] || rfa[2] || rfa[3] || rfa[4] || rfa[5]) && buffer_space && (status & 1))
+  if (!(flags & NciM_DATA_CONTIGUOUS))
   {
-    RECORD_HEADER hdr;
-    _int64 rfa_l = RfaToSeek(rfa);
-    status = TreeLockDatafile(info, 1, rfa_l);
-    if (status & 1)
+    while ((rfa[0] || rfa[1] || rfa[2] || rfa[3] || rfa[4] || rfa[5]) && buffer_space && (status & 1))
     {
-      _int64 offset = MDS_IO_LSEEK(info->data_file->get,rfa_l,SEEK_SET);
-      status = (MDS_IO_READ(info->data_file->get,(void *)&hdr,12) == 12) ? TreeSUCCESS : TreeFAILURE;
+      RECORD_HEADER hdr;
+      _int64 rfa_l = RfaToSeek(rfa);
+      status = TreeLockDatafile(info, 1, rfa_l);
       if (status & 1)
       {
-        unsigned int partlen = min(swapshort((char *)&hdr.rlength)-10, buffer_space);
-        int nidx = swapint((char *)&hdr.node_number);
-        if (first)
-          *nodenum = nidx;
-        else if (*nodenum != nidx)
-        {
-          status = 0;
-          break;
-        }
-        status = ((unsigned int)MDS_IO_READ(info->data_file->get,(void *)bptr,partlen) == partlen) ? TreeSUCCESS : TreeFAILURE;
-        if (status & 1)
-        {
-          bptr += partlen;
-          buffer_space -= partlen;
-	  *retsize = *retsize + partlen;
-          memcpy(rfa,&hdr.rfa,sizeof(rfa));
-        }
+	_int64 offset = MDS_IO_LSEEK(info->data_file->get,rfa_l,SEEK_SET);
+	status = (MDS_IO_READ(info->data_file->get,(void *)&hdr,12) == 12) ? TreeSUCCESS : TreeFAILURE;
+	if (status & 1)
+	{
+	  unsigned int partlen = min(swapshort((char *)&hdr.rlength)-10, buffer_space);
+	  int nidx = swapint((char *)&hdr.node_number);
+	  if (first)
+	    *nodenum = nidx;
+	  else if (*nodenum != nidx)
+	  {
+	    status = 0;
+	    break;
+	  }
+	  status = ((unsigned int)MDS_IO_READ(info->data_file->get,(void *)bptr,partlen) == partlen) ? TreeSUCCESS : TreeFAILURE;
+	  if (status & 1)
+	  {
+	    bptr += partlen;
+	    buffer_space -= partlen;
+	    *retsize = *retsize + partlen;
+	    memcpy(rfa,&hdr.rfa,sizeof(rfa));
+	  }
+	}
+	TreeUnLockDatafile(info, 1, rfa_l);
       }
-      TreeUnLockDatafile(info, 1, rfa_l);
+      else
+	status = TreeFAILURE;
+    }
+  }
+  else
+  {
+    if (flags & NciM_NON_VMS)
+    {
+      _int64 rfa_l = RfaToSeek(rfa);
+      status = TreeLockDatafile(info, 1, rfa_l);
+      MDS_IO_LSEEK(info->data_file->get,rfa_l,SEEK_SET);
+      status = (MDS_IO_READ(info->data_file->get,(void *)record,*buffer_size) == *buffer_size) ? TreeSUCCESS : TreeFAILURE;
+      *retsize = *buffer_size;
     }
     else
-      status = TreeFAILURE;
+    {
+      int       blen = *buffer_size + (*buffer_size + DATAF_C_MAX_RECORD_SIZE + 1)/(DATAF_C_MAX_RECORD_SIZE + 2)*sizeof(RECORD_HEADER);
+      char     *buffer = (char *)malloc(blen);
+      char     *bptr_in;
+      int      bytes_remaining;
+      int      partlen = (blen % (DATAF_C_MAX_RECORD_SIZE + 2 + sizeof(RECORD_HEADER)));
+      _int64 rfa_l = RfaToSeek(rfa);
+      rfa_l -= blen - (partlen ? partlen : (DATAF_C_MAX_RECORD_SIZE + 2 + sizeof(RECORD_HEADER)));
+      status = TreeLockDatafile(info, 1, rfa_l);
+      MDS_IO_LSEEK(info->data_file->get,rfa_l,SEEK_SET);
+      status = (MDS_IO_READ(info->data_file->get,(void *)buffer,blen) == blen) ? TreeSUCCESS : TreeFAILURE;
+      TreeUnLockDatafile(info, 1, rfa_l);
+      *nodenum = swapint((char *)&((RECORD_HEADER *)buffer)->node_number);
+      for (bptr_in = buffer, bptr = record + *buffer_size, bytes_remaining=*buffer_size; bytes_remaining;)
+      {
+        int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_remaining);
+        bptr_in += sizeof(RECORD_HEADER);
+        memcpy(bptr-bytes_this_time,bptr_in,bytes_this_time);
+        bptr_in += bytes_this_time;
+        bptr -= bytes_this_time;
+        bytes_remaining -= bytes_this_time;
+      }
+      free(buffer);
+      *retsize = *buffer_size;
+    }
   }
   return status;
 }

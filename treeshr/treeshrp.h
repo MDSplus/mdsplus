@@ -30,7 +30,10 @@
 #define   NciV_DATA_IN_ATT_BLOCK      0
 #define   NciM_ERROR_ON_PUT        0x02
 #define   NciV_ERROR_ON_PUT           1
-
+#define   NciM_DATA_CONTIGUOUS     0x04
+#define   NciV_DATA_CONTIGUOUS        2
+#define   NciM_NON_VMS             0x08
+#define   NciV_NON_VMS                3
 typedef struct nci
 {
   unsigned int  flags;

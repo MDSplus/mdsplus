@@ -1,11 +1,12 @@
 #include "mdsip.h"
+#include <STATICdef.h>
 extern int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, void **m);
 
 #if defined(__VMS) || defined(WIN32)
 #define BlockSig(arg)
 #define UnBlockSig(arg) 
 #else
-static int BlockSig(int sig_number)
+STATIC_ROUTINE int BlockSig(int sig_number)
 {
   sigset_t newsigset;
 #if defined(sun)
@@ -26,7 +27,7 @@ static int BlockSig(int sig_number)
   return sigprocmask(SIG_BLOCK, &newsigset, NULL);
 }
 
-static int UnBlockSig(int sig_number)
+STATIC_ROUTINE int UnBlockSig(int sig_number)
 {
   sigset_t newsigset;
   sigemptyset(&newsigset);
@@ -39,14 +40,14 @@ static int UnBlockSig(int sig_number)
 // Start of Mac Changes
 static short bGUSIInit = 0;
 
-static void BlockSig ( int ) {
+STATIC_ROUTINE void BlockSig ( int ) {
 	if ( !bGUSIInit ) {
 	//	GUSISetup ( GUSIwithInternetSockets );
 		GUSISetupConfig ();
 		bGUSIInit = 1;
 		}
 	}
-static void UnBlockSig ( int ) {}
+STATIC_ROUTINE void UnBlockSig ( int ) {}
 
 void main () {}
 
@@ -151,8 +152,8 @@ int MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL ter
   unsigned char nargs;
   unsigned char idx = 0;
   int status = 1;
-  static char *putexpprefix = "TreePut(";
-  static char *argplace = "$,";
+  STATIC_CONSTANT char *putexpprefix = "TreePut(";
+  STATIC_CONSTANT char *argplace = "$,";
   char *putexp;
   struct descrip putexparg;
   struct descrip exparg;
@@ -213,7 +214,7 @@ int  MdsOpen(SOCKET sock, char *tree, int shot)
   struct descrip treearg;
   struct descrip shotarg;
   struct descrip ansarg;
-  static char *expression = "TreeOpen($,$)";
+  STATIC_CONSTANT char *expression = "TreeOpen($,$)";
   int status = MdsValue(sock, expression, MakeDescrip((struct descrip *)&treearg,DTYPE_CSTRING,0,0,tree), 
 			      MakeDescrip((struct descrip *)&shotarg,DTYPE_LONG,0,0,&shot),
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
@@ -225,7 +226,7 @@ int  MdsOpen(SOCKET sock, char *tree, int shot)
 int  MdsClose(SOCKET sock)
 {
   struct descrip ansarg;
-  static char *expression = "TreeClose()";
+  STATIC_CONSTANT char *expression = "TreeClose()";
   int status = MdsValue(sock, expression, &ansarg, NULL);
   if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) status = *(int *)ansarg.ptr;
   if (ansarg.ptr) free(ansarg.ptr);
@@ -236,14 +237,14 @@ int  MdsSetDefault(SOCKET sock, char *node)
 {
   struct descrip nodearg;
   struct descrip ansarg;
-  static char *expression = "TreeSetDefault($)";
+  STATIC_CONSTANT char *expression = "TreeSetDefault($)";
   int status = MdsValue(sock, expression, MakeDescrip(&nodearg,DTYPE_CSTRING,0,0,node), &ansarg, NULL);
   if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) status = *(int *)ansarg.ptr;
   if (ansarg.ptr) free(ansarg.ptr);
   return status;
 }
 
-static int MdsLoginVMS(SOCKET sock, char *username, char *password)
+STATIC_ROUTINE int MdsLoginVMS(SOCKET sock, char *username, char *password)
 {
   struct descrip loginget_arg;
   struct descrip loginpwd_arg;

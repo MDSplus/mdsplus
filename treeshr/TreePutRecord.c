@@ -377,7 +377,91 @@ int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
   return status;
 }
 
+#ifdef BUFFERED_IO
+static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr)
+{
+  int       status = TreeNORMAL;
+  int       bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
+  int       blen = bytes_to_put + (bytes_to_put + DATAF_C_MAX_RECORD_SIZE + 1)/(DATAF_C_MAX_RECORD_SIZE + 2)*sizeof(RECORD_HEADER);
+  static    int nonvms_compatible=-1;
+  char      *buffer;
+  char      *bptr;
+  _int64 eof;
+  unsigned char rfa[6];
+  bitassign(1,nci_ptr->flags2,NciM_DATA_CONTIGUOUS);
+  if (nonvms_compatible == -1)
+    nonvms_compatible = getenv("NONVMS_COMPATIBLE") != NULL;
+  if (nonvms_compatible)
+  {
+    bitassign(1,nci_ptr->flags2,NciM_NON_VMS);
+    status = TreeLockDatafile(info, 0, 0);
+    eof = MDS_IO_LSEEK(info->data_file->put,0,SEEK_END);
+    buffer = (char *)data_dsc_ptr->pointer->pointer;
+    bptr = buffer + nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
+  }
+  else
+  {
+    buffer = (char *)malloc(blen);
+    bptr = buffer;
+    LoadInt(nodenum, (char *)&info->data_file->record_header->node_number);
+    bitassign(0,nci_ptr->flags2,NciM_NON_VMS);
+    memset(&info->data_file->record_header->rfa,0,sizeof(RFA));
+    while (bytes_to_put && (status & 1))
+    {
+      int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
+      _int64 eof;
+      unsigned short rlength = bytes_this_time + 10;
+      bytes_to_put -= bytes_this_time;
+      bptr += sizeof(RECORD_HEADER);
+      memcpy(bptr,(void *) (((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put), bytes_this_time);
+      bptr += bytes_this_time;
+    }
+    bptr = buffer;
+    status = TreeLockDatafile(info, 0, 0);
+    eof = MDS_IO_LSEEK(info->data_file->put,0,SEEK_END);
+    bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
+    while (bytes_to_put && (status & 1))
+    {
+      int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
+      unsigned short rlength = bytes_this_time + 10;
+      bytes_to_put -= bytes_this_time;
+      LoadShort(rlength,(char *)&info->data_file->record_header->rlength);
+      memcpy(bptr,(void *) info->data_file->record_header,sizeof(RECORD_HEADER));
+      bptr += sizeof(RECORD_HEADER);
+      bptr += bytes_this_time;
+      SeekToRfa(eof,rfa);
+      memcpy(&info->data_file->record_header->rfa,rfa,sizeof(info->data_file->record_header->rfa));
+      if (bytes_to_put)
+        eof += sizeof(RECORD_HEADER) + bytes_this_time;
+    }
+  }
+  if (status & 1)
+  {
+    status = (MDS_IO_WRITE(info->data_file->put,(void *) buffer,bptr - buffer) == (bptr - buffer))
+                    ? TreeNORMAL : TreeFAILURE;
+    if (status & 1)
+    {
+      bitassign(0,nci_ptr->flags2,NciM_ERROR_ON_PUT);
+      SeekToRfa(eof,rfa);
+      memcpy(nci_ptr->DATA_INFO.DATA_LOCATION.rfa,rfa,sizeof(nci_ptr->DATA_INFO.DATA_LOCATION.rfa));
+    }
+    else
+    {
+      bitassign(1,nci_ptr->flags2,NciM_ERROR_ON_PUT);
+      nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;
+      nci_ptr->length = 0;
+    }
+    TreePutNci(info, nodenum, nci_ptr, 1);
+    TreeUnLockDatafile(info, 0, 0);
+  }
+  else
+    TreeUnLockNci(info, 0, nodenum);
+  if (!nonvms_compatible)
+    free(buffer);
+  return status;
+}
 
+#else
 static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr)
 {
   int       status = TreeNORMAL;
@@ -429,6 +513,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
   }
   return status;
 }
+#endif
 
 static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr)
 {
@@ -471,7 +556,6 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
  }
   return status;
 }
-
 /*-----------------------------------------------------------------
 	Recursively compact all descriptors and adjust pointers.
 	NIDs converted to PATHs for TREE$COPY_TO_RECORD.

@@ -28,6 +28,7 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 
 
 ------------------------------------------------------------------------------*/
+#include <STATICdef.h>
 #include <ncidef.h>
 #include "treeshrp.h"
 #include <mdsdescrip.h>
@@ -37,7 +38,7 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 #include <strroutines.h>
 #include <mds_stdarg.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define  count(num) va_start(incrmtr, method_ptr); \
                      for (num=2; (num < 256) && (va_arg(incrmtr, struct descriptor *) != MdsEND_ARG);  num++)
@@ -137,11 +138,11 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     {
       /**** Try tdi fun ***/
       struct descriptor exp = {0, DTYPE_T, CLASS_D, 0};
-      static DESCRIPTOR(open,"(");
-      static DESCRIPTOR(close,"$)");
-      static DESCRIPTOR(arg,"$,");
-      static DESCRIPTOR(tdishr,"TdiShr");
-      static DESCRIPTOR(tdiexecute,"TdiExecute");
+      STATIC_CONSTANT DESCRIPTOR(open,"(");
+      STATIC_CONSTANT DESCRIPTOR(close,"$)");
+      STATIC_CONSTANT DESCRIPTOR(arg,"$,");
+      STATIC_CONSTANT DESCRIPTOR(tdishr,"TdiShr");
+      STATIC_CONSTANT DESCRIPTOR(tdiexecute,"TdiExecute");
       StrCopyDx(&exp, &method);
       StrAppend(&exp,&open);
       for (i=1;i<nargs-1;i++) StrAppend(&exp,&arg);
