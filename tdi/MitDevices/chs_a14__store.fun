@@ -30,7 +30,7 @@ public fun chs_a14__store(as_is _nid, optional _method)
   _pts = 0;
   /*
   _addr         = 0x10500000;
-  _status = MdsVme->VmePioRead("/dev/vmp0",val(_addr),val(_mode),val(4),ref(_pts));
+  _status = MdsVme->PioRead("/dev/vmp0",val(_addr),val(_mode),val(4),ref(_pts));
   */
   /**********************************
    Get the ADC ranges
@@ -38,7 +38,7 @@ public fun chs_a14__store(as_is _nid, optional _method)
   _range = 0;
   /*
   _addr         = 0x10500000;
-  _status = MdsVme->VmePioRead("/dev/vmp0",val(_addr),val(_mode),val(4),ref(_range));
+  _status = MdsVme->PioRead("/dev/vmp0",val(_addr),val(_mode),val(4),ref(_range));
   */
   _sr_mode = (_sr >> 8) & 0x7;
   if (_debug) write(*,"_sr_mode=",_sr_mode);
@@ -111,7 +111,7 @@ public fun chs_a14__store(as_is _nid, optional _method)
         _addr =  0x10700000 + (_dignum-1) * (6 * 0x40000) + _chan * 0x40000 + _start_addr + _lbound;
         _samples_read = 0;
         _data = zero(_samples,0w);
-        _status = MdsVme->VmePioRead("/dev/vmp0",val(_addr),val(_mode),val(_samples * 2),ref(_data));
+        _status = MdsVme->PioRead("/dev/vmp0",val(_addr),val(_mode),val(_samples * 2),ref(_data));
         _data = set_range(_lbound : _ubound,_data & 4095uw);
         if (_is_special_dimension)
           _dim_str = _special_dim_name;
