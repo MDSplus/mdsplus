@@ -77,6 +77,12 @@ write(*, '----> ', _events);
 	        _status = DIO2->DIO2_TH_SetTimingHighway(val(_handle), val(byte(0)), val(byte(1)));
 		_clock_source = byte(_DIO2_CLOCK_SOURCE_INTERNAL);
 	}
+
+	for(_c = 0; _c < 16; _c++)
+	{
+		_status = DIO2->DIO2_IO_SetIOConnectionInput(val(_handle), val(byte(_c + 1)),
+			val(byte(_DIO2_IO_CONNECTION_SIDE_FRONT)), val(byte(_DIO2_IO_CONNECTION_TERMINATION_OFF)));
+	}
 		
 	for(_c = 0; _c < 16; _c++)
 	{
@@ -92,6 +98,7 @@ write(*, '----> ', _events);
 
 		if(_events[_c] != 0)
 		{
+write(*, 'Setting event ', _events[_c]);
 			_status = DIO2->DIO2_EC_SetEventEncoder(val(_handle), val(byte(_c + 1)), 
 				val(byte(_events[_c])), val(byte(_DIO2_EC_RISING_EDGE)), 
 				val(byte(_DIO2_EC_SOURCE_FRONT_REAR)), val(byte(_c + 1)));

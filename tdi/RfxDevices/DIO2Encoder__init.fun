@@ -17,8 +17,6 @@ public fun DIO2Encoder__init(as_is _nid, optional _method)
     private _INVALID = 10E20;
 
 
-	write(*, 'DIO2Encoder_init');
-
     _board_id=if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
 
     if(_board_id == _INVALID)
@@ -27,8 +25,6 @@ public fun DIO2Encoder__init(as_is _nid, optional _method)
  		abort();
     }
 
-
-	write(*, _board_id);
 
     DevNodeCvt(_nid, _N_SW_MODE, ['LOCAL', 'REMOTE'], [0,1], _remote = 0);
 	if(_remote != 0)
@@ -49,7 +45,6 @@ public fun DIO2Encoder__init(as_is _nid, optional _method)
 	_events = [];
     for(_c = 0; _c < 17; _c++)
     {
-write(*, '***', _c);
 
         if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 +(_c *  _K_NODES_PER_CHANNEL))))
         { 
