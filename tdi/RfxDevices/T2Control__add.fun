@@ -3,7 +3,7 @@ public fun T2Control__add(in _path, out _nidout)
 
 write(*,'T2Control__add'); 
 
-    DevAddStart(_path, 'T2Control', 147, _nidout);
+    DevAddStart(_path, 'T2Control', 167, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -42,22 +42,42 @@ write(*,'T2Control__add');
     DevAddNode(_path // ':PAR11_VAL', 'NUMERIC', 0., *, _nid);
     DevAddNode(_path // ':PAR12_NAME', 'TEXT', "K5", *, _nid);
     DevAddNode(_path // ':PAR12_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR13_NAME', 'TEXT', "K6", *, _nid);
+    DevAddNode(_path // ':PAR13_NAME', 'TEXT', "PertIdx1", *, _nid);
     DevAddNode(_path // ':PAR13_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR14_NAME', 'TEXT', "K7", *, _nid);
+    DevAddNode(_path // ':PAR14_NAME', 'TEXT', "PertAmp1", *, _nid);
     DevAddNode(_path // ':PAR14_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR15_NAME', 'TEXT', "K8", *, _nid);
+    DevAddNode(_path // ':PAR15_NAME', 'TEXT', "PertOmega1", *, _nid);
     DevAddNode(_path // ':PAR15_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR16_NAME', 'TEXT', "K9", *, _nid);
+    DevAddNode(_path // ':PAR16_NAME', 'TEXT', "PertPhi1", *, _nid);
     DevAddNode(_path // ':PAR16_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR17_NAME', 'TEXT', "K10", *, _nid);
+    DevAddNode(_path // ':PAR17_NAME', 'TEXT', "PertIdx2", *, _nid);
     DevAddNode(_path // ':PAR17_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR18_NAME', 'TEXT', "K11", *, _nid);
+    DevAddNode(_path // ':PAR18_NAME', 'TEXT', "PertAmp2", *, _nid);
     DevAddNode(_path // ':PAR18_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR19_NAME', 'TEXT', "K12", *, _nid);
+    DevAddNode(_path // ':PAR19_NAME', 'TEXT', "PertOmega2", *, _nid);
     DevAddNode(_path // ':PAR19_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR20_NAME', 'TEXT', "K13", *, _nid);
+    DevAddNode(_path // ':PAR20_NAME', 'TEXT', "PertPhi2", *, _nid);
     DevAddNode(_path // ':PAR20_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR21_NAME', 'TEXT', "PertIdx3", *, _nid);
+    DevAddNode(_path // ':PAR21_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR22_NAME', 'TEXT', "PertAmp3", *, _nid);
+    DevAddNode(_path // ':PAR22_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR23_NAME', 'TEXT', "PertOmega3", *, _nid);
+    DevAddNode(_path // ':PAR23_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR24_NAME', 'TEXT', "PertPhi3", *, _nid);
+    DevAddNode(_path // ':PAR24_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR25_NAME', 'TEXT', "PertIdx4", *, _nid);
+    DevAddNode(_path // ':PAR25_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR26_NAME', 'TEXT', "PertAmp4", *, _nid);
+    DevAddNode(_path // ':PAR26_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR27_NAME', 'TEXT', "PertOmega4", *, _nid);
+    DevAddNode(_path // ':PAR27_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR28_NAME', 'TEXT', "PertPhi4", *, _nid);
+    DevAddNode(_path // ':PAR28_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR29_NAME', 'TEXT', "xx", *, _nid);
+    DevAddNode(_path // ':PAR29_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR30_NAME', 'TEXT', "yy", *, _nid);
+    DevAddNode(_path // ':PAR30_VAL', 'NUMERIC', 0., *, _nid);
 
     for (_c = 1; _c <=9; _c++)
     {

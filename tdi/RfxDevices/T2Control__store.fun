@@ -14,8 +14,8 @@ public fun T2Control__store(as_is _nid, optional _method)
     private _N_PAR1_NAME = 11;
     private _N_PAR1_VALUE = 12; 
 
-	private _N_INPUT_1 = 51;
-	private _N_OUTPUT_1 = 115;
+	private _N_INPUT_1 = 71;
+	private _N_OUTPUT_1 = 135;
 
 write(*, 'T2Control store');
 
