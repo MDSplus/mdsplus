@@ -100,7 +100,7 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIPSHR.C */
 #include "mdsip.h"
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#define x_UNIX_SERVER
+#define UNIX_SERVER
 
 static unsigned char message_id = 1;
 Message *GetMdsMsg(SOCKET sock, int *status);
@@ -578,6 +578,16 @@ static SOCKET ConnectToPort(char *host, char *service)
 
   
   hp = gethostbyname(host);
+#ifdef _WIN32
+  if ((hp == NULL) && (WSAGetLastError() == WSANOTINITIALISED))
+  {
+	  WSADATA wsaData;
+	  WORD wVersionRequested;
+	  wVersionRequested = MAKEWORD(1,1);
+	  WSAStartup(wVersionRequested,&wsaData);
+	  hp = gethostbyname(host);
+  }
+#endif
   if (hp == NULL)
   {
     printf("Error: %s unknown\n",host);
@@ -589,11 +599,9 @@ static SOCKET ConnectToPort(char *host, char *service)
   if (sp == NULL)
   {
     char *port = getenv(service);
-    if (port != NULL)
-    {
-      sp = malloc(sizeof(*sp));
-      sp->s_port = htons((short)atoi(port));
-    }
+	port = (port == NULL) ? "8000" : port;
+    sp = malloc(sizeof(*sp));
+    sp->s_port = htons((short)atoi(port));
   }
   if (sp == NULL || sp->s_port == 0)
   {

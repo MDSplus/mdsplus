@@ -25,3 +25,5 @@ Idlmemcpy
 IdlSendArg
 MakeDescrip
 MakeDescripWithLength
+SendMdsMsg
+GetMdsMsg

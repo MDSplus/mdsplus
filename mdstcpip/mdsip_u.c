@@ -1,6 +1,8 @@
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <treeshr.h>
+#include <strroutines.h>
+#include <libroutines.h>
 #include "../tdishr/cvtdef.h"
 #undef DTYPE_FLOAT
 #undef DTYPE_DOUBLE
@@ -24,7 +26,7 @@ typedef ARRAY_COEFF(char,7) ARRAY_7;
 typedef struct _context { void *tree;
                         } Context;
 
-typedef struct _client { int sock;
+typedef struct _client { SOCKET sock;
                          Context context;
                          unsigned char message_id;
                          int client_type;
@@ -44,6 +46,8 @@ extern int TdiRestoreContext();
 extern int TdiExecute();
 extern int TdiData();
 extern int TdiDebug();
+extern int TdiResetPublic();
+extern int TdiResetPrivate();
 
 static int ConnectToInet();
 static int CreateMdsPort(char *service, int multi);
@@ -68,11 +72,16 @@ static int two = 2;
 int main(int argc, char **argv)
 {
   static struct sockaddr_in sin;
-  int status;
   int sock;
   int shut = 0;
   int tablesize = FD_SETSIZE;
   fd_set readfds;
+#ifdef _WIN32
+  WSADATA wsaData;
+  WORD wVersionRequested;
+  wVersionRequested = MAKEWORD(1,1);
+  WSAStartup(wVersionRequested,&wsaData);
+#endif
   multi = argc > 2;  
   FD_ZERO(&fdactive);
   if (multi)
@@ -92,8 +101,8 @@ int main(int argc, char **argv)
     }
     else
     {
-      Client *c;
-      for (c=ClientList; c; c=c->next)
+      Client *c,*next;
+      for (c=ClientList,next=c ? c->next : 0; c; c=next,next=c ? c->next : 0)
         if (FD_ISSET(c->sock, &readfds))
           DoMessage(c);
     }
@@ -132,7 +141,11 @@ static int CheckClient(char *host_c, char *user_c)
 {
   FILE *f;
   int ok = 0;
+#if defined(_WIN32)
+  f = fopen("C:\\mdsip.hosts","r");
+#else
   f = fopen("/etc/mdsip.hosts","r");
+#endif
   if (f)
   {
     static char line_c[256];
@@ -210,7 +223,6 @@ static void AddClient(int sock,struct sockaddr_in *sin)
 {
   if (sock > 0)
   {
-    struct descriptor *match;
     static Message m;
     Message *m_user;
     char *timestr;
@@ -230,7 +242,6 @@ static void AddClient(int sock,struct sockaddr_in *sin)
       user = malloc(m_user->h.length + 1);
       memcpy(user,m_user->bytes,m_user->h.length);
       user[m_user->h.length] = 0;
-      free(m_user);
     }
     user_p = user ? user : "?";
     tim = time(0);
@@ -299,7 +310,7 @@ static void RemoveClient(Client *c)
   MdsEventList *e,*nexte;
   FD_CLR(c->sock,&fdactive);
   shutdown(c->sock,2);
-  close(c->sock);
+  closesocket(c->sock);
   FreeDescriptors(c);
   for (e=c->event; e; e=nexte)
   {
@@ -319,8 +330,8 @@ static void RemoveClient(Client *c)
     c->context.tree = TreeSwitchDbid(old_context);
     TdiSaveContext(tdi_context);
     TdiRestoreContext(c->tdicontext);
-    TdiResetPublic();
-    TdiResetPrivate();
+    TdiResetPublic(MdsEND_ARG);
+    TdiResetPrivate(MdsEND_ARG);
     TdiRestoreContext(tdi_context);
   }
   for (p=0,nc=ClientList; nc && nc!=c; p=nc,nc=nc->next);
@@ -436,9 +447,9 @@ static void ProcessMessage(Client *c, Message *message)
           switch (d->dtype)
           {
             case DTYPE_F:
-            case DTYPE_FC: ConvertFloat(num, CvtIEEE_S, message->h.length, message->bytes, 
+            case DTYPE_FC: ConvertFloat(num, CvtIEEE_S, (char)message->h.length, message->bytes, 
                                                   CvtVAX_F, sizeof(float), d->pointer); break;
-            case DTYPE_D: ConvertFloat(num, CvtIEEE_T, message->h.length, message->bytes, 
+            case DTYPE_D: ConvertFloat(num, CvtIEEE_T, (char)message->h.length, message->bytes, 
                                                   CvtVAX_D, sizeof(double), d->pointer); break;
             default: memcpy(d->pointer,message->bytes,dbytes); break;
           }
@@ -450,18 +461,18 @@ static void ProcessMessage(Client *c, Message *message)
             case DTYPE_ULONG: ConvertBinary(num, 0, message->h.length, message->bytes, d->length, d->pointer); break;
             case DTYPE_SHORT:
             case DTYPE_LONG:  ConvertBinary(num, 1, message->h.length, message->bytes, d->length, d->pointer); break;
-            case DTYPE_F: ConvertFloat(num, CvtCRAY, message->h.length, message->bytes, 
-                                                  CvtVAX_F, d->length, d->pointer); break;
-            case DTYPE_FC: ConvertFloat(num * 2, CvtCRAY, message->h.length/2, message->bytes, 
-                                                  CvtVAX_F, d->length/2, d->pointer); break;
-            case DTYPE_D: ConvertFloat(num, CvtCRAY, message->h.length, message->bytes, 
+            case DTYPE_F: ConvertFloat(num, CvtCRAY, (char)message->h.length, message->bytes, 
+                                                  CvtVAX_F, (char)d->length, d->pointer); break;
+            case DTYPE_FC: ConvertFloat(num * 2, CvtCRAY, (char)(message->h.length/2), message->bytes, 
+                                                  CvtVAX_F, (char)(d->length/2), d->pointer); break;
+            case DTYPE_D: ConvertFloat(num, CvtCRAY, (char)message->h.length, message->bytes, 
                                                   CvtVAX_D, sizeof(double), d->pointer); break;
             default: memcpy(d->pointer,message->bytes,dbytes); break;
           }
           break;
         default:
          if((d->dtype == DTYPE_D) && (CType(c->client_type) == VMSG_CLIENT))
-          ConvertFloat(num, CvtVAX_G, message->h.length, message->bytes, 
+          ConvertFloat(num, CvtVAX_G, (char)message->h.length, message->bytes, 
                             CvtVAX_D, sizeof(double), d->pointer);
          else
 	 memcpy(d->pointer,message->bytes,dbytes);
@@ -477,7 +488,6 @@ static void ProcessMessage(Client *c, Message *message)
       }
     }
   }
-  free(message);
 }
 
 static void ClientEventAst(MdsEventList *e)
@@ -604,6 +614,7 @@ static void ExecuteMessage(Client *c)
   {
     void  *old_context;
     void *tdi_context[6];
+	EMPTYXD(ans);
     old_context = TreeSwitchDbid(c->context.tree);
     TdiSaveContext(tdi_context);
     TdiRestoreContext(c->tdicontext);
@@ -611,10 +622,11 @@ static void ExecuteMessage(Client *c)
     c->descrip[c->nargs++] = MdsEND_ARG;
     ResetErrors();
     status = LibCallg(&c->nargs, TdiExecute);
-    if (status & 1) status = TdiData(xd,xd MDS_END_ARG);
-    if (!(status & 1)) GetErrorText(status,xd);
-    SendResponse(c,status,xd->pointer);
+    if (status & 1) status = TdiData(xd,&ans MDS_END_ARG);
+    if (!(status & 1)) GetErrorText(status,&ans);
+    SendResponse(c,status,ans.pointer);
     MdsFree1Dx(xd,NULL);
+	MdsFree1Dx(&ans,NULL);
     TdiSaveContext(c->tdicontext);
     TdiRestoreContext(tdi_context);
     c->context.tree = TreeSwitchDbid(old_context);
@@ -625,7 +637,6 @@ static void ExecuteMessage(Client *c)
 static void SendResponse(Client *c, int status, struct descriptor *d)
 {
   static Message *m = 0;
-  int retstatus;
   int flag = 0;
   int nbytes = (d->class == CLASS_S) ? d->length : ((ARRAY_7 *)d)->arsize;
   int num = nbytes/max(1,d->length);
@@ -647,7 +658,7 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
   else
   {
     int i;
-    ARRAY_7 *a = (ARRAY_7 *)d;
+    array_coeff *a = (array_coeff *)d;
     m->h.ndims = a->dimct;
     if (a->aflags.coeff)
       for (i=0;i<m->h.ndims && i<7;i++)
@@ -663,14 +674,14 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
     case JAVA_CLIENT:
       switch (d->dtype)
       {
-        case DTYPE_F:  ConvertFloat(num, CvtVAX_F, d->length, d->pointer, 
-                                               CvtIEEE_S, m->h.length, m->bytes); break;
-        case DTYPE_FC: ConvertFloat(num * 2, CvtVAX_F, d->length/2, d->pointer, 
-                                               CvtIEEE_S, m->h.length/2, m->bytes); break;
-        case DTYPE_D: ConvertFloat(num, CvtVAX_D, d->length, d->pointer, 
-                                              CvtIEEE_T, m->h.length, m->bytes); break;
-        case DTYPE_G: ConvertFloat(num, CvtVAX_G, d->length, d->pointer, 
-                                              CvtIEEE_T, m->h.length, m->bytes); m->h.dtype = DTYPE_D; break;
+        case DTYPE_F:  ConvertFloat(num, CvtVAX_F, (char)d->length, d->pointer, 
+                                               CvtIEEE_S, (char)m->h.length, m->bytes); break;
+        case DTYPE_FC: ConvertFloat(num * 2, CvtVAX_F, (char)(d->length/2), d->pointer, 
+                                               CvtIEEE_S, (char)(m->h.length/2), m->bytes); break;
+        case DTYPE_D: ConvertFloat(num, CvtVAX_D, (char)d->length, d->pointer, 
+                                              CvtIEEE_T, (char)m->h.length, m->bytes); break;
+        case DTYPE_G: ConvertFloat(num, CvtVAX_G, (char)d->length, d->pointer, 
+                                              CvtIEEE_T, (char)m->h.length, m->bytes); m->h.dtype = DTYPE_D; break;
         default: memcpy(m->bytes,d->pointer,nbytes); break;
       }
       break;
@@ -680,15 +691,15 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
         case DTYPE_USHORT:
         case DTYPE_ULONG: ConvertBinary(num, 0, d->length, d->pointer, m->h.length, m->bytes); break;
         case DTYPE_SHORT:
-        case DTYPE_LONG:  ConvertBinary(num, 1, d->length, d->pointer, m->h.length, m->bytes); break;
-        case DTYPE_F: ConvertFloat(num, CvtVAX_F, d->length, d->pointer,
-                                            CvtCRAY, m->h.length, m->bytes); break;
-        case DTYPE_FC: ConvertFloat(num * 2, CvtVAX_F, d->length/2, d->pointer, 
-                                                  CvtCRAY, m->h.length/2, m->bytes); break;
+        case DTYPE_LONG:  ConvertBinary(num, 1, (char)d->length, d->pointer, (char)m->h.length, m->bytes); break;
+        case DTYPE_F: ConvertFloat(num, CvtVAX_F, (char)d->length, d->pointer,
+                                            CvtCRAY, (char)m->h.length, m->bytes); break;
+        case DTYPE_FC: ConvertFloat(num * 2, CvtVAX_F, (char)(d->length/2), d->pointer, 
+                                                  CvtCRAY, (char)(m->h.length/2), m->bytes); break;
         case DTYPE_D: ConvertFloat(num, CvtVAX_D, sizeof(double), d->pointer, 
-                                              CvtCRAY, m->h.length, m->bytes); break;
+                                              CvtCRAY, (char)m->h.length, m->bytes); break;
         case DTYPE_G: ConvertFloat(num, CvtVAX_G, sizeof(double), d->pointer, 
-                                              CvtCRAY, m->h.length, m->bytes); m->h.dtype = DTYPE_D; break;
+                                              CvtCRAY, (char)m->h.length, m->bytes); m->h.dtype = DTYPE_D; break;
         default: memcpy(m->bytes,d->pointer,nbytes); break;
       }
       break;
@@ -696,11 +707,11 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
       switch (d->dtype)
       {
         case DTYPE_FS: ConvertFloat(num, CvtIEEE_S, sizeof(float), d->pointer, 
-                                              CvtVAX_F, m->h.length, m->bytes); break;
+                                              CvtVAX_F, (char)m->h.length, m->bytes); break;
         case DTYPE_D: ConvertFloat(num, CvtVAX_D, sizeof(double), d->pointer, 
-                                              CvtVAX_G, m->h.length, m->bytes); break;
+                                              CvtVAX_G, (char)m->h.length, m->bytes); break;
         case DTYPE_FT: ConvertFloat(num, CvtIEEE_T, sizeof(double), d->pointer, 
-                                              CvtVAX_G, m->h.length, m->bytes); m->h.dtype = DTYPE_D; break;
+                                              CvtVAX_G, (char)m->h.length, m->bytes); m->h.dtype = DTYPE_D; break;
         default: memcpy(m->bytes,d->pointer,nbytes); break;
       }
       break;
@@ -708,11 +719,11 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
       switch (d->dtype)
       {
         case DTYPE_FS: ConvertFloat(num, CvtIEEE_S, sizeof(float), d->pointer, 
-                                              CvtVAX_F, m->h.length, m->bytes); break;
+                                              CvtVAX_F, (char)m->h.length, m->bytes); break;
         case DTYPE_G: ConvertFloat(num, CvtVAX_G, sizeof(double), d->pointer, 
-                                              CvtVAX_D, m->h.length, m->bytes); break;
+                                              CvtVAX_D, (char)m->h.length, m->bytes); break;
         case DTYPE_FT: ConvertFloat(num, CvtIEEE_T, sizeof(double), d->pointer, 
-                                              CvtVAX_D, m->h.length, m->bytes); m->h.dtype = DTYPE_D; break;
+                                              CvtVAX_D, (char)m->h.length, m->bytes); m->h.dtype = DTYPE_D; break;
         default: memcpy(m->bytes,d->pointer,nbytes); break;
       }
       break;
@@ -814,7 +825,6 @@ void GetErrorText(int status, struct descriptor_xd *xd)
     {
 	message.length = strlen(message.pointer);
         MdsCopyDxXd(&message,xd);
-        free(message.pointer);
     }
     else
       MdsCopyDxXd((struct descriptor *)&unknown,xd);

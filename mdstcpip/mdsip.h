@@ -70,6 +70,7 @@
 #if defined(_WIN32)
 #include <windows.h>
 #include <io.h>
+#include <winsock.h>
 #else
 #define INVALID_SOCKET -1
 #include <sys/time.h>
