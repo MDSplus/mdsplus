@@ -289,13 +289,14 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, unsigned int *time
   char *time_str;
   char time_out[23];
   unsigned short slen=sizeof(time_out);
+  tzset();
   if (time_in)
   {
     unsigned int tmp = (time_in[0] >> 24) | (time_in[1] << 8);
-    bintim = (time_t)((double)tmp * 1.6777216 - 3.5067168e+09); 
+    bintim = (time_t)((double)tmp * 1.6777216 - 3.5067168e+09) + timezone; 
   }
   else
-    bintim = time(0);
+    bintim = time(0) + timezone;
   time_str = ctime(&bintim);
   time_out[0]  = time_str[8];
   time_out[1]  = time_str[9];
