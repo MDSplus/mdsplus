@@ -17,37 +17,41 @@ public class DeviceTable extends DeviceComponent
     boolean initializing = false;
     boolean editable = true;
     boolean displayRowNumber = false;
-    
-            
+
+
     protected JScrollPane scroll;
     protected JTable table;
     protected JLabel label;
     protected String items[] = new String[9];
-    
-    
-    
+
+
+
   /*  public void setPreferredWidth(int preferredWidth)
     {
         this.preferredWidth = preferredWidth;
     }
-    
+
     public int getPreferredWidth(){ return preferredWidth;}
     public void setPreferredHeight(int preferredHeight)
     {
         this.preferredHeight = preferredHeight;
         redisplay();
     }
-    
+
     public int getPreferredHeight(){return preferredHeight;}
 */    public void setNumRows(int numRows)
     {
         this.numRows = numRows;
         items = new String[numRows * numCols];
+        if(numRows > 3)
+          table.setPreferredScrollableViewportSize(new Dimension(200, 70));
+        else
+          table.setPreferredScrollableViewportSize(new Dimension(200, numRows* table.getRowHeight()));
         redisplay();
     }
     public int getNumRows(){ return numRows; }
 
-    public void setNumCols(int numCols) 
+    public void setNumCols(int numCols)
     {
         this.numCols = numCols;
         table.setPreferredScrollableViewportSize(new Dimension(50 * numCols, 70));
@@ -60,32 +64,32 @@ public class DeviceTable extends DeviceComponent
         this.columnNames = columnNames;
         redisplay();
     }
-    
+
     public String [] getColumnNames() {return columnNames; }
-    
+
     public void setLabelString(String labelString)
     {
         this.labelString = labelString;
         redisplay();
     }
-    
+
     public String getLabelString() {return labelString;}
-    
+
     public void setEditable(boolean state) {editable = state;}
     public boolean getEditable() {return editable;}
-    
+
     public void setDisplayRowNumber(boolean displayRowNumber)
     {
         this.displayRowNumber = displayRowNumber;
     }
-    
+
     public boolean getDisplayRowNumber()
     {
         return displayRowNumber;
     }
-    
-    
-    
+
+
+
     public DeviceTable()
     {
         initializing = true;
@@ -111,7 +115,7 @@ public class DeviceTable extends DeviceComponent
             items[idx++] = st.nextToken();
         label.setText(labelString);
         table.setModel(new AbstractTableModel() {
-            public int getColumnCount() 
+            public int getColumnCount()
             {
                 if(displayRowNumber)
                     return numCols + 1;
@@ -123,7 +127,7 @@ public class DeviceTable extends DeviceComponent
             {
                 if(displayRowNumber)
                 {
-                    if(idx == 0) 
+                    if(idx == 0)
                         return "";
                     else
                         return columnNames[idx - 1];
@@ -131,7 +135,7 @@ public class DeviceTable extends DeviceComponent
                 else
                     return columnNames[idx];
             }
-            
+
             public Object getValueAt(int row, int col)
             {
                 if(displayRowNumber)
@@ -152,15 +156,15 @@ public class DeviceTable extends DeviceComponent
                     }catch(Exception exc) {return null; }
                 }
             }
-            public boolean isCellEditable(int row, int col) 
+            public boolean isCellEditable(int row, int col)
             {
                 if(displayRowNumber && col == 0)
                     return false;
                 else
                     return editable;
             }
-                    
-            public void setValueAt(Object value, int row, int col) 
+
+            public void setValueAt(Object value, int row, int col)
             {
                 if(displayRowNumber)
                     items[row * numCols + col - 1] = (String)value;
@@ -172,8 +176,8 @@ public class DeviceTable extends DeviceComponent
         initializing = false;
     }
 
-    
-    
+
+
     public void displayData(Data data, boolean is_on)
     {
         state = is_on;
@@ -186,7 +190,7 @@ public class DeviceTable extends DeviceComponent
         redisplay();
     }
     public boolean getState(){return state; }
-        
+
     public Data getData()
     {
         int n_data = items.length;
@@ -198,7 +202,7 @@ public class DeviceTable extends DeviceComponent
                 dataString += "]";
                 break;
             }
-               
+
             if(i % numCols == 0)
                 dataString += "[";
             dataString += items[i];
@@ -220,29 +224,29 @@ public class DeviceTable extends DeviceComponent
     {
         if(!initializing)
         {
-		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Field. Please remove the component.", 
+		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Field. Please remove the component.",
 		        "Error adding Device field", JOptionPane.WARNING_MESSAGE);
             return null;
         }
         return super.add(c);
     }
-        
+
     public Component add(String name, Component c)
     {
         if(!initializing)
         {
-		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Field. Please remove the component.", 
+		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Field. Please remove the component.",
 		        "Error adding Device field", JOptionPane.WARNING_MESSAGE);
             return null;
         }
         return super.add(c);
     }
-        
+
     public Component add(Component c, int intex)
     {
         if(!initializing)
         {
-		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Field. Please remove the component.", 
+		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Field. Please remove the component.",
 		        "Error adding Device field", JOptionPane.WARNING_MESSAGE);
             return null;
         }
@@ -251,4 +255,4 @@ public class DeviceTable extends DeviceComponent
 
 
 }
-    
+
