@@ -190,7 +190,7 @@ static void PutData(hid_t obj, int nid, char dtype, int htype, int size, int n_d
     if (is_attr)
       H5Aread ( obj, htype, (void *)mem);
     else
-      printf("H5Dread: obj = %p, htype = %d, status = %d\n",obj,htype,H5Dread ( obj, htype, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)mem));
+      H5Dread ( obj, htype, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)mem);
     if (n_dims > 0)
       PutArray(nid, dtype, size, n_dims, dims, mem);
     else
