@@ -1004,7 +1004,7 @@ fi
 LD=ld
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib -I\$(top_srcdir)/include +DA1.1 +DS1.1 +z";
-       FFLAGS="$FFLAGS +z +U77 +E1 -K +DA1.1 +DS1.1 -I\$(top_srcdir)/include"; 
+       FFLAGS="$FFLAGS +z +es +U +DA1.1 +DS1.1 -I\$(top_srcdir)/include"; 
        LDSHARE="-Wl,-a shared_archive";
        LDARC="-Wl,-a archive";
        LINKSHARED="-b";
