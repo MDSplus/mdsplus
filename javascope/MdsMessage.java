@@ -244,15 +244,15 @@ class MdsMessage extends Object
         {
             for(int i = 0, j = idx; i < Descriptor.MAX_DIM; i++, j += 4)
             {
-            dims[i]  = ByteToIntSwap(header_b, j);
+                dims[i]  = ByteToIntSwap(header_b, j);
             }
         } else {
-            for(int i = 0, j = idx; i < Descriptor.MAX_DIM; i++, idx += 4)
+            for(int i = 0, j = idx; i < Descriptor.MAX_DIM; i++, j += 4)
             {
-            dims[i]  = ByteToInt(header_b, j);
+                dims[i]  = ByteToInt(header_b, j);
             }
         }
-        
+                
         if(msglen > HEADER_SIZE)
         {
             if(compressed)

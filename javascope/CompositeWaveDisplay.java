@@ -234,6 +234,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         String global_autentication, signal_autentication, autentication, param;
 
         global_autentication = getParameter("AUTENTICATION");
+        
         param = getParameter("PRINT_SCALING");
         if(param != null)
         {

@@ -4,7 +4,7 @@ import java.awt.*;
 import java.util.Vector;
 
 
-class MdsConnection
+public class MdsConnection
 {
     static public int    DEFAULT_PORT = 8000;
     static public String DEFAULT_USER = "JAVA_USER";

@@ -39,7 +39,6 @@ public class MdsAccess implements DataAccess
         String content = st1.nextToken();
         content = st1.nextToken("");
         content = content.substring(2);
-        System.out.println("Content "+content);
         StringTokenizer st2 = new StringTokenizer(content, "/");
         if(st2.countTokens() < 4) //ip addr/exp/shot/signal
             return null;
@@ -47,7 +46,6 @@ public class MdsAccess implements DataAccess
         if(addr == null) return null;
         if(ip_addr == null || !ip_addr.equals(addr))
         {
-            System.out.println("creo NetworkProvider");
             np = new NetworkProvider(addr);
             ip_addr = addr;
         }

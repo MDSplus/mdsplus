@@ -50,7 +50,6 @@
                         try {
                             curr_url--;
  			                html.setPage((URL)url_list.elementAt(curr_url));
- 			                
  			            } catch (IOException ioe) { 
  			                System.out.println("IOE: " + ioe); 
  			            } 
@@ -184,15 +183,6 @@
  			            try { 
  			                URL u = e.getURL();
  			                html.setPage(u);
- 			                /*
- 			                try
- 			                {
- 			                    while(true)
- 			                    {
- 	                                url_list.removeElementAt(curr_url + 1);
- 	                            }
- 			                } catch(Exception exc){}
- 			                */
  			                int sz = url_list.size();
  			                for(int i = curr_url + 1; i < sz; i++)
  			                    url_list.removeElementAt(curr_url + 1);

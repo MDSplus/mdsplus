@@ -13,7 +13,6 @@ public class WaveDisplay extends JApplet implements WaveformListener
 
     public WaveDisplay()
     {
-        System.out.println("Costruttore");
         DataAccessURL.addProtocol(new RdaAccess());
         DataAccessURL.addProtocol(new MdsAccess());
         DataAccessURL.addProtocol(new TwuAccess());
@@ -98,7 +97,6 @@ public class WaveDisplay extends JApplet implements WaveformListener
 
     public void init()
     {
-        System.out.println("Init");
     }
 
     public void start() {
@@ -140,13 +138,24 @@ public class WaveDisplay extends JApplet implements WaveformListener
         String url = null, color, marker, name, title;
         String sig_param;
         String  param;
+        String global_autentication, signal_autentication, 
+               autentication;
 
+        global_autentication = getParameter("AUTENTICATION");
         try 
         {
             if((sig_param = getParameter("SIGNAL")) != null)
             {
+                
+                signal_autentication = getParameterValue(sig_param, "autentication");
+                if(signal_autentication != null)
+                   autentication = signal_autentication;
+                else
+                   autentication = global_autentication;
+                
                 url = getParameterValue(sig_param, "url");
-                Signal s = DataAccessURL.getSignal(url);
+                
+                Signal s = DataAccessURL.getSignal(url, autentication);
                 if(s != null)
                 {
                     color = getParameterValue(sig_param, "color");

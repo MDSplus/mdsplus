@@ -30,7 +30,7 @@ class JetDataProvider implements DataProvider
     private String url_source = "http://data.jet.uk/";
 
     private boolean use_cache = false;
-    private SignalCache sc = new SignalCache();
+    private SignalCache sc = null;
     private   Vector    connection_listener = new Vector();
 
     JTextField user_text; 
@@ -68,7 +68,16 @@ class JetDataProvider implements DataProvider
     public boolean useCompression(){return false;}
 
     public boolean supportsCache(){return true;}
-    public void    enableCache(boolean state){use_cache = state;}
+    public void    enableCache(boolean state)
+    {
+        if(state)
+        {
+            if(sc == null)
+                sc = new SignalCache();
+        } else
+            sc = null;
+        use_cache = state;
+    }
     public boolean isCacheEnabled(){return use_cache;}
     public void    freeCache(){sc.freeCache();}
 
@@ -455,13 +464,13 @@ class JetDataProvider implements DataProvider
 
 public static void main(String args[])
 {
-    System.out.println("\nStart readout PPF/40000/MAGN/IPLA");
+    System.out.println("\nStart readout PPF/40573/MAGN/IPLA");
     JetDataProvider dp = new JetDataProvider("obarana", "clublatino");
     dp.setEvaluateUrl(true);
     float x[], y[], xdata[];
-    y = dp.GetFloatArray("PPF/40000/MAGN/BPOL");
-    x = dp.GetFloatArray("TIME:PPF/40000/MAGN/BPOL");
-    xdata = dp.GetFloatArray("X:PPF/40000/MAGN/BPOL");
+    y = dp.GetFloatArray("PPF/40573/MAGN/BPOL");
+    x = dp.GetFloatArray("TIME:PPF/40573/MAGN/BPOL");
+    xdata = dp.GetFloatArray("X:PPF/40573/MAGN/BPOL");
 
     for(int i = 0; i < x.length; i++)
         System.out.println(x[i] + "  " +y[i]);
