@@ -223,7 +223,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField9.setNumCols(5);
     deviceField9.setIdentifier("sys_duration");
     deviceField9.setBounds(new Rectangle(465, 105, 168, 30));
-    deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)5});
+    deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)4});
     deviceChoice1.setChoiceFloatValues(null);
     deviceChoice1.setConvert(true);
     deviceChoice1.setOffsetNid(6);
@@ -232,7 +232,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice1.setUpdateIdentifier("");
     deviceChoice1.setIdentifier("");
     deviceChoice1.setBounds(new Rectangle(2, 138, 225, 35));
-    deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)5});
+    deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)4});
     deviceChoice2.setChoiceFloatValues(null);
     deviceChoice2.setConvert(true);
     deviceChoice2.setOffsetNid(7);
@@ -241,7 +241,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
     deviceChoice2.setBounds(new Rectangle(229, 139, 246, 35));
-    deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)5});
+    deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)4});
     deviceChoice3.setChoiceFloatValues(null);
     deviceChoice3.setConvert(true);
     deviceChoice3.setOffsetNid(8);
