@@ -225,14 +225,12 @@ struct keyword  *findKeywordByIdx(	/* Returns: addr of struct	*/
 	 * findParamByIdx:
 	 * getParamByIdx:
 	 ****************************************************************/
-struct paramClause  *findParamByIdx(	/* Return: addr of paramClause	*/
-    struct verblist  *v		/* <r> verb struct		*/
-   ,int   paramIdx			/* <r> parameter idx		*/
-   )
+struct paramClause  *findParamByIdx(struct verblist  *v,int   paramIdx)
    {
     int   i;
     struct parameterChain  *pc;
-
+    if (v==0) 
+        return(0);
     if (paramIdx < 1)
         return(0);
 
