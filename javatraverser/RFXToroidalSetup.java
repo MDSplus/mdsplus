@@ -251,7 +251,7 @@ public class RFXToroidalSetup extends DeviceSetup {
     this.getContentPane().add(deviceField1, BorderLayout.NORTH);
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
-    jTabbedPane1.add(jPanel1,   "Setup");
+    jTabbedPane1.add(jPanel1,    "TC Send");
     jPanel1.add(jPanel5, BorderLayout.NORTH);
     jPanel5.add(jPanel6, null);
     jPanel6.add(deviceChoice2, null);
@@ -267,7 +267,7 @@ public class RFXToroidalSetup extends DeviceSetup {
     jScrollPane2.getViewport().add(deviceTable1, null);
     jPanel4.add(jScrollPane1, null);
     jScrollPane1.getViewport().add(deviceTable2, null);
-    jTabbedPane1.add(jPanel10,  "Config");
+    jTabbedPane1.add(jPanel10,   "TC Receive");
     jPanel10.add(jPanel11, null);
     jPanel11.add(jPanel13,  BorderLayout.NORTH);
     jPanel13.add(deviceField3, null);
