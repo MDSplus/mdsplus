@@ -60,7 +60,6 @@ extern int MDSprintf( char *fmt , ... );
 extern int MDSfprintf( FILE *fp , char *fmt , ... );
 #endif
 
-
 	/*****************************************************************
 	 * getFacility:
 	 *****************************************************************/
@@ -77,81 +76,75 @@ static int   getFacility(	/* Return: num entries in stsText[]	*/
     if (facility == MDSDCL_FACILITY)
        {
         *stsText = mdsdcl_stsText;	/* point to array		*/
-        *facilityText = "MDSDCL_FACILITY";
+        *facilityText = "MDSDCL";
         max = sizeof(mdsdcl_stsText)/sizeof(mdsdcl_stsText[0]);
        }
     else if (facility == CLI_FACILITY)
        {
         *stsText = cli_stsText;		/* point to array		*/
-        *facilityText = "CLI_FACILITY";
+        *facilityText = "CLI";
         max = sizeof(cli_stsText)/sizeof(cli_stsText[0]);
        }
     else if (facility == CCL_FACILITY)
        {
         *stsText = ccl_stsText;		/* point to array		*/
-        *facilityText = "CCL_FACILITY";
+        *facilityText = "CCL";
         max = sizeof(ccl_stsText)/sizeof(ccl_stsText[0]);
        }
 #ifndef HAVE_VXWORKS_H
     else if (facility == SERVERSHR_FACILITY)
        {
         *stsText = servershr_stsText;		/* point to array		*/
-        *facilityText = "SERVERSHR_FACILITY";
+        *facilityText = "SERVER";
         max = sizeof(servershr_stsText)/sizeof(servershr_stsText[0]);
        }
 #endif
     else if (facility == TDI_FACILITY)
        {
         *stsText = tdi_stsText;		/* point to array		*/
-        *facilityText = "TDI_FACILITY";
+        *facilityText = "TDI";
         max = sizeof(tdi_stsText)/sizeof(tdi_stsText[0]);
        }
     else if (facility == TCL_FACILITY)
        {
         *stsText = tcl_stsText;		/* point to array		*/
-        *facilityText = "TCL_FACILITY";
+        *facilityText = "TCL";
         max = sizeof(tcl_stsText)/sizeof(tcl_stsText[0]);
        }
     else if (facility == TREESHR_FACILITY)
        {
         *stsText = treeshr_stsText;	/* point to array		*/
-        *facilityText = "TREESHR_FACILITY";
+        *facilityText = "TREE";
         max = sizeof(treeshr_stsText)/sizeof(treeshr_stsText[0]);
        }
     else if (facility == LIB_FACILITY)
        {
         *stsText = librtl_stsText;	/* point to array		*/
-        *facilityText = "LIB_FACILITY";
+        *facilityText = "LIB";
         max = sizeof(librtl_stsText)/sizeof(librtl_stsText[0]);
        }
     else if (facility == STRMDS_FACILITY)
        {
         *stsText = strMds_stsText;	/* point to array		*/
-        *facilityText = "STRMDS_FACILITY";
+        *facilityText = "STRMDS";
         max = sizeof(strMds_stsText)/sizeof(strMds_stsText[0]);
        }
     else if (facility == CAM_FACILITY)
        {
         *stsText = camshr_stsText;      /* point to array               */
-        *facilityText = "CAM_FACILITY";
+        *facilityText = "CAM";
         max = sizeof(camshr_stsText)/sizeof(camshr_stsText[0]);
        }
     else if (facility == SS_FACILITY)
        {
         *stsText = ss_stsText;	/* point to array		*/
-        *facilityText = "SS_FACILITY";
+        *facilityText = "SS";
         max = sizeof(ss_stsText)/sizeof(ss_stsText[0]);
        }
     else
-       {
-        *stsText = 0;
-        *facilityText = "???";
-        max = 0;
-       }
-
-    return(max);
+      max = 0;
+    return max;
    }
-
 	/*****************************************************************
 	 * MdsGetMsg:
 	 *****************************************************************/
@@ -159,31 +152,55 @@ char  *MdsGetMsg(	/* Return: addr of "status" string	*/
     int   sts			/* <r> sts value			*/
    )
    {
-    int   i;
-    int   max;
-    char  *facilityText;
-    struct stsText  *stsText;
-    static char  text[72];
-    static DESCRIPTOR(dsc_text,text);
+     static DESCRIPTOR(msg_files,"MDSMSG_PATH:*Msg.*");
+     static DESCRIPTOR(getmsg_nam,"getmsg");
+     struct descriptor_d filnam = {0, DTYPE_T, CLASS_D, 0};
+     int   i;
+     char  *facnam, *msgnam, *msgtext;
+     int status = 0;
+     void *ctx = 0;
+     const static char *severity[] = {"W","S","E","I","F","?","?","?"};
+     static char text[512];
+     int (*getmsg)(int,char **,char **,char **);
+     int   max;
+     char  *facilityText;
+     struct stsText  *stsText;
 
-    max = getFacility(sts,&facilityText,&stsText);
-
-    for (i=0 ; i<max ; i++)
+     if (sts == 1)
+     {
+       strcat(text,"%SS-S-SUCCESS, Success");
+       return text;
+     }
+     max = getFacility(sts,&facnam,&stsText);
+     if (max > 0)
+     {
+       for (i=0 ; i<max ; i++)
        {
-        if (sts == stsText[i].stsL_num)
-          {
-           str_copy_dx(&dsc_text,stsText[i].stsA_name);
-           if (mdsmsgFlag & 1)
-              {		/* if longer messages ...		*/
-               str_append(&dsc_text," : ");
-               str_append(&dsc_text,stsText[i].stsA_text);
-              }
-           return(text);
-          }
+         if ((sts & 0xfffffff8) == (stsText[i].stsL_num & 0xfffffff8))
+         {
+           char *ptr;
+           sprintf(text,"%%%s-%s-%s, %s",facnam,severity[sts&0x7],stsText[i].stsA_name,stsText[i].stsA_text);
+           break;
+         }
        }
-
-    sprintf(text,"%s %s : %08X",facilityText,(sts&1)?"Success":"Error",sts);
-    return(text);
+       if (i == max)
+         sprintf(text,"%%%s-%s-NOMSG, Message number 0x%08x",facnam,severity[sts&0x7],sts);
+       status = 1;
+     }
+     while (!(status & 1) && (LibFindFile(&msg_files,&filnam,&ctx)&1))
+     {
+       status = LibFindImageSymbol(&filnam,&getmsg_nam,&getmsg);
+       if (status & 1)
+       {
+         status = (*getmsg)(sts,&facnam,&msgnam,&msgtext);
+         if (status & 1)
+           sprintf(text,"%%%s-%s-%s, %s",facnam,severity[sts&0x7],msgnam,msgtext);
+       }
+     }
+     LibFindFileEnd(&ctx);
+     if (!(status & 1))
+       sprintf(text,"%%%NONAME-%s-NOMSG, Message number 0x%08X",severity[sts&0x7],sts);
+     return text;
    }
 
 
