@@ -416,9 +416,10 @@ STATIC_ROUTINE char *DetailProc(int full)
   char *msg = 0;
   unsigned int msglen;
   ActionInfo *actions = table->actions;
+  int num = table->num;
   for (doing = 1; doing > (full ? -1 : 0); doing--)
   {
-    for (i=first_s;i<last_s;i++)
+    for (i=0;i<num;i++)
     {
       if (actions[i].dispatched && !actions[i].done && ((int)actions[i].doing == doing))
       {
