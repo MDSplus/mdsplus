@@ -1,6 +1,5 @@
 public fun DEQUSetup__add(in _path, out _nidout)
 {
-    write(*, _path);
     DevAddStart(_path, 'DEQUSetup', 25, _nidout);
     
     DevAddNode(_path // '.TRCF_ACQ', 'STRUCTURE', *, *, _nid);
