@@ -1225,7 +1225,13 @@ static CVT_STATUS pack_vax_d(UNPACKED_REAL  intermediate_value,
       memcpy(output_value, &intermediate_value[1], 8);
     }
   }
-
+#ifdef WORDS_BIGENDIAN
+  { CVT_VAX_D temp;
+    memcpy(temp,output_value,8);
+    memcpy(output_value,&((char *)temp)[4],4);
+    memcpy(&((char *)output_value)[4],temp,4);
+  } 
+#endif
   /*	  
   ** Exit the routine.
   ** ==========================================================================
@@ -1425,6 +1431,13 @@ static CVT_STATUS pack_vax_g(UNPACKED_REAL  intermediate_value,
     }
   }
 
+#ifdef WORDS_BIGENDIAN
+  { CVT_VAX_G temp;
+    memcpy(temp,output_value,8);
+    memcpy(output_value,&((char *)temp)[4],4);
+    memcpy(&((char *)output_value)[4],temp,4);
+  } 
+#endif
   /*	  
   ** Exit the routine.
   ** ==========================================================================
@@ -3699,8 +3712,12 @@ static void unpack_vax_d(CVT_VAX_D      input_value,
   ** Initialization.
   ** ==========================================================================
   */	  
+#ifdef WORDS_BIGENDIAN
+  memcpy(&output_value[1], &((char *)input_value)[4],4);
+  memcpy(&output_value[2], input_value,4);
+#else
   memcpy(&output_value[1], input_value, 8);
-
+#endif
   /*	  
   ** Initialize FLAGS and perhaps set NEGATIVE bit.
   ** ==========================================================================
@@ -3829,7 +3846,12 @@ static void unpack_vax_g(CVT_VAX_G      input_value,
   ** Initialization.
   ** ==========================================================================
   */	  
+#ifdef WORDS_BIGENDIAN
+  memcpy(&output_value[1], &((char *)input_value)[4],4);
+  memcpy(&output_value[2], input_value,4);
+#else
   memcpy(&output_value[1], input_value, 8);
+#endif
 
   /*	  
   ** Initialize FLAGS and perhaps set NEGATIVE bit.
