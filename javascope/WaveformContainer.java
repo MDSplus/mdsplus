@@ -792,7 +792,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 
         if(pageIndex == 0)
         {
-            System.out.println("Inizio Stampa");
+            // System.out.println("Inizio Stampa");
 
     //fix page margin error on jdk 1.2.X
             if(ver.indexOf("1.2") != -1)
@@ -817,7 +817,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
                          (int)height, 
                          (int)width
                      ); 
-            System.out.println("Fine Stampa");
+          //  System.out.println("Fine Stampa");
             
             return Printable.PAGE_EXISTS;
         } else
@@ -902,7 +902,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
             curr_width = (int)(width * ((RowColumnLayout)getLayout()).getPercentWidth(i) + 0.9);
 	        for(j = pos = 0, py = st_y; j < rows[i]; j++)
 	        {	        
-	            System.out.println("Print Wave col "+i+" row "+j);
+	            //System.out.println("Print Wave col "+i+" row "+j);
 	            curr_height = (int)(height * ((RowColumnLayout)getLayout()).getPercentHeight(k) + 0.9);
 	            g.translate(0, py);
 	            if(j == rows[i] - 1 && pos + curr_height != height)
