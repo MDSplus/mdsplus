@@ -42,6 +42,8 @@ and the MDSplus X applications will not build or run using LessTif package.
 
 To build on a system with LessTif installed do the following:
 
+
+setenv LD_LIBRARY_PATH [motif-lib-directory]\:$LD_LIBRARY_PATH
 setenv UILPATH [motif-bin-directory-where-uil-image-is]
 ./configure --x-libraries=[motif-library-directory] --x-includes=[motif-include-directory]
 
