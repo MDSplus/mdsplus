@@ -1102,12 +1102,12 @@ static void ProcessMessage(Client *c, Message *message)
         fd_d.pointer = (char *)&fd;
         if (O_CREAT == 0x0200) /* BSD */
 	{
-          if (mode & 0100)
-            mode = (mode & ~0100) | O_CREAT;
-          if (mode & 0200)
-            mode = (mode & ~0200) | O_EXCL;
-          if (mode & 01000)
-            mode = (mode & ~01000) | O_TRUNC;
+          if (fopts & 0100)
+            fopts = (fopts & ~0100) | O_CREAT;
+          if (fopts & 0200)
+            fopts = (fopts & ~0200) | O_EXCL;
+          if (fopts & 01000)
+            fopts = (fopts & ~01000) | O_TRUNC;
         }
         fd = open(filename,fopts | O_BINARY | O_RANDOM,mode);
         if (fd == -1)
