@@ -1,4 +1,4 @@
-CFLAGS = +z -Ae -Wl,+s -I../include -g 
+CFLAGS = +z -Ae -Wl,+s -I../include -g +DA1.1 +DS1.1
 MOTIF_CFLAGS = +z -Ae -I../include -I/usr/include/X11R6 -g -D_NO_DXm
 SHARE_TYPE = sl
 MAKE_DEPEND = cc $(CFLAGS) -P -Wp,-M {} 2> .depend \; ; rm *.i

@@ -74,4 +74,8 @@ extern int32   PASCAL MdsSetDefault(SOCKET sock, char *node);
 extern int32   PASCAL MdsClose(SOCKET sock);
 extern int32   PASCAL MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int32 *eventid);
 extern int32   PASCAL MdsEventCan(SOCKET sock, int32 eventid);
+
+extern int32 MdsValueFtotSize (struct descrip *dataarg);
+extern int32 PASCAL MdsValueF(SOCKET sock, char *expression, double *data, int32 maxsize, int32 *retsize);
+
 #endif
