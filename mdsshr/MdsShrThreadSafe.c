@@ -11,13 +11,15 @@ STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
 STATIC_ROUTINE void buffer_key_alloc();
 
 #ifdef HAVE_WINDOWS_H
-STATIC_THREADSAFE int dwTlsIndex;
+STATIC_THREADSAFE int dwTlsIndex = -1;
 
 void pthread_once(pthread_once_t *one_time,void (*key_alloc)())
 {
   if (*one_time == PTHREAD_ONCE_INIT)
   {
-      *one_time = dwTlsIndex = TlsAlloc(); 
+    if (dwTlsIndex == -1)
+      dwTlsIndex = TlsAlloc();
+    *one_time = dwTlsIndex; 
   }
 }
 
