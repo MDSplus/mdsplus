@@ -96,7 +96,7 @@ depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean:
-	- rm *.c
+	- rm *.o
 	- rm @MAKELIBDIR@libTdiShr.*
 
 install:
