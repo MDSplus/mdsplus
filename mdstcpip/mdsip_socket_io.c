@@ -524,11 +524,14 @@ SOCKET Connect(char *host, unsigned short port)
   globus_io_attr_set_socket_rcvbuf(&attr,recvbuf);
   globus_io_attr_set_socket_sndbuf(&attr,sendbuf);
   globus_io_attr_set_tcp_nodelay(&attr,GLOBUS_TRUE);
-  globus_io_secure_authorization_data_initialize(&auth_data);
-  globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
-  globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_SELF,&auth_data);
-  globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
-  if ((result = globus_io_tcp_connect(host,htons(port),&attr,handle)) != GLOBUS_SUCCESS)
+  if (host[0]=='_')
+  {
+    globus_io_secure_authorization_data_initialize(&auth_data);
+    globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
+    globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_SELF,&auth_data);
+    globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
+  }
+  if ((result = globus_io_tcp_connect((host[0] == '_') ? &host[1] : host,htons(port),&attr,handle)) != GLOBUS_SUCCESS)
   {
     globus_object_t *  err = globus_error_get(result);
     if (globus_object_type_match(
