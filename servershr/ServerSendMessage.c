@@ -43,6 +43,7 @@ int ServerSendMessage();
 #include <netinet/in.h>
 #include <netdb.h>
 #include <sys/time.h>
+#define INVALID_SOCKET -1
 #endif
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)

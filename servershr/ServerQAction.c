@@ -10,6 +10,7 @@
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #else
+typedef int SOCKET;
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
