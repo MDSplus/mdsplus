@@ -33,7 +33,7 @@ libMdsdcl.a:	$(OBJFILES)
 		mdsdcl_tables.o		\
 		$(EXPORT_SYMBOLS) libMdsdcl.a	\
 		$(EXPORT_SYMBOLS)  $(MDSPLUS)/cdu/libCdu.a	\
-		-lMdsShr  -lcurses
+		-lMdsShr  -lcurses -lc
 
 ../bin/mdsdcl:	mdsdcl.o  ../shlib/libMdsdcl.$(SHARE_TYPE)
 	$(CC) $(CFLAGS) -o $@ $(LFLAGS) mdsdcl.o	\
