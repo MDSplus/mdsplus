@@ -1,4 +1,4 @@
-CFLAGS = -c +z -Ae +u1 -Wl,+b,. -Wl,+s -woff 513 -OPT:align_aggregate=0 -D__irix__ -I../include -I. -g 
+CFLAGS = -c +z -Ae +u1 -Wl,+b,. -Wl,+s -woff 513 -D__irix__ -I../include -I. -g 
 CC = cc
 
 OBJECTS = \
@@ -6,6 +6,7 @@ OBJECTS = \
 	MdsGet1DxS.o \
 	MdsXdRoutines.o \
 	MdsCmprs.o \
+	MdsCompareXd.o \
 	MdsPk.o \
 	dummies.o \
 	librtl.o

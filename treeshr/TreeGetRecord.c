@@ -8,6 +8,8 @@
 #include <stdlib.h>
 
 
+#define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
+
 static int OpenDatafileR(TREE_INFO *info);
 static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree);
 static int GetDatafile(TREE_INFO *info_ptr, unsigned short *rfa, int *buffer_size, char *record, int *retsize,int *nodenum);
@@ -306,27 +308,32 @@ DATA_FILE *TreeGetVmDatafile()
   else
     datafile_ptr = NULL;
 #else
-  int length = sizeof(DATA_FILE)+sizeof(RECORD_HEADER)+sizeof(ASY_NCI)+sizeof(NCI)+sizeof(struct descriptor_xd);
-  datafile_ptr = malloc(length);
+  int length = align(sizeof(DATA_FILE),sizeof(void *)) + 
+               align(sizeof(RECORD_HEADER),sizeof(void *)) + 
+               align(sizeof(ASY_NCI),sizeof(void *)) + 
+               align(sizeof(NCI),sizeof(void *)) + 
+               align(sizeof(struct descriptor_xd),sizeof(void *));
+  datafile_ptr = malloc(length * 2);
   if (datafile_ptr != NULL)
   {
     char *ptr = (char *)datafile_ptr;
     memset(datafile_ptr,0,length);
-    datafile_ptr->record_header = (RECORD_HEADER *) (ptr += sizeof(DATA_FILE));
-    datafile_ptr->asy_nci = (ASY_NCI *) (ptr += sizeof(RECORD_HEADER));
-    datafile_ptr->data = (struct descriptor_xd *) (ptr += sizeof(ASY_NCI));
+    datafile_ptr->record_header = (RECORD_HEADER *) (ptr += align(sizeof(DATA_FILE),sizeof(void *)));
+    datafile_ptr->asy_nci = (ASY_NCI *) (ptr += align(sizeof(RECORD_HEADER),sizeof(void *)));
+    datafile_ptr->data = (struct descriptor_xd *) (ptr += align(sizeof(ASY_NCI),sizeof(void *)));
     *datafile_ptr->data = empty_xd;
-    datafile_ptr->asy_nci->nci = (NCI *) (ptr += sizeof(struct descriptor_xd));
+    datafile_ptr->asy_nci->nci = (NCI *) (ptr += align(sizeof(struct descriptor_xd),sizeof(void *)));
   }
 #endif
   return datafile_ptr;
 }
 
-static int GetDatafile(TREE_INFO *info, unsigned short *rfa, int *buffer_size, char *record, int *retsize,int *nodenum)
+static int GetDatafile(TREE_INFO *info, unsigned short *rfa_in, int *buffer_size, char *record, int *retsize,int *nodenum)
 {
   int status = 1;
   int buffer_space = *buffer_size;
   int       first = 1;
+  unsigned short rfa[3];
 #ifdef __VMS
   struct RAB *rab_ptr = info_ptr->tree_info$a_data_file_ptr->$a_getrab;
   RFA      *rab_rfa = (RFA *) rab_ptr->rab$w_rfa;
@@ -390,6 +397,7 @@ static int GetDatafile(TREE_INFO *info, unsigned short *rfa, int *buffer_size, c
 #else
   char *bptr = (char *)record;
   *retsize = 0;
+  memcpy(rfa,rfa_in,sizeof(rfa));
   while ((rfa[0] || rfa[1] || rfa[2]) && buffer_space && (status & 1))
   {
     RECORD_HEADER hdr;
@@ -413,7 +421,7 @@ static int GetDatafile(TREE_INFO *info, unsigned short *rfa, int *buffer_size, c
         bptr += partlen;
         buffer_space -= partlen;
 		*retsize = *retsize + partlen;
-        rfa = (unsigned short *)&hdr.rfa;
+        memcpy(rfa,&hdr.rfa,sizeof(rfa));
       }
       else
         status = 0;

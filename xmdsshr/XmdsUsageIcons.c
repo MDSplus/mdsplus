@@ -85,12 +85,10 @@ void XmdsUsageIconsInitialize(Widget w)
   int usages;
   if (!icons)
   {
-    int *TREE$K_MAX_USAGE;
+    int *TREE_K_MAX_USAGE;
     MrmCode type;
     MrmInitialize();
     MrmOpenHierarchy(1,hierarchy_name,0,&mrm_hierarchy);
-    //    MrmFetchLiteral(mrm_hierarchy,"TREE$K_MAX_USAGE",XtDisplay(w),(void *) &TREE$K_MAX_USAGE,&type);
-    //    usages = *TREE$K_MAX_USAGE + 1;
     usages = 13;
     icons = (unsigned long *) XtMalloc(sizeof(Pixmap) * usages * 2);
     gray_icons = icons + usages;

@@ -184,7 +184,7 @@ static struct descriptor_xd const empty_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
 static void Focus_In(Widget w,XEvent *event,String *params,Cardinal num_params);
 static XtActionsRec actions[] = {{"Focus_In", (XtActionProc) Focus_In}};
 static XtResource resources[] = {
-  {XmdsNxd, "Xd", XtRPointer, sizeof(struct dsc$descriptor_xd *), XtOffset(XmdsExprWidget, expr.xd), XtRImmediate, (void *)0},
+  {XmdsNxd, "Xd", XtRPointer, sizeof(struct descriptor_xd *), XtOffset(XmdsExprWidget, expr.xd), XtRImmediate, (void *)0},
   {XmdsNdefaultNid, "Nid", XtRInt, sizeof(int), XtOffset(XmdsExprWidget, expr.default_nid), XtRImmediate, (XtPointer) -1},
   {XmdsNnid, "Nid", XtRInt, sizeof(int), XtOffset(XmdsExprWidget, expr.nid), XtRImmediate, (XtPointer)0},
   {XmdsNnidOffset, "NidOffset", XtRInt, sizeof(int), XtOffset(XmdsExprWidget, expr.nid_offset), XtRImmediate, (XtPointer)0},

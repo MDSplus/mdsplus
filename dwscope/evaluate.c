@@ -544,7 +544,7 @@ Boolean EvaluateText(String text, String error_prefix, String *text_ret, String 
          (TdiData(&string_xd, &string_xd MDS_END_ARG)&1) && 
          (TdiAdjustl(&string_xd,&string_d MDS_END_ARG) & 1))
     {
-      StrTrim(&string_d,&string_d);
+      StrTrim(&string_d,&string_d,0);
       *text_ret = memcpy(XtMalloc(string_d.length+1),string_d.pointer,string_d.length);
       (*text_ret)[string_d.length] = '\0';
     }

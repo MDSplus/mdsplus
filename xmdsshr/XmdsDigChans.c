@@ -138,11 +138,11 @@ Widget XmdsCreateDigChans(Widget parent,String name,ArgList args,Cardinal argcou
     char name_c[4];
     XmString name;
     XmString path;
-    //    static struct descriptor path_s = {0,DTYPE_T,CLASS_D,0};
+    /*    static struct descriptor path_s = {0,DTYPE_T,CLASS_D,0}; */
     static unsigned char path_s[256*12];
     static int path_len;
     static NCI_ITM nci[] = {{256*12, NciMINPATH, path_s, &path_len}, {0, NciEND_OF_LIST, 0, 0}};
-    //    static DESCRIPTOR(zero,"\0");
+    /*    static DESCRIPTOR(zero,"\0"); */
     int head_nid = i * info.nodes_per_channel + info.nid + info.nid_offset;
     int data_nid = head_nid + info.data_nid_offset;
     int startidx_nid = head_nid + info.startidx_nid_offset;
@@ -150,10 +150,10 @@ Widget XmdsCreateDigChans(Widget parent,String name,ArgList args,Cardinal argcou
     sprintf(name_c,"%d",i + 1);
     name = XmStringCreateSimple(name_c);
     TreeGetNci(head_nid,nci);
-    //    StrConcat(&path_s,&path_s,&zero MDS_END_ARG);
+    /*    StrConcat(&path_s,&path_s,&zero MDS_END_ARG); */
     path_s[path_len] = '\0';
     path = XmStringCreateSimple(path_s);
-    //StrFree1Dx(&path_s);
+    /* StrFree1Dx(&path_s); */
     {
       static MrmRegisterArg uilnames[] = {{"c_nid",NULL},
 					  {"c_name",NULL},
