@@ -49,7 +49,7 @@ install:
 	fi;
 
 @MAKESHLIBDIR@libMdsShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
-	@MAKESHARED@
+	$(LD) -o $@ $LINKSHARED $(OBJECTS) $(LIBS)
 
 @MAKELIBDIR@libMdsShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
