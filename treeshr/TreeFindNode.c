@@ -845,7 +845,7 @@ int _TreeFindNodeEnd(void *dbid, void **ctx_in)
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   SEARCH_CONTEXT *ctx = (SEARCH_CONTEXT *)*ctx_in;
   int status = TreeNORMAL;
-  if (dblist->remote)
+  if (dblist && dblist->remote)
 	  FindNodeEndRemote(dblist,ctx_in);
   if (ctx)
   {

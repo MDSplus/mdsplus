@@ -158,7 +158,7 @@ ident:
                              &dfun MDS_END_ARG);
 	if (status & 1) {
 	char cs[163840];
-        int ctx = 0;
+        void *ctx = 0;
 	struct descriptor dcs = {0,DTYPE_T,CLASS_S,0};
                 dcs.pointer = (char *)cs;
                 LibFindFileRecurseCaseBlind(&file, &file, &ctx);

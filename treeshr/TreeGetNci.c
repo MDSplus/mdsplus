@@ -5,6 +5,7 @@
 #include <usagedef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <mds_stdarg.h>
 #ifdef __VMS
 #include <fab.h>
 #include <rab.h>
@@ -307,11 +308,22 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  break_on_no_node;
 		  if (node->conglomerate_elt)
 		  {
+                          struct descriptor string_d = {0, DTYPE_T, CLASS_D, 0};
 			  DESCRIPTOR_NID(nid_dsc,0);
+                          DESCRIPTOR(part_name,"PART_NAME");
 			  nid_dsc.pointer = (char *) &nid;
-			  status = TreeDoMethod(&nid_dsc, "PART_NAME", &string);
+			  status = _TreeDoMethod(dbid, &nid_dsc, (struct descriptor *)&part_name, &string_d MDS_END_ARG);
 			  if (status == TreeNOMETHOD)
-				  status = TreeDoMethod(&nid_dsc, "ORIGINAL_PART_NAME", &string);
+                          {
+                            DESCRIPTOR(part_name,"ORIGINAL_PART_NAME");
+			    status = _TreeDoMethod(dbid, &nid_dsc, (struct descriptor *)&part_name, &string_d MDS_END_ARG);
+                          }
+                          if (status & 1)
+                          {
+                            string = strncpy(malloc(string_d.length+1),string_d.pointer,string_d.length);
+                            string[string_d.length] = 0;
+                          }
+                          StrFree1Dx(&string_d);
 		  }
 		  break;
 	  case NciFULLPATH:

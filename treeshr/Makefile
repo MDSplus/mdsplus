@@ -5,6 +5,7 @@ dummies.o \
 TreeAddNode.o \
 TreeCreatePulseFile.o \
 TreeDeletePulseFile.o \
+TreeDoMethod.o \
 TreeFindNode.o \
 TreeFindTagWild.o \
 TreeGetDbi.o \
