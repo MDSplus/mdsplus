@@ -30,6 +30,8 @@ public fun CHVPSResetCommand(in _name, in _nid, in _crate_num, inout _old_group_
     private _wait_val = 0.01;
 
 	_target = (_crate_num << 8) | _K_GROUP_B;   
+
+/* Select Target */
 		
 	_a = 0;
 	_f = _K_SELECT;
@@ -50,6 +52,8 @@ public fun CHVPSResetCommand(in _name, in _nid, in _crate_num, inout _old_group_
 		DevLogErr(_nid, "CHVPS command execution error : "//_error);
 		return (0);
 	}
+
+/* Read channels defined into group  B */
 
 	_a = _K_GROUP_BIT;
 	_f = _K_SELECT;
