@@ -95,8 +95,8 @@ public class TR32Setup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(730);
-    this.setHeight(520);
+    this.setWidth(764);
+    this.setHeight(764);
     this.setDeviceType("TR32");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("INCAA TR32 CPCI Transient Recorder");
@@ -169,7 +169,7 @@ public class TR32Setup extends DeviceSetup {
     deviceChoice5.setUpdateIdentifier("");
     deviceChoice5.setIdentifier("");
     deviceChoice5.setBounds(new Rectangle(41, 143, 249, 35));
-    jTabbedPane1.setBounds(new Rectangle(10, 179, 710, 238));
+    jTabbedPane1.setBounds(new Rectangle(10, 179, 747, 238));
     jPanel1.setLayout(gridLayout1);
     gridLayout1.setColumns(1);
     gridLayout1.setRows(4);
