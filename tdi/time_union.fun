@@ -22,6 +22,10 @@ FUN	PUBLIC TIME_UNION(IN _PATH) {
 	For (_N = SIZE(_NIDS); --_N >= 0; *) {
 		_DIM = [_DIM, DIM_OF(GETNCI(_NIDS[_N], "RECORD"))];
 	}
-	Return (UNION(_DIM));
+        if (size(_dim) > 0) {
+  	  Return (UNION(_DIM));
+        } else {
+	  Return (0);
+	}
 }
 
