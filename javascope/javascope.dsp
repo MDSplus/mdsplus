@@ -464,6 +464,22 @@ SOURCE=.\WaveInterface.java
 
 SOURCE=.\WavePopup.java
 # End Source File
+# Begin Source File
+
+SOURCE=..\javatraverser\WE7000Setup.java
+# End Source File
+# Begin Source File
+
+SOURCE=..\javatraverser\WE7116Setup.java
+# End Source File
+# Begin Source File
+
+SOURCE=..\javatraverser\WE7275Setup.java
+# End Source File
+# Begin Source File
+
+SOURCE=..\javatraverser\WEGroupSetup.java
+# End Source File
 # End Group
 # Begin Group "Header Files"
 

@@ -63,30 +63,30 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
   private JButton            apply_b;
   private JFileChooser       file_diag = new JFileChooser();
   protected String           curr_directory;
-  protected String           last_directory;
-  private JLabel	         point_pos, print_icon;
-  private JTextField	     info_text, net_text;
-  private WindowDialog       win_diag;
-  public  ColorDialog	     color_dialog;
-  public  FontSelection      font_dialog;
-          jScopeWaveContainer   wave_panel;
-  SetupDefaults                 setup_default;
-  private PubVarDialog          pub_var_diag;
-  static int		            num_scope = 0;
-  private String	            config_file;
-  static DataServerItem[]       server_ip_list;
-         ServerDialog           server_diag = null;
-  static  boolean	            not_sup_local = false;
-  private boolean	            executing_update = false;
-  private JFrame                main_scope;
+  protected String last_directory;
+  private JLabel point_pos, print_icon;
+  private JTextField info_text, net_text;
+  private WindowDialog win_diag;
+  public ColorDialog color_dialog;
+  public FontSelection font_dialog;
+  jScopeWaveContainer wave_panel;
+  SetupDefaults setup_default;
+  private PubVarDialog pub_var_diag;
+  static int num_scope = 0;
+  private String config_file;
+  static DataServerItem[] server_ip_list;
+  ServerDialog server_diag = null;
+  static boolean not_sup_local = false;
+  private boolean executing_update = false;
+  private JFrame main_scope;
 
-  PrinterJob            prnJob;
-  PageFormat            pf;
+  PrinterJob          prnJob;
+  PageFormat          pageFormat;
 
-  Properties        js_prop = null;
-  int               default_server_idx;
-  boolean           is_playing = false;
-  int height = 500, width = 700, xpos = 50, ypos = 50;
+  Properties          js_prop = null;
+  int                 default_server_idx;
+  boolean             is_playing = false;
+  int height = 500,   width = 700, xpos = 50, ypos = 50;
   jScopeDefaultValues def_values = new jScopeDefaultValues();
   SetupDataDialog     setup_dialog;
   JProgressBar        progress_bar;
@@ -140,6 +140,23 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	    });
 
   }
+
+  protected void displayPageFormatAttributes(PageFormat myPageFormat)
+      {
+      System.out.println("Width = " + myPageFormat.getWidth());
+      System.out.println("Height = " + myPageFormat.getHeight());
+      System.out.println("ImageableX = " + myPageFormat.getImageableX());
+      System.out.println("ImageableY = " + myPageFormat.getImageableY());
+      System.out.println("ImageableWidth = " + myPageFormat.getImageableWidth());
+      System.out.println("ImageableHeight = " + myPageFormat.getImageableHeight());
+      int o = myPageFormat.getOrientation();
+      System.out.println("Orientation = " +
+                      (o == PageFormat.PORTRAIT ? "PORTRAIT" :
+                       o == PageFormat.LANDSCAPE ? "LANDSCAPE" :
+                       o == PageFormat.REVERSE_LANDSCAPE ? "REVERSE_LANDSCAPE" :
+                       "<invalid>"));
+      }
+
 
   class PubVarDialog extends JDialog implements ActionListener {
 
@@ -419,12 +436,14 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 
 
     prnJob = PrinterJob.getPrinterJob();
-    pf = prnJob.defaultPage();
-    pf.setOrientation(PageFormat.LANDSCAPE);
-    Paper p = pf.getPaper();
+    pageFormat = prnJob.defaultPage();
+    pageFormat.setOrientation(PageFormat.LANDSCAPE);
+    Paper p = pageFormat.getPaper();
     p.setSize(595.2239, 841.824);
     p.setImageableArea(16., 16., 560., 810.);
-    pf.setPaper(p);
+    pageFormat.setPaper(p);
+    prnJob.validatePage(pageFormat);
+    displayPageFormatAttributes(pageFormat);
 
 
     help_dialog = new jScopeBrowseUrl(this);
@@ -536,7 +555,10 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                 public void run()
                 {
                     setName("Print Dialog Thread");
+ //                 pageFormat = prnJob.defaultPage(pageFormat);
                     prnJob.printDialog();
+ //                 prnJob.validatePage(pageFormat);
+                    displayPageFormatAttributes(pageFormat);
                 }
             };
             print_cnf.start();
@@ -556,7 +578,9 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                 public void run()
                 {
                     setName("Page  Dialog Thread");
-	                pf = prnJob.pageDialog(pf);
+                    pageFormat = prnJob.pageDialog(pageFormat);
+                    //prnJob.validatePage(pageFormat);
+                    displayPageFormatAttributes(pageFormat);
                 }
             };
             page_cnf.start();
@@ -1737,7 +1761,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         try
         {
             this.SetStatusLabel("Execute printing");
-            wave_panel.PrintAllWaves(prnJob, pf);
+            wave_panel.PrintAllWaves(prnJob, pageFormat);
             SetStatusLabel("End print operation");
         }
         catch (PrinterException er)
@@ -1872,7 +1896,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
             wave_panel.StartUpdate();
 
         if(e.name.equals(print_event))
-            wave_panel.StartPrint(prnJob,  pf);
+            wave_panel.StartPrint(prnJob,  pageFormat);
      }
   }
 

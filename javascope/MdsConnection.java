@@ -83,7 +83,6 @@ public class MdsConnection
 	                curr_message.Receive(dis);
 	                if(curr_message.dtype == Descriptor.DTYPE_EVENT)
 	                {
-                        //System.out.println("Ricevuto evento");
                         PMET PMdsEvent = new PMET();
                         PMdsEvent.SetEventid(curr_message.body[12]);
                         PMdsEvent.start();
@@ -234,13 +233,16 @@ public class MdsConnection
 		            out.dtype = Descriptor.DTYPE_LONG;
                       */
                            out.short_data = message.ToShortArray();
-                     break;
+                       break;
 	            case Descriptor.DTYPE_LONG:
+                    case Descriptor.DTYPE_ULONG:
 		            out.int_data = message.ToIntArray();
 		        break;
+                        /*
 	            case Descriptor.DTYPE_ULONG:
 		            out.long_data = message.ToUIntArray();
 		        break;
+              */
 	            case Descriptor.DTYPE_LONGLONG:
 		            out.long_data = message.ToLongArray();
 		        break;
@@ -249,7 +251,7 @@ public class MdsConnection
 	                if((message.status & 1) == 1)
 	                    out.strdata = new String(message.body);
 	                else
-		                out.error = new String(message.body);
+                            out.error = new String(message.body);
 		        break;
 	            case Descriptor.DTYPE_BYTE:
 		            out.byte_data = message.body;
@@ -431,18 +433,16 @@ public class MdsConnection
 
         for(i = 0; i < event_list.size() &&
              !((Item)event_list.elementAt(i)).name.equals(event_name);i++);
+
         if(i == event_list.size())
         {
-	        eventid = getEventId();
+            eventid = getEventId();
             event_item = new Item(event_name, eventid, l);
             event_list.addElement((Object)event_item);
-            //System.out.println("Add "+mdsItem);
-	        //eventid = mdsEventList.size() - 1;
         } else {
             if(!((Item)event_list.elementAt(i)).listener.contains((Object)l))
             {
                 ((Item)event_list.elementAt(i)).listener.addElement(l);
-//                System.out.println("Add listener to event "+event_name);
             }
         }
 
