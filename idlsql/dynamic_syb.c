@@ -73,22 +73,24 @@ static int Msg_Handler(PDBPROCESS dbproc, DBINT msgno, int msgstate, int severit
 		sprintf(msg, "\nMsg %ld, Level %d, State %d\n",
 			msgno, severity, msgstate);
                 strcatn(DBMSGTEXT, msg, MAXMSG);
-		if (strlen(servername)) {
-			sprintf(msg, "Server '%s', ", servername);
-	                strcatn(DBMSGTEXT, msg, MAXMSG);
-                }
-		if (strlen(procname)) {
-			sprintf(msg, "Procedure '%s', ", procname);
-	                strcatn(DBMSGTEXT, msg, MAXMSG);
-		}
+		if (servername)
+			if (strlen(servername)) {
+				sprintf(msg, "Server '%s', ", servername);
+	            strcatn(DBMSGTEXT, msg, MAXMSG);
+             }
+		if (procname)
+			if (strlen(procname)) {
+				sprintf(msg, "Procedure '%s', ", procname);
+	             strcatn(DBMSGTEXT, msg, MAXMSG);
+			}
 		if (line) {
 			sprintf(msg, "Line %d", line);
 	                strcatn(DBMSGTEXT, msg, MAXMSG);
 		}
 	}
-        strcatn(DBMSGTEXT, msgtext, MAXMSG);
-        DBSTATUS = msgno;
-        return 0;  /* try to continue */
+    strcatn(DBMSGTEXT, msgtext, MAXMSG);
+    DBSTATUS = msgno;
+    return 0;  /* try to continue */
 }
 
 int GetDBStatus()
@@ -121,9 +123,13 @@ int	Login_Sybase(char *host, char *user, char *pass)
   dbmsghandle(Msg_Handler);
   dberrhandle(Err_Handler);
   loginrec = dblogin();
-  DBSETLUSER(loginrec, user);
-  DBSETLPWD(loginrec, pass);
-  DBSETLAPP(loginrec, "SQLSHR");
+  if (user == 0) {
+	  DBSETLSECURE(loginrec);
+  } else {
+	DBSETLUSER(loginrec, user);
+	DBSETLPWD(loginrec, pass);
+  }
+  DBSETLAPP(loginrec, "IDLSQL");
   for (try = 0; ((dbproc==0) && (try < 10)); try++) {
      DBMSGTEXT[0] = 0;
      dbproc = dbopen(loginrec, host);

@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\include" /I "c:\MSSQL7\DevTools\Include" /I "c:\RSI\IDL52\external" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "DBNTWIN32" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /I "%SQL_DIR%\DevTools\Include" /I "%IDL_DIR%\external" /I "..\include" /I "$(SQL_DIR)\DevTools\Include" /I "$(IDL_DIR)\external" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "DBNTWIN32" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o NUL /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o NUL /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -66,7 +66,7 @@ LINK32=link.exe
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /I "..\include" /I "c:\MSSQL7\DevTools\Include" /I "c:\RSI\IDL52\external" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "DBNTWIN32" /YX /FD /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /I "$(SQL_DIR)\DevTools\Include" /I "$(IDL_DIR)\external" /I "..\include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "DBNTWIN32" /YX /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o NUL /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o NUL /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -121,6 +121,10 @@ SOURCE=..\idl\Logbook\isql.pro
 # End Source File
 # Begin Source File
 
+SOURCE=.\isql.pro
+# End Source File
+# Begin Source File
+
 SOURCE=..\idl\Logbook\rollback.pro
 # End Source File
 # Begin Source File
@@ -138,31 +142,27 @@ SOURCE=..\idl\Logbook\sql_finish.pro
 # End Group
 # Begin Source File
 
-SOURCE=..\sqlshr\dynamic_syb.c
+SOURCE=.\dynamic_syb.c
 # End Source File
 # Begin Source File
 
-SOURCE=C:\RSI\IDL52\idl32.lib
+SOURCE="$(IDL_DIR)\idl32.lib"
 # End Source File
 # Begin Source File
 
-SOURCE=..\sqlshr\IdlSql.def
+SOURCE=.\IdlSql.def
 # End Source File
 # Begin Source File
 
-SOURCE=..\sqlshr\idlsql_syb.c
+SOURCE=.\idlsql_syb.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\isql.pro
+SOURCE="$(SQL_DIR)\DevTools\Lib\ntwdblib.lib"
 # End Source File
 # Begin Source File
 
-SOURCE=C:\MSSQL7\DevTools\Lib\ntwdblib.lib
-# End Source File
-# Begin Source File
-
-SOURCE=..\sqlshr\user_syb.c
+SOURCE=.\user_syb.c
 # End Source File
 # End Target
 # End Project

@@ -3,28 +3,14 @@ Begining build with project "E:\mdsplus\idlsql\idlsql.dsp", at root.
 Active configuration is Win32 (x86) Dynamic-Link Library (based on Win32 (x86) Dynamic-Link Library)
 
 Project's tools are:
-			"32-bit C/C++ Compiler for 80x86" with flags "/nologo /MTd /W3 /Gm /GX /Zi /Od /I "..\include" /I "c:\MSSQL7\DevTools\Include" /I "c:\RSI\IDL52\external" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "DBNTWIN32" /Fp"Debug/idlsql.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /c "
+			"32-bit C/C++ Compiler for 80x86" with flags "/nologo /MTd /W3 /Gm /GX /Zi /Od /I "$(SQL_DIR)\DevTools\Include" /I "$(IDL_DIR)\external" /I "..\include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "DBNTWIN32" /Fp"Debug/idlsql.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /c "
 			"OLE Type Library Maker" with flags "/nologo /D "_DEBUG" /mktyplib203 /o NUL /win32 "
 			"Win32 Resource Compiler" with flags "/l 0x409 /d "_DEBUG" "
 			"Browser Database Maker" with flags "/nologo /o"Debug/idlsql.bsc" "
-			"COFF Linker for 80x86" with flags "kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /incremental:yes /pdb:"Debug/idlsql.pdb" /debug /machine:I386 /def:"..\sqlshr\IdlSql.def" /out:"../Debug/idlsql.dll" /implib:"Debug/idlsql.lib" /pdbtype:sept "
+			"COFF Linker for 80x86" with flags "kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /incremental:yes /pdb:"Debug/idlsql.pdb" /debug /machine:I386 /def:".\IdlSql.def" /out:"../Debug/idlsql.dll" /implib:"Debug/idlsql.lib" /pdbtype:sept "
 			"Custom Build" with flags ""
 			"<Component 0xa>" with flags ""
 
-Creating temp file "C:\TEMP\RSP3FD.tmp" with contents </nologo /MTd /W3 /Gm /GX /Zi /Od /I "..\include" /I "c:\MSSQL7\DevTools\Include" /I "c:\RSI\IDL52\external" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "DBNTWIN32" /Fp"Debug/idlsql.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /c 
-"E:\mdsplus\sqlshr\dynamic_syb.c"
->
-Creating command line "cl.exe @C:\TEMP\RSP3FD.tmp" 
-Creating temp file "C:\TEMP\RSP3FE.tmp" with contents <kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /incremental:yes /pdb:"Debug/idlsql.pdb" /debug /machine:I386 /def:"..\sqlshr\IdlSql.def" /out:"../Debug/idlsql.dll" /implib:"Debug/idlsql.lib" /pdbtype:sept 
-.\Debug\user_syb.obj
-.\Debug\dynamic_syb.obj
-.\Debug\idlsql_syb.obj
-C:\MSSQL7\DevTools\Lib\ntwdblib.lib
-C:\RSI\IDL52\idl32.lib>
-Creating command line "link.exe @C:\TEMP\RSP3FE.tmp" 
-Compiling...
-dynamic_syb.c
-Linking...
 
 
 
