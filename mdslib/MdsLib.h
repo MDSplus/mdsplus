@@ -9,6 +9,10 @@
 #undef DTYPE_COMPLEX
 #undef DTYPE_EVENT
 
+#ifndef _WIN32
+#define INVALID_SOCKET -1
+#endif
+
 #include <mdsdescrip.h>
 #include <stdio.h>            
 #include <mds_stdarg.h>
@@ -18,13 +22,12 @@
 
 #define NDESCRIP_CACHE 256
 
-static struct descriptor descrs[NDESCRIP_CACHE];
+static struct descriptor *descrs[NDESCRIP_CACHE];
 
 int descr (int *dtype, void *data, int *dim1, ...);
 
-SOCKET mdsSocket;
 
-
-void MdsConnect(char *host);
+SOCKET MdsConnect(char *host);
 int MdsValue(char *expression, ...); /**** NOTE: NULL terminated argument list expected ****/
 
+SOCKET mdsSocket=INVALID_SOCKET;
