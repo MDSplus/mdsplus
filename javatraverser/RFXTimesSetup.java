@@ -374,7 +374,7 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField113.setLabelString("T_CLOSE_PTCT_5");
     deviceField113.setOffsetNid(10);
     deviceField113.setDisplayEvaluated(false);
-    deviceField10.setOffsetNid(18);
+    deviceField10.setOffsetNid(9);
     deviceField10.setLabelString("T_CLOSE_PTCT_4");
     deviceField10.setNumCols(5);
     deviceField10.setIdentifier("CLOSE_PTCT_4");
@@ -491,11 +491,11 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField11115.setShowState(true);
     jPanel23.setBorder(titledBorder13);
     jPanel23.setLayout(gridLayout4);
+    deviceField7.setShowState(true);
     deviceField7.setOffsetNid(18);
     deviceField7.setLabelString("T_INSRT_PTCB_4");
     deviceField7.setNumCols(5);
     deviceField7.setIdentifier("INSRT_PTCB_4");
-    deviceField7.setShowState(true);
     deviceField25.setShowState(true);
     deviceField25.setIdentifier("INSRT_PTCB_3");
     deviceField25.setNumCols(5);
