@@ -1,0 +1,71 @@
+include makefile-header
+
+top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
+SHELL=/bin/sh
+CFLAGS = @CFLAGS@ $(GLOBUS_CFLAGS) $(GLOBUS_INCLUDES) -I$(top_srcdir)/include
+LDFLAGS = $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS) -L$(top_srcdir)/lib -lMdsShr -lTdiShr -lc
+EXPORTS = mdsipshr.export
+INSTALL=@top_srcdir@/conf/install-sh -c
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+
+ifeq "@SHARETYPEMOD@x" "x"
+	modules =
+else
+	modules = @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPEMOD@ 
+endif
+
+SOURCES = \
+	roam_check_access.c \
+	roam_gridmap_callout.c
+
+OBJECTS = $(SOURCES:.c=.o)
+
+all : makefile-header \
+      @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ \
+      $(modules) \
+      @MAKELIBDIR@ \
+      @MAKELIBDIR@libRoam_@GLOBUS_FLAVOR@.a
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
+
+clean: 
+	@ $(RM) $(OBJECTS)
+	@ $(RM) @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPE@
+	@ $(RM) makefile-header
+	@ $(RM) so_locations
+	@ $(RM) @MAKELIBDIR@libRoam_@GLOBUS_FLAVOR@.a
+
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ @libdir@
+        ifdef modules
+		$(INSTALL) -m 755  @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPEMOD@ @libdir@
+        endif
+	if test "@SHARETYPE@" != ".a" ; then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libRoam_@GLOBUS_FLAVOR@.a @libdir@; \
+	fi;
+
+@MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ : $(OBJECTS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LDFLAGS)
+
+makefile-header:  
+	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@ --static globus_xio globus_gridmap_callout_error > makefile-header
+
+@MAKELIBDIR@libRoam_@GLOBUS_FLAVOR@.a : $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
+	@RANLIB@ $@
+
+ifdef modules
+@MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPEMOD@ : $(OBJECTS)
+	$(LD) -o $@ @LINKMODULE@ $(OBJECTS) $(LIBS) 
+endif
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@
