@@ -113,7 +113,7 @@ DBI_ITM lst[] = {{sizeof(index),DbiINDEX,0,0},EOL,EOL};
 				struct descriptor ans = {0,DTYPE_T,CLASS_S,0};
 				if (lst[1].pointer) {
 				  ans.length = strlen(lst[1].pointer);
-				  ans.pointer = lst[1].pointer;
+				  ans.pointer = (char *)lst[1].pointer;
 				}
 				status = MdsCopyDxXd(&ans, out_ptr);
 				if (ans.pointer) TreeFree(ans.pointer);

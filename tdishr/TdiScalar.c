@@ -151,37 +151,23 @@ int			status = 1, n;
 	EPSILON(3.0) is 2**(-23), EPSILON(4g0) 2**(-52).
 		real = EPSILON(real-model)
 */
-static const unsigned int F_EPS[] = {0x3500};
-static const unsigned int FS_EPS[] = {0x34000000};
-static const unsigned int D_EPS[] = {0x2500,0};
-static const unsigned int G_EPS[] = {0x3CD0,0};
-static const unsigned int FT_EPS[] = {0,0x3CB00000};
 
 int			Tdi3Epsilon(
 struct descriptor	*x_ptr,
 struct descriptor	*out_ptr)
 {
-int			status = 1;
-
-	switch (x_ptr->dtype) {
-	default : status = TdiINVDTYDSC; break;
-	case DTYPE_F :  memcpy(out_ptr->pointer,F_EPS,sizeof(F_EPS)); break;
-	case DTYPE_FS : memcpy(out_ptr->pointer,F_EPS,sizeof(FS_EPS)); break;
-	case DTYPE_D :  memcpy(out_ptr->pointer,D_EPS,sizeof(D_EPS)); break;
-	case DTYPE_G :  memcpy(out_ptr->pointer,G_EPS,sizeof(G_EPS)); break;
-	case DTYPE_FT :  memcpy(out_ptr->pointer,FT_EPS,sizeof(FT_EPS)); break;
-	case DTYPE_FC : memcpy(out_ptr->pointer,F_EPS,sizeof(F_EPS)); 
-                              memset(out_ptr->pointer+sizeof(F_EPS),0,sizeof(F_EPS)); break;
-	case DTYPE_FSC : memcpy(out_ptr->pointer,FS_EPS,sizeof(FS_EPS)); 
-                              memset(out_ptr->pointer+sizeof(FS_EPS),0,sizeof(FS_EPS)); break;
-	case DTYPE_DC : memcpy(out_ptr->pointer,D_EPS,sizeof(D_EPS));
-                              memset(out_ptr->pointer+sizeof(D_EPS),0,sizeof(D_EPS)); break;
-	case DTYPE_GC : memcpy(out_ptr->pointer,G_EPS,sizeof(G_EPS));
-                              memset(out_ptr->pointer+sizeof(G_EPS),0,sizeof(G_EPS)); break;
-	case DTYPE_FTC : memcpy(out_ptr->pointer,FT_EPS,sizeof(FT_EPS));
-                              memset(out_ptr->pointer+sizeof(FT_EPS),0,sizeof(FT_EPS)); break;
-	}
-	return status;
+       int			status = 1;
+       static double digits_d;
+       static struct descriptor digits = {sizeof(digits_d),DTYPE_DOUBLE,CLASS_S,(char *)&digits_d};
+       status = TdiDigits(x_ptr,&digits MDS_END_ARG);
+       if (status & 1)
+       {
+	 static double two_d = 2.;
+	 static struct descriptor two = {sizeof(two_d),DTYPE_DOUBLE,CLASS_S,(char *)&two_d};
+	 digits_d = 1. - digits_d;
+	 status = TdiPower(&two,&digits,out_ptr MDS_END_ARG);
+       }
+       return status;
 }
 /*---------------------------------------------------
 	F90 inquiry for largest positive number in model: sign * base**exponent * fraction.
