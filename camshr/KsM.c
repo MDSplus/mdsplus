@@ -39,9 +39,11 @@ static int KsMultiIo(
   RequestSenseData sense;
   unsigned char sb_out_len;
   unsigned int transfer_len;
-  unsigned int dummy;
   int enhanced;
   int online;
+  int dummy;
+  int i;
+  unsigned char b;
   
   if( MSGLVL(FUNCTION_NAME) )
     printf( "%s()\n", KM_ROUTINE_NAME );
@@ -64,6 +66,7 @@ static int KsMultiIo(
     printf( "%s(): device '%s' = '/dev/sg%d'\n", KM_ROUTINE_NAME, dev_name, scsiDevice );
   
   xfer_len.l = Count ? Count * ((Mem == 16) ? 2 : 4) : 0;
+  memset(Command,0,sizeof(Command));
   Command[0] = OpCodeBlockCAMAC;
   Command[1] = 0;
   Command[2] = Key.crate;
@@ -73,14 +76,15 @@ static int KsMultiIo(
   Command[6] = xfer_len.b[HI];
   Command[7] = xfer_len.b[MID];
   Command[8] = xfer_len.b[LO];
-  
+
   direction = ((F & 0x08) == 0) ? ((F < 8) ? 1 : 2) : 0;
   
   // talk to the physical device
   scsi_lock( scsiDevice, 1);
   status = scsi_io( scsiDevice, direction, Command, sizeof(Command),
                     Data, xfer_len.l, 
-                    0, 0, &sb_out_len,&dummy);
+                    (char *)&sense, sizeof(sense), &sb_out_len,&transfer_len);
+  
   Command[0] = OpCodeRegisterAccess;
   Command[1] = 0;
   Command[2] = 0x01;
@@ -88,23 +92,9 @@ static int KsMultiIo(
   Command[4] = 1;
   Command[5] = 0;
   status = scsi_io( scsiDevice, 1, Command, 6,
-                    (char *)&sense.u2.esr, sizeof(sense.u2.esr), 
+                    (char *)&sense.u2.esr, sizeof(sense.u2.esr),
                     0, 0, &sb_out_len,&dummy);
-  Command[2] = 0;
-  Command[3] = 0;
-  Command[4] = 0;
-  status = scsi_io( scsiDevice, 1, Command, 6,
-                    (char *)&transfer_len, 1, 
-                    0, 0, &sb_out_len,&dummy);
-  Command[3] = 2;
-  status = scsi_io( scsiDevice, 1, Command, 6,
-                    ((char *)&transfer_len)+1, 1, 
-                    0, 0, &sb_out_len,&dummy);
-  Command[3] = 0x1A;
-  status = scsi_io( scsiDevice, 1, Command, 6,
-                    ((char *)&transfer_len)+2, 1, 
-                    0, 0, &sb_out_len,&dummy);
-  scsi_lock (scsiDevice, 0);
+  scsi_lock( scsiDevice, 0);
   LastIosb.bytcnt = (unsigned short)(transfer_len & 0xFFFF);
   LastIosb.lbytcnt = (unsigned short)(transfer_len >> 16);
   status = KsTranslateIosb(&sense,status);
