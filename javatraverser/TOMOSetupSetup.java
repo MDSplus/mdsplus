@@ -94,8 +94,8 @@ public class TOMOSetupSetup extends DeviceSetup {
 
   private void jbInit() throws Exception {
     jPanel1.setLayout(borderLayout1);
-    this.setWidth(700);
-    this.setHeight(240);
+    this.setWidth(569);
+    this.setHeight(569);
     this.setDeviceType("TOMOSetup");
     this.setDeviceProvider("150.178.3.33");
     this.setDeviceTitle("\"Tomography timing configuration");
@@ -208,7 +208,7 @@ public class TOMOSetupSetup extends DeviceSetup {
     deviceField20.setEditable(false);
     jPanel4.setLayout(gridLayout3);
     jPanel13.setLayout(flowLayout7);
-    deviceField112.setOffsetNid(19);
+    deviceField112.setOffsetNid(23);
     deviceField112.setLabelString("Delay ");
     deviceField112.setNumCols(15);
     deviceField112.setIdentifier("");
