@@ -11,9 +11,15 @@ public fun TR10HWReadChan(in _handle, in _chan, in _start_idx, in _end_idx, in _
 
 write(*, 'ACT SAMPLE ', _act_sample);
 
+	_act_sample = _act_sample;
+
 	_act_sample = _act_sample - _pts + _start_idx;
 	if(_act_sample < 0)
-		_act_sample = _act_sample + _2M;
+	{
+	    write(*, "LESS DATA THAT EXPECTED!!!!!: ", _act_sample, _pts - _start_idx);
+	    _act_sample = 0;
+	}
+
 
   write(*, 'NUOVO ACT SAMPLE ', _act_sample);
 /* Allocate buffer */
@@ -23,11 +29,9 @@ write(*, 'ACT SAMPLE ', _act_sample);
 	_act_sample = _act_sample - _start_ofs; 
 
 	_n_samples = long(_end_idx - _start_idx  + _start_ofs);
-	if(mod(_n_samples, 32) > 0)
-		_n_samples = _n_samples + 32 - mod(_n_samples, 32);
 	
 
-	_data = zero(_n_samples, 0L);
+	_data = zero(_n_samples+32, 0W);
 
 write(*, 'MEMREAD', _chan, _act_sample, _n_samples);
 
