@@ -1,6 +1,0 @@
-CC = cc68k
-
-CFLAGS  = -c -g -fno-builtin  -m68040 -DCPU=MC68040 -DVME_ENV  -fvolatile -fpack-struct -DvxWorks -D_big_endian -I $(VXWORKS_BASE)/h  -I$(MDSPLUS)/include -I/usr/include 
-SHARE_TYPE = o
-MAKE_DEPEND = $(CC) $(CFLAGS) -M {} > .depend \;
-OBJECTDIR = ../vxWorks

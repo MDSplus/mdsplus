@@ -1,4 +1,0 @@
-#
-# Shared image path
-#
-LIBPATH $MDSPLUS/lib
