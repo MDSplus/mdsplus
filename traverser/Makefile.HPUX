@@ -1,0 +1,44 @@
+CFLAGS = -c +z -Ae  -Wl,+b,. -Wl,+s +u1 -D__hpux__ -I../include -I. -g 
+
+OBJECTS = \
+	main-uil.o \
+	bxutils-uil.o \
+	CallbacksUil.o \
+        ReadInt.o \
+        ReadString.o \
+        GetNciString.o
+
+all :	.depend
+	make -f Makefile.HPUX -f .depend the_rest
+
+the_rest : ../bin/traverser \
+	../uid/traverser.uid
+
+../bin/traverser : $(OBJECTS) ../bin
+	cc -o $@ $(OBJECTS)  -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr -lMrm -lXm -lXt -lX11 
+
+../bin :
+	mkdir ../bin
+
+../uid :
+	mkdir ../uid
+
+../uid/traverser.uid : traverser.uil ../uid
+	uil -wmd ../xmdsshr/xmdsuil.wmd -o $@ $<
+	
+clean :
+	- rm *.o
+	- rm ../bin/traverser
+	- rm ../uid/traverser.uid
+	- rm .depend
+	- rm *~
+
+depend : .depend
+
+.depend :
+	- rm .depend
+        - find *.c -exec cc $(CFLAGS) -P -Wp,-M {} 2> .depend \;
+        - rm *.i        
+
+include .depend
+

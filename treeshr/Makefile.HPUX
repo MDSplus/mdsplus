@@ -32,5 +32,6 @@ depend : .depend
 
 .depend :
 	- rm .depend
-	find *.c -exec /usr/ccs/lbin/cpp -I../include -M {} /dev/null 2> .depend \;
+        - find *.c -exec cc $(CFLAGS) -P -Wp,-M {} 2> .depend \;
+        - rm *.i        
 

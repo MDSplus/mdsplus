@@ -832,6 +832,8 @@ static void SwapBytesInt(char *in)
   in[2] = tmp;
 }
   
+#ifdef _big_endian
+
 void FixupHeader(TREE_HEADER *hdr)
 {
   char flags = ((char *)hdr)[1];
@@ -842,6 +844,8 @@ void FixupHeader(TREE_HEADER *hdr)
   SwapBytesInt((char *)&hdr->externals);
   SwapBytesInt((char *)&hdr->nodes);
 }
+
+#endif
 
 static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote_file)
 {
@@ -925,11 +929,11 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
 
 		if (status & 1)
 		{
-                        int endianTest = 1;
-                        int bigEndian = *(char *)&endianTest == 0;
 			info->blockid = TreeBLOCKID;
 			info->header = (TREE_HEADER *) info->section_addr[0];
-                        if (bigEndian) FixupHeader(info->header);
+#ifdef _big_endian
+                        FixupHeader(info->header);
+#endif
 			info->node = (NODE *) (info->section_addr[0] + ((sizeof(TREE_HEADER) + 511) / 512) * 512);
 			info->tags = (int *) (((char *)info->node) + ((info->header->nodes * sizeof(NODE) + 511) / 512) * 512);
 			info->tag_info = (TAG_INFO *) (((char *)info->tags) + ((info->header->tags * 4 + 511) / 512) * 512);
