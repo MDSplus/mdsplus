@@ -1,68 +1,104 @@
-public fun LASER_ND__init(as_is _nid, optional _method)
+public fun LASER_ND__store(as_is _nid, optional _method)
 {
     private _K_CONG_NODES = 12;
 
-	private _N_HEAD			= 0;
-	private _N_COMMENT		= 1;
+    private _N_HEAD		= 0;
+    private _N_COMMENT		= 1;
     private _N_IP_ADDRESS	= 2;
-    private _TRIG_SOURCE	= 3;
-    private _N_PORT			= 4;
+    private _N_PORT		= 3;
+    private _N_TRIG_SOURCE	= 4;
     private _N_NUM_PULSES	= 5;
     private _N_DELAY_PULSE	= 6;
-    private _N_OSC			= 7;
-    private _N_AMP			= 8;
+    private _N_OSC		= 7;
+    private _N_AMP		= 8;
     private _N_TOTAL		= 9;
 
-	private _ASCII_MODE = 0
+    private _ASCII_MODE = 0;
 
-    _ip = if_error(data(DevNodeRef(_nid, _N_IP_ADDRESS)),(DevLogErr(_nid, "Missing IP address"); abort();));
+write(*, "LASER Neodimium");
 
-    _port = if_error(data(DevNodeRef(_nid, _N_PORT)),(DevLogErr(_nid, "Missing TCP Port"); abort();));
+   _error = 0;
 
-    _n_pulses = if_error(data(DevNodeRef(_nid, _N_NUM_PULSES)),(DevLogErr(_nid, "Missing number of pulses"); abort();));
+    _ip = if_error(data(DevNodeRef(_nid, _N_IP_ADDRESS)), _error = 1);
+    if(_error)
+    {
+	DevLogErr(_nid, "Missing IP address"); 
+	abort();
+    }
 
-    _delay_pulse = if_error(data(DevNodeRef(_nid, _N_NUM_PULSES)),(DevLogErr(_nid, "Missing delay between pulse"); abort();));
+write(*, _ip);
+
+
+    _port = if_error(data(DevNodeRef(_nid, _N_PORT)), _error = 1);
+    if(_error)
+    {
+	DevLogErr(_nid, "Missing TCP Port");
+	abort();
+    }
+
+write(*, _port);
+
+    _n_pulses = if_error(data(DevNodeRef(_nid, _N_NUM_PULSES)), _error = 1);
+    if(_error)
+    {
+	DevLogErr(_nid, "Missing number of pulses");
+	abort();
+    }
+
+write(*, _n_pulses);
+
+    _delay_pulse = if_error(data(DevNodeRef(_nid, _N_DELAY_PULSE)), _error = 1);
+    if(_error)
+    {
+	DevLogErr(_nid, "Missing delay between pulse");
+	abort();
+    }
+
+write(*, _delay_pulse );
 
     _trig = if_error(data(DevNodeRef(_nid, _TRIG_SOURCE)),(DevLogErr(_nid, "Missing trigger source"); abort();));
+    if(_error)
+    {
+	DevLogErr(_nid, "Missing trigger source");
+	abort();
+    }
 
-	_sock = TCPOpenConnection(_ip, _port, _ASCII_MODE);
-	if(_sock == 0)
+   if( ( allocated (public _laser_nd_connected) ) == 0)
+   {
+
+	public _laser_nd_connected = 0;
+   }
+
+    if( ( public _laser_nd_connected ) == 0 )
+    {
+
+	public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE);
+	if(public _sock == 0)
 	{
 		DevLogErr(_nid, "Cannot connect to remote instruments"); 
 		abort();
 	}
+        public _laser_nd_connected = 1;
+    }    
 
-	if(TCPSendCommand(_sock, "ND_DUMP") == 0)
+
+	if(TCPSendCommand(public _sock, "ND_DUMP") == 0)
 	{
-		TCPCloseConnection(_sock);
 		DevLogErr(_nid, "Error during send  ND_DUMP command"); 
 		abort();
 	}
 
-	if((_msg = CheckAnswer(_sock) )!= "")
-	{
-		TCPCloseConnection(_sock);
-		DevLogErr(_nid, "Error in ND_DUMP command execution : "//_msg); 
-		abort();
-	}
 
 /* STORE OSC SIGNAL */
 
-	if(TCPSendCommand(_sock, "ND_GET_OSC") == 0)
+	if(TCPSendCommand(public _sock, "ND_GET_OSC") == 0)
 	{
-		CloseConnection(_sock);
 		DevLogErr(_nid, "Error during send  ND_GET_OSC command"); 
 		abort();
 	}
 
-	if((_msg = TCPCheckAnswer(_sock) )!= "")
-	{
-		CloseConnection(_sock);
-		DevLogErr(_nid, "Error in ND_GET_OSC command execution : "//_msg); 
-		abort();
-	}
 
-	_data = TCPReadFloat(_sock);
+	_data = TCPReadFloat(public _sock);
 
 	if( size( _data ) < 4)
 	{
@@ -78,21 +114,14 @@ public fun LASER_ND__init(as_is _nid, optional _method)
 
 /* STORE AMP SIGNAL */
 
-	if(TCPSendCommand(_sock, "ND_GET_AMP") == 0)
+	if(TCPSendCommand(public _sock, "ND_GET_AMP") == 0)
 	{
-		TCPCloseConnection(_sock);
 		DevLogErr(_nid, "Error during send  ND_GET_AMP command"); 
 		abort();
 	}
 
-	if((_msg = TCPCheckAnswer(_sock) )!= "")
-	{
-		TCPCloseConnection(_sock);
-		DevLogErr(_nid, "Error in ND_GET_AMP command execution : "//_msg); 
-		abort();
-	}
 
-	_data = TCPReadFloat(_sock);
+	_data = TCPReadFloat(public _sock);
 
 	if( size( _data ) < 2)
 	{
@@ -110,21 +139,13 @@ public fun LASER_ND__init(as_is _nid, optional _method)
 
 /* STORE TOTAL SIGNAL */
 
-	if(TCPSendCommand(_sock, "ND_GET_TOTAL") == 0)
+	if(TCPSendCommand(public _sock, "ND_GET_TOTAL") == 0)
 	{
-		CloseConnection(_sock);
 		DevLogErr(_nid, "Error during send  ND_GET_TOTAL command"); 
 		abort();
 	}
 
-	if((_msg = TCPCheckAnswer(_sock) )!= "")
-	{
-		CloseConnection(_sock);
-		DevLogErr(_nid, "Error in ND_GET_TOTAL command execution : "//_msg); 
-		abort();
-	}
-
-	_data = TCPReadFloat(_sock);
+	_data = TCPReadFloat(public _sock);
 
 	if( size( _data ) < 4)
 	{
@@ -138,8 +159,9 @@ public fun LASER_ND__init(as_is _nid, optional _method)
 		}
 	}
 
-	TCPCloseConnection(_sock);
-
+/*
+	TCPCloseConnection(public _sock);
+*/
 	return (1);
 
 }

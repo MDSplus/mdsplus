@@ -2,50 +2,110 @@ public fun LASER_ND__init(as_is _nid, optional _method)
 {
     private _K_CONG_NODES = 12;
 
-	private _N_HEAD			= 0;
-	private _N_COMMENT		= 1;
+    private _N_HEAD		= 0;
+    private _N_COMMENT		= 1;
     private _N_IP_ADDRESS	= 2;
-    private _TRIG_SOURCE	= 3;
-    private _N_PORT			= 4;
+    private _N_PORT		= 3;
+    private _TRIG_SOURCE	= 4;
     private _N_NUM_PULSES	= 5;
     private _N_DELAY_PULSE	= 6;
-    private _N_OSC			= 7;
-    private _N_AMP			= 8;
+    private _N_OSC		= 7;
+    private _N_AMP		= 8;
     private _N_TOTAL		= 9;
 
-	private _ASCII_MODE = 0
+    private _ASCII_MODE = 0;
 
-    _ip = if_error(data(DevNodeRef(_nid, _N_IP_ADDRESS)),(DevLogErr(_nid, "Missing IP address"); abort();));
+write(*, "LASER Neodimium");
 
-    _port = if_error(data(DevNodeRef(_nid, _N_PORT)),(DevLogErr(_nid, "Missing TCP Port"); abort();));
+   _error = 0;
 
-    _n_pulses = if_error(data(DevNodeRef(_nid, _N_NUM_PULSES)),(DevLogErr(_nid, "Missing number of pulses"); abort();));
+    _ip = if_error(data(DevNodeRef(_nid, _N_IP_ADDRESS)), _error = 1);
+    if(_error)
+    {
+	DevLogErr(_nid, "Missing IP address"); 
+	abort();
+    }
 
-    _delay_pulse = if_error(data(DevNodeRef(_nid, _N_NUM_PULSES)),(DevLogErr(_nid, "Missing delay between pulse"); abort();));
+write(*, _ip);
 
-	_sock = TCPOpenConnection(_ip, _port, _ASCII_MODE);
-	if(_sock == 0)
+
+    _port = if_error(data(DevNodeRef(_nid, _N_PORT)), _error = 1);
+    if(_error)
+    {
+	DevLogErr(_nid, "Missing TCP Port");
+	abort();
+    }
+
+write(*, _port);
+
+    _n_pulses = if_error(data(DevNodeRef(_nid, _N_NUM_PULSES)), _error = 1);
+    if(_error)
+    {
+	DevLogErr(_nid, "Missing number of pulses");
+	abort();
+    }
+
+write(*, _n_pulses);
+
+    _delay_pulse = if_error(data(DevNodeRef(_nid, _N_DELAY_PULSE)), _error = 1);
+    if(_error)
+    {
+	DevLogErr(_nid, "Missing delay between pulse");
+	abort();
+    }
+
+write(*, _delay_pulse );
+
+   if( ( allocated (public _laser_nd_connected) ) == 0)
+   {
+
+	public _laser_nd_connected = 0;
+   }
+
+    if( ( public _laser_nd_connected ) == 0 )
+    {
+
+	public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE);
+	if(public _sock == 0)
 	{
 		DevLogErr(_nid, "Cannot connect to remote instruments"); 
 		abort();
 	}
+        public _laser_nd_connected = 1;
+    }    
 
-	if(TCPSendCommand(_sock, "ND_CHARGE "//_n_pulses//" "//_delay_pulse) == 0)
+	if(TCPSendCommand(public _sock, "ND_DUMP") == 0)
 	{
-		TCPCloseConnection(_sock);
 		DevLogErr(_nid, "Error during send  ND_CHARGE command"); 
 		abort();
 	}
 
-	if((_msg = TCPCheckAnswer(_sock) )!= "")
+	wait(5);
+
+	if(TCPSendCommand(public _sock, "ND_INIT") == 0)
 	{
-		TCPCloseConnection(_sock);
-		DevLogErr(_nid, "Error in ND_CHARGE command execution : "//_msg); 
+		DevLogErr(_nid, "Error during send  ND_CHARGE command"); 
 		abort();
 	}
 
-	TCPCloseConnection(_sock);
+	wait(5);
 
+	if(TCPSendCommand(public _sock, "ND_CHARGE "//trim(adjustl(_n_pulses))//" "//trim(adjustl(_delay_pulse))) == 0)
+	{
+		DevLogErr(_nid, "Error during send  ND_CHARGE command"); 
+		abort();
+	}
+
+	wait(60);
+
+	if(TCPSendCommand(public _sock, "ND_PULSE") == 0)
+	{
+		DevLogErr(_nid, "Error during send  ND_CHARGE command"); 
+		abort();
+	}
+/*
+	TCPCloseConnection(_sock);
+*/
 	return (1);
 
 }
