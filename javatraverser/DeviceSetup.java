@@ -121,9 +121,9 @@ public class DeviceSetup extends JDialog
                                 DeviceSetup.this.subtree.doDeviceMethod(
                                     new NidData(DeviceSetup.this.baseNid), methods[j]);
                             }catch(Exception exc) {errmsg = exc.toString(); success = false;}
-                            if(success)
+                            if(!success)
                                 JOptionPane.showMessageDialog(DeviceSetup.this, 
-                                    "Error execution method " + methods[j] + ": "+errmsg,
+                                    "Error executing method " + methods[j] + ": "+errmsg,
                                     "Method execution report",
                                     JOptionPane.WARNING_MESSAGE);
                             else
@@ -138,14 +138,14 @@ public class DeviceSetup extends JDialog
             {
                 public void mousePressed(MouseEvent e)
                 {
-                    if(e.isPopupTrigger())
+                    if((e.getModifiers() & Event.META_MASK)!=0)
                         pop_methods.show(DeviceSetup.this, e.getX(), e.getY());
                 }
-                public void mouseReleased(MouseEvent e)
+                /*public void mouseReleased(MouseEvent e)
                 {
                     if(e.isPopupTrigger())
                         pop_methods.show(DeviceSetup.this, e.getX(), e.getY());
-                }
+                }*/
             });
         }
                 

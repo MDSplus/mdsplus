@@ -31,6 +31,13 @@ public class E1463Setup extends DeviceSetup
 		ScanMask.setLabelString("Scan Mask");
 		getContentPane().add(ScanMask);
 		ScanMask.setBounds(24,228,228,108);
+		{
+			String[] tempString = new String[3];
+			tempString[0] = "INIT";
+			tempString[1] = "ARM";
+			tempString[2] = "STORE";
+			deviceButtons1.setMethods(tempString);
+		}
 		getContentPane().add(deviceButtons1);
 		deviceButtons1.setBounds(96,336,281,40);
 		getContentPane().add(Dispatch);
