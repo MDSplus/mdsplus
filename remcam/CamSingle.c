@@ -41,8 +41,35 @@ int locnam(char *name, int a, int f, void *data, int mem, short *iosb) \
   return CamSingle(#remnam,name,a,f,data,mem,iosb); \
 }
 
-MakeSingle(CamPiow,cam$piow)
-MakeSingle(CamPioQrepw,cam$pioqrepw)
+MakeSingle(CamPiow,Piow)
+MakeSingle(CamPioQrepw,PioQrepw)
+
+
+static void getiosb(int serverid, short *iosb)
+{
+  int status;
+  struct descrip ans_d = {0,0,{0,0,0,0,0,0,0},0};
+  status = MdsValue(serverid,"_iosb",&ans_d,0);
+  if (status & 1 && ans_d.dtype == DTYPE_USHORT && ans_d.ndims == 1 && ans_d.dims[0] == 4)
+  {
+    memcpy(iosb,ans_d.ptr,8);
+    memcpy(RemCamLastIosb,ans_d.ptr,8);
+  }
+  if (ans_d.ptr)
+    free(ans_d.ptr);
+}
+
+static void getdata(int serverid, void *data)
+{
+  int status;
+  struct descrip ans_d = {0,0,{0,0,0,0,0,0,0},0};
+  status = MdsValue(serverid,"_data",&ans_d,0);
+  if (status & 1 && (ans_d.dtype == DTYPE_USHORT || ans_d.dtype == DTYPE_LONG) && ans_d.ptr)
+    memcpy(data,ans_d.ptr,(ans_d.dtype == DTYPE_SHORT) ? 2 : 4);
+  if (ans_d.ptr)
+    free(ans_d.ptr);
+}
+
 
 static int CamSingle(char *routine, char *name, int a, int f, void *data, int mem, short *iosb)
 {
@@ -53,8 +80,9 @@ static int CamSingle(char *routine, char *name, int a, int f, void *data, int me
     struct descrip data_d = {8,0,{0,0,0,0,0,0,0},0};
     struct descrip ans_d = {0,0,{0,0,0,0,0,0,0},0};
     char cmd[512];
-    sprintf(cmd,"CamSingle('%s','%s',%d,%d,%s,%d,_iosb)",routine,name,a,f,f < 8 ? "_data" : "_data=$",mem);
-    if (f < 8)
+    int istatus;
+    sprintf(cmd,"CamSingle('%s','%s',%d,%d,%s,%d,_iosb)",routine,name,a,f,f < 10 ? "_data" : "_data=$",mem);
+    if (f < 10)
     {
       status = MdsValue(serverid,cmd,&ans_d,0);
     }
@@ -64,19 +92,15 @@ static int CamSingle(char *routine, char *name, int a, int f, void *data, int me
       data_d.ptr = data;
       status = MdsValue(serverid,cmd,&data_d,&ans_d,0);
     }      
-    if (status & 1)
+    if (status & 1 && ans_d.dtype == DTYPE_LONG && ans_d.ptr)
     {
-      int i;
-      status = *(int *)ans_d.ptr;
-      for (i=0;i<4;i++)
-      {
-        RemCamLastIosb[i] = iosb[i] = (short)(((int *)ans_d.ptr)[i+1]);
-      }
-      for (i=5;i<ans_d.dims[0];i++)
-        if (mem < 24)
-          ((short *)data)[i-5] = (short)((int *)ans_d.ptr)[i];
-        else
-          ((int *)data)[i-5] = ((int *)ans_d.ptr)[i];
+      memcpy(&status,ans_d.ptr,4);
+      free(ans_d.ptr);
+      ans_d.ptr = 0;
+      if (data && f < 8)
+        getdata(serverid,data);
+      if (iosb)
+        getiosb(serverid,iosb);            
     }
   }
   return status;

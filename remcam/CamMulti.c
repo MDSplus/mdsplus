@@ -25,13 +25,13 @@ int locnam(char *name, int a, int f, int count, void *data, int mem, unsigned sh
   return CamMulti(#remnam,name,a,f,count,data,mem,iosb); \
 }
 
-MakeMulti(CamFQrepw,cam$fqrepw)
-MakeMulti(CamFQstopw,cam$fqstopw)
-MakeMulti(CamFStopw,cam$fstopw)
-MakeMulti(CamQrepw,cam$qrepw)
-MakeMulti(CamQscanw,cam$qscanw)
-MakeMulti(CamQstopw,cam$qstopw)
-MakeMulti(CamStopw,cam$stopw)
+MakeMulti(CamFQrepw,FQrepw)
+MakeMulti(CamFQstopw,FQstopw)
+MakeMulti(CamFStopw,Fstopw)
+MakeMulti(CamQrepw,Qrepw)
+MakeMulti(CamQscanw,Qscanw)
+MakeMulti(CamQstopw,Qstopw)
+MakeMulti(CamStopw,Stopw)
 
 static int DoCamMulti(char *routine, char *name, int a, int f, int count, void *data, int mem, short *iosb);
 
@@ -54,6 +54,32 @@ static int CamMulti(char *routine, char *name, int a, int f, int count, void *da
   return status;
 }
 
+static void getiosb(int serverid, short *iosb)
+{
+  int status;
+  struct descrip ans_d = {0,0,{0,0,0,0,0,0,0},0};
+  status = MdsValue(serverid,"_iosb",&ans_d,0);
+  if (status & 1 && ans_d.dtype == DTYPE_USHORT && ans_d.ndims == 1 && ans_d.dims[0] == 4)
+  {
+    memcpy(iosb,ans_d.ptr,8);
+    memcpy(RemCamLastIosb,ans_d.ptr,8);
+  }
+  if (ans_d.ptr)
+    free(ans_d.ptr);
+}
+
+static void getdata(int serverid, void *data)
+{
+  int status;
+  struct descrip ans_d = {0,0,{0,0,0,0,0,0,0},0};
+  status = MdsValue(serverid,"_data",&ans_d,0);
+  if (status & 1 && (ans_d.dtype == DTYPE_USHORT || ans_d.dtype == DTYPE_LONG) && ans_d.ptr)
+    memcpy(data,ans_d.ptr,((ans_d.dtype == DTYPE_USHORT) ? 2 : 4) * ans_d.dims[0]);
+  if (ans_d.ptr)
+    free(ans_d.ptr);
+}
+
+
 static int DoCamMulti(char *routine, char *name, int a, int f, int count, void *data, int mem, short *iosb)
 {
   int serverid = RemoteServerId();
@@ -64,7 +90,7 @@ static int DoCamMulti(char *routine, char *name, int a, int f, int count, void *
     struct descrip ans_d = {0,0,{0,0,0,0,0,0,0},0};
     char cmd[512];
     sprintf(cmd,"CamMulti('%s','%s',%d,%d,%d,%s,%d,_iosb)",routine,name,a,f,count,f < 8 ? "_data" : "_data=$",mem);
-    if (f < 8)
+    if (f < 10)
     {
       status = MdsValue(serverid,cmd,&ans_d,0);
     }
@@ -75,29 +101,15 @@ static int DoCamMulti(char *routine, char *name, int a, int f, int count, void *
       data_d.ptr = data;
       status = MdsValue(serverid,cmd,&data_d,&ans_d,0);
     }      
-    if (status & 1)
+    if (status & 1 && ans_d.dtype == DTYPE_LONG && ans_d.ptr)
     {
-      int i;
-      if (ans_d.dtype == DTYPE_LONG)
-      {
-        status = *(int *)ans_d.ptr;
-        for (i=0;i<4;i++)
-        {
-          iosb[i] = (short)(((int *)ans_d.ptr)[i+1]);
-        }
-        for (i=5;i<ans_d.dims[0];i++)
-          ((int *)data)[i-5] = ((int *)ans_d.ptr)[i];
-      }
-      else if (ans_d.dtype == DTYPE_SHORT)
-      {
-        status = (int)*(unsigned short *)ans_d.ptr;
-        for (i=0;i<4;i++)
-        {
-          RemCamLastIosb[i] = iosb[i] = ((short *)ans_d.ptr)[i+1];
-        }
-        for (i=5;i<ans_d.dims[0];i++)
-          ((short *)data)[i-5] = ((short *)ans_d.ptr)[i];
-      }
+      memcpy(&status,ans_d.ptr,4);
+      free(ans_d.ptr);
+      ans_d.ptr = 0;
+      if (data && f < 8)
+        getdata(serverid,data);
+      if (iosb)
+        getiosb(serverid,iosb);            
     }
   }
   return status;
