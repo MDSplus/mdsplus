@@ -9,13 +9,10 @@ Buildroot: /var/tmp/mdsplus
 Vendor: MIT Plasma Science and Fusion Center 
 Summary: MDSplus Data Acquisition System
 
-%ifos Linux
 AutoReqProv: no
-requires: openmotif
-%endif
 
-%ifos osf1
-AutoReqProv: no
+%ifos Linux
+requires: openmotif
 %endif
 
 %description
