@@ -1,7 +1,7 @@
 include $(MAKE_OPTIONS)
 
 OBJECTS = \
-	dummies.o \
+	dummies.o  \
 	librtl.o \
 	dasutil_routines4.o \
 	mdsmsg.o \
