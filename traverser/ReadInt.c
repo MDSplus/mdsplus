@@ -61,6 +61,14 @@ int ReadInt(char *expr, ...)
         ans = (int)malloc(sizeof(int));
         ans = *(int *)d_ptr->pointer;
       }
+      else if (d_ptr->dtype == DTYPE_WU) {
+        ans = (int)malloc(sizeof(int));
+        ans = *(unsigned short *)d_ptr->pointer;
+      }
+      else if (d_ptr->dtype == DTYPE_W) {
+        ans = (int)malloc(sizeof(int));
+        ans = *(short *)d_ptr->pointer;
+      }
       else if (d_ptr->dtype == DTYPE_BU) {
         ans = (int)malloc(sizeof(int));
         ans = *(char *)d_ptr->pointer;
