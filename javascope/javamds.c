@@ -14,6 +14,7 @@ static void MdsUpdate(char *exp, int shot)
     int status;
     
 	
+    if(!exp) return;
     if(shot == prev_shot && !strcmp(prev_exp, exp))
 	return;
 
