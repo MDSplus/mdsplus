@@ -90,7 +90,6 @@ class TwuSingleSignal
 
     private void fetchProperties(TwuDataProvider dp) throws Exception
     {
-        // checkForError() ; And fail on old errors? Why?
         try
         {
             // Don't remember errors and data from previous attempts
@@ -267,7 +266,6 @@ class TwuSingleSignal
     }
 
     protected synchronized float[] doFetch(TwuDataProvider dp, TWUFetchOptions opt)
-        throws Exception
     {
         TWUSignal bulk ;
 
@@ -280,7 +278,7 @@ class TwuSingleSignal
         return dp.SimplifiedGetFloats(bulk, isAbscissa, opt.total);
     }
 
-    private void createScalarData(TwuDataProvider dp) throws Exception
+    private void createScalarData(TwuDataProvider dp)
     {
         // an extra check to see if it really is a scalar
         if (fetchOptions.total == 1)
