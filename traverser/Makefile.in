@@ -26,7 +26,12 @@ SOURCES = \
 
 OBJECTS = $(SOURCES:.c=.o)
 
-all : @MAKEBINDIR@ @MAKEBINDIR@traverser @MAKEUIDDIR@ @MAKEUIDDIR@traverser.uid
+all : @MAKEBINDIR@ \
+@MAKEBINDIR@traverser \
+@MAKEUIDDIR@ \
+@MAKEUIDDIR@traverser.uid \
+$(top_srcdir)/man/man1 \
+$(top_srcdir)/man/man1/traverser.1.gz
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -38,12 +43,12 @@ clean :
 
 
 install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
 	$(INSTALL) -m 644  @MAKEUIDDIR@traverser.uid @uiddir@
 	$(INSTALL) -m 755  @MAKEBINDIR@traverser @bindir@
+	$(INSTALL) -m 755  $(top_srcdir)/man/man1/traverser.1.gz $(exec_prefix)/man/man1
+
+$(exec_prefix)/man/man1 :
+	mkdirhier $@
 
 @MAKEBINDIR@traverser : $(OBJECTS)
 	 $(CC) -o $@ $(CFLAGS) $(OBJECTS) -L@MAKELIBDIR@ -lXmdsShr -lMdsdcl -lTdiShr -lTreeShr -lMdsShr $(MLIBS) $(LIBS)
@@ -53,6 +58,13 @@ install:
 
 @MAKEUIDDIR@ :
 	mkdir @MAKEUIDDIR@
+
+$(top_srcdir)/man/man1 :
+	mkdirhier $@
+
+$(top_srcdir)/man/man1/traverser.1.gz : traverser.groff
+	groff -t -man -Tascii traverser.groff > $(top_srcdir)/man/man1/traverser.1
+	gzip $(top_srcdir)/man/man1/traverser.1
 
 @MAKEUIDDIR@traverser.uid : traverser.uil
 	$(UIL) -o $@ traverser.uil
