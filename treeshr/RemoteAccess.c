@@ -78,6 +78,21 @@ STATIC_ROUTINE int FindImageSymbol(char *name, void **sym)
 {
   STATIC_CONSTANT DESCRIPTOR(image,"MdsIpShr");
   struct descriptor symname = {0, DTYPE_T, CLASS_S, 0};
+  STATIC_CONSTANT int mdslib_library_linked = 0;
+  
+/*
+Manage name clash for MdsValue (defined both in mdsipshr and mdslib) by forcing library MdsLib to be loaded first.
+This does not make harm to treeshr, but avoids to load a wrong symbol when MdsLib's MdsValue is then loaded.
+*/
+  if(!mdslib_library_linked)
+  {
+   	STATIC_CONSTANT DESCRIPTOR(dummySymbol,"MdsOpen");
+  	STATIC_CONSTANT DESCRIPTOR(dummyImage,"MdsLib");
+	void *dummySym;
+ 	LibFindImageSymbol(&dummyImage,&dummySymbol,&dummySym);
+      	mdslib_library_linked = 1;
+  }
+
   symname.length = strlen(name);
   symname.pointer = name;
   return LibFindImageSymbol(&image,&symname,sym);
