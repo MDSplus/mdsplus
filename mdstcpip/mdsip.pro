@@ -1,6 +1,9 @@
-;/*
+pro setenv_,envstring
+if (!version.os ne 'MacOS') then setenv,envstring
+end
 
 Function MdsIPImage
+;Path to shared library
   case !version.os of
     'vms' : return,'mdsipshr'
     'windows' : return,'mdsipshr'
@@ -10,18 +13,29 @@ Function MdsIPImage
     'OSF' : return,'libMdsIpShr.so'
     'sunos' : return,'libMdsIpShr.so'
     'hp-ux' : begin
-              if getenv('MDS_SHLIB_PATH') eq '' then setenv,'MDS_SHLIB_PATH=/usr/lib'
+              if getenv('MDS_SHLIB_PATH') eq '' then setenv_,'MDS_SHLIB_PATH=/usr/lib'
               return,getenv('MDS_SHLIB_PATH')+'/libMdsIpShr.sl'
               end
-    else  : message,'MDS is not supported on this platform',/IOERROR
+    'MacOS': return,!dir+'libMdsIpShr.lib'
+    else  : message,'MDS is not supported on this platform',/IOERROR 
   endcase
 end
 
 function MdsRoutinePrefix
+;Descriptors or argc/argv convention?
+;Shouldn't need to be changed for macos
+;By the way, probably didn't need to port routines beginning with "Idl"
   if !version.os eq 'vms' then return,'' else return,'Idl'
 end
 
+function MdsGetAnsFn
+  if (!version.os eq 'vms') then return,"GetAnswerInfo" else return,"IdlGetAnsInfo"
+end
+
 Pro MdsMemCpy,outvar,inptr,num
+;Does pointer to input data need to be passed by value or reference?
+;VMS & else, passed by value
+;OSF by reference
   case !version.os of
     'vms' :  dummy = call_external('decc$shr','decc$memcpy',outvar,inptr,num,value=[0,1,1])
     'OSF' :  dummy = call_external(MdsIpImage(),MdsRoutinePrefix()+'memcpy',outvar,inptr,num,value=[0,0,1])
@@ -31,10 +45,11 @@ Pro MdsMemCpy,outvar,inptr,num
 end
 
 function mds$socket,quiet=quiet,status=status
-  sock = 0l
+  sockmin=1l-(!version.os eq 'MacOS')
+  sock=sockmin-1
   defsysv,'!MDS_SOCKET',exists=old_sock
   if not old_sock then defsysv,'!MDS_SOCKET',sock else tmp = execute('sock=!MDS_SOCKET')
-  if sock eq 0 then begin
+  if sock lt sockmin then begin
     status = 0
     if not keyword_set(quiet) then message,'Use MDS$CONNECT to connect to a host.',/continue
     return,0
@@ -60,7 +75,9 @@ pro Mds$SendArg,sock,n,idx,arg
   if dtype eq 14 then begin
     if (n_elements(arg) gt 1) then message,'Argument to MDS$PUT must be a scalar string',/ioerror
     length = strlen(arg)
-    argByVal = 1b
+    argByVal = 1b 
+;;;    if !version.os eq 'windows' then argByVal = 0b  ; removed as
+;;;    part of CVS update by Jeff Schachter 1998.08.21
   endif else begin
     argByVal = 0b
   endelse
@@ -71,12 +88,14 @@ end
 pro mds$connect,host,status=status,quiet=quiet,port=port
   mds$disconnect,/quiet
   if n_elements(port) ne 0 then begin
-    setenv,'mdsip='+strtrim(port,2)
+    setenv_,'mdsip='+strtrim(port,2)
   endif else if getenv('mdsip') eq '' then begin
-    setenv,'mdsip=8000'
+    setenv_,'mdsip=8000'
   endif
-  sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'ConnectToMds',host,value=[byte(not IsWindows())])
-  if (sock gt 0) then begin
+
+  sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'ConnectToMds',host,value=[byte(!version.os ne 'windows')])
+  sockmin=1l-(!version.os eq 'MacOS')
+  if (sock ge sockmin) then begin
     status = 1
     x=execute('!MDS_SOCKET = sock')
   endif else begin
@@ -112,8 +131,11 @@ function mds$value,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10
   answer = 0
   length = 0
   ansptr = 0l
+;Not sure here... hope Mac acts like others, if not maybe try OSF way
   if !version.os eq 'OSF' then ansptr = lonarr(2)
-  status = call_external(MdsIPImage(),MdsRoutinePrefix()+'GetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
+;;;;  status = call_external(MdsIPImage(),MdsRoutinePrefix()+'GetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
+;;; temporary fix Jeff Schachte 98.05.13
+  status = call_external(MdsIPImage(),MdsGetAnsFn(),sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
   if numbytes gt 0 then begin
     if dtype eq 14 then begin
       if ndims ne 0 then begin
@@ -177,7 +199,9 @@ pro mds$put,node,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,a
   answer = 0
   length = 0
   ansptr = 0l
-  status = call_external(MdsIPImage(),MdsRoutinePrefix()+'GetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
+;;;;  status = call_external(MdsIPImage(),MdsRoutinePrefix()+'GetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
+;;; temporary fix by Jeff Schachter 98.05.13
+  status = call_external(MdsIPImage(),MdsGetAnsFn(),sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
   if numbytes gt 0 then begin
     if dtype eq 14 then begin
       if ndims ne 0 then begin
