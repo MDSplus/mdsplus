@@ -1,22 +1,4 @@
-setenv MDSPLUS `pwd`
-#
-# TDI Functions
-#
-setenv MDS_PATH $MDSPLUS/tdi
-#
-# Test trees
-#
-setenv main_path $MDSPLUS/trees
-setenv subtree_path $main_path/subtree
 #
 # Shared image path
 #
 setenv SHLIB_PATH $MDSPLUS/shlib
-#
-# UID path
-#
-setenv UIDPATH $MDSPLUS/uid/%U
-#
-# Make Options
-#
-setenv MAKE_OPTIONS $MDSPLUS/MakeOptions.`uname`
