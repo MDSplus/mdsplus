@@ -1,7 +1,7 @@
 public fun RFXControl__add(in _path, out _nidout)
 {
 write(*,'RFXControl__add'); 
-    DevAddStart(_path, 'RFXControl', 833 + 341, _nidout);
+    DevAddStart(_path, 'RFXControl', 961 + 341, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -73,15 +73,15 @@ write(*,'RFXControl__add');
 	}
     for (_c = 1; _c <= 9; _c++)
     {
-        DevAddNode(_path // '.SIGNALS:USER_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // '.SIGNALS:SPARE_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     }
     for (_c = 10; _c <= 99; _c++)
     {
-        DevAddNode(_path // '.SIGNALS:USER_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // '.SIGNALS:SPARE_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
     for (_c = 100; _c <= 128; _c++)
     {
-        DevAddNode(_path // '.SIGNALS:USER_' // TEXT(_c, 3) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // '.SIGNALS:SPARE_' // TEXT(_c, 3) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     }
     for (_c = 1; _c <= 9; _c++)
     {
@@ -469,6 +469,23 @@ write(*,'RFXControl__add');
 /* Simulink model */
 	DevAddNode(_path // ':MODEL_1', 'NUMERIC', *, *, _nid);
 	DevAddNode(_path // ':MODEL_2', 'NUMERIC', *, *, _nid);
+
+/* User signals */
+    for (_c = 1; _c <= 9; _c++)
+    {
+        DevAddNode(_path // '.SIGNALS:USER_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+    }
+    for (_c = 10; _c <= 99; _c++)
+    {
+        DevAddNode(_path // '.SIGNALS:USER_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+	}
+    for (_c = 100; _c <= 256; _c++)
+    {
+        DevAddNode(_path // '.SIGNALS:USER_' // TEXT(_c, 3) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+    }
+
+
+
 
     DevAddEnd();
 }

@@ -38,7 +38,7 @@ public fun RFXControl__store(as_is _nid, optional _method)
 	
 	private _N_ADC_IN_1 = 30;
 	private _N_DAC_OUT_1 = 222;
-	private _N_USER_1 = 318;
+	private _N_USER_1 = 1174;
 	private _N_MODES_1 = 446;
 
 
@@ -130,7 +130,7 @@ write(*, _c);
 
 	_num_user_signals = MdsValue('Feedback->getNumUserSignals()');
 	write(*, 'Num User Signals: ', _num_user_signals);
-	if(_c > 128) _c = 128;
+	if(_c > 256) _c = 256;
 	for(_c = 0; _c < _num_user_signals; _c++)
 	{
 write(*, _c);
