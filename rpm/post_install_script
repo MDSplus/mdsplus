@@ -20,7 +20,7 @@ if (test "$RPM_INSTALL_PREFIX" != "")
   echo "MDSplus is now installed on your system. If you would like to"
   echo "have MDSplus environment variables setup for all users or"
   echo "install an MDSplus data server on your system please execute"
-  echo "$MDSPLUS_DIR/rpm/post_install_scrip
+  echo "$MDSPLUS_DIR/rpm/post_install_scrip"
   echo ""
   exit 0
 fi 
