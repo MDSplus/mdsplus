@@ -29,7 +29,7 @@ if ( test -r /etc/xinetd.d/globus-gatekeeper ); then
   rm -f /etc/xinetd.d/globus-gatekeeper
 fi
 if ( test -r /etc/xinetd.d/globus-gridftp ); then
-  rm -f /etc/xinetd.d/globus-grdiftp
+  rm -f /etc/xinetd.d/globus-gridftp
 fi
 if ( test -r /etc/xinetd.d/mdsip ); then
   rm -f /etc/xinetd.d/mdsip
