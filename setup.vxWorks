@@ -1,0 +1,21 @@
+#!/bin/csh
+
+setenv PATH ${PATH}:$VXWORKS_BASE/host/sun4-sunos4/bin:usr/openwin/bin:/usr/ccs/bin
+
+setenv MDSPLUS `pwd`
+#
+# TDI Functions
+#
+setenv MDS_PATH $MDSPLUS/tdi
+#
+# Test trees
+#
+setenv main_path $MDSPLUS/trees
+setenv subtree_path $main_path/subtree
+#
+#
+setenv MAKE_OPTIONS $MDSPLUS/MakeOptions.vxWorks
+setenv DEPEND .depend
+#
+# Platform specific setup
+#
