@@ -17,54 +17,9 @@
  * $Id$
  *
  * ------------------------------------------------------------------------ 
- * $Log$
- * Revision 1.19  2003/02/28 09:50:59  manduchi
- * New jScope version (7.2.2) supporting ssh tunneling
- *
- * Revision 1.18  2002/11/29 13:45:20  jgk
- * Some unimportant changes to the comment texts, in effect
- * going back to the situation of revision 1.14.
- *
- * Revision 1.17  2002/11/12 17:18:29  manduchi
- * Added support for waveform editing
- *
- * Revision 1.14  2002/09/20 12:37:08  jgk
- * Factored-out the (nested) class TwuFetchOptions in to its own source file.
- * Clarified a minor naming convention: Classes with names starting with TWU
- * are written such that they are not strongly bound to jScope, but can also
- * be used by other java based TEC Web-Umbrella clients.
- *
- * Revision 1.13  2002/09/04 14:11:25  manduchi
- * Fixed porting to jdk1.4
- *
- * Revision 1.9  2002/06/05 15:00:08  jgk
- * Tell the server to close the connection after sending
- * all the data.  This stops it "chunking" the data.
- *
- * Revision 1.8  2002/05/06 16:09:57  jgk
- * Fiddles (sorry).
- *
- * Revision 1.7  2002/05/06 16:07:10  jgk
- * Further adjustment suggested by Marco van de Giessen.
- *
- * Revision 1.6  2002/04/26 14:00:35  jgk
- * Added an error reporting method, as suggested by
- * Marco van de Giessen <A.P.M.vandeGiessen@phys.uu.nl>.
- *
- * Revision 1.5  2002/04/26 13:14:30  jgk
- * Changed End-Of-Line marker from Windows- to CVS standard.
- * No code changes (or at least, not intentional :-) ).
- *
- * Revision 1.4  2002/04/24 09:06:17  manduchi
- * Added Asdex Data Provider
- *
- * Revision 1.2  2002/04/09 16:25:41  jgk
- * Fixed zoming-bug in TWU support classes.
- *
- * Revision 1.1  2002/04/05 09:36:36  manduchi
- * Upgraded TWUDataProvider
- *
  * Derived from (matlab-) WUSignal.java Revision 1.6 2002/02/26 hrk/jgk
+ * I removed the automatic CVS log from this file; it can be read
+ * directly from the CVS repository with "cvs log".
  */
 /* ------------------------------------------------------------------------ */
 
