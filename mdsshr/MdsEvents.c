@@ -37,7 +37,7 @@ STATIC_THREADSAFE char *send_servers[256];		/* Send server names */
 STATIC_THREADSAFE HANDLE external_thread = 0;
 STATIC_THREADSAFE HANDLE external_event = 0;
 STATIC_THREADSAFE HANDLE thread_alive_event = 0;
-#define MAX_ACTIVE_EVENTS 5000   /* Maximum number events concurrently dealt with by processes */
+#define MAX_ACTIVE_EVENTS 50000   /* Maximum number events concurrently dealt with by processes */
 
 STATIC_THREADSAFE int external_shutdown = 0;
 STATIC_THREADSAFE int external_count = 0;          /* remote event pendings count */
@@ -645,7 +645,7 @@ struct msqid_ds {int msg_qnum; int msg_stime; int msg_rtime; int msg_ctime;};
 
 
 #define MAX_EVENTNAME_LEN 64 	 /* Maximum number of characters in event name */
-#define MAX_ACTIVE_EVENTS 5000   /* Maximum number events concurrently dealt with by processes */
+#define MAX_ACTIVE_EVENTS 50000   /* Maximum number events concurrently dealt with by processes */
 #define MAX_EVENTNAMES 	  1000   /* Maximum number of different event names */
 
 #define MAX_DATA_LEN 64		 /* Maximum number of bytes to be broadcasted by events */
@@ -1767,6 +1767,7 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
     /* Local stuff */
 
     /* First check wether the same name is already in use */
+    LockMdsShrMutex(&privateMutex,&privateMutex_initialized);
     for(i = 0; i < MAX_EVENTNAMES; i++)
       if(private_info[i].active && !strcmp(eventnam, private_info[i].name))
 	break;
@@ -1777,7 +1778,6 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
 
 
     /* define internal event dispatching structure */ 
-    LockMdsShrMutex(&privateMutex,&privateMutex_initialized);
     for(i = 0; i < MAX_EVENTNAMES; i++)
       if(private_info[i].active && !strcmp(eventnam, private_info[i].name) &&
 	 private_info[i].astadr == astadr && private_info[i].astprm == astprm)
@@ -1787,7 +1787,9 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
       for(i = 0; i < MAX_EVENTNAMES && private_info[i].active; i++);
       if(i == MAX_EVENTNAMES) /* if no free private event slot found */
       {
+        fprintf(stderr,"No more active event slots available. Ignoring event\n");
         status = 0;
+        UnlockMdsShrMutex(&privateMutex);
         goto cleanup;
       }
       strncpy(private_info[i].name, eventnam, MAX_EVENTNAME_LEN - 1);
@@ -1829,6 +1831,7 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
     for(i = 0; i < MAX_ACTIVE_EVENTS && shared_info[i].nameid != -1; i++);
     if(i == MAX_ACTIVE_EVENTS) /* If no free SharedEventInfo slot foud */
     {
+      fprintf(stderr,"Global event table full. Event ignored.\n");
       releaseLock();
       UnlockMdsShrMutex(&sharedMutex);
       status = 0;
@@ -1844,6 +1847,7 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
       for(j = 0; j < MAX_EVENTNAMES && shared_name[j].refcount > 0; j++);
       if(j == MAX_EVENTNAMES) /* If event names slot full */
       {
+        fprintf(stderr,"Global event name table full. Event ignored.\n");
 	releaseLock();
 	UnlockMdsShrMutex(&sharedMutex);
         status = 0;
@@ -1923,7 +1927,6 @@ int MDSEventCan(int eventid)
     for(i = 0; i < MAX_EVENTNAMES; i++)
 	if((i != local_eventid) && private_info[i].active && !strcmp(evinfo->name, private_info[i].name))
           name_in_use = 1;
-    UnlockMdsShrMutex(&privateMutex);
     if (!name_in_use)
     {
       getLock();
@@ -1958,8 +1961,8 @@ int MDSEventCan(int eventid)
       }
 
       releaseLock();
-      UnlockMdsShrMutex(&sharedMutex);
     }
+    UnlockMdsShrMutex(&privateMutex);
     evinfo->active = 0;
     return 0;
 }
