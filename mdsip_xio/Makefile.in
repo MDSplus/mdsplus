@@ -26,6 +26,9 @@ SERVER_SOURCES = \
 	mdsip_close_cb.c \
 	mdsip_current_time.c \
 	mdsip_do_message_cb.c \
+	mdsip_flip_header.c \
+	mdsip_flip_data.c \
+	mdsip_host_to_ipaddr.c \
 	mdsip_initialize_io.c \
 	mdsip_io_wait.c \
 	mdsip_new_client.c \
