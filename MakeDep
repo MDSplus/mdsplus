@@ -1,7 +1,0 @@
-#!/bin/sh
-make -f - << done
-include $(MAKE_OPTIONS)
-
-all :
-	find . -name '*.c' -exec $(MAKE_DEPEND)
-done
