@@ -1,6 +1,6 @@
 public fun RFXTimes__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXTimes', 47, _nidout);
+    DevAddStart(_path, 'RFXTimes', 49, _nidout);
     DevAddNode(_path // ':CLOSE_PNSS', 'NUMERIC', *, *, _nid);
 	tcl('add tag '//_path //':CLOSE_PNSS T_CLOSE_PNSS');
     DevAddNode(_path // ':CLOSE_PP1', 'NUMERIC', *, *, _nid);
@@ -95,6 +95,11 @@ public fun RFXTimes__add(in _path, out _nidout)
 	tcl('add tag '//_path //':START_PWM_R T_START_PWM_TC_REF');
     DevAddNode(_path // ':STOP_PWM_R', 'NUMERIC', *, *, _nid);
 	tcl('add tag '//_path //':STOP_PWM_R T_STOP_PWM_TC_REF');
+
+    DevAddNode(_path // ':START_PR', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':START_PR T_START_PR');
+    DevAddNode(_path // ':STOP_PR', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':STOP_PR T_STOP_PR');
 
 
     DevAddEnd();
