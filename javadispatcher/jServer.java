@@ -327,6 +327,20 @@ public class jServer extends MdsIp {
     catch (Exception exc) {
       port = 8002;
     }
+
+    if(args.length > 1)
+    {
+      String tclBatch = args[1];
+      Database tree = new Database();
+      try {
+        tree.evaluateData(Data.fromExpr("tcl(\'@"+tclBatch+"\')"), 0);
+      }catch(Exception exc)
+      {
+        System.err.println("Error executing initial TCL batch: " + exc);
+      }
+    }
+
+
     jServer server = new jServer(port);
     server.start();
 
