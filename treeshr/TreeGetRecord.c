@@ -109,8 +109,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 		  {
 		  case 2: *(short *)dptr->pointer = swapshort(dptr->pointer); break;
 		  case 4: *(int *)dptr->pointer = swapint(dptr->pointer); break;
-		  case 8: *(int *)dptr->pointer = swapint(dptr->pointer); 
-		          ((int *)dptr->pointer)[1] = swapint(dptr->pointer+sizeof(int)); break;
+		  case 8: *(_int64 *)dptr->pointer = swapquad(dptr->pointer); break;
 		  }
   	        }
 	      }

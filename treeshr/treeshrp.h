@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include <mdsdescrip.h>
+#include <mdstypes.h>
 #include <treeshr_hooks.h>
 
 /********************************************
@@ -78,6 +79,15 @@ typedef struct nci
 #define LoadInt(in,outp)   ((char *)(outp))[0] = ((char *)&in)[3]; ((char *)(outp))[1] = ((char *)&in)[2]; \
                            ((char *)(outp))[2] = ((char *)&in)[1]; ((char *)(outp))[3] = ((char *)&in)[0]
 
+static _int64 swapquad(char *in_c)
+{
+  _int64 out;
+  char *out_c = (char *)&out;
+  int i;
+  for (i=0;i<8;i++) out_c[7-i] = in_c[i];
+  return out;
+}
+
 static int swapint(char *in_c)
 {
   int out;
@@ -117,6 +127,15 @@ static int swapshort(char *in_c)
   char *out_c = (char *)&out;
   int i;
   for (i=0;i<2;i++) out_c[i] = in_c[i];
+  return out;
+}
+
+static _int64 swapquad(char *in_c)
+{
+  _int64 out;
+  char *out_c = (char *)&out;
+  int i;
+  for (i=0;i<8;i++) out_c[i] = in_c[i];
   return out;
 }
 
