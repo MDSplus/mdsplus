@@ -141,8 +141,10 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 
   }
 
-  protected void displayPageFormatAttributes(PageFormat myPageFormat)
+  static public void displayPageFormatAttributes(int idx, PageFormat myPageFormat)
       {
+      System.out.println("+----------------------------------------------------------+" );
+      System.out.println("Index = " + idx);
       System.out.println("Width = " + myPageFormat.getWidth());
       System.out.println("Height = " + myPageFormat.getHeight());
       System.out.println("ImageableX = " + myPageFormat.getImageableX());
@@ -155,7 +157,8 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                        o == PageFormat.LANDSCAPE ? "LANDSCAPE" :
                        o == PageFormat.REVERSE_LANDSCAPE ? "REVERSE_LANDSCAPE" :
                        "<invalid>"));
-      }
+      System.out.println("+----------------------------------------------------------+" );
+     }
 
 
   class PubVarDialog extends JDialog implements ActionListener {
@@ -442,7 +445,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     p.setSize(597, 844);
     p.setImageableArea(15., 15., 567., 814.);
     pageFormat.setPaper(p);
-    prnJob.validatePage(pageFormat);
+    //prnJob.validatePage(pageFormat);
     //displayPageFormatAttributes(pageFormat);
 
 
@@ -555,11 +558,12 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                 public void run()
                 {
                     setName("Print Dialog Thread");
+ //                   displayPageFormatAttributes(1, pageFormat);
  //                 pageFormat = prnJob.defaultPage(pageFormat);
                     if (prnJob.printDialog())
                       PrintAllWaves();
  //                 prnJob.validatePage(pageFormat);
- //                   displayPageFormatAttributes(pageFormat);
+ //                   displayPageFormatAttributes(2, pageFormat);
                 }
             };
             print_cnf.start();

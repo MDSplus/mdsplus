@@ -358,6 +358,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     public void PrintAllWaves(PrinterJob prnJob, PageFormat pf) throws PrinterException
     {
         prnJob.setPrintable(this, pf);
+//        jScope.displayPageFormatAttributes(3, pf);
         prnJob.print();
     }
 
@@ -369,6 +370,8 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         double width = pf.getImageableWidth();
         Graphics2D g2 = (Graphics2D)g;
         String ver = System.getProperty("java.version");
+
+//        jScope.displayPageFormatAttributes(4,pf);
 
 
         if(pageIndex == 0)
