@@ -75,7 +75,7 @@ DFLUSetupSetup.java\
 EM_FLU_TESTSetup.java\
 BOLOSetup.java\
 XRAYSetup.java\
-SXMSetup.java
+SXCSetup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
