@@ -259,18 +259,21 @@ int TclDispatch_show_server()
        {
         if (IS_WILD(ident.dscA_pointer))	/* contains wildcard?	*/
            {
-            static DYNAMIC_DESCRIPTOR(server);
             void  *ctx = 0;
-            while (0 /* ServerFindServers(&ctx,ident.dscA_pointer,&server) & 1 */)
+            char *server;
+            while (server = ServerFindServers(&ctx,ident.dscA_pointer))
                {
                 if (output)
 		{
                     char *info;
-                    TclTextOut(info=ServerGetInfo(full,server.dscA_pointer));
+                    char *header = strcpy(malloc(100+strlen(server)),"Checking server: ");
+                    strcat(header,server);
+                    TclTextOut(header);
+                    free(header);
+                    TclTextOut(info=ServerGetInfo(full,server));
                     free(info);
                 }
                }
-            str_free1_dx(&server);
            }
         else
            {
