@@ -58,7 +58,7 @@ public class RFXVISetupSetup extends DeviceSetup
     deviceField1.setLabelString("Comment: ");
     deviceField1.setNumCols(30);
     deviceField1.setIdentifier("");
-    deviceChoice1.setChoiceIntValues(new int[] {(int)0,(int)1,(int)2,(int)3,(int)4,(int)5,(int)6});
+    deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)5,(int)6,(int)7});
     deviceChoice1.setChoiceFloatValues(null);
     deviceChoice1.setConvert(true);
     deviceChoice1.setOffsetNid(2);

@@ -193,7 +193,7 @@ public class DEQUSetupSetup extends DeviceSetup {
     this.getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
     jTabbedPane1.add(jPanel1,   "TRCF ACQ");
     this.getContentPane().add(deviceButtons1,  BorderLayout.SOUTH);
-    jTabbedPane1.add(jPanel2,  "CADF ACQ");
+    jTabbedPane1.add(jPanel2,  "CADH ACQ");
     jPanel8.add(deviceField13, null);
     jPanel8.add(deviceField8, null);
     jPanel2.add(jPanel9, null);

@@ -58,10 +58,14 @@ RFXANSALDOSetup.java \
 IPC901Setup.java \
 CADHSetup.java \
 J221Setup.java \
-RFXVISetupSetup.java \
+L6810Setup.java \
+FXVISetupSetup.java \
 RFXVIConfigSetup.java \
 LASER_NDSetup.java\
-EDAMSetupSetup.java
+EDAMSetupSetup.java\
+DEQUSetupSetup.java\
+EM_GAINSetup.java\
+EM_EQU_TESTSetup.java
 
 
 SOURCES = ActionData.java\
