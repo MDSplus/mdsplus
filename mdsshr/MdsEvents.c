@@ -1,14 +1,146 @@
-#ifdef vxWorks
+#include <config.h>
+#if defined(vxWorks)
 int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
 int MDSEventCan(void *eventid) {}
 int MDSEvent(char *evname){}
-#else
-#ifdef WIN32
-int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
-int MDSEventCan(int eventid) {}
-int MDSEvent(char *evname){}
-#else
+#elif defined(HAVE_WINDOWS_H)
+#include <windows.h>
+#include <process.h>
 
+struct event_struct { char *eventnam;
+                      void (*astadr)(void *,int,char *);
+                      void *astprm;
+					  int len;
+					  char *data;
+					  unsigned long thread;
+					  HANDLE event;
+};
+static void EventActionProc(struct event_struct *event)
+{
+		(*event->astadr)(event->astprm,event->len,event->data);
+}
+
+static void EventThreadProc(struct event_struct *event)
+{
+	/*
+	UINT msgnum = RegisterWindowMessage("MDSplus Events");
+	MSG message;
+	int status;
+	HWND hWnd = GetTopWindow(NULL);
+	status = PeekMessage(&message,hWnd,msgnum,msgnum,PM_NOREMOVE);
+	while( (status = GetMessage(&message,hWnd,msgnum,msgnum)) != -1)
+	{
+    	_beginthread((void (*)(void *))EventActionProc,0,(void *)event);
+	}
+*/
+	/*
+	char pipename[256];
+	HANDLE pipe = INVALID_HANDLE_VALUE;
+	int status = ERROR_PIPE_BUSY;
+	char data[256];
+	int num;
+	for (num=0;(pipe == INVALID_HANDLE_VALUE) && (status == ERROR_PIPE_BUSY);num++)
+	{
+	  sprintf(pipename,"\\\\.\\pipe\\mdsevents\\%s\\%0x",event->eventnam,num);
+	  pipe = CreateNamedPipe(pipename,PIPE_ACCESS_INBOUND,PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,1,512,512,1000,0);
+	  if (pipe == INVALID_HANDLE_VALUE)
+	  {
+	    status = GetLastError();
+	    printf("Error creating pipe - %d\n",status);
+	  }
+	}
+	if (pipe != INVALID_HANDLE_VALUE)
+	{
+		while ((ConnectNamedPipe(pipe,0) != 0) && ((status = ReadFile(pipe,data,sizeof(data),&event->len,0)) != 0))
+	  {
+		event->data= memcpy(malloc(event->len),data,event->len);
+        _beginthread((void (*)(void *))EventActionProc,0,(void *)event);
+	  }
+	}
+	*/
+
+
+	while ( WaitForSingleObject(event->event,INFINITE) != WAIT_FAILED)
+	{
+		event->len = 0;
+		_beginthread((void (*)(void *))EventActionProc,0,(void *)event);
+	}
+	
+}
+
+int MDSEventAst(char *eventnam, void (*astadr)(void *,int,char *), void *astprm, int *eventid)
+{
+	struct event_struct *event = (struct event_struct *)malloc(sizeof(struct event_struct));
+	*eventid = (int)event;
+	event->eventnam = strcpy(malloc(strlen(eventnam)+1),eventnam);
+	event->astadr = astadr;
+	event->astprm = astprm;
+	event->event = CreateEvent(NULL, TRUE, FALSE, eventnam);
+	if (event->event == NULL) return(0);
+	event->thread = _beginthread( (void(*)(void *))EventThreadProc, 0, (void *)event);
+	return(event->thread != -1);
+}
+
+int MDSEventCan(int eventid) 
+{
+	return 0;
+}
+
+int MDSEvent(char *evname, int data_len, char *data)
+{
+	HANDLE handle = OpenEvent(EVENT_ALL_ACCESS,0,evname);
+	if (handle != NULL)
+		PulseEvent(handle);
+	CloseHandle(handle);
+	return 1;
+
+	/*
+	UINT msgnum = RegisterWindowMessage("MDSplus Events");
+	int status;
+	status = BroadcastSystemMessage(BSF_POSTMESSAGE,0, msgnum,32,19876);
+	return status;
+*/
+	/*
+	char pipename[256];
+	int status;
+	int num;
+	HANDLE pipe = 0;
+	for (num=0;(pipe != INVALID_HANDLE_VALUE);num++)
+	{
+	  sprintf(pipename,"\\\\.\\pipe\\mdsevents\\%s\\%0x",evname,num);
+	  pipe = CreateFile(pipename,GENERIC_WRITE,0,0,OPEN_EXISTING,0,0);
+	  if (pipe == INVALID_HANDLE_VALUE)
+	  {
+	    status = GetLastError();
+	    printf("Error creating pipe - %d\n",status);
+	  }
+	  else
+	  {
+		  int len_written = 0;
+		  status = WriteFile(pipe,data,data_len,&len_written,0);
+		  CloseHandle(pipe);
+	  }
+	}
+	return 1;
+	*/
+}
+#else
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#include "../servershr/servershrp.h"
+#define IPC_CREAT 42
+#define IPC_STAT 42
+#define IPC_RMID 42
+#define SETVAL 42
+#define SEM_UNDO 42
+#define IPC_EXCL 42
+#define SIGINT 42
+union semun {int val;};
+struct sembuf {int sem_num; int sem_op; int sem_flg;};
+struct msqid_ds {int msg_qnum; int msg_stime; int msg_rtime; int msg_ctime;};
+#undef close
+
+#else
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -20,6 +152,7 @@ int MDSEvent(char *evname){}
 #include <signal.h>
 #include <pthread.h>
 #include <unistd.h>
+#endif
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
@@ -140,6 +273,19 @@ static int getSemId()
   static int semId = 0;
   if(!semId) /* Acquire semaphore id if not done*/
   {
+#ifdef HAVE_WINDOWS_H
+	  semId = (int)CreateSemaphore(NULL,1,1,"MDSEvents Semaphore");
+	  if (semId == 0)
+	  {
+		  if (GetLastError() == ERROR_ALREADY_EXISTS)
+			  semId = (int)OpenSemaphore(SEMAPHORE_MODIFY_STATE,0,"MDSEvents Semaphore");
+	  }
+	  if (semId == 0)
+	  {
+		  printf("Error creating locking semaphore");
+		  semId = -1;
+	  }
+#else
     semId = semget(SEM_ID, 1, 0);
     if(semId == -1)
     {
@@ -168,6 +314,7 @@ static int getSemId()
       else
         perror("Error accessing locking semaphore");
     }
+#endif
   }
   return semId;
 }
@@ -175,6 +322,23 @@ static int getSemId()
 static int semSet(int lock)
 {
     int status;
+#ifdef HAVE_WINDOWS_H
+	if (lock)
+	{
+		status = WaitForSingleObject((HANDLE)getSemId(),INFINITE);
+		if (status != WAIT_FAILED)
+			semLocked = 1;
+	}
+	else
+	{
+		if (semLocked)
+		{
+			status = ReleaseSemaphore((HANDLE)getSemId(),1,0);
+			semLocked = 0;
+		}
+	}
+	return status;
+#else
     struct sembuf psembuf;
     psembuf.sem_num = 0;
     psembuf.sem_op = lock ? -1 : 1;
@@ -185,6 +349,7 @@ static int semSet(int lock)
     else
       semLocked = lock;
     return(status == 0);
+#endif
 }
 
 
@@ -1153,7 +1318,6 @@ void RemoveMessages()
     }
 }
 	
-#endif
 #endif
 
 

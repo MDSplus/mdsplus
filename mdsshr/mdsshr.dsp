@@ -120,10 +120,6 @@ SOURCE=.\dasutil_routines4.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\dummies.c
-# End Source File
-# Begin Source File
-
 SOURCE=.\librtl.c
 # End Source File
 # Begin Source File
@@ -137,6 +133,10 @@ SOURCE=.\MdsCompareXd.c
 # Begin Source File
 
 SOURCE=.\MdsCompress.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\MdsEvents.c
 # End Source File
 # Begin Source File
 
@@ -169,6 +169,10 @@ SOURCE=.\MdsShr.def
 # Begin Source File
 
 SOURCE=.\MdsXdRoutines.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\servershr\pthread_dummies.c
 # End Source File
 # End Target
 # End Project
