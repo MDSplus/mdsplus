@@ -6,7 +6,7 @@ top_srcdir=@top_srcdir@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@ @LIBDL@
+LIBS=@LIBS@ @LIBDL@ @LIBPTHREAD@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
@@ -17,14 +17,12 @@ SOURCES = \
         MdsCmprs.c \
         MdsCompareXd.c \
         MdsCompress.c \
-        MdsEventAst.c \
+        MdsEvents.c \
         MdsGet1DxA.c \
         MdsGet1DxS.c \
         MdsGetSetShotId.c \
         MdsPk.c \
-        MdsQ_Event.c \
         MdsSerialize.c \
-        MdsWtEvent.c \
         MdsXdRoutines.c
 
 OBJECTS = $(SOURCES:.c=.o)
@@ -48,7 +46,7 @@ install:
 	$(INSTALL) -m 755  @MAKELIBDIR@libMdsShr@SHARETYPE@ @libdir@
 
 @MAKELIBDIR@libMdsShr@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS)  -L@MAKELIBDIR@ -lipcs $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
 
 @MAKELIBDIR@libMdsShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
