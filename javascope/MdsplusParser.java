@@ -33,8 +33,8 @@ class MdsplusParser
         "STRING_OPCODE","SUBSCRIPT","SUBTRACT","SUM","SWITCH","TAN","TAND","TANH","TASK_OF","TEXT","TIME_OUT_OF","TINY",
         "TRANSLATE","TRIM","UBOUND","UNION","UNITS","UNITS_OF","UNARY_MINUS","UNARY_PLUS","UNSIGNED","UPCASE","USING",
         "VALIDATION","VALIDATION_OF","VALUE_OF","VAR","VECTOR","VERIFY","WAIT","WHEN_OF","WHILE","WINDOW_OF","WORD","WORD_UNSIGNED",
-        "WRITE","X_TO_I","ZERO"};
-        
+        "WRITE","X_TO_I","ZERO","LONG", "FS_FLOAT"};
+
 
     static boolean isKeyword(String str)
     {
@@ -42,9 +42,11 @@ class MdsplusParser
         for(int i = 0; i < keywords.length; i++)
             if(upStr.equals(keywords[i]))
                 return true;
+        if(str.startsWith("_")) //TDI variable
+          return true;
         return false;
     }
-    
+
     //Parses a TDI expression substituting each occurrence of name (which is not a keyword)
     //with <funName>(<name>)
     static String parseFun(String expr, String rightPart, String leftPart)
@@ -69,4 +71,3 @@ class MdsplusParser
         return outExpr;
     }
 }
-        
