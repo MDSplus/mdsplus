@@ -2,7 +2,6 @@
 #include <string.h>
 #include  <stdlib.h>
 #include <config.h>
-
 #ifdef HAVE_WINDOWS_H
 int MDSEventCan()
 {
