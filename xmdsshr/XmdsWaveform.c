@@ -1,4 +1,8 @@
 /*  CMS REPLACEMENT HISTORY, Element XMDSWAVEFORM.C */
+/*  *362   3-NOV-1997 18:55:52 MRL "remove dps" */
+/*  *361   3-NOV-1997 13:19:17 MRL "remove dps calls" */
+/*  *360   3-NOV-1997 13:17:20 MRL "remove dps calls" */
+/*  *359   3-NOV-1997 13:14:29 MRL "remove dps calls" */
 /*  *358  27-AUG-1997 15:12:00 TWF "Fix inline error messages" */
 /*  *357  27-AUG-1997 14:14:31 TWF "Fix multiline title" */
 /*  *356  27-AUG-1997 14:00:29 TWF "Add full error message reporting" */
@@ -480,13 +484,6 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
 
 #ifdef __VMS
 #include <lib$routines.h>
-#endif
-
-#ifndef _NO_DPS
-#define globalref extern
-#include <DPS/dpsXclient.h>
-#include <DPS/dpsops.h>
-static DPSContext printctx = 0;
 #endif
 
 /*------------------------------------------------------------------------------
@@ -2380,29 +2377,6 @@ void XmdsWaveformPrint(Widget w,FILE *fid,int width,int height,int rotate,
   (w,fid,width,height,rotate,title,window_title,inp_resolution);
 }
 
-#ifndef _NO_DPS
-static void SaveTextOut(ctx,buffer,count)
-  DPSContext ctx;
-  char *buffer;
-  unsigned count;
-{
-  static int lfseen = 0;
-  if (count == 1 && buffer[0] == '\n')
-  {
-    if (lfseen)
-      return;
-    else
-      lfseen = 1;
-  }
-  else
-    lfseen = 0;
-  fwrite(buffer,1,count,printfid);
-}
-
-static void SaveError()
-{
-}
-
 static void SetScale(int scaleit)
 {
   static int scaled = 0;
@@ -2413,15 +2387,15 @@ static void SetScale(int scaleit)
 
   if (scaleit)
   {
-    DPSgsave(printctx);
-    DPStranslate(printctx,0.,825. * (1. - scale));	/* Grid y values are set to ylimit-y (decwindows y are reversed from
-							   postscript), but the ylimit, normally 825, changes due to scale */
-    DPSscale(printctx,scale,scale);
+    fprintf(printfid,"gsave\n");
+    fprintf(printfid,"%g %g translate\n",0.,825. * (1. - scale));
+	/* Grid y values are set to ylimit-y (decwindows y are reversed from
+	   postscript), but the ylimit, normally 825, changes due to scale */
+    fprintf(printfid,"%g %g scale\n",scale,scale);
   }
   else
-    DPSgrestore(printctx);
+    fprintf(printfid,"grestore\n");
 }
-#endif /* _NO_DPS */
 
 static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp_total_height,int inp_rotate,
 		  char *title, char *window_title, int inp_resolution)
@@ -2433,7 +2407,6 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
 /* If multiple plot on a single page, the first plot printed must be the one located at top left hand corner. */
 
 {
-#ifndef _NO_DPS
 
 #ifdef __VMS
   static char *libname = "MDS$ROOT:[SYSLIB]MDS$LIB.PS";
@@ -2502,24 +2475,22 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
     width = width * scale;
     height = height * scale;
 
-    if (!printctx)
-      printctx = (DPSContext) DPSCreateTextContext(SaveTextOut,SaveError);    
     libfid = fopen(libname,"r");
     if (libfid == NULL)
       return;
-    DPSPrintf(printctx,"%%!PS-Adobe-3.0 EPSF-3.0\n");
+    fprintf(printfid,"%%!PS-Adobe-3.0 EPSF-3.0\n");
     {
       float llx = ((width_limit - width) * 72. / resolution) / 2 + margin * 72;
       float urx = llx + width * 72. / resolution;
       float lly = ((height_limit - height) * 72. / resolution) / 2 + margin * 72;
       float ury = lly + height * 72. / resolution;
       if (rotate == 0)
-        DPSPrintf(printctx,"%%%%BoundingBox: %f %f %f %f\n",llx,lly,urx,ury);
+        fprintf(printfid,"%%%%BoundingBox: %g %g %g %g\n",llx,lly,urx,ury);
       else
-        DPSPrintf(printctx,"%%%%BoundingBox: %f %f %f %f\n",lly,llx,ury,urx);
+        fprintf(printfid,"%%%%BoundingBox: %g %g %g %g\n",lly,llx,ury,urx);
 
       while (fgets(buf,500,libfid))
-        DPSWriteData(printctx,buf,strlen(buf));
+        fwrite(buf,1,strlen(buf),printfid);
       fclose(libfid);
 
       fontsize = 13. * 2. / 3.;      /* 2/3 gives the actual height of characters. */
@@ -2572,18 +2543,18 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
       if (fatom) fontsize = fontsize * fs->properties[i].card32 / 120.;
 
       if (rotate != 0)
-        DPStranslate(printctx,11. * 72. - (11. - 8.5) * 72. / 2.,(11. - 8.5) * 72. / 2.);
+        fprintf(printfid,"%g %g translate\n",11. * 72. - (11. - 8.5) * 72. / 2.,(11. - 8.5) * 72. / 2.);
       /* Rotation is around origin, so must move origin for proper plot position */
-      DPSrotate(printctx,rotate);
+      fprintf(printfid,"%d rotate\n",rotate);
 
       if (window_title && strlen(window_title))
       /* If window title, allow space at top of plot for printing window title. */
       {
         float yscale = 1. - fontsize * 1.5 * 1.25 / (height - 1.);
 
-        DPSfindfont(printctx,fontname);
-        DPSscalefont(printctx,fontsize * 1.5);	/* Specify 13 as fontsize (see note on fontsize) */
-        DPSPrintf(printctx,"setfont\n");
+        fprintf(printfid,"/%s findfont\n",fontname);
+        fprintf(printfid,"%g scalefont\n",fontsize * 1.5);	/* Specify 13 as fontsize (see note on fontsize) */
+        fprintf(printfid,"setfont\n");
 
   	if (rotate != 0) 
 	{
@@ -2594,36 +2565,36 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
 	    y = -(72. * (11. - 2. * margin) - height) / 2. 
 		- y * resinc - 72. * margin;
 
-          DPSPrintf(printctx,"(%s) %f %f centershow\n",window_title,
+          fprintf(printfid,"(%s) %g %g centershow\n",window_title,
             height_limit * 72. / resolution + 72. * 2. * margin,
 	    height - y - 1.125 * 1.5 * fontsize);
 
 	  /* Scale so bottom of plot still at same place, */
-          DPSscale(printctx,1.,yscale);
-          DPStranslate(printctx,0.,y * (yscale - 1));
+          fprintf(printfid,"%g %g scale\n",1.,yscale);
+          fprintf(printfid,"%g %g translate\n",0.,y * (yscale - 1));
 	}
 	else
 	{
-          DPSPrintf(printctx,"(%s) %f %f centershow\n",window_title,
+          fprintf(printfid,"(%s) %g %g centershow\n",window_title,
             width_limit * 72. / resolution + 72. * 2. * margin,ury - 1.125 * fontsize);
 
           /* Scale so bottom of plot still at same place, */
-           DPSscale(printctx,1.,yscale);
+           fprintf(printfid,"%g %g scale\n",1.,yscale);
 	}
       }
     }
 
-    DPSscale(printctx,.72 / .75,.72 / .75);
+    fprintf(printfid,"%g %g scale\n",.72 / .75,.72 / .75);
 
-    DPSsetlinewidth(printctx,.75);	/* Set line width so it generates a true 1/75 */
+    fprintf(printfid,"%g setlinewidth\n",.75);	/* Set line width so it generates a true 1/75 */
     /* .72/.75 should work, but it doesn't. */
     xoffset = xorigin * scale;
     yoffset = yorigin * scale;
 
-    DPSPrintf(printctx,"/fontsize %f def\n",fontsize * 1.5 / scale);	/* Fontsize definition needed for overlayshow */
-    DPSfindfont(printctx,fontname);
-    DPSscalefont(printctx,fontsize * 1.5 / scale);	/* Specify 13 as fontsize (see note on fontsize) */
-    DPSPrintf(printctx,"setfont\n");
+    fprintf(printfid,"/fontsize %g def\n",fontsize * 1.5 / scale);	/* Fontsize definition needed for overlayshow */
+    fprintf(printfid,"/%s findfont\n",fontname);
+    fprintf(printfid,"%g scalefont\n",fontsize * 1.5 / scale);	/* Specify 13 as fontsize (see note on fontsize) */
+    fprintf(printfid,"setfont\n");
   }
   else
   {
@@ -2644,14 +2615,14 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
   else
     y = -(resolution * (11. - 2. * margin) - height) / 2. - y * resinc - resolution * margin;
 
-  DPSgsave(printctx);
-  DPStranslate(printctx,x / resinc,y / resinc);	/* Center plot */
+  fprintf(printfid,"gsave\n");
+  fprintf(printfid,"%g %g translate\n",x / resinc,y / resinc);	/* Center plot */
  
   swidth = XtWidth(w) * resinc * scale;
   sheight = XtHeight(w) * resinc * scale;
 
-  DPSgsave(printctx);
-  DPSscale(printctx,1. / resinc,1. / resinc);
+  fprintf(printfid,"gsave\n");
+  fprintf(printfid,"%g %g scale\n",1. / resinc,1. / resinc);
 
   xstart = ((!inp_total_width) ? -1 : - (int) (XtBorderWidth(w)) * scale);
   xend = ((!inp_total_width) ? (int) (XtWidth(w) * scale) : XtWidth(w) * scale);
@@ -2664,9 +2635,9 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
     float xtest = xorigin*scale;
     float ytest = yorigin*scale;
 
-    DPSgsave(printctx);
-    DPSscale(printctx,resinc,resinc);
-    DPSsetlinewidth(printctx,.75*3);  /* Thick border around multi-frame */
+    fprintf(printfid,"gsave\n");
+    fprintf(printfid,"%g %g scale\n",resinc,resinc);
+    fprintf(printfid,"%g setlinewidth\n",.75*3);  /* Thick border around multi-frame */
 
     /* The following mess draws finds borders that intersect at the */
     /* corners and draws them in succession to obtain rounded corners. */
@@ -2674,59 +2645,59 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
     if (xoffset == xtest &&
       abs((yoffset/scale + inp_total_height) - (yorigin + XtHeight(w))) > 5)
     {
-      DPSmoveto(printctx,xstart,ystart);
-      DPSlineto(printctx,xstart,yend);
+      fprintf(printfid,"%g %g moveto\n",xstart,ystart);
+      fprintf(printfid,"%g %g lineto\n",xstart,yend);
       if (yoffset == ytest)
       {
-        DPSlineto(printctx,xend,yend);
+        fprintf(printfid,"%g %g lineto\n",xend,yend);
         if (abs((xoffset/scale + inp_total_width) - (xorigin + XtWidth(w))) < 5)
-          DPSlineto(printctx,xend,ystart);
+          fprintf(printfid,"%g %g lineto\n",xend,ystart);
       }
       else if (abs((xoffset/scale + inp_total_width) - (xorigin + XtWidth(w))) < 5)
       {
-        DPSstroke(printctx);
-        DPSmoveto(printctx,xend,yend);
-        DPSlineto(printctx,xend,ystart);
+        fprintf(printfid,"stroke\n");
+        fprintf(printfid,"%g %g moveto\n",xend,yend);
+        fprintf(printfid,"%g %g lineto\n",xend,ystart);
       }
-      DPSstroke(printctx);
+      fprintf(printfid,"stroke\n");
     }
     else if (yoffset == ytest && (xoffset != xtest ||
       abs((yoffset/scale + inp_total_height) - (yorigin + XtHeight(w))) > 5))
     {
-      DPSmoveto(printctx,xstart,yend);
-      DPSlineto(printctx,xend,yend);
+      fprintf(printfid,"%g %g moveto\n",xstart,yend);
+      fprintf(printfid,"%g %g lineto\n",xend,yend);
       if (abs((xoffset/scale + inp_total_width) - (xorigin + XtWidth(w))) < 5)
       {
-        DPSlineto(printctx,xend,ystart);
+        fprintf(printfid,"%g %g lineto\n",xend,ystart);
         if (abs((yoffset/scale + inp_total_height) - (yorigin + XtHeight(w))) < 5)
-          DPSlineto(printctx,xstart,ystart);
+          fprintf(printfid,"%g %g lineto\n",xstart,ystart);
       }
       else if (abs((yoffset/scale + inp_total_height) - (yorigin + XtHeight(w))) < 5)
       {
-        DPSstroke(printctx);
-        DPSmoveto(printctx,xstart,ystart);
-        DPSlineto(printctx,xend,ystart);
+        fprintf(printfid,"stroke\n");
+        fprintf(printfid,"%g %g moveto\n",xstart,ystart);
+        fprintf(printfid,"%g %g lineto\n",xend,ystart);
       }
-      DPSstroke(printctx);
+      fprintf(printfid,"stroke\n");
     }
     else if (abs((xoffset/scale + inp_total_width) - (xorigin + XtWidth(w))) < 5)
     {
-      DPSmoveto(printctx,xend,yend);
-      DPSlineto(printctx,xend,ystart);
+      fprintf(printfid,"%g %g moveto\n",xend,yend);
+      fprintf(printfid,"%g %g lineto\n",xend,ystart);
       if (abs((yoffset/scale + inp_total_height) - (yorigin + XtHeight(w))) < 5)
-        DPSlineto(printctx,xstart,ystart);
-      if (xoffset == xtest) DPSlineto(printctx,xstart,yend);
-      DPSstroke(printctx);
+        fprintf(printfid,"%g %g lineto\n",xstart,ystart);
+      if (xoffset == xtest) fprintf(printfid,"%g %g lineto\n",xstart,yend);
+      fprintf(printfid,"stroke\n");
     }
     else if (abs((yoffset/scale + inp_total_height) - (yorigin + XtHeight(w))) < 5)
     {
-      DPSmoveto(printctx,xend,ystart);
-      DPSlineto(printctx,xstart,ystart);
-      if (xoffset == xtest) DPSlineto(printctx,xstart,yend);
-      if (yoffset == ytest) DPSlineto(printctx,xend,yend);
-      DPSstroke(printctx);
+      fprintf(printfid,"%g %g moveto\n",xend,ystart);
+      fprintf(printfid,"%g %g lineto\n",xstart,ystart);
+      if (xoffset == xtest) fprintf(printfid,"%g %g lineto\n",xstart,yend);
+      if (yoffset == ytest) fprintf(printfid,"%g %g lineto\n",xend,yend);
+      fprintf(printfid,"stroke\n");
     }
-    DPSgrestore(printctx);
+    fprintf(printfid,"grestore\n");
   }
 
   if (title && strlen(title))
@@ -2736,12 +2707,12 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
 		/* Scale so top of plot still at same place, */
     float yoffset = 11 * resolution * (1. - yscale);
 		/* but bottom appears raised from original spot. */
-    DPStranslate(printctx,0.,yoffset);
-    DPSscale(printctx,1.,yscale);
+    fprintf(printfid,"%g %g translate\n",0.,yoffset);
+    fprintf(printfid,"%g %g scale\n",1.,yscale);
   }
 
-  DPSscale(printctx,resinc,resinc);
-  DPSPrintf(printctx,"%f %f %f %f dorectangleclip\n",xstart,ystart,xend - xstart,yend - ystart);
+  fprintf(printfid,"%g %g scale\n",resinc,resinc);
+  fprintf(printfid,"%g %g %g %g dorectangleclip\n",xstart,ystart,xend - xstart,yend - ystart);
 
   waveformPrint = 1;
   if (waveformCount(w)) GetPixVals(w,swidth,sheight);
@@ -2749,7 +2720,7 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
   waveformPrint = 0;
 
   SetScale(0);
-  DPSgrestore(printctx);	/* To clear clipping region */
+  fprintf(printfid,"grestore\n");	/* To clear clipping region */
 
   if (title && strlen(title))
   {
@@ -2763,18 +2734,17 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
     for (i = 0; i < length; i++)
     {
        char c[2];
-       DPSmoveto(printctx,middle+(x-middle)/scale,y);
+       fprintf(printfid,"%g %g moveto\n",middle+(x-middle)/scale,y);
        c[0]=title[i];
        c[1]=0;
        x += XTextWidth(waveformFontStruct(w), c, 1);
-       DPSshow(printctx,c);
+       fprintf(printfid,"(%s) show\n",c);
     }
     SetScale(0);
   }
 
-  DPSgrestore(printctx);
-  DPSPrintf(printctx,"\nshowpage\n");
-#endif /* _NO_DPS */
+  fprintf(printfid,"grestore\n");
+  fprintf(printfid,"\nshowpage\n");
 }
 
 static void DrawLines(Display *display,Window win,GC gc,XPoint *point,int kp, Dimension pwidth, Dimension pheight)
@@ -2899,7 +2869,6 @@ static void DrawLines(Display *display,Window win,GC gc,XPoint *point,int kp, Di
     XDrawLines(display,win,gc,point,kpnew,CoordModeOrigin);
     return;
   }
-#ifndef _NO_DPS
   else
   {
 
@@ -2908,8 +2877,8 @@ static void DrawLines(Display *display,Window win,GC gc,XPoint *point,int kp, Di
     int lastpoint = 0;
     int np = 0;
     SetScale(0);
-    DPSgsave(printctx);
-    DPSscale(printctx,1. / resinc,1. / resinc);
+    fprintf(printfid,"gsave\n");
+    fprintf(printfid,"%g %g scale\n",1. / resinc,1. / resinc);
     for (i = 1; i < kp; i++)
     {
       if (pen_down)
@@ -3007,9 +2976,8 @@ static void DrawLines(Display *display,Window win,GC gc,XPoint *point,int kp, Di
     {
       fprintf(printfid,"%d %d %d v\n",np,point[lastpoint].x,11 * resolution - point[lastpoint].y);
     }
-    DPSgrestore(printctx);
+    fprintf(printfid,"grestore\n");
   }
-#endif /* _NO_DPS */
 }
 
 static void DrawRectangles(Display *display,Window win,GC gc,XRectangle *rectangle,int num, Dimension pwidth, Dimension pheight)
@@ -3029,12 +2997,11 @@ static void DrawRectangles(Display *display,Window win,GC gc,XRectangle *rectang
     XDrawRectangles(display,win,gc,rectangle,n);
     return;
   }
-#ifndef _NO_DPS
   else
   {
     SetScale(0);
-    DPSgsave(printctx);
-    DPSscale(printctx,1. / resinc,1. / resinc);
+    fprintf(printfid,"gsave\n");
+    fprintf(printfid,"%g %g scale\n",1. / resinc,1. / resinc);
     for (i = 0; i < num; i++)
     {
       if (((rectangle[i].x >= 0 && rectangle[i].x < width) ||
@@ -3046,12 +3013,11 @@ static void DrawRectangles(Display *display,Window win,GC gc,XRectangle *rectang
 	   Note that theoretically the points could be outside the grid, yet some of it's sides
 	   could be in the grid.  However, for our application, this test is good enough. */
 
-	DPSPrintf(printctx,"%d %d %d %d dorectangle\n",
+	fprintf(printfid,"%d %d %d %d dorectangle\n",
 		  rectangle[i].x,11 * resolution - rectangle[i].y,rectangle[i].width,rectangle[i].height);
     }
-    DPSgrestore(printctx);
+    fprintf(printfid,"grestore\n");
   }
-#endif /* _NO_DPS */
 }
 
 static float *dashes_ps = 0;
@@ -3091,30 +3057,29 @@ static void DrawSegments(Display *display,Window win,GC gc,float *crosshairs,int
     XtFree((char *)line);
     return;
   }
-#ifndef _NO_DPS
   else
   {
     float *dashes = (float *) XtMalloc(num_dashes_ps * sizeof(float));
     float offset_dashes = offset_dashes_ps * resinc;
-    DPSgsave(printctx);
-    DPSnewpath(printctx);
+    fprintf(printfid,"gsave\n");
+    fprintf(printfid,"newpath\n");
     for (i = 0; i < num_dashes_ps; i++) dashes[i] = dashes_ps[i] * resinc;
-    if (gc == dash_gc) DPSsetdash(printctx,dashes,num_dashes_ps,offset_dashes);
+    if (gc == dash_gc) fprintf(printfid,"[%d %d] %d setdash\n",
+	     (int) (dashes),num_dashes_ps,(int) offset_dashes);
     XtFree((char *)dashes);
-    DPSscale(printctx,1. / resinc,1. / resinc);
-    DPSsetlinewidth(printctx,.25);	/* Width for grid lines*/
+    fprintf(printfid,"%g %g scale\n",1. / resinc,1. / resinc);
+    fprintf(printfid,"%g setlinewidth\n",.25);	/* Width for grid lines*/
     for (i = 0; i < num * 4; i = i + 4)
     {
       fprintf(printfid,"%d %d mv\n",(int) (crosshairs[i] * scale * resinc),
 	      (int) (11 * resolution) - (int) (crosshairs[i + 2] * scale * resinc));
       fprintf(printfid,"%d %d ln\n",(int) (crosshairs[i + 1] * scale * resinc),
 	      (int) (11 * resolution) - (int) (crosshairs[i + 3] * scale * resinc));
-      DPSstroke(printctx);
+      fprintf(printfid,"stroke\n");
     }
-    DPSgrestore(printctx);
-    DPSsetdash(printctx,0,0,0);
+    fprintf(printfid,"grestore\n");
+    fprintf(printfid,"[] 0 setdash\n");
   }
-#endif /* _NO_DPS */
 }
 
 static void DrawString(XmdsWaveformWidget w,Display *display,Window win,GC gc,float x,float y,char *label,int length)
@@ -3126,20 +3091,18 @@ static void DrawString(XmdsWaveformWidget w,Display *display,Window win,GC gc,fl
     XDrawString(display,win,gc,sx,sy,label,length);
     return;
   }
-#ifndef _NO_DPS
   else
   {
     int i;
     SetScale(1);
     if (x < 0)
-      DPSPrintf(printctx,"(%s) %f %f centershow\n",label,-x*2,825. - y);
+      fprintf(printfid,"(%s) %g %g centershow\n",label,-x*2,825. - y);
     else
     {
-      DPSmoveto(printctx,x,825. - y);
-      DPSshow(printctx,label);
+      fprintf(printfid,"%g %g moveto\n",x,825. - y);
+      fprintf(printfid,"(%s) show\n",label);
     }
   }
-#endif /* _NO_DPS */
 }
 
 void XmdsWaveformReverse(Widget w,int reverse)
