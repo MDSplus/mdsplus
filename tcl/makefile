@@ -16,6 +16,7 @@ OBJFILES = 			\
 	libTcl.a(tcl_directory.o)	\
 	libTcl.a(tcl_directory_tag.o)	\
 	libTcl.a(tcl_do_method.o)	\
+	libTcl.a(tcl_do_node.o)	\
 	libTcl.a(tcl_edit.o)		\
 	libTcl.a(tcl_rename.o)		\
 	libTcl.a(tcl_set_callbacks.o)	\
@@ -23,6 +24,7 @@ OBJFILES = 			\
 	libTcl.a(tcl_set_default.o)	\
 	libTcl.a(tcl_set_node.o)	\
 	libTcl.a(tcl_set_tree.o)	\
+	libTcl.a(tcl_show_current.o)	\
 	libTcl.a(tcl_show_data.o)	\
 	libTcl.a(tcl_verify_tree.o)	\
 	libTcl.a(tcl_write.o)
