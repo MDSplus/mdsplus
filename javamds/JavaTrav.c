@@ -146,7 +146,7 @@ static char buf[1000];
  { 
     status = TreeOpen((char *)name, shot, is_readonly);
   (*env)->ReleaseStringUTFChars(env, jname, name);
-  printf("APERTO: %s\n", MdsGetMsg(status));
+  //printf("APERTO: %s\n", MdsGetMsg(status));
  }
  /*  //printf("Aperto\n");*/
 
