@@ -3,7 +3,6 @@
 #       standard mdsip.hosts and logs into /var/log/mdsplus.
 service mdsip
 {
-        flags           = REUSE
         socket_type     = stream
         wait            = no
         user            = root
