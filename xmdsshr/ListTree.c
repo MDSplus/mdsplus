@@ -1712,8 +1712,6 @@ ListTreeItem *item;
       ret.event = NULL;
       XtCallCallbacks((Widget) w, XtNdestroyItemCallback, &ret);
     }
-    /* added 3/6/98 Josh Stillerman jas@psfc.mit.edu */
-    item->parent=NULL;
 
     XtFree((char *) item->text);
     XtFree((char *) item);
