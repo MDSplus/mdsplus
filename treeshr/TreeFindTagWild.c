@@ -89,7 +89,7 @@ char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
 /*************************************
   Loop looking for a tag that matches
 **************************************/
-  for (found = 0, done = 0; status && !found && !done;)
+  for (found = 0, done = 0; (status & 1) && !found && !done;)
   {
 
   /*************************************
@@ -139,7 +139,7 @@ char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
 	  static struct descriptor_s s_tag_dsc = { sizeof(TAG_NAME), DTYPE_T, CLASS_S, 0};
 	  static struct descriptor_d tag_dsc = {0, DTYPE_T, CLASS_D, 0};
           s_tag_dsc.pointer = 
-             (char *) (*ctx)->this_tree_info->tag_info[(*ctx)->this_tree_info->tags[(*ctx)->next_tag]].name;
+             (char *) (*ctx)->this_tree_info->tag_info[swapint((char *)&(*ctx)->this_tree_info->tags[(*ctx)->next_tag])].name;
 	  StrTrim(&tag_dsc, &s_tag_dsc,&len);
 	  if (StrMatchWild(&tag_dsc, &((*ctx)->search_tag)) & 1)
 	  {
@@ -165,10 +165,10 @@ char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
       static struct descriptor_s tag_name =  {sizeof(TAG_NAME), DTYPE_T, CLASS_S, tagname};
       unsigned short len;
       s_tag_name.pointer = 
-           (char *) (*ctx)->this_tree_info->tag_info[(*ctx)->this_tree_info->tags[(*ctx)->next_tag]].name;
+           (char *) (*ctx)->this_tree_info->tag_info[swapint((char *)&(*ctx)->this_tree_info->tags[(*ctx)->next_tag])].name;
       StrTrim(&tag_name, &s_tag_name,&len);
       tagname[len]='\0';
-      nptr += (*ctx)->this_tree_info->tag_info[(*ctx)->this_tree_info->tags[(*ctx)->next_tag]].node_idx;
+      nptr += (*ctx)->this_tree_info->tag_info[swapint((char *)&(*ctx)->this_tree_info->tags[(*ctx)->next_tag])].node_idx;
     }
     else
       strcpy(tagname,"TOP");
@@ -208,10 +208,10 @@ static TAG_SEARCH *NewTagSearch(char *tagnam_ptr)
   TAG_SEARCH *ctx = (TAG_SEARCH *) malloc(sizeof(TAG_SEARCH));
   static struct descriptor_d empty = {0, DTYPE_T, CLASS_D, 0};
   struct descriptor tag_dsc = {0, DTYPE_T, CLASS_S, 0};
-  int       tree_len;
+  unsigned short tree_len;
   int       garbage;
   char *cptr;
-  static int one = 1;
+  static unsigned short one = 1;
   tag_dsc.length = strlen(tagnam_ptr);
   tag_dsc.pointer = tagnam_ptr;
   ctx->search_tag = empty;
@@ -236,6 +236,8 @@ static TAG_SEARCH *NewTagSearch(char *tagnam_ptr)
     StrCopyDx(&ctx->search_tag, &tag_dsc);
   else
     StrCopyR(&ctx->search_tag, &one, "*");
+  StrUpcase(&ctx->search_tree,&ctx->search_tree);
+  StrUpcase(&ctx->search_tag,&ctx->search_tag);
   ctx->top_match = StrMatchWild(&top, &ctx->search_tag) & 1;
   return ctx;
 }

@@ -1126,7 +1126,7 @@ static int FindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *t
 static int BsearchCompare(const void *this_one, const void *compare_one)
 {
   struct tag_search *tsearch = (struct tag_search *)this_one;
-  unsigned char *tag = (tsearch->info->tag_info + *(int *)compare_one)->name;
+  unsigned char *tag = (tsearch->info->tag_info + swapint((char *)compare_one))->name;
 
 /******************************************
  This routine is called by bsearch during
