@@ -90,6 +90,7 @@ printf("\nEndCheck: %d %s\n", xd.pointer->length, xd.pointer->pointer);
    }
    */
    ris = DescripToObject(env, out_xd.pointer);
+
    MdsFree1Dx(&out_xd, NULL);
    return  ris;
 }  
@@ -111,6 +112,8 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
   jdoubleArray jdoubles;
   jobjectArray jobjects;
   jfieldID data_fid, opcode_fid;
+  float *float_buf;
+  double *double_buf;
 
   char message[64];
   struct descriptor_a *array_d;
@@ -124,7 +127,7 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
     {
       return  NULL;
     }
- /*printf("DescripToObject dtype = %d class = %d\n", desc->dtype, desc->class);
+/*printf("DescripToObject dtype = %d class = %d\n", desc->dtype, desc->class);
 */
   if(desc->class == CLASS_XD)
     return DescripToObject(env, ((struct descriptor_xd *)desc)->pointer);
@@ -175,17 +178,24 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_FS :
         case DTYPE_F:
-		  cls = (*env)->FindClass(env, "FloatData");
-		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(F)LData;");
-		  if(desc->dtype == DTYPE_F)
-			  CvtConvertFloat(desc->pointer, DTYPE_F, &args[0].f, DTYPE_FS, 0);
+		case DTYPE_FSC:
+			cls = (*env)->FindClass(env, "FloatData");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(FI)LData;");
+		  if(desc->dtype != DTYPE_FS)
+			CvtConvertFloat(desc->pointer, desc->dtype, &args[0].f, DTYPE_FS, 0);
 		  else
 			args[0].f = *(float *)desc->pointer;
+		  args[1].i = desc->dtype;
 		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-        case DTYPE_DOUBLE : 
+		case DTYPE_FTC:
+		case DTYPE_FT:
+		case DTYPE_D :
+		case DTYPE_G :
 		  cls = (*env)->FindClass(env, "DoubleData");
-		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(D)LData;");
-		  args[0].d = *(float *)desc->pointer;
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(DI)LData;");
+		  CvtConvertFloat(desc->pointer, desc->dtype, &args[0].d, DTYPE_DOUBLE, 0);
+		  args[0].d = *(double *)desc->pointer;
+		  args[1].i = desc->dtype;
 		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_T :
 		  cls = (*env)->FindClass(env, "StringData");
@@ -294,12 +304,42 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 				args[1].z = is_unsigned;
 				if(is_ca) MdsFree1Dx(&ca_xd, 0);
 				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-			case DTYPE_D:
-			case DTYPE_G:
-			case DTYPE_H:
-			case DTYPE_F: 
-			case DTYPE_FLOAT: /* //Let Tdi handle all the floating point stuff */
-				status = TdiFloat(array_d, &float_xd MDS_END_ARG);
+
+	        case DTYPE_FS :
+			case DTYPE_F:
+			case DTYPE_FSC:
+				float_buf = malloc(sizeof(float) * length);
+				if(array_d->dtype == DTYPE_FS)
+					memcpy(float_buf, array_d->pointer, sizeof(float) * length);
+				else
+					for(i = 0; i < length; i++)
+						CvtConvertFloat(&((float *)array_d->pointer)[i], desc->dtype, &float_buf[i], DTYPE_FS, 0);
+				cls = (*env)->FindClass(env, "FloatArray");
+				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([FI)LData;");
+				jfloats = (*env)->NewFloatArray(env, length);
+				(*env)->SetFloatArrayRegion(env, jfloats, 0, length, (jfloat *)float_buf);
+				args[0].l = jfloats;
+				args[1].i = array_d->dtype;
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+				
+			case DTYPE_FTC:
+			case DTYPE_FT:
+			case DTYPE_D :
+			case DTYPE_G :
+				double_buf = malloc(sizeof(double) * length);
+				for(i = 0; i < length; i++)
+					CvtConvertFloat(&((double *)array_d->pointer)[i], desc->dtype, &double_buf[i], DTYPE_DOUBLE, 0);
+				cls = (*env)->FindClass(env, "DoubleArray");
+				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([FI)LData;");
+				jdoubles = (*env)->NewDoubleArray(env, length);
+				(*env)->SetDoubleArrayRegion(env, jdoubles, 0, length, (jdouble *)double_buf);
+				args[0].l = jdoubles;
+				args[1].i = array_d->dtype;
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+			
+/*				status = TdiFloat(array_d, &float_xd MDS_END_ARG);
 				if(!(status & 1))
 				{
 					printf(MdsGetMsg(status));
@@ -321,7 +361,7 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 				(*env)->SetDoubleArrayRegion(env, jdoubles, 0, length, (jdouble *)array_d->pointer);
 				args[0].l = jdoubles;
 				if(is_ca) MdsFree1Dx(&ca_xd, 0);
-				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);*/
 			case DTYPE_T:
 				cls = (*env)->FindClass(env, "StringArray");
 				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([Ljava/lang/String;)LData;");
@@ -396,6 +436,9 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
  	case DTYPE_RANGE: cls = (*env)->FindClass(env, "RangeData"); 
 	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
+ 	case DTYPE_SLOPE: cls = (*env)->FindClass(env, "SlopeData"); 
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
+			  break;   
 	}
         obj = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 	data_cls = (*env)->FindClass(env, "Data");
@@ -446,7 +489,8 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
       descs_fid,
       opcode_fid,
       dtype_fid,
-      dclass_fid;
+      dclass_fid,
+	  flags_fid;
     static DESCRIPTOR_A(template_array, 0, 0, 0, 0);
     struct descriptor_a *array_d;
     static DESCRIPTOR_R(template_rec, 0, 1);
@@ -550,12 +594,18 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 			    desc->length = sizeof(float);
 			    desc->pointer = (char *)malloc(desc->length);
 			    *(float *)desc->pointer = (*env)->GetFloatField(env, obj, datum_fid);
+				flags_fid = (*env)->GetFieldID(env, cls, "flags", "I");
+				desc->dtype = (unsigned char)(*env)->GetIntField(env, obj, flags_fid);
+				CvtConvertFloat(desc->pointer, DTYPE_FS, desc->pointer, desc->dtype, 0);
 			    return desc;
 		  case DTYPE_DOUBLE:
 			    datum_fid = (*env)->GetFieldID(env, cls, "datum", "D");
 			    desc->length = sizeof(double);
 			    desc->pointer = (char *)malloc(desc->length);
 				*(double *)desc->pointer = (*env)->GetDoubleField(env, obj, datum_fid);
+				flags_fid = (*env)->GetFieldID(env, cls, "flags", "I");
+				desc->dtype = (unsigned char)(*env)->GetIntField(env, obj, flags_fid);
+				CvtConvertFloat(desc->pointer, DTYPE_DOUBLE, desc->pointer, desc->dtype, 0);
 			    return desc;
 		default:
 		  printf("\nUnsupported type for CLASS_S: %d\n", dtype);
@@ -634,7 +684,10 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 		    array_d->length = sizeof(float);
 		    array_d->arsize = array_d->length * length;
 		    array_d->pointer = (char *)malloc(array_d->arsize);
-		    memcpy(array_d->pointer, floats, array_d->arsize);
+			flags_fid = (*env)->GetFieldID(env, cls, "flags", "I");
+			array_d->dtype = (unsigned char)(*env)->GetIntField(env, obj, flags_fid);
+			for(i = 0; i < length; i++)
+				CvtConvertFloat(&floats[i], DTYPE_FS, &((float *)array_d->pointer)[i], array_d->dtype, 0);
 		    (*env)->ReleaseFloatArrayElements(env, jfloats, floats, 0);
 		    return (struct descriptor *)array_d;
 		  case DTYPE_DOUBLE:
@@ -645,7 +698,10 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 		    array_d->length = sizeof(double);
 		    array_d->arsize = array_d->length * length;
 		    array_d->pointer = (char *)malloc(array_d->arsize);
-		    memcpy(array_d->pointer, doubles, array_d->arsize);
+			flags_fid = (*env)->GetFieldID(env, cls, "flags", "I");
+			array_d->dtype = (unsigned char)(*env)->GetIntField(env, obj, flags_fid);
+			for(i = 0; i < length; i++)
+				CvtConvertFloat(&doubles[i], DTYPE_DOUBLE, &((double *)array_d->pointer)[i], array_d->dtype, 0);
 		    (*env)->ReleaseDoubleArrayElements(env, jdoubles, doubles, 0);
 		    return (struct descriptor *)array_d;
 		  case DTYPE_T:

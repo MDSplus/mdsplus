@@ -294,9 +294,6 @@ printf(out_xd.pointer->pointer);*/
 /*printf("Parte DescripToObject\n");*/
 
   ris = DescripToObject(env, xd.pointer);
-
-/*printf("Finita DescripToObject\n");*/
-
   MdsFree1Dx(&xd, NULL);
 
   return ris;
