@@ -956,8 +956,8 @@ public class K3115Setup
     jPanel21114.setPreferredSize(new Dimension(67, 45));
     jPanel2116.setPreferredSize(new Dimension(67, 45));
     jPanel17.setLayout(flowLayout20);
-    jPanel17.setPreferredSize(new Dimension(-2, 10));
-    jPanel18.setPreferredSize(new Dimension(-2, 10));
+    jPanel17.setPreferredSize(new Dimension(-11, 10));
+    jPanel18.setPreferredSize(new Dimension(-11, 10));
     deviceDispatch1.setLayout(flowLayout21);
     deviceDispatch1.setFont(new java.awt.Font("Dialog", 1, 11));
     jPanel19.setPreferredSize(new Dimension(-2, 10));
