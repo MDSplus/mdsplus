@@ -323,7 +323,26 @@ int FindNodeWildRemote(PINO_DATABASE *dblist, char *path, int *nid_out, void **c
 
 char *FindNodeTagsRemote(PINO_DATABASE *dblist, int nid_in, void **ctx_ptr)
 {
-	return NULL;
+  struct descrip ans = empty_ans;
+  char exp[64];
+  static char tagname[64];
+  int status;
+  char *tag = 0;
+  sprintf(exp,"TreeFindNodeTags(%d)",nid_in);
+  status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+  if (ans.ptr)
+  {
+    if (ans.dtype == DTYPE_T)
+    {
+      if (strlen(ans.ptr) > 0)
+      {
+        strcpy(tagname,ans.ptr);
+        tag = tagname;
+      }
+      MdsIpFree(ans.ptr);
+    }
+  }
+  return tag;
 }
 
 char *AbsPathRemote(PINO_DATABASE *dblist, char *inpath)
