@@ -1,0 +1,35 @@
+include $(MAKE_OPTIONS)
+
+
+OBJECTS = \
+	dummies.o  \
+	librtl.o \
+	dasutil_routines4.o \
+	mdsmsg.o \
+	MdsCmprs.o \
+	MdsCompareXd.o \
+	MdsCompress.o \
+	MdsGet1DxA.o \
+ 	MdsGet1DxS.o \
+        MdsGetSetShotId.o \
+        MdsPk.o \
+        MdsSerialize.o \
+	MdsXdRoutines.o
+
+
+
+mdsshr:  ../vxWorks ../vxWorks/68K $(OBJECTS)
+	ld68k -o ../vxWorks/68K/libMdsShr.o -r *.o
+	rm *.o
+
+
+../vxWorks :
+	mkdir ../vxWorks
+
+../vxWorks/68K :
+	mkdir ../vxWorks/68K
+
+clean :
+	rm ../vxWorks/*.o
+	rm .depend
+
