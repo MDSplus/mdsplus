@@ -242,8 +242,13 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
 #if !defined(_WIN32)
 static int CopyFile(char *src, char *dst, int dont_replace)
 {
-  char cmd[1024];
+  int status=0;
+  char *cmd = (char *)malloc(strlen(src)+strlen(dst) + 100);
   sprintf(cmd,"cp %s %s",src,dst);
-  return dont_replace ? system(cmd) == 0 : system(cmd) == 0;
+  status = system(cmd);
+  if (status != 0)
+     printf("Error creating pulse with command: %s, status = %d\n",cmd,status);
+  free(cmd);
+  return status == 0;
 }
 #endif
