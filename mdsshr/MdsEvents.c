@@ -1403,8 +1403,12 @@ static void initializeLocalRemote(int receive_events, int *use_local)
 	    	        receive_sockets[i] = 0;
 		    }
 		    else
-			receive_servers[i] = servers[i];
-
+		    {
+#ifdef GLOBUS
+		      RegisterRead(send_sockets[i]);
+#endif
+		      receive_servers[i] = servers[i];
+                    }
 		}
 		else
 		{
