@@ -1,5 +1,87 @@
-Version 1.7-1
+Version 1.7-3
 
+
+2005-02-07 14:01  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Use MAX_ACTIVE_EVENTS
+
+2005-02-07 10:33  twf
+
+	* mdstcpip/mdsip_u.c, treeshr/RemoteAccess.c,
+	mdsip_xio/mdsip_process_message.c:
+	
+	Fix file options in a generic way
+
+2005-02-07 10:13  manduchi
+
+	* javatraverser/: DeviceTable.java, DeviceTableBeanInfo.java,
+	DeviceTableCustomizer.java, DeviceWave.java, Devicebeans.jar,
+	RFXControlSetup.java:
+	
+	Allow expressions in table
+
+2005-02-03 15:45  jas
+
+	* mitdevices/dc1394_support.c:
+	
+	change bus search to 1 camera / board
+
+2005-02-03 15:22  jas
+
+	* matlab/make_mdsipmex.m:
+	
+	Need mdsip_socket_io.c
+
+2005-02-03 04:30  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	dummy
+
+2005-02-02 15:38  twf
+
+	* mdsip_xio/mdsip_process_message.c:
+	
+	Fix record locking
+
+2005-02-02 11:23  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	Fix locking problem
+
+2005-02-02 10:19  manduchi
+
+	* tdi/RfxDevices/: OAM01__add.fun, OAM01__calib.fun,
+	OAM01__init.fun, OAM01__off.fun:
+	
+	added OAM01 device
+
+2005-02-02 07:43  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	Fix SXMSetup.java to SXCSetup.java
+
+2005-02-02 07:38  manduchi
+
+	* javatraverser/DeviceWave.java:
+	
+	Support Copy/Paste
+
+2005-02-01 07:47  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Use libspawn instead of system
+
+2005-01-30 12:58  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.7-1
 
 2005-01-30 12:49  twf
 
