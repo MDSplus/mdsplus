@@ -24,6 +24,7 @@ PARTS = \
         cdu     \
         mdsdcl  \
         ccl     \
+        cts     \
 	servershr \
         tcl \
         traverser \
