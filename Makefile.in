@@ -19,6 +19,7 @@ PARTS = \
         xmdsshr \
         mdstcpip \
         dwscope \
+	gen_device \
         mitdevices \
         mdslibidl \
         remcam \
