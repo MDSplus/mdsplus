@@ -127,7 +127,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  read_nci;
 		  set_retlen(sizeof(nci.length));
 		  *(unsigned int *) itm->pointer =
-			  nci.data_in_att_block ? nci.length :
+			  (nci.flags2 & NciM_DATA_IN_ATT_BLOCK) ? nci.length :
 		  nci.DATA_INFO.DATA_LOCATION.record_length;
 		  break;
 	  case NciSTATUS:
@@ -140,25 +140,25 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  break_on_no_node;
 		  read_nci;
 		  set_retlen(sizeof(char));
-		  *(unsigned char *) itm->pointer = nci.data_in_att_block;
+		  *(unsigned char *) itm->pointer = (nci.flags2 & NciM_DATA_IN_ATT_BLOCK) ? 1 : 0;
 		  break;
 	  case NciERROR_ON_PUT:
 		  break_on_no_node;
 		  read_nci;
 		  set_retlen(sizeof(char));
-		  *(unsigned char *) itm->pointer = nci.error_on_put;
+		  *(unsigned char *) itm->pointer = (nci.flags2 & NciM_ERROR_ON_PUT) ? 1 : 0;
 		  break;
 	  case NciIO_STATUS:
 		  break_on_no_node;
 		  read_nci;
 		  set_retlen(sizeof(nci.DATA_INFO.ERROR_INFO.error_status));
-		  *(unsigned int *) itm->pointer = nci.error_on_put ? nci.DATA_INFO.ERROR_INFO.error_status : 1;
+		  *(unsigned int *) itm->pointer = (nci.flags2 & NciM_ERROR_ON_PUT) ? nci.DATA_INFO.ERROR_INFO.error_status : 1;
 		  break;
 	  case NciIO_STV:
 		  break_on_no_node;
 		  read_nci;
 		  set_retlen(sizeof(nci.DATA_INFO.ERROR_INFO.stv));
-		  *(unsigned int *) itm->pointer = nci.error_on_put ? nci.DATA_INFO.ERROR_INFO.stv : 1;
+		  *(unsigned int *) itm->pointer = (nci.flags2 & NciM_ERROR_ON_PUT) ? nci.DATA_INFO.ERROR_INFO.stv : 1;
 		  break;
 	  case NciRFA:
 		  break_on_no_node;
@@ -630,18 +630,6 @@ int _TreeIsOn(void *dbid, int nid)
 #ifdef _big_endian
 static void FixupNciIn(NCI *nci)
 {
-  unsigned int flags;
-  unsigned char *flagsc_p = ((unsigned char *)nci) + sizeof(nci->flags);
-  int i; 
-  
-  nci->flags = swapint((char *)&nci->flags);
-  flags = *flagsc_p;
-  *flagsc_p = 0;
-  for (i=0;i<8;i++)
-  {
-      if (flags & (1 << (7-i)))
-        (*flagsc_p) = (*flagsc_p) | (1 << i);
-  }
   nci->time_inserted[0] = swapint((char *)&nci->time_inserted[0]);
   nci->time_inserted[1] = swapint((char *)&nci->time_inserted[1]);
   nci->owner_identifier = swapint((char *)&nci->owner_identifier);

@@ -137,7 +137,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
       if (!(open_status & 1))
       {
 	local_nci.DATA_INFO.ERROR_INFO.stv = stv;
-	local_nci.error_on_put = 1;
+        bitassign_c(1,local_nci.flags2,NciM_ERROR_ON_PUT);
 	local_nci.DATA_INFO.ERROR_INFO.error_status = open_status;
 	length = local_nci.length = 0;
 	TreePutNci(info_ptr, nidx, &local_nci, 1);
@@ -149,7 +149,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 	*nci = local_nci;
 	if (!utility_update)
 	{
-	  old_record_length = nci->data_in_att_block ? 0 : nci->DATA_INFO.DATA_LOCATION.record_length;
+	  old_record_length = (nci->flags2 & NciM_DATA_IN_ATT_BLOCK) ? 0 : nci->DATA_INFO.DATA_LOCATION.record_length;
 	  if ((nci->flags & NciM_WRITE_ONCE) && nci->length)
 	    status = TreeNOOVERWRITE;
 	  if ((status & 1) && (shot_open && (nci->flags & NciM_NO_WRITE_SHOT)))
@@ -175,15 +175,15 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
           bitassign(path_reference,nci->flags,NciM_PATH_REFERENCE);
           bitassign(nid_reference,nci->flags,NciM_NID_REFERENCE);
           bitassign(compressible,nci->flags,NciM_COMPRESSIBLE);
-          nci->data_in_att_block = data_in_altbuf;
+          bitassign_c(data_in_altbuf,nci->flags2,NciM_DATA_IN_ATT_BLOCK);
         }
 	if ((status & 1) && nci->length && (!utility_update))
 	  status = CheckUsage(dblist, nid_ptr, nci);
 	if (status & 1)
 	{
-	  if (nci->data_in_att_block)
+	  if (nci->flags2 & NciM_DATA_IN_ATT_BLOCK)
 	  {
-	    nci->error_on_put = 0;
+	    bitassign_c(0,nci->flags2,NciM_ERROR_ON_PUT);
 	    status = TreePutNci(info_ptr, nidx, nci, 1);
 	  }
 	  else
@@ -191,7 +191,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 	    if ((nci->DATA_INFO.DATA_LOCATION.record_length != old_record_length) ||
 		(nci->DATA_INFO.DATA_LOCATION.record_length >= DATAF_C_MAX_RECORD_SIZE) ||
 		utility_update ||
-		nci->error_on_put)
+		(nci->flags2 & NciM_ERROR_ON_PUT))
 	      status = PutDatafile(info_ptr, nidx, nci, info_ptr->data_file->data);
 	    else
 	      status = UpdateDatafile(info_ptr, nidx, nci, info_ptr->data_file->data);
@@ -381,13 +381,13 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
       {
         if (status & 1)
         {
-          nci_ptr->error_on_put = 0;
+          bitassign(0,nci_ptr->flags2,NciM_ERROR_ON_PUT);
           SeekToRfa(eof,rfa);
           memcpy(nci_ptr->DATA_INFO.DATA_LOCATION.rfa,rfa,sizeof(nci_ptr->DATA_INFO.DATA_LOCATION.rfa));
         }
         else
         {
-          nci_ptr->error_on_put = 1;
+          bitassign(1,nci_ptr->flags2,NciM_ERROR_ON_PUT);
           nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;
           nci_ptr->length = 0;
         }
@@ -429,11 +429,11 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
       {
         if (status & 1)
         {
-          nci_ptr->error_on_put = 0;
+          bitassign(0,nci_ptr->flags2,NciM_ERROR_ON_PUT);
         }
         else
         {
-          nci_ptr->error_on_put = 1;
+          bitassign(1,nci_ptr->flags2,NciM_ERROR_ON_PUT);
           nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;
           nci_ptr->length = 0;
         }

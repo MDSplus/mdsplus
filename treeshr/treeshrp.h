@@ -71,20 +71,25 @@ static int swapshort(char *in_c)
 #endif
 
 #define bitassign(bool,value,mask) value = (bool) ? (value) | (mask) : (value) & ~(mask)
+#define bitassign_c(bool,value,mask) value = (char)((bool) ? (value) | (mask) : (value) & ~(mask))
+
+#define   NciM_DATA_IN_ATT_BLOCK   0x01
+#define   NciV_DATA_IN_ATT_BLOCK      0
+#define   NciM_ERROR_ON_PUT        0x02
+#define   NciV_ERROR_ON_PUT           1
 
 typedef struct nci
 {
-  unsigned int flags PACK;
-  unsigned  char data_in_att_block:1 PACK;
-  unsigned  char error_on_put:1 PACK;
-  unsigned  char :8 PACK;
-  unsigned int time_inserted[2] PACK;
-  unsigned int owner_identifier PACK;
+  unsigned int  flags PACK;
+  unsigned char flags2 PACK;
+  unsigned char spare PACK;
+  unsigned int  time_inserted[2] PACK;
+  unsigned int  owner_identifier PACK;
   unsigned char class PACK;
   unsigned char dtype PACK;
-  unsigned int length PACK;
-  unsigned char :8 PACK;
-  unsigned int status PACK;
+  unsigned int  length PACK;
+  unsigned char spare2 PACK;
+  unsigned int  status PACK;
   union
   {
     struct
