@@ -1,6 +1,12 @@
-top_srcdir=@top_srcdir@
+SHELL=/bin/sh
+CC=@CC@
+LD=@LD@
 prefix=@prefix@
+top_srcdir=@top_srcdir@
 exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@ 
 INSTALL=@top_srcdir@/conf/install-sh -c
 UIL=@UIL@ -I$(top_srcdir)/include
 
@@ -76,8 +82,6 @@ UIDS = \
 @MAKEUIDDIR@T4012.uid \
 @MAKEUIDDIR@UMCCD.uid \
 @MAKEUIDDIR@U_OF_M_SPECT.uid
-
-WML_DEPENDENT = \
 
 SOURCES = io.c
 OBJECTS = $(SOURCES:.c=.o)
