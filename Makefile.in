@@ -3,7 +3,8 @@
 prefix=@prefix@
 SHELL=/bin/sh
 
-JAVA_APS = javamds \
+JAVA_APS = javadispatcher \
+	   javamds \
 	   javascope \
            javatraverser \
 	   javaclient

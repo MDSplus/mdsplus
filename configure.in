@@ -459,6 +459,7 @@ dwscope/Makefile
 idlmdsevent/Makefile
 idlsql/Makefile
 javaclient/Makefile
+javadispatcher/Makefile
 javamds/Makefile 
 javascope/Makefile
 javatraverser/Makefile
