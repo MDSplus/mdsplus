@@ -1,0 +1,76 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 39;
+	objects = {
+		0862B79406DD277C00B14B3A = {
+			children = (
+				0862B79E06DD27C600B14B3A,
+			);
+			isa = PBXGroup;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		0862B79606DD277C00B14B3A = {
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			isa = PBXBuildStyle;
+			name = Development;
+		};
+		0862B79706DD277C00B14B3A = {
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			isa = PBXBuildStyle;
+			name = Deployment;
+		};
+		0862B79806DD277C00B14B3A = {
+			buildSettings = {
+			};
+			buildStyles = (
+				0862B79606DD277C00B14B3A,
+				0862B79706DD277C00B14B3A,
+			);
+			hasScannedForEncodings = 0;
+			isa = PBXProject;
+			mainGroup = 0862B79406DD277C00B14B3A;
+			projectDirPath = "";
+			targets = (
+				0862F66506DD292300B14B3A,
+			);
+		};
+		0862B79E06DD27C600B14B3A = {
+			isa = PBXFileReference;
+			lastKnownFileType = folder;
+			name = mdsplus;
+			path = ..;
+			refType = 2;
+			sourceTree = SOURCE_ROOT;
+		};
+		0862F66506DD292300B14B3A = {
+			buildArgumentsString = "$(ACTION)";
+			buildPhases = (
+			);
+			buildSettings = {
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = "Build All";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
+			};
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = "$(SRCROOT)/..";
+			dependencies = (
+			);
+			isa = PBXLegacyTarget;
+			name = "Build All";
+			passBuildSettingsInEnvironment = 1;
+			productName = "Build All";
+		};
+	};
+	rootObject = 0862B79806DD277C00B14B3A;
+}

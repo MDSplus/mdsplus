@@ -3,11 +3,20 @@ if ( test -r $HOME/.scope_printers )
 then
 	cat $HOME/.scope_printers
 else 
+  if ( test -x /bin/awk )
+  then
+    awkcmd=/bin/awk
+  elif ( test -x /usr/bin/awk )
+  then
+    awkcmd=/usr/bin/awk
+  else
+    awkcmd=awk
+  fi
   if ( test -r $MDSPLUS_DIR/local/scope_printers )
   then
 	cat $MDSPLUS_DIR/local/scope_printers
   else
-    /bin/awk -F\| '{\
+    $awkcmd -F\| '{\
       if (match($0,/^#/) != 0 || match($0,/^[:blank:]*$/) != 0) \
         next; \
       while (match($0,/\\[:blank:]*$/) != 0) \
@@ -26,6 +35,6 @@ else
       }\
       else\
         print $1;\
-    }' /etc/printcap | /bin/awk -F: '{print $1;}' -
+    }' /etc/printcap | $awkcmd -F: '{print $1;}' -
   fi
 fi

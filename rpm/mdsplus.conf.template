@@ -11,7 +11,7 @@
 # Test trees
 #
 main_path /usr/local/mdsplus/trees >;
-subtree_path /usr/local/mdsplus/tree/subtree >;
+subtree_path /usr/local/mdsplus/trees/subtree >;
 #
 # Put mdsplus in beginning of PATH
 #

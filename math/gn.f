@@ -116,13 +116,13 @@ c>>>
 	if (fcn.eq.0) goto 12
 c>>>
 	if (fcn.gt.0) goto 27
-600	format(1x,a,(5g15.7))
-620	format(' iter',i4,' nf',i4,' f',g22.14,' ier',i4,l2)
+c600	format(1x,a,(5g15.7))
+c620	format(' iter',i4,' nf',i4,' f',g22.14,' ier',i4,l2)
 	ier=128
 	if(n.le.0.or.m.le.0.or.limit.le.0.or.
      1 xacc.ge.D1.or.facc.ge.D1) then
-		WRITE(*,600) 'INPUT ERROR(n,m,limit,xacc,facc)'
-     1		,n,m,limit,xacc,facc
+c		WRITE(*,600) 'INPUT ERROR(n,m,limit,xacc,facc)'
+c     1		,n,m,limit,xacc,facc
 		return
 	endif
 c Machine precision is number of mantissa bits less one.
@@ -217,12 +217,12 @@ c Some convergence tests.
 	if(.not.done.and.nfcn.ge.limit) ier=130
 	if(.not.done.and.consec.ge.5) ier=131
 c Printout.
-	if(iprint.ge.5) write(*,600)
-	if(iprint.ge.3) write(*,620) iter,nfcn,f,ier,take
-	if(iprint.ge.4) write(*,600) 'x',x
+c	if(iprint.ge.5) write(*,600)
+c	if(iprint.ge.3) write(*,620) iter,nfcn,f,ier,take
+c	if(iprint.ge.4) write(*,600) 'x',x
 	if(iter.gt.1.and.(done.or.ier.ge.128)) then
-		if(iprint.ge.1) write(*,620) iter,nfcn,f0,ier,take
-		if(iprint.ge.2) write(*,600) 'x0',x0
+c		if(iprint.ge.1) write(*,620) iter,nfcn,f0,ier,take
+c		if(iprint.ge.2) write(*,600) 'x0',x0
 		if(take) then
 			do 18 i=1,m
 18				r0(i)=r(i)
@@ -283,20 +283,20 @@ c>>>
 c>>>
 		endif		
 		if(scal.gt.P0) del=sqrt(scal0/scal)*del
-		if(iprint.ge.5) write(*,600) 'e',e
+c		if(iprint.ge.5) write(*,600) 'e',e
 	endif
 c Gradient and portion of Hessian.
 	do 33 j=1,n
 		g(j)=ODOT(m,Jac(1,j),1,r0,1)
 		do 33 i=1,j
 33			H(i,j)=ODOT(m,Jac(1,j),1,Jac(1,i),1)
-	if(iprint.ge.7) then
-		do 770 j=1,m
-770			write(*,600) 'J',(Jac(j,i),i=1,n)
-		do 771 j=1,n
-771			write(*,600) 'H',(H(i,j),i=1,j)
-	endif
-	if(iprint.ge.5) write(*,600) 'g',g
+c	if(iprint.ge.7) then
+c		do 770 j=1,m
+c770			write(*,600) 'J',(Jac(j,i),i=1,n)
+c		do 771 j=1,n
+c771			write(*,600) 'H',(H(i,j),i=1,j)
+c	endif
+c	if(iprint.ge.5) write(*,600) 'g',g
 	gnorm=sqrt(ODOT(n,g,1,g,1))
 c --- get Newton step, H sN = -g ---
 c L1 norm of H to augment matrix a little.
@@ -314,7 +314,7 @@ c Decomposition without addition if it works.
 c Put bad update away, improves reliability.
 	if(nrank1.ne.0.and.
      1	(snewt.lt.del/ZWILD.or.snewt.gt.ZWILD*del)) goto 24
-	if(iprint.ge.6) write(*,600) 'sN',sN
+c	if(iprint.ge.6) write(*,600) 'sN',sN
 	first=.true.
 	if(sing.lt.P0.or.del.le.P0.and.gnorm.gt.P0) then
 c Take Cauchy point, CP = -||g||**2/(g H g) g, g H g = ||LT g||**2.
@@ -328,8 +328,8 @@ c Steps are the same for identity Hessian and single directions.
 		del=min(gnorm/temp,stpmax)
 	endif
 c --- Choose Newton or hook steps ---
-40	if(iprint.ge.6) write(*,600)'g,del,sn,s',gnorm,del,snewt,snorm
-	if(snewt.le.ZNEWT*del.or..not.hook) then
+c40	if(iprint.ge.6) write(*,600)'g,del,sn,s',gnorm,del,snewt,snorm
+40	if(snewt.le.ZNEWT*del.or..not.hook) then
 		mu=P0
 		temp=D1
 		if(snewt.gt.ZNEWT*del.and..not.hook) temp=del/snewt
@@ -353,7 +353,7 @@ c Want s H**-1 s = ||L**-1 s||**2.
 	muup=gnorm/del
 c REPEAT UNTIL .75*del<||s||<1.5*del or mulow>muup.
 44	continue
-	if(iprint.ge.6) write(*,600) 'mu',mulow,mu,muup
+c	if(iprint.ge.6) write(*,600) 'mu',mulow,mu,muup
 	if(mu.lt.mulow.or.mu.gt.muup) mu=max(sqrt(mulow*muup),P001*muup)
 	call OCHOL(n,mu,H,g,L,s,sing)
 	if(sing.le.-mu) goto 91
@@ -370,7 +370,7 @@ c REPEAT UNTIL .75*del<||s||<1.5*del or mulow>muup.
 		goto 44
 	endif
 c Endof REPEAT.
-		if(iprint.ge.6) write(*,600) 's',s
+c		if(iprint.ge.6) write(*,600) 's',s
 		dlast=del
 	endif
 c Take the step.

@@ -43,13 +43,13 @@
 /* #undef TARGET_ARCH_CRAYSV1 */
 /* #undef TARGET_ARCH_UNICOS */
 /* #undef TARGET_ARCH_FREEBSD */
-/* #undef TARGET_ARCH_DARWIN */
+#define TARGET_ARCH_DARWIN 1
 /* #undef TARGET_ARCH_BSD */
 /* #undef TARGET_ARCH_BSDI */
 /* #undef TARGET_ARCH_NEXTSTEP */
-#define TARGET_ARCH_LINUX 1
+/* #undef TARGET_ARCH_LINUX */
 /* #undef TARGET_ARCH_CYGWIN */
-#define TARGET_ARCH_X86 1
+/* #undef TARGET_ARCH_X86 */
 /* #undef TARGET_ARCH_IA64 */
 
 #define HAVE_MALLOC_H 1
@@ -90,21 +90,21 @@
 /* #undef HAVE_PTHREAD_PRIO_MINMAX */
 #define HAVE_SEEKDIR 1
 #define HAVE_SIGNAL_H 1
-/* #undef HAVE_SNPRINTF */
+#define HAVE_SNPRINTF 1
 #define HAVE_STRERROR 1
 /* #undef HAVE_STRNCASECMP */
 /* #undef HAVE_SYS_CNX_PATTR_H */
-/* #undef HAVE_SYS_DIR_H */
+#define HAVE_SYS_DIR_H 1
 /* #undef HAVE_SYS_LIMITS_H */
 /* #undef HAVE_SYS_NDIR_H */
-/* #undef HAVE_SYS_TYPES */
+#define HAVE_SYS_TYPES 1
 #define HAVE_SYS_WAIT_H 1
 #define HAVE_WAITPID 1
 #define HAVE_TELLDIR 1
-/* #undef HAVE_VSNPRINTF */
+#define HAVE_VSNPRINTF 1
 #define HAVE_WRITEV 1
 #define HAVE_STRTOUL 1
-/* #undef HAVE_LIBC_H */
+#define HAVE_LIBC_H 1
 
 #define HAVE_WRITEV 1
 #define HAVE_SYS_UIO_H 1

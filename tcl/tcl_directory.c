@@ -331,9 +331,11 @@ int   TclDirectory()
                                }
                            }
                        }
+					else
 #ifdef vms
-                    else
                       lib$signal(status,0);
+#else
+					  MdsMsg(status,0);
 #endif
                    }
                 else

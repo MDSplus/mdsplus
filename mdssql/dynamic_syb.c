@@ -8,6 +8,12 @@
 #ifndef WIN32
 #include <sybfront.h>
 #include <sybdb.h>
+#ifdef __APPLE__
+/* this is only a problem with the FreeTDS header file */
+#ifndef ERREXIT
+#define ERREXIT -1
+#endif
+#endif
 #else
 #define _LPCBYTE_DEFINED
 typedef unsigned char BYTE;

@@ -1,7 +1,7 @@
 top_srcdir=..
 CVSROOT=":pserver:anonymous@cvs.globus.org:/home/globdev/CVS/globus-packages"
-CFLAGS=-g -O2 -fno-common -fPIC -I. -I$(OPENSSL_DIR)/ssl -DOPENSSL_NO_KRB5  -DHAVE_CONFIG_H -D_REENTRANT -Wall -DGLOBUS_BUILTIN -Dflavor=\"gcc32pthr\"
-LIBS=-dynamic -L$(OPENSSL_DIR) -lssl -lcrypto -lpthread -lc -lltdl -ldl -lm 
+CFLAGS=-g -O2 -fno-common -I. -I$(OPENSSL_DIR)/ssl -DOPENSSL_NO_KRB5  -DHAVE_CONFIG_H -D_REENTRANT -Wall -DGLOBUS_BUILTIN -Dflavor=\"gcc32pthr\"
+LIBS= -L$(OPENSSL_DIR) -lssl -lcrypto -lpthread -lc -lltdl -ldl -lm
 
 SOURCES=accept.c \
 	accept_delegation.c \
@@ -231,7 +231,7 @@ all : ./globus $(top_srcdir)/lib/libGsiLite.dylib
 	mkdir ./globus
 
 $(top_srcdir)/lib/libGsiLite.dylib : $(CONFIG_HEADERS) $(HEADERS) $(OBJECTS)
-	gcc -o $@ -dynamiclib -flat-namespace $(OBJECTS) $(LIBS)
+	gcc -dynamiclib -o $@ -install_name=/usr/local/mdsplus/lib/$(@F) $(OBJECTS) $(LIBS)
 
 clean :
 	- rm *.o *.c *.h

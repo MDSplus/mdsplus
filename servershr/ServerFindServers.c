@@ -30,6 +30,8 @@ int SERVER$FIND_SERVERS(int *ctx, struct dsc$descriptor *server )
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
 #ifndef HAVE_WINDOWS_H
+/* DTG: Unix Spec v.2 has <dirent.h> depends on <sys/types.h> */
+#include <sys/types.h> 
 #include <dirent.h>
 #endif
 #include <string.h>

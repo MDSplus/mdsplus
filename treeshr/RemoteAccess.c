@@ -1128,7 +1128,7 @@ STATIC_ROUTINE _int64 io_lseek_remote(int fd, _int64 offset, int whence)
 _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
 {
     _int64 pos;
-#ifdef __APPLE__
+#ifdef __APPLE1__
     if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use) {
         LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
         if (FDS[fd-1].socket == -1) {

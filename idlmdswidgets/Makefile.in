@@ -11,8 +11,8 @@ X_LIBS=@X_LIBS@
 X_EXTRA_LIBS=@X_EXTRA_LIBS@
 X_PRE_LIBS=@X_PRE_LIBS@
 XLIBS = $(X_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS)
-MOTIF_LIBS = @MOTIF_LD_LDARC@ @XM_LIBS@ @MOTIF_LD_LDSHARE@ @LIBXP@ @LIBXEXT@
-LIBS=@IDL_LIB@  @LIBS@ @DNET_STUB@ @LIBSOCKET@ -lMdsIpShr -lMdsShr -lMdsMath
+MOTIF_LIBS = @MOTIF_LD_LDARC@ @XM_LIBS@ @MOTIF_LD_LDSHARE@ $(XLIBS) @LIBXP@ @LIBXEXT@
+LIBS=@LIBS@ @DNET_STUB@ @LIBSOCKET@ -lMdsIpShr -lMdsShr -lMdsMath
 INSTALL=@top_srcdir@/conf/install-sh -c
 UIL=@UIL@ -I$(top_srcdir)/include
 
@@ -25,13 +25,13 @@ OBJECTS = $(SOURCES:.c=.o)
 
 EXPORTS = IdlMdsWidgets.export
 
-all : @MAKELIBDIR@ @MAKELIBDIR@libIdlMdsWidgets@SHARETYPE@ @MAKELIBDIR@libIdlMdsWidgets.a @MAKEUIDDIR@cw_wvedit.uid
+all : @MAKELIBDIR@ @MAKELIBDIR@libIdlMdsWidgets@SHARETYPEMOD@ @MAKELIBDIR@libIdlMdsWidgets.a @MAKEUIDDIR@cw_wvedit.uid
 
 
 clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) @MAKELIBDIR@libIdlMdsWidgets@SHARETYPE@
+	@ $(RM) @MAKELIBDIR@libIdlMdsWidgets@SHARETYPEMOD@
 	@ $(RM) @MAKELIBDIR@libIdlMdsWidgets.a
 
 depend:
@@ -43,12 +43,12 @@ install:
                 chmod 755 @libdir@; \
         fi;
 	$(INSTALL) -m 644  @MAKELIBDIR@libIdlMdsWidgets.a @libdir@
-	$(INSTALL) -m 755  @MAKELIBDIR@libIdlMdsWidgets@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKELIBDIR@libIdlMdsWidgets@SHARETYPEMOD@ @libdir@
 	$(INSTALL) -m 644 @MAKEUIDDIR@cw_wvedit.uid @uiddir@
 
 
-@MAKELIBDIR@libIdlMdsWidgets@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ $(LDFLAGS)  -L/usr/X11R6/lib/ -lMrm $(LIBS) -lXmdsShr
+@MAKELIBDIR@libIdlMdsWidgets@SHARETYPEMOD@ : $(OBJECTS) 
+	$(LD) -o $@ @LINKMODULE@ $(OBJECTS) -L@MAKELIBDIR@ $(LDFLAGS) $(MOTIF_LIBS) $(LIBS) -lXmdsShr
 
 @MAKELIBDIR@libIdlMdsWidgets.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)

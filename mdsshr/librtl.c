@@ -613,12 +613,14 @@ void *dlsym(void *handle, char *name)
   int s = shl_findsym((shl_t *)&handle,name,0,&symbol);
   return symbol;
 }
+
+#elif HAVE_DLFCN_H
+#include <dlfcn.h>
+
 #elif defined(__MACH__)
 #define USE_MACH_MODULE_LOADER
 #include <mach-o/dyld.h>
 #include <sys/stat.h>
-#else
-#include <dlfcn.h>
 #endif
 
 #endif
@@ -1125,6 +1127,207 @@ int LibFindImageSymbol(struct descriptor *library, struct descriptor *symbol, vo
     // printf("%s\n",FIS_Error);
   }
   }}}
+
+  free(c_sym);
+  free(c_lib);
+  free(symname);
+  free(libname);
+
+   if (*symbol_value == NULL) {
+      return LibKEYNOTFOU;
+   } else
+        return 1;  
+}
+
+#elif defined(USE_MACH_MODULE_LOADER)
+
+//#define DEBUG_APPLE_LOADER 1
+
+char *GetSetFISError(char *err)
+{
+    static char *fis_err=NULL;
+    if (err!=NULL) {
+        if (fis_err != NULL)
+            free(fis_err);
+        fis_err = err;
+    }
+    return fis_err;
+}
+
+char *LibFindImageSymbolErrString()
+{
+  return GetSetFISError(NULL);
+}
+
+
+/*
+ * helper routine: search for a named module in various locations
+ */
+static int search_lib_paths(const char *filename, char *pathbuf,
+			    struct stat *stat_buf)
+{
+    const char *pathspec;
+    const char *element;
+    const char *p;
+    char *q;
+    char *pathbuf_end;
+    const char *envvars[] = {
+        "$DYLD_LIBRARY_PATH",
+        "$LD_LIBRARY_PATH",
+        "/usr/local/lib:/usr/lib:/lib",
+        NULL };
+    int envvar_index;
+
+        pathbuf_end = pathbuf + PATH_MAX - 8;
+
+	for(envvar_index = 0; envvars[envvar_index]; envvar_index++){
+	    if(envvars[envvar_index][0] == '$'){
+	        pathspec = getenv(envvars[envvar_index]+1);
+	    }
+	    else {
+	        pathspec = envvars[envvar_index];
+	    }
+
+	    if(pathspec != NULL){
+	        element = pathspec;
+		while(*element){
+	            /* extract path list element */
+		    p = element;
+		    q = pathbuf;
+		    while(*p && *p != ':' && q < pathbuf_end) *q++ = *p++;
+		    if(q == pathbuf){  /* empty element */
+		        if(*p){
+		            element = p+1;
+			    continue;
+			}
+			break;
+		    }
+		    if (*p){
+		        element = p+1;
+		    }
+		    else{
+		        element = p;  /* this terminates the loop */
+		    }
+
+		    /* add slash if neccessary */
+		    if(*(q-1) != '/' && q < pathbuf_end){
+		        *q++ = '/';
+		    }
+
+		    /* append module name */
+		    p = filename;
+		    while(*p && q < pathbuf_end) *q++ = *p++;
+		    *q++ = 0;
+
+		    if(q >= pathbuf_end){
+		        /* maybe add an error message here */
+		        break;
+		    }
+
+#if DEBUG_APPLE_LOADER
+                    printf("Checking for %s\n",pathbuf);
+                    fflush(NULL);
+#endif
+                    if(stat(pathbuf, stat_buf) == 0){
+		        return 0;
+		    }
+		}
+	    }
+	}
+
+	/* we have searched everywhere, now we give up */
+	return -1;
+}
+
+
+
+int LibFindImageSymbol(struct descriptor *library, struct descriptor *symbol, void **symbol_value)
+{
+  char 				*c_lib, *c_sym;
+  char 				path[PATH_MAX+1];
+  char			        *libname, *symname;
+  struct stat 			stat_buf;
+  NSSymbol 			sym;
+  const struct mach_header 	*image = 0;
+  NSLinkEditErrors		leErrs;
+  int 				leErrN;
+  const char 			*errFile, *errStr;
+  int 				loaded;
+  size_t			len;
+
+  *symbol_value = NULL;
+  
+  c_lib = MdsDescrToCstring(library);
+  c_sym = MdsDescrToCstring(symbol);
+
+#if DEBUG_APPLE_LOADER
+  printf("LibFindImageSymbol: %s, %s\n",c_lib,c_sym);
+#endif
+  
+  symname = (char *) malloc(len=3+strlen(c_sym));
+  sprintf(symname,"_%s",c_sym);
+
+  libname = (char *) malloc(len=4+sizeof(SHARELIB_TYPE)+strlen(c_lib));
+  sprintf(libname,"lib%s%s",c_lib,SHARELIB_TYPE);
+
+  if (search_lib_paths(libname,path,&stat_buf) == -1) { 
+    sprintf(GetSetFISError((char *)malloc(80+strlen(libname)+strlen(symname))),
+	   "Error finding library %s: searching for symbol %s",libname,symname);
+#if DEBUG_APPLE_LOADER
+      printf("%s\n",GetSetFISError(NULL));
+      fflush(NULL);
+#endif
+  } else {
+
+/* let's use NSAddImage API which perserves capability of two level namespace, requires >  10.1 */
+#if DEBUG_APPLE_LOADER
+      printf("Found library %s\n",libname);
+      fflush(NULL);
+#endif
+
+      image = NSAddImage(path,NSADDIMAGE_OPTION_RETURN_ON_ERROR); 
+
+      if (!image) {
+          NSLinkEditError(&leErrs,&leErrN,&errFile,&errStr);
+          sprintf(GetSetFISError((char *)malloc(40+strlen(errFile)+strlen(errStr))),
+                  "Error linking %s: %s",errFile,errStr);
+#if DEBUG_APPLE_LOADER
+          printf("%s\n",GetSetFISError(NULL));
+#endif
+      } else {
+
+#if DEBUG_APPLE_LOADER
+          printf("Linked image %s\n",libname);
+#endif
+
+          sym=NSLookupSymbolInImage(image, symname, NSLOOKUPSYMBOLINIMAGE_OPTION_RETURN_ON_ERROR);
+
+          if (!sym) {
+              NSLinkEditError(&leErrs,&leErrN,&errFile,&errStr);
+              sprintf(GetSetFISError((char *)malloc(40+strlen(errFile)+strlen(errStr)+strlen(symname))),
+                      "Error finding %s in %s : %s",symname,errFile,errStr);
+#if DEBUG_APPLE_LOADER
+              printf("%s\n",GetSetFISError(NULL));
+#endif
+          } else {
+
+              *symbol_value = NSAddressOfSymbol(sym);
+
+              if (*symbol_value == NULL) {
+                  NSLinkEditError(&leErrs,&leErrN,&errFile,&errStr);
+                  sprintf(GetSetFISError((char *)malloc(40+strlen(errFile)+strlen(errStr)+strlen(symname))),
+                          "Error getting address of %s in %s : %s",symname,errFile,errStr);
+#if DEBUG_APPLE_LOADER
+                  printf("%s\n",GetSetFISError(NULL));
+#endif
+              } else {
+#if DEBUG_APPLE_LOADER
+                  printf("Found address for %s\n",symname);
+#endif
+              }
+          }
+      }
+  }
 
   free(c_sym);
   free(c_lib);

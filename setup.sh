@@ -146,7 +146,17 @@ else
     awkcmd="$awkcmd"'; temp_delim='
     awkcmd="$awkcmd"'" substr($3,2) "'
     awkcmd="$awkcmd"'; . '$temp_setup_script';" ; }'
-    shellcmd=`/bin/awk "$awkcmd" $temp_file`
+    if ( test -x /bin/awk ) 
+    then
+      shellcmd=`/bin/awk "$awkcmd" $temp_file`
+    else
+      if ( test -x /usr/bin/awk) 
+      then
+        shellcmd=`/usr/bin/awk "$awkcmd" $temp_file`
+      else
+        shellcmd=`awk "$awkcmd" $temp_file`
+      fi
+    fi
     unset temp_file
     eval $shellcmd
 #    unset temp_setup_script
