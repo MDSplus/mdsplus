@@ -175,7 +175,7 @@ public boolean SupportsAsynch() { return true; }
 public synchronized void Update(String exp, int s)
 {
     error = null;
-    if(exp == null || exp.length() == 0)  { experiment = null; open = true; return;}
+    if(exp == null || exp.length() == 0)  { experiment = null; open = true; shot = s; return;}
     if(s != shot || experiment == null || !experiment.equals(exp) )
     {
     

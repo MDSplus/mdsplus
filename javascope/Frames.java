@@ -275,6 +275,10 @@ class Frames extends Canvas {
     public int GetFrameIdxAtTime(float t)
     {
         int idx = 0;
+
+        if(frame.size() < 0)
+            return -1;
+
         
         if(frame.size() == 1)
             return 0;
