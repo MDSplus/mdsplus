@@ -241,9 +241,9 @@ int IdlMdsValue(int argc, void **argv)
         char dims[512] = "(";
         int i;
         if (ptr->aflags.coeff)
-          for (i=0;i<ptr->dimct;i++) sprintf(dims,"%s%d,",dims,ptr->m[i]);
+          for (i=0;i<ptr->dimct;i++) sprintf(dims,"%s%d,",dims,ptr->m[i] > 0 ? ptr->m[i] : 1);
         else
-          sprintf(dims,"%s%d,",dims,ptr->arsize/ptr->length);
+          sprintf(dims,"%s%d,",dims,((ptr->arsize/ptr->length) > 0) ? (ptr->arsize/ptr->length) : 1);
         dims[strlen(dims)-1]=')';
         switch (mdsValueAnswer.pointer->dtype)
 	{
