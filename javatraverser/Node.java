@@ -1,5 +1,6 @@
 //package jTraverser;
 import javax.swing.*;
+import java.net.URL;
 
 public class Node
 {
@@ -261,32 +262,31 @@ public class Node
 	info = experiment.getInfo(nid);
     }
 
-
+    private ImageIcon loadIcon(String gifname)
+    {
+      String base = System.getProperty("icon_base");
+      return (base == null) ? new ImageIcon(ClassLoader.getSystemResource(gifname)) : new ImageIcon(base + "/" + gifname);
+    }
+        
     public JLabel getIcon()
     {
 	if(tree_label != null)
 	    return tree_label;
-    
 	ImageIcon icon = null;
-	String base = System.getProperty("icon_base");
-	if(base == null) 
-	    base = "";
-	else
-	    base = base + "/";
     	switch (info.usage) {
-	    case NodeInfo.USAGE_NONE: icon = new ImageIcon(base + "structure.gif");break;
-	    case NodeInfo.USAGE_ACTION: icon = new ImageIcon(base + "action.gif");break;
-	    case NodeInfo.USAGE_DEVICE: icon = new ImageIcon(base + "device.gif");break;
-	    case NodeInfo.USAGE_DISPATCH: icon = new ImageIcon(base + "dispatch.gif");break;
+	    case NodeInfo.USAGE_NONE: icon = loadIcon("structure.gif"); break;
+	    case NodeInfo.USAGE_ACTION: icon = loadIcon("action.gif");break;
+	    case NodeInfo.USAGE_DEVICE: icon = loadIcon("device.gif");break;
+	    case NodeInfo.USAGE_DISPATCH: icon = loadIcon("dispatch.gif");break;
 	    case NodeInfo.USAGE_ANY:
-	    case NodeInfo.USAGE_NUMERIC: icon = new ImageIcon(base + "numeric.gif");break;
-	    case NodeInfo.USAGE_TASK: icon = new ImageIcon(base + "task.gif");break;
-	    case NodeInfo.USAGE_TEXT: icon = new ImageIcon(base + "text.gif");break;
-	    case NodeInfo.USAGE_WINDOW: icon = new ImageIcon(base + "window.gif");break;
-	    case NodeInfo.USAGE_AXIS: icon = new ImageIcon(base + "axis.gif");break;
-	    case NodeInfo.USAGE_SIGNAL: icon = new ImageIcon(base + "signal.gif");break;
-	    case NodeInfo.USAGE_SUBTREE: icon = new ImageIcon(base + "subtree.gif");break;
-	    case NodeInfo.USAGE_COMPOUND_DATA: icon = new ImageIcon(base + "compound.gif");break;
+	    case NodeInfo.USAGE_NUMERIC: icon = loadIcon("numeric.gif");break;
+	    case NodeInfo.USAGE_TASK: icon = loadIcon("task.gif");break;
+	    case NodeInfo.USAGE_TEXT: icon = loadIcon("text.gif");break;
+	    case NodeInfo.USAGE_WINDOW: icon = loadIcon("window.gif");break;
+	    case NodeInfo.USAGE_AXIS: icon = loadIcon("axis.gif");break;
+	    case NodeInfo.USAGE_SIGNAL: icon = loadIcon("signal.gif");break;
+	    case NodeInfo.USAGE_SUBTREE: icon = loadIcon("subtree.gif");break;
+	    case NodeInfo.USAGE_COMPOUND_DATA: icon = loadIcon("compound.gif");break;
 	}
 	
 	if(is_member)
@@ -295,6 +295,7 @@ public class Node
 	    tree_label = new TreeNode(this, info.name, icon);
 	return tree_label;
     }
+
     public String toString() {return getFullPath(); }
    
 }
