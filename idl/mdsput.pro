@@ -14,7 +14,6 @@ pro MdsPut,node,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,ar
   forward_function MdsValue
   status = 0
   n = n_params()
-
   lexpression = 'TreePut('
   for i=0,n-1 do lexpression = lexpression + '$'+strtrim(i+1,2)+','
   strput,lexpression,')',strlen(lexpression)-1
@@ -22,6 +21,8 @@ pro MdsPut,node,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,ar
   for i=0,n-3 do MdsValueExp = MdsValueExp + ',arg'+strtrim(i+1,2)
   MdsValueExp = MdsValueExp + ",status=status,quiet=quiet)"
   x = execute(MdsValueExp)
+  sz=size(status)
+  if (sz[sz[0]+1] eq 7) then status=0
   msg = strtrim(MdsValue('getmsg($)',/quiet,status),2)
   if not status then begin
     if keyword_set(quiet) then $

@@ -11,8 +11,10 @@ pro MdsTcl,command,output=output,status=status,quiet=quiet
       output = str_sep(output,string([10b]))
       if not arg_present(output) then for i=0,(size(output))[1]-1 do print,output[i]
     endif
+    s=size(status)
+    if (s[s[0]+1] eq 7) then status=0
     if not status then begin
-      msg = mdsvalue('getmsg($)',status)
+      msg = mdsvalue('getmsg($)',/quiet,status)
       if keyword_set(quiet) then $
         message,msg,/continue,/noprint $
       else $
