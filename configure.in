@@ -295,10 +295,6 @@ dnl          -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable
        SHARETYPE=".so";;
 esac
 
-if test "$SHARETYPEMOD" == ""; then
-  SHARETYPEMOD=$SHARETYPE
-fi
-
 dnl Checks for programs.
 AC_PROG_RANLIB
 AC_MSG_CHECKING(for ps sysv style arguments)
