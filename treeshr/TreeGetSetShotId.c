@@ -32,7 +32,8 @@ int TreeGetCurrentShotId(experiment,shot)
 #include <strroutines.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-
+#include <ncidef.h>
+#include "treeshrp.h"
 extern void TranslateLogicalFree();
 extern int TreeGetCurrentShotIdRemote();
 extern int TreeSetCurrentShotIdRemote();
@@ -50,7 +51,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 static char *GetFileName(char *experiment,char **ctx)
 {
   char *ans = 0;
-  static char pathname[550];
+  static char pathname[1024];
   static char *path;
   FILE *file = 0;
   char *semi = 0;
@@ -70,6 +71,7 @@ static char *GetFileName(char *experiment,char **ctx)
     part = *ctx;
   if (part != NULL)
   {
+    char *delim = TREE_PATH_DELIM;
     char *tmp;
     if ((semi = (char *)index(part, ';')) != 0)
       *semi = '\0';
@@ -78,15 +80,22 @@ static char *GetFileName(char *experiment,char **ctx)
       *ctx = pathname;
     else
       *ctx = part + strlen(part) + 1;
-#ifdef _WINDOWS
-    strcat(pathname,"\\");
-#else
-    strcat(pathname,"/");
-#endif
-    strcat(pathname,"shotid.sys");
     tmp = MaskReplace(pathname,experiment,0);
     strcpy(pathname,tmp);
     free(tmp);
+    if (pathname[strlen(pathname)-1] == '+')
+    {
+      int i;
+      for (i=strlen(pathname)-1;(i >= 0) && (pathname[i] != delim[0]);i--);
+      if (i >= 0)
+        pathname[i+1] = 0;
+    }
+    else
+    {
+      if (pathname[strlen(pathname)-1] != delim[0])
+        strcat(pathname,TREE_PATH_DELIM);
+    }
+    strcat(pathname,"shotid.sys");
     ans = pathname;
   }
   return ans;

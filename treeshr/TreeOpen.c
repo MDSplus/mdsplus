@@ -5,6 +5,7 @@
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ctype.h>
+#include <mds_stdarg.h>
 #ifdef _WIN32
 #include <io.h>
 extern char *index(char *str,char c);
@@ -643,11 +644,54 @@ int _TreeSetStackSize(void **dbid, int size)
 static char TreeMask[13] = "TREE";
 static char ShotMask[11] = "JIHGFEDCBA";
 
+static char *GetFname(char *tree, int shot)
+{
+  int status = 1;
+  static char *ans = 0;
+  struct descriptor fname = {0, DTYPE_T, CLASS_D, 0};
+  void *arglist[4];
+  char expression[128];
+  static void *TdiExecute = 0;
+  struct descriptor expression_d = {0, DTYPE_T, CLASS_S, 0};
+  if (ans)
+  {
+    free(ans);
+    ans = 0;
+  }
+  expression_d.length = sprintf(expression,"%s_tree_filename(%d)",tree,shot);
+  expression_d.pointer = expression;
+  arglist[0] = (void *)3;
+  arglist[1] = &expression_d;
+  arglist[2] = &fname;
+  arglist[3] = MdsEND_ARG;
+  if (TdiExecute == 0)
+  {
+    static DESCRIPTOR(image,"TdiShr");
+    static DESCRIPTOR(routine,"TdiExecute");
+    status = LibFindImageSymbol(&image,&routine,&TdiExecute);
+  }
+  if (status & 1)
+    status = LibCallg(arglist,TdiExecute);
+  if (status & 1)
+  {
+    ans = strcpy(malloc(fname.length+2),fname.pointer);
+    ans[fname.length] = '+';
+    ans[fname.length+1] = 0;
+  }
+  else
+  {
+    ans = strcpy(malloc(6),"ErRoR");
+  }
+  StrFree1Dx(&fname);
+  return(ans);
+}
+
 char *MaskReplace(char *path_in,char *tree,int shot)
 {
   char *path = strcpy(malloc(strlen(path_in)+1),path_in);
   char ShotMask[13];
   char *tilde;
+  char *fname;
   int replace_tilde = 0;
   unsigned int i; 
   if (shot > 0)
@@ -669,6 +713,15 @@ char *MaskReplace(char *path_in,char *tree,int shot)
     case 'h':  tilde[0]=ShotMask[4]; strcpy(&tilde[1],&tilde[2]); break;
     case 'i':  tilde[0]=ShotMask[3]; strcpy(&tilde[1],&tilde[2]); break;
     case 'j':  tilde[0]=ShotMask[2]; strcpy(&tilde[1],&tilde[2]); break;
+    case 'n':  fname = GetFname(tree,shot);
+               tmp = strcpy(malloc(strlen(tilde+2)+1),tilde+2);
+               tmp2 = strcpy(malloc(strlen(path)+1+strlen(fname)),path);
+               strcpy(tmp2 +(tilde-path)+strlen(fname), tmp);
+               free(tmp);
+               strncpy(tmp2+(tilde-path),fname,strlen(fname)); 
+               free(path);
+               path=tmp2;
+               break;
     case 't':  tmp = strcpy(malloc(strlen(tilde+2)+1),tilde+2);
                tmp2 = strcpy(malloc(strlen(path)+1+strlen(tree)),path);
                strcpy(tmp2 +(tilde-path)+strlen(tree), tmp);
@@ -722,10 +775,10 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
 		char *part;
 		int pathlen = strlen(path);
 		char *npath;
-    npath = MaskReplace(path,tree_lower,shot);
+                npath = MaskReplace(path,tree_lower,shot);
 		TranslateLogicalFree(path);
 		path = npath;
-    pathlen = strlen(path);
+                pathlen = strlen(path);
 		if (shot < 0)
 			sprintf(name,"%s_model",tree_lower);
 		else if (shot < 1000)
@@ -740,9 +793,15 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
 			{
 				path[i] = 0;
 				resnam = strcpy(malloc(strlen(part)+strlen(name)+strlen(type)+2),part);
-				if (strcmp(resnam+strlen(resnam)-1,TREE_PATH_DELIM))
+                                if (resnam[strlen(resnam)-1] == '+')
+                                  resnam[strlen(resnam)-1] = '\0';
+                                else
+				{
+				  if (strcmp(resnam+strlen(resnam)-1,TREE_PATH_DELIM))
 					strcat(resnam,TREE_PATH_DELIM);
-				strcat(resnam,name);
+                                  else
+				    strcat(resnam,name);
+                                }
 				strcat(resnam,type);
 				if (new)
 				{

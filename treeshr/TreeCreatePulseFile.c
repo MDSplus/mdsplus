@@ -176,10 +176,17 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
         {
 	      path[i] = 0;
           srcfile = strcpy(malloc(strlen(part)+strlen(name)+strlen(type)+2),part);
-	      if (strcmp(srcfile+strlen(srcfile)-1,TREE_PATH_DELIM))
+          if (srcfile[strlen(srcfile)-1] == '+')
+	  {
+            srcfile[strlen(srcfile)-1] = '\0';
+          }
+          else
+	  {
+	    if (strcmp(srcfile+strlen(srcfile)-1,TREE_PATH_DELIM))
 	        strcat(srcfile,TREE_PATH_DELIM);
-	      strcat(srcfile,name);
-	      strcat(srcfile,type);
+	    strcat(srcfile,name);
+          }
+	  strcat(srcfile,type);
           if (stat(srcfile,&stat_info) == 0)
             break;
           else
@@ -206,29 +213,46 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
 			  part++;
           else if ((path[i] == ';' || path[i] == 0) && strlen(part))
           {
-			  path[i] = 0;
-			  dstfile = strcpy(malloc(strlen(part)+strlen(name)+strlen(type)+2),part);
-			  if (strcmp(dstfile+strlen(dstfile)-1,TREE_PATH_DELIM) == 0)
-				  *(dstfile+strlen(dstfile)-1) = 0;
-			  if (stat(dstfile,&stat_info) == 0)
-			  {
-				  strcat(dstfile,TREE_PATH_DELIM);
-				  strcat(dstfile,name);
-				  strcat(dstfile,type);
-				  break;
-			  }
-			  else
-			  {
-				  free(dstfile);
-				  dstfile = 0;
-				  part = &path[i+1];
-			  }
+	    path[i] = 0;
+	    dstfile = strcpy(malloc(strlen(part)+strlen(name)+strlen(type)+2),part);
+            if (dstfile[strlen(dstfile)-1] == '+')
+	    {
+              char *delim = TREE_PATH_DELIM;
+              int j = strlen(dstfile) - 1;
+              dstfile[j] = '\0';
+              for (j--;j >= 0 && dstfile[j] != delim[0]; j--);
+              if (j >= 0)
+	      {
+                dstfile[j] = 0;
+                if (stat(dstfile,&stat_info) == 0)
+		{
+                  dstfile[j] = delim[0];
+                  strcat(dstfile,type);
+                  break;
+                }
+              }
+            }
+            else
+	    {
+	      if (strcmp(dstfile+strlen(dstfile)-1,TREE_PATH_DELIM) == 0)
+                *(dstfile+strlen(dstfile)-1) = 0;
+              if (stat(dstfile,&stat_info) == 0)
+              {
+                strcat(dstfile,TREE_PATH_DELIM);
+                strcat(dstfile,name);
+                strcat(dstfile,type);
+                break;
+              }
+            }
+            free(dstfile);
+            dstfile = 0;
+            part = &path[i+1];
           }
         }
         if (dstfile)
-		{
-			status = CopyFile(srcfile,dstfile,0);
-			free(dstfile);
+        {
+          status = CopyFile(srcfile,dstfile,0);
+          free(dstfile);
         }
         else
           status = 0;
