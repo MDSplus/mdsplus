@@ -59,6 +59,22 @@ char *TreeFindTagWild(char *wild, int *nidout, void **ctx_inout)
   return _TreeFindTagWild(DBID, wild, nidout, ctx_inout);
 }
 
+int TreeFindTagWildDsc(char *wild, int *nidout, void **ctx_inout, struct descriptor_xd *name)
+{
+  int status;
+  char *ans = _TreeFindTagWild(DBID, wild, nidout, ctx_inout);
+  if (ans)
+    {
+      static struct descriptor tag = {0, DTYPE_T, CLASS_S, 0};
+      tag.length = strlen(ans);
+      tag.pointer = ans;
+      MdsCopyDxXd(&tag,name);
+      status = 1;
+    }
+    else
+      status = 0;
+}
+
 char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid; 
