@@ -571,7 +571,7 @@ char		*pout_end = pout+MAXPARSE;
 		case IDL_TYP_FLOAT	: {bufchk2(10) sprintf(pout, "%14.8g", (double)src.value.f); break;}
 		case IDL_TYP_DOUBLE	: {bufchk2(10) sprintf(pout, "%24.17g", (double)src.value.d); break;}
 		case IDL_TYP_COMPLEX	: {bufchk2(10) sprintf(pout, "%14.8g", (double)src.value.f); break; /*real part*/}
-		case IDL_TYP_STRING	: {bufchk2(strlen(src.value.str.s))  sprintf(pout, "'%s'", src.value.str.s); break;}
+		case IDL_TYP_STRING	: {bufchk2(strlen(IdlStrS(&src.value.str)))  sprintf(pout, "'%s'", IdlStrS(&src.value.str)); break;}
 		default :
 			sprintf(hold, "Bad IDL %d marker type %d.", used, src0->type);
 			return 0;
@@ -609,7 +609,7 @@ IDL_VPTR	IDLSQL_LOGIN(int argc, IDL_VPTR argv[], char *argk)
     IDL_ENSURE_STRING(argv[i]);
     IDL_ENSURE_SCALAR(argv[i]);
   }
-  status = Login_Sybase(argv[0]->value.str.s, argv[1]->value.str.s, argv[2]->value.str.s);
+  status = Login_Sybase(IdlStrS(&argv[0]->value.str), IdlStrS(&argv[1]->value.str), IdlStrS(&argv[2]->value.str));
   result.value.l = status;
   return &result;
 }
@@ -652,7 +652,7 @@ static IDL_KW_PAR kw_list[] = {
 	user_args.c = IDL_KWGetParams(argc, argv_in, argk, kw_list, argv, 1) - 1;
 	IDL_ENSURE_STRING(argv[0]);
 	IDL_ENSURE_SCALAR(argv[0]);
-        if (strchr(argv[0]->value.str.s, ';')) {
+        if (strchr(IdlStrS(&argv[0]->value.str), ';')) {
           strcpy(hold, "Only one SQL statement allowed per call (no ';'s");
    	  result.value.l = 0;
           set_them(-1, 0); 
@@ -661,7 +661,7 @@ static IDL_KW_PAR kw_list[] = {
 	status = SQL_DYNAMIC(
 		Gets,	/*routine to fill markers	*/
 		Puts,	/*routine to store selctions	*/
-                AddDaysToQuery(argv[0]->value.str.s),
+                AddDaysToQuery(IdlStrS(&argv[0]->value.str)),
 		&user_args,	/*value passed to GETS and PUTS	*/
 		&rows);		/*output, number of rows	*/
         status = GetDBStatus();
@@ -718,7 +718,7 @@ char	*argk;
 	status = SQL_DYNAMIC(
 		USERSQL_GETS,	/*routine to fill markers	*/
 		USERSQL_PUTS,	/*routine to store selctions	*/
-                AddDaysToQuery(argv[0]->value.str.s),
+                AddDaysToQuery(IdlStrS(&argv[0]->value.str)),
 		(ARGLIST *)&width,/*value passed to GETS and PUTS	*/
 		&rows);		/*output, number of rows	*/
 	result.value.l = rows;
