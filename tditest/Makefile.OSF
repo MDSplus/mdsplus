@@ -1,9 +1,0 @@
-CFLAGS = -c -I../include -I. -g -migrate -U__DECC -assume noaligned_objects -ieee_with_inexact
-
-OBJECTS = \
-tditest.o
-
-tditest : $(OBJECTS)
-	cc -o $@ $(OBJECTS) -lc -L../tdishr -lTdiShr 
-
-##-lc -lm -L../mdsshr -lMdsShr -lots -L../treeshr -lTreeShr
