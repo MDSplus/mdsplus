@@ -710,10 +710,9 @@ static void WaitForJob()
     struct timespec one_sec = {1,0};
     struct timespec abstime;
     ProgLoc = 12;
-    //    pthread_get_expiration_np(&one_sec,&abstime);
+    /*   pthread_get_expiration_np(&one_sec,&abstime);*/
     gettimeofday(&abstime, 0);
     abstime.tv_sec += 1;
-    //
 
 
     CondWStat = pthread_cond_timedwait( &JobWaitCondition, &JobWaitMutex, &abstime);
