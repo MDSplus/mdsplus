@@ -4,9 +4,6 @@ int CloseSocket(SOCKET s);
 extern int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob);
 extern char ClientType(void);
 extern void FlipHeader(MsgHdr *header);
-#ifndef MSG_NOSIGNAL
-#define MSG_NOSIGNAL 0
-#endif
 #ifdef GLOBUS
 #if defined(__VMS)
 #include <descrip.h>
@@ -100,13 +97,6 @@ void SetFD(SOCKET sock) {}
 void ClearFD(SOCKET sock) {}
 
 #else
-//#include <signal.h>
-#include <pthread.h>
-#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
-#define pthread_attr_default NULL
-#define pthread_mutexattr_default NULL
-#define pthread_condattr_default NULL
-#endif
 static fd_set fdactive;
 void ZeroFD() { FD_ZERO(&fdactive);}
 void SetFD(SOCKET sock) { FD_SET(sock,&fdactive);}
@@ -342,12 +332,8 @@ void FlushSocket(SOCKET sock)
 #endif
         if (nbytes > 0 && status != -1)
         {
-#ifdef HAVE_WINDOWS_H
-			nbytes = recv(sock, buffer, sizeof(buffer) > nbytes ? nbytes : sizeof(buffer), 0);
-#else
-			nbytes = recv(sock, buffer, sizeof(buffer) > nbytes ? nbytes : sizeof(buffer), MSG_NOSIGNAL);
-#endif
-			if (nbytes > 0) tries = 0;
+          nbytes = recv(sock, buffer, sizeof(buffer) > nbytes ? nbytes : sizeof(buffer), 0);
+	  if (nbytes > 0) tries = 0;
 	}
     }
     else
@@ -369,88 +355,10 @@ void FlushSocket(SOCKET sock)
 #endif
 }
 
-typedef struct _socket_list {int socket; struct _socket_list *next;} SocketList;
-
-static SocketList *Sockets = 0;
-
-static int socket_mutex_initialized = 0;
-static pthread_mutex_t socket_mutex;
-
-static void lock_socket_list()
-{
-
-  if(!socket_mutex_initialized)
-  {
-    socket_mutex_initialized = 1;
-    pthread_mutex_init(&socket_mutex, pthread_mutexattr_default);
-  }
-
-  pthread_mutex_lock(&socket_mutex);
-}
-
-static void unlock_socket_list()
-{
-
-  if(!socket_mutex_initialized)
-  {
-    socket_mutex_initialized = 1;
-    pthread_mutex_init(&socket_mutex, pthread_mutexattr_default);
-  }
-
-  pthread_mutex_unlock(&socket_mutex);
-}
-
-static void PushSocket(SocketList *s)
-{
-  SocketList *oldhead;
-  lock_socket_list();
-  oldhead=Sockets;
-  Sockets=s;
-  s->next=oldhead;
-  unlock_socket_list();
-}
-
-static void PopSocket(SocketList *s_in)
-{
-  SocketList *p,*s;
-  lock_socket_list();
-  for (s=Sockets,p=0;s && s!=s_in; p=s,s=s->next);
-  if (s)
-  {
-    if (p)
-      p->next = s->next;
-    else
-      Sockets = s->next;
-  }
-  unlock_socket_list();
-}
-
-static void ABORT(int sigval)
-{
-  SocketList *s;
-  lock_socket_list();
-  for (s=Sockets;s;s=s->next) CloseSocket(s->socket);
-  unlock_socket_list();
-}
-
 int SocketRecv(SOCKET s, char *bptr, int num,int oob)
 {
 #ifndef GLOBUS
-#ifdef HAVE_WINDOWS_H
-  return recv(s,bptr,num,(oob ? MSG_OOB : 0));
-#else
-  int num_got=0;
-  struct sockaddr sin;
-  socklen_t n = sizeof(sin);
-  SocketList this_socket = {s,0};
-  PushSocket(&this_socket);
-  this_socket.socket=s;
-  signal(SIGABRT,ABORT);
-  if (getpeername(s, (struct sockaddr *)&sin, &n)==0)
-    num_got=recv(s,bptr,num,(oob ? MSG_OOB : 0) | MSG_NOSIGNAL);
-  PopSocket(&this_socket);
-  return num_got;
-#endif
+  return recv(s,bptr,num,oob ? MSG_OOB : 0);
 #else
   int bytes_to_read = num;
   char *ptr = bptr;
@@ -484,14 +392,10 @@ int SocketRecv(SOCKET s, char *bptr, int num,int oob)
 #endif
 }   
 
-int SocketSend(SOCKET s, char *bptr, int num, int options)
+int SocketSend(SOCKET s, char *bptr, int num, int oob)
 {
 #ifndef GLOBUS
-#ifdef HAVE_WINDOWS_H
-  return send(s,bptr,num,options);
-#else
-  return send(s,bptr,num, options | MSG_NOSIGNAL);
-#endif
+  return send(s,bptr,num,oob ? MSG_OOB : 0);
 #else
   globus_io_handle_t *handle = GetHandle(s);
   globus_size_t nbytes_written = 0;
@@ -513,7 +417,7 @@ void SetSocketOptions(SOCKET s, int reuse)
 #ifndef GLOBUS
   STATIC_CONSTANT int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
   int one = 1;
-  unsigned long len;
+  int len;
   static int debug_winsize=0;
   static int init=1;
   if (init)
@@ -873,11 +777,9 @@ globus_result_t globus_io_tcp_accept_inetd(globus_io_attr_t *attr,   globus_io_h
         char *cp;
         cp = strchr(delcname,'=');
         cp++;
-#ifndef _AIX
         unsetenv("X509_USER_KEY");
         unsetenv("X509_USER_CERT");
         unsetenv("X509_USER_PROXY");
-#endif
         setenv("X509_USER_PROXY",cp,1);
       }
     }
@@ -916,7 +818,7 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
   SOCKET s=-1;
 #ifndef GLOBUS
   struct sockaddr_in sin;
-  unsigned long n = sizeof(sin);
+  int n = sizeof(sin);
   int status = 1;
 #ifdef _VMS
   status = sys$assign(&INET, &s, 0, 0);
