@@ -1,4 +1,4 @@
-CFLAGS = -I../include -g
+CFLAGS = -I../include -I/usr/include/java -I/usr/include/java/alpha -g
 MOTIF_CFLAGS = -I../include -g -D_NO_DXm
 WML = ln -sf /usr/examples/motif/wml/tokens.dat . ; /usr/examples/motif/wml/wml xmdsuil.wml ; rm wml-uil.* wml.report
 WML_INCLUDE = -I/usr/examples/motif/wml
