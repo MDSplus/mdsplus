@@ -9,6 +9,7 @@ import java.lang.InterruptedException;
 class TWUDataProvider implements DataProvider
 {
 
+    String provider_url = "ipp333.ipp.kfa-juelich.de";
     String experiment;
     int shot;
     String error_string;
@@ -17,7 +18,7 @@ class TWUDataProvider implements DataProvider
     private String title;
     private float [] last_y, last_x;
     private boolean evaluate_url = false;
-    private int n_point;
+    private int n_point, last_skip = -1;
     transient Vector   connection_listener = new Vector();
     private Properties ysig_properties = null;
     private Properties xsig_properties = null;
@@ -82,6 +83,71 @@ class TWUDataProvider implements DataProvider
     public String GetString(String in) {return in; }
     public float GetFloat(String in){ return new Float(in).floatValue(); }
 
+    int skip = 0;
+    int start_idx = 0;
+    boolean fast_access = false;
+    public float[] GetFloatArray(String in_x, String in_y, float start, float end)
+    {
+        String x_url_prop, x_url_path;
+        int n_point_redu = 0;
+        
+        if(in_x.startsWith("TIME:", 0))
+        {
+            in_x = in_x.substring(5);
+            return getFloatArray(getSignalPath(in_x), true);
+        }
+            
+        try
+        {
+            fast_access = true;
+            last_url_name = null;
+            in_x = getSignalPath(in_x);
+            if(ysig_properties == null || !ysig_properties.getProperty("SignalURL").equals(in_x))
+            {
+                ysig_properties = readProperties(in_x);
+            }
+            x_url_prop = ysig_properties.getProperty("Abscissa.URL.0");
+            if(xsig_properties == null || !xsig_properties.getProperty("SignalURL").equals(x_url_prop))
+            {
+                xsig_properties = readProperties(x_url_prop);
+            }
+            //read first two abscissa points to evaluate start_index and
+            //stop index to load (WARNING only single clock speed acquisition is
+            //load correctly)
+            x_url_path = xsig_properties.getProperty("Bulkfile.URL");
+                
+            URL url = new URL(x_url_path+"?total="+2);
+            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+            float t0 = (new Float(br.readLine())).floatValue();
+            float t1 = (new Float(br.readLine())).floatValue();
+            br.close();
+            float dt = t1-t0;
+            if(start > t0)
+                start_idx =(int)((start - t0)/dt);
+            else
+                start_idx = 0;
+                    
+            n_point_redu =(int)((end - start)/dt);             
+            n_point = Integer.parseInt(ysig_properties.getProperty("Length.dimension.0").trim())-1;
+                
+            if(start_idx + n_point_redu > n_point)
+                n_point_redu =  n_point - start_idx;
+                
+            n_point = n_point_redu;
+                        
+            skip = 1+n_point/1000;
+            if(n_point > 1000)
+                n_point = 1000;
+                
+            return getFloatArray(getSignalPath(in_x), false);
+        }
+        catch (Exception e) 
+        {
+            error_string = "Error opening URL " + in_x + " in fast mode access";
+        }
+        return null;
+    }
+
     public float[] GetFloatArray(String in)
     {
         boolean is_time;
@@ -93,24 +159,53 @@ class TWUDataProvider implements DataProvider
         }
         else
             is_time = false;
-            
+        
+        //If fast access mode are used in the last signal evaluation
+        //must be set last_url_name to null to force signal
+        //evaluation in the case the new signal is the euqal to the last
+        if(fast_access)
+        {
+           fast_access = false; 
+           last_url_name = null;
+        }    
         return getFloatArray(getSignalPath(in), is_time);
     }
-    
+        
     private String getSignalPath(String in)
     {
         if(isFullURL(in))
             return completeURL(in);
         else
         {
+            //check if signal path is in the format
+            // url_server_address//group/signal_path
+            String p_url = getURLserver(in);
+            if(p_url == null)
+            {
+                p_url = provider_url;
+            } else
+                in = in.substring(in.indexOf("//")+2, in.length());
+                
             StringTokenizer st = new StringTokenizer(in, "/");
-            String full_url = "http://ipp333.ipp.kfa-juelich.de/"+experiment+"/"+st.nextToken()+
+            String full_url = "http://"+p_url+"/"+experiment+"/"+st.nextToken()+
                 "/"+shot;
             while(st.hasMoreTokens())
                 full_url += "/"+st.nextToken();
             return full_url;
         }
     }
+    
+    private String getURLserver(String in)
+    {
+        int idx;
+        String out = null;
+        if((idx = in.indexOf("//")) != -1)
+        {
+            out = in.substring(0, idx);
+        }
+        return out;
+    }
+    
     
     private boolean isFullURL(String in)
     {
@@ -145,12 +240,16 @@ class TWUDataProvider implements DataProvider
                 if(!is_time)
                 {
                    if(ysig_properties == null || !ysig_properties.getProperty("SignalURL").equals(url_name))
+                   {
                      ysig_properties = readProperties(url_name);
+                   }
                    try {
                         y_url = ysig_properties.getProperty("Bulkfile.URL");
                         x_url = ysig_properties.getProperty("Abscissa.URL.0");
-                        n_point = Integer.parseInt(ysig_properties.getProperty("Length.dimension.0").trim())-1;
-                    }catch(Exception exc) 
+                        if(!fast_access)
+                            n_point = Integer.parseInt(ysig_properties.getProperty("Length.dimension.0").trim());
+                    }
+                    catch(Exception exc) 
                     {
                         error_string = "Error reading URL " + url_name + " :unexpected properties format";
                         ysig_properties = null;
@@ -158,12 +257,12 @@ class TWUDataProvider implements DataProvider
                     }
 
                     if(x_url != null && y_url != null)
-                    {
-                        
+                    {                        
                         last_x = getFloatArray(x_url, true); 
                         last_y = getFloats(y_url, false);
                         last_url_name = url_name;
- 
+                        skip = 0;
+                        start_idx = 0;
                     } else {
                         error_string = "Error reading URL " + url_name + " :unexpected properties format";
                         ysig_properties = null;
@@ -172,10 +271,13 @@ class TWUDataProvider implements DataProvider
                 }
                 else //is_time
                 {
-                    xsig_properties = readProperties(url_name);
-                    try {
+                    try 
+                    {
+                        if(xsig_properties == null || !xsig_properties.getProperty("SignalURL").equals(url_name))
+                            xsig_properties = readProperties(url_name);
                         x_url = xsig_properties.getProperty("Bulkfile.URL");
-                    }catch(Exception exc) 
+                    }
+                    catch(Exception exc) 
                     {
                         error_string = "Error reading URL " + url_name + " :unexpected properties format";
                         xsig_properties = null;
@@ -196,13 +298,13 @@ class TWUDataProvider implements DataProvider
     private Properties readProperties(String url_name) throws IOException
     {
         ConnectionEvent ce;
+        
         ce = new ConnectionEvent(this, "Load Properties", 0, 0);
         this.dispatchConnectionEvent(ce);
-        //URLConnection urlcon;
-        URL url = new URL(url_name+"?only");//read properties first 
-        //urlcon = url.openConnection();
+        
+        URL url = new URL(url_name+"?only");//read properties first
         Properties pr = new Properties();
-        //InputStream is = urlcon.getInputStream();
+        URLConnection urlcon = url.openConnection();
         pr.load(url.openStream());
         return pr;
     }
@@ -213,7 +315,13 @@ class TWUDataProvider implements DataProvider
         try {
   //          Date d = new Date();
   //          long start = d.getTime();
-            URL url = new URL(url_name); 
+            
+            URL url;
+            
+            if(fast_access)
+                url = new URL(url_name+"?start="+start_idx+"&skip="+skip+"&total="+n_point); 
+            else
+                url = new URL(url_name); 
             
             ConnectionEvent ce;
             ce = new ConnectionEvent(this, (is_time ? "Load X" : "Load Y"), 0, 0);
@@ -227,16 +335,19 @@ class TWUDataProvider implements DataProvider
            
             int inc = n_point/1000;
             int p = 0;
+            float [] values = new float[n_point];
+            String curr_str; 
             while(true)//curr_len < content_len)
             {
                 try 
-                {
-                    String curr_str; 
+                {                    
+                    curr_str = br.readLine();
+                    //lines.addElement(curr_str = br.readLine());
+                    //curr_len += curr_str.length() + 1;
                     
-                    lines.addElement(curr_str = br.readLine());
-                    curr_len += curr_str.length() + 1;
+                    values[p] = (new Float(curr_str)).floatValue();
                     
-                    if(p%inc == 0 || p == n_point)
+                    if(inc != 0 && (p%inc == 0 || p == n_point))
                     {
                         ce = new ConnectionEvent(this, (is_time ? "X:" : "Y:"), n_point, p);
                         dispatchConnectionEvent(ce);
@@ -246,6 +357,15 @@ class TWUDataProvider implements DataProvider
                 } catch(Exception exc) { break; }
             }
             br.close();
+            if ( p < n_point)
+            {
+                while (p < n_point)
+                {
+                    values[p] = values[p-1];
+                    p++;
+                }
+            }            
+            /*
             float [] values = new float[lines.size() - 1];
             for(i = 0; i < lines.size() - 1; i++)
             {
@@ -253,6 +373,7 @@ class TWUDataProvider implements DataProvider
                     values[i] = (new Float((String)lines.elementAt(i))).floatValue();
                 }catch(Exception exc) {break;}
             }
+            */
             ce = new ConnectionEvent(this, null, 0, 0);
             dispatchConnectionEvent(ce);
             
@@ -332,7 +453,7 @@ class TWUDataProvider implements DataProvider
 
 
  public String ErrorString() { return error_string; }
- public boolean SupportsAsynch() { return false; }
+ public boolean SupportsAsynch() { return true; }
  public void addNetworkListener(NetworkListener l, String event){}
  public void removeNetworkListener(NetworkListener l, String event){}
     public synchronized void addConnectionListener(ConnectionListener l) 
@@ -366,15 +487,18 @@ class TWUDataProvider implements DataProvider
 
 public static void main(String args[])
 {
+  
     TWUDataProvider dp = new TWUDataProvider();
     float x[], y[], xdata[];
     y = dp.GetFloatArray("http://ipp333.ipp.kfa-juelich.de/textor/all/86858/RT2/IVD/IBT2P-star");
     x = dp.GetFloatArray("TIME:http://ipp333.ipp.kfa-juelich.de/textor/all/86858/RT2/IVD/IBT2P-star");
 
-//    for(int i = 0; i < x.length; i++)
-//        System.out.println(x[i] + "  " +y[i]);
+    for(int i = 0; i < x.length; i++)
+        System.out.println(x[i] + "  " +y[i]);
 
     System.out.println("Num. points: "+y.length);
+    
+
  }
 
 }

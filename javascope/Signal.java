@@ -257,7 +257,9 @@ public class Signal
     private double curr_xmax;
     private double curr_xmin;
 
-
+    //True if signal is resampled on server side to 
+    //reduce net load 
+    private boolean full_load = false;
     
     //Float flo;
     //Integer inte;
@@ -588,6 +590,9 @@ public class Signal
         //if(i == data.length) i--;
         return i;
     }
+    
+    public boolean  isFullLoad(){return full_load;}
+    public void setFullLoad(boolean full_load){this.full_load = full_load;}
     
     public float getTime(){return curr_time_xy_plot;}
     public float getXData(){return curr_data_yt_plot;}

@@ -675,17 +675,8 @@ public class WaveInterface
             {
                 Class cl = Class.forName("FrameJAI");
                 frames = (Frames)cl.newInstance();
-            } catch (ClassNotFoundException e)
-              {
-                frames = new Frames();
-                use_jai = false;
-              }
-              catch (InstantiationException e)
-              {
-                frames = new Frames();
-                use_jai = false;
-              }
-              catch (IllegalAccessException e)
+            } 
+            catch (Exception e)
             {
                 frames = new Frames();
                 use_jai = false;
@@ -695,42 +686,6 @@ public class WaveInterface
     }
     
     
-    public void flipFrames(byte buf[])
-    {
-        if(!vertical_flip && !horizontal_flip)
-            return;
-        
-        try
-        {
-        ByteArrayInputStream b = new ByteArrayInputStream(buf);
-        DataInputStream d = new DataInputStream(b);
-
-            
-        int width = d.readInt();
-        int height = d.readInt();
-        int img_size = height*width;
-        int n_frame = d.readInt();
-   
-        d.close();
-        
-        byte tmp[] = new byte[img_size];
-        int i, j , k , ofs;
-        
-        int h = vertical_flip ? height - 1: 0;
-        int w = horizontal_flip ? width - 1: 0;
-        
-        ofs = 12 + 4 * n_frame;
-        
-        for(i = 0; i < n_frame; i++)
-        {
-            for(j = 0; j < width; j++)
-                for(k = 0; k < height; k++)
-                   tmp[(Math.abs(h - k) * width) +  Math.abs(w - j)] = buf[ofs + (k * width) + j];
-            System.arraycopy(tmp, 0, buf, ofs, img_size);
-            ofs += img_size; 
-        }
-        } catch (IOException e) {}
-    }
     
     private void InitializeFrames()
     {
@@ -761,8 +716,9 @@ public class WaveInterface
             wave.dispatchWaveformEvent(we);
             if( (buf = dp.GetAllFrames(in_y[0])) != null )
             {
-                flipFrames(buf);
                 CreateNewFramesClass();
+                frames.setHorizontalFlip(horizontal_flip);
+                frames.setVerticalFlip(vertical_flip);                
                 if(!frames.AddMultiFrame(buf, timemin, timemax))
                 {
 	                curr_error = " Can't decode multi frame image "; 
@@ -796,6 +752,8 @@ public class WaveInterface
 	                return;
                 }
                 CreateNewFramesClass();
+                frames.setHorizontalFlip(horizontal_flip);
+                frames.setVerticalFlip(vertical_flip);                
                 for(i = 0, j = 0; j < f_time.length; j++)
                 {
                     if(f_time[j] < timemin || f_time[j] > timemax)
@@ -830,8 +788,8 @@ public class WaveInterface
     private Signal GetSignal(int curr_wave, float xmin, float xmax) throws IOException
     {			    
 		
-	    String limits = "FLOAT("+new Float(xmin).toString()+"), " +		    		    
-	                        "FLOAT("+new Float(xmax).toString()+")";
+//	    String limits = "FLOAT("+new Float(xmin).toString()+"), " +		    		    
+//	                        "FLOAT("+new Float(xmax).toString()+")";
 	                        
 	    //if(experiment != null && experiment.trim().length() > 0)    			    		    
 	    //    dp.Update(experiment, shots[curr_wave]);
@@ -887,8 +845,10 @@ public class WaveInterface
 	        if(full_flag)
 		        curr_y = dp.GetFloatArray(in_y[curr_wave]);
 	        else
-		        curr_y = dp.GetFloatArray("JavaResample("+ "FLOAT("+in_y[curr_wave]+ "), "+
-		                    "FLOAT(DIM_OF("+in_y[curr_wave]+")), "+ limits + ")");
+		        curr_y = dp.GetFloatArray(in_y[curr_wave], in_y[curr_wave], xmin, xmax);
+	        
+//		        curr_y = dp.GetFloatArray("JavaResample("+ "FLOAT("+in_y[curr_wave]+ "), "+
+//		                    "FLOAT(DIM_OF("+in_y[curr_wave]+")), "+ limits + ")");
 		
 		
 	        if(curr_y != null && curr_y.length > 1 && in_up_err != null && in_up_err[curr_wave] != null 
@@ -897,8 +857,9 @@ public class WaveInterface
 		        if(full_flag)
 		            up_err = dp.GetFloatArray(in_up_err[curr_wave]);
 		        else
-		            up_err = dp.GetFloatArray("JavaResample(FLOAT("+ in_up_err[curr_wave]+ "), DIM_OF(FLOAT("+
-			    in_y[curr_wave] + ")), "+limits +")");
+		            up_err = dp.GetFloatArray(in_up_err[curr_wave], in_y[curr_wave], xmin, xmax);
+//		            up_err = dp.GetFloatArray("JavaResample(FLOAT("+ in_up_err[curr_wave]+ "), DIM_OF(FLOAT("+
+//			    in_y[curr_wave] + ")), "+limits +")");
 		        if(up_err == null || up_err.length <= 1)
 		            curr_y = null;
 	    
@@ -909,8 +870,9 @@ public class WaveInterface
 		        if(full_flag)
 		            low_err = dp.GetFloatArray(in_low_err[curr_wave]);
 		        else
-		            low_err = dp.GetFloatArray("JavaResample(FLOAT("+in_low_err[curr_wave] +
-			            "), DIM_OF(FLOAT("+ in_y[curr_wave] + ")),"+ limits + ")");
+		            low_err = dp.GetFloatArray(in_low_err[curr_wave], in_y[curr_wave], xmin, xmax);
+//		            low_err = dp.GetFloatArray("JavaResample(FLOAT("+in_low_err[curr_wave] +
+//			            "), DIM_OF(FLOAT("+ in_y[curr_wave] + ")),"+ limits + ")");
 			
 		        if(low_err == null || low_err.length <= 1)
 		            curr_y = null;
@@ -919,18 +881,21 @@ public class WaveInterface
 	        if(curr_y != null)
 	        {
 		        if(full_flag)
-//		    curr_x = dp.GetFloatArray("DIM_OF("+in_y[curr_wave]+")");
 		            curr_x = dp.GetFloatArray(dp.GetXSpecification(in_y[curr_wave]));
 		        else
 		        {
+		            curr_x = dp.GetFloatArray(dp.GetXSpecification(in_y[curr_wave]), ""+curr_y.length, xmin, xmax );
+		            /*
 		            curr_x = dp.GetFloatArray("JavaDim(FLOAT(DIM_OF("+ in_y[curr_wave]+ 
-			        ")), "+ limits + ")"); 
+			                                    ")), "+ limits + ")"); 
 		            if(curr_x != null && curr_x.length > 1)
 		            {   
 			            expanded_x = new float[curr_y.length];
 			            x_samples = ExpandTimes(curr_x, expanded_x);
 			            curr_x = expanded_x;
 		            }
+		            */
+		            x_samples = curr_x.length;
 		        }
 		        if(curr_x == null)
 		            curr_y = null;
@@ -995,50 +960,43 @@ public class WaveInterface
     	    out_signal.error = true;
         if(up_err != null && low_err != null)
     	    out_signal.asym_error = true;
+    	
+    	out_signal.setFullLoad(full_flag);    
+    	
         return out_signal;
     }
     
-    
+/*    
     private int ExpandTimes(float coded_time[], float expanded_time[])
     {
-	int max_len = expanded_time.length;
-	int num_blocks = (coded_time.length-1) / 3;
-//each block codes start, end, delta
-	int out_idx, in_idx, curr_block;
-	float curr_time;
-	
-	if(coded_time[0] > 0) //JAVA$DIM decided to apply coding
-	{
-	    for(curr_block = 0, out_idx = 0; out_idx < max_len && curr_block < num_blocks; 
-		curr_block++)
-	    {   
-//		for(in_idx = 0; out_idx < max_len && 
-//		 (curr_time = coded_time[curr_block*3+1] + 
-//		    in_idx * coded_time[curr_block*3+3]) <= coded_time[curr_block*3+2];
-//		in_idx++)
-//		    expanded_time[out_idx++] = curr_time;
-		for(in_idx = 0; out_idx < max_len; in_idx++)
-		{ 
-		    curr_time = coded_time[curr_block*3+1] + 
-			in_idx * coded_time[curr_block*3+3];
-		    if(curr_time > coded_time[curr_block*3+2])
-			break;
-		    expanded_time[out_idx++] = curr_time;
-		}
-		    
-		    
+	    int max_len = expanded_time.length;
+	    int num_blocks = (coded_time.length-1) / 3;
+    //each block codes start, end, delta
+	    int out_idx, in_idx, curr_block;
+	    float curr_time;
+    	
+	    if(coded_time[0] > 0) //JAVA$DIM decided to apply coding
+	    {
+	        for(curr_block = 0, out_idx = 0; out_idx < max_len && curr_block < num_blocks; 
+		    curr_block++)
+	        {   
+	            for(in_idx = 0; out_idx < max_len; in_idx++)
+	            { 
+		            curr_time = coded_time[curr_block*3+1] + 
+		            in_idx * coded_time[curr_block*3+3];
+		            if(curr_time > coded_time[curr_block*3+2])
+		            break;
+		            expanded_time[out_idx++] = curr_time;
+	            }		    		    
+	        }
 	    }
-//System.out.println("End Expanding");	
-
-	}
-	else //JAVA$DIM did not apply coding
-	    for(out_idx = 0; out_idx < max_len && out_idx < coded_time.length-1; out_idx++)
-		expanded_time[out_idx] = coded_time[out_idx+1];
-		
-	
-    	return out_idx;
+	    else //JAVA$DIM did not apply coding
+	        for(out_idx = 0; out_idx < max_len && out_idx < coded_time.length-1; out_idx++)
+		        expanded_time[out_idx] = coded_time[out_idx+1];		
+    	
+        return out_idx;
     }
-
+*/
 
     void AsynchUpdate(/*Signal sigs[],*/ Vector sigs, float xmin, float xmax, 
 	                    float _orig_xmin, float _orig_xmax, 
@@ -1090,22 +1048,35 @@ public class WaveInterface
     {
 	    boolean needs_update = false;
 	    int curr_wave, saved_timestamp = wave_timestamp;
+	    
+        WaveformEvent we = new WaveformEvent(w, "Asyncronous signal loading");
+        w.dispatchWaveformEvent(we);
+        
 	    for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
 	    {
-	//   if (wave_signals[curr_wave].n_points >= MAX_POINTS - 1)
+	    //if (wave_signals[curr_wave].n_points >= MAX_POINTS - 1)
 	    //if (wave_signals[curr_wave].n_points >= MAX_POINTS - 1 || 
 		//orig_xmin < wave_xmin || orig_xmax > wave_xmax)
-	   {
-		needs_update = true;
-		wave_signals[curr_wave] = GetSignal(curr_wave, wave_xmin, wave_xmax);
+	        {
+	            //Check if signal is full loaded so no need dynamic update
+        		if(wave_signals[curr_wave] != null && wave_signals[curr_wave].isFullLoad())
+        		    continue;
+        		    
+		        needs_update = true;
+		        wave_signals[curr_wave] = GetSignal(curr_wave, wave_xmin, wave_xmax);
+	        }
+        }
+	    if(needs_update && saved_timestamp == wave_timestamp)
+	    {
+	        w.UpdateSignals(wave_signals, wave_timestamp);
+	        w.AutoscaleY();
+	        //w.UpdateSignals(wave_signals, wave_signals.length, wave_timestamp);
 	    }
-	}
-	if(needs_update && saved_timestamp == wave_timestamp)
-	    w.UpdateSignals(wave_signals, wave_timestamp);
-	    //w.UpdateSignals(wave_signals, wave_signals.length, wave_timestamp);
-    }
+        we = new WaveformEvent(w, "Asyncronous operation completed");
+        w.dispatchWaveformEvent(we);
+     }
 
-    }		
+}		
 	
 class AsynchUpdater  extends Thread
 {

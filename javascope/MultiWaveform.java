@@ -1085,7 +1085,9 @@ public class MultiWaveform extends Waveform
 	    }
 	
 	    if(waveform_signal == null) return;
+	    
 	    update_timestamp++;
+
 	    if(signals == null)
 	        return;
 	    if(orig_signals != null)   //Previous zoom
@@ -1144,6 +1146,7 @@ public class MultiWaveform extends Waveform
 	    waveform_signal.ymin = ymin;
 	    waveform_signal.ymax = ymax;	
 	    ReportChanges();
+	    	    
     }
     
     public void SetXScaleAutoY(Waveform w)
@@ -1154,13 +1157,24 @@ public class MultiWaveform extends Waveform
 	
 	    if(signals == null)
 	        return;
-	    if(w != this && orig_signals != null)   //Previous zoom for differentr windows
+	    if(w != this && orig_signals != null) //Previous zoom for differentr windows
+	    {
 	        signals = orig_signals;
-
+	        //operation on signals must not affect original signals
+	        orig_signals = new Vector();
+	        for(int i = 0; i < signals.size(); i++)
+	            orig_signals.addElement(signals.elementAt(i));
+        }
 	    waveform_signal.xmin = w.waveform_signal.xmin;
 	    waveform_signal.xmax = w.waveform_signal.xmax;
 
-	    AutoscaleY();	
+	    AutoscaleY();
+	    
+	    NotifyZoom(waveform_signal.xmin, 
+	               waveform_signal.xmax, 
+	               waveform_signal.ymin,
+	               waveform_signal.ymax, 
+                   update_timestamp);
     }
 
     public void ResetScales()

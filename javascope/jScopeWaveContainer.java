@@ -1138,7 +1138,7 @@ class jScopeWaveContainer extends WaveformContainer
         {
             new_dp = new TWUDataProvider();
             fast_network_access = false;
-		    supports_fast_network = false;
+		    supports_fast_network = true;
             change = true;
         } 
 
@@ -1187,10 +1187,31 @@ class jScopeWaveContainer extends WaveformContainer
                         browse_sig = (jScopeBrowseSignals)cl.newInstance();
                         browse_sig.setWaveContainer(this);
                         browse_sig.connectToBrowser(server_item.browse_url);
+                        browse_sig.setTitle("URL : "+server_item.browse_url);
                     } 
-                    catch (ClassNotFoundException e){browse_sig = null;}         
-                    catch (InstantiationException e){browse_sig = null;}         
-                    catch (IllegalAccessException e){browse_sig = null;}         
+                    catch (Exception e)
+                    {
+		                JOptionPane.showMessageDialog(this, "Can't create browse signal : "+e, 
+		                                            "alert", 
+		                                            JOptionPane.ERROR_MESSAGE);
+                        browse_sig = null;
+                    }
+                    /*
+                    catch (InstantiationException e)
+                    {
+		                JOptionPane.showMessageDialog(this, "Can't create browse signal : "+e, 
+		                                            "alert", 
+		                                            JOptionPane.ERROR_MESSAGE);
+                        browse_sig = null;
+                    }         
+                    catch (IllegalAccessException e)
+                    {
+		                JOptionPane.showMessageDialog(this, "Can't create browse signal : "+e, 
+		                                            "alert", 
+		                                            JOptionPane.ERROR_MESSAGE);
+                        browse_sig = null;
+                    } 
+                    */
                 } else {
                     browse_sig = null;
                 }

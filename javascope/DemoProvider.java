@@ -5,9 +5,9 @@ class DemoProvider implements DataProvider
 {
     String error = null;
 
-    public void disconnect(){}
+    public void    disconnect(){}
     public boolean supportsCompression(){return false;}
-    public void setCompression(boolean state){}
+    public void    setCompression(boolean state){}
     public boolean useCompression(){return false;}
     public boolean supportsCache(){return false;}
     public void    enableCache(boolean state){}
@@ -33,6 +33,12 @@ class DemoProvider implements DataProvider
         Float f = new Float(in); 
         return f.floatValue();
     }
+    
+    public float[] GetFloatArray(String in_x, String in_y, float start, float end)
+    {
+        return null;
+    }
+    
     public float[] GetFloatArray(String in)
     {
         float d[] = new float[1000];

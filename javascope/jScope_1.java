@@ -911,16 +911,18 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	    if(ip_addr == null) //Set to default server if no server is defined
 	        srv_item = new DataServerItem(default_server, null, null);
 	    else {
-	        //Set to the command line defined 
-	        //server and add it to the menu server list
+	        //Set to the command line defined server 
 	        srv_item = new DataServerItem(ip_addr, null, null); 
-	        server_diag.addServerIp(srv_item);
+	 //       server_diag.addServerIp(srv_item);
 	    }
     }
     else
         //Only if local provider is supported
         srv_item = new DataServerItem("Local", null, null); 
      
+     //Add server to the server list and if presente browse class and
+     //url browse signal set it into srv_item
+     server_diag.addServerIp(srv_item); 
      //if some error occurs reset server to default server
      if(SetDataServer(srv_item) != null && !srv_item.equals(default_server))
         SetDataServer(new DataServerItem("default_server", null, null));
@@ -2406,6 +2408,7 @@ class ServerDialog extends JDialog implements ActionListener
 	    int i;
 	    JMenuItem new_ip;
 	    String ip = dsi.data_server;
+	    DataServerItem found_dsi = null;
 
 
         int idx = ip.indexOf("|");
@@ -2424,7 +2427,8 @@ class ServerDialog extends JDialog implements ActionListener
 	    boolean found = false;
 	    while(e.hasMoreElements())
 	    {   
-	        if(((DataServerItem)e.nextElement()).equals(dsi))
+	        found_dsi = (DataServerItem)e.nextElement();
+	        if(found_dsi.equals(dsi))
 	        {
 	            found = true;
 	            break;
@@ -2438,6 +2442,12 @@ class ServerDialog extends JDialog implements ActionListener
 	        new_ip.setActionCommand("SET_SERVER " + ip);
 	        new_ip.addActionListener(dw);
 	        dw.server_ip_list = getServerIpList();//server_list.getItems();
+	    } else {
+	        if(found_dsi != null)
+	        {
+	            dsi.browse_class = found_dsi.browse_class;
+	            dsi.browse_url = found_dsi.browse_url;	            
+	        }
 	    }
     }
     

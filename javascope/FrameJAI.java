@@ -3,23 +3,17 @@ import java.util.*;
 import java.awt.image.*;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
-import javax.media.jai.widget.ImageCanvas;
-import javax.media.jai.Interpolation;
-import javax.media.jai.JAI;
-import javax.media.jai.RenderedOp;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.TiledImage;
+import javax.media.jai.*;
+import javax.media.jai.operator.TransposeDescriptor;
+
 import com.sun.media.jai.codec.ByteArraySeekableStream;
 
 
 class FrameJAI extends Frames
 {
     RenderingHints renderHints = null;
-//    boolean perform_zoom = false;
     float x_ratio = 0.1F;
     float y_ratio = 0.1F;
- //   Frame f = new Frame();
- //   ScrollingImagePanel sim = null;
     
     
     FrameJAI()
@@ -38,6 +32,16 @@ class FrameJAI extends Frames
         
         /* Create an operator to decode the image file. */
             RenderedOp image1 = JAI.create("stream", stream);
+            if(getHorizontalFlip())
+            {
+                RenderedOp image2 = JAI.create("transpose", image1, TransposeDescriptor.FLIP_HORIZONTAL);
+                image1 = image2;
+            }
+            if(this.getVerticalFlip())
+            {
+                RenderedOp image2 = JAI.create("transpose", image1, TransposeDescriptor.FLIP_VERTICAL);
+                image1 = image2;
+            }
             AddFrame(image1, t);
             return true;
         } catch (IOException e) {
@@ -66,6 +70,7 @@ class FrameJAI extends Frames
         curr_frame_idx = idx;
 
         RenderedImage image1  = (RenderedImage)frame.elementAt(idx);
+        
         if(zoom_rect != null)
         {
            params = new ParameterBlock();
@@ -87,16 +92,19 @@ class FrameJAI extends Frames
          Interpolation interp = Interpolation.getInstance(
                                         Interpolation.INTERP_NEAREST);
          params1 = new ParameterBlock();
+
+         Dimension dim = this.getFrameSize(idx, d);
+
                 
-         x_ratio = ((float)d.width)/image_op.getWidth();
-         y_ratio = ((float)d.height)/image_op.getHeight();
+         x_ratio = ((float)dim.width)/image_op.getWidth();
+         y_ratio = ((float)dim.height)/image_op.getHeight();
          params1.addSource(image_op);
 
          params1.add(x_ratio);          // x scale factor
          params1.add(y_ratio);          // y scale factor
          params1.add(tras_x * x_ratio); // x translate
          params1.add(tras_y * y_ratio); // y translate
-         params1.add(interp);           // interpolation method
+    //     params1.add(interp);           // interpolation method
 
          /* Create an operator to scale image1. */
          buimg = JAI.create("scale", params1);
@@ -105,4 +113,24 @@ class FrameJAI extends Frames
 
     }
         
+    
+    protected int[] getPixelArray(int idx, int x, int y, int img_w, int img_h)
+    {
+       int pixel_array[];// = new int[img_width * img_height]; 
+       RenderedImage r_img = (RenderedImage)frame.elementAt(idx);
+       if(img_w == -1 && img_h == -1)
+       {
+            img_width = img_w = r_img.getWidth(); 
+            img_height = img_h = r_img.getHeight();
+       }
+       Raster raster = r_img.getData();
+       try 
+       { 
+         pixel_array = raster.getPixels(x, y, img_w, img_h, (int[])null);
+       } catch(Exception exc) { 
+            System.out.println("Pixel array not completed"); 
+            return null; 
+       }
+       return pixel_array;
+    }
 }

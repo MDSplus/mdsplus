@@ -292,8 +292,8 @@ class MdsConnection
 
     public  void sendArg(byte descr_idx, 
                             byte dtype, 
-                            byte nargs, 
-                            int dims[], 
+                            byte nargs,
+                             int dims[], 
                             byte body[]) throws IOException
     {
        MdsMessage msg = new MdsMessage( descr_idx, dtype, 

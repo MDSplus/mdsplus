@@ -64,7 +64,7 @@ class JetDataProvider implements DataProvider
     }
 
     public boolean supportsCompression(){return false;}
-    public void setCompression(boolean state){}
+    public void    setCompression(boolean state){}
     public boolean useCompression(){return false;}
 
     public boolean supportsCache(){return true;}
@@ -187,8 +187,7 @@ class JetDataProvider implements DataProvider
     public float[] GetFrameTimes(String in_frame){return null;}
     public byte[] GetFrameAt(String in_frame, int frame_idx){return null;}
     public byte[]  GetAllFrames(String in_frame){return null;}
-
-
+    
     public void SetEnvironment(String s) {}
     public void disconnect(){}
     
@@ -200,6 +199,11 @@ class JetDataProvider implements DataProvider
     }
     public String GetString(String in) {return in; }
     public float GetFloat(String in){ return new Float(in).floatValue(); }
+
+    public float[] GetFloatArray(String in_x, String in_y, float start, float end)
+    {
+        return null;
+    }
 
     public float[] GetFloatArray(String in)
     {

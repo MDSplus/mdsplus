@@ -24,6 +24,8 @@ class Frames extends Canvas {
     protected int x_measure_pixel = 0, y_measure_pixel = 0;
     protected float ft[] = null;
     protected Point sel_point = null;
+    protected boolean horizontal_flip = false;
+    protected boolean vertical_flip = false;
     
     Frames()
     {
@@ -89,11 +91,52 @@ class Frames extends Canvas {
         this.aspect_ratio = aspect_ratio;
     }
     
+    
+    public void flipFrames(byte buf[])
+    {
+        if(!vertical_flip && !horizontal_flip)
+            return;
+        
+        try
+        {
+        ByteArrayInputStream b = new ByteArrayInputStream(buf);
+        DataInputStream d = new DataInputStream(b);
+
+            
+        int width = d.readInt();
+        int height = d.readInt();
+        int img_size = height*width;
+        int n_frame = d.readInt();
+   
+        d.close();
+        
+        byte tmp[] = new byte[img_size];
+        int i, j , k , ofs;
+        
+        int h = vertical_flip ? height - 1: 0;
+        int w = horizontal_flip ? width - 1: 0;
+        
+        ofs = 12 + 4 * n_frame;
+        
+        for(i = 0; i < n_frame; i++)
+        {
+            for(j = 0; j < width; j++)
+                for(k = 0; k < height; k++)
+                   tmp[(Math.abs(h - k) * width) +  Math.abs(w - j)] = buf[ofs + (k * width) + j];
+            System.arraycopy(tmp, 0, buf, ofs, img_size);
+            ofs += img_size; 
+        }
+        } catch (IOException e) {}
+    }
+    
+    
     public boolean AddMultiFrame(byte[] buf, /* WaveSetup controller,*/ float timemin, float timemax)
     {
 
         try
         {
+            flipFrames(buf);
+            
             MemoryImageSource source;
             ByteArrayInputStream b = new ByteArrayInputStream(buf);
             DataInputStream d = new DataInputStream(b);
@@ -165,15 +208,21 @@ class Frames extends Canvas {
         tracker.waitForID(0);
     }    
 
-    protected int[] getPixelArray(Image img, int x, int y, int img_width, int img_height)
+    protected int[] getPixelArray(int idx, int x, int y, int img_w, int img_h)
     {
-       int pixel_array[] = new int[img_width * img_height]; 
-       PixelGrabber grabber = new PixelGrabber(img, x, y, img_width, img_height, pixel_array,0,img_width);    
+       Image img = (Image)frame.elementAt(idx);
+       if(img_w == -1 && img_h == -1)
+       {
+            img_width = img_w = img.getWidth(this); 
+            img_height = img_h = img.getHeight(this);
+       }
+       int pixel_array[] = new int[img_w * img_h]; 
+       PixelGrabber grabber = new PixelGrabber(img, x, y, img_w, img_h, pixel_array,0,img_width);    
        try 
        { 
           grabber.grabPixels(); 
        } catch(InterruptedException ie) { 
-            System.out.println("Pixel array not completed"); 
+            System.err.println("Pixel array not completed"); 
             return null; 
        }
        return pixel_array;
@@ -183,27 +232,31 @@ class Frames extends Canvas {
     {
         if(curr_frame_idx != curr_grab_frame)
         {
-            Image img = (Image)frame.elementAt(curr_frame_idx);
-            img_width = img.getWidth(this); 
-            img_height = img.getHeight(this);
-            
-            if( (pixel_array = getPixelArray(img, 0, 0, img_width, img_height)) != null)
+            if( (pixel_array = getPixelArray(curr_frame_idx, 0, 0, -1, -1)) != null)
                 curr_grab_frame = curr_frame_idx;
         }
     }
 
-    public int getPixel(int idx, int x, int y)
+    public boolean isInImage(int idx, int x, int y)
     {
-        Image img = (Image)frame.elementAt(idx);
-        img_width = img.getWidth(this); 
-        img_height = img.getHeight(this);
-        
-        if(x >= img_width || y >= img_height)
+        Dimension d = this.GetFrameDim(idx);
+        Rectangle r = new Rectangle(0,0,d.width,d.height);
+        return r.contains(x,y);        
+    }
+
+    public void setHorizontalFlip(boolean horizontal_flip) {this.horizontal_flip = horizontal_flip;}
+    public void setVerticalFlip(boolean vertical_flip) {this.vertical_flip = vertical_flip;}
+    public boolean getHorizontalFlip() {return horizontal_flip;}
+    public boolean getVerticalFlip() {return vertical_flip;}
+
+    public int getPixel(int idx, int x, int y)
+    {        
+        if(!isInImage(idx, x, y))
             return -1;
         
         if(idx != curr_grab_frame)
         {
-            if( (pixel_array = getPixelArray(img, 0, 0, img_width, img_height)) != null)
+            if( (pixel_array = getPixelArray(idx, 0, 0, -1, -1)) != null)
                 curr_grab_frame = idx;
         }
         return pixel_array[(y * img_width) + x];
@@ -233,20 +286,6 @@ class Frames extends Canvas {
                              pixel_array[(st_y * img_width) + st_x]};
                         
         grabFrame();
-        
-        /*
-        if(st_x < end_x)
-        {
-            s_x = st_x;
-            e_x = end_x;
-        } else {
-            s_x = end_x;
-            e_x = st_x;            
-        }
-        
-        if((e_x - s_x) < 2)
-            return pixels_line;
-        */
         if(n_point < 2)
             return pixels_line;
         
@@ -334,8 +373,7 @@ class Frames extends Canvas {
             int f_array[];
             for(int i = 0; i < getNumFrame(); i++)
             {
-                Image img = (Image)frame.elementAt(i);
-                f_array = getPixelArray(img, frames_pixel_roi.x, frames_pixel_roi.y, frames_pixel_roi.width, frames_pixel_roi.height);
+                f_array = getPixelArray(i, frames_pixel_roi.x, frames_pixel_roi.y, frames_pixel_roi.width, frames_pixel_roi.height);
                 System.arraycopy(f_array, 0, frames_pixel_array, f_array.length * i, f_array.length);
             }             
         }
@@ -461,12 +499,12 @@ class Frames extends Canvas {
     public Point getFramePoint(Point p, Dimension d)
     {
         Point p_out = new Point(0, 0);
-        Dimension fr_dim = getFrameSize(curr_frame_idx, d);
         
         if(curr_frame_idx != -1 && frame.size() != 0)
         {
             Dimension view_dim;
             Dimension dim;
+            Dimension fr_dim = getFrameSize(curr_frame_idx, d);
             
             if(zoom_rect == null)
             {

@@ -5,7 +5,7 @@ import java.io.*;
 import java.util.*;
 
   
-public class Grid {
+public class Grid implements Serializable {
     WaveformMetrics wm;
     boolean reversed = false;
     int x_dim, y_dim;

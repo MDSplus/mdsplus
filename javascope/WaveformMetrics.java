@@ -2,9 +2,10 @@ import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
 import java.util.*;
+import java.io.Serializable;
 
  
-public  class WaveformMetrics {
+public  class WaveformMetrics implements Serializable {
     static double MAX_VALUE = 10000.;//(double)Integer.MAX_VALUE;
     static double MIN_VALUE = -10000.;//(double)Integer.MIN_VALUE;
     static int INT_MAX_VALUE = (int)MAX_VALUE; 

@@ -5,12 +5,12 @@ import java.io.IOException;
 import java.lang.NumberFormatException;
 import java.util.*;
 import javax.swing.*;
+import java.security.AccessControlException;
 //import java.awt.print.*;
 
 
 public class CompositeWaveDisplay extends JApplet implements WaveContainerListener
 {
-    private ButtonGroup       pointer_mode = new ButtonGroup();
     private WaveformContainer_2 wave_container;
     private boolean           automatic_color = false;
     private boolean           isApplet = true;
@@ -100,7 +100,9 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             Waveform.zoom_on_mb1 = false;
             DataAccessURL.addProtocol(new RdaAccess());
             DataAccessURL.addProtocol(new MdsAccess());
+            DataAccessURL.addProtocol(new TwuAccess());
         }
+        setBackground(Color.lightGray);
         wave_container = new WaveformContainer_2();
         wave_container.addWaveContainerListener(this);
         WavePopup wave_popup = new MultiWavePopup();
@@ -136,6 +138,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 		       }
 		    });
 
+        ButtonGroup       pointer_mode = new ButtonGroup();
         pointer_mode.add(point);
         pointer_mode.add(zoom);
         pointer_mode.add(pan);
@@ -255,11 +258,11 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             wave_container.setPrintBW(translateToBoolean(param));
 
 
-        while((sig_param = getParameter(sig_attr + i)) != null)
-        {
-            try {                
+        try 
+        {                
+            while((sig_param = getParameter(sig_attr + i)) != null)
+            {
                // System.out.println("inizia " + sig_param.toLowerCase());
-
                 signal_autentication = getParameterValue(sig_param, "autentication");
                 if(signal_autentication != null)
                    autentication = signal_autentication;
@@ -312,10 +315,24 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
                     }
                 
                 }
-            } catch(Exception e){
-                showStatus(e.toString()+" url "+url);                    
+                i++;
             }
-            i++;
+        } 
+        catch(Exception e)
+        {
+            if(e instanceof  AccessControlException)
+            {
+		        JOptionPane.showMessageDialog(this, 
+		                                        e.toString()+"\n url "+url +
+		                                        "\nUse policytool.exe in  JDK or JRE installation directory to add socket access permission\n", 
+		                                        "alert", 
+		                                        JOptionPane.ERROR_MESSAGE);
+            } else {
+		        JOptionPane.showMessageDialog(this, 
+		                                        e.toString()+" url "+url, 
+		                                        "alert", 
+		                                        JOptionPane.ERROR_MESSAGE);
+		    }
         }
     }
     
@@ -378,17 +395,17 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         Signal sig = new Signal(x, y);
         
         if(color != null)
-	{
-	    if(color.equals("Automatic"))
 	    {
-		automatic_color = true;
+	        if(color.equals("Automatic"))
+	        {
+		        automatic_color = true;
+	        }
+	        else
+	        {
+		        automatic_color = false;
+		        sig.setColorIdx(Waveform.ColorNameToIndex(color));
+	        }
 	    }
-	    else
-	    {
-		automatic_color = false;
-		sig.setColorIdx(Waveform.ColorNameToIndex(color));
-	    }
-	}
         if(label != null && label.length() != 0)
             sig.setName(label);
             

@@ -333,9 +333,17 @@ public class Waveform extends JComponent
         {
             idx = idx % colors.length;
             waveform_signal.setColorIdx(idx);
-        }
+        } 
+        this.SetCrosshairColor(idx);
     }
     
+    public String   getSignalName() 
+    {
+        if(is_image && frames != null)
+            return frames.getName();
+        else
+         return (waveform_signal != null ? waveform_signal.getName() : "");
+    }
     public int      getSignalType() {return (waveform_signal != null ? waveform_signal.getType() : -1 ); }
     public Signal   GetSignal()     {return waveform_signal;}
     public boolean  GetInterpolate(){return (waveform_signal != null ? waveform_signal.getInterpolate() : true );}
@@ -877,6 +885,8 @@ public class Waveform extends JComponent
     public void UpdateImage(Frames frames)
     {
         this.frames = frames;
+        if(frames != null && frames.getNumFrame() > 0)
+            frames.curr_frame_idx = 0;
         this.is_image = true;
 	    curr_rect = null;
  	    prev_point_x = prev_point_y = -1;
@@ -1066,7 +1076,7 @@ public class Waveform extends JComponent
         
 	        xmax = 1; ymax = 1; xmin = 0; ymin = 0;
             
-           // g.clipRect(0, 0, d.width, d.height);
+            //g.clipRect(0, 0, d.width, d.height);
 
 	        if(mode != MODE_PAN || dragging == false)
 	        {
@@ -1112,7 +1122,7 @@ public class Waveform extends JComponent
 		        g.setColor(Color.lightGray);
 		        
 	        g.fillRect(1, 1, d.width - 2, d.height - 2);
-
+	        	        
             if(!is_min_size)
 	            grid.paint(g, d, this, wm);
 
@@ -1622,31 +1632,6 @@ public class Waveform extends JComponent
        
        DrawImage(g, img, dim);
        
-       /*
-       if(!(img instanceof RenderedImage))
-       {
-            Rectangle r = frames.GetZoomRect();
-            
-            if(r == null)
-                g2.drawImage((Image)img, 1, 1, dim.width, dim.height, this);
-            else
-                g2.drawImage((Image)img, 
-                              1,
-                              1,
-                              dim.width,
-                              dim.height,
-                              r.x,
-                              r.y,
-                              r.x+r.width,
-                              r.y+r.height,
-                              this);
-       }
-       else
-       {
-           g2.clearRect(0, 0, dim.width, dim.height);
-           g2.drawRenderedImage((RenderedImage)img, new AffineTransform(1f,0f,0f,1f,0F,0F));
-       }
-       */
        return true;
 
     }
@@ -1840,11 +1825,14 @@ public class Waveform extends JComponent
 		    }
 		}
 	}
-
 	
-	
-    protected void NotifyZoom(double start_xs, double end_xs, double start_ys, double end_ys,
-	int timestamp) {}
+    protected void NotifyZoom(double start_xs, 
+                              double end_xs, 
+                              double start_ys, 
+                              double end_ys,
+	                          int timestamp) 
+	{
+	}
 
     protected void ReportLimits(ZoomRegion r, boolean add_undo)    
     {
@@ -2012,7 +2000,7 @@ public class Waveform extends JComponent
 	    end_xs = wm.XValue(end_x, d);
         start_ys = wm.YValue(start_y, d);
         end_ys = wm.YValue(end_y, d);	
-        NotifyZoom(start_xs, end_xs, start_ys, end_ys, update_timestamp);
+        //NotifyZoom(start_xs, end_xs, start_ys, end_ys, update_timestamp);
 	    
 	    ZoomRegion r = new ZoomRegion(start_xs, end_xs, start_ys, end_ys);
         ReportLimits(r, true);
@@ -2040,6 +2028,13 @@ public class Waveform extends JComponent
 	        if(is_image && send_profile)
 	            sendProfileEvent();
 	    }
+	    /*
+	    NotifyZoom(waveform_signal.xmin, 
+	               waveform_signal.xmax, 
+	               waveform_signal.ymin,
+	               waveform_signal.ymax, 
+                   update_timestamp);
+        */
     }
     
     public void SetCopySelected(boolean selec)

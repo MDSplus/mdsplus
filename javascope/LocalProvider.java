@@ -53,6 +53,9 @@ public class LocalProvider extends NetworkProvider implements DataProvider {
     public boolean compressionEnable(){return false;}
     
     public void    freeCache(){}
-
     
+    public float[] GetFloatArray(String in_x, String in_y, float start, float end)
+    {
+        return null;
+    }
 }	    

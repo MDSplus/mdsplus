@@ -37,7 +37,7 @@ class MdsMessage extends Object
 
     public MdsMessage()
     {
-       this((byte)0, (byte)0, (byte)0, null, new byte[0]);
+       this((byte)0, (byte)0, (byte)0, null, new byte[1]);
        status = 1;
     }
 

@@ -184,5 +184,9 @@ public class RdaAccess implements DataAccess
             return("Cannot create NetworkProvider");
         return jp.ErrorString();
     }
+
+
+    public void close(){}
+    public Frames getImages(String url, Frames f){return null;}
 }
         

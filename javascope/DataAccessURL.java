@@ -20,8 +20,8 @@ class DataAccessURL
     {
         return getSignal(url, null, passwd);
     }
-  
-    static public Signal getSignal(String url, String name, String passwd) throws IOException
+    
+    static public DataAccess getDataAccess(String url)
     {
         DataAccess da = null;
         
@@ -31,39 +31,85 @@ class DataAccessURL
             if(da.supports(url))
                 break;
         }
-        if(da != null)
+        return da;
+    }
+    
+    static public Signal getSignal(String url, String name, String passwd) throws IOException
+    {
+        DataAccess da = null;
+        
+        if((da = getDataAccess(url)) != null)
         {
-           da.setPassword(passwd);
-           
-           /*
-           float y[] = da.getY(url);
-           float x[] = da.getX(url);
-            
-            if(x == null || y == null)
-                throw(new IOException("Incorrect password or read signal error"));
-            
-            Signal s = new Signal(x, y);
-            */
-            
+            da.setPassword(passwd);
             Signal s = da.getSignal(url);
-            if(s == null)
+            if(s == null && da.getError() == null)
                 throw(new IOException("Incorrect password or read signal error"));
             
             if(da.getError() == null)
             {
                 if(name == null)
-                {
+                    name = s.getName();
+                    
+                if(name == null)
                     name = da.getSignal()+" "+da.getShot();
-                } else
+                else
                     name = name+" "+da.getShot();                
                 s.setName(name);
                 return s;
             }
             else
+            {
                 throw(new IOException(da.getError()));
+            }
+        }
+        throw(new IOException("Protocol not recognized"));
+    }    
+
+
+    static public Frames getImages(String url, Frames f) throws IOException
+    {
+        return getImages(url, null, null, f);
+    }
+
+    static public Frames getImages(String url, String passwd, Frames f) throws IOException
+    {
+        return getImages(url, null, passwd, f);
+    }
+
+    static public Frames getImages(String url, String name, String passwd, Frames f) throws IOException
+    {
+        DataAccess da = null;
+        
+        if((da = getDataAccess(url)) != null)
+        {
+            da.setPassword(passwd);
+            f = da.getImages(url, f);
+            if(f == null && da.getError() == null)
+                throw(new IOException("Incorrect password or read images error"));
+            
+            if(da.getError() == null)
+            {
+                return f;
+            }
+            else
+            {
+                throw(new IOException(da.getError()));
+            }
         }
         throw(new IOException("Protocol not recognized"));
     }
     
     
+    static public void close()
+    {
+        DataAccess da = null;
+        for(int i = 0 ; i < data_access_vector.size(); i++)
+        {
+            da = (DataAccess)data_access_vector.elementAt(i);
+            if(da != null)
+                da.close();
+        }
+    }
+
+
 }

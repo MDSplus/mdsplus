@@ -7,7 +7,8 @@ public class MdsAccess implements DataAccess
     String ip_addr = null;
     String shot_str = null;
     String signal = null;
-    NetworkProvider np;
+    NetworkProvider np = null;
+    String error = null;
 
     
     public static void main(String args[])
@@ -15,11 +16,14 @@ public class MdsAccess implements DataAccess
         MdsAccess access = new MdsAccess();
         String url = "mds:://150.178.3.80/a/14000/\\emra_it";
         boolean supports = access.supports(url);
-        try
+        //try
         {
-            float x [] = access.getX(url);
-            float y [] = access.getY(url);
-        } catch (IOException e) {}
+            Signal s = access.getSignal(url);
+            s = access.getSignal(url);
+            //float x [] = access.getX(url);
+            //float y [] = access.getY(url);
+         }
+        //catch (IOException e) {}
     }
 
     public boolean supports(String url)
@@ -33,8 +37,9 @@ public class MdsAccess implements DataAccess
     {
         StringTokenizer st1 = new StringTokenizer(url, ":");
         String content = st1.nextToken();
-        content = st1.nextToken();
+        content = st1.nextToken("");
         content = content.substring(2);
+        System.out.println("Content "+content);
         StringTokenizer st2 = new StringTokenizer(content, "/");
         if(st2.countTokens() < 4) //ip addr/exp/shot/signal
             return null;
@@ -42,6 +47,7 @@ public class MdsAccess implements DataAccess
         if(addr == null) return null;
         if(ip_addr == null || !ip_addr.equals(addr))
         {
+            System.out.println("creo NetworkProvider");
             np = new NetworkProvider(addr);
             ip_addr = addr;
         }
@@ -66,6 +72,13 @@ public class MdsAccess implements DataAccess
         return signal;
     }
 
+    public void close()
+    {
+        if(np != null)
+            np.disconnect();
+        np = null;
+        ip_addr = null;
+    }
     
     public float [] getX(String url) throws IOException
     {
@@ -83,7 +96,58 @@ public class MdsAccess implements DataAccess
     
     public Signal getSignal(String url)
     {
-        return null;
+        Signal s = null;
+        error = null;
+        
+        try
+        {
+            float y[] = getY(url);
+            float x[] = getX(url);
+                
+            if(x == null || y == null)
+            {
+                error = np.ErrorString();
+                return null;
+            }
+            s = new Signal(x, y);
+        } 
+        catch (IOException e) 
+        {
+            error = new String(e.getMessage());
+        }        
+        return s;
+    }
+ 
+    public Frames getImages(String url, Frames f)
+    {
+        byte buf[];
+        String signal = setProvider(url);
+        
+        if(signal == null) return null;
+        try
+        {
+            if( (buf = np.GetAllFrames(signal)) != null )
+            {
+                if(f == null)
+                    f = new Frames();
+                if(!f.AddMultiFrame(buf, (float)-1E8, (float)1E8))
+                {
+	                error = " Can't decode multi frame image "; 
+                } else {
+                    f.WaitLoadFrame();
+                    f.setName(signal);
+                }
+                buf = null;            
+            } 
+            else
+                error = " Frames not found ";
+        }   
+        catch (Exception e) 
+        {
+            error = new String(e.getMessage());
+        }
+        
+        return f;
     }
     
     public void setPassword(String encoded_credentials)
@@ -93,7 +157,9 @@ public class MdsAccess implements DataAccess
     public String getError()
     {   
         if(np == null)
-            return("Cannot create NetworkProvider");
+           return("Cannot create NetworkProvider");
+        if(error != null)
+            return error;
         return np.ErrorString();
     }
 }

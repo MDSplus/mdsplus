@@ -8,6 +8,7 @@ public class TextorBrowseSignals extends jScopeBrowseSignals
     String path;
     String shot;
     String tree;
+    String server_url;
     
     protected String getSignal(String url_name)
     {
@@ -15,7 +16,16 @@ public class TextorBrowseSignals extends jScopeBrowseSignals
         try
         {
             URLConnection urlcon;
-            URL u = new URL(url_name+"?only");//read properties first 
+            /*
+            if(url_name.indexOf("?only") == -1)
+            {
+ 		        JOptionPane.showMessageDialog(this, 
+ 		                        "Select properties only page of the signal to add", 
+		                        "Warning", JOptionPane.INFORMATION_MESSAGE);
+		        return null;
+            }
+            */
+            URL u = new URL(url_name);//+"?only");//read properties first 
             urlcon = u.openConnection();
             BufferedReader br = new BufferedReader(new InputStreamReader(urlcon.getInputStream()));
             while (sig_path == null)
@@ -24,9 +34,9 @@ public class TextorBrowseSignals extends jScopeBrowseSignals
                     curr_line = br.readLine();
                     if(curr_line.startsWith("SignalURL"))
                         sig_path = curr_line.substring(curr_line.indexOf("http:"));
-                    if(curr_line.startsWith("Should be handle"))
-                        sig_path = curr_line.substring(curr_line.indexOf("http:"), 
-                                                       curr_line.indexOf("?only"));
+//                    if(curr_line.startsWith("Should be handle"))
+//                        sig_path = curr_line.substring(curr_line.indexOf("http:"), 
+//                                                       curr_line.indexOf("?only"));
                }
                 catch(Exception exc) 
                 {
@@ -42,11 +52,11 @@ public class TextorBrowseSignals extends jScopeBrowseSignals
                 String group;
                 StringTokenizer st = new StringTokenizer(sig_path, "/");
                 dummy = st.nextToken();
-                dummy = st.nextToken();
+                server_url = st.nextToken();
                 tree  = st.nextToken();
                 group = st.nextToken();
                 shot  = st.nextToken();
-                sig_path = "/"+group+"/"+st.nextToken("");
+                sig_path = server_url+"//"+group+st.nextToken("");
             }
         } catch (Exception exc)
             {
@@ -58,4 +68,5 @@ public class TextorBrowseSignals extends jScopeBrowseSignals
     
     protected String getTree(){return tree;}
     protected String getShot(){return shot;}
+    protected String getServerAddr(){return server_url;}
 }

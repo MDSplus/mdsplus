@@ -133,6 +133,7 @@
      abstract protected String getSignal(String url);
      abstract protected String getShot();
      abstract protected String getTree();
+     abstract protected String getServerAddr();
      
      
      public void addSignal(boolean with_shot)
@@ -143,8 +144,10 @@
             String url_name = (u.toString());
             String sig_path = getSignal(url_name);
             String shot = (with_shot) ? getShot() : null;
-            if(sig_path != null)
+            if(sig_path != null) 
+            {
                 wave_panel.AddSignal(getTree(), shot, sig_path);
+            }
         }
      }
      
@@ -153,18 +156,18 @@
         this.wave_panel = wave_panel;
      }
   
-     public void connectToBrowser(String url_path)
+     public void connectToBrowser(String url_path) throws Exception
      {
  	    URL url = null;
- 	    try { 
+ 	    //try { 
  		    url = new URL(url_path);
  		    url_list.addElement(url);
             if(url != null)
                 html.setPage(url);
-        } catch (Exception e) { 
- 	        System.err.println("Failed to open " + url_path); 
- 	        url = null; 
-        }
+        //} catch (Exception e) { 
+ 	    //    System.err.println("Failed to open " + url_path); 
+ 	    //    url = null; 
+       // }
      }
   
      public HyperlinkListener createHyperLinkListener() { 
@@ -181,6 +184,7 @@
  			            try { 
  			                URL u = e.getURL();
  			                html.setPage(u);
+ 			                /*
  			                try
  			                {
  			                    while(true)
@@ -188,6 +192,10 @@
  	                                url_list.removeElementAt(curr_url + 1);
  	                            }
  			                } catch(Exception exc){}
+ 			                */
+ 			                int sz = url_list.size();
+ 			                for(int i = curr_url + 1; i < sz; i++)
+ 			                    url_list.removeElementAt(curr_url + 1);
  			                url_list.addElement(u);
  			                curr_url++;
 			            } catch (IOException ioe) { 

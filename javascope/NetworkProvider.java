@@ -16,7 +16,7 @@ public class NetworkProvider implements DataProvider
     public String error;
     private boolean use_compression = false;
     private boolean use_cache = false;
-    private SignalCache sc = new SignalCache();
+    private SignalCache sc = null;
         
     public NetworkProvider()
     {
@@ -61,7 +61,16 @@ public class NetworkProvider implements DataProvider
     public boolean useCompression(){return use_compression;}
 
     public boolean supportsCache(){return true;}
-    public void    enableCache(boolean state){use_cache = state;}
+    public void    enableCache(boolean state)
+    {
+        if(state)
+        {
+            if(sc == null)
+                sc = new SignalCache();
+        } else
+            sc = null;
+        use_cache = state;
+    }
     public boolean isCacheEnabled(){return use_cache;}
     public void    freeCache(){sc.freeCache();}
 
@@ -86,7 +95,7 @@ public class NetworkProvider implements DataProvider
         return exp;
     }
 
-    public byte[] GetAllFrames(String in_frame) throws IOException
+    public synchronized byte[] GetAllFrames(String in_frame) throws IOException
     {
         byte img_buf[], out[] = null;
         float time[];
@@ -124,7 +133,7 @@ public class NetworkProvider implements DataProvider
         return out;
     }
 
-    public float[]  GetFrameTimes(String in_frame)
+    public synchronized float[]  GetFrameTimes(String in_frame)
     {
         String exp = GetExperimentName(in_frame);
         
@@ -164,7 +173,7 @@ public class NetworkProvider implements DataProvider
         return GetByteArray(in);
     }
 
-    protected byte[] GetByteArray(String in)
+    protected synchronized byte[] GetByteArray(String in)
     {
         Descriptor desc = mds.MdsValue(in);
         switch(desc.dtype)  {
@@ -186,7 +195,6 @@ public class NetworkProvider implements DataProvider
 
     public String GetXSpecification(String yspec) {return "DIM_OF("+yspec+")";}
     public String GetXDataSpecification(String yspec) {return null;}
-
 
     public boolean SupportsAsynch() { return true; }
 
@@ -285,7 +293,64 @@ public class NetworkProvider implements DataProvider
 	        return new Float(in).floatValue();
         return 0;
     }	
+    
+    private int ExpandTimes(float coded_time[], float expanded_time[])
+    {
+	    int max_len = expanded_time.length;
+	    int num_blocks = (coded_time.length-1) / 3;
+    //each block codes start, end, delta
+	    int out_idx, in_idx, curr_block;
+	    float curr_time;
     	
+	    if(coded_time[0] > 0) //JAVA$DIM decided to apply coding
+	    {
+	        for(curr_block = 0, out_idx = 0; out_idx < max_len && curr_block < num_blocks; 
+		    curr_block++)
+	        {   
+	            for(in_idx = 0; out_idx < max_len; in_idx++)
+	            { 
+		            curr_time = coded_time[curr_block*3+1] + 
+		            in_idx * coded_time[curr_block*3+3];
+		            if(curr_time > coded_time[curr_block*3+2])
+		            break;
+		            expanded_time[out_idx++] = curr_time;
+	            }		    		    
+	        }
+	    }
+	    else //JAVA$DIM did not apply coding
+	        for(out_idx = 0; out_idx < max_len && out_idx < coded_time.length-1; out_idx++)
+		        expanded_time[out_idx] = coded_time[out_idx+1];		
+    	
+        return out_idx;
+    }
+        
+    public synchronized float[] GetFloatArray(String in_y, String in_x, float start, float end)  throws IOException
+    {
+	    String limits = "FLOAT("+start+"), " + "FLOAT("+end+")";
+	    if(in_y.startsWith("DIM_OF"))
+	    {
+	        
+		    float curr_x[] = GetFloatArray("JavaDim(FLOAT("+ in_y+ "), "+ limits + ")"); 
+		    if(curr_x != null && curr_x.length > 1)
+		    {   
+			    float expanded_x[] = new float[Integer.parseInt(in_x)];
+			    int x_samples = ExpandTimes(curr_x, expanded_x);
+			    if(expanded_x.length > x_samples)
+			    {
+			       curr_x = new float[x_samples];
+			       for(int i = 0; i < x_samples; i++)
+			         curr_x[i] = expanded_x[i];
+			    } else			    
+			       curr_x = expanded_x;
+		    }
+		    return curr_x;
+	    }
+	    else 
+	    {
+		    return GetFloatArray("JavaResample("+ "FLOAT("+in_y+ "), "+
+		                    "FLOAT(DIM_OF("+in_x+")), "+ limits + ")");
+		}
+    }
     	
     public synchronized float[] GetFloatArray(String in)  throws IOException
     {
@@ -294,7 +359,7 @@ public class NetworkProvider implements DataProvider
         float[] out = null;
         
         if(use_cache)
-        {
+        {                
             out = (float[])sc.getCacheData(provider, in, experiment, shot);
             if(out != null)
             {

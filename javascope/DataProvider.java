@@ -7,6 +7,7 @@ interface DataProvider
         public String  GetString(String in) throws IOException;
         public float   GetFloat(String in) throws IOException;
         public float[] GetFloatArray(String in) throws IOException;
+        public float[] GetFloatArray(String in_y, String in_x, float start, float end) throws IOException;
         public int[]   GetIntArray(String in) throws IOException;
         public String  GetXSpecification(String in);
         public String  GetXDataSpecification(String in);
