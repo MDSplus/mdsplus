@@ -1984,7 +1984,8 @@ int MDSEventCan(int eventid)
 	shared_info[i].nameid = shared_info[i].next_id = -1;
       }
 
-      releaseLock();
+     LockMdsShrMutex(&sharedMutex);
+     releaseLock();
     }
     UnlockMdsShrMutex(&privateMutex);
     evinfo->active = 0;
@@ -2157,7 +2158,7 @@ void DumpSharedEventInfo()
     printf("\n");
 }
 
-void InitializeSharedInfo()
+/*void InitializeSharedInfo()
 {
 
     getLock();
@@ -2170,7 +2171,7 @@ void InitializeSharedInfo()
     }
     initializeShared();
 }
-		    		
+*/		    		
 #ifndef USE_PIPED_MESSAGING                                
 void RemoveMessages()
 {
