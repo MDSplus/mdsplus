@@ -627,7 +627,7 @@ u_of_m_spect_gen.c : u_of_m_spect.gen
 	cp daq_server @MAKEBINDIR@daq_server
 
 @MAKESHLIBDIR@libMitDevices@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS)  -L$(top_srcdir)/lib -lCamShr -lXmdsShr -lGenDevShr -lMdsdcl -lTdiShr -lTreeShr -lMdsShr $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS)  -L$(top_srcdir)/lib -lCamShr -lXmdsShr -lGenDevShr -lMdsdcl -lTdiShr -lTreeShr -lMdsShr $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS) $(MATH_LIBS)
 	ln -sf libMitDevices@SHARETYPE@ @MAKESHLIBDIR@libMIT\$$DEVICES@SHARETYPE@
 
 @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@ : mitdevices_msg.o
@@ -638,7 +638,7 @@ u_of_m_spect_gen.c : u_of_m_spect.gen
 	@RANLIB@ $@
 
 @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ : $(IO_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(IO_OBJECTS) $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(IO_OBJECTS) $(LIBS) $(MATH_LIBS)
 
 @MAKELIBDIR@libMitDevicesIO.a : $(IO_OBJECTS)
 	$(AR) -cr $@ $(IO_OBJECTS)
