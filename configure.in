@@ -427,6 +427,7 @@ servershr/Makefile
 setevent/Makefile
 tcl/Makefile 
 tdishr/Makefile 
+tdic/Makefile
 tditest/Makefile 
 traverser/Makefile 
 treeshr/Makefile 

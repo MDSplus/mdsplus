@@ -15,6 +15,7 @@ PARTS = \
         tditest \
         xmdsshr \
         mdstcpip \
+	tdic \
         dwscope \
         mitdevices \
         mdslibidl \
