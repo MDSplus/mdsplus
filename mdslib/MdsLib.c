@@ -1,7 +1,18 @@
-/* TO DO: 
+#ifndef FORTRAN_ENTRY_POINTS
 
-  - ensure all data types covered
-*/
+/*************************************************************************
+Note: This file gets loaded twice during compilation. Once to compile
+the C entry points and a second time to generate the Fortran specific
+entry points for the target platform.  The first part of the file
+enclosed by the ifndef FORTRAN_ENTRY_POINTS loads the header files and
+defines some utility routines.  Since MdsConnect, MdsDisconnect,
+MdsOpen, MdsClose, and MdsSetDefault do not need to handle variable
+argument lists, we can just have fortran entry points that calls these
+C functions directly. The functions descr, MdsValue and MdsPut have
+variable argument lists so a second compilation of these routines is
+necessary to create the fortran entry points.  See more notes at
+bottom of this file for configuring fortran entry points.
+**************************************************************************/
 
 #ifdef __VMS
 #include <descrip.h>
@@ -38,13 +49,14 @@ extern int TreeFindNode();
 extern int TreePutRecord();
 extern int TreeWait();
 #endif
+
 short ArgLen(struct descrip *d);
 
 static int next = 0;
 #define MIN(A,B)  ((A) < (B) ? (A) : (B))
 #define MAXARGS 32
 
-int dtype_length(struct descriptor *d)
+static int dtype_length(struct descriptor *d)
 {
   short len;
   switch (d->dtype)
@@ -77,8 +89,421 @@ char *DscToCstring(struct dsc$descriptor *dsc)
 }
 #endif
 
-int descr (int *dtype, void *data, int *dim1, ...)
+#if !defined(_VMS) && !defined(_CLIENT_ONLY)
+int *cdescr (int dtype, void *data, ...)
+{
+    void *arglist[MAXARGS];
+    va_list incrmtr;
+    int dsc;
+    static int status;
+    int argidx=1;
+    arglist[argidx++] = (void *)&dtype;
+    arglist[argidx++] = (void *)data;
 
+    va_start(incrmtr, data);
+
+    dsc = 1;  /* initialize ok */
+    for ( ; dsc != 0; )
+    {
+      dsc = va_arg(incrmtr, int);
+      arglist[argidx++] = (void *)&dsc;
+    }
+
+    if (dtype == DTYPE_CSTRING)
+      {
+	dsc = va_arg(incrmtr, int);
+	arglist[argidx++] = (void *)&dsc;
+      }
+#ifndef __VMS
+    arglist[argidx++] = MdsEND_ARG;
+#endif
+    *(int *)&arglist[0] = argidx-1; 
+    status = LibCallg(arglist,descr);
+    return(&status);
+}
+#endif
+
+static struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
+{
+
+  int dtype;
+
+  switch (dsc->dtype)
+  {
+
+    case DTYPE_FLOAT : 
+      dtype = DTYPE_F;
+      break;
+    case DTYPE_DOUBLE : 
+      dtype = DTYPE_D;
+      break;
+    case DTYPE_FLOAT_COMPLEX: 
+      dtype = DTYPE_FC;
+      break;
+    default:
+      dtype = dsc->dtype;
+  }
+
+  if (dsc->class == CLASS_S) 
+  {
+    if (dsc->length)
+      arg = MakeDescripWithLength(arg, (char)dtype, (int)dsc->length, (char)0, (int *)0, dsc->pointer);
+    else
+      arg = MakeDescrip(arg, (char)dtype, (char)0, (int *)0, dsc->pointer);
+  } 
+  else 
+  {
+    int i;
+    array_coeff *adsc = (array_coeff *)dsc;  
+    int dims[MAXDIM];
+    int num = adsc->arsize/adsc->length;
+    int *m = &num;
+    if (adsc->dimct > 1) m = adsc->m;
+    for (i=0; i<adsc->dimct; i++) dims[i] = m[i];
+    for (i=adsc->dimct; i<MAXDIM; i++) dims[i] = 0;
+    if (dsc->length)
+      arg = MakeDescripWithLength(arg, (char)dtype, (int)dsc->length, adsc->dimct, dims, adsc->pointer);
+    else
+      arg = MakeDescrip(arg, (char)dtype, adsc->dimct, dims, adsc->pointer);
+  }
+  return arg;
+}
+
+static int MdsValueLength(struct descriptor *dsc)
+{
+  int length;
+  switch (dsc->class)
+  {
+    case CLASS_S:
+    case CLASS_D:
+      length = dsc->length;
+      break;
+    case CLASS_A:
+      length = ((struct descriptor_a *)dsc)->arsize;
+      break;
+    default:
+      length = 0;
+      break;
+  }
+  return(length);
+}
+
+static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
+{
+
+  /* This function will wrap expression in the appropriate type
+   * conversion function to ensure that the return value of MdsValue
+   * is of the right type.  It is only used for remote MDSplus 
+   */
+
+  char *newexpression = (char *) malloc(strlen(expression)+13);
+				
+  switch (dsc->dtype) 
+    {
+    case DTYPE_CSTRING: strcpy(newexpression,"TEXT"); break;
+    case DTYPE_UCHAR  : strcpy(newexpression,"BYTE_UNSIGNED"); break;
+    case DTYPE_CHAR   : strcpy(newexpression,"BYTE"); break;
+    case DTYPE_USHORT : strcpy(newexpression,"WORD_UNSIGNED"); break;
+    case DTYPE_SHORT  : strcpy(newexpression,"WORD"); break;
+    case DTYPE_ULONG  : strcpy(newexpression,"ULONG"); break;
+    case DTYPE_LONG   : strcpy(newexpression,"LONG"); break;
+    case DTYPE_FLOAT  : strcpy(newexpression,"F_FLOAT"); break;
+    case DTYPE_DOUBLE : strcpy(newexpression,"DBLE"); break;
+    }
+
+  strcat(newexpression, "(");
+  strcat(newexpression, expression);
+  strcat(newexpression, ")\0");
+
+  return newexpression;
+
+}
+
+static void MdsValueMove(int source_length, char *source_array, char fill, int dest_length, char *dest_array)
+{
+  int i;
+  memcpy(dest_array, source_array, MIN(source_length, dest_length));
+  for (i=0; i<dest_length-source_length; i++)
+  {
+    dest_array[source_length+i] = fill;
+  }
+}
+
+static void MdsValueCopy(int dim, int length, char fill, char *in, int *in_m, char *out, int *out_m)
+{
+  int i;
+  if (dim == 1)
+    MdsValueMove(length * in_m[0], in, fill, length * out_m[0], out);
+  else
+  {
+    int in_increment = length;
+    int out_increment = length;
+    for (i=0; i<dim-1; i++)
+    {
+      in_increment *= in_m[i];
+      out_increment *= out_m[i];
+    }
+    for (i=0; i<in_m[dim-1] && i < out_m[dim-1]; i++)
+      MdsValueCopy(dim-1, length, fill, in + in_increment * i, in_m, out + out_increment * i, out_m);
+  }
+}
+
+static void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int *length)
+{
+  int fill = (outdsc->dtype == DTYPE_CSTRING) ? 32 : 0;
+  if ( (indsc->class == CLASS_A) &&
+       (outdsc->class == CLASS_A) &&
+       (((struct descriptor_a *)outdsc)->dimct > 1) &&
+       (((struct descriptor_a *)outdsc)->dimct == ((struct descriptor_a *)indsc)->dimct) )
+  {
+    array_coeff *in_a = (array_coeff *) indsc;
+    array_coeff *out_a = (array_coeff *) outdsc;
+    MdsValueMove(0,0,fill,MdsValueLength(outdsc),out_a->pointer);
+    MdsValueCopy(out_a->dimct, in_a->length, fill, in_a->pointer, in_a->m, out_a->pointer, out_a->m);
+  }
+  else
+  {
+    MdsValueMove(MdsValueLength(indsc), indsc->pointer, fill, MdsValueLength(outdsc), outdsc->pointer);
+  }
+
+  if (length) 
+  {
+    if (indsc->class == CLASS_A) 
+      *length = MIN( ((struct descriptor_a *)outdsc)->arsize / outdsc->length, 
+		     ((struct descriptor_a *)indsc)->arsize / indsc->length);
+    else 
+    {
+      if (indsc->dtype == DTYPE_CSTRING)
+      {
+	*length = MIN(outdsc->length, indsc->length);
+      }
+      else
+      {
+	*length = MIN(outdsc->length / dtype_length(outdsc), 
+		      indsc->length / dtype_length(indsc));
+      }
+    }
+  }
+}
+
+#ifdef __VMS
+int  MdsOpen(struct dsc$descriptor *treedsc, int *shot)
+{
+   char *tree = DscToCstring(treedsc);
+#else
+int  MdsOpen(char *tree, int *shot)
+{
+#endif
+
+  if (mdsSocket != INVALID_SOCKET)
+  {
+
+    long answer;
+    int status;
+    int length;
+    int d1,d2,d3; /* descriptor numbers passed to MdsValue */
+    int dtype_cstring = DTYPE_CSTRING;
+    int dtype_long = DTYPE_LONG;
+    int null = 0;
+
+#ifdef __VMS
+    static $DESCRIPTOR(expressiondsc,"TreeOpen($,$)\0");
+    static struct dsc$descriptor *expression = (struct dsc$descriptor *)&expressiondsc;
+#else
+    static char *expression = "TreeOpen($,$)";
+#endif
+
+    length = strlen(tree);
+    d1 = descr(&dtype_cstring,tree,&null,&length);
+    d2 = descr(&dtype_long,shot, &null);
+    d3 = descr(&dtype_long,&answer,&null);
+
+    status = MdsValue(expression, &d1, &d2, &d3, &null, &length);
+    if ((status & 1))
+    {
+      return *(int *)&answer; 
+    } else 
+      return 0;  
+  }
+  else 
+#ifdef _CLIENT_ONLY
+    printf("Must ConnectToMds first\n");
+#else
+  {
+
+#ifdef __VMS
+    struct descriptor treeexp = {0,DTYPE_T,CLASS_S,0};
+    int status;
+    treeexp.length = strlen((char *)tree);
+    treeexp.pointer = (char *)tree;
+    status = MDS$OPEN(&treeexp, shot);
+    free(tree);
+    return status;
+#else
+    return TreeOpen(tree, *shot, 0);
+#endif
+
+  }
+#endif
+}
+
+
+#ifdef __VMS
+int  MdsClose(struct dsc$descriptor *treedsc, int *shot)
+{
+  char *tree = DscToCstring(treedsc);
+#else
+int  MdsClose(char *tree, int *shot)
+{
+#endif
+  if (mdsSocket != INVALID_SOCKET)
+  {
+
+
+    long answer;
+    int length;
+    int status;
+    int d1,d2,d3; /* descriptor numbers passed to MdsValue */
+    int dtype_cstring = DTYPE_CSTRING;
+    int dtype_long = DTYPE_LONG;
+    int null = 0;
+
+#ifdef __VMS
+    static $DESCRIPTOR(expressiondsc,"TreeClose($,$)\0");
+    static struct dsc$descriptor *expression = (struct dsc$descriptor *)&expressiondsc;
+#else
+    static char *expression = "TreeClose($,$)";
+#endif
+
+    length = strlen(tree);
+    d1 = descr(&dtype_cstring,tree,&null,&length);
+    d2 = descr(&dtype_long,shot, &null);
+    d3 = descr(&dtype_long,&answer,&null);
+
+    status = MdsValue(expression, &d1, &d2, &d3, &null, &length);
+    
+#ifdef __VMS
+    free(tree);
+#endif
+    if ((status & 1))
+    {
+      return *(int *)&answer; 
+    } else 
+      return 0;  
+  }
+  else 
+#ifdef _CLIENT_ONLY
+    printf("Must ConnectToMds first\n");
+#else
+  {
+#ifdef __VMS
+    struct descriptor treeexp = {0,DTYPE_T,CLASS_S,0};
+    int status;
+    treeexp.length = strlen((char *)tree);
+    treeexp.pointer = (char *)tree;
+    status =  MDS$CLOSE(&treeexp, shot);
+    free(tree);
+    return status;
+#else
+    return TreeClose(tree, *shot);
+#endif
+  }
+#endif
+
+}
+
+#ifdef __VMS
+int  MdsSetDefault(struct dsc$descriptor *nodedsc)
+{
+   char *node = DscToCstring(nodedsc);
+#else
+int  MdsSetDefault(char *node)
+{
+#endif
+
+  if (mdsSocket != INVALID_SOCKET) {
+    char *expression = strcpy((char *)malloc(strlen(node)+20),"TreeSetDefault('");
+#ifdef __VMS
+    static struct dsc$descriptor expressiondsc = {0,DTYPE_T,CLASS_S,0};
+#endif
+    long answer;
+    int length = strlen(node);
+    int null = 0;
+    int dtype_long = DTYPE_LONG;
+    int d1 = descr(&dtype_long, &answer, &null);
+    int status;
+    if (node[0] == '\\') strcat(expression,"\\");
+    strcat(expression,node);
+    strcat(expression,"')");
+#ifdef __VMS
+    expressiondsc.dsc$w_length = strlen(expression)+1;
+    expressiondsc.dsc$a_pointer = expression;
+    free(node);
+    status = MdsValue(&expressiondsc, &d1, &null, &length);
+#else
+    status = MdsValue(expression, &d1, &null, &length);
+#endif
+    free(expression);
+    if ((status & 1))
+    {
+      return *(int *)&answer;
+    }  else
+      return 0;
+  }
+
+  else 
+#ifdef _CLIENT_ONLY
+    printf("Must ConnectToMds first\n");
+#else
+
+  {
+
+#ifdef __VMS
+    struct descriptor defaultexp = {0,DTYPE_T,CLASS_S,0};
+    int status;
+    defaultexp.length = strlen((char *)node);
+    defaultexp.pointer = (char *)node;
+    status = MDS$SET_DEFAULT(&defaultexp);
+    free(node);
+    return status;
+#else
+    int nid;
+    return TreeSetDefault(node,&nid);
+#endif
+  }
+#endif
+}
+
+void MdsDisconnect()
+{
+  DisconnectFromMds(mdsSocket);
+  mdsSocket = INVALID_SOCKET;      /*** SETS GLOBAL VARIABLE mdsSOCKET ***/
+}
+
+#ifdef __VMS
+SOCKET MdsConnect(struct dsc$descriptor *hostdsc)
+{
+  char *host = DscToCstring(hostdsc);
+#else
+SOCKET MdsConnect(char *host)
+{
+#endif
+  if (mdsSocket != INVALID_SOCKET)
+    {
+      MdsDisconnect(); 
+    }
+  mdsSocket = ConnectToMds(host);  /*** SETS GLOBAL VARIABLE mdsSOCKET ***/
+#ifdef __VMS
+  free(host);
+#endif
+  return(mdsSocket);
+}
+
+/* end FORTRAN_ENTRY_POINTS */
+#endif
+
+#if !defined(FORTRAN_ENTRY_POINTS) || defined(descr)
+int descr (int *dtype, void *data, int *dim1, ...)
 {
 
   /* variable length argument list: 
@@ -223,233 +648,9 @@ int descr (int *dtype, void *data, int *dim1, ...)
   if (next >= NDESCRIP_CACHE) next = 0;
   return retval;
 }
-
-#ifndef _VMS
-#ifndef _CLIENT_ONLY
-int *cdescr (int dtype, void *data, ...)
-{
-    void *arglist[MAXARGS];
-    va_list incrmtr;
-    int dsc;
-    static int status;
-    int argidx=1;
-    arglist[argidx++] = (void *)&dtype;
-    arglist[argidx++] = (void *)data;
-
-    va_start(incrmtr, data);
-
-    dsc = 1;  /* initialize ok */
-    for ( ; dsc != 0; )
-    {
-      dsc = va_arg(incrmtr, int);
-      arglist[argidx++] = (void *)&dsc;
-    }
-
-    if (dtype == DTYPE_CSTRING)
-      {
-	dsc = va_arg(incrmtr, int);
-	arglist[argidx++] = (void *)&dsc;
-      }
-#ifndef __VMS
-    arglist[argidx++] = MdsEND_ARG;
-#endif
-    *(int *)&arglist[0] = argidx-1; 
-    status = LibCallg(arglist,descr);
-    return(&status);
-}
-#endif
 #endif
 
-void MdsDisconnect()
-{
-  DisconnectFromMds(mdsSocket);
-  mdsSocket = INVALID_SOCKET;      /*** SETS GLOBAL VARIABLE mdsSOCKET ***/
-}
-
-#ifdef __VMS
-SOCKET MdsConnect(struct dsc$descriptor *hostdsc)
-{
-  char *host = DscToCstring(hostdsc);
-#else
-SOCKET MdsConnect(char *host)
-{
-#endif
-  if (mdsSocket != INVALID_SOCKET)
-    {
-      MdsDisconnect(); 
-    }
-  mdsSocket = ConnectToMds(host);  /*** SETS GLOBAL VARIABLE mdsSOCKET ***/
-#ifdef __VMS
-  free(host);
-#endif
-  return(mdsSocket);
-}
-
-
-
-struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
-{
-
-  int dtype;
-
-  switch (dsc->dtype)
-  {
-
-    case DTYPE_FLOAT : 
-      dtype = DTYPE_F;
-      break;
-    case DTYPE_DOUBLE : 
-      dtype = DTYPE_D;
-      break;
-    case DTYPE_FLOAT_COMPLEX: 
-      dtype = DTYPE_FC;
-      break;
-    default:
-      dtype = dsc->dtype;
-  }
-
-  if (dsc->class == CLASS_S) 
-  {
-    if (dsc->length)
-      arg = MakeDescripWithLength(arg, (char)dtype, (int)dsc->length, (char)0, (int *)0, dsc->pointer);
-    else
-      arg = MakeDescrip(arg, (char)dtype, (char)0, (int *)0, dsc->pointer);
-  } 
-  else 
-  {
-    int i;
-    array_coeff *adsc = (array_coeff *)dsc;  
-    int dims[MAXDIM];
-    int num = adsc->arsize/adsc->length;
-    int *m = &num;
-    if (adsc->dimct > 1) m = adsc->m;
-    for (i=0; i<adsc->dimct; i++) dims[i] = m[i];
-    for (i=adsc->dimct; i<MAXDIM; i++) dims[i] = 0;
-    if (dsc->length)
-      arg = MakeDescripWithLength(arg, (char)dtype, (int)dsc->length, adsc->dimct, dims, adsc->pointer);
-    else
-      arg = MakeDescrip(arg, (char)dtype, adsc->dimct, dims, adsc->pointer);
-  }
-  return arg;
-}
-
-int MdsValueLength(struct descriptor *dsc)
-{
-  int length;
-  switch (dsc->class)
-  {
-    case CLASS_S:
-    case CLASS_D:
-      length = dsc->length;
-      break;
-    case CLASS_A:
-      length = ((struct descriptor_a *)dsc)->arsize;
-      break;
-    default:
-      length = 0;
-      break;
-  }
-  return(length);
-}
-
-char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
-{
-
-  /* This function will wrap expression in the appropriate type
-   * conversion function to ensure that the return value of MdsValue
-   * is of the right type.  It is only used for remote MDSplus 
-   */
-
-  char *newexpression = (char *) malloc(strlen(expression)+13);
-				
-  switch (dsc->dtype) 
-    {
-    case DTYPE_CSTRING: strcpy(newexpression,"TEXT"); break;
-    case DTYPE_UCHAR  : strcpy(newexpression,"BYTE_UNSIGNED"); break;
-    case DTYPE_CHAR   : strcpy(newexpression,"BYTE"); break;
-    case DTYPE_USHORT : strcpy(newexpression,"WORD_UNSIGNED"); break;
-    case DTYPE_SHORT  : strcpy(newexpression,"WORD"); break;
-    case DTYPE_ULONG  : strcpy(newexpression,"ULONG"); break;
-    case DTYPE_LONG   : strcpy(newexpression,"LONG"); break;
-    case DTYPE_FLOAT  : strcpy(newexpression,"F_FLOAT"); break;
-    case DTYPE_DOUBLE : strcpy(newexpression,"DBLE"); break;
-    }
-
-  strcat(newexpression, "(");
-  strcat(newexpression, expression);
-  strcat(newexpression, ")\0");
-
-  return newexpression;
-
-}
-
-void MdsValueMove(int source_length, char *source_array, char fill, int dest_length, char *dest_array)
-{
-  int i;
-  memcpy(dest_array, source_array, MIN(source_length, dest_length));
-  for (i=0; i<dest_length-source_length; i++)
-  {
-    dest_array[source_length+i] = fill;
-  }
-}
-
-void MdsValueCopy(int dim, int length, char fill, char *in, int *in_m, char *out, int *out_m)
-{
-  int i;
-  if (dim == 1)
-    MdsValueMove(length * in_m[0], in, fill, length * out_m[0], out);
-  else
-  {
-    int in_increment = length;
-    int out_increment = length;
-    for (i=0; i<dim-1; i++)
-    {
-      in_increment *= in_m[i];
-      out_increment *= out_m[i];
-    }
-    for (i=0; i<in_m[dim-1] && i < out_m[dim-1]; i++)
-      MdsValueCopy(dim-1, length, fill, in + in_increment * i, in_m, out + out_increment * i, out_m);
-  }
-}
-
-void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int *length)
-{
-  int fill = (outdsc->dtype == DTYPE_CSTRING) ? 32 : 0;
-  if ( (indsc->class == CLASS_A) &&
-       (outdsc->class == CLASS_A) &&
-       (((struct descriptor_a *)outdsc)->dimct > 1) &&
-       (((struct descriptor_a *)outdsc)->dimct == ((struct descriptor_a *)indsc)->dimct) )
-  {
-    array_coeff *in_a = (array_coeff *) indsc;
-    array_coeff *out_a = (array_coeff *) outdsc;
-    MdsValueMove(0,0,fill,MdsValueLength(outdsc),out_a->pointer);
-    MdsValueCopy(out_a->dimct, in_a->length, fill, in_a->pointer, in_a->m, out_a->pointer, out_a->m);
-  }
-  else
-  {
-    MdsValueMove(MdsValueLength(indsc), indsc->pointer, fill, MdsValueLength(outdsc), outdsc->pointer);
-  }
-
-  if (length) 
-  {
-    if (indsc->class == CLASS_A) 
-      *length = MIN( ((struct descriptor_a *)outdsc)->arsize / outdsc->length, 
-		     ((struct descriptor_a *)indsc)->arsize / indsc->length);
-    else 
-    {
-      if (indsc->dtype == DTYPE_CSTRING)
-      {
-	*length = MIN(outdsc->length, indsc->length);
-      }
-      else
-      {
-	*length = MIN(outdsc->length / dtype_length(outdsc), 
-		      indsc->length / dtype_length(indsc));
-      }
-    }
-  }
-}
-
+#if !defined(FORTRAN_ENTRY_POINTS) || defined(MdsValue)
 
 #ifdef __VMS
 int MdsValue(struct dsc$descriptor *expressiondsc, ...) 
@@ -664,8 +865,9 @@ int MdsValue(char *expression, ...)
   return(status);
 
 }
+#endif
 
-
+#if !defined(FORTRAN_ENTRY_POINTS) || defined(MdsPut)
 #ifdef __VMS
 int  MdsPut(struct dsc$descriptor *pathnamedsc, struct dsc$descriptor *expressiondsc, ...)
 {
@@ -815,196 +1017,58 @@ int  MdsPut(char *pathname, char *expression, ...)
 #endif
   return(status);
 }
+#endif 
 
+#ifndef FORTRAN_ENTRY_POINTS
+#define FORTRAN_ENTRY_POINTS
 
-#ifdef __VMS
-int  MdsOpen(struct dsc$descriptor *treedsc, int *shot)
-{
-   char *tree = DscToCstring(treedsc);
-#else
-int  MdsOpen(char *tree, int *shot)
-{
+/************************************************************
+For each platform, you can define the following macros to
+determine the names of the corresponding fortran entry point:
+
+       descr
+       FortranMdsConnect
+       FortranMdsClose
+       FortranMdsDisconnect
+       FortranMdsOpen
+       FortranMdsSetDefault
+       MdsPut
+       MdsValue
+
+If any of these entry points share the same name for fortran
+and c then donot define the macro.
+*************************************************************/
+       
+#if defined(__osf__)
+#define descr descr_
+#define FortranMdsConnect mdsconnect_
+#define FortranMdsClose mdsclose_
+#define FortranMdsDisconnect mdsdisconnect_
+#define FortranMdsOpen mdsopen_
+#define FortranMdsSetDefault mdssetdefault_
+#define MdsPut mdsput_
+#define MdsValue mdsvalue_
 #endif
 
-  if (mdsSocket != INVALID_SOCKET)
-  {
-
-    long answer;
-    int status;
-    int length;
-    int d1,d2,d3; /* descriptor numbers passed to MdsValue */
-    int dtype_cstring = DTYPE_CSTRING;
-    int dtype_long = DTYPE_LONG;
-    int null = 0;
-
-#ifdef __VMS
-    static $DESCRIPTOR(expressiondsc,"TreeOpen($,$)\0");
-    static struct dsc$descriptor *expression = (struct dsc$descriptor *)&expressiondsc;
-#else
-    static char *expression = "TreeOpen($,$)";
+#ifdef FortranMdsConnect
+SOCKET FortranMdsConnect(char *host) { return MdsConnect(host);}
 #endif
 
-    length = strlen(tree);
-    d1 = descr(&dtype_cstring,tree,&null,&length);
-    d2 = descr(&dtype_long,shot, &null);
-    d3 = descr(&dtype_long,&answer,&null);
-
-    status = MdsValue(expression, &d1, &d2, &d3, &null, &length);
-    if ((status & 1))
-    {
-      return *(int *)&answer; 
-    } else 
-      return 0;  
-  }
-  else 
-#ifdef _CLIENT_ONLY
-    printf("Must ConnectToMds first\n");
-#else
-  {
-
-#ifdef __VMS
-    struct descriptor treeexp = {0,DTYPE_T,CLASS_S,0};
-    int status;
-    treeexp.length = strlen((char *)tree);
-    treeexp.pointer = (char *)tree;
-    status = MDS$OPEN(&treeexp, shot);
-    free(tree);
-    return status;
-#else
-    return TreeOpen(tree, *shot, 0);
+#ifdef FortranMdsDisconnect
+void FortranMdsDisconnect() { MdsDisconnect();}
 #endif
 
-  }
-#endif
-}
-
-
-#ifdef __VMS
-int  MdsClose(struct dsc$descriptor *treedsc, int *shot)
-{
-  char *tree = DscToCstring(treedsc);
-#else
-int  MdsClose(char *tree, int *shot)
-{
-#endif
-  if (mdsSocket != INVALID_SOCKET)
-  {
-
-
-    long answer;
-    int length;
-    int status;
-    int d1,d2,d3; /* descriptor numbers passed to MdsValue */
-    int dtype_cstring = DTYPE_CSTRING;
-    int dtype_long = DTYPE_LONG;
-    int null = 0;
-
-#ifdef __VMS
-    static $DESCRIPTOR(expressiondsc,"TreeClose($,$)\0");
-    static struct dsc$descriptor *expression = (struct dsc$descriptor *)&expressiondsc;
-#else
-    static char *expression = "TreeClose($,$)";
+#ifdef FortranMdsClose
+int  FortranMdsClose(char *tree, int *shot) { return MdsClose(tree,shot);}
 #endif
 
-    length = strlen(tree);
-    d1 = descr(&dtype_cstring,tree,&null,&length);
-    d2 = descr(&dtype_long,shot, &null);
-    d3 = descr(&dtype_long,&answer,&null);
-
-    status = MdsValue(expression, &d1, &d2, &d3, &null, &length);
-    
-#ifdef __VMS
-    free(tree);
-#endif
-    if ((status & 1))
-    {
-      return *(int *)&answer; 
-    } else 
-      return 0;  
-  }
-  else 
-#ifdef _CLIENT_ONLY
-    printf("Must ConnectToMds first\n");
-#else
-  {
-#ifdef __VMS
-    struct descriptor treeexp = {0,DTYPE_T,CLASS_S,0};
-    int status;
-    treeexp.length = strlen((char *)tree);
-    treeexp.pointer = (char *)tree;
-    status =  MDS$CLOSE(&treeexp, shot);
-    free(tree);
-    return status;
-#else
-    return TreeClose(tree, *shot);
-#endif
-  }
+#ifdef FortranMdsSetDefault
+int  FortranMdsSetDefault(char *node) { return MdsSetDefault(node);}
 #endif
 
-}
-
-
-
-#ifdef __VMS
-int  MdsSetDefault(struct dsc$descriptor *nodedsc)
-{
-   char *node = DscToCstring(nodedsc);
-#else
-int  MdsSetDefault(char *node)
-{
+#ifdef FortranMdsOpen
+int  FortranMdsOpen(char *tree, int *shot) { return MdsOpen(tree,shot);}
 #endif
 
-  if (mdsSocket != INVALID_SOCKET) {
-    char *expression = strcpy((char *)malloc(strlen(node)+20),"TreeSetDefault('");
-#ifdef __VMS
-    static struct dsc$descriptor expressiondsc = {0,DTYPE_T,CLASS_S,0};
+#include __FILE__
 #endif
-    long answer;
-    int length = strlen(node);
-    int null = 0;
-    int dtype_long = DTYPE_LONG;
-    int d1 = descr(&dtype_long, &answer, &null);
-    int status;
-    if (node[0] == '\\') strcat(expression,"\\");
-    strcat(expression,node);
-    strcat(expression,"')");
-#ifdef __VMS
-    expressiondsc.dsc$w_length = strlen(expression)+1;
-    expressiondsc.dsc$a_pointer = expression;
-    free(node);
-    status = MdsValue(&expressiondsc, &d1, &null, &length);
-#else
-    status = MdsValue(expression, &d1, &null, &length);
-#endif
-    free(expression);
-    if ((status & 1))
-    {
-      return *(int *)&answer;
-    }  else
-      return 0;
-  }
-
-  else 
-#ifdef _CLIENT_ONLY
-    printf("Must ConnectToMds first\n");
-#else
-
-  {
-
-#ifdef __VMS
-    struct descriptor defaultexp = {0,DTYPE_T,CLASS_S,0};
-    int status;
-    defaultexp.length = strlen((char *)node);
-    defaultexp.pointer = (char *)node;
-    status = MDS$SET_DEFAULT(&defaultexp);
-    free(node);
-    return status;
-#else
-    int nid;
-    return TreeSetDefault(node,&nid);
-#endif
-  }
-#endif
-}
-
-
