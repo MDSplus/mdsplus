@@ -91,7 +91,7 @@ static void PutData(hid_t obj, char dtype, int htype, int size, int n_dims, hsiz
     if (is_attr)
       H5Aread ( obj, htype, (void *)mem);
     else
-      H5Dread ( obj, htype, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)mem);
+      /* printf("H5Dread: obj = %p, htype = %d, status = %d\n",obj,htype, */ H5Dread ( obj, htype, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)mem) /* ) */ ;
     if (n_dims > 0)
       PutArray(dtype, size, n_dims, dims, mem, xd);
     else
@@ -126,13 +126,13 @@ static int find_attr(hid_t attr_id, const char *name, void *op_data)
   if ((obj = H5Aopen_name(attr_id,name)) >= 0) {
     int size;
     char dtype;
-    int htype;
+    int htype = 42;
     int is_signed;
     hsize_t ds_dims[64];
     hid_t space = H5Aget_space(obj);
     int n_ds_dims = H5Sget_simple_extent_dims(space,ds_dims,0);
     size_t precision;
-    H5Dclose(space);
+    H5Sclose(space);
     item->obj = obj;
   }
   return 0;
@@ -299,15 +299,14 @@ int hdf5read(char *name, struct descriptor_xd *xd)
     if (item_type == H5G_DATASET) {
       int size;
       char dtype;
-      int htype;
+      int htype = 42;
       int is_signed;
       hsize_t ds_dims[64];
       hid_t space = H5Dget_space(obj);
       int n_ds_dims = H5Sget_simple_extent_dims(space,ds_dims,0);
       size_t precision;
-      H5Dclose(space);
+      H5Sclose(space);
       type = H5Dget_type(obj);
-      H5Gget_objinfo(type, ".", 1, &statbuf);
       switch (H5Tget_class(type))
 	{
 	case H5T_COMPOUND:
@@ -380,13 +379,13 @@ int hdf5read(char *name, struct descriptor_xd *xd)
     else {
       int size;
       char dtype;
-      int htype;
+      int htype = 42;
       int is_signed;
       hsize_t ds_dims[64];
       hid_t space = H5Aget_space(obj);
       int n_ds_dims = H5Sget_simple_extent_dims(space,ds_dims,0);
       size_t precision;
-      H5Dclose(space);
+      H5Sclose(space);
       type = H5Aget_type(obj);
       switch (H5Tget_class(type))
 	{
@@ -497,9 +496,10 @@ int hdf5open(char *fname)
     h5item *itm; 
 
     /* Disable error reporting */
+    /*
     H5Eget_auto(&func, &edata);
     H5Eset_auto(NULL, NULL);
-
+    */
     fid = H5Fopen(fname, 0, H5P_DEFAULT);
 
     if (fid < 0) {

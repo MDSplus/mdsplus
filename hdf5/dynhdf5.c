@@ -22,6 +22,7 @@ static herr_t (*H5Giterate_dyn)(hid_t loc_id, const char *name, int *idx, H5G_it
                    void *op_data) = 0;
 static hid_t (*H5Fopen_dyn)(const char *filename, unsigned flags, hid_t access_plist) = 0;
 static hid_t (*H5Fclose_dyn)(hid_t) = 0;
+static herr_t (*H5Sclose_dyn)(hid_t) = 0;
 static int (*H5Sget_simple_extent_dims_dyn)(hid_t space_id, hsize_t dims[], hsize_t maxdims[]) = 0;
 static hid_t (*H5Tclose_dyn)(hid_t type_id) = 0;
 static H5T_class_t (*H5Tget_class_dyn)(hid_t type_id) = 0;
@@ -86,6 +87,7 @@ static void Initialize()
     Find(H5Gclose);
     Find(H5Fopen);
     Find(H5Fclose);
+    Find(H5Sclose);
     Find(H5Sget_simple_extent_dims);
     Find(H5Tclose);
     Find(H5Tget_class);
@@ -130,6 +132,7 @@ herr_t H5Giterate(hid_t loc_id, const char *name, int *idx, H5G_iterate_t op,
 hid_t H5Fopen (const char *filename, unsigned flags, hid_t access_plist) { Initialize();
   return (H5Fopen_dyn)(filename, flags, access_plist);}
 hid_t H5Fclose(hid_t fid) { return (H5Fclose_dyn)(fid);}
+herr_t H5Sclose(hid_t attr_id) {return (H5Sclose_dyn)(attr_id);}
 int H5Sget_simple_extent_dims(hid_t space_id, hsize_t dims[], hsize_t maxdims[]) {
   return (H5Sget_simple_extent_dims_dyn)(space_id, dims, maxdims);}
 hid_t H5Tclose(hid_t type_id) {return (H5Tclose_dyn)(type_id);}

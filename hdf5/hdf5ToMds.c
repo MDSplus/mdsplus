@@ -190,7 +190,7 @@ static void PutData(hid_t obj, int nid, char dtype, int htype, int size, int n_d
     if (is_attr)
       H5Aread ( obj, htype, (void *)mem);
     else
-      H5Dread ( obj, htype, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)mem);
+      printf("H5Dread: obj = %p, htype = %d, status = %d\n",obj,htype,H5Dread ( obj, htype, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void *)mem));
     if (n_dims > 0)
       PutArray(nid, dtype, size, n_dims, dims, mem);
     else
@@ -215,7 +215,7 @@ static int mds_find_attr(hid_t attr_id, const char *name, void *op_data)
     hid_t space = H5Aget_space(obj);
     int n_ds_dims = H5Sget_simple_extent_dims(space,ds_dims,0);
     size_t precision;
-    H5Dclose(space);
+    H5Sclose(space);
     nid = AddNode(name,1);
     type = H5Aget_type(obj);
     switch (H5Tget_class(type))
@@ -327,11 +327,10 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
         hid_t space = H5Dget_space(obj);
         int n_ds_dims = H5Sget_simple_extent_dims(space,ds_dims,0);
         size_t precision;
-        H5Dclose(space);
+        H5Sclose(space);
         nid = AddNode(name,1);
         H5Aiterate(obj,&idx,mds_find_attr,(void *)0);
         type = H5Dget_type(obj);
-        H5Gget_objinfo(type, ".", 1, &statbuf);
         switch (H5Tget_class(type))
 	{
 	case H5T_COMPOUND:
@@ -441,9 +440,10 @@ int main(int argc, const char *argv[])
     parse_command_line(argc, argv);
 
     /* Disable error reporting */
+    /*
     H5Eget_auto(&func, &edata);
     H5Eset_auto(NULL, NULL);
-
+    */
 
     if (argv[1][0] == '\\')
       fname = &argv[1][1];
@@ -469,7 +469,9 @@ int main(int argc, const char *argv[])
     if (H5Fclose(fid) < 0)
       d_status = EXIT_FAILURE;
 
+    /*
     H5Eset_auto(func, edata);
+    */
     TreeWriteTree(0,0);
     TreeClose(0,0);
     return d_status;
