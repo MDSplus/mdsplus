@@ -1,24 +1,39 @@
 /* Version 2.2000.05.1
 /* CREATE_MEX_FILE for making this mex and HELPER_FILES below to use mex, BPD, May 2000 */
-#ifdef MAKE DISTRIBUTION
+#ifdef MAKE_DISTRIBUTION
 tar -T mdsipmex.T -czf mdsipmex.tar.gz
 mkdir MDSIPMEXTEMP
 cd MDSIPMEXTEMP
 tar xzf ../mdsipmex.tar.gz
-zip ../mdsipmex.zip *
+zip -r ../mdsipmex.zip *
 cd ..
 rm -rf MDSIPMEXTEMP
 #endif
 #ifdef CREATE_MEX_FILE
 /* make_mdsipmex.m */
 % make_mdsipmex.m
-% Make the mdsipmex routine (not shared version)
 % make sure ../mdsplus points to current version of mdsplus distribution
-if(exist('debug','var'))
-mex -DDEBUG mdsipmex.c ../mdsplus/mdstcpip/mdsipshr.c ../mdsplus/mdstcpip/mdsiputil.c -I../mdsplus/include -I../mdsplus/mdstcpip
+% to make the debug version, debug=1;make_mdsipmex;
+% to make the shared version, shared=1;make_mdsipmex;
+% Note; if shared, install MdsIpShr library or point $LD_LIBRARY_PATH to shareables
+% Basil P. DUVAL, May 2000
+
+MDSPLUS=getenv('MDSPLUS');
+if(length(MDSPLUS)==0)
+  disp('shell variable MDSPLUS must point to MDSPLUS distribution before compilation');end
+
+if(exist('debug','var'));DEBUG = '-DDEBUG';else;DEBUG='';end
+
+if(~strcmp(computer,'VMS'));PASSWD = '-DPASSWD';else;PASSWD='mdsipmex.opt';end
+
+if(~exist('shared','var'))
+comm = sprintf('mex %s %s mdsipmex.c %s/mdstcpip/mdsipshr.c %s/mdstcpip/mdsiputil.c -I%s/include -I%s/mdstcpip',...
+	       DEBUG,PASSWD,MDSPLUS,MDSPLUS,MDSPLUS,MDSPLUS);
 else
-mex mdsipmex.c ../mdsplus/mdstcpip/mdsipshr.c ../mdsplus/mdstcpip/mdsiputil.c -I../mdsplus/include -I../mdsplus/mdstcpip
+comm = sprintf('mex %s %s mdsipmex.c -I%s/include -I%s/mdstcpip -L%s/lib -lMdsIpShr',...
+	       DEBUG,PASSWD,MDSPLUS,MDSPLUS,MDSPLUS);
 end
+disp(comm);eval(comm);
 #endif
 
 #define VERSION "2.2000.05.1"
@@ -991,7 +1006,8 @@ else
 	if(nargout > 0);shoto=[];end
 end
 /* mdsvalue.m */
-%function [reply,status] = mdsvalue(varargin)
+function [reply,status] = mdsvalue(str,varargin)
+% [reply,status] = mdsvalue(str,varargin)
 % This is a dummy file to call mdsipmex.mex##; calls the mex directly; rename mex if you want to use this function
 % eg : mdsvalue('_a=2+3');
 % to avoid a reply eg: mdsvalue('_a=1..1000;$MISSING');
@@ -999,7 +1015,7 @@ end
 % If variables ARE DOUBLE PRECISION, you may convert before sending (see mdsput) eg: mdsvalue('_a=$1',mdscvt(1:100,'C'));
 % Adapted Basil P. DUVAL, Sept 1998
 
-[reply,status] = mdsipmex(varargin{:});
+[reply,status] = mdsipmex(str,varargin{:});
 /* mdsput.m */
 function status = mdsput(node,expr,varargin)
 
@@ -1080,4 +1096,10 @@ else
  y.t = t;
  y = class(y,'mdscvt');
 end
+#endif
+#ifdef PASSWD
+int Lgihpwd()
+{
+   return(1);
+}
 #endif

@@ -12,3 +12,4 @@ mdsversion.m
 mdsipmex.txt
 mdsipmex.opt
 mdsipmex.T
+tdic

@@ -151,3 +151,52 @@ Example session
 	mdsdisconnect;
 
 Good LUUUUUUUUCCCCCCCCCCCCCCKKKKKKKKKKKK !
+
+#####################################################################
+tdi shell and MdsIp client from Unix, May, 2000, Basil P. DUVAL
+#####################################################################
+
+Further to the Matlab client, I once wrote a TDI shell from VMS from which
+you could call tdi functions and even use it as a shell script. Some of this
+functionality has been translated to UNIX using readline for the command
+line callback and some of the print routines. In the hope that someone else
+may a) find this useful or b) make it work better, I put this together into
+a directory with a Makefile that works on my Linux box..... 
+
+In order to compile, you must
+1) export MDSPLUS="your MDSplus distribution directory"
+2) make
+3) export LD_LIBRARY_PATH=$(MDSPLUS)/lib
+4) export MDS_PATH="$(MDS_PATH);$(pwd)" to use the .funs provided
+   or put the .funs in the appropriate place.
+
+to use, its a little like the matlab client (!)
+
+./tdic
+mdsopen('server::')	/* or mdsopen('server::Tree:socket',_shot); */
+mdsvalue('expression $1 $2',_a,_b);
+mdsdisconnect();
+
+If you now want, you can make a TDI session that calls MdsIp in native-native
+format. You can thus create a script from a remote machine that lauches, collects
+data and then opens the main SERVER machine and stores the data there. There is
+no longer a need for an IDL or Matlab client for repetitive tasks.
+
+Basil
+
+ps: it compiles with little problem on VMS, you need option file
+/* bpdmdsunix.opt */
+sys$share:mdslib.exe/share
+sys$share:tdishr.exe/share
+sys$library:mdsipshr_ieee.exe/share
+multinet:multinet_socket_library/share
+SYMBOL_VECTOR=(bMdsOpen=procedure)
+SYMBOL_VECTOR=(bMdsClose=procedure)
+SYMBOL_VECTOR=(bMdsValue=procedure)
+SYMBOL_VECTOR=(bMdsDisconnect=procedure)
+SYMBOL_VECTOR=(bMdsPut=procedure)
+SYMBOL_VECTOR=(bTest=procedure)
+SYMBOL_VECTOR=(bTest1=procedure)
+PSECT_ATTR=SOCK,NOSHR
+PSECT_ATTR=SERV,NOSHR
+PSECT_ATTR=SERVIP,NOSHR
