@@ -364,6 +364,26 @@ public class RFXANSALDOSetup extends DeviceSetup {
   DeviceChoice deviceChoice211112215 = new DeviceChoice();
   JPanel jPanel1112215 = new JPanel();
   DeviceChoice deviceChoice11132113 = new DeviceChoice();
+  DeviceChoice deviceChoice1111220 = new DeviceChoice();
+  DeviceChoice deviceChoice11112110 = new DeviceChoice();
+  DeviceChoice deviceChoice1111221 = new DeviceChoice();
+  DeviceChoice deviceChoice1111222 = new DeviceChoice();
+  DeviceChoice deviceChoice1111223 = new DeviceChoice();
+  DeviceChoice deviceChoice1111224 = new DeviceChoice();
+  DeviceChoice deviceChoice1111225 = new DeviceChoice();
+  DeviceChoice deviceChoice1111226 = new DeviceChoice();
+  DeviceChoice deviceChoice1111227 = new DeviceChoice();
+  DeviceChoice deviceChoice1111228 = new DeviceChoice();
+  DeviceChoice deviceChoice1111229 = new DeviceChoice();
+  DeviceChoice deviceChoice11112111 = new DeviceChoice();
+  DeviceChoice deviceChoice11112112 = new DeviceChoice();
+  DeviceChoice deviceChoice11112113 = new DeviceChoice();
+  DeviceChoice deviceChoice11112114 = new DeviceChoice();
+  DeviceChoice deviceChoice11112115 = new DeviceChoice();
+  DeviceChoice deviceChoice11112116 = new DeviceChoice();
+  DeviceChoice deviceChoice11112117 = new DeviceChoice();
+  DeviceChoice deviceChoice11112118 = new DeviceChoice();
+  DeviceChoice deviceChoice11112119 = new DeviceChoice();
   public RFXANSALDOSetup() {
     try {
       jbInit();
@@ -438,41 +458,42 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel4.setPreferredSize(new Dimension(908, 473));
     jPanel4.setLayout(borderLayout3);
     jPanel7.setLayout(flowLayout2);
-    jLabel1.setText("     CONFIGURATION    ");
-    jLabel2.setText(" ENABLE UNIT");
+    jLabel1.setText("CONFIGURATION    ");
+    jLabel2.setText("        ENABLE UNIT");
     jLabel3.setText("    REGULATION ");
-    jLabel4.setText("     WINDOW");
-    jLabel5.setText("   PROTECTION");
+    jLabel4.setText(" WINDOW");
+    jLabel5.setText(" PROTECTION");
     flowLayout2.setAlignment(FlowLayout.LEFT);
+    flowLayout2.setHgap(10);
     gridLayout2.setColumns(2);
     gridLayout2.setRows(6);
     gridLayout2.setVgap(0);
     jPanel8.setLayout(gridLayout2);
     jPanel8.setPreferredSize(new Dimension(1000, 528));
-    jLabel6.setText("   PROTECTION      ");
-    jLabel7.setText("  WINDOW");
-    jLabel8.setText("    CONFIGURATION    ");
+    jLabel6.setText("     PROTECTION      ");
+    jLabel7.setText("WINDOW");
+    jLabel8.setText("CONFIGURATION    ");
     jLabel9.setText("     REGULATION    ");
     jLabel10.setText("ENABLE UNIT  ");
     flowLayout3.setAlignment(FlowLayout.LEFT);
-    jLabel11.setText("  REGULATION");
+    jLabel11.setText("      REGULATION");
     jPanel9.setLayout(flowLayout3);
-    jLabel12.setText("     CONFIGURATION    ");
+    jLabel12.setText("CONFIGURATION    ");
     jPanel5.setBorder(BorderFactory.createEtchedBorder());
     jPanel5.setLayout(borderLayout4);
-    jLabel13.setText("      CONFIGURATION    ");
-    jLabel14.setText("ENABLE UNIT  ");
+    jLabel13.setText("CONFIGURATION    ");
+    jLabel14.setText("             ENABLE UNIT  ");
     jPanel10.setLayout(gridLayout3);
     jPanel10.setPreferredSize(new Dimension(1000, 528));
-    jLabel15.setText("     WINDOW");
+    jLabel15.setText("WINDOW");
     jLabel16.setText("ENABLE UNIT  ");
     gridLayout3.setColumns(2);
     gridLayout3.setRows(6);
     gridLayout3.setVgap(0);
-    jLabel17.setText("    PROTECTION      ");
-    jLabel18.setText("   PROTECTION");
-    jLabel19.setText("    WINDOW");
-    jLabel20.setText("    REGULATION ");
+    jLabel17.setText("       PROTECTION      ");
+    jLabel18.setText("        PROTECTION");
+    jLabel19.setText(" WINDOW");
+    jLabel20.setText("      REGULATION ");
     gridLayout4.setColumns(2);
     gridLayout4.setRows(1);
     UNITS_B.setLayout(gridLayout4);
@@ -1212,342 +1233,418 @@ public class RFXANSALDOSetup extends DeviceSetup {
     deviceChoice11132113.setOffsetNid(173);
     deviceChoice11132113.setLabelString("");
     deviceChoice11132113.setChoiceItems(new String[] {"ACTIVE", "INACTIVE"});
+    deviceChoice1111220.setIdentifier("");
+    deviceChoice1111220.setUpdateIdentifier("");
+    deviceChoice1111220.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice1111220.setLabelString("");
+    deviceChoice1111220.setOffsetNid(5);
+    deviceChoice1111220.setChoiceFloatValues(null);
+    deviceChoice1111220.setChoiceIntValues(null);
+    deviceChoice11112110.setIdentifier("");
+    deviceChoice11112110.setUpdateIdentifier("");
+    deviceChoice11112110.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice11112110.setLabelString("");
+    deviceChoice11112110.setOffsetNid(15);
+    deviceChoice11112110.setChoiceFloatValues(null);
+    deviceChoice11112110.setChoiceIntValues(null);
+    deviceChoice1111221.setIdentifier("");
+    deviceChoice1111221.setUpdateIdentifier("");
+    deviceChoice1111221.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice1111221.setLabelString("");
+    deviceChoice1111221.setOffsetNid(25);
+    deviceChoice1111221.setChoiceFloatValues(null);
+    deviceChoice1111221.setChoiceIntValues(null);
+    deviceChoice1111222.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice1111222.setLabelString("");
+    deviceChoice1111222.setOffsetNid(35);
+    deviceChoice1111223.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice1111223.setLabelString("");
+    deviceChoice1111223.setOffsetNid(45);
+    deviceChoice1111224.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice1111224.setLabelString("");
+    deviceChoice1111224.setOffsetNid(55);
+    deviceChoice1111225.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice1111225.setLabelString("");
+    deviceChoice1111225.setOffsetNid(75);
+    deviceChoice1111226.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice1111226.setLabelString("");
+    deviceChoice1111226.setOffsetNid(85);
+    deviceChoice1111227.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice1111227.setLabelString("");
+    deviceChoice1111227.setOffsetNid(95);
+    deviceChoice1111228.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice1111228.setLabelString("");
+    deviceChoice1111228.setOffsetNid(105);
+    deviceChoice1111229.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice1111229.setLabelString("");
+    deviceChoice1111229.setOffsetNid(115);
+    deviceChoice11112111.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice11112111.setLabelString("");
+    deviceChoice11112111.setOffsetNid(65);
+    deviceChoice11112112.setIdentifier("");
+    deviceChoice11112112.setUpdateIdentifier("");
+    deviceChoice11112112.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice11112112.setLabelString("");
+    deviceChoice11112112.setOffsetNid(125);
+    deviceChoice11112112.setChoiceFloatValues(null);
+    deviceChoice11112112.setChoiceIntValues(null);
+    deviceChoice11112113.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice11112113.setLabelString("");
+    deviceChoice11112113.setOffsetNid(135);
+    deviceChoice11112114.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice11112114.setLabelString("");
+    deviceChoice11112114.setOffsetNid(145);
+    deviceChoice11112115.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice11112115.setLabelString("");
+    deviceChoice11112115.setOffsetNid(155);
+    deviceChoice11112116.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice11112116.setLabelString("");
+    deviceChoice11112116.setOffsetNid(165);
+    deviceChoice11112117.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice11112117.setLabelString("");
+    deviceChoice11112117.setOffsetNid(175);
+    deviceChoice11112118.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice11112118.setLabelString("");
+    deviceChoice11112118.setOffsetNid(185);
+    deviceChoice11112119.setChoiceItems(new String[] {"SERIES", "INDIPENDENT", "PARALLEL"});
+    deviceChoice11112119.setLabelString("");
+    deviceChoice11112119.setOffsetNid(195);
     jPanel1.add(jPanel2, BorderLayout.NORTH);
     jPanel2.add(deviceField1, null);
     jPanel1.add(jTabbedPane1, BorderLayout.CENTER);
     jTabbedPane1.add(UNITS_A,   "UNITS A");
     UNITS_A.add(jPanel4, null);
     jPanel4.add(jPanel7, BorderLayout.NORTH);
-    jPanel7.add(jLabel8, null);
     jPanel7.add(jLabel10, null);
-    jPanel7.add(jLabel3, null);
+    jPanel7.add(jLabel8, null);
     jPanel7.add(jLabel4, null);
+    jPanel7.add(jLabel3, null);
     jPanel7.add(jLabel6, null);
-    jPanel7.add(jLabel1, null);
     jPanel7.add(jLabel2, null);
-    jPanel7.add(jLabel9, null);
+    jPanel7.add(jLabel1, null);
     jPanel7.add(jLabel7, null);
+    jPanel7.add(jLabel9, null);
     jPanel7.add(jLabel5, null);
     jPanel4.add(jScrollPane3, BorderLayout.CENTER);
     jScrollPane3.getViewport().add(jPanel8, null);
     jTabbedPane1.add(UNITS_B,   "UNITS_B");
     UNITS_B.add(jPanel5, null);
-    jPanel9.add(jLabel12, null);
     jPanel9.add(jLabel16, null);
-    jPanel9.add(jLabel20, null);
+    jPanel9.add(jLabel12, null);
     jPanel9.add(jLabel19, null);
+    jPanel9.add(jLabel20, null);
     jPanel9.add(jLabel17, null);
-    jPanel9.add(jLabel13, null);
     jPanel9.add(jLabel14, null);
-    jPanel9.add(jLabel11, null);
+    jPanel9.add(jLabel13, null);
     jPanel9.add(jLabel15, null);
+    jPanel9.add(jLabel11, null);
     jPanel9.add(jLabel18, null);
     jPanel1.add(deviceButtons1, BorderLayout.SOUTH);
     jPanel5.add(jScrollPane4, BorderLayout.CENTER);
     //jScrollPane4.add(jPanel10, null);
     jScrollPane4.getViewport().add(jPanel10, null);
     jPanel10.add(jPanel121120, null);
-    jPanel111221.add(deviceChoice2111212, null);
+    jPanel111221.add(deviceChoice1111212, null);
     jPanel111221.add(deviceChoice21111220, null);
+    jPanel111221.add(deviceChoice2111212, null);
     jPanel111221.add(deviceChoice21111221, null);
-    jPanel121120.add(deviceChannel1220, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121120.add(deviceChannel1220,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1220.add(jPanel111220, BorderLayout.EAST);
-    jPanel121120.add(deviceChannel125, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121120.add(deviceChannel125,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel125.add(jPanel111221, BorderLayout.EAST);
-    jPanel111220.add(deviceChoice111321, null);
+    jPanel111220.add(deviceChoice11112112, null);
     jPanel111220.add(deviceChoice111320, null);
+    jPanel111220.add(deviceChoice111321, null);
     jPanel111220.add(deviceChoice111322, null);
-    jPanel121120.add(deviceChoice1111212, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel10.add(jPanel121127, null);
-    jPanel1112215.add(deviceChoice2111219, null);
+    jPanel1112215.add(deviceChoice1111219, null);
     jPanel1112215.add(deviceChoice211112214, null);
+    jPanel1112215.add(deviceChoice2111219, null);
     jPanel1112215.add(deviceChoice211112215, null);
-    jPanel121127.add(deviceChannel12212, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121127.add(deviceChannel12212,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12212.add(jPanel1112214, BorderLayout.EAST);
-    jPanel121127.add(deviceChannel12213, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121127.add(deviceChannel12213,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12213.add(jPanel1112215, BorderLayout.EAST);
-    jPanel1112214.add(deviceChoice11132112, null);
+    jPanel1112214.add(deviceChoice11112116, null);
     jPanel1112214.add(deviceChoice11132111, null);
+    jPanel1112214.add(deviceChoice11132112, null);
     jPanel1112214.add(deviceChoice11132113, null);
-    jPanel121127.add(deviceChoice1111219, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel10.add(jPanel121126, null);
-    jPanel1112213.add(deviceChoice2111218, null);
+    jPanel1112213.add(deviceChoice1111218, null);
     jPanel1112213.add(deviceChoice211112212, null);
+    jPanel1112213.add(deviceChoice2111218, null);
     jPanel1112213.add(deviceChoice211112213, null);
-    jPanel121126.add(deviceChannel12210, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121126.add(deviceChannel12210,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12210.add(jPanel1112212, BorderLayout.EAST);
-    jPanel121126.add(deviceChannel12211, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121126.add(deviceChannel12211,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12211.add(jPanel1112213, BorderLayout.EAST);
-    jPanel1112212.add(deviceChoice1113219, null);
+    jPanel1112212.add(deviceChoice11112113, null);
     jPanel1112212.add(deviceChoice1113218, null);
+    jPanel1112212.add(deviceChoice1113219, null);
     jPanel1112212.add(deviceChoice11132110, null);
-    jPanel121126.add(deviceChoice1111218, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel10.add(jPanel121125, null);
-    jPanel1112211.add(deviceChoice2111217, null);
+    jPanel1112211.add(deviceChoice1111217, null);
     jPanel1112211.add(deviceChoice211112210, null);
+    jPanel1112211.add(deviceChoice2111217, null);
     jPanel1112211.add(deviceChoice211112211, null);
-    jPanel121125.add(deviceChannel1228, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121125.add(deviceChannel1228,    new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1228.add(jPanel1112210, BorderLayout.EAST);
-    jPanel121125.add(deviceChannel1229, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121125.add(deviceChannel1229,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1229.add(jPanel1112211, BorderLayout.EAST);
-    jPanel1112210.add(deviceChoice1113216, null);
+    jPanel1112210.add(deviceChoice11112117, null);
     jPanel1112210.add(deviceChoice1113215, null);
+    jPanel1112210.add(deviceChoice1113216, null);
     jPanel1112210.add(deviceChoice1113217, null);
-    jPanel121125.add(deviceChoice1111217, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel10.add(jPanel121124, null);
-    jPanel111229.add(deviceChoice2111216, null);
+    jPanel111229.add(deviceChoice1111216, null);
     jPanel111229.add(deviceChoice21111228, null);
+    jPanel111229.add(deviceChoice2111216, null);
     jPanel111229.add(deviceChoice21111229, null);
-    jPanel121124.add(deviceChannel1226, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121124.add(deviceChannel1226,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1226.add(jPanel111228, BorderLayout.EAST);
-    jPanel121124.add(deviceChannel1227, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121124.add(deviceChannel1227,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1227.add(jPanel111229, BorderLayout.EAST);
-    jPanel111228.add(deviceChoice1113213, null);
+    jPanel111228.add(deviceChoice11112114, null);
     jPanel111228.add(deviceChoice1113212, null);
+    jPanel111228.add(deviceChoice1113213, null);
     jPanel111228.add(deviceChoice1113214, null);
-    jPanel121124.add(deviceChoice1111216, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel10.add(jPanel121123, null);
-    jPanel111227.add(deviceChoice2111215, null);
+    jPanel111227.add(deviceChoice1111215, null);
     jPanel111227.add(deviceChoice21111226, null);
+    jPanel111227.add(deviceChoice2111215, null);
     jPanel111227.add(deviceChoice21111227, null);
-    jPanel121123.add(deviceChannel1224, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121123.add(deviceChannel1224,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1224.add(jPanel111226, BorderLayout.EAST);
-    jPanel121123.add(deviceChannel1225, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121123.add(deviceChannel1225,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1225.add(jPanel111227, BorderLayout.EAST);
-    jPanel111226.add(deviceChoice1113210, null);
+    jPanel111226.add(deviceChoice11112118, null);
     jPanel111226.add(deviceChoice111329, null);
+    jPanel111226.add(deviceChoice1113210, null);
     jPanel111226.add(deviceChoice1113211, null);
-    jPanel121123.add(deviceChoice1111215, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel10.add(jPanel121122, null);
-    jPanel111225.add(deviceChoice2111214, null);
+    jPanel111225.add(deviceChoice1111214, null);
     jPanel111225.add(deviceChoice21111224, null);
+    jPanel111225.add(deviceChoice2111214, null);
     jPanel111225.add(deviceChoice21111225, null);
-    jPanel121122.add(deviceChannel1222, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121122.add(deviceChannel1222,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1222.add(jPanel111224, BorderLayout.EAST);
-    jPanel121122.add(deviceChannel1223, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121122.add(deviceChannel1223,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1223.add(jPanel111225, BorderLayout.EAST);
-    jPanel111224.add(deviceChoice111327, null);
+    jPanel111224.add(deviceChoice11112115, null);
     jPanel111224.add(deviceChoice111326, null);
+    jPanel111224.add(deviceChoice111327, null);
     jPanel111224.add(deviceChoice111328, null);
-    jPanel121122.add(deviceChoice1111214, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel10.add(jPanel121121, null);
-    jPanel111223.add(deviceChoice2111213, null);
+    jPanel111223.add(deviceChoice1111213, null);
     jPanel111223.add(deviceChoice21111222, null);
+    jPanel111223.add(deviceChoice2111213, null);
     jPanel111223.add(deviceChoice21111223, null);
-    jPanel121121.add(deviceChannel1221, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121121.add(deviceChannel1221,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1221.add(jPanel111222, BorderLayout.EAST);
-    jPanel121121.add(deviceChannel126, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121121.add(deviceChannel126,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel126.add(jPanel111223, BorderLayout.EAST);
-    jPanel111222.add(deviceChoice111324, null);
+    jPanel111222.add(deviceChoice11112119, null);
     jPanel111222.add(deviceChoice111323, null);
+    jPanel111222.add(deviceChoice111324, null);
     jPanel111222.add(deviceChoice111325, null);
-    jPanel121121.add(deviceChoice1111213, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
 
     jPanel5.add(jPanel9, BorderLayout.NORTH);
-    jPanel8.add(jPanel12118, null);
-    jPanel12118.add(deviceChannel124,    new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
-    deviceChannel124.add(jPanel11126, BorderLayout.EAST);
-    jPanel11126.add(deviceChoice211120, null);
+    jPanel11126.add(deviceChoice1111220, null);
     jPanel11126.add(deviceChoice2111120, null);
+    jPanel11126.add(deviceChoice211120, null);
     jPanel11126.add(deviceChoice2111121, null);
-    jPanel12118.add(deviceChannel127,   new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel12118.add(deviceChannel127,     new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel127.add(jPanel11127, BorderLayout.EAST);
-    jPanel11127.add(deviceChoice11131, null);
+    jPanel12118.add(deviceChannel124,    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 0), -24, -10));
+    deviceChannel124.add(jPanel11126, BorderLayout.EAST);
+    jPanel11127.add(deviceChoice111120, null);
     jPanel11127.add(deviceChoice11130, null);
+    jPanel11127.add(deviceChoice11131, null);
     jPanel11127.add(deviceChoice11132, null);
-    jPanel12118.add(deviceChoice111120,                    new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
+    jPanel8.add(jPanel12118, null);
     jPanel8.add(jPanel121119, null);
-    jPanel1112119.add(deviceChoice2111211, null);
+    jPanel1112119.add(deviceChoice1111211, null);
     jPanel1112119.add(deviceChoice211112112, null);
+    jPanel1112119.add(deviceChoice2111211, null);
     jPanel1112119.add(deviceChoice211112113, null);
-    jPanel121119.add(deviceChannel12118, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121119.add(deviceChannel12118,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12118.add(jPanel1112118, BorderLayout.EAST);
-    jPanel121119.add(deviceChannel12119, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121119.add(deviceChannel12119,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12119.add(jPanel1112119, BorderLayout.EAST);
-    jPanel1112118.add(deviceChoice11131114, null);
+    jPanel1112118.add(deviceChoice11112111, null);
     jPanel1112118.add(deviceChoice11131113, null);
+    jPanel1112118.add(deviceChoice11131114, null);
     jPanel1112118.add(deviceChoice11131115, null);
-    jPanel121119.add(deviceChoice1111211, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel8.add(jPanel121118, null);
-    jPanel1112117.add(deviceChoice2111210, null);
+    jPanel1112117.add(deviceChoice1111210, null);
     jPanel1112117.add(deviceChoice211112110, null);
+    jPanel1112117.add(deviceChoice2111210, null);
     jPanel1112117.add(deviceChoice211112111, null);
-    jPanel121118.add(deviceChannel12116, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121118.add(deviceChannel12116,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12116.add(jPanel1112116, BorderLayout.EAST);
-    jPanel121118.add(deviceChannel12117, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121118.add(deviceChannel12117,    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12117.add(jPanel1112117, BorderLayout.EAST);
-    jPanel1112116.add(deviceChoice11131111, null);
+    jPanel1112116.add(deviceChoice11112110, null);
     jPanel1112116.add(deviceChoice11131110, null);
+    jPanel1112116.add(deviceChoice11131111, null);
     jPanel1112116.add(deviceChoice11131112, null);
-    jPanel121118.add(deviceChoice1111210, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel8.add(jPanel121117, null);
-    jPanel1112115.add(deviceChoice211129, null);
+    jPanel1112115.add(deviceChoice111129, null);
     jPanel1112115.add(deviceChoice21111218, null);
+    jPanel1112115.add(deviceChoice211129, null);
     jPanel1112115.add(deviceChoice21111219, null);
-    jPanel121117.add(deviceChannel12114, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121117.add(deviceChannel12114,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12114.add(jPanel1112114, BorderLayout.EAST);
-    jPanel121117.add(deviceChannel12115, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121117.add(deviceChannel12115,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12115.add(jPanel1112115, BorderLayout.EAST);
-    jPanel1112114.add(deviceChoice1113118, null);
+    jPanel1112114.add(deviceChoice1111225, null);
     jPanel1112114.add(deviceChoice1113117, null);
+    jPanel1112114.add(deviceChoice1113118, null);
     jPanel1112114.add(deviceChoice1113119, null);
-    jPanel121117.add(deviceChoice111129, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel8.add(jPanel121116, null);
-    jPanel1112113.add(deviceChoice211128, null);
+    jPanel1112113.add(deviceChoice111128, null);
     jPanel1112113.add(deviceChoice21111216, null);
+    jPanel1112113.add(deviceChoice211128, null);
     jPanel1112113.add(deviceChoice21111217, null);
-    jPanel121116.add(deviceChannel12112, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121116.add(deviceChannel12112,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12112.add(jPanel1112112, BorderLayout.EAST);
-    jPanel121116.add(deviceChannel12113, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121116.add(deviceChannel12113,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12113.add(jPanel1112113, BorderLayout.EAST);
-    jPanel1112112.add(deviceChoice1113115, null);
+    jPanel1112112.add(deviceChoice1111221, null);
     jPanel1112112.add(deviceChoice1113114, null);
+    jPanel1112112.add(deviceChoice1113115, null);
     jPanel1112112.add(deviceChoice1113116, null);
-    jPanel121116.add(deviceChoice111128, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel8.add(jPanel121115, null);
-    jPanel1112111.add(deviceChoice211127, null);
+    jPanel1112111.add(deviceChoice111127, null);
     jPanel1112111.add(deviceChoice21111214, null);
+    jPanel1112111.add(deviceChoice211127, null);
     jPanel1112111.add(deviceChoice21111215, null);
-    jPanel121115.add(deviceChannel12110, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121115.add(deviceChannel12110,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12110.add(jPanel1112110, BorderLayout.EAST);
-    jPanel121115.add(deviceChannel12111, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121115.add(deviceChannel12111,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -22, -10));
     deviceChannel12111.add(jPanel1112111, BorderLayout.EAST);
-    jPanel1112110.add(deviceChoice1113112, null);
+    jPanel1112110.add(deviceChoice1111226, null);
     jPanel1112110.add(deviceChoice1113111, null);
+    jPanel1112110.add(deviceChoice1113112, null);
     jPanel1112110.add(deviceChoice1113113, null);
-    jPanel121115.add(deviceChoice111127, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel8.add(jPanel121114, null);
-    jPanel111219.add(deviceChoice211126, null);
+    jPanel111219.add(deviceChoice111126, null);
     jPanel111219.add(deviceChoice21111212, null);
+    jPanel111219.add(deviceChoice211126, null);
     jPanel111219.add(deviceChoice21111213, null);
-    jPanel121114.add(deviceChannel1218, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121114.add(deviceChannel1218,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1218.add(jPanel111218, BorderLayout.EAST);
-    jPanel121114.add(deviceChannel1219, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121114.add(deviceChannel1219,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1219.add(jPanel111219, BorderLayout.EAST);
-    jPanel111218.add(deviceChoice111319, null);
+    jPanel111218.add(deviceChoice1111222, null);
     jPanel111218.add(deviceChoice111318, null);
+    jPanel111218.add(deviceChoice111319, null);
     jPanel111218.add(deviceChoice1113110, null);
-    jPanel121114.add(deviceChoice111126, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel8.add(jPanel121113, null);
-    jPanel111217.add(deviceChoice211125, null);
+    jPanel111217.add(deviceChoice111125, null);
     jPanel111217.add(deviceChoice21111210, null);
+    jPanel111217.add(deviceChoice211125, null);
     jPanel111217.add(deviceChoice21111211, null);
-    jPanel121113.add(deviceChannel1216, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121113.add(deviceChannel1216,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1216.add(jPanel111216, BorderLayout.EAST);
-    jPanel121113.add(deviceChannel1217, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121113.add(deviceChannel1217,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1217.add(jPanel111217, BorderLayout.EAST);
-    jPanel111216.add(deviceChoice111316, null);
+    jPanel111216.add(deviceChoice1111227, null);
     jPanel111216.add(deviceChoice111315, null);
+    jPanel111216.add(deviceChoice111316, null);
     jPanel111216.add(deviceChoice111317, null);
-    jPanel121113.add(deviceChoice111125, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel8.add(jPanel121112, null);
-    jPanel111215.add(deviceChoice211124, null);
+    jPanel111215.add(deviceChoice111124, null);
     jPanel111215.add(deviceChoice2111128, null);
+    jPanel111215.add(deviceChoice211124, null);
     jPanel111215.add(deviceChoice2111129, null);
-    jPanel121112.add(deviceChannel1214, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121112.add(deviceChannel1214,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1214.add(jPanel111214, BorderLayout.EAST);
-    jPanel121112.add(deviceChannel1215, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121112.add(deviceChannel1215,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1215.add(jPanel111215, BorderLayout.EAST);
-    jPanel111214.add(deviceChoice111313, null);
+    jPanel111214.add(deviceChoice1111223, null);
     jPanel111214.add(deviceChoice111312, null);
+    jPanel111214.add(deviceChoice111313, null);
     jPanel111214.add(deviceChoice111314, null);
-    jPanel121112.add(deviceChoice111124, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel8.add(jPanel121111, null);
-    jPanel111213.add(deviceChoice211123, null);
+    jPanel111213.add(deviceChoice111123, null);
     jPanel111213.add(deviceChoice2111126, null);
+    jPanel111213.add(deviceChoice211123, null);
     jPanel111213.add(deviceChoice2111127, null);
-    jPanel121111.add(deviceChannel1212, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121111.add(deviceChannel1212,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1212.add(jPanel111212, BorderLayout.EAST);
-    jPanel121111.add(deviceChannel1213, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121111.add(deviceChannel1213,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1213.add(jPanel111213, BorderLayout.EAST);
-    jPanel111212.add(deviceChoice111310, null);
+    jPanel111212.add(deviceChoice1111228, null);
     jPanel111212.add(deviceChoice11139, null);
+    jPanel111212.add(deviceChoice111310, null);
     jPanel111212.add(deviceChoice111311, null);
-    jPanel121111.add(deviceChoice111123, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel8.add(jPanel121110, null);
-    jPanel111211.add(deviceChoice211122, null);
+    jPanel111211.add(deviceChoice111122, null);
     jPanel111211.add(deviceChoice2111124, null);
+    jPanel111211.add(deviceChoice211122, null);
     jPanel111211.add(deviceChoice2111125, null);
-    jPanel121110.add(deviceChannel1210, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel121110.add(deviceChannel1210,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1210.add(jPanel111210, BorderLayout.EAST);
-    jPanel121110.add(deviceChannel1211, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel121110.add(deviceChannel1211,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1211.add(jPanel111211, BorderLayout.EAST);
-    jPanel111210.add(deviceChoice11137, null);
+    jPanel111210.add(deviceChoice1111224, null);
     jPanel111210.add(deviceChoice11136, null);
+    jPanel111210.add(deviceChoice11137, null);
     jPanel111210.add(deviceChoice11138, null);
-    jPanel121110.add(deviceChoice111122, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     jPanel8.add(jPanel12119, null);
-    jPanel11129.add(deviceChoice211121, null);
+    jPanel11129.add(deviceChoice111121, null);
     jPanel11129.add(deviceChoice2111122, null);
+    jPanel11129.add(deviceChoice211121, null);
     jPanel11129.add(deviceChoice2111123, null);
-    jPanel12119.add(deviceChannel128, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(-6, 0, 6, 226), -1, -7));
+    jPanel12119.add(deviceChannel128,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel128.add(jPanel11128, BorderLayout.EAST);
-    jPanel12119.add(deviceChannel129, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 0, 6, 224), -2, -9));
+    jPanel12119.add(deviceChannel129,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel129.add(jPanel11129, BorderLayout.EAST);
-    jPanel11128.add(deviceChoice11134, null);
+    jPanel11128.add(deviceChoice1111229, null);
     jPanel11128.add(deviceChoice11133, null);
+    jPanel11128.add(deviceChoice11134, null);
     jPanel11128.add(deviceChoice11135, null);
-    jPanel12119.add(deviceChoice111121, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 230, 25, 12), -12, -2));
     this.getContentPane().add(jPanel1,  BorderLayout.CENTER);
   }
 

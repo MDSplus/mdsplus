@@ -155,6 +155,16 @@ public class RFXMOPSetup extends DeviceSetup {
   FlowLayout flowLayout1110 = new FlowLayout();
   DeviceChoice deviceChoice128 = new DeviceChoice();
   DeviceChoice deviceChoice129 = new DeviceChoice();
+  DeviceChoice deviceChoice1210 = new DeviceChoice();
+  DeviceField deviceField26 = new DeviceField();
+  DeviceChoice deviceChoice1211 = new DeviceChoice();
+  FlowLayout flowLayout1111 = new FlowLayout();
+  JPanel riga27 = new JPanel();
+  DeviceChoice deviceChoice1212 = new DeviceChoice();
+  DeviceField deviceField27 = new DeviceField();
+  DeviceChoice deviceChoice1213 = new DeviceChoice();
+  FlowLayout flowLayout1112 = new FlowLayout();
+  JPanel riga28 = new JPanel();
   public RFXMOPSetup() {
     try {
       jbInit();
@@ -165,8 +175,8 @@ public class RFXMOPSetup extends DeviceSetup {
   }
   private void jbInit() throws Exception {
     border1 = BorderFactory.createBevelBorder(BevelBorder.LOWERED,Color.white,Color.white,new Color(99, 99, 99),new Color(142, 142, 142));
-    this.setWidth(761);
-    this.setHeight(761);
+    this.setWidth(671);
+    this.setHeight(671);
     this.setDeviceType("RFXMOP");
     this.setDeviceProvider("150.178.3.10");
     this.setDeviceTitle("RFX Mode Of Operation");
@@ -184,7 +194,7 @@ public class RFXMOPSetup extends DeviceSetup {
     flowLayout2.setVgap(0);
     jPanel4.setLayout(gridLayout2);
     gridLayout2.setColumns(2);
-    gridLayout2.setRows(13);
+    gridLayout2.setRows(14);
     deviceField2.setOffsetNid(6);
     deviceField2.setTextOnly(true);
     deviceField2.setLabelString("Task:");
@@ -798,6 +808,52 @@ public class RFXMOPSetup extends DeviceSetup {
     deviceChoice129.setChoiceItems(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"});
     deviceChoice129.setUpdateIdentifier("");
     deviceChoice129.setIdentifier("");
+    deviceChoice1210.setIdentifier("    ");
+    deviceChoice1210.setUpdateIdentifier("");
+    deviceChoice1210.setChoiceItems(new String[] {"INACTIVE", "QUIESCENT", "ACTIVE"});
+    deviceChoice1210.setLabelString("Function:");
+    deviceChoice1210.setOffsetNid(107);
+    deviceChoice1210.setChoiceFloatValues(null);
+    deviceChoice1210.setChoiceIntValues(null);
+    deviceField26.setOffsetNid(106);
+    deviceField26.setTextOnly(true);
+    deviceField26.setLabelString("Task:");
+    deviceField26.setNumCols(2);
+    deviceField26.setIdentifier("");
+    deviceChoice1211.setIdentifier("");
+    deviceChoice1211.setUpdateIdentifier("");
+    deviceChoice1211.setChoiceItems(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"});
+    deviceChoice1211.setLabelString("Mode:");
+    deviceChoice1211.setOffsetNid(108);
+    deviceChoice1211.setChoiceFloatValues(null);
+    deviceChoice1211.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)5,(int)6,(int)7,(int)8,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15});
+    flowLayout1111.setAlignment(FlowLayout.LEFT);
+    flowLayout1111.setVgap(0);
+    riga27.setBorder(border1);
+    riga27.setLayout(flowLayout1111);
+    deviceChoice1212.setIdentifier("    ");
+    deviceChoice1212.setUpdateIdentifier("");
+    deviceChoice1212.setChoiceItems(new String[] {"INACTIVE", "QUIESCENT", "ACTIVE"});
+    deviceChoice1212.setLabelString("Function:");
+    deviceChoice1212.setOffsetNid(107);
+    deviceChoice1212.setChoiceFloatValues(null);
+    deviceChoice1212.setChoiceIntValues(null);
+    deviceField27.setOffsetNid(106);
+    deviceField27.setTextOnly(true);
+    deviceField27.setLabelString("Task:");
+    deviceField27.setNumCols(2);
+    deviceField27.setIdentifier("");
+    deviceChoice1213.setIdentifier("");
+    deviceChoice1213.setUpdateIdentifier("");
+    deviceChoice1213.setChoiceItems(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"});
+    deviceChoice1213.setLabelString("Mode:");
+    deviceChoice1213.setOffsetNid(108);
+    deviceChoice1213.setChoiceFloatValues(null);
+    deviceChoice1213.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)5,(int)6,(int)7,(int)8,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15});
+    flowLayout1112.setAlignment(FlowLayout.LEFT);
+    flowLayout1112.setVgap(0);
+    riga28.setBorder(border1);
+    riga28.setLayout(flowLayout1112);
     this.getContentPane().add(jPanel1,  BorderLayout.NORTH);
     jPanel1.add(jPanel2, null);
     jPanel2.add(deviceField1, null);
@@ -809,6 +865,13 @@ public class RFXMOPSetup extends DeviceSetup {
     riga1.add(deviceField2, null);
     riga1.add(deviceChoice2, null);
     riga1.add(deviceChoice3, null);
+    riga28.add(deviceField27, null);
+    riga28.add(deviceChoice1212, null);
+    riga28.add(deviceChoice1213, null);
+    riga27.add(deviceField26, null);
+    riga27.add(deviceChoice1210, null);
+    riga27.add(deviceChoice1211, null);
+    jPanel4.add(riga28, null);
     jPanel4.add(riga2, null);
     riga2.add(deviceField112, null);
     riga2.add(deviceChoice11113, null);
@@ -915,6 +978,7 @@ public class RFXMOPSetup extends DeviceSetup {
     riga26.add(deviceField25, null);
     riga26.add(deviceChoice128, null);
     riga26.add(deviceChoice129, null);
+    jPanel4.add(riga27, null);
   }
 
 }

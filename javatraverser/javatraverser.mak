@@ -1,6 +1,6 @@
 .SUFFIXES: .class .java
 .java.class:
-	%JDK_DIR%\bin\javac.exe $*.java
+	"C:\Program Files\JBuilderX\jdk1.4\bin\javac.exe" $*.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
@@ -88,7 +88,29 @@ WindowData.java\
 WindowEditor.java\
 WithErrorData.java\
 WithUnitsData.java\
-jTraverser.java
+jTraverser.java\
+ACQD265Setup.java\
+ADC265Setup.java\
+Aurora14Setup.java\
+DIO2EncoderSetup.java\
+DIO2Setup.java\
+E1463Setup.java\
+FR10Setup.java\
+L5613Setup.java\
+L6810Setup.java\
+MPBDecoderSetup.java\
+MPBEncoderSetup.java\
+MPBRecorderSetup.java\
+NI6071ESetup.java\
+TR10Setup.java\
+TR32Setup.java\
+TRCFSetup.java\
+TRCHSetup.java\
+VMEWavesSetup.java\
+WE7000Setup.java\
+WE7116Setup.java\
+WE7275Setup.java\
+WEGroupSetup.java
 
 GIFS = DeviceApply.gif \
        DeviceChoice.gif \
@@ -114,8 +136,9 @@ GIFS = DeviceApply.gif \
        task.gif
 
 all : $(SOURCES)
-	%JDK_DIR%\bin\javac.exe -classpath .;..\java\classes\MindTerm.jar $(SOURCES)
-	%JDK_DIR%\bin\jar.exe -uf ..\java\classes\MDSplus.jar *.class *.gif
+	"C:\Program Files\JBuilderX\jdk1.4\bin\javac.exe" -classpath .;..\java\classes\MindTerm.jar $(SOURCES)
+	"C:\Program Files\JBuilderX\jdk1.4\bin\jar.exe" -uf ..\java\classes\MDSplus.jar *.class *.gif
+	"C:\Program Files\JBuilderX\jdk1.4\bin\jar.exe" -cmf DeviceBeansManifest.mf ..\java\classes\DeviceBeans.jar *.class *.gif
 
 #jTraverser.class : *.java
 #	%JDK_DIR%\bin\javac.exe jTraverser.java
