@@ -11,7 +11,6 @@ LIBS=@LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = 			\
-	mds_dsc_string.c	\
 	tcl_dummy.c		\
 	tcl_add_node.c	\
 	tcl_add_tag.c		\
