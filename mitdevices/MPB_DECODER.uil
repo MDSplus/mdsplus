@@ -273,12 +273,12 @@ list P5StyleReasons : callbacks {
 list COnOffStyle : arguments {
         arguments BaseStyle;
         XmNborderWidth = 0;
-        XmNleftAttachment = XmATTACH_FORM;
-        XmNleftOffset = 10;
+!        XmNleftAttachment = XmATTACH_FORM;
+!        XmNleftOffset = 10;
         XmdsNnid = DEVICE_NID;
         XmdsNputOnApply = true;
-        XmNtopAttachment = XmATTACH_FORM;
-        XmNtopOffset = 20;
+!        XmNtopAttachment = XmATTACH_FORM;
+!        XmNtopOffset = 20;
 };
 
 list COnOffStyleReasons : callbacks {
@@ -294,13 +294,13 @@ list ModeStyle : arguments {
 	compound_string("Dual Speed Clock "),
 	compound_string("Gated Clock "),
 	compound_string("Gate  "));
-        XmNleftAttachment = XmATTACH_FORM;
-        XmNleftOffset = 50;
+!        XmNleftAttachment = XmATTACH_FORM;
+!        XmNleftOffset = 50;
         XmNmarginHeight = 0;
         XmdsNnid = DEVICE_NID;
         XmdsNputOnApply = true;
-        XmNtopAttachment = XmATTACH_FORM;
-        XmNtopOffset = 20;
+!        XmNtopAttachment = XmATTACH_FORM;
+!        XmNtopOffset = 20;
         XmdsNvalueStrings = string_table(
 	compound_string("0"),
 	compound_string("1"),
