@@ -189,8 +189,10 @@ public  class WaveformMetrics implements Serializable
 	    Polygon curr_polygon = null;
 	    int pol_idx = 0;
 	    min_y = max_y = sig.y[0];
-	    xpoints = new int[sig.n_points];
-	    ypoints = new int[sig.n_points];
+	    //xpoints = new int[sig.n_points];
+	    //ypoints = new int[sig.n_points];
+	    xpoints = new int[2*sig.n_points];
+	    ypoints = new int[2*sig.n_points];
 	    curr_num_points = 0;
 	    i = j = 0;
         int end_point = sig.n_points;
@@ -201,29 +203,49 @@ public  class WaveformMetrics implements Serializable
 	        double xmax_nolog = Math.pow(10, xmax);
             double xmin_nolog = Math.pow(10, xmin);
 
+            float first_y, last_y;
 	        for(i = 0; i < sig.n_points && sig.x[i] < xmin_nolog; i++);
 	        if(i > 0) i--;
 	        min_y = max_y = sig.y[i];
 	        j = i+1;
-
 	        start_x = XPixel(sig.x[i], d);
+	        
+	        first_y = last_y = sig.y[i];
 	        while(j < end_point)//sig.n_points  && sig.x[j] < xmax_nolog)
 	        {
 		        for(j = i+1; j < sig.n_points && 
 		            (pol_idx >= sig.n_nans || j != sig.nans[pol_idx])&& 
 		            (curr_x = XPixel(sig.x[j], d)) == start_x; j++)
 		        {
-		            curr_y = sig.y[j];
+		            last_y = curr_y = sig.y[j];
 		            if(curr_y < min_y) min_y = curr_y;
 		            if(curr_y > max_y) max_y = curr_y;
 		        }
 		        if(max_y > min_y)
 		        {
+		            if(first_y != min_y)
+		            {
+		                xpoints[curr_num_points] = start_x;
+		                ypoints[curr_num_points] = YPixel(first_y, d);
+		                curr_num_points++;
+		            }
 		            xpoints[curr_num_points] = xpoints[curr_num_points + 1] = start_x;
 		            ypoints[curr_num_points] = YPixel(min_y, d);
 		            ypoints[curr_num_points + 1] = YPixel(max_y, d);
 		            curr_num_points +=2;
+		            if(last_y != max_y)
+		            {
+		                xpoints[curr_num_points] = start_x;
+		                ypoints[curr_num_points] = YPixel(last_y, d);
+		                curr_num_points++;
+		            }
 		        }
+/*		        {
+		            xpoints[curr_num_points] = xpoints[curr_num_points + 1] = start_x;
+		            ypoints[curr_num_points] = YPixel(min_y, d);
+		            ypoints[curr_num_points + 1] = YPixel(max_y, d);
+		            curr_num_points +=2;
+		        }*/
 		        else
 		        {
 		            xpoints[curr_num_points] = start_x;
@@ -265,23 +287,43 @@ public  class WaveformMetrics implements Serializable
 	        
 	        
 	        start_x = XPixel(sig.x[i]);
-	        
+	        float first_y, last_y;
 	        while(j < end_point)//sig.n_points && sig.x[j] < xmax + dt)
 	        {
+	            first_y = last_y = sig.y[i];
 		        for(j = i+1; j < sig.n_points && //!Float.isNaN(sig.y[j]) && 
 		            (pol_idx >= sig.n_nans || j != sig.nans[pol_idx])&& 
 		            (curr_x = XPixel(sig.x[j])) == start_x; j++)
 		        {
-		            curr_y = sig.y[j];
+		            last_y = curr_y = sig.y[j];
 		            if(curr_y < min_y) min_y = curr_y;
 		            if(curr_y > max_y) max_y = curr_y;
 		        }
-		        if(max_y > min_y)
+		   /*     if(max_y > min_y)
 		        {
 		            xpoints[curr_num_points] = xpoints[curr_num_points + 1] = start_x;
 		            ypoints[curr_num_points] = YPixel(min_y);
 		            ypoints[curr_num_points + 1] = YPixel(max_y);
 		            curr_num_points +=2;
+		        }*/
+		        if(max_y > min_y)
+		        {
+                    if(min_y != first_y)
+                    {
+		                xpoints[curr_num_points] = start_x;
+		                ypoints[curr_num_points] = YPixel(first_y);
+		                curr_num_points++;
+		            }
+		            xpoints[curr_num_points] = xpoints[curr_num_points + 1] = start_x;
+		            ypoints[curr_num_points] = YPixel(min_y);
+		            ypoints[curr_num_points + 1] = YPixel(max_y);
+		            curr_num_points +=2;
+		            if(max_y != last_y)
+                    {
+		                xpoints[curr_num_points] = start_x;
+		                ypoints[curr_num_points] = YPixel(last_y);
+		                curr_num_points++;
+		            }
 		        }
 		        else
 		        {
