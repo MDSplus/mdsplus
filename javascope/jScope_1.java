@@ -8,11 +8,12 @@ import java.awt.event.KeyEvent;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 
 
 public class jScope_1 extends JFrame implements ActionListener, ItemListener, 
                              WindowListener, WaveContainerListener, 
-                             NetworkEventListener, NetworkTransferListener
+                             NetworkListener, ConnectionListener
 {
  
    public  static final int MAX_NUM_SHOT   = 30;
@@ -59,10 +60,11 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   public  FontSelection font_dialog;
           jScopeWaveContainer     wave_panel;
   SetupDefaults     setup_default;
-  PubVarDialog      pub_var_diag;
+  private PubVarDialog      pub_var_diag;
   static int		num_scope = 0;
   private String	config_file;
-  static  String[]	server_ip_list; 
+  //static  String[]	server_ip_list;
+  static DataServerItem[] server_ip_list;
   ServerDialog      server_diag;
   static  boolean	not_sup_local = false;
   private Thread	printThread;
@@ -99,10 +101,9 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     JRadioButtonMenuItem metalMenuItem;
     JRadioButtonMenuItem motifMenuItem;
     JRadioButtonMenuItem windowsMenuItem;
+    
 
-
-
-
+    
   class PrintThread extends Thread {
     
     public void run()
@@ -365,9 +366,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     /**
      * Show the spash screen while the rest of the demo loads
      */
-    public void createAboutScreen() {
-	   // JLabel aboutLabel = new JLabel(new ImageIcon(getClass().getResource("About.jpg")));
-	
+    public void createAboutScreen() {	
 	    JLabel aboutLabel = new AboutWindow();
 	    aboutScreen = new JWindow();
 	    aboutScreen.addMouseListener( new MouseAdapter()
@@ -414,20 +413,12 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	
 	jScopeCreate(spos_x, spos_y);
 	
-	/*
-	// Show the demo and take down the about screen. Note that
-	// we again must do this on the GUI thread using invokeLater.
-	SwingUtilities.invokeLater(new Runnable() {
-	    public void run() {
-		hideAbout();
-	    }
-	});
-    */
   }
 	    
   public void jScopeCreate(int spos_x, int spos_y)
   {
         
+ 
     main_scope = this;
 
     Properties props = System.getProperties();
@@ -437,43 +428,24 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     
     setBounds(spos_x, spos_y, 750, 550);
 
-
-    //if(IsNewJVMVersion())
-    //{
-        InitProperties();
-        GetPropertiesValue();
-    //} else {
-    //    InitProperties_VM11();
-    //    GetPropertiesValue_VM11();
-    //}
+    InitProperties();
+    GetPropertiesValue();
+    
+    
     
     font_dialog   = new FontSelection(this, "Waveform Font Selection");
     setup_default = new SetupDefaults(this, "Default Setup", def_values);
     color_dialog  = new ColorDialog(this, "Color Configuration Dialog");
     pub_var_diag  = new PubVarDialog(this);
-   
-/*
-    if(IsNewJVMVersion())
-    {
-        prnJob = PrinterJob.getPrinterJob();
-        pf = prnJob.defaultPage();
-        pf.setOrientation(PageFormat.LANDSCAPE);
-        Paper p = pf.getPaper();
-        p.setSize(595.2239, 841.824);
-        p.setImageableArea(13.536, 12.959, 567.288, 816.6239);
-        pf.setPaper(p);
-    }
- */
+
+
     getContentPane().setLayout(new BorderLayout());
-    //setFont(new Font("Helvetica", Font.PLAIN, 12));
     setBackground(Color.lightGray);
     
     addWindowListener(this);
     
-
     mb = new JMenuBar();
-    //setJMenuBar(mb);
-    getContentPane().add("North", mb);
+    setJMenuBar(mb);
     edit_m = new JMenu("File");
     mb.add(edit_m);
     open_i = new JMenuItem("New Window");
@@ -493,8 +465,6 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     exit_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
     edit_m.add(exit_i);	
     exit_i.addActionListener(this);
-
-
 
    // Look and Feel Radio control
 
@@ -554,15 +524,19 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     print_m = new JMenu("Print");
     mb.add(print_m);
     print_all_i = new JMenuItem("Print all ...");
-    print_m.add(print_all_i);
-    print_all_i.addActionListener(new ActionListener()
+    
+    if(!(this instanceof jScope))
     {
-        public void actionPerformed(ActionEvent e) 
+        print_all_i.addActionListener(new ActionListener()
         {
-		    printThread = new PrintThread();
-	        printThread.start();
-        }
-    });
+            public void actionPerformed(ActionEvent e) 
+            {
+		        printThread = new PrintThread();
+	            printThread.start();
+            }
+        });
+    }
+    print_m.add(print_all_i);
     mb.add(print_m);
     
     customize_m = new JMenu("Customize");
@@ -575,20 +549,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     win_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
     win_i.addActionListener(this);        
     customize_m.add(win_i);
-    /*
-    if(IsNewJVMVersion())
-    {
-        print_i = new JMenuItem("Printer ...");
-        print_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
-        customize_m.add(print_i);
-        print_i.addActionListener(this);
 
-        page_i = new JMenuItem("Page setup ...");
-        page_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J, ActionEvent.CTRL_MASK));
-        customize_m.add(page_i);
-        page_i.addActionListener(this);
-    }
-    */
     font_i = new JMenuItem("Font selection ...");
     font_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
     font_i.addActionListener(this);    
@@ -715,13 +676,9 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     icon.setImageObserver(print_icon);
     progress_pan.add(print_icon);
     */
-    
+
+
     setup_dialog = new SetupDataDialog(this, "Setup");
-    
-    /*
-    int rows[] = {1,0,0,0};
-    wave_panel = new jScopeWaveContainer(rows, def_values);
-    */
     
     wave_panel = buildWaveContainer();
     
@@ -737,7 +694,6 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     wave_panel.setPopupMenu(new jScopeWavePopup(setup_dialog));
     
     getContentPane().add("Center", wave_panel);
-
     
     panel = new JPanel();
     panel.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
@@ -839,14 +795,11 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	    );
         panel1.add("West", exec_gc);
     }
+
+
     
     InitDataServer();
 
-	
-		//{{REGISTER_LISTENERS
-		SymComponent aSymComponent = new SymComponent();
-		this.addComponentListener(aSymComponent);
-		//}}
 	}
 	
 	protected jScopeWaveContainer buildWaveContainer()
@@ -855,34 +808,33 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         return (new jScopeWaveContainer(rows, def_values));
 	}
   
-  class MonMemory extends Thread
-  {
-                 public void run() 
-                    {
-                        setName("Monitor Thread");
-                        try
-                        {
-                        while(true)
-                        {
-                            
-                           //System.out.println
-                           SetWindowTitle("Free :" + (int)(Runtime.getRuntime().freeMemory()/1024) +" "+
-	                           "Total :" + (int)(Runtime.getRuntime().totalMemory())/1024+" "+
-	                           "USED :" + (int)((Runtime.getRuntime().totalMemory()-
-	                                      Runtime.getRuntime().freeMemory())/1024.));                            
-                            sleep(2000, 0);
-                            //waitTime(2000);
-                        }
-                        } catch(InterruptedException e){}
-                    }
-                    
-                    synchronized void waitTime(long t) throws InterruptedException
-                    {
-                        wait(t);
-                    }
-                
-        
-  }
+    class MonMemory extends Thread
+    {
+        public void run() 
+        {
+            setName("Monitor Thread");
+            try
+            {
+                while(true)
+                {
+                                    
+                    //System.out.println
+                    SetWindowTitle("Free :" + (int)(Runtime.getRuntime().freeMemory()/1024) +" "+
+	                    "Total :" + (int)(Runtime.getRuntime().totalMemory())/1024+" "+
+	                    "USED :" + (int)((Runtime.getRuntime().totalMemory()-
+	                                Runtime.getRuntime().freeMemory())/1024.));                            
+                    sleep(2000, 0);
+                    //waitTime(2000);
+                }
+            } catch(InterruptedException e){}
+        }
+                        
+        synchronized void waitTime(long t) throws InterruptedException
+        {
+            wait(t);
+        }       
+    }
+ 
     
   public void InvalidateDefaults()
   {
@@ -946,7 +898,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   {
     String is_local = null;
     String ip_addr = null;
-    String srv_name;
+    DataServerItem srv_item;// srv_name;
 
     Properties props = System.getProperties();
     is_local = props.getProperty("data.is_local");
@@ -956,18 +908,22 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     
     if(ip_addr != null || is_local == null || (is_local != null && is_local.equals("no")))
     {
-	    if(ip_addr == null)
-	        srv_name = default_server;
+	    if(ip_addr == null) //Set to default server if no server is defined
+	        srv_item = new DataServerItem(default_server, null, null);
 	    else {
-	        srv_name = ip_addr;
-	        server_diag.addServerIp(ip_addr);
+	        //Set to the command line defined 
+	        //server and add it to the menu server list
+	        srv_item = new DataServerItem(ip_addr, null, null); 
+	        server_diag.addServerIp(srv_item);
 	    }
     }
     else
-        srv_name = "Local";
+        //Only if local provider is supported
+        srv_item = new DataServerItem("Local", null, null); 
      
-     if(SetDataServer(srv_name) != null && !srv_name.equals(default_server))
-        SetDataServer(default_server);
+     //if some error occurs reset server to default server
+     if(SetDataServer(srv_item) != null && !srv_item.equals(default_server))
+        SetDataServer(new DataServerItem("default_server", null, null));
   }
 
 
@@ -976,24 +932,12 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     net_text.setText("Data Server:" + wave_panel.GetServerName());
   }
 
-
-
-//  String status_msg;
   public void SetStatusLabel(String msg)
   {
-    //setup.SetStatusLabel(msg);
-    //System.out.println(">>>>>>>>>>>> E' in event dispatch thread "+SwingUtilities.isEventDispatchThread());
-    //System.out.println(">>>>>>>>>>>> view Status "+msg);
     info_text.setText(" Status: " + msg);
   }
   
-/*
-  public void AppendStatusLabel(String msg)
-  {
-    info_text.setText(" Status: " + status_msg  + msg);
-  }
-*/
-  
+  /*
   private void addServers()
   {
      JMenuItem item;
@@ -1006,7 +950,8 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
      } 
 
   }
-   
+  */
+  
   public void RepaintAllWaves()
   {
      int wave_mode = wave_panel.GetMode();
@@ -1067,7 +1012,6 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	   executing_update = true;
        apply_b.setText("Abort");
        setPublicVariables(pub_var_diag.getPublicVar());
-       //wave_panel.initMdsWaveInterface();
        wave_panel.StartUpdate();
   }
   
@@ -1219,11 +1163,11 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   
 
 
-  public String SetDataServer(String new_data_server)
+  public String SetDataServer(DataServerItem new_srv_item)//String new_data_server)
   {
     String error = null;
     
-    if((error = wave_panel.SetDataServer(new_data_server, this)) != null)
+    if((error = wave_panel.SetDataServer(new_srv_item, this)) != null)
     {
 		JOptionPane.showMessageDialog(null, error, "alert", JOptionPane.ERROR_MESSAGE); 
     }   
@@ -1261,15 +1205,13 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 
   public void UpdateFont()
   {
-    wave_panel.SetFont(font_dialog.GetFont());
-//	RepaintAllWaves();
+     wave_panel.SetFont(font_dialog.GetFont());
   }
   
   public void UpdateColors()
   {
       wave_panel.SetColors(color_dialog.GetColors(), color_dialog.GetColorsName());
       this.setup_dialog.SetColorList();
-//	  RepaintAllWaves();
   }
 
   public void UpdateDefaultValues()
@@ -1375,19 +1317,31 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	            break;
 	        }
 	        break;
-	 }        
-  }
+	    }        
+    }
 
-    public void processNetworkTransferEvent(NetworkEvent e)
-    {
-        if(e.info != null)
+    public void processConnectionEvent(ConnectionEvent e)
+    {   
+        if(e.current_size == 0 && e.total_size == 0)
         {
-            progress_bar.setString(e.info);
+            if(e.info != null)
+                progress_bar.setString(e.info);
+            else
+                progress_bar.setString("");
+            progress_bar.setValue(0);
         } else {
             int v = (int)((float)e.current_size/e.total_size * 100.);
             progress_bar.setValue(v);
-            progress_bar.setString(""+v+"%");
+            progress_bar.setString((e.info != null ? e.info : "")+v+"%");
         }
+
+        /*
+        try {
+            progress_monitor.setEvent(e);
+            SwingUtilities.invokeAndWait(progress_monitor);
+        } catch (InvocationTargetException exc) {} 
+          catch (InterruptedException exc){}
+        */
     }
 
   public void processNetworkEvent(NetworkEvent e)
@@ -1402,6 +1356,13 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 //        wave_panel.StartPrint(prnJob,  pf);
   }
 
+  private DataServerItem getServerItem(String server)
+  {
+     for(int i = 0; i < server_ip_list.length ; i++)
+        if(server_ip_list[i].equals(server))
+            return server_ip_list[i];
+     return null;
+  }
     
   public void actionPerformed(ActionEvent e) {
 
@@ -1423,8 +1384,8 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	    {
 	        String value = action_cmd.substring(action.length()+1);
 	        if(!wave_panel.GetServerName().equals(value) )
-	        {
-	            SetDataServer(new String(value));
+	        {	            
+	            SetDataServer(getServerItem(value));
     	    }
         }
     }
@@ -1434,11 +1395,12 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         String error = null, sig = signal_expr.getText(); 
         
         if(sig != null && sig.trim().length() != 0)
-            error = wave_panel.AddSignal(sig);
-        if(error != null)
-        {
-		    JOptionPane.showMessageDialog(null, error, "alert", JOptionPane.ERROR_MESSAGE); 
-        }      
+            wave_panel.AddSignal(sig);
+            // error = wave_panel.AddSignal(sig);
+        //if(error != null)
+        //{
+		//    JOptionPane.showMessageDialog(null, error, "alert", JOptionPane.ERROR_MESSAGE); 
+        //}      
     }
 
     
@@ -1456,10 +1418,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     }
 
     if(ob == color_i)
-    {
-	    if(color_dialog == null) 
-	        color_dialog = new ColorDialog(this, "Color Configuration Dialog");
-    	
+    {    	
         javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 jScope_1.this.color_dialog.ShowColorDialog(jScope_1.this.wave_panel);
@@ -1470,7 +1429,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     }
 
     if(ob == font_i)
-    {
+    {        
 	    font_dialog.setLocationRelativeTo(this);
         javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -1694,7 +1653,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
      }
 
      if(ob == pub_variables_i)
-     {
+     {            
         javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
 	            pub_var_diag.Show();
@@ -1702,7 +1661,6 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         });
         t.setRepeats(false);
         t.start();
-//	    pub_var_diag.Show();
      }
 
   } 
@@ -1835,7 +1793,6 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     int wave_mode = wave_panel.GetMode();
 
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
-    //wave_panel.SetMode(Waveform.MODE_WAIT);
     try {
         error = FromFile(in);
 	    if(error == null)        
@@ -1850,7 +1807,6 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	    error = ""+e;
     }
     setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-    //wave_panel.SetMode(wave_mode);
     return error;
   }
  
@@ -1911,9 +1867,12 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         UpdateFont();
 	    wave_panel.update();	
 	    validate();
-	    if(wave_panel.GetServerName() != null && !curr_dsa.equals(wave_panel.GetServerName()))
-    	        server_diag.addServerIp(wave_panel.GetServerName());
-            SetDataServer(wave_panel.GetServerName());
+	    
+//	    if(wave_panel.GetServerName() != null && !curr_dsa.equals(wave_panel.GetServerName()))
+//    	        server_diag.addServerIp(wave_panel.GetServerName());
+        server_diag.addServerIp(wave_panel.getServerItem());
+        SetDataServer(wave_panel.getServerItem());
+ 
    	    UpdateAllWaves();
     } else {
 	    JOptionPane.showMessageDialog(null, error, "alert", JOptionPane.ERROR_MESSAGE); 
@@ -1945,6 +1904,8 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
         String file = null;    
         
         jScope_1 win = new jScope_1(100, 100);
+
+
         
         win.pack();                 
 	    win.setSize(750, 550);
@@ -2055,7 +2016,6 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	    	                                UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 	    	                                SwingUtilities.updateComponentTreeUI(jScope_1.this);
 	                                    } 
-             
                 jScope_1.jScopeSetUI(font_dialog);
                 jScope_1.jScopeSetUI(setup_default);
                 jScope_1.jScopeSetUI(color_dialog);
@@ -2096,23 +2056,6 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 	}
 
     }
-
-
-
-	class SymComponent extends java.awt.event.ComponentAdapter
-	{
-		public void componentHidden(java.awt.event.ComponentEvent event)
-		{
-			Object object = event.getSource();
-			if (object == jScope_1.this)
-				jScope1_componentHidden(event);
-		}
-	}
-
-	void jScope1_componentHidden(java.awt.event.ComponentEvent event)
-	{
-		// to do: code goes here.
-	}
 }
 
 class WindowDialog extends JDialog implements ActionListener 
@@ -2328,13 +2271,13 @@ class ServerDialog extends JDialog implements ActionListener
             JTextField server_ip;
             JCheckBox automatic;
     jScope_1 dw;
+    
 
     ServerDialog(JFrame _dw, String title)
     {
         super(_dw, title, true);
 	    dw = (jScope_1)_dw;
 	    setResizable(false);
-	    //super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
 
 	    GridBagLayout gridbag = new GridBagLayout();
 	    GridBagConstraints c = new GridBagConstraints();
@@ -2393,15 +2336,13 @@ class ServerDialog extends JDialog implements ActionListener
 	    getContentPane().add(p);
 	
 	    if(dw.server_ip_list == null) {
-	        addServerIp("Local");	
-//	        addServerIp("Jet data");	
-//	        addServerIp("Ftu data");
+	        addServerIp(new DataServerItem("Local", null, null));	
             if(jScope_1.IsNewJVMVersion())
 	            GetPropertiesValue();
 	        else
                 GetPropertiesValue_VM11();
 
-	        addServerIp(dw.default_server);
+	        addServerIp(new DataServerItem(dw.default_server, null, null));
 	    }
 	    else
 	    {
@@ -2413,14 +2354,23 @@ class ServerDialog extends JDialog implements ActionListener
     private void GetPropertiesValue()
     {
        ResourceBundle rb = dw.rb;
-       String prop;
+       DataServerItem dsi;
        int i = 1;
        
        if(rb == null) return;
        try {
         while(true) {
-            prop = (String)rb.getString("jScope.data_server_"+i);
-	        addServerIp(prop);
+            dsi = new DataServerItem();
+            dsi.data_server = (String)rb.getString("jScope.data_server_"+i);
+            try
+            {
+                dsi.browse_class = (String)rb.getString("jScope.data_server_"+i+".browse_class");
+            }catch(MissingResourceException e){}
+            try
+            {
+                dsi.browse_url = (String)rb.getString("jScope.data_server_"+i+".browse_url");
+            }catch(MissingResourceException e){}
+	        addServerIp(dsi);
 	        i++;
         } 
        }catch(MissingResourceException e){}
@@ -2429,15 +2379,17 @@ class ServerDialog extends JDialog implements ActionListener
     private void GetPropertiesValue_VM11()
     {
        PropertyResourceBundle prb = dw.prb;
-       String prop;
-       int i = 1;
-       
+       DataServerItem dsi;
+       int i = 1;       
 
        if(prb == null) return;
        while(true) {
-           prop = (String)prb.handleGetObject("jScope.data_server_"+i);
-           if(prop == null) break;
-	       addServerIp(prop);
+           dsi = new DataServerItem();
+           dsi.data_server = (String)prb.handleGetObject("jScope.data_server_"+i);
+           if(dsi.data_server == null) break;
+           dsi.browse_class = (String)prb.handleGetObject("jScope.data_server_"+i+".browse_class");
+           dsi.browse_url = (String)prb.handleGetObject("jScope.data_server_"+i+".browse_url");
+	       addServerIp(dsi);
 	       i++;
        } 
     }
@@ -2449,10 +2401,11 @@ class ServerDialog extends JDialog implements ActionListener
 	    show();
     }
     
-    public void addServerIp(String ip)
+    public void addServerIp(DataServerItem dsi)//String ip)
     {
 	    int i;
 	    JMenuItem new_ip;
+	    String ip = dsi.data_server;
 
 
         int idx = ip.indexOf("|");
@@ -2460,7 +2413,10 @@ class ServerDialog extends JDialog implements ActionListener
         {
             String user = ip.substring(0, idx);
             if(!user.equals(System.getProperty("user.name")))
+            {
                 ip = System.getProperty("user.name") + ip.substring(idx, ip.length());
+                dsi.data_server = ip;
+            }
         }
 	
 	
@@ -2468,7 +2424,7 @@ class ServerDialog extends JDialog implements ActionListener
 	    boolean found = false;
 	    while(e.hasMoreElements())
 	    {   
-	        if(((String)e.nextElement()).equals(ip))
+	        if(((DataServerItem)e.nextElement()).equals(dsi))
 	        {
 	            found = true;
 	            break;
@@ -2476,7 +2432,7 @@ class ServerDialog extends JDialog implements ActionListener
 	    }
 	    if(!found)
 	    {
-	        list_model.addElement(ip);
+	        list_model.addElement(dsi);
 	        new_ip = new JMenuItem(ip);
 	        dw.servers_m.add(new_ip);
 	        new_ip.setActionCommand("SET_SERVER " + ip);
@@ -2485,28 +2441,26 @@ class ServerDialog extends JDialog implements ActionListener
 	    }
     }
     
-    public void addServerIpList(String[] ip_list)
+    public void addServerIpList(DataServerItem[] dsi_list)
     {
-	    //server_list.add("Local");
-	    for(int i = 0; i < ip_list.length; i++) 
-	        addServerIp(ip_list[i]);
-	   // server_list.add(ip_list[i]);
+	    for(int i = 0; i < dsi_list.length; i++) 
+	        addServerIp(dsi_list[i]);
     }
 
-    public String[] getServerIpList()
+    public DataServerItem[] getServerIpList()
     {
 	    Enumeration e = list_model.elements();
-	    String out[] = new String[list_model.size()];
+	    DataServerItem out[] = new DataServerItem[list_model.size()];
 	    for(int i = 0; e.hasMoreElements(); i++)
-	        out[i] = ((String)e.nextElement());
+	        out[i] = ((DataServerItem)e.nextElement());
 	    return out;
-	    //return server_list.get .getItems();
     }
 	        
     public void actionPerformed(ActionEvent event)
     { 
 
         Object ob = event.getSource();
+        String ip;
       
 	    if(ob == cancel_b)
 	        setVisible(false);
@@ -2515,9 +2469,10 @@ class ServerDialog extends JDialog implements ActionListener
 	    {
 	       	        
 	        if(automatic.isSelected())
-                addServerIp(System.getProperty("user.name")+"|"+server_ip.getText().trim());	  
+	            ip = System.getProperty("user.name")+"|"+server_ip.getText().trim();
             else
-                addServerIp(server_ip.getText().trim());
+                ip = server_ip.getText().trim();
+            addServerIp(new DataServerItem(ip, null, null));	  
 	     
 	    }
 	

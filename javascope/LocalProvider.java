@@ -26,13 +26,13 @@ public class LocalProvider extends NetworkProvider implements DataProvider {
 
     public boolean SupportsAsynch() { return false; }
 
-    public void addNetworkEventListener(NetworkEventListener l, String event){}
+    public void addNetworkListener(NetworkListener l, String event){}
 
-    public void removeNetworkEventListener(NetworkEventListener l, String event){}
+    public void removeNetworkListener(NetworkListener l, String event){}
 
-    public void    addNetworkTransferListener(NetworkTransferListener l){}
+    public void    addConnectionListener(ConnectionListener l){}
     
-    public void    removeNetworkTransferListener(NetworkTransferListener l){}
+    public void    removeConnectionListener(ConnectionListener l){}
 
     public String GetDefaultTitle(String in_y[]){return null;}
 

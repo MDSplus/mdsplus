@@ -1,6 +1,5 @@
 import java.lang.Integer;
 import java.awt.*;
-//import java.awt.font.*;
 import java.awt.event.*;
 import java.util.Vector;
 import javax.swing.*;
@@ -16,12 +15,11 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
     String fontchoice = "fontchoice";
     int stChoice = 0;
     String siChoice = "10";
-    Font font = null;
     jScope_1 main_scope;
     String envfonts[];
     String size_l[];
     String style_l[];
-    
+    Font font;
 
     public FontSelection(Frame dw, String title) {
         super(dw, title, true);

@@ -907,7 +907,10 @@ public class Waveform extends JComponent
 	        end_y = p_pos.y;
 	    }
     }
-
+   protected void resetMode()
+   {
+      SetMode(mode);
+   }
 
    protected void SetMode(int mod)
    {

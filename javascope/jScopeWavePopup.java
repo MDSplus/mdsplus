@@ -10,12 +10,11 @@ import javax.swing.*;
 
 
 class jScopeWavePopup extends MultiWavePopup {
-	SetupDataDialog setup_dialog;
+	private   SetupDataDialog setup_dialog;
 	protected JMenuItem setup, refresh, saveAsText;
 	protected JMenuItem  selectWave, remove_panel, profile_dialog;
 	protected JSeparator sep1, sep3;
-    
-
+        
     public jScopeWavePopup(SetupDataDialog setup_dialog)
     {
         super();

@@ -301,7 +301,7 @@ public class Signal
     public Signal(float _x[], float _y[], String name)
     {
         this(_x, _y);
-	setName(new String(name));
+	    setName(new String(name));
     }	
 
     /**

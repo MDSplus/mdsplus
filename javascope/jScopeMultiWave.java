@@ -1,12 +1,13 @@
 import java.awt.*;
 import java.util.*;
 import java.io.*;
+import javax.swing.SwingUtilities;
 
 /**
 Class MultiWaveform extends the capability of class Waveform to deal with multiple
 waveforms.
 */
-public class jScopeMultiWave extends MultiWaveform implements NetworkEventListener
+public class jScopeMultiWave extends MultiWaveform implements NetworkListener
 {
     MdsWaveInterface wi;
    
@@ -25,30 +26,32 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
 //         Refresh();
     }
 
-    public String Refresh()
+    public void Refresh()
     {
-        String error;
         
-        int curr_mode = GetMode();
-	    SetMode(Waveform.MODE_WAIT);
-
-        try
+        if(wi.isAddSignal())
         {
-            error = wi.Update();
-            if(error == null)
-                jScopeWaveUpdate();
-            else
-                Update(wi);
-        } 
-        catch (IOException e) 
-        {
-            wi.error = e.getMessage();
-            Update(wi);
+            setCursor(new Cursor(Cursor.WAIT_CURSOR));
+            try
+            {
+                AddEvent();
+            } catch (IOException e){}
         }
         
-    	SetMode(curr_mode);
-
-        return wi.error;
+        Thread p = new Thread() {
+            public void run()
+            {
+                wi.refresh();
+                    
+	            SwingUtilities.invokeLater(new Runnable() {
+	                public void run() {
+		            jScopeWaveUpdate();
+	                }
+	            });
+                
+            }
+        };
+        p.start();
     }
     
     
@@ -56,10 +59,9 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
     {
         Erase();
         wi.Erase();
-     //   System.gc();
     }
     
-    private String getBriefError(String er, boolean brief)
+    public String getBriefError(String er, boolean brief)
     {
         if(brief)
         {
@@ -69,79 +71,71 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
         return er;
     }
     
-    public String Refresh(boolean add_sig, boolean brief_error)
+    public void Refresh_xxx(boolean add_sig)//, boolean brief_error)
     {
         
         String error;
         try
         {
+            setCursor(new Cursor(Cursor.WAIT_CURSOR));
             AddEvent();
-            error = Refresh();
-            if(error != null)
-                error = getBriefError(error, brief_error);
-            else
-                error = wi.GetErrorString(add_sig, brief_error);
-        } 
+            Refresh();
+       } 
         catch(IOException e)
         {
             error = e.getMessage();
         }
+    }
+
+    public void jScopeWaveUpdate()
+    {
+        String out_error;
+        if(wi.isAddSignal())
+            out_error = wi.getErrorString(true);
+        else
+            out_error = wi.getErrorTitle(true);
         
-        return error;
+        if(out_error != null && wi.prev_wi != null)
+        {
+            //reset to previous configuration
+            wi.prev_wi.w_error = wi.w_error;            
+            if(wi.isAddSignal())
+                wi.prev_wi.setAddSignal(true);                    
+            wi = wi.prev_wi;
+            wi.prev_wi = null;
+        } else
+            wi.prev_wi = null;
+        Update(wi);
+        WaveformEvent e = new WaveformEvent(this, WaveformEvent.END_UPDATE);
+        dispatchWaveformEvent(e);
     }
-
-
-    //public String Update()
-    public void jScopeWaveUpdate() throws IOException
-    {	
-	    if(wi == null)
-	        return;// "Undefine signal to evaluate";
-	    
-	    if(wi.modified)
-	    {
-	        wi.StartEvaluate();
-//	        if(wi.error == null)
-		        wi.EvaluateOthers();
-	    }
-
-	    Update(wi);
-
-	    wi.modified = (wi.error != null);
-	
-	    //return  wi.error;		
-    }
-
 
     public void Update(WaveInterface _wi)
     {
 	    wi = (MdsWaveInterface)_wi;	     	    
+	    
+	    resetMode();
 	    	    
 	    orig_signals = null;
-//	    if(wi.colors != null && wi.colors.length > 0)
-//	    {
-//	        colors = wi.colors;
-	        //num_colors =  wi.colors.length;
-//	        crosshair_color = colors[curr_point_sig_idx % wi.colors.length];
-//	        first_set_point = true;
-//	    }
         super.x_label = wi.xlabel;
 	    super.y_label = wi.ylabel;
 	    super.x_log = wi.x_log;
 	    super.y_log = wi.y_log;
 	    
-	    String error = wi.GetErrorTitle();
-	    if(error == null)
+	  //  String error = null;
+	    if(!wi.isAddSignal())
+	        wave_error = wi.getErrorTitle(true);
+	        
+	    if(wi.title != null)
 	        super.title = wi.title;
 	    else 
-	        super.title = getBriefError(error, true);
+	        super.title = "";
 	    
         super.show_legend = wi.show_legend;
 	    super.legend_x = wi.legend_x;
         super.legend_y = wi.legend_y;
         super.is_image = wi.is_image;
         super.frames = wi.frames;
-
-       // System.gc();
 
 	    if(wi.signals != null)
 	    {
@@ -158,9 +152,6 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
 		            wi.signals[i].setMarkerStep(wi.markers_step[i]);
 		            wi.signals[i].setInterpolate(wi.interpolates[i]);
 		            wi.signals[i].setColorIdx(wi.colors_idx[i]);
-		            //Update(wi.signals, wi.num_waves, wi.markers, wi.markers_step, wi.interpolates);
-                    //Update(wi.signals);//, wi.in_label,  wi.markers, wi.markers_step, 
-                                       //wi.interpolates, wi.colors_idx);
 		        }
             if(!all_null)
             {
@@ -179,12 +170,10 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
 
 	        not_drawn = true;
 	        frame = 0;
-	        Update();
+	        super.Update();
 	        return;
-	    }
-	        	        
+	    }	        	        
 	    Erase();
-
     }
 
     protected Color getSignalColor(int i)
@@ -227,8 +216,8 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
     protected String getSignalInfo(int i)
     {
         String s;
-        String name = (wi.in_label[i] != null && wi.in_label[i].length() > 0) ? wi.in_label[i] : wi.in_y[i]; 
-        String er = wi.w_error[i] != null ? " ERROR " : "";
+        String name = (wi.in_label != null &&  wi.in_label[i] != null && wi.in_label[i].length() > 0 ) ? wi.in_label[i] : wi.in_y[i]; 
+        String er = (wi.w_error != null && wi.w_error[i] != null) ? " ERROR " : "";
         if(wi.shots != null) {
             s = name+" "+wi.shots[i] + er;
         } else {

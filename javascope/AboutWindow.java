@@ -2,15 +2,20 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 
 
 public class AboutWindow extends JLabel  {
   
-  ImageIcon io;
+  ImageIcon io = null;
   
   public AboutWindow() 
   {
-    setIcon( (io = new ImageIcon(getClass().getClassLoader().getResource("about_jscope.jpg"))));
+    try
+    {
+        io = new ImageIcon(getClass().getClassLoader().getResource("about_jscope.jpg"));
+        setIcon(io);
+    } catch (NullPointerException e){};
   }
   
   public void update( Graphics g ) {
@@ -22,6 +27,8 @@ public class AboutWindow extends JLabel  {
 	  Image imageBuffer = createImage( getWidth(), getHeight() );
 	  Graphics g = imageBuffer.getGraphics();
 
+    if(io == null) return;
+    
     Image image = io.getImage();
   
     g.drawImage( image, 1, 1, null );

@@ -70,7 +70,7 @@ public class jScope extends jScope_1
             }
         });
         
-        print_all_i.setLabel("Print all");
+        print_all_i.setText("Print all");
         print_all_i.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e) 
@@ -98,7 +98,18 @@ public class jScope extends jScope_1
                     help_dialog.show();
                 }
 	        }
-	    );       
+	    );
+	    
+        JMenuItem browse_signals_i = new JMenuItem("Browse signals");            
+        edit_m.insert(browse_signals_i, 0);
+        browse_signals_i.addActionListener(new ActionListener()
+	        {
+	            public void actionPerformed(ActionEvent e)
+                {
+                    wave_panel.showBrowseSignals();
+                }
+	        }
+	    );
   }
   
     protected jScopeWaveContainer buildWaveContainer()
@@ -159,7 +170,9 @@ public class jScope extends jScope_1
   protected void PrintAllWaves()
   {
         try {
+            this.SetStatusLabel("Execute printing");
            ((jScopeWaveContainer_2)wave_panel).PrintAllWaves(prnJob, pf);
+            this.SetStatusLabel("End print operation");
         } catch (PrinterException er) {
  		    JOptionPane.showMessageDialog(null, "Error on printing", 
 		                                "alert", JOptionPane.ERROR_MESSAGE); 
@@ -189,7 +202,7 @@ public class jScope extends jScope_1
         String file = null;    
         
         AboutWindow about = new AboutWindow();
-        about.show();
+        about.setVisible(true);
         
         jScope win = new jScope(100, 100);
         

@@ -19,6 +19,9 @@ class MdsWaveInterface extends WaveInterface {
 		             B_default_node = 9;
     public boolean default_is_update = true;
     jScopeDefaultValues def_vals;
+    MdsWaveInterface prev_wi = null;
+    
+    public String previous_shot = "";
     
     public MdsWaveInterface(Waveform wave, DataProvider dp, jScopeDefaultValues def_vals)
     {
@@ -190,12 +193,26 @@ class MdsWaveInterface extends WaveInterface {
   public void UpdateShot() throws IOException
   {
 	int curr_shots[] = null, l = 0, curr_num_shot;
+	String c_shot_str = this.GetUsedShot();
   
     error = null;
     
+    if(c_shot_str != null)
+    {
+        if(previous_shot.equals(c_shot_str))
+            return;
+        previous_shot = new String(c_shot_str);
+    }
+    else
+    {
+       if(previous_shot.equals("not defined"))
+           return;
+       previous_shot = "not defined";
+    }
+    
     if(UseDefaultShot())
     {
-            String main_shot_str = ((jScopeWaveContainer)(wave.getParent())).getMainShotStr();
+        String main_shot_str = ((jScopeWaveContainer)(wave.getParent())).getMainShotStr();
 	    if(main_shot_str != null && main_shot_str.length() != 0)
 	    {
             curr_shots = ((jScopeWaveContainer)(wave.getParent())).getMainShots();
@@ -218,10 +235,6 @@ class MdsWaveInterface extends WaveInterface {
 	  curr_shots = GetShotArray(cin_shot);
 	}
 	
-/*	
-	if(error != null)
-	    return;
-*/	
 	
 	if(curr_shots == null)
 	{
@@ -231,7 +244,7 @@ class MdsWaveInterface extends WaveInterface {
 	} else
 	    curr_num_shot = curr_shots.length;
 
-
+/*
   	
 	//Check current shot list and wave interface shot list
 	if(shots != null && shots.length == curr_shots.length)
@@ -246,6 +259,7 @@ class MdsWaveInterface extends WaveInterface {
 	        return;
         }
     }
+*/
 	modified     = true;
 	
 	int num_signal; 
@@ -357,6 +371,7 @@ class MdsWaveInterface extends WaveInterface {
   
     public MdsWaveInterface(MdsWaveInterface wi)
     {
+        previous_shot = wi.previous_shot;
 	    full_flag = wi.full_flag;
 	    provider = wi.provider;
 	    num_waves = wi.num_waves;
@@ -384,6 +399,11 @@ class MdsWaveInterface extends WaveInterface {
 	    markers_step = new int[num_waves];
 	    colors_idx = new int[num_waves];
 	    interpolates = new boolean[num_waves];
+	    
+	    w_error = new String[num_waves];
+	    evaluated = new boolean[num_waves];
+	    signals = new Signal[num_waves];
+	    
 	    if(wi.in_shot == null || wi.in_shot.trim().length() == 0)
 	        shots = wi.shots = null;
 	    else
@@ -392,25 +412,25 @@ class MdsWaveInterface extends WaveInterface {
 	    for(int i = 0; i < num_waves; i++)
 	    {
 	        if(wi.in_label[i] != null)
-		    in_label[i] = new String(wi.in_label[i]);
+		        in_label[i] = new String(wi.in_label[i]);
 	        else
-		    in_label[i] = null;
+		        in_label[i] = null;
 	        if(wi.in_x[i] != null)
-		    in_x[i] = new String(wi.in_x[i]);
+		        in_x[i] = new String(wi.in_x[i]);
 	        else
-		    in_x[i] = null;
+		        in_x[i] = null;
 	        if(wi.in_y[i] != null)
-		    in_y[i] = new String(wi.in_y[i]);
+		        in_y[i] = new String(wi.in_y[i]);
 	        else
-		    in_y[i] = null;
+		        in_y[i] = null;
 	        if(wi.in_up_err[i] != null)
-		    in_up_err[i] = new String(wi.in_up_err[i]);
+		        in_up_err[i] = new String(wi.in_up_err[i]);
 	        else
-		    in_up_err[i] = null;
+		        in_up_err[i] = null;
 	        if(wi.in_low_err[i] != null)
-		    in_low_err[i] = new String(wi.in_low_err[i]);
+		        in_low_err[i] = new String(wi.in_low_err[i]);
 	        else
-		    in_low_err[i] = null;
+		        in_low_err[i] = null;
 	    }
     	
 
@@ -421,7 +441,17 @@ class MdsWaveInterface extends WaveInterface {
 	        colors_idx[i] = wi.colors_idx[i];
 	        interpolates[i] = wi.interpolates[i];
 	        if(wi.shots != null)
-	        shots[i] = wi.shots[i];
+	            shots[i] = wi.shots[i];
+/*****/
+	        if(wi.evaluated != null)
+	            evaluated[i] = wi.evaluated[i];
+	        else
+	            evaluated[i] = false;
+	        if(wi.signals != null)
+	            signals[i] = wi.signals[i];
+	        if(wi.w_error != null)
+	            w_error[i] = wi.w_error[i];
+/*****/	            
 	    }
 
 	    if(wi.in_xmin != null)
@@ -564,11 +594,11 @@ class MdsWaveInterface extends WaveInterface {
     }
     
    
-    public String GetErrorString(boolean add_sig, boolean brief_error)
+    public String getErrorString(boolean brief_error)
     {
        String full_error = null;
        
-       if(num_waves == 0) return null;
+       if(w_error == null || w_error.length == 0) return null;
        
 	   if(!is_image)
 	   {
@@ -577,17 +607,18 @@ class MdsWaveInterface extends WaveInterface {
 	        
 	        String e;
 	        
-	        if(add_sig)
-	            i = num_waves - 1;
+	        if(isAddSignal())
+	            i = w_error.length - 1;
 	        else
 	            i = 0;
 	        
-	        for(; i < num_waves; i++)
+	        for(; i < w_error.length; i++)
 	        {
 	            e = w_error[i];
 	            if(e != null) 
 	            {
-	                e = "<Wave "+(i+1)+ "> " + e;
+	                if(!isAddSignal())
+	                    e = "<Wave "+(i+1)+ "> " + e;
 	                if(brief_error)
 	                {
 	                    idx = e.indexOf('\n');
@@ -621,6 +652,28 @@ class MdsWaveInterface extends WaveInterface {
 //		main_shot_evaluated = false;
     }
 
+    public synchronized void refresh()
+    {
+        try
+        {
+            error = Update();
+            if(error == null)
+            {	    
+	            //if(modified)
+	            {
+	                StartEvaluate();
+		            EvaluateOthers();
+	            }
+
+	            //modified = (error != null);
+            }
+        } 
+        catch (IOException e) 
+        {
+            error = e.getMessage();
+        }
+    }
+    
    public void Erase()
     {
         super.Erase();
@@ -668,7 +721,7 @@ class MdsWaveInterface extends WaveInterface {
 	    }
     }
 
-    public void AddEvent(NetworkEventListener w) throws IOException
+    public void AddEvent(NetworkListener w) throws IOException
     {
         int bit = MdsWaveInterface.B_event;
         boolean def_flag = ((defaults & (1<<bit)) == 1<<bit);      
@@ -679,43 +732,44 @@ class MdsWaveInterface extends WaveInterface {
         }
     }
 
-    public void RemoveEvent(NetworkEventListener w)  throws IOException
+    public void RemoveEvent(NetworkListener w)  throws IOException
     {
         if(in_upd_event != null)
         {
-            dp.removeNetworkEventListener(w, in_upd_event);
+            dp.removeNetworkListener(w, in_upd_event);
             in_upd_event = null;
         }
     }
 
-    public void RemoveEvent(NetworkEventListener w, String event)  throws IOException
+    public void RemoveEvent(NetworkListener w, String event)  throws IOException
     {
-        dp.removeNetworkEventListener(w, event);
+        dp.removeNetworkListener(w, event);
     }
    
-    public void AddEvent(NetworkEventListener w, String event) throws IOException
+    public void AddEvent(NetworkListener w, String event) throws IOException
     {   
         
        if( in_upd_event != null && in_upd_event.length() != 0)
        {
             if(event == null || event.length() == 0)
             {
-                dp.removeNetworkEventListener(w, in_upd_event);
+                dp.removeNetworkListener(w, in_upd_event);
                 in_upd_event = null;
             } 
             else 
             {
                 if(!in_upd_event.equals(event))
                 {
-                    dp.removeNetworkEventListener(w, in_upd_event);
-                    dp.addNetworkEventListener(w, event);
+                    dp.removeNetworkListener(w, in_upd_event);
+                    dp.addNetworkListener(w, event);
                     in_upd_event = event;
                 }
             }
         } else 
             if(event != null && event.length() != 0) 
             { 
-                dp.addNetworkEventListener(w, event);
+
+                dp.addNetworkListener(w, event);
                 in_upd_event = event;
             }
     }

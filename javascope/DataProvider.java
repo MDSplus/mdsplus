@@ -12,8 +12,8 @@ interface DataProvider
         public String  GetXDataSpecification(String in);
         public String  ErrorString();
         public boolean SupportsAsynch();
-        public void    addNetworkEventListener(NetworkEventListener l, String event) throws IOException;
-        public void    removeNetworkEventListener(NetworkEventListener l, String event) throws IOException;
+        public void    addNetworkListener(NetworkListener l, String event) throws IOException;
+        public void    removeNetworkListener(NetworkListener l, String event) throws IOException;
         public String  GetDefaultTitle(String in_y[])  throws IOException;
         public String  GetDefaultXLabel(String in_y[]) throws IOException;
         public String  GetDefaultYLabel(String in_y[]) throws IOException;
@@ -28,6 +28,6 @@ interface DataProvider
         public void    enableCache(boolean state);
         public boolean isCacheEnabled();
         public void    freeCache();
-        public void    addNetworkTransferListener(NetworkTransferListener l);
-        public void    removeNetworkTransferListener(NetworkTransferListener l);
+        public void    addConnectionListener(ConnectionListener l);
+        public void    removeConnectionListener(ConnectionListener l);
     }	    

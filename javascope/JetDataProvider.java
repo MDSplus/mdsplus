@@ -31,7 +31,7 @@ class JetDataProvider implements DataProvider
 
     private boolean use_cache = false;
     private SignalCache sc = new SignalCache();
-    private   Vector    network_transfer_listener = new Vector();
+    private   Vector    connection_listener = new Vector();
 
     JTextField user_text; 
     JPasswordField passwd_text;
@@ -241,12 +241,12 @@ class JetDataProvider implements DataProvider
             out = (float[])sc.getCacheData(provider, in_expr, experiment, shot);
             if(out == null)
                 data_from = "Network";
-            NetworkEvent e = new NetworkEvent(this, data_from);
-            dispatchNetworkTransferEvent(e);
+            ConnectionEvent e = new ConnectionEvent(this, data_from);
+            dispatchConnectionEvent(e);
 
         } else {
-            NetworkEvent e = new NetworkEvent(this, "Network");
-            dispatchNetworkTransferEvent(e);
+            ConnectionEvent e = new ConnectionEvent(this, "Network");
+            dispatchConnectionEvent(e);
         }
         
         if((last_url_name != null && url_name.equals(last_url_name)) || out!= null)
@@ -417,31 +417,32 @@ class JetDataProvider implements DataProvider
 
  public String ErrorString() { return error_string; }
  public boolean SupportsAsynch() { return false; }
- public void addNetworkEventListener(NetworkEventListener l, String event){}
- public void removeNetworkEventListener(NetworkEventListener l, String event){}
- public void addNetworkTransferListener(NetworkTransferListener l)
+ public void addNetworkListener(NetworkListener l, String event){}
+ public void removeNetworkListener(NetworkListener l, String event){}
+
+ public void addConnectionListener(ConnectionListener l)
  {
 	if (l == null) {
 	    return;
 	}
-    network_transfer_listener.addElement(l);
+    connection_listener.addElement(l);
  }
  
- public void removeNetworkTransferListener(NetworkTransferListener l)
+ public void removeConnectionListener(ConnectionListener l)
  {
 	if (l == null) {
 	    return;
 	}
-    network_transfer_listener.removeElement(l);
+    connection_listener.removeElement(l);
  }
  
-    protected void dispatchNetworkTransferEvent(NetworkEvent e) 
+    protected void dispatchConnectionEvent(ConnectionEvent e) 
     {
-        if (network_transfer_listener != null) 
+        if (connection_listener != null) 
         {
-            for(int i = 0; i < network_transfer_listener.size(); i++)
+            for(int i = 0; i < connection_listener.size(); i++)
             {
-                ((NetworkTransferListener)network_transfer_listener.elementAt(i)).processNetworkTransferEvent(e);
+                ((ConnectionListener)connection_listener.elementAt(i)).processConnectionEvent(e);
             }
         }
     }

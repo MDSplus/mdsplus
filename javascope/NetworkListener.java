@@ -1,6 +1,6 @@
 import java.util.EventListener;
 
-public interface NetworkEventListener extends EventListener {
+public interface NetworkListener extends EventListener {
 
     /**
      * Invoked when an Waveform event occurs.

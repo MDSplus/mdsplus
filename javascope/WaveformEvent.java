@@ -3,15 +3,17 @@ import java.awt.Event;
 
 public class WaveformEvent extends AWTEvent {
 
-    static final int POINT_UPDATE     = AWTEvent.RESERVED_ID_MAX + 1;
-    static final int MEASURE_UPDATE   = AWTEvent.RESERVED_ID_MAX + 2;
-    static final int STATUS_INFO      = AWTEvent.RESERVED_ID_MAX + 3;
-    static final int BROADCAST_SCALE  = AWTEvent.RESERVED_ID_MAX + 4;
-    static final int COPY_PASTE       = AWTEvent.RESERVED_ID_MAX + 5;
-    static final int COPY_CUT         = AWTEvent.RESERVED_ID_MAX + 6;
-    static final int EVENT_UPDATE     = AWTEvent.RESERVED_ID_MAX + 7;
-    static final int PROFILE_UPDATE   = AWTEvent.RESERVED_ID_MAX + 8;
-    static final int POINT_IMAGE_UPDATE     = AWTEvent.RESERVED_ID_MAX + 9;
+    static final int POINT_UPDATE         = AWTEvent.RESERVED_ID_MAX + 1;
+    static final int MEASURE_UPDATE       = AWTEvent.RESERVED_ID_MAX + 2;
+    static final int STATUS_INFO          = AWTEvent.RESERVED_ID_MAX + 3;
+    static final int BROADCAST_SCALE      = AWTEvent.RESERVED_ID_MAX + 4;
+    static final int COPY_PASTE           = AWTEvent.RESERVED_ID_MAX + 5;
+    static final int COPY_CUT             = AWTEvent.RESERVED_ID_MAX + 6;
+    static final int EVENT_UPDATE         = AWTEvent.RESERVED_ID_MAX + 7;
+    static final int PROFILE_UPDATE       = AWTEvent.RESERVED_ID_MAX + 8;
+    static final int POINT_IMAGE_UPDATE   = AWTEvent.RESERVED_ID_MAX + 9;
+    static final int START_UPDATE         = AWTEvent.RESERVED_ID_MAX + 10;
+    static final int END_UPDATE           = AWTEvent.RESERVED_ID_MAX + 11;
     
     int    signal_idx;
     int    pixel_value;

@@ -15,15 +15,15 @@ class Frames extends Canvas {
     Dimension d;
     ColorModel c_model = null;
     protected boolean aspect_ratio = true;
-    private int curr_grab_frame = -1;
-    private int[] pixel_array;
-    private int img_width;
-    private int img_height;
-    private int[] frames_pixel_array;
-    private Rectangle frames_pixel_roi;
-    private int x_measure_pixel = 0, y_measure_pixel = 0;
-    private float ft[] = null;
-    private Point sel_point = null;
+    protected int curr_grab_frame = -1;
+    protected int[] pixel_array;
+    protected int img_width;
+    protected int img_height;
+    protected int[] frames_pixel_array;
+    protected Rectangle frames_pixel_roi;
+    protected int x_measure_pixel = 0, y_measure_pixel = 0;
+    protected float ft[] = null;
+    protected Point sel_point = null;
     
     Frames()
     {
@@ -165,7 +165,7 @@ class Frames extends Canvas {
         tracker.waitForID(0);
     }    
 
-    private int[] getPixelArray(Image img, int x, int y, int img_width, int img_height)
+    protected int[] getPixelArray(Image img, int x, int y, int img_width, int img_height)
     {
        int pixel_array[] = new int[img_width * img_height]; 
        PixelGrabber grabber = new PixelGrabber(img, x, y, img_width, img_height, pixel_array,0,img_width);    
@@ -179,7 +179,7 @@ class Frames extends Canvas {
        return pixel_array;
     }
     
-    private void grabFrame()
+    protected void grabFrame()
     {
         if(curr_frame_idx != curr_grab_frame)
         {

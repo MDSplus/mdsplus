@@ -1,4 +1,3 @@
-//import java.awt.Canvas;
 import java.awt.Panel;
 import java.awt.Component;
 import java.awt.Point;
@@ -14,7 +13,6 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
-//import javax.swing.JButton;
 
 /**
  * RowColumnContainer object is a component that can contain other AWT 
@@ -59,17 +57,21 @@ public class RowColumnContainer extends JComponent
 
    private Point split_pos = null;
    
-   class Btm extends Component {
+   class Btm extends Component 
+   {
     
 	    Btm()
 	    {
 	        setBackground(Color.lightGray);
-	        setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 	    }
     
 	    public void paint(Graphics g)
 	    {
 	        Rectangle d = getBounds();
+	        if(d.width > d.height)
+	            setCursor(new Cursor(Cursor.N_RESIZE_CURSOR));
+	        else
+	            setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));	        
 	        g.draw3DRect(0, 0, d.width-1, d.height-1, true);
 	    }
 	    public void print(Graphics g){}
@@ -116,7 +118,7 @@ public class RowColumnContainer extends JComponent
            	 
       num_component = getComponentNumber();
       
-      Btm b; 	 
+      Btm b;
       for(i = 0; i < num_component - 1; i++)
       {
 	     add(b = new Btm());
@@ -339,9 +341,7 @@ public class RowColumnContainer extends JComponent
 	        super.add(c);	    
 	    super.add(b = new Btm(), 0);
 	    setListener(b);
-	    
- //       update(); row column update must be programmer owner
-         
+	             
         if(rrow != row || rcol != col)
           setRealPosition(new Point(col, row), new Point(rcol, rrow));            
    }
@@ -601,7 +601,6 @@ public class RowColumnContainer extends JComponent
             for(int i = 0; i < rows.length; i++)
                 this.rows[i] = rows[i];
         }
-        // update();          
     }
 
    /**

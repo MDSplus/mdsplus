@@ -16,7 +16,8 @@ import javax.swing.event.*;
 //*****
  class SetupDataDialog extends JDialog implements ActionListener, 
                                                   ItemListener,
-                                                  KeyListener
+                                                  KeyListener,
+                                                  WaveformListener
  {
  
    private JLabel	    lab;
@@ -26,6 +27,7 @@ import javax.swing.event.*;
    private SList	    signalList;
    private jScopeMultiWave    wave;	    
    public  MdsWaveInterface   wi;
+   private Point        wave_coord;
    
     JCheckBox title_b = new JCheckBox("Title");
     JTextField title = new JTextField(50);
@@ -597,7 +599,7 @@ import javax.swing.event.*;
 		        {
 		            ws.shot = shots[i];
 		            ws.color_idx = color_idx;
-		            color_idx = (color_idx + 1) % main_scope.color_dialog.GetNumColor();
+		            color_idx = (color_idx + 1) %  main_scope.color_dialog.GetNumColor();
 		            addSignalSetup(ws);
 		            signalListAdd(ws);
 		        }	
@@ -913,9 +915,8 @@ import javax.swing.event.*;
   }
 
 
-
-   public SetupDataDialog(Frame fw, String frame_title) {
-
+   public SetupDataDialog(Frame fw, String frame_title)
+   {
       super(fw, frame_title, false);
       setModal(true);
       setResizable(false);    
@@ -1086,7 +1087,9 @@ import javax.swing.event.*;
 
     public void Show(Waveform w, int col, int row)
     {
+      wave_coord = new Point(row, col);
       wave = (jScopeMultiWave)w;
+      wave.addWaveformListener(this);
       wi = wave.wi;
       wi = new MdsWaveInterface(wave, wave.wi.dp, wave.wi.def_vals);
       wi.defaults = wave.wi.defaults;
@@ -1582,6 +1585,8 @@ import javax.swing.event.*;
 //	      wave.wi = new MdsWaveInterface(main_scope.db, wave.controller, main_scope.def_values);
 //	      wi.is_image = image_b.isSelected();
 //	      wi.use_jai = use_jai_b.isSelected();
+          if(wave.wi != null)
+            wave.wi.Erase();
 	      return 1;
       }
 
@@ -1728,23 +1733,38 @@ import javax.swing.event.*;
 
    private  void applyWaveform()
    {
-        if(checkSetup() == 0)
+        //if(checkSetup() == 0)
+        checkSetup();
         {       
             setCursor(new Cursor(Cursor.WAIT_CURSOR));
             try
             {
-                String full_error = main_scope.wave_panel.Refresh(wave, "Update ");
-                wave.setPointSignalIndex(signalList.getSignalSelect());
-		        if(full_error != null)
-		            JOptionPane.showMessageDialog(SetupDataDialog.this, full_error, "alert", JOptionPane.ERROR_MESSAGE); 	         
+                main_scope.wave_panel.Refresh(wave, "Update ");
 	        } catch (Throwable e) {	        
 	            main_scope.SetStatusLabel("Error during apply: "+e);	    
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	        }
-            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        } else
-	        wave.Erase();
+        } 
+        //else
+	    //  wave.Erase();
    }
 	    	
+    public void processWaveformEvent(WaveformEvent e) 
+    {
+        jScopeMultiWave w = (jScopeMultiWave)e.getSource();
+        switch(e.getID())
+        {
+             case WaveformEvent.END_UPDATE :
+                String full_error = w.wi.getErrorString(main_scope.wave_panel.getBriefError());
+                if(full_error != null)
+                {
+		            JOptionPane.showMessageDialog(SetupDataDialog.this, full_error, 
+		                                            "alert", JOptionPane.ERROR_MESSAGE);
+                }
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+             break;
+        }
+    }
    public void actionPerformed(ActionEvent e)
    {
       Object ob = e.getSource();
@@ -1756,10 +1776,11 @@ import javax.swing.event.*;
 	    eraseForm();
 //	    wave.wi = new MdsWaveInterface(main_scope.db, main_scope.def_values);
 //	    wave.wi.is_image = image_b.isSelected();
-	    wave.jScopeErase();
+//	    wave.jScopeErase();
       }
 		
       if(ob == cancel) {
+        wave.removeWaveformListener(this);
 	    setVisible(false);
 	    signalList.reset();
       }
@@ -1769,8 +1790,9 @@ import javax.swing.event.*;
             applyWaveform();
             if(ob == ok) 
             {
-                signalList.reset();
+                wave.removeWaveformListener(this);
                 setVisible(false);
+                signalList.reset();
             }
 	   }
  

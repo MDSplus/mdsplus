@@ -20,7 +20,7 @@ public class WaveInterface
 
     public String in_shot;
     public int num_shot = 1;
-    public boolean modified = true;
+    protected boolean modified = true;
    
     boolean reversed = false;
     boolean show_legend = false;
@@ -48,9 +48,8 @@ public class WaveInterface
     AsynchUpdater du;
     boolean request_pending;
     float orig_xmin, orig_xmax;
-    private boolean evaluated[];
-    
-    
+    protected boolean evaluated[];
+        
     static final float HUGE = (float)1E8;
     static final int   MAX_POINTS = 1000;
    
@@ -62,216 +61,15 @@ public class WaveInterface
     int     signal_select = -1;
     Frames  frames;
     static public boolean auto_color_on_expr = false;
-
     
-    /*
-    public WaveInterface(WaveInterface wi)
-    {
+    //True when a signal is added
+    protected boolean  add_signal = false;
+    
         
-    controller = wi.controller;
-	full_flag = wi.full_flag;
-	provider = wi.provider;
-	num_waves = wi.num_waves;
-	num_shot  = wi.num_shot;
-	defaults  = wi.defaults;
-	modified = true;
-	in_grid_mode = wi.in_grid_mode;
-	x_log = wi.x_log;
-	y_log = wi.y_log;
-	is_image = wi.is_image;
-	use_jai = wi.use_jai;
-	show_legend = wi.show_legend;
-	reversed = wi.reversed;
-	legend_x = wi.legend_x;
-	legend_y = wi.legend_y;
-	in_label = new String[num_waves];
-	in_x = new String[num_waves];
-	in_y = new String[num_waves];
-	in_up_err = new String[num_waves];
-	in_low_err = new String[num_waves];
-	markers = new int[num_waves];
-	markers_step = new int[num_waves];
-	colors = new Color[num_waves];
-	colors_idx = new int[num_waves];
-	interpolates = new boolean[num_waves];
-	if(wi.in_shot == null || wi.in_shot.trim().length() == 0)
-	    shots = wi.shots = null;
-	else
-	    shots = new int[num_waves];
-	
-	for(int i = 0; i < num_waves; i++)
-	{
-	    if(wi.in_label[i] != null)
-		in_label[i] = new String(wi.in_label[i]);
-	    else
-		in_label[i] = null;
-	    if(wi.in_x[i] != null)
-		in_x[i] = new String(wi.in_x[i]);
-	    else
-		in_x[i] = null;
-	    if(wi.in_y[i] != null)
-		in_y[i] = new String(wi.in_y[i]);
-	    else
-		in_y[i] = null;
-	    if(wi.in_up_err[i] != null)
-		in_up_err[i] = new String(wi.in_up_err[i]);
-	    else
-		in_up_err[i] = null;
-	    if(wi.in_low_err[i] != null)
-		in_low_err[i] = new String(wi.in_low_err[i]);
-	    else
-		in_low_err[i] = null;
-	}
-	
-
-	for(int i = 0; i < num_waves; i++)
-	{
-	    markers[i] = wi.markers[i];
-	    markers_step[i] = wi.markers_step[i];
-	    colors[i] = wi.colors[i];
-	    colors_idx[i] = wi.colors_idx[i];
-	    interpolates[i] = wi.interpolates[i];
-	    if(wi.shots != null)
-	       shots[i] = wi.shots[i];
-	}
-
-	if(wi.in_xmin != null)
-	    in_xmin = new String(wi.in_xmin);
-	else
-	    in_xmin = null;
-	if(wi.in_ymin != null)
-	    in_ymin = new String(wi.in_ymin);
-	else
-	    in_ymin = null;	
-	if(wi.in_xmax != null)
-	    in_xmax = new String(wi.in_xmax);
-	else
-	    in_xmax = null;
-	if(wi.in_ymax != null)
-	    in_ymax = new String(wi.in_ymax);
-	else
-	    in_ymax = null;
-	    
-	if(wi.in_timemax != null)
-	    in_timemax = new String(wi.in_timemax);
-	else
-	    in_timemax = null;
-	if(wi.in_timemin != null)
-	    in_timemin = new String(wi.in_timemin);
-	else
-	    in_timemin = null;
-
-			
-	if(wi.in_shot != null)
-	    in_shot = new String(wi.in_shot);
-	else
-	    in_shot = null;
-	if(wi.experiment != null)
-	    experiment = new String(wi.experiment);
-	else
-	    experiment = null;
-	if(wi.in_title != null)
-	    in_title = new String(wi.in_title);
-	else
-	    in_title = null;
-	if(wi.in_xlabel != null)
-	    in_xlabel = new String(wi.in_xlabel);
-	else
-	    in_xlabel = null;
-	if(wi.in_ylabel != null)
-	    in_ylabel = new String(wi.in_ylabel);
-	else
-	    in_ylabel = null;	
-
-	if(wi.in_upd_event != null)
-	    in_upd_event = new String(wi.in_upd_event);
-	else
-	    in_upd_event = null;
-
-	if(wi.in_def_node != null)
-	    in_def_node = new String(wi.in_def_node);
-	else
-	    in_def_node = null;
-
-
-	if(wi.cin_xmin != null)
-	    cin_xmin = new String(wi.cin_xmin);
-	else
-	    cin_xmin = null;
-	if(wi.cin_ymin != null)
-	    cin_ymin = new String(wi.cin_ymin);
-	else
-	    cin_ymin = null;	
-	if(wi.cin_xmax != null)
-	    cin_xmax = new String(wi.cin_xmax);
-	else
-	    cin_xmax = null;
-	if(wi.cin_ymax != null)
-	    cin_ymax = new String(wi.cin_ymax);
-	else
-	    cin_ymax = null;
-
-	if(wi.cin_timemax != null)
-	    cin_timemax = new String(wi.cin_timemax);
-	else
-	    cin_timemax = null;
-	if(wi.cin_timemin != null)
-	    cin_timemin = new String(wi.cin_timemin);
-	else
-	    cin_timemin = null;
-
-
-	if(wi.cin_shot != null)
-	    cin_shot = new String(wi.cin_shot);
-	else
-	    cin_shot = null;
-	if(wi.cexperiment != null)
-	    cexperiment = new String(wi.cexperiment);
-	else
-	    cexperiment = null;
-	if(wi.cin_title != null)
-	    cin_title = new String(wi.cin_title);
-	else
-	    cin_title = null;
-	if(wi.cin_xlabel != null)
-	    cin_xlabel = new String(wi.cin_xlabel);
-	else
-	    cin_xlabel = null;
-	if(wi.cin_ylabel != null)
-	    cin_ylabel = new String(wi.cin_ylabel);
-	else
-	    cin_ylabel = null;	
-
-	if(wi.error != null)
-	    error = new String(wi.error);
-	else
-	    error = null;
-
-	if(wi.cin_upd_event != null)
-	    cin_upd_event = new String(wi.cin_upd_event);
-	else
-	    cin_upd_event = null;
-
-	if(wi.cin_def_node != null)
-	    cin_def_node = new String(wi.cin_def_node);
-	else
-	    cin_def_node = null;
-	    	
-	error = null;
-	dp = wi.dp;
-	
-    }	
-    */
-    
     public WaveInterface()
     {
-        CreateWaveInterface(null);//, null);
+        CreateWaveInterface(null);
     }    
-
-   // public WaveInterface(DataProvider dp)//, WaveSetup c)
-  //  {
- //       CreateWaveInterface(dp);//, c);
- //   }
 
 
     public WaveInterface(DataProvider dp)
@@ -424,7 +222,7 @@ public class WaveInterface
     }
 
     public void ShowLegend(boolean state){show_legend = state;}
-    public void setModified(boolean state){modified = state;};
+    public void setModified(boolean state){modified = state;}
 
     public void SetLegendPosition(double x, double y)
     {
@@ -443,45 +241,51 @@ public class WaveInterface
 	        return str;
     }
 
-    public  String GetErrorTitle()
+    public  String getErrorTitle(boolean brief)
     {
         int n_error = 0;
-        String error_title = null;
+        String er = error;
 
         if( num_waves == 0 || ( is_image &&  frames == null))
         {
 			if( error != null)
-			error_title = GetFirstLine(new String(  error));
-            return error_title;
+			    if(brief)
+			        er = GetFirstLine(new String(error));
+            return er;
 		}
 
 		     
 		for(int ii = 0; ii <   num_waves; ii++)
 		{   		                
 		    if(  w_error != null &&   w_error[ii] != null)
-			n_error++;               
+			    n_error++;               
 	    }
 			 
 	    if(  error == null &&  n_error > 1 && n_error ==   num_waves)
 	    {
-		    error_title = "Evaluation error on all signals";
+		    er = "Evaluation error on all signals";
 	    } 
 		else 
 		{
-		    if(  error != null)
-			    error_title =  error;
+		    if(error != null)
+			    er =  error;
 			else 
 			{
 			    if(n_error == 1 && num_waves == 1)
 			    {
-			        error_title = GetFirstLine(  w_error[0]);
+			        er = w_error[0];
 			    } else
 			        if(n_error > 0)
-			            error_title = "< Evaluation error on " + n_error + " signal"+ (n_error > 1 ? "s":"") +" >";
+			            er = "< Evaluation error on " + n_error + " signal"+ (n_error > 1 ? "s":"") +" >";
 			}    
         }
         
-        return error_title;
+        if(er != null && brief)
+        {
+            int idx = (er.indexOf('\n') == -1 ? er.length() : er.indexOf('\n'));
+            er = er.substring(0, idx);
+        }
+        return er;
     }
 
     public boolean GetSignalState(int i)
@@ -523,32 +327,6 @@ public class WaveInterface
         }
         return name;
     }
-
-/*
-    public boolean[] GetSignalsState()
-    {
-        boolean state[] = null, s;
-        
-        if(num_waves != 0)
-        {
-            int ns = (num_shot > 0 ? num_shot : 1);
-            state = new boolean[num_waves/ns];
-            for(int i = 0; i < num_waves; i+= ns)
-            {
-                state[i] = false;
-                for(int j = 0; j < ns; j++)
-                {
-                    if(!(!interpolates[i+j] && markers[i+j]  == Signal.NONE))
-                    {
-                        state[i] = true;
-                        break;
-                    }
-                }
-            }
-        }
-        return state;
-    }
-*/
     
     public boolean AddSignal(String s)
     {
@@ -626,8 +404,6 @@ public class WaveInterface
 	        new_evaluated[i] = false;
 	        if(shots != null)
 	            new_shots[i] = shots[i - num_shot];
-//	        else
-//	            new_shots[i] = UNDEF_SHOT;
         }
 
         in_label = new_in_label;
@@ -646,18 +422,19 @@ public class WaveInterface
 	    w_error = new_w_error;
 	    modified = true;
 	    
-	    //if(shots != null)
-	    //    return false;
-	    //else
+	    add_signal = true;
 	    return true;
     }
     
+    public boolean isAddSignal() {return add_signal;}
+    public void    setAddSignal(boolean add_signal) {this.add_signal = add_signal;}
     
     public synchronized int StartEvaluate() throws IOException
     {
  	    error = null;
 		
-	    evaluated = null;
+		if(modified)
+	        evaluated = null;
 
 	    if((in_y == null || in_x == null) || (shots == null && 
 				(experiment != null && experiment.trim().length() > 0)) )
@@ -669,12 +446,15 @@ public class WaveInterface
 
 	    num_waves = in_y.length;
 	
-        if(!is_image)
-	        signals = new Signal[num_waves];    
+		if(modified)
+		{
+            if(!is_image)
+	            signals = new Signal[num_waves];    
 
-	    evaluated = new boolean[num_waves];
-        w_error = new String[num_waves];
-    
+	        evaluated = new boolean[num_waves];
+            w_error = new String[num_waves];
+        }
+        
 	    if(in_x != null && num_waves != in_x.length)
 	    {
 	        error = "X values are different from Y values";
@@ -819,8 +599,9 @@ public class WaveInterface
                             
     	for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
 	    {
-	        if(shots[curr_wave] == shot && 
-	            (interpolates[curr_wave] || this.markers[curr_wave] != Signal.NONE))
+	        if(shots[curr_wave] == shot && !evaluated[curr_wave] &&
+	            (interpolates[curr_wave] || 
+	            markers[curr_wave] != Signal.NONE))
 	        {
 	            w_error[curr_wave] = null;
 		        evaluated[curr_wave] = true;
@@ -882,6 +663,7 @@ public class WaveInterface
 		        }
 	        }    	    
 	    }
+	    modified = false;
     }
 
     private void CreateNewFramesClass()

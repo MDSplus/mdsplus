@@ -24,9 +24,9 @@ class jScopeWaveContainer_2 extends jScopeWaveContainer implements Printable
     {
         try
         {
-        initMdsWaveInterface();
-        UpdateAllWave();
-        PrintAllWaves(prnJob, pf);
+            initMdsWaveInterface();
+            UpdateAllWave();
+            PrintAllWaves(prnJob, pf);
         } catch (InterruptedException e){}
         catch (PrinterException e){}
         catch (Exception e){}
