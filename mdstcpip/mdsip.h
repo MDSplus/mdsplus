@@ -108,6 +108,9 @@
 #define ioctl ioctlsocket
 #else
 #include <sys/ioctl.h>
+#ifndef I_NREAD
+#include <stropts.h>
+#endif
 #endif
 
 #if defined(__sgi) || defined(sun)
