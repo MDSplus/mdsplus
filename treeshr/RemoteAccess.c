@@ -338,6 +338,57 @@ int GetDefaultNidRemote(PINO_DATABASE *dblist, int *nid)
   return status;
 }
 
+typedef struct tag_search
+{
+  int       next_tag;
+  TREE_INFO *this_tree_info;
+  struct descriptor_d search_tag;
+  struct descriptor_d search_tree;
+  unsigned char top_match;
+  unsigned char remote;
+  char *remote_tag;
+  int socket;
+}         TAG_SEARCH;
+
+char *FindTagWildRemote(PINO_DATABASE *dblist, char *wild, int *nidout, void **ctx_inout)
+{
+  TAG_SEARCH **ctx = (TAG_SEARCH **)ctx_inout;
+  struct descrip ans = empty_ans;
+  char exp[512];
+  int status;
+  int first_time = 0;
+  if (*ctx == (TAG_SEARCH *)0)
+  {
+    *ctx = (TAG_SEARCH *)malloc(sizeof(TAG_SEARCH));
+    (*ctx)->remote = 1;
+    (*ctx)->remote_tag = 0;
+    (*ctx)->socket = dblist->tree_info->channel;
+    first_time = 1;
+  }
+  else
+    if ((*ctx)->remote_tag) free((*ctx)->remote_tag);
+  sprintf(exp,"TreeFindTagWild(\"%s\",_nid,%s)//\"\\0\"",wild,first_time ? "_remftwctx = 0" : "_remftwctx");
+  status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+  (*ctx)->remote_tag = ans.ptr;
+  return (status & 1 && ans.ptr && ans.dtype == DTYPE_T && strlen((char *)ans.ptr) > 0) ? (char *)ans.ptr : 0;
+}
+
+void FindTagEndRemote(void **ctx_inout)
+{
+  TAG_SEARCH **ctx = (TAG_SEARCH **)ctx_inout;
+  struct descrip ans = empty_ans;
+  char exp[512];
+  int status;
+  int first_time = 0;
+  if (*ctx != (TAG_SEARCH *)0)
+  {
+    if ((*ctx)->remote_tag) free((*ctx)->remote_tag);
+    status = MdsValue0((*ctx)->socket,"TreeFindTagEnd(_remftwctx)",&ans);
+    if (ans.ptr) free(ans.ptr);
+  }
+  *ctx = (TAG_SEARCH *)0;
+}
+
 int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm)
 {
   NID nid = *(NID *)&nid_in;
