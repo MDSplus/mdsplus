@@ -1752,7 +1752,7 @@ unsigned short Crc(unsigned int len, unsigned char *bufptr)
     for (j=0;j<256;j++)
     {
       icrctb[j]=icrc1(j << 8);
-      rchr[j]=(uchar)(it[j & 0xF] << 4 | it[j >> 4]);
+      rchr[j]=(unsigned char)(it[j & 0xF] << 4 | it[j >> 4]);
     }
   }
   for (j=0;j<len;j++)
