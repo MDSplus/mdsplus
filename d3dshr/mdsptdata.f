@@ -86,6 +86,7 @@ C This should NEVER happen, but just in case...
 
 	enddo
 
+
 C Write data and time to SDATE and STIME
 	write(SDATE,100)IARRAY.DAY, months(IARRAY.MONTH), IARRAY.YEAR
 	write(STIME,110)IARRAY.HOUR, IARRAY.MINUTE, IARRAY.SECOND
@@ -107,6 +108,8 @@ c	       return
 	       do i=1,MIN(n,iarray.nret)                              !added
 		  rarray.time(i) = RARRAY.STHED + (i-1)*RARRAY.DTHED  !added
 	       enddo                                                  !added
+	       if (rarray.in.eq.0.0) rarray.in = 1.0                  !3/21
+	       if (rarray.rcg.eq.0.0) rarray.rcg = 1.0
 	    else                                                      !added
 	       if (ier1.ne.0) then                                    !added 
 		  ier=ier1                                            !added    
