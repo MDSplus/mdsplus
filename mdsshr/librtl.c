@@ -618,7 +618,7 @@ int StrLenExtr(struct descriptor *dest, struct descriptor *source, int *start_in
 
 int StrGet1Dx(unsigned short *len, struct descriptor *out)
 {
-  if (out->class != CLASS_D) return 0;
+  if (out->class != CLASS_D) return LibINVSTRDES;
   if (out->length == *len) return 1;
   if (out->length && (out->pointer != NULL))
     free(out->pointer);
@@ -853,7 +853,7 @@ int StrAppend(struct descriptor *out, struct descriptor *tail)
     struct descriptor new = {0,DTYPE_T,CLASS_D,0};
     unsigned short len = (unsigned short)(out->length + tail->length);
     if (((unsigned int)out->length + (unsigned int)tail->length) > 0xffff)
-      return 0;
+      return StrSTRTOOLON;
     StrGet1Dx(&len,&new);
     memcpy(new.pointer, out->pointer, out->length);
     memcpy(new.pointer + out->length, tail->pointer, tail->length);
