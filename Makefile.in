@@ -58,17 +58,16 @@ depend:
 	  cd $${dir}; make depend; cd $$cdir;\
 	done
 
-MISC_PARTS = etc tdi idl trees setup.sh setup.csh java LabView include
+MISC_PARTS = etc tdi idl trees setup.sh setup.csh java LabView include rpm
 
 install: 
-	mkdirhier @prefix@
-	mkdirhier @uiddir@
+	mkdirhier @exec_prefix@
 	cdir=`pwd`;\
 	for dir in $(PARTS) ; do\
 	  cd $${dir}; make install; cd $$cdir;\
 	done
-	tar cf - $(MISC_PARTS) | (cd @prefix@; tar xf -)
-	(cd @prefix@; chmod -R 755 $(MISC_PARTS))
+	tar cf - --exclude CVS $(MISC_PARTS) | (cd @exec_prefix@; tar xf -)
+	(cd @exec_prefix@; chmod -R 755 $(MISC_PARTS))
 
 BINARIES = bin etc lib uid \
            tdi idl trees envsyms \
