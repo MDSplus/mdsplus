@@ -2,7 +2,7 @@
 /*
  * TWUProperties: Handling the Web-Umbrella Signal Properties.
  *
- * Copyright (c) 2002, J.G.krom, Forschungszentrum Jülich GmbH.
+ * Copyright (c) 2002...2003, J.G.krom, Forschungszentrum Juelich GmbH.
  * All rights reserved.
  * 
  * This class handles the properties 'file' as used in the TEC Web-Umbrella.
@@ -16,7 +16,7 @@
  * because it is also used in contexts where the handling of such exceptions 
  * is somewhat troublesome. (E.g. JVMs running implicitly by matlab.)
  *
- * Author: Jon Krom, Forschungszentrum Jülich, Institut für Plasmaphysik.
+ * Author: Jon Krom, Forschungszentrum Juelich, Institut fuer Plasmaphysik.
  *
  * $Id$
  *
@@ -380,6 +380,7 @@ class FakeTWUProperties extends TWUProperties {
 
     signalProps.put ("Signal.Maximum", String.valueOf( (double)(len-1) ) );
   }
+    public boolean valid() {return true;}
 }
 
 /* ------------------------------------------------------------------------ */
