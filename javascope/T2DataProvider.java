@@ -215,10 +215,10 @@ class T2DataProvider
                     y[i] = dis.readFloat();
 
                 //TEMPORARY
-                x = new float[retlen];
+                /*x = new float[retlen];
                 for(int i = 0; i < retlen; i++)
                     x[i] = i;
-                if(true)return;
+                if(true)return;*/
 
                 dos.writeInt(shot);
                 dos.writeInt(inX.length());

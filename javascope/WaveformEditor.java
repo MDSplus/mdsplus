@@ -11,9 +11,11 @@ public class WaveformEditor extends Waveform
     public static final float MIN_STEP = 1E-6F;
     Vector listeners = new Vector();
     protected boolean editable = false;
-    
-    public WaveformEditor(){super();}
-    public WaveformEditor(float[]x, float [] y, float minY, float maxY) 
+
+    static float[] copyX, copyY;
+
+    public WaveformEditor(){super(); setupCopyPaste();}
+    public WaveformEditor(float[]x, float [] y, float minY, float maxY)
     {
         super(new Signal(x,y, x.length, x[0], x[x.length - 1], minY, maxY));
         SetMarker(1);
@@ -21,8 +23,9 @@ public class WaveformEditor extends Waveform
         currentY = y;
         this.minY = minY;
         this.maxY = maxY;
+        setupCopyPaste();
     }
-    
+
     public void setWaveform(float[]x, float [] y, float minY, float maxY)
     {
         Signal sig = new Signal(x,y, x.length, x[0], x[x.length - 1], minY, maxY);
@@ -38,7 +41,54 @@ public class WaveformEditor extends Waveform
         this.maxY = maxY;
         Update(sig);
     }
-        
+
+    protected void setupCopyPaste()
+    {
+      //enableEvents(AWTEvent.KEY_EVENT_MASK);
+      addMouseListener(new MouseAdapter()
+      {
+        public void mousePressed(MouseEvent e)
+        {
+          requestFocus();
+        }
+      });
+      addKeyListener(new KeyListener()
+      {
+        public void keyPressed(KeyEvent ke)
+        {
+          if((ke.getModifiers() & KeyEvent.CTRL_MASK)!= 0 && (ke.getKeyCode() == KeyEvent.VK_C))
+          {
+            copyX = new float[currentX.length];
+            copyY = new float[currentY.length];
+            for(int i = 0; i < currentX.length; i++)
+            {
+              if(i >= currentY.length) break;
+              copyX[i] = currentX[i];
+              copyY[i] = currentY[i];
+            }
+          }
+          if((ke.getModifiers() & KeyEvent.CTRL_MASK)!= 0 && (ke.getKeyCode() == KeyEvent.VK_V))
+          {
+            if(copyX == null) return;
+            Signal sig = new Signal(copyX,copyY, copyX.length, copyX[0], copyX[copyX.length - 1], minY, maxY);
+            sig.setMarker(1);
+            currentX = new float[copyX.length];
+            currentY = new float[copyY.length];
+            for(int i = 0; i < copyX.length; i++)
+            {
+                currentX[i] = copyX[i];
+                currentY[i] = copyY[i];
+            }
+            Update(sig);
+            notifyUpdate(currentX, currentY, currentX.length - 1);
+          }
+        }
+        public void keyReleased(KeyEvent ke){}
+        public void keyTyped(KeyEvent ke){}
+      }
+                       );
+    }
+
     protected void setMouse()
     {
         addMouseListener(new MouseAdapter()  {
@@ -55,7 +105,7 @@ public class WaveformEditor extends Waveform
                         prevIdx = i;
                     //(float currDist = (float)Math.abs(currX - currentX[i]);
                     float currDist = (currX - currentX[i])*(currX - currentX[i])+
-                       (currY - currentY[i])*(currY - currentY[i]); 
+                       (currY - currentY[i])*(currY - currentY[i]);
                     if( currDist < minDist)
                     {
                         minDist = currDist;
@@ -63,7 +113,7 @@ public class WaveformEditor extends Waveform
                     }
                 }
                 notifyUpdate(currentX, currentY, closestIdx);
-                if(!editable) return; 
+                if(!editable) return;
 	            if((e.getModifiers() & Event.META_MASK) != 0) //If MB3
 	            {
 	                if((e.getModifiers() & Event.SHIFT_MASK) != 0) //Pont deletion
@@ -83,7 +133,7 @@ public class WaveformEditor extends Waveform
                                 newCurrentX[j] = currentX[i];
                                 newCurrentY[j] = currentY[i];
                             }
-                            currentX = newCurrentX;            
+                            currentX = newCurrentX;
                             currentY = newCurrentY;
                         }
                     }
@@ -99,7 +149,7 @@ public class WaveformEditor extends Waveform
                             newCurrentY[i] = currentY[i];
                         }
                         newCurrentX[j] = newX;
-                        newCurrentY[j] = currentY[j - 1] + 
+                        newCurrentY[j] = currentY[j - 1] +
                             (newX - currentX[j - 1])*(currentY[j] - currentY[j-1])/(currentX[j] - currentX[j-1]);
                         j++;
                         for(int i = prevIdx + 1; i < currentX.length; i++, j++)
@@ -107,13 +157,13 @@ public class WaveformEditor extends Waveform
                             newCurrentX[j] = currentX[i];
                             newCurrentY[j] = currentY[i];
                         }
-                        currentX = newCurrentX;            
-                        currentY = newCurrentY;   
+                        currentX = newCurrentX;
+                        currentY = newCurrentY;
                         newIdx = prevIdx + 1;
                     }
                 Signal newSig = new Signal(currentX,currentY, currentX.length, currentX[0],
                         currentX[currentX.length - 1], minY, maxY);
-                newSig.setMarker(1);   
+                newSig.setMarker(1);
                 Update(newSig);
                 notifyUpdate(currentX, currentY, newIdx);
                }
@@ -123,7 +173,7 @@ public class WaveformEditor extends Waveform
                 closestIdx = -1;
             }
         });
-        
+
         addMouseMotionListener(new MouseMotionAdapter()  {
             public void mouseDragged(MouseEvent e)
             {
@@ -131,7 +181,7 @@ public class WaveformEditor extends Waveform
                 synchronized(WaveformEditor.this)
                 {
                     if(closestIdx == -1) return;
-                    float currX; 
+                    float currX;
                     float currY;
                     try {
                         currX = convertX(e.getX());
@@ -147,39 +197,39 @@ public class WaveformEditor extends Waveform
                     else
                         currX = currentX[closestIdx];
                     currentX[closestIdx] = currX;
-                    
+
                     if(currY < minY) currY = minY;
                     if(currY > maxY) currY = maxY;
                     currentY[closestIdx] = currY;
                     Signal newSig = new Signal(currentX,currentY, currentX.length, currentX[0],
                         currentX[currentX.length - 1], minY, maxY);
-                    newSig.setMarker(1);   
+                    newSig.setMarker(1);
                     Update(newSig);
                     notifyUpdate(currentX, currentY, -1);
                 }
             }
         });
-                        
+
    }
 
     public synchronized void addWaveformEditorListener(WaveformEditorListener listener)
     {
         listeners.add(listener);
     }
-    
+
     public synchronized void removeWaveformEditorListener(WaveformEditorListener listener)
     {
         listeners.remove(listener);
     }
-    
+
     public synchronized void notifyUpdate(float [] waveX, float [] waveY, int newIdx)
     {
         for(int i = 0; i < listeners.size(); i++)
             ((WaveformEditorListener)listeners.elementAt(i)).waveformUpdated(waveX, waveY, newIdx);
     }
-    
+
     public void setEditable(boolean editable){this.editable = editable;}
-    
+
     public static void main(String args[])
     {
         float x[] = new float[10];
