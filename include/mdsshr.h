@@ -30,7 +30,9 @@ extern int MdsGet1Dx(unsigned int *len, unsigned char *dtype, struct descriptor_
 extern int MdsGet1DxA(struct descriptor_a * in, unsigned short *len, unsigned char *dtype, struct descriptor_xd *out);
 extern int MdsGet1DxS(unsigned short *len, unsigned char *dtype, struct descriptor_xd *out);
 extern int MdsGetCurrentShotId(char *experiment);
+extern char *MdsGetMsg(int sts);
 extern int MdsFree1Dx(struct descriptor_xd *dsc, void **zone);
+extern int MdsMsg(int sts, char fmt[], ...);
 extern void MdsPk(char *nbits, int *nitems, int pack[], int items[], int *bit);
 extern int  MdsSetCurrentShotId(char *experiment,int shot);
 extern void MdsUnpk(char *nbits, int *nitems, int pack[], int items[], int *bit);
