@@ -34,6 +34,31 @@ names = case_sensitive
 !(BX) bx_info("c_makefile", "MAKEFILE-C.MMS", true )
 !(BX) bx_info("app_defaults", "APP-DEFAULTS.DAT", true )
 
+procedure
+	XmdsCreateExprField;
+	XmdsCreateDigChans;
+	XmdsCreateXdBoxOnOffButton;
+	XmdsCreateOkButton;
+	XmdsCreateCancelButton;
+	XmdsCreateResetButton;
+	XmdsCreateApplyButton;
+        XmdsCreateXdBoxDialogButton;
+        XmdsCreateNidOptionMenu;
+
+value
+	XmdsNnid : argument("nid",integer);
+	XmdsNnidOffset : argument("nidOffset",integer);
+	XmdsNdefaultQuote : argument("defaultQuote",boolean);
+	XmdsNautoQuote : argument("autoQuote",boolean);
+	XmdsNchannels : argument("channels",integer);
+	XmdsNdataNidOffset : argument("dataNidOffset",integer);
+        XmdsNstartIdxNidOffset : argument("startIdxNidOffset",integer);
+        XmdsNendIdxNidOffset : argument("endIdxNidOffset",integer);
+        XmdsNnodesPerChannel : argument("nodesPerChannel",integer);
+        XmdsNlabelStrings : argument("labelStrings",string_table);
+        XmdsNvalueStrings : argument("valueStrings",string_table);
+        XmdsNputOnApply : argument("putOnApply",boolean);
+
 value
     DEVICE_NID :  -1;
     DEVICE$K_NODES_PER_INP :  3;
@@ -128,28 +153,28 @@ object L6810 : XmBulletinBoardDialog widget {
     controls {
        managed XmLabelGadget labelGadget;
        managed XmLabelGadget labelGadget1;
-       managed XmdsExprField dsExprField;
-       managed XmdsExprField dsExprField1;
-       managed XmdsXdBoxOnOffButton dsXdBoxOnOffButton;
-       managed XmdsXdBoxOnOffButton dsXdBoxOnOffButton1;
-       managed XmdsNidOptionMenu dsNidOptionMenu;
-       managed XmdsNidOptionMenu dsNidOptionMenu1;
-       managed XmdsExprField dsExprField2;
+       managed user_defined dsExprField;
+       managed user_defined dsExprField1;
+       managed user_defined dsXdBoxOnOffButton;
+       managed user_defined dsXdBoxOnOffButton1;
+       managed user_defined dsNidOptionMenu;
+       managed user_defined dsNidOptionMenu1;
+       managed user_defined dsExprField2;
        managed XmLabelGadget labelGadget2;
        managed XmLabelGadget labelGadget3;
-       managed XmdsExprField dsExprField3;
-       managed XmdsCancelButton dsCancelButton;
-       managed XmdsResetButton dsResetButton;
-       managed XmdsOkButton dsOkButton;
-       managed XmdsApplyButton dsApplyButton;
+       managed user_defined dsExprField3;
+       managed user_defined dsCancelButton;
+       managed user_defined dsResetButton;
+       managed user_defined dsOkButton;
+       managed user_defined dsApplyButton;
        managed XmBulletinBoard bulletinBoard;
-       managed XmdsNidOptionMenu dsNidOptionMenu2;
+       managed user_defined dsNidOptionMenu2;
     };
     callbacks {
     };
 };
 
-object dsNidOptionMenu2 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu2 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -196,23 +221,23 @@ object bulletinBoard : XmBulletinBoard widget {
         XmNheight = 190;
     };
     controls {
-       managed XmdsDigChans dsDigChans;
-       managed XmdsNidOptionMenu dsNidOptionMenu3;
-       managed XmdsNidOptionMenu dsNidOptionMenu4;
-       managed XmdsNidOptionMenu dsNidOptionMenu5;
-       managed XmdsNidOptionMenu dsNidOptionMenu6;
+       managed user_defined dsDigChans;
+       managed user_defined dsNidOptionMenu3;
+       managed user_defined dsNidOptionMenu4;
+       managed user_defined dsNidOptionMenu5;
+       managed user_defined dsNidOptionMenu6;
        managed XmLabelGadget labelGadget4;
        managed XmLabelGadget labelGadget5;
-       managed XmdsNidOptionMenu dsNidOptionMenu7;
-       managed XmdsNidOptionMenu dsNidOptionMenu8;
-       managed XmdsNidOptionMenu dsNidOptionMenu9;
-       managed XmdsNidOptionMenu dsNidOptionMenu10;
+       managed user_defined dsNidOptionMenu7;
+       managed user_defined dsNidOptionMenu8;
+       managed user_defined dsNidOptionMenu9;
+       managed user_defined dsNidOptionMenu10;
     };
     callbacks {
     };
 };
 
-object dsNidOptionMenu10 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu10 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = chan_src_codes;
@@ -229,7 +254,7 @@ object dsNidOptionMenu10 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsNidOptionMenu9 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu9 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = chan_src_codes;
@@ -246,7 +271,7 @@ object dsNidOptionMenu9 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsNidOptionMenu8 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu8 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = chan_src_codes;
@@ -263,7 +288,7 @@ object dsNidOptionMenu8 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsNidOptionMenu7 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu7 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = chan_src_codes;
@@ -304,7 +329,7 @@ object labelGadget4 : XmLabelGadget widget {
     };
 };
 
-object dsNidOptionMenu6 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu6 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = gains;
@@ -321,7 +346,7 @@ object dsNidOptionMenu6 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsNidOptionMenu5 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu5 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = gains;
@@ -338,7 +363,7 @@ object dsNidOptionMenu5 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsNidOptionMenu4 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu4 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = gains;
@@ -355,7 +380,7 @@ object dsNidOptionMenu4 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsNidOptionMenu3 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu3 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = gains;
@@ -372,7 +397,7 @@ object dsNidOptionMenu3 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsDigChans : XmdsDigChans widget {
+object dsDigChans : user_defined procedure XmdsCreateDigChans widget {
     arguments {
         XmdsNnodesPerChannel = L6810$K_NODES_PER_INP;
         XmdsNnid = DEVICE_NID;
@@ -389,7 +414,7 @@ object dsDigChans : XmdsDigChans widget {
     };
 };
 
-object dsApplyButton : XmdsApplyButton widget {
+object dsApplyButton : user_defined procedure XmdsCreateApplyButton widget {
     arguments {
         XmNx = 239;
         XmNy = 383;
@@ -400,7 +425,7 @@ object dsApplyButton : XmdsApplyButton widget {
     };
 };
 
-object dsOkButton : XmdsOkButton widget {
+object dsOkButton : user_defined procedure XmdsCreateOkButton widget {
     arguments {
         XmNx = 9;
         XmNy = 383;
@@ -411,7 +436,7 @@ object dsOkButton : XmdsOkButton widget {
     };
 };
 
-object dsResetButton : XmdsResetButton widget {
+object dsResetButton : user_defined procedure XmdsCreateResetButton widget {
     arguments {
         XmNx = 497;
         XmNy = 383;
@@ -422,7 +447,7 @@ object dsResetButton : XmdsResetButton widget {
     };
 };
 
-object dsCancelButton : XmdsCancelButton widget {
+object dsCancelButton : user_defined procedure XmdsCreateCancelButton widget {
     arguments {
         XmNx = 739;
         XmNy = 383;
@@ -433,7 +458,7 @@ object dsCancelButton : XmdsCancelButton widget {
     };
 };
 
-object dsExprField3 : XmdsExprField widget {
+object dsExprField3 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 20;
@@ -473,7 +498,7 @@ object labelGadget2 : XmLabelGadget widget {
     };
 };
 
-object dsExprField2 : XmdsExprField widget {
+object dsExprField2 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 20;
@@ -489,7 +514,7 @@ object dsExprField2 : XmdsExprField widget {
     };
 };
 
-object dsNidOptionMenu1 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu1 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -542,7 +567,7 @@ object dsNidOptionMenu1 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsNidOptionMenu : XmdsNidOptionMenu widget {
+object dsNidOptionMenu : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -565,7 +590,7 @@ object dsNidOptionMenu : XmdsNidOptionMenu widget {
     };
 };
 
-object dsXdBoxOnOffButton1 : XmdsXdBoxOnOffButton widget {
+object dsXdBoxOnOffButton1 : user_defined procedure XmdsCreateXdBoxOnOffButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("Store Action");
@@ -581,7 +606,7 @@ object dsXdBoxOnOffButton1 : XmdsXdBoxOnOffButton widget {
     };
 };
 
-object dsXdBoxOnOffButton : XmdsXdBoxOnOffButton widget {
+object dsXdBoxOnOffButton : user_defined procedure XmdsCreateXdBoxOnOffButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("Initialization Action");
@@ -597,7 +622,7 @@ object dsXdBoxOnOffButton : XmdsXdBoxOnOffButton widget {
     };
 };
 
-object dsExprField1 : XmdsExprField widget {
+object dsExprField1 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;
@@ -614,7 +639,7 @@ object dsExprField1 : XmdsExprField widget {
     };
 };
 
-object dsExprField : XmdsExprField widget {
+object dsExprField : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;
