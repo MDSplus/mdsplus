@@ -16,7 +16,8 @@ PARTS = mdsshr \
 	actions \
 	mdslib \
 	math \
-	d3dshr
+	d3dshr \
+	wfevent
 
 all :
 	- cdir=`pwd`; \
