@@ -1,4 +1,25 @@
-#include <stdio.h>
+# include "stdio.h"
+#if defined(__cplusplus)
+   extern "C" {
+#endif
+#if (defined(__cplusplus) || defined(__STDC__))
+     extern int yyreject();
+     extern int yywrap();
+     extern int yylook();
+     extern int yyback(int *, int);
+     extern int yyinput();
+     extern void yyoutput(int);
+     extern void yyunput(int);
+     extern int yylex();
+     extern int yyless(int);
+#ifdef LEXDEBUG
+     extern void allprint();
+     extern void sprint();
+#endif
+#if defined(__cplusplus)
+   }
+#endif
+#endif	/* __cplusplus or __STDC__ */
 # define U(x) x
 # define NLSTATE yyprevious=YYNEWLINE
 # define BEGIN yybgin = yysvec + 1 +
@@ -6,81 +27,39 @@
 # define YYLERR yysvec
 # define YYSTATE (yyestate-yysvec-1)
 # define YYOPTIM 1
-# define YYLMAX BUFSIZ
-#ifndef __cplusplus
-# define output(c) (void)putc(c,yyout)
-#else
-# define lex_output(c) (void)putc(c,yyout)
-#endif
-
-#if defined(__cplusplus) || defined(__STDC__)
-
-#if defined(__cplusplus) && defined(__EXTERN_C__)
-extern "C" {
-#endif
-	int yyback(int *, int);
-	int yyinput(void);
-	int yylook(void);
-	void yyoutput(int);
-	int yyracc(int);
-	int yyreject(void);
-	void yyunput(int);
-	int yylex(void);
-#ifdef YYLEX_E
-	void yywoutput(wchar_t);
-	wchar_t yywinput(void);
-#endif
-#ifndef yyless
-	int yyless(int);
-#endif
-#ifndef yywrap
-	int yywrap(void);
-#endif
-#ifdef LEXDEBUG
-	void allprint(char);
-	void sprint(char *);
-#endif
-#if defined(__cplusplus) && defined(__EXTERN_C__)
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-	void exit(int);
-#ifdef __cplusplus
-}
-#endif
-
-#endif
+# define YYLMAX 200
+# define output(c) putc(c,yyout)
+# define input() (((yytchar=yysptr>yysbuf?U(*--yysptr):getc(yyin))==10?(yylineno++,yytchar):yytchar)==EOF?0:yytchar)
 # define unput(c) {yytchar= (c);if(yytchar=='\n')yylineno--;*yysptr++=yytchar;}
 # define yymore() (yymorfg=1)
-#ifndef __cplusplus
-# define input() (((yytchar=yysptr>yysbuf?U(*--yysptr):getc(yyin))==10?(yylineno++,yytchar):yytchar)==EOF?0:yytchar)
-#else
-# define lex_input() (((yytchar=yysptr>yysbuf?U(*--yysptr):getc(yyin))==10?(yylineno++,yytchar):yytchar)==EOF?0:yytchar)
-#endif
-#define ECHO fprintf(yyout, "%s",yytext)
+# define ECHO fprintf(yyout, "%s",yytext)
 # define REJECT { nstr = yyreject(); goto yyfussy;}
 int yyleng;
-char yytext[YYLMAX];
+int yylenguc;
+extern unsigned char yytextarr[];
+# ifdef YYCHAR_ARRAY
+extern char yytext[];
+# else
+extern unsigned char yytext[];
+# endif
+int yyposix_point=0;
+int yynls16=0;
+int yynls_wchar=0;
+char *yylocale = "C C C C C C";
 int yymorfg;
-extern char *yysptr, yysbuf[];
+extern unsigned char *yysptr, yysbuf[];
 int yytchar;
 FILE *yyin = {stdin}, *yyout = {stdout};
 extern int yylineno;
 struct yysvf { 
-	struct yywork *yystoff;
+	int yystoff;
 	struct yysvf *yyother;
 	int *yystops;};
 struct yysvf *yyestate;
 extern struct yysvf yysvec[], *yybgin;
-
-# line 2 "TdiLex.x"
 	/*	TdiLex
 	Lexical analysis to parse tokens for TdiYacc.y.
 	Definition section precedes rule section.
-
 	Lex regular expression operators:
 	\x "x"		as is unless "" or []
 	[xyz] [x-z]	chars x through z
@@ -100,25 +79,19 @@ extern struct yysvf yysvec[], *yybgin;
 	%k	/1000	packed classes
 	%a	/~2000	packed transitions
 	%o	/3000	output slots
-
 	Ken Klare, LANL P-4	(c)1989,1990,1991
 	NEED to handle 6..8 and 6...8 and 6...8.9, should use spaces.
-
 	Limitations:
-
 	Floating requires (1) digit before exponent
 	(2) either decimal point or exponent, (.E3) looks like path.
 	(3) 6..8 is 6 .. 8 and not 6. .8, 6...8 is ambiguous?
 	(4) prefix + or - on numbers handled elsewhere, a-6 would be tokens a -6.
-
 	Pathname apostrophe required (1) with wildcards (% or *),
 	(2) without leading \ . or : (path:member looks like file),
 	(3) with son or member starting with number (.7E6 is float not son),
 	(4) with up-tree minus requires leading period. .-.over
-
 	Filename double quote required for non-simple names.
 	"node::node::device:[--.dir.sub.sub]file.extension;version".
-
 	Input, nlpos, output, pos, unput, and yylex defined by include file.
 	Floating for exponent but no decimal would fall into integer.
 	*/
@@ -149,9 +122,9 @@ extern int TdiConvert();
 extern struct marker *TdiYylvalPtr;
 
 extern unsigned short Opcdollar, OpcZero,
-	OpcAdd,	OpcAnd,	OpcConcat,	OpcDivide,	OpcEq,
+	OpcAdd,	OpcAnd,	OpcConcat,	OpcDivide,	OpcEq,	
 	OpcGe,		OpcGt,		OpcIand,	OpcInot,	OpcIor,
-	OpcLe,		OpcLt,		OpcMultiply,	OpcNe,		OpcNot,	OpcOr,
+	OpcLe,		OpcLt,		OpcMultiply,	OpcNe,		OpcNot,	OpcOr,	
 	OpcPower,	OpcPreDec,	OpcPreInc,	OpcPromote,	OpcDtypeRange,
 	OpcShiftLeft,	OpcShiftRight,	OpcSubtract;
 
@@ -168,8 +141,6 @@ static int TdiLexBinEq(int token);
 
 extern void TdiYyReset()
 {
-
-# line 94 "TdiLex.x"
 /*
   yy_reset();
 */
@@ -182,8 +153,6 @@ static void	upcase(unsigned char *str, int str_len) {
 
 	for (pc = str; pc < str+str_len; ++pc) if (*pc >= 'a' && *pc <= 'z') *pc += (unsigned char)('A' - 'a');
 }
-
-# line 106 "TdiLex.x"
 /*--------------------------------------------------------
 	Remove comment from the Lex input stream.
 	Nested comments allowed. Len is not used.
@@ -213,8 +182,6 @@ int			count = 1;
 	}
 	return 0;
 }
-
-# line 135 "TdiLex.x"
 /*--------------------------------------------------------
 	Convert floating point values with the follow
 ing
@@ -310,8 +277,6 @@ static struct {
 	TdiRefZone.l_status = status;
 	return(LEX_ERROR);
 }
-
-# line 230 "TdiLex.x"
 /*--------------------------------------------------------
 	Convert Lex input to identifier name or builtin.
 	Clobbers string with upcase. IDENT token returns name.
@@ -335,8 +300,6 @@ int				j, token;
 
         sd.length = len;
         sd.pointer = (char *)str;
-
-# line 253 "TdiLex.x"
 /*
 	upcase(str,len);
 */
@@ -388,8 +351,6 @@ int				j, token;
 	}
 	return(LEX_IDENT);
 }
-
-# line 304 "TdiLex.x"
 /*--------------------------------------------------------
 	Convert integer values with the following syntax
 	to internal representation via descriptors:
@@ -568,8 +529,6 @@ int			length, is_signed, status = 1, tst, type;
 	TdiRefZone.l_status = status;
 	return(LEX_ERROR);
 }
-
-# line 482 "TdiLex.x"
 /*--------------------------------------------------------
 	Convert Lex input to NID or absolute PATH.
 */
@@ -616,8 +575,6 @@ struct marker		*mark_ptr)
         free(str_l);
 	return token;
 }
-
-# line 528 "TdiLex.x"
 /*--------------------------------------------------------
 	Remove arrow and trailing punctation.
 */
@@ -633,8 +590,6 @@ int		lenx = len - 2;
 	_MOVC3((unsigned short)lenx, &str[2], (char *)mark_ptr->rptr->pointer);
 	return LEX_POINT;
 }
-
-# line 543 "TdiLex.x"
 /*--------------------------------------------------------
 	Recognize some graphic punctuation Lex symbols for YACC.
 	Note must be acceptable in written form also: a<=b, a LE b, LE(a,b).
@@ -669,22 +624,12 @@ char		c0 = str[0], c1 = input();
 	case '*' :	if (c1 == '*') {mark_ptr->builtin = OpcPower;		return TdiLexBinEq	(LEX_POWER);} break;
 	case '+' :	if (c1 == '+') {mark_ptr->builtin = OpcPreInc;	return			(LEX_INC);} break;
 	case '-' :	if (c1 == '-') {mark_ptr->builtin = OpcPreDec;	return			(LEX_INC);} break;
-
-# line 577 "TdiLex.x"
 /***			if (c1 == '>') {					return			(LEX_POINT);} break;***/
 	case '.' :	if (c1 == '.') {mark_ptr->builtin = OpcDtypeRange;	return			(LEX_RANGE);} break;
 	case '/' :	if (c1 == '/') {mark_ptr->builtin = OpcConcat;		return TdiLexBinEq	(LEX_CONCAT);} break;
-
-# line 580 "TdiLex.x"
 /***                     else if (c1 == '*') return (TdiLexComment(len, str, mark_ptr) == 0) ? input() : 0; break; ***/
-
-# line 581 "TdiLex.x"
 /***			if (c1 == '=') {mark_ptr->builtin = OpcNe;		return TdiLexBinEq	(LEX_LEQS);}*/
-
-# line 582 "TdiLex.x"
 /***			if (c1 == ')') {					return 			']';} break;***/
-
-# line 583 "TdiLex.x"
 /***	case '(' :	if (c1 == '/') {					return 			'[';} break;***/
 	case '<' :	if (c1 == '<') {mark_ptr->builtin = OpcShiftLeft;	return TdiLexBinEq	(LEX_SHIFT);}
 			if (c1 == '=') {mark_ptr->builtin = OpcLe;		return TdiLexBinEq	(LEX_LGES);}
@@ -701,8 +646,6 @@ char		c0 = str[0], c1 = input();
 	********************/
 	switch (c0) {
 	case '!' :	mark_ptr->builtin = OpcNot;		return			(LEX_UNARYS);
-
-# line 599 "TdiLex.x"
 /****	case '%' :	mark_ptr->builtin = OpcMod;		return TdiLexBinEq	(LEX_MULS);****/
 	case '&' :	mark_ptr->builtin = OpcIand;		return TdiLexBinEq	(LEX_IAND);
 	case '*' :	mark_ptr->builtin = OpcMultiply;	return TdiLexBinEq	('*');
@@ -720,8 +663,6 @@ char		c0 = str[0], c1 = input();
 	mark_ptr->builtin = -1;
 	return(c0);
 }
-
-# line 616 "TdiLex.x"
 /*--------------------------------------------------------
 	C-style text in matching quotes. Strict: must end in quote. Continuation: \ before newline.
 	Limitation: Text is ASCII dependent in quotes.
@@ -796,77 +737,54 @@ int		cur = 0, limit;
 }
 # define YYNEWLINE 10
 yylex(){
-int nstr; extern int yyprevious;
-#ifdef __cplusplus
-/* to avoid CC and lint complaining yyfussy not being used ...*/
-static int __lex_hack = 0;
-if (__lex_hack) goto yyfussy;
-#endif
-while((nstr = yylook()) >= 0)
+   int nstr; extern int yyprevious;
+   while((nstr = yylook()) >= 0)
 yyfussy: switch(nstr){
 case 0:
-if(yywrap()) return(0); break;
+   if(yywrap()) return(0); break;
 case 1:
-
-# line 710 "TdiLex.x"
 	{;}
 break;
 case 2:
-
-# line 712 "TdiLex.x"
 {nlpos();}
 break;
 case 3:
-
-# line 714 "TdiLex.x"
 	{pos();  return	(TdiLexFloat(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case 4:
-
-# line 716 "TdiLex.x"
 {pos(); return	(TdiLexFloat(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case 5:
-
-# line 718 "TdiLex.x"
 {pos();  return	(TdiLexInteger(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case 6:
-
-# line 720 "TdiLex.x"
 	{pos();  return	(TdiLexIdent(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case 7:
-
-# line 722 "TdiLex.x"
 	{pos();  return	(TdiLexPath(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case 8:
-
-# line 724 "TdiLex.x"
 	{pos();  return	(TdiLexQuote(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case 9:
-
-# line 726 "TdiLex.x"
 	{pos();  return	(TdiLexPoint(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case 10:
-
-# line 728 "TdiLex.x"
            {pos(); if      (TdiLexComment(      yyleng, (unsigned char *)yytext, TdiYylvalPtr)) return(LEX_ERROR);}
 break;
 case 11:
-
-# line 730 "TdiLex.x"
 	{pos(); return	(TdiLexPunct(	yyleng, (unsigned char *)yytext, TdiYylvalPtr));}
 break;
 case -1:
 break;
 default:
-(void)fprintf(yyout,"bad switch yylook %d",nstr);
+   fprintf(yyout,"bad switch yylook %d",nstr);
 } return(0); }
 /* end of yylex */
+
+#ifndef __cplusplus
+static void __yy__unused() { main(); }
+#endif
 
 int yyvstop[] = {
 0,
@@ -967,339 +885,351 @@ int yyvstop[] = {
 0};
 # define YYTYPE unsigned char
 struct yywork { YYTYPE verify, advance; } yycrank[] = {
-0,0,	0,0,	1,3,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	1,4,	1,5,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	1,6,	
-0,0,	1,7,	0,0,	0,0,	
-0,0,	0,0,	0,0,	10,20,	
-1,3,	0,0,	1,8,	1,9,	
-1,10,	1,11,	2,8,	28,18,	
-2,10,	27,36,	18,18,	18,28,	
-36,37,	0,0,	0,0,	1,12,	
-35,41,	0,0,	0,0,	8,16,	
-0,0,	27,37,	1,7,	18,15,	
-0,0,	1,7,	7,14,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-7,15,	0,0,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,15,	1,13,	0,0,	0,0,	
-0,0,	2,13,	0,0,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	0,0,	0,0,	0,0,	
-0,0,	7,14,	0,0,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	9,17,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	9,18,	0,0,	
-0,0,	9,19,	9,19,	9,19,	
-9,19,	9,19,	9,19,	9,19,	
-9,19,	9,19,	9,19,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-0,0,	0,0,	0,0,	0,0,	
-9,17,	0,0,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-11,21,	0,0,	11,22,	11,22,	
-11,22,	11,22,	11,22,	11,22,	
-11,22,	11,22,	11,22,	11,22,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	11,23,	
-11,23,	11,23,	11,24,	11,24,	
-11,24,	11,24,	11,24,	11,23,	
-11,23,	11,23,	11,23,	11,23,	
-11,23,	11,23,	11,23,	11,23,	
-11,23,	11,24,	11,24,	11,23,	
-11,24,	11,23,	11,23,	11,23,	
-11,23,	0,0,	0,0,	0,0,	
-12,17,	0,0,	0,0,	11,23,	
-11,23,	11,23,	11,24,	11,24,	
-11,24,	11,24,	11,24,	11,23,	
-11,23,	11,23,	11,23,	11,23,	
-11,23,	11,23,	11,23,	11,23,	
-11,23,	11,24,	11,24,	11,23,	
-11,24,	11,23,	11,23,	11,23,	
-11,23,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	0,0,	
-0,0,	0,0,	13,25,	12,17,	
-0,0,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	0,0,	0,0,	0,0,	
-15,26,	13,25,	0,0,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	0,0,	
-0,0,	0,0,	0,0,	15,26,	
-0,0,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	16,27,	
-33,38,	33,38,	33,38,	33,38,	
-33,38,	33,38,	33,38,	33,38,	
-33,38,	33,38,	0,0,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	0,0,	0,0,	
-0,0,	0,0,	16,27,	0,0,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	17,15,	0,0,	
-17,17,	17,17,	17,17,	17,17,	
-17,17,	17,17,	17,17,	17,17,	
-17,17,	17,17,	17,15,	19,19,	
-19,19,	19,19,	19,19,	19,19,	
-19,19,	19,19,	19,19,	19,19,	
-19,19,	34,34,	34,34,	34,34,	
-34,34,	34,34,	34,34,	34,34,	
-34,34,	34,34,	34,34,	19,29,	
-19,29,	19,29,	19,29,	19,29,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	21,30,	0,0,	
-0,0,	0,0,	19,29,	19,29,	
-0,0,	19,29,	21,30,	21,30,	
-39,40,	39,40,	39,40,	39,40,	
-39,40,	39,40,	39,40,	39,40,	
-39,40,	39,40,	0,0,	19,29,	
-19,29,	19,29,	19,29,	19,29,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	21,30,	
-0,0,	21,30,	19,29,	19,29,	
-0,0,	19,29,	0,0,	0,0,	
-21,30,	0,0,	0,0,	21,0,	
-0,0,	21,31,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	21,30,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	21,30,	0,0,	
-0,0,	21,32,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	24,33,	0,0,	24,33,	
-0,0,	0,0,	24,34,	24,34,	
-24,34,	24,34,	24,34,	24,34,	
-24,34,	24,34,	24,34,	24,34,	
-25,15,	0,0,	25,25,	25,25,	
-25,25,	25,25,	25,25,	25,25,	
-25,25,	25,25,	25,25,	25,25,	
-25,35,	26,15,	0,0,	26,26,	
-26,26,	26,26,	26,26,	26,26,	
-26,26,	26,26,	26,26,	26,26,	
-26,26,	26,15,	29,33,	0,0,	
-29,33,	0,0,	0,0,	29,38,	
-29,38,	29,38,	29,38,	29,38,	
-29,38,	29,38,	29,38,	29,38,	
-29,38,	31,31,	31,31,	31,31,	
-31,31,	31,31,	31,31,	31,31,	
-31,31,	31,31,	31,31,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	31,32,	31,32,	31,32,	
-31,32,	31,32,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-31,32,	31,32,	32,39,	31,32,	
-32,39,	0,0,	0,0,	32,40,	
-32,40,	32,40,	32,40,	32,40,	
-32,40,	32,40,	32,40,	32,40,	
-32,40,	31,32,	31,32,	31,32,	
-31,32,	31,32,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-31,32,	31,32,	0,0,	31,32,	
-0,0};
+{0,0},	{0,0},	{1,3},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{1,4},	{1,5},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{1,6},	
+{0,0},	{1,7},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{10,20},	
+{1,3},	{0,0},	{1,8},	{1,9},	
+{1,10},	{1,11},	{2,8},	{28,18},	
+{2,10},	{27,36},	{18,18},	{18,28},	
+{36,37},	{0,0},	{0,0},	{1,12},	
+{35,41},	{0,0},	{0,0},	{8,16},	
+{0,0},	{27,37},	{1,7},	{18,15},	
+{0,0},	{1,7},	{7,14},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{7,15},	{0,0},	{7,14},	{7,14},	
+{7,14},	{7,14},	{7,14},	{7,14},	
+{7,14},	{7,14},	{7,14},	{7,14},	
+{7,15},	{1,13},	{0,0},	{0,0},	
+{0,0},	{2,13},	{0,0},	{7,14},	
+{7,14},	{7,14},	{7,14},	{7,14},	
+{7,14},	{7,14},	{7,14},	{7,14},	
+{7,14},	{7,14},	{7,14},	{7,14},	
+{7,14},	{7,14},	{7,14},	{7,14},	
+{7,14},	{7,14},	{7,14},	{7,14},	
+{7,14},	{7,14},	{7,14},	{7,14},	
+{7,14},	{0,0},	{0,0},	{0,0},	
+{0,0},	{7,14},	{0,0},	{7,14},	
+{7,14},	{7,14},	{7,14},	{7,14},	
+{7,14},	{7,14},	{7,14},	{7,14},	
+{7,14},	{7,14},	{7,14},	{7,14},	
+{7,14},	{7,14},	{7,14},	{7,14},	
+{7,14},	{7,14},	{7,14},	{7,14},	
+{7,14},	{7,14},	{7,14},	{7,14},	
+{7,14},	{9,17},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{9,18},	{0,0},	
+{0,0},	{9,19},	{9,19},	{9,19},	
+{9,19},	{9,19},	{9,19},	{9,19},	
+{9,19},	{9,19},	{9,19},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{9,17},	{9,17},	
+{9,17},	{9,17},	{9,17},	{9,17},	
+{9,17},	{9,17},	{9,17},	{9,17},	
+{9,17},	{9,17},	{9,17},	{9,17},	
+{9,17},	{9,17},	{9,17},	{9,17},	
+{9,17},	{9,17},	{9,17},	{9,17},	
+{9,17},	{9,17},	{9,17},	{9,17},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{9,17},	{0,0},	{9,17},	{9,17},	
+{9,17},	{9,17},	{9,17},	{9,17},	
+{9,17},	{9,17},	{9,17},	{9,17},	
+{9,17},	{9,17},	{9,17},	{9,17},	
+{9,17},	{9,17},	{9,17},	{9,17},	
+{9,17},	{9,17},	{9,17},	{9,17},	
+{9,17},	{9,17},	{9,17},	{9,17},	
+{11,21},	{0,0},	{11,22},	{11,22},	
+{11,22},	{11,22},	{11,22},	{11,22},	
+{11,22},	{11,22},	{11,22},	{11,22},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{11,23},	
+{11,23},	{11,23},	{11,24},	{11,24},	
+{11,24},	{11,24},	{11,24},	{11,23},	
+{11,23},	{11,23},	{11,23},	{11,23},	
+{11,23},	{11,23},	{11,23},	{11,23},	
+{11,23},	{11,24},	{11,24},	{11,23},	
+{11,24},	{11,23},	{11,23},	{11,23},	
+{11,23},	{0,0},	{0,0},	{0,0},	
+{12,17},	{0,0},	{0,0},	{11,23},	
+{11,23},	{11,23},	{11,24},	{11,24},	
+{11,24},	{11,24},	{11,24},	{11,23},	
+{11,23},	{11,23},	{11,23},	{11,23},	
+{11,23},	{11,23},	{11,23},	{11,23},	
+{11,23},	{11,24},	{11,24},	{11,23},	
+{11,24},	{11,23},	{11,23},	{11,23},	
+{11,23},	{12,17},	{12,17},	{12,17},	
+{12,17},	{12,17},	{12,17},	{12,17},	
+{12,17},	{12,17},	{12,17},	{12,17},	
+{12,17},	{12,17},	{12,17},	{12,17},	
+{12,17},	{12,17},	{12,17},	{12,17},	
+{12,17},	{12,17},	{12,17},	{12,17},	
+{12,17},	{12,17},	{12,17},	{0,0},	
+{0,0},	{0,0},	{13,25},	{12,17},	
+{0,0},	{12,17},	{12,17},	{12,17},	
+{12,17},	{12,17},	{12,17},	{12,17},	
+{12,17},	{12,17},	{12,17},	{12,17},	
+{12,17},	{12,17},	{12,17},	{12,17},	
+{12,17},	{12,17},	{12,17},	{12,17},	
+{12,17},	{12,17},	{12,17},	{12,17},	
+{12,17},	{12,17},	{12,17},	{13,25},	
+{13,25},	{13,25},	{13,25},	{13,25},	
+{13,25},	{13,25},	{13,25},	{13,25},	
+{13,25},	{13,25},	{13,25},	{13,25},	
+{13,25},	{13,25},	{13,25},	{13,25},	
+{13,25},	{13,25},	{13,25},	{13,25},	
+{13,25},	{13,25},	{13,25},	{13,25},	
+{13,25},	{0,0},	{0,0},	{0,0},	
+{15,26},	{13,25},	{0,0},	{13,25},	
+{13,25},	{13,25},	{13,25},	{13,25},	
+{13,25},	{13,25},	{13,25},	{13,25},	
+{13,25},	{13,25},	{13,25},	{13,25},	
+{13,25},	{13,25},	{13,25},	{13,25},	
+{13,25},	{13,25},	{13,25},	{13,25},	
+{13,25},	{13,25},	{13,25},	{13,25},	
+{13,25},	{15,26},	{15,26},	{15,26},	
+{15,26},	{15,26},	{15,26},	{15,26},	
+{15,26},	{15,26},	{15,26},	{15,26},	
+{15,26},	{15,26},	{15,26},	{15,26},	
+{15,26},	{15,26},	{15,26},	{15,26},	
+{15,26},	{15,26},	{15,26},	{15,26},	
+{15,26},	{15,26},	{15,26},	{0,0},	
+{0,0},	{0,0},	{0,0},	{15,26},	
+{0,0},	{15,26},	{15,26},	{15,26},	
+{15,26},	{15,26},	{15,26},	{15,26},	
+{15,26},	{15,26},	{15,26},	{15,26},	
+{15,26},	{15,26},	{15,26},	{15,26},	
+{15,26},	{15,26},	{15,26},	{15,26},	
+{15,26},	{15,26},	{15,26},	{15,26},	
+{15,26},	{15,26},	{15,26},	{16,27},	
+{33,38},	{33,38},	{33,38},	{33,38},	
+{33,38},	{33,38},	{33,38},	{33,38},	
+{33,38},	{33,38},	{0,0},	{16,27},	
+{16,27},	{16,27},	{16,27},	{16,27},	
+{16,27},	{16,27},	{16,27},	{16,27},	
+{16,27},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{16,27},	{16,27},	{16,27},	{16,27},	
+{16,27},	{16,27},	{16,27},	{16,27},	
+{16,27},	{16,27},	{16,27},	{16,27},	
+{16,27},	{16,27},	{16,27},	{16,27},	
+{16,27},	{16,27},	{16,27},	{16,27},	
+{16,27},	{16,27},	{16,27},	{16,27},	
+{16,27},	{16,27},	{0,0},	{0,0},	
+{0,0},	{0,0},	{16,27},	{0,0},	
+{16,27},	{16,27},	{16,27},	{16,27},	
+{16,27},	{16,27},	{16,27},	{16,27},	
+{16,27},	{16,27},	{16,27},	{16,27},	
+{16,27},	{16,27},	{16,27},	{16,27},	
+{16,27},	{16,27},	{16,27},	{16,27},	
+{16,27},	{16,27},	{16,27},	{16,27},	
+{16,27},	{16,27},	{17,15},	{0,0},	
+{17,17},	{17,17},	{17,17},	{17,17},	
+{17,17},	{17,17},	{17,17},	{17,17},	
+{17,17},	{17,17},	{17,15},	{19,19},	
+{19,19},	{19,19},	{19,19},	{19,19},	
+{19,19},	{19,19},	{19,19},	{19,19},	
+{19,19},	{34,34},	{34,34},	{34,34},	
+{34,34},	{34,34},	{34,34},	{34,34},	
+{34,34},	{34,34},	{34,34},	{19,29},	
+{19,29},	{19,29},	{19,29},	{19,29},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{21,30},	{0,0},	
+{0,0},	{0,0},	{19,29},	{19,29},	
+{0,0},	{19,29},	{21,30},	{21,30},	
+{39,40},	{39,40},	{39,40},	{39,40},	
+{39,40},	{39,40},	{39,40},	{39,40},	
+{39,40},	{39,40},	{0,0},	{19,29},	
+{19,29},	{19,29},	{19,29},	{19,29},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{21,30},	
+{0,0},	{21,30},	{19,29},	{19,29},	
+{0,0},	{19,29},	{0,0},	{0,0},	
+{21,30},	{0,0},	{0,0},	{21,0},	
+{0,0},	{21,31},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{21,30},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{21,30},	{0,0},	
+{0,0},	{21,32},	{23,23},	{23,23},	
+{23,23},	{23,23},	{23,23},	{23,23},	
+{23,23},	{23,23},	{23,23},	{23,23},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{23,23},	
+{23,23},	{23,23},	{23,23},	{23,23},	
+{23,23},	{23,23},	{23,23},	{23,23},	
+{23,23},	{23,23},	{23,23},	{23,23},	
+{23,23},	{23,23},	{23,23},	{23,23},	
+{23,23},	{23,23},	{23,23},	{23,23},	
+{23,23},	{23,23},	{23,23},	{23,23},	
+{23,23},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{23,23},	
+{23,23},	{23,23},	{23,23},	{23,23},	
+{23,23},	{23,23},	{23,23},	{23,23},	
+{23,23},	{23,23},	{23,23},	{23,23},	
+{23,23},	{23,23},	{23,23},	{23,23},	
+{23,23},	{23,23},	{23,23},	{23,23},	
+{23,23},	{23,23},	{23,23},	{23,23},	
+{23,23},	{24,33},	{0,0},	{24,33},	
+{0,0},	{0,0},	{24,34},	{24,34},	
+{24,34},	{24,34},	{24,34},	{24,34},	
+{24,34},	{24,34},	{24,34},	{24,34},	
+{25,15},	{0,0},	{25,25},	{25,25},	
+{25,25},	{25,25},	{25,25},	{25,25},	
+{25,25},	{25,25},	{25,25},	{25,25},	
+{25,35},	{26,15},	{0,0},	{26,26},	
+{26,26},	{26,26},	{26,26},	{26,26},	
+{26,26},	{26,26},	{26,26},	{26,26},	
+{26,26},	{26,15},	{29,33},	{0,0},	
+{29,33},	{0,0},	{0,0},	{29,38},	
+{29,38},	{29,38},	{29,38},	{29,38},	
+{29,38},	{29,38},	{29,38},	{29,38},	
+{29,38},	{31,31},	{31,31},	{31,31},	
+{31,31},	{31,31},	{31,31},	{31,31},	
+{31,31},	{31,31},	{31,31},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{31,32},	{31,32},	{31,32},	
+{31,32},	{31,32},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{31,32},	{31,32},	{32,39},	{31,32},	
+{32,39},	{0,0},	{0,0},	{32,40},	
+{32,40},	{32,40},	{32,40},	{32,40},	
+{32,40},	{32,40},	{32,40},	{32,40},	
+{32,40},	{31,32},	{31,32},	{31,32},	
+{31,32},	{31,32},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{0,0},	{0,0},	{0,0},	{0,0},	
+{31,32},	{31,32},	{0,0},	{31,32},	
+{0,0}};
 struct yysvf yysvec[] = {
-0,	0,	0,
-yycrank+-1,	0,		0,	
-yycrank+-5,	yysvec+1,	0,	
-yycrank+0,	0,		yyvstop+1,
-yycrank+0,	0,		yyvstop+3,
-yycrank+0,	0,		yyvstop+6,
-yycrank+0,	0,		yyvstop+8,
-yycrank+34,	0,		yyvstop+11,
-yycrank+1,	0,		yyvstop+15,
-yycrank+121,	0,		yyvstop+17,
-yycrank+1,	0,		yyvstop+19,
-yycrank+198,	0,		yyvstop+21,
-yycrank+256,	0,		yyvstop+24,
-yycrank+314,	0,		yyvstop+26,
-yycrank+0,	yysvec+7,	yyvstop+28,
-yycrank+372,	0,		0,	
-yycrank+459,	0,		0,	
-yycrank+536,	yysvec+12,	yyvstop+31,
-yycrank+9,	0,		yyvstop+33,
-yycrank+547,	0,		yyvstop+35,
-yycrank+0,	0,		yyvstop+37,
-yycrank+-625,	0,		yyvstop+39,
-yycrank+0,	yysvec+11,	yyvstop+41,
-yycrank+646,	0,		yyvstop+43,
-yycrank+726,	yysvec+23,	yyvstop+45,
-yycrank+738,	yysvec+13,	yyvstop+47,
-yycrank+751,	yysvec+15,	yyvstop+49,
-yycrank+7,	yysvec+16,	yyvstop+51,
-yycrank+6,	yysvec+15,	0,	
-yycrank+767,	0,		0,	
-yycrank+0,	0,		yyvstop+53,
-yycrank+777,	0,		yyvstop+55,
-yycrank+819,	0,		0,	
-yycrank+448,	0,		0,	
-yycrank+557,	yysvec+23,	yyvstop+57,
-yycrank+2,	yysvec+15,	0,	
-yycrank+10,	0,		0,	
-yycrank+0,	0,		yyvstop+60,
-yycrank+0,	yysvec+33,	yyvstop+62,
-yycrank+588,	0,		0,	
-yycrank+0,	yysvec+39,	yyvstop+64,
-yycrank+0,	yysvec+12,	0,	
-0,	0,	0};
+{0,	0,	0},
+{-1,	0,		0},	
+{-5,	yysvec+1,	0},	
+{0,	0,		yyvstop+1},
+{0,	0,		yyvstop+3},
+{0,	0,		yyvstop+6},
+{0,	0,		yyvstop+8},
+{34,	0,		yyvstop+11},
+{1,	0,		yyvstop+15},
+{121,	0,		yyvstop+17},
+{1,	0,		yyvstop+19},
+{198,	0,		yyvstop+21},
+{256,	0,		yyvstop+24},
+{314,	0,		yyvstop+26},
+{0,	yysvec+7,	yyvstop+28},
+{372,	0,		0},	
+{459,	0,		0},	
+{536,	yysvec+12,	yyvstop+31},
+{9,	0,		yyvstop+33},
+{547,	0,		yyvstop+35},
+{0,	0,		yyvstop+37},
+{-625,	0,		yyvstop+39},
+{0,	yysvec+11,	yyvstop+41},
+{646,	0,		yyvstop+43},
+{726,	yysvec+23,	yyvstop+45},
+{738,	yysvec+13,	yyvstop+47},
+{751,	yysvec+15,	yyvstop+49},
+{7,	yysvec+16,	yyvstop+51},
+{6,	yysvec+15,	0},	
+{767,	0,		0},	
+{0,	0,		yyvstop+53},
+{777,	0,		yyvstop+55},
+{819,	0,		0},	
+{448,	0,		0},	
+{557,	yysvec+23,	yyvstop+57},
+{2,	yysvec+15,	0},	
+{10,	0,		0},	
+{0,	0,		yyvstop+60},
+{0,	yysvec+33,	yyvstop+62},
+{588,	0,		0},	
+{0,	yysvec+39,	yyvstop+64},
+{0,	yysvec+12,	0},	
+{0,	0,	0}};
 struct yywork *yytop = yycrank+895;
 struct yysvf *yybgin = yysvec+1;
-char yymatch[] = {
-  0,   1,   1,   1,   1,   1,   1,   1, 
-  1,   9,  10,   1,   1,   9,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  9,   1,  34,   1,  36,   1,   1,  34, 
-  1,   1,   1,  43,   1,  43,  46,   1, 
- 48,  48,  48,  48,  48,  48,  48,  48, 
- 48,  48,  58,   1,   1,   1,   1,   1, 
-  1,  65,  65,  65,  68,  68,  68,  68, 
- 68,  65,  65,  65,  65,  65,  65,  65, 
- 65,  65,  65,  68,  68,  65,  68,  65, 
- 65,  65,  65,   1,   1,   1,   1,  36, 
-  1,  65,  65,  65,  68,  68,  68,  68, 
- 68,  65,  65,  65,  65,  65,  65,  65, 
- 65,  65,  65,  68,  68,  65,  68,  65, 
- 65,  65,  65,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
-  1,   1,   1,   1,   1,   1,   1,   1, 
+unsigned char yymatch[] = {
+00  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,011 ,012 ,01  ,01  ,011 ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+011 ,01  ,'"' ,01  ,'$' ,01  ,01  ,'"' ,
+01  ,01  ,01  ,'+' ,01  ,'+' ,'.' ,01  ,
+'0' ,'0' ,'0' ,'0' ,'0' ,'0' ,'0' ,'0' ,
+'0' ,'0' ,':' ,01  ,01  ,01  ,01  ,01  ,
+01  ,'A' ,'A' ,'A' ,'D' ,'D' ,'D' ,'D' ,
+'D' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,
+'A' ,'A' ,'A' ,'D' ,'D' ,'A' ,'D' ,'A' ,
+'A' ,'A' ,'A' ,01  ,01  ,01  ,01  ,'$' ,
+01  ,'A' ,'A' ,'A' ,'D' ,'D' ,'D' ,'D' ,
+'D' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,
+'A' ,'A' ,'A' ,'D' ,'D' ,'A' ,'D' ,'A' ,
+'A' ,'A' ,'A' ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
 0};
-char yyextra[] = {
+unsigned char yyextra[] = {
 0,0,0,1,0,0,0,0,
 0,0,0,0,0,0,0,0,
 0};
-/*	Copyright (c) 1989 AT&T	*/
-/*	  All Rights Reserved  	*/
-
-/*	THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF AT&T	*/
-/*	The copyright notice above does not evidence any   	*/
-/*	actual or intended publication of such source code.	*/
-
-#pragma ident	"@(#)ncform	6.8	95/02/11 SMI"
-
+/* @(#) A.10.32.03 HP C LANGUAGE TOOL (NCFORM) 960517 $      */
 int yylineno =1;
 # define YYU(x) x
 # define NLSTATE yyprevious=YYNEWLINE
+ 
+#ifdef YYNLS16_WCHAR
+unsigned char yytextuc[YYLMAX * sizeof(wchar_t)];
+# ifdef YY_PCT_POINT /* for %pointer */
+wchar_t yytextarr[YYLMAX];
+wchar_t *yytext;
+# else               /* %array */
+wchar_t yytextarr[1];
+wchar_t yytext[YYLMAX];
+# endif
+#else
+unsigned char yytextuc;
+# ifdef YY_PCT_POINT /* for %pointer */
+unsigned char yytextarr[YYLMAX];
+unsigned char *yytext;
+# else               /* %array */
+unsigned char yytextarr[1];
+# ifdef YYCHAR_ARRAY
+char yytext[YYLMAX];
+# else
+unsigned char yytext[YYLMAX];
+# endif
+# endif
+#endif
+
 struct yysvf *yylstate [YYLMAX], **yylsp, **yyolsp;
-char yysbuf[YYLMAX];
-char *yysptr = yysbuf;
+unsigned char yysbuf[YYLMAX];
+unsigned char *yysptr = yysbuf;
 int *yyfnd;
 extern struct yysvf *yyestate;
 int yyprevious = YYNEWLINE;
-#if defined(__cplusplus) || defined(__STDC__)
-int yylook(void)
-#else
-yylook()
-#endif
-{
+yylook(){
 	register struct yysvf *yystate, **lsp;
 	register struct yywork *yyt;
 	struct yysvf *yyz;
@@ -1308,17 +1238,35 @@ yylook()
 # ifdef LEXDEBUG
 	int debug;
 # endif
-	char *yylastch;
+/*	char *yylastch;
+ * ***** nls8 ***** */
+	unsigned char *yylastch, sec, third, fourth;
 	/* start off machines */
 # ifdef LEXDEBUG
 	debug = 0;
 # endif
 	yyfirst=1;
 	if (!yymorfg)
+#ifdef YYNLS16_WCHAR
+		yylastch = yytextuc;
+#else
+# ifdef YYCHAR_ARRAY
+		yylastch = (unsigned char *)yytext;
+# else
 		yylastch = yytext;
+# endif
+#endif
 	else {
 		yymorfg=0;
+#ifdef YYNLS16_WCHAR
+		yylastch = yytextuc+yylenguc;
+#else
+# ifdef YYCHAR_ARRAY
+		yylastch = (unsigned char *)yytext+yyleng;
+# else
 		yylastch = yytext+yyleng;
+# endif
+#endif
 		}
 	for(;;){
 		lsp = yylstate;
@@ -1328,21 +1276,13 @@ yylook()
 # ifdef LEXDEBUG
 			if(debug)fprintf(yyout,"state %d\n",yystate-yysvec-1);
 # endif
-			yyt = yystate->yystoff;
+			yyt = &yycrank[yystate->yystoff];
 			if(yyt == yycrank && !yyfirst){  /* may not be any transitions */
 				yyz = yystate->yyother;
 				if(yyz == 0)break;
-				if(yyz->yystoff == yycrank)break;
+				if(yyz->yystoff == 0)break;
 				}
-#ifndef __cplusplus
 			*yylastch++ = yych = input();
-#else
-			*yylastch++ = yych = lex_input();
-#endif
-			if(yylastch > &yytext[YYLMAX]) {
-				fprintf(yyout,"Input string too long, limit %d\n",YYLMAX);
-				exit(1);
-			}
 			yyfirst=0;
 		tryagain:
 # ifdef LEXDEBUG
@@ -1359,10 +1299,6 @@ yylook()
 					if(yyt->advance+yysvec == YYLERR)	/* error transitions */
 						{unput(*--yylastch);break;}
 					*lsp++ = yystate = yyt->advance+yysvec;
-					if(lsp > &yylstate[YYLMAX]) {
-						fprintf(yyout,"Input string too long, limit %d\n",YYLMAX);
-						exit(1);
-					}
 					goto contin;
 					}
 				}
@@ -1377,10 +1313,6 @@ yylook()
 					if(yyt->advance+yysvec == YYLERR)	/* error transitions */
 						{unput(*--yylastch);break;}
 					*lsp++ = yystate = yyt->advance+yysvec;
-					if(lsp > &yylstate[YYLMAX]) {
-						fprintf(yyout,"Input string too long, limit %d\n",YYLMAX);
-						exit(1);
-					}
 					goto contin;
 					}
 				yyt = yyr + YYU(yymatch[yych]);
@@ -1395,14 +1327,10 @@ yylook()
 					if(yyt->advance+yysvec == YYLERR)	/* error transition */
 						{unput(*--yylastch);break;}
 					*lsp++ = yystate = yyt->advance+yysvec;
-					if(lsp > &yylstate[YYLMAX]) {
-						fprintf(yyout,"Input string too long, limit %d\n",YYLMAX);
-						exit(1);
-					}
 					goto contin;
 					}
 				}
-			if ((yystate = yystate->yyother) && (yyt= yystate->yystoff) != yycrank){
+			if ((yystate = yystate->yyother) && (yyt = &yycrank[yystate->yystoff]) != yycrank){
 # ifdef LEXDEBUG
 				if(debug)fprintf(yyout,"fall back to state %d\n",yystate-yysvec-1);
 # endif
@@ -1440,12 +1368,25 @@ yylook()
 					}
 				yyprevious = YYU(*yylastch);
 				yylsp = lsp;
+#ifdef YYNLS16_WCHAR
+				yylenguc = yylastch-yytextuc+1;
+				yytextuc[yylenguc] = 0;
+#else
+# ifdef YYCHAR_ARRAY
+				yyleng = yylastch-(unsigned char*)yytext+1;
+# else
 				yyleng = yylastch-yytext+1;
+# endif
 				yytext[yyleng] = 0;
+#endif
 # ifdef LEXDEBUG
 				if(debug){
 					fprintf(yyout,"\nmatch ");
+#ifdef YYNLS16_WCHAR
+					sprint(yytextuc);
+#else
 					sprint(yytext);
+#endif
 					fprintf(yyout," action %d\n",*yyfnd);
 					}
 # endif
@@ -1453,72 +1394,125 @@ yylook()
 				}
 			unput(*yylastch);
 			}
+#ifdef YYNLS16_WCHAR
+		if (yytextuc[0] == 0  /* && feof(yyin) */)
+#else
 		if (yytext[0] == 0  /* && feof(yyin) */)
+#endif
 			{
 			yysptr=yysbuf;
 			return(0);
 			}
-#ifndef __cplusplus
-		yyprevious = yytext[0] = input();
-		if (yyprevious>0)
-			output(yyprevious);
+#ifdef YYNLS16_WCHAR
+		yyprevious = yytextuc[0] = input();
 #else
-		yyprevious = yytext[0] = lex_input();
-		if (yyprevious>0)
-			lex_output(yyprevious);
+		yyprevious = yytext[0] = input();
 #endif
+		if (yyprevious>0) {
+			output(yyprevious);
+#ifdef YYNLS16
+                        if (yynls16) {
+			int noBytes;
+                        sec = input();
+                        third = input();
+                        fourth = input();
+#ifdef YYNLS16_WCHAR
+                        noBytes = MultiByte(yytextuc[0],sec,third,fourth);
+#else 
+                        noBytes = MultiByte(yytext[0],sec,third,fourth);
+#endif          
+     					switch(noBytes) {
+     					case 2:
+#ifdef YYNLS16_WCHAR
+ 						output(yyprevious=yytextuc[0]=sec);
+#else
+ 						output(yyprevious=yytext[0]=sec);
+#endif
+                                                 unput(fourth);
+                                                 unput(third);
+                                                 break;
+     					case 3:
+#ifdef YYNLS16_WCHAR
+ 						output(yyprevious=yytextuc[0]=sec);
+ 						output(yyprevious=yytextuc[0]=third);
+#else
+ 						output(yyprevious=yytext[0]=sec);
+ 						output(yyprevious=yytext[0]=third);
+#endif
+                                                 unput(fourth);
+                                                 break; 
+                                         case 4:
+#ifdef YYNLS16_WCHAR
+ 						output(yyprevious=yytextuc[0]=sec);
+ 						output(yyprevious=yytextuc[0]=third);
+ 						output(yyprevious=yytextuc[0]=fourth);
+#else
+ 						output(yyprevious=yytext[0]=sec);
+ 						output(yyprevious=yytext[0]=third);
+ 						output(yyprevious=yytext[0]=fourth);
+#endif
+                                                 break;                                                                                            
+					default:
+					        unput(fourth);
+					        unput(third);
+						unput(sec);
+						break;
+						}
+					}
+#endif
+                }
+#ifdef YYNLS16_WCHAR
+		yylastch=yytextuc;
+#else
+# ifdef YYCHAR_ARRAY
+		yylastch=(unsigned char*)yytext;
+# else
 		yylastch=yytext;
+# endif
+#endif
 # ifdef LEXDEBUG
 		if(debug)putchar('\n');
 # endif
 		}
 	}
-#if defined(__cplusplus) || defined(__STDC__)
-int yyback(int *p, int m)
-#else
+
+# ifdef __cplusplus
+yyback(int *p, int m)
+# else
 yyback(p, m)
 	int *p;
-#endif
+# endif
 {
-	if (p==0) return(0);
-	while (*p) {
-		if (*p++ == m)
-			return(1);
+if (p==0) return(0);
+while (*p)
+	{
+	if (*p++ == m)
+		return(1);
 	}
-	return(0);
+return(0);
 }
 	/* the following are only used in the lex library */
-#if defined(__cplusplus) || defined(__STDC__)
-int yyinput(void)
-#else
-yyinput()
-#endif
-{
-#ifndef __cplusplus
+yyinput(){
 	return(input());
-#else
-	return(lex_input());
-#endif
+	
 	}
-#if defined(__cplusplus) || defined(__STDC__)
+
+#if (defined(__cplusplus) || defined(__STDC__))
 void yyoutput(int c)
 #else
 yyoutput(c)
-  int c; 
-#endif
+  int c;
+# endif
 {
-#ifndef __cplusplus
 	output(c);
-#else
-	lex_output(c);
-#endif
-	}
-#if defined(__cplusplus) || defined(__STDC__)
+}
+
+#if (defined(__cplusplus) || defined(__STDC__))
 void yyunput(int c)
 #else
 yyunput(c)
-   int c; 
+   int c;
 #endif
 {
 	unput(c);
-	}
+}

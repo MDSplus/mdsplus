@@ -39,6 +39,9 @@ int TreeCreatePulseFile(int shotid,int numnids, int *nids)
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
+static int  TreeCreateTreeFiles(char *tree, int shot, int source_shot);
+static int CopyFile(char *src, char *dst);
+
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
 extern void *DBID;
