@@ -431,6 +431,7 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
           LoadChar(in_ptr->class,out_ptr+3);
           LoadInt(dscsize,out_ptr+4);
           out_ptr += 8;
+#ifdef _big_endian
           if (in_ptr->dtype != DTYPE_T)
 	  {
 	    switch (in_ptr->length)
@@ -443,6 +444,7 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
 	    }
 	  }
           else
+#endif
             memcpy(out_ptr,inp, in_ptr->length);
           out_ptr += in_ptr->length;
 	}
