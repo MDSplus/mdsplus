@@ -60,6 +60,9 @@ install:
 @MAKEBINDIR@dwscopePrint : dwscopePrint
 	cp dwscopePrint $@
 
+@MAKELIBDIR@dwscope_setup.ps : dwscope_setup.ps
+	cp dwscope_setup.ps $@
+
 @MAKEBINDIR@dwscope_remote : dwscope.o dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o
 	$(CC) -o $@ $(CFLAGS) dwscope.o  dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o \
               -L@MAKESHLIBDIR@ @LDARC@ -lXmdsShr @LDSHARE@ -lMdsIpShr $(MLIBS) @LIBM@ -L@MAKESHLIBDIR@ @MEMCHKLIB@
