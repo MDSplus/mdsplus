@@ -51,14 +51,14 @@
 */
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
-
+#include <STATICdef.h>
 #ifdef WORDS_BIGENDIAN
 #define MaskTrue (pi0[leni-1] & 1)
 #else
 #define MaskTrue (pi0[0] & 1)
 #endif
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern  unsigned short
 	OpcAccumulate,
@@ -86,11 +86,11 @@ extern int TdiGetLong();
 extern int TdiConvert();
 extern int TdiMasterData();
 
-static DESCRIPTOR_A(		arr0,sizeof(int),DTYPE_L,0,sizeof(int));
-static unsigned char		zero_val = 0;
-static unsigned char		one_val = 1;
-static struct descriptor	zero = {sizeof(zero_val),DTYPE_BU,CLASS_S,(char *)&zero_val};
-static struct descriptor	one = {sizeof(one_val),DTYPE_BU,CLASS_S,(char *)&one_val};
+STATIC_CONSTANT DESCRIPTOR_A(		arr0,sizeof(int),DTYPE_L,0,sizeof(int));
+STATIC_CONSTANT unsigned char		zero_val = 0;
+STATIC_CONSTANT unsigned char		one_val = 1;
+STATIC_CONSTANT struct descriptor	zero = {sizeof(zero_val),DTYPE_BU,CLASS_S,(char *)&zero_val};
+STATIC_CONSTANT struct descriptor	one = {sizeof(one_val),DTYPE_BU,CLASS_S,(char *)&one_val};
 
 TdiRefStandard(Tdi1Trans)
 struct descriptor		*pmask = &one;

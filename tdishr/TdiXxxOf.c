@@ -964,7 +964,7 @@ STATIC_CONSTANT unsigned char omits[] = {
 	NEED thought about rescale of units, parameters...
 */
 TdiRefStandard(Tdi1UnitsOf)
-static DESCRIPTOR(none, " ");
+STATIC_CONSTANT DESCRIPTOR(none, " ");
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_WITH_UNITS,

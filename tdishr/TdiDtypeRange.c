@@ -16,6 +16,7 @@ struct descriptor *TdiRANGE_PTRS[3] = {0,0,0};
 
 extern unsigned short OpcValue;
 
+#include <STATICdef.h>
 #include "tdinelements.h"
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -23,11 +24,11 @@ extern unsigned short OpcValue;
 #include <stdlib.h>
 #include <mdsshr.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-static DESCRIPTOR_A(arr0, 1, DTYPE_B, 0, 0);
-static int minus_one_value = -1;
-static struct descriptor minus_one = {sizeof(int), DTYPE_L, CLASS_S, (char *)&minus_one_value};
+STATIC_CONSTANT DESCRIPTOR_A(arr0, 1, DTYPE_B, 0, 0);
+STATIC_CONSTANT int minus_one_value = -1;
+STATIC_CONSTANT struct descriptor minus_one = {sizeof(int), DTYPE_L, CLASS_S, (char *)&minus_one_value};
 
 extern struct descriptor *TdiItoXSpecial;
 

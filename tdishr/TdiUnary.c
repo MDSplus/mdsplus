@@ -32,10 +32,11 @@
        use without specific written approval of MIT Plasma Fusion Center
        Management.
 ------------------------------------------------------------------------------*/
+#include <STATICdef.h>
 #include <mdsdescrip.h>
 #include <tdimessages.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 int       TdiUnary(struct descriptor *in_ptr,
 		                struct descriptor *out_ptr,

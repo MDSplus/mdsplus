@@ -49,31 +49,31 @@ int Tdi3xxxxx(struct descriptor *in, struct descriptor *mask,
 extern int Tdi3Lt(  );
 extern int Tdi3Gt(  );
 extern int Tdi3Divide(  );
-
+#include <STATICdef.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <string.h>
 #include <tdimessages.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int CvtConvertFloat();
 
-static int roprand = 0x8000;
+STATIC_CONSTANT int roprand = 0x8000;
 
 typedef struct {int q0; int q1;} quadword;
 typedef struct {int o0; int o1; int o2; int o3;} octaword;
-static quadword qzero = {0,0};
-static octaword ozero = {0,0,0,0};
-static quadword maxquad = {-1,2147483647};
-static octaword maxocta = {-1,-1,-1,2147483647};
-static quadword umaxquad = {-1,-1};
-static int umax64[2] = {-1,-1};
-static octaword umaxocta = {-1,-1,-1,-1};
-static quadword  minquad = {0,-2147483647};
-static octaword minocta = {0,0,0,-2147483647};
-static quadword uminquad = {0,0};
-static octaword uminocta = {0,0,0,0};
+STATIC_CONSTANT quadword qzero = {0,0};
+STATIC_CONSTANT octaword ozero = {0,0,0,0};
+STATIC_CONSTANT quadword maxquad = {-1,2147483647};
+STATIC_CONSTANT octaword maxocta = {-1,-1,-1,2147483647};
+STATIC_CONSTANT quadword umaxquad = {-1,-1};
+STATIC_CONSTANT int umax64[2] = {-1,-1};
+STATIC_CONSTANT octaword umaxocta = {-1,-1,-1,-1};
+STATIC_CONSTANT quadword  minquad = {0,-2147483647};
+STATIC_CONSTANT octaword minocta = {0,0,0,-2147483647};
+STATIC_CONSTANT quadword uminquad = {0,0};
+STATIC_CONSTANT octaword uminocta = {0,0,0,0};
 
 #if DTYPE_NATIVE_DOUBLE == DTYPE_D
 #define HUGE 1.7E38

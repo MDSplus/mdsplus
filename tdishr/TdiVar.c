@@ -37,6 +37,7 @@
 	NEED subscripted assignment.
 */
 #include "STATICdef.h"
+#include "tdithreadsafe.h"
 #include "tdirefstandard.h"
 #include <libroutines.h>
 #include <strroutines.h>
@@ -84,9 +85,7 @@ typedef struct {
 	node_type		*head;		/* changing binary-tree head */
 	void			*head_zone;	/* created on first call */
 	void			*data_zone;	/* created on first call */
-	struct descriptor	*head_name;	/* display name */
-	struct descriptor	*data_name;	/* display name */
-	struct descriptor	*label;		/* simple name */
+	int                     public;		/* is public */
 } block_type;
 typedef struct {
 	struct descriptor	match;
@@ -99,21 +98,15 @@ STATIC_CONSTANT struct descriptor EMPTDY_S = {0,DTYPE_T,CLASS_S,0};
 STATIC_CONSTANT struct descriptor_xd	NULL_XD = {0,0,0,0,0};
 STATIC_CONSTANT unsigned char true = 1;
 STATIC_CONSTANT struct descriptor true_dsc = {sizeof(true),DTYPE_BU,CLASS_S,(char *)&true};
-static DESCRIPTOR(private_head, "TDISHR private headers");
-static DESCRIPTOR(private_data, "TDISHR private data");
-static DESCRIPTOR(private_label, "Private");
-static DESCRIPTOR(public_head, "TDISHR public headers");
-static DESCRIPTOR(public_data, "TDISHR public data");
-static DESCRIPTOR(public_label, "Public");
-static block_type private	= {0,0,0,(struct descriptor *)&private_head,(struct descriptor *)&private_data,
-                                    (struct descriptor *)&private_label};
-static block_type public	= {0,0,0, (struct descriptor *)&public_head, (struct descriptor *)&public_data,
-                                    (struct descriptor *)&public_label};
+STATIC_THREADSAFE pthread_mutex_t lock;
+STATIC_THREADSAFE int lock_initialized=0;
+STATIC_THREADSAFE block_type public	= {0,0,0,1};
 STATIC_CONSTANT DESCRIPTOR(star, "*");
 STATIC_CONSTANT DESCRIPTOR(percent, "%");
-static int new_narg = 0;
-static struct descriptor TdiNargConstant = {sizeof(new_narg),DTYPE_L,CLASS_S,(char *)&new_narg};
-struct descriptor *Tdi3Narg(){return &TdiNargConstant;}
+struct descriptor *Tdi3Narg()
+{
+  return &(TdiThreadStatic())->TdiVar_new_narg_d;
+}
 
 /*--------------------------------------------------------------
 	Put a byte to output.
@@ -154,12 +147,8 @@ int			status = 1, len = sizeof(struct link) - 1 + key_ptr->length;
 	Must clear memory unless allocate is called only once for each node.
 	*******************************************************************/
 	if (block_ptr->data_zone == 0) {
-                STATIC_CONSTANT int flags = LibVM_EXTEND_AREA|LibVM_TAIL_LARGE;
-                STATIC_CONSTANT int initial = 128;
-                STATIC_CONSTANT int extend = 64;
-		LibCreateVmZone(&block_ptr->head_zone,0,0,0,0,0,0,0,0,0,block_ptr->head_name);
-		LibCreateVmZone(&block_ptr->data_zone,0,0,&flags,&initial,&extend,0,0,0,0,
-                      block_ptr->data_name);
+		LibCreateVmZone(&block_ptr->head_zone);
+		LibCreateVmZone(&block_ptr->data_zone);
 	}
 	status = LibGetVm(&len, node_ptr_ptr, &block_ptr->head_zone);
 	if (status & 1) {
@@ -176,7 +165,7 @@ int			status = 1, len = sizeof(struct link) - 1 + key_ptr->length;
 	Look in private and public lists.
 	search: 1=public 2=private 4=check that it exists.
 */
-int				TdiFindIdent(
+STATIC_ROUTINE int		TdiFindIdent(
 int				search,
 struct descriptor_r		*ident_ptr,
 struct descriptor		*key_ptr,
@@ -187,6 +176,7 @@ struct descriptor		key_dsc, name_dsc;
 node_type			*node_ptr;
 block_type			*block_ptr;
 int				code, status = 1;
+block_type *private = (block_type *)&(TdiThreadStatic())->TdiVar_private;
 
 	if (ident_ptr == 0) status = TdiNULL_PTR;
 	else switch (ident_ptr->class) {
@@ -198,13 +188,13 @@ int				code, status = 1;
 		********************************************/
 		case DTYPE_T :
 		case DTYPE_IDENT :
-			block_ptr = &private;
+			block_ptr = private;
 			key_dsc = *(struct descriptor *)ident_ptr;
 			key_dsc.dtype = DTYPE_T;
 			key_dsc.class = CLASS_S;
 			if (search & 4) {
 				if (search & 1) {
-					status = LibLookupTree(&private.head, &key_dsc, compare, &node_ptr);
+					status = LibLookupTree(&private->head, &key_dsc, compare, &node_ptr);
 					if (status & 1)
 					if (node_ptr->xd.class != 0) break;
 					else status = TdiUNKNOWN_VAR;
@@ -277,9 +267,11 @@ struct descriptor_xd	*data_ptr)
 node_type			*node_ptr;
 int				status;
 
+        LockTdiMutex(&lock,&lock_initialized);
 	status = TdiFindIdent(7, (struct descriptor_r *)ident_ptr, 0, &node_ptr, 0);
 	if (status & 1) status = MdsCopyDxXd(node_ptr->xd.pointer, data_ptr);
 	else MdsFree1Dx(data_ptr, NULL);
+	UnlockTdiMutex(&lock);
 	return status;
 }
 /*--------------------------------------------------------------
@@ -295,6 +287,7 @@ node_type			*node_ptr;
 block_type			*block_ptr;
 int				size = 0, status;
 STATIC_CONSTANT int zero = 0;
+        LockTdiMutex(&lock,&lock_initialized);
 
 	/************************************
 	Find where we should place the stuff.
@@ -315,6 +308,7 @@ STATIC_CONSTANT int zero = 0;
                   node_ptr->xd = NULL_XD;
                 }
 	}
+	UnlockTdiMutex(&lock);
 	return status;
 }
 /***************************************************************
@@ -332,6 +326,7 @@ struct descriptor_xd *out_ptr)
 node_type		*node_ptr;
 user_type		user = {{0,DTYPE_T,CLASS_D,0},0,0};
 int			j, status = 1;
+        LockTdiMutex(&lock,&lock_initialized);
         user.block_ptr = block_ptr;
 	if (narg == 0 || list[0] == 0) status = LibTraverseTree(&block_ptr->head, doit, &user);
 	else for (j = 0; status & 1 && j < narg; ++j) {
@@ -348,6 +343,7 @@ int			j, status = 1;
 	}
 	if (user.match.class == CLASS_D) StrFree1Dx(&user.match);
 	if (status & 1) status = TdiPutLong(&user.count, out_ptr);
+	UnlockTdiMutex(&lock);
 	return status;
 }
 /*--------------------------------------------------------------
@@ -384,11 +380,12 @@ int			status = 1;
 */
 STATIC_ROUTINE int free_all(node_type **pnode) {
 int	status = 1, stat2, len;
+block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
 
 	if ((*pnode)->xd.l_length) status = LibFreeVm(
 		&(*pnode)->xd.l_length,
 		&(*pnode)->xd.pointer,
-		&private.data_zone);
+		&private->data_zone);
 	if ((*pnode)->left) {
 		stat2 = free_all(&((*pnode)->left));
 		if (status & 1) status = stat2;
@@ -398,7 +395,7 @@ int	status = 1, stat2, len;
 		if (status & 1) status = stat2;
 	}
 	len = sizeof(struct link) - 1 + (*pnode)->name_dsc.length;
-	stat2 = LibFreeVm(&len, pnode, &private.head_zone);
+	stat2 = LibFreeVm(&len, pnode, &private->head_zone);
         *pnode = 0;
 	if (status & 1) status = stat2;
 	return status;
@@ -407,12 +404,13 @@ int	status = 1, stat2, len;
 	Release variables.
 */
 TdiRefStandard(Tdi1Deallocate)
-	if (narg == 0 && private.head) {
-           status = free_all(&private.head); 
-           private.head = 0;
+block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
+	if (narg == 0 && private->head) {
+           status = free_all(&private->head); 
+           private->head = 0;
            return status;
         }
-	return wild((int (*)())free_one, narg, list, &private, out_ptr);
+	return wild((int (*)())free_one, narg, list, private, out_ptr);
 }
 /*--------------------------------------------------------------
 	Check for allocated variable, private only by default.
@@ -423,12 +421,14 @@ node_type		*node_ptr;
 block_type		*block_ptr;
 int			found;
 
+        LockTdiMutex(&lock,&lock_initialized);
 	status = TdiFindIdent(3, (struct descriptor_r *)list[0], &key_dsc, 0, &block_ptr);
 	if (status & 1) status = LibLookupTree(&block_ptr->head, &key_dsc, compare, &node_ptr);
         found = status & 1;
 	if (found) found = node_ptr->xd.class != 0;
 	else if (status == LibKEYNOTFOU || status == TdiUNKNOWN_VAR) status = 1;
 	if (status & 1) status = TdiPutLogical((unsigned char)found, out_ptr);
+	UnlockTdiMutex(&lock);
 	return status;
 }
 /*--------------------------------------------------------------
@@ -439,13 +439,14 @@ struct descriptor	key_dsc = EMPTDY_S;
 node_type		*node_ptr;
 block_type		*block_ptr;
 int			found;
-
+        LockTdiMutex(&lock,&lock_initialized);
 	status = TdiFindIdent(3, (struct descriptor_r *)list[0], &key_dsc, 0, &block_ptr);
 	if (status & 1) status = LibLookupTree(&block_ptr->head, &key_dsc, compare, &node_ptr);
         found = status & 1;
 	if (found) ;
 	else if (status == LibKEYNOTFOU || status == TdiUNKNOWN_VAR) status = 1;
 	if (status & 1) status = TdiPutLogical((unsigned char)found, out_ptr);
+	UnlockTdiMutex(&lock);
 	return status;
 }
 /***************************************************************
@@ -463,11 +464,15 @@ struct descriptor_r		*formal_ptr=0, *formal_arg_ptr, *actual_ptr;
 struct descriptor_xd	tmp = EMPTY_XD;
 node_type			*old_head, *new_head = 0;
 int				code, opt, j, nformal=0, status;
-int				old_narg = new_narg;
+int    *new_narg = &(TdiThreadStatic())->TdiVar_new_narg;
+int				old_narg = *new_narg;
+block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
 
 	/******************************************
 	Get name of function to do. Check its type.
 	******************************************/
+
+        LockTdiMutex(&lock,&lock_initialized);
 	status = TdiFindIdent(7, (struct descriptor_r *)ident_ptr, 0, &node_ptr, 0);
 	if (!(status & 1)) ;
 	else if ((formal_ptr = (struct descriptor_r *)node_ptr->xd.pointer) == 0
@@ -515,9 +520,9 @@ int				old_narg = new_narg;
 			if (!opt) status = TdiMISS_ARG;
 		}
 		else if (code == OpcOut) {
-			old_head = private.head; private.head = new_head;
+			old_head = private->head; private->head = new_head;
 			status = TdiPutIdent(formal_arg_ptr, 0);
-			new_head = private.head; private.head = old_head;
+			new_head = private->head; private->head = old_head;
 		}
 		else {
 			if (code == OpcAsIs) {
@@ -534,16 +539,16 @@ int				old_narg = new_narg;
 			/**************************
 			Do this with new variables.
 			**************************/
-			old_head = private.head; private.head = new_head;
+			old_head = private->head; private->head = new_head;
 			if (status & 1) status = TdiPutIdent(formal_arg_ptr, &tmp);
-			new_head = private.head; private.head = old_head;
+			new_head = private->head; private->head = old_head;
 		}
 	}
 	/**************************
 	Do this with new variables.
 	**************************/
-	old_head = private.head; private.head = new_head;
-	new_narg = nactual;
+	old_head = private->head; private->head = new_head;
+	*new_narg = nactual;
 	if (status & 1) {
 		status = TdiEvaluate(formal_ptr->dscptrs[1], out_ptr MDS_END_ARG);
 		if (status == TdiRETURN) status = 1;
@@ -568,16 +573,17 @@ int				old_narg = new_narg;
 				/**************************
 				Do this with old variables.
 				**************************/
-				new_head = private.head; private.head = old_head;
+				new_head = private->head; private->head = old_head;
 				if (status & 1) status = TdiPutIdent(actual_arg_ptr[j], &node_ptr->xd);
-				old_head = private.head; private.head = new_head;
+				old_head = private->head; private->head = new_head;
 			}
 		}
 	}
 	TdiDeallocate(&tmp MDS_END_ARG);
 	MdsFree1Dx(&tmp, NULL);
-	private.head = old_head;
-	new_narg = old_narg;
+	private->head = old_head;
+	*new_narg = old_narg;
+        UnlockTdiMutex(&lock);
 	return status;
 }
 /***************************************************************
@@ -652,8 +658,9 @@ struct descriptor_xd	tmp = EMPTY_XD;
 */
 TdiRefStandard(Tdi1Private)
 node_type	*node_ptr;
+block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
 
-	status = LibLookupTree(&private.head, list[0], compare, &node_ptr);
+	status = LibLookupTree(&private->head, list[0], compare, &node_ptr);
 	if (status & 1) status = MdsCopyDxXd(node_ptr->xd.pointer, out_ptr);
 	else if (status == LibKEYNOTFOU) status = TdiUNKNOWN_VAR;
 	return status;
@@ -664,10 +671,12 @@ node_type	*node_ptr;
 */
 TdiRefStandard(Tdi1Public)
 node_type	*node_ptr;
+        LockTdiMutex(&lock,&lock_initialized);
 
 	status = LibLookupTree(&public.head, list[0], compare, &node_ptr);
 	if (status & 1) status = MdsCopyDxXd(node_ptr->xd.pointer, out_ptr);
 	else if (status == LibKEYNOTFOU) status = TdiUNKNOWN_VAR;
+	UnlockTdiMutex(&lock);
 	return status;
 }
 /*--------------------------------------------------------------
@@ -703,10 +712,11 @@ unsigned short opcode_s = (unsigned short)opcode;
 	This to be used by functions.
 */
 TdiRefStandard(Tdi1ResetPrivate)
+block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
 
-	private.head = 0;
-	if (private.data_zone) status = LibResetVmZone(&private.data_zone);
-	if (private.head_zone) status = LibResetVmZone(&private.head_zone);
+	private->head = 0;
+	if (private->data_zone) status = LibResetVmZone(&private->data_zone);
+	if (private->head_zone) status = LibResetVmZone(&private->head_zone);
 	return status;
 }
 /*--------------------------------------------------------------
@@ -714,9 +724,11 @@ TdiRefStandard(Tdi1ResetPrivate)
 */
 TdiRefStandard(Tdi1ResetPublic)
 
+        LockTdiMutex(&lock,&lock_initialized);
 	public.head = 0;
 	if (public.data_zone) status = LibResetVmZone(&public.data_zone);
 	if (public.head_zone) status = LibResetVmZone(&public.head_zone);
+	UnlockTdiMutex(&lock);
 	return status;
 }
 /***************************************************************
@@ -740,11 +752,11 @@ struct descriptor_r	*rptr = (struct descriptor_r *)node_ptr->xd.pointer;
 			&& *(unsigned short *)rptr->pointer == OpcFun)
 				printf("%.*s\n", tmp.length, tmp.pointer);
 			else if (tmp.length > 0)
-				printf("%s %.*s\t= %.*s\n", user_ptr->block_ptr->label->pointer,
+				printf("%s %.*s\t= %.*s\n", user_ptr->block_ptr->public ? "Public" : "Private",
 				node_ptr->name_dsc.length, node_ptr->name_dsc.pointer,
 				tmp.length, tmp.pointer);
 			else
-				printf("%s %.*s\t=\n", user_ptr->block_ptr->label->pointer,
+				printf("%s %.*s\t=\n", user_ptr->block_ptr->public ? "Public" : "Private",
 				node_ptr->name_dsc.length, node_ptr->name_dsc.pointer);
 			user_ptr->count++;
 		}
@@ -759,24 +771,31 @@ struct descriptor_r	*rptr = (struct descriptor_r *)node_ptr->xd.pointer;
 	Display private variables.
 */
 TdiRefStandard(Tdi1ShowPrivate)
-	return wild((int (*)())show_one, narg, list, &private, out_ptr);
+block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
+	return wild((int (*)())show_one, narg, list, private, out_ptr);
 }
 /*--------------------------------------------------------------
 	Display public variables.
 */
 TdiRefStandard(Tdi1ShowPublic)
-	return wild((int (*)())show_one, narg, list, &public, out_ptr);
+        LockTdiMutex(&lock,&lock_initialized);
+	status = wild((int (*)())show_one, narg, list, &public, out_ptr);
+	UnlockTdiMutex(&lock);
+     return status;
 }
 
 
 int TdiSaveContext(void *ptr[6])
 {
-    ptr[0] = (void *)private.head;
-    ptr[1] = private.head_zone;
-    ptr[2] = private.data_zone;
+        LockTdiMutex(&lock,&lock_initialized);
+  block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
+    ptr[0] = (void *)private->head;
+    ptr[1] = private->head_zone;
+    ptr[2] = private->data_zone;
     ptr[3] = (void *)public.head;
     ptr[4] = public.head_zone;
     ptr[5] = public.data_zone;
+	UnlockTdiMutex(&lock);
     return 1;
 }
 
@@ -794,12 +813,15 @@ int TdiDeleteContext(void *ptr[6])
 */
 int TdiRestoreContext(void *ptr[6])
 {
-    private.head = (node_type *)ptr[0];
-    private.head_zone = ptr[1];
-    private.data_zone = ptr[2];
+        LockTdiMutex(&lock,&lock_initialized);
+  block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
+    private->head = (node_type *)ptr[0];
+    private->head_zone = ptr[1];
+    private->data_zone = ptr[2];
     public.head = ptr[3];
     public.head_zone = (node_type *)ptr[4];
     public.data_zone = ptr[5];
+	UnlockTdiMutex(&lock);
     return 1;
 }
 

@@ -36,8 +36,9 @@ int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 #include <mdsdescrip.h>
 #include <tdimessages.h>
 #include "roprand.h"
+#include <STATICdef.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int CvtConvertFloat();
 
@@ -90,7 +91,7 @@ int TdiSubtractOctaword();
   break;\
 }
 
-static const int roprand = 0x8000;
+STATIC_CONSTANT const int roprand = 0x8000;
 
 #define OperateFloatOne(type,dtype,native,operator,p1,p2) \
 { type a,b,ans;\
@@ -278,7 +279,7 @@ int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2, struct descript
 typedef long long _int64;
 #endif
 
-static int zero[]={0,0};
+STATIC_CONSTANT int zero[]={0,0};
 
 #ifdef __VAX
 #define emul lib##$emul
@@ -294,7 +295,7 @@ extern int emul();
 #define swapocta(in)
 #endif
 
-static int emul(int *m1, int *m2, int *add, int *out)
+STATIC_ROUTINE int emul(int *m1, int *m2, int *add, int *out)
 {
   *(_int64 *)out = *(_int64 *)m1 * *(_int64 *)m2 + *(_int64 *)add;
   return 1;

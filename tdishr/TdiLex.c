@@ -1,3 +1,4 @@
+#include <STATICdef.h>
 # include "stdio.h"
 # define U(x) ((x)&0377)
 # define NLSTATE yyprevious=YYNEWLINE
@@ -101,7 +102,7 @@ int yywrap(YYVOID);
 #include <strroutines.h>
 #include <tdimessages.h>
 #include <treeshr.h>
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #ifdef WIN32
 #pragma warning (disable : 4013 4102 4035) /* LEX produces code with no forward declarations of yylook and yyback. Also has unreferenced label yyfussy. And two int functions: yyoutput and yyunput do not return a value.*/
 #endif
@@ -131,7 +132,7 @@ extern
 	LEX_LANDS,	LEX_LEQS,	LEX_LGES,	LEX_LORS,	LEX_MULS,	LEX_UNARYS;
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
-static int TdiLexBinEq(int token);
+STATIC_ROUTINE int TdiLexBinEq(int token);
 
 
 extern void TdiYyReset()
@@ -143,7 +144,7 @@ extern void TdiYyReset()
 
 extern int TdiHash(  );
 
-static void	upcase(unsigned char *str, int str_len) {
+STATIC_ROUTINE void	upcase(unsigned char *str, int str_len) {
 	unsigned char	*pc;
 
 	for (pc = str; pc < str+str_len; ++pc) if (*pc >= 'a' && *pc <= 'z') *pc += (unsigned char)('A' - 'a');
@@ -153,7 +154,7 @@ static void	upcase(unsigned char *str, int str_len) {
 	Nested comments allowed. Len is not used.
 	Limitation:	Not ANSI C standard use of delimiters.
 */
-static int			TdiLexComment(
+STATIC_ROUTINE int			TdiLexComment(
 int			len,
 unsigned char		*str,
 struct marker		*mark_ptr)
@@ -188,11 +189,11 @@ ing
 		exponent	[E|F|D|G|H|S|T] [+|-] 0-9...
 	NEED to size based on exponent range and number of digits.
 */
-static DESCRIPTOR(dfghst_dsc, "DFGHSTVdfghstv");
-static DESCRIPTOR(e_dsc, "E");
-static DESCRIPTOR(valid_dsc, "+-.0123456789DEFGHSTV \t");
+STATIC_CONSTANT DESCRIPTOR(dfghst_dsc, "DFGHSTVdfghstv");
+STATIC_CONSTANT DESCRIPTOR(e_dsc, "E");
+STATIC_CONSTANT DESCRIPTOR(valid_dsc, "+-.0123456789DEFGHSTV \t");
 
-static int ConvertFloating(struct descriptor_s *str, struct descriptor_r *out_d)
+STATIC_ROUTINE int ConvertFloating(struct descriptor_s *str, struct descriptor_r *out_d)
 {
   char str_c[64];
   int len = str->length > 63 ? 63 : str->length;
@@ -216,14 +217,14 @@ static int ConvertFloating(struct descriptor_s *str, struct descriptor_r *out_d)
   }
 }
 
-static int			TdiLexFloat(
+STATIC_ROUTINE int			TdiLexFloat(
 int		str_len,
 unsigned char		*str,
 struct marker		*mark_ptr)
 {
 struct descriptor_s str_dsc = {0,DTYPE_T,CLASS_S,0};
 int			bad, idx, status, tst, type;
-static struct {
+STATIC_CONSTANT struct {
 	unsigned short	length;
 	unsigned char	dtype;
 } table[] = {
@@ -277,14 +278,14 @@ static struct {
 	Clobbers string with upcase. IDENT token returns name.
 	Note, Lex strings are NUL terminated.
 */
-static int compare (
+STATIC_ROUTINE int compare (
 char				*s1,
 struct TdiFunctionStruct	*s2)
 {
 	return strcmp(s1, s2->name);
 }
 
-static int			TdiLexIdent(
+STATIC_ROUTINE int			TdiLexIdent(
 int 			len,
 unsigned char		*str,
 struct marker		*mark_ptr)
@@ -379,12 +380,12 @@ int				j, token;
 #define len1 8		/*length of a word in bits*/
 #define num1 16		/*number of words to accumulate, octaword*/
 
-static int			TdiLexInteger(
+STATIC_ROUTINE int			TdiLexInteger(
 int		str_len,
 unsigned char	*str,
 struct marker		*mark_ptr)
 {
-static struct {
+STATIC_ROUTINE struct {
 	unsigned short	length;
 	unsigned char	udtype, sdtype;
 } table[] = {
@@ -573,7 +574,7 @@ struct marker		*mark_ptr)
 /*--------------------------------------------------------
 	Remove arrow and trailing punctation.
 */
-static int			TdiLexPoint(
+STATIC_ROUTINE int			TdiLexPoint(
 int			len,
 unsigned char		*str,
 struct marker		*mark_ptr)
@@ -590,7 +591,7 @@ int		lenx = len - 2;
 	Note must be acceptable in written form also: a<=b, a LE b, LE(a,b).
 	Binary a<=(b,c) is OK, but unary <=(b,c) should not be.
 */
-static int			TdiLexBinEq(
+STATIC_ROUTINE int			TdiLexBinEq(
 int			token)
 {
 char		cx;
@@ -601,7 +602,7 @@ char		cx;
 	return token;
 }
 
-static int			TdiLexPunct(
+STATIC_ROUTINE int			TdiLexPunct(
 int			len,
 unsigned char		*str,
 struct marker		*mark_ptr)

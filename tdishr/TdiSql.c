@@ -19,6 +19,7 @@
 	Ken Klare, LANL P-4	(c)1991,1992
 */
 #define _MOVC3(a,b,c) memcpy(c,b,a)
+#include <STATICdef.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -42,7 +43,7 @@
 #define  DTYPE_D DTYPE_G
 #endif
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int stat;
 extern int TdiFindImageSymbol();
@@ -56,7 +57,7 @@ extern int TdiText();
 /* MUST match declaration in DYNAMIC_SYB.C ( ../idlsql/dyanamic_syb.c ) */
 #define MAXPARSE 16384
 
-static DESCRIPTOR(dunderscore,	"_");
+STATIC_CONSTANT DESCRIPTOR(dunderscore,	"_");
 typedef struct {
 	unsigned int	l0;
 	int		l1;
@@ -66,14 +67,14 @@ typedef struct {
 	int			c;
 	struct descriptor	**v;
 }	ARGLIST;
-static double	HUGE_D = 1.7e+38;
-static float	HUGE_F = (float)1.7e+38;
-static quadw	HUGE_Q = {0xffffffff,0x7fffffff};
-static int	HUGE_L = 0x7fffffff;
-static short	HUGE_W = 0x7fff;
-static char	HUGE_B = 0x7f;
+STATIC_CONSTANT double	HUGE_D = 1.7e+38;
+STATIC_CONSTANT float	HUGE_F = (float)1.7e+38;
+STATIC_CONSTANT quadw	HUGE_Q = {0xffffffff,0x7fffffff};
+STATIC_CONSTANT int	HUGE_L = 0x7fffffff;
+STATIC_CONSTANT short	HUGE_W = 0x7fff;
+STATIC_CONSTANT char	HUGE_B = 0x7f;
 
-static const char *default_date = "Jan 01 1970 12:00:00:000AM";
+STATIC_CONSTANT const char *default_date = "Jan 01 1970 12:00:00:000AM";
 static DESCRIPTOR(ddate, "dd-mmm-yyyy hh:mm:ss.cc");
 static int	width = 0, head = 2;
 static int	(*USERSQL_ERRORS)() = 0;
@@ -114,8 +115,8 @@ typedef const LPBYTE         LPCBYTE ;
 #endif
 
 /*********************************************************/
-static int	TDISQL_LINK(char *name, int (**routine)()) {
-static DESCRIPTOR(dimage,	"MdsSql");
+STATIC_ROUTINE int	TDISQL_LINK(char *name, int (**routine)()) {
+STATIC_CONSTANT DESCRIPTOR(dimage,	"MdsSql");
 struct descriptor dname = {0,DTYPE_T,CLASS_S,0};
 int	status;
 dname.length = (unsigned short)strlen(name);
@@ -124,8 +125,8 @@ status = TdiFindImageSymbol(&dimage, &dname, routine);
 return status;
 }
 /*********************************************************/
-static int	TDISQL_LINKCPTR(char *name, char * (**routine)()) {
-static DESCRIPTOR(dimage,	"MdsSql");
+STATIC_ROUTINE int	TDISQL_LINKCPTR(char *name, char * (**routine)()) {
+STATIC_CONSTANT DESCRIPTOR(dimage,	"MdsSql");
 struct descriptor dname = {0,DTYPE_T,CLASS_S,0};
 int	status;
 dname.length = (unsigned short)strlen(name);
@@ -161,7 +162,7 @@ static void FreeBuffers() {
 
 #define INITIAL_GUESS 32767
 
-static void AppendAnswer(int idx, void *buffer, int len, int dtype)
+STATIC_ROUTINE void AppendAnswer(int idx, void *buffer, int len, int dtype)
 {
 	int needed = len;
 	/*
@@ -190,7 +191,7 @@ static void AppendAnswer(int idx, void *buffer, int len, int dtype)
 	}
 }
 
-static void StoreAnswer(int idx, struct descriptor *dst, int type)
+STATIC_ROUTINE void StoreAnswer(int idx, struct descriptor *dst, int type)
 {
 	int status = 1;
 	DESCRIPTOR_A(src, 0, 0, 0, 0);
@@ -237,7 +238,7 @@ static void StoreAnswer(int idx, struct descriptor *dst, int type)
 
 
 
-static int Puts(dbproc, prows, arg, rblob)
+STATIC_ROUTINE int Puts(dbproc, prows, arg, rblob)
 DBPROCESS	*dbproc;
 int 	*prows;
 ARGLIST 	*arg;
@@ -385,8 +386,8 @@ int 	rblob;
 							buf = (char *)&HUGE_D;
 						break;
 #else
-						static char *moname = "JanFebMarAprMayJunJulAugSepOctNovDec";
-						static int day[] = {0,31,59,90,120,151,181,212,243,273,304,334};
+						STATIC_CONSTANT char *moname = "JanFebMarAprMayJunJulAugSepOctNovDec";
+						STATIC_CONSTANT int day[] = {0,31,59,90,120,151,181,212,243,273,304,334};
 						char	mon[4], *moptr, ampm[3];
 						len=sizeof(HUGE_D);
 						dtype = DTYPE_FT;
@@ -457,7 +458,7 @@ if (pout == pout_end) {\
   return 0;\
 }
 
-static int Gets(pin, pout, nmarks, arg)
+STATIC_ROUTINE int Gets(pin, pout, nmarks, arg)
 char		*pin, *pout;
 int		*nmarks;
 ARGLIST 	*arg;
@@ -510,7 +511,7 @@ ARGLIST		user_args = {0};
 struct descriptor dtext = {0,DTYPE_T,CLASS_D,0};
 struct descriptor dq_text = {0,DTYPE_T,CLASS_D,0};
 struct descriptor drows = {sizeof(rows),DTYPE_L,CLASS_S,0};
-static DESCRIPTOR(zero, "\0");
+STATIC_CONSTANT DESCRIPTOR(zero, "\0");
         drows.pointer = (char *)&rows;
 	user_args.c = narg-1;
 	user_args.v = &list[1];
@@ -577,7 +578,7 @@ struct descriptor drows = {sizeof(rows),DTYPE_L,CLASS_S,0};
 #ifdef __VMS
 	if (width == 0) 
         {
-          static DESCRIPTOR(output_device,	"SYS$OUTPUT");
+          STATIC_CONSTANT DESCRIPTOR(output_device,	"SYS$OUTPUT");
           LibGetDvi(&DVI$_DEVBUFSIZ, 0, &output_device, &width, 0, 0);
         }
 #endif
@@ -606,7 +607,7 @@ TdiRefStandard(Tdi1IsqlSet)
 	return status;
 }
 #else /* no sybase support */
-static DESCRIPTOR(const msg, "Sybase support not compiled into TDI.  Did you want to MDSConnect ?");
+STATIC_CONSTANT DESCRIPTOR(const msg, "Sybase support not compiled into TDI.  Did you want to MDSConnect ?");
 
 TdiRefStandard(Tdi1Dsql)
      status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);

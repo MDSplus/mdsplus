@@ -12,13 +12,14 @@
 
 	Ken Klare, LANL	P-4	(c)1989,1990,1992
 */
+#include <STATICdef.h>
 #include <stdlib.h>
 #include "tdirefstandard.h"
 #include "tdirefcat.h"
 #include <tdimessages.h>
 #include <mdsshr.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiGetArgs();
 extern int Tdi2Vector();

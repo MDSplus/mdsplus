@@ -14,6 +14,7 @@
 */
 typedef struct {int lo; unsigned int hi;} quadw;
 
+#include <STATICdef.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include "tdirefstandard.h"
@@ -26,7 +27,7 @@ typedef struct {int lo; unsigned int hi;} quadw;
 #include <mdsshr.h>
 #include <treeshr.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiTaskOf();
 extern int TdiGetFloat();
@@ -48,12 +49,12 @@ extern int TdiCall();
 ****/
 
 #ifdef __VMS
-static void TASK_AST(int astpar, int r0, int r1, int *pc, int psl) {
+STATIC_ROUTINE void TASK_AST(int astpar, int r0, int r1, int *pc, int psl) {
 	lib$signal(TdiTIMEOUT,0);
 }
 #endif
 
-static int Doit(struct descriptor_routine	*ptask, struct descriptor_xd *out_ptr)
+STATIC_ROUTINE int Doit(struct descriptor_routine	*ptask, struct descriptor_xd *out_ptr)
 {
   int dtype, ndesc, j, status;
   int *arglist[256];
@@ -125,8 +126,8 @@ struct descriptor_routine	*ptask;
 	/***** get timeout *****/
 	if (status & 1) status=TdiGetFloat(ptask->time_out, &timeout);
 	if (timeout > 0.) {
-                static int zero = 0;
-                static DESCRIPTOR_LONG(zero_dsc,&zero);
+                STATIC_CONSTANT int zero = 0;
+                STATIC_CONSTANT DESCRIPTOR_LONG(zero_dsc,&zero);
 		timeout = (float)(1.E7 * timeout);	/*** 100 ns steps ***/
 		if (status & 1) status = TdiConvert(&timeout_dsc, &dt_dsc MDS_END_ARG);
                 if (status & 1) status = TdiSubtract(&zero_dsc,&dt_dsc,&dt_dsc MDS_END_ARG);

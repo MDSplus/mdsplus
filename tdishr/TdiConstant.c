@@ -9,8 +9,9 @@
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
 #include <mdsshr.h>
+#include <STATICdef.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 TdiRefStandard(Tdi1Constant)
 
@@ -62,33 +63,33 @@ typedef unsigned int		FROP;
 #define DTYPE_FROP	DTYPE_F
 
 #define DATUM(type, x, data) \
-	static type			d##x = data;\
-	static struct descriptor	Tdi##x##Constant = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
+	STATIC_CONSTANT type			d##x = data;\
+	STATIC_CONSTANT struct descriptor	Tdi##x##Constant = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
 	struct descriptor *Tdi3##x(){return &Tdi##x##Constant;}
 
 #define DERR(type, x, data, error) \
-	static type			d##x = data;\
-        static type			e##x = error;\
-	static struct descriptor	dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
-	static struct descriptor	de##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&e##x};\
-        static DESCRIPTOR_WITH_ERROR(Tdi##x##Constant,&dd##x,&de##x);\
+	STATIC_CONSTANT type			d##x = data;\
+        STATIC_CONSTANT type			e##x = error;\
+	STATIC_CONSTANT struct descriptor	dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
+	STATIC_CONSTANT struct descriptor	de##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&e##x};\
+        STATIC_CONSTANT DESCRIPTOR_WITH_ERROR(Tdi##x##Constant,&dd##x,&de##x);\
 	struct descriptor *Tdi3##x(){return (struct descriptor *)&Tdi##x##Constant;}
 
 #define UNITS(type, x, data, units) \
-	static type			d##x = data;\
-	static struct descriptor	dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
-	static DESCRIPTOR(		du##x, units);\
-	static DESCRIPTOR_WITH_UNITS(Tdi##x##Constant,&dd##x,&du##x);\
+	STATIC_CONSTANT type			d##x = data;\
+	STATIC_CONSTANT struct descriptor	dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
+	STATIC_CONSTANT DESCRIPTOR(		du##x, units);\
+	STATIC_CONSTANT DESCRIPTOR_WITH_UNITS(Tdi##x##Constant,&dd##x,&du##x);\
 	struct descriptor *Tdi3##x(){return (struct descriptor *)&Tdi##x##Constant;}
 
 #define UERR(type, x, data, error, units) \
-	static type			d##x = data;\
-	static type			e##x = error;\
-	static DESCRIPTOR(du##x, units);\
-	static struct descriptor	dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
-	static struct descriptor	de##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&e##x};\
-        static DESCRIPTOR_WITH_ERROR(dwe##x,&dd##x,&de##x);\
-	static DESCRIPTOR_WITH_UNITS(Tdi##x##Constant,&dwe##x,&du##x);\
+	STATIC_CONSTANT type			d##x = data;\
+	STATIC_CONSTANT type			e##x = error;\
+	STATIC_CONSTANT DESCRIPTOR(du##x, units);\
+	STATIC_CONSTANT struct descriptor	dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
+	STATIC_CONSTANT struct descriptor	de##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&e##x};\
+        STATIC_CONSTANT DESCRIPTOR_WITH_ERROR(dwe##x,&dd##x,&de##x);\
+	STATIC_CONSTANT DESCRIPTOR_WITH_UNITS(Tdi##x##Constant,&dwe##x,&du##x);\
         struct descriptor *Tdi3##x(){return (struct descriptor *)&Tdi##x##Constant;}
 
 #define II {(float)0., (float)1.}

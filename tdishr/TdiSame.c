@@ -10,6 +10,7 @@
 
 	Ken Klare, LANL CTR-7	(c)1989,1990
 */
+#include <STATICdef.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -18,7 +19,7 @@
 #include "tdirefstandard.h"
 #include <libroutines.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int Tdi3undef();
 extern int TdiGetArgs();

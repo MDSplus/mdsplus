@@ -48,11 +48,12 @@ int Tdi3Iand(struct descriptor *in1, struct descriptor *in2, struct descriptor *
 ------------------------------------------------------------------------------*/
 
 
+#include <STATICdef.h>
 #include <string.h>
 #include <mdsdescrip.h>
 #include <tdimessages.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int CvtConvertFloat();
 extern void DoubleToWideInt();

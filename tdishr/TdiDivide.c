@@ -30,18 +30,19 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor
 ------------------------------------------------------------------------------*/
 
 
+#include <STATICdef.h>
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <tdimessages.h>
 
 
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int CvtConvertFloat();
 extern double WideIntToDouble();
 extern void DoubleToWideInt();
-static int roprand = 0x8000;
+STATIC_CONSTANT int roprand = 0x8000;
 typedef struct { int longword[2]; } quadword;
 typedef struct { int longword[4]; } octaword;
 

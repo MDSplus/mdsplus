@@ -15,6 +15,7 @@
 #define	P_UNARY	12	/*unary: NEGATE(!) IGNORE_UNDEFINED(?) IGNORE_STATUS(~)*/
 #define	P_TIGHT	16	/*strongest: path <event> and parentheses*/
 
+#include <STATICdef.h>
 #include <string.h>
 #include <mdsdescrip.h>
 #include "tdirefstandard.h"
@@ -24,20 +25,20 @@
 #include <treeshr.h>
 #include <mds_stdarg.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-static DESCRIPTOR(AND,		" & ");
-static DESCRIPTOR(OR,		" | ");
-static DESCRIPTOR(NEGATE,	"!");
-static DESCRIPTOR(IGNORE_UNDEFINED,"?");
-static DESCRIPTOR(IGNORE_STATUS,	"~");
+STATIC_CONSTANT DESCRIPTOR(AND,		" & ");
+STATIC_CONSTANT DESCRIPTOR(OR,		" | ");
+STATIC_CONSTANT DESCRIPTOR(NEGATE,	"!");
+STATIC_CONSTANT DESCRIPTOR(IGNORE_UNDEFINED,"?");
+STATIC_CONSTANT DESCRIPTOR(IGNORE_STATUS,	"~");
 
-static DESCRIPTOR(LEFT_ANGLE,	"<");
-static DESCRIPTOR(RIGHT_ANGLE,	">");
-static DESCRIPTOR(LEFT_PAREN,	"(");
-static DESCRIPTOR(RIGHT_PAREN,	")");
+STATIC_CONSTANT DESCRIPTOR(LEFT_ANGLE,	"<");
+STATIC_CONSTANT DESCRIPTOR(RIGHT_ANGLE,	">");
+STATIC_CONSTANT DESCRIPTOR(LEFT_PAREN,	"(");
+STATIC_CONSTANT DESCRIPTOR(RIGHT_PAREN,	")");
 
-static int		DependencyGet(
+STATIC_ROUTINE int		DependencyGet(
 int			prec,
 struct descriptor_r *pin,
 struct descriptor_d	*pout)

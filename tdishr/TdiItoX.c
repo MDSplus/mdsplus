@@ -19,6 +19,7 @@
 	Ken Klare, LANL P-4	(c)1990,1991,1992
 	KK	21-Oct-1992	Text requires exact match.
 */
+#include <STATICdef.h>
 #define beg	0
 #define end	1
 #define delta	2
@@ -39,11 +40,11 @@ extern int IsRoprand();
 #include <mdsshr.h>
 #include <string.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 
-static struct descriptor tdiItoXSpecial;
+STATIC_CONSTANT struct descriptor tdiItoXSpecial;
 struct descriptor *TdiItoXSpecial = &tdiItoXSpecial;
 extern struct descriptor *TdiRANGE_PTRS[3];
 extern unsigned short OpcItoX;
@@ -79,22 +80,22 @@ extern int TdiFloor();
 extern int TdiMax();
 extern int TdiMultiply();
 
-static DESCRIPTOR_FUNCTION_0(value,&OpcValue);
-static float big = (float)1.e37;
-static float mbig;
-static int mhuge = -HUGE;
-static int lhuge = HUGE;
-static int mone = -1;
-static int one = 1;
-static struct descriptor dmbig = {sizeof(mbig),DTYPE_F,CLASS_S,(char *)&mbig};
-static struct descriptor dbig = {sizeof(big),DTYPE_F,CLASS_S,(char *)&big};
-static struct descriptor dmhuge = {sizeof(mhuge),DTYPE_L,CLASS_S,(char *)&mhuge};
-static struct descriptor dhuge = {sizeof(lhuge),DTYPE_L,CLASS_S,(char *)&lhuge};
-static struct descriptor dmone = {sizeof(mone),DTYPE_L,CLASS_S,(char *)&mone};
-static struct descriptor done = {sizeof(one),DTYPE_L,CLASS_S,(char *)&one};
-static DESCRIPTOR_A(duo, sizeof(int), DTYPE_L, 0, 2*sizeof(int));
-static DESCRIPTOR_RANGE(fake0, 0, 0, 0);
-static DESCRIPTOR_FUNCTION_0(vector0,&OpcVector);
+STATIC_CONSTANT DESCRIPTOR_FUNCTION_0(value,&OpcValue);
+STATIC_CONSTANT float big = (float)1.e37;
+STATIC_CONSTANT float mbig = (float)-1.e37;
+STATIC_CONSTANT int mhuge = -HUGE;
+STATIC_CONSTANT int lhuge = HUGE;
+STATIC_CONSTANT int mone = -1;
+STATIC_CONSTANT int one = 1;
+STATIC_CONSTANT struct descriptor dmbig = {sizeof(mbig),DTYPE_F,CLASS_S,(char *)&mbig};
+STATIC_CONSTANT struct descriptor dbig = {sizeof(big),DTYPE_F,CLASS_S,(char *)&big};
+STATIC_CONSTANT struct descriptor dmhuge = {sizeof(mhuge),DTYPE_L,CLASS_S,(char *)&mhuge};
+STATIC_CONSTANT struct descriptor dhuge = {sizeof(lhuge),DTYPE_L,CLASS_S,(char *)&lhuge};
+STATIC_CONSTANT struct descriptor dmone = {sizeof(mone),DTYPE_L,CLASS_S,(char *)&mone};
+STATIC_CONSTANT struct descriptor done = {sizeof(one),DTYPE_L,CLASS_S,(char *)&one};
+STATIC_CONSTANT DESCRIPTOR_A(duo, sizeof(int), DTYPE_L, 0, 2*sizeof(int));
+STATIC_CONSTANT DESCRIPTOR_RANGE(fake0, 0, 0, 0);
+STATIC_CONSTANT DESCRIPTOR_FUNCTION_0(vector0,&OpcVector);
 TdiRefStandard(Tdi1ItoX)
 int				j1, left, right, *pcnt=0, *ptest;
 int				k0,k1;
@@ -201,7 +202,6 @@ unsigned char			omits[] = {DTYPE_WITH_UNITS,DTYPE_DIMENSION,0};
 			for (jseg = nseg; --jseg >= 0;)
 				if ((vec[0].arguments[jseg] = pslope->segment[jseg].begin) == 0)
                                 {
-					mbig = -big;
 					vec[0].arguments[jseg] = &dmbig;
                                 }
 			for (jseg = nseg; --jseg >= 0;)

@@ -10,9 +10,9 @@
 #include <libroutines.h>
 #include <mdsshr.h>
 #include <treeshr.h>
+#include <STATICdef.h>
 
-
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 /*--------------------------------------------------------------
 	Default path name.
@@ -23,7 +23,7 @@ struct descriptor_xd	*out_ptr)
 {
 struct descriptor *dummy = in_ptr;
 char	value[4096];
-static unsigned char    dtype = (unsigned char)DTYPE_T;
+STATIC_CONSTANT unsigned char    dtype = (unsigned char)DTYPE_T;
 int	retlen, status;
 struct dbi_itm lst[] = {{sizeof(value),DbiDEFAULT,0,0},{0,DbiEND_OF_LIST,0}};
 unsigned short len;
@@ -48,7 +48,7 @@ struct descriptor_xd	*out_ptr)
 struct descriptor *dummy = in_ptr;
 char	value[39-7];
 int	retlen, status;
-static unsigned char dtype = (unsigned char)DTYPE_T;
+STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
 struct dbi_itm lst[] = {{sizeof(value),DbiNAME,0,0},{0,DbiEND_OF_LIST,0}};
 unsigned short len;
         lst[0].pointer = (unsigned char *)value;
@@ -72,7 +72,7 @@ struct descriptor_xd	*out_ptr)
 struct descriptor *dummy = in_ptr;
 int	value;
 int	retlen, status;
-static unsigned char dtype = (unsigned char)DTYPE_L;
+STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_L;
 struct dbi_itm lst[] = {{sizeof(value),DbiSHOTID,0,0},{0,DbiEND_OF_LIST,0}};
 unsigned short len;
         lst[0].pointer = (unsigned char *)&value;

@@ -5,9 +5,9 @@
 	Josh Stillerman, MIT-PFC, 28-DEC-1988
 	Ken Klare, LANL P-4	(c)1989,1990,1991,1992
 */
+#include <STATICdef.h>
 #include <string.h>
 #include <mdsdescrip.h>
-/*#include <mdsdescrip.h>*/
 #include "opcopcodes.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"
@@ -19,14 +19,14 @@
 #define	P_ARG		88
 #define P_SUBS		0
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern unsigned int LEX_CONST;
 unsigned int TdiIndent = 1;
 extern int Tdi0Decompile(  );
 extern int TdiSingle(  );
 
-static struct op_rec {
+STATIC_CONSTANT struct op_rec {
 	char		*symbol;
 	short		opcode;
 	char		prec,lorr;
@@ -74,8 +74,8 @@ static struct op_rec {
 	{"++"		,OpcPostInc,	4,-1},
 	{0,0,0,0}
 };
-static DESCRIPTOR(ARROW,		"->");
-static char *bname[] = {
+STATIC_CONSTANT DESCRIPTOR(ARROW,		"->");
+STATIC_CONSTANT char *bname[] = {
 	"Param",	/*194*/
 	"Signal",	/*195*/
 	"Dim",		/*196 dtype_dimension*/
@@ -97,7 +97,7 @@ static char *bname[] = {
 	"Call",		/*212*/
 	"With_Error",	/*213*/
 };
-static int		Append(
+STATIC_ROUTINE int		Append(
 char			*pstr,
 struct descriptor_d	*pd)
 {
@@ -107,7 +107,7 @@ dstr.pointer = pstr;
 	return StrAppend(pd, &dstr);
 }
 
-static DESCRIPTOR(newline,	"\r\n\t\t\t\t\t\t\t");
+STATIC_CONSTANT DESCRIPTOR(newline,	"\r\n\t\t\t\t\t\t\t");
 
 void			TdiDecompileDeindent(
 struct descriptor_d	*pout)
@@ -120,7 +120,7 @@ char	*start = pout->pointer, *fin = start + pout->length - 1;
 	return;
 }
 
-static int		Indent(
+STATIC_ROUTINE int		Indent(
 int			step,
 struct descriptor_d	*pout)
 {
@@ -128,7 +128,7 @@ struct descriptor_d	*pout)
 	return StrAppend(pout, &newline);
 }
 
-static int		OneStatement(
+STATIC_ROUTINE int		OneStatement(
 struct descriptor_r	*pin,
 struct descriptor_d	*pout)
 {
@@ -148,7 +148,7 @@ int	status = 1;
 	return status;
 }
 
-static int		MultiStatement(
+STATIC_ROUTINE int		MultiStatement(
 int			nstmt,
 struct descriptor_r	*pin[],
 struct descriptor_d	*pout)
@@ -163,7 +163,7 @@ int	status = 1, j;
 	return status;
 }
 
-static int		CompoundStatement(
+STATIC_ROUTINE int		CompoundStatement(
 int			nstmt,
 struct descriptor_r	*pin[],
 struct descriptor_d	*pout)
@@ -181,7 +181,7 @@ int	status;
 	return status;
 }
 
-static int		Arguments(
+STATIC_ROUTINE int		Arguments(
 int			first,
 char			*left,
 char			*right,

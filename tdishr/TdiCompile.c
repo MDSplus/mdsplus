@@ -14,6 +14,7 @@ extern unsigned short OpcCompile;
 #include <libroutines.h>
 #include <tdimessages.h>
 #include <mdsshr.h>
+#include <STATICdef.h>
 #ifndef HAVE_WINDOWS_H
 #ifndef HAVE_VXWORKS_H
 #include <pthread.h>
@@ -28,7 +29,7 @@ extern unsigned short OpcCompile;
 #endif
 
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiEvaluate();
 extern int TdiYacc();
@@ -54,7 +55,7 @@ extern void TdiYyReset();
 TdiRefStandard(Tdi1Compile)
 EMPTYXD(tmp);
 struct descriptor		*text_ptr;
-static DESCRIPTOR(compile_zone,"TDI Compile Zone");
+STATIC_CONSTANT DESCRIPTOR(compile_zone,"TDI Compile Zone");
 
 	status = TdiEvaluate(list[0],&tmp MDS_END_ARG);
 	text_ptr = tmp.pointer;
@@ -64,8 +65,8 @@ static DESCRIPTOR(compile_zone,"TDI Compile Zone");
 		{
 #ifndef HAVE_WINDOWS_H
 #ifndef HAVE_VXWORKS_H
-		  static  int yacc_mutex_initialized = 0;
-                  static  pthread_mutex_t yacc_mutex;
+		  STATIC_THREADSAFE  int yacc_mutex_initialized = 0;
+                  STATIC_THREADSAFE  pthread_mutex_t yacc_mutex;
 
                   if(!yacc_mutex_initialized)
                   {

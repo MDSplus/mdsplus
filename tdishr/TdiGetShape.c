@@ -11,13 +11,14 @@
 	Ken Klare LANL CTR-7	(c)1989,1990
 	NEED CHECKS: Dimensions must match except first one and the smaller first dimension is used.
 */
+#include <STATICdef.h>
 #include <tdimessages.h>
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
 #include "tdirefcat.h"
 #include <mdsshr.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 int				TdiGetShape(
 int				narg,

@@ -33,8 +33,9 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
+#include <STATICdef.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern unsigned short OpcDescr;
 extern unsigned short OpcFun;
@@ -52,20 +53,20 @@ extern int TdiPutIdent();
 extern int TdiCompile();
 extern int TdiEvaluate();
 
-static DESCRIPTOR(dnul, "\0");
-static DESCRIPTOR(dfun, ".fun\0");
-static DESCRIPTOR(def_name, "dna=");
+STATIC_CONSTANT DESCRIPTOR(dnul, "\0");
+STATIC_CONSTANT DESCRIPTOR(dfun, ".fun\0");
+STATIC_CONSTANT DESCRIPTOR(def_name, "dna=");
 #if defined(__VMS)
-static DESCRIPTOR(def_image, "MDS$FUNCTIONS");
-static DESCRIPTOR(def_path, "MDS$PATH:");
+STATIC_CONSTANT DESCRIPTOR(def_image, "MDS$FUNCTIONS");
+STATIC_CONSTANT DESCRIPTOR(def_path, "MDS$PATH:");
 #elif defined(WIN32)
-static DESCRIPTOR(def_image, "MdsFunctions");
-static DESCRIPTOR(def_path, "MDS_PATH:");
+STATIC_CONSTANT DESCRIPTOR(def_image, "MdsFunctions");
+STATIC_CONSTANT DESCRIPTOR(def_path, "MDS_PATH:");
 #else
-static DESCRIPTOR(def_image, "MdsFunctions");
-static DESCRIPTOR(def_path, "MDS_PATH:");
+STATIC_CONSTANT DESCRIPTOR(def_image, "MdsFunctions");
+STATIC_CONSTANT DESCRIPTOR(def_path, "MDS_PATH:");
 #endif
-static struct descriptor_d EMPTY_D = {0,DTYPE_T,CLASS_D,0};
+STATIC_CONSTANT struct descriptor_d EMPTY_D = {0,DTYPE_T,CLASS_D,0};
 
 int	TdiFindImageSymbol(
 struct descriptor_d	*image,
@@ -97,7 +98,9 @@ int                             geterror = 0;
 	if (image.length == 0) {
 		status = TdiDoFun(&entry, narg-2, &list[2], out_ptr);
 		if (status != TdiUNKNOWN_VAR) goto done;
+		/*
 		status = TdiFindImageSymbol((struct descriptor_d *)&def_image, &entry, &routine);
+                */
 	}
 	else
         {
@@ -160,7 +163,7 @@ ident:
 	Gather, compile.
 	***************/
  else {
-        static struct descriptor file = {0, DTYPE_T, CLASS_D, 0};
+        struct descriptor file = {0, DTYPE_T, CLASS_D, 0};
 	status = StrConcat(&file, list[0] ? (struct descriptor *)&image : (struct descriptor *)&def_path, &entry, 
                              &dfun MDS_END_ARG);
 	if (status & 1) {
@@ -185,7 +188,7 @@ ident:
 	  }
 	  else status = TdiUNKNOWN_VAR;
 	}
-
+        StrFree1Dx(&file);
 	/******************************************************
 	If it is a FUN then define it and do it with arguments.
 	Otherwise, just do it if does not have arguments.

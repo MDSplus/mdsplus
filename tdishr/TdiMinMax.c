@@ -4,11 +4,12 @@
 
 	Ken Klare, LANL CTR-7	(c)1989,1990
 */
+#include <STATICdef.h>
 #include "tdirefstandard.h"
 #include <stdlib.h>
 #include <mdsshr.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiEvaluate();
 extern int Tdi1Same();

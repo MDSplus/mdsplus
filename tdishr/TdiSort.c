@@ -22,6 +22,7 @@
 	Ken Klare, LANL P-4	(c)1990,1992
 	KK	21-Oct-1992	upcase options for BSEARCH/SORT/SORTVAL
 */
+#include <STATICdef.h>
 #include "tdinelements.h"
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -32,7 +33,7 @@
 #include <string.h>
 #include <mdstypes.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 extern unsigned short OpcVector;
@@ -60,32 +61,32 @@ extern int TdiSortVal();
 	Equality test where different.
 */
 #define NEQ_BU GTR_BU
-static int GTR_BU(unsigned char *a, unsigned char *b)	{return *a - *b;}
+STATIC_ROUTINE int GTR_BU(unsigned char *a, unsigned char *b)	{return *a - *b;}
 #define NEQ_WU GTR_WU
-static int GTR_WU(unsigned short *a, unsigned short *b) {return *a - *b;}
+STATIC_ROUTINE int GTR_WU(unsigned short *a, unsigned short *b) {return *a - *b;}
 #define NEQ_LU NEQ_L
-static int GTR_LU(unsigned int *a, unsigned int *b)	{return *a > *b;}
+STATIC_ROUTINE int GTR_LU(unsigned int *a, unsigned int *b)	{return *a > *b;}
 #define NEQ_QU NEQ_Q
-static int GTR_QU(unsigned int a[2], unsigned int b[2]) {return a[1] > b[1] || a[1] == b[1] && a[0] > b[0];}
+STATIC_ROUTINE int GTR_QU(unsigned int a[2], unsigned int b[2]) {return a[1] > b[1] || a[1] == b[1] && a[0] > b[0];}
 #define NEQ_OU NEQ_O
-static int GTR_OU(unsigned int a[4], unsigned int b[4]) {return a[3] > b[3] || a[3] == b[3]
+STATIC_ROUTINE int GTR_OU(unsigned int a[4], unsigned int b[4]) {return a[3] > b[3] || a[3] == b[3]
 	&& (a[2] > b[2] || (a[2] == b[2] && (a[1] > b[1] || (a[1] == b[1] && a[0] > b[0]))));}
 
 #define NEQ_B GTR_B
-static int GTR_B(char *a, char *b)	{return *a - *b;}
+STATIC_ROUTINE int GTR_B(char *a, char *b)	{return *a - *b;}
 #define NEQ_W GTR_W
-static int GTR_W(short *a, short *b)	{return *a - *b;}
-static int NEQ_L(int *a, int *b)	{return *a != *b;}
-static int GTR_L(int *a, int *b)	{return *a > *b;}
-static int NEQ_Q(unsigned int a[2], unsigned int b[2]) {return a[0] != b[0] || a[1] != a[1];}
-static int GTR_Q(unsigned int a[2], unsigned int b[2]) {return (int)a[1] > (int)b[1] || a[1] == b[1] && a[0] > b[0];}
-static int NEQ_O(unsigned int a[4], unsigned int b[4]) {return a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3];}
-static int GTR_O(unsigned int a[4], unsigned int b[4]) {return (int)a[3] > (int)b[3] || a[3] == b[3]
+STATIC_ROUTINE int GTR_W(short *a, short *b)	{return *a - *b;}
+STATIC_ROUTINE int NEQ_L(int *a, int *b)	{return *a != *b;}
+STATIC_ROUTINE int GTR_L(int *a, int *b)	{return *a > *b;}
+STATIC_ROUTINE int NEQ_Q(unsigned int a[2], unsigned int b[2]) {return a[0] != b[0] || a[1] != a[1];}
+STATIC_ROUTINE int GTR_Q(unsigned int a[2], unsigned int b[2]) {return (int)a[1] > (int)b[1] || a[1] == b[1] && a[0] > b[0];}
+STATIC_ROUTINE int NEQ_O(unsigned int a[4], unsigned int b[4]) {return a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3];}
+STATIC_ROUTINE int GTR_O(unsigned int a[4], unsigned int b[4]) {return (int)a[3] > (int)b[3] || a[3] == b[3]
 	&& (a[2] > b[2] || (a[2] == b[2] && (a[1] > b[1] || (a[1] == b[1] && a[0] > b[0]))));}
 
 extern int CvtConvertFloat();
 
-static int GtrFloat(int dtype,void *a, void *b)
+STATIC_ROUTINE int GtrFloat(int dtype,void *a, void *b)
 {
   int ans;
   float a_local;
@@ -96,7 +97,7 @@ static int GtrFloat(int dtype,void *a, void *b)
   return ans;
 }
 
-static int GtrDouble(int dtype,void *a, void *b)
+STATIC_ROUTINE int GtrDouble(int dtype,void *a, void *b)
 {
   int ans;
   double a_local;
@@ -108,38 +109,38 @@ static int GtrDouble(int dtype,void *a, void *b)
 }
 
 #define NEQ_F NEQ_L
-static int GTR_F(void *a, void *b) {return GtrFloat(DTYPE_F,a,b);}
+STATIC_ROUTINE int GTR_F(void *a, void *b) {return GtrFloat(DTYPE_F,a,b);}
 
 #define NEQ_FS NEQ_L
-static int GTR_FS(void *a, void *b) {return GtrFloat(DTYPE_FS,a,b);}
+STATIC_ROUTINE int GTR_FS(void *a, void *b) {return GtrFloat(DTYPE_FS,a,b);}
 
 #define NEQ_D NEQ_Q
-static int GTR_D(void *a, void *b) {return GtrDouble(DTYPE_D,a,b);}
+STATIC_ROUTINE int GTR_D(void *a, void *b) {return GtrDouble(DTYPE_D,a,b);}
 
 #define NEQ_G NEQ_Q
-static int GTR_G(void *a, void *b) {return GtrDouble(DTYPE_G,a,b);}
+STATIC_ROUTINE int GTR_G(void *a, void *b) {return GtrDouble(DTYPE_G,a,b);}
 
 #define NEQ_FT NEQ_Q
-static int GTR_FT(void *a, void *b) {return GtrDouble(DTYPE_FT,a,b);}
+STATIC_ROUTINE int GTR_FT(void *a, void *b) {return GtrDouble(DTYPE_FT,a,b);}
 
 #define NEQ_FC NEQ_Q
-static int GTR_FC(float *a, float *b) {if (NEQ_F((int *)a, (int *)b)) return GTR_F(&a[0],&b[0]); return GTR_F(&a[1], &b[1]);}
+STATIC_ROUTINE int GTR_FC(float *a, float *b) {if (NEQ_F((int *)a, (int *)b)) return GTR_F(&a[0],&b[0]); return GTR_F(&a[1], &b[1]);}
 
 #define NEQ_FSC NEQ_Q
-static int GTR_FSC(float *a, float *b) {if (NEQ_FS((int *)a, (int *)b)) return GTR_FS(&a[0],&b[0]); return GTR_FS(&a[1], &b[1]);}
+STATIC_ROUTINE int GTR_FSC(float *a, float *b) {if (NEQ_FS((int *)a, (int *)b)) return GTR_FS(&a[0],&b[0]); return GTR_FS(&a[1], &b[1]);}
 
 #define	NEQ_DC NEQ_O
-static int GTR_DC(double *a, double *b) {if (NEQ_D((unsigned int *)a, (unsigned int *)b)) return GTR_D(&a[0],&b[0]); return GTR_D(&a[1], &b[1]);}
+STATIC_ROUTINE int GTR_DC(double *a, double *b) {if (NEQ_D((unsigned int *)a, (unsigned int *)b)) return GTR_D(&a[0],&b[0]); return GTR_D(&a[1], &b[1]);}
 
 #define	NEQ_GC NEQ_O
-static int GTR_GC(double *a, double *b) {if (NEQ_G((unsigned int *)a, (unsigned int *)b)) return GTR_G(&a[0],&b[0]); return GTR_G(&a[1], &b[1]);}
+STATIC_ROUTINE int GTR_GC(double *a, double *b) {if (NEQ_G((unsigned int *)a, (unsigned int *)b)) return GTR_G(&a[0],&b[0]); return GTR_G(&a[1], &b[1]);}
 
 #define	NEQ_FTC NEQ_O
-static int GTR_FTC(double *a, double *b) {if (NEQ_FT((unsigned int *)a, (unsigned int *)b)) return GTR_FT(&a[0],&b[0]); return GTR_FT(&a[1], &b[1]);}
+STATIC_ROUTINE int GTR_FTC(double *a, double *b) {if (NEQ_FT((unsigned int *)a, (unsigned int *)b)) return GTR_FT(&a[0],&b[0]); return GTR_FT(&a[1], &b[1]);}
 
 
 #define NEQ_T GTR_T
-static int GTR_T(unsigned char *a, unsigned char *b, int len) {
+STATIC_ROUTINE int GTR_T(unsigned char *a, unsigned char *b, int len) {
 register char	*pa = (char *)a, *pb = (char *)b;
 register int	n = len;
 	for (; --n >= 0;) if (*pa++ != *pb++) break;
@@ -273,7 +274,7 @@ struct TdiCatStruct		cats[3];
 	It could be done by sorting indices of equal value elements.
 */
 TdiRefStandard(Tdi1Sort)
-static _int64			ran = 0;
+STATIC_THREADSAFE _int64			ran = 0;
 int				i, j, keep, l, r, jstack, *ndx;
 int				upcase = 0, cmode = -1, len, n=0;
 int				(*gtr)()=0;

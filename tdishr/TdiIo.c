@@ -8,6 +8,7 @@
 #include <dvidef.h>
 #endif
 
+#include <STATICdef.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "tdirefstandard.h"
@@ -16,11 +17,11 @@
 #include <mdsshr.h>
 #include <string.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-static struct descriptor_d EMPTY_D = {0,DTYPE_T,CLASS_D,0};
-static DESCRIPTOR(dNUL, "\0");
-static DESCRIPTOR(dBAD, "/*bad*/");
+STATIC_CONSTANT struct descriptor_d EMPTY_D = {0,DTYPE_T,CLASS_D,0};
+STATIC_CONSTANT DESCRIPTOR(dNUL, "\0");
+STATIC_CONSTANT DESCRIPTOR(dBAD, "/*bad*/");
 
 /*----------------------------------------------
 	A kludge to get stdout.
@@ -43,8 +44,8 @@ int			TdiPutLong(
 int			*data,
 struct descriptor_xd *out_ptr) {
 int	status;
-static unsigned char dtype = (unsigned char)DTYPE_L;
-static unsigned short len = sizeof(int);
+STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_L;
+STATIC_CONSTANT unsigned short len = sizeof(int);
 
 	if (out_ptr == 0) return 1;
 	status = MdsGet1DxS(&len, &dtype, out_ptr);
@@ -54,7 +55,7 @@ static unsigned short len = sizeof(int);
 /*----------------------------------------------
 	Internal routine to output a unit
 */
-static int TdiPutUnit(FILE *unit, struct descriptor_xd *out_ptr)
+STATIC_ROUTINE int TdiPutUnit(FILE *unit, struct descriptor_xd *out_ptr)
 {
   struct descriptor unit_d = {0,DTYPE_T,CLASS_S,0};
   unit_d.length = unit != 0 ? sizeof(unit) : 0;
@@ -64,29 +65,31 @@ static int TdiPutUnit(FILE *unit, struct descriptor_xd *out_ptr)
 /*----------------------------------------------
 	Internal routine to input a unit
 */
-static int TdiGetOutUnit(struct descriptor *in_ptr, FILE **unit)
+STATIC_ROUTINE int TdiGetOutUnit(struct descriptor *in_ptr, FILE **unit)
 {
    int status;
-   static struct descriptor unit_d = {0,DTYPE_T,CLASS_D,0};
+   struct descriptor unit_d = {0,DTYPE_T,CLASS_D,0};
    status = TdiEvaluate(in_ptr, &unit_d MDS_END_ARG);
    if (unit_d.length != sizeof(*unit))
      *unit = stdout;
    else
      *unit = *(FILE **)unit_d.pointer;
+   StrFree1Dx(&unit_d);
    return status;
 }
 /*----------------------------------------------
 	Internal routine to input a unit
 */
-static int TdiGetInUnit(struct descriptor *in_ptr, FILE **unit)
+STATIC_ROUTINE int TdiGetInUnit(struct descriptor *in_ptr, FILE **unit)
 {
    int status;
-   static struct descriptor unit_d = {0,DTYPE_T,CLASS_D,0};
+   struct descriptor unit_d = {0,DTYPE_T,CLASS_D,0};
    status = TdiEvaluate(in_ptr, &unit_d MDS_END_ARG);
    if (unit_d.length != sizeof(*unit))
      *unit = stdin;
    else
      *unit = *(FILE **)unit_d.pointer;
+   StrFree1Dx(&unit_d);
    return status;
 }
 /*----------------------------------------------
@@ -96,8 +99,8 @@ static int TdiGetInUnit(struct descriptor *in_ptr, FILE **unit)
 TdiRefStandard(Tdi1DateTime)
 int	time[2] = {0,0}, *ptime;
 unsigned short len;
-static unsigned char dtype = (unsigned char)DTYPE_T;
-static unsigned short length = 23;
+STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
+STATIC_CONSTANT unsigned short length = 23;
 
 	if (narg > 0 && list[0]) {
 	struct descriptor dtime = {sizeof(time),DTYPE_Q,CLASS_S,0};
@@ -162,8 +165,8 @@ int	pos;
 */
 TdiRefStandard(Tdi1Fopen)
 FILE	*unit;
-static struct descriptor_d dname = {0,DTYPE_T,CLASS_D,0};
-static struct descriptor_d dmode = {0,DTYPE_T,CLASS_D,0};
+struct descriptor_d dname = {0,DTYPE_T,CLASS_D,0};
+struct descriptor_d dmode = {0,DTYPE_T,CLASS_D,0};
 
 	status = TdiData(list[0], &dname MDS_END_ARG);
 	if (status & 1) status = TdiData(list[1], &dmode MDS_END_ARG);
@@ -173,6 +176,8 @@ static struct descriptor_d dmode = {0,DTYPE_T,CLASS_D,0};
 	   unit = fopen(dname.pointer, dmode.pointer);
            status = TdiPutUnit(unit, out_ptr);
         }
+        StrFree1Dx(&dname);
+        StrFree1Dx(&dmode);
 	return status;
 }
 /*----------------------------------------------
@@ -222,14 +227,9 @@ int	j, stat1, bytes = 0, col = 0, len;
 FILE	*unit = 0;
 struct descriptor	*pd, *ptmp;
 char	*pt, *plim;
-static EMPTYXD(tmp);
+EMPTYXD(tmp);
 
-static int width = 132;
-static int initialized = 0;
-#ifdef __VMS
-static DESCRIPTOR(dSYS$OUTPUT, "SYS$OUTPUT");
-	if (initialized == 0) initialized = LibGetDvi(&DVI$_DEVBUFSIZ, 0, &dSYS$OUTPUT, &width, 0, 0);
-#endif
+STATIC_CONSTANT int width = 132;
 
 	status = TdiGetOutUnit(list[0], &unit);
 	if (status & 1) for (j = 1; j < narg; ++j) {

@@ -1,12 +1,13 @@
 #include <string.h>
 #include <stdio.h>
 #include <mdsdescrip.h>
-/*#include <mdsdescrip.h>*/
 #include <tdimessages.h>
 #include <math.h>
+#include <STATICdef.h>
+
 #define MAXTYPE (DTYPE_FTC + 1)
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern void CvtConvertFloat();
 extern int IsRoprand();
@@ -602,7 +603,7 @@ typedef union {double f; char i;} binary_double;
 
 
 
-static void FLOAT_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
+STATIC_ROUTINE void FLOAT_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
 {
   float *ip = (float*)pa;
   char *op = (char *)pb;
@@ -647,7 +648,7 @@ static void FLOAT_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, cha
   }
 }
 
-static void DOUBLE_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
+STATIC_ROUTINE void DOUBLE_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
 {
   double *ip = (double*)pa;
   char *op = (char *)pb;
@@ -695,7 +696,7 @@ static void DOUBLE_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, ch
   }
 }
 
-static void FLOATC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
+STATIC_ROUTINE void FLOATC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
 {
   float *ip = (float*)pa;
   char *op = (char *)pb;
@@ -751,7 +752,7 @@ static void FLOATC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, ch
   }
 }
 
-static void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
+STATIC_ROUTINE void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
 {
   double *ip = (double*)pa;
   char *op = (char *)pb;

@@ -13,13 +13,14 @@
 
 	Ken Klare LANL P-4	(c)1989,1990,1991
 */
+#include <STATICdef.h>
 #include "tdirefstandard.h"
 #include <mdsshr.h>
 #include <stdlib.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-static EMPTYXD(emptyxd);
+STATIC_CONSTANT EMPTYXD(emptyxd);
 
 int				TdiMasterData(
 int				nsig,

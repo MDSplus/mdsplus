@@ -8,8 +8,9 @@
 */
 
 #include <tdimessages.h>
+#include <STATICdef.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 unsigned int TdiDECOMPILE_MAX = 0xffff;
 
@@ -64,23 +65,23 @@ struct descriptor_d		answer = {0,DTYPE_T,CLASS_D,0};
 	Precedence is used by function evaluation.
 */
 #define P_ARG	88
-static unsigned char htab[16] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
-static DESCRIPTOR(BUILD_EVENT,	"BuildEvent(\"");
-static DESCRIPTOR(CLASS,		"??Class_");
-static DESCRIPTOR(CLOSE_EVENT,	"\")");
-static DESCRIPTOR(COLON,		":");
-static DESCRIPTOR(COMMA,		",");
-static DESCRIPTOR(COMMA_SPACE,	", ");
-static DESCRIPTOR(CMPLX,		"Cmplx(");
-static DESCRIPTOR(DTYPE,		"??Dtype_");
-static DESCRIPTOR(HEX,		"0X");
-static DESCRIPTOR(LEFT_BRACKET,	"[");
-static DESCRIPTOR(MISSING,	"$Missing");
-static DESCRIPTOR(MORE,		" /*** etc. ***/");
-static DESCRIPTOR(RIGHT_BRACKET,	"]");
-static DESCRIPTOR(RIGHT_PAREN,	")");
-static DESCRIPTOR(SET_RANGE,	"Set_Range(");
-static DESCRIPTOR(STAR,		"*");
+STATIC_CONSTANT unsigned char htab[16] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
+STATIC_CONSTANT DESCRIPTOR(BUILD_EVENT,	"BuildEvent(\"");
+STATIC_CONSTANT DESCRIPTOR(CLASS,		"??Class_");
+STATIC_CONSTANT DESCRIPTOR(CLOSE_EVENT,	"\")");
+STATIC_CONSTANT DESCRIPTOR(COLON,		":");
+STATIC_CONSTANT DESCRIPTOR(COMMA,		",");
+STATIC_CONSTANT DESCRIPTOR(COMMA_SPACE,	", ");
+STATIC_CONSTANT DESCRIPTOR(CMPLX,		"Cmplx(");
+STATIC_CONSTANT DESCRIPTOR(DTYPE,		"??Dtype_");
+STATIC_CONSTANT DESCRIPTOR(HEX,		"0X");
+STATIC_CONSTANT DESCRIPTOR(LEFT_BRACKET,	"[");
+STATIC_CONSTANT DESCRIPTOR(MISSING,	"$Missing");
+STATIC_CONSTANT DESCRIPTOR(MORE,		" /*** etc. ***/");
+STATIC_CONSTANT DESCRIPTOR(RIGHT_BRACKET,	"]");
+STATIC_CONSTANT DESCRIPTOR(RIGHT_PAREN,	")");
+STATIC_CONSTANT DESCRIPTOR(SET_RANGE,	"Set_Range(");
+STATIC_CONSTANT DESCRIPTOR(STAR,		"*");
 
 int			TdiSingle(
 int			val,
@@ -93,7 +94,7 @@ struct descriptor_d	*out_ptr)
 /*-------------------------------------------------------
 	Handle arrays and arrays of pointers to descriptors.
 */
-static int			tdi_vector(
+STATIC_ROUTINE int			tdi_vector(
 struct descriptor	*in_ptr,
 int			level,
 char			**item_ptr_ptr,
@@ -138,7 +139,7 @@ int	j, status;
 	/******************
 	Squeeze out spaces.
 	******************/
-static int		noblanks(
+STATIC_ROUTINE int		noblanks(
 struct descriptor	*cdsc_ptr)
 {
 int	n = cdsc_ptr->length;
@@ -152,7 +153,7 @@ char	*pwas = cdsc_ptr->pointer, *pnow = pwas;
 	/*****************************
 	Neater floating point numbers.
 	*****************************/
-static int		closeup(
+STATIC_ROUTINE int		closeup(
 char			repl,
 struct descriptor	*pfloat,
 struct descriptor	*pdc)

@@ -6,6 +6,7 @@
 	Ken Klare, LANL CTR-7	(c)1990
 */
 
+#include <STATICdef.h>
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 #include "STATICdef.h"
 #include "tdirefstandard.h"
@@ -16,14 +17,14 @@
 #include <mdsshr.h>
 #include <string.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiGetArgs();
 extern int TdiData();
 extern int TdiConvert();
 extern int TdiMasterData();
 
-static struct descriptor missing = {0,DTYPE_MISSING,CLASS_S,0};
+STATIC_CONSTANT struct descriptor missing = {0,DTYPE_MISSING,CLASS_S,0};
 typedef struct {int q[2];} quadw;
 STATIC_ROUTINE int copy(
 int	len,

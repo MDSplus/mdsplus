@@ -19,6 +19,7 @@
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 
+#include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <tdimessages.h>
@@ -26,7 +27,7 @@
 #include <mdsshr.h>
 #include <string.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiGetArgs();
 extern int TdiGetData();
@@ -35,7 +36,7 @@ extern int TdiConvert();
 extern int TdiMasterData();
 
 TdiRefStandard(Tdi1SetRange)
-static DESCRIPTOR_A(		arr0,1,DTYPE_BU,0,1);
+STATIC_CONSTANT DESCRIPTOR_A(		arr0,1,DTYPE_BU,0,1);
 struct descriptor_xd	sig[1], uni[1], dat[1], tmp = EMPTY_XD;
 struct descriptor_range	*prange;
 struct TdiCatStruct		cats[2];

@@ -17,8 +17,9 @@
 #include "tdinelements.h"
 #include <tdimessages.h>
 #include <mdsshr.h>
+#include <STATICdef.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 
@@ -40,9 +41,8 @@ extern int TdiItoX();
 extern int TdiGetLong();
 extern int Tdi2Range();
 
-static DESCRIPTOR_FUNCTION_0(value,&OpcValue);
-static DESCRIPTOR_A(NULL_A, sizeof(int), DTYPE_L, 0, 0);
-static DESCRIPTOR_RANGE(EMPTY_RANGEE, 0, 0, (struct descriptor *)&value);
+STATIC_CONSTANT DESCRIPTOR_FUNCTION_0(value,&OpcValue);
+STATIC_CONSTANT DESCRIPTOR_RANGE(EMPTY_RANGEE, 0, 0, (struct descriptor *)&value);
 typedef struct {int x[2];} quadw;
 
 /**********************************************
@@ -113,7 +113,7 @@ int	n, status = 1;
 /*---------------------------------------------
 	Remove elements not satisfying mask.
 */
-static int		rcull(
+STATIC_ROUTINE int		rcull(
 struct descriptor	*pnew,
 struct descriptor_a	*pmask,
 struct descriptor_a	*px)
@@ -150,7 +150,7 @@ quadw *qptr;
 /*---------------------------------------------
 	Replace elements not in mask.
 */
-static int		rextend(
+STATIC_ROUTINE int		rextend(
 struct descriptor	*pnew,
 struct descriptor_a	*pmask,
 struct descriptor_a	*px)
@@ -171,7 +171,7 @@ int	len = px->length, n, status = 1;
 /**********************************************
 	Going to find out who is naughty and nice.
 */
-static int			work(
+STATIC_ROUTINE int			work(
 int				rroutine(struct descriptor *,struct descriptor_a *,struct descriptor_a *),
 int				opcode,
 int				narg,
@@ -188,9 +188,8 @@ struct descriptor_range	fake_range;
 struct descriptor		dx0, dx1;
 struct descriptor_xd	sig[3], uni[3], dat[3];
 struct TdiCatStruct		cats[4];
-static struct descriptor EMPTY_LONG = {sizeof(int),DTYPE_L,CLASS_S,0};
-static unsigned char omits[] = {DTYPE_DIMENSION,DTYPE_SIGNAL,DTYPE_DIMENSION,0};
-static unsigned char omitd[] = {DTYPE_WITH_UNITS,DTYPE_DIMENSION,0};
+STATIC_CONSTANT unsigned char omits[] = {DTYPE_DIMENSION,DTYPE_SIGNAL,DTYPE_DIMENSION,0};
+STATIC_CONSTANT unsigned char omitd[] = {DTYPE_WITH_UNITS,DTYPE_DIMENSION,0};
         keep[0] = TdiRANGE_PTRS[0];
         keep[1] = TdiRANGE_PTRS[1];
         keep[2] = TdiRANGE_PTRS[2];

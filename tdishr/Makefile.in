@@ -79,6 +79,7 @@ TdiSql.c \
 TdiSquare.c \
 TdiStatement.c \
 TdiSubscript.c \
+TdiThreadSafe.c \
 TdiTrans.c \
 TdiTrim.c \
 TdiUnary.c \

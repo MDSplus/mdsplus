@@ -35,7 +35,7 @@ int Tdi3xxx(struct descriptor *in, struct descriptor *out)
 
 ------------------------------------------------------------------------------*/
 
-
+#include <STATICdef.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
@@ -43,11 +43,11 @@ int Tdi3xxx(struct descriptor *in, struct descriptor *out)
 #include <errno.h>
 #include <math.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int CvtConvertFloat();
 
-static int roprand = 0x8000;
+STATIC_CONSTANT int roprand = 0x8000;
 #define radians_to_degrees 57.295778
 #define degrees_to_radians 0.017453293
 
@@ -180,7 +180,7 @@ int Tdi3##name(struct descriptor *in, struct descriptor *out)\
   return 1;\
 } 
  
-static double anint(double val) 
+STATIC_ROUTINE double anint(double val) 
 { 
   int tmp;
   val += (val > 0.0) ? .5 : -.5;
@@ -188,26 +188,26 @@ static double anint(double val)
   return (double)tmp;
 }
 
-static double trunc_static(double val) 
+STATIC_ROUTINE double trunc_Static(double val) 
 { 
   return (double)((int)val);
 }
 
-static void cos_complex(double *in, double *out)
+STATIC_ROUTINE void cos_complex(double *in, double *out)
 {
   out[0] = cos(in[0]) * cosh(in[1]);
   out[1] = -sin(in[0]) * sinh(in[1]);
   return;
 }
 
-static void sin_complex(double *in, double *out)
+STATIC_ROUTINE void sin_complex(double *in, double *out)
 {
   out[0] = sin(in[0]) * cosh(in[1]);
   out[1] = cos(in[0]) * sinh(in[1]);
   return;
 }
 
-static void exp_complex(double *in, double *out)
+STATIC_ROUTINE void exp_complex(double *in, double *out)
 {
   out[0] = exp(in[0]);
   out[1] = out[0] * sin(in[1]);
@@ -215,7 +215,7 @@ static void exp_complex(double *in, double *out)
   return;
 }
 
-static double cabs_d(double in1, double in2)
+STATIC_ROUTINE double cabs_d(double in1, double in2)
 {
   double x = (in1 > 0) ? in1 : -in1;
   double y = (in2 > 0) ? in2 : -in2;
@@ -229,7 +229,7 @@ static double cabs_d(double in1, double in2)
     return y * sqrt(1 + pow((x/y),2.0));
 }
 
-static void sqrt_complex(double *in, double *out)
+STATIC_ROUTINE void sqrt_complex(double *in, double *out)
 {
   if (in[0] == (double)0.0 && in[1] == (double)0.0)
   {
@@ -251,7 +251,7 @@ static void sqrt_complex(double *in, double *out)
 }
 
 
-static void log_complex(double *in, double *out)
+STATIC_ROUTINE void log_complex(double *in, double *out)
 {
   double theta;
   if (in[0] > 0.0)
@@ -283,15 +283,15 @@ static void log_complex(double *in, double *out)
   return;
 }
 
-static double acosd_static(double in) { return radians_to_degrees * acos(in);}
-static double asind_static(double in) { return radians_to_degrees * asin(in);}
-static double atand_static(double in) { return radians_to_degrees * atan(in);}
-static double cosd_static(double in)  { return cos(degrees_to_radians * in);}
-static double log2_static(double in)  { return log10(in)/log10(2.); }
-static double sind_static(double in)  { return sin(degrees_to_radians * in);}
-static double tand_static(double in)  { return tan(degrees_to_radians * in);}
-static double atand2_static(double in1, double in2) { return radians_to_degrees * atan2(in1,in2);}
-static double atanh_static(double in)
+STATIC_ROUTINE double acosd_Static(double in) { return radians_to_degrees * acos(in);}
+STATIC_ROUTINE double asind_Static(double in) { return radians_to_degrees * asin(in);}
+STATIC_ROUTINE double atand_Static(double in) { return radians_to_degrees * atan(in);}
+STATIC_ROUTINE double cosd_Static(double in)  { return cos(degrees_to_radians * in);}
+STATIC_ROUTINE double log2_Static(double in)  { return log10(in)/log10(2.); }
+STATIC_ROUTINE double sind_Static(double in)  { return sin(degrees_to_radians * in);}
+STATIC_ROUTINE double tand_Static(double in)  { return tan(degrees_to_radians * in);}
+STATIC_ROUTINE double atand2_Static(double in1, double in2) { return radians_to_degrees * atan2(in1,in2);}
+STATIC_ROUTINE double atanh_Static(double in)
 {
   double ans;
   if (in <= -1.0 || in >= 1.)
@@ -301,24 +301,24 @@ static double atanh_static(double in)
   return ans;
 }
 
-mathsingle(Atanh,atanh_static)
+mathsingle(Atanh,atanh_Static)
 mathsingle(Cosh,cosh)
-mathsingle(Log2,log2_static)
+mathsingle(Log2,log2_Static)
 mathsingle(Sinh,sinh)
 mathsingle(Tanh,tanh)
 mathsingle(Acos,acos)
-mathsingle(Acosd,acosd_static)
+mathsingle(Acosd,acosd_Static)
 mathsingle(Asin,asin)
-mathsingle(Asind,asind_static)
+mathsingle(Asind,asind_Static)
 mathsingle(Atan,atan)
-mathsingle(Atand,atand_static)
-mathsingle(Cosd,cosd_static)
+mathsingle(Atand,atand_Static)
+mathsingle(Cosd,cosd_Static)
 mathsingle(Floor,floor)
 mathsingle(Log10,log10)
-mathsingle(Sind,sind_static)
+mathsingle(Sind,sind_Static)
 mathsingle(Tan,tan)
-mathsingle(Tand,tand_static)
-mathsinglewithkind(Aint,trunc_static)
+mathsingle(Tand,tand_Static)
+mathsinglewithkind(Aint,trunc_Static)
 mathsinglewithkind(Anint,anint)
 mathboth(Cos,cos)
 mathboth(Exp,exp)
@@ -326,7 +326,7 @@ mathboth(Log,log)
 mathboth(Sin,sin)
 mathboth(Sqrt,sqrt)
 mathcomplex(Arg,atan2)
-mathcomplex(Argd,atand2_static)
+mathcomplex(Argd,atand2_Static)
 /*  CMS REPLACEMENT HISTORY, Element Tdi3MATH1.C */
 /*  *51   27-AUG-1996 07:42:11 TWF "Fix compile warnings" */
 /*  *50   21-AUG-1996 11:56:00 TWF "fix arg" */

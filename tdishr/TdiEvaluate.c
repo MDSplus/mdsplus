@@ -14,6 +14,7 @@ RULES OF THE GAME:
 	"out" must be an XD. It will be an XD-DSC, usually.
 */
 
+#include <STATICdef.h>
 #include "tdirefstandard.h"
 #include <tdimessages.h>
 #include <mdsshr.h>
@@ -21,9 +22,9 @@ RULES OF THE GAME:
 #include <stdlib.h>
 #include <string.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-static struct descriptor missing = {0,DTYPE_MISSING,CLASS_S,0};
+STATIC_CONSTANT struct descriptor missing = {0,DTYPE_MISSING,CLASS_S,0};
 
 extern int TdiGetIdent();
 extern int TdiEvaluate();

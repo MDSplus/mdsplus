@@ -3,6 +3,7 @@
 
 	Ken Klare, LANL P-4	(c)1989,1990,1991
 */
+#include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <strroutines.h>
@@ -10,19 +11,19 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiConcat();
 extern int TdiTranslate();
 extern int TdiGetLong();
 
 
-static DESCRIPTOR(asterisk,"*");
-static DESCRIPTOR(slash,"/");
-static DESCRIPTOR(slash_star,"/*");
-static DESCRIPTOR(star_slash,"*/");
-static DESCRIPTOR(bad,"?");
-static struct descriptor_xd BAD = {0,DTYPE_DSC,CLASS_XS,(struct descriptor *)&bad,0};
+STATIC_CONSTANT DESCRIPTOR(asterisk,"*");
+STATIC_CONSTANT DESCRIPTOR(slash,"/");
+STATIC_CONSTANT DESCRIPTOR(slash_star,"/*");
+STATIC_CONSTANT DESCRIPTOR(star_slash,"*/");
+STATIC_CONSTANT DESCRIPTOR(bad,"?");
+STATIC_CONSTANT struct descriptor_xd BAD = {0,DTYPE_DSC,CLASS_XS,(struct descriptor *)&bad,0};
 
 #define TdiRefStandard2(name) \
 int			name(	\
@@ -38,7 +39,7 @@ int			o2)\
 /********************************
 Units must match or one be empty.
 ********************************/
-static either(struct descriptor_xd uni[2]) {
+STATIC_ROUTINE either(struct descriptor_xd uni[2]) {
 
 	if (uni[0].pointer == 0) {
 		uni[0] = uni[1];
@@ -55,7 +56,7 @@ static either(struct descriptor_xd uni[2]) {
 /*******************************
 Discard units unless mismatched.
 *******************************/
-static only_mismatch(struct descriptor_xd uni[2]) {
+STATIC_ROUTINE only_mismatch(struct descriptor_xd uni[2]) {
 
 	either(uni);
 	if (uni[0].pointer && uni[0].pointer != (struct descriptor *)&bad) MdsFree1Dx(&uni[0],NULL);
@@ -64,7 +65,7 @@ static only_mismatch(struct descriptor_xd uni[2]) {
 /*****************
 Concatenate units.
 *****************/
-static void multiply(
+STATIC_ROUTINE void multiply(
 struct descriptor_xd *left_ptr,
 struct descriptor_xd *right_ptr) {
 int	status;
@@ -82,7 +83,7 @@ int	status;
 /*****************
 Reciprocate units.
 *****************/
-static void divide(
+STATIC_ROUTINE void divide(
 struct descriptor_xd *left_ptr,
 struct descriptor_xd *right_ptr) {
 int	status;

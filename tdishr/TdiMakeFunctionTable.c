@@ -8,7 +8,7 @@
 /*  *2    25-OCT-1994 08:21:07 TWF "Add TdiMAX_FUNCTION" */
 /*  *1    25-OCT-1994 08:18:33 TWF "Make TdiRefFunction table" */
 /*  CMS REPLACEMENT HISTORY, Element TDI$$MAKE_FUNCTION_TABLE.C */
-#include <mdsdescrip.h>
+#include <STATICdef.h>
 #include <mdsdescrip.h>
 #define COM 
 
@@ -16,7 +16,7 @@
 #include "opcbuiltins.h"
 #undef OPC
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 	/******************************
 	Shorthand for conversions:

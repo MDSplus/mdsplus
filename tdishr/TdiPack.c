@@ -17,6 +17,7 @@
 	Ken Klare, LANL CTR-7	(c)1990
 */
 
+#include <STATICdef.h>
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -25,7 +26,7 @@
 #include <mdsshr.h>
 #include <string.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiGetArgs();
 extern int TdiMasterData();

@@ -8,8 +8,9 @@
 #include <mdsdescrip.h>
 #include "tdinelements.h"
 #include <tdimessages.h>
+#include <STATICdef.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int IsRoprand();
 

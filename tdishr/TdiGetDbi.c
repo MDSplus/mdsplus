@@ -7,6 +7,7 @@
 
 	Ken Klare, LANL P-4	(c)1990,1991
 */
+#include <STATICdef.h>
 #include "tdirefstandard.h"
 #include <dbidef.h>
 #include <strroutines.h>
@@ -16,13 +17,13 @@
 #include <treeshr.h>
 #include <mdsshr.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-static DESCRIPTOR(pathtext, "PATH");
-static DESCRIPTOR(coloncolon, "::");
+STATIC_CONSTANT DESCRIPTOR(pathtext, "PATH");
+STATIC_CONSTANT DESCRIPTOR(coloncolon, "::");
 #define EOL {0,DbiEND_OF_LIST,0,0}
 
-static struct item {
+STATIC_CONSTANT struct item {
 	char		*item_name;
 	char		item_code;
 	unsigned char	item_dtype;
@@ -46,7 +47,7 @@ extern int TdiGetData();
 extern int TdiGetLong();
 extern int TdiEvaluate();
 
-static int		compare (
+STATIC_ROUTINE int		compare (
 struct descriptor	*s1,
 struct item		s2[1])
 {
@@ -126,7 +127,7 @@ DBI_ITM lst[] = {{sizeof(index),DbiINDEX,0,0},EOL,EOL};
 		USING(expression, [DEFAULT], [SHOTID], [EXPT])
 	Note that DEFAULT may be NID/PATH and will not be data at same.
 */
-static int fixup_nid( int *pin, /* NID pointer */int	arg, struct descriptor_d *pout)
+STATIC_ROUTINE int fixup_nid( int *pin, /* NID pointer */int	arg, struct descriptor_d *pout)
 {
 	int status = 0;
 	char *path = TreeGetPath(*pin);
@@ -140,7 +141,7 @@ static int fixup_nid( int *pin, /* NID pointer */int	arg, struct descriptor_d *p
 	return status;
 }
 
-static fixup_path(struct descriptor *pin, int	arg, struct descriptor_d *pout) {
+STATIC_ROUTINE fixup_path(struct descriptor *pin, int	arg, struct descriptor_d *pout) {
 	int status = 0;
 	char *pathin = MdsDescrToCstring(pin);
 	char *path = TreeAbsPath(pathin);
@@ -187,7 +188,7 @@ unsigned char	omits[] = {DTYPE_PATH,0};
 			status = TreeGetDbi(def_itm);
 			if (def_itm[0].pointer == NULL)
 			{
-				static DESCRIPTOR(top,"\\TOP");
+				STATIC_CONSTANT DESCRIPTOR(top,"\\TOP");
 				StrCopyDx(&def, &top);
 				status = 1;
 			}

@@ -10,8 +10,9 @@
 #include "tdirefstandard.h"
 #include <tdimessages.h>
 #include <mdsshr.h>
+#include <STATICdef.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiGetLong();
 extern int TdiEvaluate();

@@ -3,6 +3,7 @@
 
 	Ken Klare, LANL P-4	(c)1989,1990,1991
 */
+#include <STATICdef.h>
 #include "tdinelements.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"
@@ -14,7 +15,7 @@
 #include <mdsshr.h>
 #include <mds_stdarg.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiGetLong();
 extern int TdiGetArgs();
@@ -69,7 +70,7 @@ struct descriptor_xd	*out_ptr)
 {
 unsigned int	ind = 0xffffffff;
 int		status;
-static unsigned char dtype = (unsigned char)DTYPE_T;
+STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
 	status = TdiGetLong(in_ptr, &ind);
 	if (status & 1 && ind < (unsigned int)TdiFUNCTION_MAX) {
 	char *name_ptr = TdiRefFunction[ind].name;
@@ -89,10 +90,10 @@ int				Tdi3OpcodeString(
 struct descriptor		*in_ptr,
 struct descriptor_xd	*out_ptr)
 {
-static DESCRIPTOR(str1,"OPC""$");
+STATIC_CONSTANT DESCRIPTOR(str1,"OPC""$");
 unsigned int	ind = 0xffffffff;
 int		status;
-static unsigned char dtype = (unsigned char)DTYPE_T;
+STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
 	status = TdiGetLong(in_ptr, &ind);
 	if (status & 1 && ind < (unsigned int)TdiFUNCTION_MAX) {
 	char *name_ptr = TdiRefFunction[ind].name;

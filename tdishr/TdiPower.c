@@ -6,16 +6,17 @@
 	WARNING accuracy of float base not as good as OTS$ routines, which use double.
 	Ken Klare, LANL P-4	(c)1990,1991
 */
+#include <STATICdef.h>
 #include <string.h>
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 #include <mdsdescrip.h>
 #include "tdinelements.h"
 #include <tdimessages.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-static int one = 1;
-static struct descriptor one_dsc = {sizeof(one),DTYPE_L,CLASS_S,(char *)&one};
+STATIC_CONSTANT int one = 1;
+STATIC_CONSTANT struct descriptor one_dsc = {sizeof(one),DTYPE_L,CLASS_S,(char *)&one};
 
 extern int Tdi3Log();
 extern int TdiConvert();

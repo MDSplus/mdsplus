@@ -5,6 +5,7 @@
 
 	Ken Klare, LANL CTR-7	(c)1989,1990
 */
+#include <STATICdef.h>
 #ifdef HAVE_VXWORKS_H
 #include <stdio.h>
 #endif
@@ -12,10 +13,9 @@
 #include <libroutines.h>
 #include <tdimessages.h>
 #include <mdsdescrip.h>
-/*#include <mdsdescrip.h>*/
 #define COM 
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiIntrinsic();
 

@@ -37,12 +37,13 @@ int Tdi3Mod(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 ------------------------------------------------------------------------------*/
 
 
+#include <STATICdef.h>
 #include <math.h>
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
 #include <tdimessages.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int CvtConvertFloat();
 extern double WideIntToDouble();
@@ -92,9 +93,9 @@ extern void DoubleToWideInt();
   break;\
 }
 
-static const int roprand = 0x8000;
+STATIC_CONSTANT const int roprand = 0x8000;
 
-static double mod_d(double in1, double in2) {
+STATIC_ROUTINE double mod_d(double in1, double in2) {
   double intpart;
   modf((in2 != 0.0) ? in1/in2 : 0.,&intpart);
   return in1 - intpart * in2;
@@ -121,7 +122,7 @@ static double mod_d(double in1, double in2) {
   break;\
 }
 
-static void mod_bin(int size, int is_signed, char *in1, char *in2, char *out)
+STATIC_ROUTINE void mod_bin(int size, int is_signed, char *in1, char *in2, char *out)
 {
   double in1_d = WideIntToDouble(in1,size,is_signed);
   double in2_d = WideIntToDouble(in2,size,is_signed);

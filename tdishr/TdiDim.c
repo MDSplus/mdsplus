@@ -59,7 +59,7 @@ int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
 #include <mdstypes.h>
 #include <mdsdescrip.h>
 #include <tdimessages.h>
-
+#include <STATICdef.h>
 #ifdef HAVE_VXWORKS_H
 /*#define _int64  long long
 #define _int64u unsigned long long*/
@@ -67,13 +67,13 @@ int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
 #define LONG_LONG_CONSTANT(value) value##ll
 #endif
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiConvert(  ); 
 extern int Tdi3Subtract(  );
 extern int CvtConvertFloat();
 
-static int roprand = 0x8000;
+STATIC_CONSTANT int roprand = 0x8000;
 typedef struct { int longword[2]; } quadword;
 typedef struct { int longword[4]; } octaword;
 
@@ -431,8 +431,8 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 {
   int status;
   typedef struct { double l[2]; } octaword_aligned;
-  octaword_aligned zero;
-  static struct descriptor dzero = {0, 0, CLASS_D, 0};
+  STATIC_CONSTANT octaword_aligned zero = {0.,0.};
+  STATIC_CONSTANT struct descriptor dzero = {0, 0, CLASS_S, (void *)&zero};
 
   switch (in1->dtype)
   {
@@ -447,10 +447,8 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
   status = Tdi3Subtract(in1,in2,out);
    if (!(status & 1)) return status;
 
-  memset(&zero,0,sizeof(zero));  
   dzero.length = in1->length;
   dzero.dtype = in1->dtype;
-  dzero.pointer = (char *)(&zero);
 
   switch (in1->dtype)
   {

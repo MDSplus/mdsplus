@@ -39,6 +39,8 @@
 	path[b] subscripts whatever is at node. Same problem.
 	NOT and INOT of AND OR etc., form NAND or AND_NOT etc. See KNOT1 and KNOT2. Not after 9/25/89.
 */
+#include <STATICdef.h>
+#include "tdithreadsafe.h"
 #include <stdio.h>
 #include <string.h>
 #include "tdirefcat.h"
@@ -53,7 +55,7 @@
 #ifdef HAVE_VXWORKS_H
 #undef ERROR
 #endif
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern unsigned short
 	OpcAbort,
@@ -105,9 +107,7 @@ extern int TdiLexPath();
 #define _JUST3(opcode,arg1,arg2,arg3,out)	if (TdiYacc_BUILD(3, 3, opcode, &out, &arg1, &arg2, &arg3)) {yyerror(0);}
 #define _JUST4(opcode,arg1,arg2,arg3,arg4,out)	if (TdiYacc_BUILD(4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4)) {yyerror(0);}
 
-static struct marker _EMPTY_MARKER = {0,0};
-
-
+STATIC_THREADSAFE struct marker _EMPTY_MARKER = {0,0};
 # line 111 "TdiYacc.y"
 typedef union 	{struct marker mark;} YYSTYPE;
 #ifdef __cplusplus
@@ -176,14 +176,14 @@ extern int yychar;
 
 /* __YYSCLASS defines the scoping/storage class for global objects
  * that are NOT renamed by the -p option.  By default these names
- * are going to be 'static' so that multi-definition errors
+ * are going to be 'STATIC_THREADSAFE' so that multi-definition errors
  * will not occur with multiple parsers.
  * If you want (unsupported) access to internal names you need
  * to define this to be null so it implies 'extern' scope.
  * This should not be used in conjunction with -p.
  */
 #ifndef __YYSCLASS
-# define __YYSCLASS static
+# define __YYSCLASS STATIC_THREADSAFE
 #endif
 YYSTYPE yylval;
 __YYSCLASS YYSTYPE yyval;
@@ -738,8 +738,8 @@ __YYSCLASS char * yyreds[] =
 #define YYERROR		goto yyerrlab
 
 #ifndef __RUNTIME_YYMAXDEPTH
-#define YYACCEPT	return(0)
-#define YYABORT		return(1)
+#define YYACCEPT	{return(0);}
+#define YYABORT		{return(1);}
 #else
 #define YYACCEPT	{free_stacks(); return(0);}
 #define YYABORT		{free_stacks(); return(1);}
@@ -792,8 +792,8 @@ __YYSCLASS int *yys;			/* pointer to malloc'ed stack stack */
 #endif /* __STDC__ or __cplusplus */
 
 
-static int allocate_stacks(); 
-static void free_stacks();
+STATIC_ROUTINE int allocate_stacks(); 
+STATIC_ROUTINE void free_stacks();
 # ifndef YYINCREMENT
 # define YYINCREMENT (YYMAXDEPTH/2) + 10
 # endif
@@ -1218,7 +1218,7 @@ case 35:
 							yyval.mark.rptr->dscptrs[0]=(struct descriptor *)yypvt[-2].mark.rptr;
 							++yyval.mark.rptr->ndesc;}
 						else {TdiRefZone.l_status=TdiEXTRA_ARG; return(1);}
-					else	{static unsigned int vmlen = sizeof(struct descriptor_range);
+					else	{unsigned int vmlen = sizeof(struct descriptor_range);
 						LibGetVm(&vmlen, &yyval.mark.rptr, &TdiRefZone.l_zone);
 						yyval.mark.rptr->length = 0;
 						yyval.mark.rptr->dtype = DTYPE_RANGE;
@@ -1578,7 +1578,7 @@ case 122:
 
 # ifdef __RUNTIME_YYMAXDEPTH
 
-static int allocate_stacks() {
+STATIC_ROUTINE int allocate_stacks() {
 	/* allocate the yys and yyv stacks */
 	yys = (int *) malloc(yymaxdepth * sizeof(int));
 	yyv = (YYSTYPE *) malloc(yymaxdepth * sizeof(YYSTYPE));
@@ -1592,7 +1592,7 @@ static int allocate_stacks() {
 }
 
 
-static void free_stacks() {
+STATIC_ROUTINE void free_stacks() {
 	if (yys!=0) free((char *) yys);
 	if (yyv!=0) free((char *) yyv);
 }

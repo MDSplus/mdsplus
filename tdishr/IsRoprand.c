@@ -3,8 +3,9 @@
 /*  *1    27-AUG-1996 07:51:38 TWF "Test for reserved oprand" */
 /*  CMS REPLACEMENT HISTORY, Element ISROPRAND.C */
 #include <mdsdescrip.h>
+#include <STATICdef.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define f_float_exp(val) ((*(int *)val >> 7) & 0xff)
 #define f_float_sign(val) ((*(int *)val >> 15) &0x1)

@@ -10,13 +10,14 @@
 #include <libroutines.h>
 #include <strroutines.h>
 #include <tdimessages.h>
+#include <STATICdef.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiHash();
 
-static char		false = 0;
-static struct descriptor	false_dsc = {1,DTYPE_T,CLASS_S,(char *)&false};
+STATIC_CONSTANT char		false = 0;
+STATIC_CONSTANT struct descriptor	false_dsc = {1,DTYPE_T,CLASS_S,(char *)&false};
 /*------------------------------------------------------------------------------
 	F8X elemental, adjust string left, if there are blanks at left, and add blanks at right.
 		string = ADJUSTL(string)
@@ -133,7 +134,7 @@ int	source_step = (source_dsc.class == CLASS_A) ? source_dsc.length : 0;
 	delim_dsc.class = CLASS_S;
 	out_dsc.class = CLASS_S;
 	for (; status & 1 && --n >= 0;) {
-                static int zero = 0;
+                STATIC_CONSTANT int zero = 0;
 		number = *(int *)pnumber, pnumber += number_step;
 		status = StrElement(&out_dsc, &number, &delim_dsc, &source_dsc);
 		if (!(status & 1)) status = StrCopyR(&out_dsc, &zero, "");

@@ -22,6 +22,7 @@
 	NEED to think, should "TdiImpose" convert data type?
 	ASSUMES VECTOR works for any size.
 */
+#include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <tdimessages.h>
@@ -29,8 +30,9 @@
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <string.h>
+#include "tdithreadsafe.h"
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 
@@ -123,7 +125,7 @@ int	in_size, out_size, dimct, status = 1;
 }
 /*----------------------------------------------------------------------------
 */
-static struct descriptor missing_dsc = {0,DTYPE_MISSING,CLASS_S,0};
+STATIC_CONSTANT struct descriptor missing_dsc = {0,DTYPE_MISSING,CLASS_S,0};
 int				TdiGetData(
 unsigned char			omits[],
 struct descriptor		*their_ptr,
@@ -135,14 +137,16 @@ struct descriptor_signal	*keep;
 struct descriptor_xd	hold = EMPTY_XD;
 struct descriptor_r		*pin = (struct descriptor_r *)their_ptr;
 int				status = 1;
-static unsigned char OMIT_WINDOW[] = {DTYPE_WINDOW,0};
-static unsigned char OMIT_AXIS[] = {DTYPE_SLOPE,0};
-static recursion_count = 0;
+STATIC_CONSTANT unsigned char OMIT_WINDOW[] = {DTYPE_WINDOW,0};
+STATIC_CONSTANT unsigned char OMIT_AXIS[] = {DTYPE_SLOPE,0};
 
-	if (++recursion_count > 1800) return TdiRECURSIVE;
+ int *recursion_count = &((TdiThreadStatic())->TdiGetData_recursion_count);
+ *recursion_count = (*recursion_count + 1);
+	if ((*recursion_count) > 1800) return TdiRECURSIVE;
 	while (pin && (dtype = pin->dtype) == DTYPE_DSC) {
 		pin = (struct descriptor_r *)pin->pointer;
-		if (++recursion_count > 1800) return TdiRECURSIVE;
+                *recursion_count = (*recursion_count + 1);
+		if ((*recursion_count) > 1800) return TdiRECURSIVE;
 	}
  if (!pin) status = MdsCopyDxXd(&missing_dsc, &hold);
  else {
@@ -255,7 +259,7 @@ redo:			if (status & 1) status = TdiGetData(omits, (struct descriptor *)&hold, &
 		break;
 	}
  }
-	recursion_count = 0;
+	*recursion_count = 0;
 	/**********************************
 	Watch out for input same as output.
 	**********************************/
@@ -466,8 +470,8 @@ struct descriptor_r		*rptr;
 struct descriptor_xd	tmp = EMPTY_XD, uni[2];
 struct TdiCatStruct		cats[3];
 int				j;
-static DESCRIPTOR(blank_dsc, " ");
-static unsigned char omits[] = {
+STATIC_CONSTANT DESCRIPTOR(blank_dsc, " ");
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_DIMENSION,
 	DTYPE_RANGE,
 	DTYPE_SLOPE,
@@ -517,9 +521,9 @@ static unsigned char omits[] = {
 	Caution. The units field may be null.
 		status = TdiDataWithUnits(&in, &out MDS_END_ARG)
 */
-static DESCRIPTOR_WITH_UNITS(null,0,0);
+STATIC_CONSTANT DESCRIPTOR_WITH_UNITS(null,0,0);
 TdiRefStandard(Tdi1DataWithUnits)
-static unsigned char omits[] = {DTYPE_WITH_UNITS,0};
+STATIC_CONSTANT unsigned char omits[] = {DTYPE_WITH_UNITS,0};
 struct descriptor_with_units dwu = null;
 struct descriptor_xd data = EMPTY_XD, units = EMPTY_XD;
         dwu.data = null.data = (struct descriptor *)&missing_dsc;
@@ -556,8 +560,8 @@ struct descriptor_xd data = EMPTY_XD, units = EMPTY_XD;
 TdiRefStandard(Tdi1Validation)
 struct descriptor_r		*rptr;
 struct descriptor		*keep;
-static unsigned char omits[] = {DTYPE_PARAM,0};
-static unsigned char noomits[] = {0};
+STATIC_CONSTANT unsigned char omits[] = {DTYPE_PARAM,0};
+STATIC_CONSTANT unsigned char noomits[] = {0};
 
 	status = TdiGetData((unsigned char *)omits, list[0], out_ptr);
 	rptr = (struct descriptor_r *)out_ptr->pointer;

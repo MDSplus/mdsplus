@@ -11,14 +11,14 @@ extern unsigned short OpcLabel;
 extern unsigned short OpcStatement;
 extern int TdiON_ERROR;
 
-#include "STATICdef.h"
+#include <STATICdef.h>
 #include "tdirefstandard.h"
 #include <strroutines.h>
 #include <tdimessages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiIntrinsic();
 extern int TdiEvaluate();

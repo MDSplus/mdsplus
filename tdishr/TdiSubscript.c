@@ -32,6 +32,7 @@
 
 	Ken Klare, LANL P-4	(c)1990,1991
 */
+#include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include "tdinelements.h"
@@ -40,7 +41,7 @@
 #include <mdsshr.h>
 #include <string.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 extern struct descriptor *TdiRANGE_PTRS[3];
@@ -69,7 +70,7 @@ extern int TdiSubtract();
 typedef struct {int x[2];} quadw;
 
 TdiRefStandard(Tdi1Subscript)
-static DESCRIPTOR_A_COEFF(coeff0, 1, DTYPE_B, 0, MAXDIM, 1);
+STATIC_CONSTANT DESCRIPTOR_A_COEFF(coeff0, 1, DTYPE_B, 0, MAXDIM, 1);
 register char			*pin, *pout;
 int				bounded = 0, cmode = -1, dimct, highest = 0, highdim = 0, row;
 int                      	dim;
@@ -210,13 +211,11 @@ struct TdiCatStruct		cats[2];
 	if (highest <= 0) {
                 unsigned short llen = (unsigned short)0;
                 unsigned char dtype = (unsigned char)DTYPE_MISSING;
-                printf("In the first case highest is %d\n", highest);
 		if (arr.arsize) status = MdsGet1DxS(&pdat->length, &pdat->dtype, out_ptr);
 		else status = MdsGet1DxS(&llen, &dtype, out_ptr);
 		if (status & 1) _MOVC3(len, pin, out_ptr->pointer->pointer);
 	}
 	else {
-                printf("In the second case highest is %d\n", highest);
 		arr.dimct = (unsigned char)highest;
 		arr.aflags.coeff = (unsigned char)(highest > 1);
 		status = MdsGet1DxA((struct descriptor_a *)&arr, &pdat->length, &pdat->dtype, out_ptr);
@@ -231,7 +230,6 @@ struct TdiCatStruct		cats[2];
 		for (j = highest; --j > 0;) count[j] = 0;
 		pin -= len * *px[0];
 		row = arr.m[0] * sizeof(int);
-		printf("before inner px[0] is %d  highest is %d\n", px[0], highest);
  inner:		for (j = 0; j < row; j += sizeof(int))
 			_MOVC3(len, pin + len * *(int *)((char *)px[0]+j), pout), pout += len;
 		/******************************************************

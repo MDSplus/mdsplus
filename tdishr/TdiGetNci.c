@@ -22,6 +22,7 @@
 	NEED parameter for sizeof(NODE_NAME).
 	NEED to be careful about any new names. They could take away uniqueness from existing code.
 */
+#include <STATICdef.h>
 #ifndef HAVE_VXWORKS_H
 #undef MAX
 #endif
@@ -41,7 +42,7 @@
 #include "tdirefstandard.h"
 #include "tdinelements.h"
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern unsigned short OpcVector;
 
@@ -50,7 +51,7 @@ extern int TdiData();
 extern int TdiUpcase();
 extern int Tdi1Vector();
 
-static struct item {
+STATIC_CONSTANT struct item {
 	char		*item_name;
         unsigned int   	        item_mask;
 	unsigned int	        item_test;
@@ -131,7 +132,7 @@ static struct item {
 #define siztab sizeof(struct item)
 #define numtab (sizeof(table)/siztab)
 
-static struct usage_item {
+STATIC_CONSTANT struct usage_item {
 	char		*usage_name;
 	char		usage_code;
 }	usage_table[] = {
@@ -151,7 +152,7 @@ static struct usage_item {
 {"WINDOW",		TreeUSAGE_WINDOW,		},
 };
 
-static int		compare (
+STATIC_ROUTINE int		compare (
 struct descriptor	*s1,
 struct item		s2[1])
 {
@@ -173,8 +174,8 @@ char			c0;
 	return cmp;
 }
 TdiRefStandard(Tdi1GetNci)
-static struct descriptor_d	EMPTY_D = {0,DTYPE_T,CLASS_D,0};
-static DESCRIPTOR_A(arr0,1,DTYPE_B,0,960);
+STATIC_CONSTANT struct descriptor_d	EMPTY_D = {0,DTYPE_T,CLASS_D,0};
+STATIC_CONSTANT DESCRIPTOR_A(arr0,1,DTYPE_B,0,960);
 struct descriptor_a		*holda_ptr=0;
 struct descriptor_d		string = EMPTY_D;
 struct descriptor_xd	nids = EMPTY_XD, tmp = EMPTY_XD, holdxd = EMPTY_XD;
