@@ -46,7 +46,7 @@ install:
 	$(INSTALL) -m 755  @MAKEBINDIR@traverser @bindir@
 
 @MAKEBINDIR@traverser : $(OBJECTS)
-	 $(CC) -o $@ $(CFLAGS) $(OBJECTS) -L@MAKELIBDIR@ -lXmdsShr -lMdsdcl -lCdu -lTdiShr -lTreeShr -lMdsShr $(MLIBS) $(LIBS)
+	 $(CC) -o $@ $(CFLAGS) $(OBJECTS) -L@MAKELIBDIR@ -lXmdsShr -lMdsdcl -lTdiShr -lTreeShr -lMdsShr $(MLIBS) $(LIBS)
 
 @MAKEBINDIR@ :
 	mkdir @MAKEBINDIR@
