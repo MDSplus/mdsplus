@@ -85,6 +85,12 @@ typedef int mode_t;
 #define MDS_IO_REMOVE_K 8
 #define MDS_IO_RENAME_K 9
 
+#define MDS_IO_O_CREAT  0x00000040
+#define MDS_IO_O_TRUNC  0x00000200
+#define MDS_IO_O_EXCL   0x00000080
+#define MDS_IO_O_WRONLY 0x00000001
+#define MDS_IO_O_RDONLY 0x00004000
+#define MDS_IO_O_RDWR   0x00000002
 
 extern char *MdsDescrToCstring();
 extern void MdsFree();
@@ -1096,19 +1102,17 @@ static void ProcessMessage(Client *c, Message *message)
         int fd;
         char *filename = (char *)message->bytes;
         char *ptr;
-        int fopts = message->h.dims[1];
+        int options = message->h.dims[1];
+	int fopts;
         mode_t mode = message->h.dims[2];
         DESCRIPTOR_LONG(fd_d,0);
         fd_d.pointer = (char *)&fd;
-        if (O_CREAT == 0x0200) /* BSD */
-	{
-          if (fopts & 0100)
-            fopts = (fopts & ~0100) | O_CREAT;
-          if (fopts & 0200)
-            fopts = (fopts & ~0200) | O_EXCL;
-          if (fopts & 01000)
-            fopts = (fopts & ~01000) | O_TRUNC;
-        }
+	fopts=(options & MDS_IO_O_CREAT  ? O_CREAT  : 0) |
+	      (options & MDS_IO_O_TRUNC  ? O_TRUNC  : 0) |
+              (options & MDS_IO_O_EXCL   ? O_EXCL   : 0) |
+	      (options & MDS_IO_O_WRONLY ? O_WRONLY : 0) |
+	      (options & MDS_IO_O_RDONLY ? O_RDONLY : 0) |
+	      (options & MDS_IO_O_RDWR   ? O_RDWR   : 0);
         fd = open(filename,fopts | O_BINARY | O_RANDOM,mode);
         if (fd == -1)
 	{

@@ -30,6 +30,14 @@
 #include "treeshrp.h"
 #include <ncidef.h>
 #include <config.h>
+#ifndef O_BINARY
+#define O_BINARY 0x0
+#endif
+
+#ifndef O_RANDOM
+#define O_RANDOM 0x0
+#endif
+
 #ifdef SRB
 #define SRB_SOCKET 12345  /* this is the socket value used to indicate that
                              this file is an an SRB file.  Positive so that
@@ -916,6 +924,13 @@ STATIC_ROUTINE int  GetAnswerInfoTS(int sock, char *dtype, short *length, char *
 #define MDS_IO_REMOVE_K 8
 #define MDS_IO_RENAME_K 9
 
+#define MDS_IO_O_CREAT  0x00000040
+#define MDS_IO_O_TRUNC  0x00000200
+#define MDS_IO_O_EXCL   0x00000080
+#define MDS_IO_O_WRONLY 0x00000001
+#define MDS_IO_O_RDONLY 0x00004000
+#define MDS_IO_O_RDWR   0x00000002
+
 STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_t mode, int *sock)
 {
   int fd = -1;
@@ -937,7 +952,12 @@ STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_
 	if (options & O_EXCL)
           options = (options & ~O_EXCL) | 0200;
       }
-      info[1]=options;
+      info[1]=(options & O_CREAT  ? MDS_IO_O_CREAT  : 0) |
+	      (options & O_TRUNC  ? MDS_IO_O_TRUNC  : 0) |
+              (options & O_EXCL   ? MDS_IO_O_EXCL   : 0) |
+	      (options & O_WRONLY ? MDS_IO_O_WRONLY : 0) |
+	      (options & O_RDONLY ? MDS_IO_O_RDONLY : 0) |
+	      (options & O_RDWR   ? MDS_IO_O_RDWR   : 0);
       info[2]=(int)mode;
       status = SendArg(*sock,MDS_IO_OPEN_K,0,0,0,sizeof(info)/sizeof(int),info,filename);
       if (status & 1)
@@ -976,13 +996,6 @@ STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_
   }
   return fd;
 }
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-
-#ifndef O_RANDOM
-#define O_RANDOM 0
-#endif
 
 int MDS_IO_OPEN(char *filename, int options, mode_t mode)
 {
@@ -1010,7 +1023,9 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
       cmd_d.length=strlen(cmd);
       cmd_d.pointer=cmd;
       LibSpawn(&cmd_d,1,0);
-      //      system(cmd);
+      /*
+            system(cmd);
+      */
       free(cmd);
     }
 #endif
