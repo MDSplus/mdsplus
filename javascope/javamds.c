@@ -63,9 +63,9 @@ static char *MdsGetString(char *in)
     return out;
 }
 		    
-static double MdsGetDouble(char *in)
+static float MdsGetFloat(char *in)
 {
-    double ris = 0;
+    float ris = 0;
     int status;
     struct descriptor in_d = {0,DTYPE_T,CLASS_S,0};
     EMPTYXD(xd);
@@ -90,6 +90,7 @@ static double MdsGetDouble(char *in)
 	strcpy(error_message, "Not a scalar");
 	return 0;
     }
+
  
     switch(xd.pointer->dtype) {
 	case DTYPE_BU:
@@ -100,7 +101,7 @@ static double MdsGetDouble(char *in)
 	case DTYPE_L : ris = *(int *)xd.pointer->pointer; break;
 	case DTYPE_F : ris = *(float *)xd.pointer->pointer; break;
 	case DTYPE_D :
-	case DTYPE_G : ris = *(double *)xd.pointer->pointer; break; //Missing appropriate double conversion...
+	case DTYPE_G : ris = *(float *)xd.pointer->pointer; break; 
 	default:	strcpy(error_message, "Not a supported type");
 			return;
     }
@@ -110,9 +111,9 @@ static double MdsGetDouble(char *in)
 }
 
 
-static double *MdsGetDoubleArray(char *in, int *out_dim)
+static float *MdsGetFloatArray(char *in, int *out_dim)
 {
-    double *ris = NULL;
+    float *ris = NULL;
     int status, dim, i;
     struct descriptor in_d = {0,DTYPE_T,CLASS_S,0};
     EMPTYXD(xd);
@@ -141,7 +142,7 @@ static double *MdsGetDoubleArray(char *in, int *out_dim)
  
     arr_ptr = (struct descriptor_a *)xd.pointer;
     *out_dim = dim = arr_ptr->arsize/arr_ptr->length;
-    ris = (double *)malloc(sizeof(double) * dim);
+    ris = (float *)malloc(sizeof(float) * dim);
     switch(arr_ptr->dtype) {
 	case DTYPE_BU:
 	case DTYPE_B : 
@@ -159,16 +160,19 @@ static double *MdsGetDoubleArray(char *in, int *out_dim)
 		    ris[i] = ((int *)arr_ptr->pointer)[i];
 		break;
 	case DTYPE_F : 
+	case DTYPE_FS :
 		for(i = 0; i < dim; i++)
 		    ris[i] = ((float *)arr_ptr->pointer)[i];
 		break;
 	case DTYPE_D :
 	case DTYPE_G : //Not really correct...
-		memcpy(ris, arr_ptr->pointer, dim * sizeof(double));
+		memcpy(ris, arr_ptr->pointer, dim * sizeof(float));
 		break;
 	default:	strcpy(error_message, "Not a supported type");
 			return NULL;
     }
+
+
     MdsFree1Dx(&xd, NULL);
     error_message[0] = 0;
     return ris;
@@ -184,6 +188,7 @@ JNIEXPORT void JNICALL Java_LocalProvider_Update(JNIEnv *env, jobject obj, jstri
 
 JNIEXPORT jstring JNICALL Java_LocalProvider_ErrorString(JNIEnv *env, jobject obj)
 {
+
     return (*env)->NewStringUTF(env, error_message);
 }  
 
@@ -201,34 +206,35 @@ JNIEXPORT jstring JNICALL Java_LocalProvider_GetString(JNIEnv *env, jobject obj,
 
 
 
-JNIEXPORT jdoubleArray JNICALL Java_LocalProvider_GetDoubleArray(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jfloatArray JNICALL Java_LocalProvider_GetFloatArray(JNIEnv *env, jobject obj, jstring in)
 {
-    jdoubleArray jarr;
-    double zero = 0.;
+    jfloatArray jarr;
+    float zero = 0.;
     const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
     int dim;
-    double *out_ptr = MdsGetDoubleArray((char *)in_char, &dim);
+    float *out_ptr;
+
+
+    out_ptr = MdsGetFloatArray((char *)in_char, &dim);
 
     (*env)->ReleaseStringUTFChars(env, in, in_char);
 
     if(error_message[0]) //Return a dummy vector without elements
     {
-	jarr = (*env)->NewDoubleArray(env, 1);
-	(*env)->SetDoubleArrayRegion(env, jarr, 0, dim, &zero);
-	return jarr;
+	return NULL;
     }
-    jarr = (*env)->NewDoubleArray(env, dim);
-    (*env)->SetDoubleArrayRegion(env, jarr, 0, dim, out_ptr);
+    jarr = (*env)->NewFloatArray(env, dim);
+    (*env)->SetFloatArrayRegion(env, jarr, 0, dim, out_ptr);
     return jarr;
 }
 
 
-JNIEXPORT jdouble JNICALL Java_LocalProvider_GetDouble(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jfloat JNICALL Java_LocalProvider_GetFloat(JNIEnv *env, jobject obj, jstring in)
 {
-    double ris;
+    float ris;
     const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
 
-    ris = MdsGetDouble((char *)in_char);
+    ris = MdsGetFloat((char *)in_char);
     (*env)->ReleaseStringUTFChars(env, in, in_char);
     return ris;
 }
