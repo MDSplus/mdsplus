@@ -27,8 +27,8 @@
        Management.
 
 -----------------------------------------------------------------------------*/
-#include <mdsshr.h>
 #include <mdsdescrip.h>
+#include <mdsshr.h>
 #include <string.h>
 
 int       MdsCompareXd(struct descriptor * dsc1_ptr, struct descriptor * dsc2_ptr)

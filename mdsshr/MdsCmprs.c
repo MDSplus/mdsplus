@@ -73,6 +73,11 @@
 #define MAXY 32			/*maximum bits that we can pack*/
 #define BITSX 10		/*number of bits for run length*/
 #define BITSY 6			/*number of bits in y 0-32*/
+
+#ifdef __hpux__
+#pragma HP_ALIGN NOPADDING PUSH
+#endif
+
 typedef union
 {
   int       l;
@@ -97,6 +102,10 @@ struct HEADER
   union Y_X n;
   union Y_X e;
 };
+
+#ifdef __hpux__
+#pragma HP_ALIGN POP
+#endif
 
 static int FIELDSY = BITSY + BITSX;
 static int FIELDSX = 2;
@@ -315,7 +324,7 @@ Do this in runs.
     header.n.fields.y = yn;
     header.e.fields.x = xe;
     header.e.fields.y = ye - 1;
-    MdsPk((char *) &FIELDSY, (int *) &FIELDSX, (int *) ppack, (int *) &header, (int *) bit_ptr);
+    MdsPk((char *) &FIELDSY, &FIELDSX, (int *) ppack, (int *) &header, (int *) bit_ptr);
     MdsPk((char *) &yn, (int *) &xn, (int *) ppack, (int *) diff, (int *) bit_ptr);
     MdsPk((char *) &ye, (int *) &xe, (int *) ppack, (int *) exce, (int *) bit_ptr);
   }
@@ -366,9 +375,10 @@ Note the sign-extended unpacking.
 ********************************/
   while (nitems > 0)
   {
+    char nbits = (char)FIELDSY;
     if (*bit_ptr + 2 * (BITSY + BITSX) > limit)
       break;
-    MdsUnpk((char *) &FIELDSY, (int *) &FIELDSX, (int *) ppack, (int *) &header, (int *) bit_ptr);
+    MdsUnpk(&nbits, (int *) &FIELDSX, (int *) ppack, (int *) &header, (int *) bit_ptr);
     xhead = j = header.n.fields.x + 1;
     if (j > nitems)
       j = nitems;
@@ -379,12 +389,14 @@ Note the sign-extended unpacking.
     if (*bit_ptr - ye * xe - yn * j > limit)
       break;
     nitems -= j;
-    MdsUnpk((char *) &yn, (int *) &xn, (int *) ppack, (int *) diff, (int *) bit_ptr);
+    nbits = (char)yn;
+    MdsUnpk(&nbits, (int *) &xn, (int *) ppack, (int *) diff, (int *) bit_ptr);
     if (xe)
     {
       *bit_ptr -= yn * (xhead - j);
       pe = exce;
-      MdsUnpk((char *) &ye, (int *) &xe, (int *) ppack, (int *) pe, (int *) bit_ptr);
+      nbits = (char)ye;
+      MdsUnpk(&nbits, &xe, (int *) ppack, (int *) pe, (int *) bit_ptr);
       mark = -1 << -yn - 1;
     }
 
