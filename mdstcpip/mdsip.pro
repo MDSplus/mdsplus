@@ -17,6 +17,7 @@ Function MdsIPImage
               return,getenv('MDS_SHLIB_PATH')+'/libMdsIpShr.sl'
               end
     'MacOS': return,!dir+'libMdsIpShr.lib'
+    'linux': return,'/home_ejet/ntcdemo/twf/mdsplus/shlib/libMdsIpShr.so'
     else  : message,'MDS is not supported on this platform',/IOERROR 
   endcase
 end
@@ -92,7 +93,7 @@ pro mds$connect,host,status=status,quiet=quiet,port=port
   endif else if getenv('mdsip') eq '' then begin
     setenv_,'mdsip=8000'
   endif
-
+  !ERROR_STATE.MSG="About to connect"
   sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'ConnectToMds',host,value=[byte(!version.os ne 'windows')])
   sockmin=1l-(!version.os eq 'MacOS')
   if (sock ge sockmin) then begin
