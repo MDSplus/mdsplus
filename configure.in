@@ -329,7 +329,8 @@ then
 	AC_MSG_RESULT(yes)
 else
 	AC_MSG_RESULT(no)
-	JNITYPE="$SHARETYPE"
+	SHARETYPEJNI="$SHARETYPE"
+        LINKJNI="$LINKSHARED"
 fi
 
 dnl Checks for libraries.
