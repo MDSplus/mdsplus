@@ -1,6 +1,14 @@
 module ACTIONS
     names = case_sensitive
 
+value
+	XmdsNautoPut : argument("autoPut",boolean);
+	XmdsNnid     : argument("nid",integer);
+        XmdsNusage   : argument("usage",integer);
+        TreeUSAGE_ACTION : 2;
+procedure
+	XmdsCreateXdBoxDialog;
+
 object
     actions: XmMainWindow 
         {
@@ -71,7 +79,7 @@ object
                     XmList action_list;
                     };
                 };
-            unmanaged XmdsXdBoxDialog modify_xdbox;
+            unmanaged user_defined modify_xdbox;
             };
         };
     action_list: XmList 
@@ -93,7 +101,7 @@ object
                 };
             };
         };
-    modify_xdbox: XmdsXdBoxDialog 
+    modify_xdbox: user_defined procedure XmdsCreateXdBoxDialog 
         {
         arguments
             {

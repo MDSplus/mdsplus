@@ -15,7 +15,7 @@ all : ../bin/actions \
 	mkdir ../bin
 
 ../uid/actions.uid : actions.uil
-	uil -wmd ../shlib/xmdsuil.wmd -o $@ actions.uil
+	uil -o $@ actions.uil
 
 clean :
 	- rm *.o
