@@ -1128,7 +1128,8 @@ static int FindFileEnd(FindFileCtx *ctx)
 
 #define CSTRING_FROM_DESCRIPTOR(cstring, descr)\
   cstring=malloc(descr->length+1);\
-  strncpy(cstring, descr->pointer,descr->length);
+  strncpy(cstring, descr->pointer,descr->length);\
+  cstring[descr->length] = '\0';
 
 static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int caseBlind)
 {
@@ -1149,6 +1150,7 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int cas
   else {
     lctx->env = malloc(colon-fspec+1);
     strncpy(lctx->env, fspec, colon-fspec);
+    lctx->env[colon-fspec] = '\0';
   }
   if (strlen(colon+1)==0) {
     if (lctx->env) free(lctx->env);
@@ -1194,6 +1196,7 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int cas
           int len = ((cptr=index(ptr, ';'))==0) ? strlen(ptr) : cptr-ptr; 
 	  lctx->env_strs[i] = malloc(len+1);
           strncpy(lctx->env_strs[i], ptr, len);
+          lctx->env_strs[i][len] = '\0';
           ptr=cptr+1;
 	}
       }
