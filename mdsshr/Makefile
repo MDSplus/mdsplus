@@ -17,10 +17,13 @@ OBJECTS = \
 
 EXPORTS = MdsShr.export
 
-mdsshr : ../shlib ../shlib/libMdsShr.$(SHARE_TYPE)
+mdsshr : ../shlib ../shlib/libMdsShr.$(SHARE_TYPE) ../shlib/libMdsShr.a
 
 ../shlib/libMdsShr.$(SHARE_TYPE) : $(OBJECTS) 
 	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc $(DLD)
+
+../shlib/libMdsShr.a : $(OBJECTS)
+	$(AR) -r $@ $(OBJECTS)
 
 ../shlib :
 	mkdir ../shlib
