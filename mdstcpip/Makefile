@@ -4,10 +4,10 @@ OBJECTS = \
 	mdsipshr.o
 
 t : t.c ../shlib/libMdsIpShr.$(SHARE_TYPE)
-	cc -o $@ $(CFLAGS) t.c -L../shlib -lMdsIpShr 
+	cc -o $@ $(CFLAGS) t.c -L../shlib -lMdsIpShr $(SOCKET_LIB)
 
 ../shlib/libMdsIpShr.$(SHARE_TYPE) : $(OBJECTS) ../shlib
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc $(SOCKET_LIB)
 
 ../shlib :
 	mkdir ../shlib

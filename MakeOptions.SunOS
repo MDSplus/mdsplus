@@ -5,3 +5,4 @@ SHARE_TYPE = so
 MAKE_DEPEND = cc $(CFLAGS) -xM {} > .depend \;
 LD_SHARED_LIB_OPTIONS = -G -ldl
 LD = cc
+SOCKET_LIB = -lsocket
