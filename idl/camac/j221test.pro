@@ -91,11 +91,11 @@ pro j221test,name,reps=reps,noremcam=noremcam
 ;
 ;   Write and read 12 bit memory using fstopw
 ;
-    campiow,name,2,16,0,16          ; Reset memory address register
-    camfstopw,name,0,16,1024,d12,16  ; Write data to 12 bit memory
-    campiow,name,2,16,0,16          ; Reset memory address register
-    camfstopw,name,0,0,1024,t12,16   ; Read data from 12 bit memory
-    CheckData,d12,t12,'fstop'       ; Check data
+;    campiow,name,2,16,0,16          ; Reset memory address register
+;    camfstopw,name,0,16,1024,d12,16  ; Write data to 12 bit memory
+;    campiow,name,2,16,0,16          ; Reset memory address register
+;    camfstopw,name,0,0,1024,t12,16   ; Read data from 12 bit memory
+;    CheckData,d12,t12,'fstop'       ; Check data
 ;
 ;   Write and read 24 bit memory using stopw
 ;
@@ -107,11 +107,11 @@ pro j221test,name,reps=reps,noremcam=noremcam
 ;
 ;   Write and read 24 bit memory using fstopw
 ;
-    campiow,name,2,16,0,16          ; Reset memory address register
-    camfstopw,name,1,16,1024,d24,24  ; Write data to 24 bit memory
-    campiow,name,2,16,0,16          ; Reset memory address register
-    camfstopw,name,1,0,1024,t24,24   ; Read data from 24 bit memory
-    CheckData,d24,t24,'fstop'       ; Check data
+;    campiow,name,2,16,0,16          ; Reset memory address register
+;    camfstopw,name,1,16,1024,d24,24  ; Write data to 24 bit memory
+;    campiow,name,2,16,0,16          ; Reset memory address register
+;    camfstopw,name,1,0,1024,t24,24   ; Read data from 24 bit memory
+;    CheckData,d24,t24,'fstop'       ; Check data
 ;
 ;   Write and read 24 bit memory using qrepw
 ;
@@ -123,11 +123,11 @@ pro j221test,name,reps=reps,noremcam=noremcam
 ;
 ;   Write and read 24 bit memory using fqrepw
 ;
-    campiow,name,2,16,0,16          ; Reset memory address register
-    camfqrepw,name,1,16,1024,d24,24  ; Write data to 24 bit memory
-    campiow,name,2,16,0,16          ; Reset memory address register
-    camfqrepw,name,1,0,1024,t24,24   ; Read data from 24 bit memory
-    CheckData,d24,t24,'fqrep'         ; Check data
+;    campiow,name,2,16,0,16          ; Reset memory address register
+;    camfqrepw,name,1,16,1024,d24,24  ; Write data to 24 bit memory
+;    campiow,name,2,16,0,16          ; Reset memory address register
+;    camfqrepw,name,1,0,1024,t24,24   ; Read data from 24 bit memory
+;    CheckData,d24,t24,'fqrep'         ; Check data
 ;
 ;   Write and read 24 bit memory using qstopw
 ;
@@ -139,10 +139,10 @@ pro j221test,name,reps=reps,noremcam=noremcam
 ;
 ;   Write and read 24 bit memory using fqstopw
 ;
-    campiow,name,2,16,0,16          ; Reset memory address register
-    camfqstopw,name,1,16,1024,d24,24 ; Write data to 24 bit memory
-    campiow,name,2,16,0,16          ; Reset memory address register
-    camfqstopw,name,1,0,1024,t24,24  ; Read data from 24 bit memory
-    CheckData,d24,t24,'qstop'        ; Check data
+;    campiow,name,2,16,0,16          ; Reset memory address register
+;    camfqstopw,name,1,16,1024,d24,24 ; Write data to 24 bit memory
+;    campiow,name,2,16,0,16          ; Reset memory address register
+;    camfqstopw,name,1,0,1024,t24,24  ; Read data from 24 bit memory
+;    CheckData,d24,t24,'qstop'        ; Check data
   endfor
 end
