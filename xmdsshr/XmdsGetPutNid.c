@@ -192,7 +192,7 @@ int XmdsPutNidValue(int nid,unsigned short length,unsigned char dtype,char *poin
     dsc.length = length;
     dsc.dtype = dtype;
     dsc.pointer = pointer;
-    return TreePutRecord(nid,&dsc);
+    return TreePutRecord(nid,&dsc,0);
   }
   else
     return 1;
@@ -219,7 +219,7 @@ int XmdsPutNidSText(Widget w,int nid,char *originalValue)
     struct descriptor dsc = {0,DTYPE_T,CLASS_S,(char *) 0};
     dsc.length = strlen(value);
     dsc.pointer = value;
-    return TreePutRecord(nid,&dsc);
+    return TreePutRecord(nid,&dsc,0);
   }
 }
 

@@ -321,7 +321,7 @@ int XmdsNidOptionMenuPut(Widget w)
 	TreeGetRecord(nid,&xd);
 	if ((xd.l_length || button_xd->l_length) ?
 	    !(MdsCompareXd((struct descriptor *) & xd,(struct descriptor *) button_xd) & 1) : 0)
-	  status = TreePutRecord(nid,(struct descriptor *) button_xd);
+	  status = TreePutRecord(nid,(struct descriptor *) button_xd,0);
 	else
 	  status = 1;
       }
