@@ -12,7 +12,7 @@ import java.util.*;
 
 public class LoadPulse
 {
-    static final String confFileName = "l:\\manduchi\\LoadPulse.conf";
+    static final String confFileName = "LoadPulse.conf";
 
     static class NodeDescriptor
     {

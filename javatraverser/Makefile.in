@@ -72,7 +72,10 @@ RFXParametersSetup.java\
 CAMERASetup.java\
 FLU_GAINSetup.java\
 DFLUSetupSetup.java\
-EM_FLU_TESTSetup.java
+EM_FLU_TESTSetup.java\
+BOLOSetup.java\
+XRAYSetup.java\
+SXMSetup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
