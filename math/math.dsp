@@ -203,7 +203,7 @@ SOURCE=".\csint-win32.f"
 
 !IF  "$(CFG)" == "math - Win32 Release"
 
-# Begin Custom Build - Compiling
+# Begin Custom Build - Compiling...
 IntDir=.\Release
 InputPath=".\csint-win32.f"
 InputName=csint-win32
@@ -217,7 +217,7 @@ InputName=csint-win32
 
 !ELSEIF  "$(CFG)" == "math - Win32 Debug"
 
-# Begin Custom Build - Compiling
+# Begin Custom Build - Compiling...
 IntDir=.\Debug
 InputPath=".\csint-win32.f"
 InputName=csint-win32
@@ -549,14 +549,14 @@ InputName=dsrch
 # End Source File
 # Begin Source File
 
-SOURCE=.\dsvrgn.f
+SOURCE=".\dsvrgn-win32.f"
 
 !IF  "$(CFG)" == "math - Win32 Release"
 
-# Begin Custom Build - Compiling
+# Begin Custom Build - Compiling...
 IntDir=.\Release
-InputPath=.\dsvrgn.f
-InputName=dsvrgn
+InputPath=.\dsvrgn-win32.f
+InputName=dsvrgn-win32
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
@@ -567,10 +567,10 @@ InputName=dsvrgn
 
 !ELSEIF  "$(CFG)" == "math - Win32 Debug"
 
-# Begin Custom Build - Compiling
+# Begin Custom Build - Compiling...
 IntDir=.\Debug
-InputPath=.\dsvrgn.f
-InputName=dsvrgn
+InputPath=.\dsvrgn-win32.f
+InputName=dsvrgn-win32
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
@@ -646,39 +646,6 @@ InputName=isrch
 	echo $(IntDir)\$(InputName).f 
 	set path=%path%;%G77_DIR%\bin 
 	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w 
-	
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=".\librtl-win32.f"
-
-!IF  "$(CFG)" == "math - Win32 Release"
-
-# Begin Custom Build - Compiling
-IntDir=.\Release
-InputPath=".\librtl-win32.f"
-InputName=librtl-win32
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	set path=%path%;%g77_dir%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -fno-underscoring    -fcase-preserve 
-	
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "math - Win32 Debug"
-
-# Begin Custom Build - Compiling
-IntDir=.\Debug
-InputPath=".\librtl-win32.f"
-InputName=librtl-win32
-
-"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	set path=%path%;%g77_dir%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -fno-underscoring    -fcase-preserve 
 	
 # End Custom Build
 
@@ -936,14 +903,14 @@ InputName=ssrch
 # End Source File
 # Begin Source File
 
-SOURCE=.\svign.f
+SOURCE=".\svign-win32.f"
 
 !IF  "$(CFG)" == "math - Win32 Release"
 
-# Begin Custom Build - Compiling
+# Begin Custom Build - Compiling...
 IntDir=.\Release
-InputPath=.\svign.f
-InputName=svign
+InputPath=.\svign-win32.f
+InputName=svign-win32
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
@@ -954,10 +921,10 @@ InputName=svign
 
 !ELSEIF  "$(CFG)" == "math - Win32 Debug"
 
-# Begin Custom Build - Compiling
+# Begin Custom Build - Compiling...
 IntDir=.\Debug
-InputPath=.\svign.f
-InputName=svign
+InputPath=.\svign-win32.f
+InputName=svign-win32
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
@@ -971,14 +938,14 @@ InputName=svign
 # End Source File
 # Begin Source File
 
-SOURCE=.\svrgn.f
+SOURCE=".\svrgn-win32.f"
 
 !IF  "$(CFG)" == "math - Win32 Release"
 
-# Begin Custom Build - Compiling
+# Begin Custom Build - Compiling...
 IntDir=.\Release
-InputPath=.\svrgn.f
-InputName=svrgn
+InputPath=.\svrgn-win32.f
+InputName=svrgn-win32
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
@@ -989,10 +956,10 @@ InputName=svrgn
 
 !ELSEIF  "$(CFG)" == "math - Win32 Debug"
 
-# Begin Custom Build - Compiling
+# Begin Custom Build - Compiling...
 IntDir=.\Debug
-InputPath=.\svrgn.f
-InputName=svrgn
+InputPath=.\svrgn-win32.f
+InputName=svrgn-win32
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo $(IntDir)\$(InputName).f 
