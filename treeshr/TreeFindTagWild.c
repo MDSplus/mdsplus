@@ -38,6 +38,8 @@ TreeFindTagEnd(void **ctx);
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
+extern int MdsCopyDxXd();
+
 extern void *DBID;
 typedef struct tag_search
 {
@@ -73,6 +75,7 @@ int TreeFindTagWildDsc(char *wild, int *nidout, void **ctx_inout, struct descrip
     }
     else
       status = 0;
+  return status;
 }
 
 char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)

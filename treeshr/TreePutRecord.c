@@ -132,11 +132,11 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
         unsigned int zero[2] = {0,0};
 #ifdef _big_endian
         unsigned int addin[2] = {0x7c9567,0x4beb4000};
+        unsigned int time_inserted[2];
 #else
         unsigned int addin[2] = {0x4beb4000,0x7c9567};
 #endif
         unsigned int temp[2] = {0,0};
-        unsigned int time_inserted[2];
         bitassign(dblist->setup_info, local_nci.flags, NciM_SETUP_INFORMATION);
 	local_nci.owner_identifier = saved_uic;
 	/* VMS time = unixtime * 10,000,000 + 0x7c95674beb4000q */

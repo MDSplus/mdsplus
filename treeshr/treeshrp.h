@@ -603,6 +603,8 @@ extern int TreeEstablishRundownEvent(TREE_INFO *info);
 extern DATA_FILE *TreeGetVmDatafile();
 extern int TreeOpenNciW(TREE_INFO *info, int tmpfile);
 extern int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile);
+extern void TreeSerializeNciIn(char *in, struct nci *out);
+extern void TreeSerializeNciOut(struct nci *in, char *out);
 extern int TreeLockNci(TREE_INFO *info, int readonly, int nodenum);
 extern int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum);
 extern int TreeLockDatafile(TREE_INFO *info, int readonly, int where);

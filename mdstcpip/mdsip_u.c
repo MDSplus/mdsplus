@@ -20,7 +20,7 @@ extern char *ctime();
 #define MAX_ARGS 256
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#if !defined(_WIN95)
+#if !defined(_WIN32)
 #include <pwd.h>
 #define closesocket close
 #endif
@@ -572,7 +572,7 @@ static void ClientEventAst(MdsEventList *e)
 
 static void ExecuteMessage(Client *c)
 {
-  int status;
+  int status=1;
   static EMPTYXD(emptyxd);
   struct descriptor_xd *xd;
   static DESCRIPTOR(eventastreq,EVENTASTREQUEST);
