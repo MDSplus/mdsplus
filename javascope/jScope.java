@@ -446,12 +446,14 @@ public class jScope extends Frame implements ActionListener, ItemListener, Windo
 		setup.data_server_address = "Local";
 	    } catch (Throwable ex) {
 		not_sup_local = true;
-		servers_m.getItem(0).enable(false); //local server sempre indice 0
+		//servers_m.getItem(0).enable(false); //local server sempre indice 0
+		servers_m.getItem(0).setEnabled(false); //local server sempre indice 0
 		db = new NetworkProvider(DEFAULT_IP_SERVER);
 		setup.data_server_address = DEFAULT_IP_SERVER;
 	    }
 	} else {
-	    servers_m.getItem(0).enable(false); //local server sempre indice 0
+	    //servers_m.getItem(0).enable(false); //local server sempre indice 0
+	    servers_m.getItem(0).setEnabled(false); //local server sempre indice 0
 	    db = new NetworkProvider(DEFAULT_IP_SERVER);
 	    setup.data_server_address = DEFAULT_IP_SERVER;
 	} 
@@ -1460,7 +1462,7 @@ class WindowDialog extends ScopePositionDialog {
 
 
 class ServerDialog extends ScopePositionDialog {
-    private List server_list;
+    private java.awt.List server_list;
     private Button add_b, remove_b, cancel_b;
     private Label server_label;
     private TextField server_ip;
@@ -1484,7 +1486,7 @@ class ServerDialog extends ScopePositionDialog {
         c.gridwidth = GridBagConstraints.REMAINDER;
 	c.fill =  GridBagConstraints.BOTH;
 	c.gridheight = 10;
-	server_list = new List(5, false);
+	server_list = new java.awt.List(5, false);
 	server_list.addItemListener(this);
 	server_list.addKeyListener(this);
 	gridbag.setConstraints(server_list, c);

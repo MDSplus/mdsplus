@@ -6,7 +6,7 @@ import java.io.*;
 
 
 class ColorDialog extends ScopePositionDialog  {
-    List colorList;
+    java.awt.List colorList;
     TextField colorName;
     Choice color;
     Slider red, green, blue;
@@ -102,7 +102,7 @@ class ColorDialog extends ScopePositionDialog  {
 
 	c.gridwidth = 2;
 	c.gridheight = 5;
-	colorList = new List(12, false);
+	colorList = new java.awt.List(12, false);
 	colorList.addItemListener(this);
 	colorList.addKeyListener(this);			
         gridbag.setConstraints(colorList, c);
