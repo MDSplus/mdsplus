@@ -67,7 +67,6 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci);
 static int FixupNid(NID *nid, unsigned char *tree, struct descriptor *path);
 static int FixupPath();
-static int AddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans);
 static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr);
 static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr);
 static int compress_utility;
@@ -455,36 +454,6 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
  }
   return status;
 }
-
-#ifdef WORDS_BIGENDIAN
-#define swapquad(in) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[1]; iptr[1]=stmp;}
-#else
-#define swapquad(in) 
-#endif
-
-static int AddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
-{
-  int i;
-  int carry=0;
-  unsigned int la[2];
-  unsigned int lb[2];
-  la[0] = a[0];
-  la[1] = a[1];
-  lb[0] = b[0];
-  lb[1] = b[1];
-  swapquad(la);
-  swapquad(lb);
-  for (i=0; i<2; i++) {
-    unsigned int _a = la[i];
-    unsigned int _b = lb[i];
-    ans[i] = _a + _b + carry;
-    carry = (ans[i] <= _a) && ((_b != 0) || (carry != 0));
-  }
-  swapquad(ans);
-  return !carry;
-}
-
-
 
 /*-----------------------------------------------------------------
 	Recursively compact all descriptors and adjust pointers.

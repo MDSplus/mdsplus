@@ -72,8 +72,7 @@ typedef struct nci
 #define PACK __attribute__ ((packed))
 #endif
 
-
-#if defined(_big_endian)
+#if defined(WORDS_BIGENDIAN)
 
 #define LoadShort(in,outp) ((char *)(outp))[0] = ((char *)&in)[1]; ((char *)(outp))[1] = ((char *)&in)[0]
 #define LoadInt(in,outp)   ((char *)(outp))[0] = ((char *)&in)[3]; ((char *)(outp))[1] = ((char *)&in)[2]; \
@@ -83,32 +82,13 @@ typedef struct nci
                            (outp)[4] = ((char *)&in)[3]; (outp)[5] = ((char *)&in)[2]; \
                            (outp)[6] = ((char *)&in)[1]; (outp)[7] = ((char *)&in)[0]
 
-static _int64 swapquad(char *in_c)
-{
-  _int64 out;
-  char *out_c = (char *)&out;
-  int i;
-  for (i=0;i<8;i++) out_c[7-i] = in_c[i];
-  return out;
-}
-
-static int swapint(char *in_c)
-{
-  int out;
-  char *out_c = (char *)&out;
-  int i;
-  for (i=0;i<4;i++) out_c[3-i] = in_c[i];
-  return out;
-}
-
-static int swapshort(char *in_c)
-{
-  short out;
-  char *out_c = (char *)&out;
-  int i;
-  for (i=0;i<2;i++) out_c[1-i] = in_c[i];
-  return out;
-}
+#define swapquad(ptr) ( (((_int64)((unsigned char *)ptr)[0]) << 56) | (((_int64)((unsigned char *)ptr)[1]) << 48) | \
+                        (((_int64)((unsigned char *)ptr)[2]) << 40) | (((_int64)((unsigned char *)ptr)[3]) << 32) | \
+                        (((_int64)((unsigned char *)ptr)[4]) << 24) | (((_int64)((unsigned char *)ptr)[5]) << 16) | \
+                        (((_int64)((unsigned char *)ptr)[6]) <<  8) | (((_int64)((unsigned char *)ptr)[7]) ))
+#define swapint(ptr) ( (((int)((unsigned char *)ptr)[0]) << 24) | (((int)((unsigned char *)ptr)[1]) << 16) | \
+                       (((int)((unsigned char *)ptr)[2]) <<  8) | (((int)((unsigned char *)ptr)[3]) ))
+#define swapshort(ptr) ( (((short)((unsigned char *)ptr)[0]) << 8) | (((short)((unsigned char *)ptr)[1]) ))
 
 #else
 
@@ -120,32 +100,13 @@ static int swapshort(char *in_c)
                            (outp)[4] = ((char *)&in)[4]; (outp)[5] = ((char *)&in)[5]; \
                            (outp)[6] = ((char *)&in)[6]; (outp)[7] = ((char *)&in)[7]
 
-static int swapint(char *in_c)
-{
-  int out;
-  char *out_c = (char *)&out;
-  int i;
-  for (i=0;i<4;i++) out_c[i] = in_c[i];
-  return out;
-}
-
-static int swapshort(char *in_c)
-{
-  short out;
-  char *out_c = (char *)&out;
-  int i;
-  for (i=0;i<2;i++) out_c[i] = in_c[i];
-  return out;
-}
-
-static _int64 swapquad(char *in_c)
-{
-  _int64 out;
-  char *out_c = (char *)&out;
-  int i;
-  for (i=0;i<8;i++) out_c[i] = in_c[i];
-  return out;
-}
+#define swapquad(ptr) ( (((_int64)((unsigned char *)ptr)[7]) << 56) | (((_int64)((unsigned char *)ptr)[6]) << 48) | \
+                        (((_int64)((unsigned char *)ptr)[5]) << 40) | (((_int64)((unsigned char *)ptr)[4]) << 32) | \
+                        (((_int64)((unsigned char *)ptr)[3]) << 24) | (((_int64)((unsigned char *)ptr)[2]) << 16) | \
+                        (((_int64)((unsigned char *)ptr)[1]) <<  8) | (((_int64)((unsigned char *)ptr)[0]) ))
+#define swapint(ptr) ( (((int)((unsigned char *)(ptr))[3]) << 24) | (((int)((unsigned char *)(ptr))[2]) << 16) | \
+                       (((int)((unsigned char *)(ptr))[1]) <<  8) | (((int)((unsigned char *)(ptr))[0]) )) 
+#define swapshort(ptr) ( (((int)((unsigned char *)ptr)[1]) << 8) | (((int)((unsigned char *)ptr)[0]) ))
 
 #endif
 
@@ -161,7 +122,7 @@ for invocations of the same MAIN tree and
 can be passed between processes.
 ******************************************/
 
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 typedef struct nid
 {
   unsigned tree:8;

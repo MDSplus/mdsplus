@@ -7,6 +7,7 @@ void TreeSerializeNciOut(NCI *in, char *out)
   char *ptr = out;
   LoadInt(in->flags,ptr);                           ptr += 4;
   *ptr = in->flags2;                                ptr += 1;
+                                                    ptr += 1;
   LoadQuad(in->time_inserted,ptr);                  ptr += 8;
   LoadInt(in->owner_identifier,ptr);                ptr += 4;
   *ptr = in->class;                                 ptr += 1;
@@ -38,6 +39,7 @@ void TreeSerializeNciIn(char *in, NCI *out)
   char *ptr = in;
   out->flags = swapint(ptr);                                              ptr += 4;
   out->flags2 = *ptr;                                                     ptr += 1;
+                                                                          ptr += 1;
   out->time_inserted = swapquad(ptr);                                     ptr += 8;
   out->owner_identifier = swapint(ptr);                                   ptr += 4;
   out->class = *ptr;                                                      ptr += 1;

@@ -54,6 +54,7 @@ int TreeFindTag(char *tagnam, char *treename, int *tagidx) {
 #define compare(node)      Compare(node->name,12,search->string,search->len)
 #define compare_wild(node) CompareWild(node->name,12,search->string,search->len)
 #define FirstChild(node) (node->member ? member_of(node) : child_of(node))
+#define FirstChildOfParent(node) (node->parent ? child_of(parent_of(node)) : child_of(node))
 #define SiblingOf(node) (node->brother ? brother_of(node) : ((node->parent && IsMember(node)) ? child_of(parent_of(node)) : 0))
 #define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #define match_usage \
@@ -264,8 +265,8 @@ static int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **n
       else
       {
         int looking_for_child = 1;
-        node = child_of(parent_of(node));
-        while ((node != search->stop))
+        node = FirstChildOfParent(node);
+        while (node && (node != search->stop))
         {
           if (looking_for_child)
           {
@@ -293,6 +294,7 @@ static int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **n
               node = parent_of(node);
           }
         }
+        if (node == search->stop) node = 0;
       }
       break;
     }
