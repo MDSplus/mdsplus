@@ -26,7 +26,7 @@ extern int VmePioWrite(char *device, unsigned long addr, unsigned long mode, int
 
 static void SigCatcher(int signo) {}
 
-static int fd1,fd2;
+static int fd1=0,fd2=0;
 
 int VmeWaitForInterrupt(char *device, int irq, int vector)
 {
@@ -219,10 +219,16 @@ int PioWrite(char *device, unsigned int addr, unsigned int mode, int bufsize, vo
 
 void    termfunc(int dummy)
 {
-  ioctl(fd1, VMP_DEL_INTR);
-  ioctl(fd2, VMP_DEL_INTR);
-  close(fd1);  
-  close(fd2);  
+  if (fd1 != 0)
+  {
+    ioctl(fd1, VMP_DEL_INTR);
+    close(fd1);
+  }
+  if (fd2 != 0)
+  {
+    ioctl(fd2, VMP_DEL_INTR);
+    close(fd2);
+  }
   exit(1);
 }
 
@@ -232,7 +238,6 @@ int WaitForInterrupt(char *device1, int priority1, int vector1, char *device2, i
   fd_set mask;
   int status = 0;
   fd1 = open(device1,O_RDWR);
-  fd2 = open(device2,O_RDWR);
   if (fd1 != -1)
   {
     signal(SIGUSR1, SIG_IGN);
@@ -248,19 +253,28 @@ int WaitForInterrupt(char *device1, int priority1, int vector1, char *device2, i
     setIntr.priority = priority1;
     setIntr.vector = vector1;
     ioctl ( fd1, VMP_ADD_INTR, &setIntr );
-    setIntr.priority = priority2;
-    setIntr.vector = vector2;
-    ioctl ( fd2, VMP_ADD_INTR, &setIntr );
     FD_ZERO ( &mask );
     FD_SET ( fd1, &mask );
-    FD_SET ( fd2, &mask );
+    if (strlen(device2) > 0)
+    {
+      fd2 = open(device2,O_RDWR);
+      setIntr.priority = priority2;
+      setIntr.vector = vector2;
+      ioctl ( fd2, VMP_ADD_INTR, &setIntr );
+      FD_SET ( fd2, &mask );
+    }
     select (FD_SETSIZE, &mask, NULL, NULL, NULL );
     if(FD_ISSET(fd1, &mask)) status = 1;
-    if(FD_ISSET(fd2, &mask)) status = 2;
+    if(fd2 != 0 && FD_ISSET(fd2, &mask)) status = 2;
     ioctl (fd1, VMP_DEL_INTR );
-    ioctl (fd2, VMP_DEL_INTR );
     close(fd1);
-    close(fd2);
+    fd1=0;
+    if (fd2 != 0)
+    {
+      ioctl (fd2, VMP_DEL_INTR );
+      close(fd2); 
+      fd2=0;
+    }
   }
   else
     perror("Error opening VME device");
