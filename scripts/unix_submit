@@ -24,7 +24,7 @@ if [ -d "$MDS_LOGS" -a -w "$MDS_LOGS" ]; then
     lockfile "$LOG.lock"
     echo ">>>>>>>>>>>>>>>>>>>>>   $2  >>>>>>>>>>>>>>>>>>>>" >> $LOG
     date >> $LOG
-    /usr/bin/time -a -f "Elapsed %E\tUser %U\tSystem %S"  -o $LOG $1 $2 >>$LOG 2>&1
+    /usr/bin/time -a -f "Elapsed %E\tUser %U\tSystem %S"  -o $LOG $1 $2 < /dev/null >>$LOG 2>&1
     echo "<<<<<<<<<<<<<<<<<<<<<   $2  <<<<<<<<<<<<<<<<<<<<" >> $LOG
     echo " " >> $LOG
     cat $LOG >> $CUMULATIVE_LOG
