@@ -946,14 +946,25 @@ static int T_messageType;
        curr_directory  = (String)System.getProperty("jScope.config_directory");
     }
     
-    default_server_idx = Integer.parseInt((String)js_prop.getProperty("jScope.default_server")) - 1;
+    default_server_idx = -1;
+    String prop = (String)js_prop.getProperty("jScope.default_server");
+    if(prop != null)
+    {
+        try
+        {
+            default_server_idx = Integer.parseInt(prop) - 1;
+        } 
+        catch (NumberFormatException e) {}        
+    }
+    
+    
     String cache_directory = (String)js_prop.getProperty("jScope.cache_directory");
     String cache_size = (String)js_prop.getProperty("jScope.cache_size");
     String f_name = (String)js_prop.getProperty("jScope.save_selected_points");
     String proxy_host = (String)js_prop.getProperty("jScope.http_proxy_host");
     String proxy_port = (String)js_prop.getProperty("jScope.http_proxy_port");
     
-    String prop = (String)js_prop.getProperty("jScope.vertical_offset");
+    prop = (String)js_prop.getProperty("jScope.vertical_offset");
     int val = 0;
     if(prop != null)
     {
@@ -1047,8 +1058,9 @@ static int T_messageType;
         {
             srv_item = server_ip_list[default_server_idx];
             SetDataServer(srv_item);
-        }
-     }
+        } else
+            setDataServerLabel();
+     } 
   }
 
 
@@ -1989,18 +2001,6 @@ static int T_messageType;
     wave_panel.Reset();
   }
 
-/*
-  private void LoadConfError(String line)
-  {
-    Reset();
-    if(line != null)
-		JOptionPane.showMessageDialog(null, "File configuration syntax error\n Line : "+line, 
-		                                  "alert", JOptionPane.ERROR_MESSAGE); 
-    else
-	   JOptionPane.showMessageDialog(null, "File configuration syntax error " + "<" + config_file + ">", 
-		                                  "alert", JOptionPane.ERROR_MESSAGE); 
-  }
-  */
   
   public void LoadConfiguration()
   {

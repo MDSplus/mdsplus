@@ -6,7 +6,7 @@ class jScopeWaveContainer_2 extends jScopeWaveContainer implements Printable
 
     public jScopeWaveContainer_2(int rows[], jScopeDefaultValues def_vals)
     {
-        this(rows, null, def_vals);
+        super(rows, def_vals);
     }
 
        

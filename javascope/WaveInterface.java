@@ -194,7 +194,7 @@ public class WaveInterface
 	        old_pos = new_pos + "\n".length();			  
 	        s_new += "|||";
 	    }
-	    s_new = s_new.concat(s.substring(old_pos, s.length())) + " ";
+	    s_new = s_new.concat(s.substring(old_pos, s.length()));
 	    return s_new;
     }
     

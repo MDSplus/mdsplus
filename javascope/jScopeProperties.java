@@ -34,7 +34,9 @@ public class jScopeProperties extends Properties
             if (line.length() > 0) {
                 // Continue lines that end in slashes if they are not comments
                 char firstChar = line.charAt(0);
-                if ((firstChar != '#') && (firstChar != '!')) {
+                if ((firstChar != '#') && (firstChar != '!'))
+                {
+                    /*
                     while (continueLine(line)) {
                         String nextLine = in.readLine();
                         if(nextLine == null)
@@ -48,6 +50,7 @@ public class jScopeProperties extends Properties
                         nextLine = nextLine.substring(startIndex,nextLine.length());
                         line = new String(loppedLine+nextLine);
                     }
+                    */
                     // Find start of key
                     int len = line.length();
                     int keyStart;
@@ -98,6 +101,7 @@ public class jScopeProperties extends Properties
      * Returns true if the given line is a line that must
      * be appended to the next line
      */
+     /*
     private boolean continueLine (String line) {
         int slashCount = 0;
         int index = line.length() - 1;
@@ -105,7 +109,7 @@ public class jScopeProperties extends Properties
             slashCount++;
         return (slashCount % 2 == 1);
     }
-    
+    */
     public String getProperty(String key)
     {
         String p = super.getProperty(key);

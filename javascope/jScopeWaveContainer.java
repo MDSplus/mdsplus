@@ -121,7 +121,10 @@ class jScopeWaveContainer extends WaveformContainer
 
     public jScopeWaveContainer(int rows[], jScopeDefaultValues def_vals)
     {
-        this(rows, null, def_vals);
+        this(rows, new NotConnectedDataProvider(), def_vals);
+        server_item = new DataServerItem("Not Connected", null, null, 
+                          null, null, null);
+        
     }
 
        
