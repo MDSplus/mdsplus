@@ -28,8 +28,8 @@ libMdsdcl.a:	$(OBJFILES)
 		$(RANLIB)
 
 ../shlib/libMdsdcl.$(SHARE_TYPE):	mdsdcl_tables.o  libMdsdcl.a
-	$(LD)  -o $@ $(LFLAGS)		\
-		$(LD_SHARED_LIB_OPTIONS)		\
+	$(LD)  -o $@ $(LFLAGS)	\
+		$(LD_SHARED_LIB_OPTIONS)	\
 		mdsdcl_tables.o		\
 		$(EXPORT_SYMBOLS) libMdsdcl.a	\
 		$(EXPORT_SYMBOLS)  $(MDSPLUS)/cdu/libCdu.a	\
