@@ -132,7 +132,7 @@ else
     awkcmd='{ if (($3 != "") && ((substr($3,2,1) == ":") || (substr($3,2,1) == ";"))) $3 = substr($3,1,1) "\\" substr($3,2) } '
     awkcmd="$awkcmd"'{ if ((NF > 0) && ($1 !~ /^#.*/) && (NF < 3) && ($1 != "source") && ($1 != ".") && ($1 != "include")) print $1 "=" $2 "; export " $1 " ;" ;'
     awkcmd="$awkcmd"'else if ((NF > 0) && ($1 == "source")) print "" ; '
-    awkcmd="$awkcmd"'else if ((NF > 0) && ($1 == "include")) print "temp_file=" $2 "; . \$temp_setup_script ; " ; '
+    awkcmd="$awkcmd"'else if ((NF > 0) && ($1 == "include")) print "temp_file=" $2 "; . $temp_setup_script ; " ; '
     awkcmd="$awkcmd"'else if ((NF > 0) && ($1 == ".")) print $0 ";" ; '
     awkcmd="$awkcmd"'else if ((NF > 0) && ($1 !~ /^#.*/)) print "temp_sym_name=" $1 "; temp_sym_value=" $2 "; temp_direction='
     awkcmd="$awkcmd""'"
@@ -140,7 +140,7 @@ else
     awkcmd="$awkcmd""'"
     awkcmd="$awkcmd"'; temp_delim='
     awkcmd="$awkcmd"'" substr($3,2) "'
-    awkcmd="$awkcmd"'; . \$temp_setup_script;" ; }'
+    awkcmd="$awkcmd"'; . $temp_setup_script;" ; }'
     shellcmd=`/bin/awk "$awkcmd" $temp_file`
     unset temp_file
     eval $shellcmd
