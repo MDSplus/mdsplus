@@ -89,6 +89,14 @@ struct PrivateEventInfo {
     void *astprm;		  /* ast routine parameter */
 };
 
+/* Descriptor for AST arguments */
+struct AstDescriptor {
+	void (*astadr)(void *, int, char *);
+	void *astprm;
+	int  data_len;
+	char *data;
+};
+
 
 static int is_exiting = 0;
 
@@ -340,11 +348,11 @@ static void removeMessage(int key)
 }
  
 
-static void createThread(void (*rtn)())
+static void createThread(void (*rtn)(), void *par)
 {
     pipe(fds);
     external_thread_created = 0;
-    if(pthread_create(&external_thread, pthread_attr_default, (void *(*)(void *))rtn, 0) !=  0)
+    if(pthread_create(&external_thread, pthread_attr_default, (void *(*)(void *))rtn, par) !=  0)
 	perror("pthread_create");
     else
         external_thread_created = 1;
@@ -402,12 +410,22 @@ static void initializeShared()
 }
 
 
+static void executeAst(struct AstDescriptor *ast_d)
+{
+    (*(ast_d->astadr))(ast_d->astprm, ast_d->data_len, ast_d->data);
+    if(ast_d->data_len > 0)
+	free((char *)ast_d->data);
+    free((char *)ast_d);
+}
+
+
 static void *handleMessage(void * dummy)
 {
     int i;
     char event_name[MAX_EVENTNAME_LEN];
     int data_len;
     char data[MAX_DATA_LEN];
+    struct AstDescriptor *arg_d;
     while(1)
     {	
 	if(readMessage(event_name, &data_len, data) != -1)
@@ -416,7 +434,19 @@ static void *handleMessage(void * dummy)
     	    {
 	        if(private_info[i].active && !strcmp(event_name, private_info[i].name))
 		{
-		    (*(private_info[i].astadr))(private_info[i].astprm, data_len, data);
+/*		    (*(private_info[i].astadr))(private_info[i].astprm, data_len, data);*/
+/* Do not execute ast routine directly, rather launch a thread for doing it */
+
+		    arg_d = (struct AstDescriptor *)malloc(sizeof(struct AstDescriptor));
+		    arg_d->astadr = private_info[i].astadr;
+		    arg_d->astprm = private_info[i].astprm;
+		    arg_d->data_len = data_len;
+		    if(data_len > 0)
+		    {
+			arg_d->data = malloc(data_len);
+			memcpy(arg_d->data, data, data_len);
+		    } /* will be freed by the ExecuteAst */
+		    createThread(executeAst, arg_d);
 		}
 	    }
 	}
@@ -698,7 +728,7 @@ static void initializeLocalRemote(int receive_events, int *use_local)
 			send_servers[i] = servers[i];
 		}
 	    }
-	    createThread(handleRemoteAst);
+	    createThread(handleRemoteAst, 0);
 	}
 	else printf(MdsGetMsg(status));
     }
@@ -740,7 +770,7 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
 /* now external thread must be created in any case */
         if (status & 1)
 	{
-	    createThread(handleRemoteAst);
+	    createThread(handleRemoteAst, 0);
 	    external_count++;
 	}
     }
@@ -876,7 +906,7 @@ static int canEventRemote(int eventid)
 	{
 	    if(receive_sockets[i]) status = (*rtn) (receive_sockets[i], getRemoteId(eventid, i));
 	}
-	createThread(handleRemoteAst);
+	createThread(handleRemoteAst, 0);
     }
     return status;
 }
