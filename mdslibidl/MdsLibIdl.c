@@ -20,6 +20,11 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define sigrelse(a)
 #endif
 
+#ifdef _LINUX
+#define sighold(a)
+#define sigrelse(a)
+#endif
+
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
 int IdlMdsClose(int argc, void **argv)
