@@ -186,7 +186,7 @@ C Cut off extra times at end of data arrays
 c-------------------------------------------------------------------------------
 
 	subroutine PTDATA_ERRMES(ier)
-	entry PTDATA_ERRMES_
+	entry PTDATA_ERRMES_(ier)
 	parameter (n=1)
 	include 'mdsptdata.inc'
 	character string*80
@@ -208,7 +208,7 @@ c-------------------------------------------------------------------------------
 C PTDATA_ERRORS
 C Returns a string corresponding to a given PTDATA error code
 	subroutine MDSPTERROR(error,string)
-	entry MDSPTERROR_
+	entry MDSPTERROR_(error,string)
 	character string*50
 	integer error
 	if(error.lt.0)then
@@ -414,7 +414,7 @@ c	for a total number of points = 16384.
 c----------------------------------------------------------------------------
 
 	subroutine mdsptheadsize(shot,pointname,ier,size)
-	entry mdsptheadsize_
+	entry mdsptheadsize_(shot,pointname,ier,size)
 
 c	implicit none
 	parameter (n=1)
@@ -455,7 +455,7 @@ c	implicit none
 c-------------------------------------------------------------------------------
 
 	subroutine mdsptheada(shot,pointname,ier,apass)
-	entry mdsptheada_
+	entry mdsptheada_(shot,pointname,ier,apass)
 
 c	implicit none
 	parameter (n=1)
@@ -487,7 +487,7 @@ c	implicit none
 c-------------------------------------------------------------------------------
 
 	subroutine mdsptheadi16(shot,pointname,ier,i16pass)
-	entry mdsptheadi16_
+	entry mdsptheadi16_(shot,pointname,ier,i16pass)
 
 c	implicit none
 	parameter (n=1)
@@ -521,7 +521,7 @@ c	implicit none
 c-------------------------------------------------------------------------------
 
 	subroutine mdsptheadi32(shot,pointname,ier,i32pass)
-	entry mdsptheadi32_
+	entry mdsptheadi32_(shot,pointname,ier,i32pass)
 
 c	implicit none
 	parameter (n=1)
@@ -556,7 +556,7 @@ c	implicit none
 c-------------------------------------------------------------------------------
 
 	subroutine mdsptheadr32(shot,pointname,ier,r32pass)
-	entry mdsptheadr32_
+	entry mdsptheadr32_(shot,pointname,ier,r32pass)
 
 c	implicit none
 	parameter (n=1)
@@ -592,7 +592,7 @@ c	implicit none
 c-------------------------------------------------------------------------------
 
 	subroutine mdsptheadifix(shot,pointname,ier,ifixpass)
-	entry mdsptheadifix_
+	entry mdsptheadifix_(shot,pointname,ier,ifixpass)
 
 c	implicit none
 	parameter (n=1)
@@ -638,7 +638,7 @@ c	record /PT_REAL32/ r32pass
 c-------------------------------------------------------------------------------
 
 	subroutine mdsptheadunits(shot,pointname,ier,units)
-	entry mdsptheadunits_
+	entry mdsptheadunits_(shot,pointname,ier,units)
 
 c	implicit none
 	parameter (n=1)
@@ -670,7 +670,7 @@ c	implicit none
 c-------------------------------------------------------------------------------
 
 	subroutine mdsptheadrfix(shot,pointname,ier,rfixpass)
-	entry mdsptheadrfix_
+	entry mdsptheadrfix_(shot,pointname,ier,rfixpass)
 
 c	implicit none
 	parameter (n=1)
@@ -708,7 +708,7 @@ c	record /PT_REAL32/ r32pass
 c----------------------------------------------------------------------------
 
 	subroutine mdsptcomments(shot,ier,cx) 
-	entry mdsptcomments_
+	entry mdsptcomments_(shot,ier,cx) 
 
 	include 'mdsptdata.inc'
 
