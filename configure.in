@@ -12,7 +12,7 @@ hppa*) : ${CC=cc};
        : ${F77=f77};;
 alpha-dec-osf*) : ${CC=cc};
 		: ${F77=f77};;
-mips*) : ${CC=cc};;
+sparc-sun-solaris2*) : ${CC=cc};;
 esac
 
 dnl Check out the compiler

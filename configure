@@ -639,7 +639,7 @@ hppa*) : ${CC=cc};
        : ${F77=f77};;
 alpha-dec-osf*) : ${CC=cc};
 		: ${F77=f77};;
-mips*) : ${CC=cc};;
+sparc-sun-solaris2*) : ${CC=cc};;
 esac
 
 # Extract the first word of "gcc", so it can be a program name with args.
