@@ -21,7 +21,7 @@ all : ../bin/traverser \
 	mkdir ../bin
 
 ../uid/traverser.uid : traverser.uil
-	uil -wmd ../shlib/xmdsuil.wmd -o $@ traverser.uil
+	uil -o $@ traverser.uil
 
 clean :
 	- rm *.o
