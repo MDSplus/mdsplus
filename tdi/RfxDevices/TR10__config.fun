@@ -42,4 +42,5 @@ public fun TR10__config(as_is _nid, optional _method)
 	}
 
    write(*, "TR10 Configured =", _status);
+   return(1);
 }
