@@ -77,7 +77,7 @@ EventStruct *IDLMdsEvent(int argc, void * *argv)
     if ((parent_rec = IDL_WidgetStubLookup(*base_id))
         && (stub_rec = IDL_WidgetStubLookup(*stub_id)))
     {
-//	  IDL_WidgetSetStubIds(stub_rec, parent_rec, parent_rec);  
+      /* IDL_WidgetSetStubIds(stub_rec, parent_rec, parent_rec);   */
       if (!XTINPUTID) {
         Widget w1, w2;
         IDL_WidgetGetStubIds(parent_rec, (unsigned long *)&w1, (unsigned long *)&w2);
@@ -91,7 +91,7 @@ EventStruct *IDLMdsEvent(int argc, void * *argv)
       return e;
     }
   }
-//  free((char *)e);
+  /*  free((char *)e); */
   return 0;
 }
 
