@@ -30,6 +30,7 @@ int SERVER$DISPATCH_CLOSE(DispatchTable *table)
 
 ------------------------------------------------------------------------------*/
 
+#include <servershr.h>
 #include "servershrp.h"
 
 int ServerDispatchClose(void *vtable)

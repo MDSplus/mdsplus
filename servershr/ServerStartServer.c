@@ -30,6 +30,7 @@ int SERVER$START_SERVER( struct dsc$descriptor *server )
 ------------------------------------------------------------------------------*/
 
 #include <ipdesc.h>
+#include <servershr.h>
 #include "servershrp.h"
 
 int ServerStartServer(char *server)

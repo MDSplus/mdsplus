@@ -32,13 +32,15 @@ doing.
 ------------------------------------------------------------------------------*/
 
 #include <ipdesc.h>
+#include <servershr.h>
 #include "servershrp.h"
 #include <stdlib.h>
 #include <string.h>
 
+extern int ServerConnect();
+
 char *ServerGetInfo(int full, char *server)
 {
-  int status;
   char *cmd = "ServerGetInfo()"; 
   char *ans;
   char *ansret;
@@ -46,7 +48,7 @@ char *ServerGetInfo(int full, char *server)
   int sock = ServerConnect(server);
   if (sock >= 0)
   {
-    int status = SendArg(sock,0,DTYPE_CSTRING,1,strlen(cmd),0,0,cmd);
+    int status = SendArg(sock,(unsigned char)0,(char)DTYPE_CSTRING,(unsigned char)1,(short)strlen(cmd),0,0,cmd);
     if (status & 1) 
     {
       char dtype;

@@ -31,7 +31,7 @@ int SERVER$CREATE_PULSE(int efn, struct dsc$descriptor *server, struct dsc$descr
 ------------------------------------------------------------------------------*/
 
 #include <ipdesc.h>
-#include <pthread.h>
+#include <servershr.h>
 #include "servershrp.h"
 
 int ServerCreatePulse(pthread_cond_t *condition, char *server, char *tree, int shot,

@@ -32,6 +32,7 @@ int SERVER$FREE_DISPATCH_TABLE( void *vtable)
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <stdlib.h>
+#include <servershr.h>
 #include "servershrp.h"
 
 int ServerFreeDispatchTable( void *vtable)

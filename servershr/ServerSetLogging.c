@@ -36,6 +36,7 @@ int SERVER$SET_LOGGING( struct dsc$descriptor *server, char *logging_mode)
 ------------------------------------------------------------------------------*/
 
 #include <ipdesc.h>
+#include <servershr.h>
 #include "servershrp.h"
 
 int ServerSetLogging(char *server, char logging_mode)

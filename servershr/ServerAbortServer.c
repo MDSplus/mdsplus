@@ -30,7 +30,7 @@ int SERVER$ABORT_SERVER( struct dsc$descriptor *server )
 ------------------------------------------------------------------------------*/
 
 #include <ipdesc.h>
-#include <pthread.h>
+#include <servershr.h>
 #include "servershrp.h"
 
 int ServerAbortServer(char *server, int flush)

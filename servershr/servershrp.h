@@ -1,6 +1,9 @@
 #ifndef SERVERSHRP_H
 #define SERVERSHRP_H
+#include <config.h>
+#ifndef HAVE_WINDOWS_H
 #include <pthread.h>
+#endif
 
 #define SrvNoop        0           /**** Used to start server ****/
 #define SrvAbort       1           /**** Abort current action or mdsdcl command ***/
@@ -106,4 +109,8 @@ typedef struct { int shot;
                  int status;
                } DispatchEvent;
 
+extern int ServerSendMessage( pthread_cond_t *condition, char *server, int op, int *retstatus, 
+                         void (*ast)(), void *astparam, void (*before_ast)(),
+  int numargs_in, ...);
+extern int ServerConnect(char *);
 #endif

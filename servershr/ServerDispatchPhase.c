@@ -35,6 +35,7 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 #undef DTYPE_DOUBLE
 #undef DTYPE_EVENT
 #include <ipdesc.h>
+#include <servershr.h>
 #include "servershrp.h"
 #include <ncidef.h>
 #include <stdio.h>
@@ -48,8 +49,11 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 #include <servershr.h>
 #include <mds_stdarg.h>
 #include <tdimessages.h>
-#include <pthread.h>
 #include <errno.h>
+
+#ifdef HAVE_WINDOWS_H
+//typedef void *pthread_cond_t;
+#endif
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_condattr_default NULL
@@ -357,6 +361,7 @@ static void RecordStatus(int s,int e)
 
 static void WaitForActions(int all)
 {
+#ifndef HAVE_WINDOWS_H
   int status = ETIMEDOUT;
   struct timespec one_sec = {1,0};
   struct timespec abstime;
@@ -373,6 +378,7 @@ static void WaitForActions(int all)
 #endif
     pthread_mutex_unlock(&JobWaitMutex);
   }
+#endif
 }
 
 static char *DetailProc(int full)
@@ -543,3 +549,4 @@ static void Dispatch(int i)
     ActionDone(i);
   }
 }
+

@@ -30,6 +30,7 @@ int SERVER$MONITOR_CHECKIN(struct dsc$descriptor *server, void (*ast)(), int ast
 ------------------------------------------------------------------------------*/
 
 #include <ipdesc.h>
+#include <servershr.h>
 #include "servershrp.h"
 
 int ServerMonitorCheckin(char *server, void (*ast)(), void *astprm)

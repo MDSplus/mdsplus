@@ -29,22 +29,28 @@ int ServerSendMessage();
 
 ------------------------------------------------------------------------------*/
 
-#include <pthread.h>
 #include <ipdesc.h>
 #include <string.h>
 #include <servershr.h>
 #include "servershrp.h"
-#include <sys/socket.h>
+#include <stdio.h>
+#if defined(HAVE_WINDOWS_H)
+#include <windows.h>
+typedef void *pthread_t;
+#else
+#include <socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <sys/time.h>
-
+#endif
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
 #else
 #undef select
 #endif
+
+extern short ArgLen();
 
 extern char *TranslateLogical(char *);
 extern void TranslateLogicalFree(char *);
@@ -100,49 +106,50 @@ int ServerSendMessage( pthread_cond_t *condition, char *server, int op, int *ret
   if (StartReceiver(&addr,&port) && ((sock = ServerConnect(server)) >= 0))
   {
     char cmd[] = "ServerQAction($,$,$,$,$,$,$,$,$,$,$,$,$)";
-    int numargs = max(0,min(numargs_in,8));
+    unsigned char numargs = max(0,min(numargs_in,8));
     int offset = strlen("ServerQAction($,$,$,$,$") + numargs * 2;
-    int idx = 0;
+    unsigned char idx = 0;
     char dtype;
     short len;
     char ndims;
     int  dims[8];
     int numbytes;
     int *dptr;
+	unsigned char totargs = (unsigned char)(numargs+6);
     jobid = RegisterJob(condition,retstatus,ast,astparam,before_ast,sock);
     cmd[offset] = ')';
     cmd[offset+1] = '\0';
-    SndArgChk(sock, idx++, DTYPE_CSTRING, numargs+6, strlen(cmd), 0, 0, cmd);
-    SndArgChk(sock, idx++, DTYPE_LONG,    numargs+6, 4, 0, 0, (char *)&addr);
-    SndArgChk(sock, idx++, DTYPE_SHORT,    numargs+6, 2, 0, 0, (char *)&port);
-    SndArgChk(sock, idx++, DTYPE_LONG,    numargs+6, 4, 0, 0, (char *)&op);
+    SndArgChk(sock, idx++, DTYPE_CSTRING, totargs, (short)strlen(cmd), 0, 0, cmd);
+    SndArgChk(sock, idx++, DTYPE_LONG,    totargs, (short)4, 0, 0, (char *)&addr);
+    SndArgChk(sock, idx++, DTYPE_SHORT,   totargs, 2, 0, 0, (char *)&port);
+    SndArgChk(sock, idx++, DTYPE_LONG,    totargs, 4, 0, 0, (char *)&op);
     if (before_ast) flags |= SrvJobBEFORE_NOTIFY;
-    SndArgChk(sock, idx++, DTYPE_LONG,    numargs+6, 4, 0, 0, (char *)&flags);
-    SndArgChk(sock, idx++, DTYPE_LONG,    numargs+6, 4, 0, 0, (char *)&jobid);
+    SndArgChk(sock, idx++, DTYPE_LONG,    totargs, 4, 0, 0, (char *)&flags);
+    SndArgChk(sock, idx++, DTYPE_LONG,    totargs, 4, 0, 0, (char *)&jobid);
     if (numargs > 0)
     {
-      SndArgChk(sock, idx++, p1->dtype, numargs+6, ArgLen(p1), p1->ndims, p1->dims, p1->ptr);
+      SndArgChk(sock, idx++, p1->dtype, totargs, ArgLen(p1), p1->ndims, p1->dims, p1->ptr);
       if (numargs > 1) 
       {
-        SndArgChk(sock, idx++, p2->dtype, numargs+6, ArgLen(p2), p2->ndims, p2->dims, p2->ptr);
+        SndArgChk(sock, idx++, p2->dtype, totargs, ArgLen(p2), p2->ndims, p2->dims, p2->ptr);
         if (numargs > 2) 
         {
-          SndArgChk(sock, idx++, p3->dtype, numargs+6, ArgLen(p3), p3->ndims, p3->dims, p3->ptr);
+          SndArgChk(sock, idx++, p3->dtype, totargs, ArgLen(p3), p3->ndims, p3->dims, p3->ptr);
           if (numargs > 3) 
           {
-            SndArgChk(sock, idx++, p4->dtype, numargs+6, ArgLen(p4), p4->ndims, p4->dims, p4->ptr);
+            SndArgChk(sock, idx++, p4->dtype, totargs, ArgLen(p4), p4->ndims, p4->dims, p4->ptr);
             if (numargs > 4) 
             {
-              SndArgChk(sock, idx++, p5->dtype, numargs+6, ArgLen(p5), p5->ndims, p5->dims, p5->ptr);
+              SndArgChk(sock, idx++, p5->dtype, totargs, ArgLen(p5), p5->ndims, p5->dims, p5->ptr);
               if (numargs > 5) 
               {
-                SndArgChk(sock, idx++, p6->dtype, numargs+6, ArgLen(p6), p6->ndims, p6->dims, p6->ptr);
+                SndArgChk(sock, idx++, p6->dtype, totargs, ArgLen(p6), p6->ndims, p6->dims, p6->ptr);
                 if (numargs > 6) 
                 {
-                  SndArgChk(sock, idx++, p7->dtype, numargs+6, ArgLen(p7), p7->ndims, p7->dims, p7->ptr);
+                  SndArgChk(sock, idx++, p7->dtype, totargs, ArgLen(p7), p7->ndims, p7->dims, p7->ptr);
                   if (numargs > 7) 
                   {
-                    SndArgChk(sock, idx++, p8->dtype, numargs+6, ArgLen(p8), p8->ndims, p8->dims, p8->ptr);
+                    SndArgChk(sock, idx++, p8->dtype, totargs, ArgLen(p8), p8->ndims, p8->dims, p8->ptr);
 		  }
                 }
               }
@@ -253,7 +260,6 @@ static int CreatePort(short starting_port, short *port_out)
 {
   short port;
   static struct sockaddr_in sin;
-  struct servent *sp;
   long sendbuf=32768,recvbuf=32768;
   int s;
   int status;

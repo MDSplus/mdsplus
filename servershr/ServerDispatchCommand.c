@@ -31,7 +31,7 @@ int SERVER$DISPATCH_COMMAND(int efn, struct dsc$descriptor *server, struct dsc$d
 ------------------------------------------------------------------------------*/
 
 #include <ipdesc.h>
-#include <pthread.h>
+#include <servershr.h>
 #include "servershrp.h"
 
 int ServerDispatchCommand(pthread_cond_t *condition, char *server, char *cli, char *command,
