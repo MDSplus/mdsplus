@@ -37,6 +37,7 @@ C calling program.
 C==========================================================================
 	integer*4 function MDSPTREAD(shot,pointname,f,t,n,sdate,stime,
      >        units,ier)
+	entry MDSPTREAD_
 c	integer*4 function MDSPTREAD(shot,pointname,f,t,n,sdate,stime,ier)
 c	implicit none
 	integer n
@@ -184,6 +185,7 @@ C Cut off extra times at end of data arrays
 c-------------------------------------------------------------------------------
 
 	subroutine PTDATA_ERRMES(ier)
+	entry PTDATA_ERRMES_
 	parameter (n=1)
 	include 'mdsptdata.inc'
 	character string*80
@@ -205,6 +207,7 @@ c-------------------------------------------------------------------------------
 C PTDATA_ERRORS
 C Returns a string corresponding to a given PTDATA error code
 	subroutine MDSPTERROR(error,string)
+	entry MDSPTERROR_
 	character string*50
 	integer error
 	if(error.lt.0)then
@@ -236,7 +239,7 @@ C Returns a string corresponding to a given PTDATA error code
 	elseif(error.eq.25)then
 	 string='error reading data from remote node'
 	elseif(error.eq.30)then
-	 string='digitizer delta time .LE. 0 or requested delta time .LE. 0'
+	 string='digitizer or requested delta time .LE. 0'
 	elseif(error.eq.31)then
 	 string='number of data points requested is less than 1'
 	elseif(error.eq.32)then
@@ -246,7 +249,7 @@ C Returns a string corresponding to a given PTDATA error code
 	elseif(error.eq.35)then
 	 string='data format index is inconsistent with calling type'
 	elseif(error.eq.36)then
-	 string='pointname requires special non ptdata handling of the timing.'
+	 string='pointname requires special non ptdata timing handling.'
 	elseif(error.eq.37)then
 	 string='data format index is inconsistent with calling type'
 	elseif(error.eq.40)then
@@ -266,7 +269,7 @@ C Returns a string corresponding to a given PTDATA error code
 	elseif(error.eq.53)then
 	 string='invalid data type in fixed header'
 	elseif(error.eq.60)then
-	 string='Modcomp error - fatal acquisition error No data was acquired'
+	 string='Modcomp error - fatal acquisition error. No data.'
 	elseif(error.eq.61)then
 	 string='Modcomp error - I/O error in writing disk file.'
 	elseif(error.eq.62)then
@@ -367,6 +370,7 @@ c-------------------------------------------------------------------------------
 c-------------------------------------------------------------------------------
 
 	integer*4 function MDSPTNPTS(shot,pointname,ier)
+	entry MDSPTNPTS_
 
 c	implicit none                   
 	parameter (n=1)
@@ -409,6 +413,7 @@ c	for a total number of points = 16384.
 c----------------------------------------------------------------------------
 
 	subroutine mdsptheadsize(shot,pointname,ier,size)
+	entry mdsptheadsize_
 
 c	implicit none
 	parameter (n=1)
@@ -449,6 +454,7 @@ c	implicit none
 c-------------------------------------------------------------------------------
 
 	subroutine mdsptheada(shot,pointname,ier,apass)
+	entry mdsptheada_
 
 c	implicit none
 	parameter (n=1)
@@ -480,6 +486,7 @@ c	implicit none
 c-------------------------------------------------------------------------------
 
 	subroutine mdsptheadi16(shot,pointname,ier,i16pass)
+	entry mdsptheadi16_
 
 c	implicit none
 	parameter (n=1)
@@ -513,6 +520,7 @@ c	implicit none
 c-------------------------------------------------------------------------------
 
 	subroutine mdsptheadi32(shot,pointname,ier,i32pass)
+	entry mdsptheadi32_
 
 c	implicit none
 	parameter (n=1)
@@ -547,6 +555,7 @@ c	implicit none
 c-------------------------------------------------------------------------------
 
 	subroutine mdsptheadr32(shot,pointname,ier,r32pass)
+	entry mdsptheadr32_
 
 c	implicit none
 	parameter (n=1)
@@ -582,6 +591,7 @@ c	implicit none
 c-------------------------------------------------------------------------------
 
 	subroutine mdsptheadifix(shot,pointname,ier,ifixpass)
+	entry mdsptheadifix_
 
 c	implicit none
 	parameter (n=1)
@@ -627,6 +637,7 @@ c	record /PT_REAL32/ r32pass
 c-------------------------------------------------------------------------------
 
 	subroutine mdsptheadunits(shot,pointname,ier,units)
+	entry mdsptheadunits_
 
 c	implicit none
 	parameter (n=1)
@@ -658,6 +669,7 @@ c	implicit none
 c-------------------------------------------------------------------------------
 
 	subroutine mdsptheadrfix(shot,pointname,ier,rfixpass)
+	entry mdsptheadrfix_
 
 c	implicit none
 	parameter (n=1)
@@ -695,6 +707,7 @@ c	record /PT_REAL32/ r32pass
 c----------------------------------------------------------------------------
 
 	subroutine mdsptcomments(shot,ier,cx) 
+	entry mdsptcomments_
 
 	include 'mdsptdata.inc'
 
