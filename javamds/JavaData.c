@@ -712,8 +712,6 @@ void FreeDescrip(struct descriptor *desc)
   if(!desc)
     return;
 
-printf("FreeDescrip class %d dtype %d\n", desc->class, desc->dtype);
-
   switch(desc->class) {
     case CLASS_S : free(desc->pointer); break;
     case CLASS_A : free(((struct descriptor_a *)desc)->pointer); break;
