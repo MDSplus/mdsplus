@@ -152,71 +152,55 @@ static int MdsValue1(int socket, char *exp, struct descrip *arg1, struct descrip
   return (*MdsValue)(socket, exp, arg1, ans, 0);
 } 
   
-int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,int status)
+int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,char *path, int status)
 {
-  int len = strlen(tree);
-  char tree_lower[13];
-  char pathname[32];
-  int i;
   char *resnam = 0;
   char *logname;
   char *colon = 0;
   int slen;
-  for (i=0;i<len && i < 12;i++)
-     tree_lower[i] = __tolower(tree[i]);
-  tree_lower[i]=0;
-  strcpy(pathname,tree_lower);
-  strcat(pathname,TREE_PATH_SUFFIX);
-  logname = TranslateLogical(pathname);
-  if (logname && (strlen(logname) > 2))
+  int socket;
+  logname[strlen(logname)-2] = '\0';
+  socket = RemoteAccessConnect(logname,1);
+  if (socket != -1)
   {
-    char *cptr = logname + strlen(logname) - 2;
-    if (cptr[0] == ':' && cptr[1] == ':')
+    struct descrip ans = empty_ans;
+    char *exp = malloc(strlen(subtree_list ? subtree_list : tree)+100);
+    sprintf(exp,"TreeOpen('%s',%d)",subtree_list ? subtree_list : tree,dblist->shotid);
+    status =  MdsValue0(socket, exp, &ans);
+    free(exp);
+    status = (status & 1) ? (((ans.dtype == DTYPE_L)  && ans.ptr) ? *(int *)ans.ptr : 0) : status;
+    if (status & 1)
     {
-        int socket;
-        *cptr = '\0';
-        socket = RemoteAccessConnect(logname,1);
-        if (socket != -1)
+      TREE_INFO *info;
+      /***********************************************
+       Get virtual memory for the tree
+       information structure and zero the structure.
+      ***********************************************/
+      for (info = dblist->tree_info; info && strcmp(tree,info->treenam); info = info->next_info);
+      if (!info)
+      {
+        info = malloc(sizeof(TREE_INFO));
+        if (info)
         {
-          struct descrip ans = empty_ans;
-          char *exp = malloc(strlen(subtree_list ? subtree_list : tree)+100);
-          sprintf(exp,"TreeOpen('%s',%d)",subtree_list ? subtree_list : tree,dblist->shotid);
-          status =  MdsValue0(socket, exp, &ans);
-
-	  free(exp);
-
-          status = (status & 1) ? (((ans.dtype == DTYPE_L)  && ans.ptr) ? *(int *)ans.ptr : 0) : status;
-          if (status & 1)
-	  {
-            TREE_INFO *info;
-            /***********************************************
-             Get virtual memory for the tree
-             information structure and zero the structure.
-            ***********************************************/
-            for (info = dblist->tree_info; info && strcmp(tree,info->treenam); info = info->next_info);
-            if (!info)
-	    {
-              info = malloc(sizeof(TREE_INFO));
-              if (info)
-              {
-                static TREE_HEADER header;
-  	        memset(info,0,sizeof(*info));
-                info->blockid = TreeBLOCKID;
-	        info->flush = (dblist->shotid == -1);
-                info->header = &header;
-	        info->treenam = strcpy(malloc(strlen(tree)+1),tree);
-	        TreeCallHook(OpenTree, info,0);
-                info->channel = socket;
-	        dblist->tree_info = info;
-                dblist->remote = 1;
-              }
-  	    }
-          }
-          if (ans.ptr) MdsIpFree(ans.ptr);
+          static TREE_HEADER header;
+          memset(info,0,sizeof(*info));
+          info->blockid = TreeBLOCKID;
+          info->flush = (dblist->shotid == -1);
+          info->header = &header;
+          info->treenam = strcpy(malloc(strlen(tree)+1),tree);
+          TreeCallHook(OpenTree, info,0);
+          info->channel = socket;
+          dblist->tree_info = info;
+          dblist->remote = 1;
         }
+      }
+      else
+        status = TreeFILE_NOT_FOUND;
     }
-    TranslateLogicalFree(logname);
+    if (ans.ptr) MdsIpFree(ans.ptr);
   }
+  if (status & 1)
+    status = TreeNORMAL;
   return status;
 }
 
