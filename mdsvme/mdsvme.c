@@ -142,13 +142,12 @@ int VmePioWrite(char *device, unsigned long addr, unsigned long mode, int bufsiz
   return status;
 }
 
-int PioRead(char *device, unsigned int addr, unsigned int mode, int bufsize, void *buffer, int *bytes_read)
+int PioRead(char *device, unsigned int addr, unsigned int mode, int bufsize, void *buffer)
 {
   struct pio_info		setVme, getVme;
   int fd = open(device,O_RDWR);
   int status = 0;
   void *pMapAdr;
-  *bytes_read = 0;
   if (fd != -1)
   {
     setVme.pio_addr = addr;
@@ -167,7 +166,6 @@ int PioRead(char *device, unsigned int addr, unsigned int mode, int bufsize, voi
       else
       {
         memcpy(buffer, pMapAdr, bufsize);
-        *bytes_read = bufsize;
 	if ( ioctl(fd, VMP_UNMAP_PIO_ADDR, &setVme) < 0 )
 		printf ( "### error in ioctl-UNMAP\n" );
     	if ( munmap((caddr_t)pMapAdr,setVme.pio_size) < 0 )
@@ -182,13 +180,12 @@ int PioRead(char *device, unsigned int addr, unsigned int mode, int bufsize, voi
   return status;
 }
 
-int PioWrite(char *device, unsigned long addr, unsigned long mode, int bufsize, void *buffer, int *bytes_written)
+int PioWrite(char *device, unsigned int addr, unsigned int mode, int bufsize, void *buffer)
 {
   struct pio_info		setVme, getVme;
   int fd = open(device,O_RDWR);
   int status = 0;
   void *pMapAdr;
-  *bytes_written = 0;
   if (fd != -1)
   {
     setVme.pio_addr = addr;
@@ -206,7 +203,6 @@ int PioWrite(char *device, unsigned long addr, unsigned long mode, int bufsize, 
       else
       {
         memcpy(pMapAdr, buffer, bufsize);
-        *bytes_written = bufsize;
 	if ( ioctl(fd, VMP_UNMAP_PIO_ADDR, &setVme) < 0 )
 		printf ( "### error in ioctl-UNMAP\n" );
     	if ( munmap((caddr_t)pMapAdr,setVme.pio_size) < 0 )
