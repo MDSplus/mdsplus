@@ -19,8 +19,10 @@
 extern noshare char  *sys_errlist[];
 extern noshare int  sys_nerr;
 #else
+#ifndef linux
 extern char  *sys_errlist[];
 extern int  sys_nerr;
+#endif
 #endif
 
 
