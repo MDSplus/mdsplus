@@ -395,7 +395,27 @@ char *FindNodeTagsRemote(PINO_DATABASE *dblist, int nid_in, void **ctx_ptr)
 
 char *AbsPathRemote(PINO_DATABASE *dblist, char *inpath)
 {
-	return NULL;
+  struct descrip ans = empty_ans;
+  char *exp = (char *)malloc(strlen(inpath)+20);
+  static char *path = 0;
+  char *retans = 0;
+  int status;
+  char *tag = 0;
+  sprintf(exp,"TreeAbsPath(\"%s\")",inpath);
+  status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+  free(exp);
+  if (ans.ptr)
+  {
+    if (ans.dtype == DTYPE_T)
+    {
+      if (path != 0)
+        MdsIpFree(path);
+      retans = path = (char *)ans.ptr;
+    }
+    else
+      MdsIpFree(ans.ptr);
+  }
+  return retans;
 }
 
 int SetDefaultNidRemote(PINO_DATABASE *dblist, int nid)
