@@ -12,14 +12,14 @@ top_srcdir=@top_srcdir@
 RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-CFLAGS=@CFLAGS@ $(COMPRESSION_SWITCH)
+CFLAGS=@CFLAGS@ $(COMPRESSION_SWITCH) @GLOBUS_CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @LIBPTHREAD@ @MEMCHKLIB@
+LIBS=@GLOBUS_LIBS@ @LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @LIBPTHREAD@ @MEMCHKLIB@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 
 SOURCES = \
-	mdsipshr.c mdsiputil.c vmshpwd.c $(COMPRESSION_SOURCES)
+	mdsipshr.c mdsiputil.c vmshpwd.c mdsip_socket_io.c $(COMPRESSION_SOURCES)
 
 COMPRESSION_OBJECTS = $(COMPRESSION_SOURCES:.c=.o)
 OBJECTS = $(SOURCES:.c=.o)
