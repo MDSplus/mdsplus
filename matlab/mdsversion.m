@@ -1,4 +1,4 @@
 function status = mdsversion()
-% function to return version of mex mdsvalue
+% function to return version of mex mdsipmex
 % Basil P. DUVAL, May 2000
-status = mdsvalue(6);
+status = mdsipmex(6);

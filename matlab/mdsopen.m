@@ -14,12 +14,12 @@ elseif(nargin >2 | ~isstr(server) | isstr(shot));error('Incorrect arguments to m
 
 % open the shot
 
-	status = mdsvalue(1,server,shot);
+	status = mdsipmex(1,server,shot);
 
-%status  = mdsvalue('MDSLIB->MDS$OPEN($,int($))',server,shot);
+%status  = mdsipmex('MDSLIB->MDS$OPEN($,int($))',server,shot);
 % return the open shot number if successful
 if(rem(status,2) == 1 & nargin > 1)
-   shoto = mdsvalue(2,'$SHOT');
+   shoto = mdsipmex(2,'$SHOT');
 else
 	if(nargout > 0);shoto=[];end
 end

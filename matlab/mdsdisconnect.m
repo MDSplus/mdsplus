@@ -4,4 +4,4 @@ function status = mdsdisconnect()
 % Basil P. DUVAL, Oct 1998
 
 %status = mdsremote(4);
-status = mdsvalue(4);
+status = mdsipmex(4);

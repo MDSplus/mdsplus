@@ -18,6 +18,6 @@ if nargin < 3 , varargin{1} = expr; expr = '$1'; end
 
  cmd = ['TreePut($1' sprintf(',$%d',2:length(varargin)+2) ')'];
 
-stat = mdsvalue(cmd,node,expr,varargin{1:end});
+stat = mdsipmex(cmd,node,expr,varargin{1:end});
 
 if nargout, status = stat; end

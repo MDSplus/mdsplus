@@ -1,10 +1,15 @@
-function status = mdsclose()
+function status = mdsclose(para)
 % function to mdsclose on remote server
-% eg : mdsclose(para);
+% eg : mdsclose(para);        % para is optional
 % if para ~= 0, perform a disconnect of remote server
 % Basil P. DUVAL, Oct 1998
 
 %status = mdsremote(3);
-%status = mdsvalue(3);
-%status  = mdsvalue('MDSLIB->MDS$CLOSE()');
-status  = mdsvalue('TreeClose()');
+%status = mdsipmex(3);
+%status  = mdsipmex('MDSLIB->MDS$CLOSE()');
+if(nargin < 1);para=0;end
+if(para)
+status = mdsdisconnect();
+else
+status  = mdsipmex('TreeClose()');
+end
