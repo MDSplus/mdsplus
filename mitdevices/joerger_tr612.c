@@ -245,12 +245,17 @@ int joerger_tr612___store(struct descriptor *niddsc, InStoreStruct *setup)
 static int ReadChannel(InStoreStruct *setup, int max_samps, int chan, short *data_ptr)
 {
   int status;
+  /*
   int samples_to_read = max_samps;
   int this_chunk;
+  */
   static int zero=0;
   pio(17,0,&zero,&one);
+  /*
   for (this_chunk = min(32767,samples_to_read);samples_to_read > 0; 
        samples_to_read -= this_chunk, data_ptr += this_chunk, this_chunk = min(32767,samples_to_read))
     return_on_error(DevCamChk(CamStopw(setup->name,chan,2,this_chunk,data_ptr,16,0),&one,0),status);
+  */
+  return_on_error(DevCamChk(CamFStopw(setup->name,chan,2,max_samps,data_ptr,16,0),&one,0),status);
   return status;
 }
