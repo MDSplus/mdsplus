@@ -6,6 +6,9 @@
 #include "/usr/include/sys/types.h"
 #elif !defined(HAVE_WINDOWS_H)
 #include <sys/types.h>
+#if defined(linux)
+#define USE_PIPED_MESSAGING 1
+#endif
 #endif
 #ifdef HAVE_VXWORKS_H
 int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
@@ -969,10 +972,13 @@ STATIC_ROUTINE void setHandle()
         setKeyPath(keypath,++msgKey);
       }
       /* don't block on open */
+#ifdef linux
+      msgId = open(keypath, O_RDWR);
+#else
       msgId = open(keypath, O_RDONLY | O_NONBLOCK);
-      
       /* block on next read */
       fcntl(msgId, F_SETFL, 0);
+#endif
       umask(um);
 #else 
 	/* get first unused message queue id */
@@ -1099,7 +1105,6 @@ STATIC_ROUTINE void releaseMessages()
 #else
     struct msqid_ds buf;
 #endif
-
     if(!msgId) return;
 
 
