@@ -187,7 +187,7 @@ int   MdsMsg(			/* Return: sts provided by user		*/
             fprintf(stderr,"%s\n",text);
        }
     else
-        fprintf(stderr,"%s:  sts=%s",text,MdsGetMsg(sts));
+        fprintf(stderr,"%s:  sts=%s\n",text,MdsGetMsg(sts));
 
     return(sts | ALREADY_DISPLAYED);
    }
