@@ -81,9 +81,9 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @libdir@
-	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @libdir@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR)
-	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) @libdir@lib$(LIBRARYNAME)@SHARETYPE@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @libdir@
+	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @libdir@/lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR)
+	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) @libdir@/lib$(LIBRARYNAME)@SHARETYPE@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libcts_commands@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdscts @bindir@
 
