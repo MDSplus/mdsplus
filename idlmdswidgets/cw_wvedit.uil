@@ -108,7 +108,7 @@ object
                         {
                         XmNactivateCallback = procedures
                             {
-                            Print(WidgetRec);
+!                            Print(WidgetRec);
                             };
                         };
                     };
@@ -123,7 +123,7 @@ object
                         {
                         XmNactivateCallback = procedures
                             {
-                            PrintAll(WidgetRec);
+!                            PrintAll(WidgetRec);
                             };
                         };
                     };
@@ -138,8 +138,8 @@ object
                         {
                         XmNactivateCallback = procedures
                             {
-	                    ResetCustomizePrint(WidgetRec);
-        	            XmdsManageChildCallback(CustomizePrintWidget);
+!	                    ResetCustomizePrint(WidgetRec);
+!        	            XmdsManageChildCallback(CustomizePrintWidget);
                             };
                         };
                     };
