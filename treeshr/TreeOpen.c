@@ -271,11 +271,13 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 							MDSEventCan(local_info->rundown_id);
 						if (local_info->section_addr[0])
 						{
-                                                  if (local_info->channel)
+#ifndef HAVE_WINDOWS_H
+              if (local_info->channel)
 							{ int status;
 							  close(local_info->channel);
 							  status = munmap(local_info->section_addr[0],local_info->alq * 512);
 							}
+#endif
 							if (local_info->vm_addr)
                                                           free(local_info->vm_addr);
 						}
@@ -920,17 +922,19 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int nomap)
 			fclose(*(FILE **)file_handle);
 			status = 1;
 		}
+#ifndef HAVE_WINDOWS_H
 		else
 		{
 #ifndef MAP_FILE
 #define MAP_FILE 0
 #endif
-                        info->section_addr[0] = mmap(0,info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE, info->channel, 0);
-                        status = info->section_addr[0] != (void *)-1;
-                        if (!status)
-                          printf("Error mapping file - errno = %d\n",errno);
+      info->section_addr[0] = mmap(0,info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE, info->channel, 0);
+      status = info->section_addr[0] != (void *)-1;
+      if (!status)
+        printf("Error mapping file - errno = %d\n",errno);
 
-                }
+    }
+#endif
 		/***********************************************
 		If we successfully mapped the file, see if
 		we got all of the file and the return addresses
