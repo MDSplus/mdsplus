@@ -812,7 +812,7 @@ static void FlipHeader(MsgHdr *header)
   Flip32(header->msglen);
   Flip32(header->status);
   Flip16(header->length);
-  for (i=0;i<MAX_DIMS/2;i++) FlipBytes(sizeof(header->dims[i]),(char *)&header->dims[i]);
+  for (i=0;i<MAX_DIMS;i++) FlipBytes(4,((char *)header->dims)+4*i);
 #else
   FlipBytes(4,(char *)&header->msglen);
   FlipBytes(4,(char *)&header->status);
@@ -830,7 +830,7 @@ static void FlipData(Message *m)
   for (i=0;i<MAX_DIMS;i++)
   {
 #ifdef __CRAY
-    dims[i] = i % 2 ? m->h.dims[i/2] >> 32 : m->h.dims[i/2] & 0xffffffff;
+    dims[i] = i % 2 ? m->h.dims[i/2] & 0xffffffff : m->h.dims[i/2] >> 32;
 #else
     dims[i] = m->h.dims[i];
 #endif
