@@ -79,6 +79,9 @@ extern void AddNode(Widget, XtPointer, XtPointer);
 extern void AddNodeApply(Widget, XtPointer, XtPointer);
 extern void AddNodeDismiss(Widget, XtPointer, XtPointer);
 extern void SetUsage(Widget, XtPointer, XtPointer);
+extern void AddDeviceDismiss(Widget, XtPointer, XtPointer);
+extern void CreateAddDevice(Widget, XtPointer, XtPointer);
+extern void AddDevice(Widget, XtPointer, XtPointer);
 
 /*
  * Function prototypes for routines located in utilities file
@@ -158,7 +161,7 @@ int main(int argc, char **argv)
     MrmHierarchy HierarchyID;
     MrmType MrmWClass;
     static char *UidFile [] = { BX_UID_FILE_NAME };
-    MRMRegisterArg NamesList[27];
+    MRMRegisterArg NamesList[30];
     Cardinal Nlac;
     Nlac = 0;
     NamesList[Nlac].name = "CloseTree";
@@ -215,6 +218,12 @@ int main(int argc, char **argv)
     NamesList[Nlac++].value = (XtPointer) AddNodeDismiss;
     NamesList[Nlac].name = "SetUsage";
     NamesList[Nlac++].value = (XtPointer) SetUsage;
+    NamesList[Nlac].name = "AddDeviceDismiss";
+    NamesList[Nlac++].value = (XtPointer) AddDeviceDismiss;
+    NamesList[Nlac].name = "CreateAddDevice";
+    NamesList[Nlac++].value = (XtPointer) CreateAddDevice;
+    NamesList[Nlac].name = "AddDevice";
+    NamesList[Nlac++].value = (XtPointer) AddDevice;
     NamesList[Nlac].name = NULL;
     NamesList[Nlac].value = NULL;
     

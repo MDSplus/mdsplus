@@ -530,20 +530,24 @@ static ListTreeItem *FindChildItemByNid(Widget tree, ListTreeItem *parent, int n
 
 static Widget toplevel;
 
+static Boolean notify_on=TRUE;
+
 static void NodeTouched(int nid, NodeTouchType type)
 {
-  Widget tree = XtNameToWidget(BxFindTopShell(toplevel), "*.tree");
-  ListTreeItem *this_item;
-  ListTreeRefreshOff(tree);
-  this_item = FindParentItemByNid(tree, nid);
-  if (this_item != NULL) {
-    switch(type) {
-    case on_off:      FixPixMaps(tree, this_item); break;
-    case set_def:     set_default(toplevel, FindChildItemByNid(tree, this_item, nid)); break;
-    case new:         this_item = insert_item(tree, this_item, nid); break;
+  if (notify_on) {
+    Widget tree = XtNameToWidget(BxFindTopShell(toplevel), "*.tree");
+    ListTreeItem *this_item;
+    ListTreeRefreshOff(tree);
+    this_item = FindParentItemByNid(tree, nid);
+    if (this_item != NULL) {
+      switch(type) {
+      case on_off:      FixPixMaps(tree, this_item); break;
+      case set_def:     set_default(toplevel, FindChildItemByNid(tree, this_item, nid)); break;
+      case new:         this_item = insert_item(tree, this_item, nid); break;
+      }
     }
+    ListTreeRefreshOn(tree);
   }
-  ListTreeRefreshOn(tree);
 }
 
 
@@ -1033,6 +1037,8 @@ DoAction( Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 static unsigned int usage=0;
+static char *device_type=0;
+
 void
 AddNodeDismiss( Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -1054,28 +1060,6 @@ Boolean add_node(Widget w, ListTreeItem *parent, char *name, int usage, ListTree
   c_nid = parent_nid;
   parent_path = ReadString(getnci, &nid_dsc MDS_END_ARG);
   full_path=realloc(parent_path, strlen(parent_path)+1+strlen(name)+1);
-  if (usage == TreeUSAGE_DEVICE) {
-    static Boolean devices_loaded = False; 
-    char **devnames;
-    char **imagenames;
-    int num;
-    Widget top;
-    top = XtNameToWidget(BxFindTopShell(w), "*.addDeviceDialog");
-    if (!devices_loaded) {
-      int i;
-      Widget rb;
-      status = GetSupportedDevices(&devnames, &imagenames, &num);
-      rb = XtNameToWidget(top, "*.ad_radioBox1");
-      for (i=0; i<num; i++) {
-	Widget w = XmCreateToggleButton(rb, devnames[i], NULL, 0);
-        XtManageChild(w);
-      }
-      devices_loaded = True;
-    }
-    XtManageChild(top);
-    XmdsComplain(BxFindTopShell(w), "Non Motif traverser does not\nyet support adding devices to the tree");
-    return 0;
-  }
   if (usage == TreeUSAGE_SUBTREE) {
     XmdsComplain(BxFindTopShell(w), "Non Motif traverser does not\nyet support adding subtrees to the tree");
     return 0;
@@ -1086,8 +1070,28 @@ Boolean add_node(Widget w, ListTreeItem *parent, char *name, int usage, ListTree
   else
     strcat(full_path, ":");
   strcat(full_path,name);
-  status = TreeAddNode(full_path, &new_nid, usage);
-  if (status) {
+  if (usage == TreeUSAGE_DEVICE) {
+    status = 0;
+    if (device_type) {
+      char *path = malloc(strlen(full_path)+2);
+      strcpy(path, "\\");
+      strcat(path, full_path);
+      notify_on = FALSE;
+      status = TreeAddConglom(path, device_type, &new_nid);
+      notify_on = TRUE;
+
+      free(path);
+      if (!(status&1))
+	XmdsComplain(BxFindTopShell(w), "Error adding device");
+    }
+    else
+      XmdsComplain(BxFindTopShell(w), "Select a device type before choosing add");
+  } else {
+    status = TreeAddNode(full_path, &new_nid, usage);
+    if (!(status&1))
+      XmdsComplain(BxFindTopShell(w), "Error adding node");
+  }
+  if (status&1) {
      Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
      *itm = insert_item(tree, parent, new_nid);
   }
@@ -1114,7 +1118,7 @@ Boolean AddNodeApply(Widget w)
               XmdsComplain(w, "Node names must be no more than 12 characters long");
 	    else {
               ListTreeItem *ret_itm;
-              status = add_node(w, selections[0], name_c, usage, &ret_itm);
+	      status = add_node(w, selections[0], name_c, usage, &ret_itm);
               if (status) {
                 Widget tag_w = XtNameToWidget(XtParent(w), "*.nodeTags");
                 char *tags_c = XmTextGetString(tag_w);
@@ -1152,6 +1156,12 @@ SetUsage( Widget w, XtPointer client_data, XtPointer call_data)
   if (cb->set)
     usage = *(int *)client_data;
 }
+void SetDeviceType( Widget w, XtPointer client_data, XtPointer call_data)
+{
+  XmToggleButtonCallbackStruct *cb = (XmToggleButtonCallbackStruct *)call_data;
+  device_type = realloc(device_type, strlen(w->core.name)+1);
+  strcpy(device_type, w->core.name);
+}  
 void
 CommandEntered( Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -1161,3 +1171,44 @@ CommandEntered( Widget w, XtPointer client_data, XtPointer call_data)
   XmStringGetLtoR(cb->value, XmSTRING_DEFAULT_CHARSET, &cmd);
   status = mdsdcl_do_command(cmd);
 } 
+
+void
+CreateAddDevice( Widget w, XtPointer client_data, XtPointer call_data)
+{
+  static Boolean devices_loaded = False; 
+  char **devnames;
+  char **imagenames;
+  int num;
+  Widget top;
+  usage = TreeUSAGE_DEVICE;
+  top = XtNameToWidget(BxFindTopShell(w), "*.addDeviceDialog");
+  if (!devices_loaded) {
+  static Arg args[] = {
+                        {XmNarmCallback, 0}
+                      };
+    int i;
+    Widget rb;
+    int status = GetSupportedDevices(&devnames, &imagenames, &num);
+    static XtCallbackRec device_changed_list[] = {{(XtCallbackProc)SetDeviceType, 0},{0,0}};
+    args[0].value = (long)device_changed_list;
+    rb = XtNameToWidget(top, "*.ad_radioBox1");
+    for (i=0; i<num; i++) {
+      
+      Widget w = XmCreateToggleButton(rb, devnames[i], args, 1);
+      XtManageChild(w);
+    }
+    devices_loaded = True;
+  }
+  XtManageChild(top);
+}
+
+void
+AddDevice( Widget w, XtPointer client_data, XtPointer call_data)
+{
+  XtUnmanageChild(w);
+}
+void
+AddDeviceDismiss( Widget w, XtPointer client_data, XtPointer call_data)
+{
+  XtUnmanageChild(w);
+}

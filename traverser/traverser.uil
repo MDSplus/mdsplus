@@ -133,6 +133,9 @@ procedure SetUsage(integer);
 procedure CommandEntered();
 procedure MessageDismiss();
 procedure MessageClear();
+procedure AddDeviceDismiss();
+procedure CreateAddDevice();
+procedure AddDevice();
 
 list BaseStyle : arguments {
 };
@@ -507,7 +510,6 @@ object radioBox1 : XmRadioBox widget {
     };
     controls {
          managed XmToggleButton toggleButton;
-         managed XmToggleButton toggleButton1;
          managed XmToggleButton toggleButton2;
          managed XmToggleButton toggleButton3;
          managed XmToggleButton toggleButton4;
@@ -534,20 +536,20 @@ object toggleButton : XmToggleButton widget {
         XmNvalueChangedCallback = procedure SetUsage(USAGE_ACTION);
     };
 };
-
-object toggleButton1 : XmToggleButton widget {
-    arguments {
-        XmNlabelString = compound_string("device...");
-        XmNwidth = 83;
-        XmNheight = 26;
-    };
-    controls {
-    };
-    callbacks {
-        XmNvalueChangedCallback = procedure SetUsage(USAGE_DEVICE);
-    };
-};
-
+!
+!object toggleButton1 : XmToggleButton widget {
+!    arguments {
+!        XmNlabelString = compound_string("device...");
+!        XmNwidth = 83;
+!        XmNheight = 26;
+!    };
+!    controls {
+!    };
+!    callbacks {
+!        XmNvalueChangedCallback = procedure SetUsage(USAGE_DEVICE);
+!    };
+!};
+!
 object toggleButton2 : XmToggleButton widget {
     arguments {
         XmNlabelString = compound_string("dispatch");
@@ -725,8 +727,8 @@ object addDeviceDialog : XmMessageDialog widget {
          managed XmPushButton ad_pushButton;
     };
     callbacks {
-        XmNokCallback = procedure AddNode();
-        XmNcancelCallback = procedure AddNodeDismiss();
+        XmNcancelCallback = procedure AddDeviceDismiss();
+        XmNokCallback = procedure AddNodeApply();
     };
 };
 
@@ -741,9 +743,9 @@ object ad_bulletinBoard : XmBulletinBoard widget {
     controls {
          managed XmSeparator ad_separator2;
          managed XmRadioBox ad_radioBox1;
-         managed XmTextField ad_nodeTags;
+         managed XmTextField nodeTags;
          managed XmLabel ad_label;
-         managed XmTextField ad_nodeName;
+         managed XmTextField nodeName;
          managed XmLabel ad_label1;
     };
     callbacks {
@@ -762,21 +764,21 @@ object ad_label1 : XmLabel widget {
     };
 };
 
-object ad_nodeName : XmTextField widget {
-    arguments {
-        XmNmarginHeight = 1;
-        XmNmarginWidth = 1;
-        XmNcolumns = 12;
-        XmNx = 104;
-        XmNy = 10;
-        XmNheight = 23;
-    };
-    controls {
-    };
-    callbacks {
-    };
-};
-
+!object ad_nodeName : XmTextField widget {
+!    arguments {
+!        XmNmarginHeight = 1;
+!        XmNmarginWidth = 1;
+!        XmNcolumns = 12;
+!        XmNx = 104;
+!        XmNy = 10;
+!        XmNheight = 23;
+!    };
+!    controls {
+!    };
+!    callbacks {
+!    };
+!};
+!
 object ad_label : XmLabel widget {
     arguments {
         XmNlabelString = compound_string("Tags:");
@@ -790,20 +792,21 @@ object ad_label : XmLabel widget {
     };
 };
 
-object ad_nodeTags : XmTextField widget {
-    arguments {
-        XmNmarginHeight = 1;
-        XmNmarginWidth = 1;
-        XmNcolumns = 32;
-        XmNx = 102;
-        XmNy = 31;
-        XmNheight = 25;
-    };
-    controls {
-    };
-    callbacks {
-    };
-};
+!object ad_nodeTags : XmTextField widget {
+!    arguments {
+!        XmNmarginHeight = 1;
+!        XmNmarginWidth = 1;
+!        XmNcolumns = 32;
+!        XmNx = 102;
+!        XmNy = 31;
+!        XmNheight = 25;
+!    };
+!    controls {
+!    };
+!    callbacks {
+!    };
+!};
+!
 
 object ad_radioBox1 : XmRadioBox widget {
     arguments {
@@ -1133,6 +1136,7 @@ object pulldownMenu1 : XmPulldownMenu widget {
     };
     controls {
          managed XmPushButton pushButtonss;
+         managed XmPushButton pushButtonAddDevice;
          managed XmPushButton pushButton4;
          managed XmPushButton pushButton5;
     };
@@ -1148,6 +1152,17 @@ object pushButtonss : XmPushButton widget {
     };
     callbacks {
         XmNactivateCallback = procedure BxManageCB("addDialog");
+    };
+};
+
+object pushButtonAddDevice : XmPushButton widget {
+    arguments {
+        XmNlabelString = compound_string("Add Device");
+    };
+    controls {
+    };
+    callbacks {
+        XmNactivateCallback = procedure CreateAddDevice();
     };
 };
 
