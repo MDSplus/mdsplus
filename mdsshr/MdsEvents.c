@@ -514,7 +514,7 @@ static void handleRemoteAst()
         if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo)))
         {
             MdsEventInfo *event = (MdsEventInfo *)m->bytes;
-            (*event->astadr)(event->astprm, event->eventid, event->data);
+            (*event->astadr)(event->astprm, 12, event->data);
  	}
     }
 }
@@ -698,7 +698,7 @@ int MDSEventCan(int eventid)
     for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
     {
 	if(shared_info[i].msgkey == msgKey && shared_info[i].nameid >= 0 
-		&& !strncmp(evinfo->name, shared_name[shared_info[i].nameid].name))
+		&& !strcmp(evinfo->name, shared_name[shared_info[i].nameid].name))
 	    break;
     }
     if(i < MAX_ACTIVE_EVENTS) /* if corresponding slot found */
