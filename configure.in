@@ -6,12 +6,12 @@ AC_CONFIG_HEADER(include/config.h)
 AC_CONFIG_AUX_DIR(conf)
 AC_CANONICAL_SYSTEM
 
-dnl See if we need to use native compiler
+dnl See if we need to use native compilers
 case "$target" in
-hppa*) CC=cc;
-       F77=f77;;
-alpha-dec-osf*) CC=cc;
-		F77=f77;;
+hppa*) {CC=cc};
+       {F77=f77};;
+alpha-dec-osf*) {CC=cc};
+		{F77=f77};;
 esac
 
 dnl Check out the compiler
@@ -19,6 +19,7 @@ AC_PROG_CC
 AC_PROG_F77
 
 LD=ld
+
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib -I\$(top_srcdir)/include +DA1.1 +DS1.1 +z";
        FFLAGS="$FFLAGS +z +es -I\$(top_srcdir)/include"; 
@@ -45,7 +46,7 @@ sparc-sun-solaris2*)  LINKSHARED="-G -B symbolic -R $(exec_prefix)/lib";
        LDARC="-Wl,-B,static";
        FOR_LDFLAGS="";
        SHARETYPE=".so";;
-alpha-dec-osf*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include";
+alpha-dec-osf*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -pthread";
        FFLAGS="$FFLAGS -I\$(top_srcdir)/include";
        LDSHARE="-Wl,-so_archive ";
        LDARC="-Wl,-no_so ";
@@ -102,7 +103,6 @@ MAKEJAVADIR="\$(top_srcdir)/java/"
 
 dnl Checks for libraries.
 
-XM_LIBS="-lMrm -lXm"
 AC_CHECK_LIB(c,printf)
 AC_CHECK_LIB(m,pow)
 AC_CHECK_LIB(resolv,__dn_skipname)
@@ -120,7 +120,8 @@ AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/fi
 
 dnl Check for jdk files
 AC_CHECK_FILE(/usr/include/java/jni.h,JDK_CFLAGS="-I/usr/include/java")
-AC_CHECK_FILE(/usr/include/java/`uname -m`/jni_md.h,JDK_CFLAGS="$JDK_CFLAGS -I/usr/include/java/`uname -m`")
+jni_md_inc="/usr/include/java/`uname -m`/jni_md.h"
+AC_CHECK_FILE($jni_md_inc,JDK_CFLAGS="$JDK_CFLAGS -I/usr/include/java/`uname -m`")
 if test "$JDK_CFLAGS"
 then
   JAVA_APS="$(JAVA_APS)"
@@ -197,10 +198,11 @@ AC_CHECK_SIZEOF(_int64)
 AC_CHECK_SIZEOF(int *)
 SIZEOF_INT_P=$ac_cv_sizeof_int_p
 AC_PATH_XTRA
-AC_PATH_PROG(UIL,uil,uil,$PATH:/usr/bin/X11)
+AC_PATH_PROG(UIL,uil,uil,/usr/bin/X11:$PATH)
 AC_PATH_PROG(JAVAC,javac,javac)
 AC_PATH_PROG(JAR,jar,jar)
-if test $X_CFLAGS
+XM_LIBS="-lMrm -lXm"
+if test "$X_CFLAGS"
 then
 	X_CFLAGS="$X_CFLAGS -D_NO_DXm"
 else
