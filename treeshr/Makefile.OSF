@@ -9,7 +9,7 @@ treegetnci.o \
 treegetrecord.o \
 treeopen.o \
 treesetdefault.o \
-remote.o
+RemoteAccess.o
 
 libTreeShr.so : $(OBJECTS)
 	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm -lots -L../mdsshr -lMdsShr
