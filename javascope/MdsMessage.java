@@ -44,12 +44,12 @@ class MdsMessage extends Object
 
     public MdsMessage(String s)
     {
-        this(s, null); 
+        this(s, null);
     }
 
     public MdsMessage(byte c)
     {
-        this(c, null); 
+        this(c, null);
     }
 
     public MdsMessage(String s, Vector v)
@@ -66,40 +66,43 @@ class MdsMessage extends Object
         BuildMdsMessage((byte)0, Descriptor.DTYPE_CSTRING, (byte)1, null, buf);
     }
 
-    public MdsMessage(byte descr_idx, byte dtype, 
-                        byte nargs, 
-                        int dims[], 
+    public MdsMessage(byte descr_idx, byte dtype,
+                        byte nargs,
+                        int dims[],
                         byte body[])
     {
-        BuildMdsMessage(descr_idx, dtype, nargs, dims, body);  
+        BuildMdsMessage(descr_idx, dtype, nargs, dims, body);
     }
 
-    public void BuildMdsMessage(byte descr_idx, byte dtype, 
-                        byte nargs, 
-                        int dims[], 
+    public void BuildMdsMessage(byte descr_idx, byte dtype,
+                        byte nargs,
+                        int dims[],
                         byte body[])
     {
         int body_size = (body != null ? body.length : 0);
         msglen = HEADER_SIZE + body_size;
         status = 0;
         message_id = msgid;
-        this.length = (short)body_size;
+
+//Cesare 2004 la length e' la dimensione del body
+//se stringa e il numero di byte del dato elementare se array
+//      this.length = (short)body_size;
+        this.length = Descriptor.getDataSize(dtype, body);
+
         this.nargs = nargs;
         this.descr_idx = descr_idx;
-        //this.ndims = ndims; ???? Cesare 7-8-2003
         if(dims != null)
             ndims = (byte)( (dims.length > Descriptor.MAX_DIM) ? Descriptor.MAX_DIM : dims.length);
         else
             ndims = 0;
         this.dims = new int[Descriptor.MAX_DIM];
         for(int i = 0; i < Descriptor.MAX_DIM; i++)
-	        //this.dims[i] = (dims == null || dims.length >= i) ? 0 : dims[i];
 	        this.dims[i] = (dims != null && i < dims.length) ?  dims[i] : 0;
         this.dtype = dtype;
         client_type = JAVA_CLIENT;
         this.body = body;
     }
-    
+
     public void useCompression(boolean use_cmp)
     {
          status = (use_cmp ? SUPPORTS_COMPRESSION | 5 : 0);
@@ -109,12 +112,12 @@ class MdsMessage extends Object
     {
         int bytes_to_read , read_bytes = 0, curr_offset = 0;
         byte out[], b4[] = new byte[4];
-        
+
         ReadBuf(b4, dis);
         bytes_to_read = ToInt(b4) - HEADER_SIZE;
-                
+
         out = new byte[bytes_to_read];
-        
+
         InflaterInputStream zis = new InflaterInputStream(dis);
         while(bytes_to_read > 0)
         {
@@ -137,7 +140,7 @@ class MdsMessage extends Object
         ConnectionEvent e;
         int bytes_to_read = buf.length, read_bytes = 0, curr_offset = 0;
         boolean send = false;
-                
+
         if(bytes_to_read > 2000)
         {
             send = true;
@@ -149,15 +152,15 @@ class MdsMessage extends Object
 	        read_bytes     = dis.read(buf, curr_offset, bytes_to_read);
 	        curr_offset   += read_bytes;
 	        bytes_to_read -= read_bytes;
-    	    
+
 	        if(send)
 	        {
 	            e = new ConnectionEvent(this, buf.length, curr_offset);
 	            dispatchConnectionEvent(e);
 	        }
-        }   
+        }
     }
-    
+
     public synchronized void Send(DataOutputStream dos) throws IOException
     {
         dos.writeInt(msglen);
@@ -171,20 +174,20 @@ class MdsMessage extends Object
         dos.writeByte(ndims);
         for(int i = 0; i < Descriptor.MAX_DIM; i++)
 	        dos.writeInt(dims[i]);
-        dos.write(body, 0, length);
+        dos.write(body, 0, body.length);
         dos.flush();
-        
+
         if(descr_idx == (nargs - 1)) msgid++;
         if(msgid == 0) msgid = 1;
     }
-    
+
     protected int ByteToIntSwap(byte b[], int idx)
     {
         int ch1, ch2, ch3, ch4;
         ch1 = (b[idx+3] & 0xff) << 24;
         ch2 = (b[idx+2] & 0xff) << 16;
         ch3 = (b[idx+1] & 0xff) << 8;
-        ch4 = (b[idx+0] & 0xff) << 0;    
+        ch4 = (b[idx+0] & 0xff) << 0;
         return ((ch1) + (ch2) + (ch3) + (ch4));
     }
 
@@ -194,7 +197,7 @@ class MdsMessage extends Object
         ch1 = (b[idx+0] & 0xff) << 24;
         ch2 = (b[idx+1] & 0xff) << 16;
         ch3 = (b[idx+2] & 0xff) << 8;
-        ch4 = (b[idx+3] & 0xff) << 0;    
+        ch4 = (b[idx+3] & 0xff) << 0;
         return ((ch1) + (ch2) + (ch3) + (ch4));
     }
 
@@ -202,7 +205,7 @@ class MdsMessage extends Object
     {
         short ch1, ch2;
         ch1 = (short)((b[idx+1] & 0xff) << 8);
-        ch2 = (short)((b[idx+0] & 0xff) << 0);    
+        ch2 = (short)((b[idx+0] & 0xff) << 0);
         return (short)((ch1) + (ch2));
     }
 
@@ -215,13 +218,13 @@ class MdsMessage extends Object
     }
 
     public synchronized void Receive(DataInputStream dis)throws IOException
-    {	
+    {
         byte header_b[] = new byte[16 + Descriptor.MAX_DIM*4];
         byte b4[] = new byte[4];
         byte b2[] = new byte[2];
         int c_type = 0;
         int idx = 0;
-        
+
         //ReadBuf(header_b, dis);
         if(dis.read(header_b)== -1)
             throw(new IOException("Broken connection with mdsip server"));
@@ -229,21 +232,21 @@ class MdsMessage extends Object
         c_type = header_b[14];
         swap = ((c_type & BIG_ENDIAN_MASK) != BIG_ENDIAN_MASK);
         compressed = ((c_type & COMPRESSED) == COMPRESSED);
-            
+
         if(swap)
-        {        
+        {
             msglen = ByteToIntSwap(header_b, 0);
             idx = 4;
             status = ByteToIntSwap(header_b, idx);
             idx += 4;
-            length = ByteToShortSwap(header_b, idx);;                
+            length = ByteToShortSwap(header_b, idx);;
             idx += 2;
         } else {
             msglen = ByteToInt(header_b, 0);
             idx = 4;
             status = ByteToInt(header_b, idx);
             idx += 4;
-            length = ByteToShort(header_b, idx);;                
+            length = ByteToShort(header_b, idx);;
             idx += 2;
         }
 
@@ -265,7 +268,7 @@ class MdsMessage extends Object
         System.out.println("c_type " + c_type);
         System.out.println("ndims " + ndims);
 */
-            
+
         if(swap)
         {
             for(int i = 0, j = idx; i < Descriptor.MAX_DIM; i++, j += 4)
@@ -278,27 +281,27 @@ class MdsMessage extends Object
                 dims[i]  = ByteToInt(header_b, j);
             }
         }
-                    
+
         if(msglen > HEADER_SIZE)
         {
             if(compressed)
-            {   
+            {
                 body = ReadCompressedBuf(dis);
-            } else {        
+            } else {
                 body = new byte[msglen - HEADER_SIZE];
                 ReadBuf(body, dis);
             }
         }
-        else 
-	        body = new byte[0];    	        
-    }	
-    	 
+        else
+	        body = new byte[0];
+    }
+
     protected void Flip(byte bytes[], int size)
     {
         int i;
         byte b;
         for(i = 0; i < bytes.length; i += size)
-        {   
+        {
             if(size == 2)
 	        {
 	            b = bytes[i];
@@ -355,11 +358,11 @@ class MdsMessage extends Object
                 ch1 = (body[j+7] & 0xff) << 56;
                 ch2 = (body[j+6] & 0xff) << 48;
                 ch3 = (body[j+5] & 0xff) << 40;
-                ch4 = (body[j+4] & 0xff) << 32;    
+                ch4 = (body[j+4] & 0xff) << 32;
                 ch5 = (body[j+3] & 0xff) << 24;
                 ch6 = (body[j+2] & 0xff) << 16;
                 ch7 = (body[j+1] & 0xff) << 8;
-                ch8 = (body[j+0] & 0xff) << 0;    
+                ch8 = (body[j+0] & 0xff) << 0;
                 out[i] = ((ch1) + (ch2) + (ch3) + (ch4) + (ch5) + (ch6) + (ch7) + (ch8));
             }
 	    else
@@ -368,11 +371,11 @@ class MdsMessage extends Object
                 ch1 = (body[j+0] & 0xffL) << 56;
                 ch2 = (body[j+1] & 0xffL) << 48;
                 ch3 = (body[j+2] & 0xffL) << 40;
-                ch4 = (body[j+3] & 0xffL) << 32;    
+                ch4 = (body[j+3] & 0xffL) << 32;
                 ch5 = (body[j+4] & 0xffL) << 24;
                 ch6 = (body[j+5] & 0xffL) << 16;
                 ch7 = (body[j+6] & 0xffL) << 8;
-                ch8 = (body[j+7] & 0xffL) << 0;   
+                ch8 = (body[j+7] & 0xffL) << 0;
                 out[i] = ((ch1) + (ch2) + (ch3) + (ch4) + (ch5) + (ch6) + (ch7) + (ch8));
             }
         return out;
@@ -388,7 +391,7 @@ class MdsMessage extends Object
                 ch1 = (body[j+3] & 0xff) << 24;
                 ch2 = (body[j+2] & 0xff) << 16;
                 ch3 = (body[j+1] & 0xff) << 8;
-                ch4 = (body[j+0] & 0xff) << 0;    
+                ch4 = (body[j+0] & 0xff) << 0;
                 out[i] = ((ch1) + (ch2) + (ch3) + (ch4) );
             }
 	    else
@@ -397,7 +400,7 @@ class MdsMessage extends Object
                 ch1 = (body[j+0] & 0xff) << 24;
                 ch2 = (body[j+1] & 0xff) << 16;
                 ch3 = (body[j+2] & 0xff) << 8;
-                ch4 = (body[j+3] & 0xff) << 0;    
+                ch4 = (body[j+3] & 0xff) << 0;
                 out[i] = ((ch1) + (ch2) + (ch3) + (ch4) );
             }
         return out;
@@ -413,7 +416,7 @@ class MdsMessage extends Object
                 ch1 = (body[j+3] & 0xff) << 24;
                 ch2 = (body[j+2] & 0xff) << 16;
                 ch3 = (body[j+1] & 0xff) << 8;
-                ch4 = (body[j+0] & 0xff) << 0;    
+                ch4 = (body[j+0] & 0xff) << 0;
                 out[i] = ((ch1) + (ch2) + (ch3) + (ch4));
             }
 	    else
@@ -422,7 +425,7 @@ class MdsMessage extends Object
                 ch1 = (body[j+0] & 0xff) << 24;
                 ch2 = (body[j+1] & 0xff) << 16;
                 ch3 = (body[j+2] & 0xff) << 8;
-                ch4 = (body[j+3] & 0xff) << 0;    
+                ch4 = (body[j+3] & 0xff) << 0;
                 out[i] = ((ch1) + (ch2) + (ch3) + (ch4));
             }
         return out;
@@ -436,14 +439,14 @@ class MdsMessage extends Object
             for(int i = 0, j = 0; i < body.length / 2; i++, j+=2)
             {
                 ch1 = (short)((body[j+1] & 0xff) << 8);
-                ch2 = (short)((body[j+0] & 0xff) << 0);    
+                ch2 = (short)((body[j+0] & 0xff) << 0);
                 out[i] = (short)((ch1) + (ch2));
             }
 	    else
             for(int i = 0, j = 0; i < body.length / 2; i++, j+=2)
             {
                 ch1 = (short)((body[j+0] & 0xff) << 8);
-                ch2 = (short)((body[j+1] & 0xff) << 0);    
+                ch2 = (short)((body[j+1] & 0xff) << 0);
                 out[i] = (short)((ch1) + (ch2));
             }
         return out;
@@ -453,14 +456,14 @@ class MdsMessage extends Object
     public float[] ToFloatArray() throws IOException
     {
         int ch1, ch2, ch3, ch4;
-        float out[] = new float[body.length / 4];    
+        float out[] = new float[body.length / 4];
         if(swap)
             for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
             {
                 ch1 = (body[j+3] & 0xff) << 24;
                 ch2 = (body[j+2] & 0xff) << 16;
                 ch3 = (body[j+1] & 0xff) << 8;
-                ch4 = (body[j+0] & 0xff) << 0;    
+                ch4 = (body[j+0] & 0xff) << 0;
                 out[i] = Float.intBitsToFloat((int)((ch1) + (ch2) + (ch3) + (ch4)));
             }
 	    else
@@ -469,7 +472,7 @@ class MdsMessage extends Object
                 ch1 = (body[j+0] & 0xff) << 24;
                 ch2 = (body[j+1] & 0xff) << 16;
                 ch3 = (body[j+2] & 0xff) << 8;
-                ch4 = (body[j+3] & 0xff) << 0;    
+                ch4 = (body[j+3] & 0xff) << 0;
                 out[i] = Float.intBitsToFloat((int)((ch1) + (ch2) + (ch3) + (ch4)));
             }
         return out;
@@ -478,32 +481,32 @@ class MdsMessage extends Object
     public double[] ToDoubleArray() throws IOException
     {
         long ch;
-        double out[] = new double[body.length / 8];    
+        double out[] = new double[body.length / 8];
         if(swap)
             for(int i = 0, j = 0; i < body.length / 8; i++, j+=8)
             {
                 ch =  (body[j+7] & 0xff) << 56;
                 ch += (body[j+6] & 0xff) << 48;
                 ch += (body[j+5] & 0xff) << 40;
-                ch += (body[j+4] & 0xff) << 32;    
+                ch += (body[j+4] & 0xff) << 32;
                 ch += (body[j+3] & 0xff) << 24;
                 ch += (body[j+2] & 0xff) << 16;
                 ch += (body[j+1] & 0xff) << 8;
-                ch += (body[j+0] & 0xff) << 0;    
+                ch += (body[j+0] & 0xff) << 0;
                 out[i] = Double.longBitsToDouble(ch);
             }
 	    else
 	    {
             for(int i = 0, j = 0; i < body.length / 8; i++, j+=8)
-            {   
+            {
                 ch  = (body[j+0] & 0xffL) << 56;
                 ch += (body[j+1] & 0xffL) << 48;
                 ch += (body[j+2] & 0xffL) << 40;
-                ch += (body[j+3] & 0xffL) << 32;    
+                ch += (body[j+3] & 0xffL) << 32;
                 ch += (body[j+4] & 0xffL) << 24;
                 ch += (body[j+5] & 0xffL) << 16;
                 ch += (body[j+6] & 0xffL) << 8;
-                ch += (body[j+7] & 0xffL) << 0;   
+                ch += (body[j+7] & 0xffL) << 0;
                 out[i] = Double.longBitsToDouble(ch);
             }
         }
@@ -520,11 +523,11 @@ class MdsMessage extends Object
     {
         return  (arr[idx] == 0 && arr[idx + 1] == 0 && arr[idx + 2] == -128
 	    && arr[idx + 3] == 0);
-    }  
+    }
 
-    synchronized protected void dispatchConnectionEvent(ConnectionEvent e) 
+    synchronized protected void dispatchConnectionEvent(ConnectionEvent e)
     {
-        if (connection_listener != null) 
+        if (connection_listener != null)
         {
             for(int i = 0; i < connection_listener.size(); i++)
             {
