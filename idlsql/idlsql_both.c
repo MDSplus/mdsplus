@@ -16,8 +16,8 @@ static IDL_VPTR (*CURRENT_LOGIN)() = 0;
 
 void IDLSQL_SETDBTYPE(int argc, IDL_VPTR argv_in[], char *argk)
 {
-  static long sybase = 0;
-  static long rdb = 0;
+  static int sybase = 0;
+  static int rdb = 0;
   static IDL_KW_PAR kw_list[] = {
 	{"RDB",		IDL_TYP_LONG,	1,IDL_KW_ZERO,		0,	IDL_CHARA(rdb)},
 	{"SYBASE",	IDL_TYP_LONG,	1,IDL_KW_ZERO,		0,	IDL_CHARA(sybase)},

@@ -4,13 +4,13 @@ static int	nline;		/*character count on row*/
 static char	*pline;		/*temporary line*/
 #define MAXMSG 1024
 static char	hold[MAXMSG];	/*decode/encode holder*/
-static long	excess;		/*flag for unchecked argument count*/
-static long	date;		/*flag for absolute day*/
+static int	excess;		/*flag for unchecked argument count*/
+static int	date;		/*flag for absolute day*/
 #include <stdio.h>
 
 typedef struct {
-	unsigned long	l0;
-	long		l1;
+	unsigned int	l0;
+	int		l1;
 }	quadword;
 
 #ifdef __VMS
@@ -114,8 +114,8 @@ static IDL_VARIABLE result = {IDL_TYP_LONG, 0};
 static IDL_STRING	EMPTYSTRING = {0,0,0};
 static const double	HUGE_D = 1.7e+38;
 static const float	HUGE_F = (float)1.7e+38;
-static const long	HUGE_L = 0x7fffffff;
-static long      quiet;
+static const int	HUGE_L = 0x7fffffff;
+static int      quiet;
 static const short	HUGE_W = 0x7fff;
 /*********************************************************/
 static void IDLresize(k, dst)
@@ -144,7 +144,7 @@ IDL_VPTR	dst;
 			break;
 		}
 	case IDL_TYP_LONG : {
-		long *in = old, *out = buf;
+		int *in = old, *out = buf;
 			for (;--j>=0;) *out++ = *in++;
 			break;
 		}
@@ -224,7 +224,7 @@ char	*form;
 static void	txtitem(form, arg1, arg2, arg3, arg4)
 char	*form;
 {
-long	j;
+int	j;
 IDL_VPTR	vpnew = 0;
 IDL_STRING	*psold, *psnew;
 
@@ -315,7 +315,7 @@ int		rblob;
 			type = IDL_TYP_FLOAT;
 			break;
 		case SYBINT4 :
-			temp.l = ind ? HUGE_L : *(long *)buf;
+			temp.l = ind ? HUGE_L : *(int *)buf;
 			type = IDL_TYP_LONG;
 			break;
 		case SYBINT2 :
@@ -406,7 +406,7 @@ int		rblob;
 			switch (type) {
 			case IDL_TYP_FLOAT :	*((float *)buf	+(rows-1)) = temp.f;	break;
 			case IDL_TYP_DOUBLE :	*(((double *)buf)	+(rows-1)) = temp.d;	break;
-			case IDL_TYP_LONG :		*((long *)buf	+(rows-1)) = temp.l;	break;
+			case IDL_TYP_LONG :		*((int *)buf	+(rows-1)) = temp.l;	break;
 			case IDL_TYP_INT :		*((short *)buf	+(rows-1)) = temp.i;	break;
 			case IDL_TYP_STRING :	*((IDL_STRING *)buf	+(rows-1)) = temp.str;	break;
 			}
@@ -464,7 +464,7 @@ char		*pout_end = pout+MAXPARSE;
 			switch (src0->type) {
 			case IDL_TYP_BYTE :		src.value.c	= *((UCHAR *)buf+count); break;
 			case IDL_TYP_INT :		src.value.i	= *((short *)buf+count); break;
-			case IDL_TYP_LONG :		src.value.l	= *((long *)buf+count); break;
+			case IDL_TYP_LONG :		src.value.l	= *((int *)buf+count); break;
 			case IDL_TYP_FLOAT :	src.value.f	= *((float *)buf+count); break;
 			case IDL_TYP_DOUBLE :	src.value.d	= *((double *)buf+count); break;
 			case IDL_TYP_COMPLEX :	src.value.cmp	= *((IDL_COMPLEX *)buf+count); break;
@@ -601,9 +601,9 @@ char	*argk;
  extern	USERSQL_GETS();
  extern	USERSQL_PUTS();
  IDL_VPTR		argv[1], vpline;
- static long   head;
+ static int   head;
  static int    head_present;
- static long   width;
+ static int   width;
  static int    width_present;
  static IDL_STRING host;
  static IDL_KW_PAR kw_list[] = {
