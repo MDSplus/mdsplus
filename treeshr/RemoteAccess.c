@@ -28,6 +28,16 @@
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ncidef.h>
+
+#ifdef SRB
+#define SRB_SOCKET 12345  /* this is the socket value used to indicate that
+                             this file is an an SRB file.  Positive so that
+                             other MDSPlus checks pass, but a value that 
+                             otherwise will not occur */
+#include "srbUio.h"
+#endif
+
+
 #ifndef HAVE_VXWORKS_H
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
@@ -966,6 +976,13 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
   int fd;
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   if (hostpart)
+#ifdef SRB
+    if (strcmp(hostpart,"SRB")==0) {
+      fd = srbUioOpen(filepart, options, mode);
+      socket=SRB_SOCKET; /* flag to indicate SRB file */
+    } 
+    else
+#endif
     fd = io_open_remote(hostpart,filepart,options,mode,&socket);
   else {
     fd = open(filename, options | O_BINARY | O_RANDOM, mode);
@@ -1019,7 +1036,14 @@ int MDS_IO_CLOSE(int fd)
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
     LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
+#ifdef SRB
+    if (FDS[fd-1].socket==SRB_SOCKET) {
+      status = srbUioClose(FDS[fd-1].fd);
+    }
+    else
+#else
     status = (FDS[fd-1].socket == -1) ? close(FDS[fd-1].fd) : io_close_remote(fd);
+#endif
     FDS[fd-1].in_use = 0;
     UnlockMdsShrMutex(&IOMutex);
     return status;
@@ -1072,6 +1096,13 @@ _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
 #ifdef __APPLE__
     if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use) {
         LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
+#ifdef SRB
+        if (FDS[fd-1].socket == SRB_SOCKET) {
+            pos = srbUioSeek(FDS[fd-1].fd,offset,whence);
+	    UnlockMdsShrMutex(&IOMutex);
+	    return pos;
+        }
+#endif
         if (FDS[fd-1].socket == -1) {
             pos = (_int64) lseek(FDS[fd-1].fd,(off_t)offset,whence);
             if ((whence == SEEK_END) && (offset == 0))
@@ -1131,6 +1162,12 @@ int MDS_IO_WRITE(int fd, void *buff, size_t count)
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
     LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
+#ifdef SRB
+    if (FDS[fd-1].socket == SRB_SOCKET) {
+      ans = srbUioWrite(FDS[fd-1].fd,buff,count);
+    }
+    else
+#endif
     ans = (FDS[fd-1].socket == -1) ? write(FDS[fd-1].fd,buff,count) : io_write_remote(fd,buff,count);
     UnlockMdsShrMutex(&IOMutex);
   }
@@ -1174,6 +1211,12 @@ ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
     LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
+#ifdef SRB
+    if (FDS[fd-1].socket == SRB_SOCKET) {
+      ans = srbUioRead(FDS[fd-1].fd,buff,count);
+    }
+    else
+#endif
     ans = (FDS[fd-1].socket == -1) ? read(FDS[fd-1].fd,buff,count) : io_read_remote(fd,buff,count);
     UnlockMdsShrMutex(&IOMutex);
   }
@@ -1192,8 +1235,8 @@ STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, int size, int mode)
   *(_int64 *)(&info[2]) = offset;
 #ifdef _big_endian
   status = info[2];
-  info[2] = info[3];
-  info[3] = status;
+  info[2]=info[3];
+  info[3]=status;
 #endif
   status = SendArg(sock,MDS_IO_LOCK_K,0,0,0,sizeof(info)/sizeof(int),info,0);
   if (status & 1)
@@ -1220,6 +1263,12 @@ int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in)
   int status = TreeFAILURE;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
+#ifdef SRB
+    if (FDS[fd-1].socket == SRB_SOCKET) {
+      status = srbUioLock(fd, offset, size, mode_in);
+      return status;
+    }
+#endif
     LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
     if (FDS[fd-1].socket == -1)
     {
@@ -1312,6 +1361,12 @@ int MDS_IO_EXISTS(char *filename)
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename,&hostpart,&filepart);
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
+#ifdef SRB
+  if (strcmp(hostpart,"SRB")==0) {
+    status = srbUioStat(filepart, &statbuf);
+  } 
+  else
+#endif
   status = hostpart ? io_exists_remote(hostpart,filepart) : (stat(filename,&statbuf) == 0);
   UnlockMdsShrMutex(&IOMutex);
   free(tmp);
@@ -1356,6 +1411,12 @@ int MDS_IO_REMOVE(char *filename)
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename,&hostpart,&filepart);
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
+#ifdef SRB
+  if (strcmp(hostpart,"SRB")==0) {
+    status = srbUioUnlink(filepart);
+  } 
+  else
+#endif
   status = hostpart ? io_remove_remote(hostpart,filepart) : remove(filename);
   UnlockMdsShrMutex(&IOMutex);
   free(tmp);
@@ -1404,6 +1465,20 @@ int MDS_IO_RENAME(char *filename_old, char *filename_new)
   char *hostpart_old, *filepart_old, *hostpart_new, *filepart_new;
   char *tmp_old = ParseFile(filename_old,&hostpart_old,&filepart_old);
   char *tmp_new = ParseFile(filename_new,&hostpart_new,&filepart_new);
+#ifdef SRB
+  if (strcmp(hostpart_new,"SRB")==0) {
+    if (strcmp(hostpart_old,hostpart_new)==0) {
+      status = srbUioRename(filepart_old, filepart_new);
+    }
+    else {
+      status = 1;
+    }
+    free(tmp_old);
+    free(tmp_new);
+    return status;
+  } 
+#endif
+
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   if (hostpart_old)
   {
@@ -1426,4 +1501,3 @@ int MDS_IO_RENAME(char *filename_old, char *filename_new)
   UnlockMdsShrMutex(&IOMutex);
   return status;
 }
-
