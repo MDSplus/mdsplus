@@ -67,6 +67,6 @@ clean:
 	rm .depend
 
 .depend:
-	find . -name '*.uil' -exec makeuildep {} \; > .depend
+	find . -name '*.uil' -exec ./makeuildep {} \; > .depend
 
 include $(DEPEND)
