@@ -537,21 +537,16 @@ static void FlushSocket(SOCKET sock)
   FD_ZERO(&writefds);
   FD_SET(sock,&writefds);
   while((((status = select(FD_SETSIZE, &readfds, &writefds, 0, &timout)) > 0) && FD_ISSET(sock,&readfds)) ||
-	       (status == -1 && errno == EINTR))
+	       (status == -1 && errno == EINTR) && tries < 10)
   {
+    tries++;
     if (FD_ISSET(sock,&readfds))
     {
         status = ioctl(sock,I_NREAD,&nbytes);
         if (nbytes > 0 && status != -1)
         {
           nbytes = recv(sock, buffer, sizeof(buffer) > nbytes ? nbytes : sizeof(buffer), 0);
-	  if (nbytes <= 0)
-	  {
-		tries++;
-		if (tries > 5) break;
-	  }
-	  else
-		tries = 0;
+	  if (nbytes > 0) tries = 0;
 	}
     }
     else
@@ -583,6 +578,12 @@ static int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int oob)
 	  tries = 0;
     }
   }
+  if (tries >= 10)
+  {
+    shutdown(sock,2);
+    close(sock);
+    return 0;
+  }
   return 1;
 }
 
@@ -606,6 +607,12 @@ static int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob)
       bytes_to_recv -= bytes_recv;
       bptr += bytes_recv;
     }
+  }
+  if (tries >= 10)
+  {
+    shutdown(sock,2);
+    close(sock);
+    return 0;
   }
   return 1;
 }
@@ -713,7 +720,7 @@ static void FlipData(Message *m)
 #ifndef __CRAY
     case DTYPE_COMPLEX:
     case DTYPE_COMPLEX_DOUBLE: for (i=0,ptr=m->bytes;i<(num * 2);i++,ptr += m->h.length/2) FlipBytes(m->h.length/2,ptr); break;
-    case DTYPE_FLOAT:          
+    case DTYPE_FLOAT:   
     case DTYPE_DOUBLE:
 #endif
     case DTYPE_LONGLONG:
@@ -747,6 +754,8 @@ Message *GetMdsMsg(SOCKET sock, int *status)
 #endif
     if (CType(header.client_type) > CRAY_CLIENT || header.ndims > MAX_DIMS)
     {
+      shutdown(sock,2);
+      close(sock);
       *status = 0;
       return 0;
     }  
