@@ -435,7 +435,6 @@ JNIEXPORT void JNICALL Java_LocalProvider_SetEnvironment(JNIEnv *env, jobject ob
 
 
 
-
 /* CompositeWaveDisplay management routines for using 
 jScope panels outside java application */
 
@@ -479,15 +478,17 @@ void createWindow(char *name, int idx)
 	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
 	if(cls == 0)
 	{
-		printf("\nCannot find jScope classes!");
+		printf("\nCannot find CompositeWaveDisplay classes!");
 		return;
-	}
+	}	
+		
 	mid = (*env)->GetStaticMethodID(env, cls, "createWindow", "(Ljava/lang/String;)LCompositeWaveDisplay;");
 	if(mid == 0)
 	{
 		printf("\nCannot find main\n");
 		return;
 	}
+
 	if(name)
 		jstr = (*env)->NewStringUTF(env, name);
 	else
@@ -496,15 +497,11 @@ void createWindow(char *name, int idx)
 	jobjects[idx] = (*env)->CallStaticObjectMethod(env, cls, mid, jstr);
 }
 
-
-void addSignal(int obj_idx, float *x, float *y, int num_points, int row, int column, 
-			   char *name, char *colour)
+void clearWindow(char *name, int idx)
 {
-	jstring jname, jcolour;
-	jobject jobj = jobjects[obj_idx];
-	jfloatArray jx, jy;
 	jclass cls;
 	jmethodID mid;
+	jstring jstr;
 
 	if(env == 0)
 	{
@@ -512,37 +509,99 @@ void addSignal(int obj_idx, float *x, float *y, int num_points, int row, int col
 		return;
 	}
 
-	jx = (*env)->NewFloatArray(env, num_points);
-	jy = (*env)->NewFloatArray(env, num_points);
-	(*env)->SetFloatArrayRegion(env, jx, 0, num_points, (jfloat *)x);
-	(*env)->SetFloatArrayRegion(env, jy, 0, num_points, (jfloat *)y);
-	if(name)
-		jname = (*env)->NewStringUTF(env, name);
-	else
-		jname = (*env)->NewStringUTF(env, "");
-	if(colour)
-		jcolour = (*env)->NewStringUTF(env, colour);
-	else
-		jcolour = (*env)->NewStringUTF(env, "black");
-		
 	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
 	if(cls == 0)
 	{
-		printf("\nCannot find jScope classes!");
+		printf("\nCannot find CompositeWaveDisplay classes!");
 		return;
-	}
-	mid = (*env)->GetMethodID(env, cls, "addSignal", 
-		"([F[FIILjava/lang/String;Ljava/lang/String;)V");
-    if (mid == 0) 
+	}	
+
+	if(jobjects[idx] != 0)
 	{
-		printf("\nCannot find jScope classes!");
+		if(name)
+			jstr = (*env)->NewStringUTF(env, name);
+		else
+			jstr = (*env)->NewStringUTF(env, "");
+
+		mid = (*env)->GetMethodID(env, cls, "setTitle","(Ljava/lang/String;)V");
+		if (mid == 0)
+		{
+			printf("\nCannot find method setTitle in CompositeWaveDisplay!");
+			return;
+		}
+		(*env)->CallVoidMethod(env, jobjects[idx], mid, jstr);
+		mid = (*env)->GetMethodID(env, cls, "removeAllSignals","()V");
+		if (mid == 0)
+		{
+			printf("\nCannot find method removeAllSignals in CompositeWaveDisplay!");
+			return;
+		}
+		(*env)->CallVoidMethod(env, jobjects[idx], mid);
+	}
+	else
+	{
+		printf("\nWindow %d not create!!\n", idx);
 		return;
 	}
-
-
-    (*env)->CallVoidMethod(env, jobj, mid, jx, jy, row, column, jname, jcolour);
 }
 
+
+void addSignalWithParam(int obj_idx, float *x, float *y, int num_points, int row, int column,
+			   char *colour, char *name, int inter, int marker)
+{
+	jstring jname, jcolour;
+	jobject jobj = jobjects[obj_idx];
+	jfloatArray jx, jy;
+	jclass cls;
+	jmethodID mid;
+	jboolean jinter;
+
+	if(env == 0)
+	{
+		printf("\nJava virtual machine not set!!\n");
+		return;
+	}
+
+	jinter = inter;
+
+	jx = (*env)->NewFloatArray(env,  num_points);
+	jy = (*env)->NewFloatArray(env,  num_points);
+	(*env)->SetFloatArrayRegion(env,  jx, 0, num_points, (jfloat *)x);
+	(*env)->SetFloatArrayRegion(env,  jy, 0, num_points, (jfloat *)y);
+	if(name)
+		jname = (*env)->NewStringUTF(env,  name);
+	else
+		jname = (*env)->NewStringUTF(env,  "");
+	if(colour)
+		jcolour = (*env)->NewStringUTF(env,  colour);
+	else
+		jcolour = (*env)->NewStringUTF(env,  "black");
+
+	cls = (*env)->FindClass(env,  "CompositeWaveDisplay");
+	if(cls == 0)
+	{
+		printf("\nCannot find CompositeWaveDisplay classes!");
+		return;
+	}
+	mid = (*env)->GetMethodID(env,  cls, "addSignal",
+		"([F[FIILjava/lang/String;Ljava/lang/String;ZI)V");
+    if (mid == 0)
+	{
+		printf("\nCannot find method addSignal in CompositeWaveDisplay classes!");
+		return;
+	}
+
+
+    (*env)->CallVoidMethod(env, jobj, mid, jx, jy, row, column, jname, jcolour, jinter, marker);
+}
+
+
+void addSignal(int obj_idx, float *x, float *y, int num_points, int row, int column,
+			   char *colour, char *name)
+{
+   addSignalWithParam(obj_idx, x, y, num_points, row, column, name, colour, 1, 0);
+
+}
 
 
 void showWindow(int obj_idx, int x, int y, int width, int height)
