@@ -26,7 +26,7 @@ if [ -d "$MDS_LOGS" -a -w "$MDS_LOGS" ]; then
     date >> $LOG
     /usr/bin/time -a -f "Elapsed %E\tUser %U\tSystem %S"  -o $LOG $1 $2 >>$LOG 2>&1
     echo "<<<<<<<<<<<<<<<<<<<<<   $2  <<<<<<<<<<<<<<<<<<<<" >> $LOG
-    echo " " > $LOG
+    echo " " >> $LOG
     cat $LOG >> $CUMULATIVE_LOG
     rm -f $LOG
     rm -f "$LOG.lock"
