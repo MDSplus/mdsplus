@@ -59,7 +59,7 @@ install:
 
 
 @MAKESHLIBDIR@libTreeShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
-	@MAKESHARED@
+	$(LD) -o $@ $LINKSHARED $(OBJECTS) $(LIBS)
 
 @MAKELIBDIR@libTreeShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
@@ -67,8 +67,6 @@ install:
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
-
-@MAKESHLIBDIR_RULE@
 
 TreeShr.exports: TreeShr.def
 	sed -e /LIBRARY/\;/\;/d TreeShr.def > $@
