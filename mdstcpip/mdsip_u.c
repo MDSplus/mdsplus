@@ -163,6 +163,16 @@ static int shut = 0;
 static int *workerShutdown;
 #define MakeDesc(name) memcpy(malloc(sizeof(name)),&name,sizeof(name))
 
+#ifdef HAVE_VXWORKS_H
+int getpid()
+{
+	return taskIdSelf();
+}
+#endif
+
+
+
+
 #ifdef _NT_SERVICE
 
 static char *ServiceName()
@@ -715,11 +725,7 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
     time_t tim;
     int m_status;
     int user_compression_level;
-#ifndef HAVE_VXWORKS_H
     pid = getpid();
-#else
-    pid = taskIdSelf();
-#endif
     m.h.msglen = sizeof(MsgHdr);
     m_user = GetMdsMsg(sock,&status);
     if ((status & 1) && (m_user) && (m_user->h.dtype == DTYPE_CSTRING))
@@ -733,7 +739,8 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
     timestr = ctime(&tim);
     timestr[strlen(timestr)-1] = 0;
 #ifdef HAVE_VXWORKS_H
-    hp = resolvGetHostByAddr((const char *)&sin->sin_addr, hostent_buf, 512);
+   /* hp = resolvGetHostByAddr((const char *)&sin->sin_addr, hostent_buf, 512);*/
+    hp = NULL;
 #else
     hp = gethostbyaddr((char *)&sin->sin_addr,sizeof(sin->sin_addr),AF_INET);
 #endif

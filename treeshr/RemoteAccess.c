@@ -1,4 +1,6 @@
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#endif
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #include <io.h>
@@ -817,7 +819,7 @@ int *dims, char *bytes)
 
 static int (*MDS_GET_ANSWER_INFO_TS)() = 0;
 
-int  GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void **dptr, void **m)
+static int  GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void **dptr, void **m)
 {
   if (MDS_GET_ANSWER_INFO_TS == 0)
   {

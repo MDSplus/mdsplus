@@ -20,6 +20,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <mdsdescrip.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <libroutines.h>

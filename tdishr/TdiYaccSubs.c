@@ -7,13 +7,16 @@
 extern unsigned short OpcSetRange;
 
 #include <stdlib.h>
+#include <mdsdescrip.h>
+#include "tdirefstandard.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"
-#include "tdirefstandard.h"
 #include "tdirefzone.h"
 #include <libroutines.h>
 #include <tdimessages.h>
 #include <mdsshr.h>
+
+
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 

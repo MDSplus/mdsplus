@@ -34,10 +34,6 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor
 #include <mdstypes.h>
 #include <tdimessages.h>
 
-#ifdef HAVE_VXWORKS_H
-typedef long long _int64;
-typedef unsigned long long _int64u;
-#endif
 
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

@@ -1,16 +1,15 @@
 #define _GNU_SOURCE /* glibc2 needs this */
-#if defined(__sparc__)
+#ifdef __sparc__
 #include "/usr/include/sys/types.h"
 #elif !defined(HAVE_WINDOWS_H)
 #include <sys/types.h>
 #endif
-#include <config.h>
-#if defined(vxWorks)
+#ifdef HAVE_VXWORKS_H
 int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
 int MDSEventCan(void *eventid) {}
 int MDSEvent(char *evname){}
-#elif defined(HAVE_WINDOWS_H)
-
+#elif (defined(HAVE_WINDOWS_H))
+#include <config.h>
 #include <process.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -618,7 +617,6 @@ static int sendRemoteEvent(char *evname, int data_len, char *data)
     }
     return status;
 }
-
 
 
 

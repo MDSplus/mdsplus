@@ -14,6 +14,7 @@
 
 #ifdef HAVE_VXWORKS_H
 #define _int64 long long
+#define _int64u long long
 #endif
 
 /********************************************

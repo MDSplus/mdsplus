@@ -747,6 +747,19 @@ void TreeFree(void *ptr)
   free(ptr);
 }
 
+#ifdef HAVE_VXWORKS_H
+_int64 RfaToSeek(unsigned char *rfa)
+{
+  _int64 ans = (((_int64)rfa[0] << 9) |
+            ((_int64)rfa[1] << 17) |
+            ((_int64)rfa[2] << 25) |
+            ((_int64)rfa[4]) |
+            (((_int64)rfa[5] & 1) << 8));
+    ans =- 512;
+    ans |= ((_int64)rfa[3] << 33);
+  return ans;
+}
+#else
 _int64 RfaToSeek(unsigned char *rfa)
 {
   _int64 ans = (((_int64)rfa[0] << 9) |
@@ -757,7 +770,7 @@ _int64 RfaToSeek(unsigned char *rfa)
     ans |= ((_int64)rfa[3] << 33);
   return ans;
 }
-
+#endif
 void SeekToRfa(_int64 seek, unsigned char *rfa)
 {
   _int64 tmp = seek + 512;

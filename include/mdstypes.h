@@ -11,6 +11,10 @@
 typedef int64_t _int64;
 typedef u_int64_t _int64u;
 #else
+#ifdef HAVE_VXWORKS_H
+typedef long long _int64;
+typedef unsigned long long _int64u;
+#else
 
 #if (SIZEOF__INT64 != 8)
 #if (SIZEOF_LONG == 8)
@@ -23,7 +27,7 @@ typedef unsigned long long _int64u;
 #else
 typedef unsigned _int64 _int64u;
 #endif
-
+#endif /*vxWorks*/
 #endif /* __APPLE__ */
 
 

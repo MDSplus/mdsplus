@@ -27,7 +27,9 @@
 #include <sys/ioctl.h>
 #ifndef I_NREAD
 #if defined(HAVE_VXWORKS_H)
-#include <streams/stropts.h>
+#include <vxWorks.h>
+#include <ioLib.h>
+#define I_NREAD FIONREAD
 #elif !defined(__sparc__)
 #include <stropts.h>
 #endif

@@ -63,8 +63,6 @@ int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
 #ifdef HAVE_VXWORKS_H
 /*#define _int64  long long
 #define _int64u unsigned long long*/
-typedef long long _int64;
-typedef unsigned long long _int64u;
 
 #define LONG_LONG_CONSTANT(value) value##ll
 #endif

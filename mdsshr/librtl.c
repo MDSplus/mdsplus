@@ -964,6 +964,11 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   } else
     return 1;  
 }
+static char *FIS_Error = NULL;
+char *LibFindImageSymbolErrString()
+{
+  return FIS_Error;
+}
 
 #elif defined(USE_MACH_MODULE_LOADER)
 
@@ -1285,8 +1290,6 @@ int StrGet1Dx(unsigned short *len, struct descriptor *out)
 
 #ifdef HAVE_VXWORKS_H
 static int timezone = 0;
-typedef long long _int64;
-typedef unsigned long long _int64u;
 #endif
 
 
@@ -1521,6 +1524,7 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
   }
   else {
 #ifndef HAVE_WINDOWS_H
+#ifndef HAVE_VXWORKS_H
     struct tm tm = {0,0,0,0,0,0,0,0,0};
     char *tmp;
     tmp = strptime(asc_time, "%x %X", &tm);
@@ -1528,13 +1532,20 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
       tim = mktime(&tm);
     else
       tim = 0;
+#else
+    tim = 0; /*It is vxWorks */
+#endif
 #else /* it is windows */
     tim = 0;
     printf("Only today, tomorrow, and yesterday available on windows\n");
 #endif
   }
   if (tim > 0) {
+#ifndef HAVE_VXWORKS_H
     _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
+#else
+    _int64 addin = 0x7c95674beb4000;
+#endif
     *qtime = ((_int64)tim)*10000000+addin;
   } else
     *qtime = 0;

@@ -29,7 +29,9 @@ int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 
 ------------------------------------------------------------------------------*/
 
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#endif
 #include <string.h>
 #include <mdsdescrip.h>
 #include <tdimessages.h>

@@ -5,7 +5,9 @@
 #ifdef WIN32
 #include <io.h>
 #else
+#ifndef HAVE_VXWORKS_H
 #include <pwd.h>
+#endif
 #endif
 
 static unsigned char message_id = 1;

@@ -4,6 +4,7 @@
 	Ken Klare, LANL P-4	(c)1989,1990,1991
 */
 #include <stdlib.h>
+#include <mdsdescrip.h>
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefstandard.h"

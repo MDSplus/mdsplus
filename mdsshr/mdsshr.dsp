@@ -125,6 +125,10 @@ SOURCE=.\librtl.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\mds_dsc_string.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\MdsCmprs.c
 # End Source File
 # Begin Source File

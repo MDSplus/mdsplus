@@ -41,11 +41,10 @@
 */
 #include <stdio.h>
 #include <string.h>
-#include <mdsdescrip.h>
-#include <mdsdescrip.h>
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefzone.h"
+#include "tdirefstandard.h"
 #include <libroutines.h>
 #include <strroutines.h>
 #include <tdimessages.h>

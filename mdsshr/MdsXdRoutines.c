@@ -15,7 +15,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
-#include <mdsdescrip.h>
 #include <libroutines.h>
 #include <strroutines.h>
 #include <librtl_messages.h>

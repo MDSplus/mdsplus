@@ -8,6 +8,7 @@ extern unsigned short OpcCompile;
 
 #include <stdlib.h>
 #include <string.h>
+#include <mdsdescrip.h>
 #include "tdirefzone.h"
 #include "tdirefstandard.h"
 #include <libroutines.h>

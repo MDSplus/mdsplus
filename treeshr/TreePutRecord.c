@@ -50,6 +50,7 @@
 
 #ifdef HAVE_VXWORKS_H
 static int timezone = 0;
+static int daylight = 0;
 #define LONG_LONG_CONSTANT(value) value##ll
 #endif
 
