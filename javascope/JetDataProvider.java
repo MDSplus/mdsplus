@@ -33,7 +33,7 @@ class JetDataProvider implements DataProvider
 
     private   Vector    connection_listener = new Vector();
 
-    JTextField user_text; 
+    JTextField user_text;
     JPasswordField passwd_text;
 
     JetDataProvider() {this(null, null);}
@@ -67,12 +67,12 @@ class JetDataProvider implements DataProvider
     public boolean SupportsFastNetwork(){return false;}
     public void    SetArgument(String arg){};
     public boolean SupportsTunneling() {return false; }
-    
-    
+
+
     class SimpleWaveData implements WaveData
     {
         String in_x, in_y;
-        
+
         public SimpleWaveData(String in_y)
         {
             this.in_y = in_y;
@@ -82,18 +82,19 @@ class JetDataProvider implements DataProvider
             this.in_y = in_y;
             this.in_x = in_x;
         }
-        
+
         public int GetNumDimension()throws IOException
         {
             GetFloatArray(in_y, DATA);
             return dimension;
         }
-        
+
         public float[] GetFloatData() throws IOException
         {
             return GetFloatArray(in_y, DATA);
         }
-                
+
+        public double[] GetXDoubleData(){return null;}
         public float[] GetXData()   throws IOException
         {
             if(in_x != null)
@@ -101,12 +102,12 @@ class JetDataProvider implements DataProvider
             else
                 return GetFloatArray(in_y, X);
         }
-        
+
         public float[] GetYData()   throws IOException
         {
             return GetFloatArray(in_y, Y);
         }
-        
+
         public String GetTitle()   throws IOException
         {
             return null;
@@ -124,7 +125,7 @@ class JetDataProvider implements DataProvider
             return null;
         }
    }
-    
+
     public WaveData GetWaveData(String in)
     {
         return new SimpleWaveData(in);
@@ -166,7 +167,7 @@ class JetDataProvider implements DataProvider
     public int InquireCredentials(JFrame f, DataServerItem server_item)
     {
         String user = server_item.user;
-        
+
         login_status = DataProvider.LOGIN_OK;
         owner_f = f;
         inquiry_dialog = new JDialog(f, "JET data server login", true);
@@ -195,7 +196,7 @@ class JetDataProvider implements DataProvider
                     passwd = new String(passwd_text.getPassword());
                     if(!CheckPasswd(username, passwd))
                     {
- 		                JOptionPane.showMessageDialog(inquiry_dialog, "Login ERROR : " + ((error_string != null) ? error_string : "no further information"), 
+ 		                JOptionPane.showMessageDialog(inquiry_dialog, "Login ERROR : " + ((error_string != null) ? error_string : "no further information"),
 		                                "alert", JOptionPane.ERROR_MESSAGE);
                         login_status = DataProvider.LOGIN_ERROR;
                     } else {
@@ -278,7 +279,7 @@ class JetDataProvider implements DataProvider
         encoded_credentials = translator.encode(credentials);
         return CheckPasswd(encoded_credentials);
    }
-    
+
     public void Update(String experiment, long shot)
     {
         this.experiment = experiment;
@@ -291,7 +292,7 @@ class JetDataProvider implements DataProvider
     {
         float out[] = null;
         String in_expr = new String(in);
-        
+
         error_string = null;
         boolean is_time = (type == X);
         boolean is_y = (type == Y);
@@ -315,15 +316,15 @@ class JetDataProvider implements DataProvider
         }
 
         out = null;
-        
+
         ConnectionEvent e = new ConnectionEvent(this, "Network");
         DispatchConnectionEvent(e);
-        
+
         if((last_url_name != null && url_name.equals(last_url_name)) || out!= null)
         {
             if(out != null)
                 return out;
-                
+
             if(is_time)
                 return last_x;
             else
@@ -403,10 +404,10 @@ class JetDataProvider implements DataProvider
                 throw(new IOException(error_string));
             }
 
-            
-            if(is_time)            
+
+            if(is_time)
                 return last_x;
-             else 
+             else
                 if(is_y)
                     return last_y;
                 else
@@ -475,7 +476,7 @@ class JetDataProvider implements DataProvider
 	    }
         connection_listener.addElement(l);
     }
-     
+
     public void RemoveConnectionListener(ConnectionListener l)
     {
 	    if (l == null) {
@@ -483,10 +484,10 @@ class JetDataProvider implements DataProvider
 	    }
         connection_listener.removeElement(l);
     }
-     
-    protected void DispatchConnectionEvent(ConnectionEvent e) 
+
+    protected void DispatchConnectionEvent(ConnectionEvent e)
     {
-        if (connection_listener != null) 
+        if (connection_listener != null)
         {
             for(int i = 0; i < connection_listener.size(); i++)
             {

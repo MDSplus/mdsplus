@@ -252,6 +252,7 @@ class T2DataProvider
         * @return The returned X values coded as a float array
         * @exception java.io.IOException
         */
+       public double[] GetXDoubleData(){return null;}
         public float[] GetXData()   {return x;}
 
         /**

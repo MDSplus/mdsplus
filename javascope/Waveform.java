@@ -1094,7 +1094,7 @@ public class Waveform
     }
     else {
       for (i = 0; i < waveform_signal.n_points; i++) {
-        x[i] = wm.XPixel(waveform_signal.x[i], d);
+        x[i] = wm.XPixel(waveform_signal.isDoubleX()?waveform_signal.x_double[i]:waveform_signal.x[i], d);
         y[i] = wm.YPixel(waveform_signal.y[i], d);
         points[i] = new Point(x[i], y[i]);
       }
@@ -1106,40 +1106,6 @@ public class Waveform
     end_y = y[0];
   }
 
-  /*
-      void DrawWave(Dimension d)
-      {
-       int i, j , x_p, y_p;
-          Vector points_v = new Vector();
-       int x_all[] = new int[waveform_signal.n_points];
-       int y_all[] = new int[waveform_signal.n_points];
-      // points = new Point[waveform_signal.n_points];
-       x_all[0] = wm.XPixel(waveform_signal.x[0], d);
-       y_all[0] = wm.YPixel(waveform_signal.y[0], d);
-       for(i = 1, j = 1; i < waveform_signal.n_points; i++)
-       {
-           x_all[j] = wm.XPixel(waveform_signal.x[i], d);
-           y_all[j] = wm.YPixel(waveform_signal.y[i], d);
-           if(x_all[j - 1] == x_all[j] && y_all[j - 1] == y_all[j])
-               continue;
-           //points[i] = new Point(x[i], y[i]);
-           points_v.addElement(new Point(x_all[j], y_all[j]));
-           j++;
-       }
-       int x[] = new int[j];
-       int y[] = new int[j];
-       System.arraycopy(x_all, 0, x, 0, j);
-       System.arraycopy(y_all, 0, y, 0, j);
-       points = new Point[points_v.size()];
-       points_v.copyInto(points);
-       num_points = j;
-       System.out.println("Punti disegnati "+j+" punti totali "+waveform_signal.n_points);
-       //num_points = waveform_signal.n_points;
-       polygon = new Polygon(x, y, i);
-       end_x = x[0];
-       end_y = y[0];
-      }
-   */
 
   synchronized public void PaintImage(Graphics g, Dimension d, int print_mode) {
     if (frames != null) {
@@ -1672,33 +1638,35 @@ public class Waveform
     if (curr_x > s.getXmax() || curr_x < s.getXmin() ||
         idx == s.getNumPoints() - 1) {
       y = s.y[idx];
-      x = s.x[idx];
+      x = s.isDoubleX()?s.x_double[idx]:s.x[idx];
+      //x = s.x[idx];
     }
-    else {
+    else if(s.isDoubleX())
+    {
       if (s.getMarker() != Signal.NONE && !s.getInterpolate() &&
           s.getMode1D() != Signal.MODE_STEP || s.findNaN()) {
         double val;
-        boolean increase = s.x[idx] < s.x[idx + 1];
+        boolean increase = s.x_double[idx] < s.x_double[idx + 1];
 
         if (increase) {
-          val = s.x[idx] + (s.x[idx + 1] - s.x[idx]) / 2;
+          val = s.x_double[idx] + (s.x_double[idx + 1] - s.x_double[idx]) / 2;
         }
         else {
-          val = s.x[idx + 1] + (s.x[idx] - s.x[idx + 1]) / 2;
+          val = s.x_double[idx + 1] + (s.x_double[idx] - s.x_double[idx + 1]) / 2;
 
           //Patch to elaborate strange RFX signal (roprand bar error signal)
         }
-        if (s.x[idx] == s.x[idx + 1] && !Float.isNaN(s.y[idx + 1])) {
+        if (s.x_double[idx] == s.x_double[idx + 1] && !Float.isNaN(s.y[idx + 1])) {
           val += curr_x;
 
         }
         if (curr_x < val) {
           y = s.y[idx + (increase ? 0 : 1)];
-          x = s.x[idx + (increase ? 0 : 1)];
+          x = s.x_double[idx + (increase ? 0 : 1)];
         }
         else {
           y = s.y[idx + (increase ? 1 : 0)];
-          x = s.x[idx + (increase ? 1 : 0)];
+          x = s.x_double[idx + (increase ? 1 : 0)];
         }
       }
       else {
@@ -1708,8 +1676,8 @@ public class Waveform
             y = s.y[idx];
           }
           else {
-            y = s.y[idx] + (s.y[idx + 1] - s.y[idx]) * (x - s.x[idx]) /
-                (s.x[idx + 1] - s.x[idx]);
+            y = s.y[idx] + (s.y[idx + 1] - s.y[idx]) * (x - s.x_double[idx]) /
+                (s.x_double[idx + 1] - s.x_double[idx]);
           }
         }
         catch (ArrayIndexOutOfBoundsException e) {
@@ -1718,6 +1686,51 @@ public class Waveform
         }
       }
     }
+    else
+    {
+     if (s.getMarker() != Signal.NONE && !s.getInterpolate() &&
+         s.getMode1D() != Signal.MODE_STEP || s.findNaN()) {
+       double val;
+       boolean increase = s.x[idx] < s.x[idx + 1];
+
+       if (increase) {
+         val = s.x[idx] + (s.x[idx + 1] - s.x[idx]) / 2;
+       }
+       else {
+         val = s.x[idx + 1] + (s.x[idx] - s.x[idx + 1]) / 2;
+
+         //Patch to elaborate strange RFX signal (roprand bar error signal)
+       }
+       if (s.x[idx] == s.x[idx + 1] && !Float.isNaN(s.y[idx + 1])) {
+         val += curr_x;
+
+       }
+       if (curr_x < val) {
+         y = s.y[idx + (increase ? 0 : 1)];
+         x = s.x[idx + (increase ? 0 : 1)];
+       }
+       else {
+         y = s.y[idx + (increase ? 1 : 0)];
+         x = s.x[idx + (increase ? 1 : 0)];
+       }
+     }
+     else {
+       x = curr_x;
+       try {
+         if (s.getMode1D() == Signal.MODE_STEP) {
+           y = s.y[idx];
+         }
+         else {
+           y = s.y[idx] + (s.y[idx + 1] - s.y[idx]) * (x - s.x[idx]) /
+               (s.x[idx + 1] - s.x[idx]);
+         }
+       }
+       catch (ArrayIndexOutOfBoundsException e) {
+         System.out.println("Excepion on " + getName() + " " + s.x.length +
+                            " " + idx);
+       }
+     }
+   }
     wave_point_x = x;
     wave_point_y = y;
     Dimension d = getWaveSize();
@@ -1936,7 +1949,8 @@ public class Waveform
       else {
         low = wm.YPixel(sig.y[i] - low_error[i], d);
       }
-      x = wm.XPixel(sig.x[i], d);
+
+      x = wm.XPixel(sig.isDoubleX()?sig.x_double[i]:sig.x[i], d);
 
       g.drawLine(x, up, x, low);
       g.drawLine(x - 2, up, x + 2, up);

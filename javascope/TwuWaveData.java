@@ -25,18 +25,18 @@ class TwuWaveData
     private String          mainSignal_name = null  ;
     private String          abscissa_X_name = null  ;
 
-    public 
+    public
     TwuWaveData()
     {
     }
 
-    public 
+    public
     TwuWaveData(TwuDataProvider dp, String in_y)
     {
         init(dp, in_y, null);
     }
 
-    public 
+    public
     TwuWaveData(TwuDataProvider dp, String in_y, String in_x)
     {
         init(dp, in_y, in_x);
@@ -61,7 +61,7 @@ class TwuWaveData
 
     }
 
-    public void 
+    public void
     setZoom (float xmin, float xmax, int n_points)
     {
         // this method allows reusing of this object
@@ -80,7 +80,7 @@ class TwuWaveData
         // call GetFloatData().
     }
 
-    public void 
+    public void
     setFullFetch()
     {
         try
@@ -92,7 +92,7 @@ class TwuWaveData
     }
 
 
-    public boolean 
+    public boolean
     notEqualsInputSignal (String in_y, String in_x, long requestedShot)
     {
         // this uses a simple (i.e. imperfect) comparison approach to see
@@ -119,7 +119,7 @@ class TwuWaveData
     // is retrieved using GetXData(). however, GetYData() is not used ?! MvdG
     // It is used!  it represents the second abscissa, for a 2D signal! JGK
 
-    public float[] 
+    public float[]
     GetFloatData()
         throws IOException
     {
@@ -129,14 +129,15 @@ class TwuWaveData
         return mainSignal.getData() ;
     }
 
-    public float[] 
+    public double[] GetXDoubleData(){return null;}
+    public float[]
     GetXData()
         throws IOException
     {
         return abscissa_X.getData() ;
     }
 
-    public float[] 
+    public float[]
     GetYData()
         throws IOException
     {
@@ -145,28 +146,28 @@ class TwuWaveData
         // TODO: To be fixed later! JGK.
     }
 
-    public  String 
+    public  String
     GetXLabel()
         throws IOException
     {
         return abscissa_X.getTWUProperties(shotOfThisData).Units() ;
     }
 
-    public  String 
+    public  String
     GetYLabel()
         throws IOException
     {
         return mainSignal.getTWUProperties(shotOfThisData).Units() ;
     }
 
-    public  String 
+    public  String
     GetZLabel()
         throws IOException
     {
         return null;
     }
 
-    public  int 
+    public  int
     GetNumDimension()
         throws IOException
     {
@@ -175,7 +176,7 @@ class TwuWaveData
 
     private String title = null ;
 
-    public  String 
+    public  String
     GetTitle ()
         throws IOException
     {
@@ -210,7 +211,7 @@ class TwuWaveData
     //  (most fetch options, particularly settings involved with zoom range,
     //  should be the same for both x and y data.)
     //
-    protected void 
+    protected void
     setFetchOptions (TWUFetchOptions opt)
         throws IOException
     {
@@ -223,7 +224,7 @@ class TwuWaveData
     // of the properties within the TwuSingleSignal, so it won't
     // need to be retrieved time after time ...
     //
-    public TWUProperties 
+    public TWUProperties
     getTWUProperties()
         throws IOException
     {

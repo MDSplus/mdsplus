@@ -3,7 +3,7 @@ import java.io.*;
 import javax.swing.JFrame;
 
 
-class DemoDataProvider implements DataProvider 
+class DemoDataProvider implements DataProvider
 {
     String error = null;
     int loop_count = 0;
@@ -13,7 +13,7 @@ class DemoDataProvider implements DataProvider
     class SimpleWaveData implements WaveData
     {
         String in_x, in_y;
-        
+
         public SimpleWaveData(String in_y)
         {
             this.in_y = in_y;
@@ -24,27 +24,28 @@ class DemoDataProvider implements DataProvider
             this.in_y = in_y;
             this.in_x = in_x;
         }
-        
+
         public int GetNumDimension()throws IOException
         {
             return 1;
         }
-        
+
         public float[] GetFloatData() throws IOException
         {
             return GetFloatArray(in_y);
         }
-                
-        public float[] GetXData()   throws IOException
+
+        public double[] GetXDoubleData(){return null;}
+       public float[] GetXData()   throws IOException
         {
             return GetFloatArray(in_x);
         }
-        
+
         public float[] GetYData()   throws IOException
         {
             return null;
         }
-        
+
         public String GetTitle()   throws IOException
         {
             return null;
@@ -62,7 +63,7 @@ class DemoDataProvider implements DataProvider
             return null;
         }
    }
-    
+
     public WaveData GetWaveData(String in)
     {
         return new SimpleWaveData(in);
@@ -79,7 +80,7 @@ class DemoDataProvider implements DataProvider
     {
         return null;
     }
-    
+
     public void    Dispose(){}
     public boolean SupportsCompression(){return false;}
     public void    SetCompression(boolean state){}
@@ -88,9 +89,9 @@ class DemoDataProvider implements DataProvider
     public boolean SupportsFastNetwork(){return false;}
     public void    SetArgument(String arg){}
     public boolean SupportsTunneling() {return false; }
-    
 
-    
+
+
     public void SetEnvironment(String exp)
     {
         error = null;
@@ -107,19 +108,19 @@ class DemoDataProvider implements DataProvider
     public float GetFloat(String in)
     {
         error = null;
-        Float f = new Float(in); 
+        Float f = new Float(in);
         return f.floatValue();
     }
-    
+
     public float[] GetFloatArray(String in_x, String in_y, float start, float end)
     {
         return null;
     }
-    
+
     public float[] GetFloatArray(String in)
     {
         float d[] = new float[POINTS];
-        
+
         try {
             Thread.sleep(100, 0);
         }catch(Exception exc){}
@@ -138,31 +139,31 @@ class DemoDataProvider implements DataProvider
         {
             if(in.equals("sin")) {
                 d[i] = (float)Math.sin(loop_count/(float)C_POINTS * 6.28/1000*i);
-                continue;               
+                continue;
             }
             if(in.equals("cos")) {
                 d[i] = (float)Math.cos(loop_count/(float)C_POINTS * 6.28/1000*i);
-                continue;               
+                continue;
             }
             if(in.equals("sin*cos")) {
                 d[i] = (float)(Math.sin(loop_count/200. * 6.28/1000*i) * Math.cos(6.28/1000*i));
-                continue;               
+                continue;
             }
             if(in.indexOf("_x") != -1)
                 d[i] = loop_count/(float)C_POINTS * (float)6.28/1000*i;
         }
         return d;
     }
-    
+
     public long[] GetShots(String in)
     {
         error = null;
         long d[] = new long[1];
         d[0] = 0;
         return d;
-        
+
     }
-    
+
     public String ErrorString()
     {
         return error;
@@ -185,18 +186,18 @@ class DemoDataProvider implements DataProvider
         throw(new IOException("Frames visualization on DemoDataProvider not implemented"));
     }
 
-    
+
     public float[] GetFrameTimes(String in_expr)
     {
         int cnt = 0;
         String n;
         File f;
-        float[] out = null; 
+        float[] out = null;
         String in , ext;
-        
+
         in = in_expr.substring(0, in_expr.indexOf("."));
         ext = in_expr.substring(in_expr.indexOf("."), in_expr.length());
-        
+
         for(int i = 0; i < 100; i++)
         {
                 if(i < 10)
@@ -207,19 +208,19 @@ class DemoDataProvider implements DataProvider
             if(f.exists())
                 cnt++;
         }
-        
+
         if(cnt != 0)
         {
             out = new float[cnt];
             for(int i = 1 ; i < out.length; i++)
                 out[i] += out[i-1] + 1;
         }
-        
+
         return out;
     }
-    
-    public byte[]  GetAllFrames(String in_frame){return null;} 
-    
+
+    public byte[]  GetAllFrames(String in_frame){return null;}
+
     public byte[] GetFrameAt(String in_expr, int frame_idx)
     {
         String n;
@@ -228,19 +229,19 @@ class DemoDataProvider implements DataProvider
         long new_size;
         String l[] = null;
         int i = frame_idx;
-        
+
         String in , ext;
-        
+
         in = in_expr.substring(0, in_expr.indexOf("."));
         ext = in_expr.substring(in_expr.indexOf("."), in_expr.length());
-                
-                
+
+
                 if(i < 10)
                     n = in + "_00" +(i) + ext;
                 else
                     n = in + "_0" +(i) + ext;
-                
-                
+
+
                 File f = new File(n);
 
                 if(f.exists())
@@ -249,11 +250,11 @@ class DemoDataProvider implements DataProvider
                    try
                     {
                          FileInputStream bin = new FileInputStream(n);
-                    
+
                         size  = f.length();
                         buf = new byte[(int)size];
-                    
-                        if(buf != null) 
+
+                        if(buf != null)
                             bin.read(buf);
                         bin.close();
                     } catch (IOException e) {}
@@ -262,11 +263,11 @@ class DemoDataProvider implements DataProvider
                 {
                     System.out.println("Non Esiste "+n);
                 }
-            
-      
+
+
                 return buf;
     }
-    
+
     public boolean DataPending()
     {
         if(loop_count++ < C_POINTS)
@@ -274,5 +275,5 @@ class DemoDataProvider implements DataProvider
         loop_count = 0;
         return false;
     }
-    
- }	    
+
+ }

@@ -5,14 +5,14 @@ public class MdsContinuousDataProvider extends MdsDataProvider
   public WaveData GetWaveData(String inX, String inY)
   {
     try {
-      Thread.currentThread().sleep(100);
+      Thread.currentThread().sleep(1000);
     }catch(InterruptedException exc){}
     return super.GetWaveData(inX, inY);
   }
   public WaveData GetWaveData(String in)
   {
     try {
-      Thread.currentThread().sleep(100);
+      Thread.currentThread().sleep(1000);
     }catch(InterruptedException exc){}
     return super.GetWaveData(in);
   }

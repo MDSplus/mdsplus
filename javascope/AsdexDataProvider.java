@@ -10,24 +10,24 @@ class AsdexDataProvider extends MdsDataProvider
     {
         super();
     }
-    
+
     public AsdexDataProvider(String provider) throws IOException
     {
         super(provider);
     }
-    
+
     public void SetArgument(String arg) throws IOException
     {
         mds.setProvider(arg);
         mds.setUser("mdsplus");
     }
-    
+
     public synchronized void Update(String exp, long s)
 	{
 	    error = null;
 		shot = s;
 	}
-	
+
 	protected String ParseExpression(String in)
 	{
 	    if(in.startsWith("DIM_OF("))
@@ -53,9 +53,9 @@ class AsdexDataProvider extends MdsDataProvider
         if(parsed == null) return null;
         return super.GetIntArray(parsed);
     }
-	
-	
-	
+
+
+
     public synchronized float[] GetFloatArray(String in) throws IOException
     {
         String parsed = ParseExpression(in);
@@ -72,7 +72,7 @@ class AsdexDataProvider extends MdsDataProvider
 	    return out_array;
     }
 
-        
+
 
 public boolean SupportsCompression(){return false;}
 public void    SetCompression(boolean state){}
@@ -82,4 +82,4 @@ public int     InquireCredentials(JFrame f, DataServerItem server_item){return D
 public boolean SupportsFastNetwork(){return false;}
 public int []    GetNumDimensions(String spec) {return new int[] {1};}
 }
-								
+

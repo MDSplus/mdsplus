@@ -3,7 +3,7 @@ import java.util.*;
 import javax.swing.JFrame;
 
 
-class ASCIIDataProvider implements DataProvider 
+class ASCIIDataProvider implements DataProvider
 {
     String error = null;
     String path_exp = null;
@@ -11,7 +11,7 @@ class ASCIIDataProvider implements DataProvider
     float time[];
     float y[];
     float x[];
-    
+
     /*
     * File structure estensione prop
     * Title=
@@ -31,25 +31,25 @@ class ASCIIDataProvider implements DataProvider
         int    dimension;
         Properties x_prop = new Properties();
         Properties y_prop = new Properties();
-        
+
         public SimpleWaveData(String in_y)
         {
             file_y = getPathValue(in_y);
-            setPropValues(file_y, y_prop);   
+            setPropValues(file_y, y_prop);
             x_prop = y_prop;
-            file_x = null;            
+            file_x = null;
         }
-        
+
         public SimpleWaveData(String in_y, String in_x)
         {
             file_y = getPathValue(in_y);
-            setPropValues(file_y, y_prop);   
+            setPropValues(file_y, y_prop);
             file_x = getPathValue(in_x);
-            setPropValues(file_x, x_prop);   
+            setPropValues(file_x, x_prop);
         }
 
         private String getPathValue(String in)
-        {    
+        {
             String out = "";
             if(path_exp != null)
                 out = path_exp;
@@ -57,41 +57,42 @@ class ASCIIDataProvider implements DataProvider
                 out = out + File.separatorChar + curr_shot;
 
             out = out + File.separatorChar + in;
-            
+
             return out;
         }
-        
+
         private void setPropValues(String in, Properties prop)
-        {    
+        {
             String str, p1, p2;
             try
             {
                 prop.load(new FileInputStream(in));
-            } 
-            catch (IOException exc) 
+            }
+            catch (IOException exc)
             {
                 error = exc.getMessage();
             }
-        }        
-        
+        }
+
         public int GetNumDimension()throws IOException
         {
             try
             {
                 dimension = Integer.parseInt(y_prop.getProperty("Dimension"));
                 return dimension;
-            } 
+            }
             catch (NumberFormatException exc)
             {
                 return (dimension = 1);
             }
         }
-        
+
         public float[] GetFloatData() throws IOException
         {
            return decodeValues(x_prop.getProperty("Data"));
         }
-                
+
+        public double[] GetXDoubleData(){return null;}
         public float[] GetXData()   throws IOException
         {
             if(file_x == null)
@@ -99,44 +100,44 @@ class ASCIIDataProvider implements DataProvider
             else
                 return decodeValues(x_prop.getProperty("Data"));
          }
-        
+
         public float[] GetYData() throws IOException
         {
             return decodeValues(x_prop.getProperty("X"));
         }
-        
+
         public String GetTitle() throws IOException
         {
             return y_prop.getProperty("Title");
         }
-        
+
         public String GetXLabel()  throws IOException
         {
             if(file_x == null)
                 return y_prop.getProperty("XLabel");
             else
-                return x_prop.getProperty("YLabel");            
+                return x_prop.getProperty("YLabel");
         }
-        
+
         public String GetYLabel()  throws IOException
         {
             return y_prop.getProperty("YLabel");
         }
-        
+
         public String GetZLabel()  throws IOException
         {
            return y_prop.getProperty("ZLabel");
         }
-        
+
         private float[] decodeValues(String val)
         {
-            
+
             if(val == null)
             {
                 error = "File syntax error";
                 return null;
             }
-            
+
             StringTokenizer st = new StringTokenizer(val,",");
             int num = st.countTokens();
             float out[] = new float[num];
@@ -158,7 +159,7 @@ class ASCIIDataProvider implements DataProvider
             }
             return out;
         }
-        
+
         private float[] decodeTimes(String val)
         {
             float out[] = null;
@@ -170,7 +171,7 @@ class ASCIIDataProvider implements DataProvider
                     error = "File syntax error";
                     return null;
                 }
-                
+
                 st = new StringTokenizer(val,":");
                 if(st.countTokens() > 1)
                 {
@@ -190,7 +191,7 @@ class ASCIIDataProvider implements DataProvider
                             dos.writeFloat(t);
                     }
                     out =  byteArrayToFloat(aos.toByteArray());
-                } else {                        
+                } else {
                     out = decodeValues(val);
                 }
             }
@@ -201,7 +202,7 @@ class ASCIIDataProvider implements DataProvider
             }
             return out;
         }
-        
+
         private float[] byteArrayToFloat(byte a[])
         {
             int size = a.length/4;
@@ -212,37 +213,37 @@ class ASCIIDataProvider implements DataProvider
                 for(int i = 0; i < size; i++)
                     out[i] = dis.readFloat();
                 dis.close();
-            } 
-            catch ( Exception exc ) 
+            }
+            catch ( Exception exc )
             {
                 error = "File sintax error : " + exc.getMessage();
                 out = null;
             }
             return out;
         }
-        
+
     }
-    
+
     public WaveData GetWaveData(String in)
     {
         return new SimpleWaveData(in);
     }
-    
+
     public WaveData GetWaveData(String in_y, String in_x)
     {
         return new SimpleWaveData(in_y, in_x);
     }
-    
+
     public WaveData GetResampledWaveData(String in, float start, float end, int n_points)
     {
         return null;
     }
-    
+
     public WaveData GetResampledWaveData(String in_y, String in_x, float start, float end, int n_points)
     {
         return null;
     }
-    
+
     public void    Dispose(){}
     public boolean SupportsCompression(){return false;}
     public void    SetCompression(boolean state){}
@@ -252,35 +253,35 @@ class ASCIIDataProvider implements DataProvider
     public void    SetArgument(String arg){}
     public boolean SupportsTunneling() {return false; }
     public boolean DataPending(){return false;}
-    
-    
-    
+
+
+
     public void SetEnvironment(String exp)
     {
         error = null;
     }
-    
+
     public void Update(String exp, long s)
     {
         error = null;
         path_exp = exp;
-        curr_shot = s;       
+        curr_shot = s;
     }
-    
+
     public String GetString(String in)
     {
         error = null;
         return new String(in);
     }
-    
+
     public float GetFloat(String in)
     {
         error = null;
-        Float f = new Float(in); 
+        Float f = new Float(in);
         return f.floatValue();
     }
-    
-    
+
+
     public long[] GetShots(String in) throws IOException
     {
         error = null;
@@ -330,11 +331,11 @@ class ASCIIDataProvider implements DataProvider
             }
         }
         error = "Error parsing shot number(s)";
-        throw(new IOException(error));      
+        throw(new IOException(error));
     }
-    
+
     public String ErrorString(){ return error; }
-    
+
     public void AddUpdateEventListener(UpdateEventListener l, String event){}
     public void RemoveUpdateEventListener(UpdateEventListener l, String event){}
     public void AddConnectionListener(ConnectionListener l){}
@@ -345,18 +346,18 @@ class ASCIIDataProvider implements DataProvider
         throw(new IOException("Frames visualization on DemoDataProvider not implemented"));
     }
 
-    
+
     public float[] GetFrameTimes(String in_expr)
     {
         int cnt = 0;
         String n;
         File f;
-        float[] out = null; 
+        float[] out = null;
         String in , ext;
-        
+
         in = in_expr.substring(0, in_expr.indexOf("."));
         ext = in_expr.substring(in_expr.indexOf("."), in_expr.length());
-        
+
         for(int i = 0; i < 100; i++)
         {
                 if(i < 10)
@@ -367,19 +368,19 @@ class ASCIIDataProvider implements DataProvider
             if(f.exists())
                 cnt++;
         }
-        
+
         if(cnt != 0)
         {
             out = new float[cnt];
             for(int i = 1 ; i < out.length; i++)
                 out[i] += out[i-1] + 1;
         }
-        
+
         return out;
     }
-    
-    public byte[]  GetAllFrames(String in_frame){return null;} 
-    
+
+    public byte[]  GetAllFrames(String in_frame){return null;}
+
     public byte[] GetFrameAt(String in_expr, int frame_idx)
     {
         String n;
@@ -388,19 +389,19 @@ class ASCIIDataProvider implements DataProvider
         long new_size;
         String l[] = null;
         int i = frame_idx;
-        
+
         String in , ext;
-        
+
         in = in_expr.substring(0, in_expr.indexOf("."));
         ext = in_expr.substring(in_expr.indexOf("."), in_expr.length());
-                
-                
+
+
         if(i < 10)
             n = in + "_00" +(i) + ext;
         else
             n = in + "_0" +(i) + ext;
-                
-                
+
+
         File f = new File(n);
 
         if(f.exists())
@@ -409,11 +410,11 @@ class ASCIIDataProvider implements DataProvider
             try
             {
                     FileInputStream bin = new FileInputStream(n);
-                    
+
                 size  = f.length();
                 buf = new byte[(int)size];
-                    
-                if(buf != null) 
+
+                if(buf != null)
                     bin.read(buf);
                 bin.close();
             } catch (IOException e) {}
@@ -422,9 +423,9 @@ class ASCIIDataProvider implements DataProvider
         {
             System.out.println("Non Esiste "+n);
         }
-            
-      
+
+
         return buf;
     }
-        
- }	    
+
+ }
