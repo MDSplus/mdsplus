@@ -1266,7 +1266,8 @@ static Boolean SetValues(XmdsWaveformWidget old,XmdsWaveformWidget req,XmdsWavef
     SetTranslations(new);
   if (waveformTitle(req) != waveformTitle(old))
   {
-    XtFree(waveformTitle(old));
+    if (waveformTitle(old) != 0)
+      XtFree(waveformTitle(old));
     waveformTitle(new) = waveformTitle(req) ? XtNewString(waveformTitle(req)) : 0;
   }
   if (waveformDisabled(req) ? 0 : (waveformDisabled(old) ? 1 : plot_changed))
