@@ -166,7 +166,8 @@ public class DecompileTree
                 if((!info.isOn() && info.isParentOn())
                     || (info.isOn() && !info.isParentOn())
                     || (info.isSetup()&& data != null) || tags.length > 0
-                    || subtreeNodes.size() > 0 || subtreeMembers.size() > 0) //show it only at these conditions
+                    || subtreeNodes.size() > 0 || subtreeMembers.size() > 0
+                    || isFull) //show it only at these conditions
                 {
                     Element fieldNode = (Element) document.createElement("field");
                     node.appendChild(fieldNode);
