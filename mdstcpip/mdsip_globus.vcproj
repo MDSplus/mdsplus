@@ -12,19 +12,19 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="c:/mdsplus/debug"
-			IntermediateDirectory="Debug"
+			OutputDirectory="../debug"
+			IntermediateDirectory="mdsip_globus_Debug"
 			ConfigurationType="1"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../include"
+				AdditionalIncludeDirectories="../include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;GLOBUS"
 				MinimalRebuild="TRUE"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough=""
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="4"/>
@@ -36,7 +36,7 @@
 				OutputFile="$(OutDir)/mdsip_globus.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/mdsip_globus.pdb"
+				ProgramDatabaseFile="$(IntDir)/mdsip_globus.pdb"
 				SubSystem="1"
 				TargetMachine="1"/>
 			<Tool
@@ -109,7 +109,7 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm">
 			<File
-				RelativePath="..\mdsip_u.c">
+				RelativePath="mdsip_u.c">
 			</File>
 		</Filter>
 		<Filter

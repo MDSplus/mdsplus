@@ -12,18 +12,18 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="../../DEBUG"
-			IntermediateDirectory="Debug"
+			OutputDirectory="../DEBUG"
+			IntermediateDirectory="mdsipshr_globus_Debug"
 			ConfigurationType="2"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../include,C:/globus_io/include"
+				AdditionalIncludeDirectories="C:\WinGlobus2.0_Alpha1\source\io\library;C:\WinGlobus2.0_Alpha1\include\;C:\WinGlobus2.0_Alpha1\include\nonthreaded;../include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;MDSIPSHR_GLOBUS_EXPORTS;GLOBUS"
 				MinimalRebuild="TRUE"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				BasicRuntimeChecks="0"
+				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -32,11 +32,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="c:\globus_io\lib\*.lib ws2_32.lib C:\OpenSSL\openssl-0.9.6c\out32dll\*.lib"
+				AdditionalDependencies="ws2_32.lib $(OPENSSL_DIR)/out32/*eay32.lib"
 				OutputFile="$(OutDir)/mdsipshr_globus.dll"
 				LinkIncremental="2"
-				IgnoreDefaultLibraryNames="libcmtd.lib"
-				ModuleDefinitionFile="c:\mdsplus\mdstcpip\mdsipshr.def"
+				IgnoreDefaultLibraryNames=""
+				ModuleDefinitionFile="mdsipshr_globus.def"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(IntDir)/mdsipshr_globus.pdb"
 				SubSystem="2"
@@ -112,55 +112,55 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm">
 			<File
-				RelativePath="..\adler32.c">
+				RelativePath="adler32.c">
 			</File>
 			<File
-				RelativePath="..\compress.c">
+				RelativePath="compress.c">
 			</File>
 			<File
-				RelativePath="..\deflate.c">
+				RelativePath="deflate.c">
 			</File>
 			<File
-				RelativePath="..\infblock.c">
+				RelativePath="infblock.c">
 			</File>
 			<File
-				RelativePath="..\infcodes.c">
+				RelativePath="infcodes.c">
 			</File>
 			<File
-				RelativePath="..\inffast.c">
+				RelativePath="inffast.c">
 			</File>
 			<File
-				RelativePath="..\inflate.c">
+				RelativePath="inflate.c">
 			</File>
 			<File
-				RelativePath="..\inftrees.c">
+				RelativePath="inftrees.c">
 			</File>
 			<File
-				RelativePath="..\infutil.c">
+				RelativePath="infutil.c">
 			</File>
 			<File
-				RelativePath="..\mdsip_socket_io.c">
+				RelativePath="mdsip_socket_io.c">
 			</File>
 			<File
-				RelativePath="..\mdsipshr.c">
+				RelativePath="mdsipshr.c">
 			</File>
 			<File
-				RelativePath="..\mdsipshr.def">
+				RelativePath="mdsipshr_globus.def">
 			</File>
 			<File
-				RelativePath="..\mdsiputil.c">
+				RelativePath="mdsiputil.c">
 			</File>
 			<File
-				RelativePath="..\trees.c">
+				RelativePath="trees.c">
 			</File>
 			<File
-				RelativePath="..\uncompr.c">
+				RelativePath="uncompr.c">
 			</File>
 			<File
-				RelativePath="..\vmshpwd.c">
+				RelativePath="vmshpwd.c">
 			</File>
 			<File
-				RelativePath="..\zutil.c">
+				RelativePath="zutil.c">
 			</File>
 		</Filter>
 		<Filter

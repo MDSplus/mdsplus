@@ -16,7 +16,9 @@ extern void FlipHeader(MsgHdr *header);
         unsigned char  family;
         }    socketParamType, /* For one occurance */
             *socketParamPtr;  /* For a pointer to an occ.*/
-#elif !defined(WIN32)
+#elif defined(WIN32)
+#define globus_libc_printf printf
+#else
 #include <syslog.h>
 #include <sys/param.h>
 #include <pwd.h>
@@ -111,6 +113,8 @@ void ReadCallback(void *sock, globus_io_handle_t *handle, globus_result_t result
 {
   if (result != GLOBUS_SUCCESS)
   {
+    globus_libc_printf("Error in ReadCallback:\n\t");
+    globus_libc_printf(globus_object_printable_to_string(globus_error_get(result)));
     free(iohandles[(SOCKET)sock-1].header);
     iohandles[(SOCKET)sock-1].header = 0;
   }
@@ -184,7 +188,7 @@ void ConnectReceived(void *callback_arg, globus_io_handle_t *listener_handle, gl
       globus_libc_printf(globus_object_printable_to_string(globus_error_get(result)));
     }
     in_host = host[0] | (host[1] << 8) | (host[2] << 16) | (host[3] << 24);
-    memcpy(&sin.sin_addr,&in_host,sizeof(host));
+    memcpy(&sin.sin_addr,&in_host,sizeof(in_host));
     (*AddClient)(s,&sin,(char *)gss_buffer.value);
   }
   if (pid == getpid())
