@@ -151,6 +151,9 @@ struct msqid_ds {int msg_qnum; int msg_stime; int msg_rtime; int msg_ctime;};
 #include <unistd.h>
 #include <signal.h>
 #include <pthread.h>
+#ifdef __hpux
+#undef select
+#endif
 #include <unistd.h>
 #endif
 #include <mdsdescrip.h>
@@ -646,7 +649,11 @@ static void *handleMessage(void * dummy)
 			memcpy(arg_d->data, data, data_len);
 			} /* will be freed by the ExecuteAst */
 		    createThread(&thread, executeAst, arg_d);
+#ifdef __hpux
+                    pthread_detach(&thread);
+#else
                     pthread_detach(thread);
+#endif
 		}
 	    }
 	}
@@ -802,7 +809,7 @@ static void handleRemoteAst()
 	    if(receive_sockets[i])
         	FD_SET(receive_sockets[i],&readfds);
         FD_SET(fds[0],&readfds);
-	selectstat = select(tablesize, &readfds, 0, 0, NULL);
+	selectstat = select(tablesize, &readfds, 0, 0, 0);
   	if (selectstat == -1) {
       	perror("select error"); return; }
 	if(external_shutdown)
