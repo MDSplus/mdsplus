@@ -60,7 +60,8 @@ static DESCRIPTOR(compile_zone,"TDI Compile Zone");
 	if (status & 1) {
                 if (text_ptr->length > 0)
 		{
-                  static  int yacc_mutex_initialized = 0;
+#ifndef HAVE_WINDOWS_H
+					static  int yacc_mutex_initialized = 0;
                   static  pthread_mutex_t yacc_mutex;
 
                   if(!yacc_mutex_initialized)
@@ -69,7 +70,7 @@ static DESCRIPTOR(compile_zone,"TDI Compile Zone");
 	            pthread_mutex_init(&yacc_mutex, pthread_mutexattr_default);
                   }
                   pthread_mutex_lock(&yacc_mutex);
-
+#endif
 		  if (!TdiRefZone.l_zone) status = LibCreateVmZone(&TdiRefZone.l_zone,0,0,0,0,0,0,0,0,0,&compile_zone);
 
 		  /****************************************
@@ -97,7 +98,9 @@ static DESCRIPTOR(compile_zone,"TDI Compile Zone");
 			else status = MdsCopyDxXd((struct descriptor *)TdiRefZone.a_result, out_ptr);
 		  }
 		  LibResetVmZone(&TdiRefZone.l_zone);
+#ifndef HAVE_WINDOWS_H
                   pthread_mutex_unlock(&yacc_mutex);
+#endif
                 }
                 else
                   MdsFree1Dx(out_ptr,NULL);

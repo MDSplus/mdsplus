@@ -90,6 +90,9 @@ static int Doit(struct descriptor_routine	*ptask, struct descriptor_xd *out_ptr)
 	    struct descriptor_program *prog_task = (struct descriptor_program *)ptask;
 	    if(prog_task->program && prog_task->program->dtype == DTYPE_T) 
 	    status = LibSpawn(prog_task->program, 1, 0);
+		
+		status = TdiPutLong(&status, out_ptr);
+
 	}
 	break;
     case DTYPE_ROUTINE :
