@@ -36,7 +36,7 @@ Frames.java                 JiVar.java              UniversalDataProvider.java  
 
 SOURCES = AboutWindow.java            FtuDataProvider.java        JiVarImpl.java              Signal.java                 WaveformManager.java \
 Base64.java                 Grid.java                   LocalDataProvider.java      SignalCache.java            WaveformMetrics.java \
-ColorDialog.java            JetDataProvider.java        MdsAccess.java              TextorBrowseSignals.java    Waveform_2.java \
+ColorDialog.java            JetDataProvider.java        MdsAccess.java              TextorBrowseSignals.java     \
 CompositeWaveDisplay.java   JetMdsDataProvider.java     MdsConnection.java          TwuAccess.java              jScope.java \
 ConnectionEvent.java        JiDataSource.java           MdsDataProvider.java        TwuDataProvider.java        jScopeBrowseSignals.java \
 ConnectionListener.java     JiDim.java                  MdsMessage.java             UpdateEvent.java            jScopeBrowseUrl.java \
@@ -44,13 +44,13 @@ DataAccess.java             JiNcSource.java             MdsPlusBrowseSignals.jav
 DataAccessURL.java          JiNcVar.java                MdsWaveInterface.java       WaveContainerEvent.java      \
 DataCacheObject.java        JiNcVarByte.java            MultiWavePopup.java         WaveContainerListener.java  \
 DataCached.java             JiNcVarChar.java            MultiWaveform.java          WaveData.java               jScopeMultiWave.java \
-DataProvider.java           JiNcVarDouble.java          ProfileDialog.java          WaveDisplay.java            jScopeMultiWave_2.java \
+DataProvider.java           JiNcVarDouble.java          ProfileDialog.java          WaveDisplay.java             \
 DataServerItem.java         JiNcVarFloat.java           RandomAccessData.java       WaveInterface.java          jScopeProperties.java \
 DemoDataProvider.java       JiNcVarImp.java             RdaAccess.java              WavePopup.java              jScopeWaveContainer.java \
-Descriptor.java             JiNcVarInt.java             RotateFilter.java           Waveform.java               jScopeWaveContainer_2.java \
+Descriptor.java             JiNcVarInt.java             RotateFilter.java           Waveform.java                \
 FontSelection.java          JiNcVarShort.java           RowColumnContainer.java     WaveformContainer.java      jScopeWavePopup.java \
-FrameData.java              JiSlab.java                 RowColumnLayout.java        WaveformContainer_2.java    jScope_1.java \
-JiSlabIterator.java         SetupDataDialog.java        WaveformEvent.java          jScope_2.java 		UniversalDataProvider.java\
+FrameData.java              JiSlab.java                 RowColumnLayout.java           \
+JiSlabIterator.java         SetupDataDialog.java        WaveformEvent.java          DemoAccess.java		UniversalDataProvider.java\
 Frames.java                 JiVar.java                  SetupDefaults.java          WaveformListener.java	NotConnectedDataProvider.java\
 SignalsBoxDialog.java	    SignalBox.java		MdsDataClient.java	    MdsIOException.java		SetupWaveformParams.java \
 TSDataProvider.java	    AsdexDataProvider.java
@@ -95,7 +95,7 @@ install:
 	$(JAR) c0f $@ *.class
 
 jScope.class: 	$(SOURCES)
-	$(JAVAC) -g jScope.java jScope_1.java *BrowseSignals.java *DataProvider.java *Listener.java
+	$(JAVAC) -g jScope.java *BrowseSignals.java *DataProvider.java *Listener.java
 
 CompositeWaveDisplay.class: 	$(SOURCES)
 	$(JAVAC) -g CompositeWaveDisplay.java
