@@ -25,7 +25,7 @@ c23456789012345678901234567890123456789012345678901234567890123456789012
 
 
       dsc = descr(IDTYPE_FLOAT,result,0)
-      status = MdsValue("1."//CHAR(0),dsc,0,)
+      status = MdsValue("1."//CHAR(0),dsc,0,1)
       write (6,*) "MdsValue('1.') : ",result,status
 
       dsc = descr(IDTYPE_FLOAT,resultarr,20,0)
@@ -48,7 +48,7 @@ c23456789012345678901234567890123456789012345678901234567890123456789012
       write (6,*) "MdsPut('ONE_NUMBER',$,42042): ",status
 
       dsc = descr(IDTYPE_LONG,iresult,0)
-      status = MdsValue("ONE_NUMBER"//CHAR(0),dsc,0,)
+      status = MdsValue("ONE_NUMBER"//CHAR(0),dsc,0,1)
       write (6,*) "MdsValue('ONE_NUMBER'): ",iresult,status
 
       dsc = descr(IDTYPE_FLOAT,resultarr,20,0)
