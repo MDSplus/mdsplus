@@ -27,3 +27,6 @@ MakeDescrip
 MakeDescripWithLength
 SendMdsMsg
 GetMdsMsg
+GetAnswerInfo
+SendArg
+ArgLen

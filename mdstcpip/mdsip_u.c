@@ -263,7 +263,9 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     struct hostent *hp;
     int i;
     int status;
+#ifndef _WIN32
     pid_t pid;
+#endif
     int ok = 0;
     Client *c;
     time_t tim;
