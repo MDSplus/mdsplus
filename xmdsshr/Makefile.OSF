@@ -1,6 +1,7 @@
 CFLAGS = -c -I../include -g -assume noaligned_objects -D_NO_DPS
 
 OBJECTS = \
+ListTree.o \
 XmdsBells.o \
 XmdsComplain.o \
 XmdsDeviceSetup.o \
@@ -45,6 +46,64 @@ depend :
 
 # add output from depend (.depend) below
 #
+ListTree.o:	ListTree.c
+ListTree.o:	/usr/include/X11/IntrinsicP.h
+ListTree.o:	  /usr/include/X11/Intrinsic.h
+ListTree.o:	    /usr/include/X11/Xlib.h
+ListTree.o:	      /usr/include/sys/types.h
+ListTree.o:	        /usr/include/standards.h
+ListTree.o:	        /usr/include/mach/machine/vm_types.h
+ListTree.o:	        /usr/include/sys/select.h
+ListTree.o:	      /usr/include/X11/X.h
+ListTree.o:	      /usr/include/X11/Xfuncproto.h
+ListTree.o:	      /usr/include/X11/Xosdefs.h
+ListTree.o:	      /usr/include/stddef.h
+ListTree.o:	    /usr/include/X11/Xutil.h
+ListTree.o:	    /usr/include/X11/Xresource.h
+ListTree.o:	    /usr/include/string.h
+ListTree.o:	      /usr/include/strings.h
+ListTree.o:	        /usr/include/string.h
+ListTree.o:	    /usr/include/X11/Core.h
+ListTree.o:	    /usr/include/X11/Composite.h
+ListTree.o:	    /usr/include/X11/Constraint.h
+ListTree.o:	    /usr/include/X11/Object.h
+ListTree.o:	    /usr/include/X11/RectObj.h
+ListTree.o:	  /usr/include/X11/CoreP.h
+ListTree.o:	  /usr/include/X11/CompositeP.h
+ListTree.o:	  /usr/include/X11/ConstrainP.h
+ListTree.o:	  /usr/include/X11/ObjectP.h
+ListTree.o:	  /usr/include/X11/RectObjP.h
+ListTree.o:	/usr/include/X11/StringDefs.h
+ListTree.o:	/usr/include/stdio.h
+ListTree.o:	  /usr/include/sys/seek.h
+ListTree.o:	  /usr/include/va_list.h
+ListTree.o:	  /usr/include/getopt.h
+ListTree.o:	  /usr/include/sys/limits.h
+ListTree.o:	    /usr/include/machine/machlimits.h
+ListTree.o:	    /usr/include/sys/syslimits.h
+ListTree.o:	    /usr/include/machine/machtime.h
+ListTree.o:	    /usr/include/sys/rt_limits.h
+ListTree.o:	/usr/include/stdlib.h
+ListTree.o:	ListTreeP.h
+ListTree.o:	  /usr/include/Xm/DrawP.h
+ListTree.o:	    /usr/include/Xm/XmP.h
+ListTree.o:	      /usr/include/Xm/Xm.h
+ListTree.o:	        /usr/include/X11/Shell.h
+ListTree.o:	          /usr/include/X11/SM/SMlib.h
+ListTree.o:	            /usr/include/X11/SM/SM.h
+ListTree.o:	            /usr/include/X11/ICE/ICElib.h
+ListTree.o:	              /usr/include/X11/ICE/ICE.h
+ListTree.o:	        /usr/include/X11/Xatom.h
+ListTree.o:	        /usr/include/Xm/XmStrDefs.h
+ListTree.o:	        /usr/include/Xm/VirtKeys.h
+ListTree.o:	          /usr/include/Xm/Xm.h
+ListTree.o:	        /usr/include/Xm/VendorS.h
+ListTree.o:	      /usr/include/Xm/BaseClassP.h
+ListTree.o:	        /usr/include/Xm/XmP.h
+ListTree.o:	  /usr/include/Xm/PrimitiveP.h
+ListTree.o:	  /usr/include/Xm/ScrollBar.h
+ListTree.o:	  /usr/include/Xm/ScrolledW.h
+ListTree.o:	  ListTree.h
 XmdsBells.o:	XmdsBells.c
 XmdsBells.o:	/usr/include/X11/Xlib.h
 XmdsBells.o:	  /usr/include/sys/types.h
@@ -462,7 +521,7 @@ XmdsInitialize.o:	../include/Xmds/XmdsPath.h
 XmdsInitialize.o:	../include/Xmds/XmdsSupport.h
 XmdsInitialize.o:	  ../include/mdsdescrip.h
 XmdsInitialize.o:	../include/Xmds/XmdsWavedraw.h
-XmdsInitialize.o:	  /usr/include/Xmds/XmdsWaveform.h
+XmdsInitialize.o:	  ../include/Xmds/XmdsWaveform.h
 XmdsInitialize.o:	../include/Xmds/XmdsXdBox.h
 XmdsInitialize.o:	  ../include/usagedef.h
 XmdsInitialize.o:	../include/Xmds/XmdsXdBoxDialog.h
@@ -925,8 +984,8 @@ XmdsWavedraw.o:	        /usr/include/X11/StringDefs.h
 XmdsWavedraw.o:	      /usr/include/Xm/VirtKeys.h
 XmdsWavedraw.o:	        /usr/include/Xm/Xm.h
 XmdsWavedraw.o:	      /usr/include/Xm/VendorS.h
-XmdsWavedraw.o:	    /usr/include/Xmds/XmdsWaveform.h
-XmdsWavedraw.o:	  /usr/include/Xmds/XmdsWaveformP.h
+XmdsWavedraw.o:	    ../include/Xmds/XmdsWaveform.h
+XmdsWavedraw.o:	  ../include/Xmds/XmdsWaveformP.h
 XmdsWavedraw.o:	    /usr/include/Xm/XmP.h
 XmdsWavedraw.o:	      /usr/include/X11/IntrinsicP.h
 XmdsWavedraw.o:	        /usr/include/X11/CoreP.h
@@ -959,8 +1018,8 @@ XmdsWaveform.o:	    /usr/include/sys/rt_limits.h
 XmdsWaveform.o:	/usr/include/math.h
 XmdsWaveform.o:	/usr/include/X11/cursorfont.h
 XmdsWaveform.o:	/usr/include/X11/Xatom.h
-XmdsWaveform.o:	/usr/include/Xmds/XmdsWaveformP.h
-XmdsWaveform.o:	  /usr/include/Xmds/XmdsWaveform.h
+XmdsWaveform.o:	../include/Xmds/XmdsWaveformP.h
+XmdsWaveform.o:	  ../include/Xmds/XmdsWaveform.h
 XmdsWaveform.o:	    /usr/include/Xm/Xm.h
 XmdsWaveform.o:	      /usr/include/X11/Intrinsic.h
 XmdsWaveform.o:	        /usr/include/X11/Xlib.h
