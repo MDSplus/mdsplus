@@ -3,7 +3,12 @@ PATH=/bin:/sbin:$PATH
 export PATH
 if ( test "$RPM_INSTALL_PREFIX" != "")
 then
-  MDSPLUS_DIR=$RPM_INSTALL_PREFIX/mdsplus
+  if [ -r $RPM_INSTALL_PREFIX/fusiongrid ]
+  then
+    MDSPLUS_DIR=$RPM_INSTALL_PREFIX/fusiongrid
+  else
+    MDSPLUS_DIR=$RPM_INSTALL_PREFIX/mdsplus
+  fi
 else
   if [ -r /etc/.mdsplus_dir ]
   then
@@ -14,10 +19,24 @@ else
 fi
 until ( test -r $MDSPLUS_DIR/bin/tditest )
 do
-  echo -n "Enter the mdsplus installation directory [$MDSPLUS_DIR]: "
+  echo -n "Enter the installation directory [$MDSPLUS_DIR]: "
   read MDSPLUS_DIR
 done
 echo $MDSPLUS_DIR > /etc/.mdsplus_dir
+if [ -r $MDSPLUS_DIR/setup/grid-security.tgz ]
+then
+  if [ ! -r /etc/grid-security ]
+  then
+    cd /etc
+    tar xzf $MDSPLUS_DIR/setup/grid-security.tgz
+  fi
+fi
+if [ -r $MDSPLUS_DIR/GLOBUS_LICENSE ]
+then
+  product=FusionGrid
+else
+  product=MDSplus
+fi
 if (test "$RPM_INSTALL_PREFIX" != "")
 then
   if [ ! -r $MDSPLUS_DIR/local/mdsplus_post_uninstall_script ]
@@ -25,15 +44,15 @@ then
     cp $MDSPLUS_DIR/rpm/post_uninstall_script $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
   fi
   echo ""
-  echo "MDSplus is now installed on your system. If you would like to"
-  echo "have MDSplus environment variables setup for all users or"
-  echo "install an MDSplus data server on your system please execute"
+  echo "$product is now installed on your system. If you would like to"
+  echo "have $product environment variables setup for all users or"
+  echo "install an $product data server on your system please execute"
   echo "$MDSPLUS_DIR/rpm/post_install_script"
   echo ""
-  echo "If you choose not to setup the MDSplus environment variables"
+  echo "If you choose not to setup the $product environment variables"
   echo "for all users you will need to do one of the following commands"
   echo "based on the shell you are using before executing any of the"
-  echo "MDSplus utilities:"
+  echo "$product utilities:"
   echo ""
   echo ". $MDSPLUS_DIR/setup.sh"
   echo ""
@@ -47,7 +66,7 @@ fi
 # Determine if user wants MDSplus environment variables set for all users
 #
 while ( test "$MDSplusEnv" = "") do
-echo -n "Do you want MDSplus environment variables set for all users? (y/n/?) [y]: "
+echo -n "Do you want $product environment variables set for all users? (y/n/?) [y]: "
 read MDSplusEnv
 if ( test "$MDSplusEnv" = "")
 then
@@ -60,9 +79,9 @@ n*) MDSplusEnv=n;;
 N*) MDSplusEnv=n;;
 \?*) unset MDSplusEnv
     echo ""
-    echo "There are several environment variables that need to be defined to use MDSplus."
-    echo "Entering a y[es] here will add the MDSplus variables to the environment of all users"
-    echo "at login time. If you answer n[o] the variables can be defined for MDSplus users by"
+    echo "There are several environment variables that need to be defined to use $product."
+    echo "Entering a y[es] here will add the $product variables to the environment of all users"
+    echo "at login time. If you answer n[o] the variables can be defined for $product users by"
     echo "adding the following line to their login script for a borne shell (or derivative):"
     echo ""
     echo ". $MDSPLUS_DIR/setup.sh"
@@ -81,7 +100,7 @@ done
 # Determine if user wants to setup MDSplus data servers
 #
 while ( test "$MDSplusSrv" = "") do
-echo -n "Do you want to setup MDSplus data servers? (y/n/?) [y]: "
+echo -n "Do you want to setup $product data servers? (y/n/?) [y]: "
 read MDSplusSrv
 if ( test "$MDSplusSrv" = "")
 then
@@ -94,9 +113,8 @@ n*) MDSplusSrv=n;;
 N*) MDSplusSrv=n;;
 \?*) unset MDSplusSrv
     echo ""
-    echo "MDSplus can be setup to serve data to remote clients."
-    echo "Entering a y[es] here will add the mdsip service to inetd. Access to the data servers is"
-    echo "controlled by /etc/mdsip.hosts."
+    echo "$product can be setup to serve data to remote clients."
+    echo "Entering a y[es] here will add the mdsip service to xinetd.
     echo "";;
 *)  unset MDSplusSrv
     echo ""
@@ -118,14 +136,28 @@ then
   then
           true
   else
-          echo "mdsip    8000/tcp # Added by package mdsplus" >> /etc/services
+          echo "mdsip    8000/tcp # Added by package $product" >> /etc/services
+          if [ "$product" = "FusionGrid" ]
+          then
+            echo "mdsips  8200/tcp # Added by package $product" >> /etc/services
+            echo "gsigatekeeper 2119/tcp # Added by package $product" >> /etc/services
+            echo "gsiftp 2811/tcp # Added by package $product" >> /etc/services
+          fi
   fi
 #
 # Add mdsipd to /etc/inetd.conf or /etc/xinetd.d
 #
   if [ -r /etc/xinetd.d ] ; then
     echo Adding mdsip to /etc/xinetd.d
-    cp $MDSPLUS_DIR/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
+    if [ "$product"  = "FusiongGrid" ]
+    then
+      cp $MDSPLUS_DIR/setup/mdsip.xinetd /etc/xinetd.d/mdsip
+      cp $MDSPLUS_DIR/setup/mdsips.xinetd /etc/xinetd.d/mdsips
+      cp $MDSPLUS_DIR/setup/globus-gatekeeper.xinetd /etc/xinetd.d/globus-gatekeeper
+      cp $MDSPLUS_DIR/setup/globus-gridftp.xinetd /etc/xinetd.d/globus-gridftp
+    else
+      cp $MDSPLUS_DIR/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
+    fi
     @HUP_TO_XINETD@
   else
     echo Adding mdsipd service to /etc/inetd.conf
@@ -140,24 +172,56 @@ then
 fi
 if (test "$MDSplusEnv" = "y")
 then
-  echo Adding MDSplus login scripts
+  echo Adding $product login scripts
   if [ -r /etc/profile.d ]; then
     ln -s $MDSPLUS_DIR/setup.csh /etc/profile.d/mdsplus.csh
     ln -s $MDSPLUS_DIR/setup.sh /etc/profile.d/mdsplus.sh
+    if [ "$product" = "FusionGrid"]
+    then
+	if [ ! -r /etc/profile.d/globus.csh ]
+	then
+	    echo "setenv GLOBUS_LOCATION $MDSPLUS_DIR" > /etc/profile.d/globus.csh
+	    echo "source \$GLOBUS_LOCATION/etc/globus-user-env.csh" >> /etc/profile.d/globus.csh
+	    echo "setenv MYPROXY_SERVER cert.fusiongrid.org" >> /etc/profile.d/globus.csh
+	fi
+	if [ ! -r /etc/profile.d/globus.sh ]
+	then
+	    echo "GLOBUS_LOCATION=$MDSPLUS_DIR" > /etc/profile.d/globus.sh
+	    echo "export GLOBUS_LOCATION" >> /etc/profile.d/globus.sh
+	    echo ". \$GLOBUS_LOCATION/etc/globus-user-env.sh" >> /etc/profile.d/globus.sh
+	    echo "MYPROXY_SERVER=cert.fusiongrid.org" >> /etc/profile.d/globus.sh
+	    echo "export MYPROXY_SERVER" >> /etc/profile.d/globus.csh
+	fi
+    fi
   else
     if grep "^. $MDSPLUS_DIR/setup.sh" /etc/profile > /dev/null
     then
       true
     else
       echo ". $MDSPLUS_DIR/setup.sh" >> /etc/profile
+      if [ "$product" = "FusionGrid" ]
+      then
+	  echo "GLOBUS_LOCATION=$MDSPLUS_DIR" >> /etc/profile
+	  echo "export GLOBUS_LOCATION" >> /etc/profile
+	  echo ". \$GLOBUS_LOCATION/etc/globus-user-env.sh" >> /etc/profile
+	  echo "MYPROXY_SERVER=cert.fusiongrid.org" >> /etc/profile
+	  echo "export MYPROXY_SERVER" >> /etc/profile
+      fi
     fi
     if grep "^source $MDSPLUS_DIR/setup.csh" /etc/csh.login > /dev/null
     then
       true
     else
       echo "source $MDSPLUS_DIR/setup.csh" >> /etc/csh.login
+      if [ "$product" = "FusionGrid" ]
+      then
+	  echo "setenv GLOBUS_LOCATION $MDSPLUS_DIR" >> /etc/csh.login
+	  echo "source \$GLOBUS_LOCATION/etc/globus-user-env.csh" >> /etc/csh.login
+	  echo "setenv MYPROXY_SERVER cert.fusiongrid.org" >> /etc/csh.login
+      fi
     fi
   fi
 fi
 unset MDSplusEnv
 unset MDSplusSrv
+unset product
