@@ -1,5 +1,4 @@
-
-package jTraverser;
+//package jTraverser;
 import javax.swing.*;
 
 public class Node

@@ -1,4 +1,4 @@
-package jTraverser;
+//package jTraverser;
 
 class CompoundData extends Data
 {

@@ -46,6 +46,7 @@ static char *MdsGetString(char *in)
     	strncpy(error_message, MdsGetMsg(status), 512);
 	return NULL;
     }
+
     if(!xd.pointer)
     {
 	strcpy(error_message, "Missing data");
@@ -77,6 +78,8 @@ static float MdsGetFloat(char *in)
     status = TdiCompile(&in_d, &xd MDS_END_ARG);
     if(status & 1)
     	status = TdiData(&xd, &xd MDS_END_ARG);
+    if(status & 1)
+    	status = TdiFloat(&xd, &xd MDS_END_ARG);
     if(!(status & 1))
     {
     	strncpy(error_message, MdsGetMsg(status), 512);
@@ -102,9 +105,10 @@ static float MdsGetFloat(char *in)
 	case DTYPE_LU:
 	case DTYPE_L : ris = *(int *)xd.pointer->pointer; break;
 	case DTYPE_F : ris = *(float *)xd.pointer->pointer; break;
+	case DTYPE_FS: ris = *(float *)xd.pointer->pointer; break;
 	case DTYPE_D :
 	case DTYPE_G : ris = *(float *)xd.pointer->pointer; break; 
-	default:	strcpy(error_message, "Not a supported type");
+	default:	sprintf(error_message, "Not a supported type %d", xd.pointer->dtype);
 			return 0;
     }
     MdsFree1Dx(&xd, NULL);
@@ -131,38 +135,47 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float)
     if(!(status & 1))
     {
     	strncpy(error_message, MdsGetMsg(status), 512);
-	return 0;
+		return 0;
     }
     if(!xd.pointer)
     {
-	strcpy(error_message, "Missing data");
-	return 0;
+		strcpy(error_message, "Missing data");
+		return 0;
     }
     if(xd.pointer->class != CLASS_A)
     {
-	if(!is_float) //Legal only if used to retrieve the sho number
-	{
-	    int_ris = malloc(sizeof(int));
-	    switch(xd.pointer->dtype)
-	    {
-		case DTYPE_BU:
-		case DTYPE_B : int_ris[0] = *((char *)xd.pointer->pointer); break;
-		case DTYPE_WU:
-		case DTYPE_W : int_ris[0] = *((short *)xd.pointer->pointer); break;
-		case DTYPE_LU:
-		case DTYPE_L : int_ris[0] = *((int *)xd.pointer->pointer); break;
-		case DTYPE_F : 
-		case DTYPE_FS : int_ris[0] = *((int *)xd.pointer->pointer); break;
-	    }
-	    *out_dim = 1;
-	    return int_ris;
+		if(!is_float) //Legal only if used to retrieve the shot number
+		{
+			int_ris = malloc(sizeof(int));
+			switch(xd.pointer->dtype)
+			{
+				case DTYPE_BU:
+				case DTYPE_B : int_ris[0] = *((char *)xd.pointer->pointer); break;
+				case DTYPE_WU:
+				case DTYPE_W : int_ris[0] = *((short *)xd.pointer->pointer); break;
+				case DTYPE_LU:
+				case DTYPE_L : int_ris[0] = *((int *)xd.pointer->pointer); break;
+				case DTYPE_F : 
+				case DTYPE_FS : int_ris[0] = *((int *)xd.pointer->pointer); break;
+			}
+			*out_dim = 1;
+			return int_ris;
+		}
+		strcpy(error_message, "Not an array");
+		return 0;
 	}
-	strcpy(error_message, "Not an array");
-	return 0;
-    }
  
-    arr_ptr = (struct descriptor_a *)xd.pointer;
-    *out_dim = dim = arr_ptr->arsize/arr_ptr->length;
+	arr_ptr = (struct descriptor_a *)xd.pointer;
+	if(arr_ptr->dtype == DTYPE_F || 
+		arr_ptr->dtype == DTYPE_D ||
+		arr_ptr->dtype == DTYPE_G ||
+		arr_ptr->dtype == DTYPE_H) 
+	{
+		status = TdiFloat(&xd, &xd MDS_END_ARG);
+		arr_ptr = (struct descriptor_a *)xd.pointer;
+	}
+		
+		*out_dim = dim = arr_ptr->arsize/arr_ptr->length;
     if(is_float)
         float_ris = (float *)malloc(sizeof(float) * dim);
     else
@@ -202,7 +215,7 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float)
 		break;
 	case DTYPE_D :
 	case DTYPE_G :
-	default:	strcpy(error_message, "Not a supported type");
+	default:	strcpy(error_message, "Not a supported type PAPPERO");
 			return NULL;
     }
 

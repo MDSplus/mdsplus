@@ -1,4 +1,4 @@
-package jTraverser;
+//package jTraverser;
 import java.awt.*;
 
 public class NodeDisplayData extends NodeDataPropertyEditor {

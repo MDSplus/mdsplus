@@ -1,4 +1,4 @@
-package jTraverser;
+//package jTraverser;
 import javax.swing.*;
 import java.awt.*;
 

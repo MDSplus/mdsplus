@@ -1,4 +1,4 @@
-package jTraverser;
+//package jTraverser;
 
 class SyntaxException extends Exception {
     public SyntaxException(String message)

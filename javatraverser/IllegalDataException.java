@@ -1,4 +1,4 @@
-package jTraverser;
+//package jTraverser;
 
 class IllegalDataException extends Exception {
     Data invalid_data;

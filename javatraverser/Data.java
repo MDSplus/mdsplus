@@ -1,4 +1,4 @@
-package jTraverser;
+//package jTraverser;
 /** Abstract class Data defines the general concept of data. At this level only a list of 
 DataListeners is maintained, as well as methods to notify a data change to the element of this list.
 */
@@ -7,7 +7,7 @@ import java.util.*;
 abstract class Data 
 {
     static {
-	System.loadLibrary("javamds");
+	System.loadLibrary("JavaMds");
     }
 
     int dclass;

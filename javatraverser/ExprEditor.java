@@ -1,6 +1,8 @@
-package jTraverser;
+//package jTraverser;
 import javax.swing.*; 
+
 import java.awt.*;
+
 import java.awt.event.*;
 
 public class ExprEditor extends JPanel implements ActionListener, Editor{
@@ -154,4 +156,6 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
     
 
 }
+
+
 

@@ -1,4 +1,4 @@
-package jTraverser;
+//package jTraverser;
 
 public class NidData extends IntData implements NodeId
 {

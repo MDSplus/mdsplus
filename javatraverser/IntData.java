@@ -1,9 +1,9 @@
-package jTraverser;
+//package jTraverser;
 
 public class IntData extends AtomicData
 {
     int datum;
-    static Data getData(int datum, boolean unsigned)
+    public static Data getData(int datum, boolean unsigned)
 	{return new IntData(datum, unsigned);}
     public IntData() {}
     public IntData(int datum, boolean unsigned)

@@ -1,4 +1,4 @@
-package jTraverser;
+//package jTraverser;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -223,6 +223,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    ok_cb.addActionListener(this);//(new ActionListener() {
 		//public void actionPerformed(ActionEvent e)  {
 		  //  open_ok(); }});
+		ok_cb.setSelected(true);
 	    jp1.add(ok_cb);
 	    JButton cancel = new JButton("Cancel");
 	    cancel.addActionListener(new ActionListener() {
@@ -397,7 +398,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	if((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 	{
 	    Point screen_origin = getLocationOnScreen();
-	    curr_origin = new Point(e.getX()+screen_origin.x, e.getY()+screen_origin.y);
+	    //curr_origin = new Point(e.getX()+screen_origin.x, e.getY()+screen_origin.y);
+        curr_origin = screen_origin;
 	    //curr_tree_node = 
 	//	(DefaultMutableTreeNode)curr_tree.getClosestPathForLocation(e.getX(), e.getY()).getLastPathComponent();
 	  //  curr_node = (Node)curr_tree_node.getUserObject();

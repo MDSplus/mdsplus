@@ -1,5 +1,5 @@
 #include <jni.h>
-#include "jTraverser_Data.h"
+#include "Data.h"
 #include <stdio.h>
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
@@ -8,8 +8,7 @@
 #include <stdlib.h>
 #include <libroutines.h>
 
-extern int TdiDecompile(), TdiCompile();
-extern int CvtConvertFloat();
+extern int TdiDecompile(), TdiCompile(), TdiFloat();
 
 struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj);
 void FreeDescrip(struct descriptor *desc);
@@ -17,7 +16,7 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc);
 
 
 
-JNIEXPORT jstring JNICALL Java_jTraverser_Data_toString(JNIEnv *env, jobject obj)
+JNIEXPORT jstring JNICALL Java_Data_toString(JNIEnv *env, jobject obj)
 {
   EMPTYXD(out_xd);
   jstring ris;
@@ -46,7 +45,7 @@ JNIEXPORT jstring JNICALL Java_jTraverser_Data_toString(JNIEnv *env, jobject obj
 }
 
 
-JNIEXPORT jobject JNICALL Java_jTraverser_Data_fromExpr
+JNIEXPORT jobject JNICALL Java_Data_fromExpr
   (JNIEnv *env, jclass cls, jstring jsource)
 {
    EMPTYXD(out_xd);
@@ -55,7 +54,10 @@ JNIEXPORT jobject JNICALL Java_jTraverser_Data_fromExpr
    const char *source = (*env)->GetStringUTFChars(env, jsource, 0);
    char *error_msg;
    struct descriptor source_d = {0, DTYPE_T, CLASS_S, 0};
+   jstring jerror_msg;
    jobject ris, exc;
+
+struct descriptor_r *d;
 
 
    source_d.length = strlen(source);
@@ -64,7 +66,7 @@ JNIEXPORT jobject JNICALL Java_jTraverser_Data_fromExpr
    if(!(status & 1))
      {
        error_msg = (char *)MdsGetMsg(status);
-       exc = (*env)->FindClass(env, "jTraverser/SyntaxException");
+       exc = (*env)->FindClass(env, "SyntaxException");
        (*env)->ThrowNew(env, exc, error_msg);
        free(error_msg);
        return NULL;
@@ -91,10 +93,10 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 {
   jclass cls, data_cls;
   jmethodID constr;
-  int i, length, count;
+  int i, length, count, ndescs, status;
   unsigned int opcode;
   jboolean is_unsigned = 0;
-  jobject obj, exc, curr_obj;
+  jobject obj, exc, curr_obj, ris;
   jvalue args[4];
   jbyteArray jbytes;
   jshortArray jshorts;
@@ -107,8 +109,9 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
   char message[64];
   struct descriptor_a *array_d;
   struct descriptor_r *record_d;
+  struct descriptor_apd *apd_d;
   char *buf;
-
+  EMPTYXD(float_xd);
   if(!desc)
     {
       return  NULL;
@@ -123,41 +126,41 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
       switch(desc->dtype) {
         case DTYPE_BU: is_unsigned =1;
         case DTYPE_B : 
-	  cls = (*env)->FindClass(env, "jTraverser/ByteData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(BZ)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "ByteData");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(BZ)LData;");
 	  args[0].b = *(char *)desc->pointer;
 	  args[1].z = is_unsigned;
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_WU: is_unsigned =1;
         case DTYPE_W : 
-	  cls = (*env)->FindClass(env, "jTraverser/ShortData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(SZ)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "ShortData");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(SZ)LData;");
 	  args[0].s = *(short *)desc->pointer;
 	  args[1].z = is_unsigned;
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_LU: is_unsigned =1;
         case DTYPE_L : 
-	  cls = (*env)->FindClass(env, "jTraverser/IntData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(IZ)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "IntData");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(IZ)LData;");
 	  args[0].i = *(int *)desc->pointer;
 	  args[1].z = is_unsigned;
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_NID : 
-	  cls = (*env)->FindClass(env, "jTraverser/NidData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "NidData");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
 	  args[0].i = *(int *)desc->pointer;
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_QU: is_unsigned =1;
         case DTYPE_Q : 
-	  cls = (*env)->FindClass(env, "jTraverser/QuadData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(JZ)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "QuadData");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(JZ)LData;");
 	  args[0].j = *(long *)desc->pointer;
 	  args[1].z = is_unsigned;
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_OU: is_unsigned =1;
         case DTYPE_O : 
-	  cls = (*env)->FindClass(env, "jTraverser/OctaData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([JZ)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "OctaData");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([JZ)LData;");
 	  jlongs = (*env)->NewLongArray(env, 2);
 	  (*env)->SetLongArrayRegion(env, jlongs, 0, 2, (jlong *)desc->pointer);
 	  args[0].l = jlongs;
@@ -165,21 +168,21 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_FS :
         case DTYPE_F:
-	  cls = (*env)->FindClass(env, "jTraverser/FloatData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(F)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "FloatData");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(F)LData;");
 	  if(desc->dtype == DTYPE_F)
 	      CvtConvertFloat(desc->pointer, DTYPE_F, &args[0].f, DTYPE_FS, 0);
 	  else
 	    args[0].f = *(float *)desc->pointer;
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_DOUBLE : 
-	  cls = (*env)->FindClass(env, "jTraverser/DoubleData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(D)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "DoubleData");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(D)LData;");
 	  args[0].d = *(float *)desc->pointer;
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_T :
-	  cls = (*env)->FindClass(env, "jTraverser/StringData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(Ljava/lang/String;)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "StringData");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(Ljava/lang/String;)LData;");
 	  buf = (char *)malloc(desc->length+1);
 	  memcpy(buf, desc->pointer, desc->length);
 	  buf[desc->length] = 0;
@@ -187,8 +190,8 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 	  free(buf);
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_PATH :
-	  cls = (*env)->FindClass(env, "jTraverser/PathData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(Ljava/lang/String;)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "PathData");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(Ljava/lang/String;)LData;");
 	  buf = (char *)malloc(desc->length+1);
 	  memcpy(buf, desc->pointer, desc->length);
 	  buf[desc->length] = 0;
@@ -196,8 +199,8 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 	  free(buf);
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_EVENT :
-	  cls = (*env)->FindClass(env, "jTraverser/EventData");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(Ljava/lang/String;)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "EventData");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(Ljava/lang/String;)LData;");
 	  buf = (char *)malloc(desc->length+1);
 	  memcpy(buf, desc->pointer, desc->length);
 	  buf[desc->length] = 0;
@@ -207,26 +210,29 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 	  
         default: 
 	  sprintf(message, "Datatype %d not supported for class CLASS_S", desc->dtype);
-	  exc = (*env)->FindClass(env, "jTraverser/UnsupportedDataException");
+	  exc = (*env)->FindClass(env, "UnsupportedDataException");
 	  (*env)->ThrowNew(env, exc, message);
       }
-    case CLASS_A:
+	  case CLASS_CA: 
+	  case CLASS_A:
       array_d = (struct descriptor_a *)desc;
       length =array_d->arsize/array_d->length; 
+
+printf("\nlenght array: %d", length);
       switch(array_d->dtype) {
         case DTYPE_BU: is_unsigned = 1;
         case DTYPE_B: 
-	  cls = (*env)->FindClass(env, "jTraverser/ByteArray");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([BZ)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "ByteArray");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([BZ)LData;");
 	  jbytes = (*env)->NewByteArray(env, length);
 	  (*env)->SetByteArrayRegion(env, jbytes, 0, length, (jbyte *)array_d->pointer);
 	  args[0].l = jbytes;
 	  args[1].z = is_unsigned;
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_WU: is_unsigned = 1;
-        case DTYPE_W: 
-	  cls = (*env)->FindClass(env, "jTraverser/ShortArray");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([SZ)LjTraverser/Data;");
+        case DTYPE_W:  
+	  cls = (*env)->FindClass(env, "ShortArray");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([SZ)LData;");
 	  jshorts = (*env)->NewShortArray(env, length);
 	  (*env)->SetShortArrayRegion(env, jshorts, 0, length, (jshort *)array_d->pointer);
 	  args[0].l = jshorts;
@@ -234,8 +240,8 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_LU: is_unsigned = 1;
         case DTYPE_L: 
-	  cls = (*env)->FindClass(env, "jTraverser/IntArray");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([IZ)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "IntArray");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([IZ)LData;");
 	  jints = (*env)->NewIntArray(env, length);
 	  (*env)->SetIntArrayRegion(env, jints, 0, length, (jint *)array_d->pointer);
 	  args[0].l = jints;
@@ -243,8 +249,8 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_QU: is_unsigned = 1;
         case DTYPE_Q: 
-	  cls = (*env)->FindClass(env, "jTraverser/QuadArray");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([JZ)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "QuadArray");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([JZ)LData;");
 	  jlongs = (*env)->NewLongArray(env, length);
 	  (*env)->SetLongArrayRegion(env, jlongs, 0, length, (jlong *)array_d->pointer);
 	  args[0].l = jlongs;
@@ -252,23 +258,45 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_OU: is_unsigned = 1;
         case DTYPE_O: 
-	  cls = (*env)->FindClass(env, "jTraverser/OctaArray");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([JZ)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "OctaArray");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([JZ)LData;");
 	  jlongs = (*env)->NewLongArray(env, 2*length);
 	  (*env)->SetLongArrayRegion(env, jlongs, 0, 2*length, (jlong *)array_d->pointer);
 	  args[0].l = jlongs;
 	  args[1].z = is_unsigned;
 	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-        case DTYPE_FLOAT:
-	  cls = (*env)->FindClass(env, "jTraverser/FloatArray");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([F)LjTraverser/Data;");
+		case DTYPE_D:
+		case DTYPE_G:
+		case DTYPE_H:
+		case DTYPE_F: 
+		case DTYPE_FLOAT: //Let Tdi handle all the floating point stuff
+			{	
+				status = TdiFloat(array_d, &float_xd MDS_END_ARG);
+				if(!(status & 1))
+				{
+					printf(MdsGetMsg(status));
+					exit(0);
+				}
+			}
+			array_d = (struct descriptor_array *)float_xd.pointer;
+		cls = (*env)->FindClass(env, "FloatArray");
+		constr = (*env)->GetStaticMethodID(env, cls, "getData", "([F)LData;");
+		jfloats = (*env)->NewFloatArray(env, length);
+		(*env)->SetFloatArrayRegion(env, jfloats, 0, length, (jfloat *)array_d->pointer);
+		args[0].l = jfloats;
+		MdsFree1Dx(&float_xd, 0);
+		return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+
+	  /*case DTYPE_FLOAT:
+	  cls = (*env)->FindClass(env, "FloatArray");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([F)LData;");
 	  jfloats = (*env)->NewFloatArray(env, length);
 	  (*env)->SetFloatArrayRegion(env, jfloats, 0, length, (jfloat *)array_d->pointer);
 	  args[0].l = jfloats;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);*/
         case DTYPE_DOUBLE: 
-	  cls = (*env)->FindClass(env, "jTraverser/DoubleArray");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([D)LjTraverser/Data;");
+	  cls = (*env)->FindClass(env, "DoubleArray");
+	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([D)LData;");
 	  jdoubles = (*env)->NewDoubleArray(env, length);
 	  (*env)->SetDoubleArrayRegion(env, jdoubles, 0, length, (jdouble *)array_d->pointer);
 	  args[0].l = jdoubles;
@@ -277,69 +305,69 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
       case CLASS_R :
 	record_d = (struct descriptor_r *)desc;
 	switch(record_d->dtype) {
-	case DTYPE_PARAM: cls = (*env)->FindClass(env, "jTraverser/ParameterData");
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+	case DTYPE_PARAM: cls = (*env)->FindClass(env, "ParameterData");
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break; 
-	case DTYPE_SIGNAL: cls = (*env)->FindClass(env, "jTraverser/SignalData");
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+	case DTYPE_SIGNAL: cls = (*env)->FindClass(env, "SignalData");
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break; 
-	case DTYPE_DIMENSION: cls = (*env)->FindClass(env, "jTraverser/DimensionData"); 
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+	case DTYPE_DIMENSION: cls = (*env)->FindClass(env, "DimensionData"); 
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
-	case DTYPE_WINDOW: cls = (*env)->FindClass(env, "jTraverser/WindowData");
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+	case DTYPE_WINDOW: cls = (*env)->FindClass(env, "WindowData");
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
-	case DTYPE_FUNCTION: cls = (*env)->FindClass(env, "jTraverser/FunctionData"); 
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+	case DTYPE_FUNCTION: cls = (*env)->FindClass(env, "FunctionData"); 
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
-	case DTYPE_CONGLOM: cls = (*env)->FindClass(env, "jTraverser/ConglomData");
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+	case DTYPE_CONGLOM: cls = (*env)->FindClass(env, "ConglomData");
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
-	case DTYPE_ACTION: cls = (*env)->FindClass(env, "jTraverser/ActionData"); 
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+	case DTYPE_ACTION: cls = (*env)->FindClass(env, "ActionData"); 
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
-	case DTYPE_DISPATCH: cls = (*env)->FindClass(env, "jTraverser/DispatchData");
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+	case DTYPE_DISPATCH: cls = (*env)->FindClass(env, "DispatchData");
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
-	case DTYPE_PROGRAM: cls = (*env)->FindClass(env, "jTraverser/ProgramData");
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+	case DTYPE_PROGRAM: cls = (*env)->FindClass(env, "ProgramData");
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
-	case DTYPE_ROUTINE: cls = (*env)->FindClass(env, "jTraverser/RoutineData");  
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+	case DTYPE_ROUTINE: cls = (*env)->FindClass(env, "RoutineData");  
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
-	case DTYPE_PROCEDURE: cls = (*env)->FindClass(env, "jTraverser/ProcedureData");   
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+	case DTYPE_PROCEDURE: cls = (*env)->FindClass(env, "ProcedureData");   
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
-	case DTYPE_METHOD: cls = (*env)->FindClass(env, "jTraverser/MethodData");
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+	case DTYPE_METHOD: cls = (*env)->FindClass(env, "MethodData");
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
-      	case DTYPE_DEPENDENCY: cls = (*env)->FindClass(env, "jTraverser/DependencyData");
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+      	case DTYPE_DEPENDENCY: cls = (*env)->FindClass(env, "DependencyData");
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
-	case DTYPE_CONDITION: cls = (*env)->FindClass(env, "jTraverser/ConditionData"); 
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+	case DTYPE_CONDITION: cls = (*env)->FindClass(env, "ConditionData"); 
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
-	case DTYPE_WITH_UNITS: cls = (*env)->FindClass(env, "jTraverser/WithUnitsData"); 
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+	case DTYPE_WITH_UNITS: cls = (*env)->FindClass(env, "WithUnitsData"); 
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
-	case DTYPE_CALL: cls = (*env)->FindClass(env, "jTraverser/CallData");
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+	case DTYPE_CALL: cls = (*env)->FindClass(env, "CallData");
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
- 	case DTYPE_WITH_ERROR: cls = (*env)->FindClass(env, "jTraverser/WithErrorData"); 
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+ 	case DTYPE_WITH_ERROR: cls = (*env)->FindClass(env, "WithErrorData"); 
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
- 	case DTYPE_RANGE: cls = (*env)->FindClass(env, "jTraverser/RangeData"); 
-	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LjTraverser/Data;");
+ 	case DTYPE_RANGE: cls = (*env)->FindClass(env, "RangeData"); 
+	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
 			  break;   
 	}
         obj = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-	data_cls = (*env)->FindClass(env, "jTraverser/Data");
+	data_cls = (*env)->FindClass(env, "Data");
 	jobjects = (*env)->NewObjectArray(env, record_d->ndesc, data_cls, 0);
 	for(i = count = 0; count < record_d->ndesc;i++, count++)
 	  {
 	    (*env)->SetObjectArrayElement(env, jobjects, i, DescripToObject(env, record_d->dscptrs[i]));
 	  }
-        data_fid = (*env)->GetFieldID(env, cls, "descs", "[LjTraverser/Data;");
+        data_fid = (*env)->GetFieldID(env, cls, "descs", "[LData;");
         (*env)->SetObjectField(env, obj, data_fid, jobjects);
 	if(record_d->pointer &&(record_d->dtype == DTYPE_FUNCTION || record_d->dtype == DTYPE_DEPENDENCY
 	     || record_d->dtype == DTYPE_CONDITION || record_d->dtype == DTYPE_CALL || 
@@ -358,9 +386,9 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
       case CLASS_APD :
 	array_d = (struct descriptor_a *)desc;
 	length = array_d->arsize/array_d->length;
-	cls = (*env)->FindClass(env, "jTraverser/ApdData"); 
-	data_cls = (*env)->FindClass(env, "jTraverser/Data");
-	constr = (*env)->GetStaticMethodID(env, cls, "getData", "([LjTraverser/Data;)LjTraverser/Data;");
+	cls = (*env)->FindClass(env, "ApdData"); 
+	data_cls = (*env)->FindClass(env, "Data");
+	constr = (*env)->GetStaticMethodID(env, cls, "getData", "([LData;)LData;");
 	jobjects = (*env)->NewObjectArray(env, length, data_cls, 0);
 	for(i = 0; i < length; i++)
 	  {
@@ -469,7 +497,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	    datum_fid = (*env)->GetFieldID(env, cls, "datum", "J");
 	    desc->length = sizeof(long);
 	    desc->pointer = (char *)malloc(desc->length);
-	    *(long *)desc->pointer = (*env)->GetLongField(env, obj, datum_fid);
+	    *(long *)desc->pointer =(*env)->GetLongField(env, obj, datum_fid);
 	    return desc;
 
   	  case DTYPE_O:
@@ -613,7 +641,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
       case CLASS_R:
 	opcode_fid = (*env)->GetFieldID(env, cls, "opcode", "I");
 	opcode = (*env)->GetIntField(env, obj, opcode_fid);
-	descs_fid = (*env)->GetFieldID(env, cls, "descs", "[LjTraverser/Data;");
+	descs_fid = (*env)->GetFieldID(env, cls, "descs", "[LData;");
         jdescs = (*env)->GetObjectField(env, obj, descs_fid);
 	ndescs = (*env)->GetArrayLength(env, jdescs);
 	record_d = (struct descriptor_r *)malloc(sizeof(struct descriptor_r) + (ndescs - 1) * sizeof(void *));
@@ -642,7 +670,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	return (struct descriptor *)record_d;
 
        case CLASS_APD:
-	descs_fid = (*env)->GetFieldID(env, cls, "descs", "[LjTraverser/Data;");
+	descs_fid = (*env)->GetFieldID(env, cls, "descs", "[LData;");
         jdescs = (*env)->GetObjectField(env, obj, descs_fid);
 	ndescs = (*env)->GetArrayLength(env, jdescs);
 	array_d = (struct descriptor_a *)malloc(sizeof(struct descriptor_a));

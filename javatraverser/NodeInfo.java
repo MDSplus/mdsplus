@@ -1,4 +1,4 @@
-package jTraverser;
+//package jTraverser;
 
 /** class NodeInfo carries all the NCI information */
 

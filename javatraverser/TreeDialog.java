@@ -1,4 +1,4 @@
-package jTraverser;
+//package jTraverser;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.*;
@@ -25,8 +25,8 @@ class TreeDialog extends JFrame
     {
 	if(!isVisible())
 	    return;
-	Point origin = getLocationOnScreen();
-	setLocation(origin);
+	//Point origin = getLocationOnScreen();
+	//setLocation(origin);
 	pack();
     }
     public final void setUsed(boolean used)

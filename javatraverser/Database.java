@@ -1,4 +1,4 @@
-package jTraverser;
+//package jTraverser;
 
 public class Database {
     String name;
@@ -7,7 +7,7 @@ public class Database {
     boolean is_readonly = false;
     boolean is_editable = false;
     static {
-	System.loadLibrary("javamds");
+	System.loadLibrary("JavaMds");
     }
     public Database(String name, int shot)
     {

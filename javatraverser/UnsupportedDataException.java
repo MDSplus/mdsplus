@@ -1,4 +1,4 @@
-package jTraverser;
+//package jTraverser;
 
 class UnsupportedDataException extends Exception {
     public UnsupportedDataException(String message)

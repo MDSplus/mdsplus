@@ -1,5 +1,5 @@
 #include <jni.h>
-#include "jTraverser_Database.h"
+#include "Database.h"
 #include <stdio.h>
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
@@ -15,13 +15,13 @@ extern void FreeDescrip(struct descriptor *desc);
 
 static void RaiseException(JNIEnv *env, char *msg)
 {
-   jclass exc = (*env)->FindClass(env, "jTraverser/DatabaseException");
+   jclass exc = (*env)->FindClass(env, "DatabaseException");
    (*env)->ThrowNew(env, exc, msg);
    //free(msg);
 }
   
 
-JNIEXPORT void JNICALL Java_jTraverser_Database_open
+JNIEXPORT void JNICALL Java_Database_open
   (JNIEnv *env, jobject obj)
 {
   int status;
@@ -49,14 +49,13 @@ JNIEXPORT void JNICALL Java_jTraverser_Database_open
     }
   else
     status = TreeOpen((char *)name, shot, is_readonly);
-
   (*env)->ReleaseStringUTFChars(env, jname, name);
   if(!(status & 1))
     RaiseException(env, MdsGetMsg(status));
 }
 
 
-JNIEXPORT void JNICALL Java_jTraverser_Database_write
+JNIEXPORT void JNICALL Java_Database_write
   (JNIEnv *env, jobject obj)
 {
   int status;
@@ -79,7 +78,7 @@ JNIEXPORT void JNICALL Java_jTraverser_Database_write
 
 
       
-JNIEXPORT void JNICALL Java_jTraverser_Database_close (JNIEnv *env, jobject obj)
+JNIEXPORT void JNICALL Java_Database_close (JNIEnv *env, jobject obj)
 {
   int status = 1;
   jfieldID name_fid,shot_fid;
@@ -100,7 +99,7 @@ JNIEXPORT void JNICALL Java_jTraverser_Database_close (JNIEnv *env, jobject obj)
 }
 
       
-JNIEXPORT void JNICALL Java_jTraverser_Database_quit (JNIEnv *env, jobject obj)
+JNIEXPORT void JNICALL Java_Database_quit (JNIEnv *env, jobject obj)
 {
   int status;
   jfieldID name_fid,shot_fid;
@@ -121,18 +120,32 @@ JNIEXPORT void JNICALL Java_jTraverser_Database_quit (JNIEnv *env, jobject obj)
 }
       
 
-JNIEXPORT jobject JNICALL Java_jTraverser_Database_getData
+JNIEXPORT jobject JNICALL Java_Database_getData
  (JNIEnv *env, jobject obj, jobject jnid)
 {
   int nid, status;
   jfieldID nid_fid;
-  jclass cls = (*env)->GetObjectClass(env, jnid);
+  jclass cls;
   EMPTYXD(xd);
+  EMPTYXD(out_xd);
   jobject ris;
+
+
+  cls = (*env)->GetObjectClass(env, jnid);
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
 
+
   status = TreeGetRecord(nid, &xd);
+
+ // printf("\nletti %d bytes", xd.l_length);
+/*
+  status = TdiDecompile(&xd, &out_xd MDS_END_ARG);
+printf("\nEnd TdiDecompile");
+out_xd.pointer->pointer[out_xd.pointer->length - 1] = 0;
+printf(out_xd.pointer->pointer);*/
+ 
+
   if(!(status & 1))
     {
       RaiseException(env, MdsGetMsg(status));
@@ -140,12 +153,15 @@ JNIEXPORT jobject JNICALL Java_jTraverser_Database_getData
     }
   if(!xd.pointer)
     return NULL;
+
+
   ris = DescripToObject(env, xd.pointer);
+   
   MdsFree1Dx(&xd, NULL);
   return ris;
 }
 
-JNIEXPORT void JNICALL Java_jTraverser_Database_putData
+JNIEXPORT void JNICALL Java_Database_putData
   (JNIEnv *env, jobject obj, jobject jnid, jobject jdata)
 {
   int nid, status;
@@ -176,7 +192,7 @@ printf(xd.pointer->pointer);
       RaiseException(env, MdsGetMsg(status));
 }
 
-JNIEXPORT jobject JNICALL Java_jTraverser_Database_getInfo
+JNIEXPORT jobject JNICALL Java_Database_getInfo
   (JNIEnv *env, jobject obj, jobject jnid)
 {
   int nid, status;
@@ -206,9 +222,7 @@ JNIEXPORT jobject JNICALL Java_jTraverser_Database_getInfo
 
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
-
   status = TreeGetNci(nid, nci_list);
- 
   if(!(status & 1))
    {
       RaiseException(env, MdsGetMsg(status));
@@ -218,8 +232,8 @@ JNIEXPORT jobject JNICALL Java_jTraverser_Database_getInfo
   name[name_len] = 0;
   fullpath[fullpath_len] = 0;
   minpath[minpath_len] = 0;
-  cls = (*env)->FindClass(env, "jTraverser/NodeInfo");
-  constr = (*env)->GetStaticMethodID(env, cls, "getNodeInfo", "(ZZZZZZZZLjava/lang/String;IIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)LjTraverser/NodeInfo;");
+  cls = (*env)->FindClass(env, "NodeInfo");
+  constr = (*env)->GetStaticMethodID(env, cls, "getNodeInfo", "(ZZZZZZZZLjava/lang/String;IIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)LNodeInfo;");
   args[0].z = nci_flags & NciM_STATE;
   args[1].z = nci_flags & NciM_PARENT_STATE;
   args[2].z = nci_flags & NciM_SETUP_INFORMATION;
@@ -242,7 +256,7 @@ JNIEXPORT jobject JNICALL Java_jTraverser_Database_getInfo
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }
 
-JNIEXPORT void JNICALL Java_jTraverser_Database_setTags
+JNIEXPORT void JNICALL Java_Database_setTags
   (JNIEnv *env, jobject obj, jobject jnid, jobjectArray jtags)
 {
   int nid, status, n_tags, i;
@@ -275,7 +289,7 @@ JNIEXPORT void JNICALL Java_jTraverser_Database_setTags
 }
       
       
-JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_getTags
+JNIEXPORT jobjectArray JNICALL Java_Database_getTags
   (JNIEnv *env, jobject obj, jobject jnid)
 {
   int nid, n_tags, i;
@@ -291,7 +305,7 @@ JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_getTags
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
   n_tags = 0;
-  while(n_tags < 256 && (tags[n_tags] = TreeFindNodeTags(nid, (void **)&ctx)) )
+  while(n_tags < 256 && (tags[n_tags] = TreeFindNodeTags(nid, &ctx)) )
   {
 	 n_tags++;
 	 if(ctx == -1)
@@ -307,7 +321,7 @@ JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_getTags
   return jtags;
 }
       
-JNIEXPORT void JNICALL Java_jTraverser_Database_renameNode
+JNIEXPORT void JNICALL Java_Database_renameNode
   (JNIEnv *env, jobject obj, jobject jnid, jstring jname)
 {
 
@@ -326,7 +340,7 @@ JNIEXPORT void JNICALL Java_jTraverser_Database_renameNode
       RaiseException(env, MdsGetMsg(status));
 }
     
-JNIEXPORT jobject JNICALL Java_jTraverser_Database_addNode
+JNIEXPORT jobject JNICALL Java_Database_addNode
   (JNIEnv *env, jobject obj, jstring jname, jint usage)
 {
   const char *name = (*env)->GetStringUTFChars(env, jname, 0);
@@ -343,13 +357,13 @@ JNIEXPORT jobject JNICALL Java_jTraverser_Database_addNode
       return NULL;
     }
 
-  cls = (*env)->FindClass(env, "jTraverser/NidData");
-  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LjTraverser/Data;");
+  cls = (*env)->FindClass(env, "NidData");
+  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
   args[0].i = nid;
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }
 
-JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_startDelete
+JNIEXPORT jobjectArray JNICALL Java_Database_startDelete
   (JNIEnv *env, jobject obj, jobjectArray jnids)
 {
   int nid, status, len, i, num_to_delete;
@@ -357,7 +371,7 @@ JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_startDelete
   jmethodID constr;
   jvalue args[1];
   jobject jnid, jout_nids;
-  jclass cls = (*env)->FindClass(env, "jTraverser/NidData");
+  jclass cls = (*env)->FindClass(env, "NidData");
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
 
   num_to_delete = 0;
@@ -371,7 +385,7 @@ JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_startDelete
     }
   num_to_delete -= len; 
 
-  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LjTraverser/Data;");
+  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
   jout_nids = (*env)->NewObjectArray(env, num_to_delete, cls, 0);
   for(i = 0; i < num_to_delete; i++)
     {
@@ -384,14 +398,14 @@ JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_startDelete
 }
 	
 
-JNIEXPORT void JNICALL Java_jTraverser_Database_executeDelete
+JNIEXPORT void JNICALL Java_Database_executeDelete
   (JNIEnv *env, jobject obj)
 {
   TreeDeleteNodeExecute();
 }
 
 
-JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_getSons
+JNIEXPORT jobjectArray JNICALL Java_Database_getSons
   (JNIEnv *env, jobject obj, jobject jnid)
 {
   
@@ -404,6 +418,8 @@ JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_getSons
   static int num_nids_len, num_nids, nids_len;
   int *nids;
 
+
+
   struct nci_itm nci_list1[] = 
   {{4, NciNUMBER_OF_CHILDREN, &num_nids, &num_nids_len},
    {NciEND_OF_LIST, 0, 0, 0}},
@@ -412,6 +428,8 @@ JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_getSons
   {{0, NciCHILDREN_NIDS, 0, &nids_len},
    {NciEND_OF_LIST, 0, 0, 0}};
 
+//printf("\nStart getSons");
+  
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
   status = TreeGetNci(nid, nci_list1);
@@ -420,17 +438,19 @@ JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_getSons
       RaiseException(env, MdsGetMsg(status));
       return NULL;
     }
-  nids = (int *)malloc(num_nids * sizeof(nid));
-  nci_list2[0].buffer_length = sizeof(int) * num_nids;
-  nci_list2[0].pointer = nids;
-  status = TreeGetNci(nid, nci_list2);
-  if(!(status & 1))
+  if(num_nids > 0)
+  {
+	nids = (int *)malloc(num_nids * sizeof(nid));
+	nci_list2[0].buffer_length = sizeof(int) * num_nids;
+	nci_list2[0].pointer = nids;
+	status = TreeGetNci(nid, nci_list2);
+	if(!(status & 1))
     {
       RaiseException(env, MdsGetMsg(status));
       return NULL;
     }
-
-  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LjTraverser/Data;");
+  } 
+  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
   jnids = (*env)->NewObjectArray(env, num_nids, cls, 0);
   for(i = 0; i < num_nids; i++)
     {
@@ -438,11 +458,14 @@ JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_getSons
       jnid = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
       (*env)->SetObjectArrayElement(env, jnids, i, jnid);
     }
-  free((char *)nids);
+  if(num_nids > 0)
+	free((char *)nids);
+
+//printf("\nEnd getSons");
   return jnids;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_getMembers
+JNIEXPORT jobjectArray JNICALL Java_Database_getMembers
   (JNIEnv *env, jobject obj, jobject jnid)
 {
   int nid, status, i;
@@ -454,6 +477,8 @@ JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_getMembers
   static int num_nids_len, num_nids, nids_len;
   int *nids;
 
+
+
   struct nci_itm nci_list1[] = 
   {{4, NciNUMBER_OF_MEMBERS, &num_nids, &num_nids_len},
    {NciEND_OF_LIST, 0, 0, 0}},
@@ -461,6 +486,8 @@ JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_getMembers
   nci_list2[] = 
   {{0, NciMEMBER_NIDS, 0, &nids_len},
    {NciEND_OF_LIST, 0, 0, 0}};
+
+//printf("\nStart getMembers");
 
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
@@ -470,17 +497,21 @@ JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_getMembers
       RaiseException(env, MdsGetMsg(status));
       return NULL;
     }
-  nids = (int *)malloc(num_nids * sizeof(nid));
-  nci_list2[0].buffer_length = sizeof(int) * num_nids;
-  nci_list2[0].pointer = nids;
-  status = TreeGetNci(nid, nci_list2);
-  if(!(status & 1))
+
+
+  if(num_nids > 0)
+  {
+	nids = (int *)malloc(num_nids * sizeof(nid));
+	nci_list2[0].buffer_length = sizeof(int) * num_nids;
+	nci_list2[0].pointer = nids;
+	status = TreeGetNci(nid, nci_list2);
+	if(!(status & 1))
     {
       RaiseException(env, MdsGetMsg(status));
       return NULL;
     }
-
-  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LjTraverser/Data;");
+  }
+  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
   jnids = (*env)->NewObjectArray(env, num_nids, cls, 0);
   for(i = 0; i < num_nids; i++)
     {
@@ -488,11 +519,13 @@ JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_getMembers
       jnid = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
       (*env)->SetObjectArrayElement(env, jnids, i, jnid);
     }
-  free((char *)nids);
+  if(num_nids > 0)free((char *)nids);
+
+//printf("\nEnd getMembers");
   return jnids;
 }
 
-JNIEXPORT jboolean JNICALL Java_jTraverser_Database_isOn
+JNIEXPORT jboolean JNICALL Java_Database_isOn
   (JNIEnv *env, jobject obj, jobject jnid)
 {
   int nid, status;
@@ -507,7 +540,7 @@ JNIEXPORT jboolean JNICALL Java_jTraverser_Database_isOn
 }
   
   
-JNIEXPORT void JNICALL Java_jTraverser_Database_setOn
+JNIEXPORT void JNICALL Java_Database_setOn
   (JNIEnv *env, jobject obj, jobject jnid, jboolean on)
 {
   int nid, status;
@@ -521,12 +554,11 @@ JNIEXPORT void JNICALL Java_jTraverser_Database_setOn
      status = TreeTurnOn(nid);
   else
      status = TreeTurnOff(nid);
-
   if(!(status & 1))
       RaiseException(env, MdsGetMsg(status));
 }	
 	
-JNIEXPORT jobject JNICALL Java_jTraverser_Database_resolve
+JNIEXPORT jobject JNICALL Java_Database_resolve
   (JNIEnv *env, jobject obj, jobject jpath_data)
 {
   int nid, status;
@@ -548,13 +580,13 @@ JNIEXPORT jobject JNICALL Java_jTraverser_Database_resolve
     }
   (*env)->ReleaseStringUTFChars(env, jpath, path);
   
-  cls = (*env)->FindClass(env, "jTraverser/NidData");
-  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LjTraverser/Data;");
+  cls = (*env)->FindClass(env, "NidData");
+  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
   args[0].i = nid;
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }
 
-JNIEXPORT void JNICALL Java_jTraverser_Database_setDefault
+JNIEXPORT void JNICALL Java_Database_setDefault
   (JNIEnv *env, jobject obj, jobject jnid)
 {
   
@@ -570,7 +602,7 @@ JNIEXPORT void JNICALL Java_jTraverser_Database_setDefault
 }
 
 
-JNIEXPORT jobject JNICALL Java_jTraverser_Database_getDefault
+JNIEXPORT jobject JNICALL Java_Database_getDefault
   (JNIEnv *env, jobject obj)
 {
   jclass cls;
@@ -584,14 +616,14 @@ JNIEXPORT jobject JNICALL Java_jTraverser_Database_getDefault
       RaiseException(env, MdsGetMsg(status));
       return NULL;
     }
-  cls = (*env)->FindClass(env, "jTraverser/NidData");
-  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LjTraverser/Data;");
+  cls = (*env)->FindClass(env, "NidData");
+  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
   args[0].i = nid;
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }
 
 
-JNIEXPORT jobject JNICALL Java_jTraverser_Database_addDevice
+JNIEXPORT jobject JNICALL Java_Database_addDevice
   (JNIEnv *env, jobject obj, jstring jpath, jstring jmodel)
 {
   int nid, status;
@@ -609,8 +641,8 @@ JNIEXPORT jobject JNICALL Java_jTraverser_Database_addDevice
       RaiseException(env, MdsGetMsg(status));
       return NULL;
     }
-  cls = (*env)->FindClass(env, "jTraverser/NidData");
-  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LjTraverser/Data;");
+  cls = (*env)->FindClass(env, "NidData");
+  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
   args[0].i = nid;
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }

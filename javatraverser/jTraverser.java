@@ -1,4 +1,4 @@
-package jTraverser;
+//package jTraverser;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -168,7 +168,7 @@ public void actionPerformed(ActionEvent e)
 	}
 	display_data.setNode(tree.getCurrentNode());
 	display_data_d.pack();
-	display_data_d.setLocation(new Point(50,50));
+	//display_data_d.setLocation(new Point(50,50));
 	display_data_d.show();
     }    
     if(source == (Object)display_nci_b)
@@ -210,7 +210,6 @@ public void actionPerformed(ActionEvent e)
 void reportChange(String exp, int shot, boolean editable, boolean readonly)
 {
     
-System.out.println("reportChange");    
     String title;
     if(exp != null)
     {

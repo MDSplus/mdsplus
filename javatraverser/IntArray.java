@@ -1,4 +1,4 @@
-package jTraverser;
+//package jTraverser;
 
 public class IntArray extends ArrayData
 {

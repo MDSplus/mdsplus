@@ -1,4 +1,4 @@
-package jTraverser;
+//package jTraverser;
 
 class DatabaseException extends Exception {
     public DatabaseException(String message)

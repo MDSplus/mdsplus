@@ -1,9 +1,9 @@
-package jTraverser;
+//package jTraverser;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class DispatchEditor extends JPanel implements ActionListener, Editor
+public class DispatchEditor extends JPanel implements ActionListener,Editor
 {
     DispatchEdt dispatch_edit;
     ExprEditor expr_edit;
