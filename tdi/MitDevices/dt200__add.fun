@@ -23,7 +23,7 @@ Public fun dt200__add(in _path, out _nidout)
 
   DevAddNode(_path//':DAQ_MEM', 'NUMERIC', 64, '/noshot_write', _nid);
   DevAddNode(_path//':ACTIVE_CHAN', 'NUMERIC', 32, '/noshot_write', _nid);
-  DevAddNode(_path//':TRIG_SRC', 'TEXT', 'DI1', '/noshot_write', _nid);
+  DevAddNode(_path//':TRIG_SRC', 'TEXT', 'DI2', '/noshot_write', _nid);
   DevAddNode(_path//':POST_TRIG','NUMERIC',64,'/noshot_write',_nid);
   DevAddNode(_path//':PRE_TRIG','NUMERIC',1,'/noshot_write',_nid);
    for (_c=1;_c<=32;_c++)

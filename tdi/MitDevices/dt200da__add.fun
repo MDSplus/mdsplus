@@ -1,9 +1,9 @@
 Public fun dt200DA__add(in _path, out _nidout)
 {
 /*  DevAddStart(_path,'DT200',231,_nidout); */
-  DevAddStart(_path,'DT200DA',226,_nidout);
+  DevAddStart(_path,'DT200DA',234,_nidout,'MitDevices');
   DevAddNode(_path//':NODE','TEXT',*,*,_nid);
-  DevAddNode(_path//':BOARD','NUMERIC',1,'/noshotwrite',_nid);
+  DevAddNode(_path//':BOARD','NUMERIC',1,'/noshot_write',_nid);
   DevAddNode(_path//':COMMENT','TEXT',*,*,_nid);
 
   /* trigger routing */
@@ -16,14 +16,14 @@ Public fun dt200DA__add(in _path, out _nidout)
     DevAddNode(_name//':BUS', 'TEXT', *,'/noshot_write', _nid);
   }
   /* internal clock / clock divider (or int clock freq) */
-  DevAddNode(_path//':CLOCK_SRC', 'TEXT', 'INT', '/noshotwrite', _nid);
-  DevAddNode(_path//':CLOCK_DIV', 'NUMERIC', 200000., '/noshotwrite', _nid);
+  DevAddNode(_path//':CLOCK_SRC', 'TEXT', 'INT', '/noshot_write', _nid);
+  DevAddNode(_path//':CLOCK_DIV', 'NUMERIC', 200000., '/noshot_write', _nid);
 
   /* data acquisition */
 
   DevAddNode(_path//':DAQ_MEM', 'NUMERIC', 64, '/noshot_write', _nid);
   DevAddNode(_path//':ACTIVE_CHAN', 'NUMERIC', 32, '/noshot_write', _nid);
-  DevAddNode(_path//':TRIG_SRC', 'TEXT', 'DI1', '/noshot_write', _nid);
+  DevAddNode(_path//':TRIG_SRC', 'TEXT', 'DI2', '/noshot_write', _nid);
   DevAddNode(_path//':POST_TRIG','NUMERIC',64,'/noshot_write',_nid);
   DevAddNode(_path//':PRE_TRIG','NUMERIC',1,'/noshot_write',_nid);
    for (_c=1;_c<=32;_c++)
@@ -51,18 +51,19 @@ Public fun dt200DA__add(in _path, out _nidout)
     DevAddNode(_cn//':EDGES_F', 'NUMERIC', *,'/noshot_write', _nid);
   }
 
-  /* Analog Outputs
+  /* Analog Outputs */
+
   _apath = _path//'.ANALOG_OUT';
   DevAddNode(_apath, 'STRUCTURE', *, *, _nid);
   DevAddNode(_apath//':TRIG_SRC', 'TEXT', 'DI1', '/noshot_write', _nid);
-  DevAddNode(_apath//':NSAMP', 'TEXT', 'DI1', '/noshot_write', _nid);
+  DevAddNode(_apath//':CLOCK_SRC', 'TEXT', 'DI2', '/noshot_write', _nid);
+  DevAddNode(_apath//':TBASE', 'AXIS', 0 : 2 : 1/1D6 , '/noshot_write', _nid);
   for (_c=1;_c<=2;_c++)
   {
     _cn = _apath//':OUTPUT_'//TEXT(_c, 1);
     DevAddNode(_cn, 'SIGNAL', *,'/noshot_write', _nid);
-    DevAddNode(_cn//':SET_POINTS', 'NUMERIC', *,'/noshot_write', _nid);
+    DevAddNode(_cn//':SET_POINTS', 'SIGNAL', *,'/noshot_write', _nid);
   }
-  */
 
   /* and the default actions */
   DevAddAction(_path//':INIT_ACTION','INIT','INIT',50,'CAMAC_SERVER',_path,_nid);

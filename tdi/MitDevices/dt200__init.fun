@@ -53,5 +53,6 @@ public fun DT200__INIT(as_is _nid, optional _method)
   _clockFreq = if_error(data(DevNodeRef(_nid, _DT200_CLOCK_DIV)), 0);
 
   MdsValue('Dt200Init($,$,$,$,$,$,$)', _board, _activeChans, _trigSource, _clockSource, _clockFreq, _preTrig, _postTrig);
+  MdsValue("Dt200WriteMaster($,$)", _board, "setArm");
   return(1);
 }
