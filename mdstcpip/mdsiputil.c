@@ -51,6 +51,10 @@ extern int inet_addr();
 extern int MdsDispatchEvent();
 #endif
 
+void SetCompression(int on)
+{
+  UseCompression = on;
+}
 
 void SetSocketOptions(SOCKET s)
 {
@@ -317,8 +321,8 @@ static SOCKET ConnectToPort(char *host, char *service)
           DisconnectFromMds(s);
           return INVALID_SOCKET;
         }
-		if (!SupportsCompression(m->h.status))
-			UseCompression = 0;
+	if (!SupportsCompression(m->h.status))
+	  UseCompression = 0;
       }
     }
     else
@@ -545,7 +549,7 @@ int SendMdsMsg(SOCKET sock, Message *m, int oob)
   }
   if (!oob) FlushSocket(sock);
   if (m->h.client_type == SENDCAPABILITIES)
-	  m->h.status = SUPPORTS_COMPRESSION;
+    m->h.status = SUPPORTS_COMPRESSION;
   if ((m->h.client_type & SwapEndianOnServer) != 0)
   {
     if (Endian(m->h.client_type) != Endian(ClientType()))
@@ -565,7 +569,7 @@ int SendMdsMsg(SOCKET sock, Message *m, int oob)
 	status = SendBytes(sock, (char *)cm, cm->h.msglen, oob);
   }
   else
-	  status = SendBytes(sock, (char *)m, m->h.msglen, oob);
+	  status = SendBytes(sock, (char *)m, len + sizeof(MsgHdr), oob);
   if (clength) free(cm);
   return status;
 }
@@ -657,33 +661,33 @@ Message *GetMdsMsg(SOCKET sock, int *status)
     {
       *status = 0;
       return 0;
-	}  
+    }  
     msglen = header.msglen;
     msg = malloc(header.msglen);
     msg->h = header;
-	*status = GetBytes(sock, msg->bytes, msglen - sizeof(MsgHdr), 0);
-	if (*status & 1 && IsCompressed(header.client_type))
-	{
+    *status = GetBytes(sock, msg->bytes, msglen - sizeof(MsgHdr), 0);
+    if (*status & 1 && IsCompressed(header.client_type))
+    {
       Message *m;
-	  unsigned long dlen;
-	  memcpy(&msglen, msg->bytes, 4);
+      unsigned long dlen;
+      memcpy(&msglen, msg->bytes, 4);
       if (Endian(header.client_type) != Endian(ClientType()))
         FlipBytes(4,(char *)&msglen);
       m = malloc(msglen);
       m->h = header;
-	  dlen = msglen - sizeof(MsgHdr);
+      dlen = msglen - sizeof(MsgHdr);
       *status = uncompress(m->bytes, &dlen, msg->bytes + 4, header.msglen - sizeof(MsgHdr) - 4) == 0;
       if (*status & 1)
-	  {
-	    m->h.msglen = msglen;
+      {
+	m->h.msglen = msglen;
         free(msg);
-		msg = m;
-	  }
-	  else
-		free(m);
-	}
-	if (*status & 1 && (Endian(header.client_type) != Endian(ClientType())))
-		FlipData(msg);
+	msg = m;
+      }
+      else
+	free(m);
+    }
+    if (*status & 1 && (Endian(header.client_type) != Endian(ClientType())))
+      FlipData(msg);
   }
   return msg;
 }

@@ -48,6 +48,7 @@ typedef struct _client { SOCKET sock;
                          MdsEventList *event;
 			 void         *tdicontext[6];
                          int addr;
+                         int use_compression;
                          struct _client *next;
                        } Client;
 
@@ -574,16 +575,17 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     m.h.client_type = m_user->h.client_type;
     SetSocketOptions(sock);
     SendMdsMsg(sock,&m,0);
-	if (NO_SPAWN)
-	{
+    if (NO_SPAWN)
+    {
       if (m.h.status && NO_SPAWN)
-	  {
+      {
         Client *new = malloc(sizeof(Client));
         FD_SET(sock,&fdactive);
         new->sock = sock;
         new->context.tree = 0;
         new->message_id = 0;
         new->event = 0;
+        new->use_compression = ((m_user->h.status & SUPPORTS_COMPRESSION) == SUPPORTS_COMPRESSION);
         for (i=0;i<6;i++)
 	      new->tdicontext[i] = NULL;
         for (i=0;i<MAX_ARGS;i++)
@@ -595,10 +597,10 @@ static void AddClient(int sock,struct sockaddr_in *sin)
           c->next = new;
         else
           ClientList = new;
-	  }
+       }
 	  pid = getpid();
-	}
-	else
+    }
+    else
       pid = SpawnWorker(sock);
     if (hp)
       printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr,sock, pid, user_p, hp->h_name, inet_ntoa(sin->sin_addr));
@@ -865,6 +867,7 @@ static void ClientEventAst(MdsEventList *e, int len, char *data)
       for(i = len; i < 12; i++)
         info->data[i] = 0;
       info->eventid = e->jeventid;
+      SetCompression(c->use_compression);
       SendMdsMsg(c->sock, m, 0);
       free(m);
     }
@@ -878,6 +881,7 @@ static void ClientEventAst(MdsEventList *e, int len, char *data)
       for(i = len; i < 12; i++)
         e->info->data[i] = 0;
       memcpy(m->bytes,e->info,e->info_len);
+      SetCompression(c->use_compression);
       SendMdsMsg(c->sock, m, MSG_OOB);
       free(m);
     }
@@ -1136,6 +1140,7 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
     m->h.dtype = DTYPE_F;
   else if (m->h.dtype == DTYPE_FSC)
     m->h.dtype = DTYPE_FC;
+  SetCompression(c->use_compression);
   SendMdsMsg(c->sock, m, 0);
   free(m);
 }
