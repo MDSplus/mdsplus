@@ -48,7 +48,6 @@ hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
        FOR_LDFLAGS="-v -L/usr/lib/pa1.1 -lcl -lf";
        LIBPATH="SHLIB_PATH";
        IDL_BIN_SUF="hp";
-       MAKESHARED="\$(LD) -o \$@ $LINKSHARED \$(OBJECTS) \$(LIBS)";
        SHARETYPE=".sl";;
 mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        FFLAGS="$FFLAGS -D_BSD_SIGNALS -KPIC";
@@ -59,7 +58,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LINKSHARED="-shared -rpath \$(exec_prefix)/lib";
        FOR_LDFLAGS="";
        LIBPATH="LD_LIBRARY_PATH";
-       MAKESHARED="\$(LD) -o \$@ $LINKSHARED \$(OBJECTS) \$(LIBS)";
        SHARETYPE=".so";;
 sparc-sun-solaris2*)  
        if test $CC = gcc; then
@@ -81,7 +79,6 @@ sparc-sun-solaris2*)
        FFLAGS="$FFLAGS -PIC";
        IDL_BIN_SUF="solaris2.sparc"
        LIBPATH="LD_LIBRARY_PATH";
-       MAKESHARED="\$(LD) -o \$@ $LINKSHARED \$(OBJECTS) \$(LIBS)";
        SHARETYPE=".so";;
 alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FFLAGS="$FFLAGS -pthread";
@@ -93,7 +90,6 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LINKSHARED="-shared -rpath \\\$\$LD_LIBRARY_PATH:\$(exec_prefix)/lib";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="-lfor";
-       MAKESHARED="\$(LD) -o \$@ $LINKSHARED \$(OBJECTS) \$(LIBS)";
        SHARETYPE=".so";;
 *linux*) CFLAGS="$CFLAGS -fpic";
        FFLAGS="$FFLAGS -fpic";
@@ -104,7 +100,6 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LINKSHARED="-shared ";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
-       MAKESHARED="\$(LD) -o \$@ $LINKSHARED \$(OBJECTS) \$(LIBS)";
        SHARETYPE=".so";;
 *aix*) CFLAGS="$CFLAGS";
        FFLAGS="$FFLAGS";
@@ -115,13 +110,11 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LIBPATH="LIBPATH";
        MAKESHLIBDIR="\$(top_srcdir)/shlib/";
        EXPORTS_FILE="\$(EXPORTS)";
-       MAKESHARED="\$(LD) -o shared_library.o $LINKSHARED \$(OBJECTS) \$(LIBS); \$(AR) qv \$@ shared_library.o";
        SHARETYPE=".a";;
 *windows*)     CFLAGS="$CFLAGS";
        LDSHARE="";
        LDARC="";
        LINKSHARED="";
-       MAKESHARED="";
        SHARETYPE="";;
 *)     CFLAGS="$CFLAGS";
        FFLAGS="$FFLAGS";
@@ -328,7 +321,6 @@ AC_SUBST(MAKEBINDIR)
 AC_SUBST(MAKELIBDIR)
 AC_SUBST(MAKESHLIBDIR)
 AC_SUBST(MAKESHLIBDIR_RULE)
-AC_SUBST(MAKESHARED)
 AC_SUBST(MAKEUIDDIR)
 AC_SUBST(uiddir)
 AC_SUBST(MAKEETCDIR)
