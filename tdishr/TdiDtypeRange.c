@@ -130,7 +130,12 @@ struct TdiCatStruct		cats[4];
 	if (status & 1) status = TdiSubtract(&dat[1], dat[0].pointer, &nelem MDS_END_ARG);
 	if (new[2] && status & 1) status = TdiDivide(&nelem, dat[2].pointer, &nelem MDS_END_ARG);
 	if (status & 1) status = TdiDim(&nelem, &minus_one, &nelem MDS_END_ARG);
-	if (status & 1 && nelem.pointer->dtype != DTYPE_L) status = TdiLong(&nelem, &nelem MDS_END_ARG);
+        if (status & 1 && nelem.pointer->dtype != DTYPE_L)
+        {
+          status = TdiNint(&nelem, &nelem MDS_END_ARG);
+          if (status & 1 && nelem.pointer->dtype != DTYPE_L)
+            status = TdiLong(&nelem, &nelem MDS_END_ARG);
+        }
 	if (status & 1) N_ELEMENTS(nelem.pointer, nseg);
 	if (status & 1) for (j = nseg, pl = (int *)nelem.pointer->pointer, tot = 0; --j >= 0;) tot += *pl++;
 

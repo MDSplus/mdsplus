@@ -128,7 +128,29 @@ struct TdiCatStruct		cats[2];
 				status = TdiCull(psig, &ddim, dim+1 < narg ? list[dim+1] : 0, &xx[dim] MDS_END_ARG);
 				if (status & 1) status = TdiXtoI(pdim, xx[dim].pointer, &ii[dim] MDS_END_ARG);
 				if (status & 1) status = TdiItoX(pdim, ii[dim].pointer, &xx[dim] MDS_END_ARG);
-				TdiSELF_PTR = keeps;
+	                        if (status & 1)
+                                {
+                                  EMPTYXD(xd);
+
+				  /*
+                                  int tmp_status = TdiMinVal(pdim, &xd MDS_END_ARG);
+                                  if (tmp_status & 1)
+                                  {
+                                    tmp_status = TdiXtoI(pdim,&xd,&xd MDS_END_ARG);
+                                    if (tmp_status & 1)
+                                      status = TdiSubtract(&ii[dim],&xd,&ii[dim] MDS_END_ARG);
+                                  }
+				  */
+                                  int tmp_status = TdiWindowOf(pdim, &xd MDS_END_ARG);
+                                  if (tmp_status & 1)
+                                  {
+                                    struct descriptor_window *pwin = (struct descriptor_window *)xd.pointer;
+                                    if (pwin && pwin->startidx)
+                                      status = TdiSubtract(&ii[dim],pwin->startidx,&ii[dim] MDS_END_ARG);
+                                  }
+                                  MdsFree1Dx(&xd, NULL);
+                                }
+			TdiSELF_PTR = keeps;
 				if (status & 1 && bounded) pin += pdat->m[dim*2+dimct] * stride[dim];
 				highdim = dim + 1;
 			}
@@ -277,7 +299,7 @@ int				*pindex=0;
 	case CLASS_A :
 		if (pa->aflags.bounds) {
 			abase = pa->a0;
-			left = (abase - pa->pointer) / len;
+			left = (pa->pointer - abase) / len;
 		}
 		break;
 	}
