@@ -196,7 +196,12 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
   if OK so far then
   fill in the rab and read the record
 ******************************************/
-
+  if ((info->edit != 0) && info->edit->nci == 0 && ((info->nci_file == 0) || (info->nci_file->put == 0)))
+  {
+    status = OpenNciW(info);
+    if (!(status & 1))
+      return status;
+  }
   if ((info->edit == 0) || (node_num < info->edit->first_in_mem))
   {
 #ifdef __VMS
@@ -395,6 +400,9 @@ static int OpenNciW(TREE_INFO *info)
 	if (!(status & 1))
 	  return status;
       }
+#else
+    fseek(info->nci_file->put,0,SEEK_END);
+    info->edit->first_in_mem = ftell(info->nci_file->put)/sizeof(NCI);
 #endif /* __VMS */
     }
   /**********************************************

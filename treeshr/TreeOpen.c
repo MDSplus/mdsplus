@@ -259,6 +259,8 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 							{
 							  close(local_info->channel);
 							  munmap(local_info->section_addr[0],local_info->alq * 512);
+		                                          mmap(local_info->section_addr[0],local_info->alq * 512,PROT_READ | PROT_WRITE, 
+                                                                        MAP_ANONYMOUS | MAP_PRIVATE | MAP_FIXED, -1, 0);
 							}
 #endif
 							free(local_info->vm_addr);

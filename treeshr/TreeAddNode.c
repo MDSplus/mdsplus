@@ -88,9 +88,10 @@ int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
 	if (status & 1)
 	{
 	  int       i;
-          strncpy(new_ptr->name,name,sizeof(new_ptr->name));
-          for (i=strlen(name);i<sizeof(new_ptr->name);i++)
+          strncpy(new_ptr->name,node_name,sizeof(new_ptr->name));
+          for (i=strlen(node_name);i<sizeof(new_ptr->name);i++)
 	    new_ptr->name[i]=' ';
+          free(node_name);
 	  new_ptr->child = 0;
 	  new_ptr->conglomerate_elt = *conglom_index;
 	  if (node_type == BROTHER_TYPE_NOWILD)
