@@ -97,6 +97,7 @@ public fun CHVPS__init(as_is _nid, optional _method)
 	}
 
 	_target = _crate_num << 8;
+	_chan_set_error = 0;
 
 	for(_i = 0; _i < _K_NUM_SET; _i++)
 	{
@@ -336,8 +337,15 @@ public fun CHVPS__init(as_is _nid, optional _method)
 			else
 			{
 				DevLogErr(_nid, "CHVPS set"//_i//" configuration parameter "//_param//" error");
+				_chan_set_error = 1;
 			}		
 		}
+	}
+	
+	if(_chan_set_error == 1)
+	{
+		DevLogErr(_nid, "CHVPS channel set configuration error");
+		abort();
 	}
 
 

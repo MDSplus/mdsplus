@@ -128,7 +128,7 @@ public fun EM_EQU_TEST__init(as_is _nid, optional _method)
 
 		for( _i = 0 ; _i < 16; _i++)
 		{
-			_word = _card + ( _i << 7 );
+			_word = _card + ( (15 - _i) << 7 );
 			DevCamChk(_name, CamPiow( _name, _a, _f, _word, 24),1,1);
 			wait(0.02);
 		}

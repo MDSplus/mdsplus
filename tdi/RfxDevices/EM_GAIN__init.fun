@@ -183,7 +183,7 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 	
    
 	for(_i = 0; _i < _K_NUM_CHANNEL; _i++)
-   {
+   	{
  		_head_channel = _N_CHANNEL_1 + (_i *  _K_NODES_PER_CHANNEL);
 	
 		if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
@@ -202,7 +202,11 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 			
 			if( ! _noerror && (_gain >= 0 && _gain <= 127 ) )
 			{
-				_word = WordSetGain(_write_value, _i, _INTEGRAL, _gain);
+			/*
+			* Per come sono stati realizzati i cablaggi il canale 1 corrisponde
+			* al canale 16
+			*/
+				_word = WordSetGain(_write_value, ( 15 - _i), _INTEGRAL, _gain);
 				
 	write(*, "Integral Card   = ", WordGetCard(_word), WordGetChan(_word), WordGetGain(_word));
 				
@@ -227,7 +231,13 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 	
 			if( ! _noerror && ( _gain >= 0 && _gain <= 127 ) )
 			{
-				_word = WordSetGain(_write_value, _i, _LINEAR, _gain);
+			
+			/*
+			* Per come sono stati realizzati i cablaggi il canale 1 corrisponde
+			* al canale 16
+			*/
+
+				_word = WordSetGain(_write_value, (15 - _i), _LINEAR, _gain);
 
 	write(*, "Linear Card   = ", WordGetCard(_word), WordGetChan(_word), WordGetGain(_word));
 	
