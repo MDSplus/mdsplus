@@ -1,6 +1,7 @@
 index
 LibCallg
 LibCreateVmZone
+LibDeleteVmZone
 LibEstablish
 LibEmul
 LibFindFile
