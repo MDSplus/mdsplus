@@ -160,6 +160,12 @@ public class RFXControlSetup extends DeviceSetup {
   GridLayout gridLayout14 = new GridLayout();
   DeviceField deviceField111111111 = new DeviceField();
   DeviceField deviceField111117 = new DeviceField();
+  JPanel jPanel1 = new JPanel();
+  GridLayout gridLayout3 = new GridLayout();
+  DeviceField deviceField12 = new DeviceField();
+  DeviceField deviceField13 = new DeviceField();
+  DeviceField deviceField14 = new DeviceField();
+  DeviceField deviceField15 = new DeviceField();
   public RFXControlSetup() {
     try {
       jbInit();
@@ -722,6 +728,25 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField111117.setNumCols(40);
     deviceField111117.setLabelString("X14: ");
     deviceField111117.setOffsetNid(523);
+    jPanel1.setLayout(gridLayout3);
+    gridLayout3.setColumns(1);
+    gridLayout3.setRows(4);
+    deviceField12.setOffsetNid(649);
+    deviceField12.setLabelString("K1: ");
+    deviceField12.setNumCols(30);
+    deviceField12.setIdentifier("");
+    deviceField15.setOffsetNid(651);
+    deviceField15.setLabelString("K2: ");
+    deviceField15.setNumCols(30);
+    deviceField15.setIdentifier("");
+    deviceField14.setOffsetNid(653);
+    deviceField14.setLabelString("K3: ");
+    deviceField14.setNumCols(30);
+    deviceField14.setIdentifier("");
+    deviceField13.setOffsetNid(655);
+    deviceField13.setLabelString("K4: ");
+    deviceField13.setNumCols(30);
+    deviceField13.setIdentifier("");
     this.getContentPane().add(deviceField1, null);
     this.getContentPane().add(deviceField3, null);
     this.getContentPane().add(deviceField5, null);
@@ -740,6 +765,11 @@ public class RFXControlSetup extends DeviceSetup {
     this.getContentPane().add(deviceChoice2, null);
     this.getContentPane().add(deviceChoice3, null);
     jTabbedPane1.add(jScrollPane1,   "Waveform Generation");
+    jTabbedPane1.add(jPanel1,  "Simulink Parameters");
+    jPanel1.add(deviceField12, null);
+    jPanel1.add(deviceField15, null);
+    jPanel1.add(deviceField14, null);
+    jPanel1.add(deviceField13, null);
     jScrollPane1.getViewport().add(jPanel3, null);
     jPanel1118.add(deviceField11111119, null);
     jPanel1118.add(deviceField11111118, null);
