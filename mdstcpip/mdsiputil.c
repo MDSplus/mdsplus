@@ -419,6 +419,7 @@ int *dims, char *bytes)
   memcpy(m->bytes,bytes,nbytes);
   status = SendMdsMsg(sock, m, 0);
   if (idx == (nargs -1)) message_id++;
+  if (message_id == 0) message_id = 1;
   free(m);
   return status;
 }
