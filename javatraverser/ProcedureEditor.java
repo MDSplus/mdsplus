@@ -7,7 +7,7 @@ public class ProcedureEditor extends JPanel implements Editor
     ProcedureData procedure;
     LabeledExprEditor procedure_edit, language_edit, timeout_edit;
     ArgEditor arg_edit;
-    
+
     public ProcedureEditor() {this(null);}
     public ProcedureEditor(ProcedureData procedure)
     {
@@ -30,11 +30,11 @@ public class ProcedureEditor extends JPanel implements Editor
 	add(jp, "North");
    	arg_edit = new ArgEditor(this.procedure.getArguments());
 	add(arg_edit, "Center");
-	timeout_edit = new LabeledExprEditor("Timeout: ", new ExprEditor( 
+	timeout_edit = new LabeledExprEditor("Timeout: ", new ExprEditor(
 	    this.procedure.getTimeout(), false));
 	add(timeout_edit, "South");
     }
-    
+
     public void reset()
     {
 	procedure_edit.reset();
@@ -42,13 +42,13 @@ public class ProcedureEditor extends JPanel implements Editor
 	arg_edit.reset();
 	timeout_edit.reset();
     }
-    
+
     public Data getData()
     {
-	return new ProcedureData(timeout_edit.getData(), procedure_edit.getData(),
-	    language_edit.getData(), arg_edit.getData());
+	return new ProcedureData(timeout_edit.getData(), language_edit.getData(),
+                             procedure_edit.getData(),arg_edit.getData());
     }
-    
+
     public void setData(Data data)
     {
 	this.procedure = (ProcedureData)data;
