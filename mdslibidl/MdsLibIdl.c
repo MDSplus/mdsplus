@@ -154,11 +154,11 @@ static void *MakeDescr(int idx, int *argsize, void *bytes)
           arrayArgs[idx].pointer = 0;
       }
       break;
-    case 9: arrayArgs[idx].length = 16; scalarArgs[idx].dtype = DTYPE_FTC; arrayArgs[idx].arsize = argsize[argsize[0]+2] * 16; break;
-    case 12: arrayArgs[idx].length = 2; scalarArgs[idx].dtype = DTYPE_WU;  arrayArgs[idx].arsize = argsize[argsize[0]+2] * 2; break;
-    case 13: arrayArgs[idx].length = 4; scalarArgs[idx].dtype = DTYPE_LU;  arrayArgs[idx].arsize = argsize[argsize[0]+2] * 4; break;
-    case 14: arrayArgs[idx].length = 8; scalarArgs[idx].dtype = DTYPE_Q;   arrayArgs[idx].arsize = argsize[argsize[0]+2] * 8; break;
-    case 15: arrayArgs[idx].length = 8; scalarArgs[idx].dtype = DTYPE_QU;  arrayArgs[idx].arsize = argsize[argsize[0]+2] * 8; break;
+    case 9: arrayArgs[idx].length = 16; arrayArgs[idx].dtype = DTYPE_FTC; arrayArgs[idx].arsize = argsize[argsize[0]+2] * 16; break;
+    case 12: arrayArgs[idx].length = 2; arrayArgs[idx].dtype = DTYPE_WU;  arrayArgs[idx].arsize = argsize[argsize[0]+2] * 2; break;
+    case 13: arrayArgs[idx].length = 4; arrayArgs[idx].dtype = DTYPE_LU;  arrayArgs[idx].arsize = argsize[argsize[0]+2] * 4; break;
+    case 14: arrayArgs[idx].length = 8; arrayArgs[idx].dtype = DTYPE_Q;   arrayArgs[idx].arsize = argsize[argsize[0]+2] * 8; break;
+    case 15: arrayArgs[idx].length = 8; arrayArgs[idx].dtype = DTYPE_QU;  arrayArgs[idx].arsize = argsize[argsize[0]+2] * 8; break;
     default: return 0;
     }
     return (void *)&arrayArgs[idx];
