@@ -35,5 +35,5 @@ int SERVER$START_SERVER( struct dsc$descriptor *server )
 
 int ServerStartServer( char *server )
 {
-  return ServerSendMessage( 0, 0, server, noop, 0, 0, 0, 0, 0, 0, 0);
+  return ServerSendMessage(0, server, noop, 0, 0, 0, 0, 0, 0, 0);
 }

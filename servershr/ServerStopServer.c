@@ -35,5 +35,5 @@ int SERVER$STOP_SERVER( struct dsc$descriptor *server )
 
 int ServerStopServer( char *server )
 {
-  return ServerSendMessage( 0, 1, server, stop, 0, 0, 0, 0, 0, 0, 0);
+  return ServerSendMessage(1, server, stop, 0, 0, 0, 0, 0, 0, 0);
 }

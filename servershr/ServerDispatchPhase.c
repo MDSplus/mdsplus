@@ -108,7 +108,7 @@ void SendMonitor(MonitorMode mode, int idx)
     msg.mode = mode;
     msg.status = actions[idx].status;
     memcpy(msg.server,actions[idx].server,sizeof(msg.server));
-    MonitorOn = ServerSendMessage(0, 0, Monitor, monitor, sizeof(msg), (char *)&msg, 0, 0, 0, 0, 0) & 1;
+    MonitorOn = ServerSendMessage(0, Monitor, monitor, sizeof(msg), (char *)&msg, 0, 0, 0, 0, 0) & 1;
   }
 }
 

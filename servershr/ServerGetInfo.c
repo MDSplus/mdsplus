@@ -63,7 +63,7 @@ char *ServerGetInfo( int efn, int full, char *server)
   ShowMsg msg;
   msg.full = full;
   ServerSetLinkDownHandler(LinkDown);
-  status = ServerSendMessage(efn, 1, server, show, sizeof(msg), (char *)&msg, 0, ReturnText, (void *)&response, 0, 0);
+  status = ServerSendMessage(1, server, show, sizeof(msg), (char *)&msg, 0, ReturnText, (void *)&response, 0, 0);
 /*
   if (status & 1)
     sys$waitfr(efn);

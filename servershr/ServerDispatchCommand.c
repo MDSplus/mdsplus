@@ -50,7 +50,7 @@ int ServerDispatchCommand(int efn, char *server, char *cli, char *command,
   msg->cli[tablen] = 0;
   strcpy(msg->command,command);
   ServerSetLinkDownHandler(link_down);
-  status = ServerSendMessage(efn, 0, server, mdsdcl_command, size, (char *)msg, retstatus, ast, astprm, before_ast, netid);
+  status = ServerSendMessage(0, server, mdsdcl_command, size, (char *)msg, retstatus, ast, astprm, before_ast, netid);
   free(msg);
   return status;
 }

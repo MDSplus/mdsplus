@@ -117,6 +117,21 @@ Package=<4>
 
 ###############################################################################
 
+Project: "ipcsdll"=.\ipcs\lib\ipcsdll.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name ipcs
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "istart"=.\ipcs\grandpa\istart.dsp - Package Owner=<4>
 
 Package=<5>
@@ -167,6 +182,9 @@ Package=<5>
 
 Package=<4>
 {{{
+    Begin Project Dependency
+    Project_Dep_Name jScope
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -375,6 +393,36 @@ Package=<4>
 
 ###############################################################################
 
+Project: "mdsserver"=.\mdsserver\mdsserver.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name servershr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsdclshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ipcsdll
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "mdsshr"=.\mdsshr\mdsshr.dsp - Package Owner=<4>
 
 Package=<5>
@@ -383,6 +431,39 @@ Package=<5>
 
 Package=<4>
 {{{
+    Begin Project Dependency
+    Project_Dep_Name ipcsdll
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "netmailer"=.\ipcs\netmailer\netmailer.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name ipcs
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "nm_status"=.\ipcs\netmailer\nm_status.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name ipcs
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -432,6 +513,30 @@ Package=<4>
 
 ###############################################################################
 
+Project: "servershr"=.\servershr\servershr.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ipcsdll
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "tcl_commands"=.\tcl\tcl_commands.dsp - Package Owner=<4>
 
 Package=<5>
@@ -454,6 +559,9 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name mdsdclshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name servershr
     End Project Dependency
 }}}
 
@@ -487,27 +595,6 @@ Package=<4>
 {{{
     Begin Project Dependency
     Project_Dep_Name tdishr
-    End Project Dependency
-}}}
-
-###############################################################################
-
-Project: "test"=.\test\test.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name mdsshr
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name tdishr
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name treeshr
     End Project Dependency
 }}}
 

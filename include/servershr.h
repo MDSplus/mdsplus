@@ -8,6 +8,7 @@
 #define ServerNOREPLY  0xfe1802b
 #define ServerABORT    0xfe18032
 #define ServerPATH_DOWN 0xfe18042
+#define ServerBEFORE    0xfe18001
 
 #ifdef CREATE_STS_TEXT
 #include        "facility_list.h"
@@ -20,6 +21,7 @@ static struct stsText  servershr_stsText[] = {
    ,STS_TEXT(ServerNOREPLY,"operation in progress, do not reply to request yet")
    ,STS_TEXT(ServerABORT,"operation was aborted")
    ,STS_TEXT(ServerPATH_DOWN,"connection to server broken or remote server is down")
+   ,STS_TEXT(ServerBEFORE,"server is about to perform action")
    };
 
 #endif
@@ -35,7 +37,7 @@ extern int ServerDispatchAction(int efn, char *server, char *tree, int shot, int
 extern int ServerDispatchClose(void *vtable);
 extern int ServerDispatchCommand(int efn, char *server, char *cli, char *command,
                         void (*ast)(), void *astprm, int *retstatus, int *netid, void (*link_down)(), void (*before_ast)());
-extern int ServerSendMessage( int efn, int sendast, char *server, MsgType type, int length, char *msg, int *retstatus, 
+extern int ServerSendMessage( int sendast, char *server, MsgType type, int length, char *msg, int *retstatus, 
                          void (*ast)(), void *astparam, void (*before_ast)(), int *netid_return);
 extern int ServerSendReply(void *lid,int length,char *reply);
 extern int ServerSetLinkDownHandler(void (*handler)());

@@ -38,5 +38,5 @@ int ServerMonitorCheckin(char *server, void (*ast)(), void *astparam, void (*lin
   MonitorMsg msg;
   msg.mode = display_checkin;
   ServerSetLinkDownHandler(link_down);
-  return ServerSendMessage(0, 0, server, monitor, sizeof(msg), (char *)&msg, 0, ast, astparam, 0, 0);
+  return ServerSendMessage(0, server, monitor, sizeof(msg), (char *)&msg, 0, ast, astparam, 0, 0);
 }

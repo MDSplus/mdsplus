@@ -71,7 +71,7 @@ int ServerSetLinkDownHandler(void (*handler)())
 
 
 
-int ServerSendMessage( int efn, int sendast, char *server, MsgType type, int length, char *msg, int *retstatus, 
+int ServerSendMessage( int sendast, char *server, MsgType type, int length, char *msg, int *retstatus, 
                          void (*ast)(), void *astparam, void (*before_ast)(), int *netid_return)
 {
     IPCS_PDATA_PTR  pdata_ptr,  ipcs_pdata_ptr();
@@ -81,12 +81,8 @@ int ServerSendMessage( int efn, int sendast, char *server, MsgType type, int len
     static short class[8] = {
         mc_mdsserver,1,2,3,4,5,6,7      };
     m->opcode = type;
-    m->retstatus = retstatus;
-    m->ast = ast;
-    m->astparam = astparam;
-    m->efn = efn;
-    m->before_ast = before_ast;
     m->status = 0;
+	m->now = sendast;
     if (length)
       memcpy(m->data,msg,length);
     pdata_ptr = ipcs_pdata_ptr();

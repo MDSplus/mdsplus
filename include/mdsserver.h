@@ -58,20 +58,15 @@ typedef struct { char treename[12];
 typedef struct { char full;} ShowMsg;
 /* stop message has no data */
 
-typedef struct { MsgType  opcode;
-                 int      incarnation;
-		 int      transaction_id;
-                 int     *retstatus;
-                 void     (*ast)();
-                 void     *astparam;
-                 int      efn;
-                 void     (*before_ast)();
-                 int      status;
-                 char     data[1];
+typedef struct { char  opcode;
+                 char  now;
+				 char  fill1;
+				 char  fill2;
+                 int   status;
+                 char  data[1];
                } Msg;
 
 #define MsgOffset(field) ((int)&((Msg *)0)->field)
-#define MaxMsgSize sizeof(Msg) + 511
 
 typedef struct { char server[32];
                  int  nid;

@@ -44,5 +44,5 @@ int ServerSetLogging( char *server, char *logging_mode )
   LoggingMsg msg;
   msg.type = (LoggingType)(*logging_mode);
   ServerSetLinkDownHandler(0);
-  return ServerSendMessage( 0, 0, server, logging, sizeof(msg), (char *)&msg, 0, 0, 0, 0, 0);
+  return ServerSendMessage(0, server, logging, sizeof(msg), (char *)&msg, 0, 0, 0, 0, 0);
 }
