@@ -413,7 +413,7 @@ unsigned long WINAPI MdsDispatchEvent(SOCKET sock)
     if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo)))
     {
       MdsEventInfo *event = (MdsEventInfo *)m->bytes;
-      (*event->astadr)(event->astprm, event->eventid, event->data);
+      (*event->astadr)(event->astprm, 12, event->data);
     }
     free(m);
 #ifdef MULTINET
