@@ -37,6 +37,9 @@ STATIC_CONSTANT unsigned int masks[33] = {0,
 0x1ffffff, 0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff, 0xffffffff,};
 #include  <string.h>
 #include <mdsdescrip.h>
+
+STATIC_ROUTINE int dummy(int in){return in;}
+
 STATIC_ROUTINE int SwapBytes(char *in_c)
 {
   int out;
@@ -98,7 +101,7 @@ void      MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[]
 	hold |= *pitems << off;
 #ifdef WORDS_BIGENDIAN
 #ifdef __APPLE__
-        *ppack = hold;
+        *ppack = dummy(hold);
 #endif
         for (i=0;i<4;i++)
           ((char *)ppack)[i] = ((char *)&hold)[3-i];
@@ -120,7 +123,7 @@ void      MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[]
       {
 #ifdef WORDS_BIGENDIAN
 #ifdef __APPLE__
-        *ppack = hold;
+        *ppack = dummy(hold);
 #endif
         for (i=0;i<4;i++)
           ((char *)ppack)[i] = ((char *)&hold)[3-i];
