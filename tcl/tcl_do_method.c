@@ -66,6 +66,8 @@ int TclDoMethod()
            }
         if (do_it)
            {
+            int dometh_stat;
+            DESCRIPTOR_LONG(dometh_stat_d,0);
             cli_get_value("METHOD",&method);
             argc = 0;
             if (cli_present("ARGUMENT") & 1)
@@ -88,10 +90,13 @@ int TclDoMethod()
 #ifdef vms
                 arglist[0] = (void *)(argc + 2);
 #else
-                arglist[argc+3] = MdsEND_ARG;
-                arglist[0] = (void *)(argc + 3);
+                dometh_stat_d.dscA_pointer = (char *)&dometh_stat;
+                arglist[argc+3] = &dometh_stat_d;
+                arglist[argc+4] = MdsEND_ARG;
+                arglist[0] = (void *)(argc + 4);
 #endif
                 sts = LibCallg(arglist,TreeDoMethod);
+                if (sts & 1) sts = dometh_stat;
                }
             str_free1_dx(&arg);
             str_free1_dx(&method);
