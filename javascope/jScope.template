@@ -7,4 +7,4 @@ LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MDSPLUS_DIR/lib \
 SHLIB_PATH=$SHLIB_PATH:$MDSPLUS_DIR/lib \
 DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$MDSPLUS_DIR/lib \
 CLASSPATH=$HOME:$MDSPLUS_DIR/java/classes/jScope.jar:$MDSPLUS_DIR/java/classes \
-java jScope $1 $2 $3 $4 $5 $6 $7
+java -Xmx128M jScope $1 $2 $3 $4 $5 $6 $7
