@@ -764,7 +764,7 @@ static void trim_excess_nodes(TREE_INFO *info_ptr)
       {
 		  if (node_ptr->parent)
 		  {
-			  *free_ptr += node_ptr->parent;
+			  *free_ptr += swapint((char *)&node_ptr->parent);
 			  (parent_of(node_ptr))->child = 0;
 		  }
 		  else
