@@ -5,9 +5,9 @@ prefix=@prefix@
 top_srcdir=@top_srcdir@
 exec_prefix=@exec_prefix@
 RM=$(top_srcdir)/devscripts/rm_if
-CFLAGS=@CFLAGS@ -I.
+CFLAGS=@CFLAGS@ @HDF5_INCS@ -I.
 LDFLAGS=@LDFLAGS@
-LIBS=-L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr -lhdf5 @LIBS@
+LIBS=-L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr @HDF5_LIBS@ -lhdf5 @LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
