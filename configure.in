@@ -15,6 +15,7 @@ esac
 dnl Check out the compiler
 AC_PROG_CC
 
+LD=ld
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib -I\$(top_srcdir)/include +DA1.1 +DS1.1 +z";
        LDSHARE="-Wl,-a shared";
@@ -28,7 +29,6 @@ mips*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -cckr -signed -D_BSD_SIGNALS -KP
        SHARETYPE=".so";;
 sparc-sun-solaris2*)  LINKSHARED="-G -B symbolic -R $(exec_prefix)/lib";
        if test $CC = gcc; then
-         echo using gcc for ld;
 	 LD=gcc;
          LINKSHARED="-Wl,-G -Wl,-B,symbolic -Wl,-R,$(exec_prefix)/lib";
        fi;
@@ -188,6 +188,7 @@ AC_SUBST(X_EXTRA_LIBS)
 AC_SUBST(X_PRE_LIBS)
 AC_SUBST(UIL)
 AC_SUBST(XM_LIBS)
+AC_SUBST(LD)
 AC_LINK_FILES(ipcs/include/ipcs, include/ipcs)
 AC_LINK_FILES(include/config.h, ipcs/include/ipcs/config.h)
 AC_OUTPUT(Makefile ipcs/Makefile ipcs/lib/Makefile ipcs/grandpa/Makefile ipcs/netmailer/Makefile ipcs/applications/Makefile ipcs/events/Makefile \

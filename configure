@@ -862,6 +862,7 @@ else
 fi
 
 
+LD=ld
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib -I\$(top_srcdir)/include +DA1.1 +DS1.1 +z";
        LDSHARE="-Wl,-a shared";
@@ -875,7 +876,6 @@ mips*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -cckr -signed -D_BSD_SIGNALS -KP
        SHARETYPE=".so";;
 sparc-sun-solaris2*)  LINKSHARED="-G -B symbolic -R $(exec_prefix)/lib";
        if test $CC = gcc; then
-         echo using gcc for ld;
 	 LD=gcc;
          LINKSHARED="-Wl,-G -Wl,-B,symbolic -Wl,-R,$(exec_prefix)/lib";
        fi;
@@ -3359,6 +3359,7 @@ EOF
 
 
 
+
 trap '' 1 2 15
 cat > confcache <<\EOF
 # This file is a shell script that caches the results of configure
@@ -3527,6 +3528,7 @@ s%@XLIB@%$XLIB%g
 s%@NEED_SEMUN@%$NEED_SEMUN%g
 s%@TARGETSYS@%$TARGETSYS%g
 s%@XM_LIBS@%$XM_LIBS%g
+s%@LD@%$LD%g
 
 CEOF
 EOF
