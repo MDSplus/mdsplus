@@ -152,7 +152,7 @@ static int CheckClient(char *host_c, char *user_c)
 #if defined(_WIN32)
   f = fopen("C:\\mdsip.hosts","r");
 #else
-  f = fopen("mdsip.hosts","r");
+  f = fopen("/etc/mdsip.hosts","r");
 #endif
   if (f)
   {
