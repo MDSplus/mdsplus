@@ -128,6 +128,7 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,int 
   char *resnam = 0;
   char *logname;
   char *colon = 0;
+  int slen;
   for (i=0;i<len && i < 12;i++)
      tree_lower[i] = __tolower(tree[i]);
   tree_lower[i]=0;
@@ -136,44 +137,49 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,int 
   logname = TranslateLogical(pathname);
   if (logname)
   {
-    if ((colon = strchr(logname, ':')) != 0 && colon[1] == ':')
+    char *cptr;
+    for (cptr = logname,slen = strlen(logname); cptr < (logname + slen - 1); cptr++)
     {
-      int socket;
-      *colon = '\0';
-      socket = ConnectToMds(logname);
-      if (socket != -1)
+      if (cptr[0] == ':' && cptr[1] == ':')
       {
-        struct descrip ans = empty_ans;
-        char *exp = malloc(strlen(subtree_list ? subtree_list : tree)+100);
-        sprintf(exp,"TreeOpen('%s',%d)",subtree_list ? subtree_list : tree,dblist->shotid);
-        status =  MdsValue0(socket, exp, &ans);
-        if (status & 1)
-	{
-          TREE_INFO *info;
-          /***********************************************
-           Get virtual memory for the tree
-           information structure and zero the structure.
-          ***********************************************/
-          for (info = dblist->tree_info; info && strcmp(tree,info->treenam); info = info->next_info);
-          if (!info)
+        int socket;
+        *cptr = '\0';
+        socket = ConnectToMds(logname);
+        if (socket != -1)
+        {
+          struct descrip ans = empty_ans;
+          char *exp = malloc(strlen(subtree_list ? subtree_list : tree)+100);
+          sprintf(exp,"TreeOpen('%s',%d)",subtree_list ? subtree_list : tree,dblist->shotid);
+          status =  MdsValue0(socket, exp, &ans);
+          if (status & 1)
 	  {
-            info = malloc(sizeof(TREE_INFO));
-            if (info)
-            {
-              static TREE_HEADER header;
-  	      memset(info,0,sizeof(*info));
-              info->blockid = TreeBLOCKID;
-	      info->flush = (dblist->shotid == -1);
-              info->header = &header;
-	      info->treenam = strcpy(malloc(strlen(tree)+1),tree);
-	      TreeCallHook(OpenTree, info);
-              info->channel = socket;
-	      dblist->tree_info = info;
-              dblist->remote = 1;
-            }
-	  }
+            TREE_INFO *info;
+            /***********************************************
+             Get virtual memory for the tree
+             information structure and zero the structure.
+            ***********************************************/
+            for (info = dblist->tree_info; info && strcmp(tree,info->treenam); info = info->next_info);
+            if (!info)
+	    {
+              info = malloc(sizeof(TREE_INFO));
+              if (info)
+              {
+                static TREE_HEADER header;
+  	        memset(info,0,sizeof(*info));
+                info->blockid = TreeBLOCKID;
+	        info->flush = (dblist->shotid == -1);
+                info->header = &header;
+	        info->treenam = strcpy(malloc(strlen(tree)+1),tree);
+	        TreeCallHook(OpenTree, info);
+                info->channel = socket;
+	        dblist->tree_info = info;
+                dblist->remote = 1;
+              }
+  	    }
+          }
+          if (ans.ptr) free(ans.ptr);
         }
-        if (ans.ptr) free(ans.ptr);
+        break;
       }
     }
     TranslateLogicalFree(logname);
@@ -490,3 +496,98 @@ int PutRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor *dsc, i
   return status;
 }
 
+static int SetNciItmRemote(PINO_DATABASE *dblist, int nid, int code, int value)
+{
+  struct descrip ans = empty_ans;
+  char exp[512];
+  int status;
+  sprintf(exp,"TreeSetNciItm(%d,%d,%d)",nid,code,value);
+  status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+  if (ans.ptr)
+  {
+    status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
+    free(ans.ptr);
+  }
+  return status;
+}
+
+int SetNciRemote(PINO_DATABASE *dblist, int nid, NCI_ITM *nci_itm)
+{
+  int status = 1;
+  NCI_ITM *itm_ptr;
+  for (itm_ptr = nci_itm; itm_ptr->code != NciEND_OF_LIST && status & 1; itm_ptr++)
+  {
+    switch (itm_ptr->code)
+    {
+      case NciSTATUS:
+      case NciCLEAR_FLAGS:
+      case NciSET_FLAGS: 
+        status = SetNciItmRemote(dblist, nid, (int)itm_ptr->code, *(int *)itm_ptr->pointer);
+	break;
+      default:
+	status = TreeILLEGAL_ITEM;
+	break;
+    }
+  }
+  return status;
+}
+
+int TreeFlushOffRemote(PINO_DATABASE *dblist, int nid)
+{
+  struct descrip ans = empty_ans;
+  char exp[512];
+  int status;
+  sprintf(exp,"TreeFlushOff(%d)",nid);
+  status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+  if (ans.ptr)
+  {
+    status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
+    free(ans.ptr);
+  }
+  return status;
+}
+
+int TreeFlushResetRemote(PINO_DATABASE *dblist, int nid)
+{
+  struct descrip ans = empty_ans;
+  char exp[512];
+  int status;
+  sprintf(exp,"TreeFlushReset(%d)",nid);
+  status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+  if (ans.ptr)
+  {
+    status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
+    free(ans.ptr);
+  }
+  return status;
+}
+
+int TreeTurnOnRemote(PINO_DATABASE *dblist, int nid)
+{
+  struct descrip ans = empty_ans;
+  char exp[512];
+  int status;
+  sprintf(exp,"TreeTurnOn(%d)",nid);
+  status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+  if (ans.ptr)
+  {
+    status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
+    free(ans.ptr);
+  }
+  return status;
+}
+
+int TreeTurnOffRemote(PINO_DATABASE *dblist, int nid)
+{
+  struct descrip ans = empty_ans;
+  char exp[512];
+  int status;
+  sprintf(exp,"TreeTurnOff(%d)",nid);
+  status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+  if (ans.ptr)
+  {
+    status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
+    free(ans.ptr);
+  }
+  return status;
+}

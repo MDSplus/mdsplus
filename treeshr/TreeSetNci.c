@@ -79,6 +79,8 @@ int       _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
     return TreeNOTOPEN;
   if (dblist->open_readonly)
       return TreeREADONLY;
+  if (dblist->remote)
+    return SetNciRemote(dbid,nid_in,nci_itm_ptr);
   nid_to_tree_nidx(dblist, nid_ptr, tree_info, node_number);
   if (!tree_info)
     return TreeNNF;
@@ -112,6 +114,15 @@ int       _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
   return status;
 }
 
+int TreeSetNciItm(int nid, int code, int value)
+{
+  NCI_ITM itm[] = {{0,0,0,0},{0,0,0,0}};
+  itm[0].buffer_length = (short)sizeof(int);
+  itm[0].code = (short)code;
+  itm[0].pointer = (void *)&value;
+  return TreeSetNci(nid, itm);
+}
+
 int _TreeFlushOff(void *dbid, int nid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
@@ -120,6 +131,8 @@ int _TreeFlushOff(void *dbid, int nid)
   TREE_INFO *tree_info;
   if (!(IS_OPEN(dblist)))
     return TreeNOTOPEN;
+  if (dblist->remote)
+    return TreeFlushOffRemote(dbid,nid);
   nid_to_tree_nidx(dblist, nid_ptr, tree_info, node_number);
   if (!tree_info)
     return TreeNNF;
@@ -135,6 +148,8 @@ int _TreeFlushReset(void *dbid,  int nid)
   TREE_INFO *tree_info;
   if (!(IS_OPEN(dblist)))
     return TreeNOTOPEN;
+  if (dblist->remote)
+    return TreeFlushResetRemote(dbid,nid);
   nid_to_tree_nidx(dblist, nid_ptr, tree_info, node_number);
   if (!tree_info)
     return TreeNNF;
@@ -455,6 +470,8 @@ int _TreeTurnOn(void *dbid, int nid_in)
   NODE     *node;
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
+  if (dblist->remote)
+    return TreeTurnOnRemote(dbid,nid_in);
   nid_to_tree_nidx(dblist, nid, info, node_num);
   if (!info)
     return TreeNNF;
@@ -530,6 +547,8 @@ int _TreeTurnOff(void *dbid, int nid_in)
   NODE     *node;
   if (!IS_OPEN(dblist))
     return TreeNOT_OPEN;
+  if (dblist->remote)
+    return TreeTurnOffRemote(dbid,nid_in);
   nid_to_tree_nidx(dblist, nid, info, node_num);
   if (!info)
     return TreeNNF;
