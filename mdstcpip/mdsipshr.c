@@ -167,6 +167,7 @@ void main () {}
 extern short ArgLen();
 extern int Lgihpwd();
 extern Message *GetMdsMsg();
+extern Message *GetMdsMsgOOB();
 
 #define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 
@@ -482,7 +483,7 @@ static EventThread *eThreads = NULL;
 unsigned long WINAPI MdsDispatchEvent(SOCKET sock);
 #endif
 
-int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, void **eventid)
+int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 {
 #ifdef _WIN32
   EventThread *et;
@@ -511,7 +512,7 @@ int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, vo
 			      MakeDescrip((struct descrip *)&infoarg,DTYPE_UCHAR,1,&size,&info),
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
   if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) {
-    *eventid = *(void **)ansarg.ptr;
+    *eventid = *(int *)ansarg.ptr;
 #ifdef _WIN32
     et->eventid = *(int *)ansarg.ptr;
     if (et->thread_handle == NULL)
@@ -523,7 +524,7 @@ int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, vo
   return status;
 }
 
-int  MdsEventCan(SOCKET sock, void *eventid)
+int  MdsEventCan(SOCKET sock, int eventid)
 {
 #ifdef _WIN32
   EventThread *et, *prev;
@@ -549,32 +550,6 @@ int  MdsEventCan(SOCKET sock, void *eventid)
 }
 
 #ifndef _WIN32
-void MdsDispatchEvent(SOCKET sock)
-#else
-unsigned long WINAPI MdsDispatchEvent(SOCKET sock)
-#endif
-{
-  int status;
-  Message  *m;
-#ifndef _WIN32
-  if ((m = GetMdsMsg(sock,&status)) != 0)
-#else
-  while ((m = GetMdsMsgOOB(sock,&status)) != 0)
-#endif
-  {
-    if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo)))
-    {
-      MdsEventInfo *event = (MdsEventInfo *)m->bytes;
-      (*event->astadr)(event->astprm, event->eventid, event->data);
-    }
-#ifdef MULTINET
-    sys$qiow(0,sock,IO$_SETMODE | IO$M_ATTNAST,0,0,0,MdsDispatchEvent,sock,0,0,0,0);
-#endif
-  }
-#ifdef _WIN32
-  return 0;
-#endif
-}
 
 #ifndef vxWorks
 
@@ -599,6 +574,7 @@ int  IdlConnectToMds(int lArgc, void * * lpvArgv)
   UnBlockSig(SIGALRM);
   return status;
 }
+
 
 int  IdlDisconnectFromMds(int lArgc, void * * lpvArgv)
 {
@@ -686,3 +662,4 @@ int  IdlSendArg(int lArgc, void * * lpvArgv)
   return status;
 }
 #endif //vxWorks
+#endif 
