@@ -66,6 +66,33 @@ Package=<4>
 
 ###############################################################################
 
+Project: "idlmdsevent"=.\idlmdsevent\idlmdsevent.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsipshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "idlsql"=.\idlsql\idlsql.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "ipcs"=.\ipcs\ipcs.dsp - Package Owner=<4>
 
 Package=<5>
@@ -264,6 +291,21 @@ Package=<4>
 
 ###############################################################################
 
+Project: "mdslibtst"=.\mdslibtst\mdslibtst.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdslib
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "mdsshr"=.\mdsshr\mdsshr.dsp - Package Owner=<4>
 
 Package=<5>
@@ -299,9 +341,6 @@ Package=<5>
 
 Package=<4>
 {{{
-    Begin Project Dependency
-    Project_Dep_Name ipcs
-    End Project Dependency
 }}}
 
 ###############################################################################
@@ -317,6 +356,18 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name mdsipshr
     End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "sqlshr"=.\sqlshr\sqlshr\sqlshr.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
 }}}
 
 ###############################################################################
