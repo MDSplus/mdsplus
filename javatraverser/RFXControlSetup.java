@@ -563,7 +563,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable6.setNumCols(5);
     deviceTable6.setNumRows(1);
     deviceTable6.setIdentifier("");
-    deviceTable6.setColumnNames(new String[] {"T_ip", "Bv_Gain", "Max_PVAT_Curr", "Par4", "Par5"});
+    deviceTable6.setColumnNames(new String[] {"T_ip", "Bv_Gain", "Max_PVAT_Curr", "GainDecoup", "Par5"});
         deviceTable6.setRowNames(null);
     deviceTable6.setPreferredHeight(20);
     deviceTable6.setUseExpressions(true);
