@@ -20,7 +20,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                              UpdateEventListener, ConnectionListener
 {
  
-   static final String VERSION = "jScope (version 7.2)";
+   static final String VERSION = "jScope (version 7.2.1)";
    static public boolean is_debug = false;
     
    public  static final int MAX_NUM_SHOT   = 30;
@@ -1129,18 +1129,21 @@ static int T_messageType;
     
     //jScope configurations file directory can be defined
     //with decrease priority order: 
-    // 1) in jScope.properties using jScope.directory property
-    // 2) by system property jScope.config_directory; 
+    // 1) by system property jScope.config_directory; 
     //    in this case jScope must be started with 
     //    -DjScope.config_directory=<directory> option.
-    //If the previous properties are not defined jScope create
+    // 2) in jScope.properties using jScope.directory property
+   //If the previous properties are not defined jScope create
     //configuration folder in <home directory>/jScope/configurations, if
     //for same abnormal reason the directory creation failed
     //<home directory> is used as configuration directory
-    curr_directory = (String)js_prop.getProperty("jScope.directory");
-    if(curr_directory == null || curr_directory.trim().length() == 0)
+
+   curr_directory  = (String)System.getProperty("jScope.config_directory");
+
+   if(curr_directory == null || curr_directory.trim().length() == 0)
     {
-       curr_directory  = (String)System.getProperty("jScope.config_directory");
+       curr_directory = (String)js_prop.getProperty("jScope.directory");
+    
        if(curr_directory == null || curr_directory.trim().length() == 0)
        {
             //Store default jScope configuration file in local
@@ -1267,7 +1270,7 @@ static int T_messageType;
     
     if(ip_addr != null && dp_class != null)//|| is_local == null || (is_local != null && is_local.equals("no")))
     {
-	    srv_item = new DataServerItem(ip_addr, ip_addr, null, dp_class,  null, null); 
+	    srv_item = new DataServerItem(ip_addr, ip_addr, null, dp_class,  null, null, false); 
         //Add server to the server list and if presente browse class and
         //url browse signal set it into srv_item
         server_diag.addServerIp(srv_item); 	    
@@ -2847,6 +2850,14 @@ class ServerDialog extends JDialog implements ActionListener
            dsi.class_name = (String)js_prop.getProperty("jScope.data_server_"+i+".class");
            dsi.browse_class = (String)js_prop.getProperty("jScope.data_server_"+i+".browse_class");
            dsi.browse_url = (String)js_prop.getProperty("jScope.data_server_"+i+".browse_url");
+		    try
+		    {
+		        dsi.fast_network_access = new Boolean((String)js_prop.getProperty("jScope.data_server_"+i+".fast_network_access")).booleanValue();
+		    }
+		    catch(Exception exc)
+		    {
+		        dsi.fast_network_access = false;
+		    }
 	       addServerIp(dsi);
 	       i++;
        } 
@@ -2956,7 +2967,7 @@ class ServerDialog extends JDialog implements ActionListener
             addServerIp(new DataServerItem(srv, server_a.getText().trim(), 
                                            server_u.getText().trim(), 
                                            (String)data_provider_list.getSelectedItem(),
-                                           null, null));
+                                           null, null, false));
 	       }
 	    }
 	

@@ -20,7 +20,6 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 
               DataProvider dp;
     private   jScopeDefaultValues def_vals;
-    private   boolean   fast_network_access = false;
     private   boolean   supports_fast_network = false;
     private   boolean   supports_local = true;
     private   String    title = null;
@@ -117,7 +116,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     {
         this(rows, new NotConnectedDataProvider(), def_vals);
         server_item = new DataServerItem("Not Connected", null, null, 
-                          null, null, null);
+                          null, null, null, false);
         
     }
 
@@ -644,7 +643,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
    
     public boolean GetFastNetworkState()
     {
-        return fast_network_access;
+        return (server_item != null ? server_item.fast_network_access : false);
     }
 
     public void SetModifiedState(boolean state)
@@ -663,7 +662,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     public void SetFastNetworkState(boolean state)
     {
         jScopeMultiWave w;
-    	fast_network_access = state;
+    	server_item.fast_network_access = state;
 	    for(int i = 0; i < getComponentNumber(); i++)
         {
 	        w = (jScopeMultiWave)getGridComponent(i);
@@ -751,7 +750,13 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 								                "Update signal column " + (i + 1) + " row " + (j + 1) + 
 								                " main shot " + main_shots[l]);
 					            dispatchWaveContainerEvent(wce);
-				                mds_wi[k].EvaluateShot(main_shots[l]);			
+				                mds_wi[k].EvaluateShot(main_shots[l]);
+				                if(mds_wi[k].allEvaluated())
+				                {
+	    	                        jScopeMultiWave wx = (jScopeMultiWave)getGridComponent(k);
+	    	                        if(wx.wi != null)
+			                            wx.Update(wx.wi);		            				                    
+				                }				                
 				            }
 			            }
 			        } 
@@ -760,23 +765,27 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     	    
 	        // Evaluate evaluate other shot	
         
-	        for(int i = 0, k = 0; i < 4 && !abort; i++)
+	        for(int i = 0, k = 0; i < 4; i++)
 	        {
-		        for(int j = 0; j < rows[i] && !abort; j++, k++) 
+		        for(int j = 0; j < rows[i]; j++, k++) 
 		        {
-			        if(mds_wi[k] != null && mds_wi[k].error == null && mds_wi[k].num_waves != 0)
+			        if(mds_wi[k] != null && mds_wi[k].error == null && 
+			           mds_wi[k].num_waves != 0 && !abort)
                     {
+				        if(mds_wi[k].allEvaluated())
+                            continue;
+                            
                         wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, 
                                 "Evaluate wave column " + (i + 1) + " row " + (j + 1));
                         dispatchWaveContainerEvent(wce);
-			            mds_wi[k].EvaluateOthers();
-    			        
-		            }		    
+			            mds_wi[k].EvaluateOthers();    			        
+		            }
+	    	        jScopeMultiWave wx = (jScopeMultiWave)getGridComponent(k);
+	    	        if(wx.wi != null)
+			            wx.Update(wx.wi);		            
 		        }
 	        }	    
-
-             RepaintAllWave();
-             mds_wi = null;
+            mds_wi = null;
                     
         } 
         catch (Exception e) 
@@ -793,9 +802,9 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
             public void run()
             {
                 jScopeMultiWave wx;
-	            for(int i = 0, k = 0; i < 4 /*&& !abort*/; i++)
+	            for(int i = 0, k = 0; i < 4; i++)
 	            {
-		            for(int j = 0; j < rows[i] /*&& !abort*/; j++, k++) 
+		            for(int j = 0; j < rows[i]; j++, k++) 
 		            {
 	    	            wx = (jScopeMultiWave)getGridComponent(k);
 	    	            if(wx.wi != null)
@@ -865,13 +874,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	    event = pr.getProperty(prompt+".update_event");
 	    
 	    print_event = pr.getProperty(prompt+".print_event");
-	    
-	    prop = pr.getProperty(prompt+".fast_network_access");
-	    if(prop != null)
-	    {
-		    fast_network_access =  new Boolean(prop).booleanValue();
-	    }
-	    
+
 	    prop = pr.getProperty(prompt+".data_server_name");
 	    if(prop != null)
 	    {
@@ -882,6 +885,14 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
             server_item.class_name = pr.getProperty(prompt+".data_server_class");
 		    server_item.browse_class = pr.getProperty(prompt+".data_server_browse_class");
 		    server_item.browse_url = pr.getProperty(prompt+".data_server_browse_url");
+		    try
+		    {
+		        server_item.fast_network_access = new Boolean(pr.getProperty(prompt+".fast_network_access")).booleanValue();
+		    }
+		    catch(Exception exc)
+		    {
+		        server_item.fast_network_access = false;
+		    }
         }
 
         for(int c = 1; c <= MAX_COLUMN; c++)
@@ -1103,7 +1114,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
             case DataProvider.LOGIN_ERROR :
             case DataProvider.LOGIN_CANCEL :
                 server_item = new DataServerItem("Not Connected", null, null, 
-                          null, null, null);
+                          null, null, null, false);
                 new_dp = new NotConnectedDataProvider();            
                 change = true;
        }
@@ -1248,8 +1259,9 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	            WaveInterface.WriteLine(out, prompt + "data_server_browse_class: ", server_item.browse_class);
 	        if(server_item.browse_url != null)
 	            WaveInterface.WriteLine(out, prompt + "data_server_browse_url: ",   server_item.browse_url);
+	            
+	        WaveInterface.WriteLine(out, prompt + "fast_network_access: ", ""+server_item.fast_network_access);		    
 	    }
-	    WaveInterface.WriteLine(out, prompt + "fast_network_access: ", ""+fast_network_access);		    
 	    WaveInterface.WriteLine(out, prompt + "update_event: ", event);		    
 	    WaveInterface.WriteLine(out, prompt + "print_event: ", print_event);
         WaveInterface.WriteLine(out, prompt + "reversed: "     , ""+reversed);

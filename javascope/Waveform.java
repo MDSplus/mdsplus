@@ -10,6 +10,7 @@ import java.awt.Insets;
 import java.awt.image.*;
 import java.awt.geom.*;
 
+
 //import java.awt.geom.*;
 
 public class Waveform extends JComponent

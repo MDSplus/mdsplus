@@ -529,7 +529,7 @@ public class WaveInterface
     	        
     	        
 		        if(auto_color_on_expr)
-	                new_colors_idx[k] = i;
+	                new_colors_idx[k] = (k - j) % Waveform.colors.length;
                 else	        
 	                new_colors_idx[k] = j % Waveform.colors.length;
     	        
@@ -895,6 +895,17 @@ public class WaveInterface
 		if(ymax !=  HUGE) s.ymax = ymax;
     }
     
+    public boolean allEvaluated()
+    {
+        if(evaluated == null)
+            return false;
+    	for(int curr_wave = 0; curr_wave < num_waves; curr_wave++)
+	        if(!evaluated[curr_wave])
+	            return false;	            
+        modified = false;	            
+	    return true; 
+    }
+    
     public synchronized void EvaluateOthers() throws IOException
     {
 	    int curr_wave;
@@ -1054,6 +1065,7 @@ public class WaveInterface
 		if(out_signal == null)
 		{
 		    out_signal = GetSignalFromProvider(curr_wave, xmin, xmax);
+		 
 	        if(!(full_flag || 
 	             wave_signals == null || 
 	             wave_signals.length <= curr_wave || 
@@ -1064,6 +1076,7 @@ public class WaveInterface
     	        // limits must not be changed
     	        return out_signal;
 	        }
+	        
 		}
 		
 		if(out_signal != null)
@@ -1292,14 +1305,7 @@ public class WaveInterface
 	      curr_y = wd.GetYData();
 	      out_signal = new Signal(curr_data, curr_y, curr_x, Signal.MODE_YTIME);
 	    } else {
-	        if(full_flag || wave_signals == null || wave_signals.length <= curr_wave || wave_signals[curr_wave] == null)
-	        {
-    	        out_signal = new Signal(curr_x, curr_data, min_len);
-    	    } else {
-    	        out_signal = wave_signals[curr_wave];
-    	        out_signal.merge(curr_x, curr_data);
-    	        out_signal.setFullLoad(full_flag);    
-    	    }
+    	  out_signal = new Signal(curr_x, curr_data, min_len);
     	}
     	
     	if(cache_enabled && full_flag && !is_async_update)
