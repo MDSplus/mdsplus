@@ -19,8 +19,8 @@ OBJFILES = 			\
 all:	tcl tcl_commands.o  libTcl.a  ../shlib/tcl_commands.$(SHARE_TYPE)
 
 tcl:	tcl.o
-	/usr/ucb/cc $(CFLAGS) -o $@ $@.o $(LFLAGS) -m -lMdsdcl	\
-		$(MDSPLUS)/cdu/libCdu.a   > tcl.map
+	$(CC) $(CFLAGS) -o $@ $@.o $(LFLAGS) -lMdsdcl	\
+		$(MDSPLUS)/cdu/libCdu.a
 
 tcl_commands.o:
 

@@ -163,14 +163,15 @@ struct descriptor  {
                 {sizeof(string)-1,DSC_K_DTYPE_T,DSC_K_CLASS_S,string}
 #define DYNAMIC_DESCRIPTOR(D)  struct descriptor  D = {\
                                       0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0 }
-#define is_cdescr(d) \
-            (((struct descriptor *)d)->dscB_dtype==DSC_K_DTYPE_T && \
-            ((struct descriptor *)d)->dscB_class==DSC_K_CLASS_S && \
-            ((struct descriptor *)d)->dscW_length<=1024)
-#define is_ddescr(d) \
-            (((struct descriptor *)d)->dscB_dtype==DSC_K_DTYPE_T && \
-            ((struct descriptor *)d)->dscB_class==DSC_K_CLASS_D && \
-            ((struct descriptor *)d)->dscW_length<=1024)
+#define ALIGN_MASK(x)  (sizeof(x) - 1)
+#define is_cdescr(d)  (((int)(d) & ALIGN_MASK(void *))==0 &&	\
+            ((struct descriptor *)(d))->dscB_dtype==DSC_K_DTYPE_T && \
+            ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_S && \
+            ((struct descriptor *)(d))->dscW_length<=1024)
+#define is_ddescr(d)  (((int)(d) & ALIGN_MASK(void *))==0 &&	\
+            ((struct descriptor *)(d))->dscB_dtype==DSC_K_DTYPE_T && \
+            ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_D && \
+            ((struct descriptor *)(d))->dscW_length<=1024)
 #define dsc_descriptor  descriptor
 
 #define NIL           (void *)0
@@ -210,6 +211,11 @@ int   str_element(			/* Returns: status		*/
    ,int   ielement			/* <r> element num, 0-based	*/
    ,char  delimiter			/* <r> delimiter character	*/
    ,void  *source			/* <r> source: dsc or c-string	*/
+   );
+char  *str_dupl_char(			/* Returns: dsc_ret->dscA_pointer */
+    struct descriptor  *dsc_ret		/* <w> Destination string	*/
+   ,int   icnt				/* <r> duplication count	*/
+   ,char  c				/* <r> character to duplicate	*/
    );
 
 

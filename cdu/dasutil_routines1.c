@@ -1087,7 +1087,7 @@ char  *str_concat(		/* Returns: ptr to null-terminated string*/
 	 * Return "idx"th element (0-based) of input string
 	 ****************************************************************/
 int   str_element(			/* Returns: status		*/
-    struct descriptor  *dsc_ret		/* <w> return string		*/
+    struct descriptor  *dsc_ret		/* <w> Destination string	*/
    ,int   ielement			/* <r> element num, 0-based	*/
    ,char  delimiter			/* <r> delimiter character	*/
    ,void  *source			/* <r> source: dsc or c-string	*/
@@ -1143,6 +1143,35 @@ int   str_element(			/* Returns: status		*/
     dsc_substring.dscA_pointer = p;
     dsc_substring.dscW_length = p2 - p;
     return(str_copy_dx(dsc_ret,&dsc_substring));
+   }
+
+
+
+	/****************************************************************
+	 * str_dupl_char:
+	 * Duplicate character a number of times ...
+	 ****************************************************************/
+char  *str_dupl_char(			/* Returns: dsc_ret->dscA_pointer */
+    struct descriptor  *dsc_ret		/* <w> Destination string	*/
+   ,int   icnt				/* <r> duplication count	*/
+   ,char  c				/* <r> character to duplicate	*/
+   )
+   {
+    int   i,k;
+    char  *p;
+
+    if (!(is_ddescr(dsc_ret) || is_cdescr(dsc_ret)))
+        return((char *)dasmsg(0,"str_dupl_char: 1st arg not a descriptor"));
+
+    p = malloc(icnt+1);
+    if (!p)
+        exit(dasmsg(0,"Out of space"));
+
+    memset(p,c,icnt);
+    p[icnt] = '\0';
+    str_copy_dx(dsc_ret,p);
+    free(p);
+    return(dsc_ret->dscA_pointer);
    }
 #include        "dasutil.h"
 #include        <ctype.h>

@@ -7,6 +7,7 @@
 #else
 #include        <dlfcn.h>
 #include        <stdlib.h>
+#include        <sys/stat.h>
 #endif
 
 /***********************************************************************
@@ -33,11 +34,12 @@ static void  *dlopen_table(	/* Return: shared-object handle		*/
    )
    {
     int   i,k;
+    char  filename[256];
     char  *p;
     char  utilString[80];
     void  *hndl;
+    struct stat  statbuf;
     FILE  *fp;
-    static DYNAMIC_DESCRIPTOR(dsc_filename);
 
 		/*=======================================================
 		 * First, check for environment variable (upper case)
@@ -45,28 +47,27 @@ static void  *dlopen_table(	/* Return: shared-object handle		*/
     l2u(utilString,tableName);
     if (p = getenv(utilString))
        {
-        strcpy(utilString,p);
-        hndl = dlopen(utilString,RTLD_LAZY);
+        strcpy(filename,p);
+        hndl = dlopen(filename,RTLD_LAZY);
         if (hndl)
             return(hndl);		/*--------------------> return	*/
+        p = dlerror();
+        fprintf(stderr,"\nError trying to open %s file '%s':\n%s\n\n",
+            utilString,filename,p);
        }
 
 		/*======================================================
 		 * Next, try local directory ...
 		 *=====================================================*/
-    sprintf(utilString,"ls -r ./%s.so*  2> /dev/null",tableName);
-    if (fp = popen(utilString,"r"))
-       {
-        hndl = 0;
-        if (p = fgets(utilString,sizeof(utilString),fp))
-           {
-            if (ascFilename(&p,&dsc_filename,0))
-                hndl = dlopen(dsc_filename.dscA_pointer,RTLD_LAZY);
-            str_free1_dx(&dsc_filename);
-           }
-        pclose(fp);			/* close the pipe		*/
+    sprintf(filename,"./%s.so",tableName);
+    if (!stat(filename,&statbuf))
+       {			/* File exists --			*/
+        hndl = dlopen(filename,RTLD_LAZY);
         if (hndl)
             return(hndl);		/*--------------------> return	*/
+        p = dlerror();
+        fprintf(stderr,"\nError tryingin to open file '%s':\n%s\n\n",
+            filename,p);
        }
 
 		/*=======================================================
@@ -75,20 +76,15 @@ static void  *dlopen_table(	/* Return: shared-object handle		*/
     p = getenv("MDSPLUS");
     if (!p)
         p = "$MDSPLUS";
-    sprintf(utilString,"ls -r %s/shlib/%s.so*  2> /dev/null",
-        p,tableName);
-    if (fp = popen(utilString,"r"))
-       {
-        hndl = 0;
-        if (p = fgets(utilString,sizeof(utilString),fp))
-           {
-            if (ascFilename(&p,&dsc_filename,0))
-                hndl = dlopen(dsc_filename.dscA_pointer,RTLD_LAZY);
-            str_free1_dx(&dsc_filename);
-           }
-        pclose(fp);			/* close the pipe		*/
+    sprintf(filename,"%s/shlib/%s.so",p,tableName);
+    if (!stat(filename,&statbuf))
+       {			/* File exists --			*/
+        hndl = dlopen(filename,RTLD_LAZY);
         if (hndl)
             return(hndl);		/*--------------------> return	*/
+        p = dlerror();
+        fprintf(stderr,"\nError tryingin to open file '%s':\n%s\n\n",
+            filename,p);
        }
 
     return(0);				/*--------------------> return	*/
