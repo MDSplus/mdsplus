@@ -3,12 +3,12 @@
 
 	Ken Klare, LANL P-4	(c)1989,1990,1991
 */
+#include <string.h>
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
 #include "tdinelements.h"
 #include <libroutines.h>
 #include <strroutines.h>
-#include <string.h>
 #include <tdimessages.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

@@ -20,15 +20,15 @@
 	Ken Klare, LANL P-4	(c)1991,1992
 */
 #define _MOVC3(a,b,c) memcpy(c,b,a)
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
 #include <math.h>	/*for pow definition*/
 #include "tdirefstandard.h"
-#include <string.h>
 #include <strroutines.h>
 #include <libroutines.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <tdimessages.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>

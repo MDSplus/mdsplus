@@ -10,9 +10,9 @@
 
 	Ken Klare, LANL CTR-7	(c)1989,1990
 */
+#include <stdlib.h>
 #include <mdsdescrip.h>
 #include <tdimessages.h>
-#include <stdlib.h>
 #include <mdsshr.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

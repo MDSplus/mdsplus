@@ -48,8 +48,8 @@ int Tdi3Iand(struct descriptor *in1, struct descriptor *in2, struct descriptor *
 ------------------------------------------------------------------------------*/
 
 
-#include <mdsdescrip.h>
 #include <string.h>
+#include <mdsdescrip.h>
 #include <tdimessages.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

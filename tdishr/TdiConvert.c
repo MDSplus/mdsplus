@@ -1,9 +1,9 @@
+#include <string.h>
+#include <stdio.h>
 #include <mdsdescrip.h>
 /*#include <mdsdescrip.h>*/
-#include <string.h>
-#include <math.h>
 #include <tdimessages.h>
-#include <stdio.h>
+#include <math.h>
 #define MAXTYPE (DTYPE_FTC + 1)
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

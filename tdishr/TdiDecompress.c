@@ -12,9 +12,9 @@
 
 	Ken Klare, LANL	P-4	(c)1989,1990,1992
 */
+#include <stdlib.h>
 #include "tdirefstandard.h"
 #include "tdirefcat.h"
-#include <stdlib.h>
 #include <mdsshr.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

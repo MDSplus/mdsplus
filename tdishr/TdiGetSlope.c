@@ -11,13 +11,13 @@
 	NEED to watch for rounding/precision problems.
 */
 
+#include <stdlib.h>
 #include <tdimessages.h>
 #include "tdirefstandard.h"
 #ifdef vxWorks
 #undef MAX
 #endif
 
-#include <stdlib.h>
 #include <mdsshr.h>
 
 #define HUGE 0x1FFFFFFF

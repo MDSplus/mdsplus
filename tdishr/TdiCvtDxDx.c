@@ -8,7 +8,7 @@
 	NEED to handle array of descriptors.
 */
 #include <mdsdescrip.h>
-#include <mdsdescrip.h>
+/*#include <mdsdescrip.h>*/
 #include <mdsshr.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

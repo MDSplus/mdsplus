@@ -6,11 +6,11 @@
 	WARNING accuracy of float base not as good as OTS$ routines, which use double.
 	Ken Klare, LANL P-4	(c)1990,1991
 */
+#include <string.h>
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 #include <mdsdescrip.h>
 #include "tdinelements.h"
 #include <tdimessages.h>
-#include <string.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 

@@ -10,13 +10,13 @@
 	Ken Klare, LANL P-4	(c)1990,1991,1992
 	KK	21-Oct-1992	remove text mismatches, NOT FOR EXTEND
 */
+#include <stdlib.h>
+#include <string.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include "tdinelements.h"
 #include <tdimessages.h>
-#include <stdlib.h>
 #include <mdsshr.h>
-#include <string.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 

@@ -10,7 +10,7 @@
 #include <libroutines.h>
 #include <tdimessages.h>
 #include <mdsdescrip.h>
-#include <mdsdescrip.h>
+/*#include <mdsdescrip.h>*/
 #define COM 
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

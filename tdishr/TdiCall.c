@@ -17,13 +17,13 @@
 
 	Ken Klare, LANL	P-4	(c)1990,1992
 */
+#include <string.h>
+#include <stdlib.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <libroutines.h>
 #include <strroutines.h>
-#include <string.h>
 #include <tdimessages.h>
-#include <stdlib.h>
 #include <mdsshr.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

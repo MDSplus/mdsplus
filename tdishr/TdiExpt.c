@@ -3,11 +3,11 @@
 
 	Ken Klare, LANL CTR-7	(c)1990
 */
+#include <stdio.h>
+#include <string.h>
 #include <mdsdescrip.h>
 #include <dbidef.h>
 #include <libroutines.h>
-#include <stdio.h>
-#include <string.h>
 #include <mdsshr.h>
 #include <treeshr.h>
 

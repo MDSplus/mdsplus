@@ -15,6 +15,7 @@
 #define	P_UNARY	12	/*unary: NEGATE(!) IGNORE_UNDEFINED(?) IGNORE_STATUS(~)*/
 #define	P_TIGHT	16	/*strongest: path <event> and parentheses*/
 
+#include <string.h>
 #include <mdsdescrip.h>
 #include "tdirefstandard.h"
 #include <strroutines.h>
@@ -22,7 +23,6 @@
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <mds_stdarg.h>
-#include <string.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 

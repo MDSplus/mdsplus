@@ -5,10 +5,10 @@
 
 	Ken Klare, LANL CTR-7	(c)1989,1990
 */
+#include <stdlib.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <tdimessages.h>
-#include <stdlib.h>
 #include <mdsshr.h>
 
 #define SIGNEDNESS	(TdiCAT_B ^ TdiCAT_BU)

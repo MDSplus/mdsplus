@@ -37,9 +37,9 @@ int Tdi3Mod(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 ------------------------------------------------------------------------------*/
 
 
-#include <mdsdescrip.h>
-#include <mdsdescrip.h>
 #include <math.h>
+#include <mdsdescrip.h>
+#include <mdsdescrip.h>
 #include <tdimessages.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

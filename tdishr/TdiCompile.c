@@ -6,13 +6,13 @@
 
 extern unsigned short OpcCompile;
 
+#include <stdlib.h>
+#include <string.h>
 #include "tdirefzone.h"
 #include "tdirefstandard.h"
 #include <libroutines.h>
 #include <tdimessages.h>
 #include <mdsshr.h>
-#include <stdlib.h>
-#include <string.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 

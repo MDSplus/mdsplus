@@ -39,6 +39,8 @@
 	path[b] subscripts whatever is at node. Same problem.
 	NOT and INOT of AND OR etc., form NAND or AND_NOT etc. See KNOT1 and KNOT2. Not after 9/25/89.
 */
+#include <stdio.h>
+#include <string.h>
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
 #include "tdirefcat.h"
@@ -46,10 +48,12 @@
 #include "tdirefzone.h"
 #include <libroutines.h>
 #include <strroutines.h>
-#include <stdio.h>
-#include <string.h>
 #include <tdimessages.h>
 #include <mds_stdarg.h>
+
+#ifdef vxWorks
+#undef ERROR
+#endif
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern unsigned short

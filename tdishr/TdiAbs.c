@@ -44,10 +44,9 @@
        use without specific written approval of MIT Plasma Fusion Center
        Management.
 ------------------------------------------------------------------------------*/
-#include <mdsdescrip.h>
+#include <string.h>
 #include <mdsdescrip.h>
 #include <tdimessages.h>
-#include <string.h>
 #include <math.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
@@ -58,6 +57,11 @@ extern int TdiSubtractOctaword();
 extern int TdiUnary(  );
 extern int Tdi3Multiply(  );
 extern int CvtConvertFloat();
+
+#ifdef vxWorks
+#undef min
+#undef max
+#endif
 
 #define min(a,b) ((a)<(b)) ? (a) : (b) 
 #define max(a,b) ((a)<(b)) ? (b) : (a) 

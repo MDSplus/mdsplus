@@ -14,6 +14,7 @@
 */
 typedef struct {int lo; unsigned int hi;} quadw;
 
+#include <stdlib.h>
 #include <mdsdescrip.h>
 #include "tdirefstandard.h"
 #include <libroutines.h>
@@ -22,7 +23,6 @@ typedef struct {int lo; unsigned int hi;} quadw;
 #ifdef __VMS
 #include <starlet.h>
 #endif
-#include <stdlib.h>
 #include <mdsshr.h>
 #include <treeshr.h>
 

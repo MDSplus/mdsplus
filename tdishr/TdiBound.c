@@ -16,10 +16,10 @@
 
 	Ken Klare, LANL P-4	(c)1989,1990,1991,1992
 */
+#include <stdlib.h>
 #include <mdsdescrip.h>
 #include <tdimessages.h>
 #include <mdsshr.h>
-#include <stdlib.h>
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
