@@ -10116,8 +10116,9 @@ object nidOptionMenu2 : user_defined procedure XmdsCreateNidOptionMenu {
         XmdsNvalueStrings = string_table(
 	compound_string("\' \'"),
 	compound_string("\'mezz\'"),
+	compound_string("\'fpga\'"),
 	compound_string("\'pxi\'"),
-	compound_string("\'fpga\'"));
+        compound_string("\'fpga pxi\'"));
         XmNlabelString = compound_string("");
         XmdsNputOnApply = true;
         XmdsNnidOffset = DT200_DIOS + DT200_DIO_BUS + DT200_N_NODES_PER_DIO * 0;
@@ -10209,10 +10210,11 @@ object nidOptionMenu6 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
-	compound_string("\' \'"),
-	compound_string("\'mezz\'"),
-	compound_string("\'pxi\'"),
-	compound_string("\'fpga\'"));
+        compound_string("\' \'"),
+        compound_string("\'mezz\'"),
+        compound_string("\'fpga\'"),
+        compound_string("\'pxi\'"),
+        compound_string("\'fpga pxi\'"));
         XmNlabelString = compound_string("");
         XmdsNputOnApply = true;
         XmdsNnidOffset = DT200_DIOS + DT200_DIO_BUS + DT200_N_NODES_PER_DIO * 1;
@@ -10304,10 +10306,11 @@ object nidOptionMenu8 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
-	compound_string("\' \'"),
-	compound_string("\'mezz\'"),
-	compound_string("\'pxi\'"),
-	compound_string("\'fpga\'"));
+        compound_string("\' \'"),
+        compound_string("\'mezz\'"),
+        compound_string("\'fpga\'"),
+        compound_string("\'pxi\'"),
+        compound_string("\'fpga pxi\'"));
         XmNlabelString = compound_string("");
         XmdsNputOnApply = true;
         XmdsNnidOffset = DT200_DIOS + DT200_DIO_BUS + DT200_N_NODES_PER_DIO * 2;
@@ -10399,10 +10402,11 @@ object nidOptionMenu10 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
-	compound_string("\' \'"),
-	compound_string("\'mezz\'"),
-	compound_string("\'pxi\'"),
-	compound_string("\'fpga\'"));
+        compound_string("\' \'"),
+        compound_string("\'mezz\'"),
+        compound_string("\'fpga\'"),
+        compound_string("\'pxi\'"),
+        compound_string("\'fpga pxi\'"));
         XmNlabelString = compound_string("");
         XmdsNputOnApply = true;
         XmdsNnidOffset = DT200_DIOS + DT200_DIO_BUS + DT200_N_NODES_PER_DIO * 3;
@@ -10494,10 +10498,11 @@ object nidOptionMenu12 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
-	compound_string("\' \'"),
-	compound_string("\'mezz\'"),
-	compound_string("\'pxi\'"),
-	compound_string("\'fpga\'"));
+        compound_string("\' \'"),
+        compound_string("\'mezz\'"),
+        compound_string("\'fpga\'"),
+        compound_string("\'pxi\'"),
+        compound_string("\'fpga pxi\'"));
         XmNlabelString = compound_string("");
         XmdsNputOnApply = true;
         XmdsNnidOffset = DT200_DIOS + DT200_DIO_BUS + DT200_N_NODES_PER_DIO * 4;
@@ -10589,10 +10594,11 @@ object nidOptionMenu14 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
-	compound_string("\' \'"),
-	compound_string("\'mezz\'"),
-	compound_string("\'pxi\'"),
-	compound_string("\'fpga\'"));
+        compound_string("\' \'"),
+        compound_string("\'mezz\'"),
+        compound_string("\'fpga\'"),
+        compound_string("\'pxi\'"),
+        compound_string("\'fpga pxi\'"));
         XmNlabelString = compound_string("");
         XmdsNputOnApply = true;
         XmdsNnidOffset = DT200_DIOS + DT200_DIO_BUS + DT200_N_NODES_PER_DIO * 5;
