@@ -293,7 +293,7 @@ public class RFXTimesSetup extends DeviceSetup
 			tempString[29] = "if(_START_PV_state == 1) tcl('set node \\\\START_PV /on'); else tcl('set node \\\\START_PV /off'); 1;";
 			tempString[30] = "if(_START_PV_state == 1 && _STOP_PV_state == 1) { tcl('set node \\\\ENABLE_PV /on'); } else { tcl('set node \\\\ENABLE_PV /off'); } 1;";
 			tempString[31] = "if(_OPEN_BPS_state == 1) tcl('set node \\\\OPEN_BPS /on'); else tcl('set node \\\\OPEN_BPS/off'); 1;";
-			tempString[32] = "if(_CLOSE_PMSS_state == 1) tcl('set node \\\\CLOSE_PMSS /on'); else tcl('set node \\\\CLOSE_PMSS /off'); 1;";
+			tempString[32] = "if(_CLOSE_PNSS_state == 1) tcl('set node \\\\CLOSE_PNSS /on'); else tcl('set node \\\\CLOSE_PNSS /off'); 1;";
 			deviceButtons1.setCheckExpressions(tempString);
 		}
 		getContentPane().add(deviceButtons1);
