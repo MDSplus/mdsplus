@@ -773,11 +773,12 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
           set_aflags(out_ptr,in);
           LoadChar(inp->dimct,out_ptr+11);
           LoadInt(inp->arsize,out_ptr+12);
+          out_ptr += 16;
           if (inp->aflags.coeff)
 	  {
             int a0 = dscsize + (offset(inp->a0) - offset(inp->pointer));
-            LoadInt(a0,out_ptr + 16);
-            out_ptr += 20;
+            LoadInt(a0,out_ptr);
+            out_ptr += 4;
             for (j=0;j<inp->dimct;j++)
 	    {
               LoadInt(inp->m[j],out_ptr);
@@ -829,11 +830,12 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
           set_aflags(out_ptr,in);
           LoadChar(inp->dimct,out_ptr+11);
           LoadInt(inp->arsize,out_ptr+12);
+          out_ptr += 16;
           if (inp->aflags.coeff)
 	  {
             int a0 = dscsize + (offset(inp->a0) - offset(inp->pointer));
-            LoadInt(a0,out_ptr + 16);
-            out_ptr += 20;
+            LoadInt(a0,out_ptr);
+            out_ptr += 4;
             for (j=0;j<inp->dimct;j++)
 	    {
               LoadInt(inp->m[j],out_ptr);
@@ -897,11 +899,12 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
           set_aflags(out_ptr,in);
           LoadChar(inp->dimct,out_ptr+11);
           LoadInt(inp->arsize,out_ptr+12);
+          out_ptr += 16;
           if (inp->aflags.coeff)
 	  {
             int a0 = dscsize + (offset(inp->a0) - offset(inp->pointer));
-            LoadInt(a0,out_ptr + 16);
-            out_ptr += 20;
+            LoadInt(a0,out_ptr);
+            out_ptr += 4;
             for (j=0;j<inp->dimct;j++)
 	    {
               LoadInt(inp->m[j],out_ptr);
