@@ -731,7 +731,8 @@ int descr (int *dtype, void *data, int *dim1, ...)
 	printf("(descr.c) WARNING: requested ndim>MAXDIM, forcing to MAXDIM\n");
       }
       adsc->dimct = ndim;
-
+      adsc->scale = 0;
+      adsc->digits = 0;
       adsc->aflags.binscale = 0;
       adsc->aflags.redim = 1;
       adsc->aflags.column = 1;
@@ -758,6 +759,8 @@ int descr (int *dtype, void *data, int *dim1, ...)
       adsc->class = CLASS_A;
       adsc->arsize = totsize * adsc->length;
       adsc->dimct = 1;
+      adsc->scale = 0;
+      adsc->digits = 0;
       adsc->aflags.binscale = 0;
       adsc->aflags.redim = 1;
       adsc->aflags.column = 1;

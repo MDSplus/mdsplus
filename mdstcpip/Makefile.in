@@ -29,8 +29,8 @@ all : @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ \
       @MAKEBINDIR@ @MAKELIBDIR@ @MAKEETCDIR@ \
       @MAKEBINDIR@mdsiptest @MAKEBINDIR@mdsip \
       @MAKEBINDIR@mdsipd @MAKEETCDIR@mdsip.hosts \
-      @MAKELIBDIR@libMdsIpShr.a @MAKELIBDIR@libMdsIpUtil.a
-      
+      @MAKELIBDIR@libMdsIpShr.a @MAKELIBDIR@libMdsIpUtil.a \
+      @MAKEBINDIR@unix_submit.sh @MAKEBINDIR@synchronize.sh 
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES) mdsip_u.c
@@ -44,6 +44,8 @@ clean :
 	@ $(RM) @MAKEBINDIR@mdsiptest
 	@ $(RM) @MAKEBINDIR@mdsip
 	@ $(RM) @MAKEBINDIR@mdsipd
+	@ $(RM) @MAKEBINDIR@unix_submit.sh
+	@ $(RM) @MAKEBINDIR@synchronize.sh
 	@ $(RM) @MAKEETCDIR@mdsip.hosts
 
 install:
@@ -54,6 +56,8 @@ install:
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsip	@bindir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsipd	@bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@unix_submit.sh	@bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@synchronize.sh	@bindir@
 	if test "@SHARETYPE@" != ".a" ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpShr.a @libdir@; \
 		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpUtil.a @libdir@; \
@@ -75,6 +79,12 @@ install:
 
 @MAKEBINDIR@mdsipd : mdsipd
 	cp mdsipd @MAKEBINDIR@mdsipd
+
+@MAKEBINDIR@unix_submit.sh : unix_submit.sh
+	cp unix_submit.sh @MAKEBINDIR@unix_submit.sh
+
+@MAKEBINDIR@synchronize.sh : synchronize.sh
+	cp synchronize.sh @MAKEBINDIR@synchronize.sh
 
 @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ : $(OBJECTS)
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) 

@@ -4763,6 +4763,7 @@ remcam/Makefile
 rpm/Makefile
 rpm/envsyms
 rpm/post_install_script
+scripts/Makefile
 servershr/Makefile 
 setevent/Makefile
 tcl/Makefile 
@@ -4970,6 +4971,7 @@ remcam/Makefile
 rpm/Makefile
 rpm/envsyms
 rpm/post_install_script
+scripts/Makefile
 servershr/Makefile 
 setevent/Makefile
 tcl/Makefile 

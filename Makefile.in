@@ -36,6 +36,7 @@ PARTS = \
         wfevent \
         setevent \
         mdsmisc \
+	scripts \
 	rpm \
         manpages \
         @D3D_PACKAGE@ \
