@@ -555,8 +555,11 @@ static int LockCount = 0;
 #else
 #undef select
 #endif
+static pthread_t current_locked_thread = 0;
+
 void pthread_lock_global_np()
 {
+  pthread_t thread = pthread_self();
   if (!Initialized)
   {
 #if !defined(PTHREAD_MUTEX_RECURSIVE)
@@ -576,11 +579,15 @@ void pthread_lock_global_np()
     Initialized = 1;
   }
 #ifdef ___DEBUG_IT
-  printf("About to lock global\n");
+  if (current_locked_thread)
+    printf("global currently locked by thread %d\n",current_locked_thread);
+
+  printf("Thread %d is about to lock global\n",thread);
 #endif
   pthread_mutex_lock(&GlobalMutex);
 #ifdef ___DEBUG_IT
   printf("Global locked - %d\n",++LockCount);
+  current_locked_thread = thread;
 #endif
 }
 
@@ -605,11 +612,13 @@ void pthread_unlock_global_np()
     Initialized = 1;
   }
 #ifdef ___DEBUG_IT
-  printf("About to unlock global - %d\n",LockCount--);
+  printf("Thread %d is about to unlock global - %d\n",pthread_self(),LockCount--);
 #endif
   pthread_mutex_unlock(&GlobalMutex);
 #ifdef ___DEBUG_IT
   printf("Unlocked global - %d\n",LockCount);
+  if (LockCount == 0)
+    current_locked_thread = 0;
 #endif
 }
 #endif
@@ -1155,6 +1164,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   void *handle;
   char *tmp_error1 = 0;
   char *tmp_error2 = 0;
+  
   *symbol_value = NULL;
   strcpy(full_filename,"lib");
   strcat(full_filename,c_filename);
@@ -1167,10 +1177,12 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   handle = dlopen(c_filename,RTLD_LAZY);
   if (handle == NULL) {
     tmp_error1 = dlerror();
+    if (tmp_error1 == NULL) tmp_error1="";
     tmp_error1 = strcpy((char *)malloc(strlen(tmp_error1)+1),tmp_error1);
     handle = dlopen(full_filename,RTLD_LAZY);
     if (handle == NULL) {
       tmp_error2 = dlerror();
+      if (tmp_error2 == NULL) tmp_error2="";
       tmp_error2 = strcpy((char *)malloc(strlen(tmp_error2)+1),tmp_error2);
       handle = dlopen(&full_filename[3],RTLD_LAZY);
     }
@@ -1182,6 +1194,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     if (!(*symbol_value))
     {
       char *tmp = dlerror();
+      if (tmp == NULL) tmp="";
       sprintf((FIS_Error = (char *)malloc(strlen(tmp)+strlen("error finding symbol , ")+strlen(c_symbol)+1)),"error finding symbol %s, %s",
 			  c_symbol,tmp);
     }
@@ -1190,6 +1203,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   else 
   {
     char *tmp = dlerror();
+    if (tmp == "") tmp="";
     sprintf((FIS_Error = (char *)malloc(strlen("Error loading library:\n\t %s - %s\n\t %s, %s\n\t%s - %s\n")+
       strlen(full_filename)*2+strlen(tmp)+strlen(tmp_error1)+strlen(tmp_error2)+10)),
       "Error loading library:\n\t %s - %s\n\t %s - %s\n\t%s - %s\n",c_filename,tmp_error1,full_filename,tmp_error2,&full_filename[3],tmp);
