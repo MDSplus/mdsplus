@@ -1,0 +1,113 @@
+module ACTIONS
+    names = case_sensitive
+
+object
+    actions: XmMainWindow 
+        {
+        arguments
+            {
+            XmNwidth = 750;
+            XmNheight = 300;
+            };
+        controls
+            {
+            XmMenuBar 
+                {
+                controls
+                    {
+                    XmCascadeButtonGadget 
+                        {
+                        arguments
+                            {
+                            XmNlabelString = 
+                            compound_string("File");
+                            };
+                        controls
+                            {
+                            XmPulldownMenu 
+                                {
+                                controls
+                                    {
+                                    XmPushButtonGadget 
+                                        {
+                                        arguments
+                                            {
+                                            XmNlabelString = 
+                                            compound_string("Refresh");
+                                            };
+                                        callbacks
+                                            {
+                                            XmNactivateCallback = procedures
+                                                {
+                                                Refresh(0);
+                                                };
+                                            };
+                                        };
+                                    XmPushButtonGadget 
+                                        {
+                                        arguments
+                                            {
+                                            XmNlabelString = 
+                                            compound_string("Exit");
+                                            };
+                                        callbacks
+                                            {
+                                            XmNactivateCallback = procedures
+                                                {
+                                                Exit(0);
+                                                };
+                                            };
+                                        };
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+            XmScrolledWindow 
+                {
+                controls
+                    {
+                    XmList action_list;
+                    };
+                };
+            unmanaged XmdsXdBoxDialog modify_xdbox;
+            };
+        };
+    action_list: XmList 
+        {
+        arguments
+            {
+            XmNselectionPolicy = XmSINGLE_SELECT;
+            XmNfontList = font_table(font('FIXED'));
+            };
+        callbacks
+            {
+            XmNsingleSelectionCallback = procedures
+                {
+                Modify(0);
+                };
+            XmNdefaultActionCallback = procedures
+                {
+                ToggleEssential(0);
+                };
+            };
+        };
+    modify_xdbox: XmdsXdBoxDialog 
+        {
+        arguments
+            {
+            XmdsNautoPut = true;
+            XmdsNnid = 1;
+            XmdsNusage = TreeUSAGE_ACTION;
+            };
+        };
+
+procedure
+    Exit;
+    Modify;
+    Refresh;
+    ToggleEssential;
+
+end module;
+
