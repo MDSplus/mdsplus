@@ -476,12 +476,14 @@ static void ThreadExit(void *arg)
   ThreadRunning = 0;
 }
   
+/*
 static jmp_buf Env;
 
 static void signal_handler(int dummy)
 {
   longjmp(Env, 1);
 }
+*/
 
 static void *Worker(void *sockptr)
 {
@@ -491,6 +493,7 @@ static void *Worker(void *sockptr)
   int num = 0;
   fd_set readfds,fdactive;
   pthread_cleanup_push(ThreadExit, 0);
+  /*
   signal(SIGSEGV, signal_handler);
   signal(SIGBUS, signal_handler);
   if (setjmp(Env) != 0)
@@ -498,6 +501,7 @@ static void *Worker(void *sockptr)
       printf("Signal handler called in Worker\n");
       return;
     }
+  */
   pthread_mutex_lock(&worker_mutex);
   ThreadRunning = 1;
   pthread_cond_signal(&worker_condition);
