@@ -192,6 +192,13 @@ void Poll(int shut,int IsWorker,int IsService, SOCKET serverSock)
 {
    while (1) globus_poll_blocking();
 }
+
+static globus_bool_t AuthenticationCallback(void *arg, globus_io_handle_t *handle, globus_result_t result, char *identity, gss_ctx_id_t *context_handle)
+{
+  printf("AuthenticationCallback from identity %s\n",identity);
+  return 1;
+}
+
 #else
 fd_set FdActive() { return fdactive; }
 #endif
@@ -245,8 +252,9 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
   globus_io_attr_set_tcp_nodelay(&attr,GLOBUS_TRUE);
   globus_io_attr_set_socket_reuseaddr(&attr,GLOBUS_TRUE);
   globus_io_secure_authorization_data_initialize(&auth_data);
+  globus_io_secure_authorization_data_set_callback(&auth_data,AuthenticationCallback,0);
   globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
-  globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_SELF,&auth_data);
+  globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_CALLBACK,&auth_data);
   globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
   AddClient = AddClient_in;
   DoMessage = DoMessage_in;
@@ -496,8 +504,9 @@ SOCKET Connect(char *host, unsigned short port)
   if (host[0]=='_')
   {
     globus_io_secure_authorization_data_initialize(&auth_data);
+    globus_io_secure_authorization_data_set_callback(&auth_data,AuthenticationCallback,0);
     globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
-    globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_SELF,&auth_data);
+    globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_CALLBACK,&auth_data);
     globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
   }
   if ((result = globus_io_tcp_connect((host[0] == '_') ? &host[1] : host,htons(port),&attr,handle)) != GLOBUS_SUCCESS)
@@ -646,8 +655,9 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
   globus_io_attr_set_tcp_nodelay(&attr,GLOBUS_TRUE);
   globus_io_attr_set_socket_reuseaddr(&attr,GLOBUS_TRUE);
   globus_io_secure_authorization_data_initialize(&auth_data);
+  globus_io_secure_authorization_data_set_callback(&auth_data,AuthenticationCallback,0);
   globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
-  globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_SELF,&auth_data);
+  globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_CALLBACK,&auth_data);
   globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
   globus_io_tcp_posix_convert( 0,&attr,handle);
   AddClient = AddClient_in;
