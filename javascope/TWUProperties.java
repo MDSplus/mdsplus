@@ -22,6 +22,9 @@
  *
  * ------------------------------------------------------------------------ 
  * $Log$
+ * Revision 1.18  2003/01/09 14:35:58  jgk
+ * Some trivial changes to test the CVS notification system.
+ *
  * Revision 1.17  2002/11/28 11:56:51  jgk
  * Some unimportant changes to the comment texts, in effect
  * going back to the situation of revision 1.13.
