@@ -59,6 +59,8 @@ class InfoServer implements Server
         for(int i = num_actions = 0; i < nids.length; i++)
         {
             try{
+                if(!model_database.isOn(nids[i], 0))
+                    continue;
                 NodeInfo info = model_database.getInfo(nids[i], 0);
                 //check dispatch and task fields
                 ActionData action_data = (ActionData)model_database.getData(nids[i], 0);
