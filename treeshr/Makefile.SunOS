@@ -1,4 +1,4 @@
-CFLAGS = -c -D__sunos__ -misalign -D_big_endian -I../include -I. -g 
+CFLAGS = -c -D__sunos__ -D_big_endian -I../include -I. -g 
 
 OBJECTS = \
 dummies.o \
@@ -17,16 +17,18 @@ RemoteAccess.o
 #	make -f Makefile.SunOS -f .depend ../shlib/libTreeShr.so
 
 ../shlib/libTreeShr.so : $(OBJECTS) ../shlib
-	ld -o $@ $(OBJECTS) -G -lc -L../shlib -lMdsShr
+	cc -o $@ -misalign2 $(OBJECTS) -G -lc -L../shlib -lMdsShr
 
 ../shlib :
 	mkdir ../shlib
+
+TreeGetNci.o : TreeGetNci.c
+	cc $(CFLAGS) -misalign2 TreeGetNci.c
 
 clean :
 	- rm *.o
 	- rm ../shlib/libTreeShr.so
 	- rm .depend
-	- rm so_locations
 
 depend : .depend
 
