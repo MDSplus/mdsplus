@@ -47,6 +47,7 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 #include <mds_stdarg.h>
 #include <tdimessages.h>
 #include <errno.h>
+#include <sys/time.h>
 
 #ifdef HAVE_WINDOWS_H
 extern int pthread_cond_signal();
@@ -379,9 +380,14 @@ static void WaitForActions(int all)
 	{
       struct timespec one_sec = {1,0};
       struct timespec abstime;
-      /*      pthread_get_expiration_np(&one_sec,&abstime);*/
-      gettimeofday(&abstime, 0);
-      abstime.tv_sec += 1;
+      struct timeval tmval;
+      /*
+      pthread_get_expiration_np(&one_sec,&abstime);
+      */
+      
+      gettimeofday(&tmval, 0);
+      abstime.tv_sec = tmval.tv_sec + 1;
+      abstime.tv_nsec = tmval.tv_usec * 1000;
       
 
       ProgLoc = 601;

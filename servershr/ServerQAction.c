@@ -7,6 +7,7 @@
 #include <mdsshr.h>
 #include <strroutines.h>
 #include <treeshr.h>
+#include <sys/time.h>
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 extern int  pthread_cond_timedwait();
@@ -709,12 +710,16 @@ static void WaitForJob()
   {
     struct timespec one_sec = {1,0};
     struct timespec abstime;
+    struct timeval tmval;
     ProgLoc = 12;
-    /*   pthread_get_expiration_np(&one_sec,&abstime);*/
-    gettimeofday(&abstime, 0);
-    abstime.tv_sec += 1;
-
-
+    /*
+    pthread_get_expiration_np(&one_sec,&abstime);
+    */
+      
+    gettimeofday(&tmval, 0);
+    abstime.tv_sec = tmval.tv_sec + 1;
+    abstime.tv_nsec = tmval.tv_usec * 1000;
+      
     CondWStat = pthread_cond_timedwait( &JobWaitCondition, &JobWaitMutex, &abstime);
     ProgLoc = 13;
   }
