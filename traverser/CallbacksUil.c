@@ -1013,8 +1013,8 @@ RenameNode( Widget w, XtPointer client_data, XtPointer call_data)
 	qargs[0].value = (long)XmStringCreateLtoR("Rename node", XmSTRING_DEFAULT_CHARSET);
 	qargs[1].value = (long)XmStringCreateLtoR("Rename", XmSTRING_DEFAULT_CHARSET);
         qdlog = XmCreateQuestionDialog(toplevel, "rename", qargs, XtNumber(qargs));
-	XtFree(qargs[0].value);
-	XtFree(qargs[1].value);
+	XmStringFree(qargs[0].value);
+	XmStringFree(qargs[1].value);
         targs[0].value = (long)c_path;
         widg = (Widget)XmCreateTextField(qdlog, "new_name", targs, XtNumber(targs));
         XtManageChild(widg);
@@ -1199,7 +1199,7 @@ void CloseTree( Widget w, XtPointer client_data, XtPointer call_data)
       XtManageChild(write_dlog);
     }
     else {
-      int status = TreeClose(NULL, NULL);
+      int status = TreeClose(NULL, 0);
       ListTreeRefreshOff(tree);
       if ((status&1) && (top != NULL)) ListTreeDelete(tree, top);
       Init(tree);
@@ -1214,7 +1214,7 @@ void WriteTree( Widget w, XtPointer client_data, XtPointer call_data)
     if (write) {
       status = TreeWriteTree(0, 0);
       if (status)
-	status = TreeClose(NULL, NULL);
+	status = TreeClose(NULL, 0);
     }
     else
       status = TreeQuitTree(0, 0);

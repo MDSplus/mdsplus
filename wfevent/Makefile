@@ -5,7 +5,7 @@ CFLAGS =  -g
 OBJECTS = \
 wfevent.o 
 
-wfevent : ../bin \
+all : ../bin \
 ../bin/wfevent 
 
 ../bin :
