@@ -34,12 +34,16 @@ fi
 if [ -r $MDSPLUS_DIR/GLOBUS_LICENSE ]
 then
   product=FusionGrid
+  echo "GLOBUS_LOCATION $MDSPLUS_DIR" >> $MDSPLUS_DIR/etc/envsyms
   if [ ! -r $MDSPLUS_DIR/local/envsyms ]
   then
     echo "include $MDSPLUS_DIR/local/roam.env" > $MDSPLUS_DIR/local/envsyms
+    echo "MYPROXY_SERVER cert.fusiongrid.org" >> $MDSPLUS_DIR/local/envsyms
   fi
+  GLOBUS_LOCATIOON=$MDSPLUS_DIR
   GPT_LOCATION=$MDSPLUS_DIR
   export GPT_LOCATION
+  export GLOBUS_LOCATION
   $GPT_LOCATION/sbin/gpt-postinstall --force
   if [ ! -r $MDSPLUS_DIR/local/roam.env ]
   then
@@ -195,49 +199,18 @@ then
   then
     ln -s $MDSPLUS_DIR/setup.csh /etc/profile.d/mdsplus.csh
     ln -s $MDSPLUS_DIR/setup.sh /etc/profile.d/mdsplus.sh
-    if [ "$product" = "FusionGrid" ]
-    then
-	if [ ! -r /etc/profile.d/globus.csh ]
-	then
-	    echo "setenv GLOBUS_LOCATION $MDSPLUS_DIR" > /etc/profile.d/globus.csh
-	    echo "source \$GLOBUS_LOCATION/etc/globus-user-env.csh" >> /etc/profile.d/globus.csh
-	    echo "setenv MYPROXY_SERVER cert.fusiongrid.org" >> /etc/profile.d/globus.csh
-	fi
-	if [ ! -r /etc/profile.d/globus.sh ]
-	then
-	    echo "GLOBUS_LOCATION=$MDSPLUS_DIR" > /etc/profile.d/globus.sh
-	    echo "export GLOBUS_LOCATION" >> /etc/profile.d/globus.sh
-	    echo ". \$GLOBUS_LOCATION/etc/globus-user-env.sh" >> /etc/profile.d/globus.sh
-	    echo "MYPROXY_SERVER=cert.fusiongrid.org" >> /etc/profile.d/globus.sh
-	    echo "export MYPROXY_SERVER" >> /etc/profile.d/globus.csh
-	fi
-    fi
   else
     if grep "^. $MDSPLUS_DIR/setup.sh" /etc/profile > /dev/null
     then
       true
     else
       echo ". $MDSPLUS_DIR/setup.sh" >> /etc/profile
-      if [ "$product" = "FusionGrid" ]
-      then
-	  echo "GLOBUS_LOCATION=$MDSPLUS_DIR" >> /etc/profile
-	  echo "export GLOBUS_LOCATION" >> /etc/profile
-	  echo ". \$GLOBUS_LOCATION/etc/globus-user-env.sh" >> /etc/profile
-	  echo "MYPROXY_SERVER=cert.fusiongrid.org" >> /etc/profile
-	  echo "export MYPROXY_SERVER" >> /etc/profile
-      fi
     fi
     if grep "^source $MDSPLUS_DIR/setup.csh" /etc/csh.login > /dev/null
     then
       true
     else
       echo "source $MDSPLUS_DIR/setup.csh" >> /etc/csh.login
-      if [ "$product" = "FusionGrid" ]
-      then
-	  echo "setenv GLOBUS_LOCATION $MDSPLUS_DIR" >> /etc/csh.login
-	  echo "source \$GLOBUS_LOCATION/etc/globus-user-env.csh" >> /etc/csh.login
-	  echo "setenv MYPROXY_SERVER cert.fusiongrid.org" >> /etc/csh.login
-      fi
     fi
   fi
 fi
