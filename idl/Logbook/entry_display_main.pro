@@ -1,4 +1,3 @@
-pro entry_display_main
-  sql
-  entry_display
-end
+restore, 'Entry_Display.sav'
+entry_display
+exit
