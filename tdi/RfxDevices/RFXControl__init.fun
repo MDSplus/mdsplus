@@ -21,8 +21,8 @@ public fun RFXControl__init(as_is _nid, optional _method)
     private _N_N_NET_IN = 18;
     private _N_N_NET_OUT = 19;
 
-    private _N_PAR1_NAME = 436;
-    private _N_PAR1_VALUE = 437; 
+    private _N_PAR1_NAME = 438;
+    private _N_PAR1_VALUE = 439; 
 
 	private _N_ADC_IN_1 = 20;
 	private _N_DAC_OUT_1 = 212;
@@ -30,7 +30,7 @@ public fun RFXControl__init(as_is _nid, optional _method)
 	private _N_NET_OUT_1 = 372;
 
 
-	private _MAX_CONTROLS = 5;
+	private _MAX_CONTROLS = 6;
 	private _NUM_PARAMETERS = 105;
 
 write(*, 'RFXControl init');
@@ -162,12 +162,13 @@ write(*, 'RFXControl init');
 				_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedback'//_par_name, float(_par_value));
 		}
 		else
-			_status = MdsValue('Feedback->setFloatVariable($1, 0.)', 'feedback'//_par_name, float(_par_value));
+			_status = MdsValue('Feedback->setFloatVariable($1, 0.)', 'feedback'//_par_name//'Length');
 
 	}
 
 	_routine_name= data(DevNodeRef(_nid, _N_ROUTINE_NAME));
-	_status = MdsValue('Feedback->'// _routine_name // '()');
+	_status = MdsValue('feedback->stop'// _routine_name // '()');
+	_status = MdsValue('feedback->start'// _routine_name // '()');
 
     MdsDisconnect();
     return (1);

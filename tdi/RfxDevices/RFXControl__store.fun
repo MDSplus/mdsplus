@@ -22,8 +22,8 @@ public fun RFXControl__store(as_is _nid, optional _method)
     private _N_N_NET_IN = 18;
     private _N_N_NET_OUT = 19;
 
-    private _N_PAR1_NAME = 436;
-    private _N_PAR1_VALUE = 437; 
+    private _N_PAR1_NAME = 438;
+    private _N_PAR1_VALUE = 439; 
 
 	private _N_ADC_IN_1 = 20;
 	private _N_DAC_OUT_1 = 212;
@@ -57,9 +57,13 @@ write(*, 'RFXControl store');
 
 	/* Read number of signals */
 	_num_adc_in = data(DevNodeRef(_nid, _N_N_ADC_IN));
+	write(*, 'Num ADC in: ', _num_adc_in);
 	_num_dac_out = data(DevNodeRef(_nid, _N_N_DAC_OUT));
+	write(*, 'Num DAC out: ', _num_dac_out);
 	_num_net_in = data(DevNodeRef(_nid, _N_N_NET_IN));
+	write(*, 'Num NET in: ', _num_net_in);
 	_num_net_out = data(DevNodeRef(_nid, _N_N_NET_OUT));
+	write(*, 'Num NET out: ', _num_net_out);
 
 	for(_c = 0; _c < _num_adc_in; _c++)
 	{
@@ -83,7 +87,7 @@ write(*, _c);
 			_status = DevPutSignal(_sig_nid, -2048, 10/2048., word(_data), 0, _n_samples, _dim);
 			if(! _status)
 			{
-				DevLogErr(_nid, 'Error writing data in pulse file');
+				DevLogErr(_nid, 'Error writing data in pulse file' // _status);
 
 			}
 	}
