@@ -1003,7 +1003,7 @@ LD=ld
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib -I\$(top_srcdir)/include +DA1.1 +DS1.1 +z";
        FFLAGS="$FFLAGS -Wl,+s,+b\$(exec_prefix)/lib -I\$(top_srcdir)/include +DA1.1 +DS1.1 +"; 
-       LDSHARE="-Wl,-a shared";
+       LDSHARE="-Wl,-a shared_archive";
        LDARC="-Wl,-a archive";
        LINKSHARED="-b";
        FOR_LDFLAGS="-v -L/usr/lib/pa1.1 -lcl -lf";
