@@ -134,7 +134,10 @@ static SOCKET ConnectToPort(char *host, char *service)
   struct hostent *hp = NULL;
   struct servent *sp;
   static int one=1;
+/*
   long sendbuf = 32768,recvbuf = 32768;
+*/
+  long sendbuf = 5000,recvbuf = 5000;
   int addr;
 
 #ifndef vxWorks

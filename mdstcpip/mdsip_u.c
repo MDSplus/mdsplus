@@ -1129,7 +1129,11 @@ static int CreateMdsPort(char *service, int multi_in)
 {
   static struct sockaddr_in sin;
   struct servent *sp;
+  int one=1;
+/*
   long sendbuf=32768,recvbuf=32768;
+*/
+  long sendbuf=5000,recvbuf=5000;
   int s;
   int status;
   if (multi)
@@ -1155,7 +1159,8 @@ static int CreateMdsPort(char *service, int multi_in)
   sp = getservbyport(sin.sin_port,"tcp");
   PortName = strcpy((char *)malloc(strlen(sp ? sp->s_name :service)+1),sp ? sp->s_name : service);
   setsockopt(s, SOL_SOCKET,SO_RCVBUF,(char *)&recvbuf,sizeof(long));
-  setsockopt(s, SOL_SOCKET,SO_SNDBUF,(char *)&sendbuf,sizeof(long));  
+  setsockopt(s, SOL_SOCKET,SO_SNDBUF,(char *)&sendbuf,sizeof(long));
+  setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&one, sizeof(one));  
   status = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&multi_in,sizeof(1));
   if (status < 0)
   {
