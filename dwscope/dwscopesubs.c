@@ -506,7 +506,7 @@ Boolean   ConvertWaveToSelection(Widget w, String prefix, WaveInfo *wave, Atom t
   }
   else if (target == XA_TARGETS)
   {
-    *type = XA_ATOM;
+    *type = target;
     *value = (String)XtMalloc(sizeof(Atom) * 4);
     ((Atom *) * value)[0] = XA_STRING;
     ((Atom *) * value)[1] = XA_DWSCOPE_PANEL;
