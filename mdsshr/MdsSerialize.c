@@ -908,10 +908,10 @@ int MdsSerializeDscOutZ(struct descriptor *in,
 #ifdef _big_endian
         if (dtype != DTYPE_T)
         {
+          char *outp = (char *)altbuf;
+          char *inp = out_ptr->pointer;
 	  switch (out_ptr->length)
 	  {
-            char *outp = (char *)altbuf;
-            char *inp = out_ptr->pointer;
 	    case 2:  LoadShort(inp,outp); break;
             case 4:  LoadInt(inp,outp); break;
             case 8:  LoadInt(inp,outp); 
