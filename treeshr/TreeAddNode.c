@@ -630,16 +630,16 @@ static int one = 1;
 static int zero = 0;
 
 #ifdef _big_endian
-static TREE_HEADER *HeaderOut(TREE_HEADER *hdr)
+static TREE_HEADER *HeaderOut(TREE_HEADER *hdr, TREE_HEADER *out)
 {
-  TREE_HEADER out = *hdr;
+  *out = *hdr;
   char flags = (hdr->sort_children ? 1 : 0) | (hdr->sort_members ? 2 : 0);
-  *(char *)&out = flags;
-  out.free = swapint((char *)&hdr->free);
-  out.tags = swapint((char *)&hdr->tags);
-  out.externals = swapint((char *)&hdr->externals);
-  out.nodes = swapint((char *)&hdr->nodes);
-  return &out;
+  ((char *)out)[1] = flags;
+  out->free = swapint((char *)&hdr->free);
+  out->tags = swapint((char *)&hdr->tags);
+  out->externals = swapint((char *)&hdr->externals);
+  out->nodes = swapint((char *)&hdr->nodes);
+  return out;
 }
 #endif
 
@@ -710,9 +710,10 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
       ntreef = fopen(nfilenam,"wb");
       if (ntreef)
       {
+        TREE_HEADER tmp;
         size_t num;
 #ifdef _big_endian
-        num = fwrite(HeaderOut(info_ptr->header),512,header_pages,ntreef);
+        num = fwrite(HeaderOut(info_ptr->header,&tmp),512,header_pages,ntreef);
 #else
         num = fwrite(info_ptr->header,512,header_pages,ntreef);
 #endif
