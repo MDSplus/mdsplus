@@ -1,0 +1,9 @@
+LIBRARY	MDSJET
+CODE	PRELOAD MOVEABLE DISCARDABLE
+DATA	PRELOAD SINGLE
+EXPORTS
+;
+mdsjet
+mdsjet_idl
+mdsjetdata
+mdsjet_setidentity
