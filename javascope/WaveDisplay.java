@@ -9,9 +9,10 @@ import java.security.*;
 public class WaveDisplay extends JApplet implements WaveformListener
 {
     MultiWaveform w;
-    MultiWavePopup wave_popup;
+    WavePopup wave_popup;
     private Frame frame;
     JTextField shot_txt;
+    ProfileDialog profDialog;
 
     public WaveDisplay()
     {
@@ -25,7 +26,8 @@ public class WaveDisplay extends JApplet implements WaveformListener
         w.addWaveformListener(this);
                         
         setBackground(Color.lightGray);
-        wave_popup = new MultiWavePopup(new SetupWaveformParams(null, "Waveform Params"));
+        profDialog = new ProfileDialog(null, null);
+        wave_popup = new WavePopup(new SetupWaveformParams(null, "Waveform Params"), profDialog);
         getContentPane().add(wave_popup);
         panel.addMouseListener( new MouseAdapter()
 	        {
@@ -100,7 +102,8 @@ public class WaveDisplay extends JApplet implements WaveformListener
 
     public void destroy() {
     }
-             
+  
+                      
     public void processWaveformEvent(WaveformEvent e)
     {
         String s = null;
@@ -113,7 +116,6 @@ public class WaveDisplay extends JApplet implements WaveformListener
 	        
 	    switch(we_id)
 	    {
-    	    case WaveformEvent.MEASURE_UPDATE:
 	        case WaveformEvent.POINT_UPDATE:
 	        case WaveformEvent.POINT_IMAGE_UPDATE:
        	        s = we.toString();
@@ -126,12 +128,14 @@ public class WaveDisplay extends JApplet implements WaveformListener
 		            s  = (s +
 		                " Expr : " + w.getSignalName(we.signal_idx));  
 	            }
+	            showStatus(s);
 	        break;
 	        case WaveformEvent.STATUS_INFO:
 	            s = we.status_info;
+	            showStatus(s);
 	        break;
 	    }
-        showStatus(s);
+        
     }
 
     protected boolean translateToBoolean(String value)
@@ -182,7 +186,7 @@ public class WaveDisplay extends JApplet implements WaveformListener
                     WaveInterface wi = w.getWaveInterface();
                     wi.SetDataProvider(da.getDataProvider());
                     wi.experiment = da.getExperiment();
-                    wi.AddSignal(da.getSignal());
+                    wi.AddSignal(da.getSignalName());
                                        
                     wi.full_flag = !async_update;
                     wi.setShotArray(da.getShot());
@@ -227,8 +231,9 @@ public class WaveDisplay extends JApplet implements WaveformListener
                     vertical_flip = getParameterValue(sig_param, "v_flip");
                     if(vertical_flip != null && vertical_flip.toLowerCase().equals("true"))
                         f.setVerticalFlip(true);
+                    
                         
-                    f = DataAccessURL.getImages(url, f);
+                    DataAccessURL.getImages(url, f);
                     if(f != null)
                     {
                         name = getParameterValue(sig_param, "name");
@@ -238,11 +243,11 @@ public class WaveDisplay extends JApplet implements WaveformListener
                         aspect_ratio = getParameterValue(sig_param, "ratio");
                         if(aspect_ratio != null && aspect_ratio.toLowerCase().equals("false"))
                             f.setAspectRatio(false);
-                            
-                            
+                                                        
                         w.UpdateImage(f);
                     }
-                }
+                    
+               }
             }
         }
         catch(Exception e)
@@ -285,6 +290,13 @@ public class WaveDisplay extends JApplet implements WaveformListener
         }
         return value;         
     }
+    
+    public void addProtocol(DataAccess dataAccess)
+    {
+        DataAccessURL.addProtocol(dataAccess);
+    }
+    
+    
     public void print_xxx(Graphics g)
     {
         Dimension dim = new Dimension();

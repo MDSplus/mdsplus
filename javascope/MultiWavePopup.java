@@ -24,12 +24,12 @@ public class MultiWavePopup extends WavePopup
 	
 	public MultiWavePopup()
     {
-        this(null);
+        this(null, null);
     }
     
-    public MultiWavePopup(SetupWaveformParams setup_params)
+    public MultiWavePopup(SetupWaveformParams setup_params, ProfileDialog profDialog)
     {
-        super(setup_params);
+        super(setup_params, profDialog);
         
 	    legend = new JMenuItem("Position legend");
 	    legend.addActionListener(new ActionListener()
@@ -119,7 +119,6 @@ public class MultiWavePopup extends WavePopup
             
             markerList.setEnabled(state);
             colorList.setEnabled(state);	
-//            interpolate_f.setEnabled(state);
             set_point.setEnabled(wave.mode == Waveform.MODE_POINT);
             
             if(state) {
@@ -128,7 +127,6 @@ public class MultiWavePopup extends WavePopup
                 else
                     sig_idx = wave.GetSelectedSignal();
                     
-//                interpolate_f.setState(wave.GetInterpolate(sig_idx));
                 boolean state_m = state && (wave.GetMarker(sig_idx) != Signal.NONE 
                                         && wave.GetMarker(sig_idx) != Signal.POINT);
                 markerStep.setEnabled(state_m);
@@ -148,11 +146,6 @@ public class MultiWavePopup extends WavePopup
             JCheckBoxMenuItem ob;
             if(s_name != null)
             {
-/*
-                JPanel pan = new JPanel();
-                BoxLayout bl = new BoxLayout(pan, BoxLayout.Y_AXIS);
-                JScrollPane jsp = new JScrollPane(pan);
-  */              
                 
                 int ccc = signalList.getItemCount();
                 if(signalList.getItemCount() != 0)

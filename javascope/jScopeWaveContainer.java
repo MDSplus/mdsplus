@@ -34,11 +34,9 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     private   UpdW      updateThread;
     private   boolean   abort;
     private   boolean   add_sig = false;
-    private   ProfileDialog profile_dialog;
     private   long       main_shots[] = null;
     private   String    main_shot_str = null;
     private   String    main_shot_error = null;
-    private   jScopeMultiWave profile_source = null;
               jScopeMultiWave wave_all[];
     private   String    save_as_txt_directory = null;
     private   jScopeBrowseSignals browse_sig = null;
@@ -286,33 +284,6 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         jScopeMultiWave w = (jScopeMultiWave)e.getSource();
         switch(e.getID())
         {
-            case WaveformEvent.PROFILE_UPDATE:
-                if(profile_dialog != null && profile_dialog.isShowing())
-                {
-                    if(e.frame_type == FrameData.BITMAP_IMAGE_32)
-                    {
-                        profile_dialog.updateProfiles(e.name,
-                                                  e.values_x, e.start_pixel_x, 
-                                                  e.values_y, e.start_pixel_y,
-                                                  e.values_signal, e.frames_time);
-                        if(e.pixels_line != null)
-                            profile_dialog.updateProfileLine(e.values_line);
-                        else
-                            profile_dialog.removeProfileLine();
-                    }
-                    else
-                    {
-                        profile_dialog.updateProfiles(e.name,
-                                                  e.pixels_x, e.start_pixel_x, 
-                                                  e.pixels_y, e.start_pixel_y,
-                                                  e.pixels_signal, e.frames_time);
-                        if(e.pixels_line != null)
-                            profile_dialog.updateProfileLine(e.pixels_line);
-                        else
-                            profile_dialog.removeProfileLine();
-                    }   
-                }
-             break;
              case WaveformEvent.END_UPDATE :
                 Point p = getComponentPosition(w);
 	            if(w.wi.isAddSignal())
@@ -371,25 +342,6 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		  JOptionPane.showMessageDialog(null, msg , "alert", JOptionPane.ERROR_MESSAGE); 
         }    
     }
-
-    public void ShowProfileDialog(jScopeMultiWave wave)
-    {
-        if(profile_dialog != null && profile_dialog.isVisible())
-            profile_dialog.dispose();
-        //if(profile_dialog == null)
-        {
-            profile_dialog = new ProfileDialog(GetFrameParent(), wave);
-            profile_dialog.pack();
-            profile_dialog.setSize(200, 300);
-            if(profile_source != null)
-                profile_source.setSendProfile(false);
-            wave.setSendProfile(true);
-            profile_source = wave;
-            profile_dialog.show();
-            wave.sendProfileEvent();
-        }
-    }
-
    
     public void StartPrint(PrinterJob prnJob, PageFormat pf)
     {

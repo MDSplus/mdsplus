@@ -10,7 +10,7 @@ import java.awt.datatransfer.*;
 
 
 
-public class WavePopup extends JPopupMenu implements  ItemListener 
+public class WavePopup extends JPopupMenu implements  ItemListener
 {
 	protected Waveform   wave = null;
 	protected SetupWaveformParams setup_params;
@@ -18,7 +18,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	protected JMenuItem setup, autoscale, autoscaleY, autoscaleAll, autoscaleAllY,
 		      allSameScale, allSameXScale, allSameXScaleAutoY, allSameYScale,
 		      resetScales, resetAllScales, playFrame, remove_panel,
-		      set_point, undo_zoom, maximize, cb_copy; 
+		      set_point, undo_zoom, maximize, cb_copy, profile_dialog; 
 	protected JMenu markerList, colorList, markerStep, mode_2d, mode_1d;
 	//protected JCheckBoxMenuItem interpolate_f;
 	protected JRadioButtonMenuItem plot_y_time, plot_x_y, plot_y_x, plot_image;
@@ -28,13 +28,16 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	
 	protected int curr_x, curr_y;
 	protected Container parent;
+	
+	private   Waveform profile_source = null;
+    ProfileDialog profDialog;
 
     public WavePopup()
     {
-        this(null);
+        this(null, null);
     }
     
-    public WavePopup(SetupWaveformParams setup_params)
+    public WavePopup(SetupWaveformParams setup_params, ProfileDialog profDialog)
     {	    
 
 	    setup = new JMenuItem("Set Limits...");
@@ -47,7 +50,8 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	        }
 	    );
         this.setup_params = setup_params;
-
+        this.profDialog = profDialog;
+        
 	    remove_panel = new JMenuItem("Remove panel");
 	    remove_panel.setEnabled(false);
 	    remove_panel.addActionListener(new ActionListener()
@@ -387,6 +391,17 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	            }
 	        }
 	    );
+	    
+	    profile_dialog = new JMenuItem("Show profile dialog");
+	    profile_dialog.addActionListener(new ActionListener()
+	        {
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                ShowProfileDialog(wave);
+	            }
+	        }
+	    );
+	    
     }
     
     protected void ShowDialog()
@@ -440,6 +455,8 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	   {
            add(setup);
            colorList.setText("Colors");
+           if(profDialog != null)
+                add(profile_dialog);
 	       if(parent instanceof WaveformManager)
 	       {
               add(maximize);
@@ -467,7 +484,6 @@ public class WavePopup extends JPopupMenu implements  ItemListener
            add(markerStep);
            colorList.setText("Colors");
            add(colorList);	
-          // add(interpolate_f);
            if(wave.mode == Waveform.MODE_POINT || wave.GetShowSignalCount() == 1)
            {
                 if(wave.getSignalType() == Signal.TYPE_1D)
@@ -535,7 +551,27 @@ public class WavePopup extends JPopupMenu implements  ItemListener
         SelectListItem(colorList_bg, wave.GetColorIdx());
 	    playFrame.setEnabled(state);
         set_point.setEnabled(state && ((wave.mode == Waveform.MODE_POINT)));
+        
+        profile_dialog.setEnabled(!wave.isSendProfile());
+        
 	}
+	
+    public void ShowProfileDialog(Waveform wave)
+    {
+        if(profDialog != null && profDialog.isVisible())
+            profDialog.dispose();
+        //profDialog = new ProfileDialog(null, wave);
+        profDialog.setWaveSource(wave);
+        profDialog.pack();
+        profDialog.setSize(200, 300);
+        if(profile_source != null)
+            profile_source.setSendProfile(false);
+        wave.setSendProfile(true);
+        profile_source = wave;
+        profDialog.show();
+        wave.sendProfileEvent();
+    }
+	
 	
 	protected void SetSignalMenu()
 	{

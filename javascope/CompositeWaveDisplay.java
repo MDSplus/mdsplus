@@ -126,7 +126,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         setBackground(Color.lightGray);
         wave_container = new WaveformContainer();
         wave_container.addWaveContainerListener(this);
-        WavePopup wave_popup = new MultiWavePopup(new SetupWaveformParams(f, "Waveform Params"));
+        WavePopup wave_popup = new MultiWavePopup(new SetupWaveformParams(f, "Waveform Params"), new ProfileDialog(null, null));
         wave_container.setPopupMenu(wave_popup);
         wave_container.SetMode(Waveform.MODE_ZOOM);
                 
@@ -552,7 +552,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             {
                                        
                 wi.experiment = da.getExperiment();
-                wi.AddSignal(da.getSignal());
+                wi.AddSignal(da.getSignalName());
                 wi.setShotArray(da.getShot());
                                             
 	            wi.StartEvaluate();

@@ -36,7 +36,7 @@ public class MdsAccess implements DataAccess
         return st.nextToken().equals("mds");
     }
     
-    public String setProvider(String url) throws IOException
+    public void setProvider(String url) throws IOException
     {
         StringTokenizer st1 = new StringTokenizer(url, ":");
         String content = st1.nextToken();
@@ -44,9 +44,9 @@ public class MdsAccess implements DataAccess
         content = content.substring(2);
         StringTokenizer st2 = new StringTokenizer(content, "/");
         if(st2.countTokens() < 4) //ip addr/exp/shot/signal
-            return null;
+            return;
         String addr = st2.nextToken();
-        if(addr == null) return null;
+        if(addr == null) return;
         if(ip_addr == null || !ip_addr.equals(addr))
         {
             np = new MdsDataProvider(addr);
@@ -68,7 +68,6 @@ public class MdsAccess implements DataAccess
             np.Update(experiment, shot);
         }
         signal = st2.nextToken();
-        return signal;
     }
     
     public String getShot()
@@ -76,7 +75,7 @@ public class MdsAccess implements DataAccess
         return shot_str;
     }
 
-    public String getSignal()
+    public String getSignalName()
     {
         return signal;
     }
@@ -101,14 +100,14 @@ public class MdsAccess implements DataAccess
     
     public float [] getX(String url) throws IOException
     {
-        signal = setProvider(url);
+        setProvider(url);
         if(signal == null) return null;
         return np.GetFloatArray("DIM_OF("+signal+")");
     }
     
     public float [] getY(String url) throws IOException
     {
-        String signal = setProvider(url);
+        setProvider(url);
         if(signal == null) return null;
         return np.GetFloatArray(signal);
     }
@@ -130,38 +129,12 @@ public class MdsAccess implements DataAccess
         return s;
     }
  
-    public Frames getImages(String url, Frames f) throws IOException
+    public FrameData getFrameData(String url) throws IOException
     {
-        byte buf[];
-        String signal = setProvider(url);
-        
-        if(signal == null) return null;
-        try
-        {
-            if( (buf = np.GetAllFrames(signal)) != null )
-            {
-                if(f == null)
-                    f = new Frames();
-                if(!f.AddMultiFrame(buf, (float)-1E8, (float)1E8))
-                {
-	                error = " Can't decode multi frame image "; 
-                } else {
-                    f.WaitLoadFrame();
-                    f.setName(signal);
-                }
-                buf = null;            
-            } 
-            else
-                error = " Frames not found ";
-        }   
-        catch (Exception e) 
-        {
-            error = new String(e.getMessage());
-        }
-        
-        return f;
+        setProvider(url);
+        return np.GetFrameData(signal, null, (float)-1E8, (float)1E8);
     }
-    
+ 
     public void setPassword(String encoded_credentials)
     {
         this.encoded_credentials = encoded_credentials;

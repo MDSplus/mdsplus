@@ -54,7 +54,7 @@ class DataAccessURL
                     name = s.getName();
                     
                 if(name == null)
-                    name = da.getSignal()+" "+da.getShot();
+                    name = da.getSignalName()+" "+da.getShot();
                 else
                     name = name+" "+da.getShot();                
                 s.setName(name);
@@ -68,37 +68,37 @@ class DataAccessURL
         return null;
     }    
 
-    static public Frames getImages(String url, Frames f) throws IOException
+    static public void getImages(String url, Frames f) throws IOException
     {
-        return getImages(url, null, null, f);
+        getImages(url, null, null, f);
     }
 
-    static public Frames getImages(String url, String passwd, Frames f) throws IOException
+    static public void getImages(String url, String passwd, Frames f) throws IOException
     {
-        return getImages(url, null, passwd, f);
+        getImages(url, null, passwd, f);
     }
 
-    static public Frames getImages(String url, String name, String passwd, Frames f) throws IOException
+    static public void getImages(String url, String name, String passwd, Frames f) throws IOException
     {
         DataAccess da = null;
         
-        if((da = getDataAccess(url)) != null)
+        if((da = getDataAccess(url)) != null || f == null)
         {
             da.setPassword(passwd);
-            f = da.getImages(url, f);
-            if(f == null && da.getError() == null)
+            FrameData fd = da.getFrameData(url);
+            if(fd == null && da.getError() == null)
                 throw(new IOException("Incorrect password or read images error"));
             
-            if(da.getError() == null)
-            {
-                return f;
-            }
-            else
+            f.SetFrameData(fd);
+            f.setName(da.getSignalName());
+            
+            if(da.getError() != null)
             {
                 throw(new IOException(da.getError()));
             }
         }
-        throw(new IOException("Protocol not recognized"));
+        else
+            throw(new IOException("Protocol not recognized"));
     }
     
     

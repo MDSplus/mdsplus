@@ -45,14 +45,14 @@ public class RdaAccess implements DataAccess
         return st.nextToken().equals("rda");
     }
     
-    public String setProvider(String url) throws IOException
+    public void setProvider(String url) throws IOException
     {
         String protocol = url.substring(0, url.indexOf(":"));
         String context = url.substring(url.indexOf(":")+3);
         String addr = context.substring(0, context.indexOf("/"));
         signal = context.substring(addr.length()+1, context.length());
      
-        if(addr == null) return null;
+        if(addr == null) return;
         if(ip_addr == null || !ip_addr.equals(addr))
         {
             if(jp == null)
@@ -77,8 +77,6 @@ public class RdaAccess implements DataAccess
                 ip_addr = addr;
             }    
         }
-        
-        return signal;
     }
     
     public String getShot()
@@ -86,7 +84,7 @@ public class RdaAccess implements DataAccess
         return shot_str;
     }
 
-    public String getSignal()
+    public String getSignalName()
     {
         return signal;
     }
@@ -113,7 +111,7 @@ public class RdaAccess implements DataAccess
 
     public float [] getX(String url) throws IOException
     {
-        signal = setProvider(url);
+        setProvider(url);
         if(signal == null) return null;
         System.out.println(signal);
         return jp.GetWaveData(signal).GetXData();
@@ -121,7 +119,7 @@ public class RdaAccess implements DataAccess
 
     public float [] getY(String url) throws IOException
     {
-        signal = setProvider(url);
+        setProvider(url);
         if(signal == null) return null;
         System.out.println(signal);
         return jp.GetWaveData(signal).GetYData();
@@ -129,7 +127,7 @@ public class RdaAccess implements DataAccess
     
     public float [] getData(String url) throws IOException
     {
-        signal = setProvider(url);
+        setProvider(url);
         if(signal == null) return null;
         return jp.GetWaveData(signal).GetFloatData();
     }
@@ -166,7 +164,7 @@ public class RdaAccess implements DataAccess
     
     public Signal getSignal(String url) throws IOException
     {
-        signal = setProvider(url);
+        setProvider(url);
         if(signal == null) return null;
         SignalInfo sig_info = parseSignal(signal);
         Signal s = null;
@@ -225,6 +223,6 @@ public class RdaAccess implements DataAccess
 
 
     public void close(){}
-    public Frames getImages(String url, Frames f){return null;}
+    public FrameData getFrameData(String url){return null;}
 }
         

@@ -2207,11 +2207,14 @@ public class Waveform extends JComponent
 	            sendProfileEvent();
 	    }
 	    
-	    NotifyZoom(waveform_signal.xmin, 
-	               waveform_signal.xmax, 
-	               waveform_signal.ymin,
-	               waveform_signal.ymax, 
-                   update_timestamp);
+	    if(waveform_signal != null)
+	    {
+	        NotifyZoom(waveform_signal.xmin, 
+	                   waveform_signal.xmax, 
+	                   waveform_signal.ymin,
+	                   waveform_signal.ymax, 
+                       update_timestamp);
+        }
         
     }
     
@@ -2276,7 +2279,7 @@ public class Waveform extends JComponent
         waveform_listener.addElement(l);
    }
 
-    public synchronized void removeWaveformListener(ActionListener l) 
+    public synchronized void removeWaveformListener(WaveformListener l) 
     {
 	    if (l == null) {
 	        return;

@@ -5,7 +5,7 @@ import java.awt.*;
 import java.util.Vector;
 
 
-public class MdsConnection
+public class MdsConnection 
 {
     static public int    DEFAULT_PORT = 8000;
     static public String DEFAULT_USER = "JAVA_USER";
@@ -235,6 +235,13 @@ public class MdsConnection
 	            case Descriptor.DTYPE_LONG:
 		            out.int_data = message.ToIntArray();
 		        break;
+	            case Descriptor.DTYPE_ULONG:
+		            out.long_data = message.ToUIntArray();
+		        break;
+	            case Descriptor.DTYPE_LONGLONG:
+		            out.long_data = message.ToLongArray();
+		        break;
+		        
 	            case Descriptor.DTYPE_CSTRING:
 	                if((message.status & 1) == 1)
 	                    out.strdata = new String(message.body);
@@ -295,13 +302,11 @@ public class MdsConnection
                 out = getAnswer();
             else
                 out = new Descriptor();
-            
-            
         }
 	    catch(IOException e) 
-	        { 
-	            out = new Descriptor("Could not get IO for "+provider + e);
-	        }
+	    { 
+	        out = new Descriptor("Could not get IO for "+provider + e);
+	    }
         return out;        
     }
 
@@ -553,8 +558,5 @@ public class MdsConnection
             }
         }
     }
-    
-    
-    
   }
 

@@ -35,7 +35,7 @@ public class TwuAccess implements DataAccess
         return st.nextToken().equals("twu");
     }
     
-    public String setProvider(String url) throws IOException
+    public void setProvider(String url) throws IOException
     {
         signal = "http" + url.substring(url.indexOf(":"));
         
@@ -51,7 +51,6 @@ public class TwuAccess implements DataAccess
         {
             tw = new TwuDataProvider("jScope applet (Version 7.2.2)");
         }        
-        return signal;
     }
     
     public String getShot()
@@ -59,7 +58,7 @@ public class TwuAccess implements DataAccess
         return shot_str;
     }
 
-    public String getSignal()
+    public String getSignalName()
     {
         return signal;
     }
@@ -80,21 +79,21 @@ public class TwuAccess implements DataAccess
 
     public float [] getX(String url) throws IOException
     {
-        signal = setProvider(url);
+        setProvider(url);
         if(signal == null) return null;
         return tw.GetFloatArray(signal, true);
     }
     
     public float [] getY(String url) throws IOException
     {
-        signal = setProvider(url);
+        setProvider(url);
         if(signal == null) return null;
         return tw.GetFloatArray(signal, false);
     }    
     
     public Signal getSignal(String url) throws IOException
     {
-        signal = setProvider(url);
+        setProvider(url);
         if(signal == null) return null;
         Signal s = null;
         
@@ -120,7 +119,7 @@ public class TwuAccess implements DataAccess
         return tw.ErrorString();
     }
 
-    public Frames getImages(String url, Frames f) throws IOException
+    public FrameData getFrameData(String url)
     {
         return null;
     }

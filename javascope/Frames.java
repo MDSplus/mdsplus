@@ -339,6 +339,15 @@ class Frames extends Canvas
             
             byte b_img[];
             Image img;
+            
+            if(c_model == null)
+            {
+                byte rgb[] = new byte[256];
+                for(int i = 0; i < 256; i++)
+                    rgb[i] = (byte)i;                   
+                c_model = new IndexColorModel(pixel_size, 256, rgb, rgb, rgb);    
+            }
+            
             for(int i = 0; i < n_frame; i++)
             {
                 if(f_time[i] < timemin || f_time[i] > timemax)

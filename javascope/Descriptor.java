@@ -27,6 +27,7 @@ class Descriptor
     public    float  float_data[];
     public	  int    int_data[];
     public    byte   byte_data[];
+    public    long   long_data[];
     public	  String strdata;
     public	  String error = null;
     public    int    dims[];
@@ -87,6 +88,13 @@ class Descriptor
             dos.writeDouble(d);
             b = dosb.toByteArray();
         }
+        if(o instanceof Long)
+        {
+            long l = ((Long)o).longValue();
+            dos.writeLong(l);
+            b = dosb.toByteArray();
+        }
+ 
         
         dos.close();
         return b;

@@ -341,6 +341,64 @@ class MdsMessage extends Object
         return dis.readFloat();
     }
 
+    public long[] ToLongArray() throws IOException
+    {
+        long ch1, ch2, ch3, ch4, ch5, ch6, ch7, ch8;
+        long out[] = new long[body.length / 8];
+        if(swap)
+            for(int i = 0, j = 0; i < body.length / 8; i++, j+=8)
+            {
+                ch1 = (body[j+7] & 0xff) << 56;
+                ch2 = (body[j+6] & 0xff) << 48;
+                ch3 = (body[j+5] & 0xff) << 40;
+                ch4 = (body[j+4] & 0xff) << 32;    
+                ch5 = (body[j+3] & 0xff) << 24;
+                ch6 = (body[j+2] & 0xff) << 16;
+                ch7 = (body[j+1] & 0xff) << 8;
+                ch8 = (body[j+0] & 0xff) << 0;    
+                out[i] = ((ch1) + (ch2) + (ch3) + (ch4) + (ch5) + (ch6) + (ch7) + (ch8));
+            }
+	    else
+            for(int i = 0, j = 0; i < body.length / 8; i++, j+=8)
+            {
+                ch1 = (body[j+0] & 0xffL) << 56;
+                ch2 = (body[j+1] & 0xffL) << 48;
+                ch3 = (body[j+2] & 0xffL) << 40;
+                ch4 = (body[j+3] & 0xffL) << 32;    
+                ch5 = (body[j+4] & 0xffL) << 24;
+                ch6 = (body[j+5] & 0xffL) << 16;
+                ch7 = (body[j+6] & 0xffL) << 8;
+                ch8 = (body[j+7] & 0xffL) << 0;   
+                out[i] = ((ch1) + (ch2) + (ch3) + (ch4) + (ch5) + (ch6) + (ch7) + (ch8));
+            }
+        return out;
+    }
+
+    public long[] ToUIntArray() throws IOException
+    {
+        long ch1, ch2, ch3, ch4;
+        long out[] = new long[body.length / 4];
+        if(swap)
+            for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
+            {
+                ch1 = (body[j+3] & 0xff) << 24;
+                ch2 = (body[j+2] & 0xff) << 16;
+                ch3 = (body[j+1] & 0xff) << 8;
+                ch4 = (body[j+0] & 0xff) << 0;    
+                out[i] = ((ch1) + (ch2) + (ch3) + (ch4) );
+            }
+	    else
+            for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
+            {
+                ch1 = (body[j+0] & 0xff) << 24;
+                ch2 = (body[j+1] & 0xff) << 16;
+                ch3 = (body[j+2] & 0xff) << 8;
+                ch4 = (body[j+3] & 0xff) << 0;    
+                out[i] = ((ch1) + (ch2) + (ch3) + (ch4) );
+            }
+        return out;
+    }
+
     public int[] ToIntArray() throws IOException
     {
         int ch1, ch2, ch3, ch4;

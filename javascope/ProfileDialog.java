@@ -4,7 +4,7 @@ import javax.swing.JFrame;
 import java.awt.event.*;
 
 
-public class ProfileDialog extends JDialog
+public class ProfileDialog extends JDialog implements WaveformListener
 {
     static final String TITLE[] = {"X profile", "Y profile", "Pixel time profile"};
     private WaveformContainer profile_container;
@@ -12,9 +12,9 @@ public class ProfileDialog extends JDialog
     Waveform wave[] = new Waveform[3];
     Waveform w_profile_line = null;
     private String name;
-    private jScopeMultiWave source_profile = null;
+    private Waveform source_profile = null;
     
-    ProfileDialog(JFrame parent, jScopeMultiWave source_profile)
+    ProfileDialog(JFrame parent, Waveform source_profile)
     {
         super(parent, "Profile Dialog");
         this.source_profile = source_profile;
@@ -32,10 +32,22 @@ public class ProfileDialog extends JDialog
             public void windowClosing(WindowEvent e) 
             {
                 if(ProfileDialog.this.source_profile != null)
+                {
                     ProfileDialog.this.source_profile.setSendProfile(false);
+                    ProfileDialog.this.source_profile.removeWaveformListener(ProfileDialog.this);
+                    
+                }
                 dispose();
             }
         });
+    }
+    
+    public void setWaveSource(Waveform source_profile)
+    {
+        if(this.source_profile != null)
+            (this.source_profile).removeWaveformListener(this);
+        this.source_profile = source_profile;
+        source_profile.addWaveformListener(this);
     }
     
     public void addProfileLine()
@@ -172,4 +184,48 @@ public class ProfileDialog extends JDialog
             wave[2].Update(frames_time, values_signal);
         } 
     }
+    
+    public void processWaveformEvent(WaveformEvent e)
+    {
+        String s = null;
+	    int event_id = e.getID();
+	    	 	 
+	    WaveformEvent we = (WaveformEvent)e;
+	    MultiWaveform w = (MultiWaveform)we.getSource();
+	    WaveInterface  wi = w.getWaveInterface();
+	    int we_id = we.getID();
+	        
+	    switch(we_id)
+	    {     
+            case WaveformEvent.PROFILE_UPDATE:
+                if(isShowing())
+                {
+                    if(e.frame_type == FrameData.BITMAP_IMAGE_32)
+                    {
+                        updateProfiles(e.name,
+                                                  e.values_x, e.start_pixel_x, 
+                                                  e.values_y, e.start_pixel_y,
+                                                  e.values_signal, e.frames_time);
+                        if(e.pixels_line != null)
+                            updateProfileLine(e.values_line);
+                        else
+                            removeProfileLine();
+                    }
+                    else
+                    {
+                        updateProfiles(e.name,
+                                       e.pixels_x, e.start_pixel_x, 
+                                       e.pixels_y, e.start_pixel_y,
+                                       e.pixels_signal, e.frames_time);
+                        if(e.pixels_line != null)
+                            updateProfileLine(e.pixels_line);
+                        else
+                            removeProfileLine();
+                    }   
+                }
+            break;
+	    }
+        
+    }
+    
 }

@@ -17,7 +17,7 @@ public class DemoAccess implements DataAccess
         return st.nextToken().equals("demo");
     }
     
-    public String setProvider(String url) throws IOException
+    public void setProvider(String url) throws IOException
     {
         StringTokenizer st1 = new StringTokenizer(url, ":");
         String content = st1.nextToken();
@@ -26,11 +26,10 @@ public class DemoAccess implements DataAccess
         StringTokenizer st2 = new StringTokenizer(content, "/");
         np = new DemoDataProvider();
         signal = st2.nextToken();
-        return signal;
     }
     
 
-    public String getSignal()
+    public String getSignalName()
     {
         return signal;
     }
@@ -53,14 +52,14 @@ public class DemoAccess implements DataAccess
     
     public float [] getX(String url) throws IOException
     {
-        signal = setProvider(url);
+        setProvider(url);
         if(signal == null) return null;
         return np.GetFloatArray(signal+"_x");
     }
     
     public float [] getY(String url) throws IOException
     {
-        String signal = setProvider(url);
+        setProvider(url);
         if(signal == null) return null;
         return np.GetFloatArray(signal);
     }
@@ -82,36 +81,10 @@ public class DemoAccess implements DataAccess
         return s;
     }
  
-    public Frames getImages(String url, Frames f) throws IOException
+    public FrameData getFrameData(String url) throws IOException
     {
-        byte buf[];
-        String signal = setProvider(url);
-        
-        if(signal == null) return null;
-        try
-        {
-            if( (buf = np.GetAllFrames(signal)) != null )
-            {
-                if(f == null)
-                    f = new Frames();
-                if(!f.AddMultiFrame(buf, (float)-1E8, (float)1E8))
-                {
-	                error = " Can't decode multi frame image "; 
-                } else {
-                    f.WaitLoadFrame();
-                    f.setName(signal);
-                }
-                buf = null;            
-            } 
-            else
-                error = " Frames not found ";
-        }   
-        catch (Exception e) 
-        {
-            error = new String(e.getMessage());
-        }
-        
-        return f;
+        setProvider(url);
+        return ( np.GetFrameData(signal, null, (float)-1E8, (float)1E8) );
     }
     
     public void setPassword(String encoded_credentials)
