@@ -1020,7 +1020,7 @@ static char *AbsPath(void *dbid, char *inpath, int nid_in)
         strcpy(answer,"\\");
         strcat(answer,Treename(dblist,nid_in));
         strcat(answer,"::");
-        strcat(answer,pathptr);
+        strcat(answer,pathptr+1);
       }
     }
     else if (ctx[1].type == PARENT_TYPE)
