@@ -1281,3 +1281,23 @@ void *TreeSwitchDbid(void *dbid)
   DBID = dbid;
   return old_dbid;
 }
+
+struct descriptor *TreeFileName(char *tree, int shot)
+{
+  static struct descriptor ans_dsc={0, DTYPE_T, CLASS_D, 0};
+  int fd;
+  char *ans;
+  TREE_INFO dummy_info;
+
+  fd = OpenOne(&dummy_info, tree, shot, TREE_TREEFILE_TYPE, 0, &ans, 0);
+  if (fd != -1) {
+    MDS_IO_CLOSE(fd);
+    ans_dsc.pointer = ans;
+    ans_dsc.length = strlen(ans);
+  }
+  else {
+    ans_dsc.pointer = NULL;
+    ans_dsc.length = 0;
+  }
+  return &ans_dsc;
+}
