@@ -392,7 +392,7 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
       double result = 0;\
       double resulti = 0;\
 	  count = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += (2 * step0),pm0 += stepm0) {\
         if (*pm0 & 1)\
         {\
           double val;\
@@ -488,7 +488,7 @@ int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
   for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
     for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
-      double result = 0;\
+      double result = 1;\
       int bad = 0;\
       for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
         if (!bad && *pm0 & 1)\
@@ -512,17 +512,21 @@ int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
   for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
     for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
-      double result = 0;\
-      double resulti = 0;\
+      int first = 1;\
+      double result = 1;\
+      double resulti = 1;\
       int bad = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += (2 * step0),pm0 += stepm0) {\
         if (!bad && *pm0 & 1)\
         {\
           double val;\
           double vali;\
           if (CvtConvertFloat(&pi0[0],dtype,&val,DTYPE_DOUBLE,0) && \
               CvtConvertFloat(&pi0[1],dtype,&vali,DTYPE_DOUBLE,0)) \
-            {result = result * val - resulti * vali; resulti = result * vali + resulti * val;} else bad=1;\
+          {\
+            if (first) { result = val; resulti = vali; first = 0;} else \
+            {double oldresult = result; result = result * val - resulti * vali; resulti = oldresult * vali + resulti * val;}\
+          } else bad=1;\
         }\
       }\
       if (!bad)\
@@ -610,7 +614,7 @@ int Tdi3Product(struct descriptor *in, struct descriptor *mask,
     for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
       double result = 0;\
       double resulti = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += (2 * step0),pm0 += stepm0) {\
         if (*pm0 & 1)\
         {\
           double val;\
@@ -702,7 +706,7 @@ int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
     for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
       double result = 0;\
       double resulti = 0;\
-      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += (2 * step0),pm0 += stepm0) {\
         if (*pm0 & 1)\
         {\
           double val;\
