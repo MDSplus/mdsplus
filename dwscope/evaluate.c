@@ -833,13 +833,13 @@ static long Connect()
 {
   static long sock;
   if (!sock) {
-    char *host = getenv("mds_host");
+    char *host = getenv("MDS_HOST");
     if (host == 0)
     {
-      printf("set environment variable mds_host to remote server name\n");
+      printf("set environment variable MDS_HOST to remote server name\n");
       exit(1);
     }
-    sock = ConnectToMds(getenv("mds_host"));
+    sock = ConnectToMds(getenv("MDS_HOST"));
   }
   if (sock == -1)
     exit(1);
@@ -850,7 +850,7 @@ static long ConnectEvents()
 {
   static long sock;
   if (!sock) {
-    sock = ConnectToMdsEvents(getenv("mds_host"));
+    sock = ConnectToMdsEvents(getenv("MDS_HOST"));
   }
   if (sock == -1)
     exit(1);
