@@ -163,7 +163,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  break_on_no_node;
 		  set_retlen(sizeof(node->conglomerate_elt));
 		  if (node->conglomerate_elt)
-			  *(unsigned short *) itm->pointer = node->conglomerate_elt;
+			  *(unsigned short *) itm->pointer = swapshort((char *)&node->conglomerate_elt);
 		  else
 			  *(unsigned short *) itm->pointer = 0;
 		  break;
@@ -221,9 +221,9 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  if (node->conglomerate_elt)
 		  {
 			  out_nid = nid;
-			  out_nid.node -= (node->conglomerate_elt - 1);
-			  cng_node = node - node->conglomerate_elt + 1;
-			  for (i = 0; (i < itm->buffer_length / 4) && (cng_node->conglomerate_elt > i); i++)
+			  out_nid.node -= (swapshort((char *)&node->conglomerate_elt) - 1);
+			  cng_node = node - swapshort((char *)&node->conglomerate_elt) + 1;
+			  for (i = 0; (i < itm->buffer_length / 4) && (swapshort((char *)&cng_node->conglomerate_elt) > i); i++)
 			  {
 				  set_retlen((sizeof(NID) * (i + 1)));
 				  *((NID *) (itm->pointer) + i) = out_nid;
@@ -256,7 +256,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  break_on_no_node;
 		  set_retlen(sizeof(count));
 		  count = 0;
-		  cng_node = node - node->conglomerate_elt + 1;
+		  cng_node = node - swapshort((char *)&node->conglomerate_elt) + 1;
 		  for (count = 0; cng_node->conglomerate_elt > count; count++);
 		  *(int *) (itm->pointer) = count;
 		  break;
