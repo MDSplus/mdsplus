@@ -25,7 +25,7 @@ static int ReadChannel(InStoreStruct *setup, int channel, int num, unsigned shor
 static void FixMenu(Widget w);
 
 extern int CamQ();
-
+extern int DevWait(float);
 int dsp2904___add(int *head_nid)
 {
   int counter_bits_nid = *head_nid + DSP2904_N_COUNTER_BITS_32;

@@ -132,6 +132,7 @@ static void GetPodSettings(int nid, int *settings);
 	}
 
 static int one=1;
+extern int DevWait(float);
 
 int hv4032___init(struct descriptor *niddsc, InInitStruct *setup)
 {

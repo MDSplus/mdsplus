@@ -24,7 +24,7 @@ static int ReadChannel(InStoreStruct *setup, int chunk,int samples,unsigned shor
 extern unsigned short OpcSubtract;
 extern unsigned short OpcMultiply;
 extern unsigned short OpcValue;
-
+extern int DevWait(float);
 extern int CamQ();
 extern int TdiData();
 

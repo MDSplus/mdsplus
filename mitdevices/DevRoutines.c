@@ -84,9 +84,9 @@ int DevNid(int *nid_in, int *nid_out)
   return status;
 }
   
-int DevWait(float time)
+int DevWait(float time_in)
 {
-  struct timespec req = {(time_t)time,(long)((time - (long)time)*1E9)};
+  struct timespec req = {(time_t)time_in,(long)((time_in - (long)time_in)*1E9)};
   struct timespec rem = {0,0};
   while (nanosleep(&req,&rem) == -1 && (rem.tv_sec != 0 || rem.tv_nsec != 0))
   {

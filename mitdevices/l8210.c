@@ -26,7 +26,7 @@ extern int TdiXtoI();
 extern int TdiNint();
 extern int TdiLong();
 extern int TdiText();
-
+extern int DevWait(float);
 static int one=1;
 static int zero=0;
 

@@ -27,7 +27,7 @@ static int one=1;
 #define fstop(f,a,num,data) {\
  if (!((status = DevCamChk(CamFStopw(setup->name,a,f,num,data,16,0),&one,&one)) & 1)) return status;}
 extern int DevCamChk();
-extern int DevWait();
+extern int DevWait(float);
 extern int CamPiow();
 extern int CamFStopw();
 extern int TdiGetFloat();

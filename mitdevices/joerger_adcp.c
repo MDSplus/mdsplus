@@ -8,6 +8,7 @@
 #include "joerger_adcp_gen.h"
 
 extern int TdiCompile();
+extern int DevWait(float);
 static int one=1;
 #define return_on_error(f) if (!((status = f) & 1)) return status;
 #define pio(f,a,d)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 16, 0), &one, 0))
