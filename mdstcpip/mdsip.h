@@ -49,7 +49,7 @@
 /*  *11   10-JUN-1994 11:32:13 TWF "Add another definition" */
 /*  *10   10-JUN-1994 11:23:12 TWF "Add errno" */
 /*  *9    10-JUN-1994 09:48:59 TWF "Add alpha osf1" */
-/*  *8     9-JUN-1994 16:19:02 TWF "Use int32 instead of long" */
+/*  *8     9-JUN-1994 16:19:02 TWF "Use int instead of long" */
 /*  *7     9-JUN-1994 08:20:13 TWF "Add linux" */
 /*  *6     7-JUN-1994 15:24:05 TWF "Add Ultrix system" */
 /*  *5     1-JUN-1994 14:44:04 TWF "Flip bytes" */
@@ -58,30 +58,30 @@
 /*  *2    17-MAY-1994 15:09:57 TWF "Put IPDESC.H in MDS$ROOT:[SYSLIB]" */
 /*  *1    17-MAY-1994 09:31:48 TWF "Include for MDSIPSHR" */
 /*  CMS REPLACEMENT HISTORY, Element MDSIP.H */
-#ifdef __MSDOS__
-
-#include <windows.h>
-#include <io.h>
-#include <alloc.h>
-
-#else
-
-#define INVALID_SOCKET -1
 #if defined(__sgi) || defined(sun)
 #define memcpy(a,b,c) bcopy(b,a,c)
 #include <errno.h>
+#elif defined(_WIN32)
+#include <errno.h>
+#include <time.h>
 #else
 #include <sys/errno.h>
 #endif
-#include <sys/types.h>
+#if defined(_WIN32)
+#include <windows.h>
+#include <io.h>
+#else
+#define INVALID_SOCKET -1
 #include <sys/time.h>
+#include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include "signal.h"
+#include <netinet/tcp.h>
+#endif
 #ifdef _AIX /* IBM AIX */
 #include <sys/select.h>
-#endif
-
 #endif
 
 #include <ipdesc.h>
@@ -129,8 +129,8 @@ int errno = 0;
 #endif
 
 typedef struct _eventinfo { char          data[12];
-                            int32          eventid;
-			    void      (*astadr)(void *, int32, char *);
+                            int          eventid;
+			    void      (*astadr)(void *, int, char *);
                             void          *astprm;
                           } MdsEventInfo;
 
@@ -139,15 +139,15 @@ typedef struct _jeventinfo { char          data[12];
                           } JMdsEventInfo;
 
 typedef struct _eventlist { SOCKET        sock;
-                            int32          eventid;
+                            int          eventid;
 			    char           jeventid;
                             MdsEventInfo  *info;
 			    int		  info_len;
                             struct _eventlist *next;
                           } MdsEventList;
 
-typedef struct _msghdr { int32 msglen bits32;
-			 int32 status bits32;
+typedef struct _msghdr { int msglen bits32;
+			 int status bits32;
                          short length bits16;
                          unsigned char nargs;
                          unsigned char descriptor_idx;
@@ -158,8 +158,8 @@ typedef struct _msghdr { int32 msglen bits32;
 #ifdef __CRAY
 			 long  dims[MAX_DIMS/2];
 #else
-                         int32  dims[MAX_DIMS];
-                         int32  fill;
+                         int  dims[MAX_DIMS];
+                         int  fill;
 #endif
                        } MsgHdr;
 

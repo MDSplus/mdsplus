@@ -12,9 +12,9 @@
 /*  *11    7-JUL-1994 12:08:10 TWF "Change _NO_PROTO to something else" */
 /*  *10   14-JUN-1994 09:28:55 TWF "add CRAY" */
 /*  *9    13-JUN-1994 09:52:08 TWF "Add NO_PROTO" */
-/*  *8    10-JUN-1994 13:47:00 TWF "use define with int32" */
-/*  *7     9-JUN-1994 16:20:20 TWF "Use int32 instead of long" */
-/*  *6     9-JUN-1994 16:18:58 TWF "Use int32 instead of long" */
+/*  *8    10-JUN-1994 13:47:00 TWF "use define with int" */
+/*  *7     9-JUN-1994 16:20:20 TWF "Use int instead of long" */
+/*  *6     9-JUN-1994 16:18:58 TWF "Use int instead of long" */
 /*  *5     2-JUN-1994 12:20:35 TWF "Change GetAnswerInfo to return pointer to data" */
 /*  *4     2-JUN-1994 12:18:36 TWF "Change GetAnswerInfo to return pointer to data" */
 /*  *3     1-JUN-1994 12:14:05 TWF "Add RS6000 support" */
@@ -22,12 +22,10 @@
 /*  *1    17-MAY-1994 09:33:58 TWF "descriptor structures" */
 /*  CMS REPLACEMENT HISTORY, Element IPDESC.H */
 #ifdef _WIN32
-#include "winsock.h"
-typedef long int32;
+#include "windows.h"
+//#include "winsock.h"
 #else
 typedef int SOCKET;
-typedef int int32;
-#define PASCAL
 #endif
 
 #define MAX_DIMS 7
@@ -45,42 +43,42 @@ typedef int int32;
 
 struct descrip { char dtype;
                  char ndims;
-                 int32  dims[MAX_DIMS];
-                 int32  length;
+                 int  dims[MAX_DIMS];
+                 int  length;
 		 void *ptr;
 	       };
 #define EndOfArgs ((struct descrip *)0)
 
 #ifdef _NO_MDS_PROTO
-extern SOCKET PASCAL ConnectToMds();
-extern SOCKET PASCAL ConnectToMdsEvents();
-extern int32  PASCAL SendArg();
-extern int32  PASCAL GetAnswerInfo();
-extern int32   MdsValue();
-extern int32   MdsPut();
-extern int32   PASCAL DisconnectFromMds();
+extern SOCKET ConnectToMds();
+extern SOCKET ConnectToMdsEvents();
+extern int  SendArg();
+extern int  GetAnswerInfo();
+extern int   MdsValue();
+extern int   MdsPut();
+extern int   DisconnectFromMds();
 extern struct descrip *MakeDescrip();
 extern struct descrip *MakeDescripWithLength();
-extern int32   PASCAL MdsOpen();
-extern int32   PASCAL MdsSetDefault();
-extern int32   PASCAL MdsClose();
-extern int32   PASCAL MdsEventAst();
-extern int32   PASCAL MdsEventCan();
+extern int   MdsOpen();
+extern int   MdsSetDefault();
+extern int   MdsClose();
+extern int   MdsEventAst();
+extern int   MdsEventCan();
 #else
-extern SOCKET PASCAL ConnectToMds(char *host);
-extern SOCKET PASCAL ConnectToMdsEvents(char *host);
-extern int32  PASCAL SendArg(SOCKET s,unsigned char i,char dtype,unsigned char nargs,short len,char ndims,int32 *dims,
+extern SOCKET ConnectToMds(char *host);
+extern SOCKET ConnectToMdsEvents(char *host);
+extern int  SendArg(SOCKET s,unsigned char i,char dtype,unsigned char nargs,short len,char ndims,int *dims,
                                  char *ptr);
-extern int32   PASCAL GetAnswerInfo(SOCKET s, char *dtype, short *len, char *ndims, int32 *dims, 
-			  int32 *nbytes, void * *dptr);
-extern int32   MdsValue(SOCKET sock, char *,...);
-extern int32   MdsPut(SOCKET sock, char *node, char *expression,...);
-extern int32   PASCAL DisconnectFromMds(SOCKET sock);
-extern struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype, char ndims, int32 *dims, void *ptr);
-extern struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype, int32 length, char ndims, int32 *dims, void *ptr);
-extern int32   PASCAL MdsOpen(SOCKET sock, char *tree, int32 shot);
-extern int32   PASCAL MdsSetDefault(SOCKET sock, char *node);
-extern int32   PASCAL MdsClose(SOCKET sock);
-extern int32   PASCAL MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int32 *eventid);
-extern int32   PASCAL MdsEventCan(SOCKET sock, int32 eventid);
+extern int   GetAnswerInfo(SOCKET s, char *dtype, short *len, char *ndims, int *dims, 
+			  int *nbytes, void * *dptr);
+extern int   MdsValue(SOCKET sock, char *,...);
+extern int   MdsPut(SOCKET sock, char *node, char *expression,...);
+extern int   DisconnectFromMds(SOCKET sock);
+extern struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype, char ndims, int *dims, void *ptr);
+extern struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype, int length, char ndims, int *dims, void *ptr);
+extern int   MdsOpen(SOCKET sock, char *tree, int shot);
+extern int   MdsSetDefault(SOCKET sock, char *node);
+extern int   MdsClose(SOCKET sock);
+extern int   MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int *eventid);
+extern int   MdsEventCan(SOCKET sock, int eventid);
 #endif

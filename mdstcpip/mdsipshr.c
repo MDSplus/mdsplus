@@ -80,7 +80,7 @@
 /*  *20   10-JUN-1994 11:57:37 TWF "Handle 64bit pointers" */
 /*  *19   10-JUN-1994 11:23:03 TWF "Take out multinet" */
 /*  *18   10-JUN-1994 09:55:49 TWF "fix" */
-/*  *17    9-JUN-1994 16:19:04 TWF "Use int32 instead of long" */
+/*  *17    9-JUN-1994 16:19:04 TWF "Use int instead of long" */
 /*  *16    7-JUN-1994 15:46:30 TWF "ultrix" */
 /*  *15    7-JUN-1994 15:23:57 TWF "Add ultrix support" */
 /*  *14    6-JUN-1994 10:18:48 TWF "Flush pipe if possible" */
@@ -99,36 +99,22 @@
 /*  *1    17-MAY-1994 09:30:50 TWF "MDSplus TCPIP RTL" */
 /*  CMS REPLACEMENT HISTORY, Element MDSIPSHR.C */
 #include "mdsip.h"
-#include "signal.h"
-#include <netinet/tcp.h>
-
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define x_UNIX_SERVER
 
 static unsigned char message_id = 1;
-Message *GetMdsMsg(SOCKET sock, int32 *status);
-int32 SendMdsMsg(SOCKET sock, Message *m, int oob);
+Message *GetMdsMsg(SOCKET sock, int *status);
+int SendMdsMsg(SOCKET sock, Message *m, int oob);
 
-static int32 initialized = 0;
-
-#ifdef __MSDOS__
-int PASCAL LibMain(HANDLE hInstance, WORD wDataSeg, WORD wHeapSize, LPSTR lmCmdLine)
-{
-  WSADATA wsaData;
-  WSAStartup(0x101,&wsaData);
-  if (wHeapSize > 0)
-    UnlockData(0);
-  return 1;
-}
-#endif
+static int initialized = 0;
 
 static char ClientType(void)
 {
   static char ctype = 0;
   if (!ctype)
   {
-    union { int32 i;
-            char  c[sizeof(int32)];
+    union { int i;
+            char  c[sizeof(int)];
             float x;
             double d;
           } client_test;
@@ -150,9 +136,9 @@ static char ClientType(void)
   return ctype;
 }
 
-struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype, int32 length, char ndims, int32 *dims, void *ptr)
+struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype, int length, char ndims, int *dims, void *ptr)
 {
-  int32 i;
+  int i;
   in_descrip->dtype = dtype;
   in_descrip->ndims = ndims;
   in_descrip->length = length;
@@ -162,9 +148,9 @@ struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype, in
   return in_descrip;
 }
 
-struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype, char ndims, int32 *dims, void *ptr)
+struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype, char ndims, int *dims, void *ptr)
 {
-  int32 i;
+  int i;
   in_descrip->dtype = dtype;
   in_descrip->ndims = ndims;
   in_descrip->length = 0;
@@ -174,9 +160,9 @@ struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype, char ndims, 
   return in_descrip;
 }
 
-static int32 ArgLen(struct descrip *d)
+static short ArgLen(struct descrip *d)
 {
-  int32 len;
+  short len;
   switch (d->dtype)
   {
     case DTYPE_CSTRING :  len = d->length ? d->length : (d->ptr ? strlen(d->ptr) : 0); break;
@@ -193,14 +179,14 @@ static int32 ArgLen(struct descrip *d)
   return len;
 }
 
-int32 MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated argument list expected ****/
+int MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated argument list expected ****/
 {
   va_list incrmtr;
   int a_count;
   int i;
   unsigned char nargs;
   unsigned char idx;
-  int32 status = 1;
+  int status = 1;
   struct descrip exparg;
   struct descrip *arg = &exparg;
   va_start(incrmtr, expression);
@@ -220,7 +206,7 @@ int32 MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated 
   if (status & 1)
   {
     short len;
-    int32 numbytes;
+    int numbytes;
     void *dptr;
     status = GetAnswerInfo(sock, &arg->dtype, &len, &arg->ndims, arg->dims, &numbytes, &dptr);
     arg->length = len;
@@ -244,14 +230,14 @@ int32 MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated 
   return status;
 }
 
-int32 MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL terminated argument list expected ****/
+int MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL terminated argument list expected ****/
 {
   va_list incrmtr;
   int a_count;
   int i;
   unsigned char nargs;
   unsigned char idx = 0;
-  int32 status = 1;
+  int status = 1;
 #ifdef _UNIX_SERVER
   static char *putexpprefix = "TreePutRecord(";
   static char *argplace = "$,";
@@ -261,7 +247,6 @@ int32 MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL t
 #endif
   char *putexp;
   struct descrip putexparg;
-  struct descrip nodearg;
   struct descrip exparg;
   struct descrip *arg;
   va_start(incrmtr, expression);
@@ -280,19 +265,19 @@ int32 MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL t
   arg = MakeDescrip(&exparg,DTYPE_CSTRING,0,0,expression);
   for (i=idx;i<a_count && (status & 1);i++)
   {
-    status = SendArg(sock, i, arg->dtype, nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
+    status = SendArg(sock, (char)i, arg->dtype, nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
     arg = va_arg(incrmtr, struct descrip *);
   }
   if (status & 1)
   {
     char dtype;
-    int32 dims[MAX_DIMS];
+    int dims[MAX_DIMS];
     char ndims;
     short len;
-    int32 numbytes;
+    int numbytes;
     void *dptr;
     status = GetAnswerInfo(sock, &dtype, &len, &ndims, dims, &numbytes, &dptr);
-    if (status & 1 && dtype == DTYPE_LONG && ndims == 0 && numbytes == sizeof(int32))
+    if (status & 1 && dtype == DTYPE_LONG && ndims == 0 && numbytes == sizeof(int))
       memcpy(&status,dptr,numbytes);
   }
   return status;
@@ -301,9 +286,9 @@ int32 MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL t
 /*JMS--->*/
 
 
-int32 MdsValueFtotSize (struct descrip *dataarg)
+int MdsValueFtotSize (struct descrip *dataarg)
 {
-  int32 totsize = 0;
+  int totsize = 0;
   if (dataarg->ndims == 0) {
     printf("MDSvalueF: scalar\n");
     totsize=1;
@@ -316,20 +301,20 @@ int32 MdsValueFtotSize (struct descrip *dataarg)
   return totsize;
 }
 
-int32 PASCAL MdsValueF(SOCKET sock, char *expression, double *data, int32 maxsize, int32 *retsize)
+int  MdsValueF(SOCKET sock, char *expression, double *data, int maxsize, int *retsize)
 {
 
   struct descrip dataarg;
 
-  int32 status = MdsValue(sock, expression, (struct descrip *)&dataarg, (struct descrip *)NULL);
+  int status = MdsValue(sock, expression, (struct descrip *)&dataarg, (struct descrip *)NULL);
 
   /*printf("EXPRESSION IN MDSVALUEF: %s %u \n",expression,strlen(expression)); */
   if (status & 1) {
 
-    int32 fullsize;
+    int fullsize;
     float *newdata;
-    int32 totsize = MdsValueFtotSize( (struct descrip *)&dataarg );
-    memcpy(retsize,&totsize,sizeof(int32));
+    int totsize = MdsValueFtotSize( (struct descrip *)&dataarg );
+    memcpy(retsize,&totsize,sizeof(int));
 
 
     if (totsize > maxsize) totsize=maxsize;
@@ -366,12 +351,11 @@ int32 PASCAL MdsValueF(SOCKET sock, char *expression, double *data, int32 maxsiz
 
 }
 
-int32 PASCAL MdsValueC(SOCKET sock, char *expression, char *data, int *retsize)
+int  MdsValueC(SOCKET sock, char *expression, char *data, int *retsize)
 {
 
   struct descrip dataarg;
-  int i;
-  int32 status = MdsValue(sock, expression, (struct descrip *)&dataarg, (struct descrip *)NULL);
+  int status = MdsValue(sock, expression, (struct descrip *)&dataarg, (struct descrip *)NULL);
   /* printf("EXPRESSION IN MDSVALUEC: -->%s<--\n",expression); */
   if (status & 1) {
     int size = ArgLen(&dataarg);
@@ -391,18 +375,17 @@ int32 PASCAL MdsValueC(SOCKET sock, char *expression, char *data, int *retsize)
 
 }
 
-int32 PASCAL MdsValueI(SOCKET sock, char *expression, int32 *data);
-int32 PASCAL MdsValueI(SOCKET sock, char *expression, int32 *data) 
+int  MdsValueI(SOCKET sock, char *expression, int *data);
+int  MdsValueI(SOCKET sock, char *expression, int *data) 
 {
 
   struct descrip dataarg;
-  int i;
-  int32 status = MdsValue(sock, expression, (struct descrip *)&dataarg, (struct descrip *)NULL);
+  int status = MdsValue(sock, expression, (struct descrip *)&dataarg, (struct descrip *)NULL);
 
   if (status & 1) {
     switch (dataarg.dtype) {
     case DTYPE_SHORT : case DTYPE_LONG :
-	memcpy(data, (int32 *) dataarg.ptr, ArgLen(&dataarg));
+	memcpy(data, (int *) dataarg.ptr, ArgLen(&dataarg));
 	break;
     default :
 	printf ("MDSValueI: Can't handle type: %u\n", dataarg.dtype);
@@ -417,21 +400,21 @@ int32 PASCAL MdsValueI(SOCKET sock, char *expression, int32 *data)
 
 
 
-int32 PASCAL MdsValueAll(SOCKET sock, char *expression, int32 *ireturn,
+int  MdsValueAll(SOCKET sock, char *expression, int *ireturn,
 		       double *freturn, char *creturn,
-		       int32 maxsize, int32 *retsize, int32 *type)
+		       int maxsize, int *retsize, int *type)
 {
 
   struct descrip ansarg;
 
-  int32 status = MdsValue(sock, expression, (struct descrip *)&ansarg, (struct descrip *)NULL);
+  int status = MdsValue(sock, expression, (struct descrip *)&ansarg, (struct descrip *)NULL);
 
   if (status & 1) {
 
-    int32 fullsize;
-    int32 totsize=0;
+    int fullsize;
+    int totsize=0;
     printf ("ndims: %u \n",ansarg.ndims);
-    printf ("value: %d \n",*(int32 *)ansarg.ptr);
+    printf ("value: %d \n",*(int *)ansarg.ptr);
     if (ansarg.ndims == 0) {
       totsize=1;
     } else { 
@@ -440,7 +423,7 @@ int32 PASCAL MdsValueAll(SOCKET sock, char *expression, int32 *ireturn,
 	totsize=totsize+ansarg.dims[i];
       }
     }
-    memcpy(retsize,&totsize,sizeof(int32));
+    memcpy(retsize,&totsize,sizeof(int));
     fullsize=totsize*ArgLen(&ansarg);
 
     printf ("total size: %u \n",totsize);
@@ -461,7 +444,7 @@ int32 PASCAL MdsValueAll(SOCKET sock, char *expression, int32 *ireturn,
           memcpy(ireturn, (uchar *) ansarg.ptr, fullsize);
           break; */
     case DTYPE_USHORT : 
-          memcpy(ireturn, (ushort *) ansarg.ptr, fullsize);
+          memcpy(ireturn, (unsigned short *) ansarg.ptr, fullsize);
           break;
 	  /* case DTYPE_ULONG : 
           memcpy(ireturn, (ulong *) ansarg.ptr, fullsize);
@@ -478,9 +461,9 @@ int32 PASCAL MdsValueAll(SOCKET sock, char *expression, int32 *ireturn,
     }
 
 
-    /*    int32 size = maxsize*4; 
-    printf("ansarg.ptr val: %u \n",*(int32 *)ansarg.ptr);
-    memcpy(returnval, (int32 *) ansarg.ptr, size); */
+    /*    int size = maxsize*4; 
+    printf("ansarg.ptr val: %u \n",*(int *)ansarg.ptr);
+    memcpy(returnval, (int *) ansarg.ptr, size); */
   }
   if (ansarg.ptr) free(ansarg.ptr);
   printf ("STATUS in MDSVALUEALL: %d \n",status);
@@ -490,7 +473,7 @@ int32 PASCAL MdsValueAll(SOCKET sock, char *expression, int32 *ireturn,
 
 /*JMS<---*/
 
-int32 PASCAL MdsOpen(SOCKET sock, char *tree, int32 shot)
+int  MdsOpen(SOCKET sock, char *tree, int shot)
 {
   struct descrip treearg;
   struct descrip shotarg;
@@ -500,16 +483,16 @@ int32 PASCAL MdsOpen(SOCKET sock, char *tree, int32 shot)
 #else
   static char *expression = "MDSLIB->MDS$OPEN($,$)";
 #endif
-  int32 status = MdsValue(sock, expression, MakeDescrip((struct descrip *)&treearg,DTYPE_CSTRING,0,0,tree), 
+  int status = MdsValue(sock, expression, MakeDescrip((struct descrip *)&treearg,DTYPE_CSTRING,0,0,tree), 
 			      MakeDescrip((struct descrip *)&shotarg,DTYPE_LONG,0,0,&shot),
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
 
-  if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) status = *(int32 *)ansarg.ptr;
+  if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) status = *(int *)ansarg.ptr;
   if (ansarg.ptr) free(ansarg.ptr);
   return status;
 }
 
-int32 PASCAL MdsClose(SOCKET sock)
+int  MdsClose(SOCKET sock)
 {
   struct descrip ansarg;
 #ifdef _UNIX_SERVER
@@ -517,13 +500,13 @@ int32 PASCAL MdsClose(SOCKET sock)
 #else
   static char *expression = "MDSLIB->MDS$CLOSE()";
 #endif
-  int32 status = MdsValue(sock, expression, &ansarg, NULL);
-  if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) status = *(int32 *)ansarg.ptr;
+  int status = MdsValue(sock, expression, &ansarg, NULL);
+  if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) status = *(int *)ansarg.ptr;
   if (ansarg.ptr) free(ansarg.ptr);
   return status;
 }
 
-int32 PASCAL MdsSetDefault(SOCKET sock, char *node)
+int  MdsSetDefault(SOCKET sock, char *node)
 {
   struct descrip nodearg;
   struct descrip ansarg;
@@ -532,35 +515,35 @@ int32 PASCAL MdsSetDefault(SOCKET sock, char *node)
 #else
   static char *expression = "MDSLIB->MDS$SET_DEFAULT($)";
 #endif
-  int32 status = MdsValue(sock, expression, MakeDescrip(&nodearg,DTYPE_CSTRING,0,0,node), &ansarg, NULL);
-  if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) status = *(int32 *)ansarg.ptr;
+  int status = MdsValue(sock, expression, MakeDescrip(&nodearg,DTYPE_CSTRING,0,0,node), &ansarg, NULL);
+  if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) status = *(int *)ansarg.ptr;
   if (ansarg.ptr) free(ansarg.ptr);
   return status;
 }
 
-int32 PASCAL MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int32 *eventid)
+int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 {
   struct descrip eventnamarg;
   struct descrip infoarg;
   struct descrip ansarg;
   MdsEventInfo info;
-  int32 size = sizeof(info);
-  int32 status;
-  info.astadr = astadr;
+  int size = sizeof(info);
+  int status;
+  info.astadr = (void (*)(void *,int ,char *))astadr;
   info.astprm = astprm;
   status = MdsValue(sock, EVENTASTREQUEST, MakeDescrip((struct descrip *)&eventnamarg,DTYPE_CSTRING,0,0,eventnam), 
 			      MakeDescrip((struct descrip *)&infoarg,DTYPE_UCHAR,1,&size,&info),
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
-  if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) *eventid = *(int32 *)ansarg.ptr;
+  if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) *eventid = *(int *)ansarg.ptr;
   if (ansarg.ptr) free(ansarg.ptr);
   return status;
 }
 
-int32 PASCAL MdsEventCan(SOCKET sock, int32 eventid)
+int  MdsEventCan(SOCKET sock, int eventid)
 {
   struct descrip eventarg;
   struct descrip ansarg;
-  int32 status = MdsValue(sock, EVENTCANREQUEST, MakeDescrip((struct descrip *)&eventarg,DTYPE_LONG,0,0,&eventid), 
+  int status = MdsValue(sock, EVENTCANREQUEST, MakeDescrip((struct descrip *)&eventarg,DTYPE_LONG,0,0,&eventid), 
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
   if (ansarg.ptr) free(ansarg.ptr);
   return status;
@@ -568,7 +551,7 @@ int32 PASCAL MdsEventCan(SOCKET sock, int32 eventid)
 
 void MdsDispatchEvent(SOCKET sock)
 {
-  int32 status;
+  int status;
   Message  *m;
   if ((m = GetMdsMsg(sock,&status)) != 0)
   {
@@ -585,9 +568,8 @@ void MdsDispatchEvent(SOCKET sock)
 
 static SOCKET ConnectToPort(char *host, char *service)
 {
-  int32 status;
+  int status;
   SOCKET s;
-  char buf[256];
   static struct sockaddr_in sin;
   struct hostent *hp;
   struct servent *sp;
@@ -598,13 +580,7 @@ static SOCKET ConnectToPort(char *host, char *service)
   hp = gethostbyname(host);
   if (hp == NULL)
   {
-#ifdef __MSDOS__
-    char msg[200];
-    sprintf(msg,"Error connecting to remote host: %s",host);
-    MessageBox( 0,msg,"Node Lookup Error",MB_OK | MB_ICONHAND);
-#else
     printf("Error: %s unknown\n",host);
-#endif
     return INVALID_SOCKET;
   }
   s = socket(AF_INET, SOCK_STREAM, 0);
@@ -616,17 +592,12 @@ static SOCKET ConnectToPort(char *host, char *service)
     if (port != NULL)
     {
       sp = malloc(sizeof(*sp));
-      sp->s_port = htons(atoi(port));
+      sp->s_port = htons((short)atoi(port));
     }
   }
   if (sp == NULL || sp->s_port == 0)
   {
-#ifdef __MSDOS__
-    MessageBox(0,"mdsip service not defined as known service","Unknown Service: mdsip",
-	     MB_OK | MB_ICONHAND);
-#else
     printf("Unknown service: %s\nSet environment variable %s if port is known\n",service,service);
-#endif
     return INVALID_SOCKET;
   }
   sin.sin_family = AF_INET;
@@ -640,10 +611,12 @@ static SOCKET ConnectToPort(char *host, char *service)
   }
   else
   {
-    int32 status;
+    int status;
     Message *m;
-#ifdef __MSDOS__
-    char *user_p = "Windows User";
+#ifdef _WIN32
+	static char user[128];
+	int bsize=128;
+	char *user_p = GetUserName(user,&bsize) ? user : "Windows User";
 #else
     static char user[L_cuserid];
     char *user_p;
@@ -692,20 +665,20 @@ static SOCKET ConnectToPort(char *host, char *service)
   return s;
 }
 
-SOCKET PASCAL ConnectToMds(char *host)
+SOCKET  ConnectToMds(char *host)
 {
   return ConnectToPort(host, "mdsip");
 }
 
-SOCKET PASCAL ConnectToMdsEvents(char *host)
+SOCKET  ConnectToMdsEvents(char *host)
 {
   return ConnectToPort(host, "mdsipe");
 }
 
-int32 PASCAL GetAnswerInfo(SOCKET sock, char *dtype, short *length, char *ndims, int32 *dims,
- int32 *numbytes, void * *dptr)
+int  GetAnswerInfo(SOCKET sock, char *dtype, short *length, char *ndims, int *dims,
+ int *numbytes, void * *dptr)
 {
-  int32 status;
+  int status;
   Message *m;
   int i;
   *numbytes = 0;
@@ -735,7 +708,7 @@ int32 PASCAL GetAnswerInfo(SOCKET sock, char *dtype, short *length, char *ndims,
     for (i=0;i<MAX_DIMS;i++)
       dims[i] = 0;
   }
-  if ((sizeof(MsgHdr) + *numbytes) != m->h.msglen)
+  if ((int)(sizeof(MsgHdr) + *numbytes) != m->h.msglen)
   {
     *numbytes = 0;
     return 0;
@@ -747,9 +720,9 @@ int32 PASCAL GetAnswerInfo(SOCKET sock, char *dtype, short *length, char *ndims,
   return m->h.status;
 }
 
-int32 PASCAL DisconnectFromMds(SOCKET sock)
+int  DisconnectFromMds(SOCKET sock)
 {
-  int32 status;
+  int status;
   shutdown(sock,2);
   status = close(sock);
 #ifdef __MSDOS__
@@ -758,15 +731,14 @@ int32 PASCAL DisconnectFromMds(SOCKET sock)
   return status;
 }
 
-int32 PASCAL SendArg(SOCKET sock, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims,
-int32 *dims, char *bytes)
+int  SendArg(SOCKET sock, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims,
+int *dims, char *bytes)
 {
-  int32 status;
-  int32 msglen;
+  int status;
+  int msglen;
   int i;
-  int32 nbytes = length;
+  int nbytes = length;
   Message *m;
-  char *bptr;
   for (i=0;i<ndims;i++)
     nbytes *= dims[i];
   msglen = sizeof(MsgHdr) + nbytes;
@@ -796,15 +768,15 @@ int32 *dims, char *bytes)
   return status;
 }
 
-int32 SendMdsMsg(SOCKET sock, Message *m, int oob)
+int SendMdsMsg(SOCKET sock, Message *m, int oob)
 {
   char *bptr = (char *)m;
-  int32 bytes_to_send = m->h.msglen;
+  int bytes_to_send = m->h.msglen;
   m->h.client_type = ClientType();
   while (bytes_to_send > 0)
   {
-    int32 bytes_this_time = min(bytes_to_send,BUFSIZ);
-    int32 bytes_sent;
+    int bytes_this_time = min(bytes_to_send,BUFSIZ);
+    int bytes_sent;
     bytes_sent = send(sock, bptr, bytes_this_time, oob);
     if (bytes_sent <= 0)
       return 0;
@@ -851,7 +823,7 @@ static void FlipData(Message *m)
   int num = 1;
   int i;
   char *ptr;
-  int32 dims[MAX_DIMS];
+  int dims[MAX_DIMS];
   for (i=0;i<MAX_DIMS;i++)
   {
 #ifdef __CRAY
@@ -878,21 +850,21 @@ static void FlipData(Message *m)
   }
 }
 
-Message *GetMdsMsg(SOCKET sock, int32 *status)
+Message *GetMdsMsg(SOCKET sock, int *status)
 {
   static MsgHdr header;
   static Message *msg = 0;
-  int32 msglen = 0;
+  int msglen = 0;
 /*
   static struct timeval timer = {10,0};
-  int32 tablesize = FD_SETSIZE;
+  int tablesize = FD_SETSIZE;
 */
-  int32 nbytes;
-  int32 selectstat=0;
+  int nbytes;
+  int selectstat=0;
   char *bptr = (char *)&header;
   fd_set readfds;
   fd_set exceptfds;
-  int32 bytes_remaining = sizeof(MsgHdr);
+  int bytes_remaining = sizeof(MsgHdr);
   FD_ZERO(&readfds);
   FD_SET(sock,&readfds);
   FD_ZERO(&exceptfds);
@@ -956,10 +928,10 @@ Message *GetMdsMsg(SOCKET sock, int32 *status)
     }
     else
     {
-      int32 bytes_this_time = min(bytes_remaining,BUFSIZ);
+      int bytes_this_time = min(bytes_remaining,BUFSIZ);
       nbytes = recv(sock, bptr, bytes_this_time, flags);
 #ifdef DEBUG
-      {int32 i;
+      {int i;
       for (i=0;i<nbytes;i++)
         printf("byte(%d) = 0x%x\n",i,bptr[i]);
       }
@@ -988,99 +960,99 @@ Message *GetMdsMsg(SOCKET sock, int32 *status)
   return msg;
 }
 
-int32 PASCAL IdlMdsClose(int32 lArgc, void * * lpvArgv)
+int  IdlMdsClose(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlMdsClose', socket, value=[1b])
 */
-  int32 status;
+  int status;
   sighold(SIGALRM);
   status = MdsClose((SOCKET)lpvArgv[0]);
   sigrelse(SIGALRM);
   return status;
 }
 
-int32 PASCAL IdlConnectToMds(int32 lArgc, void * * lpvArgv)
+int  IdlConnectToMds(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlConnectToMds', 'host-name')
 */
-  int32 status;
+  int status;
   sighold(SIGALRM);
   status = ConnectToMds((char *)lpvArgv[0]);
   sigrelse(SIGALRM);
   return status;
 }
 
-int32 PASCAL IdlDisconnectFromMds(int32 lArgc, void * * lpvArgv)
+int  IdlDisconnectFromMds(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlDisconnectFromMds', socket, value=[1b])
 */
-  int32 status;
+  int status;
   sighold(SIGALRM);
   status = DisconnectFromMds((SOCKET)lpvArgv[0]);
   sigrelse(SIGALRM);
   return status;
 }
 
-int32 PASCAL IdlMdsOpen(int32 lArgc, void * * lpvArgv)
+int  IdlMdsOpen(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlMdsOpen', sock, 'tree-name', shot, value = [1b,0b,1b]) 
 */
-  int32 status;
+  int status;
   sighold(SIGALRM);
-  status = MdsOpen((int32)lpvArgv[0],(char *)lpvArgv[1],(int32)lpvArgv[2]);
+  status = MdsOpen((int)lpvArgv[0],(char *)lpvArgv[1],(int)lpvArgv[2]);
   sigrelse(SIGALRM);
   return status;
 }
 
-int32 PASCAL IdlMdsSetDefault(int32 lArgc, void * * lpvArgv)
+int  IdlMdsSetDefault(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlMdsSetDefault', sock, 'node', value = [1b,0b]) 
 */
-  int32 status;
+  int status;
   sighold(SIGALRM);
-  status = MdsSetDefault((int32)lpvArgv[0],(char *)lpvArgv[1]);
+  status = MdsSetDefault((int)lpvArgv[0],(char *)lpvArgv[1]);
   sigrelse(SIGALRM);
   return status;
 }
 
-int32 PASCAL IdlGetAnsInfo(int32 lArgc, void * * lpvArgv)
+int  IdlGetAnsInfo(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlGetAnsInfo', socket_l, dtype_b, length_w, ndims_b, dims_l[7], numbytes_l, 
                                value=[1b,0b,0b,0b,0b,0b,0b])
 */
-  int32 status;
+  int status;
   sighold(SIGALRM);
   status = GetAnswerInfo((SOCKET)lpvArgv[0], (char *)lpvArgv[1], (short *)lpvArgv[2], (char *)lpvArgv[3],
-                       (int32 *)lpvArgv[4], (int32 *)lpvArgv[5], (void **)lpvArgv[6]);
+                       (int *)lpvArgv[4], (int *)lpvArgv[5], (void **)lpvArgv[6]);
   sigrelse(SIGALRM);
   return status;
 }
 
-int32 PASCAL Idlmemcpy(int32 lArgc, void * * lpvArgv)
+int  Idlmemcpy(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','Idlmemcpy', answer, answer_ptr, nbytes, value=[0b,1b,1b])
 */
 #ifdef __alpha
-  memcpy((void *)lpvArgv[0],*(void **)lpvArgv[1], (int32)lpvArgv[2]);
+  memcpy((void *)lpvArgv[0],*(void **)lpvArgv[1], (int)lpvArgv[2]);
 #else
-  memcpy((void *)lpvArgv[0],(void *)lpvArgv[1], (int32)lpvArgv[2]);
+  memcpy((void *)lpvArgv[0],(void *)lpvArgv[1], (int)lpvArgv[2]);
 #endif
   return 1;
 }
 
-int32 PASCAL IdlSendArg(int32 lArgc, void * * lpvArgv)
+int  IdlSendArg(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlSendArg', sock_l, idx_l, dtype_b, nargs_w, length_w, ndims_b, dims_l[7], 
 			    bytes, value=[1b,1b,1b,1b,1b,1b,1b,0b,0b])
 */
-  unsigned char idx    = (long)lpvArgv[1];
-  unsigned char dtype  = (long)lpvArgv[2];
-  unsigned char nargs  = (long)lpvArgv[3];
-  short         length = (long)lpvArgv[4];
-  char          ndims  = (long)lpvArgv[5];
-  int32 status;
+  unsigned char idx    = (unsigned char)lpvArgv[1];
+  unsigned char dtype  = (unsigned char)lpvArgv[2];
+  unsigned char nargs  = (unsigned char)lpvArgv[3];
+  short         length = (short)lpvArgv[4];
+  char          ndims  = (char)lpvArgv[5];
+  int status;
   sighold(SIGALRM);
-  status = SendArg((SOCKET)lpvArgv[0], idx, dtype, nargs, length, ndims, (int32 *)lpvArgv[6], (char *)lpvArgv[7]);
+  status = SendArg((SOCKET)lpvArgv[0], idx, dtype, nargs, length, ndims, (int *)lpvArgv[6], (char *)lpvArgv[7]);
   sigrelse(SIGALRM);
   return status;
 }
