@@ -100,7 +100,7 @@ public fun RFXClock__init(as_is _nid, optional _method)
 	DevPut(_base_nid, _chan_nid + _N_CHAN_COUNT_MODE, 'BINARY'); 
 	DevPut(_base_nid, _chan_nid + _N_CHAN_COUNT_DIR, 'DESCENDING'); 
 	DevPut(_base_nid, _chan_nid + _N_CHAN_OUTPUT_MODE, 'TOGGLE: INITIAL LOW'); 
-	write(*,  make_range(*,*,_effective_period));
+/*	write(*,  make_range(*,*,_effective_period));*/
 	DevPut(_nid, _N_CLOCK, make_range(*,*,_effective_period));
 
     }

@@ -41,10 +41,6 @@ public fun RFXPulse__init(as_is _nid, optional _method)
     private _N_START_EVENT = 7;
 
 
-
-
-
-write(*, 'Parte RFXPulse__init');
     _decoder =  if_error(DevNodeRef(_nid, _N_TARGET), (DevLogErr(_nid, 'Cannot resolve decoder');abort();));
     _decoder_nid = compile(getnci(getnci(_decoder, 'record'), 'fullpath'));
     _channel = if_error(data(DevNodeRef(_nid, _N_CHANNEL)), (DevLogErr(_nid, 'Cannot resolve channel');abort();));
@@ -77,9 +73,7 @@ write(*, 'Parte RFXPulse__init');
 	_event_num = 0;
     if(_event_num != 0)
     {
-write(*, 'CUCU ', _event);
 	_event_time = TimingGetEventTime(_event);
-write(*,'FATTO ',  _event_time);
 	DevPut(_nid, _N_EXT_TRIGGER, _event_time); 
     }
 
@@ -134,8 +128,6 @@ write(*,'FATTO ',  _event_time);
 	{
     	    _start_event = if_error(long(data(DevNodeRef(_decoder_nid, _N_START_EVENT))), (DevLogErr(_nid, 'Cannot resolve start event');abort();));
 	    _start_time = TimingGetEventTime(TimingEncodeEvent(_start_event));
-write(*, 'START SCALERS EVENT: ', _start_event);
-write(*, 'START SCALERS TIME: ', _start_time);
 	}
 	else
 	{

@@ -147,12 +147,8 @@ public fun MPBDecoder__init(as_is _nid, optional _method)
 		['ALWAYS HIGH','LOW PULSES','TOGGLE: INITIAL HIGH','TOGGLE: INITIAL LOW','ALWAYS LOW','HIGH PULSES'],
  		[0,1,2,3,4,5], _chan_output_mode = 0);
 
-write(*, 'Chan: ', _chan+1, '  ', _chan_output_mode, data(DevNodeRef(_nid,_chan_nid + _N_CHAN_OUTPUT_MODE )));
-
 	    if(_chan_output_mode == 3)
 	    {
-
-write(*, 'Chan: ', _chan+1, 'Set low');
 		_chan_output_mode--;
 		_set_low_mask = _set_low_mask | (1 << _chan);
 	    }
@@ -195,8 +191,6 @@ write(*, 'Chan: ', _chan+1, 'Set low');
     {
 	if(((_set_low_mask & (1 << _chan))!= 0)|| ((_chan_flags & (1 << _chan))== 0))
 	{
-
-write(*, 'Chan: ', _chan+1, 'LOW ', _set_low_mask);
 	    _w = (_chan + 1) |(29<<3) | 0xFF00;
  	    _status=DevCamChk(_name, CamPiow(_name, 0, 16, _w, 16),1,*);
 	
