@@ -175,10 +175,10 @@ public class RFXMOPSetup extends DeviceSetup {
   }
   private void jbInit() throws Exception {
     border1 = BorderFactory.createBevelBorder(BevelBorder.LOWERED,Color.white,Color.white,new Color(99, 99, 99),new Color(142, 142, 142));
-    this.setWidth(830);
-    this.setHeight(671);
+    this.setWidth(695);
+    this.setHeight(695);
     this.setDeviceType("RFXMOP");
-    this.setDeviceProvider("150.178.3.10");
+    this.setDeviceProvider("150.178.3.33");
     this.setDeviceTitle("RFX Mode Of Operation");
     this.getContentPane().setLayout(borderLayout1);
     jPanel1.setLayout(gridLayout1);
