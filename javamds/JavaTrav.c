@@ -711,7 +711,7 @@ static int doAction(int nid)
 	int method_nid, i;
 	struct descriptor nid_d = {sizeof(int), DTYPE_NID, CLASS_S, (char *)&method_nid};
 	char type = DTYPE_L;
-	DESCRIPTOR_CALL(call_d, &type, (unsigned char)256, 0, 0);
+	DESCRIPTOR_CALL(call_d, &type, 256, 0, 0);
 
 	status = TreeGetRecord(nid, &xd);
 	if(!(status & 1)) return status;
