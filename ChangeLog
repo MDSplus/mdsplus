@@ -1,5 +1,2196 @@
-Version 1.4-0
+Version 1.5-0
 
+
+2003-06-25 11:04  manduchi
+
+	* tdi/RfxDevices/DIO2Encoder__add.fun:
+	
+	Added software channel
+
+2003-06-25 11:03  manduchi
+
+	* javatraverser/: DIO2EncoderSetup.java, DIO2Setup.java,
+	RFXPConfigSetup.java:
+	
+	Minor changes io DIO2 encoder
+
+2003-06-25 10:37  manduchi
+
+	* tdi/RfxDevices/: DIO2HWGetPhaseCount.fun, DIO2HWGetRecEvents.fun,
+	DIO2HWInit.fun, DIO2HWReset.fun, DIO2HWSetDClockChan.fun,
+	DIO2__reset.fun, DIO2__store.fun, TimingEncodeEvent.fun:
+	
+	Reset method for DIO2 device iVS:
+	-------------------------------------------------------------------
+	---
+
+2003-06-24 12:20  manduchi
+
+	* tdi/RfxDevices/: DIO2EncoderHWInit.fun, DIO2HWInit.fun,
+	DIO2HWSetClockChan.fun, DIO2HWSetGClockChan.fun,
+	DIO2HWSetPulseChan.fun, DIO2HWStartChan.fun, DIO2HWTrigger.fun,
+	DIO2__init.fun, DIO2__store.fun, DIO2__trigger.fun:
+	
+	
+	Working update
+
+2003-06-23 11:53  twf
+
+	* Makefile.in:
+	
+	Add idlmdswidgets to makefile
+
+2003-06-23 11:32  twf
+
+	* idlmdswidgets/cw_wveditv5.c:
+	
+	Count of samples is length not length divided by sizeof(float)
+
+2003-06-23 11:31  twf
+
+	* dwscope/dwscopesubs.c:
+	
+	oops, revert last change. Problem was in cw_wvedit.
+
+2003-06-23 11:21  twf
+
+	* dwscope/dwscopesubs.c:
+	
+	Fix paste of x and y data. Using format 32 with count=num doesn't
+	work any more for some reason. Switched to format 8 with count =
+	num * sizeof float
+
+2003-06-19 10:51  manduchi
+
+	* tdi/RfxDevices/DIO2__init.fun:
+	
+	First fix of a long series.....
+
+2003-06-12 12:02  manduchi
+
+	* javascope/Waveform.java:
+	
+	Fixed Waveform for step plot
+
+2003-06-12 10:18  manduchi
+
+	* javadispatcher/: jDispatcher.java, jDispatcherIp.java:
+	
+	Changed the way TCL sends messages
+
+2003-06-12 09:18  manduchi
+
+	* javascope/WaveInterface.java:
+	
+	Update limits fix
+
+2003-06-10 08:23  manduchi
+
+	* javascope/: AboutWindow.java, AsdexDataProvider.java,
+	Base64.java, ColorDialog.java, CompositeWaveDisplay.java,
+	ConnectionEvent.java, ConnectionListener.java, DataAccess.java,
+	DataAccessURL.java, DataCacheObject.java, DataCached.java,
+	DataProvider.java, DataServerItem.java, DemoAccess.java,
+	DemoDataProvider.java, Descriptor.java, FontSelection.java,
+	FrameData.java, FrameJAI.java, Frames.java, FtuDataProvider.java,
+	Grid.java, JetDataProvider.java, JetMdsDataProvider.java,
+	JiDataSource.java, JiDim.java, JiNcSource.java, JiNcVar.java,
+	JiNcVarByte.java, JiNcVarChar.java, JiNcVarDouble.java,
+	JiNcVarFloat.java, JiNcVarImp.java, JiNcVarInt.java,
+	JiNcVarShort.java, JiSlab.java, JiSlabIterator.java, JiVar.java,
+	JiVarImpl.java, LocalDataProvider.java, MdsAccess.java,
+	MdsConnection.java, MdsDataClient.java, MdsDataProvider.java,
+	MdsIOException.java, MdsMessage.java, MdsPlusBrowseSignals.java,
+	MdsWaveInterface.java, MultiWavePopup.java, MultiWaveform.java,
+	NotConnectedDataProvider.java, ProfileDialog.java, RdaAccess.java,
+	RowColumnContainer.java, RowColumnLayout.java,
+	SetupDataDialog.java, SetupDefaults.java, SetupWaveformParams.java,
+	Signal.java, SignalBox.java, SignalCache.java,
+	SignalsBoxDialog.java, TSDataProvider.java,
+	TextorBrowseSignals.java, UniversalDataProvider.java,
+	UpdateEvent.java, UpdateEventListener.java,
+	WaveContainerEvent.java, WaveContainerListener.java, WaveData.java,
+	WaveDisplay.java, WaveInterface.java, WavePopup.java,
+	Waveform.java, WaveformContainer.java, WaveformEvent.java,
+	WaveformListener.java, WaveformManager.java, WaveformMetrics.java,
+	jScope.java, jScopeBrowseSignals.java, jScopeBrowseUrl.java,
+	jScopeDefaultValues.java, jScopeMultiWave.java,
+	jScopeProperties.java, jScopeWaveContainer.java,
+	jScopeWavePopup.java:
+	
+	Added improvements requested at PFC
+
+2003-06-09 14:52  jas
+
+	* traverser/traverser.uil:
+	
+	add read/write open option (bugzilla bug #2)
+
+2003-06-06 17:17  jas
+
+	* matlab/mdsclose.m:
+	
+	syntax error on mdsdisconnect in mdsclose
+
+2003-06-05 12:39  jas
+
+	* actions/: Makefile.in, actmon.c, actmon.uil:
+	
+	Make the kill buttons only sensitive if the scripts can be found
+	and are executable
+
+2003-06-05 09:52  twf
+
+	* mdstcpip/mdsip_socket_io.c:
+	
+	remove need for internal globus header file
+
+2003-06-04 16:54  jas
+
+	* actions/actmon.c:
+	
+	change the commands that are invoked when killing servers and
+	dispatchers
+
+2003-06-04 16:40  jas
+
+	* actions/: actmon.c, actmon.uil:
+	
+	add kill server widgets to bottom
+
+2003-06-04 11:37  twf
+
+	* camshr/cam_functions.c:
+	
+	Fix JORWAYMODE macro
+
+2003-06-03 13:51  jas
+
+	* tdi/MitDevices/event_table.fun:
+	
+	add HXR_START
+
+2003-06-03 12:55  twf
+
+	* treeshr/TreePutRecord.c:
+	
+	Fix FixupNid
+
+2003-06-03 11:18  twf
+
+	* devscripts/MakeRpm:
+	
+	Use rpmbuild
+
+2003-06-02 12:31  twf
+
+	* treeshr/TreePutRecord.c:
+	
+	close old get fd on datafile after opening it for write
+
+2003-06-02 11:05  twf
+
+	* mdsmisc/: Makefile.in, fformat.c:
+	
+	Add fformat.c for formatting floating point output
+
+2003-06-02 11:04  twf
+
+	* tdi/fformat.fun:
+	
+	Add fformat.fun for formatting floating point output
+
+2003-05-26 11:45  manduchi
+
+	* javatraverser/DeviceField.java:
+	
+	Fix on/off report
+
+2003-05-26 07:06  manduchi
+
+	* tdi/RfxDevices/: AAGain.fun, AAMaxValue.fun, TRCH__store.fun:
+	
+	Update AA parameters
+
+2003-05-22 09:50  manduchi
+
+	* javadispatcher/: jDispatcher.java, jDispatcherIp.java:
+	
+	
+	CVSExchange current shot
+	-------------------------------------------------------------------
+	---
+
+2003-05-22 09:48  twf
+
+	* dwscope/dwscope.c:
+	
+	Fix format on printer save
+
+2003-05-21 10:27  twf
+
+	* mitdevices/joerger_tr16.c:
+	
+	Add error
+
+2003-05-20 12:33  twf
+
+	* mitdevices/joerger_tr16.c:
+	
+	Make enhanced mode optional - turn off name node to use
+	non-enhanced
+
+2003-05-20 12:23  manduchi
+
+	* javamds/javamds.c:
+	
+	Still compiler happy
+
+2003-05-20 12:21  manduchi
+
+	* javamds/javamds.c:
+	
+	Make compiler happy
+
+2003-05-20 12:16  manduchi
+
+	* javamds/: LocalDataProvider.h, javamds.c, javamds.def,
+	javamds.dsp:
+	
+	Added Event and default support to LocalDataProvider
+
+2003-05-20 12:15  manduchi
+
+	* javascope/: LocalDataProvider.java, MdsDataProvider.java:
+	
+	Added event and default support to LocalDataProvider. G. Manduchi
+
+2003-05-20 09:50  twf
+
+	* mdslib/MdsLib.c:
+	
+	Only do ptr to vms string descriptor test on VMS platform
+
+2003-05-20 05:10  manduchi
+
+	* tdi/RfxDevices/: DIO2EncoderHWInit.fun, DIO2Encoder__add.fun,
+	DIO2Encoder__init.fun, DIO2HWGetPhaseCount.fun,
+	DIO2HWGetRecEvents.fun, DIO2HWInit.fun, DIO2HWSetDClockChan.fun,
+	DIO2HWSetGClockChan.fun, DIO2HWSetPulseChan.fun, DIO2HWTrigger.fun,
+	DIO2__init.fun, DIO2__store.fun, DIO2__trigger.fun:
+	
+	Further support for INCAA DIO2 device
+
+2003-05-20 05:09  manduchi
+
+	* javatraverser/: ACQD265Setup.java, Aurora14Setup.java,
+	DIO2EncoderSetup.java, DIO2Setup.java, DeviceChannel.java,
+	DeviceChannelBeanInfo.java, DeviceChannelCustomizer.java,
+	DeviceComponent.java, DeviceCustomizer.java, DeviceField.java,
+	MPBDecoderSetup.java, MPBEncoderSetup.java, TR10Setup.java,
+	TRCFSetup.java, TRCHSetup.java, VMEWavesSetup.java:
+	
+	Added DW setuo for DIO2 decoder and encoder
+
+2003-05-16 04:12  manduchi
+
+	* javascope/: AboutWindow.java, AsdexDataProvider.java,
+	Base64.java, ColorDialog.java, CompositeWaveDisplay.java,
+	ConnectionEvent.java, ConnectionListener.java, DataAccess.java,
+	DataAccessURL.java, DataCacheObject.java, DataCached.java,
+	DataProvider.java, DataServerItem.java, DemoAccess.java,
+	DemoDataProvider.java, Descriptor.java, FontSelection.java,
+	FrameData.java, Frames.java, FtuDataProvider.java, Grid.java,
+	JetDataProvider.java, JetMdsDataProvider.java, JiDataSource.java,
+	JiDim.java, JiNcSource.java, JiNcVar.java, JiNcVarByte.java,
+	JiNcVarChar.java, JiNcVarDouble.java, JiNcVarFloat.java,
+	JiNcVarImp.java, JiNcVarInt.java, JiNcVarShort.java, JiSlab.java,
+	JiSlabIterator.java, JiVar.java, JiVarImpl.java,
+	LocalDataProvider.java, MdsAccess.java, MdsConnection.java,
+	MdsDataClient.java, MdsDataProvider.java, MdsIOException.java,
+	MdsMessage.java, MdsPlusBrowseSignals.java, MdsWaveInterface.java,
+	MultiWavePopup.java, MultiWaveform.java,
+	NotConnectedDataProvider.java, ProfileDialog.java, RdaAccess.java,
+	RowColumnContainer.java, RowColumnLayout.java,
+	SetupDataDialog.java, SetupDefaults.java, SetupWaveformParams.java,
+	Signal.java, SignalBox.java, SignalCache.java,
+	SignalsBoxDialog.java, TSDataProvider.java,
+	TextorBrowseSignals.java, UniversalDataProvider.java,
+	UpdateEvent.java, UpdateEventListener.java,
+	WaveContainerEvent.java, WaveContainerListener.java, WaveData.java,
+	WaveDisplay.java, WaveInterface.java, WavePopup.java,
+	Waveform.java, WaveformContainer.java, WaveformEvent.java,
+	WaveformListener.java, WaveformManager.java, WaveformMetrics.java,
+	jScope.java, jScopeBrowseSignals.java, jScopeBrowseUrl.java,
+	jScopeDefaultValues.java, jScopeMultiWave.java,
+	jScopeProperties.java, jScopeWaveContainer.java,
+	jScopeWavePopup.java:
+	
+	Fix in timebase reconstruction for MDSPlusDataProvider
+
+2003-05-15 13:04  manduchi
+
+	* tdi/RfxDevices/: DIO2HWGetRecEvents.fun, DIO2HWGetRecTimes.fun,
+	DIO2HWInit.fun, DIO2HWSetClockChan.fun, DIO2HWSetDClockChan.fun,
+	DIO2HWSetGClockChan.fun, DIO2HWSetPulseChan.fun,
+	DIO2HWStartChan.fun, DIO2__add.fun, DIO2__init.fun,
+	DIO2__store.fun, RFXDClock__add.fun, RFXDClock__init.fun,
+	RFXGClock__add.fun, RFXGClock__init.fun:
+	
+	INCAA DIO2 timing module support
+
+2003-05-14 15:10  twf
+
+	* tcl/tcl_dispatch.c:
+	
+	Allow node spec in ident field of action
+
+2003-05-14 11:58  manduchi
+
+	* tdi/camac/CamFStopw.fun:
+	
+	Removed redundant Cam
+
+2003-05-14 11:25  manduchi
+
+	* tdi/RfxDevices/RFXClock__init.fun:
+	
+	Use channel number 0
+
+2003-05-14 11:16  twf
+
+	* camshr/KsM.c:
+	
+	Fix bytcnt computation
+
+2003-05-14 10:59  manduchi
+
+	* javadispatcher/jDispatcherIp.java:
+	
+	Changed communication with TCL
+
+2003-05-13 16:31  twf
+
+	* camshr/KsM.c:
+	
+	use esr for status
+
+2003-05-13 16:29  twf
+
+	* camshr/KsT.c:
+	
+	get x and q from esr
+
+2003-05-13 16:24  twf
+
+	* camshr/: scsi_io.c, cam_functions.c:
+	
+	Move locking out of scsi_io
+
+2003-05-13 16:23  twf
+
+	* camshr/: KsM.c, KsS.c:
+	
+	get esr for status
+
+2003-05-13 13:07  twf
+
+	* camshr/scsi_io.c:
+	
+	Fix bytes_transfered calculation
+
+2003-05-13 13:04  twf
+
+	* camshr/KsT.c:
+	
+	Fix status
+
+2003-05-13 12:57  twf
+
+	* camshr/RSD.h:
+	
+	Fix struct
+
+2003-05-13 11:05  twf
+
+	* xmdsshr/XmdsWaveform.c:
+	
+	fix A4PAPER
+
+2003-05-12 11:19  twf
+
+	* camshr/KsM.c:
+	
+	fill in upper word of byte count
+
+2003-05-12 10:16  twf
+
+	* camshr/KsT.c:
+	
+	Return NOX if invalid module addressed
+
+2003-05-09 13:40  twf
+
+	* camshr/RSD.h:
+	
+	Fix alignment problems
+
+2003-05-09 11:35  twf
+
+	* mitdevices/: joerger_tr16.c, joerger_tr612.c:
+	
+	Use big I/O's always
+
+2003-05-09 11:29  twf
+
+	* idl/camac/camblock.pro:
+	
+	allow large buffers
+
+2003-05-09 11:26  twf
+
+	* ccl/ccl_verbs.c:
+	
+	allow large I/O's
+
+2003-05-09 11:20  twf
+
+	* camshr/: KsT.c, RSD.h, cam_functions.c, prototypes.h, scsi_io.c:
+	
+	add verbose output for KS and use standard I/O for large buffers
+
+2003-05-09 09:49  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	fix for osf
+
+2003-05-09 09:33  twf
+
+	* configure, configure.in:
+	
+	Fix for osf
+
+2003-05-09 09:30  twf
+
+	* mdsshr/mdsmsg.c:
+	
+	Fix noname message
+
+2003-05-07 08:09  manduchi
+
+	* tdi/RfxDevices/: TR10HWInit.fun, TR10HWReadChan.fun,
+	TR10HWStartStore.fun, TR10__store.fun:
+	
+	Final release. G. Manduchi
+
+2003-05-07 07:45  manduchi
+
+	* javatraverser/TR10Setup.java:
+	
+	Frequency fix. G. Manduchi
+
+2003-05-07 06:19  manduchi
+
+	* javatraverser/TR10Setup.java:
+	
+	Allow trigger mode selection. G. Manduchi
+
+2003-05-07 05:59  manduchi
+
+	* tdi/RfxDevices/: TR10HWInit.fun, TR10HWReadChan.fun,
+	TR10__add.fun, TR10__init.fun, TR10__store.fun:
+	
+	Let Ext/Int trigger definition. G. Manduchi
+
+2003-05-06 13:01  twf
+
+	* camshr/scsi_io.c:
+	
+	Failback to small buffer if error
+
+2003-05-06 07:26  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	recover from ServerSendMessage select errors
+
+2003-05-05 15:52  twf
+
+	* mitdevices/: DevRoutines.c, dsp2904.c, hv4032.c, incaa16.c,
+	joerger_adcp.c, l8210.c, t4012.c:
+	
+	Fix devwait calls
+
+2003-05-05 14:23  twf
+
+	* mitdevices/joerger_tr16.c:
+	
+	Fix case on fstop call
+
+2003-05-05 14:15  twf
+
+	* mitdevices/joerger_tr16.c:
+	
+	Use big buffer and enhanced
+
+2003-05-02 14:39  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	Add debug error messages when thread exits
+
+2003-05-02 08:13  manduchi
+
+	* javamds/: JavaTrav.c, javamds.c:
+	
+	Fixed MdsGetArray by G. Manduchi
+
+2003-05-01 14:55  jas
+
+	* mitdevices/: l2256.c, l3512.c, reticon120.c:
+	
+	use __attribute__ ((packed)) instead of the member alignment
+	pragmas
+
+2003-05-01 14:21  twf
+
+	* tdishr/TdiAdd.c:
+	
+	Fix quadword multiply on optimized compile
+
+2003-05-01 10:29  twf
+
+	* tdishr/TdiExtFunction.c:
+	
+	Open fun file in binary mode
+
+2003-05-01 09:29  jas
+
+	* mitdevices/reticon120.c:
+	
+	use gcc __attribute__ ((packed)) instead of pragma nomemberallign
+
+2003-04-29 17:01  twf
+
+	* camshr/scsi_io.c:
+	
+	Add semaphore to prevent two processes talking to serial highway at
+	same time
+
+2003-04-29 10:09  twf
+
+	* dwscope/: dwscope.c, dwscope.uil, dwscopesubs.c:
+	
+	Fix default filter for restore from and save to
+
+2003-04-28 17:15  jas
+
+	* dwscope/dwpad.c:
+	
+	Make sure at least part of it is on the screen
+
+2003-04-28 17:09  jas
+
+	* dwscope/dwscope.c:
+	
+	Make sure at least part of it is on the screen
+
+2003-04-28 13:54  jas
+
+	* xmdsshr/XmdsWaveform.c:
+	
+	Make sure to execute the last event in the que not the first when
+	compressing them
+
+2003-04-28 11:17  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	Check both hostname and number for each line in mdsip.hosts instead
+	of doing them in two passes
+
+2003-04-28 10:07  twf
+
+	* mdstcpip/mdsipd:
+	
+	add mkdirhier to create log directory
+
+2003-04-26 16:17  twf
+
+	* treeshr/TreeCallHook.c:
+	
+	do not do tdi fun in hook
+
+2003-04-26 15:49  twf
+
+	* servershr/ServerDispatchPhase.c:
+	
+	Put locking around MDSEvent to prevent colliding in mdsip messaging
+
+2003-04-25 22:22  jas
+
+	* dwscope/dwscope.c:
+	
+	Do the last resize event in the Queue
+
+2003-04-25 14:03  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	fix to prevent race condition on windows
+
+2003-04-25 14:02  twf
+
+	* mdsshr/librtl.c:
+	
+	Have pthread_cond_timedwait return status on windows
+
+2003-04-25 10:57  twf
+
+	* mdsshr/MdsSerialize.c:
+	
+	Fix a0 on CLASS_CA (compressed) arrays with coefficients
+
+2003-04-25 10:15  jas
+
+	* mitdevices/mpb__decoder.c:
+	
+	mpb__decoder don't check for Q (even though it is supposed to
+	always return it
+
+2003-04-25 08:45  jas
+
+	* mitdevices/l8590_mem.c:
+	
+	force l8590 num samples to 2000 if comment node is off
+
+2003-04-24 12:01  twf
+
+	* camshr/cam_functions.c:
+	
+	Use stop or qrep mode for jorway I/O's with count=1
+
+2003-04-24 11:59  twf
+
+	* camshr/scsi_io.c:
+	
+	Default buffer size set by environment variable: CAMAC_BUFFSIZE
+
+2003-04-23 20:30  jas
+
+	* mitdevices/joerger_tr16.c:
+	
+	multiple retries on tr16
+
+2003-04-23 16:18  twf
+
+	* mitdevices/joerger_tr612.c:
+	
+	Use enhanced if possible
+
+2003-04-23 16:18  twf
+
+	* rpm/mdsipd.xinetd:
+	
+	allow rapid connections
+
+2003-04-23 16:17  twf
+
+	* camshr/scsi_io.c:
+	
+	add get set maxbuf
+
+2003-04-23 15:51  twf
+
+	* tdi/camac/CamGetMAXBUF.fun, tdi/camac/CamSetMAXBUF.fun,
+	camshr/cam_functions.c, camshr/scsi_io.c:
+	
+	New large buffer handling
+
+2003-04-23 15:50  twf
+
+	* remcam/CamMulti.c:
+	
+	Add CamGet/SetMAXBUF
+
+2003-04-23 13:57  twf
+
+	* scripts/unix_submit:
+	
+	use /dev/null for stdin
+
+2003-04-23 13:08  twf
+
+	* camshr/: copy.c, create_tmp_file.c:
+	
+	Fix expand
+
+2003-04-23 09:35  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Add debug printout to distributed open
+
+2003-04-22 15:29  twf
+
+	* mdsplus.sln:
+	
+	Visual .NET
+
+2003-04-22 15:27  twf
+
+	* mdsmisc/step_resample.c:
+	
+	Fix error return
+
+2003-04-22 15:26  twf
+
+	* javascope/javascope.mak, javatraverser/javatraverser.mak:
+	
+	new classes
+
+2003-04-22 15:25  twf
+
+	* LabView/: MdsDescrStr.vi, MdsGetStr.vi:
+	
+	updates
+
+2003-04-22 15:25  jas
+
+	* mitdevices/: Makefile.in, l8590_mem.c:
+	
+	try telling the 8590s about the num_active_converters twice as per
+	OpenVMS code
+
+2003-04-22 15:25  twf
+
+	* Setup/Setup.vdproj:
+	
+	Visual .NET
+
+2003-04-22 15:24  twf
+
+	* mdslib/MdsLib.c:
+	
+	Fix compiler warning
+
+2003-04-22 15:23  twf
+
+	* mdsdcl/mdsdcl_macros.c:
+	
+	Fix bug with string handling
+
+2003-04-22 15:22  twf
+
+	* javamds/JavaData.c, mdsshr/mdsmsg.c:
+	
+	Prevent compiler warning
+
+2003-04-22 15:21  twf
+
+	* tdishr/tdishr.vcproj:
+	
+	Visual .NET
+
+2003-04-22 15:20  twf
+
+	* remcam/CamSingle.c:
+	
+	Remove unreferenced variable
+
+2003-04-22 15:18  twf
+
+	* include/libroutines.h:
+	
+	Add LibFindImageSymbolErrString prototype
+
+2003-04-18 15:25  twf
+
+	* gen_device/GenDeviceFree.c:
+	
+	Do not free mem more than once
+
+2003-04-18 15:24  twf
+
+	* mitdevices/: l8590.c, l8590_mem.c:
+	
+	Fix for too many samples
+
+2003-04-18 10:07  twf
+
+	* setup.sh:
+	
+	Need to export MDSPLUS_DIR for java apps
+
+2003-04-18 09:11  manduchi
+
+	* javascope/Makefile.in:
+	
+	Added two java sources
+
+2003-04-18 09:08  manduchi
+
+	* javascope/: ASCIIDataProvider.java, AboutWindow.java,
+	AsdexDataProvider.java, Base64.java, ColorDialog.java,
+	CompositeWaveDisplay.java, ConnectionEvent.java,
+	ConnectionListener.java, DataAccess.java, DataAccessURL.java,
+	DataCacheObject.java, DataCached.java, DataProvider.java,
+	DataServerItem.java, DemoAccess.java, DemoDataProvider.java,
+	Descriptor.java, FontSelection.java, FrameData.java, Frames.java,
+	FtuDataProvider.java, Grid.java, ImageTransferable.java,
+	JetDataProvider.java, JetMdsDataProvider.java, JiDataSource.java,
+	JiDim.java, JiNcSource.java, JiNcVar.java, JiNcVarByte.java,
+	JiNcVarChar.java, JiNcVarDouble.java, JiNcVarFloat.java,
+	JiNcVarImp.java, JiNcVarInt.java, JiNcVarShort.java, JiSlab.java,
+	JiSlabIterator.java, JiVar.java, JiVarImpl.java,
+	LocalDataProvider.java, MdsAccess.java, MdsConnection.java,
+	MdsDataClient.java, MdsDataProvider.java, MdsIOException.java,
+	MdsMessage.java, MdsPlusBrowseSignals.java, MdsWaveInterface.java,
+	MultiWavePopup.java, MultiWaveform.java,
+	NotConnectedDataProvider.java, ProfileDialog.java, RdaAccess.java,
+	RowColumnContainer.java, RowColumnLayout.java,
+	SetupDataDialog.java, SetupDefaults.java, SetupWaveformParams.java,
+	Signal.java, SignalBox.java, SignalCache.java,
+	SignalsBoxDialog.java, TSDataProvider.java,
+	TextorBrowseSignals.java, UniversalDataProvider.java,
+	UpdateEvent.java, UpdateEventListener.java,
+	WaveContainerEvent.java, WaveContainerListener.java, WaveData.java,
+	WaveDisplay.java, WaveInterface.java, WavePopup.java,
+	Waveform.java, WaveformContainer.java, WaveformEvent.java,
+	WaveformListener.java, WaveformManager.java, WaveformMetrics.java,
+	jScope.java, jScopeBrowseSignals.java, jScopeBrowseUrl.java,
+	jScopeDefaultValues.java, jScopeMultiWave.java,
+	jScopeProperties.java, jScopeWaveContainer.java,
+	jScopeWavePopup.java:
+	
+	Added copy/paste Optimized X axis access for MDSplus
+
+2003-04-18 09:00  twf
+
+	* javatraverser/jTraverser.template:
+	
+	fix typo
+
+2003-04-17 14:29  twf
+
+	* setup.csh:
+	
+	Export MDSPLUS_DIR
+
+2003-04-17 13:47  twf
+
+	* mdslibidl/MdsLibIdl.c, mdslib/MdsLib.c:
+	
+	Fix TdiDebug call
+
+2003-04-17 12:28  manduchi
+
+	* javatraverser/: ACQD265Setup.java, Aurora14Setup.java,
+	L5613Setup.java, MPBDecoderSetup.java, MPBEncoderSetup.java,
+	MPBRecorderSetup.java, Node.java, RFXClockSetup.java,
+	RFXDClockSetup.java, RFXGClockSetup.java, RFXPCSetupSetup.java,
+	RFXPMSetupSetup.java, RFXPulseSetup.java, RFXTimesSetup.java,
+	TRCHSetup.java, TreeNode.java, VMEWavesSetup.java, jTraverser.java:
+	
+	Added cut/copy capability
+
+2003-04-17 09:52  twf
+
+	* javatraverser/jTraverser.template, javascope/jScope.template:
+	
+	Add switches
+
+2003-04-17 09:10  manduchi
+
+	* tdi/RfxDevices/TR10HWReadChan.fun:
+	
+	Some fixes
+
+2003-04-17 09:02  twf
+
+	* javascope/jScope.template, javatraverser/jTraverser.template:
+	
+	Append MDSPLUS_DIR/LIB to existing library paths
+
+2003-04-16 13:16  jas
+
+	* mitdevices/Makefile.in:
+	
+	Need MdsMath
+
+2003-04-16 12:19  twf
+
+	* camshr/: KsM.c, verbs.c:
+	
+	Fix data direction logic
+
+2003-04-16 10:31  twf
+
+	* camshr/KsS.c:
+	
+	Fix data check logic
+
+2003-04-14 11:58  jas
+
+	* tdishr/TdiSql.c:
+	
+	Fix numeric date returns
+
+2003-04-14 11:23  jas
+
+	* idl/dsql.pro:
+	
+	fix multiple substitutions '\'s and quiet
+
+2003-04-14 06:25  manduchi
+
+	* tdi/RfxDevices/: TR10HWClose.fun, TR10HWInit.fun,
+	TR10HWReadChan.fun, TR10HWStartStore.fun, TR10HWTrigger.fun,
+	TR10__init.fun, TR10__store.fun, TR10__trigger.fun:
+	
+	Initial debug
+
+2003-04-11 09:31  manduchi
+
+	* tdi/RfxDevices/: Aurora14__add.fun, DevLogErr.fun,
+	TR10HWClose.fun, TR10HWInit.fun, TR10HWReadChan.fun,
+	TR10HWStartStore.fun, TR10HWTrigger.fun, TR10__add.fun,
+	TR10__init.fun, TR10__store.fun, TR10__trigger.fun, TRCH__init.fun:
+	
+	Added TR10 device
+
+2003-04-11 09:31  manduchi
+
+	* javatraverser/: Makefile.in, Node.java, RFXPMSetupSetup.java,
+	TR10Setup.java, TRCFSetup.java:
+	
+	Aded TR10 Device Setup
+
+2003-04-10 16:01  twf
+
+	* tdishr/TdiDecompile.c:
+	
+	Enable vax double precision text
+
+2003-04-09 13:22  jas
+
+	* mitdevices/l8590_mem.c:
+	
+	fix call to FindNodeWild and one PIO
+
+2003-04-09 11:23  twf
+
+	* mdstcpip/Makefile.in:
+	
+	Add rule for mkdirhier
+
+2003-04-09 11:23  twf
+
+	* mdslib/MdsLib.c:
+	
+	clear tdi traceback buffer
+
+2003-04-09 11:16  twf
+
+	* mdslibidl/MdsLibIdl.c:
+	
+	Clear tdi traceback
+
+2003-04-09 09:31  manduchi
+
+	* tdishr/TdiCompile.c:
+	
+	Added #ifdef for compatibility with vxWorks
+
+2003-04-07 12:33  twf
+
+	* tdi/dev_support/DevCamChk.fun:
+	
+	fix q check logic and add noabort argument
+
+2003-04-07 12:23  twf
+
+	* tdi/dev_support/DevCamChk.fun:
+	
+	Fix q check and add optional noabort parameter
+
+2003-04-07 10:21  twf
+
+	* tdi/transp/: tr_put.fun, tr_putmg.fun:
+	
+	Add transp support functions
+
+2003-04-04 15:28  jas
+
+	* mdsshr/librtl.c:
+	
+	fix FFS to fix problem with mit_decoder missing events
+
+2003-04-03 10:59  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	make bug removed
+
+2003-04-02 11:09  jas
+
+	* traverser/CallbacksUil.c:
+	
+	fix for add node broke add device - fixed now
+
+2003-04-01 15:43  jas
+
+	* scripts/unix_submit:
+	
+	missing >> in unix_submit
+
+2003-03-28 09:41  manduchi
+
+	* tdi/RfxDevices/VMEWaves__init.fun:
+	
+	Report COnsistency check status
+
+2003-03-27 16:24  twf
+
+	* idl/wvscratch.pro:
+	
+	Fix carriagecontrol
+
+2003-03-27 16:22  twf
+
+	* tdi/Ccl.fun:
+	
+	Ccl from tdi
+
+2003-03-27 16:20  twf
+
+	* ccl/ccl_verbs.c:
+	
+	Fix show data
+
+2003-03-27 16:20  twf
+
+	* camshr/scsi_io.c:
+	
+	do not use huge buffers yet
+
+2003-03-27 16:19  twf
+
+	* remcam/CamMulti.c:
+	
+	support bigger buffers
+
+2003-03-26 21:27  jas
+
+	* tcl/tcl_add_node.c:
+	
+	descriptors in add_node can't be static since it recurses for
+	devices
+
+2003-03-26 16:37  twf
+
+	* tdishr/TdiExtFunction.c:
+	
+	Use better file io
+
+2003-03-26 16:26  jas
+
+	* tdi/MitDevices/MitDevices.fun:
+	
+	Add the matrox device
+
+2003-03-26 16:25  jas
+
+	* tdi/MitDevices/: matrox__add.fun, matrox__init.fun,
+	matrox__init_path.fun, matrox__part_name.fun, matrox__store.fun,
+	matrox_init.fun, matrox_store.fun, paragon_ftp_delete.fun:
+	
+	funs for matrox cameras
+
+2003-03-26 11:04  twf
+
+	* treeshr/: RemoteAccess.c, TreeGetSetShotId.c:
+	
+	Fix MDS_IO_EXISTS return when problem connecting to server
+
+2003-03-25 10:04  twf
+
+	* actions/actmon.c:
+	
+	motif not thread safe, fix to prevent x calls in servershr threads
+
+2003-03-25 09:48  manduchi
+
+	* javamds/: JavaData.c, JavaTrav.c:
+	
+	Fixed Double aray conversion
+
+2003-03-25 09:38  twf
+
+	* mdsshr/mdsmsg.c:
+	
+	fix for success messages
+
+2003-03-24 10:56  jas
+
+	* remcam/CamSingle.c:
+	
+	type for shorts coming back is USHORT
+
+2003-03-20 15:15  jas
+
+	* traverser/: CallbacksUil.c, main-uil.c, traverser.uil:
+	
+	fix up add node (selection changes out from under it
+
+2003-03-20 14:33  twf
+
+	* mitdevices/joerger_tr612.c:
+	
+	revert to small i/o's
+
+2003-03-20 14:21  twf
+
+	* mitdevices/b2408.c:
+	
+	Fix segfault
+
+2003-03-20 14:14  twf
+
+	* configure, configure.in:
+	
+	use GMTOFF if avail
+
+2003-03-20 09:10  manduchi
+
+	* javatraverser/: RemoteTree.java, TRCFSetup.java, Tree.java,
+	TreeServer.java, VMEWavesSetup.java:
+	
+	Minor fixes
+
+2003-03-14 14:49  twf
+
+	* mitdevices/: DevRoutines.c, dsp2904.c, hv4032.c, incaa16.c,
+	joerger_adcp.c, l8210.c, t4012.c:
+	
+	Implement DevWait and use it in modules that need to wait
+
+2003-03-14 10:53  jgk
+
+	* javascope/: TWUProperties.java, TWUSignal.java:
+	
+	Removed the automatic CVS log from this file; it can be read
+	directly from the CVS repository with "cvs log".
+
+2003-03-14 10:46  jgk
+
+	* javascope/TwuDataProvider.java:
+	
+	Merged the developments that lead to revision 2.18 and those that
+	lead independently to revision 2.19.
+
+2003-03-14 10:43  jgk
+
+	* javascope/TWUSignal.java:
+	
+	Some unimportant changes to the comment texts, in effect going back
+	to the situation of revision 1.18.
+
+2003-03-14 10:43  jgk
+
+	* javascope/TWUProperties.java:
+	
+	Some unimportant changes to the comment texts, in effect going back
+	to the situation of revision 1.17.
+
+2003-03-14 07:27  manduchi
+
+	* javatraverser/: DeviceComponent.java, DeviceWaveBeanInfo.java,
+	RFXPConfigSetup.java, RFXPMSetupSetup.java:
+	
+	Interface re-organization
+
+2003-03-14 04:10  manduchi
+
+	* javatraverser/RFXPConfigSetup.java:
+	
+	Minor fix
+
+2003-03-14 03:12  manduchi
+
+	* javatraverser/RFXPConfigSetup.java:
+	
+	Remove one field
+
+2003-03-13 12:48  manduchi
+
+	* tdi/RfxDevices/: RFXPCSetup__add.fun, RFXPMSetup__add.fun:
+	
+	New Wave interface organization
+
+2003-03-13 12:47  manduchi
+
+	* javatraverser/: DeviceComponent.java, DeviceField.java,
+	DeviceSetup.java, RFXPCSetupSetup.java, RFXPMSetupSetup.java,
+	RFXPSetupSetup.java:
+	
+	New waveform interface organization
+
+2003-03-13 10:14  manduchi
+
+	* tdi/RfxDevices/: RFXPCSetup__add.fun, RFXPMSetup__add.fun,
+	RFXPSetup__add.fun:
+	
+	Use different form for PM and PC
+
+2003-03-12 12:00  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	fix for windows
+
+2003-03-12 11:50  twf
+
+	* servershr/: ServerFindServers.c, ServerDispatchPhase.c:
+	
+	fix for windows
+
+2003-03-12 11:42  twf
+
+	* servershr/: ServerDispatchAction.c, ServerQAction.c,
+	ServerSendMessage.c:
+	
+	Take out includes
+
+2003-03-12 11:40  twf
+
+	* treeshr/TreeDoMethod.c:
+	
+	Take out signal handler
+
+2003-03-11 14:50  twf
+
+	* mitdevices/joerger_tr612.c:
+	
+	Use enhanced mode tranfers
+
+2003-03-11 14:44  twf
+
+	* camshr/scsi_io.c:
+	
+	allow 2 megabyte I/O's
+
+2003-03-11 14:43  twf
+
+	* camshr/: cam_functions.c, cts, scsi_io.c:
+	
+	use dirname
+
+2003-03-11 09:33  twf
+
+	* idl/camac/: camblock.pro, campiow.pro:
+	
+	Fix xstate and qstate tests
+
+2003-03-11 09:05  twf
+
+	* camshr/: contract_db.c, create_tmp_file.c, expand_db.c,
+	prototypes.h, verbs.c:
+	
+	make expand and contract use tmpfile in same directory and chmod
+	dbs 0666
+
+2003-03-10 11:58  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Change name
+
+2003-03-10 11:50  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Name change
+
+2003-03-10 04:08  manduchi
+
+	* javatraverser/DeviceField.java, javatraverser/RFXTimesSetup.java,
+	tdi/RfxDevices/RFXTimes__add.fun:
+	
+	Minor fixes
+
+2003-03-10 03:12  manduchi
+
+	* javadispatcher/: Action.java, ActionServer.java, Balancer.java,
+	Descriptor.java, InfoServer.java, MdsHelper.java, MdsIp.java,
+	MdsMonitor.java, MdsMonitorEvent.java, MdsServer.java,
+	MdsServerEvent.java, MdsServerListener.java, MonitorEvent.java,
+	MonitorListener.java, NetworkEvent.java, NetworkListener.java,
+	Server.java, ServerEvent.java, ServerListener.java,
+	jDispatchMonitor.java, jDispatcher.java, jDispatcherIp.java:
+	
+	Added set current <shot>
+
+2003-03-08 22:24  twf
+
+	* servershr/: ServerDispatchPhase.c, ServerSendMessage.c:
+	
+	performance improvements
+
+2003-03-07 17:00  jas
+
+	* mitdevices/j221.c:
+	
+	avoid freeing bad pointers
+
+2003-03-07 10:10  manduchi
+
+	* javascope/: AboutWindow.java, AsdexDataProvider.java,
+	Base64.java, ColorDialog.java, CompositeWaveDisplay.java,
+	ConnectionEvent.java, ConnectionListener.java, DataAccess.java,
+	DataAccessURL.java, DataCacheObject.java, DataCached.java,
+	DataProvider.java, DataServerItem.java, DemoAccess.java,
+	DemoDataProvider.java, Descriptor.java, FontSelection.java,
+	FrameData.java, FrameJAI.java, Frames.java, FtuDataProvider.java,
+	Grid.java, JetDataProvider.java, JetMdsDataProvider.java,
+	JiDataSource.java, JiDim.java, JiNcSource.java, JiNcVar.java,
+	JiNcVarByte.java, JiNcVarChar.java, JiNcVarDouble.java,
+	JiNcVarFloat.java, JiNcVarImp.java, JiNcVarInt.java,
+	JiNcVarShort.java, JiSlab.java, JiSlabIterator.java, JiVar.java,
+	JiVarImpl.java, LocalDataProvider.java, MdsAccess.java,
+	MdsConnection.java, MdsDataClient.java, MdsDataProvider.java,
+	MdsIOException.java, MdsMessage.java, MdsPlusBrowseSignals.java,
+	MdsWaveInterface.java, MultiWavePopup.java, MultiWaveform.java,
+	NotConnectedDataProvider.java, ProfileDialog.java, RdaAccess.java,
+	RowColumnContainer.java, RowColumnLayout.java,
+	SetupDataDialog.java, SetupDefaults.java, SetupWaveformParams.java,
+	Signal.java, SignalBox.java, SignalCache.java,
+	SignalsBoxDialog.java, TSDataProvider.java,
+	TextorBrowseSignals.java, UniversalDataProvider.java,
+	UpdateEvent.java, UpdateEventListener.java,
+	WaveContainerEvent.java, WaveContainerListener.java, WaveData.java,
+	WaveDisplay.java, WaveInterface.java, WavePopup.java,
+	Waveform.java, WaveformContainer.java, WaveformEvent.java,
+	WaveformListener.java, WaveformManager.java, WaveformMetrics.java,
+	jScope.java, jScopeBrowseSignals.java, jScopeBrowseUrl.java,
+	jScopeDefaultValues.java, jScopeMultiWave.java,
+	jScopeProperties.java, jScopeWaveContainer.java,
+	jScopeWavePopup.java:
+	
+	Some fixes, BUT without changing TWU stuff!!!
+
+2003-03-07 10:04  jas
+
+	* mitdevices/: hv1440.c, hv4032.c:
+	
+	TreeDoMethod needs MDS_END_ARG
+
+2003-03-07 07:44  manduchi
+
+	* javatraverser/: DeviceField.java, RFXPConfigSetup.java:
+	
+	Minor changes in RFX device setups
+
+2003-03-06 16:16  twf
+
+	* remcam/CamMulti.c:
+	
+	Fix case of fstop
+
+2003-03-06 16:15  twf
+
+	* idlmdswidgets/cw_wvedit.uil:
+	
+	No print yet
+
+2003-03-06 13:11  twf
+
+	* tcl/: tcl_commands.ocld, tcl_set_node.c:
+	
+	Add command SET NODE node/STATUS=value
+
+2003-03-06 10:37  jas
+
+	* actions/actmon.c:
+	
+	deal with out of order done responses
+
+2003-03-06 09:44  jas
+
+	* mitdevices/l8206.c:
+	
+	pass valid data address for all data pios
+
+2003-03-05 16:27  jas
+
+	* mitdevices/paragon_rpt.c:
+	
+	StrTrim takes 3 arguments
+
+2003-03-05 16:12  twf
+
+	* tcl/tcl_dispatch.c, servershr/ServerFindServers.c:
+	
+	Add show server wildcarding support
+
+2003-03-05 15:22  twf
+
+	* treeshr/TreeDoMethod.c:
+	
+	Take out signal handler
+
+2003-03-05 13:58  twf
+
+	* treeshr/TreeDoMethod.c:
+	
+	Add signal handler to domethod
+
+2003-03-05 13:57  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	Don't do signal handler
+
+2003-03-05 13:56  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Fix status for findimagesym
+
+2003-03-05 13:55  twf
+
+	* ccl/: ccl_commands.ocld, ccl_verbs.c:
+	
+	Add set verbose command
+
+2003-03-05 13:53  twf
+
+	* mitdevices/fera.c:
+	
+	Fix invalid free's
+
+2003-03-05 12:40  manduchi
+
+	* mdsshr/librtl.c:
+	
+	Report status for program execution.  Modified also the way this is
+	done in Linux. It appears that sts has to shifted by 8 to the
+	right.
+
+2003-03-05 12:36  manduchi
+
+	* tdishr/: TdiCompile.c, TdiDoTask.c:
+	
+	Report status of program execution
+
+2003-03-05 10:09  jas
+
+	* mitdevices/: hm650.c, j221.c:
+	
+	camac data commands must have valid data addresses
+
+2003-03-04 16:29  jas
+
+	* xmdsshr/XmdsWaveform.c:
+	
+	Try flushing the crosshair events to prevent lockups
+
+2003-03-04 14:44  jas
+
+	* traverser/CallbacksUil.c:
+	
+	don't mess with the selected node after it is deleted
+
+2003-03-04 14:12  jas
+
+	* traverser/CallbacksUil.c:
+	
+	loose the section before deleting nodes
+
+2003-03-04 12:57  twf
+
+	* treeshr/: RemoteAccess.c, TreeCreatePulseFile.c:
+	
+	Add create pulse for distributed trees
+
+2003-03-04 11:41  manduchi
+
+	* javatraverser/: DeviceChoice.java, DeviceSetup.java,
+	TRCFSetup.java:
+	
+	Minor fixes
+
+2003-03-04 10:25  jas
+
+	* remcam/: CamMulti.c, CamSingle.c:
+	
+	distinguish read/write/control	fix IOSB handling
+
+2003-03-04 07:53  twf
+
+	* tcl/: tcl_close.c, tcl_commands.ocld:
+	
+	Add /noconfirm to close command
+
+2003-03-03 16:09  twf
+
+	* idlmdswidgets/cw_wveditv5.c:
+	
+	Fix extra buttons
+
+2003-03-03 15:23  twf
+
+	* treeshr/TreeFindNode.c:
+	
+	Add forgiving son/member syntax
+
+2003-03-03 12:04  manduchi
+
+	* javatraverser/RFXPConfigSetup.java:
+	
+	Minor fix
+
+2003-03-03 11:26  manduchi
+
+	* javatraverser/: CompileTree.java, DeviceChoice.java,
+	DeviceComponent.java, DeviceField.java, DeviceFieldBeanInfo.java,
+	DeviceFieldCustomizer.java, DeviceSetup.java, DeviceWave.java,
+	RFXPConfigSetup.java, RFXPSetupSetup.java, RFXTimesSetup.java:
+	
+	Minor fixes
+
+2003-03-02 12:08  twf
+
+	* math/Makefile.in, configure, configure.in:
+	
+	Use g77 to link on linux
+
+2003-02-28 16:08  twf
+
+	* configure, configure.in:
+	
+	Remove the sharetypemod
+
+2003-02-28 11:09  twf
+
+	* tdi/camac/CamFstopw.fun:
+	
+	Remove duplicate fun
+
+2003-02-28 11:02  twf
+
+	* mdsplus.sln:
+	
+	remove globus libraries
+
+2003-02-28 10:15  twf
+
+	* configure, configure.in:
+	
+	Change -fpic to -fPIC on solaris
+
+2003-02-28 09:19  twf
+
+	* Makefile.in:
+	
+	Allow MAKE environment variable override to make command
+
+2003-02-28 08:11  manduchi
+
+	* tdi/: interpolate.fun, RfxDevices/TimingGetEventTime.fun:
+	
+	Added interpolation fun
+
+2003-02-28 07:33  manduchi
+
+	* javascope/: MdsConnection.java, MdsDataProvider.java,
+	SshTunneling.java:
+	
+	Latest version for ssh
+
+2003-02-28 06:16  manduchi
+
+	* javascope/Makefile.in:
+	
+	Added support for ssh tunneling
+
+2003-02-28 06:05  manduchi
+
+	* javascope/MindTerm.jar:
+	
+	Remove temp
+
+2003-02-28 04:50  manduchi
+
+	* javascope/: AboutWindow.java, AsdexDataProvider.java,
+	Base64.java, ColorDialog.java, CompositeWaveDisplay.java,
+	ConnectionEvent.java, ConnectionListener.java, DataAccess.java,
+	DataAccessURL.java, DataCacheObject.java, DataCached.java,
+	DataProvider.java, DataServerItem.java, DemoAccess.java,
+	DemoDataProvider.java, Descriptor.java, FontSelection.java,
+	FrameData.java, Frames.java, FtuDataProvider.java, Grid.java,
+	JetDataProvider.java, JetMdsDataProvider.java, JiDataSource.java,
+	JiDim.java, JiNcSource.java, JiNcVar.java, JiNcVarByte.java,
+	JiNcVarChar.java, JiNcVarDouble.java, JiNcVarFloat.java,
+	JiNcVarImp.java, JiNcVarInt.java, JiNcVarShort.java, JiSlab.java,
+	JiSlabIterator.java, JiVar.java, JiVarImpl.java,
+	LocalDataProvider.java, MdsAccess.java, MdsConnection.java,
+	MdsDataClient.java, MdsDataProvider.java, MdsIOException.java,
+	MdsMessage.java, MdsPlusBrowseSignals.java, MdsWaveInterface.java,
+	MindTerm.jar, MultiWavePopup.java, MultiWaveform.java,
+	NotConnectedDataProvider.java, ProfileDialog.java, RdaAccess.java,
+	RotateFilter.java, RowColumnContainer.java, RowColumnLayout.java,
+	SetupDataDialog.java, SetupDefaults.java, SetupWaveformParams.java,
+	Signal.java, SignalBox.java, SignalCache.java,
+	SignalsBoxDialog.java, SshTunneling.java, TSDataProvider.java,
+	TWUProperties.java, TWUSignal.java, TextorBrowseSignals.java,
+	TwuAccess.java, TwuDataProvider.java, UniversalDataProvider.java,
+	UpdateEvent.java, UpdateEventListener.java,
+	WaveContainerEvent.java, WaveContainerListener.java, WaveData.java,
+	WaveDisplay.java, WaveInterface.java, WavePopup.java,
+	Waveform.java, WaveformContainer.java, WaveformEvent.java,
+	WaveformListener.java, WaveformManager.java, WaveformMetrics.java,
+	jScope.java, jScopeBrowseSignals.java, jScopeBrowseUrl.java,
+	jScopeDefaultValues.java, jScopeMultiWave.java,
+	jScopeProperties.java, jScopeWaveContainer.java,
+	jScopeWavePopup.java:
+	
+	New jScope version (7.2.2) supporting ssh tunneling
+
+2003-02-27 16:33  twf
+
+	* mdstcpip/Makefile.in:
+	
+	revert
+
+2003-02-27 12:54  twf
+
+	* mdstcpip/Makefile.in, configure, configure.in:
+	
+	Remove non-portable Makefile directives
+
+2003-02-27 12:52  twf
+
+	* mdstcpip/mdsiputil.c:
+	
+	Fix globus I/O hang
+
+2003-02-26 10:12  twf
+
+	* LabView/: MdsDescrStr.vi, MdsGetStr.vi:
+	
+	Add string vi's
+
+2003-02-26 09:47  manduchi
+
+	* tdi/RfxDevices/: AAGain.fun, AAMaxValue.fun, L5613__off.fun,
+	MPBEncoder__init.fun, RFXClock__init.fun, RFXPSetup__add.fun,
+	TRCF__init.fun, TRCH__init.fun, TRCH__store.fun,
+	TimingGetEvents.fun:
+	
+	Minor fixes
+
+2003-02-25 15:45  twf
+
+	* treeshr/TreeDeletePulseFile.c:
+	
+	Use file mask in delete pulse
+
+2003-02-25 14:02  gibney
+
+	* mdsdcl/mdsdcl_do_command.c:
+	
+	Ignore blank lines
+
+2003-02-25 08:48  twf
+
+	* remcam/CamIosb.c:
+	
+	add dummy CamVerbose
+
+2003-02-24 11:03  twf
+
+	* idl/camac/j221test.pro:
+	
+	do not use enhanced transfers with j221
+
+2003-02-22 10:04  twf
+
+	* idl/camac/camcheck.pro:
+	
+	continue after error
+
+2003-02-22 10:03  twf
+
+	* idl/camac/camverbose.pro:
+	
+	Add camverbose
+
+2003-02-22 10:00  twf
+
+	* camshr/Makefile.in:
+	
+	link MdsShr in camshr
+
+2003-02-22 10:00  twf
+
+	* camshr/cam_functions.c:
+	
+	Add CamVerbose
+
+2003-02-22 08:30  twf
+
+	* ccl/: ccl_commands.ocld, ccl_verbs.c:
+	
+	Add enhanced mode commands
+
+2003-02-22 08:05  twf
+
+	* idl/camac/: camfqstopw.pro, j221test.pro:
+	
+	Add camfqstop.pro
+
+2003-02-22 07:57  twf
+
+	* idl/camac/: camassign.pro, camblock.pro, camcheck.pro,
+	camcstate.pro, camdassgn.pro, camerror.pro, camfqrepw.pro,
+	camfstopw.pro, camget_stat.pro, camlamwait.pro, campiow.pro,
+	camq.pro, camqrepw.pro, camqscanw.pro, camqstopw.pro,
+	camshow_stat.pro, camstopw.pro, camtest.pro, camv2.pro, camx.pro,
+	camxandq.pro, j221test.pro:
+	
+	Add camac access functions
+
+2003-02-21 16:52  jas
+
+	* tcl/tcl_add_node.c:
+	
+	fix memory leak in AddNode
+
+2003-02-21 16:08  jas
+
+	* treeshr/: TreeAddNode.c, TreeFindNode.c, TreeOpen.c:
+	
+	fix uninitialized field in TreeOpenNew and memory leak in
+	FindParent
+
+2003-02-21 13:59  twf
+
+	* mitdevices/j221.c:
+	
+	fix for bad channel treatment
+
+2003-02-21 13:58  twf
+
+	* servershr/: ServerQAction.c, ServerSendMessage.c, servershrp.h:
+	
+	Permit actmon reconnects
+
+2003-02-21 13:57  twf
+
+	* actions/actmon.c:
+	
+	Reconnect when monitor server restarts
+
+2003-02-21 12:30  jas
+
+	* tdi/MitDevices/event_table.fun:
+	
+	bring up to date from VMS
+
+2003-02-20 12:44  twf
+
+	* servershr/ServerDispatchPhase.c:
+	
+	Fix race condition with server down errors
+
+2003-02-20 12:06  twf
+
+	* servershr/ServerQAction.c:
+	
+	Print done messages
+
+2003-02-20 11:26  jas
+
+	* treeshr/TreePutRecord.c:
+	
+	Fix fixup paths
+
+2003-02-20 10:03  jas
+
+	* matlab/mdsipmex.c:
+	
+	Need one more declaration
+
+2003-02-19 12:38  twf
+
+	* hdf5/hdf5ToMds.c:
+	
+	Fix node name computation
+
+2003-02-17 10:26  twf
+
+	* mitdevices/l8212.c, mitdevices/paragon_rpt.c,
+	tdi/MitDevices/paragon_ftp_copy.fun,
+	tdi/MitDevices/paragon_ftp_delete.fun:
+	
+	remove debug printout
+
+2003-02-17 09:58  twf
+
+	* mitdevices/mdsdcl.c:
+	
+	Fix mdsdcl execute method
+
+2003-02-15 09:19  twf
+
+	* mitdevices/joerger_tr612.c:
+	
+	fix pio
+
+2003-02-15 08:10  twf
+
+	* mitdevices/l8212.c:
+	
+	Fix libffs call
+
+2003-02-14 17:01  jas
+
+	* actions/actmon.c:
+	
+	add XFlush calls
+
+2003-02-14 15:35  twf
+
+	* tcl/tcl_dispatch.c:
+	
+	Add socket to dispatch
+
+2003-02-14 15:35  twf
+
+	* mdsshr/librtl.c:
+	
+	Fix StrUpcase
+
+2003-02-14 15:34  twf
+
+	* mitdevices/: a12.c, j221.c, l2256.c, mit_decoder.c:
+	
+	bug fixes
+
+2003-02-14 15:34  twf
+
+	* treeshr/TreeGetSetShotId.c:
+	
+	Fix case sensitivity
+
+2003-02-14 15:33  twf
+
+	* servershr/: ServerAbortServer.c, ServerBuildDispatchTable.c,
+	ServerCloseTrees.c, ServerCreatePulse.c, ServerDispatchAction.c,
+	ServerDispatchClose.c, ServerDispatchCommand.c,
+	ServerDispatchPhase.c, ServerMonitorCheckin.c, ServerSendMessage.c,
+	ServerSetLogging.c, ServerStopServer.c, servershrp.h:
+	
+	Fix race conditions
+
+2003-02-14 15:33  twf
+
+	* include/servershr.h:
+	
+	Updates
+
+2003-02-14 15:32  twf
+
+	* ccl/ccl_verbs.c:
+	
+	Add error messages
+
+2003-02-14 15:32  twf
+
+	* camshr/: cam_functions.c, get_scsi_device_number.c:
+	
+	Fix online check
+
+2003-02-14 15:31  twf
+
+	* actions/actmon.c:
+	
+	fixes
+
+2003-02-12 16:37  jas
+
+	* treeshr/TreePutRecord.c:
+	
+	Make FixupNid return 1
+
+2003-02-12 15:19  jas
+
+	* tdi/: TreeDirName.fun, concatenate.fun:
+	
+	Concatenate needed by pcs
+
+2003-02-12 09:22  manduchi
+
+	* javadispatcher/: Action.java, ActionServer.java, Balancer.java,
+	Descriptor.java, InfoServer.java, MdsHelper.java, MdsIp.java,
+	MdsMonitor.java, MdsMonitorEvent.java, MdsServer.java,
+	MdsServerEvent.java, MdsServerListener.java, MonitorEvent.java,
+	MonitorListener.java, NetworkEvent.java, NetworkListener.java,
+	Server.java, ServerEvent.java, ServerListener.java,
+	jDispatchMonitor.java, jDispatcher.java, jDispatcherIp.java:
+	
+	
+	jDispatcherMonitor brought up-to-date
+
+2003-02-11 16:49  jas
+
+	* mdslib/Makefile.in:
+	
+	Change the build order to do remote only stuff first
+
+2003-02-11 14:21  twf
+
+	* remcam/: CamMulti.c, CamSingle.c, Makefile.in:
+	
+	Make compatible with vms
+
+2003-02-11 13:44  twf
+
+	* camshr/cam_functions.c:
+	
+	Add CamFQrepw and change CamPioQrep to CamPioQrepw
+
+2003-02-11 12:36  twf
+
+	* tdi/camac/: CamFQrepw.fun, CamFQstop.fun, CamFQstopw.fun,
+	CamFstopw.fun, CamMulti.fun, CamPiow.fun, CamQrepw.fun,
+	CamQscanw.fun, CamQstopw.fun, CamSingle.fun, CamStopw.fun:
+	
+	Make compatible with vms
+
+2003-02-11 11:57  jas
+
+	* mdstcpip/: mdsip.h, mdsip_socket_io.c:
+	
+	changes for qnx
+
+2003-02-11 11:40  jas
+
+	* configure.in, configure:
+	
+	adding qnx
+
+2003-02-11 11:36  jas
+
+	* mdstcpip/Makefile.in:
+	
+	change the build order for qnx
+
+2003-02-11 11:23  twf
+
+	* tdi/camac/: CamError.fun, CamFstopw.fun, CamGetStat.fun,
+	CamImage.fun, CamMulti.fun, CamQ.fun, CamSingle.fun, CamX.fun,
+	CamXandQ.fun:
+	
+	Make the camac functions detect if local camac available
+
+2003-02-10 16:43  twf
+
+	* camshr/: KsM.c, KsS.c, cam_functions.c, crate.h,
+	get_scsi_device_number.c, parse_crate_db.c, prototypes.h,
+	turn_crate_on_off_line.c, verbs.c:
+	
+	Put online and enhanced state in crate db and use this info in the
+	cam functions
+
+2003-02-10 10:38  twf
+
+	* camshr/inquiry.c:
+	
+	Simple inquiry program for testing
+
+2003-02-10 10:12  twf
+
+	* camshr/verbs.c:
+	
+	fix error message
+
+2003-02-09 12:34  twf
+
+	* camshr/: KsM.c, KsS.c, KsT.c, ScsiCamac.h, cam_functions.c,
+	prototypes.h:
+	
+	numerous fixes
+
+2003-02-09 11:11  twf
+
+	* camshr/: CamFunctions.c, Makefile.in, ScsiCamac.h, ScsiIo.c,
+	cam_functions.c, lookup_entry.c, prototypes.h, scsi_io.c,
+	tunables.h, verbs.c:
+	
+	Numerous fixes
+
+2003-02-06 11:38  manduchi
+
+	* javascope/MdsConnection.java:
+	
+	Fixed again
+
+2003-02-06 10:26  manduchi
+
+	* javascope/MdsConnection.java:
+	
+	Fixed a race condition
+
+2003-02-05 12:20  jas
+
+	* mdstcpip/mdsip_u.c:
+	
+	make statuses returned by mds_remote_io calls longs instead of
+	strings
+
+2003-02-05 10:32  twf
+
+	* include/mdsserver.h:
+	
+	Start monitor operations enum at 1
+
+2003-02-05 10:30  twf
+
+	* mdsshr/librtl.c:
+	
+	make dlopen calls thread safe on linux
+
+2003-02-05 10:15  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	Take out socket locking and fix port lookup based on service name
+
+2003-02-05 10:13  twf
+
+	* servershr/ServerQAction.c:
+	
+	Only get message text once
+
+2003-02-05 10:12  twf
+
+	* servershr/ServerBuildDispatchTable.c:
+	
+	Only send first and last actions to monitor when building dispatch
+	table
+
+2003-02-03 11:40  jas
+
+	* actions/Makefile.in:
+	
+	added actmon
+
+2003-02-03 11:32  jas
+
+	* actions/: actmon.c, actmon.uil:
+	
+	action monitor
+
+2003-02-03 04:55  manduchi
+
+	* tdishr/TdiCompile.c, treeshr/RemoteAccess.c:
+	
+	Typo
+
+2003-01-31 10:35  twf
+
+	* idlmdswidgets/cw_wveditv5.c:
+	
+	Fix mskrv2 calls
+
+2003-01-31 10:34  twf
+
+	* tdishr/TdiCompile.c:
+	
+	Do not use global mutex locking
+
+2003-01-31 10:33  twf
+
+	* servershr/: ServerDispatchPhase.c, ServerSendMessage.c:
+	
+	Fix thread interlocking to prevent hangs
+
+2003-01-31 10:32  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Only call LibFindImageSymbol once for each routine, problem with
+	dlopen in threads on linux
+
+2003-01-31 10:32  twf
+
+	* mdsshr/librtl.c:
+	
+	Fix for dlerror returning NULL
+
+2003-01-31 10:29  twf
+
+	* xmdsshr/XmdsWaveform.c:
+	
+	Add support for A4PAPER
+
+2003-01-31 10:02  jas
+
+	* treeshr/TreeOpen.c:
+	
+	Add TreeFileName entrypoint
+
+2003-01-31 10:00  jas
+
+	* tdi/: TreeDirName.fun, TreeFileName.fun:
+	
+	Funs to return file/dir specs for a tree/shot
+
+2003-01-28 14:40  twf
+
+	* idlmdsevent/mdsevent.c:
+	
+	Use ExceptMask, InputMask won't always work
+
+2003-01-28 14:26  twf
+
+	* idlmdsevent/mdsevent.c:
+	
+	Use XtInputReadMask instead of XtInputExceptMask
+
+2003-01-28 10:44  jas
+
+	* xmdsshr/XmdsXdBox.c:
+	
+	Fix WidgetWNameCmp to compare against argument instead of fixed
+	string
+
+2003-01-24 03:17  manduchi
+
+	* tcl/tcl_commands.dsp:
+	
+	Removed mds_dsc_string.c
+
+2003-01-23 16:41  twf
+
+	* dwscope/: dwscope.c, dwscope.uil:
+	
+	Add portrait mode in printing
+
+2003-01-22 14:53  twf
+
+	* rpm/rpm.spec:
+	
+	Add ChangeLog to rpm
+
+2003-01-22 14:20  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.4-0
 
 2003-01-22 14:19  twf
 
