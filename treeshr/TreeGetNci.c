@@ -96,8 +96,8 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  break_on_no_node;
 		  read_nci;
 		  set_retlen(sizeof(nci.time_inserted));
-                  ((int *)itm->pointer)[0] = swapint(nci.time_inserted[0]);
-                  ((int *)itm->pointer)[1] = swapint(nci.time_inserted[1]);
+                  ((int *)itm->pointer)[0] = swapint((char *)&nci.time_inserted[0]);
+                  ((int *)itm->pointer)[1] = swapint((char *)&nci.time_inserted[1]);
 		  break;
 	  case NciOWNER_ID:
 		  break_on_no_node;
