@@ -627,11 +627,11 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField114.setIdentifier("");
     deviceField114.setNumCols(20);
     deviceField114.setLabelString("Y:");
-    deviceField114.setOffsetNid(866);
+    deviceField114.setOffsetNid(1022);
     deviceField115.setIdentifier("");
     deviceField115.setNumCols(20);
     deviceField115.setLabelString("X:");
-    deviceField115.setOffsetNid(864);
+    deviceField115.setOffsetNid(1020);
     deviceChannel4.setLabelString("Wave 40");
     deviceChannel4.setOffsetNid(1022);
     deviceChannel4.setInSameLine(true);

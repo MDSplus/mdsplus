@@ -51,11 +51,11 @@ public class RFXToroidalSetup extends DeviceSetup {
   JScrollPane jScrollPane5 = new JScrollPane();
   DeviceTable deviceTable8 = new DeviceTable();
   GridLayout gridLayout3 = new GridLayout();
-  JPanel jPanel2 = new JPanel();
-  DeviceField deviceField2 = new DeviceField();
   DeviceField deviceField5 = new DeviceField();
-  DeviceChoice deviceChoice7 = new DeviceChoice();
   DeviceField deviceField6 = new DeviceField();
+  JPanel jPanel2 = new JPanel();
+  DeviceChoice deviceChoice7 = new DeviceChoice();
+  DeviceField deviceField2 = new DeviceField();
   public RFXToroidalSetup() {
     try {
       jbInit();
@@ -145,7 +145,7 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceTable2.setNumRows(12);
     deviceTable2.setNumCols(6);
     deviceTable2.setLabelString("Send Parameters CPU2");
-    deviceTable2.setOffsetNid(15);
+    deviceTable2.setOffsetNid(9);
     jPanel10.setDebugGraphicsOptions(0);
     jPanel10.setLayout(gridLayout3);
     jPanel11.setLayout(borderLayout5);
@@ -230,12 +230,11 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceField5.setNumCols(30);
     deviceField5.setIdentifier("");
     deviceField5.setEditable(false);
-    deviceField2.setOffsetNid(17);
-    deviceField2.setTextOnly(true);
-    deviceField2.setLabelString("TF Connection: ");
-    deviceField2.setNumCols(8);
-    deviceField2.setIdentifier("");
-    deviceField2.setEditable(false);
+    deviceField6.setOffsetNid(20);
+    deviceField6.setLabelString("TF Window: ");
+    deviceField6.setNumCols(4);
+    deviceField6.setIdentifier("");
+    deviceField6.setEditable(false);
     deviceChoice7.setChoiceIntValues(null);
     deviceChoice7.setChoiceFloatValues(null);
     deviceChoice7.setOffsetNid(18);
@@ -243,11 +242,12 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceChoice7.setChoiceItems(new String[] {"VOLTAGE", "CURRENT", "OPEN LOOP"});
     deviceChoice7.setUpdateIdentifier("");
     deviceChoice7.setIdentifier("");
-    deviceField6.setOffsetNid(20);
-    deviceField6.setLabelString("TF Window: ");
-    deviceField6.setNumCols(4);
-    deviceField6.setIdentifier("");
-    deviceField6.setEditable(false);
+    deviceField2.setOffsetNid(17);
+    deviceField2.setTextOnly(true);
+    deviceField2.setLabelString("TF Connection: ");
+    deviceField2.setNumCols(8);
+    deviceField2.setIdentifier("");
+    deviceField2.setEditable(false);
     this.getContentPane().add(deviceField1, BorderLayout.NORTH);
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
@@ -279,7 +279,7 @@ public class RFXToroidalSetup extends DeviceSetup {
     jPanel14.add(deviceField4, null);
     jPanel14.add(deviceTable7, null);
     jPanel12.add(jScrollPane5,  BorderLayout.CENTER);
-    jTabbedPane1.add(jPanel2,  "TF");
+    jTabbedPane1.add(jPanel2,   "TF");
     jPanel2.add(deviceField5, null);
     jPanel2.add(deviceField2, null);
     jPanel2.add(deviceChoice7, null);
