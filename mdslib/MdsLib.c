@@ -305,12 +305,13 @@ static void MdsValueCopy(int dim, int length, char fill, char *in, int *in_m, ch
 
 static void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int *length)
 {
+  char fill;
   if (indsc == 0)
   {
     if (length) *length = 0;
     return;
   }
-  char fill = (outdsc->dtype == DTYPE_CSTRING) ? 32 : 0;
+  fill = (outdsc->dtype == DTYPE_CSTRING) ? 32 : 0;
   if ( (indsc->class == CLASS_A) &&
        (outdsc->class == CLASS_A) &&
        (((struct descriptor_a *)outdsc)->dimct > 1) &&
@@ -1494,10 +1495,10 @@ int  MdsPut(char *pathname, char *expression, ...)
       if (status & 1)
       {
 #ifdef __VMS
-	if ((status = TreePutRecord(&nid, (struct descriptor *)arglist[argidx-1]),0) & 1)
+	if ((status = TreePutRecord(&nid, (struct descriptor *)arglist[argidx-1],0)) & 1)
 	{ 
 #else
-	if ((status = TreePutRecord(nid, (struct descriptor *)arglist[argidx-2]),0) & 1)
+	if ((status = TreePutRecord(nid, (struct descriptor *)arglist[argidx-2],0)) & 1)
 	{ 
 #endif
 	  TreeWait();
