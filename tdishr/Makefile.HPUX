@@ -79,14 +79,17 @@ TdiXxx.o \
 TdiYaccSubs.o \
 TdiYacc.o
 
-libTdiShr.sl : $(OBJECTS)
-	ld -o $@ +vallcompatwarnings +s -b $(OBJECTS) -lc -lm -L../mdsshr -lMdsShr -L../treeshr -lTreeShr
+all : .depend
+	make -f Makefile.HPUX -f .depend ../shlib/libTdiShr.sl
 
+../shlib/libTdiShr.sl : $(OBJECTS) ../shlib
+	ld -o $@ +vallcompatwarnings +s -b $(OBJECTS) -lc -lm -L../shlib -lMdsShr -lTreeShr
+
+../shlib :
+	mkdir ../shlib
 clean :
 	- rm *.o
-	- rm *.sl
-	- rm TdiLex.c
-	- rm TdiYacc.c
+	- rm ../shlib/libTdiShr.sl
 
 TdiLex.c : TdiLex.x
 	lex -t TdiLex.x > $@
@@ -94,3 +97,9 @@ TdiLex.c : TdiLex.x
 tdiyacc.h : TdiYacc.y
 	yacc -d TdiYacc.y ; mv y.tab.h $@
 
+depend : .depend
+
+.depend :
+	- rm .depend
+	- find *.c -exec /usr/ccs/lbin/cpp -I../include -M {} /dev/null 2> .depend \;
+	

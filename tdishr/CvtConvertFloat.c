@@ -1,7 +1,7 @@
 #include <string.h>
 #include <mdsdescrip.h>
 
-/** Adapted from VMS V7.0 sources CVT$CONVERT_FLOAT.LIS                      **/  
+/** Adapted from VMS V7.0 sources CvtConvertFloat.lis                      **/  
 /******************************************************************************/
 /**                                                                          **/
 /**  Copyright (c) 1991                                                      **/
@@ -26,13 +26,13 @@
 /*
 **=============================================================================
 **
-**  File:		CVT$CONVERT_FLOAT.C
+**  File:		CvtConvertFloat.c
 **
 **  Version:		1-004
 **
 **  Facility:		CVTRTL - VMS Conversion Run Time Library
 **
-**  Abstract:		CVT$CONVERT_FLOAT and supporting routines.
+**  Abstract:		CvtConvertFloat and supporting routines.
 **
 **  Author:		Jeffrey S. Young
 **
@@ -45,7 +45,7 @@
 **
 **  1-003 07-Jun-1993 JSY  Add IEEE X floating point type.
 **
-**  1-002 31-Oct-1991 JSY  Change CVT$CONVERT to CVT$CONVERT_FLOAT,
+**  1-002 31-Oct-1991 JSY  Change CvtConvert to CvtConvertFloat,
 **			   Add IBM and Cray floating point types.
 **
 **  1-001 25-Jun-1991 JSY  Original version.
@@ -59,7 +59,7 @@
 ** ROUTINE TABLE OF CONTENTS:
 **-----------------------------------------------------------------------------
 **
-** CVT$CONVERT_FLOAT		- General purpose conversion routine between
+** CvtConvertFloat		- General purpose conversion routine between
 **				  two floating point data types.
 **
 ** pack_vax_f			- Converts the standard intermediate data type
@@ -135,47 +135,47 @@
 **=============================================================================
 */
 
-#define CVT$K_VAX_F DTYPE_F                   /* VAX F     Floating point data    */
-#define CVT$K_VAX_D DTYPE_D                   /* VAX D     Floating point data    */
-#define CVT$K_VAX_G DTYPE_G                   /* VAX G     Floating point data    */
-#define CVT$K_VAX_H DTYPE_H                   /* VAX H     Floating point data    */
-#define CVT$K_IEEE_S DTYPE_FS                  /* IEEE S    Floating point data    */
-#define CVT$K_IEEE_T DTYPE_FT                  /* IEEE T    Floating point data    */
-#define CVT$K_IBM_LONG 6                /* IBM Long  Floating point data    */
-#define CVT$K_IBM_SHORT 7               /* IBM Short Floating point data    */
-#define CVT$K_CRAY 8                    /* Cray      Floating point data    */
-#define CVT$K_IEEE_X 9                  /* IEEE X    Floating point data    */
-#define CVT$M_ROUND_TO_NEAREST 0x1
-#define CVT$M_TRUNCATE 0x2
-#define CVT$M_ROUND_TO_POS 0x4
-#define CVT$M_ROUND_TO_NEG 0x8
-#define CVT$M_VAX_ROUNDING 0x10
-#define CVT$M_BIG_ENDIAN 0x20
-#define CVT$M_ERR_UNDERFLOW 0x40
-#define CVT$M_SPARE2 0xFFFFFF80
-struct cvt$r_conversion_options {
-    unsigned cvt$v_round_to_nearest : 1;
-    unsigned cvt$v_truncate : 1;
-    unsigned cvt$v_round_to_pos : 1;
-    unsigned cvt$v_round_to_neg : 1;
-    unsigned cvt$v_vax_rounding : 1;
-    unsigned cvt$v_big_endian : 1;
-    unsigned cvt$v_err_underflow : 1;
-    unsigned cvt$v_spare2 : 25;
+#define VAX_F DTYPE_F                   /* VAX F     Floating point data    */
+#define VAX_D DTYPE_D                   /* VAX D     Floating point data    */
+#define VAX_G DTYPE_G                   /* VAX G     Floating point data    */
+#define VAX_H DTYPE_H                   /* VAX H     Floating point data    */
+#define IEEE_S DTYPE_FS                  /* IEEE S    Floating point data    */
+#define IEEE_T DTYPE_FT                  /* IEEE T    Floating point data    */
+#define IBM_LONG 6                /* IBM Long  Floating point data    */
+#define IBM_SHORT 7               /* IBM Short Floating point data    */
+#define CRAY 8                    /* Cray      Floating point data    */
+#define IEEE_X 9                  /* IEEE X    Floating point data    */
+#define CVT_M_ROUND_TO_NEAREST 0x1
+#define CVT_M_TRUNCATE 0x2
+#define CVT_M_ROUND_TO_POS 0x4
+#define CVT_M_ROUND_TO_NEG 0x8
+#define CVT_M_VAX_ROUNDING 0x10
+#define CVT_M_BIG_ENDIAN 0x20
+#define CVT_M_ERR_UNDERFLOW 0x40
+#define CVT_M_SPARE2 0xFFFFFF80
+struct cvt_r_conversion_options {
+    unsigned cvt_v_round_to_nearest : 1;
+    unsigned cvt_v_truncate : 1;
+    unsigned cvt_v_round_to_pos : 1;
+    unsigned cvt_v_round_to_neg : 1;
+    unsigned cvt_v_vax_rounding : 1;
+    unsigned cvt_v_big_endian : 1;
+    unsigned cvt_v_err_underflow : 1;
+    unsigned cvt_v_spare2 : 25;
     } ;
 
-#define CVT$_FACILITY 1530
-#define CVT$_NORMAL 100302857
-#define CVT$_INPCONERR 100302866
-#define CVT$_INVINPTYP 100302874
-#define CVT$_INVOPT 100302882
-#define CVT$_INVOUTTYP 100302890
-#define CVT$_INVVAL 100302898
-#define CVT$_NEGINF 100302906
-#define CVT$_OUTCONERR 100302914
-#define CVT$_OVERFLOW 100302922
-#define CVT$_POSINF 100302930
-#define CVT$_UNDERFLOW 100302938
+#define CvtFACILITY 1530
+#define CvtNORMAL 100302857
+#define CvtINPCONERR 100302866
+#define CvtINVINPTYP 100302874
+#define CvtINVOPT 100302882
+#define CvtINVOUTTYP 100302890
+#define CvtINVVAL 100302898
+#define CvtNEGINF 100302906
+#define CvtOUTCONERR 100302914
+#define CvtOVERFLOW 100302922
+#define CvtPOSINF 100302930
+#define CvtUNDERFLOW 100302938
 typedef char		Int_8;
 typedef unsigned char	U_Int_8;
 typedef	short		Int_16;
@@ -216,17 +216,17 @@ typedef struct {unsigned int low2; unsigned low:16; unsigned hi : 4; unsigned ex
 #define t_float_exp(val) ((((int *)val)[1] >> 4) & 0x7ff)
 #define IsRoprandT(val) (t_float_exp(val) == 2047)
 
-#define cvt_s_normal 			CVT$_NORMAL
-#define cvt_s_input_conversion_error 	CVT$_INPCONERR
-#define cvt_s_invalid_input_type	CVT$_INVINPTYP
-#define cvt_s_invalid_option		CVT$_INVOPT
-#define cvt_s_invalid_output_type	CVT$_INVOUTTYP
-#define cvt_s_invalid_value 		CVT$_INVVAL
-#define cvt_s_neg_infinity 		CVT$_NEGINF
-#define cvt_s_output_conversion_error 	CVT$_OUTCONERR
-#define cvt_s_overflow 			CVT$_OVERFLOW
-#define cvt_s_pos_infinity 		CVT$_POSINF
-#define cvt_s_underflow 		CVT$_UNDERFLOW
+#define cvt_s_normal 			CvtNORMAL
+#define cvt_s_input_conversion_error 	CvtINPCONERR
+#define cvt_s_invalid_input_type	CvtINVINPTYP
+#define cvt_s_invalid_option		CvtINVOPT
+#define cvt_s_invalid_output_type	CvtINVOUTTYP
+#define cvt_s_invalid_value 		CvtINVVAL
+#define cvt_s_neg_infinity 		CvtNEGINF
+#define cvt_s_output_conversion_error 	CvtOUTCONERR
+#define cvt_s_overflow 			CvtOVERFLOW
+#define cvt_s_pos_infinity 		CvtPOSINF
+#define cvt_s_underflow 		CvtUNDERFLOW
 #define RAISE(COND)			return(COND)
 
 /*
@@ -393,51 +393,51 @@ static U_Int_32 const cray[] = {
 #define VAX_H_NEG_HUGE &vax_c[12]
 
 
-#define IEEE_S_INVALID ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_S_INVALID ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_s[1] : &ieee_s[0])
-#define IEEE_S_POS_ZERO ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_S_POS_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_s[3] : &ieee_s[2])
-#define IEEE_S_NEG_ZERO ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_S_NEG_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_s[5] : &ieee_s[4])
-#define IEEE_S_POS_HUGE ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_S_POS_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_s[7] : &ieee_s[6])
-#define IEEE_S_NEG_HUGE ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_S_NEG_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_s[9] : &ieee_s[8])
-#define IEEE_S_POS_INFINITY ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_S_POS_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_s[11] : &ieee_s[10])
-#define IEEE_S_NEG_INFINITY ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_S_NEG_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_s[13] : &ieee_s[12])
 
 
-#define IEEE_T_INVALID ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_T_INVALID ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_t[2] : &ieee_t[0])
-#define IEEE_T_POS_ZERO ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_T_POS_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_t[6] : &ieee_t[4])
-#define IEEE_T_NEG_ZERO ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_T_NEG_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_t[10] : &ieee_t[8])
-#define IEEE_T_POS_HUGE ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_T_POS_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_t[14] : &ieee_t[12])
-#define IEEE_T_NEG_HUGE ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_T_NEG_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_t[18] : &ieee_t[16])
-#define IEEE_T_POS_INFINITY ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_T_POS_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_t[22] : &ieee_t[20])
-#define IEEE_T_NEG_INFINITY ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_T_NEG_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_t[26] : &ieee_t[24])
 
 
-#define IEEE_X_INVALID ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_X_INVALID ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_x[4] : &ieee_x[0])
-#define IEEE_X_POS_ZERO ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_X_POS_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_x[12] : &ieee_x[8])
-#define IEEE_X_NEG_ZERO ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_X_NEG_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_x[20] : &ieee_x[16])
-#define IEEE_X_POS_HUGE ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_X_POS_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_x[28] : &ieee_x[24])
-#define IEEE_X_NEG_HUGE ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_X_NEG_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_x[36] : &ieee_x[32])
-#define IEEE_X_POS_INFINITY ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_X_POS_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_x[44] : &ieee_x[40])
-#define IEEE_X_NEG_INFINITY ((options & CVT$M_BIG_ENDIAN) ? \
+#define IEEE_X_NEG_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
 	&ieee_x[52] : &ieee_x[48])
 
 
@@ -573,7 +573,7 @@ CVT_STATUS CvtConvertFloat(void	*input_value,
 **
 **  FUNCTIONAL DESCRIPTION:
 **
-**	CVT$CONVERT_FLOAT is a general purpose routine for converting between
+**	CvtConvertFloat is a general purpose routine for converting between
 **	any pair of the following data types:
 **
 **	    VAX F_Floating
@@ -587,7 +587,7 @@ CVT_STATUS CvtConvertFloat(void	*input_value,
 **	    Cray floating point
 **
 **	The input value pointed to by *input_value will be interpreted as being
-**	of type input_type (types are defined in CVTDEF.H).  CVT$CONVERT_FLOAT
+**	of type input_type (types are defined in CVTDEF.H).  CvtConvertFloat
 **	will convert *input_value to output_type and store the result in
 **	*output_value.  The conversion may be influenced by several options.
 **	The options are specified by setting specific bits in the options
@@ -655,38 +655,38 @@ CVT_STATUS CvtConvertFloat(void	*input_value,
   {
     switch (input_type)
     {
-      case CVT$K_VAX_F	 : *(float *)output_value = *(float *)input_value; return !IsRoprandF(input_value);
-      case CVT$K_VAX_D	 : *(double *)output_value = *(double *)input_value; return !IsRoprandD(input_value);
-      case CVT$K_VAX_G	 : *(double *)output_value = *(double *)input_value; return !IsRoprandG(input_value);
-      case CVT$K_IEEE_S	 : *(float *)output_value = *(float *)input_value; return !IsRoprandS(input_value);
-      case CVT$K_IEEE_T	 : *(double *)output_value = *(double *)input_value; return !IsRoprandT(input_value);
+      case VAX_F	 : *(float *)output_value = *(float *)input_value; return !IsRoprandF(input_value);
+      case VAX_D	 : *(double *)output_value = *(double *)input_value; return !IsRoprandD(input_value);
+      case VAX_G	 : *(double *)output_value = *(double *)input_value; return !IsRoprandG(input_value);
+      case IEEE_S	 : *(float *)output_value = *(float *)input_value; return !IsRoprandS(input_value);
+      case IEEE_T	 : *(double *)output_value = *(double *)input_value; return !IsRoprandT(input_value);
       default		 : RAISE(cvt_s_invalid_input_type);   break;
     }
   }
 
-  switch ( options & ~(CVT$M_BIG_ENDIAN | CVT$M_ERR_UNDERFLOW) )
+  switch ( options & ~(CVT_M_BIG_ENDIAN | CVT_M_ERR_UNDERFLOW) )
   {
     case 0 : switch ( output_type )
 	     {
-	       case CVT$K_VAX_F	    : 
-	       case CVT$K_VAX_D	    : 
-	       case CVT$K_VAX_G	    : 
-	       case CVT$K_VAX_H	    : options |= CVT$M_VAX_ROUNDING;	 break;
-	       case CVT$K_IEEE_S    : 
-	       case CVT$K_IEEE_T    : 
-	       case CVT$K_IEEE_X    : 
-	       case CVT$K_IBM_LONG  :
-	       case CVT$K_IBM_SHORT :
-	       case CVT$K_CRAY	    : options |= CVT$M_ROUND_TO_NEAREST; break;
+	       case VAX_F	    : 
+	       case VAX_D	    : 
+	       case VAX_G	    : 
+	       case VAX_H	    : options |= CVT_M_VAX_ROUNDING;	 break;
+	       case IEEE_S    : 
+	       case IEEE_T    : 
+	       case IEEE_X    : 
+	       case IBM_LONG  :
+	       case IBM_SHORT :
+	       case CRAY	    : options |= CVT_M_ROUND_TO_NEAREST; break;
 	       default		    : RAISE(cvt_s_invalid_output_type);  break;
 	     }
 	     break;
 
-    case CVT$M_ROUND_TO_NEAREST : 
-    case CVT$M_TRUNCATE         : 
-    case CVT$M_ROUND_TO_POS     : 
-    case CVT$M_ROUND_TO_NEG     : 
-    case CVT$M_VAX_ROUNDING     : break;
+    case CVT_M_ROUND_TO_NEAREST : 
+    case CVT_M_TRUNCATE         : 
+    case CVT_M_ROUND_TO_POS     : 
+    case CVT_M_ROUND_TO_NEG     : 
+    case CVT_M_VAX_ROUNDING     : break;
     default			: RAISE(cvt_s_invalid_option);   break;
   }
 
@@ -713,43 +713,43 @@ CVT_STATUS CvtConvertFloat(void	*input_value,
   */	  
   switch (input_type)
   {
-    case CVT$K_VAX_F	    :	unpack_vax_f(input_value, intermediate_value,
+    case VAX_F	    :	unpack_vax_f(input_value, intermediate_value,
 					     options);
 				break;
 
-    case CVT$K_VAX_D	    :	unpack_vax_d(input_value, intermediate_value,
+    case VAX_D	    :	unpack_vax_d(input_value, intermediate_value,
 					     options);
 				break;
 
-    case CVT$K_VAX_G	    :	unpack_vax_g(input_value, intermediate_value,
+    case VAX_G	    :	unpack_vax_g(input_value, intermediate_value,
 					     options);
 				break;
 
-    case CVT$K_VAX_H	    :	unpack_vax_h(input_value, intermediate_value,
+    case VAX_H	    :	unpack_vax_h(input_value, intermediate_value,
 					     options);
 				break;
 
-    case CVT$K_IEEE_S	    :	unpack_ieee_s(input_value, intermediate_value,
+    case IEEE_S	    :	unpack_ieee_s(input_value, intermediate_value,
 					      options);
 				break;
 
-    case CVT$K_IEEE_T	    :	unpack_ieee_t(input_value, intermediate_value,
+    case IEEE_T	    :	unpack_ieee_t(input_value, intermediate_value,
 					      options);
 				break;
 
-    case CVT$K_IEEE_X	    :	unpack_ieee_x(input_value, intermediate_value,
+    case IEEE_X	    :	unpack_ieee_x(input_value, intermediate_value,
 					      options);
 				break;
 
-    case CVT$K_IBM_LONG	    :	unpack_ibm_l(input_value, intermediate_value,
+    case IBM_LONG	    :	unpack_ibm_l(input_value, intermediate_value,
 					     options);
 				break;
 
-    case CVT$K_IBM_SHORT    :	unpack_ibm_s(input_value, intermediate_value,
+    case IBM_SHORT    :	unpack_ibm_s(input_value, intermediate_value,
 					     options);
 				break;
 
-    case CVT$K_CRAY	    :	unpack_cray(input_value, intermediate_value,
+    case CRAY	    :	unpack_cray(input_value, intermediate_value,
 					    options);
 				break;
 
@@ -763,52 +763,52 @@ CVT_STATUS CvtConvertFloat(void	*input_value,
   */	  
   switch (output_type)
   {
-    case CVT$K_VAX_F	    :	return_status = pack_vax_f(intermediate_value, 
+    case VAX_F	    :	return_status = pack_vax_f(intermediate_value, 
 							   output_value, 
 							   options);
 				break;
 
-    case CVT$K_VAX_D	    :	return_status = pack_vax_d(intermediate_value, 
+    case VAX_D	    :	return_status = pack_vax_d(intermediate_value, 
 							   output_value, 
 							   options);
 				break;
 
-    case CVT$K_VAX_G	    :	return_status = pack_vax_g(intermediate_value, 
+    case VAX_G	    :	return_status = pack_vax_g(intermediate_value, 
 							   output_value, 
 							   options);
 				break;
 
-    case CVT$K_VAX_H	    :	return_status = pack_vax_h(intermediate_value, 
+    case VAX_H	    :	return_status = pack_vax_h(intermediate_value, 
 							   output_value, 
 							   options);
 				break;
 
-    case CVT$K_IEEE_S	    :	return_status = pack_ieee_s(intermediate_value, 
+    case IEEE_S	    :	return_status = pack_ieee_s(intermediate_value, 
 							    output_value, 
 							    options);
 				break;
 
-    case CVT$K_IEEE_T	    :	return_status = pack_ieee_t(intermediate_value, 
+    case IEEE_T	    :	return_status = pack_ieee_t(intermediate_value, 
 							    output_value, 
 							    options);
 				break;
 
-    case CVT$K_IEEE_X	    :	return_status = pack_ieee_x(intermediate_value, 
+    case IEEE_X	    :	return_status = pack_ieee_x(intermediate_value, 
 							    output_value, 
 							    options);
 				break;
 
-    case CVT$K_IBM_LONG	    :	return_status = pack_ibm_l(intermediate_value, 
+    case IBM_LONG	    :	return_status = pack_ibm_l(intermediate_value, 
 							   output_value, 
 							   options);
 				break;
 
-    case CVT$K_IBM_SHORT    :	return_status = pack_ibm_s(intermediate_value, 
+    case IBM_SHORT    :	return_status = pack_ibm_s(intermediate_value, 
 							   output_value, 
 							   options);
 				break;
 
-    case CVT$K_CRAY	    :	return_status = pack_cray(intermediate_value, 
+    case CRAY	    :	return_status = pack_cray(intermediate_value, 
 							  output_value, 
 							  options);
 				break;
@@ -936,7 +936,7 @@ static CVT_STATUS pack_vax_f(UNPACKED_REAL  intermediate_value,
     if (intermediate_value[U_R_EXP] < (U_R_BIAS - 127)) 
     {
       memcpy(output_value, VAX_F_ZERO, 4);
-      if (options & CVT$M_ERR_UNDERFLOW) 
+      if (options & CVT_M_ERR_UNDERFLOW) 
 	RAISE(cvt_s_underflow);
     } 
 
@@ -946,7 +946,7 @@ static CVT_STATUS pack_vax_f(UNPACKED_REAL  intermediate_value,
     */
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 127)) 
     {
-      if (options & CVT$M_TRUNCATE) 
+      if (options & CVT_M_TRUNCATE) 
       {
 	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
 	{
@@ -958,13 +958,13 @@ static CVT_STATUS pack_vax_f(UNPACKED_REAL  intermediate_value,
 	}
       } 
 
-      else if ((options & CVT$M_ROUND_TO_POS)  &&
+      else if ((options & CVT_M_ROUND_TO_POS)  &&
                (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) 
       {
         memcpy(output_value, VAX_F_NEG_HUGE, 4);
       } 
 
-      else if ((options & CVT$M_ROUND_TO_NEG) && 
+      else if ((options & CVT_M_ROUND_TO_NEG) && 
 	       !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) 
       {
         memcpy(output_value, VAX_F_POS_HUGE, 4);
@@ -1137,7 +1137,7 @@ static CVT_STATUS pack_vax_d(UNPACKED_REAL  intermediate_value,
     if (intermediate_value[U_R_EXP] < (U_R_BIAS - 127)) 
     {
       memcpy(output_value, VAX_D_ZERO, 8);
-      if (options & CVT$M_ERR_UNDERFLOW)
+      if (options & CVT_M_ERR_UNDERFLOW)
 	RAISE(cvt_s_underflow);
     } 
 
@@ -1147,7 +1147,7 @@ static CVT_STATUS pack_vax_d(UNPACKED_REAL  intermediate_value,
     */	  
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 127)) 
     {
-      if (options & CVT$M_TRUNCATE)
+      if (options & CVT_M_TRUNCATE)
       {
 	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
 	{
@@ -1159,13 +1159,13 @@ static CVT_STATUS pack_vax_d(UNPACKED_REAL  intermediate_value,
 	}
       } 
 
-      else if ((options & CVT$M_ROUND_TO_POS) && 
+      else if ((options & CVT_M_ROUND_TO_POS) && 
 	       (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) 
       {
 	memcpy(output_value, VAX_D_NEG_HUGE, 8);
       } 
 
-      else if ((options & CVT$M_ROUND_TO_NEG) &&
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
 	       !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) 
       {
 	memcpy(output_value, VAX_D_POS_HUGE, 8);
@@ -1339,7 +1339,7 @@ static CVT_STATUS pack_vax_g(UNPACKED_REAL  intermediate_value,
     if (intermediate_value[U_R_EXP] < (U_R_BIAS - 1023))
     {
       memcpy(output_value, VAX_G_ZERO, 8);
-      if (options & CVT$M_ERR_UNDERFLOW)
+      if (options & CVT_M_ERR_UNDERFLOW)
 	RAISE(cvt_s_underflow);
     }
 
@@ -1349,7 +1349,7 @@ static CVT_STATUS pack_vax_g(UNPACKED_REAL  intermediate_value,
     */	  
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 1023)) 
     {
-      if (options & CVT$M_TRUNCATE) 
+      if (options & CVT_M_TRUNCATE) 
       {
 	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
 	{
@@ -1360,12 +1360,12 @@ static CVT_STATUS pack_vax_g(UNPACKED_REAL  intermediate_value,
 	  memcpy(output_value, VAX_G_POS_HUGE, 8);
 	}
       } 
-      else if ((options & CVT$M_ROUND_TO_POS) &&
+      else if ((options & CVT_M_ROUND_TO_POS) &&
 	       (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) 
       {
 	memcpy(output_value, VAX_G_NEG_HUGE, 8);
       }
-      else if ((options & CVT$M_ROUND_TO_NEG) &&
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
 	       !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) 
       {
 	memcpy(output_value, VAX_G_POS_HUGE, 8);
@@ -1542,7 +1542,7 @@ static CVT_STATUS pack_vax_h(UNPACKED_REAL  intermediate_value,
     if (intermediate_value[U_R_EXP] < (U_R_BIAS - 16383)) 
     {
       memcpy(output_value, VAX_H_ZERO, 16);
-      if (options & CVT$M_ERR_UNDERFLOW)
+      if (options & CVT_M_ERR_UNDERFLOW)
 	RAISE(cvt_s_underflow);
     } 
 
@@ -1552,7 +1552,7 @@ static CVT_STATUS pack_vax_h(UNPACKED_REAL  intermediate_value,
     */	  
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 16383))
     {
-      if (options & CVT$M_TRUNCATE) 
+      if (options & CVT_M_TRUNCATE) 
       {
 	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
 	{
@@ -1563,12 +1563,12 @@ static CVT_STATUS pack_vax_h(UNPACKED_REAL  intermediate_value,
 	  memcpy(output_value, VAX_H_POS_HUGE, 16);
 	}
       } 
-      else if ((options & CVT$M_ROUND_TO_POS) &&
+      else if ((options & CVT_M_ROUND_TO_POS) &&
 	       (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) 
       {
 	memcpy(output_value, VAX_H_NEG_HUGE, 16);
       } 
-      else if ((options & CVT$M_ROUND_TO_NEG) &&
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
 	       !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
       {
 	memcpy(output_value, VAX_H_POS_HUGE, 16);
@@ -1781,7 +1781,7 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL  intermediate_value,
 	  memcpy(output_value, IEEE_S_POS_ZERO, 4);
 	}
 
-	if (options & CVT$M_ERR_UNDERFLOW)
+	if (options & CVT_M_ERR_UNDERFLOW)
 	  RAISE(cvt_s_underflow);
       } 
 
@@ -1800,7 +1800,7 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL  intermediate_value,
 	*/
 	intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
-	if (options & CVT$M_BIG_ENDIAN)
+	if (options & CVT_M_BIG_ENDIAN)
 	{
 	  intermediate_value[0]  = ((intermediate_value[1] << 24) | 
 				    (intermediate_value[1] >> 24));
@@ -1821,7 +1821,7 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL  intermediate_value,
     */	  
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 128))
     {
-      if (options & CVT$M_TRUNCATE)
+      if (options & CVT_M_TRUNCATE)
       {
 	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
 	{
@@ -1832,12 +1832,12 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL  intermediate_value,
 	  memcpy(output_value, IEEE_S_POS_HUGE, 4);
 	}
       } 
-      else if ((options & CVT$M_ROUND_TO_POS) &&
+      else if ((options & CVT_M_ROUND_TO_POS) &&
 	       (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
       {
 	memcpy(output_value, IEEE_S_NEG_HUGE, 4);
       } 
-      else if ((options & CVT$M_ROUND_TO_NEG) &&
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
 		!(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
       {
 	memcpy(output_value, IEEE_S_POS_HUGE, 4);
@@ -1887,7 +1887,7 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL  intermediate_value,
       intermediate_value[1] |= (intermediate_value[U_R_EXP] << 23);
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
-      if (options & CVT$M_BIG_ENDIAN)
+      if (options & CVT_M_BIG_ENDIAN)
       {
 	intermediate_value[0]  = ((intermediate_value[1] << 24) | 
 				  (intermediate_value[1] >> 24));
@@ -2058,7 +2058,7 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
           if (flip) FlipDouble((int *)output_value);
 	}
 
-	if (options & CVT$M_ERR_UNDERFLOW)
+	if (options & CVT_M_ERR_UNDERFLOW)
 	  RAISE(cvt_s_underflow);
       } 
 
@@ -2087,7 +2087,7 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
 	** --------------------------------------------------------------------
 	*/
 	intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
-	if (options & CVT$M_BIG_ENDIAN) 
+	if (options & CVT_M_BIG_ENDIAN) 
 	{
 	  intermediate_value[0]  = ((intermediate_value[1] << 24) | 
 				    (intermediate_value[1] >> 24));
@@ -2113,7 +2113,7 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
     */	  
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 1024))
     {
-      if (options & CVT$M_TRUNCATE) 
+      if (options & CVT_M_TRUNCATE) 
       {
 	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
 	{
@@ -2127,14 +2127,14 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
 	}
       } 
 
-      else if ((options & CVT$M_ROUND_TO_POS) &&
+      else if ((options & CVT_M_ROUND_TO_POS) &&
 	       (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
       {
 	memcpy(output_value, IEEE_T_NEG_HUGE, 8);
         if (flip) FlipDouble((int *)output_value);
       } 
 
-      else if ((options & CVT$M_ROUND_TO_NEG) &&
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
 		!(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
       {
 	memcpy(output_value, IEEE_T_POS_HUGE, 8);
@@ -2190,7 +2190,7 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
       intermediate_value[1] |= (intermediate_value[U_R_EXP] << 20);
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
-      if (options & CVT$M_BIG_ENDIAN)
+      if (options & CVT_M_BIG_ENDIAN)
       {
 	intermediate_value[0]  = ((intermediate_value[1] << 24) | 
                                   (intermediate_value[1] >> 24));
@@ -2359,7 +2359,7 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL  intermediate_value,
 	  memcpy(output_value, IEEE_X_POS_ZERO, 16);
 	}
 
-	if (options & CVT$M_ERR_UNDERFLOW)
+	if (options & CVT_M_ERR_UNDERFLOW)
 	  RAISE(cvt_s_underflow);
       } 
 
@@ -2413,7 +2413,7 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL  intermediate_value,
 	** --------------------------------------------------------------------
 	*/
 	intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
-	if (options & CVT$M_BIG_ENDIAN) 
+	if (options & CVT_M_BIG_ENDIAN) 
 	{
 	  intermediate_value[0]  = ((intermediate_value[1] << 24) | 
 				    (intermediate_value[1] >> 24));
@@ -2452,7 +2452,7 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL  intermediate_value,
     */	  
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 16384))
     {
-      if (options & CVT$M_TRUNCATE) 
+      if (options & CVT_M_TRUNCATE) 
       {
 	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
 	{
@@ -2464,13 +2464,13 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL  intermediate_value,
 	}
       } 
 
-      else if ((options & CVT$M_ROUND_TO_POS) &&
+      else if ((options & CVT_M_ROUND_TO_POS) &&
 	       (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
       {
 	memcpy(output_value, IEEE_X_NEG_HUGE, 16);
       } 
 
-      else if ((options & CVT$M_ROUND_TO_NEG) &&
+      else if ((options & CVT_M_ROUND_TO_NEG) &&
 		!(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
       {
 	memcpy(output_value, IEEE_X_POS_HUGE, 16);
@@ -2527,7 +2527,7 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL  intermediate_value,
       intermediate_value[1] |= (intermediate_value[U_R_EXP] << 16);
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
-      if (options & CVT$M_BIG_ENDIAN)
+      if (options & CVT_M_BIG_ENDIAN)
       {
 	intermediate_value[0]  = ((intermediate_value[1] << 24) | 
                                   (intermediate_value[1] >> 24));
@@ -2705,7 +2705,7 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL  intermediate_value,
 	memcpy(output_value, IBM_L_POS_ZERO, 8);
       }
 
-      if (options & CVT$M_ERR_UNDERFLOW)
+      if (options & CVT_M_ERR_UNDERFLOW)
 	RAISE(cvt_s_underflow);
     } 
     /*	  
@@ -2718,7 +2718,7 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL  intermediate_value,
       ** Value is too large, so overflow. 
       ** ----------------------------------------------------------------------
       */
-      if (options & CVT$M_TRUNCATE)
+      if (options & CVT_M_TRUNCATE)
       {
 	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
 	{
@@ -2729,12 +2729,12 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL  intermediate_value,
 	  memcpy(output_value, IBM_L_POS_HUGE, 8);
 	}
       } 
-      else if ((options & CVT$M_ROUND_TO_POS) && 
+      else if ((options & CVT_M_ROUND_TO_POS) && 
 	       (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) 
       {
 	memcpy(output_value, IBM_L_NEG_HUGE, 8);
       } 
-      else if ((options & CVT$M_ROUND_TO_NEG) && 
+      else if ((options & CVT_M_ROUND_TO_NEG) && 
                !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) 
       {
         memcpy(output_value, IBM_L_POS_HUGE, 8);
@@ -2946,7 +2946,7 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL  intermediate_value,
 	memcpy(output_value, IBM_S_POS_ZERO, 4);
       }
 
-      if (options & CVT$M_ERR_UNDERFLOW)
+      if (options & CVT_M_ERR_UNDERFLOW)
       {
         RAISE(cvt_s_underflow);
       }
@@ -2958,7 +2958,7 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL  intermediate_value,
     */	  
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 252))
     {
-      if (options & CVT$M_TRUNCATE)
+      if (options & CVT_M_TRUNCATE)
       {
 	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
 	{
@@ -2969,12 +2969,12 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL  intermediate_value,
 	  memcpy(output_value, IBM_S_POS_HUGE, 4);
 	}
       } 
-      else if ((options & CVT$M_ROUND_TO_POS) && 
+      else if ((options & CVT_M_ROUND_TO_POS) && 
 	       (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) 
       {
         memcpy(output_value, IBM_S_NEG_HUGE, 4);
       } 
-      else if ((options & CVT$M_ROUND_TO_NEG) && 
+      else if ((options & CVT_M_ROUND_TO_NEG) && 
                !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)) 
       {
 	memcpy(output_value, IBM_S_POS_HUGE, 4);
@@ -3185,7 +3185,7 @@ static CVT_STATUS pack_cray(UNPACKED_REAL  intermediate_value,
 	memcpy(output_value, CRAY_POS_ZERO, 8);
       }
 
-      if (options & CVT$M_ERR_UNDERFLOW) 
+      if (options & CVT_M_ERR_UNDERFLOW) 
       {
 	RAISE(cvt_s_underflow);
       }
@@ -3197,7 +3197,7 @@ static CVT_STATUS pack_cray(UNPACKED_REAL  intermediate_value,
     */	  
     else if (intermediate_value[U_R_EXP] > (U_R_BIAS + 8191))
     {
-      if (options & CVT$M_TRUNCATE)
+      if (options & CVT_M_TRUNCATE)
       {
 	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
 	{
@@ -3208,12 +3208,12 @@ static CVT_STATUS pack_cray(UNPACKED_REAL  intermediate_value,
 	  memcpy(output_value, CRAY_POS_HUGE, 8);
 	}
       } 
-      else if ((options & CVT$M_ROUND_TO_POS) && 
+      else if ((options & CVT_M_ROUND_TO_POS) && 
                (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
       {
         memcpy(output_value, CRAY_NEG_HUGE, 8);
       } 
-      else if ((options & CVT$M_ROUND_TO_NEG) && 
+      else if ((options & CVT_M_ROUND_TO_NEG) && 
                !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
       {
 	memcpy(output_value, CRAY_POS_HUGE, 8);
@@ -3394,7 +3394,7 @@ static void round(UNPACKED_REAL  intermediate_value,
   ** If we are not going to TRUNCATE the number.
   ** ==========================================================================
   */	  
-  if ( ! (options & CVT$M_TRUNCATE) ) 
+  if ( ! (options & CVT_M_TRUNCATE) ) 
   {
 
     /*	  
@@ -3413,7 +3413,7 @@ static void round(UNPACKED_REAL  intermediate_value,
     ** If we are doing VAX ROUNDING.
     ** ========================================================================
     */	  
-    if (options & CVT$M_VAX_ROUNDING)
+    if (options & CVT_M_VAX_ROUNDING)
       roundup = intermediate_value[i] & bit_mask;
 
     /*	  
@@ -3431,7 +3431,7 @@ static void round(UNPACKED_REAL  intermediate_value,
 	** truncate.
 	** --------------------------------------------------------------------
 	*/
-	case  0 : if (options & CVT$M_ROUND_TO_NEAREST)
+	case  0 : if (options & CVT_M_ROUND_TO_NEAREST)
 		    break;
 
 	/*
@@ -3454,7 +3454,7 @@ static void round(UNPACKED_REAL  intermediate_value,
 		  ** round bit is set.
 		  ** ----------------------------------------------------------
 		  */
-		  if (options & CVT$M_ROUND_TO_NEAREST) 
+		  if (options & CVT_M_ROUND_TO_NEAREST) 
 		  {
 		    if ( ! ( roundup = more_bits ) )
 		      if ( bit_mask << 1 )
@@ -3467,7 +3467,7 @@ static void round(UNPACKED_REAL  intermediate_value,
 		  ** Check ROUND TO POSITIVE INFINITY option.
 		  ** ----------------------------------------------------------
 		  */
-		  else if (options & CVT$M_ROUND_TO_POS)
+		  else if (options & CVT_M_ROUND_TO_POS)
 		  {
 		    if ( !(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE) )
 		      roundup = (intermediate_value[i] & bit_mask) | more_bits;
@@ -4097,7 +4097,7 @@ static void unpack_ieee_s(CVT_IEEE_S      input_value,
   ** Initialization.
   ** ==========================================================================
   */	  
-  if (options & CVT$M_BIG_ENDIAN)
+  if (options & CVT_M_BIG_ENDIAN)
   {
     memcpy(output_value, input_value, 4);
 
@@ -4302,7 +4302,7 @@ static void unpack_ieee_t(CVT_IEEE_T      input_value,
   */	  
   memcpy(output_value, input_value, 8);
   if (flip) FlipDouble((int *)output_value);
-  if (options & CVT$M_BIG_ENDIAN)
+  if (options & CVT_M_BIG_ENDIAN)
   {
     /*	  
     ** Shuffle bytes to little endian format.
@@ -4538,7 +4538,7 @@ static void unpack_ieee_x(CVT_IEEE_X      input_value,
   */	  
   memcpy(output_value, input_value, 16);
 
-  if (options & CVT$M_BIG_ENDIAN)
+  if (options & CVT_M_BIG_ENDIAN)
   {
     /*	  
     ** Shuffle bytes to little endian format.
