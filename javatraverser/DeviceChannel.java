@@ -7,11 +7,28 @@ public class DeviceChannel extends DeviceComponent
 {
     public String labelString = null;
     public boolean borderVisible = false;
-    protected JCheckBox    checkB;
+    public boolean inSameLine = false;
+    protected JCheckBox    checkB = null;
     protected Vector device_components = null;
     public int lines = 1, columns = 0; //if columns == 0 FlowLayout is assumed
     protected boolean initializing = false;
     protected JPanel componentsPanel;
+
+    public void setInSameLine(boolean inSameLine)
+    {
+        this.inSameLine = inSameLine;
+        if(checkB != null)
+        {
+            remove(checkB);
+            if(inSameLine)
+                add(checkB, "West");
+            else
+                add(checkB, "North");
+        }
+    }
+    
+    public boolean getInSameLine() {return inSameLine; }
+
 
     public void setLines(int lines)
     {
@@ -47,10 +64,13 @@ public class DeviceChannel extends DeviceComponent
     public void setBorderVisible(boolean borderVisible)
     {
         this.borderVisible = borderVisible;
+ 
         if(borderVisible)
-            componentsPanel.setBorder(new LineBorder(Color.black, 1));
+            //componentsPanel.setBorder(new LineBorder(Color.black, 1));
+            setBorder(new LineBorder(Color.black, 1));
         else
-            componentsPanel.setBorder(null);
+            //componentsPanel.setBorder(null);
+            setBorder(null);
     }
     public boolean getBorderVisible(){return borderVisible;}
     

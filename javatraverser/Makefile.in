@@ -7,6 +7,8 @@ JAVAC = @JAVAC@
 JAR = @JAR@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
+DEVICES = TRCHSetup.java
+
 SOURCES = ActionData.java\
 ActionEditor.java\
 ApdData.java\
@@ -143,8 +145,9 @@ install:
 @MAKEJAVADIR@classes/jTraverser.jar: jTraverser.class
 	$(JAR) c0f $@ *.class $(GIFS)
 
-jTraverser.class: 	$(SOURCES)
+jTraverser.class: 	$(SOURCES) $(DEVICES)
 	$(JAVAC) -g jTraverser.java
+	$(JAVAC) -g $(DEVICES)
 
 @MAKEBINDIR@ : ; mkdir @MAKEBINDIR@
 

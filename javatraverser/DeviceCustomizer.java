@@ -1,6 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
 import java.util.*;
+import java.io.*;
 
 public class DeviceCustomizer extends Panel
 {
@@ -39,25 +40,33 @@ public class DeviceCustomizer extends Panel
     ".CHANNEL_4:DATA"};
     public String[] getDeviceFields()
     {
+        System.out.println("\nParte domanda");
+        
+        
         if(DeviceSetupBeanInfo.beanDeviceType == null)
         {
             DeviceSetupBeanInfo.beanDeviceType = JOptionPane.showInputDialog(
                 "Please define the device type"); 
 		}
+        System.out.println("\nParte domanda 1");
 		if(DeviceSetupBeanInfo.beanDeviceProvider == null)
         {
             DeviceSetupBeanInfo.beanDeviceProvider = JOptionPane.showInputDialog(
                 "Please define the IP address of the device repository"); 
 		}
+        System.out.println("\nParte domanda 2");
 		if(lastDeviceType != null && lastDeviceType.equals(DeviceSetupBeanInfo.beanDeviceType))
 		    return lastFields;
-		lastDeviceType = DeviceSetupBeanInfo.beanDeviceType;    
+		lastDeviceType = DeviceSetupBeanInfo.beanDeviceType;  
+		String linFields = "";
 		if(deviceProvider == null || !deviceProvider.equals(DeviceSetupBeanInfo.beanDeviceProvider))
         {
 		    deviceProvider = new NetworkProvider(DeviceSetupBeanInfo.beanDeviceProvider);
 		}
-		String linFields = deviceProvider.GetString("JavaGetDeviceFields(\""+ 
-		    DeviceSetupBeanInfo.beanDeviceType + "\")");
+        try{
+		    linFields = deviceProvider.GetString("JavaGetDeviceFields(\""+ 
+		        DeviceSetupBeanInfo.beanDeviceType + "\")");
+		}catch(IOException e) {JOptionPane.showMessageDialog(null, "Cannot retrieve device field names");}
 		StringTokenizer st = new StringTokenizer(linFields);
 		lastFields = new String[st.countTokens()];
 		for(int i = 0; i < lastFields.length; i++)

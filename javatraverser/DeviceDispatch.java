@@ -38,7 +38,7 @@ public class DeviceDispatch extends DeviceComponent
         NidData currNid = new NidData(nidData.getInt());
         int num_components = nodeInfo.getConglomerateNids();
         NodeInfo nodeInfos[] = new NodeInfo[num_components];
-        for(i = num_actions = 0; i < num_components - 1; i++)
+        for(i = num_actions = 0; i < num_components; i++)
         {
             currNid.incrementNid();
             try {
@@ -54,7 +54,7 @@ public class DeviceDispatch extends DeviceComponent
         actions = new Data[num_actions];
         dispatch_fields = new DeviceDispatchField[num_actions];
         currNid = new NidData(nidData.getInt());
-        for(i = j = num_actions = 0; i < num_components - 1; i++)
+        for(i = j = num_actions = 0; i < num_components; i++)
         {
             currNid.incrementNid();
             if(nodeInfos[i].getUsage() == NodeInfo.USAGE_ACTION)
@@ -74,7 +74,7 @@ public class DeviceDispatch extends DeviceComponent
                 j++;
             }
         }
-        for(i = 0; i < num_components - 1; i++)
+        for(i = 0; i < num_components; i++)
         {
             if(nodeInfos[i].getUsage() == NodeInfo.USAGE_ACTION)
             {
@@ -136,6 +136,7 @@ public class DeviceDispatch extends DeviceComponent
     class DispatchComboEditor implements ComboBoxEditor
     {
         JLabel label = new  JLabel("  Dispatch");
+        int idx; String name;
         public void addActionListener(ActionListener l){}
         public void removeActionListener(ActionListener l){}
         public Component getEditorComponent() {return label;}
@@ -143,12 +144,21 @@ public class DeviceDispatch extends DeviceComponent
         public void selectAll() {}
         public void setItem(Object obj)
         {
-            if(initializing) return;
+            if(initializing || !(obj instanceof String)) return;
             if(dispatch_fields == null) return;
-            String name = (String) obj;
-            int idx = menu.getSelectedIndex();
-            if(idx >= 0)
-                activateForm(dispatch_fields[idx], name);
+            name = (String) obj;
+            idx = menu.getSelectedIndex();
+            if(idx >= 0) 
+            {
+                //Workaround for swing wrong timing
+                Timer t = new javax.swing.Timer(20, new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        activateForm(dispatch_fields[idx], name);
+                    }});
+                t.setRepeats(false);
+                t.start();
+            }
         }
     }
 

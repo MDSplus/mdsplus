@@ -24,6 +24,7 @@ public class DeviceButtonsBeanInfo extends SimpleBeanInfo
             PropertyDescriptor[] props = {
                property("checkExpressions", "Check expressions"),
                property("checkMessages", "Check messages"),
+               property("methods", "Method list for the device")
             };
             return props;
         }catch(IntrospectionException e)

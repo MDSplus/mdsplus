@@ -12,7 +12,7 @@ public class DeviceChannelCustomizer extends DeviceCustomizer implements Customi
     TextField labelString, lines, columns;
     Choice nids;
     Button doneButton;
-    Checkbox showBorder;
+    Checkbox showBorder, inSameLine;
     
     public DeviceChannelCustomizer()
     {
@@ -52,6 +52,7 @@ public class DeviceChannelCustomizer extends DeviceCustomizer implements Customi
         jp1.add(new Label("Columns: "));
         jp1.add(columns = new TextField(4));
         columns.setText((new Integer(bean.getColumns())).toString());
+        jp1.add(inSameLine = new Checkbox("Same line: ", bean.getInSameLine()));
         jp.add(jp1);
         
         add(jp, "Center");
@@ -62,6 +63,7 @@ public class DeviceChannelCustomizer extends DeviceCustomizer implements Customi
             {
                 bean.setLabelString(labelString.getText());
                 bean.setBorderVisible(showBorder.getState());
+                bean.setInSameLine(inSameLine.getState());
                 bean.setOffsetNid(nids.getSelectedIndex() + 1);
                 bean.setLines((new Integer(lines.getText())).intValue());
                 bean.setColumns((new Integer(columns.getText())).intValue());

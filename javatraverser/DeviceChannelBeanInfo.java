@@ -27,7 +27,8 @@ public class DeviceChannelBeanInfo extends SimpleBeanInfo
                property("offsetNid", "Offset nid"),
                property("borderVisible", "Display border"),
                property("lines", "Number of lines"),
-               property("columns", "Number of Columns")
+               property("columns", "Number of Columns"),
+               property("inSameLine", "All Items in same line")
             };
             return props;
         }catch(IntrospectionException e)

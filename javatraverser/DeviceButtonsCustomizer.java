@@ -10,7 +10,7 @@ public class DeviceButtonsCustomizer extends Panel implements Customizer
     DeviceButtons bean = null;
     PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 
-    TextField expression, message;
+    TextField expression, message, methods;
     java.awt.List exprList;
     Vector expressionsV = new Vector(), messagesV = new Vector();
 
@@ -97,7 +97,26 @@ public class DeviceButtonsCustomizer extends Panel implements Customizer
         });
         add(jp, "Center");
         jp = new Panel();
-        jp.add(doneButton = new Button("Apply"));
+        jp.setLayout(new BorderLayout());
+        jp1 = new Panel();
+        jp1.add(new Label("Methods: "));
+        jp1.add(methods = new TextField(40));
+        String [] methodList = bean.getMethods();
+        if(methodList != null && methodList.length > 0)
+        {
+            String method_txt = methodList[0];
+            for(int i = 1; i < methodList.length; i++)
+            {
+                method_txt += " " + methodList[i];
+            }
+            methods.setText(method_txt);
+        }
+                
+                
+        jp.add(jp1, "North");
+        jp1 = new Panel();
+        jp1.add(doneButton = new Button("Apply"));
+        jp.add(jp1, "South");
         doneButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
@@ -110,6 +129,22 @@ public class DeviceButtonsCustomizer extends Panel implements Customizer
                 }
                 bean.setCheckMessages(messages);
                 bean.setCheckExpressions(expressions);
+                String method_list = methods.getText();
+                //System.out.println(method_list);
+                StringTokenizer st = new StringTokenizer(method_list, " ,;");
+                int num_methods = st.countTokens();
+                if(num_methods > 0)
+                {
+                    String [] methods = new String[num_methods];
+                    int i = 0;
+                    while(st.hasMoreTokens())
+                    {
+                        methods[i] = st.nextToken();
+                        //System.out.println(methods[i]);
+                        i++;
+                    }
+                    bean.setMethods(methods);
+                }
             }
         });
         add(jp,"South");

@@ -111,7 +111,12 @@ public class DataEditor extends JPanel implements ActionListener, Editor
 	    case 1: 
 		Data units = units_edit.getData();
 		if(units != null)
-		    return new WithUnitsData(expr_edit.getData(), units);
+		{
+		    if(units instanceof StringData && ((StringData)units).datum.equals(""))
+		        return expr_edit.getData();
+		    else
+		        return new WithUnitsData(expr_edit.getData(), units);
+		}
 		else
 		    return expr_edit.getData();
 	}

@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.util.*;
 import java.awt.*;
+import java.awt.event.*;
 
 
 public class DeviceSetup extends JDialog
@@ -8,10 +9,13 @@ public class DeviceSetup extends JDialog
     protected String deviceType;
     protected String deviceTitle;
     protected String deviceProvider;
-    protected int baseNid, num_components = 0;
+    public int baseNid, num_components = 0;
     protected Vector device_components = new Vector();
-    protected Database subtree = null;
+    public Database subtree = null;
     protected Vector dataChangeListeners = new Vector();
+    protected String [] methods;
+    JMenuItem pop_items[];
+    JPopupMenu pop_methods = null;
     public void setDeviceType(String deviceType) 
     {
         this.deviceType = deviceType;
@@ -73,8 +77,13 @@ public class DeviceSetup extends JDialog
             if(curr_components == null) continue;
             for(int i = 0; i < curr_components.length; i++)
             {
+                if(curr_components[i] instanceof DeviceButtons)
+                    methods = ((DeviceButtons)curr_components[i]).getMethods();
+                
                 if(curr_components[i] instanceof DeviceComponent)
+                {
                     device_components.addElement(curr_components[i]);
+                }
                 if(curr_components[i] instanceof Container)
                     search_stack.push(curr_components[i]);
             }
@@ -86,6 +95,60 @@ public class DeviceSetup extends JDialog
             ((DeviceComponent)device_components.elementAt(i)).setSubtree(subtree);
             ((DeviceComponent)device_components.elementAt(i)).configure(baseNid);
         }
+        if(methods != null && methods.length > 0)
+        {
+            pop_methods = new JPopupMenu("Methods");
+            pop_items = new JMenuItem[methods.length];
+            for(int i = 0; i < methods.length; i++)
+            {
+                pop_methods.add(pop_items[i] = new JMenuItem(methods[i]));
+                pop_items[i].addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        boolean success = true;
+                        String errmsg = "";
+                        int j;
+                        for(j = 0; 
+                            j < pop_items.length && ((JMenuItem)e.getSource()) != pop_items[j]; j++);
+                        if(j == pop_items.length) return;
+                        if(JOptionPane.showConfirmDialog(DeviceSetup.this, 
+                            "Execute "+methods[j] + "?",
+                            "Execute a device method",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION)
+                        {
+                            try{
+                                DeviceSetup.this.subtree.doDeviceMethod(
+                                    new NidData(DeviceSetup.this.baseNid), methods[j]);
+                            }catch(Exception exc) {errmsg = exc.toString(); success = false;}
+                            if(success)
+                                JOptionPane.showMessageDialog(DeviceSetup.this, 
+                                    "Error execution method " + methods[j] + ": "+errmsg,
+                                    "Method execution report",
+                                    JOptionPane.WARNING_MESSAGE);
+                            else
+                                JOptionPane.showMessageDialog(DeviceSetup.this, 
+                                    "Method " + methods[j] + " succesfully executed",
+                                    "Method execution report",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                        }          
+                    }});
+            }
+            addMouseListener(new MouseAdapter()
+            {
+                public void mousePressed(MouseEvent e)
+                {
+                    if(e.isPopupTrigger())
+                        pop_methods.show(DeviceSetup.this, e.getX(), e.getY());
+                }
+                public void mouseReleased(MouseEvent e)
+                {
+                    if(e.isPopupTrigger())
+                        pop_methods.show(DeviceSetup.this, e.getX(), e.getY());
+                }
+            });
+        }
+                
     }
     
     public void apply()
