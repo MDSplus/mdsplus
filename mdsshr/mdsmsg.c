@@ -22,6 +22,7 @@
 #include        "librtl_messages.h"
 #include        "tdimessages.h"
 #include        "treeshr.h"
+#include        "camdef.h"
 
 
 		/*========================================================
@@ -128,6 +129,12 @@ static int   getFacility(	/* Return: num entries in stsText[]	*/
         *stsText = strMds_stsText;	/* point to array		*/
         *facilityText = "STRMDS_FACILITY";
         max = sizeof(strMds_stsText)/sizeof(strMds_stsText[0]);
+       }
+    else if (facility == CAM_FACILITY)
+       {
+        *stsText = camshr_stsText;      /* point to array               */
+        *facilityText = "CAM_FACILITY";
+        max = sizeof(camshr_stsText)/sizeof(camshr_stsText[0]);
        }
     else if (facility == SS_FACILITY)
        {
