@@ -4527,7 +4527,6 @@ mdsvme/Makefile
 mitdevices/Makefile 
 remcam/Makefile 
 rpm/Makefile
-rpm/makekit
 servershr/Makefile 
 setevent/Makefile
 tcl/Makefile 
@@ -4717,7 +4716,6 @@ mdsvme/Makefile
 mitdevices/Makefile 
 remcam/Makefile 
 rpm/Makefile
-rpm/makekit
 servershr/Makefile 
 setevent/Makefile
 tcl/Makefile 
