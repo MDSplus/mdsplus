@@ -6,6 +6,8 @@ procedure
     cancel_button_proc;
     ok_button_proc;
     reset_button_proc;
+    XmdsCreateExprField;
+    XmdsCreateExpr;
 
 procedure
     action_change_type_proc(integer);
@@ -14,6 +16,10 @@ procedure
     expression_change_type_proc(integer);
     task_change_type_proc(integer);
     window_change_type_proc(integer);
+
+value
+	XmdsNautoQuote : argument("autoQuote",boolean);
+	XmdsNdefaultQuote : argument("defaultQuote",boolean);
 
 object
     xd_box: XmForm 
@@ -182,8 +188,8 @@ object
         controls
             {
             XmOptionMenu expression_menu;
-            unmanaged XmdsExprField expression_units;
-            unmanaged XmdsExpr expression_expr;
+            unmanaged user_defined expression_units;
+            unmanaged user_defined expression_expr;
             unmanaged XmLabelGadget expression_units_label;
             };
         };
@@ -243,7 +249,7 @@ object
                 };
             };
         };
-    expression_units: XmdsExprField 
+    expression_units: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -254,7 +260,7 @@ object
             XmdsNdefaultQuote = true;
             };
         };
-    expression_expr: XmdsExpr 
+    expression_expr: user_defined procedure XmdsCreateExpr 
         {
         arguments
             {
@@ -318,10 +324,10 @@ object
         controls
             {
             XmOptionMenu axis_menu;
-            unmanaged XmdsExprField axis_units;
+            unmanaged user_defined axis_units;
             unmanaged XmLabelGadget axis_units_label;
             unmanaged XmBulletinBoard axis_box;
-            unmanaged XmdsExpr axis_expr;
+            unmanaged user_defined axis_expr;
             };
         callbacks
             {
@@ -404,7 +410,7 @@ object
                 };
             };
         };
-    axis_units: XmdsExprField 
+    axis_units: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -434,7 +440,7 @@ object
             {
             XmOptionMenu window_menu;
             unmanaged XmBulletinBoard window_box;
-            unmanaged XmdsExpr window_expr;
+            unmanaged user_defined window_expr;
             };
         };
     window_menu: XmOptionMenu 
@@ -510,7 +516,7 @@ object
                 };
             };
         };
-    window_start_idx: XmdsExprField 
+    window_start_idx: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -521,7 +527,7 @@ object
             XmNmarginWidth = 1;
             };
         };
-    window_end_idx: XmdsExprField 
+    window_end_idx: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -532,7 +538,7 @@ object
             XmNmarginWidth = 1;
             };
         };
-    window_tzero: XmdsExprField 
+    window_tzero: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -543,7 +549,7 @@ object
             XmNmarginWidth = 1;
             };
         };
-    axis_inc: XmdsExprField 
+    axis_inc: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -554,7 +560,7 @@ object
             XmNmarginWidth = 1;
             };
         };
-    axis_end: XmdsExprField 
+    axis_end: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -565,7 +571,7 @@ object
             XmNmarginWidth = 1;
             };
         };
-    axis_start: XmdsExprField 
+    axis_start: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -626,12 +632,12 @@ object
                     compound_string("Increment:");
                     };
                 };
-            XmdsExprField axis_start;
-            XmdsExprField axis_end;
-            XmdsExprField axis_inc;
+            user_defined axis_start;
+            user_defined axis_end;
+            user_defined axis_inc;
             };
         };
-    axis_expr: XmdsExpr 
+    axis_expr: user_defined procedure XmdsCreateExpr 
         {
         arguments
             {
@@ -693,12 +699,12 @@ object
                     compound_string("Time of Zero:");
                     };
                 };
-            XmdsExprField window_start_idx;
-            XmdsExprField window_end_idx;
-            XmdsExprField window_tzero;
+            user_defined window_start_idx;
+            user_defined window_end_idx;
+            user_defined window_tzero;
             };
         };
-    window_expr: XmdsExpr 
+    window_expr: user_defined procedure XmdsCreateExpr 
         {
         arguments
             {
@@ -748,7 +754,7 @@ object
             {
             XmOptionMenu dispatch_menu;
             unmanaged XmBulletinBoard dispatch_box;
-            unmanaged XmdsExpr dispatch_expr;
+            unmanaged user_defined dispatch_expr;
             };
         };
     dispatch_menu: XmOptionMenu 
@@ -871,13 +877,13 @@ object
                     XmNy = 85;
                     };
                 };
-            XmdsExprField dispatch_ident;
-            XmdsExprField dispatch_phase;
-            XmdsExprField dispatch_when;
-            XmdsExprField dispatch_completion;
+            user_defined dispatch_ident;
+            user_defined dispatch_phase;
+            user_defined dispatch_when;
+            user_defined dispatch_completion;
             };
         };
-    dispatch_ident: XmdsExprField 
+    dispatch_ident: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -890,7 +896,7 @@ object
             XmdsNdefaultQuote = true;
             };
         };
-    dispatch_phase: XmdsExprField 
+    dispatch_phase: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -903,7 +909,7 @@ object
             XmdsNautoQuote = true;
             };
         };
-    dispatch_when: XmdsExprField 
+    dispatch_when: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -914,7 +920,7 @@ object
             XmNmarginWidth = 1;
             };
         };
-    dispatch_expr: XmdsExpr 
+    dispatch_expr: user_defined procedure XmdsCreateExpr 
         {
         arguments
             {
@@ -933,7 +939,7 @@ object
             XmNrightOffset = 0;
             };
         };
-    dispatch_completion: XmdsExprField 
+    dispatch_completion: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -959,9 +965,9 @@ object
             {
             XmOptionMenu action_menu;
             unmanaged XmForm action_box;
-            unmanaged XmdsExpr action_expr;
+            unmanaged user_defined action_expr;
             XmLabelGadget action_notify_label;
-            XmdsExprField action_notify;
+            user_defined action_notify;
             };
         };
     action_menu: XmOptionMenu 
@@ -1048,7 +1054,7 @@ object
             XmNbottomAttachment = XmATTACH_FORM;
             };
         };
-    action_notify: XmdsExprField 
+    action_notify: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -1083,7 +1089,7 @@ object
             {
             };
         };
-    action_expr: XmdsExpr 
+    action_expr: user_defined procedure XmdsCreateExpr 
         {
         arguments
             {
@@ -1118,7 +1124,7 @@ object
             XmOptionMenu task_menu;
             unmanaged XmBulletinBoard routine_box;
             unmanaged XmBulletinBoard method_box;
-            unmanaged XmdsExpr task_expr;
+            unmanaged user_defined task_expr;
             };
         };
     task_menu: XmOptionMenu 
@@ -1234,9 +1240,9 @@ object
                     compound_string("Routine:");
                     };
                 };
-            XmdsExprField routine_image;
-            XmdsExprField routine_routine;
-            XmdsExprField routine_timeout;
+            user_defined routine_image;
+            user_defined routine_routine;
+            user_defined routine_timeout;
             XmLabelGadget 
                 {
                 arguments
@@ -1250,7 +1256,7 @@ object
             XmScrolledWindow arg_scroll_box;
             };
         };
-    routine_image: XmdsExprField 
+    routine_image: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -1263,7 +1269,7 @@ object
             XmdsNdefaultQuote = true;
             };
         };
-    routine_routine: XmdsExprField 
+    routine_routine: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -1276,7 +1282,7 @@ object
             XmdsNautoQuote = true;
             };
         };
-    task_expr: XmdsExpr 
+    task_expr: user_defined procedure XmdsCreateExpr 
         {
         arguments
             {
@@ -1335,9 +1341,9 @@ object
                     compound_string("Method:");
                     };
                 };
-            XmdsExprField method_object;
-            XmdsExprField method_method;
-            XmdsExprField method_timeout;
+            user_defined method_object;
+            user_defined method_method;
+            user_defined method_timeout;
             XmLabelGadget 
                 {
                 arguments
@@ -1351,7 +1357,7 @@ object
             XmScrolledWindow arg_scroll_box;
             };
         };
-    method_object: XmdsExprField 
+    method_object: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -1364,7 +1370,7 @@ object
             XmdsNdefaultQuote = false;
             };
         };
-    method_method: XmdsExprField 
+    method_method: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -1377,7 +1383,7 @@ object
             XmdsNautoQuote = true;
             };
         };
-    method_timeout: XmdsExprField 
+    method_timeout: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -1388,7 +1394,7 @@ object
             XmNmarginWidth = 1;
             };
         };
-    routine_timeout: XmdsExprField 
+    routine_timeout: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -1419,7 +1425,7 @@ object
             XmBulletinBoard arg_box;
             };
         };
-    arg1: XmdsExprField 
+    arg1: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -1430,7 +1436,7 @@ object
             XmNmarginWidth = 1;
             };
         };
-    arg2: XmdsExprField 
+    arg2: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -1441,7 +1447,7 @@ object
             XmNmarginWidth = 1;
             };
         };
-    arg3: XmdsExprField 
+    arg3: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -1452,7 +1458,7 @@ object
             XmNmarginWidth = 1;
             };
         };
-    arg4: XmdsExprField 
+    arg4: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -1463,7 +1469,7 @@ object
             XmNmarginWidth = 1;
             };
         };
-    arg5: XmdsExprField 
+    arg5: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -1474,7 +1480,7 @@ object
             XmNmarginWidth = 1;
             };
         };
-    arg6: XmdsExprField 
+    arg6: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -1485,7 +1491,7 @@ object
             XmNmarginWidth = 1;
             };
         };
-    arg7: XmdsExprField 
+    arg7: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -1496,7 +1502,7 @@ object
             XmNmarginWidth = 1;
             };
         };
-    arg8: XmdsExprField 
+    arg8: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -1518,14 +1524,14 @@ object
             };
         controls
             {
-            XmdsExprField arg1;
-            XmdsExprField arg2;
-            XmdsExprField arg3;
-            XmdsExprField arg4;
-            XmdsExprField arg5;
-            XmdsExprField arg6;
-            XmdsExprField arg7;
-            XmdsExprField arg8;
+            user_defined arg1;
+            user_defined arg2;
+            user_defined arg3;
+            user_defined arg4;
+            user_defined arg5;
+            user_defined arg6;
+            user_defined arg7;
+            user_defined arg8;
             XmLabelGadget 
                 {
                 arguments

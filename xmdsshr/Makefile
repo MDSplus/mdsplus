@@ -57,7 +57,7 @@ xmdsshr : ../shlib \
 	uil -wmd ../shlib/xmdsuil.wmd -o $@ XmdsInput.uil
 
 ../uid/XmdsXdBox.uid : XmdsXdBox.uil
-	uil -wmd ../shlib/xmdsuil.wmd -o $@ XmdsXdBox.uil
+	uil -o $@ XmdsXdBox.uil
 
 ../shlib/libXmdsShr.$(SHARE_TYPE) : $(OBJECTS)
 	- $(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc -lm \
