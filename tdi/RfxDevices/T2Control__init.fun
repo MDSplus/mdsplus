@@ -16,11 +16,11 @@ public fun T2Control__init(as_is _nid, optional _method)
     private _N_PAR1_NAME = 13;
     private _N_PAR1_VALUE = 14; 
 
-	private _N_ZERO_START = 130;
-	private _N_ZERO_END = 131;
-	private _N_ZERO = 132;
-	private _N_MAPPING_ID = 133;
-	private _N_MAPPING = 134;
+    private _N_ZERO_START = 105;
+    private _N_ZERO_END = 106;
+    private _N_ZERO = 107;
+    private _N_MAPPING_ID = 108;
+    private _N_MAPPING = 109;
 
 
 
@@ -115,22 +115,33 @@ write(*, 'T2Control init');
 	_status = MdsValue('Feedback->setOutputCalibration($1, $2)', float(_out_calibration), 32);
 
 	_mapping_id = data(DevNodeRef(_nid, _N_MAPPING_ID));
-	_status = MdsValue('Feedback->setIntVariable('feedbackMappingId', $1)', long(_mapping_id));
+	write(*, 'Mapping_id: ', _mapping_id);
+	_status = MdsValue('Feedback->setIntVariable("feedbackMappingId", $1)', long(_mapping_id));
 
 	_zero_start = data(DevNodeRef(_nid, _N_ZERO_START));
-	_status = MdsValue('Feedback->setFloatVariable('feedbackAutozeroStart', $1)', float(_zero_start));
+	write(*, 'Zero Start: ', _zero_start);
+	_status = MdsValue('Feedback->setFloatVariable("feedbackAutozeroStart", $1)', float(_zero_start));
 	_zero_end = data(DevNodeRef(_nid, _N_ZERO_END));
-	_status = MdsValue('Feedback->setFloatVariable('feedbackAutozeroEnd', $1)', float(_zero_end));
+	_status = MdsValue('Feedback->setFloatVariable("feedbackAutozeroEnd", $1)', float(_zero_end));
+	write(*, 'Zero End: ', _zero_end);
 
 
 
 
 	
-    for(_par = 0; _par < 47; _par++)
+    for(_par = 0; _par < 46; _par++)
 	{
+
+
+
 		_par_name = data(DevNodeRef(_nid, _N_PAR1_NAME + _par * 2));
+
+
 		_par_value = data(DevNodeRef(_nid, _N_PAR1_VALUE + _par * 2));
-	    _status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedback'//_par_name, float(_par_value));
+		if(size(_par_value) > 1)
+		    _status = MdsValue('Feedback->setFloatArray($1, $2, $3)', 'feedback'//_par_name, float(_par_value), size(_par_value));
+		else
+		    _status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedback'//_par_name, float(_par_value));
 	}
 
 	_status = MdsValue('Feedback->stopLocal()');
