@@ -21,6 +21,11 @@ public fun DT100__INIT(as_is _nid, optional _method)
   _chansize = _mem_size*1024*1024 / 2 / _active_chans;
   _chansize = if_error(min(_chansize, DevNodeRef(_nid, 8)*1024), _chansize);
 
+  MdsValue('Dt100WriteMaster('//_board//',"setSyncRoute DI0 MI0")')
+  MdsValue('Dt100WriteMaster('//_board//',"setSyncRoute DI1 MI1")')
+  MdsValue('Dt100WriteMaster('//_board//',"setSyncRoute DI2 MI2")')
+  MdsValue('Dt100WriteMaster('//_board//',"setSyncRoute DI3 MI3")')
+
   _cmd = 'Dt100Init('//_board//','//_active_chans//','//DevNodeRef(_nid, 9)//','//_chansize//')';
   write(*, _cmd);
   MdsValue(_cmd);

@@ -12,7 +12,7 @@ fun Dt101ReadChannel2(in _board, in _channel, in _start, in _end, in _inc, in _c
   _chn2 = char(_channel /  10 +ichar('0'));
   _devname = "/dev/acq32/acq32."//_brd//"."//_chn2//_chn1;
   write (*, "Calling FOPEN on "//_devname);
-  _lun = io->FOPEN(_devname, 'r+');
+  _lun = MitDevices->FOPEN(_devname, 'r+');
   if (_lun <= 0)
   {
      write(*, "Error opening channel device");
@@ -21,11 +21,11 @@ fun Dt101ReadChannel2(in _board, in _channel, in _start, in _end, in _inc, in _c
   write (*, "open is OK");
 
   _cmd = "seek trig "//trim(adjustl(_start))//" \n";
-  io->FWRITE(_cmd, val(1), val(len(_cmd)), val(_lun));
+  MitDevices->FWRITE(_cmd, val(1), val(len(_cmd)), val(_lun));
 
   _buf = zero(_samples, 0w);
-  _count = io->FREAD(ref(_buf), val(2), val(_samples), val(_lun));
-  _dummy = io->FCLOSE(val(_lun));
+  _count = MitDevices->FREAD(ref(_buf), val(2), val(_samples), val(_lun));
+  _dummy = MitDevices->FCLOSE(val(_lun));
   if(_count != _samples) {
     write(*, "Read "//_count//" of "//_samples//" samples");
     if (_count > 0) {
@@ -38,7 +38,7 @@ fun Dt101ReadChannel2(in _board, in _channel, in _start, in _end, in _inc, in _c
   if (_inc > 1) {
     if (_count > 0) {
       _new_buf = zero(_count/_inc, 0w);
-      _dummy = io->Convolve(ref(_new_buf), ref(_buf), val(_count), _coeffs, val(size(_coeffs)), val(_inc));
+      _dummy = MitDevices->Convolve(ref(_new_buf), ref(_buf), val(_count), _coeffs, val(size(_coeffs)), val(_inc));
       return(_new_buf);
     }
   }

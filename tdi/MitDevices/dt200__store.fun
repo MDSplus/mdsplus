@@ -21,7 +21,7 @@ public fun dt200__store(as_is _nid, optional _method)
    _DT200_AI_INC = 3;
    _DT200_AI_COEFFS = 4;
 
-   _DI_NUMBERS = BUILD_SIGNAL([0,1,2,3,4,5], *, ['DI0', 'DI1' 'DI2', 'DI3' 'DI4', 'DI5' ]);
+   _DI_NUMBERS = BUILD_SIGNAL([0,1,2,3,4,5], *, ['DI0', 'DI1', 'DI2', 'DI3', 'DI4', 'DI5' ]);
 
   _node = if_error(data(DevNodeRef(_nid,_DT200_NODE)), "");
   if (Len(_node) <= 0) {
@@ -38,9 +38,9 @@ public fun dt200__store(as_is _nid, optional _method)
    See if digitizer is done digitizing
   ************************************/
 
-  _state = MdsValue('Dt100WriteMaster($, "getState")', _board);
+  _state = MdsValue('Dt200WriteMaster($, "getState")', _board);
   if (_state != "ACQ32:0 ST_STOP") {
-    write(*, '%DT100ERR, board '//_board//' Device not triggered');
+    write(*, '%DT200ERR, board '//_board//' Device not triggered');
     Abort();
   }
 
@@ -50,7 +50,7 @@ public fun dt200__store(as_is _nid, optional _method)
   _clockSource = if_error(data(DevNodeRef(_nid, _DT200_CLOCK_SRC)), '');
   if (_clockSource == 'INT') {
     _clockFreq = if_error(data(DevNodeRef(_nid, _DT200_CLOCK_DIV)), 0);
-    _clk = make_range(*, *, 1.0D0/_clk);
+    _clk = make_range(*, *, 1.0D0/_clockFreq);
   }
   else {
     _clk = DevNodeRef(_nid, _DT200_DIs + _DI_NUMBERS[_clockSource]*_DT200_NODES_PER_DI);
@@ -59,20 +59,16 @@ public fun dt200__store(as_is _nid, optional _method)
 /* should be able to ask the board getEVENT AI E1 and then look it up but
    for now assume the board did what we asked */
 
-  _trigSource = if_error(data(DevNodeRef(_nid, _DT200_CLOCK_SRC)), '');
+  _trigSource = if_error(data(DevNodeRef(_nid, _DT200_TRIG_SRC)), '');
   _trigger = DevNodeRef(_nid, _DT200_DIs + _DI_NUMBERS[_trigSource]*_DT200_NODES_PER_DI);
 
   /*************************************
    Get setup info
   *************************************/
-  _num_chans = 0L;
-  _pre_trig = 0L;
-  _post_trig = 0L;
-  _status = MdsValue('Dt200GetSetup($, $, $, $)', _board, _num_chans, _pre_trig, _post_trig);
-  if (_status <=0) {
-    write(*, '%DT100ERR, board '//_board//' Error getting device setup');
-    Abort();
-  }
+  _num_chans=MdsValue('Dt200GetNumChans($)',_board);
+  _pre_trig = MdsValue("Dt200GetInt($, 'getPhase AI P1 actual-samples')",_board);
+  _post_trig = MdsValue("Dt200GetInt($, 'getPhase AI P2 actual-samples')", _board)-1;
+
   _first_idx = - _pre_trig;
   _last_idx = _post_trig;
   _max_samples = _pre_trig+_post_trig;
@@ -100,13 +96,12 @@ public fun dt200__store(as_is _nid, optional _method)
       _endidx   = DevNodeRef(_nid,_chan_offset+_DT200_AI_END);
       _lbound = if_error(long(data(_startidx)),_first_idx);
 
-
       _ubound = if_error(long(data(_endidx)),_post_trig); /* or _post_trig -1 ? */
       _inc = if_error(long(data(DevNodeRef(_nid, _chan_offset+_DT200_AI_INC))), 1);
       _filter_coefs = if_error(float(data(DevNodeRef(_nid, _chan_offset+_DT200_AI_COEFFS))), 1.0);
 
-      write(*, "MdsValue('Dt101ReadChannel3("//_board//","//_chan+1//","//_lbound-_first_idx//","//_ubound-_first_idx//","//_inc//",_filter_coefs)')");
-      _data= MdsValue('Dt101ReadChannel3($,$,$,$,$,$)', _board, _chan+1, _lbound-_first_idx, _ubound-_first_idx, _inc, _filter_coefs);     
+      write(*, "MdsValue('Dt200ReadChannel("//_board//","//_chan+1//","//_lbound-_first_idx//","//_ubound-_first_idx//","//_inc//",_filter_coefs)')");
+      _data= MdsValue('Dt200ReadChannel($,$,$,$,$,$)', _board, _chan+1, _lbound-_first_idx, _ubound-_first_idx, _inc, _filter_coefs);     
 
       write(*, "Read the data "//size(_data));
 

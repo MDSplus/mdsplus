@@ -10,7 +10,7 @@ fun Dt100ReadChannel(in _board, in _channel)
   _dmaname = "/dev/acq32/acq32."//_brd//".host";
 
   _buf = zero(_samples, 0w);
-  _count = io->DMARead(ref(_buf), _dmaname, _channel-1, _samples, 32); 
+  _count = MitDevices->DMARead(ref(_buf), _dmaname, _channel-1, _samples, 32); 
   
   if(_count != _samples) {
     write(*, "Read "//_count//" of "//_samples//" samples");
@@ -29,7 +29,7 @@ fun Dt100ReadChannel(in _board, in _channel)
   _chn2 = char(_channel /  10 +ichar('0'));
   _devname = "/dev/acq32/acq32."//_brd//"."//_chn2//_chn1;
   write (*, "Calling FOPEN on "//_devname);
-  _lun = io->FOPEN(_devname, 'r');
+  _lun = MitDevices->FOPEN(_devname, 'r');
   if (_lun <= 0)
   {
      write(*, "Error opening channel device");
@@ -37,8 +37,8 @@ fun Dt100ReadChannel(in _board, in _channel)
   }
   write (*, "open is OK");
   _buf = zero(_samples, 0w);
-  _count = io->FREAD(ref(_buf), val(2), val(_samples), val(_lun));
-  _dummy = io->FCLOSE(val(_lun));
+  _count = MitDevices->FREAD(ref(_buf), val(2), val(_samples), val(_lun));
+  _dummy = MitDevices->FCLOSE(val(_lun));
   if(_count != _samples) {
     write(*, "Read "//_count//" of "//_samples//" samples");
     if (_count > 0) {

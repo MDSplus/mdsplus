@@ -1,4 +1,4 @@
-fun Dt101ReadChannel(in _board, in _channel, in _start, in _end, in _inc, in _coeffs)
+fun Dt101ReadChannel3(in _board, in _channel, in _start, in _end, in _inc, optional  _coeffs)
 {
   write (*, "starting ReadChannel");
   _samples = Dt100GetNumSamples(_board);
@@ -6,11 +6,13 @@ fun Dt101ReadChannel(in _board, in _channel, in _start, in _end, in _inc, in _co
     write(*, "no samples taken");
     Abort();
   }
-  _active_chan = Dt100GetNumChannels(_board);
+  
   _brd = char(_board+ichar('0'));
-  _devname = "/dev/acq32/acq32."//_brd//".host";
-  _buf = zero((_end - _start +_inc -1)/_inc, 0w);
-  _count = MitDevices->DMARead2(ref(_buf), _devname, _channel-1, _samples, _active_chan, _start, _end, _inc, _coeffs, size(_coeffs));
+  _chn1 = char(_channel mod 10 +ichar('0'));
+  _chn2 = char(_channel /  10 +ichar('0'));
+  _devname = "/dev/acq32/acq32."//_brd//"."//_chn2//_chn1;
+  _buf = zero((_end - _start + 1)/_inc, 0w);
+  _count = MitDevices->DMARead3(ref(_buf), _devname, _start, _end, _inc, _coeffs, size(_coeffs));
   if(_count != _samples) {
     write(*, "Read "//_count//" of "//_samples//" samples");
     if (_count > 0) {
@@ -21,5 +23,3 @@ fun Dt101ReadChannel(in _board, in _channel, in _start, in _end, in _inc, in _co
   }
   return(_buf);
 }
-
-
