@@ -220,7 +220,7 @@ static void ActionDone(int idx)
 	TreeFree(path);
     if (Output)
     {
-      (*Output)(&logmsg);
+      (*Output)(logmsg);
     }
     if (!AbortInProgress)
     {
@@ -532,7 +532,7 @@ static void Dispatch(int i)
     path = TreeGetMinimumPath((int *)&zero,actions[i].nid);
 	sprintf(logmsg,"%s, Dispatching node %s to %s",now(),path,Server(actions[i].server));
 	TreeFree(path);
-    (*Output)(&logmsg);
+    (*Output)(logmsg);
     return;
   }
   actions[i].done = 0;

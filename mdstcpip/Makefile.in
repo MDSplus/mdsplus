@@ -1,0 +1,74 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=@LD@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = \
+	mdsipshr.c mdsiputil.c vmshpwd.c
+
+OBJECTS = $(SOURCES:.c=.o)
+EXPORTS = mdsipshr.export
+
+all : @MAKEBINDIR@ @MAKELIBDIR@ @MAKEETCDIR@ \
+      @MAKEBINDIR@mdsiptest @MAKEBINDIR@mdsip \
+      @MAKEBINDIR@mdsipd @MAKEETCDIR@mdsip.hosts \
+      @MAKELIBDIR@libMdsIpShr.a @MAKELIBDIR@libMdsIpUtil.a
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES) mdsip_u.c
+
+clean :
+	- rm *.o
+	- rm @MAKELIBDIR@libMdsIpShr.$(SHARE_TYPE)
+	- rm @MAKELIBDIR@libMdsIpShr.a
+	- rm @MAKELIBDIR@libMdsIpUtil.a
+	- rm @MAKEBINDIR@mdsiptest
+	- rm @MAKEBINDIR@mdsip
+	- rm @MAKEETCDIR@mdsip.hosts
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpShr.a @libdir@
+	$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpUtil.a @libdir@
+	$(INSTALL) -m 755  @MAKELIBDIR@libMdsIpShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKEBINDIR@mdsip	@bindir@
+
+@MAKEBINDIR@ :
+	mkdir @MAKEBINDIR@
+
+@MAKEBINDIR@mdsiptest : t.c @MAKELIBDIR@libMdsIpShr@SHARETYPE@
+	$(CC) -o $@ $(CFLAGS) t.c -L@MAKELIBDIR@ -lMdsIpShr $(LIBS)
+
+@MAKEBINDIR@mdsip : mdsip_u.c
+	$(CC) -o $@ $(CFLAGS) mdsip_u.c -L@MAKELIBDIR@ -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
+
+@MAKEBINDIR@mdsipd : mdsipd
+	cp mdsipd @MAKEBINDIR@mdsipd
+
+@MAKELIBDIR@libMdsIpShr@SHARETYPE@ : $(OBJECTS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) 
+
+@MAKELIBDIR@libMdsIpShr.a : $(OBJECTS)
+	$(AR) -r $@ $(OBJECTS)
+	@RANLIB@ $@
+
+@MAKELIBDIR@libMdsIpUtil.a : mds
+	$(AR) -r $@ $(OBJECTS)
+	@RANLIB@ $@
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@
+
+@MAKEETCDIR@ :
+	mkdir @MAKEETCDIR@
+
+@MAKEETCDIR@mdsip.hosts : mdsip.hosts
+	cp mdsip.hosts @MAKEETCDIR@mdsip.hosts

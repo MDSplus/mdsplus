@@ -1,0 +1,34 @@
+SHELL=/bin/sh
+F77=@F77@
+LD=@LD@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+FFLAGS=@FFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = mdsptdata.f
+OBJECTS = $(SOURCES:.f=.o)
+
+all: @MAKELIBDIR@ @MAKELIBDIR@libMdsD3D@SHARETYPE@  
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
+
+clean :
+	- rm *.o
+	- rm @MAKELIBDIR@libMdsD3D@SHARETYPE@
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKELIBDIR@libMdsD3D@SHARETYPE@ @libdir@
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@
+
+@MAKELIBDIR@libMdsD3D@SHARETYPE@ : $(OBJECTS) 
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS)  -ld3 @FOR_LDFLAGS@ $(LIBS)

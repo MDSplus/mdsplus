@@ -1,0 +1,64 @@
+SHELL=/bin/sh
+LD=@LD@
+F77=@F77@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+FFLAGS=@FFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = \
+	caxpy.f \
+	cgeco.f \
+	cmul.f  \
+	csint.f  \
+	csval.f  \
+	daxpy.f  \
+	dcsint.f  \
+	dcsval.f  \
+	dgeco.f  \
+	dmul.f  \
+	dpermu.f  \
+	dppval.f  \
+	dsrch.f  \
+	dsvrgn.f  \
+	gn.f  \
+	isrch.f  \
+	permu.f  \
+	ppval.f  \
+	saxpy.f  \
+	sgeco.f  \
+	smul.f  \
+	srch.f  \
+	ssrch.f  \
+	svign.f  \
+	svrgn.f  \
+	umach.f  \
+	zaxpy.f  \
+	zgeco.f  \
+	zmul.f   
+
+OBJECTS = $(SOURCES:.f=.o)
+
+all: @MAKELIBDIR@ @MAKELIBDIR@libMdsMath@SHARETYPE@ 
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
+
+clean:
+	- rm *.o
+	- rm @MAKELIBDIR@libMdsMath@SHARETYPE@
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKELIBDIR@libMdsMath@SHARETYPE@ @libdir@
+
+@MAKELIBDIR@libMdsMath@SHARETYPE@ : $(OBJECTS) 
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBS)
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@

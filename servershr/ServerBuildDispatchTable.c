@@ -243,7 +243,7 @@ int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table)
         msg.nid = actions[i].nid;
         msg.on = actions[i].on;
         msg.mode = i ? (i == (num_actions - 1) ? build_table_end : build_table) : build_table_begin;
-        if (!(ServerSendMessage(0, 0, monitor_name, monitor, sizeof(msg), (char *)&msg, 0, 0, 0, 0, 0) & 1))
+        if (!(ServerSendMessage(0, monitor_name, monitor, sizeof(msg), (char *)&msg, 0, 0, 0, 0, 0) & 1))
           break;
       }
     }

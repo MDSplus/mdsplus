@@ -1,0 +1,57 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=@LD@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = 		\
+mdsdcl_dcl_parse.c		\
+mdsdcl_do_command.c	\
+mdsdcl_dummy.c		\
+mdsdcl_general.c		\
+mdsdcl_get_input.c		\
+mdsdcl_initialize.c	\
+mdsdcl_insert_symbols.c	\
+mdsdcl_macros.c		\
+mdsdcl_set_command.c	\
+mdsdcl_spawn.c		\
+mdsdcl_wait.c
+
+OBJECTS = $(SOURCES:.c=.o)
+EXPORTS = mdsdclshr.export
+
+all:	@MAKELIBDIR@ @MAKEBINDIR@ @MAKELIBDIR@libMdsdcl.a  @MAKELIBDIR@libMdsdcl@SHARETYPE@ @MAKEBINDIR@mdsdcl
+
+clean:
+	- rm @MAKELIBDIR@libMdsdcl.a @MAKELIBDIR@libMdsdcl@SHARETYPE@
+	- rm @MAKEBINDIR@mdsdcl
+	- rm  *.o
+	- rm mdsdcl_tables.c
+
+depend:  mdsdcl_tables.c
+	 @makedepend -- $(CFLAGS) -- $(SOURCES) mdsdcl_tables.c mdsdcl.c
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKELIBDIR@libMdsdcl@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKEBINDIR@mdsdcl	@bindir@
+
+mdsdcl_tables.c:	mdsdcl_tables.ocld
+	@MAKEBINDIR@cdu < mdsdcl_tables.ocld
+
+@MAKELIBDIR@libMdsdcl.a:	$(OBJECTS)
+		$(AR) -cr $@ $(OBJECTS)
+		@RANLIB@ $@
+
+@MAKELIBDIR@libMdsdcl@SHARETYPE@:	mdsdcl_tables.o $(OBJECTS)
+	$(LD)  -o $@ @LINKSHARED@ mdsdcl_tables.o $(OBJECTS) -L@MAKELIBDIR@ -lCdu -lMdsShr  $(LIBS)
+
+@MAKEBINDIR@mdsdcl:	mdsdcl.o
+	$(CC) $(CFLAGS) -o $@ mdsdcl.o -L@MAKELIBDIR@ -lMdsdcl -lMdsShr

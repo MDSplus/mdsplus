@@ -1,0 +1,74 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=@LD@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = 			\
+	mds_dsc_string.c	\
+	tcl_dummy.c		\
+	tcl_add_node.c	\
+	tcl_add_tag.c		\
+	tcl_clean_datafile.c		\
+	tcl_close.c		\
+	tcl_compress_datafile.c		\
+	tcl_create_pulse.c	\
+	tcl_decompile.c	\
+	tcl_delete_node.c	\
+	tcl_delete_pulse.c	\
+	tcl_directory.c	\
+	tcl_directory_tag.c	\
+	tcl_dispatch.c		\
+	tcl_do_method.c	\
+	tcl_do_node.c	\
+	tcl_edit.c		\
+	tcl_put_expression.c		\
+	tcl_remove_tag.c	\
+	tcl_rename.c		\
+	tcl_set_callbacks.c	\
+	tcl_set_current.c	\
+	tcl_set_default.c	\
+	tcl_set_node.c	\
+	tcl_set_tree.c	\
+	tcl_show_current.c	\
+	tcl_show_data.c	\
+	tcl_show_db.c	\
+	tcl_verify_tree.c	\
+	tcl_write.c
+
+OBJECTS = $(SOURCES:.c=.o)
+EXPORTS = tcl_commands.export
+
+all:	@MAKEBINDIR@tcl @MAKELIBDIR@tcl_commands@SHARETYPE@
+
+depend: 
+	 @makedepend -- $(CFLAGS) -- $(SOURCES) tcl_commands.c
+
+clean:
+	- rm @MAKEBINDIR@tcl
+	- rm @MAKELIBDIR@tcl_commands@SHARETYPE@
+	- rm tcl_commands.c
+	- rm *.o
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKELIBDIR@tcl_commands@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKEBINDIR@tcl @bindir@
+
+@MAKEBINDIR@tcl:	tcl
+	cp  tcl $@
+	chmod +x $@
+
+tcl_commands.c:	tcl_commands.ocld
+	@MAKEBINDIR@cdu < tcl_commands.ocld
+	$(MAKE) depend
+
+@MAKELIBDIR@tcl_commands@SHARETYPE@:	$(OBJECTS) tcl_commands.o
+	$(LD)  -o $@ @LINKSHARED@ tcl_commands.o $(OBJECTS) -L@MAKELIBDIR@ -lMdsdcl -lMdsShr -lTreeShr -lTdiShr -lMdsServerShr $(LIBS)

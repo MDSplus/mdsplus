@@ -1,0 +1,44 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=@LD@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = ccl_commands.c ccl_dummy.c
+OBJECTS = $(SOURCES:.c=.o)
+EXPORTS = ccl_commands.export
+
+all:	@MAKELIBDIR@ @MAKELIBDIR@ccl_commands@SHARETYPE@  @MAKEBINDIR@ @MAKEBINDIR@ccl
+
+clean:
+	- rm @MAKELIBDIR@ccl_commands@SHARETYPE@
+	- rm -f *.o
+	- rm -f @MAKEBINDIR@ccl
+	- rm ccl_commands.c
+
+depend:
+	 @makedepend -- $(CFLAGS) -- $(SOURCES) ccl_commands.c
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKELIBDIR@ccl_commands@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKEBINDIR@ccl @bindir@
+
+ccl_commands.c:	ccl_commands.ocld
+	@MAKEBINDIR@cdu < ccl_commands.ocld
+	$(MAKE) depend
+
+@MAKELIBDIR@ccl_commands@SHARETYPE@:	$(OBJECTS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
+
+@MAKEBINDIR@ccl:	ccl
+	cp ccl $@
+	chmod +x $@
+

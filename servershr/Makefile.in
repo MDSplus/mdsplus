@@ -1,0 +1,58 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=@LD@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = \
+      ServerDispatchAction.c\
+      ServerFreeDispatchTable.c\
+      ServerSetDetailProc.c\
+      ServerAbortServer.c\
+      ServerDispatchClose.c\
+      ServerGetInfo.c\
+      ServerSetLogging.c\
+      ServerBuildDispatchTable.c\
+      ServerDispatchCommand.c\
+      ServerMonitorCheckin.c\
+      ServerStartServer.c\
+      ServerCloseTrees.c\
+      ServerDispatchPhase.c\
+      ServerStopServer.c\
+      ServerCreatePulse.c\
+      ServerFindServers.c\
+      ServerSendMessage.c
+
+OBJECTS = $(SOURCES:.c=.o)
+
+all: @MAKELIBDIR@ @MAKELIBDIR@libMdsServerShr@SHARETYPE@ @MAKELIBDIR@libMdsServerShr.a
+
+clean:
+	- rm *.o
+	- rm @MAKELIBDIR@libMdsServerShr.*
+
+depend:
+	 @makedepend -- $(CFLAGS) -- $(SOURCES)
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKELIBDIR@libMdsServerShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKELIBDIR@libMdsServerShr.a @libdir@
+
+@MAKELIBDIR@libMdsServerShr@SHARETYPE@ : $(OBJECTS) 
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lTdiShr -lTreeShr -lMdsShr -lipcs $(LIBS)
+
+@MAKELIBDIR@libMdsServerShr.a : $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
+	@RANLIB@ $@
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@
+

@@ -1,0 +1,57 @@
+SHELL=/bin/sh
+CC=@CC@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+X_CFLAGS=@X_CFLAGS@
+CFLAGS=@CFLAGS@ $(X_CFLAGS)
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+UIL=@UIL@
+X_LIBS=@X_LIBS@
+X_EXTRA_LIBS=@X_EXTRA_LIBS@
+X_PRE_LIBS=@X_PRE_LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+MOTIF_LIBS = @XM_LIBS@
+MLIBS = $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS)
+
+SOURCES = \
+	main-uil.c \
+	bxutils-uil.c \
+	CallbacksUil.c \
+        ReadInt.c \
+        ReadString.c \
+        GetNciString.c \
+        GetSupportedDevices.c
+
+OBJECTS = $(SOURCES:.c=.o)
+
+all : @MAKEBINDIR@ @MAKEBINDIR@traverser @MAKEUIDDIR@ @MAKEUIDDIR@traverser.uid
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
+
+clean :
+	- rm *.o
+	- rm @MAKEBINDIR@traverser
+	- rm @MAKEUIDDIR@traverser.uid
+
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 644  @MAKEUIDDIR@traverser.uid @uiddir@
+	$(INSTALL) -m 755  @MAKEBINDIR@traverser @bindir@
+
+@MAKEBINDIR@traverser : $(OBJECTS)
+	 $(CC) -o $@ $(OBJECTS) -L@MAKELIBDIR@ -lXmdsShr -lMdsdcl -lCdu -lTdiShr -lTreeShr -lMdsShr $(MLIBS) $(LIBS)
+
+@MAKEBINDIR@ :
+	mkdir @MAKEBINDIR@
+
+@MAKEUIDDIR@ :
+	mkdir @MAKEUIDDIR@
+
+@MAKEUIDDIR@traverser.uid : traverser.uil
+	uil -o $@ traverser.uil

@@ -47,5 +47,5 @@ int ServerCreatePulse(int efn, char *server, char *tree, int shot,
   for (i=strlen(tree); i<sizeof(msg.treename); i++) msg.treename[i]=' ';
   msg.shot = shot;
   ServerSetLinkDownHandler(link_down_handler);
-  return ServerSendMessage(efn, 0, server, create_pulse, sizeof(msg), (char *)&msg, retstatus, ast, astprm, before_ast, netid);
+  return ServerSendMessage(0, server, create_pulse, sizeof(msg), (char *)&msg, retstatus, ast, astprm, before_ast, netid);
 }

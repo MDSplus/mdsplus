@@ -1,0 +1,63 @@
+SHELL=/bin/sh
+CC=@CC@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+X_CFLAGS=@X_CFLAGS@
+CFLAGS=@CFLAGS@ $(X_CFLAGS)
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+UIL=@UIL@
+X_LIBS=@X_LIBS@
+X_EXTRA_LIBS=@X_EXTRA_LIBS@
+X_PRE_LIBS=@X_PRE_LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+MOTIF_LIBS = @XM_LIBS@
+MLIBS = $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS)
+SOURCES = dwscope.c dwscopesubs.c dwpad.c
+OBJECTS = $(SOURCES:.c=.o)
+
+all : @MAKEBINDIR@ @MAKEBINDIR@dwscope @MAKEUIDDIR@dwscope.uid @MAKEBINDIR@dwpad @MAKEUIDDIR@dwpad.uid @MAKEBINDIR@dwscope_remote
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
+
+clean :
+	- rm *.o
+	- rm @MAKEBINDIR@dwscope
+	- rm @MAKEBINDIR@dwscope_remote
+	- rm @MAKEUIDDIR@dwscope.uid
+	- rm @MAKEBINDIR@dwpad
+	- rm @MAKEUIDDIR@dwpad.uid
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKEBINDIR@dwscope @bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@dwscope_remote @bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@dwpad @bindir@
+	$(INSTALL) -m 644  @MAKEUIDDIR@dwscope.uid @uiddir@
+	$(INSTALL) -m 644  @MAKEUIDDIR@dwpad.uid @uiddir@
+
+@MAKEBINDIR@ :
+	mkdir @MAKEBINDIR@
+
+@MAKEBINDIR@dwscope : dwscope.o dwscopesubs.o evaluate_local.o
+	$(CC) -o $@ dwscope.o dwscopesubs.o  evaluate_local.o -L@MAKELIBDIR@ -lXmdsShr -lTdiShr -lTreeShr -lMdsShr $(MLIBS)
+                        
+
+@MAKEBINDIR@dwscope_remote : dwscope.o dwscopesubs.o evaluate.o RemoteDummies.o
+	$(CC) -o $@ dwscope.o  dwscopesubs.o evaluate.o RemoteDummies.o -L@MAKELIBDIR@ @LDARC@ -lXmdsShr @LDSHARE@ -lMdsIpShr $(MLIBS)
+
+@MAKEUIDDIR@dwscope.uid : dwscope.uil
+	uil -o $@ dwscope.uil
+
+@MAKEBINDIR@dwpad : dwpad.o dwscopesubs.o
+	$(CC) -o $@ dwpad.o dwscopesubs.o -L@MAKELIBDIR@ -lXmdsShr $(MLIBS)
+
+@MAKEUIDDIR@dwpad.uid : dwpad.uil
+	uil -o $@ dwpad.uil
+ 
+evaluate_local.o : evaluate.c
+	$(CC) -c $(CFLAGS) -D_LOCAL_ACCESS -o $@ evaluate.c

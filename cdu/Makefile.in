@@ -1,0 +1,44 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=@LD@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+LIB_SOURCES =		\
+	cli_routines.c	\
+	cli_util.c		\
+	dasutil_routines1.c	\
+	dasutil_routines2.c	\
+	dasutil_routines3.c
+
+MAIN_SOURCES = cdu.c cdu_util.c cdu_write.c
+
+LIB_OBJECTS = $(LIB_SOURCES:.c=.o)
+MAIN_OBJECTS = $(MAIN_SOURCES:.c=.o)
+
+all:	@MAKELIBDIR@ @MAKELIBDIR@libCdu.a @MAKEBINDIR@cdu
+
+clean:
+	- rm @MAKEBINDIR@cdu
+	- rm @MAKELIBDIR@libCdu.a
+	- rm *.o
+
+depend:
+	 @makedepend -- $(CFLAGS) -- $(LIB_SOURCES) $(MAIN_SOURCES)
+
+install:
+	@ :
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@
+
+@MAKELIBDIR@libCdu.a:	$(LIB_OBJECTS)
+		$(AR) -cr $@ $(LIB_OBJECTS)
+		@RANLIB@ $@
+
+@MAKEBINDIR@cdu:	$(MAIN_OBJECTS)
+	$(CC) $(CFLAGS) -o $@  $(MAIN_OBJECTS) -L@MAKELIBDIR@ -lCdu -lMdsShr $(LIBS)

@@ -36,5 +36,5 @@ int SERVER$CLOSE_TREES( struct dsc$descriptor *server )
 int ServerCloseTrees( char *server )
 {
   ServerSetLinkDownHandler(0);
-  return ServerSendMessage(0, 0, server, close, 0, 0, 0, 0, 0, 0, 0);
+  return ServerSendMessage(0, server, close, 0, 0, 0, 0, 0, 0, 0);
 }
