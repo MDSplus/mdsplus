@@ -16,8 +16,8 @@ typedef struct {
 
 #ifdef __toupper
 #undef __toupper
-#define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #endif
+#define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 
 #ifdef __VMS
 #include <descrip.h>
