@@ -148,12 +148,13 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         panel1.add(zoom);
         panel1.add(pan);
 	
-        JPanel panel = new JPanel()
+        JPanel panel = new JPanel();
+	/*
         {
             public void print(Graphics g){}
             public void printAll(Graphics g){}
         };    
-            
+	*/  
         panel.setLayout(new BorderLayout());
         panel.add("West", panel1);
         if(!isApplet)
