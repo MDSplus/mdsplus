@@ -1,4 +1,4 @@
 #
 # Shared image path
 #
-SHLIB_PATH $MDSPLUS/shlib
+SHLIB_PATH $MDSPLUS/lib

@@ -1,3 +1,3 @@
 # Library path
 #
-LD_LIBRARY_PATH $MDSPLUS/shlib
+LD_LIBRARY_PATH $MDSPLUS/lib

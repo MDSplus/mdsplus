@@ -1,7 +1,7 @@
 #
 # Shared image path
 #
-LD_LIBRARY_PATH $MDSPLUS/shlib
+LD_LIBRARY_PATH $MDSPLUS/lib
 #
 # Motif development kit
 #
