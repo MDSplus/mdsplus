@@ -603,34 +603,50 @@ int main(int argc, char **argv)
   int tablesize = FD_SETSIZE;
   extern fd_set FdActive();
   struct timeval timeout = {1,0};
+  int error_count=0;
   fd_set readfds;
   readfds = FdActive();
-  while (!shut && (select(tablesize, &readfds, 0, 0, (IsWorker || IsService) ? &timeout : 0) != SOCKET_ERROR))
+  while (!shut)
   {
-    if ((serverSock != -1) && FD_ISSET(serverSock, &readfds))
+    if (select(tablesize, &readfds, 0, 0, (IsWorker || IsService) ? &timeout : 0) != SOCKET_ERROR)
     {
-      int len = sizeof(struct sockaddr_in);
-      (*AddClient)(accept(serverSock, (struct sockaddr *)&sin, &len),&sin,0);
+      error_count=0;
+      if ((serverSock != -1) && FD_ISSET(serverSock, &readfds))
+      {
+	int len = sizeof(struct sockaddr_in);
+	(*AddClient)(accept(serverSock, (struct sockaddr *)&sin, &len),&sin,0);
+      }
+      else
+      {
+	Client *c,*next;
+	for (c=ClientList,next=c ? c->next : 0; c; c=next,next=c ? c->next : 0)
+	{
+	  if (IsWorker)
+	  {
+	    if (*workerShutdown)
+	    {
+	      CloseSocket(c->sock);
+	      exit(0);
+	    }
+	  }
+	  if (FD_ISSET(c->sock, &readfds))
+	    (*DoMessage)(c->sock);
+	}
+      }
+      shut = (ClientList == NULL) && !multi && !IsService;
+      readfds = FdActive();
     }
     else
     {
-      Client *c,*next;
-      for (c=ClientList,next=c ? c->next : 0; c; c=next,next=c ? c->next : 0)
+      error_count++;
+      perror("error in main select");
+      fprintf(stderr,"Error count=%d\n",error_count);
+      if (error_count > 100)
       {
-        if (IsWorker)
-        {
-          if (*workerShutdown)
-          {
-            CloseSocket(c->sock);
-            exit(0);
-          }
-        }
-        if (FD_ISSET(c->sock, &readfds))
-          (*DoMessage)(c->sock);
+        fprintf(stderr,"Error count exceeded, shutting down\n");
+        shut=1;
       }
     }
-    shut = (ClientList == NULL) && !multi && !IsService;
-    readfds = FdActive();
   }
   CloseSocket(serverSock);
   return 1;
