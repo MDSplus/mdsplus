@@ -21,12 +21,16 @@
 #pragma nomember_alignment
 #elif defined(__hpux)
 #pragma HP_ALIGN NOPADDING PUSH
-#elif defined(__sgi)
-#pragma pack(1)
-#elif defined(__sun)
+#elif defined(__sgi) || defined(__sun) 
 #pragma pack(1)
 #elif defined(_WINDOWS)
 #pragma pack(push,enter_include,1)
+#endif
+
+#if defined(__linux__)
+#define PACK __attribute__ ((packed))
+#else
+#define PACK
 #endif
 
 #if defined(_big_endian)
@@ -75,63 +79,39 @@ static int swapshort(char *in_c)
 
 typedef struct nci
 {
-/*
-  union
-  {
-*/
-    unsigned int flags;
-/*
-    struct
-    {
-      unsigned  state:1;
-      unsigned  parent_state:1;
-      unsigned  essential:1;
-      unsigned  :3;
-      unsigned  setup_information:1;
-      unsigned  write_once:1;
-      unsigned  compressible:1;
-      unsigned  do_not_compress:1;
-      unsigned  compress_on_put:1;
-      unsigned  nowrite_model:1;
-      unsigned  nowrite_shot:1;
-      unsigned  path_reference:1;
-      unsigned  nid_reference:1;
-      unsigned  include_in_pulse:1;
-    }         NCI_FLAGS;
-  }         NCI_FLAG_WORD;
-*/
-  unsigned  char data_in_att_block:1;
-  unsigned  char error_on_put:1;
-  unsigned  char :8;
-  unsigned int time_inserted[2];
-  unsigned int owner_identifier;
-  unsigned char class;
-  unsigned char dtype;
-  unsigned int length;
-  unsigned char :8;
-  unsigned int status;
+  unsigned int flags PACK;
+  unsigned  char data_in_att_block:1 PACK;
+  unsigned  char error_on_put:1 PACK;
+  unsigned  char :8 PACK;
+  unsigned int time_inserted[2] PACK;
+  unsigned int owner_identifier PACK;
+  unsigned char class PACK;
+  unsigned char dtype PACK;
+  unsigned int length PACK;
+  unsigned char :8 PACK;
+  unsigned int status PACK;
   union
   {
     struct
     {
-      unsigned char file_level;
-      unsigned char file_version;
-      unsigned char rfa[6];
-      unsigned int record_length;
-    }         DATA_LOCATION;
+      unsigned char file_level PACK;
+      unsigned char file_version PACK;
+      unsigned char rfa[6] PACK;
+      unsigned int record_length PACK;
+    }         DATA_LOCATION PACK;
     struct
     {
-      unsigned char element_length;
-      unsigned char data[11];
-    }         DATA_IN_RECORD;
+      unsigned char element_length PACK;
+      unsigned char data[11] PACK;
+    }         DATA_IN_RECORD PACK;
     struct
     {
-      unsigned int error_status;
-      unsigned int stv;
-    }         ERROR_INFO;
-  }         DATA_INFO;
-  unsigned char nci_fill;
-}         NCI;
+      unsigned int error_status PACK;
+      unsigned int stv PACK;
+    }         ERROR_INFO PACK;
+  }         DATA_INFO PACK;
+  unsigned char nci_fill PACK;
+}         NCI PACK;
 
 /*****************************************
   NID
@@ -237,7 +217,7 @@ typedef struct node
   int       brother;
   int       child;
   unsigned char usage;
-  unsigned short conglomerate_elt;
+  unsigned short conglomerate_elt PACK;
   char      fill;
   unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
 }         NODE;
@@ -306,8 +286,8 @@ efficiently.
 ************************************/
 typedef struct
 {
-  unsigned char rfa[6];
-}         RFA;
+  unsigned char rfa[6] PACK;
+}         RFA PACK;
 
 #ifdef RFA_MACROS
 #define RfaToSeek(rfa) (((*(unsigned int *)rfa - 1) * 512) + (*(unsigned short *)&((char *)rfa)[4] & 0x1ff))
@@ -321,10 +301,10 @@ VFC portion of file.
 ***************************************/
 typedef struct record_header
 {
-  unsigned  short rlength;
-  int       node_number;
-  RFA       rfa;
-}         RECORD_HEADER;
+  unsigned  short rlength PACK;
+  int       node_number PACK;
+  RFA       rfa PACK;
+}         RECORD_HEADER PACK;
 
 
 #if defined(__VMS) || defined(__osf__)
