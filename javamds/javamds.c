@@ -329,5 +329,147 @@ JNIEXPORT jfloat JNICALL Java_LocalProvider_GetFloat(JNIEnv *env, jobject obj, j
     return ris;
 }
 
+
+/* CompositeWaveDisplay management routines for using 
+jScope panels outside java application */
+
+#ifdef HAVE_WINDOWS_H
+#define PATH_SEPARATOR ';'
+#else
+#define PATH_SEPARATOR ':'
+#endif
+
+
+JNIEnv *env = 0;
+static jobject jobjects[1024];
+
+
+createWindow(char *name, int *idx)
+{
+	JavaVM *jvm;
+	static JDK1_1InitArgs vm_args;
+	jint res;
+	jclass cls;
+	jmethodID mid;
+	jstring jstr;
+	char classpath[2048], *curr_classpath;
+	jobject jobj;
+
+	if(env == 0) /* Java virtual machine does not exist yet */
+	{
+		vm_args.version = 0x00010001;
+		JNI_GetDefaultJavaVMInitArgs(&vm_args);
+		curr_classpath = getenv("CLASSPATH");
+		if(curr_classpath)
+		{
+			sprintf(classpath, "%s%c%s", vm_args.classpath, PATH_SEPARATOR, curr_classpath);
+			vm_args.classpath = classpath;
+		}
+		res = JNI_CreateJavaVM(&jvm, &env, &vm_args);
+		if(res < 0)
+		{
+			printf("\nCannot create Java VM!!\n");
+			return;
+		}
+	}
+	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
+	if(cls == 0)
+	{
+		printf("\nCannot find jScope classes!");
+		return;
+	}
+	mid = (*env)->GetStaticMethodID(env, cls, "createWindow", "(Ljava/lang/String;)LCompositeWaveDisplay;");
+	if(mid == 0)
+	{
+		printf("\nCannot find main\n");
+		return;
+	}
+	if(name)
+		jstr = (*env)->NewStringUTF(env, name);
+	else
+		jstr = (*env)->NewStringUTF(env, "");
+	jobjects[*idx] = (*env)->CallStaticObjectMethod(env, cls, mid, jstr);
+}
+
+
+void addSignal(int *obj_idx, float *x, float *y, int *num_points, int *row, int *column, 
+			   char *name, char *colour)
+{
+	jstring jname, jcolour;
+	jobject jobj = jobjects[*obj_idx];
+	jfloatArray jx, jy;
+	jclass cls;
+	jmethodID mid;
+
+	if(env == 0)
+	{
+		printf("\nJava virtual machine not set!!\n");
+		return;
+	}
+
+	jx = (*env)->NewFloatArray(env, *num_points);
+	jy = (*env)->NewFloatArray(env, *num_points);
+	(*env)->SetFloatArrayRegion(env, jx, 0, *num_points, (jfloat *)x);
+	(*env)->SetFloatArrayRegion(env, jy, 0, *num_points, (jfloat *)y);
+	if(name)
+		jname = (*env)->NewStringUTF(env, name);
+	else
+		jname = (*env)->NewStringUTF(env, "");
+	if(colour)
+		jcolour = (*env)->NewStringUTF(env, colour);
+	else
+		jcolour = (*env)->NewStringUTF(env, "black");
+		
+	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
+	if(cls == 0)
+	{
+		printf("\nCannot find jScope classes!");
+		return;
+	}
+	mid = (*env)->GetMethodID(env, cls, "addSignal", 
+		"([F[FIILjava/lang/String;Ljava/lang/String;)V");
+    if (mid == 0) 
+	{
+		printf("\nCannot find jScope classes!");
+		return;
+	}
+
+
+    (*env)->CallVoidMethod(env, jobj, mid, jx, jy, *row, *column, jname, jcolour);
+}
+
+
+
+void showWindow(int *obj_idx, int *x, int *y, int *width, int *height)
+{
+	jclass cls;
+	jmethodID mid;
+	jobject jobj = jobjects[*obj_idx];
+
+	if(env == 0)
+	{
+		printf("\nJava virtual machine not set!!\n");
+		return;
+	}
+	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
+	if(cls == 0)
+	{
+		printf("\nCannot find jScope classes!");
+		return;
+	}
+	mid = (*env)->GetMethodID(env, cls, "showWindow", "(IIII)V");
+    if (mid == 0) 
+	{
+		printf("\nCannot find jScope classes!");
+		return;
+	}
+
+
+    (*env)->CallVoidMethod(env, jobj, mid, *x,*y,*width,*height);
+}
+
+
+
+
 	
  

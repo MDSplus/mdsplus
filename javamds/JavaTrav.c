@@ -13,6 +13,45 @@ extern struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj);
 extern jobject DescripToObject(JNIEnv *env, struct descriptor *desc);
 extern void FreeDescrip(struct descriptor *desc);
 
+
+static char **getDeviceFields(char *deviceName, int *num_fields)
+{
+	int status, nid, curr_nid, i;
+	char **names;
+	static int conglomerate_nids, conglomerate_nids_len;
+	struct nci_itm nci_list[] = 
+	{{4, NciNUMBER_OF_ELTS, &conglomerate_nids, &conglomerate_nids_len}, 
+	{NciEND_OF_LIST, 0, 0, 0}};
+
+
+	conglomerate_nids = 0;
+	status = TreeOpenNew("device", -1);
+	if(!(status & 1)) return NULL;
+	status = TreeAddConglom("TEST", deviceName, &nid);
+	if(status & 1) status = TreeGetNci(nid, nci_list);
+	if(!(status & 1) || conglomerate_nids == 0) 
+	{
+		TreeQuitTree("TEST", -1);
+		return NULL;
+	}
+	conglomerate_nids--;
+	names = (char **)malloc(sizeof(char *) * conglomerate_nids);
+	TreeSetDefaultNid(nid);
+	curr_nid = nid + 1;
+	for(i = 0; i < conglomerate_nids; i++, curr_nid++)
+	{
+		names[i] = TreeGetMinimumPath(&nid, curr_nid);
+//		printf(names[i]);
+	}
+	TreeQuitTree("TEST", -1);
+	*num_fields = conglomerate_nids;
+	return names;
+}
+
+
+
+
+
 static void RaiseException(JNIEnv *env, char *msg)
 {
    jclass exc = (*env)->FindClass(env, "DatabaseException");
@@ -199,8 +238,8 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   jfieldID nid_fid;
   jclass cls = (*env)->GetObjectClass(env, jnid);
   jmethodID constr;
-  jvalue args[17];
-  static  int nci_flags, nci_flags_len, time_inserted[2], time_len,
+  jvalue args[18];
+  static  int nci_flags, nci_flags_len, time_inserted[2], time_len, conglomerate_nids_len, conglomerate_nids,
     owner_id, owner_len, dtype_len, class_len, length, length_len, usage_len, name_len, fullpath_len, minpath_len;
   static  char dtype, class, time_str[256], usage, name[16], fullpath[512], minpath[512];
   unsigned short asctime_len;
@@ -217,11 +256,14 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
    {16, NciNODE_NAME, name, &name_len},
    {511, NciFULLPATH, fullpath, &fullpath_len},
    {511, NciMINPATH, minpath, &minpath_len},
+  {4, NciNUMBER_OF_ELTS, &conglomerate_nids, &conglomerate_nids_len}, 
    {NciEND_OF_LIST, 0, 0, 0}};
 
 
+  
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
+  conglomerate_nids = 0;
   status = TreeGetNci(nid, nci_list);
   if(!(status & 1))
    {
@@ -233,7 +275,7 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   fullpath[fullpath_len] = 0;
   minpath[minpath_len] = 0;
   cls = (*env)->FindClass(env, "NodeInfo");
-  constr = (*env)->GetStaticMethodID(env, cls, "getNodeInfo", "(ZZZZZZZZLjava/lang/String;IIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)LNodeInfo;");
+  constr = (*env)->GetStaticMethodID(env, cls, "getNodeInfo", "(ZZZZZZZZLjava/lang/String;IIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;I)LNodeInfo;");
   args[0].z = nci_flags & NciM_STATE;
   args[1].z = nci_flags & NciM_PARENT_STATE;
   args[2].z = nci_flags & NciM_SETUP_INFORMATION;
@@ -253,6 +295,7 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   args[14].l = (*env)->NewStringUTF(env, name);
   args[15].l = (*env)->NewStringUTF(env, fullpath);
   args[16].l = (*env)->NewStringUTF(env, minpath);
+  args[17].i = conglomerate_nids;
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }
 
@@ -648,13 +691,128 @@ JNIEXPORT jobject JNICALL Java_Database_addDevice
 }
   
   
-    
+static int doAction(int nid)
+{
+	extern int TdiEvaluate();
+	int status;
+	EMPTYXD(xd);
+	EMPTYXD(xd1);
+	struct descriptor_program *program_d_ptr;
+	struct descriptor_method *method_d_ptr;
+	struct descriptor_routine *routine_d_ptr;
+	struct descriptor_r *curr_rec_ptr;
+	struct descriptor *curr_d_ptr;
+	char *command, *expression, *path;
+	struct descriptor expr_d = {0, DTYPE_T, CLASS_S, 0};
+	int method_nid, i;
+	struct descriptor nid_d = {sizeof(int), DTYPE_NID, CLASS_S, (char *)&method_nid};
+	char type = DTYPE_L;
+	DESCRIPTOR_CALL(call_d, &type, 256, 0, 0);
+
+	status = TreeGetRecord(nid, &xd);
+	if(!(status & 1)) return status;
+	if(!xd.pointer) return 0;
+	curr_rec_ptr = (struct descriptor_r *)xd.pointer;
+	if(curr_rec_ptr->dtype == DTYPE_ACTION)
+		curr_rec_ptr = ((struct descriptor_action *)curr_rec_ptr)->task;
+	if(!curr_rec_ptr) return 0;
+	switch(curr_rec_ptr->dtype) {
+	case DTYPE_PROGRAM:
+		program_d_ptr = (struct descriptor_program *)xd.pointer;
+		if(!program_d_ptr->program) {status = 0; break;}
+		status = TdiEvaluate(program_d_ptr->program, &xd1 MDS_END_ARG);
+		if(!(status & 1)) break;
+		if(!xd1.pointer || xd1.pointer->dtype != DTYPE_T) 
+		{
+			status = 0; break;
+		}
+		command = malloc(xd1.pointer->length + 1);
+		memcpy(command, xd1.pointer->pointer, xd1.pointer->length);
+		command[xd1.pointer->length] = 0;
+		MdsFree1Dx(&xd1, 0);
+		expression = malloc(strlen(command) + 20);
+		sprintf(expression, "spawn(\"%s\",,)", command);
+		expr_d.length = strlen(expression);
+		expr_d.pointer = expression;
+		status = TdiCompile(&expr_d, &xd1 MDS_END_ARG);
+		free(command);
+		free(expression);
+		if(status & 1) status = TdiEvaluate(&xd1, &xd1 MDS_END_ARG);
+		break;
+	case DTYPE_METHOD:
+		method_d_ptr = (struct descriptor_method *)curr_rec_ptr;
+		if(!method_d_ptr->object || !method_d_ptr->method)
+		{
+			status = 0; 
+			break;
+		}
+		if(method_d_ptr->object->dtype == DTYPE_NID)
+			status = TreeDoMethod(method_d_ptr->object, method_d_ptr->method MDS_END_ARG);
+		else if(method_d_ptr->object->dtype == DTYPE_PATH)
+		{
+			path = malloc(method_d_ptr->object->length + 1);
+			memcpy(path, method_d_ptr->object->pointer, method_d_ptr->object->length);
+			path[method_d_ptr->object->length] = 0;
+			status = TreeFindNode(path, &method_nid);
+			free(path);
+			if(status & 1) status = TreeDoMethod(&nid_d, method_d_ptr->method MDS_END_ARG);
+		} else status = 0;
+		break;
+	case DTYPE_ROUTINE:
+		routine_d_ptr = (struct descriptor_routine *)curr_rec_ptr;
+		call_d.image = routine_d_ptr->image;
+		call_d.routine = routine_d_ptr->routine;
+		call_d.ndesc = routine_d_ptr->ndesc - 1;
+		for(i = 0; i < routine_d_ptr->ndesc-3; i++)
+			call_d.arguments[i] = routine_d_ptr->arguments[i];
+		status = TdiEvaluate(&call_d, &xd1 MDS_END_ARG);
+		MdsFree1Dx(&xd1, 0);
+		break;
+	default: status = 0;
+	}
+	MdsFree1Dx(&xd, 0);
+	return status;
+}
+
+JNIEXPORT void JNICALL Java_Database_doAction
+  (JNIEnv *env, jobject obj, jobject jnid)
+{
+  int nid, status;
+  jfieldID nid_fid;
+  jclass cls = (*env)->GetObjectClass(env, jnid);
+
+  nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+  nid = (*env)->GetIntField(env, jnid, nid_fid);
+
+  status = doAction(nid);
+  if(!(status & 1))
+      RaiseException(env, (status == 0)?"Cannot perform action":MdsGetMsg(status));
+}
   
-      
  
-  
+JNIEXPORT jobjectArray JNICALL Java_Database_getDeviceComponents
+  (JNIEnv *env, jobject obj, jstring jname)
+{
+	const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+	int num_fields, i;
+	jobjectArray jfields;
+	jclass string_cls = (*env)->FindClass(env, "java/lang/String");
+	jstring jfield; 
 
+	char **fields = getDeviceFields(name, &num_fields);
+	(*env)->ReleaseStringUTFChars(env, jname, name);
+	if(fields == NULL) return NULL;
 
+	jfields = (*env)->NewObjectArray(env, num_fields, string_cls, 0); 
+	for(i = 0; i < num_fields; i++)
+    {
+		jfield = (*env)->NewStringUTF(env, fields[i]);
+		TreeFree(fields[i]);
+		(*env)->SetObjectArrayElement(env, jfields, i, jfield);
+    }
+	free((char *)fields);
+	return jfields;
+}
 
 
 

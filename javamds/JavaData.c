@@ -44,6 +44,27 @@ JNIEXPORT jstring JNICALL Java_Data_toString(JNIEnv *env, jobject obj)
   return ris;
 }
 
+JNIEXPORT jint JNICALL Java_Data_evaluate
+  (JNIEnv *env, jclass cls, jstring jexpr)
+{
+	EMPTYXD(xd);
+	int status, ris = 0;
+	const char *expr = (*env)->GetStringUTFChars(env, jexpr, 0);
+	struct descriptor expr_d = {0, DTYPE_T, CLASS_S, 0};
+
+	expr_d.length = strlen(expr);
+	expr_d.pointer = (char *)expr;
+	status = TdiCompile(&expr_d, &xd MDS_END_ARG);
+	if(status & 1) status = TdiData(&xd, &xd MDS_END_ARG);
+	if(status & 1) status = TdiLong(&xd, &xd MDS_END_ARG);
+	if(status & 1 && xd.pointer && xd.pointer->pointer) 
+		ris = *(int *)xd.pointer->pointer;
+	MdsFree1Dx(&xd, NULL);
+	return ris;
+}
+
+
+
 
 JNIEXPORT jobject JNICALL Java_Data_fromExpr
   (JNIEnv *env, jclass cls, jstring jsource)
@@ -68,7 +89,7 @@ struct descriptor_r *d;
        error_msg = (char *)MdsGetMsg(status);
        exc = (*env)->FindClass(env, "SyntaxException");
        (*env)->ThrowNew(env, exc, error_msg);
-       free(error_msg);
+       //free(error_msg);
        return NULL;
      }
    /*
@@ -217,8 +238,6 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 	  case CLASS_A:
       array_d = (struct descriptor_a *)desc;
       length =array_d->arsize/array_d->length; 
-
-printf("\nlenght array: %d", length);
       switch(array_d->dtype) {
         case DTYPE_BU: is_unsigned = 1;
         case DTYPE_B: 
