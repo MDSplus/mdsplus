@@ -12,7 +12,6 @@ public fun TRCF__init(as_is _nid, optional _method)
     private _N_FREQUENCY = 8;
     private _N_USE_TIME = 9;
     private _N_PTS = 10;
-
     private _K_NODES_PER_CHANNEL = 6;
     private _N_CHANNEL_0= 11;
     private _N_CHAN_START_TIME = 1;
@@ -20,15 +19,13 @@ public fun TRCF__init(as_is _nid, optional _method)
     private _N_CHAN_START_IDX = 3;
     private _N_CHAN_END_IDX = 4;
     private _N_CHAN_DATA = 5;
-
     private _N_INIT_ACTION = 47;
     private _N_STORE_ACTION = 48;
     private _256K = 262144;
     private _64K = 65536;
- 
-    _name = DevNodeRef(_nid, _N_NAME);
+
+     _name = DevNodeRef(_nid, _N_NAME);
     DevCamChk(_name, CamPiow(_name, 0,28, _dummy=0, 16),1,1); 
- 
 /*Check if CADF or TRCF */
     _control_reg = 1 << 15;
     _status=DevCamChk(_name, CamPiow(_name, 2,16, _control_reg,24),1,*); 
@@ -43,7 +40,6 @@ public fun TRCF__init(as_is _nid, optional _method)
 		write(*, 'TRCF');
 		_buffer_size = _256K;
 	}
- 
     DevNodeCvt(_nid, _N_CHANNELS, [1,2,4,8,16], [0,1,2,3,4], _chans = 0);
     _offset = word(DevNodeRef(_nid, _N_CHAN_OFFSET));
     DevNodeCvt(_nid, _N_CLOCK_MODE, ['INTERNAL', 'EXTERNAL'], [0,1], _ext_clock = 0);
@@ -52,7 +48,6 @@ public fun TRCF__init(as_is _nid, optional _method)
         _clk = if_error(DevNodeRef(_nid, _N_CLOCK_SOURCE), (DevLogErr(_nid, "Cannot resolve clock"); abort();));
 		_clock_val = execute('`_clk');
 		_clk = 0;
-
     }
     else
     {
@@ -82,7 +77,6 @@ public fun TRCF__init(as_is _nid, optional _method)
 	    			_curr_pts = x_to_i(build_dim(build_window(0,*,_trig), _clock_val), _curr_end + _trig);
 				else
 	    			_curr_pts = - x_to_i(build_dim(build_window(0,*,_trig + _curr_end), _clock_val),  _trig);
-
 				DevPut(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_END_IDX, long(_curr_pts));
 				_curr_start = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_START_TIME)),(DevLogErr(_nid, "Cannot end time"); abort();));
 				if(_curr_start > 0)

@@ -4,9 +4,74 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
-class jDispatchMonitor extends JFrame implements MdsServerListener,
+public class jDispatchMonitor extends JFrame implements MdsServerListener,
                                                  ConnectionListener
 {
+    
+    
+    
+    public class ErrorMgr extends MdsIp
+    {
+    //The constructor
+        public ErrorMgr(int port) 
+        {
+            super(port); 
+        }
+        
+    //The message handler: the expression and arguments are passed as a vector of MdsMessage
+        public MdsMessage handleMessage(MdsMessage [] messages)
+        {
+            int [] nids = null;
+            String message = null;
+            //method MdsMessage.ToString returns the argument as a string
+            //in this ase messages[0] contains the expression to be evaluated
+            //the other elements of emssages contain additional arguments
+            //see the definition of MdsMessage (or ask me) if you need to handle other types of arguments
+            String arg1 = messages[0].ToString();
+            System.out.println(arg1);
+            try {
+                nids = messages[1].ToIntArray();
+                System.out.println(nids[0]);
+                System.out.println(nids[1]);
+                message = messages[2].ToString();
+                System.out.println(message);
+            } catch(Exception exc) {System.out.println(exc);}
+                        
+            //do the stuff here
+            
+            if(nids == null || message == null)
+                return new MdsMessage((byte)1);
+            
+            Hashtable actions = null;
+            
+            if(phase_hash == null)
+                return new MdsMessage((byte)1);
+            
+            if(phase_hash.containsKey(new Integer(curr_phase)))
+                actions = (Hashtable)phase_hash.get(new Integer(curr_phase));                                        
+                     
+            if(actions == null)
+                return new MdsMessage((byte)1);
+            
+            if(actions.containsKey(new Integer(nids[0])))
+            {
+                MdsMonitorEvent e = (MdsMonitorEvent)actions.get(new Integer(nids[0]));
+                e.error_message += message+"\n";
+            }
+            
+            
+            //In this example the mdsip returns a string value
+            return new MdsMessage((byte)1);
+            //if a integer number has to be returned instead, 
+            //you can type return new MdsMessage((Byte)<number>) 
+        }
+
+    }
+
+    
+    
+    
+    
     static Font disp_font = new Font("Platino Linotype", Font.ITALIC, 12);
     static Font doing_font = new Font("Platino Linotype", Font.ITALIC | Font.BOLD, 12);
     static Font done_font = new Font("Platino Linotype", Font.PLAIN, 12);
@@ -46,8 +111,10 @@ class jDispatchMonitor extends JFrame implements MdsServerListener,
     DefaultListModel failed_list = new DefaultListModel();
     private int num_window = 0;
     
-    transient Hashtable phase_hash = new Hashtable();
-    transient Hashtable phase_name = new Hashtable();
+    Hashtable phase_hash = new Hashtable();
+    Hashtable phase_name = new Hashtable();
+    
+    ErrorMgr error_mgr;
     
     class ToolTipJList extends JList
     {
@@ -240,6 +307,29 @@ class jDispatchMonitor extends JFrame implements MdsServerListener,
         setWindowTitle();
         this.monitor_server = monitor_server;        
 
+
+
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileInputStream("jDispatcher.properties"));
+        }
+        catch(Exception exc)
+        {
+            System.out.println("Cannot open properties file");
+            System.exit(0);
+        }
+        int error_port = 0;
+        try {
+            error_port = Integer.parseInt(properties.getProperty("jDispatcher.error_port"));
+        }
+        catch(Exception exc)
+        {
+            System.out.println("Cannot read error port");
+            System.exit(0);
+        }
+        error_mgr = new ErrorMgr(error_port);
+        error_mgr.start();
+
         try
         {
             if(monitor_server != null && monitor_server.length() != 0)
@@ -249,6 +339,7 @@ class jDispatchMonitor extends JFrame implements MdsServerListener,
         {
             System.out.println(e.getMessage());
         }
+        
         JMenu file = new JMenu("File");
         JMenuItem open = new JMenuItem("Open Connection ...");
         open.addActionListener(new ActionListener()

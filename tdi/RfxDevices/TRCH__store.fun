@@ -37,65 +37,46 @@ public fun TRCH__store(as_is _nid, optional _method)
     }
     _num_chans = data(DevNodeRef(_nid, _N_CHANNELS));
     if(_num_chans < 6)  _num_chans = 3;
-
-
     _trig = data(DevNodeRef(_nid, _N_TRIG_SOURCE));
     _clock = evaluate(DevNodeRef(_nid, _N_CLOCK_SOURCE));
     _clock = execute('evaluate(`_clock)');
     _pts = data(DevNodeRef(_nid, _N_PTS));
-
-write(*, 'PTS', _pts);
-
     DevCamChk(_name, CamPiow(_name, 0,0,_base_mar=0, 24),1,1);
-
-write(*, 'MAR', _base_mar);
-
     for(_i = 0; _i < _num_chans; _i++)
     {
         if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 +(_i *  _K_NODES_PER_CHANNEL))))
         { 
-	    _end_idx = data(DevNodeRef(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_END_IDX));	
-	    _start_idx = data(DevNodeRef(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_START_IDX));	
-
-write(*,'Start idx', _start_idx, 'End idx', _end_idx);
-
-/*Check and correct memory overflow or wrong setting*/
-	    if(_end_idx > _pts) _end_idx = _pts;
-	    if(_num_chans == 6)
-	        _max_samples = _500K;
-	    else
-	        _max_samples = _1M;
-	    if(_end_idx  - _start_idx >  _max_samples) _start_idx = _pts - _max_samples;
-	    if(_end_idx < _start_idx) _start_idx = _end_idx - 1;
-/* Compute MAR */
-	    if(_num_chans == 6)
-	        _mar = _base_mar - 2*(_pts - _start_idx);
-	    else
-	        _mar = _base_mar - (_pts - _start_idx);
-	    if(_mar < 0) _mar = _mar + _1M;
-	    if(_num_chans == 3)
-	        _mar = _mar |(_i   << 20);
-	    else
-	        _mar = (_mar + mod(_i, 2))|((_i /2)<<20);
-    	    DevCamChk(_name, CamPiow(_name, 0,16,_mar, 24),1,1);
-	    DevCamChk(_name, CamFstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);
-
-
-write(*, 'START IDX: ', _start_idx);
-write(*, 'END IDX: ', _end_idx);
-write(*, 'TRIG: ', _trig);
-write(*, 'CLOCK: ', _clock);
-	    _dim = make_dim(make_window(_start_idx, _end_idx, _trig), _clock);
-write(*, 'DIMENSION: ', _dim);
-	    _sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
-
-	    _status = DevPutSignal(_sig_nid, 0, 5/2048., word(_data), 0, _end_idx - _start_idx - 1, _dim);
-	    if(! _status)
-	    {
-                DevLogErr(_nid, 'Error writing data in pulse file');
-                return(0);
+			_end_idx = data(DevNodeRef(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_END_IDX));	
+			_start_idx = data(DevNodeRef(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_START_IDX));	
+	/*Check and correct memory overflow or wrong setting*/
+			if(_end_idx > _pts) _end_idx = _pts;
+			if(_num_chans == 6)
+				_max_samples = _500K;
+			else
+				_max_samples = _1M;
+			if(_end_idx  - _start_idx >  _max_samples) _start_idx = _pts - _max_samples;
+			if(_end_idx < _start_idx) _start_idx = _end_idx - 1;
+	/* Compute MAR */
+			if(_num_chans == 6)
+				_mar = _base_mar - 2*(_pts - _start_idx);
+			else
+				_mar = _base_mar - (_pts - _start_idx);
+			if(_mar < 0) _mar = _mar + _1M;
+			if(_num_chans == 3)
+				_mar = _mar |(_i   << 20);
+			else
+				_mar = (_mar + mod(_i, 2))|((_i /2)<<20);
+    			DevCamChk(_name, CamPiow(_name, 0,16,_mar, 24),1,1);
+			DevCamChk(_name, CamFstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);
+			_dim = make_dim(make_window(_start_idx, _end_idx, _trig), _clock);
+			_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
+			_status = DevPutSignal(_sig_nid, 0, 10/2048., word(_data), 0, _end_idx - _start_idx - 1, _dim);
+			if(! _status)
+			{
+				DevLogErr(_nid, 'Error writing data in pulse file');
+				return(0);
             }
-	}
+		}
     }
     return(1);
 }

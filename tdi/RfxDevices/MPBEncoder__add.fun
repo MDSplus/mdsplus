@@ -28,4 +28,6 @@ public fun MPBEncoder__add(in _path, out _nidout)
     DevAddAction(_path// ':DISAB_ACTION', 'INIT', 'INIT', 5,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }
+
        
+

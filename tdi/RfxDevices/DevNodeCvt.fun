@@ -1,4 +1,5 @@
 public fun DevNodeCvt(in _nid, in _offset, in _table1,  in _table2, out _converted)
+
 {
     _d = data(DevNodeRef(_nid, _offset));
     _found = -1;
@@ -15,5 +16,7 @@ public fun DevNodeCvt(in _nid, in _offset, in _table1,  in _table2, out _convert
     _converted = 0;
     return (0);
 }
+
 	
+
   

@@ -1,7 +1,6 @@
 public fun TimingDecodeEvent(in _event)
 {
     TimingGetEvents(_event_names, _event_codes);
-
     for(_i = 0; _i < size(_event_names); _i++)
     {
     	if(_event_names[_i] == _event) 
@@ -9,3 +8,4 @@ public fun TimingDecodeEvent(in _event)
     }  
     return (0);
 }
+

@@ -1,6 +1,5 @@
 public fun TRCF__add(in _path, out _nidout)
 {
-    write(*, _path);
     DevAddStart(_path, 'TRCF', 109, _nidout);
     DevAddNode(_path // ':NAME', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);

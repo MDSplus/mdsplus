@@ -14,7 +14,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
     String ip_address;
     int shot;
     javax.swing.Timer timer;
-    static final int RECONNECT_TIME = 2; 
+    static final int RECONNECT_TIME = 5; 
     
     
     public ActionServer(String tree, String ip_address, String server_class)
@@ -89,7 +89,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                                 mds_server.addConnectionListener(ActionServer.this);
                                 mds_server.dispatchCommand("TCL", "SET TREE " + tree + "/SHOT=" + shot);
                                 System.out.println("Restarting server");
-                                Thread.currentThread().sleep(1000); //Give time to mdsip server to start its own threads
+                                Thread.currentThread().sleep(2000); //Give time to mdsip server to start its own threads
                             }catch(Exception exc) {mds_server = null; }
                             if(doing_actions.size() > 0)
                             {

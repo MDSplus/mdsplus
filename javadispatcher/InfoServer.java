@@ -66,7 +66,7 @@ class InfoServer implements Server
                 ActionData action_data = (ActionData)model_database.getData(nids[i], 0);
                 if(action_data.getDispatch() == null || action_data.getTask() == null)
                     continue;
-                action = new Action(action_data, nids[i].getInt(), info.getName(), 
+                action = new Action(action_data, nids[i].getInt(), info.getFullPath(), 
                     model_database.isOn(nids[i], 0));
                 action_vect.addElement(action);
                 nid_array[num_actions] = nids[i].getInt();

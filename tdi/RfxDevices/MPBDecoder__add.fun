@@ -1,4 +1,5 @@
 public fun MPBDecoder__add(in _path, out _nidout)
+
 {
     DevAddStart(_path, 'MPBDecoder', 79, _nidout);
     DevAddNode(_path // ':NAME', 'TEXT', *, *, _nid);
@@ -17,16 +18,18 @@ public fun MPBDecoder__add(in _path, out _nidout)
         DevAddNode(_cn // ':LOAD', 'NUMERIC', 3, *, _nid);
         DevAddNode(_cn // ':HOLD', 'NUMERIC', 3, *, _nid);
     	DevAddNode(_cn // ':GATING', 'TEXT', 'TRIGGER RISING', *, _nid);
-   	DevAddNode(_cn // ':CLOCK_SOURCE', 'TEXT', '1KHz', *, _nid);
-   	DevAddNode(_cn // ':CLOCK_EDGE', 'TEXT', 'RISING', *, _nid);
-   	DevAddNode(_cn // ':SPECIAL_GATE', 'TEXT', 'DISABLED', *, _nid);
-   	DevAddNode(_cn // ':DOUBLE_LOAD', 'TEXT', 'DISABLED', *, _nid);
-   	DevAddNode(_cn // ':REPEAT_COUNT','TEXT',  'DISABLED',  *, _nid);
-   	DevAddNode(_cn // ':COUNT_MODE', 'TEXT', 'BINARY', *, _nid);
-   	DevAddNode(_cn // ':COUNT_DIR','TEXT',  'DESCENDING',*, _nid);
-   	DevAddNode(_cn // ':OUTPUT_MODE', 'TEXT', 'TOGGLE: INITIAL LOW', *, _nid);
-   	DevAddNode(_cn // ':CLOCK', 'AXIS', 0., *, _nid);
+   		DevAddNode(_cn // ':CLOCK_SOURCE', 'TEXT', '1KHz', *, _nid);
+   		DevAddNode(_cn // ':CLOCK_EDGE', 'TEXT', 'RISING', *, _nid);
+   		DevAddNode(_cn // ':SPECIAL_GATE', 'TEXT', 'DISABLED', *, _nid);
+   		DevAddNode(_cn // ':DOUBLE_LOAD', 'TEXT', 'DISABLED', *, _nid);
+   		DevAddNode(_cn // ':REPEAT_COUNT','TEXT',  'DISABLED',  *, _nid);
+   		DevAddNode(_cn // ':COUNT_MODE', 'TEXT', 'BINARY', *, _nid);
+   		DevAddNode(_cn // ':COUNT_DIR','TEXT',  'DESCENDING',*, _nid);
+   		DevAddNode(_cn // ':OUTPUT_MODE', 'TEXT', 'TOGGLE: INITIAL LOW', *, _nid);
+   		DevAddNode(_cn // ':CLOCK', 'AXIS', 0., *, _nid);
     }
     DevAddEnd();
 }
+
        
+
