@@ -91,7 +91,7 @@ typedef struct {
 
 static int ShortStrings(char *b)
 {
-  return b[5] != 0 || b[6] != 0;
+  return b[4] != 0 || b[5] != 0;
 }
 
 static void *MakeDescr(int idx, int *argsize, void *bytes)
