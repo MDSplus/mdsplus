@@ -391,8 +391,8 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
                 break;
            }
        }
-    if (!icnt)
-        history[icnt++] = strcpy(malloc(strlen(line)),line);
+    if (!icnt && (k=strlen(line)))
+        history[icnt++] = strcpy(malloc(k+1),line);
     else
        {
         idx = (icnt-1) % MAX_HISTORY;
@@ -401,7 +401,7 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
             idx = icnt++ % MAX_HISTORY;
             if (history[idx])
                 free(history[idx]);
-            history[idx] = strcpy(malloc(strlen(line)),line);
+            history[idx] = strcpy(malloc(strlen(line)+1),line);
            }
        }
     irecall = HISTORY_NOT_ACTIVE;
