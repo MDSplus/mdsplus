@@ -209,11 +209,11 @@ c-------------------------------------------------------------------------------
 	include 'mdsptdata.inc'
 	character string*80
 		if(ier.eq.-1)then
-		 type 100,IARRAY.DFI
+		 print 100,IARRAY.DFI
 		elseif(ier.ge.0)then
 		 call MDSPTERROR(ier,string)
 		 call str$trim(string,string,len)
-		 type 110,ier,string(1:len)
+		 print 110,ier,string(1:len)
 		endif
 	return
   100	format(' UNSUPPORTED DFI TYPE: ',i5)
@@ -345,9 +345,9 @@ C First, put the data into the "SPRED" structure
 		enddo
 C Should we query for a pointname to read?
 		if(SPRED_QFLAG)then
-		 type 100
-		 type 110,(SPRED.NAME(i),i=1,SPRED.NLINES)
-		 type 120
+		 print 100
+		 print 110,(SPRED.NAME(i),i=1,SPRED.NLINES)
+		 print 120
 C The following line used to be 'accept' instead of 'read'
 		 read '(a)',SPRED_NAME
 		endif
@@ -361,7 +361,7 @@ C Look for SPRED_NAME in the list
 		enddo
 
 		if (i.gt.SPRED.NLINES) then
-		 type '('' Not found: "'',a,''"'')',SPRED_NAME(1:len)
+		 print '('' Not found: "'',a,''"'')',SPRED_NAME(1:len)
 		 SPRED_IND = -1
 		 SPRED_DECODE=-2
 		 return
