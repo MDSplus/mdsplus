@@ -482,6 +482,7 @@ int ServerConnect(char *server_in)
   int sock = -1;
   char *srv = TranslateLogical(server_in);
   char *server = srv ? srv : server_in;
+  int found = 0;
   unsigned int addr;
   char hostpart[256] = {0};
   char portpart[256] = {0};
@@ -515,7 +516,10 @@ int ServerConnect(char *server_in)
           if (ServerBadSocket(c->send_sock))
             RemoveClient(c,0);
           else
+	  {
             sock = c->send_sock;
+            found = 1;
+          }
         }
       }
     }
@@ -524,7 +528,7 @@ int ServerConnect(char *server_in)
   }
   if (srv)
     TranslateLogicalFree(srv);
-  if (sock >= 0)
+  if (!found && sock >= 0)
     AddClient(addr,port,sock);
   return(sock);
 }

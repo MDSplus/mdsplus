@@ -100,6 +100,8 @@ int       _TreeDeletePulseFile(void *dbid, int shotid, int allfiles)
         retstatus = status;
     }
     _TreeClose(&dbid_tmp, dblist->experiment, shotid);
+    free(dbid_tmp);
+    TreeFindTagEnd(&ctx);
   }
   return retstatus;
 }

@@ -80,6 +80,7 @@ int       _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids
   {
     void       *ctx = 0;
     for (num = 0; num < 256 && _TreeFindTagWild(dbid, "TOP", &nids[num], &ctx); num++);
+    TreeFindTagEnd(&ctx);
   }
   else
   {
