@@ -813,7 +813,7 @@ static int Jorway73ADoIo(
 	  __u8	transfer_len[3];
 	  __u8	zero5;
 	} LongDATAcommand = {0x21,0,0,0,0,0,0,0,0,0};
-	static char modes[4] = {2,0,3,1};
+	static char modes[4] = {1,2,3,0}; /* QStop, QIgnore, QRep, QScan */
 	if( MSGLVL(FUNCTION_NAME) )
 		printf( "%s()\n", J_ROUTINE_NAME );
 //printf( "%s(iosb is %sNULL)\n", J_ROUTINE_NAME, (iosb)?"NOT ":"" );		// [2002.12.13]
