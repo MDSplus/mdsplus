@@ -828,6 +828,11 @@ static int Jorway73ADoIo(
         if (!online && Key.slot != 30)
           return CamOFFLINE;
 
+        if (online && Key.slot == 30 && F == 1 && A == 0)
+	{
+          *(short *)Data = 0x1000;
+          return CamDONE_Q;
+        }
         if (!Enhanced)
           enhanced = 0;
 	if( MSGLVL(DETAILS) )
