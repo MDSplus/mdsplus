@@ -266,7 +266,7 @@ void 	DoFilterResampleVME(Filter *filter, short *in, float *out, int *n_s, int *
         
 void	TestFilter(Filter *filter, float fc, int n_points, float *module, float *phase)
 {
-    double curr_f, step_f, *in, *out, t_in, t_out;
+    float curr_f, step_f, *in, *out, t_in, t_out;
     int i, j, k, idx;
     complex curr_fc, curr_c, curr_fac, curr_num, curr_den, curr_z;
 
@@ -309,6 +309,16 @@ void	TestFilter(Filter *filter, float fc, int n_points, float *module, float *ph
 		curr_z = AddC(curr_z, curr_num);
 	}
 	module[idx] = sqrt(Mod2(curr_z));
+	
+	 //This ckeck is required to avoid floating point underflow!!
+    	if(fabs(curr_z.re) < 1E-10) curr_z.re = 0;
+   	if(fabs(curr_z.im) < 1E-10) curr_z.im = 0;
+ 	if(curr_z.re == 0 && curr_z.im == 0)
+	{
+	    phase[idx] = 0;
+	    continue;
+	}
+ 
 	if(curr_z.re < 0)
 	{
 	    if(curr_z.im >= 0)

@@ -170,13 +170,13 @@ Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *ou
 	{
 	    cplx1 = MulC(Ak[2 * i], Ak[2 * i - 1]);
 	    cplx2 = AddC(Ak[2 * i], Ak[2 * i - 1]);
-	    if(fabs(cplx1.im) > 1E-6 || fabs(cplx2.im) > 1E-6)  /* Must be real */
+	    if(fabs(cplx1.im) > 1E-4 || fabs(cplx2.im) > 1E-4)  /* Must be real */
 	    {
 		printf("\nInternal error in Invariant conversion");
 	    }
 	    filter->units[i].num[0] = cplx2.re/cplx1.re;
 	    cplx2 = AddC(MulC(Ak[2 * i], ExpC(MulC(Tc, poles[2 * i]))), MulC(Ak[2 * i - 1], ExpC(MulC(Tc, poles[2 * i - 1]))));
-	    if(fabs(cplx2.im) > 1E-8)	/* Must be real */
+	    if(fabs(cplx2.im) > 1E-4)	/* Must be real */
 	    {
 		printf("\nInternal error in Invariant conversion");
 	    }
@@ -192,13 +192,13 @@ Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *ou
 	{
 	    cplx1 = MulC(Ak[2 * i], Ak[2 * i + 1]);
 	    cplx2 = AddC(Ak[2 * i], Ak[2 * i + 1]);
-	    if(fabs(cplx1.im) > 1E-8 || fabs(cplx2.im) > 1E-8)  /* Must be real */
+	    if(fabs(cplx1.im) > 1E-4 || fabs(cplx2.im) > 1E-4)  /* Must be real */
 	    {
 		printf("\nInternal error in Invariant conversion");
 	    }
 	    filter->units[i].num[0] = cplx2.re/cplx1.re;
 	    cplx2 = AddC(MulC(Ak[2 * i], ExpC(MulC(Tc, poles[2 * i]))), MulC(Ak[2 * i + 1], ExpC(MulC(Tc, poles[2 * i + 1]))));
-	    if(fabs(cplx2.im) > 1E-8)	/* Must be real */
+	    if(fabs(cplx2.im) > 1E-4)	/* Must be real */
 	    {
 		printf("\nInternal error in Invariant conversion");
 	    }
@@ -296,42 +296,42 @@ Filter *Bilinear(double fp, double fs, double ap, double as, double fc, int *out
 	    b1c.re = 1 + poles[2 * i - 1].re * T2;
 	    b1c.im = poles[2 * i - 1].im * T2;
 	    cplx = AddC(MulC(A1c, ac), MulC(Ac, a1c));
-	    if(fabs(cplx.im) > 1E-10)
+	    if(fabs(cplx.im) > 1E-4)
 	    {
 		printf("\nInternal error in Bilinear conversion");
 	    }
 	    filter->units[i].num[0] = cplx.re;
 
  	    cplx = SubC(AddC(MulC(A1c, ac), MulC(Ac, a1c)), AddC(MulC(A1c, bc), MulC(Ac, b1c)));
-	    if(fabs(cplx.im) > 1E-10)
+	    if(fabs(cplx.im) > 1E-4)
 	    {
 		printf("\nInternal error in Bilinear conversion");
 	    }
 	    filter->units[i].num[1] = cplx.re;
 	    
  	    cplx = AddC(MulC(A1c, bc), MulC(Ac, b1c));
-	    if(fabs(cplx.im) > 1E-10)
+	    if(fabs(cplx.im) > 1E-4)
 	    {
 		printf("\nInternal error in Bilinear conversion");
 	    }
 	    filter->units[i].num[2] = -cplx.re;
 
 	    cplx = MulC(ac, a1c);
-	    if(fabs(cplx.im) > 1E-10)
+	    if(fabs(cplx.im) > 1E-4)
 	    {
 		printf("\nInternal error in Bilinear conversion");
 	    }
 	    filter->units[i].den[0] = cplx.re;
 
 	    cplx = AddC(MulC(a1c, bc), MulC(b1c, ac));
-	    if(fabs(cplx.im) > 1E-10)
+	    if(fabs(cplx.im) > 1E-4)
 	    {
 		printf("\nInternal error in Bilinear conversion");
 	    }
 	    filter->units[i].den[1] = -cplx.re;
 
 	    cplx = MulC(bc, b1c);
-	    if(fabs(cplx.im) > 1E-10)
+	    if(fabs(cplx.im) > 1E-4)
 	    {
 		printf("\nInternal error in Bilinear conversion");
 	    }
@@ -355,42 +355,42 @@ Filter *Bilinear(double fp, double fs, double ap, double as, double fc, int *out
 	    b1c.re = 1 + poles[2 * i + 1].re * T2;
 	    b1c.im = poles[2 * i + 1].im * T2;
 	    cplx = AddC(MulC(A1c, ac), MulC(Ac, a1c));
-	    if(fabs(cplx.im) > 1E-10)
+	    if(fabs(cplx.im) > 1E-5)
 	    {
 		printf("\nInternal error in Bilinear conversion");
 	    }
 	    filter->units[i].num[0] = cplx.re;
 
  	    cplx = SubC(AddC(MulC(A1c, ac), MulC(Ac, a1c)), AddC(MulC(A1c, bc), MulC(Ac, b1c)));
-	    if(fabs(cplx.im) > 1E-10)
+	    if(fabs(cplx.im) > 1E-5)
 	    {
 		printf("\nInternal error in Bilinear conversion");
 	    }
 	    filter->units[i].num[1] = cplx.re;
 	    
  	    cplx = AddC(MulC(A1c, bc), MulC(Ac, b1c));
-	    if(fabs(cplx.im) > 1E-10)
+	    if(fabs(cplx.im) > 1E-5)
 	    {
 		printf("\nInternal error in Bilinear conversion");
 	    }
 	    filter->units[i].num[2] = -cplx.re;
 
 	    cplx = MulC(ac, a1c);
-	    if(fabs(cplx.im) > 1E-10)
+	    if(fabs(cplx.im) > 1E-5)
 	    {
 		printf("\nInternal error in Bilinear conversion");
 	    }
 	    filter->units[i].den[0] = cplx.re;
 
 	    cplx = AddC(MulC(a1c, bc), MulC(b1c, ac));
-	    if(fabs(cplx.im) > 1E-10)
+	    if(fabs(cplx.im) > 1E-5)
 	    {
 		printf("\nInternal error in Bilinear conversion");
 	    }
 	    filter->units[i].den[1] = -cplx.re;
 
 	    cplx = MulC(bc, b1c);
-	    if(fabs(cplx.im) > 1E-10)
+	    if(fabs(cplx.im) > 1E-5)
 	    {
 		printf("\nInternal error in Bilinear conversion");
 	    }

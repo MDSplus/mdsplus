@@ -29,7 +29,7 @@
 #include <mdsshr.h>
 #include "filter.h"
 
-struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size, float *cut_off)
+struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size, float *cut_off, int *num_in_poles)
 { 
     static struct descriptor_xd out_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
 
@@ -48,12 +48,16 @@ struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size, float 
 	time_at_0_d = {sizeof(float), DTYPE_FLOAT, CLASS_S, 0};
 
 	
-    int status, num_samples, num_poles = 10, start_idx, end_idx, i;
+    int status, num_samples, num_poles, start_idx, end_idx, i;
     float fc, delta, dummy, *filtered_data, start, end, time_at_0;
     float phs_steep, delay;
     float *mod, *phs;
     static Filter *filter;
 
+    if(*num_in_poles > 0)
+    	num_poles = *num_in_poles;
+    else
+    	num_poles = 10;
 
     signal_d.data = (struct descriptor *)&data_d;
     signal_d.dimensions[0] = (struct descriptor *)&dimension_d;
@@ -82,12 +86,18 @@ struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size, float 
     mod = (float *)malloc(sizeof(float) * 1000);
     phs = (float *)malloc(sizeof(float) * 1000);
     TestFilter(filter, fc, 1000, mod, phs);
-    for(i = 0; i < 1000 - 1  && phs[i] > phs[i+1]; i++);
+
+    for(i = 1; i < 1000 - 1  && !isnan(phs[i]) && !isnan(phs[i+1]) && phs[i] > phs[i+1]; i++);
+
+
     if(i > 1 && i < 1000)
     {
-    	phs_steep = (phs[0] - phs[i])/((i/1000.) * fc/2.);
+    	phs_steep = (phs[1] - phs[i])/((i/1000.) * fc/2.);
        	delay = phs_steep/(2*PI);
+	
     }
+
+
     free((char *)mod);
     free((char *)phs);
     

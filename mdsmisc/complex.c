@@ -16,7 +16,12 @@
 
 complex AddC(complex c1, complex c2)
 {
-    complex ris;
+ //This ckeck is required to avoid floating point underflow!!
+    if(fabs(c1.re) < 1E-30) c1.re = 0;
+    if(fabs(c2.re) < 1E-30) c2.re = 0;
+    if(fabs(c1.im) < 1E-30) c1.im = 0;
+    if(fabs(c2.im) < 1E-30) c2.im = 0;
+   complex ris;
     ris.re = c1.re + c2.re;
     ris.im = c1.im + c2.im;
     return ris;
@@ -24,8 +29,13 @@ complex AddC(complex c1, complex c2)
 
 complex SubC(complex c1, complex c2)
 {
-    complex ris;
-    ris.re = c1.re - c2.re;
+   complex ris;
+//This ckeck is required to avoid floating point underflow!!
+    if(fabs(c1.re) < 1E-30) c1.re = 0;
+    if(fabs(c2.re) < 1E-30) c2.re = 0;
+    if(fabs(c1.im) < 1E-30) c1.im = 0;
+    if(fabs(c2.im) < 1E-30) c2.im = 0;
+     ris.re = c1.re - c2.re;
     ris.im = c1.im - c2.im;
     return ris;
 }
@@ -51,7 +61,12 @@ complex DivC(complex c1, complex c2)
 {
     complex ris;
     double den;
-    den = c2.re * c2.re + c2.im * c2.im;
+ //This ckeck is required to avoid floating point underflow!!
+    if(fabs(c1.re) < 1E-30) c1.re = 0;
+    if(fabs(c2.re) < 1E-30) c2.re = 0;
+    if(fabs(c1.im) < 1E-30) c1.im = 0;
+    if(fabs(c2.im) < 1E-30) c2.im = 0;
+   den = c2.re * c2.re + c2.im * c2.im;
     if(den == 0)
     {
 	printf("DivC: division by Zero\n");
@@ -66,6 +81,9 @@ complex DivC(complex c1, complex c2)
 complex ExpC(complex c)
 {
     complex ris;
+ //This ckeck is required to avoid floating point underflow!!
+    if(fabs(c.re) < 1E-30) c.re = 0;
+    if(fabs(c.im) < 1E-30) c.im = 0;
     ris.re = exp(c.re) * cos(c.im);
     ris.im = exp(c.re) * sin(c.im);
     return ris;
@@ -73,5 +91,8 @@ complex ExpC(complex c)
 
 double Mod2(complex c)
 {
-    return c.re * c.re + c.im * c.im;
+  //This ckeck is required to avoid floating point underflow!!
+    if(fabs(c.re) < 1E-30) c.re = 0;
+    if(fabs(c.im) < 1E-30) c.im = 0;
+   return c.re * c.re + c.im * c.im;
 }
