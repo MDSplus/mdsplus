@@ -453,11 +453,11 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField212.setLabelString("Rot. Phase(Rad):");
     deviceField212.setOffsetNid(1065);
     deviceField2110.setOffsetNid(1045);
-    deviceField2110.setLabelString("Freq. (Hz):");
+    deviceField2110.setLabelString("Start:");
     deviceField2110.setNumCols(4);
     deviceField2110.setIdentifier("");
     deviceField210.setOffsetNid(1075);
-    deviceField210.setLabelString("Phase(Rad):");
+    deviceField210.setLabelString("End:");
     deviceField210.setNumCols(4);
     deviceField210.setIdentifier("");
     deviceField31.setOffsetNid(1041);
@@ -480,7 +480,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField211.setNumCols(4);
     deviceField211.setIdentifier("");
     deviceField22.setOffsetNid(1031);
-    deviceField22.setLabelString("Freq. (Hz):");
+    deviceField22.setLabelString("Start:");
     deviceField22.setNumCols(4);
     deviceField22.setIdentifier("");
     jPanel24.setLayout(flowLayout6);
@@ -489,7 +489,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField2113.setNumCols(4);
     deviceField2113.setIdentifier("");
     deviceField2112.setOffsetNid(1047);
-    deviceField2112.setLabelString("Phase(Rad):");
+    deviceField2112.setLabelString("End:");
     deviceField2112.setNumCols(4);
     deviceField2112.setIdentifier("");
     jPanel23.setLayout(flowLayout7);
@@ -498,7 +498,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField24.setNumCols(4);
     deviceField24.setIdentifier("");
     deviceField23.setOffsetNid(1033);
-    deviceField23.setLabelString("Phase(Rad):");
+    deviceField23.setLabelString("End:");
     deviceField23.setNumCols(4);
     deviceField23.setIdentifier("");
     jPanel6.setLayout(flowLayout5);
@@ -513,7 +513,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField33.setLabelString("M4:");
     deviceField33.setNumCols(2);
     deviceField214.setOffsetNid(1059);
-    deviceField214.setLabelString("Freq. (Hz):");
+    deviceField214.setLabelString("Start:");
     deviceField214.setNumCols(4);
     deviceField214.setIdentifier("");
     jPanel7.setLayout(flowLayout8);
@@ -525,7 +525,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField215.setNumCols(2);
     deviceField215.setIdentifier("");
     deviceField216.setOffsetNid(1061);
-    deviceField216.setLabelString("Phase(Rad):");
+    deviceField216.setLabelString("End:");
     deviceField216.setNumCols(4);
     deviceField216.setIdentifier("");
     deviceField219.setIdentifier("");
@@ -549,7 +549,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField26.setLabelString("Rot. Phase(Rad):");
     deviceField26.setOffsetNid(1079);
     deviceField28.setOffsetNid(1073);
-    deviceField28.setLabelString("Freq. (Hz):");
+    deviceField28.setLabelString("Start:");
     deviceField28.setNumCols(4);
     deviceField28.setIdentifier("");
     deviceField27.setIdentifier("");
