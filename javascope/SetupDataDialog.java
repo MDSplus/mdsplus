@@ -12,16 +12,16 @@ import java.util.Vector;
  class SetupDataDialog extends ScopePositionDialog {
  
  
-   TextField		    title, shot, experiment;
-   TextField		    x_max, x_min, x_label, y_expr, signal_label;
-   TextField		    y_max, y_min, y_label, x_expr;
-   TextField            upd_event, def_node;
-   private Button       browser, error, y_browser, expand;
-   private Button       ok, cancel, reset, erase, apply, x_browser, add_shot;
-   private Checkbox	    x_log, y_log, opt_network;
-   private Checkbox	    title_b, shot_b, experiment_b, x_max_b, x_min_b, 
-			            x_label_b, y_max_b, y_min_b, y_label_b, def_node_b,
-			            upd_event_b;  
+   //TextField		    title, shot, experiment;
+   // TextField		    x_max, x_min, x_label, y_expr, signal_label;
+   //TextField		    y_max, y_min, y_label, x_expr;
+   //TextField            upd_event, def_node;
+   //private Button       browser, error, y_browser, expand;
+   //private Button       ok, cancel, reset, erase, apply, x_browser, add_shot;
+   //private Checkbox	    x_log, y_log, opt_network;
+   //private Checkbox	    title_b, shot_b, experiment_b, x_max_b, x_min_b, 
+//			            x_label_b, y_max_b, y_min_b, y_label_b, def_node_b,
+//			            upd_event_b, image_b;  
    private Choice       show_type;
    private Label	    lab;
    private SError	    error_w;
@@ -568,6 +568,8 @@ import java.util.Vector;
 	        }
 	        signalListRefresh();	    
 	    }
+	    if(sel_signal == -1 && wi.num_waves > 0)
+	        sel_signal = 0;
 	    signalSelect(sel_signal);
       }
       
@@ -631,7 +633,20 @@ import java.util.Vector;
 		    shot_str = in_shot;
 		    shots  = main_scope.evaluateShot(in_shot);
 		    if(shots == null)
+		    {
 		        shot_str = null;
+		    } else {
+		        if(image_b.getState())
+		        {
+		            if(shots.length > 1)
+		            {
+		                int sh[] = new int[1];
+		                sh[0]=shots[0];
+		                shots = sh;
+		                list_num_shot = 1;
+		            }
+		        }
+		    }
 		    return true;
 	    } else
 		    return false;	    
@@ -665,29 +680,29 @@ import java.util.Vector;
 
        public void updateSignals()
        {
-	  int i, j, sig_idx, start_idx, end_idx;
-	  int num_shot = shots.length;
-	  int num_signal = signals.size(); 
+	        int i, j, sig_idx, start_idx, end_idx;
+	        int num_shot = shots.length;
+	        int num_signal = signals.size(); 
       
-	  if(findSignalSetup(getSignalSetup()) != -1)
-	    return;	
+	        if(findSignalSetup(getSignalSetup()) != -1)
+	            return;	
           	
-	  if(sel_signal != -1) 
-	  {
-	    start_idx = (sel_signal/num_shot) * num_shot; // Divisione intera
-	    end_idx   = start_idx + num_shot; 
+	        if(sel_signal != -1) 
+	        {
+	            start_idx = (sel_signal/num_shot) * num_shot; // Divisione intera
+	            end_idx   = start_idx + num_shot; 
 
 	
-	    for (i = 0,  j = 0 ; i < num_signal; i++)
-		if(i >= start_idx && i < end_idx)  {
-		    ((Data)signals.elementAt(i)).label = signal_label.getText();
-		    ((Data)signals.elementAt(i)).x_expr = x_expr.getText();
-		    ((Data)signals.elementAt(i)).y_expr = y_expr.getText();
-		    signalListReplace(i + 1, (Data)signals.elementAt(i));
-		}		
-	    signalSelect(start_idx);
-	   }
-	 }
+	            for (i = 0,  j = 0 ; i < num_signal; i++)
+		        if(i >= start_idx && i < end_idx)  {
+		            ((Data)signals.elementAt(i)).label = signal_label.getText();
+		            ((Data)signals.elementAt(i)).x_expr = x_expr.getText();
+		            ((Data)signals.elementAt(i)).y_expr = y_expr.getText();
+		            signalListReplace(i + 1, (Data)signals.elementAt(i));
+		        }		
+	            signalSelect(start_idx);
+	        }
+	    }
 	 
 	 public void updateError()
 	 {
@@ -749,8 +764,12 @@ import java.util.Vector;
 	        }
     	    if(sel_signal == -1)	    
 		        signalList.addSignals();
-	        else
-		        signalList.updateSignals();			    	
+	        else {
+	            if(y_expr.getText().trim().length() != 0)
+		            signalList.updateSignals();
+		        else
+		            removeSignalSetup();
+		    }
       }
  
      
@@ -760,13 +779,12 @@ import java.util.Vector;
 	    
 	    if(ob == marker_step_t && sel_signal != -1)
 	    {
-		try {
-		    ((Data)signals.elementAt(sel_signal)).marker_step = new Integer(marker_step_t.getText()).intValue();
-		} catch (NumberFormatException ex) {
-		    marker_step_t.setText("1");
-		}
-
-    	    }		  	      
+		    try {
+		        ((Data)signals.elementAt(sel_signal)).marker_step = new Integer(marker_step_t.getText()).intValue();
+		    } catch (NumberFormatException ex) {
+		        marker_step_t.setText("1");
+		    }
+    	 }		  	      
       }
      
       public void actionPerformed(ActionEvent e) 
@@ -828,7 +846,7 @@ import java.util.Vector;
 
   class ExpandExp extends ScopePositionDialog { 
 
-  private Label lab;
+  private Label lab_x, lab_y;
   private TextArea x_expr, y_expr;
   private Button ok, cancel;
   private SetupDataDialog  conf_dialog;
@@ -849,9 +867,9 @@ import java.util.Vector;
 	  c.fill =  GridBagConstraints.BOTH;
 	  c.gridwidth = 1;
 	  c.gridheight = 1;
-	  lab = new Label("Y");
-	  gridbag.setConstraints(lab, c);
-	  add(lab);		 	
+	  lab_y = new Label("Y");
+	  gridbag.setConstraints(lab_y, c);
+	  add(lab_y);		 	
     
 	  c.gridheight = 11;
 	  c.gridwidth = GridBagConstraints.REMAINDER;
@@ -862,10 +880,10 @@ import java.util.Vector;
 	  c.anchor = GridBagConstraints.NORTH;
 	  c.fill =  GridBagConstraints.BOTH;
 	  c.gridwidth = 1;
-	  c.gridheight = 1;    
-	  lab = new Label("X");
-	  gridbag.setConstraints(lab, c);
-	  add(lab);		 	
+	  c.gridheight = 1;
+	  lab_x = new Label("X");	  
+	  gridbag.setConstraints(lab_x, c);
+	  add(lab_x);		 	
     
 	  c.gridheight = 11;
 	  c.gridwidth = GridBagConstraints.REMAINDER;
@@ -895,6 +913,15 @@ import java.util.Vector;
      */
      public void setExpressionString(String x, String y)
      {
+        if(image_b.getState())
+        {
+	        lab_x.setText("Frames");	  
+	        lab_y.setText("Times");	              
+        } else {
+	        lab_x.setText("X");	  
+	        lab_y.setText("Y");	              
+        }
+        
 	    if(x != null)
 	        x_expr.setText(x);
 	    if(y != null)
@@ -927,7 +954,8 @@ import java.util.Vector;
       error_w = new SError(fw);
       error_msg = new ErrorMessage(fw);
       expand_expr = new ExpandExp(fw, this);	    
-     
+
+/*     
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints c = new GridBagConstraints();
       Insets insets = new Insets(2,2,2,2);
@@ -1028,10 +1056,17 @@ import java.util.Vector;
 
       c.fill =  GridBagConstraints.NONE;
       c.gridwidth = GridBagConstraints.REMAINDER;
-      y_browser = new Button("Browse...");
-      y_browser.addActionListener(this);
-      gridbag.setConstraints(y_browser, c);
-      add(y_browser);	
+      
+//      y_browser = new Button("Browse...");
+//      y_browser.addActionListener(this);
+//      gridbag.setConstraints(y_browser, c);
+//      add(y_browser);	
+
+      image_b = new Checkbox("Is image");
+      image_b.addItemListener(this);
+      gridbag.setConstraints(image_b, c);
+      add(image_b);	
+
 
       c.fill =  GridBagConstraints.HORIZONTAL;
       c.gridwidth = 1;
@@ -1077,17 +1112,19 @@ import java.util.Vector;
       gridbag.setConstraints(x_max_b, c);
       add(x_max_b);	
 	 	
+      c.fill =  GridBagConstraints.NONE;
+      c.gridwidth = GridBagConstraints.REMAINDER;
       x_max = new TextField(10);
       x_max.addKeyListener(this);
       gridbag.setConstraints(x_max, c);
       add(x_max);	
 
-      c.fill =  GridBagConstraints.NONE;
-      c.gridwidth = GridBagConstraints.REMAINDER;
-      x_browser = new Button("Browse...");
-      x_browser.addActionListener(this);
-      gridbag.setConstraints(x_browser, c);
-      add(x_browser);
+//      c.fill =  GridBagConstraints.NONE;
+//      c.gridwidth = GridBagConstraints.REMAINDER;
+//      x_browser = new Button("Browse...");
+//      x_browser.addActionListener(this);
+//      gridbag.setConstraints(x_browser, c);
+//      add(x_browser);
  
       c.fill =  GridBagConstraints.HORIZONTAL;			          		
       c.gridwidth = 1;
@@ -1108,7 +1145,7 @@ import java.util.Vector;
       add(shot_b);	
 
       c.gridwidth = GridBagConstraints.REMAINDER;
-      shot = new TextField(30);
+      shot = new TextField(35);
       shot.addKeyListener(this);
       shot.addFocusListener(this);
       gridbag.setConstraints(shot, c);
@@ -1133,7 +1170,7 @@ import java.util.Vector;
       add(def_node_b);	
 
       c.gridwidth = GridBagConstraints.REMAINDER;
-      def_node = new TextField(30);
+      def_node = new TextField(35);
  //     def_node.addKeyListener(this);
  //     def_node.addFocusListener(this);
       gridbag.setConstraints(def_node, c);
@@ -1175,20 +1212,218 @@ import java.util.Vector;
       add(cancel);
       
 //      browse_x_w = new BrowseSig(fw, "X signal Broser", BROWSE_X);
-//      browse_y_w = new BrowseSig(fw, "Y signal Broser", BROWSE_Y);    
+//      browse_y_w = new BrowseSig(fw, "Y signal Broser", BROWSE_Y);
+*/
+
+		//{{INIT_CONTROLS
+			setLayout(null);
+		setSize(730,405);
+		setVisible(false);
+		title_b.setLabel("Title");
+		add(title_b);
+		title_b.setBounds(6,24,60,20);
+		add(title);
+		title.setBounds(78,24,546,20);
+		expand.setLabel("Expand Expr.");
+		add(expand);
+		expand.setBackground(java.awt.Color.lightGray);
+		expand.setBounds(636,24,84,20);
+		label1.setText("Signal Label");
+		add(label1);
+		label1.setBounds(6,48,72,20);
+		add(signal_label);
+		signal_label.setBounds(78,48,546,20);
+		error.setLabel("Error");
+		add(error);
+		error.setBackground(java.awt.Color.lightGray);
+		error.setBounds(636,48,84,20);
+		y_lab.setText("Y");
+		add(y_lab);
+		y_lab.setBounds(10,73,12,20);
+		add(y_expr);
+		y_expr.setBounds(28,72,596,20);
+		y_min_b.setLabel("Y min");
+		add(y_min_b);
+		y_min_b.setBounds(321,96,52,20);
+		add(y_min);
+		y_min.setBounds(376,96,92,20);
+		y_max_b.setLabel("Y max");
+		add(y_max_b);
+		y_max_b.setBounds(477,96,56,20);
+		add(y_max);
+		y_max.setBounds(532,96,92,20);
+		image_b.setLabel("Is Image");
+		add(image_b);
+		image_b.setBounds(636,96,84,20);
+		x_lab.setText("X");
+		add(x_lab);
+		x_lab.setBounds(9,121,12,20);
+		add(x_expr);
+		x_expr.setBounds(28,120,596,20);
+		x_log.setLabel("Log scale");
+		add(x_log);
+		x_log.setBounds(636,120,84,20);
+		x_label_b.setLabel("X Label");
+		add(x_label_b);
+		x_label_b.setBounds(6,144,66,20);
+		add(x_label);
+		x_label.setBounds(86,144,232,20);
+		y_log.setLabel("Log scale");
+		add(y_log);
+		y_log.setBounds(636,72,84,20);
+		y_label_b.setLabel("Y Label");
+		add(y_label_b);
+		y_label_b.setBounds(6,96,63,20);
+		add(y_label);
+		y_label.setBounds(86,96,232,20);
+		x_min_b.setLabel("X min");
+		add(x_min_b);
+		x_min_b.setBounds(322,145,52,20);
+		add(x_min);
+		x_min.setBounds(376,144,92,20);
+		x_max_b.setLabel("X max");
+		add(x_max_b);
+		x_max_b.setBounds(478,144,54,20);
+		add(x_max);
+		x_max.setBounds(533,144,91,19);
+		experiment_b.setLabel("Experiment");
+		add(experiment_b);
+		experiment_b.setBounds(6,168,76,20);
+		add(experiment);
+		experiment.setBounds(86,168,232,20);
+		shot_b.setLabel("Shot");
+		add(shot_b);
+		shot_b.setBounds(322,168,48,20);
+		add(shot);
+		shot.setBounds(377,169,247,20);
+		upd_event_b.setLabel("Update event");
+		add(upd_event_b);
+		upd_event_b.setBounds(6,192,90,20);
+		add(upd_event);
+		upd_event.setBounds(96,192,222,20);
+		def_node_b.setLabel("Default node");
+		add(def_node_b);
+		def_node_b.setBounds(322,192,96,20);
+		add(def_node);
+		def_node.setBounds(417,192,207,20);
+		panel1.setLayout(null);
+		add(panel1);
+		panel1.setBounds(12,365,660,40);
+		ok.setLabel("Ok");
+		panel1.add(ok);
+		ok.setBackground(java.awt.Color.lightGray);
+		ok.setBounds(12,12,48,20);
+		apply.setLabel("Apply");
+		panel1.add(apply);
+		apply.setBackground(java.awt.Color.lightGray);
+		apply.setBounds(159,12,48,20);
+		reset.setLabel("Reset");
+		panel1.add(reset);
+		reset.setBackground(java.awt.Color.lightGray);
+		reset.setBounds(306,12,48,20);
+		erase.setLabel("Erase");
+		panel1.add(erase);
+		erase.setBackground(java.awt.Color.lightGray);
+		erase.setBounds(453,12,48,20);
+		cancel.setLabel("Cancel");
+		panel1.add(cancel);
+		cancel.setBackground(java.awt.Color.lightGray);
+		cancel.setBounds(600,12,48,20);
+			//}}
+
+        signalList = new SList(); 
+		add(signalList);
+		signalList.setBounds(6,215,720,160);
+
+      title_b.addItemListener(this);
+      expand.addActionListener(this);
+      signal_label.addKeyListener(this);
+      error.addActionListener(this);
+      y_expr.addKeyListener(this);
+      y_label_b.addItemListener(this);
+      y_min_b.addItemListener(this);
+      y_min.addKeyListener(this);
+      y_max_b.addItemListener(this);
+      y_max.addKeyListener(this);
+      image_b.addItemListener(this);
+      x_expr.addKeyListener(this);
+      x_label_b.addItemListener(this);
+      x_min_b.addItemListener(this);
+      x_min.addKeyListener(this);
+      x_max_b.addItemListener(this);
+      x_max.addKeyListener(this);
+      experiment_b.addItemListener(this);
+      experiment.addKeyListener(this);
+      shot_b.addItemListener(this);      
+      shot.addKeyListener(this);
+      shot.addFocusListener(this);
+      upd_event_b.addItemListener(this);
+      def_node_b.addItemListener(this);      
+      ok.addActionListener(this);
+      apply.addActionListener(this);
+      reset.addActionListener(this);
+      erase.addActionListener(this);
+      cancel.addActionListener(this);
    }
+   
+   	//{{DECLARE_CONTROLS
+	java.awt.Checkbox title_b = new java.awt.Checkbox();
+	java.awt.TextField title = new java.awt.TextField();
+	java.awt.Button expand = new java.awt.Button();
+	java.awt.Label label1 = new java.awt.Label();
+	java.awt.TextField signal_label = new java.awt.TextField();
+	java.awt.Button error = new java.awt.Button();
+	java.awt.Label y_lab = new java.awt.Label();
+	java.awt.TextField y_expr = new java.awt.TextField();
+	java.awt.Checkbox y_min_b = new java.awt.Checkbox();
+	java.awt.TextField y_min = new java.awt.TextField();
+	java.awt.Checkbox y_max_b = new java.awt.Checkbox();
+	java.awt.TextField y_max = new java.awt.TextField();
+	java.awt.Checkbox image_b = new java.awt.Checkbox();
+	java.awt.Label x_lab = new java.awt.Label();
+	java.awt.TextField x_expr = new java.awt.TextField();
+	java.awt.Checkbox x_log = new java.awt.Checkbox();
+	java.awt.Checkbox x_label_b = new java.awt.Checkbox();
+	java.awt.TextField x_label = new java.awt.TextField();
+	java.awt.Checkbox y_log = new java.awt.Checkbox();
+	java.awt.Checkbox y_label_b = new java.awt.Checkbox();
+	java.awt.TextField y_label = new java.awt.TextField();
+	java.awt.Checkbox x_min_b = new java.awt.Checkbox();
+	java.awt.TextField x_min = new java.awt.TextField();
+	java.awt.Checkbox x_max_b = new java.awt.Checkbox();
+	java.awt.TextField x_max = new java.awt.TextField();
+	java.awt.Checkbox experiment_b = new java.awt.Checkbox();
+	java.awt.TextField experiment = new java.awt.TextField();
+	java.awt.Checkbox shot_b = new java.awt.Checkbox();
+	java.awt.TextField shot = new java.awt.TextField();
+	java.awt.Checkbox upd_event_b = new java.awt.Checkbox();
+	java.awt.TextField upd_event = new java.awt.TextField();
+	java.awt.Checkbox def_node_b = new java.awt.Checkbox();
+	java.awt.TextField def_node = new java.awt.TextField();
+	java.awt.Panel panel1 = new java.awt.Panel();
+	java.awt.Button ok = new java.awt.Button();
+	java.awt.Button apply = new java.awt.Button();
+	java.awt.Button reset = new java.awt.Button();
+	java.awt.Button erase = new java.awt.Button();
+	java.awt.Button cancel = new java.awt.Button();
+	//}}
+
+   
+   
+   
+   
    
    public void Show(MultiWaveform w, Setup _setup)
    {
-      setup = _setup;      
+      setup = _setup;
       pack();
       wi = new WaveInterface(setup.main_scope.db);
       wave = w;
       putWindowSetup(w.wi);
       setPosition(w.getParent());
       Point p = setup.GetWavePos(w);
-      setTitle("Wave Setup for column " + p.x + " row " + p.y); 	
-      show();
+      setTitle("Wave Setup for column " + p.x + " row " + p.y);
+      show(); 
    }
    
    public void SetColorList()
@@ -1316,6 +1551,8 @@ import java.util.Vector;
 	    return;
 	}
 
+    setImageDialog(wi.is_image);
+
 	this.wi.cexperiment     = wi.cexperiment;	
 	this.wi.cin_shot        = wi.cin_shot;	
 	this.wi.cin_upd_event   = wi.cin_upd_event;	
@@ -1335,28 +1572,66 @@ import java.util.Vector;
     
 	setDefaultFlags(wi.defaults);
 	putDefaultValues();
-/*
-	defaultButtonOperation(title, def_flag = title_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_title, def_flag, wi));
-	putShotValue(shot_b.getState());
-	defaultButtonOperation(experiment, def_flag = experiment_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_exp, def_flag, wi));
-	defaultButtonOperation(x_max, def_flag = x_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_max, def_flag, wi));
-	defaultButtonOperation(x_min, def_flag = x_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_min, def_flag, wi));
-	defaultButtonOperation(x_label, def_flag = x_label_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_label, def_flag, wi));
-	defaultButtonOperation(y_max, def_flag = y_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_max, def_flag, wi));
-	defaultButtonOperation(y_min, def_flag = y_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_min, def_flag, wi));
-	defaultButtonOperation(y_label, def_flag = y_label_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_label, def_flag, wi));
-	defaultButtonOperation(upd_event, def_flag = upd_event_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_event, def_flag, wi));
-	defaultButtonOperation(def_node,  def_flag = def_node_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_default_node, def_flag, wi));
-*/
-	x_log.setState(wi.x_log);
-	y_log.setState(wi.y_log);
 	
-    signal_label.setText("");
-    x_expr.setText("");
-    y_expr.setText("");
+    image_b.setState(wi.is_image);
 
-	signalList.init(wi);       		
+//    if(!wi.is_image)
+//    {
+        signal_label.setText("");
+        x_expr.setText("");
+        y_expr.setText("");
+	    x_log.setState(wi.x_log);
+	    y_log.setState(wi.y_log);
+//	}
+//	else {
+ //       x_expr.setText("");
+ //      if(wi.in_label != null && wi.in_label[0].trim().length() > 0)
+ //           signal_label.setText(wi.in_label[0]);
+ //       if(wi.in_y != null && wi.in_y[0].trim().length() > 0)
+ //           y_expr.setText(wi.in_y[0]);
+//	}
+
+
+    signalList.init(wi);
    }
+   
+  private void setImageDialog(boolean state)
+  {
+   // eraseForm();
+    if(state)
+    {
+        x_log.setVisible(false);
+        y_log.setVisible(false); 
+        signalList.setVisible(false);
+        error.setVisible(false);
+		panel1.setBounds(12,215,660,40);
+		y_lab.setText("Frames");
+		y_lab.setBounds(10,73,35,20);
+		y_expr.setBounds(47,72,577,20);
+		x_lab.setText("Times");
+		x_lab.setBounds(10,121,35,20);
+		x_expr.setBounds(47,120,577,20);
+		setSize(730,255);
+    } else {
+        x_log.setVisible(true);
+        y_log.setVisible(true); 
+        signalList.setVisible(true);        
+        error.setVisible(true);
+        x_lab.setVisible(true);
+		panel1.setBounds(12,365,660,40);
+		y_lab.setText("Y");
+		add(y_lab);
+		y_lab.setBounds(10,73,12,20);
+		y_expr.setBounds(28,72,596,20);
+		x_lab.setText("X");
+		x_lab.setBounds(10,121,12,20);
+		x_expr.setBounds(28,120,596,20);
+
+		setSize(730,405);
+
+    }
+    
+  }
 
   public void eraseForm()
   {
@@ -1379,11 +1654,14 @@ import java.util.Vector;
 	experiment.setText("");
 	shot.setText("");
 	upd_event.setText("");
-	def_node.setText("");	
+	def_node.setText("");
 	shot.setForeground(Color.black);		
 	resetDefaultFlags();
-	signalList.reset();
-	signalList.signalListRefresh();
+//	if(!wi.is_image)
+	{
+	    signalList.reset();
+	    signalList.signalListRefresh();
+	}
   } 
  
 
@@ -1412,11 +1690,12 @@ import java.util.Vector;
     if(!main_scope.equalsString(def_node.getText(),    wave_wi.cin_def_node))   return true;	
 	if(!main_scope.equalsString(experiment.getText(), wave_wi.cexperiment)) return true;
 	if(getDefaultFlags() != wave_wi.defaults)				                return true;	
+	if(image_b.getState() != wave_wi.is_image)				                  return true;		
 
     for(int i = 0 ; i < wave_wi.num_waves; i++)
 	{
 	    if(!main_scope.equalsString(s[i].x_expr,  wave_wi.in_x[i]))        return true;
-	    if(!main_scope.equalsString(s[i].y_expr,  wave_wi.in_y[i]))	       return true;
+	    if(!main_scope.equalsString(s[i].y_expr,  wave_wi.in_y[i]))        return true;
 	    if(!main_scope.equalsString(s[i].up_err,  wave_wi.in_up_err[i]))   return true;
 	    if(!main_scope.equalsString(s[i].low_err, wave_wi.in_low_err[i]))  return true;
 	}
@@ -1430,11 +1709,9 @@ import java.util.Vector;
         try
         {
 	        signalList.updateList();
-            //setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             setCursor(c_cursor);
 	    } catch (Throwable e) {
-	        main_scope.SetStatusLabel("Unrecoverable error during apply");	    
-	        //setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	        main_scope.SetStatusLabel("Unrecoverable error during update list");	    
             setCursor(c_cursor);
 	    }
     }
@@ -1474,14 +1751,21 @@ import java.util.Vector;
 	  num_signal = s.length;
 
  	  if(num_signal == 0)
+ 	  {
+	      wave.wi = new WaveInterface(main_scope.db);
+	      wi.is_image = image_b.getState();
 	      return 1;
-
+      }
 
 	  wi.modified = isChanged(s);
+	  wi.is_image = image_b.getState();
 	  
 	  if(!wi.modified)
 	  {
 //		wave.wi.full_flag = !main_scope.GetFastNetworkState();
+        if(wi.is_image)
+            return 0;
+
 		for(int i = 0; i < wave.wi.num_waves; i++)      
 		{
 		    wave.wi.markers[i]      = s[i].marker;
@@ -1519,15 +1803,16 @@ import java.util.Vector;
 	  wi.in_label     = new String[num_signal];
 	  wi.in_x         = new String[num_signal];
 	  wi.in_y         = new String[num_signal];
+	  
 	  wi.in_up_err    = new String[num_signal];
-          wi.in_low_err   = new String[num_signal];
-          wi.markers      = new int[num_signal];
-          wi.markers_step = new int[num_signal];	  
-          wi.colors       = new Color[num_signal];
-          wi.colors_idx   = new int[num_signal];
-          wi.interpolates = new boolean[num_signal];
-    
-          wi.shots        = new int[num_signal];				
+      wi.in_low_err   = new String[num_signal];
+      wi.markers      = new int[num_signal];
+      wi.markers_step = new int[num_signal];	  
+      wi.colors       = new Color[num_signal];
+      wi.colors_idx   = new int[num_signal];
+      wi.interpolates = new boolean[num_signal];
+      
+      wi.shots        = new int[num_signal];				
     
           for(int i = 0; i < num_signal; i++)      
           {
@@ -1538,20 +1823,24 @@ import java.util.Vector;
 		        wi.in_x[i]         = new String(s[i].x_expr);
 	        if(s[i].y_expr != null)	     
 		        wi.in_y[i]         = new String(s[i].y_expr);
-	        wi.markers[i]      = s[i].marker;
-	        wi.markers_step[i] = s[i].marker_step;
-	        wi.interpolates[i] = s[i].interpolate;
+		        
 	        if(wi.shots != null)
 		        wi.shots[i]        = s[i].shot;
-	        if(s[i].up_err != null)
-		        wi.in_up_err[i] = new String(s[i].up_err);
-	        if(s[i].low_err != null)      
-		        wi.in_low_err[i] = new String(s[i].low_err);	    
-	        wi.colors[i]       = main_scope.color_dialog.GetColorAt(s[i].color_idx);
-	        wi.colors_idx[i]   = s[i].color_idx;
+		        
+		    if(!wi.is_image)
+		    {
+	            wi.markers[i]      = s[i].marker;
+	            wi.markers_step[i] = s[i].marker_step;
+	            wi.interpolates[i] = s[i].interpolate;
+	            if(s[i].up_err != null)
+		            wi.in_up_err[i] = new String(s[i].up_err);
+	            if(s[i].low_err != null)      
+		            wi.in_low_err[i] = new String(s[i].low_err);	    
+	            wi.colors[i]       = main_scope.color_dialog.GetColorAt(s[i].color_idx);
+	            wi.colors_idx[i]   = s[i].color_idx;
+	        }
 	      }
-	  
-	  
+	      
 	      if(wi.shots[0] == jScope.UNDEF_SHOT)
 	   	     wi.shots = null;
 
@@ -1580,7 +1869,7 @@ import java.util.Vector;
 		    error_msg.addMessage("Experiment defined but undefined shot\n");
 		    error = 1;
 		}    
-	    if(!def_exp && !setup.data_server_address.equals("Ftu data")) {	    
+	    if(!def_exp && !setup.data_server_address.equals("Ftu data") && !image_b.getState()) {	    
 		    error_msg.addMessage("Shot defined but undefined experiment\n");
 	        error = 1;
 	    }
@@ -1619,7 +1908,8 @@ import java.util.Vector;
 
       if(ob == erase) {
 	    eraseForm();
-	    wave.wi = new WaveInterface(main_scope.db);
+//	    wave.wi = new WaveInterface(main_scope.db);
+//	    wave.wi.is_image = image_b.getState();
 //	    wave.Erase();
       }
 		
@@ -1658,6 +1948,7 @@ import java.util.Vector;
 	    expand_expr.setPosition(this);
 	    expand_expr.show();
       }
+      
       
 //      if(ob == x_browser)
 //	    browse_x_w.Show();
@@ -1762,12 +2053,20 @@ import java.util.Vector;
 
    public void itemStateChanged(ItemEvent e)
    {
-	Object ob = e.getSource();
+	    Object ob = e.getSource();
 	
 
-	if(ob instanceof Checkbox)
-	    defaultButtonChange(ob);
+	    if(ob instanceof Checkbox)
+	    {
+	        if(ob == image_b)
+            {
+                eraseForm();
+                setImageDialog(image_b.getState());
+                return;
+            }
 
+	        defaultButtonChange(ob);
+        }
 	    
     }   
 }

@@ -119,8 +119,6 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     
     synchronized public void run()
     {
-      Date date = new Date();
-      long start, end;
          
       while(true)
       {
@@ -129,9 +127,6 @@ public class jScope extends Frame implements ActionListener, ItemListener,
             wait();
         } catch (InterruptedException e){}
 
-       // date = new Date();
-       // start = date.getTime();
-       // System.out.println("Start "+start+" ms ");
         
 	    isUpdateAllWaves = true;
 	    SetStatusLabel("");
@@ -230,14 +225,6 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    {
 	        jScope.this.printAllWaves();
 	    }
-
-        //date = new Date();
-        //end = date.getTime();
-        //System.out.println("End "+end+" ms ");
-        
-        //System.out.println("Durata "+(end-start)+" ms ");
-	    	    
-
 	    } catch(Throwable e ) {
 	        isUpdateAllWaves = false;      
  	        apply_b.setLabel("Apply");
@@ -809,23 +796,26 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	        } 
 	        else
 	        {
-	            int i;
-	            if(add_sig)
-	                i = w.wi.num_waves - 1;
-	            else
-	                i = 0;
-	        
-	            for(; i < w.wi.num_waves; i++)
+	            if(!w.wi.is_image)
 	            {
-	                e = w.wi.w_error[i];
-	                if(e != null) {
-	                    if(briefError())
-		                    error_msg.addMessage("<Wave "+(i+1)+ "> " + e);
-	                    else {
-	                        if(full_error == null)
-		                        full_error = "<Wave "+(i+1)+ "> " + e + "\n";
-		                    else
-		                        full_error = full_error + "<Wave "+(i+1)+ "> " + e + "\n";
+	                int i;
+	                if(add_sig)
+	                    i = w.wi.num_waves - 1;
+	                else
+	                    i = 0;
+	        
+	                for(; i < w.wi.num_waves; i++)
+	                {
+	                    e = w.wi.w_error[i];
+	                    if(e != null) {
+	                        if(briefError())
+		                        error_msg.addMessage("<Wave "+(i+1)+ "> " + e);
+	                        else {
+	                            if(full_error == null)
+		                            full_error = "<Wave "+(i+1)+ "> " + e + "\n";
+		                        else
+		                            full_error = full_error + "<Wave "+(i+1)+ "> " + e + "\n";
+		                    }
 		                }
 		            }
 		        }
@@ -1004,6 +994,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
   public void resetDrawPanel(int in_row[])
   {
+    setup.StopAllPlay();
 	setup.ChangeRowColumn(in_row);
 //	draw_pan.removeAll();
 	draw_pan.createWavePanel(db);
@@ -1562,6 +1553,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
         WaveInterface old_wi = null;
         MultiWaveform sel_wave = setup.sel_wave;
             
+        
         if(sel_wave == null) 
         {
             int i;

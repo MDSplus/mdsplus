@@ -1,3 +1,6 @@
+import java.io.*;
+
+
 class DemoProvider implements DataProvider 
 {
     String error = null;
@@ -95,4 +98,90 @@ class DemoProvider implements DataProvider
     {
         return null;
     }
+    
+    public float[] GetFrameTimes(String in)
+    {
+        int cnt = 0;
+        String n;
+        File f;
+        float[] out = null; 
+        
+        for(int i = 0; i < 30; i++)
+        {
+                if(i < 10)
+                    n = in + "00" +(i) + ".jpg";
+                else
+                    n = in + "0" + (i) + ".jpg";
+            f = new File(n);
+            if(f.exists())
+                cnt++;
+        }
+        
+        if(cnt != 0)
+        {
+            out = new float[cnt];
+            for(int i = 1 ; i < out.length; i++)
+                out[i] += out[i-1] + 0.2;
+        }
+        
+        return out;
+    }
+    
+    
+    public byte[] GetFrameAt(String in, int frame_idx)
+    {
+        String n;
+        byte buf[] = null;
+        long size = 0;
+        long new_size;
+        String l[] = null;
+        int i = frame_idx;
+        
+                
+                if(i < 10)
+                    n = in + "00" +(i) + ".jpg";
+                else
+                    n = in + "0" + (i) + ".jpg";
+                
+                
+                
+                File f = new File(n);
+/*                
+                if(f.isDirectory())
+                {
+                   l = f.list();
+                }
+
+                if(l == null)
+                    return null;
+                    
+            for(int i = 0; i < 10 && i < l.length; i++)
+            {
+                n = in + l[i];
+
+                f = new File(n);
+*/
+                if(f.exists())
+                {
+                    System.out.println("Esiste "+n);
+                    try
+                    {
+                        FileInputStream bin = new FileInputStream(n);
+                    
+                        size  = f.length();
+                        buf = new byte[(int)size];
+                    
+                        if(buf != null) 
+                            bin.read(buf);
+                        bin.close();
+                    } catch (IOException e) {}
+                }
+                else
+                {
+                    System.out.println("Non Esiste "+n);
+                }
+            
+      
+                return buf;
+    }    
  }	    

@@ -73,6 +73,8 @@ waveforms.
         super.make_legend = wi.make_legend;
 	    super.legend_x = -1;
         super.legend_y = -1;
+        super.is_image = wi.is_image;
+        super.frames = wi.frames;
 
 	    if(wi.signals != null)
 	    {
@@ -83,6 +85,16 @@ waveforms.
 		            return;
 		        }
 	    }
+	    
+	    if(wi.is_image && wi.frames != null)
+	    {
+	        not_drawn = true;
+	        frame = 0;
+//	        super.paint(super.getGraphics());
+	        return;
+	    }
+	        
+	        
 	    this.Erase();
 
     }
@@ -373,6 +385,13 @@ waveforms.
     public void Autoscale()
     {
 	int i;
+	
+	if(is_image && frames != null)
+	{
+	    super.Autoscale();
+	    return;
+	}
+	
 	if(waveform_signal == null) return;
 	update_timestamp++;
 	if(signals == null)
@@ -489,13 +508,15 @@ protected void HandleCopy()
 {
     if(IsSelected())
 	return;
-    if(wi != null && signals != null && signals.length != 0 && controller.GetSource() == null)
+    if(wi != null && signals != null && signals.length != 0 && controller.GetSource() == null
+       || is_image && wi != null && frames != null && controller.GetSource() == null )
+            
     {
-	//copy_wi = wi;
-	//source_copy_w = (Waveform)this;
-	//controller.SetSourceCopy(source_copy_w);
-	controller.SetSourceCopy(this);
-	SetSelected(true);
+	        //copy_wi = wi;
+	        //source_copy_w = (Waveform)this;
+	        //controller.SetSourceCopy(source_copy_w);
+	    controller.SetSourceCopy(this);
+	    SetSelected(true);
     }
 }
 

@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.io.*;
+import java.awt.image.*;
 
 public class WaveInterface
 {
@@ -35,8 +36,8 @@ public class WaveInterface
     public  String  provider;
     public  String  w_error[];
     public  Signal  signals[];
-    public  float xmax, xmin, ymax, ymin; 
-    public  String title, xlabel, ylabel;
+    public  float   xmax, xmin, ymax, ymin; 
+    public  String  title, xlabel, ylabel;
     private DataProvider dp;
     
 // Used for asynchronous Update  
@@ -58,9 +59,14 @@ public class WaveInterface
 		             B_default_node = 9;
     boolean default_update = false;
 
-
     static final float HUGE = (float)1E8;
     static final int MAX_POINTS = 1000;
+
+    
+    boolean is_image = false;
+    Frames frames;
+
+    
     
     public WaveInterface(WaveInterface wi)
     {
@@ -73,6 +79,7 @@ public class WaveInterface
 	in_grid_mode = wi.in_grid_mode;
 	x_log = wi.x_log;
 	y_log = wi.y_log;
+	is_image = wi.is_image;
 	make_legend = wi.make_legend;
 	reversed = wi.reversed;
 	legend_x = wi.legend_x;
@@ -426,10 +433,13 @@ public class WaveInterface
 	}    
 
 	num_waves = in_y.length;
-	evaluated = new boolean[num_waves];
-	signals = new Signal[num_waves];    
-    w_error = new String[num_waves];
+	
+    if(!is_image)
+	    signals = new Signal[num_waves];    
 
+	evaluated = new boolean[num_waves];
+    w_error = new String[num_waves];
+    
 	if(in_x != null && num_waves != in_x.length)
 	{
 	    error = "X values are different from Y values";
@@ -458,7 +468,7 @@ public class WaveInterface
 	    }
 	}
 	else
-	    xmin = -HUGE;
+	    xmin = (!is_image) ? -HUGE : -1;
 	if(in_xmax != null && (in_xmax.trim()).length() != 0)
 	{
 	    xmax = dp.GetFloat(in_xmax);
@@ -469,7 +479,7 @@ public class WaveInterface
 	    }
 	}
 	else
-	    xmax = HUGE;
+	    xmax = (!is_image) ? HUGE : -1;
 	if(in_ymax != null && (in_ymax.trim()).length() != 0)
 	{
 	    ymax = dp.GetFloat(in_ymax);
@@ -480,7 +490,7 @@ public class WaveInterface
 	    }
 	}
 	else
-	    ymax = HUGE;
+	    ymax = (!is_image) ? HUGE : -1;
   	if(in_ymin != null && (in_ymin.trim()).length() != 0)
 	{
 	    ymin = dp.GetFloat(in_ymin);
@@ -491,7 +501,7 @@ public class WaveInterface
 	    }
 	}
 	else
-	    ymin = -HUGE;
+	    ymin = (!is_image) ? -HUGE : -1;
 	//Compute title, x label, y_label
 	if(in_title != null && (in_title.trim()).length() != 0)
 	{
@@ -539,6 +549,10 @@ public class WaveInterface
 	    int curr_wave;
         if(xmin > xmax) xmin = xmax;
         if(ymin > ymax) ymin = ymax;
+        
+        if(is_image)
+            return;
+                            
     	for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
 	    {
 	        if(shots[curr_wave] == shot && 
@@ -570,7 +584,17 @@ public class WaveInterface
     
     public synchronized void EvaluateOthers()
     {
-	int curr_wave;
+	    int curr_wave;
+        
+        if(is_image)
+        {
+            frames = GetFrames();
+            if(frames != null)
+                frames.SetViewRect((int)xmin, (int)ymin, (int)xmax, (int)ymax);
+            error = curr_error;
+            return;
+        }
+        
         
         if(evaluated == null)
             return;
@@ -605,6 +629,73 @@ public class WaveInterface
 	}
     }
     
+    
+    private Frames GetFrames()
+    {
+        Panel p = new Panel();
+        float f_time[];
+        int j = 0, i = 0;
+        curr_error = null;
+
+	    if(in_y[0] == null)
+	    {
+	        curr_error = "Missing Y value";
+	        return null;
+	    }
+	    
+	    if(experiment != null && experiment.trim().length() > 0)    			    		    
+	        dp.Update(experiment, shots[0]);
+	    else
+	        if(shots != null && shots.length != 0)
+	            dp.Update(null, shots[0]);
+	        else
+	            dp.Update(null, 0);
+
+	    
+	    if(in_x[0] == null || in_x[0].length() == 0)
+            f_time =  dp.GetFrameTimes(in_y[0]);
+        else
+            f_time = dp.GetFloatArray(in_x[0]);
+        
+        
+        if(f_time == null)
+        {
+	        curr_error = " Frame times not found "; 
+	        
+	        if(dp.ErrorString() != null)
+	            curr_error = curr_error +"\n"+dp.ErrorString();
+	            
+	        return null;
+        }
+        
+        Frames frames = new Frames();
+        Image img;
+        byte buf[];
+
+        try
+        {
+           for(i = 0, j = 0; i < f_time.length && j < 100; j++)
+            {
+                buf = dp.GetFrameAt(in_y[0], j);
+                if(buf == null)
+                {
+                    continue;
+                } else {
+                    frames.AddFrame(buf, f_time[i]);
+                    i++;
+                }
+            }
+            frames.WaitLoadFrame();
+        } catch (Exception e) {}
+        
+        if(i == 0 && j == 100)
+        {
+	        curr_error = " Frames not found "; 
+            frames = null;
+        }
+        
+        return frames;
+    }
 				    
     private Signal GetSignal(int curr_wave, float xmin, float xmax)
     {			    
@@ -883,11 +974,17 @@ public class WaveInterface
  
 	    jScope.writeLine(out, prompt + "x_label: "         , cin_xlabel);
 	    jScope.writeLine(out, prompt + "y_label: "         , cin_ylabel);
-	    jScope.writeLine(out, prompt + "x_log: "           , ""+x_log);
-	    jScope.writeLine(out, prompt + "y_log: "           , ""+y_log);
-	    if(make_legend) {
-	        jScope.writeLine(out, prompt + "legend: "           , "("+legend_x+","+legend_y+")");
-	    }
+	    if(!is_image)
+	    {
+	        jScope.writeLine(out, prompt + "x_log: "           , ""+x_log);
+	        jScope.writeLine(out, prompt + "y_log: "           , ""+y_log);
+	        if(make_legend) {
+	            jScope.writeLine(out, prompt + "legend: "           , "("+legend_x+","+legend_y+")");
+	        }
+	    } else 
+	        jScope.writeLine(out, prompt + "is_image: "           , ""+is_image);
+	        
+	    
 	    jScope.writeLine(out, prompt + "experiment: "      , cexperiment);
 	    jScope.writeLine(out, prompt + "event: "           , cin_upd_event);
 	    jScope.writeLine(out, prompt + "default_node: "    , cin_def_node);
@@ -917,16 +1014,20 @@ public class WaveInterface
 	        jScope.writeLine(out, prompt + "label"     + "_" + exp_n + ": " , in_label[exp]);
 	        jScope.writeLine(out, prompt + "x_expr"     + "_" + exp_n + ": " , addNewLineCode(in_x[exp]));
 	        jScope.writeLine(out, prompt + "y_expr"     + "_" + exp_n + ": " , addNewLineCode(in_y[exp]));
-	        jScope.writeLine(out, prompt + "up_error"   + "_" + exp_n + ": " , in_up_err[exp]);
-	        jScope.writeLine(out, prompt + "low_error"  + "_" + exp_n + ": " , in_low_err[exp]);
+	        
+	        if(!is_image)
+	        {
+	            jScope.writeLine(out, prompt + "up_error"   + "_" + exp_n + ": " , in_up_err[exp]);
+	            jScope.writeLine(out, prompt + "low_error"  + "_" + exp_n + ": " , in_low_err[exp]);
 			
-	        for(sht = 0, sht_n = 1; sht < cnum_shot; sht++, sht_n++)
-	        {			    
-		        jScope.writeLine(out, prompt + "interpolate"+"_"+exp_n+"_"+sht_n+": ",""+interpolates[exp + sht]);								    
-		        jScope.writeLine(out, prompt + "color"      +"_"+exp_n+"_"+sht_n+": ",""+colors_idx[exp + sht]);
-		        jScope.writeLine(out, prompt + "marker"     +"_"+exp_n+"_"+sht_n+": ",""+markers[exp + sht]);
-		        jScope.writeLine(out, prompt + "step_marker"+"_"+exp_n+"_"+sht_n+": ",""+markers_step[exp + sht]);
-	        }			    			    
+	            for(sht = 0, sht_n = 1; sht < cnum_shot; sht++, sht_n++)
+	            {			    
+		            jScope.writeLine(out, prompt + "interpolate"+"_"+exp_n+"_"+sht_n+": ",""+interpolates[exp + sht]);								    
+		            jScope.writeLine(out, prompt + "color"      +"_"+exp_n+"_"+sht_n+": ",""+colors_idx[exp + sht]);
+		            jScope.writeLine(out, prompt + "marker"     +"_"+exp_n+"_"+sht_n+": ",""+markers[exp + sht]);
+		            jScope.writeLine(out, prompt + "step_marker"+"_"+exp_n+"_"+sht_n+": ",""+markers_step[exp + sht]);
+	            }
+	        }
 	    } 
     }
     
@@ -1020,23 +1121,33 @@ public class WaveInterface
 		            cin_ylabel = str.substring(len, str.length());
 		            continue;		
 		        }
-		        if(str.indexOf(".x_log:") != -1)
-		        {
-		            x_log = new Boolean(str.substring(len, str.length())).booleanValue();
-		            continue;		
-		        }
-		        if(str.indexOf(".y_log:") != -1)
-		        {
-		            y_log = new Boolean(str.substring(len, str.length())).booleanValue();
-		            continue;		
-		        }		    
-		        if(str.indexOf(".legend:") != -1)
-		        {
-		            make_legend = true;
-		            legend_x = Integer.parseInt(str.substring(str.indexOf("(") + 1, str.indexOf(",")));
-		            legend_y = Integer.parseInt(str.substring(str.indexOf(",") + 1, str.indexOf(")")));
-		            continue;		
-		        }
+		        
+		            if(str.indexOf(".x_log:") != -1)
+		            {
+		                x_log = new Boolean(str.substring(len, str.length())).booleanValue();
+		                continue;		
+		            }
+		            if(str.indexOf(".y_log:") != -1)
+		            {
+		                y_log = new Boolean(str.substring(len, str.length())).booleanValue();
+		                continue;		
+		            }
+		            
+		            if(str.indexOf(".legend:") != -1)
+		            {
+		                make_legend = true;
+		                legend_x = Integer.parseInt(str.substring(str.indexOf("(") + 1, str.indexOf(",")));
+		                legend_y = Integer.parseInt(str.substring(str.indexOf(",") + 1, str.indexOf(")")));
+		                continue;		
+		            }
+		            
+		            if(str.indexOf(".is_image:") != -1)
+		            {
+		                is_image = new Boolean(str.substring(len, str.length())).booleanValue();
+		                continue;		
+		            }		            
+		        
+		        
 		        
 		        
 		        if(str.indexOf(".experiment:") != -1)
@@ -1044,6 +1155,7 @@ public class WaveInterface
 		            cexperiment = str.substring(len, str.length());
 		            continue;		
 		        }
+		        
 		        if(str.indexOf(".shot:") != -1)
 		        {
 		            cin_shot = str.substring(len, str.length());
@@ -1219,66 +1331,68 @@ public class WaveInterface
 		                for(int j = 1; j < num_shot; j++)
 			            in_y[expr_idx + j] = in_y[expr_idx];			
 		                continue;		
-		            }		    
-		            if((pos = str.indexOf(".up_error_")) != -1)
-		            {			
-		                pos += ".up_error_".length();
-		                int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
-		                in_up_err[expr_idx] = str.substring(pos + 2, str.length());
-		                for(int j = 1; j < num_shot; j++)
-			            in_up_err[expr_idx + j] = in_up_err[expr_idx];			
-		                continue;		
-		            }		    
-		            if((pos = str.indexOf(".low_error_")) != -1)
-		            {			
-		                pos += ".low_error_".length();
-		                int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
-		                in_low_err[expr_idx] = str.substring(pos + 2, str.length());
-		                for(int j = 1; j < num_shot; j++)
-			                in_low_err[expr_idx + j] = in_low_err[expr_idx];			
-		                continue;		
 		            }
+		            
+		                if((pos = str.indexOf(".up_error_")) != -1)
+		                {			
+		                    pos += ".up_error_".length();
+		                    int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
+		                    in_up_err[expr_idx] = str.substring(pos + 2, str.length());
+		                    for(int j = 1; j < num_shot; j++)
+			                    in_up_err[expr_idx + j] = in_up_err[expr_idx];			
+		                    continue;		
+		                }		    
+		                if((pos = str.indexOf(".low_error_")) != -1)
+		                {			
+		                    pos += ".low_error_".length();
+		                    int expr_idx = (new Integer(str.substring(pos, pos = str.indexOf(":", pos))).intValue() - 1) * num_shot;
+		                    in_low_err[expr_idx] = str.substring(pos + 2, str.length());
+		                    for(int j = 1; j < num_shot; j++)
+			                    in_low_err[expr_idx + j] = in_low_err[expr_idx];			
+		                    continue;		
+		                }
 		
-		            if((pos = str.indexOf(".interpolate_")) != -1)
-		            {			
-		                pos += ".interpolate_".length();
-		                int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
-		                int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
-		                interpolates[expr_idx *  num_shot + shot_idx] = 
-						new Boolean(str.substring(pos + 2, str.length())).booleanValue();
-		                continue;		
-		            }
-		            if((pos = str.indexOf(".color_")) != -1)
-		            {
-		                pos += ".color_".length();
-		                int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
-		                int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
-		                try {			
-		                    int c_idx = new Integer(str.substring(pos + 2, str.length())).intValue();
-		                    colors_idx[expr_idx *  num_shot + shot_idx] = c_idx;
-		                } catch(Exception e) { colors_idx[expr_idx *  num_shot + shot_idx] = 0;}
-		                continue;		
-		            }
-		            if((pos = str.indexOf(".marker_")) != -1)
-		            {			
-		                pos += ".marker_".length();
-		                int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
-		                int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
-		                markers[expr_idx *  num_shot + shot_idx] = 
-						new Integer(str.substring(pos + 2, str.length())).intValue();
-		                continue;		
-		            }
+		                if((pos = str.indexOf(".interpolate_")) != -1)
+		                {			
+		                    pos += ".interpolate_".length();
+		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
+		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
+		                    interpolates[expr_idx *  num_shot + shot_idx] = 
+						    new Boolean(str.substring(pos + 2, str.length())).booleanValue();
+		                    continue;		
+		                }
+		                
+		                if((pos = str.indexOf(".color_")) != -1)
+		                {
+		                    pos += ".color_".length();
+		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
+		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
+		                    try {			
+		                        int c_idx = new Integer(str.substring(pos + 2, str.length())).intValue();
+		                        colors_idx[expr_idx *  num_shot + shot_idx] = c_idx;
+		                    } catch(Exception e) { colors_idx[expr_idx *  num_shot + shot_idx] = 0;}
+		                    continue;		
+		                }
+		                if((pos = str.indexOf(".marker_")) != -1)
+		                {			
+		                    pos += ".marker_".length();
+		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
+		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
+		                    markers[expr_idx *  num_shot + shot_idx] = 
+						    new Integer(str.substring(pos + 2, str.length())).intValue();
+		                    continue;		
+		                }
 		
-		            if((pos = str.indexOf(".step_marker_")) != -1)
-		            {			
-		                pos += ".step_marker_".length();
-		                int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
-		                int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
-		                markers_step[expr_idx *  num_shot + shot_idx] = 
-						new Integer(str.substring(pos + 2, str.length())).intValue();
-		                continue;		
-		            }
-						
+		                if((pos = str.indexOf(".step_marker_")) != -1)
+		                {			
+		                    pos += ".step_marker_".length();
+		                    int expr_idx = new Integer(str.substring(pos, pos = str.indexOf("_", pos))).intValue() - 1;
+		                    int shot_idx = new Integer(str.substring(pos + 1, pos = str.indexOf(":", pos))).intValue() - 1;
+		                    markers_step[expr_idx *  num_shot + shot_idx] = 
+						    new Integer(str.substring(pos + 2, str.length())).intValue();
+		                    continue;		
+		                }
+					
 		            if(str.indexOf(".title:") != -1)
 		            {
 		                cin_title = str.substring(len, str.length());

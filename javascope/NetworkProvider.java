@@ -12,6 +12,7 @@ public    static final byte DTYPE_CSTRING = 14;
 public    static final byte DTYPE_CHAR = 6;
 public    static final byte DTYPE_SHORT = 7;
 public    static final byte DTYPE_LONG = 8;
+public    static final byte DTYPE_BYTE = 2;
 public    static final byte DTYPE_FLOAT = 10;
 public    static final byte DTYPE_WORDU = 3;
 public    static final byte DTYPE_EVENT = 99;
@@ -20,6 +21,7 @@ public    static final byte DTYPE_EVENT = 99;
 public    byte dtype;
 public    float float_data[];
 public	  int   int_data[];
+public    byte  byte_data[];
 public	  String strdata;
 public	  String error;
 
@@ -31,7 +33,6 @@ public class NetworkProvider implements DataProvider {
     String experiment;
     int shot;
     boolean open, connected;
-    boolean connection_down = false;
     Mds mds;
     MdsEventManager mdsEventManager = new MdsEventManager();
     public String error;
@@ -80,6 +81,65 @@ public String GetDefaultTitle(String in_y[]){return null;}
 public String GetDefaultXLabel(String in_y[]){return null;}
 public String GetDefaultYLabel(String in_y[]){return null;}
 
+public float[]  GetFrameTimes(String in_frame)
+{
+    String exp;
+    
+    if(experiment == null)
+        exp = in_frame;
+    else
+        exp = experiment;
+    
+    String in = "JavaGetFrameTimes(\""+ exp +"\",\""+ in_frame +"\","+shot +" )";
+//    if(!CheckOpen())
+//	    return null;
+    Descriptor desc = mds.MdsValue(in);
+    switch(desc.dtype)  {
+	    case desc.DTYPE_FLOAT:
+	        return desc.float_data;
+	    case desc.DTYPE_LONG: 
+	        float[] out_data = new float[desc.int_data.length];
+	        for(int i = 0; i < desc.int_data.length; i++)
+		    out_data[i] = (float)desc.int_data[i];
+	    return out_data;
+	    case desc.DTYPE_BYTE:
+	        error = "Cannot convert byte array to float array";
+	    return null;	        
+	    case desc.DTYPE_CSTRING:
+	        error = desc.error;
+	    return null;
+    }	        
+    return null;
+} 
+
+public byte[] GetFrameAt(String in_frame, int frame_idx)
+{
+    
+    String exp;
+    
+    if(experiment == null)
+        exp = in_frame;
+    else
+        exp = experiment;
+    
+    String in = "JavaGetFrameAt(\""+ exp +"\",\" "+ in_frame +"\","+shot + ", " + frame_idx + " )";
+//    if(!CheckOpen())
+//	    return null;
+    Descriptor desc = mds.MdsValue(in);
+    switch(desc.dtype)  {
+	    case desc.DTYPE_FLOAT:
+	    case desc.DTYPE_LONG: 
+	        error = "Cannot convert float or long array to byte array";
+	    return null;
+	    case desc.DTYPE_BYTE:
+	        return desc.byte_data;
+	    case desc.DTYPE_CSTRING:
+	        error = desc.error;
+	    return null;
+    }	
+    return null;
+} 
+
 public synchronized String ErrorString() { return error; }
 
 public String GetXSpecification(String yspec) {return "DIM_OF("+yspec+")";}
@@ -104,12 +164,8 @@ public synchronized void Update(String exp, int s)
 
 public synchronized String GetString(String in)
 {
-    error = null;    
-    if(connection_down)
-    {
-        return "";
-    }
-
+ 
+    error = null;
     if(NotYetString(in))
     {
     	if(!CheckOpen())
@@ -149,11 +205,6 @@ public synchronized void SetEnvironment(String in)
 public synchronized float GetFloat(String in)
 {
     error = null;
-    if(connection_down)
-    {
-        return 0;
-    }
-    error = null;
     if(NotYetNumber(in))
     {
     	if(!CheckOpen())
@@ -182,11 +233,6 @@ public synchronized float GetFloat(String in)
 	
 public synchronized float[] GetFloatArray(String in)
 {
-    if(connection_down)
-    {
-        error = "Connection to data server is down. Please re-connect"; 
-        return null;
-    }
     in = "fs_float(("+in+"))";
     String open_err = new String("");
     if(!CheckOpen())
@@ -213,13 +259,6 @@ public synchronized float[] GetFloatArray(String in)
 	
 public synchronized int[] GetIntArray(String in)
 {
-    error = null;
-    if(connection_down)
-    {
-        int dummy_ris[] = new int[1];
-        dummy_ris[0] = 0;
-        return dummy_ris;
-    }
     String open_err = new String("");
     if(!CheckOpen())
 	return null;
@@ -393,7 +432,7 @@ class PMET extends Thread //Process Mds Event Thread
 	
 	class MRT extends Thread // Mds Receive Thread
 	{
-        MdsMessage message = null;
+        MdsMessage message;
 
 	    public void run()
 	    {
@@ -414,9 +453,9 @@ class PMET extends Thread //Process Mds Event Thread
 	                    Mds.this.ReceiveNotify();
 	                }
 	            }
-	        } catch(IOException e) { System.out.println("Could not get IO for "+provider + e); message = null;}  
+	        } catch(IOException e) { System.out.println("Could not get IO for "+provider + e);}  
 	    }
-
+	    
 	    public MdsMessage GetMessage()
 	    {
 	       return message;
@@ -444,27 +483,11 @@ class PMET extends Thread //Process Mds Event Thread
 	    wait();
         message = receiveThread.GetMessage();
     
-	    if(message == null)
-	    {
-	        out.error = "No response from data server";
-	        connection_down = true;
-	        return out;
-	    }
-	    
-	    
 	    if(message.length == 0)
 	    {
-	        out.error = "Zero length response from data server";
+	        out.error = "Null response from server";
 	        return out;
 	    }
-// Keep messages to a reasonable size
-        if(message.length > 5E6)
-        {
-            out.error = "A possibly incosistent message of " + message.length + " bytes has been received from the data server";
-	        return out;
-	    }
-	    
-	    
 	    switch (out.dtype = message.dtype)
 	    {
 	        case Descriptor.DTYPE_CHAR:
@@ -487,8 +510,11 @@ class PMET extends Thread //Process Mds Event Thread
 	        case Descriptor.DTYPE_CSTRING:
 		        out.error = new String(message.body);
 		    break;
+	        case Descriptor.DTYPE_BYTE:
+		        out.byte_data = message.body;
+		    break;
 	    }
-	} catch(IOException e) { out.error = new String("Could not get IO for "+provider + e); }
+	} catch(IOException e) { out.error = new String("Could not get IO for "+provider + e);}
       catch (InterruptedException e) {out.error = new String("Could not get IO for "+provider + e);}  
 	return out;
     }		
@@ -537,9 +563,9 @@ class PMET extends Thread //Process Mds Event Thread
 	    receiveThread = new MRT();
 	    receiveThread.start();
 	    
-	} catch(NumberFormatException e){error="Data provider syntax error "+ provider + " (host:port)"; connection_down = true; return 0;}
-	  catch(UnknownHostException e) {error="Data provider: "+ host + " port " + port +" unknown"; connection_down = true; return 0;}
-	  catch(IOException e) { error = "Could not get IO for " +provider+ e; connection_down = true; return 0;}
+	} catch(NumberFormatException e){error="Data provider syntax error "+ provider + " (host:port)"; return 0;}
+	  catch(UnknownHostException e) {error="Data provider: "+ host + " port " + port +" unknown"; return 0;}
+	  catch(IOException e) { error = "Could not get IO for " +provider+ e; return 0;}
 
 
 	return 1;

@@ -3,11 +3,14 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
+import java.util.*;
+
 //import com.apple.mrj.*;
 
 public class Setup extends Object implements WaveSetup {
     Label coords_label; 
-    SetupDataDialog sd;	
+    SetupDataDialog sd;
+    
     Button3Menu menu;	
     public MultiWaveform waves[];
     public int num_waves;
@@ -89,6 +92,7 @@ public class Setup extends Object implements WaveSetup {
 	        waves[i].SetMode(pointer_mode);	
     }
 
+
     public  void SetErrorTitle(MultiWaveform w)
     {
         int n_error = 0;
@@ -96,33 +100,38 @@ public class Setup extends Object implements WaveSetup {
         w.error_flag = false;
 		if(w.wi != null)
 		{
-                if(w.wi.num_waves == 0)
-                {
-			        if(w.wi.error != null)
-			            w.SetTitle(jScope.GetFirstLine(new String(w.wi.error)));
-                        return;
-		        }
-		        for(int ii = 0; ii < w.wi.num_waves; ii++)
-		        {		                
-			        if(w.wi.w_error != null && w.wi.w_error[ii] != null)
-			            n_error++;
-			                
-			    }
-			    if(w.wi.error == null &&  n_error > 1 && n_error == w.wi.num_waves)
-			    {
-			        w.SetTitle("Evaluation error on all signals");
-			    } else {
-			        if(w.wi.error != null)
-			            w.SetTitle(w.wi.error);
-			        else {
-			            if(n_error == 1 && w.wi.num_waves == 1) {
+            if(w.wi.num_waves == 0)
+            {
+			    if(w.wi.error != null)
+			        w.SetTitle(jScope.GetFirstLine(new String(w.wi.error)));
+                return;
+		     }
+		     
+		     for(int ii = 0; ii < w.wi.num_waves; ii++)
+		     {   		                
+			    if(w.wi.w_error != null && w.wi.w_error[ii] != null)
+			        n_error++;               
+			 }
+			 
+			 if(w.wi.error == null &&  n_error > 1 && n_error == w.wi.num_waves)
+			 {
+			      w.SetTitle("Evaluation error on all signals");
+			 } 
+			 else 
+			 {
+			      if(w.wi.error != null)
+			        w.SetTitle(w.wi.error);
+			      else 
+			      {
+			            if(n_error == 1 && w.wi.num_waves == 1)
+			            {
 			                w.SetTitle(jScope.GetFirstLine(w.wi.w_error[0]));
-			             } else
+			            } else
 			                if(n_error > 0)
 			                    w.SetTitle("< Evaluation error on " + n_error + " signals >");
 			       }    
-              }
-		 }
+               }
+		  }
     }
 
     public void SetAllErrorTitle()
@@ -202,8 +211,13 @@ public class Setup extends Object implements WaveSetup {
 				               "]", 80);
 
 	        } else {
-	            s = SetStrSize("[" + Waveform.ConvertToString(curr_x, false) + ", " 
+	            if(!wi.is_image)
+	                s = SetStrSize("[" + Waveform.ConvertToString(curr_x, false) + ", " 
 				                    + Waveform.ConvertToString(curr_y, false) + "]", 30);
+				else
+	                s = SetStrSize("[" + ((int)curr_x) + ", " 
+				                    + ((int)curr_y) + " : " + dx + "]", 30);
+				
 	        }
 	        
 	        if(wi.shots != null)
@@ -215,11 +229,10 @@ public class Setup extends Object implements WaveSetup {
 		        coords_label.setText(s +
 		            " Expr : " + wi.in_y[sig_idx]);  
 	        }
-	        //if(broadcast)
-	        if(true) //Like Scope always broadcast
+	        if(broadcast)
 		        UpdatePoints(curr_x, w);
-	        else
-		        w.UpdatePoint(curr_x);
+//	        else
+//		        w.UpdatePoint(curr_x); boo!!!!
 	    }	
     }
     
@@ -305,6 +318,21 @@ public class Setup extends Object implements WaveSetup {
 		    i++;
 		}
     }
+    
+    public void StopAllPlay()
+    {
+	    for(int i = 0; i < num_waves; i++) 
+	        if(waves[i].is_image)
+	            waves[i].StopFrame();
+    }
+
+    public void StartAllPlay()
+    {
+	    for(int i = 0; i < num_waves; i++) 
+	        if(waves[i].is_image)
+	            waves[i].PlayFrame();
+	}
+    
     
     public void AutoscaleAll()
     {
@@ -751,12 +779,14 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	MenuItem setup, autoscale, autoscaleY, autoscaleAll, autoscaleAllY,
 		 allSameScale, allSameXScale, allSameXScaleAutoY, allSameYScale,
 		 resetScales, resetAllScales, refresh, saveAsText, selectWave,
-		 legend, remove_legend, remove_panel;
+		 legend, remove_legend, remove_panel, sep1, sep2, sep3, playFrame,
+		 startAllPlay, stopAllPlay;
 	Menu signalList, markerList, colorList, markerStep;
 	CheckboxMenuItem interpolate_f;
 	SetupDataDialog sd;
 	int curr_x, curr_y;
 	Setup controller;
+	boolean is_image_menu = false;
 
     public Button3Menu(Frame pw, SetupDataDialog _sd, Setup _controller)
     {
@@ -777,7 +807,7 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	remove_panel.setEnabled(false);
 	remove_panel.addActionListener(this);
 	
-	add(new MenuItem("-"));
+	add(sep1 = new MenuItem("-"));
 	add(signalList = new Menu("Signals"));
 	signalList.setEnabled(false);	
 	add(markerList = new Menu("Markers"));	
@@ -800,7 +830,8 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
     add(interpolate_f = new CheckboxMenuItem("Interpolate", false));
 	interpolate_f.setEnabled(false);
     interpolate_f.addItemListener(this);
-	add(new MenuItem("-"));
+    
+	add(sep2 = new MenuItem("-"));
 	add(autoscale = new MenuItem("Autoscale"));
 	autoscale.addActionListener(this);
 	add(autoscaleY = new MenuItem("Autoscale Y"));
@@ -823,9 +854,16 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	resetAllScales.addActionListener(this);
 	add(refresh = new MenuItem("Refresh"));
 	refresh.addActionListener(this);
-	add(new MenuItem("-"));
+	add(sep3 = new MenuItem("-"));
 	add(saveAsText = new MenuItem("Save as text ..."));
 	saveAsText.addActionListener(this);
+	
+	playFrame = new MenuItem();
+	playFrame.addActionListener(this);
+	startAllPlay = new MenuItem("Start all wave image");
+	startAllPlay.addActionListener(this);
+	stopAllPlay = new MenuItem("Stop all wave image");
+	stopAllPlay.addActionListener(this);
     }
 	
 	private void SelectListItem(Menu m, int idx)
@@ -850,23 +888,111 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	    }
 	    return idx;
 	}
-    public void Show(MultiWaveform w, int x, int y)
-    {
+
+	private void SetColorMenu()
+    {	
+	    colorList.removeAll();
+
+        String[] colors_name = controller.main_scope.color_dialog.GetColorsName();
+	    CheckboxMenuItem ob = null;
+	    if(colors_name != null)
+	    {
+	        for(int i = 0; i < colors_name.length; i++) {
+                colorList.add(ob = new CheckboxMenuItem(colors_name[i]));
+                ob.addItemListener(this);
+            }
+	    }
+        SelectListItem(colorList, wave.wi.colors_idx[controller.signal_idx]);
+	}
+	
+	private void SetMenuItem(boolean is_image)
+	{
+	   if(is_image == is_image_menu)
+	      return;
+	   
+	   is_image_menu = is_image;
+	   
+	   removeAll();
+	   
+	   if(is_image_menu)
+	   {
+           add(setup);
+           colorList.setLabel("Colors");
+           add(colorList);	
+	       add(sep1);
+	       add(playFrame);
+	       add(startAllPlay);
+	       add(stopAllPlay);
+	       add(sep2);
+	       add(autoscale);
+	       autoscaleAll.setLabel("Autoscale all images");
+	       add(autoscaleAll);
+	       add(refresh);
+       } else {
+           add(setup);
+           add(selectWave);
+           add(legend);	
+           add(remove_legend);
+           add(remove_panel);
+	       add(sep1);
+           add(signalList);
+           add(markerList);
+           colorList.setLabel("Colors");
+           add(colorList);	
+           add(markerStep);
+           add(interpolate_f);
+	       add(sep2);           
+	       add(autoscale);
+	       add(autoscaleY);
+	       autoscaleAll.setLabel("Autoscale all images");
+	       add(autoscaleAll);
+	       add(autoscaleAllY);
+	       add(allSameScale);
+	       add(allSameXScale);
+	       add(allSameXScaleAutoY);
+	       add(allSameYScale);
+	       add(resetScales);
+	       add(resetAllScales);
+	       add(refresh);
+	       add(sep3);
+	       add(saveAsText);
+       }
+	}
+	
+	private void SetImageMenu(MultiWaveform w)
+	{
+	    SetMenuItem(w.wi.is_image);
+	    boolean state = (w.frames != null && w.frames.getNumFrame() != 0);
+	    playFrame.setEnabled(state);
+        if(w.is_playing)
+	         playFrame.setLabel("Stop play");
+	    else 
+	         playFrame.setLabel("Start play");
+	    
+        if(state) {
+            controller.signal_idx = 0;
+            SetColorMenu();
+        }
+        colorList.setEnabled(state);	
+	}
+	
+	private void SetSignalMenu(MultiWaveform w)
+	{
+	    SetMenuItem(w.wi.is_image);
+	    
         if(controller.sel_wave == w)
             selectWave.setLabel("Deselect wave panel");
         else
             selectWave.setLabel("Select wave panel");
 
         remove_panel.setEnabled(controller.waves.length > 1);
-        
+	    
         signalList.removeAll();
         if(w.wi != null && w.wi.num_waves != 0)
         {
             String s_name[] = w.wi.getSignalsName();
             boolean s_state[] = w.wi.getSignalsState();
-
-
-            
+        
             boolean state = ((w.mode == Waveform.MODE_POINT && controller.signal_idx != -1) || 
                                 w.num_signals == 1);
             
@@ -891,19 +1017,9 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
                     if(jScope.markerStepList[st] == w.wi.markers_step[controller.signal_idx])
                         break;
                 SelectListItem(markerStep, st);
-                        
-                colorList.removeAll();
 
-	            String[] colors_name = controller.main_scope.color_dialog.GetColorsName();
-	            CheckboxMenuItem ob = null;
-	            if(colors_name != null)
-	            {
-	                for(int i = 0; i < colors_name.length; i++) {
-                        colorList.add(ob = new CheckboxMenuItem(colors_name[i]));
-                        ob.addItemListener(this);
-                    }
-	            }
-                SelectListItem(colorList, w.wi.colors_idx[controller.signal_idx]);
+                SetColorMenu();        
+                        
 
             }
             
@@ -922,6 +1038,7 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
             
             if(w.wi.make_legend)
             	remove_legend.setEnabled(true);
+            	
         } else {
             signalList.setEnabled(false);
             markerList.setEnabled(false);
@@ -931,11 +1048,19 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	        legend.setEnabled(false);
             remove_legend.setEnabled(false);
         }
-        
-        
+	}
+	
+    public void Show(MultiWaveform w, int x, int y)
+    {
+ 	    wave   = w;
+       
+        if(w.wi.is_image)
+            SetImageMenu(w);
+        else
+            SetSignalMenu(w);
+            
 	    curr_x = x;
 	    curr_y = y;
-	    wave   = w;
 	    show(w, x, y );	
      }
 
@@ -1002,7 +1127,7 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	    {
 	        sd.selectSignal(controller.signal_idx);
 	    } else
-	        if(wave.num_signals > 0)
+	        if(wave.num_signals > 0 || wave.is_image && wave.wi.num_waves != 0)
 	            sd.selectSignal(0);
 	    
 	    sd.Show(wave, controller);
@@ -1043,6 +1168,24 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	    controller.RemovePanel(wave);
 	}
        
+	if(target == playFrame)
+	{
+	    if(wave.is_playing)
+	        wave.StopFrame();
+	    else
+	        wave.PlayFrame();
+	}
+
+	if(target == startAllPlay)
+	{
+	    controller.StartAllPlay();
+	}
+
+	if(target == stopAllPlay)
+	{
+	    controller.StopAllPlay();
+	}
+
        
     }
     
@@ -1108,13 +1251,13 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	            idx = GetSelectedItem(parent, cb);
 	            if(idx < parent.getItemCount())
 	            {       
-	                if(wave.wi.colors_idx[controller.signal_idx] == idx)
-	                {
-	                    cb.setState(true);
-	                } else {
-	                    wave.wi.colors_idx[controller.signal_idx] = idx;
-	                    wave.wi.colors[controller.signal_idx] = controller.main_scope.color_dialog.GetColorAt(idx);
-                        wave.SetCrosshairColor(wave.wi.colors[controller.signal_idx]);
+	               if(wave.wi.colors_idx[controller.signal_idx] == idx)
+	               {
+	                  cb.setState(true);
+	               } else {
+	                  wave.wi.colors_idx[controller.signal_idx] = idx;
+	                  wave.wi.colors[controller.signal_idx] = controller.main_scope.color_dialog.GetColorAt(idx);
+                      wave.SetCrosshairColor(wave.wi.colors[controller.signal_idx]);
 	                }
 	            }
 	            wave.Repaint();	                
