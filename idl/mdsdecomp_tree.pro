@@ -123,7 +123,12 @@ shot=mdsvalue('$SHOTNAME')
 openw,lun,tree+'_'+shot+'.TCL',/get_lun
 
 printf,lun,'EDIT/NEW '+tree+'/SHOT='+string(mdsvalue('$SHOT'))
-all_nids=MDSVALUE('GETNCI("'+path+'","NID_NUMBER")')
+all_nids=MDSVALUE('GETNCI("'+path+'","NID_NUMBER")',status=status)
+if (not(status)) then begin
+  message,/info,mdsgetmsg(status)
+  return
+endif
+
 defered_nids=0
 usage=['ANY','STRUCTURE','ACTION','DEVICE','DISPATCH','NUMERIC','SIGNAL','TASK','TEXT','WINDOW','AXIS','SUBTREE','COMPOUND_DATA']
 punct=[':','.']
