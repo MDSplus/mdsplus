@@ -226,6 +226,11 @@ STATIC_ROUTINE globus_bool_t AuthenticationCallback(void *arg, globus_io_handle_
 fd_set FdActive() { return fdactive; }
 #endif
 
+void SetCloseOnExec(SOCKET sock)
+{
+  fcntl(sock,F_SETFD,FD_CLOEXEC);
+}
+
 SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *), void (*DoMessage_in)(SOCKET s))
 {
   SOCKET s;
@@ -246,6 +251,7 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
     printf("Error getting Connection Socket\n");
     exit(1);
   }
+  SetCloseOnExec(s);
   FD_SET(s,&fdactive);
   SetSocketOptions(s,1);
   memset(&sin,0,sizeof(sin));
@@ -537,6 +543,7 @@ SOCKET MConnect(char *host, unsigned short port)
     CloseSocket(s);
     s=INVALID_SOCKET;
   }
+  SetCloseOnExec(s);
 #else
   globus_io_handle_t *handle = NewHandle(&s);
   globus_result_t result;

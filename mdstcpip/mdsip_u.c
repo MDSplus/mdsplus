@@ -747,6 +747,7 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
     time_t tim;
     int m_status;
     int user_compression_level;
+    SetCloseOnExec(sock);
     pid = getpid();
     m.h.msglen = sizeof(MsgHdr);
     m_user = GetMdsMsg(sock,&status);
