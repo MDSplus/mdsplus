@@ -247,11 +247,11 @@ then
 else
   echo ". /usr/local/mdsplus/etc/profile.d/mdsplus.sh" >> /etc/profile
 fi
-if grep "^source /usr/local/mdsplus/etc/profile.d/mdsplus.csh" /etc/csh.login > /dev/null
+if grep "^source /usr/local/mdsplus/etc/profile.d/mdsplus.csh" /etc/.login > /dev/null
 then
   true
 else
-  echo "source /usr/local/mdsplus/etc/profile.d/mdsplus.csh" >> /etc/csh.login
+  echo "source /usr/local/mdsplus/etc/profile.d/mdsplus.csh" >> /etc/.login
 fi
 echo Creating sample /etc/mdsip.hosts file for mdsip server to user mapping
 if [ ! -r /etc/mdsip.hosts ]; then 
