@@ -58,7 +58,7 @@ ASCIIDataProvider.java      ImageTransferable.java
 
 CLASSES = $(SOURCES:.java=.class)
 
-all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/docs @MAKEJAVADIR@classes/jScope.jar  @MAKEJAVADIR@classes/WaveDisplay.jar docs  @MAKEJAVADIR@classes/jScope.properties @MAKEJAVADIR@classes/MindTerm.jar
+all:	@MAKEBINDIR@ @MAKEJAVADIR@classes/docs @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/jScope.jar  @MAKEJAVADIR@classes/WaveDisplay.jar docs  @MAKEJAVADIR@classes/jScope.properties @MAKEJAVADIR@classes/MindTerm.jar
 
 clean: 
 	@ $(RM) *.class
@@ -85,7 +85,10 @@ install:
 @MAKEJAVADIR@classes/docs : ; mkdir @MAKEJAVADIR@classes/docs
 
 @MAKEJAVADIR@classes/jScope.jar: jScope.class CompositeWaveDisplay.class
-	$(JAR) c0f $@ *.class
+	mkdir docs
+	cp @MAKEJAVADIR@classes/docs/* docs
+	$(JAR) c0f $@ *.class *.html docs
+	rm -R docs
 
 @MAKEJAVADIR@classes/jScope.properties: jScope.properties
 	cp jScope.properties ../java/classes
@@ -112,3 +115,4 @@ CompositeWaveDisplay.class: 	$(SOURCES)
 
 docs: $(DOCS) 
 	cp $(DOCS) @MAKEJAVADIR@classes/docs
+	
