@@ -47,39 +47,39 @@ int _TreeOpen(void **dbid, char *tree_in, int shot_in, int read_only_flag)
 {
 	int       status = TreeFAILURE;
 	int       shot;
-	char     *subtree_list;
 	char     *tree = malloc(strlen(tree_in)+1);
+	char     *subtree_list = 0;
+        char     *comma_ptr;
 
 	RemoveBlanksAndUpcase(tree,tree_in);
-	if (subtree_list = strchr(tree, ',')) 
-		*subtree_list++ = 0;
+        if (comma_ptr = strchr(tree, ','))
+	{
+          subtree_list = strcpy(malloc(strlen(tree)+1),tree);
+          *comma_ptr='\0';
+        }
 
 /**************************************************
  To open a tree we need only to connect up the MAIN
  tree which will in turn link up any subtrees.
 **************************************************/
 
-	shot = shot_in ? shot_in : MdsGetCurrentShotid(tree);
+	shot = shot_in ? shot_in : MdsGetCurrentShotId(tree);
 	if (shot)
 	{
 		PINO_DATABASE **dblist = (PINO_DATABASE **)dbid;
-		status = CreateDbSlot(dblist, tree, shot, 0);
-		if (status == TreeNORMAL)
+		int db_slot_status = CreateDbSlot(dblist, tree, shot, 0);
+		if (db_slot_status == TreeNORMAL || db_slot_status == TreeALREADY_OPEN)
 		{
-			if ((status = ConnectTree(*dblist, tree, 0, subtree_list)) == TreeNORMAL ||
-				(status == TreeNOTALLSUBS))
+			if (((status = ConnectTree(*dblist, tree, 0, subtree_list)) == TreeNORMAL) ||
+			    (status == TreeNOTALLSUBS) ||
+			    ((status = ConnectTreeRemote(*dblist, tree, subtree_list)) == TreeNORMAL) ||
+			    (status == TreeNOTALLSUBS))
 			{
-				(*dblist)->default_node = (*dblist)->tree_info->root;
+                                if (db_slot_status == TreeNORMAL)
+				  (*dblist)->default_node = (*dblist)->tree_info->root;
 				(*dblist)->open = 1;
 				(*dblist)->open_readonly = read_only_flag;
 				(*dblist)->remote = 0;
-			}
-			else if ((status = ConnectTreeRemote(*dblist, tree, subtree_list)) == TreeNORMAL ||
-				(status == TreeNOTALLSUBS))
-			{
-				(*dblist)->open = 1;
-				(*dblist)->open_readonly = read_only_flag;
-				(*dblist)->remote = 1;
 			}
 			else
 			{
@@ -96,6 +96,9 @@ int _TreeOpen(void **dbid, char *tree_in, int shot_in, int read_only_flag)
 		else if (status == TreeALREADY_OPEN)
 			(*dblist)->open_readonly = 0;
 	}
+        if (subtree_list)
+          free(subtree_list);
+        free(tree);
 	return status;
 }
 
@@ -129,7 +132,7 @@ int _TreeClose(void **dbid, char *tree, int shot)
 			uptree[i]='\0';
 			status = TreeNOT_OPEN;
 			if (!shot)
-				shot = MdsGetCurrentShotid(tree);
+				shot = MdsGetCurrentShotId(tree);
 			for (prev_db = 0, db = *dblist; db ? db->open : 0; prev_db = db, db = db->next)
 			{
 				if ((shot == db->shotid) && (strcmp(db->main_treenam, uptree) == 0))
@@ -337,11 +340,11 @@ int _TreeEditing(void *dbid)
 
 static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *subtree_list)
 {
-	int       status;
-	int       ext_status;
-	int       i;
-	TREE_INFO *info;
-	TREE_INFO *iptr;
+  int       status = TreeNORMAL;
+  int       ext_status;
+  int       i;
+  TREE_INFO *info;
+  TREE_INFO *iptr;
 
 
 /***********************************************
@@ -349,8 +352,8 @@ static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *su
   just return success.
 ************************************************/
 
-	if (parent && parent->usage!=TreeUSAGE_SUBTREE)
-		return TreeNORMAL;
+  if (parent && parent->usage!=TreeUSAGE_SUBTREE)
+    return TreeNORMAL;
 
 /***********************************************
   If there is a treelist (canditates) then if 
@@ -358,53 +361,56 @@ static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *su
   success.
 ************************************************/
 
-	if (subtree_list)
-	{
-		char *found;
-		char *tmp_list = malloc(strlen(subtree_list)+3);
-		char *tmp_tree = malloc(strlen(tree)+3);
-		int llen = strlen(subtree_list);
-		int slen = strlen(tree);
-		strcpy(tmp_list,",");
-		strcat(tmp_list,subtree_list);
-		strcat(tmp_list,",");
-		strcpy(tmp_tree,",");
-		strcat(tmp_tree,tree);
-		strcat(tmp_tree,",");
-		found = strstr(tmp_list,tmp_tree);
-		free(tmp_list);
-		free(tmp_tree);
-		if (!found)
-			return TreeNORMAL;
-	}
+  if (subtree_list)
+    {
+      char *found;
+      char *tmp_list = malloc(strlen(subtree_list)+3);
+      char *tmp_tree = malloc(strlen(tree)+3);
+      int llen = strlen(subtree_list);
+      int slen = strlen(tree);
+      strcpy(tmp_list,",");
+      strcat(tmp_list,subtree_list);
+      strcat(tmp_list,",");
+      strcpy(tmp_tree,",");
+      strcat(tmp_tree,tree);
+      strcat(tmp_tree,",");
+      found = strstr(tmp_list,tmp_tree);
+      free(tmp_list);
+      free(tmp_tree);
+      if (!found)
+	return TreeNOT_IN_LIST;
+    }
 
 /***********************************************
   Get virtual memory for the tree
   information structure and zero the structure.
 ***********************************************/
 
-  info = malloc(sizeof(TREE_INFO));
-  if (info)
-  {
+  for (info = dblist->tree_info; info && strcmp(tree,info->treenam); info = info->next_info);
+  if (!info)
+    {
+      info = malloc(sizeof(TREE_INFO));
+      if (info)
+	{
 	  memset(info,0,sizeof(*info));
-
-   /***********************************************
-    Next we map the file and if successful copy
-    the tree name (blank filled) into the info block.
-    ***********************************************/
-
+	  
+	  /***********************************************
+	  Next we map the file and if successful copy
+	  the tree name (blank filled) into the info block.
+	  ***********************************************/
+	  
 	  info->flush = (dblist->shotid == -1);
 	  info->treenam = strcpy(malloc(strlen(tree)+1),tree);
 	  status = MapTree(tree, dblist->shotid, info, 0);
 	  if (status == TreeFAILURE && treeshr_errno == TreeFILE_NOT_FOUND)
 	  {
-		  status = TreeCallHook(RetrieveTree, info);
-		  if (status == TreeNORMAL)
-			  status = MapTree(tree, dblist->shotid, info, 0);
+	    status = TreeCallHook(RetrieveTree, info);
+	    if (status == TreeNORMAL)
+	      status = MapTree(tree, dblist->shotid, info, 0);
 	  }
 	  if (status == TreeNORMAL)
 	  {
-		  TreeCallHook(OpenTree, info);
+	    TreeCallHook(OpenTree, info);
 
       /**********************************************
        If this is the main tree the root node is the
@@ -414,15 +420,15 @@ static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *su
        the root node of the subtree.
       **********************************************/
 
-		  info->root = info->node;
-		  if (parent == 0)
-			  dblist->tree_info = info;
-		  else
-		  {
-			  SubtreeNodeConnect(parent, info->node);
-			  for (iptr = dblist->tree_info; iptr->next_info; iptr = iptr->next_info);
-			  iptr->next_info = info;
-		  }
+	    info->root = info->node;
+	    if (parent == 0)
+	      dblist->tree_info = info;
+	    else
+	      {
+		SubtreeNodeConnect(parent, info->node);
+		for (iptr = dblist->tree_info; iptr->next_info; iptr = iptr->next_info);
+		iptr->next_info = info;
+	      }
 
       /***********************************************
        For each of the external references (subtrees),
@@ -431,30 +437,35 @@ static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *su
        and then recursively call this routine to connect
        the subtree(s).
       *************************************************/
-
-		  for (i = 0; i < info->header->externals; i++)
-		  {
-			  NODE     *external_node = info->node + swapint((char *)&info->external[i]);
-			  char *subtree = strncpy(malloc(sizeof(NODE_NAME)+1),external_node->name,sizeof(NODE_NAME));
-			  char *blank = strchr(subtree,32);
-                          subtree[sizeof(NODE_NAME)] = '\0';
-			  if (blank) *blank = 0;
-			  ext_status = ConnectTree(dblist, subtree, external_node, subtree_list);
-			  free(subtree);
-			  if (!(ext_status & 1))
-			  {
-				  status = TreeNOTALLSUBS;
-				  if (treeshr_errno == TreeCANCEL) 
-					  break;
-			  }
-		  }
 	  }
-	  else
-	  {
-		  free(info->treenam);
-		  free(info);
-	  }
-  }
+	  if (!(status & 1) && info)
+	    {
+	      if (info->treenam)
+		free(info->treenam);
+	      free(info);
+	      info = 0;
+	    }
+	}
+    }
+  if (info)
+    {
+      for (i = 0; i < info->header->externals; i++)
+	{
+	  NODE     *external_node = info->node + swapint((char *)&info->external[i]);
+	  char *subtree = strncpy(malloc(sizeof(NODE_NAME)+1),external_node->name,sizeof(NODE_NAME));
+	  char *blank = strchr(subtree,32);
+	  subtree[sizeof(NODE_NAME)] = '\0';
+	  if (blank) *blank = 0;
+	  ext_status = ConnectTree(dblist, subtree, external_node, subtree_list);
+	  free(subtree);
+	  if (!(ext_status & 1))
+	    {
+	      status = TreeNOTALLSUBS;
+	      if (treeshr_errno == TreeCANCEL) 
+		break;
+	    }
+	}
+    }
   return status;
 }
 
@@ -692,7 +703,7 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,char *op
 				strcat(resnam,type);
 #if defined(__osf__) || defined(__hpux) || defined(__sun) || defined(__sgi)
 				info->channel = open(resnam,O_RDONLY);
-				file = info->channel ? fdopen(info->channel,"rb") : NULL;
+				file = (info->channel != -1) ? fdopen(info->channel,"rb") : NULL;
 #else
 				info->channel = 0;
 				file = fopen(resnam,"rb");
@@ -1192,7 +1203,7 @@ int       _TreeOpenEdit(void **dbid, char *tree_in, int shot_in)
   int       status = TreeFAILURE;
 
   RemoveBlanksAndUpcase(tree,tree_in);
-  shot = shot_in ? shot_in : MdsGetCurrentShotid(tree);
+  shot = shot_in ? shot_in : MdsGetCurrentShotId(tree);
   if (shot)
   {
     PINO_DATABASE **dblist = (PINO_DATABASE **)dbid;

@@ -103,6 +103,7 @@ unsigned char			origin[255];
         dx.dtype = (unsigned char)opcode;
         dx.pointer = (char *)result;
 	LibEstablish(TdiFaultHandler);
+	memset(newdsc,0,sizeof(newdsc));
 	if (narg > 255+2) status = TdiNDIM_OVER;
 	else status = TdiData(list[0], &image MDS_END_ARG);
 	if (status & 1) status = TdiData(list[1], &entry MDS_END_ARG);

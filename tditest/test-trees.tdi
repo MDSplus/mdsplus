@@ -1,0 +1,23 @@
+current_shot('main')
+TreeOpen('main',-1)
+member
+_nids=getnci('***','nid_number'),size(_nids)
+getnci(_nids[100],'fullpath')
+getnci(member,'rlength')
+getnci(member,'length')
+getnci(member,'on')
+_tim=getnci(member,'time_inserted')
+date_time(_tim)
+.subtree:a12:name
+size(.subtree:a12:stop_trig)
+kind(.subtree:a12:stop_trig)
+'total of '//text(size(getnci('***','nid_number','signal')))//' signals'
+'total of '//text(size(getnci('***','nid_number','action')))//' actions'
+'total of '//text(size(getnci('***','nid_number','numeric')))//' numerics'
+'total of '//text(size(_nids=getnci('***','nid_number','subtree')))//' subtrees'
+getnci(_nids,'fullpath')
+TreeShr->TreeClose(val(0))
+TreeOpen('main,',-1)
+size(getnci('***','nid_number'))
+TreeOpen('main,subtree',-1)
+size(getnci('***','nid_number'))

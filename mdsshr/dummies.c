@@ -11,5 +11,4 @@ int name()\
   return stat;\
 }
 
-Dummy(MdsGetCurrentShotid,0)
 Dummy(MdsEventCan,0)
