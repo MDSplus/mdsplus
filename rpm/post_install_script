@@ -48,7 +48,7 @@ fi
 echo Adding MDSplus login scripts
 ln -s /usr/local/mdsplus/etc/profile.d/mdsplus.* /etc/profile.d/
 echo Creating sample /etc/mdsip.hosts file for mdsip server to user mapping
-if [ ! -r /etc/mdsip.hosts ]; then
+if [ -r /etc/mdsip.hosts ]; then
   cp /usr/local/mdsplus/etc/mdsip.hosts /etc/
 fi
 ;;
@@ -122,29 +122,45 @@ else
   echo "source /usr/local/mdsplus/etc/profile.d/mdsplus.csh" >> /etc/csh.login
 fi
 echo Creating sample /etc/mdsip.hosts file for mdsip server to user mapping
-if [ ! -r /etc/mdsip.hosts ]; then 
+if [ -r /etc/mdsip.hosts ]; then 
   cp /usr/local/mdsplus/etc/mdsip.hosts /etc/ 
 fi
 ;;
-HP-UX*)
+SunOS*)
 #
-# HP-UX post install script
+# SunOS post install script
 #
 # Put symlinks in /usr/local/lib to all MDSplus shared libraries
 #
 echo Configuring mdsplus libraries
-ln -sf /usr/local/mdsplus/lib/*.sl /usr/local/lib
+ln -sf /usr/local/mdsplus/lib/*.so /usr/local/lib
 #
-# Add /usr/local/mdsplus/man to /etc/MANPATH
+# Put symlinks in /usr/local/man to all MDSplus man pages
 #
 echo Configuring mdsplus man pages
-if [ -r /etc/MANPATH ]; then
-mv /etc/MANPATH /etc/MANPATH_pre_mdsplus
-echo `cat /etc/MANPATH_pre_mdsplus`:/usr/local/mdsplus/man > /etc/MANPATH
+if [ ! -r /usr/local/man ]; then
+mkdir /usr/local/man
+mkdir /usr/local/man/man1
+mkdir /usr/local/man/man5
+mkdir /usr/local/man/man8
+chmod -R 755 /usr/local/man
 else
-echo /usr/share/man:/usr/contrib/man:/usr/local/man:/usr/local/mdsplus/man > /etc/MANPATH
+if [ ! -r /usr/local/man/man1 ]; then
+mkdir /usr/local/man/man1
+chmod 755 /usr/local/man/man1
 fi
-chmod 444 /etc/MANPATH
+if [ ! -r /usr/local/man/man5 ]; then
+mkdir /usr/local/man/man5
+chmod 755 /usr/local/man/man5
+fi
+if [ ! -r /usr/local/man/man8 ]; then
+mkdir /usr/local/man/man8
+chmod 755 /usr/local/man/man8
+fi
+fi
+ln -sf /usr/local/mdsplus/man/man1/*.gz /usr/local/man/man1
+ln -sf /usr/local/mdsplus/man/man5/*.gz /usr/local/man/man5
+ln -sf /usr/local/mdsplus/man/man8/*.gz /usr/local/man/man8
 #
 # Add mdsip to services
 #
@@ -164,7 +180,7 @@ then
   true
 else
   echo "mdsip stream	tcp	nowait root /usr/local/mdsplus/bin/mdsipd mdsipd mdsip /var/log/mdsplus/mdsipd" >> /etc/inetd.conf
-  kill -HUP `/bin/ps -e | /bin/grep inetd | /bin/grep -v grep | /bin/awk '{print $1}'`
+  kill -HUP `/bin/ps -e -o pid -o command | /bin/grep /usr/sbin/inetd | /bin/grep -v grep | /bin/awk '{print $1}'`
 fi
 echo Adding MDSplus login scripts
 if grep "^. /usr/local/mdsplus/etc/profile.d/mdsplus.sh" /etc/profile > /dev/null
@@ -180,7 +196,7 @@ else
   echo "source /usr/local/mdsplus/etc/profile.d/mdsplus.csh" >> /etc/csh.login
 fi
 echo Creating sample /etc/mdsip.hosts file for mdsip server to user mapping
-if [ ! -r /etc/mdsip.hosts ]; then 
+if [ -r /etc/mdsip.hosts ]; then 
   cp /usr/local/mdsplus/etc/mdsip.hosts /etc/ 
 fi
 ;;
