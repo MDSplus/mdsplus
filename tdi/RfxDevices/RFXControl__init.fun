@@ -44,7 +44,7 @@ public fun RFXControl__init(as_is _nid, optional _method)
     private _N_PAR1_VALUE = 832; 
 
  
-	private _MAX_CONTROLS = 6;
+	private _MAX_CONTROLS = 7;
 	private _NUM_PARAMETERS = 137;
 
 
@@ -194,9 +194,7 @@ write(*, _trig1_time);
 	
     for(_par = 0; _par < _NUM_PARAMETERS; _par++)
 	{
-
 		_par_name = data(DevNodeRef(_nid, _N_PAR1_NAME + _par * 2));
-
 	    if(DevIsOn(DevNodeRef(_nid, _N_PAR1_VALUE + _par * 2)))
 		{
 			_par_value = data(DevNodeRef(_nid, _N_PAR1_VALUE + _par * 2));

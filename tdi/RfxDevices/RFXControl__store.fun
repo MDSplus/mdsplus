@@ -69,8 +69,8 @@ write(*, 'RFXControl store');
     _clock = make_range(*,*, _period);
 
  	/* Build signal dimension */
-	_dim = make_dim(make_window(0, _n_samples, _trigger - _n_pretrigger * _period), _clock);
-
+/*	_dim = make_dim(make_window(0, _n_samples, _trigger - _n_pretrigger * _period), _clock);*/
+	_dim = MdsValue('Feedback->getTimebase:dsc()');
 
 	/* Read number of signals */
 	_num_adc_in = data(DevNodeRef(_nid, _N_N_ADC_IN));
