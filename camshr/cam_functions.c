@@ -79,23 +79,39 @@ static BYTE scsi_cmd_size[] = { 6, 10, 10, 12, 12, 12, 10, 10 };
 //-----------------------------------------------------------
 // transfer modes
 //-----------------------------------------------------------
-static BYTE JorwayModes[][4] = {
-				{	// non-enhanced modes
-					QSTOP_MODE, 		// QStop			(M = 0)
-					STOP_MODE, 			// QIgnore         	(M = 6)
-					QREP_MODE,			// QRep				(M = 2)
-			    	NO_MODE				// QScan	NB! tbi
-				},
-				{	// enhanced modes
-					FQSTOP_MODE,		//					(M = 4)
-					FSTOP_MODE,			//					(M = 5)
-					NO_MODE,
-					NO_MODE	
-				}
-			};
+static BYTE JorwayModes[2][2][4] = {
+  {
+  {	// non-enhanced modes
+    STOP_MODE, 		// QStop			(M = 0)
+    STOP_MODE, 			// QIgnore         	(M = 6)
+    QREP_MODE,			// QRep				(M = 2)
+    NO_MODE				// QScan	NB! tbi
+  },
+  {	// enhanced modes
+    STOP_MODE,		//					(M = 4)
+    STOP_MODE,			//					(M = 5)
+    NO_MODE,
+    NO_MODE	
+  }
+  },
+  {
+  {	// non-enhanced modes
+    QSTOP_MODE, 		// QStop			(M = 0)
+    STOP_MODE, 			// QIgnore         	(M = 6)
+    QREP_MODE,			// QRep				(M = 2)
+    NO_MODE				// QScan	NB! tbi
+  },
+  {	// enhanced modes
+    FQSTOP_MODE,		//					(M = 4)
+    FSTOP_MODE,			//					(M = 5)
+    NO_MODE,
+    NO_MODE	
+  }
+  }
+};
 
 #define	JORWAY_DISCONNECT			0
-#define	JORWAYMODE(mode, enhanced)	JorwayModes[enhanced][mode]
+#define	JORWAYMODE(multisample, mode, enhanced)	JorwayModes[enhanced][mode][multisample]
 #define	KSMODE(mode)				mode
 
 //-----------------------------------------------------------
@@ -480,7 +496,7 @@ static int MultiIo(
 				if( MSGLVL(DETAILS) )
 					printf( "-->>JorwayDoIo()\n" );
 
-				mode = JORWAYMODE(dmode, (Enhanced && highwayType == JORWAY));
+				mode = JORWAYMODE(dmode, (Enhanced && highwayType == JORWAY), Count > 1);
 				if( mode != NO_MODE )
 					status = JorwayDoIo(
 									Key, 			// module info
@@ -588,7 +604,7 @@ static int JorwayDoIo(
 		DATAcommand.f     = F;
 		DATAcommand.bs    = Mem == 24;
 		DATAcommand.n     = Key.slot;
-		DATAcommand.m     = JORWAYMODE(dmode, enhanced);
+		DATAcommand.m     = JORWAYMODE(dmode, enhanced, Count > 1);
 		DATAcommand.a     = A;
 		DATAcommand.sncx  = 0;
 		DATAcommand.scs   = 0;
