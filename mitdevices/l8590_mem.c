@@ -109,6 +109,11 @@ int l8590_mem___store(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
       return_on_error(setup_status,status);
     }
   }
+  if (total_samps > 32766)
+  {
+    printf("Total samples too large for L8590_MEM: %s --- %d\n",setup->name,total_samps);
+    total_samps = 32767;
+  }
   if (total_samps) {
     int chan;
     int chan_idx;

@@ -59,6 +59,11 @@ int l8590___store(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
   static DESCRIPTOR_SIGNAL_1(signal,&value,&counts,&latch);
   latch_nid = setup->head_nid + L8590_N_LATCH;
   pio(setup->name,2,0,&samples);
+  if (samples > 32766)
+  {
+    printf("Got large sample count from L8590: %s --- %d\n",setup->name,samples);
+    samples=32766;
+  }
   if (samples)
   {
     int samps_per_chan = samples/setup->num_active;
