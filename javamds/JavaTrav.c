@@ -26,6 +26,7 @@ static void report(char *msg)
 }
 
 
+
 struct descriptor_xd *getDeviceFields(char *deviceName)
 {
 	int status, nid, curr_nid, i;
@@ -38,6 +39,8 @@ struct descriptor_xd *getDeviceFields(char *deviceName)
 	struct descriptor dsc = {0, DTYPE_T, CLASS_S, 0};
 	char log_string[4096];
 
+
+	printf("Parte getDeviceFields\n");
 	conglomerate_nids = 0;
 	sprintf(log_string, "device_beans_path=%s", getenv("HOME"));
 	putenv(log_string);
