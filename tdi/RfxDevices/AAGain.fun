@@ -1,32 +1,34 @@
 public fun AAGain(in _control, in _config)
 {
-	if(_config == 'Series')
+	if(_config == 'SERIES')
 	{
-	    if(_control == 'Voltage')
+	    if(_control == 'VOLTAGE')
 		return(270.);
-	    if(_control == 'Current')
+	    if(_control == 'CURRENT')
 		return(812.5);
-	    if(_control == 'OpenLoop')
+	    if(_control == 'OPEN LOOP')
 		return(1.);
 	}
-	if(_config == 'Parallel')
+	if(_config == 'PARALLEL')
 	{
-	    if(_control == 'Voltage')
+	    if(_control == 'VOLTAGE')
 		return(135.);
-	    if(_control == 'Current')
+	    if(_control == 'CURRENT')
 		return(1625.);
-	    if(_control == 'OpenLoop')
+	    if(_control == 'OPEN LOOP')
 		return(1.);
 	}
-	if(_config == 'Independent')
+	if(_config == 'INDEPENDENT')
 	{
-	    if(_control == 'Voltage')
+	    if(_control == 'VOLTAGE')
 		return(135.);
-	    if(_control == 'Current')
+	    if(_control == 'CURRENT')
 		return(812.5);
-	    if(_control == 'OpenLoop')
+	    if(_control == 'OPEN LOOP')
 		return(1.);
 	}
     return (0);
 }
+
+
 
