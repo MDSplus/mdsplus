@@ -46,7 +46,8 @@ typedef struct _client { SOCKET sock;
                          int nargs;
                          struct descriptor *descrip[MAX_ARGS];
                          MdsEventList *event;
-						 void         *tdicontext[6];
+			 void         *tdicontext[6];
+                         int addr;
                          struct _client *next;
                        } Client;
 
@@ -56,6 +57,7 @@ static int multi = 0;
 static int IsService = 0;
 static int IsWorker = 0;
 static int ContextSwitching = 0;
+static char *PortName;
 #if defined(_WIN32)
 static char *hostfile = "C:\\mdsip.hosts";
 #else
@@ -63,6 +65,7 @@ static char *hostfile = "/etc/mdsip.hosts";
 #endif
 static char *portname = "8000";
 
+static void DefineTdi(char *execute_string, char dtype, short length, void *value);
 extern int TdiSaveContext();
 extern int TdiRestoreContext();
 extern int TdiExecute();
@@ -554,6 +557,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
 	    new->tdicontext[i] = NULL;
       for (i=0;i<MAX_ARGS;i++)
         new->descrip[i] = NULL;
+      new->addr = *(int *)&sin->sin_addr;
       new->next = NULL;
       for (c=ClientList; c && c->next; c = c->next);
       if (c) 
@@ -947,6 +951,8 @@ static void ExecuteMessage(Client *c)
     }
     c->descrip[c->nargs++] = (struct descriptor *)(xd = (struct descriptor_xd *)memcpy(malloc(sizeof(emptyxd)),&emptyxd,sizeof(emptyxd)));
     c->descrip[c->nargs++] = MdsEND_ARG;
+    DefineTdi("public $REMADDR=$",DTYPE_LONG,4,&c->addr);
+    DefineTdi("public $PORTNAME=$",DTYPE_T,strlen(PortName),PortName);
     ResetErrors();
     status = LibCallg(&c->nargs, TdiExecute);
     if (status & 1) status = TdiData(xd,&ans MDS_END_ARG);
@@ -1128,6 +1134,8 @@ static int CreateMdsPort(char *service, int multi_in)
     }
     sin.sin_port = sp->s_port;
   }
+  sp = getservbyport(sin.sin_port,"tcp");
+  PortName = strcpy((char *)malloc(strlen(sp ? sp->s_name :service)+1),sp ? sp->s_name : service);
   setsockopt(s, SOL_SOCKET,SO_RCVBUF,(char *)&recvbuf,sizeof(long));
   setsockopt(s, SOL_SOCKET,SO_SNDBUF,(char *)&sendbuf,sizeof(long));  
   status = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&multi_in,sizeof(1));
@@ -1203,4 +1211,18 @@ void GetErrorText(int status, struct descriptor_xd *xd)
     else
       MdsCopyDxXd((struct descriptor *)&unknown,xd);
   }
+}
+
+static void DefineTdi(char *execute_string, char dtype, short length, void *value)
+{
+  struct descriptor cmd = {0, DTYPE_T, CLASS_S, 0};
+  struct descriptor val = {0, 0, CLASS_S, 0};
+  EMPTYXD(emptyxd);
+  cmd.length = strlen(execute_string);
+  cmd.pointer = execute_string;
+  val.length = length;
+  val.dtype = dtype;
+  val.pointer = value;
+  TdiExecute(&cmd,&val,&emptyxd MDS_END_ARG);
+  MdsFree1Dx(&emptyxd,NULL);
 }

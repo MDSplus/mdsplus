@@ -53,6 +53,8 @@ static void SetCurrentJob(SrvJob *job);
 static SrvJob *GetCurrentJob();
 static char *Now();
 static void RemoveClient(SrvJob *job);
+static int GetRemAddr();
+static char *GetPortName();
 
 static int     Logging = 1;
 static SrvJob *LastQueueEntry;
@@ -90,7 +92,7 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
   case SrvAction:
     {
       SrvActionJob job;
-      job.h.addr  = *addr;
+      job.h.addr  = GetRemAddr();
       job.h.port  = *port;
       job.h.op    = *op;
       job.h.length = sizeof(job);
@@ -105,7 +107,7 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
   case SrvClose:
     {
       SrvCloseJob job;
-      job.h.addr  = *addr;
+      job.h.addr  = GetRemAddr();
       job.h.port  = *port;
       job.h.op    = *op;
       job.h.length = sizeof(job);
@@ -117,7 +119,7 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
   case SrvCreatePulse:
     {
       SrvCreatePulseJob job;
-      job.h.addr  = *addr;
+      job.h.addr  = GetRemAddr();
       job.h.port  = *port;
       job.h.op    = *op;
       job.h.length = sizeof(job);
@@ -136,7 +138,7 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
   case SrvCommand:
     {
       SrvCommandJob job;
-      job.h.addr  = *addr;
+      job.h.addr  = GetRemAddr();
       job.h.port  = *port;
       job.h.op    = *op;
       job.h.length = sizeof(job);
@@ -150,7 +152,7 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
   case SrvMonitor:
     {
       SrvMonitorJob job;
-      job.h.addr  = *addr;
+      job.h.addr  = GetRemAddr();
       job.h.port  = *port;
       job.h.op    = *op;
       job.h.length = sizeof(job);
@@ -432,7 +434,7 @@ static void DoSrvMonitor(SrvJob *job_in)
 static void LogPrefix(char *ans_c)
 {
   char hname[512];
-  char *port = getenv("port");
+  char *port = GetPortName();
   gethostname(hname,512);
   sprintf(ans_c,"%s, %s:%s, %s, ",Now(), hname, port ? port : "?", Logging == 0 ? "logging disabled" : "logging enabled");
 }
@@ -622,3 +624,27 @@ static int SendReply(SrvJob *job, int replyType, int status_in, int length, char
   return status;
 }
       
+static int GetRemAddr()
+{
+  static int addr;
+  static DESCRIPTOR_LONG(addr_d,&addr);
+  static DESCRIPTOR(cmd,"public $REMADDR");
+  TdiExecute(&cmd,&addr_d MDS_END_ARG);
+  return addr;
+}
+
+static char *GetPortName()
+{
+  static char *portname = 0;
+  if (!portname)
+  {
+    int status;
+    struct descriptor port_d = {0, DTYPE_T, CLASS_D, 0};
+    static DESCRIPTOR(endnull,"\0");
+    static DESCRIPTOR(cmd,"public $PORTNAME");
+    status = TdiExecute(&cmd,&port_d MDS_END_ARG);
+    StrAppend(&port_d,&endnull);
+    portname = port_d.pointer;
+  }
+  return portname;
+}
