@@ -119,8 +119,8 @@ static void InitSyncEfn()
 #ifdef vms
     lib$get_ef(&SyncEfn);
 #else
-    pthread_mutex_init(&SyncEfnMutex,0);
-    pthread_cond_init(&SyncEfnCond,0);
+    pthread_mutex_init(&SyncEfnMutex,pthread_mutexattr_default);
+    pthread_cond_init(&SyncEfnCond,pthread_condattr_default);
     SyncEfn = &SyncEfnCond;
 #endif
     SyncEfnInit = 1;
