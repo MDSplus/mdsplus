@@ -49,6 +49,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern void *DBID;
 
+/*
 static jmp_buf Env;
 static pthread_t this_thread = 0;
 
@@ -57,6 +58,7 @@ static void signal_handler(int dummy)
   if (pthread_self() == this_thread)
     longjmp(Env, 1);
 }
+*/
 
 int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
 {
@@ -98,6 +100,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
   count(nargs);
   arglist[0] = (void *)nargs;
 
+  /*
   this_thread = pthread_self();
   signal(SIGSEGV, signal_handler);
   signal(SIGBUS, signal_handler);
@@ -106,7 +109,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     printf("Do Method signal caught\n");
     return TreeFAILURE;
   }
-
+  */
   if (nid_dsc->dtype != DTYPE_NID || (!nid_dsc->pointer))
     return TreeNOMETHOD;
   head_nid = 0;
