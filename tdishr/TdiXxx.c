@@ -405,11 +405,11 @@ TdiRefStandard2(Tdi2Keep)
 TdiRefStandard2(Tdi2Land)
 
 	only_mismatch(uni);
-	if (cats[0].in_cat != cats[0].out_cat) {
+	if (cats[0].out_cat != DTYPE_BU) {
 		cats[0].out_dtype = DTYPE_BU;
 		cats[0].out_cat = TdiREF_CAT[DTYPE_BU].cat;
 	}
-	if (cats[1].in_cat != cats[1].out_cat) {
+	if (cats[1].out_cat != DTYPE_BU) {
 		cats[1].out_dtype = DTYPE_BU;
 		cats[1].out_cat = TdiREF_CAT[DTYPE_BU].cat;
 	}
