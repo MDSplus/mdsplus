@@ -186,15 +186,16 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
 static void RemoveJob(Job *job)
 {
   Job *j,*prev;
-  pthread_lock_global_np();
   for (j=Jobs,prev=0;j;prev=j,j=j->next)
   {
     if (j==job)
     {
+      pthread_lock_global_np();
       if (prev)
         prev->next = j->next;
       else
         Jobs = j->next;
+      pthread_unlock_global_np();
       if (j->has_condition)
       {
         pthread_mutex_lock(&j->mutex);
@@ -208,7 +209,6 @@ static void RemoveJob(Job *job)
       break;
     }
   }
-  pthread_unlock_global_np();
 }
 
 static void DoCompletionAst(int jobid,int status,char *msg, int removeJob)
@@ -240,6 +240,7 @@ void ServerWait(int jobid)
   Job *j;
   pthread_lock_global_np();
   for (j=Jobs; j && (j->jobid != jobid); j=j->next);
+  pthread_unlock_global_np();
   if (j)
   {
     if (j->has_condition)
@@ -250,7 +251,6 @@ void ServerWait(int jobid)
       pthread_mutex_unlock(&j->mutex);
     }
   }
-  pthread_unlock_global_np();
 }
 
 static void DoBeforeAst(int jobid)
@@ -302,6 +302,7 @@ static void  CleanupJob(int status, int jobid)
   SOCKET sock;
   pthread_lock_global_np();
   for (j=Jobs; j && (j->jobid != jobid); j++);
+  pthread_unlock_global_np();
   if (j)
   {
     sock = j->sock;
@@ -318,7 +319,6 @@ static void  CleanupJob(int status, int jobid)
         j=next;
       }
   }
-  pthread_unlock_global_np();
 }
 
 static int CreatePort(short starting_port, short *port_out)
@@ -555,11 +555,12 @@ static void RemoveClient(Client *c, fd_set *fdactive)
 {
   Job *j;
   int found = 1;
-  pthread_lock_global_np();
   while (found)
   {
     found = 0;
+    pthread_lock_global_np();
     for (j=Jobs;j && (j->sock != c->send_sock);j=j->next);
+    pthread_unlock_global_np();
     if (j)
     {
       found = 1;
@@ -587,7 +588,6 @@ static void RemoveClient(Client *c, fd_set *fdactive)
     if (cp && cp->next == c)
       cp->next = c->next;
   }
-  pthread_unlock_global_np();
   free(c);
 }
   
