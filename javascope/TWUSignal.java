@@ -13,6 +13,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.6  2002/04/26 14:00:35  jgk
+ * Added an error reporting method, as suggested by
+ * Marco van de Giessen <A.P.M.vandeGiessen@phys.uu.nl>.
+ *
  * Revision 1.5  2002/04/26 13:14:30  jgk
  * Changed End-Of-Line marker from Windows- to CVS standard.
  * No code changes (or at least, not intentional :-) ).
@@ -199,11 +203,15 @@ public class TWUSignal
                 ydata[sampleCount++] = F.floatValue();
             }
 
-            if (s==null)
+            finished = (sampleCount>=samples2Read || s == null) ;
+
+            if ( finished )
             {
+                // boolean premature_eof = (s==null);
+                // We should handle this, if it is a real problem.
+                
                 try { instream.close(); }
                 catch (Exception e) {}
-                finished =true;
 
                 if (sampleCount<samples2Read)
                 {
@@ -218,8 +226,6 @@ public class TWUSignal
                     }
                 }
             }
-            else
-              finished = sampleCount>=samples2Read ;
         }
         catch (Exception e) 
         {
