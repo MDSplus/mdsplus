@@ -5,4 +5,5 @@ all :
 	cd tditest ; make -f Makefile.OSF
 	cd xmdsshr ; make -f Makefile.OSF
 	cd dwscope ; make -f Makefile.OSF
+	cd mitdevices ; make -f Makefile.OSF
 	cd traverser ; make -f Makefile.OSF

@@ -61,7 +61,7 @@ all :	../shlib/libXmdsShr.so \
 xmdsuil.wmd : xmdsuil.wml wmldbcreate-xmdsshr.c
 	mkdir wmltemp
 	cd wmltemp ; ln -s /usr/examples/motif/wml/tokens.dat . ; /usr/examples/motif/wml/wml ../xmdsuil.wml
-	cc -o wmltemp/wmdcreate -DMDS_EXTENSION -I../../include -I/usr/examples/motif/wml -I. -I./wmltemp wmldbcreate-xmdsshr.c -lXt -lXm
+	cc -o wmltemp/wmdcreate -DMDS_EXTENSION -I../include -I/usr/examples/motif/wml -I. -I./wmltemp wmldbcreate-xmdsshr.c -lXt -lXm
 	wmltemp/wmdcreate -o xmdsuil.wmd
 	- rm -R wmltemp
 

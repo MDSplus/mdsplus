@@ -429,12 +429,9 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
   TdiExecute(&idxv,&ival_d,&ival_d MDS_END_ARG);
   if (strlen(database))
   {
-    struct descriptor database_dsc = {0,DTYPE_T,CLASS_S,0};
     static int shotnum;
     static int one = 1;
     shotnum = 0;
-    database_dsc.length = strlen(database);
-    database_dsc.pointer = database;
     if (strlen(shot))
     {
       struct descriptor shot_dsc = {0,DTYPE_T,CLASS_S,0};
@@ -455,17 +452,14 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
         if (! *event) return 1;
       }
     }
-    if (!(TreeOpen(&database_dsc,&shotnum)&1)) 
+    if (!(TreeOpen(database,shotnum, 1)&1)) 
       return Error(1, "Error opening database", error, 0, 0);
   }
   if (strlen(default_node))
   {
-    struct descriptor default_node_dsc = {0,DTYPE_T,CLASS_S,0};
     int nid;
-    default_node_dsc.length = strlen(default_node);
-    default_node_dsc.pointer = default_node;
     TreeSetDefaultNid(0);
-    if (!(TreeSetDefault(&default_node_dsc,&nid)&1))
+    if (!(TreeSetDefault(default_node,&nid)&1))
       return Error(1, "Default node not found", error, 0, 0);
   }
   else
