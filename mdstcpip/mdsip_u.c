@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mds_stdarg.h>
+#include <pthread.h>
 #ifdef _THREADS
 #include <pthread.h>
 #endif
@@ -969,12 +970,14 @@ static void ExecuteMessage(Client *c)
     }
     c->descrip[c->nargs++] = (struct descriptor *)(xd = (struct descriptor_xd *)memcpy(malloc(sizeof(emptyxd)),&emptyxd,sizeof(emptyxd)));
     c->descrip[c->nargs++] = MdsEND_ARG;
+    pthread_lock_global_np();
     DefineTdi("public $REMADDR=$",DTYPE_LONG,4,&c->addr);
     DefineTdi("public $PORTNAME=$",DTYPE_T,(short)strlen(PortName),PortName);
     ResetErrors();
     status = LibCallg(&c->nargs, TdiExecute);
     if (status & 1) status = TdiData(xd,&ans MDS_END_ARG);
     if (!(status & 1)) GetErrorText(status,&ans);
+    pthread_unlock_global_np();
     SendResponse(c,status,ans.pointer);
     MdsFree1Dx(xd,NULL);
 	MdsFree1Dx(&ans,NULL);

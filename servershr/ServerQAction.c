@@ -279,11 +279,26 @@ static void *Worker(void *arg)
         SendReply(job,SrvJobSTARTING,1,0,0);
       switch (job->h.op)
       {
-      case SrvAction: DoSrvAction(job); break;
-      case SrvClose: DoSrvClose(job); break;
-      case SrvCreatePulse: DoSrvCreatePulse(job); break;
-      case SrvCommand: DoSrvCommand(job); break;
-      case SrvMonitor: DoSrvMonitor(job); break;
+      case SrvAction: pthread_lock_global_np();
+                      DoSrvAction(job); 
+                      pthread_unlock_global_np();
+                      break;
+      case SrvClose:  pthread_lock_global_np();
+                      DoSrvClose(job); 
+                      pthread_unlock_global_np();
+                      break;
+      case SrvCreatePulse: pthread_lock_global_np();
+                           DoSrvCreatePulse(job); 
+                           pthread_unlock_global_np();
+                           break;
+      case SrvCommand: pthread_lock_global_np();
+                       DoSrvCommand(job); 
+                       pthread_unlock_global_np();
+                       break;
+      case SrvMonitor: pthread_lock_global_np();
+                       DoSrvMonitor(job); 
+                       pthread_unlock_global_np();
+                       break;
       }
       SetCurrentJob(0);
       FreeJob(job);
