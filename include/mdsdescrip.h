@@ -21,14 +21,12 @@
 #endif
 
 #ifdef _DESCRIPTOR_PREFIXES
-#define _DSC_  dsc_descriptor
 #define _DSCA_(field) dscA_##field
 #define _DSCB_(field) dscB_##field
 #define _DSCL_(field) dscL_##field
 #define _DSCW_(field) dscW_##field
 #define _DSCV_(field) dscV_##field
 #else
-#define _DSC_ descriptor
 #define _DSCA_(field) field
 #define _DSCB_(field) field
 #define _DSCL_(field) field
@@ -39,7 +37,7 @@
 /*
  *	Descriptor Prototype - each class of descriptor consists of at least the following fields:
  */
-struct	_DSC_
+struct	descriptor
 {
 	unsigned short	_DSCW_(length);	/* specific to descriptor class;  typically a 16-bit (unsigned) length */
 	unsigned char	_DSCB_(dtype);	/* data type code */
@@ -186,7 +184,7 @@ struct descriptor_xd {
 				unsigned short		_DSCW_(length);
 				unsigned char		_DSCB_(dtype);
 				unsigned char		_DSCB_(class);
-				struct descriptor	*_DSCA_(pointer);
+                                struct descriptor	        *_DSCA_(pointer);
 				unsigned int		_DSCL_(l_length);
 			};
 
@@ -203,7 +201,7 @@ struct descriptor_xs {
 				unsigned short		_DSCW_(length);
 				unsigned char		_DSCB_(dtype);
 				unsigned char		_DSCB_(class);
-				struct descriptor	*_DSCA_(pointer);
+				struct descriptor     	*_DSCA_(pointer);
 				unsigned int		_DSCL_(l_length);
 			};
 
@@ -310,9 +308,9 @@ struct descriptor_r		{	RECORD_HEAD
 #define DTYPE_PARAM	194
 
 struct descriptor_param	{	RECORD_HEAD
-					struct descriptor *value;
-					struct descriptor *help;
-					struct descriptor *validation;
+					struct descriptor *_DSCA_(value);
+					struct descriptor *_DSCA_(help);
+					struct descriptor *_DSCA_(validation);
 				};
 
 #define DESCRIPTOR_PARAM(name, value, help, validation) \
@@ -322,15 +320,15 @@ struct descriptor_param	{	RECORD_HEAD
 #define DTYPE_SIGNAL	195
 
 struct descriptor_signal	{	RECORD_HEAD
-					struct descriptor *data;
-					struct descriptor *raw;
-					struct descriptor *dimensions[1];
+					struct descriptor *_DSCA_(data);
+					struct descriptor *_DSCA_(raw);
+					struct descriptor *_DSCA_(dimensions)[1];
 				};
 
 #define SIGNAL(ndims)	struct	{	RECORD_HEAD \
-					struct descriptor *data;		\
-					struct descriptor *raw;		\
-					struct descriptor *dimensions[ndims];	\
+					struct descriptor *_DSCA_(data);		\
+					struct descriptor *_DSCA_(raw);		\
+					struct descriptor *_DSCA_(dimensions)[ndims];	\
 				}
 
 #define DESCRIPTOR_SIGNAL(name, ndims, data, raw) \
@@ -348,8 +346,8 @@ struct descriptor_signal	{	RECORD_HEAD
 #define DTYPE_DIMENSION	196
 
 struct descriptor_dimension {	RECORD_HEAD
-					struct descriptor *window;
-					struct descriptor *axis;
+					struct descriptor *_DSCA_(window);
+					struct descriptor *_DSCA_(axis);
 				};
 
 #define DESCRIPTOR_DIMENSION(name, window, axis) \
@@ -359,9 +357,9 @@ struct descriptor_dimension {	RECORD_HEAD
 #define DTYPE_WINDOW	197
 
 struct descriptor_window	{	RECORD_HEAD
-					struct descriptor *startidx;
-					struct descriptor *endingidx;
-					struct descriptor *value_at_idx0;
+					struct descriptor *_DSCA_(startidx);
+					struct descriptor *_DSCA_(endingidx);
+					struct descriptor *_DSCA_(value_at_idx0);
 				};
 
 #define DESCRIPTOR_WINDOW(name, start, iend, xref) \
@@ -369,7 +367,7 @@ struct descriptor_window	{	RECORD_HEAD
 	(struct descriptor *)start, (struct descriptor *)iend, (struct descriptor *)xref}
 
 struct descriptor_axis	{	RECORD_HEAD
-					struct descriptor *dscptrs[3];
+					struct descriptor *_DSCA_(dscptrs)[3];
 				};
 
 
@@ -378,17 +376,17 @@ struct descriptor_axis	{	RECORD_HEAD
 
 struct descriptor_slope	{	RECORD_HEAD
 					struct {
-						struct descriptor *slope;
-						struct descriptor *begin;
-						struct descriptor *ending;
+						struct descriptor *_DSCA_(slope);
+						struct descriptor *_DSCA_(begin);
+						struct descriptor *_DSCA_(ending);
 					} segment[1];
 				};
 
 #define SLOPE(nsegs)	struct	{	RECORD_HEAD \
 					struct {\
-						struct descriptor *slope;	\
-						struct descriptor *begin;	\
-						struct descriptor *ending;	\
+						struct descriptor *_DSCA_(slope);	\
+						struct descriptor *_DSCA_(begin);	\
+						struct descriptor *_DSCA_(ending);	\
 					} segment[nsegs];\
 				}
 
@@ -396,11 +394,11 @@ struct descriptor_slope	{	RECORD_HEAD
 #define DTYPE_FUNCTION	199
 
 struct descriptor_function	{	RECORD_HEAD
-					struct descriptor *arguments[1];
+					struct descriptor *_DSCA_(arguments)[1];
 				};
 
 #define FUNCTION(nargs) struct	{	RECORD_HEAD \
-					struct descriptor *arguments[nargs];	\
+					struct descriptor *_DSCA_(arguments)[nargs];	\
 				}
 
 #define DESCRIPTOR_FUNCTION(name, op_code_ptr, nargs) \
@@ -421,10 +419,10 @@ struct descriptor_function	{	RECORD_HEAD
 #define DTYPE_CONGLOM	200
 
 struct descriptor_conglom	{	RECORD_HEAD
-					struct descriptor *image;
-					struct descriptor *model;
-					struct descriptor *name;
-					struct descriptor *qualifiers;
+					struct descriptor *_DSCA_(image);
+					struct descriptor *_DSCA_(model);
+					struct descriptor *_DSCA_(name);
+					struct descriptor *_DSCA_(qualifiers);
 				};
 
 #define DESCRIPTOR_CONGLOM(sname, image, model, name, qualifiers) \
@@ -435,9 +433,9 @@ struct descriptor_conglom	{	RECORD_HEAD
 #define DTYPE_RANGE	201
 
 struct descriptor_range	{	RECORD_HEAD
-					struct descriptor *begin;
-					struct descriptor *ending;
-					struct descriptor *deltaval;
+					struct descriptor *_DSCA_(begin);
+					struct descriptor *_DSCA_(ending);
+					struct descriptor *_DSCA_(deltaval);
 				};
 
 #define DESCRIPTOR_RANGE(name, begin, ending, delta) \
@@ -447,11 +445,11 @@ struct descriptor_range	{	RECORD_HEAD
 #define DTYPE_ACTION	202
 
 struct descriptor_action	{	RECORD_HEAD
-					struct descriptor *dispatch;
-					struct descriptor *task;
-					struct descriptor *errorlogs;
-					struct descriptor *completion_message;
-					struct descriptor_a *performance;
+					struct descriptor *_DSCA_(dispatch);
+					struct descriptor *_DSCA_(task);
+					struct descriptor *_DSCA_(errorlogs);
+					struct descriptor *_DSCA_(completion_message);
+					struct descriptor_a *_DSCA_(performance);
 				};
 
 #define DESCRIPTOR_ACTION(name, dispatch, task, errorlogs) \
@@ -461,10 +459,10 @@ struct descriptor_action	{	RECORD_HEAD
 #define DTYPE_DISPATCH	203
 
 struct descriptor_dispatch	{	RECORD_HEAD
-					struct descriptor *ident;
-					struct descriptor *phase;
-					struct descriptor *when;
-					struct descriptor *completion;
+					struct descriptor *_DSCA_(ident);
+					struct descriptor *_DSCA_(phase);
+					struct descriptor *_DSCA_(when);
+					struct descriptor *_DSCA_(completion);
 				};
 
 /*****************************************************
@@ -483,8 +481,8 @@ struct descriptor_dispatch	{	RECORD_HEAD
 #define DTYPE_PROGRAM	204
 
 struct descriptor_program	{	RECORD_HEAD
-					struct descriptor *time_out;
-					struct descriptor *program;
+					struct descriptor *_DSCA_(time_out);
+					struct descriptor *_DSCA_(program);
 				};
 
 #define DESCRIPTOR_PROGRAM(name, program, timeout) \
@@ -494,18 +492,18 @@ struct descriptor_program	{	RECORD_HEAD
 #define DTYPE_ROUTINE	205
 
 struct descriptor_routine	{	RECORD_HEAD
-					struct descriptor *time_out;
-					struct descriptor *image;
-					struct descriptor *routine;
-					struct descriptor *arguments[1];
+					struct descriptor *_DSCA_(time_out);
+					struct descriptor *_DSCA_(image);
+					struct descriptor *_DSCA_(routine);
+					struct descriptor *_DSCA_(arguments)[1];
 				};
 
 
 #define ROUTINE(nargs)	struct	{	RECORD_HEAD \
-					struct descriptor *time_out;		\
-					struct descriptor *image;		\
-					struct descriptor *routine;		\
-					struct descriptor *arguments[nargs];	\
+					struct descriptor *_DSCA_(time_out);		\
+					struct descriptor *_DSCA_(image);		\
+					struct descriptor *_DSCA_(routine);		\
+					struct descriptor *_DSCA_(arguments)[nargs];	\
 				}
 
 #define DESCRIPTOR_ROUTINE(name, image, routine, timeout, nargs) \
@@ -516,18 +514,18 @@ struct descriptor_routine	{	RECORD_HEAD
 #define DTYPE_PROCEDURE	206
 
 struct descriptor_procedure	{	RECORD_HEAD
-					struct descriptor *time_out;
-					struct descriptor *language;
-					struct descriptor *procedure;
-					struct descriptor *arguments[1];
+					struct descriptor *_DSCA_(time_out);
+					struct descriptor *_DSCA_(language);
+					struct descriptor *_DSCA_(procedure);
+					struct descriptor *_DSCA_(arguments)[1];
 				};
 
 
 #define PROCEDURE(nargs) struct {	RECORD_HEAD \
-					struct descriptor *time_out;		\
-					struct descriptor *language;		\
-					struct descriptor *procedure;		\
-					struct descriptor *arguments[nargs];	\
+					struct descriptor *_DSCA_(time_out);		\
+					struct descriptor *_DSCA_(language);		\
+					struct descriptor *_DSCA_(procedure);		\
+					struct descriptor *_DSCA_(arguments)[nargs];	\
 				}
 
 #define DESCRIPTOR_PROCEDURE(name, language, procedure, timeout, nargs) \
@@ -537,24 +535,24 @@ struct descriptor_procedure	{	RECORD_HEAD
 #define DTYPE_METHOD	207
 
 struct descriptor_method	{	RECORD_HEAD
-					struct descriptor *time_out;
-					struct descriptor *method;
-					struct descriptor *object;
-					struct descriptor *arguments[1];
+					struct descriptor *_DSCA_(time_out);
+					struct descriptor *_DSCA_(method);
+					struct descriptor *_DSCA_(object);
+					struct descriptor *_DSCA_(arguments)[1];
 				};
 
 
 #define METHOD(nargs)	struct	{	RECORD_HEAD \
-					struct descriptor *time_out;		\
-					struct descriptor *method;		\
-					struct descriptor *object;		\
-					struct descriptor *arguments[nargs];	\
+					struct descriptor *_DSCA_(time_out);		\
+					struct descriptor *_DSCA_(method);		\
+					struct descriptor *_DSCA_(object);		\
+					struct descriptor *_DSCA_(arguments)[nargs];	\
 				}
 
 #define METHOD_0	struct	{	RECORD_HEAD \
-					struct descriptor *time_out;		\
-					struct descriptor *method;		\
-					struct descriptor *object;		\
+					struct descriptor *_DSCA_(time_out);		\
+					struct descriptor *_DSCA_(method);		\
+					struct descriptor *_DSCA_(object);		\
 				}
 
 #define DESCRIPTOR_METHOD(name, method, object, timeout, nargs) \
@@ -568,7 +566,7 @@ struct descriptor_method	{	RECORD_HEAD
 #define DTYPE_DEPENDENCY	208
 
 struct descriptor_dependency {	RECORD_HEAD
-					struct descriptor *arguments[2];
+					struct descriptor *_DSCA_(arguments)[2];
 				};
 
 #define DESCRIPTOR_DEPENDENCY(name, op_code_ptr, arg_1, arg_2) \
@@ -578,7 +576,7 @@ struct descriptor_dependency {	RECORD_HEAD
 #define DTYPE_CONDITION	209
 
 struct descriptor_condition {	RECORD_HEAD
-					struct descriptor *condition;
+					struct descriptor *_DSCA_(condition);
 				};
 
 #define DESCRIPTOR_CONDITION(name, modifier, condition) \
@@ -597,8 +595,8 @@ struct descriptor_condition {	RECORD_HEAD
 #define DTYPE_WITH_UNITS	211
 
 struct descriptor_with_units {	RECORD_HEAD
-					struct descriptor *data;
-					struct descriptor *units;
+					struct descriptor *_DSCA_(data);
+					struct descriptor *_DSCA_(units);
 				};
 
 
@@ -615,15 +613,15 @@ struct descriptor_with_units {	RECORD_HEAD
 #define DTYPE_CALL	212
 
 struct descriptor_call	{	RECORD_HEAD
-					struct descriptor *image;
-					struct descriptor *routine;
-					struct descriptor *arguments[1];
+					struct descriptor *_DSCA_(image);
+					struct descriptor *_DSCA_(routine);
+					struct descriptor *_DSCA_(arguments)[1];
 				};
 
 #define CALL(nargs) struct	{	RECORD_HEAD \
-					struct descriptor *image;		\
-					struct descriptor *routine;		\
-					struct descriptor *arguments[nargs];	\
+					struct descriptor *_DSCA_(image);		\
+					struct descriptor *_DSCA_(routine);		\
+					struct descriptor *_DSCA_(arguments)[nargs];	\
 				}
 
 #define DESCRIPTOR_CALL(name, dtype_ptr, nargs, image, routine) \
@@ -633,8 +631,8 @@ struct descriptor_call	{	RECORD_HEAD
 #define DTYPE_WITH_ERROR	213
 
 struct descriptor_with_error {	RECORD_HEAD
-					struct descriptor *data;
-					struct descriptor *error;
+					struct descriptor *_DSCA_(data);
+					struct descriptor *_DSCA_(error);
 				};
 
 #define DESCRIPTOR_WITH_ERROR(name, data, error) \

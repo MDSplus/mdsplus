@@ -46,6 +46,7 @@
 
 +-----------------------------------------------------------------------------*/
 
+#define _DESCRIPTOR_PREFIXES
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <stdlib.h>
@@ -74,10 +75,10 @@ typedef ARRAY_COEFF(char, 1) array_coef;
   int align_size;
   array_coef *out_dsc;
   unsigned char dsc_dtype = DTYPE_DSC;
-  new_arsize = (in_dsc->arsize / in_dsc->length) * (*length_ptr);
-  dsc_size = sizeof(struct descriptor_a) + (in_dsc->aflags.coeff ? sizeof(char *) + 
-                                                          sizeof(int) * in_dsc->dimct : 0) +
-						 (in_dsc->aflags.bounds ? sizeof(int) * (in_dsc->dimct * 2) 
+  new_arsize = (in_dsc->dscL_arsize / in_dsc->dscW_length) * (*length_ptr);
+  dsc_size = sizeof(struct descriptor_a) + (in_dsc->aflags.dscV_coeff ? sizeof(char *) + 
+                                                          sizeof(int) * in_dsc->dscB_dimct : 0) +
+						 (in_dsc->aflags.dscV_bounds ? sizeof(int) * (in_dsc->dscB_dimct * 2) 
                                                                                                      : 0);
   align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
   dsc_size = align(dsc_size,align_size);
@@ -85,40 +86,40 @@ typedef ARRAY_COEFF(char, 1) array_coef;
   status = MdsGet1Dx(&new_size, &dsc_dtype, out_xd, NULL);
   if (status & 1)
   {
-    out_dsc = (array_coef *) out_xd->pointer;
+    out_dsc = (array_coef *) out_xd->dscA_pointer;
     *(struct descriptor_a *) out_dsc = *(struct descriptor_a *) in_dsc;
-    out_dsc->length = *length_ptr;
-    out_dsc->dtype = *dtype_ptr;
-    out_dsc->pointer = (char *) out_dsc + align(dsc_size,align_size);
-    out_dsc->arsize = new_arsize;
-    if (out_dsc->aflags.coeff)
+    out_dsc->dscW_length = *length_ptr;
+    out_dsc->dscB_dtype = *dtype_ptr;
+    out_dsc->dscA_pointer = (char *) out_dsc + align(dsc_size,align_size);
+    out_dsc->dscL_arsize = new_arsize;
+    if (out_dsc->aflags.dscV_coeff)
     {
-      if (out_dsc->class == CLASS_CA)
+      if (out_dsc->dscB_class == CLASS_CA)
       {
-	out_dsc->a0 = out_dsc->pointer + ((int) out_dsc->length) *
-		       ((int) in_dsc->a0 / ((int) in_dsc->length));
+	out_dsc->dscA_a0 = out_dsc->dscA_pointer + ((int) out_dsc->dscW_length) *
+		       ((int) in_dsc->dscA_a0 / ((int) in_dsc->dscW_length));
       }
       else
       {
-	out_dsc->a0 = out_dsc->pointer + ((int) out_dsc->length) *
-		       (((char *)in_dsc->a0 - (char *)in_dsc->pointer) / ((int) in_dsc->length));
+	out_dsc->dscA_a0 = out_dsc->dscA_pointer + ((int) out_dsc->dscW_length) *
+		       (((char *)in_dsc->dscA_a0 - (char *)in_dsc->dscA_pointer) / ((int) in_dsc->dscW_length));
       }
-      for (i = 0; i < out_dsc->dimct; i++)
-	out_dsc->m[i] = in_dsc->m[i];
-      if (in_dsc->aflags.bounds)
+      for (i = 0; i < out_dsc->dscB_dimct; i++)
+	out_dsc->dscL_m[i] = in_dsc->dscL_m[i];
+      if (in_dsc->aflags.dscV_bounds)
       {
 	struct bound
 	{
 	  int       l;
 	  int       u;
 	};
-	struct bound *new_bound_ptr = (struct bound *) & out_dsc->m[out_dsc->dimct];
-	struct bound *a_bound_ptr = (struct bound *) & in_dsc->m[in_dsc->dimct];
-	for (i = 0; i < out_dsc->dimct; i++)
+	struct bound *new_bound_ptr = (struct bound *) & out_dsc->dscL_m[out_dsc->dscB_dimct];
+	struct bound *a_bound_ptr = (struct bound *) & in_dsc->dscL_m[in_dsc->dscB_dimct];
+	for (i = 0; i < out_dsc->dscB_dimct; i++)
 	  new_bound_ptr[i] = a_bound_ptr[i];
       }
     }
-    out_dsc->class = CLASS_A;
+    out_dsc->dscB_class = CLASS_A;
   }
   return status;
 }
