@@ -54,7 +54,7 @@ MSGPTR msg;
     short class[class_size];
     idptr id;
     int status;
-    memcpy(class,msgclass(msg),class_size * sizeof(short));
+    memcpy(class,(void *)msgclass(msg),class_size * sizeof(short));
     id = find_mdsevent_idtag(class[private_tag]);
     switch(class[minor_class]){
     case mc_create:
@@ -78,7 +78,7 @@ MSGPTR msg;
         }
         if(id && id->data && msgsize(msg) > 0){
             if(id->dlen > msgsize(msg)) id->dlen = msgsize(msg);
-            memcpy(id->data,msgdata(msg),msgsize(msg));
+            memcpy(id->data,(void *)msgdata(msg),msgsize(msg));
         }
         mdseventdone(id);
         ipcs_deletemsg(msg);
@@ -92,7 +92,7 @@ MSGPTR msg;
     short class[class_size];
     idptr id;
     int status;
-    memcpy(class,msgclass(msg),class_size * sizeof(short));
+    memcpy(class,(void *)msgclass(msg),class_size * sizeof(short));
     id = find_mdsevent_idtag(class[private_tag]);
     switch(class[minor_class]){
     case mc_create:
