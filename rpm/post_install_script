@@ -11,265 +11,284 @@ do
   read MDSPLUS_DIR
 done
 echo $MDSPLUS_DIR > /etc/.mdsplus_dir
+#
+# Determine if user wants MDSplus environment variables set for all users
+#
+while ( test "$MDSplusEnv" = "") do
+echo -n "Do you want MDSplus environment variables set for all users? (y/n/?) [y]: "
+read MDSplusEnv
+if ( test "$MDSplusEnv" = "")
+then
+  MDSplusEnv=y
+fi  
+case $MDSplusEnv in
+y*) MDSplusEnv=y;;
+Y*) MDSplusEnv=y;;
+n*) MDSplusEnv=n;;
+N*) MDSplusEnv=n;;
+\?*) unset MDSplusEnv
+    echo ""
+    echo "There are several environment variables that need to be defined to use MDSplus."
+    echo "Entering a y[es] here will add the MDSplus variables to the environment of all users"
+    echo "at login time. If you answer n[o] the variables can be defined for MDSplus users by"
+    echo "adding the following line to their login script for a borne shell (or derivative):"
+    echo ""
+    echo ". $MDSPLUS_DIR/setup.sh"
+    echo ""
+    echo "or if using a csh or derivative:"
+    echo ""
+    echo "source $MDSPLUS_DIR/setup.csh"
+    echo "";;
+*)  unset MDSplusEnv
+    echo ""
+    echo "Please answer y[es], n[o] or ? for help."
+    echo "";;
+esac
+done
+#
+# Determine if user wants to setup MDSplus data servers
+#
+while ( test "$MDSplusSrv" = "") do
+echo -n "Do you want to setup MDSplus data servers? (y/n/?) [y]: "
+read MDSplusSrv
+if ( test "$MDSplusSrv" = "")
+then
+  MDSplusSrv=y
+fi  
+case $MDSplusSrv in
+y*) MDSplusSrv=y;;
+Y*) MDSplusSrv=y;;
+n*) MDSplusSrv=n;;
+N*) MDSplusSrv=n;;
+\?*) unset MDSplusSrv
+    echo ""
+    echo "MDSplus can be setup to serve data to remote clients."
+    echo "Entering a y[es] here will add the mdsip service to inetd. Access to the data servers is"
+    echo "controlled by /etc/mdsip.hosts."
+    echo "";;
+*)  unset MDSplusSrv
+    echo ""
+    echo "Please answer y[es], n[o] or ? for help."
+    echo "";;
+esac
+done
+if (test "$MDSplusSrv" = "y")
+then
+  echo Creating sample /etc/mdsip.hosts file for mdsip server to user mapping
+  if [ ! -r /etc/mdsip.hosts ]; then 
+    cp $MDSPLUS_DIR/etc/mdsip.hosts /etc/ 
+  fi
+fi
+#
+# case on operating system
+#
 case "`uname`" in
 Linux*)
 #
-# Linux post install script
-#
-# Add $MDSPLUS_DIR/lib to /etc/ld.so.conf
-#
-echo Configuring mdsplus libraries
-if grep "^$MDSPLUS_DIR/lib" /etc/ld.so.conf > /dev/null
-then
-	true
-else
-	echo "$MDSPLUS_DIR/lib" >> /etc/ld.so.conf
-fi
-/sbin/ldconfig
-#
-# Add $MDSPLUS_DIR/man to manpath
-#
-echo Configuring mdsplus man pages
-if grep "^MANPATH $MDSPLUS_DIR/man" /etc/man.config > /dev/null
-then
-	true
-else
-	echo "MANPATH $MDSPLUS_DIR/man" >> /etc/man.config
-fi
-#
 # Add mdsip to services
 #
-echo Adding mdsip MDSplus data server
-if grep "^mdsip " /etc/services >/dev/null
+if (test "$MDSplusSrv" = "y")
 then
-        true
-else
-        echo "mdsip    8000/tcp # Added by package mdsplus" >> /etc/services
-fi
+  echo Adding mdsip MDSplus data server
+  if grep "^mdsip " /etc/services >/dev/null
+  then
+          true
+  else
+          echo "mdsip    8000/tcp # Added by package mdsplus" >> /etc/services
+  fi
 #
 # Add mdsipd to inetd.conf
 #
-mkdirhier /var/log/mdsplus/mdsipd
-if grep "^mdsip " /etc/inetd.conf > /dev/null
-then
-  true
-else
-  echo "mdsip stream	tcp	nowait root $MDSPLUS_DIR/bin/mdsipd mdsipd mdsip /var/log/mdsplus/mdsipd" >> /etc/inetd.conf
-  kill -HUP `/sbin/pidof inetd`
+  mkdirhier /var/log/mdsplus/mdsipd
+  if grep "^mdsip " /etc/inetd.conf > /dev/null
+  then
+    true
+  else
+    echo "mdsip stream	tcp	nowait root $MDSPLUS_DIR/bin/mdsipd mdsipd mdsip /var/log/mdsplus/mdsipd" >> /etc/inetd.conf
+    kill -HUP `/sbin/pidof inetd`
+  fi
 fi
-echo Adding MDSplus login scripts
-ln -s $MDSPLUS_DIR/setup.csh /etc/profile.d/mdsplus.csh
-ln -s $MDSPLUS_DIR/setup.sh /etc/profile.d/mdsplus.sh
-echo Creating sample /etc/mdsip.hosts file for mdsip server to user mapping
-if [ ! -r /etc/mdsip.hosts ]; then
-  cp $MDSPLUS_DIR/etc/mdsip.hosts /etc/
+#
+if (test "$MDSplusEnv" = "y")
+then
+  echo Adding MDSplus login scripts
+  ln -s $MDSPLUS_DIR/setup.csh /etc/profile.d/mdsplus.csh
+  ln -s $MDSPLUS_DIR/setup.sh /etc/profile.d/mdsplus.sh
 fi
 ;;
 OSF1*)
-#
-# Compaq TruUNIX post install script
-#
-# Put symlinks in /usr/local/lib to all MDSplus shared libraries
-#
-echo Configuring mdsplus libraries
-ln -sf $MDSPLUS_DIR/lib/*.so /usr/local/lib
-#
-# Put symlinks in /usr/local/man to all MDSplus man pages
-#
-echo Configuring mdsplus man pages
-if [ ! -r /usr/local/man ]; then
-mkdir /usr/local/man
-mkdir /usr/local/man/man1
-mkdir /usr/local/man/man5
-mkdir /usr/local/man/man8
-chmod -R 755 /usr/local/man
-else
-if [ ! -r /usr/local/man/man1 ]; then
-mkdir /usr/local/man/man1
-chmod 755 /usr/local/man/man1
-fi
-if [ ! -r /usr/local/man/man5 ]; then
-mkdir /usr/local/man/man5
-chmod 755 /usr/local/man/man5
-fi
-if [ ! -r /usr/local/man/man8 ]; then
-mkdir /usr/local/man/man8
-chmod 755 /usr/local/man/man8
-fi
-fi
-ln -sf $MDSPLUS_DIR/man/man1/*.gz /usr/local/man/man1
-ln -sf $MDSPLUS_DIR/man/man5/*.gz /usr/local/man/man5
-ln -sf $MDSPLUS_DIR/man/man8/*.gz /usr/local/man/man8
+if (test "$MDSplusSrv" = "y")
+then 
 #
 # Add mdsip to services
 #
-echo Adding mdsip MDSplus data server
-if grep "^mdsip " /etc/services >/dev/null
-then
+  echo Adding mdsip MDSplus data server
+  if grep "^mdsip " /etc/services >/dev/null
+  then
         true
-else
+  else
         echo "mdsip    8000/tcp # Added by package mdsplus" >> /etc/services
-fi
+  fi
 #
 # Add mdsipd to inetd.conf
 #
-/usr/bin/X11/mkdirhier /var/log/mdsplus/mdsipd
-if grep "^mdsip " /etc/inetd.conf > /dev/null
-then
-  true
-else
-  echo "mdsip stream	tcp	nowait root $MDSPLUS_DIR/bin/mdsipd mdsipd mdsip /var/log/mdsplus/mdsipd" >> /etc/inetd.conf
-  kill -HUP `/bin/ps -e -o pid -o command | /bin/grep /usr/sbin/inetd | /bin/grep -v grep | /bin/awk '{print $1}'`
+  /usr/bin/X11/mkdirhier /var/log/mdsplus/mdsipd
+  if grep "^mdsip " /etc/inetd.conf > /dev/null
+  then
+    true
+  else
+    echo "mdsip stream	tcp	nowait root $MDSPLUS_DIR/bin/mdsipd mdsipd mdsip /var/log/mdsplus/mdsipd" >> /etc/inetd.conf
+    kill -HUP `/bin/ps -e -o pid -o command | /bin/grep /usr/sbin/inetd | /bin/grep -v grep | /bin/awk '{print $1}'`
+  fi
 fi
-echo Adding MDSplus login scripts
-if grep "^. $MDSPLUS_DIR/setup.sh" /etc/profile > /dev/null
-then
-  true
-else
-  echo ". $MDSPLUS_DIR/setup.sh" >> /etc/profile
-fi
-if grep "^source $MDSPLUS_DIR/setup.csh" /etc/csh.login > /dev/null
-then
-  true
-else
-  echo "source $MDSPLUS_DIR/setup.csh" >> /etc/csh.login
-fi
-echo Creating sample /etc/mdsip.hosts file for mdsip server to user mapping
-if [ ! -r /etc/mdsip.hosts ]; then 
-  cp $MDSPLUS_DIR/etc/mdsip.hosts /etc/ 
+if (test "$MDSplusEnv" = "y")
+then 
+  echo Adding MDSplus login scripts
+  if grep "^. $MDSPLUS_DIR/setup.sh" /etc/profile > /dev/null
+  then
+    true
+  else
+    echo ". $MDSPLUS_DIR/setup.sh" >> /etc/profile
+  fi
+  if grep "^source $MDSPLUS_DIR/setup.csh" /etc/csh.login > /dev/null
+  then
+    true
+  else
+    echo "source $MDSPLUS_DIR/setup.csh" >> /etc/csh.login
+  fi
 fi
 ;;
 HP-UX*)
-#
-# HP-UX post install script
-#
-# Put symlinks in /usr/local/lib to all MDSplus shared libraries
-#
-echo Configuring mdsplus libraries
-ln -sf $MDSPLUS_DIR/lib/*.sl /usr/local/lib
-#
-# Add $MDSPLUS_DIR/man to /etc/MANPATH
-#
-echo Configuring mdsplus man pages
-if [ -r /etc/MANPATH ]; then
-mv /etc/MANPATH /etc/MANPATH_pre_mdsplus
-echo `cat /etc/MANPATH_pre_mdsplus`:$MDSPLUS_DIR/man > /etc/MANPATH
-else
-echo /usr/share/man:/usr/contrib/man:/usr/local/man:$MDSPLUS_DIR/man > /etc/MANPATH
-fi
-chmod 444 /etc/MANPATH
+if (test "$MDSplusSrv" = "y")
+then
 #
 # Add mdsip to services
 #
-echo Adding mdsip MDSplus data server
-if grep "^mdsip " /etc/services >/dev/null
-then
+  echo Adding mdsip MDSplus data server
+  if grep "^mdsip " /etc/services >/dev/null
+  then
         true
-else
+  else
         echo "mdsip    8000/tcp # Added by package mdsplus" >> /etc/services
-fi
+  fi
 #
 # Add mdsipd to inetd.conf
 #
-/usr/bin/X11/mkdirhier /var/log/mdsplus/mdsipd
-if grep "^mdsip " /etc/inetd.conf > /dev/null
-then
-  true
-else
-  echo "mdsip stream	tcp	nowait root $MDSPLUS_DIR/bin/mdsipd mdsipd mdsip /var/log/mdsplus/mdsipd" >> /etc/inetd.conf
-  kill -HUP `/bin/ps -e | /bin/grep inetd | /bin/grep -v grep | /bin/awk '{print $1}'`
+  /usr/bin/X11/mkdirhier /var/log/mdsplus/mdsipd
+  if grep "^mdsip " /etc/inetd.conf > /dev/null
+  then
+    true
+  else
+    echo "mdsip stream	tcp	nowait root $MDSPLUS_DIR/bin/mdsipd mdsipd mdsip /var/log/mdsplus/mdsipd" >> /etc/inetd.conf
+    kill -HUP `/bin/ps -e | /bin/grep inetd | /bin/grep -v grep | /bin/awk '{print $1}'`
+  fi
 fi
-echo Adding MDSplus login scripts
-if grep "^. $MDSPLUS_DIR/setup.sh" /etc/profile > /dev/null
-then
-  true
-else
-  echo ". $MDSPLUS_DIR/setup.sh" >> /etc/profile
-fi
-if grep "^source $MDSPLUS_DIR/setup.csh" /etc/csh.login > /dev/null
-then
-  true
-else
-  echo "source $MDSPLUS_DIR/setup.csh" >> /etc/csh.login
-fi
-echo Creating sample /etc/mdsip.hosts file for mdsip server to user mapping
-if [ ! -r /etc/mdsip.hosts ]; then 
-  cp $MDSPLUS_DIR/etc/mdsip.hosts /etc/ 
+if (test "$MDSplusEnv" = "y")
+then 
+  echo Adding MDSplus login scripts
+  if grep "^. $MDSPLUS_DIR/setup.sh" /etc/profile > /dev/null
+  then
+    true
+  else
+    echo ". $MDSPLUS_DIR/setup.sh" >> /etc/profile
+  fi
+  if grep "^source $MDSPLUS_DIR/setup.csh" /etc/csh.login > /dev/null
+  then
+    true
+  else
+    echo "source $MDSPLUS_DIR/setup.csh" >> /etc/csh.login
+  fi
 fi
 ;;
 SunOS*)
 #
 # SunOS post install script
 #
-# Put symlinks in /usr/local/lib to all MDSplus shared libraries
-#
-echo Configuring mdsplus libraries
-ln -sf $MDSPLUS_DIR/lib/*.so /usr/local/lib
-#
-# Put symlinks in /usr/local/man to all MDSplus man pages
-#
-echo Configuring mdsplus man pages
-if [ ! -r /usr/local/man ]; then
-mkdir /usr/local/man
-mkdir /usr/local/man/man1
-mkdir /usr/local/man/man5
-mkdir /usr/local/man/man8
-chmod -R 755 /usr/local/man
-else
-if [ ! -r /usr/local/man/man1 ]; then
-mkdir /usr/local/man/man1
-chmod 755 /usr/local/man/man1
-fi
-if [ ! -r /usr/local/man/man5 ]; then
-mkdir /usr/local/man/man5
-chmod 755 /usr/local/man/man5
-fi
-if [ ! -r /usr/local/man/man8 ]; then
-mkdir /usr/local/man/man8
-chmod 755 /usr/local/man/man8
-fi
-fi
-ln -sf $MDSPLUS_DIR/man/man1/*.gz /usr/local/man/man1
-ln -sf $MDSPLUS_DIR/man/man5/*.gz /usr/local/man/man5
-ln -sf $MDSPLUS_DIR/man/man8/*.gz /usr/local/man/man8
+if (test "$MDSplusSrv" = "y")
+then
 #
 # Add mdsip to services
 #
-echo Adding mdsip MDSplus data server
-if grep "^mdsip " /etc/services >/dev/null
-then
-        true
-else
-        echo "mdsip    8000/tcp # Added by package mdsplus" >> /etc/services
-fi
+  echo Adding mdsip MDSplus data server
+  if grep "^mdsip " /etc/services >/dev/null
+  then
+          true
+  else
+          echo "mdsip    8000/tcp # Added by package mdsplus" >> /etc/services
+  fi
 #
 # Add mdsipd to inetd.conf
 #
-/usr/openwin/bin/mkdirhier /var/log/mdsplus/mdsipd
-if grep "^mdsip " /etc/inetd.conf > /dev/null
-then
-  true
-else
-  echo "mdsip stream	tcp	nowait root $MDSPLUS_DIR/bin/mdsipd mdsipd mdsip /var/log/mdsplus/mdsipd" >> /etc/inetd.conf
-  kill -HUP `/bin/ps -e -o pid -o command | /bin/grep /usr/sbin/inetd | /bin/grep -v grep | /bin/awk '{print $1}'`
+  /usr/openwin/bin/mkdirhier /var/log/mdsplus/mdsipd
+  if grep "^mdsip " /etc/inetd.conf > /dev/null
+  then
+    true
+  else
+    echo "mdsip stream	tcp	nowait root $MDSPLUS_DIR/bin/mdsipd mdsipd mdsip /var/log/mdsplus/mdsipd" >> /etc/inetd.conf
+    kill -HUP `/bin/ps -e -o pid -o command | /bin/grep /usr/sbin/inetd | /bin/grep -v grep | /bin/awk '{print $1}'`
+  fi
 fi
-echo Adding MDSplus login scripts
-if grep "^. $MDSPLUS_DIR/setup.sh" /etc/profile > /dev/null
+if (test "$MDSplusEnv" = "y")
 then
-  true
-else
-  echo ". $MDSPLUS_DIR/setup.sh" >> /etc/profile
+  echo Adding MDSplus login scripts
+  if grep "^. $MDSPLUS_DIR/setup.sh" /etc/profile > /dev/null
+  then
+    true
+  else
+    echo ". $MDSPLUS_DIR/setup.sh" >> /etc/profile
+  fi
+  if grep "^source $MDSPLUS_DIR/setup.csh" /etc/.login > /dev/null
+  then
+    true
+  else
+    echo "source $MDSPLUS_DIR/setup.csh" >> /etc/.login
+  fi
 fi
-if grep "^source $MDSPLUS_DIR/setup.csh" /etc/.login > /dev/null
+;;
+*)
+if (test "$MDSplusSrv" = "y")
 then
-  true
-else
-  echo "source $MDSPLUS_DIR/setup.csh" >> /etc/.login
+#
+# Add mdsip to services
+#
+  echo Adding mdsip MDSplus data server
+  if grep "^mdsip " /etc/services >/dev/null
+  then
+        true
+  else
+        echo "mdsip    8000/tcp # Added by package mdsplus" >> /etc/services
+  fi
+#
+# Add mdsipd to inetd.conf
+#
+  /usr/bin/X11/mkdirhier /var/log/mdsplus/mdsipd
+  if grep "^mdsip " /etc/inetd.conf > /dev/null
+  then
+    true
+  else
+    echo "mdsip stream	tcp	nowait root $MDSPLUS_DIR/bin/mdsipd mdsipd mdsip /var/log/mdsplus/mdsipd" >> /etc/inetd.conf
+    kill -HUP `/bin/ps -e | /bin/grep inetd | /bin/grep -v grep | /bin/awk '{print $1}'`
+  fi
 fi
-echo Creating sample /etc/mdsip.hosts file for mdsip server to user mapping
-if [ ! -r /etc/mdsip.hosts ]; then 
-  cp $MDSPLUS_DIR/etc/mdsip.hosts /etc/ 
+if (test "$MDSplusEnv" = "y")
+then 
+  echo Adding MDSplus login scripts
+  if grep "^. $MDSPLUS_DIR/setup.sh" /etc/profile > /dev/null
+  then
+    true
+  else
+    echo ". $MDSPLUS_DIR/setup.sh" >> /etc/profile
+  fi
+  if grep "^source $MDSPLUS_DIR/setup.csh" /etc/csh.login > /dev/null
+  then
+    true
+  else
+    echo "source $MDSPLUS_DIR/setup.csh" >> /etc/csh.login
+  fi
 fi
 ;;
 esac
-cp $MDSPLUS_DIR/rpm/post_uninstall_script $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
+if [ ! -r $MDSPLUS_DIR/local/mdsplus_post_uninstall_script ]
+then
+  cp $MDSPLUS_DIR/rpm/post_uninstall_script $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
+fi
