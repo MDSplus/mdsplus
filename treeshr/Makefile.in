@@ -6,7 +6,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=-L@MAKESHLIBDIR@ -lMdsShr $(LIBS)@LIBS@
+LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
