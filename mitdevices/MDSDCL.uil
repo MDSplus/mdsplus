@@ -1,6 +1,8 @@
 module MDSDCL_UIL
     names = case_sensitive
 
+include file "XmdsWidgets.uil";
+
 object
     MDSDCL: XmFormDialog 
         {
@@ -27,7 +29,7 @@ object
                     XmNtopOffset = 10;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -83,7 +85,7 @@ object
                     XmNtopOffset = 113;
                     };
                 };
-            XmdsExpr 
+            user_defined procedure XmdsCreateExpr 
                 {
                 arguments
                     {
@@ -105,7 +107,7 @@ object
                     XmNeditMode = XmMULTI_LINE_EDIT;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -119,7 +121,7 @@ object
                     XmNrightOffset = 10;
                     };
                 };
-            XmdsOkButton
+            user_defined procedure XmdsCreateOkButton
                 {
                 arguments
                     {
@@ -138,7 +140,7 @@ object
                         };
                     };
                 };
-            XmdsApplyButton
+            user_defined procedure XmdsCreateApplyButton
                 {
                 arguments
                     {
@@ -157,7 +159,7 @@ object
                         };
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {

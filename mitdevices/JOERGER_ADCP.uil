@@ -3,6 +3,8 @@ module joerger_adcp
     version = 
     "v1.0"
 
+include file "XmdsWidgets.uil";
+
 object
     JOERGER_ADCP: XmBulletinBoardDialog 
         {
@@ -26,7 +28,7 @@ object
                     XmNy = 10;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -51,7 +53,7 @@ object
                     XmNy = 40;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -66,7 +68,7 @@ object
                     XmNy = 40;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -78,7 +80,7 @@ object
                     XmdsNnidOffset = JOERGER_ADCP$N_INIT_ACTION;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -90,7 +92,7 @@ object
                     XmdsNnidOffset = JOERGER_ADCP$N_STORE_ACTION;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -98,7 +100,7 @@ object
                     XmNy = 180;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -106,7 +108,7 @@ object
                     XmNy = 180;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -114,7 +116,7 @@ object
                     XmNy = 180;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -122,7 +124,7 @@ object
                     XmNy = 180;
                     };
                 };
-            XmdsPath 
+            user_defined procedure XmdsCreatePath 
                 {
                 arguments
                     {
@@ -154,7 +156,7 @@ object
                     XmNy = 75;
                     };
                 };
-            XmdsNidOptionMenu 
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {

@@ -1,6 +1,8 @@
 module l3512
     names = case_sensitive
 
+include file "XmdsWidgets.uil";
+
 object
     L3512: XmBulletinBoardDialog 
         {
@@ -44,7 +46,7 @@ object
                     compound_string("Router Name:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -58,7 +60,7 @@ object
                     XmdsNautoQuote = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -72,7 +74,7 @@ object
                     XmdsNautoQuote = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -96,7 +98,7 @@ object
                     compound_string("Comment:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -120,7 +122,7 @@ object
                     compound_string("Number of Spectra:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -142,7 +144,7 @@ object
                     compound_string("Duration (dwell):");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -154,7 +156,7 @@ object
                     XmdsNnidOffset = L3512$N_DURATION;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -162,7 +164,7 @@ object
                     XmNy = 250;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -170,7 +172,7 @@ object
                     XmNy = 250;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -178,7 +180,7 @@ object
                     XmNy = 250;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -186,7 +188,7 @@ object
                     XmNy = 250;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -198,7 +200,7 @@ object
                     compound_string("Initialization Action");
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -220,7 +222,7 @@ object
                     compound_string("Channels per Spectra:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -242,7 +244,7 @@ object
                     compound_string("Offset (0,1,2 etc.):");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {

@@ -3,6 +3,8 @@ module l2415
     version = 
     "v1.0"
 
+include file "XmdsWidgets.uil";
+
 object
     L2415: XmBulletinBoardDialog 
         {
@@ -27,7 +29,7 @@ object
                     XmNy = 10;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -52,7 +54,7 @@ object
                     XmNy = 40;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -67,7 +69,7 @@ object
                     XmNy = 40;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -79,7 +81,7 @@ object
                     XmdsNnidOffset = L2415$N_INIT_ACTION;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -91,7 +93,7 @@ object
                     XmdsNnidOffset = L2415$N_STORE_ACTION;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -99,7 +101,7 @@ object
                     XmNy = 281;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -107,7 +109,7 @@ object
                     XmNy = 286;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -115,7 +117,7 @@ object
                     XmNy = 284;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -123,7 +125,7 @@ object
                     XmNy = 283;
                     };
                 };
-            XmdsNidOptionMenu 
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -144,7 +146,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsNidOptionMenu 
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -175,7 +177,7 @@ object
                     XmNy = 127;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -210,7 +212,7 @@ object
                     XmNy = 124;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -249,7 +251,7 @@ object
                     };
                 controls
                     {
-                    XmdsPath 
+                    user_defined procedure XmdsCreatePath 
                         {
                         arguments
                             {
@@ -261,7 +263,7 @@ object
                             XmdsNnidOffset = L2415$N_VOLT_OUT;
                             };
                         };
-                    XmdsPath 
+                    user_defined procedure XmdsCreatePath 
                         {
                         arguments
                             {

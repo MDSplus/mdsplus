@@ -1,6 +1,8 @@
 module j221
     names = case_sensitive
 
+include file "XmdsWidgets.uil";
+
 object
     J221: XmBulletinBoardDialog 
         {
@@ -36,7 +38,7 @@ object
                     compound_string("Comment:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -50,7 +52,7 @@ object
                     XmdsNautoQuote = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -74,7 +76,7 @@ object
                     compound_string("Trigger:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -97,7 +99,7 @@ object
                     compound_string("External Clock:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -149,7 +151,7 @@ object
                                             compound_string("01");
                                             };
                                         };
-                                    XmdsOnOffToggleButton 
+                                    user_defined procedure XmdsCreateOnOffToggleButton 
                                         {
                                         arguments
                                             {
@@ -159,7 +161,7 @@ object
                                             compound_string("");
                                             };
                                         };
-                                    XmdsXdBoxDialogButton 
+                                    user_defined procedure XmdsCreateXdBoxDialogButton 
                                         {
                                         arguments
                                             {
@@ -169,7 +171,7 @@ object
                                             compound_string("Modify");
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -179,7 +181,7 @@ object
                                             XmdsNnidOffset = J221$N_CHAN1_MODE;
                                             };
                                         };
-                                    XmdsPath 
+                                    user_defined procedure XmdsCreatePath 
                                         {
                                         arguments
                                             {
@@ -208,7 +210,7 @@ object
                                             compound_string("02");
                                             };
                                         };
-                                    XmdsOnOffToggleButton 
+                                    user_defined procedure XmdsCreateOnOffToggleButton 
                                         {
                                         arguments
                                             {
@@ -218,7 +220,7 @@ object
                                             compound_string("");
                                             };
                                         };
-                                    XmdsXdBoxDialogButton 
+                                    user_defined procedure XmdsCreateXdBoxDialogButton 
                                         {
                                         arguments
                                             {
@@ -228,7 +230,7 @@ object
                                             compound_string("Modify");
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -238,7 +240,7 @@ object
                                             XmdsNnid = DEVICE_NID;
                                             };
                                         };
-                                    XmdsPath 
+                                    user_defined procedure XmdsCreatePath 
                                         {
                                         arguments
                                             {
@@ -267,7 +269,7 @@ object
                                             compound_string("03");
                                             };
                                         };
-                                    XmdsOnOffToggleButton 
+                                    user_defined procedure XmdsCreateOnOffToggleButton 
                                         {
                                         arguments
                                             {
@@ -277,7 +279,7 @@ object
                                             compound_string("");
                                             };
                                         };
-                                    XmdsXdBoxDialogButton 
+                                    user_defined procedure XmdsCreateXdBoxDialogButton 
                                         {
                                         arguments
                                             {
@@ -287,7 +289,7 @@ object
                                             compound_string("Modify");
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -297,7 +299,7 @@ object
                                             XmdsNnid = DEVICE_NID;
                                             };
                                         };
-                                    XmdsPath 
+                                    user_defined procedure XmdsCreatePath 
                                         {
                                         arguments
                                             {
@@ -326,7 +328,7 @@ object
                                             compound_string("04");
                                             };
                                         };
-                                    XmdsOnOffToggleButton 
+                                    user_defined procedure XmdsCreateOnOffToggleButton 
                                         {
                                         arguments
                                             {
@@ -336,7 +338,7 @@ object
                                             compound_string("");
                                             };
                                         };
-                                    XmdsXdBoxDialogButton 
+                                    user_defined procedure XmdsCreateXdBoxDialogButton 
                                         {
                                         arguments
                                             {
@@ -346,7 +348,7 @@ object
                                             compound_string("Modify");
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -356,7 +358,7 @@ object
                                             XmdsNnid = DEVICE_NID;
                                             };
                                         };
-                                    XmdsPath 
+                                    user_defined procedure XmdsCreatePath 
                                         {
                                         arguments
                                             {
@@ -385,7 +387,7 @@ object
                                             compound_string("05");
                                             };
                                         };
-                                    XmdsOnOffToggleButton 
+                                    user_defined procedure XmdsCreateOnOffToggleButton 
                                         {
                                         arguments
                                             {
@@ -395,7 +397,7 @@ object
                                             compound_string("");
                                             };
                                         };
-                                    XmdsXdBoxDialogButton 
+                                    user_defined procedure XmdsCreateXdBoxDialogButton 
                                         {
                                         arguments
                                             {
@@ -405,7 +407,7 @@ object
                                             compound_string("Modify");
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -415,7 +417,7 @@ object
                                             XmdsNnid = DEVICE_NID;
                                             };
                                         };
-                                    XmdsPath 
+                                    user_defined procedure XmdsCreatePath 
                                         {
                                         arguments
                                             {
@@ -444,7 +446,7 @@ object
                                             compound_string("06");
                                             };
                                         };
-                                    XmdsOnOffToggleButton 
+                                    user_defined procedure XmdsCreateOnOffToggleButton 
                                         {
                                         arguments
                                             {
@@ -454,7 +456,7 @@ object
                                             compound_string("");
                                             };
                                         };
-                                    XmdsXdBoxDialogButton 
+                                    user_defined procedure XmdsCreateXdBoxDialogButton 
                                         {
                                         arguments
                                             {
@@ -464,7 +466,7 @@ object
                                             compound_string("Modify");
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -474,7 +476,7 @@ object
                                             XmdsNnid = DEVICE_NID;
                                             };
                                         };
-                                    XmdsPath 
+                                    user_defined procedure XmdsCreatePath 
                                         {
                                         arguments
                                             {
@@ -503,7 +505,7 @@ object
                                             compound_string("07");
                                             };
                                         };
-                                    XmdsOnOffToggleButton 
+                                    user_defined procedure XmdsCreateOnOffToggleButton 
                                         {
                                         arguments
                                             {
@@ -513,7 +515,7 @@ object
                                             compound_string("");
                                             };
                                         };
-                                    XmdsXdBoxDialogButton 
+                                    user_defined procedure XmdsCreateXdBoxDialogButton 
                                         {
                                         arguments
                                             {
@@ -523,7 +525,7 @@ object
                                             compound_string("Modify");
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -533,7 +535,7 @@ object
                                             XmdsNnid = DEVICE_NID;
                                             };
                                         };
-                                    XmdsPath 
+                                    user_defined procedure XmdsCreatePath 
                                         {
                                         arguments
                                             {
@@ -562,7 +564,7 @@ object
                                             compound_string("08");
                                             };
                                         };
-                                    XmdsOnOffToggleButton 
+                                    user_defined procedure XmdsCreateOnOffToggleButton 
                                         {
                                         arguments
                                             {
@@ -572,7 +574,7 @@ object
                                             compound_string("");
                                             };
                                         };
-                                    XmdsXdBoxDialogButton 
+                                    user_defined procedure XmdsCreateXdBoxDialogButton 
                                         {
                                         arguments
                                             {
@@ -582,7 +584,7 @@ object
                                             compound_string("Modify");
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -592,7 +594,7 @@ object
                                             XmdsNnid = DEVICE_NID;
                                             };
                                         };
-                                    XmdsPath 
+                                    user_defined procedure XmdsCreatePath 
                                         {
                                         arguments
                                             {
@@ -621,7 +623,7 @@ object
                                             compound_string("09");
                                             };
                                         };
-                                    XmdsOnOffToggleButton 
+                                    user_defined procedure XmdsCreateOnOffToggleButton 
                                         {
                                         arguments
                                             {
@@ -631,7 +633,7 @@ object
                                             compound_string("");
                                             };
                                         };
-                                    XmdsXdBoxDialogButton 
+                                    user_defined procedure XmdsCreateXdBoxDialogButton 
                                         {
                                         arguments
                                             {
@@ -641,7 +643,7 @@ object
                                             compound_string("Modify");
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -651,7 +653,7 @@ object
                                             XmdsNnid = DEVICE_NID;
                                             };
                                         };
-                                    XmdsPath 
+                                    user_defined procedure XmdsCreatePath 
                                         {
                                         arguments
                                             {
@@ -680,7 +682,7 @@ object
                                             compound_string("10");
                                             };
                                         };
-                                    XmdsOnOffToggleButton 
+                                    user_defined procedure XmdsCreateOnOffToggleButton 
                                         {
                                         arguments
                                             {
@@ -690,7 +692,7 @@ object
                                             compound_string("");
                                             };
                                         };
-                                    XmdsXdBoxDialogButton 
+                                    user_defined procedure XmdsCreateXdBoxDialogButton 
                                         {
                                         arguments
                                             {
@@ -700,7 +702,7 @@ object
                                             compound_string("Modify");
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -710,7 +712,7 @@ object
                                             XmdsNnid = DEVICE_NID;
                                             };
                                         };
-                                    XmdsPath 
+                                    user_defined procedure XmdsCreatePath 
                                         {
                                         arguments
                                             {
@@ -739,7 +741,7 @@ object
                                             compound_string("11");
                                             };
                                         };
-                                    XmdsOnOffToggleButton 
+                                    user_defined procedure XmdsCreateOnOffToggleButton 
                                         {
                                         arguments
                                             {
@@ -749,7 +751,7 @@ object
                                             compound_string("");
                                             };
                                         };
-                                    XmdsXdBoxDialogButton 
+                                    user_defined procedure XmdsCreateXdBoxDialogButton 
                                         {
                                         arguments
                                             {
@@ -759,7 +761,7 @@ object
                                             compound_string("Modify");
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -769,7 +771,7 @@ object
                                             XmdsNnid = DEVICE_NID;
                                             };
                                         };
-                                    XmdsPath 
+                                    user_defined procedure XmdsCreatePath 
                                         {
                                         arguments
                                             {
@@ -798,7 +800,7 @@ object
                                             compound_string("12");
                                             };
                                         };
-                                    XmdsOnOffToggleButton 
+                                    user_defined procedure XmdsCreateOnOffToggleButton 
                                         {
                                         arguments
                                             {
@@ -808,7 +810,7 @@ object
                                             compound_string("");
                                             };
                                         };
-                                    XmdsXdBoxDialogButton 
+                                    user_defined procedure XmdsCreateXdBoxDialogButton 
                                         {
                                         arguments
                                             {
@@ -818,7 +820,7 @@ object
                                             compound_string("Modify");
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -828,7 +830,7 @@ object
                                             XmdsNnid = DEVICE_NID;
                                             };
                                         };
-                                    XmdsPath 
+                                    user_defined procedure XmdsCreatePath 
                                         {
                                         arguments
                                             {
@@ -842,7 +844,7 @@ object
                         };
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -854,7 +856,7 @@ object
                     compound_string("Init Action");
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -862,7 +864,7 @@ object
                     XmNy = 350;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -870,7 +872,7 @@ object
                     XmNy = 350;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -878,7 +880,7 @@ object
                     XmNy = 350;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {

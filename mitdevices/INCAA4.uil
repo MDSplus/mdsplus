@@ -1,6 +1,8 @@
 module INCAA4_UIL
     names = case_sensitive
 
+include file "XmdsWidgets.uil";
+
 object
     INCAA4: XmBulletinBoardDialog 
         {
@@ -37,7 +39,7 @@ object
                     compound_string("Comment:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -51,7 +53,7 @@ object
                     XmdsNdefaultQuote = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -65,7 +67,7 @@ object
                     XmdsNdefaultQuote = true;
                     };
                 };
-            XmdsDigChans 
+            user_defined procedure XmdsCreateDigChans 
                 {
                 arguments
                     {
@@ -81,7 +83,7 @@ object
                     XmdsNnidOffset = INCAA4$N_INPUTS;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -95,7 +97,7 @@ object
                     compound_string("Initialization Action");
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -109,7 +111,7 @@ object
                     compound_string("Store Action");
                     };
                 };
-            XmdsNidOptionMenu 
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -133,7 +135,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsNidOptionMenu 
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -153,7 +155,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsNidOptionMenu 
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -171,7 +173,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsNidOptionMenu 
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -219,7 +221,7 @@ object
                         compound_string(""));
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -252,7 +254,7 @@ object
                     compound_string("Trigger:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -265,7 +267,7 @@ object
                     XmdsNnidOffset = INCAA4$N_TRIG_IN;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -273,7 +275,7 @@ object
                     XmNy = 430;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -281,7 +283,7 @@ object
                     XmNy = 430;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -289,7 +291,7 @@ object
                     XmNy = 430;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -297,7 +299,7 @@ object
                     XmNy = 430;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {

@@ -34,6 +34,8 @@ names = case_sensitive
 !(BX) bx_info("c_makefile", "MAKEFILE-C.MMS", true )
 !(BX) bx_info("app_defaults", "APP-DEFAULTS.DAT", true )
 
+include file "XmdsWidgets.uil";
+
 value
     DEVICE_NID        :  -1;
     UMCCD$K_CONG_NODES 				: 70;
@@ -126,7 +128,7 @@ object UMCCD : XmFormDialog widget {
     controls {
        managed XmBulletinBoard bulletinBoard;
        managed XmForm bottomButtons;
-       managed XmdsExprField comment;
+       managed user_defined comment;
        managed XmLabelGadget commentLabel;
     };
     callbacks {
@@ -147,7 +149,7 @@ object commentLabel : XmLabelGadget widget {
     };
 };
 
-object comment : XmdsExprField widget {
+object comment : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_COMMENT;
@@ -177,9 +179,9 @@ object bottomButtons : XmForm widget {
         XmNrightAttachment = XmATTACH_FORM;
     };
     controls {
-       managed XmdsXdBoxOnOffButton analysisAction;
-       managed XmdsXdBoxOnOffButton storeAction;
-       managed XmdsXdBoxOnOffButton initAction;
+       managed user_defined analysisAction;
+       managed user_defined storeAction;
+       managed user_defined initAction;
        managed XmForm deviceButtons;
     };
     callbacks {
@@ -193,21 +195,21 @@ object deviceButtons : XmForm widget {
         XmNbottomAttachment = XmATTACH_FORM;
         XmNleftAttachment = XmATTACH_FORM;
         XmNrightAttachment = XmATTACH_FORM;
-        XmNtopWidget = XmdsXdBoxOnOffButton initAction;
+        XmNtopWidget = user_defined initAction;
         XmNtopOffset = 15;
         XmNy = 50;
     };
     controls {
-       managed XmdsCancelButton cancelButton;
-       managed XmdsResetButton resetButton;
-       managed XmdsApplyButton applyButton;
-       managed XmdsOkButton okButton;
+       managed user_defined cancelButton;
+       managed user_defined resetButton;
+       managed user_defined applyButton;
+       managed user_defined okButton;
     };
     callbacks {
     };
 };
 
-object okButton : XmdsOkButton widget {
+object okButton : user_defined procedure XmdsCreateOkButton widget {
     arguments {
         XmNleftAttachment = XmATTACH_FORM;
         XmNleftOffset = 10;
@@ -218,7 +220,7 @@ object okButton : XmdsOkButton widget {
     };
 };
 
-object applyButton : XmdsApplyButton widget {
+object applyButton : user_defined procedure XmdsCreateApplyButton widget {
     arguments {
         XmNleftAttachment = XmATTACH_POSITION;
         XmNleftPosition = 33;
@@ -230,7 +232,7 @@ object applyButton : XmdsApplyButton widget {
     };
 };
 
-object resetButton : XmdsResetButton widget {
+object resetButton : user_defined procedure XmdsCreateResetButton widget {
     arguments {
         XmNleftAttachment = XmATTACH_POSITION;
         XmNleftPosition = 66;
@@ -242,7 +244,7 @@ object resetButton : XmdsResetButton widget {
     };
 };
 
-object cancelButton : XmdsCancelButton widget {
+object cancelButton : user_defined procedure XmdsCreateCancelButton widget {
     arguments {
         XmNrightAttachment = XmATTACH_FORM;
         XmNrightOffset = 10;
@@ -253,7 +255,7 @@ object cancelButton : XmdsCancelButton widget {
     };
 };
 
-object initAction : XmdsXdBoxOnOffButton widget {
+object initAction : user_defined procedure XmdsCreateXdBoxOnOffButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_INIT_ACTION;
@@ -265,13 +267,13 @@ object initAction : XmdsXdBoxOnOffButton widget {
     };
 };
 
-object storeAction : XmdsXdBoxOnOffButton widget {
+object storeAction : user_defined procedure XmdsCreateXdBoxOnOffButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_STORE_ACTION;
         XmNlabelString = compound_string("Store Action");
         XmNleftAttachment = XmATTACH_WIDGET;
-        XmNleftWidget = XmdsXdBoxOnOffButton initAction;
+        XmNleftWidget = user_defined initAction;
         XmNleftOffset = 20;
     };
     controls {
@@ -280,13 +282,13 @@ object storeAction : XmdsXdBoxOnOffButton widget {
     };
 };
 
-object analysisAction : XmdsXdBoxOnOffButton widget {
+object analysisAction : user_defined procedure XmdsCreateXdBoxOnOffButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_ANALY_ACTION;
         XmNlabelString = compound_string("Analysis Action");
         XmNleftAttachment = XmATTACH_WIDGET;
-        XmNleftWidget = XmdsXdBoxOnOffButton storeAction;
+        XmNleftWidget = user_defined storeAction;
         XmNleftOffset = 20;
     };
     controls {
@@ -306,31 +308,31 @@ object bulletinBoard : XmBulletinBoard widget {
         XmNbottomOffset = 74;
     };
     controls {
-       managed XmdsExprField data_file;
+       managed user_defined data_file;
        managed XmLabelGadget data_file_label;
-       managed XmdsOnOffToggleButton hd_ratio;
+       managed user_defined hd_ratio;
        managed XmLabel cal_shift_label;
        managed XmBulletinBoard balmers;
-       managed XmdsExprField cal_shift;
+       managed user_defined cal_shift;
        managed XmBulletinBoard row_bb;
-       managed XmdsXdBoxOnOffButton temp_flow;
-       managed XmdsXdBoxOnOffButton mag_field;
-       managed XmdsExprField wavelen_600;
-       managed XmdsExprField trans_600;
-       managed XmdsExprField wavelen_2400;
-       managed XmdsExprField trans_2400;
+       managed user_defined temp_flow;
+       managed user_defined mag_field;
+       managed user_defined wavelen_600;
+       managed user_defined trans_600;
+       managed user_defined wavelen_2400;
+       managed user_defined trans_2400;
        managed XmLabelGadget wavelen_600_label;
        managed XmLabelGadget trans_600_label;
        managed XmLabelGadget wavelen_2400_label;
        managed XmLabelGadget trans_2400_label;
-       managed XmdsNidOptionMenu grating_alignment;
-       managed XmdsExprField daq_mode;
+       managed user_defined grating_alignment;
+       managed user_defined daq_mode;
        managed XmLabelGadget daq_mode_label;
-       managed XmdsExprField exposure;
+       managed user_defined exposure;
        managed XmLabelGadget exposure_label;
-       managed XmdsExprField num_spectra;
+       managed user_defined num_spectra;
        managed XmLabelGadget num_spectra_label;
-       managed XmdsExprField go_file;
+       managed user_defined go_file;
        managed XmLabelGadget go_file_label;
     };
     callbacks {
@@ -349,7 +351,7 @@ object go_file_label : XmLabelGadget widget {
     };
 };
 
-object go_file : XmdsExprField widget {
+object go_file : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_GO_FILE;
@@ -380,7 +382,7 @@ object num_spectra_label : XmLabelGadget widget {
     };
 };
 
-object num_spectra : XmdsExprField widget {
+object num_spectra : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_SETUP_NUM_SPECTRA;
@@ -409,7 +411,7 @@ object exposure_label : XmLabelGadget widget {
     };
 };
 
-object exposure : XmdsExprField widget {
+object exposure : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_SETUP_EXPOSURE;
@@ -438,7 +440,7 @@ object daq_mode_label : XmLabelGadget widget {
     };
 };
 
-object daq_mode : XmdsExprField widget {
+object daq_mode : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_SETUP_DAQ_MODE;
@@ -455,7 +457,7 @@ object daq_mode : XmdsExprField widget {
     };
 };
 
-object grating_alignment : XmdsNidOptionMenu widget {
+object grating_alignment : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_SETUP_GRATNG_ALIGN;
@@ -524,7 +526,7 @@ object wavelen_600_label : XmLabelGadget widget {
     };
 };
 
-object trans_2400 : XmdsExprField widget {
+object trans_2400 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_SETUP_TRANS_2400;
@@ -541,7 +543,7 @@ object trans_2400 : XmdsExprField widget {
     };
 };
 
-object wavelen_2400 : XmdsExprField widget {
+object wavelen_2400 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_SETUP_WAVELEN_2400;
@@ -558,7 +560,7 @@ object wavelen_2400 : XmdsExprField widget {
     };
 };
 
-object trans_600 : XmdsExprField widget {
+object trans_600 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_SETUP_TRANS_600;
@@ -575,7 +577,7 @@ object trans_600 : XmdsExprField widget {
     };
 };
 
-object wavelen_600 : XmdsExprField widget {
+object wavelen_600 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_SETUP_WAVELEN_600;
@@ -602,12 +604,12 @@ object row_bb : XmBulletinBoard widget {
     };
     controls {
        managed XmLabel rows_label;
-       managed XmdsExprField row_6;
-       managed XmdsExprField row_5;
-       managed XmdsExprField row_4;
-       managed XmdsExprField row_3;
-       managed XmdsExprField row_2;
-       managed XmdsExprField row_1;
+       managed user_defined row_6;
+       managed user_defined row_5;
+       managed user_defined row_4;
+       managed user_defined row_3;
+       managed user_defined row_2;
+       managed user_defined row_1;
        managed XmLabelGadget row_6_label;
        managed XmLabelGadget row_5_label;
        managed XmLabelGadget row_4_label;
@@ -691,7 +693,7 @@ object row_6_label : XmLabelGadget widget {
     };
 };
 
-object row_1 : XmdsExprField widget {
+object row_1 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_ROW_1;
@@ -708,7 +710,7 @@ object row_1 : XmdsExprField widget {
     };
 };
 
-object row_2 : XmdsExprField widget {
+object row_2 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_ROW_2;
@@ -725,7 +727,7 @@ object row_2 : XmdsExprField widget {
     };
 };
 
-object row_3 : XmdsExprField widget {
+object row_3 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_ROW_3;
@@ -742,7 +744,7 @@ object row_3 : XmdsExprField widget {
     };
 };
 
-object row_4 : XmdsExprField widget {
+object row_4 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_ROW_4;
@@ -759,7 +761,7 @@ object row_4 : XmdsExprField widget {
     };
 };
 
-object row_5 : XmdsExprField widget {
+object row_5 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_ROW_5;
@@ -776,7 +778,7 @@ object row_5 : XmdsExprField widget {
     };
 };
 
-object row_6 : XmdsExprField widget {
+object row_6 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_ROW_6;
@@ -817,7 +819,7 @@ object cal_shift_label : XmLabel widget {
     };
 };
 
-object cal_shift : XmdsExprField widget {
+object cal_shift : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_CAL_SHIFT;
@@ -834,7 +836,7 @@ object cal_shift : XmdsExprField widget {
     };
 };
 
-object temp_flow : XmdsXdBoxOnOffButton widget {
+object temp_flow : user_defined procedure XmdsCreateXdBoxOnOffButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_TEMP_LINES;
@@ -848,7 +850,7 @@ object temp_flow : XmdsXdBoxOnOffButton widget {
     };
 };
 
-object mag_field : XmdsXdBoxOnOffButton widget {
+object mag_field : user_defined procedure XmdsCreateXdBoxOnOffButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_MAG_LINES;
@@ -871,17 +873,17 @@ object balmers : XmBulletinBoard widget {
         XmNy = 175;
     };
     controls {
-       managed XmdsOnOffToggleButton bl_10;
-       managed XmdsOnOffToggleButton bl_9;
-       managed XmdsOnOffToggleButton bl_8;
-       managed XmdsOnOffToggleButton bl_7;
-       managed XmdsOnOffToggleButton balmer_lines;
+       managed user_defined bl_10;
+       managed user_defined bl_9;
+       managed user_defined bl_8;
+       managed user_defined bl_7;
+       managed user_defined balmer_lines;
     };
     callbacks {
     };
 };
 
-object hd_ratio : XmdsOnOffToggleButton widget {
+object hd_ratio : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_H_D_RATIO;
@@ -896,7 +898,7 @@ object hd_ratio : XmdsOnOffToggleButton widget {
     };
 };
 
-object balmer_lines : XmdsOnOffToggleButton widget {
+object balmer_lines : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_BALMER_LINES;
@@ -911,7 +913,7 @@ object balmer_lines : XmdsOnOffToggleButton widget {
     };
 };
 
-object bl_7 : XmdsOnOffToggleButton widget {
+object bl_7 : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_BALMER_LINES_N_E_7;
@@ -926,7 +928,7 @@ object bl_7 : XmdsOnOffToggleButton widget {
     };
 };
 
-object bl_8 : XmdsOnOffToggleButton widget {
+object bl_8 : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_BALMER_LINES_N_E_8;
@@ -941,7 +943,7 @@ object bl_8 : XmdsOnOffToggleButton widget {
     };
 };
 
-object bl_9 : XmdsOnOffToggleButton widget {
+object bl_9 : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_BALMER_LINES_N_E_9;
@@ -956,7 +958,7 @@ object bl_9 : XmdsOnOffToggleButton widget {
     };
 };
 
-object bl_10 : XmdsOnOffToggleButton widget {
+object bl_10 : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_BALMER_LINES_N_E_10;
@@ -983,7 +985,7 @@ object data_file_label : XmLabelGadget widget {
     };
 };
 
-object data_file : XmdsExprField widget {
+object data_file : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = UMCCD$N_DATA_FILE;

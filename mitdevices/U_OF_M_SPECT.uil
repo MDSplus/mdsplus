@@ -1,6 +1,8 @@
 module u_of_m_spect
     names = case_sensitive
 
+include file "XmdsWidgets.uil";
+
 object
     U_OF_M_SPECT: XmBulletinBoardDialog 
         {
@@ -26,7 +28,7 @@ object
                     compound_string("Go File:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -51,7 +53,7 @@ object
                     compound_string("Data File:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -76,7 +78,7 @@ object
                     compound_string("Comment:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -101,7 +103,7 @@ object
                     compound_string("Trigger:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -126,7 +128,7 @@ object
                     compound_string("Wavelength  (0-13000):");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -151,7 +153,7 @@ object
                     compound_string("Slit Width (0-500):");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -176,7 +178,7 @@ object
                     compound_string("Number of Spectra (1-100):");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -201,7 +203,7 @@ object
                     compound_string("Grating Type (1-5):");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -226,7 +228,7 @@ object
                     compound_string("Exposure Time (30-3000):");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -251,7 +253,7 @@ object
                     compound_string("Neutral Density Filter (0-5):");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -266,7 +268,7 @@ object
                     XmdsNautoQuote = false;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -278,7 +280,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -290,7 +292,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -298,7 +300,7 @@ object
                     XmNy = 428;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -306,7 +308,7 @@ object
                     XmNy = 428;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -314,7 +316,7 @@ object
                     XmNy = 428;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -332,7 +334,7 @@ object
                     compound_string("Order Sorter (0-no, 1-yes):");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {

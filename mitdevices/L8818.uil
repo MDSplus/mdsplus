@@ -83,6 +83,8 @@ names = case_sensitive
 !(BX) bx_info("integrate_xrunner", "false")
 !(BX) bx_info("xrunner_command", "$(M_ROOT)/arch/X11.5/Xm1.2/mic_xm.o")
 
+include file "XmdsWidgets.uil";
+
 value 
     DEVICE_NID :  -1;
     L8818$K_CONG_NODES : 14;
@@ -140,17 +142,17 @@ object L8818 : XmFormDialog widget {
         XmNheight = 433;
     };
     controls {
-         managed XmdsNidOptionMenu nidOptionMenu1;
-         managed XmdsDigChans digChans;
+         managed user_defined nidOptionMenu1;
+         managed user_defined digChans;
          managed XmBulletinBoard bulletinBoard;
-         managed XmdsExprField externalClock;
+         managed user_defined externalClock;
          managed XmLabel extClockLabel;
-         managed XmdsExprField trigger;
+         managed user_defined trigger;
          managed XmLabel triggerLabel;
          managed XmForm bottomButtons;
-         managed XmdsExprField commentField;
+         managed user_defined commentField;
          managed XmLabelGadget commentLabel;
-         managed XmdsExprField nameField;
+         managed user_defined nameField;
          managed XmLabelGadget nameLabel;
     };
     callbacks {
@@ -171,7 +173,7 @@ object nameLabel : XmLabelGadget widget {
     };
 };
 
-object nameField : XmdsExprField widget {
+object nameField : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;
@@ -206,7 +208,7 @@ object commentLabel : XmLabelGadget widget {
     };
 };
 
-object commentField : XmdsExprField widget {
+object commentField : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;
@@ -239,8 +241,8 @@ object bottomButtons : XmForm widget {
         XmNrightOffset = 0;
     };
     controls {
-         managed XmdsXdBoxOnOffButton storeAction;
-         managed XmdsXdBoxOnOffButton initAction;
+         managed user_defined storeAction;
+         managed user_defined initAction;
          managed XmForm deviceButtons;
     };
     callbacks {
@@ -254,7 +256,7 @@ object deviceButtons : XmForm widget {
         XmNbottomAttachment = XmATTACH_FORM;
         XmNleftAttachment = XmATTACH_FORM;
         XmNrightAttachment = XmATTACH_FORM;
-        XmNtopWidget = XmdsXdBoxOnOffButton initAction;
+        XmNtopWidget = user_defined initAction;
         XmNtopOffset = 15;
         XmNbottomOffset = 0;
         XmNleftOffset = 0;
@@ -262,16 +264,16 @@ object deviceButtons : XmForm widget {
         XmNy = 50;
     };
     controls {
-         managed XmdsCancelButton cancelButton;
-         managed XmdsResetButton resetButton;
-         managed XmdsApplyButton applyButton;
-         managed XmdsOkButton okButton;
+         managed user_defined cancelButton;
+         managed user_defined resetButton;
+         managed user_defined applyButton;
+         managed user_defined okButton;
     };
     callbacks {
     };
 };
 
-object okButton : XmdsOkButton widget {
+object okButton : user_defined procedure XmdsCreateOkButton widget {
     arguments {
         XmNleftAttachment = XmATTACH_FORM;
         XmNleftOffset = 10;
@@ -282,7 +284,7 @@ object okButton : XmdsOkButton widget {
     };
 };
 
-object applyButton : XmdsApplyButton widget {
+object applyButton : user_defined procedure XmdsCreateApplyButton widget {
     arguments {
         XmNleftAttachment = XmATTACH_POSITION;
         XmNleftPosition = 33;
@@ -294,7 +296,7 @@ object applyButton : XmdsApplyButton widget {
     };
 };
 
-object resetButton : XmdsResetButton widget {
+object resetButton : user_defined procedure XmdsCreateResetButton widget {
     arguments {
         XmNleftAttachment = XmATTACH_POSITION;
         XmNleftPosition = 66;
@@ -306,7 +308,7 @@ object resetButton : XmdsResetButton widget {
     };
 };
 
-object cancelButton : XmdsCancelButton widget {
+object cancelButton : user_defined procedure XmdsCreateCancelButton widget {
     arguments {
         XmNrightAttachment = XmATTACH_FORM;
         XmNrightOffset = 10;
@@ -317,7 +319,7 @@ object cancelButton : XmdsCancelButton widget {
     };
 };
 
-object initAction : XmdsXdBoxOnOffButton widget {
+object initAction : user_defined procedure XmdsCreateXdBoxOnOffButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("Initialization Action");
@@ -329,13 +331,13 @@ object initAction : XmdsXdBoxOnOffButton widget {
     };
 };
 
-object storeAction : XmdsXdBoxOnOffButton widget {
+object storeAction : user_defined procedure XmdsCreateXdBoxOnOffButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("Store Action");
         XmdsNnidOffset = L8818$N_STORE_ACTION;
         XmNleftAttachment = XmATTACH_WIDGET;
-        XmNleftWidget = XmdsXdBoxOnOffButton initAction;
+        XmNleftWidget = user_defined initAction;
         XmNleftOffset = 20;
     };
     controls {
@@ -363,7 +365,7 @@ object triggerLabel : XmLabel widget {
     };
 };
 
-object trigger : XmdsExprField widget {
+object trigger : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 48;
@@ -375,7 +377,7 @@ object trigger : XmdsExprField widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsExprField commentField;
+        XmNtopWidget = user_defined commentField;
         XmNleftWidget = XmLabel extClockLabel;
         XmNtopOffset = 10;
         XmNbottomOffset = 0;
@@ -409,7 +411,7 @@ object extClockLabel : XmLabel widget {
     };
 };
 
-object externalClock : XmdsExprField widget {
+object externalClock : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 48;
@@ -421,8 +423,8 @@ object externalClock : XmdsExprField widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_OPPOSITE_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsExprField trigger;
-        XmNleftWidget = XmdsExprField trigger;
+        XmNtopWidget = user_defined trigger;
+        XmNleftWidget = user_defined trigger;
         XmNtopOffset = 10;
         XmNbottomOffset = 0;
         XmNleftOffset = 0;
@@ -445,7 +447,7 @@ object bulletinBoard : XmBulletinBoard widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_FORM;
         XmNrightAttachment = XmATTACH_FORM;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu1;
+        XmNtopWidget = user_defined nidOptionMenu1;
         XmNtopOffset = 1;
         XmNbottomOffset = 0;
         XmNleftOffset = 0;
@@ -456,17 +458,17 @@ object bulletinBoard : XmBulletinBoard widget {
     };
     controls {
          managed XmLabel triggerLabel3;
-         managed XmdsExprField active_mem;
+         managed user_defined active_mem;
          managed XmLabel triggerLabel2;
-         managed XmdsExprField trigger1;
+         managed user_defined trigger1;
          managed XmLabel triggerLabel1;
-         managed XmdsNidOptionMenu nidOptionMenu;
+         managed user_defined nidOptionMenu;
     };
     callbacks {
     };
 };
 
-object nidOptionMenu : XmdsNidOptionMenu widget {
+object nidOptionMenu : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -515,7 +517,7 @@ object triggerLabel1 : XmLabel widget {
     };
 };
 
-object trigger1 : XmdsExprField widget {
+object trigger1 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 5;
@@ -545,7 +547,7 @@ object triggerLabel2 : XmLabel widget {
     };
 };
 
-object active_mem : XmdsExprField widget {
+object active_mem : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 6;
@@ -575,7 +577,7 @@ object triggerLabel3 : XmLabel widget {
     };
 };
 
-object digChans : XmdsDigChans widget {
+object digChans : user_defined procedure XmdsCreateDigChans widget {
     arguments {
         XmdsNnodesPerChannel = L8818$K_NODES_PER_INP;
         XmdsNnid = DEVICE_NID;
@@ -604,7 +606,7 @@ object digChans : XmdsDigChans widget {
     };
 };
 
-object nidOptionMenu1 : XmdsNidOptionMenu widget {
+object nidOptionMenu1 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNlabelStrings = string_table(
@@ -632,7 +634,7 @@ object nidOptionMenu1 : XmdsNidOptionMenu widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_OPPOSITE_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsExprField externalClock;
+        XmNtopWidget = user_defined externalClock;
         XmNleftWidget = XmLabel extClockLabel;
         XmNtopOffset = 8;
         XmNbottomOffset = 0;

@@ -3,6 +3,8 @@ module PREAMP_UIL
     version = 
     "v1.0"
 
+include file "XmdsWidgets.uil";
+
 object
     PREAMP: XmBulletinBoardDialog 
         {
@@ -29,7 +31,7 @@ object
                     XmNy = 10;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -53,7 +55,7 @@ object
                     XmNy = 40;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -87,7 +89,7 @@ object
                     XmNy = 70;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -95,7 +97,7 @@ object
                     XmNy = 299;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -103,7 +105,7 @@ object
                     XmNy = 299;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -111,7 +113,7 @@ object
                     XmNy = 299;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -125,7 +127,7 @@ object
                     compound_string("Initialization Action");
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -181,7 +183,7 @@ object
                                             compound_string("1");
                                             };
                                         };
-                                    output_01 : XmdsExprField 
+                                    output_01 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -192,7 +194,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C1+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -204,7 +206,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -218,7 +220,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -255,7 +257,7 @@ object
                                             compound_string("2");
                                             };
                                         };
-                                    output_02 : XmdsExprField 
+                                    output_02 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -266,7 +268,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C2+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -278,7 +280,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -292,7 +294,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -329,7 +331,7 @@ object
                                             compound_string("3");
                                             };
                                         };
-                                    output_03 : XmdsExprField 
+                                    output_03 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -340,7 +342,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C3+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -352,7 +354,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -366,7 +368,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -403,7 +405,7 @@ object
                                             compound_string("4");
                                             };
                                         };
-                                    output_04 : XmdsExprField 
+                                    output_04 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -414,7 +416,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C4+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -426,7 +428,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -440,7 +442,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -477,7 +479,7 @@ object
                                             compound_string("5");
                                             };
                                         };
-                                    output_05 : XmdsExprField 
+                                    output_05 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -488,7 +490,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C5+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -500,7 +502,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -514,7 +516,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -551,7 +553,7 @@ object
                                             compound_string("6");
                                             };
                                         };
-                                    output_06 : XmdsExprField 
+                                    output_06 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -562,7 +564,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C6+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -574,7 +576,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -588,7 +590,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -625,7 +627,7 @@ object
                                             compound_string("7");
                                             };
                                         };
-                                    output_07 : XmdsExprField 
+                                    output_07 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -636,7 +638,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C7+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -648,7 +650,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -662,7 +664,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -699,7 +701,7 @@ object
                                             compound_string("8");
                                             };
                                         };
-                                    output_08 : XmdsExprField 
+                                    output_08 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -710,7 +712,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C8+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -722,7 +724,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -736,7 +738,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -773,7 +775,7 @@ object
                                             compound_string("9");
                                             };
                                         };
-                                    output_09 : XmdsExprField 
+                                    output_09 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -784,7 +786,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C9+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -796,7 +798,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -810,7 +812,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -847,7 +849,7 @@ object
                                             compound_string("10");
                                             };
                                         };
-                                    output_10 : XmdsExprField 
+                                    output_10 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -858,7 +860,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C10+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -870,7 +872,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -884,7 +886,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -921,7 +923,7 @@ object
                                             compound_string("11");
                                             };
                                         };
-                                    output_11 : XmdsExprField 
+                                    output_11 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -932,7 +934,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C11+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -944,7 +946,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -958,7 +960,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -995,7 +997,7 @@ object
                                             compound_string("12");
                                             };
                                         };
-                                    output_12 : XmdsExprField 
+                                    output_12 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -1006,7 +1008,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C12+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -1018,7 +1020,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -1032,7 +1034,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -1069,7 +1071,7 @@ object
                                             compound_string("13");
                                             };
                                         };
-                                    output_13 : XmdsExprField 
+                                    output_13 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -1080,7 +1082,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C13+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -1092,7 +1094,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -1106,7 +1108,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -1143,7 +1145,7 @@ object
                                             compound_string("14");
                                             };
                                         };
-                                    output_14 : XmdsExprField 
+                                    output_14 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -1154,7 +1156,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C14+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -1166,7 +1168,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -1180,7 +1182,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -1217,7 +1219,7 @@ object
                                             compound_string("15");
                                             };
                                         };
-                                    output_15 : XmdsExprField 
+                                    output_15 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -1228,7 +1230,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C15+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -1240,7 +1242,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -1254,7 +1256,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -1291,7 +1293,7 @@ object
                                             compound_string("16");
                                             };
                                         };
-                                    output_16 : XmdsExprField 
+                                    output_16 : user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -1302,7 +1304,7 @@ object
                                             XmdsNnidOffset = PREAMP$N_C16+PREAMP$N_INP_OUTPUT;
                                             };
                                         };
-                                    XmdsExprField 
+                                    user_defined procedure XmdsCreateExprField 
                                         {
                                         arguments
                                             {
@@ -1314,7 +1316,7 @@ object
                                             XmNy = 1;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {
@@ -1328,7 +1330,7 @@ object
                                             XmNmarginWidth = 0;
                                             };
                                         };
-                                    XmdsNidOptionMenu 
+                                    user_defined procedure XmdsCreateNidOptionMenu 
                                         {
                                         arguments
                                             {

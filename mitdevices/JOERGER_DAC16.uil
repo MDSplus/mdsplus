@@ -3,6 +3,8 @@ module joerger_dac16
     version = 
     "v1.0"
 
+include file "XmdsWidgets.uil";
+
 object
     JOERGER_DAC16: XmBulletinBoardDialog 
         {
@@ -26,7 +28,7 @@ object
                     XmNy = 10;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -51,7 +53,7 @@ object
                     XmNy = 40;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -66,7 +68,7 @@ object
                     XmNy = 40;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -78,7 +80,7 @@ object
                     XmdsNnidOffset = JOERGER_DAC16$N_INIT_ACTION;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -86,7 +88,7 @@ object
                     XmNy = 391;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -94,7 +96,7 @@ object
                     XmNy = 391;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -102,7 +104,7 @@ object
                     XmNy = 391;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -125,7 +127,7 @@ object
                     };
                 controls
                     {
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -138,7 +140,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_01;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -175,7 +177,7 @@ object
                             XmNwidth = 15;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -188,7 +190,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_02;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -214,7 +216,7 @@ object
                             XmNwidth = 15;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -227,7 +229,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_03;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -297,7 +299,7 @@ object
                             XmNwidth = 16;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -310,7 +312,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_04;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -323,7 +325,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_05 ;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -336,7 +338,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_06;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -349,7 +351,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_07;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -362,7 +364,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_08;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -377,7 +379,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_04;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -392,7 +394,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_05;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -408,7 +410,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_06;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -423,7 +425,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_07;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -449,7 +451,7 @@ object
                             XmNwidth = 15;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -462,7 +464,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_09;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -488,7 +490,7 @@ object
                             XmNwidth = 15;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -503,7 +505,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_10;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -518,7 +520,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_11;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -533,7 +535,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_12;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -548,7 +550,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_13;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -563,7 +565,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_14;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -578,7 +580,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_15;
                             };
                         };
-                    XmdsExprField 
+                    user_defined procedure XmdsCreateExprField 
                         {
                         arguments
                             {
@@ -593,7 +595,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_16;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -606,7 +608,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_10;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -619,7 +621,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_11;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -632,7 +634,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_12;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -645,7 +647,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_13;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -658,7 +660,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_14;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {
@@ -671,7 +673,7 @@ object
                             XmdsNnidOffset = JOERGER_DAC16$N_OUTPUT_15;
                             };
                         };
-                    XmdsOnOffToggleButton 
+                    user_defined procedure XmdsCreateOnOffToggleButton 
                         {
                         arguments
                             {

@@ -11,6 +11,8 @@ module l8501
         XmCascadeButton = gadget;
         }
 
+include file "XmdsWidgets.uil";
+
 value
     DEVICE_NID: -1;
     L8501$N_TRIGGER1: 3;
@@ -133,7 +135,7 @@ object
                     XmNy = 5;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -156,7 +158,7 @@ object
                     XmNy = 35;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -169,8 +171,8 @@ object
                     XmNmarginHeight = 1;
                     };
                 };
-            XmdsNidOptionMenu freq1;
-            XmdsExprField 
+            user_defined freq1;
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -182,8 +184,8 @@ object
                     XmNmarginHeight = 1;
                     };
                 };
-            XmdsNidOptionMenu freq2;
-            XmdsExprField 
+            user_defined freq2;
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -195,7 +197,7 @@ object
                     XmNmarginHeight = 1;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -207,8 +209,8 @@ object
                     XmNmarginHeight = 1;
                     };
                 };
-            XmdsNidOptionMenu freq3;
-            XmdsExprField 
+            user_defined freq3;
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -220,7 +222,7 @@ object
                     XmNmarginHeight = 1;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -262,7 +264,7 @@ object
                     XmNy = 135;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -277,7 +279,7 @@ object
                         };
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -285,7 +287,7 @@ object
                     XmNy = 250;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -300,7 +302,7 @@ object
                         };
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -308,8 +310,8 @@ object
                     XmNy = 250;
                     };
                 };
-            XmdsNidOptionMenu mode;
-            XmdsXdBoxOnOffButton 
+            user_defined mode;
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -322,7 +324,7 @@ object
                     XmNmarginHeight = 0;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -337,7 +339,7 @@ object
                 };
             };
         };
-    freq1: XmdsNidOptionMenu 
+    freq1: user_defined procedure XmdsCreateNidOptionMenu 
         {
         arguments
             {
@@ -354,7 +356,7 @@ object
             {
             };
         };
-    freq2: XmdsNidOptionMenu 
+    freq2: user_defined procedure XmdsCreateNidOptionMenu 
         {
         arguments
             {
@@ -371,7 +373,7 @@ object
             {
             };
         };
-    freq3: XmdsNidOptionMenu 
+    freq3: user_defined procedure XmdsCreateNidOptionMenu 
         {
         arguments
             {
@@ -385,7 +387,7 @@ object
             XmdsNvalueStrings = frequency_values;
             };
         };
-    mode: XmdsNidOptionMenu 
+    mode: user_defined procedure XmdsCreateNidOptionMenu 
         {
         arguments
             {

@@ -1,6 +1,8 @@
 module MIT_ENCODER_UIL
     names = case_sensitive
 
+include file "XmdsWidgets.uil";
+
 object
     MIT_ENCODER: XmBulletinBoardDialog 
         {
@@ -37,7 +39,7 @@ object
                     compound_string("Comment:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -51,7 +53,7 @@ object
                     XmdsNdefaultQuote = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -65,7 +67,7 @@ object
                     XmdsNdefaultQuote = true;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -79,7 +81,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -87,7 +89,7 @@ object
                     XmNy = 365;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -95,7 +97,7 @@ object
                     XmNy = 366;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -103,7 +105,7 @@ object
                     XmNy = 367;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -111,7 +113,7 @@ object
                     XmNy = 366;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -125,7 +127,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -160,7 +162,7 @@ object
                     compound_string("Event");
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -174,7 +176,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -188,7 +190,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -202,7 +204,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -216,7 +218,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -230,7 +232,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -244,7 +246,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -259,7 +261,7 @@ object
                     XmdsNnidOffset = MIT_ENCODER$N_CS_EVENT;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -274,7 +276,7 @@ object
                     XmdsNnidOffset = MIT_ENCODER$N_C6_EVENT;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -289,7 +291,7 @@ object
                     XmdsNnidOffset = MIT_ENCODER$N_C5_EVENT;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -304,7 +306,7 @@ object
                     XmdsNnidOffset = MIT_ENCODER$N_C4_EVENT;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -319,7 +321,7 @@ object
                     XmdsNnidOffset = MIT_ENCODER$N_C3_EVENT;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {

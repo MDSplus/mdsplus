@@ -1,6 +1,8 @@
 module L4202_UIL
     names = case_sensitive
 
+include file "XmdsWidgets.uil";
+
 object
     L4202: XmBulletinBoardDialog 
         {
@@ -27,7 +29,7 @@ object
                     compound_string("CAMAC name:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -42,7 +44,7 @@ object
                     XmdsNdefaultQuote = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -57,7 +59,7 @@ object
                     XmdsNdefaultQuote = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -72,7 +74,7 @@ object
                     XmdsNdefaultQuote = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -85,7 +87,7 @@ object
                     XmdsNnidOffset = L4202$N_EXT_CLOCK;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -98,7 +100,7 @@ object
                     XmdsNnidOffset = L4202$N_NUM_SPECTRA;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -111,7 +113,7 @@ object
                     XmdsNnidOffset = L4202$N_ROUTER_INC;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -124,7 +126,7 @@ object
                     XmdsNnidOffset = L4202$N_OFFSET;
                     };
                 };
-            XmdsNidOptionMenu 
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -138,7 +140,7 @@ object
                     compound_string("Resolution (nsecs):");
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -150,7 +152,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -162,7 +164,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -234,7 +236,7 @@ object
                     compound_string("Offset:");
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -242,7 +244,7 @@ object
                     XmNy = 320;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -250,7 +252,7 @@ object
                     XmNy = 320;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -258,7 +260,7 @@ object
                     XmNy = 320;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {

@@ -1,6 +1,8 @@
 module L8212_UIL
     names = case_sensitive
 
+include file "XmdsWidgets.uil";
+
 object
     L8212: XmBulletinBoardDialog 
         {
@@ -37,7 +39,7 @@ object
                     };
                 };
             XmLabelGadget Trigger;
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -53,7 +55,7 @@ object
                     XmNwidth = 350;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -69,7 +71,7 @@ object
                     XmNwidth = 350;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -83,8 +85,8 @@ object
                     XmNwidth = 350;
                     };
                 };
-            unmanaged XmdsExprField external_clock;
-            XmdsNidOptionMenu 
+            unmanaged user_defined external_clock;
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -135,7 +137,7 @@ object
                     compound_string("Memories:");
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -150,7 +152,7 @@ object
                         };
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -165,7 +167,7 @@ object
                         };
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -180,7 +182,7 @@ object
                         };
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -188,7 +190,7 @@ object
                     XmNy = 452;
                     };
                 };
-            header_menu : XmdsNidOptionMenu 
+            header_menu : user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -211,7 +213,7 @@ object
                         };
                     };
                 };
-            pts_menu : XmdsNidOptionMenu 
+            pts_menu : user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -243,7 +245,7 @@ object
                         compound_string("7BU"));
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -255,7 +257,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -267,7 +269,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsDigChans 
+            user_defined procedure XmdsCreateDigChans 
 		{
 		arguments
 		    {
@@ -283,11 +285,11 @@ object
 		    XmNwidth = 535;
 		    };
 		};
-	    XmdsNidOptionMenu chans_menu; 
-	    XmdsNidOptionMenu  clock_menu;
+	    user_defined chans_menu; 
+	    user_defined clock_menu;
             };
         };
-    chans_menu : XmdsNidOptionMenu 
+    chans_menu : user_defined procedure XmdsCreateNidOptionMenu 
 	{
 	arguments
 	    {
@@ -307,7 +309,7 @@ object
                  };
              };
 	};
-    clock_menu : XmdsNidOptionMenu 
+    clock_menu : user_defined procedure XmdsCreateNidOptionMenu 
  	{
         arguments
             {
@@ -338,7 +340,7 @@ object
             compound_string("Trigger:");
             };
         };
-    external_clock: XmdsExprField 
+    external_clock: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {

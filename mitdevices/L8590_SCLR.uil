@@ -3,6 +3,8 @@ module l8590_sclr_uil
     version = 
     "v1.0"
 
+include file "XmdsWidgets.uil";
+
 object
     L8590_SCLR: XmBulletinBoardDialog 
         {
@@ -28,7 +30,7 @@ object
                     XmNy = 10;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -43,7 +45,7 @@ object
                     XmNy = 10;
                     };
                 };
-            XmdsDigChans 
+            user_defined procedure XmdsCreateDigChans 
                 {
                 arguments
                     {
@@ -60,7 +62,7 @@ object
                     XmNheight = 321;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -68,7 +70,7 @@ object
                     XmNy = 421;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -76,7 +78,7 @@ object
                     XmNy = 418;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -84,7 +86,7 @@ object
                     XmNy = 421;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -92,7 +94,7 @@ object
                     XmNy = 419;
                     };
                 };
-            XmdsNidOptionMenu 
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {

@@ -3,6 +3,8 @@ module RETICON120_UIL
     version = 
     "v1.0"
 
+include file "XmdsWidgets.uil";
+
 object
     RETICON120: XmBulletinBoardDialog 
         {
@@ -28,7 +30,7 @@ object
                     XmNy = 10;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -53,7 +55,7 @@ object
                     XmNy = 70;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -78,7 +80,7 @@ object
                     XmNy = 40;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -103,7 +105,7 @@ object
                     XmNx = 10;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -162,9 +164,9 @@ object
                                     compound_string("0");
                                     };
                                 };
-                            XmdsNidOptionMenu p0;
-                            XmdsExprField f0;
-                            XmdsNidOptionMenu 
+                            user_defined p0;
+                            user_defined f0;
+                            user_defined procedure XmdsCreateNidOptionMenu 
                                 {
                                 arguments
                                     {
@@ -198,9 +200,9 @@ object
                                     compound_string("1");
                                     };
                                 };
-                            XmdsNidOptionMenu p1;
-                            XmdsExprField f1;
-                            XmdsNidOptionMenu 
+                            user_defined p1;
+                            user_defined f1;
+                            user_defined procedure XmdsCreateNidOptionMenu 
                                 {
                                 arguments
                                     {
@@ -234,9 +236,9 @@ object
                                     compound_string("2");
                                     };
                                 };
-                            XmdsNidOptionMenu p2;
-                            XmdsExprField f2;
-                            XmdsNidOptionMenu 
+                            user_defined p2;
+                            user_defined f2;
+                            user_defined procedure XmdsCreateNidOptionMenu 
                                 {
                                 arguments
                                     {
@@ -270,9 +272,9 @@ object
                                     compound_string("3");
                                     };
                                 };
-                            XmdsNidOptionMenu p3;
-                            XmdsExprField f3;
-                            XmdsNidOptionMenu 
+                            user_defined p3;
+                            user_defined f3;
+                            user_defined procedure XmdsCreateNidOptionMenu 
                                 {
                                 arguments
                                     {
@@ -289,7 +291,7 @@ object
                         };
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -304,7 +306,7 @@ object
                         };
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -312,7 +314,7 @@ object
                     XmNy = 390;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -327,7 +329,7 @@ object
                         };
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -407,7 +409,7 @@ object
                     XmNy = 170;
                     };
                 };
-            XmdsNidOptionMenu number_of_states;
+            user_defined number_of_states;
             };
         callbacks
             {
@@ -2483,7 +2485,7 @@ object
                 };
             };
         };
-    number_of_states: XmdsNidOptionMenu 
+    number_of_states: user_defined procedure XmdsCreateNidOptionMenu 
         {
         arguments
             {
@@ -2497,7 +2499,7 @@ object
             XmdsNnid = DEVICE_NID;
             };
         };
-    p0: XmdsNidOptionMenu 
+    p0: user_defined procedure XmdsCreateNidOptionMenu 
         {
         arguments
             {
@@ -2509,7 +2511,7 @@ object
             XmdsNnidOffset = RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*0+RETICON120$N_STATE_PERIOD;
             };
         };
-    p1: XmdsNidOptionMenu 
+    p1: user_defined procedure XmdsCreateNidOptionMenu 
         {
         arguments
             {
@@ -2521,7 +2523,7 @@ object
             XmdsNnidOffset = RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*1+RETICON120$N_STATE_PERIOD;
             };
         };
-    p2: XmdsNidOptionMenu 
+    p2: user_defined procedure XmdsCreateNidOptionMenu 
         {
         arguments
             {
@@ -2533,7 +2535,7 @@ object
             XmdsNnidOffset = RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*2+RETICON120$N_STATE_PERIOD;
             };
         };
-    p3: XmdsNidOptionMenu 
+    p3: user_defined procedure XmdsCreateNidOptionMenu 
         {
         arguments
             {
@@ -2545,7 +2547,7 @@ object
             XmdsNnidOffset = RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*3+RETICON120$N_STATE_PERIOD;
             };
         };
-    f0: XmdsExprField 
+    f0: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -2554,7 +2556,7 @@ object
             XmdsNnidOffset = RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*0+RETICON120$N_STATE_FRAMES;
             };
         };
-    f1: XmdsExprField 
+    f1: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -2563,7 +2565,7 @@ object
             XmdsNnidOffset = RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*1+RETICON120$N_STATE_FRAMES;
             };
         };
-    f2: XmdsExprField 
+    f2: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {
@@ -2572,7 +2574,7 @@ object
             XmdsNnidOffset = RETICON120$N_STATES+RETICON120$K_NODES_PER_STATE*2+RETICON120$N_STATE_FRAMES;
             };
         };
-    f3: XmdsExprField 
+    f3: user_defined procedure XmdsCreateExprField 
         {
         arguments
             {

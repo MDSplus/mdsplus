@@ -3,6 +3,8 @@ module j412
     version = 
     "v1.0"
 
+include file "XmdsWidgets.uil";
+
 object
     J412: XmBulletinBoardDialog 
         {
@@ -26,7 +28,7 @@ object
                     XmNy = 10;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -51,7 +53,7 @@ object
                     XmNy = 40;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -76,7 +78,7 @@ object
                     XmNy = 110;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -99,7 +101,7 @@ object
                     XmNy = 72;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -112,7 +114,7 @@ object
                     XmNy = 70;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -124,7 +126,7 @@ object
                     XmdsNnidOffset = J412$N_INIT_ACTION;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -132,7 +134,7 @@ object
                     XmNy = 217;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -140,7 +142,7 @@ object
                     XmNy = 217;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -148,7 +150,7 @@ object
                     XmNy = 217;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -156,7 +158,7 @@ object
                     XmNy = 217;
                     };
                 };
-            XmdsPath 
+            user_defined procedure XmdsCreatePath 
                 {
                 arguments
                     {
@@ -179,7 +181,7 @@ object
                     XmNy = 138;
                     };
                 };
-            XmdsXdBoxDialogButton 
+            user_defined procedure XmdsCreateXdBoxDialogButton 
                 {
                 arguments
                     {
@@ -201,7 +203,7 @@ object
                     XmNy = 106;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {

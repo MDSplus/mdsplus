@@ -1,6 +1,8 @@
 module paragon_rpt
     names = case_sensitive
 
+include file "XmdsWidgets.uil";
+
 object
     PARAGON_RPT: XmBulletinBoardDialog 
         {
@@ -24,7 +26,7 @@ object
                     compound_string("Report name:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -49,7 +51,7 @@ object
                     compound_string("Comment:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -64,7 +66,7 @@ object
                     XmdsNautoQuote = true;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -76,7 +78,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -84,7 +86,7 @@ object
                     XmNy = 110;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -92,7 +94,7 @@ object
                     XmNy = 110;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -100,7 +102,7 @@ object
                     XmNy = 110;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {

@@ -3,6 +3,8 @@ module hv1443
     version = 
     "v1.0"
 
+include file "XmdsWidgets.uil";
+
 object
     HV1443: XmBulletinBoardDialog 
         {
@@ -18,7 +20,7 @@ object
             };
         controls
             {
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton
                 {
                 arguments
                     {
@@ -26,7 +28,7 @@ object
                     XmNy = 290;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -34,7 +36,7 @@ object
                     XmNy = 290;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -42,7 +44,7 @@ object
                     XmNy = 290;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -52,7 +54,7 @@ object
                     compound_string("Cancel");
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -65,7 +67,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -78,7 +80,7 @@ object
                     XmdsNnidOffset = HV1443$N_VOLTAGE_01;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -91,7 +93,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -104,7 +106,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -117,7 +119,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -130,7 +132,7 @@ object
                     XmdsNnidOffset = HV1443$N_VOLTAGE_02;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -143,7 +145,7 @@ object
                     XmdsNnidOffset = HV1443$N_VOLTAGE_03;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -176,7 +178,7 @@ object
                     compound_string("Voltage (integer)");
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -189,7 +191,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -202,7 +204,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -215,7 +217,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -228,7 +230,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -241,7 +243,7 @@ object
                     XmdsNnidOffset = HV1443$N_VOLTAGE_05;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -254,7 +256,7 @@ object
                     XmdsNnidOffset = HV1443$N_VOLTAGE_06;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -267,7 +269,7 @@ object
                     XmdsNnidOffset = HV1443$N_VOLTAGE_07;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -280,7 +282,7 @@ object
                     XmdsNnidOffset = HV1443$N_VOLTAGE_08;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -293,7 +295,7 @@ object
                     XmdsNnidOffset = HV1443$N_VOLTAGE_09;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -306,7 +308,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -319,7 +321,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -332,7 +334,7 @@ object
                     XmdsNnidOffset = HV1443$N_VOLTAGE_10;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -345,7 +347,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -358,7 +360,7 @@ object
                     XmdsNnidOffset = HV1443$N_VOLTAGE_11;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -371,7 +373,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -384,7 +386,7 @@ object
                     XmdsNnidOffset = HV1443$N_VOLTAGE_12;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -397,7 +399,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -410,7 +412,7 @@ object
                     XmdsNnidOffset = HV1443$N_VOLTAGE_13;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -423,7 +425,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -436,7 +438,7 @@ object
                     XmdsNnidOffset = HV1443$N_VOLTAGE_14;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -449,7 +451,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -462,7 +464,7 @@ object
                     XmdsNnidOffset = HV1443$N_VOLTAGE_15;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -475,7 +477,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {

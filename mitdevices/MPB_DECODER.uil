@@ -34,6 +34,8 @@ names = case_sensitive
 !(BX) bx_info("c_makefile", "MAKEFILE-C.MMS", true )
 !(BX) bx_info("app_defaults", "APP-DEFAULTS.DAT", true )
 
+include file "XmdsWidgets.uil";
+
 value
     DEVICE_NID :  -1;
     DEVICE$K_NODES_PER_INP :  3;
@@ -389,13 +391,13 @@ object MPB__DECODER : XmFormDialog widget {
     };
     controls {
        managed XmLabelGadget nameLabel;
-       managed XmdsExprField nameField;
+       managed user_defined nameField;
        managed XmLabelGadget commentLabel;
-       managed XmdsExprField commentField;
+       managed user_defined commentField;
        managed XmLabelGadget startTimeLabel;
-       managed XmdsExprField startTime;
+       managed user_defined startTime;
        managed XmLabelGadget startEventLabel;
-       managed XmdsExprField startEvent;
+       managed user_defined startEvent;
        managed XmRowColumn rowColumn;
        managed XmForm bottomButtons;
        unmanaged XmBulletinBoardDialog showDialog;
@@ -590,7 +592,7 @@ object bottomButtons : XmForm widget {
         XmNrightOffset = 5;
     };
     controls {
-       managed XmdsXdBoxOnOffButton initAction;
+       managed user_defined initAction;
        managed XmPushButton showButton;
        managed XmForm deviceButtons;
     };
@@ -605,23 +607,23 @@ object deviceButtons : XmForm widget {
         XmNbottomAttachment = XmATTACH_FORM;
         XmNleftAttachment = XmATTACH_FORM;
         XmNrightAttachment = XmATTACH_FORM;
-        XmNtopWidget = XmdsXdBoxOnOffButton initAction;
+        XmNtopWidget = user_defined initAction;
         XmNtopOffset = 15;
         XmNbottomOffset = 0;
         XmNleftOffset = 0;
         XmNrightOffset = 0;
     };
     controls {
-       managed XmdsCancelButton cancelButton;
-       managed XmdsResetButton resetButton;
-       managed XmdsApplyButton applyButton;
-       managed XmdsOkButton okButton;
+       managed user_defined cancelButton;
+       managed user_defined resetButton;
+       managed user_defined applyButton;
+       managed user_defined okButton;
     };
     callbacks {
     };
 };
 
-object okButton : XmdsOkButton widget {
+object okButton : user_defined procedure XmdsCreateOkButton widget {
     arguments {
         XmNleftAttachment = XmATTACH_FORM;
         XmNleftOffset = 10;
@@ -632,7 +634,7 @@ object okButton : XmdsOkButton widget {
     };
 };
 
-object applyButton : XmdsApplyButton widget {
+object applyButton : user_defined procedure XmdsCreateApplyButton widget {
     arguments {
         XmNleftAttachment = XmATTACH_POSITION;
         XmNleftPosition = 33;
@@ -644,7 +646,7 @@ object applyButton : XmdsApplyButton widget {
     };
 };
 
-object resetButton : XmdsResetButton widget {
+object resetButton : user_defined procedure XmdsCreateResetButton widget {
     arguments {
         XmNleftAttachment = XmATTACH_POSITION;
         XmNleftPosition = 66;
@@ -658,7 +660,7 @@ object resetButton : XmdsResetButton widget {
     };
 };
 
-object cancelButton : XmdsCancelButton widget {
+object cancelButton : user_defined procedure XmdsCreateCancelButton widget {
     arguments {
         XmNrightAttachment = XmATTACH_FORM;
         XmNrightOffset = 10;
@@ -683,7 +685,7 @@ object showButton : XmPushButton widget {
     };
 };
 
-object initAction : XmdsXdBoxOnOffButton widget {
+object initAction : user_defined procedure XmdsCreateXdBoxOnOffButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("Initialization Action");
@@ -726,19 +728,19 @@ object channel_0 : XmForm widget {
         XmNheight = 64;
     };
     controls {
-       managed XmdsOnOffToggleButton c0;
-       managed XmdsNidOptionMenu c0_mode;
+       managed user_defined c0;
+       managed user_defined c0_mode;
        managed XmLabel c0_p1_label;
-       managed XmdsExprField c0_p1;
+       managed user_defined c0_p1;
        managed XmLabel c0_p2_label;
-       managed XmdsExprField c0_p2;
+       managed user_defined c0_p2;
        managed XmLabel c0_p3_label;
-       managed XmdsExprField c0_p3;
+       managed user_defined c0_p3;
        managed XmLabel c0_p4_label;
-       managed XmdsExprField c0_p4;
-       managed XmdsNidOptionMenu c0_p5;
-       managed XmdsOnOffToggleButton c0_start_low;
-       managed XmdsExprField exprField;
+       managed user_defined c0_p4;
+       managed user_defined c0_p5;
+       managed user_defined c0_start_low;
+       managed user_defined exprField;
        managed XmLabelGadget label;
     };
     callbacks {
@@ -756,7 +758,7 @@ object label : XmLabelGadget widget {
     };
 };
 
-object exprField : XmdsExprField widget {
+object exprField : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnidOffset = DEVICE$N_CHANNEL_0_COMMENT;
         XmNleftWidget = XmLabelGadget label;
@@ -768,7 +770,7 @@ object exprField : XmdsExprField widget {
     };
 };
 
-object c0_start_low : XmdsOnOffToggleButton widget {
+object c0_start_low : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         arguments StartLowStyle;
         XmdsNnidOffset = DEVICE$N_CHANNEL_0_START_LOW;
@@ -780,7 +782,7 @@ object c0_start_low : XmdsOnOffToggleButton widget {
     };
 };
 
-object c0_p5 : XmdsNidOptionMenu widget {
+object c0_p5 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         arguments P5Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_0_P5;
@@ -792,7 +794,7 @@ object c0_p5 : XmdsNidOptionMenu widget {
     };
 };
 
-object c0_p4 : XmdsExprField widget {
+object c0_p4 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P4Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_0_P4;
@@ -815,7 +817,7 @@ object c0_p4_label : XmLabel widget {
     };
 };
 
-object c0_p3 : XmdsExprField widget {
+object c0_p3 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P3Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_0_P3;
@@ -838,7 +840,7 @@ object c0_p3_label : XmLabel widget {
     };
 };
 
-object c0_p2 : XmdsExprField widget {
+object c0_p2 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P2Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_0_P2;
@@ -861,7 +863,7 @@ object c0_p2_label : XmLabel widget {
     };
 };
 
-object c0_p1 : XmdsExprField widget {
+object c0_p1 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P1Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_0_P1;
@@ -884,7 +886,7 @@ object c0_p1_label : XmLabel widget {
     };
 };
 
-object c0_mode : XmdsNidOptionMenu widget {
+object c0_mode : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         arguments ModeStyle;
         XmdsNnidOffset = DEVICE$N_CHANNEL_0_MODE;
@@ -900,7 +902,7 @@ object c0_mode : XmdsNidOptionMenu widget {
     };
 };
 
-object c0 : XmdsOnOffToggleButton widget {
+object c0 : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         arguments COnOffStyle;
         XmNlabelString = compound_string("E0");
@@ -923,19 +925,19 @@ object channel_1 : XmForm widget {
         XmNheight = 64;
     };
     controls {
-       managed XmdsOnOffToggleButton c1;
-       managed XmdsNidOptionMenu c1_mode;
+       managed user_defined c1;
+       managed user_defined c1_mode;
        managed XmLabel c1_p1_label;
-       managed XmdsExprField c1_p1;
+       managed user_defined c1_p1;
        managed XmLabel c1_p2_label;
-       managed XmdsExprField c1_p2;
+       managed user_defined c1_p2;
        managed XmLabel c1_p3_label;
-       managed XmdsExprField c1_p3;
+       managed user_defined c1_p3;
        managed XmLabel c1_p4_label;
-       managed XmdsExprField c1_p4;
-       managed XmdsNidOptionMenu c1_p5;
-       managed XmdsOnOffToggleButton c1_start_low;
-       managed XmdsExprField exprField1;
+       managed user_defined c1_p4;
+       managed user_defined c1_p5;
+       managed user_defined c1_start_low;
+       managed user_defined exprField1;
        managed XmLabelGadget label1;
     };
     callbacks {
@@ -953,7 +955,7 @@ object label1 : XmLabelGadget widget {
     };
 };
 
-object exprField1 : XmdsExprField widget {
+object exprField1 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnidOffset = DEVICE$N_CHANNEL_1_COMMENT;
         XmNleftWidget = XmLabelGadget label1;
@@ -965,7 +967,7 @@ object exprField1 : XmdsExprField widget {
     };
 };
 
-object c1_start_low : XmdsOnOffToggleButton widget {
+object c1_start_low : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         arguments StartLowStyle;
         XmdsNnidOffset = DEVICE$N_CHANNEL_1_START_LOW;
@@ -977,7 +979,7 @@ object c1_start_low : XmdsOnOffToggleButton widget {
     };
 };
 
-object c1_p5 : XmdsNidOptionMenu widget {
+object c1_p5 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         arguments P5Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_1_P5;
@@ -989,7 +991,7 @@ object c1_p5 : XmdsNidOptionMenu widget {
     };
 };
 
-object c1_p4 : XmdsExprField widget {
+object c1_p4 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P4Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_1_P4;
@@ -1012,7 +1014,7 @@ object c1_p4_label : XmLabel widget {
     };
 };
 
-object c1_p3 : XmdsExprField widget {
+object c1_p3 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P3Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_1_P3;
@@ -1035,7 +1037,7 @@ object c1_p3_label : XmLabel widget {
     };
 };
 
-object c1_p2 : XmdsExprField widget {
+object c1_p2 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P2Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_1_P2;
@@ -1058,7 +1060,7 @@ object c1_p2_label : XmLabel widget {
     };
 };
 
-object c1_p1 : XmdsExprField widget {
+object c1_p1 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P1Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_1_P1;
@@ -1081,7 +1083,7 @@ object c1_p1_label : XmLabel widget {
     };
 };
 
-object c1_mode : XmdsNidOptionMenu widget {
+object c1_mode : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         arguments ModeStyle;
         XmdsNnidOffset = DEVICE$N_CHANNEL_1_MODE;
@@ -1097,7 +1099,7 @@ object c1_mode : XmdsNidOptionMenu widget {
     };
 };
 
-object c1 : XmdsOnOffToggleButton widget {
+object c1 : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         arguments COnOffStyle;
         XmNlabelString = compound_string("E1");
@@ -1121,19 +1123,19 @@ object channel_2 : XmForm widget {
         XmNheight = 64;
     };
     controls {
-       managed XmdsOnOffToggleButton c2;
-       managed XmdsNidOptionMenu c2_mode;
+       managed user_defined c2;
+       managed user_defined c2_mode;
        managed XmLabel c2_p1_label;
-       managed XmdsExprField c2_p1;
+       managed user_defined c2_p1;
        managed XmLabel c2_p2_label;
-       managed XmdsExprField c2_p2;
+       managed user_defined c2_p2;
        managed XmLabel c2_p3_label;
-       managed XmdsExprField c2_p3;
+       managed user_defined c2_p3;
        managed XmLabel c2_p4_label;
-       managed XmdsExprField c2_p4;
-       managed XmdsNidOptionMenu c2_p5;
-       managed XmdsOnOffToggleButton c2_start_low;
-       managed XmdsExprField exprField2;
+       managed user_defined c2_p4;
+       managed user_defined c2_p5;
+       managed user_defined c2_start_low;
+       managed user_defined exprField2;
        managed XmLabelGadget label2;
     };
     callbacks {
@@ -1151,7 +1153,7 @@ object label2 : XmLabelGadget widget {
     };
 };
 
-object exprField2 : XmdsExprField widget {
+object exprField2 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnidOffset = DEVICE$N_CHANNEL_2_COMMENT;
         XmNleftWidget = XmLabelGadget label2;
@@ -1163,7 +1165,7 @@ object exprField2 : XmdsExprField widget {
     };
 };
 
-object c2_start_low : XmdsOnOffToggleButton widget {
+object c2_start_low : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         arguments StartLowStyle;
         XmdsNnidOffset = DEVICE$N_CHANNEL_2_START_LOW;
@@ -1175,7 +1177,7 @@ object c2_start_low : XmdsOnOffToggleButton widget {
     };
 };
 
-object c2_p5 : XmdsNidOptionMenu widget {
+object c2_p5 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         arguments P5Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_2_P5;
@@ -1187,7 +1189,7 @@ object c2_p5 : XmdsNidOptionMenu widget {
     };
 };
 
-object c2_p4 : XmdsExprField widget {
+object c2_p4 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P4Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_2_P4;
@@ -1210,7 +1212,7 @@ object c2_p4_label : XmLabel widget {
     };
 };
 
-object c2_p3 : XmdsExprField widget {
+object c2_p3 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P3Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_2_P3;
@@ -1233,7 +1235,7 @@ object c2_p3_label : XmLabel widget {
     };
 };
 
-object c2_p2 : XmdsExprField widget {
+object c2_p2 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P2Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_2_P2;
@@ -1256,7 +1258,7 @@ object c2_p2_label : XmLabel widget {
     };
 };
 
-object c2_p1 : XmdsExprField widget {
+object c2_p1 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P1Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_2_P1;
@@ -1279,7 +1281,7 @@ object c2_p1_label : XmLabel widget {
     };
 };
 
-object c2_mode : XmdsNidOptionMenu widget {
+object c2_mode : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         arguments ModeStyle;
         XmdsNnidOffset = DEVICE$N_CHANNEL_2_MODE;
@@ -1295,7 +1297,7 @@ object c2_mode : XmdsNidOptionMenu widget {
     };
 };
 
-object c2 : XmdsOnOffToggleButton widget {
+object c2 : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         arguments COnOffStyle;
         XmNlabelString = compound_string("E2");
@@ -1319,19 +1321,19 @@ object channel_3 : XmForm widget {
         XmNheight = 64;
     };
     controls {
-       managed XmdsOnOffToggleButton c3;
-       managed XmdsNidOptionMenu c3_mode;
+       managed user_defined c3;
+       managed user_defined c3_mode;
        managed XmLabel c3_p1_label;
-       managed XmdsExprField c3_p1;
+       managed user_defined c3_p1;
        managed XmLabel c3_p2_label;
-       managed XmdsExprField c3_p2;
+       managed user_defined c3_p2;
        managed XmLabel c3_p3_label;
-       managed XmdsExprField c3_p3;
+       managed user_defined c3_p3;
        managed XmLabel c3_p4_label;
-       managed XmdsExprField c3_p4;
-       managed XmdsNidOptionMenu c3_p5;
-       managed XmdsOnOffToggleButton c3_start_low;
-       managed XmdsExprField exprField3;
+       managed user_defined c3_p4;
+       managed user_defined c3_p5;
+       managed user_defined c3_start_low;
+       managed user_defined exprField3;
        managed XmLabelGadget label3;
     };
     callbacks {
@@ -1349,7 +1351,7 @@ object label3 : XmLabelGadget widget {
     };
 };
 
-object exprField3 : XmdsExprField widget {
+object exprField3 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments ChanCommentExprStyle;
         XmdsNnidOffset = DEVICE$N_CHANNEL_3_COMMENT;
@@ -1361,7 +1363,7 @@ object exprField3 : XmdsExprField widget {
     };
 };
 
-object c3_start_low : XmdsOnOffToggleButton widget {
+object c3_start_low : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         arguments StartLowStyle;
         XmdsNnidOffset = DEVICE$N_CHANNEL_3_START_LOW;
@@ -1373,7 +1375,7 @@ object c3_start_low : XmdsOnOffToggleButton widget {
     };
 };
 
-object c3_p5 : XmdsNidOptionMenu widget {
+object c3_p5 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         arguments P5Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_3_P5;
@@ -1385,7 +1387,7 @@ object c3_p5 : XmdsNidOptionMenu widget {
     };
 };
 
-object c3_p4 : XmdsExprField widget {
+object c3_p4 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P4Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_3_P4;
@@ -1408,7 +1410,7 @@ object c3_p4_label : XmLabel widget {
     };
 };
 
-object c3_p3 : XmdsExprField widget {
+object c3_p3 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P3Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_3_P3;
@@ -1431,7 +1433,7 @@ object c3_p3_label : XmLabel widget {
     };
 };
 
-object c3_p2 : XmdsExprField widget {
+object c3_p2 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P2Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_3_P2;
@@ -1454,7 +1456,7 @@ object c3_p2_label : XmLabel widget {
     };
 };
 
-object c3_p1 : XmdsExprField widget {
+object c3_p1 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P1Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_3_P1;
@@ -1477,7 +1479,7 @@ object c3_p1_label : XmLabel widget {
     };
 };
 
-object c3_mode : XmdsNidOptionMenu widget {
+object c3_mode : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         arguments ModeStyle;
         XmdsNnidOffset = DEVICE$N_CHANNEL_3_MODE;
@@ -1493,7 +1495,7 @@ object c3_mode : XmdsNidOptionMenu widget {
     };
 };
 
-object c3 : XmdsOnOffToggleButton widget {
+object c3 : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         arguments COnOffStyle;
         XmNlabelString = compound_string("E3");
@@ -1517,19 +1519,19 @@ object channel_4 : XmForm widget {
         XmNheight = 64;
     };
     controls {
-       managed XmdsOnOffToggleButton c4;
-       managed XmdsNidOptionMenu c4_mode;
+       managed user_defined c4;
+       managed user_defined c4_mode;
        managed XmLabel c4_p1_label;
-       managed XmdsExprField c4_p1;
+       managed user_defined c4_p1;
        managed XmLabel c4_p2_label;
-       managed XmdsExprField c4_p2;
+       managed user_defined c4_p2;
        managed XmLabel c4_p3_label;
-       managed XmdsExprField c4_p3;
+       managed user_defined c4_p3;
        managed XmLabel c4_p4_label;
-       managed XmdsExprField c4_p4;
-       managed XmdsNidOptionMenu c4_p5;
-       managed XmdsOnOffToggleButton c4_start_low;
-       managed XmdsExprField exprField4;
+       managed user_defined c4_p4;
+       managed user_defined c4_p5;
+       managed user_defined c4_start_low;
+       managed user_defined exprField4;
        managed XmLabelGadget label4;
     };
     callbacks {
@@ -1547,7 +1549,7 @@ object label4 : XmLabelGadget widget {
     };
 };
 
-object exprField4 : XmdsExprField widget {
+object exprField4 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments ChanCommentExprStyle;
         XmdsNnidOffset = DEVICE$N_CHANNEL_4_COMMENT;
@@ -1559,7 +1561,7 @@ object exprField4 : XmdsExprField widget {
     };
 };
 
-object c4_start_low : XmdsOnOffToggleButton widget {
+object c4_start_low : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         arguments StartLowStyle;
         XmdsNnidOffset = DEVICE$N_CHANNEL_4_START_LOW;
@@ -1571,7 +1573,7 @@ object c4_start_low : XmdsOnOffToggleButton widget {
     };
 };
 
-object c4_p5 : XmdsNidOptionMenu widget {
+object c4_p5 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         arguments P5Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_4_P5;
@@ -1583,7 +1585,7 @@ object c4_p5 : XmdsNidOptionMenu widget {
     };
 };
 
-object c4_p4 : XmdsExprField widget {
+object c4_p4 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P4Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_4_P4;
@@ -1606,7 +1608,7 @@ object c4_p4_label : XmLabel widget {
     };
 };
 
-object c4_p3 : XmdsExprField widget {
+object c4_p3 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P3Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_4_P3;
@@ -1629,7 +1631,7 @@ object c4_p3_label : XmLabel widget {
     };
 };
 
-object c4_p2 : XmdsExprField widget {
+object c4_p2 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P2Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_4_P2;
@@ -1652,7 +1654,7 @@ object c4_p2_label : XmLabel widget {
     };
 };
 
-object c4_p1 : XmdsExprField widget {
+object c4_p1 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         arguments P1Style;
         XmdsNnidOffset = DEVICE$N_CHANNEL_4_P1;
@@ -1675,7 +1677,7 @@ object c4_p1_label : XmLabel widget {
     };
 };
 
-object c4_mode : XmdsNidOptionMenu widget {
+object c4_mode : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         arguments ModeStyle;
         XmdsNnidOffset = DEVICE$N_CHANNEL_4_MODE;
@@ -1691,7 +1693,7 @@ object c4_mode : XmdsNidOptionMenu widget {
     };
 };
 
-object c4 : XmdsOnOffToggleButton widget {
+object c4 : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         arguments COnOffStyle;
         XmNlabelString = compound_string("E4");
@@ -1709,7 +1711,7 @@ object c4 : XmdsOnOffToggleButton widget {
     };
 };
 
-object startEvent : XmdsExprField widget {
+object startEvent : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;
@@ -1744,7 +1746,7 @@ object startEventLabel : XmLabelGadget widget {
     };
 };
 
-object startTime : XmdsExprField widget {
+object startTime : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;
@@ -1779,7 +1781,7 @@ object startTimeLabel : XmLabelGadget widget {
     };
 };
 
-object commentField : XmdsExprField widget {
+object commentField : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;
@@ -1814,7 +1816,7 @@ object commentLabel : XmLabelGadget widget {
     };
 };
 
-object nameField : XmdsExprField widget {
+object nameField : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;

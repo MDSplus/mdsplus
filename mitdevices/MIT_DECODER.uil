@@ -1,6 +1,8 @@
 module MIT_DECODER_UIL
     names = case_sensitive
 
+include file "XmdsWidgets.uil";
+
 object
     MIT_DECODER: XmBulletinBoardDialog 
         {
@@ -35,7 +37,7 @@ object
                     compound_string("Comment:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -49,7 +51,7 @@ object
                     XmdsNdefaultQuote = true;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -63,7 +65,7 @@ object
                     XmdsNdefaultQuote = true;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -85,7 +87,7 @@ object
                     compound_string("Master register:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -98,7 +100,7 @@ object
                     XmdsNnidOffset = MIT_DECODER$N_MASTER_REG;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -106,7 +108,7 @@ object
                     XmNy = 380;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -114,7 +116,7 @@ object
                     XmNy = 380;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -122,7 +124,7 @@ object
                     XmNy = 380;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -178,7 +180,7 @@ object
                                     compound_string("0");
                                     };
                                 };
-                            XmdsOnOffToggleButton 
+                            user_defined procedure XmdsCreateOnOffToggleButton 
                                 {
                                 arguments
                                     {
@@ -188,7 +190,7 @@ object
                                     compound_string("");
                                     };
                                 };
-                            XmdsExprField 
+                            user_defined procedure XmdsCreateExprField 
                                 {
                                 arguments
                                     {
@@ -219,7 +221,7 @@ object
                                     compound_string("1");
                                     };
                                 };
-                            XmdsOnOffToggleButton 
+                            user_defined procedure XmdsCreateOnOffToggleButton 
                                 {
                                 arguments
                                     {
@@ -229,7 +231,7 @@ object
                                     compound_string("");
                                     };
                                 };
-                            XmdsExprField 
+                            user_defined procedure XmdsCreateExprField 
                                 {
                                 arguments
                                     {
@@ -260,7 +262,7 @@ object
                                     compound_string("2");
                                     };
                                 };
-                            XmdsOnOffToggleButton 
+                            user_defined procedure XmdsCreateOnOffToggleButton 
                                 {
                                 arguments
                                     {
@@ -270,7 +272,7 @@ object
                                     compound_string("");
                                     };
                                 };
-                            XmdsExprField 
+                            user_defined procedure XmdsCreateExprField 
                                 {
                                 arguments
                                     {
@@ -301,7 +303,7 @@ object
                                     compound_string("3");
                                     };
                                 };
-                            XmdsOnOffToggleButton 
+                            user_defined procedure XmdsCreateOnOffToggleButton 
                                 {
                                 arguments
                                     {
@@ -311,7 +313,7 @@ object
                                     compound_string("");
                                     };
                                 };
-                            XmdsExprField 
+                            user_defined procedure XmdsCreateExprField 
                                 {
                                 arguments
                                     {
@@ -342,7 +344,7 @@ object
                                     compound_string("4");
                                     };
                                 };
-                            XmdsOnOffToggleButton 
+                            user_defined procedure XmdsCreateOnOffToggleButton 
                                 {
                                 arguments
                                     {
@@ -352,7 +354,7 @@ object
                                     compound_string("");
                                     };
                                 };
-                            XmdsExprField 
+                            user_defined procedure XmdsCreateExprField 
                                 {
                                 arguments
                                     {

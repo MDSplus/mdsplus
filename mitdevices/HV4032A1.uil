@@ -3,6 +3,8 @@ module hv4032a1
     version = 
     "v1.0"
 
+include file "XmdsWidgets.uil";
+
 object
     HV4032A1: XmBulletinBoardDialog 
         {
@@ -16,7 +18,7 @@ object
             };
         controls
             {
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -24,7 +26,7 @@ object
                     XmNy = 162;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -32,7 +34,7 @@ object
                     XmNy = 162;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -40,7 +42,7 @@ object
                     XmNy = 162;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -50,7 +52,7 @@ object
                     compound_string("Cancel");
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -63,7 +65,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -76,7 +78,7 @@ object
                     XmdsNnidOffset = HV4032A1$N_VOLTAGE_1;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -89,7 +91,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -102,7 +104,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOnOffToggleButton 
+            user_defined procedure XmdsCreateOnOffToggleButton 
                 {
                 arguments
                     {
@@ -115,7 +117,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -128,7 +130,7 @@ object
                     XmdsNnidOffset = HV4032A1$N_VOLTAGE_2;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -141,7 +143,7 @@ object
                     XmdsNnidOffset = HV4032A1$N_VOLTAGE_3;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {

@@ -1,6 +1,8 @@
 module T4012_UIL
     names = case_sensitive
 
+include file "XmdsWidgets.uil";
+
 value
     T4012$N_NAME: 1;
     T4012$N_COMMENT: 2;
@@ -44,7 +46,7 @@ object
                     compound_string("CAMAC name:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -69,7 +71,7 @@ object
                     compound_string("Comment:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -94,7 +96,7 @@ object
                     compound_string("Number of channels:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -117,7 +119,7 @@ object
                     compound_string("Post Trigger Samples:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -150,7 +152,7 @@ object
                     compound_string("Samples per channel:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -173,7 +175,7 @@ object
                     compound_string("Display channel:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -196,7 +198,7 @@ object
                     compound_string("Stop trigger:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -261,7 +263,7 @@ object
                     compound_string("Digitizers");
                     };
                 };
-            XmdsNidOptionMenu 
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -359,7 +361,7 @@ object
                     compound_string("SWI Trigger:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -372,7 +374,7 @@ object
                     XmdsNnidOffset = T4012$N_SWITCH_TRIG;
                     };
                 };
-            XmdsNidOptionMenu 
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -466,7 +468,7 @@ object
                     compound_string("External clock:");
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -479,7 +481,7 @@ object
                     XmdsNnidOffset = T4012$N_EXTERN_CLOCK;
                     };
                 };
-            XmdsNidOptionMenu 
+            user_defined procedure XmdsCreateNidOptionMenu 
                 {
                 arguments
                     {
@@ -503,7 +505,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -515,7 +517,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {
@@ -527,7 +529,7 @@ object
                     XmdsNnid = DEVICE_NID;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -535,7 +537,7 @@ object
                     XmNy = 345;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -543,7 +545,7 @@ object
                     XmNy = 345;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -551,7 +553,7 @@ object
                     XmNy = 345;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {

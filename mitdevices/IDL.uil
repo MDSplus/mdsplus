@@ -3,6 +3,8 @@ module IDL_UIL
     version = 
     "v1.0"
 
+include file "XmdsWidgets.uil";
+
 object
     IDL: XmFormDialog 
         {
@@ -32,7 +34,7 @@ object
                     XmNleftOffset = 0;
                     };
                 };
-            XmdsExprField 
+            user_defined procedure XmdsCreateExprField 
                 {
                 arguments
                     {
@@ -59,7 +61,7 @@ object
                     XmNleftOffset = 0;
                     };
                 };
-            XmdsExpr 
+            user_defined procedure XmdsCreateExpr 
                 {
                 arguments
                     {
@@ -80,7 +82,7 @@ object
                     XmNeditMode = XmMULTI_LINE_EDIT;
                     };
                 };
-            XmdsOkButton 
+            user_defined procedure XmdsCreateOkButton 
                 {
                 arguments
                     {
@@ -89,7 +91,7 @@ object
                     XmNbottomOffset = 0;
                     };
                 };
-            XmdsCancelButton 
+            user_defined procedure XmdsCreateCancelButton 
                 {
                 arguments
                     {
@@ -98,7 +100,7 @@ object
                     XmNbottomOffset = 0;
                     };
                 };
-            XmdsApplyButton 
+            user_defined procedure XmdsCreateApplyButton 
                 {
                 arguments
                     {
@@ -108,7 +110,7 @@ object
                     XmNleftPosition = 30;
                     };
                 };
-            XmdsResetButton 
+            user_defined procedure XmdsCreateResetButton 
                 {
                 arguments
                     {
@@ -118,7 +120,7 @@ object
                     XmNbottomOffset = 0;
                     };
                 };
-            XmdsXdBoxOnOffButton 
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
                 {
                 arguments
                     {

@@ -9,6 +9,8 @@ module joerger_cg
 version = 'V1.0'
 names = case_sensitive
 
+include file "XmdsWidgets.uil";
+
 value
     DEVICE_NID :  -1;
     DEVICE$N_NAME :  1;
@@ -94,9 +96,9 @@ object JOERGER_CG : XmFormDialog widget {
     controls {
          managed XmBulletinBoard bulletinBoard;
          managed XmForm bottomButtons;
-         managed XmdsExprField commentField;
+         managed user_defined commentField;
          managed XmLabelGadget commentLabel;
-         managed XmdsExprField nameField;
+         managed user_defined nameField;
          managed XmLabelGadget nameLabel;
     };
     callbacks {
@@ -117,7 +119,7 @@ object nameLabel : XmLabelGadget widget {
     };
 };
 
-object nameField : XmdsExprField widget {
+object nameField : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;
@@ -152,7 +154,7 @@ object commentLabel : XmLabelGadget widget {
     };
 };
 
-object commentField : XmdsExprField widget {
+object commentField : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;
@@ -185,7 +187,7 @@ object bottomButtons : XmForm widget {
         XmNrightOffset = 0;
     };
     controls {
-         managed XmdsXdBoxOnOffButton initAction;
+         managed user_defined initAction;
          managed XmForm deviceButtons;
     };
     callbacks {
@@ -199,7 +201,7 @@ object deviceButtons : XmForm widget {
         XmNbottomAttachment = XmATTACH_FORM;
         XmNleftAttachment = XmATTACH_FORM;
         XmNrightAttachment = XmATTACH_FORM;
-        XmNtopWidget = XmdsXdBoxOnOffButton initAction;
+        XmNtopWidget = user_defined initAction;
         XmNtopOffset = 15;
         XmNbottomOffset = 0;
         XmNleftOffset = 0;
@@ -207,16 +209,16 @@ object deviceButtons : XmForm widget {
         XmNy = 50;
     };
     controls {
-         managed XmdsCancelButton cancelButton;
-         managed XmdsResetButton resetButton;
-         managed XmdsApplyButton applyButton;
-         managed XmdsOkButton okButton;
+         managed user_defined cancelButton;
+         managed user_defined resetButton;
+         managed user_defined applyButton;
+         managed user_defined okButton;
     };
     callbacks {
     };
 };
 
-object okButton : XmdsOkButton widget {
+object okButton : user_defined procedure XmdsCreateOkButton widget {
     arguments {
         XmNleftAttachment = XmATTACH_FORM;
         XmNleftOffset = 10;
@@ -227,7 +229,7 @@ object okButton : XmdsOkButton widget {
     };
 };
 
-object applyButton : XmdsApplyButton widget {
+object applyButton : user_defined procedure XmdsCreateApplyButton widget {
     arguments {
         XmNleftAttachment = XmATTACH_POSITION;
         XmNleftPosition = 33;
@@ -239,7 +241,7 @@ object applyButton : XmdsApplyButton widget {
     };
 };
 
-object resetButton : XmdsResetButton widget {
+object resetButton : user_defined procedure XmdsCreateResetButton widget {
     arguments {
         XmNleftAttachment = XmATTACH_POSITION;
         XmNleftPosition = 66;
@@ -251,7 +253,7 @@ object resetButton : XmdsResetButton widget {
     };
 };
 
-object cancelButton : XmdsCancelButton widget {
+object cancelButton : user_defined procedure XmdsCreateCancelButton widget {
     arguments {
         XmNrightAttachment = XmATTACH_FORM;
         XmNrightOffset = 10;
@@ -262,7 +264,7 @@ object cancelButton : XmdsCancelButton widget {
     };
 };
 
-object initAction : XmdsXdBoxOnOffButton widget {
+object initAction : user_defined procedure XmdsCreateXdBoxOnOffButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("Initialization Action");
@@ -291,20 +293,20 @@ object bulletinBoard : XmBulletinBoard widget {
         XmNheight = 185;
     };
     controls {
-         managed XmdsOnOffToggleButton inverted4;
-         managed XmdsOnOffToggleButton inverted3;
-         managed XmdsOnOffToggleButton inverted2;
-         managed XmdsOnOffToggleButton inverted1;
-         managed XmdsNidOptionMenu c4_freq;
-         managed XmdsNidOptionMenu c3_freq;
-         managed XmdsNidOptionMenu c2_freq;
-         managed XmdsNidOptionMenu c1_freq;
+         managed user_defined inverted4;
+         managed user_defined inverted3;
+         managed user_defined inverted2;
+         managed user_defined inverted1;
+         managed user_defined c4_freq;
+         managed user_defined c3_freq;
+         managed user_defined c2_freq;
+         managed user_defined c1_freq;
     };
     callbacks {
     };
 };
 
-object c1_freq : XmdsNidOptionMenu widget {
+object c1_freq : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = frequency_values;
@@ -321,7 +323,7 @@ object c1_freq : XmdsNidOptionMenu widget {
     };
 };
 
-object c2_freq : XmdsNidOptionMenu widget {
+object c2_freq : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = frequency_values;
@@ -338,7 +340,7 @@ object c2_freq : XmdsNidOptionMenu widget {
     };
 };
 
-object c3_freq : XmdsNidOptionMenu widget {
+object c3_freq : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = frequency_values;
@@ -355,7 +357,7 @@ object c3_freq : XmdsNidOptionMenu widget {
     };
 };
 
-object c4_freq : XmdsNidOptionMenu widget {
+object c4_freq : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = frequency_values;
@@ -372,7 +374,7 @@ object c4_freq : XmdsNidOptionMenu widget {
     };
 };
 
-object inverted1 : XmdsOnOffToggleButton widget {
+object inverted1 : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNputOnApply = true;
@@ -387,7 +389,7 @@ object inverted1 : XmdsOnOffToggleButton widget {
     };
 };
 
-object inverted2 : XmdsOnOffToggleButton widget {
+object inverted2 : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNputOnApply = true;
@@ -402,7 +404,7 @@ object inverted2 : XmdsOnOffToggleButton widget {
     };
 };
 
-object inverted3 : XmdsOnOffToggleButton widget {
+object inverted3 : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNputOnApply = true;
@@ -417,7 +419,7 @@ object inverted3 : XmdsOnOffToggleButton widget {
     };
 };
 
-object inverted4 : XmdsOnOffToggleButton widget {
+object inverted4 : user_defined procedure XmdsCreateOnOffToggleButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNputOnApply = true;
