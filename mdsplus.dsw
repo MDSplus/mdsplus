@@ -267,6 +267,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "quickmsg"=.\ipcs\applications\quickmsg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "remcam"=.\remcam\remcam.dsp - Package Owner=<4>
 
 Package=<5>
