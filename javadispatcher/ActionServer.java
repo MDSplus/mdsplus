@@ -274,7 +274,8 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
     public void beginSequence(int shot)
     {
         this.shot = shot;
-        if(mds_server == null || subtree == null || subtree.equals("")) return;
+        System.out.println("ActionServer.createPulse " + subtree);
+        if(mds_server == null || subtree == null || subtree.trim().equals("")) return;
         try {
             mds_server.createPulse(subtree, shot);
         }catch(Exception exc){}
