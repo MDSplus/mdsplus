@@ -49,6 +49,8 @@ public fun WE7116__init(as_is _nid, optional _method)
     private _N_TYPE_MODULE	  = 1;
     private _N_LINK_MODULE    = 2;
 
+	private _K_CHAN_MEM = 1024 * 1024 * 4;
+
 write(*, "WE7116__init");
 
 	_error = 0;
@@ -74,6 +76,7 @@ write(*, "WE7116__init");
 	_rack_field_nid =  _slot_nid + _N_TYPE_MODULE;
 
 	_mod_type = if_error(data(DevNodeRef(_rack_nid, _rack_field_nid)), "");
+
 
 
     if(_mod_type != "WE7116")
@@ -129,6 +132,7 @@ write(*, "WE7116__init");
 			DevLogErr(_nid, "Cannot resolve external clock source"); 
 			abort();
 		}
+		_smp_int = dscptr(_clock_val, 2);
 	}
 
 	if(_clock_mode == 2)
@@ -140,11 +144,9 @@ write(*, "WE7116__init");
 			DevLogErr(_nid, "Cannot resolve bus clock source"); 
 			abort();
 		}
+		_smp_int = dscptr(_clock_val, 2);
 	   	DevPut(_nid, _N_CLOCK_SOURCE, _clock_val);
 	}
-
-
-
 
 
     DevNodeCvt(_nid, _N_TRIG_MODE, ['EXTERNAL', 'BUSTRIG 1', 'BUSTRIG 2'], [0,1,2], _trig_mode = 0);
@@ -225,7 +227,6 @@ Attualmente non implementati perchè non necessari
 	}
 
 
-
 	_state_a    = [];
 	_coupling_a = [];
 	_range_a    = [];
@@ -251,6 +252,8 @@ Attualmente non implementati perchè non necessari
 	    			_curr_end_idx = if_error( x_to_i(build_dim(build_window(0,*,_trig), _clock_val), _curr_end + _trig), (_error = 1) );
 				else
 	    			_curr_end_idx = - if_error( x_to_i(build_dim(build_window(0,*,_trig + _curr_end), _clock_val),  _trig), (_error = 1) );
+
+
 				
 				/*
 				 * Check clock consistency
@@ -266,6 +269,8 @@ Attualmente non implementati perchè non necessari
 				DevPut(_nid, _head_channel +  _N_CHAN_END_IDX, long(_curr_end_idx));
 
 				_curr_start = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_START_TIME));
+
+
 
 				if(_curr_start > 0)
 	    			_curr_start_idx = x_to_i(build_dim(build_window(0,*,_trig), _clock_val), _curr_start + _trig);
@@ -318,20 +323,31 @@ Attualmente non implementati perchè non necessari
     }
 
 
-	DevPut(_nid, _N_PRE_TRIGGER, long(_pre_trigger));
+
+
+	if(_rec_length > _K_CHAN_MEM)
+	{
+		DevLogErr(_nid, "WARNING : Max memory for channel must be less than 4M");
+		_rec_length = _K_CHAN_MEM;
+	}
+
 
 	DevPut(_nid,  _N_REC_LENGTH, long(_rec_length));
 
-
-
 	_hold_off = if_error(data(DevNodeRef(_nid, _N_HOLD_OFF)), 0);
-	if(_hold_off < _rec_length)
+	if(_hold_off < _rec_length || _hold_off > _rec_length )
 	{
 		_hold_off = _rec_length;
 		DevPut(_nid,  _N_HOLD_OFF, long(_hold_off));
 /*		DevLogErr(_nid, "Warning : hold off >= record length"); */
 	}
 
+	_pre_trigger = abs(_pre_trigger);
+	if(_pre_trigger > ( _rec_length - 2 ) )
+	{
+		_pre_trigger = _rec_length - 2;
+	}
+	DevPut(_nid, _N_PRE_TRIGGER, long(_pre_trigger));
 
 
 

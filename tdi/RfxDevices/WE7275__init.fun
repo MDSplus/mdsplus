@@ -48,6 +48,9 @@ public fun WE7275__init(as_is _nid, optional _method)
     private _N_TYPE_MODULE	  = 1;
     private _N_LINK_MODULE    = 2;
 
+	private _K_CHAN_MEM = 1024 * 1024 * 4;
+
+
 write(*, "WE7275__init");
 
 	_error = 0;
@@ -127,6 +130,7 @@ write(*, "WE7275__init");
 			DevLogErr(_nid, "Cannot resolve bus clock source"); 
 			abort();
 		}
+		_smp_int = dscptr(_clock_val, 2);
 	   	DevPut(_nid, _N_CLOCK_SOURCE, _clock_val);
 	}
 
@@ -139,6 +143,7 @@ write(*, "WE7275__init");
 			DevLogErr(_nid, "Cannot resolve external clock source"); 
 			abort();
 		}
+		_smp_int = dscptr(_clock_val, 2);
 	}
 
 
@@ -238,7 +243,7 @@ write(*, "Number acq : ", _num_acq);
 				_curr_end = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_END_TIME));
 				
 				if(_curr_end > 0)
-	    			_curr_end_idx = if_error( x_to_i(build_dim(build_window(0,*,_trig), _clock_val), _curr_end + _trig), (_error = 1));
+	    			_curr_end_idx = if_error( x_to_i( build_dim(build_window(0,*,_trig), _clock_val), _curr_end + _trig), (_error = 1));
 				else
 	    			_curr_end_idx = - if_error( x_to_i(build_dim(build_window(0,*,_trig + _curr_end), _clock_val),  _trig), (_error = 1));
 
@@ -256,10 +261,15 @@ write(*, "Number acq : ", _num_acq);
 				DevPut(_nid, _head_channel +  _N_CHAN_END_IDX, long(_curr_end_idx));
 
 				_curr_start = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_START_TIME));
+
+write(*, '-- time', _curr_start);
+
 				if(_curr_start > 0)
 	    			_curr_start_idx = x_to_i(build_dim(build_window(0,*,_trig), _clock_val), _curr_start + _trig);
 				else
-	    			_curr_start_idx =  - x_to_i(build_dim(build_window(0,*,_trig + _curr_start ), _clock_val),_trig);
+	    			_curr_start_idx =  - x_to_i(build_dim(build_window(0, *, _trig + _curr_start ), _clock_val), _trig);
+
+write(*, '-- idx ', _curr_start_idx);
 
 
 			    DevPut(_nid, _head_channel +  _N_CHAN_START_IDX, long(_curr_start_idx));
@@ -303,19 +313,37 @@ write(*, "Number acq : ", _num_acq);
 		_aaf_a   = [_aaf_a, _aaf];
     }
 
-	DevPut(_nid, _N_PRE_TRIGGER, long(_pre_trigger));
+
+	if(_rec_length > _K_CHAN_MEM)
+	{
+		DevLogErr(_nid, "WARNING : Max memory for channel must be less than 4M");
+		_rec_length = _K_CHAN_MEM;
+	}
+
+	if(_rec_length * _smp_int < 5e-3)
+	{
+		DevLogErr(_nid, "WARNING : Min period of acquisition must be 5e-3 s");
+		_rec_length = 5e-3/_smp_int;
+	}
 
 	DevPut(_nid,  _N_REC_LENGTH, long(_rec_length));
 
 
 	_hold_off = if_error(data(DevNodeRef(_nid, _N_HOLD_OFF)), 0);
-	if(_hold_off < _rec_length)
+	if(_hold_off < _rec_length || _hold_off > _rec_length )
 	{
 		_hold_off = _rec_length;
 		DevPut(_nid,  _N_HOLD_OFF, long(_hold_off));
 /*		DevLogErr(_nid, "Warning : hold off >= record length"); */
 	}
 
+
+	_pre_trigger = abs(_pre_trigger);
+	if(_pre_trigger > ( _rec_length - 2 ) )
+	{
+		_pre_trigger = _rec_length - 2;
+	}
+	DevPut(_nid, _N_PRE_TRIGGER, long(_pre_trigger));
 
 /*
 	write(*, "Mode Type =			", _mod_type);

@@ -30,7 +30,6 @@ write(*,"WE7000 init");
  		abort();
     }
 
-
     _station_ip = if_error(data(DevNodeRef(_nid, _N_STATION_IP)), "");
     if(_station_ip == "")
     {
@@ -38,21 +37,16 @@ write(*,"WE7000 init");
  		abort();
     }
 
-
     DevNodeCvt(_nid, _N_BUSTRIG_1, ['SOFTWARE','EXT I/O', 'TRIGIN'], [0,1,2], _bustrig1 = 0);
-
 
     DevNodeCvt(_nid, _N_BUSTRIG_2, ['SOFTWARE','EXT I/O', 'TRIGIN'], [0,1,2], _bustrig2 = 0);
 
-
     DevNodeCvt(_nid, _N_TRIG_SLOPE, ['POSITIVE', 'NEGATIVE'], [0,1], _polarity = 0);
-
 
     DevNodeCvt(_nid, _N_CMN_CLOCK, ['NONE', 'EXT I/O', 'TRIGIN'], [0,1,2], _busclock = 0);
 
 
     DevNodeCvt(_nid, _N_ARM_SOURCE, ['SOFTWARE', 'BUSTRIG1', "BUSTRIG2"], [0,1,2], _arm = 0);
-
 
 /*
     _error = we7000->WE7000ConnectController(_controller_ip);
@@ -70,6 +64,7 @@ write(*,"WE7000 init");
 	{
 	        _msg = repeat(" ", 1024);
 			we7000->WE7000GetErrorMsg(ref(_msg));
+
 	    	DevLogErr(_nid, _msg);
  			abort();
 	}

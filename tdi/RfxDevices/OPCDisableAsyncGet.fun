@@ -1,5 +1,5 @@
-public fun OPCDisableAsyncGet(in _group)
+public fun OPCDisableAsyncGet(in _group, in _tag)
 {
-    _status = MdsOpcClient->OPCDisableAsyncRead(_group);
+    _status = MdsOpcClient->OPCDisableAsyncRead(_group, _tag);
      return(_status);
 }

@@ -1,6 +1,6 @@
-public fun OPCBrowseTag()
+public fun OPCBrowseTag(in _filter)
 {
 	_ris = 0;
-    MdsOpcClient->OPCBrowseTag(xd(_ris));
+    MdsOpcClient->OPCBrowseTagXd(_filter, xd(_ris));
 	return (_ris);
 }

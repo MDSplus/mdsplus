@@ -51,6 +51,9 @@ public fun WE7116__store(as_is _nid, optional _method)
     private _N_TYPE_MODULE	  = 1;
     private _N_LINK_MODULE    = 2;
 
+	private _K_CHAN_MEM = 1024 * 1024 * 4;
+
+
 write(*, "WE7116__store");
 
 	_error = 0;
@@ -205,7 +208,17 @@ Se scalare una sola acquisizione attualmente non gestito
  		abort();
     }
 
+    if(_rec_length > _K_CHAN_MEM)
+    {
+		_rec_length = _K_CHAN_MEM;
+    }
+
 	_b_size = _rec_length * 2;
+
+	_vResolution = zero(_num_acq, FT_FLOAT(0.0));
+	_vOffset     = zero(_num_acq, FT_FLOAT(0.0));
+
+	_data = zero(_b_size * _num_acq, 0W);
 
     for(_i = 0; _i < _num_chans; _i++)
     {
@@ -216,14 +229,12 @@ Se scalare una sola acquisizione attualmente non gestito
 			_end_idx   = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_END_IDX));	
 			_start_idx = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_START_IDX));
 			
-			_data = zero(_b_size * _num_acq, 0W);
 
 			_error = 0;	
 
-
 			_error = we7000->WE7116ReadChData(_controller_ip, _station_ip, val(_slot_num), val(_link_mod), 
-											  val(_i+1), val(_num_acq), ref(_data), val(_b_size));
-
+											  val(_i+1), val(_num_acq), ref(_data), val(_b_size),
+											  ref(_vResolution), ref(_vOffset));
 
 			_range = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_RANGE));
 
@@ -244,9 +255,12 @@ Se scalare una sola acquisizione attualmente non gestito
 
 				_sig_nid =  DevHead(_nid) + _head_channel +  _N_CHAN_DATA;
 
-				_status = DevPutSignal(_sig_nid, _offset,  _range/2048., word(_data), 0, _end_idx - _start_idx - 1, _dim);
- 
+				_status = DevPutSignal(_sig_nid, - _vOffset[0], _vResolution[0], word(_data), 0, _end_idx - _start_idx - 1, _dim);
 
+/*
+write(*, "offset ", FT_FLOAT(_vOffset[0]));
+write(*, "gain ", FT_FLOAT(_vResolution[0]));
+*/
 				if(! _status)
 				{
 					DevLogErr(_nid, 'Error writing data in pulse file');
