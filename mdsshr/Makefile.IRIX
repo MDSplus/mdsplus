@@ -1,4 +1,4 @@
-CFLAGS = -c +z -Ae +u1 -Wl,+b,. -Wl,+s -D__irix__ -I../include -I. -g 
+CFLAGS = -c +z -Ae +u1 -Wl,+b,. -Wl,+s -woff 513 -D__irix__ -I../include -I. -g 
 CC = cc
 
 OBJECTS = \
