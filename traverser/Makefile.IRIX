@@ -6,7 +6,8 @@ OBJECTS = \
 	CallbacksUil.o \
         ReadInt.o \
         ReadString.o \
-        GetNciString.o
+        GetNciString.o \
+	GetSupportedDevices.o
 
 all :	.depend
 	make -f Makefile.IRIX -f .depend the_rest

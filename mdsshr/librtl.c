@@ -10,7 +10,7 @@ void __MB(){return;}
 #include <winreg.h>
 #else /* WIN32 */
 
-#if defined(__osf__) || defined(__irix__) || defined(__sunos__)
+#if defined(__osf__) || defined(__sgi) || defined(__sunos__)
 #include <dlfcn.h>
 #elif defined(__hpux)
 #include <dl.h>
@@ -147,7 +147,7 @@ int StrGet1Dx(unsigned short *len, struct descriptor *out)
 
 #if defined(__alpha) && defined(__vms)
 typedef __int64 _int64;
-#elif defined(__osf__) || defined(__irix__) || defined(__sunos__)
+#elif defined(__osf__) || defined(__sgi) || defined(__sunos__)
 typedef long _int64;
 #elif defined(__hpux)
 typedef long long _int64;
@@ -943,7 +943,7 @@ unsigned int LibCallg(void **arglist, FARPROC *routine)
 
   return retval;
 }
-#elif defined(__osf__) || defined (__hpux) || defined(__irix__) || defined(__sunos__)
+#elif defined(__osf__) || defined (__hpux) || defined(__sgi) || defined(__sunos__)
 unsigned int LibCallg(void **arglist, unsigned int (*routine)())
 {
   switch (*(int *)arglist & 0xff)
@@ -1034,7 +1034,7 @@ unsigned int LibCallg(void **arglist, unsigned int (*routine)())
   return 0;
 }
 
-#if defined(__osf__) || defined(__irix__) || defined(__sunos__)
+#if defined(__osf__) || defined(__sgi) || defined(__sunos__)
 int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
 {
   char *c_filename = MdsDescrToCstring(filename);

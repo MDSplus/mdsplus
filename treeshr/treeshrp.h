@@ -142,11 +142,20 @@ for invocations of the same MAIN tree and
 can be passed between processes.
 ******************************************/
 
+#ifdef _big_endian
+typedef struct nid
+{
+  unsigned tree:8;
+  unsigned node:24;
+} NID;
+#else
 typedef struct nid
 {
   unsigned node:24;	/* Node offset of root node of tree this node belongs to */
   unsigned tree:8;	/* Level of tree in chained tree_info blocks 0=main tree */
 }         NID;
+#endif
+
 /******************************************
 Two macros are provided for converting from
 a NID to a node address or from a node

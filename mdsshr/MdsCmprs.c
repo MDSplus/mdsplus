@@ -76,7 +76,7 @@
 
 #if defined(__hpux)
 #pragma HP_ALIGN NOPADDING PUSH
-#elif defined(__irix__)
+#elif defined(__sgi)
 #pragma pack(1)
 #endif
 
@@ -131,7 +131,7 @@ struct HEADER
 
 #if defined(__hpux)
 #pragma HP_ALIGN POP
-#elif defined(__irix__)
+#elif defined(__sgi)
 #pragma pack(0)
 #endif
 

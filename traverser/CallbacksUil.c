@@ -700,7 +700,7 @@ static int setup_device(Widget parent, int nid)
       /*      static DESCRIPTOR(const prefix, "DECW$SYSTEM_DEFAULTS:"); */
       static DESCRIPTOR(const postfix, ".uid\0");
       static DESCRIPTOR(const zero,"\0");
-      StrTrim(&model,&model);
+      StrTrim(&model,&model,0);
       StrConcat(&filename,&model,&postfix MDS_END_ARG);
       StrAppend(&model,&zero MDS_END_ARG);
       status = XmdsDeviceSetup(parent, &nid, &filename.pointer, 1, model.pointer, NULL, 0, 0);

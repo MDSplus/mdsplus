@@ -16,7 +16,7 @@
 #define __fill_value__
 #endif /* _WINDOWS */
 
-#if defined(__hpux) || defined(__irix__) || defined(__sunos__)
+#if defined(__hpux) || defined(__sgi) || defined(__sunos__)
 #define _big_endian
 #endif
 
