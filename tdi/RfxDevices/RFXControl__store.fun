@@ -113,7 +113,7 @@ write(*, _c);
 
 	for(_c = 0; _c < _num_modes; _c++)
 	{
-		_data = MdsValue( 'Feedback->getMode:dsc($1, 1)', _c);
+		_data = MdsValue( 'Feedback->getRfxMode:dsc($1, 1)', _c);
 		_sig_nid =  DevHead(_nid) + _N_MODES_1  + 2 * _c;
 		_status = DevPutSignal(_sig_nid, 0, 1., _data, 0, _n_samples, _dim);
 		if(! _status)
@@ -121,7 +121,7 @@ write(*, _c);
 			DevLogErr(_nid, 'Error writing modes in pulse file');
 
 		}
-		_data = MdsValue( 'Feedback->getMode:dsc($1, 0)', _c);
+		_data = MdsValue( 'Feedback->getRfxMode:dsc($1, 0)', _c);
 		_sig_nid =  DevHead(_nid) + _N_MODES_1  + 2 * _c + 1;
 		_status = DevPutSignal(_sig_nid, 0, 1., _data, 0, _n_samples, _dim);
 		if(! _status)

@@ -92,8 +92,9 @@ write(*, 'RFXControl init');
 	write(*, 'Control duration: ', _contr_duration);
 	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackControlDuration', float(_contr_duration));
 
-
+write(*, 'LEGGO TRIG1');
 	_trig1_time = data(DevNodeRef(_nid, _N_TRIG1_TIME));
+write(*, _trig1_time);
 	_trig2_time = data(DevNodeRef(_nid, _N_TRIG2_TIME));
 	if(_trig1_time >= _trig2_time)
 	{
