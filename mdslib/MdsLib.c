@@ -196,7 +196,7 @@ int descr (int *dtype, void *data, int *dim1, ...)
 }
 
 
-int cdescr (int dtype, void *data, ...)
+int *cdescr (int dtype, void *data, ...)
 {
     void *arglist[MAXARGS];
     va_list incrmtr;
