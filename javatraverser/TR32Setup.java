@@ -96,7 +96,7 @@ public class TR32Setup extends DeviceSetup {
   }
   private void jbInit() throws Exception {
     this.setWidth(774);
-    this.setHeight(774);
+    this.setHeight(600);
     this.setDeviceType("TR32");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("INCAA TR32 CPCI Transient Recorder");
