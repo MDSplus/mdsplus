@@ -11,7 +11,7 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
   forward_function mdsIsClient,mdsIdlImage,mds$socket,MdsRoutinePrefix,MdsIPImage,MdsGetAnsFN
 
   ;; note that MdsIpShr version of MdsValue had 32 arguments in addition
-  ;; to expression 
+  ;; to expression
 
   if (mdsIsClient()) then begin
 
@@ -70,12 +70,14 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
         answer = 0
       endif
     endif else begin
-      if not keyword_set(quiet) then message,'Error evaluating expression',/continue
-      status = 0
-      answer = 0
+      if (status and 1) and (dtype eq 14) then answer = "" else begin
+        if not keyword_set(quiet) then message,'Error evaluating expression',/continue
+        status = 0
+        answer = 0
+      endelse
     endelse
-    
-    
+
+
   endif else begin
 
     if (!VERSION.OS eq 'vms') then begin
