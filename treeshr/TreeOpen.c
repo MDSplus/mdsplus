@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include <mds_stdarg.h>
 #include <libroutines.h>
+#include <strroutines.h>
 #ifdef _WIN32
 #include <io.h>
 extern char *index(char *str,char c);
