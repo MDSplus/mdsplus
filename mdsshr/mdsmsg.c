@@ -108,9 +108,9 @@ static int   getFacility(	/* Return: num entries in stsText[]	*/
 
 
 	/*****************************************************************
-	 * statusText:
+	 * MdsGetMsg:
 	 *****************************************************************/
-static char  *statusText(	/* Return: addr of "status" string	*/
+char  *MdsGetMsg(	/* Return: addr of "status" string	*/
     int   sts			/* <r> sts value			*/
    )
    {
@@ -182,17 +182,15 @@ int   MdsMsg(			/* Return: sts provided by user		*/
         va_start(ap,fmt);	/* initialize "ap"			*/
         vsprintf(text+k,fmt,ap);
         if (sts)
-            fprintf(stderr,"%s\n    sts=%s\n\n",text,statusText(sts));
+            fprintf(stderr,"%s\n    sts=%s\n\n",text,MdsGetMsg(sts));
         else
             fprintf(stderr,"%s\n",text);
        }
     else
-        fprintf(stderr,"%s:  sts=%s",text,statusText(sts));
+        fprintf(stderr,"%s:  sts=%s",text,MdsGetMsg(sts));
 
     return(sts | ALREADY_DISPLAYED);
    }
-
-
 
 #ifdef MAIN
 main()
