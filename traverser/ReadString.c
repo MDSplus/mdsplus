@@ -63,7 +63,7 @@ char *ReadString(char *expr, ...)
     }
     else
       ans = 0;
-    //    MdsFree1Dx(&ans_xd);
+    MdsFree1Dx(&ans_xd, 0);
   }
   else
     ans = 0;
