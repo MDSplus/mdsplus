@@ -50,7 +50,7 @@ DemoDataProvider.java       JiNcVarImp.java             RdaAccess.java          
 Descriptor.java             JiNcVarInt.java             RotateFilter.java           Waveform.java               jScopeWaveContainer_2.java \
 FontSelection.java          JiNcVarShort.java           RowColumnContainer.java     WaveformContainer.java      jScopeWavePopup.java \
 FrameData.java              JiSlab.java                 RowColumnLayout.java        WaveformContainer_2.java    jScope_1.java \
-JiSlabIterator.java         SetupDataDialog.java        WaveformEvent.java          jScope_2.java \
+JiSlabIterator.java         SetupDataDialog.java        WaveformEvent.java          jScope_2.java 		UniversalDataProvider.java\
 Frames.java                 JiVar.java                  SetupDefaults.java          WaveformListener.java	NotConnectedDataProvider.java
 
 CLASSES = $(SOURCES:.java=.class)
@@ -90,7 +90,7 @@ install:
 	$(JAR) c0f $@ *.class
 
 jScope.class: 	$(SOURCES)
-	$(JAVAC) -g jScope.java jScope_1.java MdsPlusBrowseSignals.java TextorBrowseSignals.java *DataProvider.java
+	$(JAVAC) -g jScope.java jScope_1.java *BrowseSignals.java *DataProvider.java *Listener.java
 
 CompositeWaveDisplay.class: 	$(SOURCES)
 	$(JAVAC) -g CompositeWaveDisplay.java

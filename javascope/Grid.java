@@ -268,8 +268,8 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 		    case IS_NONE :
 			    if(dim <= d.height - label_height)
 			    {
-			        g.drawLine(label_width,dim, d.width/40 + label_width, dim);
-			        g.drawLine(d.width - d.width/40, dim, d.width, dim);
+			        g.drawLine(label_width+3,dim, d.width/80 + label_width+3, dim);
+			        g.drawLine(d.width - d.width/80, dim, d.width, dim);
 			    }
 			    if(i == y_dim - 1) break;
 			    if(wm.YLog())
@@ -281,8 +281,8 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 			        curr_dim = wm.YPixel(y_values[i] + j * curr_step, d);
 			        if(curr_dim <= d.height - label_height)
 			        {
-			    	    g.drawLine(label_width,curr_dim, label_width + d.width/80, curr_dim);
-			    	    g.drawLine(d.width - d.width/80, curr_dim, d.width, curr_dim);
+			    	    g.drawLine(label_width+3,curr_dim, label_width + d.width/100+3, curr_dim);
+			    	    g.drawLine(d.width - d.width/100, curr_dim, d.width, curr_dim);
 			        }
 			    }
 		    }
@@ -304,7 +304,7 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 			                ylabel_offset = 2;
 		            }
 		    
-		            g.drawString(Waveform.ConvertToString(y_values[i], wm.YLog()), ylabel_offset, curr_dim);
+		            g.drawString(Waveform.ConvertToString(y_values[i], wm.YLog()), ylabel_offset+1, curr_dim);
 		        }
     	    }
 	    }
@@ -327,7 +327,7 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 		    case IS_NONE :
 			    if(dim >= label_width)
 			    {
-			        g.drawLine(dim, 0, dim, d.height/40);
+			        g.drawLine(dim, 2, dim, d.height/40);
 			        g.drawLine(dim, d.height - label_height - d.height/40, dim, 
 				    d.height - label_height);
 			    }
@@ -341,12 +341,12 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 			        curr_dim = wm.XPixel(x_values[i] + j * curr_step, d);
 			        if(curr_dim >= label_width)
 			        {
-			            g.drawLine(curr_dim, 0, curr_dim, d.height/80);
+			            g.drawLine(curr_dim, 2, curr_dim, d.height/80);
 			            g.drawLine(curr_dim, d.height - label_height - d.height/80, 
 				        curr_dim, d.height - label_height);
 			        }
 			    }
-	            g.drawRect(label_width, 0, d.width - label_width-1, d.height - label_height); 
+	            g.drawRect(label_width+3, 2, d.width - label_width-3, d.height - label_height-2); 
 		    }
 		    
 	        g.setColor(prev_col);

@@ -6,7 +6,7 @@ class JetMdsDataProvider extends MdsDataProvider
 {
     public JetMdsDataProvider()
     {
-        super("194.81.223.90");
+        super("mdsplus.jet.efda.org");
     } 
     
     public void SetArgument(String arg){};
@@ -16,9 +16,13 @@ class JetMdsDataProvider extends MdsDataProvider
 	    error = null;
 		shot = s;
 	}
-	
-    public synchronized float[] GetFloatArray(String in) throws IOException
+    public synchronized int[] GetIntArray(String in) throws IOException
     {
+        return super.GetIntArray(ParseExpression(in));
+    }
+	
+	protected String ParseExpression(String in)
+	{
 	  error= null;
 	  StringTokenizer st = new StringTokenizer(in, " /(){}[]*+,:;", true);
 	  String parsed = "", signal = "";
@@ -54,7 +58,7 @@ class JetMdsDataProvider extends MdsDataProvider
 		        state = 3;
 		        break;
 		    case 3:
-		        parsed += ("jet(\"" + signal + curr_str + "\", " + shot + ") ");
+		        parsed += ("(jet(\"" + signal + curr_str + "\", " + shot + ")) ");
 		        signal = "";
 		        state = 0;
 		        break;
@@ -65,8 +69,13 @@ class JetMdsDataProvider extends MdsDataProvider
 	{
 	    System.out.println(e);
 	}
+	return parsed;
+	}
+	
+    public synchronized float[] GetFloatArray(String in) throws IOException
+    {
 	//System.out.println("parsed: "+ parsed);
-	float [] out_array = super.GetFloatArray(parsed);
+	float [] out_array = super.GetFloatArray(ParseExpression(in));
 	if(out_array == null && error == null)
 	    error = "Cannot evaluate " + in + " for shot " + shot;
 	/*    

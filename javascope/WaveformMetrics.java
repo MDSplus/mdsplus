@@ -259,6 +259,9 @@ public  class WaveformMetrics implements Serializable {
 	        min_y = max_y = sig.y[i];
 	        j = i+1;
 
+	//GAB testare da qua il problema
+	        
+	        
 	        start_x = XPixel(sig.x[i]);
 	        
 	        while(j < end_point)//sig.n_points && sig.x[j] < xmax + dt)
@@ -301,7 +304,7 @@ public  class WaveformMetrics implements Serializable {
 		            start_x = XPixel(sig.x[j]);
 		            max_y = min_y = sig.y[j];
 		            i = j;
-		            if(sig.x[j] > xmax)
+		            if(sig.isIncreasingX() && sig.x[j] > xmax)
 		                end_point = j + 1;
 		        }
 	        }

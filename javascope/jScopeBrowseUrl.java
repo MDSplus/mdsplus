@@ -23,6 +23,7 @@
      JButton home;
      int curr_url = 0;
      JPanel p; 
+     boolean connected = false;
       
      public jScopeBrowseUrl(JFrame owner)
      { 
@@ -103,6 +104,7 @@
  	    setSize(680,700);
       
      }
+     
 
      public void connectToBrowser(URL url) throws Exception
      {
@@ -114,13 +116,25 @@
         }
      }
 
-          
+     public boolean isConnected()
+     {
+        return connected;
+     }
        
      public void connectToBrowser(String url_path) throws Exception
      {
- 	    URL url = null;
- 		url = new URL(url_path);
-        connectToBrowser(url);
+        try
+        {
+ 	        URL url = null;
+ 		    url = new URL(url_path);
+            connectToBrowser(url);
+            connected = true;
+        } 
+        catch (Exception e)
+        {
+           connected = false;
+           throw(new IOException("Unable to locate the signal server "+url_path+" : "+e.getMessage()));
+        }
     }
   
      public HyperlinkListener createHyperLinkListener() { 

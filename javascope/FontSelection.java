@@ -23,7 +23,6 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
 
     public FontSelection(Frame dw, String title) {
         super(dw, title, true);
-	    //setResizable(false);
         
 	    main_scope = (jScope_1)dw;
 
@@ -116,6 +115,8 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
           buttonPanel.add(cancel);
           getContentPane().add( BorderLayout.SOUTH, buttonPanel);
 	      pack();
+	      
+	      GetPropertiesValue();	            
     }
     
     private void setFontChoice()
@@ -132,6 +133,25 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         styles.addItemListener(this);
         sizes.addItemListener(this);
     }
+
+    private void GetPropertiesValue()
+    {
+        Properties js_prop = main_scope.js_prop;
+        String prop;
+        int i = 0, len;
+       
+        if(js_prop == null) return;
+        prop = (String)js_prop.getProperty("jScope.font");
+        
+        if(prop == null) return;
+	    font = StringToFont(prop);
+	    
+	    if(font != null) {
+	        setFontChoice();
+	        fontC.changeFont(font);
+	    }	    
+    }     
+
     
     public Font StringToFont(String f)
     {

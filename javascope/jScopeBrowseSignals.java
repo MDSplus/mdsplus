@@ -78,15 +78,5 @@
      {
         this.wave_panel = wave_panel;
      }
-  
-     public void connectToBrowser(String url_path) throws Exception
-     {
- 	    URL url = null;
- 		url = new URL(url_path);
- 		url_list.addElement(url);
-        if(url != null)
-            html.setPage(url);
-     }
- 
  } 
  

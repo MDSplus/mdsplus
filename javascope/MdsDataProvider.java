@@ -221,8 +221,10 @@ public class MdsDataProvider implements DataProvider
         {
             int shape[] = GetIntArray("shape("+in_y+")");
             if(error != null)
-                return 0;
-                //throw(new IOException(error));
+            {
+                error = null;
+                return 1;
+            }
             return shape.length;
         }
         

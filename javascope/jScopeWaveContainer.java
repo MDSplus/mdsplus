@@ -342,7 +342,22 @@ class jScopeWaveContainer extends WaveformContainer
     public void ShowBrowseSignals()
     {
         if(browse_sig != null)
+        {
+            if(!browse_sig.isConnected())
+            {
+                try
+                {
+                    browse_sig.connectToBrowser(server_item.browse_url);
+                    browse_sig.setTitle("URL : "+server_item.browse_url);
+                } 
+                catch(Exception e)
+                {
+                    JOptionPane.showMessageDialog(this,e.getMessage(), 
+		                                             "alert", JOptionPane.ERROR_MESSAGE);
+                }
+            }
             browse_sig.show();
+        }
         else
         {
           String msg;
@@ -573,6 +588,19 @@ class jScopeWaveContainer extends WaveformContainer
     {
         return fast_network_access;
     }
+
+    public void SetModifiedState(boolean state)
+    {
+        jScopeMultiWave w;
+	    for(int i = 0; i < getComponentNumber(); i++)
+        {
+	        w = (jScopeMultiWave)getGridComponent(i);
+	        if(w != null && w.wi != null ) {
+		       w.wi.setModified(state);
+		    }
+		}
+    }    
+
     
     public void SetFastNetworkState(boolean state)
     {
@@ -1067,8 +1095,6 @@ class jScopeWaveContainer extends WaveformContainer
                         Class cl = Class.forName(server_item.browse_class);
                         browse_sig = (jScopeBrowseSignals)cl.newInstance();
                         browse_sig.setWaveContainer(this);
-                        browse_sig.connectToBrowser(server_item.browse_url);
-                        browse_sig.setTitle("URL : "+server_item.browse_url);
                     } 
                     catch (Exception e)
                     {

@@ -1551,6 +1551,8 @@ public class Signal
         y = yn;
         n_points = x.length;
     }
+    
+    final public boolean isIncreasingX() {return increasing_x;}
 }
 
 

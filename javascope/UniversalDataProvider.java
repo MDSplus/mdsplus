@@ -8,6 +8,7 @@ class UniversalDataProvider implements DataProvider
     FtuDataProvider ftu; 
     TwuDataProvider twu;
     JetDataProvider jet;
+    JetMdsDataProvider jetmds;
     public UniversalDataProvider() throws IOException
     {
         rfx = new MdsDataProvider();
@@ -16,6 +17,7 @@ class UniversalDataProvider implements DataProvider
         ftu.SetArgument("192.107.51.84:8100");
         twu = new TwuDataProvider();
         jet = new JetDataProvider();
+        jetmds = new JetMdsDataProvider();
     }
 
 
@@ -29,6 +31,8 @@ class UniversalDataProvider implements DataProvider
             return twu;
         if(spec.startsWith("jet:"))
             return jet;
+        if(spec.startsWith("jetmds:"))
+            return jetmds;
         error = "Unknown experiment";
             
         return null;
@@ -36,6 +40,8 @@ class UniversalDataProvider implements DataProvider
     
     protected String RemoveExp(String spec)
     {
+        if(spec.startsWith("jetmds:"))
+            return spec.substring(7);
         return spec.substring(4);
     }
     
@@ -88,6 +94,8 @@ class UniversalDataProvider implements DataProvider
             twu.Update(exp, s);
         else if(exp.equals("jet"))
             jet.Update(null, s);
+        else if(exp.equals("jetmds"))
+            jetmds.Update(null, s);
         error = null;
     }
 
@@ -108,7 +116,7 @@ class UniversalDataProvider implements DataProvider
     {
         int d[] = new int[1];
         try {
-            d[0] = Integer.parseInt(in);
+            return ftu.GetShots(in);
         }catch (Exception exc) {d[0] = 0;}
         return d;
     }
@@ -123,6 +131,7 @@ class UniversalDataProvider implements DataProvider
         rfx.AddUpdateEventListener(l, event);
         ftu.AddUpdateEventListener(l, event);
         jet.AddUpdateEventListener(l, event);
+        jetmds.AddUpdateEventListener(l, event);
     }
     public void RemoveUpdateEventListener(UpdateEventListener l, String event)throws IOException
     {
@@ -130,6 +139,7 @@ class UniversalDataProvider implements DataProvider
         rfx.RemoveUpdateEventListener(l, event);
         ftu.RemoveUpdateEventListener(l, event);
         jet.RemoveUpdateEventListener(l, event);
+        jetmds.RemoveUpdateEventListener(l, event);
         
     }
     public void    AddConnectionListener(ConnectionListener l)
@@ -138,6 +148,7 @@ class UniversalDataProvider implements DataProvider
         rfx.AddConnectionListener(l);
         ftu.AddConnectionListener(l);
         jet.AddConnectionListener(l);
+        jetmds.AddConnectionListener(l);
     }
     public void    RemoveConnectionListener(ConnectionListener l)
     {
@@ -145,6 +156,7 @@ class UniversalDataProvider implements DataProvider
         rfx.RemoveConnectionListener(l);
         ftu.RemoveConnectionListener(l);
         jet.RemoveConnectionListener(l);
+        jetmds.RemoveConnectionListener(l);
         
     }
 

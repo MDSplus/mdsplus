@@ -477,7 +477,7 @@ static int T_messageType;
 	    {
 	        public void actionPerformed(ActionEvent e)
             {
-                wave_panel.ShowBrowseSignals();
+                 wave_panel.ShowBrowseSignals();
             }
 	    }
 	);
@@ -725,7 +725,7 @@ static int T_messageType;
 	    {
 	        public void actionPerformed(ActionEvent e)
             {
-                help_dialog.show();
+                 help_dialog.show();
             }
 	    }
 	);
@@ -848,10 +848,8 @@ static int T_messageType;
 	    );
         panel1.add("West", exec_gc);
     }
-
-
-    
     InitDataServer();
+    UpdateFont();
 
 	}
 	
@@ -1142,6 +1140,9 @@ static int T_messageType;
   public void setPublicVariables(String public_variables)
   {
      def_values.public_variables = public_variables;
+     def_values.is_evaluated = false;
+     //Force update in all waveform
+     wave_panel.SetModifiedState(true);
   }
     
   public void UpdateAllWaves()
@@ -1149,6 +1150,7 @@ static int T_messageType;
 	   executing_update = true;
        apply_b.setText("Abort");
        setPublicVariables(pub_var_diag.getPublicVar());
+       wave_panel.SetMainShotStr(shot_t.getText().trim());
        wave_panel.StartUpdate();
   }
   
@@ -1191,8 +1193,9 @@ static int T_messageType;
 	
 	
 	    if(conf_file == null || conf_file.length() == 0) return;
-
-
+        if(conf_file.indexOf('.') == -1)
+            conf_file = conf_file + ".jscp";
+        
 	    last_directory = new String(conf_file);
 	    save_i.setEnabled(true);
 	    use_last_i.setEnabled(true);
@@ -1273,18 +1276,18 @@ static int T_messageType;
                 {
                         File file = file_diag.getSelectedFile();
                         String d = file.getAbsolutePath();
-	                String f = file.getName();
-	                if(f != null && f.trim().length() != 0 && 
-	                    d != null && d.trim().length() != 0)
-	                {
-                        curr_directory = d;
-	                    config_file = curr_directory;
-	                } else
+	                    String f = file.getName();
+	                    if(f != null && f.trim().length() != 0 && 
+	                        d != null && d.trim().length() != 0)
+	                    {
+                            curr_directory = d;
+	                        config_file = curr_directory;
+	                    } else
 	                    config_file = null;
-	                if(config_file != null)
-	                {
-	                    SaveConfiguration(config_file);
-	                } 
+	                    if(config_file != null)
+	                    {
+	                        SaveConfiguration(config_file);
+	                    } 
 	            }
              }
         });
