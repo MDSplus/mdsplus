@@ -388,7 +388,7 @@ typedef struct
 
 #define RfaToSeek(rfa) (((*(unsigned int *)rfa - 1) * 512) + (*(unsigned short *)&((char *)rfa)[4] & 0x1ff))
 #define SeekToRfa(seek,rfa) {*(unsigned int *)rfa = (unsigned int)(seek/512 + 1); \
-                             *(unsigned short *)&((char *)rfa)[4] = (unsigned short)(seek % 512);}
+                             *(unsigned short *)&(((char *)rfa)[4]) = (unsigned short)(seek % 512);}
 
 /****************************************
 RECORD_HEADER
@@ -557,7 +557,7 @@ extern struct descriptor *TreeSectionName(TREE_INFO *info);
 extern int TreeFindTag(PINO_DATABASE *db, NODE *node, char *treename, char **search_string, NODE **node_in_out);
 extern int TreeCallHook(TreeshrHookType operation, TREE_INFO *info);
 extern int TreeEstablishRundownEvent(TREE_INFO *info);
-
+extern DATA_FILE *TreeGetVmDatafile();
 #ifdef __DECC
 #pragma member_alignment restore
 #endif

@@ -11,7 +11,7 @@ extern int GetNciW();
 
 static int OpenDatafileR(TREE_INFO *info);
 static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree);
-static DATA_FILE *GetVmDatafile();
+extern DATA_FILE *TreeGetVmDatafile();
 static int GetDatafile(TREE_INFO *info_ptr, unsigned short *rfa, int *buffer_size, char *record, int *retsize,int *nodenum);
 
 extern void *DBID;
@@ -114,7 +114,7 @@ static int OpenDatafileR(TREE_INFO *info)
   DATA_FILE *df_ptr = info->data_file;
   if (df_ptr)
     return 1;
-  df_ptr = GetVmDatafile(info);
+  df_ptr = TreeGetVmDatafile(info);
   if (df_ptr != NULL)
   {
 
@@ -251,7 +251,7 @@ static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree)
   return status;
 }
 
-static DATA_FILE *GetVmDatafile()
+DATA_FILE *TreeGetVmDatafile()
 {
   DATA_FILE *datafile_ptr;
   static const struct descriptor_xd empty_xd = {0, 0, CLASS_XD, 0, 0};

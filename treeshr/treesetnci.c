@@ -58,7 +58,8 @@ int TreeFlushReset(int nid) { return _TreeFlushReset(DBID, nid);}
 int TreeTurnOn(int nid) { return _TreeTurnOn(DBID, nid);}
 int TreeTurnOff(int nid) { return _TreeTurnOff(DBID, nid);}
 
-static int GetNciLw(TREE_INFO *info, int node_num, NCI *nci);
+int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci);
+
 static int OpenNciW(TREE_INFO *info);
 
 int       _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
@@ -84,7 +85,7 @@ int       _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
     return TreeNNF;
   if (tree_info->reopen)
     TreeCloseFiles(tree_info);
-  status = GetNciLw(tree_info, node_number, &nci);
+  status = TreeGetNciLw(tree_info, node_number, &nci);
   if (status & 1)
   {
     for (itm_ptr = nci_itm_ptr; itm_ptr->code != NciEND_OF_LIST && status & 1; itm_ptr++)
@@ -107,7 +108,7 @@ int       _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
       }
     }
     if (status & 1)
-      status = PutNci(tree_info, node_number, &nci, 1);
+      status = TreePutNci(tree_info, node_number, &nci, 1);
   }
   return status;
 }
@@ -147,7 +148,7 @@ int _TreeFlushReset(void *dbid,  int nid)
 
 /*------------------------------------------------------------------------------
 
-		Name: GetNciLw
+		Name: TreeGetNciLw
 
 		Type:   C function
 
@@ -162,7 +163,7 @@ int _TreeFlushReset(void *dbid,  int nid)
 ------------------------------------------------------------------------------
 
 	Call sequence:
-	       STATUS = GetNciLw(info, node_num, nci)
+	       STATUS = TreeGetNciLw(info, node_num, nci)
 
 ------------------------------------------------------------------------------
    Copyright (c) 1988
@@ -177,7 +178,7 @@ int _TreeFlushReset(void *dbid,  int nid)
 
 +-----------------------------------------------------------------------------*/
 
-static int GetNciLw(TREE_INFO *info, int node_num, NCI *nci)
+int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
 {
   int       status;
   int       nci_num;
@@ -434,7 +435,7 @@ static int OpenNciW(TREE_INFO *info)
 
 /*------------------------------------------------------------------------------
 
-		Name: PutNci
+		Name: TreePutNci
 
 		Type:   C function
 
@@ -449,7 +450,7 @@ static int OpenNciW(TREE_INFO *info)
 ------------------------------------------------------------------------------
 
 	Call sequence:
-	       STATUS = PutNci(info_ptr, node_num, nci_ptr, flush)
+	       STATUS = TreePutNci(info_ptr, node_num, nci_ptr, flush)
 
 ------------------------------------------------------------------------------
    Copyright (c) 1988
@@ -471,7 +472,7 @@ static void flush_it(struct RAB *rab)
 }
 #endif /* __VMS */
 
-static int PutNci(TREE_INFO *info, int node_num, NCI *nci, int flush)
+int TreePutNci(TREE_INFO *info, int node_num, NCI *nci, int flush)
 {
   int       status;
   int       nci_num;
@@ -563,13 +564,13 @@ int _TreeTurnOn(void *dbid, int nid_in)
   nid_to_tree_nidx(dblist, nid, info, node_num);
   if (!info)
     return TreeNNF;
-  status = GetNciLw(info, node_num, &nci);
+  status = TreeGetNciLw(info, node_num, &nci);
   if (~status & 1)
     return status;
   if (nci.NCI_FLAG_WORD.NCI_FLAGS.state)
   {
     nci.NCI_FLAG_WORD.NCI_FLAGS.state = 0;
-    status = PutNci(info, node_num, &nci, 0);
+    status = TreePutNci(info, node_num, &nci, 0);
     if (~status & 1)
       return status;
     if (!nci.NCI_FLAG_WORD.NCI_FLAGS.parent_state)
@@ -649,13 +650,13 @@ int _TreeTurnOff(void *dbid, int nid_in)
   nid_to_tree_nidx(dblist, nid, info, node_num);
   if (!info)
     return TreeNNF;
-  status = GetNciLw(info, node_num, &nci);
+  status = TreeGetNciLw(info, node_num, &nci);
   if (~status & 1)
     return status;
   if (!nci.NCI_FLAG_WORD.NCI_FLAGS.state)
   {
     nci.NCI_FLAG_WORD.NCI_FLAGS.state = 1;
-    status = PutNci(info, node_num, &nci, 0);
+    status = TreePutNci(info, node_num, &nci, 0);
     if (~status & 1)
       return status;
     if (!nci.NCI_FLAG_WORD.NCI_FLAGS.parent_state)
@@ -822,11 +823,11 @@ static int SetNodeParentState(PINO_DATABASE *db, NODE *node, NCI *nci, unsigned 
   if (!info)
     return TreeNNF;
   node_num = node - info->node;
-  status = GetNciLw(info, node_num, nci);
+  status = TreeGetNciLw(info, node_num, nci);
   if (status & 1)
   {
     nci->NCI_FLAG_WORD.NCI_FLAGS.parent_state = state;
-    status = PutNci(info, node_num, nci, 0);
+    status = TreePutNci(info, node_num, nci, 0);
   }
   return status;
 }
