@@ -1,4 +1,5 @@
-#ifdef _WIN32
+#include <config.h>
+#ifdef HAVE_WINDOWS_H
 #include <io.h>
 #define write _write
 #define lseek _lseek
@@ -23,7 +24,6 @@
 #ifdef max
 #undef max
 #endif
-
 #define max(a,b) ((a) > (b) ? (a) : (b))
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
@@ -358,6 +358,8 @@ int       TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_no
     int       uic_code = JPI$_UIC;
     lib$getjpi(&uic_code, 0, 0, &empty_nci.nci$l_owner_identifier, 0, 0);
     */
+    link_it(empty_node.parent,sizeof(NODE)*2,sizeof(NODE)*1);
+    link_it(empty_node.child,sizeof(NODE)*1,sizeof(NODE)*2);
     empty_node_array = (NODE *) malloc(empty_node_size);
     if (empty_node_array == NULL) return 0;
     empty_nci_array = (NCI *) malloc(empty_nci_size);
@@ -633,20 +635,23 @@ static void trim_excess_nodes(TREE_INFO *info_ptr);
 static int one = 1;
 static int zero = 0;
 
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 static TREE_HEADER *HeaderOut(TREE_HEADER *hdr, TREE_HEADER *out)
 {
-  *out = *hdr;
+  static TREE_HEADER ans;
+  out = *hdr;
   {
     char flags = (hdr->sort_children ? 1 : 0) | (hdr->sort_members ? 2 : 0);
-    ((char *)out)[1] = flags;
+    ((char *)&out)[1] = flags;
   }
-  out->free = swapint((char *)&hdr->free);
-  out->tags = swapint((char *)&hdr->tags);
-  out->externals = swapint((char *)&hdr->externals);
-  out->nodes = swapint((char *)&hdr->nodes);
-  return out;
+  ans.free = swapint((char *)&hdr->free);
+  ans.tags = swapint((char *)&hdr->tags);
+  ans.externals = swapint((char *)&hdr->externals);
+  ans.nodes = swapint((char *)&hdr->nodes);
+  return &ans;
 }
+#else
+#define HeaderOut(in) in
 #endif
 
 int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
@@ -717,12 +722,7 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
       if (ntreef)
       {
         size_t num;
-#ifdef _big_endian
-        TREE_HEADER tmp;
-        num = fwrite(HeaderOut(info_ptr->header,&tmp),512,header_pages,ntreef);
-#else
-        num = fwrite(info_ptr->header,512,header_pages,ntreef);
-#endif
+        num = fwrite(HeaderOut(info_ptr->header),512,header_pages,ntreef);
         if (num != header_pages) goto error_exit;
         num = fwrite(info_ptr->node,512,node_pages,ntreef);
         if (num != node_pages) goto error_exit;
@@ -737,7 +737,7 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
 			goto error_exit;
 		remove(info_ptr->filespec);
         fclose(ntreef);
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
 	/*rename is not supported by nfs on vxWorks*/
 
 	copy(nfilenam,info_ptr->filespec);
