@@ -1,0 +1,391 @@
+/*
+ * Created by Matthew Fishburn.
+ *
+ * September 2003.
+ *
+ */
+module jrg_tr1612_uil
+    names = case_sensitive
+
+include file "XmdsWidgets.uil";
+
+object
+    JRG_TR1612: XmBulletinBoardDialog 
+        {
+        arguments
+            {
+            XmNx = 0;
+            XmNy = 0;
+            XmNresizePolicy = XmRESIZE_GROW;
+            XmNdialogTitle = compound_string("JRG_TR1612  Joerger 16 Channel, 12 Bit Transient Recorder");
+            XmNautoUnmanage = false;
+            XmNnoResize = false;
+            XmNdefaultPosition = true;
+            XmNwidth = 1200;
+            XmNheight = 550;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 10;
+                    XmNlabelString = 
+                    compound_string("CAMAC Name:");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 38;
+                    XmNlabelString = 
+                    compound_string("Comment:");
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 135;
+                    XmNy = 8;
+                    XmNcolumns = 26;
+                    XmNmarginHeight = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JRG_TR1612$N_NAME;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 105;
+                    XmNy = 38;
+                    XmNcolumns = 29;
+                    XmNmarginHeight = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JRG_TR1612$N_COMMENT;
+                    XmdsNautoQuote = true;
+                    XmdsNdefaultQuote = true;
+                    };
+                };
+            user_defined procedure XmdsCreateNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 70;
+                    XmdsNnidOffset = JRG_TR1612$N_SAMP_INTRVAL;
+                    XmNlabelString = 
+                    compound_string("Frequency (Sampling Interval):");
+                    XmdsNlabelStrings = string_table(
+                        compound_string(" 40 MHz (25 ns)*"),
+                        compound_string(" 20 MHz (50 ns)*"),
+                        compound_string(" 10 MHz (100 ns)"),
+                        compound_string("  5 MHz (200 ns)"),
+                        compound_string("2.5 MHz (400 ns)"),
+                        compound_string("  1 MHz (1 us)  "),
+                        compound_string("100 kHz (10 us) "),
+                        compound_string(" 10 kHz (100 us)"),
+                        compound_string(" External       "));
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNvalueStrings = string_table(
+                        compound_string("2.5E-8"),
+                        compound_string("5.0E-8"),
+                        compound_string("1.0E-7"),
+                        compound_string("2.0E-7"),
+                        compound_string("4.0E-7"),
+                        compound_string("1.0E-6"),
+                        compound_string("1.0E-5"),
+                        compound_string("1.0E-4"),
+                        compound_string("0.0"));
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 102;
+                    XmNlabelString = compound_string("(*Standard Model 10Mhz)");
+                    };
+                };
+            user_defined procedure XmdsCreateNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 230;
+                    XmdsNnidOffset = JRG_TR1612$N_SAMP_2_STORE;
+                    XmNlabelString = compound_string("Samples To Store:");
+                    XmdsNlabelStrings = sample_value;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNvalueStrings = sample_number;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 262;
+                    XmNlabelString = 
+                    compound_string("(*Standard Model 64K)");
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 150;
+                    XmNlabelString = 
+                    compound_string("External Clock:");
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 140;
+                    XmNy = 148;
+                    XmNcolumns = 20;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JRG_TR1612$N_EXT_CLOCK;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 180;
+                    XmNlabelString = 
+                    compound_string("Trigger:");
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 100;
+                    XmNy = 178;
+                    XmNcolumns = 20;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JRG_TR1612$N_TRIGGER;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 310;
+                    XmNlabelString = compound_string("Pretrigger Samples (65535 max):");
+                    XmNheight = 22;
+                    };
+                };
+            user_defined procedure XmdsCreateExprField 
+                {
+                arguments
+                    {
+                    XmNx = 275;
+                    XmNy = 308;
+                    XmNcolumns = 10;
+                    XmNmarginHeight = 1;
+                    XmNmarginWidth = 1;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JRG_TR1612$N_PRETRIG_SAMP;
+                    XmNheight = 28;
+                    };
+                };
+            user_defined procedure XmdsCreateNidOptionMenu 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 360;
+                    XmdsNnidOffset = JRG_TR1612$N_ACTIVE_CHANS;
+                    XmNlabelString = 
+                    compound_string("Active Channels:");
+                    XmdsNlabelStrings = string_table(
+                        compound_string("First 1"),
+                        compound_string("First 2"),
+                        compound_string("First 4"),
+                        compound_string("First 8"),
+                        compound_string(" All 16"));
+                    XmdsNvalueStrings = string_table(
+                        compound_string("1"),
+                        compound_string("2"),
+                        compound_string("4"),
+                        compound_string("8"),
+                        compound_string("16"));
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNputOnApply = true;
+                    };
+                };
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 400;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JRG_TR1612$N_INIT_ACTION;
+                    XmNwidth = 25;
+                    XmNheight = 25;
+                    XmNlabelString = 
+                    compound_string("Initialization Action");
+                    };
+                };
+            user_defined procedure XmdsCreateXdBoxOnOffButton 
+                {
+                arguments
+                    {
+                    XmNx = 215;
+                    XmNy = 400;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JRG_TR1612$N_STORE_ACTION;
+                    XmNwidth = 25;
+                    XmNheight = 25;
+                    XmNlabelString = 
+                    compound_string("Store Action");
+                    };
+                };
+            user_defined procedure XmdsCreateOkButton 
+                {
+                arguments
+                    {
+                    XmNx = 10;
+                    XmNy = 450;
+                    };
+                };
+            user_defined procedure XmdsCreateApplyButton 
+                {
+                arguments
+                    {
+                    XmNx = 100;
+                    XmNy = 450;
+                    };
+                };
+            user_defined procedure XmdsCreateResetButton 
+                {
+                arguments
+                    {
+                    XmNx = 200;
+                    XmNy = 450;
+                    };
+                };
+            user_defined procedure XmdsCreateCancelButton 
+                {
+                arguments
+                    {
+                    XmNx = 300;
+                    XmNy = 450;
+                    };
+                };
+            XmScrolledWindow
+	          {
+		  arguments
+		      {
+		      XmNx = 500;
+                      XmNy = 10;
+                      XmNwidth = 690;
+                      XmNheight = 540;
+                      XmNborderWidth = 1;
+                      XmNscrollBarDisplayPolicy = XmAS_NEEDED;
+                      XmNscrollingPolicy = XmAUTOMATIC;
+		      };
+                controls
+                    {
+	            user_defined procedure XmdsCreateDigChans 
+                        {
+                        arguments
+                            {
+                            XmNx = 0;
+                            XmNy = 0;
+                            XmdsNchannels = 16;
+                            XmdsNdataNidOffset = JRG_TR1612$N_INP_HEAD;
+                            XmdsNendIdxNidOffset = JRG_TR1612$N_INP_ENDIDX;
+                            XmdsNnodesPerChannel = JRG_TR1612$N_NODES_PER_INP;
+                            XmdsNstartIdxNidOffset = JRG_TR1612$N_INP_STARTIDX;
+                            XmdsNnid = DEVICE_NID;
+                            XmdsNnidOffset = JRG_TR1612$N_INPUTS;
+                            XmNwidth = 650;
+                            XmNheight = 530;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+
+value 
+    DEVICE_NID: -1;
+    JRG_TR1612$N_HEAD: 0;
+    JRG_TR1612$N_NAME: 1;
+    JRG_TR1612$N_COMMENT: 2;
+    JRG_TR1612$N_MODULE_ID: 3;
+    JRG_TR1612$N_SAMP_INTRVAL: 4;
+    JRG_TR1612$N_EXT_CLOCK: 5;
+    JRG_TR1612$N_TRIGGER: 6;
+    JRG_TR1612$N_SAMP_2_STORE: 7;
+    JRG_TR1612$N_PRETRIG_SAMP: 8;
+    JRG_TR1612$N_ACTIVE_CHANS: 9;
+    JRG_TR1612$N_SAMP_AVERAGE: 10;
+    JRG_TR1612$N_TRIG_BY_CHAN: 11;
+    JRG_TR1612$N_TRIG_DELAY: 12;
+    JRG_TR1612$N_VALID_DATA: 13;
+    JRG_TR1612$N_VALID_TRIG: 14;
+    JRG_TR1612$N_LAM_SETUP: 15;
+    JRG_TR1612$N_MUL_PRE_POST: 16;
+    JRG_TR1612$N_RTC_ENABLE: 17;
+    JRG_TR1612$N_RTC_TRIGS: 18;
+    JRG_TR1612$N_MEMORY_SHARE: 19;
+      
+    JRG_TR1612$N_INPUTS: 20;
+    JRG_TR1612$N_NODES_PER_INP: 8;
+    JRG_TR1612$N_INP_HEAD: 0;
+    JRG_TR1612$N_INP_COMMENT: 1;
+    JRG_TR1612$N_INP_STARTIDX: 2;
+    JRG_TR1612$N_INP_ENDIDX: 3;
+    JRG_TR1612$N_INP_RANGE: 4;
+    JRG_TR1612$N_INP_OFFSET: 5;
+    JRG_TR1612$N_INP_TRIG_THRESH: 6;
+    JRG_TR1612$N_INP_VALID_THRESH: 7;
+
+    JRG_TR1612$N_INIT_ACTION: 148;
+    JRG_TR1612$N_STORE_ACTION: 149;
+
+value
+    sample_value: string_table(
+        compound_string("   4k  "),
+        compound_string("   8k  "),
+        compound_string("  16k  "),
+        compound_string("  32k  "),
+        compound_string("  64k  "),
+        compound_string(" 128k* "),
+        compound_string(" 256k* "));
+
+    sample_number: string_table(
+        compound_string("4096"),
+        compound_string("8192"),
+        compound_string("16384"),
+        compound_string("32768"),
+        compound_string("65536"),
+        compound_string("131072"),
+        compound_string("262144"));
+
+end module;
+
