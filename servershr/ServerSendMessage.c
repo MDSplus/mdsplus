@@ -105,6 +105,12 @@ static void RemoveClient(Client *c, fd_set *fdactive);
 static unsigned int GetHostAddr(char *host);
 static void AddClient(unsigned int addr, short port, int send_sock);
 static void AcceptClient(int reply_sock, struct sockaddr_in *sin, fd_set *fdactive);
+static void lock_client_list();
+static void unlock_client_list();
+static void lock_job_list();
+static void unlock_job_list();
+static void lock_socket();
+static void unlock_socket();
 
 int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, 
                          void (*ast)(), void *astparam, void (*before_ast)(),
@@ -118,15 +124,7 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
   int status = 0;
   int jobid;
 
-  static  int ssm_mutex_initialized = 0;
-  static  pthread_mutex_t ssm_mutex;
-
-  if(!ssm_mutex_initialized)
-  {
-	ssm_mutex_initialized = 1;
-	pthread_mutex_init(&ssm_mutex, pthread_mutexattr_default);
-  }
-  pthread_mutex_lock(&ssm_mutex);
+  lock_socket();
 
   if (StartReceiver(&port) && ((sock = ServerConnect(server)) >= 0))
   {
@@ -142,7 +140,9 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
     int *dptr;
     void *mem=0;
     unsigned char totargs = (unsigned char)(numargs+6);
+    unlock_socket();
     jobid = RegisterJob(msgid,retstatus,ast,astparam,before_ast,sock);
+    lock_socket();
     cmd[offset] = ')';
     cmd[offset+1] = '\0';
     if (addr == 0)
@@ -192,15 +192,17 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
       }
     }
     status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
+    unlock_socket();
     if (mem) free(mem);
   }
+  else
+    unlock_socket();
 
-  pthread_mutex_unlock(&ssm_mutex);
   return status;
 
  send_error:
   perror("Error sending message to server");
-  pthread_mutex_unlock(&ssm_mutex);
+  unlock_socket();
   CleanupJob(status,jobid);
   return status;
 }
@@ -208,7 +210,7 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
 static void RemoveJob(Job *job)
 {
   Job *j,*prev;
-  pthread_lock_global_np();
+  lock_job_list();
   for (j=Jobs,prev=0;j && j!=job;prev=j,j=j->next);
   if (j)
   {
@@ -217,7 +219,7 @@ static void RemoveJob(Job *job)
     else
       Jobs = j->next;
   }
-  pthread_unlock_global_np();
+  unlock_job_list();
   if (j)
   {
     if (j->has_condition == HAS_CONDITION)
@@ -236,9 +238,9 @@ static void RemoveJob(Job *job)
 static void DoCompletionAst(int jobid,int status,char *msg, int removeJob)
 {
   Job *j;
-  pthread_lock_global_np();
+  lock_job_list();
   for (j=Jobs; j && (j->jobid != jobid); j=j->next);
-  pthread_unlock_global_np();
+  unlock_job_list();
   if (j)
   {
     if (j->retstatus)
@@ -260,9 +262,9 @@ static void DoCompletionAst(int jobid,int status,char *msg, int removeJob)
 void ServerWait(int jobid)
 {
   Job *j;
-  pthread_lock_global_np();
+  lock_job_list();
   for (j=Jobs; j && (j->jobid != jobid); j=j->next);
-  pthread_unlock_global_np();
+  unlock_job_list();
   if (j)
   {
     if (j->has_condition == HAS_CONDITION)
@@ -282,9 +284,9 @@ void ServerWait(int jobid)
 static void DoBeforeAst(int jobid)
 {
   Job *j;
-  pthread_lock_global_np();
+  lock_job_list();
   for (j=Jobs; j && (j->jobid != jobid); j=j->next);
-  pthread_unlock_global_np();
+  unlock_job_list();
   if (j)
   {
     if (j->before_ast)
@@ -300,7 +302,7 @@ static int RegisterJob(int *msgid, int *retstatus,void (*ast)(), void *astparam,
   j->astparam = astparam;
   j->before_ast = before_ast;
   j->sock = sock;
-  pthread_lock_global_np();
+  lock_job_list();
   j->jobid = ++JobId;
   if (msgid)
   {
@@ -317,7 +319,7 @@ static int RegisterJob(int *msgid, int *retstatus,void (*ast)(), void *astparam,
   }
   j->next = Jobs;
   Jobs = j;
-  pthread_unlock_global_np();
+  unlock_job_list();
   return j->jobid;
 }
 
@@ -325,9 +327,9 @@ static void  CleanupJob(int status, int jobid)
 {
   Job *j,*prev;
   SOCKET sock;
-  pthread_lock_global_np();
+  lock_job_list();
   for (j=Jobs; j && (j->jobid != jobid); j++);
-  pthread_unlock_global_np();
+  unlock_job_list();
   if (j)
   {
     sock = j->sock;
@@ -494,13 +496,19 @@ static void *Worker(void *sockptr)
     else
     {
       Client *c,*next;
-      pthread_lock_global_np();
-      for (c=ClientList,next=c ? c->next : 0; c; c=next,next=c ? c->next : 0)
-      {
-        if (c->reply_sock >= 0 && FD_ISSET(c->reply_sock, &readfds))
+      int done=0;
+      while(!done) {
+        lock_client_list();
+        for (c=ClientList,next=c ? c->next : 0; c && (c->reply_sock < 0 || !FD_ISSET(c->reply_sock,&readfds)); c=next,next=c ? c->next : 0);
+	unlock_client_list();
+        if (c && FD_ISSET(c->reply_sock,&readfds))
+	{
           DoMessage(c,&fdactive);
+          FD_CLR(c->reply_sock,&readfds);
+        }
+        else
+          done=1;
       }
-      pthread_unlock_global_np();
     }
     readfds = fdactive;
   }
@@ -544,9 +552,9 @@ int ServerConnect(char *server_in)
       if (port > 0)
       {
         Client *c;
-        pthread_lock_global_np();
+        lock_client_list();
         for (c=ClientList; c && (c->addr != addr || c->port != port); c=c->next);
-        pthread_unlock_global_np();
+        unlock_client_list();
         if (c)
         {
           if (ServerBadSocket(c->send_sock))
@@ -568,7 +576,10 @@ int ServerConnect(char *server_in)
     AddClient(addr,port,sock);
   return(sock);
 }
-  
+
+#include <sys/ioctl.h>
+#include <stropts.h>
+
 static void DoMessage(Client *c, fd_set *fdactive)
 {
   char reply[60];
@@ -619,9 +630,9 @@ static void RemoveClient(Client *c, fd_set *fdactive)
   while (found)
   {
     found = 0;
-    pthread_lock_global_np();
+    lock_job_list();
     for (j=Jobs;j && (j->sock != c->send_sock);j=j->next);
-    pthread_unlock_global_np();
+    unlock_job_list();
     if (j)
     {
       found = 1;
@@ -640,7 +651,7 @@ static void RemoveClient(Client *c, fd_set *fdactive)
     shutdown(c->send_sock,2);
     close(c->send_sock);
   }
-  pthread_lock_global_np();
+  lock_client_list();
   if (ClientList == c)
     ClientList = c->next;
   else
@@ -650,7 +661,7 @@ static void RemoveClient(Client *c, fd_set *fdactive)
     if (cp && cp->next == c)
       cp->next = c->next;
   }
-  pthread_unlock_global_np();
+  unlock_client_list();
   free(c);
 }
   
@@ -694,22 +705,22 @@ static void AddClient(unsigned int addr, short port, int send_sock)
   new->addr = addr;
   new->port = port;
   new->next = 0;
-  pthread_lock_global_np();
+  lock_client_list();
   for (c=ClientList; c && c->next != 0; c=c->next);
   if (c)
     c->next = new;
   else
     ClientList = new;
-  pthread_unlock_global_np();
+  unlock_client_list();
 }
 
 static void AcceptClient(int reply_sock, struct sockaddr_in *sin, fd_set *fdactive)
 {
   unsigned int addr = *(unsigned int *)&sin->sin_addr;
   Client *c;
-  pthread_lock_global_np();
+  lock_client_list();
   for (c=ClientList; c && (c->addr != addr || c->reply_sock != -1); c=c->next);
-  pthread_unlock_global_np();
+  unlock_client_list();
   if (c)
   {
     c->reply_sock = reply_sock;
@@ -720,4 +731,85 @@ static void AcceptClient(int reply_sock, struct sockaddr_in *sin, fd_set *fdacti
     shutdown(reply_sock,2);
     close(reply_sock);
   }
+}
+
+static int client_mutex_initialized = 0;
+static pthread_mutex_t client_mutex;
+
+static void lock_client_list()
+{
+
+  if(!client_mutex_initialized)
+  {
+    client_mutex_initialized = 1;
+    pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_lock(&client_mutex);
+}
+
+static void unlock_client_list()
+{
+
+  if(!client_mutex_initialized)
+  {
+    client_mutex_initialized = 1;
+    pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_unlock(&client_mutex);
+}
+
+static int job_mutex_initialized = 0;
+static pthread_mutex_t job_mutex;
+
+static void lock_job_list()
+{
+
+  if(!job_mutex_initialized)
+  {
+    job_mutex_initialized = 1;
+    pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_lock(&job_mutex);
+}
+
+static void unlock_job_list()
+{
+
+  if(!job_mutex_initialized)
+  {
+    job_mutex_initialized = 1;
+    pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_unlock(&job_mutex);
+}
+
+static int socket_mutex_initialized = 0;
+static pthread_mutex_t socket_mutex;
+
+static void lock_socket()
+{
+
+  if(!socket_mutex_initialized)
+  {
+    socket_mutex_initialized = 1;
+    pthread_mutex_init(&socket_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_lock(&socket_mutex);
+}
+
+static void unlock_socket()
+{
+
+  if(!socket_mutex_initialized)
+  {
+    socket_mutex_initialized = 1;
+    pthread_mutex_init(&socket_mutex, pthread_mutexattr_default);
+  }
+
+  pthread_mutex_unlock(&socket_mutex);
 }
