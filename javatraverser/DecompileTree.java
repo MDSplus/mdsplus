@@ -219,6 +219,13 @@ public class DecompileTree
             } //End management of device fields
             else
             {
+              if(info.getName().startsWith("TCAC07"))
+                 {
+                 int i=0;
+                 i ++;
+                 }
+
+
                 node.setAttribute("NAME", info.getName());
                 if(info.getUsage() == NodeInfo.USAGE_DEVICE || info.getUsage() == NodeInfo.USAGE_COMPOUND_DATA)
                 {
@@ -299,8 +306,7 @@ public class DecompileTree
                     }
                     node.setAttribute("USAGE", usageStr);
 
-                //Data, if setup data
-                    if(info.isSetup())
+                    //if(info.isSetup())
                     {
                         Data data;
                         try {
