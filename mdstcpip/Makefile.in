@@ -6,7 +6,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@
+LIBS=@LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
