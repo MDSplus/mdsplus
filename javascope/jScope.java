@@ -49,6 +49,5 @@ public class jScope
         
         win.num_scope++;
         win.startScope(file);
-        
     }
 }
