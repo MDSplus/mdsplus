@@ -7,7 +7,7 @@ public fun DIO2Encoder__trigger(as_is _nid, optional _method)
     private _N_COMMENT = 4;
     private _N_CLOCK_SOURCE = 5;
 
-    private _K_NODES_PER_CHANNEL = 4;
+    private _K_NODES_PER_CHANNEL = 5;
     private _N_CHANNEL_0= 6;
     private _N_CHAN_EVENT_NAME = 1;
     private _N_CHAN_EVENT = 2;
