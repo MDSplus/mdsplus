@@ -22,7 +22,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                              UpdateEventListener, ConnectionListener
 {
  
-   static final String VERSION = "jScope (version 7.2.6)";
+   static final String VERSION = "jScope (version 7.2.7)";
    static public boolean is_debug = false;
     
    public  static final int MAX_NUM_SHOT   = 30;
@@ -423,7 +423,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     pf.setOrientation(PageFormat.LANDSCAPE);
     Paper p = pf.getPaper();
     p.setSize(595.2239, 841.824);
-    p.setImageableArea(13.536, 12.959, 567.288, 816.6239);
+    p.setImageableArea(16., 16., 560., 810.);
     pf.setPaper(p);
  
  
