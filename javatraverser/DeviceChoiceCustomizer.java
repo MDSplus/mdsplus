@@ -50,22 +50,6 @@ public class DeviceChoiceCustomizer extends DeviceCustomizer implements Customiz
         mode.add("Integer");
         mode.add("Float");
         mode.add("Code");
-        mode.addItemListener(new ItemListener()
-        {
-            public void itemStateChanged(ItemEvent e)
-            {
-                int curr_idx = mode.getSelectedIndex();
-                if(curr_idx == 3)
-                {
-                    codesLabel.setEnabled(true);
-                    codesArea.setEnabled(true);
-                }
-                else
-                {
-                    codesLabel.setEnabled(false);
-                    codesArea.setEnabled(false);
-                }
-        }});
         boolean convert = bean.getConvert();
         String [] items = bean.getChoiceItems();
         int [] choiceIntValues = bean.getChoiceIntValues();
@@ -75,8 +59,26 @@ public class DeviceChoiceCustomizer extends DeviceCustomizer implements Customiz
         else if(choiceIntValues != null)
             mode.select(1);
         else if(choiceFloatValues != null)
+          try {
             mode.select(2);
+          }catch(Exception exc){JOptionPane.showMessageDialog(null, ""+exc, ""+mode, JOptionPane.WARNING_MESSAGE);}
         else mode.select(0);
+        mode.addItemListener(new ItemListener()
+       {
+           public void itemStateChanged(ItemEvent e)
+           {
+               int curr_idx = mode.getSelectedIndex();
+               if(curr_idx == 3)
+               {
+                   codesLabel.setEnabled(true);
+                   codesArea.setEnabled(true);
+               }
+               else
+               {
+                   codesLabel.setEnabled(false);
+                   codesArea.setEnabled(false);
+               }
+        }});
         jp1.add(itemsLabel = new Label("Items: "));
         jp1.add(itemsArea = new TextArea(5, 15));
         if(items != null)
