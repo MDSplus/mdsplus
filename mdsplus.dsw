@@ -197,6 +197,9 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name treeshr
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name servershr
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -368,6 +371,24 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name mdsipshr
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsdclshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "setevent"=.\setevent\setevent.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -436,6 +457,21 @@ Package=<4>
 ###############################################################################
 
 Project: "treeshr"=.\treeshr\treeshr.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "wfevent"=.\wfevent\wfevent.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
