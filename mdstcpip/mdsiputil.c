@@ -220,6 +220,7 @@ static SOCKET ConnectToPort(char *host, char *service)
 #endif
   if (sin.sin_port == 0)
   {
+
     printf("Error in MDSplus ConnectToPort: Unknown service: %s\nSet environment variable %s if port is known\n",service,service);
     return INVALID_SOCKET;
   }
@@ -653,44 +654,6 @@ static int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob)
   return 1;
 }
 
-int SendMdsMsg(SOCKET sock, Message *m, int oob)
-{
-  unsigned long len = m->h.msglen - sizeof(m->h);
-  unsigned long clength = 0; 
-  Message *cm = 0;
-  int status;
-  if (len > 0 && CompressionLevel > 0 && m->h.client_type != SENDCAPABILITIES)
-  {
-	  clength = len;
-	  cm = (Message *)malloc(m->h.msglen + 4);
-  }
-  if (!oob) FlushSocket(sock);
-  if (m->h.client_type == SENDCAPABILITIES)
-    m->h.status = CompressionLevel;
-  if ((m->h.client_type & SwapEndianOnServer) != 0)
-  {
-    if (Endian(m->h.client_type) != Endian(ClientType()))
-    {
-      FlipData(m);
-      FlipHeader(&m->h);
-    }
-  }
-  else
-    m->h.client_type = ClientType();
-  if (clength && compress2(cm->bytes+4,&clength,m->bytes,len,CompressionLevel) == 0 && clength < len)
-  {
-    cm->h = m->h;
-    cm->h.client_type |= COMPRESSED;
-    memcpy(cm->bytes,&cm->h.msglen,4);
-    cm->h.msglen = clength + 4 + sizeof(MsgHdr);
-    status = SendBytes(sock, (char *)cm, cm->h.msglen, oob);
-  }
-  else
-	  status = SendBytes(sock, (char *)m, len + sizeof(MsgHdr), oob);
-  if (clength) free(cm);
-  return status;
-}
-
 /* static void FlipBytes(int n, char *ptr)
 {
   int i;
@@ -714,6 +677,55 @@ int SendMdsMsg(SOCKET sock, Message *m, int oob)
     __p[__n - __i - 1] = __tmp;\
   }\
 }
+
+
+int SendMdsMsg(SOCKET sock, Message *m, int oob)
+{
+  unsigned long len = m->h.msglen - sizeof(m->h);
+  unsigned long clength = 0; 
+  Message *cm = 0;
+  int status;
+  int do_swap = 0; /*Added to handle byte swapping with compression*/
+ 
+  if (len > 0 && CompressionLevel > 0 && m->h.client_type != SENDCAPABILITIES)
+  {
+	  clength = len;
+	  cm = (Message *)malloc(m->h.msglen + 4);
+  }
+  if (!oob) FlushSocket(sock);
+  if (m->h.client_type == SENDCAPABILITIES)
+    m->h.status = CompressionLevel;
+  if ((m->h.client_type & SwapEndianOnServer) != 0)
+  {
+    if (Endian(m->h.client_type) != Endian(ClientType()))
+    {
+      FlipData(m);
+      FlipHeader(&m->h);
+      do_swap = 1; /* Recall that the header field msglen needs to be swapped */
+    }
+  }
+  else
+    m->h.client_type = ClientType();
+  if (clength && compress2(cm->bytes+4,&clength,m->bytes,len,CompressionLevel) == 0 && clength < len)
+  {
+    cm->h = m->h;
+    cm->h.client_type |= COMPRESSED;
+    memcpy(cm->bytes,&cm->h.msglen,4);
+    cm->h.msglen = clength + 4 + sizeof(MsgHdr);
+/*If byte swapping required, swap msglen */
+    if(do_swap)
+ 	FlipBytes(4,(char *)&cm->h.msglen);	
+ /* status = SendBytes(sock, (char *)cm, cm->h.msglen, oob);*/
+/* now msglen is swapped, and cannot be used as byte counter */
+    status = SendBytes(sock, (char *)cm, clength + 4 + sizeof(MsgHdr), oob);
+
+  }
+  else
+	  status = SendBytes(sock, (char *)m, len + sizeof(MsgHdr), oob);
+  if (clength) free(cm);
+  return status;
+}
+
   
 static void FlipHeader(MsgHdr *header)
 {

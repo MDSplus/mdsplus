@@ -70,6 +70,7 @@ int MdsValue(va_alist) va_dcl
 int MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated argument list expected ****/
 {
 #endif
+
   va_list incrmtr;
   int a_count;
   int i;
