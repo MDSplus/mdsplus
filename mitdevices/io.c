@@ -15,7 +15,7 @@
 
 FILE *FOPEN(const char *fname, const char *mode)
 {
-  printf("here I am in open\n");
+  /*  printf("here I am in open\n"); */
   return fopen(fname, mode);
 }
 int FCLOSE(FILE *fd)
@@ -158,13 +158,17 @@ int DMARead3(short *buffer, const char *fname, int *start, int *end, int *inc, f
   int rc;
   int idx, cidx, sam;
     
+  /*
   printf("Starting DMARead3 start = %d end = %d linc = %d\n", *start, *end, linc);
+  */
   if ( (fd = open( fname, O_RDONLY)) < 0 ) {
         fprintf( stderr, "DMARead: failed to open device \"%s\" - ", fname );
         perror( "" );
         return -1;
   }
+  /*
   printf("about to mmap (null, %d, PROT_READ, MAP_SHARED, %d, 0)\n", length, fd);
+  */
   region = (short *)mmap( NULL, length, PROT_READ, MAP_SHARED, fd, 0 );
 
   if ( region == (short *)-1 ){
@@ -177,11 +181,14 @@ int DMARead3(short *buffer, const char *fname, int *start, int *end, int *inc, f
   for (samples_to_go=length/2; samples_to_go > 0; samples_to_go -= buffer_def.nsamples)
     {
       buffer_def.nsamples = MIN(samples_to_go, MAX_CHUNK_SIZE);
+      /*
       printf("about to ioctl istart = %d, istride= %d, nsamples = %d \n", 
 	     buffer_def.istart, buffer_def.istride, buffer_def.nsamples);
-
+      */
       rc = ioctl( fd, ACQ32_IOREAD_LOCALBUF, &buffer_def );
+      /*
       printf("back from ioctl *num_coeffs=%d\n", *num_coeffs);
+      */
       if (rc < 0) {
 	printf("got back %d from ioctl\n", rc);
 	perror("call to ioctl");
@@ -203,7 +210,9 @@ int DMARead3(short *buffer, const char *fname, int *start, int *end, int *inc, f
   } else {
     memcpy(buffer, region, samples*sizeof(short));
   }
+  /*
   printf("about to umap...\n");
+  */
   rc = munmap((void *)region, length);
   if (rc != 0) {
     printf("error unmapping %d\n", length);
