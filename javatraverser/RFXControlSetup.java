@@ -662,7 +662,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable6.setNumCols(5);
     deviceTable6.setNumRows(1);
     deviceTable6.setIdentifier("");
-    deviceTable6.setColumnNames(new String[] {"T_ip", "Par2", "Par3", "Par4", "Par5"});
+    deviceTable6.setColumnNames(new String[] {"T_ip", "Bv_Gain", "Par3", "Par4", "Par5"});
         deviceTable6.setRowNames(null);
     deviceTable6.setPreferredHeight(20);
     deviceTable3.setOffsetNid(1171);
@@ -670,7 +670,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable3.setNumCols(5);
     deviceTable3.setNumRows(1);
     deviceTable3.setIdentifier("");
-    deviceTable3.setColumnNames(new String[] {"AxiFeedforward", "AxiControl", "Control3", "Control4", "Control5", "Control6", "Control7", "Control8"});
+    deviceTable3.setColumnNames(new String[] {"AxiFeedforward", "AxiControl", "VoltageControl", "Control4", "Control5", "Control6", "Control7", "Control8"});
     deviceTable3.setRowNames(null);
     deviceTable3.setBinary(true);
     deviceTable3.setPreferredHeight(20);
