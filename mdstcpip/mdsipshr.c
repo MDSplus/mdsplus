@@ -384,7 +384,7 @@ static SOCKET ConnectToPort(char *host, char *service)
   status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
   if (status < 0)
   {
-    perror("Error in connect to service");
+    perror("Error in connect to service\n");
     return INVALID_SOCKET;
   }
   else
@@ -668,8 +668,8 @@ Message *GetMdsMsg(SOCKET sock, int32 *status)
       nbytes = recv(sock, bptr, bytes_remaining, flags);
       if (nbytes == 0)
       {
-        *status = -1;
-        return msg;
+        *status = 0;
+        return 0;
       }
       else if (nbytes > 0)
       {
@@ -683,6 +683,11 @@ Message *GetMdsMsg(SOCKET sock, int32 *status)
                header.msglen,header.status,header.length,header.nargs,header.descriptor_idx,header.message_id,header.dtype);
           printf("client_type = %d\nndims = %d\n",header.client_type,header.ndims);
 #endif
+          if (CType(header.client_type) > CRAY_CLIENT || header.ndims > MAX_DIMS)
+          {
+            *status = 0;
+            return 0;
+          }  
           msglen = header.msglen;
           bytes_remaining = msglen - sizeof(MsgHdr);
           msg = malloc(msglen);
@@ -713,8 +718,8 @@ Message *GetMdsMsg(SOCKET sock, int32 *status)
       }
       else
       {
-	*status = -1;
-        return msg;
+	*status = 0;
+        return 0;
       }
     }
   }
