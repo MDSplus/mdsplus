@@ -24,6 +24,7 @@
 *               provided.
 *
 * Modifications:
+*  07-May-1998  TRG  First null cmdA_string recognized as end of list.
 *  18-Oct-1996  TRG  Use COLWIDTH when displaying available commands.
 *  10-Dec-1987  TRG  Set "noerrmsg" flag during successful "context" srch.
 *  23-Jun-1987  TRG  Add 'context' and 'wildcard' stuff.
@@ -45,7 +46,23 @@
 /*#define NOWILD 2		/* "flags" mask, ignores wildcards	*/
 
 
-static int strncmp_nocase();
+
+	/**************************************************************
+	 * strncmp_nocase:
+	 * Like strncmp(), but is not case sensitive.
+	 **************************************************************/
+static int strncmp_nocase(
+    char  *s			/* <r> 1st string to compare		*/
+   ,char  *t			/* <r> 2nd string  "    "		*/
+   ,int   n			/* <r> num chars to compare		*/
+   )
+   {
+    register int   i;
+
+    for ( ; n ; n--,s++,t++)
+        if (i = toupper(*s) - toupper(*t))  break;
+    return(i);
+   }
 
 
 
@@ -54,7 +71,6 @@ static int strncmp_nocase();
 	 *    Otherwise, return 0 and, unless otherwise indicated,
 	 *     complain about it.
 	 ****************************************************************/
-
 int cmd_lookup(
 	char  **s,		/* <m> Ptr within command string	*/
 	struct cmd_struct  cmdlist[], /* <r> Command-list struct	*/
@@ -86,7 +102,7 @@ int cmd_lookup(
     if (context && *context)
         noerrmsg = 1;
     first = 1 + (context ? *context : 0);
-    ilast = (long)cmdlist->cmdA_string;	/* # of entries in list		*/
+    ilast = (int)cmdlist->cmdA_string;	/* # of entries in list		*/
     isave = 0;
 
 		/*======================================================
@@ -128,7 +144,7 @@ int cmd_lookup(
         char  *cmdA_string = (cmdlist+i)->cmdA_string;
 
         if (!cmdA_string)
-            continue;
+            break;
 
         if (wc)
            {
@@ -171,6 +187,7 @@ int cmd_lookup(
                isave = i;		/* Save "match" idx		*/
            }
        }
+
     if (icount == 0)
        {
         k = 0;			/* Set "token length" to 0	*/
@@ -183,7 +200,7 @@ int cmd_lookup(
             for (i=1,j=0 ; i<ilast ; i++)
                {			/* Print out commands		*/
                 if (!(cmdlist+i)->cmdA_string)
-                    continue;
+                    break;
                 ispace = j ? (COLWIDTH - (j-FIRST_COLUMN)%COLWIDTH) :
                             FIRST_COLUMN;
                 len = strlen((cmdlist+i)->cmdA_string);
@@ -216,22 +233,6 @@ int cmd_lookup(
     else
         *s = nonblank(*s + k);	/* Bump "command-line" ptr	*/;
     return((cmdlist+isave)->cmdL_id);
-   }
-
-
-
-	/**************************************************************
-	 * strncmp_nocase():
-	 * Like strncmp(), but is not case sensitive.
-	 **************************************************************/
-static int strncmp_nocase(s,t,n)
-char  *s,*t;
-   {
-    register int   i;
-
-    for ( ; n ; n--,s++,t++)
-        if (i = toupper(*s) - toupper(*t))  break;
-    return(i);
    }
 #include        "dasutil.h"
 #include        <stdio.h>

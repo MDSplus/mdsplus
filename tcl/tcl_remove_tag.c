@@ -20,7 +20,7 @@ int TclRemoveTag()
     int   sts;
     static DYNAMIC_DESCRIPTOR(dsc_tagnam);
 
-    cli_get_value("TAG",&dsc_tagnam);
+    cli_get_value("TAGNAME",&dsc_tagnam);
     l2u(dsc_tagnam.dscA_pointer,0);
     sts = TreeRemoveTag(dsc_tagnam.dscA_pointer);
     if (~sts & 1)

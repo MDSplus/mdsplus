@@ -193,7 +193,7 @@ define type REMOVE_TYPE
 Define syntax remove_tag
 	Routine TclRemoveTag
         parameter p1,prompt="What",value(required,type=REMOVE_TYPE)
-        parameter p2,LABEL=TAG,prompt="Tag",value(required)
+        parameter p2,LABEL=TAGNAME,prompt="Tag",value(required)
 Define verb RENAME												       ! 59 
 	Routine TclRename											       ! 59
 	parameter p1, LABEL=SOURCE, VALUE(required)								       ! 59 
