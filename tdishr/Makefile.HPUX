@@ -79,13 +79,12 @@ TdiXxx.o \
 TdiYaccSubs.o \
 TdiYacc.o
 
-libTdiShr.so : $(OBJECTS)
-	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm -L../mdsshr -lMdsShr -lots -L../treeshr -lTreeShr
+libTdiShr.sl : $(OBJECTS)
+	ld -o $@ +vallcompatwarnings -b $(OBJECTS) -lc -lm -L../mdsshr -lMdsShr -L../treeshr -lTreeShr
 
 clean :
 	- rm *.o
-	- rm *.so
-	- rm so_locations
+	- rm *.sl
 	- rm TdiLex.c
 	- rm TdiYacc.c
 

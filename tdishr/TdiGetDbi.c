@@ -112,7 +112,7 @@ DBI_ITM lst[] = {{sizeof(index),DbiINDEX,0,0},EOL,EOL};
 			{
 				struct descriptor ans = {0,DTYPE_T,CLASS_S,0};
 				if (lst[1].pointer) {
-				  ans.length = strlen(lst[1].pointer);
+				  ans.length = strlen((char *)lst[1].pointer);
 				  ans.pointer = (char *)lst[1].pointer;
 				}
 				status = MdsCopyDxXd(&ans, out_ptr);
@@ -194,7 +194,7 @@ unsigned char	omits[] = {DTYPE_PATH,0};
 			}
 			else
 			{
-				unsigned short len = (unsigned short)strlen(def_itm[0].pointer);
+				unsigned short len = (unsigned short)strlen((char *)def_itm[0].pointer);
 				StrCopyR(&def,&len,def_itm[0].pointer);
 				TreeFree(def_itm[0].pointer);
 			}
@@ -220,7 +220,7 @@ unsigned char	omits[] = {DTYPE_PATH,0};
 			status = TreeGetDbi(expt_itm);
 			if (expt_itm[0].pointer)
 			{
-				unsigned short len = (unsigned short)strlen(expt_itm[0].pointer);
+				unsigned short len = (unsigned short)strlen((char *)expt_itm[0].pointer);
 				StrCopyR(&expt,&len,expt_itm[0].pointer);
 				TreeFree(expt_itm[0].pointer);
 			}

@@ -375,7 +375,7 @@ more:		switch (dtype) {
 			status = TreeGetNci(nid, texted);
 			if (status & 1 && texted[0].pointer)
 			{
-				unsigned short len = (unsigned short)strlen(texted[0].pointer);
+				unsigned short len = (unsigned short)strlen((char *)texted[0].pointer);
 				StrCopyR((struct descriptor *)hold_ptr,&len,texted[0].pointer);
 			}
 		}

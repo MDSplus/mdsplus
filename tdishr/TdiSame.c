@@ -10,6 +10,7 @@
 
 	Ken Klare, LANL CTR-7	(c)1989,1990
 */
+#include <mdsdescrip.h>
 #include <stdlib.h>
 #include <mdsshr.h>
 #include "tdirefcat.h"

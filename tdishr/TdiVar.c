@@ -48,9 +48,6 @@
 #include <mdsshr.h>
 #include <string.h>
 #include <librtl_messages.h>
-static int new_narg = 0;
-
-struct descriptor Tdi3Narg = {sizeof(new_narg),DTYPE_L,CLASS_S,(char *)&new_narg};
 
 extern unsigned short OpcEquals, OpcEqualsFirst;
 extern unsigned short OpcFun;
@@ -114,6 +111,10 @@ static block_type public	= {0,0,0, (struct descriptor *)&public_head, (struct de
                                     (struct descriptor *)&public_label};
 static DESCRIPTOR(star, "*");
 static DESCRIPTOR(percent, "%");
+static int new_narg = 0;
+static struct descriptor TdiNargConstant = {sizeof(new_narg),DTYPE_L,CLASS_S,(char *)&new_narg};
+struct descriptor *Tdi3Narg(){return &TdiNargConstant;}
+
 /*--------------------------------------------------------------
 	Put a byte to output.
 */
