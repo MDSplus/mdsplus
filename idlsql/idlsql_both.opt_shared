@@ -1,4 +1,0 @@
-gsmatch=lequal,1,0
-objlib /inc=idlsql_both
-universal=IDLSQL_DYNAMIC, IDLSQL_INTERACTIVE, IDLSQL_LOGIN, IDLSQL_LOGOUT, IDLSQL_SETDBTYPE
-sys$share:idltransfer/share
