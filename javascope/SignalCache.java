@@ -25,7 +25,6 @@ public class SignalCache
         try
         {   
             String s = System.getProperty("Signal.cache_size");
-            //Long size = new Long(s);
             max_cache_size = Long.parseLong(s);
         } catch (NumberFormatException e){}
         
@@ -33,7 +32,7 @@ public class SignalCache
         {
             File f = new File(cache_directory);
             if(!f.exists() || !f.isDirectory()) 
-                f.mkdir();
+                f.mkdirs();
             if(f.list() == null)
                 cache_directory = null;
             
@@ -41,7 +40,7 @@ public class SignalCache
         
         if(cache_directory == null)
         {
-            cache_directory = System.getProperty("user.home")+ File.separator + "jScopeCache";
+            cache_directory = System.getProperty("user.home") + File.separator + "jScope" + File.separator + "jScopeCache";
             System.getProperties().put("Signal.cache_directory", cache_directory);            
             File f = new File(cache_directory);
             if(!f.exists() || !f.isDirectory()) 

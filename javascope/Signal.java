@@ -1545,6 +1545,9 @@ public class Signal
         {
             return;
         }
+        
+        if(n_points > x.length) n_points = x.length;
+        if(n_points > y.length) n_points = y.length;
                 
         
         for(j = 0; j < n_points; j++)

@@ -163,8 +163,10 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         
         prop = (String)js_prop.getProperty("jScope.font");
         
-        if(prop == null) return;
-	    font = StringToFont(prop);
+        if(prop == null) 
+            font = StringToFont(getFont().toString());
+        else
+	        font = StringToFont(prop);
 	    
 	    if(font != null) {
 	        setFontChoice();
@@ -181,11 +183,13 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         
         if(f.indexOf("java.awt.Font[") == -1)
             return null;
+
+        if(jScope.is_debug)
+            System.out.println("Font desiderato " + f);
         
-        fontchoice = f.substring("java.awt.Font[Family=".length(), pos = f.indexOf(","));
-        pos++;
-        pos = f.indexOf(",", pos) + 1;
-        style = f.substring(f.indexOf("style=")+6, pos = f.indexOf(",", pos));
+        fontchoice = f.substring(f.indexOf("family=") + 7, pos = f.indexOf(",name="));
+        pos++;//Index on the string after comma before style
+        style = f.substring(f.indexOf("style=", pos)+6, pos = f.indexOf(",size", pos));
         for(i = 0; i < this.style_l.length; i++)
             if(style_l[i].equals(style.toUpperCase()))
                 break;
@@ -193,8 +197,24 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
             stChoice = 0;
         else
             stChoice = i;
-        siChoice = f.substring(f.indexOf("size=")+5, pos = f.indexOf("]", pos));
-        return new Font(fontchoice, stChoice, Integer.parseInt(siChoice));
+        siChoice = f.substring(f.indexOf("size=")+5, f.indexOf("]", pos));
+        Font font = new Font(fontchoice, stChoice, Integer.parseInt(siChoice));
+                
+        //Check if selected font can be displayed
+        //on the current patform
+        if(!fontC.isFontAvailable(font))
+        {
+            //Set font to default font
+            fontchoice = "Default";
+            stChoice = 0;
+            siChoice = "12";
+            font = new Font(fontchoice, stChoice, Integer.parseInt(siChoice));
+        }
+        
+        if(jScope.is_debug)
+            System.out.println("Font ottenuto " + font);
+            
+        return font;
     }
 
     public void fromFile(Properties pr, String prompt) throws IOException
@@ -229,7 +249,7 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
             Integer newSize = new Integer(siChoice);
             int size = newSize.intValue();
             Font f = new Font(fontchoice, stChoice, size);
-            StringToFont(f.toString());
+            f = StringToFont(f.toString());
             
             return f;
     }
@@ -287,6 +307,17 @@ class FontPanel extends JPanel {
     public Dimension getPreferredSize()
     {
         return new Dimension(100, 50);
+    }
+    
+    //Check if the font is visible on
+    //this platform
+    public boolean isFontAvailable(Font font)
+    {
+        int height;
+        Graphics g = this.getGraphics();
+        FontMetrics fm = g.getFontMetrics(font);
+        height = fm.getHeight();
+        return (height > 9 && height < 100);
     }
     
     public void changeFont(Font font){

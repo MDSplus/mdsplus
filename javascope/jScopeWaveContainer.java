@@ -222,10 +222,11 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	  
     }
 
+    public void   SetTitle(String title){this.title = title;}
     public String GetTitle(){return title;}
     public String GetEvaluatedTitle()
     {
-        if(title == null || title.length() == 0 || dp == null ) return "";
+        if(title == null || title.length() == 0 || dp == null) return "";
         try
         {
             return dp.GetString(title);
@@ -255,7 +256,6 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         return server_item.name;
     }
    
-    public void    SetTitle(String title){this.title = title;}
     
 
     public boolean SupportsFastNetwork(){return supports_fast_network;}
@@ -698,7 +698,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
             else
 	            abort = false;
 	    	
-	    	if(def_vals != null && def_vals.public_variables != null)
+	    	if(def_vals != null && def_vals.public_variables != null && def_vals.public_variables.length() != 0)
 	    	{
 	    	    dp.SetEnvironment(def_vals.public_variables);
 	    	    if(WaveInterface.IsCacheEnabled())

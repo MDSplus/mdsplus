@@ -154,8 +154,6 @@ import javax.swing.event.*;
       SError(Frame fw) 
       {               
 	        super(fw, "Error Setup", true); 	
-//	        super.setFont(new Font("Helvetica", Font.PLAIN, 10)); 
-//	        setResizable(false);   
         	    
 	        JLabel label;
         		    

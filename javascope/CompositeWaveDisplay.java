@@ -21,69 +21,56 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
     PrinterJob                prnJob;
     PageFormat                pf;
 
-
-//A SAMPLE SESSION ILLUSTRATING THE USAGE OF COMPOSITE WAVE DISPLAY
     public static void main(String args[])
     {
-        //Create a new instance of CompositeWaveDisplay
-        CompositeWaveDisplay cd = createWindow("test");
-        //Add signals (see below)
-        testSignal((CompositeWaveDisplay)cd);
-        //Display Window
-        cd.showWindow(50, 50, 500, 400);
+        Component cd = createWindow("prova");
+        ((CompositeWaveDisplay)cd).testSignal((CompositeWaveDisplay)cd);
+        ((CompositeWaveDisplay)cd).showWindow(50, 50, 500, 400);
     }
     
     
-    private static void testSignal(CompositeWaveDisplay cd)
+    private void testSignal(CompositeWaveDisplay cd)
     {
-        //Create a couple of signals
+        
         float y[] = new float[1000], y1[] = new float[1000], y2[] = new float[1000], x [] = new float[1000];
         for(int i = 0; i < 1000; i++)
         {
             x[i] = (float)(i/1000.);
             y[i] = (float)Math.sin(i/300.);
             y1[i] = (float)Math.cos(i/300.);
+            y2[i] = (float)Math.sin(i/300.)*(float)Math.sin(i/300.);
         }
-        //A sample ceation of two static signals in one panel
-        cd.addSignal(
-            x,          //X Axis
-            y,          //Y Axis
-            1,          //row in panel
-            2,          //Column in panel
-            "blue",     //Colour
-            "my signal1", //Legend
-            true,       //Display lines connecting points
-            0);         //Marker step: 0 means that all points are displayed
-       //Another signal in the same panel 
-        cd.addSignal(x,y1,1,2,"green", "my signal 2", true, 0);
+        
+        float data[] = new float[100*100], time[] = new float[100], x_data[] = new float[100]; 
+        for(int i = 0; i < 100; i++)
+        {
+            time[i] = (float)(i/100.);
+            //data[i] = (float)Math.cos(i/300.);
+            for(int j = 0; j < 100; j++)
+            {
+                data[j * 100+i] = (float)((i + 1)/100.) * (float)Math.cos(j * 6.28/100.) * (float)Math.cos(i * 6.28/100.);
+            }
+        }
+        for(int i = 0; i < 100; i++)
+            x_data[i] = i;// (float)Math.sin(i * 6.28/100.);
             
-        //Another definition for signal. In this case a URL like specification is provided. 
-        //The first part defines the DataProvider to be used. In this case the demo data provider is used
-        //Demo is a sample data provider already defined in jScope, which has the ability 
-        //of showing signals evolving in time. The second part of the URL is a name which is
-        //interpreted by the associated Data Provider 
-        cd.addSignal(
-            "demo://sin",           //Signal Specification: <DataProvider>://<name>
-            1,                      //row in panel
-            1,                      //Column in panel
-            "red",                  //Colour
-            "evolving signal",      //Legend
-            true,                   //Display lines connecting points
-            0);                     //Marker step: 0 means that all points are displayed
-            
-            
-        //Set the limits of the corresponding panel    
-        cd.setLimits(
-            1,      //row idx
-            1,      //column idx
-            0,   //min X
-            100,    //max X
-            -2,     //min Y
-            2);     //Max Y
+        Signal  sig_2d = new Signal(data, x_data, time, Signal.MODE_YTIME); 
+        ((CompositeWaveDisplay)cd).addSignal(sig_2d, 1, 2);
+        ((CompositeWaveDisplay)cd).addSignal(x, y, 1,2,"green", "seno");
+       
+//        Signal  sig_2d1 = new Signal(sig_2d);
+//        ((CompositeWaveDisplay)cd).addSignal(sig_2d1, 1, 1);
+//        ((CompositeWaveDisplay)cd).addSignal(x, y, 1,1,"green", "seno");
+//        ((CompositeWaveDisplay)cd).addSignal(x, y1, 1,1,"red", "coseno");
+        
+//        ((CompositeWaveDisplay)cd).addSignal(x, y2, 2,1,"blue", "seno**2");
+  //      ((CompositeWaveDisplay)cd).addSignal("mds://150.178.3.80/rfx/13000/\\RFX::TOP.RFX.A.SIGNALS.EMRA:IT", 2,3, "blue", "emra_it", true, 0);
+  //      ((CompositeWaveDisplay)cd).addSignal("twu://ipp333.ipp.kfa-juelich.de/textor/all/86858/RT2/IVD/IBT2P-star", 2,3, "blue", "twu", true, 0);
+   //       ((CompositeWaveDisplay)cd).addSignal("rda://data.jet.uk/PPF/40000/MAGN/BPOL", 1,3, "blue", "jet", true, 0);
+          ((CompositeWaveDisplay)cd).addSignal("demo://sin", 1,1, "blue", "demo", true, 0);
+          ((CompositeWaveDisplay)cd).setLimits(1,1, -100, 100, -2, 2);
           
     }
-    
- //-------------------------------------------End Sample code   
     
     public static CompositeWaveDisplay createWindow(String title)
     {

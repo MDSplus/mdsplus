@@ -36,45 +36,45 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                          customize_m, autoscale_m, print_m, network_m, help_m;
            	JMenu		 servers_m;
   /**Menu items on menu edit_m */	  
-  private JMenuItem      exit_i, win_i;
+  private   JMenuItem    exit_i, win_i;
   protected JMenuItem    default_i, use_i, pub_variables_i, save_as_i, use_last_i, 
-                        save_i, color_i, print_all_i,  open_i, 
-                        close_i, server_list_i,  font_i, save_all_as_text_i,
-                        free_cache_i;
+                         save_i, color_i, print_all_i,  open_i, 
+                         close_i, server_list_i,  font_i, save_all_as_text_i,
+                         free_cache_i;
   private JCheckBoxMenuItem  brief_error_i;			
   /**Menu item on menu pointer_mode_m */	  
   private JMenuItem	zoom_i, point_i, copy_i, pan_i;
   /**Menu item on menu autoscale_m */	    
   private JMenuItem	all_i, allY_i;
   
-  private JMenuItem     print_i, page_i;
-  
+  private JMenuItem      print_i, page_i, properties_i;
+  private String         propertiesFilePath = null;
    
-  private JPanel         panel, panel1;
-  private ButtonGroup   pointer_mode = new ButtonGroup();
-  private JRadioButton  zoom, point, copy, pan;
+  private JPanel             panel, panel1;
+  private ButtonGroup        pointer_mode = new ButtonGroup();
+  private JRadioButton       zoom, point, copy, pan;
   private JCheckBoxMenuItem  fast_network_i, enable_compression_i, use_cache_i;
-  private JLabel         shot_l, lab;
-  private JTextField     shot_t, signal_expr;
-  private JButton        apply_b;
-  private JFileChooser    file_diag = new JFileChooser();
-  protected String        curr_directory;
-  protected String        last_directory;
-  private JLabel	        point_pos, print_icon;
-  private JTextField	    info_text, net_text;
-  private WindowDialog  win_diag;
-  public  ColorDialog	color_dialog;
-  public  FontSelection font_dialog;
-          jScopeWaveContainer     wave_panel;
-  SetupDefaults     setup_default;
-  private PubVarDialog      pub_var_diag;
-  static int		num_scope = 0;
-  private String	config_file;
-  static DataServerItem[] server_ip_list;
-         ServerDialog     server_diag = null;
-  static  boolean	not_sup_local = false;
-  private boolean	executing_update = false;
-  private JFrame    main_scope;
+  private JLabel             shot_l, lab;
+  private JTextField         shot_t, signal_expr;
+  private JButton            apply_b;
+  private JFileChooser       file_diag = new JFileChooser();
+  protected String           curr_directory;
+  protected String           last_directory;
+  private JLabel	         point_pos, print_icon;
+  private JTextField	     info_text, net_text;
+  private WindowDialog       win_diag;
+  public  ColorDialog	     color_dialog;
+  public  FontSelection      font_dialog;
+          jScopeWaveContainer   wave_panel;
+  SetupDefaults                 setup_default;
+  private PubVarDialog          pub_var_diag;
+  static int		            num_scope = 0;
+  private String	            config_file;
+  static DataServerItem[]       server_ip_list;
+         ServerDialog           server_diag = null;
+  static  boolean	            not_sup_local = false;
+  private boolean	            executing_update = false;
+  private JFrame                main_scope;
   
   PrinterJob            prnJob;
   PageFormat            pf;
@@ -84,8 +84,8 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
   boolean           is_playing = false;
   int height = 500, width = 700, xpos = 50, ypos = 50;
   jScopeDefaultValues def_values = new jScopeDefaultValues();
-  SetupDataDialog setup_dialog;  
-  JProgressBar progress_bar;
+  SetupDataDialog     setup_dialog;  
+  JProgressBar        progress_bar;
 
   private jScopeBrowseUrl help_dialog ;
 
@@ -148,10 +148,8 @@ static int T_messageType;
        PubVarDialog(Frame fw) {
        
 	  super(fw, "Public Variables", false); 	
-	  //super.setFont(new Font("Helvetica", Font.PLAIN, 12));
 	  dw = (jScope)fw; 
-	  //setResizable(false);   	    
-		    
+	  
 	  GridBagConstraints c = new GridBagConstraints();
 	  GridBagLayout gridbag = new GridBagLayout();
 	  getContentPane().setLayout(gridbag);        
@@ -532,6 +530,20 @@ static int T_messageType;
     });
     edit_m.add(page_i);
       
+    edit_m.addSeparator();
+   
+    properties_i = new JMenuItem("Properties...");
+    properties_i.addActionListener(new ActionListener()
+    {
+        public void actionPerformed(ActionEvent e) 
+        {
+            PropertiesEditor pe = new PropertiesEditor(jScope.this, propertiesFilePath);
+            pe.show();
+        }
+    });
+    edit_m.add(properties_i);
+ 
+    
     edit_m.addSeparator();
 
     close_i = new JMenuItem("Close");
@@ -1047,26 +1059,51 @@ static int T_messageType;
 
   public void InitProperties()
   {
-    String f_name;
+    String f_name = System.getProperty("user.home")+ File.separator +"jScope" + File.separator + "jScope.properties";
     try
     {
-//      if((f_name = findFileInClassPath("jScope.properties")) != null)
-//      System.out.println(System.getProperty("jScope.properties"));
-        if((f_name = System.getProperty("jScope.properties")) != null)
+        if(jScope.is_debug)
         {
-            if(jScope.is_debug)
-                System.out.println("Properties file "+ f_name);
+            
+            System.out.println("jScope.properties " + System.getProperty("jScope.properties"));
+            System.out.println("jScope.config_directory " + System.getProperty("jScope.config_directory"));
+        }
+        
+        if( ( (new File(f_name)).exists() ) || 
+            (f_name = System.getProperty("jScope.properties")) != null)
+        {
             js_prop = new Properties();
             js_prop.load(new FileInputStream(f_name));
         }
         else
         {
+            
+            f_name = System.getProperty("user.home") + File.separator + "jScope" + File.separator;
+            File jScopeUserDir = new File(f_name);
+            if(!jScopeUserDir.exists())
+                jScopeUserDir.mkdirs();           
+            f_name = f_name + "jScope.properties";
+            
             js_prop = new Properties();
             InputStream pis = getClass().getClassLoader().getResourceAsStream("jScope.properties");
-            if(pis != null)            
+            if(pis != null)
+            {                
                 js_prop.load(pis);
+                pis.close();
+                
+                pis = getClass().getClassLoader().getResourceAsStream("jScope.properties");
+                f_name = System.getProperty("user.home") + File.separator + "jScope" + File.separator + "jScope.properties";
+                FileOutputStream fos = new FileOutputStream(f_name);
+                byte b[] = new byte[1024];
+                for(int len = pis.read(b); len > 0; len = pis.read(b))
+                    fos.write(b, 0, len);
+                fos.close();
+                pis.close();
+            }
             else
+            {
                 System.out.println("Not found jScope.properties file");
+            }
         }
     } 
     
@@ -1078,19 +1115,72 @@ static int T_messageType;
     {
         System.out.println(e);
     }
+    propertiesFilePath = f_name;
+  }
+  
+  private void crateConfigDir()
+  {
+    
   }
 
   protected void GetPropertiesValue()
   {    
     if(js_prop == null) return;
     
+    //jScope configurations file directory can be defined
+    //with decrease priority order: 
+    // 1) in jScope.properties using jScope.directory property
+    // 2) by system property jScope.config_directory; 
+    //    in this case jScope must be started with 
+    //    -DjScope.config_directory=<directory> option.
+    //If the previous properties are not defined jScope create
+    //configuration folder in <home directory>/jScope/configurations, if
+    //for same abnormal reason the directory creation failed
+    //<home directory> is used as configuration directory
     curr_directory = (String)js_prop.getProperty("jScope.directory");
     if(curr_directory == null || curr_directory.trim().length() == 0)
     {
        curr_directory  = (String)System.getProperty("jScope.config_directory");
        if(curr_directory == null || curr_directory.trim().length() == 0)
        {
-            curr_directory = (String)System.getProperty("user.home");
+            //Store default jScope configuration file in local
+            //directory <home directory>/jScope/configurations.
+            //Default configuration are stored in jScope jar file.
+            //If configuration directory already exist the configurations
+            //copy is not performed.
+            try
+            {
+                curr_directory = System.getProperty("user.home") + File.separator + "jScope" + File.separator + "configurations" + File.separator;
+                File jScopeUserDir = new File(curr_directory);
+                if(!jScopeUserDir.exists())
+                {
+                    String s;
+                    byte b[] = new byte[1024];
+                                        
+                    jScopeUserDir.mkdirs();
+                    
+                    String configList[] = {"FTU_plasma_current.jscp",
+                                            "fusion.jscp",
+                                            "JET_plasma_current.jscp",
+                                            "RFX_plasma_current.jscp",
+                                            "TS_plasma_current.jscp",
+                                            "TWU_plasma_current.jscp"};
+                   
+                    for(int i = 0; i < configList.length; i++)
+                    {             
+                        InputStream  fis = getClass().getClassLoader().getResourceAsStream("configurations/" + configList[i]);
+                        FileOutputStream fos = new FileOutputStream(curr_directory + configList[i]);
+                        for(int len = fis.read(b); len > 0; len = fis.read(b))
+                            fos.write(b, 0, len);
+                        fos.close();                    
+                        fis.close();
+                    }
+                }
+            } 
+            catch (Exception exc) 
+            {
+                curr_directory = System.getProperty("user.home");
+            }            
        }
     }
     
@@ -1171,8 +1261,7 @@ static int T_messageType;
     Properties props = System.getProperties();
     ip_addr = props.getProperty("data.address");
     dp_class = props.getProperty("data.class");
-    //if(server_diag == null)
-        server_diag = new ServerDialog(this, "Server list");  
+    server_diag = new ServerDialog(this, "Server list");  
 
 
     
@@ -1207,20 +1296,6 @@ static int T_messageType;
     info_text.setText(" Status: " + msg);
   }
   
-  /*
-  private void addServers()
-  {
-     JMenuItem item;
-     
-     for(int i = 0; i < server_ip_list.length; i++) 
-     {
-	    item = new JMenuItem(server_ip_list[i]);
-	    servers_m.add(item);
-	    item.addActionListener(this);
-     } 
-
-  }
-  */
   
   public void RepaintAllWaves()
   {
@@ -1287,6 +1362,7 @@ static int T_messageType;
        setPublicVariables(pub_var_diag.getPublicVar());
        wave_panel.SetMainShotStr(shot_t.getText().trim());
        wave_panel.StartUpdate();
+       SetWindowTitle("");
   }
   
   
@@ -1401,7 +1477,7 @@ static int T_messageType;
   {
 	    if(curr_directory != null &&  curr_directory.trim().length() != 0)
 	        file_diag.setCurrentDirectory(new File(curr_directory));
-
+	    
 
         javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -1521,6 +1597,7 @@ static int T_messageType;
         
         fast_network_i.setEnabled(wave_panel.SupportsFastNetwork());
         fast_network_i.setState(wave_panel.GetFastNetworkState());
+        SetFastNetworkState(wave_panel.GetFastNetworkState());
         	
         enable_compression_i.setEnabled(wave_panel.SupportsCompression());
         enable_compression_i.setState(false);
@@ -2165,7 +2242,7 @@ static int T_messageType;
 	    validate();   	    
         server_diag.addServerIp(wave_panel.GetServerItem());
         SetDataServer(wave_panel.GetServerItem());
-        SetFastNetworkState(wave_panel.GetFastNetworkState());
+        //SetFastNetworkState(wave_panel.GetFastNetworkState());
         UpdateAllWaves();
     } 
     catch(Exception e)
@@ -2404,13 +2481,9 @@ class WindowDialog extends JDialog implements ActionListener
     WindowDialog(JFrame dw, String title) {
 
         super(dw, title, true);
-//	    setResizable(false);
-	    //super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
 
 	    parent = (jScope)dw;
 	
-	    //out_row[0] = 1;
-
         GridBagConstraints c = new GridBagConstraints();
         GridBagLayout gridbag = new GridBagLayout();
         getContentPane().setLayout(gridbag);        
@@ -2908,6 +2981,12 @@ class ServerDialog extends JDialog implements ActionListener
                     dw.server_ip_list[idx].user = server_u.getText().trim();
                     dw.server_ip_list[idx].class_name = (String)data_provider_list.getSelectedItem();
                     server_list.repaint();
+                    //It is need tu update the current data server if it is
+                    //the modified server
+                    if(dw.wave_panel.GetServerItem().equals(dw.server_ip_list[idx]))
+                    {
+                        dw.SetDataServer(dw.server_ip_list[idx]);
+                    }
                 }
 	        }
 	    }   

@@ -189,10 +189,10 @@ public  class WaveformMetrics implements Serializable
 	    Polygon curr_polygon = null;
 	    int pol_idx = 0;
 	    min_y = max_y = sig.y[0];
-	    //xpoints = new int[sig.n_points];
-	    //ypoints = new int[sig.n_points];
-	    xpoints = new int[2*sig.n_points];
-	    ypoints = new int[2*sig.n_points];
+	    xpoints = new int[sig.n_points];
+	    ypoints = new int[sig.n_points];
+	    //xpoints = new int[2*sig.n_points];
+	    //ypoints = new int[2*sig.n_points];
 	    curr_num_points = 0;
 	    i = j = 0;
         int end_point = sig.n_points;
@@ -306,7 +306,7 @@ public  class WaveformMetrics implements Serializable
 		            ypoints[curr_num_points + 1] = YPixel(max_y);
 		            curr_num_points +=2;
 		        }*/
-		        if(max_y > min_y)
+		 /*       if(max_y > min_y)
 		        {
                     if(min_y != first_y)
                     {
@@ -323,6 +323,87 @@ public  class WaveformMetrics implements Serializable
 		                xpoints[curr_num_points] = start_x;
 		                ypoints[curr_num_points] = YPixel(last_y);
 		                curr_num_points++;
+		            }
+		        }*/
+		        if(max_y > min_y)
+		        {
+		            if(first_y == min_y)
+		            {
+		                xpoints[curr_num_points] = start_x;
+		                ypoints[curr_num_points] = YPixel(first_y);
+		                curr_num_points++;
+		                if(last_y == max_y)
+		                {
+		                    xpoints[curr_num_points] = start_x;
+		                    ypoints[curr_num_points] = YPixel(last_y);
+		                    curr_num_points++;
+		                }
+		                else
+		                {
+		                    xpoints[curr_num_points] = start_x;
+		                    ypoints[curr_num_points] = YPixel(max_y);
+		                    curr_num_points++;
+		                    xpoints[curr_num_points] = start_x;
+		                    ypoints[curr_num_points] = YPixel(last_y);
+		                    curr_num_points++;
+		                }
+		            }
+		            else if(first_y == max_y)
+		            {
+		                xpoints[curr_num_points] = start_x;
+		                ypoints[curr_num_points] = YPixel(first_y);
+		                curr_num_points++;
+		                if(last_y == min_y)
+		                {
+		                    xpoints[curr_num_points] = start_x;
+		                    ypoints[curr_num_points] = YPixel(last_y);
+		                    curr_num_points++;
+		                }
+		                else
+		                {
+		                    xpoints[curr_num_points] = start_x;
+		                    ypoints[curr_num_points] = YPixel(min_y);
+		                    curr_num_points++;
+		                    xpoints[curr_num_points] = start_x;
+		                    ypoints[curr_num_points] = YPixel(last_y);
+		                    curr_num_points++;
+		                }
+		            }
+		            else //first_y != min_y && first_y != max_y
+		            {
+		                xpoints[curr_num_points] = start_x;
+		                ypoints[curr_num_points] = YPixel(first_y);
+		                curr_num_points++;
+                        if(last_y == min_y)
+                        {
+		                    xpoints[curr_num_points] = start_x;
+		                    ypoints[curr_num_points] = YPixel(max_y);
+		                    curr_num_points++;
+		                    xpoints[curr_num_points] = start_x;
+		                    ypoints[curr_num_points] = YPixel(last_y);
+		                    curr_num_points++;
+		                }
+		                else if(last_y == max_y)
+		                {
+		                    xpoints[curr_num_points] = start_x;
+		                    ypoints[curr_num_points] = YPixel(min_y);
+		                    curr_num_points++;
+		                    xpoints[curr_num_points] = start_x;
+		                    ypoints[curr_num_points] = YPixel(last_y);
+		                    curr_num_points++;
+		                }
+		                else
+		                {
+		                    xpoints[curr_num_points] = start_x;
+		                    ypoints[curr_num_points] = YPixel(min_y);
+		                    curr_num_points++;
+		                    xpoints[curr_num_points] = start_x;
+		                    ypoints[curr_num_points] = YPixel(max_y);
+		                    curr_num_points++;
+		                    xpoints[curr_num_points] = start_x;
+		                    ypoints[curr_num_points] = YPixel(last_y);
+		                    curr_num_points++;
+		                }
 		            }
 		        }
 		        else
