@@ -829,13 +829,17 @@ int StrCopyR(struct descriptor *dest, unsigned short *len, char *source)
 
 int StrLenExtr(struct descriptor *dest, struct descriptor *source, int *start_in, int *len_in)
 {
-  unsigned short start = (unsigned short)((*start_in > 1) ? *start_in : 1);
-  unsigned short len = (unsigned short)((*len_in > 0) ? *len_in : 0);
-  unsigned short maxlen = (unsigned short)(source->length - start + 1);
-  struct descriptor s = {0,DTYPE_T,CLASS_S,0};
-  s.length = (unsigned short)(len > maxlen ? maxlen : len);
-  s.pointer = &source->pointer[start-1];
-  return StrCopyDx(dest,&s);
+  unsigned short len = (unsigned short)((*len_in < 0) ? 0 : *len_in & 0xffff);
+  unsigned short start = (unsigned short)((*start_in > 1) ? *start_in & 0xffff : 1);
+  struct descriptor s = {0,DTYPE_T,CLASS_D,0};
+  int status = StrGet1Dx(&len, &s);
+  int i,j;
+  memset(s.pointer,32,len);
+  for (i=start-1,j=0;i<source->length;i++,j++)
+    s.pointer[j]=source->pointer[i];
+  status = StrCopyDx(dest,&s);
+  StrFree1Dx(&s);
+  return status;
 }
 
 int StrGet1Dx(unsigned short *len, struct descriptor *out)
