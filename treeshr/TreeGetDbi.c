@@ -110,7 +110,7 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
 	    retlen = min((unsigned short)strlen(string), lst->buffer_length);
         strncpy((char *)lst->pointer,string,retlen);
         if (retlen < lst->buffer_length)
-          lst->pointer[retlen] = '\0';
+          ((char *)lst->pointer)[retlen] = '\0';
         free(string);
       }
       else
