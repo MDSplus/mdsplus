@@ -194,16 +194,17 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 			_int_gain = if_error(data(DevNodeRef(_nid, _head_channel + _N_CHAN_INT_GAIN)), _noerror = 1);
 	
 			_gain = int ( (8 * _int_gain) + 0.5  );
-			
-		write(*, "Int gain" , _int_gain, _gain);
 	
 			_real_gain = _gain / 8.;
 			DevPut(_nid, _head_channel + _N_CHAN_INT_GAIN, _real_gain);
 	
 			
-			if( _noerror && (_gain >= 0 && _gain <= 127 ) )
+			if( ! _noerror && (_gain >= 0 && _gain <= 127 ) )
 			{
 				_word = WordSetGain(_write_value, _i, _INTEGRAL, _gain);
+				
+	write(*, "Integral Card   = ", WordGetCard(_word), WordGetChan(_word), WordGetGain(_word));
+				
 				WriteGain(_name, _word);
 			} 
 			else
@@ -218,15 +219,17 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 	
 
 			_gain = int (8 * _lin_gain + 0.5 );
-			
-	write(*, "Lin gain" , _lin_gain, _gain);
+
 			
 			_real_gain = _gain / 8.;
 			DevPut(_nid, _head_channel + _N_CHAN_LIN_GAIN, _real_gain);
 	
-			if( _noerror && ( _gain >= 0 && _gain <= 127 ) )
+			if( ! _noerror && ( _gain >= 0 && _gain <= 127 ) )
 			{
 				_word = WordSetGain(_write_value, _i, _LINEAR, _gain);
+
+	write(*, "Linear Card   = ", WordGetCard(_word), WordGetChan(_word), WordGetGain(_word));
+	
 				WriteGain(_name, _word);
 			}
 			else
