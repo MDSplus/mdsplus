@@ -933,7 +933,7 @@ public class Waveform extends Canvas
     public void SetXLog(boolean _x_log) {x_log = _x_log;}
     public void SetYLog(boolean _y_log) {y_log = _y_log;}
   	
-	public void Update(Signal s)
+	synchronized public void Update(Signal s)
     {
 
 	if(mode == MODE_PAN)
@@ -1098,7 +1098,9 @@ public class Waveform extends Canvas
 	    else 
 	    {
 		//g.clipRect(0, 0, d.width, d.height);
-	        g.drawImage(off_image, 0, 0, this);
+		//Cesare
+		    if(off_image != null)
+	            g.drawImage(off_image, 0, 0, this);
 	    }
 	}
 	else
