@@ -749,7 +749,7 @@ int StrReplace(struct descriptor *dest, struct descriptor *src, int *start_idx, 
   return status;
 }
 
-#if  defined(_MSC_VER)
+#if  defined(_WIN32)
 int LibSpawn(struct descriptor *cmd, struct descriptor *in, struct descriptor *out)
 {
   char *cmd_c = MdsDescrToCstring(cmd);
@@ -794,7 +794,7 @@ static char *GetRegistryPath(char *pathname)
   RegCloseKey(regkey3);
   return (char *)path;
 }
-
+/*
 typedef struct findFileCtx { HANDLE hand;
 		             char *path;
                              char *pathstart;
@@ -906,7 +906,7 @@ int LibFindFileEnd(void **ctx)
   }
   return 1;
 }
-
+*/
 int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, FARPROC *symbol_value)
 {
   char *c_filename = MdsDescrToCstring(filename);
@@ -1097,6 +1097,87 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     return 1;  
 }
 #endif
+int LibSpawn(struct descriptor *cmd, struct descriptor *in, struct descriptor *out)
+{
+  printf("LibSpawn not yet supported\n");
+  return 0;
+}
+
+int LibWait(float *secs)
+{
+  sleep((unsigned int)*secs);
+  return 1;
+}
+#endif
+
+#if defined(_WIN32)
+typedef struct _dir
+{
+	char *path;
+	HANDLE handle;
+} DIR;
+
+struct dirent
+{
+	char *d_name;
+};
+
+static DIR *opendir(char *path)
+{
+	DIR *dir = 0;
+	int info = GetFileAttributes(path);
+	if ((info != 0xFFFFFFFF) && ((info & FILE_ATTRIBUTE_DIRECTORY) != 0))
+	{
+		dir = (DIR *)malloc(sizeof(DIR)+strlen(path)+3);
+		dir->path = ((char *)dir)+sizeof(DIR);
+		strcpy(dir->path,path);
+		strcat(dir->path,(dir->path[strlen(dir->path)-1] == '\\') ? "*" : "\\*");
+		dir->handle = 0;
+	}
+	return dir;
+}
+
+static void closedir(DIR *dir)
+{
+	if (dir)
+		free(dir);
+}
+
+struct dirent *readdir(DIR *dir)
+{
+	static struct dirent ans;
+	static WIN32_FIND_DATA fdata;
+	if (dir->handle == 0)
+	{
+
+		dir->handle = FindFirstFile(dir->path, &fdata);
+		if (dir->handle == INVALID_HANDLE_VALUE)
+			dir->handle = 0;
+	}
+	else
+	{
+		if (!FindNextFile(dir->handle, &fdata))
+		{
+	      FindClose(dir->handle);
+		  dir->handle = 0;
+		}
+	}
+	if (dir->handle != 0)
+	{
+		ans.d_name = fdata.cFileName;
+		return &ans;
+	}
+	else
+		return 0;
+}
+
+static char *index(char *str, char c)
+{
+	int pos = strcspn(str,&c);
+	return (pos == 0) ? ((str[0] == c) ? str : 0) : &str[pos];
+}
+#endif
+
 typedef struct {
   char *env;
   char *file;
@@ -1112,7 +1193,7 @@ typedef struct {
 static int FindFile(struct descriptor *filespec, struct descriptor *result, int **ctx, int recursively, int caseBlind);
 static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int caseBlind);
 static int FindFileEnd(FindFileCtx *ctx);
-static char *FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind);
+static char *_FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind);
 
 extern int LibFindFile(struct descriptor *filespec, struct descriptor *result, int **ctx)
 {
@@ -1131,7 +1212,7 @@ static int FindFile(struct descriptor *filespec, struct descriptor *result, int 
     if ((status&1) ==0)
       return status;
   }
-  ans = FindNextFile((FindFileCtx *)*ctx, recursively, caseBlind);
+  ans = _FindNextFile((FindFileCtx *)*ctx, recursively, caseBlind);
   if (ans != 0) {
     static struct descriptor ansd = {0, DTYPE_T, CLASS_S,0};
     ansd.length = strlen(ans);
@@ -1203,7 +1284,7 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int cas
     return 0;    
   }
   else {
-    lctx->file = malloc(strlen(colon+1));
+    lctx->file = malloc(strlen(colon+1)+1);
     strcpy(lctx->file, colon+1);
     lctx->wild_descr.length = strlen(colon+1);
     lctx->wild_descr.pointer=lctx->file;
@@ -1217,32 +1298,40 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int cas
     int num = 0;
     char *env;
     char *semi;
+#if defined(_WIN32)
+	char *env_sav;
+	env = env_sav = GetRegistryPath(lctx->env);
+#else
     env = getenv(lctx->env);
+#endif
     if (env != 0) {
       if (env[strlen(env)-1] != ';') {
-        char *tmp = malloc(strlen(env)+2);
-        strcpy(tmp, env);
-	strcat(tmp, ";");
-        env = tmp;
+		  char *tmp = malloc(strlen(env)+2);
+		  strcpy(tmp, env);
+		  strcat(tmp, ";");
+		  env = tmp;
       }
       else {
-	char *tmp = malloc(strlen(env)+1);
-        strcpy(tmp, env);
-        env = tmp;
+		  char *tmp = malloc(strlen(env)+1);
+		  strcpy(tmp, env);
+		  env = tmp;
       }
+#if defined(_WIN32)
+	  free(env_sav);
+#endif
       for(semi=(char *)index(env, ';'); semi!= 0; num++, semi=(char *)index(semi+1, ';'));
       if (num > 0) {
-        char *ptr;
-        int i;
-        lctx->num_env = num;
-        lctx->env_strs = (char **)malloc(num*sizeof(char *));
-        for (ptr=env,i=0; i<num; i++) {
-          char *cptr;
-          int len = ((cptr= (char *)index(ptr, ';'))==0) ? strlen(ptr) : cptr-ptr; 
-	  lctx->env_strs[i] = strncpy(malloc(len+1),ptr,len);
-          lctx->env_strs[i][len] = '\0';
-          ptr=cptr+1;
-	}
+		  char *ptr;
+		  int i;
+		  lctx->num_env = num;
+		  lctx->env_strs = (char **)malloc(num*sizeof(char *));
+		  for (ptr=env,i=0; i<num; i++) {
+			  char *cptr;
+			  int len = ((cptr= (char *)index(ptr, ';'))==0) ? strlen(ptr) : cptr-ptr; 
+			  lctx->env_strs[i] = strncpy(malloc(len+1),ptr,len);
+			  lctx->env_strs[i][len] = '\0';
+			  ptr=cptr+1;
+		  }
       }
       free(env);
     }
@@ -1251,7 +1340,7 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int cas
   return 1;
 }
 
-static char *FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind)
+static char *_FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind)
 {
   char *ans;
   struct dirent *dp;
@@ -1289,7 +1378,6 @@ static char *FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind)
 	  tmp_dir = opendir(tmp_dirname);
 	  if (tmp_dir != NULL) {
 	    int i;
-	    char **tmp;
 	    closedir(tmp_dir);
 	    ctx->env_strs = realloc(ctx->env_strs, sizeof(char*)*(ctx->num_env+1));
 	    for(i=ctx->num_env-1; i>=ctx->next_dir_index; i--)
@@ -1315,15 +1403,3 @@ static char *FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind)
   return ans;
 }
 
-int LibSpawn(struct descriptor *cmd, struct descriptor *in, struct descriptor *out)
-{
-  printf("LibSpawn not yet supported\n");
-  return 0;
-}
-
-int LibWait(float *secs)
-{
-  sleep((unsigned int)*secs);
-  return 1;
-}
-#endif
