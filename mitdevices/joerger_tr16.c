@@ -202,13 +202,21 @@ static int ReadChannel(char *name, int chan, int *samples_ptr, short *data_ptr)
   int samples_read = 0;
   int samples_to_read = *samples_ptr;
   int read_size;
+  int bufsize = CamGetMAXBUF(name);
   pio(17,0,&chan, one);
   pio(17,0,&chan, one);
-  for(samples_to_read = *samples_ptr; samples_to_read; samples_to_read -= read_size)
+  if (bufsize < (samples_to_read * 2))
   {
-    read_size = min(32767, samples_to_read);
-    return_on_error(DevCamChk(CamQstopw(name,0,2,read_size,data_ptr+samples_read,16,0),&one,0));
-    samples_read += read_size;
+    for(samples_to_read = *samples_ptr; samples_to_read; samples_to_read -= read_size)
+    {
+      read_size = min(32767, samples_to_read);
+      return_on_error(DevCamChk(CamStopw(name,0,2,read_size,data_ptr+samples_read,16,0),&one,0));
+      samples_read += read_size;
+    }
+  }
+  else
+  {
+    return_on_error(DevCamChk(CamFstopw(name,0,2,samples_to_read,data_ptr,16,0),&one,0));
   }
   return 1;
 }
