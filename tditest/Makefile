@@ -6,7 +6,7 @@ tditest.o
 _tditest : ../bin ../bin/tditest
 
 ../bin/tditest : $(OBJECTS)
-	cc -o $@ $(OBJECTS) $(CC_IMAGE_OPTIONS) -lc -L../shlib -lTdiShr 
+	$(CC) -o $@ $(OBJECTS) $(CC_IMAGE_OPTIONS) -lc -L../shlib -lTdiShr -lTreeShr -lMdsShr $(DLD)
 
 ../bin :
 	mkdir ../bin
