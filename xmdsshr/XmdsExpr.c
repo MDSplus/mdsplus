@@ -120,6 +120,7 @@
 
 #include <strroutines.h>
 #include <mdsdescrip.h>
+#include <treeshr.h>
 #include <ncidef.h>
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
@@ -324,7 +325,7 @@ struct descriptor *XmdsExprGetXd(Widget w)
     if (def_nid != -1)
     {
       TreeGetDefaultNid(&old_def);
-      TreeSetDefaultNid(&def_nid);
+      TreeSetDefaultNid(def_nid);
     }
     status = (*ew->expr.compile) (&text_dsc,ans);
     if ((status & 1) == 0)
@@ -333,7 +334,7 @@ struct descriptor *XmdsExprGetXd(Widget w)
       XtFree((char *)ans);
       ans = 0;
     }
-    if (def_nid != -1) TreeSetDefaultNid(&old_def);
+    if (def_nid != -1) TreeSetDefaultNid(old_def);
   }
   return (struct descriptor *) ans;
 }
@@ -355,7 +356,7 @@ Boolean XmdsExprPut(Widget w)
       struct descriptor_xd *old_xd;
       old_xd = (struct descriptor_xd *) TdiGet(nid);
       if ((!old_xd && new_xd->l_length) || !MdsCompareXd((struct descriptor *) new_xd,(struct descriptor *) old_xd))
-	status = TreePutRecord(&nid,(struct descriptor *) new_xd);
+	status = TreePutRecord(nid,(struct descriptor *) new_xd,0);
       if (old_xd)
       {
 	MdsFree1Dx(old_xd);
@@ -438,7 +439,7 @@ void XmdsExprSetNid(Widget w,int nid,int offset)
     ew->expr.nid = XmdsGetDeviceNid();
 
   new_nid = ew->expr.nid + offset;
-  status = TreeGetRecord(&new_nid,ew->expr.xd);
+  status = TreeGetRecord(new_nid,ew->expr.xd);
   if (status & 1)
     LoadExpr(ew,(struct descriptor *) ew->expr.xd);
   else
@@ -679,7 +680,7 @@ static void LoadExpr(XmdsExprWidget w,struct descriptor *dsc)
       if (def_nid != -1)
       {
 	TreeGetDefaultNid(&old_def);
-	TreeSetDefaultNid(&def_nid);
+	TreeSetDefaultNid(def_nid);
       }
       status = (*w->expr.decompile) (xd,&text);
       w->expr.is_text = 0;
@@ -693,7 +694,7 @@ static void LoadExpr(XmdsExprWidget w,struct descriptor *dsc)
       else
 	SetString(w->expr.text_widget,"");
       StrFree1Dx(&text);
-      if (def_nid != -1) TreeSetDefaultNid(&old_def);
+      if (def_nid != -1) TreeSetDefaultNid(old_def);
     }
   }
   else
