@@ -84,9 +84,9 @@ WindowData.java\
 WindowEditor.java\
 WithErrorData.java\
 WithUnitsData.java\
-jTraverser.java\
+jTraverser.java
 
-CLASSES = *.class
+CLASSES = jTraverser/*.class
 
 all: @MAKEBINDIR@ @MAKEBINDIR@jTraverser @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/jTraverser.jar
