@@ -231,7 +231,10 @@ public class DeviceChannel extends DeviceComponent
             setEnabledAll(false);
     }
 
-    protected boolean supportsState(){return showState;}
+    protected boolean supportsState()
+    {
+      return showState;
+    }
     protected void setEnabledAll(boolean enabled)
     {
         buildComponentList();
