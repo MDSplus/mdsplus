@@ -34,7 +34,8 @@ PARTS = \
         mdsremote \
         @JAVA_APS@ \
         @IDLSQL@ \
-	@IDLMDSEVENT@
+	@IDLMDSEVENT@ \
+	@MDSVME@
 
 all:
 	cdir=`pwd`;\

@@ -1,0 +1,51 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=@LD@
+prefix=@prefix@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@ @LIBDL@ @LIBPTHREAD@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = \
+        mdsvme.c
+
+OBJECTS = $(SOURCES:.c=.o)
+EXPORTS = MdsVme.exports
+
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsVme@SHARETYPE@ @MAKELIBDIR@libMdsVme.a
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
+
+clean :
+	rm *.o
+	rm @MAKELIBDIR@libMdsVme.a
+	rm @MAKESHLIBDIR@libMdsVme@SHARETYPE@
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsVme@SHARETYPE@ @libdir@
+	if (test @SHARETYPE@ != .a) then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libMdsVme.a @libdir@; \
+	fi;
+
+@MAKESHLIBDIR@libMdsVme@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
+
+@MAKELIBDIR@libMdsVme.a : $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
+	@RANLIB@ $@
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@
+
+@MAKESHLIBDIR_RULE@
+
+MdsVme.exports: MdsVme.def
+	sed -e /LIBRARY/\;/\;/d MdsVme.def > $@
