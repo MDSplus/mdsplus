@@ -27,7 +27,6 @@ PARTS = \
         remcam \
         mitdevices \
         ccl     \
-        cts     \
 	servershr \
         tcl \
         tdic \
