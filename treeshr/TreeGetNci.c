@@ -6,10 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mds_stdarg.h>
-#ifdef __VMS
-#include <fab.h>
-#include <rab.h>
-#include <starlet.h>
+#if defined(unix)
+#include <fcntl.h>
 #endif
 
 extern int StrFree1Dx();
@@ -676,21 +674,24 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci)
 			status = OpenNciR(info);
 		if (status & 1)
 		{
-#ifdef __VMS
-			int nci_num = node_num + 1;
-			info->nci_file->getrab->rab$l_kbf = (char *) &nci_num;
-			info->nci_file->getrab->rab$l_rop = RAB$M_WAT | RAB$M_NLK;
-			info->nci_file->getrab->rab$l_ubf = (char *) nci;
-			status = sys$get(info->nci_file->getrab, 0, 0);
+		  status = TreeLockNci(info,1,node_num);
+		  if (status & 1)
+		  {
+#if defined(_WIN32)
+		    fseek(info->nci_file->get, node_num * sizeof(NCI), SEEK_SET);
+		    status = fread((void *)nci,sizeof(NCI),1,info->nci_file->get) == 1 ? 
+                      TreeSUCCESS : TreeFAILURE;
 #else
-			fseek(info->nci_file->get, node_num * sizeof(NCI), SEEK_SET);
-			fread((void *)nci,sizeof(NCI),1,info->nci_file->get);
-#if defined(_big_endian)
-			FixupNciIn(nci);
+		    lseek(info->nci_file->get, node_num * sizeof(NCI), SEEK_SET);
+		    status = read(info->nci_file->get,(void *)nci, sizeof(NCI)) == sizeof(NCI) ?
+		      TreeSUCCESS : TreeFAILURE;
 #endif
-
-#endif
+                    TreeUnLockNci(info,1,node_num);
+		  }
 		}
+#if defined(_big_endian)
+		if (status & 1) FixupNciIn(nci);
+#endif
 	}
 	else
 	{
@@ -712,65 +713,28 @@ static int OpenNciR(TREE_INFO *info)
 	int       status;
 	/****************************************************
     Allocate an nci_file structure
-    Allocate RMS data structures to go in it
     (if there is any problem ...
 	Free the mem allocated and return
 	*****************************************************/
 
 	if (info->nci_file == NULL) {
-		info->nci_file = malloc(NCI_FILE_VM_SIZE);
+		info->nci_file = malloc(sizeof(NCI_FILE));
 		if (info->nci_file != NULL)
-			memset(info->nci_file,0,NCI_FILE_VM_SIZE);
+			memset(info->nci_file,0,sizeof(NCI_FILE));
 	}
 	if (info->nci_file != NULL)
 	{
 
-#ifdef __VMS
-	/********************************************
-    Open the file for Read only access with
-    a namblock.  If there is a problem free the
-    memory and return.
-		*********************************************/
-		memset(info->nci_file,0,NCI_FILE_VM_SIZE);
-
-		*info->nci_file->fab = cc$rms_fab;
-		info->nci_file->fab->fab$l_nam = info->nci_file->nam;
-		info->nci_file->fab->fab$l_dna = info->filespec;
-		info->nci_file->fab->fab$b_dns = strlen(info->filespec);
-		info->nci_file->fab->fab$l_fna = ".characteristics";
-		info->nci_file->fab->fab$b_fns = strlen(info->nci_file->fab->fab$l_fna);
-		info->nci_file->fab->fab$b_rfm = FAB$C_FIX;
-		info->nci_file->fab->fab$b_shr = FAB$M_SHRGET | FAB$M_SHRPUT | FAB$M_MSE | FAB$M_SHRUPD;
-		info->nci_file->fab->fab$b_fac = FAB$M_GET;
-		*info->nci_file->nam = cc$rms_nam;
-		status = sys$open(info->nci_file->fab, 0, 0);
-		if (status & 1)
-		{
-		/**********************************************
-		Set up the RAB for buffered reads and writes
-		and CONNECT it.
-		If there is a problem then close it, free the
-		memory and return.
-			**********************************************/
-
-			*info->nci_file->getrab = cc$rms_rab;
-			info->nci_file->getrab->rab$l_fab = info->nci_file->fab;
-			info->nci_file->getrab->rab$b_ksz = 4;
-			info->nci_file->getrab->rab$b_rac = RAB$C_KEY;
-			info->nci_file->getrab->rab$w_usz = sizeof(NCI);
-			TreeGetBuffering((struct dsc$descriptor *)&ncif_buffering, info->nci_file->getrab);
-			status = sys$connect(info->nci_file->getrab, 0, 0);
-			if (~status & 1)
-				sys$close(info->nci_file->fab, 0, 0);
-		}
-#else
 		size_t len = strlen(info->filespec)-4;
 		char *filename = strncpy(malloc(len+16),info->filespec,len);
 		filename[len]='\0';
 		strcat(filename,"characteristics");
+#if defined(_WIN32)
 		info->nci_file->get = fopen(filename,"rb");
 		status = (info->nci_file->get == NULL) ? TreeFAILURE : TreeNORMAL;
-                if (status & 1) setbuf(info->nci_file->get,0);
+#else
+		info->nci_file->get = open(filename,O_RDONLY);
+		status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
 #endif
 		if (!(status & 1))
 		{

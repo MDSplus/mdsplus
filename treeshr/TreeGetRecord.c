@@ -9,6 +9,9 @@
 #include <string.h>
 
 #include <stdlib.h>
+#if defined(unix)
+#include <fcntl.h>
+#endif
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
@@ -145,78 +148,27 @@ static int OpenDatafileR(TREE_INFO *info)
   if (df_ptr != NULL)
   {
 
-#ifdef __VMS
-  /********************************************
-    Open the file for Read only access with
-    a namblock.  If there is a problem free the
-    memory and return.
-  *********************************************/
-    RECORD_HEADER header;
-
-    *df_ptr->fab = cc$rms_fab;
-    df_ptr->fab->fab$l_nam = df_ptr->nam;
-    df_ptr->fab->fab$l_dna = info->filespec;
-    df_ptr->fab->fab$b_dns = strlen(info->filespec);
-    df_ptr->fab->fab$l_fna = datafile_name;
-    df_ptr->fab->fab$b_fns = strlen(datafile_name);
-    df_ptr->fab->fab$b_shr = FAB$M_SHRGET | FAB$M_SHRPUT | FAB$M_MSE | FAB$M_SHRUPD;
-    df_ptr->fab->fab$b_fac = FAB$M_GET;
-    *df_ptr->nam = cc$rms_nam;
-    status = sys$open(df_ptr->fab, 0, 0);
-    if (status & 1)
-    {
-    /**********************************************
-     Set up the RAB for buffered reads and writes
-     and CONNECT it.
-    **********************************************/
-
-      *df_ptr->getrab = cc$rms_rab;
-      df_ptr->getrab->rab$l_fab = df_ptr->fab;
-      df_ptr->getrab->rab$l_rhb = (char *) &header;
-      TREE$GET_BUFFERING((struct descriptor *)&dataf_buffering, df_ptr->getrab);
-      status = sys$connect(df_ptr->getrab, 0, 0);
-      if (status & 1)
-	df_ptr->open_for_write = 0;
-      else
-      {
-	sys$close(df_ptr->fab, 0, 0);
-	free(df_ptr);
-        df_ptr = NULL;
-      }
-    }
-    else
-    {
-      free(df_ptr);
-      df_ptr = NULL;
-    }
-#else
     size_t len = strlen(info->filespec)-4;
     char *filename = strncpy(malloc(len+9),info->filespec,len);
     filename[len]='\0';
     strcat(filename,"datafile");
+#ifdef _WIN32
     df_ptr->get = fopen(filename,"rb");
     status = (df_ptr->get == NULL) ? TreeFAILURE : TreeNORMAL;
+#else
+    df_ptr->get = open(filename,O_RDONLY);
+    status = (df_ptr->get == -1) ? TreeFAILURE : TreeNORMAL;
+    if (df_ptr->get == -1)
+      df_ptr->get == 0;
 #endif
   }
   info->data_file = df_ptr;
   return status;
 }
 
-#ifdef __VMS
-#pragma member_alignment save
-#pragma nomember_alignment
-
-#endif
-
-
 typedef RECORD(1) record_one;
 typedef ARRAY(struct descriptor *) array_dsc;
 
-
-#ifdef __VMS
-
-#pragma member_alignment restore
-#endif
 
 static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree)
 {
@@ -289,45 +241,6 @@ DATA_FILE *TreeGetVmDatafile()
 {
   DATA_FILE *datafile_ptr;
   static const struct descriptor_xd empty_xd = {0, 0, CLASS_XD, 0, 0};
-#ifdef __VMS
-  static const int vm_size = sizeof(DATA_FILE) +
-		       sizeof(struct NAM) +
-		       sizeof(struct RAB) +
-		       sizeof(struct RAB) +
-		       sizeof(struct RAB) +
-		       sizeof(struct FAB) +
-		       sizeof(RECORD_HEADER) +
-		       sizeof(ASY_NCI) +
-		       sizeof(struct descriptor_xd) +
-		       sizeof(NCI);
-  int       status;
-  char     *ptr;
-/********************************************
- For efficiency and cleanliness reasons the
- datafile structure and all the structures
- it points to will be allocated in one
- block of virtual memory. The use of ptr
- in the following code avoids type casting
- of each structure for the pointer arithmetic.
-**********************************************/
-
-  if ((status = lib$get_vm(&vm_size, &datafile_ptr)) & 1)
-  {
-    ptr = (char *) datafile_ptr;
-    datafile_ptr->nam = (struct NAM *) (ptr += sizeof(DATA_FILE));
-    datafile_ptr->getrab = (struct RAB *) (ptr += sizeof(struct NAM));
-    datafile_ptr->putrab = (struct RAB *) (ptr += sizeof(struct RAB));
-    datafile_ptr->updaterab = (struct RAB *) (ptr += sizeof(struct RAB));
-    datafile_ptr->fab = (struct FAB *) (ptr += sizeof(struct RAB));
-    datafile_ptr->record_header = (RECORD_HEADER *) (ptr += sizeof(struct FAB));
-    datafile_ptr->asy_nci = (ASY_NCI *) (ptr += sizeof(RECORD_HEADER));
-    datafile_ptr->data = (struct descriptor_xd *) (ptr += sizeof(ASY_NCI));
-    *datafile_ptr->data = empty_xd;
-    datafile_ptr->asy_nci->nci = (NCI *) (ptr += sizeof(struct descriptor_xd));
-  }
-  else
-    datafile_ptr = NULL;
-#else
   int length = align(sizeof(DATA_FILE),sizeof(void *)) + 
                align(sizeof(RECORD_HEADER),sizeof(void *)) + 
                align(sizeof(ASY_NCI),sizeof(void *)) + 
@@ -344,7 +257,6 @@ DATA_FILE *TreeGetVmDatafile()
     *datafile_ptr->data = empty_xd;
     datafile_ptr->asy_nci->nci = (NCI *) (ptr += align(sizeof(struct descriptor_xd),sizeof(void *)));
   }
-#endif
   return datafile_ptr;
 }
 
@@ -354,67 +266,6 @@ static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size,
   int buffer_space = *buffer_size;
   int       first = 1;
   unsigned char rfa[6];
-#ifdef __VMS
-  struct RAB *rab_ptr = info_ptr->tree_info$a_data_file_ptr->$a_getrab;
-  RFA      *rab_rfa = (RFA *) rab_ptr->rab$w_rfa;
-  RECORD_HEADER *header = (RECORD_HEADER *) rab_ptr->rab$l_rhb;
-/**************************************
- Records are retrieved by their record
- file address (RFA). The maximum record
- size is 32765 bytes minus the size of
- the VFC header portion. Longer records
- are segmented into multiple records
- and the RFA field of the header points
- to the next segment.
-
- This routine will return RMS$_RFA if
- the RFA supplied is all zeros or if
- the node number changes during the
- reading of a segmented record.
-
- It will return RMS$_RTB if there are
- more segments and the user buffer
- if full.
-
- Otherwise it will return whatever status
- is returned by the SYS$GET call.
-***************************************/
-
-  *retsize = 0;
-  rab_ptr->rab$b_rac = RAB$C_RFA;
-  *rab_rfa = *rfa;
-  status = RMS$_RFA;
-  while ((rab_ptr->rab$w_rfa[0] || rab_ptr->rab$w_rfa[1] || rab_ptr->rab$w_rfa[2]) && buffer_space)
-  {
-    rab_ptr->rab$w_usz = min(DATAF$C_MAX_RECORD_SIZE, buffer_space);
-    rab_ptr->rab$l_ubf = record + *retsize;
-    rab_ptr->rab$w_rsz = 0;
-    rab_ptr->rab$l_rop |= RAB$M_NLK;
-    status = sys$get(rab_ptr);
-    *retsize += rab_ptr->rab$w_rsz;
-    if (status & 1)
-    {
-      buffer_space -= rab_ptr->rab$w_rsz;
-      *rab_rfa = header->$b_rfa;
-      if (first)
-      {
-	*nodenum = header->$l_node_number;
-	first = 0;
-      }
-      else if (*nodenum != header->$l_node_number)
-      {
-	*retsize -= rab_ptr->rab$w_rsz;
-	return RMS$_RFA;
-      }
-    }
-    else
-      return status;
-  }
-  if (rab_ptr->rab$w_rfa[0] || rab_ptr->rab$w_rfa[1] || rab_ptr->rab$w_rfa[2])
-    return RMS$_RTB;
-  else
-    return status;
-#else
   char *bptr = (char *)record;
 
   *retsize = 0;
@@ -423,38 +274,46 @@ static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size,
   {
     RECORD_HEADER hdr;
     int rfa_l = RfaToSeek(rfa);
-
-    fseek(info->data_file->get,rfa_l,SEEK_SET);
-    if ((fread((void *)&hdr,12,1,info->data_file->get) == 1))
+    status = TreeLockDatafile(info, 1, rfa_l);
+    if (status & 1)
     {
-      unsigned int partlen = min(swapshort((char *)&hdr.rlength)-10, buffer_space);
-      int nidx = swapint((char *)&hdr.node_number);
-      if (first)
-        *nodenum = nidx;
-      else if (*nodenum != nidx)
+#ifdef _WIN32
+      fseek(info->data_file->get,rfa_l,SEEK_SET);
+      status = (fread((void *)&hdr,12,1,info->data_file->get) == 1) ? TreeSUCCESS : TreeFAILURE;
+#else
+      lseek(info->data_file->get,rfa_l,SEEK_SET);
+      status = (read(info->data_file->get,(void *)&hdr,12) == 12) ? TreeSUCCESS : TreeFAILURE;
+#endif
+      if (status & 1)
       {
-        status = 0;
-        break;
+        unsigned int partlen = min(swapshort((char *)&hdr.rlength)-10, buffer_space);
+        int nidx = swapint((char *)&hdr.node_number);
+        if (first)
+          *nodenum = nidx;
+        else if (*nodenum != nidx)
+        {
+          status = 0;
+          break;
+        }
+#ifdef _WIN32
+        status = (fread((void *)bptr,partlen,1,info->data_file->get) == 1) ? TreeSUCCESS : TreeFAILURE;
+#else
+        status = (read(info->data_file->get,(void *)bptr,partlen) == partlen) ? TreeSUCCESS : TreeFAILURE;
+#endif
+        if (status & 1)
+        {
+          bptr += partlen;
+          buffer_space -= partlen;
+	  *retsize = *retsize + partlen;
+          memcpy(rfa,&hdr.rfa,sizeof(rfa));
+        }
       }
-      if ((fread((void *)bptr,partlen,1,info->data_file->get) == 1))
-      {
-        bptr += partlen;
-        buffer_space -= partlen;
-
-	*retsize = *retsize + partlen;
-        memcpy(rfa,&hdr.rfa,sizeof(rfa));
-      }
-      else
-      {
-        printf("errno = %d\n",errno);
-        status = 0;
-      }
+      TreeUnLockDatafile(info, 1, rfa_l);
     }
     else
-      status = 0;
+      status = TreeFAILURE;
   }
   return status;
-#endif
 }
 
 #define length_of(ptr)    ((unsigned short)swapshort(&ptr[0]))

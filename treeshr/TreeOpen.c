@@ -17,6 +17,12 @@
 #define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
+#ifdef _WIN32
+#define closefile fclose
+#else
+#define closefile close
+#endif
+
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 int treeshr_errno = 0;
@@ -231,12 +237,6 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 						free(local_info->tag_info);
 					if (local_info->edit->external_pages)
 						free(local_info->external);
-#ifdef __VMS
-					if (local_info->edit->nci_section[0])
-						sys$deltva(local_info->edit->nci_section, 0, 0);
-					if (local_info->edit->nci_channel)
-						sys$dassgn(local_info->edit->nci_channel);
-#endif
 					free(local_info->edit);
 				}
 
@@ -258,11 +258,6 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 							MdsEventCan(local_info->rundown_id);
 						if (local_info->section_addr[0])
 						{
-#if defined(__VMS)
-							if ((status = sys$cretva(local_info->section_addr, 0, 0)) & 1)
-							if ((status = sys$dassgn(local_info->channel)) & 1)
-							status = lib$free_vm_page(&local_info->vm_pages, &local_info->vm_addr);
-#else
 #if defined(__osf__)
 							if (local_info->channel)
 							{
@@ -273,30 +268,24 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 							}
 #endif
 							free(local_info->vm_addr);
-#endif
 						}
 						TreeWait(local_info);
 						if (local_info->data_file)
 						{
 							MdsFree1Dx(local_info->data_file->data,NULL);
-#ifdef __VMS
-							sys$close(local_info->data_file->$a_fab, 0, 0);
-#else
-							if (local_info->data_file->get)    fclose(local_info->data_file->get);
-							if (local_info->data_file->put)    fclose(local_info->data_file->put);
-							if (local_info->data_file->update) fclose(local_info->data_file->update);
-#endif
+							if (local_info->data_file->get)
+                                                          closefile(local_info->data_file->get);
+							if (local_info->data_file->put)
+                                                          closefile(local_info->data_file->put);
 							free(local_info->data_file);
 							local_info->data_file = NULL;
 						}
 						if (local_info->nci_file)
 						{
-#ifdef __VMS
-							sys$close(local_info->nci_file->$a_fab, 0, 0);
-#else
-							if (local_info->nci_file->get)    fclose(local_info->nci_file->get);
-							if (local_info->nci_file->put)    fclose(local_info->nci_file->put);
-#endif
+							if (local_info->nci_file->get)
+							  closefile(local_info->nci_file->get);
+							if (local_info->nci_file->put)
+							  closefile(local_info->nci_file->put);
 							free(local_info->nci_file);
 							local_info->nci_file = NULL;
 						}
@@ -675,9 +664,7 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
 	tree_lower[i]=0;
 	strcpy(pathname,tree_lower);
 	strcat(pathname,TREE_PATH_SUFFIX);
-#if defined(__VMS)
-	path = pathname;
-#elif defined(_MSC_VER)
+#if defined(_WIN32)
 	path = GetRegistryPath(pathname);
 #else
 	path = getenv(pathname);
@@ -764,8 +751,6 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, in
 {
 	int       status;
 
-#ifndef __VMS
-
 	FILE **file;
 	char *resnam;
 	*file_handle = malloc(sizeof(FILE *));
@@ -782,69 +767,6 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, in
 	}
 	else 
 		status = TreeFILE_NOT_FOUND;
-
-#else
-
-	struct FAB *fab;
-	struct NAM *nam;
-	struct XABFHC *xab;
-	int       i;
-	short     length;
-	char      name[255];
-	int tlen = strlen(tree);
-	char     *filnam = malloc(tlen * 2 + 20);
-	if (shot < 0)
-		sprintf(filnam,"%s$DATA:%s_MODEL",tree,tree);
-	else if (shot < 1000)
-		sprintf(filnam,"%s$DATA:%s_%03d",tree,tree,shot);
-	else
-		sprintf(filnam,"%s$DATA:%s_%d",tree,tree,shot);
-	*file_handle = malloc(sizeof(struct FAB)+sizeof(struct NAM)+sizeof(struct XAB));
-	fab = (struct FAB *)(*file_handle);
-	nam = (struct NAM *)(fab + 1);
-	xab = (struct XABFHC *)(nam + 1);
-	*fab = cc$rms_fab;
-	*nam = cc$rms_nam;
-	*xab = cc$rms_xabfhc;
-	fab->fab$l_dna = "*"TREE_TREEFILE_TYPE;
-	fab->fab$b_dns = sizeof("*"TREE_TREEFILE_TYPE);
-	fab->fab$b_fac = edit_flag ? FAB$M_PUT : FAB$M_GET;
-	fab->fab$l_fna = filnam;
-	fab->fab$b_fns = strlen(filnam);
-	fab->fab$b_shr = edit_flag ? (FAB$M_SHRGET | FAB$M_UPI) : (FAB$M_SHRGET | FAB$M_SHRPUT | FAB$M_UPI);
-	fab->fab$l_fop = FAB$M_UFO;
-	fab->fab$l_nam = nam;
-	fab->fab$l_xab = (char *) xab;
-	nam->nam$b_ess = 255;
-	nam->nam$l_esa = name;
-	status = sys$open(fab);
-	if (status == RMS$_SUPPORT ||	/* DECNET */
-		!(fab->fab$l_dev & (DEV$M_ELG | DEV$M_NET))/* NFS */)
-	{
-		*remote_file = 1;
-		fab->fab$l_fop = 0;
-		sys$dassgn(fab->fab$l_stv);
-		status = sys$open(fab);
-	}
-	else
-		*remote_file = 0;
-	if (status & 1)
-	{
-		info->channel = fab->fab$l_stv;
-		info->alq = xab->xab$l_ebk - 1;
-		memcpy(info->tree_info_w_fid,nam->nam$w_fid,sizeof(info->tree_info_w_fid));
-		memcpy(info->tree_info_t_dvi,nam->nam$t_dvi,sizeof(info->tree_info_t_dvi));
-		for (length = 0; length < nam->nam$b_esl; length++)
-			if (((char *) nam->nam$l_esa)[length] == ';')
-			break;
-		info->filespec=strcpy(malloc(length+1),nam->nam$l_esa);
-		status = TreeNORMAL;
-	}
-	else if (status == RMS$_FNF)
-		status = TreeFILE_NOT_FOUND;
-	free(filnam);
-#endif
-
 	return status;
 }
 
@@ -888,49 +810,13 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
 		if (remote_file)
 		{
 
-#ifndef __VMS
 			fread((void *)info->section_addr[0], 512, info->alq, *(FILE **)file_handle);
 			fclose(*(FILE **)file_handle);
 			status = 1;
-#else
-
-			/******************************************
-			Read in tree structure using RMS
-			******************************************/
-			struct RAB rab;
-			rab = cc$rms_rab;
-			rab.rab$l_fab = file_handle;
-			rab.rab$l_rop = RAB$M_NLK;
-			rab.rab$w_usz = 512;
-			status = sys$connect(&rab);
-			if (status & 1)
-			{
-				int       i;
-				for (i = 0, rab.rab$l_ubf = (char *) info->section_addr[0];
-				(i < info->alq) && (status & 1);
-				i++, rab.rab$l_ubf += 512)
-					status = sys$get(&rab);
-			}
-			sys$close(file_handle);
-			info->channel = 0;
-
-#endif
-
 		}
 		else
 		{
-#if defined(__VMS)
-			int       retadr[2];
-			/************************************************
-			Use file id for the section name.
-			If we are not editting create and map a global
-			section, readonly.
-			If we are editting, create a copy on reference
-			writeable private section.
-			************************************************/
-			status = sys$crmpsc(info->section_addr, retadr, 0, edit_flag == 0 ? SEC$M_GBL : SEC$M_CRF | SEC$M_WRT,
-				TreeSectionName(info), 0, 0, info->channel, info->alq, 0, 0, 0);
-#elif defined(__osf__)
+#if defined(__osf__)
                         void *addr = mmap(info->section_addr[0],info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE | MAP_FIXED, 
                             info->channel, 0);
                         status = addr != (void *)-1;
@@ -971,13 +857,7 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
 			status = TreeNORMAL;
 		}
 		else
-		{
-#ifdef __VMS
-			if (!remote_file)
-				sys$dassgn(info->channel);
-#endif
 			free(info->vm_addr);
-		}
 	}
 	return status;
 }
@@ -986,9 +866,7 @@ static int GetVmForTree(TREE_INFO *info)
 {
 	int status;
 
-#if defined(__ALPHA) && defined(__VMS)
-	int PAGE_SIZE=64;
-#elif defined(__osf__) || defined(__hpux)
+#if defined(__osf__) || defined(__hpux)
 	int PAGE_SIZE = sysconf(_SC_PAGE_SIZE)/512;
 #else
 	int PAGE_SIZE=1;
@@ -1013,78 +891,6 @@ static int GetVmForTree(TREE_INFO *info)
 }
 
 
-struct descriptor *TreeSectionName(TREE_INFO *info)
-{
-#ifndef __VMS
-	return 0;
-#else
-	static const _DESCRIPTOR(fao,"!AC_!4XW!4XW!4XW");
-	char sectnam[28];
-	struct dsc_descriptor sectnam_d = {0,DTYPE_T,CLASS_S,0};
-	sectnam_d.length = sizeof(sectnam);
-	sectnam_d.pointer = sectnam;
-	sys$fao(&fao,&sectnam_d.length,&sectnam_d,info->dvi,
-		info->fid[0],info->fid[1],info->fid[2]);
-	return &sectnam_d;
-#endif
-}
-
-#ifndef __VMS
-
-#define SetPageModifiable(a)
-#define SetPageNomodifiable(a)
-
-#else
-
-#ifdef __ALPHA
-#define page_size (64 * 512)
-#else
-#define page_size 512
-#endif
-
-static void SetPageModifiable(NODE *node)
-{
-
-	char     *begaddr = (char *)node;
-	char     *endaddr = ((char *)node) + sizeof(NODE) -1;
-	char     *inaddr[2];
-	char     *retadr[2];
-	char     *page_boundary = ((char *)node) - ((unsigned long) node % page_size);
-	int       copysize = (endaddr > (page_boundary + page_size - 1)) ? page_size * 2 : page_size;
-	char      *temp_pages = malloc(page_size * 2);
-	int       status;
-	/********************************
-	We need to retain a copy of the
-	page to be set modifiable. Next
-	we create a new demand zero
-	page at that address. And finally
-	copy the page back to the new page.
-	**********************************/
-	inaddr[0] = page_boundary;
-	inaddr[1] = page_boundary + copysize - 1;
-	memcpy(temp_pages, page_boundary, copysize);
-	status = sys$cretva(inaddr, retadr, 0);
-	memcpy(page_boundary, temp_pages, copysize);
-	free(temp_pages);
-	return;
-}
-
-static void SetPageNomodifiable(NODE *node)
-{
-	char     *begaddr = (char *)node;
-	char     *endaddr = ((char *)node) + sizeof(NODE) -1;
-	char     *inaddr[2];
-	char     *retadr[2];
-	char     *page_boundary = ((char *)node) - ((unsigned long) node % page_size);
-	int       copysize = (endaddr > (page_boundary + page_size - 1)) ? page_size * 2 : page_size;
-	inaddr[0] = page_boundary;
-	inaddr[1] = page_boundary + copysize - 1;
-	sys$setprt(inaddr, 0, 0, PRT$C_UR, 0);	/* Set page user read only */
-	return;
-}
-
-#endif
-
 static void SubtreeNodeConnect(NODE *parent, NODE *subtreetop)
 {
 	NODE     *grandparent = parent_of(parent);
@@ -1099,9 +905,7 @@ static void SubtreeNodeConnect(NODE *parent, NODE *subtreetop)
 
 	if (child_of(grandparent) == parent)
 	{
-		SetPageModifiable(grandparent);
 		link_it(grandparent->child,subtreetop, grandparent);
-		SetPageNomodifiable(grandparent);
 	}
 	else
 	{
@@ -1109,19 +913,15 @@ static void SubtreeNodeConnect(NODE *parent, NODE *subtreetop)
 		for (bro = child_of(grandparent); brother_of(bro) && (brother_of(bro) != parent); bro = brother_of(bro));
 		if (brother_of(bro))
 		{
-			SetPageModifiable(bro);
 			link_it(bro->brother, subtreetop, bro);
-			SetPageNomodifiable(bro);
 		}
 	}
-	SetPageModifiable(subtreetop);
 	memcpy(subtreetop->name, parent->name, sizeof(subtreetop->name));
 	link_it(subtreetop->parent, grandparent, subtreetop);
 	if (parent->brother)
 	  {
 		link_it(subtreetop->brother, brother_of(parent), subtreetop);
 	  }
-	SetPageNomodifiable(subtreetop);
 	return;
 }
 
@@ -1178,24 +978,15 @@ int TreeCloseFiles(TREE_INFO *info)
 			if (info->data_file)
 			{
 				MdsFree1Dx(info->data_file->data, NULL);
-#ifdef __VMS
-				sys$close(info->data_file->fab, 0, 0);
-#else
-				if (info->data_file->get)    fclose(info->data_file->get);
-				if (info->data_file->put)    fclose(info->data_file->put);
-				if (info->data_file->update) fclose(info->data_file->update);
-#endif
+				if (info->data_file->get)    closefile(info->data_file->get);
+				if (info->data_file->put)    closefile(info->data_file->put);
 				free(info->data_file);
 				info->data_file = NULL;
 			}
 			if (info->nci_file)
 			{
-#ifdef __VMS
-				sys$close(info->nci_file->$fab, 0, 0);
-#else
-				if (info->nci_file->get)    fclose(info->nci_file->get);
-				if (info->nci_file->put)    fclose(info->nci_file->put);
-#endif
+				if (info->nci_file->get)    closefile(info->nci_file->get);
+				if (info->nci_file->put)    closefile(info->nci_file->put);
 				free(info->nci_file);
 				info->nci_file = NULL;
 			}

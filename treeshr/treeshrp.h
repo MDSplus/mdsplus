@@ -321,9 +321,7 @@ VFC portion of file.
 ***************************************/
 typedef struct record_header
 {
-#if !defined(__VMS)
   unsigned  short rlength;
-#endif
   int       node_number;
   RFA       rfa;
 }         RECORD_HEADER;
@@ -429,27 +427,7 @@ in doing I/O to the tree files.
 #define TREE_TREEFILE_TYPE ".tree"
 
 
-#ifndef __VMS
-
 #include <stdio.h>
-
-#else
-
-#include <fab.h>
-#include <rab.h>
-#include <nam.h>
-#include <xab.h>
-#include <secdef.h>
-#include <devdef.h>
-#include <starlet.h>
-#include <prtdef.h>
-
-#pragma extern_model save
-#pragma extern_model globalvalue
-extern RMS$_SUPPORT;
-#pragma extern_model restore
-
-#endif
 
 /********************************************
 The NCI_FILE structure contains the stuff
@@ -457,29 +435,17 @@ needed to do I/O on the node characteristics
 file.
 *********************************************/
 
-#ifndef __VMS
-
 typedef struct nci_file
 {
+#if defined(_WIN32)
   FILE *get;
   FILE *put;
+#else
+  int get;
+  int put;
+#endif
   NCI  nci;
 }  NCI_FILE;
-
-#define NCI_FILE_VM_SIZE sizeof(NCI_FILE) + 2 * sizeof(FILE *)
-#else
-
-typedef struct nci_file
-{
-  struct NAM *nam;
-  struct RAB *getrab;
-  struct RAB *putrab;
-  struct FAB *fab;
-  NCI	     nci;
-}         NCI_FILE;
-
-#define NCI_FILE_VM_SIZE sizeof(NCI_FILE) + sizeof(struct NAM) + sizeof(struct RAB) + sizeof(struct RAB) + sizeof(struct FAB)
-#endif
 
 /**************************************
 ASY_NCI
@@ -497,37 +463,21 @@ typedef struct asy_nci
 DATA_FILE structure used for I/O to datafile
 ********************************************/
 
-#ifndef __VMS
-
 typedef struct data_file
 {
   unsigned  open_for_write:1;
   unsigned: 7;
+#if defined(_WIN32)
   FILE *get;
   FILE *put;
-  FILE *update;
-  RECORD_HEADER *record_header;
-  ASY_NCI *asy_nci;
-  struct descriptor_xd *data;
-}         DATA_FILE;
-
 #else
-
-typedef struct data_file
-{
-  unsigned  open_for_write:1;
-  unsigned: 7;
-  struct NAM *nam;
-  struct RAB *getrab;
-  struct RAB *putrab;
-  struct RAB *updaterab;
-  struct FAB *fab;
+  int get;
+  int put;
+#endif
   RECORD_HEADER *record_header;
   ASY_NCI *asy_nci;
   struct descriptor_xd *data;
 }         DATA_FILE;
-
-#endif
 
 /********************************************
     TREE_INFO
@@ -667,5 +617,8 @@ extern int TreeEstablishRundownEvent(TREE_INFO *info);
 extern DATA_FILE *TreeGetVmDatafile();
 extern int TreeOpenNciW(TREE_INFO *info, int tmpfile);
 extern int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile);
-
+extern int TreeLockNci(TREE_INFO *info, int readonly, int nodenum);
+extern int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum);
+extern int TreeLockDatafile(TREE_INFO *info, int readonly, int where);
+extern int TreeUnLockDatafile(TREE_INFO *info, int readonly, int where);
 #endif
