@@ -638,7 +638,7 @@ static void FixupNciIn(NCI *nci)
   if (nci->flags & NciM_DATA_IN_ATT_BLOCK)
   {
   }
-  else if (nci->error_on_put)
+  else if (nci->flags & NciM_ERROR_ON_PUT)
   {
     nci->DATA_INFO.ERROR_INFO.error_status = swapint((char *)&nci->DATA_INFO.ERROR_INFO.error_status);
     nci->DATA_INFO.ERROR_INFO.stv = swapint((char *)&nci->DATA_INFO.ERROR_INFO.stv);
