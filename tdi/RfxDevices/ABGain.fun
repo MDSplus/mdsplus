@@ -1,29 +1,20 @@
-public fun AAGain(in _control, in _config)
+public fun ABGain(in _control, in _config)
 {
-	if(_config == 'SERIES')
-	{
-	    if(_control == 'VOLTAGE')
-		return(300.);
-	    if(_control == 'CURRENT')
-		return(812.5);
-	    if(_control == 'OPEN LOOP')
-		return(1.);
-	}
 	if(_config == 'PARALLEL')
 	{
 	    if(_control == 'VOLTAGE')
-		return(300.);
+		return(150.);
 	    if(_control == 'CURRENT')
-		return(1625.);
+		return(812.5);
 	    if(_control == 'OPEN LOOP')
 		return(1.);
 	}
 	if(_config == 'INDEPENDENT')
 	{
 	    if(_control == 'VOLTAGE')
-		return(300.);
+		return(150.);
 	    if(_control == 'CURRENT')
-		return(812.5);
+		return(406.25);
 	    if(_control == 'OPEN LOOP')
 		return(1.);
 	}
