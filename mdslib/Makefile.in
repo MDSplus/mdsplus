@@ -14,7 +14,8 @@ INSTALL=@top_srcdir@/conf/install-sh -c
 SOURCES = MdsLib.c
 OBJECTS = $(SOURCES:.c=.o)
 
-OBJECTS_CLIENT = MdsLib_client.o
+OBJECTS_CLIENT = MdsLib_client.o 
+OBJECTS_CLIENT_ARCHIVE = ../mdstcpip/mdsiputil.o
 
 all: @MAKEBINDIR@ @MAKELIBDIR@ \
          @MAKELIBDIR@libMdsLib@SHARETYPE@ \
@@ -58,8 +59,8 @@ install:
 @MAKELIBDIR@libMdsLib_client@SHARETYPE@ : $(OBJECTS_CLIENT)
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS_CLIENT) -L@MAKELIBDIR@ -lMdsIpUtil $(LIBS)
 
-@MAKELIBDIR@libMdsLib_client.a : $(OBJECTS_CLIENT)
-	$(AR) -cr $@ $(OBJECTS_CLIENT)
+@MAKELIBDIR@libMdsLib_client.a : $(OBJECTS_CLIENT) $(OBJECTS_CLIENT_ARCHIVE)
+	$(AR) -cr $@ $(OBJECTS_CLIENT) $(OBJECTS_CLIENT_ARCHIVE)
 
 MdsLib_client.o : MdsLib.c
 	$(CC) -o $@ -c $(CFLAGS) MdsLib.c -D_CLIENT_ONLY
