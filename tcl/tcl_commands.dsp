@@ -226,6 +226,10 @@ SOURCE=.\tcl_set_tree.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\tcl_setevent.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\tcl_show_current.c
 # End Source File
 # Begin Source File
@@ -239,6 +243,10 @@ SOURCE=.\tcl_show_db.c
 # Begin Source File
 
 SOURCE=.\tcl_verify_tree.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\tcl_wfevent.c
 # End Source File
 # Begin Source File
 

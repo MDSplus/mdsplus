@@ -70,8 +70,6 @@ void TclTextOut(		/* Returns: void			*/
     char  *text			/* <r> text for display			*/
    )
    {
-    char  *p;
-    struct descriptor  *dsc;
 
     if (TextOut)
         (*TextOut) (text);

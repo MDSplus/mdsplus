@@ -31,3 +31,4 @@ ArgLen
 MdsIpFree
 SetSocketOptions
 SetCompression
+HostToIp
