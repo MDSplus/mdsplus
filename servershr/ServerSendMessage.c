@@ -500,6 +500,7 @@ static void *Worker(void *sockptr)
   int sock = *(int *)sockptr;
   int tablesize = FD_SETSIZE;
   int num = 0;
+  int last_client_addr=0;
   fd_set readfds,fdactive;
   pthread_cleanup_push(ThreadExit, 0);
   /*
@@ -536,6 +537,7 @@ static void *Worker(void *sockptr)
         if (c && FD_ISSET(c->reply_sock,&readfds))
 	{
           int reply_sock = c->reply_sock;
+          last_client_addr=c->addr;
           DoMessage(c,&fdactive);
           FD_CLR(reply_sock,&readfds);
         }
@@ -545,6 +547,8 @@ static void *Worker(void *sockptr)
     }
     readfds = fdactive;
   }
+  perror("Dispatcher select loop failed");
+  printf("Last client addr = %d\n",last_client_addr);
   pthread_cleanup_pop(1);
   return(0);
 }
