@@ -10,9 +10,6 @@ STATIC_THREADSAFE pthread_key_t buffer_key;
 STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
 
 STATIC_ROUTINE void buffer_key_alloc();
-STATIC_CONSTANT DESCRIPTOR(private_head, "TDISHR private headers");
-STATIC_CONSTANT DESCRIPTOR(private_data, "TDISHR private data");
-STATIC_CONSTANT DESCRIPTOR(private_label, "Private");
 
 /* Return the thread-specific buffer */
 ThreadStatic *TdiThreadStatic()
