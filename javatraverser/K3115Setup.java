@@ -399,7 +399,7 @@ public class K3115Setup
     jScrollPane1.setPreferredSize(new Dimension(600, 219));
     jPanel16.setLayout(gridLayout2);
     jPanel16.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-    jPanel16.setPreferredSize(new Dimension(600, 900));
+    jPanel16.setPreferredSize(new Dimension(600, 950));
     jLabel14.setText("CH 02 :");
     jLabel14.setFont(new java.awt.Font("Dialog", 1, 11));
     deviceField6.setOffsetNid(21);
