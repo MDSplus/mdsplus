@@ -34,7 +34,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     public long[] GetShots(String in)  
     {
         try {
-            int []shots =  GetIntArray(in);
+            int shots[] =  GetIntArray(in.trim());
             long lshots[] = new long[shots.length];
             for(int i = 0; i < shots.length; i++)
                 lshots[i] = shots[i];
@@ -43,7 +43,8 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
         {
             System.err.println("Errore in GetLongArray: " + exc);
             
-            return null;}
+            return null;
+        }
     }
 
     native public byte [] GetByteArray(String in);

@@ -956,7 +956,8 @@ public class MultiWaveform extends Waveform
 	    setPointSignalIndex(curr_point_sig_idx);
 	    curr_signal = (Signal)signals.elementAt(curr_point_sig_idx);
 	    
-	    UpdateLimits();
+	    // ???? 23-4-2003
+	    //UpdateLimits();
 	    not_drawn = true;
 	    	    
 	    Point p = FindPoint(curr_signal, curr_x, curr_y);
@@ -1090,9 +1091,9 @@ public class MultiWaveform extends Waveform
 	        signals = orig_signals;
 	        orig_signals = null;
 	    } 
-	    this.UpdateLimits();
+//	    this.UpdateLimits();
 
-	/*
+	
 	    for(i = 0; i < signals.size(); i++)
 	        if(signals.elementAt(i) != null) break;
 	    if(i == signals.size()) return;
@@ -1112,7 +1113,7 @@ public class MultiWaveform extends Waveform
 	        if(((Signal)signals.elementAt(i)).ymax > waveform_signal.ymax)
 		        waveform_signal.ymax = ((Signal)signals.elementAt(i)).ymax;
 	    }
-	    */
+	    
 	    ReportChanges();
     }
 

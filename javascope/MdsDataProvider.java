@@ -273,6 +273,7 @@ public class MdsDataProvider implements DataProvider
                 float delta[] = GetFloatArray("slope_of(axis_of(dim_of("+expr+")))");
                 float begin[] = null;
                 float end[] = null;
+                float curr;
                 float firstTime[] = GetFloatArray("i_to_x(dim_of("+expr+"),"+startIdx[0]+")");
                 try
                 {
@@ -283,11 +284,11 @@ public class MdsDataProvider implements DataProvider
                 
                 if(delta.length == 1 && numPoint > 1)
                 {
-                    int i;
+                    int i, j;
                     float out[] = new float[numPoint];
                     
-                    for(i = 1, out[0] = firstTime[0]; i < numPoint; i++)
-                        out[i] = out[i-1] + delta[0];
+                    for(i = j = 0, curr = firstTime[0]; i < numPoint; i++, j++)
+                        out[i] = curr + j * delta[0];
                 
                     return out;
                 }
@@ -296,7 +297,6 @@ public class MdsDataProvider implements DataProvider
                 {
                     int i, j, idx;
                     float out[] = new float[numPoint];
-                    float curr;
                     
                     for(i = j = 0, idx = 0, curr = firstTime[0]; i < numPoint; i++, j++)
                     {

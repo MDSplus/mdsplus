@@ -108,7 +108,7 @@ class MdsMessage extends Object
         
         ReadBuf(b4, dis);
         bytes_to_read = ToInt(b4) - HEADER_SIZE;
-        
+                
         out = new byte[bytes_to_read];
         
         InflaterInputStream zis = new InflaterInputStream(dis);
@@ -133,6 +133,7 @@ class MdsMessage extends Object
         ConnectionEvent e;
         int bytes_to_read = buf.length, read_bytes = 0, curr_offset = 0;
         boolean send = false;
+                
         if(bytes_to_read > 2000)
         {
             send = true;

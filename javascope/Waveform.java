@@ -159,6 +159,11 @@ public class Waveform extends JComponent
 //      Reshape al piu' con 1000 punti
 	    not_drawn = true;
 //	    double xmax = MaxXSignal(), xmin = MinXSignal(), ymax = MaxYSignal(), ymin = MinYSignal();
+	
+		//{{REGISTER_LISTENERS
+		SymContainer aSymContainer = new SymContainer();
+		this.addContainerListener(aSymContainer);
+		//}}
 	}
 
     public Waveform()
@@ -2175,13 +2180,13 @@ public class Waveform extends JComponent
 	        if(is_image && send_profile)
 	            sendProfileEvent();
 	    }
-	    /*
+	    
 	    NotifyZoom(waveform_signal.xmin, 
 	               waveform_signal.xmax, 
 	               waveform_signal.ymin,
 	               waveform_signal.ymax, 
                    update_timestamp);
-        */
+        
     }
     
     public void SetCopySelected(boolean selec)
@@ -2265,4 +2270,19 @@ public class Waveform extends JComponent
         }
     }
 
+
+	class SymContainer extends java.awt.event.ContainerAdapter
+	{
+		public void componentAdded(java.awt.event.ContainerEvent event)
+		{
+			Object object = event.getSource();
+			if (object == Waveform.this)
+				Waveform_ComponentAdded(event);
+		}
+	}
+
+	void Waveform_ComponentAdded(java.awt.event.ContainerEvent event)
+	{
+		// to do: code goes here.
+	}
 }

@@ -78,7 +78,7 @@ public class WaveInterface
     protected boolean  add_signal = false;
     protected boolean  is_signal_added = false;
     
-    static boolean cache_enabled = false;
+    boolean cache_enabled = false;
     static SignalCache sc = null;
     static boolean brief_error = true;
     
@@ -163,16 +163,13 @@ public class WaveInterface
         this.is_image = is_image;
     }
 
-    static public void EnableCache(boolean state)
+    public void EnableCache(boolean state)
     {
         if(state && sc == null)
             sc = new SignalCache();
+        if(!state)
+            sc = null;
         cache_enabled = state;
-    }
-    
-    static public boolean IsCacheEnabled()
-    {
-        return cache_enabled;
     }
 
     static public void FreeCache()
@@ -1051,7 +1048,7 @@ public class WaveInterface
         
         if(in_shots == null || in_shots.trim().length() == 0)
 	        return null;
-	        
+	    
 	    shot_list = dp.GetShots(in_shots);
 	    if( shot_list == null || shot_list.length == 0 || shot_list.length > MAX_NUM_SHOT)
 	    {
@@ -1184,8 +1181,10 @@ public class WaveInterface
     	        out_signal.AddAsymError(up_err, low_err);
     	    else
                 if(up_err != null)
-                    out_signal.AddError(up_err);   
-        }       
+                    out_signal.AddError(up_err);
+                    
+            out_signal.setLabels(title, xlabel, ylabel, zlabel);         
+        }
         return out_signal;
     }
     
@@ -1354,7 +1353,10 @@ public class WaveInterface
     	  out_signal = new Signal(curr_x, curr_data, min_len);
     	}
     	
-    	if(cache_enabled && full_flag && !is_async_update)
+        if(wd != null)
+            title = wd.GetTitle();       
+    	
+    	if( (cache_enabled || sc != null) && full_flag && !is_async_update)
     	{
     	    long sh = 0;
     	    DataCacheObject cd = new DataCacheObject();
@@ -1366,10 +1368,10 @@ public class WaveInterface
             if(in_low_err[curr_wave] != null)
                 expr = expr+in_low_err[curr_wave];
     	    
-            cd.title = title;
-            cd.x_label = (xlabel == null) ? this.xlabel : xlabel;
-            cd.y_label = (ylabel == null) ? this.ylabel : ylabel;
-            cd.z_label = (zlabel == null) ? this.zlabel : zlabel;
+            cd.title   = (this.title  != null) ? this.title  : title ;
+            cd.x_label = (this.xlabel != null) ? this.xlabel : xlabel;
+            cd.y_label = (this.ylabel != null) ? this.ylabel : ylabel;
+            cd.z_label = (this.zlabel != null) ? this.zlabel : zlabel;
             cd.up_err = up_err;
             cd.low_err = low_err;
             cd.data = curr_data;
@@ -1390,8 +1392,6 @@ public class WaveInterface
             if(up_err != null)
                 out_signal.AddError(up_err);
         
-        if(wd != null)
-            title = wd.GetTitle();       
         out_signal.setLabels(title, xlabel, ylabel, zlabel);   
         return out_signal;
    }

@@ -10,6 +10,10 @@ public class DataServerItem
     boolean fast_network_access;
     String tunnel_port;
     
+    boolean enable_cache = false;
+    boolean enable_compression = false;
+    
+    
     public DataServerItem(String user)
     {
         this(null, null, user, null, null, null, null, false);
@@ -58,5 +62,4 @@ public class DataServerItem
     {
         return this.name.equals(name);
     }
-        
 }

@@ -149,7 +149,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     
     protected jScopeMultiWave BuildjScopeMultiWave(DataProvider dp, jScopeDefaultValues def_vals)
     {
-        return new jScopeMultiWave(dp, def_vals);
+        return new jScopeMultiWave(dp, def_vals, IsCacheEnabled());
     }
     
     public void getjScopeMultiWave()
@@ -277,11 +277,6 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     public void FreeCache()
     {
         WaveInterface.FreeCache();
-    }
-
-    public void EnableCache(boolean state)
-    {
-        WaveInterface.EnableCache(state);
     }
 
     
@@ -653,6 +648,16 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         return (server_item != null ? server_item.fast_network_access : false);
     }
 
+    public boolean IsCacheEnabled()
+    {
+        return (server_item != null ? server_item.enable_cache : false);
+    }
+
+    public boolean IsCompressionEnabled()
+    {
+        return (server_item != null ? server_item.enable_compression : false);
+    }
+
     public void SetModifiedState(boolean state)
     {
         jScopeMultiWave w;
@@ -679,6 +684,21 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		    }
 		}
     }
+    
+    public void SetCacheState(boolean state)
+    {
+        jScopeMultiWave w;
+    	server_item.enable_cache = state;
+	    for(int i = 0; i < getComponentNumber(); i++)
+        {
+	        w = (jScopeMultiWave)getGridComponent(i);
+	        if(w != null && w.wi != null ) {
+		       w.wi.EnableCache(state);
+		       w.wi.setModified(true);
+		    }
+		}
+    }
+    
     
     public void maximizeComponent(Waveform w)
     {
@@ -715,14 +735,14 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	    	if(def_vals != null && def_vals.public_variables != null && def_vals.public_variables.length() != 0)
 	    	{
 	    	    dp.SetEnvironment(def_vals.public_variables);
-	    	    if(WaveInterface.IsCacheEnabled())
+	    	    if(IsCacheEnabled())
 	    	    {
  		            JOptionPane.showMessageDialog(this, 
  		                                          "Signal cache must be disabled when public varibles are set.\n"+
  		                                          "Cache operation is automatically disabled.", 
 		                                          "alert", JOptionPane.WARNING_MESSAGE);
 	    	        
-	    	        WaveInterface.EnableCache(false);
+	    	        SetCacheState(false);
 	    	    }
 	    	} 
 
@@ -911,6 +931,26 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		    {
 		        server_item.fast_network_access = false;
 		    }
+		    
+		    try
+		    {
+		        server_item.enable_cache = new Boolean(pr.getProperty(prompt+".enable_cache")).booleanValue();
+		    }
+		    catch(Exception exc)
+		    {
+		        server_item.enable_cache = false;
+		    }
+
+		    try
+		    {
+		        server_item.enable_compression = new Boolean(pr.getProperty(prompt+".enable_compression")).booleanValue();
+		    }
+		    catch(Exception exc)
+		    {
+		        server_item.enable_compression = false;
+		    }
+
+        
         }
 
         for(int c = 1; c <= MAX_COLUMN; c++)
@@ -1221,10 +1261,10 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
  
         if(sel_wave.wi == null || is_image)
         {
-            sel_wave.wi = new MdsWaveInterface(sel_wave, dp, def_vals);
+            sel_wave.wi = new MdsWaveInterface(sel_wave, dp, def_vals, IsCacheEnabled());
             sel_wave.wi.SetAsImage(is_image);
             if(!with_error)
-                ((MdsWaveInterface)sel_wave.wi).prev_wi = new MdsWaveInterface(sel_wave, dp, def_vals);
+                ((MdsWaveInterface)sel_wave.wi).prev_wi = new MdsWaveInterface(sel_wave, dp, def_vals, IsCacheEnabled());
         } else {
             new_wi = new MdsWaveInterface((MdsWaveInterface)sel_wave.wi);
             new_wi.wave = sel_wave;
@@ -1280,7 +1320,15 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	        if(server_item.tunnel_port != null)
 	            WaveInterface.WriteLine(out, prompt + "data_server_tunnel_port: ",   server_item.tunnel_port);
 	            
-	        WaveInterface.WriteLine(out, prompt + "fast_network_access: ", ""+server_item.fast_network_access);		    
+	        WaveInterface.WriteLine(out, prompt + "fast_network_access: ", ""+server_item.fast_network_access);
+	        
+	        if(server_item.enable_cache)
+	            WaveInterface.WriteLine(out, prompt + "enable_cache: ", ""+server_item.enable_cache);
+
+	        if(server_item.enable_compression)
+	            WaveInterface.WriteLine(out, prompt + "enable_compression: ", ""+server_item.enable_compression);
+
+	        
 	    }
 	    WaveInterface.WriteLine(out, prompt + "update_event: ", event);		    
 	    WaveInterface.WriteLine(out, prompt + "print_event: ", print_event);
@@ -1349,10 +1397,11 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         // Disable signal cache if public variable
         // are set
         if(def_vals != null && 
-           def_vals.public_variables != null && 
-           WaveInterface.IsCacheEnabled())
+           def_vals.public_variables != null &&
+           def_vals.public_variables.trim().length() != 0 &&
+           IsCacheEnabled())
 	    {    	        
-	       WaveInterface.EnableCache(false);
+	       this.SetCacheState(false);
 	    }
 	     
 

@@ -2,7 +2,7 @@
 import java.io.*;
 import java.net.*;
 import java.awt.List;
-import java.awt.event.*;
+import java.awt.event.*; 
 import java.lang.*;
 import java.util.*;
 import java.awt.event.*;
@@ -797,7 +797,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	    {
 	        public void menuSelected(MenuEvent e)
             {
-                use_cache_i.setSelected(WaveInterface.IsCacheEnabled());
+                use_cache_i.setSelected(wave_panel.IsCacheEnabled());
             }
 	        public void menuCanceled(MenuEvent e)
             {
@@ -1636,15 +1636,22 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     {
         wave_panel.SetDataServer(new_srv_item, this);
         
+        wave_panel.SetCacheState(new_srv_item.enable_cache);
+        use_cache_i.setState(new_srv_item.enable_cache);
+        free_cache_i.setEnabled(new_srv_item.enable_cache);        
+
+        
         fast_network_i.setEnabled(wave_panel.SupportsFastNetwork());
         fast_network_i.setState(wave_panel.GetFastNetworkState());
         SetFastNetworkState(wave_panel.GetFastNetworkState());
-        	
+        
         enable_compression_i.setEnabled(wave_panel.SupportsCompression());
-        enable_compression_i.setState(false);
+        if(!wave_panel.SupportsCompression())
+            new_srv_item.enable_compression = false;
 
-        use_cache_i.setState(WaveInterface.IsCacheEnabled());
-        free_cache_i.setEnabled(WaveInterface.IsCacheEnabled());        
+        enable_compression_i.setState(new_srv_item.enable_compression);
+        SetCompressionState(new_srv_item.enable_compression);
+        
         
         setDataServerLabel();
         
@@ -1902,7 +1909,6 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                 wave_panel.AddSignal(sig, true);
                 setChange(true);
             }
-            
     	    UpdateAllWaves();
 	            
 	    }	     
@@ -2119,11 +2125,27 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
    public void SetFastNetworkState(boolean state)
    {
 	    wave_panel.SetFastNetworkState(state);
+	    if(state)
+	    {
+            use_cache_i.setState(false);
+    	    wave_panel.SetCacheState(false);
+        }
         use_cache_i.setEnabled(!state);
-        use_cache_i.setState(false);
-    	WaveInterface.EnableCache(false);
         free_cache_i.setEnabled(!state);
+        
+    }
+
+   public void SetCacheState(boolean state)
+   {
+	    wave_panel.SetCacheState(state);
+        free_cache_i.setEnabled(state);        
    }
+
+   public void SetCompressionState(boolean state) throws IOException
+   {
+        wave_panel.SetCompression(state, this);
+   }
+
 
    public void itemStateChanged(ItemEvent e)
    {
@@ -2134,13 +2156,12 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
      {
         if(ob == fast_network_i)
         {
-            boolean state = fast_network_i.getState();
-            SetFastNetworkState(state);
+            SetFastNetworkState(fast_network_i.getState());
         }
          
         if(ob == enable_compression_i)
         {
-            wave_panel.SetCompression(enable_compression_i.getState(), this);
+            SetCompressionState(enable_compression_i.getState());
         }
          
         if(ob == brief_error_i)
@@ -2151,8 +2172,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
          
         if(ob == use_cache_i)
         {
-	        wave_panel.EnableCache(use_cache_i.getState());
-            free_cache_i.setEnabled(use_cache_i.getState());        
+	        SetCacheState(use_cache_i.getState());
         }
 
         if(e.getStateChange() != ItemEvent.SELECTED)

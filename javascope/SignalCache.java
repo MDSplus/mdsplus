@@ -109,7 +109,7 @@ public class SignalCache
                   expression.trim().toUpperCase()+
                   experiment.trim().toUpperCase()+shot;
     
-    if(isInCache(name)) return;
+//    if(isInCache(name)) return;
     
     if(cache_size > max_cache_size)
         purgeCache();

@@ -25,10 +25,11 @@ class MdsWaveInterface extends WaveInterface
     
     public String previous_shot = "";
     
-    public MdsWaveInterface(Waveform wave, DataProvider dp, jScopeDefaultValues def_vals)
+    public MdsWaveInterface(Waveform wave, DataProvider dp, jScopeDefaultValues def_vals, boolean enable_cache)
     {
         super(dp);
         setDefaultsValues(def_vals);
+        EnableCache(enable_cache);
         this.wave = wave;
     }
     
@@ -272,11 +273,12 @@ class MdsWaveInterface extends WaveInterface
     {
         previous_shot = wi.previous_shot;
 	    full_flag = wi.full_flag;
+	    cache_enabled = wi.cache_enabled;
 	    provider = wi.provider;
 	    num_waves = wi.num_waves;
 	    num_shot  = wi.num_shot;
 	    defaults  = wi.defaults;
-	    modified = wi.modified;//********true;
+	    modified = wi.modified;
 	    in_grid_mode = wi.in_grid_mode;
 	    x_log = wi.x_log;
 	    y_log = wi.y_log;
@@ -876,26 +878,79 @@ class MdsWaveInterface extends WaveInterface
     																	    
 		        if(y_str.indexOf("[") == 0 && y_str.indexOf("$roprand") != -1)
 		        {
-    		        //Parse [expression1,$roprand,expression2,....,$roprand,expressionN]  
-    		        st_y = new StringTokenizer(y_str, "[]");
-    		        token = st_y.nextToken();
-    		        st_y = new StringTokenizer(token, ",");
-    		       
-    		       
-    		        while(st_y.hasMoreTokens())
-    		        {
-    		            token = st_y.nextToken().trim();
-    		            if(token.indexOf("$roprand") != -1)
-    		                continue;
-			            num_expr++;    		                
+		            try
+		            {
+    		            //Parse [expression1,$roprand,expression2,....,$roprand,expressionN]  
+    		            st_y = new StringTokenizer(y_str, "[]");
+    		            token = st_y.nextToken();
+    		            st_y = new StringTokenizer(token, ",");
+        		       
+        		       
+    		            while(st_y.hasMoreTokens())
+    		            {
+    		                token = st_y.nextToken().trim();
+    		                if(token.indexOf("$roprand") != -1)
+    		                    continue;
+			                num_expr++;    		                
+    		            }
     		        }
+    		        catch(Exception e)
+    		        {
+    		            num_expr = 1;
+    		        }
+    	
     		    } else
     		        num_expr = 1; 
     		
 		        num_waves = num_expr * num_shot;
 		        CreateVector();
 
-		        if(num_expr == 1) 
+		        if(num_expr > 1) 
+		        {
+		            try
+		            {
+    		            st_y = new StringTokenizer(y_str, "[]");
+    		            String token_y = st_y.nextToken();
+    		            st_y = new StringTokenizer(token_y, ",");
+                        if(x_str != null)
+                        {
+    		                st_x = new StringTokenizer(x_str, "[]");
+    		                token = st_x.nextToken();
+    		                st_x = new StringTokenizer(token, ",");
+                        }
+    		            
+    		            
+		                int i = 0;			
+		                while(st_y.hasMoreTokens())
+    		            {
+    		                token_y = st_y.nextToken().trim();
+       		            
+     		                if(st_x != null)
+    		                token = st_x.nextToken().trim(); 	               		                
+
+       		            
+    		                if(token_y.indexOf("$roprand") != -1)
+    		                    continue;
+        		                    		                
+    		                in_y[i] = token_y;
+    		                if(st_x != null)
+    		                in_x[i] = token; 	               		                
+			                if(in_y[i].indexOf("multitrace") != -1)
+			                {
+				                in_y[i] =   "compile"+in_y[i].substring(in_y[i].indexOf("("));  
+			                }
+			                i++; 
+    		            } 
+    		        }
+    		        catch (Exception e)
+    		        {
+    		            num_expr = 1;     		
+		                num_waves = num_expr * num_shot;
+		                CreateVector();    		        
+    		        }
+		        }
+		        
+		        if(num_expr == 1)
 		        {
 			        in_y[0] = y_str;
 			        if( in_y[0].indexOf("multitrace") != -1) 
@@ -908,42 +963,8 @@ class MdsWaveInterface extends WaveInterface
 			            in_x[0] = new String(x_str);
 			        else
 			            in_x[0] = null;
-    		    
-		        } else {
-		            
-    		        st_y = new StringTokenizer(y_str, "[]");
-    		        String token_y = st_y.nextToken();
-    		        st_y = new StringTokenizer(token_y, ",");
-                    if(x_str != null)
-                    {
-    		            st_x = new StringTokenizer(x_str, "[]");
-    		            token = st_x.nextToken();
-    		            st_x = new StringTokenizer(token, ",");
-                    }
-		            
-		            
-		            int i = 0;			
-		            while(st_y.hasMoreTokens())
-    		        {
-    		            token_y = st_y.nextToken().trim();
-   		            
-     		            if(st_x != null)
-    		               token = st_x.nextToken().trim(); 	               		                
-
-   		            
-    		            if(token_y.indexOf("$roprand") != -1)
-    		                continue;
-    		                    		                
-    		            in_y[i] = token_y;
-    		            if(st_x != null)
-    		               in_x[i] = token; 	               		                
-			            if(in_y[i].indexOf("multitrace") != -1)
-			            {
-				            in_y[i] =   "compile"+in_y[i].substring(in_y[i].indexOf("("));  
-			            }
-			            i++; 
-    		        } 
-		        }    
+		        }
+		        
 		    }
             
 		    prop = pr.getProperty(prompt+".num_expr");

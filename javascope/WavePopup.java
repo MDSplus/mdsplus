@@ -464,8 +464,8 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	       add(resetScales);
 	       add(undo_zoom);
            //Copy image to clipborad can be done only with
-           //java release 1.4
-           if(AboutWindow.javaVersion.indexOf("1.4") != -1)
+           //java release 1.4           
+           if(System.getProperty("java.version").indexOf("1.4") != -1)
            { 	       
 	            add(cb_copy);
 	       }

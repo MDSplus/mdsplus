@@ -232,9 +232,9 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
                     double x = e.point_x;
                     if(w.IsImage())
                         x = e.delta_x;
-		    else
-			if(e.is_mb2)
-			   AllSameXScaleAutoY(w);
+		            else
+			            if(e.is_mb2)
+			                AllSameXScaleAutoY(w);
                     UpdatePoints(x, (Waveform)e.getSource());
                 }
                 if(!w.IsImage() && show_measure)
@@ -495,7 +495,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	    for(int i = 0; i < getGridComponentCount(); i++)
 	    {
 	        w = GetWavePanel(i);
-	        if(w != null)
+	        if(w != null && w != curr_w)
 	            w.SetXScale(curr_w);
 		}
     }

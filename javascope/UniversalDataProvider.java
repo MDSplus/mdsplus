@@ -28,7 +28,7 @@ class UniversalDataProvider implements DataProvider
         jetmds = new JetMdsDataProvider();
         ts = new TSDataProvider();
         try {
-            ts.SetArgument("132.169.8.122:8000");
+            ts.SetArgument("132.169.8.164:8000");
         }catch(Exception exc){ts = null;}
         asd = new AsdexDataProvider();
         try {
