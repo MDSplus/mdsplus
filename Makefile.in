@@ -53,7 +53,7 @@ PARTS = \
 all:
 	cdir=`pwd`;\
 	for dir in $(PARTS) ; do\
-	  echo Making $${dir}; cd $${dir}; make all; cd $$cdir;\
+	  echo Making $${dir}; cd $${dir}; $${MAKE:=make} all; cd $$cdir;\
 	done
 
 .IGNORE:
@@ -61,11 +61,11 @@ all:
 clean:
 	cdir=`pwd`;\
 	for dir in $(PARTS) ; do\
-	  cd $${dir} && make -i clean; cd $$cdir;\
+	  cd $${dir} && $${MAKE:=make} -i clean; cd $$cdir;\
 	done
 
 full_clean:
-	make clean
+	$${MAKE:=make} clean
 	@ ./devscripts/rm_if bin
 	@ ./devscripts/rm_if etc
 	@ ./devscripts/rm_if lib
@@ -81,7 +81,7 @@ full_clean:
 depend:
 	cdir=`pwd`;\
 	for dir in $(PARTS) ; do\
-	  cd $${dir}; make depend > /dev/null 2> /dev/null; cd $$cdir;\
+	  cd $${dir}; $${MAKE:=make} depend > /dev/null 2> /dev/null; cd $$cdir;\
 	done
 
 CHANGELOG :
@@ -100,7 +100,7 @@ install:
 	mkdirhier @exec_prefix@/java
 	cdir=`pwd`;\
 	for dir in $(PARTS) ; do\
-	  cd $${dir}; make install; cd $$cdir;\
+	  cd $${dir}; $${MAKE:=make} install; cd $$cdir;\
 	done
 	tar cf - $(MISC_PARTS) | (cd @exec_prefix@; tar xf -)
 	find @exec_prefix@ -name CVS -exec rm -R {} \;
