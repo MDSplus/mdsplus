@@ -8,7 +8,7 @@ OBJECTS_UTIL = \
 
 EXPORTS = mdsipshr.export
 
-mdstcpip : ../bin ../shlib ../bin/mdsiptest ../bin/mdsip ../bin/mdsipd
+mdstcpip : ../bin ../shlib ../etc ../bin/mdsiptest ../bin/mdsip ../bin/mdsipd ../etc/mdsip.hosts
 
 ../bin :
 	mkdir ../bin
@@ -28,6 +28,12 @@ mdstcpip : ../bin ../shlib ../bin/mdsiptest ../bin/mdsip ../bin/mdsipd
 ../shlib :
 	mkdir ../shlib
 
+../etc :
+	mkdir ../etc
+
+../etc/mdsip.hosts : mdsip.hosts
+	cp mdsip.hosts ../etc/mdsip.hosts
+
 libMdsIpUtil.a :  $(OBJECTS_UTIL)
 	$(AR) -r $@ $(OBJECTS_UTIL)
 	
@@ -38,6 +44,7 @@ clean :
 	- rm .depend
 	- rm ../bin/mdsiptest
 	- rm ../bin/mdsip
+	- rm ../etc/mdsip.hosts
 
 .depend :
 	find *.c -exec $(MAKE_DEPEND)
