@@ -29,7 +29,7 @@ class TWUFetchOptions
     public TWUFetchOptions (int sta, int ste, int tot) 
     {
         start = sta ; 
-        step  = ste ;
+        step  = ste>0 ? ste : 1 ;
         total = tot ; 
     }
 
@@ -47,7 +47,7 @@ class TWUFetchOptions
         // note: should we allow total = 0 ? it *may* not be
         // a good idea to have 'total = 0' translated to 'get all'.
 
-        if (step == 0)
+        if (step < 1)
           step = 1 ;
 
         int begin = start, end = start + (total-1)*step ;
