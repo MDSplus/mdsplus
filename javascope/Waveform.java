@@ -1,6 +1,7 @@
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.image.*;
+import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
@@ -440,7 +441,7 @@ import java.util.*;
 	{
 	    for(int i = 0; i < y_dim; i++)
 	    {
-		curr_dim = fm.stringWidth(ConvertToString(y_values[i], ylog));
+		curr_dim = fm.stringWidth(Waveform.ConvertToString(y_values[i], ylog));
 		if(label_width < curr_dim)
 		    label_width = curr_dim;
 	    }	
@@ -479,7 +480,7 @@ import java.util.*;
 	    {
 		for(i = 0; i < y_dim; i++)
 		{
-		    curr_dim = fm.stringWidth(ConvertToString(y_values[i], wm.YLog()));
+		    curr_dim = fm.stringWidth(Waveform.ConvertToString(y_values[i], wm.YLog()));
 		    if(label_width < curr_dim)
 			label_width = curr_dim;
 		}	
@@ -566,7 +567,7 @@ import java.util.*;
 			    ylabel_offset = 2;
 		    }
 		    
-		    g.drawString(ConvertToString(y_values[i], wm.YLog()), ylabel_offset, curr_dim);
+		    g.drawString(Waveform.ConvertToString(y_values[i], wm.YLog()), ylabel_offset, curr_dim);
 		}
     	    }
 	}
@@ -608,7 +609,7 @@ import java.util.*;
 			}
 		}
 	    g.setColor(prev_col);
-	    curr_string = ConvertToString(x_values[i], wm.XLog());
+	    curr_string = Waveform.ConvertToString(x_values[i], wm.XLog());
 	    curr_dim = dim - fm.stringWidth(curr_string)/2;
 	    if(curr_dim >= label_width && 
 		    dim + fm.stringWidth(curr_string)/2 < d.width)
@@ -630,44 +631,10 @@ import java.util.*;
 	return new Rectangle(label_width, 0, d.width - label_width+1, d.height - label_height+1);
     }
 
-
-    static String ConvertToString(double f, boolean is_log)
-    {
-	double curr_f, curr_f1;
-	double abs_f;
-	int exp;
-	String out;
-	abs_f = Math.abs(f);
-	{
-	    if(abs_f > 1000.)
-	    {
-	    	for(curr_f = f, exp = 0; Math.abs(curr_f) > (double)10; curr_f /=(double)10, exp++);		
-	   	out = (new Float(Math.round(curr_f * 100)/100.)).toString() + "e"+(new Integer(exp)).toString();
-	    }
-	    else if(abs_f < 1E-3 && abs_f > 0)  
-	    {
-	    	for(curr_f = f, exp = 0; Math.abs(curr_f) < 1.; curr_f *=(double)10, exp--);		
-	    	out = (new Float(curr_f)).toString() + "e"+ (new Integer(exp)).toString();
-	    }
-	    else
-	    {
-		int i;
-	    	out = (new Float(f)).toString();
-		out.trim();
-		if(f < 1. && f > -1.) //remove last 0s
-		{
-		    for(i = out.length() - 1; out.charAt(i) == '0'; i--);
-		    out = out.substring(0, i+1);
-		}
-	    }
-    	}
-	out.trim();
-	return out;
-    }	
-}
-
+ }
+ 
 // Definition of Waveform class
-public class Waveform extends Canvas 
+public class Waveform extends Canvas
 {
 
     WaveSetup controller;
@@ -714,7 +681,7 @@ public class Waveform extends Canvas
 	update_timestamp = 0;
 	x_log = y_log = false;
 	controller = c;
-	Dimension d = size();
+	Dimension d = getSize();
 	waveform_signal = new Signal(s, 1000);
  // Reshape al piu' con 1000 punti
 	first_set_point = true;
@@ -728,6 +695,7 @@ public class Waveform extends Canvas
 	interpolate = true;
 	marker = NONE;
 	marker_width = 6; 
+	setMouse();
   }
 
     public Waveform(WaveSetup c)
@@ -743,6 +711,197 @@ public class Waveform extends Canvas
 	marker = NONE; 
 	marker_width = 6;
 	x_log = y_log = false;
+	setMouse();
+    }
+ 
+    static String ConvertToString(double f, boolean is_log)
+    {
+	    double curr_f, curr_f1;
+	    double abs_f;
+	    int exp;
+	    String out;
+	    abs_f = Math.abs(f);
+	    {
+	        if(abs_f > 1000.)
+	        {
+	    	    for(curr_f = f, exp = 0; Math.abs(curr_f) > (double)10; curr_f /=(double)10, exp++);		
+	   	        out = (new Float(Math.round(curr_f * 100)/100.)).toString() + "e"+(new Integer(exp)).toString();
+	        }
+	        else 
+	            if(abs_f < 1E-3 && abs_f > 0)  
+	            {
+	    	        for(curr_f = f, exp = 0; Math.abs(curr_f) < 1.; curr_f *=(double)10, exp--);		
+	    	        out = (new Float(curr_f)).toString() + "e"+ (new Integer(exp)).toString();
+	            }
+	            else
+	            {
+		            int i;
+	    	        out = (new Float(f)).toString();
+		            out.trim();
+		            if(f < 1. && f > -1.) //remove last 0s
+		            {
+		                for(i = out.length() - 1; out.charAt(i) == '0'; i--);
+		                out = out.substring(0, i+1);
+		            }
+	            }
+    	 }
+	     out.trim();
+	     return out;
+    }	
+    
+   
+    private void setMouse()
+    {
+        final Waveform w = this;
+        addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e)
+            {
+                int x = e.getX();
+                int y = e.getY();
+        
+	            if((e.getModifiers() & Event.ALT_MASK) != 0) 
+	            {
+	                is_mb2 = true;
+	                if(controller != null && mode == MODE_POINT)
+		            controller.BroadcastScale(w);
+	                if(mode == MODE_COPY)
+	                {
+		                HandlePaste();
+		                return;
+	                }
+	            }
+	            else
+	                is_mb2 = false;
+	            if((e.getModifiers() & Event.META_MASK) != 0) //Se e' MB3
+	            {
+    	            if(controller != null && mode != MODE_COPY)
+		                controller.SetSetup(w, x, y);
+	            }
+	            else
+	            {	
+	                if(controller != null)
+		                controller.Hide();     
+	                if(mode != MODE_POINT)
+		                update_timestamp++;
+	                if(mode ==  MODE_COPY)
+	                {
+		                HandleCopy();
+		                return;
+	                }
+    	            start_x = end_x = prev_point_x = x;
+	                start_y = end_y = prev_point_y = y;
+	                prev_clip_w = curr_clip_w = prev_clip_h = curr_clip_h = 0;
+	                dragging = true;
+	                first_set_point = true;
+	                if(mode == MODE_PAN && waveform_signal != null)
+		                waveform_signal.StartTraslate();
+	                if(mode == MODE_POINT && waveform_signal != null)
+		                repaint();
+	            }
+            }
+        
+            public void mouseReleased(MouseEvent e)
+            {
+	            double start_xs, end_xs, start_ys, end_ys;
+	            int idx; 
+	
+                int x = e.getX();
+                int y = e.getY();
+
+	            dragging = false;
+	            if((e.getModifiers() & Event.META_MASK) != 0) //Se e' MB3
+	                return;
+
+	            if(waveform_signal == null)
+	                return;
+	
+	            Dimension d = getSize();
+	            if(mode == MODE_ZOOM && x > start_x && y > start_y)
+	            {
+
+	                start_xs = wm.XValue(start_x, d);
+	                end_xs = wm.XValue(end_x, d);
+	                start_ys = wm.YValue(start_y, d);
+	                end_ys = wm.YValue(end_y, d);	
+	                NotifyZoom(start_xs, end_xs, start_ys, end_ys, update_timestamp);
+	                ReportLimits(start_xs, end_xs, start_ys, end_ys);
+	                not_drawn = true;
+	            }
+	            if(mode == MODE_ZOOM && x == start_x && y == start_y)
+	            {
+	                if((e.getModifiers() & Event.ALT_MASK) != 0)
+		                Resize(x, y, false);
+	                else
+		                Resize(x, y, true);
+	            }
+	            if(mode == MODE_PAN)
+	            {
+	                NotifyZoom(MinXSignal(), MaxXSignal(), MinYSignal(), MaxYSignal(), update_timestamp);
+	                not_drawn = true;
+	            }
+	            if(mode == MODE_POINT)
+	            {
+	                double  curr_x = wm.XValue(end_x, d),
+		            curr_y = wm.XValue(end_y, d);
+		    
+	                curr_y = FindPointY(curr_x, curr_y, first_set_point);
+	                controller.DisplayCoords(w, curr_x, curr_y, GetSelectedSignal(), is_mb2);
+	            }
+	            curr_rect = null;
+	            prev_point_x = prev_point_y = -1;
+	            repaint();
+	            dragging = false;
+            }
+        });
+        
+        addMouseMotionListener(new MouseMotionAdapter() {            
+	        public void mouseDragged(MouseEvent e)
+            {
+	            int curr_width, curr_height, prev_end_x, prev_end_y;
+                int x = e.getX();
+                int y = e.getY();
+
+	            if((e.getModifiers() & Event.META_MASK) != 0) //Se e' MB3
+	                return;
+	            if(waveform_signal == null)
+	                return;
+	            curr_clip_w = x - start_x;
+	            curr_clip_h = y - start_y;
+
+	            prev_end_x = end_x;
+	            prev_end_y = end_y;
+	            end_x = x;
+	            end_y = y;
+	            if(mode == MODE_ZOOM && x > start_x && y > start_y)
+	            {
+	                if(curr_rect == null)
+		                curr_rect = new Rectangle(start_x, start_y, x - start_x, y - start_y);
+	                else
+		                curr_rect.setSize(x - start_x, y - start_y);
+	                repaint();
+	            }
+	            else
+	                curr_rect = null;
+	            if(mode == MODE_POINT) 
+	                repaint();
+	            if(mode == MODE_PAN)
+	            {
+	                Dimension d = getSize();
+	                if(wm.x_log)
+		                pan_delta_x = wm.XValue(start_x, d)/wm.XValue(end_x, d);
+	                else
+		                pan_delta_x = wm.XValue(start_x, d) - wm.XValue(end_x, d);
+	                if(wm.y_log)
+		                pan_delta_y = wm.YValue(start_y, d)/wm.YValue(end_y, d);
+	                else
+		                pan_delta_y = wm.YValue(start_y, d) - wm.YValue(end_y, d);
+	                not_drawn = false;
+	                repaint();
+	            }
+            }
+        });
+        
+        
     }
 
     public void Erase()
@@ -843,7 +1002,7 @@ public class Waveform extends Canvas
     void DrawWave()
     {
 	Integer ic;
- 	Dimension d = size();
+ 	Dimension d = getSize();
 	int i, x[] = new int[waveform_signal.n_points],
 	y[] = new int[waveform_signal.n_points];
 	points = new Point[waveform_signal.n_points];
@@ -864,7 +1023,7 @@ public class Waveform extends Canvas
 
 	Float fc_x, fc_y;
 	int idx, plot_y;
-	Dimension d = size();
+	Dimension d = getSize();
 	Graphics g1;
 	double curr_x, curr_y, xmax = 1, ymax = 1, xmin = 0, ymin = 0;
 	if(not_drawn || prev_width != d.width 
@@ -902,6 +1061,7 @@ public class Waveform extends Canvas
 		off_graphics.setColor(Color.lightGray);
 	    off_graphics.fillRect(0, 0, d.width, d.height);
 	    off_graphics.setColor(Color.black);
+	    off_graphics.drawRect(0, 0, d.width - 1, d.height - 1);
 	    grid.paint(off_graphics, d, this, wm);
 	    if(waveform_signal != null)
 	    {
@@ -921,15 +1081,13 @@ public class Waveform extends Canvas
 	{
 	    if(curr_rect != null)
 	    {
-	    	g.clearRect(start_x, start_y, prev_clip_w,
-		    prev_clip_h);
+	    	g.clearRect(start_x, start_y, prev_clip_w, prev_clip_h);
 		g1 = g.create();
 	  	g1.clipRect(start_x, start_y, prev_clip_w + 4, prev_clip_h + 4);
 	    	g1.drawImage(off_image, 0, 0, this);	
 	    	prev_clip_w = curr_clip_w;
 	    	prev_clip_h = curr_clip_h;
-	    	g.drawRect(curr_rect.x, curr_rect.y, curr_rect.width,
-		    curr_rect.height);
+	    	g.drawRect(curr_rect.x, curr_rect.y, curr_rect.width, curr_rect.height);
 	    }
 	    else 
 	    {
@@ -1008,7 +1166,7 @@ public class Waveform extends Canvas
 
     protected void DrawSignal(Graphics g)
     {	
-	Dimension d = size();
+	Dimension d = getSize();
 	Shape prev_clip = g.getClip();
 	DrawWave();
 	
@@ -1017,7 +1175,7 @@ public class Waveform extends Canvas
         if(marker != NONE)
 	DrawMarkers(g, points, num_points, marker);
         if(waveform_signal.error)
-	    DrawError(off_graphics, size(), waveform_signal);
+	    DrawError(off_graphics, getSize(), waveform_signal);
 	g.setClip(prev_clip);
     }	
     protected double MaxXSignal() 
@@ -1047,49 +1205,15 @@ public class Waveform extends Canvas
 	    return  waveform_signal.ymin - 1E-3 - Math.abs(waveform_signal.ymax);
 	return waveform_signal.ymin;
     }
+       
     
-    public boolean mouseDown(Event e, int x, int y)
-    {
-	if((e.modifiers & Event.ALT_MASK) != 0) 
-	{
-	    is_mb2 = true;
-	    if(controller != null && mode == MODE_POINT)
-		controller.BroadcastScale(this);
-	    if(mode == MODE_COPY)
-		return false;
-	}
-	else
-	    is_mb2 = false;
-	if((e.modifiers & Event.META_MASK) != 0) //Se e' MB3
-	{
-    	    if(controller != null && mode != MODE_COPY)
-		controller.SetSetup(this, x, y);
-	}
-	else
-	{	
-	    if(controller != null)
-		controller.Hide();     
-	    if(mode != MODE_POINT)
-		update_timestamp++;
-	    if(mode ==  MODE_COPY)
-	    {
-		HandleCopy();
-		return false;
-	    }
-    	    start_x = end_x = prev_point_x = x;
-	    start_y = end_y = prev_point_y = y;
-	    prev_clip_w = curr_clip_w = prev_clip_h = curr_clip_h = 0;
-	    dragging = true;
-	    first_set_point = true;
-	    if(mode == MODE_PAN && waveform_signal != null)
-		waveform_signal.StartTraslate();
-	    if(mode == MODE_POINT && waveform_signal != null)
-		repaint();
-	}
-        return false;
-    }
+    
+
+    
+    
     
     protected void HandleCopy() {}
+    protected void HandlePaste() {}
 
     protected void DrawMarkers(Graphics g, Point pnt[], int n_pnt, int mode)
     {
@@ -1152,7 +1276,7 @@ public class Waveform extends Canvas
 	public void UpdatePoint(double curr_x)
 	{
 		double xrange;
-		Dimension d = size();
+		Dimension d = getSize();
 		if(dragging || mode != MODE_POINT || waveform_signal == null)
 			return;
 		if(curr_x < waveform_signal.x[0])
@@ -1167,101 +1291,6 @@ public class Waveform extends Canvas
 
 	
 	
-	public boolean mouseDrag(Event e, int x, int y)
-    {
-	int curr_width, curr_height, prev_end_x, prev_end_y;
-
-	if((e.modifiers & Event.META_MASK) != 0) //Se e' MB3
-	    return true;
-	if(waveform_signal == null)
-	    return true;
-	curr_clip_w = x - start_x;
-	curr_clip_h = y - start_y;
-
-	prev_end_x = end_x;
-	prev_end_y = end_y;
-	end_x = x;
-	end_y = y;
-	if(mode == MODE_ZOOM && x > start_x && y > start_y)
-	{
-	    if(curr_rect == null)
-		curr_rect = new Rectangle(start_x, start_y, 
-			x - start_x, y - start_y);
-	    else
-		curr_rect.setSize(x - start_x, y - start_y);
-	    repaint();
-	}
-	else
-	    curr_rect = null;
-	if(mode == MODE_POINT) 
-	    repaint();
-	if(mode == MODE_PAN)
-	{
-	    Dimension d = size();
-	    if(wm.x_log)
-		pan_delta_x = wm.XValue(start_x, d)/wm.XValue(end_x, d);
-	    else
-		pan_delta_x = wm.XValue(start_x, d) - wm.XValue(end_x, d);
-	    if(wm.y_log)
-		pan_delta_y = wm.YValue(start_y, d)/wm.YValue(end_y, d);
-	    else
-		pan_delta_y = wm.YValue(start_y, d) - wm.YValue(end_y, d);
-	    not_drawn = false;
-	    repaint();
-	}
-	return false;
-    }
-
-    public boolean mouseUp(Event e, int x, int y)
-    {
-	double start_xs, end_xs, start_ys, end_ys;
-	int idx; 
-	
-	dragging = false;
-	if((e.modifiers & Event.META_MASK) != 0) //Se e' MB3
-	    return true;
-
-	if(waveform_signal == null)
-	    return true;
-	
-	Dimension d = size();
-	if(mode == MODE_ZOOM && x > start_x && y > start_y)
-	{
-
-	    start_xs = wm.XValue(start_x, d);
-	    end_xs = wm.XValue(end_x, d);
-	    start_ys = wm.YValue(start_y, d);
-	    end_ys = wm.YValue(end_y, d);	
-	    NotifyZoom(start_xs, end_xs, start_ys, end_ys, update_timestamp);
-	    ReportLimits(start_xs, end_xs, start_ys, end_ys);
-	    not_drawn = true;
-	}
-	if(mode == MODE_ZOOM && x == start_x && y == start_y)
-	{
-	    if((e.modifiers & Event.ALT_MASK) != 0)
-		Resize(x, y, false);
-	    else
-		Resize(x, y, true);
-	}
-	if(mode == MODE_PAN)
-	{
-	    NotifyZoom(MinXSignal(), MaxXSignal(), MinYSignal(), MaxYSignal(), update_timestamp);
-	    not_drawn = true;
-	}
-	if(mode == MODE_POINT)
-	{
-	    double  curr_x = wm.XValue(end_x, d),
-		    curr_y = wm.XValue(end_y, d);
-		    
-	    curr_y = FindPointY(curr_x, curr_y, first_set_point);
-	    controller.DisplayCoords(this, curr_x, curr_y, GetSelectedSignal(), is_mb2);
-	}
-	curr_rect = null;
-	prev_point_x = prev_point_y = -1;
-	repaint();
-	dragging = false;
-	return false;
-    }
     protected void NotifyZoom(double start_xs, double end_xs, double start_ys, double end_ys,
 	int timestamp) {}
 
@@ -1353,7 +1382,7 @@ public class Waveform extends Canvas
 
     protected void Resize(int x, int y, boolean enlarge)
     {
-	Dimension d = size();
+	Dimension d = getSize();
 	double  curr_x = wm.XValue(x, d),
 		curr_y = wm.YValue(y, d),
 		prev_xmax = wm.XMax(), 

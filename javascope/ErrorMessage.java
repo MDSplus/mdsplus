@@ -79,7 +79,7 @@ class ErrorMessage extends ScopePositionDialog {
 	if(n_row < MAX_ERROR_ROW)
 	{	
 	    if((end = error.indexOf(10)) != -1)
-		add(new Label(error.substring(0, end - 1)));
+		add(new Label(error.substring(0, end)));
 	    else
 		add(new Label(error.substring(0, error.length())));	
 	    n_row++;
@@ -112,7 +112,7 @@ class ErrorMessage extends ScopePositionDialog {
 	    break;	    
 	}
 	pack();
-	setResizable(true);	    
+	setResizable(false);	    
 	setPosition(f);
 	show();
 	return 1;
@@ -128,13 +128,19 @@ class ErrorMessage extends ScopePositionDialog {
 	    return;
 
     	removeAll();
-		
-	while((end = error.indexOf('\n', start)) != -1)
-	{
-	    add(new Label(error.substring(start, end)));
-	    start = end + 1;
+	
+	if(error.indexOf('\n', start) != -1)
+	{	
+	    while((end = error.indexOf('\n', start)) != -1)
+	    {
+		add(new Label(error.substring(start, end)));
+		start = end + 1;
+		n_row++;
+	    }
+	} else {
+	    add(new Label(error));
 	    n_row++;
-	}
+	}    
 	
  
     }
@@ -149,7 +155,7 @@ class ErrorMessage extends ScopePositionDialog {
     {
          Object ob = e.getSource();	
 
-
+	f.validate();
 	switch(msg_type)
 	{
 	    case ERROR_TYPE :	

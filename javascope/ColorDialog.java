@@ -1,12 +1,12 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.*;
-import java.util.*;
+import java.util.Vector;
 import java.io.*;
 
 
 class ColorDialog extends ScopePositionDialog  {
-    java.awt.List colorList;
+    List colorList;
     TextField colorName;
     Choice color;
     Slider red, green, blue;
@@ -44,7 +44,7 @@ class ColorDialog extends ScopePositionDialog  {
 
         super(dw, title, true);
 	setResizable(false);
-	super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
+	//super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
 
 	main_scope = (jScope)dw;
 	
@@ -96,13 +96,14 @@ class ColorDialog extends ScopePositionDialog  {
 	c.gridwidth = GridBagConstraints.REMAINDER;
 	color_test = new Canvas();
 //	color_test.setBounds(10,10,10,10);
+	color_test.setBackground(Color.black);	      	      
         gridbag.setConstraints(color_test, c);
 	add(color_test);
 	
 
 	c.gridwidth = 2;
 	c.gridheight = 5;
-	colorList = new java.awt.List(12, false);
+	colorList = new List(12, false);
 	colorList.addItemListener(this);
 	colorList.addKeyListener(this);			
         gridbag.setConstraints(colorList, c);
@@ -210,7 +211,7 @@ class ColorDialog extends ScopePositionDialog  {
     
     public  Color GetColorAt(int idx)
     {
-	if(idx < color_set.size())
+	if(idx >= 0 && idx < color_set.size())
 	{
 	    Color color = ((Item)color_set.elementAt(idx)).color;
 	    return color;
@@ -220,7 +221,7 @@ class ColorDialog extends ScopePositionDialog  {
     
     public  String GetNameAt(int idx)
     {
-	if(idx < color_set.size())
+	if(idx >= 0 && idx < color_set.size())
 	{
 	    String name = ((Item)color_set.elementAt(idx)).name;
 	    return name;
@@ -290,7 +291,8 @@ class ColorDialog extends ScopePositionDialog  {
 	red.setValue(c.getRed());
 	green.setValue(c.getGreen());
 	blue.setValue(c.getBlue());
-	color_test.setBackground(c);	      	      
+	color_test.setBackground(c);
+	color_test.repaint();	      	      
    }
    
    private void AddUpdateItem(String name, Color color)
@@ -362,30 +364,23 @@ class ColorDialog extends ScopePositionDialog  {
     }
 
     
-    public int fromFile(String conf_file, String prompt)
+    public int fromFile(BufferedReader in, String prompt) throws IOException
     {
     	String str;
 	int error = 0;
 	removeAllColorItems();
 
-	try {
-	    BufferedReader in = new BufferedReader(new FileReader(conf_file));
-     
-	    while((str = in.readLine()) != null) {
+	while((str = in.readLine()) != null) {
 
-		if(str.indexOf(prompt) != -1)
-    		{
-		    int len;
-		    int i = new Integer(str.substring("Scope.item_color_".length(), len = str.indexOf(":"))).intValue();
-		    String name = new String(str.substring(len  + 2, len = str.indexOf(",")));
-		    Color cr = StringToColor(new String(str.substring(len + 2, str.length())));
-		    insertItemAt(name, cr, i);
-		    continue;
-    		}
+	    if(str.indexOf(prompt) != -1)
+	    {
+		int len;
+		int i = new Integer(str.substring("Scope.item_color_".length(), len = str.indexOf(":"))).intValue();
+		String name = new String(str.substring(len  + 2, len = str.indexOf(",")));
+		Color cr = StringToColor(new String(str.substring(len + 2, str.length())));
+		insertItemAt(name, cr, i);
+		continue;
 	    }
-    
-    	} catch(Exception e) {
-	    error = 1;
 	}
 	return error;
     }
@@ -439,5 +434,6 @@ class ColorDialog extends ScopePositionDialog  {
 	    color_set_clone = null;
 	    setVisible(false);
 	}
+	main_scope.validate();
     }
 }

@@ -2,7 +2,7 @@ import java.awt.*;
 import java.util.*;
 
 
-public class MultiWaveform extends Waveform
+public class MultiWaveform extends Waveform implements MdsEventListener
 /**
 Class MultiWaveform extends the capability of class Waveform to deal with multiple
 waveforms.
@@ -42,7 +42,13 @@ waveforms.
 	super.Erase();
     }
     
-    
+  public void processMdsEvent(MdsEvent e)
+  {
+    controller.Refresh(this, " on event " + e.name);
+  }
+  
+  
+
     public void Update(WaveInterface _wi)
     {
 	wi = _wi;
@@ -54,7 +60,7 @@ waveforms.
 	    crosshair_color = colors[curr_point_sig_idx % num_colors];
 	    first_set_point = true;
 	}
-    	super.x_label = wi.xlabel;
+    super.x_label = wi.xlabel;
 	super.y_label = wi.ylabel;
 	super.x_log = wi.x_log;
 	super.y_log = wi.y_log;
@@ -161,7 +167,7 @@ waveforms.
     {	
 	int i, j, x[], y[];
 	Point curr_points[];
-	Dimension d = size();
+	Dimension d = getSize();
 	Vector segments = null;
 		
 	int step, num_steps;
@@ -208,7 +214,7 @@ waveforms.
 		else
 		    DrawMarkers(g, segments, markers[i], 1);
 	    if(signals[i].error)
-		DrawError(g, size(), signals[i]);
+		DrawError(g, getSize(), signals[i]);
 	}
     }
 
@@ -402,16 +408,47 @@ protected void NotifyZoom(double start_xs, double end_xs, double start_ys, doubl
 	    (float)orig_xmin, (float)orig_xmax, update_timestamp, mode == MODE_PAN, this);
 }	
 
-
 protected void HandleCopy()
 {
-//    if(copy_wi == null)
-    if((copy_wi = controller.GetSource()) == null && !IsSelected())
+    if(IsSelected())
+	return;
+    if(wi != null && controller.GetSource() == null)
     {
 	copy_wi = wi;
 	source_copy_w = (Waveform)this;
 	controller.SetSourceCopy(source_copy_w);
 	SetSelected(true);
+    }
+}
+
+protected void HandlePaste()
+{
+    if(IsSelected())
+    {
+	copy_wi = null;
+	SetSelected(false);
+	controller.SetSourceCopy(null);
+    }
+    else
+    {
+	//Update(copy_wi);
+	if(controller.GetSource() != null)
+	    controller.NotifyChange((Waveform)this, source_copy_w);
+    }
+}
+
+protected void HandleCopyOld()
+{
+//    if(copy_wi == null)
+    if((copy_wi = controller.GetSource()) == null && !IsSelected())
+    {
+	if(wi != null)
+	{
+	    copy_wi = wi;
+	    source_copy_w = (Waveform)this;
+	    controller.SetSourceCopy(source_copy_w);
+	    SetSelected(true);
+	}
     }
     else
     {

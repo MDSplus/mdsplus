@@ -1,5 +1,7 @@
 import java.io.*;
 import java.net.*;
+import java.awt.*;
+import java.util.Vector;
 
 //public class NetworkProvider implements DataProvider {
 
@@ -12,6 +14,8 @@ public    static final byte DTYPE_SHORT = 7;
 public    static final byte DTYPE_LONG = 8;
 public    static final byte DTYPE_FLOAT = 10;
 public    static final byte DTYPE_WORDU = 3;
+public    static final byte DTYPE_EVENT = 99;
+
 
 public    byte dtype;
 public    float float_data[];
@@ -19,8 +23,8 @@ public	  int   int_data[];
 public	  String strdata;
 public	  String error;
 
-
 }
+
 
 public class NetworkProvider implements DataProvider {
     String provider;
@@ -28,8 +32,29 @@ public class NetworkProvider implements DataProvider {
     int shot;
     boolean open, connected;
     Mds mds;
+    MdsEventManager mdsEventManager = new MdsEventManager();
     public String error;
     
+/*
+    private Vector mdsEventList     = new Vector();
+
+static class MdsEventItem
+{
+    String  name;
+    Vector  listener = new Vector();
+    
+    MdsEventItem (String name, MdsEventListener l)
+    {
+        this.name = name;
+        listener.addElement((Object) l);
+    }
+    
+    public String toString()
+    {
+        return name;
+    }
+}
+*/
 
 public NetworkProvider()
 {
@@ -39,6 +64,7 @@ public NetworkProvider()
     mds = new Mds();
     error = null;
 }
+
 public NetworkProvider(String _provider)
 {
     provider = _provider;
@@ -48,6 +74,7 @@ public NetworkProvider(String _provider)
     mds = new Mds(provider);
     error = null;
 }
+
 public NetworkProvider(String exp, int s)
 {
     experiment = exp;
@@ -273,8 +300,46 @@ private boolean NotYetNumber(String in)
 
     return ris;
 }
-  
-}	      
+
+public synchronized void addMdsEventListener(MdsEventListener l, String event_name){
+    
+    int eventid;
+    
+    if(!connected)
+    {
+	  if(mds.ConnectToMds() == 0)
+	  {
+         System.out.println("Could not get IO for "+provider);
+      } else
+         connected = true;
+    }
+    if((eventid = mdsEventManager.AddEvent(l, event_name)) != -1)
+	    mds.MdsSetEvent(event_name, eventid);
+    
+}
+
+public synchronized void removeMdsEventListener(MdsEventListener l, String event_name){
+
+   int eventid;
+    
+    if(!connected)
+    {
+	  if(mds.ConnectToMds() == 0)
+	  {
+         System.out.println("Could not get IO for "+provider);
+      } else
+         connected = true;
+    } 
+   if((eventid = mdsEventManager.RemoveEvent(l, event_name)) != -1)
+	    mds.MdsRemoveEvent(event_name, eventid);
+
+}
+
+protected synchronized void processActionEvent(int eventid) {
+    mdsEventManager.FireEvent(eventid);
+}
+
+//} fine network	      
 								  
 class Mds {
     /**
@@ -285,50 +350,111 @@ class Mds {
     DataInputStream dis;
     DataOutputStream dos; 
     public String error; 
+    MdsReceiveThread receiveThread;
 
     public Mds () {sock = null; dis = null; dos = null; provider = null;}
     public Mds (String _provider) {sock = null; dis = null; dos = null; provider = _provider;}
+
+class ProcessMdsEventThread extends Thread
+{
+    int eventid;
+    
+    
+        public void run()
+        {
+	       processActionEvent(eventid);
+        }
+        
+        public void SetEventid(int id)
+        {
+            eventid = id;
+        }
+    
+    }
+	
+	class MdsReceiveThread extends Thread
+	{
+        MdsMessage message;
+
+	    public void run()
+	    {
+    	    MdsMessage curr_message;
+	        try {
+	            while(true)
+	            {
+    	            curr_message = new MdsMessage("");
+	                curr_message.Receive(dis);
+	                if(curr_message.dtype == Descriptor.DTYPE_EVENT) {
+//	                    System.out.println("Ricevuto evento");
+                        ProcessMdsEventThread PMdsEvent = new ProcessMdsEventThread();
+                        PMdsEvent.SetEventid(curr_message.body[12]);
+                        PMdsEvent.start();
+	                } else {
+//	                    System.out.println("Ricevuto messaggio");
+	                    message = curr_message;
+	                    Mds.this.ReceiveNotify();
+	                }
+	            }
+	        } catch(IOException e) { System.out.println("Could not get IO for "+provider + e);}  
+	    }
+	    
+	    public MdsMessage GetMessage()
+	    {
+	       return message;
+	    }
+	    
+	}
+	
+	public synchronized void ReceiveNotify()
+	{
+	    notify();
+	}    
 	
 
     // Read either a string or a float array
-    public  Descriptor MdsValue(String expr)
+    public synchronized  Descriptor MdsValue(String expr)
     {
 	int i, status;
 	Descriptor out = new Descriptor();
-    	MdsMessage message = new MdsMessage(expr);
-	try {
-	message.nargs = 1;
-	message.Send(dos);
-	message.Receive(dis);
-	if(message.length == 0)
-	{
-	    out.error = "Null response from server";
-	    return out;
-	}
-	switch (out.dtype = message.dtype)
-	{
-	    case Descriptor.DTYPE_CHAR:
-		out.strdata = new String(message.body);
-		break;
-	    case Descriptor.DTYPE_WORDU:
-	    case Descriptor.DTYPE_SHORT:
-		short data[] = message.ToShortArray();
-		out.int_data = new int[data.length];
-		for(i = 0; i < data.length; i++)
-		   out.int_data[i] = (int)data[i];
-		out.dtype = Descriptor.DTYPE_LONG;
-		break;
-	    case Descriptor.DTYPE_LONG:
-		out.int_data = message.ToIntArray();
-		break;
-	    case Descriptor.DTYPE_FLOAT:
-		out.float_data = message.ToFloatArray();
-		break;
-	    case Descriptor.DTYPE_CSTRING:
-		out.error = new String(message.body);
-		break;
-	}
+    MdsMessage message = new MdsMessage(expr);
+
+    try {
+	    message.nargs = 1;
+	    message.Send(dos);
+//	    message.Receive(dis);
+	    wait();
+        message = receiveThread.GetMessage();
+    
+	    if(message.length == 0)
+	    {
+	        out.error = "Null response from server";
+	        return out;
+	    }
+	    switch (out.dtype = message.dtype)
+	    {
+	        case Descriptor.DTYPE_CHAR:
+		        out.strdata = new String(message.body);
+		    break;
+	        case Descriptor.DTYPE_WORDU:
+	        case Descriptor.DTYPE_SHORT:
+		        short data[] = message.ToShortArray();
+		        out.int_data = new int[data.length];
+		        for(i = 0; i < data.length; i++)
+		            out.int_data[i] = (int)data[i];
+		        out.dtype = Descriptor.DTYPE_LONG;
+		    break;
+	        case Descriptor.DTYPE_LONG:
+		        out.int_data = message.ToIntArray();
+		    break;
+	        case Descriptor.DTYPE_FLOAT:
+		        out.float_data = message.ToFloatArray();
+		    break;
+	        case Descriptor.DTYPE_CSTRING:
+		        out.error = new String(message.body);
+		    break;
+	    }
 	} catch(IOException e) { out.error = new String("Could not get IO for "+provider + e);}
+      catch (InterruptedException e) {out.error = new String("Could not get IO for "+provider + e);}  
 	return out;
     }		
     	    
@@ -340,8 +466,6 @@ class Mds {
 	} catch(IOException e) { error.concat("Could not get IO for"+provider + e); return 0;}
 	return 1;	
     }	    
-
-    
     
     public int ConnectToMds()
     {
@@ -366,11 +490,58 @@ class Mds {
 	    MdsMessage message = new MdsMessage("JAVA_USER");
 	    message.Send(dos);
 	    message.Receive(dis);
+	    
+	    receiveThread = new MdsReceiveThread();
+	    receiveThread.start();
+	    
 	} catch(UnknownHostException e) {error="pdigi1 unknown"; return 0;}
 	  catch(IOException e) { error = "Could not get IO for " +provider+ e; return 0;}
+
+
 	return 1;
     }
+    
+    public void MdsSetEvent(String event, int idx)
+    {
+       MdsMessage event_ast = new MdsMessage(MdsMessage.EVENTASTREQUEST);
+       MdsMessage event_msg = new MdsMessage(event);
+       MdsMessage event_id = new MdsMessage((byte)idx);
+ //      System.out.println("Set event "+event+" "+idx);
+	   try {
+	     
+	     event_ast.descr_idx = 0;
+	     event_ast.nargs = 3;
+         event_ast.Send(dos);
+         MdsMessage.msgid--;     
+	     event_msg.descr_idx = 1;
+	     event_msg.nargs = 3;
+         event_msg.Send(dos);
+         MdsMessage.msgid--;
+	     event_id.descr_idx = 2;
+	     event_id.nargs = 3;
+         event_id.Send(dos);        
+       } catch(IOException e) {System.out.println("Could not get IO for "+provider + e);}       
+    }
+
+    public void MdsRemoveEvent(String event, int idx)
+    {
+       MdsMessage event_can = new MdsMessage(MdsMessage.EVENTCANREQUEST);
+       MdsMessage event_msg = new MdsMessage(event);
+       MdsMessage event_id = new MdsMessage(""+idx);
+ //      System.out.println("Remove event "+event+" "+idx);
+	   try {
+	     event_can.descr_idx = 0;
+	     event_can.nargs = 2;
+         event_can.Send(dos);
+         MdsMessage.msgid--;
+	     event_id.descr_idx = 1;
+	     event_id.nargs = 2;
+         event_id.Send(dos);        
+       } catch(IOException e) { System.out.println("Could not get IO for "+provider + e);}
+    }    
 }
+}
+
 
 class MdsMessage extends Object
 {
@@ -378,7 +549,10 @@ class MdsMessage extends Object
 public    static final byte BIG_ENDIAN_MASK = (byte)0x80;
 public    static final byte SWAP_ENDIAN_ON_SERVER_MASK = (byte)0x40;
 public    static final byte JAVA_CLIENT = 3 | BIG_ENDIAN_MASK | SWAP_ENDIAN_ON_SERVER_MASK;
-static   int msgid = 0;
+public    static final String EVENTASTREQUEST = "---EVENTAST---REQUEST---";
+public    static final String EVENTCANREQUEST = "---EVENTCAN---REQUEST---";
+
+static    int msgid = 0;
     	  int msglen;
 public    int status;
 public    short length;
@@ -392,6 +566,7 @@ public    byte ndims;
 public    int dims[];
 public    byte body[];
 private   boolean swap = false;
+
     
 public MdsMessage(String s)
 {
@@ -409,6 +584,23 @@ public MdsMessage(String s)
     body = s.getBytes();
 }
 
+public MdsMessage(byte c)
+{
+    msglen = 49;
+    status = 0;
+    length = 1;
+    nargs = 0;
+    descr_idx = 0;
+    ndims = 0;
+    dims = new int[Descriptor.MAX_DIM];
+    for(int i = 0; i < Descriptor.MAX_DIM; i++)
+	dims[i] = 0;
+    dtype = Descriptor.DTYPE_CSTRING;
+    client_type = JAVA_CLIENT;
+    body = new byte[1];
+    body[0] = c;
+}
+
 private void ReadBuf(byte buf[], DataInputStream dis) throws IOException
 {
     int bytes_to_read = buf.length, read_bytes = 0, curr_offset = 0;
@@ -422,7 +614,7 @@ private void ReadBuf(byte buf[], DataInputStream dis) throws IOException
       
 	
 
-public void Send(DataOutputStream dos) throws IOException
+public synchronized void Send(DataOutputStream dos) throws IOException
 {
 
     msglen = 48 + body.length;
@@ -443,7 +635,7 @@ public void Send(DataOutputStream dos) throws IOException
 }
 	
 	 
-public void Receive(DataInputStream dis)throws IOException
+public synchronized void Receive(DataInputStream dis)throws IOException
 {
     byte msglen_b[] = new byte[4];
     byte status_b[] = new byte[4];

@@ -10,4 +10,6 @@ public class LocalProvider implements DataProvider {
     native public int[] GetIntArray(String in);
     native public String ErrorString();
     public boolean SupportsAsynch() { return false; }
+    public void addMdsEventListener(MdsEventListener l, String event){}
+    public void removeMdsEventListener(MdsEventListener l, String event){}
     }	    

@@ -3,7 +3,7 @@ import java.util.Vector;
 
 public class RowColumnLayout implements LayoutManager {
 
-    private int vgap = 2, hgap = 2;
+    private int vgap = 0, hgap = 0;
     private int minWidth = 0, minHeight = 0;
     private int maxWidth = 0, maxHeight = 0;
     private int preferredWidth = 0, preferredHeight = 0;
@@ -332,9 +332,9 @@ public class RowColumnLayout implements LayoutManager {
 		    {
 		       Component b = parent.getComponent(k);		
 		       if(j == row[i] - 1) 	    
-			  b.setBounds(x + d.width - hgap , maxHeight - 10, 4, 8);
+			  b.setBounds(x + d.width - hgap - 2, maxHeight - 20, 4, 8);
 		       else 		    
-			  b.setBounds(x + d.width - 10,  c.getBounds().y + c.getBounds().height , 8, 4 );
+			  b.setBounds(x + d.width - 25,  c.getBounds().y + c.getBounds().height - 2, 8, 4 );
 		    }
 		}
 		k++;
@@ -368,9 +368,9 @@ public class RowColumnLayout implements LayoutManager {
 		{
 		    Component b = parent.getComponent(k);		
 		    if(j == row[col_idx] - 1)
-		      b.setBounds(c.getBounds().x + c.getBounds().width - hgap, maxHeight - 10, 4, 8);		     		    
+		      b.setBounds(c.getBounds().x + c.getBounds().width - hgap - 2, maxHeight - 20, 4, 8);		     		    
 		    else 	    
-		      b.setBounds(c.getBounds().x +  c.getBounds().width - 10, y + d.height, 8, 4 );
+		      b.setBounds(c.getBounds().x +  c.getBounds().width - 25, y + d.height -2, 8, 4 );
 		}
 	     }
 	     k++;
@@ -471,9 +471,9 @@ public class RowColumnLayout implements LayoutManager {
 		{
 		    Component b = parent.getComponent(k);		
 		    if(j == row[i] - 1) 	    
-		      b.setBounds(x + d.width - hgap, maxHeight - 10, 4, 8);		     
+		      b.setBounds(x + d.width - hgap - 2, maxHeight - 20, 4, 8);		     
 		    else 		    
-		      b.setBounds(x + previousWidth - 10, y + d.height, 8, 4);
+		      b.setBounds(x + previousWidth - 25, y + d.height - 2, 8, 4);
 		}
 	     }
 	     k++;

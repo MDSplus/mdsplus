@@ -9,6 +9,7 @@ public class SetupDefaults extends ScopePositionDialog {
    TextField        title, shot, experiment;
    TextField        x_max, x_min, x_label;
    TextField        y_max, y_min, y_label;
+   TextField        def_node, upd_event;
    Button           ok, cancel, reset, erase, apply;
    Label            lab;
    int		    shots[];
@@ -16,13 +17,14 @@ public class SetupDefaults extends ScopePositionDialog {
    String xmin, xmax, ymax, ymin;
    String title_str, xlabel, ylabel;
    String experiment_str, shot_str;
+   String upd_event_str, def_node_str;
 
 
    public SetupDefaults(Frame fw, String frame_title) 
    {
 
       super(fw, frame_title, true);
-      super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
+//      super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
       setModal(true);
       setResizable(false);
 
@@ -116,7 +118,26 @@ public class SetupDefaults extends ScopePositionDialog {
       shot = new TextField(30);
       gridbag.setConstraints(shot, c);
       add(shot);
+
       	
+      c.gridwidth = 1;
+      lab = new Label("Update event");
+      gridbag.setConstraints(lab, c);
+      add(lab);	
+      
+      upd_event = new TextField(25);		 	
+      gridbag.setConstraints(upd_event, c);
+      add(upd_event);	
+
+      lab = new Label("Default node");
+      gridbag.setConstraints(lab, c);
+      add(lab);	
+
+      c.gridwidth = GridBagConstraints.REMAINDER;
+      def_node = new TextField(30);
+      gridbag.setConstraints(def_node, c);
+      add(def_node);
+      	      	
       c.fill =  GridBagConstraints.NONE;     
       c.anchor = GridBagConstraints.CENTER;
       c.gridwidth = 1;
@@ -159,6 +180,8 @@ public class SetupDefaults extends ScopePositionDialog {
 	y_label.setText("");
 	experiment.setText("");
 	shot.setText("");
+	upd_event.setText("");
+	def_node.setText("");
    }
    
    private void setTextValue(TextField t, String val)
@@ -172,30 +195,34 @@ public class SetupDefaults extends ScopePositionDialog {
    private void initialize()      
    { 
    
-	eraseForm();	    
-	setTextValue(title, title_str);
-	setTextValue(y_label, ylabel);
-	setTextValue(x_label, xlabel);
+	    eraseForm();	    
+	    setTextValue(title, title_str);
+	    setTextValue(y_label, ylabel);
+	    setTextValue(x_label, xlabel);
         setTextValue(y_max, ymax);
         setTextValue(y_min, ymin);
         setTextValue(x_max, xmax);
         setTextValue(x_min, xmin);
-	setTextValue(experiment, experiment_str);
-	setTextValue(shot, shot_str);		
+	    setTextValue(experiment, experiment_str);
+	    setTextValue(shot, shot_str);		
+	    setTextValue(upd_event, upd_event_str);
+	    setTextValue(def_node, def_node_str);		
    }
    
    private void saveDefaultConfiguration()
    {
 
       experiment_str	= new String(experiment.getText());
-      shot_str		= new String(shot.getText());
-      xmax		= new String(x_max.getText());
-      xmin		= new String(x_min.getText());
-      ymax		= new String(y_max.getText());
-      ymin		= new String(y_min.getText());
-      title_str		= new String(title.getText());
-      xlabel		= new String(x_label.getText());
-      ylabel		= new String(y_label.getText());
+      shot_str		    = new String(shot.getText());
+      xmax		        = new String(x_max.getText());
+      xmin		        = new String(x_min.getText());
+      ymax		        = new String(y_max.getText());
+      ymin		        = new String(y_min.getText());
+      title_str		    = new String(title.getText());
+      xlabel		    = new String(x_label.getText());
+      ylabel		    = new String(y_label.getText());
+      upd_event_str  	= new String(upd_event.getText());
+      def_node_str	    = new String(def_node.getText());
     } 
     
    public String getDefaultValue(int i, boolean def_flag, WaveInterface wi)
@@ -222,6 +249,10 @@ public class SetupDefaults extends ScopePositionDialog {
 	      out =  def_flag ? ymin : wi.cin_ymin; break; 
 	    case WaveInterface.B_y_label:
 	      out =  def_flag ? ylabel : wi.cin_ylabel;break; 
+	    case WaveInterface.B_event:
+	      out =  def_flag ? upd_event_str : wi.cin_upd_event;break; 
+	    case WaveInterface.B_default_node:
+	      out =  def_flag ? def_node_str : wi.cin_def_node;break; 
 	}
 	return out;
    } 
@@ -238,30 +269,46 @@ public class SetupDefaults extends ScopePositionDialog {
       bit = WaveInterface.B_title;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       wi.in_title      = getDefaultValue(bit, def_flag, wi);
+      
       bit = WaveInterface.B_shot;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       wi.in_shot       = getDefaultValue(bit ,  def_flag, wi); 
+      
       bit =WaveInterface.B_exp;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       wi.experiment = getDefaultValue(bit , def_flag , wi);
+      
       bit = WaveInterface.B_x_max;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
-      wi.in_xmax       = getDefaultValue(bit , def_flag , wi); 
+      wi.in_xmax       = getDefaultValue(bit , def_flag , wi);
+      
       bit = WaveInterface.B_x_min;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       wi.in_xmin       = getDefaultValue(bit , def_flag , wi);
+      
       bit = WaveInterface.B_x_label;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       wi.in_xlabel     = getDefaultValue(bit , def_flag , wi); 
+
       bit = WaveInterface.B_y_max;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       wi.in_ymax       = getDefaultValue(bit , def_flag , wi); 
+      
       bit = WaveInterface.B_y_min;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
       wi.in_ymin       = getDefaultValue(bit , def_flag, wi); 
+
       bit = WaveInterface.B_y_label;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
-      wi.in_ylabel     = getDefaultValue(bit , def_flag , wi);
+      wi.in_ylabel     = getDefaultValue(bit , def_flag , wi); 
+
+      bit = WaveInterface.B_default_node;
+      def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
+      wi.in_def_node = getDefaultValue(bit , def_flag , wi);
+      
+      bit = WaveInterface.B_event;
+      def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);      
+      wi.in_upd_event = getDefaultValue(bit , def_flag , wi);
    }   
 
    public void  Show()
@@ -274,6 +321,8 @@ public class SetupDefaults extends ScopePositionDialog {
    public void toFile(BufferedWriter out, String prompt)
    {
 	jScope.writeLine(out, prompt + "experiment: " , experiment_str);
+	jScope.writeLine(out, prompt + "event: " , upd_event_str);
+	jScope.writeLine(out, prompt + "default_node: " , def_node_str);
 	jScope.writeLine(out, prompt + "shot: "       , shot_str);
 	jScope.writeLine(out, prompt + "title: "      , title_str);
 	jScope.writeLine(out, prompt + "xmax: "       , xmax);
@@ -284,73 +333,78 @@ public class SetupDefaults extends ScopePositionDialog {
 	jScope.writeLine(out, prompt + "y_label: "    , ylabel);
    }
 
-   public int fromFile(String conf_file, String prompt)
+   public int fromFile(BufferedReader in, String prompt) throws IOException
    {
 	String str;
 	int error = 0;
-   
-        try {
-	    BufferedReader in = new BufferedReader(new FileReader(conf_file));
      
-	    while((str = in.readLine()) != null) {
-	      
-   		if(str.indexOf("Scope.global_1_1") == 0)
-		{
-		    int len = str.indexOf(":") + 2;
+	while((str = in.readLine()) != null) {
+	  
+	    if(str.indexOf("Scope.global_1_1") == 0)
+	    {
+		int len = str.indexOf(":") + 2;
 
-		    if(str.indexOf(".xmax:") != -1)
-		    {
-			xmax = str.substring(len, str.length());
-			continue;		
-		    }
-		    if(str.indexOf(".xmin:") != -1)
-		    {
-			xmin = str.substring(len, str.length());
-			continue;		
-		    }
-		    		    
-		    if(str.indexOf(".x_label:") != -1)
-		    {
-			xlabel = str.substring(len, str.length());
-			continue;		
-		    }
-		    if(str.indexOf(".ymax:") != -1)
-		    {
-			ymax = str.substring(len, str.length());
-			continue;		
-		    }
-		    if(str.indexOf(".ymin:") != -1)
-		    {
-			ymin = str.substring(len, str.length());
-			continue;		
-		    }
-		    if(str.indexOf(".y_label:") != -1)
-		    {
-			ylabel = str.substring(len, str.length());
-			continue;		
-		    }
-		    if(str.indexOf(".experiment:") != -1)
-		    {
-			experiment_str = str.substring(len, str.length());
-			continue;		
-		    }
-		    if(str.indexOf(".title:") != -1)
-		    {
-			title_str = str.substring(len, str.length());
-			continue;		
-		    }
-		    if(str.indexOf(".shot:") != -1)
-		    {
-			shot_str = str.substring(len, str.length());
-			if(shot_str.indexOf("_shots") != -1) 
-			    shot_str  =  shot_str.substring(shot_str.indexOf("[")+1, shot_str.indexOf("]")); 
-    			shots = main_scope.evaluateShot(shot_str);
-    			continue;		
-		    }		
+		if(str.indexOf(".xmax:") != -1)
+		{
+		    xmax = str.substring(len, str.length());
+		    continue;		
 		}
+		if(str.indexOf(".xmin:") != -1)
+		{
+		    xmin = str.substring(len, str.length());
+		    continue;		
+		}
+				
+		if(str.indexOf(".x_label:") != -1)
+		{
+		    xlabel = str.substring(len, str.length());
+		    continue;		
+		}
+		if(str.indexOf(".ymax:") != -1)
+		{
+		    ymax = str.substring(len, str.length());
+		    continue;		
+		}
+		if(str.indexOf(".ymin:") != -1)
+		{
+		    ymin = str.substring(len, str.length());
+		    continue;		
+		}
+		if(str.indexOf(".y_label:") != -1)
+		{
+		    ylabel = str.substring(len, str.length());
+		    continue;		
+		}
+		if(str.indexOf(".experiment:") != -1)
+		{
+		    experiment_str = str.substring(len, str.length());
+		    continue;		
+		}
+		if(str.indexOf(".title:") != -1)
+		{
+		    title_str = str.substring(len, str.length());
+		    continue;		
+		}
+		if(str.indexOf(".shot:") != -1)
+		{
+		    shot_str = str.substring(len, str.length());
+		    if(shot_str.indexOf("_shots") != -1) 
+			shot_str  =  shot_str.substring(shot_str.indexOf("[")+1, shot_str.indexOf("]")); 
+		    shots = main_scope.evaluateShot(shot_str);
+		    continue;		
+		}		
+		if(str.indexOf(".event:") != -1)
+		{
+		    upd_event_str = str.substring(len, str.length());
+		    continue;		
+		}
+		if(str.indexOf(".default_node:") != -1)
+		{
+		    def_node_str = str.substring(len, str.length());
+		    continue;		
+		}
+	    
 	    }
-	}   catch(Exception e) {
-	    error = 1;
 	}
 	return error;
    }
@@ -362,23 +416,24 @@ public class SetupDefaults extends ScopePositionDialog {
       Object ob = e.getSource();
 
       if(ob == erase)
-	eraseForm();
+	    eraseForm();
 		
       if(ob == cancel)
-	setVisible(false);
+	    setVisible(false);
 
       if(ob == apply || ob == ok)
       {
-	saveDefaultConfiguration();
-	if(ob == ok)
-	    setVisible(false);
-	shots = main_scope.evaluateShot(shot_str);    
-	main_scope.UpdateAllWaves();
+	    saveDefaultConfiguration();
+	    if(ob == ok)
+	        setVisible(false);
+	        shots = main_scope.evaluateShot(shot_str);
+	        main_scope.RemoveAllEvents();
+	        main_scope.UpdateAllWaves();
       }
       
       if(ob == reset)
       {
-	initialize();
+	    initialize();
       }      	
    } 
 }

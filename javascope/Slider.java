@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Vector;
 
 
 class Slider extends Panel implements AdjustmentListener {
@@ -21,7 +22,9 @@ class Slider extends Panel implements AdjustmentListener {
   private int       mode_show;
   private int       mode_pos;
   private int       font_size = 12;
-  transient AdjustmentListener adjustmentListener;
+  private Vector    adjustmentListener = new Vector();
+  private Insets    insets = setInsets();
+  
 
          
   final static int VERTICAL         = Scrollbar.VERTICAL;
@@ -43,11 +46,10 @@ class Slider extends Panel implements AdjustmentListener {
     orientation   = orie;
     mode_show     = LABEL_CURSOR;
     mode_pos      = mode;
-    Insets insets = insets();
  
     setLayout(null);
     
-    scr_slide = new  Scrollbar(orientation, val, 1, min_v, max_v);
+    scr_slide = new  Scrollbar(orientation, val, 1, min_v, max_v+1);
     scr_slide.addAdjustmentListener(this);
     lab = new Label("", Label.LEFT);
 
@@ -68,48 +70,45 @@ class Slider extends Panel implements AdjustmentListener {
   public void setAutoFontSize()
   {
     if(width_size > 0)
-     lab.setFont(new Font("Helvetica", Font.PLAIN, 12)) ; 
+     lab.setFont(new Font("Helvetica", Font.PLAIN, font_size)) ; 
   }
 
-  public Insets insets()
+  public Insets setInsets()
   {
-     return new Insets(5,5,5,8);
+     return new Insets(5,5,5,5);
   }	 
 
   public synchronized void addAdjustmentListener(AdjustmentListener l) {	
-	adjustmentListener = AWTEventMulticaster.add(adjustmentListener, l);
+	adjustmentListener.addElement((Object)l);
   } 
 
   public synchronized void removeAdjustmentListener(AdjustmentListener l) {
-	adjustmentListener = AWTEventMulticaster.remove(adjustmentListener, l);
+	adjustmentListener.removeElement((Object)l);
   }
   
   protected void processAdjustmentEvent(AdjustmentEvent e) {
-	if (adjustmentListener != null) {
-            adjustmentListener.adjustmentValueChanged(e);
-        }
+    for(int i = 0; i < adjustmentListener.size(); i++)
+	((AdjustmentListener)adjustmentListener.elementAt(i)).adjustmentValueChanged(e);
   }
 
 
   public void paint(Graphics g)
   {
 	FontMetrics  fm  = g.getFontMetrics();
-        String       str = new String("" + max_val);
+    String       str = new String("" + max_val);
 
 	if(max_lab_size	== 0) {
-	   max_lab_size = fm.stringWidth(str);
+	       max_lab_size = fm.stringWidth(str);
            if(orientation == VERTICAL)
-	   	width_size += max_lab_size;
-        } 	 
-    	updateLabel();	
-	validateTree(); 
-
+	   	        width_size += max_lab_size;
+    }
+    updateLabel();	
+ 	validateTree(); 
   } 
  
   public void paintSlider() 
   {
 
-     Insets insets = insets();
      String str    = new String("" + max_val);
      int x=0, y=0;
     
@@ -117,41 +116,44 @@ class Slider extends Panel implements AdjustmentListener {
 
      if(orientation == HORIZONTAL) {
        if(mode_pos == POS_LABEL_UP) {
-	   x = insets.left;
+	       x = insets.left;
            y = insets.top + font_size;
        }
        if(mode_pos == POS_LABEL_DOWN) { 
-  	   x = insets.left;
+  	       x = insets.left;
            y = insets.top;
        } 	
      } 
 
      if(orientation == VERTICAL) {
        if(mode_pos == POS_LABEL_RIGHT) {
-	   x = insets.left;
+	       x = insets.left;
            y = insets.top;
        } 
        if(mode_pos == POS_LABEL_LEFT) {
-	   x = width_size - insets.right - w_scr;
+	       x = width_size - insets.right - w_scr;
            y = insets.top;
        }	
      } 
      scr_slide.setBounds(x, y, w_scr, h_scr);
      lab.setSize(max_lab_size, font_size);	
    }
+/*
+   public Dimension getPreferedSize()
+   {
+        return(new Dimension(0, 0));
+   }
 
-
-
-   public Dimension minimumSize() {
+   public Dimension setMinimumSize() {
 	if ((getSize().width == 0) || (getSize().height == 0)) {
 		setSize(width_size, height_size);
 	}	      
 	return (new Dimension(getSize().width,getSize().height));
    }
+*/
 
   public  void mySetSize(int width, int height)
   {
-      Insets insets = insets();
       w_scr = width;
       h_scr = height;
  
@@ -188,7 +190,6 @@ class Slider extends Panel implements AdjustmentListener {
   private void updateLabel()
   {
 
-     Insets insets = insets();
      int val = value - min_val;
 
      int x=0, y=0;	
@@ -201,12 +202,12 @@ class Slider extends Panel implements AdjustmentListener {
        x = (int)(step * val)  + h_scr - len/2 + insets.left;
 
        if(step < 0 )
-	 step = 0;
+	        step = 0;
         
        if(mode_pos == POS_LABEL_UP)
-	  y = insets.top;
+	        y = insets.top - 2;
        if(mode_pos == POS_LABEL_DOWN)
-          y = insets.top + h_scr;
+            y = insets.top + h_scr + 2;
      }
 
      if(orientation == VERTICAL) {
@@ -215,10 +216,10 @@ class Slider extends Panel implements AdjustmentListener {
        y = (int)(step * val) + offset;
  
        if(mode_pos == POS_LABEL_RIGHT) 
-	 x = insets.left + w_scr;
+	       x = insets.left + w_scr;
 
        if(mode_pos == POS_LABEL_LEFT) 
-       	 x = insets.left;      
+       	   x = insets.left - 3;      
      }
      lab.setLocation(x, y);
    }

@@ -15,26 +15,31 @@ import java.util.Vector;
    TextField		    title, shot, experiment;
    TextField		    x_max, x_min, x_label, y_expr;
    TextField		    y_max, y_min, y_label, x_expr;
-   private Button           browser, error, y_browser, expand;
-   private Button           ok, cancel, reset, erase, apply, x_browser, add_shot;
+   TextField            upd_event, def_node;
+   private Button       browser, error, y_browser, expand;
+   private Button       ok, cancel, reset, erase, apply, x_browser, add_shot;
    private Checkbox	    x_log, y_log, opt_network;
    private Checkbox	    title_b, shot_b, experiment_b, x_max_b, x_min_b, 
-			    x_label_b, y_max_b, y_min_b, y_label_b;  
-   private Choice           show_type;
-   private Label            lab;
+			            x_label_b, y_max_b, y_min_b, y_label_b, def_node_b,
+			            upd_event_b;  
+   private Choice       show_type;
+   private Label	    lab;
    private SError	    error_w;
-   private ErrorMessage	    error_msg;
+   private ErrorMessage	error_msg;
    private jScope	    main_scope;
-   private Setup            setup;       
-   private ExpandExp expand_expr;
+   private Setup        setup;       
+   private ExpandExp    expand_expr;
    private SList	    signalList;
    private MultiWaveform    wave;	    
    public  WaveInterface    wi;
+   static  BrowseSig	    browse_x_w, browse_y_w;
+  
      
    static final int  LINE = 0, POINT = 1, BOTH = 2, NONE = 3;
-
-
-  class Data {
+   static final int  BROWSE_X = 0, BROWSE_Y = 1;
+    
+	    
+   class Data {
   
 	String  x_expr;
 	String  y_expr;
@@ -107,6 +112,7 @@ import java.util.Vector;
     
 	  c.insets = new Insets(4, 4, 4, 4);
 	  c.fill = GridBagConstraints.BOTH;
+	  
     
 	  c.gridwidth = GridBagConstraints.BOTH;
 	  label = new Label("Error up");
@@ -173,10 +179,93 @@ import java.util.Vector;
 	   setVisible(false);	    
 	 }
 	 if(ob == cancel)
-	   setVisible(false);	   
-    
+	   setVisible(false);    
        }
    }
+   
+   class BrowseSig extends ScopePositionDialog {
+       private Button dismiss;
+       private List   sig_list;
+       private int    type;
+       private Frame  dw;
+       final int  BROWSE_X = 0, BROWSE_Y = 1;
+       
+       BrowseSig(Frame fw, String title, int _type) {	
+	  super(fw, title, false); 	
+	  //super.setFont(new Font("Helvetica", Font.PLAIN, 10));
+	  dw = fw;
+	  type = _type;
+    	  setResizable(false);
+	  
+	  BorderLayout bl= new BorderLayout(25,1);
+	  setLayout(bl);
+  
+	  sig_list = new List(8, false);
+	  sig_list.addItemListener(this);
+	  add("Center",sig_list);
+	  LoadSignal(main_scope.getSignalsFile());	
+
+	  dismiss = new Button("Dismiss");
+	  dismiss.addActionListener(this);
+	  add("South", dismiss);
+	    	  		    	     
+       } 
+       
+       public void LoadSignal(String file_list)
+       {
+	   BufferedReader in;
+	   String str;
+	   
+	   try {
+	   	in = new BufferedReader(new FileReader(file_list));
+		while((str = in.readLine()) != null) 
+		{
+		    sig_list.add(str);
+		}
+	   } catch (IOException e) {
+		//error_msg.addMessage("Signal list file must be specified\n jScope ");
+	   }
+       }
+       
+       private void SetSignalString()
+       {
+       
+	   String sig = sig_list.getSelectedItem();
+	   if(sig != null) {
+		if(type == BROWSE_X)
+		    x_expr.setText(sig);
+		if(type == BROWSE_Y)
+		    y_expr.setText(sig);
+	   } 
+       }
+       
+       	         
+       public void Show()
+       {
+	   pack();
+	   setPosition(dw);
+	   show();
+       }
+       
+       public void actionPerformed(ActionEvent e)
+       {
+	 Object ob = e.getSource();	
+    
+	 if(ob == dismiss)  
+	    setVisible(false);	   
+       }
+       
+       public void itemStateChanged(ItemEvent e)
+       { 
+	  Object ob = e.getSource();
+
+    	  if(ob == sig_list)
+	    SetSignalString();
+       }
+   
+  }
+
+
 
    class SList extends Container implements ActionListener, KeyListener, ItemListener, TextListener {
     private List             sig_list;
@@ -254,6 +343,26 @@ import java.util.Vector;
 	
     	lab = new Label("");
 	add("South", lab);
+	
+	setOptionState(false);
+
+      }
+      
+      private void signalSelect(int sig)
+      {
+	sel_signal = sig;
+        sig_list.select(sel_signal + 1);
+	if(sig >= 0)
+	    setOptionState(true);  
+	else
+	    setOptionState(false);  
+      }
+      
+      private void setOptionState(boolean state)
+      {
+	marker.setEnabled(state);
+	show_type.setEnabled(state);
+	color.setEnabled(state);
       }
       
       public int getNumShot()
@@ -301,8 +410,7 @@ import java.util.Vector;
 		    signals.removeElementAt(start_idx);
 		}	     	     
 	}
-	sel_signal = -1;
-	sig_list.select(sel_signal + 1);
+	signalSelect(-1);
 	x_expr.setText("");
 	y_expr.setText("");      
      }
@@ -335,6 +443,18 @@ import java.util.Vector;
 	if(error_w.isVisible())
 	    error_w.setError(ws);	
       }	
+      
+      private void resetSignalSetup()
+      {
+	x_expr.setText("");      
+	y_expr.setText("");      
+	show_type.select(0);
+	marker.select(0);
+	marker_step_t.setText("1");
+	setMarkerTextState(0);			 
+	color.select(0);      
+      }
+      
 
       public Data getSignalSetup()
       {
@@ -359,7 +479,7 @@ import java.util.Vector;
       
       public void reset()
       {
-	sel_signal = -1;
+	signalSelect(-1);
 	signals.removeAllElements();
       }
       
@@ -400,8 +520,8 @@ import java.util.Vector;
 		addSignalSetup(ws);       
 	    }
 	    signalListRefresh();	    
-	  }      
-	  sig_list.select(sel_signal + 1);
+	  }
+	  signalSelect(sel_signal);
       }
       
       public Data[] getSignals()
@@ -446,8 +566,7 @@ import java.util.Vector;
 		addSignalSetup(ws);
 		signalListAdd(ws);
 	    } 
-	    sel_signal = findSignalSetup(ws);
-	    sig_list.select(sel_signal + 1);
+	    signalSelect(findSignalSetup(ws));	    
 	    putSignalSetup(ws);
 	 }	 
        }
@@ -512,9 +631,8 @@ import java.util.Vector;
 		    ((Data)signals.elementAt(i)).x_expr = x_expr.getText();
 		    ((Data)signals.elementAt(i)).y_expr = y_expr.getText();
 		    signalListReplace(i + 1, (Data)signals.elementAt(i));
-	    }		
-	    sig_list.select(start_idx + 1);
-	    sel_signal = start_idx;
+		}		
+	    signalSelect(start_idx);
 	   }
 	 }
 	 
@@ -532,7 +650,7 @@ import java.util.Vector;
 	    sig_list.add("Select this item to add new expression");
 	    for(int i = 0; i < signals.size(); i++)
 		signalListAdd((Data)signals.elementAt(i));
-	    sig_list.select(sel_signal + 1);
+	    signalSelect(sel_signal); 	
 	  } 
 
 	  private void signalListAdd(Data ws)
@@ -626,11 +744,12 @@ import java.util.Vector;
     	if(ob == sig_list)
 	{
            sel_signal = sig_list.getSelectedIndex() - 1;
-	   if(sel_signal >= 0)
+	   if(sel_signal >= 0) {
+	       setOptionState(true);
 	       signalList.putSignalSetup((Data)signals.elementAt(sel_signal));
-	   else {
-		x_expr.setText("");
-		y_expr.setText("");
+	   } else {
+	       signalList.resetSignalSetup();
+	       setOptionState(false);
 	    }
 	} 
 
@@ -745,6 +864,38 @@ import java.util.Vector;
      }      
 
   }
+
+   class UpdWaveforThread extends Thread
+   {
+        public void  run()
+        {
+            setCursor(new Cursor(Cursor.WAIT_CURSOR));
+            try
+            {
+	            wave.SetMode(Waveform.MODE_WAIT);
+                if(checkSetup() == 0)
+                {
+	                main_scope.SetStatusLabel("Update signals for shots " + shot.getText());
+	                String e = setup.UpdateWave(wave);
+	                if(e != null) {
+	                    if(main_scope.briefError())
+		                    error_msg.addMessage(e);
+	                    else
+		                    error_msg.setMessage(e);
+	                    error_msg.showMessage();
+	                }  
+	                main_scope.SetStatusLabel("Wave is up to date");
+                } else
+	                error_msg.showMessage();       	
+	            wave.SetMode(main_scope.wave_mode);
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	        } catch (Throwable e) {	        
+	            wave.SetMode(main_scope.wave_mode);
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	            main_scope.SetStatusLabel("Unrecoverable error during apply");	    
+	        }
+        }
+   }
 
 
 
@@ -930,6 +1081,31 @@ import java.util.Vector;
       gridbag.setConstraints(shot, c);
       add(shot);
 
+
+      c.fill =  GridBagConstraints.HORIZONTAL;			          		
+      c.gridwidth = 1;
+      upd_event_b = new Checkbox("Update event");
+      upd_event_b.addItemListener(this);
+      gridbag.setConstraints(upd_event_b, c);
+      add(upd_event_b);	
+      
+      upd_event = new TextField(25);
+      gridbag.setConstraints(upd_event, c);
+      add(upd_event);	
+
+      c.fill =  GridBagConstraints.NONE;
+      def_node_b = new Checkbox("Default node");
+      def_node_b.addItemListener(this);      
+      gridbag.setConstraints(def_node_b, c);
+      add(def_node_b);	
+
+      c.gridwidth = GridBagConstraints.REMAINDER;
+      def_node = new TextField(30);
+ //     def_node.addKeyListener(this);
+ //     def_node.addFocusListener(this);
+      gridbag.setConstraints(def_node, c);
+      add(def_node);
+
       c.fill =  GridBagConstraints.BOTH;
       signalList = new SList(); 
       gridbag.setConstraints(signalList, c);
@@ -964,6 +1140,9 @@ import java.util.Vector;
       cancel.addActionListener(this);
       gridbag.setConstraints(cancel, c);
       add(cancel);
+      
+      browse_x_w = new BrowseSig(fw, "X signal Broser", BROWSE_X);
+      browse_y_w = new BrowseSig(fw, "Y signal Broser", BROWSE_Y);    
    }
    
    public void Show(MultiWaveform w, Setup _setup)
@@ -973,7 +1152,9 @@ import java.util.Vector;
       wi = new WaveInterface(setup.main_scope.db);
       wave = w;
       putWindowSetup(w.wi);
-      setPosition(w.getParent());	
+      setPosition(w.getParent());
+      Point p = setup.GetWavePos(w);
+      setTitle("Wave Setup for column " + p.x + " row " + p.y); 	
       show();
    }
    
@@ -1028,6 +1209,10 @@ import java.util.Vector;
 		    y_min_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
 		case WaveInterface.B_y_label:
 		    y_label_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break;  
+		case WaveInterface.B_event:
+		    upd_event_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break;  
+		case WaveInterface.B_default_node:
+		    def_node_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break;  
 	    }
 	}       
    }
@@ -1054,6 +1239,10 @@ import java.util.Vector;
 				    else value &= ~(1<<WaveInterface.B_y_min); 
 	if  (y_label_b.getState() )	 value |= 1<<WaveInterface.B_y_label ; 
 				    else value &= ~(1<<WaveInterface.B_y_label);
+	if  (upd_event_b.getState() )	 value |= 1<<WaveInterface.B_event ; 
+				    else value &= ~(1<<WaveInterface.B_event);
+	if  (def_node_b.getState() )	 value |= 1<<WaveInterface.B_default_node ; 
+				    else value &= ~(1<<WaveInterface.B_default_node);
 	return (value);  
    }
 
@@ -1069,7 +1258,9 @@ import java.util.Vector;
 
 	this.wi.cexperiment     = wi.cexperiment;	
 	this.wi.cin_shot        = wi.cin_shot;	
-        this.wi.cin_xmax        = wi.cin_xmax;
+	this.wi.cin_upd_event   = wi.cin_upd_event;	
+	this.wi.cin_def_node    = wi.cin_def_node;	
+    this.wi.cin_xmax        = wi.cin_xmax;
 	this.wi.cin_xmin        = wi.cin_xmin;
 	this.wi.cin_ymax        = wi.cin_ymax;
 	this.wi.cin_ymin        = wi.cin_ymin;
@@ -1087,12 +1278,14 @@ import java.util.Vector;
 	defaultButtonOperation(y_max, def_flag = y_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_max, def_flag, wi));
 	defaultButtonOperation(y_min, def_flag = y_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_min, def_flag, wi));
 	defaultButtonOperation(y_label, def_flag = y_label_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_label, def_flag, wi));
+	defaultButtonOperation(upd_event, def_flag = upd_event_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_event, def_flag, wi));
+	defaultButtonOperation(def_node,  def_flag = def_node_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_default_node, def_flag, wi));
 
 	x_log.setState(wi.x_log);
 	y_log.setState(wi.y_log);
 		     	
-        x_expr.setText("");
-        y_expr.setText("");
+    x_expr.setText("");
+    y_expr.setText("");
 
 	signalList.init(wi);       		
    }
@@ -1116,6 +1309,8 @@ import java.util.Vector;
 	y_label.setForeground(Color.black);		
 	experiment.setText("");
 	shot.setText("");
+	upd_event.setText("");
+	def_node.setText("");	
 	shot.setForeground(Color.black);		
 	resetDefaultFlags();
 	signalList.reset();
@@ -1138,17 +1333,18 @@ import java.util.Vector;
 	if(!main_scope.equalsString(x_max.getText(),   wave_wi.cin_xmax))     return true;
 	if(!main_scope.equalsString(x_min.getText(),   wave_wi.cin_xmin))     return true;
 	if(!main_scope.equalsString(x_label.getText(), wave_wi.cin_xlabel))   return true;
-	if(x_log.getState() != wave_wi.x_log)				      return true;
+	if(x_log.getState() != wave_wi.x_log)				                  return true;
 	if(!main_scope.equalsString(y_max.getText(),   wave_wi.cin_ymax))     return true;
 	if(!main_scope.equalsString(y_min.getText(),   wave_wi.cin_ymin))     return true;
 	if(!main_scope.equalsString(y_label.getText(), wave_wi.cin_ylabel))   return true;	
-	if(y_log.getState() != wave_wi.y_log)				      return true;		
-
-    	if(!main_scope.equalsString(shot.getText(),   wave_wi.cin_shot))        return true;	
+	if(y_log.getState() != wave_wi.y_log)				                  return true;		
+    if(!main_scope.equalsString(shot.getText(),   wave_wi.cin_shot))        return true;	
+    if(!main_scope.equalsString(upd_event.getText(),   wave_wi.cin_upd_event))  return true;	
+    if(!main_scope.equalsString(def_node.getText(),    wave_wi.cin_def_node))   return true;	
 	if(!main_scope.equalsString(experiment.getText(), wave_wi.cexperiment)) return true;
-	if(getDefaultFlags() != wave_wi.defaults)				return true;	
+	if(getDefaultFlags() != wave_wi.defaults)				                return true;	
 
-    	for(int i = 0 ; i < wave_wi.num_waves; i++)
+    for(int i = 0 ; i < wave_wi.num_waves; i++)
 	{
 	    if(!main_scope.equalsString(s[i].x_expr,  wave_wi.in_x[i]))        return true;
 	    if(!main_scope.equalsString(s[i].y_expr,  wave_wi.in_y[i]))	       return true;
@@ -1160,43 +1356,58 @@ import java.util.Vector;
 
     private void update()
     {
-	signalList.updateList();
+        Cursor c_cursor = getCursor();
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        try
+        {
+	        signalList.updateList();
+            //setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            setCursor(c_cursor);
+	    } catch (Throwable e) {
+	        main_scope.SetStatusLabel("Unrecoverable error during apply");	    
+	        //setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            setCursor(c_cursor);
+	    }
     }
 
    private void updateGlobalWI()
    {
       if(!experiment_b.getState() && !main_scope.equalsString(experiment.getText(), wi.cexperiment))
-	wi.cexperiment   = experiment.getText();	
+	    wi.cexperiment   = experiment.getText();	
       if(!shot_b.getState() && !main_scope.equalsString(shot.getText(),   wi.cin_shot))
-	wi.cin_shot      = shot.getText();	
+	    wi.cin_shot      = shot.getText();	
+      if(!upd_event_b.getState() && !main_scope.equalsString(upd_event.getText(),   wi.cin_upd_event))
+	    wi.cin_upd_event      = upd_event.getText();	
+      if(!def_node_b.getState() && !main_scope.equalsString(def_node.getText(),   wi.cin_def_node))
+	    wi.cin_def_node       = def_node.getText();	
       if(!x_max_b.getState() && !main_scope.equalsString(x_max.getText(),   wi.cin_xmax))
-	wi.cin_xmax      = x_max.getText();
+	    wi.cin_xmax      = x_max.getText();
       if(!x_min_b.getState() && !main_scope.equalsString(x_min.getText(),   wi.cin_xmin))
-	wi.cin_xmin      = x_min.getText();
+	    wi.cin_xmin      = x_min.getText();
       if(!y_max_b.getState() && !main_scope.equalsString(y_max.getText(),   wi.cin_ymax))
-	wi.cin_ymax      = y_max.getText();
+	    wi.cin_ymax      = y_max.getText();
       if(!y_min_b.getState() && !main_scope.equalsString(y_min.getText(),   wi.cin_ymin))
-	wi.cin_ymin      = y_min.getText();
+	    wi.cin_ymin      = y_min.getText();
       if(!title_b.getState() && !main_scope.equalsString(title.getText(),   wi.cin_title))
-	wi.cin_title     = title.getText();
+	    wi.cin_title     = title.getText();
       if(!x_label_b.getState() && !main_scope.equalsString(x_label.getText(), wi.cin_xlabel))
-	wi.cin_xlabel    = x_label.getText();
+	    wi.cin_xlabel    = x_label.getText();
       if(!y_label_b.getState() && !main_scope.equalsString(y_label.getText(), wi.cin_ylabel))
-	wi.cin_ylabel    = y_label.getText();
+	    wi.cin_ylabel    = y_label.getText();
    }
 
    private void updateWI()
    {
-   
 	  Data[] s;
 	  int num_signal;
-    
+	      
 	  s = signalList.getSignals();
 	  num_signal = s.length;
 
  	  if(num_signal == 0)
 	      return;
-  
+
+
 	  wi.modified = isChanged(s);
 	  
 	  if(!wi.modified)
@@ -1219,6 +1430,8 @@ import java.util.Vector;
     
 	  wi.experiment     = new String(experiment.getText());	
 	  wi.in_shot        = new String(shot.getText());	
+	  wi.in_def_node    = new String(def_node.getText());	
+      wi.in_upd_event   = new String(upd_event.getText());
 	  wi.in_xmax        = new String(x_max.getText());
 	  wi.in_xmin        = new String(x_min.getText());
 	  wi.in_ymax        = new String(y_max.getText());
@@ -1267,18 +1480,19 @@ import java.util.Vector;
 	  
 	   if(wi.shots[0] == jScope.UNDEF_SHOT)
 	   	wi.shots = null;
+
+       String event = wave.wi != null ? wave.wi.in_upd_event : null;
+  	   main_scope.SetRemoveMdsEvent(wave, event, wi.in_upd_event);
 	  	    
 	   wave.wi = wi;
    }
 
-
-   private int applyWaveform(boolean ok_flag)
+   private int checkSetup()
    {
 	int error = 0;
 	boolean def_exp = true, def_shot = true;
 
-    	main_scope.SetStatusLabel("");
-	wave.SetMode(Waveform.MODE_WAIT);
+      main_scope.SetStatusLabel("");
 				
 	if(experiment.getText() == null || experiment.getText().trim().length() == 0)
 	    def_exp = false;
@@ -1289,105 +1503,137 @@ import java.util.Vector;
 	if(def_exp ^ def_shot)
 	{
 	    if(!def_shot)
-		error_msg.addMessage("Experiment defined but undefined shot\n");
+		    error_msg.addMessage("Experiment defined but undefined shot\n");
 	    if(!def_exp)
-		error_msg.addMessage("Shot defined but undefined experiment\n");
+		    error_msg.addMessage("Shot defined but undefined experiment\n");
 	    error = 1;
 	}
-		    
+
 	update();
 	
 	updateWI();
 	
-	if(error == 0) {
-	
-	    main_scope.SetStatusLabel("Update signals for shots " + shot.getText());
-	    String e = setup.UpdateWave(wave);
-	    if(e != null) {
-		error = 1;
-		if(main_scope.briefError())
-		    error_msg.addMessage(e);
-		else
-		    error_msg.setMessage(e);
-	    }  
-	}
-	wave.SetMode(main_scope.wave_mode);
-	main_scope.SetStatusLabel("Wave is up to date");
-	
-	return error;	
+	return error;
+
+    }
+
+
+   private  void applyWaveform()
+   {
+/*
+     UpdWaveforThread upd = new UpdWaveforThread();
+     upd.start();
+*/
+     setCursor(new Cursor(Cursor.WAIT_CURSOR));
+     try
+     {
+	    wave.SetMode(Waveform.MODE_WAIT);
+        if(checkSetup() == 0)
+        {
+	        main_scope.SetStatusLabel("Update signals for shots " + shot.getText());
+	        String e = setup.UpdateWave(wave);
+	        if(e != null) {
+	            if(main_scope.briefError())
+		            error_msg.addMessage(e);
+	            else
+		            error_msg.setMessage(e);
+	            error_msg.showMessage();
+	        }  
+	        main_scope.SetStatusLabel("Wave is up to date");
+        } else
+	        error_msg.showMessage();       	
+	    wave.SetMode(main_scope.wave_mode);
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	 } catch (Throwable e) {	        
+	    wave.SetMode(main_scope.wave_mode);
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	    main_scope.SetStatusLabel("Unrecoverable error during apply");	    
+	 }
    }
 	    	
    public void actionPerformed(ActionEvent e)
    {
       Object ob = e.getSource();
 
+      if(getCursor().getType() == Cursor.WAIT_CURSOR)
+        return;
+
       if(ob == erase) {
-	eraseForm();
+	    eraseForm();
+	    wave.wi = null;
+	    wave.Erase();
       }
 		
       if(ob == cancel) {
-	setVisible(false);
-	signalList.reset();
+	    setVisible(false);
+	    signalList.reset();
       }
 	
       if(ob == apply || ob == ok)
       {
-	
-	if(applyWaveform(ob == ok) == 1)
-	    error_msg.showMessage();
-	if(ob == ok) {
-	    signalList.reset();
-	    setVisible(false);
-	}		
+	    applyWaveform();
+	    if(ob == ok) {
+	       signalList.reset();
+	       setVisible(false);
+	    }	
       }
  
       if(ob == reset) {
-	signalList.reset();
-	putWindowSetup(wave.wi); 	
+	    signalList.reset();
+	    putWindowSetup(wave.wi); 	
       }
       
-      if(ob == error) {
-	 signalList.updateError();
-    	 error_w.pack();
-	 error_w.setPosition(this);
-	 error_w.show();
+      if(ob == error && y_expr.getText().trim().length() != 0)
+      {
+	    update();
+	    signalList.updateError();
+	    error_w.pack();
+	    error_w.setPosition(this);
+	    error_w.show();
       }
       
       if(ob == expand)
       {	
-	expand_expr.setExpressionString(x_expr.getText(), y_expr.getText());
-	expand_expr.pack();
-	expand_expr.setPosition(this);
-	expand_expr.show();
+	    expand_expr.setExpressionString(x_expr.getText(), y_expr.getText());
+	    expand_expr.pack();
+	    expand_expr.setPosition(this);
+	    expand_expr.show();
       }
-
+      
+      if(ob == x_browser)
+	    browse_x_w.Show();
+	
+      if(ob == y_browser)
+	    browse_y_w.Show();
+	
    }
 
    public void keyPressed(KeyEvent e)
    {
       Object ob = e.getSource();
       char key  = e.getKeyChar();
-        
-     if(key == KeyEvent.CHAR_UNDEFINED)
-	 return;		  	      	
-
-      if(key == KeyEvent.VK_ENTER)
-      { 
-	 if(ob == y_expr || ob == x_expr || ob == shot || ob == experiment) {
-	     update();
-         } 
-      }
       
-      if(ob instanceof TextField)
-      {
-	 if(ob == x_max || ob == y_max || ob == x_min || ob == y_min || ob == shot)
-	 {
-	     Character ch = new Character((char)key);
-             if(!ch.isDigit((char)key) && 
-		key != KeyEvent.VK_DELETE && 
+      
+     if(key == KeyEvent.CHAR_UNDEFINED)
+	    return;		  	      	
+
+     if(key == KeyEvent.VK_ENTER)
+     { 
+	    if(ob == y_expr || ob == x_expr || ob == shot || ob == experiment) {
+	      update();
+        } 
+     }
+      
+     if(ob instanceof TextField)
+     {
+	    if(ob == x_max || ob == y_max || ob == x_min || ob == y_min || ob == shot)
+	    {
+	        Character ch = new Character((char)key);
+            if(!ch.isDigit((char)key) && 
+		    key != KeyEvent.VK_DELETE && 
 	        key != '.' && key != '+' && key != '-')
 		    return;
-         }
+        }
       } 
    }
    
@@ -1432,11 +1678,14 @@ import java.util.Vector;
    
 	if(ob == title_b)
 	    defaultButtonOperation(title, def_flag = title_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_title, def_flag, wi));
-
-    	if(ob == shot_b) 
+    if(ob == shot_b) 
 	    putShotValue(shot_b.getState());
 	if(ob == experiment_b)
 	    defaultButtonOperation(experiment, def_flag = experiment_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_exp, def_flag, wi));
+	if(ob == upd_event_b)
+	    defaultButtonOperation(upd_event, def_flag = upd_event_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_event, def_flag, wi));
+	if(ob == def_node_b)
+	    defaultButtonOperation(def_node, def_flag = def_node_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_default_node, def_flag, wi));
 	if(ob == x_max_b)
 	    defaultButtonOperation(x_max, def_flag = x_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_max, def_flag, wi));
 	if(ob == x_min_b)

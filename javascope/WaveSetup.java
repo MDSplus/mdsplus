@@ -7,6 +7,7 @@ interface WaveSetup {
 	public void BroadcastScale(Waveform w);
 	public void NotifyChange(Waveform target_w, Waveform source_w);
 	public void SetSourceCopy(Waveform source_w);
+	public void Refresh(Waveform w, String label);
 	public WaveInterface GetSource();
 	
 }

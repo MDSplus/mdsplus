@@ -2,8 +2,7 @@ import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-//import com.apple.mrj.*;
-
+import com.apple.mrj.*;
 
 public class Setup extends Object implements WaveSetup {
     Label coords_label; 
@@ -57,6 +56,20 @@ public class Setup extends Object implements WaveSetup {
 	    return -1;
     }
     
+    public Point GetWavePos(Waveform w)
+    {
+	int col = 0, row = 0;
+	int idx = GetWaveIndex(w) + 1;
+	for(col = 0; col < 4; col++)
+	{
+	    for(row = 0; row < rows[col] && idx != 0; row++)
+		idx--;
+	    if(idx == 0) break;
+	}
+	Point p = new Point(col + 1, row);
+	return p;
+    }
+
     public void SetSetup(Waveform w, int x, int y)    
     {
 	wave_idx = GetWaveIndex(w);
@@ -66,10 +79,20 @@ public class Setup extends Object implements WaveSetup {
     
     public void SetAllWaveformPointer(int pointer_mode)
     {
-	for(int i = 0; i < waves.length; i++)
-	    waves[i].SetMode(pointer_mode);	
+	    for(int i = 0; i < waves.length; i++)
+	        waves[i].SetMode(pointer_mode);	
     }
-    
+
+    public void RemoveSelection()
+    {
+	for(int i = 0; i < waves.length; i++)
+	    if(waves[i].IsSelected()) 
+	    {
+		main_scope.wi_source = null;
+		waves[i].SetSelected(false);
+	    } 		
+    }
+        
         
     public void WaveCheckError(int k)
     {
@@ -117,46 +140,45 @@ public class Setup extends Object implements WaveSetup {
 
     public void DisplayCoords(Waveform w, double curr_x, double curr_y, int sig_idx, boolean broadcast)
     { 
-	
         if(coords_label != null)
-	{   
-	    WaveInterface  wi = ((MultiWaveform)w).wi;
-	    if(wi.shots != null)
-	    {
-		coords_label.setText(SetStrSize("[" + Grid.ConvertToString(curr_x, false) + ", " 
-				 + Grid.ConvertToString(curr_y, false) + "]", 30) +
-		    " Expr : " + wi.in_y[sig_idx] +  
-		    " Shot = " + wi.shots[sig_idx]);
-	    } else {
-		coords_label.setText(SetStrSize("[" + Grid.ConvertToString(curr_x, false) + ", " 
-				 + Grid.ConvertToString(curr_y, false) + "]", 30) +
-		    " Expr : " + wi.in_y[sig_idx]);  
-	    }
-	    if(true)
-		UpdatePoints(curr_x, w);
-	    else
-		w.UpdatePoint(curr_x);
-	}	
+	    {   
+	        WaveInterface  wi = ((MultiWaveform)w).wi;
+	        if(wi.shots != null)
+	        {
+		        coords_label.setText(SetStrSize("[" + Waveform.ConvertToString(curr_x, false) + ", " 
+				 + Waveform.ConvertToString(curr_y, false) + "]", 30) +
+		            " Expr : " + wi.in_y[sig_idx] +  
+		            " Shot = " + wi.shots[sig_idx]);
+	        } else {
+		        coords_label.setText(SetStrSize("[" + Waveform.ConvertToString(curr_x, false) + ", " 
+				 + Waveform.ConvertToString(curr_y, false) + "]", 30) +
+		            " Expr : " + wi.in_y[sig_idx]);  
+	        }
+	        if(true)
+		        UpdatePoints(curr_x, w);
+	        else
+		        w.UpdatePoint(curr_x);
+	    }	
     }
     
     public WaveInterface GetSource()
     {
-	return main_scope.wi_source;
+	    return main_scope.wi_source;
     }
     
     public void SetSourceCopy(Waveform source)
     {
-	if(source != null) {
-	    main_scope.wi_source = ((MultiWaveform)source).GetWaveInterface();
-	} else {
-	    main_scope.wi_source = null;
-	}
+	    if(source != null) {
+	        main_scope.wi_source = ((MultiWaveform)source).GetWaveInterface();
+	    } else {
+	        main_scope.wi_source = null;
+	    }
     }
     
     public void NotifyChange(Waveform dest, Waveform source)    
     {
-	((MultiWaveform)dest).wi = main_scope.wi_source;
-	Refresh(dest);
+	  ((MultiWaveform)dest).wi = main_scope.wi_source;
+	  Refresh(dest, "");
     }
    
    public String UpdateWave(MultiWaveform wave)
@@ -249,15 +271,19 @@ public class Setup extends Object implements WaveSetup {
 	AllSameScale((MultiWaveform)w);
     }
     
-    public void Refresh(Waveform w)
+    public synchronized void Refresh(Waveform w, String label)
     {
-	main_scope.SetStatusLabel("Refresh waveform");
-	main_scope.updateMainShot();
-	main_scope.setup_default.updateDefaultWI(((MultiWaveform)w).wi);
-	main_scope.updateShotWI(((MultiWaveform)w).wi);	
-	UpdateWave((MultiWaveform)w);
-	WaveCheckError(GetWaveIndex(w));
-	main_scope.SetStatusLabel("Waveform refreshed");
+        Point p = GetWavePos(w);
+	    
+	    w.SetMode(Waveform.MODE_WAIT);
+	    main_scope.SetStatusLabel("Refresh wave row " + p.x + " column " + p.y + label);
+	    main_scope.updateMainShot();
+	    main_scope.setup_default.updateDefaultWI(((MultiWaveform)w).wi);
+	    main_scope.updateShotWI(((MultiWaveform)w).wi);	
+	    UpdateWave((MultiWaveform)w);
+	    WaveCheckError(GetWaveIndex(w));
+	    main_scope.SetStatusLabel("Wave row " + p.x + " column "+ p.y + " refreshed");	    
+	    w.SetMode(main_scope.wave_mode);
     }    
     
     public void ChangeRowColumn(int _row[])
@@ -292,79 +318,94 @@ public class Setup extends Object implements WaveSetup {
 	return s_new;
     }
 
-    public int fromFile(String conf_file, String prompt)
+    public int fromFile(BufferedReader in, String prompt) throws IOException
     {
 	String str;
 	int error = 0;
 
 	num_conf = 0;
-        try {
-	    BufferedReader in = new BufferedReader(new FileReader(conf_file));
+	for(int i=0; i < 4; i++)
+	    rows[i] = 0;
      
-	    while((str = in.readLine()) != null) 
-	    {
-		if(str.trim().length() != 0 && str.indexOf("Scope") != 0) {
-		    System.out.println(str);
-		    return 1;
-		}
-    		if(str.indexOf("Scope.geometry:") == 0) {
-		    int pos;
-		    int len = "Scope.geometry: ".length();
-		    width = new Integer(str.substring(len, pos = str.indexOf("x", len))).intValue();
-		    height = new Integer(str.substring(pos + 1, pos = str.indexOf("+", pos))).intValue();
-		    xpos= new Integer(str.substring(pos + 1, pos = str.indexOf("+", pos + 1))).intValue();
-		    ypos = new Integer(str.substring(pos + 1, pos = str.length())).intValue();
-		    continue;
-    		}
-		if(str.indexOf("Scope.columns:") == 0) {
-		    int len = "Scope.columns: ".length();
-		    columns = new Integer(str.substring(len, str.length())).intValue();
-		    width_percent = new float[columns];
-		    continue;
-    		}
-		if(str.indexOf("Scope.title:") == 0) {
-		    title = str.substring("Scope.title: ".length(), str.length());
-		    continue;
-    		}
-		if(str.indexOf("Scope.title_event:") == 0) {
-		    event = str.substring("Scope.title_event: ".length(), str.length());
-		    continue;	
-		}
+	while((str = in.readLine()) != null) 
+	{
+	    if(str.trim().length() != 0 && str.indexOf("Scope") != 0) {
+		return 1;
+	    }
+	    if(str.indexOf("Scope.geometry:") == 0) {
+		int pos;
+		int len = "Scope.geometry: ".length();
+		width = new Integer(str.substring(len, pos = str.indexOf("x", len))).intValue();
+		height = new Integer(str.substring(pos + 1, pos = str.indexOf("+", pos))).intValue();
+		xpos= new Integer(str.substring(pos + 1, pos = str.indexOf("+", pos + 1))).intValue();
+		ypos = new Integer(str.substring(pos + 1, pos = str.length())).intValue();
+		continue;
+	    }
+	    if(str.indexOf("Scope.columns:") == 0) {
+		int len = "Scope.columns: ".length();
+		columns = new Integer(str.substring(len, str.length())).intValue();
+		width_percent = new float[columns];
+		continue;
+	    }
+	    if(str.indexOf("Scope.title:") == 0) {
+		title = str.substring("Scope.title: ".length(), str.length());
+		continue;
+	    }
+	    if(str.indexOf("Scope.title_event:") == 0) {
+		event = str.substring("Scope.title_event: ".length(), str.length());
+		continue;	
+	    }
 
-		if(str.indexOf("Scope.fast_network_access:") != -1)
-		{
-		    fast_network_access =  new Boolean(str.substring("Scope.fast_network_access: ".length(), 
-										    str.length())).booleanValue();
-		    continue;		
-		}
-		
-		if(str.indexOf("Scope.data_server_address:") != -1)
-		{
-		    data_server_address = str.substring("Scope.data_server_address: ".length(), str.length());
-		    continue;	
-		}
-				    	    
-    		if(str.indexOf("Scope.rows_in_column_") != -1)
-		{
-		    int len;
-		    int c = new Integer(str.substring("Scope.rows_in_column_".length(), len = str.indexOf(":"))).intValue() - 1;
-		    int r = new Integer(str.substring(len + 2, str.length())).intValue();
-		    rows[c] = r;
-		    continue;		
-		}
-		
-		if(str.indexOf("Scope.vpane_") != -1)
-	  	{
-		    int len;
-		    int c = new Integer(str.substring("Scope.vpane_".length(), len = str.indexOf(":"))).intValue() - 1;
-		    int w = new Integer(str.substring(len + 2, str.length())).intValue();
-		    width_percent[c] = (float)w;
-		    continue;		
-		}		
+	    if(str.indexOf("Scope.fast_network_access:") != -1)
+	    {
+		fast_network_access =  new Boolean(str.substring("Scope.fast_network_access: ".length(), 
+										str.length())).booleanValue();
+		continue;		
 	    }
 	    
-	    if(width_percent != null)
+	    if(str.indexOf("Scope.data_server_address:") != -1)
 	    {
+		data_server_address = str.substring("Scope.data_server_address: ".length(), str.length());
+		continue;	
+	    }
+					
+	    if(str.indexOf("Scope.rows_in_column_") != -1)
+	    {
+		int len;
+		int c = new Integer(str.substring("Scope.rows_in_column_".length(), len = str.indexOf(":"))).intValue() - 1;
+		int r = new Integer(str.substring(len + 2, str.length())).intValue();
+		rows[c] = r;
+		continue;		
+	    }
+	    
+	    if(str.indexOf("Scope.vpane_") != -1)
+	    {
+		int len;
+		int c = new Integer(str.substring("Scope.vpane_".length(), len = str.indexOf(":"))).intValue() - 1;
+		int w = new Integer(str.substring(len + 2, str.length())).intValue();
+		width_percent[c] = (float)w;
+		continue;		
+	    }		
+	}
+	
+	if(width_percent != null)
+	{
+	    //Evaluate real number of columns
+	    int r_columns =  0;
+	    for(int i = 0; i < 4; i++)
+		if(rows[i] != 0)
+		    r_columns++;
+
+	    //Silent file configuration correction
+	    //possible define same warning information	    	    
+
+	    if(columns != r_columns)
+	    {			
+		columns = r_columns;
+		width_percent = new float[columns];
+		for(int i = 0; i < columns; i++)
+		    width_percent[i] = (float) 1./columns;
+	    } else {			    
 		if(columns == 4)
 		    width_percent[3] = (float)((1000 - width_percent[2])/1000.);
 		if(columns >= 3)
@@ -373,15 +414,10 @@ public class Setup extends Object implements WaveSetup {
 		    width_percent[1] = (float)(((width_percent[1] != 0) ? (width_percent[1] - width_percent[0]): 1000  - width_percent[0])/1000.);
 		if(columns >= 1)
 		    width_percent[0] = (float)(((width_percent[0] == 0) ? 1000 : width_percent[0])/1000.);
-	    } else
-		error = 1;
-    	} catch(Exception e) {
-		error = 1;
-	}
-
-	    
+	    }
+	} else
+	    error = 1;
 	return error;
-	        
     }
     
     public void updateHeight()
@@ -412,14 +448,16 @@ public class Setup extends Object implements WaveSetup {
 	int wc_idx, height_w[] = new int[4];
 	File f;
 	
+	
+	if(System.getProperty("os.name").equals("Mac OS"))
+	{	
+	    MRJFileUtils.setDefaultFileType(new MRJOSType("TEXT"));
+	    MRJFileUtils.setDefaultFileCreator(new MRJOSType("JSCP"));
+	} 
+	
 	f = new File(conf_file);    
 	if(f.exists()) f.delete();   
 
-	if(System.getProperty("os.name").equals("Mac OS"))
-	{	
-	    //MRJFileUtils.setDefaultFileType(new MRJOSType("TEXT"));
-	    //MRJFileUtils.setDefaultFileCreator(new MRJOSType("JSCP"));
-	} 
 	
         try {
 	    out = new BufferedWriter(new FileWriter(f));
@@ -458,6 +496,9 @@ public class Setup extends Object implements WaveSetup {
 		jScope.writeLine(out, "Scope.vpane_" + i + ": " , ""+pos);
 		k += rows[i-1];
 	    } 
+	    
+	    
+
 	    out.close();
     	} 
 	catch(IOException e) {
@@ -569,7 +610,7 @@ class Button3Menu extends PopupMenu implements ActionListener {
 	}
 	if(target == (Object)refresh)
 	{
-	    controller.Refresh(wave);
+	    controller.Refresh(wave, "");
 	   // wave.repaint();	
 	}
 	if(target == (Object)setup) {

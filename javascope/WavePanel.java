@@ -61,12 +61,12 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
 
       WaveButton b; 	 
       for(int i = 0; i < num_waves - 1; i++) {
-	add(b = new WaveButton());
-	b.addMouseListener(this);
-	b.addMouseMotionListener(this);
+	    add(b = new WaveButton());
+	    b.addMouseListener(this);
+	    b.addMouseMotionListener(this);
       }
       
-      for(int i = 0; i < num_waves; i++) 
+      for(int i = 0; i < num_waves; i++)
 	   add(setup.waves[i]);
 
       validate();   
@@ -82,7 +82,7 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
       removeAll();	    
 	    
       if(setup.columns == 0)
-	return;  
+	    return;  
      
       for(i=0; i < setup.columns; i++)
         new_num_waves += setup.rows[i];
@@ -98,25 +98,25 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
           	 
       WaveButton b; 	 
       for(i = 0; i < new_num_waves - 1; i++) {
-	add(b = new WaveButton());
-	b.addMouseListener(this);
-	b.addMouseMotionListener(this);
+	    add(b = new WaveButton());
+	    b.addMouseListener(this);
+	    b.addMouseMotionListener(this);
       }
   
       for(i = 0, k = 0, kk = 0; i < setup.columns; i++) {
-	for(j = 0; j < setup.rows[i]; j++) 
-	{
+	    for(j = 0; j < setup.rows[i]; j++) 
+	    {
            if(setup.waves == null || j >= setup.prec_rows[i] ||
 				 setup.waves.length <= kk + j || setup.waves[kk + j] == null) {
-	      wave = new MultiWaveform(setup);
+	            wave = new MultiWaveform(setup);
            } else {
-	      wave = setup.waves[kk + j];
+	            wave = setup.waves[kk + j];
            } 
-	   new_waves[k + j] = wave;	
-	   add(wave);
-	}
+	       new_waves[k + j] = wave;	
+	       add(wave);
+	    }
         k += setup.rows[i];
-	kk += setup.prec_rows[i];
+	    kk += setup.prec_rows[i];
      }
 
      setup.num_waves     = new_num_waves;
@@ -134,26 +134,25 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
       int hpan = 15, wpan = 15;
       
       /* Fix page dimension  bug on Mac OS */
-      System.out.println("page size width" + width + " height " + height);
       if(System.getProperties().getProperty("os.name").equals("Mac OS"))
       {
-	hpan = 5;
-	wpan = 0;
-	width  -= 45;
-	height += 25;
-	height -= 2 * hpan;
-	dy1 = hpan;	
+	    hpan = 5;
+	    wpan = 0;
+	    width  -= 45;
+	    height += 25;
+	    height -= 2 * hpan;
+	    dy1 = hpan;	
       } else {	    		      
-	dy1 = hpan;
-	height -= 2 * hpan;
-	width  -= 2 * wpan;
+	    dy1 = hpan;
+	    height -= 2 * hpan;
+	    width  -= 2 * wpan;
       }
        
       for(i = 0 ; i < setup.columns; i++)
       {	  
-	  dy2 += (int)(height * ((RowColumnLayout)getLayout()).getPercentWidth(i));
-	  for(j =0, dx2 = width + wpan; j < setup.rows[i]; j++)
-	  {
+	    dy2 += (int)(height * ((RowColumnLayout)getLayout()).getPercentWidth(i));
+	    for(j =0, dx2 = width + wpan; j < setup.rows[i]; j++)
+	    {
 	      curr_image = setup.waves[k].GetImage();
 	      new_image = createImage(new FilteredImageSource(curr_image.getSource(), filter));
 	      sx2 = new_image.getWidth(this);
@@ -162,8 +161,8 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
 	      g.drawImage(new_image, dx1, dy1, dx2, dy2, 0, 0, sx2, sy2, this);
 	      dx2 = dx1;
 	      k++;
-	  }
-	  dy1 = dy2;	  
+	    }
+	    dy1 = dy2;	  
       }
 
   }
@@ -172,7 +171,7 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
   {
      Component ob = e.getComponent();
      if(ob instanceof WaveButton)
-	row_col_layout.resizeRowColumn(ob, e.getPoint().x, e.getPoint().y);	
+	    row_col_layout.resizeRowColumn(ob, e.getPoint().x, e.getPoint().y);	
   }
     
   public  void mouseClicked(MouseEvent e)
@@ -182,13 +181,8 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
 
      if(ob instanceof Canvas)
      {
-	switch(m_button)
-	{
-	    case MouseEvent.BUTTON2_MASK:
-		row_col_layout.resizeRowColumn(ob);	
-	    break;		    		    
-	}
-	
+	if((m_button & MouseEvent.BUTTON2_MASK) == MouseEvent.BUTTON2_MASK)
+	    row_col_layout.resizeRowColumn(ob);		
      }	
   }
     

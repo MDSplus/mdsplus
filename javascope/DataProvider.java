@@ -7,4 +7,6 @@ interface DataProvider {
     public int[] GetIntArray(String in);
     public String ErrorString();
     public boolean SupportsAsynch();
+    public void addMdsEventListener(MdsEventListener l, String event);
+    public void removeMdsEventListener(MdsEventListener l, String event);
     }	    
