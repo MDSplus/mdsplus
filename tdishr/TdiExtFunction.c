@@ -161,7 +161,7 @@ ident:
         int ctx = 0;
 	struct descriptor dcs = {0,DTYPE_T,CLASS_S,0};
                 dcs.pointer = (char *)cs;
-                LibFindFile(&file, &file, &ctx);
+                LibFindFileRecurseCaseBlind(&file, &file, &ctx);
                 LibFindFileEnd(&ctx);
                 StrAppend(&file,&dnul);
 		unit = fopen(file.pointer, "r");
