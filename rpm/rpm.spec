@@ -42,6 +42,7 @@ $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 
 %files
 %defattr(-,root,root)
+/usr/local/mdsplus/ChangeLog
 /usr/local/mdsplus/LabView
 /usr/local/mdsplus/bin
 /usr/local/mdsplus/etc
