@@ -813,7 +813,8 @@ static int Jorway73ADoIo(
 	  __u8	transfer_len[3];
 	  __u8	zero5;
 	} LongDATAcommand = {0x21,0,0,0,0,0,0,0,0,0};
-	static char modes[4] = {1,2,3,0}; /* QStop, QIgnore, QRep, QScan */
+	static char modes[4] = {2,2,3,1}; /* QStop, QIgnore, QRep, QScan */
+        static char singlemodes[4] = {0,2,3,1};
 	if( MSGLVL(FUNCTION_NAME) )
 		printf( "%s()\n", J_ROUTINE_NAME );
 //printf( "%s(iosb is %sNULL)\n", J_ROUTINE_NAME, (iosb)?"NOT ":"" );		// [2002.12.13]
@@ -852,7 +853,7 @@ static int Jorway73ADoIo(
 	    ShortDATAcommand.f     = F;
 	    ShortDATAcommand.bs    = Mem == 24;
 	    ShortDATAcommand.n     = Key.slot;
-	    ShortDATAcommand.m     = modes[dmode];
+	    ShortDATAcommand.m     = Count > 1 ? modes[dmode] : singlemodes[dmode];
 	    ShortDATAcommand.a     = A;
 	    ShortDATAcommand.transfer_len = transfer_len.l;
 	  }
