@@ -48,3 +48,4 @@ ConnectToInet
 SetFD
 ClearFD
 CreateListener
+SetCloseOnExec
