@@ -6,6 +6,7 @@ exec_prefix=@exec_prefix@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SCRIPTS = \
+        @MAKEBINDIR@remote_submit \
 	@MAKEBINDIR@unix_submit \
 	@MAKEBINDIR@synchronize_unix
 
@@ -19,6 +20,9 @@ install:
 	for script in $(SCRIPTS) ; do\
 	  $(INSTALL) -m 755 $${script} @bindir@;\
 	done
+
+@MAKEBINDIR@remote_submit : remote_submit
+        cp remote_submit @MAKEBINDIR@remote_submit
 
 @MAKEBINDIR@unix_submit : unix_submit
 	cp unix_submit @MAKEBINDIR@unix_submit

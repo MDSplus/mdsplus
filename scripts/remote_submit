@@ -1,0 +1,3 @@
+#!/bin/sh
+export MDS_PATH=`pwd`\;$MDS_PATH
+echo remote_submit_helper\(\"$1\",\"$2\",\"$3\"\) | tditest
