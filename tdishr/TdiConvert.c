@@ -12,10 +12,14 @@ extern void CvtConvertFloat();
 extern int IsRoprand();
 
 #define TWO_32 (double)4294967296.
-#ifndef vxWorks
-#define min(a,b) (((a) < (b)) ? (a) : (b))
-#define max(a,b) (((a) < (b)) ? (b) : (a))
+#ifdef min
+#undef min
 #endif
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+#ifdef max
+#undef max
+#endif
+#define max(a,b) (((a) < (b)) ? (b) : (a))
 
 
 /****** Identity conversions handled before big switch *********/
@@ -872,12 +876,12 @@ int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout) {
    int	dtypea = pdin->dtype;
    char	*pa = pdin->pointer;
    int	classa = pdin->class == CLASS_A;
-   int	numa = classa ? (int)pdin->arsize/lena : 1L;
+   int	numa = classa ? (int)pdin->arsize/max(1,lena) : 1L;
    int	lenb = pdout->length;
    int	dtypeb = pdout->dtype;
    int	classb = pdout->class == CLASS_A;
    char	*pb = pdout->pointer;
-   register int	numb = classb ? (int)pdout->arsize/lenb : 1L;
+   register int	numb = classb ? (int)pdout->arsize/max(lenb,1) : 1L;
    int	numbsave;
    int  n;
    int status = TdiINVDTYDSC;
