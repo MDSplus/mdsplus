@@ -135,8 +135,8 @@ public class T2ControlSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(811);
-    this.setHeight(811);
+    this.setWidth(900);
+    this.setHeight(600);
     this.setDeviceType("T2Control");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("T2 Feedback Control");
@@ -226,12 +226,13 @@ public class T2ControlSetup extends DeviceSetup {
     deviceField9.setLabelString("Autozero end(s):");
     deviceField9.setNumCols(5);
     deviceField9.setIdentifier("");
-    deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3});
+    deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)5,(int)6,(int)7});
     deviceChoice3.setChoiceFloatValues(null);
     deviceChoice3.setConvert(true);
     deviceChoice3.setOffsetNid(130);
     deviceChoice3.setLabelString("Mapping:");
-    deviceChoice3.setChoiceItems(new String[] {"16 Equispaced Coils", "16 Coils", "8 Coils"});
+    deviceChoice3.setChoiceItems(new String[] {"(OLD)16 Equispaced Coils", "(OLD)16 Coils", "(OLD)8 Coils", "16 Toroidal angles in-out&top-bottom", "32 Toroidal angles in-out only",
+        "32 Toroidal angles top-bottom only", "32 Toroidal angles in-out alternated to top-bottom"});
     deviceChoice3.setUpdateIdentifier("");
     deviceChoice3.setIdentifier("");
     deviceChoice5.setChoiceIntValues(new int[] {(int)0,(int)1});
