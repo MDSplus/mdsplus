@@ -36,6 +36,7 @@ struct descrip { char dtype;
                  void *ptr;
                };
 
+
 STATIC_CONSTANT struct descrip empty_ans;
 
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
@@ -43,6 +44,21 @@ STATIC_CONSTANT struct descrip empty_ans;
 extern char *TranslateLogical(char *);
 extern void TranslateLogicalFree(char *);
 extern int LibFindImageSymbol();
+
+
+#ifdef HAVE_WINDOWS_H
+#define pthread_mutex_t int
+static void LockMdsShrMutex(){}
+static void UnlockMdsShrMutex(){}
+#endif
+#ifdef HAVE_WXVORKS_H
+#define pthread_mutex_t int
+static void LockMdsShrMutex(){}
+static void UnlockMdsShrMutex(){}
+#endif
+
+
+
 
 STATIC_ROUTINE int FindImageSymbol(char *name, void **sym)
 {
@@ -52,6 +68,9 @@ STATIC_ROUTINE int FindImageSymbol(char *name, void **sym)
   symname.pointer = name;
   return LibFindImageSymbol(&image,&symname,sym);
 }
+
+
+
 
 STATIC_THREADSAFE pthread_mutex_t HostListMutex;
 STATIC_THREADSAFE int HostListMutex_initialized = 0;
