@@ -142,7 +142,7 @@ SOURCE=.\mdsdcl_tables.ocld
 InputPath=.\mdsdcl_tables.ocld
 
 "mdsdcl_tables.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	SET PATH = ..\Release 
+	SET PATH=..\Release 
 	cdu < "$(InputPath)" 
 	
 # End Custom Build
