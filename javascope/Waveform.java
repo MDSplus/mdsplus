@@ -672,7 +672,7 @@ public class Waveform extends Canvas
     Rectangle wave_b_box;
     String x_label, y_label, title;
     int mode, grid_mode;
-    boolean ext_update, dragging,  selected = false;
+    boolean ext_update, dragging,  selected = false, resizing = false;
     int pan_x, pan_y;
     double pan_delta_x, pan_delta_y;
     int update_timestamp;
@@ -872,11 +872,16 @@ public class Waveform extends Canvas
 	    }
 	    off_image = createImage(d.width, d.height);
 	    off_graphics = off_image.getGraphics(); 
-	    grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, 
-		title, grid_step_x, grid_step_y, int_xlabel, int_ylabel);
-	    curr_display_limits = new Rectangle();
-	    grid.GetLimits(off_graphics, curr_display_limits, y_log);
-	    wm = new WaveformMetrics(xmax, xmin, ymax, ymin, curr_display_limits, d, x_log, y_log);
+	    if(!resizing) // If new Grid and WaveformMatrics have not been computed before
+	    {
+		grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, 
+		    title, grid_step_x, grid_step_y, int_xlabel, int_ylabel);
+		curr_display_limits = new Rectangle();
+		grid.GetLimits(off_graphics, curr_display_limits, y_log);
+		wm = new WaveformMetrics(xmax, xmin, ymax, ymin, curr_display_limits, d, x_log, y_log);
+	    }
+	    else
+		resizing = false;
 	    if(!selected)
 		off_graphics.setColor(Color.white);
 	    else
@@ -1204,6 +1209,13 @@ public class Waveform extends Canvas
 	    ReportLimits(start_xs, end_xs, start_ys, end_ys);
 	    not_drawn = true;
 	}
+	if(mode == MODE_ZOOM && x == start_x && y == start_y)
+	{
+	    if((e.modifiers & Event.ALT_MASK) != 0)
+		Resize(x, y, false);
+	    else
+		Resize(x, y, true);
+	}
 	if(mode == MODE_PAN)
 	{
 	    NotifyZoom(MinXSignal(), MaxXSignal(), MinYSignal(), MaxYSignal(), update_timestamp);
@@ -1311,6 +1323,43 @@ public class Waveform extends Canvas
 	waveform_signal.ResetScales();
 	ReportChanges();
     }
+
+    protected void Resize(int x, int y, boolean enlarge)
+    {
+	Dimension d = size();
+	double  curr_x = wm.XValue(x, d),
+		curr_y = wm.YValue(y, d),
+		prev_xmax = wm.XMax(), 
+		prev_xmin = wm.XMin(),
+		prev_ymax = wm.YMax(),
+		prev_ymin = wm.YMin(),
+		new_xmax, new_xmin, new_ymax, new_ymin;
+		
+	if(enlarge)
+	{
+	    new_xmax = curr_x + (prev_xmax - curr_x)/2.;
+	    new_xmin = curr_x - (curr_x - prev_xmin)/2.;
+	    new_ymax = curr_y + (prev_ymax - curr_y)/2.;
+	    new_ymin = curr_y - (curr_y - prev_ymin)/2.;
+	}
+	else
+	{
+	    new_xmax = curr_x + (prev_xmax - curr_x)*2.;
+	    new_xmin = curr_x - (curr_x - prev_xmin)*2.;
+	    new_ymax = curr_y + (prev_ymax - curr_y)*2.;
+	    new_ymin = curr_y - (curr_y - prev_ymin)*2.;
+	}
+	waveform_signal.xmin = new_xmin;
+	waveform_signal.xmax = new_xmax;
+	waveform_signal.ymin = new_ymin;
+	waveform_signal.ymax = new_ymax;
+	
+	not_drawn = true;
+	repaint();
+    }
+    
+
+
 
     void ReportChanges()
     {
