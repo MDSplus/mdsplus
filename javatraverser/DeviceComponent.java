@@ -33,14 +33,14 @@ public abstract class DeviceComponent extends JPanel
         if(mode == DATA)
         {
             try {
-                init_data = curr_data = subtree.getData(nidData);
+                init_data = curr_data = subtree.getData(nidData, Tree.context);
             }catch(Exception e) {init_data = curr_data = null;}
         }
         else init_data = null;
         //if(mode != DISPATCH)
         {
             try {
-                init_on = curr_on = subtree.isOn(nidData); 
+                init_on = curr_on = subtree.isOn(nidData, Tree.context); 
             } catch(Exception e) 
             {
                 System.out.println("Error configuring device: " + e);
@@ -68,7 +68,7 @@ public abstract class DeviceComponent extends JPanel
         {
             curr_data = getData();
             try {
-              subtree.putData(nidData, curr_data);
+              subtree.putData(nidData, curr_data, Tree.context);
             } catch(Exception e) 
             {
                 System.out.println("Error writing device data: " + e);
@@ -80,7 +80,7 @@ public abstract class DeviceComponent extends JPanel
         {
             curr_on = getState();
             try {
-                subtree.setOn(nidData, curr_on);
+                subtree.setOn(nidData, curr_on, Tree.context);
             }catch(Exception e)
             {
                 System.out.println("Error writing device state: " + e);

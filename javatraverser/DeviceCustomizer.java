@@ -40,7 +40,7 @@ public class DeviceCustomizer extends Panel
     ".CHANNEL_4:DATA"};
     public String[] getDeviceFields()
     {
-        System.out.println("\nParte domanda");
+        System.out.println("\nInquiring Device Fields...");
         
         
         if(DeviceSetupBeanInfo.beanDeviceType == null)
@@ -48,13 +48,16 @@ public class DeviceCustomizer extends Panel
             DeviceSetupBeanInfo.beanDeviceType = JOptionPane.showInputDialog(
                 "Please define the device type"); 
 		}
-        System.out.println("\nParte domanda 1");
+        System.out.println("Device type: "+DeviceSetupBeanInfo.beanDeviceType);
+        System.out.println("Inquiring Device Provider...");
 		if(DeviceSetupBeanInfo.beanDeviceProvider == null)
         {
             DeviceSetupBeanInfo.beanDeviceProvider = JOptionPane.showInputDialog(
                 "Please define the IP address of the device repository"); 
 		}
-        System.out.println("\nParte domanda 2");
+        System.out.println("Device Provider: "
+          + DeviceSetupBeanInfo.beanDeviceProvider );
+        System.out.println("lastDeviceType = " + lastDeviceType);
 		if(lastDeviceType != null && lastDeviceType.equals(DeviceSetupBeanInfo.beanDeviceType))
 		    return lastFields;
 		lastDeviceType = DeviceSetupBeanInfo.beanDeviceType;  

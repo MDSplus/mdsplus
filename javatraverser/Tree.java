@@ -29,6 +29,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     java.util.Stack trees, experiments;
     JTree curr_tree;
     static RemoteTree curr_experiment;
+    public static int context;
     Node curr_node = null;
     DefaultMutableTreeNode curr_tree_node; 
     JDialog open_dialog = null, add_node_dialog = null;
@@ -125,7 +126,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	{
 	    curr_experiment = (RemoteTree)experiments.pop();
 	    try {
-		curr_experiment.close();
+		curr_experiment.close(Tree.context);
 	    } catch(Exception e)
 	    {
 	        boolean editable = false;
@@ -141,8 +142,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		        if(n == JOptionPane.YES_OPTION)
 		        {
 			        try{
-			            curr_experiment.write();
-			            curr_experiment.close();
+			            curr_experiment.write(Tree.context);
+			            curr_experiment.close(Tree.context);
 			        }catch(Exception exc)
 			        {
 			            System.out.println("Error closing experiment: " + exc.getMessage());
@@ -162,7 +163,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	if(curr_tree == null)
 	    return;
 	try {
-	    curr_experiment.close();
+	    curr_experiment.close(Tree.context);
 	} catch(Exception e) {
 	    boolean editable = false;
 	    String name = null;
@@ -178,8 +179,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		    if(n == JOptionPane.YES_OPTION)
 		    {
 		        try{
-			    curr_experiment.write();
-			    curr_experiment.close();
+			    curr_experiment.write(Tree.context);
+			    curr_experiment.close(Tree.context);
 		        }catch(Exception exc)
 		        {
 			    JOptionPane.showMessageDialog(frame, "Error closing tree", exc.getMessage(),JOptionPane.WARNING_MESSAGE);
@@ -189,7 +190,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		    else
 		    {
 		        try {
-			    curr_experiment.quit();
+			    curr_experiment.quit(Tree.context);
 		        } catch(Exception exce) {
 			    JOptionPane.showMessageDialog(frame, "Error quitting tree", exce.getMessage(),JOptionPane.WARNING_MESSAGE);
 			    return;
@@ -395,7 +396,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	//curr_experiment.is_editable = editable;
 	//curr_experiment.is_readonly = readonly;
 	try {
-	    curr_experiment.open();
+	    Tree.context = curr_experiment.open();
 	    top_node = new Node(curr_experiment, this);
 	} catch (Exception e) {
 	    JOptionPane.showMessageDialog(frame, e.getMessage(), "Error opening "+exp, JOptionPane.ERROR_MESSAGE);

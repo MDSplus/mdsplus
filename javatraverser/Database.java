@@ -38,35 +38,37 @@ public class Database implements RemoteTree{
     public boolean isEditable() {return is_editable; }
     public boolean isReadonly() {return is_readonly;}
    /* Low level MDS database management routines, will be  masked by the Node class*/
-    public native void open() throws DatabaseException;
-    public native void write() throws DatabaseException;
-    public native void close()throws DatabaseException;
-    public native void quit()throws DatabaseException;
-    public native Data getData(NidData nid) throws DatabaseException;
-    public native Data evaluateData(NidData nid) throws DatabaseException;
-    public native void putData(NidData nid, Data data) throws DatabaseException;
+    public native int open() throws DatabaseException;
+    public native void write(int ctx) throws DatabaseException;
+    public native void close(int ctx)throws DatabaseException;
+    public native void quit(int ctx)throws DatabaseException;
+    public native Data getData(NidData nid, int ctx) throws DatabaseException;
+    public native Data evaluateData(NidData nid, int ctx) throws DatabaseException;
+    public native void putData(NidData nid, Data data, int ctx) throws DatabaseException;
     //public native DatabaseInfo getInfo(); throws DatabaseException;
-    public native NodeInfo getInfo(NidData nid) throws DatabaseException;
-    public native void setTags(NidData nid, String tags[]) throws DatabaseException;
-    public native String[] getTags(NidData nid);
-    public native void renameNode(NidData nid, String name) throws DatabaseException;
-    public native NidData addNode(String name, int usage) throws DatabaseException;
-    public native NidData[] startDelete(NidData nid[]) throws DatabaseException;
-    public native void executeDelete() throws DatabaseException;
-    public native NidData[] getSons(NidData nid) throws DatabaseException;
-    public native NidData[] getMembers(NidData nid) throws DatabaseException;
-    public native boolean isOn(NidData nid) throws DatabaseException;
-    public native void setOn(NidData nid, boolean on) throws DatabaseException;
-    public native NidData resolve(PathData pad) throws DatabaseException;
-    public native void setDefault(NidData nid) throws DatabaseException;
-    public native NidData getDefault() throws DatabaseException;
-    public native NidData addDevice(String path, String model) throws DatabaseException;
-    public native void doAction(NidData nid) throws DatabaseException;
-    public native void doDeviceMethod(NidData nid, String method) throws DatabaseException;
-    public native NidData [] getWild(int usage_mask) throws DatabaseException;
-    public native void create(int shot) throws DatabaseException;
+    public native NodeInfo getInfo(NidData nid, int ctx) throws DatabaseException;
+    public native void setTags(NidData nid, String tags[], int ctx) throws DatabaseException;
+    public native String[] getTags(NidData nid, int ctx);
+    public native void renameNode(NidData nid, String name, int ctx) throws DatabaseException;
+    public native NidData addNode(String name, int usage, int ctx) throws DatabaseException;
+    public native NidData[] startDelete(NidData nid[], int ctx) throws DatabaseException;
+    public native void executeDelete(int ctx) throws DatabaseException;
+    public native NidData[] getSons(NidData nid, int ctx) throws DatabaseException;
+    public native NidData[] getMembers(NidData nid, int ctx) throws DatabaseException;
+    public native boolean isOn(NidData nid, int ctx) throws DatabaseException;
+    public native void setOn(NidData nid, boolean on, int ctx) throws DatabaseException;
+    public native NidData resolve(PathData pad, int ctx) throws DatabaseException;
+    public native void setDefault(NidData nid, int ctx) throws DatabaseException;
+    public native NidData getDefault(int ctx) throws DatabaseException;
+    public native NidData addDevice(String path, String model, int ctx) throws DatabaseException;
+    public native void doAction(NidData nid, int ctx) throws DatabaseException;
+    public native void doDeviceMethod(NidData nid, String method, int ctx) throws DatabaseException;
+    public native NidData [] getWild(int usage_mask, int ctx) throws DatabaseException;
+    public native int create(int shot) throws DatabaseException;
     public String dataToString(Data data){return "ERROR this method cannot be called";}
     public Data dataFromExpr(String expr){return null;}
+    public native long saveContext();
+    public native void restoreContext(long context);
   }  
     
     

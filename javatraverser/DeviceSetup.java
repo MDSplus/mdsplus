@@ -119,7 +119,7 @@ public class DeviceSetup extends JDialog
                         {
                             try{
                                 DeviceSetup.this.subtree.doDeviceMethod(
-                                    new NidData(DeviceSetup.this.baseNid), methods[j]);
+                                    new NidData(DeviceSetup.this.baseNid), methods[j], Tree.context);
                             }catch(Exception exc) {errmsg = exc.toString(); success = false;}
                             if(!success)
                                 JOptionPane.showMessageDialog(DeviceSetup.this, 

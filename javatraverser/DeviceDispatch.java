@@ -29,7 +29,7 @@ public class DeviceDispatch extends DeviceComponent
         NodeInfo nodeInfo;
         if(subtree == null) return;
         try {
-            nodeInfo = subtree.getInfo(nidData);
+            nodeInfo = subtree.getInfo(nidData, Tree.context);
         }catch(Exception e)
         {
             System.out.println("Cannot read device NCI: "+e);
@@ -41,7 +41,7 @@ public class DeviceDispatch extends DeviceComponent
         for(i = num_actions = 0; i < num_components; i++)
         {
             try {
-                nodeInfos[i] = subtree.getInfo(currNid);
+                nodeInfos[i] = subtree.getInfo(currNid, Tree.context);
             }catch(Exception e)
             {
                 System.out.println("Cannot read device NCI: "+e);
@@ -60,7 +60,7 @@ public class DeviceDispatch extends DeviceComponent
             {
                 try
                 {
-                    actions[j] = subtree.getData(currNid);
+                    actions[j] = subtree.getData(currNid, Tree.context);
                 }catch(Exception e)
                 {
                     System.out.println("Cannot read device actions: "+e);

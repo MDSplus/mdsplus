@@ -20,6 +20,7 @@ public class DeviceFieldCustomizer extends DeviceCustomizer implements Customize
     }        
     public void setObject(Object o)
     {
+
         bean = (DeviceField)o;
 
         setLayout(new BorderLayout());

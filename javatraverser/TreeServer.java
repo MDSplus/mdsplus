@@ -1,12 +1,14 @@
 import java.rmi.*;
 import java.rmi.server.*;
+import java.util.*;
 
 class TreeServer extends UnicastRemoteObject implements RemoteTree
 {
     String experiment;
     int shot;
+    int lastCtx = 0;
     transient Database tree;
-    
+    Vector contexts = new Vector();
     public TreeServer() throws RemoteException
     {
         super();
@@ -24,33 +26,180 @@ class TreeServer extends UnicastRemoteObject implements RemoteTree
     public boolean isEditable(){return tree.isEditable();}
     public boolean isReadonly() {return tree.isReadonly();}
    /* Low level MDS database management routines, will be  masked by the Node class*/
-    public void open() throws DatabaseException {tree.open();}
-    public void write() throws DatabaseException {tree.write();}
-    public void close() throws DatabaseException {tree.close();}
-    public void quit() throws DatabaseException {tree.quit();}
-    public Data getData(NidData nid) throws DatabaseException {return tree.getData(nid);}
-    public Data evaluateData(NidData nid) throws DatabaseException {return tree.evaluateData(nid);}
-    public void putData(NidData nid, Data data) throws DatabaseException {tree.putData(nid, data); }
+    public int open() throws DatabaseException 
+    {
+        System.out.println("Server: start open lastCtx = "+lastCtx);
+        
+        tree.open();
+        contexts.insertElementAt(new Long(tree.saveContext()), lastCtx);
+        return lastCtx++;
+    }
+    public void write(int ctx) throws DatabaseException 
+    {
+        long lctx = ((Long)contexts.elementAt(ctx)).longValue();
+        tree.restoreContext(lctx); 
+        contexts.setElementAt(new Long(0), ctx);
+        tree.write(0);
+        lctx = tree.saveContext();
+        contexts.setElementAt(new Long(lctx), ctx);
+    }
+    public void close(int ctx) throws DatabaseException 
+    {
+        long lctx = ((Long)contexts.elementAt(ctx)).longValue();
+        tree.restoreContext(lctx); 
+        contexts.setElementAt(new Long(0), ctx);
+        tree.close(0);
+        lctx = tree.saveContext();
+        contexts.setElementAt(new Long(lctx), ctx);
+    }
+    public void quit(int ctx) throws DatabaseException 
+    {
+        long lctx = ((Long)contexts.elementAt(ctx)).longValue();
+        tree.restoreContext(lctx); 
+        contexts.setElementAt(new Long(0), ctx);
+        tree.quit(0);
+        lctx = tree.saveContext();
+        contexts.setElementAt(new Long(lctx), ctx);
+    }
+    
+    private void setContext(int ctx)
+    {
+        long lctx = ((Long)contexts.elementAt(ctx)).longValue();
+        tree.restoreContext(lctx); 
+        lctx = tree.saveContext();
+        contexts.setElementAt(new Long(lctx), ctx);
+    }
+    
+    
+    public Data getData(NidData nid, int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        Data data =  tree.getData(nid, 0);
+        return data;
+    }
+    public Data evaluateData(NidData nid, int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        Data data = tree.evaluateData(nid, 0);
+        return data;
+    }
+    public void putData(NidData nid, Data data, int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        tree.putData(nid, data, 0); 
+    }
     //public native DatabaseInfo getInfo(); throws DatabaseException;
-    public NodeInfo getInfo(NidData nid) throws DatabaseException {return tree.getInfo(nid);}
-    public void setTags(NidData nid, String tags[]) throws DatabaseException {tree.setTags(nid, tags);}
-    public String[] getTags(NidData nid)throws DatabaseException {return tree.getTags(nid);}
-    public void renameNode(NidData nid, String name)throws DatabaseException {tree.renameNode(nid, name);}
-    public NidData addNode(String name, int usage) throws DatabaseException {return tree.addNode(name, usage);}
-    public NidData[] startDelete(NidData nid[])throws DatabaseException {return tree.startDelete(nid);}
-    public void executeDelete()throws DatabaseException  {tree.executeDelete();}
-    public NidData[] getSons(NidData nid) throws DatabaseException {return tree.getSons(nid);}
-    public NidData[] getMembers(NidData nid) throws DatabaseException {return tree.getMembers(nid);}
-    public boolean isOn(NidData nid) throws DatabaseException {return tree.isOn(nid);}
-    public void setOn(NidData nid, boolean on) throws DatabaseException {tree.setOn(nid, on);}
-    public NidData resolve(PathData pad) throws DatabaseException {return tree.resolve(pad);}
-    public void setDefault(NidData nid)throws DatabaseException  {tree.setDefault(nid);}
-    public NidData getDefault()throws DatabaseException  {return tree.getDefault();}
-    public NidData addDevice(String path, String model)throws DatabaseException  {return tree.addDevice(path, model);}
-    public void doAction(NidData nid) throws DatabaseException {tree.doAction(nid);}
-    public void doDeviceMethod(NidData nid, String method) throws DatabaseException {tree.doDeviceMethod(nid, method);}
-    public NidData [] getWild(int usage_mask) throws DatabaseException {return tree.getWild(usage_mask);}
-    public void create(int shot) throws DatabaseException  {tree.create(shot);}
+    public NodeInfo getInfo(NidData nid, int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        NodeInfo info = tree.getInfo(nid, 0);
+        return info;
+    }
+    public void setTags(NidData nid, String tags[], int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        tree.setTags(nid, tags, 0);
+    }
+    public String[] getTags(NidData nid, int ctx)throws DatabaseException 
+    {
+        setContext(ctx);
+        String tags[] = tree.getTags(nid, 0);
+        return tags;
+    }
+    public void renameNode(NidData nid, String name, int ctx)throws DatabaseException 
+    {
+        setContext(ctx);
+        tree.renameNode(nid, name, 0);
+    }
+    public NidData addNode(String name, int usage, int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        NidData nid = tree.addNode(name, usage, 0);
+        return nid;
+    }
+    public NidData[] startDelete(NidData nid[], int ctx)throws DatabaseException 
+    {
+        setContext(ctx);
+        NidData nids[] = tree.startDelete(nid, 0);
+        return nids;        
+    }
+    public void executeDelete(int ctx)throws DatabaseException  
+    {
+        setContext(ctx);
+        tree.executeDelete(0);
+    }
+    public NidData[] getSons(NidData nid, int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        NidData [] sons = tree.getSons(nid, 0);
+        return sons;
+    }
+
+    public NidData[] getMembers(NidData nid, int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        NidData members[] = tree.getMembers(nid, 0);
+        return members;
+    }
+    public boolean isOn(NidData nid, int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        boolean on = tree.isOn(nid, 0);
+        return on;
+    }
+    public void setOn(NidData nid, boolean on, int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        tree.setOn(nid, on, 0);
+    }
+    public NidData resolve(PathData pad, int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        NidData nid = tree.resolve(pad, 0);
+        return nid;
+    }
+    public void setDefault(NidData nid, int ctx)throws DatabaseException  
+    {
+        long lctx = ((Long)contexts.elementAt(ctx)).longValue();
+        tree.restoreContext(lctx); 
+        tree.setDefault(nid, 0);
+        lctx = tree.saveContext();
+        contexts.setElementAt(new Long(lctx), ctx);
+    }
+    public NidData getDefault(int ctx)throws DatabaseException  
+    {
+        setContext(ctx);
+        NidData nid = tree.getDefault(0);
+        return nid;
+    }
+    public NidData addDevice(String path, String model, int ctx)throws DatabaseException  
+    {
+        setContext(ctx);
+        NidData nid = tree.addDevice(path, model, 0);
+        return nid;
+    }
+    public void doAction(NidData nid, int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        tree.doAction(nid, 0);
+    }
+    public void doDeviceMethod(NidData nid, String method, int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        tree.doDeviceMethod(nid, method, 0);
+    }
+    public NidData [] getWild(int usage_mask, int ctx) throws DatabaseException 
+    {
+        setContext(ctx);
+        NidData nids[] = tree.getWild(usage_mask, 0);
+        return nids;
+    }
+    public int create(int shot) throws DatabaseException  
+    {
+        tree.create(shot);
+        contexts.insertElementAt(new Long(tree.saveContext()), lastCtx);
+        return lastCtx++;
+    }
     public String dataToString(Data data){return data.toString();}
     public Data dataFromExpr(String expr){return Data.fromExpr(expr);}
     
