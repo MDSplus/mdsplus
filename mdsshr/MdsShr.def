@@ -98,3 +98,4 @@ libgetvm_
 libfreevm_
 MSISetPATH
 MSIUnsetPATH
+cstring_to_dsc

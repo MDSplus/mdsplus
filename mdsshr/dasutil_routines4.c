@@ -655,3 +655,11 @@ char  *str_dupl_char(			/* Returns: dsc_ret->dscA_pointer */
     free(p);
     return(dsc_ret->dscA_pointer);
    }
+
+struct descriptor *cstring_to_dsc( char *src) 
+{
+  static struct descriptor ans = {0,DSC_K_DTYPE_T,DSC_K_CLASS_S,0} ;
+  ans.dscW_length = strlen(src);
+  ans.dscA_pointer = src;
+  return &ans;
+}
