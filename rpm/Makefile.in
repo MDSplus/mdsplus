@@ -13,9 +13,7 @@ depend:
 	:
 
 clean :
-	- rm $(exec_prefix)/etc/profile.d/mdsplus.sh
-	- rm $(exec_prefix)/etc/profile.d/mdsplus.csh
-	- rm $(exec_prefix)/etc/envsyms
+	:
 
 install:
 	if [ ! -d $(exec_prefix)/etc/profile.d ] ; then \
@@ -25,3 +23,4 @@ install:
 	$(INSTALL) -m 755  envsyms $(exec_prefix)/etc
 	$(INSTALL) -m 755  mdsplus.csh $(exec_prefix)/etc/profile.d
 	$(INSTALL) -m 755  mdsplus.sh  $(exec_prefix)/etc/profile.d
+	$(INSTALL) -m 755  mdsplus.conf.template $(exec_prefix)/etc

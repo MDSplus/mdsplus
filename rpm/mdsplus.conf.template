@@ -1,0 +1,18 @@
+# mdsplus.conf - Defines MDSplus environment variables
+#
+# Format:
+#
+#         varname value  [(>|<)delimiter]
+#
+#       If third parameter is >; then if varname is already defined
+#       append a semicolon and the value to the end of the definition.
+#
+#
+# Test trees
+#
+main_path /usr/local/mdsplus/trees >;
+subtree_path /usr/local/mdsplus/tree/subtree >;
+#
+# Put mdsplus in beginning of PATH
+#
+PATH /usr/local/mdsplus/bin <:
