@@ -28,8 +28,9 @@ int ServerSendMessage();
 
 
 ------------------------------------------------------------------------------*/
-
 #include <ipdesc.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <servershr.h>
 #define _NO_SERVER_SEND_MESSAGE_PROTO
@@ -147,7 +148,7 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
     if (addr == 0)
     {
       struct sockaddr_in addr_struct;
-      int len;
+      unsigned int len=sizeof(addr_struct);
       if (getsockname(sock,(struct sockaddr *)&addr_struct,&len) == 0)
         addr = *(int *)&addr_struct.sin_addr;
     }
@@ -404,6 +405,9 @@ static int CreatePort(short starting_port, short *port_out)
 }
 
 static int ThreadRunning = 0;
+static pthread_mutex_t worker_mutex;
+static pthread_cond_t  worker_condition;
+static int worker_cond_init = 1;
 
 static int StartReceiver(short *port_out)
 {
@@ -419,19 +423,35 @@ static int StartReceiver(short *port_out)
   }
   if (!ThreadRunning)
   {
-    status = pthread_create(&thread, pthread_attr_default, Worker, (void *)&sock);
-#ifdef __hpux
-    pthread_detach(&thread);
-#else
-    pthread_detach(thread);
-#endif
+    size_t ssize;
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    status = pthread_attr_getstacksize(&attr,&ssize);
+    status = pthread_attr_setstacksize(&attr,ssize*16);
+    status = pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
+    if (worker_cond_init)
+    {
+      pthread_mutex_init(&worker_mutex,pthread_mutexattr_default);
+      pthread_cond_init(&worker_condition,pthread_condattr_default);
+      worker_cond_init = 0;
+    }
+    status = pthread_create(&thread, &attr, Worker, (void *)&sock);
+    pthread_attr_destroy(&attr);
     if (status != 0)
     {
       perror("error creating dispatch receiver thread\n");
       status = 0;
     }
     else
+    {
+      while ((ThreadRunning == 0) && (pthread_mutex_lock(&worker_mutex) == 0))
+      {
+        if (!ThreadRunning)
+          pthread_cond_wait(&worker_condition,&worker_mutex);
+        pthread_mutex_unlock(&worker_mutex);
+      }
       status = 1;
+    }
   }
   *port_out = port;
   return status;  
@@ -448,17 +468,21 @@ static void *Worker(void *sockptr)
   struct sockaddr_in sin;
   int sock = *(int *)sockptr;
   int tablesize = FD_SETSIZE;
+  int num = 0;
   fd_set readfds,fdactive;
   pthread_cleanup_push(ThreadExit, 0);
+  pthread_mutex_lock(&worker_mutex);
   ThreadRunning = 1;
+  pthread_cond_signal(&worker_condition);
+  pthread_mutex_unlock(&worker_mutex);
   FD_ZERO(&fdactive);
   FD_SET(sock,&fdactive);
   readfds = fdactive;
-  while ((select(tablesize, &readfds, 0, 0, 0) != -1))
+  while ((num = select(tablesize, &readfds, 0, 0, 0)) != -1)
   {
     if (FD_ISSET(sock, &readfds))
     {
-      int len = sizeof(struct sockaddr_in);
+      unsigned int len = sizeof(struct sockaddr_in);
       AcceptClient(accept(sock, (struct sockaddr *)&sin, &len),&sin,&fdactive);
     }
     else
@@ -493,7 +517,10 @@ int ServerBadSocket(int socket)
 int ServerConnect(char *server_in)
 {
   int sock = -1;
+/***** VMS
   char *srv = TranslateLogical(server_in);
+****************/
+  char *srv = server_in;
   char *server = srv ? srv : server_in;
   int found = 0;
   unsigned int addr;
@@ -519,13 +546,6 @@ int ServerConnect(char *server_in)
         pthread_unlock_global_np();
         if (c)
         {
-          int tablesize = FD_SETSIZE;
-          fd_set fdactive;
-          int status;
-          struct timeval timeout = {0,0};
-          FD_ZERO(&fdactive);
-          FD_SET(c->send_sock,&fdactive);
-          status = select(tablesize,&fdactive,0,0,&timeout);
           if (ServerBadSocket(c->send_sock))
             RemoveClient(c,0);
           else
@@ -539,8 +559,10 @@ int ServerConnect(char *server_in)
     if (sock == -1)
       sock = ConnectToMds(server);
   }
+/*************************** VMS
   if (srv)
     TranslateLogicalFree(srv);
+******************************************/
   if (!found && sock >= 0)
     AddClient(addr,port,sock);
   return(sock);
