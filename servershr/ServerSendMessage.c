@@ -73,7 +73,6 @@ typedef struct _Job { int has_condition;
                       pthread_mutex_t mutex;
                       int done;
                       int marked_for_delete;
-                      int in_use;
                       int *retstatus;
                       void (*ast)();
                       void *astparam;
@@ -204,6 +203,13 @@ static void RemoveJob(Job *job)
   Job *j,*prev;
   lock_job_list();
   for (j=Jobs,prev=0;j && j!=job;prev=j,j=j->next);
+  if (j)
+  {
+    if (prev)
+      prev->next = j->next;
+    else
+      Jobs = j->next;
+  }
   unlock_job_list();
   if (j)
   {
@@ -216,7 +222,7 @@ static void RemoveJob(Job *job)
       pthread_mutex_unlock(&j->mutex);
       pthread_mutex_destroy(&j->mutex);
     }
-    j->in_use = 0;
+    free(j);
   }
 }
 
@@ -287,16 +293,7 @@ static void DoBeforeAst(int jobid)
       
 static int RegisterJob(int *msgid, int *retstatus,void (*ast)(), void *astparam, void (*before_ast)(), int sock)
 {
-  Job *j;
-  int oldj=0;
-  lock_job_list();
-  for (j=Jobs; j && j->in_use; j=j->next);
-  unlock_job_list();
-  if (j)
-    oldj = 1;
-  else
-    j = (Job *)malloc(sizeof(Job));
-  j->in_use=1;
+  Job *j = (Job *)malloc(sizeof(Job));
   j->retstatus = retstatus;
   j->ast = ast;
   j->astparam = astparam;
@@ -318,11 +315,8 @@ static int RegisterJob(int *msgid, int *retstatus,void (*ast)(), void *astparam,
     j->has_condition = 0;
     j->done = 1;
   }
-  if (!oldj)
-  {
-    j->next = Jobs;
-    Jobs = j;
-  }
+  j->next = Jobs;
+  Jobs = j;
   unlock_job_list();
   return j->jobid;
 }
