@@ -300,7 +300,7 @@ int				stack[64];
 	case DTYPE_FS :	gtr = (int (*)())&GTR_FS; break;
 	case DTYPE_D :	gtr = (int (*)())&GTR_D; break;
 	case DTYPE_G :	gtr = (int (*)())&GTR_G; break;
-	case DTYPE_FT : 	gtr = (int (*)())&GTR_FS; break;
+	case DTYPE_FT : gtr = (int (*)())&GTR_FT; break;
 
 	case DTYPE_FC :	gtr = (int (*)())&GTR_FC; break;
 	case DTYPE_DC :	gtr = (int (*)())&GTR_DC; break;
