@@ -1146,6 +1146,7 @@ static void ProcessMessage(Client *c, Message *message)
 	        DESCRIPTOR(ans_d,"");
           SendResponse(c,1,(struct descriptor *)&ans_d);
         }
+        free(buf);
         break;
       }
     case MDS_IO_WRITE_K:
