@@ -170,7 +170,7 @@ static int OpenScsi(int scsiDevice, char **buff_out)
   return fd;
 }
 
-static int lock_scsi(int scsiDevice, int lock)
+int scsi_lock(int scsiDevice, int lock)
 {
   static int semId = 0;
   int status = 0;
@@ -215,24 +215,10 @@ static int lock_scsi(int scsiDevice, int lock)
   return (status == 0);
 }  
 
-static int locked_scsi_io(int scsiDevice, int direction, unsigned char *cmdp, 
-         unsigned char cmd_len, char *buffer, unsigned int buflen, 
-         unsigned char *sbp, unsigned char mx_sb_len, 
-			  unsigned char *sb_out_len, int *transfer_len, int lock);
-
 int scsi_io(int scsiDevice, int direction, unsigned char *cmdp, 
          unsigned char cmd_len, char *buffer, unsigned int buflen, 
          unsigned char *sbp, unsigned char mx_sb_len, 
          unsigned char *sb_out_len, int *transfer_len)
-{
-  return locked_scsi_io(scsiDevice, direction, cmdp, cmd_len, buffer, buflen, 
-			sbp, mx_sb_len, sb_out_len, transfer_len, 1);
-}
-
-static int locked_scsi_io(int scsiDevice, int direction, unsigned char *cmdp, 
-         unsigned char cmd_len, char *buffer, unsigned int buflen, 
-         unsigned char *sbp, unsigned char mx_sb_len, 
-			  unsigned char *sb_out_len, int *transfer_len, int lock)
 {
   char *buf;
   int fd;
@@ -270,8 +256,6 @@ static int locked_scsi_io(int scsiDevice, int direction, unsigned char *cmdp,
       sghdr.timeout = timeout > 10000 ? timeout : 10000;
       sghdr.flags = use_mmap ? SG_FLAG_MMAP_IO : 0;
       sghdr.pack_id = 0;
-      if (lock)
-        lock_scsi(scsiDevice,1);
       if (ioctl(fd, SG_IO, &sghdr) >= 0)
       {
         status = sghdr.masked_status;
@@ -287,17 +271,14 @@ static int locked_scsi_io(int scsiDevice, int direction, unsigned char *cmdp,
         {
           int len = 0;
           unsigned char sense_cmd[] = {3,0,0,0,mx_sb_len,0}; 
-          locked_scsi_io(scsiDevice, 1, sense_cmd, sizeof(sense_cmd), sbp, mx_sb_len, 
-			 0, 0, 0, &len, 0);
+          scsi_io(scsiDevice, 1, sense_cmd, sizeof(sense_cmd), sbp, mx_sb_len, 
+			 0, 0, 0, &len);
           if (sb_out_len != 0)
             *sb_out_len = (unsigned char)len;
         }
         else if (sb_out_len != 0)
           *sb_out_len = sghdr.sb_len_wr;
       }
-      if (lock)
-        lock_scsi(scsiDevice,0);
-      //}
   }
   if (transfer_len != 0)
     *transfer_len = bytes_transfered;
