@@ -38,6 +38,11 @@ int ServerSendMessage();
 #include <netdb.h>
 #include <sys/time.h>
 
+
+#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
+#define pthread_attr_default NULL
+#endif
+
 extern char *TranslateLogical(char *);
 extern void TranslateLogicalFree(char *);
 
@@ -65,7 +70,7 @@ static Client *ClientList = 0;
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define SndArgChk(a1,a2,a3,a4,a5,a6,a7,a8) status = SendArg(a1,a2,a3,a4,a5,a6,a7,a8); if (!(status & 1)) goto send_error;
-#define pthread_attr_default NULL
+
 
 static int StartReceiver(unsigned int *addr, short *port);
 int ServerConnect(char *server);
