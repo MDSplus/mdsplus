@@ -7,7 +7,7 @@ pro CAMBLOCK,entry,MODULE,A,F,TC,DATA,MEM,IOSB
 	if (n_elements(MEM) ne 1L) then MEM = !CAM_MEM
 	if (MEM ne 24) then if (MEM ne 16) then MEM = !CAM_MEM
 	if (MEM eq 16) then bytes = 2L else bytes = 4L
-	if (bytes*TC gt 65535L) then message,string('module,tc >65535 bytes: ',MODULE,TC)
+;	if (bytes*TC gt 65535L) then message,string('module,tc >65535 bytes: ',MODULE,TC)
 	if (F lt 16) then begin
 		DATA = 0b
 		if (MEM eq 16) then tmp = intarr(TC,/nozero) else tmp = lonarr(TC,/nozero)
@@ -21,10 +21,11 @@ pro CAMBLOCK,entry,MODULE,A,F,TC,DATA,MEM,IOSB
                 tmp,entry,module,a,f,tc,mem)
 	CAMCHECK,camstat
 	!CAM_IOSB = MdsValue('_IOSB')
+        IOSB = !CAM_IOSB
         tmp = MdsValue('_data')
 	if (F lt 16) then begin
-		nelem = (!CAM_IOSB(1) and 65535L)/bytes
-		if (nelem eq 0L) then DATA = 0b $
+		nelem = (LONG(!CAM_IOSB(1) and 65535L) + (!CAM_IOSB(3)*65536L))/bytes
+		if (nelem eq 0L or (not IOSB[0])) then DATA = 0b $
 		else DATA = tmp(0L:nelem-1L)
 	end
 	;*** CSTATE does not seem to enforce X or Q but we do on request ***
