@@ -462,5 +462,9 @@ skip:		if (status & 1 && wild) goto more;
 	MdsFree1Dx(&holdxd, NULL);
 	if (status & 1 && key_ptr->item_dtype == DTYPE_NID && out_ptr->pointer)
 		out_ptr->pointer->dtype = DTYPE_NID;
+        if (status & 1 && out_ptr->pointer && out_ptr->pointer->class == CLASS_A &&
+            ((struct descriptor_a *)(out_ptr->pointer))->arsize == 0)
+           status = TreeNNF;
+
 	return status;
 }
