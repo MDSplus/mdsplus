@@ -28,7 +28,7 @@ static struct cmd_struct  cmd0[2] = {
 	/***************************************************************
 	 * main:  Mdsdcl main program
 	 ***************************************************************/
-main(
+void  main(
     int   argc
    ,char  *argv[]
    )
@@ -103,9 +103,5 @@ main(
         sts = mdsdcl_do_command(0);
         if (sts == CLI_STS_EOF)
             exit(0);
-
-/*        if ((~sts & 01) && sts!=CLI_STS_NOCOMD)
-/*            fprintf(stderr,"--> error status %08X\n\n\n",sts);  /*  */
        }
-	return 1;
    }						/*  */

@@ -206,25 +206,3 @@ struct cmd_struct  *make_lookup_keyword( /* Return: addr of cmd_struct	*/
        }
     return(cmd);
    }
-
-
-
-	/**************************************************************
-	 * main:
-	 **************************************************************/
-/*main(
-/*    int   argc
-/*   ,char  *argv[]
-/*   )
-/*   {
-/*    int   i,k;
-/*    char  *p;
-/*
-/*    for ( ; ; )
-/*       {
-/*        p = cli_get_cmdstring("Enter> ");
-/*        if (!p)
-/*            exit(0);
-/*        printf("\n--> '%s'\n\n",p);
-/*       }
-/*   }						/*  */

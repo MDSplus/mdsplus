@@ -1,9 +1,13 @@
 #include        <stdarg.h>
 #include        <stdio.h>
+#include        <stdlib.h>
 #if defined(vms)
 #include        <lib$routines.h>
 #include        <time.h>
-#elif defined(_WINDOWS)
+#include        <unistd.h>
+#elif defined(_WIN32)
+#include        <io.h>
+#define isatty(a) _isatty(a)
 #else
 #include        <sys/time.h>
 #endif
@@ -176,9 +180,11 @@ int   MdsMsg(			/* Return: sts provided by user		*/
    )
    {
     int   k;
+    int   write2stdout;
     char  text[256];
     va_list  ap;		/* arg ptr				*/
 
+    write2stdout = isatty(fileno(stdout)) ^ isatty(fileno(stderr));
     if ((sts & ALREADY_DISPLAYED) && (sts != -1))
         return(sts);
 
@@ -189,18 +195,30 @@ int   MdsMsg(			/* Return: sts provided by user		*/
         va_start(ap,fmt);	/* initialize "ap"			*/
         vsprintf(text+k,fmt,ap);
         if (sts)
+           {
             fprintf(stderr,"%s\n    sts=%s\n\n",text,MdsGetMsg(sts));
+            if (write2stdout)
+                fprintf(stdout,"%s\n    sts=%s\n\n",text,MdsGetMsg(sts));
+           }
         else
+           {
             fprintf(stderr,"%s\n",text);
+            if (write2stdout)
+                fprintf(stdout,"%s\n",text);
+           }
        }
     else
+       {
         fprintf(stderr,"%s:  sts=%s\n",text,MdsGetMsg(sts));
+        if (write2stdout)
+            fprintf(stdout,"%s:  sts=%s\n",text,MdsGetMsg(sts));
+       }
 
     return(sts | ALREADY_DISPLAYED);
    }
 
 #ifdef MAIN
-main()
+void  main()
    {
     MdsMsg(MDSDCL_STS_SUCCESS,0);  printf("\n");
     MdsMsg(CLI_STS_PRESENT,0);  printf("\n");
