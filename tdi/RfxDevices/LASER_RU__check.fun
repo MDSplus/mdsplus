@@ -49,12 +49,13 @@ public fun LASER_RU__check(as_is _nid, optional _method)
     private _N_DF1M_PAR_2 = 40;
 
     private _K_NUM_BITS = 5;
+	private _K_NUM_DATA = 8;
     private _K_NODES_PER_BIT = 2;
     private _N_BIT_0= 42;
     private _N_BIT_PRE_SHOT = 1;
     private _N_BIT_POST_SHOT = 1;
 
-	private _N_DATA = 63;
+	private _N_DATA = 57;
 
 	private _RS232_XONXOFF = 0;
     private _RS232_CTSDSR  = 1;
@@ -65,37 +66,32 @@ public fun LASER_RU__check(as_is _nid, optional _method)
     private _TRIG_MANUAL    = 4;
 
 
-   private fun SendCommand(in _hComm, in _nid, in _cmnd)
-	{
-		_outValue = 0;
-		_error = LASER_RUSendCommand(_hComm,  _cmnd, size(_cmnd), in _outValue);
-		if(_error <= 0)
-		{
-			if(_error == 0)
-			{
-    			DevLogErr(_nid, "RS232 communication error : "//RS232GetError() );
-				RS232Close(_hComm);
-				return (-1);
-			}
-    		DevLogErr(_nid, "Ruby laser execution command error : "//_cmnd);
-		}
-		return ( _outValue );
-	};
-
     _port = if_error(data(DevNodeRef(_nid, _N_RS232_PORT)),(DevLogErr(_nid, "Missing RS232 Port"); abort();));
 
-    _hComm = RS232OpenPort(_port, "baud=1200 parity=N data=8 stop=1", 0, _RS232_XONXOFF, 13);
+    _hComm = RS232Open(_port, "baud=1200 parity=N data=8 stop=1", 0, _RS232_XONXOFF, 13);
 	if( _hComm == 0 )
 	{
     	DevLogErr(_nid, "Cannot open RS232 port : "//RS232GetError() );
 		abort();
 	}
 
+   /* Set CR as command terminator */
+	_cmnd =  "dterm 13";
+    if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 )
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 	_cmnd = "hip";
-	_retvalue = SendCommand(_hComm, _nid,  _cmnd);
-	if(_retvalue < 0) abort();
+	_retvalue = LASER_RUSendCommand(_hComm, _nid,  _cmnd);
+	if(_retvalue < 0)
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 
-	switch(retvalue) 
+	DevLogErr(_nid, "Ruby laser in "// _retvalue //" state code"); 
+	switch(_retvalue) 
 	{
 	    case (240)   	  
 			DevLogErr(_nid, "Ruby laser in FIRE state"); 

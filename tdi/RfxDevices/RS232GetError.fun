@@ -1,4 +1,4 @@
 public fun RS232GetError()
 {
-   return ( RS232Lib->GetError:dsc() );
+   return ( RS232Lib->RS232GetErrorXd:dsc() );
 }

@@ -1,6 +1,6 @@
 public fun LASER_RU__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'LASER_RU', 55, _nidout);
+    DevAddStart(_path, 'LASER_RU', 60, _nidout);
     DevAddNode(_path // ':COMMENT',     'TEXT', *, *, _nid);
     DevAddNode(_path // ':RS232_PORT',  'TEXT', *, *, _nid);
     DevAddNode(_path // ':TRIG_MODE',   'TEXT', *, *, _nid);
@@ -31,9 +31,9 @@ public fun LASER_RU__add(in _path, out _nidout)
     DevAddNode(_path // ':AMP_PAR_1',  'NUMERIC', compile('NINT ( '// _path //':VOLTAGE_A_1 * 4.095 / ( '//_path //':CALIBRATION.KAMP_1 * 5.) )' ), *, _nid);
     DevAddNode(_path // ':AMP_PAR_2',  'NUMERIC', compile('NINT ( '// _path //':VOLTAGE_A_2 * 4.095 / ( '//_path //':CALIBRATION.KAMP_2 * 5.) )' ), *, _nid);
     DevAddNode(_path // ':AMP_PAR_3',  'NUMERIC', compile('NINT ( '// _path //':VOLTAGE_A_3 * 4.095 / ( '//_path //':CALIBRATION.KAMP_3 * 5.) )' ), *, _nid);
-    DevAddNode(_path // ':PBAL_PAR_1', 'NUMERIC', compile('NINT ( '// _path //':BALANCE_P_1 * 4.095 / ( '//_path //':CALIBRATION.KBAL_1 * 5.) )' ), *, _nid);
-    DevAddNode(_path // ':PBAL_PAR_2', 'NUMERIC', compile('NINT ( '// _path //':BALANCE_P_2 * 4.095 / ( '//_path //':CALIBRATION.KBAL_2 * 5.) )' ), *, _nid);
-    DevAddNode(_path // ':PBAL_PAR_3', 'NUMERIC', compile('NINT ( '// _path //':BALANCE_P_3 * 4.095 / ( '//_path //':CALIBRATION.KBAL_3 * 5.) )' ), *, _nid);
+    DevAddNode(_path // ':PBAL_PAR_1', 'NUMERIC', compile('NINT ( '// _path //':BALANCE_P_1 * 4.095 / ( '//_path //':CALIBRATION.KBAL_1 * 10.) )' ), *, _nid);
+    DevAddNode(_path // ':PBAL_PAR_2', 'NUMERIC', compile('NINT ( '// _path //':BALANCE_P_2 * 4.095 / ( '//_path //':CALIBRATION.KBAL_2 * 10.) )' ), *, _nid);
+    DevAddNode(_path // ':PBAL_PAR_3', 'NUMERIC', compile('NINT ( '// _path //':BALANCE_P_3 * 4.095 / ( '//_path //':CALIBRATION.KBAL_3 * 10.) )' ), *, _nid);
     DevAddNode(_path // ':DTIME1_PAR_1', 'NUMERIC',  compile('NINT( 4000E3 * ('//_path //':DELAY_PULS_1 +'// _path //':DELAY_PULS_2 +'//_path //':DELAY_PULS_3) )'), *, _nid);
     DevAddNode(_path // ':DTIME1_PAR_2', 'NUMERIC',  compile('NINT( 4000E3 * ('//_path//':DELAY_PULS_1 +'//_path//':DELAY_PULS_2 +'//_path//':DELAY_PULS_3 +'//_path//':DELAY_PULS_4) )' ), *, _nid);
     DevAddNode(_path // ':DTIME1_PAR_3', 'NUMERIC',  compile('NINT( 4000E3 * ('//_path//':DELAY_PULS_1) )' ), *, _nid);

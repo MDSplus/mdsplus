@@ -44,17 +44,18 @@ public fun LASER_RU__init(as_is _nid, optional _method)
     private _N_DTIME1_PAR_2 = 35;
     private _N_DTIME1_PAR_3 = 36;
     private _N_DTIME1_PAR_4 = 37;
-    private _N_DTIME1_PAR_4 = 38;
+    private _N_DTIME1_PAR_5 = 38;
     private _N_DF1M_PAR_1 = 39;
     private _N_DF1M_PAR_2 = 40;
 
     private _K_NUM_BITS = 5;
+	private _K_NUM_DATA = 8;
     private _K_NODES_PER_BIT = 2;
     private _N_BIT_0= 42;
     private _N_BIT_PRE_SHOT = 1;
     private _N_BIT_POST_SHOT = 1;
 
-	private _N_DATA = 63;
+	private _N_DATA = 57;
     
 	private _RS232_XONXOFF = 0;
     private _RS232_CTSDSR  = 1;
@@ -65,32 +66,14 @@ public fun LASER_RU__init(as_is _nid, optional _method)
     private _TRIG_MANUAL    = 4;
 
 
-   private fun SendCommand(in _hComm, in _nid, in _cmnd)
-	{
-		_outValue = 0;
-		_error = LASER_RUSendCommand(_hComm,  _cmnd, size(_cmnd), in _outValue);
-		if(_error <= 0)
-		{
-			if(_error == 0)
-			{
-    			DevLogErr(_nid, "RS232 communication error : "//RS232GetError() );
-				RS232Close(_hComm);
-				return (-1);
-			}
-    		DevLogErr(_nid, "Ruby laser execution command error : "//_cmnd);
-		}
-		return ( _outValue );
-	};
-
     _port = if_error(data(DevNodeRef(_nid, _N_RS232_PORT)),(DevLogErr(_nid, "Missing RS232 Port"); abort();));
 
-    _hComm = RS232OpenPort(_port, "baud=1200 parity=N data=8 stop=1", 0, _RS232_XONXOFF, 13);
+    _hComm = RS232Open(_port, "baud=1200 parity=N data=8 stop=1", 0, _RS232_XONXOFF, 13);
 	if( _hComm == 0 )
 	{
     	DevLogErr(_nid, "Cannot open RS232 port : "//RS232GetError() );
 		abort();
 	}
-
 
  	/*  Decode trigger mode parameter */
 
@@ -102,30 +85,37 @@ public fun LASER_RU__init(as_is _nid, optional _method)
     _osc_par = if_error(DevNodeRef(_nid, _N_OSC_PAR), _error = 1);
 	if( _error || _osc_par > 4095)
 	{
-	        DevLogErr(_nid, "Invalid voltage oscillator value"); 
+	        DevLogErr(_nid, "Invalid voltage oscillator value");
+			RS232Close(_hComm);
 			abort();
   	}
 
     /*  Get amplifier parameter 1 2 3 */
 
+
     _amp_par1 = if_error(DevNodeRef(_nid, _N_AMP_PAR_1), _error = 1);
+
+
 	if( _error || _amp_par1 > 4095)
 	{
-	        DevLogErr(_nid, "Invalid aplifier parameter 1 value"); 
+	        DevLogErr(_nid, "Invalid amplifier parameter 1 value");
+			RS232Close(_hComm);
 			abort();
   	}
 
     _amp_par2 = if_error(DevNodeRef(_nid, _N_AMP_PAR_2), _error = 1);
 	if( _error || _amp_par2 > 4095)
 	{
-	        DevLogErr(_nid, "Invalid aplifier parameter 2 value"); 
+	        DevLogErr(_nid, "Invalid amplifier parameter 2 value");
+			RS232Close(_hComm);
 			abort();
   	}
 
     _amp_par3 = if_error(DevNodeRef(_nid, _N_AMP_PAR_3), _error = 1);
 	if( _error || _amp_par3 > 4095)
 	{
-	        DevLogErr(_nid, "Invalid aplifier parameter 3 value"); 
+	        DevLogErr(_nid, "Invalid amplifier parameter 3 value");
+			RS232Close(_hComm);
 			abort();
   	}
 
@@ -134,66 +124,76 @@ public fun LASER_RU__init(as_is _nid, optional _method)
     _pbal_par1 = if_error(DevNodeRef(_nid, _N_PBAL_PAR_1), _error = 1);
 	if( _error || _pbal_par1 > 4095)
 	{
-	        DevLogErr(_nid, "Invalid balance parameter 1 value"); 
+	        DevLogErr(_nid, "Invalid balance parameter 1 value");
+			RS232Close(_hComm);
 			abort();
   	}
 
     _pbal_par2 = if_error(DevNodeRef(_nid, _N_PBAL_PAR_2), _error = 1);
 	if( _error || _pbal_par2 > 4095)
 	{
-	        DevLogErr(_nid, "Invalid balance parameter 2 value"); 
+	        DevLogErr(_nid, "Invalid balance parameter 2 value");
+			RS232Close(_hComm);
 			abort();
   	}
 
     _pbal_par3 = if_error(DevNodeRef(_nid, _N_PBAL_PAR_3), _error = 1);
 	if( _error || _pbal_par3 > 4095)
 	{
-	        DevLogErr(_nid, "Invalid balance parameter 3 value"); 
+	        DevLogErr(_nid, "Invalid balance parameter 3 value");
+			RS232Close(_hComm);
 			abort();
   	}
 
 	/*  Get delay time parameter 1 2 3 4 5 */
 
-    _dtime_par1 = if_error(DevNodeRef(_nid, _N_DTIME1_PAR_1), _error = 1);
+    _dtime1_par1 = if_error(DevNodeRef(_nid, _N_DTIME1_PAR_1), _error = 1);
 	if( _error )
 	{
-	        DevLogErr(_nid, "Invalid delay time parameter 1 value"); 
+	        DevLogErr(_nid, "Invalid delay time parameter 1 value");
+			RS232Close(_hComm);
 			abort();
   	}
 
-    _dtime_par2 = if_error(DevNodeRef(_nid, _N_DTIME1_PAR_2), _error = 1);
+    _dtime1_par2 = if_error(DevNodeRef(_nid, _N_DTIME1_PAR_2), _error = 1);
 	if( _error )
 	{
-	        DevLogErr(_nid, "Invalid delay time parameter 2 value"); 
+	        DevLogErr(_nid, "Invalid delay time parameter 2 value");
+			RS232Close(_hComm);
 			abort();
   	}
 
-    _dtime_par3 = if_error(DevNodeRef(_nid, _N_DTIME1_PAR_3), _error = 1);
+    _dtime1_par3 = if_error(DevNodeRef(_nid, _N_DTIME1_PAR_3), _error = 1);
 	if( _error )
 	{
-	        DevLogErr(_nid, "Invalid delay time parameter 3 value"); 
+	        DevLogErr(_nid, "Invalid delay time parameter 3 value");
+			RS232Close(_hComm);
 			abort();
   	}
 
-    _dtime_par4 = if_error(DevNodeRef(_nid, _N_DTIME1_PAR_4), _error = 1);
+    _dtime1_par4 = if_error(DevNodeRef(_nid, _N_DTIME1_PAR_4), _error = 1);
 	if( _error )
 	{
-	        DevLogErr(_nid, "Invalid delay time parameter 4 value"); 
+	        DevLogErr(_nid, "Invalid delay time parameter 4 value");
+			RS232Close(_hComm);
 			abort();
   	}
 
-    _dtime_par5 = if_error(DevNodeRef(_nid, _N_DTIME1_PAR_5), _error = 1);
+    _dtime1_par5 = if_error(DevNodeRef(_nid, _N_DTIME1_PAR_5), _error = 1);
 	if( _error )
 	{
-	        DevLogErr(_nid, "Invalid delay time parameter 5 value"); 
+	        DevLogErr(_nid, "Invalid delay time parameter 5 value");
+			RS232Close(_hComm);
 			abort();
   	}
 
 	/* Get delay fire */
+
     _delay_fire = if_error(DevNodeRef(_nid, _N_DELAY_FIRE), _error = 1);
 	if( _error )
 	{
-	        DevLogErr(_nid, "Invalid delay fire value"); 
+	        DevLogErr(_nid, "Invalid delay fire value");
+			RS232Close(_hComm);
 			abort();
   	}
 
@@ -204,14 +204,16 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 		_df1m_par1 = if_error(DevNodeRef(_nid, _N_DF1M_PAR_1), _error = 1);
 		if( _error )
 		{
-				DevLogErr(_nid, "Invalid df1m parameter 1 value"); 
+				DevLogErr(_nid, "Invalid df1m parameter 1 value");
+				RS232Close(_hComm); 
 				abort();
   		}
 
 		_df1m_par2 = if_error(DevNodeRef(_nid, _N_DF1M_PAR_2), _error = 1);
 		if( _error )
 		{
-				DevLogErr(_nid, "Invalid df1m parameter 2 value"); 
+				DevLogErr(_nid, "Invalid df1m parameter 2 value");
+				RS232Close(_hComm);
 				abort();
   		}
 	}
@@ -228,78 +230,141 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 
     /* Set CR as command terminator */
 	_cmnd =  "dterm 13";
-    if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+    if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 
 /* Set sistem in interlock mode */
 /********************************************************************
     _cmnd =  "dump 0"
-	if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 )
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 ********************************************************************/
 
 /* Set sistem from interlock to stand by mode */
    _cmnd =  "dump 1";
-	if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 
 /* Set digital output 3 on*/
    _cmnd =  "on 3";
-	if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 
 	wait(0.5);
 
 /* Set digital output 3 off*/
    _cmnd =  "off 3";
-	if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 
 
 /* Set all digital output */
     for(_i = 0, _bit = 0; _i < _K_NUM_BITS; _i++, _bit++)
 	{
-		if(i == 3) _bit++;
+		if(_i == 3) _bit++;
 
-		if(_bit_states[i])
+		if(_bit_states[_i])
 			_cmnd =  "on "//_bit;
 		else
 			_cmnd =  "off "//_bit;
 
-		if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+		if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 )  
+	    {
+			RS232Close(_hComm);
+			abort();
+        }
     }
 
 /* SET ALL PARAMETERS */
 
 /* change mode from stand by to charged */
    _cmnd =  "clb";
-	if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
-
+	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+	{
+		RS232Close(_hComm);
+		abort();
+	}
    _cmnd =  "osc "//_osc_par;
-	if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 
    _cmnd =  "amp "//_amp_par1//" "//_amp_par2//" "//_amp_par3;
-	if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 
    _cmnd =  "pbal "//_pbal_par1//" "//_pbal_par2//" "//_pbal_par3;
-	if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 
    _cmnd =  "dtime1 "//_dtime1_par1//" "//_dtime1_par2//" "//_dtime1_par3//" "//_dtime1_par4//" 40 "//_dtime1_par5;
-	if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 
    _cmnd =  "use1";
-	if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 
    _cmnd =  "charge 1";
-	if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 
 	wait(1.);
 
     _cmnd =  "charge 0";
-	if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 
 	wait(1.);
 	
 	_cmnd =  "osc "//_osc_par;
-	if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 
 	_cmnd =  "amp "//_amp_par1//" "//_amp_par2//" "//_amp_par3;
-	if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+	{
+		RS232Close(_hComm);
+		abort();
+	}
 
 	wait(1.);
 
@@ -309,22 +374,36 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 	while (_i < 20  && _retvalue != 49) 
 	{
 		wait(1.);
-		_retvalue = SendCommand(_hComm, _nid,  _cmnd);
-		if(_retvalue < 0) abort();
+		_retvalue = LASER_RUSendCommand(_hComm, _nid,  _cmnd);
+		if(_retvalue < 0) 
+		{
+			RS232Close(_hComm);
+			abort();
+		}
 		_i++;
 	}
 	if(_i == 20 && _retvalue != 49)
 	{
-		DevLogErr(_nid, "Invalid charge in ruby laser"); 
+		DevLogErr(_nid, "Invalid charge in ruby laser");
+		RS232Close(_hComm);
+		abort(); 
 	}
 
 
 	if (_trig_mode != _TRIG_MANUAL)
 	{   
 	    _cmnd = "en1";
-	    if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+	    if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+		{
+			RS232Close(_hComm);
+			abort();
+		}
 	    _cmnd = "en2";
-	    if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+	    if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+		{
+			RS232Close(_hComm);
+			abort();
+		}
 		wait(1.);
 	}
 
@@ -340,7 +419,11 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 
 				/************************************************************
 				Non funziona manda in tilt il laser si sta indagando 17/9/96
-				if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+				if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+				{
+					RS232Close(_hComm);
+					abort();
+				}
 				************************************************************/
 
 				wait(1.);
@@ -351,15 +434,23 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 		break;
 		case(_TRIG_AUTOMATIC)	
 			_cmnd = "fire1";
-			if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+			if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+			{
+				RS232Close(_hComm);
+				abort();
+			}
 			_cmnd = "hip";
 			_i = 0;
 			_retvalue = 0;
 			while (_i < 20  && _retvalue != 240) 
 			{
 				wait(1.0);
-				_retvalue = SendCommand(_hComm, _nid,  _cmnd);
-				if(_retvalue < 0) abort();
+				_retvalue = LASER_RUSendCommand(_hComm, _nid,  _cmnd);
+				if(_retvalue < 0) 
+				{
+					RS232Close(_hComm);
+					abort();
+				}
 				_i++;
 			}
 			if(_i == 20 && _retvalue != 240)
@@ -369,7 +460,11 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 		break;
 		case(_TRIG_MANUAL)
 			_cmnd = "pb1";
-			if( SendCommand(_hComm, _nid,  _cmnd) < 0 ) abort();
+			if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 ) 
+			{
+				RS232Close(_hComm);
+				abort();
+			}
 		break;
 
 	}
