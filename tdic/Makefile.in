@@ -7,7 +7,7 @@ exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
 LIBS=@LIBS@ -L$(top_srcdir)/lib -lMdsIpShr -lTdiShr -lMdsShr
-TDIC_LIBS= -L$(top_srcdir)/lib -lTdiShr -lMdsShr @LIBPTHREAD@ @LIBS@
+TDIC_LIBS= -L$(top_srcdir)/lib -lTdiShr -lTreeShr -lMdsdcl  -lMdsShr @LIBPTHREAD@ @LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
@@ -46,7 +46,7 @@ install:
 	@RANLIB@ $@
 
 @MAKEBINDIR@tdic : tdic.c
-	$(CC) -o $@ tdic.c $(CFLAGS) -L@MAKESHLIBDIR@ -lTdiShr -lMdsdcl
+	$(CC) -o $@ tdic.c $(CFLAGS) $(TDIC_LIBS)
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
