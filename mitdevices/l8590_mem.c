@@ -54,6 +54,8 @@ int l8590_mem___init(struct descriptor_s *niddsc_ptr, InInitStruct *setup)
       pio(sclr_setup.name,10,0,0);
       pio(sclr_setup.name,18,0,&sclr_setup.num_active_convert);
       pio(sclr_setup.name,26,0,0);
+      pio(sclr_setup.name,18,0,&sclr_setup.num_active_convert);
+      pio(sclr_setup.name,26,0,0);
       GenDeviceFree(&sclr_setup);
     }
     else
