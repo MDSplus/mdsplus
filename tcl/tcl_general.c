@@ -44,8 +44,9 @@ int   TclMsg(			/* Returns: val of "sts"		*/
 int   TclShowDefault()		/* Returns: status			*/
    {
     char  *p;
-
-    p = TreeGetPath(0);
+    int nid;
+    TreeGetDefaultNid(&nid);
+    p = TreeGetPath(nid);
     if (p)
         TclTextOut(p);
     return(p ? 1 : 0);
