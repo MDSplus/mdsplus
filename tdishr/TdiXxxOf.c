@@ -3,12 +3,13 @@
 
 	Ken Klare, LANL P-4	(c)1989,1990,1991,1992
 */
+#include "STATICdef.h"
 #include <tdimessages.h>
 #include "tdirefstandard.h"
 #include <stdlib.h>
 #include <mdsshr.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiGetData();
 extern int TdiGetLong();
@@ -29,7 +30,7 @@ extern int TdiTaskOf();
 TdiRefStandard(Tdi1ArgOf)
 struct descriptor_xd	tmp = EMPTY_XD;
 unsigned int			iarg = 0;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_CALL,
 	DTYPE_CONDITION,
 	DTYPE_DEPENDENCY,
@@ -79,7 +80,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1AxisOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_DIMENSION,
 	DTYPE_SLOPE,
 	DTYPE_RANGE,
@@ -109,7 +110,7 @@ static unsigned char omits[] = {
 TdiRefStandard(Tdi1BeginOf)
 struct descriptor_xd	tmp = EMPTY_XD;
 unsigned int			n = 0;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_RANGE,
 	DTYPE_SLOPE,
 	DTYPE_WINDOW,
@@ -178,7 +179,7 @@ struct descriptor_xd	tmp = EMPTY_XD;
 */
 TdiRefStandard(Tdi1CompletionMessageOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_ACTION,
 	0};
 
@@ -198,7 +199,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1ConditionOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_CONDITION,
 	0};
 
@@ -225,7 +226,7 @@ struct descriptor_xd	tmp = EMPTY_XD;
 int				dimct;
 int				l, u;
 int			index = 0;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_SIGNAL,
 	DTYPE_DIMENSION,
 	0};
@@ -296,7 +297,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1DispatchOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_ACTION,
 	DTYPE_DISPATCH,
 	0};
@@ -389,7 +390,7 @@ TdiRefStandard(Tdi1Kind)
 TdiRefStandard(Tdi1EndOf)
 struct descriptor_xd	tmp = EMPTY_XD;
 unsigned int			n = 0;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_RANGE,
 	DTYPE_SLOPE,
 	DTYPE_WINDOW,
@@ -421,9 +422,9 @@ static unsigned char omits[] = {
 		error = ERROR_OF(with_error)
 */
 TdiRefStandard(Tdi1ErrorOf)
-static DESCRIPTOR(none, "");
+STATIC_CONSTANT DESCRIPTOR(none, "");
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_WITH_ERROR,
 	0};
 
@@ -445,7 +446,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1ErrorlogsOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_ACTION,
 	0};
 
@@ -471,7 +472,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1HelpOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_PARAM,
 	0};
 
@@ -505,7 +506,7 @@ struct descriptor_xd	tmp = EMPTY_XD;
 */
 TdiRefStandard(Tdi1ImageOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_CALL,
 	DTYPE_CONGLOM,
 	DTYPE_ROUTINE,
@@ -560,7 +561,7 @@ char	omits[] = {
 */
 TdiRefStandard(Tdi1LanguageOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_PROCEDURE,
 	0};
 
@@ -580,7 +581,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1MethodOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_METHOD,
 	0};
 
@@ -600,7 +601,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1ModelOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_CONGLOM,
 	0};
 
@@ -620,7 +621,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1NameOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_CONGLOM,
 	0};
 
@@ -671,7 +672,7 @@ TdiRefStandard(Tdi1Ndesc)
 */
 TdiRefStandard(Tdi1ObjectOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_METHOD,
 	0};
 
@@ -691,7 +692,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1PerformanceOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_ACTION,
 	0};
 
@@ -724,7 +725,7 @@ struct descriptor_xd	tmp = EMPTY_XD;
 */
 TdiRefStandard(Tdi1ProcedureOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_PROCEDURE,
 	0};
 
@@ -744,7 +745,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1ProgramOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_PROGRAM,
 	0};
 
@@ -770,7 +771,7 @@ static unsigned char omits[] = {
 TdiRefStandard(Tdi1QualifiersOf)
 struct descriptor_xd	tmp = EMPTY_XD;
 struct descriptor		*pd;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_CALL,
 	DTYPE_CONDITION,
 	DTYPE_CONGLOM,
@@ -809,7 +810,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1RawOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_SIGNAL,
 	0};
 
@@ -833,7 +834,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1RoutineOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_CALL,
 	DTYPE_ROUTINE,
 	0};
@@ -857,12 +858,12 @@ static unsigned char omits[] = {
 		slope_field = SLOPE_OF(slope,[n]) !deprecated!
 */
 TdiRefStandard(Tdi1SlopeOf)
-static unsigned char one_val = 1;
-static struct descriptor one = {sizeof(unsigned char),DTYPE_BU,CLASS_S,(char *)&one_val};
+STATIC_CONSTANT unsigned char one_val = 1;
+STATIC_CONSTANT struct descriptor one = {sizeof(unsigned char),DTYPE_BU,CLASS_S,(char *)&one_val};
 
 struct descriptor_xd	tmp = EMPTY_XD;
 unsigned int			n = 0;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_RANGE,
 	DTYPE_SLOPE,
 	0};
@@ -895,7 +896,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1TaskOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_ACTION,
 	DTYPE_METHOD,
 	DTYPE_PROCEDURE,
@@ -930,7 +931,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1TimeoutOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_METHOD,
 	DTYPE_PROCEDURE,
 	DTYPE_PROGRAM,
@@ -965,7 +966,7 @@ static unsigned char omits[] = {
 TdiRefStandard(Tdi1UnitsOf)
 static DESCRIPTOR(none, " ");
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_WITH_UNITS,
 	0};
 
@@ -987,7 +988,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1ValidationOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_PARAM,
 	0};
 
@@ -1011,7 +1012,7 @@ static unsigned char omits[] = {
 */
 TdiRefStandard(Tdi1ValueOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_DIMENSION,
 	DTYPE_PARAM,
 	DTYPE_SIGNAL,
@@ -1063,7 +1064,7 @@ struct descriptor_xd	tmp = EMPTY_XD;
 */
 TdiRefStandard(Tdi1WindowOf)
 struct descriptor_xd	tmp = EMPTY_XD;
-static unsigned char omits[] = {
+STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_DIMENSION,
 	DTYPE_WINDOW,
 	0};

@@ -7,6 +7,7 @@
 */
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
+#include "STATICdef.h"
 #include "tdirefstandard.h"
 #include "tdirefcat.h"
 #include "tdinelements.h"
@@ -24,7 +25,7 @@ extern int TdiMasterData();
 
 static struct descriptor missing = {0,DTYPE_MISSING,CLASS_S,0};
 typedef struct {int q[2];} quadw;
-static int copy(
+STATIC_ROUTINE int copy(
 int	len,
 int	n,
 char	*x,

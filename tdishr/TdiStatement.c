@@ -11,6 +11,7 @@ extern unsigned short OpcLabel;
 extern unsigned short OpcStatement;
 extern int TdiON_ERROR;
 
+#include "STATICdef.h"
 #include "tdirefstandard.h"
 #include <strroutines.h>
 #include <tdimessages.h>
@@ -26,7 +27,7 @@ extern int TdiGe();
 extern int TdiLe();
 extern int TdiEq();
 
-static int goto1(int, struct descriptor *[], struct descriptor_xd *);
+STATIC_ROUTINE int goto1(int, struct descriptor *[], struct descriptor_xd *);
 
 /*-----------------------------------------------------------------
 	ABORT processing.
@@ -215,7 +216,7 @@ TdiRefStandard(Tdi1Return)
 	WHERE (exp) stmt ELSEWHERE stmt
 	{stmt ...}
 */
-static int			goto1(
+STATIC_ROUTINE int			goto1(
 int				narg,
 struct descriptor		*list[],
 struct descriptor_xd	*out_ptr) {
@@ -271,7 +272,7 @@ int	j;
 		FOR IF ELSE SWITCH WHERE ELSEWHERE or WHILE.
 	NEED to handle vector cases and stepped ranges, NEED IS_IN.
 */
-static int			switch1(
+STATIC_ROUTINE int			switch1(
 struct descriptor		*ptest,
 int				*jdefault,
 struct descriptor_function	***pdefault,

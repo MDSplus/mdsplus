@@ -36,6 +36,7 @@
 	Ken Klare, LANL P-4	(c)1989,1990,1991,1992
 	NEED subscripted assignment.
 */
+#include "STATICdef.h"
 #include "tdirefstandard.h"
 #include <libroutines.h>
 #include <strroutines.h>
@@ -49,7 +50,7 @@
 #include <string.h>
 #include <librtl_messages.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern unsigned short OpcEquals, OpcEqualsFirst;
 extern unsigned short OpcFun;
@@ -93,11 +94,11 @@ typedef struct {
 	int			count;
 } user_type;
 
-static struct descriptor EMPTY_D = {0,DTYPE_T,CLASS_D,0};
-static struct descriptor EMPTDY_S = {0,DTYPE_T,CLASS_S,0};
-static struct descriptor_xd	NULL_XD = {0,0,0,0,0};
-static unsigned char true = 1;
-static struct descriptor true_dsc = {sizeof(true),DTYPE_BU,CLASS_S,(char *)&true};
+STATIC_CONSTANT struct descriptor EMPTY_D = {0,DTYPE_T,CLASS_D,0};
+STATIC_CONSTANT struct descriptor EMPTDY_S = {0,DTYPE_T,CLASS_S,0};
+STATIC_CONSTANT struct descriptor_xd	NULL_XD = {0,0,0,0,0};
+STATIC_CONSTANT unsigned char true = 1;
+STATIC_CONSTANT struct descriptor true_dsc = {sizeof(true),DTYPE_BU,CLASS_S,(char *)&true};
 static DESCRIPTOR(private_head, "TDISHR private headers");
 static DESCRIPTOR(private_data, "TDISHR private data");
 static DESCRIPTOR(private_label, "Private");
@@ -108,8 +109,8 @@ static block_type private	= {0,0,0,(struct descriptor *)&private_head,(struct de
                                     (struct descriptor *)&private_label};
 static block_type public	= {0,0,0, (struct descriptor *)&public_head, (struct descriptor *)&public_data,
                                     (struct descriptor *)&public_label};
-static DESCRIPTOR(star, "*");
-static DESCRIPTOR(percent, "%");
+STATIC_CONSTANT DESCRIPTOR(star, "*");
+STATIC_CONSTANT DESCRIPTOR(percent, "%");
 static int new_narg = 0;
 static struct descriptor TdiNargConstant = {sizeof(new_narg),DTYPE_L,CLASS_S,(char *)&new_narg};
 struct descriptor *Tdi3Narg(){return &TdiNargConstant;}
@@ -121,8 +122,8 @@ int			TdiPutLogical(
 unsigned char		data,
 struct descriptor_xd *out_ptr) {
 int	status;
-static unsigned short len = (unsigned short)sizeof(unsigned char);
-static unsigned char dtype = (unsigned char)DTYPE_BU;
+STATIC_CONSTANT unsigned short len = (unsigned short)sizeof(unsigned char);
+STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_BU;
 	if (out_ptr == 0) return 0;
 	status = MdsGet1DxS(&len, &dtype, out_ptr);
 	if (status & 1) *(unsigned char *) out_ptr->pointer->pointer = data;
@@ -131,7 +132,7 @@ static unsigned char dtype = (unsigned char)DTYPE_BU;
 /*--------------------------------------------------------------
 	Comparison routine.
 */
-static int		compare(
+STATIC_ROUTINE int		compare(
 struct descriptor	*key_ptr,
 node_type		*node_ptr,
 block_type		*block_ptr)
@@ -142,7 +143,7 @@ block_type		*block_ptr)
 	Allocation routine, does not set data field.
 	ASSUMED called only once per node.
 */
-static int		allocate(
+STATIC_ROUTINE int		allocate(
 struct descriptor	*key_ptr,
 node_type		**node_ptr_ptr,
 block_type		*block_ptr)
@@ -153,9 +154,9 @@ int			status = 1, len = sizeof(struct link) - 1 + key_ptr->length;
 	Must clear memory unless allocate is called only once for each node.
 	*******************************************************************/
 	if (block_ptr->data_zone == 0) {
-                static int flags = LibVM_EXTEND_AREA|LibVM_TAIL_LARGE;
-                static int initial = 128;
-                static int extend = 64;
+                STATIC_CONSTANT int flags = LibVM_EXTEND_AREA|LibVM_TAIL_LARGE;
+                STATIC_CONSTANT int initial = 128;
+                STATIC_CONSTANT int extend = 64;
 		LibCreateVmZone(&block_ptr->head_zone,0,0,0,0,0,0,0,0,0,block_ptr->head_name);
 		LibCreateVmZone(&block_ptr->data_zone,0,0,&flags,&initial,&extend,0,0,0,0,
                       block_ptr->data_name);
@@ -293,7 +294,7 @@ struct descriptor		key_dsc = EMPTDY_S;
 node_type			*node_ptr;
 block_type			*block_ptr;
 int				size = 0, status;
-static int zero = 0;
+STATIC_CONSTANT int zero = 0;
 
 	/************************************
 	Find where we should place the stuff.
@@ -321,7 +322,7 @@ static int zero = 0;
 	IDENT names are not evaluated.
 	PUBLIC or PRIVATE(ident or text) overrides block_ptr.
 */
-static int		wild(
+STATIC_ROUTINE int		wild(
 int			(* doit)(),
 int			narg,
 struct descriptor	*list[],
@@ -352,7 +353,7 @@ int			j, status = 1;
 /*--------------------------------------------------------------
 	Release variables.
 */
-static int		free_one(
+STATIC_ROUTINE int		free_one(
 node_type		*node_ptr,
 user_type		*user_ptr)
 {
@@ -381,7 +382,7 @@ int			status = 1;
 	Release all variables under a header and the headers too.
 	Used to release the FUN variables.
 */
-static int free_all(node_type **pnode) {
+STATIC_ROUTINE int free_all(node_type **pnode) {
 int	status = 1, stat2, len;
 
 	if ((*pnode)->xd.l_length) status = LibFreeVm(
@@ -721,7 +722,7 @@ TdiRefStandard(Tdi1ResetPublic)
 /***************************************************************
 	Display a variable.
 */
-static int		show_one(
+STATIC_ROUTINE int		show_one(
 node_type		*node_ptr,
 user_type		*user_ptr)
 {

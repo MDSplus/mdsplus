@@ -210,11 +210,13 @@ struct TdiCatStruct		cats[2];
 	if (highest <= 0) {
                 unsigned short llen = (unsigned short)0;
                 unsigned char dtype = (unsigned char)DTYPE_MISSING;
+                printf("In the first case highest is %d\n", highest);
 		if (arr.arsize) status = MdsGet1DxS(&pdat->length, &pdat->dtype, out_ptr);
 		else status = MdsGet1DxS(&llen, &dtype, out_ptr);
 		if (status & 1) _MOVC3(len, pin, out_ptr->pointer->pointer);
 	}
 	else {
+                printf("In the second case highest is %d\n", highest);
 		arr.dimct = (unsigned char)highest;
 		arr.aflags.coeff = (unsigned char)(highest > 1);
 		status = MdsGet1DxA((struct descriptor_a *)&arr, &pdat->length, &pdat->dtype, out_ptr);
@@ -229,7 +231,8 @@ struct TdiCatStruct		cats[2];
 		for (j = highest; --j > 0;) count[j] = 0;
 		pin -= len * *px[0];
 		row = arr.m[0] * sizeof(int);
-inner:		for (j = 0; j < row; j += sizeof(int))
+		printf("before inner px[0] is %d  highest is %d\n", px[0], highest);
+ inner:		for (j = 0; j < row; j += sizeof(int))
 			_MOVC3(len, pin + len * *(int *)((char *)px[0]+j), pout), pout += len;
 		/******************************************************
 		Find the index to increment, reset those that overflow.

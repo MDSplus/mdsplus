@@ -6,6 +6,7 @@
 
 extern unsigned short OpcSetRange;
 
+#include "STATICdef.h"
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include "tdirefstandard.h"
@@ -18,7 +19,7 @@ extern unsigned short OpcSetRange;
 
 
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int Tdi1Build();
 extern int TdiEvaluate();
