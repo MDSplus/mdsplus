@@ -75,7 +75,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   int       open_status;
   TREE_INFO *info_ptr;
   int       nidx;
-  int       old_record_length;
+  unsigned int old_record_length;
   static int saved_uic = 0;
   int       id = 0;
   int       length = 0;
@@ -268,7 +268,6 @@ static int CopyToRecord(NCI *nci,
 			          unsigned char tree)
 {
   int       status;
-  short     data_len;
   struct descriptor *out_ptr;
   nid_reference = 0;
   path_reference = 0;
@@ -341,15 +340,14 @@ static int CopyToRecord(NCI *nci,
 	  nci->data_in_att_block = 0;
 	  nci->length = 0;
 	  status = PointerToOffset(io_dscr_ptr->pointer, (unsigned int *)&nci->length);
-#if  !(defined(_WINDOWS))
-            if (status & 1)
-	    { struct descriptor_xd tempxd = *io_dscr_ptr;
-              io_dscr_ptr->l_length = 0;
-              io_dscr_ptr->pointer = 0;
-	      Dsc2Rec(tempxd.pointer,io_dscr_ptr);
-              MdsFree1Dx(&tempxd, NULL);
-            }
-#endif
+      if (status & 1)
+	  { 
+		  struct descriptor_xd tempxd = *io_dscr_ptr;
+		  io_dscr_ptr->l_length = 0;
+		  io_dscr_ptr->pointer = 0;
+		  Dsc2Rec(tempxd.pointer,io_dscr_ptr);
+		  MdsFree1Dx(&tempxd, NULL);
+	  }
 	  nci->DATA_INFO.DATA_LOCATION.record_length = io_dscr_ptr->l_length;
 	  break;
 
@@ -548,7 +546,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
   {
     int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
     int eof;
-    int rfa[2];
+    unsigned char rfa[6];
     fseek(info->data_file->put,0,SEEK_END);
     eof = ftell(info->data_file->put);
     bytes_to_put -= bytes_this_time;
@@ -663,7 +661,7 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
   unsigned int status = TreeNORMAL,
               bytes_out = 0,
               bytes_in = 0,
-              i,j,
+              j,
               size_out,
               size_in,
               num_dsc;

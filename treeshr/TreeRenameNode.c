@@ -52,7 +52,6 @@ int       _TreeRenameNode(void *dbid, int nid, char *newname)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID       *nid_ptr = (NID *)&nid;
-  NID       new_node_nid;
   NODE     *pptr,
              *nptr,
              *newnode,
@@ -73,7 +72,7 @@ int       _TreeRenameNode(void *dbid, int nid, char *newname)
 /**************************
    Convert to upper case.
 ***************************/
-  for (i=0;i<strlen(newname);i++)
+  for (i=0;i<(int)strlen(newname);i++)
   {
       upcase_name[i] = __toupper(newname[i]);
   }

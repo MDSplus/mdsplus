@@ -67,7 +67,6 @@ int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset)
   NID *nid = (NID *)&nidin;
   static int list_vm = 0;
   int       vm_needed;
-  int       status;
   if (!IS_OPEN_FOR_EDIT(dblist))
     return TreeNOEDIT;
   vm_needed = dblist->tree_info->header->nodes / 8 + 4;
@@ -261,7 +260,7 @@ extern void       _TreeDeleteNodeExecute(void *dbid)
 	}
       }
     }
-    if (nid.node < edit->first_in_mem)
+    if ((int)nid.node < edit->first_in_mem)
     {
       NCI       old_nci;
       int       nidx = nid.node;

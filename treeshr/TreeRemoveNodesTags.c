@@ -32,6 +32,7 @@
 
 #include <treeshr.h>
 #include "treeshrp.h"
+#include <string.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
@@ -85,7 +86,7 @@ int _TreeRemoveTag(void *dbid, char *name)
     return TreeNOEDIT;
 
   info = dblist->tree_info;
-  if ((status = _TreeFindTag(dblist, info->node, strlen(info->treenam),info->treenam, strlen(name), name, &node, &idx))&1 && idx >=0)
+  if ((status = _TreeFindTag(dblist, info->node, (short)strlen(info->treenam),info->treenam, (short)strlen(name), name, &node, &idx))&1 && idx >=0)
     _RemoveTagIdx(dblist, idx);
   return status;
 }
@@ -107,7 +108,7 @@ static void _RemoveTagIdx(PINO_DATABASE  *dblist, int tagidx)
 
     remove_info_ptr = dblist->tree_info->tag_info + tagidx - 1;
     node_ptr = dblist->tree_info->node + remove_info_ptr->node_idx;
-    if (node_ptr->tag_link == tagidx)
+    if ((int)node_ptr->tag_link == tagidx)
       node_ptr->tag_link = remove_info_ptr->tag_link;
     else
     {
@@ -134,7 +135,7 @@ static void _RemoveTagIdx(PINO_DATABASE  *dblist, int tagidx)
     for (node_ptr = dblist->tree_info->node;
 	 node_ptr < dblist->tree_info->node + dblist->tree_info->header->nodes; 
 	 node_ptr++)
-      if (node_ptr->tag_link >= tagidx)
+      if ((int)node_ptr->tag_link >= tagidx)
 	node_ptr->tag_link--;
 
   /*************************************************

@@ -53,7 +53,6 @@ int _TreeVerify(void *dbid)
   NODE     *firstempty = (dblist->tree_info->header->free == -1) ? (NODE *) 0 :
 		   (NODE *) ((char *) dblist->tree_info->node + 
 			     dblist->tree_info->header->free);
-  NODE     *node;
   nodecount = 0;
   maxnodes = dblist->tree_info->header->nodes;
   if (countnodes(dblist->tree_info->node))

@@ -31,12 +31,20 @@
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <stdlib.h>
+#include <string.h>
+
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern void *DBID;
 
+#ifdef min
+#undef min
+#endif
 #define min(a,b)  ( (a) <= (b) ? (a) : (b) )
+#ifdef max
+#undef max
+#endif
 #define max(a,b)  ( (a) >= (b) ? (a) : (b) )
 #define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 
@@ -51,20 +59,16 @@ int _TreeAddTag(void *dbid, int nid_in, char *tagnam)
   NID       *nid_ptr = (NID *)&nid_in;
   int       status;
   NODE     *node_ptr;
-  NODE     *found_node_ptr;
   int       tags;
   int       pages_needed;
   int       pages_allocated;
   int      *new_tags_ptr;
   int      *old_tags_ptr;
-  int      *newtag_ptr;
   int       newtag_idx;
-  TAG_INFO *tag_info_ptr;
   TAG_INFO *new_tag_info_ptr;
   TAG_INFO  tag_info;
   size_t    len;
   char      tag[24];
-  int       nid;
   int       i;
 
 /************************************************
@@ -80,7 +84,7 @@ the tag name specified does not already exist.
   if (len < 1 || len > 24)
     return TreeTAGNAMLEN;
 
-  for (i=0;i<len;i++) tag[i] = __toupper(tagnam[i]);
+  for (i=0;i<(int)len;i++) tag[i] = __toupper(tagnam[i]);
   for (i=len;i<24;i++) tag[i] = ' ';
 
   nid_to_node(dblist, nid_ptr, node_ptr);
@@ -181,7 +185,7 @@ the tag name specified does not already exist.
 ********************************************************/
 
   pages_needed = ((tags + 1) * sizeof(TAG_INFO) + 511) / 512;
-  pages_allocated = max((tags * sizeof(TAG_INFO) + 511) / 512,
+  pages_allocated = max((int)(tags * sizeof(TAG_INFO) + 511) / 512,
 			dblist->tree_info->edit->tag_info_pages);
   if (pages_needed > pages_allocated)
   {

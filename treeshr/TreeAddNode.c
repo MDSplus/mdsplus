@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <treeshr.h>
+#include <errno.h>
 #define EMPTY_NODE
 #define EMPTY_NCI
 #include <ncidef.h>
@@ -12,6 +13,10 @@
 #include <libroutines.h>
 #include <strroutines.h>
 
+#ifdef max
+#undef max
+#endif
+
 #define max(a,b) ((a) > (b) ? (a) : (b))
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
@@ -20,6 +25,8 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 
 extern void *DBID;
+static int       TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr, NODE **trn_node_ptrptr);
+static int TreeWriteNci(TREE_INFO *info);
 
 int TreeAddNode(char *name, int *nid_out, char usage)
 {
@@ -71,7 +78,6 @@ int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
   char     *node_name;
   SEARCH_TYPE node_type;
   NID       nid;
-  int       arg_count;
   static NCI nci;
   static char blank = ' ';
   short    *conglom_size;
@@ -275,7 +281,7 @@ int TreeInsertMember(NODE *parent_ptr,NODE *member_ptr,int  sort)
     }
 
 
-int       TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr, NODE **trn_node_ptrptr)
+static int       TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr, NODE **trn_node_ptrptr)
 {
   int       status = TreeNORMAL;
   NODE     *node_ptr;
@@ -325,7 +331,6 @@ int       TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_no
 {
   int      *saved_node_numbers;
   int       status = TreeNORMAL;
-  NODE    **node_ptrptr;
   NODE     *node_ptr;
   NODE     *ptr;
   TREE_INFO *info_ptr;
@@ -625,12 +630,11 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
 {
   PINO_DATABASE **dblist = (PINO_DATABASE **)dbid;
   int       status;
-  int       header_pages;
-  int       node_pages;
-  int       tags_pages;
-  int       tag_info_pages;
-  int       external_pages;
-  int       offset;
+  size_t       header_pages;
+  size_t       node_pages;
+  size_t       tags_pages;
+  size_t       tag_info_pages;
+  size_t       external_pages;
   PINO_DATABASE *db;
   PINO_DATABASE *prev_db;
   status = TreeNOT_OPEN;
@@ -700,15 +704,13 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
         if (num != tag_info_pages) goto error_exit;
         num = fwrite(info_ptr->external,512,external_pages,ntreef);
         if (num != external_pages) goto error_exit;
-
-	status = TreeWriteNci(info_ptr);
-	if ((status & 1) == 0)
-	  goto error_exit;
-
-        remove(info_ptr->filespec);
-        rename(nfilenam,info_ptr->filespec);
-	(*dblist)->modified = 0;
+		status = TreeWriteNci(info_ptr);
+		if ((status & 1) == 0)
+			goto error_exit;
+		remove(info_ptr->filespec);
         fclose(ntreef);
+        rename(nfilenam,info_ptr->filespec);
+		(*dblist)->modified = 0;
         TreeCallHook(WriteTree, info_ptr);
       }
     }
@@ -726,14 +728,13 @@ static void trim_excess_nodes(TREE_INFO *info_ptr)
   NODE     *node_ptr;
   NODE     *nodes_ptr = info_ptr->node;
   NODE     *last_node_ptr = nodes_ptr + *nodecount_ptr - 1;
-  NODE     *free_node_ptr;
   int       nodes;
   int       node_pages;
   int       length = sizeof(node_ptr->name);
   for (node_ptr = last_node_ptr;
        strncmp((const char *) node_ptr->name, (const char *) empty_node.name, length) == 0; node_ptr--);
   node_pages = ((node_ptr - nodes_ptr + 1) * sizeof(NODE) + 511) / 512;
-  nodes = max(info_ptr->edit->first_in_mem, (node_pages * 512) / sizeof(NODE));
+  nodes = max(info_ptr->edit->first_in_mem, (int)((node_pages * 512) / sizeof(NODE)));
   if (nodes < *nodecount_ptr)
   {
     for (node_ptr = &nodes_ptr[nodes]; (*free_ptr != -1) && (node_ptr <= last_node_ptr); node_ptr++)
@@ -767,7 +768,7 @@ static void trim_excess_nodes(TREE_INFO *info_ptr)
   return;
 }
 
-int TreeWriteNci(TREE_INFO *info)
+static int TreeWriteNci(TREE_INFO *info)
 {
   int       status = TreeNORMAL;
   if (info->header->nodes > info->edit->first_in_mem)
@@ -776,7 +777,7 @@ int TreeWriteNci(TREE_INFO *info)
     if (!fseek(info->nci_file->put,info->edit->first_in_mem * sizeof(struct nci),SEEK_SET))
     {
       size_t num = fwrite(info->edit->nci,sizeof(struct nci),info->header->nodes - info->edit->first_in_mem,info->nci_file->put);
-      if (num == (info->header->nodes - info->edit->first_in_mem))
+      if (num == (size_t)(info->header->nodes - info->edit->first_in_mem))
       {
         info->edit->first_in_mem = info->header->nodes;
         status = TreeNORMAL;
@@ -883,7 +884,6 @@ int _TreeSetNoSubtree(void *dbid, int nid)
   int       node_idx;
   int       ext_idx;
   int       i;
-  int       status;
 /*****************************************************
   Make sure that the tree is open and OK and editable
 *****************************************************/

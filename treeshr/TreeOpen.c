@@ -634,10 +634,10 @@ int _TreeSetStackSize(void **dbid, int size)
 	return old_size;
 }
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <wtypes.h>
 #include <winreg.h>
-static char *GetRegistryPath(char *pathname)
+char *GetRegistryPath(char *pathname)
 {
 	HKEY regkey1,regkey2,regkey3;
 	unsigned char *path = NULL;

@@ -40,7 +40,11 @@ int TreeCreatePulseFile(int shotid,int numnids, int *nids)
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 static int  TreeCreateTreeFiles(char *tree, int shot, int source_shot);
-static int CopyFile(char *src, char *dst);
+#ifdef _WIN32
+#include <windows.h>
+#else
+static int CopyFile(char *src, char *dst, int dont_replace);
+#endif
 
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
@@ -196,31 +200,32 @@ static int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
         for (i=0,part=path;i<pathlen+1;i++)
         {
           if (*part == ' ') 
-            part++;
+			  part++;
           else if ((path[i] == ' ' || path[i] == ';' || path[i] == 0) && strlen(part))
           {
-	    path[i] = 0;
-            dstfile = strcpy(malloc(strlen(part)+strlen(name)+strlen(type)+2),part);
-	    if (strcmp(dstfile+strlen(dstfile)-1,TREE_PATH_DELIM))
-	      strcat(dstfile,TREE_PATH_DELIM);
-            if (stat(dstfile,&stat_info) == 0)
-	    {
-	      strcat(dstfile,name);
-	      strcat(dstfile,type);
-              break;
-            }
-            else
-	    {
-              free(dstfile);
-              dstfile = 0;
-	      part = &path[i+1];
-            }
+			  path[i] = 0;
+			  dstfile = strcpy(malloc(strlen(part)+strlen(name)+strlen(type)+2),part);
+			  if (strcmp(dstfile+strlen(dstfile)-1,TREE_PATH_DELIM) == 0)
+				  *(dstfile+strlen(dstfile)-1) = 0;
+			  if (stat(dstfile,&stat_info) == 0)
+			  {
+				  strcat(dstfile,TREE_PATH_DELIM);
+				  strcat(dstfile,name);
+				  strcat(dstfile,type);
+				  break;
+			  }
+			  else
+			  {
+				  free(dstfile);
+				  dstfile = 0;
+				  part = &path[i+1];
+			  }
           }
         }
         if (dstfile)
-	{
-          status = CopyFile(srcfile,dstfile);
-          free(dstfile);
+		{
+			status = CopyFile(srcfile,dstfile,0);
+			free(dstfile);
         }
         else
           status = 0;
@@ -232,10 +237,11 @@ static int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
   return status;
 }
 
-static int CopyFile(char *src, char *dst)
+#if !defined(_WIN32)
+static int CopyFile(char *src, char *dst, int dont_replace)
 {
   char cmd[1024];
   sprintf(cmd,"cp %s %s",src,dst);
-  system(cmd);
-  return 1;
+  return dont_replace ? system(cmd) == 0 : system(cmd) == 0;
 }
+#endif

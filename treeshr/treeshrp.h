@@ -628,6 +628,8 @@ extern int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_i
 
 extern int GetRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor_xd *dsc);
 
+extern char *GetRegistryPath(char *pathname);
+
 extern int FindNodeRemote(PINO_DATABASE *dblist, char *path, int *outnid);
 
 extern int FindNodeWildRemote(PINO_DATABASE *dblist, char *path, int *nid_out, void **ctx_inout, int usage_mask);
@@ -642,12 +644,17 @@ extern int SetDefaultNidRemote(PINO_DATABASE *dblist, int nid);
 
 extern int GetDefaultNidRemote(PINO_DATABASE *dblist, int *nid);
 
+extern int RfaToSeek(unsigned char *rfa);
+void SeekToRfa(unsigned int seek, unsigned char *rfa);
 extern int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state);
 
 extern int TreeCloseFiles(TREE_INFO *info);
-
+extern int TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_nodes);
+extern int TreeFindParent(PINO_DATABASE *dblist, char *path_ptr, NODE **node_ptrptr, char **namedsc_ptr, SEARCH_TYPE *type_ptr);
 extern int TreeGetNciW(TREE_INFO *info, int node_number, NCI *nci);
 extern int TreeGetNciLw(TREE_INFO *info, int node_number, NCI *nci);
+extern int TreeInsertChild(NODE *parent_ptr,NODE *child_ptr,int  sort);
+extern int TreeInsertMember(NODE *parent_ptr,NODE *member_ptr,int  sort);
 extern int TreePutNci(TREE_INFO *info, int node_number, NCI *nci, int flush);
 extern int TreeIsChild(NODE *node);
 extern struct descriptor *TreeSectionName(TREE_INFO *info);

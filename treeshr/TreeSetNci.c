@@ -345,6 +345,8 @@ int TreeOpenNciW(TREE_INFO *info, int tmpfile)
     char *filename = strncpy(malloc(len+20),info->filespec,len);
     filename[len]='\0';
     strcat(filename,tmpfile ? "characteristics#" : "characteristics");
+	if (info->nci_file->put)
+		fclose(info->nci_file->put);
     info->nci_file->put = fopen(filename,tmpfile ? "w+b" : "r+b");
     free(filename);
     status = (info->nci_file->put == NULL) ? TreeFAILURE : TreeNORMAL;

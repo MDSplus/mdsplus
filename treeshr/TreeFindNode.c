@@ -32,7 +32,7 @@ char *TreeAbsPath(char *inpath) { return _TreeAbsPath(DBID, inpath); }
 int TreeFindTag(char *tagnam, char *treename, int *tagidx) {
   PINO_DATABASE *dblist = (PINO_DATABASE *)DBID;
   NODE *nodeptr;
-  return _TreeFindTag(DBID, dblist->default_node, strlen(treename), treename, strlen(tagnam), tagnam, &nodeptr, tagidx);
+  return _TreeFindTag(DBID, dblist->default_node, (short)strlen(treename), treename, (short)strlen(tagnam), tagnam, &nodeptr, tagidx);
 }
 
 #define isident(b) ( ((*(b) >= 'A') && (*(b) <= 'Z')) || \
@@ -1055,7 +1055,6 @@ struct tag_search { TAG_NAME   tag;
 int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tree, short taglen, char *tagnam, NODE **nodeptr, int *tagidx)
 
 {
-  int       status;
   int len = min(taglen,sizeof(TAG_NAME));
   int i;
   int *idx;

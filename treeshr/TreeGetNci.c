@@ -12,6 +12,8 @@
 #include <starlet.h>
 #endif
 
+extern int StrFree1Dx();
+
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
@@ -30,7 +32,6 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 static char *GetPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs);
 static const char *nonode = "<no-node>   ";
 static int OpenNciR(TREE_INFO *info);
-extern int RfaToSeek(unsigned char *rfa);
 
 extern void *DBID;
 

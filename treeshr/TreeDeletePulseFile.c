@@ -43,7 +43,12 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern void *DBID;
 static int  TreeDeleteTreeFiles(char *tree, int shot);
+
+#if defined(_WIN32)
+#include <windows.h>
+#else
 static int DeleteFile(char *src);
+#endif
 
 int       TreeDeletePulseFile(int shotid, int allfiles)
 {
@@ -57,7 +62,6 @@ int       _TreeDeletePulseFile(void *dbid, int shotid, int allfiles)
   int       retstatus = 1;
   int       num;
   int       nids[256];
-  int       i;
   int       j;
   int       shot;
   void      *dbid_tmp = 0;
@@ -172,10 +176,11 @@ static int  TreeDeleteTreeFiles(char *tree, int shot)
   return status;
 }
 
+#if !defined(_WIN32)
 static int DeleteFile(char *src)
 {
   char cmd[1024];
   sprintf(cmd,"rm %s",src);
-  system(cmd);
-  return 1;
+  return system(cmd) == 0;
 }
+#endif

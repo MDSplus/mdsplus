@@ -11,6 +11,11 @@ static int RewriteDatafile(void **dbid, char *tree, int shot, int compress)
 {
   int status;
   void *dbid1 = 0, *dbid2 = 0;
+  char *from_c = NULL;
+  char *to_c = NULL;
+  char *from_d = NULL;
+  char *to_d = NULL;
+  int lstatus;
   status = _TreeOpenEdit(&dbid1, tree, shot);
   if (status & 1)
   {
@@ -35,10 +40,7 @@ static int RewriteDatafile(void **dbid, char *tree, int shot, int compress)
             status = TreeOpenDatafileW(dblist2->tree_info, &stv, 1);
             if (status & 1)
             {
-              char *from;
-              char *to;
               int i;
-              int lstatus;
               for (i=0;i<info1->header->nodes;i++)
               {
                 EMPTYXD(xd);
@@ -48,16 +50,14 @@ static int RewriteDatafile(void **dbid, char *tree, int shot, int compress)
                 lstatus = _TreeGetRecord(dbid1, i, &xd);
                 lstatus = _TreePutRecord(dbid2, i, (struct descriptor *)&xd, compress ? 2 : 1);
               }
-              from = strcpy(malloc(strlen(info1->filespec)+20),info1->filespec);
-              strcpy(from+strlen(info1->filespec)-4,"characteristics#");
-              to = strcpy(malloc(strlen(info1->filespec)+20),info1->filespec);
-              strcpy(to+strlen(info1->filespec)-4,"characteristics");
-              lstatus = rename(from,to);
-              strcpy(from+strlen(info1->filespec)-4,"datafile#");
-              strcpy(to+strlen(info1->filespec)-4,"datafile");
-              lstatus = rename(from,to);
-              free(from);
-              free(to);
+              from_c = strcpy(malloc(strlen(info1->filespec)+20),info1->filespec);
+              strcpy(from_c+strlen(info1->filespec)-4,"characteristics#");
+              to_c = strcpy(malloc(strlen(info1->filespec)+20),info1->filespec);
+              strcpy(to_c+strlen(info1->filespec)-4,"characteristics");
+			  from_d = strcpy(malloc(strlen(info1->filespec)+20),from_c);
+              strcpy(from_d+strlen(info1->filespec)-4,"datafile#");
+			  to_d = strcpy(malloc(strlen(info1->filespec)+20),to_c);
+              strcpy(to_d+strlen(info1->filespec)-4,"datafile");
             }
           }
           _TreeClose(&dbid2, 0, 0);
@@ -65,6 +65,18 @@ static int RewriteDatafile(void **dbid, char *tree, int shot, int compress)
       }
     }
     _TreeClose(&dbid1, 0, 0);
+	if (status & 1)
+	{
+		status = remove(to_c) == 0 ? TreeNORMAL : TreeFAILURE;
+		if (status & 1)
+			status = remove(to_d) == 0 ? TreeNORMAL : TreeFAILURE;
+		if (status & 1)
+			status = ((rename(from_c,to_c) == 0) && (rename(from_d,to_d) == 0)) ? TreeNORMAL : TreeFAILURE;
+	}
+    if (from_c) free(from_c);
+	if (to_c) free(to_c);
+	if (from_d) free(from_d);
+	if (to_d) free(to_d);
   }
   return status;
 }
