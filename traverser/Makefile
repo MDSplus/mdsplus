@@ -9,6 +9,8 @@ OBJECTS = \
         GetNciString.o \
         GetSupportedDevices.o
 
+CFLAGS = $(MOTIF_CFLAGS)
+
 all : ../bin/traverser \
 	../uid/traverser.uid
 
@@ -19,7 +21,7 @@ all : ../bin/traverser \
 	mkdir ../bin
 
 ../uid/traverser.uid : traverser.uil
-	uil -wmd ../shlib/xmdsuil.wmd -o $@ $<
+	uil -wmd ../shlib/xmdsuil.wmd -o $@ traverser.uil
 	
 clean :
 	- rm *.o

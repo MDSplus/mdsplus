@@ -62,7 +62,7 @@ all :	../shlib/libXmdsShr.$(SHARE_TYPE) \
 	../bin/wmdcreate -o ../shlib/xmdsuil.wmd
 
 ../bin/wmdcreate : wmldbcreate-xmdsshr.c UilConst.h
-	cc -o $@ -DMDS_EXTENSION $(CFLAGS) wmldbcreate-xmdsshr.c $(MOTIF_LIBS) $(X11_LIBS)
+	cc -o $@ -DMDS_EXTENSION $(CFLAGS) wmldbcreate-xmdsshr.c $(MOTIF_LIBS) $(X11_LIBS) $(SOCKET_LIB)
 
 UilConst.h : xmdsuil.wml 
 	/usr/examples/motif/wml/wml xmdsuil.wml

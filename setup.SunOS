@@ -2,3 +2,9 @@
 # Shared image path
 #
 setenv LD_LIBRARY_PATH $MDSPLUS/shlib
+#
+# Motif development kit
+#
+setenv MOTIFHOME /opt/motif/scomd12s
+source $MOTIFHOME/share/src/setup/csh-env
+setenv UIDPATH $UIDPATH\:$MDSPLUS/uid/%U
