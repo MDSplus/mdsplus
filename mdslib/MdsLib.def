@@ -8,3 +8,10 @@ MdsPut
 MdsOpen
 MdsClose
 MdsDisconnect
+descr_
+mdsconnect_
+mdsvalue_
+mdsput_
+mdsopen_
+mdsclose_
+mdsdisconnect_
