@@ -539,18 +539,26 @@ static Boolean notify_on=TRUE;
 static void NodeTouched(int nid, NodeTouchType type)
 {
   if (notify_on) {
-    Widget tree = XtNameToWidget(BxFindTopShell(toplevel), "*.tree");
+    Widget treew = XtNameToWidget(BxFindTopShell(toplevel), "*.tree");
     ListTreeItem *this_item;
-    ListTreeRefreshOff(tree);
-    this_item = FindParentItemByNid(tree, nid);
-    if (this_item != NULL) {
-      switch(type) {
-      case on_off:      FixPixMaps(tree, this_item); break;
-      case set_def:     set_default(toplevel, FindChildItemByNid(tree, this_item, nid)); break;
-      case new:         this_item = insert_item(tree, this_item, nid); break;
+    ListTreeRefreshOff(treew);
+    if (type == tree) {
+      ListTreeItem *top = ListTreeFirstItem(treew);
+      ListTreeRefreshOff(treew);
+      if (top != NULL) ListTreeDelete(treew, top);
+      Init(treew);
+    }
+    else {
+      this_item = FindParentItemByNid(treew, nid);
+      if (this_item != NULL) {
+	switch(type) {
+	case on_off:      FixPixMaps(treew, this_item); break;
+	case set_def:     set_default(toplevel, FindChildItemByNid(treew, this_item, nid)); break;
+	case new:         this_item = insert_item(treew, this_item, nid); break;
+	}
       }
     }
-    ListTreeRefreshOn(tree);
+    ListTreeRefreshOn(treew);
   }
 }
 
