@@ -109,7 +109,7 @@ write(*, 'TR10 START STORE');
 				    _bug_idx++;
 				    _tr10_read_bug = 1;
 				    wait(0.5);
-				    _data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts);	
+				    _data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts, _tr10_status);	
 				   
 				}
 				if(_bug_idx > 0)
