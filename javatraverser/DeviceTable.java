@@ -256,7 +256,7 @@ public class DeviceTable extends DeviceComponent
         table.setModel(new AbstractTableModel() {
             public int getColumnCount()
             {
-                if(displayRowNumber || rowNames.length > 0)
+                if(displayRowNumber || (rowNames != null && rowNames.length > 0))
                 {
 
                   return numCols + 1;
