@@ -1,4 +1,7 @@
 /*  CMS REPLACEMENT HISTORY, Element IPDESC.H */
+/*  *21   21-APR-1998 11:16:34 TWF "Add MakeDescripWidthLen" */
+/*  *20   17-APR-1998 10:57:54 TWF "Add MakeDescr prototype" */
+/*  *19   17-APR-1998 10:56:53 TWF "Add MakeDescr prototype" */
 /*  *18   14-APR-1998 11:58:54 TWF "Reduce maxdims and return length field" */
 /*  *17   16-OCT-1995 13:23:47 TWF "Cleaner windows version" */
 /*  *16   23-DEC-1994 09:13:03 TWF "Change how events are handled" */
@@ -56,6 +59,8 @@ extern int32  PASCAL GetAnswerInfo();
 extern int32   MdsValue();
 extern int32   MdsPut();
 extern int32   PASCAL DisconnectFromMds();
+extern struct descrip *MakeDescrip();
+extern struct descrip *MakeDescripWithLength();
 extern int32   PASCAL MdsOpen();
 extern int32   PASCAL MdsSetDefault();
 extern int32   PASCAL MdsClose();
@@ -71,6 +76,8 @@ extern int32   PASCAL GetAnswerInfo(SOCKET s, char *dtype, short *len, char *ndi
 extern int32   MdsValue(SOCKET sock, char *,...);
 extern int32   MdsPut(SOCKET sock, char *node, char *expression,...);
 extern int32   PASCAL DisconnectFromMds(SOCKET sock);
+extern struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype, char ndims, int32 *dims, void *ptr);
+extern struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype, int32 length, char ndims, int32 *dims, void *ptr);
 extern int32   PASCAL MdsOpen(SOCKET sock, char *tree, int32 shot);
 extern int32   PASCAL MdsSetDefault(SOCKET sock, char *node);
 extern int32   PASCAL MdsClose(SOCKET sock);

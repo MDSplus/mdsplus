@@ -103,7 +103,7 @@
 #include <netinet/tcp.h>
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#define _UNIX_SERVER
+#define x_UNIX_SERVER
 
 static unsigned char message_id = 1;
 Message *GetMdsMsg(SOCKET sock, int32 *status);
@@ -150,11 +150,24 @@ static char ClientType(void)
   return ctype;
 }
 
+struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype, int32 length, char ndims, int32 *dims, void *ptr)
+{
+  int32 i;
+  in_descrip->dtype = dtype;
+  in_descrip->ndims = ndims;
+  in_descrip->length = length;
+  for (i=0;i<ndims;i++) in_descrip->dims[i] = dims[i];
+  for (i=ndims; i<MAX_DIMS; i++) in_descrip->dims[i] = 0;
+  in_descrip->ptr = ptr;
+  return in_descrip;
+}
+
 struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype, char ndims, int32 *dims, void *ptr)
 {
   int32 i;
   in_descrip->dtype = dtype;
   in_descrip->ndims = ndims;
+  in_descrip->length = 0;
   for (i=0;i<ndims;i++) in_descrip->dims[i] = dims[i];
   for (i=ndims; i<MAX_DIMS; i++) in_descrip->dims[i] = 0;
   in_descrip->ptr = ptr;
