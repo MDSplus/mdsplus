@@ -5,6 +5,14 @@
 #include        <ncidef.h>
 #include        <pthread.h>
 
+#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
+#define pthread_attr_default NULL
+#define pthread_mutexattr_default NULL
+#define pthread_condattr_default NULL
+#else
+#undef select
+#endif
+
 #ifdef vms
 #include        <lib$routines.h>
 #include        <ssdef.h>
