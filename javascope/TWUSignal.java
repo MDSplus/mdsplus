@@ -7,12 +7,28 @@
  * 
  * This class handles the bulk datafiles as used in the TEC Web-Umbrella.
  *
+ * The TWU* classes (with TWU in three capitals) are written so that they 
+ * can also be used in other java based applications and not only by jScope.  
+ * Please keep the code of these separate of jScope specific elements.
+ *
  * Authors: Jon Krom, H.R.Koslowski, 
  *          Forschungszentrum Jülich, Institut für Plasmaphysik.
  *
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2002/11/12 17:18:29  manduchi
+ * Added support for waveform editing
+ *
+ * Revision 1.14  2002/09/20 12:37:08  jgk
+ * Factored-out the (nested) class TwuFetchOptions in to its own source file.
+ * Clarified a minor naming convention: Classes with names starting with TWU
+ * are written such that they are not strongly bound to jScope, but can also
+ * be used by other java based TEC Web-Umbrella clients.
+ *
+ * Revision 1.13  2002/09/04 14:11:25  manduchi
+ * Fixed porting to jdk1.4
+ *
  * Revision 1.9  2002/06/05 15:00:08  jgk
  * Tell the server to close the connection after sending
  * all the data.  This stops it "chunking" the data.
