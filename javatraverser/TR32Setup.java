@@ -95,8 +95,8 @@ public class TR32Setup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(722);
-    this.setHeight(500);
+    this.setWidth(730);
+    this.setHeight(730);
     this.setDeviceType("TR32");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("INCAA TR32 CPCI Transient Recorder");
@@ -105,7 +105,7 @@ public class TR32Setup extends DeviceSetup {
     deviceField1.setLabelString("Board Id: ");
     deviceField1.setNumCols(4);
     deviceField1.setIdentifier("");
-    deviceField1.setBounds(new Rectangle(4, 7, 168, 31));
+    deviceField1.setBounds(new Rectangle(12, 13, 168, 31));
     deviceChoice1.setChoiceIntValues(null);
     deviceChoice1.setChoiceFloatValues(null);
     deviceChoice1.setOffsetNid(2);
@@ -113,13 +113,13 @@ public class TR32Setup extends DeviceSetup {
     deviceChoice1.setChoiceItems(new String[] {"LOCAL", "REMOTE"});
     deviceChoice1.setUpdateIdentifier("");
     deviceChoice1.setIdentifier("");
-    deviceChoice1.setBounds(new Rectangle(167, 5, 231, 35));
+    deviceChoice1.setBounds(new Rectangle(167, 11, 231, 35));
     deviceField2.setOffsetNid(3);
     deviceField2.setTextOnly(true);
     deviceField2.setLabelString("Crate IP Addr: ");
     deviceField2.setNumCols(15);
     deviceField2.setIdentifier("");
-    deviceField2.setBounds(new Rectangle(409, 7, 287, 30));
+    deviceField2.setBounds(new Rectangle(409, 13, 287, 30));
     deviceField3.setOffsetNid(4);
     deviceField3.setTextOnly(true);
     deviceField3.setLabelString("Comment: ");
@@ -130,13 +130,13 @@ public class TR32Setup extends DeviceSetup {
     deviceField4.setLabelString("Clock Source: ");
     deviceField4.setNumCols(30);
     deviceField4.setIdentifier("");
-    deviceField4.setBounds(new Rectangle(5, 73, 442, 30));
-    deviceDispatch1.setBounds(new Rectangle(527, 45, 130, 31));
+    deviceField4.setBounds(new Rectangle(4, 73, 442, 30));
+    deviceDispatch1.setBounds(new Rectangle(545, 45, 130, 31));
     deviceField5.setOffsetNid(7);
     deviceField5.setLabelString("Trig. Source: ");
     deviceField5.setNumCols(30);
     deviceField5.setIdentifier("");
-    deviceField5.setBounds(new Rectangle(-1, 104, 460, 30));
+    deviceField5.setBounds(new Rectangle(-2, 104, 460, 30));
     deviceChoice2.setChoiceIntValues(null);
     deviceChoice2.setChoiceFloatValues(null);
     deviceChoice2.setOffsetNid(12);
@@ -144,7 +144,7 @@ public class TR32Setup extends DeviceSetup {
     deviceChoice2.setChoiceItems(new String[] {"RISING", "FALLING"});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
-    deviceChoice2.setBounds(new Rectangle(367, 142, 184, 35));
+    deviceChoice2.setBounds(new Rectangle(461, 142, 184, 35));
     deviceChoice3.setChoiceIntValues(null);
     deviceChoice3.setChoiceFloatValues(null);
     deviceChoice3.setOffsetNid(5);
@@ -160,7 +160,7 @@ public class TR32Setup extends DeviceSetup {
     deviceChoice4.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
     deviceChoice4.setUpdateIdentifier("");
     deviceChoice4.setIdentifier("");
-    deviceChoice4.setBounds(new Rectangle(465, 105, 190, 35));
+    deviceChoice4.setBounds(new Rectangle(463, 107, 190, 35));
     deviceChoice5.setChoiceIntValues(null);
     deviceChoice5.setChoiceFloatValues(new float[] {(float)200000.0,(float)100000.0,(float)50000.0,(float)20000.0,(float)10000.0,(float)5000.0,(float)2000.0,(float)1000.0,(float)500.0,(float)200.0,(float)100.0});
     deviceChoice5.setOffsetNid(9);
@@ -169,7 +169,7 @@ public class TR32Setup extends DeviceSetup {
     deviceChoice5.setUpdateIdentifier("");
     deviceChoice5.setIdentifier("");
     deviceChoice5.setBounds(new Rectangle(41, 143, 249, 35));
-    jTabbedPane1.setBounds(new Rectangle(3, 176, 710, 238));
+    jTabbedPane1.setBounds(new Rectangle(10, 179, 710, 238));
     jPanel1.setLayout(gridLayout1);
     gridLayout1.setColumns(1);
     gridLayout1.setRows(4);
@@ -377,17 +377,9 @@ public class TR32Setup extends DeviceSetup {
     deviceChannel8.setLabelString("Ch 3: ");
     flowLayout16.setHgap(5);
     flowLayout16.setVgap(10);
-    this.getContentPane().add(deviceField1, null);
-    this.getContentPane().add(deviceChoice1, null);
-    this.getContentPane().add(deviceField2, null);
     this.getContentPane().add(deviceField3, null);
-    this.getContentPane().add(deviceDispatch1, null);
-    this.getContentPane().add(deviceField4, null);
     this.getContentPane().add(deviceChoice3, null);
-    this.getContentPane().add(deviceChoice4, null);
-    this.getContentPane().add(deviceField5, null);
     this.getContentPane().add(deviceChoice5, null);
-    this.getContentPane().add(deviceChoice2, null);
     jPanel3.add(deviceField7, null);
     jPanel3.add(deviceField6, null);
     jPanel3.add(deviceChoice6, null);
@@ -408,30 +400,38 @@ public class TR32Setup extends DeviceSetup {
     jPanel4.add(deviceField8, null);
     jPanel4.add(deviceField9, null);
     jPanel4.add(deviceChoice7, null);
-    jTabbedPane1.add(jPanel2,    "Channels (Samples)");
+    this.getContentPane().add(jTabbedPane1, null);
     jPanel10.add(deviceField110, null);
     jPanel10.add(deviceField14, null);
     jPanel10.add(deviceChoice11, null);
-    jPanel2.add(deviceChannel8, null);
-    deviceChannel8.add(jPanel7, null);
+    jPanel2.add(deviceChannel7, null);
+    deviceChannel7.add(jPanel8, null);
     jPanel8.add(deviceField15, null);
     jPanel8.add(deviceField17, null);
     jPanel8.add(deviceChoice10, null);
-    jPanel2.add(deviceChannel5, null);
-    deviceChannel5.add(jPanel10, null);
-    jPanel2.add(deviceChannel7, null);
-    deviceChannel7.add(jPanel8, null);
+    jPanel2.add(deviceChannel6, null);
+    deviceChannel6.add(jPanel9, null);
+    jPanel2.add(deviceChannel8, null);
+    deviceChannel8.add(jPanel7, null);
     jPanel9.add(deviceField18, null);
     jPanel9.add(deviceField19, null);
     jPanel9.add(deviceChoice13, null);
+    jTabbedPane1.add(jPanel1, "Channels (Time)");
     jPanel7.add(deviceField16, null);
     jPanel7.add(deviceField20, null);
     jPanel7.add(deviceChoice12, null);
-    jPanel2.add(deviceChannel6, null);
-    deviceChannel6.add(jPanel9, null);
-    jTabbedPane1.add(jPanel1, "Channels (Time)");
+    jPanel2.add(deviceChannel5, null);
+    deviceChannel5.add(jPanel10, null);
+    jTabbedPane1.add(jPanel2, "Channels (Samples)");
     this.getContentPane().add(deviceButtons1, null);
-    this.getContentPane().add(jTabbedPane1, null);
+    this.getContentPane().add(deviceChoice4, null);
+    this.getContentPane().add(deviceDispatch1, null);
+    this.getContentPane().add(deviceField4, null);
+    this.getContentPane().add(deviceField5, null);
+    this.getContentPane().add(deviceField1, null);
+    this.getContentPane().add(deviceChoice1, null);
+    this.getContentPane().add(deviceField2, null);
+    this.getContentPane().add(deviceChoice2, null);
     jTabbedPane1.setSelectedComponent(jPanel1);
   }
 
