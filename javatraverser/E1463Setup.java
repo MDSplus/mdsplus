@@ -18,7 +18,7 @@ public class E1463Setup extends DeviceSetup
 		//{{INIT_CONTROLS
 		setDeviceTitle("E1463-Optical Multichannel Analyzer EG&G PARC Model 1463");
 		getContentPane().setLayout(null);
-		setSize(465,376);
+		setSize(489,373);
 		{
 			String[] tempString = new String[3];
 			tempString[0] = "Start";
@@ -62,12 +62,12 @@ public class E1463Setup extends DeviceSetup
 		}
 		deviceChoice1.setLabelString("Trig. Mode:");
 		getContentPane().add(deviceChoice1);
-		deviceChoice1.setBounds(0,60,192,36);
+		deviceChoice1.setBounds(0,60,204,36);
 		deviceField3.setNumCols(15);
 		deviceField3.setOffsetNid(4);
 		deviceField3.setLabelString("Trig. Source:    ");
 		getContentPane().add(deviceField3);
-		deviceField3.setBounds(192,60,276,36);
+		deviceField3.setBounds(204,60,288,36);
 		deviceChoice2.setOffsetNid(5);
 		{
 			String[] tempString = new String[3];
@@ -78,12 +78,12 @@ public class E1463Setup extends DeviceSetup
 		}
 		deviceChoice2.setLabelString("Synch. Mode:");
 		getContentPane().add(deviceChoice2);
-		deviceChoice2.setBounds(0,96,180,40);
+		deviceChoice2.setBounds(0,96,204,36);
 		deviceField4.setNumCols(15);
 		deviceField4.setOffsetNid(6);
 		deviceField4.setLabelString("Synch. Source:");
 		getContentPane().add(deviceField4);
-		deviceField4.setBounds(192,96,276,36);
+		deviceField4.setBounds(204,96,276,36);
 		deviceChoice3.setOffsetNid(7);
 		{
 			String[] tempString = new String[2];

@@ -5,6 +5,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
+import javax.swing.plaf.*;
 import java.util.*;
 public class jTraverser extends JFrame implements ActionListener{
     
@@ -26,6 +27,13 @@ public class jTraverser extends JFrame implements ActionListener{
      */
     public static void main(String args[]) {
 	
+    if(System.getProperty("os.name").equals("Linux"))
+    {
+	    UIManager.put("Label.font", new FontUIResource(new Font("LuciduxSans", Font.BOLD, 11)));
+	    UIManager.put("ComboBox.font", new FontUIResource(new Font("LuciduxSans", Font.BOLD, 11)));
+	    UIManager.put("Button.font", new FontUIResource(new Font("LuciduxSans", Font.BOLD, 11)));
+    }
+
 	if(args.length >= 2)
 	    FrameRepository.frame = new jTraverser(args[0], args[1]);
 	else
