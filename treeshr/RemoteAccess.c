@@ -547,7 +547,8 @@ int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm)
 int PutRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor *dsc, int utility_update)
 {
   EMPTYXD(out);
-  int status = MdsSerializeDscOut(dsc,&out);
+  int status = MdsSerializeDscOut(dsc,&out); 
+  
   if (status & 1)
   {
     char exp[512];
@@ -558,14 +559,14 @@ int PutRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor *dsc, i
       sprintf(exp,"TreePutRecord(%d, SerializeIn($), %d)",nid_in,utility_update);
       data.dims[0] = ((struct descriptor_a *)out.pointer)->arsize;
       data.ptr = out.pointer->pointer;
-      status = MdsValue1(dblist->tree_info->channel,exp,&data,&ans);
+      status = MdsValue1(dblist->tree_info->channel,exp,&data,&ans); 
     }
     else
     {
       sprintf(exp,"TreePutRecord(%d, *, %d)",nid_in,utility_update);
-      status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+      status = MdsValue0(dblist->tree_info->channel,exp,&ans);  
     }
-    if (ans.ptr)
+    if (ans.ptr) 
     {
       if (ans.dtype == DTYPE_L)
         status = *(int *)ans.ptr;
@@ -574,6 +575,7 @@ int PutRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor *dsc, i
       MdsIpFree(ans.ptr);
     }  
   }
+  MdsFree1Dx(&out, NULL); //gab
   return status;
 }
 
