@@ -699,7 +699,10 @@ static int Dsc2Rec(struct descriptor *inp, struct descriptor_xd *out_dsc_ptr)
     out_template.arsize = size_out;
     status = MdsGet1DxA((struct descriptor_a *)&out_template, &nlen, (unsigned char *) &dsc_dtype, out_dsc_ptr);
     if (status & 1)
+    {
+	  memset(out_dsc_ptr->pointer->pointer,0,size_out);
       status = copy_dx_rec((struct descriptor *)inp, out_dsc_ptr->pointer->pointer, &size_out, &size_in);
+	}
   }
   else
     MdsFree1Dx(out_dsc_ptr, NULL);

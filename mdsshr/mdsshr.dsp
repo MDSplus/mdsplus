@@ -132,6 +132,10 @@ SOURCE=.\MdsPk.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\MdsSerialize.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\MdsShr.def
 # End Source File
 # Begin Source File

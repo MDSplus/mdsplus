@@ -34,6 +34,9 @@ MdsGet1Dx
 MdsGet1DxA
 MdsGet1DxS
 MdsGetCurrentShotId
+MdsSerializeDscIn
+MdsSerializeDscOut
+MdsSerializeDscOutZ
 MdsSetCurrentShotId
 MdsGetMsg
 MdsMsg
