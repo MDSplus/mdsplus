@@ -4,7 +4,7 @@ public fun DIO2__store(as_is _nid, optional _method)
     private _N_BOARD_ID = 1;
     private _N_SW_MODE = 2;
     private _N_IP_ADDR = 3;
-	private _N_COMMENT = 4;
+    private _N_COMMENT = 4;
     private _N_CLOCK_SOURCE = 5;
     private _N_REC_START_EV = 6;
 
@@ -26,7 +26,7 @@ public fun DIO2__store(as_is _nid, optional _method)
     private _N_CHAN_TRIGGER_1 = 14;
     private _N_CHAN_TRIGGER_2 = 15;
 
-    private _N_REC_EVENT = 143;
+    private _N_REC_EVENTS = 143;
     private _N_REC_TIMES = 144;
     private _N_SYNCH = 145;
     private _N_SYNCH_EVENT = 146;
@@ -35,7 +35,6 @@ public fun DIO2__store(as_is _nid, optional _method)
 	private _LARGE_TIME = 1E6;
     private _INVALID = 10E20;
 
-
     _board_id=if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
 
     if(_board_id == _INVALID)
@@ -43,8 +42,6 @@ public fun DIO2__store(as_is _nid, optional _method)
     	DevLogErr(_nid, "Invalid Board ID specification");
  		abort();
     }
-
-
     DevNodeCvt(_nid, _N_SW_MODE, ['LOCAL', 'REMOTE'], [0,1], _remote = 0);
 	if(_remote != 0)
 	{
@@ -71,9 +68,9 @@ public fun DIO2__store(as_is _nid, optional _method)
 	    _rec_events = DIO2HWGetRecEvents(_nid, _board_id);
 	    _rec_times = _DIO2_rec_times;
 	}
-  	_status = DevPut(_nid, _N_REC_EVENTS, _rec_events);
-  	DevPut(_nid, _N_REC_TIMES, _rec_times);
 
+  	_status = DevPut(_nid, _N_REC_EVENTS, _rec_events);
+ 	DevPut(_nid, _N_REC_TIMES, _rec_times);
     for(_c = 0; _c < 8; _c++)
     {
         if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 +(_c *  _K_NODES_PER_CHANNEL))))

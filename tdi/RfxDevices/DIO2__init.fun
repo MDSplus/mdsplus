@@ -26,7 +26,7 @@ public fun DIO2__init(as_is _nid, optional _method)
     private _N_CHAN_TRIGGER_1 = 14;
     private _N_CHAN_TRIGGER_2 = 15;
 
-    private _N_REC_EVENT = 143;
+    private _N_REC_EVENTS = 143;
     private _N_REC_TIMES = 144;
     private _N_SYNCH = 145;
     private _N_SYNCH_EVENT = 146;
@@ -458,6 +458,7 @@ write(*, "------> Event time ", _event_time);
 		if(_status == 0)
 		abort();
 	}
+write(*, 'FINITO');
 	return(1);
 }
 			
