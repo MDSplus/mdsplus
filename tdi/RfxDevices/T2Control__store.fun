@@ -85,8 +85,8 @@ write(*, _c);
 
 		}
 	}
-	_n_samples =  MdsValue('size(Feedback->getMode:dsc(0, 1))');
-	_dim = make_dim(make_window(0, _n_samples, _trigger), _clock);
+/*	_n_samples =  MdsValue('size(Feedback->getMode:dsc(0, 1))');
+	_dim = make_dim(make_window(0, _n_samples, _trigger), _clock);*/
 	for(_c = 0; _c < 32; _c++)
 	{
 write(*, _c);
@@ -108,6 +108,10 @@ write(*, _c);
 			DevLogErr(_nid, 'Error writing mods in pulse file:'//getmsg(_status));
 		}
 	}
+	_zero = MdsValue('Feedback->getZero:dsc()');
+        for(_i = 0; _i < size(_zero); _i++)
+	    write(*, _zero[_i] * 10./2048); 
+
     MdsDisconnect();
     return (1);
 }
