@@ -11,25 +11,25 @@ public class DeviceWave extends DeviceComponent
 {
     static final int MAX_POINTS = 50;
     static final double MIN_STEP = 1E-4;
-    
+
     public boolean maxXVisible = false;
     public boolean minXVisible = false;
     public boolean maxYVisible = true;
     public boolean minYVisible = false;
     public boolean waveEditable = false;
     public String updateExpression = null;
-    
-    
+
+
     public void setMaxXVisible(boolean visible) {maxXVisible = visible;}
     public void setMinXVisible(boolean visible) {minXVisible = visible;}
     public void setMaxYVisible(boolean visible) {maxYVisible = visible;}
     public void setMinYVisible(boolean visible) {minYVisible = visible;}
-    
+
     public boolean getMaxXVisible() {return maxXVisible;}
     public boolean getMinXVisible() {return minXVisible;}
     public boolean getMaxYVisible() {return maxYVisible;}
     public boolean getMinYVisible() {return minYVisible;}
-    
+
     public void setWaveEditable(boolean editable){waveEditable = editable;}
     public boolean getWaveEditable() {return waveEditable;}
 
@@ -38,7 +38,7 @@ public class DeviceWave extends DeviceComponent
         this.updateExpression = updateExpression;
     }
     public String getUpdateExpression() {return updateExpression;}
-    
+
 
     protected boolean initializing = false;
     protected WaveformEditor waveEditor;
@@ -47,16 +47,16 @@ public class DeviceWave extends DeviceComponent
     protected JCheckBox editCB;
     protected JScrollPane scroll;
     protected int numPoints;
-    protected float [] waveX = null, waveY = null; 
-    protected float [] waveXOld = null, waveYOld = null; 
+    protected float [] waveX = null, waveY = null;
+    protected float [] waveXOld = null, waveYOld = null;
     protected float maxX, minX, maxY, minY;
     protected float maxXOld, minXOld, maxYOld, minYOld;
-     
+
     private NumberFormat nf = NumberFormat.getInstance(Locale.ENGLISH);
-     
+
     public DeviceWave()
     {}
-    
+
     private void create()
     {
         waveEditor = new WaveformEditor();
@@ -77,10 +77,10 @@ public class DeviceWave extends DeviceComponent
                     if(newIdx > 8)
                         centerIdx = newIdx - 4;
                     else
-                        centerIdx = 0; 
+                        centerIdx = 0;
                     int rowY = centerIdx * table.getRowHeight();
                     scroll.getViewport().setViewPosition(new Point(0, rowY));
-                    
+
                 }
                 if(maxYVisible)
                 {
@@ -89,13 +89,13 @@ public class DeviceWave extends DeviceComponent
                         for(int i = 0; i < waveY.length; i++)
                             if(waveY[i] > maxY)
                                 waveY[i] = maxY;
-                        
+
                     }catch(Exception exc){}
                 }
                 table.repaint();
             }
         });
-        waveEditor.setEditable(false);        
+        waveEditor.setEditable(false);
         table = new JTable();
         /*table.setColumnModel(new DefaultTableColumnModel()
         {
@@ -104,7 +104,7 @@ public class DeviceWave extends DeviceComponent
         */
         table.setModel(new DefaultTableModel()
         {
-            public void addTableModelListener(TableModelListener l){} 
+            public void addTableModelListener(TableModelListener l){}
             public Class getColumnClass(int col)
             {
                 return new String().getClass();
@@ -113,7 +113,7 @@ public class DeviceWave extends DeviceComponent
             public int getRowCount() {return MAX_POINTS;}
             public String getColumnName(int col)
             {
-                if(col == 0) 
+                if(col == 0)
                     return "Time";
                 else
                     return "Value";
@@ -137,7 +137,7 @@ public class DeviceWave extends DeviceComponent
             {
                 if(row >= waveX.length)
                 {
-                    JOptionPane.showMessageDialog(DeviceWave.this, "There are misssing points in the waveform definition", 
+                    JOptionPane.showMessageDialog(DeviceWave.this, "There are misssing points in the waveform definition",
                         "Incorrect waveform definition", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
@@ -146,7 +146,7 @@ public class DeviceWave extends DeviceComponent
                     valFloat = (new Float((String)val)).floatValue();
                 }catch(Exception exc)
                 {
-                    JOptionPane.showMessageDialog(DeviceWave.this, "The value is not a correct floating point representation", 
+                    JOptionPane.showMessageDialog(DeviceWave.this, "The value is not a correct floating point representation",
                         "Incorrect waveform definition", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
@@ -181,24 +181,24 @@ public class DeviceWave extends DeviceComponent
         scroll = new JScrollPane(table);
         scroll.setPreferredSize(new Dimension(150, 200));
         add(scroll, "East");
-        
+
         JPanel jp = new JPanel();
-        if(minXVisible) 
+        if(minXVisible)
         {
             jp.add(new JLabel("Min X: "));
             jp.add(minXField = new JTextField(""+minX, 6));
         }
-        if(maxXVisible) 
+        if(maxXVisible)
         {
             jp.add(new JLabel("Max X: "));
             jp.add(maxXField = new JTextField(""+maxX, 6));
         }
-        if(minYVisible) 
+        if(minYVisible)
         {
             jp.add(new JLabel("Min Y: "));
             jp.add(minYField = new JTextField(""+minY, 6));
         }
-        if(maxYVisible) 
+        if(maxYVisible)
         {
             jp.add(new JLabel("Max Y: "));
             jp.add(maxYField = new JTextField(""+maxY, 6));
@@ -211,20 +211,20 @@ public class DeviceWave extends DeviceComponent
                 waveEditor.setEditable(editCB.isSelected());
             }
         });
-        jp.add(editCB);        
-        
+        jp.add(editCB);
+
         JButton updateB = new JButton("Update");
         updateB.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 updateLimits();
                 waveEditor.setWaveform(waveX, waveY, minY, maxY);
-            }   
+            }
         });
         jp.add(updateB);
         add(jp, "North");
     }
-           
+
     protected void initializeData(Data data, boolean is_on)
     {
         create();
@@ -245,7 +245,7 @@ public class DeviceWave extends DeviceComponent
             currData = subtree.evaluateData(currNid, 0);
             maxX = maxXOld = currData.getFloat();
         }catch(Exception exc) {maxX = maxXOld = 1;}
-        
+
         //Min Y
         try {
             currNid = new NidData(nidData.getInt() + 3);
@@ -258,7 +258,7 @@ public class DeviceWave extends DeviceComponent
             currData = subtree.evaluateData(currNid, 0);
             maxY = maxYOld = currData.getFloat();
         }catch(Exception exc) {maxY = maxYOld = 1;}
-        
+
         //Prepare waveX and waveY
         Data xData, yData;
         try {
@@ -271,19 +271,19 @@ public class DeviceWave extends DeviceComponent
             currX = new float[]{minX, maxX};
             currY = new float[]{0, 0};
         }
-        
+
         //Check that the stored signal lies into valid X range
         if(currX[0] <= minX - (float)MIN_STEP || currX[currX.length - 1] >= maxX + (float)MIN_STEP)
         {
             currX = new float[]{minX, maxX};
             currY = new float[]{0, 0};
-            JOptionPane.showMessageDialog(DeviceWave.this, 
-                "The stored signal lies outside the valid X range. Hit apply to override the incorrect values.", 
+            JOptionPane.showMessageDialog(DeviceWave.this,
+                "The stored signal lies outside the valid X range. Hit apply to override the incorrect values.",
                 "Incorret waveform limits", JOptionPane.WARNING_MESSAGE);
         }
         //set extreme points, if not present
         int nPoints = currX.length;
-            
+
         if(Math.abs(currX[0] - minX) > MIN_STEP)
             nPoints++;
         else
@@ -291,7 +291,7 @@ public class DeviceWave extends DeviceComponent
         if(Math.abs(currX[currX.length - 1] - maxX) > MIN_STEP)
             nPoints++;
         else
-           currX[currX.length - 1] = maxX; 
+           currX[currX.length - 1] = maxX;
 
         waveX = new float[nPoints];
         waveY = new float[nPoints];
@@ -313,32 +313,32 @@ public class DeviceWave extends DeviceComponent
             waveX[currIdx] = maxX;
             waveY[currIdx] = 0;
         }
-        waveXOld = new float[waveX.length];   
-        waveYOld = new float[waveX.length];   
+        waveXOld = new float[waveX.length];
+        waveYOld = new float[waveX.length];
         for(int i = 0; i < waveX.length; i++)
         {
             waveXOld[i] = waveX[i];
             waveYOld[i] = waveY[i];
         }
         //updateLimits();
-        displayData(data, is_on);   
+        displayData(data, is_on);
         initializing = false;
     }
-        
-        
-    
+
+
+
     protected void displayData(Data data, boolean is_on)
     {
         waveEditor.setWaveform(waveX, waveY, minY, maxY);
-        
+
         if(maxXVisible) {maxXField.setText(""+maxX);}
         if(minXVisible) {minXField.setText(""+minX);}
         if(maxYVisible) {maxYField.setText(""+maxY);}
         if(minYVisible) {minYField.setText(""+minY);}
-        
+
         table.repaint();
     }
-        
+
      protected Data getData()
     {
         Data []dims = new Data[1];
@@ -346,18 +346,21 @@ public class DeviceWave extends DeviceComponent
         Data values = new FloatArray(waveY);
         return new SignalData(values, values, dims);
     }
-    
+
     protected boolean getState(){return true;}
     public void setEnabled(boolean state) {}
 
 
     public void apply() throws Exception
     {
+        CellEditor ce = table.getCellEditor();
+        if(ce != null)
+          ce.stopCellEditing();
         super.apply();
         updateLimits();
         if(minXVisible)
         {
-            try {                
+            try {
                 subtree.putData(new NidData(nidData.getInt() + 1), new FloatData(minX), 0);
             }catch(Exception exc)
             {
@@ -392,15 +395,15 @@ public class DeviceWave extends DeviceComponent
             }
         }
     }
-    
+
     public void reset()
     {
         minX = minXOld;
         maxX = maxXOld;
         minY = minYOld;
         maxY = maxYOld;
-        waveX = new float[waveXOld.length];   
-        waveY = new float[waveXOld.length];   
+        waveX = new float[waveXOld.length];
+        waveY = new float[waveXOld.length];
         for(int i = 0; i < waveXOld.length; i++)
         {
             waveX[i] = waveXOld[i];
@@ -408,7 +411,7 @@ public class DeviceWave extends DeviceComponent
         }
         super.reset();
     }
-      
+
     protected void updateLimits()
     {
         if(minXVisible)
@@ -420,8 +423,8 @@ public class DeviceWave extends DeviceComponent
                     break;
                 }catch(Exception exc)
                 {
-                    JOptionPane.showMessageDialog(DeviceWave.this, 
-                        "Invalid value for min X", 
+                    JOptionPane.showMessageDialog(DeviceWave.this,
+                        "Invalid value for min X",
                         "Incorret limit", JOptionPane.WARNING_MESSAGE);
                 }
             }
@@ -435,8 +438,8 @@ public class DeviceWave extends DeviceComponent
                     break;
                 }catch(Exception exc)
                 {
-                    JOptionPane.showMessageDialog(DeviceWave.this, 
-                        "Invalid value for max X", 
+                    JOptionPane.showMessageDialog(DeviceWave.this,
+                        "Invalid value for max X",
                         "Incorret limit", JOptionPane.WARNING_MESSAGE);
                 }
             }
@@ -450,8 +453,8 @@ public class DeviceWave extends DeviceComponent
                     break;
                 }catch(Exception exc)
                 {
-                    JOptionPane.showMessageDialog(DeviceWave.this, 
-                        "Invalid value for min Y", 
+                    JOptionPane.showMessageDialog(DeviceWave.this,
+                        "Invalid value for min Y",
                         "Incorret limit", JOptionPane.WARNING_MESSAGE);
                 }
             }
@@ -465,8 +468,8 @@ public class DeviceWave extends DeviceComponent
                     break;
                 }catch(Exception exc)
                 {
-                    JOptionPane.showMessageDialog(DeviceWave.this, 
-                        "Invalid value for max Y", 
+                    JOptionPane.showMessageDialog(DeviceWave.this,
+                        "Invalid value for max Y",
                         "Incorret limit", JOptionPane.WARNING_MESSAGE);
                 }
             }
@@ -478,7 +481,7 @@ public class DeviceWave extends DeviceComponent
             repaint();
         }
     }
-                
+
 
 
 
@@ -486,29 +489,29 @@ public class DeviceWave extends DeviceComponent
     {
         if(!initializing)
         {
-		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Wave. Please remove the component.", 
+		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Wave. Please remove the component.",
 		        "Error adding Device field", JOptionPane.WARNING_MESSAGE);
             return null;
         }
         return super.add(c);
     }
-        
+
     public Component add(String name, Component c)
     {
         if(!initializing)
         {
-		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Wave. Please remove the component.", 
+		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Wave. Please remove the component.",
 		        "Error adding Device field", JOptionPane.WARNING_MESSAGE);
             return null;
         }
         return super.add(c);
     }
-        
+
     public Component add(Component c, int intex)
     {
         if(!initializing)
         {
-		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Wave. Please remove the component.", 
+		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Wave. Please remove the component.",
 		        "Error adding Device field", JOptionPane.WARNING_MESSAGE);
             return null;
         }
@@ -531,7 +534,7 @@ public class DeviceWave extends DeviceComponent
                         newExprStr += newVal;
                 }
                 //System.out.println(newExprStr);
-                
+
                 //Update first current id TDI variables
                 master.updateIdentifiers();
                 //Compute new Max
@@ -547,7 +550,7 @@ public class DeviceWave extends DeviceComponent
             }
         }
     }
-                
+
 
 
     public static void main(String args[])
@@ -556,4 +559,4 @@ public class DeviceWave extends DeviceComponent
         System.out.println("Istanziato");
     }
 }
-    
+
