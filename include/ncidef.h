@@ -85,7 +85,7 @@ typedef struct nci_itm
 {
 	short int buffer_length;
 	short int code;
-	unsigned char *pointer;
+	void *pointer;
 	int *return_length_address;
 } NCI_ITM;
 #endif

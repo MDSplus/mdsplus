@@ -265,7 +265,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  {
 			  break_on_no_node;
 			  out_nids = (NID *) itm->pointer;
-			  end_nids = (NID *) (itm->pointer + itm->buffer_length);
+			  end_nids = (NID *) (((char *)itm->pointer) + itm->buffer_length);
 			  if (node->child)
 				  for (node = child_of(node); node && (out_nids + 1 <= end_nids);
 			  node = node->brother ? brother_of(node) : 0, out_nids++)
@@ -276,7 +276,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 	  case NciMEMBER_NIDS:
 		  break_on_no_node;
 		  out_nids = (NID *) itm->pointer;
-		  end_nids = (NID *) (itm->pointer + itm->buffer_length);
+		  end_nids = (NID *) (((char *)itm->pointer) + itm->buffer_length);
 		  if (node->member)
 			  for (node = member_of(node); node && (out_nids + 1 <= end_nids);
 		  node = node->brother ? brother_of(node) : 0, out_nids++)
