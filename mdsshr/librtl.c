@@ -255,11 +255,12 @@ int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag)
   }
   arglist[((int)arglist[0])] = (char *)0;
   status = LibCallg(arglist,_spawnlp);
-  if (status != 0) perror("Error doing spawn"); 
+  /*if (status != 0) perror("Error doing spawn"); */
   free(cmd_c);
-  return (status);
-  return (0);
-}
+
+  return status;
+
+ }
 
 int LibWait(float *secs)
 {
@@ -823,7 +824,8 @@ int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
     }
   }
   free(cmdstring);
-  return sts;
+  /* return sts;*/
+  return sts >> 8;
 }
 
 #endif
