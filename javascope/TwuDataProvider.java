@@ -197,414 +197,7 @@ class TwuDataProvider
         }
     } // end (nested) class TwuSimpleFrameData 
 
-    // ---------------------------------------------------------------------------------------------
-    class TwuSingleSignal 
-    {
-        TWUProperties   properties      = null  ;
-        TwuSingleSignal mainSignal      = null  ;
-        TWUFetchOptions fetchOptions    = null  ;
-        String    source                = null  ;
-        float[]   data                  = null  ;
-        boolean   propertiesAvailable   = false ;
-        long      shotOfTheProperties   = 0;
-        boolean   dataAvailable         = false ;
-        boolean   fetchOptionsAvailable = false ;
-        boolean   error                 = false ;
-        Exception errorSource           = null  ; 
-        boolean   fakeAbscissa          = false ;
-        boolean   isAbscissa            = false ;
-
-        public TwuSingleSignal (String src)             
-        {
-            source = src;  
-        }
-
-        public TwuSingleSignal (TwuSingleSignal prnt) 
-        {
-            mainSignal = prnt ;
-            isAbscissa = true ;
-        }
-
-        public TWUProperties  getTWUProperties() 
-            throws IOException 
-        {
-            if (! propertiesAvailable || shotOfTheProperties!=shot)
-            { 
-                try
-                {
-                    shotOfTheProperties=shot;
-                    fetchProperties() ;
-                    // NB, this throws an exception if an error occurs 
-                    // OR HAS occurred before. And what good did that do?
-                }
-                catch (IOException e) 
-                {
-                    throw e ; 
-                }
-                catch (Exception   e) 
-                {
-                    handleException(e);
-                    throw new IOException (e.toString()); 
-                    // e.getMessage() might be nicer... but then you won't
-                    // know the original exception type at all, and
-                    // there's a possibility there won't be a message
-                    // in the exception. Then you'd have _nothing_ to go on.
-                } 
-            }
-            return properties ;
-        }
-
-        public String getProperty (String keyword) 
-            throws Exception  
-        {
-            if (! propertiesAvailable || shotOfTheProperties!=shot)
-            {
-                shotOfTheProperties=shot;
-                fetchProperties() ;
-            }
-
-            return properties.getProperty (keyword);
-        }
-
-        // note that this setup only fetches the properties (and, later on, data)
-        // if (and when) it is needed. it's less likely to do redundant work than
-        // if I'd get the properties in the constructor.
-
-        private void fetchProperties() throws Exception 
-        {
-            // checkForError() ; And fail on old errors? Why?
-            try 
-            {
-                // Don't remember errors from previous attempts
-                errorSource = null ; 
-                error = false ; 
-
-                if (isAbscissa) 
-                  fetch_X_Properties() ;
-                else
-                  fetch_Y_Properties() ;
-            }
-            catch (Exception e)
-            { 
-                errorSource = e ; 
-                error = true ; 
-            }
-            checkForError() ;
-            propertiesAvailable = true ;
-        }
-
-        private void fetch_X_Properties() throws Exception 
-        {
-            checkForError( mainSignal ) ;
-            TWUProperties yprops = mainSignal.getTWUProperties();
-            int dim = yprops.Dimensions() ;
-
-            if (dim > 1 || dim < 0)
-              throwError ("Not a 1-dimensional signal !");
-
-            if (! yprops.hasAbscissa0() ) 
-            {
-                fake_my_Properties() ;
-                return ;
-            }
-
-            String mypropsurl = yprops.FQAbscissa0Name() ;
-            fetch_my_Properties (mypropsurl);
-
-            if (! properties.valid() )
-              throwError ("Error loading properties of X data !"); 
-
-            // it's a shame, but the TWUProperties does not directly register
-            // the exception that occurred here, so the _nature_ of
-            // the error remains uncertain.
-        }
-
-        private void fetch_Y_Properties() throws Exception 
-        {
-            if (source == null) 
-              throwError ("No input signal set !");
-
-            String propsurl = GetSignalPath (source);
-            fetch_my_Properties (propsurl);
-
-            if (! properties.valid())
-            {
-                if (error_string==null)
-                  error_string = "No Such Y Signal : " + propsurl ;
-                throwError ("Error loading properties of Y data !" + propsurl );
-            }
-            
-        }
-
-        private void fetch_my_Properties(String propsurl) throws Exception 
-        {
-            TwuDataProvider dp = TwuDataProvider.this ;
-            DispatchConnectionEvent ( new ConnectionEvent (dp, "Load Properties", 0, 0));
-            properties = new TWUProperties (propsurl);
-            DispatchConnectionEvent ( new ConnectionEvent (dp, null, 0, 0));
-        }
-
-        private void fake_my_Properties() throws Exception 
-        {
-            fakeAbscissa = true ; 
-            int len = mainSignal.getTWUProperties().LengthTotal() ;
-            properties = new FakeTWUProperties (len) ;
-            // creates an empty (but non-null!) Properties object,
-            // which can used _almost_ just like the real thing.
-        }
-
-        // these public routines returning private variables are supposed
-        // to protect those vars from accidental overwriting.
-
-        public boolean dataReady      () 
-        {
-            return dataAvailable ;   // note: you should also check for error !!!
-        }
-
-        public boolean propertiesReady() 
-        {
-            return propertiesAvailable ; // ditto.
-        } 
-
-        public boolean error() 
-        {
-            return error ;       
-        }
-
-        public Exception getError() 
-        {
-            return errorSource ; 
-        }
-
-        public float [] getData (TWUFetchOptions opt) 
-            throws IOException 
-        {
-            setFetchOptions (opt) ;
-            return getData() ;
-        }
-
-        public float [] getData () throws IOException 
-        {
-            if    (dataAvailable)
-              return data ;
-
-            try   
-            {
-                fetchBulkData () ; 
-            }
-            catch (IOException e) 
-            { 
-                throw e; 
-            }
-            catch (Exception   e) 
-            { 
-                handleException(e); 
-                throw new IOException (e.toString()) ; 
-            }
-            return data ;
-        }
-
-        public void setFetchOptions (TWUFetchOptions opt)
-            throws IOException 
-        {
-            doClip (opt);
-            if ( fetchOptionsAvailable 
-                 &&
-                 fetchOptions.equalsForBulkData (opt) )
-            {
-                return ;
-            }
-
-            fetchOptions = opt ;
-            fetchOptionsAvailable = true ;
-            dataAvailable = false ;
-            data = null ;
-        }
-
-        private void doClip (TWUFetchOptions opt)
-            throws IOException 
-        {
-            if (fakeAbscissa) 
-              return ; 
-            // there *is* no abscissa so there aren't any properties 
-            // (and certainly no length)!
-
-            int length = getTWUProperties().LengthTotal();
-            opt.clip (length);
-        }
-
-        private synchronized void fetchBulkData() throws Exception 
-        {
-            if (! fetchOptionsAvailable) 
-              throwError ("unspecified fetch options (internal error)");
-
-            if (fetchOptions.total == -1 ) 
-              doClip(fetchOptions); // just in case ...
-
-            if (fetchOptions.total <=  1 ) 
-            {
-                createScalarData (); 
-                return ; 
-            }
-            if ( (isAbscissa && fakeAbscissa) || properties.Equidistant() ) 
-            {
-                createEquidistantData( fetchOptions ); 
-                return ;
-            }
-            data = doFetch (fetchOptions);
-            dataAvailable = true ;
-        }
-
-        private synchronized float[] doFetch(TWUFetchOptions opt)
-            throws Exception 
-        {
-            TWUSignal bulk ;
-
-            ConnectionEvent ce;
-            ce = new ConnectionEvent(this, "Start Loading "+ (isAbscissa ? "X" : "Y"));
-
-            DispatchConnectionEvent(ce);
-
-            bulk = new TWUSignal (properties, opt.start, opt.step, opt.total);
-            return SimplifiedGetFloats(bulk, isAbscissa, opt.total);
-        }
-
-        private void createScalarData() throws Exception 
-        {
-            // an extra check to see if it really is a scalar
-            if (fetchOptions.total == 1) 
-            {
-                // return an (almost) empty array so there won't be
-                // an error ; also, TwuWaveData.GetTitle() will
-                // return an adapted title string containing the scalar value.
-
-                data = new float[] {0.0f} ; 
-                // an empty array would cause an exception in Signal. But this works.
-                dataAvailable = true ;
-                return ;
-            }
-            else 
-              error_string = "No numerical data available!" ;
-
-            data = null ; // 'triggers' display of the error_string.
-            dataAvailable = true ;
-        }
-
-        public synchronized String ScalarToTitle() throws Exception 
-        {
-            TWUProperties props = getTWUProperties(); 
-            // makes sure that the properties are really fetched.
-            // although they should already have been if this method is called.
-
-            String name = props.Title() ;
-            if (props.LengthTotal() > 1) 
-              return name + " (is not a scalar)" ;
-
-            String units = props.Units() ;
-            float min    = 0.0f ;
-            if (props.getProperty("Signal.Minimum") != null)
-              min = (float) props.Minimum() ;
-            else 
-            { 
-                float[] scalar = doFetch (new TWUFetchOptions()); 
-                min = scalar[0] ; 
-            }
-            return name + " = " + min + " " + units ;
-        }
-
-        private void 
-        createEquidistantData(TWUFetchOptions opt) 
-            throws Exception 
-        {
-            float fullstep, start ;
-            int   total ;
-            // NB: it is assumed that opt is already clipped !
-
-            if (fakeAbscissa) 
-            {
-                TWUProperties props = null ;
-                try   
-                {
-                    props = mainSignal.getTWUProperties() ;
-                }
-                catch (IOException e) 
-                {
-                    return ;  // the error flag should already be set.
-                }
-                total    = props.LengthTotal() - 1 ;
-                fullstep = opt.step  ;
-                start    = opt.start ;
-            }
-            else 
-            {
-                float min, max, onestep ;
-                boolean up =    properties.Incrementing();
-                min   = (float) properties.Minimum(); 
-                max   = (float) properties.Maximum();
-                total =         properties.LengthTotal() - 1 ;
-                if (! up) 
-                {
-                    float tmp = min ; min = max ; max = tmp ;
-                }
-                onestep  = (max - min) / (float)total ;
-                fullstep = opt.step  * onestep ;
-                start    = opt.start * onestep + min ;
-            }
-            if (total <= 0) 
-            {
-                throwError ("negative or zero sample quantity (*probably* an internal error) !");
-            }
-            data = new float [ opt.total ] ;
-            for (int i = 0 ; i < opt.total ; i++) 
-            {
-                data[i] = start + i * fullstep ;
-            }
-            dataAvailable = true ;
-        }
-
-        private void throwError (String msg) 
-            throws Exception 
-        {
-            error = true ;
-            errorSource = new Exception (msg);
-            throw errorSource ;
-        }
-
-        private void checkForError () 
-            throws Exception 
-        {
-            checkForError (this); 
-        }
-
-        private void checkForError (TwuSingleSignal sig) 
-            throws Exception 
-        {
-            if (sig.error) 
-              throw( (Exception) sig.errorSource.fillInStackTrace() ) ;
-        }
-
-    } // end (nested) class TwuSingleSignal.
-
-    // ---------------------------------------------------------------------------------------------
-
-    // Temporary factory methods, while untangling the nested classes.
-    // JGK 2003-07-09
-
-    TwuSingleSignal
-    newTwuSingleSignal (String sig) 
-    {
-        return new TwuSingleSignal(sig);
-    }
-    
-    TwuSingleSignal
-    newTwuSingleSignal (TwuSingleSignal sig) 
-    {
-        return new TwuSingleSignal(sig);
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    //  ---------------------------------------------------
+    //  --------------------------------------------------------------------------------------------
     //     interface methods for getting *Data objects
     //  ---------------------------------------------------
 
@@ -635,7 +228,7 @@ class TwuDataProvider
     GetResampledWaveData(String in_y, String in_x, float start, float end, int n_points) 
     {
         TwuWaveData find = FindWaveData (in_y, in_x);
-        find.setZoom (start, end, n_points);
+        find.setZoom (shot, start, end, n_points);
         return find ;
     }
 
@@ -654,7 +247,7 @@ class TwuDataProvider
             catch (IOException e)
             {
                 if (error_string==null)
-                  error_string = "No Such Signal : " + GetSignalPath(in_y) ;
+                  error_string = "No Such Signal : " + GetSignalPath(in_y, shot, provider_url, experiment) ;
                 //throw new IOException ("No Such Signal");
             }
         }
@@ -665,7 +258,9 @@ class TwuDataProvider
     //     abscissa / signal properties / path utility methods
     //  ----------------------------------------------------------
 
-    private synchronized String GetSignalPath(String in)
+    static
+    protected synchronized String 
+    GetSignalPath(String in, long shot, String provider_url, String experiment)
     {
         if(IsFullURL(in))
           return in;
@@ -697,6 +292,7 @@ class TwuDataProvider
         }
     }
 
+    static
     private boolean IsFullURL(String in)
     {
         in = in.toLowerCase();
@@ -729,6 +325,7 @@ class TwuDataProvider
     }
         
 
+    static 
     private String GetURLserver(String in)
     { 
         // Find the servername, if it follows the (early) jScope internal
@@ -745,11 +342,14 @@ class TwuDataProvider
     //       data fetching (or creation) methods below.
     //  ----------------------------------------------------
 
+    // Should probably be in another class.
+
+    //static
     protected synchronized TWUFetchOptions
-    FindIndicesForXRange( TwuSingleSignal xsig, float x_start, float x_end, int n_points ) 
+    FindIndicesForXRange( TwuSingleSignal xsig, long shot, float x_start, float x_end, int n_points ) 
         throws  Exception
     {
-        final TWUProperties prop = xsig.getTWUProperties() ;
+        final TWUProperties prop = xsig.getTWUProperties(this) ;
         final int           len  = prop.LengthTotal() ;
 
         if (prop.Dimensions() == 0 || len <= 1)
@@ -792,7 +392,7 @@ class TwuDataProvider
             final int step = (int) Math.ceil ( len / (float)k ) ;
 
             TWUFetchOptions opt = new TWUFetchOptions ( 0, step, k );
-            float[] data = xsig.doFetch (opt);
+            float[] data = xsig.doFetch (this, opt);
 
             boolean up = data [1] > data [0] ; 
             k = data.length ; // may be less than POINTS_PER_REQUEST .
@@ -832,8 +432,8 @@ class TwuDataProvider
             // garbage-collect the now redundant data. 
             // saves some memory [okay, now I'm optimizing... :)]
 
-            ix_start = FindNonEquiIndex(up ? x_start : x_end,    xsig, ix_start, step, k, len);
-            ix_end   = FindNonEquiIndex(up ? x_end   : x_start,  xsig, ix_end,   step, k, len);
+            ix_start = FindNonEquiIndex(this, up ? x_start : x_end,    xsig, ix_start, step, k, len);
+            ix_end   = FindNonEquiIndex(this, up ? x_end   : x_start,  xsig, ix_end,   step, k, len);
         }
 
         // extra checks:
@@ -857,8 +457,10 @@ class TwuDataProvider
         return new TWUFetchOptions (ix_start, step, real_n_points) ;
     }
 
+    // Should probably be in another class.
+    static
     protected synchronized int
-    FindNonEquiIndex(float target, TwuSingleSignal xsig, int start, int laststep, int maxpts, int len)
+    FindNonEquiIndex(TwuDataProvider provider, float target, TwuSingleSignal xsig, int start, int laststep, int maxpts, int len)
         throws Exception
     {
         // This is an iterative routine : it 'zooms in' on (a subsampled part of the)
@@ -874,7 +476,7 @@ class TwuDataProvider
         int end = start + laststep ;
         int num = (int) Math.ceil ( laststep / ((float)newstep) );
 
-        float [] data = xsig.doFetch (new TWUFetchOptions (start, newstep, num+1)); 
+        float [] data = xsig.doFetch (provider, new TWUFetchOptions (start, newstep, num+1)); 
 
         // the "num+1" is for reading the sample at the edge, for comparison 
         // (we want to get the index for which the data is closest to the target value.)
@@ -900,7 +502,7 @@ class TwuDataProvider
         if (newstep > 1) 
         {
             data = null ; 
-            ret = FindNonEquiIndex (target, xsig, newstart, newstep, maxpts, len) ; 
+            ret = FindNonEquiIndex (provider, target, xsig, newstart, newstep, maxpts, len) ; 
         }
         else 
         {

@@ -19,15 +19,15 @@ import java.lang.InterruptedException;
 class TwuWaveData
     implements WaveData
 {
-    private TwuDataProvider.TwuSingleSignal mainSignal      = null  ;
-    private TwuDataProvider.TwuSingleSignal abscissa_X      = null  ;
-    private String                          mainSignal_name = null  ;
-    private String                          abscissa_X_name = null  ;
-    private boolean                         fullfetch       = false ;
-    private float                           xmax            = 0.0f  ;
-    private float                           xmin            = 0.0f  ;
-    private int                             n_points        =  0    ;
-    private TwuDataProvider                 provider        = null  ;
+    private TwuSingleSignal mainSignal      = null  ;
+    private TwuSingleSignal abscissa_X      = null  ;
+    private String          mainSignal_name = null  ;
+    private String          abscissa_X_name = null  ;
+    private boolean         fullfetch       = false ;
+    private float           xmax            = 0.0f  ;
+    private float           xmin            = 0.0f  ;
+    private int             n_points        =  0    ;
+    private TwuDataProvider provider        = null  ;
 
     public TwuWaveData()
     {
@@ -52,16 +52,16 @@ class TwuWaveData
         mainSignal_name = in_y ;
         abscissa_X_name = in_x ;
 
-        mainSignal = provider.newTwuSingleSignal (mainSignal_name) ;
+        mainSignal = new TwuSingleSignal (mainSignal_name) ;
 
-        if  (mainSignal_name != null && abscissa_X_name != null)
-          abscissa_X = provider.newTwuSingleSignal (abscissa_X_name);
+        if  (abscissa_X_name != null)
+          abscissa_X = new TwuSingleSignal (abscissa_X_name);
         else
-          abscissa_X = provider.newTwuSingleSignal (mainSignal);
+          abscissa_X = new TwuSingleSignal (mainSignal);
 
     }
 
-    public void setZoom (float xmin, float xmax, int n_points)
+    public void setZoom (long shot, float xmin, float xmax, int n_points)
     {
         // this method allows reusing of this object
         // to fetch data from the same signal at a
@@ -75,11 +75,11 @@ class TwuWaveData
         try
         {
             setFetchOptions (
-                provider.FindIndicesForXRange ( abscissa_X, xmin, xmax, n_points ) );
+                provider.FindIndicesForXRange ( abscissa_X, shot, xmin, xmax, n_points ) );
         }
         catch ( Exception e ) {}
 
-        // the TwuDataProvider.TwuSingleSignal already has the error flag set (?),
+        // the TwuSingleSignal already has the error flag set (?),
         // and it will throw an exception when jscope tries to
         // call GetFloatData().
     }
@@ -104,11 +104,11 @@ class TwuWaveData
         in_x = (in_x != null && in_x.trim().length() != 0) ? in_x.trim() : null;
 
         boolean y_equals
-            = (in_y==null) ? (this.mainSignal_name==null)
-            : (this.mainSignal_name!=null && in_y.equalsIgnoreCase(this.mainSignal_name) );
+            = (in_y==null) ? (mainSignal_name==null)
+            : (mainSignal_name!=null && in_y.equalsIgnoreCase(mainSignal_name) );
         boolean x_equals
-            = (in_x==null) ? (this.abscissa_X_name==null)
-            : (this.abscissa_X_name!=null && in_x.equalsIgnoreCase(this.abscissa_X_name) );
+            = (in_x==null) ? (abscissa_X_name==null)
+            : (abscissa_X_name!=null && in_x.equalsIgnoreCase(abscissa_X_name) );
 
         return  ! (x_equals && y_equals) ;
     }
@@ -124,19 +124,19 @@ class TwuWaveData
         if (mainSignal==null || mainSignal.error() )
           return null;
 
-        return mainSignal.getData() ;
+        return mainSignal.getData(provider) ;
     }
 
     public float[] GetXData()
         throws IOException
     {
-        return abscissa_X.getData() ;
+        return abscissa_X.getData(provider) ;
     }
 
     public float[] GetYData()
         throws IOException
     {
-        return mainSignal.getData() ; // used to be : return null; ...  :o
+        return mainSignal.getData(provider) ; // used to be : return null; ...  :o
         // Wrong !! should return Abscissa.1 data!
         // TODO: To be fixed later! JGK.
     }
@@ -144,13 +144,13 @@ class TwuWaveData
     public  String GetXLabel()
         throws IOException
     {
-        return abscissa_X.getTWUProperties().Units() ;
+        return abscissa_X.getTWUProperties(provider).Units() ;
     }
 
     public  String GetYLabel()
         throws IOException
     {
-        return mainSignal.getTWUProperties().Units() ;
+        return mainSignal.getTWUProperties(provider).Units() ;
     }
 
     public  String GetZLabel()
@@ -162,7 +162,7 @@ class TwuWaveData
     public  int GetNumDimension()
         throws IOException
     {
-        return mainSignal.getTWUProperties().Dimensions () ;
+        return mainSignal.getTWUProperties(provider).Dimensions () ;
     }
 
     private String title = null ;
@@ -177,12 +177,12 @@ class TwuWaveData
 
         int dim = GetNumDimension() ;
         if (dim != 0)
-          title = mainSignal.getTWUProperties().Title() ;
+          title = mainSignal.getTWUProperties(provider).Title() ;
         else
         {
             try
             {
-                title = mainSignal.ScalarToTitle();
+                title = mainSignal.ScalarToTitle(provider);
             }
             catch (IOException e)
             {
@@ -204,19 +204,19 @@ class TwuWaveData
     protected void setFetchOptions (TWUFetchOptions opt)
         throws IOException
     {
-        mainSignal.setFetchOptions (opt);
-        abscissa_X.setFetchOptions (opt);
+        mainSignal.setFetchOptions (opt, provider);
+        abscissa_X.setFetchOptions (opt, provider);
     }
 
     // another utility method. needed by TwuAccess (via via).
     // this is an efficient way to do it because it allows storage
-    // of the properties within the TwuDataProvider.TwuSingleSignal, so it won't
+    // of the properties within the TwuSingleSignal, so it won't
     // need to be retrieved time after time ...
     //
     public TWUProperties getTWUProperties()
         throws IOException
     {
-        return mainSignal.getTWUProperties() ;
+        return mainSignal.getTWUProperties(provider) ;
     }
 
 }
