@@ -57,7 +57,9 @@ RFXMOPSetup.java \
 RFXANSALDOSetup.java \
 IPC901Setup.java \
 CADHSetup.java \
-J221Setup.java
+J221Setup.java \
+RFXVISetupSetup.java
+
 
 SOURCES = ActionData.java\
 ActionEditor.java\
@@ -166,7 +168,7 @@ WithErrorData.java\
 WithUnitsData.java\
 jTraverser.java\
 DecompileTree.java\
-CompileTree.java
+CompileTree.java 
 
 GIFS = DeviceApply.gif \
        DeviceChoice.gif \
