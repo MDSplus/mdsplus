@@ -257,7 +257,7 @@ OPC (	MatRot,	MAT_ROT ,	Matrix, undef,		MatRot,	F,HC,	F,HC,	2,5,	OK	)/*;	(mat,an
 OPC (	MatRotInt,	MAT_ROT_INT ,	Matrix, undef,		MatRotInt,	F,HC,	F,HC,	2,5,	OK	)/*;	(mat,angle,mag,x0,y0)	*/
 OPC (	Max,	MAX ,		MinMax, Add,		Max,		BU,HC,	BU,HC,	2,254,	OK	)/*;f9	(x,y..)			*/
 OPC (	MaxExponent,	MAXEXPONENT ,	Scalar,Any,		MaxExponent,	F,HC,	L,L,	1,1,	OK	)/*;f9	(model)			*/
-OPC (	MaxLoc,	MAXLOC ,		Trans,	Mask2,		MaxLoc,	T,HC,SUBSCRIPT,SUBSCRIPT,1,2,	OK	)/*;f9	(x,[mask])		*/
+OPC (	MaxLoc,	MAXLOC ,		Trans,	Mask3,		MaxLoc,	T,HC,SUBSCRIPT,SUBSCRIPT,1,3,	OK	)/*;f9	(x,[mask])		*/
 OPC (	MaxVal,	MAXVAL ,		Trans,	Mask3,		MaxVal,		T,HC,	T,HC,	1,3,	OK	)/*;f9	(x,[dim],[mask])	*/
 OPC (	Mean,	MEAN ,		Trans,	Mask3,		Mean,		BU,HC,	F,HC,	1,3,	OK	)/*;	(x,[dim],[mask])	*/
 OPC (	Median,	MEDIAN ,		Same,	Long2,		Median,		BU,HC,	BU,HC,	2,2,	OK	)/*;	(a,width)		*/

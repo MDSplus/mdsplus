@@ -208,18 +208,18 @@ int Tdi3MaxLoc(struct descriptor *in, struct descriptor *mask,
     case DTYPE_T:  OperateL(int,(int)pi1;count = -1,Tdi3Gt(pi0,*(int *)result),
 		         result = (int)pi0;count = j0;,*outp++ = count)
     case DTYPE_B:  OperateL(char,(char)-127;count = -1,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_BU: OperateL(unsigned char,(unsigned char)0;count = -1,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_BU: OperateL(unsigned char,(unsigned char)0;count = 0,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_W:  OperateL(short,(short)-32768;count = -1,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_WU: OperateL(unsigned short,(unsigned short)0;count = -1,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_WU: OperateL(unsigned short,(unsigned short)0;count = 0,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_L:  OperateL(int,-2147483647;count = -1,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_LU: OperateL(unsigned int,(unsigned int)0;count = -1,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_QU: OperateL(quadword,minquad;count = -1,TdiGtQ(pi0,&result,0),
+    case DTYPE_LU: OperateL(unsigned int,(unsigned int)0;count = 0,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
+    case DTYPE_Q: OperateL(quadword,minquad;count = -1,TdiGtQ(pi0,&result,0),
 			result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_Q: OperateL(quadword,uminquad;count = -1,TdiGtQ(pi0,&result,1),
+    case DTYPE_QU: OperateL(quadword,uminquad;count = 0,TdiGtQ(pi0,&result,1),
 			result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_OU: OperateL(octaword,minocta;count = -1,TdiGtO(pi0,&result,0),
+    case DTYPE_O: OperateL(octaword,minocta;count = -1,TdiGtO(pi0,&result,0),
 			result = *pi0;count = j0;,*outp++ = count)
-    case DTYPE_O: OperateL(octaword,uminocta;count = -1,TdiGtO(pi0,&result,1),
+    case DTYPE_OU: OperateL(octaword,uminocta;count = 0,TdiGtO(pi0,&result,1),
 			result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_F:  OperateFloc(float,DTYPE_F  ,-HUGE,>)
     case DTYPE_FS: OperateFloc(float,DTYPE_FS ,-HUGE,>)
