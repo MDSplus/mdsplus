@@ -14,7 +14,7 @@ MDSLIB_LIBS=-lTdiShr -lTreeShr -lMdsShr
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = MdsLib.c
-OBJECTS = $(SOURCES:.c=.o)
+OBJECTS = $(SOURCES:.c=.o) 
 
 OBJECTS_CLIENT = MdsLib_client.o 
 OBJECTS_CLIENT_ARCHIVE = ../mdstcpip/mdsiputil.o
@@ -31,7 +31,7 @@ depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean:
-	@ $(RM) $(OBJECTS) $(OBJECTS_CLIENT)
+	@ $(RM) $(OBJECTS) $(OBJECTS_CLIENT) mdslib_ftest.o
 	@ $(RM) so_locations
 	@ $(RM) @MAKELIBDIR@libMdsLib_client@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsLib_client.a

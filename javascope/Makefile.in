@@ -7,10 +7,18 @@ JAR = @JAR@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = FtuProvider.java\
+AsynchUpdater.java\
 Base64.java\
 ColorDialog.java\
+DataCached.java\
 DataProvider.java\
+DemoProvider.java\
+Discriptor.java\
 ErrorMessage.java\
+FontPanel.java\
+FontSelection.java\
+Frames.java\
+Grid.java\
 JetDataProvider.java\
 JiDataSource.java\
 JiDim.java\
@@ -28,18 +36,41 @@ JiSlabIterator.java\
 JiVar.java\
 JiVarImpl.java\
 LocalProvider.java\
+MdsMessage.java\
+MdsWavePopup.java\
 MultiWaveform.java\
+NetworkEvent.java\
+NetworkEventListener.java\
+NetworkEventManager.java\
 NetworkProvider.java\
+ProfileDialog.java\
 RandomAccessData.java\
+ReaderConfig.java\
 RotateFilter.java\
+RowColumnContainer.java\
 RowColumnLayout.java\
 ScopePositionDialog.java\
+ServerDialog.java\
 SetupDataDialog.java\
 SetupDefaults.java\
 Signal.java\
+SignalCache.java\
 Slider.java\
+WaveContainerEvent.java\
+WaveContainerListener.java\
 WaveInterface.java\
+WavePopup.java\
 Waveform.java\
+WaveformContainer.java\
+WaveformEvent.java\
+WaveformListener.java\
+WaveformManager.java\
+WaveformMetrics.java\
+WindowDialog.java\
+jScopeDefaultValues.java\
+jScopeMultiWave.java\
+jScopeWaveContainer.java\
+jScopeWavePopup.java\
 jScope.java
 
 CLASSES = $(SOURCES:.java=.class)
@@ -47,7 +78,7 @@ CLASSES = $(SOURCES:.java=.class)
 all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/jScope.jar
 
 clean: 
-	@ $(RM) $(CLASSES)
+	@ $(RM) $(CLASSES) *\$*.class
 	@ $(RM) @MAKEBINDIR@jScope
 	@ $(RM) @MAKEJAVADIR@classes/jScope.jar
 

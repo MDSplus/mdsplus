@@ -13,17 +13,14 @@ MdsPlusEvents.java\
 MdsPlusEvent.java\
 MdsPlus.java
 
-CLASSES = MdsPlus/MdsPlusDescriptor.class\
-MdsPlus/MdsPlusException.class\
-MdsPlus/MdsPlusEvents.class\
-MdsPlus/MdsPlusEvent.class\
-MdsPlus.class
+CLASSES = $(SOURCES:.java=.class)
 
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/MdsPlus.jar
 
 clean: 
-	@ $(RM) $(CLASSES)
+	@ if [ -d MdsPlus ]; then (cd MdsPlus; ../$(RM) $(CLASSES)); fi
+	@ $(RM) MdsPlus
 	@ $(RM) @MAKEJAVADIR@classes/MdsPlus.jar
 
 depend: ; @ :

@@ -24,7 +24,7 @@ depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean :
-	@ $(RM) $(OBJECTS)
+	@ $(RM) $(OBJECTS) XmdsWidgetCallbacks.o
 	@ $(RM) @MAKEBINDIR@dwscope
 	@ $(RM) @MAKEBINDIR@dwscope_remote
 	@ $(RM) @MAKEUIDDIR@dwscope.uid

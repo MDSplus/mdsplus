@@ -17,6 +17,7 @@ SOURCES = 			\
 	tcl_add_tag.c		\
 	tcl_clean_datafile.c		\
 	tcl_close.c		\
+	tcl_commands.c	\
 	tcl_compress_datafile.c		\
 	tcl_create_pulse.c	\
 	tcl_decompile.c	\
@@ -50,10 +51,10 @@ EXPORTS = tcl_commands.export
 all:	@MAKEBINDIR@mdstcl @MAKELIBDIR@libtcl_commands@SHARETYPE@
 
 depend: 
-	 @makedepend -- $(CFLAGS) -- $(SOURCES) tcl_commands.c
+	 @makedepend -- $(CFLAGS) -- $(SOURCES) 
 
 clean:
-	@ $(RM) $(OBJECTRS)
+	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
 	@ $(RM) tcl_commands.c
 	@ $(RM) @MAKEBINDIR@mdstcl
