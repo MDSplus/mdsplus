@@ -6,7 +6,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@ @JDK_CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@
+LIBS=@JVM@ @LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = javamds.c ServerSupport.c JavaData.c JavaTrav.c
@@ -31,7 +31,7 @@ install:
 	$(INSTALL) -m 755  @MAKELIBDIR@libJavaMds@SHARETYPE@ @libdir@
 
 @MAKELIBDIR@libJavaMds@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsShr -lTreeShr -lTdiShr @JVM_LIBPATH@ -ljvm $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsShr -lTreeShr -lTdiShr $(LIBS)
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
