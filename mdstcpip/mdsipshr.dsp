@@ -89,6 +89,10 @@ LINK32=link.exe
 # Name "mdsipshr - Win32 Debug"
 # Begin Source File
 
+SOURCE=.\mdsip.pro
+# End Source File
+# Begin Source File
+
 SOURCE=.\mdsipshr.c
 # End Source File
 # Begin Source File

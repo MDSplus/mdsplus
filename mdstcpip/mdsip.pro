@@ -4,6 +4,7 @@ Function MdsIPImage
   case !version.os of
     'vms' : return,'mdsipshr'
     'windows' : return,'mdsipshr'
+	'Win32'	: return,'mdsipshr'
     'AIX' : return,'libMdsIpShr.lib'
     'IRIX' : return,'libMdsIpShr.so'
     'OSF' : return,'libMdsIpShr.so'
@@ -12,7 +13,7 @@ Function MdsIPImage
               if getenv('MDS_SHLIB_PATH') eq '' then setenv,'MDS_SHLIB_PATH=/usr/lib'
               return,getenv('MDS_SHLIB_PATH')+'/libMdsIpShr.sl'
               end
-    else  : message,'MDS is not supported on this platform',/IOERROR 
+    else  : message,'MDS is not supported on this platform',/IOERROR
   endcase
 end
 
@@ -42,27 +43,30 @@ function mds$socket,quiet=quiet,status=status
   return,sock
 end
 
-pro Mds$SendArg,sock,n,idx,arg 
-  s = size(arg) 
-  ndims = s(0) 
-  dims = lonarr(8) 
-  if ndims gt 0 then for i=1,ndims do dims(i-1) = s(i) 
-  dtype = s(ndims + 1) 
-  dtypes =  [0,2,7,8,10,11,12,14,0] 
-  lengths = [0,1,2,4,4,8,8,1,0] 
+function IsWindows
+  return,!version.os eq 'windows' or !version.os eq 'Win32'
+end
+
+pro Mds$SendArg,sock,n,idx,arg
+  s = size(arg)
+  ndims = s(0)
+  dims = lonarr(8)
+  if ndims gt 0 then for i=1,ndims do dims(i-1) = s(i)
+  dtype = s(ndims + 1)
+  dtypes =  [0,2,7,8,10,11,12,14,0]
+  lengths = [0,1,2,4,4,8,8,1,0]
   length = lengths(dtype)
-  dtype = dtypes(dtype) 
+  dtype = dtypes(dtype)
   if dtype eq 14 then begin
     if (n_elements(arg) gt 1) then message,'Argument to MDS$PUT must be a scalar string',/ioerror
     length = strlen(arg)
-    argByVal = 1b 
-    if !version.os eq 'windows' then argByVal = 0b
+    argByVal = 1b
   endif else begin
     argByVal = 0b
   endelse
-  x = call_external(MdsIPImage(),MdsRoutinePrefix()+'SendArg',sock,idx,dtype,n,length,ndims,dims,arg,value=[1b,1b,1b,1b,1b,1b,0b,argByVal]) 
+  x = call_external(MdsIPImage(),MdsRoutinePrefix()+'SendArg',sock,idx,dtype,n,length,ndims,dims,arg,value=[1b,1b,1b,1b,1b,1b,0b,argByVal])
   return
-end 
+end
 
 pro mds$connect,host,status=status,quiet=quiet,port=port
   mds$disconnect,/quiet
@@ -71,7 +75,7 @@ pro mds$connect,host,status=status,quiet=quiet,port=port
   endif else if getenv('mdsip') eq '' then begin
     setenv,'mdsip=8000'
   endif
-  sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'ConnectToMds',host,value=[byte(!version.os ne 'windows')])
+  sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'ConnectToMds',host,value=[byte(not IsWindows())])
   if (sock gt 0) then begin
     status = 1
     x=execute('!MDS_SOCKET = sock')
@@ -80,7 +84,7 @@ pro mds$connect,host,status=status,quiet=quiet,port=port
     status = 0
   endelse
   return
-end  
+end
 
 pro mds$disconnect,status=status,quiet=quiet
   status = 1
@@ -91,7 +95,7 @@ pro mds$disconnect,status=status,quiet=quiet
     tmp = execute('!MDS_SOCKET = 0l')
   endif
   return
-end  
+end
 
 function mds$value,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12, $
              arg13,arg14,arg15,arg16,arg17,arg18,arg19,arg20,arg21,arg22,arg23,arg24,arg25, $
@@ -252,7 +256,7 @@ PRO MDS$SET_DEF,NODE,QUIET=QUIET,STATUS=STATUS
 ON_ERROR,2		;RETURN TO CALLER IF ERROR
 sock = mds$socket(quiet=quiet,status=status)
 if not status then return
-status = call_external(MdsIPImage(),MdsRoutinePrefix()+'MdsSetDefault',sock,string(node),value=[1b,byte(!version.os ne 'windows')])
+status = call_external(MdsIPImage(),MdsRoutinePrefix()+'MdsSetDefault',sock,string(node),value=[1b,byte(not IsWindows())])
 if not status then begin
   if keyword_set(quiet) then message,mds$getmsg(status,quiet=quiet),/continue,/noprint $
                         else message,mds$getmsg(status,quiet=quiet),/continue
@@ -299,7 +303,7 @@ ON_ERROR,2		;RETURN TO CALLER IF ERROR
 ;
 sock = mds$socket(quiet=quiet,status=status)
 if not status then return
-status = call_external(MdsIPImage(),MdsRoutinePrefix()+'MdsOpen',sock,string(experiment),long(shot),value=[1b,byte(!version.os ne 'windows'),1b])
+status = call_external(MdsIPImage(),MdsRoutinePrefix()+'MdsOpen',sock,string(experiment),long(shot),value=[1b,byte(not IsWindows()),1b])
 return
 if not status then begin
   if keyword_set(quiet) then message,mds$getmsg(status,quiet=quiet),/continue,/noprint $
