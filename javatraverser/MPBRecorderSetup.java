@@ -36,7 +36,7 @@ public class MPBRecorderSetup extends DeviceSetup
 		getContentPane().add(deviceDispatch1);
 		deviceDispatch1.setBounds(348,12,131,40);
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(108,108,281,40);
+		deviceButtons1.setBounds(84,108,324,40);
 		//}}
 	}
 

@@ -475,10 +475,6 @@ public class Node
         return "XXXXXXX"; //Dummy name, hopefully will never reach this
     }
             
-        
-   
-   
-   
 }
     
         

@@ -161,7 +161,7 @@ public class ACQD265Setup extends DeviceSetup
 			deviceButtons1.setMethods(tempString);
 		}
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(145,553,281,40);
+		deviceButtons1.setBounds(132,553,312,40);
 		getContentPane().add(deviceDispatch1);
 		deviceDispatch1.setBounds(404,33,136,33);
 		deviceChoice4.setOffsetNid(5);

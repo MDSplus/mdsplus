@@ -131,7 +131,7 @@ public class MPBEncoderSetup extends DeviceSetup
 		channels.setTitleAt(5,"Chan 6");
 		channels.setTitleAt(6,"Chan SW");
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(120,252,281,40);
+		deviceButtons1.setBounds(96,252,336,40);
 		//}}
 	}
 

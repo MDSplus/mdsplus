@@ -297,7 +297,7 @@ public class RFXTimesSetup extends DeviceSetup
 			deviceButtons1.setCheckExpressions(tempString);
 		}
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(228,432,281,40);
+		deviceButtons1.setBounds(216,432,336,40);
 		//}}
 	}
 

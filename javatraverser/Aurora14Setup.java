@@ -260,7 +260,7 @@ public class Aurora14Setup extends DeviceSetup
 		JTabbedPane1.setTitleAt(0,"Channels (Time)");
 		JTabbedPane1.setTitleAt(1,"Channels (Samples)");
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(132,408,281,40);
+		deviceButtons1.setBounds(96,408,336,40);
 		//}}
 	}
 

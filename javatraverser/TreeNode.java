@@ -2,6 +2,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.datatransfer.*;
 
 public class TreeNode extends JLabel
 {
@@ -17,8 +18,19 @@ public class TreeNode extends JLabel
     public static void setSelectedNode(Node sel)
     {
 	    selected = sel;
+ 	    
+	    
     }
     
+	public static void copyToClipboard()
+	{
+	    try {
+	        String fullPath = selected.getInfo().getFullPath();
+	        Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+	        StringSelection content = new StringSelection(fullPath);
+	        cb.setContents(content, null);
+	    }catch(Exception exc){System.err.println("Cannot copy fullPath to Clibboard");}
+	}
     public static void copy()
     {
         copied = selected;

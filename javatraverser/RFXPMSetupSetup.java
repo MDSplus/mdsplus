@@ -56,7 +56,7 @@ public class RFXPMSetupSetup extends DeviceSetup
 			deviceButtons1.setCheckExpressions(tempString);
 		}
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(168,396,281,36);
+		deviceButtons1.setBounds(144,396,348,36);
 		deviceField2.setNumCols(3);
 		deviceField2.setIdentifier("window");
 		deviceField2.setOffsetNid(8);

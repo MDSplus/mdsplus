@@ -92,7 +92,7 @@ public class RFXPulseSetup extends DeviceSetup
 			deviceButtons1.setMethods(tempString);
 		}
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(132,240,281,40);
+		deviceButtons1.setBounds(120,240,336,40);
 		//}}
 	}
 

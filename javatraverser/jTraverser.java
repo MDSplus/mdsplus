@@ -142,9 +142,18 @@ public class jTraverser extends JFrame implements ActionListener
 	addKeyListener(new KeyAdapter() {
 	    public void keyTyped(KeyEvent e)
 	    {
+	        if((e.getModifiers() & Event.CTRL_MASK) != 0)
+	        {
+	            int cc = e.getKeyChar();
+	            //if(e.getKeyChar() == 'c')  
+	            if(e.getKeyChar() == 3)  
+                {
+	                TreeNode.copyToClipboard();
+	            }   
+	        }
 	        if(!tree.isEditable())
 	            return;
-	        if((e.getModifiers() & Event.ALT_MASK) != 0)
+	        if((e.getModifiers() & Event.CTRL_MASK) != 0)
 	        {
 	            if(e.getKeyChar() == 'c')  
 	                TreeNode.copy();

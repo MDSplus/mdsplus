@@ -112,7 +112,7 @@ public class TRCHSetup extends DeviceSetup
 			deviceButtons1.setMethods(tempString);
 		}
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(132,432,281,40);
+		deviceButtons1.setBounds(108,432,324,40);
 		getContentPane().add(JTabbedPane1);
 		JTabbedPane1.setBounds(12,228,516,192);
 		JScrollPane1.setOpaque(true);

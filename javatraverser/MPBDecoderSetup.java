@@ -693,7 +693,7 @@ public class MPBDecoderSetup extends DeviceSetup
 			deviceButtons1.setMethods(tempString);
 		}
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(192,336,281,40);
+		deviceButtons1.setBounds(168,336,324,40);
 		deviceChoice2.setOffsetNid(6);
 		{
 			String[] tempString = new String[2];

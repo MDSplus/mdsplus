@@ -53,7 +53,7 @@ public class VMEWavesSetup extends DeviceSetup
 			deviceButtons1.setCheckExpressions(tempString);
 		}
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(120,312,281,40);
+		deviceButtons1.setBounds(108,312,324,40);
 		getContentPane().add(deviceDispatch1);
 		deviceDispatch1.setBounds(312,12,131,40);
 		getContentPane().add(JTabbedPane1);

@@ -100,7 +100,7 @@ public class RFXDClockSetup extends DeviceSetup
 		getContentPane().add(deviceField10);
 		deviceField10.setBounds(324,228,240,40);
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(156,288,281,40);
+		deviceButtons1.setBounds(144,288,324,40);
 		//}}
 	}
 

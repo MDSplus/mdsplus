@@ -45,7 +45,7 @@ public class RFXPCSetupSetup extends DeviceSetup
 		getContentPane().add(deviceWave1);
 		deviceWave1.setBounds(12,96,564,240);
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(168,348,281,40);
+		deviceButtons1.setBounds(132,348,336,40);
 		deviceField2.setNumCols(3);
 		deviceField2.setIdentifier("pcwindow");
 		deviceField2.setOffsetNid(8);

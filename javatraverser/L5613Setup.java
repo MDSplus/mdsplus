@@ -94,7 +94,7 @@ public class L5613Setup extends DeviceSetup
 		getContentPane().add(deviceField4);
 		deviceField4.setBounds(0,180,456,40);
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(108,216,281,40);
+		deviceButtons1.setBounds(108,216,300,40);
 		//}}
 	}
 

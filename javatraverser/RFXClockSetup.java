@@ -55,7 +55,7 @@ public class RFXClockSetup extends DeviceSetup
 			deviceButtons1.setMethods(tempString);
 		}
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(72,168,281,40);
+		deviceButtons1.setBounds(48,168,324,40);
 		//}}
 	}
 
