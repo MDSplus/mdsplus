@@ -1,4 +1,5 @@
 CFLAGS = -I../include -g
+MOTIF_CFLAGS = -I../include -g -I/usr/X11R6/include -D_NO_DXm
 MISALIGN_CFLAGS = -misalign2
 MISALIGN_LD_FLAGS = -misalign2
 SHARE_TYPE = so
@@ -6,3 +7,5 @@ MAKE_DEPEND = cc $(CFLAGS) -xM {} > .depend \;
 LD_SHARED_LIB_OPTIONS = -G -ldl
 LD = cc
 SOCKET_LIB = -lsocket
+MOTIF_LIBS = -L/usr/X11R6/lib -lMrm -lXm
+X11_LIBS = -lXt -lX11
