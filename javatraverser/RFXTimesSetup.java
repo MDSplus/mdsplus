@@ -419,7 +419,7 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField2.setNumCols(5);
     deviceField2.setIdentifier("START_PWM_TC");
     deviceField2.setShowState(true);
-    deviceField3.setOffsetNid(45);
+    deviceField3.setOffsetNid(39);
     deviceField3.setLabelString("T_STOP_PWM_TC");
     deviceField3.setNumCols(5);
     deviceField3.setIdentifier("STOP_PWM_TC");
