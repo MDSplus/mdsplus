@@ -14,6 +14,7 @@ TreeGetNci.o \
 TreeGetRecord.o \
 TreeOpen.o \
 TreePutRecord.o \
+TreeRemoveNodesTags.o\
 TreeSetDefault.o \
 TreeSetNci.o \
 RemoteAccess.o
