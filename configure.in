@@ -31,9 +31,7 @@ AC_ARG_ENABLE(globus,
                : ${GLOBUS_FLAVOR=gcc32dbg}
                GLOBUS_CFLAGS="-DGLOBUS -I\$(GLOBUS_LOCATION)/include/$GLOBUS_FLAVOR"
                GLOBUS_LIBS="-L\$(GLOBUS_LOCATION)/lib -lglobus_io_$GLOBUS_FLAVOR \
-                            -lglobus_gss_assist_$GLOBUS_FLAVOR -lssl_$GLOBUS_FLAVOR \
-                            -lglobus_ssl_utils_$GLOBUS_FLAVOR -lcrypto_$GLOBUS_FLAVOR \
-                            -lglobus_common_$GLOBUS_FLAVOR -lglobus_gssapi_gsi_$GLOBUS_FLAVOR"
+                            -lglobus_common_$GLOBUS_FLAVOR"
         else
                GLOBUS_CFLAGS=""
                GLOBUS_LIBS=""
