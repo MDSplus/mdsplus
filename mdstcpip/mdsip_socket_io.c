@@ -1,6 +1,29 @@
+#include <libio.h>
 #include "mdsip.h"
 #ifdef GLOBUS
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <fcntl.h>
+#include <pwd.h>
+#include <sys/param.h>
+#include <unistd.h>
+#include <errno.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <sys/socket.h>
+#include <syslog.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <time.h>
+#include <sys/stat.h>
+#include <sys/file.h>
+#include <sys/ioctl.h>
+#include <sys/signal.h>
+#include <sys/wait.h>
 #include "globus_io.h"
+#include "globus_l_io.h"
 struct handle_struct { globus_io_handle_t handle;
                        int in_use;
                        MsgHdr *header;
@@ -86,6 +109,23 @@ void RegisterRead(SOCKET s)
   if (status != GLOBUS_SUCCESS) 
     CloseSocket(s);
 }
+
+char *GetName(globus_io_handle_t *handle)
+{
+    gss_ctx_id_t context = 0;
+    OM_uint32 minor_status = 0;
+    gss_name_t src_name = 0;
+    gss_name_t targ_name = 0;
+    int lifetime = 0;
+    unsigned int status;
+    gss_buffer_desc gss_buffer = {0,0};
+    gss_OID gss_oid = 0;
+    globus_io_tcp_get_security_context(handle,&context);
+    gss_inquire_context(&minor_status, context, &src_name, &targ_name, 0, 0,0,0,0);
+    gss_display_name(&minor_status,src_name,&gss_buffer,&gss_oid);
+    return (char *)gss_buffer.value;
+}
+
 
 void ConnectReceived(void *callback_arg, globus_io_handle_t *listener_handle, globus_result_t result_in)
 {
@@ -282,6 +322,7 @@ int SocketRecv(SOCKET s, char *bptr, int num,int oob)
   int bytes_to_read = num;
   char *ptr = bptr;
   globus_io_handle_t *handle = GetHandle(s);
+  globus_result_t status;
   globus_size_t nbytes_read = 0;
   /***************** oob not implemented yet. need documentation on globus_io_recv ***************/
   if (iohandles[s-1].header && (num >= sizeof(MsgHdr)))
@@ -294,13 +335,19 @@ int SocketRecv(SOCKET s, char *bptr, int num,int oob)
   }
   if (bytes_to_read <= 0)
     return num;
-  if (globus_io_read(handle, (globus_byte_t *)ptr, (globus_size_t)bytes_to_read,(globus_size_t)bytes_to_read,&nbytes_read) == GLOBUS_SUCCESS)
+  if ((status = globus_io_read(handle, (globus_byte_t *)ptr, 
+           (globus_size_t)bytes_to_read,(globus_size_t)bytes_to_read,&nbytes_read)) == GLOBUS_SUCCESS)
   {
     if (bytes_to_read != nbytes_read) printf("read num=%d nbytes_read=%d\n",num,nbytes_read);
     return((int)num);
   }
   else
+  {
+    char *errstr = 0;
+    errstr = globus_object_printable_to_string(globus_error_get(status));
+    fprintf(stderr,"Error reading:\n\t%s",errstr);
     return(-1);
+  }
 #endif
 }   
 
@@ -553,6 +600,92 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
 }
 #endif
 
+#ifdef GLOBUS
+globus_result_t globus_io_tcp_accept_inetd(globus_io_attr_t *attr,   globus_io_handle_t *handle)
+{
+  static FILE *   fdout;
+  globus_result_t result;
+  OM_uint32 major_status = 0;
+  OM_uint32 minor_status = 0;
+  OM_uint32 ret_flags = 0;
+  int       token_status = 0;
+  globus_i_io_mutex_lock();
+  result = globus_i_io_initialize_handle(handle,GLOBUS_IO_HANDLE_TYPE_TCP_CONNECTED);
+  result = globus_i_io_copy_tcpattr_to_handle(attr,handle);
+  handle->fd = 0;
+  handle->state=GLOBUS_IO_HANDLE_STATE_CONNECTED;
+  globus_i_io_mutex_unlock();
+  major_status = globus_gss_assist_acquire_cred_ext(&minor_status,
+                              0,
+                              GSS_C_INDEFINITE,
+                              GSS_C_NO_OID_SET,
+                              GSS_C_ACCEPT,
+                              &handle->securesocket_attr.credential,
+                              NULL,
+                              NULL);
+  if (major_status != GSS_S_COMPLETE)
+  {
+      globus_gss_assist_display_status(stderr,
+                            "GSS failed getting server credentials: ",
+                            major_status,
+                            minor_status,
+                            0);
+      exit(0);
+  }
+  fdout = fdopen(dup(0),"w");
+  setbuf(fdout,NULL);
+  major_status = globus_gss_assist_accept_sec_context(&minor_status,
+                       &handle->context,
+                       handle->securesocket_attr.credential,
+						      0,
+						      /*
+                       client_name,
+						      */
+                       &ret_flags,
+                       NULL,            /* don't need user_to_user */
+                       &token_status,
+    		       &handle->delegated_credential,
+                       globus_gss_assist_token_get_fd,
+                       (void *)stdin,
+                       globus_gss_assist_token_send_fd,
+                       (void *)fdout);
+  if (major_status != GSS_S_COMPLETE)
+  {
+        globus_gss_assist_display_status(stdout,
+                "GSS authentication failure ",
+                major_status,
+                minor_status,
+                token_status);
+	exit(0);
+  }
+  result = globus_i_io_setup_nonblocking(handle);
+  if(handle->securesocket_attr.channel_mode !=
+       GLOBUS_IO_SECURE_CHANNEL_MODE_CLEAR)
+  {
+	OM_uint32			max_input_size;
+		
+	major_status =
+            gss_wrap_size_limit(&minor_status,
+			        handle->context,
+			        handle->securesocket_attr.protection_mode ==
+                                    GLOBUS_IO_SECURE_PROTECTION_MODE_PRIVATE,
+				GSS_C_QOP_DEFAULT,
+				1<<30,
+				&max_input_size);
+	if(major_status != GLOBUS_SUCCESS)
+	{
+	  return (void *)-1;
+	}
+	handle->max_wrap_length = (globus_size_t) max_input_size;
+		
+	globus_fifo_init(&handle->wrapped_buffers);
+	globus_fifo_init(&handle->unwrapped_buffers);
+  }
+  return GLOBUS_SUCCESS;
+}
+
+#endif
+
 int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *), void (*DoMessage_in)(SOCKET s))
 {
   SOCKET s=-1;
@@ -577,28 +710,40 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
   (*AddClient)(s,&sin,0);
   return -1;
 #else
-  unsigned short netport = htons(port);
   globus_io_handle_t *handle = NewHandle(&s);
   globus_io_secure_authorization_data_t  auth_data;
   static int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
   globus_io_attr_t attr;
-  globus_io_tcpattr_init(&attr);
-  globus_io_attr_set_socket_rcvbuf(&attr,recvbuf);
-  globus_io_attr_set_socket_sndbuf(&attr,sendbuf);
-  globus_io_attr_set_tcp_nodelay(&attr,GLOBUS_TRUE);
-  globus_io_attr_set_socket_reuseaddr(&attr,GLOBUS_TRUE);
-  globus_io_secure_authorization_data_initialize(&auth_data);
-  globus_io_secure_authorization_data_set_callback(&auth_data,AuthenticationCallback,0);
-  globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
-  globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_CALLBACK,&auth_data);
-  globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
-/*
+  globus_result_t result = 0;
+  int host[4];
+  int in_host;
+  struct sockaddr_in sin;
+  unsigned int status;
+  result = globus_io_tcpattr_init(&attr);
+  result = globus_io_attr_set_socket_rcvbuf(&attr,recvbuf);
+  result = globus_io_attr_set_socket_sndbuf(&attr,sendbuf);
+  result = globus_io_attr_set_tcp_nodelay(&attr,GLOBUS_TRUE);
+  result = globus_io_attr_set_socket_reuseaddr(&attr,GLOBUS_TRUE);
+  result = globus_io_secure_authorization_data_initialize(&auth_data);
+  result = globus_io_secure_authorization_data_set_callback(&auth_data,AuthenticationCallback,0);
+  result = globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
+  result = globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_CALLBACK,&auth_data);
+  result = globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
+  /*
   globus_io_attr_set_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
-*/
-  globus_io_tcp_posix_convert( 0,&attr,handle);
+  */
+  result = globus_io_tcp_accept_inetd(&attr,handle);
+  result = globus_io_tcpattr_destroy(&attr);
+  if ((result = globus_io_tcp_get_remote_address(handle,host,&sin.sin_port)) != GLOBUS_SUCCESS)
+  {
+    globus_libc_printf("Error accepting client connection:\n\t");
+    globus_libc_printf(globus_object_printable_to_string(globus_error_get(result)));
+  }
+  in_host = host[0] | (host[1] << 8) | (host[2] << 16) | (host[3] << 24);
+  memcpy(&sin.sin_addr,&in_host,sizeof(host));
   AddClient = AddClient_in;
   DoMessage = DoMessage_in;
-  (*AddClient)(s,0,0);
+  (*AddClient)(s,&sin,GetName(handle));
   return -1;
 #endif
 }
