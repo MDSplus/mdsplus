@@ -218,6 +218,7 @@ clean:
 	@ $(RM) so_locations
 	@ $(RM) @MAKELIBDIR@libMitDevices.a
 	@ $(RM) @MAKESHLIBDIR@libMitDevices@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@
 	@ $(RM)	@MAKESHLIBDIR@libMIT\$$DEVICES@SHARETYPE@
 	@ $(RM) @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@
 
