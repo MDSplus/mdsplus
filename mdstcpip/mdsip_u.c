@@ -1404,7 +1404,7 @@ static void ParseCommand(int argc, char **argv,char **portname, short *port, cha
 	  case 's': SetMode('s',mode); break;
 	  case 'i': SetMode('i',mode); break;
           case 'r': SetMode('r',mode); break;
-	  case 'h': if (argc > (i+1)) *hostfile = strcpy((char *)malloc(strlen(argv[++i])+1),argv[i]); else PrintHelp(0); break;
+	  case 'h': if (argc > (i+1)) {i++; *hostfile = strcpy((char *)malloc(strlen(argv[i])+1),argv[i]);} else PrintHelp(0); break;
 	  case 'c': *flags = *flags & (~SUPPORTS_COMPRESSION); break;
 	  case '-': i += ParseOption(&option[2],&argv[i+1],argc-i-1,portname,port,hostfile,mode,flags); break;
 #ifdef HAVE_WINDOWS_H
