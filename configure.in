@@ -38,6 +38,7 @@ hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
        LINKSHARED="-b";
        FOR_LDFLAGS="-v -L/usr/lib/pa1.1 -lcl -lf";
        LIBPATH="SHLIB_PATH";
+       IDL_BIN_SUF="hp";
        SHARETYPE=".sl";;
 mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        FFLAGS="$FFLAGS -D_BSD_SIGNALS -KPIC";
