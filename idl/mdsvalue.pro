@@ -75,37 +75,46 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
     
     
   endif else begin
-    
-    anscreate_pre = bytarr(512)
-    anscreate_post = bytarr(512)
-    answer = '*'
-    status = 0L
-    cmd = 'status = call_external(value=[1b,bytarr('+strtrim(n_params()*2,2)+')],MdsIdlImage(),"IdlMdsValue",expression,anscreate_pre,anscreate_post'
-    args = n_params() - 1
-    for i=1,args do begin
-      arg = 'arg'+strtrim(i,2)
-      cmd = cmd + ',size('+arg+'),'+arg
-    endfor
-    cmd = cmd + ')'
-    msg = ''
-    dummy = execute(cmd)
-    if dummy then begin
-      if status then begin
-        dummy = execute(string(anscreate_pre))
-        if dummy then dummy = call_external(MdsIdlImage(),"IdlGetAns",answer,value=[0b])
-        if anscreate_post(0) ne 0 then dummy = execute(string(anscreate_post))
-      endif else begin
-        msg = 'Error evaluating expression'
-      endelse
+
+    if (!VERSION.OS eq 'vms') then begin
+
+      cmd = 'answer = mds$value(expression'
+      for i=1,n_params()-1 do cmd=cmd+',arg'+strtrim(i,2)
+      cmd = cmd+',quiet=quiet,status=status)'
+      dummy = execute(cmd)
+
     endif else begin
-      msg = 'Error in call external'
+      anscreate_pre = bytarr(512)
+      anscreate_post = bytarr(512)
+      answer = '*'
+      status = 0L
+      cmd = 'status = call_external(value=[1b,bytarr('+strtrim(n_params()*2,2)+')],MdsIdlImage(),"IdlMdsValue",expression,anscreate_pre,anscreate_post'
+      args = n_params() - 1
+      for i=1,args do begin
+        arg = 'arg'+strtrim(i,2)
+        cmd = cmd + ',size('+arg+'),'+arg
+      endfor
+      cmd = cmd + ')'
+      msg = ''
+      dummy = execute(cmd)
+      if dummy then begin
+        if status then begin
+          dummy = execute(string(anscreate_pre))
+          if dummy then dummy = call_external(MdsIdlImage(),"IdlGetAns",answer,value=[0b])
+          if anscreate_post(0) ne 0 then dummy = execute(string(anscreate_post))
+        endif else begin
+          msg = 'Error evaluating expression'
+        endelse
+      endif else begin
+        msg = 'Error in call external'
+      endelse
+      if not status then begin
+        if keyword_set(quiet) then $
+            message,msg,/continue,/noprint $
+        else $
+            message,msg,/continue
+      endif
     endelse
-    if not status then begin
-      if keyword_set(quiet) then $
-          message,msg,/continue,/noprint $
-      else $
-          message,msg,/continue
-    endif
   endelse
 
   return,answer

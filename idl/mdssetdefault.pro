@@ -47,15 +47,20 @@ pro MdsSetDefault,node,quiet=quiet,status=status
 
   endif else begin
 
-    status=call_external(MdsIdlImage(),'IdlMdsSetDefault',strtrim(node,2),value=[1b])
-    if not status then begin
-      msg = 'Error setting default to '+strtrim(node,2) 
-      if keyword_set(quiet) then $
-          message,msg,/continue,/noprint $
-      else $
-          message,msg,/continue
-    endif
+    if (!VERSION.OS eq 'vms') then begin
 
+      mds$set_def,node,quiet=quiet,status=status
+
+    endif else begin
+      status=call_external(MdsIdlImage(),'IdlMdsSetDefault',strtrim(node,2),value=[1b])
+      if not status then begin
+        msg = 'Error setting default to '+strtrim(node,2) 
+        if keyword_set(quiet) then $
+            message,msg,/continue,/noprint $
+        else $
+            message,msg,/continue
+      endif
+    endelse
   endelse
 
 end

@@ -1,5 +1,9 @@
 pro setenv_,envstring
-if (!version.os ne 'MacOS') then setenv,envstring
+case (!version.os) of
+  'MacOS' :
+  'vms' : 
+  else : setenv,envstring
+endcase
 end
 
 Function MdsIPImage
@@ -93,7 +97,7 @@ pro mds$connect,host,status=status,quiet=quiet,port=port
   endif else if getenv('mdsip') eq '' then begin
     setenv_,'mdsip=8000'
   endif
-  !ERROR_STATE.MSG="About to connect"
+  if (!version.release ne '5.0.3') then dummy = execute('!ERROR_STATE.MSG="About to connect"')
   sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'ConnectToMds',host,value=[byte(!version.os ne 'windows')])
   sockmin=1l-(!version.os eq 'MacOS')
   if (sock ge sockmin) then begin
@@ -117,277 +121,6 @@ pro mds$disconnect,status=status,quiet=quiet
   return
 end
 
-function mds$value,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12, $
-             arg13,arg14,arg15,arg16,arg17,arg18,arg19,arg20,arg21,arg22,arg23,arg24,arg25, $
-             arg26,arg27,arg28,arg29,arg30,arg31,arg32,status=status,quiet=quiet
-  sock = mds$socket(status=status,quiet=quiet)
-  if not status then return,0
-  n = n_params()
-  Mds$SendArg,sock,n,0,expression
-  for i=1,n-1 do x = execute('Mds$SendArg,sock,n,i,arg'+strtrim(i,2))
-  dtype = 0b
-  ndims = 0b
-  dims = lonarr(8)
-  numbytes = 0l
-  answer = 0
-  length = 0
-  ansptr = 0l
-;Not sure here... hope Mac acts like others, if not maybe try OSF way
-  if !version.os eq 'OSF' then ansptr = lonarr(2)
-;;;;  status = call_external(MdsIPImage(),MdsRoutinePrefix()+'GetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
-;;; temporary fix Jeff Schachte 98.05.13
-  status = call_external(MdsIPImage(),MdsGetAnsFn(),sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
-  if numbytes gt 0 then begin
-    if dtype eq 14 then begin
-      if ndims ne 0 then begin
-        s = 'answer = bytarr(length,'
-        for i=0,ndims-1 do s = s + 'dims(' + strtrim(i,2) + '),'
-        strput,s,')',strlen(s)-1
-        x = execute(s)
-      endif else begin
-        answer = bytarr(length)
-      endelse
-      MdsMemCpy,answer,ansptr,numbytes
-      answer = string(answer)
-    endif else begin
-      if ndims ne 0 then begin
-        s = 'answer = bytarr('
-        for i=0,ndims-1 do s = s + 'dims(' + strtrim(i,2) + '),'
-        strput,s,')',strlen(s)-1
-        x = execute(s)
-      endif else answer = 0b
-      case dtype of
-      2: answer = answer
-      3: answer = fix(answer)
-      4: answer = long(answer)
-      7: answer = fix(answer)
-      8: answer = long(answer)
-      10: answer = float(answer)
-      11: answer = double(answer)
-      12: answer = complex(answer)
-      else: message,'Data type '+string(dtype)+'  is not supported',/continue
-      endcase
-      MdsMemCpy,answer,ansptr,numbytes
-    endelse
-    if not (status and 1) then begin
-      if keyword_set(quiet) then message,answer,/noprint,/continue else message,answer,/continue
-      answer = 0
-    endif
-  endif else begin
-    if (status and 1) then status = 265519162
-    if not keyword_set(quiet) then message,'Error evaluating expression',/continue
-    answer = 0
-  endelse
-  return,answer
-end
-
-pro mds$put,node,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12, $
-             arg13,arg14,arg15,arg16,arg17,arg18,arg19,arg20,arg21,arg22,arg23,arg24,arg25, $
-             arg26,arg27,arg28,arg29,arg30,arg31,arg32,status=status,quiet=quiet
-  sock = mds$socket(status=status,quiet=quiet)
-  if not status then return
-  n = n_params()
-  lexpression = 'mdslib->mds$put('
-  for i=0,n-1 do lexpression = lexpression + 'descr($'+strtrim(i+1,2)+'),'
-  strput,lexpression,')',strlen(lexpression)-1
-  mds$sendarg,sock,n+1,0,lexpression
-  mds$sendarg,sock,n+1,1,node
-  mds$sendarg,sock,n+1,2,expression
-  for i=1,n-2 do x = execute('mds$sendarg,sock,n+1,i+2,arg'+strtrim(i,2))
-  dtype = 0b
-  ndims = 0b
-  dims = lonarr(8)
-  numbytes = 0l
-  answer = 0
-  length = 0
-  ansptr = 0l
-;;;;  status = call_external(MdsIPImage(),MdsRoutinePrefix()+'GetAnsInfo',sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
-;;; temporary fix by Jeff Schachter 98.05.13
-  status = call_external(MdsIPImage(),MdsGetAnsFn(),sock,dtype,length,ndims,dims,numbytes,ansptr,value=[1,0,0,0,0,0,0])
-  if numbytes gt 0 then begin
-    if dtype eq 14 then begin
-      if ndims ne 0 then begin
-        s = 'answer = bytarr(length,'
-        for i=0,ndims-1 do s = s + 'dims(' + strtrim(i,2) + '),'
-        strput,s,')',strlen(s)-1
-        x = execute(s)
-      endif else begin
-        answer = bytarr(length)
-      endelse
-      MdsMemCpy,answer,ansptr,numbytes
-      answer = string(answer)
-    endif else begin
-      if ndims ne 0 then begin
-        s = 'answer = bytarr('
-        for i=0,ndims-1 do s = s + 'dims(' + strtrim(i,2) + '),'
-        strput,s,')',strlen(s)-1
-        x = execute(s)
-      endif else answer = 0b
-      case dtype of
-      2: answer = answer
-      3: answer = fix(answer)
-      4: answer = long(answer)
-      7: answer = fix(answer)
-      8: answer = long(answer)
-      10: answer = float(answer)
-      11: answer = double(answer)
-      12: answer = complex(answer)
-      else: message,'Data type '+string(dtype)+'  is not supported',/ioerror
-      endcase
-      MdsMemCpy,answer,ansptr,numbytes
-    endelse
-    status = answer
-  endif else begin
-    if not keyword_set(quiet) then message,'Error evaluating expression',/IOERROR
-    answer = -1
-  endelse
-  return
-end
-
-function mds$getmsg,status,quiet=quiet
-  return,MDS$VALUE('getmsg($)', status,quiet=quiet)
-end
-
-PRO MDS$SET_DEF,NODE,QUIET=QUIET,STATUS=STATUS
-;
-;+
-; NAME:
-;	MDS$SET_DEF
-; PURPOSE:
-;	Set default to a node in an MDSplus tree
-; CATEGORY:
-;	MDSPLUS
-; CALLING SEQUENCE:
-;	MDS$SET_DEF,NODE
-; INPUT PARAMETERS:
-;	node = Node specification.
-; Keywords:
-;       QUIET = prevents IDL error if TCL command fails
-;       STATUS = return status, low bit set = success
-; OUTPUTS:
-;       istat = return status, low bit set = success
-; COMMON BLOCKS:
-;	None.
-; SIDE EFFECTS:
-;	None.
-; RESTRICTIONS:
-;	None.
-; PROCEDURE:
-;	Straightforward.  Makes a call to MDSplus shared image library
-;       procedure MDS$SET_DEFAULT and checks for errors.
-; MODIFICATION HISTORY:
-;	 VERSION 1.0, CREATED BY T.W. Fredian, April 22,1991
-;-
-;
-ON_ERROR,2		;RETURN TO CALLER IF ERROR
-sock = mds$socket(quiet=quiet,status=status)
-if not status then return
-status = call_external(MdsIPImage(),MdsRoutinePrefix()+'MdsSetDefault',sock,string(node),value=[1b,byte(not IsWindows())])
-if not status then begin
-  if keyword_set(quiet) then message,mds$getmsg(status,quiet=quiet),/continue,/noprint $
-                        else message,mds$getmsg(status,quiet=quiet),/continue
-endif
-return
-end
-
-PRO MDS$OPEN,EXPERIMENT,SHOT,QUIET=QUIET,STATUS=STATUS
-;
-;+
-; NAME:
-;	MDS$OPEN
-; PURPOSE:
-;	Open an MDSplus experiment model or pulse file
-; CATEGORY:
-;	MDSPLUS/IP
-; CALLING SEQUENCE:
-;	MDS$OPEN,experiment,shot[,/QUIET][,STATUS=ISTAT]
-; INPUT PARAMETERS:
-;	experiment = name of the experiment whose model or pulse
-;                    file you want to open.
-;       shot       = shot number of the file.
-; Keywords:
-;       QUIET = prevents IDL error if TCL command fails
-;       STATUS = return status, low bit set = success
-; OUTPUTS:
-;       istat = return status, low bit set = success
-; COMMON BLOCKS:
-;	None.
-; SIDE EFFECTS:
-;	None.
-; RESTRICTIONS:
-;	None.
-; PROCEDURE:
-;	Straightforward.  Makes a call to MDSplus shared image library
-;       procedure MDS$OPEN and checks for errors.
-; MODIFICATION HISTORY:
-;	 VERSION 1.0, CREATED BY T.W. Fredian, April 22,1991
-;-
-;
-ON_ERROR,2		;RETURN TO CALLER IF ERROR
-;
-; Determine whether experiment and shot were provided.
-;
-sock = mds$socket(quiet=quiet,status=status)
-if not status then return
-status = call_external(MdsIPImage(),MdsRoutinePrefix()+'MdsOpen',sock,string(experiment),long(shot),value=[1b,byte(not IsWindows()),1b])
-return
-if not status then begin
-  if keyword_set(quiet) then message,mds$getmsg(status,quiet=quiet),/continue,/noprint $
-                        else message,mds$getmsg(status,quiet=quiet),/continue
-endif
-RETURN
-END
-
-PRO MDS$CLOSE,EXPERIMENT,SHOT,QUIET=QUIET,STATUS=STATUS
-;
-;+
-; NAME:
-;	MDS$CLOSE (TCPIP version)
-; PURPOSE:
-;	Close an open MDSplus experiment model or pulse file
-; CATEGORY:
-;	MDSPLUS/IP
-; CALLING SEQUENCE:
-;	MDS$CLOSE[,experiment,shot][,/QUIET,STATUS=ISTAT]
-; OPTIONAL INPUT PARAMETERS:
-;	experiment = name of the experiment used in an invocation
-;                    of MDS$OPEN.
-;       shot       = shot number of the file.
-;       If both experiment and shot are omitted, all files will be
-;       closed.
-; Keywords:
-;       QUIET = prevents IDL error if TCL command fails
-;       STATUS = return status, low bit set = success
-; OUTPUTS:
-;       istat = return status, low bit set = success
-; OUTPUTS:
-;	None.
-; COMMON BLOCKS:
-;	None.
-; SIDE EFFECTS:
-;	None.
-; RESTRICTIONS:
-;	None.
-; PROCEDURE:
-;	Straightforward.  Makes a call to MDSplus shared image library
-;       procedure MDS$CLOSE and checks for errors.
-; MODIFICATION HISTORY:
-;	 VERSION 1.0, CREATED BY T.W. Fredian, April 22,1991
-;-
-;
-ON_ERROR,2		;RETURN TO CALLER IF ERROR
-;
-; Determine whether experiment and shot were provided.
-;
-sock = mds$socket(quiet=quiet,status=status)
-if not status then return
-sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'MdsClose',sock,value=[1b])
-if not status then begin
-  if keyword_set(quiet) then message,mds$getmsg(status,quiet=quiet),/continue,/noprint $
-                        else message,mds$getmsg(status,quiet=quiet),/continue
-endif
-RETURN
-END
 
 pro connect,host,_EXTRA=e
 	mds$connect,host,_EXTRA=e
@@ -400,9 +133,9 @@ end
 pro mdsconnect,host,status=status,quiet=quiet,port=port
   mdsdisconnect,/quiet
   if n_elements(port) ne 0 then begin
-    setenv,'mdsip='+strtrim(port,2)
+    setenv_,'mdsip='+strtrim(port,2)
   endif else if getenv('mdsip') eq '' then begin
-    setenv,'mdsip=8000'
+    setenv_,'mdsip=8000'
   endif
 
   sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'ConnectToMds',host,value=[byte(!version.os ne 'windows')])
