@@ -197,6 +197,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
           }
         }
       }
+      free(path);
       if (srcfile)
       {
         path = MaskReplace(pathin,tree_lower,shot);
@@ -249,6 +250,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
             part = &path[i+1];
           }
         }
+        free(path);
         if (dstfile)
         {
           status = CopyFile(srcfile,dstfile,0);
@@ -259,7 +261,6 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
         free(srcfile);
       }
     }
-    free(path);
     TranslateLogicalFree(pathin);
   }
   return status;

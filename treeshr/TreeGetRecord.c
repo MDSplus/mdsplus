@@ -166,6 +166,7 @@ static int OpenDatafileR(TREE_INFO *info)
 #else
     df_ptr->get = open(filename,O_RDONLY | O_BINARY | O_RANDOM);
 #endif
+    free(filename);
     status = (df_ptr->get == -1) ? TreeFAILURE : TreeNORMAL;
     if (df_ptr->get == -1)
       df_ptr->get = 0;

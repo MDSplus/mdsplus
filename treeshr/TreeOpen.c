@@ -46,10 +46,10 @@ static void RemoveBlanksAndUpcase(char *out, char *in);
 static int CloseTopTree(PINO_DATABASE *dblist, int call_hook);
 static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *subtree_list);
 static int CreateDbSlot(PINO_DATABASE **dblist, char *tree, int shot, int editting);
-static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, int *remote_file, void **file_handle, int report);
-static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote_file);
+static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, int *nomap, void **file_handle, int report);
+static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int nomap);
 static int ReadTree(TREE_INFO *info, int edit_flag);
-static int GetVmForTree(TREE_INFO *info);
+static int GetVmForTree(TREE_INFO *info,int nomap);
 static int MapTree(char *tree, int shot, TREE_INFO *info, int edit_flag, int remote);
 static void SubtreeNodeConnect(NODE *parent, NODE *subtreetop);
 
@@ -202,9 +202,9 @@ int _TreeClose(void **dbid, char *tree, int shot)
 
 static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 {
-	TREE_INFO *local_info = dblist ? dblist->tree_info : 0;
-	TREE_INFO *previous_info;
-	int       status;
+  TREE_INFO *local_info = dblist ? dblist->tree_info : 0;
+  TREE_INFO *previous_info;
+  int       status;
 
 	status = TreeNORMAL;
 	if (dblist)
@@ -271,18 +271,13 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 							MDSEventCan(local_info->rundown_id);
 						if (local_info->section_addr[0])
 						{
-#if defined(__osf__) && !defined(vxWorks)
-							if (local_info->channel)
+                                                  if (local_info->channel)
 							{ int status;
 							  close(local_info->channel);
 							  status = munmap(local_info->section_addr[0],local_info->alq * 512);
-							  /*
-		                                          mmap(local_info->section_addr[0],local_info->alq * 512,PROT_READ | PROT_WRITE, 
-                                                                        MAP_ANONYMOUS | MAP_PRIVATE | MAP_FIXED, -1, 0);
-							  */
 							}
-#endif
-							free(local_info->vm_addr);
+							if (local_info->vm_addr)
+                                                          free(local_info->vm_addr);
 						}
 						TreeWait(local_info);
 						if (local_info->data_file)
@@ -842,7 +837,7 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
 static int MapTree(char *tree, int shot, TREE_INFO *info, int edit_flag, int report)
 {
 	int       status;
-	int       remote_file;
+	int       nomap;
 	void     *file_handle;
 
 
@@ -852,14 +847,14 @@ static int MapTree(char *tree, int shot, TREE_INFO *info, int edit_flag, int rep
 	section on the tree file.
 	*******************************************/
 
-	status = OpenTreefile(tree, shot, info, edit_flag, &remote_file, &file_handle, report);
+	status = OpenTreefile(tree, shot, info, edit_flag, &nomap, &file_handle, report);
 	if (status == TreeNORMAL)
-		status = MapFile(file_handle, info, edit_flag, remote_file);
+		status = MapFile(file_handle, info, edit_flag, nomap);
 	free(file_handle);
 	return status;
 }
 
-static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, int *remote_file, void **file_handle, int report)
+static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, int *nomap, void **file_handle, int report)
 {
 	int       status;
 
@@ -875,7 +870,7 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, in
 		fseek(*file, 0, SEEK_SET);
 		status = TreeNORMAL;
 		info->filespec=resnam;
-		*remote_file = info->channel == 0;
+		*nomap = info->channel == 0;
 	}
 	else 
 		status = TreeFILE_NOT_FOUND;
@@ -907,7 +902,7 @@ void FixupHeader(TREE_HEADER *hdr)
 #define FixupHeader(arg)
 #endif
 
-static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote_file)
+static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int nomap)
 {
 	int       status;
 
@@ -916,10 +911,10 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
 	be mapped into.
 	********************************************/
 
-	status = GetVmForTree(info);
+	status = GetVmForTree(info,nomap);
 	if (status == TreeNORMAL)
 	{
-		if (remote_file)
+		if (nomap)
 		{
 			fread((void *)info->section_addr[0], 512, info->alq, *(FILE **)file_handle);
 			fclose(*(FILE **)file_handle);
@@ -927,15 +922,6 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
 		}
 		else
 		{
-
-#if defined(xxxxx__osf__) && !defined(vxWorks)
-
-                        void *addr = mmap(info->section_addr[0],info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE | MAP_FIXED, 
-                            info->channel, 0);
-                        status = addr != (void *)-1;
-                        if (!status)
-                          printf("Error mapping file - errno = %d\n",errno);
-#elif !defined(_WIN32) /* defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX) */
 #ifndef MAP_FILE
 #define MAP_FILE 0
 #endif
@@ -944,7 +930,6 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
                         if (!status)
                           printf("Error mapping file - errno = %d\n",errno);
 
-#endif
                 }
 		/***********************************************
 		If we successfully mapped the file, see if
@@ -967,38 +952,27 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
 			TreeEstablishRundownEvent(info);
 			status = TreeNORMAL;
 		}
-		else
-			free(info->vm_addr);
+		else if (info->vm_addr)
+                  free(info->vm_addr);
 	}
 	return status;
 }
 
-static int GetVmForTree(TREE_INFO *info)
+static int GetVmForTree(TREE_INFO *info,int nomap)
 {
-	int status;
-#if defined(_SC_PAGE_SIZE)
-#define PAGE_SIZE sysconf(_SC_PAGE_SIZE)/512
-#elif !defined(PAGE_SIZE)
-#define PAGE_SIZE 1
-#endif
-        int page_size = PAGE_SIZE;
-#define align(addr)  addr = (((unsigned long)addr) % (page_size * 512)) ? \
-	addr - (((unsigned long)addr) % (page_size * 512)) + page_size * 512 : addr
-
-	info->vm_pages = ((info->alq + page_size)/page_size * page_size) + page_size;
-	info->vm_addr = malloc(info->vm_pages*512);
-	if (info->vm_addr)
-	{
-		info->section_addr[0] = info->vm_addr;
-		align(info->section_addr[0]);
-		info->section_addr[1] = info->section_addr[0] + info->alq * 512 - 1;
-		align(info->section_addr[1]);
-		info->section_addr[1]--;
-		status = TreeNORMAL;
-	}
-	else
-		status = TreeFAILURE;
-	return status;
+  int status = TreeNORMAL;
+  info->vm_pages = info->alq;
+  if (nomap)
+  {
+    info->vm_addr = malloc(info->vm_pages*512);
+    if (info->vm_addr)
+      info->section_addr[0] = info->vm_addr;
+    else
+      status = TreeFAILURE;
+  }
+  else
+    info->vm_addr = 0;
+  return status;
 }
 
 

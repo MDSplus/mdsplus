@@ -703,7 +703,8 @@ static int OpenNciR(TREE_INFO *info)
 #else
 		info->nci_file->get = open(filename,O_RDONLY | O_BINARY | O_RANDOM);
 #endif
-        status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
+                free(filename);
+                status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
 		if (!(status & 1))
 		{
 			free(info->nci_file);
