@@ -126,5 +126,63 @@ if [ -r /etc/mdsip.hosts ]; then
   cp /usr/local/mdsplus/etc/mdsip.hosts /etc/ 
 fi
 ;;
+HP-UX*)
+#
+# HP-UX post install script
+#
+# Put symlinks in /usr/local/lib to all MDSplus shared libraries
+#
+echo Configuring mdsplus libraries
+ln -sf /usr/local/mdsplus/lib/*.sl /usr/local/lib
+#
+# Add /usr/local/mdsplus/man to /etc/MANPATH
+#
+echo Configuring mdsplus man pages
+if [ -r /etc/MANPATH ]; then
+mv /etc/MANPATH /etc/MANPATH_pre_mdsplus
+echo `cat /etc/MANPATH_pre_mdsplus`:/usr/local/mdsplus/man > /etc/MANPATH
+else
+echo /usr/share/man:/usr/contrib/man:/usr/local/man:/usr/local/mdsplus/man > /etc/MANPATH
+fi
+chmod 444 /etc/MANPATH
+#
+# Add mdsip to services
+#
+echo Adding mdsip MDSplus data server
+if grep "^mdsip " /etc/services >/dev/null
+then
+        true
+else
+        echo "mdsip    8000/tcp # Added by package mdsplus" >> /etc/services
+fi
+#
+# Add mdsipd to inetd.conf
+#
+/usr/bin/X11/mkdirhier /var/log/mdsplus/mdsipd
+if grep "^mdsip " /etc/inetd.conf > /dev/null
+then
+  true
+else
+  echo "mdsip stream	tcp	nowait root /usr/local/mdsplus/bin/mdsipd mdsipd mdsip /var/log/mdsplus/mdsipd" >> /etc/inetd.conf
+  kill -HUP `/bin/ps -e | /bin/grep inetd | /bin/grep -v grep | /bin/awk '{print $1}'`
+fi
+echo Adding MDSplus login scripts
+if grep "^. /usr/local/mdsplus/etc/profile.d/mdsplus.sh" /etc/profile > /dev/null
+then
+  true
+else
+  echo ". /usr/local/mdsplus/etc/profile.d/mdsplus.sh" >> /etc/profile
+fi
+if grep "^source /usr/local/mdsplus/etc/profile.d/mdsplus.csh" /etc/csh.login > /dev/null
+then
+  true
+else
+  echo "source /usr/local/mdsplus/etc/profile.d/mdsplus.csh" >> /etc/csh.login
+fi
+echo Creating sample /etc/mdsip.hosts file for mdsip server to user mapping
+if [ -r /etc/mdsip.hosts ]; then 
+  cp /usr/local/mdsplus/etc/mdsip.hosts /etc/ 
+fi
+;;
 esac
 cp /usr/local/mdsplus/rpm/post_uninstall_script /usr/local/mdsplus_post_uninstall_script

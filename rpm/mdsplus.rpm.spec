@@ -13,8 +13,8 @@ AutoReqProv: no
 requires: openmotif
 %endif
 
-%ifos OSF1
-AutoReqPRov: no
+%ifos osf1
+AutoReqProv: no
 %endif
 
 %description
