@@ -36,6 +36,21 @@ static int FindImageSymbol(char *name, void **sym)
 
 static struct _host_list {char *host; int socket; int connections; struct _host_list *next;} *host_list = 0;
 
+#ifdef _WIN32
+static void MdsIpFree(void *ptr)
+{
+	static void (*rtn)(void *) = 0;
+	if (rtn == 0)
+	{
+		int status = FindImageSymbol("MdsIpFree",(void **)&rtn);
+		if (!(status & 1)) return;
+	}
+	(*rtn)(ptr);
+}
+#else
+#define MdsIpFree free
+#endif
+
 static int RemoteAccessConnect(char *host, int inc_count)
 {
   struct _host_list *hostchk;
@@ -179,7 +194,7 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,int 
               }
   	    }
           }
-          if (ans.ptr) free(ans.ptr);
+          if (ans.ptr) MdsIpFree(ans.ptr);
         }
         break;
       }
@@ -204,7 +219,7 @@ int CloseTreeRemote(PINO_DATABASE *dblist, int call_hook)
   if (ans.ptr)
   {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
-    free(ans.ptr);
+    MdsIpFree(ans.ptr);
   }
   RemoteAccessDisconnect(dblist->tree_info->channel);
   if (dblist->tree_info && dblist->tree_info->treenam) free(dblist->tree_info->treenam);
@@ -227,7 +242,7 @@ int GetRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor_xd *dsc
     else
       status = TreeNODATA;
   }
-  if (ans.ptr) free(ans.ptr);
+  if (ans.ptr) MdsIpFree(ans.ptr);
   return status;
 }
 
@@ -245,7 +260,7 @@ int FindNodeRemote(PINO_DATABASE *dblist, char *path, int *outnid)
     else
       status = TreeNNF;
   }
-  if (ans.ptr) free(ans.ptr);
+  if (ans.ptr) MdsIpFree(ans.ptr);
   return status;
 }
 
@@ -326,7 +341,7 @@ int SetDefaultNidRemote(PINO_DATABASE *dblist, int nid)
   if (ans.ptr)
   {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
-    free(ans.ptr);
+    MdsIpFree(ans.ptr);
   }
   return status;
 }
@@ -341,7 +356,7 @@ int GetDefaultNidRemote(PINO_DATABASE *dblist, int *nid)
       *nid = *(int *)ans.ptr;
     else
       status = 0;
-    free(ans.ptr);
+    MdsIpFree(ans.ptr);
   }  
   return status;
 }
@@ -391,7 +406,7 @@ void FindTagEndRemote(void **ctx_inout)
   {
     if ((*ctx)->remote_tag) free((*ctx)->remote_tag);
     status = MdsValue0((*ctx)->socket,"TreeFindTagEnd(_remftwctx)",&ans);
-    if (ans.ptr) free(ans.ptr);
+    if (ans.ptr) MdsIpFree(ans.ptr);
   }
   *ctx = (TAG_SEARCH *)0;
 }
@@ -491,7 +506,7 @@ int PutRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor *dsc, i
         status = *(int *)ans.ptr;
       else
         status = 0;
-      free(ans.ptr);
+      MdsIpFree(ans.ptr);
     }  
   }
   return status;
@@ -507,7 +522,7 @@ static int SetNciItmRemote(PINO_DATABASE *dblist, int nid, int code, int value)
   if (ans.ptr)
   {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
-    free(ans.ptr);
+    MdsIpFree(ans.ptr);
   }
   return status;
 }
@@ -543,7 +558,7 @@ int TreeFlushOffRemote(PINO_DATABASE *dblist, int nid)
   if (ans.ptr)
   {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
-    free(ans.ptr);
+    MdsIpFree(ans.ptr);
   }
   return status;
 }
@@ -558,7 +573,7 @@ int TreeFlushResetRemote(PINO_DATABASE *dblist, int nid)
   if (ans.ptr)
   {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
-    free(ans.ptr);
+    MdsIpFree(ans.ptr);
   }
   return status;
 }
@@ -573,7 +588,7 @@ int TreeTurnOnRemote(PINO_DATABASE *dblist, int nid)
   if (ans.ptr)
   {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
-    free(ans.ptr);
+    MdsIpFree(ans.ptr);
   }
   return status;
 }
@@ -588,7 +603,7 @@ int TreeTurnOffRemote(PINO_DATABASE *dblist, int nid)
   if (ans.ptr)
   {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
-    free(ans.ptr);
+    MdsIpFree(ans.ptr);
   }
   return status;
 }
@@ -609,7 +624,7 @@ int TreeGetCurrentShotIdRemote(char *tree, char *path, int *shot)
         *shot = *(int *)ans.ptr;
       else
         status = status & 1 ? 0 : status;
-      free(ans.ptr);
+      MdsIpFree(ans.ptr);
     }
   }
   return status;
@@ -628,7 +643,7 @@ int TreeSetCurrentShotIdRemote(char *tree, char *path, int shot)
     if (ans.ptr)
     {
       status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
-      free(ans.ptr);
+      MdsIpFree(ans.ptr);
     }
   }
   return status;

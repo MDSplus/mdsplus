@@ -194,6 +194,13 @@ unsigned long WINAPI MdsDispatchEvent(SOCKET sock)
 #endif
 }
 
+#ifdef _WIN32
+void MdsIpFree(void *ptr)
+{
+	free(ptr);
+}
+#endif
+
 static SOCKET ConnectToPort(char *host, char *service)
 {
   int status;

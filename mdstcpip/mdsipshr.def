@@ -30,3 +30,4 @@ GetMdsMsg
 GetAnswerInfo
 SendArg
 ArgLen
+MdsIpFree
