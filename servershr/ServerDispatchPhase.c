@@ -256,7 +256,9 @@ static void ActionDone(int idx)
     {
       char *event = strncpy((char *)malloc(event_name.length+1),event_name.pointer,event_name.length);
       event[event_name.length] = 0;
+      lock_send_msg();
       MDSEvent(event,sizeof(int),(char *)&table->shot);
+      unlock_send_msg();
       free(event);
     }
     DoSendMonitor(MonitorDone, idx);
@@ -528,7 +530,6 @@ int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact,
   phasenam_d.length = strlen(phasenam);
   phasenam_d.pointer = phasenam;
   ProgLoc = 6001;
-  MDSEvent("__DISPATCH__",0,0); /********************* problem with dlopen in threads on linux, force mdsipshr activation ******/
   if (JobWaitInitialized == 0)
   {
     ProgLoc = 6002;
