@@ -1,5 +1,5 @@
 include $(MAKE_OPTIONS)
-LFLAGS = -L$(MDSPLUS)/shlib
+LFLAGS = -g -L$(MDSPLUS)/shlib
 
 OBJFILES = 		\
 libMdsdcl.a(mdsdcl_dcl_parse.o)		\

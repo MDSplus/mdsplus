@@ -232,7 +232,7 @@ static int   get_cmdstring(	/* Return: status			*/
 
     for ( ; *p ; p++)
        {
-        if (*p == COMMENT_CHARACTER)
+        if (IS_COMMENT_CHARACTER(*p))
            {
             for ( ; isspace(*(p-1)) ; p--)
                 ;			/* remove white space ...	*/
@@ -264,10 +264,10 @@ static int   get_cmdstring(	/* Return: status			*/
             break;		/* end of line reached ... out of loop	*/
            }
 
-        if (*p == CONTINUATION_CHARACTER)
+        if (IS_CONTINUATION_CHARACTER(*p))
            {		/*=========== Continuation character ===========*/
             p2 = nonblank(p+1);
-            if (p2 && *p2!=COMMENT_CHARACTER)
+            if (p2 && !IS_COMMENT_CHARACTER(*p2))
                 continue;	/* not really a "continuation" ...	*/
 		/*--------------------------------------------------------
 		 * *p is a continuation character.

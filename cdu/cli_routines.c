@@ -800,7 +800,7 @@ int   cli_dcl_parse(		/* Returns: status			*/
 		/*=====================================================
 		 * Get the command verb ...
 		 *====================================================*/
-    opt = cmd_lookup(&p,cmdVerb,0,NOMSG,0);
+    opt = cmd_lookup(&p,cmdVerb,0,NOMSG|NO_BEMORESPECIFIC,0);
     if (!opt)
         sts = CLI_STS_IVVERB;
     else

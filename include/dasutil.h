@@ -21,6 +21,7 @@
 		 *=====================================================*/
 #define NOMSG    1		/* "flags" mask, for no errmsg		*/
 #define NOWILD   2		/* "flags" mask, ignores wildcards	*/
+#define NO_BEMORESPECIFIC 4	/* "flags": supress "be more specific"	*/
 
 struct cmd_struct  {
         long  cmdL_id;		/* command id #				*/

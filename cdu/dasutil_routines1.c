@@ -84,6 +84,7 @@ int cmd_lookup(
     int   len;
     int   noerrmsg;
     int   nowildcard;
+    int   noMoreSpecificMsg;
     char  *wc;			/* Flag: set if wildcards are present	*/
     char  *cmd;
     long  *context;		/* Local copy of the optional "ucontext" */
@@ -97,6 +98,7 @@ int cmd_lookup(
 		 *  "noerrmsg" suppresses certain error messages.
 		 *=======================================================*/
     noerrmsg = flags & NOMSG;
+    noMoreSpecificMsg = flags & NO_BEMORESPECIFIC;
     nowildcard = flags & NOWILD;	/* "context" only */
     context = ucontext;
     if (context && *context)
@@ -177,10 +179,13 @@ int cmd_lookup(
 			 *----------------------------------------------*/
             if (icount++)
                {			/* More than 1 match ?		*/
-                if (icount == 2)	/* -- 1st time ...		*/
-                    printf("Be more specific :\n\t%s\n",
-                        (cmdlist+isave)->cmdA_string);
-                printf("\t%s\n",(cmdlist+i)->cmdA_string);
+                if (!noMoreSpecificMsg)
+                   {
+                    if (icount == 2)	/* -- 1st time ...		*/
+                        printf("Be more specific :\n\t%s\n",
+                            (cmdlist+isave)->cmdA_string);
+                    printf("\t%s\n",(cmdlist+i)->cmdA_string);
+                   }
                 isave = 0;		/* "No match" return		*/
                }
             else

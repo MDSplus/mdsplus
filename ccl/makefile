@@ -1,5 +1,5 @@
 include $(MAKE_OPTIONS)
-LFLAGS = -L$(MDSPLUS)/shlib
+LFLAGS = -g -L$(MDSPLUS)/shlib
 
 all:	../shlib/ccl_commands.$(SHARE_TYPE)  ../bin/ccl
 
