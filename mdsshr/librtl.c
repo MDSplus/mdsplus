@@ -2152,7 +2152,8 @@ int libffs(int *position, int *size, char *base, int *find_position)
 
 char *MdsRelease()
 {
-  static const char *tag = "$Name$";
+#include "release.h"
+  static const char *tag = MDSPLUS_RELEASE;
   static char rel[512] = {0};
   if (rel[0] == 0)
   {
