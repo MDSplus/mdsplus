@@ -330,7 +330,7 @@ int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
     char *filename = strncpy(malloc(len+20),info->filespec,len);
     filename[len]='\0';
     strcat(filename,tmpfile ? "datafile#" : "datafile");
-    df_ptr->get = open(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY) | O_BINARY | O_RANDOM);
+    df_ptr->get = open(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY) | O_BINARY | O_RANDOM, 0664);
     status = (df_ptr->get == -1) ? TreeFAILURE : TreeNORMAL;
     if (df_ptr->get == -1)
       df_ptr->get = 0;

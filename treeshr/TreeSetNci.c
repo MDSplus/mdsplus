@@ -274,7 +274,7 @@ int TreeOpenNciW(TREE_INFO *info, int tmpfile)
       filename[len]='\0';
       strcat(filename,tmpfile ? "characteristics#" : "characteristics");
       memset(info->nci_file,0, sizeof(NCI_FILE));
-      info->nci_file->get = open(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC  : O_RDONLY) | O_BINARY | O_RANDOM);
+      info->nci_file->get = open(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC  : O_RDONLY) | O_BINARY | O_RANDOM,0664);
       status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
       if (info->nci_file->get == -1)
         info->nci_file->get = 0;
@@ -300,7 +300,7 @@ int TreeOpenNciW(TREE_INFO *info, int tmpfile)
     strcat(filename,tmpfile ? "characteristics#" : "characteristics");
     if (info->nci_file->put)
       close(info->nci_file->put);
-    info->nci_file->put = open(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDWR) | O_BINARY | O_RANDOM);
+    info->nci_file->put = open(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDWR) | O_BINARY | O_RANDOM, 0664);
     status = (info->nci_file->put == -1) ? TreeFAILURE : TreeNORMAL;
     if (info->nci_file->put == -1)
       info->nci_file->put = 0;
