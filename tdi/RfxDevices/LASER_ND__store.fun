@@ -65,29 +65,20 @@ write(*, _delay_pulse );
 
    if( ( allocated (public _laser_nd_connected) ) == 0)
    {
-
 	public _laser_nd_connected = 0;
    }
 
     if( ( public _laser_nd_connected ) == 0 )
     {
-	public _answer_pending = 0;
 
-	public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE);
-	if(public _sock == 0)
-	{
-		DevLogErr(_nid, "Cannot connect to remote instruments"); 
-		abort();
-	}
-        public _laser_nd_connected = 1;
-    }    
-
-	if(public _answer_pending)
-	{
-	    _out = TCPCheckAnswer(public _sock);
-write(*, "OK letti i dati pendenti "//_out);
-
-	}
+		public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 2000, 0);
+		if(public _sock == 0)
+		{
+			DevLogErr(_nid, "Cannot connect to remote instruments"); 
+			abort();
+		}
+ 		public _laser_nd_connected = 1;
+	}    
 
 	if((_err_msg = TCPSendCommand(public _sock, "ND_DUMP") ) != "")
 	{
@@ -113,7 +104,7 @@ write(*, "OK letti i dati pendenti "//_out);
 	{
 		DevLogErr(_nid, "No data read for OSC signal"); 
 	} else {
-		_dim = make_dim(make_window(0, size(_data) - 1, _trig), [* : *: _data[1]]);
+		_dim = build_dim(make_window(0, size(_data) - 1, _trig), [* : *: _data[1]]);
 		_osc_sig = build_signal(_data[1,*],, _dim );
 		if(! DevPut(_nid, _N_OSC, _osc_sig))
 		{
@@ -137,7 +128,7 @@ write(*, "OK letti i dati pendenti "//_out);
 		DevLogErr(_nid, "No data read for AMP signal"); 
 	} else {
 
-		_dim = make_dim(make_window(0, size(_data) - 1, _trig), [* : *: _data[1]]);
+		_dim = build_dim(make_window(0, size(_data) - 1, _trig), [* : *: _data[1]]);
 		_amp_sig = build_signal(_data[1,*],, _dim );
 		if(! DevPut(_nid, _N_AMP, _amp_sig))
 		{
@@ -160,7 +151,7 @@ write(*, "OK letti i dati pendenti "//_out);
 	{
 		DevLogErr(_nid, "No data read for TOTAL signal"); 
 	} else {
-		_dim = make_dim(make_window(0, size(_data) - 1, _trig), [* : *: _data[1]]);
+		_dim = build_dim(make_window(0, size(_data) - 1, _trig), [* : *: _data[1]]);
 		_total_sig = build_signal(_data[1,*],, _dim );
 		if(! DevPut(_nid, _N_TOTAL, _total_sig))
 		{
@@ -168,9 +159,7 @@ write(*, "OK letti i dati pendenti "//_out);
 		}
 	}
 
-/*
-	TCPCloseConnection(public _sock);
-*/
+
 	return (1);
 
 }

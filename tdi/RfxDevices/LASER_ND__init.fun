@@ -63,22 +63,15 @@ write(*, _delay_pulse );
 
     if( ( public _laser_nd_connected ) == 0 )
     {
-
-	public _answer_pending = 0;
-
-		public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE);
+		public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 2000, 0);
 		if(public _sock == 0)
 		{
 			DevLogErr(_nid, "Cannot connect to remote instruments"); 
 			abort();
 		}
-        public _laser_nd_connected = 1;
-    }    
+		public _laser_nd_connected = 1;
 
-	if(public _answer_pending)
-	{
-	    _out = TCPCheckAnswer(public _sock);
-	}
+    }    
 
 
 	if((_err_msg = TCPSendCommand(public _sock, "ND_DUMP")) != "")
@@ -105,31 +98,13 @@ write(*, _delay_pulse );
 
 	wait(60);
 
-	public _answer_pending = 0;
 
-	_status = TcpClient->SendCommand(val(public _sock), "ND_PULSE");
-	if( _status == 0)
-	{
-		DevLogErr(_nid, "Error during send  ND_PULSE command"); 
-		abort();
-	}
-
-	public _answer_pending = 1;
-
-
-/*
 	if((_err_msg = TCPSendCommand(public _sock, "ND_PULSE") ) != "")
 	{
 		DevLogErr(_nid, _err_msg); 
-		abort();
 	}
-*/
 
 
-
-/*
-	TCPCloseConnection(_sock);
-*/
 	return (1);
 
 }
