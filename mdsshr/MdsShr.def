@@ -9,6 +9,7 @@ LibEstablish
 LibEmul
 LibFindFile
 LibFindFileEnd
+LibFindFileRecurseCaseBlind
 LibFindImageSymbol
 LibFreeVm
 LibGetVm

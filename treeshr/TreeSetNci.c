@@ -35,6 +35,7 @@
 #include "treeshrp.h"
 #include <ncidef.h>
 #include <string.h>
+#include <stdlib.h>
 
 #ifdef __VMS
 #include <fab.h>
@@ -61,6 +62,9 @@ int TreeTurnOff(int nid) { return _TreeTurnOff(DBID, nid);}
 int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci);
 
 static int OpenNciW(TREE_INFO *info);
+static int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state);
+static int UnlockNci(TREE_INFO *info, int node_num);
+static int SetNodeParentState(PINO_DATABASE *db, NODE *node, NCI *nci, unsigned int state);
 
 int       _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
 {
@@ -71,7 +75,6 @@ int       _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
   TREE_INFO *tree_info;
   NCI_ITM  *itm_ptr;
   NCI       nci;
-  NODE     *node_ptr;
 /*------------------------------------------------------------------------------
 
  Executable:
@@ -475,7 +478,6 @@ static void flush_it(struct RAB *rab)
 int TreePutNci(TREE_INFO *info, int node_num, NCI *nci, int flush)
 {
   int       status;
-  int       nci_num;
   status = 1;
 /***************************************
   If the tree is not open for edit
@@ -643,7 +645,6 @@ int _TreeTurnOff(void *dbid, int nid_in)
   int       node_num;
   TREE_INFO *info;
   NCI       nci;
-  int       i;
   NODE     *node;
   if (!IS_OPEN(dblist))
     return TreeNOT_OPEN;

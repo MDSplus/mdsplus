@@ -40,6 +40,7 @@
 #include <time.h>
 #include <librtl_messages.h>
 #include <strroutines.h>
+#include <libroutines.h>
 #ifdef __VMS
 #include <fab.h>
 #include <rab.h>
@@ -53,7 +54,6 @@ extern RMS$_WER;
 #pragma extern_model restore
 #endif /* __VMS */
 
-#define min(a,b) ( (a) <= (b) ? (a) : (b) )
 
 static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci);
 static int FixupNid(NID *nid, unsigned char *tree, struct descriptor *path);
@@ -63,6 +63,8 @@ static int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length);
 static int StartEvent(NID *nid_ptr, int utility_update);
 static void EndEvent(int id, int length, int status, int stv);
 static int AddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans);
+static int       OpenDatafileW(TREE_INFO *info, int *stv_ptr);
+static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr);
 
 static int compress_utility;
 static char nid_reference;
@@ -83,13 +85,15 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   TREE_INFO *info_ptr;
   int       nidx;
   int       old_record_length;
-  static int saved_uic;
+  static int saved_uic = 0;
   int       id = 0;
   int       length = 0;
   int       shot_open;
   compress_utility = utility_update == 2;
+#if !defined(_WINDOWS)
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
+#endif
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
   if (dblist->open_readonly)
@@ -154,7 +158,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 	}
 	if (status & 1)
 	  status = CopyToRecord(nci, descriptor_ptr, info_ptr->data_file->data,
-				nid_ptr->tree);
+				(unsigned char)nid_ptr->tree);
 	if ((status & 1) && nci->length && (!utility_update))
 	  status = CheckUsage(dblist, nid_ptr, nci);
 	if (status & 1)
@@ -515,7 +519,7 @@ static int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length)
   return status;
 }
 
-int       OpenDatafileW(TREE_INFO *info, int *stv_ptr)
+static int       OpenDatafileW(TREE_INFO *info, int *stv_ptr)
 {
   int       status = 1;
   int       tries = 0;

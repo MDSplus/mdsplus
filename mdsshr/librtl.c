@@ -765,8 +765,16 @@ static char *GetRegistryPath(char *pathname)
     unsigned long valsize;
     if (RegQueryValueEx(regkey3,pathname,0,&valtype,NULL,&valsize) == ERROR_SUCCESS)
     {
-      path = malloc(++valsize);
+	  int plen;
+	  valsize += 2;
+      path = malloc(valsize);
       RegQueryValueEx(regkey3,pathname,0,&valtype,path,&valsize);
+	  plen = strlen(path);
+	  if (path[plen-1] != '\\')
+	  {
+		  path[plen++] = '\\';
+		  path[plen] = '\0';
+	  }
     }
   }
   RegCloseKey(regkey1);
@@ -855,7 +863,8 @@ int LibFindFile(struct descriptor *filespec, struct descriptor *result, void **c
     pathdsc.pointer = ffctx->path;
     namedsc.length = (unsigned short)strlen(fdata.cFileName);
     namedsc.pointer = fdata.cFileName;
-    status = ((StrCopyDx(result, &pathdsc) & 1) && (StrAppend(result,&namedsc) & 1));
+	StrCopyDx(result, &pathdsc);
+    StrAppend(result,&namedsc);
   }
   else
   {

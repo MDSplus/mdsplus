@@ -35,6 +35,7 @@ extern int LibEmul();
 extern int LibEstablish();
 extern int LibFindFile();
 extern int LibFindFileEnd();
+extern int LibFindFileRecurseCaseBlind();
 extern int LibFindImageSymbol();
 extern int LibFindVmZone();
 extern int LibFreeVm();

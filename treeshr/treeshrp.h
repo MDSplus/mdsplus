@@ -510,8 +510,11 @@ typedef struct pino_database
   unsigned  modified:1;	/* Flag indicating tree structure modified */
   unsigned  setup_info:1;/* Flag indicating setup info is being added */
   unsigned  remote:1; /* Flag indicating tree is on remote system */
+
   void      *remote_ctx; /* Pointer to remote system context */
+
   struct pino_database *next;	/* Link to next database in open list */
+
 
   int	    stack_size;
 }         PINO_DATABASE;
@@ -539,19 +542,34 @@ to databases
 /************* Prototypes for internal functions *************/
 extern int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list);
 extern int SetStackSizeRemote(PINO_DATABASE *dblist, int stack_size);
+
 extern int CloseTreeRemote(PINO_DATABASE *dblist, int call_hook);
+
 extern int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm);
+
 extern int GetRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor_xd *dsc);
+
 extern int FindNodeRemote(PINO_DATABASE *dblist, char *path, int *outnid);
+
 extern int FindNodeWildRemote(PINO_DATABASE *dblist, char *path, int *nid_out, void **ctx_inout, int usage_mask);
+
 extern int FindNodeEndRemote(PINO_DATABASE *dblist, void **ctx_in);
+
 extern char *FindNodeTagsRemote(PINO_DATABASE *dblist, int nid_in, void **ctx_ptr);
+
 extern char *AbsPathRemote(PINO_DATABASE *dblist, char *inpath);
+
 extern int SetDefaultNidRemote(PINO_DATABASE *dblist, int nid);
+
 extern int GetDefaultNidRemote(PINO_DATABASE *dblist, int *nid);
 
+
+
 extern int TreeCloseFiles(TREE_INFO *info);
+
 extern int TreeGetNciW(TREE_INFO *info, int node_number, NCI *nci);
+extern int TreeGetNciLw(TREE_INFO *info, int node_number, NCI *nci);
+extern int TreePutNci(TREE_INFO *info, int node_number, NCI *nci, int flush);
 extern int TreeIsChild(NODE *node);
 extern struct descriptor *TreeSectionName(TREE_INFO *info);
 extern int TreeFindTag(PINO_DATABASE *db, NODE *node, char *treename, char **search_string, NODE **node_in_out);
