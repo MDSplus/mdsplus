@@ -1,34 +1,30 @@
 public fun XRAY__init(as_is _nid, optional _method)
 {
 
-	private _K_CONG_NODES = 793;
+	private _K_CONG_NODES = 714;
 	private _N_HEAD = 0;
 	private _N_COMMENT = 1;
-	private _N_CAL_EXP = 2;
-	private _N_CAL_SHOT = 3;
-	private _N_IP_ADDR_0 = 4;
-	private _N_IP_ADDR_1 = 5;
-	private _N_FREQUENCY = 6;
-	private _N_TRIG_SOURCE = 7;
-	private _N_DURATION = 8;
-	private _N_HOR_HEAD = 9;
-	private _N_HEAD_POS = 10;
+	private _N_IP_ADDR_0 = 2;
+	private _N_IP_ADDR_1 = 3;
+	private _N_FREQUENCY = 4;
+	private _N_TRIG_MODE = 5;
+	private _N_TRIG_SOURCE = 6;
+	private _N_DURATION = 7;
+	private _N_HOR_HEAD = 8;
+	private _N_HEAD_POS = 9;
 	
-	private _K_NODES_PER_CHANNEL = 10;
-	private _N_CHANNEL_0 = 11;
+	private _K_NODES_PER_CHANNEL = 9;
+	private _N_CHANNEL_0 = 10;
 	private _N_CHAN_CHANNEL_ID = 1;
-	private _N_CHAN_GAIN = 2;
-	private _N_CHAN_FILTER = 3;
-	private _N_CHAN_TR_IMPEDANCE = 4;
-	private _N_CHAN_BIAS = 5;
-	private _N_CHAN_CALIBRATION = 6;
-	private _N_CHAN_BANDWIDTH = 7;
-	private _N_CHAN_STATUS = 8;
-	private _N_CHAN_DATA = 9;
+	private _N_CHAN_AMP_TYPE = 2;
+	private _N_CHAN_GAIN = 3;
+	private _N_CHAN_FILTER = 4;
+	private _N_CHAN_TR_IMPEDANCE = 5;
+	private _N_CHAN_BIAS = 6;
+	private _N_CHAN_STATUS = 7;
+	private _N_CHAN_DATA = 8;
 	
 	private _K_CHANNELS	= 78;
-	private _K_MOULE_RACK_0 = 12;
-	private _K_MOULE_RACK_1 = 10;
 
 
 	_status = 0;
@@ -65,6 +61,9 @@ public fun XRAY__init(as_is _nid, optional _method)
 	    abort();
 	}
 
+	DevNodeCvt(_nid, _N_HOR_HEAD, ["INTERNAL", "EXTERNAL"],[2, 1], _trig_mode = 2);
+
+
 	_trig = if_error( data(DevNodeRef(_nid, _N_TRIG_SOURCE)), (_status = 1) );
 	if(_status == 1)
 	{
@@ -74,23 +73,6 @@ public fun XRAY__init(as_is _nid, optional _method)
     
 	DevNodeCvt(_nid, _N_FREQUENCY, [1000000,500000,250000,200000,100000,40000,20000,10000,5000],
 	                               [0,      1,     3,     4 ,    9,    24,   49,    99,   249], _reduction = 0);
-
-
-/********************************************************************************************************************
-	_reduction = int(1000000./_freq + 0.5) - 1;
-
-        if(_reduction < 0)
-        {
-   	    _reduction = 0;
-            _freq = 1e6;		
- 	}
-	else
-	{
-		_freq = 1e6/_reduction;
-	}
-
-	DevPut(_nid, _N_FREQUENCY, _freq);            
-**********************************************************************************************************************/
 
 	DevNodeCvt(_nid, _N_HOR_HEAD, ["USED", "NOT USED"],[1, 0], _hor_head = 0);
 
@@ -104,7 +86,7 @@ public fun XRAY__init(as_is _nid, optional _method)
 	for(_i = 0; _i < _K_CHANNELS; _i++)
 	{
 
-                   _chan_nid = _N_CHANNEL_0 + _i * _K_NODES_PER_CHANNEL;
+           _chan_nid = _N_CHANNEL_0 + _i * _K_NODES_PER_CHANNEL;
 
 		   if( ( _is_on = DevIsOn(DevNodeRef(_nid, _chan_nid)) && _i < 58) || 
 			   ( _is_on && _i > 58 && _hor_head == 1) ) /* Disabilito i canali della testa orizzontale se non utilizzati */
@@ -144,43 +126,6 @@ public fun XRAY__init(as_is _nid, optional _method)
 	}
 
 
-
-	_cal_exp = if_error( data(DevNodeRef(_nid, _N_CAL_EXP)), (_status = 1) );
-	if(_status == 1)
-	{
-		DevLogErr(_nid, "Invalid calibration experiment");
-	}
-
-	_cal_shot = if_error( data(DevNodeRef(_nid, _N_CAL_SHOT)), (_status = 1) );
-	if(_status == 1)
-	{
-		DevLogErr(_nid, "Invalid calibration shot value");
-	}
-
-
-	if(_status == 0)
-	{
-
-		_band_out = [];
-		_calib_out = [];
-
-write(*, "XRAY 1 "//_cal_exp//_cal_shot);
-
-		_status = XrayGetCalibValues(_cal_exp, _cal_shot, _chan_id, _filter_id, _gain_id, _trans_id, _band_out, _calib_out);
-		   
-		if(_status == 0)
-		{
-			for(_i = 0; _i < _K_CHANNELS; _i++)
-			{
-				_chan_nid = _N_CHANNEL_0 + _i * _K_NODES_PER_CHANNEL;
-
-				DevPut(_nid, _chan_nid + _N_CHAN_BANDWIDTH, _band_out[ _i ]);
-				DevPut(_nid, _chan_nid + _N_CHAN_CALIBRATION, _calib_out[ _i ]);
-			}
-		}
-	}
-
-
 	write(*, "Initialize amplifire modules : ", _ip_addr_1);
 
 	_errors_0 = zero(_K_CHANNELS, 0);
@@ -216,9 +161,6 @@ write(*, "XRAY 1 "//_cal_exp//_cal_shot);
 	_cmd = 'MdsConnect("'//_ip_addr_0//'")';
 	_status = execute(_cmd);
 
-/* Set External trigger */
-	   _trig_mode = 1; 
-
 
 	if(_status != 0)
 	{
@@ -240,12 +182,12 @@ write(*, "XRAY 1 "//_cal_exp//_cal_shot);
 
 	 write(*, "Initialize rack ", _ip_addr_1);
 
-	_cmd = 'MdsConnect("'//_ip_addr_1//'")';
-	_status = execute(_cmd);
+	 _cmd = 'MdsConnect("'//_ip_addr_1//'")';
+	 _status = execute(_cmd);
 
-
-	if(_status != 0)
-        {
+ 
+	 if(_status != 0)
+     {
 	
 	   _expr = "XrayHwStartAcq(1, $, $, $, $)" ;  
 	   MdsValue(_expr, _chan_id, _errors_1, _reduction, _trig_mode, 0);
@@ -254,18 +196,18 @@ write(*, "XRAY 1 "//_cal_exp//_cal_shot);
 	   MdsDisconnect();
 
 	   write(*, "Fine Initialize rack ", _ip_addr_1);
-	}
-	else
-	{   	
+	 }
+	 else
+	 {   	
 	    DevLogErr(_nid, "Cannot connect to VME rack 1");
 	    abort();
-	}
+	 }
                  
 	          
 	 for(_i = 0; _i < _K_CHANNELS; _i++)
 	 {
 
-	       _chan_nid = _N_CHANNEL_0 + _i * _K_NODES_PER_CHANNEL;
+	    _chan_nid = _N_CHANNEL_0 + _i * _K_NODES_PER_CHANNEL;
 	
 		if( TomoChanIsActive(_chan_id[_i]) )
 		{
@@ -273,13 +215,8 @@ write(*, "XRAY 1 "//_cal_exp//_cal_shot);
 		  if(TomoVmeRack(_chan_id[_i]) == 0)
 				DevPut(_nid, _chan_nid + _N_CHAN_STATUS, _errors_0[ _i ]);
 			  else
-				DevPut(_nid, _chan_nid + _N_CHAN_STATUS, _errors_1[ _i ]);
-			  
+				DevPut(_nid, _chan_nid + _N_CHAN_STATUS, _errors_1[ _i ]);  
 		}
      }
-
-
      return(1);
-
-
 }

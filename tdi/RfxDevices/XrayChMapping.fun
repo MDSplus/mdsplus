@@ -1,8 +1,8 @@
 public fun XrayChMapping()
 {
 /*
-LOGICO RACK VME_SLOT VME_CANALE   DIODO   AMP_TYPE  AMP  GPIB_SLOT  GPIB_CH  AMP_RACK
-		   L  R  VS VC   D  AT   A  GS GC  AC                                */
+LOGICO RACK VME_MODULE VME_CANALE   DIODO   AMP_TYPE  AMP  GPIB_MODULE  GPIB_CH  AMP_RACK
+		   L  R  VM VC   D  AT   A  GM GC  AC                                */
   return (
 		[[ 1, 0, 1, 1, 201, 21, 20, 1, 1,  6],
   	   	 [ 2, 0, 1, 2, 202, 21, 21, 1, 2,  6],

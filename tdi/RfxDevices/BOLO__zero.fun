@@ -1,37 +1,31 @@
 ppublic fun BOLO__zero(as_is _nid, optional _method)
-{{
+{
 
-    private _K_CONG_NODES = BOLO = 637;
-	private _N_HEAD = 0;
-    private _N_COMMENT = 1;
-    private _N_CAL_EXP = 2;
-    private _N_CAL_SHOT = 3;
-    private _N_IP_ADDR = 4;
-    private _N_FG = 5;
-    private _N_FREQUENCY = 6;
-    private _N_TRIG_SOURCE = 7;
-    private _N_DURATION = 8;
-    private _N_HOR_HEAD = 9;
-    private _N_HEAD_POS = 10;
+    private _K_CONG_NODES  = 395;
+	private _N_HEAD        = 0;
+    private _N_COMMENT     = 1;
+    private _N_IP_ADDR     = 2;
+    private _N_FREQUENCY   = 3;
+    private _N_TRIG_MODE   = 4;
+    private _N_TRIG_SOURCE = 5;
+    private _N_DURATION    = 6;
+    private _N_HOR_HEAD    = 7;
+    private _N_HEAD_POS    = 8;
 
-    private _K_NODES_PER_CHANNEL = 13;
-    private _N_CHANNEL_0 = 11;
-	private _N_CHAN_CHANNEL_ID = 1;
+    private _K_NODES_PER_CHANNEL = 8;
+    private _N_CHANNEL_0         = 9;
+	private _N_CHAN_CHANNEL_ID   = 1;
 	private _N_CHAN_CARRIER_FLAG = 2;
-    private _N_CHAN_FILTER = 3;
-    private _N_CHAN_GAIN = 4;
-    private _N_CHAN_REF_PHASE = 5;
-    private _N_CHAN_CALIB_GAIN = 6;
-    private _N_CHAN_CALIB_FILTER = 7;
-    private _N_CHAN_SENS = 8;
-    private _N_CHAN_TAU = 9;
-	private _N_CHAN_STATUS = 10;
-    private _N_CHAN_DATA = 11;
-    private _N_CHAN_POWER = 12;
+    private _N_CHAN_FILTER       = 3;
+    private _N_CHAN_GAIN         = 4;
+    private _N_CHAN_REF_PHASE    = 5;
+	private _N_CHAN_STATUS       = 6;
+    private _N_CHAN_DATA         = 7;
+ 
+	private _K_CHANNELS		     = 48;
+	private _K_MODULE_RACK       = 12;
 
-	private _K_CHANNELS		= 48;
-	private _K_MOULE_RACK   = 12;
-
+	_status = 0;
 
     _ip_addr = if_error(data(DevNodeRef(_nid, _N_IP_ADDR)), "");
 	if(_ip_addr == "")
@@ -44,7 +38,7 @@ ppublic fun BOLO__zero(as_is _nid, optional _method)
 
 	DevNodeCvt(_nid, _N_HOR_HEAD, ["USED", "NOT USED"],[1, 0], _hor_head = 0);
 
-   	_chan_id        = [];
+   	_chan_id = [];
 
 	for(_i = 0; _i < _K_CHANNELS; _i++)
 	{
@@ -67,7 +61,7 @@ ppublic fun BOLO__zero(as_is _nid, optional _method)
 	}
 
 
-	write(*, "Initialize rack ", _ip_addr);
+	write(*, "Zero rack ", _ip_addr);
 
 	_cmd = 'MdsConnect("'//_ip_addr//'")';
 	_status = execute(_cmd);
@@ -80,12 +74,9 @@ ppublic fun BOLO__zero(as_is _nid, optional _method)
 
        _errors = MdsValue(_expr, _chan_id, 0);
 	
-       _expr = "BoloHwStartAcq(_K_MODULE_RACK, "//_reduction//")" ;  
-   	   MdsValue(_expr);
-
 	   MdsDisconnect();
 
-	   write(*, "Fine Initialize rack ", _ip_add);
+	   write(*, "Fine Zero rack ", _ip_add);
 	 }
 	 else
      {   	

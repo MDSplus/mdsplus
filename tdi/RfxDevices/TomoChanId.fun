@@ -4,7 +4,7 @@ public fun TomoChanId(in _logical, in _enable, in _table)
 
     /* VME RACK*/
     _id =   (   _table[ 1, _logical -1] & 0x1UQ);
-    /* VME SLOT */
+    /* VME MODULE */
     _id +=  ((  _table[ 2, _logical -1] & 0xFUQ)      << 1);
     /* VME CHANNEL */
     _id +=  ((( _table[ 3, _logical -1] - 1) & 0x3UQ) << 5);
@@ -14,7 +14,7 @@ public fun TomoChanId(in _logical, in _enable, in _table)
     _id +=  (((_table[ 5, _logical -1]) & 0x1FUQ)      << 16); 
     /* AMPLIFIER ID */
     _id +=  (( _table[ 6, _logical -1] & 0x7FUQ)       << 21);
-    /* GPIB SLOT*/
+    /* GPIB MODULE*/
     _id +=  QUADWORD(( _table[ 7, _logical -1] & 0x1FUQ))       << 28;
     /* GPIB CHANNEL*/
     _id +=  QUADWORD((( _table[ 8, _logical -1] - 1) & 0x3UQ))       << 33;

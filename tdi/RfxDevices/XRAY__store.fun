@@ -1,31 +1,29 @@
 public fun XRAY__store(as_is _nid, optional _method)
 {
-    private _K_CONG_NODES = 793;
-    private _N_HEAD = 0;
-    private _N_COMMENT = 1;
-    private _N_CAL_EXP = 2;
-    private _N_CAL_SHOT = 3;
-    private _N_IP_ADDR_0 = 4;
-    private _N_IP_ADDR_1 = 5;
-    private _N_FREQUENCY = 6;
-    private _N_TRIG_SOURCE = 7;
-    private _N_DURATION = 8;
-    private _N_HOR_HEAD = 9;
-    private _N_HEAD_POS = 10;
-
-    private _K_NODES_PER_CHANNEL = 10;
-    private _N_CHANNEL_0 = 11;
-    private _N_CHAN_CHANNEL_ID = 1;
-    private _N_CHAN_GAIN = 2;
-    private _N_CHAN_FILTER = 3;
-    private _N_CHAN_TR_IMPEDANCE = 4;
-    private _N_CHAN_BIAS = 5;
-    private _N_CHAN_CALIBRATION = 6;
-    private _N_CHAN_BANDWIDTH = 7;
-    private _N_CHAN_STATUS = 8;
-    private _N_CHAN_DATA = 9;
+	private _K_CONG_NODES = 714;
+	private _N_HEAD = 0;
+	private _N_COMMENT = 1;
+	private _N_IP_ADDR_0 = 2;
+	private _N_IP_ADDR_1 = 3;
+	private _N_FREQUENCY = 4;
+	private _N_TRIG_MODE = 5;
+	private _N_TRIG_SOURCE = 6;
+	private _N_DURATION = 7;
+	private _N_HOR_HEAD = 8;
+	private _N_HEAD_POS = 9;
 	
-    private _K_CHANNELS	= 78;
+	private _K_NODES_PER_CHANNEL = 9;
+	private _N_CHANNEL_0 = 10;
+	private _N_CHAN_CHANNEL_ID = 1;
+	private _N_CHAN_AMP_TYPE = 2;
+	private _N_CHAN_GAIN = 3;
+	private _N_CHAN_FILTER = 4;
+	private _N_CHAN_TR_IMPEDANCE = 5;
+	private _N_CHAN_BIAS = 6;
+	private _N_CHAN_STATUS = 7;
+	private _N_CHAN_DATA = 8;
+	
+	private _K_CHANNELS	= 78;
 
 write(*, "XRAY init");
 
@@ -104,7 +102,7 @@ write(*, "XRAY init");
 
 
 					_c = TomoVMEChan(_chan_id);
-					_m = TomoVMESlot(_chan_id);
+					_m = TomoVMEModule(_chan_id);
 
 write(*,"Rack 0 Canale ", _i, _m, _c);	
 
@@ -120,7 +118,7 @@ write(*,"Rack 0 Canale ", _i, _m, _c);
 						_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
 			
 
-						_status = DevPutSignal(_sig_nid, 0, 5.0/2048., word(_data), 0, _end_idx - _start_idx - 1, _dim);
+						_status = DevPutSignal(_sig_nid, 0, 5.0/2048., word(_data), 0, _end_idx - _start_idx, _dim);
 
 				
 						if(! _status)
@@ -173,7 +171,7 @@ write(*,"Rack 0 Canale ", _i, _m, _c);
 				{
 	
 					_c = TomoVMEChan(_chan_id);
-					_m = TomoVMESlot(_chan_id);
+					_m = TomoVMEModule(_chan_id);
 
 write(*,"Rack 1 Canale ", _i, _m, _c);	
 
@@ -216,7 +214,6 @@ write(*,"Rack 1 Canale ", _i, _m, _c);
 		abort();
 	}
 
-
-        return(1);
+    return(1);
 }
 
