@@ -1,7 +1,7 @@
 public fun RFXControl__add(in _path, out _nidout)
 {
 write(*,'RFXControl__add'); 
-    DevAddStart(_path, 'RFXControl', 440 + 227, _nidout);
+    DevAddStart(_path, 'RFXControl', 831 + 234, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -34,12 +34,21 @@ write(*,'RFXControl__add');
     DevAddNode(_path // ':SYS_DURAT', 'NUMERIC', 10., *, _nid);
     DevAddNode(_path // ':PRE_TIME', 'NUMERIC', -.5, *, _nid);
     DevAddNode(_path // ':POST_TIME', 'NUMERIC', .5, *, _nid);
+    DevAddNode(_path // ':ZERO_START', 'NUMERIC', 1., *, _nid);
+    DevAddNode(_path // ':ZERO_END', 'NUMERIC', 0.5, *, _nid);
+    DevAddNode(_path // ':ZERO', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':MAPPING_ID', 'NUMERIC', 1, *, _nid);
+    DevAddNode(_path // ':MAPPING', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':RAMP_SLOPE', 'NUMERIC', 10., *, _nid);
+    DevAddNode(_path // ':RAMP_TRIGGER', 'NUMERIC', 2, *, _nid);
+    DevAddNode(_path // ':FEEDFORW', 'TEXT', 'DISABLED', *, _nid);
 
     DevAddNode(_path // ':ROUTINE_NAME', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':N_ADC_IN', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':N_DAC_OUT', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':N_NET_IN', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':N_NET_OUT', 'NUMERIC', 0, *, _nid);
+    DevAddNode(_path // ':N_MODES', 'NUMERIC', 0, *, _nid);
     for (_c = 1; _c <= 9; _c++)
     {
        DevAddNode(_path // ':ADC_IN_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
@@ -76,6 +85,22 @@ write(*,'RFXControl__add');
     {
         DevAddNode(_path // ':NET_OUT_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
+    for (_c = 1; _c <= 9; _c++)
+    {
+       DevAddNode(_path // ':MODE_MOD_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+       DevAddNode(_path // ':MODE_PHS_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+    }
+    for (_c = 10; _c <= 99; _c++)
+    {
+        DevAddNode(_path // ':MODE_MOD_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // ':MODE_PHS_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+	}
+    for (_c = 100; _c <= 192; _c++)
+    {
+        DevAddNode(_path // ':MODE_MOD_' // TEXT(_c, 3) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // ':MODE_PHS_' // TEXT(_c, 3) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+	}
+
  
     DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path// ':STORE_ACTION', 'STORE', 'STORE', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
@@ -248,88 +273,96 @@ write(*,'RFXControl__add');
 	
 
 
-/* Mode generation */
-    DevAddNode(_path // ':PAR81_NAME', 'TEXT', "ModePertAmp1", *, _nid);
+
+
+
+/* Rotating perturmation */
+    DevAddNode(_path // ':PAR81_NAME', 'TEXT', "RotPertN1", *, _nid);
     DevAddNode(_path // ':PAR81_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR82_NAME', 'TEXT', "ModePertAmpAngVel1", *, _nid);
+    DevAddNode(_path // ':PAR82_NAME', 'TEXT', "RotPertAmplitude1", *, _nid);
     DevAddNode(_path // ':PAR82_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR83_NAME', 'TEXT', "ModePertAmpPhase1", *, _nid);
+    DevAddNode(_path // ':PAR83_NAME', 'TEXT', "RotPertAmpAngVel1", *, _nid);
     DevAddNode(_path // ':PAR83_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR84_NAME', 'TEXT', "ModePertAngVel1", *, _nid);
+    DevAddNode(_path // ':PAR84_NAME', 'TEXT', "RotPertAmpPhase1", *, _nid);
     DevAddNode(_path // ':PAR84_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR85_NAME', 'TEXT', "ModePertInitPhase1", *, _nid);
+    DevAddNode(_path // ':PAR85_NAME', 'TEXT', "RotPertAngVel1", *, _nid);
     DevAddNode(_path // ':PAR85_VAL', 'NUMERIC', 0., *, _nid);
-
-    DevAddNode(_path // ':PAR86_NAME', 'TEXT', "ModePertAmp2", *, _nid);
+    DevAddNode(_path // ':PAR86_NAME', 'TEXT', "RotPertPhase1", *, _nid);
     DevAddNode(_path // ':PAR86_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR87_NAME', 'TEXT', "ModePertAmpAngVel2", *, _nid);
+
+ 
+    DevAddNode(_path // ':PAR87_NAME', 'TEXT', "RotPertN2", *, _nid);
     DevAddNode(_path // ':PAR87_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR88_NAME', 'TEXT', "ModePertAmpPhase2", *, _nid);
+    DevAddNode(_path // ':PAR88_NAME', 'TEXT', "RotPertAmplitude2", *, _nid);
     DevAddNode(_path // ':PAR88_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR89_NAME', 'TEXT', "ModePertAngVel2", *, _nid);
+    DevAddNode(_path // ':PAR89_NAME', 'TEXT', "RotPertAmpAngVel2", *, _nid);
     DevAddNode(_path // ':PAR89_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR90_NAME', 'TEXT', "ModePertInitPhase2", *, _nid);
+    DevAddNode(_path // ':PAR90_NAME', 'TEXT', "RotPertAmpPhase2", *, _nid);
     DevAddNode(_path // ':PAR90_VAL', 'NUMERIC', 0., *, _nid);
-
-    DevAddNode(_path // ':PAR91_NAME', 'TEXT', "ModePertAmp3", *, _nid);
+    DevAddNode(_path // ':PAR91_NAME', 'TEXT', "RotPertAngVel2", *, _nid);
     DevAddNode(_path // ':PAR91_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR92_NAME', 'TEXT', "ModePertAmpAngVel3", *, _nid);
+    DevAddNode(_path // ':PAR92_NAME', 'TEXT', "RotPertPhase2", *, _nid);
     DevAddNode(_path // ':PAR92_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR93_NAME', 'TEXT', "ModePertAmpPhase3", *, _nid);
+
+ 
+    DevAddNode(_path // ':PAR93_NAME', 'TEXT', "RotPertN3", *, _nid);
     DevAddNode(_path // ':PAR93_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR94_NAME', 'TEXT', "ModePertAngVel3", *, _nid);
+    DevAddNode(_path // ':PAR94_NAME', 'TEXT', "RotPertAmplitude3", *, _nid);
     DevAddNode(_path // ':PAR94_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR95_NAME', 'TEXT', "ModePertInitPhase3", *, _nid);
+    DevAddNode(_path // ':PAR95_NAME', 'TEXT', "RotPertAmpAngVel3", *, _nid);
     DevAddNode(_path // ':PAR95_VAL', 'NUMERIC', 0., *, _nid);
-
-    DevAddNode(_path // ':PAR96_NAME', 'TEXT', "ModePertAmp4", *, _nid);
+    DevAddNode(_path // ':PAR96_NAME', 'TEXT', "RotPertAmpPhase3", *, _nid);
     DevAddNode(_path // ':PAR96_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR97_NAME', 'TEXT', "ModePertAmpAngVel4", *, _nid);
+    DevAddNode(_path // ':PAR97_NAME', 'TEXT', "RotPertAngVel3", *, _nid);
     DevAddNode(_path // ':PAR97_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR98_NAME', 'TEXT', "ModePertAmpPhase4", *, _nid);
+    DevAddNode(_path // ':PAR98_NAME', 'TEXT', "RotPertPhase3", *, _nid);
     DevAddNode(_path // ':PAR98_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR99_NAME', 'TEXT', "ModePertAngVel4", *, _nid);
+
+ 
+    DevAddNode(_path // ':PAR99_NAME', 'TEXT', "RotPertN4", *, _nid);
     DevAddNode(_path // ':PAR99_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR100_NAME', 'TEXT', "ModePertInitPhase4", *, _nid);
+    DevAddNode(_path // ':PAR100_NAME', 'TEXT', "RotPertAmplitude4", *, _nid);
     DevAddNode(_path // ':PAR100_VAL', 'NUMERIC', 0., *, _nid);
-
-/* Mode Control */
-
-    DevAddNode(_path // ':PAR101_NAME', 'TEXT', "K1", *, _nid);
+    DevAddNode(_path // ':PAR101_NAME', 'TEXT', "RotPertAmpAngVel4", *, _nid);
     DevAddNode(_path // ':PAR101_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR102_NAME', 'TEXT', "K2", *, _nid);
+    DevAddNode(_path // ':PAR102_NAME', 'TEXT', "RotPertAmpPhase4", *, _nid);
     DevAddNode(_path // ':PAR102_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR103_NAME', 'TEXT', "K3", *, _nid);
+    DevAddNode(_path // ':PAR103_NAME', 'TEXT', "RotPertAngVel4", *, _nid);
     DevAddNode(_path // ':PAR103_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR104_NAME', 'TEXT', "K4", *, _nid);
+    DevAddNode(_path // ':PAR104_NAME', 'TEXT', "RotPertPhase4", *, _nid);
     DevAddNode(_path // ':PAR104_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // ':PAR105_NAME', 'TEXT', "K5", *, _nid);
+
+ /* Mode Control */
+
+    DevAddNode(_path // ':PAR105_NAME', 'TEXT', "ModeControlKp", *, _nid);
     DevAddNode(_path // ':PAR105_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR106_NAME', 'TEXT', "ModeControlKi", *, _nid);
+    DevAddNode(_path // ':PAR106_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR107_NAME', 'TEXT', "ModeControlKd", *, _nid);
+    DevAddNode(_path // ':PAR107_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR108_NAME', 'TEXT', "K4", *, _nid);
+    DevAddNode(_path // ':PAR108_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // ':PAR109_NAME', 'TEXT', "K5", *, _nid);
+    DevAddNode(_path // ':PAR109_VAL', 'NUMERIC', 0., *, _nid);
 
 /* Simulink Parameters */
-    DevAddNode(_path // ':PAR106_NAME', 'TEXT', "SimulinkK1", *, _nid);
-    DevAddNode(_path // ':PAR106_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR107_NAME', 'TEXT', "SimulinkK2", *, _nid);
-    DevAddNode(_path // ':PAR107_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR108_NAME', 'TEXT', "SimulinkK3", *, _nid);
-    DevAddNode(_path // ':PAR108_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR109_NAME', 'TEXT', "SimulinkK4", *, _nid);
-    DevAddNode(_path // ':PAR109_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR110_NAME', 'TEXT', "SimulinkK5", *, _nid);
+    DevAddNode(_path // ':PAR110_NAME', 'TEXT', "SimulinkK1", *, _nid);
     DevAddNode(_path // ':PAR110_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR111_NAME', 'TEXT', "SimulinkK6", *, _nid);
+    DevAddNode(_path // ':PAR111_NAME', 'TEXT', "SimulinkK2", *, _nid);
     DevAddNode(_path // ':PAR111_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR112_NAME', 'TEXT', "SimulinkK7", *, _nid);
+    DevAddNode(_path // ':PAR112_NAME', 'TEXT', "SimulinkK3", *, _nid);
     DevAddNode(_path // ':PAR112_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR113_NAME', 'TEXT', "SimulinkK8", *, _nid);
+    DevAddNode(_path // ':PAR113_NAME', 'TEXT', "SimulinkK4", *, _nid);
     DevAddNode(_path // ':PAR113_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
+    DevAddNode(_path // ':PAR114_NAME', 'TEXT', "SimulinkK5", *, _nid);
+    DevAddNode(_path // ':PAR114_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
+    DevAddNode(_path // ':PAR115_NAME', 'TEXT', "SimulinkK6", *, _nid);
+    DevAddNode(_path // ':PAR115_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
+    DevAddNode(_path // ':PAR116_NAME', 'TEXT', "SimulinkK7", *, _nid);
+    DevAddNode(_path // ':PAR116_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
+    DevAddNode(_path // ':PAR117_NAME', 'TEXT', "SimulinkK8", *, _nid);
+    DevAddNode(_path // ':PAR117_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
 
-/* Ramp down */
-    DevAddNode(_path // ':RAMP_SLOPE', 'NUMERIC', 10., *, _nid);
-    DevAddNode(_path // ':RAMP_TRIGGER', 'NUMERIC', 2, *, _nid);
-
-/*  Feedforward */
-    DevAddNode(_path // ':FEEDFORW', 'TEXT', 'DISABLED', *, _nid);
 
 
     DevAddEnd();

@@ -1,7 +1,7 @@
 public fun RFXControl__store(as_is _nid, optional _method)
 {
 
-    private _N_HEAD = 0;
+     private _N_HEAD = 0;
     private _N_COMMENT = 1;
     private _N_VME_IP = 2;
     private _N_FREQUENCY = 3;
@@ -16,20 +16,38 @@ public fun RFXControl__store(as_is _nid, optional _method)
     private _N_SYS_DURAT = 12;
     private _N_PRE_TIME = 13;
     private _N_POST_TIME = 14;
+    private _N_ZERO_START = 15;
+    private _N_ZERO_END = 16;
+    private _N_ZERO = 17;
+    private _N_MAPPING_ID = 18;
+    private _N_MAPPING = 19;
     private _N_ROUTINE_NAME = 15;
     private _N_N_ADC_IN = 16;
     private _N_N_DAC_OUT = 17;
     private _N_N_NET_IN = 18;
     private _N_N_NET_OUT = 19;
+	private _N_RAMP_SLOPE = 20;
+	private _N_RAMP_TRIGGER = 21;
+	private _N_FEEDFORWARD = 22;
+	private _N_N_ADC_IN = 23;
+	private _N_N_DAC_OUT = 24;
+	private _N_N_NET_IN = 25;
+	private _N_N_NET_OUT = 26;
+	private _N_N_MODES = 27;
+	
+	private _N_ROUTINE_NAME = 28;
+	private _N_ADC_IN_1 = 29;
+	private _N_DAC_OUT_1 = 221;
+	private _N_NET_IN_1 = 317;
+	private _N_NET_OUT_1 = 381;
+	private _N_MODES_1 = 445;
 
-    private _N_PAR1_NAME = 438;
-    private _N_PAR1_VALUE = 439; 
+    private _N_PAR1_NAME = 831;
+    private _N_PAR1_VALUE = 832; 
 
-	private _N_ADC_IN_1 = 20;
-	private _N_DAC_OUT_1 = 212;
-	private _N_NET_IN_1 = 308;
-	private _N_NET_OUT_1 = 372;
-
+ 
+	private _MAX_CONTROLS = 6;
+	private _NUM_PARAMETERS = 117;
 
 
 write(*, 'RFXControl store');
@@ -64,6 +82,8 @@ write(*, 'RFXControl store');
 	write(*, 'Num NET in: ', _num_net_in);
 	_num_net_out = data(DevNodeRef(_nid, _N_N_NET_OUT));
 	write(*, 'Num NET out: ', _num_net_out);
+	_num_modes = data(DevNodeRef(_nid, _N_N_MODES));
+	write(*, 'Num MODES: ', _num_net_out);
 
 	for(_c = 0; _c < _num_adc_in; _c++)
 	{
@@ -92,7 +112,34 @@ write(*, _c);
 			}
 	}
 
+	for(_c = 0; _c < _num_modes; _c++)
+	{
+		_data = MdsValue( 'Feedback->getMode:dsc($1, 1)', _c);
+		_sig_nid =  DevHead(_nid) + _N_MODES_1  + 2 * _c;
+		_status = DevPutSignal(_sig_nid, 0, 1., _data, 0, _n_samples, _dim);
+		if(! _status)
+		{
+			DevLogErr(_nid, 'Error writing modes in pulse file');
+
+		}
+		_data = MdsValue( 'Feedback->getMode:dsc($1, 0)', _c);
+		_sig_nid =  DevHead(_nid) + _N_MODES_1  + 2 * _c + 1;
+		_status = DevPutSignal(_sig_nid, 0, 1., _data, 0, _n_samples, _dim);
+		if(! _status)
+		{
+			DevLogErr(_nid, 'Error writing mods in pulse file:'//getmsg(_status));
+		}
+	}
+
+
 /* NET_IN and NET_OUT not yet implemented */ 
+	_zero = MdsValue('Feedback->getZero:dsc()');
+	_status = DevPut(_nid, _N_ZERO, _zero);
+	if(! _status)
+	{
+		DevLogErr(_nid, 'Error writing offset values in pulse file:'//getmsg(_status));
+	}
+
 
     MdsDisconnect();
     return (1);

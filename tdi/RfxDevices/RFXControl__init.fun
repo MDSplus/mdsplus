@@ -15,27 +15,38 @@ public fun RFXControl__init(as_is _nid, optional _method)
     private _N_SYS_DURAT = 12;
     private _N_PRE_TIME = 13;
     private _N_POST_TIME = 14;
+    private _N_ZERO_START = 15;
+    private _N_ZERO_END = 16;
+    private _N_ZERO = 17;
+    private _N_MAPPING_ID = 18;
+    private _N_MAPPING = 19;
     private _N_ROUTINE_NAME = 15;
     private _N_N_ADC_IN = 16;
     private _N_N_DAC_OUT = 17;
     private _N_N_NET_IN = 18;
     private _N_N_NET_OUT = 19;
+	private _N_RAMP_SLOPE = 20;
+	private _N_RAMP_TRIGGER = 21;
+	private _N_FEEDFORWARD = 22;
+	private _N_N_ADC_IN = 23;
+	private _N_N_DAC_OUT = 24;
+	private _N_N_NET_IN = 25;
+	private _N_N_NET_OUT = 26;
+	private _N_N_MODES = 27;
+	
+	private _N_ROUTINE_NAME = 28;
+	private _N_ADC_IN_1 = 29;
+	private _N_DAC_OUT_1 = 221;
+	private _N_NET_IN_1 = 317;
+	private _N_NET_OUT_1 = 381;
+	private _N_MODES_1 = 445;
 
-    private _N_PAR1_NAME = 438;
-    private _N_PAR1_VALUE = 439; 
+    private _N_PAR1_NAME = 831;
+    private _N_PAR1_VALUE = 832; 
 
-	private _N_ADC_IN_1 = 20;
-	private _N_DAC_OUT_1 = 212;
-	private _N_NET_IN_1 = 308;
-	private _N_NET_OUT_1 = 372;
-
-
+ 
 	private _MAX_CONTROLS = 6;
-	private _NUM_PARAMETERS = 113;
-
-	private _N_RAMP_SLOPE = 664;
-	private _N_RAMP_TRIGGER = 665;
-	private _N_FEEDFORWARD = 666;
+	private _NUM_PARAMETERS = 117;
 
 
 write(*, 'RFXControl init');
@@ -142,6 +153,9 @@ write(*, 'RFXControl init');
 		abort();
 	}
 
+
+
+
 	write(*, 'Trig2 Control: ', _control_idx);
 	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackTrig2Control', long(_control_idx));
 
@@ -154,6 +168,25 @@ write(*, 'RFXControl init');
 	_out_calibration = data(DevNodeRef(_nid, _N_OUT_CALIB));
 /*	write(*, 'Calibration: ', _calibration);*/
 	_status = MdsValue('Feedback->setOutputCalibration($1, $2)', float(_out_calibration), 96);
+
+
+	_zero_start = data(DevNodeRef(_nid, _N_ZERO_START));
+	write(*, 'Zero Start: ', _zero_start);
+	_status = MdsValue('Feedback->setFloatVariable("feedbackAutozeroStart", $1)', float(_zero_start));
+	_zero_end = data(DevNodeRef(_nid, _N_ZERO_END));
+	_status = MdsValue('Feedback->setFloatVariable("feedbackAutozeroEnd", $1)', float(_zero_end));
+	write(*, 'Zero End: ', _zero_end);
+
+
+	_ramp_trigger = data(DevNodeRef(_nid, _N_RAMP_TRIGGER));
+	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackRampDownTrigger', long(_ramp_trigger));
+
+	_ramp_slope = data(DevNodeRef(_nid, _N_RAMP_SLOPE));
+	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackRampDownSlope', float(_ramp_slope));
+
+    DevNodeCvt(_nid, _N_FEEDFORWARD, ['DISABLED', 'ENABLED'], [0,1], _feedforward = 0);
+	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackFeedForward', long(_feedforward));
+
 	
     for(_par = 0; _par < _NUM_PARAMETERS; _par++)
 	{
@@ -171,15 +204,6 @@ write(*, 'RFXControl init');
 			_status = MdsValue('Feedback->setFloatVariable($1, 0.)', 'feedback'//_par_name//'Length');
 
 	}
-
-	_ramp_trigger = data(DevNodeRef(_nid, _N_RAMP_TRIGGER));
-	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackRampDownTrigger', long(_ramp_trigger));
-
-	_ramp_slope = data(DevNodeRef(_nid, _N_RAMP_SLOPE));
-	_status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedbackRampDownSlope', float(_ramp_slope));
-
-    DevNodeCvt(_nid, _N_FEEDFORWARD, ['DISABLED', 'ENABLED'], [0,1], _feedforward = 0);
-	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackFeedForward', long(_feedforward));
 
 
 	_routine_name= data(DevNodeRef(_nid, _N_ROUTINE_NAME));
