@@ -1013,8 +1013,8 @@ RenameNode( Widget w, XtPointer client_data, XtPointer call_data)
 	qargs[0].value = (long)XmStringCreateLtoR("Rename node", XmSTRING_DEFAULT_CHARSET);
 	qargs[1].value = (long)XmStringCreateLtoR("Rename", XmSTRING_DEFAULT_CHARSET);
         qdlog = XmCreateQuestionDialog(toplevel, "rename", qargs, XtNumber(qargs));
-	XmStringFree(qargs[0].value);
-	XmStringFree(qargs[1].value);
+	XmStringFree((XmString)qargs[0].value);
+	XmStringFree((XmString)qargs[1].value);
         targs[0].value = (long)c_path;
         widg = (Widget)XmCreateTextField(qdlog, "new_name", targs, XtNumber(targs));
         XtManageChild(widg);

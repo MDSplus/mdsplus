@@ -1433,22 +1433,29 @@ XtPointer CONVERT
 	 * return is in the correct bytes of the XtPointer that we
 	 * return.  Here we check all sizes from 1 to 8 bytes.
 	 */
+      union { char c;
+	      short s;
+	      int   i;
+	      long  l;
+	      XTPOINTER p;
+            } uval;
 	switch(toVal.size)
 	{
-	case 1:
-	    val = (XTPOINTER)(*(char*)toVal.addr);
+        case 1:
+	    uval.c = *(char*)toVal.addr;
 	    break;
 	case 2:
-	    val = (XTPOINTER)(*(short*)toVal.addr);
+	    uval.s = *(short*)toVal.addr;
 	    break;
 	case 4:
-	    val = (XTPOINTER)(*(int*)toVal.addr);
+	    uval.i = *(int*)toVal.addr;
 	    break;
 	case 8:
 	default:
-	    val = (XTPOINTER)(*(long*)toVal.addr);
+	    uval.l = *(long*)toVal.addr;
 	    break;
 	}
+        val = uval.p;
     }
 
     /*
