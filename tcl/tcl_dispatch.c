@@ -57,7 +57,6 @@ static void  *dispatch_table = 0;
 
 extern void TclTextOut();
 
-extern int ServerSetLogging();
 extern int ServerFailedEssential();
 
 extern int TdiIdentOf();
@@ -260,7 +259,7 @@ int TclDispatch_set_server()
 
     while (sts & 1 && cli_get_value("SERVER",&ident) & 1)
        {
-        sts = ServerSetLogging(ident.dscA_pointer,logging);
+        sts = ServerSetLogging(ident.dscA_pointer,(char)logging);
        }
     if (~sts & 1)
         MdsMsg(sts,"Error from ServerSetLogging for server %s",

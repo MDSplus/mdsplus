@@ -75,7 +75,7 @@ int   ServerGetInfo(
    );
 int   ServerSetLogging(
     char  *srvnam		/* <r> server name			*/
-   ,int   logging		/* <r> flag				*/
+   ,char   logging		/* <r> flag				*/
    );
 int   ServerStartServer(
     char  *srvnam		/* <r> server name			*/
