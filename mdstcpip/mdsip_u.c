@@ -1174,7 +1174,7 @@ static void ProcessMessage(Client *c, Message *message)
       { 
         struct stat statbuf;
         int status = (stat(message->bytes,&statbuf) == 0);
-	      DESCRIPTOR(status_d,0);
+        DESCRIPTOR_LONG(status_d,0);
         status_d.pointer = (char *)&status;
         SendResponse(c, 1, (struct descriptor *)&status_d);
         break;
@@ -1182,14 +1182,14 @@ static void ProcessMessage(Client *c, Message *message)
     case MDS_IO_REMOVE_K:
       { 
         int status = remove(message->bytes);
-        DESCRIPTOR(status_d,0);
+        DESCRIPTOR_LONG(status_d,0);
         status_d.pointer = (char *)&status;
         SendResponse(c, 1, (struct descriptor *)&status_d);
         break;
       }
     case MDS_IO_RENAME_K:
       {
-        DESCRIPTOR(status_d,0);
+        DESCRIPTOR_LONG(status_d,0);
 #ifdef HAVE_VXWORKS_H
         int status = copy(message->bytes,message->bytes+strlen(message->bytes)+1);
         if (status == 0)
