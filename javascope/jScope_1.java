@@ -7,6 +7,8 @@ import java.util.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.plaf.*;
+import javax.swing.table.*;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 
@@ -22,8 +24,6 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 
   JWindow aboutScreen;
 
-  /** Default server */
-  //static final String DEFAULT_SERVER = "Demo server";
   /**Main menu bar*/
   protected JMenuBar       mb;
   /**Menus on menu bar */
@@ -51,8 +51,8 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   private JTextField     shot_t, signal_expr;
   private JButton        apply_b;
   private JFileChooser    file_diag = new JFileChooser();
-  protected String        curr_directory;//, curr_file_name;
-  protected String        last_directory;//, last_file_name;
+  protected String        curr_directory;
+  protected String        last_directory;
   private JLabel	        point_pos, print_icon;
   private JTextField	    info_text, net_text;
   private WindowDialog  win_diag;
@@ -63,7 +63,6 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   private PubVarDialog      pub_var_diag;
   static int		num_scope = 0;
   private String	config_file;
-  //static  String[]	server_ip_list;
   static DataServerItem[] server_ip_list;
   ServerDialog      server_diag;
   static  boolean	not_sup_local = false;
@@ -80,7 +79,6 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   int height = 500, width = 700, xpos = 50, ypos = 50;
   jScopeDefaultValues def_values = new jScopeDefaultValues();
   SetupDataDialog setup_dialog;  
-//  static SignalCache sc = new SignalCache();
   JProgressBar progress_bar;
 
   private jScopeBrowseUrl help_dialog ;
@@ -421,6 +419,7 @@ static int T_messageType;
 	    
   public jScope_1(int spos_x, int spos_y)
   {
+    
     if(num_scope == 0)
     {
 	    createAboutScreen();
@@ -491,6 +490,21 @@ static int T_messageType;
     look_and_feel_m = new JMenu("Look & Feel");
     edit_m.add(look_and_feel_m);
 
+
+
+    JMenuItem sign = new JMenuItem("History...");
+    sign.addActionListener(new ActionListener()
+    {
+        public void actionPerformed(ActionEvent e) 
+        {
+            SignalsBoxDialog sig_box_diag = new SignalsBoxDialog(jScope_1.this, "Visited Signals", false);
+    	    sig_box_diag.setVisible(true);	
+        }
+    });
+    
+    edit_m.add(sign);
+
+
     close_i = new JMenuItem("Close");
     close_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
     edit_m.add(close_i);
@@ -500,6 +514,7 @@ static int T_messageType;
     exit_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
     edit_m.add(exit_i);	
     exit_i.addActionListener(this);
+
 
    // Look and Feel Radio control
 
@@ -886,6 +901,57 @@ static int T_messageType;
         }       
     }
  
+  public void SetApplicationFonts(String font, int style, int size)
+  {
+    SetApplicationFonts(new Font(font, style, size));
+  }
+ 
+ 
+  public void SetApplicationFonts(Font font)
+  {
+    //int fontSize=9;
+    //Font userEntryFont = new Font("Dialog", Font.PLAIN, fontSize);
+    //Font defaultFont = new Font("Dialog", Font.PLAIN, fontSize);
+    //Font boldFont = new Font("Dialog", Font.BOLD, fontSize);
+    Font userEntryFont = font;
+    Font defaultFont = font;
+    Font boldFont = font;
+    //writeToFile("c:\\temp\\outFile.txt",String.valueOf(UIManager.getDefaults())); // write out defaults
+    // User entry widgets
+    UIManager.put("Text.font", new FontUIResource(userEntryFont));
+    UIManager.put("TextField.font", new FontUIResource(userEntryFont));
+    UIManager.put("TextArea.font", new FontUIResource(userEntryFont));
+    UIManager.put("TextPane.font", new FontUIResource(userEntryFont));
+    UIManager.put("List.font", new FontUIResource(userEntryFont));
+    UIManager.put("Table.font", new FontUIResource(userEntryFont));
+    UIManager.put("ComboBox.font", new FontUIResource(userEntryFont));
+    // Non-user entry widgets
+    UIManager.put("Button.font",new FontUIResource(defaultFont));
+    UIManager.put("Label.font", new FontUIResource(defaultFont));
+    UIManager.put("Menu.font", new FontUIResource(defaultFont));
+    UIManager.put("MenuItem.font", new FontUIResource(defaultFont));
+    UIManager.put("ToolTip.font", new FontUIResource(defaultFont));
+    UIManager.put("ToggleButton.font", new FontUIResource(defaultFont));
+    UIManager.put("TitledBorder.font", new FontUIResource(boldFont));
+    UIManager.put("PopupMenu.font", new FontUIResource(defaultFont));
+    UIManager.put("TableHeader.font", new FontUIResource(defaultFont));
+    UIManager.put("PasswordField.font", new FontUIResource(defaultFont));
+    UIManager.put("CheckBoxMenuItem.font", new FontUIResource(defaultFont));    
+    UIManager.put("CheckBox.font", new FontUIResource(defaultFont));    
+    UIManager.put("RadioButtonMenuItem.font", new FontUIResource(defaultFont));    
+    UIManager.put("RadioButton.font", new FontUIResource(defaultFont));    
+ // Containters
+    UIManager.put("ToolBar.font", new FontUIResource(defaultFont));
+    UIManager.put("MenuBar.font", new FontUIResource(defaultFont));
+    UIManager.put("Panel.font", new FontUIResource(defaultFont));
+    UIManager.put("ProgressBar.font", new FontUIResource(defaultFont));
+    UIManager.put("TextPane.font", new FontUIResource(defaultFont));
+    UIManager.put("OptionPane.font", new FontUIResource(defaultFont));
+    UIManager.put("ScrollPane.font", new FontUIResource(defaultFont));
+    UIManager.put("EditorPane.font", new FontUIResource(defaultFont));
+    UIManager.put("ColorChooser.font", new FontUIResource(defaultFont));
+    jScopeUpdateUI();
+  }
     
   public void InvalidateDefaults()
   {
@@ -1625,10 +1691,9 @@ static int T_messageType;
     if(ob == default_i)
     {
 	    
-	    setup_default.setLocationRelativeTo(this);
         javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-	            setup_default.Show(jScope_1.this.def_values);	    
+	            setup_default.Show(jScope_1.this, jScope_1.this.def_values);	    
             }
         });
         t.setRepeats(false);
@@ -2122,6 +2187,17 @@ static int T_messageType;
   }
     
 
+     protected  void jScopeUpdateUI() 
+     {
+        jScope_1.jScopeSetUI(this);
+        jScope_1.jScopeSetUI(font_dialog);
+        jScope_1.jScopeSetUI(setup_default);
+        jScope_1.jScopeSetUI(color_dialog);
+        jScope_1.jScopeSetUI(pub_var_diag);
+        jScope_1.jScopeSetUI(server_diag);
+        jScope_1.jScopeSetUI(file_diag);
+     }
+
 
      protected static void jScopeSetUI(Component c) 
      {
@@ -2181,13 +2257,15 @@ static int T_messageType;
 	    	                                UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 	    	                                SwingUtilities.updateComponentTreeUI(jScope_1.this);
 	                                    } 
+                jScopeUpdateUI();
+                /*
                 jScope_1.jScopeSetUI(font_dialog);
                 jScope_1.jScopeSetUI(setup_default);
                 jScope_1.jScopeSetUI(color_dialog);
                 jScope_1.jScopeSetUI(pub_var_diag);
                 jScope_1.jScopeSetUI(server_diag);
                 jScope_1.jScopeSetUI(file_diag);
-                
+                */
             }
             catch (UnsupportedLookAndFeelException exc)
             {
@@ -2576,7 +2654,6 @@ class ServerDialog extends JDialog implements ActionListener
 	    {
 	        addServerIpList(dw.server_ip_list);
 	    }
-	    pack();
 	    
     }
 
@@ -2602,7 +2679,8 @@ class ServerDialog extends JDialog implements ActionListener
     }
     
     public void Show()
-    {    
+    {   
+        pack();
 	    setLocationRelativeTo(dw);
 	    show();
     }

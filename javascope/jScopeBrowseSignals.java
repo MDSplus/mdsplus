@@ -69,7 +69,7 @@
             String shot = (with_shot) ? getShot() : null;
             if(sig_path != null) 
             {
-                wave_panel.AddSignal(getTree(), shot, sig_path, true);
+                wave_panel.AddSignal(getTree(), shot, "", sig_path, true);
             }
         }
      }

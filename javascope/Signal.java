@@ -1217,8 +1217,10 @@ public class Signal
      */
     public void setXlimits(float xmin, float xmax)
     {
-	    this.xmax = xmax;
-	    this.xmin = xmin;
+        if(xmax != Float.MAX_VALUE)
+            this.xmax = saved_xmax = xmax;
+        if(xmin != Float.MIN_VALUE)
+            this.xmin = saved_xmin = xmin;        
     }
 
     /**
@@ -1229,8 +1231,10 @@ public class Signal
      */
     public void setYlimits(float ymin, float ymax)
     {
-	    this.ymax = ymax;
-	    this.ymin = ymin;
+        if(ymax != Float.MAX_VALUE)
+            this.ymax = saved_ymax = ymax;
+        if(ymin != Float.MIN_VALUE)
+            this.ymin = saved_ymin = ymin;        
     }
 
     /**

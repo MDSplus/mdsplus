@@ -66,7 +66,14 @@ class UniversalDataProvider implements DataProvider
         return null;
     }
     
-    public void    Dispose(){}
+    public void    Dispose()
+    {
+        rfx.Dispose();
+        ftu.Dispose(); 
+        twu.Dispose();
+        jet.Dispose();
+        jetmds.Dispose();
+    }
     public boolean SupportsCompression(){return false;}
     public void    SetCompression(boolean state){}
     public boolean SupportsContinuous() { return true; }

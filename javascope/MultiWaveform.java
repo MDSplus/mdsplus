@@ -123,15 +123,19 @@ public class MultiWaveform extends Waveform
     public void addSignal(Signal s)
     {
         if(!exists(s))
+        {
             signals.addElement(s);
+            setLimits();
+        }
     }
 
     public void addSignals(Signal s[])
     {
         if(s == null || s.length == 0) return;
         for(int i = 0; i < s.length; i++)
-            addSignal(s[i]);    
-	    UpdateLimits();
+            addSignal(s[i]);
+	    //UpdateLimits();
+	    setLimits();
 	    if(waveform_signal != null)
 	    {
 	        curr_point_sig_idx = 0;
@@ -163,6 +167,8 @@ public class MultiWaveform extends Waveform
 
     public double GetLegendXPosition(){return legend_x;}
     public double GetLegendYPosition(){return legend_y;}
+
+    public int getLegendMode(){return legend_mode;}
 
     public void setLegendMode(int legend_mode)
     {
@@ -478,6 +484,14 @@ public class MultiWaveform extends Waveform
     public int getSignalCount()
     {
         return GetShowSignalCount();
+    }
+
+    protected void setLimits()
+    {
+      setXlimits(lx_min, lx_max);
+      setYlimits(ly_min, ly_max);      
+      UpdateLimits();
+	  change_limits = true;
     }
 
     

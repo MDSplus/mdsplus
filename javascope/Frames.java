@@ -32,10 +32,6 @@ class Frames extends Canvas {
     {
         super();
         tracker = new MediaTracker(this);
-        byte rgb[] = new byte[256], b = 0;
-        for(int i = 0; i < 256; i++, b++)
-            rgb[i] = b;                   
-        c_model = new IndexColorModel(8, 256, rgb, rgb, rgb);
     }
     
     Frames(Frames frames)
@@ -77,6 +73,21 @@ class Frames extends Canvas {
         return FrameData.JAI_IMAGE;
     }
     
+    public void CreateColorModel(int mode)
+    {
+        int pixel_size;
+        switch(mode)
+        {
+            case FrameData.BITMAP_IMAGE_8 : pixel_size = 8; break;
+            case FrameData.BITMAP_IMAGE_16 : pixel_size = 16; break;
+            case FrameData.BITMAP_IMAGE_32 : pixel_size = 32; break;
+            default: return;
+        }
+        byte rgb[] = new byte[256], b = 0;
+        for(int i = 0; i < 256; i++, b++)
+            rgb[i] = b;                   
+        c_model = new IndexColorModel(pixel_size, 256, rgb, rgb, rgb);
+    }
     
     protected void finalize()
     {
@@ -92,6 +103,8 @@ class Frames extends Canvas {
         int n_frames = fd.GetNumFrames();
         float t[] = fd.GetFrameTimes();
         byte[] buf;
+        
+        CreateColorModel(fd.GetFrameType());       
         for(int i = 0; i < n_frames; i++)
         {
             buf = fd.GetFrameAt(i);
@@ -99,7 +112,7 @@ class Frames extends Canvas {
                 continue;
             switch(fd.GetFrameType())
             {
-                case FrameData.BITMAP_IMAGE :
+                case FrameData.BITMAP_IMAGE_8 :
                     FlipFrame(buf, fd.GetFrameDimension());
                     AddBITMAPImage(buf, fd.GetFrameDimension(), t[i]);
                 break;
@@ -135,7 +148,7 @@ class Frames extends Canvas {
     {
         return false;
     }    
-
+    
     public void SetColorIdx(int color_idx)
     {
         this.color_idx = color_idx;

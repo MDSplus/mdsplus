@@ -9,8 +9,9 @@ import javax.swing.*;
 public class WavePopup extends JPopupMenu implements  ItemListener {
 		
 	protected Waveform   wave = null;
+	protected SetupWaveformParams setup_params;
 	protected JSeparator sep2;
-	protected JMenuItem autoscale, autoscaleY, autoscaleAll, autoscaleAllY,
+	protected JMenuItem setup, autoscale, autoscaleY, autoscaleAll, autoscaleAllY,
 		      allSameScale, allSameXScale, allSameXScaleAutoY, allSameYScale,
 		      resetScales, resetAllScales, playFrame,
 		      set_point, undo_zoom; 
@@ -24,7 +25,24 @@ public class WavePopup extends JPopupMenu implements  ItemListener {
 	protected Container parent;
 
     public WavePopup()
+    {
+        this(null);
+    }
+    
+    public WavePopup(SetupWaveformParams setup_params)
     {	    
+
+	    setup = new JMenuItem("Set Limits...");
+	    setup.addActionListener(new ActionListener()
+	        {
+	            public void actionPerformed(ActionEvent e)
+	            {
+                    ShowDialog();
+	            }
+	        }
+	    );
+        this.setup_params = setup_params;
+	    
 	    set_point = new JMenuItem("Set Point");
 	    set_point.addActionListener(new ActionListener()
 	        {
@@ -234,6 +252,13 @@ public class WavePopup extends JPopupMenu implements  ItemListener {
 	        }
 	    );
     }
+    
+    protected void ShowDialog()
+    {
+        if(setup_params != null)
+            setup_params.Show(wave);
+    }
+    
 	
 	protected void SelectListItem(ButtonGroup bg, int idx)
 	{
@@ -292,7 +317,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener {
               insert(set_point, 0);
            }     
        } else {
-        
+           add(setup);
            add(markerList);
            colorList.setText("Colors");
            add(colorList);	
@@ -332,7 +357,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener {
            }     
            if(wave.mode == Waveform.MODE_POINT)
            {
-              insert(set_point, 0);
+              insert(set_point, 1);
            }     
        }
 	}

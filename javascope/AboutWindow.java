@@ -45,8 +45,7 @@ public class AboutWindow extends JLabel  {
     g.setColor( new Color( 128, 128, 128 ) );
     g.drawRect( -1, -1, getWidth(), getHeight() ); // makes a bevel border likeness
     
-//    g.drawString( "v" + SystemState.version, start, top );
-
+    g.drawString( jScope.VERSION, start, botton - 3*delta);
     g.drawString( "http://www.igi.pd.cnr.it",  start, botton - 2*delta );
     g.drawString( "JVM used :" +  System.getProperty("java.version"), start, botton -  delta );
     

@@ -8,6 +8,8 @@ import java.io.*;
 
 public class FontSelection extends JDialog implements ActionListener, ItemListener{
     JLabel fontLabel, sizeLabel, styleLabel, testLabel;
+    JRadioButton  application_i, waveform_i;
+    
     JButton ok, cancel, apply;
     FontPanel fontC;
     JComboBox fonts, sizes, styles;
@@ -34,11 +36,14 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         JPanel stylePanel = new JPanel();
         JPanel sizeAndStylePanel = new JPanel();
         JPanel buttonPanel = new JPanel();
+        JPanel fontSelectionPanel = new JPanel();
+        
 
         topPanel.setLayout( new BorderLayout(5, 5));
         fontPanel.setLayout( new GridLayout( 2, 1 ) );
         sizePanel.setLayout( new GridLayout( 2, 1 ) );
         stylePanel.setLayout( new GridLayout( 2, 1 ) );
+        fontSelectionPanel.setLayout(new GridLayout( 2, 1 ));
         sizeAndStylePanel.setLayout( new BorderLayout() );
         buttonPanel.setLayout( new FlowLayout() );
 
@@ -46,6 +51,7 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         sizeAndStylePanel.add( BorderLayout.WEST, sizePanel );
         sizeAndStylePanel.add( BorderLayout.CENTER, stylePanel );
         topPanel.add( BorderLayout.CENTER, sizeAndStylePanel );
+        topPanel.add( BorderLayout.SOUTH, fontSelectionPanel );
 
         getContentPane().add( BorderLayout.NORTH, topPanel );
 
@@ -68,12 +74,16 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         styleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         stylePanel.add(styleLabel);
 
-//        if(System.getProperty("java.version").equals("1.2.2"))
-//        {
-            GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            envfonts = gEnv.getAvailableFontFamilyNames();
-//        } else
-//            envfonts = getToolkit().getFontList();
+        GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        envfonts = gEnv.getAvailableFontFamilyNames();       
+        
+        ButtonGroup   font_selection = new ButtonGroup();
+        application_i = new JRadioButton("Application");
+        fontSelectionPanel.add(application_i);
+        waveform_i  = new JRadioButton("Waveform", true);
+        fontSelectionPanel.add(waveform_i);
+        font_selection.add(application_i);
+        font_selection.add(waveform_i);
         
         
         fonts = new JComboBox(envfonts);
@@ -141,6 +151,14 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         int i = 0, len;
        
         if(js_prop == null) return;
+        
+        if((prop = (String)js_prop.getProperty("jScope.font.application")) != null) 
+	    {
+	         main_scope.SetApplicationFonts(StringToFont(prop));
+	    }
+
+        
+        
         prop = (String)js_prop.getProperty("jScope.font");
         
         if(prop == null) return;
@@ -181,6 +199,7 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
     {
     	String prop;
     
+
 	    if((prop = pr.getProperty(prompt)) != null) {
 	         font = StringToFont(prop);
 	    }
@@ -230,11 +249,20 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
     
 	    if (ob == ok || ob == apply)
 	    {
-            font = GetFont();
-            main_scope.UpdateFont();
-            main_scope.RepaintAllWaves();
-            main_scope.setChange(true);
-	        if(ob == ok)
+	        if(waveform_i.isSelected())
+	        {
+                font = GetFont();
+                main_scope.UpdateFont();
+                main_scope.RepaintAllWaves();
+                main_scope.setChange(true);
+            }
+            
+	        if(application_i.isSelected())
+	        {
+                main_scope.SetApplicationFonts(GetFont());
+                //SwingUtilities.updateComponentTreeUI(main_scope);
+            }
+            if(ob == ok)
 		        setVisible(false);
         }  
 

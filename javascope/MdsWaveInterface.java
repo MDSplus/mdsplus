@@ -3,8 +3,8 @@ import java.awt.*;
 import java.util.*;
 
 
-class MdsWaveInterface extends WaveInterface {
- 
+class MdsWaveInterface extends WaveInterface 
+{
  
     public String  in_def_node, in_upd_event, last_upd_event;
  

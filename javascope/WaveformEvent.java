@@ -158,13 +158,22 @@ public class WaveformEvent extends AWTEvent {
                         else
 	                        if(!tf.equals(nan_f))
 	                            xt_string = ", T = "+ Waveform.ConvertToString(time_value, false);
-                                
+//required to view exact values 
+//remove conversion to exponential form
+/*                  
                         if(xt_string == null)                               
 	                        s = SetStrSize("[" + Waveform.ConvertToString(point_x, false) + ", " 
 				                + Waveform.ConvertToString(point_y, false) + "]", 30);
 				        else 
 	                        s = SetStrSize("[" + Waveform.ConvertToString(point_x, false) + ", " 
 				                + Waveform.ConvertToString(point_y, false) + xt_string + "]", 50);
+*/
+                        if(xt_string == null)                               
+	                        s = SetStrSize("[" + new Float(point_x) + ", " 
+				                + new Float(point_y) + "]", 30);
+				        else 
+	                        s = SetStrSize("[" + new Float(point_x) + ", " 
+				                + new Float(point_y) + xt_string + "]", 50);
 		            } else 
 	                        s = SetStrSize("[" + ((int)point_x) + ", " 
 				                       + ((int)point_y) + " : " 

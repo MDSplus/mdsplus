@@ -23,8 +23,8 @@ public class MdsConnection
     int pending_count = 0;
     
     transient Vector   connection_listener = new Vector();  
-    transient boolean  event_flags[]    = new boolean[MAX_NUM_EVENTS];
-    transient Vector   event_list     = new Vector();
+    transient boolean  event_flags[]       = new boolean[MAX_NUM_EVENTS];
+    transient Vector   event_list          = new Vector();
 
     static class Item
     {

@@ -8,19 +8,29 @@ import java.awt.event.ItemEvent;
 import javax.swing.JMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JPanel;
+import javax.swing.BoxLayout;
 
 
 
-public class MultiWavePopup extends WavePopup {
+
+public class MultiWavePopup extends WavePopup 
+{
 	protected MultiWaveform   wave = null;
 	protected JMenuItem legend, remove_legend;
     protected JMenu signalList;
 	
-    public MultiWavePopup()
+	public MultiWavePopup()
     {
-        super();
+        this(null);
+    }
+    
+    public MultiWavePopup(SetupWaveformParams setup_params)
+    {
+        super(setup_params);
         
-	    insert(legend = new JMenuItem("Position legend"), 0);
+	    insert(legend = new JMenuItem("Position legend"), 1);
 	    legend.addActionListener(new ActionListener()
 	        {
                 public void actionPerformed(ActionEvent e)
@@ -65,14 +75,14 @@ public class MultiWavePopup extends WavePopup {
 	    super.SetMenuItem(is_image);
         if(!is_image)
         {
-	       insert(legend, 0);
+	       insert(legend, 1);
 	       if(wave.isFixedLegend())
 	       {
-             insert(signalList, 1);
+             insert(signalList, 2);
              legend.setText("Show Legend");
            } else {
-             insert(remove_legend, 1);
-             insert(signalList, 2);
+             insert(remove_legend, 2);
+             insert(signalList, 3);
            }
         }
 	}
@@ -133,14 +143,23 @@ public class MultiWavePopup extends WavePopup {
             JCheckBoxMenuItem ob;
             if(s_name != null)
             {
+/*
+                JPanel pan = new JPanel();
+                BoxLayout bl = new BoxLayout(pan, BoxLayout.Y_AXIS);
+                JScrollPane jsp = new JScrollPane(pan);
+  */              
+                
                 int ccc = signalList.getItemCount();
                 if(signalList.getItemCount() != 0)
                     signalList.removeAll();        
                 signalList.setEnabled(s_name.length != 0);
 	            legend.setEnabled(s_name.length != 0);
+                
+                
                 for(int i = 0; i < s_name.length; i++)
                 {
-                    signalList.add(ob = new JCheckBoxMenuItem(s_name[i]));
+                    ob = new JCheckBoxMenuItem(s_name[i]);
+                    signalList.add(ob);
                     ob.setState(s_state[i]);
 	                ob.addItemListener(new ItemListener()
 	                {

@@ -903,6 +903,18 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	    }
     }
     
+    public void RemoveAllSignals()
+    {
+        Waveform w;
+        for(int i = 0; i < getGridComponentCount(); i++)
+        {
+            w = GetWavePanel(i);
+            if(w != null)
+	            w.Erase();
+	    }
+	    System.gc();
+    }
+    
     public void LoadFileConfiguration(){}
     
     public void PrintAll(Graphics g, int st_x, int st_y, int height, int width)

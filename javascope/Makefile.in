@@ -8,7 +8,7 @@ JAR = @JAR@
 INSTALL=@top_srcdir@/conf/install-sh -c
 DOCS=ConnectionEvent.html      DataProvider.html         UpdateEvent.html          WaveData.html\
 ConnectionListener.html   FrameData.html            UpdateEventListener.html  jScope.html    data_setup.jpg \
-frame_popup.jpg  image_setup.jpg  jScope.jpg       popup.jpg
+frame_popup.jpg  image_setup.jpg  jScope.jpg       popup.jpg CompositeWaveDisplay.html
 
 
 APPLETSOURCES = \
@@ -28,7 +28,7 @@ JiNcVarImp.java             RdaAccess.java              WavePopup.java          
 Descriptor.java             JiNcVarInt.java             RotateFilter.java           Waveform.java             	 \
 JiNcVarShort.java  \
 FrameData.java              JiSlab.java \
-JiSlabIterator.java         			    WaveformEvent.java  \
+JiSlabIterator.java         			    WaveformEvent.java  	   SetupWaveformParams.java 	SignalBox.java\
 Frames.java                 JiVar.java              UniversalDataProvider.java     WaveformListener.java NotConnectedDataProvider.java
 
 
@@ -51,7 +51,8 @@ Descriptor.java             JiNcVarInt.java             RotateFilter.java       
 FontSelection.java          JiNcVarShort.java           RowColumnContainer.java     WaveformContainer.java      jScopeWavePopup.java \
 FrameData.java              JiSlab.java                 RowColumnLayout.java        WaveformContainer_2.java    jScope_1.java \
 JiSlabIterator.java         SetupDataDialog.java        WaveformEvent.java          jScope_2.java 		UniversalDataProvider.java\
-Frames.java                 JiVar.java                  SetupDefaults.java          WaveformListener.java	NotConnectedDataProvider.java
+Frames.java                 JiVar.java                  SetupDefaults.java          WaveformListener.java	NotConnectedDataProvider.java\
+SignalsBoxDialog.java	    SignalBox.java		MdsDataClient.java	    MdsIOException.java		SetupWaveformParams.java
 
 CLASSES = $(SOURCES:.java=.class)
 

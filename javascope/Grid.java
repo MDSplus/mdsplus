@@ -96,7 +96,7 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 	else 
 	{
 	    greater = false;
-	    while(step < 1)
+	    while(step < 1 && step > 0)
 	    {
 		step *= 10;
 		count++;

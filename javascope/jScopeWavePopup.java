@@ -11,13 +11,14 @@ import javax.swing.*;
 
 class jScopeWavePopup extends MultiWavePopup {
 	private   SetupDataDialog setup_dialog;
-	protected JMenuItem setup, refresh, saveAsText;
+	protected JMenuItem refresh, saveAsText;
 	protected JMenuItem  selectWave, remove_panel, profile_dialog;
 	protected JSeparator sep1, sep3;
         
     public jScopeWavePopup(SetupDataDialog setup_dialog)
     {
         super();
+        /*
 	    insert(setup = new JMenuItem("Setup data source..."), 0);
 	    setup.addActionListener(new ActionListener()
 	        {
@@ -28,7 +29,10 @@ class jScopeWavePopup extends MultiWavePopup {
 	        }
 	    );
 	    this.setup_dialog = setup_dialog;
-
+        */
+        setup.setText("Setup data source...");
+	    this.setup_dialog = setup_dialog;
+        
 	    insert(selectWave = new JMenuItem("Select wave panel"), 1);
 	    selectWave.addActionListener(new ActionListener()
 	        {
@@ -103,7 +107,12 @@ class jScopeWavePopup extends MultiWavePopup {
 	    );
 
     }
-    
+
+    protected void ShowDialog()
+    {
+	    jScopeWavePopup.this.ShowSetupDialog();  
+    }
+
     
 	protected void SetMenuItem(boolean is_image)
 	{	   

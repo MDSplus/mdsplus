@@ -1125,13 +1125,22 @@ class jScopeWaveContainer extends WaveformContainer
             if( !check_prev_signal || (check_prev_signal && (prev_add_signal == null || !prev_add_signal.equals(expr))))
             {
                 prev_add_signal = expr;
-                AddSignal(null, null, expr, false);
+                AddSignal(null, null, "", expr, false);
             }
     }
 
+    public void AddSignal(String tree, String shot, String x_expr, String y_expr, boolean with_error)
+    {
+        String x[] = new String[1];
+        String y[] = new String[1];
+        x[0] = x_expr;
+        y[0] = y_expr;
+        AddSignals( tree, shot, x, y, with_error);
+    }
+    
     // with_error == true => Signals is added also if an error occurs 
     // during its evaluations
-    public void AddSignal(String tree, String shot, String expr, boolean with_error)
+    public void AddSignals(String tree, String shot, String x_expr[], String y_expr[], boolean with_error)
     {
         MdsWaveInterface new_wi = null;
         jScopeMultiWave sel_wave = (jScopeMultiWave)GetSelectPanel();
@@ -1164,7 +1173,7 @@ class jScopeWaveContainer extends WaveformContainer
             ((MdsWaveInterface)sel_wave.wi).defaults &= ~(1 << MdsWaveInterface.B_shot);
         }
         
-        if(sel_wave.wi.AddSignal(expr)) 
+        if(sel_wave.wi.AddSignals(x_expr, y_expr)) 
         {
             add_sig = true;
             Refresh(sel_wave, "Add signal to");

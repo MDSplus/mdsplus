@@ -239,7 +239,6 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
     	c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(p1, c);
 	    getContentPane().add(p1);
-        pack();	 
      }
  
     private void GetPropertiesValue()
@@ -274,7 +273,7 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 	    setColorItemToList();
 //	color_set_clone = (Vector)color_set.clone();
 	    color_set_clone = CopyColorItemsVector(color_set);
-	   
+	    pack();	 
 	    this.setLocationRelativeTo(f);
     	setVisible(true);	
     }

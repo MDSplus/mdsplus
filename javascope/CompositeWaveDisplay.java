@@ -8,7 +8,6 @@ import javax.swing.*;
 import java.security.AccessControlException;
 //import java.awt.print.*;
 
-
 public class CompositeWaveDisplay extends JApplet implements WaveContainerListener
 {
     private WaveformContainer_2 wave_container;
@@ -86,7 +85,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         super();
     }
     
-    public CompositeWaveDisplay(boolean isApplet)
+    private CompositeWaveDisplay(boolean isApplet)
     {
         super();
         this.isApplet = isApplet;
@@ -105,7 +104,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         setBackground(Color.lightGray);
         wave_container = new WaveformContainer_2();
         wave_container.addWaveContainerListener(this);
-        WavePopup wave_popup = new MultiWavePopup();
+        WavePopup wave_popup = new MultiWavePopup(new SetupWaveformParams(f, "Waveform Params"));
         wave_container.setPopupMenu(wave_popup);
         wave_container.SetMode(Waveform.MODE_ZOOM);
                 
@@ -390,8 +389,22 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
     }
     
 
+    /**
+     * Add new signal, defined by  x and y float vectors, to the
+     * panel in (row, column) position. The panel
+     * is created if not already  present.
+     * 
+     * @param x x array values
+     * @param y y array values
+     * @param row row position, starting from 1
+     * @param column column position, starting from 1
+     * @param color Signal color
+     * @param label Signal name
+     * @param inter Interpolation flag, if true a line is draw between adiacent point
+     * @param marker Marker point
+     */
     public void addSignal(float [] x, float [] y,int row, int column,  
-        String color, String label)
+        String color, String label, boolean inter, int marker)
     {
         Signal sig = new Signal(x, y);
         
@@ -409,22 +422,86 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 	    }
         if(label != null && label.length() != 0)
             sig.setName(label);
-            
+        
+        sig.setInterpolate(inter);
+        sig.setMarker(marker);
+        
         addSignal(sig, row, column);
         if(isShowing() && !isValid())
             wave_container.update();
+    	
+	}
+	
+	/**
+	 * Set Window dialog title.
+	 * 
+	 * @param title Title string
+	 */
+	public void setTitle(String title)
+	{
+	    if(f != null)
+	        f.setTitle(title);	    
+	}
+
+	/**
+	 * Remove all signals added to the panels.
+	 */
+	public void removeAllSignals()
+	{
+	    if(wave_container != null)
+	        wave_container.RemoveAllSignals();	    
+	}
+
+
+    /**
+     * Add new signal, defined as x and y float vectors, to 
+     * panel in (row, column) position. The panel
+     * is created if not already  present.
+     * 
+     * @param x x array values
+     * @param y y array values
+     * @param row Row  position
+     * @param column Column  position
+     * @param color Signal color
+     * @param label Signal name
+     */
+    public void addSignal(float [] x, float [] y,int row, int column,  
+        String color, String label)
+    {
+    	addSignal(x, y, row, column, color, label, true, 0);
 
     }
         
+    /**
+     * Show window with defined position and size.
+     * 
+     * @param x position
+     * @param y position
+     * @param width dimension
+     * @param height dimension
+     */
     public void showWindow(int x, int y, int width, int height)
     {
         wave_container.update();
-        ((JFrame)f).pack();
-        ((JFrame)f).setBounds(new Rectangle(x, y, width, height));
-        ((JFrame)f).show();
+        if(!this.isShowing())
+        {
+            ((JFrame)f).pack();
+            ((JFrame)f).setBounds(new Rectangle(x, y, width, height));
+            ((JFrame)f).show();
+        }
     }
 
 
+    /**
+     * Add new signal, defined as Signal class, to 
+     * panel in (row, column) position. The panel
+     * is created if not already  present.
+     * 
+     * @param s Signal to add
+     * @param row Row MultiWaveform position
+     * @param column Column MultiWaveform position
+     * @param col
+     */
     public void addSignal(Signal s, int row, int col)
     {
         Component c = null;

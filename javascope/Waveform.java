@@ -88,7 +88,7 @@ public class Waveform extends JComponent
     private boolean execute_print = false;
     static double mark_point_x, mark_point_y;
     protected boolean show_measure = false;
-    private boolean change_limits = false;
+    protected boolean change_limits = false;
     
     protected double wave_point_x = 0, wave_point_y = 0;
     protected double curr_point;  
@@ -119,6 +119,14 @@ public class Waveform extends JComponent
 	private boolean pan_enabled = true;
     static protected int horizontal_offset = 0;
     static protected int vertical_offset = 0;
+
+    private double xmax = 1, ymax = 1, xmin = 0, ymin = 0;
+    boolean is_min_size;
+
+    public float lx_max = Float.MAX_VALUE;
+    public float lx_min = Float.MIN_VALUE;
+    public float ly_max = Float.MAX_VALUE;
+    public float ly_min = Float.MIN_VALUE;
 	
      
     class ZoomRegion
@@ -793,7 +801,7 @@ public class Waveform extends JComponent
     {
 	    update_timestamp = 0;
     	waveform_signal = null;
-	    mode = MODE_ZOOM;
+//	    mode = MODE_ZOOM;
 	    dragging = false;
 //	    interpolate = true;
 	    first_set_point = true;
@@ -933,6 +941,8 @@ public class Waveform extends JComponent
 	    repaint();
     }
     
+    public int GetGridMode(){return grid_mode;}
+    
     public void SetGridMode(int grid_mode, boolean int_xlabel, boolean int_ylabel)
     {
 	    this.grid_mode = grid_mode;
@@ -943,6 +953,7 @@ public class Waveform extends JComponent
 	    not_drawn = true;
 	    //repaint();
     }
+    
 
     private void setMousePoint()
     {
@@ -1105,8 +1116,6 @@ public class Waveform extends JComponent
    }
 
 
-    private double xmax = 1, ymax = 1, xmin = 0, ymin = 0;
-    boolean is_min_size;
     
     protected void PaintSignal(Graphics g, Dimension dim, int print_mode)
     {
@@ -1737,6 +1746,25 @@ public class Waveform extends JComponent
 	        
     }
     
+    protected void setLimits()
+    {
+      setXlimits(lx_min, lx_max);
+      setYlimits(ly_min, ly_max);
+      change_limits = true;
+    }
+
+    public void setXlimits(float xmin, float xmax)
+    {
+        if(waveform_signal == null) return;
+        waveform_signal.setXlimits(xmin, xmax);
+    }
+    
+    public void setYlimits(float ymin, float ymax)
+    {
+        if(waveform_signal == null) return;        
+        waveform_signal.setYlimits(ymin, ymax);
+    }
+
     protected double MaxXSignal() 
     {
 	    if(waveform_signal == null)
@@ -2061,6 +2089,11 @@ public class Waveform extends JComponent
     }
     
     public void SetTitle(String title){this.title = title;}
+    public String GetTitle(){return title;}
+    public void SetXLabel(String x_label){this.x_label = x_label;}
+    public String GetXLabel(){return x_label;}
+    public void SetYLabel(String y_label){this.y_label = y_label;}
+    public String GetYLabel(){return y_label;}
 
     void ReportChanges()
     {
@@ -2128,7 +2161,9 @@ public class Waveform extends JComponent
         this.frames = frames;
     }
     
-    void SetReversed(boolean reversed)
+    public boolean IsReversed(){return reversed;}
+    
+    public void SetReversed(boolean reversed)
     {
         if(this.is_image && !reversed)
             return;

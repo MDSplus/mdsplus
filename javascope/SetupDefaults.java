@@ -240,7 +240,6 @@ public class SetupDefaults extends JDialog implements ActionListener {
       c.gridwidth = GridBagConstraints.REMAINDER;
       gridbag.setConstraints(p1, c);
       getContentPane().add(p1);	
- 	  pack();
   }
    
    private int IsGridMode(String mode)
@@ -445,10 +444,12 @@ public class SetupDefaults extends JDialog implements ActionListener {
     } 
        
 
-   public void  Show( jScopeDefaultValues def_vals)
+   public void  Show(Frame f,  jScopeDefaultValues def_vals)
    {
         this.def_vals = def_vals;
 	    initialize();
+ 	    pack();
+        setLocationRelativeTo(f);
 	    show();
    }
    

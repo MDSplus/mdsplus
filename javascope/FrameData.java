@@ -10,9 +10,11 @@ import java.io.IOException;
  */
 interface FrameData
 {
-    static final int BITMAP_IMAGE = 0;
-    static final int AWT_IMAGE = 1;
-    static final int JAI_IMAGE = 2;
+    static final int BITMAP_IMAGE_8  = 0;
+    static final int BITMAP_IMAGE_16 = 1;
+    static final int BITMAP_IMAGE_32 = 2;
+    static final int AWT_IMAGE = 3;
+    static final int JAI_IMAGE = 4;
     
     /**
      * Returns the type of the corresponding frames. Returned frames can have either of the following types:

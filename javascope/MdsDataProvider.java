@@ -26,6 +26,7 @@ public class MdsDataProvider implements DataProvider
         String in_x, in_y;
         float time_max, time_min;
         int mode = -1;
+        int pixel_size;
         int first_frame_idx = -1;
         byte buf[];
         String error;
@@ -51,6 +52,7 @@ public class MdsDataProvider implements DataProvider
                 ByteArrayInputStream b = new ByteArrayInputStream(buf);
                 DataInputStream d = new DataInputStream(b);
                 
+                pixel_size = d.readInt();
                 int width = d.readInt();
                 int height = d.readInt();
                 int img_size = height*width;
@@ -74,7 +76,12 @@ public class MdsDataProvider implements DataProvider
                 for(i = 0; i < f_time.size(); i++)
                     all_times[i] = ((Float)f_time.elementAt(i)).floatValue();
                 
-                mode = BITMAP_IMAGE;
+                switch(pixel_size)
+                {
+                    case 8:  mode = BITMAP_IMAGE_8; break;
+                    case 16: mode = BITMAP_IMAGE_16; break;
+                    case 32: mode = BITMAP_IMAGE_32; break;
+                }
             }
             else 
             {
@@ -109,12 +116,6 @@ public class MdsDataProvider implements DataProvider
                     }
                 }
                 end_idx = i;
-              /*  
-                if(in_y.indexOf(".gif") != -1 || in_y.indexOf(".jpg") != -1)
-                    mode = this.AWT_IMAGE;
-                else
-                    mode = this.JAI_IMAGE;
-              */
              }
              
              if(st_idx == -1)
@@ -149,7 +150,7 @@ public class MdsDataProvider implements DataProvider
             byte[] b_img = null;
             
                 
-            if(mode == BITMAP_IMAGE)
+            if(mode == BITMAP_IMAGE_8 || mode == BITMAP_IMAGE_16 || mode == BITMAP_IMAGE_32)
             {
                 if(buf == null)
                     throw(new IOException("Frames not loaded"));
@@ -160,8 +161,8 @@ public class MdsDataProvider implements DataProvider
                 if(buf == null)
                     throw(new IOException("Frames dimension not evaluated"));
  
-                int img_size = dim.width*dim.height;
-                d.skip(12+4*n_frames+ (st_idx + idx)*img_size);
+                int img_size = dim.width*dim.height * pixel_size/8;
+                d.skip(13+4*n_frames+ (st_idx + idx)*img_size);
                 
                 b_img = new byte[img_size];
                 d.read(b_img);
@@ -367,6 +368,7 @@ public class MdsDataProvider implements DataProvider
         byte img_buf[], out[] = null;
         float time[];
         int   shape[];
+        int pixel_size;
         
         if(!CheckOpen())
 	        return null;
@@ -382,9 +384,13 @@ public class MdsDataProvider implements DataProvider
         in = in_frame;
         img_buf = GetByteArray(in);
         if(img_buf == null) return null;
+        
+        pixel_size = img_buf.length/shape[0] * 8;
               
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream d = new DataOutputStream(b);
+        
+        d.writeInt(pixel_size);
         
         for(int i = 0; i < shape.length; i++)
             d.writeInt(shape[i]);
@@ -428,7 +434,7 @@ public class MdsDataProvider implements DataProvider
         return null;
     } 
 
-    public byte[] GetFrameAt(String in_frame, int frame_idx)
+    public byte[] GetFrameAt(String in_frame, int frame_idx) throws IOException
     {
         
         String exp = GetExperimentName(in_frame);
@@ -440,14 +446,21 @@ public class MdsDataProvider implements DataProvider
         return GetByteArray(in);
     }
 
-    protected synchronized byte[] GetByteArray(String in)
+    protected synchronized byte[] GetByteArray(String in) throws IOException
     {
+        byte out_byte[] = null;
+        ByteArrayOutputStream dosb = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(dosb);
+
+        
         Descriptor desc = mds.MdsValue(in);
         switch(desc.dtype)  {
 	        case Descriptor.DTYPE_FLOAT:
-	        case Descriptor.DTYPE_LONG: 
-	            error = "Cannot convert float or long array to byte array";
-	        return null;
+	        case Descriptor.DTYPE_LONG:
+	            for(int i = 0; i < desc.int_data.length; i++)
+                    dos.writeInt(desc.int_data[i]);
+                out_byte = dosb.toByteArray();
+	            return out_byte;
 	        case Descriptor.DTYPE_BYTE:
 	            return desc.byte_data;
 	        case Descriptor.DTYPE_CSTRING:
@@ -663,26 +676,21 @@ public class MdsDataProvider implements DataProvider
     
     public int[] GetShots(String in) throws IOException
     {
-        return GetIntArray(in);
+        //To shot evaluation don't execute check
+        //if a pulse file is open
+        CheckConnection();
+        return GetIntegerArray(in);
     }
-    /*
-    public synchronized int[] GetIntArray(String in) throws IOException
+    
+    
+    public int[] GetIntArray(String in) throws IOException
     {
-        float float_data[] = GetFloatArray(in);
-        if(float_data != null)
-        {
-	        int out_data[] = new int[float_data.length];
-	        for(int i = 0; i < float_data.length; i++)
-		        out_data[i] = (int)(float_data[i]);// + 0.5);
-	        return out_data;
-	    } else
-	        return null;
-    }
-  */  	
-    public synchronized int[] GetIntArray(String in) throws IOException
+        if(!CheckOpen()) return null;
+        return GetIntegerArray(in);
+    }        
+   
+    private synchronized int[] GetIntegerArray(String in) throws IOException
     {
-        if(!CheckOpen())
-	    return null;
         Descriptor desc = mds.MdsValue(in);
         switch(desc.dtype)  {
 	    case Descriptor.DTYPE_LONG:
@@ -703,8 +711,7 @@ public class MdsDataProvider implements DataProvider
 	        return null;
         }	
         return null;
-    }        
-   
+    }
     
     public void Dispose()
     {
@@ -712,6 +719,21 @@ public class MdsDataProvider implements DataProvider
         {
             connected = false;
             mds.DisconnectFromMds();
+        }
+    }
+
+    protected synchronized  void CheckConnection() throws IOException
+    {
+        if(!connected)
+        {
+	        if(mds.ConnectToMds(use_compression) == 0)
+	        {
+	            if(mds.error != null)
+	                throw new IOException(mds.error);
+	            else
+                    throw new IOException("Could not get IO for "+provider);
+            } else
+                connected = true;
         }
     }
     	    
@@ -730,7 +752,7 @@ public class MdsDataProvider implements DataProvider
 	            return false;
 	        }
 	        connected = true;
-        }	
+        }
         if(!open && experiment != null)
         {
             //System.out.println("Open tree "+experiment+ " shot "+ shot);
@@ -754,8 +776,8 @@ public class MdsDataProvider implements DataProvider
 		                                shot + " : "+ mds.error;
 	            else
 		            error = "Cannot open experiment " + experiment + " shot "+ shot;	    
-	          //  return false;
-	          return true;
+	            return false;
+	            //return true;
 	        }
         }
         if(open && def_node_changed)
@@ -803,19 +825,8 @@ public class MdsDataProvider implements DataProvider
         
         
         if(event_name == null || event_name.trim().length() == 0)
-            return;
-        
-        if(!connected)
-        {
-	        if(mds.ConnectToMds(use_compression) == 0)
-	        {
-	            if(mds.error != null)
-	                throw new IOException(mds.error);
-	            else
-                    throw new IOException("Could not get IO for "+provider);
-            } else
-                connected = true;
-        }
+            return;        
+        CheckConnection();
 	    mds.MdsSetEvent(l, event_name);
     }
 
@@ -825,19 +836,8 @@ public class MdsDataProvider implements DataProvider
         String error;
 
         if(event_name == null || event_name.trim().length() == 0)
-            return;
-       
-        if(!connected)
-        {
-	        if(mds.ConnectToMds(use_compression) == 0)
-	        {
-	            if(mds.error != null)
-	                throw new IOException(mds.error);
-	            else
-                    throw new IOException("Could not get IO for "+provider);
-            } else
-                connected = true;
-        }
+            return;  
+        CheckConnection();
 	    mds.MdsRemoveEvent(l, event_name);
     }
 

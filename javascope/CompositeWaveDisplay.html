@@ -1,0 +1,198 @@
+<html>
+
+<head>
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<meta NAME="GENERATOR" CONTENT="Microsoft FrontPage 3.0">
+<title>CompositeWaveDisplay</title>
+</head>
+
+<body LINK="#0000ff">
+<font SIZE="4">
+
+<p align="center"></font><font size="7">CompositeWaveDisplay</font><font SIZE="4"></p>
+</font><font SIZE="2">
+
+<p ALIGN="left">The jar library CompositeWaveDisplay.jar contains a set of Java classes
+providing support for Web-based data visualization. The same classes are also used by a
+native library (JavaMds) to provide a callable interface to data visualization. It is
+therefore possible to integrate waveform display in user-written applications.</p>
+<b>
+
+<h2 ALIGN="CENTER"></font><font size="5">I Using CompositeWaveDisplay as an Applet</font><font
+size="4"></h2>
+</b>
+
+<p ALIGN="left"></font><font SIZE="2">Currently the applet provided in
+CompositeWaveDisplay.jar supports visualization for signals in Jet, TWU and every
+experiment using MdsPlus.</p>
+
+<p ALIGN="left">The applet activation requires the installation of the JVM-plug-in in the
+browser. An easy way to create the HTML code is to use the HTML converter, as follows:</p>
+
+<ol>
+  <li><p align="left">Create an HTML page using the &lt;APPLET&gt; tag:</p>
+  </li>
+  </font><font FACE="Courier New" SIZE="2"><p align="left">&lt;APPLET CODE =
+  &quot;CompositeWaveDisplay.class&quot; ARCHIVE = &quot;CompositeWaveDisplay.jar&quot;
+  WIDTH = &quot;700&quot; HEIGHT = &quot;500&quot; NAME = &quot;CompositeWaveDisplay&quot;
+  ALIGN = &quot;baseline&quot;&gt;</p>
+  </font><font SIZE="2"><p align="left">the applet can be configured by means of the
+  following parameters:</p>
+  </font><font FACE="Courier New" SIZE="2"><p align="left">AUTENTICATION: the password
+  required for accessing signals </p>
+  <p align="left">SIGNAL_1, .. SIGNAL_N: the list of signals to be displayed. Each signals
+  definition is composed of the following parts defining the location of the signal data and
+  the position of the corresponding plot panel in the (multipanel) applet window:</p>
+  <p align="left">url = signal source definition</p>
+  <p align="left">mds|rda|twu://server_address/experiment/shot/signal_path</p>
+  <p align="left">row = row position of the panel in which plot the signal</p>
+  <p align="left">col = column position of the panel in which plot the signal</p>
+  <p align="left">color = signal color in exadecimal format 0xRRGGBB</p>
+  <p align="left">name = signal name (which will be displayed in the legend)</p>
+  <p align="left">marker = signal marker (0 = none, 1 = square, 2=circle, 3=cross,
+  4=triangle, 5=point)</p>
+  <p align="left">for example:</p>
+  <p align="left">&lt;PARAM NAME = &quot;SIGNAL_1&quot; VALUE = &quot; url =
+  mds://150.178.3.80/a/14000/\emra_it row = 1 col = 1 color = 0xaf0000&quot;&gt;</p>
+  <p align="left">&lt;PARAM NAME = &quot;SIGNAL_2&quot; VALUE = &quot; url =
+  mds://150.178.3.80/a/14001/\emra_it row = 2 col = 1 color = 0xaf0000&quot;&gt;</p>
+  </font><font SIZE="2">
+  <li><p align="left">Download the HTML converter from <a
+    HREF="http://java.sun.com/products/plugin/1.3/docs/html_converter.html">http://java.sun.com/products/plugin/1.3/docs/html_converter.html</a></font></p>
+  </li>
+  <font SIZE="2"><p align="left">After the conversion, the resulting HTML definition can be
+  used both in Netscape and Iexplore.</p>
+  <li><p align="left">If there are security applet problems , the policytool program of the
+    JRE distribution can be used to trust the signal server data source.</p>
+  </li>
+</ol>
+
+<p ALIGN="JUSTIFY">&nbsp;</p>
+<b>
+
+<p ALIGN="CENTER"></font><font size="5">II Using CompositeWaveDisplay from a C/C++ program</font><font
+SIZE="2"></p>
+</b>
+
+<p ALIGN="JUSTIFY">&nbsp;</p>
+
+<p ALIGN="left">The shared library JavaMds (part of the MdsPlus distribution) provides a
+set of routines for initializing the Java Virtual Machine from a native application,
+creating windows and plotting signals:</p>
+</font><b><font FACE="Courier" SIZE="2">
+
+<p ALIGN="left">void createWindow(char *name, int idx)<br>
+</font></b><i><font SIZE="2">//Creates a new CompositeWaveDisplay window with title name
+index idx<br>
+//The given value for <b>idx</b> represents the uonique identifier of the window and has
+to be used in the subsequent calls. </font></i><font FACE="Courier" SIZE="2"><b></p>
+
+<p ALIGN="left">void clearWindow(char *name, int idx)<br>
+</b></font><font SIZE="2"><i>//Clear all signal shown by the window identified by idx and
+set the new title to name</i></font><b><font FACE="Courier" SIZE="2"></p>
+
+<p ALIGN="left">void showWindow(int obj_idx, int x, int y, int width, int height)<br>
+</font></b><font SIZE="2"><i><font SIZE="2">//Show the window identified by idx at
+location (x,y) with (width height) dimension</font></i></p>
+
+<p ALIGN="left"></font><b><font FACE="Courier" SIZE="2">void addSignal(int idx, float *x,
+float *y, int num_points<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int row, int column, char *colour, char *name)<br>
+<br>
+</font></b><font SIZE="2"><em><font SIZE="2">//Add a new signal signal into the window
+identified by idx at panel (row, column)<br>
+//the signal is defined by the x and y float vectors and the number of points is given by
+num_point<br>
+// color defines the associated color <br>
+// colors: (&quot;Black&quot;, &quot;Blue&quot;, &quot;Cyan&quot;,
+&quot;DarkGray&quot;,&quot;Gray&quot;, &quot;Green&quot;, &quot;LightGray&quot;,
+&quot;Magenta&quot;, &quot;Orange&quot;, &quot;Pink&quot;, &quot;Red&quot;,
+&quot;Yellow&quot;)<br>
+//name : an optional signal name (to be shown in the associated legend)</font></em></p>
+</font><font FACE="Courier" SIZE="2"><b><i>
+
+<p ALIGN="left"></i>void addSignalWithParam(int idx, float *x, float *y, int
+num_points,int row, <br>
+<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</i>int column,char *colour, char *name, int inter,&nbsp; int marker)</p>
+</b></font><font SIZE="2"><i>
+
+<p ALIGN="left">//Same as addSignal, plus the following parameters:<br>
+//inter : if not zero a line is draw between points<br>
+//marker : draw a marker in each point (0 = none, 1 = square, 2=circle, 3=cross,
+4=triangle, 5=point)</p>
+</i>
+
+<p ALIGN="left">&nbsp;</p>
+<i><b>
+
+<p ALIGN="left">An example</p>
+</b></i>
+
+<p ALIGN="left">The following fragment of code displays a sinusoidal function:</p>
+</font><font FACE="Courier" SIZE="2">
+
+<p ALIGN="left">float y[100];</p>
+
+<p ALIGN="left">float x[100];</p>
+
+<p ALIGN="left">int n_points = 100;</p>
+
+<p ALIGN="left">int i;</p>
+
+<p ALIGN="left">//Create the window with identifier 0</p>
+
+<p ALIGN="left">createWindow(&quot;Test&quot;, 0);</p>
+
+<p ALIGN="left">// initialize x y vectors to the signal value to plot</p>
+
+<p ALIGN="left">for(i = 0; i &lt; 100: i++)</p>
+
+<p ALIGN="left">{</p>
+
+<p ALIGN="left">&nbsp;&nbsp;&nbsp; x[i] = i * 3.14/100;</p>
+
+<p ALIGN="left">&nbsp;&nbsp;&nbsp; y[i] = sin(x[i]);</p>
+
+<p ALIGN="left">}<br>
+<br>
+//add the signal to waveform panel (1,1) using black color and<br>
+//&quot;sine&quot; legend name</p>
+
+<p ALIGN="left">addSignal(0, x, y, n_points, 1, 1, &quot;black&quot;, &quot;test&quot;);</p>
+
+<p ALIGN="left">//Show the window</p>
+
+<p ALIGN="left">showWindow(0, 50,50, 500, 500);</p>
+</font>
+
+<p ALIGN="left"><font FACE="Courier" SIZE="2">&nbsp;</font></p>
+<b><font SIZE="2">
+
+<p ALIGN="CENTER"></font><font size="5">III Using CompositeWaveDisplay from TDI</p>
+</font></b><font SIZE="2">
+
+<p ALIGN="left">&nbsp;</p>
+</font>
+
+<p ALIGN="left"><font SIZE="2">A set of TDI function has been created to display waveforms
+by means of TDI calls. The TDI functions have the same meaning of the above C routine:</font></p>
+<font FACE="Courier" SIZE="2">
+
+<p ALIGN="left">FUN PUBLIC JavaNewWindow(in _label, in _idx) <br>
+<i>creates a new window</i></p>
+
+<p ALIGN="left">FUN PUBLIC JavaClearWindow(in _label, in _idx)<br>
+<i>Clears the window</i></p>
+
+<p ALIGN="left">FUN PUBLIC JavaAddSignal(in _idx, in _y, optional _opt_x, optional
+_opt_row, optional _opt_col,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+optional _opt_color, optional _opt_label)<br>
+<i>Adds a new signal to the window</i></p>
+
+<p ALIGN="left">FUN PUBLIC JavaShowWindow(in _idx, in _x, in _y, in _width, in _height)<br>
+<i>Displays the window</i></p>
+</font>
+</body>
+</html>

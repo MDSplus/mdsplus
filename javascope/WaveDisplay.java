@@ -38,7 +38,7 @@ public class WaveDisplay extends JApplet implements WaveformListener
         
         
         setBackground(Color.lightGray);
-        wave_popup = new MultiWavePopup();
+        wave_popup = new MultiWavePopup(new SetupWaveformParams(null, "Waveform Params"));
         getContentPane().add(wave_popup);
         panel.addMouseListener( new MouseAdapter()
 	        {

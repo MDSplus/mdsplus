@@ -5,6 +5,8 @@ import java.util.Vector;
 
 public class WaveInterface
 {
+    static SignalBox sig_box = new SignalBox(); 
+    
     static final int MAX_NUM_SHOT = 30;
     public Waveform wave;
     public boolean full_flag;
@@ -380,26 +382,58 @@ public class WaveInterface
         return name;
     }
     
-    public boolean AddSignal(String s)
+    public boolean AddSignal(String y_expr)
     {
-        int new_num_waves, expr_idx = 0;
+        return AddSignal("", y_expr);
+    }
+    
+    public boolean AddSignal(String x_expr, String y_expr)
+    {
+        String x[] = new String[1];
+        String y[] = new String[1];
+        x[0] = x_expr;
+        y[0] = y_expr;
+        return AddSignals(x, y);
+    }
+
+    public boolean AddSignals(String x_expr[], String y_expr[])
+    {
+        
+        if(x_expr.length != y_expr.length || x_expr.length == 0)
+            return false;
+        
+        
+        int new_num_waves;
+        int num_sig = x_expr.length;
+        boolean is_new[] = null;
         
         if(num_waves != 0)
         {
-            for(int i = 0; i < num_waves; i++)
+            is_new = new boolean[x_expr.length];
+            for(int j = 0; j < x_expr.length; j++)
             {
-                if(s.equals(in_y[i]))
+                is_new[j] = true;
+                for(int i = 0; i < num_waves; i++)
                 {
-                    if(evaluated != null && evaluated[i])
-                        return true;
-                    else
-                        return false;
+                    if(y_expr[j].equals(in_y[i]) && (in_x[i] != null && x_expr[j].equals(in_x[i])))
+                    {
+                        /*
+                        if(evaluated != null && evaluated[i])
+                            return true;
+                        else
+                            return false;
+                        */
+                        is_new[j] = false;
+                        num_sig--;
+                    }
                 }
             }
-            new_num_waves = num_waves + (num_shot != 0 ? num_shot : 1);
-            expr_idx = (new_num_waves/(num_shot != 0 ? num_shot : 1)) - 1;
+            
+            if(num_sig == 0) return true;            
+                        
+            new_num_waves = num_waves + (num_shot != 0 ? num_shot : 1) * num_sig;
         } else 
-            new_num_waves = 1;
+            new_num_waves = x_expr.length;
         
         
         String new_in_label[] = new String[new_num_waves];
@@ -443,26 +477,31 @@ public class WaveInterface
 	    }
 	    
 	    	        
-	    for(int i= num_waves; i < new_num_waves; i++)
+	    for(int i = 0, k = num_waves; i < x_expr.length; i++)
 	    {
-	        new_in_label[i] = "";
-            new_in_x[i] = "";
-	        new_in_y[i] = new String(s);
-	        new_in_up_err[i] = "";
-	        new_in_low_err[i] = "";
-    	    new_markers[i] = 0;
-	        new_markers_step[i] = 1;
-	        
-	        
-		    if(auto_color_on_expr)
-	            new_colors_idx[i] = expr_idx;
-            else	        
-	            new_colors_idx[i] = (i - num_waves) % Waveform.colors.length;
-	        
-	        new_interpolates[i] = true;
-	        new_evaluated[i] = false;
-	        if(shots != null && shots.length != 0 && num_shot > 0)
-	            new_shots[i] = shots[(i - num_shot> 0) ? (i - num_shot) : 0];
+	        if(is_new != null && !is_new[i]) continue;
+	        for(int j = 0; j < num_shot; j++)
+	        {
+	            new_in_label[k] = "";
+                new_in_x[k] = new String(x_expr[i]);
+	            new_in_y[k] = new String(y_expr[i]);
+	            new_in_up_err[k] = "";
+	            new_in_low_err[k] = "";
+    	        new_markers[k] = 0;
+	            new_markers_step[k] = 1;
+    	        
+    	        
+		        if(auto_color_on_expr)
+	                new_colors_idx[k] = i;
+                else	        
+	                new_colors_idx[k] = j % Waveform.colors.length;
+    	        
+	            new_interpolates[k] = true;
+	            new_evaluated[k] = false;
+	            if(shots != null && shots.length != 0 && num_shot > 0)
+	                new_shots[k] = shots[j];
+	            k++;
+            }
         }
 
         in_label = new_in_label;
@@ -478,9 +517,7 @@ public class WaveInterface
 	    num_waves = new_num_waves;
 	    evaluated = new_evaluated;
 	    signals = new_signals;
-	    w_error = new_w_error;
-//	    modified = true;
-	    
+	    w_error = new_w_error;	    
 	    add_signal = true;
 	    return true;
     }
@@ -794,6 +831,8 @@ public class WaveInterface
 		        }
 		        else
 		        {
+                    sig_box.AddSignal(in_x[curr_wave], in_y[curr_wave]);
+
 		            if(xmin != -HUGE) signals[curr_wave].xmin = xmin;
 		            if(xmax !=  HUGE) signals[curr_wave].xmax = xmax;
 		            if(ymin != -HUGE) signals[curr_wave].ymin = ymin;
@@ -839,6 +878,8 @@ public class WaveInterface
 		        }
 		        else
 		        {
+                    sig_box.AddSignal(in_x[curr_wave], in_y[curr_wave]);
+                    
 		            if(xmin != -HUGE) signals[curr_wave].xmin = xmin;
 		            if(xmax !=  HUGE) signals[curr_wave].xmax = xmax;
 		            if(ymin != -HUGE) signals[curr_wave].ymin = ymin;
