@@ -1,6 +1,6 @@
 .SUFFIXES: .class .java
 .java.class:
-	"C:\Program Files\JBuilderX\jdk1.4\bin\javac.exe" $*.java
+	%JDK_DIR%\bin\javac $*.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
@@ -136,12 +136,12 @@ GIFS = DeviceApply.gif \
        task.gif
 
 all : $(SOURCES)
-	"C:\Program Files\JBuilderX\jdk1.4\bin\javac.exe" -classpath .;..\java\classes\MindTerm.jar $(SOURCES)
-	"C:\Program Files\JBuilderX\jdk1.4\bin\jar.exe" -uf ..\java\classes\MDSplus.jar *.class *.gif
-	"C:\Program Files\JBuilderX\jdk1.4\bin\jar.exe" -cmf DeviceBeansManifest.mf ..\java\classes\DeviceBeans.jar *.class *.gif
+	%JDK_DIR%\bin\javac -classpath .;..\java\classes\MindTerm.jar $(SOURCES)
+	%JDK_DIR%\bin\jar -cvf ..\java\classes\MDSplus.jar *.class *.gif
+	%JDK_DIR%\bin\jar -cmf DeviceBeansManifest.mf ..\java\classes\DeviceBeans.jar *.class *.gif
 
-#jTraverser.class : *.java
-#	%JDK_DIR%\bin\javac.exe jTraverser.java
+jTraverser.class : *.java
+	%JDK_DIR%\bin\javac.exe jTraverser.java
 
-#TreeNode.class : *.java
-#	%JDK_DIR%\bin\javac.exe TreeNode.java
+TreeNode.class : *.java
+	%JDK_DIR%\bin\javac.exe TreeNode.java
