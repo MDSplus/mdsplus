@@ -50,8 +50,8 @@ extern int Tdi1Vector();
 
 static struct item {
 	char		*item_name;
-        int   	        item_mask;
-	int	        item_test;
+        unsigned int   	        item_mask;
+	unsigned int	        item_test;
 	char		item_code;
 	unsigned char	item_dtype;
 	unsigned short	item_length;
