@@ -211,7 +211,7 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
       job.nid  = *(int *)p4;
       job.on   = *(int *)p5;
       job.mode = *(int *)p6;
-      job.server = strcpy(malloc(strlen((char *)p1)+1),(char *)p7);
+      job.server = strcpy(malloc(strlen((char *)p7)+1),(char *)p7);
       job.status = *(int *)p8; 
       status = QJob((SrvJob *)&job);
       break;
@@ -554,7 +554,7 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in)
  char msg[1024];
  sprintf(msg,"%s %d %d %d %d %s",job->tree,job->shot,job->nid,job->on,job->mode,job->server);
 */
-    char *msg;
+    char *msg = 0;
     struct descriptor fullpath = {0, DTYPE_T, CLASS_D, 0};
     DESCRIPTOR(fullpath_d,"FULLPATH");
     DESCRIPTOR(nullstr,"\0");
@@ -570,10 +570,6 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in)
     	status = TdiGetNci(&niddsc,&fullpath_d,&fullpath MDS_END_ARG);
     	StrAppend(&fullpath,&nullstr);
    	msg = malloc(fullpath.length + 1024 + strlen(MdsGetMsg(job->status)));
-
-
-
-
 	if(job->server && *job->server)		
     	   sprintf(msg,"%s %d %d %d %d %d %s %d %s %s; %s",job->tree,job->shot,job->phase,
 					  job->nid,job->on,job->mode,job->server,
@@ -582,8 +578,6 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in)
     	   sprintf(msg,"%s %d %d %d %d %d unknown %d %s %s; %s",job->tree,job->shot,job->phase,
 					  job->nid,job->on,job->mode,
 					  job->status, fullpath.pointer, Now(), MdsGetMsg(job->status));
- 
-
    	StrFree1Dx(&fullpath);
     }
     else
@@ -593,10 +587,9 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in)
 					  job->nid,job->on,job->mode,job->server,
 					  job->status, Now(), MdsGetMsg(job->status));
     }
-
-
-
   status = SendReply(job_in, SrvJobFINISHED,1,strlen(msg),msg);
+  if (msg)
+    free(msg);  
   if (!(status & 1))
   {
     if (prev)
