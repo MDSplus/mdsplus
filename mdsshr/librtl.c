@@ -344,11 +344,17 @@ int pthread_cond_wait(HANDLE *cond, HANDLE *mutex)
    return(status == WAIT_FAILED);
 }
 
-void pthread_cond_timedwait(HANDLE *cond, HANDLE *mutex, int msec)
+int pthread_cond_timedwait(HANDLE *cond, HANDLE *mutex, int msec)
 {
+   int status;
    pthread_mutex_unlock(mutex);
-   WaitForSingleObject(*cond,msec);
+   status = WaitForSingleObject(*cond,msec);
    pthread_mutex_lock(mutex);
+   if (status == WAIT_TIMEOUT)
+     status = ETIMEDOUT;
+   else
+     status = 0;
+   return status;
 }
 
 int pthread_mutex_init(HANDLE *mutex)
