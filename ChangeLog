@@ -1,5 +1,3511 @@
-Version 1.5-0
+Version 1.6-0
 
+
+2004-04-26 11:02  twf
+
+	* Makefile.in, configure, configure.in:
+	
+	Add mdsip_xio
+
+2004-04-26 11:00  twf
+
+	* mdsip_xio/: Makefile.in, README, cvtdef.h, mdsip.h,
+	mdsip_accept_cb.c, mdsip_arglen.c, mdsip_authenticate_cb.c,
+	mdsip_become_user.c, mdsip_client_type.c, mdsip_close.c,
+	mdsip_close_cb.c, mdsip_compatible_api.c, mdsip_compatible_api_2.c,
+	mdsip_connect.c, mdsip_current_time.c, mdsip_dispatch_event.c,
+	mdsip_do_message_cb.c, mdsip_event_ast.c, mdsip_event_can.c,
+	mdsip_flip_data.c, mdsip_flip_header.c, mdsip_get_message.c,
+	mdsip_get_result.c, mdsip_host_to_ipaddr.c, mdsip_initialize_io.c,
+	mdsip_io_wait.c, mdsip_make_descrip.c, mdsip_new_client.c,
+	mdsip_open.c, mdsip_open_cb.c, mdsip_parse_command.c,
+	mdsip_process_message.c, mdsip_put.c, mdsip_read_header_cb.c,
+	mdsip_send_arg.c, mdsip_send_message.c, mdsip_server.c,
+	mdsip_set_default.c, mdsip_test_result.c, mdsip_test_status.c,
+	mdsip_value.c, mdsip_write.c, mdsipd, mkdirhier, t.c, mdsip.hosts:
+	
+	Add mdsip_xio - Globus XIO mdsip implementation
+
+2004-04-26 10:58  twf
+
+	* mdslib/Makefile.in:
+	
+	add mdsip_xio
+
+2004-04-26 10:54  manduchi
+
+	* tdi/RfxDevices/: RFXControl__init.fun, TR10__store.fun:
+	
+	Test
+
+2004-04-26 09:45  manduchi
+
+	* javadispatcher/: Descriptor.java, Makefile.in:
+	
+	Fix
+
+2004-04-26 09:17  manduchi
+
+	* javadispatcher/ActionServer.java:
+	
+	Fix
+
+2004-04-26 08:51  manduchi
+
+	* javatraverser/: DeviceTable.java, Makefile.in:
+	
+	Fixes FixesCVS:
+	-------------------------------------------------------------------
+	---
+
+2004-04-26 08:29  manduchi
+
+	* javadispatcher/: ActionServer.java, Balancer.java,
+	InfoServer.java, Server.java:
+	
+	Added dynamic reconfiguration
+
+2004-04-26 08:02  manduchi
+
+	* javascope/: Descriptor.java, MdsConnection.java,
+	MdsDataClient.java:
+	
+	Fixes
+
+2004-04-26 07:21  manduchi
+
+	* javadispatcher/: ActionServer.java, MdsMonitor.java,
+	MdsServer.java, jDispatcherIp.java:
+	
+	Improvements
+
+2004-04-26 04:48  manduchi
+
+	* javatraverser/RFXABUnitsSetup.java:
+	
+	Fix column names
+
+2004-04-23 04:09  manduchi
+
+	* tdi/RfxDevices/: RFXABUnits__add.fun, RFXTFSetup__add.fun:
+	
+	Added A B Units setup
+
+2004-04-23 04:08  manduchi
+
+	* javatraverser/RFXABUnitsSetup.java:
+	
+	A B Units Setup
+
+2004-04-22 15:25  twf
+
+	* idl/Logbook/entry_display.pro:
+	
+	Only connect if MDS_HOST is defined
+
+2004-04-22 08:55  manduchi
+
+	* javascope/: T2DataProvider.java, WaveformEditor.java:
+	
+	Copy/Paste added to WaformEditor
+
+2004-04-21 05:17  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Fix
+
+2004-04-20 16:42  twf
+
+	* servershr/ServerDispatchPhase.c:
+	
+	Show all the actions that were dispatched, look through the entire
+	table
+
+2004-04-20 09:58  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Make events case insensitive
+
+2004-04-20 09:52  twf
+
+	* mdsshr/MdsMalloc.c:
+	
+	Add calloc
+
+2004-04-20 05:07  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Fix
+
+2004-04-19 04:00  manduchi
+
+	* javatraverser/RFXPCSetupSetup.java,
+	javatraverser/RFXPMSetupSetup.java,
+	javatraverser/RFXPVSetupSetup.java,
+	javatraverser/RFXPoloidalSetup.java,
+	javatraverser/RFXTFSetupSetup.java,
+	javatraverser/RFXToroidalSetup.java,
+	tdi/RfxDevices/RFXInverterSetup__add.fun,
+	tdi/RfxDevices/RFXTFSetup__add.fun:
+	
+	Fixes
+
+2004-04-16 11:45  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Fix
+
+2004-04-16 11:37  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Fix name
+
+2004-04-16 11:16  manduchi
+
+	* javatraverser/: RFXTimesSetup.java, RFXToroidalSetup.java:
+	
+	Fixes
+
+2004-04-16 11:12  manduchi
+
+	* javatraverser/RFXTimesSetup.java,
+	tdi/RfxDevices/RFXTimes__add.fun:
+	
+	Fixes
+
+2004-04-16 08:13  manduchi
+
+	* javascope/: Descriptor.java, MdsConnection.java,
+	MdsDataClient.java, MdsMessage.java:
+	
+	Fix
+
+2004-04-16 07:19  manduchi
+
+	* tdi/RfxDevices/AAGain.fun:
+	
+	Use uppercase
+
+2004-04-16 05:35  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Fix
+
+2004-04-16 05:29  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Debug
+
+2004-04-15 05:54  manduchi
+
+	* javatraverser/: RFXControlSetup.java, RFXToroidalSetup.java:
+	
+	Fixes
+
+2004-04-15 05:11  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	Devices added
+
+2004-04-15 05:06  manduchi
+
+	* javatraverser/RFXToroidalSetup.java:
+	
+	Added TF configuration
+
+2004-04-15 04:45  manduchi
+
+	* tdi/RfxDevices/: RFXToroidal__add.fun, TR32HWInit.fun:
+	
+	Fixes
+
+2004-04-14 14:14  twf
+
+	* treeshr/TreeGetRecord.c:
+	
+	Detect bad nci record, invalid length
+
+2004-04-14 13:50  twf
+
+	* treeshr/TreeCleanDatafile.c:
+	
+	Clean bad nci records
+
+2004-04-14 09:33  manduchi
+
+	* tdi/RfxDevices/RFXPoloidal__add.fun:
+	
+	Fix
+
+2004-04-14 09:32  manduchi
+
+	* javatraverser/: DIO2Setup.java, DeviceChannel.java,
+	DeviceField.java, RFXPMSetupSetup.java, RFXTimesSetup.java,
+	RFXToroidalSetup.java:
+	
+	Bunch of fixes
+
+2004-04-13 12:42  manduchi
+
+	* tdi/RfxDevices/: DIO2__add.fun, RFXChopperSetup__add.fun,
+	RFXControl__add.fun, RFXControl__init.fun,
+	RFXFeedforwardSetup__add.fun, RFXInverterPerturbation.fun,
+	RFXInverterSetup__add.fun, RFXPCSetup__add.fun,
+	RFXPMSetup__add.fun, RFXPVSetup__add.fun, RFXPoloidal__add.fun,
+	RFXPulse__add.fun, RFXTFSetup__add.fun, RFXTimes__add.fun,
+	RFXToroidal__add.fun, TR10__init.fun:
+	
+	New RFX configuration
+
+2004-04-13 12:22  manduchi
+
+	* javatraverser/: DeviceField.java, DeviceFieldBeanInfo.java,
+	DeviceTable.java, DeviceTableBeanInfo.java,
+	DeviceTableCustomizer.java, Devicebeans.jar, RFXControlSetup.java,
+	RFXInverterSetupSetup.java, RFXPCSetupSetup.java,
+	RFXPMSetupSetup.java, RFXPVSetupSetup.java, RFXPoloidalSetup.java,
+	RFXTFSetupSetup.java, RFXTimesSetup.java, RFXToroidalSetup.java,
+	TR32Setup.java:
+	
+	New RFX configuration
+
+2004-04-08 10:02  manduchi
+
+	* tdishr/TdiArray.c:
+	
+	Compile under Windows
+
+2004-04-08 09:46  manduchi
+
+	* mdsshr/: MdsEvents.c, MdsMalloc.c, MdsShrThreadSafe.c,
+	mdsshrthreadsafe.h:
+	
+	vxWorks integration
+
+2004-04-08 09:44  manduchi
+
+	* tdishr/: TdiThreadSafe.c, tdithreadsafe.h:
+	
+	Make it compile under vxWorks
+
+2004-04-07 12:31  manduchi
+
+	* treeshr/RemoteAccess.c:
+	
+	Compile it under vxWorks
+
+2004-04-06 11:30  twf
+
+	* tcl/tcl_set_callbacks.c:
+	
+	threadsafe
+
+2004-04-06 11:16  twf
+
+	* tdishr/TdiVar.c:
+	
+	remove locking in TdiDoFun, should already be threadsafe
+
+2004-04-06 11:09  twf
+
+	* tcl/tcl_set_callbacks.c:
+	
+	make it threadsafe
+
+2004-04-06 11:07  twf
+
+	* servershr/ServerBuildDispatchTable.c:
+	
+	define undefined action variables instead of doing reset_public()
+
+2004-04-05 12:11  manduchi
+
+	* javatraverser/: DeviceField.java, RFXChopperSetupSetup.java,
+	RFXFeedforwardSetupSetup.java, RFXInverterSetupSetup.java,
+	RFXTFSetupSetup.java:
+	
+	New Setup devices
+
+2004-04-05 11:14  twf
+
+	* tdishr/TdiArray.c:
+	
+	Fix random
+
+2004-04-05 10:14  twf
+
+	* tdi/submit.fun:
+	
+	Return success
+
+2004-04-05 10:13  twf
+
+	* scripts/Makefile.in:
+	
+	Replace spaces with tab
+
+2004-04-05 10:12  twf
+
+	* configure, configure.in:
+	
+	Fix hdf5 check
+
+2004-04-05 09:56  manduchi
+
+	* javatraverser/: DeviceSetup.java, TR32Setup.java:
+	
+	Fix
+
+2004-04-05 09:08  manduchi
+
+	* tdi/RfxDevices/: TR32HWInit.fun, TR32HWReadChan.fun:
+	
+	TR32HWReadChan.fun modificata per cambiare di segno segnali
+
+2004-04-04 11:01  twf
+
+	* scripts/unix_submit:
+	
+	Include execution script in log
+
+2004-04-04 10:14  twf
+
+	* tdi/remote_submit_helper.fun:
+	
+	use random queues
+
+2004-04-04 10:08  twf
+
+	* tdishr/: TdiArray.c, TdiArray.c:
+	
+	Use random seed in random algorithm
+
+2004-04-02 14:11  twf
+
+	* tdishr/TdiGetNci.c:
+	
+	Change RFA to quadword
+
+2004-04-02 12:48  twf
+
+	* servershr/: ServerBuildDispatchTable.c, ServerDispatchPhase.c,
+	ServerFreeDispatchTable.c, servershrp.h:
+	
+	More threadsafe changes
+
+2004-04-02 09:41  twf
+
+	* tdi/: remote_submit.fun, submit.fun:
+	
+	rename remote_submit.fun to submit.fun
+
+2004-04-01 15:23  twf
+
+	* scripts/remote_submit:
+	
+	remote debug
+
+2004-04-01 15:11  twf
+
+	* tdi/remote_submit.fun, tdi/remote_submit_helper.fun,
+	scripts/Makefile.in, scripts/remote_submit:
+	
+	Add remote_submit capability
+
+2004-04-01 09:44  manduchi
+
+	* javatraverser/DecompileTree.java:
+	
+	Fix
+
+2004-04-01 08:46  manduchi
+
+	* tdi/RfxDevices/TR32__init.fun, javatraverser/DeviceChoice.java,
+	javatraverser/TR10Setup.java:
+	
+	Fix
+
+2004-04-01 05:23  manduchi
+
+	* javatraverser/: DeviceChannel.java, DeviceChoice.java,
+	DeviceComponent.java, DeviceField.java, DeviceSetup.java,
+	DeviceTable.java, T2ControlSetup.java:
+	
+	Fixes
+
+2004-04-01 04:02  manduchi
+
+	* tdi/RfxDevices/: FR10HWInit.fun, FR10HWReadChan.fun,
+	FR10__init.fun, TR32HWInit.fun, TR32__init.fun, TR32__store.fun:
+	
+	Fixes
+
+2004-04-01 03:27  manduchi
+
+	* javatraverser/: DeviceTable.java, T2ControlSetup.java:
+	
+	Fix
+
+2004-03-31 11:48  manduchi
+
+	* javatraverser/TR32Setup.java:
+	
+	Fix
+
+2004-03-31 11:34  manduchi
+
+	* javatraverser/TR32Setup.java:
+	
+	Fix
+
+2004-03-31 11:05  manduchi
+
+	* tdi/RfxDevices/: TR32HWInit.fun, TR32__add.fun, TR32__init.fun,
+	TR32__store.fun:
+	
+	Fields Added
+
+2004-03-31 10:39  manduchi
+
+	* javatraverser/TR32Setup.java:
+	
+	Fields added
+
+2004-03-31 09:22  manduchi
+
+	* tdi/RfxDevices/: RFXControl__init.fun, RFXControl__store.fun:
+	
+	Fix
+
+2004-03-31 09:01  manduchi
+
+	* javadispatcher/: MdsIp.java, MdsServer.java,
+	jDispatchMonitor.java, jDispatcher.java:
+	
+	Fix dispatch monitor bugs
+
+2004-03-30 15:53  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	more explicit messages for debugging
+
+2004-03-30 14:56  twf
+
+	* mdstcpip/mdsiputil.c:
+	
+	Zero mem ptr so it doesn't get freed again by the called
+
+2004-03-30 14:55  twf
+
+	* mdstcpip/mdsip_socket_io.c:
+	
+	use MSG_NOSIGNAL on socket send and recv
+
+2004-03-30 13:57  twf
+
+	* mdstcpip/mdsiputil.c:
+	
+	zero the mem returned from GetAnswerInfoTS if error
+
+2004-03-30 13:07  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Take out debug print
+
+2004-03-30 08:24  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Fix
+
+2004-03-30 08:18  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Fix
+
+2004-03-29 13:31  jas
+
+	* mitdevices/t4012.c:
+	
+	add extra init script as per Amanda
+
+2004-03-29 13:09  twf
+
+	* servershr/: ServerBuildDispatchTable.c, ServerDispatchPhase.c,
+	ServerFreeDispatchTable.c, servershrp.h:
+	
+	Revert back to previous versions
+
+2004-03-29 08:44  manduchi
+
+	* javadispatcher/jDispatchMonitor.java:
+	
+	Fix
+
+2004-03-25 10:16  manduchi
+
+	* javadispatcher/InfoServer.java:
+	
+	More messages
+
+2004-03-25 09:10  manduchi
+
+	* javatraverser/Node.java:
+	
+	Fix node name for usage structure
+
+2004-03-24 14:57  twf
+
+	* camshr/: cam_functions.c, prototypes.h, scsi_io.c:
+	
+	Add more debug printout. Use verbose output on CamSERTRAERR's.
+
+2004-03-24 09:58  twf
+
+	* include/mdslib.h:
+	
+	Remove mdsdescrip include from mdslib.h and add MdsClose prototype
+
+2004-03-24 09:57  twf
+
+	* mdslib/: MdsLib.c, mdslib_ctest.c:
+	
+	remove mdsdescrip include from mdslib.h
+
+2004-03-23 12:57  manduchi
+
+	* tdi/RfxDevices/T2Control__init.fun:
+	
+	Fix
+
+2004-03-23 12:07  manduchi
+
+	* javatraverser/T2ControlSetup.java,
+	tdi/RfxDevices/T2Control__add.fun,
+	tdi/RfxDevices/T2Control__init.fun,
+	tdi/RfxDevices/T2Control__store.fun:
+	
+	Added more parameters
+
+2004-03-22 16:45  jas
+
+	* tdishr/TdiEq.c:
+	
+	fix signed quadword compares that cross zero (-1Q > 1Q)
+
+2004-03-22 15:21  twf
+
+	* servershr/: ServerBuildDispatchTable.c, ServerDispatchPhase.c,
+	ServerFreeDispatchTable.c, servershrp.h:
+	
+	Make dispatch phase more efficient and threadsafe
+
+2004-03-22 11:56  manduchi
+
+	* javatraverser/DeviceTable.java:
+	
+	Fix
+
+2004-03-22 10:19  twf
+
+	* mitdevices/joerger_tr612.c:
+	
+	check for armed or active instead of using lam condition to enable
+	re-reading module
+
+2004-03-22 08:53  manduchi
+
+	* tdi/RfxDevices/T2Control__add.fun:
+	
+	Allow full mode control
+
+2004-03-22 08:18  manduchi
+
+	* javatraverser/: DeviceTable.java, DeviceTableBeanInfo.java,
+	DeviceTableCustomizer.java, Devicebeans.jar, T2ControlSetup.java:
+	
+	Allow full Mode control
+
+2004-03-19 15:32  twf
+
+	* mitdevices/joerger_tr612.c:
+	
+	add IGNORE_LAM capability
+
+2004-03-19 14:10  twf
+
+	* mitdevices/a14.c:
+	
+	limit max_idx to memory size
+
+2004-03-19 10:26  twf
+
+	* mdsshr/librtl.c:
+	
+	Reset SIGCHLD setting to SIG_DFL before exec
+
+2004-03-18 12:53  manduchi
+
+	* javatraverser/DecompileTree.java:
+	
+	Fixed default nids
+
+2004-03-17 20:17  jas
+
+	* tdi/concatenate.fun:
+	
+	add optional _min_delta argument
+
+2004-03-17 14:47  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	do not include pthread.h on windows
+
+2004-03-17 14:46  twf
+
+	* treeshr/TreeCleanDatafile.c:
+	
+	Clear bad records
+
+2004-03-17 14:45  twf
+
+	* mdstcpip/mdsipshr.def:
+	
+	Add SetCloseOnExec
+
+2004-03-17 14:41  twf
+
+	* mdstcpip/mdsip_socket_io.c:
+	
+	Fix for windows
+
+2004-03-17 14:31  twf
+
+	* mdsshr/: MdsShrThreadSafe.c, mdsshrthreadsafe.h:
+	
+	Keep different Tls indexes
+
+2004-03-17 14:24  twf
+
+	* mdsshr/MdsShrThreadSafe.c:
+	
+	Only call TlsAlloc once
+
+2004-03-17 13:43  burruss
+
+	* treeshr/RemoteAccess.c:
+	
+	Needed to #include pthread.h because the HP-UX C compiler was not
+	understanding some pthread types used in this file.
+
+2004-03-17 13:41  burruss
+
+	* treeshr/TreeAddNode.c:
+	
+	Fixed "incompatible types" compile problem by casting return value
+	of malloc.
+
+2004-03-17 11:26  manduchi
+
+	* tdi/RfxDevices/RFXControl__add.fun,
+	javatraverser/RFXControlSetup.java:
+	
+	Added parameters
+
+2004-03-17 10:42  manduchi
+
+	* tdi/RfxDevices/: RFXControl__init.fun, RFXControl__store.fun:
+	
+	Fixes
+
+2004-03-17 09:27  manduchi
+
+	* tdi/RfxDevices/RFXControl__init.fun:
+	
+	Test
+
+2004-03-17 09:15  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Fix
+
+2004-03-17 08:49  manduchi
+
+	* javatraverser/DeviceDispatch.java:
+	
+	Fix
+
+2004-03-17 08:43  manduchi
+
+	* javatraverser/DeviceDispatch.java:
+	
+	Fix
+
+2004-03-17 07:20  manduchi
+
+	* javatraverser/: DeviceDispatch.java, DeviceDispatch.java:
+	
+	test
+
+2004-03-17 06:58  manduchi
+
+	* javatraverser/: DeviceComponent.java, DeviceDispatch.java:
+	
+	Fix
+
+2004-03-16 12:25  manduchi
+
+	* javatraverser/DeviceDispatch.java:
+	
+	test
+
+2004-03-16 12:22  manduchi
+
+	* javatraverser/DeviceDispatch.java:
+	
+	Test
+
+2004-03-16 12:16  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Fix?
+
+2004-03-16 11:57  manduchi
+
+	* javatraverser/: DeviceTable.java, RFXControlSetup.java:
+	
+	Improvements
+
+2004-03-16 11:46  manduchi
+
+	* tdi/RfxDevices/: RFXControl__add.fun, RFXControl__init.fun,
+	RFXControl__store.fun:
+	
+	Improvements
+
+2004-03-16 11:17  manduchi
+
+	* javatraverser/DeviceWave.java:
+	
+	Fix
+
+2004-03-16 09:36  twf
+
+	* mdstcpip/: mdsip_socket_io.c, mdsip_u.c:
+	
+	Set sockets close-on-exec
+
+2004-03-12 02:39  manduchi
+
+	* tdishr/: TdiShr.def, opcbuiltins.h:
+	
+	Remove TdiTranspose and OpcTranspose from.des and keep
+	opcbuiltins-h as before
+
+2004-03-11 11:59  manduchi
+
+	* tdishr/tdishr.dsp:
+	
+	Allow make under visualC
+
+2004-03-11 11:58  manduchi
+
+	* mdsshr/mdsshr.dsp:
+	
+	Allow Make with visualC
+
+2004-03-11 11:57  manduchi
+
+	* tdishr/opcbuiltins.h:
+	
+	Fix unresolved TdiTransposed symbol
+
+2004-03-11 11:56  manduchi
+
+	* treeshr/RemoteAccess.c:
+	
+	Allow compilation under Windows
+
+2004-03-10 10:12  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Added configurations
+
+2004-03-09 09:32  manduchi
+
+	* tdi/RfxDevices/: T2Control__add.fun, T2Control__init.fun,
+	T2Control__store.fun:
+	
+	Fixes
+
+2004-03-09 09:19  manduchi
+
+	* javatraverser/FR10Setup.java:
+	
+	Added FR10 device
+
+2004-03-09 09:09  manduchi
+
+	* tdi/RfxDevices/: FR10HWClose.fun, FR10HWInit.fun,
+	FR10HWReadChan.fun, FR10HWStartStore.fun, FR10HWTrigger.fun,
+	FR10__init.fun, FR10__store.fun, FR10__trigger.fun:
+	
+	Added FR10 fun
+
+2004-03-09 08:58  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	Added FR10 device
+
+2004-03-09 08:18  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Fix
+
+2004-03-09 08:15  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Added configuration
+
+2004-03-09 04:03  manduchi
+
+	* tdi/RfxDevices/: T2Control__add.fun, T2Control__init.fun,
+	T2Control__store.fun:
+	
+	New Version
+
+2004-03-09 04:02  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	New version
+
+2004-03-08 14:58  twf
+
+	* tdishr/TdiSql.c:
+	
+	Fix calloc call with 0 bytes
+
+2004-03-05 10:58  twf
+
+	* configure, configure.in:
+	
+	Add MdsCALLOC for memcheck
+
+2004-03-05 10:51  twf
+
+	* mdsshr/MdsMalloc.c:
+	
+	Add MdsCALLOC
+
+2004-03-05 09:36  manduchi
+
+	* tdi/RfxDevices/T2Control__store.fun:
+	
+	Fix
+
+2004-03-05 09:34  manduchi
+
+	* javatraverser/TR32Setup.java:
+	
+	Fix frequency
+
+2004-03-02 13:12  twf
+
+	* tdishr/TdiVar.c:
+	
+	upcase tdi vars
+
+2004-03-02 09:17  twf
+
+	* servershr/ServerBuildDispatchTable.c:
+	
+	Use public variables
+
+2004-03-01 20:29  twf
+
+	* tdishr/TdiVar.c:
+	
+	Revert
+
+2004-03-01 15:59  twf
+
+	* servershr/ServerDispatchPhase.c:
+	
+	Use public variables for dependencies
+
+2004-03-01 15:57  twf
+
+	* tdishr/TdiVar.c:
+	
+	Allow deallocate to deallocate public variables
+
+2004-03-01 08:40  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Fix
+
+2004-03-01 04:47  manduchi
+
+	* tdi/RfxDevices/RFXControl__add.fun,
+	tdi/RfxDevices/RFXControl__init.fun,
+	javatraverser/RFXControlSetup.java:
+	
+	Added more parameters
+
+2004-02-26 10:29  jas
+
+	* tcl/tcl_set_callbacks.c:
+	
+	fix error_out callback
+
+2004-02-25 21:44  twf
+
+	* html/projects/: hdf5.html, hdf5.shtml:
+	
+	hdf5 stuff
+
+2004-02-25 21:26  twf
+
+	* html/projects/1.shtml:
+	
+	1.html replaced by hdf5.html
+
+2004-02-25 21:25  twf
+
+	* html/projects/: hdf5.html, index.shtml, menu.shtml:
+	
+	add hdf5 documentation
+
+2004-02-25 00:25  jas
+
+	* configure, configure.in:
+	
+	make location of HDF5 lib and includes specifiable
+
+2004-02-25 00:24  jas
+
+	* hdf5/Makefile.in:
+	
+	use new HDF5 vars for HDF5 lib and inc location
+
+2004-02-24 23:51  jas
+
+	* hdf5/hdf5ToMds.c:
+	
+	add string and string array data sets
+
+2004-02-23 23:07  jas
+
+	* hdf5/hdf5tdi.c:
+	
+	add string array
+
+2004-02-23 21:03  jas
+
+	* hdf5/hdf5ToMds.c:
+	
+	add string array attributes and clean up code
+
+2004-02-23 16:05  jas
+
+	* tdishr/TdiSql.c:
+	
+	fix null dates (and nulls in general)
+
+2004-02-23 15:00  jas
+
+	* tdishr/TdiSql.c:
+	
+	more on dates
+
+2004-02-23 14:52  jas
+
+	* tdishr/TdiSql.c:
+	
+	fix null dates
+
+2004-02-20 09:23  twf
+
+	* tdi/: transpose.fun, transpose2d.fun:
+	
+	Make transpose and transpose2d work
+
+2004-02-20 09:15  twf
+
+	* tdishr/opcbuiltins.h:
+	
+	remove transpose from builtins to force use of tdi fun
+
+2004-02-19 11:40  manduchi
+
+	* tdi/RfxDevices/T2Control__store.fun:
+	
+	Fix
+
+2004-02-17 11:07  manduchi
+
+	* tdi/RfxDevices/T2Control__store.fun:
+	
+	Fix
+
+2004-02-17 09:38  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Fix
+
+2004-02-17 09:13  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Fix
+
+2004-02-16 11:23  manduchi
+
+	* javatraverser/TR32Setup.java:
+	
+	FIX TR32 SetupDevice EZ
+
+2004-02-16 10:52  manduchi
+
+	* tdi/RfxDevices/TR32__init.fun:
+	
+	Fix TR32
+
+2004-02-12 20:24  jas
+
+	* tdi/MitDevices/dt_acq16__store.fun:
+	
+	check for post processing on new boards
+
+2004-02-12 12:13  twf
+
+	* treeshr/TreeOpen.c:
+	
+	Fix distributed client with autostack tree closing
+
+2004-02-10 12:24  manduchi
+
+	* tdi/RfxDevices/RFXControl__init.fun:
+	
+	Fix
+
+2004-02-09 05:56  manduchi
+
+	* javatraverser/: DeviceTableCustomizer.java, RFXControlSetup.java:
+	
+	New Version
+
+2004-02-06 06:14  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Fix limit check
+
+2004-02-06 04:49  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	Added T2ControlSetup
+
+2004-02-06 04:40  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Added 32 input calibrations
+
+2004-02-06 04:35  manduchi
+
+	* tdi/RfxDevices/: T2Control__add.fun, T2Control__init.fun:
+	
+	Adder 32 input signals
+
+2004-02-03 08:43  manduchi
+
+	* javatraverser/TR10Setup.java:
+	
+	Fix
+
+2004-02-03 08:26  manduchi
+
+	* javatraverser/TR32Setup.java:
+	
+	Add USE_TIME
+
+2004-02-03 07:12  manduchi
+
+	* javatraverser/TR32Setup.java:
+	
+	FIX EZ
+
+2004-02-03 07:10  manduchi
+
+	* javatraverser/TR32Setup.java:
+	
+	Fix EZ
+
+2004-02-03 07:06  manduchi
+
+	* javatraverser/TR32Setup.java:
+	
+	Fix EZ
+
+2004-02-03 05:33  manduchi
+
+	* javatraverser/TR32Setup.java:
+	
+	Fix Nid
+
+2004-02-03 03:02  manduchi
+
+	* javatraverser/: Data.java, DeviceChoice.java, DoubleData.java:
+	
+	Added support for doubles in DeviceChoice
+
+2004-02-02 12:16  manduchi
+
+	* javatraverser/TR32Setup.java:
+	
+	Fix widgets order
+
+2004-02-02 11:07  manduchi
+
+	* javatraverser/DecompileTree.java:
+	
+	Fixed device field report
+
+2004-02-02 11:05  manduchi
+
+	* javatraverser/TR32Setup.java:
+	
+	FIX Nid posistions
+
+2004-01-30 08:29  jas
+
+	* treeshr/TreeAddNode.c:
+	
+	Need to initialize status in TreeAddConglom
+
+2004-01-23 09:16  twf
+
+	* mdsshr/dasutil_routines4.c:
+	
+	Put non-thread safe cstring_to_dsc back in
+
+2004-01-23 08:25  manduchi
+
+	* javatraverser/: DIO2Setup.java, DeviceChannel.java:
+	
+	Fix
+
+2004-01-22 10:03  manduchi
+
+	* javatraverser/TR32Setup.java:
+	
+	Fix
+
+2004-01-22 09:54  manduchi
+
+	* tdi/RfxDevices/TR32HWClose.fun:
+	
+	close TR32 device
+
+2004-01-22 09:53  manduchi
+
+	* tdi/RfxDevices/: TR32HWInit.fun, TR32__store.fun:
+	
+	Fixes
+
+2004-01-22 08:15  manduchi
+
+	* javatraverser/: Devicebeans.jar, TR32Setup.java:
+	
+	Fix TR32 Setup Device EZ.
+
+2004-01-19 11:44  manduchi
+
+	* javatraverser/: DeviceChannel.java, DeviceChannelCustomizer.java,
+	DeviceChoice.java, DeviceField.java, Makefile.in, TR32Setup.java:
+	
+	Added Device Setup for INCAA TR32
+
+2004-01-19 11:42  manduchi
+
+	* tdi/RfxDevices/: TR32__init.fun, TR32__store.fun:
+	
+	Fixes
+
+2004-01-19 06:06  manduchi
+
+	* tdi/RfxDevices/: RFXControl__init.fun, TR10__store.fun,
+	TR10__trigger.fun, TR32HWInit.fun, TR32HWReadChan.fun,
+	TR32HWStartStore.fun, TR32HWTrigger.fun, TR32__store.fun,
+	TR32__trigger.fun:
+	
+	Support for INCAA TR32 CPCI device
+
+2004-01-16 05:53  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Fix
+
+2004-01-16 03:33  manduchi
+
+	* tdi/RfxDevices/: RFXControl__add.fun, RFXControl__init.fun:
+	
+	Added Simulink parametrs
+
+2004-01-16 03:33  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Added Simulink parameters
+
+2004-01-15 15:29  burruss
+
+	* html/documentation/beginners/: advanced.shtml, expressions.shtml,
+	glossary.shtml, graphictools.shtml, readwrite.shtml,
+	tutorials.shtml:
+	
+	Removed extra <table> tags.
+
+2004-01-15 15:26  burruss
+
+	* html/documentation/beginners/: concepts.shtml, datatypes.shtml,
+	intro.shtml, trees.shtml:
+	
+	Fixed problem with extra <table> tags.
+
+2004-01-15 15:23  burruss
+
+	* html/documentation/beginners/: index.shtml, menu.shtml:
+	
+	Moved table tags between docs.
+
+2004-01-15 15:19  burruss
+
+	* html/search.shtml:
+	
+	Added some whitespace.
+
+2004-01-15 15:17  burruss
+
+	* html/documentation/beginners/menu.shtml:
+	
+	Removed extra tags.
+
+2004-01-15 15:16  burruss
+
+	* html/search.shtml:
+	
+	Added start & end comments.
+
+2004-01-15 15:14  burruss
+
+	* html/menu.shtml:
+	
+	Added begin & end comments.
+
+2004-01-15 15:13  burruss
+
+	* html/: heading.shtml, documentation/beginners/menu.shtml:
+	
+	Added start and end comments.
+
+2004-01-15 15:12  burruss
+
+	* html/documentation/beginners/index.shtml:
+	
+	Removed an extra </body> tag.
+
+2004-01-15 15:09  burruss
+
+	* html/documentation/beginners/index_contents.shtml:
+	
+	Removed extra tags inserted by the HTML editing program.
+
+2004-01-15 15:05  burruss
+
+	* html/documentation/beginners/menu.shtml:
+	
+	Removed spurious tags.
+
+2004-01-15 13:53  twf
+
+	* html/documentation/users/menu.shtml:
+	
+	Remove extra <table>
+
+2004-01-15 13:49  twf
+
+	* html/documentation/users/menu.shtml:
+	
+	Remove extra <body>
+
+2004-01-15 10:22  manduchi
+
+	* tdi/RfxDevices/: T2Control__init.fun, TR32HWInit.fun,
+	TR32__add.fun, TR32__init.fun:
+	
+	INCAA TR32 device support
+
+2004-01-13 08:33  manduchi
+
+	* tdi/RfxDevices/: RFXControl__add.fun, RFXControl__init.fun,
+	TRCH__init.fun, TRCH__store.fun:
+	
+	Fix
+
+2004-01-12 11:50  manduchi
+
+	* tdi/RfxDevices/: RFXControl__init.fun, RFXControl__store.fun:
+	
+	Fix
+
+2004-01-12 09:29  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Fix
+
+2004-01-12 09:20  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Fix
+
+2004-01-12 09:12  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Dimensions
+
+2004-01-12 09:07  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Fix dimensions for linux
+
+2004-01-12 08:56  manduchi
+
+	* tdi/RfxDevices/RFXControl__init.fun:
+	
+	Fix
+
+2004-01-09 11:28  manduchi
+
+	* tdi/RfxDevices/: RFXControl__add.fun, RFXControl__init.fun,
+	RFXControl__store.fun:
+	
+	Added methods for RFXControl
+
+2004-01-09 10:45  manduchi
+
+	* javatraverser/: DeviceSetup.java, RFXControlSetup.java:
+	
+	RFXControl
+
+2004-01-09 10:02  manduchi
+
+	* javatraverser/: DeviceSetup.java, Makefile.in,
+	RFXControlSetup.java:
+	
+	Added RFXControlSetup
+
+2004-01-09 08:28  manduchi
+
+	* tdi/RfxDevices/: OPCAsyncGet.fun, OPCBrowseTag.fun,
+	OPCDisableAsyncGet.fun, OPCError.fun, OPCErrorMessage.fun,
+	OPCRead.fun, OPCServerList.fun:
+	
+	OPC Server - MdsPlus data exchange TDI function
+
+2004-01-09 08:27  manduchi
+
+	* tdi/RfxDevices/: OPCConnect.fun, OPCGet.fun, OPCPut.fun:
+	
+	Upgrade
+
+2004-01-09 08:12  manduchi
+
+	* tdi/RfxDevices/: OPCConnect.fun, OPCDisconnect.fun, OPCGet.fun,
+	OPCPut.fun:
+	
+	OPC server - MdsPlus data exchange TDI function
+
+2004-01-08 12:19  manduchi
+
+	* tdi/RfxDevices/WE7116__init.fun:
+	
+	test
+
+2004-01-07 09:30  manduchi
+
+	* javatraverser/: DeviceButtonsCustomizer.java, DeviceChannel.java,
+	DeviceChoice.java, DeviceComponent.java, Makefile.in,
+	WE7000Setup.java, WE7116Setup.java, WE7275Setup.java,
+	WEGroupSetup.java:
+	
+	Dwsetup for Yokogawa devices
+
+2004-01-07 06:11  manduchi
+
+	* tdi/RfxDevices/: WE7000__add.fun, WE7000__arm.fun,
+	WE7000__init.fun, WE7116__add.fun, WE7116__init.fun,
+	WE7116__store.fun, WE7275__add.fun, WE7275__init.fun,
+	WE7275__store.fun, WEGroup__add.fun, WEGroup__init.fun:
+	
+	Yokogawa WE7000 devices
+
+2004-01-05 11:58  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	allow large files on linux
+
+2004-01-05 10:57  twf
+
+	* treeshr/TreeCreatePulseFile.c:
+	
+	Add threadsafe changes
+
+2004-01-05 10:53  twf
+
+	* treeshr/RemoteAccess.c, treeshr/TreeAddNode.c,
+	treeshr/TreeAddTag.c, treeshr/TreeCallHook.c,
+	treeshr/TreeCleanDatafile.c, treeshr/TreeDeleteNode.c,
+	treeshr/TreeDeletePulseFile.c, treeshr/TreeDoMethod.c,
+	treeshr/TreeFindNode.c, treeshr/TreeGetRecord.c,
+	treeshr/TreePutRecord.c, treeshr/treeshrp.h,
+	mdstcpip/mdsip_socket_io.c, mdstcpip/mdsipshr.c:
+	
+	Add threadsafe changes
+
+2004-01-04 12:13  jas
+
+	* hdf5/hdf5tdi.c:
+	
+	fix iterator, add string types, allow spaces in names
+
+2004-01-03 11:25  jas
+
+	* hdf5/hdf5ToMds.c:
+	
+	add string data type
+
+2003-12-23 10:57  twf
+
+	* javamds/JavaData.c:
+	
+	Fix some problems found when built with --enable-memcheck
+
+2003-12-23 08:25  manduchi
+
+	* javamds/javamds.c:
+	
+	Fixed JVM activation under Linux
+
+2003-12-23 04:56  manduchi
+
+	* javamds/javamds.c:
+	
+	Fixed Virtual Machine activation for Linux
+
+2003-12-22 10:33  manduchi
+
+	* html/documentation/tutorial/CreateATree.htm:
+	
+	Fix reference
+
+2003-12-22 10:27  manduchi
+
+	* html/documentation/: users/menu.shtml, beginners/menu.shtml,
+	reference/menu.shtml:
+	
+	Fix
+
+2003-12-22 10:24  manduchi
+
+	* html/documentation/: reference/menu.shtml, beginners/menu.shtml,
+	users/menu.shtml:
+	
+	Fixed references
+
+2003-12-22 09:52  manduchi
+
+	* javamds/: javamds.c, javamds.def, javamds.dsp:
+	
+	Added Device Setup activation from C
+
+2003-12-22 09:51  manduchi
+
+	* javatraverser/: DeviceSetup.java, Node.java:
+	
+	Added Sevice Setup activation from C
+
+2003-12-22 03:49  manduchi
+
+	* javascope/T2DataProvider.java:
+	
+	Fixed T2DataProvidwer
+
+2003-12-18 12:52  manduchi
+
+	* html/documentation/tutorial/: CompositeWaveDisplay.html,
+	ConnectionEvent.html, ConnectionListener.html, DataAccess.html,
+	DataProvider.html, EditServer.jpg, FrameData.html, MdsLibC.html,
+	SetupData.jpg, SignalText.jpg, UpdateEvent.html,
+	UpdateEventListener.html, WaveData.html, data_setup.jpg,
+	frame_popup.jpg, image_setup.jpg, jScope.html, jScope.jpg,
+	jScope1.jpg, popup.jpg:
+	
+	Added a new section of the tutorial
+
+2003-12-18 11:04  twf
+
+	* mdsshr/librtl.c:
+	
+	Prevent free(0)
+
+2003-12-18 10:51  manduchi
+
+	* javascope/jScope.java:
+	
+	Add T2DataProvider
+
+2003-12-18 10:40  manduchi
+
+	* javascope/: ColorDialog.java, MdsConnection.java,
+	WaveDisplay.java, Waveform.java, WaveformContainer.java,
+	jScope.java:
+	
+	Fix
+
+2003-12-18 09:44  manduchi
+
+	* javadispatcher/jDispatcherIp.java:
+	
+	remove debug messages
+
+2003-12-18 09:36  manduchi
+
+	* javadispatcher/ActionServer.java:
+	
+	Add actionServer costructor
+
+2003-12-18 09:26  manduchi
+
+	* javadispatcher/MdsServer.java:
+	
+	Set synchronous send message in dispatchAction
+
+2003-12-17 05:17  manduchi
+
+	* javadispatcher/ActionServer.java:
+	
+	Test
+
+2003-12-16 12:42  manduchi
+
+	* javascope/PropertiesEditor.java:
+	
+	Change message
+
+2003-12-16 11:02  manduchi
+
+	* javadispatcher/: ActionServer.java, InfoServer.java,
+	jDispatchMonitor.java, jDispatcherIp.java:
+	
+	Handle distributed subtrees
+
+2003-12-15 15:54  twf
+
+	* Setup/Setup.vdproj:
+	
+	Windows
+
+2003-12-15 15:50  twf
+
+	* tdishr/: TdiThreadSafe.c, TdiVar.c, tdishr.vcproj,
+	tdithreadsafe.h:
+	
+	Windows threadsafe port
+
+2003-12-15 15:50  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Windows
+
+2003-12-15 15:49  twf
+
+	* mdsshr/: MdsEvents.c, MdsShr.def, MdsShrThreadSafe.c, mdsmsg.c,
+	mdsshr.vcproj, mdsshrthreadsafe.h:
+	
+	Threadsafe port to windows
+
+2003-12-15 10:41  twf
+
+	* mdsshr/librtl.c:
+	
+	Fix for windows
+
+2003-12-15 10:38  twf
+
+	* mdsshr/librtl.c:
+	
+	Fix global_mutex
+
+2003-12-15 10:12  twf
+
+	* LabView/: MdsDescrInt2D.vi, MdsDescrSingle1D.vi,
+	Sample7-Put2DArray.vi:
+	
+	Add more sample vi's for multi-dimensional data
+
+2003-12-15 10:03  twf
+
+	* rpm/mdsipd.xinetd:
+	
+	Do not use USERID logging
+
+2003-12-15 10:02  twf
+
+	* include/mdsserver.h:
+	
+	use more specific name for enum
+
+2003-12-15 09:46  manduchi
+
+	* tdi/RfxDevices/: T2Control__add.fun, T2Control__store.fun:
+	
+	Add more channels
+
+2003-12-15 07:40  manduchi
+
+	* tdi/RfxDevices/T2Control__store.fun:
+	
+	Fix
+
+2003-12-15 06:37  manduchi
+
+	* tdi/RfxDevices/T2Control__store.fun:
+	
+	Fix
+
+2003-12-11 16:02  jas
+
+	* mitdevices/io.c:
+	
+	add some debug prints
+
+2003-12-11 14:20  jas
+
+	* mitdevices/io.c:
+	
+	a new FREAD
+
+2003-12-11 11:01  jas
+
+	* mitdevices/io.c:
+	
+	limit size of freads
+
+2003-12-05 12:10  manduchi
+
+	* javascope/: RdaAccess.java, T2DataProvider.java:
+	
+	Added data access for T2 using old MDS
+
+2003-12-03 09:52  twf
+
+	* html/javascope/: about_jscope.jpg, data_popup.jpg,
+	data_setup.jpg, frame_popup.jpg, image_setup.jpg, jScope.jpg,
+	popup.jpg:
+	
+	Add jscope to web site
+
+2003-12-03 09:25  twf
+
+	* html/javascope/ReadMe.html:
+	
+	Add javascope help to web site
+
+2003-12-02 05:24  manduchi
+
+	* javatraverser/: DeviceChoiceCustomizer.java, Devicebeans.jar:
+	
+	Fixed DeviceChoiceCustomizer
+
+2003-12-01 11:00  manduchi
+
+	* javatraverser/: DeviceSetup.java, DeviceSetupBeanInfo.java,
+	Devicebeans.jar:
+	
+	Export width and height
+
+2003-12-01 06:04  manduchi
+
+	* tdi/RfxDevices/T2Control__store.fun:
+	
+	Fix
+
+2003-12-01 05:42  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Fix
+
+2003-12-01 05:34  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Fix
+
+2003-12-01 05:15  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Fix
+
+2003-12-01 04:14  manduchi
+
+	* tdi/RfxDevices/T2Control__store.fun:
+	
+	Fixes
+
+2003-11-28 12:45  manduchi
+
+	* tdi/RfxDevices/T2Control__add.fun:
+	
+	Fix
+
+2003-11-28 12:36  manduchi
+
+	* tdi/RfxDevices/: T2Control__add.fun, T2Control__init.fun,
+	T2Control__store.fun:
+	
+	Added more fields to T2Control
+
+2003-11-28 12:27  manduchi
+
+	* javatraverser/: DeviceFieldCustomizer.java, Devicebeans.jar,
+	T2ControlSetup.java:
+	
+	Added fields to T2Control
+
+2003-11-27 11:04  manduchi
+
+	* tdi/RfxDevices/: oldmdsconnect.fun, oldmdsvalue.fun:
+	
+	Fixed reduntant point
+
+2003-11-26 16:31  twf
+
+	* tdishr/TdiThreadSafe.c:
+	
+	Take out unused constants
+
+2003-11-26 16:31  twf
+
+	* tdishr/TdiItoX.c:
+	
+	Fix to subscripting when dimension has bounds
+
+2003-11-26 08:46  manduchi
+
+	* javatraverser/: DeviceBeansManifest.mf,
+	DeviceButtonsCustomizer.java, DeviceChannelCustomizer.java,
+	DeviceChoice.java, DeviceChoiceCustomizer.java,
+	DeviceFieldCustomizer.java, DeviceTable.java,
+	DeviceTableCustomizer.java, DeviceWaveCustomizer.java,
+	Devicebeans.jar, IntArrayEditor.java, T2ControlSetup.java,
+	TRCHSetup.java, deviceWave.gif:
+	
+	Made Device Beans usable for jBuilder
+
+2003-11-25 09:18  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Fix
+
+2003-11-25 09:08  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Fixes
+
+2003-11-25 07:56  manduchi
+
+	* tdi/RfxDevices/: T2Control__abort.fun, T2Control__store.fun:
+	
+	Fix
+
+2003-11-25 07:48  manduchi
+
+	* tdi/RfxDevices/T2Control__init.fun:
+	
+	Fix
+
+2003-11-25 07:33  manduchi
+
+	* tdi/RfxDevices/T2Control__init.fun:
+	
+	Fix
+
+2003-11-25 07:29  manduchi
+
+	* tdi/RfxDevices/T2Control__init.fun,
+	javatraverser/T2ControlSetup.java:
+	
+	Fixes
+
+2003-11-25 07:22  manduchi
+
+	* tdi/RfxDevices/T2Control__init.fun:
+	
+	Fixes
+
+2003-11-25 06:55  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Fixes
+
+2003-11-25 05:55  manduchi
+
+	* javatraverser/T2ControlSetup.java,
+	tdi/RfxDevices/T2Control__add.fun:
+	
+	Fixes
+
+2003-11-25 04:36  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	More checks
+
+2003-11-25 04:27  manduchi
+
+	* javatraverser/DeviceTable.gif, javatraverser/T2ControlSetup.java,
+	tdi/RfxDevices/T2Control__add.fun,
+	tdi/RfxDevices/T2Control__init.fun,
+	tdi/RfxDevices/T2Control__store.fun:
+	
+	New T2Control release
+
+2003-11-24 12:50  twf
+
+	* mdsshr/: MDSprintf.c, Makefile.in, MdsCmprs.c, MdsCompareXd.c,
+	MdsCompress.c, MdsEvents.c, MdsGet1DxA.c, MdsGet1DxS.c,
+	MdsGetSetShotId.c, MdsMalloc.c, MdsPk.c, MdsSerialize.c,
+	MdsXdRoutines.c, dasutil_routines4.c, librtl.c, mds_dsc_string.c,
+	mdsmsg.c, MdsShrThreadSafe.c, mdsshrthreadsafe.h:
+	
+	Add thread safe code
+
+2003-11-24 09:50  manduchi
+
+	* tdi/RfxDevices/T2Control__store.fun:
+	
+	Use pre trigger samples in T2Control
+
+2003-11-24 04:36  manduchi
+
+	* javascope/MdsplusParser.java:
+	
+	Fixed TS DataProvider
+
+2003-11-20 12:00  manduchi
+
+	* tdi/RfxDevices/: T2Control__abort.fun, T2Control__add.fun,
+	T2Control__store.fun, TR10__store.fun, TRCF__store.fun,
+	TRCH__store.fun:
+	
+	Removed one point in signal dimension
+
+2003-11-20 08:47  manduchi
+
+	* html/documentation/tutorial/: CreateATree.htm, Embarrased.jpg,
+	menu.shtml:
+	
+	Typo corrections
+
+2003-11-19 09:34  manduchi
+
+	* javatraverser/: device.gif, device.gif:
+	
+	Corrupted
+
+2003-11-19 09:31  manduchi
+
+	* javatraverser/action.gif:
+	
+	zz
+
+2003-11-19 09:28  manduchi
+
+	* javatraverser/subtree.gif:
+	
+	Broken image!
+
+2003-11-19 09:27  manduchi
+
+	* javatraverser/subtree.gif:
+	
+	corrupted image!
+
+2003-11-19 08:58  manduchi
+
+	* javatraverser/: dispatch.gif, numeric.gif, structure.gif,
+	subtree.gif, task.gif, text.gif, window.gif:
+	
+	Fix - second try
+
+2003-11-19 08:58  manduchi
+
+	* javatraverser/: dispatch.gif, numeric.gif, structure.gif,
+	subtree.gif, task.gif, text.gif, window.gif:
+	
+	Second try
+
+2003-11-19 08:57  manduchi
+
+	* javatraverser/: dispatch.gif, numeric.gif, structure.gif,
+	subtree.gif, task.gif, text.gif, window.gif:
+	
+	Fixed corrupted images
+
+2003-11-19 08:56  manduchi
+
+	* javatraverser/: dispatch.gif, numeric.gif, structure.gif,
+	subtree.gif, task.gif, text.gif, window.gif:
+	
+	Corrupted images
+
+2003-11-19 08:55  manduchi
+
+	* javatraverser/signal.gif:
+	
+	Fix corrupted image
+
+2003-11-19 08:54  manduchi
+
+	* javatraverser/: DeviceBeansManifest.mf,
+	DeviceButtonsCustomizer.java, DeviceChannelCustomizer.java,
+	DeviceFieldCustomizer.java, DeviceTableCustomizer.java,
+	DeviceWaveCustomizer.java, Devicebeans.jar, Tree.java,
+	TreeNode.java, jTraverser.java, signal.gif:
+	
+	Corrupted image
+
+2003-11-19 06:02  manduchi
+
+	* html/documentation/tutorial/CreateATree.htm:
+	
+	Improvements...
+
+2003-11-19 05:50  manduchi
+
+	* html/documentation/tutorial/Undefined.jpg:
+	
+	Corrupted image II try
+
+2003-11-19 05:48  manduchi
+
+	* html/documentation/tutorial/Undefined.jpg:
+	
+	Corrupted figure
+
+2003-11-19 05:45  manduchi
+
+	* html/documentation/tutorial/: CreateATree.shtml,
+	DataAccess.shtml, Devices.shtml, Events.shtml,
+	ExperimentSequence.shtml, LetsStart.shtml, menu.shtml:
+	
+	Improving appearance
+
+2003-11-19 05:37  manduchi
+
+	* html/documentation/tutorial/: index.shtml, menu.shtml:
+	
+	Fixed file names
+
+2003-11-19 05:29  manduchi
+
+	* html/documentation/menu.shtml:
+	
+	Added link to MDSplus tutorial
+
+2003-11-19 05:28  manduchi
+
+	* html/documentation/tutorial/: DataAccess.html, Devices.html,
+	Events.html, ExperimentSequence.html, index.shtml, menu.shtml:
+	
+	Files required by the MDSplus tutorial
+
+2003-11-19 05:03  manduchi
+
+	* html/documentation/tutorial/Undefined.jpg:
+	
+	Figure was corupted
+
+2003-11-19 05:00  manduchi
+
+	* html/documentation/tutorial/: AddTag.jpg, CreateATree.htm,
+	LetsStart.htm, MDSplusTutorial.htm, ModifyData.jpg, Summary.htm,
+	Title.htm, Undefined.jpg, UsageError.jpg, jTraverser1.jpg,
+	jTraverser2.jpg, jTraverser3.jpg, jTraverser4.jpg:
+	
+	Added as binary files
+
+2003-11-19 04:59  manduchi
+
+	* html/documentation/tutorial/: AddTag.jpg, ModifyData.jpg,
+	UsageError.jpg, jTraverser1.jpg, jTraverser2.jpg, jTraverser3.jpg,
+	jTraverser4.jpg:
+	
+	Must be created with -kb option
+
+2003-11-19 04:55  manduchi
+
+	* html/documentation/tutorial/: AddTag.jpg, CreateATree.htm,
+	LetsStart.htm, MDSplusTutorial.htm, ModifyData.jpg, Summary.htm,
+	jTraverser1.jpg, jTraverser2.jpg, jTraverser3.jpg, jTraverser4.jpg,
+	Title.htm, Undefined.jpg, UsageError.jpg:
+	
+	The mdsplus tutorial
+
+2003-11-19 04:55  manduchi
+
+	* html/documentation/tutorial/: AddTag.jpg, CreateATree.htm,
+	LetsStart.htm, MDSplusTutorial.htm, ModifyData.jpg, Summary.htm,
+	jTraverser1.jpg, jTraverser2.jpg, jTraverser3.jpg, jTraverser4.jpg,
+	Title.htm, Undefined.jpg, UsageError.jpg:
+	
+	Initial revision
+
+2003-11-19 04:53  manduchi
+
+	* html/documentation/beginners/tutorial/: AddTag.jpg,
+	CreateATree.htm, LetsStart.htm, MDSplusTutorial.htm,
+	ModifyData.jpg, Summary.htm, Title.htm, Undefined.jpg,
+	UsageError.jpg, jTraverser1.jpg, jTraverser2.jpg, jTraverser3.jpg,
+	jTraverser4.jpg:
+	
+	Moved tutorial up one level
+
+2003-11-18 12:31  manduchi
+
+	* html/documentation/beginners/tutorial/jTraverser3.jpg:
+	
+	Used binary transfer
+
+2003-11-18 12:30  manduchi
+
+	* html/documentation/beginners/tutorial/jTraverser3.jpg:
+	
+	Fix binary file
+
+2003-11-18 12:26  manduchi
+
+	* html/documentation/beginners/tutorial/: AddTag.jpg,
+	ModifyData.jpg, Undefined.jpg, UsageError.jpg, jTraverser1.jpg,
+	jTraverser2.jpg, jTraverser4.jpg:
+	
+	Used binary transfer
+
+2003-11-18 12:25  manduchi
+
+	* html/documentation/beginners/tutorial/: AddTag.jpg,
+	ModifyData.jpg, Undefined.jpg, UsageError.jpg, jTraverser2.jpg,
+	jTraverser4.jpg:
+	
+	Use binary transfer
+
+2003-11-18 12:20  manduchi
+
+	* html/documentation/beginners/tutorial/: CreateATree.htm,
+	LetsStart.htm, Summary.htm, Title.htm, jTraverser1.jpg:
+	
+	Test
+
+2003-11-18 11:58  manduchi
+
+	* html/documentation/beginners/tutorial/: AddTag.jpg,
+	CreateATree.htm, LetsStart.htm, MDSplusTutorial.htm,
+	ModifyData.jpg, Summary.htm, Title.htm, Undefined.jpg,
+	UsageError.jpg, jTraverser1.jpg, jTraverser2.jpg, jTraverser3.jpg,
+	jTraverser4.jpg:
+	
+	Initial revision
+
+2003-11-18 11:58  manduchi
+
+	* html/documentation/beginners/tutorial/: AddTag.jpg,
+	CreateATree.htm, LetsStart.htm, MDSplusTutorial.htm,
+	ModifyData.jpg, Summary.htm, Title.htm, Undefined.jpg,
+	UsageError.jpg, jTraverser1.jpg, jTraverser2.jpg, jTraverser3.jpg,
+	jTraverser4.jpg:
+	
+	The MDSplus tutorial
+
+2003-11-17 16:21  twf
+
+	* tdishr/: CvtConvertFloat.c, IsRoprand.c, Makefile.in, TdiAbs.c,
+	TdiAdd.c, TdiAnd.c, TdiArray.c, TdiBinary.c, TdiBound.c,
+	TdiBuild.c, TdiCall.c, TdiChar.c, TdiCompile.c, TdiConstant.c,
+	TdiConvert.c, TdiCull.c, TdiCvtArgs.c, TdiCvtDxDx.c,
+	TdiDecompile.c, TdiDecompileDependency.c, TdiDecompileR.c,
+	TdiDecompress.c, TdiDefCat.c, TdiDefFunction.c, TdiDim.c,
+	TdiDivide.c, TdiDoTask.c, TdiDtypeRange.c, TdiEq.c, TdiEvaluate.c,
+	TdiExponent.c, TdiExpt.c, TdiExtFunction.c, TdiGetArgs.c,
+	TdiGetData.c, TdiGetDbi.c, TdiGetNci.c, TdiGetShape.c,
+	TdiGetSlope.c, TdiHash.c, TdiIand.c, TdiIntrinsic.c, TdiIo.c,
+	TdiItoX.c, TdiLex.c, TdiMakeFunctionTable.c, TdiMasterData.c,
+	TdiMath1.c, TdiMath2.c, TdiMatrix.c, TdiMaxVal.c, TdiMinMax.c,
+	TdiPack.c, TdiPower.c, TdiSame.c, TdiScalar.c, TdiSetRange.c,
+	TdiShowVm.c, TdiSort.c, TdiSql.c, TdiSquare.c, TdiStatement.c,
+	TdiSubscript.c, TdiTrans.c, TdiTrim.c, TdiUnary.c, TdiUndef.c,
+	TdiVar.c, TdiXxx.c, TdiXxxOf.c, TdiYacc.c, TdiThreadSafe.c,
+	tdithreadsafe.h:
+	
+	add changes for making tdishr thread safe
+
+2003-11-14 16:34  jas
+
+	* tdishr/: TdiMatrix.c, TdiStatement.c, TdiSubscript.c, TdiVar.c,
+	TdiVector.c, TdiXxxOf.c, TdiYaccSubs.c:
+	
+	make static routines STATIC_ROUTINE
+
+2003-11-14 15:18  jas
+
+	* tdi/MitDevices/dt_acq16__store.fun:
+	
+	remove debug prints
+
+2003-11-14 15:12  jas
+
+	* tdi/MitDevices/: Dt200GetInternalClock.fun,
+	Dt200GetNumSamples.fun, Dt200GetPostSamples.fun,
+	Dt200GetPreSamples.fun, Dt200ReadChannel.fun, Dt200Reset.fun,
+	Dt200WriteMaster.fun, dt200__store.fun:
+	
+	Make all the funs public, remove the debug prints
+
+2003-11-14 14:17  jas
+
+	* mitdevices/io.c:
+	
+	remove debug prints
+
+2003-11-14 11:47  twf
+
+	* include/STATICdef.h:
+	
+	Only do it once
+
+2003-11-14 11:42  twf
+
+	* include/STATICdef.h:
+	
+	Add STATICdef.h include
+
+2003-11-14 11:24  twf
+
+	* include/staticdef.h:
+	
+	Defines for threadsafe
+
+2003-11-14 10:09  twf
+
+	* tdishr/TdiIntrinsic.c:
+	
+	revert
+
+2003-11-14 10:06  twf
+
+	* tdishr/TdiIntrinsic.c:
+	
+	Make tdishr more thread safe
+
+2003-11-14 04:37  manduchi
+
+	* tdi/RfxDevices/: T2Control__abort.fun, T2Control__add.fun,
+	T2Control__init.fun, T2Control__store.fun:
+	
+	Minore fixes
+
+2003-11-13 10:38  twf
+
+	* treeshr/TreeCallHook.c:
+	
+	Only look for hook image once
+
+2003-11-13 10:37  twf
+
+	* mdsshr/librtl.c:
+	
+	Make FIS_Error thread safe
+
+2003-11-11 04:18  manduchi
+
+	* tdi/RfxDevices/T2Control__init.fun:
+	
+	Stop feedback first
+
+2003-11-07 07:42  manduchi
+
+	* javascope/jScopeMultiWave.java:
+	
+	Remove code added for debug
+
+2003-11-07 05:18  manduchi
+
+	* javascope/: Grid.java, MdsDataProvider.java,
+	MdsWaveInterface.java, MultiWaveform.java, Signal.java,
+	WaveInterface.java, Waveform.java, WaveformContainer.java,
+	jScope.java, jScopeMultiWave.java:
+	
+	Fixed zoom bug and double management in data retrieval
+
+2003-11-06 11:22  twf
+
+	* scripts/unix_submit:
+	
+	Add hostname to log file
+
+2003-11-06 09:04  manduchi
+
+	* javatraverser/: Node.java, RFXPulseSetup.java,
+	RFXTimingSetup.java:
+	
+	Fixed RFXPulse
+
+2003-11-05 05:39  manduchi
+
+	* tdi/RfxDevices/T2Control__store.fun:
+	
+	Fix
+
+2003-11-05 05:12  manduchi
+
+	* javatraverser/T2ControlSetup.java,
+	tdi/RfxDevices/T2Control__init.fun:
+	
+	Fix
+
+2003-11-05 04:03  manduchi
+
+	* javatraverser/: DeviceCancel.gif, DeviceSetup.gif,
+	T2ControlSetup.java, action.gif, device.gif, task.gif, window.gif:
+	
+	Complete function menu
+
+2003-11-04 15:04  jas
+
+	* tdi/MitDevices/dt200__store.fun:
+	
+	don't reset_private(),reset_public() at the end
+
+2003-11-04 13:51  twf
+
+	* actions/actmon.c:
+	
+	Fix for non-sh shells
+
+2003-11-04 11:15  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	Revert back to pre-RH9 fixes
+
+2003-11-03 23:52  twf
+
+	* mdsshr/librtl.c:
+	
+	disable env fun usage until thread safe
+
+2003-10-31 12:07  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	Mark jobs in use
+
+2003-10-31 10:17  jgk
+
+	* javascope/TwuTests/: README, TestTWUFetchOptions.java,
+	TestTWUSignalProperties.java, TestTwuSingleSignal.java,
+	TestTwuSingleSignal2.java, makefile:
+	
+	The first version of the these tests that are entered into CVS.  It
+	is believed that at the moment all tests run OK and have no
+	problems to report.
+
+2003-10-31 10:00  jgk
+
+	* javascope/jScope.java:
+	
+	Fine-tuned the printable area, bumped-up the version number,
+	because of all the TWU related changes.
+
+2003-10-31 05:26  jgk
+
+	* javascope/WaveInterface.java:
+	
+	The call to GetSignalFromProvider() should be synchronised with the
+	DataProvider object.  Perhaps other calls as well, but that is not
+	so obvious.
+
+2003-10-31 04:46  jgk
+
+	* javascope/TwuSingleSignal.java:
+	
+	A fairly aggressive cleanup of this class; especially in the area
+	of this FindIndicesForXRange() method and its associates.  Also
+	removed assorted deadwood code and comments.
+
+2003-10-31 04:41  jgk
+
+	* javascope/TWUFetchOptions.java:
+	
+	Removed another code fragment and comment that are not longer
+	relevant.
+
+2003-10-30 13:30  jgk
+
+	* javascope/TwuSingleSignal.java:
+	
+	Adapted to cooperate with the new version (2.3) of
+	TWUFetchOptions.java.
+
+2003-10-30 13:27  jgk
+
+	* javascope/TWUFetchOptions.java:
+	
+	Fairly aggressive cleanup of this class.  It is almost readable.
+
+2003-10-30 12:08  jas
+
+	* tdi/MitDevices/TR10Slot.fun:
+	
+	A fun to translate CPCI slot numbers to INCAA board numbers
+
+2003-10-30 08:27  jgk
+
+	* javascope/TwuSingleSignal.java:
+	
+	Layout fiddles, deawood comments.
+
+2003-10-30 08:21  jgk
+
+	* javascope/TwuSingleSignal.java:
+	
+	- Moved the methods FindIndicesForXRange() and	 FindNonEquiIndex()
+	from TwuWaveData into the   class were they belong:
+	TwuSingleSignal.  - Removed method createEquidistantData(), its  
+	functionality was repeated elsewhere.  - Added a constructor and
+	some other fragments   to facilitate more systematic testing.
+
+2003-10-30 08:11  jgk
+
+	* javascope/TwuWaveData.java:
+	
+	Moved the methods  FindIndicesForXRange()  and	FindNonEquiIndex()
+	from TwuWaveData into the class were they belong:  TwuSingleSignal.
+
+2003-10-30 08:00  jgk
+
+	* javascope/TWUSignal.java:
+	
+	Attempt to improve the tryToConstruct() algorithm; bring it more
+	inline with similar conventions in other TWU related software. 
+	Also ensure that the output array, as obtained via getBulkData(),
+	always has the right size.
+
+2003-10-30 07:51  jgk
+
+	* javascope/TWUProperties.java:
+	
+	The fakeproperties (used when an abscissa is missing and for
+	testing purposes) should also fake that their valid.
+
+2003-10-28 13:36  jgk
+
+	* javascope/TWUFetchOptions.java:
+	
+	No existing user of this class uses negative step distances.  In
+	order to simplify reasoning about, and testing of, these codes, we
+	will not any longer accept such negative steps.
+
+2003-10-24 13:00  manduchi
+
+	* tdi/RfxDevices/: T2Control__abort.fun, T2Control__add.fun,
+	T2Control__init.fun, T2Control__store.fun:
+	
+	Added room for new parameters and added abort method
+
+2003-10-24 12:59  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Added further parameters
+
+2003-10-23 10:19  jgk
+
+	* javascope/: TwuDataProvider.java, TwuNameServices.java,
+	TwuSingleSignal.java, TwuWaveData.java:
+	
+	Further reduced the interdependence of the Twu* classes.
+
+2003-10-23 09:45  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	add large file support for linux
+
+2003-10-22 12:07  twf
+
+	* html/software/: chroot.shtml, menu.shtml:
+	
+	Add chroot documentation
+
+2003-10-21 15:56  twf
+
+	* mdstcpip/mdsipd:
+	
+	Add chroot capability
+
+2003-10-21 11:50  jgk
+
+	* javascope/: TwuDataProvider.java, TwuSingleSignal.java,
+	TwuWaveData.java:
+	
+	Re-factored the Twu* classes, so as to reduce the amount of
+	coupling between them, improve the cohesion and focus within the
+	classes, make the remaining coupling better visible. Also removed
+	some redundant code fragments.
+
+2003-10-20 15:36  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	fix for AIX
+
+2003-10-20 15:31  twf
+
+	* tdic/tdishrext.exports:
+	
+	Add more exports
+
+2003-10-20 15:02  twf
+
+	* mdstcpip/mdsipshr.export:
+	
+	Add more exports
+
+2003-10-20 15:00  twf
+
+	* tdishr/TdiShr.export, tdishr/TdiShr.exports,
+	mdsshr/MdsShr.exports:
+	
+	Add more externals
+
+2003-10-16 15:02  twf
+
+	* mitdevices/joerger_tr812.c:
+	
+	Fix segfault from invalid pio
+
+2003-10-15 12:55  twf
+
+	* tdi/timtest.fun:
+	
+	Fix message
+
+2003-10-15 12:35  twf
+
+	* tdi/timtest.fun:
+	
+	do byte transfers
+
+2003-10-14 11:45  manduchi
+
+	* tdi/RfxDevices/T2Control__store.fun:
+	
+	Working version
+
+2003-10-14 03:19  manduchi
+
+	* tdi/RfxDevices/: T2Control__add.fun, T2Control__store.fun:
+	
+	First working release
+
+2003-10-13 13:13  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Estethic changes
+
+2003-10-13 12:18  manduchi
+
+	* tdi/RfxDevices/T2Control__store.fun:
+	
+	Store method for T2 control device
+
+2003-10-13 11:47  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Added trigger time
+
+2003-10-13 11:28  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Aestetical Fixes
+
+2003-10-13 09:32  manduchi
+
+	* tdi/RfxDevices/T2Control__init.fun:
+	
+	Fixed duration Parameter CVS
+	-------------------------------------------------------------------
+	---
+
+2003-10-13 08:06  manduchi
+
+	* tdi/RfxDevices/T2Control__init.fun:
+	
+	Working version
+
+2003-10-13 07:46  manduchi
+
+	* javatraverser/: DIO2Setup.java, DeviceTable.java,
+	DeviceTableBeanInfo.java, DeviceTableCustomizer.java,
+	RFXPulseSetup.java:
+	
+	Several minor fixes
+
+2003-10-13 07:43  manduchi
+
+	* javatraverser/T2ControlSetup.java:
+	
+	Interface for digital feedback in T2
+
+2003-10-13 05:04  manduchi
+
+	* tdi/RfxDevices/: T2Control__add.fun, T2Control__init.fun:
+	
+	Support devices for Digital Feedback COntrol in T2
+
+2003-10-10 03:04  manduchi
+
+	* tdi/RfxDevices/TRCH__store.fun:
+	
+	Patch for MAR readout malfunction
+
+2003-10-10 02:45  manduchi
+
+	* tdi/RfxDevices/: DIO2EncoderHWInit.fun, DIO2HWInit.fun,
+	DIO2__reset.fun, TimingGetEvents.fun, TimingRegisterEventTime.fun:
+	
+	Do not reset encoder in inititialization Change code for
+	T_START_RFX
+
+2003-10-09 09:28  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	workaround for pthread bug in RedHat 9
+
+2003-10-08 09:06  manduchi
+
+	* javadispatcher/: MdsIp.java, jDispatcherIp.java,
+	jDispatcherIp.template:
+	
+	Pass parameter to jDispatcherIp
+
+2003-10-07 07:24  manduchi
+
+	* javatraverser/: DeviceCancel.gif, DeviceSetup.gif, action.gif,
+	device.gif, jTraverser.template, task.gif, window.gif:
+	
+	Changed template
+
+2003-10-06 11:09  manduchi
+
+	* tdi/RfxDevices/DIO2HWInit.fun:
+	
+	Fixed timing highway propagation
+
+2003-10-06 06:41  manduchi
+
+	* tdi/RfxDevices/: DIO2__init.fun, DIO2__store.fun:
+	
+	Fixed node references
+
+2003-10-03 12:51  manduchi
+
+	* tdi/RfxDevices/: DIO2EncoderHWInit.fun, DIO2EncoderHWTrigger.fun:
+	
+	Fixed timing propagation
+
+2003-10-03 11:52  manduchi
+
+	* tdi/RfxDevices/: TR10HWInit.fun, TR10__init.fun:
+	
+	Fixed Node offsets
+
+2003-10-03 11:28  manduchi
+
+	* tdi/RfxDevices/: DIO2EncoderHWInit.fun, DIO2HWInit.fun:
+	
+	Fixed highway propagation
+
+2003-10-03 11:17  manduchi
+
+	* javatraverser/DIO2Setup.java:
+	
+	Fixed node offset
+
+2003-10-03 05:19  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	add Decompile and compile tree
+
+2003-10-02 12:11  manduchi
+
+	* tdi/RfxDevices/TR10__add.fun:
+	
+	Fix Trigger_edge
+
+2003-10-02 11:47  manduchi
+
+	* javatraverser/DIO2Setup.java:
+	
+	Hopefully last fix!!
+
+2003-10-02 11:38  manduchi
+
+	* javatraverser/DIO2Setup.java:
+	
+	Fix channel comment
+
+2003-10-02 09:30  manduchi
+
+	* javatraverser/: DIO2Setup.java, DeviceWave.java, TR10Setup.java:
+	
+	Minor improvements for channel comment in DIO2 and trigger edge in
+	TR10
+
+2003-10-02 09:28  manduchi
+
+	* tdi/RfxDevices/: DIO2__add.fun, DIO2__init.fun, DIO2__store.fun,
+	DIO2__trigger.fun, TR10HWInit.fun, TR10__add.fun, TR10__init.fun:
+	
+	Added TR10 trigger edge selection and DIO2 channel comment
+
+2003-09-30 11:18  twf
+
+	* tdi/MitDevices/idl.fun:
+	
+	Add idl function
+
+2003-09-30 11:14  twf
+
+	* mitdevices/: Makefile.in, idl.c:
+	
+	Add idl support again
+
+2003-09-30 11:14  twf
+
+	* mitdevices/callidl.c:
+	
+	Add execute idl commands
+
+2003-09-30 10:43  manduchi
+
+	* tdi/RfxDevices/TR10HWInit.fun:
+	
+	Trigger on rising edge
+
+2003-09-26 08:46  manduchi
+
+	* javadispatcher/jDispatcherIp.template:
+	
+	Fix LD_LIBRARY_PATH definition
+
+2003-09-25 08:03  manduchi
+
+	* mdsshr/librtl.c:
+	
+	removed syntax error in HAVE_WINDOWS_H part
+
+2003-09-25 08:03  manduchi
+
+	* tdishr/TdiGetDbi.c:
+	
+	Removed syntax error in HAVE_WINDOWS_H part
+
+2003-09-24 10:25  manduchi
+
+	* javascope/: MdsDataProvider.java, WaveInterface.java:
+	
+	Evaluate signals only ONCE!!!!
+
+2003-09-24 04:44  manduchi
+
+	* tditest/tditest.c:
+	
+	Allows tditest to be used in vxWorks
+
+2003-09-23 04:31  manduchi
+
+	* tdi/RfxDevices/: DIO2HWInit.fun, DIO2__init.fun:
+	
+	Better error reporting
+
+2003-09-16 12:07  manduchi
+
+	* tdi/RfxDevices/: DIO2Encoder__trigger.fun,
+	DIO2HWGetPhaseCount.fun, DIO2HWGetRecEvents.fun, DIO2HWReset.fun,
+	DIO2HWSetClockChan.fun, DIO2HWSetDClockChan.fun,
+	DIO2HWSetPulseChan.fun, DIO2HWStartChan.fun, DIO2HWTrigger.fun,
+	DIO2__init.fun, DIO2__store.fun, DIO2__trigger.fun, DevLogErr.fun,
+	TR10HWInit.fun, TR10HWStartStore.fun, TR10__store.fun:
+	
+	First round of tests
+
+2003-09-16 08:49  manduchi
+
+	* javatraverser/: DIO2EncoderSetup.java, DIO2Setup.java,
+	RFXPConfigSetup.java, RFXPMSetupSetup.java, TR10Setup.java:
+	
+	Minor estetic fixes
+
+2003-09-16 08:30  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	Remove memory leak as reported in bug 12
+
+2003-09-15 14:36  twf
+
+	* html/documentation/reference/menu.shtml:
+	
+	Fix beginners  and users guide link
+
+2003-09-15 14:35  twf
+
+	* html/documentation/users/menu.shtml:
+	
+	Fix begineers guide link
+
+2003-09-15 12:46  twf
+
+	* html/search.shtml:
+	
+	Use cgi for search
+
+2003-09-15 10:57  jas
+
+	* mitdevices/mdsdcl.c, mitdevices/preamp.c, actions/actions.c,
+	traverser/CallbacksUil.c:
+	
+	Change XmStringGetLtoR to XmStringUnparse to fix crash if LANG is
+	wrong
+
+2003-09-15 10:45  jas
+
+	* dwscope/: dwpad.c, dwscope.c:
+	
+	Change XmStringGetLtoR to XmStringUnparse to fix crash if LANG is
+	wrong
+
+2003-09-15 10:17  jas
+
+	* xmdsshr/XmdsNidOptionMenu.c:
+	
+	Change XmStringGetLtoR to XmStringUnparse to fix crash if LANG is
+	wrong
+
+2003-09-11 11:30  twf
+
+	* mdsshr/librtl.c:
+	
+	Improve LibFindImageSymbol performance when just providing partial
+	filename, i.e. MdsLib
+
+2003-09-09 14:17  twf
+
+	* rpm/envsyms.in:
+	
+	Add MDSMSG_PATH to envsyms
+
+2003-09-09 09:59  twf
+
+	* mdsshr/librtl.c:
+	
+	Add env.fun capability to translatelogical
+
+2003-09-09 09:18  manduchi
+
+	* tdi/RfxDevices/: DIO2EncoderHWInit.fun, DIO2EncoderHWTrigger.fun,
+	DIO2Encoder__init.fun, DIO2Encoder__trigger.fun,
+	DIO2HWGetPhaseCount.fun, DIO2HWInit.fun, DIO2HWTrigger.fun,
+	DIO2__init.fun, DIO2__trigger.fun, TR10HWInit.fun:
+	
+	Last fixes to make DIO store work
+
+2003-09-09 08:19  twf
+
+	* camshr/cam_functions.c:
+	
+	Jorway 73a support
+
+2003-09-08 16:05  twf
+
+	* camshr/cam_functions.c:
+	
+	Jorway 73a support
+
+2003-09-08 14:12  jas
+
+	* mitdevices/INCAA_TR10.uil:
+	
+	mods to tr10 setup form
+
+2003-09-08 14:11  jas
+
+	* tdi/MitDevices/: TR10ReadChannel.fun, TR10SetClockMode.fun,
+	incaa_tr10__store.fun:
+	
+	mods to initial TR10 Code
+
+2003-09-08 11:25  twf
+
+	* camshr/cam_functions.c:
+	
+	J73A support
+
+2003-09-08 11:02  twf
+
+	* camshr/: cam_functions.c, cam_functions.c:
+	
+	J73A support
+
+2003-09-08 09:30  twf
+
+	* camshr/cam_functions.c:
+	
+	J73A support
+
+2003-09-05 16:24  twf
+
+	* camshr/turn_crate_on_off_line.c:
+	
+	J73A support
+
+2003-09-05 16:13  twf
+
+	* camshr/cam_functions.c:
+	
+	J73A support
+
+2003-09-05 16:06  twf
+
+	* camshr/cam_functions.c:
+	
+	J73A support
+
+2003-09-05 15:50  twf
+
+	* camshr/turn_crate_on_off_line.c:
+	
+	Add Jorway 73A support
+
+2003-09-05 15:46  twf
+
+	* camshr/: turn_crate_on_off_line.c, turn_crate_on_off_line.c:
+	
+	Add Jorway 73A support
+
+2003-09-05 15:33  twf
+
+	* camshr/cam_functions.c:
+	
+	Add Jorway 73A support
+
+2003-09-05 15:29  twf
+
+	* camshr/cam_functions.c:
+	
+	Add Jorway 73A support
+
+2003-09-05 15:23  twf
+
+	* camshr/cam_functions.c:
+	
+	Add Jorway 73A support
+
+2003-09-05 13:44  twf
+
+	* camshr/cam_functions.c:
+	
+	Add Jorway 73A
+
+2003-09-05 12:15  twf
+
+	* camshr/: cam_functions.c, prototypes.h:
+	
+	Add Jorway 73A support
+
+2003-09-05 11:59  twf
+
+	* camshr/: QueryHighwayType.c, common.h:
+	
+	Add Jorway 73A support
+
+2003-09-05 11:25  jas
+
+	* tdi/MitDevices/: MitDevices.fun, TR10Close.fun, TR10Error.fun,
+	TR10GetActPostSamples.fun, TR10GetActShotSamples.fun,
+	TR10GetClockDiv.fun, TR10GetClockMode.fun, TR10GetClockSource.fun,
+	TR10GetState.fun, TR10Handle.fun, TR10HandleName.fun, TR10Open.fun,
+	TR10ReadChannel.fun, TR10Reset.fun, TR10SetClockMode.fun,
+	TR10SetPostSamples.fun, TR10SetTrigger.fun, TR10StartSampling.fun,
+	TR10Trigger.fun, TR10_GetActPostSamples.fun, incaa_tr10__add.fun,
+	incaa_tr10__init.fun, incaa_tr10__part_name.fun,
+	incaa_tr10__store.fun, incaa_tr10__trigger.fun, matrox__add.fun:
+	
+	adding INCAA 16 Chan CPCI digitizer
+
+2003-09-05 11:23  jas
+
+	* mitdevices/: INCAA_TR10.uil, Makefile.in:
+	
+	adding INCAA 16 chan CPCI digitizer
+
+2003-09-03 09:28  twf
+
+	* treeshr/TreeAddNode.c:
+	
+	Make COMPRESS_ON_PUT the default
+
+2003-09-02 13:36  burruss
+
+	* html/projects/index.shtml:
+	
+	Testing commit...
+
+2003-09-02 12:20  twf
+
+	* html/README.TXT:
+	
+	Add mention of update url
+
+2003-09-02 11:39  twf
+
+	* html/software/index.shtml:
+	
+	Add cvs reference
+
+2003-09-02 11:09  twf
+
+	* html/: README.TXT, heading.shtml, index.html, mdsplus_css.css,
+	menu.shtml, search.shtml, template.shtml,
+	documentation/glossary.shtml, documentation/index.shtml,
+	documentation/menu.shtml, documentation/beginners/Cartman.gif,
+	documentation/beginners/S-FIG1.GIF,
+	documentation/beginners/S-FIG2.GIF,
+	documentation/beginners/S-FIG3.GIF,
+	documentation/beginners/S-FIG4.GIF,
+	documentation/beginners/S-FIG5.GIF,
+	documentation/beginners/S-FIG6.GIF,
+	documentation/beginners/S-FIG7.GIF,
+	documentation/beginners/S-FIG8.GIF,
+	documentation/beginners/S-FIG9.GIF,
+	documentation/beginners/T-FIG1.GIF,
+	documentation/beginners/T-FIG10.GIF,
+	documentation/beginners/T-FIG11.GIF,
+	documentation/beginners/T-FIG12.GIF,
+	documentation/beginners/T-FIG13.GIF,
+	documentation/beginners/T-FIG14.GIF,
+	documentation/beginners/T-FIG15.GIF,
+	documentation/beginners/T-FIG16.GIF,
+	documentation/beginners/T-FIG17.GIF,
+	documentation/beginners/T-FIG18A.GIF,
+	documentation/beginners/T-FIG18B.GIF,
+	documentation/beginners/T-FIG18C.GIF,
+	documentation/beginners/T-FIG19.GIF,
+	documentation/beginners/T-FIG2.GIF,
+	documentation/beginners/T-FIG20.GIF,
+	documentation/beginners/T-FIG3.GIF,
+	documentation/beginners/T-FIG4.GIF,
+	documentation/beginners/T-FIG5.GIF,
+	documentation/beginners/T-FIG6.GIF,
+	documentation/beginners/T-FIG7.GIF,
+	documentation/beginners/T-FIG8.GIF,
+	documentation/beginners/T-FIG9.GIF,
+	documentation/beginners/advanced.shtml,
+	documentation/beginners/advanced_contents.shtml,
+	documentation/beginners/beginners.html,
+	documentation/beginners/blank.gif,
+	documentation/beginners/circle.gif,
+	documentation/beginners/concepts.shtml,
+	documentation/beginners/concepts_contents.shtml,
+	documentation/beginners/datatypes.shtml,
+	documentation/beginners/datatypes_contents.shtml,
+	documentation/beginners/expressions.shtml,
+	documentation/beginners/expressions_contents.shtml,
+	documentation/beginners/glossary.shtml,
+	documentation/beginners/glossary_contents.shtml,
+	documentation/beginners/graphictools.shtml,
+	documentation/beginners/graphictools_contents.shtml,
+	documentation/beginners/idl_language_details.shtml,
+	documentation/beginners/index.shtml,
+	documentation/beginners/index_contents.shtml,
+	documentation/beginners/intro.shtml,
+	documentation/beginners/intro_contents.shtml,
+	documentation/beginners/matlab_language_details.shtml,
+	documentation/beginners/menu.shtml,
+	documentation/beginners/readwrite.shtml,
+	documentation/beginners/readwrite_contents.shtml,
+	documentation/beginners/scope.html,
+	documentation/beginners/traverser.html,
+	documentation/beginners/tree-example.gif,
+	documentation/beginners/tree-with-caption.gif,
+	documentation/beginners/trees.shtml,
+	documentation/beginners/trees_contents.shtml,
+	documentation/beginners/tutorials.shtml,
+	documentation/beginners/tutorials_contents.shtml,
+	documentation/beginners/ga_jschachter/mdslib.shtml,
+	documentation/beginners/ga_jschachter/mdsplus-class1.pdf,
+	documentation/beginners/ga_jschachter/mdsplus-class2.pdf,
+	documentation/pppl_tcl/TCL_examples.html,
+	documentation/pppl_tcl/TCL_index.html,
+	documentation/pppl_tcl/tcl_0.html,
+	documentation/pppl_tcl/tcl_1.html,
+	documentation/pppl_tcl/tcl_2.html,
+	documentation/pppl_tcl/tcl_3.html,
+	documentation/pppl_tcl/tcl_4.html,
+	documentation/pppl_tcl/tcl_5.html,
+	documentation/reference/TCL_examples.html,
+	documentation/reference/TCL_index.html,
+	documentation/reference/c.shtml, documentation/reference/ccl.pdf,
+	documentation/reference/ccl.shtml, documentation/reference/f.shtml,
+	documentation/reference/idl.shtml,
+	documentation/reference/index.shtml,
+	documentation/reference/internals.shtml,
+	documentation/reference/matlab.shtml,
+	documentation/reference/mdsplus_idl.html,
+	documentation/reference/menu.shtml,
+	documentation/reference/python.shtml,
+	documentation/reference/realtime.shtml,
+	documentation/reference/tcl.shtml,
+	documentation/reference/tcl_0.html,
+	documentation/reference/tcl_1.html,
+	documentation/reference/tcl_2.html,
+	documentation/reference/tcl_3.html,
+	documentation/reference/tcl_4.html,
+	documentation/reference/tcl_5.html,
+	documentation/reference/tdi.shtml, documentation/users/10.shtml,
+	documentation/users/11.shtml, documentation/users/3.shtml,
+	documentation/users/4.shtml, documentation/users/5.shtml,
+	documentation/users/6.shtml, documentation/users/7.shtml,
+	documentation/users/8.shtml, documentation/users/9.shtml,
+	documentation/users/datatypes.shtml,
+	documentation/users/dt_action.shtml,
+	documentation/users/dt_call.shtml,
+	documentation/users/dt_conglom.shtml,
+	documentation/users/dt_dimension.shtml,
+	documentation/users/dt_dispatch.shtml,
+	documentation/users/dt_float.shtml,
+	documentation/users/dt_function.shtml,
+	documentation/users/dt_ident.shtml,
+	documentation/users/dt_integer.shtml,
+	documentation/users/dt_method.shtml,
+	documentation/users/dt_nid_path.shtml,
+	documentation/users/dt_param.shtml,
+	documentation/users/dt_range.shtml,
+	documentation/users/dt_routine.shtml,
+	documentation/users/dt_signal.shtml,
+	documentation/users/dt_text.shtml,
+	documentation/users/dt_window.shtml,
+	documentation/users/dt_with_error.shtml,
+	documentation/users/dt_with_units.shtml,
+	documentation/users/glossary.shtml,
+	documentation/users/index.shtml, documentation/users/menu.shtml,
+	documentation/users/tree_syntax.shtml,
+	documentation/users/trees.shtml, images/favicon.ico,
+	images/mdsplus_logo.jpg, intro/approach_contents.html,
+	intro/capabilities.shtml, intro/capabilities_content.html,
+	intro/favicon.ico, intro/image001.gif, intro/image002.gif,
+	intro/index.shtml, intro/menu.shtml, intro/philosophy.shtml,
+	intro/platforms.shtml, intro/platforms_contents.html,
+	links/index.shtml, links/menu.shtml, projects/1.shtml,
+	projects/2.shtml, projects/3.shtml, projects/index.shtml,
+	projects/menu.shtml, software/downloads.html,
+	software/downloads.shtml, software/index.shtml,
+	software/menu.shtml, software/shared_apps.shtml,
+	software/tools.shtml:
+	
+	www.mdsplus.org web site
+
+2003-08-28 13:52  burruss
+
+	* d3dshr/mdsptdata.f:
+	
+	Changed old Fortran TYPE statements to PRINT statements.
+
+2003-08-28 13:27  burruss
+
+	* d3dshr/mdsptdata.f:
+	
+	Changed old Fortran statements to that they compile under modern
+	Fortran.
+
+2003-08-28 11:49  twf
+
+	* cdu/cdu_util.c:
+	
+	fix for bug in gcc with profiling
+
+2003-08-28 11:48  twf
+
+	* mdsdcl/mdsdcl.c:
+	
+	Make main an int
+
+2003-08-28 09:59  twf
+
+	* configure, configure.in:
+	
+	Add --enable-gcc_profing option
+
+2003-08-27 13:24  twf
+
+	* cdu/dasutil_routines1.c:
+	
+	Fix elapsed spelling
+
+2003-08-27 13:19  twf
+
+	* tdi/timtest.fun:
+	
+	Add network benchmark
+
+2003-08-26 14:04  twf
+
+	* idlmdswidgets/Makefile.in:
+	
+	include X_CFLAGS to all compilations
+
+2003-08-26 08:46  twf
+
+	* configure, configure.in:
+	
+	Fix enable-nodebug on HPUX platform
+
+2003-08-22 12:32  twf
+
+	* mdslibidl/MdsLibIdl.c:
+	
+	Fix string handling for bigendian systems
+
+2003-08-21 11:06  twf
+
+	* tdishr/TdiGetDbi.c:
+	
+	Fix using to restore tree context to original state
+
+2003-08-21 10:23  twf
+
+	* idl/mdsclose.pro:
+	
+	Fix mdsclose with no arguments to close all open trees
+
+2003-08-20 07:21  jgk
+
+	* javascope/TextorBrowseSignals.java:
+	
+	Back to the state of revision 1.23.
+
+2003-08-20 07:20  jgk
+
+	* javascope/jScopeMultiWave.java:
+	
+	Back to the state of revision 1.29.
+
+2003-08-08 08:35  manduchi
+
+	* javascope/: AboutWindow.java, AsdexDataProvider.java,
+	Base64.java, ColorDialog.java, CompositeWaveDisplay.java,
+	ConnectionEvent.java, ConnectionListener.java, DataAccess.java,
+	DataAccessURL.java, DataCacheObject.java, DataCached.java,
+	DataProvider.java, DataServerItem.java, DemoAccess.java,
+	DemoDataProvider.java, Descriptor.java, FontSelection.java,
+	FrameData.java, Frames.java, FtuDataProvider.java, Grid.java,
+	JetDataProvider.java, JetMdsDataProvider.java, JiDataSource.java,
+	JiDim.java, JiNcSource.java, JiNcVar.java, JiNcVarByte.java,
+	JiNcVarChar.java, JiNcVarDouble.java, JiNcVarFloat.java,
+	JiNcVarImp.java, JiNcVarInt.java, JiNcVarShort.java, JiSlab.java,
+	JiSlabIterator.java, JiVar.java, JiVarImpl.java,
+	LocalDataProvider.java, MdsAccess.java, MdsConnection.java,
+	MdsDataClient.java, MdsDataProvider.java, MdsIOException.java,
+	MdsMessage.java, MdsPlusBrowseSignals.java, MdsWaveInterface.java,
+	MultiWavePopup.java, MultiWaveform.java,
+	NotConnectedDataProvider.java, ProfileDialog.java, RdaAccess.java,
+	RowColumnContainer.java, RowColumnLayout.java,
+	SetupDataDialog.java, SetupDefaults.java, SetupWaveformParams.java,
+	Signal.java, SignalBox.java, SignalCache.java,
+	SignalsBoxDialog.java, TSDataProvider.java,
+	TextorBrowseSignals.java, UniversalDataProvider.java,
+	UpdateEvent.java, UpdateEventListener.java,
+	WaveContainerEvent.java, WaveContainerListener.java, WaveData.java,
+	WaveDisplay.java, WaveInterface.java, WavePopup.java,
+	Waveform.java, WaveformContainer.java, WaveformEvent.java,
+	WaveformListener.java, WaveformManager.java, WaveformMetrics.java,
+	jScope.java, jScopeBrowseSignals.java, jScopeBrowseUrl.java,
+	jScopeDefaultValues.java, jScopeMultiWave.java,
+	jScopeProperties.java, jScopeWaveContainer.java,
+	jScopeWavePopup.java:
+	
+	Fixes to MdsIp Access
+
+2003-08-06 11:30  manduchi
+
+	* javascope/: AboutWindow.java, AsdexDataProvider.java,
+	Base64.java, ColorDialog.java, CompositeWaveDisplay.java,
+	ConnectionEvent.java, ConnectionListener.java, DataAccess.java,
+	DataAccessURL.java, DataCacheObject.java, DataCached.java,
+	DataProvider.java, DataServerItem.java, DemoAccess.java,
+	DemoDataProvider.java, Descriptor.java, FontSelection.java,
+	FrameData.java, Frames.java, FtuDataProvider.java, Grid.java,
+	JetDataProvider.java, JetMdsDataProvider.java, JiDataSource.java,
+	JiDim.java, JiNcSource.java, JiNcVar.java, JiNcVarByte.java,
+	JiNcVarChar.java, JiNcVarDouble.java, JiNcVarFloat.java,
+	JiNcVarImp.java, JiNcVarInt.java, JiNcVarShort.java, JiSlab.java,
+	JiSlabIterator.java, JiVar.java, JiVarImpl.java,
+	LocalDataProvider.java, MdsAccess.java, MdsConnection.java,
+	MdsDataClient.java, MdsDataProvider.java, MdsIOException.java,
+	MdsMessage.java, MdsPlusBrowseSignals.java, MdsWaveInterface.java,
+	MultiWavePopup.java, MultiWaveform.java,
+	NotConnectedDataProvider.java, ProfileDialog.java, RdaAccess.java,
+	RowColumnContainer.java, RowColumnLayout.java,
+	SetupDataDialog.java, SetupDefaults.java, SetupWaveformParams.java,
+	Signal.java, SignalBox.java, SignalCache.java,
+	SignalsBoxDialog.java, TSDataProvider.java,
+	TextorBrowseSignals.java, UniversalDataProvider.java,
+	UpdateEvent.java, UpdateEventListener.java,
+	WaveContainerEvent.java, WaveContainerListener.java, WaveData.java,
+	WaveDisplay.java, WaveInterface.java, WavePopup.java,
+	Waveform.java, WaveformContainer.java, WaveformEvent.java,
+	WaveformListener.java, WaveformManager.java, WaveformMetrics.java,
+	jScope.java, jScopeBrowseSignals.java, jScopeBrowseUrl.java,
+	jScopeDefaultValues.java, jScopeMultiWave.java,
+	jScopeProperties.java, jScopeWaveContainer.java,
+	jScopeWavePopup.java:
+	
+	Reported changes also to CompositeWaveDisplay. TWU classes not
+	modified
+
+2003-08-06 05:29  manduchi
+
+	* javascope/: AboutWindow.java, AsdexDataProvider.java,
+	Base64.java, ColorDialog.java, CompositeWaveDisplay.java,
+	ConnectionEvent.java, ConnectionListener.java, DataAccess.java,
+	DataAccessURL.java, DataCacheObject.java, DataCached.java,
+	DataProvider.java, DataServerItem.java, DemoAccess.java,
+	DemoDataProvider.java, Descriptor.java, FontSelection.java,
+	FrameData.java, Frames.java, FtuDataProvider.java, Grid.java,
+	JetDataProvider.java, JetMdsDataProvider.java, JiDataSource.java,
+	JiDim.java, JiNcSource.java, JiNcVar.java, JiNcVarByte.java,
+	JiNcVarChar.java, JiNcVarDouble.java, JiNcVarFloat.java,
+	JiNcVarImp.java, JiNcVarInt.java, JiNcVarShort.java, JiSlab.java,
+	JiSlabIterator.java, JiVar.java, JiVarImpl.java,
+	LocalDataProvider.java, MdsAccess.java, MdsConnection.java,
+	MdsDataClient.java, MdsDataProvider.java, MdsIOException.java,
+	MdsMessage.java, MdsPlusBrowseSignals.java, MdsWaveInterface.java,
+	MultiWavePopup.java, MultiWaveform.java,
+	NotConnectedDataProvider.java, ProfileDialog.java, RdaAccess.java,
+	RowColumnContainer.java, RowColumnLayout.java,
+	SetupDataDialog.java, SetupDefaults.java, SetupWaveformParams.java,
+	Signal.java, SignalBox.java, SignalCache.java,
+	SignalsBoxDialog.java, TSDataProvider.java,
+	TextorBrowseSignals.java, TwuAccess.java,
+	UniversalDataProvider.java, UpdateEvent.java,
+	UpdateEventListener.java, WaveContainerEvent.java,
+	WaveContainerListener.java, WaveData.java, WaveDisplay.java,
+	WaveInterface.java, WavePopup.java, Waveform.java,
+	WaveformContainer.java, WaveformEvent.java, WaveformListener.java,
+	WaveformManager.java, WaveformMetrics.java, jScope.java,
+	jScopeBrowseSignals.java, jScopeBrowseUrl.java,
+	jScopeDefaultValues.java, jScopeMultiWave.java,
+	jScopeProperties.java, jScopeWaveContainer.java,
+	jScopeWavePopup.java:
+	
+	Interface DataAccess has been cleaned. This required the change of
+	a couple of method names also in TwuAccess.java. These chanes have
+	been applied to the latest copy of TwuAccess in the repository.
+
+2003-07-22 08:56  jgk
+
+	* javascope/: TwuDataProvider.java, TwuNameServices.java,
+	jScopeMultiWave.java:
+	
+	Factored-out some TWU-orientated signal name handling methods from
+	TwuDataProvider into a class of their own: TwuNameServices.
+
+2003-07-11 05:28  jgk
+
+	* javascope/TwuSingleSignal.java:
+	
+	A Few redundant bits removed.
+
+2003-07-10 11:52  jgk
+
+	* javascope/: TwuDataProvider.java, TwuSimpleFrameData.java:
+	
+	"Factored-out" TwuSimpleFrameData from TwuDataProvider into a file
+	of its own.
+
+2003-07-10 11:33  jgk
+
+	* javascope/TwuSingleSignal.java:
+	
+	Removed some redundant code ... plus...  removed the bug that
+	started this whole exercise (too aggresive caching of data).
+
+2003-07-10 10:39  jgk
+
+	* javascope/: TwuDataProvider.java, TwuSingleSignal.java,
+	TwuWaveData.java:
+	
+	"Factored-out" TwuSingleSignal from TwuDataProvider into a file of
+	its own.
+
+2003-07-09 16:32  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	Fix potential FD_SET and FD_SET with sock=-1
+
+2003-07-09 11:13  jgk
+
+	* javascope/TwuDataProvider.java:
+	
+	Also renamed another (still nested) class in a more consistent way.
+
+2003-07-09 10:43  jgk
+
+	* javascope/: TwuDataProvider.java, TwuWaveData.java:
+	
+	More consistent naming of a (still nested) class.
+
+2003-07-09 10:30  jgk
+
+	* javascope/TwuWaveData.java:
+	
+	Tried to use somewhat more meaningful variable names.
+
+2003-07-09 09:58  jgk
+
+	* javascope/: TwuDataProvider.java, TwuWaveData.java:
+	
+	"Factored-out" TwuWaveData from TwuDataProvider.
+
+2003-07-04 08:48  manduchi
+
+	* javatraverser/: Makefile.in, RFXPConfigSetup.java,
+	RFXPMSetupSetup.java:
+	
+	Added DIO2 devices
+
+2003-07-03 10:27  jgk
+
+	* javascope/TextorBrowseSignals.java:
+	
+	Fixed the handling of signals URLs that are not related to a shot.
+
+2003-06-27 10:32  jas
+
+	* tdishr/TdiSort.c:
+	
+	need an include for _int64
+
+2003-06-27 10:30  jas
+
+	* tdishr/TdiSort.c:
+	
+	fix integer overflow of indices when sorting
+
+2003-06-27 05:37  manduchi
+
+	* javatraverser/DIO2Setup.java:
+	
+	Another fix
+
+2003-06-27 05:27  manduchi
+
+	* javatraverser/DIO2Setup.java:
+	
+	Minor fix
+
+2003-06-26 11:08  twf
+
+	* idlmdswidgets/cw_wveditv5.c:
+	
+	Fix convert selection
+
+2003-06-26 10:07  jas
+
+	* mitdevices/JOERGER_TR612.uil:
+	
+	mode menu wrong
+
+2003-06-25 16:40  twf
+
+	* Makefile.in:
+	
+	actmon needs mdslib
+
+2003-06-25 15:23  twf
+
+	* Makefile.in:
+	
+	mitdevices needs math
+
+2003-06-25 14:44  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.5-0
 
 2003-06-25 11:04  manduchi
 
