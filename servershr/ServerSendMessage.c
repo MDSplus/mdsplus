@@ -46,6 +46,9 @@ int ServerSendMessage();
 #define INVALID_SOCKET -1
 #endif
 
+#define HAS_CONDITION 987654
+#define NOT_DONE 1212121
+
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
 #define pthread_mutexattr_default NULL
@@ -196,7 +199,7 @@ static void RemoveJob(Job *job)
       else
         Jobs = j->next;
       pthread_unlock_global_np();
-      if (j->has_condition)
+      if (j->has_condition == HAS_CONDITION)
       {
         pthread_mutex_lock(&j->mutex);
         j->has_condition = 0;
@@ -221,7 +224,7 @@ static void DoCompletionAst(int jobid,int status,char *msg, int removeJob)
   {
     if (j->retstatus)
       *j->retstatus = status;
-    if (j->has_condition)
+    if (j->has_condition == HAS_CONDITION)
     {
       pthread_mutex_lock(&j->mutex);
       j->done = 1;
@@ -243,12 +246,17 @@ void ServerWait(int jobid)
   pthread_unlock_global_np();
   if (j)
   {
-    if (j->has_condition)
+    if (j->has_condition == HAS_CONDITION)
     {
-      pthread_mutex_lock(&j->mutex);
-      while (!j->done)
-        pthread_cond_wait(&j->condition,&j->mutex);
-      pthread_mutex_unlock(&j->mutex);
+      while ((pthread_mutex_lock(&j->mutex) == 0))
+      {
+        if (j->done == NOT_DONE)
+          pthread_cond_wait(&j->condition,&j->mutex);
+        else
+          pthread_mutex_unlock(&j->mutex);
+        if (j->done != NOT_DONE)
+          break;
+      }
     }
   }
 }
@@ -275,8 +283,8 @@ static int RegisterJob(int *msgid, int *retstatus,void (*ast)(), void *astparam,
   {
     pthread_mutex_init(&j->mutex,pthread_mutexattr_default);
     pthread_cond_init(&j->condition,pthread_condattr_default);
-    j->has_condition = 1;
-    j->done = 0;
+    j->has_condition = HAS_CONDITION;
+    j->done = NOT_DONE;
     *msgid = j->jobid;
   }
   else
