@@ -115,6 +115,7 @@ static BYTE JorwayModes[2][2][4] = {
 #define	KSMODE(mode)				mode
 
 
+
 //-----------------------------------------------------------
 // local function prototypes
 //-----------------------------------------------------------
@@ -809,10 +810,10 @@ static int Jorway73ADoIo(
 	  __u8	zero3 : 4;
 	  
 	  __u8  zero4;
-	  __u8	transfer_len[2];
+	  __u8	transfer_len[3];
 	  __u8	zero5;
 	} LongDATAcommand = {0x21,0,0,0,0,0,0,0,0,0};
-
+	static char modes[4] = {2,0,3,1};
 	if( MSGLVL(FUNCTION_NAME) )
 		printf( "%s()\n", J_ROUTINE_NAME );
 //printf( "%s(iosb is %sNULL)\n", J_ROUTINE_NAME, (iosb)?"NOT ":"" );		// [2002.12.13]
@@ -833,8 +834,6 @@ static int Jorway73ADoIo(
           *(short *)Data = 0x30;
           return CamDONE_Q;
         }
-        if (!Enhanced)
-          enhanced = 0;
 	if( MSGLVL(DETAILS) )
 		printf( "%s(): device '%s' = '/dev/sg%d'\n", J_ROUTINE_NAME, dev_name, scsiDevice );
 
@@ -853,7 +852,7 @@ static int Jorway73ADoIo(
 	    ShortDATAcommand.f     = F;
 	    ShortDATAcommand.bs    = Mem == 24;
 	    ShortDATAcommand.n     = Key.slot;
-	    ShortDATAcommand.m     = JORWAYMODE(dmode, enhanced, Count > 1);
+	    ShortDATAcommand.m     = modes[dmode];
 	    ShortDATAcommand.a     = A;
 	    ShortDATAcommand.transfer_len = transfer_len.l;
 	  }
@@ -863,10 +862,11 @@ static int Jorway73ADoIo(
 	    LongDATAcommand.f     = F;
 	    LongDATAcommand.bs    = Mem == 24;
 	    LongDATAcommand.n     = Key.slot;
-	    LongDATAcommand.m     = JORWAYMODE(dmode, enhanced, Count > 1);
+	    LongDATAcommand.m     = modes[dmode];
 	    LongDATAcommand.a     = A;
-	    LongDATAcommand.transfer_len[0] = transfer_len.b[1];
-	    LongDATAcommand.transfer_len[1] = transfer_len.b[0];
+	    LongDATAcommand.transfer_len[0] = transfer_len.b[2];	// NB! order reversal
+	    LongDATAcommand.transfer_len[1] = transfer_len.b[1];
+	    LongDATAcommand.transfer_len[2] = transfer_len.b[0];
    
 	  }
 	}
