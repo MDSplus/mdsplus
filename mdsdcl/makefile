@@ -21,7 +21,8 @@ all:	libMdsdcl.a  ../bin/mdsdcl  ../shlib/libMdsdcl.$(SHARE_TYPE)
 clean:
 	find ../shlib -name libMdsdcl.$(SHARE_TYPE) -exec rm {} \;
 	find ../bin  -name mdsdcl  -exec rm {} \;
-	rm  *.a  *.o
+	rm  *.a  *.o .depend
+	rm mdsdcl_tables.c
 
 mdsdcl_tables.o:	mdsdcl_tables.c
 
@@ -39,11 +40,14 @@ libMdsdcl.a:	$(OBJFILES)
 		mdsdcl_tables.o		\
 		$(EXPORT_SYMBOLS) libMdsdcl.a	\
 		$(EXPORT_SYMBOLS)  $(MDSPLUS)/cdu/libCdu.a	\
-		-lMdsShr  -lc
+		-lMdsShr  -lc -lm
 
 ../bin/mdsdcl:	mdsdcl.o  ../shlib/libMdsdcl.$(SHARE_TYPE)
 	$(CC) $(CFLAGS) -o $@ $(LFLAGS) mdsdcl.o	\
 		-lMdsdcl -lMdsShr
 
 .depend:
-	touch .depend
+	- find *.c -exec $(MAKE_DEPEND)
+
+include $(DEPEND)
+	

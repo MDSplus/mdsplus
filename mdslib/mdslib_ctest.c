@@ -1,9 +1,7 @@
 #include "mdslib.h"
 
 
-void main(int argc, char *argv[]);
-
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   long status;
   int shot;
@@ -17,7 +15,7 @@ void main(int argc, char *argv[])
   struct descrip *jeff1,*jeff2;
   float arg1 = 1.234567;
   float arg2 = 2.345678;
-  int null = NULL;
+  int null = 0;
   int dtype_float = DTYPE_F;
   int dtype_short = DTYPE_SHORT;
   int dtype_cstring = DTYPE_CSTRING;

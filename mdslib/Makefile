@@ -45,8 +45,12 @@ mdslib_fremotetest : mdslib_fremotetest.f ../shlib/libMdsLib.$(SHARE_TYPE)
 
 clean :
 	- rm *.o
+	- rm ../shlib/libMdsLib_client.$(SHARE_TYPE)
+	- rm ../shlib/libMdsLib_client.a
 	- rm ../shlib/libMdsLib.$(SHARE_TYPE)
+	- rm ../shlib/libMdsLib.a
 	- rm mdslib_?test
+	- rm mdslib_?remotetest
 	- rm .depend
 
 .depend :
