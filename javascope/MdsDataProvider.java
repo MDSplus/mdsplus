@@ -678,6 +678,14 @@ public class MdsDataProvider implements DataProvider
 	        error = "Cannot connetion to data server";
 	        return;
         }
+        SetEnvironmentSpecific(in, default_node);
+        
+    }
+        
+    
+    void SetEnvironmentSpecific(String in, String defaultNode)	
+    {   
+        
         Descriptor desc = mds.MdsValue(in);
         switch(desc.dtype)  {
 	        case Descriptor.DTYPE_CSTRING:
@@ -685,7 +693,6 @@ public class MdsDataProvider implements DataProvider
 	                error = desc.error;
         }
     }
-        
     	
     public synchronized float GetFloat(String in)  throws IOException
     {

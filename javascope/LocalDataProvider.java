@@ -1,10 +1,35 @@
 /* $Id$ */
 import javax.swing.JFrame;
 import java.io.IOException;
+import java.util.*;
 
 public class LocalDataProvider extends MdsDataProvider implements DataProvider 
 {
+    Vector listeners = new Vector();
+    Vector eventNames = new Vector();
     
+    static class EventDescriptor
+    {
+        UpdateEventListener listener;
+        String event;
+        int evId;
+        EventDescriptor(UpdateEventListener listener, String event, int evId)
+        {
+            this.listener = listener;
+            this.event = event;
+            this.evId = evId;
+            
+        }
+        public boolean equals(Object obj)
+        {
+            if(!(obj instanceof EventDescriptor)) return false;
+            EventDescriptor evDescr = (EventDescriptor)obj;
+            return listener == evDescr.getListener() && event.equals(evDescr.getEvent());
+        }
+        UpdateEventListener getListener() {return listener;}
+        String getEvent() {return event;}
+        int getEvId() {return evId;}
+    }
     static {
         try
         {
@@ -15,7 +40,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
 	    }
     }
     
-    native public void SetEnvironment(String exp);
+    native public void SetEnvironmentSpecific(String in, String defaultNode);	
     native public void Update(String exp, long s);
     native public String GetString(String in);
     native public float GetFloat(String in);
@@ -41,7 +66,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
             return lshots;
         }catch(Exception exc) 
         {
-            System.err.println("Errore in GetLongArray: " + exc);
+            System.err.println("Error in GetLongArray: " + exc);
             
             return null;
         }
@@ -49,8 +74,37 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
 
     native public byte [] GetByteArray(String in);
     native public String ErrorString();
-    public void AddUpdateEventListener(UpdateEventListener l, String event){}
-    public void RemoveUpdateEventListener(UpdateEventListener l, String event){}
+    public void AddUpdateEventListener(UpdateEventListener l, String event)
+    {
+        int evId;
+        int idx;
+        try {
+            evId = getEventId(event);
+            idx = eventNames.indexOf(event);
+        }catch(Exception exc)
+        {
+            idx = eventNames.size();
+            eventNames.addElement(event);
+            evId = registerEvent(event, idx);
+        }
+        listeners.addElement(new EventDescriptor(l, event, evId));    
+    }
+    public void RemoveUpdateEventListener(UpdateEventListener l, String event)
+    {
+        int idx = listeners.indexOf(new EventDescriptor(l, event, 0));
+        if(idx != -1)
+        {
+            int evId = ((EventDescriptor)listeners.elementAt(idx)).getEvId();
+            listeners.removeElementAt(idx);
+            try {
+                int id = getEventId(event);
+            }catch(Exception exc)
+            {
+                unregisterEvent(evId);
+            }
+        }
+        
+    }
     public void AddConnectionListener(ConnectionListener l){}
 
     public void RemoveConnectionListener(ConnectionListener l){}
@@ -70,5 +124,31 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     public int     InquireCredentials(JFrame f, DataServerItem server_item){return DataProvider.LOGIN_OK;}
     public boolean SupportsFastNetwork(){return false;}
     public void    SetArgument(String arg){};
-    public boolean SupportsTunneling(){return false;}    
+    public boolean SupportsTunneling(){return false;}  
+    
+    
+    int getEventId(String event) throws Exception
+    {
+        for(int idx = 0; idx < listeners.size(); idx++)
+        {
+            EventDescriptor evDescr = (EventDescriptor)listeners.elementAt(idx);
+            if(event.equals(evDescr.getEvent()))
+                return evDescr.getEvId();
+        }
+        throw(new Exception());
+    }
+    
+    public void fireEvent(int nameIdx)
+    {
+        String event = (String)eventNames.elementAt(nameIdx);
+        for(int idx = 0; idx < listeners.size(); idx++)
+        {
+            EventDescriptor evDescr = (EventDescriptor)listeners.elementAt(idx);
+            if(evDescr.getEvent().equals(event))
+                evDescr.getListener().processUpdateEvent(new UpdateEvent(this, event));
+        }
+    }
+    
+    native public int registerEvent(String event, int idx);
+    native public void unregisterEvent(int evId);
 }
