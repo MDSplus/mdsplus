@@ -117,7 +117,7 @@ c>>>
 c>>>
 	if (fcn.gt.0) goto 27
 600	format(1x,a,(5g15.7))
-620	format(' iter'i4,' nf'i4,' f'g22.14,' ier'i4,l2)
+620	format(' iter',i4,' nf',i4,' f',g22.14,' ier',i4,l2)
 	ier=128
 	if(n.le.0.or.m.le.0.or.limit.le.0.or.
      1 xacc.ge.D1.or.facc.ge.D1) then
