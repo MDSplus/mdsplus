@@ -25,7 +25,6 @@ public class BOLOSetup extends DeviceSetup {
   FlowLayout flowLayout2 = new FlowLayout();
   DeviceDispatch deviceDispatch1 = new DeviceDispatch();
   FlowLayout flowLayout3 = new FlowLayout();
-  DeviceField deviceField4 = new DeviceField();
   DeviceField deviceField5 = new DeviceField();
   DeviceField deviceField6 = new DeviceField();
   DeviceChoice deviceChoice1 = new DeviceChoice();
@@ -394,6 +393,7 @@ public class BOLOSetup extends DeviceSetup {
   DeviceChoice deviceChoice2117 = new DeviceChoice();
 
   DeviceField deviceField7 = new DeviceField();
+  DeviceChoice deviceChoice10 = new DeviceChoice();
   public BOLOSetup() {
     try {
       jbInit();
@@ -432,9 +432,6 @@ public class BOLOSetup extends DeviceSetup {
     flowLayout3.setAlignment(FlowLayout.LEFT);
     flowLayout3.setHgap(0);
     flowLayout3.setVgap(0);
-    deviceField4.setOffsetNid(6);
-    deviceField4.setLabelString("Frequency: ");
-    deviceField4.setNumCols(7);
     deviceField5.setOffsetNid(7);
     deviceField5.setLabelString("Trig. source :");
     deviceField5.setNumCols(14);
@@ -2394,7 +2391,14 @@ public class BOLOSetup extends DeviceSetup {
     deviceField7.setLabelString("fg:");
     deviceField7.setNumCols(6);
     deviceField7.setIdentifier("");
-    deviceButtons1.setMethods(new String[] {"init", "store"});
+    deviceButtons1.setMethods(new String[] {"init", "arm", "store"});
+    deviceChoice10.setChoiceIntValues(null);
+    deviceChoice10.setChoiceFloatValues(new float[] {(float)1000000.0,(float)500000.0,(float)250000.0,(float)200000.0,(float)100000.0,(float)40000.0,(float)20000.0,(float)10000.0,(float)4000.0});
+    deviceChoice10.setOffsetNid(6);
+    deviceChoice10.setLabelString("Frequency: ");
+    deviceChoice10.setChoiceItems(new String[] {"1000000", "500000", "250000", "200000", "100000", "40000", "20000", "10000", "4000"});
+    deviceChoice10.setUpdateIdentifier("");
+    deviceChoice10.setIdentifier("");
     this.getContentPane().add(jPanel1, BorderLayout.NORTH);
     jPanel1.add(jPanel2, null);
     jPanel2.add(deviceField1, null);
@@ -2405,7 +2409,7 @@ public class BOLOSetup extends DeviceSetup {
     jPanel4.add(deviceChoice1, null);
     jPanel1.add(jPanel3, null);
     jPanel3.add(deviceField7, null);
-    jPanel3.add(deviceField4, null);
+    jPanel3.add(deviceChoice10, null);
     jPanel3.add(deviceField5, null);
     jPanel3.add(deviceField6, null);
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
