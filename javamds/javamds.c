@@ -12,6 +12,8 @@ extern int TdiCompile(), TdiData(), TdiFloat();
 
 static char error_message[512];
 
+
+
 /*Support routine for MdsHelper */
 JNIEXPORT jstring JNICALL Java_MdsHelper_getErrorString
   (JNIEnv *env, jclass cld, jint jstatus)

@@ -255,6 +255,14 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 			array_d = (struct descriptor_a *)desc;
 		length =array_d->arsize/array_d->length; 
 		switch(array_d->dtype) {
+			case DTYPE_MISSING: 
+				cls = (*env)->FindClass(env, "IntArray");
+				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([IZ)LData;");
+				jints = (*env)->NewIntArray(env, 0);
+				args[0].l = jints;
+				args[1].z = 0;
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 			case DTYPE_BU: is_unsigned = 1;
 			case DTYPE_B: 
 				cls = (*env)->FindClass(env, "ByteArray");
