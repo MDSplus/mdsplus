@@ -19,12 +19,12 @@ class MdsMonitorEvent extends MdsServerEvent
     int    mode;
     String server;
     int    ret_status;
-    
+
     String node_path;
     Date   date;
     String date_st;
     String error_message;
-    
+
     public MdsMonitorEvent(Object obj, int phase, int nid, String msg)
     {
         super(obj, 0, 0, 1);
@@ -35,7 +35,7 @@ class MdsMonitorEvent extends MdsServerEvent
         this.error_message = msg;
    }
 
-    public MdsMonitorEvent(Object obj, String tree, int shot, int phase, int nid, String name, int on, int mode, 
+    public MdsMonitorEvent(Object obj, String tree, int shot, int phase, int nid, String name, int on, int mode,
         String server, int ret_status)
     {
         super(obj, 0, 0, 1);
@@ -51,7 +51,7 @@ class MdsMonitorEvent extends MdsServerEvent
         this.error_message = MdsHelper.getErrorString(ret_status);
         date_st = (new Date()).toString();
     }
-    
+
     public MdsMonitorEvent(Object source, int id, int flags, int status, String data) throws Exception
     {
         super(source, id, flags, status);
@@ -59,7 +59,7 @@ class MdsMonitorEvent extends MdsServerEvent
         try
         {
             StringTokenizer buf = new StringTokenizer(data);
-                      
+
             tree   = new String(buf.nextToken());
             if(buf.hasMoreTokens())
                 shot   = Integer.decode(buf.nextToken()).intValue();
@@ -91,12 +91,12 @@ class MdsMonitorEvent extends MdsServerEvent
         }
     }
 
-    public byte [] toBytes()
+    public synchronized byte [] toBytes()
     {
         String out_st = tree + " " + shot + " " + phase + " " + nid + " " + on + " "
             + mode + " " + server + " " + ret_status + " " + name + " " + date_st + " ; " + error_message;
         byte [] msg = out_st.getBytes();
-        
+
         String head_st = "" + jobid + " " + flags + " " + status + " " + msg.length;
         byte [] headmsg = head_st.getBytes();
         byte [] outmsg = new byte[60 + msg.length];
@@ -107,7 +107,7 @@ class MdsMonitorEvent extends MdsServerEvent
 
     private String getMode(int mode_id)
     {
-        
+
         switch(mode_id)
         {
             case MonitorBuildBegin : return "MonitorBuildBegin";
@@ -120,21 +120,21 @@ class MdsMonitorEvent extends MdsServerEvent
         }
         return "";
     }
-    
-    public String toString()
+
+    public synchronized String toString()
     {
         return new String("[exp="+tree+";shot="+shot+";phase="+phase+";nid="+nid+";on="+on+";mode= "+getMode(mode)+" ;server="+server+";status="+ret_status+"]");
     }
-    
-    public String getMonitorString()
+
+    public synchronized String getMonitorString()
     {
         StringBuffer out = new StringBuffer();
-        
+
         out.append(date_st+", ");
         switch(mode)
         {
-            case MonitorBuildBegin : 
-            case MonitorBuild      : 
+            case MonitorBuildBegin :
+            case MonitorBuild      :
             case MonitorBuildEnd   :
                 String on_off = (on == 1) ? "ON" : "OFF";
                 out.append(" Action " + on_off + " node "+ node_path );
@@ -142,17 +142,17 @@ class MdsMonitorEvent extends MdsServerEvent
             case MonitorDispatched :
                 out.append(" Dispatching node "+ node_path + " to " + server);
                 break;
-            case MonitorDoing      : 
+            case MonitorDoing      :
                 out.append(" Doing "+ node_path + " in " + tree + " shot " + shot + " on "+server);
-                break; 
+                break;
             case MonitorDone       :
                 if((ret_status & 1) == 1)
                     out.append(" Done "+ node_path + " in " + tree + " shot " + shot + " status " + ret_status + " on "+server);
                 else
-                    out.append(" Failed "+ node_path + " in " + tree + " shot " + shot + " status " + ret_status + " on "+server + " "+error_message);                    
-                break; 
+                    out.append(" Failed "+ node_path + " in " + tree + " shot " + shot + " status " + ret_status + " on "+server + " "+error_message);
+                break;
         }
-        return out.toString().trim();        
+        return out.toString().trim();
     }
-    
+
 }
