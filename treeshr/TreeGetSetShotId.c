@@ -31,6 +31,7 @@ int TreeGetCurrentShotId(experiment,shot)
 #include <libroutines.h>
 #include <strroutines.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 extern void TranslateLogicalFree();
 extern int TreeGetCurrentShotIdRemote();
@@ -45,58 +46,67 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define _ToLower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
-static FILE *CreateShotIdFile(char *experiment)
+static char *GetFileName(char *experiment,char **ctx)
 {
-  char pathname[512];
-  char *path;
+  char *ans = 0;
+  static char pathname[550];
+  static char *path;
   FILE *file = 0;
-  char *semi;
-  strcpy(pathname,experiment);
-  strcat(pathname,"_path");
-  path = (char *)TranslateLogical(pathname);
-  if (path != NULL)
+  char *semi = 0;
+  char *part;
+  if (*ctx == NULL)
   {
-    if ((semi = (char *)index(path, ';')) != 0)
-      semi = '\0';
-    strncpy(pathname,path,500);
-    TranslateLogicalFree(path);
+    if (path != NULL)
+      TranslateLogicalFree(path);
+    strcpy(pathname,experiment);
+    strcat(pathname,"_path");
+    path = (char *)TranslateLogical(pathname);
+    part = path;
+  }
+  else if (*ctx == pathname)
+    return NULL;
+  else
+    part = *ctx;
+  if (part != NULL)
+  {
+    if ((semi = (char *)index(part, ';')) != 0)
+      *semi = '\0';
+    strncpy(pathname,part,500);
+    if (semi == 0) 
+      *ctx = pathname;
+    else
+      *ctx = part + strlen(part) + 1;
 #ifdef _WINDOWS
     strcat(pathname,"\\");
 #else
     strcat(pathname,"/");
 #endif
     strcat(pathname,"shotid.sys");
-    file = fopen(pathname,"w+b");
+    MaskReplace(pathname,experiment,0);
+    ans = pathname;
   }
+  return ans;
+}
+
+static FILE *CreateShotIdFile(char *experiment)
+{
+  FILE *file = NULL;
+  char *ctx = 0;
+  char *filename;
+  while ((file == NULL) && (filename = GetFileName(experiment,&ctx)))
+    file = fopen(filename,"w+b");
   return file;
 }
 
 static FILE *OpenShotIdFile(char *experiment,char *mode)
 {
-  FILE *file = 0;
-  static struct descriptor file_d = {0, DTYPE_T, CLASS_D, 0};
-  static DESCRIPTOR(suffix_d,"_path:shotid.sys");
-  static struct descriptor experiment_d = {0, DTYPE_T, CLASS_S, 0};
-  static struct descriptor filename = {0, DTYPE_T, CLASS_D, 0};
-  unsigned short len;
-  void *ctx = 0;
-  int status = 0;
-  int i;
-  experiment_d.length = strlen(experiment);
-  experiment_d.pointer = experiment;
-  StrTrim(&file_d,&experiment_d,&len);
-  for (i=0;i<file_d.length;i++) 
-    file_d.pointer[i] = _ToLower(file_d.pointer[i]);
-  StrAppend(&file_d,&suffix_d);
-  if (LibFindFile(&file_d,&filename,&ctx) & 1)
-  {
-    static DESCRIPTOR(nullstr,"\0");
-    StrAppend(&filename,&nullstr);
-    file = fopen(filename.pointer,mode);
-  }
-  else
-    file = CreateShotIdFile(experiment);
-  return file;
+  FILE *file = NULL;
+  char *ctx = 0;
+  char *filename;
+  int found = 0;
+  struct stat statbuf;
+  while ((filename = GetFileName(experiment,&ctx)) && !(found=(stat(filename,&statbuf) == 0)));
+  return (found ? fopen(filename,mode) : CreateShotIdFile(experiment));
 }
 
 
