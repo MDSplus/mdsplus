@@ -292,7 +292,7 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
   globus_io_secure_authorization_data_set_callback(&auth_data,AuthenticationCallback,0);
   globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
   globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_CALLBACK,&auth_data);
-  globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_CLEAR);
+  globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
   globus_io_attr_set_secure_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
   AddClient = AddClient_in;
   DoMessage = DoMessage_in;
@@ -583,7 +583,7 @@ SOCKET MConnect(char *host, unsigned short port)
     globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
     globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_HOST,&auth_data);
     globus_io_attr_set_secure_delegation_mode(&attr,GLOBUS_IO_SECURE_DELEGATION_MODE_FULL_PROXY);
-    globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_CLEAR);
+    globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
     globus_io_attr_set_secure_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
   }
   if ((result = globus_io_tcp_connect((host[0] == '_') ? &host[1] : host,htons(port),&attr,handle)) != GLOBUS_SUCCESS)
@@ -873,7 +873,7 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
   result = globus_io_secure_authorization_data_set_callback(&auth_data,AuthenticationCallback,0);
   result = globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
   result = globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_CALLBACK,&auth_data);
-  result = globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_CLEAR);
+  result = globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
   globus_io_attr_set_secure_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
   result = globus_io_tcp_accept_inetd(&attr,handle);
   result = globus_io_tcpattr_destroy(&attr);
