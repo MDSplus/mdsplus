@@ -1,3 +1,4 @@
+
 FUNCTION GET_COLUMNS, table, columns, types, lengths, scales, tables, MATCH=match, QUIET=quiet, STATUS=status
 ;+
 ; NAME:		GET_COLUMNS.PRO
@@ -42,28 +43,13 @@ FUNCTION GET_COLUMNS, table, columns, types, lengths, scales, tables, MATCH=matc
 ;	KKlare, LANL P-4 (c)22-Jul-1993 Add Sybase
 ;-
 IF n_elements(quiet) eq 0 then quiet = 0
-IF get_database() EQ 'RDB' THEN BEGIN
-	z = 'Select Rdb$relation_name, r.Rdb$field_name,'	$
-	+" Rdb$field_type, Rdb$field_length, Rdb$field_scale "	$
-	+" From Rdb$relation_fields r, Rdb$fields f"		$
-	+" Where Rdb$relation_name Like '"+STRUPCASE(table)	$
-	+" %' And Rdb$field_source = f.Rdb$field_name"
-	IF N_ELEMENTS(match) GT 0 THEN z=z+$
-		" AND r.Rdb$field_name LIKE '"+STRUPCASE(match)+" %'"
-	z = z +" Order By Rdb$relation_name, Rdb$field_position"
-;	n = DSQL('Set Transaction Read Only')
-	n = DSQL(z, tables, columns, types, lengths, scales,$
-		QUIET=quiet, STATUS=status)
-	z = DSQL('Rollback')
-ENDIF ELSE BEGIN
 	z = "SELECT o.name, c.name, c.type, c.length, 0"	$
 	+" FROM syscolumns c, sysobjects o"			$
-	+" WHERE o.name = '" + table	+ "%' AND o.id = c.id"
+	+" WHERE o.name = '" + table	+ "' AND o.id = c.id"
 	IF N_ELEMENTS(match) GT 0 THEN z = z+$
 		" AND c.name LIKE '" + match + "%'"
 	z = z + " ORDER BY o.name, ABS(c.offset)"
 	n = DSQL(z, tables, columns, types, lengths, scales,$
 		QUIET=quiet, STATUS=status)
-ENDELSE
 RETURN, n
 END
