@@ -126,6 +126,7 @@ public class TRCHSetup extends DeviceSetup
 		deviceChannel1.setOffsetNid(11);
 		deviceChannel1.setLabelString("Ch1:");
 		deviceChannel1.setBorderVisible(true);
+		deviceChannel1.setLayout(new BorderLayout(0,0));
 		JPanel1.add(deviceChannel1);
 		deviceField5.setNumCols(15);
 		deviceField5.setOffsetNid(12);
@@ -139,6 +140,7 @@ public class TRCHSetup extends DeviceSetup
 		deviceChannel2.setOffsetNid(17);
 		deviceChannel2.setLabelString("Ch2:");
 		deviceChannel2.setBorderVisible(true);
+		deviceChannel2.setLayout(new BorderLayout(0,0));
 		JPanel1.add(deviceChannel2);
 		deviceField7.setNumCols(15);
 		deviceField7.setOffsetNid(18);
@@ -152,6 +154,7 @@ public class TRCHSetup extends DeviceSetup
 		deviceChannel3.setOffsetNid(23);
 		deviceChannel3.setLabelString("Ch3:");
 		deviceChannel3.setBorderVisible(true);
+		deviceChannel3.setLayout(new BorderLayout(0,0));
 		JPanel1.add(deviceChannel3);
 		deviceField9.setNumCols(15);
 		deviceField9.setOffsetNid(24);
@@ -165,6 +168,7 @@ public class TRCHSetup extends DeviceSetup
 		deviceChannel4.setOffsetNid(29);
 		deviceChannel4.setLabelString("Ch4:");
 		deviceChannel4.setBorderVisible(true);
+		deviceChannel4.setLayout(new BorderLayout(0,0));
 		JPanel1.add(deviceChannel4);
 		deviceField11.setNumCols(15);
 		deviceField11.setOffsetNid(30);
@@ -178,6 +182,7 @@ public class TRCHSetup extends DeviceSetup
 		deviceChannel5.setOffsetNid(35);
 		deviceChannel5.setLabelString("Ch5:");
 		deviceChannel5.setBorderVisible(true);
+		deviceChannel5.setLayout(new BorderLayout(0,0));
 		JPanel1.add(deviceChannel5);
 		deviceField13.setNumCols(15);
 		deviceField13.setOffsetNid(36);
@@ -191,6 +196,7 @@ public class TRCHSetup extends DeviceSetup
 		deviceChannel6.setOffsetNid(41);
 		deviceChannel6.setLabelString("Ch6:");
 		deviceChannel6.setBorderVisible(true);
+		deviceChannel6.setLayout(new BorderLayout(0,0));
 		JPanel1.add(deviceChannel6);
 		deviceField15.setNumCols(15);
 		deviceField15.setOffsetNid(42);
@@ -211,6 +217,7 @@ public class TRCHSetup extends DeviceSetup
 		deviceChannel7.setOffsetNid(11);
 		deviceChannel7.setLabelString("Ch1:");
 		deviceChannel7.setBorderVisible(true);
+		deviceChannel7.setLayout(new BorderLayout(0,0));
 		JPanel2.add(deviceChannel7);
 		deviceField17.setNumCols(15);
 		deviceField17.setOffsetNid(14);
@@ -224,6 +231,7 @@ public class TRCHSetup extends DeviceSetup
 		deviceChannel8.setOffsetNid(17);
 		deviceChannel8.setLabelString("Ch2:");
 		deviceChannel8.setBorderVisible(true);
+		deviceChannel8.setLayout(new BorderLayout(0,0));
 		JPanel2.add(deviceChannel8);
 		deviceField19.setNumCols(15);
 		deviceField19.setOffsetNid(20);
@@ -237,6 +245,7 @@ public class TRCHSetup extends DeviceSetup
 		deviceChannel9.setOffsetNid(23);
 		deviceChannel9.setLabelString("Ch3:");
 		deviceChannel9.setBorderVisible(true);
+		deviceChannel9.setLayout(new BorderLayout(0,0));
 		JPanel2.add(deviceChannel9);
 		deviceField21.setNumCols(15);
 		deviceField21.setOffsetNid(26);
@@ -250,6 +259,7 @@ public class TRCHSetup extends DeviceSetup
 		deviceChannel10.setOffsetNid(29);
 		deviceChannel10.setLabelString("Ch4:");
 		deviceChannel10.setBorderVisible(true);
+		deviceChannel10.setLayout(new BorderLayout(0,0));
 		JPanel2.add(deviceChannel10);
 		deviceField23.setNumCols(15);
 		deviceField23.setOffsetNid(32);
@@ -263,6 +273,7 @@ public class TRCHSetup extends DeviceSetup
 		deviceChannel11.setOffsetNid(35);
 		deviceChannel11.setLabelString("Ch5:");
 		deviceChannel11.setBorderVisible(true);
+		deviceChannel11.setLayout(new BorderLayout(0,0));
 		JPanel2.add(deviceChannel11);
 		deviceField25.setNumCols(15);
 		deviceField25.setOffsetNid(36);
@@ -276,6 +287,7 @@ public class TRCHSetup extends DeviceSetup
 		deviceChannel12.setOffsetNid(41);
 		deviceChannel12.setLabelString("Ch6:");
 		deviceChannel12.setBorderVisible(true);
+		deviceChannel12.setLayout(new BorderLayout(0,0));
 		JPanel2.add(deviceChannel12);
 		deviceField27.setNumCols(15);
 		deviceField27.setOffsetNid(42);

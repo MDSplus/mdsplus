@@ -25,7 +25,7 @@ public class TR10Setup extends DeviceSetup
 		getContentPane().setLayout(new BorderLayout(0,0));
 		setSize(544,429);
 		JPanel2.setLayout(new BorderLayout(0,0));
-		getContentPane().add(BorderLayout.NORTH,JPanel2);
+		getContentPane().add(BorderLayout.NORTH, JPanel2);
 		JPanel3.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		JPanel2.add(BorderLayout.NORTH, JPanel3);
 		deviceField1.setNumCols(4);
@@ -112,7 +112,7 @@ public class TR10Setup extends DeviceSetup
 			tempString[2] = "store";
 			deviceButtons1.setMethods(tempString);
 		}
-		getContentPane().add(BorderLayout.SOUTH,deviceButtons1);
+		getContentPane().add(BorderLayout.SOUTH, deviceButtons1);
 		getContentPane().add(BorderLayout.CENTER, JTabbedPane1);
 		JScrollPane1.setAutoscrolls(true);
 		JTabbedPane1.add(JScrollPane1);
@@ -130,6 +130,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel1.setOffsetNid(12);
 		timeChannel1.setLabelString("Ch1:");
 		timeChannel1.setBorderVisible(true);
+		timeChannel1.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel1);
 		deviceField5.setNumCols(15);
 		deviceField5.setOffsetNid(13);
@@ -143,6 +144,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel2.setOffsetNid(18);
 		timeChannel2.setLabelString("Ch2:");
 		timeChannel2.setBorderVisible(true);
+		timeChannel2.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel2);
 		deviceField7.setNumCols(15);
 		deviceField7.setOffsetNid(19);
@@ -156,6 +158,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel3.setOffsetNid(24);
 		timeChannel3.setLabelString("Ch3:");
 		timeChannel3.setBorderVisible(true);
+		timeChannel3.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel3);
 		deviceField9.setNumCols(15);
 		deviceField9.setOffsetNid(25);
@@ -169,6 +172,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel4.setOffsetNid(30);
 		timeChannel4.setLabelString("Ch4:");
 		timeChannel4.setBorderVisible(true);
+		timeChannel4.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel4);
 		deviceField11.setNumCols(15);
 		deviceField11.setOffsetNid(31);
@@ -182,6 +186,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel5.setOffsetNid(36);
 		timeChannel5.setLabelString("Ch5:");
 		timeChannel5.setBorderVisible(true);
+		timeChannel5.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel5);
 		deviceField13.setNumCols(15);
 		deviceField13.setOffsetNid(37);
@@ -195,6 +200,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel6.setOffsetNid(42);
 		timeChannel6.setLabelString("Ch6:");
 		timeChannel6.setBorderVisible(true);
+		timeChannel6.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel6);
 		deviceField15.setNumCols(15);
 		deviceField15.setOffsetNid(43);
@@ -208,6 +214,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel7.setOffsetNid(48);
 		timeChannel7.setLabelString("Ch7:");
 		timeChannel7.setBorderVisible(true);
+		timeChannel7.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel7);
 		deviceField29.setNumCols(15);
 		deviceField29.setOffsetNid(49);
@@ -221,6 +228,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel8.setOffsetNid(54);
 		timeChannel8.setLabelString("Ch8:");
 		timeChannel8.setBorderVisible(true);
+		timeChannel8.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel8);
 		deviceField31.setNumCols(15);
 		deviceField31.setOffsetNid(55);
@@ -234,6 +242,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel9.setOffsetNid(60);
 		timeChannel9.setLabelString("Ch9:");
 		timeChannel9.setBorderVisible(true);
+		timeChannel9.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel9);
 		deviceField33.setNumCols(15);
 		deviceField33.setOffsetNid(61);
@@ -247,6 +256,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel10.setOffsetNid(66);
 		timeChannel10.setLabelString("Ch10:");
 		timeChannel10.setBorderVisible(true);
+		timeChannel10.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel10);
 		deviceField35.setNumCols(15);
 		deviceField35.setOffsetNid(67);
@@ -260,6 +270,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel11.setOffsetNid(72);
 		timeChannel11.setLabelString("Ch11:");
 		timeChannel11.setBorderVisible(true);
+		timeChannel11.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel11);
 		deviceField37.setNumCols(15);
 		deviceField37.setOffsetNid(73);
@@ -273,6 +284,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel12.setOffsetNid(78);
 		timeChannel12.setLabelString("Ch12:");
 		timeChannel12.setBorderVisible(true);
+		timeChannel12.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel12);
 		deviceField39.setNumCols(15);
 		deviceField39.setOffsetNid(79);
@@ -286,6 +298,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel13.setOffsetNid(84);
 		timeChannel13.setLabelString("Ch13:");
 		timeChannel13.setBorderVisible(true);
+		timeChannel13.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel13);
 		deviceField41.setNumCols(15);
 		deviceField41.setOffsetNid(85);
@@ -299,6 +312,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel14.setOffsetNid(90);
 		timeChannel14.setLabelString("Ch14:");
 		timeChannel14.setBorderVisible(true);
+		timeChannel14.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel14);
 		deviceField43.setNumCols(15);
 		deviceField43.setOffsetNid(91);
@@ -312,6 +326,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel15.setOffsetNid(96);
 		timeChannel15.setLabelString("Ch15:");
 		timeChannel15.setBorderVisible(true);
+		timeChannel15.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel15);
 		deviceField45.setNumCols(15);
 		deviceField45.setOffsetNid(97);
@@ -325,6 +340,7 @@ public class TR10Setup extends DeviceSetup
 		timeChannel16.setOffsetNid(102);
 		timeChannel16.setLabelString("Ch16:");
 		timeChannel16.setBorderVisible(true);
+		timeChannel16.setLayout(new BorderLayout(0,0));
 		JPanel1.add(timeChannel16);
 		deviceField47.setNumCols(15);
 		deviceField47.setOffsetNid(103);
@@ -349,6 +365,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel1.setOffsetNid(12);
 		idxChannel1.setLabelString("Ch1:");
 		idxChannel1.setBorderVisible(true);
+		idxChannel1.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel1);
 		deviceField17.setNumCols(15);
 		deviceField17.setOffsetNid(15);
@@ -362,6 +379,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel2.setOffsetNid(18);
 		idxChannel2.setLabelString("Ch2:");
 		idxChannel2.setBorderVisible(true);
+		idxChannel2.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel2);
 		deviceField19.setNumCols(15);
 		deviceField19.setOffsetNid(21);
@@ -375,6 +393,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel3.setOffsetNid(24);
 		idxChannel3.setLabelString("Ch3:");
 		idxChannel3.setBorderVisible(true);
+		idxChannel3.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel3);
 		deviceField21.setNumCols(15);
 		deviceField21.setOffsetNid(27);
@@ -388,6 +407,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel4.setOffsetNid(30);
 		idxChannel4.setLabelString("Ch4:");
 		idxChannel4.setBorderVisible(true);
+		idxChannel4.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel4);
 		deviceField23.setNumCols(15);
 		deviceField23.setOffsetNid(33);
@@ -401,6 +421,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel5.setOffsetNid(36);
 		idxChannel5.setLabelString("Ch5:");
 		idxChannel5.setBorderVisible(true);
+		idxChannel5.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel5);
 		deviceField25.setNumCols(15);
 		deviceField25.setOffsetNid(37);
@@ -414,6 +435,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel6.setOffsetNid(42);
 		idxChannel6.setLabelString("Ch6:");
 		idxChannel6.setBorderVisible(true);
+		idxChannel6.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel6);
 		deviceField27.setNumCols(15);
 		deviceField27.setOffsetNid(45);
@@ -427,6 +449,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel7.setOffsetNid(48);
 		idxChannel7.setLabelString("Ch7:");
 		idxChannel7.setBorderVisible(true);
+		idxChannel7.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel7);
 		deviceField49.setNumCols(15);
 		deviceField49.setOffsetNid(51);
@@ -440,6 +463,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel8.setOffsetNid(54);
 		idxChannel8.setLabelString("Ch8:");
 		idxChannel8.setBorderVisible(true);
+		idxChannel8.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel8);
 		deviceField51.setNumCols(15);
 		deviceField51.setOffsetNid(57);
@@ -453,6 +477,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel9.setOffsetNid(60);
 		idxChannel9.setLabelString("Ch9:");
 		idxChannel9.setBorderVisible(true);
+		idxChannel9.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel9);
 		deviceField53.setNumCols(15);
 		deviceField53.setOffsetNid(63);
@@ -466,6 +491,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel10.setOffsetNid(66);
 		idxChannel10.setLabelString("Ch10:");
 		idxChannel10.setBorderVisible(true);
+		idxChannel10.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel10);
 		deviceField55.setNumCols(15);
 		deviceField55.setOffsetNid(69);
@@ -479,6 +505,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel11.setOffsetNid(72);
 		idxChannel11.setLabelString("Ch11:");
 		idxChannel11.setBorderVisible(true);
+		idxChannel11.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel11);
 		deviceField57.setNumCols(15);
 		deviceField57.setOffsetNid(75);
@@ -492,6 +519,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel12.setOffsetNid(78);
 		idxChannel12.setLabelString("Ch12:");
 		idxChannel12.setBorderVisible(true);
+		idxChannel12.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel12);
 		deviceField59.setNumCols(15);
 		deviceField59.setOffsetNid(81);
@@ -505,6 +533,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel13.setOffsetNid(84);
 		idxChannel13.setLabelString("Ch13:");
 		idxChannel13.setBorderVisible(true);
+		idxChannel13.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel13);
 		deviceField61.setNumCols(15);
 		deviceField61.setOffsetNid(87);
@@ -518,6 +547,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel14.setOffsetNid(90);
 		idxChannel14.setLabelString("Ch14:");
 		idxChannel14.setBorderVisible(true);
+		idxChannel14.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel14);
 		deviceField63.setNumCols(15);
 		deviceField63.setOffsetNid(93);
@@ -531,6 +561,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel15.setOffsetNid(96);
 		idxChannel15.setLabelString("Ch15:");
 		idxChannel15.setBorderVisible(true);
+		idxChannel15.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel15);
 		deviceField65.setNumCols(15);
 		deviceField65.setOffsetNid(99);
@@ -544,6 +575,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel16.setOffsetNid(102);
 		idxChannel16.setLabelString("Ch16:");
 		idxChannel16.setBorderVisible(true);
+		idxChannel16.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel16);
 		deviceField67.setNumCols(15);
 		deviceField67.setOffsetNid(105);
@@ -554,6 +586,7 @@ public class TR10Setup extends DeviceSetup
 		deviceField68.setLabelString("End :");
 		idxChannel16.add(deviceField68);
 		JTabbedPane1.setSelectedIndex(0);
+		JTabbedPane1.setSelectedComponent(JScrollPane1);
 		JTabbedPane1.setTitleAt(0,"Channels(Time)");
 		JTabbedPane1.setTitleAt(1,"Channels(Samples)");
 		//}}

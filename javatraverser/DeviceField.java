@@ -85,6 +85,8 @@ public class DeviceField extends DeviceComponent
         initializing = false;
     }       
     
+    
+    
     void postApply()
     {
         if(editable || !displayEvaluated || data == null) return; 
@@ -155,7 +157,11 @@ public class DeviceField extends DeviceComponent
     public void setEnabled(boolean state)
     {
         //if(checkB != null) checkB.setEnabled(state);
-        //if(textF != null) textF.setEnabled(state);
+        if(textF != null)
+        {
+            textF.setEnabled(state);
+            textF.setEditable(state);
+        }
         if(label != null) label.setEnabled(state);
         //if(checkB != null) checkB.setSelected(state);
         //initial_state = state;

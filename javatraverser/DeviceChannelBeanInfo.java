@@ -28,7 +28,11 @@ public class DeviceChannelBeanInfo extends SimpleBeanInfo
                property("borderVisible", "Display border"),
                property("lines", "Number of lines"),
                property("columns", "Number of Columns"),
-               property("inSameLine", "All Items in same line")
+               property("inSameLine", "All Items in same line"),
+               property("showState", "Display channel state"),
+               property("updateIdentifier", "Show identifier"),
+               property("showVal", "Show value"),
+               property("layout", "Layout Manager")
             };
             return props;
         }catch(IntrospectionException e)

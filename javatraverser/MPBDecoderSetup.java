@@ -63,6 +63,7 @@ public class MPBDecoderSetup extends DeviceSetup
 		deviceChannel1.setLines(4);
 		deviceChannel1.setOffsetNid(9);
 		deviceChannel1.setLabelString("On");
+		deviceChannel1.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel1);
 		deviceChannel1.setBounds(2,24,619,225);
 		JPanel1.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -152,7 +153,7 @@ public class MPBDecoderSetup extends DeviceSetup
 		deviceChoice8.setLabelString("Repeat Count: ");
 		JPanel3.add(deviceChoice8);
 		JPanel4.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		deviceChannel1.add(JPanel4);
+		deviceChannel1.add(BorderLayout.CENTER, JPanel4);
 		deviceChoice9.setOffsetNid(19);
 		{
 			String[] tempString = new String[2];
@@ -187,6 +188,7 @@ public class MPBDecoderSetup extends DeviceSetup
 		deviceChannel2.setLines(4);
 		deviceChannel2.setOffsetNid(23);
 		deviceChannel2.setLabelString("On");
+		deviceChannel2.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel2);
 		deviceChannel2.setBounds(2,24,619,225);
 		JPanel5.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -276,7 +278,7 @@ public class MPBDecoderSetup extends DeviceSetup
 		deviceChoice17.setLabelString("Repeat Count: ");
 		JPanel7.add(deviceChoice17);
 		JPanel8.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		deviceChannel2.add(JPanel8);
+		deviceChannel2.add(BorderLayout.CENTER, JPanel8);
 		deviceChoice18.setOffsetNid(33);
 		{
 			String[] tempString = new String[2];
@@ -311,6 +313,7 @@ public class MPBDecoderSetup extends DeviceSetup
 		deviceChannel3.setLines(4);
 		deviceChannel3.setOffsetNid(37);
 		deviceChannel3.setLabelString("On");
+		deviceChannel3.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel3);
 		deviceChannel3.setBounds(2,24,619,225);
 		JPanel9.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -400,7 +403,7 @@ public class MPBDecoderSetup extends DeviceSetup
 		deviceChoice26.setLabelString("Repeat Count: ");
 		JPanel11.add(deviceChoice26);
 		JPanel12.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		deviceChannel3.add(JPanel12);
+		deviceChannel3.add(BorderLayout.CENTER, JPanel12);
 		deviceChoice27.setOffsetNid(47);
 		{
 			String[] tempString = new String[2];
@@ -435,6 +438,7 @@ public class MPBDecoderSetup extends DeviceSetup
 		deviceChannel4.setLines(4);
 		deviceChannel4.setOffsetNid(51);
 		deviceChannel4.setLabelString("On");
+		deviceChannel4.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel4);
 		deviceChannel4.setBounds(2,24,619,225);
 		JPanel13.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -524,7 +528,7 @@ public class MPBDecoderSetup extends DeviceSetup
 		deviceChoice35.setLabelString("Repeat Count: ");
 		JPanel15.add(deviceChoice35);
 		JPanel16.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		deviceChannel4.add(JPanel16);
+		deviceChannel4.add(BorderLayout.CENTER, JPanel16);
 		deviceChoice36.setOffsetNid(61);
 		{
 			String[] tempString = new String[2];
@@ -559,6 +563,7 @@ public class MPBDecoderSetup extends DeviceSetup
 		deviceChannel5.setLines(4);
 		deviceChannel5.setOffsetNid(65);
 		deviceChannel5.setLabelString("On");
+		deviceChannel5.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel5);
 		deviceChannel5.setBounds(2,24,619,225);
 		JPanel17.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -648,7 +653,7 @@ public class MPBDecoderSetup extends DeviceSetup
 		deviceChoice44.setLabelString("Repeat Count: ");
 		JPanel19.add(deviceChoice44);
 		JPanel20.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-		deviceChannel5.add(JPanel20);
+		deviceChannel5.add(BorderLayout.CENTER, JPanel20);
 		deviceChoice45.setOffsetNid(75);
 		{
 			String[] tempString = new String[2];

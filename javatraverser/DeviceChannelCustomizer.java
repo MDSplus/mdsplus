@@ -9,10 +9,10 @@ public class DeviceChannelCustomizer extends DeviceCustomizer implements Customi
     DeviceChannel bean = null;
     Object obj;
     PropertyChangeSupport listeners = new PropertyChangeSupport(this);
-    TextField labelString, lines, columns;
+    TextField labelString, lines, columns, updateId, showVal;
     Choice nids;
     Button doneButton;
-    Checkbox showBorder, inSameLine;
+    Checkbox showBorder, inSameLine, showState;
     
     public DeviceChannelCustomizer()
     {
@@ -28,6 +28,7 @@ public class DeviceChannelCustomizer extends DeviceCustomizer implements Customi
         jp1.add(new Label("Label: "));
         jp1.add(labelString = new TextField(30));
         labelString.setText(bean.getLabelString());
+        jp1.add(showState = new Checkbox("Show state: ", bean.getShowState()));
         jp.add(jp1);
         jp1 = new Panel();
         jp1.add(showBorder = new Checkbox("Border visible: ", bean.getBorderVisible()));
@@ -54,7 +55,15 @@ public class DeviceChannelCustomizer extends DeviceCustomizer implements Customi
         columns.setText((new Integer(bean.getColumns())).toString());
         jp1.add(inSameLine = new Checkbox("Same line: ", bean.getInSameLine()));
         jp.add(jp1);
-        
+        jp1 = new Panel();
+        jp1.add(new Label("Show Id: "));
+        jp1.add(updateId = new TextField(8));
+        updateId.setText(bean.getUpdateIdentifier());
+        jp1.add(new Label("Show value: "));
+        jp1.add(showVal = new TextField(8));
+        showVal.setText(bean.getShowVal());
+        jp.add(jp1);
+
         add(jp, "Center");
         jp = new Panel();
         jp.add(doneButton = new Button("Apply"));
@@ -63,10 +72,13 @@ public class DeviceChannelCustomizer extends DeviceCustomizer implements Customi
             {
                 bean.setLabelString(labelString.getText());
                 bean.setBorderVisible(showBorder.getState());
+                bean.setShowState(showState.getState());
                 bean.setInSameLine(inSameLine.getState());
                 bean.setOffsetNid(nids.getSelectedIndex() + 1);
                 bean.setLines((new Integer(lines.getText())).intValue());
                 bean.setColumns((new Integer(columns.getText())).intValue());
+                bean.setUpdateIdentifier(updateId.getText());
+                bean.setShowVal(showVal.getText());
                 listeners.firePropertyChange(null, null, null);
             }
         });

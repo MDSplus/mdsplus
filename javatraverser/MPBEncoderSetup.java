@@ -38,6 +38,7 @@ public class MPBEncoderSetup extends DeviceSetup
 		getContentPane().add(channels);
 		channels.setBounds(12,96,468,144);
 		deviceChannel1.setOffsetNid(3);
+		deviceChannel1.setLayout(new BorderLayout(0,0));
 		channels.add(deviceChannel1);
 		deviceChannel1.setBounds(2,24,463,117);
 		deviceField3.setNumCols(30);
@@ -50,6 +51,7 @@ public class MPBEncoderSetup extends DeviceSetup
 		deviceField4.setLabelString("Trigger time: ");
 		deviceChannel1.add(deviceField4);
 		deviceChannel2.setOffsetNid(6);
+		deviceChannel2.setLayout(new BorderLayout(0,0));
 		channels.add(deviceChannel2);
 		deviceChannel2.setBounds(2,24,463,117);
 		deviceField5.setNumCols(30);
@@ -62,6 +64,7 @@ public class MPBEncoderSetup extends DeviceSetup
 		deviceField6.setLabelString("Trigger time: ");
 		deviceChannel2.add(deviceField6);
 		deviceChannel3.setOffsetNid(9);
+		deviceChannel3.setLayout(new BorderLayout(0,0));
 		channels.add(deviceChannel3);
 		deviceChannel3.setBounds(2,24,463,117);
 		deviceField7.setNumCols(30);
@@ -74,6 +77,7 @@ public class MPBEncoderSetup extends DeviceSetup
 		deviceField8.setLabelString("Trigger time: ");
 		deviceChannel3.add(deviceField8);
 		deviceChannel4.setOffsetNid(12);
+		deviceChannel4.setLayout(new BorderLayout(0,0));
 		channels.add(deviceChannel4);
 		deviceChannel4.setBounds(2,24,463,117);
 		deviceField9.setNumCols(30);
@@ -86,6 +90,7 @@ public class MPBEncoderSetup extends DeviceSetup
 		deviceField10.setLabelString("Trigger time: ");
 		deviceChannel4.add(deviceField10);
 		deviceChannel5.setOffsetNid(15);
+		deviceChannel5.setLayout(new BorderLayout(0,0));
 		channels.add(deviceChannel5);
 		deviceChannel5.setBounds(2,24,463,117);
 		deviceField11.setNumCols(30);
@@ -98,6 +103,7 @@ public class MPBEncoderSetup extends DeviceSetup
 		deviceField12.setLabelString("Trigger time: ");
 		deviceChannel5.add(deviceField12);
 		deviceChannel6.setOffsetNid(18);
+		deviceChannel6.setLayout(new BorderLayout(0,0));
 		channels.add(deviceChannel6);
 		deviceChannel6.setBounds(2,24,463,117);
 		deviceField13.setNumCols(30);
@@ -110,6 +116,7 @@ public class MPBEncoderSetup extends DeviceSetup
 		deviceField14.setLabelString("Trigger time: ");
 		deviceChannel6.add(deviceField14);
 		deviceChannel8.setOffsetNid(21);
+		deviceChannel8.setLayout(new BorderLayout(0,0));
 		channels.add(deviceChannel8);
 		deviceChannel8.setBounds(2,24,463,117);
 		deviceField17.setNumCols(30);

@@ -120,6 +120,7 @@ public class Aurora14Setup extends DeviceSetup
 		deviceChannel1.setOffsetNid(11);
 		deviceChannel1.setLabelString("Ch1: ");
 		deviceChannel1.setBorderVisible(true);
+		deviceChannel1.setLayout(new BorderLayout(0,0));
 		JPanel1.add(deviceChannel1);
 		deviceField6.setOffsetNid(14);
 		deviceField6.setLabelString("Start Time: ");
@@ -131,6 +132,7 @@ public class Aurora14Setup extends DeviceSetup
 		deviceChannel2.setOffsetNid(19);
 		deviceChannel2.setLabelString("Ch2: ");
 		deviceChannel2.setBorderVisible(true);
+		deviceChannel2.setLayout(new BorderLayout(0,0));
 		JPanel1.add(deviceChannel2);
 		deviceField8.setOffsetNid(22);
 		deviceField8.setLabelString("Start Time: ");
@@ -142,6 +144,7 @@ public class Aurora14Setup extends DeviceSetup
 		deviceChannel3.setOffsetNid(27);
 		deviceChannel3.setLabelString("Ch3: ");
 		deviceChannel3.setBorderVisible(true);
+		deviceChannel3.setLayout(new BorderLayout(0,0));
 		JPanel1.add(deviceChannel3);
 		deviceField10.setOffsetNid(30);
 		deviceField10.setLabelString("Start Time: ");
@@ -153,6 +156,7 @@ public class Aurora14Setup extends DeviceSetup
 		deviceChannel4.setOffsetNid(35);
 		deviceChannel4.setLabelString("Ch4: ");
 		deviceChannel4.setBorderVisible(true);
+		deviceChannel4.setLayout(new BorderLayout(0,0));
 		JPanel1.add(deviceChannel4);
 		deviceField12.setOffsetNid(38);
 		deviceField12.setLabelString("Start Time: ");
@@ -164,6 +168,7 @@ public class Aurora14Setup extends DeviceSetup
 		deviceChannel5.setOffsetNid(43);
 		deviceChannel5.setLabelString("Ch5: ");
 		deviceChannel5.setBorderVisible(true);
+		deviceChannel5.setLayout(new BorderLayout(0,0));
 		JPanel1.add(deviceChannel5);
 		deviceField14.setOffsetNid(46);
 		deviceField14.setLabelString("Start Time: ");
@@ -175,6 +180,7 @@ public class Aurora14Setup extends DeviceSetup
 		deviceChannel6.setOffsetNid(51);
 		deviceChannel6.setLabelString("Ch6: ");
 		deviceChannel6.setBorderVisible(true);
+		deviceChannel6.setLayout(new BorderLayout(0,0));
 		JPanel1.add(deviceChannel6);
 		deviceField16.setOffsetNid(54);
 		deviceField16.setLabelString("Start Time: ");
@@ -193,6 +199,7 @@ public class Aurora14Setup extends DeviceSetup
 		deviceChannel7.setOffsetNid(11);
 		deviceChannel7.setLabelString("Ch1: ");
 		deviceChannel7.setBorderVisible(true);
+		deviceChannel7.setLayout(new BorderLayout(0,0));
 		JPanel2.add(deviceChannel7);
 		deviceField18.setOffsetNid(16);
 		deviceField18.setLabelString("Start Idx: ");
@@ -204,6 +211,7 @@ public class Aurora14Setup extends DeviceSetup
 		deviceChannel8.setOffsetNid(19);
 		deviceChannel8.setLabelString("Ch2: ");
 		deviceChannel8.setBorderVisible(true);
+		deviceChannel8.setLayout(new BorderLayout(0,0));
 		JPanel2.add(deviceChannel8);
 		deviceField20.setOffsetNid(24);
 		deviceField20.setLabelString("Start Idx: ");
@@ -215,6 +223,7 @@ public class Aurora14Setup extends DeviceSetup
 		deviceChannel9.setOffsetNid(27);
 		deviceChannel9.setLabelString("Ch3: ");
 		deviceChannel9.setBorderVisible(true);
+		deviceChannel9.setLayout(new BorderLayout(0,0));
 		JPanel2.add(deviceChannel9);
 		deviceField22.setOffsetNid(32);
 		deviceField22.setLabelString("Start Idx: ");
@@ -226,6 +235,7 @@ public class Aurora14Setup extends DeviceSetup
 		deviceChannel10.setOffsetNid(35);
 		deviceChannel10.setLabelString("Ch4: ");
 		deviceChannel10.setBorderVisible(true);
+		deviceChannel10.setLayout(new BorderLayout(0,0));
 		JPanel2.add(deviceChannel10);
 		deviceField24.setOffsetNid(40);
 		deviceField24.setLabelString("Start Idx: ");
@@ -237,6 +247,7 @@ public class Aurora14Setup extends DeviceSetup
 		deviceChannel11.setOffsetNid(43);
 		deviceChannel11.setLabelString("Ch5: ");
 		deviceChannel11.setBorderVisible(true);
+		deviceChannel11.setLayout(new BorderLayout(0,0));
 		JPanel2.add(deviceChannel11);
 		deviceField26.setOffsetNid(48);
 		deviceField26.setLabelString("Start Idx: ");
@@ -248,6 +259,7 @@ public class Aurora14Setup extends DeviceSetup
 		deviceChannel12.setOffsetNid(51);
 		deviceChannel12.setLabelString("Ch6: ");
 		deviceChannel12.setBorderVisible(true);
+		deviceChannel12.setLayout(new BorderLayout(0,0));
 		JPanel2.add(deviceChannel12);
 		deviceField28.setOffsetNid(56);
 		deviceField28.setLabelString("Start Idx: ");

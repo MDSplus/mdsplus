@@ -8,11 +8,30 @@ public class DeviceChannel extends DeviceComponent
     public String labelString = null;
     public boolean borderVisible = false;
     public boolean inSameLine = false;
+    
     protected JCheckBox    checkB = null;
     protected Vector device_components = null;
     public int lines = 1, columns = 0; //if columns == 0 FlowLayout is assumed
+    
+    public String showVal;
+    public boolean showState = true;
+    private boolean initial_state;
+    
+    
     protected boolean initializing = false;
     protected JPanel componentsPanel;
+
+    public void setShowVal(String showVal)
+    {
+        this.showVal = showVal;
+    }
+    public String getShowVal() {return showVal;}
+    public void setShowState(boolean showState)
+    {
+        this.showState = showState;
+    }
+    public boolean getShowState() {return showState;}
+
 
     public void setInSameLine(boolean inSameLine)
     {
@@ -36,8 +55,10 @@ public class DeviceChannel extends DeviceComponent
         this.lines = lines;
         if(lines != 0 && columns != 0)
             componentsPanel.setLayout(new GridLayout(lines, columns));
-        else
+        else if(lines == 0 && columns == 0)
             componentsPanel.setLayout(new FlowLayout());
+        else
+            componentsPanel.setLayout(new BorderLayout());
         initializing = false;
     }
     public int getLines() {return lines; }
@@ -52,12 +73,10 @@ public class DeviceChannel extends DeviceComponent
             componentsPanel.setLayout(new FlowLayout());
         initializing = false;
     }        
-    
-    
     public void setLabelString(String labelString) 
     {
         this.labelString = labelString;
-        checkB.setText(labelString);
+        if(checkB != null) checkB.setText(labelString);
         redisplay();
     }
     public String getLabelString() {return labelString; }
@@ -87,28 +106,41 @@ public class DeviceChannel extends DeviceComponent
     }    
     protected void initializeData(Data data, boolean is_on)
     {
-        checkB.setText(labelString);
-        checkB.setSelected(is_on);
-        checkB.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e)
-            {
-                propagateState(checkB.isSelected());
-            }
-        });
+        if(!showState)
+        {
+            remove(checkB);
+            checkB = null;
+        }
+        else
+        {
+            checkB.setText(labelString);
+            checkB.setSelected(is_on);
+            checkB.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent e)
+                {
+                    propagateState(checkB.isSelected());
+                }
+            });
+        }
     }
     
     
     protected void displayData(Data data, boolean is_on)
     {
-        checkB.setSelected(is_on);
+        initial_state = is_on;
+        if(checkB != null) checkB.setSelected(is_on);
     }
     protected Data getData(){return null;}
     protected boolean getState()
     {
-        return checkB.isSelected();
+        if(!showState || checkB == null)
+            return initial_state;
+        else
+            return checkB.isSelected();
     }
     
-    private void propagateState(boolean state)
+    
+    private void buildComponentList()
     {
         if(device_components == null)
         {
@@ -128,6 +160,13 @@ public class DeviceChannel extends DeviceComponent
                 }
             }while(!search_stack.empty());
         }
+    }        
+    
+    
+    
+    private void propagateState(boolean state)
+    {
+        buildComponentList();
         int size = device_components.size();
         for(int i = 0; i < size; i++)
             ((DeviceComponent)device_components.elementAt(i)).setEnabled(state);
@@ -170,5 +209,41 @@ public class DeviceChannel extends DeviceComponent
             return componentsPanel.add(c);
         return super.add(c);
     }
+    
+    public void fireUpdate(String updateId, Data newExpr)
+    {
+        if(updateId == null || !updateIdentifier.equals(updateId))
+            return;
+        String newVal = newExpr.toString();
+        newVal = newVal.substring(1, newVal.length() - 1);
+        if(showVal != null && showVal.equals(newVal))
+        {
+            setEnabledAll(true);
+            LayoutManager layout = getParent().getLayout();
+            if(layout != null && (layout instanceof CardLayout))
+                ((CardLayout)layout).show(getParent(), showVal);
+            //Display this component using showVal as constraint
+        }
+        else
+            setEnabledAll(false);
+    }
+    
+    protected boolean supportsState(){return showState;}
+    protected void setEnabledAll(boolean enabled)
+    {
+        buildComponentList();
+        if(device_components != null)
+        {
+            int size = device_components.size();
+            for(int i = 0; i < size; i++)
+            {
+                if(enabled)
+                    ((DeviceComponent)device_components.elementAt(i)).enable();
+                else
+                    ((DeviceComponent)device_components.elementAt(i)).disable();
+            }
+        }
+    }
+
 
 }

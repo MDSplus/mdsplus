@@ -62,6 +62,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel1.setOffsetNid(4);
 		deviceChannel1.setLabelString("ch1");
 		deviceChannel1.setBorderVisible(true);
+		deviceChannel1.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel1);
 		deviceChannel1.setBounds(2,42,463,135);
 		JPanel2.setLayout(new GridLayout(3,1,0,0));
@@ -86,6 +87,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel2.setOffsetNid(9);
 		deviceChannel2.setLabelString("ch2");
 		deviceChannel2.setBorderVisible(true);
+		deviceChannel2.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel2);
 		deviceChannel2.setBounds(2,42,463,135);
 		JPanel4.setLayout(new GridLayout(3,1,0,0));
@@ -110,6 +112,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel3.setOffsetNid(14);
 		deviceChannel3.setLabelString("ch3");
 		deviceChannel3.setBorderVisible(true);
+		deviceChannel3.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel3);
 		deviceChannel3.setBounds(2,42,463,135);
 		JPanel6.setLayout(new GridLayout(3,1,0,0));
@@ -134,6 +137,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel4.setOffsetNid(19);
 		deviceChannel4.setLabelString("ch4");
 		deviceChannel4.setBorderVisible(true);
+		deviceChannel4.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel4);
 		deviceChannel4.setBounds(2,42,463,135);
 		JPanel8.setLayout(new GridLayout(3,1,0,0));
@@ -158,6 +162,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel5.setOffsetNid(24);
 		deviceChannel5.setLabelString("ch5");
 		deviceChannel5.setBorderVisible(true);
+		deviceChannel5.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel5);
 		deviceChannel5.setBounds(2,42,463,135);
 		JPanel10.setLayout(new GridLayout(3,1,0,0));
@@ -182,6 +187,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel6.setOffsetNid(29);
 		deviceChannel6.setLabelString("ch6");
 		deviceChannel6.setBorderVisible(true);
+		deviceChannel6.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel6);
 		deviceChannel6.setBounds(2,42,463,135);
 		JPanel12.setLayout(new GridLayout(3,1,0,0));
@@ -206,6 +212,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel7.setOffsetNid(34);
 		deviceChannel7.setLabelString("ch7");
 		deviceChannel7.setBorderVisible(true);
+		deviceChannel7.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel7);
 		deviceChannel7.setBounds(2,42,463,135);
 		JPanel14.setLayout(new GridLayout(3,1,0,0));
@@ -230,6 +237,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel8.setOffsetNid(39);
 		deviceChannel8.setLabelString("ch8");
 		deviceChannel8.setBorderVisible(true);
+		deviceChannel8.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel8);
 		deviceChannel8.setBounds(2,42,463,135);
 		JPanel18.setLayout(new GridLayout(3,1,0,0));
@@ -254,6 +262,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel9.setOffsetNid(44);
 		deviceChannel9.setLabelString("ch9");
 		deviceChannel9.setBorderVisible(true);
+		deviceChannel9.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel9);
 		deviceChannel9.setBounds(2,42,463,135);
 		JPanel16.setLayout(new GridLayout(3,1,0,0));
@@ -278,6 +287,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel10.setOffsetNid(49);
 		deviceChannel10.setLabelString("ch10");
 		deviceChannel10.setBorderVisible(true);
+		deviceChannel10.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel10);
 		deviceChannel10.setBounds(2,42,463,135);
 		JPanel20.setLayout(new GridLayout(3,1,0,0));
@@ -302,6 +312,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel11.setOffsetNid(54);
 		deviceChannel11.setLabelString("ch11");
 		deviceChannel11.setBorderVisible(true);
+		deviceChannel11.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel11);
 		deviceChannel11.setBounds(2,42,463,135);
 		JPanel22.setLayout(new GridLayout(3,1,0,0));
@@ -326,6 +337,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel12.setOffsetNid(59);
 		deviceChannel12.setLabelString("ch12");
 		deviceChannel12.setBorderVisible(true);
+		deviceChannel12.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel12);
 		deviceChannel12.setBounds(2,42,463,135);
 		JPanel24.setLayout(new GridLayout(3,1,0,0));
@@ -350,6 +362,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel13.setOffsetNid(64);
 		deviceChannel13.setLabelString("ch13");
 		deviceChannel13.setBorderVisible(true);
+		deviceChannel13.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel13);
 		deviceChannel13.setBounds(2,42,463,135);
 		JPanel26.setLayout(new GridLayout(3,1,0,0));
@@ -374,6 +387,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel14.setOffsetNid(69);
 		deviceChannel14.setLabelString("ch14");
 		deviceChannel14.setBorderVisible(true);
+		deviceChannel14.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel14);
 		deviceChannel14.setBounds(2,42,463,135);
 		JPanel28.setLayout(new GridLayout(3,1,0,0));
@@ -398,6 +412,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel15.setOffsetNid(74);
 		deviceChannel15.setLabelString("ch15");
 		deviceChannel15.setBorderVisible(true);
+		deviceChannel15.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel15);
 		deviceChannel15.setBounds(2,42,463,135);
 		JPanel30.setLayout(new GridLayout(3,1,0,0));
@@ -422,6 +437,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel16.setOffsetNid(79);
 		deviceChannel16.setLabelString("ch16");
 		deviceChannel16.setBorderVisible(true);
+		deviceChannel16.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel16);
 		deviceChannel16.setBounds(2,42,463,135);
 		JPanel32.setLayout(new GridLayout(3,1,0,0));
@@ -446,6 +462,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel17.setOffsetNid(84);
 		deviceChannel17.setLabelString("ch17");
 		deviceChannel17.setBorderVisible(true);
+		deviceChannel17.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel17);
 		deviceChannel17.setBounds(2,42,463,135);
 		JPanel1.setLayout(new GridLayout(3,1,0,0));
@@ -470,6 +487,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel18.setOffsetNid(89);
 		deviceChannel18.setLabelString("ch18");
 		deviceChannel18.setBorderVisible(true);
+		deviceChannel18.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel18);
 		deviceChannel18.setBounds(2,42,463,135);
 		JPanel35.setLayout(new GridLayout(3,1,0,0));
@@ -494,6 +512,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel19.setOffsetNid(94);
 		deviceChannel19.setLabelString("ch19");
 		deviceChannel19.setBorderVisible(true);
+		deviceChannel19.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel19);
 		deviceChannel19.setBounds(2,42,463,135);
 		JPanel37.setLayout(new GridLayout(3,1,0,0));
@@ -518,6 +537,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel20.setOffsetNid(99);
 		deviceChannel20.setLabelString("ch20");
 		deviceChannel20.setBorderVisible(true);
+		deviceChannel20.setLayout(new BorderLayout(0,0));
 		JTabbedPane1.add(deviceChannel20);
 		deviceChannel20.setBounds(2,42,463,135);
 		JPanel39.setLayout(new GridLayout(3,1,0,0));

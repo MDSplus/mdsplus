@@ -15,6 +15,9 @@ public abstract class DeviceComponent extends JPanel
     protected String updateIdentifier;
     protected boolean editable = true;
     private boolean is_initialized = false;
+    private boolean enabled = true;
+    
+    
     
     void setSubtree(RemoteTree subtree) {this.subtree = subtree; }
     RemoteTree getSubtree(){return subtree; }
@@ -78,6 +81,7 @@ public abstract class DeviceComponent extends JPanel
     
     public void apply() throws Exception
     {
+        if(!enabled) return;
         if(mode == DATA)
         {
             curr_data = getData();
@@ -100,7 +104,7 @@ public abstract class DeviceComponent extends JPanel
                 }
             }
         }
-        if(mode != DISPATCH)
+        if(mode != DISPATCH && supportsState())
         {
             curr_on = getState();
             try {
@@ -142,6 +146,15 @@ public abstract class DeviceComponent extends JPanel
     protected abstract boolean getState();
     public void postConfigure(){}
     void postApply(){}
+    protected boolean supportsState(){return false;}
+    public void enable()
+    {
+        enabled = true;
+    }
+    public void disable()
+    {
+        enabled = false;
+    }
 }
 
 

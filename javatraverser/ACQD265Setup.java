@@ -248,6 +248,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel13.setInSameLine(true);
 		deviceChannel13.setOffsetNid(20);
 		deviceChannel13.setLabelString("Ch01");
+		deviceChannel13.setLayout(new BorderLayout(0,0));
 		JPanel9.add(deviceChannel13);
 		deviceChannel13.setBounds(6,15,524,44);
 		deviceChoice62.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -291,6 +292,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel14.setInSameLine(true);
 		deviceChannel14.setOffsetNid(26);
 		deviceChannel14.setLabelString("Ch02");
+		deviceChannel14.setLayout(new BorderLayout(0,0));
 		JPanel9.add(deviceChannel14);
 		deviceChannel14.setBounds(6,49,524,44);
 		deviceChoice63.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -334,6 +336,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel15.setInSameLine(true);
 		deviceChannel15.setOffsetNid(32);
 		deviceChannel15.setLabelString("Ch03");
+		deviceChannel15.setLayout(new BorderLayout(0,0));
 		JPanel9.add(deviceChannel15);
 		deviceChannel15.setBounds(6,83,524,44);
 		deviceChoice64.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -377,6 +380,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel16.setInSameLine(true);
 		deviceChannel16.setOffsetNid(38);
 		deviceChannel16.setLabelString("Ch04");
+		deviceChannel16.setLayout(new BorderLayout(0,0));
 		JPanel9.add(deviceChannel16);
 		deviceChannel16.setBounds(6,117,524,44);
 		deviceChoice65.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -434,6 +438,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel1.setInSameLine(true);
 		deviceChannel1.setOffsetNid(44);
 		deviceChannel1.setLabelString("Ch05");
+		deviceChannel1.setLayout(new BorderLayout(0,0));
 		JPanel3.add(deviceChannel1);
 		deviceChannel1.setBounds(6,15,524,44);
 		deviceChoice66.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -477,6 +482,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel2.setInSameLine(true);
 		deviceChannel2.setOffsetNid(50);
 		deviceChannel2.setLabelString("Ch06");
+		deviceChannel2.setLayout(new BorderLayout(0,0));
 		JPanel3.add(deviceChannel2);
 		deviceChannel2.setBounds(6,49,524,44);
 		deviceChoice67.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -520,6 +526,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel3.setInSameLine(true);
 		deviceChannel3.setOffsetNid(56);
 		deviceChannel3.setLabelString("Ch07");
+		deviceChannel3.setLayout(new BorderLayout(0,0));
 		JPanel3.add(deviceChannel3);
 		deviceChannel3.setBounds(6,83,524,44);
 		deviceChoice68.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -563,6 +570,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel4.setInSameLine(true);
 		deviceChannel4.setOffsetNid(62);
 		deviceChannel4.setLabelString("Ch08");
+		deviceChannel4.setLayout(new BorderLayout(0,0));
 		JPanel3.add(deviceChannel4);
 		deviceChannel4.setBounds(6,117,524,44);
 		deviceChoice69.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -620,6 +628,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel5.setInSameLine(true);
 		deviceChannel5.setOffsetNid(68);
 		deviceChannel5.setLabelString("Ch09");
+		deviceChannel5.setLayout(new BorderLayout(0,0));
 		JPanel5.add(deviceChannel5);
 		deviceChannel5.setBounds(6,15,524,44);
 		deviceChoice70.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -663,6 +672,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel6.setInSameLine(true);
 		deviceChannel6.setOffsetNid(74);
 		deviceChannel6.setLabelString("Ch10");
+		deviceChannel6.setLayout(new BorderLayout(0,0));
 		JPanel5.add(deviceChannel6);
 		deviceChannel6.setBounds(6,49,524,44);
 		deviceChoice71.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -706,6 +716,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel7.setInSameLine(true);
 		deviceChannel7.setOffsetNid(80);
 		deviceChannel7.setLabelString("Ch11");
+		deviceChannel7.setLayout(new BorderLayout(0,0));
 		JPanel5.add(deviceChannel7);
 		deviceChannel7.setBounds(6,83,524,44);
 		deviceChoice72.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -749,6 +760,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel8.setInSameLine(true);
 		deviceChannel8.setOffsetNid(86);
 		deviceChannel8.setLabelString("Ch12");
+		deviceChannel8.setLayout(new BorderLayout(0,0));
 		JPanel5.add(deviceChannel8);
 		deviceChannel8.setBounds(6,117,524,44);
 		deviceChoice73.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -806,6 +818,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel9.setInSameLine(true);
 		deviceChannel9.setOffsetNid(92);
 		deviceChannel9.setLabelString("Ch13");
+		deviceChannel9.setLayout(new BorderLayout(0,0));
 		JPanel7.add(deviceChannel9);
 		deviceChannel9.setBounds(6,15,524,44);
 		deviceChoice74.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -849,6 +862,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel10.setInSameLine(true);
 		deviceChannel10.setOffsetNid(98);
 		deviceChannel10.setLabelString("Ch14");
+		deviceChannel10.setLayout(new BorderLayout(0,0));
 		JPanel7.add(deviceChannel10);
 		deviceChannel10.setBounds(6,49,524,44);
 		deviceChoice75.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -892,6 +906,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel11.setInSameLine(true);
 		deviceChannel11.setOffsetNid(104);
 		deviceChannel11.setLabelString("Ch15");
+		deviceChannel11.setLayout(new BorderLayout(0,0));
 		JPanel7.add(deviceChannel11);
 		deviceChannel11.setBounds(6,83,524,44);
 		deviceChoice76.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -935,6 +950,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel12.setInSameLine(true);
 		deviceChannel12.setOffsetNid(110);
 		deviceChannel12.setLabelString("Ch16");
+		deviceChannel12.setLayout(new BorderLayout(0,0));
 		JPanel7.add(deviceChannel12);
 		deviceChannel12.setBounds(6,117,524,44);
 		deviceChoice77.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -992,6 +1008,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel17.setInSameLine(true);
 		deviceChannel17.setOffsetNid(116);
 		deviceChannel17.setLabelString("Ch17");
+		deviceChannel17.setLayout(new BorderLayout(0,0));
 		JPanel11.add(deviceChannel17);
 		deviceChannel17.setBounds(6,15,524,44);
 		deviceChoice78.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -1035,6 +1052,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel18.setInSameLine(true);
 		deviceChannel18.setOffsetNid(122);
 		deviceChannel18.setLabelString("Ch18");
+		deviceChannel18.setLayout(new BorderLayout(0,0));
 		JPanel11.add(deviceChannel18);
 		deviceChannel18.setBounds(6,49,524,44);
 		deviceChoice79.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -1078,6 +1096,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel19.setInSameLine(true);
 		deviceChannel19.setOffsetNid(128);
 		deviceChannel19.setLabelString("Ch19");
+		deviceChannel19.setLayout(new BorderLayout(0,0));
 		JPanel11.add(deviceChannel19);
 		deviceChannel19.setBounds(6,83,524,44);
 		deviceChoice80.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -1121,6 +1140,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel20.setInSameLine(true);
 		deviceChannel20.setOffsetNid(134);
 		deviceChannel20.setLabelString("Ch20");
+		deviceChannel20.setLayout(new BorderLayout(0,0));
 		JPanel11.add(deviceChannel20);
 		deviceChannel20.setBounds(6,117,524,44);
 		deviceChoice81.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -1178,6 +1198,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel21.setInSameLine(true);
 		deviceChannel21.setOffsetNid(140);
 		deviceChannel21.setLabelString("Ch21");
+		deviceChannel21.setLayout(new BorderLayout(0,0));
 		JPanel13.add(deviceChannel21);
 		deviceChannel21.setBounds(6,15,524,44);
 		deviceChoice82.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -1221,6 +1242,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel22.setInSameLine(true);
 		deviceChannel22.setOffsetNid(146);
 		deviceChannel22.setLabelString("Ch22");
+		deviceChannel22.setLayout(new BorderLayout(0,0));
 		JPanel13.add(deviceChannel22);
 		deviceChannel22.setBounds(6,49,524,44);
 		deviceChoice83.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -1264,6 +1286,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel23.setInSameLine(true);
 		deviceChannel23.setOffsetNid(152);
 		deviceChannel23.setLabelString("Ch23");
+		deviceChannel23.setLayout(new BorderLayout(0,0));
 		JPanel13.add(deviceChannel23);
 		deviceChannel23.setBounds(6,83,524,44);
 		deviceChoice84.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -1307,6 +1330,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel24.setInSameLine(true);
 		deviceChannel24.setOffsetNid(158);
 		deviceChannel24.setLabelString("Ch24");
+		deviceChannel24.setLayout(new BorderLayout(0,0));
 		JPanel13.add(deviceChannel24);
 		deviceChannel24.setBounds(6,117,524,44);
 		deviceChoice85.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -1365,6 +1389,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel25.setInSameLine(true);
 		deviceChannel25.setOffsetNid(164);
 		deviceChannel25.setLabelString("Ch25");
+		deviceChannel25.setLayout(new BorderLayout(0,0));
 		JPanel15.add(deviceChannel25);
 		deviceChannel25.setBounds(6,15,524,44);
 		deviceChoice86.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -1408,6 +1433,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel26.setInSameLine(true);
 		deviceChannel26.setOffsetNid(170);
 		deviceChannel26.setLabelString("Ch26");
+		deviceChannel26.setLayout(new BorderLayout(0,0));
 		JPanel15.add(deviceChannel26);
 		deviceChannel26.setBounds(6,49,524,44);
 		deviceChoice87.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -1451,6 +1477,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel27.setInSameLine(true);
 		deviceChannel27.setOffsetNid(176);
 		deviceChannel27.setLabelString("Ch27");
+		deviceChannel27.setLayout(new BorderLayout(0,0));
 		JPanel15.add(deviceChannel27);
 		deviceChannel27.setBounds(6,83,524,44);
 		deviceChoice88.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});
@@ -1494,6 +1521,7 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChannel28.setInSameLine(true);
 		deviceChannel28.setOffsetNid(182);
 		deviceChannel28.setLabelString("Ch28");
+		deviceChannel28.setLayout(new BorderLayout(0,0));
 		JPanel15.add(deviceChannel28);
 		deviceChannel28.setBounds(6,117,524,44);
 		deviceChoice89.setChoiceFloatValues(new float[] {(float)0.05,(float)0.1,(float)0.2,(float)0.5,(float)1.0,(float)2.0,(float)5.0});

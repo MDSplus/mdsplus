@@ -5,25 +5,6 @@ import java.io.*;
 
 public class DeviceCustomizer extends Panel
 {
-  /* public static void main(String args[])
-   {
-        NetworkProvider np = new NetworkProvider("150.178.3.80");
-
-        int i;
-        
-        i = Data.evaluate("2 + 3");
-        i = Data.evaluate("2 > 3");
-        i = Data.evaluate("2 < 3");
-        i = Data.evaluate( "_pippo = 3; _pluto = 4; _pippo + _pluto");
-        i = 0;
-
-/*        DeviceSetupBeanInfo.beanDeviceType = "L6810";
-        DeviceSetupBeanInfo.beanDeviceProvider = "150.178.3.80";
-        String []fields = new DeviceCustomizer().getDeviceFields();
-        for(int i = 0; i < fields.length; i++)
-            System.out.println(fields[i]);
-}*/  
-    
  
    static String lastDeviceType = null;
    static String lastDeviceProvider = null;
