@@ -127,7 +127,9 @@ int i;
 
 #define LoadRamp(type) { type *ptr = (type *)out_ptr->pointer; for (i=0;i<n;i++) ptr[i] = (type)i; break;}
 #define LoadRampF(type,dtype,native) { type *ptr = (type *)out_ptr->pointer; type tmp; \
-                                       for (i=0;i<n;i++) {tmp = (type)i; CvtConvertFloat(&tmp,native,&ptr[i],dtype,0);} break;}
+                                       for (i=0;i<n;i++) {tmp = (type)i; \
+                                            if (native == dtype) ptr[i] = tmp; \
+                                            else CvtConvertFloat(&tmp,native,&ptr[i],dtype,0);} break;}
 
 	N_ELEMENTS(out_ptr, n);
 	switch (out_ptr->dtype) {
