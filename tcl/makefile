@@ -3,13 +3,13 @@ LFLAGS = -L$(MDSPLUS)/shlib
 
 OBJFILES = 			\
 	mds_dsc_string.o	\
+	tcl_dummy.o		\
 	tcl_add_node.o		\
 	tcl_add_tag.o		\
 	tcl_create_pulse.o	\
 	tcl_directory.o		\
 	tcl_directory_tag.o	\
 	tcl_do_method.o		\
-	tcl_dummy.o		\
 	tcl_general.o		\
 	tcl_set_callbacks.o	\
 	tcl_set_current.o	\
