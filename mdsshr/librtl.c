@@ -1,29 +1,3 @@
-#if !(defined(__ALPHA) && defined(__VMS))
-void __MB(){return;}
-#endif
-#if defined(WIN32)
-#pragma warning (disable : 4100 4201 4115 4214 4514)
-#include <process.h>
-#include <windows.h>
-#include <tchar.h>
-#include <wtypes.h>
-#include <winreg.h>
-#else /* WIN32 */
-
-#if defined(__hpux)
-#include <dl.h>
-#define SHARELIB_TYPE ".sl"
-#define RTLD_LAZY BIND_DEFERRED | BIND_NOSTART | DYNAMIC_PATH
-#else
-#include <dlfcn.h>
-#define SHARELIB_TYPE ".so"
-#endif
-
-#include <unistd.h>
-#include <sys/types.h>
-#include <dirent.h>
-
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -33,6 +7,43 @@ void __MB(){return;}
 #include <libroutines.h>
 #include <mds_stdarg.h>
 #include <librtl_messages.h>
+
+#if defined(WIN32)
+#pragma warning (disable : 4100 4201 4115 4214 4514)
+#include <process.h>
+#include <windows.h>
+#include <tchar.h>
+#include <wtypes.h>
+#include <winreg.h>
+#else /* WIN32 */
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <dirent.h>
+
+#if defined(__hpux)
+#include <dl.h>
+#define SHARELIB_TYPE ".sl"
+#define RTLD_LAZY BIND_DEFERRED | BIND_NOSTART | DYNAMIC_PATH
+
+static void *dlopen(char *filename, int flags)
+{
+  return (void *)shl_load(filename,flags,0);
+}
+
+void *dlsym(void *handle, char *name)
+{
+  void *symbol = NULL;
+  int s = shl_findsym((shl_t *)&handle,name,0,&symbol);
+  return symbol;
+}
+
+#else
+#include <dlfcn.h>
+#define SHARELIB_TYPE ".so"
+#endif
+
+#endif
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #ifndef va_count
 #define  va_count(narg) va_start(incrmtr, first); \
@@ -925,20 +936,6 @@ unsigned int LibCallg(void **arglist, unsigned int (*routine)())
   }
   return 0;
 }
-
-#if defined(__hpux)
-static void *dlopen(char *filename, int flags)
-{
-  return (void *)shl_load(filename,flags,0);
-}
-
-void *dlsym(void *handle, char *name)
-{
-  void *symbol = NULL;
-  int s = shl_findsym((shl_t *)&handle,name,0,&symbol);
-  return symbol;
-}
-#endif
 
 int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
 {
