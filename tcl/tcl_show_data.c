@@ -60,8 +60,11 @@ static int   lib_cvt_dx_dx(	/* Returns:  status			*/
         case DTYPE_BU:
             sprintf(string,"0x%02X",*(unsigned char *)p);
             break;
-        case DTYPE_F:
+        case DTYPE_FLOAT:
             sprintf(string,"%.8g",*(float *)p);
+            break;
+        case DTYPE_DOUBLE:
+            sprintf(string,"%.14lg",*(double *)p);
             break;
         case DTYPE_L:
             sprintf(string,"%d",*(long *)p);
@@ -404,7 +407,7 @@ static int CvtAdscT(struct descriptor_a *in_dsc_ptr,int depth)
     str_concat(&out_str,&spaces,dstr,"Array [ ",0);
     if (in_dsc_ptr->aflags.dscV_bounds)
        {
-        bptr = (int *) ((int) in_dsc_ptr + sizeof(struct descriptor_a) + (in_dsc_ptr->dscB_dimct + 1) * 4);
+        bptr = (int *) ((char *) in_dsc_ptr + sizeof(struct descriptor_a) + sizeof(void *) + (in_dsc_ptr->dscB_dimct) * sizeof(int));
         for (dim = 0; dim < in_dsc_ptr->dscB_dimct; dim++)
            {
             lbptr = bptr++;
