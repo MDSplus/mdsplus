@@ -43,6 +43,7 @@ public class Database implements RemoteTree{
     public boolean isReadonly() {return is_readonly;}
    /* Low level MDS database management routines, will be  masked by the Node class*/
     public native int open() throws DatabaseException;
+    public native int openNew() throws DatabaseException;
     public native void write(int ctx) throws DatabaseException;
     public native void close(int ctx)throws DatabaseException;
     public native void quit(int ctx)throws DatabaseException;
@@ -80,6 +81,7 @@ public class Database implements RemoteTree{
     public void setCurrentShot(int shot) {setCurrentShot(name, shot);}
     public native void setCurrentShot(String experiment, int shot);
     public native String getOriginalPartName(NidData nid) throws DatabaseException;
+    public native void setFlags(NidData nid, int flags) throws DatabaseException;
   }  
     
     

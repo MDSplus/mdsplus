@@ -82,5 +82,13 @@ public class NodeInfo implements Serializable
     public static final int USAGE_SUBTREE = 11;
     public static final int USAGE_COMPOUND_DATA = 12;
     public static final int USAGE_MAXIMUM = 12;
-
+    
+    
+    
+    public static final int WRITE_ONCE = 0x00000080;
+    public static final int COMPRESSIBLE   =     0x00000100;
+    public static final int DO_NOT_COMPRESS =    0x00000200;
+    public static final int COMPRESS_ON_PUT  =   0x00000400;
+    public static final int NO_WRITE_MODEL  =    0x00000800;
+    public static final int NO_WRITE_SHOT   =    0x00001000;
 }
