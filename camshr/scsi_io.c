@@ -279,8 +279,16 @@ int scsi_io(int scsiDevice, int direction, unsigned char *cmdp,
         else if (sb_out_len != 0)
           *sb_out_len = sghdr.sb_len_wr;
       }
+      else
+        perror("ioctl error performing SCSI I/O");
+  }
+  else
+  {
+    fprintf(stderr,"Error opening scsi device\n");
   }
   if (transfer_len != 0)
     *transfer_len = bytes_transfered;
+  if (status == -1)
+    fprintf(stderr,"scsi_io is returning a -1 status\n");
   return status;
 }

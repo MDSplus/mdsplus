@@ -132,7 +132,7 @@ char *get_file_name( char *filename );
 int  get_scsi_device_number( char *highway_name, int *enhanced, int *online );
 int  issort( void *data, int size, int esize,
 			 int (*compare)(const void *key1, const void *key2));
-static int JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status );
+static int JorwayTranslateIosb( int reqbytcnt, SenseData *sense, char senslen, unsigned int bytcnt, int scsi_status );
 static int KsTranslateIosb( RequestSenseData *sense, int scsi_status );
 int  lock_file();
 int  lookup_entry( int dbType, char *module_name );

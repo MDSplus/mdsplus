@@ -206,7 +206,7 @@ static void str2upcase( char *str );
 // function prototypes -- not necessarily local
 //-----------------------------------------------------------
 static void 		Blank( UserParams *user );
-static int 		JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status );
+static int 		JorwayTranslateIosb( int reqbytcnt, SenseData *sense, char senseretlen, unsigned int bytcnt, int scsi_status );
 static int              Jorway73ATranslateIosb( int datacmd, int reqbytcnt, J73ASenseData *sense, int scsi_status );
 static int 		KsTranslateIosb( RequestSenseData *sense, int scsi_status );
 
@@ -712,11 +712,14 @@ static int JorwayDoIo(
 		cmdlen = sizeof(NONDATAcommand);
                 direction = 0;
 	}
+        memset(&sense,0,sizeof(sense));
+        sensretlen=0;
+        bytcnt=0;
         scsi_lock(scsiDevice,1);
         status = scsi_io( scsiDevice, direction, cmd, cmdlen, Data, reqbytcnt, (unsigned char *)&sense,
 			  sizeof(sense), &sensretlen, &bytcnt);
         scsi_lock(scsiDevice,0);
-        status = JorwayTranslateIosb(reqbytcnt,&sense,status);
+        status = JorwayTranslateIosb(reqbytcnt,&sense,sensretlen,bytcnt,status);
 	if ( iosb ) *iosb = LastIosb;					// [2002.12.11]
 
 
@@ -945,36 +948,13 @@ CamAssign_Exit:
 }
 // extract CAMAC status info for Jorway highways
 //-----------------------------------------------------------
-static int JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status )
+static int JorwayTranslateIosb( int reqbytcnt, SenseData *sense, char sensretlen, unsigned int ret_bytcnt, int scsi_status )
 {
   int status;
   int bytcnt = reqbytcnt - ((int)sense->word_count_defect[2])+
     (((int)sense->word_count_defect[1])<<8)+
     (((int)sense->word_count_defect[0])<<16);
  
-  if (Verbose)
-  {
-    printf("SCSI Sense data:  code=%d,valid=%d,sense_key=%d,word count deficit=%d\n\n",sense->code,sense->valid,
-	   sense->sense_key, ((int)sense->word_count_defect[2])+
-	   (((int)sense->word_count_defect[1])<<8)+
-	   (((int)sense->word_count_defect[0])<<16));
-    printf("     Main status register:\n\n");
-    printf("                  bdmd=%d,dsne=%d,bdsq=%d,snex=%d,crto=%d,to=%d,no_x=%d,no_q=%d\n\n",
-                            sense->main_status_reg.bdmd,sense->main_status_reg.dsne,sense->main_status_reg.bdsq,
-                            sense->main_status_reg.snex,sense->main_status_reg.crto,sense->main_status_reg.to,
-                            sense->main_status_reg.no_x,sense->main_status_reg.no_q);
-    printf("     Serial status register:\n\n");
-    printf("                  cret=%d,timos=%d,rpe=%d,hdrrec=%d,cmdfor=%d,rnre1=%d,rnrg1=%d,snex=%d,hngd=%d\n",
-                            sense->serial_status_reg.cret,sense->serial_status_reg.timos,sense->serial_status_reg.rpe,
-                            sense->serial_status_reg.hdrrec,sense->serial_status_reg.cmdfor,
-                            sense->serial_status_reg.rnre1,sense->serial_status_reg.rnrg1,
-                            sense->serial_status_reg.snex,sense->serial_status_reg.hngd);
-    printf("                  sync=%d,losyn=%d,rerr=%d,derr=%d\n\n",sense->serial_status_reg.sync,
-                            sense->serial_status_reg.losyn,sense->serial_status_reg.rerr,
-                            sense->serial_status_reg.derr);
-    printf("                  Additional Sense Code=%d,slot=%d,crate=%d\n\n",sense->additional_sense_code,
-                              sense->slot_high_bit * 16 + sense->slot,sense->crate);
-  }
 	LastIosb.bytcnt = (unsigned short)(bytcnt & 0xffff);
         LastIosb.lbytcnt = (unsigned short)(bytcnt >> 16);
         LastIosb.x=0;
@@ -1055,6 +1035,40 @@ static int JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status
               break;
 	}
         LastIosb.status = (unsigned short)status&0xffff;
+  if (Verbose || status == CamSERTRAERR)
+  {
+    if (status == CamSERTRAERR)
+    {
+      printf("Serial Transmission Error detected, debug information follows \n\n"
+             "******************************************************************\n");
+    }
+
+    printf("Sense return length: %d, bytcnt: %d, scsi_status: %d, reqbytcnt: %d\n",sensretlen,ret_bytcnt,scsi_status,reqbytcnt);
+    printf("SCSI Sense data:  code=%d,valid=%d,sense_key=%d,word count deficit=%d\n\n",sense->code,sense->valid,
+	   sense->sense_key, ((int)sense->word_count_defect[2])+
+	   (((int)sense->word_count_defect[1])<<8)+
+	   (((int)sense->word_count_defect[0])<<16));
+    printf("     Main status register:\n\n");
+    printf("                  bdmd=%d,dsne=%d,bdsq=%d,snex=%d,crto=%d,to=%d,no_x=%d,no_q=%d\n\n",
+                            sense->main_status_reg.bdmd,sense->main_status_reg.dsne,sense->main_status_reg.bdsq,
+                            sense->main_status_reg.snex,sense->main_status_reg.crto,sense->main_status_reg.to,
+                            sense->main_status_reg.no_x,sense->main_status_reg.no_q);
+    printf("     Serial status register:\n\n");
+    printf("                  cret=%d,timos=%d,rpe=%d,hdrrec=%d,cmdfor=%d,rnre1=%d,rnrg1=%d,snex=%d,hngd=%d\n",
+                            sense->serial_status_reg.cret,sense->serial_status_reg.timos,sense->serial_status_reg.rpe,
+                            sense->serial_status_reg.hdrrec,sense->serial_status_reg.cmdfor,
+                            sense->serial_status_reg.rnre1,sense->serial_status_reg.rnrg1,
+                            sense->serial_status_reg.snex,sense->serial_status_reg.hngd);
+    printf("                  sync=%d,losyn=%d,rerr=%d,derr=%d\n\n",sense->serial_status_reg.sync,
+                            sense->serial_status_reg.losyn,sense->serial_status_reg.rerr,
+                            sense->serial_status_reg.derr);
+    printf("                  Additional Sense Code=%d,slot=%d,crate=%d\n\n",sense->additional_sense_code,
+                              sense->slot_high_bit * 16 + sense->slot,sense->crate);
+    if (status == CamSERTRAERR)
+    {
+      printf("******************************************************************\n\n");
+    }
+  }
 	return status;
 }
 
