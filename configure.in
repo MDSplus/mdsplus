@@ -392,12 +392,14 @@ AC_MSG_CHECKING(for SYBASE open/client)
 : ${SYBASE=/usr/local/sybase}
 if test -r "$SYBASE/lib/libsybdb.a" 
 then 
-        SYBASE_INC="-I$SYBASE/include"
+        SYBASE_INC="-I$SYBASE/include -DSYBASE"
         SYBASE_LIB="-L$SYBASE/lib $LD_LDARC -lsybdb $LD_LDSHARE"
+	SYBASE="SYBASE"
         AC_MSG_RESULT(have sybase open/client)
 else
         SYBASE_INC=""
         SYBASE_LIB=""
+	SYBASE=""
         AC_MSG_RESULT(no sybase open/client)
 fi
 
@@ -425,6 +427,16 @@ then
 else
         IDLSQL=""
         AC_MSG_RESULT(missing at least one of idl and sql so no.)
+fi
+
+AC_MSG_CHECKING(if mdssql should be built)
+if test -n "$SYBASE_INC"
+then
+        MDSSQL="mdssql"
+        AC_MSG_RESULT(have sql so yes.)
+else
+        IDLSQL=""
+        AC_MSG_RESULT(missing sql so no.)
 fi
 
 AC_DEFINE_UNQUOTED(SHARELIB_TYPE,"${SHARETYPE}")
@@ -474,6 +486,7 @@ AC_SUBST(HUP_TO_XINETD)
 AC_SUBST(IDL_INC)
 AC_SUBST(IDL_LIB)
 AC_SUBST(IDLMDSEVENT)
+AC_SUBST(MDSSQL)
 AC_SUBST(IDLSQL)
 AC_SUBST(JAR)
 AC_SUBST(JAVAC)
@@ -536,6 +549,7 @@ cts/Makefile
 d3dshr/Makefile 
 dwscope/Makefile 
 idlmdsevent/Makefile
+mdssql/Makefile
 idlsql/Makefile
 javaclient/Makefile
 javadispatcher/Makefile
