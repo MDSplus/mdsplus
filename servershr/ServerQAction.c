@@ -529,10 +529,11 @@ static int StartThread()
     pthread_attr_t att;
     pthread_attr_init(&att);
     pthread_attr_setstacksize(&att,0xffffff);
-    pthread_attr_setdetachstate(&att,PTHREAD_CREATE_DETACHED);
 #ifdef __hpux
     status = pthread_create(&WorkerThread,att, Worker, 0);
+    pthread_detach(&WorkerThread);
 #else
+    pthread_attr_setdetachstate(&att,PTHREAD_CREATE_DETACHED);
     status = pthread_create(&WorkerThread,&att, Worker, 0);
 #endif
     if (status)
