@@ -1,4 +1,5 @@
-blic fun OPCRead(in _tag, out _val)
+Public fun OPCRead(in _tag, inout _val)
 {
-    return ( MdsOpcInterface->OPCRead:INT(_tag, xd(_val)) );
+    _status = MdsOpcClient->OPCRead( _tag, xd(_val) );
+    return ( _status );
 }
