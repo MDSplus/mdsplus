@@ -1200,14 +1200,16 @@ time_t LibCvtTim(int *time_in,double *t)
   double t_out;
   time_t bintim = time(&bintim);
 #ifndef HAVE_VXWORKS_H
-  tzset();
   if (time_in)
   {
     _int64 time_local;
     double time_d;
+    struct tm *tmval;
+    time_t dummy=0;
+    tmval = localtime(&dummy);
     memcpy(&time_local,time_in,sizeof(time_local));
     time_d = ((double)(time_local >> 24)) * 1.6777216 - 3.5067168e+09;
-    t_out = (time_d > 0 ? time_d : 0) + timezone - daylight * 3600;
+    t_out = (time_d > 0 ? time_d : 0) + timezone - daylight * (tmval->tm_isdst ? 3600 : 0);
     bintim = (long)t_out;
   }
   else
