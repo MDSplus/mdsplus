@@ -115,18 +115,15 @@ Widget XmdsCreatePath(Widget parent,String name,ArgList args,Cardinal argcount)
     nid = -1;
   if (nid != -1)
   {
-    static struct descriptor_d path_dsc = {0, DTYPE_T, CLASS_D, 0};
-    NCI_ITM nci[] = {{0, 0, (unsigned char *) &path_dsc, 0}, 
+    NCI_ITM nci[] = {{0, 0, 0, 0}, 
 		     {0, NciEND_OF_LIST, 0, 0}};
     int status;
     nci[0].code = (info.path_type == NciABSOLUTE_PATH) ? NciFULLPATH : NciMINPATH;
-    nci[0].pointer = (unsigned char *) &path_dsc;
     status = TreeGetNci(nid,nci);
     if (status & 1)
     {
-      static DESCRIPTOR(zero_dsc,"\0");
-      StrConcat(&path_dsc,&path_dsc,&zero_dsc MDS_END_ARG);
-      lab_args[0].value = (long) XmStringCreateSimple(path_dsc.pointer);
+      lab_args[0].value = (long) XmStringCreateSimple(nci[0].pointer);
+      TreeFree(nci[0].pointer);
     }
     else
       lab_args[0].value = (long) XmStringCreateSimple("Error getting path");
@@ -135,7 +132,7 @@ Widget XmdsCreatePath(Widget parent,String name,ArgList args,Cardinal argcount)
     lab_args[0].value = (long) XmStringCreateSimple("No node");
   merged_args = XtMergeArgLists(args,argcount,lab_args,XtNumber(lab_args));
   w = XmCreateLabel(parent,name,merged_args,XtNumber(lab_args) + argcount);
-  XtFree((char *)lab_args[0].value);
+  XmStringFree((XmString)lab_args[0].value);
   XtFree((char *)merged_args);
   return w;
 }
