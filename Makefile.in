@@ -85,7 +85,7 @@ install:
 	  cd $${dir}; make install; cd $$cdir;\
 	done
 	tar cf - $(MISC_PARTS) | (cd @exec_prefix@; tar xf -)
-	find @exec_prefix@/CVS -exec rm -R {} \;
+	find @exec_prefix@ -name CVS -exec rm -R {} \;
 	(cd @exec_prefix@; chmod -R 755 $(MISC_PARTS))
 
 BINARIES = bin etc lib uid \
