@@ -868,7 +868,7 @@ hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib -I\$(top_srcdir)/include
        LDARC="-Wl,-a archive";
        LINKSHARED="-b";
        SHARETYPE=".sl";;
-mips*) CFLAGS="$(CFLAGS) -I\$(top_srcdir)/include -cckr -signed -D_BSD_SIGNALS -KPIC";
+mips*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -cckr -signed -D_BSD_SIGNALS -KPIC";
        LDSHARE="-B dynamic ";
        LDARC="-B static ";
        LINKSHARED="-shared -rpath $(exec_prefix)/lib";
@@ -1050,9 +1050,9 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-echo $ac_n "checking for dn_skipname in -lresolv""... $ac_c" 1>&6
-echo "configure:1055: checking for dn_skipname in -lresolv" >&5
-ac_lib_var=`echo resolv'_'dn_skipname | sed 'y%./+-%__p_%'`
+echo $ac_n "checking for __dn_skipname in -lresolv""... $ac_c" 1>&6
+echo "configure:1055: checking for __dn_skipname in -lresolv" >&5
+ac_lib_var=`echo resolv'_'__dn_skipname | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1064,10 +1064,10 @@ cat > conftest.$ac_ext <<EOF
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char dn_skipname();
+char __dn_skipname();
 
 int main() {
-dn_skipname()
+__dn_skipname()
 ; return 0; }
 EOF
 if { (eval echo configure:1074: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then

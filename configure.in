@@ -21,7 +21,7 @@ hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib -I\$(top_srcdir)/include
        LDARC="-Wl,-a archive";
        LINKSHARED="-b";
        SHARETYPE=".sl";;
-mips*) CFLAGS="$(CFLAGS) -I\$(top_srcdir)/include -cckr -signed -D_BSD_SIGNALS -KPIC";
+mips*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -cckr -signed -D_BSD_SIGNALS -KPIC";
        LDSHARE="-B dynamic ";
        LDARC="-B static ";
        LINKSHARED="-shared -rpath $(exec_prefix)/lib";
@@ -81,7 +81,7 @@ dnl Checks for libraries.
 XM_LIBS="-lMrm -lXm"
 AC_CHECK_LIB(c,printf)
 AC_CHECK_LIB(m,pow)
-AC_CHECK_LIB(resolv,dn_skipname)
+AC_CHECK_LIB(resolv,__dn_skipname)
 AC_CHECK_LIB(dl,dlopen)
 AC_CHECK_LIB(dld,shl_load)
 AC_CHECK_LIB(nsl,main)
