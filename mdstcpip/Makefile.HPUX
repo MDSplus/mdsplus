@@ -1,0 +1,32 @@
+CFLAGS = -c +z -Ae +u1 -Wl,+b,. -Wl,+s -D__hpux__ -D_big_endian -I../include -I. -g 
+
+OBJECTS = \
+	mdsipshr.o
+
+all : .depend
+	make -f Makefile.HPUX -f .depend t
+
+t : t.c ../shlib/libMdsIpShr.sl
+	cc -o t t.c -L../shlib -lMdsIpShr
+
+../shlib/libMdsIpShr.so : $(OBJECTS) ../shlib
+	$(LD) -o $@ -b $(OBJECTS) -lc
+
+../shlib :
+	mkdir ../shlib
+
+clean :
+	- rm *.o
+	- rm so_locations
+	- rm ../shlib/libMdsIpShr.sl
+	- rm .depend
+	- rm t
+
+depend : .depend
+
+.depend :
+	- rm .depend
+	find *.c -exec cc $(CFLAGS) -P -Wp,-M {} 2> .depend \;
+	- rm *.i
+
+
