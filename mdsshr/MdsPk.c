@@ -35,19 +35,19 @@ static unsigned int masks[33] = {0,
 0x1ffffff, 0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff, 0xffffffff,};
 #include  <string.h>
 #include <mdsdescrip.h>
-#ifdef _big_endian
 static int SwapBytes(char *in_c)
 {
   int out;
   char *out_c = (char *)&out;
   int i;
+#ifdef _big_endian
   for (i=0;i<4;i++) out_c[i] = in_c[3-i];
+#else
+  for (i=0;i<4;i++) out_c[i] = in_c[i];
+#endif
   return out;
 }
 #define getppack SwapBytes((char *)ppack)
-#else
-#define getppack *ppack
-#endif
 
 void      MdsPk(char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int *bit_ptr)
 {
