@@ -1,6 +1,8 @@
 #ifndef __SERVERSHR
 #define __SERVERSHR
 
+#include <pthread.h>
+
 #define ServerNOT_DISPATCHED  0xfe18008
 #define ServerINVALID_DEPENDENCY  0xfe18012
 #define ServerCANT_HAPPEN  0xfe1801a
@@ -29,22 +31,19 @@ static struct stsText  servershr_stsText[] = {
 extern int ServerAbortServer( char *server, int *flush );
 extern int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table);
 extern int ServerCloseTrees( char *server );
-extern int ServerCreatePulse(int efn, char *server, char *tree, int shot,
-                        void (*ast)(), void *astprm, int *retstatus, int *netid, void (*link_down_handler)(),void (*before_ast)());
-extern int ServerDispatchAction(int efn, char *server, char *tree, int shot, int nid,
-                        void (*ast)(), void *astprm, int *retstatus, int *netid, void (*link_down_handler)(),
+extern int ServerCreatePulse(pthread_cond_t *efn, char *server, char *tree, int shot,
+                        void (*ast)(), void *astprm, int *retstatus, void (*before_ast)());
+extern int ServerDispatchAction(pthread_cond_t *efn, char *server, char *tree, int shot, int nid,
+                        void (*ast)(), void *astprm, int *retstatus, 
                         void (*before_ast)());
 extern int ServerDispatchClose(void *vtable);
-extern int ServerDispatchCommand(int efn, char *server, char *cli, char *command,
-                        void (*ast)(), void *astprm, int *retstatus, int *netid, void (*link_down)(), void (*before_ast)());
-extern int ServerSendMessage( int sendast, char *server, MsgType type, int length, char *msg, int *retstatus, 
-                         void (*ast)(), void *astparam, void (*before_ast)(), int *netid_return);
-extern int ServerSendReply(void *lid,int length,char *reply);
+extern int ServerDispatchCommand(pthread_cond_t *efn, char *server, char *cli, char *command,
+                        void (*ast)(), void *astprm, int *retstatus, void (*before_ast)());
 extern int ServerSetLinkDownHandler(void (*handler)());
 extern void ServerSetDetailProc(char *(*detail_proc)(int));
 extern char *(*ServerGetDetailProc())();
-extern int ServerDispatchPhase(int efn, void *vtable, char *phasenam, char *noact_in,
-                          int *sync, void (*output_rtn)(), char *monitor);
+extern int ServerDispatchPhase(pthread_cond_t *efn, void *vtable, char *phasenam, char noact_in,
+                          int sync, void (*output_rtn)(), char *monitor);
 extern int ServerFailedEssential(void *vtable,int reset);
 extern char *ServerFindServers(void **ctx, char *wild_match);
 extern int ServerMonitorCheckin(char *server, void (*ast)(), void *astparam, void (*link_down)());
