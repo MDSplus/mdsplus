@@ -276,8 +276,10 @@ extern void       _TreeDeleteNodeExecute(void *dbid)
     node->usage = 0;
     if (prevnode)
     {
+      int tmp;
       link_it(prevnode->parent, node, prevnode);
-      node->child = -prevnode->parent;
+      tmp = -swapint((char *)&prevnode->parent);
+      node->child = swapint((char *)&tmp);
     }
     else
     {
