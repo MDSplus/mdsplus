@@ -155,7 +155,7 @@ public class Node
             conglom = (ConglomData)experiment.getData(nid, Tree.context);
         } catch(Exception e) {
  		    JOptionPane.showMessageDialog(FrameRepository.frame, e.getMessage(), 
-		        "Error in device setup", JOptionPane.WARNING_MESSAGE);
+		        "Error in device setup 1", JOptionPane.WARNING_MESSAGE);
         }
         if(conglom != null)
         {
@@ -179,13 +179,14 @@ public class Node
                 }catch(Exception e)
                 {
  		            JOptionPane.showMessageDialog(FrameRepository.frame, e.getMessage(), 
-		                "Error in device setup", JOptionPane.WARNING_MESSAGE);
+		                "Error in device setup " + e, JOptionPane.WARNING_MESSAGE);
+		            e.printStackTrace();
 		            return;
                 }
             }
         }
  		JOptionPane.showMessageDialog(null, "Missing model in descriptor", 
-		        "Error in device setup", JOptionPane.WARNING_MESSAGE);
+		        "Error in device setup 3", JOptionPane.WARNING_MESSAGE);
     }
         
     public boolean isDefault()

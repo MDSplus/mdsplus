@@ -93,8 +93,6 @@ public class RFXPulseSetup extends DeviceSetup
 		}
 		getContentPane().add(deviceButtons1);
 		deviceButtons1.setBounds(120,240,336,40);
-		getContentPane().add(deviceTable1);
-		deviceTable1.setBounds(-36,216,203,83);
 		//}}
 	}
 
@@ -152,7 +150,6 @@ public class RFXPulseSetup extends DeviceSetup
 	DeviceField deviceField6 = new DeviceField();
 	DeviceField deviceField7 = new DeviceField();
 	DeviceButtons deviceButtons1 = new DeviceButtons();
-	DeviceTable deviceTable1 = new DeviceTable();
 	//}}
 
 }

@@ -874,10 +874,15 @@ class RFXTimingSetup extends DeviceSetup
         });
         jp.add(updateB);
         getContentPane().add(jp, "South");
-    }
+    
+		//{{INIT_CONTROLS
+		//}}
+	}
         
     
     
+	//{{DECLARE_CONTROLS
+	//}}
 }                         
         
 
