@@ -648,10 +648,11 @@ int descr (int *dtype, void *data, int *dim1, ...)
   dsc = descrs[next];
 
   dsc->dtype = *dtype;
-
+#ifdef __VMS
   if ((dsc->dtype == DTYPE_CSTRING) && (((struct descriptor *)data)->dtype == DTYPE_CSTRING))
     dsc->pointer = ((struct descriptor *)data)->pointer;
   else
+#endif
     dsc->pointer = (char *)data;
   dsc->length = dtype_length(dsc); /* must set length after dtype and data pointers are set */
 
