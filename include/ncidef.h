@@ -10,6 +10,10 @@
 #ifndef NCIDEF_H
 #define NCIDEF_H
 
+#ifndef _CONFIG_INCLUDED
+#include <config.h>
+#endif
+
 #define NciEND_OF_LIST          0
 #define NciSET_FLAGS            1
 #define NciCLEAR_FLAGS          2
