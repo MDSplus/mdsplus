@@ -32,7 +32,12 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             mds_server = new MdsServer(ip_address);
             mds_server.addMdsServerListener(this);
             mds_server.addConnectionListener(this);
-        }catch(Exception exc) {mds_server = null; }
+        }
+        catch(Exception exc)
+        {
+          System.out.println("Cannot connect to server " + ip_address + " server class " + server_class);
+          mds_server = null;
+        }
         timer = new javax.swing.Timer(0, new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {

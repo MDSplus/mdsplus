@@ -17,7 +17,7 @@ class jDispatcherIp extends MdsIp
         super(port);
         this.dispatcher = dispatcher;
         this.treeName = treeName;
-	System.out.println("Tree name per jDispatcherIp : "+treeName);
+	System.out.println("Tree name per jDispatcherIp : " + treeName);
         tree = new Database(treeName, -1);
     }
 
@@ -73,14 +73,6 @@ class jDispatcherIp extends MdsIp
             buf[1] = (byte)((ris >> 16)& 0xFF);
             buf[2] = (byte)((ris >> 8)& 0xFF);
             buf[3] = (byte)(ris& 0xFF);
-
-
-
-/*    public MdsMessage(byte descr_idx, byte dtype,
-                        byte nargs,
-                        int dims[],
-                        byte body[])
-  */
 
 
             MdsMessage msg =  new MdsMessage((byte)0, (byte)Data.DTYPE_L, (byte)0, new int[]{1}, buf);
@@ -236,6 +228,10 @@ class jDispatcherIp extends MdsIp
             System.out.println("Cannot read port");
             System.exit(0);
         }
+
+        jDispatcherIp dispatcherIp = new jDispatcherIp(port, dispatcher, treeName);
+        dispatcherIp.start();
+
         int i = 1;
         while(true)
         {
@@ -270,14 +266,13 @@ class jDispatcherIp extends MdsIp
             dispatcher.setDefaultServer(server);
         }catch(Exception exc){}
 
+/*
         jDispatcherIp dispatcherIp = new jDispatcherIp(port, dispatcher, treeName);
-
-        //dispatcherIp.incrementCurrentShot();
-        //int shot = dispatcherIp.getCurrentShot();
-
         dispatcherIp.start();
+*/
+
         try {
-        dispatcherIp.getListenThread().join();
+             dispatcherIp.getListenThread().join();
         } catch(InterruptedException exc){}
     }
 }

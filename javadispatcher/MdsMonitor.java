@@ -6,12 +6,12 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
 {
     Vector outstream_vect = new Vector();
     Vector msg_vect = new Vector();
-    
+
     public MdsMonitor(int port)
     {
         super(port);
 //        new Thread(this).start();
-        new Thread(new Runnable() 
+        new Thread(new Runnable()
         {
             public void run()
             {
@@ -19,13 +19,13 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
             }
          }).start();
     }
-    
-    
-    
+
+
+
     public MdsMessage handleMessage(MdsMessage [] messages)
     {
-        if(messages.length < 6 || messages[2].dtype != Descriptor.DTYPE_SHORT 
-            || messages[1].dtype != Descriptor.DTYPE_LONG)
+        if(messages.length < 6 || messages[2].dtype != Descriptor.DTYPE_SHORT
+            || messages[1].dtype != Descriptor.DTYPE_BYTE)
         {
             System.err.println("Unexpected message has been received by MdsMonitor");
         }
@@ -37,18 +37,18 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
                     +toShort(messages[1].body[2])+"."+toShort(messages[1].body[3]);
                 Socket sock = new Socket(addr, port);
                 outstream_vect.addElement(new BufferedOutputStream(sock.getOutputStream()));
-            }catch (Exception exc) {} 
+            }catch (Exception exc) {}
         }
         MdsMessage msg =  new MdsMessage((byte)0, Descriptor.DTYPE_LONG, (byte)0, null, Descriptor.dataToByteArray(new Integer(1)));
         msg.status = 1;
         return msg;
     }
-     
+
     private short toShort(byte b)
     {
         return (short)((short)b & (short)0x00ff);
     }
-         
+
     public void sendMessages()
     {
         while(true)
@@ -76,7 +76,7 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
             }catch(InterruptedException exc) {return; }
         }
     }
-                
+
     protected void communicate(MonitorEvent event, int mode)
     {
         try {
@@ -88,8 +88,8 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
             {
                 Action action = event.getAction();
                 mds_event = new MdsMonitorEvent(this, event.getTree(), event.getShot(),
-                    MdsHelper.toPhaseId(event.getPhase()), action.getNid(), 
-                    action.getName(), action.isOn()?1:0, mode, 
+                    MdsHelper.toPhaseId(event.getPhase()), action.getNid(),
+                    action.getName(), action.isOn()?1:0, mode,
                     ((DispatchData)(action.getAction().getDispatch())).getIdent().getString(),
                     action.getStatus());
             }
@@ -104,12 +104,12 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
     {
         communicate(event, jDispatcher.MONITOR_BUILD_BEGIN);
     }
-    
+
     public synchronized void build(MonitorEvent event)
     {
         communicate(event, jDispatcher.MONITOR_BUILD);
     }
-    
+
     public synchronized void buildEnd(MonitorEvent event)
     {
         communicate(event, jDispatcher.MONITOR_BUILD_END);

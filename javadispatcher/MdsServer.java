@@ -183,11 +183,12 @@ class MdsServer extends MdsConnection
 
     public  String getFullPath(String tree, int shot, int nid)
     {
-	    Vector args = new Vector();
-        args.add(new Descriptor(Descriptor.DTYPE_CSTRING, null, tree.getBytes()));
-        args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(shot))));
-        args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(nid))));
-	    Descriptor out = MdsServer.this.MdsValue("JavaGetFullPath", args);
+        Vector args = new Vector();
+
+        args.add(new Descriptor(null, tree));
+        args.add(new Descriptor(null, new int[]{shot}));
+        args.add(new Descriptor(null, new int[]{nid}));
+        Descriptor out = MdsServer.this.MdsValue("JavaGetFullPath", args);
         if(out.error != null)
             return "<Path evaluation error>";
         else
@@ -235,11 +236,19 @@ class MdsServer extends MdsConnection
         if(args == null)
             args = new Vector();
 
+/*
         args.add(0, new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(id))));
         args.add(0, new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(flags))));
         args.add(0, new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(op))));
         args.add(0, new Descriptor(Descriptor.DTYPE_SHORT,   null, Descriptor.dataToByteArray(new Short(rcv_port))));
         args.add(0, new Descriptor(Descriptor.DTYPE_LONG,    null, self_address));
+*/
+
+        args.add(0, new Descriptor(null, new int[]{id}));
+        args.add(0, new Descriptor(null, new int[]{flags}));
+        args.add(0, new Descriptor(null, new int[]{op}));
+        args.add(0, new Descriptor(null, new short[]{rcv_port}));
+        args.add(0, new Descriptor(null, self_address));
 
         Descriptor out;
         if(wait)
@@ -256,9 +265,11 @@ class MdsServer extends MdsConnection
     public Descriptor abort(boolean do_flush) throws IOException
     {
         Vector args = new Vector();
-        int flush;
-        flush = (do_flush)?1:0;
-        args.add(new Descriptor(Descriptor.DTYPE_LONG,  null, Descriptor.dataToByteArray(new Integer(flush))));
+
+        int flush[] = new int[1];
+        flush[0] = (do_flush)?1:0;
+        args.add(new Descriptor(null, flush));
+
         Descriptor reply = sendMessage(0, SrvAbort, args, true);
         return reply;
     }
@@ -272,8 +283,8 @@ class MdsServer extends MdsConnection
     public Descriptor createPulse(String tree, int shot) throws IOException
     {
         Vector args = new Vector();
-        args.add(new Descriptor(Descriptor.DTYPE_CSTRING, null, tree.getBytes()));
-        args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(shot))));
+        args.add(new Descriptor(null, tree));
+        args.add(new Descriptor(null, new int[]{rcv_port}));
         Descriptor reply = sendMessage(0, SrvCreatePulse, args, true);
         return reply;
     }
@@ -281,9 +292,9 @@ class MdsServer extends MdsConnection
     public Descriptor dispatchAction(String tree, int shot, int nid, int id) throws IOException
     {
         Vector args = new Vector();
-        args.add(new Descriptor(Descriptor.DTYPE_CSTRING, null, tree.getBytes()));
-        args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(shot))));
-        args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(nid))));
+        args.add(new Descriptor(null, tree));
+        args.add(new Descriptor(null, new int[]{shot}));
+        args.add(new Descriptor( null, new int[]{nid}));
         Descriptor reply = sendMessage(id, SrvAction, true, args, true);
         return reply;
     }
@@ -291,8 +302,8 @@ class MdsServer extends MdsConnection
     public Descriptor dispatchCommand(String cli, String command) throws IOException
     {
         Vector args = new Vector();
-        args.add(new Descriptor(Descriptor.DTYPE_CSTRING, null, cli.getBytes()));
-        args.add(new Descriptor(Descriptor.DTYPE_CSTRING, null, command.getBytes()));
+        args.add(new Descriptor(null, cli));
+        args.add(new Descriptor(null, command));
         Descriptor reply = sendMessage(0, SrvCommand, args, true);
         return reply;
     }
@@ -301,15 +312,13 @@ class MdsServer extends MdsConnection
     {
         String cmd = "";
         Vector args = new Vector();
-
-        args.add(new Descriptor(Descriptor.DTYPE_CSTRING, null, cmd.getBytes()));
-        args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(0))));
-        args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(0))));
-        args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(0))));
-        args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(0))));
-        args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(MdsMonitorEvent.MonitorCheckin))));
-        args.add(new Descriptor(Descriptor.DTYPE_CSTRING, null, cmd.getBytes()));
-        args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(0))));
+        args.add(new Descriptor(null, new int[]{0}));
+        args.add(new Descriptor(null, new int[]{0}));
+        args.add(new Descriptor(null, new int[]{0}));
+        args.add(new Descriptor(null, new int[]{0}));
+        args.add(new Descriptor(null, new int[]{MdsMonitorEvent.MonitorCheckin}));
+        args.add(new Descriptor(null, cmd));
+        args.add(new Descriptor(null,  new int[]{0}));
         Descriptor reply = sendMessage(0, SrvMonitor, args, true);
         return reply;
     }
@@ -319,7 +328,11 @@ class MdsServer extends MdsConnection
         byte data[] = new byte[1];
         data[0] = logging_mode;
         Vector args = new Vector();
-        args.add(new Descriptor(Descriptor.DTYPE_CHAR,    null, data));
+        /*
+        args.add(new Descriptor(Descriptor.DTYPE_CHAR,  null, data));
+        */
+        args.add(new Descriptor(null, data));
+
         Descriptor reply = sendMessage(0, SrvSetLogging, args, true);
         return reply;
     }
