@@ -5,7 +5,7 @@
 #include <mds_stdarg.h>
 #include <string.h>
 #include <stdlib.h>
-#include "LocalProvider.h"
+#include "LocalDataProvider.h"
 #include "MdsHelper.h"
 extern int TdiCompile(), TdiData(), TdiFloat();
 static char error_message[512];
@@ -300,7 +300,7 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
 /* Implementation of the native methods for LocalProvider class in jScope */
 
 
-JNIEXPORT void JNICALL Java_LocalProvider_Update(JNIEnv *env, jobject obj, jstring exp, jint shot)
+JNIEXPORT void JNICALL Java_LocalDataProvider_Update(JNIEnv *env, jobject obj, jstring exp, jint shot)
 {
     const char *exp_char;
     error_message[0] = 0;
@@ -310,7 +310,7 @@ JNIEXPORT void JNICALL Java_LocalProvider_Update(JNIEnv *env, jobject obj, jstri
     (*env)->ReleaseStringUTFChars(env, exp, exp_char);
 } 
 
-JNIEXPORT jstring JNICALL Java_LocalProvider_ErrorString(JNIEnv *env, jobject obj)
+JNIEXPORT jstring JNICALL Java_LocalDataProvider_ErrorString(JNIEnv *env, jobject obj)
 {
 
     if(!error_message[0])
@@ -318,7 +318,7 @@ JNIEXPORT jstring JNICALL Java_LocalProvider_ErrorString(JNIEnv *env, jobject ob
     return (*env)->NewStringUTF(env, error_message);
 }  
 
-JNIEXPORT jstring JNICALL Java_LocalProvider_GetString(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jstring JNICALL Java_LocalDataProvider_GetString(JNIEnv *env, jobject obj, jstring in)
 {
     const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
     char *out_char = MdsGetString((char *)in_char);
@@ -332,7 +332,7 @@ JNIEXPORT jstring JNICALL Java_LocalProvider_GetString(JNIEnv *env, jobject obj,
 
 
 
-JNIEXPORT jfloatArray JNICALL Java_LocalProvider_GetFloatArrayNative(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jfloatArray JNICALL Java_LocalDataProvider_GetFloatArrayNative(JNIEnv *env, jobject obj, jstring in)
 {
     jfloatArray jarr;
     float zero = 0.;
@@ -354,7 +354,7 @@ JNIEXPORT jfloatArray JNICALL Java_LocalProvider_GetFloatArrayNative(JNIEnv *env
     return jarr;
 }
 
-JNIEXPORT jintArray JNICALL Java_LocalProvider_GetIntArray(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jintArray JNICALL Java_LocalDataProvider_GetIntArray(JNIEnv *env, jobject obj, jstring in)
 {
     jintArray jarr;
     float zero = 0.;
@@ -376,7 +376,7 @@ JNIEXPORT jintArray JNICALL Java_LocalProvider_GetIntArray(JNIEnv *env, jobject 
     return jarr;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_LocalProvider_GetByteArray(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jbyteArray JNICALL Java_LocalDataProvider_GetByteArray(JNIEnv *env, jobject obj, jstring in)
 {
     jbyteArray jarr;
     float zero = 0.;
@@ -401,7 +401,7 @@ JNIEXPORT jbyteArray JNICALL Java_LocalProvider_GetByteArray(JNIEnv *env, jobjec
 }
 
 
-JNIEXPORT jfloat JNICALL Java_LocalProvider_GetFloat(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jfloat JNICALL Java_LocalDataProvider_GetFloat(JNIEnv *env, jobject obj, jstring in)
 {
     float ris;
     const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
@@ -412,7 +412,7 @@ JNIEXPORT jfloat JNICALL Java_LocalProvider_GetFloat(JNIEnv *env, jobject obj, j
 }
 
 
-JNIEXPORT void JNICALL Java_LocalProvider_SetEnvironment(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT void JNICALL Java_LocalDataProvider_SetEnvironment(JNIEnv *env, jobject obj, jstring in)
 {
 	int status;
     const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
@@ -451,28 +451,22 @@ static jobject jobjects[1024];
 void createWindow(char *name, int idx)
 {
 	JavaVM *jvm;
+	JDK1_1InitArgs vm_args;
 	jint res;
 	jclass cls;
 	jmethodID mid;
 	jstring jstr;
 	char classpath[2048], *curr_classpath;
 
-	JavaVMInitArgs vm_args;
-        JavaVMOption options[1];
-
 	if(env == 0) /* Java virtual machine does not exist yet */
 	{
-		vm_args.version = JNI_VERSION_1_2;
-		vm_args.options = options;
-		vm_args.nOptions = 1;
-		vm_args.ignoreUnrecognized = 1;
-
-
+		vm_args.version = 0x00010001;
+		JNI_GetDefaultJavaVMInitArgs(&vm_args);
 		curr_classpath = getenv("CLASSPATH");
 		if(curr_classpath)
 		{
-			sprintf(classpath, "-Djava.class.path=%s", curr_classpath);
-			options[0].optionString = classpath;
+			sprintf(classpath, "%s%c%s", vm_args.classpath, PATH_SEPARATOR, curr_classpath);
+			vm_args.classpath = classpath;
 		}
 		res = JNI_CreateJavaVM(&jvm, (void **)&env, &vm_args);
 		if(res < 0)
