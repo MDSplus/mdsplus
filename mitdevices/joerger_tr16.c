@@ -123,6 +123,7 @@ int joerger_tr16___store(struct descriptor *niddsc_ptr, InStoreStruct *setup)
   int chan;
   int samples_to_read;
   int i;
+  int ret_status = 1;
   
   static F0A0 f0a0 = {0,0,0};
   static F0A1 f0a1 = {0,0,0};
@@ -182,14 +183,18 @@ int joerger_tr16___store(struct descriptor *niddsc_ptr, InStoreStruct *setup)
             if (tries > 0) {
               printf("TR16 read channel %d in %d tries\n", chan+1, tries);
             }
+            if (!(put_status & 1) && (ret_status & 1))
+              ret_status = put_status;
           }
         }
+        if (!(status & 1) && (ret_status & 1))
+          ret_status = status;
 	status = 1;
       }
     }
   }
   free(channel_data);
-  return put_status;
+  return ret_status;
 }
 
 #undef return_on_error
