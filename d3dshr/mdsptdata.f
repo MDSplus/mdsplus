@@ -464,7 +464,8 @@ c	implicit none
 	integer shot
 	character pointname*10
 	integer*4 ier
-	character*(*) apass
+c	character*(*) apass
+	character apass*512
 
 	IARRAY.NREQ  = 0
 
