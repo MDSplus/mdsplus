@@ -268,7 +268,8 @@ int 	rblob;
 	}
 	else 
 		for (j = 0; j < ncol; ++j, ++used) { 
-			if (rows < 0) { 	/*		dst = (struct descriptor *)(used + j > arg->c ? 0 : *(argv+used)); // should'nt it be used > arg-> c ? */
+			if (rows < 0) {
+ 	/*		dst = (struct descriptor *)(used + j > arg->c ? 0 : *(argv+used)); // should'nt it be used > arg-> c ? */
 				dst = (struct descriptor *)(used  > arg->c ? 0 : *(argv+used)); /* // should'nt it be used > arg-> c ? */
 				while (dst && dst->dtype == DTYPE_DSC) dst = (struct descriptor *)dst->pointer;
 				if (dst == 0) { /* // && (rblob || (pda->SQLTYPE & ~1) != SQL_TYPE_SEGMENT_ID)) { */
@@ -294,7 +295,7 @@ int 	rblob;
 					bufs[j].len = SYB_dbdatlen(dbproc, j+1);
 				}
 				/*
-				//if (rows == -1) status = TdiPutIdent(dst, &tmp);
+				   if (rows == -1) status = TdiPutIdent(dst, &tmp);
 				*/
 /*
 				len = SYB_dbdatlen(dbproc, j+1);
@@ -476,7 +477,7 @@ ARGLIST 	*arg;
     case '?' : ++pin;		/* parameter marker */
       ++*nmarks;
       if (used >= arg->c) {
-	/* //	sprintf(hold, "Expect >= %d parameters, %d given.", arg->used, arg->c); */
+	/*   sprintf(hold, "Expect >= %d parameters, %d given.", arg->used, arg->c); */
 	return TdiMISS_ARG;
       }
       if (argv
