@@ -86,6 +86,10 @@ int MDSEventCan(int eventid)
 	return 0;
 }
 
+int MDSWfevent(char *evname, int *data_len, char **data)
+{
+}
+
 int MDSEvent(char *evname, int data_len, char *data)
 {
 	HANDLE handle = OpenEvent(EVENT_ALL_ACCESS,0,evname);
@@ -416,6 +420,14 @@ static int readMessage(char *event_name, int *data_len, char *data)
 }
 
 
+#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
+#define pthread_attr_default NULL
+#define pthread_mutexattr_default NULL
+#define pthread_condattr_default NULL
+#else
+#undef select
+#endif
+
 static void setHandle()
 {
    pthread_t thread;
@@ -424,14 +436,6 @@ static void setHandle()
 	/* get first unused message queue id */
 	while((msgId = msgget(msgKey, 0777 | IPC_CREAT | IPC_EXCL)) == -1)
 	    msgKey++;
-
-#ifdef _DECTHREADS_
-#if _DECTHREADS_ != 1
-#define pthread_attr_default NULL
-#endif
-#else
-#define pthread_attr_default NULL
-#endif
 
 	if(pthread_create(&thread, pthread_attr_default, handleMessage, 0) !=  0)
 	    perror("pthread_create");
@@ -985,6 +989,37 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
     return status;
 }
 
+struct wfevent_thread_cond { pthread_mutex_t  mutex;
+                             pthread_cond_t cond;
+                             char **data;
+                             int *len;
+};
+
+
+static void EventHappened(void *astprm, int len, char *data)
+{
+  struct wfevent_thread_cond *t = (struct wfevent_thread_cond *)astprm;
+  if (t->data) *t->data = memcpy(malloc(len),data,len);
+  if (t->len) *t->len = len;
+  pthread_mutex_lock(&t->mutex);
+  pthread_cond_signal(&t->cond);
+  pthread_mutex_unlock(&t->mutex);
+}
+
+int MDSWfevent(char *evname, int *data_len, char **data)
+{
+    int eventid=-1;
+    struct wfevent_thread_cond t;
+    pthread_mutex_init(&t.mutex,pthread_mutexattr_default);
+    pthread_cond_init(&t.cond,pthread_condattr_default);
+    t.len = data_len;
+    t.data = data;
+    MDSEventAst(evname, EventHappened, &t, &eventid);
+    pthread_cond_wait(&t.cond,&t.mutex);
+    pthread_cond_destroy(&t.cond);
+    pthread_mutex_destroy(&t.mutex);
+    return(1);
+}
 
 int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 {
