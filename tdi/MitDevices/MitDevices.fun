@@ -55,6 +55,7 @@ FUN  PUBLIC MITDEVICES() {
 	'L8590_SCLR\0',	 'MitDevices\0',		
 	'L8818\0',	 'MitDevices\0',		
 	'L8828\0',	 'MitDevices\0',		
+	'MATROX\0',	 '\0',		
 	'MDSDCL\0',	 'MitDevices\0',		
 	'MIT_CLOCK\0',	 'MitDevices\0',		
 	'MIT_DCLOCK\0',	 'MitDevices\0',		
