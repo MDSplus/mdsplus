@@ -543,7 +543,7 @@ public class T2ControlSetup extends DeviceSetup
 		}
 		deviceChoice3.setLabelString("Map:");
 		deviceChoice3.setConvert(true);
-		deviceChoice3.setChoiceIntValues(new int[] {});
+		deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3});
 		getContentPane().add(deviceChoice3);
 		deviceChoice3.setBounds(480,204,228,40);
 		//}}
