@@ -26,6 +26,13 @@ public fun dc1394__init(as_is _nid, optional in _method)
   _FRAME_RATES = make_signal(32 : 37 : 1, *, [1.875, 3.75, 7.5, 15, 30., 60.]);
 
 
+  _debug_str=if_error(text(DevNodeRef(_nid, _DC1394_COMMENT)), "DEBUG=0");
+  write(*, _debug_str);
+  if (extract(0, 6, _debug_str) == "DEBUG=") {
+    _debug = compile(extract(6,1,_debug_str));
+  } else {
+    _debug = 0;
+  }
   _max_frames = if_error(DevNodeRef(_nid, _DC1394_MAX_FRAMES), 2);
   _camera_no = if_error(DevNodeRef(_nid, _DC1394_CAMERA_NO), 0);
   _width = if_error(DevNodeRef(_nid, _DC1394_WIDTH), 640);
@@ -45,7 +52,7 @@ public fun dc1394__init(as_is _nid, optional in _method)
 
   _trig_on = if_error(DevNodeRef(_nid, _DC1394_TRIG_ON), 0);
 
-  _status = libdc1394_support->dc1394Init(val(_camera_no), val(_width), val(_height), val(_max_frames), val(_trig_mode), val(_shutter), val(_gain), val(_trig_on), val(_iso_speed), val(_frame_rate));
+  _status = libdc1394_support->dc1394Init(val(_camera_no), val(_width), val(_height), val(_max_frames), val(_trig_mode), val(_shutter), val(_gain), val(_trig_on), val(_iso_speed), val(_frame_rate), val(_debug));
 
   return(_status);
 } 
