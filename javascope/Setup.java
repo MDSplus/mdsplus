@@ -89,14 +89,63 @@ public class Setup extends Object implements WaveSetup {
 	        waves[i].SetMode(pointer_mode);	
     }
 
+    public  void SetErrorTitle(MultiWaveform w)
+    {
+        int n_error = 0;
+
+		if(w.wi != null)
+		{
+            if(w.wi.num_waves == 0)
+            {
+			    if(w.wi.error != null)
+			        w.SetTitle(jScope.GetFirstLine(w.wi.error));
+                    return;
+		        }
+		        for(int ii = 0; ii < w.wi.num_waves; ii++)
+		        {		                
+			        if(w.wi.w_error[ii] != null)
+			            n_error++;
+			                
+			    }
+			    if(w.wi.error == null &&  n_error > 1 && n_error == w.wi.num_waves)
+			    {
+			        w.SetTitle("Evaluation error on all signals");
+			    } else {
+			        if(w.wi.error != null)
+			            w.SetTitle(w.wi.error);
+			        else {
+			            if(n_error == 1 && w.wi.num_waves == 1) {
+			                w.SetTitle(jScope.GetFirstLine(w.wi.w_error[0]));
+			             } else
+			                if(n_error > 0)
+			                    w.SetTitle("< Evaluation error on " + n_error + " signals >");
+			       }    
+              }
+		 }
+    }
+
+    public void SetAllErrorTitle()
+    {
+            
+	    for(int i = 0, k = 0; i < 4; i++)
+	    {
+		    for(int j = 0, n_error; j < rows[i]; j++, k++) 
+		    {
+		        SetErrorTitle(waves[k]);
+		    }
+	    }
+    }
+
+
     public void RemoveSelection()
     {
-	for(int i = 0; i < waves.length; i++)
-	    if(waves[i].IsSelected()) 
-	    {
-		main_scope.wi_source = null;
-		waves[i].SetSelected(false);
-	    } 		
+	    for(int i = 0; i < waves.length; i++)
+	        if(waves[i].IsSelected()) 
+	        {
+		        main_scope.wi_source = null;
+		        waves[i].SetSelected(false);
+		        break;
+	        } 		
     }
         
         
@@ -208,8 +257,9 @@ public class Setup extends Object implements WaveSetup {
     }
     
     public void NotifyChange(Waveform dest, Waveform source)    
-    {
+    {       
 	  ((MultiWaveform)dest).wi = new WaveInterface(main_scope.wi_source);
+	  ((MultiWaveform)dest).wi.SetDataProvider(main_scope.db);
 	  Refresh(dest, "");
     }
    
@@ -231,7 +281,7 @@ public class Setup extends Object implements WaveSetup {
 	{
 	    wi.StartEvaluate();
 	    if(wi.error == null)
-		wi.EvaluateOthers();
+		    wi.EvaluateOthers();
 	}
 	wave.Update(wi);
 	wi.modified = (wi.error != null);
@@ -254,16 +304,31 @@ public class Setup extends Object implements WaveSetup {
     
     public void UpdatePoints(double x, Waveform curr_w)
     {
-	for(int i = 0; i < num_waves; i++)
-	    if(waves[i] != curr_w)
-		waves[i].UpdatePoint(x);
+        int i = 0, ii;
+        int idx = GetWaveIndex(curr_w);
+        
+        for(i = 0, ii = 0; i < 4; i++)
+        {
+            if(idx < ii + rows[i])
+                break;
+            ii += rows[i];
+        }
+        
+        i = 0;
+		while(i < num_waves)
+		{
+            if(ii != idx)
+		        waves[ii].UpdatePoint(x);
+		    ii = (ii+1)%num_waves;
+		    i++;
+		}
     }
     
     public void AutoscaleAll()
     {
 	for(int i = 0; i < num_waves; i++) {
 	    waves[i].Autoscale();
-	    waves[i].repaint();
+//	    waves[i].repaint();
 	}
     }
 
@@ -318,15 +383,63 @@ public class Setup extends Object implements WaveSetup {
 	    main_scope.SetStatusLabel("Refresh wave row " + p.x + " column " + p.y + label);
 	    //main_scope.updateMainShot();
 	    main_scope.setup_default.updateDefaultWI(((MultiWaveform)w).wi);
+        main_scope.updateMainShot();	    
 	    main_scope.updateShotWI(((MultiWaveform)w).wi);
 	    if(((MultiWaveform)w).wi != null)
 	        ((MultiWaveform)w).wi.modified = true; 
-	    UpdateWave((MultiWaveform)w);
-	    
-	    WaveCheckError(GetWaveIndex(w));
+	    UpdateWave((MultiWaveform)w);	    
+	    //WaveCheckError(GetWaveIndex(w));
+	    SetErrorTitle(((MultiWaveform)w));
 	    main_scope.SetStatusLabel("Wave row " + p.x + " column "+ p.y + " refreshed");	    
 	    w.SetMode(main_scope.wave_mode);
     }    
+    
+    public void RemovePanel(Waveform w)
+    {
+        Point p = GetWavePos(w);
+        MultiWaveform _waves[] = new MultiWaveform[num_waves - 1];
+        int new_rows[] = new int[4];
+        
+        for(int i = 0, k = 0, kk = 0; i < 4; i++) {
+            new_rows[i] = rows[i]; 
+            for(int j = 0; j < rows[i]; j++, kk++) {
+                if(i == p.x-1 && j == p.y-1)
+                {
+                    if(waves[kk] == sel_wave)
+                        sel_wave = null;
+                    if(waves[kk].IsSelected())
+                    {
+                        main_scope.wi_source = null;
+		                waves[kk].SetSelected(false);
+		            }
+                    new_rows[i]--;
+                    continue;
+                }
+                 _waves[k] = waves[kk];
+                 k++;
+            }
+        }
+	    columns = 0;
+	    
+	    for(int i=0; i < 4; i++) {
+	        if(new_rows[i] != 0)
+	            columns = i + 1;
+	        else
+	            if(i < 3 && new_rows[i+1] != 0)
+	            {
+	                columns = i + 1;
+	                new_rows[i] = new_rows[i+1];
+	                new_rows[i+1] = 0;	                
+	            }
+            	        
+	    }
+
+	    prec_rows = rows;
+	    rows = new_rows;
+        waves = _waves;
+        num_waves--;
+        main_scope.draw_pan.updateWavePanel();    
+    }
     
     public void ChangeRowColumn(int _row[])
     {
@@ -342,11 +455,11 @@ public class Setup extends Object implements WaveSetup {
     
     public int GetNumWave()
     {
-	int n_wave = 0;
+	    int n_wave = 0;
     
-	for(int i = 0; i < 4; i++)
-	    n_wave += rows[i];
-	return n_wave;
+	    for(int i = 0; i < 4; i++)
+	        n_wave += rows[i];
+	    return n_wave;
     } 
     
     public void SaveAsText(MultiWaveform w)
@@ -509,29 +622,32 @@ public class Setup extends Object implements WaveSetup {
     
     public void updateHeight()
     {
-	float height = 1.F;
+	    float height = 1.F;
+        Dimension d = waves[0].getMinimumSize();
 	
-	height_percent = new float[waves.length];
+	    height_percent = new float[waves.length];
     
     	for(int i=0; i < rows[0]; i++)
-	    height += waves[i].wi.height;
+	        height += waves[i].wi.height;
       
-	for(int j = 0, k = 0; j < columns; j++)
-	    for(int i = 0; i < rows[j]; i++, k++) {
-		if( waves[k].wi.height < RowColumnLayout.MIN_SIZE) {
-		    k -= i;
-		    for(i = 0; i < rows[j]; i++)
-			height_percent[k++] = (float)1./rows[j];			
-		    break;
-		}
-	        height_percent[k] = (float)(waves[k].wi.height/height);
-	    }
-     }
+	    for(int j = 0, k = 0; j < columns; j++)
+	        for(int i = 0; i < rows[j]; i++, k++)
+	        {
+		        if( waves[k].wi.height < d.height)//RowColumnLayout.MIN_SIZE_H)
+		        {
+		            k -= i;
+		            for(i = 0; i < rows[j]; i++)
+			            height_percent[k++] = (float)1./rows[j];			
+		            break;
+		        }
+	            height_percent[k] = (float)(waves[k].wi.height/height);
+	        }
+    }
 
 
     public void toFile(String conf_file, boolean is_html)    
     {
-	    MultiWaveform w[] = main_scope.setup.waves;
+	    MultiWaveform w[] = waves;//main_scope.setup.waves;
 	    int wc_idx, height_w[] = new int[4];
 	    File f;
 	
@@ -631,7 +747,7 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	MenuItem setup, autoscale, autoscaleY, autoscaleAll, autoscaleAllY,
 		 allSameScale, allSameXScale, allSameXScaleAutoY, allSameYScale,
 		 resetScales, resetAllScales, refresh, saveAsText, selectWave,
-		 legend, remove_legend;
+		 legend, remove_legend, remove_panel;
 	Menu signalList, markerList, colorList, markerStep;
 	CheckboxMenuItem interpolate_f;
 	SetupDataDialog sd;
@@ -653,6 +769,10 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	add(remove_legend = new MenuItem("Remove legend"));
 	remove_legend.setEnabled(false);
 	remove_legend.addActionListener(this);
+	add(remove_panel = new MenuItem("Remove panel"));
+	remove_panel.setEnabled(false);
+	remove_panel.addActionListener(this);
+	
 	add(new MenuItem("-"));
 	add(signalList = new Menu("Signals"));
 	signalList.setEnabled(false);	
@@ -733,6 +853,7 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
         else
             selectWave.setLabel("Select wave panel");
 
+        remove_panel.setEnabled(controller.waves.length > 1);
         
         signalList.removeAll();
         if(w.wi != null && w.wi.num_waves != 0)
@@ -819,17 +940,17 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
     if(target == (Object)autoscale)
 	{
 	    wave.Autoscale();
-	    wave.repaint();
+//	    wave.repaint();
 	}
 	if(target == (Object)autoscaleY)
 	{
 	    wave.AutoscaleY();
-	    wave.repaint();
+//	    wave.repaint();
 	}
 	if(target == (Object)autoscale)
 	{
 	    wave.Autoscale();
-	    wave.repaint();
+//	    wave.repaint();
 	}
 	if(target == (Object)autoscaleAll)
 	{
@@ -858,7 +979,7 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	if(target == (Object)resetScales)
 	{
 	    wave.ResetScales();	
-	    wave.repaint();
+//	    wave.repaint();
 	}
 	if(target == (Object)resetAllScales)
 	{
@@ -902,6 +1023,12 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	    wave.RemoveLegend();
 	    remove_legend.setEnabled(false);
 	}
+
+	if(target == remove_panel)
+	{
+	    controller.RemovePanel(wave);
+	}
+       
        
     }
     
@@ -924,7 +1051,8 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	        {
 	            wave.wi.setWaveState(((CheckboxMenuItem)target).getLabel(), 
 	                         ((CheckboxMenuItem)target).getState());
-	            wave.Repaint();
+	            controller.Refresh(wave, "");
+	            //wave.Repaint();
 	        }
 	        
 	        if(parent == markerList)

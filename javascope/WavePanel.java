@@ -29,6 +29,7 @@ class WavePanel extends Panel implements  Printable, MouseMotionListener, MouseL
 	{
 	    Rectangle d = getBounds();
 	    g.draw3DRect(0, 0, d.width-1, d.height-1, true);
+	    g.dispose();
 	}
 	public void print(Graphics g)
 	{
@@ -39,10 +40,10 @@ class WavePanel extends Panel implements  Printable, MouseMotionListener, MouseL
     }
 
 
-   WavePanel(Setup _setup)
+   WavePanel(Setup _setup, DataProvider dp)
    {
       setup = _setup;
-      createWavePanel();   
+      createWavePanel(dp);   
    }
    
    
@@ -73,7 +74,7 @@ class WavePanel extends Panel implements  Printable, MouseMotionListener, MouseL
    }
    
      
-   public void createWavePanel() {
+   public void createWavePanel(DataProvider dp) {
         
       int i, j, k, kk, new_num_waves = 0;
       MultiWaveform[] new_waves;
@@ -109,6 +110,7 @@ class WavePanel extends Panel implements  Printable, MouseMotionListener, MouseL
            if(setup.waves == null || j >= setup.prec_rows[i] ||
 				 setup.waves.length <= kk + j || setup.waves[kk + j] == null) {
 	            wave = new MultiWaveform(setup);
+	            wave.wi = new WaveInterface(dp);
            } else {
 	            wave = setup.waves[kk + j];
            } 
@@ -121,6 +123,7 @@ class WavePanel extends Panel implements  Printable, MouseMotionListener, MouseL
 
      setup.num_waves     = new_num_waves;
      setup.waves         = new_waves;
+     System.gc();
      validate();
   }
   
@@ -258,7 +261,10 @@ class WavePanel extends Panel implements  Printable, MouseMotionListener, MouseL
      if(ob instanceof Canvas)
      {
 	    if((m_button & MouseEvent.BUTTON2_MASK) == MouseEvent.BUTTON2_MASK)
-	        row_col_layout.resizeRowColumn(ob);		
+	    {
+	        row_col_layout.resizeRowColumn(ob);
+	    }
+	   
      }
      
   }
@@ -266,9 +272,13 @@ class WavePanel extends Panel implements  Printable, MouseMotionListener, MouseL
   public  void mouseExited(MouseEvent e)
     {}
   public void mouseMoved(MouseEvent e)
-    {}    
-  public  void mouseDragged(MouseEvent e)
     {}
+    
+  public  void mouseDragged(MouseEvent e)
+    {
+        Component ob = e.getComponent();
+        row_col_layout.drawResize(ob, e.getPoint().x, e.getPoint().y);
+    }
   public void mouseEntered(MouseEvent e)
     {}
   public  void mousePressed(MouseEvent e)    

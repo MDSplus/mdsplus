@@ -773,9 +773,12 @@ public class Waveform extends Canvas
     public static final int NONE = 0, SQUARE = 1, CIRCLE = 2, CROSS = 3,
 	TRIANGLE = 4, POINT = 5, MARKER_WIDTH = 8;		
     public static final int MODE_ZOOM = 1, MODE_POINT = 2, MODE_PAN = 3, 
-	MODE_COPY = 4, MODE_WAIT = 5;
+	MODE_COPY = 4, MODE_WAIT = 5, MODE_RESIZE_Y = 6;
+	private static final int MIN_W = 10, MIN_H = 10;
+	private static final int MIN_W_S = 50, MIN_H_S = 30;
     Cursor def_cursor;
     boolean is_select;
+    static Font font = null;
 
     static float dashes_ps[];
     static int num_dashes_ps;
@@ -871,12 +874,15 @@ public class Waveform extends Canvas
 	     return out;
     }	
     
-    static Font font = null;
     public void SetFont(Font f)
     {
         font = f;
     }
-  
+
+    public Dimension getMinimumSize()
+    {
+        return new Dimension(MIN_W, MIN_H);
+    }
     
    
     private void setMouse()
@@ -926,7 +932,7 @@ public class Waveform extends Canvas
 	                    }   
 	                    else {
 	                        show_measure = false; 
-	                        not_drawn = true;
+	                        //not_drawn = true;
 	                    }
 	                    
 	                }
@@ -998,7 +1004,8 @@ public class Waveform extends Canvas
 	            }
 	            curr_rect = null;
 	            prev_point_x = prev_point_y = -1;
-	            repaint();
+	            //repaint();
+	            paint(getGraphics());//Cesare prova 
 	            dragging = false;
             }
         });
@@ -1153,7 +1160,7 @@ public class Waveform extends Canvas
 	wm = null;
 	grid = null;
 	not_drawn = true;
-	repaint();
+	//repaint();
 
     }
 
@@ -1235,20 +1242,52 @@ public class Waveform extends Canvas
     {
     }
 
+
+    int resize_x = 0;
+    int resize_y = 0;
+    int resize_line = 0;
+    int resize_space = 0;
+    public void DrawYResize(int y, int n_line, int space)
+    {
+        Graphics g = getGraphics();
+        resize_y = y;
+        resize_line = n_line;
+        resize_space = space;
+        paint(g);
+        resize_y = 0;
+        g.dispose();
+    }
+
+    public void DrawXResize(int x)
+    {
+        Graphics g = getGraphics();
+        resize_x = x;
+        paint(g);
+        resize_x = 0;
+        g.dispose();
+    }
+
+
     synchronized public void paint(Graphics g, Dimension d, boolean print_flag)
     {
 
 	Float fc_x, fc_y;
 	int idx, plot_y;
-	//Dimension d = getSize();
-	Graphics g1;
+	Dimension d1 = getSize();
+	//Graphics g1;
 	double curr_x, curr_y, xmax = 1, ymax = 1, xmin = 0, ymin = 0;
+    boolean is_min_size = false;
 
     execute_print = print_flag;
+    
     if(not_drawn || prev_width != d.width 
 		|| prev_height!= d.height || print_flag)
 	{
 	    not_drawn = false;
+
+	    if(d.width < MIN_W + MIN_W_S || d.height < MIN_H + MIN_H_S)
+            is_min_size = true;
+
 	    if(!print_flag) 
 	        g.clipRect(0, 0, d.width, d.height);
 	        
@@ -1271,6 +1310,8 @@ public class Waveform extends Canvas
 	        off_graphics = off_image.getGraphics();
 	    } else
 	        off_graphics = g;
+
+
 	    
 	    if(!resizing) // If new Grid and WaveformMatrics have not been computed before
 	    {
@@ -1295,8 +1336,10 @@ public class Waveform extends Canvas
 	    off_graphics.setColor(Color.black);
 	    if( !(print_flag && grid_mode == Grid.IS_NONE) )
 	        off_graphics.drawRect(0, 0, d.width - 1, d.height - 1);
+    
+        if(!is_min_size)
+	        grid.paint(off_graphics, d, this, wm);
 
-	    grid.paint(off_graphics, d, this, wm);
 	    if(waveform_signal != null)
 	    {
 	        wave_b_box = new Rectangle(wm.XPixel(MinXSignal(), d),
@@ -1310,23 +1353,25 @@ public class Waveform extends Canvas
 		            d.width - curr_display_limits.width, d.height - curr_display_limits.height);
     	    //DrawSignal(off_graphics);
     	    DrawSignal(off_graphics, d);
-    	    if(make_legend) {
-    	        Point p = new Point();
-    	        if(legend_x == -1 || ((mode == MODE_ZOOM || mode == MODE_PAN)
+	    }
+    	if(make_legend && !is_min_size) {
+    	    Point p = new Point();
+    	    if(legend_x == -1 || ((mode == MODE_ZOOM || mode == MODE_PAN)
     	                               && prev_width == d.width 
 		                               && prev_height == d.height) && !print_flag)
     	           initLegendPos();
-                p.x = wm.XPixel(legend_x, d);
-                p.y = wm.YPixel(legend_y, d);
-    	        DrawLegend(off_graphics, p);
-    	    }
-	    }
+            p.x = wm.XPixel(legend_x, d);
+            p.y = wm.YPixel(legend_y, d);
+    	    DrawLegend(off_graphics, p);
+    	}
+	    
+  
         if(!print_flag)
 	        off_graphics.clipRect(0, 0, d.width, d.height);
 	        
 	    prev_width = d.width;
 	    prev_height = d.height;
-	    
+	    System.gc();
 	} 
 	
 	if(print_flag) {
@@ -1335,9 +1380,14 @@ public class Waveform extends Canvas
 	    return;
 	}
 	
-	if(!(mode == MODE_PAN && dragging && waveform_signal != null))
+	if(!(mode == MODE_PAN && dragging && waveform_signal != null)) 
+	//&& !(waveform_signal != null && mode == MODE_POINT && !not_drawn))
+	{
+	    g.clipRect(0, 0, d.width, d.height);
 	    g.drawImage(off_image, 0, 0, this);
+    }
 
+	
 	
 	if(mode == MODE_ZOOM)
 	{
@@ -1357,15 +1407,16 @@ public class Waveform extends Canvas
 	    {
 		//g.clipRect(0, 0, d.width, d.height);
 		//Cesare
-		   if(off_image != null && !print_flag)
-	            g.drawImage(off_image, 0, 0, this);
+//		   if(off_image != null && !print_flag)
+//	            g.drawImage(off_image, 0, 0, this);
 	    }
 	}
 //	else
 //	    g.drawImage(off_image, 0, 0, this);
 	    
     
-	if(waveform_signal != null && mode == MODE_POINT && !not_drawn)
+	if(waveform_signal != null && mode == MODE_POINT 
+	    && !not_drawn && !is_min_size)
 	{
     	curr_x = wm.XValue(end_x, d);
 	    curr_y = wm.YValue(end_y, d);	
@@ -1444,15 +1495,34 @@ public class Waveform extends Canvas
 	}
 	
 	
-    if(is_select)
+    if(resize_y != 0)
+	{
+		Color c = g.getColor();
+		g.setColor(Color.black);
+		for(int i = 0; i < resize_line; i++)
+		{
+		    g.drawLine(0, resize_y+i*resize_space, 
+		               d.width, resize_y+i*resize_space);
+		}
+		g.setColor(c);
+    }
+    if(resize_x != 0)
+	{
+		Color c = g.getColor();
+		g.setColor(Color.black);
+		g.drawLine(resize_x, 0, resize_x, d.height);
+		g.setColor(c);
+    }
+
+   if(is_select)
     {
 	  g.setColor(Color.red);
 	  g.drawRect(0, 0, d.width - 1, d.height - 1);
 	  g.setColor(Color.black);
     }	    
 	
-	System.gc();
     }
+
 
     protected int GetSelectedSignal() {return 0;} 
     protected double FindPointY(double curr_x, double curr_y, boolean is_first)
@@ -1693,7 +1763,7 @@ public class Waveform extends Canvas
 		xrange = waveform_signal.x[waveform_signal.n_points - 1] - waveform_signal.x[0];
 
 		end_x = wm.XPixel(curr_x, d);
-		//ext_update = true;
+		ext_update = true;
 		repaint();
 		ext_update = false;
 	}
@@ -1715,11 +1785,11 @@ public class Waveform extends Canvas
  
     public void update(Graphics g)
     {
-	if((mode == MODE_ZOOM && curr_rect == null) || 
-		(mode == MODE_POINT && prev_point_x == -1))
-	    super.update(g);
-	else
-	    paint(g);
+ 	    if((mode == MODE_ZOOM && curr_rect == null) || 
+		    (mode == MODE_POINT && prev_point_x == -1))
+	        super.update(g);
+	    else
+	        paint(g);
     }
     public void Autoscale()
     {
@@ -1822,6 +1892,7 @@ public class Waveform extends Canvas
 	not_drawn = true;
 	repaint();
     }
+
     
     public void SetTitle(String title)
     {
@@ -1842,9 +1913,9 @@ public class Waveform extends Canvas
     
     public void SetSelected(boolean selec)
     {
-	selected = selec;
-	not_drawn = true;
-	repaint();
+	    selected = selec;
+	    not_drawn = true;
+	    repaint();
     }
     
     public boolean IsSelected() {return selected; }
@@ -1858,7 +1929,7 @@ public class Waveform extends Canvas
 	wm = null;
 	grid = null;
 	not_drawn = true;
-	repaint();
+	//repaint();
     }
     
     public int GetGridStepX()

@@ -221,7 +221,7 @@ public synchronized int[] GetIntArray(String in)
     return null;
 }        
 	    
- private synchronized boolean  CheckOpen()
+ private synchronized boolean  CheckOpen() 
  {
     int status;
     if(!connected)
@@ -289,38 +289,44 @@ private boolean NotYetNumber(String in)
     return ris;
 }
 
-public synchronized void addMdsEventListener(MdsEventListener l, String event_name){
+public synchronized void addMdsEventListener(MdsEventListener l, String event_name)
+        
+{
     
     int eventid;
+    String error;
     
     if(!connected)
     {
 	  if(mds.ConnectToMds() == 0)
 	  {
          System.out.println("Could not get IO for "+provider);
+         return;
       } else
          connected = true;
     }
     if((eventid = mdsEventManager.AddEvent(l, event_name)) != -1)
 	    mds.MdsSetEvent(event_name, eventid);
-    
 }
 
-public synchronized void removeMdsEventListener(MdsEventListener l, String event_name){
+public synchronized void removeMdsEventListener(MdsEventListener l, String event_name)
+        
+{
 
    int eventid;
-    
+   String error;
+   
     if(!connected)
     {
 	  if(mds.ConnectToMds() == 0)
 	  {
          System.out.println("Could not get IO for "+provider);
+         return;
       } else
          connected = true;
     } 
    if((eventid = mdsEventManager.RemoveEvent(l, event_name)) != -1)
 	    mds.MdsRemoveEvent(event_name, eventid);
-
 }
 
 protected synchronized void processActionEvent(int eventid) {

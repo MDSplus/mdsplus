@@ -11,14 +11,14 @@ public class WaveInterface
     // Prameter used to evaluate waveform
     public String in_xmin, in_xmax, in_ymax, in_ymin;
     public String in_title, in_xlabel, in_ylabel;
-    public String in_def_node, in_upd_event, experiment;
+    public String in_def_node, in_upd_event, experiment, last_upd_event;
     public int    in_grid_mode;
     public int    height; 
 
     // Configuration parameter
     public String cin_xmin, cin_xmax, cin_ymax, cin_ymin;
     public String cin_title, cin_xlabel, cin_ylabel;
-    public String cin_def_node, cin_upd_event, cexperiment; 
+    public String cin_def_node, cin_upd_event, cexperiment;
 
     boolean make_legend = false;
     int legend_x, legend_y;
@@ -32,12 +32,12 @@ public class WaveInterface
     public  String  error;
     private String  curr_error;
     public  String  provider;
-    
+    public  String  w_error[];
     public Signal signals[];
     public float xmax, xmin, ymax, ymin; 
     public String title, xlabel, ylabel;
-    //private DataProvider dp;
-    public DataProvider dp;
+    private DataProvider dp;
+    //public DataProvider dp;
     
 // Used for asynchronous Update  
     public boolean asynch_update = true;  
@@ -163,6 +163,16 @@ public class WaveInterface
 	    in_ylabel = new String(wi.in_ylabel);
 	else
 	    in_ylabel = null;	
+
+	if(wi.in_upd_event != null)
+	    in_upd_event = new String(wi.in_upd_event);
+	else
+	    in_upd_event = null;
+
+	if(wi.in_def_node != null)
+	    in_def_node = new String(wi.in_def_node);
+	else
+	    in_def_node = null;
 
 
 	if(wi.cin_xmin != null)
@@ -327,6 +337,7 @@ public class WaveInterface
 	        new_shots = new int[new_num_waves];
 	    boolean new_evaluated[] = new boolean[new_num_waves];
 	    Signal new_signals[] = new Signal[new_num_waves];    
+	    String new_w_error[] = new String[new_num_waves];    
 	    
 	    for(int i=0; i < num_waves; i++)
 	    {
@@ -348,6 +359,8 @@ public class WaveInterface
 	            new_evaluated[i] = false;
 	        if(signals != null)
 	            new_signals[i] = signals[i];
+	        if(w_error != null)
+	            new_w_error[i] = w_error[i];
 	    }
 	    
 	    int last_color_idx; 
@@ -386,12 +399,13 @@ public class WaveInterface
 	    num_waves = new_num_waves;
 	    evaluated = new_evaluated;
 	    signals = new_signals;
+	    w_error = new_w_error;
 	    modified = true;
 	    
 	    //if(shots != null)
 	    //    return false;
 	    //else
-	        return true;
+	    return true;
     }
     
     
@@ -411,6 +425,7 @@ public class WaveInterface
 	num_waves = in_y.length;
 	evaluated = new boolean[num_waves];
 	signals = new Signal[num_waves];    
+    w_error = new String[num_waves];
 
 	if(in_x != null && num_waves != in_x.length)
 	{
@@ -511,6 +526,7 @@ public class WaveInterface
 	else
 	    ylabel = dp.GetDefaultYLabel(in_y);
       
+      
 	return 1;
     } 
 	     
@@ -522,16 +538,21 @@ public class WaveInterface
         if(ymin > ymax) ymin = ymax;
     	for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
 	    {
-	        if(shots[curr_wave] == shot)
+	        if(shots[curr_wave] == shot && 
+	            (interpolates[curr_wave] || this.markers[curr_wave] != Waveform.NONE))
 	        {
+	            w_error[curr_wave] = null;
 		        evaluated[curr_wave] = true;
 		        signals[curr_wave] = GetSignal(curr_wave, (float)-1E8, (float)1E8);
 		        if(signals[curr_wave] == null)
 		        {
+		            w_error[curr_wave] = curr_error;
+		            /*
 		            if(error == null)
 			            error = curr_error;
 		            else
 			            error = error + "\n" + curr_error;
+			        */
 		        }
 		        else
 		        {
@@ -553,16 +574,22 @@ public class WaveInterface
 
     	for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
 	    {
-	    if(!evaluated[curr_wave])
+	    if(!evaluated[curr_wave] &&  
+	            (interpolates[curr_wave] || this.markers[curr_wave] != Waveform.NONE))
 	    {
+	    w_error[curr_wave] = null;    
 		evaluated[curr_wave] = true;
 		signals[curr_wave] = GetSignal(curr_wave, (float)-1E8, (float)1E8);
 		if(signals[curr_wave] == null)
 		{
+	        w_error[curr_wave] = curr_error;
+
+		/*    
 		    if(error == null)
 			error = curr_error;
 		    else
 			error = error + "\n" + curr_error;
+	    */
 		}
 		else
 		{

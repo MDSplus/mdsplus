@@ -15,7 +15,8 @@ public class RowColumnLayout implements LayoutManager {
     private int pos_x, pos_y;
     private Container main_p;
     static final int HORIZONTAL = 1, VERTICAL = 2, NONE = 3;
-    static final int MIN_SIZE = 20;
+    private int MIN_SIZE_H = 30, MIN_SIZE_W = 30;
+    private int by_pos = 20, bx_pos = 25;
     
 
     public RowColumnLayout(int _column, int[] _row) {
@@ -94,6 +95,10 @@ public class RowColumnLayout implements LayoutManager {
 	    
 	    percent_height = new float[b_comp + 1];
 	    percent_width  = new float[column];
+	    Dimension min_d = parent.getComponent(b_comp + 0).getMinimumSize();
+	
+	    MIN_SIZE_W = min_d.width;
+	    MIN_SIZE_H = min_d.height;
 	
 	    k = 0;
 	    totW=0;
@@ -105,8 +110,8 @@ public class RowColumnLayout implements LayoutManager {
 		        Component c = parent.getComponent(b_comp + k++);
     		    if (c.isVisible()) {
 		            d = c.getPreferredSize();
-		            if(d.height < MIN_SIZE) d.height = MIN_SIZE;
-		            if(d.width < MIN_SIZE) d.width = MIN_SIZE;	
+		            if(d.height < MIN_SIZE_H) d.height = MIN_SIZE_H;
+		            if(d.width < MIN_SIZE_W) d.width = MIN_SIZE_W;	
 		            if (maxW[i] < d.width) 
 			            maxW[i] = d.width;
 		            totH += d.height;
@@ -168,17 +173,191 @@ public class RowColumnLayout implements LayoutManager {
     {
     	for(int i = 0; i < column; i++) 
  	        percent_width[i]  = (float)1./column;	
-    }    
+    }
+    
+    private boolean init_resize = true;
+    private int prev_col_idx = -1;
+    
+    public void drawResize(Component _b, int x, int y)
+    {
+        Component c = null, b;
+        int idx = 0, k;
+        boolean found;
+        int pos, pos_x[];
+        Rectangle r;
+        int i, j , jj, num_line = 0, pos_y, n_draw, curr_height, start_pos;
+       
+        if(init_resize)
+        {
+            init_resize = false;
+            found = false;
+	        for( j = 0; j < column && !found; j++) {
+	            for( i = 0; i < row[j]; i++) {
+		            b = main_p.getComponent(idx);
+		            if(_b == b) {
+		                col_idx = j;
+		                comp_idx = idx;
+		                if(i == row[j] - 1)
+			                resize_mode = HORIZONTAL;
+		                else
+			                resize_mode = VERTICAL;
+			            found = true;
+			            break;
+		            }
+		            idx++;
+	            }
+	        }
+	    }
+	    
+	    if(resize_mode == VERTICAL)
+	    {
+	        k = 0;
+	        for(i = 0; i < col_idx + 1; i++)
+	            k += row[i];
+            
+            if(y < 0)
+            {
+                pos_y = pos = y;
+                curr_height = 0;
+                start_pos = _b.getBounds().y;
+                k -= row[col_idx];
+                
+                c = main_p.getComponent(b_comp+comp_idx + 1);
+                ((Waveform)c).DrawYResize(0, 0, 0);
+
+                for( j = 0, jj = 0,  i = b_comp+comp_idx ; i > b_comp+k-1; i--, j++)
+                {
+                    c = main_p.getComponent(i);
+                    r = c.getBounds();                    
+	                curr_height += r.height; 
+
+
+                    if(curr_height + pos < MIN_SIZE_H * (num_line + 1)) 
+                    {
+                            num_line++;
+                    }
+                    
+
+                    if(start_pos + pos + (k - comp_idx - 1) * MIN_SIZE_H <= 0)
+                        return;
+                    
+                    
+                    for(n_draw = 0; jj < num_line + 1; jj++)
+                    {
+                        if(Math.abs(pos) + jj * MIN_SIZE_H <  curr_height)
+                        {
+                            n_draw++;
+	                    } else
+	                        break;
+	                }
+	                if (n_draw > 0) {
+	                    pos_y = (r.height + pos) - (- curr_height + r.height + (jj - n_draw) * MIN_SIZE_H);
+	                   ((Waveform)c).DrawYResize(pos_y - 2, n_draw, -MIN_SIZE_H);
+	                } else {
+	                    ((Waveform)c).DrawYResize(0, 0, 0);
+	                }	                
+                }
+            }
+            else 
+            {
+                pos_y = pos = y;
+                curr_height = 0;
+                start_pos = _b.getBounds().y;
+                
+                c = main_p.getComponent(b_comp+comp_idx);
+                ((Waveform)c).DrawYResize(0, 0, 0);
+                
+                for( j = 0, jj = 0, i = b_comp+comp_idx+1; i < b_comp+k; i++, j++)
+                {
+                    c = main_p.getComponent(i);
+                    r = c.getBounds();                    
+	                curr_height += r.height; 
+
+
+                    if(curr_height - pos < MIN_SIZE_H * (num_line + 1)) 
+                    {
+                            num_line++;
+                    }
+                    
+                    if(start_pos + pos + (k - comp_idx - 1) * MIN_SIZE_H > maxHeight)
+                        return;
+                    
+                    
+                    for(n_draw = 0; jj < num_line + 1; jj++)
+                    {
+                        if(pos + jj * MIN_SIZE_H <  curr_height)
+                        {
+                            n_draw++;
+	                    } else
+	                        break;
+	                }
+	                if (n_draw > 0) {
+	                    pos_y = pos - curr_height + r.height + (jj - n_draw) * MIN_SIZE_H;
+	                   ((Waveform)c).DrawYResize(pos_y - 2, n_draw, MIN_SIZE_H);
+	                } else {
+	                    ((Waveform)c).DrawYResize(0, 0, 0);
+	                }	                
+                }
+            }
+	    }
+	    
+	        
+	    if(resize_mode == HORIZONTAL)
+	    {
+	        if(x < 0) 
+	            idx = col_idx;
+	        else
+	            idx = col_idx + 1;
+	            
+	        if(prev_col_idx != -1 && prev_col_idx != idx)
+	        {
+	            k = 0;
+	            for(i = 0; i < prev_col_idx; i++)
+	                k += row[i];
+	            for(i = k; i < k + row[prev_col_idx]; i++) {
+	                c = main_p.getComponent(b_comp + i);
+	                ((Waveform)c).DrawXResize(0);	            
+	            }
+            }
+	        prev_col_idx = idx;
+
+            
+	        k = 0;
+	        for(i = 0; i < idx; i++)
+	            k += row[i];
+	        
+	        
+            c = main_p.getComponent(b_comp+k);
+
+            r = c.getBounds();
+            if(x < 0) {
+               pos = r.width + x;
+               if(pos < MIN_SIZE_W)
+                  pos = MIN_SIZE_W;
+            } else {
+               pos = x;
+               if(r.width - pos < MIN_SIZE_W)
+                   pos = r.width - MIN_SIZE_W;
+            }
+	        
+	        for(i = k; i < k + row[idx]; i++) {
+	            c = main_p.getComponent(b_comp + i);
+	            ((Waveform)c).DrawXResize(pos - 2);	            
+	        }
+	    }
+    }
 
     public void resizeRowColumn(Component _b)
     {
+        Component b, c;
 	    int idx = 0;
-			    					    						
+	
+		init_resize = true;	    					    						    
 	    for(int j = 0; j < column; j++) {
 	        for(int i = 0; i < row[j]; i++) {
-		        Component b = main_p.getComponent(idx);
+		        b = main_p.getComponent(idx);
 		        if(_b == b) {
-		            Component c = main_p.getComponent(b_comp + idx);
+		            c = main_p.getComponent(b_comp + idx);
 		            col_idx = j;
 		            comp_idx = idx;
 		            if(i == row[j] - 1)
@@ -199,7 +378,7 @@ public class RowColumnLayout implements LayoutManager {
 	    if(resize_mode == HORIZONTAL)
 	    {
 	        resetPercentW();
-	        resizeColumns(main_p, col_idx);
+	        resizeColumns(main_p);
     	}	
     }		
     	        
@@ -210,14 +389,18 @@ public class RowColumnLayout implements LayoutManager {
 	int max_y, max_x, min_x;
 	int start_comp, end_comp, inc_comp;
 	int new_y, resize_y, idx = 0;
-			    					    						
+	Component b, c;
+	Rectangle d, d1;
+	
+		init_resize = true;
+		prev_col_idx = -1;
 	    for(int j = 0; j < column; j++) {
 	        for(int i = 0; i < row[j]; i++) {
-		        Component b = main_p.getComponent(idx);
+		        b = main_p.getComponent(idx);
 		        if(_b == b) {
-		            Component c = main_p.getComponent(b_comp + idx);
-		            Rectangle d = c.getBounds();
-		            Rectangle d1 = b.getBounds();                
+		            c = main_p.getComponent(b_comp + idx);
+		            d = c.getBounds();
+		            d1 = b.getBounds();                
 		            col_idx = j;
 		            comp_idx = idx;
 		            pos_x = d.x + d.width;
@@ -239,7 +422,7 @@ public class RowColumnLayout implements LayoutManager {
 						
     	if(resize_mode == VERTICAL)
 	    {
-	        if(maxHeight < row[col_idx] * (MIN_SIZE + vgap) - vgap)
+	        if(maxHeight < row[col_idx] * (MIN_SIZE_H + vgap) - vgap)
 		        return;
 	
 	        if(pos_y < y)
@@ -248,14 +431,14 @@ public class RowColumnLayout implements LayoutManager {
 		        end_comp = k+row[col_idx];
 		        inc_comp = 1;
 		        max_y = maxHeight - (row[col_idx] - (comp_idx - k) - 1) * 
-							(MIN_SIZE + vgap) + vgap;		    
+							(MIN_SIZE_H + vgap) + vgap;		    
 	        } else {
 		        start_comp = k + row[col_idx] - 1;
 		        end_comp = k - 1;
 		        inc_comp = -1;
 		        y = maxHeight - y;
 		        comp_idx++;
-		        max_y = maxHeight - (comp_idx-k)*(MIN_SIZE+vgap);
+		        max_y = maxHeight - (comp_idx-k)*(MIN_SIZE_H+vgap);
 	        }
 	    	
 	        if(y > max_y)
@@ -269,8 +452,8 @@ public class RowColumnLayout implements LayoutManager {
 		    if(k == comp_idx)
 		        percent_height[k] = (float)(resize_y - curr_y)/currMaxHeight;			    			   			
 	        else
-		        if(curr_y + currHeight - new_y < MIN_SIZE)
-			        percent_height[k] = (float)(MIN_SIZE)/currMaxHeight;
+		        if(curr_y + currHeight - new_y < MIN_SIZE_H)
+			        percent_height[k] = (float)(MIN_SIZE_H)/currMaxHeight;
 		        else	
 			        percent_height[k] = (float)(curr_y + currHeight - new_y)/currMaxHeight;
 		    curr_y += currHeight + vgap;
@@ -282,7 +465,7 @@ public class RowColumnLayout implements LayoutManager {
 	if(resize_mode == HORIZONTAL)
 	{
 	
-	    if(maxWidth < column * (MIN_SIZE + hgap) - hgap)
+	    if(maxWidth < column * (MIN_SIZE_W + hgap) - hgap)
 		return;
 	
 	    currMaxWidth = (maxWidth - (column - 1) * hgap);
@@ -290,25 +473,20 @@ public class RowColumnLayout implements LayoutManager {
 	    for(int i = 0; i < col_idx; i++)
 		curr_x += currMaxWidth * percent_width[i] + hgap;
 		
-	    min_x = curr_x + MIN_SIZE;
+	    min_x = curr_x + MIN_SIZE_W;
 	    max_x = (int)(curr_x + currMaxWidth * (percent_width[col_idx] + 
 							percent_width[col_idx + 1])) + hgap; 	
 	    if(x < min_x) x = min_x;
-	    if(x > max_x - MIN_SIZE) x = max_x - MIN_SIZE;
+	    if(x > max_x - MIN_SIZE_W) x = max_x - MIN_SIZE_W;
 	    
 	    percent_width[col_idx] = (float)(x - curr_x)/currMaxWidth;
 	    percent_width[col_idx + 1] = (float)(max_x - x - hgap)/currMaxWidth;
 
-	    resizeColumns(main_p, col_idx);
+	    resizeColumns(main_p);
     	}
     }
-    
-    public void DisableResize(Component comp)
-    {
-	    resize_mode = NONE;
-    }
-    
-    private void resizeColumns(Container parent, int col_idx) 
+        
+    private void resizeColumns(Container parent) 
     {
 	    int k = 0, x = 0;
 	    int previousWidth = 0, currMaxWidth, currWidth;
@@ -332,9 +510,13 @@ public class RowColumnLayout implements LayoutManager {
 		            {
 		                Component b = parent.getComponent(k);		
 		                if(j == row[i] - 1) 	    
-			                b.setBounds(x + d.width - hgap - 2, maxHeight - 20, 4, 8);
-		                else 		    
-			                b.setBounds(x + d.width - 25,  c.getBounds().y + c.getBounds().height - 2, 8, 4 );
+			                b.setBounds(x + d.width - hgap - 2, maxHeight - bx_pos, 4, 8);
+		                else {
+		                    int p = by_pos;
+		                    if(d.width < by_pos + 8)
+		                       p = d.width - 1;
+			                b.setBounds(x + d.width - p,  c.getBounds().y + c.getBounds().height - 2, 8, 4 );
+			            }    
 		            }
 		        }
 		        k++;
@@ -368,9 +550,13 @@ public class RowColumnLayout implements LayoutManager {
 		        {
 		            Component b = parent.getComponent(k);		
 		            if(j == row[col_idx] - 1)
-		                b.setBounds(c.getBounds().x + c.getBounds().width - hgap - 2, maxHeight - 20, 4, 8);		     		    
-		            else 	    
-		                b.setBounds(c.getBounds().x +  c.getBounds().width - 25, y + d.height -2, 8, 4 );
+		                b.setBounds(c.getBounds().x + c.getBounds().width - hgap - 2, maxHeight - bx_pos, 4, 8);		     		    
+		            else {	    
+		                int p = by_pos;
+		                if(d.width < by_pos + 8)
+		                   p = d.width - 1;
+		                b.setBounds(c.getBounds().x + c.getBounds().width - p, y + d.height -2, 8, 4 );
+                    }
 		        }
 	        }
 	        k++;
@@ -417,14 +603,6 @@ public class RowColumnLayout implements LayoutManager {
      * won't be. */
     public void layoutContainer(Container parent) {
         Insets insets = parent.getInsets();
-        int nComps = parent.getComponentCount();
-        int previousWidth = 0, previousHeight = 0;
-	    int currMaxWidth = 0, currMaxHeight = 0;
-        int k = 0, x = 0, y = insets.top;
-        int rowh = 0, start = 0;
-        int xFudge = 0, yFudge = 0;
-        boolean oneColumn = false;
-	
         maxWidth  = parent.getSize().width  - (insets.left + insets.right);
         maxHeight = parent.getSize().height - (insets.top + insets.bottom);	
 	
@@ -437,49 +615,12 @@ public class RowColumnLayout implements LayoutManager {
         // nor minimumLayoutSize() has been called.
         if (sizeUnknown) {
             setSizes(parent);
+            sizeUnknown = false;
         }
-            
-        if (maxWidth <= minWidth) {
-            oneColumn = true;
-        }
+        this.resizeColumns(parent);
+  	    for(int i = 0; i < column; i++) 
+            this.resizeColumn(parent, i);
 
-	    currMaxWidth = maxWidth - column * hgap;
-
-
-    	k = 0;
-  	    for(int i = 0; i < column; i++) {
-	        previousHeight = 0;
-	        y = 0;
-	        currMaxHeight = maxHeight - (row[i] - 1) * vgap; 
-	        for(int j = 0; j < row[i]; j++) {
-                Component c = parent.getComponent(b_comp + k);
-                if (c.isVisible()) {
-		            y += previousHeight;
-                    Dimension d = c.getPreferredSize();                
-		            if(i != column - 1)
-		                d.width  = (int)(currMaxWidth  * percent_width[i]);
-		            else
-		                d.width = maxWidth - x;
-		            if(j != row[i] - 1) 	     
-		                d.height = (int)(currMaxHeight * percent_height[k]);
-		            else
-		                d.height = maxHeight - y;
-		            c.setBounds(x, y, d.width, d.height);
-                    previousWidth  = d.width;
-                    previousHeight = d.height + vgap;
-		            if(k < b_comp)
-		            {
-		                Component b = parent.getComponent(k);		
-		                if(j == row[i] - 1) 	    
-		                    b.setBounds(x + d.width - hgap - 2, maxHeight - 20, 4, 8);		     
-		                else 		    
-		                    b.setBounds(x + previousWidth - 25, y + d.height - 2, 8, 4);
-		            }
-	            }
-	            k++;
-    	    }
-	        x += previousWidth + hgap;
-	    }
     }
     
     public String toString() {

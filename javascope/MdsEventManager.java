@@ -53,7 +53,10 @@ class MdsEventManager {
 	        //eventid = mdsEventList.size() - 1;
         } else {
             if(!((EventItem)mdsEventList.elementAt(i)).listener.contains((Object)l))
+            {
                 ((EventItem)mdsEventList.elementAt(i)).listener.addElement(l);
+                System.out.println("Add listener to event "+event_name);
+            }
         }     
 
         return eventid;
@@ -70,11 +73,12 @@ class MdsEventManager {
         if(i < mdsEventList.size())
         {
             ((EventItem)mdsEventList.elementAt(i)).listener.removeElement(l);
+            //System.out.println("Remove listener to event "+((EventItem)mdsEventList.elementAt(i)));
             if(((EventItem)mdsEventList.elementAt(i)).listener.size() == 0)
             {
                 eventid = ((EventItem)mdsEventList.elementAt(i)).eventid;
                 event_flags[eventid]  = false;
-//                System.out.println("Remove "+((EventItem)mdsEventList.elementAt(i)));
+               // System.out.println("Remove "+((EventItem)mdsEventList.elementAt(i)));
                 mdsEventList.removeElementAt(i);
             }
         }     

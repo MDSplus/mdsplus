@@ -504,6 +504,10 @@ public class SetupDefaults extends ScopePositionDialog {
 	    if(ob == ok)
 	        setVisible(false);
 	    shots = main_scope.evaluateShot(shot_str);
+        main_scope.setScopeAllMode(main_scope.wave_mode, getGridMode(), 
+                                                         getXLines(),
+                                                         getYLines());
+	    
 	    main_scope.UpdateAllWaves(false);
      }
       

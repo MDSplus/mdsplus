@@ -1310,6 +1310,7 @@ import java.util.Vector;
 	this.wi.cexperiment     = wi.cexperiment;	
 	this.wi.cin_shot        = wi.cin_shot;	
 	this.wi.cin_upd_event   = wi.cin_upd_event;	
+	this.wi.last_upd_event  = wi.last_upd_event;	
 	this.wi.cin_def_node    = wi.cin_def_node;	
     this.wi.cin_xmax        = wi.cin_xmax;
 	this.wi.cin_xmin        = wi.cin_xmin;
@@ -1544,8 +1545,6 @@ import java.util.Vector;
 	      if(wi.shots[0] == jScope.UNDEF_SHOT)
 	   	     wi.shots = null;
 
-          String event = wave.wi != null ? wave.wi.in_upd_event : null;
-  	      main_scope.SetRemoveMdsEvent(wave, event, wi.in_upd_event);
 	  	    
 	      wave.wi = wi;
 	   
@@ -1594,32 +1593,11 @@ import java.util.Vector;
    {
      if(checkSetup() == 0)
      {
-        main_scope.evaluateWave(wave, shot.getText());
-        /*
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        try
-        {
-	        wave.SetMode(Waveform.MODE_WAIT);
-	        main_scope.SetStatusLabel("Update signals for shots " + shot.getText());
-	        String e = setup.UpdateWave(wave);
-	        if(e != null) {
-	            if(main_scope.briefError())
-		            error_msg.addMessage(e);
-	            else
-		            error_msg.setMessage(e);
-	            error_msg.showMessage();
-	        }  
-	        main_scope.SetStatusLabel("Wave is up to date");
-	        wave.SetMode(main_scope.wave_mode);
-            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-	    } catch (Throwable e) {	        
-	        wave.SetMode(main_scope.wave_mode);
-            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-	        main_scope.SetStatusLabel("Unrecoverable error during applies");	    
-	    }
-	    */
-      } else
-	     error_msg.showMessage();       	
+        main_scope.evaluateWave(wave, shot.getText(), false);
+      } else {
+	     error_msg.showMessage();
+	     wave.Erase();
+	  }
    }
 	    	
    public void actionPerformed(ActionEvent e)
@@ -1631,8 +1609,8 @@ import java.util.Vector;
 
       if(ob == erase) {
 	    eraseForm();
-	    wave.wi = null;
-	    wave.Erase();
+	    wave.wi = new WaveInterface(main_scope.db);
+//	    wave.Erase();
       }
 		
       if(ob == cancel) {

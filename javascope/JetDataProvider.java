@@ -140,7 +140,13 @@ class JetDataProvider implements DataProvider
             
         String url_name;
         if(experiment == null)
-            url_name = in;
+        {
+           StringTokenizer st = new StringTokenizer(in, "/", true);
+           url_name = st.nextToken() + "/" + shot ;
+           while(st.hasMoreTokens())
+            url_name = url_name + st.nextToken();
+        }    
+            //url_name = in;
         else
             url_name = experiment + "/" + shot + "/" + in;
         if(last_url_name != null && url_name.equals(last_url_name))

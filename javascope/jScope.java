@@ -58,7 +58,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   private String        curr_directory, curr_file_name, file_name;
   private Label	        point_pos;
   private TextField	info_text, net_text;
-  private WavePanel     draw_pan;
+          WavePanel     draw_pan;
   private ErrorMessage  error_msg;
   private ErrorMessage  warning_msg;
   private WindowDialog  win_diag;
@@ -168,7 +168,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 		    {
 			for(int j = 0; j < setup.rows[i] && !abort; j++, k++)
 			{
-			    if(setup.waves[k].wi != null && setup.waves[k].wi.UseDefaultShot())
+			    if(setup.waves[k].wi != null && setup.waves[k].wi.num_waves != 0 && setup.waves[k].wi.UseDefaultShot())
 			    {
 				//if(setup.waves[k].wi.error == null)
 				{
@@ -191,7 +191,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 		for(int j = 0; j < setup.rows[i] && !abort; j++, k++) 
 		{
 		    //if(setup.waves[k].wi != null && setup.waves[k].wi.error == null)
-            if(setup.waves[k].wi != null)
+            if(setup.waves[k].wi != null && setup.waves[k].wi.num_waves != 0)
             {
 			    setup.waves[k].wi.EvaluateOthers();
 			    SetStatusLabel("Evaluate Other column " + (i + 1) + " row " + (j + 1));
@@ -203,6 +203,9 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    }
 	    
  	    apply_b.setLabel("Apply");
+ 	    
+ 	    setup.SetAllErrorTitle();
+ 	    
 	    setup.SetAllWaveformPointer(wave_mode);
 	    if(!abort)
 		    SetStatusLabel("All waveforms are up to date");
@@ -567,7 +570,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     
     point_pos = new Label("[0.000000000, 0.000000000]");    
     setup =  new Setup(this, point_pos);
-    draw_pan = new WavePanel(setup);
+    draw_pan = new WavePanel(setup, db);
 //    setScopeAllMode(wave_mode, curr_grid_mode, x_curr_lines_grid, y_curr_lines_grid); 
     setScopeAllMode(wave_mode, setup_default.getGridMode(), 
                                setup_default.getXLines(),
@@ -649,6 +652,13 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
 	}
   
+  public void SetRemoveMdsEvent(MdsEventListener w)
+  {
+        WaveInterface wi = ((MultiWaveform)w).wi;
+        SetRemoveMdsEvent(w, wi.last_upd_event, wi.in_upd_event);
+        wi.last_upd_event = wi.in_upd_event;
+  }
+  
   public void SetRemoveMdsEvent(MdsEventListener w, String old_event, String new_event)
   {    
             if(old_event != null && old_event.length() != 0)
@@ -681,22 +691,57 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	}		
   }
   
-  public void evaluateWave(MultiWaveform w, String shot)
+  public void evaluateWave(MultiWaveform w, String shot, boolean add_sig)
   {
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
         try
         {
 	        w.SetMode(Waveform.MODE_WAIT);
 	        SetStatusLabel("Update signals for shots " + shot);
+
+  	        SetRemoveMdsEvent(w);
+	        	        
 	        //w.wi.full_flag = !GetFastNetworkState();
+	        String full_error = null;
 	        String e = setup.UpdateWave(w);
 	        if(e != null) {
-	            if(briefError())
-		            error_msg.addMessage(e);
+	           if(briefError())
+		         error_msg.addMessage(e);
+	           else
+		         error_msg.setMessage(e);
+	        } 
+	        else
+	        {
+	            int i;
+	            if(add_sig)
+	                i = w.wi.num_waves - 1;
 	            else
-		            error_msg.setMessage(e);
-	            error_msg.showMessage();
-	        }  
+	                i = 0;
+	        
+	            for(; i < w.wi.num_waves; i++)
+	            {
+	                e = w.wi.w_error[i];
+	                if(e != null) {
+	                    if(briefError())
+		                    error_msg.addMessage("<Wave "+(i+1)+ "> " + e);
+	                    else {
+	                        if(full_error == null)
+		                        full_error = "<Wave "+(i+1)+ "> " + e + "\n";
+		                    else
+		                        full_error = full_error + "<Wave "+(i+1)+ "> " + e + "\n";
+		                }
+		            }
+		        }
+		    }
+		    
+		    if(full_error != null)
+		        error_msg.setMessage(full_error);
+		        
+	        error_msg.showMessage();
+	        
+	        if(!add_sig)
+	         setup.SetErrorTitle(w);
+	         
 	        SetStatusLabel("Wave is up to date");
 	        w.SetMode(wave_mode);
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -705,7 +750,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	        SetStatusLabel("Unrecoverable error during applies");	    
 	    }
-  }
+    }
   
     public int[] evaluateShot(String in_shots)
     {
@@ -821,6 +866,10 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	            setDataServer();
 	    } 
      }
+
+     if(IsIpAddress(DEFAULT_SERVER))
+        setup.ChangeDataProvider();
+
      setDataServerLabel();
   }
 
@@ -856,14 +905,14 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   public void resetDrawPanel(int in_row[])
   {
 	setup.ChangeRowColumn(in_row);
-	draw_pan.removeAll();
-	draw_pan.createWavePanel();
-//	setScopeAllMode(wave_mode, curr_grid_mode, x_curr_lines_grid, y_curr_lines_grid); 
+//	draw_pan.removeAll();
+	draw_pan.createWavePanel(db);
     setScopeAllMode(wave_mode, setup_default.getGridMode(), 
                                setup_default.getXLines(),
                                setup_default.getYLines());
     if(setup.sel_wave != null)
         setup.sel_wave.SelectWave();
+    System.gc();
   }
   
  
@@ -924,7 +973,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   
 	if(wi == null) return;
   
-    updateMainShot();
+ 
   
 	switch(getUsedShotIdx(wi.UseDefaultShot())) 
 	{   
@@ -1020,8 +1069,11 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     if(main_shot_str.length() == 0)
         main_shots = null;
     else
-        if(!equalsString(main_shot_str, curr_main_shot_str)) 
+        if(!equalsString(main_shot_str, curr_main_shot_str)) { 
 	        main_shots = evaluateShot(main_shot_str);
+	        if(main_shots[0] != jScope.UNDEF_SHOT)
+	            curr_main_shot_str = main_shot_str;
+	    }
   }
   
  /**
@@ -1062,7 +1114,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	return 0;
   }
   
-  private String GetFirstLine(String str)
+  static public String GetFirstLine(String str)
   {
 	int idx = str.indexOf("\n");
 	if(idx != -1)
@@ -1092,6 +1144,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 		    if ( event != null && event.length() != 0)
 		    {		    
 		        db.addMdsEventListener(setup.waves[k], event);
+		        setup.waves[k].wi.last_upd_event = event;
 //		        System.out.println("SetAllEvents "+setup.waves[k].wi.in_upd_event);
 		    }
         }
@@ -1119,6 +1172,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 		    if ( event != null && event.length() != 0)
 		    {
 		        db.removeMdsEventListener(setup.waves[k], event);
+		        setup.waves[k].wi.last_upd_event = null;
 //		        System.out.println("RemoveAllEvents "+setup.waves[k].wi.in_upd_event);
 		    }
         }
@@ -1127,9 +1181,9 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
   public void UpdateAllWaves(boolean and_print)
   {
-    setScopeAllMode(wave_mode, setup_default.getGridMode(), 
-                               setup_default.getXLines(),
-                               setup_default.getYLines());
+    //setScopeAllMode(wave_mode, setup_default.getGridMode(), 
+    //                           setup_default.getXLines(),
+    //                           setup_default.getYLines());
     System.gc();
     updateThread = new UpdateWaves(and_print);
     updateThread.start();
@@ -1322,10 +1376,11 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
     Object ob = e.getSource();
     
-    //remove wave selection
-    if(wi_source != null) {
-//	wi_source = null;
-	setup.RemoveSelection();
+    
+    if(wi_source != null && ob != open_i)
+    {
+        wi_source = null;
+        setup.RemoveSelection();
     }
     
     if(ob instanceof MenuItem)
@@ -1348,16 +1403,15 @@ public class jScope extends Frame implements ActionListener, ItemListener,
             
         if(sel_wave == null) 
         {
-            if(setup.waves[setup.waves.length - 1].wi != null &&
-                  setup.waves[setup.waves.length - 1].wi.num_waves != 0) 
+            int i;
+            for(i = 0; i < setup.waves.length && 
+                              setup.waves[i].wi != null &&
+                              setup.waves[i].wi.num_waves != 0; i++);
+            if(i == setup.waves.length) 
             {
                int idx = SplitWavesPanel();
                sel_wave = setup.waves[idx];
             } else {
-               int i;
-               for(i = 0; i < setup.waves.length && 
-                              setup.waves[i].wi != null &&
-                              setup.waves[i].wi.num_waves != 0; i++);
                sel_wave = setup.waves[i];
             }
         } 
@@ -1370,13 +1424,18 @@ public class jScope extends Frame implements ActionListener, ItemListener,
         if(sel_wave.wi.addSignal(signal_expr.getText(), color_dialog.getColors())) 
         {
 		    setup_default.updateDefaultWI(sel_wave.wi);
+		    updateMainShot();
             updateShotWI(sel_wave.wi);
             updateColors(sel_wave);
-            evaluateWave(sel_wave, "");
-            if(sel_wave.wi.error != null)
-                sel_wave.wi = old_wi;
-	    }
-						
+            evaluateWave(sel_wave, "", true);
+            if(sel_wave.wi.error != null || 
+                sel_wave.wi.w_error[sel_wave.wi.num_waves - 1] != null)
+            {
+              sel_wave.wi = old_wi;
+              setup.Refresh(sel_wave, "");
+            } else
+              setup.SetErrorTitle(sel_wave);
+	    }						
     }
 
     
@@ -1646,6 +1705,12 @@ public class jScope extends Frame implements ActionListener, ItemListener,
    }
    public void setWaveMode(int mode)
    {
+      if(wi_source != null && setup.waves[0].mode == Waveform.MODE_COPY && mode != Waveform.MODE_COPY)
+      {
+        wi_source = null;
+        setup.RemoveSelection();
+      }
+      
       for(int i = 0; i < setup.num_waves; i++)
       {
 	    setup.waves[i].SetMode(mode);
@@ -1718,6 +1783,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	else
 	    setTitle("- Scope - " + f_name + (setup.modified ? " (changed)" : ""));
   }     
+  
   
   public int fromFile(ReaderConfig in)    
   {
@@ -2094,7 +2160,6 @@ class WindowDialog extends ScopePositionDialog {
     public void actionPerformed(ActionEvent e) {
 
 	Object ob = e.getSource();
-	int i;
     
 	if (ob == ok || ob == apply)
 	{
@@ -2118,7 +2183,13 @@ class WindowDialog extends ScopePositionDialog {
 	    out_row[1] = row_2.getValue();
 	    out_row[2] = row_3.getValue();
 	    out_row[3] = row_4.getValue();
-	    changed = true;
+	    changed = false;
+	    for(int i = 0; i < 4; i++)
+	        if(out_row[i] != parent.setup.rows[i])
+	        {
+	            changed = true;
+	            break;
+	        }
 	    if(ob == ok)
 		    setVisible(false);
         }  

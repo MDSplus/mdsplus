@@ -18,8 +18,8 @@ waveforms.
     int markers[], markers_step[];
     boolean interpolates[];
     WaveInterface wi;
-    static WaveInterface copy_wi;
-    static Waveform source_copy_w;
+    //static WaveInterface copy_wi;
+    //static Waveform source_copy_w;
     private double orig_xmin, orig_xmax;
     
     public MultiWaveform(WaveSetup c)
@@ -57,7 +57,7 @@ waveforms.
     {
 	    wi = _wi;
 	    orig_signals = null;
-	    if(wi.colors != null)
+	    if(wi.colors != null && wi.colors.length > 0)
 	    {
 	        colors = wi.colors;
 	        num_colors =  wi.colors.length;
@@ -177,16 +177,17 @@ waveforms.
         int h = g.getFont().getSize() + 2;
         Color prev_col = g.getColor();
         Point pts[] = new Point[1];
-        String s;
+        String s, er;
         pts[0] = new Point();
         
         wi.legend_x = p.x;
         wi.legend_y = p.y;
         
-        for(int i = 0, py = p.y ; i < wi.num_waves; i++, py += h)
+        for(int i = 0, py = p.y ; i < wi.num_waves; i++)
         {
             if(!wi.interpolates[i] && wi.markers[i] == Waveform.NONE)
                 continue;
+            py += h;    
             g.setColor(wi.colors[i]);
             pts[0].x = p.x - marker_width/2;
             pts[0].y = py - marker_width/2;
@@ -194,10 +195,11 @@ waveforms.
             DrawMarkers(g, pts, 1, wi.markers[i]);
             } catch (IOException e) {};
             String name = (wi.in_label[i] != null && wi.in_label[i].length() > 0) ? wi.in_label[i] : wi.in_y[i]; 
+            er = wi.w_error[i] != null ? " ERROR " : "";
             if(wi.shots != null) {
-                s = name+" "+wi.shots[i];
+                s = name+" "+wi.shots[i] + er;
             } else {
-                s = name;
+                s = name + er;
             }
             g.drawString(s, p.x + marker_width, py);
       }
@@ -486,11 +488,12 @@ protected void HandleCopy()
 {
     if(IsSelected())
 	return;
-    if(wi != null && controller.GetSource() == null)
+    if(wi != null && signals != null && signals.length != 0 && controller.GetSource() == null)
     {
-	copy_wi = wi;
-	source_copy_w = (Waveform)this;
-	controller.SetSourceCopy(source_copy_w);
+	//copy_wi = wi;
+	//source_copy_w = (Waveform)this;
+	//controller.SetSourceCopy(source_copy_w);
+	controller.SetSourceCopy(this);
 	SetSelected(true);
     }
 }
@@ -499,7 +502,7 @@ protected void HandlePaste()
 {
     if(IsSelected())
     {
-	copy_wi = null;
+	//copy_wi = null;
 	SetSelected(false);
 	controller.SetSourceCopy(null);
     }
@@ -507,10 +510,10 @@ protected void HandlePaste()
     {
 	//Update(copy_wi);
 	if(controller.GetSource() != null)
-	    controller.NotifyChange((Waveform)this, source_copy_w);
+	    controller.NotifyChange((Waveform)this, null);
     }
 }
-
+/*
 protected void HandleCopyOld()
 {
 //    if(copy_wi == null)
@@ -539,10 +542,10 @@ protected void HandleCopyOld()
 	}
     }
 }	    
-	
+*/	
 protected void SetMode(int mod)
 {
-    copy_wi = null;
+//    copy_wi = null;
 //    controller.SetSourceCopy(null);
     super.SetMode(mod);
 }
