@@ -44,3 +44,6 @@ extern int MdsSerializeDscOutZ(struct descriptor *in,struct descriptor_xd *out,
 extern int MdsSerializeDscOut(struct descriptor *in,struct descriptor_xd *out);
 extern void MdsUnpk(char *nbits, int *nitems, int pack[], int items[], int *bit);
 extern int MdsXpand(int *nitems, struct descriptor_a *pack, struct descriptor_a *items, int *bit);
+extern int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid);
+extern int MDSEventCan(int eventid);
+extern int MDSEvent(char *evname);
