@@ -70,6 +70,11 @@ static int ParseQualifiers()
   int binary,hex,octal;
   int i;
   str_copy_dx(&Name, (cli_get_value("module",&value) & 1) ? &value : &DefName);
+  if (Name.pointer == 0)
+  {
+    printf("No module selected\n");
+    return 0;
+  }
   A = (cli_get_value("address",&value) & 1) ? atoi(value.pointer) : 0;
   if (A < 0 || A > 15)
   {
@@ -92,6 +97,11 @@ static int ParseQualifiers()
   if (Mem != 16 && Mem != 24)
   {
     printf("BADMEM: bad value for /MEMORY. Use 16 or 24.\n");
+    return 0;
+  }
+  if ((Count * ((Mem == 24) ? 4 : 2)) > 65535)
+  {
+    printf("Count too large, max=32767 for 16 bit, 16383 for 24 bit\n");
     return 0;
   }
   if (D) free(D);
@@ -142,7 +152,6 @@ static int ParseQualifiers()
 
 static int CheckErrors(int status,IOSB *iosb)
 {
-  if (status == 0) return 1;
   LastStatus = status;
   if (status & 1)
   {
@@ -165,7 +174,7 @@ static int CheckErrors(int status,IOSB *iosb)
   }
   else
   {
-    printf("Error detected in CAMAC call, status = 0x%x\n",status);
+    MDSfprintf(stderr,"Error detected in CAMAC call, %s\n",MdsGetMsg(status));
   }
   return 1;
 }
