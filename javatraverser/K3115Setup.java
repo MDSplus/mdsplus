@@ -272,8 +272,8 @@ public class K3115Setup
     border1 = BorderFactory.createEtchedBorder(Color.white,new Color(142, 142, 142));
     titledBorder1 = new TitledBorder(border1," GENERAL ");
     border2 = BorderFactory.createLineBorder(SystemColor.controlText,2);
-    this.setWidth(668);
-    this.setHeight(668);
+    this.setWidth(681);
+    this.setHeight(681);
     this.setDeviceType("K3115");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("K3115 : programmable waveform generator");
