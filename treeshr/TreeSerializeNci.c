@@ -8,8 +8,13 @@ void TreeSerializeNciOut(NCI *in, char *out)
   LoadInt(in->flags,ptr);                           ptr += 4;
   *ptr = in->flags2;                                ptr += 1;
                                                     ptr += 1;
+#ifdef WORDS_BIGENDIAN
+  LoadInt(in->time_inserted[1],ptr);                ptr += 4;
+  LoadInt(in->time_inserted[0],ptr);                ptr += 4;
+#else
   LoadInt(in->time_inserted[0],ptr);                ptr += 4;
   LoadInt(in->time_inserted[1],ptr);                ptr += 4;
+#endif
   LoadInt(in->owner_identifier,ptr);                ptr += 4;
   *ptr = in->class;                                 ptr += 1;
   *ptr = in->dtype;                                 ptr += 1;
@@ -41,8 +46,13 @@ void TreeSerializeNciIn(char *in, NCI *out)
   out->flags = swapint(ptr);                                              ptr += 4;
   out->flags2 = *ptr;                                                     ptr += 1;
                                                                           ptr += 1;
+#ifdef WORDS_BIGENDIAN
+  out->time_inserted[1] = swapint(ptr);                                   ptr += 4;
+  out->time_inserted[0] = swapint(ptr);                                   ptr += 4;
+#else
   out->time_inserted[0] = swapint(ptr);                                   ptr += 4;
   out->time_inserted[1] = swapint(ptr);                                   ptr += 4;
+#endif
   out->owner_identifier = swapint(ptr);                                   ptr += 4;
   out->class = *ptr;                                                      ptr += 1;
   out->dtype = *ptr;                                                      ptr += 1;
