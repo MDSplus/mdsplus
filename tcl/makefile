@@ -8,6 +8,7 @@ OBJFILES = 			\
 	tcl_create_pulse.o	\
 	tcl_directory.o		\
 	tcl_directory_tag.o	\
+	tcl_do_method.o		\
 	tcl_dummy.o		\
 	tcl_general.o		\
 	tcl_set_callbacks.o	\
@@ -30,7 +31,7 @@ libTcl.a:	libTcl.a( $(OBJFILES) )
 ../shlib/tcl_commands.$(SHARE_TYPE):	libTcl.a
 	$(CC) $(CFLAGS)  -o $@ $(LFLAGS) $(LD_SHARED_LIB_OPTIONS)	\
 		tcl_commands.o  libTcl.a	\
-		-lMdsdcl -lMdsShr -lTreeShr	\
+		-lMdsdcl -lMdsShr -lTreeShr -lTdiShr	\
 		$(MDSPLUS)/cdu/libCdu.a
 
 .depend:

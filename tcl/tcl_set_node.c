@@ -37,10 +37,10 @@ int TclSetNode()
         switch (cli_present("SUBTREE"))
            {
             case CLI_STS_PRESENT:
-              status = TreeSetSubtree(&nid);
+              status = TreeSetSubtree(nid);
               break;
             case CLI_STS_NEGATED:
-              status = TreeSetNoSubtree(&nid);
+              status = TreeSetNoSubtree(nid);
               break;
            }
         if (!(status & 1)) goto error;

@@ -37,8 +37,10 @@ int   TclAddNode()		/* Return: status			*/
     if (cli_get_value("MODEL",&dsc_modelType) & 1)
        {
         stsQual = cli_get_value("QUALIFIERS",&dsc_qualifiers);
-        sts = TreeAddConglom(DSC(&dsc_nodnam),DSC(&dsc_modelType),
-                  (stsQual & 1) ? DSC(&dsc_qualifiers) : 0, &nid);
+        if (stsQual & 1)
+            fprintf(stderr,"--> QUALIFIERS option is obsolete (ignored)\n");
+        sts = TreeAddConglom(dsc_nodnam.dscA_pointer,
+                            dsc_modelType.dscA_pointer,&nid);
        }
     else
        {
