@@ -60,4 +60,6 @@ host, if it finds it and can read it, it sends the first line as the username an
 the password, if not it sends $USER and a default password.
 NOTE - the environment variable SYBASE must point at the sybase distribution in order for their 
 libraries to function.
+NOTE - if the sybase distribution is not /usr/local/sybase, configure will not find the distribution
+unless you first set the environment variable SYBASE to point the the distribution directory.
 

@@ -2572,9 +2572,9 @@ fi
 
 echo $ac_n "checking for SYBASE open/client""... $ac_c" 1>&6
 echo "configure:2575: checking for SYBASE open/client" >&5
-if test -r "/usr/local/sybase/lib/libsybdb.a"
+: ${SYBASE=/usr/local/sybase}
+if test -r "$SYBASE/lib/libsybdb.a" 
 then 
-        SYBASE="/usr/local/sybase"
         SYBASE_INC="-I$SYBASE/include"
         SYBASE_LIB="-L$SYBASE/lib $LD_LDARC -lsybdb $LD_LDSHARE"
         echo "$ac_t""have sybase open/client" 1>&6
