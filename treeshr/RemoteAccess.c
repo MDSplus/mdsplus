@@ -167,6 +167,9 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,int 
           char *exp = malloc(strlen(subtree_list ? subtree_list : tree)+100);
           sprintf(exp,"TreeOpen('%s',%d)",subtree_list ? subtree_list : tree,dblist->shotid);
           status =  MdsValue0(socket, exp, &ans);
+
+	  free(exp);
+
           status = (status & 1) ? (((ans.dtype == DTYPE_L)  && ans.ptr) ? *(int *)ans.ptr : 0) : status;
           if (status & 1)
 	  {
@@ -272,6 +275,9 @@ int FindNodeRemote(PINO_DATABASE *dblist, char *path, int *outnid)
   char *exp = malloc(strlen(path)+32);
   sprintf(exp,"getnci(%s,'nid_number')",path);
   status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+
+  free(exp);
+
   if (status & 1)
   {
     if (ans.ptr)
@@ -310,6 +316,9 @@ int FindNodeWildRemote(PINO_DATABASE *dblist, char *path, int *nid_out, void **c
     char *exp = malloc(strlen(path)+50);
     sprintf(exp,"TreeFindNodeWild('%s',%d)",path,usage_mask);
     status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+
+    free(exp);
+
     if (status & 1)
     {
       if (ans.ptr)
