@@ -532,7 +532,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getTags
   while(n_tags < 256 && (tags[n_tags] = TreeFindNodeTags(nid, &ctx)) )
   {
 	 n_tags++;
-	 if((int)ctx == -1)
+	 if(((char *)ctx - (char *)0) & 0xffffffff == 0xffffffff)
 		break;
   }
   jtags = (*env)->NewObjectArray(env, n_tags, string_cls, 0); 
