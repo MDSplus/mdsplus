@@ -52,35 +52,40 @@ static DESCRIPTOR(compile_zone,"TDI Compile Zone");
 	text_ptr = tmp.pointer;
 	if (status & 1 && text_ptr->dtype != DTYPE_T) status = TdiINVDTYDSC;
 	if (status & 1) {
-                pthread_lock_global_np();
-		if (!TdiRefZone.l_zone) status = LibCreateVmZone(&TdiRefZone.l_zone,0,0,0,0,0,0,0,0,0,&compile_zone);
+                if (text_ptr->length > 0)
+		{
+                  pthread_lock_global_np();
+		  if (!TdiRefZone.l_zone) status = LibCreateVmZone(&TdiRefZone.l_zone,0,0,0,0,0,0,0,0,0,&compile_zone);
 
-		/****************************************
-		In case we bomb out, probably not needed.
-		****************************************/
-		TdiRefZone.l_status = TdiBOMB;
-                if (TdiRefZone.a_begin) free(TdiRefZone.a_begin);
-                TdiRefZone.a_begin = TdiRefZone.a_cur = memcpy(malloc(text_ptr->length),text_ptr->pointer,text_ptr->length);
-		TdiRefZone.a_end = TdiRefZone.a_cur + text_ptr->length;
-		TdiRefZone.l_ok = 0;
-		TdiRefZone.l_narg = narg - 1;
-		TdiRefZone.l_iarg = 0;
-		TdiRefZone.a_list = &list[0];
-		if (status & 1) {
+		  /****************************************
+		  In case we bomb out, probably not needed.
+		  ****************************************/
+		  TdiRefZone.l_status = TdiBOMB;
+                  if (TdiRefZone.a_begin) free(TdiRefZone.a_begin);
+                  TdiRefZone.a_begin = TdiRefZone.a_cur = memcpy(malloc(text_ptr->length),text_ptr->pointer,text_ptr->length);
+		  TdiRefZone.a_end = TdiRefZone.a_cur + text_ptr->length;
+		  TdiRefZone.l_ok = 0;
+		  TdiRefZone.l_narg = narg - 1;
+		  TdiRefZone.l_iarg = 0;
+		  TdiRefZone.a_list = &list[0];
+		  if (status & 1) {
                         TdiYyReset();
 			if (TdiYacc() && TdiRefZone.l_status & 1) status = TdiSYNTAX;
 			else status = TdiRefZone.l_status;
-		}
+		  }
 
-		/************************
-		Move from temporary zone.
-		************************/
-		if (status & 1) {
+		  /************************
+		  Move from temporary zone.
+		  ************************/
+		  if (status & 1) {
 			if (TdiRefZone.a_result == 0) MdsFree1Dx(out_ptr, NULL);
 			else status = MdsCopyDxXd((struct descriptor *)TdiRefZone.a_result, out_ptr);
-		}
-		LibResetVmZone(&TdiRefZone.l_zone);
-                pthread_unlock_global_np();
+		  }
+		  LibResetVmZone(&TdiRefZone.l_zone);
+                  pthread_unlock_global_np();
+                }
+                else
+                  MdsFree1Dx(out_ptr,NULL);
 	}
 	MdsFree1Dx(&tmp, NULL);
 	return(status);
