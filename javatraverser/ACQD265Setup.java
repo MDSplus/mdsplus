@@ -29,21 +29,21 @@ public class ACQD265Setup extends DeviceSetup
 		setSize(600,592);
 		name_label.setText("Name:");
 		getContentPane().add(name_label);
-		name_label.setBounds(10,37,36,24);
+		name_label.setBounds(10,42,42,24);
 		name.setNumCols(15);
 		name.setIdentifier("dev_name");
 		name.setTextOnly(true);
 		name.setOffsetNid(1);
 		getContentPane().add(name);
-		name.setBounds(43,35,361,29);
+		name.setBounds(40,35,361,29);
 		comment_label.setText("Comment:");
 		getContentPane().add(comment_label);
-		comment_label.setBounds(10,7,60,27);
+		comment_label.setBounds(10,7,65,27);
 		comment.setNumCols(35);
 		comment.setTextOnly(true);
 		comment.setOffsetNid(2);
 		getContentPane().add(comment);
-		comment.setBounds(57,7,480,28);
+		comment.setBounds(40,7,480,28);
 		JPanel2.setLayout(null);
 		getContentPane().add(JPanel2);
 		JPanel2.setBounds(11,105,527,96);
@@ -57,18 +57,18 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChoice1.setLabelString("Trig. Mode: ");
 		JPanel2.add(deviceChoice1);
 		deviceChoice1.setBounds(2,1,177,34);
-		deviceField3.setNumCols(6);
+		deviceField3.setNumCols(5);
 		deviceField3.setOffsetNid(14);
 		JPanel2.add(deviceField3);
 		deviceField3.setBounds(79,35,87,28);
 		JLabel3.setText("Trig. Source:");
 		JLabel3.setToolTipText("Time value of the first trigger pule.");
 		JPanel2.add(JLabel3);
-		JLabel3.setBounds(9,35,96,28);
+		JLabel3.setBounds(9,35,110,28);
 		JLabel4.setText("Trig. Delay:");
 		JPanel2.add(JLabel4);
 		JLabel4.setBounds(9,64,89,28);
-		deviceField4.setNumCols(6);
+		deviceField4.setNumCols(5);
 		deviceField4.setOffsetNid(15);
 		JPanel2.add(deviceField4);
 		deviceField4.setBounds(79,64,87,28);
@@ -76,7 +76,7 @@ public class ACQD265Setup extends DeviceSetup
 		JLabel5.setToolTipText("In % of the vertical Full Scale of the channel, or in mV if using external trig source");
 		JPanel2.add(JLabel5);
 		JLabel5.setBounds(172,35,69,28);
-		deviceField5.setNumCols(6);
+		deviceField5.setNumCols(5);
 		deviceField5.setOffsetNid(19);
 		JPanel2.add(deviceField5);
 		deviceField5.setBounds(245,35,87,28);
@@ -84,10 +84,10 @@ public class ACQD265Setup extends DeviceSetup
 		JLabel6.setToolTipText("Positive number: channel trigger number (Internal trigger), board number (External trigger)");
 		JPanel2.add(JLabel6);
 		JLabel6.setBounds(172,64,96,28);
-		deviceField6.setNumCols(6);
+		deviceField6.setNumCols(5);
 		deviceField6.setOffsetNid(16);
 		JPanel2.add(deviceField6);
-		deviceField6.setBounds(245,64,87,28);
+		deviceField6.setBounds(245,64,92,28);
 		deviceChoice2.setOffsetNid(17);
 		{
 			String[] tempString = new String[4];
@@ -99,7 +99,7 @@ public class ACQD265Setup extends DeviceSetup
 		}
 		deviceChoice2.setLabelString("Trig. Coupling:");
 		JPanel2.add(deviceChoice2);
-		deviceChoice2.setBounds(177,1,195,34);
+		deviceChoice2.setBounds(177,1,205,34);
 		deviceChoice3.setOffsetNid(18);
 		{
 			String[] tempString = new String[2];
@@ -112,16 +112,16 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChoice3.setBounds(375,1,142,34);
 		JLabel2.setText("Segment Number:");
 		JPanel2.add(JLabel2);
-		JLabel2.setBounds(336,64,102,28);
+		JLabel2.setBounds(336,64,110,28);
 		JLabel1.setText("Segment Points:");
 		JPanel2.add(JLabel1);
 		JLabel1.setBounds(337,35,99,28);
-		deviceField1.setNumCols(6);
+		deviceField1.setNumCols(5);
 		deviceField1.setIdentifier("seg_points");
 		deviceField1.setOffsetNid(10);
 		JPanel2.add(deviceField1);
-		deviceField1.setBounds(433,35,87,28);
-		deviceField2.setNumCols(6);
+		deviceField1.setBounds(433,35,92,28);
+		deviceField2.setNumCols(5);
 		deviceField2.setIdentifier("seg_num");
 		deviceField2.setOffsetNid(11);
 		JPanel2.add(deviceField2);
@@ -226,7 +226,7 @@ public class ACQD265Setup extends DeviceSetup
 		JLabel7.setText("Ck. Source:");
 		JLabel7.setToolTipText("External clock source reference (External clock source not implemented)");
 		getContentPane().add(JLabel7);
-		JLabel7.setBounds(351,72,69,30);
+		JLabel7.setBounds(351,72,72,30);
 		deviceField7.setOffsetNid(6);
         deviceField7.setNumCols(6);
 		getContentPane().add(deviceField7);
