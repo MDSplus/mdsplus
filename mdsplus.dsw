@@ -66,6 +66,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "icons"=.\icons\icons.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "idlmdsevent"=.\idlmdsevent\idlmdsevent.dsp - Package Owner=<4>
 
 Package=<5>
