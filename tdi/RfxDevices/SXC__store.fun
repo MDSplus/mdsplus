@@ -104,7 +104,11 @@ write(*, "SXC init");
   							_expr = "vt10GetData("//_m//","//_c//","//_end_idx//","//_reduction//")" ;  
    							_data = MdsValue(_expr);
 
-							_dim = make_dim(make_window(_start_idx, _end_idx, _trig), make_range(*,*,float(1./_freq)));
+							_dim = make_dim(make_window(_start_idx, _end_idx-1, _trig), make_range(*,*,float(1./_freq)));
+
+
+write(*, size(_data), size(data(_dim)));
+
 
 							_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
 				
