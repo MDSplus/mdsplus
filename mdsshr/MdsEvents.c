@@ -681,7 +681,7 @@ struct EventMessage {
 
 
 
-/* Process private part: Array of MAX_EVENTNAMES PrivateEventInfo structs */
+/* Process private part: Array of MAX_ACTIVE_EVENTS PrivateEventInfo structs */
 struct PrivateEventInfo {
     char active;  /* indicates wether this descriptor is active, i.e. describing an event declared by the process */
     char name[MAX_EVENTNAME_LEN]; /* name of the event */
@@ -1768,24 +1768,24 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
 
     /* First check wether the same name is already in use */
     LockMdsShrMutex(&privateMutex,&privateMutex_initialized);
-    for(i = 0; i < MAX_EVENTNAMES; i++)
+    for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
       if(private_info[i].active && !strcmp(eventnam, private_info[i].name))
 	break;
-    if(i < MAX_EVENTNAMES)
+    if(i < MAX_ACTIVE_EVENTS)
       name_already_in_use = 1;
     else
       name_already_in_use = 0;
 
 
     /* define internal event dispatching structure */ 
-    for(i = 0; i < MAX_EVENTNAMES; i++)
+    for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
       if(private_info[i].active && !strcmp(eventnam, private_info[i].name) &&
 	 private_info[i].astadr == astadr && private_info[i].astprm == astprm)
 	break;
-    if(i == MAX_EVENTNAMES) /* if no previous MdsEventAst to that event made by the process */
+    if(i == MAX_ACTIVE_EVENTS) /* if no previous MdsEventAst to that event made by the process */
     {
-      for(i = 0; i < MAX_EVENTNAMES && private_info[i].active; i++);
-      if(i == MAX_EVENTNAMES) /* if no free private event slot found */
+      for(i = 0; i < MAX_ACTIVE_EVENTS && private_info[i].active; i++);
+      if(i == MAX_ACTIVE_EVENTS) /* if no free private event slot found */
       {
         fprintf(stderr,"No more active event slots available. Ignoring event\n");
         status = 0;
@@ -1924,7 +1924,7 @@ int MDSEventCan(int eventid)
     if(!shared_info) return 0; /*must follow MdsEventAst */
     name_in_use = 0;
     LockMdsShrMutex(&privateMutex,&privateMutex_initialized);
-    for(i = 0; i < MAX_EVENTNAMES; i++)
+    for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
 	if((i != local_eventid) && private_info[i].active && !strcmp(evinfo->name, private_info[i].name))
           name_in_use = 1;
     if (!name_in_use)
@@ -2065,6 +2065,39 @@ int MDSEvent(char *evname_in, int data_len, char *data)
 		    
 
 /** For debugging only **/
+int NumActiveSharedEvents()
+{
+    int i, j;
+    int num=0;
+
+    getLock();
+    if(!shared_info)
+    {
+	if(attachSharedInfo() == -1)
+	{
+	    releaseLock();
+	}
+    }
+		    		
+    for(i = 0; i < MAX_EVENTNAMES; i++)
+    {
+      num+=shared_name[i].refcount;
+    }
+    releaseLock();
+    return num;
+}
+
+int NumActivePrivateEvents()
+{
+  int i,num=0;
+  LockMdsShrMutex(&privateMutex,&privateMutex_initialized);
+  for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
+  {
+    if(private_info[i].active) num++;
+  }
+  UnlockMdsShrMutex(&privateMutex);
+}
+
 void DumpSharedEventInfo()
 {
     int i, j;
