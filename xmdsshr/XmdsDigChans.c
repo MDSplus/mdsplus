@@ -53,7 +53,6 @@ Boolean XmdsIsDigChans(Widget w)
  External functions or symbols referenced:                                    */
 
 #include <stdio.h>
-#include <mds_stdarg.h>
 #include <mdsdescrip.h>
 #include <ncidef.h>
 #include <treeshr.h>
@@ -148,7 +147,7 @@ Widget XmdsCreateDigChans(Widget parent,String name,ArgList args,Cardinal argcou
     sprintf(name_c,"%d",i + 1);
     name = XmStringCreateSimple(name_c);
     TreeGetNci(head_nid,nci);
-    StrConcat(&path_s,&path_s,&zero MDS_END_ARG);
+    StrConcat(&path_s,&path_s,&zero,NULL);
     path = XmStringCreateSimple(path_s.pointer);
     StrFree1Dx(&path_s);
     {
@@ -210,9 +209,9 @@ int XmdsDigChansPut(Widget w)
       Widget *children;
       XtVaGetValues(chan_w[i],XmNnumChildren,&num_ctls,XmNchildren,&children,XmNuserData,&nid,NULL);
       if (XmToggleButtonGadgetGetState(children[1]))
-	TreeTurnOn(nid);
+	TreeTurnOn(&nid);
       else
-	TreeTurnOff(nid);
+	TreeTurnOff(&nid);
       if (num_ctls > 3) {
         XmdsExprPut(children[2]);
         XmdsExprPut(children[3]);

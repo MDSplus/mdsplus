@@ -141,7 +141,7 @@ int XmdsGetNidFloatOption(int nid,float *options,int numOptions)
       option = min(numOptions - 1,i);
     }
   }
-  MdsFree1Dx(&xd, 0);
+  MdsFree1Dx(&xd);
   return option;
 }
 
@@ -159,7 +159,7 @@ int XmdsGetNidIntOption(int nid,int *options,int numOptions)
       option = min(numOptions - 1,i);
     }
   }
-  MdsFree1Dx(&xd, 0);
+  MdsFree1Dx(&xd);
   return option;
 }
 
@@ -180,7 +180,7 @@ char *XmdsGetNidText(int nid)
   }
   else
     value = XtNewString("");
-  MdsFree1Dx(&xd, 0);
+  MdsFree1Dx(&xd);
   return value;
 }
 
@@ -192,7 +192,7 @@ int XmdsPutNidValue(int nid,unsigned short length,unsigned char dtype,char *poin
     dsc.length = length;
     dsc.dtype = dtype;
     dsc.pointer = pointer;
-    return TreePutRecord(nid,&dsc,0);
+    return TreePutRecord(nid,&dsc);
   }
   else
     return 1;
@@ -219,7 +219,7 @@ int XmdsPutNidSText(Widget w,int nid,char *originalValue)
     struct descriptor dsc = {0,DTYPE_T,CLASS_S,(char *) 0};
     dsc.length = strlen(value);
     dsc.pointer = value;
-    return TreePutRecord(nid,&dsc,0);
+    return TreePutRecord(nid,&dsc);
   }
 }
 
@@ -259,7 +259,7 @@ Boolean XmdsXdsAreValid(Widget w)
     struct descriptor_xd *xd = (struct descriptor_xd *) XmdsExprGetXd(w);
     if (xd)
     {
-      MdsFree1Dx(xd, 0);
+      MdsFree1Dx(xd);
       XtFree((char *)xd);
     }
     else
@@ -270,7 +270,7 @@ Boolean XmdsXdsAreValid(Widget w)
     struct descriptor_xd *xd = (struct descriptor_xd *) XmdsExprFieldGetXd(w);
     if (xd)
     {
-      MdsFree1Dx(xd, 0);
+      MdsFree1Dx(xd);
       XtFree((char *)xd);
     }
     else
@@ -281,7 +281,7 @@ Boolean XmdsXdsAreValid(Widget w)
     struct descriptor_xd *xd = (struct descriptor_xd *) XmdsXdBoxGetXd(w);
     if (xd)
     {
-      MdsFree1Dx(xd, 0);
+      MdsFree1Dx(xd);
       XtFree((char *)xd);
     }
     else
@@ -292,7 +292,7 @@ Boolean XmdsXdsAreValid(Widget w)
     Widget *children;
     int num;
     int i;
-    XtVaGetValues(w,XtNchildren,&children,XtNnumChildren,&num,NULL);
+    XtVaGetValues(w,XtNchildren,*children,XtNnumChildren,&num,NULL);
     for (i = 0; i < num && status; i++)
       status = XmdsXdsAreValid(children[i]);
   }

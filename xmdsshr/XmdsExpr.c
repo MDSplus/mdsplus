@@ -120,9 +120,7 @@
 
 #include <strroutines.h>
 #include <mdsdescrip.h>
-#include <treeshr.h>
 #include <ncidef.h>
-#include <mds_stdarg.h>
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include <Xmds/XmdsExprP.h>
@@ -184,16 +182,17 @@ static struct descriptor_xd const empty_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
 static void Focus_In(Widget w,XEvent *event,String *params,Cardinal num_params);
 static XtActionsRec actions[] = {{"Focus_In", (XtActionProc) Focus_In}};
 static XtResource resources[] = {
-  {XmdsNxd, "Xd", XtRPointer, sizeof(struct dsc$descriptor_xd *), XtOffset(XmdsExprWidget, expr.xd), XtRImmediate, (void *)0},
-  {XmdsNdefaultNid, "Nid", XtRInt, sizeof(int), XtOffset(XmdsExprWidget, expr.default_nid), XtRImmediate, (XtPointer) -1},
-  {XmdsNnid, "Nid", XtRInt, sizeof(int), XtOffset(XmdsExprWidget, expr.nid), XtRImmediate, (XtPointer)0},
-  {XmdsNnidOffset, "NidOffset", XtRInt, sizeof(int), XtOffset(XmdsExprWidget, expr.nid_offset), XtRImmediate, (XtPointer)0},
-  {XmdsNcompile,"Compile",XtRFunction,sizeof(int (*)()),XtOffset(XmdsExprWidget,expr.compile),XtRImmediate, (XtPointer)TdiCompile},
-  {XmdsNdecompile,"Decompile",XtRFunction,sizeof(int (*)()),XtOffset(XmdsExprWidget,expr.decompile),XtRImmediate,(XtPointer) TdiDecompile},
-  {XmdsNautoQuote, "AutoQuote", XtRBoolean, sizeof(Boolean), XtOffset(XmdsExprWidget, expr.auto_quote), XtRImmediate, (XtPointer) False},
+  {XmdsNxd, "Xd", XtRInt, sizeof(int), XtOffset(XmdsExprWidget, expr.xd), XtRImmediate, 0},
+  {XmdsNdefaultNid, "Nid", XtRInt, sizeof(int), XtOffset(XmdsExprWidget, expr.default_nid), XtRImmediate, (void *) -1},
+  {XmdsNnid, "Nid", XtRInt, sizeof(int), XtOffset(XmdsExprWidget, expr.nid), XtRImmediate, 0},
+  {XmdsNnidOffset, "NidOffset", XtRInt, sizeof(int), XtOffset(XmdsExprWidget, expr.nid_offset), XtRImmediate, 0},
+  {XmdsNcompile,"Compile",XtRInt,sizeof(int),XtOffset(XmdsExprWidget,expr.compile),XtRImmediate,(void *) TdiCompile},
+  {XmdsNdecompile,"Decompile",XtRInt,sizeof(int),XtOffset(XmdsExprWidget,expr.decompile),XtRImmediate,(void *) TdiDecompile},
+  {XmdsNautoQuote, "AutoQuote", XtRBoolean, sizeof(Boolean), XtOffset(XmdsExprWidget, expr.auto_quote), XtRImmediate, (void *) 0},
   {XmdsNdefaultQuote, "DefaultQuote", XtRBoolean, sizeof(Boolean), XtOffset(XmdsExprWidget, expr.default_quote), XtRImmediate, 
-   (XtPointer) True},
-  {XmdsNputOnApply, "PutOnApply", XtRBoolean, sizeof(Boolean), XtOffset(XmdsExprWidget, expr.put_on_apply), XtRImmediate, (XtPointer) True}
+   (void *) 1},
+  {XmdsNputOnApply, "PutOnApply", XtRBoolean, sizeof(Boolean), XtOffset(XmdsExprWidget, expr.put_on_apply), XtRImmediate, 
+   (void *) 1}
 };
 
 static CompositeClassExtensionRec composite_extension = {
@@ -325,16 +324,16 @@ struct descriptor *XmdsExprGetXd(Widget w)
     if (def_nid != -1)
     {
       TreeGetDefaultNid(&old_def);
-      TreeSetDefaultNid(def_nid);
+      TreeSetDefaultNid(&def_nid);
     }
-    status = (*ew->expr.compile) (&text_dsc,ans MDS_END_ARG);
+    status = (*ew->expr.compile) (&text_dsc,ans);
     if ((status & 1) == 0)
     {
       TdiComplain(w);
       XtFree((char *)ans);
       ans = 0;
     }
-    if (def_nid != -1) TreeSetDefaultNid(old_def);
+    if (def_nid != -1) TreeSetDefaultNid(&old_def);
   }
   return (struct descriptor *) ans;
 }
@@ -356,13 +355,13 @@ Boolean XmdsExprPut(Widget w)
       struct descriptor_xd *old_xd;
       old_xd = (struct descriptor_xd *) TdiGet(nid);
       if ((!old_xd && new_xd->l_length) || !MdsCompareXd((struct descriptor *) new_xd,(struct descriptor *) old_xd))
-	status = TreePutRecord(nid,(struct descriptor *) new_xd,0);
+	status = TreePutRecord(&nid,(struct descriptor *) new_xd);
       if (old_xd)
       {
-	MdsFree1Dx(old_xd, 0);
+	MdsFree1Dx(old_xd);
 	XtFree((char *)old_xd);
       }
-      MdsFree1Dx(new_xd, 0);
+      MdsFree1Dx(new_xd);
       XtFree((char *)new_xd);
     }
   }
@@ -429,7 +428,7 @@ void XmdsExprSetNid(Widget w,int nid,int offset)
   int new_nid;
   int status;
   if (ew->expr.xd)
-    MdsFree1Dx(ew->expr.xd, 0);
+    MdsFree1Dx(ew->expr.xd);
   else
   {
     ew->expr.xd = (struct descriptor_xd *) XtMalloc(sizeof(struct descriptor_xd));
@@ -439,7 +438,7 @@ void XmdsExprSetNid(Widget w,int nid,int offset)
     ew->expr.nid = XmdsGetDeviceNid();
 
   new_nid = ew->expr.nid + offset;
-  status = TreeGetRecord(new_nid,ew->expr.xd);
+  status = TreeGetRecord(&new_nid,ew->expr.xd);
   if (status & 1)
     LoadExpr(ew,(struct descriptor *) ew->expr.xd);
   else
@@ -456,7 +455,7 @@ void XmdsExprSetXd(Widget w,struct descriptor *dsc)
 {
   XmdsExprWidget ew = (XmdsExprWidget) w;
   if (ew->expr.xd)
-    MdsFree1Dx(ew->expr.xd, 0);
+    MdsFree1Dx(ew->expr.xd);
   else
   {
     ew->expr.xd = (struct descriptor_xd *) XtMalloc(sizeof(struct descriptor_xd));
@@ -578,7 +577,7 @@ static Boolean SetValues(Widget old,Widget req,Widget new,ArgList args,Cardinal 
   {
     if (old_ew->expr.xd)
     {
-      MdsFree1Dx(old_ew->expr.xd, 0);
+      MdsFree1Dx(old_ew->expr.xd);
       XtFree((char *)old_ew->expr.xd);
     };
     new_ew->expr.xd = 0;
@@ -680,9 +679,9 @@ static void LoadExpr(XmdsExprWidget w,struct descriptor *dsc)
       if (def_nid != -1)
       {
 	TreeGetDefaultNid(&old_def);
-	TreeSetDefaultNid(def_nid);
+	TreeSetDefaultNid(&def_nid);
       }
-      status = (*w->expr.decompile) (xd,&text MDS_END_ARG);
+      status = (*w->expr.decompile) (xd,&text);
       w->expr.is_text = 0;
       if (status & 1)
       {
@@ -694,7 +693,7 @@ static void LoadExpr(XmdsExprWidget w,struct descriptor *dsc)
       else
 	SetString(w->expr.text_widget,"");
       StrFree1Dx(&text);
-      if (def_nid != -1) TreeSetDefaultNid(old_def);
+      if (def_nid != -1) TreeSetDefaultNid(&old_def);
     }
   }
   else

@@ -1,4 +1,4 @@
-CFLAGS = -c -I../include -I. -g -assume noaligned_objects
+CFLAGS = -c -I../include -I. -g -migrate -U__DECC -assume noaligned_objects
 
 OBJECTS = \
 	main-uil.o \
@@ -8,21 +8,18 @@ OBJECTS = \
         ReadString.o \
         GetNciString.o
 
-all : ../bin/traverser \
+all : traverser \
 	../uid/motiftraverser.uid
 
-../bin/traverser : $(OBJECTS) ../bin
-	cc -o $@ $(OBJECTS)  -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr -lMrm -lXm -lXt -lX11 
-
-../bin :
-	mkdir ../bin
+traverser : $(OBJECTS)
+	cc -o traverser $(OBJECTS)  -L../mdsshr -lMdsShr -lTreeShr -L../tdishr -lTdiShr -lMrm -lXm -lXt -lX11 -L../xmdsshr -lXmdsShr
 
 ../uid/motiftraverser.uid : motiftraverser.uil
 	uil -wmd ../xmdsshr/xmdsuil.wmd -o $@ $<
 	
 clean :
 	- rm *.o
-	- rm ../bin/traverser
+	- rm traverser
 	- rm ../uid/motiftraverser.uid
 	- rm .depend
 	- rm *~

@@ -178,7 +178,7 @@ static void Destroy(Widget w,Resources *info,XtPointer cb)
   {
     struct descriptor_xd *xd;
     XtVaGetValues(labels[i],XmNuserData,&xd,NULL);
-    MdsFree1Dx(xd, 0);
+    MdsFree1Dx(xd);
     XtFree((char *)xd);
   }
   XtFree((char *)info);
@@ -239,7 +239,7 @@ void XmdsNidOptionMenuReset(Widget w)
 	    MdsCompareXd((struct descriptor *) & xd,(struct descriptor *) button_xd) & 1 : 1)
 	  break;
       }
-      MdsFree1Dx(&xd, 0);
+      MdsFree1Dx(&xd);
       XmdsSetOptionIdx(w,idx);
     }
   }
@@ -321,7 +321,7 @@ int XmdsNidOptionMenuPut(Widget w)
 	TreeGetRecord(nid,&xd);
 	if ((xd.l_length || button_xd->l_length) ?
 	    !(MdsCompareXd((struct descriptor *) & xd,(struct descriptor *) button_xd) & 1) : 0)
-	  status = TreePutRecord(nid,(struct descriptor *) button_xd,0);
+	  status = TreePutRecord(nid,(struct descriptor *) button_xd);
 	else
 	  status = 1;
       }

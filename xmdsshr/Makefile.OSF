@@ -1,7 +1,6 @@
-CFLAGS = -c -I../include -I. -g -assume noaligned_objects
+CFLAGS = -c -I../include -g -assume noaligned_objects -D_NO_DPS
 
 OBJECTS = \
-ListTree.o \
 XmdsBells.o \
 XmdsComplain.o \
 XmdsDeviceSetup.o \
@@ -29,54 +28,13 @@ XmdsXdBoxDialog.o \
 XmdsXdBoxDialogButton.o \
 XmdsXdBoxOnOffButton.o
 
-all :	../shlib/libXmdsShr.so \
-	xmdsuil.wmd \
-        ../uid \
-	../uid/xmds_usage_icons.uid \
-	../uid/XmdsDigChans.uid \
-	../uid/XmdsInput.uid \
-	../uid/XmdsXdBox.uid
-
-../uid :
-	mkdir ../uid
-
-../uid/xmds_usage_icons.uid : xmds_usage_icons.uil
-	uil -o $@ $<
-
-../uid/XmdsDigChans.uid : XmdsDigChans.uil
-	uil -wmd xmdsuil.wmd -o $@ $<
-
-../uid/XmdsInput.uid : XmdsInput.uil
-	uil -wmd xmdsuil.wmd -o $@ $<
-
-../uid/XmdsXdBox.uid : XmdsXdBox.uil
-	uil -wmd xmdsuil.wmd -o $@ $<
-
-../shlib/libXmdsShr.so : $(OBJECTS)
-	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm \
-           -L../shlib -lMdsShr -lTdiShr -lTreeShr \
-	   -lMrm -lXm -lXt -lX11
-	- rm so_locations
-
-xmdsuil.wmd : xmdsuil.wml wmldbcreate-xmdsshr.c
-	mkdir wmltemp
-	cd wmltemp ; ln -s /usr/examples/motif/wml/tokens.dat . ; /usr/examples/motif/wml/wml ../xmdsuil.wml
-	cc -o wmltemp/wmdcreate -DMDS_EXTENSION -I../../include -I/usr/examples/motif/wml -I. -I./wmltemp wmldbcreate-xmdsshr.c -lXt -lXm
-	wmltemp/wmdcreate -o xmdsuil.wmd
-	- rm -R wmltemp
+libXmdsShr.so : $(OBJECTS)
+	ld -o $@ -shared -no_archive $(OBJECTS) \
+             -lc -lm -L../mdsplus/mdsshr -lMdsShr \
+                   -lots -L../mdsplus/tdishr -lTdiShr -L../mdsplus/treeshr -lTreeShr \
+		-lMrm -lXm -lXt -lX11
 
 clean :
 	- rm *.o
-	- rm ../shlib/libXmdsShr.so
+	- rm *.so
 	- rm so_locations
-	- rm .depend
-	- rm xmdsuil.wmd
-
-depend : .depend
-
-.depend :
-	- rm .depend
-	find *.c -exec cc -DMDS_EXTENSION -I../include -I. -I/usr/examples/motif/wml -M {} > .depend \;
-
-include .depend
-

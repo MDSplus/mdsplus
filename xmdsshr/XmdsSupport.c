@@ -169,10 +169,10 @@ Boolean PutIfChanged(int nid,struct descriptor_xd *xd)
     {
       struct descriptor_xd *old_xd = (struct descriptor_xd *) TdiGet(nid);
       if ((!old_xd && xd->l_length) || !MdsCompareXd((struct descriptor *)xd, (struct descriptor *)old_xd))
-	status = TreePutRecord(nid,(struct descriptor *)xd,0);
+	status = TreePutRecord(nid,(struct descriptor *)xd);
       if (old_xd)
       {
-	MdsFree1Dx(old_xd, 0);
+	MdsFree1Dx(old_xd);
 	XtFree((char *)old_xd);
       }
     }

@@ -40,8 +40,9 @@
 
 +-----------------------------------------------------------------------------*/
 
-#include <mdsdescrip.h>
 #include <mdsshr.h>
+#include <mdsdescrip.h>
+#include <mdsdescrip.h>
 #include <stdlib.h>
 
 extern int MdsGet1Dx();

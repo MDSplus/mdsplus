@@ -15,4 +15,4 @@ setenv LD_LIBRARY_PATH $MDSPLUS/shlib
 #
 # UID path
 #
-setenv UIDPATH $MDSPLUS/uid/%U
+setenv UIDPATH $MDSPLUS/uid
