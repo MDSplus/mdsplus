@@ -1,4 +1,0 @@
-#
-# Shared image path
-#
-setenv SHLIB_PATH $MDSPLUS/shlib
