@@ -27,7 +27,7 @@ int locnam(char *name, int a, int f, int count, void *data, int mem, unsigned sh
 
 MakeMulti(CamFQrepw,FQrepw)
 MakeMulti(CamFQstopw,FQstopw)
-MakeMulti(CamFStopw,Fstopw)
+MakeMulti(CamFStopw,FStopw)
 MakeMulti(CamQrepw,Qrepw)
 MakeMulti(CamQscanw,Qscanw)
 MakeMulti(CamQstopw,Qstopw)
