@@ -1,6 +1,6 @@
 public fun chs_a14__store(as_is _nid, optional _method)
 {
-  _debug = 0;
+  _debug = 1;
   _dignum = DevNodeRef(_nid,1);
   _ext_clock = DevNodeRef(_nid,4);
   _trigger   = DevNodeRef(_nid,5);
@@ -21,9 +21,10 @@ public fun chs_a14__store(as_is _nid, optional _method)
   _VME_BS_LWORD = 0x03000000;
   _VME_DENSE    = 0x10000000;
   _mode = _VME_UDATA | _VME_D16 | _VME_BS_LWORD | _VME_DENSE;
-  _settings = zero(128,0w)
-  _status = MdsVme->PioRead("/dev/vmp0",val(106c0000),val(_mode),val(128),ref(_settings));
-  _sr = long(_settings[9+_dignum*16]) | (long(_settings[17+_dignum*16]) << 16)
+  _settings = zero(128,0w);
+  _status = MdsVme->PioRead("/dev/vmp0",val(0x106c0000),val(_mode),val(128),ref(_settings));
+  if (_debug) write(*,"Settings = ",_settings);
+  _sr = (long(_settings[10+_dignum*16]) & 0xffff) | (long(_settings[12+_dignum*16]) << 16);
   if (_debug) write(*,"_sr=",_sr);
   /**********************************
    Get the PTS
