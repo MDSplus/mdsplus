@@ -81,7 +81,7 @@ int roam_check_access(char *host, int https, char *resource, char *permit, char 
   globus_xio_attr_init(&attr);
   if (https)
   {
-    globus_xio_attr_cntl(attr, gsi_driver, GLOBUS_XIO_GSI_SET_AUTHORIZATION_MODE, GLOBUS_XIO_GSI_HOST_AUTHORIZATION);
+    globus_xio_attr_cntl(attr, gsi_driver, GLOBUS_XIO_GSI_SET_SSL_COMPATIBLE, GLOBUS_TRUE);
   }    
   res = globus_xio_handle_create(&xio_handle, stack);
   //  test_res(res);
