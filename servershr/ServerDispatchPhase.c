@@ -598,7 +598,7 @@ static void Dispatch(int i)
       }
     else
       {
-	status = ServerDispatchAction(0, Server(server,actions[i].server), tree, shot, actions[i].nid, ActionDone, (void *)i, &actions[i].status, 
+	status = ServerDispatchAction(0, Server(server,actions[i].server), tree, shot, actions[i].nid, DoActionDone, (void *)i, &actions[i].status, 
 				      &actions[i].netid, Before);
 	ProgLoc = 7003;
 	if (status & 1)
