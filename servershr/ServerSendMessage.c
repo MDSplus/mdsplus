@@ -494,6 +494,39 @@ static void signal_handler(int dummy)
 }
 */
 
+static void ResetFdactive(int try, int sock, fd_set *active)
+{
+  Client *c;
+  if (try > 0)
+  {
+    int done=0;
+    while(!done)
+    {
+      lock_client_list();
+      for (c=ClientList;c;c=c->next)
+      {
+        if (ServerBadSocket(c->reply_sock))
+	{
+          unlock_client_list();
+          printf("removed client in ResetFdactive\n");
+          RemoveClient(c,0);
+          break;
+        }
+      }
+      unlock_client_list();
+      done = (c==0);
+    }
+  }
+  FD_ZERO(active);
+  FD_SET(sock,active);
+  lock_client_list();
+  for (c=ClientList;c;c=c->next) 
+    FD_SET(c->reply_sock,active);
+  unlock_client_list();
+  printf("reset fdactive in ResetFdactive\n");
+  return;
+}
+    
 static void *Worker(void *sockptr)
 {
   struct sockaddr_in sin;
@@ -501,6 +534,7 @@ static void *Worker(void *sockptr)
   int tablesize = FD_SETSIZE;
   int num = 0;
   int last_client_addr=0;
+  int try;
   fd_set readfds,fdactive;
   pthread_cleanup_push(ThreadExit, 0);
   /*
@@ -518,9 +552,12 @@ static void *Worker(void *sockptr)
   pthread_mutex_unlock(&worker_mutex);
   FD_ZERO(&fdactive);
   FD_SET(sock,&fdactive);
+  for (try=0;try < 10; try++)
+  {
   readfds = fdactive;
   while ((num = select(tablesize, &readfds, 0, 0, 0)) != -1)
   {
+    try=0;
     if (FD_ISSET(sock, &readfds))
     {
       unsigned int len = sizeof(struct sockaddr_in);
@@ -549,6 +586,10 @@ static void *Worker(void *sockptr)
   }
   perror("Dispatcher select loop failed");
   printf("Last client addr = %d\n",last_client_addr);
+  ResetFdactive(try,sock,&fdactive);
+  }
+  printf("Cannot recover from select errors in ServerSendMessage, exitting\n");
+  exit(0);
   pthread_cleanup_pop(1);
   return(0);
 }
