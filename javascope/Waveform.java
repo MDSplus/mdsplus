@@ -1228,10 +1228,7 @@ public class Waveform
     }
     g.fillRect(1, 1, d.width - 2, d.height - 2);
 
-    /*
-       if(!is_min_size)
-        grid.paint(g, d, this, wm);
-     */
+
     if (waveform_signal != null) {
       wave_b_box = new Rectangle(wm.XPixel(MinXSignal(), d),
                                  wm.YPixel(MaxYSignal(), d),
@@ -1247,6 +1244,29 @@ public class Waveform
       }
       DrawSignal(g, d, print_mode);
     }
+
+    if(print_mode == PRINT && mode == MODE_POINT)
+    {
+      /*
+      * Needed to print crosss hair
+      */
+       double curr_x = wm.XValue(end_x, d);
+       double curr_y = wm.YValue(end_y, d);
+
+       Point p = FindPoint(curr_x, curr_y, d, true);
+
+       if (p != null) {
+         Color prev_color = g.getColor();
+         if (crosshair_color != null) {
+           g.setColor(crosshair_color);
+         }
+         g.drawLine(0, p.y, d.width, p.y);
+         g.drawLine(p.x, 0, p.x, d.height);
+         g.setColor(prev_color);
+       }
+    }
+
+
 
     if (!is_min_size) {
       grid.paint(g, d, this, wm);
@@ -1389,7 +1409,8 @@ public class Waveform
 
         if (mode == MODE_POINT) {
           Color prev_color = g.getColor();
-          g.setColor(crosshair_color);
+          if (crosshair_color != null)
+            g.setColor(crosshair_color);
 
           g.drawLine(0, end_y, d.width, end_y);
           g.drawLine(end_x, 0, end_x, d.height);
@@ -1506,8 +1527,7 @@ public class Waveform
         }
         else {
           is_min_size = false;
-
-//	            if(resizing || off_image == null)
+//	  if(resizing || off_image == null)
         }
         {
           if (bug_image) {
@@ -1562,10 +1582,9 @@ public class Waveform
       return;
     }
 
-    if (! (mode == MODE_PAN && dragging && waveform_signal != null) || is_image) {
+    if (! (mode == MODE_PAN && dragging && waveform_signal != null) ||is_image) {
       g.drawImage(off_image, 0, 0, this);
     }
-
     g.translate(i.right, i.top);
 
     if (mode == MODE_ZOOM) {
@@ -1574,24 +1593,20 @@ public class Waveform
           g.setColor(crosshair_color);
         }
         else {
-          if (reversed) {
+          if (reversed)
             g.setColor(Color.white);
-          }
-          else {
+          else
             g.setColor(Color.black);
-          }
         }
         g.drawRect(curr_rect.x, curr_rect.y, curr_rect.width, curr_rect.height);
       }
     }
 
-    if (is_image) {
+    if (is_image)
       ImageActions(g, d = getWaveSize());
-    }
-    else {
+    else
       SignalActions(g, d = getWaveSize());
 
-    }
     if (show_measure && mode == MODE_POINT) {
       int mark_px, mark_py;
       Color c = g.getColor();
@@ -1619,7 +1634,7 @@ public class Waveform
     return 0;
   }
 
-  protected Point FindPoint(Signal s, double curr_x, double curr_y) {
+  protected Point FindPoint(Signal s, double curr_x, double curr_y,  Dimension d) {
     double x = 0.0, y = 0.0;
 
     if (s == null) {
@@ -1629,7 +1644,6 @@ public class Waveform
     if (s.getType() == Signal.TYPE_2D && s.getMode2D() == Signal.MODE_IMAGE) {
       wave_point_x = s.getClosestX(curr_x);
       wave_point_y = s.getClosestY(curr_y);
-      Dimension d = getWaveSize();
       Point p = new Point(wm.XPixel(wave_point_x, d), wm.YPixel(wave_point_y, d));
       return p;
     }
@@ -1733,13 +1747,17 @@ public class Waveform
    }
     wave_point_x = x;
     wave_point_y = y;
-    Dimension d = getWaveSize();
     return new Point(wm.XPixel(x, d), wm.YPixel(y, d));
   }
 
   protected Point FindPoint(double curr_x, double curr_y, boolean is_first) {
-    return FindPoint(waveform_signal, curr_x, curr_y);
+    return FindPoint(waveform_signal, curr_x, curr_y, getWaveSize());
   }
+
+  protected Point FindPoint(double curr_x, double curr_y, Dimension d, boolean is_first) {
+    return FindPoint(waveform_signal, curr_x, curr_y, d);
+  }
+
 
   Rectangle frame_zoom = null;
 

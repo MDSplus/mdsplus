@@ -936,9 +936,12 @@ public class MultiWaveform extends Waveform
 
     }
 
-
-
     protected Point FindPoint(double curr_x, double curr_y, boolean is_first)
+    {
+      return FindPoint( curr_x, curr_y, this.getWaveSize(),  is_first);
+    }
+
+    protected Point FindPoint(double curr_x, double curr_y, Dimension d, boolean is_first)
     {
 	    Signal curr_signal;
 	    int curr_idx, i, min_idx = 0;
@@ -951,7 +954,7 @@ public class MultiWaveform extends Waveform
 	    if(!is_first)
 	    {
 	        curr_signal = (Signal)signals.elementAt(curr_point_sig_idx);
-	        return FindPoint(curr_signal, curr_x, curr_y);
+	        return FindPoint(curr_signal, curr_x, curr_y, d);
 		}
 
 	    for(curr_point_sig_idx = i = 0; i < signals.size(); i++)
@@ -984,12 +987,12 @@ public class MultiWaveform extends Waveform
 	    //UpdateLimits();
 	    not_drawn = true;
 
-	    Point p = FindPoint(curr_signal, curr_x, curr_y);
-        return p;
-    }
+	    Point p = FindPoint(curr_signal, curr_x, curr_y, d);
+            return p;
+  }
 
-	public void UpdatePoint(double curr_x)
-	{
+  public void UpdatePoint(double curr_x)
+  {
 
         if(!is_image)
         {

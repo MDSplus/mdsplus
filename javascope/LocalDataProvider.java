@@ -33,11 +33,17 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     static {
         try
         {
-	        System.loadLibrary("JavaMds");
-	    }
-	    catch(Throwable e)
-	    {
-	    }
+          System.loadLibrary("MdsShr");
+          System.loadLibrary("MdsIpShr");
+          System.loadLibrary("TreeShr");
+          System.loadLibrary("TdiShr");
+          System.loadLibrary("JavaMds");
+        }
+        catch(Throwable e)
+        {
+          System.out.println("Load library "+e);
+          e.printStackTrace();
+        }
     }
 
     native public void SetEnvironmentSpecific(String in, String defaultNode);
