@@ -23,7 +23,7 @@ mdstcpip : ../bin ../shlib ../bin/mdsiptest ../bin/mdsip ../bin/mdsipd
 	cp mdsipd ../bin/mdsipd
 
 ../shlib/libMdsIpShr.$(SHARE_TYPE) : $(OBJECTS) libMdsIpUtil.a
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc $(SOCKET_LIB) -L. -lMdsIpUtil
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) libMdsIpUtil.a -lc $(SOCKET_LIB) 
 
 ../shlib :
 	mkdir ../shlib
