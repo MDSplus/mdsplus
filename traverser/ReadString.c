@@ -47,7 +47,7 @@ char *ReadString(char *expr, ...)
         break;
   }
   if (status&1) {
-    //    status = TdiData(&ans_xd, &ans_xd);
+    /*    status = TdiData(&ans_xd, &ans_xd); */
     if (status&1) {
       struct descriptor *d_ptr;
       for (d_ptr = (struct descriptor *)&ans_xd; 

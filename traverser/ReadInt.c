@@ -47,7 +47,7 @@ int ReadInt(char *expr, ...)
         break;
   }
   if (status&1) {
-    //    status = TdiEvaluate(&ans_xd, &ans_xd);
+    /*    status = TdiEvaluate(&ans_xd, &ans_xd); */
     if (status&1) {
       struct descriptor *d_ptr;
       for (d_ptr = (struct descriptor *)&ans_xd; 

@@ -27,6 +27,7 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
 #include <libroutines.h>
 #include <strroutines.h>
@@ -670,7 +671,7 @@ ModifyData( Widget w, XtPointer client_data, XtPointer call_data)
 
 static int DoMethodNoSignal(struct descriptor *niddsc, struct descriptor *method, Widget parent)
 {
-  //  LibEstablish(LibSigToRet);
+  /*  LibEstablish(LibSigToRet); */
   return TreeDoMethod(niddsc, method, parent);
 }
 
@@ -680,8 +681,8 @@ static int setup_device(Widget parent, int nid)
   struct descriptor niddsc = {4, DTYPE_NID, CLASS_S, 0};
   volatile int status;
   niddsc.pointer = (char *)&nid;
-  //  status = DoMethodNoSignal(&niddsc, (struct descriptor *)&method, parent);
-  //  if (status == TreeNOMETHOD)
+  /*  status = DoMethodNoSignal(&niddsc, (struct descriptor *)&method, parent); */
+  /*  if (status == TreeNOMETHOD) */
   {
     static char *getnci = "GETNCI($, 'CONGLOMERATE_ELT')";
     static int c_nid;
@@ -696,7 +697,7 @@ static int setup_device(Widget parent, int nid)
     if (TdiModelOf(&niddsc,&model MDS_END_ARG) & 1)
     {
       static struct descriptor filename = {0, DTYPE_T, CLASS_D, 0};
-      //      static DESCRIPTOR(const prefix, "DECW$SYSTEM_DEFAULTS:");
+      /*      static DESCRIPTOR(const prefix, "DECW$SYSTEM_DEFAULTS:"); */
       static DESCRIPTOR(const postfix, ".uid\0");
       static DESCRIPTOR(const zero,"\0");
       StrTrim(&model,&model);
