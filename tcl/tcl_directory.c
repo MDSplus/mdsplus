@@ -361,7 +361,10 @@ int   TclDirectory()
         if (!full)
            {
             if (dsc_outline.dscW_length)
+	    {
               TclTextOut(dsc_outline.dscA_pointer);
+              str_free1_dx(&dsc_outline);
+            }
            }
         TclTextOut("  ");
         sprintf(textLine,fmtTotal,found,(found>1)?"s":"");
