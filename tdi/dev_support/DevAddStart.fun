@@ -1,4 +1,4 @@
-public fun DevAddStart(in _path, in _type, in _numnodes, _out nid)
+public fun DevAddStart(in _path, in _type, in _numnodes, out _nid)
 {
   _stat = TreeShr->TreeStartConglomerate(val(_numnodes));
   if (!_stat)

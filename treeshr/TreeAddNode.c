@@ -45,9 +45,9 @@ int TreeSetSubtree(int nid)
   return _TreeSetSubtree(DBID, nid);
 }
 
-int TreeStartConglomerate(int *size_ptr)
+int TreeStartConglomerate(int size)
 {
-  return _TreeStartConglomerate(DBID, size_ptr);
+  return _TreeStartConglomerate(DBID, size);
 }
 
 int TreeWriteTree(char *exp_ptr, int shotid)
@@ -496,7 +496,7 @@ int _TreeAddConglom(void *dbid, char *path, char *congtype, int *nid)
 #define set_child(nod_ptr, new_child_ptr) \
     (nod_ptr)->child = (char *)new_child_ptr - (char *)nod_ptr
 
-int _TreeStartConglomerate(void *dbid, int *size_ptr)
+int _TreeStartConglomerate(void *dbid, int size)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   int       i;
@@ -528,7 +528,7 @@ int _TreeStartConglomerate(void *dbid, int *size_ptr)
   is found looking for it.  If nessesary expand the
   node pool and continue looking.
 ******************************************************/
-  for (status = 1, i = 0; (status & 1) && i < *size_ptr - 1;)
+  for (status = 1, i = 0; (status & 1) && i < size - 1;)
   {
     if (i == 0)
       starting_node_ptr = this_node_ptr;
@@ -573,7 +573,7 @@ int _TreeStartConglomerate(void *dbid, int *size_ptr)
       starting_node_ptr->child = 0;
     }
     info_ptr->edit->conglomerate_index = 0;
-    info_ptr->edit->conglomerate_size = *size_ptr;
+    info_ptr->edit->conglomerate_size = size;
     info_ptr->edit->conglomerate_setup = dblist->setup_info;
     dblist->setup_info = 0;
   }
@@ -668,7 +668,7 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
       FILE *ntreef;
       TREE_INFO *info_ptr = (*dblist)->tree_info;
       char *nfilenam = strcpy(malloc(strlen(info_ptr->filespec)+2),info_ptr->filespec);
-      trim_excess_nodes(info_ptr);
+      /*      trim_excess_nodes(info_ptr); */
       header_pages = (sizeof(TREE_HEADER) + 511) / 512;
       node_pages = (info_ptr->header->nodes * sizeof(NODE) + 511) / 512;
       tags_pages = (info_ptr->header->tags * 4 + 511) / 512;
@@ -739,10 +739,16 @@ static void trim_excess_nodes(TREE_INFO *info_ptr)
       }
       else
       {
-	if (parent_of(node_ptr))
-          link_it((parent_of(node_ptr))->child,child_of(node_ptr),parent_of(node_ptr));
-	if (child_of(node_ptr))
-          link_it((child_of(node_ptr))->parent,parent_of(node_ptr),child_of(node_ptr));
+        NODE *p = parent_of(node_ptr);
+        NODE *c = child_of(node_ptr);
+	if (p)
+	{
+          link_it(p->child,c,p);
+        }
+	if (c)
+	{
+          link_it(c->parent,p,c);
+        }
       }
     }
     *nodecount_ptr = nodes;

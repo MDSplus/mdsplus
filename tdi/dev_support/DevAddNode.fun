@@ -1,4 +1,4 @@
-public DevAddNode(in _path, in _usage, optional _data, optional _flags, out _nid)
+public fun DevAddNode(in _path, in _usage, optional in _data, optional in _flags, out _nid)
 {
   _stat = Tcl('add node/usage='//_usage//' '//_path);
   if (!_stat)
@@ -6,6 +6,7 @@ public DevAddNode(in _path, in _usage, optional _data, optional _flags, out _nid
     write(*,'Error adding node '//_path);
     abort();
   }
+  _nid = getnci(_path,'nid_number');
   if (present(_data))
   {
     _stat = TreeShr->TreePutRecord(val(_nid),xd(_data),val(0));
@@ -15,7 +16,7 @@ public DevAddNode(in _path, in _usage, optional _data, optional _flags, out _nid
       abort();
     }
   }
-  if (present(_flags)
+  if (present(_flags))
   {
     _stat = Tcl('set node'//_flags//' '//_path);
     if (!_stat)

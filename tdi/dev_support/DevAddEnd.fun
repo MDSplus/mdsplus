@@ -1,4 +1,4 @@
 public fun DevAddEnd()
 {
-  return('TreeShr->TreeEndConglomerate()');
+  return(TreeShr->TreeEndConglomerate());
 }
