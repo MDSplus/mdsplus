@@ -3,16 +3,33 @@ include $(MAKE_OPTIONS)
 OBJECTS = \
         MdsLib.o 
 
-mdslib : ../bin ../shlib ../shlib/libMdsLib.$(SHARE_TYPE) ../shlib/libMdsLib.a mdslib_ctest  mdslib_ftest  mdslib_fremotetest
+OBJECTS_CLIENT = MdsLib_client.o
+
+mdslib : ../bin ../shlib \
+         ../shlib/libMdsLib.$(SHARE_TYPE) \
+         ../shlib/libMdsLib_client.$(SHARE_TYPE) \
+         ../shlib/libMdsLib_client.a \
+         ../shlib/libMdsLib.a mdslib_ctest  \
+         mdslib_ftest  mdslib_fremotetest
 
 ../bin :
 	mkdir ../bin
 
 ../shlib/libMdsLib.$(SHARE_TYPE) : $(OBJECTS) ../mdstcpip/libMdsIpUtil.a
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) ../mdstcpip/libMdsIpUtil.a -lc $(SOCKET_LIB) -L../shlib -lTdiShr -lTreeShr -lMdsShr 
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) ../mdstcpip/libMdsIpUtil.a -lc $(SOCKET_LIB)\
+               -L../shlib -lTdiShr -lTreeShr -lMdsShr 
 
 ../shlib/libMdsLib.a : $(OBJECTS) ../mdstcpip/libMdsIpUtil.a
 	$(AR) -r $@ $(OBJECTS) ../mdstcpip/libMdsIpUtil.a 
+
+../shlib/libMdsLib_client.$(SHARE_TYPE) : $(OBJECTS_CLIENT) ../mdstcpip/libMdsIpUtil.a
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS_CLIENT) ../mdstcpip/libMdsIpUtil.a -lc $(SOCKET_LIB)
+
+../shlib/libMdsLib_client.a : $(OBJECTS_CLIENT) ../mdstcpip/libMdsIpUtil.a
+	$(AR) -r $@ $(OBJECTS) ../mdstcpip/libMdsIpUtil.a 
+
+MdsLib_client.o : MdsLib.c
+	$(CC) -o $@ -c $(CFLAGS) MdsLib.c -D_CLIENT_ONLY
 
 ../shlib :
 	mkdir ../shlib

@@ -4,6 +4,7 @@
 */
 
 #include "mdslib.h"
+#ifndef _CLIENT_ONLY
 #ifdef __VMS
 extern int MDS$OPEN();
 extern int MDS$CLOSE();
@@ -23,6 +24,7 @@ extern int TreeWait();
 extern int TreeOpen();
 extern int TreeClose();
 extern int TreeSetDefault();
+#endif
 #endif
 short ArgLen(struct descrip *d);
 
@@ -195,7 +197,7 @@ int descr (int *dtype, void *data, int *dim1, ...)
   return retval;
 }
 
-
+#ifndef _CLIENT_ONLY
 int *cdescr (int dtype, void *data, ...)
 {
     void *arglist[MAXARGS];
@@ -225,7 +227,7 @@ int *cdescr (int dtype, void *data, ...)
     status = LibCallg(arglist,descr);
     return(&status);
 }
-
+#endif
 
 void MdsDisconnect()
 {
@@ -504,6 +506,9 @@ int MdsValue(char *expression, ...)
 
   }
   else 
+#ifdef _CLIENT_ONLY
+    printf("Must ConnectToMds first\n");
+#else
   {
     void *arglist[MAXARGS];
     struct descriptor *dsc;
@@ -568,6 +573,7 @@ int MdsValue(char *expression, ...)
       }
     }
   }
+#endif
 
   return(status);
 #endif
@@ -666,7 +672,10 @@ int  MdsPut(char *pathname, char *expression, ...)
 	memcpy(&status,dptr,numbytes);
     }
   }
-  else 
+  else
+#ifdef _CLIENT_ONLY
+    printf("Must ConnectToMds first\n");
+#else
   {
 
     void *arglist[MAXARGS];
@@ -706,6 +715,7 @@ int  MdsPut(char *pathname, char *expression, ...)
     }
 
   }
+#endif
   return(status);
 #endif
 }
@@ -740,6 +750,9 @@ int  MdsOpen(char *tree, int *shot)
       return 0;  /*&&& should I return status here?  It looks messed up. &&& */
   }
   else 
+#ifdef _CLIENT_ONLY
+    printf("Must ConnectToMds first\n");
+#else
   {
 
 #ifdef __VMS
@@ -752,7 +765,7 @@ int  MdsOpen(char *tree, int *shot)
 #endif
 
   }
-
+#endif
 }
 
 
@@ -787,6 +800,9 @@ int  MdsClose(char *tree, int *shot)
       return 0;  /*&&& should I return status here?  It looks messed up. &&& */
   }
   else 
+#ifdef _CLIENT_ONLY
+    printf("Must ConnectToMds first\n");
+#else
   {
 #ifdef __VMS
     struct descriptor treeexp = {0,DTYPE_T,CLASS_S,0};
@@ -797,7 +813,7 @@ int  MdsClose(char *tree, int *shot)
     return TreeClose(tree, *shot);
 #endif
   }
-
+#endif
 
 }
 
@@ -826,6 +842,9 @@ int  MdsSetDefault(char *node)
   }
 
   else 
+#ifdef _CLIENT_ONLY
+    printf("Must ConnectToMds first\n");
+#else
 
   {
 
@@ -838,7 +857,7 @@ int  MdsSetDefault(char *node)
     return TreeSetDefault(node);
 #endif
   }
-
+#endif
 }
 
 
