@@ -16,16 +16,18 @@
 ; PROCEDURE:	--
 ; MODIFICATION HISTORY:
 ;	JAS 16-MAR-1994 Initial coding.
+;       JAS 17-MAR-2004 add optional min_delta argument (10 years +1 day later)
 */
-FUN	PUBLIC CONCATENATE(_sigs, IN _starts) {
+FUN	PUBLIC CONCATENATE(_sigs, IN _starts, optional in _mindelta) {
   private _x_ans = [0.];
   private _y_ans = [0.];
+  _mind = present (_mindelta) ? _mindelta : 1E-3;
   for (_i = 0; _i < SIZE(_sigs); _i++) {
      _sig = getnci(_sigs[_i], 'RECORD');
      if (_i == SIZE(_sigs)-1) {
        _x = [_starts[_i], pack(DIM_OF(_sig), dim_of(_sig) > _starts[_i])];
      } else {
-       _x = [_starts[_i], pack(dim_of(_sig), (dim_of(_sig) > _starts[_i]) and (dim_of(_sig) < _starts[_i+1])), _starts[_i+1] - 1.E-3];
+       _x = [_starts[_i], pack(dim_of(_sig), (dim_of(_sig) > _starts[_i]) and (dim_of(_sig) < _starts[_i+1])), _starts[_i+1] - _mind];
      }
      _y = MdsMisc->Resample:DSC(XD(_SIG),XD(_x));
      if (_i == 0) {
