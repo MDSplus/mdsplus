@@ -82,7 +82,7 @@ dnl Look for java jdk
 AC_MSG_CHECKING(for presence of java jdk in /usr/java)
 jdk_found=0
 jdk_dir=""
-jdk_dirs=`find /usr/java -name 'jdk*' -type d -maxdepth 1 2>/dev/null`
+jdk_dirs=`find /usr/java -type d -maxdepth 1 2>/dev/null`
 if test $? = 0; then 
   for i in $jdk_dirs; do
     tmp=`ls -d $i/include >/dev/null 2>/dev/null`;
@@ -264,6 +264,7 @@ dnl Define build directories
 MAKEUIDDIR="\$(top_srcdir)/uid/"
 MAKEETCDIR="\$(top_srcdir)/etc/"
 MAKEJAVADIR="\$(top_srcdir)/java/"
+
 if test "$MAKELIBDIR" = "$MAKESHLIBDIR"; then
 	MAKESHLIBDIR_RULE=""
 else
@@ -554,8 +555,8 @@ cdu/Makefile
 cts/Makefile
 d3dshr/Makefile 
 dwscope/Makefile 
+gen_device/Makefile
 idlmdsevent/Makefile
-mdssql/Makefile
 idlsql/Makefile
 javaclient/Makefile
 javadispatcher/Makefile
@@ -575,6 +576,7 @@ mdslib/Makefile
 mdslibidl/Makefile 
 mdsmisc/Makefile
 mdsshr/Makefile 
+mdssql/Makefile
 mdstcpip/Makefile 
 mdsvme/Makefile
 mitdevices/Makefile 
