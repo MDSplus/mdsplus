@@ -210,7 +210,7 @@ public class MdsConnection
 	            return out;
 	        }
 	        out.status = message.status;
-	        switch (out.dtype = message.dtype)
+	        switch ((out.dtype = message.dtype))
 	        {
 	            case Descriptor.DTYPE_CHAR:
 		            out.strdata = new String(message.body);
@@ -226,9 +226,6 @@ public class MdsConnection
 	            case Descriptor.DTYPE_LONG:
 		            out.int_data = message.ToIntArray();
 		        break;
-	            case Descriptor.DTYPE_FLOAT:
-		            out.float_data = message.ToFloatArray();
-		        break;
 	            case Descriptor.DTYPE_CSTRING:
 	                if((message.status & 1) == 1)
 	                    out.strdata = new String(message.body);
@@ -237,6 +234,12 @@ public class MdsConnection
 		        break;
 	            case Descriptor.DTYPE_BYTE:
 		            out.byte_data = message.body;
+		        break;
+	            case Descriptor.DTYPE_FLOAT:
+		            out.float_data = message.ToFloatArray();
+		        break;
+	            case Descriptor.DTYPE_DOUBLE:
+		            out.double_data = message.ToDoubleArray();
 		        break;
 	        }
 	    }

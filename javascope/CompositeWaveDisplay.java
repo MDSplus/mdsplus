@@ -6,7 +6,7 @@ import java.lang.NumberFormatException;
 import java.util.*;
 import javax.swing.*;
 import java.security.AccessControlException;
-//import java.awt.print.*;
+import java.awt.print.*;
 
 public class CompositeWaveDisplay extends JApplet implements WaveContainerListener
 {
@@ -17,8 +17,8 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
     private int               print_scaling = 100;
     private boolean           fixed_legend = false;
     static  private JFrame    f = null;
-//    PrinterJob                prnJob;
-//    PageFormat                pf;
+    PrinterJob                prnJob;
+    PageFormat                pf;
 
     public static void main(String args[])
     {
@@ -148,13 +148,12 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         panel1.add(zoom);
         panel1.add(pan);
 	
-        JPanel panel = new JPanel();
-	/*
+        JPanel panel = new JPanel()
         {
             public void print(Graphics g){}
             public void printAll(Graphics g){}
         };    
-	*/  
+            
         panel.setLayout(new BorderLayout());
         panel.add("West", panel1);
         if(!isApplet)
@@ -163,20 +162,34 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             point_pos.setFont(new Font("Courier", Font.PLAIN, 12));
             panel.add("Center", point_pos);
 
-/*
+
             prnJob = PrinterJob.getPrinterJob();
             pf = prnJob.defaultPage();
+            /*
 	        pf.setOrientation(PageFormat.LANDSCAPE);
 	        Paper p = pf.getPaper();
 	        p.setSize(595.2239, 841.824);
 	        p.setImageableArea(13.536, 12.959, 567.288, 816.6239);
 	        pf.setPaper(p);
-    	
+    	    */
+    	    
 	        JButton print = new JButton("Print");
 	        print.addActionListener(new ActionListener()
 		    {
 		        public void actionPerformed(ActionEvent e)
-		        { 			
+		        {
+		            
+				        try 
+					    {
+					    pf = prnJob.pageDialog(pf);
+					    if(prnJob.printDialog())
+					        {
+                            prnJob.setPrintable(wave_container, pf);
+						    prnJob.print();
+					        }
+					    } 
+				        catch (Exception ex){}
+		            /*
 			    javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
 				    public void actionPerformed(ActionEvent ae) 
 				    {
@@ -195,11 +208,11 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 			    });
 			    t.setRepeats(false);
 			    t.start();
-    			
+    			*/
 		        }
 		    });
 	        panel.add("East", print);
-*/
+
 	    }
 
         getContentPane().add("Center", wave_container);//, BorderLayout.CENTER);
@@ -558,13 +571,13 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
     {
         
         Dimension dim = getSize();
-        /*
+        
         System.out.println(g);
         PrintGraphics pg = (PrintGraphics)g;
         PrintJob pj = pg.getPrintJob();
         System.out.println(pj); 
         System.out.println("Size "+pj.getPageDimension()+ " resolution " + pj.getPageResolution());
-        */
+        
         /*
         Dimension dim = new Dimension();       
         Dimension applet_size = getSize();

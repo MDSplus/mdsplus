@@ -2,6 +2,7 @@ import java.net.*;
 import java.io.*;
 import java.util.StringTokenizer;
 import javax.swing.JOptionPane;
+import javax.swing.JEditorPane;
 
 public class TextorBrowseSignals extends jScopeBrowseSignals
 {   
@@ -13,40 +14,51 @@ public class TextorBrowseSignals extends jScopeBrowseSignals
     protected String getSignal(String url_name)
     {
         String sig_path = null, curr_line;
+        boolean is_image = (mime_type.indexOf("image") != -1);
+        
         try
         {
-            BufferedReader br = new BufferedReader(new StringReader(html.getText()));
-            while (sig_path == null)
+            if(!is_image)
             {
-                try {
-                    curr_line = br.readLine();
-                    if(curr_line.startsWith("SignalURL"))
-                        sig_path = curr_line.substring(curr_line.indexOf("http:"));
-               }
-                catch(Exception exc) 
+                BufferedReader br = new BufferedReader(new StringReader(html.getText()));
+                while (sig_path == null)
                 {
- 		             JOptionPane.showMessageDialog(this, "Error reading URL " + url_name + " :unexpected properties format when read SignalURL property", 
-		                                "alert", JOptionPane.ERROR_MESSAGE);
-		             return null;
+                    try {
+                        curr_line = br.readLine();
+                        if(curr_line.startsWith("SignalURL"))
+                            sig_path = curr_line.substring(curr_line.indexOf("http:"));
                 }
+                    catch(Exception exc) 
+                    {
+ 		                JOptionPane.showMessageDialog(this, "Error reading URL " + url_name + " :unexpected properties format when read SignalURL property", 
+		                                    "alert", JOptionPane.ERROR_MESSAGE);
+		                return null;
+                    }
+                }
+                
+                if(sig_path != null)
+                {
+                    String dummy;
+                    String group;
+                    StringTokenizer st = new StringTokenizer(sig_path, "/");
+                    dummy = st.nextToken();
+                    server_url = st.nextToken();
+                    tree  = st.nextToken();
+                    group = st.nextToken();
+                    shot  = st.nextToken();
+                    sig_path = server_url+"//"+group+st.nextToken("");
+                }
+                
             }
+            else
+                sig_path = url_name;
+                
             
-            if(sig_path != null)
-            {
-                String dummy;
-                String group;
-                StringTokenizer st = new StringTokenizer(sig_path, "/");
-                dummy = st.nextToken();
-                server_url = st.nextToken();
-                tree  = st.nextToken();
-                group = st.nextToken();
-                shot  = st.nextToken();
-                sig_path = server_url+"//"+group+st.nextToken("");
-            }
-        } catch (Exception exc)
-            {
-                sig_path = null;
-            }
+        } 
+        catch (Exception exc)
+        {
+            sig_path = null;
+        }
         
         return sig_path;
     }

@@ -268,8 +268,7 @@ import javax.swing.event.*;
 	        {
                 public void valueChanged(ListSelectionEvent e)
                 {
-                    SList.this.sel_signal = ((JList)e.getSource()).getSelectedIndex() - 1;
-                    SList.this.signalSelect(sel_signal);
+                    SList.this.signalSelect(((JList)e.getSource()).getSelectedIndex()-1);
                 }
 	        });
 
@@ -349,22 +348,24 @@ import javax.swing.event.*;
       
       public int getSignalSelect()
       {
-	    return sel_signal;
-      }
-      
+        if(sig_list.getModel().getSize() == 2 && image_b.isSelected())
+            return 0;
+        else
+	        return sel_signal;
+      }     
       
       private void signalSelect(int sig)
       {
         if(sig+1 >= sig_list.getModel().getSize())
             return;
-	    sel_signal = sig;
-        sig_list.setSelectedIndex(sel_signal + 1);
+	    setSignalSelect(sig);
+	    sig_list.setSelectedIndex(getSignalSelect() + 1);
         if(sig >= 0)
-            if(sel_signal < signals.size())
-                putSignalSetup((Data)signals.elementAt(sel_signal));
+            if(getSignalSelect() < signals.size())
+                putSignalSetup((Data)signals.elementAt(getSignalSelect()));
         else
         	resetSignalSetup();
-	    setOptionState(sel_signal >= 0);  
+	    setOptionState(getSignalSelect() >= 0);  
       }
       
       private void setOptionState(boolean state)
@@ -417,9 +418,9 @@ import javax.swing.event.*;
         if(shots != null && shots.length > 0)  	
           	num_shot = shots.length;
           	
-	    if(sel_signal != -1) 
+	    if(getSignalSelect() != -1) 
 	    {
-    	    start_idx = (sel_signal/num_shot) * num_shot; // Divisione intera
+    	    start_idx = (getSignalSelect()/num_shot) * num_shot; // Divisione intera
 	        end_idx   = start_idx + num_shot; 
 	        for (i = 0; i < num_signal; i++)
 		    if(i >= start_idx && i < end_idx) 
@@ -559,10 +560,10 @@ import javax.swing.event.*;
 	        signalListRefresh();	    
 	    }
 	    
-	    if(sel_signal == -1 && wi.num_waves > 0)
-	        sel_signal = 0;
+	    if(getSignalSelect() == -1 && wi.num_waves > 0)
+	        setSignalSelect(0);
 	        
-	    signalSelect(sel_signal);
+	    signalSelect(getSignalSelect());
       }
       
       public Data[] getSignals()
@@ -690,12 +691,12 @@ import javax.swing.event.*;
 	            return;	
           	
 
-	        if(sel_signal != -1) 
+	        if(getSignalSelect() != -1) 
 	        {
                 if(shots != null && shots.length > 0)
                     num_shot = shots.length;
 	            
-	            start_idx = (sel_signal/num_shot) * num_shot; // Divisione intera
+	            start_idx = (getSignalSelect()/num_shot) * num_shot; // Divisione intera
 	            end_idx   = start_idx + num_shot; 
 
 	            for (i = 0,  j = 0 ; i < num_signal; i++)
@@ -712,9 +713,9 @@ import javax.swing.event.*;
 	 
 	 public void updateError()
 	 {
-	    if(sel_signal == -1)
-		return; 
-	    error_w.setError((Data)signals.elementAt(sel_signal));	
+	    if(getSignalSelect() == -1)
+		    return; 
+	    error_w.setError((Data)signals.elementAt(getSignalSelect()));	
 	 }
          
 	 public void signalListRefresh()
@@ -769,8 +770,10 @@ import javax.swing.event.*;
 		        signalsRefresh();
 		        signalListRefresh();
 	        }
-    	    if(sel_signal == -1)	    
+    	    if(getSignalSelect() == -1)
+    	    {
 		        signalList.addSignals();
+		    }    
 	        else {
 	            if(y_expr.getText().trim().length() != 0)
 		            signalList.updateSignals();
@@ -784,10 +787,10 @@ import javax.swing.event.*;
       {
 	    Object ob = e.getSource();
 	    
-	    if(ob == marker_step_t && sel_signal != -1)
+	    if(ob == marker_step_t && getSignalSelect() != -1)
 	    {
 		    try {
-		        ((Data)signals.elementAt(sel_signal)).marker_step = new Integer(marker_step_t.getText()).intValue();
+		        ((Data)signals.elementAt(getSignalSelect())).marker_step = new Integer(marker_step_t.getText()).intValue();
 		    } catch (NumberFormatException ex) {
 		        marker_step_t.setText("1");
 		    }
@@ -803,22 +806,22 @@ import javax.swing.event.*;
 	    if(ob instanceof JCheckBox)
 	        DefaultButtonChange(ob);
 
-    	if(sel_signal == -1)
+    	if(getSignalSelect() == -1)
 	        return;
         	    
 	    if(ob == marker) 
 	    {
 	        int m_idx =  marker.getSelectedIndex();
-	        ((Data)signals.elementAt(sel_signal)).marker = m_idx;
+	        ((Data)signals.elementAt(getSignalSelect())).marker = m_idx;
 	        setMarkerTextState(m_idx);
     	}	
 
 	    if(ob == show_type) {
-	        ((Data)signals.elementAt(sel_signal)).interpolate = show_type.getSelectedIndex() == 0 ? true : false;
+	        ((Data)signals.elementAt(getSignalSelect())).interpolate = show_type.getSelectedIndex() == 0 ? true : false;
 	    }	
 
 	    if(ob == color) {
-	        ((Data)signals.elementAt(sel_signal)).color_idx = color.getSelectedIndex();       
+	        ((Data)signals.elementAt(getSignalSelect())).color_idx = color.getSelectedIndex();       
 	    }
       
       }
@@ -1382,8 +1385,10 @@ import javax.swing.event.*;
 
         x_log.setVisible(false);
         y_log.setVisible(false); 
+
         signalList.setVisible(false);        
         p9.setVisible(false);        
+
         error.setVisible(false);
         keep_ratio_b.setVisible(true);
         horizontal_flip_b.setVisible(true);

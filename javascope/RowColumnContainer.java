@@ -354,6 +354,7 @@ public class RowColumnContainer extends JComponent
    public void update()
    {      
       row_col_layout.SetRowColumn(rows, ph, pw);
+      invalidate();
       validate();   
    }
 
@@ -373,6 +374,56 @@ public class RowColumnContainer extends JComponent
         this.pw = pw;
         update();
     }
+    
+    public void maximizeComponent(Component c)
+    {
+        
+        if(c == null)
+        {
+            update();
+            return;
+        }
+        
+        int n_com = getGridComponentCount() ;
+        
+        if (n_com == 1) return;
+        
+        int i, j, k;
+        float m_ph[] = new float[n_com];
+        float m_pw[] = new float[rows.length];
+        ph = new float[n_com];
+        pw = new float[rows.length];
+        
+        
+        Point p = this.getComponentPosition(c);
+        
+        for(i = 0, k = 0; i < rows.length; i++)
+        {
+            if(rows[i] == 0) continue;
+            
+            pw[i] = row_col_layout.getPercentWidth(i);
+            
+            if(i == p.x-1)
+                m_pw[i] = 1;
+            else
+                m_pw[i] = 0;
+                
+            
+            for(j = 0; j < rows[i]; j++)
+            {
+                if(i == p.x-1 && j == p.y-1)
+                   m_ph[k] = 1;
+                else
+                   m_ph[k] = 0;
+                ph[k] = row_col_layout.getPercentHeight(k);
+                k++;
+            }
+        }
+        row_col_layout.SetRowColumn(rows, m_ph, m_pw);
+        invalidate();
+        validate();   
+    }
+    
     
    /**
     * Set new grid configuration.
@@ -658,6 +709,7 @@ public class RowColumnContainer extends JComponent
                setRealPosition(new Point(col, i+1), new Point(col, i));         
         }        
         rows[col-1]--;
+        this.ph = this.pw = null;
         update();          
    }
 

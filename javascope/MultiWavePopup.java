@@ -30,7 +30,7 @@ public class MultiWavePopup extends WavePopup
     {
         super(setup_params);
         
-	    insert(legend = new JMenuItem("Position legend"), 1);
+	    insert(legend = new JMenuItem("Position legend"), 2);
 	    legend.addActionListener(new ActionListener()
 	        {
                 public void actionPerformed(ActionEvent e)
@@ -75,14 +75,14 @@ public class MultiWavePopup extends WavePopup
 	    super.SetMenuItem(is_image);
         if(!is_image)
         {
-	       insert(legend, 1);
+	       insert(legend, 3);
 	       if(wave.isFixedLegend())
 	       {
-             insert(signalList, 2);
+             insert(signalList, 4);
              legend.setText("Show Legend");
            } else {
-             insert(remove_legend, 2);
-             insert(signalList, 3);
+             insert(remove_legend, 5);
+             insert(signalList, 6);
            }
         }
 	}

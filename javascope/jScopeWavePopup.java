@@ -33,7 +33,7 @@ class jScopeWavePopup extends MultiWavePopup {
         setup.setText("Setup data source...");
 	    this.setup_dialog = setup_dialog;
         
-	    insert(selectWave = new JMenuItem("Select wave panel"), 1);
+	    insert(selectWave = new JMenuItem("Select wave panel"), 2);
 	    selectWave.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -46,7 +46,7 @@ class jScopeWavePopup extends MultiWavePopup {
 	        }
 	    );
 	  	    
-	    insert(remove_panel = new JMenuItem("Remove panel"), 2);
+	    insert(remove_panel = new JMenuItem("Remove panel"), 3);
 	    remove_panel.setEnabled(false);
 	    remove_panel.addActionListener(new ActionListener()
 	        {
@@ -73,7 +73,7 @@ class jScopeWavePopup extends MultiWavePopup {
 	        }
 	    );
 	
-	    insert(sep1 = new JSeparator(), 5);
+	    insert(sep1 = new JSeparator(), 6);
 
 	    add(refresh = new JMenuItem("Refresh"));
 	    refresh.addActionListener(new ActionListener()
@@ -122,12 +122,12 @@ class jScopeWavePopup extends MultiWavePopup {
        add(refresh);
        if(is_image)
 	   {
-           insert(profile_dialog, 1);
-           insert(remove_panel, 2);
+           insert(profile_dialog, 2);
+           insert(remove_panel, 3);
        } else {
-           insert(selectWave, 1);
-           insert(remove_panel, 2);
-	       insert(sep1, (wave.isFixedLegend() ? 4: 5));
+           insert(selectWave, 2);
+           insert(remove_panel, 3);
+	       insert(sep1, (wave.isFixedLegend() ? 5: 6));
 	       add(sep3);
 	       add(saveAsText);
        }
@@ -172,7 +172,7 @@ class jScopeWavePopup extends MultiWavePopup {
 	        setup_dialog.selectSignal(w.GetSelectedSignal());
 	   } else
 	        if(w.GetShowSignalCount() > 0 || w.is_image && w.wi.num_waves != 0)
-	            setup_dialog.selectSignal(0);
+	            setup_dialog.selectSignal(1);
         Timer t = new Timer(20, new ActionListener() {
             public void actionPerformed(ActionEvent ae) 
             {

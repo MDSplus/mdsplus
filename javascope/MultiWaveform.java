@@ -489,7 +489,7 @@ public class MultiWaveform extends Waveform
     protected void setLimits()
     {
       setXlimits(lx_min, lx_max);
-      setYlimits(ly_min, ly_max);      
+      setYlimits(ly_min, ly_max);
       UpdateLimits();
 	  change_limits = true;
     }

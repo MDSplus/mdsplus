@@ -166,4 +166,6 @@ public interface  WaveformManager   {
      * @param w a waveform
      */
     public Point     getWavePosition(Waveform w);
+    
+    public void maximizeComponent(Waveform w);
 }

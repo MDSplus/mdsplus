@@ -280,9 +280,11 @@ public class RowColumnLayout implements LayoutManager {
 		        
 	        for(int i = 0; i < row.length; i++)
 	        {
+	            /*
 	            if(MaxWidth * pw[i] > currMaxWidth - MIN_SIZE_W * (column - i))
 	                pw[i] = ((float)currMaxWidth - MIN_SIZE_W * (column - i)) / MaxWidth;
 	            currMaxWidth -= MaxWidth * pw[i];
+	            */
 		        percent_width[i] = pw[i];
 		    }
 	        sizeUnknown = false;

@@ -1040,7 +1040,7 @@ class jScopeWaveContainer extends WaveformContainer
             } 
             catch (Exception e)
             {
-	            throw(new Exception("Can't load data provider class : "+ server_item.class_name));
+	            throw(new Exception("Can't load data provider class : "+ server_item.class_name + "\n"+e));
             }
         } else {
 	        throw(new Exception("Undefine data provider class for "+ server_item.name));
@@ -1125,29 +1125,30 @@ class jScopeWaveContainer extends WaveformContainer
             if( !check_prev_signal || (check_prev_signal && (prev_add_signal == null || !prev_add_signal.equals(expr))))
             {
                 prev_add_signal = expr;
-                AddSignal(null, null, "", expr, false);
+                AddSignal(null, null, "", expr, false, false);
             }
     }
 
-    public void AddSignal(String tree, String shot, String x_expr, String y_expr, boolean with_error)
+    public void AddSignal(String tree, String shot, String x_expr, String y_expr, boolean with_error, boolean is_image)
     {
         String x[] = new String[1];
         String y[] = new String[1];
         x[0] = x_expr;
         y[0] = y_expr;
-        AddSignals( tree, shot, x, y, with_error);
+        AddSignals( tree, shot, x, y, with_error, is_image);
     }
     
     // with_error == true => Signals is added also if an error occurs 
     // during its evaluations
-    public void AddSignals(String tree, String shot, String x_expr[], String y_expr[], boolean with_error)
+    public void AddSignals(String tree, String shot, String x_expr[], String y_expr[], boolean with_error, boolean is_image)
     {
         MdsWaveInterface new_wi = null;
         jScopeMultiWave sel_wave = (jScopeMultiWave)GetSelectPanel();
  
-        if(sel_wave.wi == null)
+        if(sel_wave.wi == null || is_image)
         {
             sel_wave.wi = new MdsWaveInterface(sel_wave, dp, def_vals);
+            sel_wave.wi.SetAsImage(is_image);
             if(!with_error)
                 ((MdsWaveInterface)sel_wave.wi).prev_wi = new MdsWaveInterface(sel_wave, dp, def_vals);
         } else {

@@ -62,7 +62,7 @@ public class SignalsBoxDialog extends JDialog
     	            y_expr[i] = (String)table.getValueAt(idx[i], 0);
     	            x_expr[i] = (String)table.getValueAt(idx[i], 1);
     	        }
-    	        scope.wave_panel.AddSignals(null, null, x_expr, y_expr, true);
+    	        scope.wave_panel.AddSignals(null, null, x_expr, y_expr, true, false);
             }
         });
         p.add(add);

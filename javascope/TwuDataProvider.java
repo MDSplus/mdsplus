@@ -22,16 +22,14 @@ class TwuDataProvider implements DataProvider
     private Properties ysig_properties = null;
     private Properties xsig_properties = null;
     private String user_agent;
+    
+    private boolean is_image = false;
 
 //DataProvider implementation
     public boolean SupportsCompression(){return false;}
     public void    SetCompression(boolean state){}
     public void    SetEnvironment(String s) {}
     public void    Dispose(){}
-    public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
-    {
-        throw(new IOException("Frames visualization on TwuDataProvider not implemented"));
-    }
     public String  GetString(String in) {return in; }
     public float   GetFloat(String in){ return new Float(in).floatValue(); }
     public String  ErrorString() { return error_string; }
@@ -42,6 +40,142 @@ class TwuDataProvider implements DataProvider
     public int     InquireCredentials(JFrame f, String user){return DataProvider.LOGIN_OK;}
     public boolean SupportsFastNetwork(){return true;}
     public void    SetArgument(String arg){}
+    
+    
+    class SimpleFrameData implements FrameData
+    {
+        String in_x, in_y;
+        float time_max, time_min;
+        int mode = -1;
+        int pixel_size;
+        int first_frame_idx = -1;
+        byte buf[];
+        String error;
+        private int st_idx = -1, end_idx = -1;
+        private int n_frames = 0;
+        private float times[] = null;
+        private Dimension dim = null;
+        private int header_size = 0;
+
+        public SimpleFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
+        {
+            int i;
+            float t;
+            float all_times[] = null;
+            int n_all_frames = 0;
+            
+            this.in_y = in_y;
+            this.in_x = in_x;
+            this.time_min = time_min;
+            this.time_max = time_max; 
+
+            /* Da modificare per multi frame */
+ 	        if(in_x == null || in_x.length() == 0)
+                all_times = new float[352/3];
+            else
+                all_times = GetFloatArray(in_x);
+                
+            for(i = 0; i < all_times.length; i++)
+                all_times[i] = (float)(-0.1 + 0.06 * i);
+        
+            if(all_times == null)
+            {	                
+	            throw(new IOException("Frame time evaluation error"));
+            }
+             
+            for(i = 0; i < all_times.length; i++)
+            {
+                t = all_times[i];
+                if(t > time_max)
+                    break;
+                if(t >= time_min)
+                {
+                    if(st_idx == -1) st_idx = i;
+                }
+            }
+            end_idx = i;
+                
+            if(st_idx == -1)
+                throw(new IOException("No frames found between "+time_min+ " - "+time_max));
+ 
+            n_frames = end_idx - st_idx;
+            times = new float[n_frames];
+            int j = 0;
+            for(i = st_idx; i < end_idx; i++)
+                times[j++] = all_times[i];
+        }
+        
+        public int GetFrameType() throws IOException
+        {
+            if(mode != -1) return mode;
+            int i;
+            for(i = 0; i < n_frames; i++)
+            {
+                buf = GetFrameAt(i);
+                if(buf != null)
+                    break;
+            }
+            first_frame_idx = i;
+            mode = Frames.DecodeImageType(buf);
+            return mode;
+        }
+        public int GetNumFrames(){return n_frames;}
+        public Dimension GetFrameDimension(){return dim;}
+        public float[] GetFrameTimes(){return times;}
+        public byte[] GetFrameAt(int idx) throws IOException
+        {            
+            if(idx == first_frame_idx && buf != null)
+                return buf;
+                
+// b_img = MdsDataProvider.this.GetFrameAt(in_y, st_idx+idx);
+// Da modificare per leggere i frames
+            idx *= 3; 
+
+            ConnectionEvent ce = new ConnectionEvent(this, "Loading Image "+idx, 0, 0);
+            DispatchConnectionEvent(ce);
+
+            StringTokenizer st = new StringTokenizer(in_y, "/", true);
+            String str = new String();
+            
+            int nt = st.countTokens();
+            for(int i = 0; i < nt - 1; i++)
+                str = str + st.nextToken();
+            
+            
+            
+            if(idx < 10)
+                str = str +"00000"+idx+".jpg";
+            else
+            if(idx < 100)
+                str = str +"0000"+idx+".jpg";
+            else
+            if(idx < 1000)
+                str = str + "000"+idx+".jpg";
+            else
+            if(idx < 10000)
+                str = str + "00"+idx+".jpg";
+                
+  
+            URL url = new URL(str);
+            URLConnection url_con = url.openConnection();
+            int size = url_con.getContentLength();
+            int offset = 0, num_read = 0;
+                  
+            byte b_img[] = new byte[size];
+            InputStream is = url_con.getInputStream();
+                  
+            while(size > 0 && num_read != -1)
+            {
+                num_read = is.read(b_img, offset, size);
+                size -= num_read;
+                offset += num_read;
+            }
+                        
+            return b_img;
+        }
+    }
+    
+    
     
     class SimpleWaveData implements WaveData
     {
@@ -151,6 +285,13 @@ class TwuDataProvider implements DataProvider
             return GetSignalProperty("Unit", in_x);
         }
     }
+
+    
+    
+    public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
+    {
+        return (new SimpleFrameData(in_y, in_x, time_min, time_max));
+    }
     
     public WaveData GetWaveData(String in)
     {
@@ -178,6 +319,9 @@ class TwuDataProvider implements DataProvider
         try
         {
             String x_url_prop = GetSignalProperty("Abscissa.URL.0", url_name);
+            //patch for image
+            if(x_url_prop == null)
+                return null;
             if(xsig_properties == null || !xsig_properties.getProperty("SignalURL").equals(x_url_prop))
             {
                 xsig_properties = ReadProperties(x_url_prop);
@@ -193,11 +337,19 @@ class TwuDataProvider implements DataProvider
         String prop = null;
         try
         {
+            //patch for signals
+            if(is_image && (ysig_properties == null || ysig_properties.getProperty("SignalURL").equals(s_path)))
+                return null;
+            
             if(ysig_properties == null || 
-            !ysig_properties.getProperty("SignalURL").equals(s_path))
+               !ysig_properties.getProperty("SignalURL").equals(s_path))
                 ysig_properties = ReadProperties(s_path);
              prop = ysig_properties.getProperty(name);
-        } catch(Exception exc){}
+        } 
+        catch(Exception exc)
+        {
+            System.out.println("CACCA");
+        }
         
         return prop;
     }
@@ -428,14 +580,29 @@ class TwuDataProvider implements DataProvider
     private Properties ReadProperties(String url_name) throws IOException
     {
         ConnectionEvent ce;
+        Properties pr;
         
         try
         {
+            
+            /* Patch for image*/
+            URL url_tmp = new URL(url_name);
+            URLConnection urlcon_tmp = url_tmp.openConnection();
+            if(urlcon_tmp.getContentType().indexOf("text") == -1)
+            {
+                is_image = true;
+                pr = new Properties();
+                pr.setProperty("SignalURL", url_name);
+                return pr;
+            } else {
+                is_image = false;
+            }
+            
             ce = new ConnectionEvent(this, "Load Properties", 0, 0);
             this.DispatchConnectionEvent(ce);
             
             URL url = new URL(url_name+"?only");//read properties first
-            Properties pr = new Properties();
+            pr = new Properties();
             URLConnection urlcon = url.openConnection();
             if(user_agent == null)
                  urlcon.setRequestProperty("User-Agent", "jScope (version 6.0)");

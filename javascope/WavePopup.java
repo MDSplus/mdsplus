@@ -14,7 +14,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener {
 	protected JMenuItem setup, autoscale, autoscaleY, autoscaleAll, autoscaleAllY,
 		      allSameScale, allSameXScale, allSameXScaleAutoY, allSameYScale,
 		      resetScales, resetAllScales, playFrame,
-		      set_point, undo_zoom; 
+		      set_point, undo_zoom, maximize; 
 	protected JMenu markerList, colorList, markerStep, signal_2d;
 	protected JCheckBoxMenuItem interpolate_f;
 	protected JRadioButtonMenuItem plot_y_time, plot_x_y, plot_y_x;
@@ -42,6 +42,25 @@ public class WavePopup extends JPopupMenu implements  ItemListener {
 	        }
 	    );
         this.setup_params = setup_params;
+        
+ 	    maximize = new JMenuItem("Maximize Panel");
+ 	    maximize.setEnabled(false);
+	    maximize.addActionListener(new ActionListener()
+	        {
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                if("Maximize Panel".equals(maximize.getText()))
+	                {
+	                    maximize.setText("Show All Panels");
+                        ((WaveformManager)WavePopup.this.parent).maximizeComponent(wave);
+                    } else {
+	                    maximize.setText("Maximize Panel");
+                        ((WaveformManager)WavePopup.this.parent).maximizeComponent(null);                        
+                    }
+	            }
+	        }
+	    );
+       
 	    
 	    set_point = new JMenuItem("Set Point");
 	    set_point.addActionListener(new ActionListener()
@@ -173,7 +192,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener {
 	            public void actionPerformed(ActionEvent e)
 	            {
 	                ((WaveformManager)WavePopup.this.parent).AllSameScale(wave);
-	            }
+                }
 	        }
 	    );
 	    
@@ -302,7 +321,8 @@ public class WavePopup extends JPopupMenu implements  ItemListener {
 	   
 	   if(is_image)
 	   {
-           colorList.setText("Colors");                      
+           colorList.setText("Colors");
+           add(maximize);
            add(colorList);	
 	       add(playFrame);
 	       add(sep2);
@@ -328,6 +348,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener {
 	       add(autoscaleY);
 	       if(parent instanceof WaveformManager)           
 	       {
+                insert(maximize, 1);
 	            autoscaleAll.setText("Autoscale all");
 	            add(autoscaleAll);
 	            add(autoscaleAllY);
@@ -336,6 +357,8 @@ public class WavePopup extends JPopupMenu implements  ItemListener {
 	            add(allSameXScaleAutoY);
 	            add(allSameYScale);
 	            add(resetAllScales);
+	            maximize.setEnabled(((WaveformManager)parent).GetWaveformCount() > 1);
+
 	       }
 	       add(resetScales);
 	       add(undo_zoom);

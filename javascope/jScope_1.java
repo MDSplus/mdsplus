@@ -12,7 +12,6 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 
-
 public class jScope_1 extends JFrame implements ActionListener, ItemListener, 
                              WindowListener, WaveContainerListener, 
                              UpdateEventListener, ConnectionListener
@@ -413,6 +412,7 @@ static int T_messageType;
      */
     public void hideAbout() {
 	    aboutScreen.setVisible(false);
+	    aboutScreen.dispose();
 	    aboutScreen = null;
     }
 
@@ -430,7 +430,7 @@ static int T_messageType;
 		    showAboutScreen();
 	        }
 	    });
-    }	
+    }
 	jScopeCreate(spos_x, spos_y);
 	  
 	}
@@ -441,8 +441,9 @@ static int T_messageType;
  
     help_dialog = new jScopeBrowseUrl(this);
  	try { 
- 		String path = "docs/jScope.html"; 
- 		URL url = getClass().getResource(path);
+ 	    
+ 		String path = "docs/jScope.html";
+ 		URL url = getClass().getClassLoader().getResource(path);
  		help_dialog.connectToBrowser(url);
     } catch (Exception e){} 
 
@@ -982,14 +983,22 @@ static int T_messageType;
     String f_name;
     try
     {
-        if((f_name = findFileInClassPath("jScope.properties")) != null)
+//      if((f_name = findFileInClassPath("jScope.properties")) != null)
+//      System.out.println(System.getProperty("jScope.properties"));
+        if((f_name = System.getProperty("jScope.properties")) != null)
         {
             if(jScope.is_debug)
                 System.out.println("Properties file "+ f_name);
             js_prop = new Properties();
             js_prop.load(new FileInputStream(f_name));
-        }        
+        }
+        else
+        {
+            js_prop = new Properties();
+            js_prop.load(getClass().getClassLoader().getResourceAsStream("jScope.properties"));
+        }
     } 
+    
     catch( FileNotFoundException e)
     {
         System.out.println(e);
@@ -1008,6 +1017,10 @@ static int T_messageType;
     if(curr_directory == null || curr_directory.trim().length() == 0)
     {
        curr_directory  = (String)System.getProperty("jScope.config_directory");
+       if(curr_directory == null || curr_directory.trim().length() == 0)
+       {
+            curr_directory = (String)System.getProperty("user.home");
+       }
     }
     
     default_server_idx = -1;

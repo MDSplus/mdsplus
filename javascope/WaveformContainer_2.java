@@ -9,7 +9,7 @@ public class WaveformContainer_2 extends WaveformContainer implements Printable
     {
         int st_x = 0, st_y = 0;
         double height = pf.getImageableHeight();
-        double width = pf.getImageableWidth();
+        double width  = pf.getImageableWidth();
         Graphics2D g2 = (Graphics2D)g;
         String ver = System.getProperty("java.version");
 

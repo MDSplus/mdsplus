@@ -410,6 +410,42 @@ class MdsMessage extends Object
         return out;
     }
 
+    public double[] ToDoubleArray() throws IOException
+    {
+        long ch;
+        double out[] = new double[body.length / 8];    
+        if(swap)
+            for(int i = 0, j = 0; i < body.length / 8; i++, j+=8)
+            {
+                ch =  (body[j+7] & 0xff) << 56;
+                ch += (body[j+6] & 0xff) << 48;
+                ch += (body[j+5] & 0xff) << 40;
+                ch += (body[j+4] & 0xff) << 32;    
+                ch += (body[j+3] & 0xff) << 24;
+                ch += (body[j+2] & 0xff) << 16;
+                ch += (body[j+1] & 0xff) << 8;
+                ch += (body[j+0] & 0xff) << 0;    
+                out[i] = Double.longBitsToDouble(ch);
+            }
+	    else
+	    {
+            for(int i = 0, j = 0; i < body.length / 8; i++, j+=8)
+            {   
+                ch  = (body[j+0] & 0xffL) << 56;
+                ch += (body[j+1] & 0xffL) << 48;
+                ch += (body[j+2] & 0xffL) << 40;
+                ch += (body[j+3] & 0xffL) << 32;    
+                ch += (body[j+4] & 0xffL) << 24;
+                ch += (body[j+5] & 0xffL) << 16;
+                ch += (body[j+6] & 0xffL) << 8;
+                ch += (body[j+7] & 0xffL) << 0;   
+                out[i] = Double.longBitsToDouble(ch);
+            }
+        }
+        return out;
+    }
+
+
     public String ToString()
     {
         return new String(body);

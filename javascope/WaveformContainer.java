@@ -779,6 +779,11 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	   sel_wave = null;
     }
 
+    public void maximizeComponent(Waveform w)
+    {
+        super.maximizeComponent(w);
+    }
+
     /**
      * Select a waveform
      * 

@@ -17,6 +17,9 @@
  public class jScopeBrowseUrl extends JDialog
  {   
      JEditorPane html;
+     URLConnection url_con;
+     String mime_type;
+     
      Vector url_list = new Vector();
      JButton back;
      JButton forward;
@@ -31,11 +34,12 @@
         html = new JEditorPane();
         html.setEditable(false); 
         html.addHyperlinkListener(createHyperLinkListener()); 
- 		 
+ 		
  		JScrollPane scroller = new JScrollPane(); 
  		JViewport vp = scroller.getViewport(); 
  		vp.add(html); 
         getContentPane().add(scroller, BorderLayout.CENTER);
+                
                 
         p = new JPanel();
         back = new JButton("Back");
@@ -49,7 +53,8 @@
                     {
                         try {
                             curr_url--;
- 			                html.setPage((URL)url_list.elementAt(curr_url));
+ 			                //html.setPage((URL)url_list.elementAt(curr_url));
+ 			                setPage((URL)url_list.elementAt(curr_url));
  			            } catch (IOException ioe) { 
  			                System.out.println("IOE: " + ioe); 
  			            } 
@@ -105,14 +110,30 @@
       
      }
      
+     protected void setPage(URL url) throws IOException
+     {
+        url_con = url.openConnection();
+        mime_type = url_con.getContentType();
+//        System.out.println("Content Type " + mime_type);            
+ 		    
+ 		if(mime_type.indexOf("text") != -1)
+            html.setPage(url);
+        else
+        {
+ 		    String path = "TWU_image_message.html";
+ 		    URL u = getClass().getClassLoader().getResource(path);
+            html.setPage(u);
+        }
+     }
 
      public void connectToBrowser(URL url) throws Exception
      {
         if(url != null)
         {
  		    url_list.addElement(url);
-            if(url != null)
-                html.setPage(url);
+            //html.setPage(url); 		    
+ 		    setPage(url);
+ 		    
         }
      }
 
@@ -170,8 +191,9 @@
 		                        }
                             }
  			                // end fix bug JVM 1.1
- 			                
- 			                html.setPage(u);
+ 			               			                
+ 			                //html.setPage(u);
+ 			                setPage(u);
  			                
  			                int sz = url_list.size();
  			                for(int i = curr_url + 1; i < sz; i++)

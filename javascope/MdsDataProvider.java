@@ -34,6 +34,7 @@ public class MdsDataProvider implements DataProvider
         private int n_frames = 0;
         private float times[] = null;
         private Dimension dim = null;
+        private int header_size = 0;
 
         public SimpleFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
         {
@@ -63,6 +64,12 @@ public class MdsDataProvider implements DataProvider
                 all_times = new float[n_frame];
                 for(i = 0; i < n_frame; i++)
                 {
+                    all_times[i] = d.readFloat();
+                }
+                header_size = 13 + 4 * n_frame;
+                /*
+                for(i = 0; i < n_frame; i++)
+                {
                     t = d.readFloat();
                     if(t > time_max)
                         break;
@@ -75,6 +82,7 @@ public class MdsDataProvider implements DataProvider
                 end_idx = i;
                 for(i = 0; i < f_time.size(); i++)
                     all_times[i] = ((Float)f_time.elementAt(i)).floatValue();
+                */
                 
                 switch(pixel_size)
                 {
@@ -104,27 +112,27 @@ public class MdsDataProvider implements DataProvider
 	                
 	                throw(new IOException(error));
                 }
-                               
-                for(i = 0; i < all_times.length; i++)
-                {
-                    t = all_times[i];
-                    if(t > time_max)
-                        break;
-                    if(t > time_min)
-                    {
-                        if(st_idx == -1) st_idx = i;
-                    }
-                }
-                end_idx = i;
-             }
+            }
              
-             if(st_idx == -1)
+            for(i = 0; i < all_times.length; i++)
+            {
+                t = all_times[i];
+                if(t > time_max)
+                    break;
+                if(t >= time_min)
+                {
+                    if(st_idx == -1) st_idx = i;
+                }
+            }
+            end_idx = i;
+                
+            if(st_idx == -1)
                 throw(new IOException("No frames found between "+time_min+ " - "+time_max));
  
-             n_frames = end_idx - st_idx;
-             times = new float[n_frames];
-             int j = 0;
-             for(i = st_idx; i < end_idx; i++)
+            n_frames = end_idx - st_idx;
+            times = new float[n_frames];
+            int j = 0;
+            for(i = st_idx; i < end_idx; i++)
                 times[j++] = all_times[i];
         }
         
@@ -162,7 +170,7 @@ public class MdsDataProvider implements DataProvider
                     throw(new IOException("Frames dimension not evaluated"));
  
                 int img_size = dim.width*dim.height * pixel_size/8;
-                d.skip(13+4*n_frames+ (st_idx + idx)*img_size);
+                d.skip(header_size + (st_idx + idx)*img_size);
                 
                 b_img = new byte[img_size];
                 d.read(b_img);
@@ -385,7 +393,7 @@ public class MdsDataProvider implements DataProvider
         img_buf = GetByteArray(in);
         if(img_buf == null) return null;
         
-        pixel_size = img_buf.length/shape[0] * 8;
+        pixel_size = img_buf.length/(shape[0]*shape[1]*shape[2]) * 8;
               
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream d = new DataOutputStream(b);

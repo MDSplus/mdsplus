@@ -128,6 +128,11 @@ public class WaveInterface
         frames = null;
         show_legend = false;
     }
+    
+    public void SetAsImage(boolean is_image)
+    {
+        this.is_image = is_image;
+    }
 
     static public void EnableCache(boolean state)
     {
