@@ -296,8 +296,8 @@ public class BOLOSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(572);
-    this.setHeight(572);
+    this.setWidth(670);
+    this.setHeight(600);
     this.setDeviceType("BOLO");
     this.setDeviceProvider("150.178.3.33");
     this.setDeviceTitle("BOLO");
@@ -986,9 +986,9 @@ public class BOLOSetup extends DeviceSetup {
 
 
 
-    deviceButtons1.setCheckExpressions(new String[] {"TomoCheckAcqMemory(_freq, _duration, 524288)"});
-    deviceButtons1.setCheckMessages(new String[] {"Max memory per channel 512M"});
-    deviceButtons1.setMethods(new String[] {"init", "arm", "store"});
+ //   deviceButtons1.setCheckExpressions(new String[] {"TomoCheckAcqMemory(_freq, _duration, 524288) != 0"});
+ //    deviceButtons1.setCheckMessages(new String[] {"Max memory per channel 512M"});
+    deviceButtons1.setMethods(new String[] {"init", "store"});
     deviceChannel1120.setLabelString("11");
     deviceChannel1120.setOffsetNid(89);
     deviceChannel1120.setBorderVisible(false);

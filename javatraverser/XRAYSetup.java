@@ -947,8 +947,8 @@ public class XRAYSetup extends DeviceSetup {
     deviceField6.setIdentifier("");
     deviceField6.setLabelString("Duration: ");
     deviceField6.setOffsetNid(7);
-    this.setWidth(574);
-    this.setHeight(574);
+    this.setWidth(720);
+    this.setHeight(630);
     this.setDeviceType("XRAY");
     this.setDeviceProvider("150.178.3.33");
     this.setDeviceTitle("XRAY");
@@ -969,7 +969,6 @@ public class XRAYSetup extends DeviceSetup {
     deviceField5.setOffsetNid(6);
     deviceField5.setLabelString("Trig. source :");
     deviceField5.setNumCols(25);
-    deviceField5.setIdentifier("");
     deviceChoice1.setChoiceIntValues(null);
     deviceChoice1.setChoiceFloatValues(null);
     deviceChoice1.setOffsetNid(8);
@@ -1018,6 +1017,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice5.setChoiceItems(new String[] {"0", "1", "2", "4", "6", "8", "10", "12", "14", "16", "18", "20", "22", "24", "26", "28"});
     flowLayout4.setAlignment(FlowLayout.LEFT);
     flowLayout4.setVgap(0);
+    
     deviceButtons1.setCheckExpressions(new String[] {"XrayTrImpCheck(1, _ti_1)", "XrayTrImpCheck(2, _ti_2)", "XrayTrImpCheck(3, _ti_3)", "XrayTrImpCheck(4, _ti_4)",
         "XrayTrImpCheck(5, _ti_5)", "XrayTrImpCheck(6, _ti_6)", "XrayTrImpCheck(7, _ti_7)", "XrayTrImpCheck(8, _ti_8)",
         "XrayTrImpCheck(9, _ti_9)", "XrayTrImpCheck(10, _ti_10)", "XrayTrImpCheck(11, _ti_11)", "XrayTrImpCheck(12, _ti_12)",

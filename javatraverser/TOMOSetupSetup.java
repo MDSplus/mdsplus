@@ -94,8 +94,8 @@ public class TOMOSetupSetup extends DeviceSetup {
 
   private void jbInit() throws Exception {
     jPanel1.setLayout(borderLayout1);
-    this.setWidth(569);
-    this.setHeight(569);
+    this.setWidth(730);
+    this.setHeight(250);
     this.setDeviceType("TOMOSetup");
     this.setDeviceProvider("150.178.3.33");
     this.setDeviceTitle("\"Tomography timing configuration");

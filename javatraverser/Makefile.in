@@ -77,7 +77,8 @@ EM_FLU_TESTSetup.java\
 BOLOSetup.java\
 XRAYSetup.java\
 SXCSetup.java\
-RFXAxiControlSetup.java
+RFXAxiControlSetup.java\
+TOMOSetupSetup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
