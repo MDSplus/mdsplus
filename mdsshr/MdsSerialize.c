@@ -1,5 +1,6 @@
 #include <string.h>
 #include <mdsdescrip.h>
+#include <mdstypes.h>
 #include <mdsshr.h>
 #include <librtl_messages.h>
 
@@ -27,16 +28,33 @@
 #define LoadShort(in,outp) (outp)[0] = ((char *)&in)[1]; (outp)[1] = ((char *)&in)[0]
 #define LoadInt(in,outp)   (outp)[0] = ((char *)&in)[3]; (outp)[1] = ((char *)&in)[2]; \
                            (outp)[2] = ((char *)&in)[1]; (outp)[3] = ((char *)&in)[0]
+#define LoadQuad(in,outp)  (outp)[0] = ((char *)&in)[7]; (outp)[1] = ((char *)&in)[6]; \
+                           (outp)[2] = ((char *)&in)[5]; (outp)[3] = ((char *)&in)[4]; \
+                           (outp)[4] = ((char *)&in)[3]; (outp)[5] = ((char *)&in)[2]; \
+                           (outp)[6] = ((char *)&in)[1]; (outp)[7] = ((char *)&in)[0]
 #else
 #define LoadShort(in,outp) (outp)[0] = ((char *)&in)[0]; (outp)[1] = ((char *)&in)[1]
 #define LoadInt(in,outp)   (outp)[0] = ((char *)&in)[0]; (outp)[1] = ((char *)&in)[1]; \
                            (outp)[2] = ((char *)&in)[2]; (outp)[3] = ((char *)&in)[3]
+#define LoadQuad(in,outp)  (outp)[0] = ((char *)&in)[0]; (outp)[1] = ((char *)&in)[1]; \
+                           (outp)[2] = ((char *)&in)[2]; (outp)[3] = ((char *)&in)[3]; \
+                           (outp)[4] = ((char *)&in)[4]; (outp)[5] = ((char *)&in)[5]; \
+                           (outp)[6] = ((char *)&in)[6]; (outp)[7] = ((char *)&in)[7]
 #endif
 #define set_aflags(ptr,in)  ptr[10] = (inp->aflags.binscale << 3)  | (inp->aflags.redim << 4) | (inp->aflags.column << 5) \
                                      | (inp->aflags.coeff << 6) | (inp->aflags.bounds << 7)
 #define offset(ptr)       *(unsigned int *)&ptr
 
 #if defined(WORDS_BIGENDIAN)
+
+static _int64 swapquad(char *in_c)
+{
+  _int64 out;
+  char *out_c = (char *)&out;
+  int i;
+  for (i=0;i<8;i++) out_c[7-i] = in_c[i];
+  return out;
+}
 
 static int swapint(char *in_c)
 {
@@ -47,7 +65,7 @@ static int swapint(char *in_c)
   return out;
 }
 
-static int swapshort(char *in_c)
+static short swapshort(char *in_c)
 {
   short out;
   char *out_c = (char *)&out;
@@ -57,6 +75,15 @@ static int swapshort(char *in_c)
 }
 
 #else
+
+static _int64 swapquad(char *in_c)
+{
+  _int64 out;
+  char *out_c = (char *)&out;
+  int i;
+  for (i=0;i<8;i++) out_c[i] = in_c[i];
+  return out;
+}
 
 static int swapint(char *in_c)
 {
@@ -109,8 +136,7 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	    {
 	    case 2: *(short *)po->pointer = swapshort(po->pointer); break;
             case 4: *(int *)po->pointer = swapint(po->pointer); break;
-            case 8: *(int *)po->pointer = swapint(po->pointer); 
-	            ((int *)po->pointer)[1] = swapint(po->pointer + sizeof(int)); break;
+            case 8: *(_int64 *)po->pointer = swapquad(po->pointer); break;
 	    }
 	  }
 	}
@@ -241,9 +267,13 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	      }
 	      break;
 	    case 4:
-	    case 8:
 	      { int *ptr;
 		for (i=0,ptr=(int *)po->pointer;i<(int)po->arsize;i += sizeof(*ptr),ptr++) *ptr = swapint((char *)ptr);
+	      }
+	      break;
+	    case 8:
+	      { _int64 *ptr;
+		for (i=0,ptr=(_int64 *)po->pointer;i<(int)po->arsize;i += sizeof(*ptr),ptr++) *ptr = swapquad((char *)ptr);
 	      }
 	      break;
 	    }
