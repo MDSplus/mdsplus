@@ -4,7 +4,7 @@ OBJECTS = \
 	mdsipshr.o
 
 t : t.c ../shlib/libMdsIpShr.so
-	cc -o t t.c -L../shlib -lMdsIpShr
+	cc -o t $(CFLAGS) t.c -L../shlib -lMdsIpShr
 
 ../shlib/libMdsIpShr.so : $(OBJECTS) ../shlib
 	$(LD) -o $@ -shared -no_archive $(OBJECTS) -lc

@@ -7,7 +7,7 @@ all : .depend
 	make -f Makefile.HPUX -f .depend t
 
 t : t.c ../shlib/libMdsIpShr.sl
-	cc -o t t.c -L../shlib -lMdsIpShr
+	cc -o t t.c $(CFLAGS) -L../shlib -lMdsIpShr
 
 ../shlib/libMdsIpShr.sl : $(OBJECTS) ../shlib
 	$(LD) -o $@ -b $(OBJECTS) -lc
