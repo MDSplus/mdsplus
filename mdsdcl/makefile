@@ -5,7 +5,6 @@ OBJFILES = 		\
 libMdsdcl.a(mdsdcl_dcl_parse.o)		\
 libMdsdcl.a(mdsdcl_do_command.o)	\
 libMdsdcl.a(mdsdcl_dummy.o)		\
-libMdsdcl.a(mdsmsg.o)			\
 libMdsdcl.a(mdsdcl_general.o)		\
 libMdsdcl.a(mdsdcl_get_input.o)		\
 libMdsdcl.a(mdsdcl_initialize.o)	\

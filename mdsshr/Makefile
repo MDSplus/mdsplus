@@ -3,6 +3,7 @@ include $(MAKE_OPTIONS)
 OBJECTS = \
 	dummies.o \
 	librtl.o \
+	mdsmsg.o \
 	MdsCmprs.o \
 	MdsCompareXd.o \
 	MdsCompress.o \
@@ -15,7 +16,7 @@ OBJECTS = \
 mdsshr : ../shlib ../shlib/libMdsShr.$(SHARE_TYPE)
 
 ../shlib/libMdsShr.$(SHARE_TYPE) : $(OBJECTS) 
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) ../cdu/libCdu.a -lc
 
 ../shlib :
 	mkdir ../shlib

@@ -1,21 +1,71 @@
-# include "stdio.h"
-# define U(x) ((x)&0377)
+#include <stdio.h>
+# define U(x) x
 # define NLSTATE yyprevious=YYNEWLINE
 # define BEGIN yybgin = yysvec + 1 +
 # define INITIAL 0
 # define YYLERR yysvec
 # define YYSTATE (yyestate-yysvec-1)
 # define YYOPTIM 1
-# define YYLMAX 200
-# define output(c) putc(c,yyout)
-# define input() (((yytchar=yysptr>yysbuf?U(*--yysptr):getc(yyin))==10?(yylineno++,yytchar):yytchar)==EOF?0:yytchar)
+# define YYLMAX BUFSIZ
+#ifndef __cplusplus
+# define output(c) (void)putc(c,yyout)
+#else
+# define lex_output(c) (void)putc(c,yyout)
+#endif
+
+#if defined(__cplusplus) || defined(__STDC__)
+
+#if defined(__cplusplus) && defined(__EXTERN_C__)
+extern "C" {
+#endif
+	int yyback(int *, int);
+	int yyinput(void);
+	int yylook(void);
+	void yyoutput(int);
+	int yyracc(int);
+	int yyreject(void);
+	void yyunput(int);
+	int yylex(void);
+#ifdef YYLEX_E
+	void yywoutput(wchar_t);
+	wchar_t yywinput(void);
+#endif
+#ifndef yyless
+	int yyless(int);
+#endif
+#ifndef yywrap
+	int yywrap(void);
+#endif
+#ifdef LEXDEBUG
+	void allprint(char);
+	void sprint(char *);
+#endif
+#if defined(__cplusplus) && defined(__EXTERN_C__)
+}
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+	void exit(int);
+#ifdef __cplusplus
+}
+#endif
+
+#endif
 # define unput(c) {yytchar= (c);if(yytchar=='\n')yylineno--;*yysptr++=yytchar;}
 # define yymore() (yymorfg=1)
-# define ECHO fprintf(yyout, "%s",yytext)
+#ifndef __cplusplus
+# define input() (((yytchar=yysptr>yysbuf?U(*--yysptr):getc(yyin))==10?(yylineno++,yytchar):yytchar)==EOF?0:yytchar)
+#else
+# define lex_input() (((yytchar=yysptr>yysbuf?U(*--yysptr):getc(yyin))==10?(yylineno++,yytchar):yytchar)==EOF?0:yytchar)
+#endif
+#define ECHO fprintf(yyout, "%s",yytext)
 # define REJECT { nstr = yyreject(); goto yyfussy;}
-int yyleng; extern unsigned char yytext[];
+int yyleng;
+char yytext[YYLMAX];
 int yymorfg;
-extern unsigned char *yysptr, yysbuf[];
+extern char *yysptr, yysbuf[];
 int yytchar;
 FILE *yyin = {stdin}, *yyout = {stdout};
 extern int yylineno;
@@ -25,9 +75,12 @@ struct yysvf {
 	int *yystops;};
 struct yysvf *yyestate;
 extern struct yysvf yysvec[], *yybgin;
+
+# line 2 "TdiLex.x"
 	/*	TdiLex
 	Lexical analysis to parse tokens for TdiYacc.y.
 	Definition section precedes rule section.
+
 	Lex regular expression operators:
 	\x "x"		as is unless "" or []
 	[xyz] [x-z]	chars x through z
@@ -47,19 +100,25 @@ extern struct yysvf yysvec[], *yybgin;
 	%k	/1000	packed classes
 	%a	/~2000	packed transitions
 	%o	/3000	output slots
+
 	Ken Klare, LANL P-4	(c)1989,1990,1991
 	NEED to handle 6..8 and 6...8 and 6...8.9, should use spaces.
+
 	Limitations:
+
 	Floating requires (1) digit before exponent
 	(2) either decimal point or exponent, (.E3) looks like path.
 	(3) 6..8 is 6 .. 8 and not 6. .8, 6...8 is ambiguous?
 	(4) prefix + or - on numbers handled elsewhere, a-6 would be tokens a -6.
+
 	Pathname apostrophe required (1) with wildcards (% or *),
 	(2) without leading \ . or : (path:member looks like file),
 	(3) with son or member starting with number (.7E6 is float not son),
 	(4) with up-tree minus requires leading period. .-.over
+
 	Filename double quote required for non-simple names.
 	"node::node::device:[--.dir.sub.sub]file.extension;version".
+
 	Input, nlpos, output, pos, unput, and yylex defined by include file.
 	Floating for exponent but no decimal would fall into integer.
 	*/
@@ -74,7 +133,7 @@ extern struct yysvf yysvec[], *yybgin;
 #include <strroutines.h>
 #include <tdimessages.h>
 #include <treeshr.h>
-
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #ifdef WIN32
 #pragma warning (disable : 4013 4102 4035) /* LEX produces code with no forward declarations of yylook and yyback. Also has unreferenced label yyfussy. And two int functions: yyoutput and yyunput do not return a value.*/
 #endif
@@ -90,9 +149,9 @@ extern int TdiConvert();
 extern struct marker *TdiYylvalPtr;
 
 extern unsigned short Opcdollar, OpcZero,
-	OpcAdd,	OpcAnd,	OpcConcat,	OpcDivide,	OpcEq,	
+	OpcAdd,	OpcAnd,	OpcConcat,	OpcDivide,	OpcEq,
 	OpcGe,		OpcGt,		OpcIand,	OpcInot,	OpcIor,
-	OpcLe,		OpcLt,		OpcMultiply,	OpcNe,		OpcNot,	OpcOr,	
+	OpcLe,		OpcLt,		OpcMultiply,	OpcNe,		OpcNot,	OpcOr,
 	OpcPower,	OpcPreDec,	OpcPreInc,	OpcPromote,	OpcDtypeRange,
 	OpcShiftLeft,	OpcShiftRight,	OpcSubtract;
 
@@ -109,6 +168,8 @@ static int TdiLexBinEq(int token);
 
 extern void TdiYyReset()
 {
+
+# line 94 "TdiLex.x"
 /*
   yy_reset();
 */
@@ -121,6 +182,8 @@ static void	upcase(unsigned char *str, int str_len) {
 
 	for (pc = str; pc < str+str_len; ++pc) if (*pc >= 'a' && *pc <= 'z') *pc += (unsigned char)('A' - 'a');
 }
+
+# line 106 "TdiLex.x"
 /*--------------------------------------------------------
 	Remove comment from the Lex input stream.
 	Nested comments allowed. Len is not used.
@@ -150,6 +213,8 @@ int			count = 1;
 	}
 	return 0;
 }
+
+# line 135 "TdiLex.x"
 /*--------------------------------------------------------
 	Convert floating point values with the follow
 ing
@@ -245,6 +310,8 @@ static struct {
 	TdiRefZone.l_status = status;
 	return(LEX_ERROR);
 }
+
+# line 230 "TdiLex.x"
 /*--------------------------------------------------------
 	Convert Lex input to identifier name or builtin.
 	Clobbers string with upcase. IDENT token returns name.
@@ -268,6 +335,8 @@ int				j, token;
 
         sd.length = len;
         sd.pointer = (char *)str;
+
+# line 253 "TdiLex.x"
 /*
 	upcase(str,len);
 */
@@ -319,6 +388,8 @@ int				j, token;
 	}
 	return(LEX_IDENT);
 }
+
+# line 304 "TdiLex.x"
 /*--------------------------------------------------------
 	Convert integer values with the following syntax
 	to internal representation via descriptors:
@@ -497,6 +568,8 @@ int			length, is_signed, status = 1, tst, type;
 	TdiRefZone.l_status = status;
 	return(LEX_ERROR);
 }
+
+# line 482 "TdiLex.x"
 /*--------------------------------------------------------
 	Convert Lex input to NID or absolute PATH.
 */
@@ -543,6 +616,8 @@ struct marker		*mark_ptr)
         free(str_l);
 	return token;
 }
+
+# line 528 "TdiLex.x"
 /*--------------------------------------------------------
 	Remove arrow and trailing punctation.
 */
@@ -558,6 +633,8 @@ int		lenx = len - 2;
 	_MOVC3((unsigned short)lenx, &str[2], (char *)mark_ptr->rptr->pointer);
 	return LEX_POINT;
 }
+
+# line 543 "TdiLex.x"
 /*--------------------------------------------------------
 	Recognize some graphic punctuation Lex symbols for YACC.
 	Note must be acceptable in written form also: a<=b, a LE b, LE(a,b).
@@ -592,12 +669,22 @@ char		c0 = str[0], c1 = input();
 	case '*' :	if (c1 == '*') {mark_ptr->builtin = OpcPower;		return TdiLexBinEq	(LEX_POWER);} break;
 	case '+' :	if (c1 == '+') {mark_ptr->builtin = OpcPreInc;	return			(LEX_INC);} break;
 	case '-' :	if (c1 == '-') {mark_ptr->builtin = OpcPreDec;	return			(LEX_INC);} break;
+
+# line 577 "TdiLex.x"
 /***			if (c1 == '>') {					return			(LEX_POINT);} break;***/
 	case '.' :	if (c1 == '.') {mark_ptr->builtin = OpcDtypeRange;	return			(LEX_RANGE);} break;
 	case '/' :	if (c1 == '/') {mark_ptr->builtin = OpcConcat;		return TdiLexBinEq	(LEX_CONCAT);} break;
+
+# line 580 "TdiLex.x"
 /***                     else if (c1 == '*') return (TdiLexComment(len, str, mark_ptr) == 0) ? input() : 0; break; ***/
+
+# line 581 "TdiLex.x"
 /***			if (c1 == '=') {mark_ptr->builtin = OpcNe;		return TdiLexBinEq	(LEX_LEQS);}*/
+
+# line 582 "TdiLex.x"
 /***			if (c1 == ')') {					return 			']';} break;***/
+
+# line 583 "TdiLex.x"
 /***	case '(' :	if (c1 == '/') {					return 			'[';} break;***/
 	case '<' :	if (c1 == '<') {mark_ptr->builtin = OpcShiftLeft;	return TdiLexBinEq	(LEX_SHIFT);}
 			if (c1 == '=') {mark_ptr->builtin = OpcLe;		return TdiLexBinEq	(LEX_LGES);}
@@ -614,6 +701,8 @@ char		c0 = str[0], c1 = input();
 	********************/
 	switch (c0) {
 	case '!' :	mark_ptr->builtin = OpcNot;		return			(LEX_UNARYS);
+
+# line 599 "TdiLex.x"
 /****	case '%' :	mark_ptr->builtin = OpcMod;		return TdiLexBinEq	(LEX_MULS);****/
 	case '&' :	mark_ptr->builtin = OpcIand;		return TdiLexBinEq	(LEX_IAND);
 	case '*' :	mark_ptr->builtin = OpcMultiply;	return TdiLexBinEq	('*');
@@ -631,6 +720,8 @@ char		c0 = str[0], c1 = input();
 	mark_ptr->builtin = -1;
 	return(c0);
 }
+
+# line 616 "TdiLex.x"
 /*--------------------------------------------------------
 	C-style text in matching quotes. Strict: must end in quote. Continuation: \ before newline.
 	Limitation: Text is ASCII dependent in quotes.
@@ -706,47 +797,74 @@ int		cur = 0, limit;
 # define YYNEWLINE 10
 yylex(){
 int nstr; extern int yyprevious;
+#ifdef __cplusplus
+/* to avoid CC and lint complaining yyfussy not being used ...*/
+static int __lex_hack = 0;
+if (__lex_hack) goto yyfussy;
+#endif
 while((nstr = yylook()) >= 0)
 yyfussy: switch(nstr){
 case 0:
 if(yywrap()) return(0); break;
 case 1:
+
+# line 710 "TdiLex.x"
 	{;}
 break;
 case 2:
+
+# line 712 "TdiLex.x"
 {nlpos();}
 break;
 case 3:
+
+# line 714 "TdiLex.x"
 	{pos();  return	(TdiLexFloat(	yyleng, yytext, TdiYylvalPtr));}
 break;
 case 4:
+
+# line 716 "TdiLex.x"
 {pos(); return	(TdiLexFloat(	yyleng, yytext, TdiYylvalPtr));}
 break;
 case 5:
+
+# line 718 "TdiLex.x"
 {pos();  return	(TdiLexInteger(	yyleng, yytext, TdiYylvalPtr));}
 break;
 case 6:
+
+# line 720 "TdiLex.x"
 	{pos();  return	(TdiLexIdent(	yyleng, yytext, TdiYylvalPtr));}
 break;
 case 7:
+
+# line 722 "TdiLex.x"
 	{pos();  return	(TdiLexPath(	yyleng, yytext, TdiYylvalPtr));}
 break;
 case 8:
+
+# line 724 "TdiLex.x"
 	{pos();  return	(TdiLexQuote(	yyleng, yytext, TdiYylvalPtr));}
 break;
 case 9:
+
+# line 726 "TdiLex.x"
 	{pos();  return	(TdiLexPoint(	yyleng, yytext, TdiYylvalPtr));}
 break;
 case 10:
+
+# line 728 "TdiLex.x"
            {pos(); if      (TdiLexComment(      yyleng, yytext, TdiYylvalPtr)) return(LEX_ERROR);}
 break;
 case 11:
+
+# line 730 "TdiLex.x"
 	{pos(); return	(TdiLexPunct(	yyleng, yytext, TdiYylvalPtr));}
 break;
 case -1:
 break;
 default:
-fprintf(yyout,"bad switch yylook %d",nstr);
+(void)fprintf(yyout,"bad switch yylook %d",nstr);
 } return(0); }
 /* end of yylex */
 
@@ -1120,76 +1238,68 @@ yycrank+0,	yysvec+12,	0,
 0,	0,	0};
 struct yywork *yytop = yycrank+895;
 struct yysvf *yybgin = yysvec+1;
-unsigned char yymatch[] = {
-00  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,011 ,012 ,01  ,01  ,011 ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-011 ,01  ,'"' ,01  ,'$' ,01  ,01  ,'"' ,
-01  ,01  ,01  ,'+' ,01  ,'+' ,'.' ,01  ,
-'0' ,'0' ,'0' ,'0' ,'0' ,'0' ,'0' ,'0' ,
-'0' ,'0' ,':' ,01  ,01  ,01  ,01  ,01  ,
-01  ,'A' ,'A' ,'A' ,'D' ,'D' ,'D' ,'D' ,
-'D' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,
-'A' ,'A' ,'A' ,'D' ,'D' ,'A' ,'D' ,'A' ,
-'A' ,'A' ,'A' ,01  ,01  ,01  ,01  ,'$' ,
-01  ,'A' ,'A' ,'A' ,'D' ,'D' ,'D' ,'D' ,
-'D' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,
-'A' ,'A' ,'A' ,'D' ,'D' ,'A' ,'D' ,'A' ,
-'A' ,'A' ,'A' ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
+char yymatch[] = {
+  0,   1,   1,   1,   1,   1,   1,   1, 
+  1,   9,  10,   1,   1,   9,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  9,   1,  34,   1,  36,   1,   1,  34, 
+  1,   1,   1,  43,   1,  43,  46,   1, 
+ 48,  48,  48,  48,  48,  48,  48,  48, 
+ 48,  48,  58,   1,   1,   1,   1,   1, 
+  1,  65,  65,  65,  68,  68,  68,  68, 
+ 68,  65,  65,  65,  65,  65,  65,  65, 
+ 65,  65,  65,  68,  68,  65,  68,  65, 
+ 65,  65,  65,   1,   1,   1,   1,  36, 
+  1,  65,  65,  65,  68,  68,  68,  68, 
+ 68,  65,  65,  65,  65,  65,  65,  65, 
+ 65,  65,  65,  68,  68,  65,  68,  65, 
+ 65,  65,  65,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
+  1,   1,   1,   1,   1,   1,   1,   1, 
 0};
-unsigned char yyextra[] = {
+char yyextra[] = {
 0,0,0,1,0,0,0,0,
 0,0,0,0,0,0,0,0,
 0};
-/*
- * (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
- * ALL RIGHTS RESERVED
- */
-/*
- * OSF/1 Release 1.0
-*/
-/*
-#
-# IBM CONFIDENTIAL
-# Copyright International Business Machines Corp. 1989
-# Unpublished Work
-# All Rights Reserved
-# Licensed Material - Property of IBM
-#
-#
-# US Government Users Restricted Rights - Use, duplication or
-# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
-# 
-*/
-/* @(#)ncform	1.3  com/lib/l,3.1,8951 9/7/89 18:48:47 */
+/*	Copyright (c) 1989 AT&T	*/
+/*	  All Rights Reserved  	*/
+
+/*	THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF AT&T	*/
+/*	The copyright notice above does not evidence any   	*/
+/*	actual or intended publication of such source code.	*/
+
+#pragma ident	"@(#)ncform	6.8	95/02/11 SMI"
+
 int yylineno =1;
 # define YYU(x) x
 # define NLSTATE yyprevious=YYNEWLINE
-unsigned char yytext[YYLMAX];
 struct yysvf *yylstate [YYLMAX], **yylsp, **yyolsp;
-unsigned char yysbuf[YYLMAX];
-unsigned char *yysptr = yysbuf;
+char yysbuf[YYLMAX];
+char *yysptr = yysbuf;
 int *yyfnd;
 extern struct yysvf *yyestate;
 int yyprevious = YYNEWLINE;
-yylook(){
+#if defined(__cplusplus) || defined(__STDC__)
+int yylook(void)
+#else
+yylook()
+#endif
+{
 	register struct yysvf *yystate, **lsp;
 	register struct yywork *yyt;
 	struct yysvf *yyz;
@@ -1198,7 +1308,7 @@ yylook(){
 # ifdef LEXDEBUG
 	int debug;
 # endif
-	unsigned char *yylastch;
+	char *yylastch;
 	/* start off machines */
 # ifdef LEXDEBUG
 	debug = 0;
@@ -1224,12 +1334,15 @@ yylook(){
 				if(yyz == 0)break;
 				if(yyz->yystoff == yycrank)break;
 				}
+#ifndef __cplusplus
 			*yylastch++ = yych = input();
-            if (yylastch >= yytext + YYLMAX) {
-                fprintf(yyout, "Maximum token length exceeded\n");
-                yytext[YYLMAX] = 0;
-                return 0;
-            }
+#else
+			*yylastch++ = yych = lex_input();
+#endif
+			if(yylastch > &yytext[YYLMAX]) {
+				fprintf(yyout,"Input string too long, limit %d\n",YYLMAX);
+				exit(1);
+			}
 			yyfirst=0;
 		tryagain:
 # ifdef LEXDEBUG
@@ -1240,17 +1353,21 @@ yylook(){
 				}
 # endif
 			yyr = yyt;
-			if ( yyt > yycrank){
+			if ( (int)yyt > (int)yycrank){
 				yyt = yyr + yych;
 				if (yyt <= yytop && yyt->verify+yysvec == yystate){
 					if(yyt->advance+yysvec == YYLERR)	/* error transitions */
 						{unput(*--yylastch);break;}
 					*lsp++ = yystate = yyt->advance+yysvec;
+					if(lsp > &yylstate[YYLMAX]) {
+						fprintf(yyout,"Input string too long, limit %d\n",YYLMAX);
+						exit(1);
+					}
 					goto contin;
 					}
 				}
 # ifdef YYOPTIM
-			else if(yyt < yycrank) {		/* r < yycrank */
+			else if((int)yyt < (int)yycrank) {		/* r < yycrank */
 				yyt = yyr = yycrank+(yycrank-yyt);
 # ifdef LEXDEBUG
 				if(debug)fprintf(yyout,"compressed state\n");
@@ -1260,6 +1377,10 @@ yylook(){
 					if(yyt->advance+yysvec == YYLERR)	/* error transitions */
 						{unput(*--yylastch);break;}
 					*lsp++ = yystate = yyt->advance+yysvec;
+					if(lsp > &yylstate[YYLMAX]) {
+						fprintf(yyout,"Input string too long, limit %d\n",YYLMAX);
+						exit(1);
+					}
 					goto contin;
 					}
 				yyt = yyr + YYU(yymatch[yych]);
@@ -1274,6 +1395,10 @@ yylook(){
 					if(yyt->advance+yysvec == YYLERR)	/* error transition */
 						{unput(*--yylastch);break;}
 					*lsp++ = yystate = yyt->advance+yysvec;
+					if(lsp > &yylstate[YYLMAX]) {
+						fprintf(yyout,"Input string too long, limit %d\n",YYLMAX);
+						exit(1);
+					}
 					goto contin;
 					}
 				}
@@ -1316,11 +1441,6 @@ yylook(){
 				yyprevious = YYU(*yylastch);
 				yylsp = lsp;
 				yyleng = yylastch-yytext+1;
-                if (yyleng >= YYLMAX) {
-                    fprintf(yyout, "Maximum token length exceeded\n");
-                    yytext[YYLMAX] = 0;
-                    return 0;
-                }
 				yytext[yyleng] = 0;
 # ifdef LEXDEBUG
 				if(debug){
@@ -1338,35 +1458,67 @@ yylook(){
 			yysptr=yysbuf;
 			return(0);
 			}
+#ifndef __cplusplus
 		yyprevious = yytext[0] = input();
 		if (yyprevious>0)
 			output(yyprevious);
+#else
+		yyprevious = yytext[0] = lex_input();
+		if (yyprevious>0)
+			lex_output(yyprevious);
+#endif
 		yylastch=yytext;
 # ifdef LEXDEBUG
 		if(debug)putchar('\n');
 # endif
 		}
 	}
+#if defined(__cplusplus) || defined(__STDC__)
+int yyback(int *p, int m)
+#else
 yyback(p, m)
 	int *p;
+#endif
 {
-if (p==0) return(0);
-while (*p)
-	{
-	if (*p++ == m)
-		return(1);
+	if (p==0) return(0);
+	while (*p) {
+		if (*p++ == m)
+			return(1);
 	}
-return(0);
+	return(0);
 }
 	/* the following are only used in the lex library */
-yyinput(){
+#if defined(__cplusplus) || defined(__STDC__)
+int yyinput(void)
+#else
+yyinput()
+#endif
+{
+#ifndef __cplusplus
 	return(input());
+#else
+	return(lex_input());
+#endif
 	}
+#if defined(__cplusplus) || defined(__STDC__)
+void yyoutput(int c)
+#else
 yyoutput(c)
-  int c; {
+  int c; 
+#endif
+{
+#ifndef __cplusplus
 	output(c);
+#else
+	lex_output(c);
+#endif
 	}
+#if defined(__cplusplus) || defined(__STDC__)
+void yyunput(int c)
+#else
 yyunput(c)
-   int c; {
+   int c; 
+#endif
+{
 	unput(c);
 	}

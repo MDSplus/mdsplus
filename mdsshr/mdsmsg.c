@@ -9,7 +9,7 @@
 #endif
 
 #define CREATE_STS_TEXT
-#include        "mdsdcl.h"
+#include        "mdsdcldef.h"
 #include        "clidef.h"
 #include        "tcldef.h"
 #include        "ccldef.h"

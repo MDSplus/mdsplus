@@ -1,5 +1,9 @@
 
-typedef union 	{struct marker mark;} YYSTYPE;
+typedef union
+#ifdef __cplusplus
+	YYSTYPE
+#endif
+	{struct marker mark;} YYSTYPE;
 extern YYSTYPE yylval;
 # define ERROR 257
 # define IDENT 258
