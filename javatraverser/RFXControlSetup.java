@@ -169,8 +169,8 @@ public class RFXControlSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(400);
-    this.setHeight(792);
+    this.setWidth(792);
+    this.setHeight(480);
     this.setDeviceType("RFXControl");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("RFX Control Setup");
