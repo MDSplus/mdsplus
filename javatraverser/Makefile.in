@@ -28,9 +28,15 @@ NI6071ESetup.java\
 PELLETSetup.java\
 L5613Setup.java\
 RFXTimesSetup.java\
-RFXPConfigSetup.java\
+RFXPoloidalSetup.java\
+RFXToroidalSetup.java\
 RFXPMSetupSetup.java\
 RFXPCSetupSetup.java \
+RFXPVSetupSetup.java \
+RFXTFSetupSetup.java \
+RFXChopperSetupSetup.java \
+RFXInverterSetupSetup.java \
+RFXFeedforwardSetupSetup.java \
 TR10Setup.java \
 DIO2Setup.java \
 DIO2EncoderSetup.java \
