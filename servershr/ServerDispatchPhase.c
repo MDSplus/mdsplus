@@ -278,7 +278,7 @@ static void ActionDone(int idx)
     }
     if (!AbortInProgress)
     {
-      expression_d.length = sprintf(expression,"_ACTION_%08X = %d",actions[idx].nid,actions[idx].status);
+      expression_d.length = sprintf(expression,"PUBLIC _ACTION_%08X = %d",actions[idx].nid,actions[idx].status);
       TdiExecute(&expression_d,&xd MDS_END_ARG);
       for (i=0;i<actions[idx].num_references;i++)
       {
