@@ -98,7 +98,7 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	  po->pointer = (char *) (po + 1);
           memcpy(po->pointer,in_ptr+8,in.length);
 #if defined(WORDS_BIGENDIAN)
-          if (po->length > 1 && po->dtype != DTYPE_T)
+          if (po->length > 1 && po->dtype != DTYPE_T && po->dtype != DTYPE_IDENT && po->dtype != DTYPE_PATH)
 	  {
 	    switch (po->length)
 	    {
@@ -236,7 +236,7 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	      po->a0 = po->pointer + (a0 - offset);
             }
 #if defined(WORDS_BIGENDIAN)
-          if (po->dtype != DTYPE_T)
+          if (po->dtype != DTYPE_T && po->dtype != DTYPE_IDENT && po->dtype != DTYPE_PATH)
 	  {
             int i;
 	    switch (po->length)
@@ -457,7 +457,7 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
           LoadInt(dscsize,out_ptr+4);
           out_ptr += 8;
 #ifdef WORDS_BIGENDIAN
-          if (in_ptr->dtype != DTYPE_T)
+          if (in_ptr->dtype != DTYPE_T && in_ptr->dtype != DTYPE_IDENT && in_ptr->dtype != DTYPE_PATH)
 	  {
 	    switch (in_ptr->length)
 	    {
@@ -588,7 +588,7 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
             }
           }
 #ifdef WORDS_BIGENDIAN
-          if (in_ptr->dtype != DTYPE_T)
+          if (in_ptr->dtype != DTYPE_T && in_ptr->dtype != DTYPE_IDENT && in_ptr->dtype != DTYPE_PATH)
 	  {
             unsigned int i;
             switch (in_ptr->length)
@@ -937,7 +937,7 @@ int MdsSerializeDscOutZ(struct descriptor *in,
 	class = CLASS_S;
 	length = out_ptr->length + 8;
 #ifdef WORDS_BIGENDIAN
-        if (dtype != DTYPE_T)
+        if (dtype != DTYPE_T && dtype != DTYPE_IDENT && dtype != DTYPE_PATH)
         {
           char *outp = (char *)altbuf;
           char *inp = out_ptr->pointer;
