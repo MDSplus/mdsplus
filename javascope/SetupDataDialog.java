@@ -786,14 +786,16 @@ import java.lang.Integer;
 	    ew.UpdateWave(wc);
 	    if(ew.wave.wi.error != null)
 	    {
+		error = 1;
 		error_msg.addMessage(ew.wave.wi.error);
 	    }
 	}
-	error_msg.showMessage();
-
-
-    	if(ob == ok)
-	  setVisible(false);		
+	
+	if(error == 1)
+	    error_msg.showMessage();
+	else
+	    if(ob == ok)
+		setVisible(false);		
       }
       
       if(ob == reset)
