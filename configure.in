@@ -423,7 +423,7 @@ if test "$DO_HDF5" = yes; then
 fi
 
 dnl Check for user specified  hdf5 header and library
-if test -r $HDF5_DIR
+if test -n "$HDF5_DIR" -a -r $HDF5_DIR
 then
       HDF5_APS="\$(HDF5_APS)"
       HDF5_INCS="-I$HDF5_DIR/include"

@@ -6508,7 +6508,7 @@ fi
   fi
 fi
 
-if test -r $HDF5_DIR
+if test -n "$HDF5_DIR" -a -r $HDF5_DIR
 then
       HDF5_APS="\$(HDF5_APS)"
       HDF5_INCS="-I$HDF5_DIR/include"
