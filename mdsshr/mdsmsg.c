@@ -2,7 +2,6 @@
 #include        <stdio.h>
 #ifdef vms
 #include        <lib$routines.h>
-#include        <ssdef.h>
 #include        <time.h>
 #else
 #include        <sys/time.h>
@@ -13,6 +12,7 @@
 #include        "clidef.h"
 #include        "tcldef.h"
 #include        "ccldef.h"
+#include        "librtl_messages.h"
 #include        "treeshr.h"
 
 /**********************************************************************
@@ -76,6 +76,24 @@ static int   getFacility(	/* Return: num entries in stsText[]	*/
         *stsText = treeshr_stsText;	/* point to array		*/
         *facilityText = "TREESHR_FACILITY";
         max = sizeof(treeshr_stsText)/sizeof(treeshr_stsText[0]);
+       }
+    else if (facility == LIB_FACILITY)
+       {
+        *stsText = librtl_stsText;	/* point to array		*/
+        *facilityText = "LIB_FACILITY";
+        max = sizeof(librtl_stsText)/sizeof(librtl_stsText[0]);
+       }
+    else if (facility == STRMDS_FACILITY)
+       {
+        *stsText = strMds_stsText;	/* point to array		*/
+        *facilityText = "STRMDS_FACILITY";
+        max = sizeof(strMds_stsText)/sizeof(strMds_stsText[0]);
+       }
+    else if (facility == SS_FACILITY)
+       {
+        *stsText = ss_stsText;	/* point to array		*/
+        *facilityText = "SS_FACILITY";
+        max = sizeof(ss_stsText)/sizeof(ss_stsText[0]);
        }
     else
        {
@@ -173,3 +191,19 @@ int   MdsMsg(			/* Return: sts provided by user		*/
 
     return(sts | ALREADY_DISPLAYED);
    }
+
+
+
+#ifdef MAIN
+main()
+   {
+    MdsMsg(MDSDCL_STS_SUCCESS,0);  printf("\n");
+    MdsMsg(CLI_STS_PRESENT,0);  printf("\n");
+    MdsMsg(CCL_STS_SUCCESS,0);  printf("\n");
+    MdsMsg(TCL_STS_SUCCESS,0);  printf("\n");
+    MdsMsg(TreeNORMAL,0);  printf("\n");
+    MdsMsg(LibNOTFOU,0);  printf("\n");
+    MdsMsg(StrMATCH,0);  printf("\n");
+    MdsMsg(SsINTOVF,0);  printf("\n");
+   }
+#endif
