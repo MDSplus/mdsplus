@@ -124,7 +124,7 @@ public fun TR32__init(as_is _nid, optional _method)
 			if(_curr_pts > _pts) _pts = long(_curr_pts);
 
 			DevNodeCvt(_nid,  _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_RANGE, 
-				['0.125','0.15625','0.25','0.3125','0.5','0.625','1','1.25','2','2.5','4','5','8','10'],
+				[0.125,0.15625,0.25,0.3125,0.5,0.625,1,1.25,2,2.5,4,5,8,10],
 				[0x130,0x030,0x120,0x020,0x110,0x010,0x100,0x000,0x112,0x012,0x113,0x013,0x103,0x003],
 				 _range = 3);
 			_ranges = [_ranges, _range];

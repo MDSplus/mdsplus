@@ -96,11 +96,7 @@ public fun TR32__store(as_is _nid, optional _method)
 				_data = TR32HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts);					  
 			}						
 
-			DevNodeCvt(_nid,  _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_RANGE, 
-			['0.125','0.15625','0.25','0.3125','0.5','0.625','1','1.25','2','2.5','4','5','8','10'],
-			[0.125,0.15625,0.25,0.3125,0.5,0.625,1.,1.25,2.,2.5,4.,5.,8.,10.],
-			 _range = 10.);
-
+			_range = data(DevNodeRef(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_RANGE));	
 
 
 	/* Build signal */
