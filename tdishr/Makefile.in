@@ -8,6 +8,7 @@ exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
 LIBS=-L@MAKELIBDIR@  -lTreeShr -lMdsShr @LIBS@ @LIBM@
+SYBASE_INC=@SYBASE_INC@
 
 INSTALL=@top_srcdir@/conf/install-sh -c
 
@@ -129,3 +130,6 @@ install:
 
 TdiShr.exports: TdiShr.def
 	sed -e /LIBRARY/\;/\;/d TdiShr.def > $@
+
+TdiSql.o : TdiSql.c
+	$(CC) -o $@ TdiSql.c $(CFLAGS) -c $(SYBASE_INC)
