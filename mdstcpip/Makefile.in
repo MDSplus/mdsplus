@@ -17,6 +17,12 @@ LDFLAGS=@LDFLAGS@
 LIBS=@GLOBUS_LIBS@ @LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @MEMCHKLIB@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
+ifeq "@SHARETYPEMOD@x" "x"
+	modules =
+else
+	modules = @MAKESHLIBDIR@libMdsIpShr@SHARETYPEMOD@ 
+endif
+
 SOURCES = \
 	mdsipshr.c mdsiputil.c vmshpwd.c mdsip_socket_io.c $(COMPRESSION_SOURCES)
 
@@ -25,12 +31,12 @@ OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = mdsipshr.export
 
 all : @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ \
-      @MAKESHLIBDIR@libMdsIpShr@SHARETYPEMOD@ \
+      $(modules) \
       @MAKEBINDIR@ @MAKELIBDIR@ @MAKEETCDIR@ \
-      @MAKELIBDIR@libMdsIpShr.a @MAKELIBDIR@libMdsIpUtil.a \
       @MAKEBINDIR@mdsiptest @MAKEBINDIR@mdsip \
       @MAKEBINDIR@mdsipd @MAKEETCDIR@mdsip.hosts \
-	@MAKEBINDIR@mkdirhier
+      @MAKEBINDIR@mkdirhier \
+      @MAKELIBDIR@libMdsIpShr.a @MAKELIBDIR@libMdsIpUtil.a 
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES) mdsip_u.c
@@ -44,6 +50,7 @@ clean :
 	@ $(RM) @MAKEBINDIR@mdsiptest
 	@ $(RM) @MAKEBINDIR@mdsip
 	@ $(RM) @MAKEBINDIR@mdsipd
+	@ $(RM) @MAKEBINDIR@mkdirhier
 	@ $(RM) @MAKEETCDIR@mdsip.hosts
 
 install:
