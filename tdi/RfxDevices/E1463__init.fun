@@ -15,10 +15,8 @@ public fun E1463__init(as_is _nid, optional _method)
     private _N_DATA = 12;
     private _N_BACK = 13;
 
-write(*, 'Parte E1463__init');
 
     _address = if_error(data(DevNodeRef(_nid, _N_ADDRESS)),(DevLogErr(_nid, "Missing GPIB Address"); abort();));
-write(*, 'Address: ', _address);
 
     _command1 = 'MSK 3; NS; DT ';
     _head_temp = data(DevNodeRef(_nid, _N_HEAD_TEMP));

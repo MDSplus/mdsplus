@@ -12,8 +12,8 @@ public fun E1463__add(in _path, out _nidout)
     DevAddNode(_path // ':N_SCANS', 'NUMERIC', 10, *, _nid);
     DevAddNode(_path // ':HEAD_TEMP', 'NUMERIC', 5, *, _nid);
     DevAddNode(_path // ':SCAN_MASK', 'NUMERIC', [1,1024,1], *, _nid);
-    DevAddNode(_path // ':DATA', 'SIGNAL', *, '/compress_on_put', _nid);
-    DevAddNode(_path // ':BACK', 'SIGNAL', *, '/compress_on_put', _nid);
+    DevAddNode(_path // ':DATA', 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+    DevAddNode(_path // ':BACK', 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 50,'GPIB_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path// ':ARM_ACTION', 'ARM', 'ARM', 60,'GPIB_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path// ':STORE_ACTION', 'STORE','STORE', 50,'GPIB_SERVER',getnci(_path, 'fullpath'), _nid);

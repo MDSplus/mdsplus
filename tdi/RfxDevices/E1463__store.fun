@@ -15,11 +15,7 @@ public fun E1463__store(as_is _nid, optional _method)
     private _N_DATA = 12;
     private _N_BACK = 13;
 
-write(*, 'Parte E1463__store');
-
     _address = if_error(data(DevNodeRef(_nid, _N_ADDRESS)),(DevLogErr(_nid, "Missing GPIB Address"); abort();));
-write(*, 'Address: ', _address);
-
     _id = GPIBGetId(_address);
     if(_id == 0)
     {
@@ -43,7 +39,6 @@ write(*, 'Address: ', _address);
 	_trig_time = 0;
 
     _pts = GPIBQuery(_id, '#PTS', 5);
-write(*, _pts);
     if(_pts == 0)
     {
 	DevLogErr(_nid, "Cannot make GPIB query for PTS");
@@ -53,43 +48,30 @@ write(*, _pts);
     _dim1 = make_dim(make_window(0, _n_scans - 1, _trig_time), make_range(*,*,_synch_time));
     _dim2 = make_dim(make_window(0, _pts - 1, 0),  make_range(*,*,1));
 
-
-	wait(1);
-write(*, 'prima di GPIBWrite'); 
+    
     _command = 'BDSINT 1,1,' // trim(adjustl(_pts));    
     if_error(GPIBWrite(_id, _command),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
     _command = 'BDSINT 1,1,' // trim(adjustl(_pts));    
-    if_error(GPIBWrite(_id, _command),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
-write(*, 'prima di ReadShorts', _command);
-wait(1);
     _line = if_error(GPIBReadShorts(_id, _pts), (DevLogErr(_nid, "Error in GPIB Read"); abort();)); 
-write(*, 'dopo di ReadShorts');
-write(*,_line);
+    if_error(GPIBWrite(_id, _command),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
+    _line = if_error(GPIBReadShorts(_id, _pts), (DevLogErr(_nid, "Error in GPIB Read"); abort();)); 
 
     _back_nid = DevHead(_nid) + _N_BACK;
-
-write(*, 'back_nid = ', _back_nid);
-
     _signal = compile('build_signal((`_line), $VALUE, (`_dim2))');
     TreeShr->TreePutRecord(val(_back_nid),xd(_signal),val(0));
-write(*, 'scritto background');
     _lines = [];
+    write(*, 'Start readout');
     for(_i = 1; _i < (_n_scans + 1); _i++)
     {
-wait(0.1);
 	_command = 'BDSINT ' // trim(adjustl(_i)) // ',1,' // trim(adjustl(_pts));
-write(*,_command);
    	if_error(GPIBWrite(_id, _command),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
-write(*, 'Scritto command');
-    	_line = if_error(GPIBReadShorts(_id, _pts), (DevLogErr(_nid, "Error in GPIB Read"); abort();));
-
-if(_i == 1) write(*, _line);
-
+wait(0.1);
+   	_line = if_error(GPIBReadShorts(_id, _pts), (DevLogErr(_nid, "Error in GPIB Read"); abort();));
 	_lines = [_lines, _line];
     }
+    write(*, 'End readout');
     _data_nid = DevHead(_nid) + _N_DATA;
     _signal = compile('build_signal((`_lines), $VALUE, (`_dim2), (`_dim1))');
-write(*, 'data_nid = ', _data_nid);
     return (TreeShr->TreePutRecord(val(_data_nid),xd(_signal),val(0)));
 
 }

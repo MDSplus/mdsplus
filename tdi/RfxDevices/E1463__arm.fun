@@ -15,11 +15,7 @@ public fun E1463__arm(as_is _nid, optional _method)
     private _N_DATA = 12;
     private _N_BACK = 13;
 
-write(*, 'Parte E1463__arm');
-
     _address = if_error(data(DevNodeRef(_nid, _N_ADDRESS)),(DevLogErr(_nid, "Missing GPIB Address"); abort();));
-write(*, 'Address: ', _address);
-
     _command1 = 'MSK 3;';
     DevNodeCvt(_nid, _N_SYNCH_MODE, ['NORMAL', 'LINE', 'EXTERNAL'], ['NS', 'LS', 'XS'], _synch_mode = 'LS');
     _command1 = _command1 // _synch_mode;
