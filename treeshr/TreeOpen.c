@@ -844,7 +844,7 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
         {
           fd = MDS_IO_OPEN(resnam,O_RDONLY,0);
 #if (defined(__osf__) || defined(__linux) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX)) && !defined(HAVE_VXWORKS_H)
-          info->channel = (MDS_IO_SOCKET(fd) == -1) ? MDS_IO_FD(fd) : 0;
+          info->channel = (MDS_IO_SOCKET(fd) == -1) ? fd : 0;
 #endif
         }
         if (fd == -1)
@@ -957,7 +957,7 @@ static int MapFile(int fd, TREE_INFO *info, int edit_flag, int nomap)
 #ifndef MAP_FILE
 #define MAP_FILE 0
 #endif
-      info->section_addr[0] = mmap(0,info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE, info->channel, 0);
+      info->section_addr[0] = mmap(0,info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE, MDS_IO_FD(info->channel), 0);
       status = info->section_addr[0] != (void *)-1;
       if (!status)
         perror("Error mapping file");
