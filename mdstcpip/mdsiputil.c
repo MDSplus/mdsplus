@@ -1,5 +1,7 @@
 #include "mdsip.h"
+#ifndef min
 #define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
 #define xxxxUNIX_SERVER
 
 static unsigned char message_id = 1;
@@ -206,12 +208,15 @@ static SOCKET ConnectToPort(char *host, char *service)
   int status;
   SOCKET s;
   static struct sockaddr_in sin;
-  struct hostent *hp;
+  struct hostent *hp = NULL;
   struct servent *sp;
   static int one=1;
   long sendbuf = 32768,recvbuf = 32768;
+  int addr;
 
+#ifndef vxWorks
   hp = gethostbyname(host);
+#endif
 #ifdef _WIN32
   if ((hp == NULL) && (WSAGetLastError() == WSANOTINITIALISED))
   {
@@ -222,19 +227,38 @@ static SOCKET ConnectToPort(char *host, char *service)
 	  hp = gethostbyname(host);
   }
 #endif
+
   if (hp == NULL)
   {
-    int addr = inet_addr(host);
+    addr = inet_addr(host);
+
+#ifndef vxWorks
     if (addr != 0xffffffff)
-    hp = gethostbyaddr((void *) &addr, (int) sizeof(addr), AF_INET);
+    	hp = gethostbyaddr((void *) &addr, (int) sizeof(addr), AF_INET);
+#endif
   }
+#ifdef vxWorks
+  if (addr == 0xffffffff)
+#else
   if (hp == NULL)
+#endif
   {
     printf("Error in MDSplus ConnectToPort: %s unknown\n",host);
     return INVALID_SOCKET;
   }
   s = socket(AF_INET, SOCK_STREAM, 0);
   if (s == INVALID_SOCKET) return INVALID_SOCKET;
+
+#ifdef vxWorks
+  if (atoi(service) == 0)
+  {
+      char *port;
+      port =  "8000";
+      sin.sin_port = htons((short)atoi(port));
+  }
+  else
+    sin.sin_port = htons((short)atoi(service));
+#else
   if (atoi(service) == 0)
   {
     sp = getservbyname(service,"tcp");
@@ -249,13 +273,18 @@ static SOCKET ConnectToPort(char *host, char *service)
   }
   else
     sin.sin_port = htons((short)atoi(service));
+#endif
   if (sin.sin_port == 0)
   {
     printf("Error in MDSplus ConnectToPort: Unknown service: %s\nSet environment variable %s if port is known\n",service,service);
     return INVALID_SOCKET;
   }
   sin.sin_family = AF_INET;
+#ifdef vxWorks
+  memcpy(&sin.sin_addr, &addr, sizeof(addr));
+#else
   memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
+#endif
   status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
   if (status < 0)
   {
@@ -273,9 +302,13 @@ static SOCKET ConnectToPort(char *host, char *service)
 #else
     static char user[L_cuserid];
     char *user_p;
+#ifdef vxWorks
+    user_p = "vxWorks";
+#else
     user_p = (cuserid(user) && strlen(user)) ? user : "?";
 #endif
-    m = malloc(sizeof(MsgHdr) + strlen(user_p));
+#endif
+   m = malloc(sizeof(MsgHdr) + strlen(user_p));
     m->h.client_type = 0;
     m->h.length = strlen(user_p);
     m->h.msglen = sizeof(MsgHdr) + m->h.length;
@@ -323,8 +356,10 @@ static SOCKET ConnectToPort(char *host, char *service)
 
 SOCKET  ConnectToMds(char *host)
 {
+
   char hostpart[256] = {0};
   char portpart[256] = {0};
+
   sscanf(host,"%[^:]:%s",hostpart,portpart);
   if (strlen(portpart) == 0)
     strcpy(portpart,"mdsip");

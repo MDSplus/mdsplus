@@ -100,7 +100,9 @@
 /*  *1    17-MAY-1994 09:30:50 TWF "MDSplus TCPIP RTL" */
 /*  CMS REPLACEMENT HISTORY, Element MDSIPSHR.C */
 #include "mdsip.h"
+#ifndef min
 #define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
 #ifdef _USE_VARARGS
 int MdsValue(va_alist) va_dcl
 {
@@ -280,6 +282,7 @@ int  MdsSetDefault(SOCKET sock, char *node)
   return status;
 }
 
+#ifndef vxWorks
 
 int  IdlMdsClose(int lArgc, void * * lpvArgv)
 {
@@ -377,3 +380,4 @@ int  IdlSendArg(int lArgc, void * * lpvArgv)
   sigrelse(SIGALRM);
   return status;
 }
+#endif //vxWorks

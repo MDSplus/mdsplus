@@ -1,4 +1,4 @@
-PARTS = mdsshr treeshr tdishr
+PARTS = mdsshr treeshr tdishr mdstcpip 
 PLATFORMS = 68K Alpha
 
 all :
