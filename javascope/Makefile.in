@@ -63,9 +63,9 @@ all:	@MAKEBINDIR@ \
 	@MAKEJAVADIR@ \
 	@MAKEJAVADIR@classes \
 	@MAKEJAVADIR@classes/docs \
+	docs \
 	@MAKEJAVADIR@classes/jScope.jar  \
 	@MAKEJAVADIR@classes/WaveDisplay.jar \
-	docs \
 	@MAKEJAVADIR@classes/jScope.properties \
 	@MAKEJAVADIR@classes/MindTerm.jar
 
