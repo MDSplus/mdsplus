@@ -135,7 +135,7 @@ public class DEQUSetupSetup extends DeviceSetup {
     deviceField11.setIdentifier("");
     deviceField11.setShowState(false);
     deviceField11.setEditable(false);
-    deviceField12.setOffsetNid(7);
+    deviceField12.setOffsetNid(15);
     deviceField12.setLabelString("Start Acq. :");
     deviceField12.setNumCols(15);
     deviceField12.setIdentifier("");
