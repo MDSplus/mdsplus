@@ -1,4 +1,4 @@
-CFLAGS = -I../include -I/usr/include/java -I/usr/include/java/alpha -g
+CFLAGS = -I../include -I/usr/include/java -I/usr/include/java/alpha -g -ieee
 FFLAGS = -g -extend_source -names as_is -assume nounderscore -I../include -Wl,-L../shlib 
 MOTIF_CFLAGS = -I../include -g -D_NO_DXm
 WML = ln -sf /usr/examples/motif/wml/tokens.dat . ; /usr/examples/motif/wml/wml xmdsuil.wml ; rm wml-uil.* wml.report
@@ -12,7 +12,8 @@ SHARED_LIB = -so_archive
 MOTIF_LIBS = -lMrm -lXm
 X11_LIBS = -lXt -lX11
 RANLIB = ranlib $@
-D3LIBOPTIONS = -L/c/osf/lib -ld3 -lc -lfor
+D3LIBOPTIONS = -L/c/osf/lib -ld3 -lc -lfor /usr/lib/libUfor.a -rpath /c/osf/lib
+#D3LIBOPTIONS = -lc -lfor -no_so /c/osf/lib/libd3.a /usr/lib/libUfor.a
 FPREPROCESSOR = -P
 MATHFFLAGS = -g -I../include -Wl,-L../shlib -DBIT64
-MATHLDFLAGS = -lfor -lc -lm 
+MATHLDFLAGS = -lc -lm /usr/lib/libUfor.a
