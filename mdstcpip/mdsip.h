@@ -1,4 +1,6 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIP.H */
+/*  *60   16-JUN-1998 16:21:26 TWF "use 5000 on OpenVMS" */
+/*  *59   15-JUN-1998 15:32:21 TWF "Select buffer size" */
 /*  *58   14-APR-1998 15:58:00 TWF "Add sighold defines" */
 /*  *57   14-APR-1998 15:23:06 TWF "Fix header length to be compatible" */
 /*  *56    7-APR-1998 10:10:45 TWF "Support VAXG client (from epfl)" */
@@ -49,7 +51,7 @@
 /*  *11   10-JUN-1994 11:32:13 TWF "Add another definition" */
 /*  *10   10-JUN-1994 11:23:12 TWF "Add errno" */
 /*  *9    10-JUN-1994 09:48:59 TWF "Add alpha osf1" */
-/*  *8     9-JUN-1994 16:19:02 TWF "Use int instead of long" */
+/*  *8     9-JUN-1994 16:19:02 TWF "Use int32 instead of long" */
 /*  *7     9-JUN-1994 08:20:13 TWF "Add linux" */
 /*  *6     7-JUN-1994 15:24:05 TWF "Add Ultrix system" */
 /*  *5     1-JUN-1994 14:44:04 TWF "Flip bytes" */
@@ -108,6 +110,14 @@
 #include <starlet.h>
 #include <iodef.h>
 #include <lib$routines.h>
+#endif
+
+#ifdef __VMS
+#define SEND_BUF_SIZE 5000
+#define RECV_BUF_SIZE 5000
+#else
+#define SEND_BUF_SIZE 32768
+#define RECV_BUF_SIZE 32768
 #endif
 
 #if defined(__VMS) || defined(WIN32) || defined(__linux__)
