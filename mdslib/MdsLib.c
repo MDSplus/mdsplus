@@ -55,7 +55,7 @@ int dtype_length(struct descriptor *d)
     case DTYPE_USHORT  :
     case DTYPE_SHORT   :  len = sizeof(short); break;
     case DTYPE_ULONG   :  
-    case DTYPE_LONG    :  len = sizeof(long); break;
+    case DTYPE_LONG    :  len = sizeof(int); break;
     case DTYPE_FLOAT   :  len = sizeof(float); break;
     case DTYPE_DOUBLE  :  len = sizeof(double); break;
     case DTYPE_FLOAT_COMPLEX :  len = sizeof(float) * 2; break;
@@ -306,7 +306,10 @@ struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
 
   if (dsc->class == CLASS_S) 
   {
-    arg = MakeDescripWithLength(arg, (char)dtype, (int)dsc->length, (char)0, (int *)0, dsc->pointer);
+    if (dsc->length)
+      arg = MakeDescripWithLength(arg, (char)dtype, (int)dsc->length, (char)0, (int *)0, dsc->pointer);
+    else
+      arg = MakeDescrip(arg, (char)dtype, (char)0, (int *)0, dsc->pointer);
   } 
   else 
   {
@@ -318,7 +321,10 @@ struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
     if (adsc->dimct > 1) m = adsc->m;
     for (i=0; i<adsc->dimct; i++) dims[i] = m[i];
     for (i=adsc->dimct; i<MAXDIM; i++) dims[i] = 0;
-    arg = MakeDescripWithLength(arg, (char)dtype, (int)dsc->length, adsc->dimct, dims, adsc->pointer);
+    if (dsc->length)
+      arg = MakeDescripWithLength(arg, (char)dtype, (int)dsc->length, adsc->dimct, dims, adsc->pointer);
+    else
+      arg = MakeDescrip(arg, (char)dtype, adsc->dimct, dims, adsc->pointer);
   }
   return arg;
 }
