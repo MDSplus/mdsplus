@@ -3,6 +3,6 @@
 #! display MDSplus javascope
 #
 env \
-LD_LIBRARY_PATH=/usr/local/mdsplus/lib \
-CLASSPATH=/usr/local/mdsplus/java/classes/jTraverser.jar \
+LD_LIBRARY_PATH=$MDSPLUS_DIR/lib \
+CLASSPATH=$MDSPLUS_DIR/classes/jTraverser.jar \
 java jTraverser $1 $2 $3 $4 $5 $6 $7
