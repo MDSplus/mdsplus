@@ -166,11 +166,11 @@ public class DeviceWave extends DeviceComponent
                 }
                  else
                  {
-                    if(valFloat > maxY)
-                        waveY[row] = maxY;
-                    else if(valFloat < minY)
-                        waveY[row] = minY;
-                    else
+		     //  if(valFloat > maxY)
+		     //  waveY[row] = maxY;
+		     //else if(valFloat < minY)
+                     //   waveY[row] = minY;
+		     //else
                         waveY[row] = valFloat;
                  }
                 waveEditor.setWaveform(waveX, waveY, minY, maxY);
@@ -320,7 +320,7 @@ public class DeviceWave extends DeviceComponent
             waveXOld[i] = waveX[i];
             waveYOld[i] = waveY[i];
         }
-        updateLimits();
+        //updateLimits();
         displayData(data, is_on);   
         initializing = false;
     }
