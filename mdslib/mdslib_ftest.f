@@ -69,7 +69,7 @@ c23456789012345678901234567890123456789012345678901234567890123456789012
 
       dsc = descr(IDTYPE_LONG,iresult,0)
       dsc2 = descr(IDTYPE_CSTRING,"D3D"//CHAR(0),0,3)
-      status = MdsValue("TreeShr->TreeOpen($,-1)"//CHAR(0),dsc,dsc2,0,size)
+      status = MdsValue("TreeShr->TreeOpen($,-1)"//CHAR(0),dsc2,dsc,0,size)
       write (6,*) "TreeShr->TreeOpen(D3D,-1): ",status
 
       dsc = descr(IDTYPE_CSTRING,ctag,0,50)
