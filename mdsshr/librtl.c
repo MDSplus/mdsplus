@@ -867,6 +867,11 @@ int LibFindFile(struct descriptor *filespec, struct descriptor *result, void **c
   return (int)status;
 }
 
+int LibFindFileRecurseCaseBlind(struct descriptor *filespec, struct descriptor *result, void **ctx)
+{
+  LibFindFile(filespec, result, ctx);
+}
+
 int LibFindFileEnd(void **ctx)
 {
   FindFileCtx *ffctx = *(FindFileCtx **)ctx;
@@ -1045,33 +1050,35 @@ typedef struct {
 } FindFileCtx;
 
 
-static int FindFile(struct descriptor *filespec, struct descriptor *result, int **ctx, int recursively);
-static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx);
+static int FindFile(struct descriptor *filespec, struct descriptor *result, int **ctx, int recursively, int caseBlind);
+static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int caseBlind);
 static int FindFileEnd(FindFileCtx *ctx);
-static char *FindNextFile(FindFileCtx *ctx, int recursively);
+static char *FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind);
 
 extern int LibFindFile(struct descriptor *filespec, struct descriptor *result, int **ctx)
 {
-  return FindFile(filespec, result, ctx, 0);
+  return FindFile(filespec, result, ctx, 0, 0);
 }
-extern int LibFindFileR(struct descriptor *filespec, struct descriptor *result, int **ctx)
+extern int LibFindFileRecurseCaseBlind(struct descriptor *filespec, struct descriptor *result, int **ctx)
 {
-  return FindFile(filespec, result, ctx, 1);
+  return FindFile(filespec, result, ctx, 1, 1);
 }
-static int FindFile(struct descriptor *filespec, struct descriptor *result, int **ctx, int recursively)
+static int FindFile(struct descriptor *filespec, struct descriptor *result, int **ctx, int recursively, int caseBlind)
 {
   unsigned int status;
   char *ans;
   if (*ctx == 0) {
-    status = FindFileStart(filespec, (FindFileCtx **)ctx);
+    status = FindFileStart(filespec, (FindFileCtx **)ctx, caseBlind);
     if ((status&1) ==0)
       return status;
   }
-  ans = FindNextFile((FindFileCtx *)*ctx, recursively);
+  ans = FindNextFile((FindFileCtx *)*ctx, recursively, caseBlind);
   if (ans != 0) {
-    if (result->pointer != 0)
-      free(result->pointer);
-    result->pointer = ans;
+    static struct descriptor ansd = {0, DTYPE_T, CLASS_S,0};
+    ansd.length = strlen(ans);
+    ansd.pointer = ans;
+    StrCopyDx(result,&ansd);
+    free(ans);
     status = 1;
   }
   else {
@@ -1110,7 +1117,7 @@ static int FindFileEnd(FindFileCtx *ctx)
   cstring=malloc(descr->length+1);\
   strncpy(cstring, descr->pointer,descr->length);
 
-static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx)
+static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int caseBlind)
 {
   FindFileCtx *lctx;
   char *fspec;
@@ -1142,6 +1149,8 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx)
     lctx->wild_descr.pointer=lctx->file;
     lctx->wild_descr.dtype = DTYPE_T;
     lctx->wild_descr.class = CLASS_S;
+    if (caseBlind)
+      StrUpcase(&lctx->wild_descr,&lctx->wild_descr);
     free(fspec);
   }
   if (lctx->env != 0) {
@@ -1182,7 +1191,7 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx)
   return 1;
 }
 
-static char *FindNextFile(FindFileCtx *ctx, int recursively)
+static char *FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind)
 {
   char *ans;
   struct dirent *dp;
@@ -1198,8 +1207,17 @@ static char *FindNextFile(FindFileCtx *ctx, int recursively)
         return 0;
     dp = readdir(ctx->dir_ptr);
     if (dp != NULL) {
+      struct descriptor upname = {0,DTYPE_T,CLASS_D,0};
       DESCRIPTOR_FROM_CSTRING(filename, dp->d_name)
-      found = StrMatchWild(&filename, &ctx->wild_descr)&1;
+      if (caseBlind)
+	{
+        StrUpcase(&upname,&filename);
+      }
+      else {
+	StrCopyDx(&upname,&filename);
+      }
+      found = StrMatchWild(&upname, &ctx->wild_descr)&1;
+      StrFree1Dx(&upname);
       if (recursively) {
         if ((strcmp(dp->d_name, ".") != 0) && (strcmp(dp->d_name, "..") != 0)) {
           char *tmp_dirname;
