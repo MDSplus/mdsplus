@@ -191,7 +191,7 @@ int roam_check_access(char *host, int https, char *resource, char *permit, char 
       }
     }
     else
-      status=-1;
+      status=-2;
   }
   else
   {
