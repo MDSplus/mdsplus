@@ -73,10 +73,12 @@ public fun TR6_3__init(as_is _nid, optional _method)
     {
 		_control_w2 = _control_w2 | (1 << 2);
         _clk = DevNodeRef(_nid, _N_CLOCK_SOURCE); 
-		_clock_val = if_error(execute('`_clk'),(DevLogErr(_nid, "Cannot resolve clock"); abort();));
+	_clock_ok = 1;
+		_clock_val = if_error(execute('`_clk'),(DevLogErr(_nid, "Cannot resolve clock"); _clock_ok = 0;));
    }
-
-
+   if(!_clock_ok)
+   	abort();
+write(*,'PIMBA');
     DevNodeCvt(_nid, _N_USE_TIME, ['TRUE', 'FALSE'], [1,0], _time_cvt=0);
     _pts = 0;
 	_pre_samples = 0;
@@ -113,6 +115,7 @@ public fun TR6_3__init(as_is _nid, optional _method)
 			if(_curr_pts > _pts) _pts = long(_curr_pts);
         }
     }
+write(*,'PIMBA1');
 
 	/* If BURST mode we need to define the memory portion used for each segment */
 	if(_burst) 

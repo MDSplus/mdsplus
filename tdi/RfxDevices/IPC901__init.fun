@@ -72,11 +72,15 @@ public fun IPC901__init(as_is _nid, optional _method)
 				_calibration = [_calibration, _curr_corr];
 			}
 		}
+write(*, 'CAMAC1');
 		DevCamChk(_name, CamPiow(_name, _chan, 23, _dummy=0, 16),1,1);
  
+write(*, 'CAMAC2');
 		DevCamChk(_name, CamQstopw(_name, _chan, 17, 1024, _calibration, 16), 1, *);
 		wait(0.5);
 	}
+
+write(*, 'Fatta correzoe');
 
 
 	for(_phase = 0; _phase < 1; _phase++)

@@ -64,9 +64,10 @@ public fun CHVPS__init(as_is _nid, optional _method)
     private _K_MAX_RATE		= 5;
 
     private _data_sheet_t  = [ [ -2000,    0, 3000, 1, 2, 250 ],
-				             [       0, 6000, 1000, 1, 1, 500 ] ];
+			       [     0, 6000, 1000, 1, 1, 500 ] ];
 
 	private _wait_val = 0.01;
+
 
 
 	_error = 0;
@@ -97,16 +98,14 @@ public fun CHVPS__init(as_is _nid, optional _method)
 
 	_target = _crate_num << 8;
 
-    for(_i = 0; _i < _K_NUM_SET; _i++)
-    {
-
-write(*, "SET ", _i);
+	for(_i = 0; _i < _K_NUM_SET; _i++)
+	{
 
 		_error = 0;
 		_head_channel = _N_SET_00 + (_i *  _K_NODES_PER_SET);
-
-        if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
-        { 
+		
+		if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
+		{ 
 
 			_set_type = if_error( data(DevNodeRef(_nid, _head_channel + _N_SET_CHAN_TYPE )), ( _error = 1; _param = "Chan type"; ) );
 
@@ -252,12 +251,7 @@ write(*, "SET ", _i);
 							}
 						}
 
-						write(*, "---->", _chan_bit);
-
 						_chan_bit = _chan_bit_new;
-
-						write(*, "---->", _chan_bit);
-
 
 						_chan_type = 0;
 						_status = CHVPSSendCommand(_name, 0, _K_SELECT, _target, _error); 
@@ -269,12 +263,10 @@ write(*, "SET ", _i);
 						if (_status & 1 && !(_error < 0))
 						{
 							
-						write(*, "---->");
 							_status = CHVPSSendCommand(_name, _K_CHAN_TYPE, _K_SELECT, _K_START_READOUT, _chan_type);
-						write(*, "---->");
 						}     
 
-
+						
 						 
 						if (_status & 1 && !(_error < 0))
 						{
@@ -298,14 +290,13 @@ write(*, "SET ", _i);
 							_status = CHVPSSendCommand(_name, _K_I1 , _K_WRITE, _i1_code, _error);
 
 						if (_status & 1 && !(_error < 0))
-							_status = CHVPSSendCommand(_name, _K_RUMP_UP , _K_WRITE, _rup_code, _error);
+							_status = CHVPSSendCommand(_name, _K_RAMP_UP , _K_WRITE, _rup_code, _error);
 
 						if (_status & 1 && !(_error < 0))
-							_status = CHVPSSendCommand(_name, _K_RUMP_DOWN , _K_WRITE, _rdown_code, _error);
+							_status = CHVPSSendCommand(_name, _K_RAMP_DOWN , _K_WRITE, _rdown_code, _error);
 
 						if (_status & 1 && !(_error < 0))
 							_status = CHVPSSendCommand(_name, _K_TRIP , _K_WRITE, _trip, _error);
-
 
 						if (_status & 1 && !(_error < 0))
 						{
@@ -335,7 +326,7 @@ write(*, "SET ", _i);
 							}
 						}
 						if( _error < 0 )
-								DevLogErr(_nid, "CHVPS command execution error : "//_error);
+							DevLogErr(_nid, "CHVPS command execution error : "//_error);
 
 						_target -= _chan_addr[_j];
 						 
@@ -370,5 +361,5 @@ write(*, "SET ", _i);
 		}	
 	}
 
-    return (_status);
+	return (_status);
 }
