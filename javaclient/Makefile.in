@@ -12,7 +12,8 @@ SOURCES = MdsPlusDescriptor.java\
 MdsPlusException.java\
 MdsPlusEvents.java\
 MdsPlusEvent.java\
-MdsPlus.java
+MdsPlus.java\
+MdsPlusEventMonitor.java
 
 CLASSES = $(SOURCES:%.java=MdsPlus/%.class)
 
@@ -20,7 +21,7 @@ all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/MdsPlus.jar
 
 clean: 
-	@ if [ -d MdsPlus ]; then (cd MdsPlus; ../$(RM) $(CLASSES)); fi
+	@ $(RM) $(CLASSES)
 	@ $(RM) MdsPlus
 	@ $(RM) @MAKEJAVADIR@classes/MdsPlus.jar
 
@@ -41,4 +42,4 @@ install:
 	$(JAR) c0f $@ MdsPlus/*
 
 $(CLASSES): 	$(SOURCES)
-	$(JAVAC) -d . $(SOURCES)
+	$(JAVAC) -d . -classpath @JDK_DIR@/jre/lib/plugin.jar $(SOURCES)
