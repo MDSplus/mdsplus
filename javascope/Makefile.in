@@ -58,7 +58,16 @@ ASCIIDataProvider.java      ImageTransferable.java
 
 CLASSES = $(SOURCES:.java=.class)
 
-all:	@MAKEBINDIR@ @MAKEJAVADIR@classes/docs @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/jScope.jar  @MAKEJAVADIR@classes/WaveDisplay.jar docs  @MAKEJAVADIR@classes/jScope.properties @MAKEJAVADIR@classes/MindTerm.jar
+all:	@MAKEBINDIR@ \
+	@MAKEBINDIR@jScope \
+	@MAKEJAVADIR@ \
+	@MAKEJAVADIR@classes \
+	@MAKEJAVADIR@classes/docs \
+	@MAKEJAVADIR@classes/jScope.jar  \
+	@MAKEJAVADIR@classes/WaveDisplay.jar \
+	docs \
+	@MAKEJAVADIR@classes/jScope.properties \
+	@MAKEJAVADIR@classes/MindTerm.jar
 
 clean: 
 	@ $(RM) *.class
