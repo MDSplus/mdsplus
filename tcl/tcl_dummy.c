@@ -4,7 +4,6 @@
     int a(){printf("Routine %s not implemented yet\n",#a);return 0;}
 
 dummy(TclDispatch_abort_server)
-dummy(TclDeleteNode)
 dummy(TclDeletePulse)
 dummy(TclDispatch)
 dummy(TclDispatch_build)

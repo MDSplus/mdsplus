@@ -50,7 +50,7 @@ int TclClose()
                }
            }
         else
-          sts = TreeQuitTree(0,0);
+            sts = TreeQuitTree(0,0);
        }
     if (sts & 1)
         TclNodeTouched(0,tree);

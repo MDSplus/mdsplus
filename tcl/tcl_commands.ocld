@@ -86,7 +86,7 @@ define type DELETE_TYPE												       ! 53
 define syntax delete_node											       ! 53 
 	Routine TclDeleteNode											       ! 53
         parameter p1,prompt="What",value(required,type=DELETE_TYPE)						       ! 53 
-	parameter p2,prompt="Node",label=node,value(required,list)						       ! 53 
+	parameter p2,prompt="Node",label=NODENAME,value(required,list)						       ! 53
         qualifier log												       ! 53 
 	qualifier confirm,default										       ! 103
 define syntax delete_pulse											       ! 58 
@@ -232,7 +232,7 @@ Define syntax set_default
 Define syntax set_node
 	Routine TclSetNode
         parameter p1,prompt="What",value(required,type=SET_TYPE)
-        parameter p2,LABEL=NODE,prompt="Node",value(required)
+        parameter p2,LABEL=NODENAME,prompt="Node",value(required)
         qualifier SUBTREE
         qualifier ON												       ! 53 
         qualifier OFF												       ! 53 

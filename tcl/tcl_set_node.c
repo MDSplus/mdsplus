@@ -27,7 +27,7 @@ int TclSetNode()
     char  *nodename;
     static DYNAMIC_DESCRIPTOR(dsc_nodename);
 
-    cli_get_value("NODE",&dsc_nodename);
+    cli_get_value("NODENAME",&dsc_nodename);
     nodename = dsc_nodename.dscA_pointer;
     log = cli_present("LOG") & 1;
 
