@@ -9,7 +9,7 @@ extern void *DBID;
 int TreeGetDbi(struct dbi_itm *itmlst) {return _TreeGetDbi(DBID,itmlst);}
 #define set_retlen(length) if (lst->buffer_length < length) { status = TreeBUFFEROVF; break; } else retlen=length
 #define check_open(db) if (!db) {status=TreeNOT_OPEN;break;}
-
+#define set_ret_char(val) memset(lst->pointer, 0, lst->buffer_length); *((char *)lst->pointer) = val
 
 int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
 {
@@ -38,34 +38,19 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
      case DbiMODIFIED:
 
       check_open(db);
-      {
-        memset(lst->pointer,0,lst->buffer_length);
-        *(char *)lst->buffer_length = (char)db->modified;
-	if (lst->return_length_address)
-	  *lst->return_length_address = min(lst->buffer_length, sizeof(char));
-      }
+      set_ret_char(db->modified);
       break;
 
      case DbiOPEN_FOR_EDIT:
 
       check_open(db);
-      {
-        memset(lst->pointer,0,lst->buffer_length);
-        *(char *)lst->buffer_length = (char)db->open_for_edit;
-	if (lst->return_length_address)
-	  *lst->return_length_address = min(lst->buffer_length, sizeof(char));
-      }
+      set_ret_char(db->open_for_edit);
       break;
 
      case DbiOPEN_READONLY:
 
       check_open(db);
-      {
-        memset(lst->pointer,0,lst->buffer_length);
-        *(char *)lst->buffer_length = (char)db->open_readonly;
-	if (lst->return_length_address)
-	  *lst->return_length_address = min(lst->buffer_length, sizeof(char));
-      }
+      set_ret_char(db->open_readonly);
       break;
 
      case DbiINDEX:
