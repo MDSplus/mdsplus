@@ -33,6 +33,7 @@ extern unsigned short OpcRef;
 extern unsigned short OpcVal;
 extern unsigned short OpcXd;
 
+extern int TdiConcat();
 extern int TdiData(  );
 extern int TdiEvaluate(  );
 extern int TdiFaultHandler(  );
@@ -150,8 +151,17 @@ unsigned char			origin[255];
 fort:			tmp[ntmp] = EMPTY_XD;
 			if (list[j]) status = TdiData(list[j], &tmp[ntmp] MDS_END_ARG);
                         newdsc[j-1] = tmp[ntmp].pointer;
-			if (newdsc[j-1] && newdsc[j-1]->dtype != DTYPE_T)
-				newdsc[j-1] = (struct descriptor *)newdsc[j-1]->pointer;
+			if (newdsc[j-1])
+                        {
+                          if (newdsc[j-1]->dtype != DTYPE_T)
+			    newdsc[j-1] = (struct descriptor *)newdsc[j-1]->pointer;
+                          else
+			  {
+                            DESCRIPTOR(zero_dsc,"\0");
+                            TdiConcat(&tmp[ntmp],&zero_dsc,&tmp[ntmp] MDS_END_ARG);
+                            newdsc[j-1] = (struct descriptor *)tmp[ntmp].pointer->pointer;
+                          }
+                        }
 			origin[ntmp++] = (unsigned char)j;
 		}
 	}
