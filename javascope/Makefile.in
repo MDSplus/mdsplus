@@ -53,7 +53,7 @@ FrameData.java              JiSlab.java                 RowColumnLayout.java    
 JiSlabIterator.java         SetupDataDialog.java        WaveformEvent.java          DemoAccess.java		UniversalDataProvider.java\
 Frames.java                 JiVar.java                  SetupDefaults.java          WaveformListener.java	NotConnectedDataProvider.java\
 SignalsBoxDialog.java	    SignalBox.java		MdsDataClient.java	    MdsIOException.java		SetupWaveformParams.java \
-TSDataProvider.java	    AsdexDataProvider.java
+TSDataProvider.java	    AsdexDataProvider.java	WaveformEditor.java	    WaveformEditorListener.java
 
 CLASSES = $(SOURCES:.java=.class)
 
