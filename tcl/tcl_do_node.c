@@ -1,4 +1,5 @@
 #include        "tclsysdef.h"
+#include		<mds_stdarg.h>
 
 /**********************************************************************
 * TCL_DO_NODE.C --
@@ -33,7 +34,7 @@ int TclDoNode()
     l2u(nodnam_dsc.dscA_pointer,0);
     if ((sts = TreeFindNode(nodnam_dsc.dscA_pointer,&nid)) & 1)
        {
-        sts = TdiDoTask(&niddsc,&retstatus_d);
+        sts = TdiDoTask(&niddsc,&retstatus_d MDS_END_ARG);
         if (sts & 1)
             sts = retstatus;
        }

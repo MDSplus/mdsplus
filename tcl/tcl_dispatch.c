@@ -3,7 +3,9 @@
 #include        <stdlib.h>
 #include        <dbidef.h>
 #include        <ncidef.h>
+#ifndef HAVE_WINDOWS_H
 #include        <pthread.h>
+#endif
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
