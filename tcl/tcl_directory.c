@@ -335,8 +335,10 @@ int   TclDirectory()
                    {
                     if (previous_relationship != relationship)
                        {
-                        TclTextOut(dsc_outline.dscA_pointer);
-                        str_free1_dx(&dsc_outline);
+			 if (dsc_outline.dscW_length != 0) {
+			   TclTextOut(dsc_outline.dscA_pointer);
+			   str_free1_dx(&dsc_outline);
+			 }
                         TclTextOut("  ");
                         previous_relationship = relationship;
                        }
