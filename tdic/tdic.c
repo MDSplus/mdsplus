@@ -7,8 +7,14 @@
 
 #include <stdlib.h>
 #include <sys/stat.h>
+
+#ifdef HAVE_READLINE_READLINE_H
 #include <readline/readline.h>
 #include <readline/history.h>
+#else
+#define bfgets fgets_with_edit
+#endif
+
 extern int TdiExecute();
 char *bfgets(char *s, int size, FILE *stream, char *prompt);   /* fgets replacement */
 #define PROMPT "TDI> "
@@ -213,6 +219,7 @@ static void tdiputs(char *line)
    if (line[line_d.length-1]=='\n') line_d.length--;
    TdiExecute(&write_it,&line_d,&ans MDS_END_ARG);
 }
+#ifdef HAVE_READLINE_READLINE_H
 /* Routine to replace fgets using readline on stdin */
 char *bfgets(char *s, int size, FILE *stream, char *prompt)
 {
@@ -231,3 +238,4 @@ char *bfgets(char *s, int size, FILE *stream, char *prompt)
    } else
      return(fgets(s,size,stream));
 }
+#endif

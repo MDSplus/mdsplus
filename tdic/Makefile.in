@@ -7,6 +7,7 @@ exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
 LIBS=@LIBS@ -L$(top_srcdir)/lib -lMdsIpShr -lTdiShr -lMdsShr
+TDIC_LIBS= -L$(top_srcdir)/lib -lTdiShr -lMdsShr @LIBPTHREAD@ @LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
@@ -15,7 +16,7 @@ SOURCES = \
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = TdiShrExt.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@ @MAKELIBDIR@libTdiShrExt.a
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@ @MAKELIBDIR@libTdiShrExt.a @MAKEBINDIR@tdic
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -24,6 +25,7 @@ clean :
 	rm *.o
 	rm @MAKELIBDIR@libTdiShrExt.a
 	rm @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@
+	rm @MAKEBINDIR@tdic
 
 install:
 	if [ ! -d @libdir@ ] ; then \
@@ -34,6 +36,7 @@ install:
 	if (test @SHARETYPE@ != .a) then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libTdiShrExt.a @libdir@; \
 	fi;
+	$(INSTALL) -m 755  @MAKEBINDIR@tdic @bindir@
 
 @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
@@ -42,8 +45,14 @@ install:
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
+@MAKEBINDIR@tdic : tdic.c
+	$(CC) -o $@ tdic.c $(CFLAGS) -L@MAKESHLIBDIR@ -lTdiShr -lMdsdcl
+
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
+
+@MAKEBINDIR@ :
+	MKDIR @MAKEBINDIR@
 
 @MAKESHLIBDIR_RULE@
 
