@@ -16,7 +16,8 @@
 # Changes to this file take effect immediately without restarting inetd or
 # any other service. They do not effect existing connections however.
 #
-!*@*.com 
+fredian@*.gat.com | twf
 *@*.pfc.mit.edu	| MAP_TO_LOCAL
 *@*.psfc.mit.edu | MAP_TO_LOCAL 
+!*.com
 multi | twf

@@ -294,13 +294,13 @@ static void InstallService() {printf("install option only valid with mdsip_servi
 static void RemoveService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
 static int BecomeUser(char *remuser, struct descriptor *local_user)
 {
-  int ok;
+  int ok = 1;
   CompressString(local_user,0);
   if (local_user->length)
   {
     char *luser = MdsDescrToCstring(local_user);
     char *user = strcmp(luser,"MAP_TO_LOCAL") == 0 ? remuser : luser;
-    int status;
+    int status = -1;
     struct passwd *pwd = getpwnam(user);
     if (!pwd && remuser == user)
     {
@@ -308,14 +308,12 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
       for (i=0;i<strlen(user);i++)
         user[i] = __tolower(user[i]);
       pwd = getpwnam(user);
-    } 
+    }
     if (pwd)
        status = setuid(pwd->pw_uid);
     MdsFree(luser);
     ok = (status == 0) ? 1 : 2;
   }
-  else
-    ok = 1;
   return ok;
 }
 
