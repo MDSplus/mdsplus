@@ -1,4 +1,8 @@
-This module is selected by using the configure --with-xio option. You must also supply the --with-globus-location
-and --with-globus-flavor options when configuring for use with globus.
+This module is selected by using the configure --with-xio option. 
 
-You must have the Globus Toolkit 3.2 or greater to configure with xio.
+example:
+
+./configure --with-xio=/usr/local/gt3:gcc32
+
+You must have the Globus Toolkit 3.2 or greater to configure with xio
+and the globus xio libraries built with a pthr flavor.
