@@ -33,7 +33,6 @@ OBJECTS = \
 
 
 .F.o:
-	f77 $(FPREPROCESSOR) -c $<
 	f77 $(MATHFFLAGS) -c $<
 
 .F.f:
