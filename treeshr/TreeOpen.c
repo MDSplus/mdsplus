@@ -914,7 +914,7 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
                         if (!status)
                           printf("Error mapping file - errno = %d\n",errno);
 #elif defined(__hpux) || defined(__sun) || defined(__sgi)
-#if defined(__sun)
+#if defined(__sun) || defined(__sgi)
 #define MAP_FILE 0
 #endif
                         info->section_addr[0] = mmap(0,info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE, 
