@@ -87,8 +87,6 @@ void CloseDataSources();
 # define _toupper(c)	(((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #endif
 
-#define _LOCAL_ACCESS
-
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern void EventUpdate(XtPointer client_data, int *source, XtInputId *id);
@@ -745,7 +743,7 @@ static Boolean Error(Boolean brief, String topic, String *error, String text, in
     }
     else {
       String message = XtMalloc(strlen(topic) + 5);
-      sprintf(message,"%s\n\n%s",topic);
+      sprintf(message,"%s\n\n",topic);
       *error = message;
     }
 /*
@@ -846,7 +844,7 @@ static long ConnectEvents()
 }
 
 #define FreeDescrip(x) if (x.ptr != NULL) {free(x.ptr); x.ptr = NULL;}
-#define Descrip(name,type,ptr) struct descrip name = {type,0,{0,0,0,0,0,0,0,0},ptr}
+#define Descrip(name,type,ptr) struct descrip name = {type,0,{0,0,0,0,0,0,0},0,ptr}
 
 static Boolean Error(Boolean brief, String topic, String *error, String text, struct descrip *dsc)
 {
@@ -862,7 +860,7 @@ static Boolean Error(Boolean brief, String topic, String *error, String text, st
     }
     else {
       String message = XtMalloc(strlen(topic) + 5);
-      sprintf(message,"%s\n\n%s",topic);
+      sprintf(message,"%s\n\n",topic);
       *error = message;
     }
 /*
