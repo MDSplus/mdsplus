@@ -587,7 +587,10 @@ void SetupEvent(String event, Boolean *received, int *id)
   if (*id)
     MDSEventCan(*id);
   if (strlen(event))
+  {
     MDSEventAst(event,EventAst,received,id);
+    printf("MDSEventAst(%s)\n",event);
+  }
 }
 
 void SetupEventInput(XtAppContext app_context, Widget w)

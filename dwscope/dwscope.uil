@@ -30,6 +30,7 @@ value
 
 procedure
     Align;
+    InitializeCustomizePrint;
     ApplyCustomizePrint;
     ApplyCustomizeWindow;
     ApplyDataSetup(integer);
@@ -327,45 +328,48 @@ object
                         };
                     };
                 };
-!            unmanaged DXmPrintDialog 
-!                {
-!                arguments
-!                    {
-!                    XmNnoResize = true;
-!                    XmNdialogTitle = 
-!                    compound_string("Customize Printer Settings");
-!                    DXmNdeleteFile = true;
-!                    DXmNprintFormatList = string_table(
-!                    compound_string("PostScript(R)"));
-!                    DXmNprintFormatChoice = 
-!                    compound_string("PostScript(R)");
-!                    DXmNprintFormatCount = 1;
-!                    DXmNunmanageOnCancel = true;
-!                    DXmNunmanageOnOk = true;
-!                    XmNnavigationType = XmSTICKY_TAB_GROUP;
-!                    };
-!                controls
-!                    {
-!                    XmLabel print_file_label;
-!                    XmText print_file;
-!                    XmLabel print_event_label;
-!                    XmText print_event;
-!                    XmToggleButton print_window_title;
-!                    XmToggleButton print_to_file;
-!                    };
-!                callbacks
-!                    {
-!                    MrmNcreateCallback = procedures
-!                        {
-!                        XmdsRegisterWidgetCallback(CustomizePrintWidget);
-!                        };
-!                    XmNokCallback = procedures
-!                        {
-!                        ApplyCustomizePrint();
-!                        };
-!                    };
-!                };
-!            unmanaged DXmHelp help_window;
+            unmanaged XmFormDialog 
+                {
+                arguments
+                    {
+                    XmNdefaultButton = XmPushButton cp_ok_button;
+                    XmNhorizontalSpacing = 2;
+                    XmNverticalSpacing = 2;
+                    XmNdefaultPosition = true;
+                    XmNrubberPositioning = true;
+                    XmNdialogStyle = XmDIALOG_MODELESS;
+                    XmNautoUnmanage = false;
+                    XmNdialogTitle = 
+                    compound_string("Customize Printer Settings");
+                    XmNnoResize = true;
+                    };
+                controls
+                    {
+                    XmLabel printer_select_label;
+                    XmOptionMenu printer_select;
+                    XmLabel print_file_label;
+                    XmText print_file;
+                    XmLabel print_event_label;
+                    XmText print_event;
+                    XmToggleButton print_window_title;
+                    XmPushButton cp_ok_button;
+                    XmPushButton cp_apply_button;
+                    XmPushButton cp_cancel_button;
+                    };
+                callbacks
+                    {
+                    MrmNcreateCallback = procedures
+                        {
+                        XmdsRegisterWidgetCallback(CustomizePrintWidget);
+!                        InitializeCustomizePrint();
+                        };
+                    XmNhelpCallback = procedures
+                        {
+                        DisplayHelp(
+                        "Scope Menus Customize Print");
+                        };
+                    };
+                };
             unmanaged XmFormDialog data_setup_db;
             unmanaged XmBulletinBoardDialog defaults_setup_db;
             unmanaged XmFormDialog expand_dialog;
@@ -1732,7 +1736,7 @@ object
         arguments
             {
             XmNdirMask = 
-            compound_string("DECW$USER_DEFAULTS:Scope_*.DAT");
+            compound_string("*.scope");
             XmNdialogTitle = 
             compound_string("Scope: Save Current Settings As");
             XmNselectionLabelString = 
@@ -1984,14 +1988,58 @@ object
 !            compound_string("Scope");
 !            };
 !        };
+    printer_select_label: XmLabel widget
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Selected printer:");
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNtopAttachment = XmATTACH_FORM;
+            XmNtopOffset = 10;
+            };
+        };
+    printer_select: XmOptionMenu 
+        {
+        arguments
+            {
+            XmNmenuHistory = XmPushButtonGadget to_file;
+            XmNtopAttachment = XmATTACH_OPPOSITE_WIDGET;
+            XmNtopWidget = XmLabel printer_select_label;
+            XmNtopOffset = -5;
+            XmNleftAttachment = XmATTACH_WIDGET;
+            XmNleftWidget = XmLabel printer_select_label;
+            XmNleftOffset = 10;
+            };
+        controls
+            {
+            XmPulldownMenu printer_select_pulldown;
+            };
+        };
+    printer_select_pulldown: XmPulldownMenu 
+        {
+        controls
+            {
+		XmPushButtonGadget to_file;
+            };
+        };
+    to_file: XmPushButtonGadget
+        {
+        arguments
+            {
+                XmNlabelString = compound_string("To file");
+            };
+        };
     print_file_label: XmLabel widget
         {
         arguments
             {
             XmNlabelString = 
             compound_string("Print file:");
-            XmNx = 10;
-            XmNy = 385;
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmLabel printer_select_label;
+            XmNtopOffset = 10;
             };
         };
     print_file: XmText 
@@ -2002,9 +2050,11 @@ object
             XmNcolumns = 40;
             XmNresizeHeight = false;
             XmNresizeWidth = false;
-            XmNx = 95;
-            XmNy = 382;
             XmNmarginHeight = 1;
+            XmNtopAttachment = XmATTACH_OPPOSITE_WIDGET;
+            XmNtopWidget = XmLabel print_file_label;
+            XmNleftAttachment = XmATTACH_OPPOSITE_WIDGET;
+            XmNleftWidget = XmOptionMenu printer_select;
             };
         };
     print_event_label: XmLabel widget
@@ -2013,8 +2063,10 @@ object
             {
             XmNlabelString = 
             compound_string("Print event:");
-            XmNx = 0;
-            XmNy = 409;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmLabel print_file_label;
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNtopOffset = 5;
             };
         };
     print_event: XmText 
@@ -2025,8 +2077,10 @@ object
             XmNcolumns = 25;
             XmNresizeHeight = false;
             XmNresizeWidth = false;
-            XmNx = 95;
-            XmNy = 409;
+            XmNtopAttachment = XmATTACH_OPPOSITE_WIDGET;
+            XmNtopWidget = XmLabel print_event_label;
+            XmNleftAttachment = XmATTACH_OPPOSITE_WIDGET;
+            XmNleftWidget = XmOptionMenu printer_select;
             XmNmarginHeight = 1;
             };
         };
@@ -2037,19 +2091,68 @@ object
             XmNlabelString = 
             compound_string("Print window title");
             XmNset = false;
-            XmNx = 320;
-            XmNy = 409;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmLabel print_event_label;
+            XmNtopOffset = 5;
+            XmNleftAttachment = XmATTACH_FORM;
             };
         };
-    print_to_file: XmToggleButton widget
+    cp_ok_button: XmPushButton 
         {
         arguments
             {
             XmNlabelString = 
-            compound_string("Print to file");
-            XmNset = false;
-            XmNx = 320;
-            XmNy = 440;
+            compound_string("OK");
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmToggleButton print_window_title;
+            XmNtopOffset = 10;
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                ApplyCustomizePrint();
+                Ok();
+                };
+            };
+        };
+    cp_apply_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Apply");
+            XmNrightAttachment = XmATTACH_POSITION;
+            XmNrightPosition = 55;
+            XmNrightOffset = -10;
+            XmNtopAttachment = XmATTACH_OPPOSITE_WIDGET;
+            XmNtopWidget = XmPushButton cp_ok_button;
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                ApplyCustomizePrint();
+                };
+            };
+        };
+    cp_cancel_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Cancel");
+            XmNrightAttachment = XmATTACH_FORM;
+            XmNtopAttachment = XmATTACH_OPPOSITE_WIDGET;
+            XmNtopWidget = XmPushButton cp_ok_button;
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                XmdsUnmanageChildCallback(CustomizePrintWidget);
+                };
             };
         };
     data_setup_db: exported XmFormDialog 

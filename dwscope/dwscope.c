@@ -251,6 +251,7 @@ $ dwcope [-default setup]
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <X11/cursorfont.h>
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
@@ -263,6 +264,7 @@ $ dwcope [-default setup]
 #include <Xm/MessageB.h>
 #include <Xm/SashP.h>
 #include <Xm/ToggleB.h>
+#include <Xm/PushBG.h>
 #include <Xm/FileSB.h>
 #include <Xm/ToggleBG.h>
 #include <Xmds/XmdsWaveform.h>
@@ -282,8 +284,7 @@ extern void XmdsManageChildCallback();
 extern void XmdsRegisterWidgetCallback();
 extern void XmdsUnmanageChildCallback();
 
-extern void  
-SetupEvent(String event, Boolean *received, void **id);
+extern void SetupEvent(String event, Boolean *received, void **id);
 extern void SetupEventInput(XtAppContext app_context, Widget w);
 extern Boolean ConvertSelectionToWave(Widget w, Atom result_type, unsigned int length, XtPointer header, WaveInfo *info);
 extern Boolean ConvertWaveToSelection(Widget w, String prefix, WaveInfo *wave, Atom target, Atom *type, XtPointer *header,
@@ -377,6 +378,7 @@ static WaveInfo *GetPending(Widget w);
 static Window CreateBusyWindow(Widget w);
 static String SetupTitle();
 static XrmDatabase MdsGetFileDatabase(String file_spec);
+static char *GetPrinterList();
 
 #define min(a,b) ( ((a)<(b)) ? (a) : (b) )
 #define max(a,b) ( ((a)>(b)) ? (a) : (b) )
@@ -416,6 +418,8 @@ static Boolean ScopeTitleEventReceived = 0;
 static String ScopePrintEvent = 0;
 static String ScopeTitleEvent = 0;
 static String ScopePrintFile = 0;
+static String ScopePrinter = 0;
+static int ScopeTempFileIdx = 0;
 static int ScopePrintWindowTitle = 0;
 static int ScopePrintToFile = 0;
 static void *ScopePrintEventId = 0;
@@ -502,13 +506,14 @@ int       main(int argc, String *argv)
   MrmType   class;
   static XrmOptionDescRec options[] = {{"-defaults", "*defaults", XrmoptionSepArg, NULL}};
   static XtResource resources[] = {{"defaults", "Defaults", XtRString, sizeof(String), 0, XtRString,
-				    "SCOPE_DEFAULTS.DAT"}};
+				    "my.scope"}};
   Cursor    cursor;
   int       r;
   int       c;
   void *cds_id = 0;
   XmString  deffile;
   MrmHierarchy drm_hierarchy;
+  char *printers = GetPrinterList();
   MrmInitialize();
 
 #ifndef _NO_DXm
@@ -521,7 +526,7 @@ int       main(int argc, String *argv)
   TopWidget = XtVaAppInitialize(&AppContext, "DwScope", options, XtNumber(options), &argc, argv, fallback_resources,
 				XmNallowShellResize, 1, XmNminWidth, 320, XmNminHeight, 100, NULL);
   XtGetApplicationResources(TopWidget, &defaultfile, resources, XtNumber(resources), (Arg *) NULL, 0);
-  defaultfile = strlen(defaultfile) ? XtNewString(defaultfile) : XtNewString("SCOPE_DEFAULTS.DAT");
+  defaultfile = strlen(defaultfile) ? XtNewString(defaultfile) : XtNewString("my.scope");
   XtAppAddActions(AppContext, actions, XtNumber(actions));
   XtAugmentTranslations(TopWidget, XtParseTranslationTable("#augment <ResizeRequest> : Resize() \n\
                                                                      <Unmap> : Shrink()\n\
@@ -533,7 +538,6 @@ int       main(int argc, String *argv)
     { printf("Problem loading UID\n");
       exit(1);
     }
-
 #ifdef __VMS
   SetDirMask(XtNameToWidget(TopWidget,"*file_dialog"),&defaultfile,0);
 #endif
@@ -541,6 +545,23 @@ int       main(int argc, String *argv)
   XtVaSetValues(Pane[0], XmNleftAttachment, XmATTACH_FORM, NULL);
   for (c = 1; c < NumPanes; c++)
     XtVaSetValues(Pane[c], XmNleftAttachment, XmATTACH_OPPOSITE_WIDGET, XmNleftWidget, Sash[c - 1], XmNleftOffset, 2, NULL);
+  if (printers)
+  {
+    Widget printers_pulldown = XtNameToWidget(MainWidget,"*printer_select_pulldown");
+    Arg arglist[] = {{XmNlabelString,0}};
+    Widget b;
+    int num;
+    int i;
+    Widget *children;
+    char *printer;
+    for (printer = strtok(printers,"\n"); printer;  printer = strtok(0,"\n"))
+    {
+      arglist[0].value = (long) XmStringCreateSimple(printer);
+      b = XmCreatePushButtonGadget(printers_pulldown,printer,arglist,XtNumber(arglist));
+    }
+    XtVaGetValues(printers_pulldown,XmNnumChildren,&num,XmNchildren,&children,NULL);
+    XtManageChildren(children,num);
+  }
   XtManageChild(MainWidget);
   RestoreDatabase(defaultfile);
   cursor = XCreateFontCursor(XtDisplay(TopWidget), XC_crosshair);
@@ -562,6 +583,80 @@ int       main(int argc, String *argv)
   SetupEvent("DWSCOPE_CLOSE_FILES", &CloseDataSourcesEventReceived,&cds_id);
   XmProcessTraversal(XtNameToWidget(MainWidget,"*override_shot"),XmTRAVERSE_CURRENT);
   XtAppMainLoop(AppContext);
+}
+
+#include <errno.h>
+#include <mdsdescrip.h>
+
+static void DoPrint(char *filename)
+{
+  char *sh = "/bin/sh";
+  char cmd[512];
+  struct descriptor cmdd = {0,DTYPE_T,CLASS_S,0};
+  pid_t  pid,xpid;
+  int   sts=0;
+  sprintf(cmd,"DwscopePrint %s %s",filename,ScopePrinter);
+  cmdd.pointer=cmd;
+  cmdd.length=strlen(cmd);
+  LibSpawn(&cmdd,1,0);
+/*
+  signal(SIGCHLD,SIG_IGN);
+  pid = fork();
+  if (!pid)
+  {
+    char  *arglist[4];
+    char  *p;
+    int i=0;
+    arglist[0] = getenv("SHELL");
+    if (arglist[0] == 0)
+      arglist[0] = sh;
+    i++;
+    arglist[i++] = "-c";
+    arglist[i++] = cmd;
+    arglist[i] = 0;
+    sts = execvp(arglist[0],arglist);
+  }
+  if (pid == -1)
+  {
+    fprintf(stderr,"Error %d from fork()\n",errno);
+  }
+*/
+}
+
+static char *GetPrinterList()
+{
+  char buff[256];
+  size_t bytes;
+  char *printers = 0;
+  int fd[2];
+  pipe(fd);
+  if (fork() == 0)
+  {
+    close(fd[0]);    
+    dup2(fd[1],1);   
+    close(fd[1]);    
+    execlp("ScopePrinters","ScopePrinters",NULL);
+    _exit(1);
+  }
+  else
+  {
+    close(fd[1]);
+    while ((bytes=read(fd[0],buff,sizeof(buff)-1)))
+    {
+      buff[bytes]=0;
+      if (printers)
+      {
+        printers = realloc(printers,strlen(printers)+1+bytes);
+        strcat(printers,buff);
+      }
+      else
+      {
+        printers = strcpy(malloc(bytes+1),buff);
+      }
+    }
+  }
+  close(fd[1]);
+  return printers;
 }
 
 static void Shrink(Widget w, XEvent *event)
@@ -1139,13 +1234,39 @@ static void /*XtCallbackProc*/ResetCustomizeWindow(Widget w, XtPointer client_da
     XmScaleSetValue(XtNameToWidget(CustomizeWindowWidget, name), Rows[i]);
   }
 }
+#include <signal.h>
 
 static void /*XtCallbackProc*/ResetCustomizePrint(Widget w, XtPointer client_data, XmAnyCallbackStruct *callback_data)
 {
+  Widget *children;
+  int    numchildren;
+  int i;
   XmTextSetString(XtNameToWidget(CustomizePrintWidget, "print_file"), ScopePrintFile);
   XmTextSetString(XtNameToWidget(CustomizePrintWidget, "print_event"), ScopePrintEvent);
   XmToggleButtonSetState(XtNameToWidget(CustomizePrintWidget,"print_window_title"),ScopePrintWindowTitle,1);
+  XtVaGetValues(XtNameToWidget(CustomizePrintWidget,"*printer_select_pulldown"),XmNnumChildren,&numchildren,
+		XmNchildren,&children,NULL);
+  for (i=0;i<numchildren;i++)
+  {
+    XmString label;
+    String label_string;
+    XtVaGetValues(children[i],XmNlabelString,&label,NULL);
+    XmStringGetLtoR(label,XmSTRING_DEFAULT_CHARSET,&label_string);
+    if (strcmp(label_string,ScopePrinter) == 0)
+    {
+      XtFree(label_string);
+      XtVaSetValues(XtNameToWidget(CustomizePrintWidget,"*printer_select"),XmNmenuHistory,children[i],NULL);
+      break;
+    }
+    else
+      XtFree(label_string);
+  }
+  if ((i > numchildren) && numchildren > 0)
+    XtVaSetValues(XtNameToWidget(CustomizePrintWidget,"*printer_select"),XmNmenuHistory,children[numchildren-1],NULL);
+    
+/*
   XmToggleButtonSetState(XtNameToWidget(CustomizePrintWidget,"print_to_file"),ScopePrintToFile,1);
+*/
 }
 
 static void /*XtCallbackProc*/CreateCustomizeFont(Widget w, XtPointer client_data, XmAnyCallbackStruct *callback_data)
@@ -1262,12 +1383,22 @@ static void /*XtCallbackProc*/ApplyCustomizeWindow(Widget w, XtPointer client_da
   return;
 }
 
+
 static void /*XtCallbackProc*/ApplyCustomizePrint(Widget w, XtPointer client_data, XmAnyCallbackStruct *callback_data)
 {
+  Widget printer_select = XtNameToWidget(MainWidget,"*printer_select");
+  Widget option;
+  XmString label;
+  String label_string;
+  XtVaGetValues(printer_select,XmNmenuHistory,&option,NULL);
+  XtVaGetValues(option,XmNlabelString,&label,NULL);
+  XmStringGetLtoR(label,XmSTRING_DEFAULT_CHARSET,&label_string);
+  ReplaceString(&ScopePrinter,label_string,1);
   ReplaceString(&ScopePrintFile, XmTextGetString(XtNameToWidget(CustomizePrintWidget, "print_file")), 1);
   ReplaceString(&ScopePrintEvent, XmTextGetString(XtNameToWidget(CustomizePrintWidget, "print_event")), 1);
   ScopePrintWindowTitle = XmToggleButtonGetState(XtNameToWidget(CustomizePrintWidget,"print_window_title"));
-  ScopePrintToFile = XmToggleButtonGetState(XtNameToWidget(CustomizePrintWidget,"print_to_file"));
+  ScopePrintToFile = strcmp(ScopePrinter,"To file") == 0;
+  printf("ScopePrintToFile = %d\n",ScopePrintToFile);
   SetupEvent(ScopePrintEvent, &ScopePrintEventReceived, &ScopePrintEventId);
 }
 
@@ -1611,11 +1742,19 @@ static void /*XtCallbackProc*/PrintAll(Widget w, XtPointer client_data, XmAnyCal
 {
 
 #ifndef _NO_DPS
-  FILE     *printfid = fopen(ScopePrintFile, "w"); /*,"rop=RAH,WBH","mbc=8","mbf=2","deq=32"); */
+  char filename[256];
+  FILE     *printfid;
   int       width = XtWidth(PlotsWidget);
   int       height = XtHeight(PlotsWidget);
   int       r;
   int       c;
+  if (ScopePrintToFile)
+    printfid = fopen(ScopePrintFile, "w"); /*,"rop=RAH,WBH","mbc=8","mbf=2","deq=32"); */
+  else
+  {
+    sprintf(filename,"/tmp/dwscope_tmp_%0x_%0x",getpid(),ScopeTempFileIdx++);
+    printfid = fopen(filename,"w");
+  }
   if (printfid)
   {
     XmString  filenames[1];
@@ -1649,9 +1788,11 @@ static void /*XtCallbackProc*/PrintAll(Widget w, XtPointer client_data, XmAnyCal
 	XmdsWaveformPrint(Wave[c][r].w, printfid, width, height, orientation, 
 			Wave[c][r].print_title_evaluated, 0, 0);
     fclose(printfid);
-#ifndef _NO_DXm
     if (!ScopePrintToFile)
+#ifndef _NO_DXm
       DXmPrintWgtPrintJob(CustomizePrintWidget, filenames, 1);
+#else
+      DoPrint(filename);
 #endif /* DXmNorientation */
     XmStringFree(filenames[0]);
     Unbusy();
@@ -1674,7 +1815,15 @@ static void /*XtCallbackProc*/Print(Widget w, XtPointer client_data, XmAnyCallba
   XtVaGetValues(PendingWave->w, XmdsNcount, &count, NULL);
   if (count)
   {
-    FILE     *printfid = fopen(ScopePrintFile, "w");
+    char filename[256];
+    FILE     *printfid;
+    if (ScopePrintToFile)
+      printfid = fopen(ScopePrintFile, "w"); /*,"rop=RAH,WBH","mbc=8","mbf=2","deq=32"); */
+    else
+    {
+      sprintf(filename,"/tmp/dwscope_tmp_%0x_%0x",getpid(),ScopeTempFileIdx++);
+      printfid = fopen(filename,"w");
+    }
     if (printfid)
     {
       XmString  filenames[1];
@@ -1701,9 +1850,11 @@ static void /*XtCallbackProc*/Print(Widget w, XtPointer client_data, XmAnyCallba
       else
         XmdsWaveformPrint(PendingWave->w, printfid, 0, 0, orientation, PendingWave->print_title_evaluated, 0, 0);
       fclose(printfid);
-#ifndef _NO_DXm
       if (!ScopePrintToFile)
+#ifndef _NO_DXm
         DXmPrintWgtPrintJob(CustomizePrintWidget, filenames, 1);
+#else
+        DoPrint(filename);
 #endif
       XmStringFree(filenames[0]);
       Unbusy();
@@ -2016,7 +2167,10 @@ static void  RestoreDatabase(String dbname)
   ReplaceString(&ScopePrintFile, GetResource(scopedb, "Scope.print_file", "dwscope.ps"), 0);
 #endif
   ScopePrintWindowTitle = atoi(GetResource(scopedb, "Scope.print_window_title", "0"));
+  ReplaceString(&ScopePrinter, GetResource(scopedb,"Scope.printer","To file"),0);
+/*
   ScopePrintToFile = atoi(GetResource(scopedb, "Scope.print_to_file", "0"));
+*/
   GetWaveFromDb(scopedb, "Scope.global", 0, 0, &GlobalWave);
   SetWindowTitles();
   SetupEvent(strlen(ScopeTitleEvent) ? ScopeTitleEvent : GlobalWave.event, &ScopeTitleEventReceived, &ScopeTitleEventId);
@@ -2115,7 +2269,10 @@ static void  WriteDatabase(String dbname, Boolean zoom)
     fprintf(file, "Scope.print_file: %s\n", ScopePrintFile);
     fprintf(file, "Scope.print_event: %s\n", ScopePrintEvent);
     fprintf(file, "Scope.print_window_title: %d\n", ScopePrintWindowTitle);
+    fprintf(file, "Scope.printer: %d\n",ScopePrinter);
+/*
     fprintf(file, "Scope.print_to_file: %d\n", ScopePrintToFile);
+*/
     if (zoom) fprintf(file,"Scope.override_shot: %s\n",XmTextFieldGetString(XtNameToWidget(TopWidget,"*override_shot")));
     XtVaGetValues(Wave[0][0].w, XmdsNlabelFont, &font_struct, NULL);
     XGetFontProperty(font_struct,XA_FONT,&fontprop);
