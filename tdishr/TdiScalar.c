@@ -179,11 +179,28 @@ struct descriptor	*out_ptr)
 	HUGE(3.0) is 2**(+127)*(1-2**(-24)).
 		real = HUGE(real)
 */
+static const unsigned int BU_HUGE[]={0xff};
+static const unsigned int B_HUGE[]={0x7f};
+static const unsigned int WU_HUGE[]={0xffff};
+static const unsigned int W_HUGE[]={0x7fff};
+static const unsigned int LU_HUGE[]={0xffffffff};
+static const unsigned int L_HUGE[]={0x7fffffff};
+static const unsigned int QU_HUGE[]={0xffffffff,0xffffffff};
+static const unsigned int Q_HUGE[]={0xffffffff,0x7fffffff};
+static const unsigned int OU_HUGE[]={0xffffffff,0xffffffff,0xffffffff,0xffffffff};
+static const unsigned int O_HUGE[]={0xffffffff,0xffffffff,0xffffffff,0x7fffffff};
 static const unsigned int F_HUGE[] = {0xFFFF7FFF};
+static const unsigned int FC_HUGE[] = {0xFFFF7FFF};
 static const unsigned int D_HUGE[] = {0xFFFF7FFF,0xFFFFFFFF};
+static const unsigned int DC_HUGE[] = {0xFFFF7FFF,0xFFFFFFFF};
 static const unsigned int G_HUGE[] = {0xFFFF7FFF,0xFFFFFFFF};
+static const unsigned int GC_HUGE[] = {0xFFFF7FFF,0xFFFFFFFF};
 static const unsigned int FS_HUGE[] ={0x7F7FFFFF};
+static const unsigned int FSC_HUGE[] ={0x7F7FFFFF};
 static const unsigned int FT_HUGE[] ={0xFFFFFFFF,0x7FF7FFFF};
+static const unsigned int FTC_HUGE[] ={0xFFFFFFFF,0x7FF7FFFF};
+
+#define CASE(dtype) case DTYPE_##dtype : memcpy(out_ptr->pointer,dtype##_HUGE,sizeof(dtype##_HUGE)); break;
 
 int			Tdi3Huge(
 struct descriptor	*x_ptr,
@@ -193,11 +210,26 @@ int			status = 1;
 
 	switch (x_ptr->dtype) {
 	default : status = TdiINVDTYDSC; break;
-	case DTYPE_F : case DTYPE_FC : memcpy(out_ptr->pointer,F_HUGE,sizeof(F_HUGE)); break;
-	case DTYPE_D : case DTYPE_DC : memcpy(out_ptr->pointer,D_HUGE,sizeof(D_HUGE)); break;
-	case DTYPE_G : case DTYPE_GC : memcpy(out_ptr->pointer,G_HUGE,sizeof(G_HUGE)); break;
- 	case DTYPE_FS : case DTYPE_FSC : memcpy(out_ptr->pointer,FS_HUGE,sizeof(FS_HUGE)); break;
- 	case DTYPE_FT : case DTYPE_FTC : memcpy(out_ptr->pointer,FT_HUGE,sizeof(FT_HUGE)); break;
+	CASE(BU)
+        CASE(B)
+        CASE(WU)
+        CASE(W)
+        CASE(LU)
+        CASE(L)
+        CASE(Q)
+        CASE(QU)
+        CASE(O)
+        CASE(OU)
+        CASE(F)
+        CASE(FC)
+        CASE(D)
+        CASE(DC)
+        CASE(G)
+        CASE(GC)
+        CASE(FS)
+        CASE(FSC)
+        CASE(FT)
+        CASE(FTC)
 	}
 	return status;
 }

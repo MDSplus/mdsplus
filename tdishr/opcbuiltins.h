@@ -203,7 +203,7 @@ OPC (	Gt,	GT ,		Same,	Eq,		Gt,		XX,YY,	VV,VV,	2,2,	LGE+N+S	)/*;%	a>b	a.GT.b		*/
 OPC (	GComplex,	G_COMPLEX ,	Same,	Cmplx,		Complex,	G,G,	GC,GC,	1,2,	CAST+N+I )/*;%	(x,y)			*/
 OPC (	GFloat,	G_FLOAT ,	Same,	Keep,		undef,		G,G,	G,G,	1,1,	CAST+N+I )/*;%	(a)			*/
 OPC (	HelpOf,	HELP_OF ,	HelpOf, undef,		undef,	PARAM,PARAM,		T,T,	1,1,	OK+I	)/*;mds	(param)		*/
-OPC (	Huge,	HUGE ,		Scalar, Keep,		Huge,		F,HC,	F,H,	1,1,	OK	)/*;f9	(model)			*/
+OPC (	Huge,	HUGE ,		Scalar, Keep,		Huge,		BU,HC,	BU,H,	1,1,	OK	)/*;f9	(model)			*/
 OPC (	HComplex,	H_COMPLEX ,	Same,	Cmplx,		Complex,	HC,HC,	HC,HC,	1,2,	CAST+N+I )/*;%	(x,y)			*/
 OPC (	HFloat,	H_FLOAT ,	Same,	Keep,		undef,		H,H,	H,H,	1,1,	CAST+N+I )/*;%	(a)			*/
 OPC (	Iachar,	IACHAR ,		Same,	Keep,		Ichar,		T,T,	BU,BU,	1,1,	OK	)/*;f9	(character)		*/
