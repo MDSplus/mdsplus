@@ -600,9 +600,7 @@ int StrGet1Dx(unsigned short *len, struct descriptor *out)
   return 1;
 }
 
-#if defined(__alpha) && defined(__vms)
-typedef __int64 _int64;
-#elif defined(__unix__) || defined(unix) || defined(__unix) ||defined (vxWorks) 
+#ifndef _WIN32
 typedef long long _int64;
 #endif
 

@@ -129,7 +129,7 @@ int   mdsdcl_spawn(			/* Return: status		*/
         k += sprintf(cmdstring+k," <%s",dsc_input.dscA_pointer);
     if (dsc_output.dscA_pointer)
         k += sprintf(cmdstring+k," >%s",dsc_output.dscA_pointer);
-#if defined(unix)
+#ifndef _WIN32
     signal(SIGCHLD,notifyFlag ? child_done : SIG_DFL);
     pid = fork();
     if (!pid)
