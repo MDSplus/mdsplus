@@ -6,7 +6,7 @@ if (keyword_set(socket)) then $
     return, 0
   defsysv,'!MDS_SOCKET',exists=mdsClient
   if (mdsClient) then begin
-    dummy = execute('value= (!MDS_SOCKET ge 0)') 
+    value= (!MDS_SOCKET ge 0)
     return,value
   endif else begin
     defsysv,'!MDS_SOCKET',-1

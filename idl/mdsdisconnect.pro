@@ -10,7 +10,7 @@ pro mdsdisconnect,status=status,quiet=quiet, socket=socket
     status = call_external(image,MdsRoutinePrefix()+'DisconnectFromMds',sock,value=[1b])
     if (status eq 0) then status = 1 else status = 0
     if not keyword_set(socket) then $
-      tmp = execute('!MDS_SOCKET = -1l')
+      !MDS_SOCKET = -1l
   endif
   return
 end

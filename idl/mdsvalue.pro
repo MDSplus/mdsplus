@@ -56,7 +56,8 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
     if not status then return,0
     n = n_params()
     Mds$SendArg,sock,n,0,expression
-    for i=1,n-1 do x = execute('Mds$SendArg,sock,n,i,arg'+strtrim(i,2))
+;    for i=1,n-1 do x = execute('Mds$SendArg,sock,n,i,arg'+strtrim(i,2))
+    for i=1,n-1 do Mds$SendArg,sock,n,i,routine_names('arg'+strtrim(i,2),fetch=0)
     dtype = 0b
     ndims = 0b
     dims = lonarr(8)
@@ -72,10 +73,11 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
     if numbytes gt 0 then begin
       if dtype eq 14 then begin
         if ndims ne 0 then begin
-          s = 'answer = bytarr(length,'
-          for i=0,ndims-1 do s = s + 'dims(' + strtrim(i,2) + '),'
-          strput,s,')',strlen(s)-1
-          x = execute(s)
+          answer=bytarr([length,dims[0:ndims-1]])
+;          s = 'answer = bytarr(length,'
+;          for i=0,ndims-1 do s = s + 'dims(' + strtrim(i,2) + '),'
+;          strput,s,')',strlen(s)-1
+;          x = execute(s)
         endif else begin
           answer = bytarr(length)
         endelse
@@ -83,10 +85,11 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
         answer = string(answer)
       endif else begin
         if ndims ne 0 then begin
-          s = 'answer = bytarr('
-          for i=0,ndims-1 do s = s + 'dims(' + strtrim(i,2) + '),'
-          strput,s,')',strlen(s)-1
-          x = execute(s)
+          answer=bytarr(dims[0:ndims-1])
+;          s = 'answer = bytarr('
+;          for i=0,ndims-1 do s = s + 'dims(' + strtrim(i,2) + '),'
+;          strput,s,')',strlen(s)-1
+;          x = execute(s)
         endif else answer = 0b
         case dtype of
           2: answer = answer

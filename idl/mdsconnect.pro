@@ -14,7 +14,7 @@ function mds$socket,quiet=quiet,status=status,socket=socket
       if (socket ge sockmin) then $
           return, socket
   defsysv,'!MDS_SOCKET',exists=old_sock
-  if not old_sock then defsysv,'!MDS_SOCKET',sock else tmp = execute('sock=!MDS_SOCKET')
+  if not old_sock then defsysv,'!MDS_SOCKET',sock else sock=!MDS_SOCKET
   if sock lt sockmin then begin
     status = 0
     if not keyword_set(quiet) then message,'Use MDS$CONNECT to connect to a host.',/continue
@@ -127,12 +127,12 @@ pro mds$connect,host,status=status,quiet=quiet,port=port
   endif else if getenv('mdsip') eq '' then begin
     setenv_,'mdsip=8000'
   endif
-  if (!version.release ne '5.0.3') then dummy = execute('!ERROR_STATE.MSG="About to connect"')
+  if (!version.release ne '5.0.3') then !ERROR_STATE.MSG="About to connect"
   sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'ConnectToMds',host,value=[byte(!version.os ne 'windows')])
   sockmin=1l-(!version.os eq 'MacOS')
   if (sock ge sockmin) then begin
     status = 1
-    x=execute('!MDS_SOCKET = sock')
+    !MDS_SOCKET = sock
   endif else begin
     if not keyword_set(quiet) then message,'Error connecting to '+host,/IOERROR
     status = 0
@@ -146,7 +146,7 @@ pro mds$disconnect,status=status,quiet=quiet
   if status then begin
     status = call_external(MdsIPImage(),MdsRoutinePrefix()+'DisconnectFromMds',sock,value=[1b])
     if (status eq 0) then status = 1 else status = 0
-    tmp = execute('!MDS_SOCKET = 0l')
+    !MDS_SOCKET = 0l
   endif
   return
 end
@@ -175,7 +175,7 @@ pro mdsconnect,host,status=status,quiet=quiet,port=port,socket=socket
   if (sock ge sockmin) then begin
     status = 1
     if not keyword_set(socket) then $
-      x=execute('!MDS_SOCKET = sock') $
+      !MDS_SOCKET = sock $
     else $
       socket = sock
   endif else begin
