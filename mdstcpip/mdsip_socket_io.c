@@ -332,8 +332,12 @@ void FlushSocket(SOCKET sock)
 #endif
         if (nbytes > 0 && status != -1)
         {
-          nbytes = recv(sock, buffer, sizeof(buffer) > nbytes ? nbytes : sizeof(buffer), MSG_NOSIGNAL);
-	  if (nbytes > 0) tries = 0;
+#ifdef HAVE_WINDOWS_H
+			nbytes = recv(sock, buffer, sizeof(buffer) > nbytes ? nbytes : sizeof(buffer), 0);
+#else
+			nbytes = recv(sock, buffer, sizeof(buffer) > nbytes ? nbytes : sizeof(buffer), MSG_NOSIGNAL);
+#endif
+			if (nbytes > 0) tries = 0;
 	}
     }
     else
@@ -358,7 +362,11 @@ void FlushSocket(SOCKET sock)
 int SocketRecv(SOCKET s, char *bptr, int num,int oob)
 {
 #ifndef GLOBUS
+#ifdef HAVE_WINDOWS_H
+  return recv(s,bptr,num,(oob ? MSG_OOB : 0));
+#else
   return recv(s,bptr,num,(oob ? MSG_OOB : 0) | MSG_NOSIGNAL);
+#endif
 #else
   int bytes_to_read = num;
   char *ptr = bptr;
@@ -395,7 +403,11 @@ int SocketRecv(SOCKET s, char *bptr, int num,int oob)
 int SocketSend(SOCKET s, char *bptr, int num, int oob)
 {
 #ifndef GLOBUS
+#ifdef HAVE_WINDOWS_H
+  return send(s,bptr,num,(oob ? MSG_OOB : 0));
+#else
   return send(s,bptr,num,(oob ? MSG_OOB : 0) | MSG_NOSIGNAL);
+#endif
 #else
   globus_io_handle_t *handle = GetHandle(s);
   globus_size_t nbytes_written = 0;
