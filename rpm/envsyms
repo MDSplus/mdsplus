@@ -1,5 +1,5 @@
 MDS_PATH	$MDSPLUS_DIR/tdi
-UILPATH		$MDSPLUS_DIR/uid/%U <:
+UIDPATH		$MDSPLUS_DIR/uid/%U <:
 IDL_PATH	\+$MDSPLUS_DIR/idl <:
 PATH		$MDSPLUS_DIR/bin >:
 include         $MDSPLUS_DIR/local/envsyms
