@@ -195,8 +195,54 @@ SYMBOL_VECTOR=(bMdsClose=procedure)
 SYMBOL_VECTOR=(bMdsValue=procedure)
 SYMBOL_VECTOR=(bMdsDisconnect=procedure)
 SYMBOL_VECTOR=(bMdsPut=procedure)
+SYMBOL_VECTOR=(bMdsVersion=procedure)
+SYMBOL_VECTOR=(bMdsList=procedure)
 SYMBOL_VECTOR=(bTest=procedure)
 SYMBOL_VECTOR=(bTest1=procedure)
 PSECT_ATTR=SOCK,NOSHR
 PSECT_ATTR=SERV,NOSHR
-PSECT_ATTR=SERVIP,NOSHR
+PSECT_ATTR=CONNECTIONS,NOSHR
+
+
+/****************************************** August 20000****************/
+Multiple servers
+
+mdsopen('frk::')
+mdsopen('frk.epfl.ch::')
+mdsopen('frk:::8000')
+mdsopen('frk.epfl.ch:::8000')
+
+are all the same and use the same connection even if you perform another
+mdsopen ( as long as services says mdsip   8000/tcp)
+
+you can
+
+mdsopen('servA::')
+mdsopen('servB::')
+mdsopen('servC::')
+
+and then select a server with
+
+mdsopen('servB::') to send the next commands to servB
+
+You can
+mdsopen('asdfas::') which fails and you have NO SERVER ATTACHED
+but
+mdsopen('servB::') gets you back
+
+You can
+List the current servers and find the currently active server with
+mdsremotelist()
+
+You can
+mdsopen('servB::')
+mdsdisconnect()
+mdsopen('servC::')
+and continue with servB disconnected
+
+and you can then open the server again with
+mdsconnect('servB::')
+
+good Luck......
+
+
