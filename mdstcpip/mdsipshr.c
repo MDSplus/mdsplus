@@ -403,6 +403,7 @@ int  MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, in
 #endif
   info.astadr = (void (*)(void *,int ,char *))astadr;
   info.astprm = astprm;
+  ansarg.ptr = 0;
   status = MdsValue(sock, EVENTASTREQUEST, MakeDescrip((struct descrip *)&eventnamarg,DTYPE_CSTRING,0,0,eventnam), 
 			      MakeDescrip((struct descrip *)&infoarg,DTYPE_UCHAR,1,&size,&info),
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
