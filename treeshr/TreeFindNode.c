@@ -924,6 +924,7 @@ char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
       char *name = (char *) (info_ptr->tag_info + *ctx - 1)->name;
       for (i=0;i<sizeof(TAG_NAME) && name[i] != ' ';i++);
       answer = strncpy(malloc(i+1),name,i);
+      answer[i]='\0';
       *ctx = (info_ptr->tag_info + *ctx - 1)->tag_link;
       if (*ctx == 0)
 	*ctx = -1;
