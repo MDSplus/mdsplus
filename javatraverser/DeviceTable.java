@@ -281,7 +281,6 @@ public class DeviceTable extends DeviceComponent
 
             public Object getValueAt(int row, int col)
             {
-              System.out.println("GET VALUE");
                if(rowNames != null && rowNames.length > 0)
                 {
                   if (col == 0) {
@@ -446,7 +445,6 @@ public class DeviceTable extends DeviceComponent
      for(int i = 0; i < items.length; i++)
        if(buttons[i].isSelected())
        {
-         System.out.println("isSelected " + i);
          items[i] = "1";
        }
        else
@@ -467,7 +465,6 @@ public class DeviceTable extends DeviceComponent
             table.getColumnModel().getColumn(i).setMinWidth(6);
             table.getColumnModel().getColumn(i).setPreferredWidth(6);
             table.getColumnModel().getColumn(i).setWidth(6);
-            System.out.println(table.getColumnModel().getColumn(i).getWidth());
         }
         table.repaint();
         redisplay();
