@@ -30,8 +30,6 @@ public fun TR10HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 	private _TR10_CLK_TERMINATION_ON	=	byte(0x1);
 
 
-
-
 /* Initialize Library if the first time */
     if_error(_TR10_initialized, (TR10->TR10_InitLibrary(); public _TR10_initialized = 1;));
 	

@@ -20,16 +20,16 @@ public fun TR10__init(as_is _nid, optional _method)
     private _N_CHAN_START_IDX = 3;
     private _N_CHAN_END_IDX = 4;
     private _N_CHAN_DATA = 5;
-    private _N_TRIG_EDGE = 48;
-    private _N_INIT_ACTION = 49;
-    private _N_STORE_ACTION = 50;
+    private _N_TRIG_EDGE = 108;
+    private _N_INIT_ACTION = 109;
+    private _N_STORE_ACTION = 110;
     private _2M = 2097152;
 
 
 
     private _INVALID = 10E20;
 
-
+    write(*, 'TR10');
 
     _board_id=if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
     if(_board_id == _INVALID)
