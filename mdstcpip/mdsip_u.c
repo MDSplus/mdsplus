@@ -28,6 +28,12 @@
 #include <unistd.h>  /* for getpid() */
 #define closesocket close
 #endif
+#ifdef HAVE_WINDOWS_H
+#define DEFAULT_HOSTFILE "C:\\MDSIP.HOSTS"
+#else
+#define DEFAULT_HOSTFILE "/etc/mdsip.hosts"
+#endif
+
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 extern char *MdsDescrToCstring();
 extern void MdsFree();
@@ -58,16 +64,18 @@ static int multi = 0;
 static int IsService = 0;
 static int IsWorker = 0;
 static int NO_SPAWN = 1;
+static int CommandParsed = 0;
 static int ContextSwitching = 0;
-static char *PortName;
-#if defined(_WIN32)
-static char *hostfile = "C:\\mdsip.hosts";
-#else
-static char *hostfile = "/etc/mdsip.hosts";
-#endif
-static char *portname = "8000";
+static char *hostfile;
+static char *portname;
+static short port;
+static char mode;
+static int flags;
+static int UseCompression = 1;
+#define IS_SERVICE 2
 
 static void DefineTdi(char *execute_string, char dtype, short length, void *value);
+static void ParseCommand(int argc, char **argv,char **portname, short *port, char **hostfile, char *mode, int *flags);
 extern int TdiSaveContext();
 extern int TdiRestoreContext();
 extern int TdiExecute();
@@ -77,8 +85,8 @@ extern int TdiResetPublic();
 extern int TdiResetPrivate();
 extern char *TranslateLogical();
 
-static int ConnectToInet();
-static int CreateMdsPort(char *service, int multi);
+static int ConnectToInet(short port);
+static int CreateMdsPort(short port, int multi);
 static void AddClient(int socket, struct sockaddr_in *sin);
 static void RemoveClient(Client *c);
 static void ProcessMessage(Client *c, Message *message);
@@ -128,15 +136,14 @@ static void StartWorker(char **argv)
 {
   HANDLE sharedMemHandle;
   SOCKET sock;
-  BOOL dup = DuplicateHandle(OpenProcess(PROCESS_ALL_ACCESS,TRUE,atoi(argv[3])), 
-	     (HANDLE)atoi(argv[4]),GetCurrentProcess(),(HANDLE *)&sock,
+  BOOL dup = DuplicateHandle(OpenProcess(PROCESS_ALL_ACCESS,TRUE,atoi(argv[6])), 
+	     (HANDLE)atoi(argv[7]),GetCurrentProcess(),(HANDLE *)&sock,
 	     PROCESS_ALL_ACCESS, TRUE,DUPLICATE_CLOSE_SOURCE|DUPLICATE_SAME_ACCESS);
   ClientList = malloc(sizeof(Client));
   FD_SET(sock,&fdactive);
   memset(ClientList,0,sizeof(*ClientList));
   ClientList->sock = sock;
   IsWorker = 1;
-  PortName = portname;
   sharedMemHandle = OpenFileMapping(FILE_MAP_READ, FALSE, ServiceName());
   workerShutdown = (int *)MapViewOfFile(sharedMemHandle, FILE_MAP_READ, 0, 0, sizeof(int));
   RedirectOutput(GetCurrentProcessId());
@@ -144,24 +151,23 @@ static void StartWorker(char **argv)
 
 static void InitWorkerCommunications()
 {
-	HANDLE sharedMemHandle = CreateFileMapping((HANDLE)0xFFFFFFFF, NULL, PAGE_READWRITE, 0, sizeof(int), ServiceName());
-	workerShutdown = (int *)MapViewOfFile(sharedMemHandle, FILE_MAP_WRITE, 0, 0, sizeof(int));
-	*workerShutdown = 0;
+  HANDLE sharedMemHandle = CreateFileMapping((HANDLE)0xFFFFFFFF, NULL, PAGE_READWRITE, 0, sizeof(int), ServiceName());
+  workerShutdown = (int *)MapViewOfFile(sharedMemHandle, FILE_MAP_WRITE, 0, 0, sizeof(int));
+  *workerShutdown = 0;
 }
 
 static int SpawnWorker(SOCKET sock)
 {
-	BOOL status;
-	static STARTUPINFO startupinfo;
-	PROCESS_INFORMATION pinfo;
-	char cmd[1024];
-	sprintf(cmd,"%s %s worker %d %d","mdsip_service",
-		portname,GetCurrentProcessId(),sock);
-	startupinfo.cb = sizeof(startupinfo);
-    status = CreateProcess(_pgmptr,cmd,NULL,NULL,FALSE,0,NULL,NULL,&startupinfo, &pinfo);
-	CloseHandle(pinfo.hProcess);
-	CloseHandle(pinfo.hThread);
-	return pinfo.dwProcessId;
+  BOOL status;
+  static STARTUPINFO startupinfo;
+  PROCESS_INFORMATION pinfo;
+  char cmd[1024];
+  sprintf(cmd,"mdsip_service -p %s -F %d -W %d %d",portname,flags,GetCurrentProcessId(),sock);
+  startupinfo.cb = sizeof(startupinfo);
+  status = CreateProcess(_pgmptr,cmd,NULL,NULL,FALSE,0,NULL,NULL,&startupinfo, &pinfo);
+  CloseHandle(pinfo.hProcess);
+  CloseHandle(pinfo.hThread);
+  return pinfo.dwProcessId;
 }
 
 static unsigned long hService;
@@ -206,27 +212,16 @@ static void InitializeService()
 
 int main( int argc, char **argv) 
 {
-  int service_per_user;
-  int service_multi;
-  int service_server;
-  if (argc >= 3 && ((service_per_user  = strcmp(argv[2],"service") == 0) || 
-	                (service_multi = strcmp(argv[2],"service_multi") == 0) ||
-					(service_server = strcmp(argv[2],"service_server") == 0)))
+  CommandParsed = 1;
+  ParseCommand(argc, argv, &portname, &port, &hostfile, &mode, &flags);
+  if (flags & IS_SERVICE)
   {
-	portname = argv[1];
-	if (argc > 3)
-		hostfile = argv[3];
-	multi = NO_SPAWN = !service_per_user;
-	IsService = 1;
-	{
-      SERVICE_TABLE_ENTRY srvcTable[] = {{ServiceName(),(LPSERVICE_MAIN_FUNCTION)ServiceMain},{NULL,NULL}};
-      StartServiceCtrlDispatcher(srvcTable);
-	}
+    SERVICE_TABLE_ENTRY srvcTable[] = {{ServiceName(),(LPSERVICE_MAIN_FUNCTION)ServiceMain},{NULL,NULL}};
+    IsService = 1;
+    StartServiceCtrlDispatcher(srvcTable);
   }
   else
-  {
-	  ServiceMain(argc,argv);
-  }
+    ServiceMain(argc,argv);
   return 1;
 }
 #define main ServiceMain
@@ -236,14 +231,14 @@ static void RemoveService()
   SC_HANDLE hSCManager = OpenSCManager(NULL,NULL,SC_MANAGER_CREATE_SERVICE); 
   if (hSCManager)
   {
-	  SC_HANDLE hService = OpenService(hSCManager, ServiceName(), DELETE);
-      if (hService)
-	  {
-	    BOOL status;
-	    status = DeleteService(hService);
-	    status = CloseServiceHandle(hService);
-	  }
-	  CloseServiceHandle(hSCManager);
+    SC_HANDLE hService = OpenService(hSCManager, ServiceName(), DELETE);
+    if (hService)
+    {
+      BOOL status;
+      status = DeleteService(hService);
+      status = CloseServiceHandle(hService);
+    }
+    CloseServiceHandle(hSCManager);
   }
 }
 
@@ -255,33 +250,18 @@ static void InstallService(int typesrv)
   hSCManager = OpenSCManager(NULL,NULL,SC_MANAGER_CREATE_SERVICE);
   if (hSCManager)
   {
-	  SC_HANDLE hService;
-	  char *file = (char *)malloc(strlen(_pgmptr)+strlen(portname)+strlen(hostfile)+20);
-	  strcpy(file,_pgmptr);
-	  strcat(file," ");
-	  strcat(file,portname);
-	  switch (typesrv)
-	  {
-	  case 0: strcat(file," service "); break;
-	  case 1: strcat(file," service_multi "); break;
-	  case 2: strcat(file," service_server "); break;
-	  }
-	  if (strchr(hostfile,' '))
-	  {
-		  strcat(file,"\"");
-		  strcat(file,hostfile);
-		  strcat(file,"\"");
-	  }
-	  else
-	    strcat(file,hostfile);
-	  hService = CreateService(hSCManager, ServiceName(), ServiceName(), 0, SERVICE_WIN32_OWN_PROCESS,
-	  SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, file, NULL, NULL, NULL, NULL, NULL);
-	  if (hService == NULL)
-		  status = GetLastError();
-	  free(file);
-	  if (hService)
-		  CloseServiceHandle(hService);
-	  CloseServiceHandle(hSCManager);
+    SC_HANDLE hService;
+    char *file = (char *)malloc(strlen(_pgmptr)+strlen(portname)+strlen(hostfile)+100);
+    sprintf(file,%s -p %s %s -h \"%s\" -F %d",_pgmptr,portname,
+          (typesrv == 0) ? "" : ((typesrv == 1) ? "-m" : "-s"),hostfile, flags | IS_SERVICE);
+    hService = CreateService(hSCManager, ServiceName(), ServiceName(), 0, SERVICE_WIN32_OWN_PROCESS,
+            SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, file, NULL, NULL, NULL, NULL, NULL);
+    if (hService == NULL)
+      status = GetLastError();
+    free(file);
+    if (hService)
+      CloseServiceHandle(hService);
+    CloseServiceHandle(hSCManager);
   }
 }
 
@@ -349,70 +329,36 @@ int main(int argc, char **argv)
   InitializeSockets();
   /* DebugBreak(); */
   FD_ZERO(&fdactive);
-  if (argc <= 1 && !IsService)
-  {
-    printf("Usage: mdsip portname|portnumber [multi|install|install_server|install_multi|remove|server] [hostfile]\n");
-    exit(0);
-  }
-  ContextSwitching = 0;
+  if (!CommandParsed) 
+    ParseCommand(argc, argv, &portname, &port, &hostfile, &mode, &flags);
+  UseCompression = (flags & SUPPORTS_COMPRESSION);
   if (IsService)
-	  InitializeService();
+    InitializeService();
   else
   {
-	multi = 0;
-    portname = argv[1];
-    if (argc > 2)
-	{
-      if (argc > 3)
-        hostfile = argv[3];
-      if (strcmp("multi",argv[2]) == 0)
-	  {
-                multi = 1;
-                ContextSwitching = 1;
-	  }
-	  else if (strcmp("install",argv[2]) == 0)
-	  {
-		InstallService(0);
-		exit(0);
-	  }
-	  else if (strcmp("install_multi",argv[2]) == 0)
-	  {
-		InstallService(1);
-		exit(0);
-	  }
-	  else if (strcmp("install_server",argv[2]) == 0)
-	  {
-		InstallService(2);
-		exit(0);
-	  }
-	  else if (strcmp("remove",argv[2]) == 0)
-	  {
-		RemoveService();
-		exit(0);
-	  }
-	  else if (strcmp("worker",argv[2]) == 0)
-	  {
-		StartWorker(argv);
-          }
-          else if (strcmp("server",argv[2]) == 0)
-	  {
-                multi = 1;
-          }
-      else
-        hostfile = argv[2];
-	}
+    switch (mode)
+    {
+    case 0:     ContextSwitching = 0; multi = 0; NO_SPAWN = 0; break;
+    case 'm':   ContextSwitching = 1; multi = 1; break;
+    case 's':   ContextSwitching = 0; multi = 1; break;
+    case 'i':   InstallService(0); exit(0); break;
+    case 'M':   InstallService(1); exit(0); break;
+    case 'S':   InstallService(2); exit(0); break;
+    case 'r':   RemoveService(); exit(0); break;
+    case 'w':   StartWorker(argv); break;
+    }
   }
   if (multi || IsService)
   {
     InitWorkerCommunications();
-    serverSock = CreateMdsPort(portname,1);
+    serverSock = CreateMdsPort(port,1);
     shut = 0;
-	if (IsService)
+    if (IsService)
       SetThisServiceStatus(SERVICE_RUNNING,0);
   }
   else if (!IsWorker)
   {
-    serverSock = ConnectToInet(portname);
+    serverSock = ConnectToInet(port);
     shut = (ClientList == NULL);
   }
   readfds = fdactive;
@@ -427,19 +373,19 @@ int main(int argc, char **argv)
     {
       Client *c,*next;
       for (c=ClientList,next=c ? c->next : 0; c; c=next,next=c ? c->next : 0)
-	  {
-		if (IsWorker)
-		{
-			if (*workerShutdown)
-			{
-				shutdown(c->sock,2);
-				closesocket(c->sock);
-				_exit(0);
-			}
-		}
+      {
+        if (IsWorker)
+        {
+          if (*workerShutdown)
+          {
+            shutdown(c->sock,2);
+            closesocket(c->sock);
+            _exit(0);
+          }
+        }
         if (FD_ISSET(c->sock, &readfds))
           DoMessage(c);
-	  }
+      }
     }
     shut = (ClientList == NULL) && !multi && !IsService;
     readfds = fdactive;
@@ -571,7 +517,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     }
     else
       ok = 1;
-    m.h.status = (ok & 1) ? (1 | SUPPORTS_COMPRESSION) : 0;
+    m.h.status = (ok & 1) ? (1 | (UseCompression ? SUPPORTS_COMPRESSION : 0)) : 0;
     m.h.client_type = m_user->h.client_type;
     SetSocketOptions(sock);
     SendMdsMsg(sock,&m,0);
@@ -585,7 +531,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
         new->context.tree = 0;
         new->message_id = 0;
         new->event = 0;
-        new->use_compression = ((m_user->h.status & SUPPORTS_COMPRESSION) == SUPPORTS_COMPRESSION);
+        new->use_compression = UseCompression ? ((m_user->h.status & SUPPORTS_COMPRESSION) == SUPPORTS_COMPRESSION) : 0;
         for (i=0;i<6;i++)
 	      new->tdicontext[i] = NULL;
         for (i=0;i<MAX_ARGS;i++)
@@ -999,7 +945,7 @@ static void ExecuteMessage(Client *c)
     c->descrip[c->nargs++] = (struct descriptor *)(xd = (struct descriptor_xd *)memcpy(malloc(sizeof(emptyxd)),&emptyxd,sizeof(emptyxd)));
     c->descrip[c->nargs++] = MdsEND_ARG;
     DefineTdi("public $REMADDR=$",DTYPE_LONG,4,&c->addr);
-    DefineTdi("public $PORTNAME=$",DTYPE_T,(short)strlen(PortName),PortName);
+    DefineTdi("public $PORTNAME=$",DTYPE_T,(short)strlen(portname),portname);
     ResetErrors();
     status = LibCallg(&c->nargs, TdiExecute);
     if (status & 1) status = TdiData(xd,&ans MDS_END_ARG);
@@ -1177,7 +1123,7 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
   free(m);
 }
 
-static int CreateMdsPort(char *service, int multi_in)
+static int CreateMdsPort(short port, int multi_in)
 {
   static struct sockaddr_in sin;
   struct servent *sp;
@@ -1197,19 +1143,6 @@ static int CreateMdsPort(char *service, int multi_in)
     return 0;
   }
   FD_SET(s,&fdactive);
-  sin.sin_port = htons((short)atoi(service));
-  if (sin.sin_port == 0)
-  {
-    sp = getservbyname(service,"tcp");
-    if (sp == NULL)
-    {
-      printf("unknown service: %s/tcp\n",service);
-      exit(1);
-    }
-    sin.sin_port = sp->s_port;
-  }
-  sp = getservbyport(sin.sin_port,"tcp");
-  PortName = strcpy((char *)malloc(strlen(sp ? sp->s_name :service)+1),sp ? sp->s_name : service);
   SetSocketOptions(s);
   status = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&multi_in,sizeof(1));
   if (status < 0)
@@ -1219,6 +1152,7 @@ static int CreateMdsPort(char *service, int multi_in)
   }
   if (multi_in)
   {
+    sin.sin_port = port;
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = INADDR_ANY;
     status = bind(s, (struct sockaddr *)&sin, sizeof(struct sockaddr_in));
@@ -1237,7 +1171,7 @@ static int CreateMdsPort(char *service, int multi_in)
   return s;
 }
 
-static int ConnectToInet(char *service)
+static int ConnectToInet(short port)
 {
   static struct sockaddr_in sin;
   int s=-1;
@@ -1256,7 +1190,7 @@ static int ConnectToInet(char *service)
     exit(0);
   }
   AddClient(s,&sin);
-  return CreateMdsPort(service, 0);
+  return CreateMdsPort(port, 0);
 }
 
 void ResetErrors()
@@ -1298,4 +1232,239 @@ static void DefineTdi(char *execute_string, char dtype, short length, void *valu
   val.pointer = value;
   TdiExecute(&cmd,&val,&emptyxd MDS_END_ARG);
   MdsFree1Dx(&emptyxd,NULL);
+}
+
+static void PrintHelp(char *option);
+static void SetMode(char modein, char *mode);
+
+static short ParsePort(char *name, char **portname)
+{
+  short port;
+  struct servent *sp;
+  port = htons((short)atoi(name));
+  if (port == 0)
+  {
+    sp = getservbyname(name,"tcp");
+    if (sp == NULL)
+    {
+      printf("unknown service: %s/tcp\n\n",name);
+      PrintHelp(0);
+    }
+    port = sp->s_port;
+  }
+  sp = getservbyport(port,"tcp");
+  *portname = strcpy((char *)malloc(strlen(sp ? sp->s_name : name)+1),sp ? sp->s_name : name);
+  return port;
+}
+  
+static void PrintHelp(char *option)
+{
+  if (option)
+    printf("Invalid options specified: %s\n\n",option);
+  printf("mdsip - MDSplus data server\n\n");
+  printf("  Format:\n\n");
+  printf("    mdsip -p port|service [-m|-s] [-i|-r] [-h hostfile] [-c|+c]\n\n");
+  printf("      -p port|service    Specifies port number or tcp service name\n");
+  printf("      -m                 Use multi mode (accepts multiple connections each with own context)\n");
+  printf("      -s                 Use server mode (accepts multiple connections with shared context)\n");
+  printf("      -i                 Install service (WINNT only)\n");
+  printf("      -r                 Remove service (WINNT only)\n");
+  printf("      -h hostfile        Specify alternate mdsip.hosts file\n");
+  printf("      -c                 Disable compression\n");
+  printf("      +c                 Enable compression (default)\n\n");
+  printf("    more verbose switches are also permitted:\n\n");
+  printf("      --port port|service\n");
+  printf("      --multi\n");
+  printf("      --server\n");
+  printf("      --install\n");
+  printf("      --remove\n");
+  printf("      --hostfile hostfile\n");
+  printf("      --nocompression\n");
+  printf("      --compression\n\n");
+  printf("  Deprecated Format:\n\n    mdsip port|service [multi|server|install|install_server|install_multi|remove] [hostflie]\n");
+  exit(1);
+} 
+
+static int ParseOption(char *option, char **argv, int argc, char **portname, short *port, char **hostfile, char *mode, int *flags)
+{
+  int increment = 0;
+  if (strcmp(option,"port") == 0)
+  {
+    if (argc > 0)
+    {
+      *port = ParsePort(argv[0],portname);
+      increment = 1;
+    }
+    else
+    {
+      printf("No port or service specified\n\n");
+      PrintHelp(0);
+    }
+  }
+  else if (strcmp(option,"multi") == 0)
+  {
+    SetMode('m',mode);
+  }
+  else if (strcmp(option,"server") == 0)
+  {
+    SetMode('s',mode);
+  }
+  else if (strcmp(option,"install") == 0)
+  {
+    SetMode('i',mode);
+  }
+  else if (strcmp(option,"remove") == 0)
+  {
+    SetMode('r',mode);
+  }
+  else if (strcmp(option,"hostfile") == 0)
+  {
+    if (argc > 0)
+    {
+      *hostfile = strcpy((char *)malloc(strlen(argv[0])+1),argv[0]);
+      increment = 1;
+    }
+    else
+    {
+      printf("hostfile not specified\n\n");
+      PrintHelp(0);
+    }
+  }
+  else if (strcmp(option,"nocompression") == 0)
+  {
+    *flags = *flags & (~SUPPORTS_COMPRESSION);
+  }
+  else if (strcmp(option,"compression") == 0)
+  {
+    *flags = *flags | SUPPORTS_COMPRESSION;
+  }
+  else
+  {
+    printf("Invalid option specified: --%s\n\n",option);
+    PrintHelp(0);
+  }
+  return increment;
+}
+
+void SetMode(char modein,char *mode)
+{
+  int multiple = 0;
+  switch (modein)
+  {
+  case 'm': if (*mode == 0)
+              *mode = 'm';
+            else if (*mode == 'i')
+              *mode = 'M';
+            else
+              multiple = 1;
+            break;
+  case 's': if (*mode == 0)
+              *mode = 's';
+            else if (*mode == 'i')
+              *mode = 'S';
+            else
+              multiple = 1;
+            break;
+  case 'i': if (*mode == 0)
+              *mode = 'i';
+            else if (*mode == 's')
+              *mode = 'S';
+            else if (*mode == 'm')
+              *mode = 'M';
+            else
+              multiple = 1;
+            break;
+  case 'r': if ((*mode == 0) || (*mode == 's') || (*mode == 'm'))
+              *mode = 'r';
+            else
+              multiple = 1;
+            break;
+  }
+  if (multiple)
+  {
+    printf("Multiple or incompatible modes selected\n\n");
+    PrintHelp(0);
+  }
+}
+
+static void ParseCommand(int argc, char **argv,char **portname, short *port, char **hostfile, char *mode, int *flags)
+{
+  int i;
+  if (argc < 2) PrintHelp(0);
+  *port = 0;
+  *mode = 0;
+  *flags = SUPPORTS_COMPRESSION;
+  *hostfile = 0;
+  for (i=1;i<argc;i++)
+  {
+    char *option = argv[i];
+    switch (option[0])
+    {
+      case '-':
+        if (strlen(option) > 2 && option[1] != '-')
+	{
+          printf("Invalid option specified: %s\n\n",option);
+          PrintHelp(0);
+        }
+        switch ( option[1] )
+	{
+	  case 'p': if (argc > (i+1)) *port = ParsePort(argv[++i],portname); else PrintHelp(0); break;
+	  case 'm': SetMode('m',mode); break;
+	  case 's': SetMode('s',mode); break;
+	  case 'i': SetMode('i',mode); break;
+          case 'r': SetMode('r',mode); break;
+	  case 'h': if (argc > (i+1)) *hostfile = strcpy((char *)malloc(strlen(argv[++i])+1),argv[i]); else PrintHelp(0); break;
+	  case 'c': *flags = *flags & (~SUPPORTS_COMPRESSION); break;
+	  case '-': i += ParseOption(&option[2],&argv[i+1],argc-i-1,portname,port,hostfile,mode,flags); break;
+#ifdef HAVE_WINDOWS_H
+          case 'F': *flags = atoi(argv[++i]); break;
+          case 'W': i += 2; break;
+#endif
+	  default: PrintHelp(option); break;
+        }
+        break;
+      case '+':
+        if (strlen(option) != 2)
+        {
+          printf("Invalid option specified: %s\n\n",option);
+          PrintHelp(0);
+        }
+        switch ( option[1] )
+	{
+	  case 'c': *flags = *flags | SUPPORTS_COMPRESSION; break;
+          default: PrintHelp(option); break;
+        }
+        break;
+      default:
+        if (*port == 0)
+          *port = ParsePort(option,portname);
+        else if (strcmp(argv[i],"multi") == 0)
+          SetMode('m',mode);
+        else if (strcmp(argv[i],"install") == 0)
+          SetMode('i',mode);
+        else if (strcmp(argv[i],"install_server") == 0)
+        {
+          SetMode('s',mode);
+          SetMode('i',mode);
+        }
+        else if (strcmp(argv[i],"install_multi") == 0)
+        {
+          SetMode('m',mode);
+          SetMode('i',mode);
+        }
+        else if (strcmp(argv[i],"remove") == 0)
+          SetMode('r',mode);
+        else if (strcmp(argv[i],"server") == 0)
+          SetMode('s',mode);
+        else
+          *hostfile = strcpy((char *)malloc(strlen(option)+1),option);
+        break;
+    }
+  }
+  if (*hostfile == 0) *hostfile = strcpy((char *)malloc(strlen(DEFAULT_HOSTFILE)+1),DEFAULT_HOSTFILE);
+  if (*port == 0)
+  {
+    printf("port must be specified\n\n");
+    PrintHelp(0);
+  }
 }
