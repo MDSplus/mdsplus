@@ -39,8 +39,8 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-#define  count(num) va_start(incrmtr, nid_dsc); \
-                     for (num=1; (num < 256) && (va_arg(incrmtr, struct descriptor *) != MdsEND_ARG);  num++)
+#define  count(num) va_start(incrmtr, method_ptr); \
+                     for (num=2; (num < 256) && (va_arg(incrmtr, struct descriptor *) != MdsEND_ARG);  num++)
   
 extern void *DBID;
 
