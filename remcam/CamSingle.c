@@ -52,8 +52,9 @@ static void getiosb(int serverid, short *iosb)
   status = MdsValue(serverid,"_iosb",&ans_d,0);
   if (status & 1 && ans_d.dtype == DTYPE_USHORT && ans_d.ndims == 1 && ans_d.dims[0] == 4)
   {
-    memcpy(iosb,ans_d.ptr,8);
     memcpy(RemCamLastIosb,ans_d.ptr,8);
+    if (iosb)
+      memcpy(iosb,ans_d.ptr,8);
   }
   if (ans_d.ptr)
     free(ans_d.ptr);
@@ -75,22 +76,25 @@ static int CamSingle(char *routine, char *name, int a, int f, void *data, int me
 {
   int serverid = RemoteServerId();
   int status = 0;
+  int writeData;
   if (serverid)
   {
     struct descrip data_d = {8,0,{0,0,0,0,0,0,0},0};
     struct descrip ans_d = {0,0,{0,0,0,0,0,0,0},0};
     char cmd[512];
     int istatus;
-    sprintf(cmd,"CamSingle('%s','%s',%d,%d,%s,%d,_iosb)",routine,name,a,f,f < 10 ? "_data" : "_data=$",mem);
-    if (f < 10)
-    {
-      status = MdsValue(serverid,cmd,&ans_d,0);
-    }
-    else
+
+    writeData = (!(f &0x08)) && (f > 8);
+    sprintf(cmd,"CamSingle('%s','%s',%d,%d,%s,%d,_iosb)",routine,name,a,f,(writeData) ? "_data=$" : "_data",mem);
+    if (writeData)
     {
       data_d.dtype = mem < 24 ? DTYPE_SHORT : DTYPE_LONG;
       data_d.ptr = data;
       status = MdsValue(serverid,cmd,&data_d,&ans_d,0);
+     }
+    else
+    {
+      status = MdsValue(serverid,cmd,&ans_d,0);
     }      
     if (status & 1 && ans_d.dtype == DTYPE_LONG && ans_d.ptr)
     {
@@ -99,8 +103,7 @@ static int CamSingle(char *routine, char *name, int a, int f, void *data, int me
       ans_d.ptr = 0;
       if (data && f < 8)
         getdata(serverid,data);
-      if (iosb)
-        getiosb(serverid,iosb);            
+      getiosb(serverid,iosb);            
     }
   }
   return status;
