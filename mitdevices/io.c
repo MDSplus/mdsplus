@@ -15,9 +15,43 @@
 
 #define MAX_CHUNK_SIZE 1024*1024
 
+int OPEN(const char *pathname, int flags)
+{
+  int fd = open(pathname, flags);
+  if (fd == -1) {
+    char msg[132];
+    sprintf(msg, "error opening %s", pathname);
+    perror(msg);
+  }
+  return fd;
+}
+
+int READ(int fd, void *buf, size_t count)
+{
+  int bytes = 0;
+  int bytes_to_read = count;
+  while ((bytes_to_read > 0) && (bytes >= 0)) {
+    bytes = read(fd, buf, bytes_to_read);
+    if (bytes < 0) {
+      char msg[132];
+      sprintf(msg, "READ returned zero, quit at %d\n",count-bytes_to_read);
+      perror(msg);
+      break;
+      
+    }
+    bytes_to_read -= bytes;
+    buf += bytes;
+  }
+  return count-bytes_to_read;
+}
+
+int CLOSE(int fd)
+{
+  return close(fd);
+}
+
 FILE *FOPEN(const char *fname, const char *mode)
 {
-  /*  printf("here I am in open\n"); */
   return fopen(fname, mode);
 }
 int FCLOSE(FILE *fd)
@@ -31,13 +65,10 @@ size_t FREAD( void *ptr, size_t size, size_t nmemb, FILE *stream)
   int chunk_size;
   int this_chunk=0;
 
-  printf("entering FREAD(ptr, %d, %d, stream\n", size, nmemb);
   while ((samples_to_read != 0) && (this_chunk >= 0)) {
 
     chunk_size = MIN(MAX_CHUNK_SIZE/size, samples_to_read);
-    printf("  fread(ptr, %d %d, stream)=", size, chunk_size);
     this_chunk = fread(ptr, size, chunk_size, stream);
-    printf(" %d\n", this_chunk);
 
     if (this_chunk <= 0){
             fprintf(stderr, "fread returned zero, quit at %d\n",
