@@ -257,6 +257,198 @@ int32 MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL t
   return status;
 }
 
+/*JMS--->*/
+
+
+int32 MdsValueFtotSize (struct descrip *dataarg)
+{
+  int32 totsize = 0;
+  if (dataarg->ndims == 0) {
+    printf("MDSvalueF: scalar\n");
+    totsize=1;
+  } else { 
+    int i;
+    for (i=0;i<dataarg->ndims;i++) {
+      totsize=totsize+dataarg->dims[i];
+    }
+  }
+  return totsize;
+}
+
+int32 PASCAL MdsValueF(SOCKET sock, char *expression, double *data, int32 maxsize, int32 *retsize)
+{
+
+  struct descrip dataarg;
+
+  int32 status = MdsValue(sock, expression, (struct descrip *)&dataarg, (struct descrip *)NULL);
+
+  /*printf("EXPRESSION IN MDSVALUEF: %s %u \n",expression,strlen(expression)); */
+  if (status & 1) {
+
+    int32 fullsize;
+    float *newdata;
+    int32 totsize = MdsValueFtotSize( (struct descrip *)&dataarg );
+    memcpy(retsize,&totsize,sizeof(int32));
+
+
+    if (totsize > maxsize) totsize=maxsize;
+
+    fullsize=totsize*ArgLen(&dataarg);
+
+    switch (dataarg.dtype) {
+    int i;
+    case DTYPE_FLOAT : 
+	memcpy(data, (float *) dataarg.ptr, fullsize);
+	break;
+    case DTYPE_DOUBLE : 
+	memcpy(data, (double *) dataarg.ptr, fullsize);
+	break;
+    case DTYPE_LONG : 
+
+        newdata = calloc (totsize, sizeof(float));
+
+        for (i=0;i<totsize;i++) {
+	  *(newdata+i) = ((float) *((long *)dataarg.ptr+i));
+        } 
+
+        memcpy(data, newdata, fullsize);
+	free(newdata);
+	break;
+    default :
+	printf ("MDSValueF: Can't handle type: %u\n", dataarg.dtype);
+	status=0;
+	break;
+    }
+  }
+  if (dataarg.ptr) free(dataarg.ptr);
+  return status;
+
+}
+
+int32 PASCAL MdsValueC(SOCKET sock, char *expression, char *data, int *retsize)
+{
+
+  struct descrip dataarg;
+  int i;
+  int32 status = MdsValue(sock, expression, (struct descrip *)&dataarg, (struct descrip *)NULL);
+  /* printf("EXPRESSION IN MDSVALUEC: -->%s<--\n",expression); */
+  if (status & 1) {
+    int size = ArgLen(&dataarg);
+    memcpy(retsize,&size,sizeof(int));
+    switch (dataarg.dtype) {
+    case DTYPE_CSTRING : 
+	memcpy(data, (char *) dataarg.ptr, ArgLen(&dataarg)*sizeof(char));
+	break;
+    default :
+	printf ("MDSValueC: Can't handle type: %u\n", dataarg.dtype);
+	status=0;
+	break;
+    }
+  }
+  if (dataarg.ptr) free(dataarg.ptr);
+  return status;
+
+}
+
+int32 PASCAL MdsValueI(SOCKET sock, char *expression, int32 *data);
+int32 PASCAL MdsValueI(SOCKET sock, char *expression, int32 *data) 
+{
+
+  struct descrip dataarg;
+  int i;
+  int32 status = MdsValue(sock, expression, (struct descrip *)&dataarg, (struct descrip *)NULL);
+
+  if (status & 1) {
+    switch (dataarg.dtype) {
+    case DTYPE_SHORT : case DTYPE_LONG :
+	memcpy(data, (int32 *) dataarg.ptr, ArgLen(&dataarg));
+	break;
+    default :
+	printf ("MDSValueI: Can't handle type: %u\n", dataarg.dtype);
+	status=0;
+	break;
+    }
+  }
+  if (dataarg.ptr) free(dataarg.ptr);
+  return status;
+
+}
+
+
+
+int32 PASCAL MdsValueAll(SOCKET sock, char *expression, int32 *ireturn,
+		       double *freturn, char *creturn,
+		       int32 maxsize, int32 *retsize, int32 *type)
+{
+
+  struct descrip ansarg;
+
+  int32 status = MdsValue(sock, expression, (struct descrip *)&ansarg, (struct descrip *)NULL);
+
+  if (status & 1) {
+
+    int32 fullsize;
+    int32 totsize=0;
+    printf ("ndims: %u \n",ansarg.ndims);
+    printf ("value: %d \n",*(int32 *)ansarg.ptr);
+    if (ansarg.ndims == 0) {
+      totsize=1;
+    } else { 
+      int i;
+      for (i=0;i<ansarg.ndims;i++) {
+	totsize=totsize+ansarg.dims[i];
+      }
+    }
+    memcpy(retsize,&totsize,sizeof(int32));
+    fullsize=totsize*ArgLen(&ansarg);
+
+    printf ("total size: %u \n",totsize);
+    memcpy(type,&ansarg.dtype,sizeof(char));
+    printf ("type: %u\n",*type);
+
+    switch (ansarg.dtype) {
+    case DTYPE_CHAR : 
+          printf("Character returned: %s \n",(char *)ansarg.ptr);
+          break;
+    case DTYPE_FLOAT : 
+          memcpy(freturn, (float *) ansarg.ptr, fullsize);
+          break;
+    case DTYPE_DOUBLE : 
+          memcpy(freturn, (double *) ansarg.ptr, fullsize);
+          break;
+	  /*    case DTYPE_UCHAR : 
+          memcpy(ireturn, (uchar *) ansarg.ptr, fullsize);
+          break; */
+    case DTYPE_USHORT : 
+          memcpy(ireturn, (ushort *) ansarg.ptr, fullsize);
+          break;
+	  /* case DTYPE_ULONG : 
+          memcpy(ireturn, (ulong *) ansarg.ptr, fullsize);
+          break; */
+    case DTYPE_SHORT : 
+          memcpy(ireturn, (short *) ansarg.ptr, fullsize);
+          break;
+    case DTYPE_LONG : 
+          memcpy(ireturn, (long *) ansarg.ptr, fullsize);
+          break;
+    default :
+          printf ("Can't handle type: %u\n", *type);
+          break;
+    }
+
+
+    /*    int32 size = maxsize*4; 
+    printf("ansarg.ptr val: %u \n",*(int32 *)ansarg.ptr);
+    memcpy(returnval, (int32 *) ansarg.ptr, size); */
+  }
+  if (ansarg.ptr) free(ansarg.ptr);
+  printf ("STATUS in MDSVALUEALL: %d \n",status);
+  return status;
+
+}
+
+/*JMS<---*/
+
 int32 PASCAL MdsOpen(SOCKET sock, char *tree, int32 shot)
 {
   struct descrip treearg;
@@ -265,6 +457,7 @@ int32 PASCAL MdsOpen(SOCKET sock, char *tree, int32 shot)
   int32 status = MdsValue(sock, "MDSLIB->MDS$OPEN($,$)", MakeDescrip((struct descrip *)&treearg,DTYPE_CSTRING,0,0,tree), 
 			      MakeDescrip((struct descrip *)&shotarg,DTYPE_LONG,0,0,&shot),
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
+
   if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) status = *(int32 *)ansarg.ptr;
   if (ansarg.ptr) free(ansarg.ptr);
   return status;
@@ -344,6 +537,8 @@ static SOCKET ConnectToPort(char *host, char *service)
   struct servent *sp;
   static int one=1;
   long sendbuf = 32768,recvbuf = 32768;
+
+  
   hp = gethostbyname(host);
   if (hp == NULL)
   {

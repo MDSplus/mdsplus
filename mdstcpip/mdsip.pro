@@ -53,8 +53,9 @@ pro Mds$SendArg,sock,n,idx,arg
   length = lengths(dtype)
   dtype = dtypes(dtype) 
   if dtype eq 14 then begin
+    if (n_elements(arg) gt 1) then message,'Argument to MDS$PUT must be a scalar string',/ioerror
     length = strlen(arg)
-    argByVal = 1b
+    argByVal = 1b 
     if !version.os eq 'windows' then argByVal = 0b
   endif else begin
     argByVal = 0b
