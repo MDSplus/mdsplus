@@ -54,7 +54,7 @@ install:
 	uil -o $@ dwscope.uil
 
 @MAKEBINDIR@dwpad : dwpad.o dwscopesubs.o
-	$(CC) -o $@ dwpad.o dwscopesubs.o -L@MAKELIBDIR@ -lXmdsShr $(MLIBS)
+	$(CC) -o $@ dwpad.o dwscopesubs.o -L@MAKELIBDIR@ @LDARC@ -lXmdsShr @LDSHARE@ $(MLIBS)
 
 @MAKEUIDDIR@dwpad.uid : dwpad.uil
 	uil -o $@ dwpad.uil
