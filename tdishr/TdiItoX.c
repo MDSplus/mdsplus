@@ -28,6 +28,7 @@
 #endif
 extern int IsRoprand();
 #define ROPRAND(fptr) IsRoprand(DTYPE_NATIVE_FLOAT,fptr)
+#define ROPRAND_TYPED(type, fptr) IsRoprand(type, fptr)
 /* #define ROPRAND(fptr) (*(unsigned short *)(fptr) == 0x8000) */
 
 #include "tdirefcat.h"
@@ -253,9 +254,9 @@ unsigned char			omits[] = {DTYPE_WITH_UNITS,DTYPE_DIMENSION,0};
 		* WARNING may need more careful rounding.
 		*************************************************************************/
 		big_beg = cats[0].in_dtype == DTYPE_MISSING || (cats[0].in_cat & TdiCAT_FLOAT
-			&& ROPRAND(dat[beg].pointer->pointer));
+			&& ROPRAND_TYPED(dat[beg].pointer->dtype, dat[beg].pointer->pointer));
 		big_end = cats[1].in_dtype == DTYPE_MISSING || (cats[1].in_cat & TdiCAT_FLOAT
-			&& ROPRAND(dat[end].pointer->pointer+dat[end].pointer->length*(nseg-1)));
+			&& ROPRAND_TYPED(dat[end].pointer->dtype, dat[end].pointer->pointer+dat[end].pointer->length*(nseg-1)));
 		if (nseg == 1) {
 			dat[beg].pointer->class = CLASS_S;
 			dat[end].pointer->class = CLASS_S;
