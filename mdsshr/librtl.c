@@ -491,10 +491,10 @@ void pthread_unlock_global_np()
 {
   if (!Initialized)
   { 
-#ifdef PTHREAD_MUTEX_INITIALIZER
+#if defined(PTHREAD_MUTEX_INITIALIZER) && defined(PTHREAD_MUTEX_RECURSIVE) 
     pthread_mutexattr_t m_attr;
     pthread_mutexattr_init(&m_attr);
-    pthread_mutexattr_setkind_np(&m_attr,PTHREAD_MUTEX_RECURSIVE_NP);
+    pthread_mutexattr_setkind_np(&m_attr,PTHREAD_MUTEX_RECURSIVE);
     pthread_mutex_init(&GlobalMutex,&m_attr);
 #else 
     pthread_mutex_init(&GlobalMutex,pthread_mutexattr_default);
