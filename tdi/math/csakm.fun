@@ -6,8 +6,8 @@
 	Ken Klare, LANL P-4 (c)1991
 */
 FUN PUBLIC CSAKM(IN _s) {
-	_xdata = DIM_OF(_s);
-	_fdata = DATA(_s);
+	_xdata = FS_FLOAT(DIM_OF(_s));
+	_fdata = FS_FLOAT(DATA(_s));
 	_n = SIZE(_fdata);
 	if (_n < 5) abort();  /* will cause floating exception in MdsMath */
 	IF (SIZE(_xdata) == 0) _xdata = RAMP(_n, 1.);
