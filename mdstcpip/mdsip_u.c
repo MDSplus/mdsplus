@@ -817,7 +817,7 @@ static void ProcessMessage(Client *c, Message *message)
   }
 }
 
-static void ClientEventAst(MdsEventList *e, int len, char *data)
+static void ClientEventAst(MdsEventList *e, int data_len, char *data)
 {
   Client *c;
   int i;
@@ -833,8 +833,8 @@ static void ClientEventAst(MdsEventList *e, int len, char *data)
       m->h.msglen = len;
       m->h.dtype = DTYPE_EVENT_NOTIFY;
       info = (JMdsEventInfo *)m->bytes;
-      memcpy(info->data, data, (len<12)?len:12);
-      for(i = len; i < 12; i++)
+      memcpy(info->data, data, (data_len<12)?data_len:12);
+      for(i = data_len; i < 12; i++)
         info->data[i] = 0;
       info->eventid = e->jeventid;
       SetCompressionLevel(c->compression_level);
@@ -847,8 +847,8 @@ static void ClientEventAst(MdsEventList *e, int len, char *data)
       m->h.client_type = c->client_type;
       m->h.msglen = sizeof(MsgHdr) + e->info_len;
       m->h.dtype = DTYPE_EVENT_NOTIFY;
-      memcpy(e->info->data, data, (len<12)?len:12); 
-      for(i = len; i < 12; i++)
+      memcpy(e->info->data, data, (data_len<12)?data_len:12); 
+      for(i = data_len; i < 12; i++)
         e->info->data[i] = 0;
       memcpy(m->bytes,e->info,e->info_len);
       SetCompressionLevel(c->compression_level);
