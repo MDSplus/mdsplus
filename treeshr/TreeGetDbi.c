@@ -95,9 +95,9 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
 
       check_open(db);
       {
-	NID       nid;
-	node_to_nid(db, db->default_node, (&nid));
-	string = _TreeGetPath(db, *(int *)&nid);
+	int nid;
+        _TreeGetDefaultNid(db,&nid);
+	string = _TreeGetPath(db, nid);
       }
       break;
 

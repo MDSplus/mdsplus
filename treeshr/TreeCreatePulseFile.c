@@ -93,7 +93,8 @@ int       _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids
 	nids[num++] = nids_in[i];
     }
   }
-
+  if (dblist->remote)
+    return CreatePulseFileRemote(dblist, shotid, nids, num);
   if (shotid)
     shot = shotid;
   else

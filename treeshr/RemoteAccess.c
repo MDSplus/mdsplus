@@ -228,6 +228,25 @@ int CloseTreeRemote(PINO_DATABASE *dblist, int call_hook)
   return status;
 }
 
+int CreatePulseFileRemote(PINO_DATABASE *dblist, int shot, int *nids, int num)
+{
+  struct descrip ans = empty_ans;
+  int status;
+  char exp[8192];
+  int i;
+  sprintf(exp,"TreeCreatePulseFile(%d,[",shot);
+  for (i=0;i<num;i++)
+    sprintf(&exp[strlen(exp)],"%d,",nids[i]);
+  sprintf(&exp[strlen(exp)-1],"],%d)",num);
+  status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+  if (ans.ptr)
+  {
+    status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
+    MdsIpFree(ans.ptr);
+  }
+  return status;
+}
+
 int GetRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor_xd *dsc)
 {
   struct descrip ans = empty_ans;
@@ -396,6 +415,7 @@ char *FindTagWildRemote(PINO_DATABASE *dblist, char *wild, int *nidout, void **c
 {
   TAG_SEARCH **ctx = (TAG_SEARCH **)ctx_inout;
   struct descrip ans = empty_ans;
+  struct descrip nid_ans = empty_ans;
   char exp[512];
   int status;
   int first_time = 0;
@@ -412,6 +432,15 @@ char *FindTagWildRemote(PINO_DATABASE *dblist, char *wild, int *nidout, void **c
   sprintf(exp,"TreeFindTagWild(\"%s\",_nid,%s)//\"\\0\"",wild,first_time ? "_remftwctx = 0" : "_remftwctx");
   status = MdsValue0(dblist->tree_info->channel,exp,&ans);
   (*ctx)->remote_tag = ans.ptr;
+  if (status & 1)
+  {
+    status = MdsValue0(dblist->tree_info->channel,"_nid",&nid_ans);
+    if ((status & 1) && (nid_ans.dtype == DTYPE_L) && (nid_ans.ptr != 0))
+      *nidout = *(int *)nid_ans.ptr;
+    else
+      *nidout = 0;
+    MdsIpFree(ans.ptr);
+  }
   return (status & 1 && ans.ptr && ans.dtype == DTYPE_T && strlen((char *)ans.ptr) > 0) ? (char *)ans.ptr : 0;
 }
 
@@ -423,7 +452,7 @@ void FindTagEndRemote(void **ctx_inout)
   int first_time = 0;
   if (*ctx != (TAG_SEARCH *)0)
   {
-    if ((*ctx)->remote_tag) free((*ctx)->remote_tag);
+    if ((*ctx)->remote_tag) MdsIpFree((*ctx)->remote_tag);
     status = MdsValue0((*ctx)->socket,"TreeFindTagEnd(_remftwctx)",&ans);
     if (ans.ptr) MdsIpFree(ans.ptr);
   }
