@@ -835,7 +835,7 @@ int StrLenExtr(struct descriptor *dest, struct descriptor *source, int *start_in
   int status = StrGet1Dx(&len, &s);
   int i,j;
   memset(s.pointer,32,len);
-  for (i=start-1,j=0;i<source->length;i++,j++)
+  for (i=start-1,j=0; ((i<source->length) && (j < len));i++,j++)
     s.pointer[j]=source->pointer[i];
   status = StrCopyDx(dest,&s);
   StrFree1Dx(&s);
