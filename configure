@@ -307,7 +307,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP F77 FFLAGS ac_ct_F77 RANLIB ac_ct_RANLIB X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS UIL JAVAC JAR CAMSHR D3D_PACKAGE D3DLIB D3D_FFLAGS DNET_STUB EXPORTS_FILE FEXECLIBDIR FORLD FOR_LDFLAGS GLOBUS_CFLAGS GLOBUS_FLAVOR GLOBUS_LIBS GLOBUS_LOCATION GROFF GROFF_MAN_FLAGS HDF5_INCS HDF5_LIBS HDF5_APS HUP_TO_INETD HUP_TO_XINETD IDL_INC IDL_LIB IDLMDSEVENT IDLMDSWIDGETS IDLSQL JAVA_APS JDK_CFLAGS JVM LD LDSHARE LDARC LD_LDSHARE LD_LDARC LIBDL LIBDLD LIBM LIBNSL LIBPATH LIBPTHREAD LIBREADLINE LIBRESOLV LIBSOCKET LIBXP LIBXEXT LINKSHARED LINKJNI LINKMODULE LOC MAKEBINDIR MAKELIBDIR MAKESHLIBDIR MAKESHLIBDIR_RULE MAKEUIDDIR MAKEETCDIR MAKEJAVADIR MDSSQL MDSTCPIP MDSVME MEMCHKLIB MITDEVICESIO_TARGETS MOTIF_LDSHARE MOTIF_LDARC MOTIF_LD_LDSHARE MOTIF_LD_LDARC NEED_SEMUN SHARETYPE SHARETYPEJNI SHARETYPEMOD SIZEOF_INT_P SRBLIB SRBINCLUDE SYBASE_INC SYBASE_LIB TARGETSYS TAR_EXCLUDE XM_LIBS uiddir USE_SEMAPHORE_H USE_PIPED_MESSAGING USE_TM_GMTOFF LIBDC1394 DC1394_SUPPORT LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP F77 FFLAGS ac_ct_F77 RANLIB ac_ct_RANLIB X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS UIL JAVAC JAR RMIC CAMSHR D3D_PACKAGE D3DLIB D3D_FFLAGS DNET_STUB EXPORTS_FILE FEXECLIBDIR FORLD FOR_LDFLAGS GLOBUS_CFLAGS GLOBUS_FLAVOR GLOBUS_LIBS GLOBUS_LOCATION GROFF GROFF_MAN_FLAGS HDF5_INCS HDF5_LIBS HDF5_APS HUP_TO_INETD HUP_TO_XINETD IDL_INC IDL_LIB IDLMDSEVENT IDLMDSWIDGETS IDLSQL JAVA_APS JDK_CFLAGS JVM LD LDSHARE LDARC LD_LDSHARE LD_LDARC LIBDL LIBDLD LIBM LIBNSL LIBPATH LIBPTHREAD LIBREADLINE LIBRESOLV LIBSOCKET LIBXP LIBXEXT LINKSHARED LINKJNI LINKMODULE LOC MAKEBINDIR MAKELIBDIR MAKESHLIBDIR MAKESHLIBDIR_RULE MAKEUIDDIR MAKEETCDIR MAKEJAVADIR MDSSQL MDSTCPIP MDSVME MEMCHKLIB MITDEVICESIO_TARGETS MOTIF_LDSHARE MOTIF_LDARC MOTIF_LD_LDSHARE MOTIF_LD_LDARC NEED_SEMUN SHARETYPE SHARETYPEJNI SHARETYPEMOD SIZEOF_INT_P SRBLIB SRBINCLUDE SYBASE_INC SYBASE_LIB TARGETSYS TAR_EXCLUDE XM_LIBS uiddir USE_SEMAPHORE_H USE_PIPED_MESSAGING USE_TM_GMTOFF LIBDC1394 DC1394_SUPPORT LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -856,6 +856,7 @@ Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-nodebug        compile without debug info
+ --disable-java	do not build java libraries and applications
   --enable-globus        use globus_io for mdsip communications
   --enable-memcheck       enable virtual memory debugging
   --enable-gcc_profiling       enable gcc profiling
@@ -865,6 +866,7 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+ --with-jdk=java-jdk-dir	specify location of java jdk
   --with-xio=globus-location:flavor  use globus xio for mdsip communications
   --with-srb=srb-install-dir  Enable srb capabilities
   --with-libdc1394=location  compile the libdc1394 digital camera support stuff
@@ -3208,7 +3210,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:3211:" \
+echo "$as_me:3213:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4007,6 +4009,49 @@ if test "${enable_nodebug+set}" = set; then
 	fi
 fi;
 
+# Check whether --enable-java or --disable-java was given.
+if test "${enable_java+set}" = set; then
+  enableval="$enable_java"
+  java_enable="$enableval"
+else
+  java_enable="yes"
+
+fi;
+
+
+if test "$java_enable" = "yes"
+then
+
+# Check whether --with-jdk or --without-jdk was given.
+if test "${with_jdk+set}" = set; then
+  withval="$with_jdk"
+  jdk_dir="$withval"
+else
+  jdk_dir="$JDK_DIR"
+
+fi;
+  echo "$as_me:$LINENO: checking for presence of $jdk_dir/jre" >&5
+echo $ECHO_N "checking for presence of $jdk_dir/jre... $ECHO_C" >&6
+  if  test -r $jdk_dir/jre
+  then
+    echo "$as_me:$LINENO: result: found." >&5
+echo "${ECHO_T}found." >&6
+  else
+	cat <<EOF
+
+
+YOU NEED TO SPECIFY THE JAVA JDK DIRECTORY OR DISABLE JAVA
+The jdk directory can be specified by either defining a JDK_DIR environment
+variable or by using the --with-jdk=jdk-directory option.
+You can disable java by using the --disable-java option.
+
+
+
+EOF
+	exit
+  fi
+fi
+
 
 # Check whether --with-xio or --without-xio was given.
 if test "${with_xio+set}" = set; then
@@ -4192,7 +4237,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:4195:" \
+echo "$as_me:4240:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4341,27 +4386,6 @@ GROFF=groff
 HUP_TO_XINETD=""
 HUP_TO_INETD=""
 
-echo "$as_me:$LINENO: checking for presence of java jdk in /usr/java" >&5
-echo $ECHO_N "checking for presence of java jdk in /usr/java... $ECHO_C" >&6
-jdk_found=0
-jdk_dir=""
-jdk_dirs=`find /usr/java -type d -maxdepth 1 2>/dev/null`
-if test $? = 0; then
-  for i in $jdk_dirs; do
-    tmp=`ls -d $i/include >/dev/null 2>/dev/null`;
-    if test $? = 0 && test $jdk_found = 0; then
-      jdk_found=1;
-      jdk_dir=$i;
-    fi;
-  done;
-fi
-if test $jdk_found = 1; then
-  echo "$as_me:$LINENO: result: found. Will use $jdk_dir" >&5
-echo "${ECHO_T}found. Will use $jdk_dir" >&6;
-else
-  echo "$as_me:$LINENO: result: not found" >&5
-echo "${ECHO_T}not found" >&6;
-fi
 
 LIBPTHREAD=-lpthread
 IS_HP=0
@@ -4510,7 +4534,6 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        SHARETYPEMOD=".so";
        LIBPTHREAD="";
        TAR_EXCLUDE="--exclude";
-       jdk_dir="/System/Library/Frameworks/JavaVM.framework";
        jni_inc_dir="$jdk_dir/Headers";
        jni_md_inc_dir="$jni_inc_dir";
        JVM="-framework JavaVM";
@@ -10989,6 +11012,47 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
+# Extract the first word of "rmic", so it can be a program name with args.
+set dummy rmic; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_RMIC+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $RMIC in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_RMIC="$RMIC" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $jdk_dir/bin
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_RMIC="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  test -z "$ac_cv_path_RMIC" && ac_cv_path_RMIC="rmic"
+  ;;
+esac
+fi
+RMIC=$ac_cv_path_RMIC
+
+if test -n "$RMIC"; then
+  echo "$as_me:$LINENO: result: $RMIC" >&5
+echo "${ECHO_T}$RMIC" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+
 XM_LIBS="-lMrm -lXm"
 if test "$X_CFLAGS"
 then
@@ -11134,6 +11198,7 @@ _ACEOF
 
 
 LIBS="$LIBPTHREAD $LIBS"
+
 
 
 
@@ -11919,6 +11984,7 @@ s,@X_EXTRA_LIBS@,$X_EXTRA_LIBS,;t t
 s,@UIL@,$UIL,;t t
 s,@JAVAC@,$JAVAC,;t t
 s,@JAR@,$JAR,;t t
+s,@RMIC@,$RMIC,;t t
 s,@CAMSHR@,$CAMSHR,;t t
 s,@D3D_PACKAGE@,$D3D_PACKAGE,;t t
 s,@D3DLIB@,$D3DLIB,;t t
