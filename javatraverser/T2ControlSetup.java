@@ -56,6 +56,7 @@ public class T2ControlSetup extends DeviceSetup
 		}
 		deviceChoice1.setLabelString("Initial Control");
 		deviceChoice1.setConvert(true);
+		deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)5});
 		getContentPane().add(deviceChoice1);
 		deviceChoice1.setBounds(12,156,276,40);
 		deviceChoice2.setOffsetNid(7);
@@ -94,10 +95,10 @@ public class T2ControlSetup extends DeviceSetup
 		deviceTable1.setBounds(12,204,192,108);
 		JTabbedPane1.setAlignmentX(1.0F);
 		getContentPane().add(JTabbedPane1);
-		JTabbedPane1.setBounds(216,216,480,192);
+		JTabbedPane1.setBounds(216,204,480,216);
 		JPanel1.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		JTabbedPane1.add(JPanel1);
-		JPanel1.setBounds(2,24,475,165);
+		JPanel1.setBounds(2,24,475,189);
 		JPanel1.setVisible(false);
 		deviceField5.setNumCols(5);
 		deviceField5.setOffsetNid(14);
@@ -113,7 +114,7 @@ public class T2ControlSetup extends DeviceSetup
 		JPanel1.add(deviceField48);
 		JPanel3.setLayout(new GridLayout(3,2,0,0));
 		JTabbedPane1.add(JPanel3);
-		JPanel3.setBounds(2,24,475,165);
+		JPanel3.setBounds(2,24,475,189);
 		JPanel3.setVisible(false);
 		deviceField12.setNumCols(8);
 		deviceField12.setOffsetNid(68);
@@ -133,7 +134,7 @@ public class T2ControlSetup extends DeviceSetup
 		JPanel3.add(deviceField15);
 		JPanel4.setLayout(new GridLayout(4,4,0,0));
 		JTabbedPane1.add(JPanel4);
-		JPanel4.setBounds(2,24,475,165);
+		JPanel4.setBounds(2,24,475,189);
 		JPanel4.setVisible(false);
 		deviceField17.setNumCols(2);
 		deviceField17.setIdentifier("id1");
@@ -206,12 +207,12 @@ public class T2ControlSetup extends DeviceSetup
 		JScrollPane1.setAutoscrolls(true);
 		JScrollPane1.setDoubleBuffered(true);
 		JTabbedPane1.add(JScrollPane1);
-		JScrollPane1.setBounds(2,24,475,165);
+		JScrollPane1.setBounds(2,24,475,189);
 		JScrollPane1.getViewport().add(JViewport1);
-		JViewport1.setBounds(0,0,472,162);
+		JViewport1.setBounds(0,0,797,171);
 		JPanel2.setLayout(new GridLayout(4,1,0,0));
 		JViewport1.add(JPanel2);
-		JPanel2.setBounds(0,0,797,156);
+		JPanel2.setBounds(0,0,797,171);
 		JPanel5.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		JPanel2.add(JPanel5);
 		deviceField8.setNumCols(2);
@@ -358,7 +359,7 @@ public class T2ControlSetup extends DeviceSetup
 			deviceButtons1.setMethods(tempString);
 		}
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(144,432,336,40);
+		deviceButtons1.setBounds(180,432,336,40);
 		deviceField16.setNumCols(5);
 		deviceField16.setOffsetNid(8);
 		deviceField16.setLabelString("Trigger time (s):");
