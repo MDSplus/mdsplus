@@ -243,6 +243,30 @@ Package=<4>
 
 ###############################################################################
 
+Project: "mdsip_service"=.\mdstcpip\mdsip_service.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsipshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "mdsipshr"=.\mdstcpip\mdsipshr.dsp - Package Owner=<4>
 
 Package=<5>
@@ -270,6 +294,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "mdsjet"=.\mdsjet\mdsjet.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "mdslib"=.\mdslib\mdslib.dsp - Package Owner=<4>
 
 Package=<5>
@@ -290,6 +326,18 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name treeshr
     End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mdslib_client"=.\mdslib\mdslib_client.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
 }}}
 
 ###############################################################################
@@ -427,6 +475,27 @@ Package=<4>
 {{{
     Begin Project Dependency
     Project_Dep_Name tdishr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test"=.\test\test.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
     End Project Dependency
 }}}
 
