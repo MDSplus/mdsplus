@@ -162,6 +162,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
       char *part;
       strcpy(path,pathin);
       MaskReplace(path,tree_lower,source_shot);
+      pathlen = strlen(path);
       if (source_shot < 0)
         sprintf(name,"%s_model",tree_lower);
       else if (source_shot < 1000)
@@ -194,6 +195,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
       {
         strcpy(path,pathin);
         MaskReplace(path,tree_lower,shot);
+        pathlen = strlen(path);
         if (shot < 0)
           sprintf(name,"%s_model",tree_lower);
         else if (shot < 1000)
