@@ -77,7 +77,7 @@ c						! but user is asking for n points.  Therefore trap error in TDI function
 	    INT16.NREQ   = LEN_HDR
 	    INT32.NREQ   = LEN_HDR
 	    REAL32.NREQ  = LEN_HDR
-	    call ptdata_(type(itype),jiabs(shot),%ref('.PLA'), 
+	    call ptdata(type(itype),jiabs(shot),%ref('.PLA'), 
      2                  %ref(pointname),
      1			data,ier,iarray,rarray,ascii,int16,int32,real32)
 
@@ -348,7 +348,8 @@ C Should we query for a pointname to read?
 		 type 100
 		 type 110,(SPRED.NAME(i),i=1,SPRED.NLINES)
 		 type 120
-		 accept '(a)',SPRED_NAME
+C The following line used to be 'accept' instead of 'read'
+		 read '(a)',SPRED_NAME
 		endif
 C Look for SPRED_NAME in the list
 	call str$trim(SPRED_NAME,SPRED_NAME,len)
@@ -413,7 +414,7 @@ c	implicit none
 	INT32.NREQ   = LEN_HDR
 	REAL32.NREQ  = LEN_HDR
 
-	call ptdata_(6,shot,%ref('.PLA'),%ref(pointname),
+	call ptdata(6,shot,%ref('.PLA'),%ref(pointname),
      1		 data,ier,iarray,rarray,ascii,int16,int32,real32)
 
 	word=iarray.word
@@ -456,7 +457,7 @@ c	implicit none
 	INT32.NREQ   = LEN_HDR
 	REAL32.NREQ  = LEN_HDR
 
-	call ptdata_(6,shot,%ref('.PLA'),%ref(pointname),
+	call ptdata(6,shot,%ref('.PLA'),%ref(pointname),
      1		 data,ier,iarray,rarray,ascii,int16,int32,real32)
 
 	size(1)=iarray.nasch		! character string should be 4* this value
@@ -498,7 +499,7 @@ c	character*(*) apass
 	INT32.NREQ   = 0
 	REAL32.NREQ  = 0
 
-	call ptdata_(6,shot,%ref('.PLA'),%ref(pointname),
+	call ptdata(6,shot,%ref('.PLA'),%ref(pointname),
      1		 data,ier,iarray,rarray,ascii,int16,int32,real32)
 
 	if ((ier.ne.0).and.(ascii.nret.gt.0)) ier=0
@@ -530,7 +531,7 @@ c	implicit none
 	INT32.NREQ   = 0
 	REAL32.NREQ  = 0
 
-	call ptdata_(6,shot,%ref('.PLA'),%ref(pointname),
+	call ptdata(6,shot,%ref('.PLA'),%ref(pointname),
      1		 data,ier,iarray,rarray,ascii,int16,int32,real32)
 
 	if ((ier.ne.0).and.(int16.nret.gt.0)) ier=0
@@ -564,7 +565,7 @@ c	implicit none
 	INT32.NREQ   = LEN_HDR
 	REAL32.NREQ  = 0
 
-	call ptdata_(6,shot,%ref('.PLA'),%ref(pointname),
+	call ptdata(6,shot,%ref('.PLA'),%ref(pointname),
      1		 data,ier,iarray,rarray,ascii,int16,int32,real32)
 
 	if ((ier.ne.0).and.(int32.nret.gt.0)) ier=0
@@ -599,7 +600,7 @@ c	implicit none
 	INT32.NREQ   = 0
 	REAL32.NREQ  = LEN_HDR
 
-	call ptdata_(6,shot,%ref('.PLA'),%ref(pointname),
+	call ptdata(6,shot,%ref('.PLA'),%ref(pointname),
      1		 data,ier,iarray,rarray,ascii,int16,int32,real32)
 
 	if ((ier.ne.0).and.(real32.nret.gt.0)) ier=0
@@ -639,7 +640,7 @@ c	record /PT_REAL32/ r32pass
 	INT32.NREQ   = LEN_HDR
 	REAL32.NREQ  = LEN_HDR
 
-	call ptdata_(6,shot,%ref('.PLA'),%ref(pointname),
+	call ptdata(6,shot,%ref('.PLA'),%ref(pointname),
      1		 data,ier,iarray,rarray,ascii,int16,int32,real32)
 
 	if (iarray.hwords .gt. IFIX_SIZE) then 
@@ -680,7 +681,7 @@ c	implicit none
 	INT32.NREQ   = LEN_HDR
 	REAL32.NREQ  = LEN_HDR
 
-	call ptdata_(6,shot,%ref('.PLA'),%ref(pointname),
+	call ptdata(6,shot,%ref('.PLA'),%ref(pointname),
      1		 data,ier,iarray,rarray,ascii,int16,int32,real32)
 
 	units = iarray.units
@@ -716,7 +717,7 @@ c	record /PT_REAL32/ r32pass
 	INT32.NREQ   = LEN_HDR
 	REAL32.NREQ  = LEN_HDR
 
-	call ptdata_(6,shot,%ref('.PLA'),%ref(pointname),
+	call ptdata(6,shot,%ref('.PLA'),%ref(pointname),
      1		 data,ier,iarray,rarray,ascii,int16,int32,real32)
 
 	if ((ier.ne.0).and.(rarray.rcg.ne.0.0)) ier=0
@@ -750,7 +751,7 @@ c----------------------------------------------------------------------------
 	INT32.NREQ   = LEN_HDR
 	REAL32.NREQ  = LEN_HDR
 
-	call ptdata_(2,shot,%ref('.PLA'),%ref('COMMENTS  '),
+	call ptdata(2,shot,%ref('.PLA'),%ref('COMMENTS  '),
      1		 idat,ier,iarray,rarray,ascii,int16,int32,real32)
 
 	do i=1,512
@@ -762,7 +763,7 @@ c----------------------------------------------------------------------------
 c----------------------------------------------------------------------------
 	program test1
 
-	parameter nmax=524288
+	integer, parameter :: nmax=524288
 	external MDSptread
 	real t(nmax),f(nmax)
 	character pointname*10, sdate*10, stime*8, units*4
