@@ -21,11 +21,7 @@ class jDispatcher implements ServerListener
     /**
     current shot;
     */
-    /**
-       Used to store the status of the current action dispatch
-    */
-    int dispatchStatus = 1;
-
+    
     int timestamp = 1;
     /**
     timestamp used for messages. Incremented each new seqeuence. Messages with older timestamp
@@ -333,7 +329,6 @@ class jDispatcher implements ServerListener
    public synchronized boolean startPhase(String phase_name)
    {
         doing_phase = false;
-	dispatchStatus = 1;
      //increment timestamp. Incoming messages with older timestamp will be ignored
         curr_phase = (PhaseDescriptor)phases.get(phase_name); //select data structures for the current phase
         if(curr_phase == null) return false; //Phase name does not correspond to any known phase.
@@ -386,13 +381,12 @@ class jDispatcher implements ServerListener
         balancer.abortAction(action);
     }
         
-    public synchronized int waitPhase()
+    public synchronized void waitPhase()
     {
         try {
             while(doing_phase)
                 wait();
         }catch(InterruptedException exc){}
-	return dispatchStatus;
     }
         
         
@@ -578,12 +572,6 @@ class jDispatcher implements ServerListener
             seq_dispatched.removeElementAt(0);
         }
     } 
-
-    public void serverCrashed()
-    {
-        dispatchStatus = 0;
-    }
-
     public void setDefaultServer(Server server)
     {
         balancer.setDefaultServer(server);
