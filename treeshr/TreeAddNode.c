@@ -459,7 +459,7 @@ int _TreeAddConglom(void *dbid, char *path, char *congtype, int *nid)
   int       status;
   struct descriptor expdsc = {0, DTYPE_T, CLASS_S, 0};
   char exp[256];
-  static void *arglist[3] = {(void *)2};
+  static void *arglist[4] = {(void *)3};
   static DESCRIPTOR(tdishr,"TdiShr");
   static DESCRIPTOR(tdiexecute,"TdiExecute");
   static int addstatus = 0;
@@ -476,6 +476,7 @@ int _TreeAddConglom(void *dbid, char *path, char *congtype, int *nid)
     expdsc.pointer = exp;
     arglist[1] = &expdsc;
     arglist[2] = &statdsc;
+    arglist[3] = MdsEND_ARG;
     DBID = dbid;
     status = LibCallg(arglist,addr);
     DBID = old_dbid;
