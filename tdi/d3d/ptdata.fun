@@ -2,7 +2,6 @@ FUN PUBLIC PTDATA(IN _pointname,OPTIONAL IN _shot, OPTIONAL OUT _error, OPTIONAL
 
 {
 	IF (NOT PRESENT(_shot)) _shot=$SHOT;
-
 	if (NOT ALLOCATED(PUBLIC __ptdata_pointname))
 	{	
 /*	   write (*,"NOT ALLOCATED\n\r"); */
@@ -11,8 +10,8 @@ FUN PUBLIC PTDATA(IN _pointname,OPTIONAL IN _shot, OPTIONAL OUT _error, OPTIONAL
         }
 
 /*	write (*,"have now: ",PUBLIC __ptdata_pointname,"  WANT: ",_pointname,"\n\r"); */
-	IF ( (_pointname eq __ptdata_pointname) &&
-	     (_shot eq __ptdata_shot) )
+	IF ( (_pointname eq PUBLIC __ptdata_pointname) &&
+	     (_shot eq PUBLIC __ptdata_shot) )
 	{	
 /*	  write (*,"Returning cached signal\n\r"); */
 	  return(PUBLIC __ptdata_signal);
@@ -44,7 +43,7 @@ FUN PUBLIC PTDATA(IN _pointname,OPTIONAL IN _shot, OPTIONAL OUT _error, OPTIONAL
 
 	    if ((_error == 0) || (_error == 4)) {
 		/* calling program must trap less points returned than asked */
-/*	        PUBLIC __ptdata_signal=MAKE_SIGNAL(MAKE_WITH_UNITS(_f,_units),,MAKE_DIM(*,MAKE_WITH_UNITS(_t,"ms"))); */
+	        PUBLIC __ptdata_signal=MAKE_SIGNAL(MAKE_WITH_UNITS(_f,_units),,MAKE_DIM(*,MAKE_WITH_UNITS(_t,"ms"))); 
 	        PUBLIC __ptdata_shot = _shot;
                 PUBLIC __ptdata_pointname = _pointname;
 /*		write (*,"CACHED: ",PUBLIC __ptdata_pointname,"\n\r"); */
