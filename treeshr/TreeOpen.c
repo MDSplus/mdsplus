@@ -926,7 +926,7 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
 		if (status & 1)
 		{
                         int endianTest = 1;
-                        int bigEndian = *(char *)endianTest == 0;
+                        int bigEndian = *(char *)&endianTest == 0;
 			info->blockid = TreeBLOCKID;
 			info->header = (TREE_HEADER *) info->section_addr[0];
                         if (bigEndian) FixupHeader(info->header);
