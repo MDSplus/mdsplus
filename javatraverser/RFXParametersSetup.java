@@ -124,7 +124,7 @@ public class RFXParametersSetup extends DeviceSetup
     deviceField13.setLabelString("L_P_LINER: ");
     deviceField13.setNumCols(6);
     deviceField13.setIdentifier("");
-    deviceField14.setOffsetNid(7);
+    deviceField14.setOffsetNid(8);
     deviceField14.setTextOnly(false);
     deviceField14.setLabelString("LINER_I_RAD: ");
     deviceField14.setNumCols(6);

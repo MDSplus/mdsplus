@@ -12,7 +12,7 @@ public class DispatchEditor extends JPanel implements ActionListener,Editor
     int dtype_idx, curr_dtype_idx;
     boolean editable = true;
     TreeDialog dialog;
-    
+
     public DispatchEditor(Data data, TreeDialog dialog)
     {
 	this.dialog = dialog;
@@ -41,37 +41,37 @@ public class DispatchEditor extends JPanel implements ActionListener,Editor
 	add(jp, "North");
 	addEditor();
     }
-    
+
     private void addEditor()
     {
 	switch(curr_dtype_idx) {
 	    case 0: return;
-	    case 1: 
-		if(dtype_idx == curr_dtype_idx) 
+	    case 1:
+		if(dtype_idx == curr_dtype_idx)
 		    dispatch_edit = new DispatchEdt((DispatchData)data, false);
 		else
 		    dispatch_edit = new DispatchEdt(null, false);
 		add(dispatch_edit, "South");
 		break;
-	    case 2: 
-		if(dtype_idx == curr_dtype_idx) 
+	    case 2:
+		if(dtype_idx == curr_dtype_idx)
 		    dispatch_edit = new DispatchEdt((DispatchData)data, true);
 		else
 		    dispatch_edit = new DispatchEdt(null, true);
 		add(dispatch_edit, "South");
 		break;
-	    case 3: 
-		if(dtype_idx == curr_dtype_idx) 
+	    case 3:
+		if(dtype_idx == curr_dtype_idx)
 		    expr_edit = new ExprEditor(data, false, 5,30);
 		else
 		    expr_edit = new ExprEditor(null, false, 5, 30);
 		add(expr_edit, "South");
 		break;
 	}
-    } 
-	
-	
-    
+    }
+
+
+
     public void actionPerformed(ActionEvent e)
     {
 	if(!editable)
@@ -82,7 +82,7 @@ public class DispatchEditor extends JPanel implements ActionListener,Editor
 	int idx = combo.getSelectedIndex();
 	if(idx == curr_dtype_idx) return;
 	switch(curr_dtype_idx)  {
-	    case 1: 
+	    case 1:
 	    case 2: remove(dispatch_edit); break;
 	    case 3: remove(expr_edit); break;
 	}
@@ -92,11 +92,11 @@ public class DispatchEditor extends JPanel implements ActionListener,Editor
 	dialog.repack();
     }
 
-		
+
     public void reset()
     {
 	switch(curr_dtype_idx)  {
-		case 1: 
+		case 1:
 		case 2: remove(dispatch_edit); break;
 		case 3: remove(expr_edit); break;
 	}
@@ -105,18 +105,18 @@ public class DispatchEditor extends JPanel implements ActionListener,Editor
 	validate();
 	repaint();
     }
-    
+
     public Data getData()
     {
 	switch(curr_dtype_idx)  {
 	    case 0: return null;
-	    case 1: 
-	    case 2: return dispatch_edit.getData(); 
-	    case 3: return expr_edit.getData(); 
+	    case 1:
+	    case 2: return dispatch_edit.getData();
+	    case 3: return expr_edit.getData();
 	}
 	return null;
     }
-    
+
     public void setData(Data data)
     {
     	this.data = (DispatchData)data;
@@ -168,29 +168,29 @@ class DispatchEdt extends JPanel
 	phase_edit = new LabeledExprEditor("Phase:     ", new ExprEditor(this.data.getPhase(), true));
 	ident_edit = new LabeledExprEditor("Ident:     ", new ExprEditor(this.data.getIdent(), true));
 	if(is_sequential)
-	    sequence_edit = new LabeledExprEditor("Sequence:  ", 
+	    sequence_edit = new LabeledExprEditor("Sequence:  ",
 		new ExprEditor(this.data.getWhen(), false));
 	else
-    	    sequence_edit = new LabeledExprEditor("After:     ", 
+    	    sequence_edit = new LabeledExprEditor("After:     ",
 		new ExprEditor(this.data.getWhen(), false));
-	
-	completion_edit = new LabeledExprEditor(  "Completion:", 
+
+	completion_edit = new LabeledExprEditor(  "Completion:",
 	    new ExprEditor(this.data.getCompletion(), true));
-	    
+
 	add(ident_edit);
 	add(phase_edit);
 	add(sequence_edit);
 	add(completion_edit);
     }
     public void reset()
-    {	
+    {
 	combo.setSelectedIndex(dtype_idx);
 	ident_edit.reset();
 	phase_edit.reset();
 	sequence_edit.reset();
 	completion_edit.reset();
     }
-    
+
     public Data getData()
     {
 	Data data;
@@ -198,13 +198,13 @@ class DispatchEdt extends JPanel
 	data = phase_edit.getData();
 	data = sequence_edit.getData();
 	data = completion_edit.getData();
-    
-    
+
+
 	return new DispatchData(is_sequential?DispatchData.SCHED_SEQ:DispatchData.SCHED_COND,
 	    ident_edit.getData(), phase_edit.getData(), sequence_edit.getData(),
 	    completion_edit.getData());
     }
-    
+
     public void setEditable(boolean editable)
     {
 	if(ident_edit != null) ident_edit.setEditable(editable);
@@ -212,8 +212,8 @@ class DispatchEdt extends JPanel
 	if(sequence_edit != null) sequence_edit.setEditable(editable);
 	if(completion_edit != null) completion_edit.setEditable(editable);
     }
-    
 
-    
+
+
 }
 }
