@@ -224,13 +224,8 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
       if (status & 1)
       {
         char nci_bytes[42];
-#ifdef _WIN32
-	_lseek(info->nci_file->put,node_num * sizeof(nci_bytes),SEEK_SET);
-	status = (_read(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
-#else
-	lseek(info->nci_file->put,node_num * sizeof(nci_bytes),SEEK_SET);
-	status = (read(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
-#endif
+	MDS_IO_LSEEK(info->nci_file->put,node_num * sizeof(nci_bytes),SEEK_SET);
+	status = (MDS_IO_READ(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
         if (status == TreeNORMAL)
           TreeSerializeNciIn(nci_bytes,nci);
 	if (!(status & 1))
@@ -301,17 +296,13 @@ int TreeOpenNciW(TREE_INFO *info, int tmpfile)
       filename[len]='\0';
       strcat(filename,tmpfile ? "characteristics#" : "characteristics");
       memset(info->nci_file,0, sizeof(NCI_FILE));
-      info->nci_file->get = open(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC  : O_RDONLY) | O_BINARY | O_RANDOM,0664);
+      info->nci_file->get = MDS_IO_OPEN(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC  : O_RDONLY) | O_BINARY | O_RANDOM,0664);
       status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
       if (info->nci_file->get == -1)
         info->nci_file->get = 0;
       if (status & 1)
       {
-#ifdef HAVE_VXWORKS_H
-        info->nci_file->put = open(filename,O_RDWR | O_BINARY | O_RANDOM, 0);
-#else
-        info->nci_file->put = open(filename,O_RDWR | O_BINARY | O_RANDOM);
-#endif
+        info->nci_file->put = MDS_IO_OPEN(filename,O_RDWR | O_BINARY | O_RANDOM, 0);
         status = (info->nci_file->put == -1) ? TreeFAILURE : TreeNORMAL;
         if (info->nci_file->put == -1)
           info->nci_file->put = 0;
@@ -330,8 +321,8 @@ int TreeOpenNciW(TREE_INFO *info, int tmpfile)
     filename[len]='\0';
     strcat(filename,tmpfile ? "characteristics#" : "characteristics");
     if (info->nci_file->put)
-      close(info->nci_file->put);
-    info->nci_file->put = open(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDWR) | O_BINARY | O_RANDOM, 0664);
+      MDS_IO_CLOSE(info->nci_file->put);
+    info->nci_file->put = MDS_IO_OPEN(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDWR) | O_BINARY | O_RANDOM, 0664);
     status = (info->nci_file->put == -1) ? TreeFAILURE : TreeNORMAL;
     if (info->nci_file->put == -1)
       info->nci_file->put = 0;
@@ -341,7 +332,7 @@ int TreeOpenNciW(TREE_INFO *info, int tmpfile)
   {
     if (info->edit)
     {
-    info->edit->first_in_mem = lseek(info->nci_file->put,0,SEEK_END)/42;
+    info->edit->first_in_mem = MDS_IO_LSEEK(info->nci_file->put,0,SEEK_END)/42;
     }
   /**********************************************
    Set up the RABs for buffered reads and writes
@@ -413,13 +404,8 @@ int TreePutNci(TREE_INFO *info, int node_num, NCI *nci, int flush)
     {
       char nci_bytes[42];
       TreeSerializeNciOut(nci,nci_bytes);
-#ifdef _WIN32
-      _lseek(info->nci_file->put,sizeof(nci_bytes) * node_num, SEEK_SET);
-      status = (_write(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
-#else
-      lseek(info->nci_file->put,sizeof(nci_bytes) * node_num, SEEK_SET);
-      status = (write(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
-#endif
+      MDS_IO_LSEEK(info->nci_file->put,sizeof(nci_bytes) * node_num, SEEK_SET);
+      status = (MDS_IO_WRITE(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
       TreeUnLockNci(info, 0, node_num);
     }
   }
@@ -688,6 +674,17 @@ static int SetNodeParentState(PINO_DATABASE *db, NODE *node, NCI *nci, unsigned 
   return status;
 }
 
+int TreeLockNci(TREE_INFO *info, int readonly, int nodenum)
+{
+  return MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,nodenum * sizeof(NCI),sizeof(NCI),readonly ? 1 : 2);
+}
+
+int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
+{
+  return MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,nodenum * sizeof(NCI),sizeof(NCI),0);
+}
+
+#ifdef OLD_LOCK_CODE
 #if defined (_WIN32)
 
 int TreeLockNci(TREE_INFO *info, int readonly, int nodenum)
@@ -734,5 +731,6 @@ int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
   return (fcntl(readonly ? info->nci_file->get : info->nci_file->put,F_SETLKW, &flock_info) != -1) ? 
           TreeSUCCESS : TreeLOCK_FAILURE;
 }
+#endif
 #endif
 #endif

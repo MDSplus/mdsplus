@@ -1,9 +1,4 @@
 #include <config.h>
-#ifdef HAVE_WINDOWS_H
-#include <io.h>
-#define write _write
-#define lseek _lseek
-#endif
 #include <string.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -12,6 +7,7 @@
 #include <stdlib.h>
 #include <treeshr.h>
 #include <errno.h>
+#include <fcntl.h>
 #define EMPTY_NODE
 #define EMPTY_NCI
 #include <ncidef.h>
@@ -703,7 +699,7 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
      Write out the characteristics file.
      **************************************/
 
-      FILE *ntreef;
+      int ntreefd;
       TREE_INFO *info_ptr = (*dblist)->tree_info;
       char *nfilenam = strcpy(malloc(strlen(info_ptr->filespec)+2),info_ptr->filespec);
       trim_excess_nodes(info_ptr); 
@@ -714,25 +710,25 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
       external_pages = (info_ptr->header->externals * 4 + 511) / 512;
 
       strcat(nfilenam,"#");
-      ntreef = fopen(nfilenam,"wb");
-      if (ntreef)
+      ntreefd = MDS_IO_OPEN(nfilenam,O_WRONLY | O_CREAT | O_TRUNC, 0777);
+      if (ntreefd != -1)
       {
         size_t num;
-        num = fwrite(HeaderOut(info_ptr->header),512,header_pages,ntreef);
-        if (num != header_pages) goto error_exit;
-        num = fwrite(info_ptr->node,512,node_pages,ntreef);
-        if (num != node_pages) goto error_exit;
-        num = fwrite(info_ptr->tags,512,tags_pages,ntreef);
-        if (num != tags_pages) goto error_exit;
-        num = fwrite(info_ptr->tag_info,512,tag_info_pages,ntreef);
-        if (num != tag_info_pages) goto error_exit;
-        num = fwrite(info_ptr->external,512,external_pages,ntreef);
-        if (num != external_pages) goto error_exit;
-		status = TreeWriteNci(info_ptr);
-		if ((status & 1) == 0)
-			goto error_exit;
-		remove(info_ptr->filespec);
-        fclose(ntreef);
+        num = MDS_IO_WRITE(ntreefd,HeaderOut(info_ptr->header),512*header_pages);
+        if (num != (header_pages*512)) goto error_exit;
+        num = MDS_IO_WRITE(ntreefd,info_ptr->node,512*node_pages);
+        if (num != (node_pages*512)) goto error_exit;
+        num = MDS_IO_WRITE(ntreefd,info_ptr->tags,512*tags_pages);
+        if (num != (tags_pages*512)) goto error_exit;
+        num = MDS_IO_WRITE(ntreefd,info_ptr->tag_info,512*tag_info_pages);
+        if (num != (tag_info_pages*512)) goto error_exit;
+        num = MDS_IO_WRITE(ntreefd,info_ptr->external,512*external_pages);
+        if (num != (external_pages*512)) goto error_exit;
+	status = TreeWriteNci(info_ptr);
+	if ((status & 1) == 0) goto error_exit;
+	MDS_IO_REMOVE(info_ptr->filespec);
+        MDS_IO_CLOSE(ntreefd);
+        MDS_IO_RENAME(nfilenam,info_ptr->filespec);
 #ifdef HAVE_VXWORKS_H
 	/*rename is not supported by nfs on vxWorks*/
 
@@ -742,7 +738,7 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
         rename(nfilenam,info_ptr->filespec);
 #endif
 
-		(*dblist)->modified = 0;
+	(*dblist)->modified = 0;
         TreeCallHook(WriteTree, info_ptr,0);
       }
     }
@@ -813,10 +809,10 @@ static int TreeWriteNci(TREE_INFO *info)
     int offset;
     for (i = 0,offset = info->edit->first_in_mem * nbytes; i < numnodes && (status & 1); i++,offset += nbytes)
     {
-      lseek(info->nci_file->put,offset,SEEK_SET);
+      MDS_IO_LSEEK(info->nci_file->put,offset,SEEK_SET);
       memcpy(&nci,&info->edit->nci[i],sizeof(nci));
       TreeSerializeNciOut(&nci,nci_bytes);
-      status = (write(info->nci_file->put,nci_bytes,nbytes) == nbytes) ? TreeNORMAL : TreeFAILURE;
+      status = (MDS_IO_WRITE(info->nci_file->put,nci_bytes,nbytes) == nbytes) ? TreeNORMAL : TreeFAILURE;
       if (status & 1)
         info->edit->first_in_mem++;
     }

@@ -501,8 +501,16 @@ int *dims, char *bytes)
   int i;
   int nbytes = length;
   Message *m;
-  for (i=0;i<ndims;i++)
-    nbytes *= dims[i];
+  if (idx > nargs)
+  {
+    /**** Special I/O message ****/ 
+    nbytes = dims[0];
+  }
+  else
+  {
+    for (i=0;i<ndims;i++)
+      nbytes *= dims[i];
+  }
   msglen = sizeof(MsgHdr) + nbytes;
   m = malloc(msglen);
   m->h.client_type = 0;
@@ -521,7 +529,7 @@ int *dims, char *bytes)
 #endif
   memcpy(m->bytes,bytes,nbytes);
   status = SendMdsMsg(sock, m, 0);
-  if (idx == (nargs -1)) message_id++;
+  if (idx > nargs || idx == (nargs -1)) message_id++;
   if (message_id == 0) message_id = 1;
   free(m);
   return status;

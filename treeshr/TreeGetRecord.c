@@ -164,11 +164,7 @@ static int OpenDatafileR(TREE_INFO *info)
     char *filename = strncpy(malloc(len+9),info->filespec,len);
     filename[len]='\0';
     strcat(filename,"datafile");
-#ifdef HAVE_VXWORKS_H
-    df_ptr->get = open(filename,O_RDONLY | O_BINARY | O_RANDOM, 0);
-#else
-    df_ptr->get = open(filename,O_RDONLY | O_BINARY | O_RANDOM);
-#endif
+    df_ptr->get = MDS_IO_OPEN(filename,O_RDONLY | O_BINARY | O_RANDOM, 0);
     free(filename);
     status = (df_ptr->get == -1) ? TreeFAILURE : TreeNORMAL;
     if (df_ptr->get == -1)
@@ -285,21 +281,12 @@ static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size,
   while ((rfa[0] || rfa[1] || rfa[2] || rfa[3] || rfa[4] || rfa[5]) && buffer_space && (status & 1))
   {
     RECORD_HEADER hdr;
-    off_t rfa_l = RfaToSeek(rfa);
+    _int64 rfa_l = RfaToSeek(rfa);
     status = TreeLockDatafile(info, 1, rfa_l);
     if (status & 1)
     {
-      /*
-      if (rfa_l > 0x7fffffff)
-      {
-        errno = 0;
-        status = lseek(info->data_file->get,0x7fffffff,SEEK_SET);
-        status = lseek(info->data_file->get,rfa_l-0x7fffffff,SEEK_CUR);
-      }
-      else
-      */
-        status = lseek(info->data_file->get,rfa_l,SEEK_SET);
-      status = (read(info->data_file->get,(void *)&hdr,12) == 12) ? TreeSUCCESS : TreeFAILURE;
+      status = MDS_IO_LSEEK(info->data_file->get,rfa_l,SEEK_SET);
+      status = (MDS_IO_READ(info->data_file->get,(void *)&hdr,12) == 12) ? TreeSUCCESS : TreeFAILURE;
       if (status & 1)
       {
         unsigned int partlen = min(swapshort((char *)&hdr.rlength)-10, buffer_space);
@@ -311,7 +298,7 @@ static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size,
           status = 0;
           break;
         }
-        status = ((unsigned int)read(info->data_file->get,(void *)bptr,partlen) == partlen) ? TreeSUCCESS : TreeFAILURE;
+        status = ((unsigned int)MDS_IO_READ(info->data_file->get,(void *)bptr,partlen) == partlen) ? TreeSUCCESS : TreeFAILURE;
         if (status & 1)
         {
           bptr += partlen;

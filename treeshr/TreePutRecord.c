@@ -340,13 +340,13 @@ int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
     char *filename = strncpy(malloc(len+20),info->filespec,len);
     filename[len]='\0';
     strcat(filename,tmpfile ? "datafile#" : "datafile");
-    df_ptr->get = open(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY) | O_BINARY | O_RANDOM, 0664);
+    df_ptr->get = MDS_IO_OPEN(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY) | O_BINARY | O_RANDOM, 0664);
     status = (df_ptr->get == -1) ? TreeFAILURE : TreeNORMAL;
     if (df_ptr->get == -1)
       df_ptr->get = 0;
     if (status & 1)
     {
-      df_ptr->put = open(filename,O_RDWR | O_BINARY | O_RANDOM, 0);
+      df_ptr->put = MDS_IO_OPEN(filename,O_RDWR | O_BINARY | O_RANDOM, 0);
       status = (df_ptr->put == -1) ? TreeFAILURE : TreeNORMAL;
       if (df_ptr->put == -1)
         df_ptr->put = 0;
@@ -376,18 +376,18 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
   while (bytes_to_put && (status & 1))
   {
     int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
-    off_t eof;
+    _int64 eof;
     unsigned char rfa[6];
     status = TreeLockDatafile(info, 0, -1);
     if (status & 1)
     {
       unsigned short rlength = bytes_this_time + 10;
-      eof = lseek(info->data_file->put,0,SEEK_END);
+      eof = MDS_IO_LSEEK(info->data_file->put,0,SEEK_END);
       bytes_to_put -= bytes_this_time;
       LoadShort(rlength,(char *)&info->data_file->record_header->rlength);
-      status = (write(info->data_file->put,(void *) info->data_file->record_header,sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
+      status = (MDS_IO_WRITE(info->data_file->put,(void *) info->data_file->record_header,sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
                     ? TreeNORMAL : TreeFAILURE;
-      status = (write(info->data_file->put,(void *) (((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put), bytes_this_time) == bytes_this_time)
+      status = (MDS_IO_WRITE(info->data_file->put,(void *) (((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put), bytes_this_time) == bytes_this_time)
                     ? TreeNORMAL : TreeFAILURE;
       if (!bytes_to_put)
       {
@@ -427,17 +427,17 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
   while (bytes_to_put && (status & 1))
   {
     int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
-    off_t rfa_l = RfaToSeek(nci_ptr->DATA_INFO.DATA_LOCATION.rfa);
+    _int64 rfa_l = RfaToSeek(nci_ptr->DATA_INFO.DATA_LOCATION.rfa);
     status = TreeLockDatafile(info, 0, rfa_l);
     if (status & 1)
     {
       bytes_to_put -= bytes_this_time;
       info->data_file->record_header->rlength = (unsigned short)(bytes_this_time + 10);
       info->data_file->record_header->rlength = swapshort((char *)&info->data_file->record_header->rlength);
-      lseek(info->data_file->put,rfa_l,SEEK_SET);
-      status = (write(info->data_file->put,(void *) info->data_file->record_header,sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
+      MDS_IO_LSEEK(info->data_file->put,rfa_l,SEEK_SET);
+      status = (MDS_IO_WRITE(info->data_file->put,(void *) info->data_file->record_header,sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
                    ? TreeNORMAL : TreeFAILURE;
-      status = (write(info->data_file->put,(void *) (((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put), bytes_this_time) == bytes_this_time) ? TreeNORMAL : TreeFAILURE;
+      status = (MDS_IO_WRITE(info->data_file->put,(void *) (((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put), bytes_this_time) == bytes_this_time) ? TreeNORMAL : TreeFAILURE;
       if (!bytes_to_put)
       {
         if (status & 1)
@@ -466,18 +466,28 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
 	Eliminates DSC descriptors. Need DSC for classes A and APD?
 -----------------------------------------------------------------*/
 
+int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
+{
+  return MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put, offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3), readonly ? 1 : 2);
+}
+
+int TreeUnLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
+{
+  return MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put, offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3), 0);
+}
+#ifdef OLD_LOCK_CODE
 #ifdef _WIN32
 
 static int LockStart;
 static int LockSize;
-int TreeLockDatafile(TREE_INFO *info, int readonly, off_t offset)
+int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
 {
-	LockStart = offset >= 0 ? offset : _lseek(info->data_file->put,0,SEEK_END);
+	LockStart = offset >= 0 ? offset : MDS_IO_LSEEK(info->data_file->put,0,SEEK_END);
 	LockSize = offset >= 0 ? 12 : 0x7fffffff;
 	return LockFile((HANDLE)_get_osfhandle(readonly ? info->data_file->get : info->data_file->put), LockStart, 0,
 	   LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
 }
-int TreeUnLockDatafile(TREE_INFO *info, int readonly, off_t offset)
+int TreeUnLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
 {
   return UnlockFile((HANDLE)_get_osfhandle(readonly ? info->data_file->get : info->data_file->put), LockStart, 0,
 	   LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
@@ -489,7 +499,7 @@ int TreeLockDatafile(TREE_INFO *info, int readonly, int nodenum)
 int TreeUnLockDatafile(TREE_INFO *info, int readonly, int nodenum)
 { return TreeSUCCESS; }
 #else
-int TreeLockDatafile(TREE_INFO *info, int readonly, off_t offset)
+int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
 {
   struct flock flock_info;
   flock_info.l_type = readonly ? F_RDLCK : F_WRLCK;
@@ -500,7 +510,7 @@ int TreeLockDatafile(TREE_INFO *info, int readonly, off_t offset)
           TreeSUCCESS : TreeLOCK_FAILURE;
 }
 
-int TreeUnLockDatafile(TREE_INFO *info, int readonly, off_t offset)
+int TreeUnLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
 {
   struct flock flock_info;
   flock_info.l_type = F_UNLCK;
@@ -512,4 +522,4 @@ int TreeUnLockDatafile(TREE_INFO *info, int readonly, off_t offset)
 }
 #endif
 #endif
-
+#endif

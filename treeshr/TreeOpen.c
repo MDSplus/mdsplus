@@ -53,8 +53,8 @@ static void RemoveBlanksAndUpcase(char *out, char *in);
 static int CloseTopTree(PINO_DATABASE *dblist, int call_hook);
 static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *subtree_list);
 static int CreateDbSlot(PINO_DATABASE **dblist, char *tree, int shot, int editting);
-static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, int *nomap, void **file_handle, int report);
-static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int nomap);
+static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, int *nomap, int *fd, int report);
+static int MapFile(int fd, TREE_INFO *info, int edit_flag, int nomap);
 static int ReadTree(TREE_INFO *info, int edit_flag);
 static int GetVmForTree(TREE_INFO *info,int nomap);
 static int MapTree(char *tree, int shot, TREE_INFO *info, int edit_flag, int remote);
@@ -283,7 +283,7 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 #if (!defined(HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H))
               if (local_info->channel)
 							{ int status;
-							  close(local_info->channel);
+							  MDS_IO_CLOSE(local_info->channel);
 							  status = munmap(local_info->section_addr[0],local_info->alq * 512);
 							}
 #endif
@@ -295,18 +295,18 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 						{
 							MdsFree1Dx(local_info->data_file->data,NULL);
 							if (local_info->data_file->get)
-                                                          close(local_info->data_file->get);
+                                                          MDS_IO_CLOSE(local_info->data_file->get);
 							if (local_info->data_file->put)
-                                                          close(local_info->data_file->put);
+                                                          MDS_IO_CLOSE(local_info->data_file->put);
 							free(local_info->data_file);
 							local_info->data_file = NULL;
 						}
 						if (local_info->nci_file)
 						{
 							if (local_info->nci_file->get)
-							  close(local_info->nci_file->get);
+							  MDS_IO_CLOSE(local_info->nci_file->get);
 							if (local_info->nci_file->put)
-							  close(local_info->nci_file->put);
+							  MDS_IO_CLOSE(local_info->nci_file->put);
 							free(local_info->nci_file);
 							local_info->nci_file = NULL;
 						}
@@ -757,9 +757,9 @@ char *MaskReplace(char *path_in,char *tree,int shot)
 }  
 
 
-static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,char **resnam_out, int report)
+static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,char **resnam_out, int report)
 {
-	FILE *file = 0;
+	int fd = -1;
 	int len = strlen(tree);
 	char tree_lower[13];
 	char pathname[32];
@@ -799,7 +799,7 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
 			sprintf(name,"%s_%03d",tree_lower,shot);
 		else
 			sprintf(name,"%s_%d",tree_lower,shot);
-		for (i=0,part=path;i<pathlen+1 && file==0;i++)
+		for (i=0,part=path;i<pathlen+1 && fd==-1;i++)
 		{
 			if (*part == ' ') 
 				part++;
@@ -816,21 +816,19 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
                                   strcat(resnam,name);
                                 }
 				strcat(resnam,type);
+                                info->channel = 0;
 				if (new)
 				{
-                                  file = fopen(resnam,"wb");
+                                  fd = MDS_IO_OPEN(resnam,O_RDWR | O_CREAT, 0777);
                                 }
                                 else
 				{
+				  fd = MDS_IO_OPEN(resnam,O_RDONLY,0);
 #if (defined(__osf__) || defined(__linux) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX)) && !defined(HAVE_VXWORKS_H)
-				  info->channel = open(resnam,O_RDONLY);
-				  file = (info->channel != -1) ? fdopen(info->channel,"rb") : NULL;
-#else
-				  info->channel = 0;
-				  file = fopen(resnam,"rb");
+                                  info->channel = (MDS_IO_SOCKET(fd) == -1) ? MDS_IO_FD(fd) : 0;
 #endif
 				}
-				if (file == NULL)
+				if (fd == -1)
 				{
 				  free(resnam);
 				  resnam = NULL;
@@ -847,17 +845,17 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
 		free(path);
 	}
 	if (resnam_out)
-		*resnam_out = file ? resnam : 0;
+		*resnam_out = fd != -1 ? resnam : 0;
 	else if (resnam)
 		free(resnam);
-	return file;
+	return fd;
 }
 
 static int MapTree(char *tree, int shot, TREE_INFO *info, int edit_flag, int report)
 {
 	int       status;
 	int       nomap;
-	void     *file_handle;
+	int     fd;
 
 
 	/******************************************
@@ -866,27 +864,22 @@ static int MapTree(char *tree, int shot, TREE_INFO *info, int edit_flag, int rep
 	section on the tree file.
 	*******************************************/
 
-	status = OpenTreefile(tree, shot, info, edit_flag, &nomap, &file_handle, report);
+	status = OpenTreefile(tree, shot, info, edit_flag, &nomap, &fd, report);
 	if (status == TreeNORMAL)
-		status = MapFile(file_handle, info, edit_flag, nomap);
-	free(file_handle);
+		status = MapFile(fd, info, edit_flag, nomap);
 	return status;
 }
 
-static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, int *nomap, void **file_handle, int report)
+static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, int *nomap, int *fd, int report)
 {
 	int       status;
 
-	FILE **file;
 	char *resnam;
-	*file_handle = malloc(sizeof(FILE *));
-	file = (FILE **)*file_handle;
-	*file = OpenOne(info, tree, shot, TREE_TREEFILE_TYPE, 0, &resnam, report);
-	if (*file)
+	*fd = OpenOne(info, tree, shot, TREE_TREEFILE_TYPE, 0, &resnam, report);
+	if (*fd != -1)
 	{
-		fseek(*file, 0, SEEK_END);
-		info->alq = ftell(*file) / 512;
-		fseek(*file, 0, SEEK_SET);
+		info->alq = MDS_IO_LSEEK(*fd, 0, SEEK_END) / 512;
+		MDS_IO_LSEEK(*fd, 0, SEEK_SET);
 		status = TreeNORMAL;
 		info->filespec=resnam;
 		*nomap = info->channel == 0;
@@ -921,7 +914,7 @@ void FixupHeader(TREE_HEADER *hdr)
 #define FixupHeader(arg)
 #endif
 
-static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int nomap)
+static int MapFile(int fd, TREE_INFO *info, int edit_flag, int nomap)
 {
 	int       status;
 
@@ -935,8 +928,8 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int nomap)
 	{
 		if (nomap)
 		{
-			fread((void *)info->section_addr[0], 512, info->alq, *(FILE **)file_handle);
-			fclose(*(FILE **)file_handle);
+			MDS_IO_READ(fd,(void *)info->section_addr[0], 512 * info->alq);
+			MDS_IO_CLOSE(fd);
 			status = 1;
 		}
 #if (!defined (HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H))
@@ -948,7 +941,7 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int nomap)
       info->section_addr[0] = mmap(0,info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE, info->channel, 0);
       status = info->section_addr[0] != (void *)-1;
       if (!status)
-        printf("Error mapping file - errno = %d\n",errno);
+        perror("Error mapping file");
 
     }
 #endif
@@ -1084,15 +1077,15 @@ int TreeCloseFiles(TREE_INFO *info)
 			if (info->data_file)
 			{
 				MdsFree1Dx(info->data_file->data, NULL);
-				if (info->data_file->get)    close(info->data_file->get);
-				if (info->data_file->put)    close(info->data_file->put);
+				if (info->data_file->get)    MDS_IO_CLOSE(info->data_file->get);
+				if (info->data_file->put)    MDS_IO_CLOSE(info->data_file->put);
 				free(info->data_file);
 				info->data_file = NULL;
 			}
 			if (info->nci_file)
 			{
-				if (info->nci_file->get)    close(info->nci_file->get);
-				if (info->nci_file->put)    close(info->nci_file->put);
+				if (info->nci_file->get)    MDS_IO_CLOSE(info->nci_file->get);
+				if (info->nci_file->put)    MDS_IO_CLOSE(info->nci_file->put);
 				free(info->nci_file);
 				info->nci_file = NULL;
 			}
@@ -1183,29 +1176,29 @@ int       _TreeOpenNew(void **dbid, char *tree_in, int shot_in)
       info = (TREE_INFO *)malloc(sizeof(TREE_INFO));
       if (info)
       {
-        FILE *file;
+        int fd;
         memset(info,0,sizeof(*info));
         info->flush = ((*dblist)->shotid == -1);
         info->treenam = strcpy(malloc(strlen(tree)+1),tree);
-        file = OpenOne(info, tree, (*dblist)->shotid, TREE_TREEFILE_TYPE, 1, &info->filespec, 0);
-        if (file)
+        fd = OpenOne(info, tree, (*dblist)->shotid, TREE_TREEFILE_TYPE, 1, &info->filespec, 0);
+        if (fd != -1)
 	{
           char *resnam = 0;
-          fclose(file);
-          file = OpenOne(info, tree, (*dblist)->shotid, TREE_NCIFILE_TYPE, 1, &resnam, 0);
+          MDS_IO_CLOSE(fd);
+          fd = OpenOne(info, tree, (*dblist)->shotid, TREE_NCIFILE_TYPE, 1, &resnam, 0);
           if (resnam)
             free(resnam);
-          if (file)
+          if (fd != -1)
 	  {
-            fclose(file);
-            file = OpenOne(info, tree, (*dblist)->shotid, TREE_DATAFILE_TYPE, 1, &resnam, 0);
+            MDS_IO_CLOSE(fd);
+            fd = OpenOne(info, tree, (*dblist)->shotid, TREE_DATAFILE_TYPE, 1, &resnam, 0);
             if (resnam)
               free(resnam);
-            if (file)
-              fclose(file);
+            if (fd != -1)
+              MDS_IO_CLOSE(fd);
 	  }
 	}
-        if (file)
+        if (fd != -1)
         {
 	  TreeCallHook(OpenTreeEdit, info,0);
           info->edit = (TREE_EDIT *)malloc(sizeof(TREE_EDIT));

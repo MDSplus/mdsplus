@@ -1,3 +1,10 @@
+#ifdef HAVE_WINDOWS_H
+#include <io.h>
+#define write _write
+#define lseek _lseek
+#endif
+#include <fcntl.h>
+#include <sys/stat.h>
 #include <string.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -34,7 +41,7 @@ static int FindImageSymbol(char *name, void **sym)
   return LibFindImageSymbol(&image,&symname,sym);
 }
 
-static struct _host_list {char *host; int socket; int connections; struct _host_list *next;} *host_list = 0;
+static struct _host_list {char *host; int socket; int connections; time_t time; struct _host_list *next;} *host_list = 0;
 
 static void MdsIpFree(void *ptr)
 {
@@ -52,7 +59,7 @@ static int RemoteAccessConnect(char *host, int inc_count)
   struct _host_list *hostchk;
   struct _host_list **nextone;
   static int (*rtn)(char *) = 0;
-  int socket;
+  int socket = -1;
   if (rtn == 0)
   {
     int status = FindImageSymbol("ConnectToMds",(void **)&rtn);
@@ -62,24 +69,29 @@ static int RemoteAccessConnect(char *host, int inc_count)
   {
     if (strcmp(hostchk->host,host) == 0)
     {
+      hostchk->time = time(0);
       if (inc_count)
         hostchk->connections++;
-      return hostchk->socket;
+      socket = hostchk->socket;
     }
   }
-  socket = (*rtn)(host);
-  if (socket != -1)
+  if (socket == -1)
   {
-    *nextone = malloc(sizeof(struct _host_list));
-    (*nextone)->host = strcpy(malloc(strlen(host)+1),host);
-    (*nextone)->socket = socket;
-    (*nextone)->connections = inc_count ? 1 : 0;
-    (*nextone)->next = 0;
+    socket = (*rtn)(host);
+    if (socket != -1)
+    {
+      *nextone = malloc(sizeof(struct _host_list));
+      (*nextone)->host = strcpy(malloc(strlen(host)+1),host);
+      (*nextone)->socket = socket;
+      (*nextone)->connections = inc_count ? 1 : 0;
+      (*nextone)->time = time(0);
+      (*nextone)->next = 0;
+    }
   }
   return socket;
 } 
   
-static int RemoteAccessDisconnect(int socket)
+static int RemoteAccessDisconnect(int socket,int force)
 {
   int status = 1;
   struct _host_list *hostchk;
@@ -90,20 +102,29 @@ static int RemoteAccessDisconnect(int socket)
     int status = FindImageSymbol("DisconnectFromMds",(void **)&rtn);
     if (!(status & 1)) return status;
   }
-  for (previous = 0,hostchk = host_list; hostchk && hostchk->socket != socket; previous=hostchk, 
-                                                                               hostchk = hostchk->next);
+  for (hostchk = host_list; hostchk && hostchk->socket != socket; hostchk = hostchk->next);
   if (hostchk)
-  {
     hostchk->connections--;
-    if (hostchk->connections <= 0)
+  previous = 0;
+  hostchk = host_list;
+  while(hostchk)
+  {
+    if (force || (hostchk->connections <= 0 && ((time(0) - hostchk->time) > 60)))
     {
+      struct _host_list *next = hostchk->next;
       status = (*rtn)(socket);
       free(hostchk->host);
-      if (previous)
-        previous->next = hostchk->next;
-      else
-        host_list = hostchk->next;
       free(hostchk);
+      if (previous)
+        previous->next = next;
+      else
+        host_list = next;
+      hostchk = next;
+    }
+    else
+    {
+      previous = hostchk;
+      hostchk = hostchk->next;
     }
   }
   return status;
@@ -147,13 +168,11 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,int 
   strcpy(pathname,tree_lower);
   strcat(pathname,TREE_PATH_SUFFIX);
   logname = TranslateLogical(pathname);
-  if (logname)
+  if (logname && (strlen(logname) > 2))
   {
-    char *cptr;
-    for (cptr = logname,slen = strlen(logname); cptr < (logname + slen - 1); cptr++)
+    char *cptr = logname + strlen(logname) - 2;
+    if (cptr[0] == ':' && cptr[1] == ':')
     {
-      if (cptr[0] == ':' && cptr[1] == ':')
-      {
         int socket;
         *cptr = '\0';
         socket = RemoteAccessConnect(logname,1);
@@ -195,8 +214,6 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,int 
           }
           if (ans.ptr) MdsIpFree(ans.ptr);
         }
-        break;
-      }
     }
     TranslateLogicalFree(logname);
   }
@@ -220,7 +237,7 @@ int CloseTreeRemote(PINO_DATABASE *dblist, int call_hook)
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
     MdsIpFree(ans.ptr);
   }
-  RemoteAccessDisconnect(dblist->tree_info->channel);
+  RemoteAccessDisconnect(dblist->tree_info->channel,0);
   if (dblist->tree_info && dblist->tree_info->treenam) free(dblist->tree_info->treenam);
   if (dblist->tree_info) free(dblist->tree_info);
   dblist->tree_info = 0;
@@ -746,3 +763,488 @@ int TreeSetCurrentShotIdRemote(char *tree, char *path, int shot)
   }
   return status;
 }
+
+static struct fd_info_struct { int in_use; int socket; int fd; } *FDS = 0;
+static int ALLOCATED_FDS = 0;
+
+static char *ParseFile(char *filename, char **hostpart, char **filepart)
+{
+  char *tmp = strcpy((char *)malloc(strlen(filename)+1),filename);
+  char *ptr = strstr(tmp,"::");
+  if (ptr)
+  {
+    *hostpart = tmp;
+    *filepart = ptr+2;
+    *ptr = (char)0;
+  }
+  else
+  {
+    *hostpart = 0;
+    *filepart = tmp;
+  }
+  return tmp;
+}
+
+static int NewFD(int fd,int socket)
+{
+  int idx;
+  for (idx=0; idx<ALLOCATED_FDS && FDS[idx].in_use; idx++);
+  if (idx == ALLOCATED_FDS)
+    FDS = realloc(FDS,sizeof(struct fd_info_struct)*(++ALLOCATED_FDS));
+  FDS[idx].in_use=1;
+  FDS[idx].socket=socket;
+  FDS[idx].fd = fd;
+  return idx+1;
+}
+
+int MDS_IO_SOCKET(int fd)
+{
+  return (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use) ? FDS[fd-1].socket : -1;
+}
+
+int MDS_IO_FD(int fd)
+{
+  return (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use) ? FDS[fd-1].fd : -1;
+}
+
+static int (*MDS_SEND_ARG)() = 0;
+  
+static int SendArg(int socket, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims,
+int *dims, char *bytes)
+{
+  if (MDS_SEND_ARG == 0)
+  {
+    int status = FindImageSymbol("SendArg",(void **)&MDS_SEND_ARG);
+    if (!(status & 1)) return status;
+  }
+  return (*MDS_SEND_ARG)(socket, idx, dtype, nargs, length, ndims, dims, bytes);
+}
+
+static int (*MDS_GET_ANSWER_INFO_TS)() = 0;
+
+int  GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void **dptr, void **m)
+{
+  if (MDS_GET_ANSWER_INFO_TS == 0)
+  {
+    int status = FindImageSymbol("GetAnswerInfoTS",(void **)&MDS_GET_ANSWER_INFO_TS);
+    if (!(status & 1)) return status;
+  }
+  return (*MDS_GET_ANSWER_INFO_TS)(sock, dtype, length, ndims, dims, numbytes, dptr, m);
+}
+  
+#define MDS_IO_OPEN_K   1
+#define MDS_IO_CLOSE_K  2
+#define MDS_IO_LSEEK_K  3
+#define MDS_IO_READ_K   4
+#define MDS_IO_WRITE_K  5
+#define MDS_IO_LOCK_K   6
+#define MDS_IO_EXISTS_K 7
+#define MDS_IO_REMOVE_K 8
+#define MDS_IO_RENAME_K 9
+
+static int io_open_remote(char *host, char *filename, int options, mode_t mode, int *sock)
+{
+  int fd = -1;
+  *sock = RemoteAccessConnect(host, 1);
+  if (*sock != -1)
+  {
+    int info[] = {strlen(filename)+1,options,(int)mode};
+    int status = SendArg(*sock,MDS_IO_OPEN_K,0,0,0,sizeof(info)/sizeof(int),info,filename);
+    if (status & 1)
+    {
+      char dtype;
+      short length;
+      char ndims;
+      int dims[7];
+      int numbytes;
+      void *dptr;
+      void *msg = 0;
+      if ((GetAnswerInfoTS(*sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1) && (length == sizeof(fd)))
+        memcpy(&fd,dptr,sizeof(fd));
+      if (msg)
+        free(msg);
+      if (fd == -1)
+        RemoteAccessDisconnect(*sock,0);
+    }
+    else
+      RemoteAccessDisconnect(*sock,1);
+  }
+  return fd;
+}
+
+int MDS_IO_OPEN(char *filename, int options, mode_t mode)
+{
+  int socket = -1;
+  char *hostpart, *filepart;
+  char *tmp = ParseFile(filename,&hostpart,&filepart);
+  int fd = hostpart ? io_open_remote(hostpart,filepart,options,mode,&socket) : open(filename, options, mode);
+  free(tmp);
+  if (fd != -1)
+    fd = NewFD(fd,socket);
+  return fd;
+}
+
+static int io_close_remote(int fd)
+{
+  int ret = -1;
+  int info[] = {0,FDS[fd-1].fd};
+  int sock = FDS[fd-1].socket;
+  int status = SendArg(sock,MDS_IO_CLOSE_K,0,0,0,sizeof(info)/sizeof(int),info,0);
+  if (status & 1)
+  {
+    char dtype;
+    short length;
+    char ndims;
+    int dims[7];
+    int numbytes;
+    void *dptr;
+    void *msg = 0;
+    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1) && (length == sizeof(ret)))
+      memcpy(&ret,dptr,sizeof(ret));
+    if (msg)
+      free(msg);
+    RemoteAccessDisconnect(sock,0);
+  }
+  else
+    RemoteAccessDisconnect(sock,1);
+  return ret;
+}
+
+int MDS_IO_CLOSE(int fd)
+{
+  int status;
+  if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
+  {
+    status = (FDS[fd-1].socket == -1) ? close(FDS[fd-1].fd) : io_close_remote(fd);
+    FDS[fd-1].in_use = 0;
+    return status;
+  }
+  else
+    return -1; 
+}
+
+static _int64 io_lseek_remote(int fd, _int64 offset, int whence)
+{
+  _int64 ret = -1;
+  int info[] = {0,FDS[fd-1].fd,0,0,whence};
+  int sock = FDS[fd-1].socket;
+  int status;
+  *(_int64 *)(&info[2]) = offset;
+  status = SendArg(sock,MDS_IO_LSEEK_K,0,0,0,sizeof(info)/sizeof(int),info,0);
+  if (status & 1)
+  {
+    char dtype;
+    short length;
+    char ndims;
+    int dims[7];
+    int numbytes;
+    void *dptr;
+    void *msg = 0;
+    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1) && (length >= sizeof(int)))
+    {
+      ret = 0;
+      memcpy(&ret,dptr, (length > sizeof(ret)) ? sizeof(ret) : length);
+    }
+    if (msg)
+      free(msg);
+  }
+  else
+    RemoteAccessDisconnect(sock,1);
+  return ret;
+}
+
+
+_int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
+{
+  int status;
+  if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
+  {
+    return (FDS[fd-1].socket == -1) ? lseek(FDS[fd-1].fd,(off_t)offset,whence) : io_lseek_remote(fd,offset,whence);
+  }
+  else
+    return -1; 
+}
+
+static int io_write_remote(int fd, void *buff, size_t count)
+{
+  ssize_t ret = 0;
+  int info[] = {count,FDS[fd-1].fd};
+  int sock = FDS[fd-1].socket;
+  int status;
+  status = SendArg(sock,MDS_IO_WRITE_K,0,0,0,sizeof(info)/sizeof(int),info,buff);
+  if (status & 1)
+  {
+    char dtype;
+    short length;
+    char ndims;
+    int dims[7];
+    int nbytes;
+    void *dptr;
+    void *msg = 0;
+    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &nbytes, &dptr, &msg) & 1) && (nbytes == sizeof(ret)))
+      memcpy(&ret,dptr, sizeof(ret));
+    if (msg)
+      free(msg);
+  }
+  else
+    RemoteAccessDisconnect(sock,1);
+  return ret;
+}
+
+int MDS_IO_WRITE(int fd, void *buff, size_t count)
+{
+  int status;
+  if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
+  {
+    return (FDS[fd-1].socket == -1) ? write(FDS[fd-1].fd,buff,count) : io_write_remote(fd,buff,count);
+  }
+  else
+    return -1; 
+}
+
+static ssize_t io_read_remote(int fd, void *buff, size_t count)
+{
+  ssize_t ret = 0;
+  int info[] = {0,FDS[fd-1].fd,count};
+  int sock = FDS[fd-1].socket;
+  int status;
+  status = SendArg(sock,MDS_IO_READ_K,0,0,0,sizeof(info)/sizeof(int),info,0);
+  if (status & 1)
+  {
+    char dtype;
+    short length;
+    char ndims;
+    int dims[7];
+    void *dptr;
+    void *msg = 0;
+    if (GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &ret, &dptr, &msg) & 1)
+    {
+      if (ret)
+        memcpy(buff,dptr, ret);
+    }
+    if (msg)
+      free(msg);
+  }
+  else
+    RemoteAccessDisconnect(sock,1);
+  return ret;
+}
+
+ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
+{
+  int status;
+  if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
+  {
+    return (FDS[fd-1].socket == -1) ? read(FDS[fd-1].fd,buff,count) : io_read_remote(fd,buff,count);
+  }
+  else
+    return -1; 
+}
+
+static int io_lock_remote(int fd, _int64 offset, int size, int mode)
+{
+  ssize_t ret = 0;
+  int info[] = {0,FDS[fd-1].fd,0,0,size,mode};
+  int sock = FDS[fd-1].socket;
+  int status;
+  *(_int64 *)(&info[2]) = offset;
+  status = SendArg(sock,MDS_IO_LOCK_K,0,0,0,sizeof(info)/sizeof(int),info,0);
+  if (status & 1)
+  {
+    char dtype;
+    short length;
+    char ndims;
+    int nbytes;
+    int dims[7];
+    void *dptr;
+    void *msg = 0;
+    if (GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &nbytes, &dptr, &msg) & 1)
+      memcpy(&ret,dptr, sizeof(ret));
+    if (msg)
+      free(msg);
+  }
+  else
+    RemoteAccessDisconnect(sock,1);
+  return ret;
+}
+
+int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode)
+{
+  int status = TreeFAILURE;
+  if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
+  {
+    if (FDS[fd-1].socket == -1)
+    {
+#if defined (_WIN32)
+        static int LockStart;
+        static int LockSize;
+        if (mode > 0)
+	{
+          LockStart = offset >= 0 ? offset : lseek(fd,0,SEEK_END);
+  	  LockSize = size;
+  	  status = ( (LockFile((HANDLE)_get_osfhandle(FDS[fd-1].fd), LockStart, 0, LockSize, 0) == 0) && 
+                     (GetLastError() != ERROR_LOCK_VIOLATION) ) ? TreeFAILURE : TreeSUCCESS;
+        }
+        else
+	  status = UnlockFile((HANDLE)_get_osfhandle(FDS[fd-1].fd),LockStart, 0, LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
+#elif defined (HAVE_VXWORKS_H)
+        status = TreeSUCCESS;
+#else
+        struct flock flock_info;
+        flock_info.l_type = (mode == 0) ? F_UNLCK : ((mode == 1) ? F_RDLCK : F_WRLCK);
+        flock_info.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
+        flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
+        flock_info.l_len = (mode == 0) ? 0 : size;
+        status = (fcntl(FDS[fd-1].fd,F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
+#endif
+    }
+    else
+      status = io_lock_remote(fd,offset,size,mode);
+  }
+  return status; 
+}
+
+static int io_exists_remote(char *host, char *filename)
+{
+  int ans = -1;
+  int sock = RemoteAccessConnect(host, 1);
+  if (sock != -1)
+  {
+    int info[] = {strlen(filename)+1};
+    int status = SendArg(sock,MDS_IO_EXISTS_K,0,0,0,sizeof(info)/sizeof(int),info,filename);
+    if (status & 1)
+    {
+      char dtype;
+      short length;
+      char ndims;
+      int dims[7];
+      int numbytes;
+      void *dptr;
+      void *msg = 0;
+      if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1) && (length == sizeof(ans)))
+        memcpy(&ans,dptr,sizeof(ans));
+      if (msg)
+        free(msg);
+      RemoteAccessDisconnect(sock,0);
+    }
+    else
+      RemoteAccessDisconnect(sock,1);
+  }
+  return ans;
+}
+
+int MDS_IO_EXISTS(char *filename)
+{
+  int status;
+  struct stat statbuf;
+  int socket = -1;
+  char *hostpart, *filepart;
+  char *tmp = ParseFile(filename,&hostpart,&filepart);
+  status = hostpart ? io_exists_remote(hostpart,filepart) : (stat(filename,&statbuf) == 0);
+  free(tmp);
+  return status;
+}
+
+static int io_remove_remote(char *host, char *filename)
+{
+  int ans = -1;
+  int sock = RemoteAccessConnect(host, 1);
+  if (sock != -1)
+  {
+    int info[] = {strlen(filename)+1};
+    int status = SendArg(sock,MDS_IO_REMOVE_K,0,0,0,sizeof(info)/sizeof(int),info,filename);
+    if (status & 1)
+    {
+      char dtype;
+      short length;
+      char ndims;
+      int dims[7];
+      int numbytes;
+      void *dptr;
+      void *msg = 0;
+      if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1) && (length == sizeof(ans)))
+        memcpy(&ans,dptr,sizeof(ans));
+      if (msg)
+        free(msg);
+      RemoteAccessDisconnect(sock,0);
+    }
+    else
+      RemoteAccessDisconnect(sock,1);
+  }
+  return ans;
+}
+
+int MDS_IO_REMOVE(char *filename)
+{
+  int status;
+  struct stat statbuf;
+  int socket = -1;
+  char *hostpart, *filepart;
+  char *tmp = ParseFile(filename,&hostpart,&filepart);
+  status = hostpart ? io_remove_remote(hostpart,filepart) : remove(filename);
+  free(tmp);
+  return status;
+}
+
+static int io_rename_remote(char *host, char *filename_old, char *filename_new)
+{
+  int ans = -1;
+  int sock = RemoteAccessConnect(host, 1);
+  if (sock != -1)
+  {
+    int info[] = {strlen(filename_old)+1+strlen(filename_new)+1};
+    char *names = strcpy(malloc(info[0]),filename_old);
+    int status;
+    strcpy(&names[strlen(filename_old)+1],filename_new);
+    status = SendArg(sock,MDS_IO_RENAME_K,0,0,0,sizeof(info)/sizeof(int),info,names);
+    if (status & 1)
+    {
+      char dtype;
+      short length;
+      char ndims;
+      int dims[7];
+      int numbytes;
+      void *dptr;
+      void *msg = 0;
+      if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1) && (length == sizeof(ans)))
+        memcpy(&ans,dptr,sizeof(ans));
+      if (msg)
+        free(msg);
+      RemoteAccessDisconnect(sock,0);
+    }
+    else
+      RemoteAccessDisconnect(sock,1);
+    free(names);
+  }
+  return ans;
+}
+
+int MDS_IO_RENAME(char *filename_old, char *filename_new)
+{
+  int status;
+  struct stat statbuf;
+  int socket = -1;
+  char *hostpart_old, *filepart_old, *hostpart_new, *filepart_new;
+  char *tmp_old = ParseFile(filename_old,&hostpart_old,&filepart_old);
+  char *tmp_new = ParseFile(filename_new,&hostpart_new,&filepart_new);
+  if (hostpart_old)
+  {
+    if (hostpart_new && (strcmp(hostpart_old,hostpart_new)==0))
+      status = io_rename_remote(hostpart_old,filepart_old,filepart_new);
+    else
+      status = -1;
+  }
+  else
+  {
+#ifdef HAVE_VXWORKS_H
+    copy(filename_old, filename_new);
+    remove(filename_old);
+#else
+    rename(filename_old, filename_new);
+#endif
+  }
+  free(tmp_old);
+  free(tmp_new);
+  return status;
+}
+

@@ -66,7 +66,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
   NODE     *cng_node;
   int       node_exists;
   int		depth;
-  off_t    rfa_l;
+  _int64    rfa_l;
   int       count = 0;
   NID      *out_nids;
   NID      *end_nids;
@@ -656,8 +656,8 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci)
 		  if (status & 1)
 		  {
                     char nci_bytes[42];
-		    lseek(info->nci_file->get, node_num * sizeof(nci_bytes), SEEK_SET);
-		    status = read(info->nci_file->get,(void *)nci_bytes, sizeof(nci_bytes)) == sizeof(nci_bytes) ?
+		    MDS_IO_LSEEK(info->nci_file->get, node_num * sizeof(nci_bytes), SEEK_SET);
+		    status = MDS_IO_READ(info->nci_file->get,(void *)nci_bytes, sizeof(nci_bytes)) == sizeof(nci_bytes) ?
                       TreeSUCCESS : TreeFAILURE;
                     if (status == TreeSUCCESS)
                       TreeSerializeNciIn(nci_bytes,nci);
@@ -700,11 +700,7 @@ static int OpenNciR(TREE_INFO *info)
 		char *filename = strncpy(malloc(len+16),info->filespec,len);
 		filename[len]='\0';
 		strcat(filename,"characteristics");
-#ifdef HAVE_VXWORKS_H
-		info->nci_file->get = open(filename,O_RDONLY | O_BINARY | O_RANDOM, 0);
-#else
-		info->nci_file->get = open(filename,O_RDONLY | O_BINARY | O_RANDOM);
-#endif
+		info->nci_file->get = MDS_IO_OPEN(filename,O_RDONLY | O_BINARY | O_RANDOM, 0);
                 free(filename);
                 status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
 		if (!(status & 1))
@@ -721,33 +717,24 @@ void TreeFree(void *ptr)
   free(ptr);
 }
 
-off_t RfaToSeek(unsigned char *rfa)
+_int64 RfaToSeek(unsigned char *rfa)
 {
-  off_t ans = (((off_t)rfa[0] << 9) |
-            ((off_t)rfa[1] << 17) |
-            ((off_t)rfa[2] << 25) |
-            ((off_t)rfa[4]) |
-            (((off_t)rfa[5] & 1) << 8)) - 512;
-  if (sizeof(ans) == 8)
-    ans |= ((off_t)rfa[3] << 33);
+  _int64 ans = (((_int64)rfa[0] << 9) |
+            ((_int64)rfa[1] << 17) |
+            ((_int64)rfa[2] << 25) |
+            ((_int64)rfa[4]) |
+            (((_int64)rfa[5] & 1) << 8)) - 512;
+    ans |= ((_int64)rfa[3] << 33);
   return ans;
 }
 
-void SeekToRfa(off_t seek, unsigned char *rfa)
+void SeekToRfa(_int64 seek, unsigned char *rfa)
 {
-  off_t tmp = seek + 512;
+  _int64 tmp = seek + 512;
   rfa[0] = (tmp >> 9) & 0xff;
   rfa[1] = (tmp >> 17) & 0xff;
-  if (sizeof(tmp) == 8)
-  {
-    rfa[2] = (tmp >> 25) & 0xff;
-    rfa[3] = (tmp >> 33) & 0xff;
-  }
-  else
-  {
-    rfa[2] = (tmp >> 25) & 0x7f;
-    rfa[3] = 0;
-  }
+  rfa[2] = (tmp >> 25) & 0xff;
+  rfa[3] = (tmp >> 33) & 0xff;
   rfa[4] = tmp & 0xff;
   rfa[5] = tmp >> 8 & 0x1;
 }

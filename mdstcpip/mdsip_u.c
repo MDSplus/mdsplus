@@ -1,6 +1,7 @@
 #ifndef HAVE_VXWORKS_H
 #include <config.h>
 #endif
+#include <mdstypes.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <treeshr.h>
@@ -12,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mds_stdarg.h>
+#include <sys/stat.h>
 #if (!defined(HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H))
 #include <pthread.h>
 #include <sys/wait.h>
@@ -327,7 +329,6 @@ static int BecomeUser(char *remuser, struct descriptor *user)
 #else
 
 static void sigchld_handler(int num);
-
 static int BecomeUser(char *remuser, struct descriptor *local_user)
 {
   int ok = 1;
@@ -335,7 +336,8 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
   if (local_user->length)
   {
     char *luser = MdsDescrToCstring(local_user);
-    char *user = strcmp(luser,"MAP_TO_LOCAL") == 0 ? remuser : (strcmp(luser,"SELF") == 0 ? cuserid(0) : luser);
+    char *user = (strcmp(luser,"MAP_TO_LOCAL") == 0) ? remuser : 
+      ((strcmp(luser,"SELF") == 0) ? (char *)cuserid((char *)0) : luser);
     int status = -1;
     struct passwd *pwd = getpwnam(user);
     if (!pwd && remuser == user)
@@ -1017,6 +1019,138 @@ static void ProcessMessage(Client *c, Message *message)
       if (message->h.descriptor_idx == (message->h.nargs - 1))
       {
         ExecuteMessage(c);
+      }
+    }
+  }
+  else
+  {
+#define MDS_IO_OPEN_K   1
+#define MDS_IO_CLOSE_K  2
+#define MDS_IO_LSEEK_K  3
+#define MDS_IO_READ_K   4
+#define MDS_IO_WRITE_K  5
+#define MDS_IO_LOCK_K   6
+#define MDS_IO_EXISTS_K 7
+#define MDS_IO_REMOVE_K 8
+#define MDS_IO_RENAME_K 9
+
+    switch (message->h.descriptor_idx)
+    {
+    case MDS_IO_OPEN_K:
+      { 
+	int fd = open(message->bytes,message->h.dims[1],message->h.dims[2]);
+	DESCRIPTOR_LONG(fd_d,0);
+        fd_d.pointer = (char *)&fd;
+        SendResponse(c, 1, (struct descriptor *)&fd_d);
+	break;
+      }
+    case MDS_IO_CLOSE_K:
+      {
+	int stat = close(message->h.dims[1]);
+	DESCRIPTOR_LONG(stat_d,0);
+        stat_d.pointer = (char *)&stat;
+        SendResponse(c, 1, (struct descriptor *)&stat_d);
+	break;
+      }
+    case MDS_IO_LSEEK_K:
+      {
+	_int64 ans = (_int64)lseek(message->h.dims[1],(off_t)*(_int64 *)&message->h.dims[2],message->h.dims[4]);
+        struct descriptor ans_d = {8, DTYPE_Q, CLASS_S, (char *)&ans};
+        SendResponse(c, 1, (struct descriptor *)&ans_d);
+	break;
+      }
+    case MDS_IO_READ_K:
+      {
+        void *buf = malloc(message->h.dims[2]);
+	ssize_t nbytes = read(message->h.dims[1],buf,(size_t)message->h.dims[2]);
+        if (nbytes > 0)
+	{
+          DESCRIPTOR_A(ans_d,1,DTYPE_B,buf,nbytes);
+          SendResponse(c,1,(struct descriptor *)&ans_d);
+        }
+        else
+	{ 
+	  DESCRIPTOR(ans_d,"");
+          SendResponse(c,1,(struct descriptor *)&ans_d);
+        }
+	break;
+      }
+    case MDS_IO_WRITE_K:
+      {
+	ssize_t nbytes = write(message->h.dims[1],message->bytes,(size_t)message->h.dims[0]);
+        DESCRIPTOR_LONG(ans_d,0);
+        ans_d.pointer = (char *)&nbytes;
+        SendResponse(c,1,(struct descriptor *)&ans_d);
+	break;
+      }
+    case MDS_IO_LOCK_K:
+      {
+        int fd = message->h.dims[1];
+        int status;
+        _int64 offset = *(_int64 *)&(message->h.dims[2]);
+        int size = message->h.dims[4];
+        int mode = message->h.dims[5];
+        DESCRIPTOR_LONG(ans_d,0);
+#if defined (_WIN32)
+        static int LockStart;
+        static int LockSize;
+        if (mode > 0)
+	{
+          LockStart = offset >= 0 ? offset : lseek(fd,0,SEEK_END);
+  	  LockSize = size;
+  	  status = ( (LockFile((HANDLE)_get_osfhandle(fd), LockStart, 0, LockSize, 0) == 0) && 
+                     (GetLastError() != ERROR_LOCK_VIOLATION) ) ? TreeFAILURE : TreeSUCCESS;
+        }
+        else
+	  status = UnlockFile((HANDLE)_get_osfhandle(fd),LockStart, 0, LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
+#elif defined (HAVE_VXWORKS_H)
+        status = TreeSUCCESS;
+#else
+        struct flock flock_info;
+        flock_info.l_type = (mode == 0) ? F_UNLCK : ((mode == 1) ? F_RDLCK : F_WRLCK);
+        flock_info.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
+        flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
+        flock_info.l_len = (mode == 0) ? 0 : size;
+        status = (fcntl(fd,F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
+#endif
+        ans_d.pointer = (char *)&status;
+        SendResponse(c,1,(struct descriptor *)&ans_d);
+	break;
+      }
+    case MDS_IO_EXISTS_K:
+      { 
+        struct stat statbuf;
+        int status = (stat(message->bytes,&statbuf) == 0);
+	DESCRIPTOR(status_d,0);
+        status_d.pointer = (char *)&status;
+        SendResponse(c, 1, (struct descriptor *)&status_d);
+	break;
+      }
+    case MDS_IO_REMOVE_K:
+      { 
+        int status = remove(message->bytes);
+	DESCRIPTOR(status_d,0);
+        status_d.pointer = (char *)&status;
+        SendResponse(c, 1, (struct descriptor *)&status_d);
+	break;
+      }
+    case MDS_IO_RENAME_K:
+      { 
+	DESCRIPTOR(status_d,0);
+#ifdef HAVE_VXWORKS_H
+        int status = copy(message->bytes,message->bytes+strlen(message->bytes)+1);
+        if (status == 0)
+	{
+          status = remove(message->bytes);
+          if (status != 0)
+            remove(message->bytes+strlen(message->bytes)+1);
+        }
+#else
+        int status = rename(message->bytes,message->bytes+strlen(message->bytes)+1);
+#endif
+        status_d.pointer = (char *)&status;
+        SendResponse(c, 1, (struct descriptor *)&status_d);
+	break;
       }
     }
   }

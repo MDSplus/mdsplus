@@ -31,7 +31,7 @@ int TreeGetCurrentShotId(experiment,shot)
 #include <libroutines.h>
 #include <strroutines.h>
 #include <stdlib.h>
-#include <sys/stat.h>
+#include <fcntl.h>
 #include <ncidef.h>
 #include "treeshrp.h"
 extern void TranslateLogicalFree();
@@ -53,7 +53,7 @@ static char *GetFileName(char *experiment,char **ctx)
   char *ans = 0;
   static char pathname[1024];
   static char *path;
-  FILE *file = 0;
+  int fd = -1;
   char *semi = 0;
   char *part;
   if (*ctx == NULL)
@@ -101,25 +101,24 @@ static char *GetFileName(char *experiment,char **ctx)
   return ans;
 }
 
-static FILE *CreateShotIdFile(char *experiment)
+static int CreateShotIdFile(char *experiment)
 {
-  FILE *file = NULL;
+  int fd = -1;
   char *ctx = 0;
   char *filename;
-  while ((file == NULL) && (filename = GetFileName(experiment,&ctx)))
-    file = fopen(filename,"w+b");
-  return file;
+  while ((fd == -1) && (filename = GetFileName(experiment,&ctx)))
+    fd = MDS_IO_OPEN(filename,O_RDWR | O_CREAT | O_TRUNC,0777);
+  return fd;
 }
 
-static FILE *OpenShotIdFile(char *experiment,char *mode)
+static int OpenShotIdFile(char *experiment,int mode)
 {
-  FILE *file = NULL;
+  int fd=-1;
   char *ctx = 0;
   char *filename;
   int found = 0;
-  struct stat statbuf;
-  while ((filename = GetFileName(experiment,&ctx)) && !(found=(stat(filename,&statbuf) == 0)));
-  return (found ? fopen(filename,mode) : CreateShotIdFile(experiment));
+  while ((filename = GetFileName(experiment,&ctx)) && !(found=(MDS_IO_EXISTS(filename))));
+  return (found ? MDS_IO_OPEN(filename,mode,0) : CreateShotIdFile(experiment));
 }
 
 
@@ -140,11 +139,11 @@ int       TreeGetCurrentShotId(char *experiment)
     status = TreeGetCurrentShotIdRemote(exp, path, &shot);
   else
   {
-    FILE *file = OpenShotIdFile(exp,"rb");
-    if (file)
+    int fd = OpenShotIdFile(exp,O_RDONLY);
+    if (fd != -1)
     {
-      status = fread(&shot,sizeof(shot),1,file) == 1;
-      fclose(file);
+      status = MDS_IO_READ(fd,&shot,sizeof(shot)) == sizeof(shot);
+      MDS_IO_CLOSE(fd);
 #ifdef WORDS_BIGENDIAN
       if (status & 1)
       {
@@ -178,8 +177,8 @@ int       TreeSetCurrentShotId(char *experiment, int shot)
     status = TreeSetCurrentShotIdRemote(experiment, path, shot);
   else
   {
-    FILE *file = OpenShotIdFile(experiment,"r+b");
-    if (file)
+    int fd = OpenShotIdFile(experiment,O_WRONLY);
+    if (fd != -1)
     {
       int lshot = shot;
 #ifdef WORDS_BIGENDIAN
@@ -188,8 +187,8 @@ int       TreeSetCurrentShotId(char *experiment, int shot)
       char *iptr = (char *)&shot;
       for (i=0;i<4;i++) optr[i] = iptr[3-i];
 #endif
-      status = fwrite(&lshot,sizeof(shot),1,file) == 1;
-      fclose(file);
+      status = MDS_IO_WRITE(fd,&lshot,sizeof(shot)) == sizeof(shot);
+      MDS_IO_CLOSE(fd);
     }
   }
   if (path)
