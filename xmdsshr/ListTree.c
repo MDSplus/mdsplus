@@ -517,7 +517,7 @@ Initialize(Widget request, Widget tnew, ArgList args, Cardinal * num)
   w->list.HasFocus=False;
 
   w->list.timer_id = (XtIntervalId) 0;
-  w->list.multi_click_time = XtGetMultiClickTime(XtDisplay((Widget) w));
+  w->list.multi_click_time = XtGetMultiClickTime(XtDisplay((Widget) w))*2;
 
   w->list.hsb = w->list.vsb=NULL;
   w->list.hsbPos=0;
