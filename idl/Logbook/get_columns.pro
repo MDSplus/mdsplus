@@ -58,7 +58,7 @@ IF get_database() EQ 'RDB' THEN BEGIN
 ENDIF ELSE BEGIN
 	z = "SELECT o.name, c.name, c.type, c.length, 0"	$
 	+" FROM syscolumns c, sysobjects o"			$
-	+" WHERE o.name LIKE '" + table	+ "%' AND o.id = c.id"
+	+" WHERE o.name = '" + table	+ "%' AND o.id = c.id"
 	IF N_ELEMENTS(match) GT 0 THEN z = z+$
 		" AND c.name LIKE '" + match + "%'"
 	z = z + " ORDER BY o.name, ABS(c.offset)"
