@@ -44,7 +44,7 @@ static int KsMultiIo(
   int dummy;
   int i;
   unsigned char b;
-  
+  int wc;
   if( MSGLVL(FUNCTION_NAME) )
     printf( "%s()\n", KM_ROUTINE_NAME );
   
@@ -85,6 +85,64 @@ static int KsMultiIo(
                     Data, xfer_len.l, 
                     (char *)&sense, sizeof(sense), &sb_out_len,&transfer_len);
   
+#ifdef DEBUG
+  if (Verbose)
+  {
+    struct {char c2; char c3; char nb; char *name;} reg[]=
+      {{0x0,0x00,1,"Transfer Count Low"},
+       {0x0,0x02,1,"Transfer Count Middle"},
+       {0x0,0x04,1,"FIFO"},
+       {0x0,0x06,1,"Command"},
+       {0x0,0x08,1,"Status/Select"},
+       {0x0,0x0A,1,"Interrupt"},
+       {0x0,0x0C,1,"Sequence Step /Synchonous Transfer Period"},
+       {0x0,0x0E,1,"FIFO Flags /Synchronous Transfer Offset"},
+       {0x0,0x10,1,"Configuration #1"},
+       {0x0,0x12,1,"Clock Conversion"},
+       {0x0,0x14,1,"Test"},
+       {0x0,0x16,1,"Configuration #2"},
+       {0x0,0x18,1,"Configuration #3"},
+       {0x0,0x1A,1,"Transfer Count High"},
+       {0x0,0x1C,1,"FIFO Bottom"},
+       {0x0,0x80,2,"Timer Control/SCSI ID/Strap Selections"},
+       {0x0,0x82,2,"Control/Status"},
+       {0x0,0x86,4,"Buffer Interval Counter #1"},
+       {0x0,0x8A,2,"Buffer end Address/Counter #2"},
+       {0x1,0x84,4,"Command Memory Data"},
+       {0x1,0x88,4,"CAMAC Word Count"},
+       {0x2,0x00,2,"Command Memory Address"},
+       {0x2,0x02,2,"Demand Message"}};
+    int i;
+    for (i=0;i<(sizeof(reg)/sizeof(reg[0]));i++)
+    {
+      unsigned int l;
+      unsigned short s;
+      unsigned char c;
+      char *dptr;
+      switch (reg[i].nb)
+	{
+	case 1: dptr = (char *)&c; break;
+	case 2: dptr = (char *)&s; break;
+	case 4: dptr = (char *)&l; break;
+	}
+      Command[0] = OpCodeRegisterAccess;
+      Command[1] = 0;
+      Command[2] = reg[i].c2;
+      Command[3] = reg[i].c3;
+      Command[4] = 1;
+      Command[5] = 0;
+      status = scsi_io( scsiDevice, 1, Command, 6,
+			dptr, reg[i].nb,
+			0, 0, &sb_out_len,&dummy);
+      switch (reg[i].nb)
+	{
+	case 1: printf("%s = %d,%x\n",reg[i].name,c,c); break;
+	case 2: printf("%s = %d,%x\n",reg[i].name,s,s); break;
+	case 4: printf("%s = %d,%x\n",reg[i].name,l,l); break;
+	}
+    }
+  }
+#endif
   Command[0] = OpCodeRegisterAccess;
   Command[1] = 0;
   Command[2] = 0x01;
@@ -94,7 +152,14 @@ static int KsMultiIo(
   status = scsi_io( scsiDevice, 1, Command, 6,
                     (char *)&sense.u2.esr, sizeof(sense.u2.esr),
                     0, 0, &sb_out_len,&dummy);
+  Command[3] = 0x88;
+  Command[4] = 1;
+  Command[5] = 0;
+  status = scsi_io( scsiDevice, 1, Command, 6,
+                    (char *)&wc, sizeof(wc),
+                    0, 0, &sb_out_len,&dummy);
   scsi_lock( scsiDevice, 0);
+  transfer_len = (wc < 0) ? xfer_len.l + (wc - ((Mem == 16) ? 1 : 2))*2 : xfer_len.l;
   LastIosb.bytcnt = (unsigned short)(transfer_len & 0xFFFF);
   LastIosb.lbytcnt = (unsigned short)(transfer_len >> 16);
   status = KsTranslateIosb(&sense,status);
