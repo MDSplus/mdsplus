@@ -41,8 +41,13 @@ public fun MPBEncoder__init(as_is _nid, optional _method)
 			else
 			{
  	    		if_error(_event_time = data(DevNodeRef(_nid, _chan_nid + _N_CHAN_TRIG)), (DevLogErr(_nid, 'Missing event time for channel '//(_chan+1));abort();));
-				TimingRegisterEventTime(_event, getnci(DevNodeRef(_nid, _chan_nid + _N_CHAN_TRIG), 'fullpath'));
-    			_status=DevCamChk(_name, CamPiow(_name, _a, 17, _event_num, 16), 1,*); 
+			_status = TimingRegisterEventTime(_event, getnci(DevNodeRef(_nid, _chan_nid + _N_CHAN_TRIG), 'fullpath'));
+			if(_status == -1)
+			{
+			    DevLogErr(_nid, "Internal error in TimingRegisterEventTimes: different array sizes");
+			    abort();
+			}		
+   			_status=DevCamChk(_name, CamPiow(_name, _a, 17, _event_num, 16), 1,*); 
 				_inhibit_mask = _inhibit_mask | (1 << _chan);
 			}
 		}

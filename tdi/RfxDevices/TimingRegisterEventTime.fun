@@ -2,6 +2,10 @@ public fun TimingRegisterEventTime(in _event, in _time)
 {
     _event_names = if_error(data(\TIMING_SUPERVISOR:EVENT_NAMES), return(0));
     _event_times = if_error(data(\TIMING_SUPERVISOR:EVENT_TIMES), return(0));
+
+    if(!(size(_event_names) == size(_event_times)))
+        return (-1);	
+
     _new_times = [];
     _found = 0;
     for(_i = 0; _i < size(_event_names); _i++)

@@ -33,7 +33,7 @@ public fun TRCF__store(as_is _nid, optional _method)
     if (_not_stopped != 0)
     {
         DevLogErr(_nid, 'Module is not in STOP state');
-        return (0);
+        abort();
     }
  /*Check if CADF or TRCF */
     _status=DevCamChk(_name, CamPiow(_name, 2,0, _control_reg,24),1,*); 
@@ -96,7 +96,8 @@ public fun TRCF__store(as_is _nid, optional _method)
 			if(! _status)
 			{
 				DevLogErr(_nid, 'Error writing data in pulse file');
-				return(0);
+				abort();
+
 			}
 		}
     }

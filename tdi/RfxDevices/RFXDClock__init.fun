@@ -52,12 +52,12 @@ write(*, 'Parte RFXDClock__init');
     if(_clock_chan < 1 || _clock_chan > 6)
     {
 	DevLogErr(_nid, "Wrong clock channel number");
-	return(0);
+        abort();
     }
     if(_gate_chan < 1 || _gate_chan > 6)
     {
 	DevLogErr(_nid, "Wrong gate channel number");
-	return(0);
+        abort();
     }
 
     _base_nid = if_error(getnci(_decoder_nid, 'nid_number'), (DevLogErr(_nid, 'Cannot resolve decoder');abort();));
