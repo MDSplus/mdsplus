@@ -460,7 +460,7 @@ public class OAM01Setup
     jPanel20.setLayout(flowLayout20);
     deviceButtons1.setCheckExpressions(null);
     deviceButtons1.setCheckMessages(null);
-    deviceButtons1.setMethods(new String[] {"INIT", "OFF", "CALIB"});
+    deviceButtons1.setMethods(new String[] {"INIT", "OFF", "CALIB", "RESET"});
     jPanel21.setLayout(gridLayout2);
     gridLayout2.setRows(2);
     jPanel22.setLayout(flowLayout21);

@@ -1,4 +1,4 @@
-public fun OAM01__off ( as_is _nid, optional _method )
+public fun OAM01__reset ( as_is _nid, optional _method )
 {
 	private __GPIB_CTRL = 1 ;
 	private __GPIB_ADDR = 2 ;
@@ -63,6 +63,7 @@ public fun OAM01__off ( as_is _nid, optional _method )
 		DevLogErr ( _nid, 'Invalid GPIB identifier' ) ; 
 		abort ( ) ;
     	}
+	write ( *, 'reset id: ', _gpib_id ) ;
 
 
 
@@ -79,54 +80,9 @@ public fun OAM01__off ( as_is _nid, optional _method )
 	}
 
 
+	/* faccio un reset */
 
-
-
-	for ( _channel = 0 ; _channel < _CHANNELS ; _channel ++ )
-	{
-		/* seleziono il canale da configurare */
-
-		_command = 'W5834(0' // Trim ( AdjustL ( ( 1 + _channel ) ) ) // ')' // '\n' ;
-		_status = GPIBWrite ( _gpib_id, _command ) ;
-		wait ( _WAIT ) ;
-		if ( 0 == _status )
-		{
-			_msg = 'Command ' // _command // ' failed' ;
-			DevLogErr ( _nid, _msg ) ;
-			abort (  ) ;
-		}
-
-
-		/* metto off il canale */
-
-		_command = "W5836(C400)\n" ;
-		_status = GPIBWrite ( _gpib_id, _command ) ;
-		wait ( _WAIT ) ;
-		if ( 0 == _status )
-		{
-			_msg = 'Command ' // _command // ' failed' ;
-			DevLogErr ( _nid, _msg ) ;
-			abort (  ) ;
-		}
-	}
-
-
-	/* mi posiziono sul canale virtuale */
-
- 	_command = 'W5834(00)\n' ;
-	_status = GPIBWrite ( _gpib_id, _command ) ;
-	wait ( _WAIT ) ;
-	if ( 0 == _status )
-	{
-		_msg = 'Command ' // _command // ' failed' ;
-		DevLogErr ( _nid, _msg ) ;
-		abort (  ) ;
-	}
-
-
-	/* predispongo il controllo in locale */
-
-	_command = 'W5836(00)\n' ;
+	_command = 'J0000\n' ;
 	_status = GPIBWrite ( _gpib_id, _command ) ;
 	wait ( _WAIT ) ;
 	if ( 0 == _status )
