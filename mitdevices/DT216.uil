@@ -404,44 +404,44 @@ object DT216 : XmFormDialog widget {
          managed XmLabel label3;
          managed XmLabel label2;
          managed XmLabel label1;
-         managed XmdsExprField dsExprField269;
-         managed XmdsNidOptionMenu nidOptionMenu14;
-         managed XmdsNidOptionMenu nidOptionMenu13;
-         managed XmdsExprField dsExprField268;
-         managed XmdsNidOptionMenu nidOptionMenu12;
-         managed XmdsNidOptionMenu nidOptionMenu11;
-         managed XmdsExprField dsExprField267;
-         managed XmdsNidOptionMenu nidOptionMenu10;
-         managed XmdsNidOptionMenu nidOptionMenu9;
-         managed XmdsExprField dsExprField266;
-         managed XmdsNidOptionMenu nidOptionMenu8;
-         managed XmdsNidOptionMenu nidOptionMenu7;
-         managed XmdsExprField dsExprField265;
-         managed XmdsNidOptionMenu nidOptionMenu6;
-         managed XmdsNidOptionMenu nidOptionMenu5;
-         managed XmdsExprField dsExprField264;
-         managed XmdsNidOptionMenu nidOptionMenu2;
-         managed XmdsNidOptionMenu nidOptionMenu;
+         managed user_defined dsExprField269;
+         managed user_defined nidOptionMenu14;
+         managed user_defined nidOptionMenu13;
+         managed user_defined dsExprField268;
+         managed user_defined nidOptionMenu12;
+         managed user_defined nidOptionMenu11;
+         managed user_defined dsExprField267;
+         managed user_defined nidOptionMenu10;
+         managed user_defined nidOptionMenu9;
+         managed user_defined dsExprField266;
+         managed user_defined nidOptionMenu8;
+         managed user_defined nidOptionMenu7;
+         managed user_defined dsExprField265;
+         managed user_defined nidOptionMenu6;
+         managed user_defined nidOptionMenu5;
+         managed user_defined dsExprField264;
+         managed user_defined nidOptionMenu2;
+         managed user_defined nidOptionMenu;
          managed XmLabel label18;
          managed XmLabel label17;
          managed XmLabel label15;
          managed XmLabel label16;
          managed XmLabelGadget labelGadget2;
-         managed XmdsExprField dsExprField263;
-         managed XmdsExprField exprField;
+         managed user_defined dsExprField263;
+         managed user_defined exprField;
          managed XmLabel label;
-         managed XmdsExprField dsExprField1;
+         managed user_defined dsExprField1;
          managed XmLabelGadget labelGadget1;
          managed XmScrolledWindow scrolledWindow1;
-         managed XmdsExprField dsExprField85;
+         managed user_defined dsExprField85;
          managed XmLabelGadget labelGadget13;
-         managed XmdsNidOptionMenu nidOptionMenu4;
-         managed XmdsNidOptionMenu nidOptionMenu3;
-         managed XmdsNidOptionMenu dsNidOptionMenu1;
+         managed user_defined nidOptionMenu4;
+         managed user_defined nidOptionMenu3;
+         managed user_defined dsNidOptionMenu1;
          managed XmForm bottomButtons3;
-         managed XmdsExprField commentField;
+         managed user_defined commentField;
          managed XmLabelGadget commentLabel;
-         managed XmdsExprField nameField;
+         managed user_defined nameField;
          managed XmLabelGadget nameLabel;
     };
     callbacks {
@@ -462,7 +462,7 @@ object nameLabel : XmLabelGadget widget {
     };
 };
 
-object nameField : XmdsExprField widget {
+object nameField : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;
@@ -503,7 +503,7 @@ object commentLabel : XmLabelGadget widget {
     };
 };
 
-object commentField : XmdsExprField widget {
+object commentField : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;
@@ -536,8 +536,8 @@ object bottomButtons3 : XmForm widget {
         XmNrightOffset = 0;
     };
     controls {
-         managed XmdsXdBoxOnOffButton storeAction;
-         managed XmdsXdBoxOnOffButton initAction;
+         managed user_defined storeAction;
+         managed user_defined initAction;
          managed XmForm deviceButtons3;
     };
     callbacks {
@@ -551,7 +551,7 @@ object deviceButtons3 : XmForm widget {
         XmNbottomAttachment = XmATTACH_FORM;
         XmNleftAttachment = XmATTACH_FORM;
         XmNrightAttachment = XmATTACH_FORM;
-        XmNtopWidget = XmdsXdBoxOnOffButton initAction;
+        XmNtopWidget = user_defined initAction;
         XmNtopOffset = 15;
         XmNbottomOffset = 0;
         XmNleftOffset = 0;
@@ -559,16 +559,16 @@ object deviceButtons3 : XmForm widget {
         XmNy = 46;
     };
     controls {
-         managed XmdsCancelButton cancelButton3;
-         managed XmdsResetButton resetButton3;
-         managed XmdsApplyButton applyButton2;
-         managed XmdsOkButton okButton3;
+         managed user_defined cancelButton3;
+         managed user_defined resetButton3;
+         managed user_defined applyButton2;
+         managed user_defined okButton3;
     };
     callbacks {
     };
 };
 
-object okButton3 : XmdsOkButton widget {
+object okButton3 : user_defined procedure XmdsCreateOkButton {
     arguments {
         XmNleftAttachment = XmATTACH_FORM;
         XmNleftOffset = 10;
@@ -579,7 +579,7 @@ object okButton3 : XmdsOkButton widget {
     };
 };
 
-object applyButton2 : XmdsApplyButton widget {
+object applyButton2 : user_defined procedure XmdsCreateApplyButton {
     arguments {
         XmNleftAttachment = XmATTACH_POSITION;
         XmNleftPosition = 33;
@@ -591,7 +591,7 @@ object applyButton2 : XmdsApplyButton widget {
     };
 };
 
-object resetButton3 : XmdsResetButton widget {
+object resetButton3 : user_defined procedure XmdsCreateResetButton {
     arguments {
         XmNleftAttachment = XmATTACH_POSITION;
         XmNleftPosition = 66;
@@ -603,7 +603,7 @@ object resetButton3 : XmdsResetButton widget {
     };
 };
 
-object cancelButton3 : XmdsCancelButton widget {
+object cancelButton3 : user_defined procedure XmdsCreateCancelButton {
     arguments {
         XmNrightAttachment = XmATTACH_FORM;
         XmNrightOffset = 10;
@@ -614,7 +614,7 @@ object cancelButton3 : XmdsCancelButton widget {
     };
 };
 
-object initAction : XmdsXdBoxOnOffButton widget {
+object initAction : user_defined procedure XmdsCreateXdBoxOnOffButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("Initialization Action");
@@ -626,13 +626,13 @@ object initAction : XmdsXdBoxOnOffButton widget {
     };
 };
 
-object storeAction : XmdsXdBoxOnOffButton widget {
+object storeAction : user_defined procedure XmdsCreateXdBoxOnOffButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("Store Action");
         XmdsNnidOffset = DT200_STORE_ACTION;
         XmNleftAttachment = XmATTACH_WIDGET;
-        XmNleftWidget = XmdsXdBoxOnOffButton initAction;
+        XmNleftWidget = user_defined initAction;
         XmNleftOffset = 20;
     };
     controls {
@@ -641,7 +641,7 @@ object storeAction : XmdsXdBoxOnOffButton widget {
     };
 };
 
-object dsNidOptionMenu1 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu1 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -679,7 +679,7 @@ object dsNidOptionMenu1 : XmdsNidOptionMenu widget {
     };
 };
 
-object nidOptionMenu3 : XmdsNidOptionMenu widget {
+object nidOptionMenu3 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -702,7 +702,7 @@ object nidOptionMenu3 : XmdsNidOptionMenu widget {
         XmNtopAttachment = XmATTACH_WIDGET;
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_FORM;
-        XmNtopWidget = XmdsNidOptionMenu dsNidOptionMenu1;
+        XmNtopWidget = user_defined dsNidOptionMenu1;
         XmNtopOffset = 1;
         XmNbottomOffset = 0;
         XmNleftOffset = 17;
@@ -716,7 +716,7 @@ object nidOptionMenu3 : XmdsNidOptionMenu widget {
     };
 };
 
-object nidOptionMenu4 : XmdsNidOptionMenu widget {
+object nidOptionMenu4 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -741,7 +741,7 @@ object nidOptionMenu4 : XmdsNidOptionMenu widget {
         XmNtopAttachment = XmATTACH_OPPOSITE_WIDGET;
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_FORM;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu3;
+        XmNtopWidget = user_defined nidOptionMenu3;
         XmNtopOffset = 40;
         XmNbottomOffset = 0;
         XmNleftOffset = 30;
@@ -761,8 +761,8 @@ object labelGadget13 : XmLabelGadget widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsExprField commentField;
-        XmNleftWidget = XmdsNidOptionMenu dsNidOptionMenu1;
+        XmNtopWidget = user_defined commentField;
+        XmNleftWidget = user_defined dsNidOptionMenu1;
         XmNtopOffset = 26;
         XmNbottomOffset = 0;
         XmNleftOffset = 43;
@@ -776,7 +776,7 @@ object labelGadget13 : XmLabelGadget widget {
     };
 };
 
-object dsExprField85 : XmdsExprField widget {
+object dsExprField85 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 20;
@@ -859,17 +859,17 @@ object rowColumn48 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton dsOnOffToggleButton24;
-         managed XmdsExprField dsExprField86;
-         managed XmdsExprField dsExprField87;
-         managed XmdsExprField dsExprField88;
-         managed XmdsExprField dsXdBoxOnOffButton26;
+         managed user_defined dsOnOffToggleButton24;
+         managed user_defined dsExprField86;
+         managed user_defined dsExprField87;
+         managed user_defined dsExprField88;
+         managed user_defined dsXdBoxOnOffButton26;
     };
     callbacks {
     };
 };
 
-object dsOnOffToggleButton24 : XmdsOnOffToggleButton widget {
+object dsOnOffToggleButton24 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("01");
@@ -882,7 +882,7 @@ object dsOnOffToggleButton24 : XmdsOnOffToggleButton widget {
     };
 };
 
-object dsExprField86 : XmdsExprField widget {
+object dsExprField86 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -897,7 +897,7 @@ object dsExprField86 : XmdsExprField widget {
     };
 };
 
-object dsExprField87 : XmdsExprField widget {
+object dsExprField87 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -912,7 +912,7 @@ object dsExprField87 : XmdsExprField widget {
     };
 };
 
-object dsExprField88 : XmdsExprField widget {
+object dsExprField88 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -927,7 +927,7 @@ object dsExprField88 : XmdsExprField widget {
     };
 };
 
-object dsXdBoxOnOffButton26 : XmdsExprField widget {
+object dsXdBoxOnOffButton26 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -952,17 +952,17 @@ object rowColumn49 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton onOffToggleButton17;
-         managed XmdsExprField exprField35;
-         managed XmdsExprField exprField36;
-         managed XmdsExprField exprField37;
-         managed XmdsExprField xdBoxOnOffButton11;
+         managed user_defined onOffToggleButton17;
+         managed user_defined exprField35;
+         managed user_defined exprField36;
+         managed user_defined exprField37;
+         managed user_defined xdBoxOnOffButton11;
     };
     callbacks {
     };
 };
 
-object onOffToggleButton17 : XmdsOnOffToggleButton widget {
+object onOffToggleButton17 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("02");
@@ -975,7 +975,7 @@ object onOffToggleButton17 : XmdsOnOffToggleButton widget {
     };
 };
 
-object exprField35 : XmdsExprField widget {
+object exprField35 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -990,7 +990,7 @@ object exprField35 : XmdsExprField widget {
     };
 };
 
-object exprField36 : XmdsExprField widget {
+object exprField36 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1005,7 +1005,7 @@ object exprField36 : XmdsExprField widget {
     };
 };
 
-object exprField37 : XmdsExprField widget {
+object exprField37 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1020,7 +1020,7 @@ object exprField37 : XmdsExprField widget {
     };
 };
 
-object xdBoxOnOffButton11 : XmdsExprField widget {
+object xdBoxOnOffButton11 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -1045,17 +1045,17 @@ object rowColumn50 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton onOffToggleButton18;
-         managed XmdsExprField exprField38;
-         managed XmdsExprField exprField39;
-         managed XmdsExprField exprField40;
-         managed XmdsExprField xdBoxOnOffButton12;
+         managed user_defined onOffToggleButton18;
+         managed user_defined exprField38;
+         managed user_defined exprField39;
+         managed user_defined exprField40;
+         managed user_defined xdBoxOnOffButton12;
     };
     callbacks {
     };
 };
 
-object onOffToggleButton18 : XmdsOnOffToggleButton widget {
+object onOffToggleButton18 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("03");
@@ -1068,7 +1068,7 @@ object onOffToggleButton18 : XmdsOnOffToggleButton widget {
     };
 };
 
-object exprField38 : XmdsExprField widget {
+object exprField38 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1083,7 +1083,7 @@ object exprField38 : XmdsExprField widget {
     };
 };
 
-object exprField39 : XmdsExprField widget {
+object exprField39 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1098,7 +1098,7 @@ object exprField39 : XmdsExprField widget {
     };
 };
 
-object exprField40 : XmdsExprField widget {
+object exprField40 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1113,7 +1113,7 @@ object exprField40 : XmdsExprField widget {
     };
 };
 
-object xdBoxOnOffButton12 : XmdsExprField widget {
+object xdBoxOnOffButton12 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -1138,17 +1138,17 @@ object rowColumn51 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton onOffToggleButton19;
-         managed XmdsExprField exprField41;
-         managed XmdsExprField exprField42;
-         managed XmdsExprField exprField43;
-         managed XmdsExprField xdBoxOnOffButton13;
+         managed user_defined onOffToggleButton19;
+         managed user_defined exprField41;
+         managed user_defined exprField42;
+         managed user_defined exprField43;
+         managed user_defined xdBoxOnOffButton13;
     };
     callbacks {
     };
 };
 
-object onOffToggleButton19 : XmdsOnOffToggleButton widget {
+object onOffToggleButton19 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("04");
@@ -1161,7 +1161,7 @@ object onOffToggleButton19 : XmdsOnOffToggleButton widget {
     };
 };
 
-object exprField41 : XmdsExprField widget {
+object exprField41 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1176,7 +1176,7 @@ object exprField41 : XmdsExprField widget {
     };
 };
 
-object exprField42 : XmdsExprField widget {
+object exprField42 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1191,7 +1191,7 @@ object exprField42 : XmdsExprField widget {
     };
 };
 
-object exprField43 : XmdsExprField widget {
+object exprField43 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1206,7 +1206,7 @@ object exprField43 : XmdsExprField widget {
     };
 };
 
-object xdBoxOnOffButton13 : XmdsExprField widget {
+object xdBoxOnOffButton13 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -1231,17 +1231,17 @@ object rowColumn52 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton onOffToggleButton20;
-         managed XmdsExprField exprField44;
-         managed XmdsExprField exprField45;
-         managed XmdsExprField exprField46;
-         managed XmdsExprField xdBoxOnOffButton14;
+         managed user_defined onOffToggleButton20;
+         managed user_defined exprField44;
+         managed user_defined exprField45;
+         managed user_defined exprField46;
+         managed user_defined xdBoxOnOffButton14;
     };
     callbacks {
     };
 };
 
-object onOffToggleButton20 : XmdsOnOffToggleButton widget {
+object onOffToggleButton20 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("05");
@@ -1254,7 +1254,7 @@ object onOffToggleButton20 : XmdsOnOffToggleButton widget {
     };
 };
 
-object exprField44 : XmdsExprField widget {
+object exprField44 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1269,7 +1269,7 @@ object exprField44 : XmdsExprField widget {
     };
 };
 
-object exprField45 : XmdsExprField widget {
+object exprField45 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1284,7 +1284,7 @@ object exprField45 : XmdsExprField widget {
     };
 };
 
-object exprField46 : XmdsExprField widget {
+object exprField46 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1299,7 +1299,7 @@ object exprField46 : XmdsExprField widget {
     };
 };
 
-object xdBoxOnOffButton14 : XmdsExprField widget {
+object xdBoxOnOffButton14 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -1324,17 +1324,17 @@ object rowColumn53 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton onOffToggleButton21;
-         managed XmdsExprField exprField47;
-         managed XmdsExprField exprField48;
-         managed XmdsExprField exprField49;
-         managed XmdsExprField xdBoxOnOffButton15;
+         managed user_defined onOffToggleButton21;
+         managed user_defined exprField47;
+         managed user_defined exprField48;
+         managed user_defined exprField49;
+         managed user_defined xdBoxOnOffButton15;
     };
     callbacks {
     };
 };
 
-object onOffToggleButton21 : XmdsOnOffToggleButton widget {
+object onOffToggleButton21 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("06");
@@ -1347,7 +1347,7 @@ object onOffToggleButton21 : XmdsOnOffToggleButton widget {
     };
 };
 
-object exprField47 : XmdsExprField widget {
+object exprField47 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1362,7 +1362,7 @@ object exprField47 : XmdsExprField widget {
     };
 };
 
-object exprField48 : XmdsExprField widget {
+object exprField48 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1377,7 +1377,7 @@ object exprField48 : XmdsExprField widget {
     };
 };
 
-object exprField49 : XmdsExprField widget {
+object exprField49 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1392,7 +1392,7 @@ object exprField49 : XmdsExprField widget {
     };
 };
 
-object xdBoxOnOffButton15 : XmdsExprField widget {
+object xdBoxOnOffButton15 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -1417,17 +1417,17 @@ object rowColumn54 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton onOffToggleButton22;
-         managed XmdsExprField exprField50;
-         managed XmdsExprField exprField51;
-         managed XmdsExprField exprField52;
-         managed XmdsExprField xdBoxOnOffButton16;
+         managed user_defined onOffToggleButton22;
+         managed user_defined exprField50;
+         managed user_defined exprField51;
+         managed user_defined exprField52;
+         managed user_defined xdBoxOnOffButton16;
     };
     callbacks {
     };
 };
 
-object onOffToggleButton22 : XmdsOnOffToggleButton widget {
+object onOffToggleButton22 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("07");
@@ -1440,7 +1440,7 @@ object onOffToggleButton22 : XmdsOnOffToggleButton widget {
     };
 };
 
-object exprField50 : XmdsExprField widget {
+object exprField50 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1455,7 +1455,7 @@ object exprField50 : XmdsExprField widget {
     };
 };
 
-object exprField51 : XmdsExprField widget {
+object exprField51 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1470,7 +1470,7 @@ object exprField51 : XmdsExprField widget {
     };
 };
 
-object exprField52 : XmdsExprField widget {
+object exprField52 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1485,7 +1485,7 @@ object exprField52 : XmdsExprField widget {
     };
 };
 
-object xdBoxOnOffButton16 : XmdsExprField widget {
+object xdBoxOnOffButton16 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -1510,17 +1510,17 @@ object rowColumn55 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton onOffToggleButton23;
-         managed XmdsExprField exprField53;
-         managed XmdsExprField exprField54;
-         managed XmdsExprField exprField55;
-         managed XmdsExprField xdBoxOnOffButton17;
+         managed user_defined onOffToggleButton23;
+         managed user_defined exprField53;
+         managed user_defined exprField54;
+         managed user_defined exprField55;
+         managed user_defined xdBoxOnOffButton17;
     };
     callbacks {
     };
 };
 
-object onOffToggleButton23 : XmdsOnOffToggleButton widget {
+object onOffToggleButton23 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("08");
@@ -1533,7 +1533,7 @@ object onOffToggleButton23 : XmdsOnOffToggleButton widget {
     };
 };
 
-object exprField53 : XmdsExprField widget {
+object exprField53 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1548,7 +1548,7 @@ object exprField53 : XmdsExprField widget {
     };
 };
 
-object exprField54 : XmdsExprField widget {
+object exprField54 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1563,7 +1563,7 @@ object exprField54 : XmdsExprField widget {
     };
 };
 
-object exprField55 : XmdsExprField widget {
+object exprField55 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1578,7 +1578,7 @@ object exprField55 : XmdsExprField widget {
     };
 };
 
-object xdBoxOnOffButton17 : XmdsExprField widget {
+object xdBoxOnOffButton17 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -1603,17 +1603,17 @@ object rowColumn56 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton onOffToggleButton24;
-         managed XmdsExprField exprField56;
-         managed XmdsExprField exprField57;
-         managed XmdsExprField exprField58;
-         managed XmdsExprField xdBoxOnOffButton18;
+         managed user_defined onOffToggleButton24;
+         managed user_defined exprField56;
+         managed user_defined exprField57;
+         managed user_defined exprField58;
+         managed user_defined xdBoxOnOffButton18;
     };
     callbacks {
     };
 };
 
-object onOffToggleButton24 : XmdsOnOffToggleButton widget {
+object onOffToggleButton24 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("09");
@@ -1626,7 +1626,7 @@ object onOffToggleButton24 : XmdsOnOffToggleButton widget {
     };
 };
 
-object exprField56 : XmdsExprField widget {
+object exprField56 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1641,7 +1641,7 @@ object exprField56 : XmdsExprField widget {
     };
 };
 
-object exprField57 : XmdsExprField widget {
+object exprField57 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1656,7 +1656,7 @@ object exprField57 : XmdsExprField widget {
     };
 };
 
-object exprField58 : XmdsExprField widget {
+object exprField58 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1671,7 +1671,7 @@ object exprField58 : XmdsExprField widget {
     };
 };
 
-object xdBoxOnOffButton18 : XmdsExprField widget {
+object xdBoxOnOffButton18 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -1696,17 +1696,17 @@ object rowColumn57 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton onOffToggleButton25;
-         managed XmdsExprField exprField59;
-         managed XmdsExprField exprField60;
-         managed XmdsExprField exprField61;
-         managed XmdsExprField xdBoxOnOffButton19;
+         managed user_defined onOffToggleButton25;
+         managed user_defined exprField59;
+         managed user_defined exprField60;
+         managed user_defined exprField61;
+         managed user_defined xdBoxOnOffButton19;
     };
     callbacks {
     };
 };
 
-object onOffToggleButton25 : XmdsOnOffToggleButton widget {
+object onOffToggleButton25 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("10");
@@ -1719,7 +1719,7 @@ object onOffToggleButton25 : XmdsOnOffToggleButton widget {
     };
 };
 
-object exprField59 : XmdsExprField widget {
+object exprField59 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1734,7 +1734,7 @@ object exprField59 : XmdsExprField widget {
     };
 };
 
-object exprField60 : XmdsExprField widget {
+object exprField60 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1749,7 +1749,7 @@ object exprField60 : XmdsExprField widget {
     };
 };
 
-object exprField61 : XmdsExprField widget {
+object exprField61 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1764,7 +1764,7 @@ object exprField61 : XmdsExprField widget {
     };
 };
 
-object xdBoxOnOffButton19 : XmdsExprField widget {
+object xdBoxOnOffButton19 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -1789,17 +1789,17 @@ object rowColumn58 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton dsOnOffToggleButton25;
-         managed XmdsExprField dsExprField89;
-         managed XmdsExprField dsExprField90;
-         managed XmdsExprField dsExprField91;
-         managed XmdsExprField dsXdBoxOnOffButton27;
+         managed user_defined dsOnOffToggleButton25;
+         managed user_defined dsExprField89;
+         managed user_defined dsExprField90;
+         managed user_defined dsExprField91;
+         managed user_defined dsXdBoxOnOffButton27;
     };
     callbacks {
     };
 };
 
-object dsOnOffToggleButton25 : XmdsOnOffToggleButton widget {
+object dsOnOffToggleButton25 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("11");
@@ -1812,7 +1812,7 @@ object dsOnOffToggleButton25 : XmdsOnOffToggleButton widget {
     };
 };
 
-object dsExprField89 : XmdsExprField widget {
+object dsExprField89 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1827,7 +1827,7 @@ object dsExprField89 : XmdsExprField widget {
     };
 };
 
-object dsExprField90 : XmdsExprField widget {
+object dsExprField90 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1842,7 +1842,7 @@ object dsExprField90 : XmdsExprField widget {
     };
 };
 
-object dsExprField91 : XmdsExprField widget {
+object dsExprField91 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1857,7 +1857,7 @@ object dsExprField91 : XmdsExprField widget {
     };
 };
 
-object dsXdBoxOnOffButton27 : XmdsExprField widget {
+object dsXdBoxOnOffButton27 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -1882,17 +1882,17 @@ object rowColumn59 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton dsOnOffToggleButton26;
-         managed XmdsExprField dsExprField92;
-         managed XmdsExprField dsExprField93;
-         managed XmdsExprField dsExprField94;
-         managed XmdsExprField dsXdBoxOnOffButton28;
+         managed user_defined dsOnOffToggleButton26;
+         managed user_defined dsExprField92;
+         managed user_defined dsExprField93;
+         managed user_defined dsExprField94;
+         managed user_defined dsXdBoxOnOffButton28;
     };
     callbacks {
     };
 };
 
-object dsOnOffToggleButton26 : XmdsOnOffToggleButton widget {
+object dsOnOffToggleButton26 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("12");
@@ -1905,7 +1905,7 @@ object dsOnOffToggleButton26 : XmdsOnOffToggleButton widget {
     };
 };
 
-object dsExprField92 : XmdsExprField widget {
+object dsExprField92 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1920,7 +1920,7 @@ object dsExprField92 : XmdsExprField widget {
     };
 };
 
-object dsExprField93 : XmdsExprField widget {
+object dsExprField93 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1935,7 +1935,7 @@ object dsExprField93 : XmdsExprField widget {
     };
 };
 
-object dsExprField94 : XmdsExprField widget {
+object dsExprField94 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -1950,7 +1950,7 @@ object dsExprField94 : XmdsExprField widget {
     };
 };
 
-object dsXdBoxOnOffButton28 : XmdsExprField widget {
+object dsXdBoxOnOffButton28 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -1975,17 +1975,17 @@ object rowColumn60 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton dsOnOffToggleButton27;
-         managed XmdsExprField dsExprField95;
-         managed XmdsExprField dsExprField96;
-         managed XmdsExprField dsExprField97;
-         managed XmdsExprField dsXdBoxOnOffButton29;
+         managed user_defined dsOnOffToggleButton27;
+         managed user_defined dsExprField95;
+         managed user_defined dsExprField96;
+         managed user_defined dsExprField97;
+         managed user_defined dsXdBoxOnOffButton29;
     };
     callbacks {
     };
 };
 
-object dsOnOffToggleButton27 : XmdsOnOffToggleButton widget {
+object dsOnOffToggleButton27 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("13");
@@ -1998,7 +1998,7 @@ object dsOnOffToggleButton27 : XmdsOnOffToggleButton widget {
     };
 };
 
-object dsExprField95 : XmdsExprField widget {
+object dsExprField95 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -2013,7 +2013,7 @@ object dsExprField95 : XmdsExprField widget {
     };
 };
 
-object dsExprField96 : XmdsExprField widget {
+object dsExprField96 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -2028,7 +2028,7 @@ object dsExprField96 : XmdsExprField widget {
     };
 };
 
-object dsExprField97 : XmdsExprField widget {
+object dsExprField97 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -2043,7 +2043,7 @@ object dsExprField97 : XmdsExprField widget {
     };
 };
 
-object dsXdBoxOnOffButton29 : XmdsExprField widget {
+object dsXdBoxOnOffButton29 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -2068,17 +2068,17 @@ object rowColumn61 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton dsOnOffToggleButton28;
-         managed XmdsExprField dsExprField98;
-         managed XmdsExprField dsExprField99;
-         managed XmdsExprField dsExprField100;
-         managed XmdsExprField dsXdBoxOnOffButton30;
+         managed user_defined dsOnOffToggleButton28;
+         managed user_defined dsExprField98;
+         managed user_defined dsExprField99;
+         managed user_defined dsExprField100;
+         managed user_defined dsXdBoxOnOffButton30;
     };
     callbacks {
     };
 };
 
-object dsOnOffToggleButton28 : XmdsOnOffToggleButton widget {
+object dsOnOffToggleButton28 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("14");
@@ -2091,7 +2091,7 @@ object dsOnOffToggleButton28 : XmdsOnOffToggleButton widget {
     };
 };
 
-object dsExprField98 : XmdsExprField widget {
+object dsExprField98 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -2106,7 +2106,7 @@ object dsExprField98 : XmdsExprField widget {
     };
 };
 
-object dsExprField99 : XmdsExprField widget {
+object dsExprField99 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -2121,7 +2121,7 @@ object dsExprField99 : XmdsExprField widget {
     };
 };
 
-object dsExprField100 : XmdsExprField widget {
+object dsExprField100 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -2136,7 +2136,7 @@ object dsExprField100 : XmdsExprField widget {
     };
 };
 
-object dsXdBoxOnOffButton30 : XmdsExprField widget {
+object dsXdBoxOnOffButton30 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -2161,17 +2161,17 @@ object rowColumn62 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton dsOnOffToggleButton29;
-         managed XmdsExprField dsExprField101;
-         managed XmdsExprField dsExprField102;
-         managed XmdsExprField dsExprField103;
-         managed XmdsExprField dsXdBoxOnOffButton31;
+         managed user_defined dsOnOffToggleButton29;
+         managed user_defined dsExprField101;
+         managed user_defined dsExprField102;
+         managed user_defined dsExprField103;
+         managed user_defined dsXdBoxOnOffButton31;
     };
     callbacks {
     };
 };
 
-object dsOnOffToggleButton29 : XmdsOnOffToggleButton widget {
+object dsOnOffToggleButton29 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("15");
@@ -2184,7 +2184,7 @@ object dsOnOffToggleButton29 : XmdsOnOffToggleButton widget {
     };
 };
 
-object dsExprField101 : XmdsExprField widget {
+object dsExprField101 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -2199,7 +2199,7 @@ object dsExprField101 : XmdsExprField widget {
     };
 };
 
-object dsExprField102 : XmdsExprField widget {
+object dsExprField102 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -2214,7 +2214,7 @@ object dsExprField102 : XmdsExprField widget {
     };
 };
 
-object dsExprField103 : XmdsExprField widget {
+object dsExprField103 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -2229,7 +2229,7 @@ object dsExprField103 : XmdsExprField widget {
     };
 };
 
-object dsXdBoxOnOffButton31 : XmdsExprField widget {
+object dsXdBoxOnOffButton31 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -2254,17 +2254,17 @@ object rowColumn63 : XmRowColumn widget {
         XmNheight = 31;
     };
     controls {
-         managed XmdsOnOffToggleButton dsOnOffToggleButton30;
-         managed XmdsExprField dsExprField104;
-         managed XmdsExprField dsExprField105;
-         managed XmdsExprField dsExprField106;
-         managed XmdsExprField dsXdBoxOnOffButton32;
+         managed user_defined dsOnOffToggleButton30;
+         managed user_defined dsExprField104;
+         managed user_defined dsExprField105;
+         managed user_defined dsExprField106;
+         managed user_defined dsXdBoxOnOffButton32;
     };
     callbacks {
     };
 };
 
-object dsOnOffToggleButton30 : XmdsOnOffToggleButton widget {
+object dsOnOffToggleButton30 : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("16");
@@ -2277,7 +2277,7 @@ object dsOnOffToggleButton30 : XmdsOnOffToggleButton widget {
     };
 };
 
-object dsExprField104 : XmdsExprField widget {
+object dsExprField104 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -2292,7 +2292,7 @@ object dsExprField104 : XmdsExprField widget {
     };
 };
 
-object dsExprField105 : XmdsExprField widget {
+object dsExprField105 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -2307,7 +2307,7 @@ object dsExprField105 : XmdsExprField widget {
     };
 };
 
-object dsExprField106 : XmdsExprField widget {
+object dsExprField106 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -2322,7 +2322,7 @@ object dsExprField106 : XmdsExprField widget {
     };
 };
 
-object dsXdBoxOnOffButton32 : XmdsExprField widget {
+object dsXdBoxOnOffButton32 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = false;
@@ -2362,7 +2362,7 @@ object labelGadget1 : XmLabelGadget widget {
     };
 };
 
-object dsExprField1 : XmdsExprField widget {
+object dsExprField1 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 20;
@@ -2373,7 +2373,7 @@ object dsExprField1 : XmdsExprField widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsExprField dsExprField85;
+        XmNtopWidget = user_defined dsExprField85;
         XmNleftWidget = XmLabelGadget labelGadget1;
         XmNtopOffset = 30;
         XmNbottomOffset = 0;
@@ -2396,8 +2396,8 @@ object label : XmLabel widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsExprField nameField;
-        XmNleftWidget = XmdsExprField nameField;
+        XmNtopWidget = user_defined nameField;
+        XmNleftWidget = user_defined nameField;
         XmNtopOffset = 0;
         XmNbottomOffset = 0;
         XmNleftOffset = 30;
@@ -2411,7 +2411,7 @@ object label : XmLabel widget {
     };
 };
 
-object exprField : XmdsExprField widget {
+object exprField : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 3;
@@ -2438,7 +2438,7 @@ object exprField : XmdsExprField widget {
     };
 };
 
-object dsExprField263 : XmdsExprField widget {
+object dsExprField263 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 20;
@@ -2449,7 +2449,7 @@ object dsExprField263 : XmdsExprField widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsExprField dsExprField1;
+        XmNtopWidget = user_defined dsExprField1;
         XmNleftWidget = XmLabelGadget labelGadget2;
         XmNtopOffset = 30;
         XmNbottomOffset = 0;
@@ -2569,7 +2569,7 @@ object label18 : XmLabel widget {
     };
 };
 
-object nidOptionMenu : XmdsNidOptionMenu widget {
+object nidOptionMenu : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -2602,7 +2602,7 @@ object nidOptionMenu : XmdsNidOptionMenu widget {
     };
 };
 
-object nidOptionMenu2 : XmdsNidOptionMenu widget {
+object nidOptionMenu2 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -2622,7 +2622,7 @@ object nidOptionMenu2 : XmdsNidOptionMenu widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_OPPOSITE_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu;
+        XmNtopWidget = user_defined nidOptionMenu;
         XmNleftWidget = XmLabel label17;
         XmNtopOffset = 0;
         XmNbottomOffset = 0;
@@ -2638,7 +2638,7 @@ object nidOptionMenu2 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsExprField264 : XmdsExprField widget {
+object dsExprField264 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 20;
@@ -2649,7 +2649,7 @@ object dsExprField264 : XmdsExprField widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_OPPOSITE_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu2;
+        XmNtopWidget = user_defined nidOptionMenu2;
         XmNleftWidget = XmLabel label18;
         XmNtopOffset = 6;
         XmNbottomOffset = 0;
@@ -2664,7 +2664,7 @@ object dsExprField264 : XmdsExprField widget {
     };
 };
 
-object nidOptionMenu5 : XmdsNidOptionMenu widget {
+object nidOptionMenu5 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -2682,8 +2682,8 @@ object nidOptionMenu5 : XmdsNidOptionMenu widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_OPPOSITE_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu;
-        XmNleftWidget = XmdsNidOptionMenu nidOptionMenu;
+        XmNtopWidget = user_defined nidOptionMenu;
+        XmNleftWidget = user_defined nidOptionMenu;
         XmNtopOffset = 5;
         XmNbottomOffset = 0;
         XmNleftOffset = 0;
@@ -2697,7 +2697,7 @@ object nidOptionMenu5 : XmdsNidOptionMenu widget {
     };
 };
 
-object nidOptionMenu6 : XmdsNidOptionMenu widget {
+object nidOptionMenu6 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -2717,8 +2717,8 @@ object nidOptionMenu6 : XmdsNidOptionMenu widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu5;
-        XmNleftWidget = XmdsNidOptionMenu nidOptionMenu5;
+        XmNtopWidget = user_defined nidOptionMenu5;
+        XmNleftWidget = user_defined nidOptionMenu5;
         XmNtopOffset = 0;
         XmNbottomOffset = 0;
         XmNleftOffset = -2;
@@ -2733,7 +2733,7 @@ object nidOptionMenu6 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsExprField265 : XmdsExprField widget {
+object dsExprField265 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 20;
@@ -2744,8 +2744,8 @@ object dsExprField265 : XmdsExprField widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu6;
-        XmNleftWidget = XmdsNidOptionMenu nidOptionMenu6;
+        XmNtopWidget = user_defined nidOptionMenu6;
+        XmNleftWidget = user_defined nidOptionMenu6;
         XmNtopOffset = 10;
         XmNbottomOffset = 0;
         XmNleftOffset = 2;
@@ -2759,7 +2759,7 @@ object dsExprField265 : XmdsExprField widget {
     };
 };
 
-object nidOptionMenu7 : XmdsNidOptionMenu widget {
+object nidOptionMenu7 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -2777,8 +2777,8 @@ object nidOptionMenu7 : XmdsNidOptionMenu widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_OPPOSITE_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu5;
-        XmNleftWidget = XmdsNidOptionMenu nidOptionMenu5;
+        XmNtopWidget = user_defined nidOptionMenu5;
+        XmNleftWidget = user_defined nidOptionMenu5;
         XmNtopOffset = 5;
         XmNbottomOffset = 0;
         XmNleftOffset = 0;
@@ -2792,7 +2792,7 @@ object nidOptionMenu7 : XmdsNidOptionMenu widget {
     };
 };
 
-object nidOptionMenu8 : XmdsNidOptionMenu widget {
+object nidOptionMenu8 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -2812,8 +2812,8 @@ object nidOptionMenu8 : XmdsNidOptionMenu widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu7;
-        XmNleftWidget = XmdsNidOptionMenu nidOptionMenu7;
+        XmNtopWidget = user_defined nidOptionMenu7;
+        XmNleftWidget = user_defined nidOptionMenu7;
         XmNtopOffset = 0;
         XmNbottomOffset = 0;
         XmNleftOffset = -2;
@@ -2828,7 +2828,7 @@ object nidOptionMenu8 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsExprField266 : XmdsExprField widget {
+object dsExprField266 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 20;
@@ -2839,8 +2839,8 @@ object dsExprField266 : XmdsExprField widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu8;
-        XmNleftWidget = XmdsNidOptionMenu nidOptionMenu8;
+        XmNtopWidget = user_defined nidOptionMenu8;
+        XmNleftWidget = user_defined nidOptionMenu8;
         XmNtopOffset = 10;
         XmNbottomOffset = 0;
         XmNleftOffset = 2;
@@ -2854,7 +2854,7 @@ object dsExprField266 : XmdsExprField widget {
     };
 };
 
-object nidOptionMenu9 : XmdsNidOptionMenu widget {
+object nidOptionMenu9 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -2872,8 +2872,8 @@ object nidOptionMenu9 : XmdsNidOptionMenu widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_OPPOSITE_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu7;
-        XmNleftWidget = XmdsNidOptionMenu nidOptionMenu7;
+        XmNtopWidget = user_defined nidOptionMenu7;
+        XmNleftWidget = user_defined nidOptionMenu7;
         XmNtopOffset = 5;
         XmNbottomOffset = 0;
         XmNleftOffset = 0;
@@ -2887,7 +2887,7 @@ object nidOptionMenu9 : XmdsNidOptionMenu widget {
     };
 };
 
-object nidOptionMenu10 : XmdsNidOptionMenu widget {
+object nidOptionMenu10 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -2907,8 +2907,8 @@ object nidOptionMenu10 : XmdsNidOptionMenu widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu9;
-        XmNleftWidget = XmdsNidOptionMenu nidOptionMenu9;
+        XmNtopWidget = user_defined nidOptionMenu9;
+        XmNleftWidget = user_defined nidOptionMenu9;
         XmNtopOffset = 0;
         XmNbottomOffset = 0;
         XmNleftOffset = -2;
@@ -2923,7 +2923,7 @@ object nidOptionMenu10 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsExprField267 : XmdsExprField widget {
+object dsExprField267 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 20;
@@ -2934,8 +2934,8 @@ object dsExprField267 : XmdsExprField widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu10;
-        XmNleftWidget = XmdsNidOptionMenu nidOptionMenu10;
+        XmNtopWidget = user_defined nidOptionMenu10;
+        XmNleftWidget = user_defined nidOptionMenu10;
         XmNtopOffset = 10;
         XmNbottomOffset = 0;
         XmNleftOffset = 2;
@@ -2949,7 +2949,7 @@ object dsExprField267 : XmdsExprField widget {
     };
 };
 
-object nidOptionMenu11 : XmdsNidOptionMenu widget {
+object nidOptionMenu11 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -2967,8 +2967,8 @@ object nidOptionMenu11 : XmdsNidOptionMenu widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_OPPOSITE_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu9;
-        XmNleftWidget = XmdsNidOptionMenu nidOptionMenu9;
+        XmNtopWidget = user_defined nidOptionMenu9;
+        XmNleftWidget = user_defined nidOptionMenu9;
         XmNtopOffset = 40;
         XmNbottomOffset = 0;
         XmNleftOffset = 0;
@@ -2982,7 +2982,7 @@ object nidOptionMenu11 : XmdsNidOptionMenu widget {
     };
 };
 
-object nidOptionMenu12 : XmdsNidOptionMenu widget {
+object nidOptionMenu12 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -3002,8 +3002,8 @@ object nidOptionMenu12 : XmdsNidOptionMenu widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu11;
-        XmNleftWidget = XmdsNidOptionMenu nidOptionMenu11;
+        XmNtopWidget = user_defined nidOptionMenu11;
+        XmNleftWidget = user_defined nidOptionMenu11;
         XmNtopOffset = 0;
         XmNbottomOffset = 0;
         XmNleftOffset = -2;
@@ -3018,7 +3018,7 @@ object nidOptionMenu12 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsExprField268 : XmdsExprField widget {
+object dsExprField268 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 20;
@@ -3029,8 +3029,8 @@ object dsExprField268 : XmdsExprField widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu12;
-        XmNleftWidget = XmdsNidOptionMenu nidOptionMenu12;
+        XmNtopWidget = user_defined nidOptionMenu12;
+        XmNleftWidget = user_defined nidOptionMenu12;
         XmNtopOffset = 10;
         XmNbottomOffset = 0;
         XmNleftOffset = 2;
@@ -3044,7 +3044,7 @@ object dsExprField268 : XmdsExprField widget {
     };
 };
 
-object nidOptionMenu13 : XmdsNidOptionMenu widget {
+object nidOptionMenu13 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -3062,8 +3062,8 @@ object nidOptionMenu13 : XmdsNidOptionMenu widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_OPPOSITE_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu11;
-        XmNleftWidget = XmdsNidOptionMenu nidOptionMenu11;
+        XmNtopWidget = user_defined nidOptionMenu11;
+        XmNleftWidget = user_defined nidOptionMenu11;
         XmNtopOffset = 5;
         XmNbottomOffset = 0;
         XmNleftOffset = 0;
@@ -3077,7 +3077,7 @@ object nidOptionMenu13 : XmdsNidOptionMenu widget {
     };
 };
 
-object nidOptionMenu14 : XmdsNidOptionMenu widget {
+object nidOptionMenu14 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -3097,8 +3097,8 @@ object nidOptionMenu14 : XmdsNidOptionMenu widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu13;
-        XmNleftWidget = XmdsNidOptionMenu nidOptionMenu13;
+        XmNtopWidget = user_defined nidOptionMenu13;
+        XmNleftWidget = user_defined nidOptionMenu13;
         XmNtopOffset = 0;
         XmNbottomOffset = 0;
         XmNleftOffset = -2;
@@ -3113,7 +3113,7 @@ object nidOptionMenu14 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsExprField269 : XmdsExprField widget {
+object dsExprField269 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 20;
@@ -3124,8 +3124,8 @@ object dsExprField269 : XmdsExprField widget {
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_WIDGET;
         XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu14;
-        XmNleftWidget = XmdsNidOptionMenu nidOptionMenu14;
+        XmNtopWidget = user_defined nidOptionMenu14;
+        XmNleftWidget = user_defined nidOptionMenu14;
         XmNtopOffset = 10;
         XmNbottomOffset = 0;
         XmNleftOffset = 2;
@@ -3145,7 +3145,7 @@ object label1 : XmLabel widget {
         XmNtopAttachment = XmATTACH_WIDGET;
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_FORM;
-        XmNtopWidget = XmdsNidOptionMenu nidOptionMenu4;
+        XmNtopWidget = user_defined nidOptionMenu4;
         XmNtopOffset = 8;
         XmNbottomOffset = 0;
         XmNleftOffset = 29;
@@ -3274,17 +3274,17 @@ object niwdig_rowColumn : XmRowColumn widget {
         XmNheight = 41;
     };
     controls {
-         managed XmdsOnOffToggleButton niwdig_onOffToggleButton;
-         managed XmdsExprField niwdig_exprField;
-         managed XmdsExprField niwdig_exprField1;
-         managed XmdsExprField niwdig_exprField2;
-         managed XmdsXdBoxDialogButton niwdig_xdBoxOnOffButton;
+         managed user_defined niwdig_onOffToggleButton;
+         managed user_defined niwdig_exprField;
+         managed user_defined niwdig_exprField1;
+         managed user_defined niwdig_exprField2;
+         managed user_defined niwdig_xdBoxOnOffButton;
     };
     callbacks {
     };
 };
 
-object niwdig_onOffToggleButton : XmdsOnOffToggleButton widget {
+object niwdig_onOffToggleButton : user_defined procedure XmdsCreateOnOffToggleButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("1");
@@ -3297,7 +3297,7 @@ object niwdig_onOffToggleButton : XmdsOnOffToggleButton widget {
     };
 };
 
-object niwdig_exprField : XmdsExprField widget {
+object niwdig_exprField : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -3312,7 +3312,7 @@ object niwdig_exprField : XmdsExprField widget {
     };
 };
 
-object niwdig_exprField1 : XmdsExprField widget {
+object niwdig_exprField1 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -3327,7 +3327,7 @@ object niwdig_exprField1 : XmdsExprField widget {
     };
 };
 
-object niwdig_exprField2 : XmdsExprField widget {
+object niwdig_exprField2 : user_defined procedure XmdsCreateExprField {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 10;
@@ -3342,7 +3342,7 @@ object niwdig_exprField2 : XmdsExprField widget {
     };
 };
 
-object niwdig_xdBoxOnOffButton : XmdsXdBoxDialogButton widget {
+object niwdig_xdBoxOnOffButton : user_defined procedure XmdsCreateXdBoxDialogButton {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNnidOffset = DT200_N_x;
