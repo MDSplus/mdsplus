@@ -57,13 +57,23 @@ void      MdsPk(char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int *
   int     *pitems = &items[0];
   int       size = nbits >= 0 ? nbits : -nbits;
   int       off = *bit_ptr & 31;
-  int      hold = off ? *ppack & masks[off] : 0;
   int      mask;
   int       test;
+#ifdef _big_endian
   int i;
   int j;
   char *pin;
   char *pout;
+  int      hold = 0;
+  if (off)
+  {
+    for (i=0;i<4;i++)
+      ((char *)&hold)[i] = ((char *)ppack)[3-i];
+    hold = hold & masks[off];
+  }
+#else
+  int      hold = off ? *ppack & masks[off] : 0;
+#endif
   if (size == 0 || nitems <= 0)
     return;
   *bit_ptr += size * nitems;
