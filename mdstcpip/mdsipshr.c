@@ -663,21 +663,26 @@ static SOCKET ConnectToPort(char *host, char *service)
   }
   s = socket(AF_INET, SOCK_STREAM, 0);
   if (s == INVALID_SOCKET) return INVALID_SOCKET;
-  sp = getservbyname(service,"tcp");
-  if (sp == NULL)
+  if (atoi(service) == 0)
   {
-    char *port = getenv(service);
-	port = (port == NULL) ? "8000" : port;
-    sp = malloc(sizeof(*sp));
-    sp->s_port = htons((short)atoi(port));
+    sp = getservbyname(service,"tcp");
+    if (sp != NULL)
+      sin.sin_port = sp->s_port;
+    else
+    {
+      char *port = getenv(service);
+      port = (port == NULL) ? "8000" : port;
+      sin.sin_port = htons((short)atoi(port));
+    }
   }
-  if (sp == NULL || sp->s_port == 0)
+  else
+    sin.sin_port = htons((short)atoi(service));
+  if (sin.sin_port == 0)
   {
     printf("Error in MDSplus ConnectToPort: Unknown service: %s\nSet environment variable %s if port is known\n",service,service);
     return INVALID_SOCKET;
   }
   sin.sin_family = AF_INET;
-  sin.sin_port = sp->s_port;
   memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
   status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
   if (status < 0)
@@ -745,11 +750,21 @@ static SOCKET ConnectToPort(char *host, char *service)
 
 SOCKET  ConnectToMds(char *host)
 {
-  return ConnectToPort(host, "mdsip");
+  char hostpart[256] = {0};
+  char portpart[256] = {0};
+  sscanf(host,"%[^:]:%s",hostpart,portpart);
+  if (strlen(portpart) == 0)
+    strcpy(portpart,"mdsip");
+  return ConnectToPort(hostpart,portpart);
 }
 
 SOCKET  ConnectToMdsEvents(char *host)
 {
+  char hostpart[256] = {0};
+  char portpart[256] = {0};
+  sscanf(host,"%[^:]:%s",hostpart,portpart);
+  if (strlen(portpart) == 0)
+    strcpy(portpart,"mdsipe");
   return ConnectToPort(host, "mdsipe");
 }
 

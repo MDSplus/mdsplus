@@ -822,11 +822,16 @@ static int CreateMdsPort(char *service, int multi_in)
     return 0;
   }
   FD_SET(s,&fdactive);
-  sp = getservbyname(service,"tcp");
-  if (sp == NULL)
+  sin.sin_port = htons((short)atoi(service));
+  if (sin.sin_port == 0)
   {
-    printf("unknown service: %s/tcp\n",service);
-    exit(1);
+    sp = getservbyname(service,"tcp");
+    if (sp == NULL)
+    {
+      printf("unknown service: %s/tcp\n",service);
+      exit(1);
+    }
+    sin.sin_port = sp->s_port;
   }
   setsockopt(s, SOL_SOCKET,SO_RCVBUF,(char *)&recvbuf,sizeof(long));
   setsockopt(s, SOL_SOCKET,SO_SNDBUF,(char *)&sendbuf,sizeof(long));  
@@ -840,7 +845,6 @@ static int CreateMdsPort(char *service, int multi_in)
   {
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = INADDR_ANY;
-    sin.sin_port = sp->s_port;
     status = bind(s, (struct sockaddr *)&sin, sizeof(struct sockaddr_in));
     if (status < 0)
     {
