@@ -17,8 +17,5 @@ typedef unsigned long long _int64u;
 typedef unsigned _int64 _int64u;
 #endif
 
-#ifdef _WIN32
-typedef unsigned int off_t;
-#endif
 
 #endif

@@ -31,6 +31,7 @@
 #if defined(HAVE_WINDOWS_H)
 #include <windows.h>
 #include <process.h>
+typedef int ssize_t;
 #else
 #ifndef SOCKET_ERROR
 #define SOCKET_ERROR -1
@@ -405,6 +406,7 @@ int mdsip(int portIn, char modeIn,  int compressionIn)
   MaxCompressionLevel = compressionIn;
 
 #else
+#ifndef _WIN32
 static void sigchld_handler(int num)
                     {
                       sigset_t set, oldset;
@@ -462,9 +464,13 @@ static void sigchld_handler(int num)
                       sigprocmask(SIG_UNBLOCK, &set, &oldset);
                     }
 
+#endif
+
 int main(int argc, char **argv)
 {
+#ifndef _WIN32
   signal(SIGCHLD,sigchld_handler);
+#endif
   InitializeSockets();
   /* DebugBreak(); */
   if (!CommandParsed) 
@@ -1063,17 +1069,17 @@ static void ProcessMessage(Client *c, Message *message)
     case MDS_IO_READ_K:
       {
         void *buf = malloc(message->h.dims[2]);
-	ssize_t nbytes = read(message->h.dims[1],buf,(size_t)message->h.dims[2]);
+      	ssize_t nbytes = read(message->h.dims[1],buf,(size_t)message->h.dims[2]);
         if (nbytes > 0)
-	{
+        {
           DESCRIPTOR_A(ans_d,1,DTYPE_B,0,0);
           ans_d.pointer=buf;
           ans_d.arsize=nbytes;
           SendResponse(c,1,(struct descriptor *)&ans_d);
         }
         else
-	{ 
-	  DESCRIPTOR(ans_d,"");
+        { 
+	        DESCRIPTOR(ans_d,"");
           SendResponse(c,1,(struct descriptor *)&ans_d);
         }
 	break;
