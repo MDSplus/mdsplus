@@ -4,14 +4,13 @@
 ;  return
 ;end
 
-
-
 pro MdsPut,node,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,quiet=quiet,status=status
   ;; note that MdsIpShr version of MdsPut had 32 arguments in addition
   ;; to expression 
 
-  forward_function mdsIsClient,mdsIdlImage,mds$socket,MdsRoutinePrefix,MdsIPImage,MdsGetAnsFn
-
+  forward_function mdsIsClient,mdsIdlImage,mds$socket,MdsRoutinePrefix,MdsIPImage,MdsGetAnsFn,MdsCheckArg
+  MdsCheckArg,node,type="STRING",name="node"
+  MdsCheckArg,expression,type="STRING",name="expression"
   if (mdsIsClient()) then begin
 
     sock = mds$socket(status=status,quiet=quiet)
@@ -89,7 +88,7 @@ pro MdsPut,node,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,ar
     endif else begin
         
       status = 0L
-      cmd = 'status = call_external(value=[1b,1b,bytarr('+strtrim(n_params()*2,2)+')],MdsIdlImage(),"IdlMdsPut",node,expression'
+      cmd = 'status = call_external(value=[1b,1b,bytarr('+strtrim(n_params()*2,2)+')],MdsIdlImage(),"IdlMdsPut",string(node),string(expression)'
       args = n_params() - 2
       for i=1,args do begin
         arg = 'arg'+strtrim(i,2)
@@ -100,7 +99,7 @@ pro MdsPut,node,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,ar
       dummy = execute(cmd)
       if dummy then begin
         if not status then begin
-          msg = 'Error evaluating expression'
+          msg = 'Error in MdsPut:' + MdsValue('getmsg($)',status,/quiet)
         endif
       endif else begin
         msg = 'Error in call external'
