@@ -1,0 +1,11 @@
+LIBRARY	MdsMath
+CODE	PRELOAD MOVEABLE DISCARDABLE
+DATA	PRELOAD SINGLE
+EXPORTS
+;
+boxsmooth
+csint_
+csakm_
+csvalv_
+csderv_
+csitgv_
