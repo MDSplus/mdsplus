@@ -557,7 +557,6 @@ actions/Makefile
 camshr/Makefile
 ccl/Makefile 
 cdu/Makefile 
-cts/Makefile
 d3dshr/Makefile 
 dwscope/Makefile 
 gen_device/Makefile
