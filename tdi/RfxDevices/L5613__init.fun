@@ -26,7 +26,7 @@ public fun L5613__init(as_is _nid, optional _method)
 	}
 	_range_a_path = getnci(DevNodeRef(_nid, _N_CHAN_A_RANGE), 'fullpath');
 	_output_a_path = getnci(DevNodeRef(_nid, _N_CHAN_A_OUTPUT), 'fullpath');
-	_input_a = compile(_output_a_path // ' / ' //_range_a_path // ' * `_constant ');
+	_input_a = compile(_output_a_path // ' * ' //_range_a_path // ' / `_constant ');
 
 	DevNodeCvt(_nid, _N_CHAN_B_RANGE, [100.,50.,20.,10.,5.,2.,1.,0.5,0.2,0.], [0,1,2,4,5,6,8,9,10,12], _range_b=-1);
 	if(_range_b == -1)
@@ -36,7 +36,7 @@ public fun L5613__init(as_is _nid, optional _method)
 	}
 	_range_b_path = getnci(DevNodeRef(_nid, _N_CHAN_B_RANGE), 'fullpath');
 	_output_b_path = getnci(DevNodeRef(_nid, _N_CHAN_B_OUTPUT), 'fullpath');
-	_input_b = compile(_output_b_path // ' / ' //_range_b_path // ' * `_constant ');
+	_input_b = compile(_output_b_path // ' * ' //_range_b_path // ' / `_constant ');
 
 	_w = 0;
 
