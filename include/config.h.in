@@ -139,6 +139,12 @@
 /* Define if you have pthread_lock_global_np routine. */
 #undef HAVE_PTHREAD_LOCK_GLOBAL_NP
 
+/* Define if you have pthread_mutexattr_settype routine. */
+#undef HAVE_PTHREAD_MUTEXATTR_SETTYPE
+
+/* Define if you have pthread_mutexattr_setkind_np routine. */
+#undef HAVE_PTHREAD_MUTEXATTR_SETKIND_NP
+
 /* Define if you have <readline/readline.h> header file. */
 #undef HAVE_READLINE_READLINE_H
 

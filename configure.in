@@ -269,6 +269,8 @@ AC_CHECK_LIB(pthread,pthread_kill,LIBPTHREAD="-lpthread",AC_CHECK_LIB(cma,pthrea
 AC_CHECK_LIB(exc,__Ots_CSpecificHandler,LIBPTHREAD="$LIBPTHREAD -lexc")
 AC_CHECK_LIB(pthread,pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL_NP))
 AC_CHECK_LIB(pthread,__pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL_NP))
+AC_CHECK_LIB(pthread,pthread_mutexattr_settype,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_SETTYPE))
+AC_CHECK_LIB(pthread,pthread_mutexattr_setkind_np,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_SETKIND))
 AC_CHECK_LIB(readline,readline,LIBREADLINE="-lreadline -lcurses",LIBREADLINE="",-lcurses)
 
 AC_ARG_ENABLE(d3d,
