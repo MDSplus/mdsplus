@@ -72,7 +72,8 @@ public class ProfileDialog extends JDialog implements WaveformListener
         float xt[] = new float[pixels_line.length];
         
         if(w_profile_line == null)
-          addProfileLine();  
+          addProfileLine();
+          
         for(int i = 0; i < pixels_line.length; i++)
         {
             x[i] = (float)(pixels_line[i] & 0xff);
@@ -132,8 +133,7 @@ public class ProfileDialog extends JDialog implements WaveformListener
             }
             wave[1].Update(yt, y);
         } 
-        
-        
+               
         if(pixels_signal != null && pixels_x.length > 0 &&
            frames_time != null && frames_time.length > 0)
         {
@@ -176,8 +176,7 @@ public class ProfileDialog extends JDialog implements WaveformListener
                 yt[i] = (float)start_pixel_y + i;
             wave[1].Update(yt, values_y);
         } 
-        
-        
+                
         if(values_signal != null && values_signal.length > 0 &&
            frames_time != null && frames_time.length > 0)
         {
@@ -224,8 +223,6 @@ public class ProfileDialog extends JDialog implements WaveformListener
                     }   
                 }
             break;
-	    }
-        
-    }
-    
+	    }   
+    }  
 }

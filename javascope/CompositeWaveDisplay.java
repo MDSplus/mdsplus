@@ -70,6 +70,9 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
    //       ((CompositeWaveDisplay)cd).addSignal("rda://data.jet.uk/PPF/40000/MAGN/BPOL", 1,3, "blue", "jet", true, 0);
           ((CompositeWaveDisplay)cd).addSignal("demo://sin", 1,1, "blue", "demo", true, 0);
           ((CompositeWaveDisplay)cd).setLimits(1,1, -100, 100, -2, 2);
+  
+          ((CompositeWaveDisplay)cd).addFrames("mds://150.178.3.80/prova/-1/\\PROVA::TOP:VIDEO", 2,2);
+  
           
     }
     
@@ -101,10 +104,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         this.isApplet = isApplet;
     }
     
-    public void addProtocol(DataAccess da)
-    {
-       DataAccessURL.addProtocol(da); 
-    }
     
     private void setDataAccess()
     {
@@ -112,6 +111,11 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         DataAccessURL.addProtocol(new MdsAccess());
         DataAccessURL.addProtocol(new TwuAccess());
         DataAccessURL.addProtocol(new DemoAccess());            
+    }
+    
+    public void addProtocol(DataAccess dataAccess)
+    {
+        DataAccessURL.addProtocol(dataAccess);
     }
 
     public void init()
@@ -483,7 +487,102 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         }
 	}
 
-    public void addSignal(String url,int row, int column,  
+    public void addFrames(String url, int row, int column)
+    {
+        Component c = null;
+        MultiWaveform w = null;
+        WaveInterface wi = null;
+        DataAccess da = null;
+        Signal s;
+
+        if(DataAccessURL.getNumProtocols() == 0)
+            setDataAccess();
+        
+        c = wave_container.getGridComponent(row, column);
+        
+        try
+        {
+            da = DataAccessURL.getDataAccess(url);
+            da.setProvider(url);
+            
+            if(c != null)
+            {
+                w = (MultiWaveform)c;
+                                
+                wi  = w.getWaveInterface();
+                if(wi == null) 
+                {
+                    if( w.IsImage() || (w.GetSignals() != null && w.GetSignals().size() != 0))
+                    {                       
+		                JOptionPane.showMessageDialog(this, 
+		                                            "The selected waveform panel contains signals or frame.\n" + 
+		                                            "\nDefine a new waveform panel to show frame image from "+
+		                                            da.getDataProvider().getClass().getName() + 
+		                                            " data provider.",
+		                                            "alert", 
+		                                            JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                                        
+                    w.setWaveInterface((wi = new WaveInterface(w, da.getDataProvider())));
+                }
+                else
+                {
+                    if(!wi.getDataProvider().getClass().getName().equals(da.getDataProvider().getClass().getName()))
+                    {
+		                JOptionPane.showMessageDialog(this, 
+		                                            "The selected waveform panel is already connected to " + 
+		                                            wi.getDataProvider().getClass().getName() +
+		                                            " data provider.\nDefine a new waveform panel to show frame image from "+
+		                                            da.getDataProvider().getClass().getName() + 
+		                                            " data provider.",
+		                                            "alert", 
+		                                            JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+            } 
+            else 
+            {
+                w = (MultiWaveform)wave_container.CreateWaveComponent();
+                w.setWaveInterface((wi = new WaveInterface(w, da.getDataProvider())));            
+                wave_container.add(w, row, column);                
+            }
+                      
+            
+            if(da != null && wi != null)
+            {                                       
+                wi.experiment = da.getExperiment();
+                wi.AddFrames(da.getSignalName());
+                wi.setShotArray(da.getShot());
+                                            
+	            wi.StartEvaluate();
+		        wi.EvaluateOthers();
+		        if(wi.error != null)
+		            throw(new IOException(wi.error));
+		        w.Update(wi.frames);
+            }
+        }
+        catch(Exception e)
+        {
+            if(e instanceof  AccessControlException)
+            {
+		        JOptionPane.showMessageDialog(this, 
+		                                        e.toString()+"\n url "+url +
+		                                        "\nUse policytool.exe in  JDK or JRE installation directory to add socket access permission\n", 
+		                                        "alert", 
+		                                        JOptionPane.ERROR_MESSAGE);
+            } else {
+		        JOptionPane.showMessageDialog(this, 
+		                                        e.toString(), 
+		                                        "alert", 
+		                                        JOptionPane.ERROR_MESSAGE);
+            }
+        }            
+    }
+
+
+    public void addSignal(String url, int row, int column,  
         String color, String label, boolean inter, int marker)
     {
         

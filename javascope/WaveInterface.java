@@ -86,12 +86,17 @@ public class WaveInterface
         
     public WaveInterface()
     {
-        CreateWaveInterface(null);
+        CreateWaveInterface(null, null);
     }    
 
     public WaveInterface(DataProvider dp)
     {
-        CreateWaveInterface(dp);
+        CreateWaveInterface(null, dp);
+    }
+    
+    public WaveInterface(Waveform wave, DataProvider dp)
+    {
+        CreateWaveInterface(wave, dp);
     }
     
     public void Erase()
@@ -234,7 +239,7 @@ public class WaveInterface
     
     
     
-    private void CreateWaveInterface(DataProvider dp)
+    private void CreateWaveInterface(Waveform wave, DataProvider dp)
     {
         this.wave = wave;
         
@@ -419,6 +424,21 @@ public class WaveInterface
         }
         return name;
     }
+
+    public void AddFrames(String frames)
+    {
+        AddFrames(frames, null);
+    }
+ 
+    public void AddFrames(String frames, String frames_time)
+    {
+        SetAsImage(true);
+        in_x = new String[1];
+        in_y = new String[1];
+        in_x[0] = frames_time;
+        in_y[0] = frames;
+    }
+
     
     public boolean AddSignal(String y_expr)
     {
@@ -596,6 +616,12 @@ public class WaveInterface
         {
 	        num_signal = num_waves / num_shot * curr_num_shot;
 	        num_expr = num_waves / num_shot;
+        }
+        
+        if(is_image)
+        {
+            shots = curr_shots;
+            return true;
         }
 
 	    if(num_signal == 0)

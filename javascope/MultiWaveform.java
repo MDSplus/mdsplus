@@ -551,6 +551,13 @@ public class MultiWaveform extends Waveform
 	    }
     }
     
+    public void Update(Frames frames)
+    {
+        this.frames = frames;
+        this.is_image = true;
+        Update();
+    }
+    
     public void Update(Signal signals[])
     {
 	    int i;

@@ -797,10 +797,11 @@ class Frames extends Canvas
     public Point getImagePoint(Point p, Dimension d)
     {
         Point p_out = new Point(0, 0);
-        Dimension fr_dim = getFrameSize(curr_frame_idx, d);
         
         if(curr_frame_idx != -1 && frame.size() != 0)
         {
+            Dimension fr_dim = getFrameSize(curr_frame_idx, d);
+  
             Dimension view_dim;
             Dimension dim;
             
