@@ -21,22 +21,17 @@ AutoReqPRov: no
 Main libraries and routines to get MDS operational
 
 %prep
-echo " in prep"
 %setup
-echo " in setup"
+
 %build
-echo " in build"
 ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --enable-nodebug
 make
 
 %install
-echo " in install"
 rm -rf $RPM_BUILD_ROOT
 make install
 
 %clean
-echo " in clean"
-#mv $RPM_BUILD_ROOT/usr/local/matlab /root/mattmp
 rm -rf $RPM_BUILD_ROOT
 
 %post 

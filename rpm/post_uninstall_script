@@ -9,13 +9,19 @@ Linux*)
 #
 rm /etc/profile.d/mdsplus.csh
 rm /etc/profile.d/mdsplus.sh
+#
+# Remove man page configuration
+/bin/cp /etc/man.config /etc/man.config.before_mdsplus_removal
+/bin/grep -v "^MANPATH /usr/local/mdsplus/man" /etc/man.config.before_mdsplus_removal > /etc/man.config
 ;;
 OSF1*)
 #
 # Compaq TruUNIX post uninstall script
 #
 echo Removing mdsplus library symbolic links
-/bin/rm `ls -l /usr/local/lib/*.so | /bin/grep '\-\> /usr/local/mdsplus/lib' | /bin/awk '{print $9}'`
+/bin/rm `/bin/ls -l /usr/local/lib/*.so | /bin/grep '\-\> /usr/local/mdsplus/lib' | /bin/awk '{print $9}'`
+echo Removing mdsplus man page symbolic links
+/bin/rm `/bin/ls -l /usr/local/man/*/*.gz | /bin/grep '\-\> /usr/local/mdsplus/man' | /bin/awk '{print $9}'`
 echo Removing mdsplus from login scripts
 /bin/cp /etc/profile /etc/profile.before_mdsplus_removal
 /bin/grep -v "^. /usr/local/mdsplus/etc/profile.d/mdsplus.sh" /etc/profile.before_mdsplus_removal > /etc/profile

@@ -15,6 +15,16 @@ else
 fi
 /sbin/ldconfig
 #
+# Add /usr/local/mdsplus/man to manpath
+#
+echo Configuring mdsplus man pages
+if grep "^MANPATH /usr/local/mdsplus/man" /etc/man.config > /dev/null
+then
+	true
+else
+	echo "MANPATH /usr/local/mdsplus/man" >> /etc/man.config
+fi
+#
 # Add mdsip to services
 #
 echo Adding mdsip MDSplus data server
@@ -50,6 +60,33 @@ OSF1*)
 #
 echo Configuring mdsplus libraries
 ln -sf /usr/local/mdsplus/lib/*.so /usr/local/lib
+#
+# Put symlinks in /usr/local/man to all MDSplus man pages
+#
+echo Configuring mdsplus man pages
+if [ ! -r /usr/local/man ]; then
+mkdir /usr/local/man
+mkdir /usr/local/man/man1
+mkdir /usr/local/man/man5
+mkdir /usr/local/man/man8
+chmod -R 755 /usr/local/man
+else
+if [ ! -r /usr/local/man/man1 ]; then
+mkdir /usr/local/man/man1
+chmod 755 /usr/local/man/man1
+fi
+if [ ! -r /usr/local/man/man5 ]; then
+mkdir /usr/local/man/man5
+chmod 755 /usr/local/man/man5
+fi
+if [ ! -r /usr/local/man/man8 ]; then
+mkdir /usr/local/man/man8
+chmod 755 /usr/local/man/man8
+fi
+fi
+ln -sf /usr/local/mdsplus/man/man1/*.gz /usr/local/man/man1
+ln -sf /usr/local/mdsplus/man/man5/*.gz /usr/local/man/man5
+ln -sf /usr/local/mdsplus/man/man8/*.gz /usr/local/man/man8
 #
 # Add mdsip to services
 #
