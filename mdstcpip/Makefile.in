@@ -17,6 +17,11 @@ LDFLAGS=@LDFLAGS@
 LIBS=@GLOBUS_LIBS@ @LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @MEMCHKLIB@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
+ifeq "@SHARETYPEMOD@x" "x"
+	modules =
+else
+	modules = @MAKESHLIBDIR@libMdsIpShr@SHARETYPEMOD@ 
+endif
 
 SOURCES = \
 	mdsipshr.c mdsiputil.c vmshpwd.c mdsip_socket_io.c $(COMPRESSION_SOURCES)
@@ -26,6 +31,7 @@ OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = mdsipshr.export
 
 all : @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ \
+      $(modules) \
       @MAKEBINDIR@ @MAKELIBDIR@ @MAKEETCDIR@ \
       @MAKEBINDIR@mdsiptest @MAKEBINDIR@mdsip \
       @MAKEBINDIR@mdsipd @MAKEETCDIR@mdsip.hosts \
@@ -51,6 +57,9 @@ install:
                 chmod 755 @libdir@; \
         fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ @libdir@
+        ifdef modules
+		$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsIpShr@SHARETYPEMOD@ @libdir@
+        endif
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsip	@bindir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsipd	@bindir@
 	if test "@SHARETYPE@" != ".a" ; then \
@@ -81,6 +90,11 @@ install:
 @MAKELIBDIR@libMdsIpShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
+
+ifdef modules
+@MAKESHLIBDIR@libMdsIpShr@SHARETYPEMOD@ : $(OBJECTS)
+	$(LD) -o $@ @LINKMODULE@ $(OBJECTS) $(LIBS) 
+endif
 
 @MAKELIBDIR@libMdsIpUtil.a : mdsiputil.o mdsip_socket_io.o $(COMPRESSION_OBJECTS)
 	$(AR) -cr $@ mdsiputil.o mdsip_socket_io.o $(COMPRESSION_OBJECTS)

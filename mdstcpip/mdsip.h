@@ -17,6 +17,9 @@
 #if defined(_WIN32) || defined(__VMS)
 #define I_NREAD FIONREAD
 #endif
+#if defined(__APPLE__)
+#define I_NREAD FIONREAD
+#endif
 
 #if defined(_WIN32)
 #define ioctl ioctlsocket
@@ -55,6 +58,9 @@
 #else
 #define INVALID_SOCKET -1
 #include <sys/types.h>
+#ifdef __APPLE__
+#include <pwd.h>
+#endif
 #ifndef HAVE_VXWORKS_H
 #ifndef __VMS
 #include <fcntl.h>

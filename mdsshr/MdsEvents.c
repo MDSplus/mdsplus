@@ -570,9 +570,17 @@ struct msqid_ds {int msg_qnum; int msg_stime; int msg_rtime; int msg_ctime;};
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#if USE_SEMAPHORE_H
+#include <semaphore.h>
+#else
 #include <sys/sem.h>
+#endif
+#if USE_PIPED_MESSAGING
+#include <sys/stat.h>
+#else
 #include <sys/msg.h>
 #include <sys/time.h>
+#endif
 #include <sys/socket.h>
 #include <unistd.h>
 #include <signal.h>
@@ -673,7 +681,7 @@ static int receive_sockets[256];  	/* Socket to receive external events  */
 static int send_sockets[256];  		/* Socket to send external events  */
 static char *receive_servers[256];	/* Receive server names */
 static char *send_servers[256];		/* Send server names */
-static pthread_t thread;       		/* Thread for local event handling */
+static pthread_t local_thread = 0;      /* Thread for local event handling */
 static pthread_t external_thread;	/* Thread for remote event handling */
 static int external_thread_created = 0; /* Thread for remot event handling flag */
 static int external_shutdown = 0;	/* flag to request remote events thread termination */
@@ -714,6 +722,8 @@ static int getSemId()
 		  printf("Error creating locking semaphore");
 		  semId = -1;
 	  }
+#elif USE_SEMAPHORE_H
+	  perror("Internal error with locking semaphore");
 #else
     semId = semget(SEM_ID, 1, 0);
     if(semId == -1)
@@ -767,6 +777,25 @@ static int semSet(int lock)
 		}
 	}
 	return status;
+#elif USE_SEMAPHORE_H
+    /* MacOS X prior to 10.2 does'nt have SysV IPC... it does have POSIX semaphores,
+     * we won't bother with the silly getSemId call since we have type problems*/
+    
+    static sem_t *sem_p=NULL;
+
+    if (sem_p == NULL) {
+      sem_p = sem_open("MDSEvents Semaphore",O_CREAT,0777,1);
+      if (SEM_FAILED == (int)sem_p)
+	perror("Error creating locking semaphore");
+    }
+
+    status = lock ? sem_wait(sem_p) : sem_post(sem_p);
+
+    if (status == -1)  
+      perror("Error locking MdsEvent system\n");
+    else 
+      semLocked = lock;
+    return(status == 0);
 #else
     struct sembuf psembuf;
     psembuf.sem_num = 0;
@@ -794,7 +823,6 @@ static int releaseLock()
 
 static int attachSharedInfo()
 {
-    int i;
     int size = sizeof(struct SharedEventInfo) * MAX_ACTIVE_EVENTS + 
 	sizeof(struct SharedEventName) * MAX_EVENTNAMES + 2 * sizeof(int);
     shmId = shmget(SHMEM_ID, size, 0777 | IPC_CREAT |IPC_EXCL);
@@ -827,12 +855,23 @@ static int attachSharedInfo()
 }
 
 
+
+
 static int readMessage(char *event_name, int *data_len, char *data)
 {
     struct EventMessage message;
     int status; 
+
+#ifdef USE_PIPED_MESSAGING
+    if((status = read(msgId, &message, sizeof(message))) != sizeof(message)) {
+       /* status will be first the size of the message, then 0 for the pipe closing and then -1 */
+       /* we can return -1 when it goes to 0 */
+        status = status ? status : -1 ;
+    } else {
+#else /* ! USE_PIPED_MESSAGING */
     if((status = msgrcv(msgId, &message, sizeof(message)-sizeof(message.mtype), 1, 0)) != -1)
     {
+#endif /* USE_PIPED_MESSAGING */
 	strncpy(event_name, message.name, MAX_EVENTNAME_LEN - 1);
 	*data_len = message.length;
 	if(message.length > 0)
@@ -850,18 +889,42 @@ static int readMessage(char *event_name, int *data_len, char *data)
 #undef select
 #endif
 
+#ifdef USE_PIPED_MESSAGING
+static void setKeyPath(char *path, int key)
+{
+    sprintf(path,"/tmp/MdsEvent.%d",key);
+}
+#endif
+
 static void setHandle()
 {
    pthread_t thread;
    if(!msgId)
     {
+#ifdef USE_PIPED_MESSAGING
+      char keypath[PATH_MAX];
+      mode_t um;
+      
+      um = umask(0);
+      setKeyPath(keypath,msgKey);
+      while (mkfifo(keypath,0777) == -1) {
+	if (errno != EEXIST) 
+ 	   perror("Fatal error with MdsEvent pipes");
+        setKeyPath(keypath,++msgKey);
+      }
+      /* don't block on open */
+      msgId = open(keypath, O_RDONLY | O_NONBLOCK);
+      
+      /* block on next read */
+      fcntl(msgId, F_SETFL, 0);
+      umask(um);
+#else 
 	/* get first unused message queue id */
 	while((msgId = msgget(msgKey, 0777 | IPC_CREAT | IPC_EXCL)) == -1)
 	    msgKey++;
-
+#endif
 	if(pthread_create(&thread, pthread_attr_default, handleMessage, 0) !=  0)
 	    perror("pthread_create");
-	
     } 
 }
 
@@ -869,8 +932,12 @@ static int sendMessage(char *evname, int key, int data_len, char *data)
 {
     struct EventMessage message;
     int status, msgid;
+#ifdef USE_PIPED_MESSAGING
+    char keypath[PATH_MAX];
+#else
     struct msqid_ds msginfo;
     time_t curr_time;
+#endif
 
     strncpy(message.name, evname, MAX_EVENTNAME_LEN - 1);
     message.mtype = 1;
@@ -881,6 +948,21 @@ static int sendMessage(char *evname, int key, int data_len, char *data)
 	memcpy(message.data, data, data_len);
     }
 
+#ifdef USE_PIPED_MESSAGING
+    setKeyPath(keypath,key);
+    status = msgid = open(keypath, O_WRONLY | O_NONBLOCK);
+    /* opening with O_NONBLOCK will error if its not already open, 
+      so this should take care of zombie Msgs, I don't know how to deal with
+      stalls. */
+    if (status == -1) {
+      removeDeadMsg(key);
+      printf("Removed dead message pipe %d, error %d\n", key, errno);
+      return 0;
+    }
+    write(msgid,&message,sizeof(message));
+    close(msgid);
+    return 0;
+#else
     status = msgid = msgget(key, 0777);
     if(msgid == -1)
 	perror("msgget");
@@ -917,6 +999,7 @@ static int sendMessage(char *evname, int key, int data_len, char *data)
 	    perror("msgsend");
     }
     return status;
+#endif
 }
 
 /*static void attachExitHandler(void (*handler)())
@@ -946,27 +1029,56 @@ static void attachExitHandler(void (*handler)())
 static void releaseMessages()
 {
     void *dummy;
+#ifdef USE_PIPED_MESSAGING
+    char keypath[PATH_MAX];
+#else
     struct msqid_ds buf;
+#endif
+
     if(!msgId) return;
 
-    pthread_join(thread, &dummy);
+
+#ifdef USE_PIPED_MESSAGING    
+    /* DTG... I don't understand the purpose of the thread_join,
+       but it does crash MacOS X if not initialized */
+    if (local_thread) {
+        pthread_join(local_thread, &dummy);
+        local_thread = 0;
+    }
     
+    /* I think it is true that when msgId is set so is msgKey */
+    close(msgId);
+    setKeyPath(keypath,msgKey);
+    unlink(keypath);
+
+#else
+    pthread_join(local_thread, &dummy);
     if(msgctl(msgId, IPC_RMID, &buf) == -1)
 	    perror("msgsend");
+#endif
 
 }
 
 
 static void removeMessage(int key)
 {
+
+#ifdef USE_PIPED_MESSAGING
+    char keypath[PATH_MAX];
+    setKeyPath(keypath, key);
+    unlink(keypath);
+
+#else
+
     struct msqid_ds buf;
     int status, msgid;
-   
+
     status = msgid = msgget(key, 0777);
     if(msgid == -1)
 	perror("msgget");
     status = msgctl(msgid, IPC_RMID, &buf);
     if(status == -1) perror("msgctl");
+#endif
 }
  
 static int createThread(pthread_t *thread, void (*rtn)(), void *par)
@@ -1061,7 +1173,7 @@ static void *handleMessage(void * dummy)
     	    {
 	        if(private_info[i].active && !strcmp(event_name, private_info[i].name))
 		{
-                    pthread_t thread;
+/*                    pthread_t thread; */
 /*		    (*(private_info[i].astadr))(private_info[i].astprm, data_len, data);*/
 /* Do not execute ast routine directly, rather launch a thread for doing it */
 
@@ -1074,11 +1186,11 @@ static void *handleMessage(void * dummy)
 			arg_d->data = malloc(data_len);
 			memcpy(arg_d->data, data, data_len);
 			} /* will be freed by the ExecuteAst */
-		    createThread(&thread, executeAst, arg_d);
+		    createThread(&local_thread, executeAst, arg_d);
 #ifdef __hpux
-                    pthread_detach(&thread);
+                    pthread_detach(&local_thread);
 #else
-                    pthread_detach(thread);
+                    pthread_detach(local_thread);
 #endif
 		}
 	    }
@@ -1094,7 +1206,7 @@ static void *handleMessage(void * dummy)
 static void cleanup(int dummy)
 {
 /* remove all events declared by the process and not removed by MdsEventCan */
-    int i, j, curr_id, prev_id;
+    int i, curr_id, prev_id;
 
     if(is_exiting) return;
 
@@ -1712,6 +1824,7 @@ int MDSEventCan(int eventid)
       releaseLock();
     }
     evinfo->active = 0;
+    return 0;
 }
 
 
@@ -1795,6 +1908,7 @@ int MDSEvent(char *evname, int data_len, char *data)
     }
 
     releaseLock();
+    return 0;
 }
 		    
 
@@ -1842,6 +1956,7 @@ void InitializeSharedInfo()
     initializeShared();
 }
 		    		
+#ifndef USE_PIPED_MESSAGING                                
 void RemoveMessages()
 {
     int i, msgid, status;
@@ -1858,6 +1973,7 @@ void RemoveMessages()
 	}
     }
 }
+#endif
 	
 #endif
 

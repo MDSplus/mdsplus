@@ -248,6 +248,11 @@ static SOCKET ConnectToPort(char *host, char *service)
         static char user[128];
         int bsize=128;
         char *user_p = "Macintosh User";
+#elif __APPLE__
+    char *user_p;
+    struct passwd *pwd;
+    pwd = getpwuid(geteuid());
+    user_p = pwd->pw_name;
 #else
     char *user_p;
 #ifdef HAVE_VXWORKS_H

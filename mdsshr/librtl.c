@@ -626,6 +626,10 @@ void *dlsym(void *handle, char *name)
   int s = shl_findsym((shl_t *)&handle,name,0,&symbol);
   return symbol;
 }
+#elif defined(__MACH__)
+#define USE_MACH_MODULE_LOADER
+#include <mach-o/dyld.h>
+#include <sys/stat.h>
 #else
 #include <dlfcn.h>
 #endif
@@ -959,6 +963,173 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     return LibKEYNOTFOU;
   } else
     return 1;  
+}
+
+#elif defined(USE_MACH_MODULE_LOADER)
+
+static char *FIS_Error = NULL;
+char *LibFindImageSymbolErrString()
+{
+  return FIS_Error;
+}
+
+/*
+ * helper routine: search for a named module in various locations
+ */
+static int search_lib_paths(const char *filename, char *pathbuf,
+			    struct stat *stat_buf)
+{
+    const char *pathspec;
+    const char *element;
+    const char *p;
+    char *q;
+    char *pathbuf_end;
+    const char *envvars[] = {
+        "$DYLD_LIBRARY_PATH",
+        "$LD_LIBRARY_PATH",
+        "/usr/local/lib:/usr/lib:/lib",
+        NULL };
+    int envvar_index;
+
+        pathbuf_end = pathbuf + PATH_MAX - 8;
+
+	for(envvar_index = 0; envvars[envvar_index]; envvar_index++){
+	    if(envvars[envvar_index][0] == '$'){
+	        pathspec = getenv(envvars[envvar_index]+1);
+	    }
+	    else {
+	        pathspec = envvars[envvar_index];
+	    }
+
+	    if(pathspec != NULL){
+	        element = pathspec;
+		while(*element){
+	            /* extract path list element */
+		    p = element;
+		    q = pathbuf;
+		    while(*p && *p != ':' && q < pathbuf_end) *q++ = *p++;
+		    if(q == pathbuf){  /* empty element */
+		        if(*p){
+		            element = p+1;
+			    continue;
+			}
+			break;
+		    }
+		    if (*p){
+		        element = p+1;
+		    }
+		    else{
+		        element = p;  /* this terminates the loop */
+		    }
+
+		    /* add slash if neccessary */
+		    if(*(q-1) != '/' && q < pathbuf_end){
+		        *q++ = '/';
+		    }
+
+		    /* append module name */
+		    p = filename;
+		    while(*p && q < pathbuf_end) *q++ = *p++;
+		    *q++ = 0;
+
+		    if(q >= pathbuf_end){
+		        /* maybe add an error message here */
+		        break;
+		    }
+
+		    if(stat(pathbuf, stat_buf) == 0){
+		        return 0;
+		    }
+		}
+	    }
+	}
+
+	/* we have searched everywhere, now we give up */
+	return -1;
+}
+
+int LibFindImageSymbol(struct descriptor *library, struct descriptor *symbol, void **symbol_value)
+{
+  char 				*c_lib, *c_sym;
+  char 				path[PATH_MAX+1];
+  char			        *libname, *symname;
+  struct stat 			stat_buf;
+  NSSymbol 			sym;
+  const struct mach_header 	*image = 0;
+  NSLinkEditErrors		leErrs;
+  int 				leErrN;
+  const char 			*errFile, *errStr;
+  int 				loaded;
+  size_t			len;
+
+  
+  *symbol_value = NULL;
+
+
+  if (FIS_Error != NULL) {
+      printf("free FIS? \n");
+    free(FIS_Error);
+    FIS_Error = NULL;
+  }
+
+  len = (size_t) symbol->length +2;
+  symname = (char *) malloc(len);
+  symname[0] = '_';
+  symname[(size_t)symbol->length+1] = '\0';
+
+  c_lib = MdsDescrToCstring(library);
+  c_sym = MdsDescrToCstring(symbol);
+  
+/*  sprintf(symname,"_%s",c_sym); */
+
+  libname = (char *) malloc(3+sizeof(SHARELIB_TYPE)+strlen(c_lib));
+  sprintf(libname,"lib%s%s",c_lib,SHARELIB_TYPE);
+
+  if (search_lib_paths(libname,path,&stat_buf) == -1) { 
+    sprintf((FIS_Error = (char *)malloc(80+strlen(libname)+strlen(symname))),
+	   "Error finding library ""%s"": searching for symbol ""%s""",libname,symname);
+    //   printf("%s\n",FIS_Error);
+  } else {
+
+/* let's use NSAddImage API which perserves capability of two level namespace, requires >  10.1 */
+
+  image = NSAddImage(path,NSADDIMAGE_OPTION_RETURN_ON_ERROR); 
+  
+  if (!image) {
+    NSLinkEditError(&leErrs,&leErrN,&errFile,&errStr);
+    sprintf((FIS_Error = (char *)malloc(40+strlen(errFile)+strlen(errStr))),
+        "Error linking %s: %s",errFile,errStr);
+    //  printf("%s\n",FIS_Error);
+  } else {
+  
+  sym=NSLookupSymbolInImage(image, symname, NSLOOKUPSYMBOLINIMAGE_OPTION_RETURN_ON_ERROR);
+   
+  if (!sym) {
+     NSLinkEditError(&leErrs,&leErrN,&errFile,&errStr);
+     sprintf((FIS_Error = (char *)malloc(40+strlen(errFile)+strlen(errStr)+strlen(symname))),
+        "Error finding %s in %s : %s",symname,errFile,errStr);
+     //  printf("%s\n",FIS_Error);
+  } else {
+
+      *symbol_value = NSAddressOfSymbol(sym);
+      
+  if (*symbol_value == NULL) {
+    NSLinkEditError(&leErrs,&leErrN,&errFile,&errStr);
+    sprintf((FIS_Error = (char *)malloc(40+strlen(errFile)+strlen(errStr)+strlen(symname))),
+        "Error getting address of %s in %s : %s",symname,errFile,errStr);
+    // printf("%s\n",FIS_Error);
+  }
+  }}}
+
+  free(c_sym);
+  free(c_lib);
+  free(symname);
+  free(libname);
+
+   if (*symbol_value == NULL) {
+      return LibKEYNOTFOU;
+   } else
+        return 1;  
 }
 
 #else
@@ -1385,7 +1556,11 @@ time_t LibCvtTim(int *time_in,double *t)
     tmval = localtime(&dummy);
     memcpy(&time_local,time_in,sizeof(time_local));
     time_d = ((double)(time_local >> 24)) * 1.6777216 - 3.5067168e+09;
+#ifdef USE_TM_GMTOFF
+    t_out = (time_d > 0 ? time_d : 0) - tmval->tm_gmtoff;
+#else
     t_out = (time_d > 0 ? time_d : 0) + timezone - daylight * (tmval->tm_isdst ? 3600 : 0);
+#endif
     bintim = (long)t_out;
   }
   else
