@@ -4,9 +4,8 @@ LD=@LD@
 top_srcdir=@top_srcdir@
 RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
-X_CFLAGS=@X_CFLAGS@
 exec_prefix=@exec_prefix@
-CFLAGS=@CFLAGS@ @IDL_INC@ 
+CFLAGS=@CFLAGS@ @IDL_INC@ @X_CFLAGS@ 
 LDFLAGS=@LDFLAGS@ @IDL_LIB@
 X_LIBS=@X_LIBS@
 X_EXTRA_LIBS=@X_EXTRA_LIBS@
@@ -58,8 +57,5 @@ install:
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
-
-cw_wveditv5.o : cw_wveditv5.c
-	$(CC) -c -o $@ $(CFLAGS) cw_wveditv5.c $(X_CFLAGS) 
 
 @MAKEUIDDIR@cw_wvedit.uid : cw_wvedit.uil ; $(UIL) -o $@ cw_wvedit.uil
