@@ -26,11 +26,7 @@ public fun PXD114__init(as_is _nid, optional _method)
 
 	private _INVALID = 10E20;
 
-write(*, 'Start PDX114 INIT');
-DevLogErr(_nid, "CACCOLONA");
-abort();
-
-
+	write(*, 'Start PDX114 INIT');
 
 	_board_id = if_error(data(DevNodeRef(_nid, _N_NAME)), 'INVALID');
 	if(_board_id == 'INVALID')

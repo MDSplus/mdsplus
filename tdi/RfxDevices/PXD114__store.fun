@@ -78,7 +78,7 @@ write(*, 'Start PDX114 STORE');
     _handle = LECROY_PXD114->PXDOpen(_name);
 	if(_handle == 0)
 	{
-    	DevLogErr(_nid, "Cannot open device "// _board_id);
+    	DevLogErr(_nid, "Cannot open device "// _name);
 		abort();
 	}
 
