@@ -86,7 +86,7 @@ int IDLMdsEventCan(int argc, void * *argv)
 	 int eventid = (unsigned int)argv[1];
         int status;
         BlockSig(SIGALRM);
-	status = MdsEventCan(sock, eventid);
+	status = (sock >= 0) ? MdsEventCan(sock, eventid) : MDSEventCan(eventid);
         UnBlockSig(SIGALRM);
         for (e=EventList,p=0;e && e->loc_event_id != eventid; p=e,e=e->next);
         if (e)
@@ -117,7 +117,8 @@ int IDLMdsEvent(int argc, void * *argv)
   char *name = (char *)argv[3];
   EventStruct *e = (EventStruct *)malloc(sizeof(EventStruct));
   BlockSig(SIGALRM);
-  if (MdsEventAst(sock, name,(void (*)(int))EventAst,e,&e->event_id) & 1)
+  if (((sock >=0) ? MdsEventAst(sock, name,(void (*)(int))EventAst,e,&e->event_id) :
+                    MDSEventAst(name,(void (*)(int))EventAst,e,&e->event_id)) & 1)
   {
     char *parent_rec;
     char *stub_rec;
