@@ -34,13 +34,12 @@
 #include "treeshrp.h"
 extern void *DBID;
 
-static int       _TreeRemoveNodesTags(void *dbid, int nid);
 static void      _RemoveTagIdx(PINO_DATABASE *dblist, int tagidx);
 
 int TreeRemoveTag(char *name) { return _TreeRemoveTag(DBID, name); }
 int TreeRemoveNodesTags(int nid) { return _TreeRemoveNodesTags(DBID, nid);}
 
-static int       _TreeRemoveNodesTags(void *dbid, int nid)
+int       _TreeRemoveNodesTags(void *dbid, int nid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NODE *node;
@@ -71,8 +70,10 @@ static int       _TreeRemoveNodesTags(void *dbid, int nid)
 /*
  *  Routine to remove a tag from the tree given its name
  */
-static int _TreeRemoveTag(PINO_DATABASE  *dblist, char *name)
+
+int _TreeRemoveTag(void *dbid, char *name)
 {
+  PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   int idx;
   int status;
   if ((status = TreeFindTag(name, "\0", &idx))&1)

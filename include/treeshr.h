@@ -470,7 +470,8 @@ extern int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor, in
 extern int TreeQuitTree(char *tree, int shot);
 extern int _TreeQuitTree(void **dbid, char *tree, int shot);
 extern int TreeRemoveNodesTags(int nid);
-extern int TreeRemoveTag(struct descriptor *tagnam);
+extern int TreeRemoveTag(char *tagnam);
+extern int _TreeRemoveTag(void *dbid, char *tagnam);
 extern int TreeRenameNode(int *nid, struct descriptor *newnamedsc_ptr);
 extern void TreeRestoreContext(void *ctx);
 extern void _TreeRestoreContext(void **dbid, void *ctx);
