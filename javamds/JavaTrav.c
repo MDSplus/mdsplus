@@ -118,6 +118,9 @@ JNIEXPORT void JNICALL Java_Database_open
   int is_editable, is_readonly, shot;
 static char buf[1000];
 
+printf("Parte Open\n");
+
+
   name_fid =  (*env)->GetFieldID(env, cls, "name", "Ljava/lang/String;");
   readonly_fid = (*env)->GetFieldID(env, cls, "is_readonly", "Z");
   editable_fid = (*env)->GetFieldID(env, cls, "is_editable", "Z");
@@ -136,6 +139,9 @@ static char buf[1000];
   else
     status = TreeOpen((char *)name, shot, is_readonly);
   (*env)->ReleaseStringUTFChars(env, jname, name);
+
+
+printf("Aperto\n");
 
 /*//report(MdsGetMsg(status));*/
 sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));
@@ -210,82 +216,159 @@ JNIEXPORT void JNICALL Java_Database_quit (JNIEnv *env, jobject obj)
       
 
 JNIEXPORT jobject JNICALL Java_Database_getData
+
  (JNIEnv *env, jobject obj, jobject jnid)
+
 {
+
   int nid, status;
+
   jfieldID nid_fid;
+
   jclass cls;
+
   EMPTYXD(xd);
+
   EMPTYXD(out_xd);
+
   jobject ris;
 
+
+
   cls = (*env)->GetObjectClass(env, jnid);
+
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+
   nid = (*env)->GetIntField(env, jnid, nid_fid);
 
+
+
   status = TreeGetRecord(nid, &xd);
+
+
 
    /*printf("\nletti %d bytes\n", xd.l_length);
+
 */
+
  /* status = TdiDecompile(&xd, &out_xd MDS_END_ARG);
+
 printf("\nEnd TdiDecompile");
+
 out_xd.pointer->pointer[out_xd.pointer->length - 1] = 0;
+
 printf(out_xd.pointer->pointer);*/
+
  
 
+
+
   if(!(status & 1))
+
     {
+
       RaiseException(env, MdsGetMsg(status));
+
       return NULL;
+
     }
+
   if(!xd.l_length || !xd.pointer)
+
     return NULL;
+
+
 
 /*printf("Parte DescripToObject\n");*/
+
   ris = DescripToObject(env, xd.pointer);
+
 /*printf("Finita DescripToObject\n");*/
+
    
+
   MdsFree1Dx(&xd, NULL);
+
   return ris;
+
 }
+
+
 
 JNIEXPORT jobject JNICALL Java_Database_evaluateData
+
  (JNIEnv *env, jobject obj, jobject jnid)
+
 {
+
   int nid, status;
+
   jfieldID nid_fid;
+
   jclass cls;
+
   EMPTYXD(xd);
+
   EMPTYXD(out_xd);
+
   jobject ris;
 
+
+
   cls = (*env)->GetObjectClass(env, jnid);
+
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+
   nid = (*env)->GetIntField(env, jnid, nid_fid);
 
+
+
   status = TreeGetRecord(nid, &xd);
+
   if(!(status & 1))
+
     {
+
       RaiseException(env, MdsGetMsg(status));
+
       return NULL;
+
     }
+
   if(!xd.l_length || !xd.pointer)
+
     return NULL;
+
   status = TdiData(&xd, &xd MDS_END_ARG);
+
   if(!(status & 1))
+
     {
+
       RaiseException(env, MdsGetMsg(status));
+
       return NULL;
+
     }
+
   if(!xd.pointer)
+
     return NULL;
+
+
+
 
 
   ris = DescripToObject(env, xd.pointer);
+
    
+
   MdsFree1Dx(&xd, NULL);
+
   return ris;
+
 }
+
 
 JNIEXPORT void JNICALL Java_Database_putData
   (JNIEnv *env, jobject obj, jobject jnid, jobject jdata)
@@ -373,8 +456,14 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   args[5].z = nci_flags & NciM_COMPRESS_ON_PUT;
   args[6].z = nci_flags & NciM_NO_WRITE_MODEL;
   args[7].z = nci_flags & NciM_NO_WRITE_SHOT;
-  LibSysAscTim(&asctime_len, &time_dsc,time_inserted);
-  time_str[asctime_len] = 0;
+
+  if(time_inserted[0] || time_inserted[1])
+  {
+	LibSysAscTim(&asctime_len, &time_dsc,time_inserted);
+	time_str[asctime_len] = 0;
+  }
+  else 
+	  strcpy(time_str, "???");
   args[8].l =  (*env)->NewStringUTF(env, time_str);
   args[9].i = owner_id;
   args[10].i = dtype;
@@ -814,7 +903,7 @@ printf("\nPARTE ADD DEVICE %s %s \n\n",(char *)path, (char *)model);
 
   status = TreeAddConglom((char *)mypath, (char *)mymodel, &nid);
 
-printf("\nFINISCE ADD DEVICE\n\n");
+printf("\nFINISCE ADD DEVICE\t%s\n", MdsGetMsg(status));
 
   (*env)->ReleaseStringUTFChars(env, jpath, path);
   (*env)->ReleaseStringUTFChars(env, jmodel, model);
