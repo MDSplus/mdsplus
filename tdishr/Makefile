@@ -80,17 +80,20 @@ TdiYacc.o
 
 EXPORTS = TdiShr.export
 
-tdishr : ../shlib ../shlib/libTdiShr.$(SHARE_TYPE)
+tdishr : ../shlib ../shlib/libTdiShr.$(SHARE_TYPE) ../shlib/libTdiShr.a
 
 ../shlib/libTdiShr.$(SHARE_TYPE) : $(OBJECTS) 
 	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc -lm -L../shlib -lMdsShr -lTreeShr
+
+../shlib/libTdiShr.a : $(OBJECTS)
+	$(AR) -r $@ $(OBJECTS)
 
 ../shlib :
 	mkdir ../shlib
 
 clean :
 	- rm *.o
-	- rm ../shlib/libTdiShr.$(SHARE_TYPE)
+	- rm ../shlib/libTdiShr.*
 	- rm .depend
 
 #TdiLex.c : TdiLex.x
