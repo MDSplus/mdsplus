@@ -1303,7 +1303,7 @@ static void ResetCustomizeFont(Widget w, XtPointer client_data, XmAnyCallbackStr
   font_string = XmStringCreateSimple(font);
   XtVaSetValues(CustomizeFontWidget, XmNtextString, font_string, NULL);
   XmStringFree(font_string);
-  XtFree(font);
+  XFree(font);
 }
 
 static void /*XtCallbackProc*/ApplyFont(Widget w, XtPointer client_data, XmSelectionBoxCallbackStruct *callback_data)
@@ -1470,15 +1470,15 @@ static void  CopyWave(WaveInfo *in, WaveInfo *out)
 
 static void  FreeWave(WaveInfo *info)
 {
-  XtFree(info->database);
-  XtFree(info->shot);
-  XtFree(info->default_node);
-  XtFree(info->y);
-  XtFree(info->x);
-  XtFree(info->title);
-  XtFree(info->event);
-  XtFree(info->print_title);
-  XtFree(info->pad_label);
+  if (info->database) XtFree(info->database);
+  if (info->shot) XtFree(info->shot);
+  if (info->default_node) XtFree(info->default_node);
+  if (info->y) XtFree(info->y);
+  if (info->x) XtFree(info->x);
+  if (info->title) XtFree(info->title);
+  if (info->event) XtFree(info->event);
+  if (info->print_title) XtFree(info->print_title);
+  if (info->pad_label) XtFree(info->pad_label);
 }
 
 static void /*XtActionProc*/MoveVerticalPane(Widget w, XEvent *event, String *params, Cardinal *num_params)
@@ -2121,7 +2121,7 @@ static void  WriteDatabase(String dbname, Boolean zoom)
     XGetFontProperty(font_struct,XA_FONT,&fontprop);
     font = XGetAtomName(XtDisplay(TopWidget), fontprop);
     fprintf(file, "Scope.font: %s\n",font);
-    XtFree(font);
+    XFree(font);
     fprintf(file, "Scope.columns: %d\n", Columns);
     while (text = WaveToText("Scope.global_1_1", &GlobalWave, 0, &ctx))
     {
