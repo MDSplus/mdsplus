@@ -197,11 +197,11 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField30.setLabelString("Amp.:");
 		JPanel4.add(deviceField30);
 		deviceField31.setNumCols(4);
-		deviceField31.setOffsetNid(108);
+		deviceField31.setOffsetNid(106);
 		deviceField31.setLabelString("Omega:");
 		JPanel4.add(deviceField31);
 		deviceField32.setNumCols(4);
-		deviceField32.setOffsetNid(110);
+		deviceField32.setOffsetNid(108);
 		deviceField32.setLabelString("Phi:");
 		JPanel4.add(deviceField32);
 		JScrollPane1.setAutoscrolls(true);
