@@ -1,0 +1,42 @@
+To build and install MDSplus on unix systems, you will need to obtain the
+MDSplus distribution either in a compressed tar file or via the cvs repository.
+To access the cvs repository do the following:
+
+1) set the environment variable CVSROOT to the following:
+	:pserver:MDSguest@lost.pfc.mit.edu:/mdsplus/repos
+2) login to cvs using the password MDSguest
+    # cvs login
+    (Logging in to MDSguest@lost.pfc.mit.edu)
+    CVS password: MDSguest
+3) checkout the mdsplus system
+    # cvs checkout mdsplus
+
+To build the software do the following (See special notes below):
+
+    # cd mdsplus
+    # ./configure
+    # make all
+
+To install the software:
+
+    # make install
+
+---------------------------------------------------------------------------
+Special Notes
+
+Certain optional packages installed on system may be incompatible with some or
+all of the MDSplus package. We will try to keep a list of potential problems
+found in this document along with possible workarounds.
+
+Digital Unix conflicts:
+
+1) If the LessTif package is installed then configure will find it before it
+finds the real Motif package. LessTif is a marginal implementation of Motif
+and the MDSplus X applications will not build or run using LessTif package.
+
+To build on a system with LessTif installed do the following:
+
+./configure --x-libraries=/usr/shlib --x-includes=/usr/include
+
+
+
