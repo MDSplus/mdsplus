@@ -152,7 +152,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
   if (pathin)
   {
     pathlen = strlen(pathin);
-    path = malloc(pathlen+1);
+    path = malloc(pathlen+1+strlen(tree_lower));
     for (itype=0;itype<3 && (status & 1);itype++)
     {
       struct stat stat_info;
@@ -161,6 +161,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
       char *type = types[itype];
       char *part;
       strcpy(path,pathin);
+      MaskReplace(path,tree_lower,source_shot);
       if (source_shot < 0)
         sprintf(name,"%s_model",tree_lower);
       else if (source_shot < 1000)
@@ -192,6 +193,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
       if (srcfile)
       {
         strcpy(path,pathin);
+        MaskReplace(path,tree_lower,shot);
         if (shot < 0)
           sprintf(name,"%s_model",tree_lower);
         else if (shot < 1000)

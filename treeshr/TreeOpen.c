@@ -639,6 +639,41 @@ int _TreeSetStackSize(void **dbid, int size)
 	if (dblist && dblist->remote) SetStackSizeRemote(dblist,new_size);
 	return old_size;
 }
+static char TreeMask[13] = "TREE";
+static char ShotMask[11] = "JIHGFEDCBA";
+
+void MaskReplace(char *path,char *tree,int shot)
+{
+  char ShotMask[13];
+  char *tilde;
+  if (shot > 0)
+    sprintf(ShotMask,"%012u",shot);
+  else
+    memset(ShotMask,'X',10);
+  for(tilde=(char *)index(path, '~'); tilde != 0; tilde=(char *)index(path, '~'))
+  {
+    char *tmp;
+    switch (tilde[1])
+    {
+    case 'a':  tilde[0]=ShotMask[11]; strcpy(&tilde[1],&tilde[2]); break;
+    case 'b':  tilde[0]=ShotMask[10]; strcpy(&tilde[1],&tilde[2]); break;
+    case 'c':  tilde[0]=ShotMask[9]; strcpy(&tilde[1],&tilde[2]); break;
+    case 'd':  tilde[0]=ShotMask[8]; strcpy(&tilde[1],&tilde[2]); break;
+    case 'e':  tilde[0]=ShotMask[7]; strcpy(&tilde[1],&tilde[2]); break;
+    case 'f':  tilde[0]=ShotMask[6]; strcpy(&tilde[1],&tilde[2]); break;
+    case 'g':  tilde[0]=ShotMask[5]; strcpy(&tilde[1],&tilde[2]); break;
+    case 'h':  tilde[0]=ShotMask[4]; strcpy(&tilde[1],&tilde[2]); break;
+    case 'i':  tilde[0]=ShotMask[3]; strcpy(&tilde[1],&tilde[2]); break;
+    case 'j':  tilde[0]=ShotMask[2]; strcpy(&tilde[1],&tilde[2]); break;
+    case 't':  tmp = strcpy(malloc(strlen(tilde+2)+1),tilde+2);
+               strcpy(tilde+strlen(tree), tmp);
+               free(tmp);
+               strncpy(tilde,tree,strlen(tree)); break;
+    default: path=tilde+1;
+    }
+  }
+}  
+
 
 static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,char **resnam_out, int report)
 {
@@ -671,9 +706,10 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
 	{
 		char *part;
 		int pathlen = strlen(path);
-		char *npath = strcpy(malloc(pathlen+1),path);
+		char *npath = strcpy(malloc(pathlen+1+strlen(tree_lower)),path);
 		TranslateLogicalFree(path);
 		path = npath;
+                MaskReplace(path,tree_lower,shot);
 		if (shot < 0)
 			sprintf(name,"%s_model",tree_lower);
 		else if (shot < 1000)
