@@ -10,8 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mds_stdarg.h>
-#include <pthread.h>
-#ifdef _THREADS
+#ifndef HAVE_WINDOWS_H
 #include <pthread.h>
 #endif
 #include "mdsip.h"
@@ -195,10 +194,12 @@ static void InitializeService()
 
 int main( int argc, char **argv) 
 {
-  int service_per_user = strcmp(argv[2],"service") == 0;
-  int service_multi = strcmp(argv[2],"service_multi") == 0;
-  int service_server = strcmp(argv[2],"service_server") == 0;
-  if (argc >= 3 && (service_per_user || service_multi || service_server))
+  int service_per_user;
+  int service_multi;
+  int service_server;
+  if (argc >= 3 && ((service_per_user  = strcmp(argv[2],"service") == 0) || 
+	                (service_multi = strcmp(argv[2],"service_multi") == 0) ||
+					(service_server = strcmp(argv[2],"service_server") == 0)))
   {
 	portname = argv[1];
 	if (argc > 3)
