@@ -6,7 +6,7 @@
 ;       ans = DSQL(expression [,arg1,...,argn]
 ;       [,COUNT=count]$         ;number of selected items
 ;       [,DATE=date]$           ;binary date format
-;       [,ERROR=error]$         ;VMS error code
+;       [,ERROR=error]$         ; Database error string (if any)
 ;       [,EXCESS=excess]$       ;allow excessive args (ignored on this pass)
 ;       [,QUIET=quiet]$         ;suppress printing of error message
 ;       [,STATUS=status]$       ;VMS error code
@@ -38,6 +38,23 @@
 ;-
 
 ;
+;function QuoteQuotes, qry
+;  qry = strjoin(strsplit(qry, '"', escape="\", /extract,/preserve_null), '\"')
+;  qry = strjoin(strsplit(qry, "'", escape="\", /extract,/preserve_null), "\'")
+;  return, qry
+;end
+
+function QuoteQuotes, qry
+  idxs = strsplit(qry, '\', /preserve_null, length=lens)
+  qry= strjoin(strmid(qry, idxs, lens), '\\')
+  idxs = strsplit(qry, '"', escape="\", /preserve_null, length=lens)
+  qry= strjoin(strmid(qry, idxs, lens), '\"')
+  idxs = strsplit(qry, "'", escape="\",/preserve_null, length=lens)
+  qry= strjoin(strmid(qry, idxs, lens), "\'")
+  return, qry
+end
+
+;
 ; function which replaces on '?' with the string of an idl variable
 ; it should check that the variable is a scalar
 ;
@@ -52,16 +69,11 @@ function replace_input, qry, idx, val, debug=debug
         print, "replace_input - string ("+ans+")"
   endif else begin
       ans = strmid(qry, 0, idx-1)+STRING(val)+strmid(qry, idx, strlen(qry)-idx)
+      ans=ans(0)
       if (debug) then $
         print, "replace_input - number ("+ans+")"
   endelse
   return, ans
-end
-
-function QuoteQuotes, qry
-  qry = strjoin(strsplit(qry, '"', escape="\", /extract,/preserve_null), '\"')
-  qry = strjoin(strsplit(qry, "'", escape="\", /extract,/preserve_null), "\'")
-  return, qry
 end
 
 function BreakupStringAnswer, str, count
@@ -163,10 +175,22 @@ endelse
 if (debug) then $
   print, "        IDXs: ",idxs
 for i = 0, num_inputs-1 do begin
+    if (debug) then begin
+      print, 'About to replace input  - i = ', i, 'idxs(i) = ', idxs(i)
+      help, idxs, query
+    endif
     cmd = 'query = replace_input(query, idxs(i), a'+string(i+1, format='(I3.3)')+',debug=debug)'
     old_len = strlen(query)
     x = execute(cmd)
+    if (debug) then begin
+      print, "After query replace IDXs "
+      help, idxs
+    endif
     idxs = idxs + (strlen(query)-old_len)
+    if (debug) then begin
+      print, "After adding the offset "
+      help, idxs
+    endif
 endfor
 
 if (debug) then $
@@ -198,16 +222,12 @@ count = mdsvalue(expr, socket=!MDSDB_SOCKET)
 sz = size(count)
 if (sz(n_elements(sz)-2) eq 7) then begin
 
-; status = MdsValue('_dbstatus')
-    error = 0
+    error = count
     status = 0
-;    if not (keyword_set(quiet)) then begin
-        Message, count, /continue
-;    endif else begin
-;        Message, count, /noprint, /continue
-;    endelse
+    Message, count, noprint=quiet,/continue
     count = -1
 endif else begin
+    error = ''
 ;
 ;  for each of the output arguments
 ;    build an expression which sets the argument to the variable of
