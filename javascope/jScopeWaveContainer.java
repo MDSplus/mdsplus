@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.io.*;
 import javax.swing.*;
-import java.awt.print.*;
+//import java.awt.print.*;
 
 
 class jScopeWaveContainer extends WaveformContainer 
@@ -136,13 +136,19 @@ class jScopeWaveContainer extends WaveformContainer
         jScopeMultiWave      wave = null;
         for(int i = 0; i < c.length;i++)
         {
-	       wave = new jScopeMultiWave(dp, def_vals);
+//	       wave = new jScopeMultiWave(dp, def_vals);
+	       wave = buildjScopeMultiWave(dp, def_vals);
 	       wave.wi.full_flag = !GetFastNetworkState();
 	       wave.addWaveformListener(this);
 	       SetWaveParams(wave);
            c[i] = wave;
         }
         return c;
+    }
+    
+    protected jScopeMultiWave buildjScopeMultiWave(DataProvider dp, jScopeDefaultValues def_vals)
+    {
+        return new jScopeMultiWave(dp, def_vals);
     }
     
     public void initMdsWaveInterface()
@@ -278,13 +284,14 @@ class jScopeWaveContainer extends WaveformContainer
 
     
   public void SetBriefError(boolean brief_error){this.brief_error = brief_error;}
-    
+ 
+    /*
   public void PrintAllWaves(PrinterJob prnJob, PageFormat pf) throws PrinterException
   {
        prnJob.setPrintable(this, pf);
        prnJob.print();
   }
-
+*/
 
     public void processWaveformEvent(WaveformEvent e) 
     {
@@ -368,9 +375,11 @@ class jScopeWaveContainer extends WaveformContainer
         updateThread = new UpdW();
         updateThread.start();
       }
+      initMdsWaveInterface();
       updateThread.StartUpdate();
   }
 
+/*
   public void StartPrint(PrinterJob prnJob, PageFormat pf)
   {
     try
@@ -382,7 +391,8 @@ class jScopeWaveContainer extends WaveformContainer
       catch (PrinterException e){}
       catch (Exception e){}
   }
-  
+*/
+
   public int[] getMainShots()
   {
      try

@@ -40,8 +40,11 @@ class Frames extends Canvas {
         this();
         Image img;
         
-        frame.removeAllElements();
-        frame_time.removeAllElements();
+        if(frame.size() != 0)
+            frame.removeAllElements();
+        if(frame_time.size() != 0)
+            frame_time.removeAllElements();
+            
         int num_frame = frames.getNumFrame();
         for(int i = 0; i < num_frame; i++)
         {
@@ -63,8 +66,10 @@ class Frames extends Canvas {
     
     protected void finalize()
     {
-        frame.removeAllElements();
-        frame_time.removeAllElements();
+        if(frame.size() != 0)
+            frame.removeAllElements();
+        if(frame_time.size() != 0)
+            frame_time.removeAllElements();
         tracker = null;
     }
      

@@ -19,8 +19,7 @@ import javax.swing.event.*;
  
    private JLabel	    lab;
    private SError	    error_w;
-  // private ErrorMessage	error_msg;
-   private jScope	    main_scope;
+   private jScope_1	    main_scope;
    private ExpandExp    expand_expr;
    private SList	    signalList;
    private jScopeMultiWave    wave;	    
@@ -200,7 +199,8 @@ import javax.swing.event.*;
 	        c.gridwidth = GridBagConstraints.REMAINDER;
 	        gridbag.setConstraints(p, c);
 	        getContentPane().add(p);
-            pack();
+
+
        } 
 	  
        public void resetError()
@@ -226,12 +226,12 @@ import javax.swing.event.*;
 	        Object ob = e.getSource();	
             
 	        if(ob == ok) { 
-	        ws.up_err   = new String(e_up.getText());
-	        ws.low_err  = new String(e_low.getText());
-	        setVisible(false);	    
+	            ws.up_err   = new String(e_up.getText());
+	            ws.low_err  = new String(e_low.getText());
+	            setVisible(false);	    
 	        }
 	        if(ob == cancel)
-	        setVisible(false);    
+	            setVisible(false);    
        }
    }   
 
@@ -382,7 +382,8 @@ import javax.swing.event.*;
       public void SetColorList()
       {
 	    String[] colors_name = main_scope.color_dialog.GetColorsName();
-	    color.removeAllItems();
+	    if(color.getItemCount() != 0)
+	        color.removeAllItems();
 	    if(colors_name != null)
 	    {
 	        for(int i = 0; i < colors_name.length; i++)
@@ -502,7 +503,8 @@ import javax.swing.event.*;
       public void reset()
       {
 	    signalSelect(-1);
-	    signals.removeAllElements();
+	    if(signals.size() != 0)
+	        signals.removeAllElements();
       }
       
       public void init(WaveInterface wi)
@@ -714,7 +716,8 @@ import javax.swing.event.*;
 	 public void signalListRefresh()
 	 {
 //	    if(sig_list.getItemCount() > 1)
-		list_model.removeAllElements();
+        if(!list_model.isEmpty())
+		    list_model.removeAllElements();
 	    list_model.addElement("Select this item to add new expression");
         if(signals.size() == 0) return;
 	    for(int i = 0; i < signals.size(); i++)
@@ -870,7 +873,6 @@ import javax.swing.event.*;
 	    getContentPane().add("Center", p1); 
 	    getContentPane().add("South", p); 
 	    
-	    pack();
 	    
      }
      
@@ -898,7 +900,8 @@ import javax.swing.event.*;
      {
 	    Object ob = e.getSource();	
     
-	    if(ob == ok) {
+	    if(ob == ok)
+	    {
 	        conf_dialog.x_expr.setText(x_expr.getText());
 	        conf_dialog.y_expr.setText(y_expr.getText());
 	    }
@@ -912,13 +915,11 @@ import javax.swing.event.*;
    public SetupDataDialog(Frame fw, String frame_title) {
 
       super(fw, frame_title, false);
-//      super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
       setModal(true);
       setResizable(false);    
 
-      main_scope  = (jScope)fw;
+      main_scope  = (jScope_1)fw;
       error_w     = new SError(fw);
-//      error_msg   = new ErrorMessage(fw);
       expand_expr = new ExpandExp(fw, this);	    
 
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
@@ -928,14 +929,12 @@ import javax.swing.event.*;
 		p1.add(title_b);
 		p1.add(title);
 		p1.add(expand);
-		expand.setBackground(Color.lightGray);
 		
 		JPanel p2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		sig_label.setText("Signal Label");
 		p2.add(sig_label);
 		p2.add(signal_label);
 		p2.add(error);
-		error.setBackground(Color.lightGray);
 		
 		JPanel p3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		y_lab.setText("Y");
@@ -1030,15 +1029,10 @@ import javax.swing.event.*;
 		p10.setLayout(new FlowLayout());
 		p10.setBounds(12,347,660,40);
 		p10.add(ok);
-		ok.setBackground(Color.lightGray);
 		p10.add(apply);
-		apply.setBackground(Color.lightGray);
 		p10.add(reset);
-		reset.setBackground(Color.lightGray);
 		p10.add(erase);
-		erase.setBackground(Color.lightGray);
 		p10.add(cancel);
-		cancel.setBackground(Color.lightGray);
 
 		getContentPane().add(p1);
 		getContentPane().add(p2);
@@ -1085,7 +1079,6 @@ import javax.swing.event.*;
       reset.addActionListener(this);
       erase.addActionListener(this);
       cancel.addActionListener(this);
-      pack();
    }
    
 
@@ -1100,6 +1093,12 @@ import javax.swing.event.*;
       setLocationRelativeTo(w.getParent());
       this.signalList.signalSelect(wave.GetSelectedSignal());
       setTitle("Wave Setup for column " + col + " row " + row);
+      jScope_1.jScopeSetUI(this);
+      jScope_1.jScopeSetUI(error_w);
+	  error_w.pack();
+      jScope_1.jScopeSetUI(expand_expr);
+	  expand_expr.pack();
+      pack();
       show(); 
    }
    
@@ -1796,7 +1795,7 @@ import javax.swing.event.*;
       if(ob == expand)
       {	
 	        expand_expr.setExpressionString(x_expr.getText(), y_expr.getText());
-	        expand_expr.setLocationRelativeTo(this);
+	        expand_expr.setLocationRelativeTo(this);	        
 	        expand_expr.show();
       }	
    }

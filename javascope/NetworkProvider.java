@@ -560,6 +560,7 @@ class Mds {
      * Constructor.
      */
     String provider;
+    String user;
     String host;
     int port;
     Socket sock;  
@@ -665,6 +666,45 @@ class Mds {
         this.network_transfer_listener = network_transfer_listener;
     }
 
+    public String getProviderUser()
+    {
+        if(provider == null) return null;
+        String user = "JAVA_USER";
+        int idx = provider.indexOf("|");
+        if(idx != -1)
+        {
+            user = provider.substring(0, idx);
+            if(user.equals("<Automatic>"))
+                user = System.getProperty("user.name");
+        }
+        return user;
+    }
+  
+    public String getProviderHost()
+    {
+        if(provider == null) return null;
+        String address = provider;
+        int idx = provider.indexOf("|");
+        int idx_1 = provider.indexOf(":");
+        if(idx_1 == -1)
+            idx_1 = provider.length();
+        if(idx != -1)
+            address = provider.substring(idx+1, idx_1);
+        else
+            address = provider.substring(0, idx_1);
+            
+        return address;
+    }
+
+    public int getProviderPort() throws NumberFormatException 
+    {
+        if(provider == null) return 8000;
+        int port = 8000;
+        int idx = provider.indexOf(":");        
+        if(idx != -1)
+            port = Integer.parseInt(provider.substring(idx+1, provider.length()));
+        return port;
+    }
 		
 
     // Read either a string or a float array
@@ -735,6 +775,14 @@ class Mds {
 	        }
 	        else
 	        {
+	            
+	            host = getProviderHost();
+	            port = getProviderPort();
+	            user = getProviderUser();
+	            
+	            sock = new Socket(host,port);
+	            
+	            /*
 	            int idx = 0;
 	            if((idx = provider.indexOf(":")) != -1)
 	            {
@@ -744,21 +792,29 @@ class Mds {
 		            host = provider;
     		      
 		        sock = new Socket(host,port);
+		        */
 		    }		
 	        dis = new DataInputStream(new BufferedInputStream(sock.getInputStream()));
 	        dos = new DataOutputStream(new BufferedOutputStream(sock.getOutputStream()));
-	        MdsMessage message = new MdsMessage("JAVA_USER");
+	        MdsMessage message = new MdsMessage(user);//"JAVA_USER");
 	        message.setCompression(useCompression()); 
 	        message.Send(dos);
 	        message.Receive(dis);
-    	    
-	        receiveThread = new MRT();
-	        receiveThread.start();
+	        
+	        if((message.status & 1) != 0)
+	        {
+	            receiveThread = new MRT();
+	            receiveThread.start();
+	        } else {
+                error = "Could not get IO for : Host " + host +" Port "+ port + " User " + user; 
+                return 0;
+            }
+	        
 	               	    
 	    }
 	    catch(NumberFormatException e){error="Data provider syntax error "+ provider + " (host:port)"; return 0;}
 	    catch(UnknownHostException e) {error="Data provider: "+ host + " port " + port +" unknown"; return 0;}
-	    catch(IOException e) { error = "Could not get IO for " +provider+ e; return 0;}
+	    catch(IOException e) { error = "Could not get IO for " + provider + " " + e; return 0;}
 	    return 1;
     }
     

@@ -15,21 +15,13 @@ public class SetupDefaults extends JDialog implements ActionListener {
    JButton           ok, cancel, reset, erase, apply;
    JLabel            lab;
    
-   jScope main_scope;
+   jScope_1 main_scope;
    
    jScopeDefaultValues def_vals;
-   
-   /*
-   int	  shots[];
-   String xmin, xmax, ymax, ymin;
-   String title_str, xlabel, ylabel;
-   String experiment_str, shot_str;
-   String upd_event_str, def_node_str;
-   */
-   
+      
    boolean reversed;
    
-   private Panel         panel;
+   private JPanel        panel;
    private JTextField    x_grid_lines, y_grid_lines;
    private JComboBox	 grid_mode;
    private JComboBox     legend_mode;
@@ -49,9 +41,9 @@ public class SetupDefaults extends JDialog implements ActionListener {
       setResizable(false);
       
 //      this.def_vals = def_vals;      
-      main_scope = (jScope)fw;
+      main_scope = (jScope_1)fw;
       
-      if(jScope.IsNewJVMVersion())
+      if(jScope_1.IsNewJVMVersion())
 	    GetPropertiesValue();
 	  else
         GetPropertiesValue_VM11();
@@ -163,7 +155,7 @@ public class SetupDefaults extends JDialog implements ActionListener {
       gridbag.setConstraints(def_node, c);
       getContentPane().add(def_node);
 
-    panel = new Panel();
+    panel = new JPanel();
     panel.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
     c.fill =  GridBagConstraints.NONE;     
     lab = new JLabel("Grid: Mode");
@@ -230,37 +222,6 @@ public class SetupDefaults extends JDialog implements ActionListener {
       c.gridwidth = GridBagConstraints.REMAINDER;
       gridbag.setConstraints(p1, c);
       getContentPane().add(p1);	
- /*     	      	
-      c.fill =  GridBagConstraints.NONE;     
-      c.anchor = GridBagConstraints.CENTER;
-      c.gridwidth = 1;
-      ok = new JButton("Ok");
-      ok.addActionListener(this);
-      gridbag.setConstraints(ok, c);
-      getContentPane().add(ok);	
-      	
-      apply = new JButton("Apply");
-      apply.addActionListener(this);
-      gridbag.setConstraints(apply, c);
-      getContentPane().add(apply);	
-
-      reset = new JButton("Reset");
-      reset.addActionListener(this);
-      gridbag.setConstraints(reset, c);
-      getContentPane().add(reset);	
-
-      erase = new JButton("Erase");
-      erase.addActionListener(this);
-      gridbag.setConstraints(erase, c);
-      getContentPane().add(erase);	
-
-      c.gridwidth = GridBagConstraints.REMAINDER;
-      cancel = new JButton("Cancel");
-      cancel.addActionListener(this);
-      gridbag.setConstraints(cancel, c);
-      getContentPane().add(cancel);
- */
-      pack();
    }
    
    private int IsGridMode(String mode)
@@ -463,7 +424,8 @@ public class SetupDefaults extends JDialog implements ActionListener {
    {
     this.def_vals = def_vals;
 	initialize();
-	setVisible(true);
+	pack();
+	show();
    }
    
    

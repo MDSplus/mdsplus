@@ -17,7 +17,7 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
     int stChoice = 0;
     String siChoice = "10";
     Font font = null;
-    jScope main_scope;
+    jScope_1 main_scope;
     String envfonts[];
     String size_l[];
     String style_l[];
@@ -27,7 +27,7 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         super(dw, title, true);
 	    //setResizable(false);
         
-	    main_scope = (jScope)dw;
+	    main_scope = (jScope_1)dw;
 
         getContentPane().setLayout( new BorderLayout(5, 5) );
 

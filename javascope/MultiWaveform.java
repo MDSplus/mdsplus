@@ -39,14 +39,16 @@ public class MultiWaveform extends Waveform
     public MultiWaveform()
     {
 	    super();
-	    signals.removeAllElements(); 
+	    if(signals.size() != 0)
+	        signals.removeAllElements(); 
 	    orig_signals = null;
     }
     
     
     public void Erase()
     {
-	    signals.removeAllElements(); 
+	    if(signals.size() != 0)
+	        signals.removeAllElements(); 
 	    orig_signals = null;
 	    show_legend = false;
 	    legend_point = null;
@@ -63,7 +65,8 @@ public class MultiWaveform extends Waveform
             int n_sig;
             MultiWaveform w = (MultiWaveform)wave;
 
-            signals.removeAllElements();
+	        if(signals.size() != 0)
+	            signals.removeAllElements(); 
             Vector s = w.GetSignals(); 
             for(i = 0; i < s.size(); i++)
                 signals.addElement(new Signal((Signal)s.elementAt(i)));
@@ -313,7 +316,8 @@ public class MultiWaveform extends Waveform
 	        signals[i].setAttributes(s);
 	    }
 	    
-	    this.signals.removeAllElements();
+	    if(this.signals.size() != 0)
+	        this.signals.removeAllElements(); 
 	    for(int i = 0; i < signals.length; i++)
 	    {
 	        this.signals.addElement(signals[i]);
@@ -580,7 +584,8 @@ public class MultiWaveform extends Waveform
 	    int i;
 	    if(signals == null) return;
 	    
-	    this.signals.removeAllElements();
+	    if(this.signals.size() != 0)
+	        this.signals.removeAllElements(); 
 	    for(i = 0; i < signals.length; i++)
 	        this.signals.addElement(signals[i]);
 	    MultiWaveform.this.Update();

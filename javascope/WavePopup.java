@@ -250,8 +250,9 @@ public class WavePopup extends JPopupMenu implements  ItemListener {
     protected void InitColorMenu()
     {
         if(!Waveform.isColorsChanged() && colorList_bg != null) return;
-                
-	    colorList.removeAll();
+       
+        if(colorList.getItemCount() != 0)
+	        colorList.removeAll();
 
         String[] colors_name = Waveform.getColorsName();
 	    JRadioButtonMenuItem ob = null;
@@ -271,7 +272,8 @@ public class WavePopup extends JPopupMenu implements  ItemListener {
 	protected void SetMenuItem(boolean is_image)
 	{
 	   
-	   removeAll();
+	   if(getComponentCount() != 0)
+	       removeAll();
 	   
 	   if(is_image)
 	   {

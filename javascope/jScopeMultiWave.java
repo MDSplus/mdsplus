@@ -173,7 +173,10 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
 	    {
             super.frames.setAspectRatio(wi.keep_ratio);
             super.curr_point_sig_idx = 0;
-            signals.removeAllElements();
+
+            if(signals.size() != 0)
+                signals.removeAllElements();
+
 	        not_drawn = true;
 	        frame = 0;
 	        Update();

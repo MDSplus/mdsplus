@@ -3,10 +3,11 @@ import java.awt.image.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-import java.awt.geom.*;
 import javax.swing.border.*;
 import javax.swing.*;
 import java.awt.Insets;
+
+//import java.awt.geom.*;
 
 public class Waveform extends JComponent
 {
@@ -1597,8 +1598,6 @@ public class Waveform extends JComponent
     {
        wave_error = null;
        Object img;
-       Graphics2D g2 = (Graphics2D) g;
-       //Graphics g2 = (Graphics) g;
       
        if(mode == MODE_ZOOM && curr_rect != null)
        {
@@ -1616,7 +1615,11 @@ public class Waveform extends JComponent
            return false;
        }
        
-       Dimension dim = frames.getFrameSize(frame_idx, d);            
+       Dimension dim = frames.getFrameSize(frame_idx, d);
+       
+       DrawImage(g, img, dim);
+       
+       /*
        if(!(img instanceof RenderedImage))
        {
             Rectangle r = frames.GetZoomRect();
@@ -1640,9 +1643,28 @@ public class Waveform extends JComponent
            g2.clearRect(0, 0, dim.width, dim.height);
            g2.drawRenderedImage((RenderedImage)img, new AffineTransform(1f,0f,0f,1f,0F,0F));
        }
-       
+       */
        return true;
 
+    }
+
+    protected void DrawImage(Graphics g, Object img, Dimension dim)
+    {
+        Rectangle r = frames.GetZoomRect();
+            
+        if(r == null)
+            g.drawImage((Image)img, 1, 1, dim.width, dim.height, this);
+        else
+            g.drawImage((Image)img, 
+                            1,
+                            1,
+                            dim.width,
+                            dim.height,
+                            r.x,
+                            r.y,
+                            r.x+r.width,
+                            r.y+r.height,
+                            this);
     }
 
     protected void DrawSignal(Graphics g)
@@ -1998,7 +2020,8 @@ public class Waveform extends JComponent
 
     void ReportChanges()
     {
-        undo_zoom.removeAllElements();
+        if(undo_zoom.size() != 0)
+            undo_zoom.removeAllElements();
 	    wm = null;
 	    not_drawn = true;
         if(mode == MODE_POINT && is_image && frames != null)

@@ -94,7 +94,7 @@ class JetDataProvider implements DataProvider
             public void actionPerformed(ActionEvent e)
                 {
                     username = user_text.getText();
-                    passwd = passwd_text.getText();
+                    passwd = new String(passwd_text.getPassword());
                     if(!checkPasswd(username, passwd))
                     {
                         inquiry_dialog.setTitle("JET data server login ERROR");

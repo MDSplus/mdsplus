@@ -2,11 +2,10 @@ import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
+
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
-//import javax.swing.JMenuItem;
-//import javax.swing.JSeparator;
 import javax.swing.*;
 
 
@@ -138,6 +137,7 @@ class jScopeWavePopup extends MultiWavePopup {
  	   super.SetMenu();
  	   this.wave = (jScopeMultiWave)super.wave;
        remove_panel.setEnabled(((WaveformManager)parent).GetWaveformCount() > 1);
+       jScope_1.jScopeSetUI(this);
     }
 
      

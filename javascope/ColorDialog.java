@@ -15,10 +15,10 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
     JList colorList;
     DefaultListModel listModel = new DefaultListModel();
     JTextField colorName;
-    Choice color;
+    JComboBox color;
     JSlider red, green, blue;
     JButton ok, reset, cancel, add, erase;
-    jScope main_scope;
+    jScope_1 main_scope;
     JLabel label;
     Canvas color_test;
     int red_i, green_i, blue_i;
@@ -48,9 +48,9 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 	    setResizable(false);
 	    //super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
 
-	    main_scope = (jScope)dw;
+	    main_scope = (jScope_1)dw;
 	    
-        if(jScope.IsNewJVMVersion())
+        if(jScope_1.IsNewJVMVersion())
 	        GetPropertiesValue();
 	    else
             GetPropertiesValue_VM11();
@@ -93,7 +93,7 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 	    SetColorVector();
         GetColorsName();
         
-	    color = new Choice();
+	    color = new JComboBox();
 	    for(int i = 0; i < color_name.length; i++)
 	        color.addItem(color_name[i]);
 	        
@@ -422,7 +422,8 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
     
     public void removeAllColorItems()
     {
-	    color_set.removeAllElements();
+        if(color_set.size() != 0)
+	        color_set.removeAllElements();
     }
     
     public void InsertItemAt(String name, Color color, int idx)

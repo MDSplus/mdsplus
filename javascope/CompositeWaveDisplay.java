@@ -4,22 +4,22 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.lang.NumberFormatException;
 import java.util.*;
-import java.awt.print.*;
 import javax.swing.*;
+//import java.awt.print.*;
 
 
 public class CompositeWaveDisplay extends JApplet implements WaveContainerListener
 {
     private ButtonGroup       pointer_mode = new ButtonGroup();
-    private WaveformContainer wave_container;
+    private WaveformContainer_2 wave_container;
     private boolean           automatic_color = false;
     private boolean           isApplet = true;
     private JLabel            point_pos;
     private int               print_scaling = 100;
     private boolean           fixed_legend = false;
     static  private JFrame    f = null;
-    PrinterJob                prnJob;
-    PageFormat                pf;
+//    PrinterJob                prnJob;
+//    PageFormat                pf;
 
     public static void main(String args[])
     {
@@ -101,7 +101,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             DataAccessURL.addProtocol(new RdaAccess());
             DataAccessURL.addProtocol(new MdsAccess());
         }
-        wave_container = new WaveformContainer();
+        wave_container = new WaveformContainer_2();
         wave_container.addWaveContainerListener(this);
         WavePopup wave_popup = new MultiWavePopup();
         wave_container.setPopupMenu(wave_popup);
@@ -160,43 +160,44 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             point_pos.setFont(new Font("Courier", Font.PLAIN, 12));
             panel.add("Center", point_pos);
 
-
+/*
             prnJob = PrinterJob.getPrinterJob();
             pf = prnJob.defaultPage();
-	    pf.setOrientation(PageFormat.LANDSCAPE);
-	    Paper p = pf.getPaper();
-	    p.setSize(595.2239, 841.824);
-	    p.setImageableArea(13.536, 12.959, 567.288, 816.6239);
-	    pf.setPaper(p);
-	
-	    JButton print = new JButton("Print");
-	    print.addActionListener(new ActionListener()
-		{
-		    public void actionPerformed(ActionEvent e)
-		    { 			
-			javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
-				public void actionPerformed(ActionEvent ae) 
-				{
-				    try 
-					{
-					pf = prnJob.pageDialog(pf);
-					if(prnJob.printDialog())
+	        pf.setOrientation(PageFormat.LANDSCAPE);
+	        Paper p = pf.getPaper();
+	        p.setSize(595.2239, 841.824);
+	        p.setImageableArea(13.536, 12.959, 567.288, 816.6239);
+	        pf.setPaper(p);
+    	
+	        JButton print = new JButton("Print");
+	        print.addActionListener(new ActionListener()
+		    {
+		        public void actionPerformed(ActionEvent e)
+		        { 			
+			    javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
+				    public void actionPerformed(ActionEvent ae) 
+				    {
+				        try 
 					    {
-						System.out.println("Stampo");
-						prnJob.setPrintable(wave_container, pf);
-						prnJob.print();
-					    }
-					} 
-				    catch (Exception ex){}
-				}
-			});
-			t.setRepeats(false);
-			t.start();
-			
-		    }
-		});
-	    panel.add("East", print);    
-	}
+					    pf = prnJob.pageDialog(pf);
+					    if(prnJob.printDialog())
+					        {
+						    System.out.println("Stampo");
+						    prnJob.setPrintable(wave_container, pf);
+						    prnJob.print();
+					        }
+					    } 
+				        catch (Exception ex){}
+				    }
+			    });
+			    t.setRepeats(false);
+			    t.start();
+    			
+		        }
+		    });
+	        panel.add("East", print);
+*/
+	    }
 
         getContentPane().add("Center", wave_container);//, BorderLayout.CENTER);
         getContentPane().add("South", panel);//, BorderLayout.SOUTH);
@@ -455,7 +456,8 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 	        pg.end();
 	    }	    
      }
-    
+  */
+  
     public void print(Graphics g)
     {
         Dimension dim = new Dimension();
@@ -472,8 +474,8 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 	        dim.height = 816;
         }
 
-	wave_container.PrintAll(g, 0, 0, dim.width, dim.height); 
+	    wave_container.PrintAll(g, 0, 0, dim.width, dim.height); 
     }
-    */
+    
 }
 

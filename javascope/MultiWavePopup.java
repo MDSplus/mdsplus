@@ -33,7 +33,6 @@ public class MultiWavePopup extends WavePopup {
 	            }
 	        });
 	    legend.setEnabled(false);
-        //insert(remove_legend = new JMenuItem("Remove legend"), 1);
         remove_legend = new JMenuItem("Remove legend");
 	    remove_legend.addActionListener(new ActionListener()
 	        {
@@ -44,7 +43,6 @@ public class MultiWavePopup extends WavePopup {
 	        });
 	    remove_legend.setEnabled(false);
 
-	    //insert(signalList = new Menu("Signals"), 2);
 	    signalList = new JMenu("Signals");
 	    signalList.setEnabled(false);
 
@@ -135,7 +133,9 @@ public class MultiWavePopup extends WavePopup {
             JCheckBoxMenuItem ob;
             if(s_name != null)
             {
-                signalList.removeAll();        
+                int ccc = signalList.getItemCount();
+                if(signalList.getItemCount() != 0)
+                    signalList.removeAll();        
                 signalList.setEnabled(s_name.length != 0);
 	            legend.setEnabled(s_name.length != 0);
                 for(int i = 0; i < s_name.length; i++)
