@@ -18,7 +18,11 @@ typedef struct {
 	__u8	eom        : 1;
 	__u8	fm         : 1;
 
+	__u8	information_long[4];
+
 	__u8	sense_length;
+
+	__u32	command_specific_information;
 
 	__u8	sense_code;
 
@@ -49,9 +53,7 @@ typedef struct {
 		ErrorStatusRegister	esr;
 	} u2;
 
-	__u32	information_long;
 
-	__u32	command_specific_information;
 
 	__u32	reserved;
 

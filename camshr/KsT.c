@@ -20,12 +20,32 @@ int KsTranslateIosb( RequestSenseData *sense, int cam_status)
   char		dev_name[5];
   int			scsiDevice, status; 
   
-  union {
-    ErrorStatusRegister esr;
-    int     l;
-    BYTE	b[4];
-  } u;
+  //  union {
+  //    ErrorStatusRegister esr;
+  //    int     l;
+  //    BYTE	b[4];
+  //  } u;
   
+  if (Verbose)
+  {
+    printf("SCSI Sense data:  error code=%d,valid=%d,sense_key=%d\n\n",sense->error_code,sense->valid,sense->sense_key);
+    printf("     CSR status register:\n\n");
+    printf("                  noq=%d,nox=%d,done=%d,lam_pending=%d,qrpt_timeout=%dabort=%d,xmt_fifo_empty=%d,xmt_fifo_full=%d,\n",
+	   sense->u1.csr.noq,sense->u1.csr.nox,sense->u1.csr.done,sense->u1.csr.lam_pending,sense->u1.csr.qrpt_timeout,
+           sense->u1.csr.abort,sense->u1.csr.xmt_fifo_empty,sense->u1.csr.xmt_fifo_full);
+    printf("                  rcv_fifo_empty=%d,rcv_fifo_full=%d,high_byte_first=%d,scsi_id=%d\n\n",
+	   sense->u1.csr.rcv_fifo_empty,sense->u1.csr.rcv_fifo_full,sense->u1.csr.high_byte_first,sense->u1.csr.scsi_id);
+    printf("     Error status register:\n\n");
+    printf("                  noq=%d,nox=%d,ste=%d,adnr=%d,tpe=%d,lpe=%d,n_gt_23=%d,err=%d,no_sync=%d\n",
+	   sense->u2.esr.noq,sense->u2.esr.nox,sense->u2.esr.ste,sense->u2.esr.adnr,sense->u2.esr.tpe,sense->u2.esr.lpe,
+	   sense->u2.esr.n_gt_23,sense->u2.esr.err,sense->u2.esr.no_sync);
+    printf("                  tmo=%d,derr=%d,error_code=%d,no_halt=%d,read=%d,ad=%d,word_size=%d,qmd=%d,tm=%d,cm=%d\n\n",
+	   sense->u2.esr.tmo,sense->u2.esr.derr,sense->u2.esr.error_code,sense->u2.esr.no_halt,sense->u2.esr.read,
+	   sense->u2.esr.ad,sense->u2.esr.word_size,sense->u2.esr.qmd,sense->u2.esr.tm,sense->u2.esr.cm);
+    printf("     Additional registers:\n\n");
+    printf("                  stat=%d,stacss=%d,stasum=%d,stacnt=%d\n\n",
+	   sense->stat, sense->staccs, sense->stasum, sense->stacnt);
+  }
   if( MSGLVL(FUNCTION_NAME) )
     printf( "%s()\n", KT_ROUTINE_NAME );
   

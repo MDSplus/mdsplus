@@ -172,7 +172,7 @@ static void str2upcase( char *str );
 // function prototypes -- not necessarily local
 //-----------------------------------------------------------
 void 		Blank( UserParams *user );
-int 		JorwayTranslateIosb( SenseData *sense, int scsi_status );
+int 		JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status );
 int 		KsTranslateIosb( RequestSenseData *sense, int scsi_status );
 
 //-----------------------------------------------------------
@@ -642,9 +642,7 @@ static int JorwayDoIo(
 	}
         status = scsi_io( scsiDevice, direction, cmd, cmdlen, Data, reqbytcnt, (unsigned char *)&sense,
 			  sizeof(sense), &sensretlen, &bytcnt);
-	LastIosb.bytcnt = (unsigned short)(bytcnt & 0xffff);
-        LastIosb.lbytcnt = (unsigned short)(bytcnt >> 16);
-        status = JorwayTranslateIosb(&sense,status);
+        status = JorwayTranslateIosb(reqbytcnt,&sense,status);
 	if ( iosb ) *iosb = LastIosb;					// [2002.12.11]
 
 
@@ -706,16 +704,19 @@ CamAssign_Exit:
 }
 // extract CAMAC status info for Jorway highways
 //-----------------------------------------------------------
-JorwayTranslateIosb( SenseData *sense, int scsi_status )
+JorwayTranslateIosb( int reqbytcnt, SenseData *sense, int scsi_status )
 {
   int status;
+  int bytcnt = reqbytcnt - ((int)sense->word_count_defect[2])+
+    (((int)sense->word_count_defect[1])<<8)+
+    (((int)sense->word_count_defect[0])<<16);
+ 
   if (Verbose)
   {
     printf("SCSI Sense data:  code=%d,valid=%d,sense_key=%d,word count deficit=%d\n\n",sense->code,sense->valid,
-                               sense->sense_key,
-                                                ((int)sense->word_count_defect[2])+
-                                                (((int)sense->word_count_defect[1])<<8)+
-                                                (((int)sense->word_count_defect[0])<<16));
+	   sense->sense_key, ((int)sense->word_count_defect[2])+
+	   (((int)sense->word_count_defect[1])<<8)+
+	   (((int)sense->word_count_defect[0])<<16));
     printf("     Main status register:\n\n");
     printf("                  bdmd=%d,dsne=%d,bdsq=%d,snex=%d,crto=%d,to=%d,no_x=%d,no_q=%d\n\n",
                             sense->main_status_reg.bdmd,sense->main_status_reg.dsne,sense->main_status_reg.bdsq,
@@ -733,6 +734,8 @@ JorwayTranslateIosb( SenseData *sense, int scsi_status )
     printf("                  Additional Sense Code=%d,slot=%d,crate=%d\n\n",sense->additional_sense_code,
                               sense->slot_high_bit * 16 + sense->slot,sense->crate);
   }
+	LastIosb.bytcnt = (unsigned short)(bytcnt & 0xffff);
+        LastIosb.lbytcnt = (unsigned short)(bytcnt >> 16);
         LastIosb.x=0;
         LastIosb.q=0;
         LastIosb.err=0;

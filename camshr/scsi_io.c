@@ -48,7 +48,7 @@
 #define SG_FLAG_MMAP_IO 4
 #endif
 
-#define MIN_MAXBUF 65538
+#define MIN_MAXBUF 65536
 #define SEM_ID 80420
 static int FDS[10] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}; 
 static int MAXBUF[10] =   {0,0,0,0,0,0,0,0,0,0};
@@ -238,35 +238,37 @@ static int locked_scsi_io(int scsiDevice, int direction, unsigned char *cmdp,
   int fd;
   int bytes_transfered = -1;
   int status = -1;
+  int timeout = buflen * .02;
   struct sg_io_hdr sghdr = {'S'};
   if (sb_out_len != 0)
     *sb_out_len = 0;
   fd = OpenScsi(scsiDevice,&buf);
   if (fd >= 0)
   {
-    if (buflen > MAXBUF[scsiDevice])
-    {
-      fprintf( stderr, "%s(): buffer size (%d) too large, must be less than %d\n",ROUTINE_NAME,buflen,MAXBUF[scsiDevice]);
-    }
-    else
-    {
+    int use_mmap = buflen <= MAXBUF[scsiDevice];
+    //    if (buflen > MAXBUF[scsiDevice])
+    //{
+    //  fprintf( stderr, "%s(): buffer size (%d) too large, must be less than %d\n",ROUTINE_NAME,buflen,MAXBUF[scsiDevice]);
+    //}
+    //else
+    //{
       switch (direction)
       {
       case 0: sghdr.dxfer_direction = SG_DXFER_NONE; break;
       case 1: sghdr.dxfer_direction = SG_DXFER_FROM_DEV; break;
       case 2: sghdr.dxfer_direction = SG_DXFER_TO_DEV;
-              memcpy(buf,buffer,buflen);
+              if (use_mmap) memcpy(buf,buffer,buflen);
               break;
       }
       sghdr.cmd_len = cmd_len;
       sghdr.mx_sb_len = mx_sb_len;
       sghdr.iovec_count = 0;
       sghdr.dxfer_len = buflen;
-      sghdr.dxferp = 0;
+      sghdr.dxferp = buffer;
       sghdr.cmdp = cmdp;
       sghdr.sbp = sbp;
-      sghdr.timeout = 10000;
-      sghdr.flags = SG_FLAG_MMAP_IO;
+      sghdr.timeout = timeout > 10000 ? timeout : 10000;
+      sghdr.flags = use_mmap ? SG_FLAG_MMAP_IO : 0;
       sghdr.pack_id = 0;
       if (lock)
         lock_scsi(scsiDevice,1);
@@ -276,7 +278,7 @@ static int locked_scsi_io(int scsiDevice, int direction, unsigned char *cmdp,
         bytes_transfered = buflen - sghdr.resid;
         if (bytes_transfered > buflen)
           bytes_transfered = buflen;
-        if ((direction == 1) && (bytes_transfered > 0))
+        if ((direction == 1) && (bytes_transfered > 0) && use_mmap)
           memcpy(buffer,buf,bytes_transfered);
         if ((sghdr.sb_len_wr == 0) && (mx_sb_len > 0))
         {
@@ -292,7 +294,7 @@ static int locked_scsi_io(int scsiDevice, int direction, unsigned char *cmdp,
       }
       if (lock)
         lock_scsi(scsiDevice,0);
-    }
+      //}
   }
   if (transfer_len != 0)
     *transfer_len = bytes_transfered;
