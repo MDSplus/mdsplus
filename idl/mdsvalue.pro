@@ -45,7 +45,7 @@
 
 function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,quiet=quiet,status=status
 
-  forward_function mdsIsClient,mdsIdlImage,mds$socket,MdsRoutinePrefix,MdsIPImage,MdsGetAnsFN,MdsCheckArg
+  forward_function mdsIsClient,mdsIdlImage,mds$socket,MdsRoutinePrefix,MdsIPImage,MdsGetAnsFN
 
   MdsCheckArg,expression,type="STRING",name="expression"
   ;; note that MdsIpShr version of MdsValue had 32 arguments in addition
