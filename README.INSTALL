@@ -25,7 +25,7 @@ To install the software:
 Special Notes
 
 For D3D sites that want to build the MDSplus/d3d ptdata interface you must
-first define an envionment variable D3DLIB set to the directory containing
+first define an envionment variable D3DLIB_PATH set to the directory containing
 the d3 access library, libd3. Then invoke configure as follows:
 
 ./configure --enable-d3d
