@@ -34,4 +34,6 @@ pthread_cleanup_push
 pthread_mutex_unlock
 pthread_cond_wait
 pthread_mutex_lock
+GetDoingNid
+
 

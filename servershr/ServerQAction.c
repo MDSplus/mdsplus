@@ -441,6 +441,10 @@ static char *Now()
   return now;
 }
 
+
+static int doingNid;
+int GetDoingNid() { return doingNid;}
+
 static void DoSrvAction(SrvJob *job_in)
 {
   int status;
@@ -458,6 +462,7 @@ static void DoSrvAction(SrvJob *job_in)
     DESCRIPTOR_NID(niddsc,0);
     struct descriptor ans_d = {0, DTYPE_T, CLASS_S, 0};
     niddsc.pointer = (char *)&job->nid;
+	doingNid = job->nid;
     status = TdiGetNci(&niddsc,&fullpath_d,&fullpath MDS_END_ARG);
     StrAppend(&fullpath,&nullstr);
     job_text = malloc(fullpath.length + 1024);
