@@ -477,6 +477,7 @@ static void Init(Widget tree)
     }
     ListTreeRefreshOn(tree);
   }
+  num_selected = 0;
 }
 
 static void CommandLineOpen(Display *display, Widget tree)
