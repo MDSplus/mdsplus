@@ -113,7 +113,7 @@ else
     set awkcmd='{ if (($3 != "") && ((substr($3,2,1) == ":") || (substr($3,2,1) == ";"))) $3 = substr($3,1,1) "\\" substr($3,2) } '
     set awkcmd="$awkcmd"'{ if ((NF > 0) && ($1 !~ /^#.*/) && (NF < 3) && ($1 != "source") && ($1 != ".") && ($1 != "include")) print "setenv " $1 " " $2 ";" ;'
     set awkcmd="$awkcmd"'else if ((NF > 0) && ($1 == "source")) print $0 ";" ; '
-    set awkcmd="$awkcmd"'else if ((NF > 0) && ($1 == "include")) print "set temp_file=" $2 "; source setup.csh ; " ; '
+    set awkcmd="$awkcmd"'else if ((NF > 0) && ($1 == "include")) print "set temp_file=" $2 "; source $temp_setup_script ; " ; '
     set awkcmd="$awkcmd"'else if ((NF > 0) && ($1 == ".")) print "" ; '
     set awkcmd="$awkcmd"'else if ((NF > 0) && ($1 !~ /^#.*/)) print "set temp_sym_name=" $1 "; set temp_sym_value=" $2 "; set temp_direction='
     set awkcmd="$awkcmd""'"
