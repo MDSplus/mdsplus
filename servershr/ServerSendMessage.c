@@ -85,6 +85,7 @@ typedef struct _client { SOCKET reply_sock;
 
 
 static Job *Jobs = 0;
+static int JobId = 0;
 static Client *ClientList = 0;
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
@@ -192,28 +193,28 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
 static void RemoveJob(Job *job)
 {
   Job *j,*prev;
-  for (j=Jobs,prev=0;j;prev=j,j=j->next)
+  pthread_lock_global_np();
+  for (j=Jobs,prev=0;j && j!=job;prev=j,j=j->next);
+  if (j)
   {
-    if (j==job)
+    if (prev)
+      prev->next = j->next;
+    else
+      Jobs = j->next;
+  }
+  pthread_unlock_global_np();
+  if (j)
+  {
+    if (j->has_condition == HAS_CONDITION)
     {
-      pthread_lock_global_np();
-      if (prev)
-        prev->next = j->next;
-      else
-        Jobs = j->next;
-      pthread_unlock_global_np();
-      if (j->has_condition == HAS_CONDITION)
-      {
-        pthread_mutex_lock(&j->mutex);
-        j->has_condition = 0;
-        j->done = 1;
-        pthread_cond_destroy(&j->condition);
-        pthread_mutex_unlock(&j->mutex);
-        pthread_mutex_destroy(&j->mutex);
-      }
-      free(j);
-      break;
+      pthread_mutex_lock(&j->mutex);
+      j->has_condition = 0;
+      j->done = 1;
+      pthread_cond_destroy(&j->condition);
+      pthread_mutex_unlock(&j->mutex);
+      pthread_mutex_destroy(&j->mutex);
     }
+    free(j);
   }
 }
 
@@ -279,9 +280,7 @@ static void DoBeforeAst(int jobid)
       
 static int RegisterJob(int *msgid, int *retstatus,void (*ast)(), void *astparam, void (*before_ast)(), int sock)
 {
-  static int jobid = 0;
   Job *j = (Job *)malloc(sizeof(Job));
-  j->jobid = ++jobid;
   if (msgid)
   {
     pthread_mutex_init(&j->mutex,pthread_mutexattr_default);
@@ -300,11 +299,12 @@ static int RegisterJob(int *msgid, int *retstatus,void (*ast)(), void *astparam,
   j->astparam = astparam;
   j->before_ast = before_ast;
   j->sock = sock;
-  j->next = Jobs;
   pthread_lock_global_np();
+  j->jobid = ++JobId;
+  j->next = Jobs;
   Jobs = j;
   pthread_unlock_global_np();
-  return jobid;
+  return j->jobid;
 }
 
 static void  CleanupJob(int status, int jobid)
@@ -450,11 +450,13 @@ static void *Worker(void *sockptr)
     else
     {
       Client *c,*next;
+      pthread_lock_global_np;
       for (c=ClientList,next=c ? c->next : 0; c; c=next,next=c ? c->next : 0)
       {
         if (c->reply_sock >= 0 && FD_ISSET(c->reply_sock, &readfds))
           DoMessage(c,&fdactive);
       }
+      pthread_unlock_global_np;
     }
     readfds = fdactive;
   }
@@ -476,7 +478,7 @@ int ServerBadSocket(int socket)
 
 int ServerConnect(char *server_in)
 {
-  int sock;
+  int sock = -1;
   char *srv = TranslateLogical(server_in);
   char *server = srv ? srv : server_in;
   unsigned int addr;
@@ -487,7 +489,6 @@ int ServerConnect(char *server_in)
   if (num != 2)
   {
     printf("Server /%s/ unknown\n",server_in);
-    sock = -1;
   }
   else
   {
@@ -498,7 +499,9 @@ int ServerConnect(char *server_in)
       if (port > 0)
       {
         Client *c;
+        pthread_lock_global_np;
         for (c=ClientList; c && (c->addr != addr || c->port != port); c=c->next);
+        pthread_unlock_global_np;
         if (c)
         {
           int tablesize = FD_SETSIZE;
@@ -511,11 +514,12 @@ int ServerConnect(char *server_in)
           if (ServerBadSocket(c->send_sock))
             RemoveClient(c,0);
           else
-            return(c->send_sock);
+            sock = c->send_sock;
         }
       }
     }
-    sock = ConnectToMds(server);
+    if (sock == -1)
+      sock = ConnectToMds(server);
   }
   if (srv)
     TranslateLogicalFree(srv);
@@ -595,6 +599,7 @@ static void RemoveClient(Client *c, fd_set *fdactive)
     shutdown(c->send_sock,2);
     close(c->send_sock);
   }
+  pthread_lock_global_np;
   if (ClientList == c)
     ClientList = c->next;
   else
@@ -604,6 +609,7 @@ static void RemoveClient(Client *c, fd_set *fdactive)
     if (cp && cp->next == c)
       cp->next = c->next;
   }
+  pthread_unlock_global_np;
   free(c);
 }
   
@@ -660,7 +666,9 @@ static void AcceptClient(int reply_sock, struct sockaddr_in *sin, fd_set *fdacti
 {
   unsigned int addr = *(unsigned int *)&sin->sin_addr;
   Client *c;
+  pthread_lock_global_np;
   for (c=ClientList; c && (c->addr != addr || c->reply_sock != -1); c=c->next);
+  pthread_unlock_global_np;
   if (c)
   {
     c->reply_sock = reply_sock;
