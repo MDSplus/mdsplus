@@ -6,29 +6,6 @@
 #include <ipdesc.h>
 #include <stdio.h>
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-#ifdef __MSDOS__
-#pragma argsused
-int PASCAL WinMain(HANDLE hInstance, HANDLE hPrevInstance, LPSTR lpszCmdLine, int cmdShow)
-{
-  struct descrip ans;
-  SOCKET sock;
-  _InitEasyWin();
-  sock = ConnectToMds("cmoda.pfc.mit.edu");
-  if (sock != INVALID_SOCKET)
-  {
-    printf("status from MdsOpen = %d\n",MdsOpen(sock,"CMOD",950609015));
-    if (MdsValue(sock,"minval(\\magnetics::ip)",&ans, EndOfArgs) & 1)
-      printf("%g\n",*(float *)ans.ptr);
-    else
-      printf("%s\n",ans.ptr);
-    if (MdsValue(sock,"42.0",&ans,EndOfArgs) & 1)
-      printf("%g\n",*(float *)ans.ptr);
-    else
-      printf("%s\n",ans.ptr);
-  }
-  return 0;
-}
-#else
 int main( int argc, void **argv)
 {
   struct descrip ans;
@@ -48,4 +25,3 @@ int main( int argc, void **argv)
   }
   return 1;
 }
-#endif
