@@ -1,4 +1,4 @@
-public fun A12$PART_NAME(as_is _nid, in _method)
+public fun A12__PART_NAME(as_is _nid, in _method)
 {
   switch (getnci(_nid,'conglomerate_elt'))
   {
