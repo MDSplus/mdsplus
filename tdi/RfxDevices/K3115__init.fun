@@ -247,7 +247,7 @@ public fun K3115__init(as_is _nid, optional _method)
 				_status = 1;
 				for(_j = 0; (_j < (_n_times - 1)); _j++)
 				{
-					if(_times[_j] >= _times[_j + 1])
+					if(_times[_j] > _times[_j + 1])
 					{
  						_status = 0;
 						break;
@@ -257,7 +257,7 @@ public fun K3115__init(as_is _nid, optional _method)
 				/* write(*, "Channel ", _n_chan + 1, " times: ", _times); */
 				if(_status == 0)
 				{
-					write(*, "Temp [", _j, "] errato");
+					write(*, "Temp [", _j, "] errato", _times);
 					abort();
 				}
 
