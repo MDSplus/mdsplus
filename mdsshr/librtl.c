@@ -29,7 +29,7 @@ void TranslateLogicalFree(char *value);
 
 static void *dlopen(char *filename, int flags)
 {
-  return (void *)LoadLibrary(filename);
+  return   (void *)LoadLibrary(filename);
 }
 
 static void *dlsym(void *handle, char *name)
