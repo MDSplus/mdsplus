@@ -1,0 +1,36 @@
+LIBRARY	ServerShr
+CODE	PRELOAD MOVEABLE DISCARDABLE
+DATA	PRELOAD SINGLE
+EXPORTS
+;
+ServerAbortServer
+ServerBuildDispatchTable
+ServerCloseTrees
+ServerCreatePulse
+ServerDispatchAction
+ServerDispatchClose
+ServerDispatchCommand
+ServerDispatchPhase
+ServerFailedEssential
+ServerFindServers
+ServerFreeDispatchTable
+ServerGetDetailProc
+ServerGetInfo
+ServerMonitorCheckin
+ServerSendMessage
+ServerSetDetailProc
+ServerSetLogging
+ServerStartServer
+ServerStopServer
+pthread_cond_init
+pthread_mutex_init
+pthread_cond_signal
+pthread_unlock_global_np
+pthread_lock_global_np
+pthread_create
+pthread_cleanup_pop
+pthread_cleanup_push
+pthread_mutex_unlock
+pthread_cond_wait
+pthread_mutex_lock
+

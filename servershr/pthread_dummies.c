@@ -1,0 +1,12 @@
+void pthread_cond_init(){}
+void pthread_mutex_init(){}
+void pthread_cond_signal(){}
+void pthread_unlock_global_np(){}
+void pthread_lock_global_np(){}
+void pthread_create(){}
+void pthread_cleanup_pop(){}
+void pthread_cleanup_push(){}
+void gethostid(){}
+void pthread_mutex_lock(){}
+void pthread_mutex_unlock(){}
+void pthread_cond_wait(){}
