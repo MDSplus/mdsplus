@@ -1320,7 +1320,13 @@ static void handleRemoteAst()
             	    MdsEventInfo *event = (MdsEventInfo *)m->bytes;
             	    ((void (*)())(*event->astadr))(event->astprm,  12, event->data);
 		}
-                if (m) free(m);
+                if (m) 
+                  free(m);
+                else
+                {
+                  fprintf(stderr,"Error reading from event server, events may be disabled\n");
+                  receive_sockets[i]=0;
+                }
 	    }
  	}
     }
