@@ -533,11 +533,11 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable2.setIdentifier("");
     deviceTable2.setColumnNames(new String[] {"13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"});
     deviceTable2.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Ripr_allarmi_flex", "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra",
-        "Tens_min_barra", "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima",
-        "Limite_corrente", "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup",
-        "K_integ_flusso", "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso",
-        "KB_anello_flusso", "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
         "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable2.setEditable(false);
     deviceTable2.setDisplayRowNumber(true);
