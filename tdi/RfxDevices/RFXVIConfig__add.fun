@@ -8,13 +8,13 @@ public fun RFXVIConfig__add(in _path, out _nidout)
     DevAddNode(_path // ':N_PUFF_VALV', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':VACUUM_LEV', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':VIK1_GAS', 'TEXT', *, *, _nid);
-    DevAddNode(_path // ':VIK1_PRESS', 'NUMERIC', 0, *, _nid);
+    DevAddNode(_path // ':VIK1_PRESS', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':VIK2_GAS', 'TEXT', *, *, _nid);
-    DevAddNode(_path // ':VIK2_PRESS', 'NUMERIC', 0, *, _nid);
+    DevAddNode(_path // ':VIK2_PRESS', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':VIK3_GAS', 'TEXT', *, *, _nid);
-    DevAddNode(_path // ':VIK3_PRESS', 'NUMERIC', 0, *, _nid);
-    DevAddNode(_path // ':VVMC01_INI', 'NUMERIC', 100., *, _nid);
-    DevAddNode(_path // ':VVMC01_PPC', 'NUMERIC', 100., *, _nid);
+    DevAddNode(_path // ':VIK3_PRESS', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':VVMC01_INI', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':VVMC01_PPC', 'NUMERIC', *, *, _nid);
     DevAddAction(_path// ':STORE_ACTION', 'STORE', 'STORE', 25,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }
