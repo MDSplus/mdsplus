@@ -2,6 +2,9 @@
 #ifndef min
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
+#ifdef WIN32
+#include <io.h>
+#endif
 
 static unsigned char message_id = 1;
 #ifdef NOCOMPRESSION
@@ -18,6 +21,7 @@ Message *GetMdsMsg(SOCKET sock, int *status);
 Message *GetMdsMsgOOB(SOCKET sock, int *status);
 #endif
 int SendMdsMsg(SOCKET sock, Message *m, int oob);
+int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, Message **m);
 
 static int initialized = 0;
 static void FlipHeader(MsgHdr *header);

@@ -1,4 +1,5 @@
 #include        <stdio.h>
+#include        <mdsshr.h>
 #include        "mdsdcl.h"
 #ifdef vms
 #include        <ssdef.h>
@@ -8,6 +9,8 @@
 #include        <stdlib.h>
 #include        <sys/stat.h>
 #endif
+
+extern int MDSprintf(char *fmt, ...);
 
 /***********************************************************************
 * MDSDCL_SHOW_VM.C --

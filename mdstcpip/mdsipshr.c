@@ -1,4 +1,5 @@
 #include "mdsip.h"
+extern int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, void **m);
 
 #if defined(__VMS) || defined(WIN32)
 #define BlockSig(arg)

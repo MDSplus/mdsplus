@@ -41,6 +41,8 @@ extern void MdsFree();
 extern void SetSocketOptions();
 extern int SetCompressionLevel();
 extern int GetCompressionLevel();
+extern int MdsSetServerPortname(char *);
+extern int MdsSetClientAddr(int addr);
 
 typedef ARRAY_COEFF(char,7) ARRAY_7;
 
@@ -884,7 +886,7 @@ static void ExecuteMessage(Client *c)
     evname = malloc(c->descrip[1]->length + 1);
     memcpy(evname, c->descrip[1]->pointer, c->descrip[1]->length);
     evname[c->descrip[1]->length] = 0;
-    status = MDSEventAst(evname,(void (*)())ClientEventAst,newe,&newe->eventid);
+    status = MDSEventAst(evname,(void (*)(void *,int,char *))ClientEventAst,newe,&newe->eventid);
     free(evname); 
  /**/
     if (java)

@@ -38,6 +38,7 @@ doing.
 #include <string.h>
 
 extern int ServerConnect();
+extern int GetAnswerInfoTS();
 
 char *ServerGetInfo(int full, char *server)
 {

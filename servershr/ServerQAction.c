@@ -9,6 +9,7 @@
 #include <treeshr.h>
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
+extern int  pthread_cond_timedwait();
 #else
 typedef int SOCKET;
 #include <sys/socket.h>

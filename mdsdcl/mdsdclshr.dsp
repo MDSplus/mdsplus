@@ -125,6 +125,10 @@ SOURCE=.\mdsdcl_set_command.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\mdsdcl_show_vm.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\mdsdcl_spawn.c
 # End Source File
 # Begin Source File

@@ -46,6 +46,8 @@ extern int   MdsOpen(SOCKET sock, char *tree, int shot);
 extern int   MdsClose(SOCKET sock);
 extern int   MdsCopyDxXd(struct descriptor *in, struct descriptor_xd *out);
 extern int   TdiCvt();
+extern int   GetAnswerInfoTS();
+extern int   MdsFree1Dx();
 #ifndef _WIN32
 #define INVALID_SOCKET -1
 #endif

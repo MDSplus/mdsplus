@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <mdsshr.h>
 
 /*
 Program to wait for MDSPlus event from the command line.
