@@ -2492,7 +2492,7 @@ fi
 
 echo $ac_n "checking if idlsql should be built""... $ac_c" 1>&6
 echo "configure:2495: checking if idlsql should be built" >&5
-if test -n $SYBASE_INC -a -n $IDL_INC
+if test -n "$SYBASE_INC" -a -n "$IDL_INC"
 then
         IDLSQL="idlsql"
         echo "$ac_t""have both idl and sql so yes." 1>&6
