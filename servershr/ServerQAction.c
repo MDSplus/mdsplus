@@ -709,7 +709,7 @@ static void WaitForJob()
   pthread_mutex_lock(&JobWaitMutex);
   ProgLoc = 12;
 #ifdef HAVE_WINDOWS_H
-  status = pthread_cond_timedwait(&JobWaitCondition, 1000);
+  status = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, 1000);
 #else
   {
     struct timespec one_sec = {1,0};

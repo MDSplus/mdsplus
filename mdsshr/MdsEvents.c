@@ -1,3 +1,5 @@
+#include <config.h>
+
 #define _GNU_SOURCE /* glibc2 needs this */
 #ifdef __sparc__
 #include "/usr/include/sys/types.h"
@@ -9,7 +11,6 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
 int MDSEventCan(void *eventid) {}
 int MDSEvent(char *evname){}
 #elif (defined(HAVE_WINDOWS_H))
-#include <config.h>
 #include <process.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>

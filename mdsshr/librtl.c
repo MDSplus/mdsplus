@@ -328,23 +328,26 @@ int pthread_cond_signal(HANDLE *cond)
   return status == 0;
 }
 
-int pthread_cond_wait(HANDLE *cond)
+int pthread_cond_wait(HANDLE *cond, HANDLE *mutex)
 {
 	int status;
 #ifdef ___DEBUG_IT
    printf("waiting for condition %p\n",*cond);
 #endif
+   pthread_mutex_unlock(mutex);
    status = WaitForSingleObject(*cond,INFINITE);
+   pthread_mutex_lock(mutex);
 #ifdef ___DEBUG_IT
    printf("got condition %p\n",*cond);
 #endif
    return(status == WAIT_FAILED);
 }
 
-void pthread_cond_timedwait(HANDLE *cond, int msec)
+void pthread_cond_timedwait(HANDLE *cond, HANDLE *mutex, int msec)
 {
+   pthread_mutex_unlock(mutex);
    WaitForSingleObject(*cond,msec);
-
+   pthread_mutex_lock(mutex);
 }
 
 int pthread_mutex_init(HANDLE *mutex)

@@ -376,7 +376,7 @@ static void WaitForActions(int all)
     ProgLoc = 600;
     pthread_mutex_lock(&JobWaitMutex);
 #ifdef HAVE_WINDOWS_H
-	status = pthread_cond_timedwait(&JobWaitCondition, 1000);
+	status = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, 1000);
 #else
 	{
       struct timespec one_sec = {1,0};
