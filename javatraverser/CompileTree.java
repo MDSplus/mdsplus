@@ -128,6 +128,9 @@ public class CompileTree extends Thread
         for (int i = 0; i < unresolvedNidV.size(); i++) {
           Data data = null;
           try {
+	  
+	  //System.out.println((String) unresolvedExprV.elementAt(i));
+	    tree.setDefault((NidData) unresolvedNidV.elementAt(i), 0);
             data = Data.fromExpr( (String) unresolvedExprV.elementAt(i));
           }
           catch (Exception exc) {
@@ -175,9 +178,11 @@ public class CompileTree extends Thread
                     String dataStr = dataNode.getData();
 
                     Data data = null;
-                    try {
+                  /*  try {
+		    System.out.println(dataStr);
+		    
                         data = Data.fromExpr(dataStr);
-                    }catch(Exception exc)
+                    }catch(Exception exc)*/
                     {
                       unresolvedExprV.addElement(dataStr);
                       unresolvedNidV.addElement(tree.getDefault(0));
