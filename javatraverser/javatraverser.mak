@@ -114,7 +114,7 @@ GIFS = DeviceApply.gif \
        task.gif
 
 all : $(SOURCES)
-	%JDK_DIR%\bin\javac.exe $(SOURCES)
+	%JDK_DIR%\bin\javac.exe -classpath .;..\java\classes\MindTerm.jar $(SOURCES)
 	%JDK_DIR%\bin\jar.exe -uf ..\java\classes\MDSplus.jar *.class *.gif
 
 #jTraverser.class : *.java
