@@ -176,7 +176,7 @@ static void AppendAnswer(int idx, void *buffer, int len, int dtype)
 		bufs[idx].offset=0;
 	}
 */
-  if (bufs[idx].size < (bufs[idx].offset+needed)) {
+        if (bufs[idx].size < (bufs[idx].offset+needed)) {
 		int new_size = (bufs[idx].size == 0) ? INITIAL_GUESS*len : 3*bufs[idx].size;
 		if (new_size < bufs[idx].offset+needed) new_size += needed;  /* pathalogical case of a very big string */
 		bufs[idx].vptr = realloc(bufs[idx].vptr, new_size);
@@ -207,7 +207,7 @@ static void StoreAnswer(int idx, struct descriptor *dst, int type)
 	case SYBINT2 : src.length = 2; src.dtype = DTYPE_W; break;
 	case SYBINT1 : src.length = 1; src.dtype = DTYPE_BU; break;
 	case SYBDATETIME :
-	case SYBDATETIME4 : src.length = 0; src.dtype = DTYPE_FT; break;
+	case SYBDATETIME4 : src.length = 8; src.dtype = DTYPE_FT; break;
 	case SYBCHAR :
 	case SYBTEXT :
 	case SYBMONEY : {
@@ -410,7 +410,6 @@ int 	rblob;
 						d_ans = (double)(yr * 365 + day[mo] + da + leap - 678941);
 						d_ans += (double)(th + 1000*(se + 60*(mi + 60*hr)))/86400000.;
 						buf = (char *)&d_ans;
-						break;
 #endif
 						AppendAnswer(j, buf, len, dtype);
 					}
@@ -441,8 +440,8 @@ int 	rblob;
 							len = strlen(default_date);
 						}
 						AppendAnswer(j, buf, len, dtype);
-						break;
 					}
+                                        break;
 				case SYBMONEY:
 				default :
 					status = TdiINVDTYDSC;
