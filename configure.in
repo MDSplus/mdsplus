@@ -56,6 +56,7 @@ LD_LDARC=""
 LD_LDSHARE=""
 IDL_BIN_SUF=""
 MDSVME=""
+LOC="%loc"
 
 CFLAGS="$CFLAGS $MEMCHK -I\$(top_srcdir)/include"
 FFLAGS="$FFLAGS  -I\$(top_srcdir)/include"
@@ -223,6 +224,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        EXPORTS_FILE="\$(EXPORTS)";
        FEXECLIBDIR="-L";
        SHARETYPE=".a";
+       LOC="loc";
        HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";;
 *windows*)     CFLAGS="$CFLAGS";
        LDSHARE="";
@@ -510,6 +512,7 @@ AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBXP)
 AC_SUBST(LIBXEXT)
 AC_SUBST(LINKSHARED)
+AC_SUBST(LOC)
 AC_SUBST(MAKEBINDIR)
 AC_SUBST(MAKELIBDIR)
 AC_SUBST(MAKESHLIBDIR)
@@ -559,6 +562,9 @@ javatraverser/Makefile
 manpages/Makefile
 math/Makefile 
 math/csint.f 
+math/dsvrgn.f
+math/svign.f
+math/svrgn.f
 math/umach.f 
 mdsdcl/Makefile 
 mdsjet/Makefile
