@@ -92,7 +92,14 @@ typedef struct {
 
 static int ShortStrings(char *b)
 {
-  return ((b[4] != 0) && (b[4] != 1)) || (b[5] != 0);
+#ifdef WORDS_BIGENDIAN
+  int t1_idx=5;
+  int t2_idx=4;
+#else
+  int t1_idx=4;
+  int t2_idx=5;
+#endif
+  return ((b[t1_idx] != 0) && (b[t1_idx] != 1)) || (b[t2_idx] != 0);
 }
 
 static void *MakeDescr(int idx, int *argsize, void *bytes)
