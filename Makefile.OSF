@@ -7,3 +7,4 @@ all :
 	cd dwscope ; make -f Makefile.OSF
 	cd mitdevices ; make -f Makefile.OSF
 	cd traverser ; make -f Makefile.OSF
+	cd mdslibidl ; make -f Makefile.OSF
