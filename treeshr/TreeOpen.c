@@ -799,8 +799,7 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
 				{
 				  if (strcmp(resnam+strlen(resnam)-1,TREE_PATH_DELIM))
 					strcat(resnam,TREE_PATH_DELIM);
-                                  else
-				    strcat(resnam,name);
+                                  strcat(resnam,name);
                                 }
 				strcat(resnam,type);
 				if (new)
