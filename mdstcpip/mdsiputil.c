@@ -1,4 +1,5 @@
 #include "mdsip.h"
+#include <pthread.h>
 #ifndef min
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
@@ -742,6 +743,7 @@ Message *GetMdsMsg(SOCKET sock, int *status)
   static Message *msg = 0;
   int msglen = 0;
   *status = 0;
+  pthread_lock_global_np();
   if (msg)
   {
     free(msg);
@@ -761,6 +763,7 @@ Message *GetMdsMsg(SOCKET sock, int *status)
       shutdown(sock,2);
       close(sock);
       *status = 0;
+      pthread_unlock_global_np();
       return 0;
     }  
     msglen = header.msglen;
@@ -790,6 +793,7 @@ Message *GetMdsMsg(SOCKET sock, int *status)
     if (*status & 1 && (Endian(header.client_type) != Endian(ClientType())))
       FlipData(msg);
   }
+  pthread_unlock_global_np();
   return msg;
 }
 

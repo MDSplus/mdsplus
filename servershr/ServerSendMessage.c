@@ -177,7 +177,9 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
         }
       }
     }
+    pthread_lock_global_np();
     status = GetAnswerInfo(sock, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr);
+    pthread_unlock_global_np();
   }
   return status;
 
@@ -465,7 +467,7 @@ int ServerBadSocket(int socket)
   int tablesize = FD_SETSIZE;
   fd_set fdactive;
   int status;
-  struct timeval timeout = {0,0};
+  struct timeval timeout = {0,1000};
   FD_ZERO(&fdactive);
   FD_SET(socket,&fdactive);
   status = select(tablesize,&fdactive,0,0,&timeout);

@@ -31,11 +31,12 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 
 
-void *MdsVM_ZONE = 0;
+static void *MdsVM_ZONE = 0;
 
 int  MdsGet1Dx(unsigned int *length_ptr, unsigned char *dtype_ptr, struct descriptor_xd *dsc_ptr, void **zone)
 {
   int       status;
+  /*
   if (!MdsVM_ZONE)
   {
     static    DESCRIPTOR(zone_name, "MDS$GET1_DX zone");
@@ -47,16 +48,17 @@ int  MdsGet1Dx(unsigned int *length_ptr, unsigned char *dtype_ptr, struct descri
     if (!(status & 1))
       return status;
   }
+  */
   if (dsc_ptr->class == CLASS_XD)
   {
     if (*length_ptr != dsc_ptr->l_length)
     {
       if (dsc_ptr->l_length)
-	status = LibFreeVm(&dsc_ptr->l_length, &dsc_ptr->pointer, zone ? zone : &MdsVM_ZONE);
+	status = LibFreeVm(&dsc_ptr->l_length, &dsc_ptr->pointer, zone ? zone : (MdsVM_ZONE ? &MdsVM_ZONE : 0));
       else
 	status = 1;
       if (status & 1)
-	status = LibGetVm(length_ptr, &dsc_ptr->pointer, zone ? zone : &MdsVM_ZONE);
+	status = LibGetVm(length_ptr, &dsc_ptr->pointer, zone ? zone : (MdsVM_ZONE ? &MdsVM_ZONE : 0));
     }
     else
       status = 1;
@@ -79,7 +81,7 @@ int  MdsFree1Dx(struct descriptor_xd *dsc_ptr, void **zone)
   if (dsc_ptr->class == CLASS_XD)
   {
     if (dsc_ptr->pointer)
-      status = LibFreeVm(&dsc_ptr->l_length, &dsc_ptr->pointer, zone ? zone : &MdsVM_ZONE);
+      status = LibFreeVm(&dsc_ptr->l_length, &dsc_ptr->pointer, zone ? zone : (MdsVM_ZONE ? &MdsVM_ZONE : 0));
     else
       status = 1;
     if (status & 1)

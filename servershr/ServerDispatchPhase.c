@@ -456,43 +456,56 @@ int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact,
   table->failed_essential = 0;
   phasenam_d.length = strlen(phasenam);
   phasenam_d.pointer = phasenam;
+  ProgLoc = 6001;
   if (JobWaitInitialized == 0)
   {
+    ProgLoc = 6002;
     status = pthread_mutex_init(&JobWaitMutex,pthread_mutexattr_default);
     if (status)
     {
       perror("Error creating pthread mutex");
       exit(status);
     }
+    ProgLoc = 6003;
     status = pthread_cond_init(&JobWaitCondition,pthread_condattr_default);
     if (status)
     {
       perror("Error creating pthread condition");
       exit(status);
     }
+    ProgLoc = 6004;
     JobWaitInitialized = 1;
   }
+  ProgLoc = 6005;
   status = TdiExecute(&phase_lookup,&phasenam_d,&phase_d MDS_END_ARG);
+  ProgLoc = 6006;
   if (status & 1 && (phase > 0))
   {
     if (monitor)
     {
       MonitorOn = 1;
-	  Monitor = monitor;
+      Monitor = monitor;
     }
     else
       MonitorOn = 0;
+    ProgLoc = 6007;
     SetActionRanges(phase);
+    ProgLoc = 6008;
     ServerSetDetailProc(DetailProc);
+    ProgLoc = 6009;
     first_g = first_s;
     while (!AbortInProgress && (first_g < last_s))
     {
+      ProgLoc = 6010;
       SetGroup(sync);
+      ProgLoc = 6011;
       for (i=first_g;i<last_g;i++)
          Dispatch(i);
+      ProgLoc = 6012;
       WaitForActions(0);
       first_g = last_g;
     }
+    ProgLoc = 6013;
     if (AbortInProgress)
     {
       AbortInProgress = 0;
@@ -500,7 +513,9 @@ int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact,
       AbortRange(first_s,last_s);
       status = ServerABORT;
     }
+    ProgLoc = 6014;
     WaitForActions(1);
+    ProgLoc = 6015;
     AbortInProgress = 1;
     for (i=first_c;i<last_c;i++)
     {
@@ -510,10 +525,15 @@ int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact,
 	ActionDone(i);
       }
     }
+    ProgLoc = 6015;
     WaitForActions(1);
+    ProgLoc = 6016;
     RecordStatus(first_c,last_c);
+    ProgLoc = 6017;
     RecordStatus(first_s,last_s);
+    ProgLoc = 6018;
   }
+  ProgLoc = 6019;
   return status;
 }
 
@@ -546,7 +566,9 @@ static void Dispatch(int i)
   actions[i].dispatched = 0;
   if (Output)
       Dispatch(-1-i);
+  ProgLoc = 7001;
   SendMonitor(MonitorDispatched, i);
+  ProgLoc = 7002;
   if (noact)
   {
     actions[i].status = status = 1;
@@ -556,13 +578,16 @@ static void Dispatch(int i)
   {
     status = ServerDispatchAction(0, Server(server,actions[i].server), tree, shot, actions[i].nid, ActionDone, (void *)i, &actions[i].status,
                                     Before);
+    ProgLoc = 7003;
     if (status & 1)
       actions[i].dispatched = 1;
   }
+  ProgLoc = 7004;
   if (!(status & 1))
   {
     actions[i].status = status;
     ActionDone(i);
   }
+  ProgLoc = 7005;
 }
 

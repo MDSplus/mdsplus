@@ -530,12 +530,12 @@ int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
   pid_t  pid,xpid;
   char *cmdstring = MdsDescrToCstring(cmd);
   int   sts=0;
-  signal(SIGCHLD,notifyFlag ? child_done : SIG_DFL);
+  signal(SIGCHLD,notifyFlag ? child_done : (waitflag ? SIG_DFL : SIG_IGN));
   pid = fork();
   if (!pid)
   {
   /*-------------> child process: execute cmd	*/
-    static char  *arglist[4];
+    char  *arglist[4];
     char  *p;
     int i=0;
     arglist[0] = getenv("SHELL");
@@ -976,13 +976,13 @@ int libfreevm(int *len, void **vm, ZoneList **zone)
 
 int LibGetVm(int *len, void **vm, ZoneList **zone)
 {
-  VmList *list = malloc(sizeof(VmList));
-
-  *vm = list->ptr = malloc(*len);
+  *vm = malloc(*len);
   if (*vm == NULL)
     printf("Insufficient virtual memory\n");
-  list->next = NULL;
   if (zone != NULL) {
+    VmList *list = malloc(sizeof(VmList));
+    list->ptr = *vm;
+    list->next = NULL;
     if ((*zone)->vm) {
       VmList *ptr;
       for (ptr = (*zone)->vm; ptr->next; ptr = ptr->next);
@@ -1530,7 +1530,7 @@ static int FindFile(struct descriptor *filespec, struct descriptor *result, int 
   }
   ans = _FindNextFile((FindFileCtx *)*ctx, recursively, caseBlind);
   if (ans != 0) {
-    static struct descriptor ansd = {0, DTYPE_T, CLASS_S,0};
+    struct descriptor ansd = {0, DTYPE_T, CLASS_S,0};
     ansd.length = strlen(ans);
     ansd.pointer = ans;
     StrCopyDx(result,&ansd);
