@@ -10,6 +10,10 @@ import java.util.*;
 // Support classes (they are only valid in the Waveform context) 
 
  class WaveformMetrics {
+    static double MAX_VALUE = 10000.;//(double)Integer.MAX_VALUE;
+    static double MIN_VALUE = -10000.;//(double)Integer.MIN_VALUE;
+    static int INT_MAX_VALUE = (int)MAX_VALUE; 
+    static int INT_MIN_VALUE = (int)MIN_VALUE; 
     double xmax, xmin, ymax, ymin;
     double xrange, //xmax - xmin
 	   yrange; //ymax - ymin
@@ -102,11 +106,21 @@ import java.util.*;
     }
     final public int XPixel(double x)
     {
-	return (int)(x * FACT_X + OFS_X);
+	double xpix = x * FACT_X + OFS_X;
+	if(xpix >= MAX_VALUE)
+	    return INT_MAX_VALUE;
+	if(xpix <= MIN_VALUE)
+	    return INT_MIN_VALUE;
+	return (int)xpix;
     }
     final public int YPixel(double y)
     {
-	return (int)(y * FACT_Y + OFS_Y);
+	double ypix = y * FACT_Y + OFS_Y;
+	if(ypix >= MAX_VALUE)
+	    return INT_MAX_VALUE;
+	if(ypix <= MIN_VALUE)
+	    return INT_MIN_VALUE;
+	return (int)ypix;
     }
 			
     final public int XPixel(double x, Dimension d)
@@ -1006,16 +1020,29 @@ public class Waveform extends Canvas
 	    DrawError(off_graphics, size(), waveform_signal);
 	g.setClip(prev_clip);
     }	
-    protected double MaxXSignal() {return waveform_signal.xmax;}
+    protected double MaxXSignal() 
+    {
+	if(waveform_signal == null)
+	    return 1.;
+	return waveform_signal.xmax;
+    }
     protected double MaxYSignal() 
     {
+	if(waveform_signal == null)
+	    return 1.;
 	if(waveform_signal.ymax <= waveform_signal.ymin)
 	    return  waveform_signal.ymax + 1E-3 + Math.abs(waveform_signal.ymax);
 	return waveform_signal.ymax;
     }
-    protected double MinXSignal() {return waveform_signal.xmin;}
+    protected double MinXSignal() 
+    {
+	if(waveform_signal == null)
+	    return 0.;
+	return waveform_signal.xmin;}
     protected double MinYSignal() 
     {
+	if(waveform_signal == null)
+	    return 0.;
 	if(waveform_signal.ymax <= waveform_signal.ymin)
 	    return  waveform_signal.ymin - 1E-3 - Math.abs(waveform_signal.ymax);
 	return waveform_signal.ymin;
@@ -1358,7 +1385,11 @@ public class Waveform extends Canvas
 	repaint();
     }
     
-
+    public void SetTitle(String title)
+    {
+	this.title = title;
+	ReportChanges();
+    }
 
 
     void ReportChanges()

@@ -6,6 +6,7 @@ public class LocalProvider implements DataProvider {
     native public String GetString(String in);
     native public float GetFloat(String in);
     native public float[] GetFloatArray(String in);
+    native public int[] GetIntArray(String in);
     native public String ErrorString();
     public boolean SupportsAsynch() { return false; }
     }	    

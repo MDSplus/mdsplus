@@ -14,16 +14,11 @@ public    static final byte DTYPE_LONG = 8;
 public    static final byte DTYPE_FLOAT = 10;
 
 public    byte dtype;
-public    float data[];
+public    float float_data[];
+public	  int   int_data[];
 public	  String strdata;
 public	  String error;
 
-public Descriptor()
-{
-    data = null;
-    strdata = null;
-    error = null;
-}    
 
 }
 
@@ -78,7 +73,8 @@ public boolean SupportsAsynch() { return true; }
 
 public synchronized void Update(String exp, int s)
 {
-    if(exp == null) return;
+    error = null;
+    if(exp == null)  { experiment = null; open = true; return;}
     if(experiment == null || !experiment.equals(exp) || s != shot)
     {
     
@@ -126,7 +122,9 @@ public synchronized float GetFloat(String in)
 	    error = desc.error;
 	switch (desc.dtype) {
 		case Descriptor.DTYPE_FLOAT:
-		    return desc.data[0];
+		    return desc.float_data[0];
+		case Descriptor.DTYPE_LONG:
+		    return (float)desc.int_data[0];
 		case Descriptor.DTYPE_CHAR:
 		    error = "Cannot convert a string to float";
 		    return 0;
@@ -149,7 +147,13 @@ public synchronized float[] GetFloatArray(String in)
     Descriptor desc = mds.MdsValue(in);
     switch(desc.dtype)  {
 	case desc.DTYPE_FLOAT:
-	    return desc.data;
+	    return desc.float_data;
+	case desc.DTYPE_LONG: 
+	    float[] out_data = new float[desc.int_data.length];
+	    for(int i = 0; i < desc.int_data.length; i++)
+		out_data[i] = (float)desc.int_data[i];
+	    return out_data;
+	    
 	case desc.DTYPE_CHAR:
 	    error = "Cannot convert a string to float array";
 	    return null;
@@ -160,6 +164,31 @@ public synchronized float[] GetFloatArray(String in)
     return null;
 }        
 	
+public synchronized int[] GetIntArray(String in)
+{
+    String open_err = new String("");
+    if(!CheckOpen())
+	return null;
+    Descriptor desc = mds.MdsValue(in);
+    switch(desc.dtype)  {
+	case desc.DTYPE_LONG:
+	    return desc.int_data;
+	case desc.DTYPE_FLOAT:
+	    {
+		int out_data[] = new int[desc.float_data.length];
+		for(int i = 0; i < desc.float_data.length; i++)
+		    out_data[i] = (int)(desc.float_data[i] + 0.5);
+		return out_data;
+	    }
+	case desc.DTYPE_CHAR:
+	    error = "Cannot convert a string to int array";
+	    return null;
+	case desc.DTYPE_CSTRING:
+	    error = desc.error;
+	    return null;
+    }	
+    return null;
+}        
 	    
  private synchronized boolean  CheckOpen()
  {
@@ -169,25 +198,35 @@ public synchronized float[] GetFloatArray(String in)
 	status = mds.ConnectToMds();
 	if(status == 0)
 	{
-	    error = "Cannot open experiment " + experiment + " shot "+ 
-		new Integer(shot).toString() + " : "+ mds.error;
+	    if(mds.error != null)
+		error = "Cannot open experiment " + experiment + " shot "+ 
+		    new Integer(shot).toString() + " : "+ mds.error;
+	    else
+		error = "Cannot open experiment " + experiment + " shot "+ 
+		    new Integer(shot).toString();	    
 	    return false;
 	}
 	connected = true;
     }	
-    if(!open)
+    if(!open && experiment != null)
     {
 	Descriptor descr = mds.MdsValue("MDSLIB->MDS$OPEN(\""+experiment+"\","+
 		(new Integer(shot)).toString()+")");
-	if(descr.dtype != Descriptor.DTYPE_CSTRING)
+	if(descr.dtype != Descriptor.DTYPE_CSTRING
+		 && descr.dtype == Descriptor.DTYPE_LONG && descr.int_data != null 
+		 && descr.int_data.length > 0 && (descr.int_data[0]%2 == 1))
 	{
 	    open = true;
 	    return true;
 	}
 	else
 	{
-	    error = "Cannot open experiment " + experiment + " shot "+ 
-		new Integer(shot).toString() + " : "+ descr.error;
+	    if(mds.error != null)
+		error = "Cannot open experiment " + experiment + " shot "+ 
+		    new Integer(shot).toString() + " : "+ mds.error;
+	    else
+		error = "Cannot open experiment " + experiment + " shot "+ 
+		    new Integer(shot).toString();	    
 	    return false;
 	}
     }	    
@@ -255,20 +294,16 @@ class Mds {
 		break;
 	    case Descriptor.DTYPE_SHORT:
 		short data[] = message.ToShortArray();
-		out.data = new float[data.length];
+		out.int_data = new int[data.length];
 		for(i = 0; i < data.length; i++)
-		   out.data[i] = (float)data[i];
-		out.dtype = Descriptor.DTYPE_FLOAT;
+		   out.int_data[i] = (int)data[i];
+		out.dtype = Descriptor.DTYPE_LONG;
 		break;
 	    case Descriptor.DTYPE_LONG:
-		int int_data[] = message.ToIntArray();
-		out.data = new float[int_data.length];
-		for(i = 0; i < int_data.length; i++)
-		   out.data[i] = (float)int_data[i];
-		out.dtype = Descriptor.DTYPE_FLOAT;
+		out.int_data = message.ToIntArray();
 		break;
 	    case Descriptor.DTYPE_FLOAT:
-		out.data = message.ToFloatArray();
+		out.float_data = message.ToFloatArray();
 		break;
 	    case Descriptor.DTYPE_CSTRING:
 		out.error = new String(message.body);
@@ -421,6 +456,8 @@ public void Receive(DataInputStream dis)throws IOException
         body = new byte[msglen - 48];
         ReadBuf(body, dis);
     }
+    else
+	body = new byte[0];
  }	
  private void Flip(byte bytes[], int size)
  {

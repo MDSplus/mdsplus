@@ -225,7 +225,7 @@ import java.lang.Integer;
       c.fill =  GridBagConstraints.BOTH;
       c.gridwidth = 6;
       c.gridheight = 3;
-      sig_list = new List(8, false);
+      sig_list = new List(6, false);
       sig_list.addItemListener(this);
       sig_list.addKeyListener(this);
       gridbag.setConstraints(sig_list, c);
@@ -463,27 +463,28 @@ import java.lang.Integer;
 	}
 
 	setDefaultFlags(wc.defaults);
-	defaultButtonOperation(title, title_b.getState(),  wc_default.title, curr_wc.title);
-	defaultButtonOperation(shot, shot_b.getState(),  wc_default.shot_str, curr_wc.shot_str);
+	defaultButtonOperation(title,      title_b.getState(),      wc_default.title,      curr_wc.title);
+	defaultButtonOperation(shot,       shot_b.getState(),       wc_default.shot_str,   curr_wc.shot_str);
 	defaultButtonOperation(experiment, experiment_b.getState(), wc_default.experiment, curr_wc.experiment);
-	defaultButtonOperation(x_max, x_max_b.getState(), wc_default.x_max, curr_wc.x_max);
-	defaultButtonOperation(x_min, x_min_b.getState(),wc_default.x_min, curr_wc.x_min);
-	defaultButtonOperation(x_label, x_label_b.getState(), wc_default.x_label, curr_wc.x_label);
-	defaultButtonOperation(y_max, y_max_b.getState(), wc_default.y_max, curr_wc.y_max);
-	defaultButtonOperation(y_min, y_min_b.getState(), wc_default.y_min, curr_wc.y_min);
-	defaultButtonOperation(y_label, y_label_b.getState(), wc_default.y_label, curr_wc.y_label);
+	defaultButtonOperation(x_max,      x_max_b.getState(),      wc_default.x_max,      curr_wc.x_max);
+	defaultButtonOperation(x_min,      x_min_b.getState(),      wc_default.x_min,      curr_wc.x_min);
+	defaultButtonOperation(x_label,    x_label_b.getState(),    wc_default.x_label,    curr_wc.x_label);
+	defaultButtonOperation(y_max,      y_max_b.getState(),      wc_default.y_max,      curr_wc.y_max);
+	defaultButtonOperation(y_min,      y_min_b.getState(),      wc_default.y_min,      curr_wc.y_min);
+	defaultButtonOperation(y_label,    y_label_b.getState(),    wc_default.y_label,    curr_wc.y_label);
 	
 	
-	if(setup.main_scope.shot_t.getText() != null && setup.main_scope.shot_t.getText().trim().length() != 0 &&
-	    shot.getText().indexOf("-") == -1)
+	if(setup.main_scope.IsShotDefined() && wc.useDefaultShot())
 	{
 	    shot.setForeground(Color.red);
-	    shot.setText(setup.main_scope.shot_t.getText());
+	    shot.setText(setup.main_scope.GetMainShot());
 	}		    
 	    
 	x_log.setState(wc.x_log);
 	y_log.setState(wc.y_log);
-	ew.initSignals(wc, shot.getText());
+	
+	//if(shot.getText() != null && shot.getText().length() != 0)
+	    ew.initSignals(wc, shot.getText());
 	     	
         x_expr.setText("");
         y_expr.setText("");
@@ -503,7 +504,6 @@ import java.lang.Integer;
 	y_expr.setText("");      
       show_type.select((ws.interpolate ? 0 : 1));
       marker.select(ws.marker);		 
-//    color.select(ws.colorToIdx());
       color.select(ws.color_idx);
       if(error_w.isVisible())
 	error_w.setError(ws);	
@@ -518,7 +518,6 @@ import java.lang.Integer;
       ws.interpolate   = (show_type.getSelectedIndex() == 0 ? true : false);
       ws.marker        = marker.getSelectedIndex();	
       ws.color_idx     = color.getSelectedIndex();       
-//      ws.color         = WaveSetupData.COLOR_SET[color.getSelectedIndex()];       
 
       return ws; 	 
    }
@@ -557,7 +556,6 @@ import java.lang.Integer;
     	    {
 		ws.shot = ew.shots[i];
 		ws.color_idx = color_idx;
-//		ws.color = WaveSetupData.COLOR_SET[color_idx];
 		color_idx = (color_idx + 1) % setup.main_scope.color_dialog.GetNumColor();
 		addSignalSetup(ws);
 		signalListAdd(ws);
@@ -608,7 +606,6 @@ import java.lang.Integer;
 	 sel_signal = start_idx;
       }
    }
-   
          
    private void signalListRefresh()
    {
@@ -711,7 +708,6 @@ import java.lang.Integer;
       wc.low_err      = new String[ew.num_signal];
             
       wc.markers      = new int[ew.num_signal];
-//      wc.colors       = new Color[ew.num_signal];
 
       wc.colors_idx   = new int[ew.num_signal];
       wc.interpolates = new boolean[ew.num_signal];
@@ -730,34 +726,29 @@ import java.lang.Integer;
 	 {
 	    wc.interpolates[k] = ew.signals[k].interpolate;
 	    wc.markers[k]      = ew.signals[k].marker;
-//	    wc.colors[k]       = ew.signals[k].color;
 	    wc.colors_idx[k]   = ew.signals[k].color_idx;
     	    k++;
 	 }
       }
       wc.defaults = getDefaultFlags();
-      //wc.modified = !wc.equals(curr_wc);
+      wc.modified = !wc.equals(curr_wc);
+      if(wc.modified) {
+	main_scope.sc.modified = true;
+	main_scope.setWindowTitle();
+      }
       curr_wc = wc;        
       return (setup.SaveWaveformConf(wc));
    } 		  	
-    	
-   public void actionPerformed(ActionEvent e)
-   {
-      Object ob = e.getSource();
 
-      if(ob == erase)
-	eraseForm();
-		
-      if(ob == cancel)
-	setVisible(false);
-	
-      if(ob == apply || ob == ok)
-      {
+   private int applyWaveform(boolean ok_flag)
+   {
 	int error = 0;
 	boolean def_exp = true, def_shot = true;
-	
-	setup.main_scope.SetStatusLabel("Update signal"); 
 
+
+    	main_scope.SetStatusLabel("");
+	ew.wave.SetMode(Waveform.MODE_WAIT);
+				
 	if(experiment.getText() == null || experiment.getText().trim().length() == 0)
 	    def_exp = false;
 	
@@ -773,6 +764,7 @@ import java.lang.Integer;
 	    error = 1;
 	}
 	
+	ew.signalsRefresh(shot.getText());
 	
 	if(sel_signal == -1)
 	    addSignals();
@@ -780,23 +772,58 @@ import java.lang.Integer;
 	    updateSignals();
 
 	WaveformConf wc = saveConfiguration();
-
+	
 	if(error == 0) {
-
-	    if(ew.num_signal != 0) {
-		ew.signalsRefresh(shot.getText(), setup.main_scope.shot_t.getText(), false);
+	
+	    main_scope.SetStatusLabel("Update signals for shots " + shot.getText());
+    
+    	    if(ew.num_signal != 0) {
+//		ew.signalsRefresh(shot.getText());
 		signalListRefresh();
 	    }
-		    
-	    ew.UpdateWave(wc);
-	    if(ew.wave.wi.error != null)
-	    {
-		error = 1;
-		error_msg.addMessage(ew.wave.wi.error);
-	    }
+		if(wc.modified)	    		    
+		    ew.UpdateWave(wc);
+		else
+		    ew.RefreshWave(wc);
+		
+		wc.modified = true;	    
+		if(ew.wave.wi.error != null)
+		{
+		    error = 1;
+		    error_msg.addMessage(ew.wave.wi.error);
+		    ew.RefreshWave(wc);
+		}
+	    	 
 	}
 	
-	if(error == 1)
+	if(error == 0 && ok_flag)
+	    wc.modified = wc.useDefaultShot();
+
+	if(error != 0)
+	    wc.modified = true;	    		
+
+	
+	ew.wave.SetMode(main_scope.wave_mode);
+	main_scope.SetStatusLabel("Wave is up to date");
+	
+	return error;
+   }
+	    	
+   public void actionPerformed(ActionEvent e)
+   {
+      Object ob = e.getSource();
+
+      if(ob == erase) {
+	eraseForm();
+      }
+		
+      if(ob == cancel)
+	setVisible(false);
+	
+      if(ob == apply || ob == ok)
+      {
+	
+	if(applyWaveform(ob == ok) == 1)
 	    error_msg.showMessage();
 	if(ob == ok)
 	    setVisible(false);		
@@ -841,13 +868,13 @@ import java.lang.Integer;
       if(key == KeyEvent.VK_ENTER)
       { 
 	 if(ob == y_expr || ob == x_expr || ob == shot || ob == experiment) {
-	    ew.evaluateMainShot(setup.main_scope.shot_t.getText());
+	    ew.evaluateMainShot(setup.main_scope.GetMainShot());
     	    if(sel_signal == -1)	    
 		addSignals();
 	    else
 		updateSignals();	    	
 	    if(ew.num_signal != 0) {
-		ew.signalsRefresh(shot.getText(), setup.main_scope.shot_t.getText(), false);
+		ew.signalsRefresh(shot.getText());
 	        signalListRefresh();
 	    }	    
          } 
@@ -940,7 +967,6 @@ import java.lang.Integer;
 
 	if(ob == color) {
 	    ew.signals[sel_signal].color_idx = color.getSelectedIndex();       
-//	    ew.signals[sel_signal].color = WaveSetupData.COLOR_SET[color.getSelectedIndex()];       
 	}
 	
     }
@@ -948,7 +974,7 @@ import java.lang.Integer;
     public void focusGained(FocusEvent e)
     {
 	Object ob = e.getSource();
-	
+/*		
 	if(ob == shot) {
 	    if(shot_b.getState()) {
 	      ((TextField)ob).setForeground(Color.blue);
@@ -959,7 +985,8 @@ import java.lang.Integer;
 	      ((TextField)ob).setForeground(Color.black);
 	      ((TextField)ob).setText(curr_wc.shot_str);
 	    }
-	}    
+	}
+*/  
     }    
 }
 

@@ -400,7 +400,7 @@ protected void NotifyZoom(double start_xs, double end_xs, double start_ys, doubl
 protected void HandleCopy()
 {
 //    if(copy_wi == null)
-    if((copy_wi = controller.GetSource()) == null)
+    if((copy_wi = controller.GetSource()) == null && !IsSelected())
     {
 	copy_wi = wi;
 	source_copy_w = (Waveform)this;
@@ -417,7 +417,7 @@ protected void HandleCopy()
 	}
 	else
 	{
-	    Update(copy_wi);
+	    //Update(copy_wi);
 	    controller.NotifyChange((Waveform)this, source_copy_w);
 	}
     }

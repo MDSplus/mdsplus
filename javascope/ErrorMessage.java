@@ -9,21 +9,63 @@ import java.awt.event.*;
 class ErrorMessage extends ScopePositionDialog {
     private TextArea message;
     private Button acknowledge;
+    private Button bt_1, bt_2, bt_3;
+    private Label  lab;
     private int n_row = 0;
     private Frame f;
     public static final int MAX_ERROR_ROW  = 10;
+    public static final int WARNING_TYPE = 1, ERROR_TYPE = 2;
     boolean is_message_show = false;
+    private int msg_type;
+    private int state = 0;
     
     ErrorMessage(Frame fw)
     {
-	
-	super(fw, "Error Setup", true);
+	super(fw, "Message", true);
 	setResizable(true);
 	
+	msg_type = ERROR_TYPE;
 	f = fw; 	
 	setTitle("Error Message");
 	setLayout(new GridLayout(20, 0, 0, 0));    
     }
+    
+    ErrorMessage(Frame fw, int _msg_type)
+    {
+	super(fw, "Error Setup", true);
+	setResizable(true);	
+	msg_type = _msg_type;
+	f = fw; 	
+		
+	switch(msg_type) {
+	    case WARNING_TYPE :
+		setTitle("WARNING");
+		Panel p0 = new Panel(new GridLayout(2, 0, 0, 0));
+		Panel p1 = new Panel(new FlowLayout(FlowLayout.CENTER));
+		Panel p2 = new Panel(new FlowLayout(FlowLayout.CENTER));
+		p1.add(lab = new Label());
+		p2.add(bt_1 = new Button());
+		bt_1.addActionListener(this);
+		p2.add(bt_2 = new Button());
+		bt_2.addActionListener(this);
+    		p2.add(bt_3 = new Button());
+		bt_3.addActionListener(this);
+		p0.add(p1);
+		p0.add(p2);
+		add(p0);
+	    break;
+	}
+		
+    }
+    public void setLabels(String msg, String b1_lab, String b2_lab, String b3_lab)
+    {    
+	lab.setText(msg);
+	bt_1.setLabel(b1_lab);
+	bt_2.setLabel(b2_lab);
+	bt_3.setLabel(b3_lab);    
+    }
+    
+    
     /**
      ** Add a raw to the message dialog label
      */
@@ -43,20 +85,33 @@ class ErrorMessage extends ScopePositionDialog {
 	    n_row++;
 	}
     }
+    
+    public int getState()
+    {
+	return state;
+    }
+    
     /**
      ** Show error message dialog
      */
     public int showMessage()
     {
-	if(n_row == 0 || is_message_show) 
-	    return 0;
-	is_message_show = true;
-	setLayout(new GridLayout(n_row + 1, 0));
-	Panel p = new Panel();
-	((FlowLayout)p.getLayout()).setAlignment(FlowLayout.CENTER);
-	p.add(acknowledge = new Button("Acknowledge"));
-	acknowledge.addActionListener(this);
-	add(p);
+	switch(msg_type)
+	{
+	    case ERROR_TYPE :	
+		if(n_row == 0 || is_message_show) 
+		return 0;
+		is_message_show = true;
+		setLayout(new GridLayout(n_row + 1, 0));
+		Panel p = new Panel();
+		((FlowLayout)p.getLayout()).setAlignment(FlowLayout.CENTER);
+		p.add(acknowledge = new Button("Acknowledge"));
+		acknowledge.addActionListener(this);
+		add(p);
+	    break;
+	    case WARNING_TYPE :	
+	    break;	    
+	}
 	pack();
 	setResizable(false);	    
 	setPosition(f);
@@ -70,7 +125,7 @@ class ErrorMessage extends ScopePositionDialog {
     {
 	int start = 0, end = 0;
 
-	if(is_message_show) 
+	if(is_message_show || error == null) 
 	    return;
 
     	removeAll();
@@ -80,7 +135,7 @@ class ErrorMessage extends ScopePositionDialog {
 	    add(new Label(error.substring(start, end)));
 	    start = end + 1;
 	    n_row++;
-	}
+	} 
     }
     
     public void resetMsg()
@@ -91,9 +146,26 @@ class ErrorMessage extends ScopePositionDialog {
     
     public void actionPerformed(ActionEvent e)
     {
-	is_message_show = false;
-    	setResizable(true);
-	setVisible(false);
-	resetMsg();
+         Object ob = e.getSource();	
+
+
+	switch(msg_type)
+	{
+	    case ERROR_TYPE :	
+		is_message_show = false;
+		setResizable(true);
+		setVisible(false);
+		resetMsg();
+	    break;
+	    case WARNING_TYPE :	
+		if(ob == bt_1)
+		    state = 1; 
+		if(ob == bt_2)
+		    state = 2; 
+		if(ob == bt_3)
+		    state = 3; 
+		setVisible(false);	    
+	    break;	    
+	}
     }    
 }

@@ -197,6 +197,7 @@ public class SetupDefaults extends ScopePositionDialog {
       wc.title        = new String(title.getText());
       wc.x_label      = new String(x_label.getText());
       wc.y_label      = new String(y_label.getText());
+      wc.modified     = !wc.equals(main_scope.sc.gwc);
       main_scope.sc.gwc = wc;
       return(wc);		     	     
     } 
@@ -214,9 +215,10 @@ public class SetupDefaults extends ScopePositionDialog {
       if(ob == apply || ob == ok)
       {
 	//if(shot.getText() != null && shot.getText().length()!= 0)
-	    //sd_block.evaluateShot(shot.getText());
+	//sd_block.evaluateShot(shot.getText());
 	saveDefaultConfiguration();
 	main_scope.UpdateAllWaves();
+	main_scope.sc.gwc.modified = false;
 	if(ob == ok)
 	    setVisible(false);
       }

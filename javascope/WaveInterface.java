@@ -46,6 +46,7 @@ public class WaveInterface
 	in_y = new String[num_waves];
 	in_up_err = new String[num_waves];
 	in_low_err = new String[num_waves];
+	
 	for(int i = 0; i < num_waves; i++)
 	{
 	    if(wi.in_x[i] != null)
@@ -77,6 +78,7 @@ public class WaveInterface
         markers = wi.markers;
 	colors = wi.colors;
 	interpolates = wi.interpolates;
+	
 	if(wi.experiment != null)
 	    experiment = new String(wi.experiment);
 	else
@@ -92,7 +94,7 @@ public class WaveInterface
 	if(wi.in_ylabel != null)
 	    in_ylabel = new String(wi.in_ylabel);
 	else
-	    in_ylabel = null;
+	    in_ylabel = null;	
 
         shots = wi.shots;
 	error = null;
@@ -133,6 +135,11 @@ public class WaveInterface
 	}
 	        
 	dp.Update(experiment, shots[0]);
+	if(dp.ErrorString() != null)
+	{
+	    error = dp.ErrorString();
+	    return 0;
+	}
 //compute limits
 	if(in_xmin != null && (in_xmin.trim()).length() != 0)
 	{
@@ -279,6 +286,12 @@ public class WaveInterface
 	String limits = "FLOAT("+new Float(xmin).toString()+"), " +		    		    
 	    "FLOAT("+new Float(xmax).toString()+")";			    		    
 	dp.Update(experiment, shots[curr_wave]);
+	if(dp.ErrorString() != null)
+	{
+	    error = dp.ErrorString();
+	    return null;
+	}
+	
 	if(in_y[curr_wave] == null)
 	{
 	    curr_error = "Missing Y value";

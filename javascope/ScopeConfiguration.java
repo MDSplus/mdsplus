@@ -6,6 +6,7 @@ import java.awt.*;
 class ScopeConfiguration {
     final static String msg_error_title = "File configuration sintax error\n";
     String title, event;
+    String data_server_address;
     String error, msg_error;
     StringBuffer msg_error_buffer = new StringBuffer(msg_error_title);
     int num_conf = 0;
@@ -19,6 +20,7 @@ class ScopeConfiguration {
     boolean fast_network_access = true;
     float height_percent[], width_percent[]; 
     BufferedWriter out;
+    boolean modified;
 
 
     ScopeConfiguration()
@@ -57,9 +59,50 @@ class ScopeConfiguration {
 
     public void SetModified(int idx, boolean mod)
     {
-	wc[idx].modified = true;
+	wc[idx].modified = mod;
     }
-        
+    
+    public String getWaveformShot(WaveformConf wc, String mShot)
+    {
+	if(wc.useDefaultShot())
+	{
+	    if(mShot != null && mShot.length() != 0)
+		return mShot;
+	    else
+		return gwc.shot_str;
+	} else
+	    return wc.shot_str;
+    }
+    
+    public void SetGlobalSetting(WaveformConf wc_new)
+    {
+        for(int i=0; i < 32; i++)
+	{
+		    switch(i)
+		    {
+    			case WaveformConf.B_title:
+			    if ((wc_new.defaults & (1<<i)) == 1<<i) wc_new.title = gwc.title; break; 
+			case WaveformConf.B_shot:
+			    if ((wc_new.defaults & (1<<i)) == 1<<i) wc_new.shot_str = gwc.shot_str;break; 
+			case WaveformConf.B_exp:
+			    if ((wc_new.defaults & (1<<i)) == 1<<i) wc_new.experiment = gwc.experiment;break; 
+			case WaveformConf.B_x_max:
+			    if ((wc_new.defaults & (1<<i)) == 1<<i) wc_new.x_max = gwc.x_max; break; 
+			case WaveformConf.B_x_min:
+			    if ((wc_new.defaults & (1<<i)) == 1<<i) wc_new.x_min = gwc.x_min; break; 
+			case WaveformConf.B_x_label:
+			    if ((wc_new.defaults & (1<<i)) == 1<<i) wc_new.x_label = gwc.x_label;break; 
+			case WaveformConf.B_y_max:
+			    if ((wc_new.defaults & (1<<i)) == 1<<i) wc_new.y_max = gwc.y_max; break; 
+			case WaveformConf.B_y_min:
+			    if ((wc_new.defaults & (1<<i)) == 1<<i) wc_new.y_min = gwc.y_min; break; 
+			case WaveformConf.B_y_label:
+			    if ((wc_new.defaults & (1<<i)) == 1<<i) wc_new.y_label = gwc.y_label;break; 
+		    }
+	}
+    }
+    
+
     public WaveformConf GetWaveformConf(int idx, boolean def)
     {
 	WaveformConf wc_new = null;
@@ -232,6 +275,12 @@ class ScopeConfiguration {
 		    fast_network_access =  new Boolean(str.substring("Scope.fast_network_access: ".length(), 
 										    str.length())).booleanValue();
 		    continue;		
+		}
+		
+		if(str.indexOf("Scope.data_server_address:") != -1)
+		{
+		    data_server_address = str.substring("Scope.data_server_address: ".length(), str.length());
+		    continue;	
 		}
 				    
 		if(str.indexOf("Scope.item_color_") != -1)
@@ -655,8 +704,8 @@ class ScopeConfiguration {
 	
 	if(System.getProperty("os.name").equals("Mac OS"))
 	{	
-	 //   MRJFileUtils.setDefaultFileType(new MRJOSType("TEXT"));
-	 //   MRJFileUtils.setDefaultFileCreator(new MRJOSType("JSCP"));
+	    //MRJFileUtils.setDefaultFileType(new MRJOSType("TEXT"));
+	    //MRJFileUtils.setDefaultFileCreator(new MRJOSType("JSCP"));
 	} 
 	f = new File(conf_file);    
 	if(f.exists()) f.delete();   
@@ -673,6 +722,7 @@ class ScopeConfiguration {
 	    out.newLine();
 
 	    writeLine("Scope.fast_network_access: ", ""+fast_network_access);		    
+	    writeLine("Scope.data_server_address: ", data_server_address);		    
 
     	    for(int i = 0; i < c_list.GetNumColor(); i++)
 	    {

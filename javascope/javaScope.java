@@ -5,12 +5,16 @@ import java.awt.event.*;
 import java.lang.*;
 import java.util.*;
   
-public class javaScope extends Frame implements ActionListener, ItemListener,WindowListener
-//, MRJOpenDocumentHandler,MRJQuitHandler
+public class javaScope extends Frame implements ActionListener, ItemListener, WindowListener
+//							,MRJQuitHandler, MRJOpenDocumentHandler 
 {
 
+  static final String DEFAULT_IP_SERVER = "150.178.3.80";
+//  static final String DEFAULT_FILE_NAME = "scope_default.scp";
+  
   private MenuBar       mb;
-  private Menu          edit_m, pointer_mode_m, customize_m, autoscale_m, print_m, network_m, servers_m;
+  private Menu          edit_m, pointer_mode_m, customize_m, autoscale_m, print_m, network_m;
+	  Menu		servers_m;
   private MenuItem      exit_i, win_i, default_i, use_i, save_as_i, use_last_i, save_i, color_i,
 			print_all_i, open_i, close_i, server_list_i;
   private MenuItem	zoom_i, point_i, copy_i, pan_i;
@@ -21,17 +25,18 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
   private CheckboxMenuItem  fast_network_i;
   private Choice	grid_mode;  
   private Label         shot_l, lab;
-  public  TextField     shot_t, x_grid_lines, y_grid_lines;
+  private TextField     shot_t, x_grid_lines, y_grid_lines;
   private Button        apply_b;
   private FileDialog    file_diag;
   private String        curr_directory, curr_file_name, file_name;
   private Label	        point_pos;
-  private Label		info_label;
+  private TextField	info_text, net_text;
   private WavePanel     draw_pan;
   private ErrorMessage  error_msg;
+  private ErrorMessage  warning_msg;
   private WindowDialog  win_diag;
   public ColorDialog	color_dialog;
-  int			wave_mode = Waveform.MODE_ZOOM, curr_grid_mode = 2, x_curr_lines_grid = 3,
+  int			wave_mode = Waveform.MODE_ZOOM, curr_grid_mode = 0, x_curr_lines_grid = 3,
 			y_curr_lines_grid = 3;
   DataProvider		db;
   Setup	                setup; 
@@ -41,46 +46,26 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
   static String         MACfile;
   private String	config_file, last_config_file;
   String		prev_main_shot;
-  private String	server_ip;
+  private String	server_ip1;
   private String[]	server_ip_list; 
   private ServerDialog  server_diag;
   EvaluateWaveform	ew;
   static WaveInterface  wi_source;
   static WaveformConf   wc_source;
+  static boolean	not_sup_local = false;
     
   public javaScope()
   {
     
     server_diag = new ServerDialog((Frame)this, "Server list");
     server_diag.addServerIp("Local");
+    
     if(server_ip_list == null) {
 	server_diag.addServerIp("150.178.3.80");
 	server_ip_list = server_diag.getServerIpList();
     }
     else
 	server_diag.addServerIpList(server_ip_list);
-    
-    Properties props = System.getProperties();
-    String is_local = props.getProperty("data.is_local");
-    String ip_addr;
-    if(is_local != null && is_local.equals("no"))
-    {
-	ip_addr = props.getProperty("data.address");
-	if(ip_addr == null)
-	{
-	    server_ip = new String("150.178.3.80");
-	    db = new NetworkProvider("150.178.3.80");
-	} else {
-	    server_ip = new String(ip_addr);
-	    db = new NetworkProvider(ip_addr);
-	    server_diag.addServerIp(ip_addr);
-	}
-    }
-    else {
-	server_ip = new String("Local");
-	db = new LocalProvider();
-    }
-    
 		
     if(System.getProperty("os.name").equals("Mac OS")) {
       //MRJApplicationUtils.registerOpenDocumentHandler(this);
@@ -89,11 +74,12 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
 
     setSize(750,550);
     error_msg = new ErrorMessage(this);
+    warning_msg = new ErrorMessage(this, ErrorMessage.WARNING_TYPE);
     ew = new EvaluateWaveform(this);
     color_dialog = new ColorDialog(this, "Color Configuration Dialog");
     
     setLayout(new BorderLayout());
-    setTitle("Java Scope");
+    //setTitle("Java Scope");
     setFont(new Font("Helvetica", Font.PLAIN, 12));
     
     addWindowListener(this); 
@@ -172,10 +158,7 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
     
     network_m = new Menu("Network");
     mb.add(network_m);
-//Gabriele fast network access disabled by default
-    sc.fast_network_access = false;		
-    fast_network_i = new CheckboxMenuItem("Fast network access", false);
-
+    fast_network_i = new CheckboxMenuItem("Fast network access", true);
     network_m.add(fast_network_i);
     fast_network_i.addItemListener(this);        
     servers_m  = new Menu("Servers");
@@ -189,6 +172,7 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
     point_pos = new Label("[0.000000000, 0.000000000]");    
     setup =  new Setup(this, point_pos);
     draw_pan = new WavePanel(setup, sc);
+    setScopeAllMode(wave_mode, curr_grid_mode, x_curr_lines_grid, y_curr_lines_grid); 
     add("Center", draw_pan);
 
     panel1 = new Panel();
@@ -240,10 +224,69 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
     y_grid_lines.setText(""+y_curr_lines_grid);    
         
     panel1.add("North", panel);
-    panel1.add("Center", point_pos);    
-    panel1.add("South", info_label = new Label(" Status: "));
+    panel1.add("Center", point_pos);
+
+    Panel panel2 = new Panel();
+    panel2.setLayout(new FlowLayout(FlowLayout.LEFT));
+    panel2.add(info_text = new TextField(" Status : ", 65));    
+    panel2.add(net_text  = new TextField(" Data server :", 25));
+    info_text.setEditable(false);
+    net_text.setEditable(false);
+     
+       
+    panel1.add("South", panel2);
 
     add("South",panel1);
+    
+    initDataServer();
+    setDataServerLabel();
+  }
+  
+  private void initDataServer()
+  {
+  
+    Properties props = System.getProperties();
+    String is_local = props.getProperty("data.is_local");
+    String ip_addr = props.getProperty("data.address");
+    
+    if(ip_addr != null || (is_local != null && is_local.equals("no")))
+    {   		               
+	if(ip_addr == null)
+	{
+	    sc.data_server_address = DEFAULT_IP_SERVER;
+	    db = new NetworkProvider(DEFAULT_IP_SERVER);
+	} else {
+	    sc.data_server_address = ip_addr;
+	    db = new NetworkProvider(ip_addr);
+	    server_diag.addServerIp(ip_addr);
+	}
+    }
+    else {
+	if(!not_sup_local)
+	{
+	    try {
+		db = new LocalProvider();
+		fast_network_i.setState(false);
+		fast_network_i.setEnabled(false);
+		sc.fast_network_access = false;		
+		sc.data_server_address = "Local";
+	    } catch (Throwable ex) {
+		not_sup_local = true;
+		servers_m.getItem(0).enable(false); //local server sempre indice 0
+		db = new NetworkProvider(DEFAULT_IP_SERVER);
+		sc.data_server_address = DEFAULT_IP_SERVER;
+	    }
+	} else {
+	    servers_m.getItem(0).enable(false); //local server sempre indice 0
+	    db = new NetworkProvider(DEFAULT_IP_SERVER);
+	    sc.data_server_address = DEFAULT_IP_SERVER;
+	} 
+     }
+  }
+
+  public void setDataServerLabel()
+  {
+    net_text.setText("Data Server:" + sc.data_server_address);
   }
 
   public boolean GetFastNetworkState()
@@ -253,7 +296,7 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
 
   public void SetStatusLabel(String msg)
   {
-    info_label.setText(" Status: " + msg);
+    info_text.setText(" Status: " + msg);
   }
   
   private void addServers()
@@ -266,6 +309,7 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
 	item.addActionListener(this);
      } 
   }
+  
 
   public void resetDrawPanel(int in_row[])
   {
@@ -283,37 +327,73 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
      WaveformConf wc;
      int k;
 
+     setup.SetAllWaveformPointer(Waveform.MODE_WAIT);     
+     ew.evaluateMainShot(GetMainShot());
      k = 0;
-     ew.evaluateMainShot(shot_t.getText());
      for(int i = 0; i < 4; i++)
      {
 	for(int j = 0; j < sc.rows[i]; j++, k++) 
 	{
 	    wc = sc.GetWaveformConf(k, true);
-	    if(wc.shot_str == null)
-		wc.shot_str = shot_t.getText();
+//	    if(wc.shot_str == null)
+//		wc.shot_str = shot_t.getText();
 	    SetStatusLabel("Repaint signal column " + (i + 1) + " row " + (j + 1));	    
-		    ew.RepaintWave(setup.waves[k], wc, shot_t.getText());
+	    ew.RepaintWave(setup.waves[k], wc, sc.getWaveformShot(wc, GetMainShot()));
 	}
       }
       repaintAllWaves();
+      setup.SetAllWaveformPointer(wave_mode);     
+  }
+  
+  public String GetMainShot()
+  {
+    return shot_t.getText();
+  }
+  
+  public boolean IsShotDefined()
+  {
+    return (shot_t.getText() != null && shot_t.getText().trim().length() > 0);
   }
  
+  public void WaveCheckError(int k)
+  {
+	WaveformConf wc = sc.GetWaveformConf(k);
+	if(setup.waves[k].wi == null || setup.waves[k].wi.shots == null || setup.waves[k].wi.shots[0] == WaveSetupData.UNDEF_SHOT) {
+	    if(setup.waves[k].wi == null )
+		setup.waves[k].SetTitle("Error during evaluate wave");
+	    else
+		setup.waves[k].SetTitle("Undefined Shot");
+	    sc.SetModified(k, true);
+	    return;	
+	}
+	if(setup.waves[k].wi.error != null) {
+	    setup.waves[k].SetTitle(setup.waves[k].wi.error);
+	    sc.SetModified(k, true);
+	}
+  }
+ 
+  public void UpdateWave(MultiWaveform w, WaveformConf wc) {
+ 
+ 	SetStatusLabel("Update signals for shots " + sc.getWaveformShot(wc, GetMainShot()));		
+	ew.UpdateWave(w, wc, sc.getWaveformShot(wc, GetMainShot()));
+	WaveCheckError(setup.GetWaveIndex(w));
+    	sc.modified = true;
+	setWindowTitle();
+  }
+  
   public void UpdateAllWaves()
   {
     int k = 0;
-//    EvaluateWaveform sd_block = new EvaluateWaveform(this);
-    String  main_shot = new String(shot_t.getText());
-    boolean m_shot_nodef = (main_shot == null || main_shot.trim().length() == 0 );
+    String  main_shot = shot_t.getText();
+    boolean m_shot_nodef = !IsShotDefined();
     boolean mod_shot;
     String e_msg = null;
     WaveformConf wc;
-    WaveInterface wi;
+
+    SetStatusLabel("");
+    setup.SetAllWaveformPointer(Waveform.MODE_WAIT);
 
     if(setup.num_waves == 0) return; 
-
-    if(ew.evaluateMainShot(main_shot) == 0)
-	return;
 	
     k = 0;
     if(m_shot_nodef)
@@ -323,72 +403,81 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
 	    for(int j = 0; j < sc.rows[i]; j++, k++) 
 	    {
 		wc = sc.GetWaveformConf(k, true);
-		if(!(wc.shot_str != null && wc.shot_str.indexOf("-") != -1) )
-	        {	
-		    SetStatusLabel("Update signal column " + (i + 1) + " row " + (j + 1));	    
-		    ew.UpdateWave(setup.waves[k], wc, shot_t.getText());
-		    sc.SetModified(k, false);
-
-		}
-		else
-	        {
-		    SetStatusLabel("Error : Main shot must be defined ");
-		}     		
+		sc.SetModified(k, true);	    
+		SetStatusLabel("Update signal column " + (i + 1) + " row " + (j + 1) + " shots " + wc.shot_str);	    
+		ew.UpdateWave(setup.waves[k], wc, sc.getWaveformShot(wc, main_shot));
+		sc.SetModified(k, false);
 	    }
 	}
     } 
     else 
     {
+    
+        if(ew.evaluateMainShot(main_shot) == 0)
+	    return;
+
 	if(prev_main_shot != null)
 	    mod_shot = !prev_main_shot.equals(main_shot);
 	else
 	    mod_shot = true;
-	mod_shot = true;
 	prev_main_shot = main_shot;
-
-	wi = null;	
+	
+	mod_shot = true; // Apply generale forza sempre una rivalutazione
+		
     	for(int i = 0; i < 4; i++)
 	{
 	    for(int j = 0; j < sc.rows[i]; j++, k++) 
 	    {
-		if(mod_shot)
-		 sc.SetModified(k, true);
+		sc.SetModified(k, true);
 		wc = sc.GetWaveformConf(k, true);
-		if(wc.shot_str == null)
-		    wc.shot_str = shot_t.getText();
-		ew.UpdateInterface(setup.waves[k], wc, shot_t.getText());
-		SetStatusLabel("Evaluate signal column " + (i + 1) + " row " + (j + 1));
-		if(wi == null && setup.waves[0].wi != null)
-		    wi = setup.waves[k].wi;	    
-	    }
+		//if((mod_shot || wc.modified) && wc.useDefaultShot())
+		if(mod_shot)
+		{
+//		    sc.SetModified(k, true);
+		    ew.UpdateInterface(setup.waves[k], wc, main_shot);
+		    SetStatusLabel("Evaluate signal column " + (i + 1) + " row " + (j + 1));
+		}
+    	    }
 	}
 
-	for(int l = 0; wi != null && l < wi.shots.length; l++)
+	for(int l = 0; l < ew.main_shots.length; l++)
 	{
 	    k = 0;
 	    for(int i = 0; i < 4; i++)
 	    {
 		for(int j = 0; j < sc.rows[i]; j++, k++)
 		{
-		    if(setup.waves[k].wi == null || l >= setup.waves[k].wi.shots.length) 
-			continue;
-		    SetStatusLabel("Update signal column " + (i + 1) + " row " + (j + 1) + " shot " + 
-											setup.waves[k].wi.shots[l]);	    
 		    wc = sc.GetWaveformConf(k, true);
-		    if(wc.modified)
-			ew.UpdateWave(setup.waves[k], setup.waves[k].wi.shots[l]);
+		    //if(setup.waves[k].wi != null && wc.useDefaultShot() && wc.modified)
+		    if(setup.waves[k].wi != null && wc.useDefaultShot())
+		    {
+			ew.UpdateWave(setup.waves[k], ew.main_shots[l]);			
+			SetStatusLabel("Update signal column " + (i + 1) + " row " + (j + 1) + " main shot " + 
+										    ew.main_shots[l]);
+		    }
 		} 
     	    }
 	}
+	
 	k = 0;
 	for(int i = 0; i < 4; i++)
 	{
 	    for(int j = 0; j < sc.rows[i]; j++, k++)
 	    {
-		SetStatusLabel("Update signal column " + (i + 1) + " row " + (j + 1));	    
 		wc = sc.GetWaveformConf(k, true);
-		ew.UpdateWave(setup.waves[k], wc.modified);
-		sc.SetModified(k, false);
+		if(wc.modified)
+		{
+		    if (!wc.useDefaultShot()) {		
+			ew.UpdateWave(setup.waves[k], wc, wc.shot_str);
+			SetStatusLabel("Update signal column " + (i + 1) + " row " + (j + 1) + " shots " + wc.shot_str);
+		    } else {
+			if(setup.waves[k].wi != null) {
+			    setup.waves[k].Update(setup.waves[k].wi ); 
+			    SetStatusLabel("Update signal column " + (i + 1) + " row " + (j + 1));
+			}
+		    }
+		    sc.SetModified(k, false);
+		}
 	    }
 	}
     }
@@ -398,18 +487,16 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
     {
 	for(int j = 0; j < sc.rows[i]; j++, k++)
 	{
-	    if(setup.waves[k].wi == null) {
-		error_msg.addMessage("(Column "+ (i+1) +" Row " + (j+1) +") Error during evaluate wave");
-		continue;
-	    }
-	    if(setup.waves[k].wi.error != null) {
-		error_msg.addMessage("(Column "+ (i+1) +" Row " + (j+1) +") "+ setup.waves[k].wi.error);
-	    }
+	    WaveCheckError(k);
 	}
     }
     
     if(error_msg.showMessage() != 0)
 	repaintAllWaves();
+    		    
+    setup.SetAllWaveformPointer(wave_mode);
+    SetStatusLabel("All waveform are up to date");
+
   }
   
   public void repaintAllWaves()
@@ -418,6 +505,97 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
 	setup.waves[i].repaint();
   }
   
+  public void closeScope()
+  {
+	if(sc.modified)
+	{
+	    warning_msg.setLabels("Save change to the configuration file before closing ?", 
+				  "Don't Save", "Cancel", "Save");
+	    warning_msg.showMessage();
+	    switch(warning_msg.getState())
+	    {
+		case 3:
+		    if(config_file == null)
+			SaveAs();
+		    else
+			saveConf(config_file);	
+		case 1:
+		    removeAll();
+		    setVisible(false);
+		    num_scope--;	
+		break;
+	    }
+	} else {
+	    removeAll();
+	    setVisible(false);
+	    num_scope--;	
+	}
+  }
+  
+  private void SaveAs()
+  {
+	file_diag = new FileDialog(this, "Save current setting as", FileDialog.SAVE);
+        file_diag.pack();
+        file_diag.show();
+	last_config_file = config_file;  
+	config_file = file_diag.getDirectory() + file_diag.getFile();
+	if(config_file != null)
+	   saveConf(config_file);	
+	file_diag = null;
+  }
+  
+  private void LoadConfigurationFrom()
+  {
+	file_diag = new FileDialog(this, "Use saved setting from", FileDialog.LOAD);      
+	if(curr_directory != null)
+	    file_diag.setDirectory(curr_directory);
+        file_diag.pack();
+        file_diag.show();
+	curr_directory = file_diag.getDirectory();
+	curr_file_name = file_diag.getFile();
+	file_name = new String(curr_directory + curr_file_name);
+	if(curr_file_name != null) {
+	   last_config_file = config_file;  
+    	   config_file = new String(file_name);
+    	   loadConf(config_file);	
+	}
+	file_diag =  null;      
+  }
+  
+  public boolean setDataServer()
+  {
+	boolean change = false;  
+	String old_ip = sc.data_server_address;
+	DataProvider old_db = db;
+	
+	if(sc.data_server_address.equals("Local"))
+	    try {
+		db = new LocalProvider();
+//		db = new NetworkProvider(sc.data_server_address);
+		fast_network_i.setState(false);
+		fast_network_i.setEnabled(false);
+		sc.fast_network_access = false;
+		change = true;	
+	    } catch (Throwable ex) {
+		db = old_db;
+		sc.data_server_address = old_ip;
+		error_msg.addMessage("Local data access is not supported on this platform");
+		change = false;
+	    }
+        else {
+	    fast_network_i.setEnabled(true);		
+	    db = new NetworkProvider(sc.data_server_address);
+	    change = true;
+	}
+	    
+	setDataServerLabel();
+	    
+	if(change) {
+	    setup.ResetAllWaveInterface();
+	    UpdateAllWaves();		
+	}
+	return change;
+  }
   
   public void actionPerformed(ActionEvent e) {
 
@@ -427,25 +605,8 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
     {
 	if(((MenuItem)ob).getParent() == servers_m)
 	{
-	    String old_ip = server_ip;
-	    DataProvider old_db = db;
-	    server_ip = new String(((MenuItem)ob).getLabel());
-	    if(server_ip.equals("Local"))
-	    try {
-		db = new LocalProvider();
-		fast_network_i.setState(false);
-		fast_network_i.setEnabled(false);
-		sc.fast_network_access = false;		
-	    } catch (Throwable ex) {
-		db = old_db;
-		server_ip = old_ip;
-		((MenuItem)ob).setEnabled(false);
-		error_msg.addMessage("Local data access is not supported on this platform");
-	    }
-	    else {
-		fast_network_i.setEnabled(true);		
-		db = new NetworkProvider(server_ip);
-	    }
+	    sc.data_server_address = new String(((MenuItem)ob).getLabel());
+	    ((MenuItem)ob).setEnabled(setDataServer());
     	}
     }
     
@@ -499,39 +660,17 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
     
     if (ob == use_i)
     {
-	file_diag = new FileDialog(this, "Use saved setting from", FileDialog.LOAD);      
-	if(curr_directory != null)
-	    file_diag.setDirectory(curr_directory);
-        file_diag.pack();
-        file_diag.show();
-	curr_directory = file_diag.getDirectory();
-	curr_file_name = file_diag.getFile();
-	file_name = new String(curr_directory + curr_file_name);
-	if(curr_file_name != null) {
-	   last_config_file = config_file;  
-    	   config_file = new String(file_name);
-    	   loadConf(config_file);	
-	}
-	file_diag =  null;
+	LoadConfigurationFrom();
     }
 
     if (ob == save_i)
     {
-	if(config_file == null)
-	    config_file = new String("Unamed_scope.scp");
 	saveConf(config_file);	
     }
     
     if (ob == save_as_i)
     {
-	file_diag = new FileDialog(this, "Save current setting as", FileDialog.SAVE);
-        file_diag.pack();
-        file_diag.show();
-	last_config_file = config_file;  
-	config_file = file_diag.getDirectory() + file_diag.getFile();
-	if(config_file != null)
-	   saveConf(config_file);	
-	file_diag = null;
+	SaveAs();
     }    
 
     if (ob == print_all_i)
@@ -545,13 +684,30 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
     }
 
     if (ob == exit_i) {
-	System.exit(0);
+	if(num_scope > 1)
+	{
+	    warning_msg.setLabels("Close all open scope", "Close this", "Cancel", "Close all");
+	    warning_msg.showMessage();
+	    switch(warning_msg.getState())
+	    {
+		case 1:
+		    closeScope();
+		break;
+		case 2:
+		break;
+		case 3:
+		    System.exit(0);
+		break;
+	    }
+	} else {
+	    closeScope();
+	    if(num_scope == 0)
+		System.exit(0);
+	}
     }
     
     if (ob == close_i && num_scope != 1) {
-	removeAll();
-	setVisible(false);
-	num_scope--;
+	closeScope();
     }
     
     if (ob == open_i)
@@ -623,8 +779,8 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
      {
 	server_diag.Show();
 	server_ip_list = server_diag.getServerIpList();
-	servers_m.removeAll();
-	addServers();
+//	servers_m.removeAll();
+//	addServers();
      }
 
      error_msg.showMessage();  
@@ -700,37 +856,65 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
 	curr_grid_mode = grid_mode.getSelectedIndex();
 	setGridMode(curr_grid_mode);	
      }
-     
+
+          
      if(ob == fast_network_i)
      {
 	sc.fast_network_access = fast_network_i.getState();
-     }
-     
-
+     }     
   }
-     
+  
+  public void setWindowTitle()
+  {
+	String f_name = config_file;
+
+    	if(f_name == null)
+	    f_name = "Untitled";
+  
+	if(sc.title != null)
+	    setTitle(sc.title + " - " + f_name + (sc.modified ? " (changed)" : ""));
+	else
+	    setTitle("java Scope - " + f_name + (sc.modified ? " (changed)" : ""));
+  }     
 
   public void loadConf(String _file_name)
   {
-    sc = new ScopeConfiguration(_file_name, color_dialog);
-    if(sc.error == null)
-    {
-	setTitle(sc.title);
+    String curr_dsa = sc.data_server_address;
+    ScopeConfiguration new_sc;
+    
+    new_sc = new ScopeConfiguration(_file_name, color_dialog);
+    if(new_sc.error == null)
+    { 
+	sc = new_sc;   
+	sc.modified = false;
 	fast_network_i.setState(sc.fast_network_access);
 	setBounds(sc.xpos, sc.ypos, sc.width, sc.height);
 	validate();
 	resetDrawPanel(sc.rows);
-	if(sc.msg_error == null)
-	    UpdateAllWaves();
-	else {
+	if(sc.msg_error == null) {
+	    if(sc.data_server_address != null && !curr_dsa.equals(sc.data_server_address))
+		setDataServer();
+	    else {
+		sc.data_server_address = curr_dsa;
+		UpdateAllWaves();
+	    }
+	} else {
 	    error_msg.setMessage(sc.msg_error);
 	    error_msg.showMessage();
 	}
     } else {
+        int reset_row[] = new int[4];
+	reset_row[0] = 1;
+
+	sc.gwc = new WaveformConf(); // Reset global configuration
+	config_file = null;
 	error_msg.setMessage(sc.error);
 	error_msg.showMessage();
+	resetDrawPanel(reset_row);
+	
     }
-           
+    setWindowTitle();
+            
   }
 
   public void saveConf(String file)
@@ -740,6 +924,8 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
      sc.ypos   = r.y;
      sc.height = r.height;
      sc.width  = r.width;
+     sc.modified = false;
+     setWindowTitle();
      sc.SaveScopeConfiguration(file, setup.waves, color_dialog);
   }
   
@@ -752,6 +938,7 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
     pack();
     if(file == null) 
 	setSize(750,550);
+    setWindowTitle();      
     show(); 
 /*    
     Image image = Toolkit.getDefaultToolkit().getImage("/home/Web/work/Cesare/javaScope.gif");
@@ -776,7 +963,7 @@ public class javaScope extends Frame implements ActionListener, ItemListener,Win
 	win.loadConf(MACfile);
     }
     num_scope++;
-    win.startScope(file);      
+    win.startScope(file);
   }
 
 
@@ -946,7 +1133,7 @@ class WindowDialog extends ScopePositionDialog {
 	{
 	    parent.sc.title = new String(titleText.getText());
 	    parent.sc.event = new String(eventText.getText());
-	    parent.setTitle(titleText.getText());
+	    parent.setWindowTitle();
 	    out_row[0] = row_1.getValue();
 	    out_row[1] = row_2.getValue();
 	    out_row[2] = row_3.getValue();
@@ -969,12 +1156,12 @@ class ServerDialog extends ScopePositionDialog {
     private Button add_b, remove_b, cancel_b;
     private Label server_label;
     private TextField server_ip;
-    Frame dw;
+    javaScope dw;
 
     ServerDialog(Frame _dw, String title)
     {
         super(_dw, title, true);
-	dw = _dw;
+	dw = (javaScope)_dw;
 	setResizable(false);
 	super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
 
@@ -1062,18 +1249,26 @@ class ServerDialog extends ScopePositionDialog {
 	if(ob == add_b)
 	{
 	    int i;
+	    MenuItem new_ip;
+	    
 	    String items[] = server_list.getItems();
 	    for(i = 0 ; i < items.length; i++)
 		if(items[i].equals(server_ip.getText())) break;
-	    if(i == items.length)
+	    if(i == items.length) {
 		server_list.add(server_ip.getText());
+		new_ip = new MenuItem(server_ip.getText());
+		dw.servers_m.add(new_ip);
+		new_ip.addActionListener(dw);
+	    }
 	}
 	
 	if(ob == remove_b)
 	{
 	    int idx = server_list.getSelectedIndex();
-	    if(idx >= 0)
+	    if(idx >= 0) {
 		server_list.remove(idx);
+		dw.servers_m.remove(idx);
+	    }
 	}
     }
 }

@@ -54,7 +54,28 @@ public class Setup extends Object implements WaveSetup {
     public WaveformConf SaveWaveformConf(WaveformConf wc)
     {
 	main_scope.sc.SetWaveformConf(wave_idx, wc);
-	return(main_scope.sc.GetWaveformConf(wave_idx, true));
+	return(main_scope.sc.GetWaveformConf(wave_idx, true)); // Ritorno wave configuration con i 
+							      //  dati di default inizializzati
+	//return wc;
+    }
+    
+    public void SetAllWaveformPointer(int pointer_mode)
+    {
+	for(int i = 0; i < waves.length; i++)
+	    waves[i].SetMode(pointer_mode);	
+    }
+    
+    
+    public void ResetWaveInterface(int i)
+    {
+	waves[i].wi = null;
+    }
+    
+    
+    public void ResetAllWaveInterface()
+    {
+	for(int i = 0; i < waves.length; i++)
+	    ResetWaveInterface(i);
     }
 
 
@@ -77,7 +98,8 @@ public class Setup extends Object implements WaveSetup {
 	
         if(coords_label != null)
 	{   
-	    WaveInterface  wi = ((MultiWaveform)w).GetWaveInterface(); 
+	    //WaveInterface  wi = ((MultiWaveform)w).GetWaveInterface();
+	    WaveInterface  wi = ((MultiWaveform)w).wi;
   	    coords_label.setText(SetStrSize("[" + Grid.ConvertToString(curr_x, false) + ", " 
 				 + Grid.ConvertToString(curr_y, false) + "]", 30) +
 		    " Expr : " + wi.in_y[sig_idx] +  
@@ -97,8 +119,9 @@ public class Setup extends Object implements WaveSetup {
     public void SetSourceCopy(Waveform source)
     {
 	if(source != null) {
-	    main_scope.wi_source = ((MultiWaveform)source).wi;
-	    main_scope.wc_source = GetWaveformConf(GetWaveIndex(source));
+	    main_scope.wi_source = ((MultiWaveform)source).GetWaveInterface();
+	    main_scope.wc_source = main_scope.sc.GetWaveformConf(GetWaveIndex(source), false);
+	    main_scope.wc_source.modified = true; 
 	} else {
 	    main_scope.wi_source = null;
 	    main_scope.wc_source = null;
@@ -107,9 +130,21 @@ public class Setup extends Object implements WaveSetup {
     
     public void NotifyChange(Waveform dest, Waveform source)    
     {
+	
 	WaveformConf   wc_dest = GetWaveformConf(GetWaveIndex(dest));
 	wc_dest.Copy(main_scope.wc_source);
-  //  	wc_dest.setWaveformConf(wi); 
+	WaveformConf new_wc = main_scope.sc.GetWaveformConf(GetWaveIndex(dest), true); 
+	main_scope.UpdateWave(((MultiWaveform) dest), new_wc);
+
+/*
+	main_scope.SetStatusLabel("Update signals for shots " + main_scope.wc_source.shot_str);		
+	main_scope.ew.UpdateWave(((MultiWaveform)dest), main_scope.wc_source, 
+				    main_scope.sc.getWaveformShot(main_scope.wc_source, main_scope.GetMainShot()));
+	main_scope.WaveCheckError(GetWaveIndex(dest));
+
+    	main_scope.sc.modified = true;
+	main_scope.setWindowTitle();
+*/
     }
 
     public void Hide(){	
@@ -177,11 +212,12 @@ public class Setup extends Object implements WaveSetup {
     {
 	EvaluateWaveform ew;
 	WaveformConf	wc = main_scope.sc.GetWaveformConf(wave_idx, true);
+	String shot = main_scope.sc.getWaveformShot(wc, main_scope.GetMainShot());
 
     	ew = main_scope.ew;
 	ew.error_msg.resetMsg();
-	ew.evaluateMainShot(main_scope.shot_t.getText());
-	ew.UpdateWave((MultiWaveform)w, wc, main_scope.shot_t.getText());
+	ew.evaluateMainShot(shot);
+	ew.UpdateWave((MultiWaveform)w, wc, shot);
 	ew.error_msg.showMessage();
     }
     

@@ -16,13 +16,11 @@ class WaveformConf {
     String  y_max;
     String  y_min;
     String  y_label;
-    //Color   colors[];
     int     colors_idx[];
     int	    markers[];
     boolean interpolates[];
     boolean x_log;
     boolean y_log;
-//    boolean opt_network = true;
     int     grid_mode;
     String  shot_str;
     String  experiment;
@@ -50,23 +48,26 @@ class WaveformConf {
 	if(num_expr != in.num_expr) return false;
 	if(num_shot != in.num_shot) return false;
 	
-	if(!equalsString(title, in.title))     return false;	
-	if(!equalsString(x_max, in.x_max))     return false;
-	if(!equalsString(x_min, in.x_min))     return false;
-	if(!equalsString(x_label, in.x_label)) return false;	
-	if(!equalsString(y_max, in.y_max))     return false;
-	if(!equalsString(y_min, in.y_min))     return false;
-	if(!equalsString(y_label, in.y_label)) return false;	
+	if(!equalsString(title,   in.title))     return false;	
+	if(!equalsString(x_max,   in.x_max))     return false;
+	if(!equalsString(x_min,   in.x_min))     return false;
+	if(!equalsString(x_label, in.x_label))   return false;
+	if(x_log != in.x_log)			 return false;
+	if(!equalsString(y_max,   in.y_max))     return false;
+	if(!equalsString(y_min,   in.y_min))     return false;
+	if(!equalsString(y_label, in.y_label))   return false;	
+	if(y_log != in.y_log)			 return false;		
 
-    	if(!equalsString(shot_str, in.shot_str))     return false;	
-	if(!equalsString(experiment, in.experiment)) return false;	
+    	if(!equalsString(shot_str,   in.shot_str))   return false;	
+	if(!equalsString(experiment, in.experiment)) return false;
+	if(defaults != in.defaults) return false;	
 
     	for(int i = 0 ; i < num_expr; i++)
 	{
-	    if(!equalsString(x_expr[i], in.x_expr[i])) return false;
-	    if(!equalsString(y_expr[i], in.y_expr[i])) return false;
-	    if(!equalsString(up_err[i], in.up_err[i])) return false;
-	    if(!equalsString(low_err[i], in.low_err[i])) return false;
+	    if(!equalsString(x_expr[i],  in.x_expr[i]))   return false;
+	    if(!equalsString(y_expr[i],  in.y_expr[i]))   return false;
+	    if(!equalsString(up_err[i],  in.up_err[i]))   return false;
+	    if(!equalsString(low_err[i], in.low_err[i]))  return false;
 	}
 	return true;
     }
@@ -103,12 +104,10 @@ class WaveformConf {
 	  y_label = new String(in.y_label);
 	if(in.markers != null)
 	{
-//	    colors = new Color[in.colors.length];
 	    colors_idx = new int[in.colors_idx.length];
 	    markers = new int[in.markers.length];
 	    interpolates = new boolean[in.interpolates.length];
 	    for(int i=0; i < in.markers.length; i++) {
-//		colors[i]       = in.colors[i];
 		colors_idx[i]   = in.colors_idx[i];
     		markers[i]      = in.markers[i];
 		interpolates[i] = in.interpolates[i];
@@ -116,12 +115,18 @@ class WaveformConf {
 	}
 	x_log = in.x_log;
 	y_log = in.y_log;
-	//opt_network = in.opt_network;
 	if(in.shot_str != null)
 	    shot_str = new String(in.shot_str);
 	if(in.experiment != null)
 	    experiment = new String(in.experiment);
+	else
+	    experiment = null;
 	defaults = in.defaults;
+    }
+    
+    public boolean useDefaultShot()
+    {
+	return ((defaults & (1 << B_shot)) != 0);	    
     }
 }
 

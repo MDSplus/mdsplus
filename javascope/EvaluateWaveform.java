@@ -64,12 +64,52 @@ import java.util.*;
    public int evaluateMainShot(String in_main_shots)
    {   
 	main_shots = evaluateShot(in_main_shots);
-	if(in_main_shots.length() != 0 && main_shots[0] == WaveSetupData.UNDEF_SHOT)
+	if(main_shots[0] == WaveSetupData.UNDEF_SHOT)
 	    return 0;
     	return 1;   
    }
-
+   
+   
    private int[] evaluateShot(String in_shots)
+   {
+	return evaluateShotTdi(in_shots);
+   }
+   
+   
+   private int[] evaluateShotTdi(String in_shots)
+   {
+	int int_data[];
+	
+	if(in_shots == null || in_shots.length() == 0)
+	{
+	    int_data = new int[1];
+	    int_data[0] = WaveSetupData.UNDEF_SHOT;
+	//    error_msg.setMessage("Undefined shot\n");
+	//    error_msg.showMessage();
+	    return int_data;
+	}
+	
+	main_scope.db.Update(null, 0);
+	int_data = main_scope.db.GetIntArray(in_shots);
+	if( int_data == null || int_data.length == 0 || int_data.length > WaveSetupData.MAX_NUM_SHOT)
+	{
+	    if(int_data != null && int_data.length > WaveSetupData.MAX_NUM_SHOT)
+		error_msg.setMessage("Too many shots. Max shot list elements " + WaveSetupData.MAX_NUM_SHOT +"\n");
+	    else {
+		if(main_scope.db.ErrorString() != null)	    
+		    error_msg.setMessage(main_scope.db.ErrorString());
+		else
+		    error_msg.setMessage("Shot syntax error\n");
+		
+	    }
+	    error_msg.showMessage();
+	    int_data = new int[1];
+	    int_data[0] = WaveSetupData.UNDEF_SHOT;
+	}
+	return int_data;
+   }
+
+   private int[] evaluateShotString(String in_shots)
    {
 	int[]  s_value = new int[1];
 	int  s_range, s_curr; 
@@ -141,12 +181,12 @@ import java.util.*;
     	return (s_value); 
    } 
 
-   public void signalsRefresh(String in_shot, String in_main_shots, boolean use_main_shot)
+//    public void signalsRefresh(String in_shot, String in_main_shots, boolean use_main_shot)
+    public void signalsRefresh(String in_shot)
    {
-    int new_num_shot, new_num_signal = 0, sig_idx, new_main_shot, 
-	new_shots[]; // main_shots[];
-    WaveSetupData[] new_sigs;
-    int color_idx = 0;
+	int new_num_shot, new_num_signal = 0, sig_idx, new_main_shot, new_shots[]; 
+	WaveSetupData[] new_sigs;
+	int color_idx = 0;
     
 	if(in_shot == null)
 	    return;
@@ -156,33 +196,7 @@ import java.util.*;
 	    new_num_shot = new_shots.length;
 	else
 	    new_num_shot = 0;
-	    
-	if(use_main_shot)
-	    num_shot = new_num_shot;
-	    
-	for(int i = 0; i < new_num_shot; i++)
-	    if(new_shots[i] < 10 && new_shots[i] > -10 && new_shots[i] != 0) {
-		use_main_shot = false;
-		break;
-	    }
-	if(main_shots == null)	    	    	    
-	    main_shots = evaluateShot(in_main_shots);
-	if(main_shots[0] != WaveSetupData.UNDEF_SHOT)
-	    new_main_shot = main_shots.length;
-	else
-	    new_main_shot = 0;
-	    
-	if(new_main_shot != 0 && use_main_shot)
-	{
-//	    for(int i = 0; i < new_main_shot; i++)
-//		new_shots[i] = main_shots[i];
-	    new_shots    = main_shots;
-    	    new_num_shot = new_main_shot;
-	}
-		
-	for(int i = 0; i < new_num_shot; i++)
-	    if(new_shots[i] < 10 && new_shots[i] > -10 && new_main_shot != 0)
-		new_shots[i] += main_shots[0];
+
 
 	if(num_shot == 0)
 	    sig_idx = 1;				        
@@ -201,32 +215,25 @@ import java.util.*;
 		else {
 		    new_sigs[new_num_signal].copy(signals[j]);
 		    color_idx = (color_idx + 1) % main_scope.color_dialog.GetNumColor();
-		    //new_sigs[new_num_signal].color = WaveSetupData.COLOR_SET[color_idx];
 		    new_sigs[new_num_signal].color_idx = color_idx;
 		}
 		new_sigs[new_num_signal].shot = new_shots[i];
 		new_num_signal++;
 	    }
 	}
+	
 	if(new_num_signal != 0)
 	{
 	    num_signal = new_num_signal;
 	    signals    = new_sigs;
 	}
-	if(new_num_shot != 0)
-	{    
-	    num_shot   = new_num_shot;
-	    shots      = new_shots;
-	} else {
-	    num_shot   = 1;
-	    shots      = new int[1];
-	    shots[0]   = WaveSetupData.UNDEF_SHOT;
-	}
-   } 
+
+    	num_shot   = new_num_shot;
+	shots      = new_shots;
+    } 
    
    public void initSignals(WaveformConf wc, String curr_shot)   
    { 
-	//if(wc == null || curr_shot == null) { 	    
 	if(wc == null) {
     	    shots = null;
 	    signals = null;
@@ -259,18 +266,14 @@ import java.util.*;
 		{
 		    signals[k].interpolate = wc.interpolates[k];
 		    signals[k].marker      = wc.markers[k];
-		    //if(wc.colors[k] == null)
 		    if(wc.colors_idx[k] == -1)
 			signals[k].color_idx = wc.colors_idx[k] = k % main_scope.color_dialog.GetNumColor();
-			//signals[k].color = wc.colors[k] = WaveSetupData.COLOR_SET[k%WaveSetupData.MAX_COLOR];
 		    else
 			signals[k].color_idx = wc.colors_idx[k];		    
-			//signals[k].color = wc.colors[k];		    
 		} else {
 		    signals[k].interpolate = true;
 		    signals[k].marker = 0;
 		    signals[k].color_idx = k %main_scope.color_dialog.GetNumColor();
-		    //signals[k].color = WaveSetupData.COLOR_SET[k%WaveSetupData.MAX_COLOR];
 		}
 		k++;
 	    }
@@ -282,15 +285,17 @@ import java.util.*;
       WaveInterface wi = wave.wi;
               		
       if(num_signal == 0)
+      {	
+	wave.wi = new WaveInterface(main_scope.db);
 	return;
-
+      }
+      
       if( wi != null && !wc.modified)
       {
 	    for(int i = 0; i < wi.num_waves; i++)      
 	    {
 		wi.markers[i]      = signals[i].marker;
 		wi.interpolates[i] = signals[i].interpolate;
-		//wi.colors[i]     = signals[i].color;
 		wi.colors[i]       = main_scope.color_dialog.GetColorAt(signals[i].color_idx);
 	    }
 	    return;	 
@@ -300,7 +305,10 @@ import java.util.*;
 	 wi = new WaveInterface(main_scope.db);
 	 
 	wi.num_waves    = num_signal;
-	wi.experiment   = wc.experiment;
+	if(wc.experiment != null && wc.experiment.length() == 0)
+	    wi.experiment   = null;
+	else
+	    wi.experiment   = wc.experiment;
 	wi.in_xmax      = wc.x_max;
 	wi.in_xmin      = wc.x_min;
 	wi.in_ymax      = wc.y_max;
@@ -319,7 +327,11 @@ import java.util.*;
 	wi.markers      = new int[num_signal];
 	wi.colors       = new Color[num_signal];
 	wi.interpolates = new boolean[num_signal];
-	wi.shots        = new int[num_signal];				
+
+//	if(signals[0].shot == WaveSetupData.UNDEF_SHOT)
+//	    wi.shots        = null;
+//	else
+	    wi.shots        = new int[num_signal];				
 
 	for(int i = 0; i < num_signal; i++)      
 	{
@@ -329,17 +341,30 @@ import java.util.*;
 	    wi.in_y[i]         = new String(signals[i].y_expr);
 	  wi.markers[i]      = signals[i].marker;
 	  wi.interpolates[i] = signals[i].interpolate;
-	  wi.shots[i]        = signals[i].shot;
+	  if(wi.shots != null)
+	    wi.shots[i]        = signals[i].shot;
 	  if(signals[i].up_err != null)
 	    wi.in_up_err[i] = new String(signals[i].up_err);
 	  if(signals[i].low_err != null)      
     	    wi.in_low_err[i] = new String(signals[i].low_err);	    
-//	  wi.colors[i]       = signals[i].color;
 	  wi.colors[i]       = main_scope.color_dialog.GetColorAt(signals[i].color_idx);
 	}
 	wave.wi = wi;        
    }
-   	    
+
+   public void RefreshWave(WaveformConf wc)
+   {
+ 	InitWaveInterface(wc);
+	WaveInterface wi = wave.wi;
+        
+	if(wi == null)
+	    return;
+	if(wi.error == null)
+	{
+	    wave.Update(wi);
+	} 		
+   }
+   	       	    
    public void UpdateWave(WaveformConf wc)
    {
 	InitWaveInterface(wc);
@@ -347,46 +372,24 @@ import java.util.*;
         
 	if(wi == null)
 	    return;
-	        
-	main_scope.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-	if(wc.modified)
-	    wi.StartEvaluate();
+	        	
+	wi.StartEvaluate();
 	if(wi.error == null)
 	{
-	    if(wc.modified)
-		wi.EvaluateOthers();
-		
-	    wave.y_log  = wc.y_log;
-	    wave.x_log  = wc.x_log;
+	    wi.EvaluateOthers();
 	    wave.Update(wi);
-	    wave.SetMode(main_scope.wave_mode);
-	    wc.modified = true;
 	} 
 	
-	main_scope.setCursor(Cursor.getDefaultCursor());
-	    
-	if(wi.error != null)
-	{
-	    error_msg.addMessage(wi.error);
-	}
    }
 
-   public void UpdateWave(MultiWaveform w, boolean eval)
+   private void UpdateWaveOther(MultiWaveform w)
    {
 	WaveInterface wi = w.wi;
 
 	if(wi == null) return;
 	            
-	main_scope.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-	if(eval)
-	    wi.EvaluateOthers();
-	main_scope.setCursor(Cursor.getDefaultCursor());
+	wi.EvaluateOthers();
 	w.Update(wi);
-	    
-	if(wi.error != null)
-	{
-	    error_msg.addMessage(wi.error);
-	}
    }
 
    public void UpdateWave(MultiWaveform w, int shot)
@@ -395,41 +398,31 @@ import java.util.*;
           
 	if(wi.error == null)
 	{
-	    main_scope.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 	    wi.EvaluateShot(shot);
-	    main_scope.setCursor(Cursor.getDefaultCursor());
 	} 		    
    }
 
-   public void UpdateInterface(MultiWaveform _wave, WaveformConf wc, String main_shots)
+   public void UpdateInterface(MultiWaveform _wave, WaveformConf wc, String shots)
    {	
     	wave = _wave;	
-        main_scope.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-	initSignals(wc, wc.shot_str);    
-	signalsRefresh(wc.shot_str, main_shots, true);
+	initSignals(wc, shots);  
 	InitWaveInterface(wc);
-	wave.SetMode(main_scope.wave_mode);
-	if(wc.modified && wave.wi != null)
-	     wave.wi.StartEvaluate();	
-	main_scope.setCursor(Cursor.getDefaultCursor());
+	if(wave.wi != null)
+	    wave.wi.StartEvaluate();	
     }	    						     	     	     
 		        		     
-   public void UpdateWave(MultiWaveform _wave, WaveformConf wc, String main_shots)
+   public void UpdateWave(MultiWaveform _wave, WaveformConf wc, String shots)
    {	
     	wave = _wave;
-	initSignals(wc, wc.shot_str);    
-	signalsRefresh(wc.shot_str, main_shots, true);	
+	initSignals(wc, shots);  
 	UpdateWave(wc);
    }	    						     	     	     
 
-   public void RepaintWave(MultiWaveform _wave, WaveformConf wc, String main_shots)
+   public void RepaintWave(MultiWaveform _wave, WaveformConf wc, String shots)
    {	
     	wave = _wave;
-	initSignals(wc, wc.shot_str);    
-	signalsRefresh(wc.shot_str, main_shots, true);
-	wc.modified = false;
+	initSignals(wc, shots);  
 	InitWaveInterface(wc);	
-	wc.modified = true;
-	UpdateWave(wave, false);
+	UpdateWaveOther(wave);
     }	    						     	     	     
  }
