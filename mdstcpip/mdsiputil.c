@@ -15,7 +15,13 @@
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
 
+#ifdef _WIN32
+#define ioctl ioctlsocket
+#define I_NREAD FIONREAD
+#else
 #include <stropts.h>
+#endif
+
 static unsigned char message_id = 1;
 #ifdef NOCOMPRESSION
 static int UseCompression = 0;

@@ -79,8 +79,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 wsock32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /dll /map /debug /machine:I386 /out:"../Debug/mdsipshr.dll" /pdbtype:sept
-# SUBTRACT LINK32 /pdb:none
+# ADD LINK32 wsock32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /dll /debug /machine:I386 /out:"../Debug/mdsipshr.dll" /pdbtype:sept
+# SUBTRACT LINK32 /pdb:none /map
 
 !ENDIF 
 
@@ -88,6 +88,42 @@ LINK32=link.exe
 
 # Name "mdsipshr - Win32 Release"
 # Name "mdsipshr - Win32 Debug"
+# Begin Source File
+
+SOURCE=.\adler32.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\compress.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\deflate.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\infblock.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\infcodes.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\inffast.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\inflate.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\inftrees.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\infutil.c
+# End Source File
 # Begin Source File
 
 SOURCE=.\mdsip.pro
@@ -106,7 +142,19 @@ SOURCE=.\mdsiputil.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\trees.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\uncompr.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\vmshpwd.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\zutil.c
 # End Source File
 # End Target
 # End Project
