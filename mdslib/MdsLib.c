@@ -334,13 +334,14 @@ static void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int
     }
   }
 }
-
+#else /* FORTRAN_ENTRY_POINTS */ 
 #ifdef __VMS
 int  MdsOpen(struct dsc$descriptor *treedsc, int *shot)
 {
    char *tree = DscToCstring(treedsc);
 #else
-int  MdsOpen(char *tree, int *shot)
+ int  MdsOpen(char *tree, int *shot){return ___MdsOpen(tree,shot);}
+static int  ___MdsOpen(char *tree, int *shot)
 {
 #endif
 
@@ -402,7 +403,8 @@ int  MdsClose(struct dsc$descriptor *treedsc, int *shot)
 {
   char *tree = DscToCstring(treedsc);
 #else
-int  MdsClose(char *tree, int *shot)
+int  MdsClose(char *tree, int *shot){return ___MdsClose(tree,shot);}
+static int  ___MdsClose(char *tree, int *shot)
 {
 #endif
   if (mdsSocket != INVALID_SOCKET)
@@ -466,7 +468,8 @@ int  MdsSetDefault(struct dsc$descriptor *nodedsc)
 {
    char *node = DscToCstring(nodedsc);
 #else
-int  MdsSetDefault(char *node)
+ int  MdsSetDefault(char *node){return ___MdsSetDefault(node);}
+static int  ___MdsSetDefault(char *node)
 {
 #endif
 
@@ -523,7 +526,8 @@ int  MdsSetDefault(char *node)
 #endif
 }
 
-void MdsDisconnect()
+ void MdsDisconnect(){___MdsDisconnect();}
+static void ___MdsDisconnect()
 {
   DisconnectFromMds(mdsSocket);
   mdsSocket = INVALID_SOCKET;      /*** SETS GLOBAL VARIABLE mdsSOCKET ***/
@@ -534,7 +538,8 @@ SOCKET MdsConnect(struct dsc$descriptor *hostdsc)
 {
   char *host = DscToCstring(hostdsc);
 #else
-SOCKET MdsConnect(char *host)
+SOCKET MdsConnect(char *host){return ___MdsConnect(host);}
+static SOCKET ___MdsConnect(char *host)
 {
 #endif
   if (mdsSocket != INVALID_SOCKET)
@@ -1101,7 +1106,7 @@ SOCKET WINAPI MdsConnectVB(char *host) { return MdsConnect(host);}
 void WINAPI MdsDisconnectVB() { MdsDisconnect();}
 int WINAPI MdsCloseVB(char *tree, int *shot) { return MdsClose(tree,shot);}
 int  WINAPI MdsSetDefaultVB(char *node) { return MdsSetDefault(node);}
-int  WINAPI MdsOpenVB(char *tree, int *shot) { return MdsOpen(tree,shot);}
+int  WINAPI MdsOpenVB(char *tree, int *shot) { return ___MdsOpen(tree,shot);}
 int WINAPI descr1VB(int *dtype, void *value)
 { if (*dtype == DTYPE_CSTRING)
   {
@@ -1175,27 +1180,35 @@ and c then donot define the macro.
 #define MdsPut mdsput
 #define MdsValue mdsvalue
 #endif
+int MdsValue(char *expression, ...);
+int descr (int *dtype, void *data, int *dim1, ...);
+static SOCKET ___MdsConnect(char *host);
+static void ___MdsDisconnect();
+static int  ___MdsClose(char *tree, int *shot);
+static int  ___MdsSetDefault(char *node);
+static int  ___MdsOpen(char *tree, int *shot);
 
 #ifdef FortranMdsConnect
-SOCKET FortranMdsConnect(char *host) { return MdsConnect(host);}
+SOCKET FortranMdsConnect(char *host) { return ___MdsConnect(host);}
 #endif
 
 #ifdef FortranMdsDisconnect
-void FortranMdsDisconnect() { MdsDisconnect();}
+void FortranMdsDisconnect() { ___MdsDisconnect();}
 #endif
 
 #ifdef FortranMdsClose
-int  FortranMdsClose(char *tree, int *shot) { return MdsClose(tree,shot);}
+int  FortranMdsClose(char *tree, int *shot) { return ___MdsClose(tree,shot);}
 #endif
 
 #ifdef FortranMdsSetDefault
-int  FortranMdsSetDefault(char *node) { return MdsSetDefault(node);}
+int  FortranMdsSetDefault(char *node) { return ___MdsSetDefault(node);}
 #endif
 
 #ifdef FortranMdsOpen
-int  FortranMdsOpen(char *tree, int *shot) { return MdsOpen(tree,shot);}
+int  FortranMdsOpen(char *tree, int *shot) { return ___MdsOpen(tree,shot);}
 #endif
 
 
 #include __FILE__
 #endif
+
