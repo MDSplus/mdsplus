@@ -126,8 +126,9 @@ STATIC_ROUTINE void AppendOut(char *text)
 {
 	char *msg = text ? text : "";
 	int len = strlen(msg);
+        char *old_saved_output;
         pthread_mutex_lock(&saved_output_mutex);
-	char *old_saved_output = saved_output;
+	old_saved_output = saved_output;
 	if (saved_output)
 	{
 		saved_output = strcpy((char *)malloc(strlen(old_saved_output)+len+2),old_saved_output);
