@@ -7,6 +7,10 @@
  * 
  * This class handles the properties 'file' as used in the TEC Web-Umbrella.
  *
+ * The TWU* classes (with TWU in three capitals) are written so that they 
+ * can also be used in other java based applications and not only by jScope.  
+ * Please keep the code of these separate of jScope specific elements.
+ *
  * This class does not throw any exceptions; this should be left so.  This is
  * because it is also used in contexts where the handling of such exceptions 
  * is somewhat troublesome. (E.g. JVMs running implicitly by matlab.)
@@ -16,6 +20,18 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2002/11/12 17:18:29  manduchi
+ * Added support for waveform editing
+ *
+ * Revision 1.13  2002/09/20 12:37:08  jgk
+ * Factored-out the (nested) class TwuFetchOptions in to its own source file.
+ * Clarified a minor naming convention: Classes with names starting with TWU
+ * are written such that they are not strongly bound to jScope, but can also
+ * be used by other java based TEC Web-Umbrella clients.
+ *
+ * Revision 1.12  2002/09/04 14:11:25  manduchi
+ * Fixed porting to jdk1.4
+ *
  * Revision 1.8  2002/05/27 13:49:51  jgk
  * Suggestion from Marco: NaN for min/max when the're no proper values.
  *
