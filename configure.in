@@ -26,10 +26,15 @@ mips*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -cckr -signed -D_BSD_SIGNALS -KP
        LDARC="-B static ";
        LINKSHARED="-shared -rpath $(exec_prefix)/lib";
        SHARETYPE=".so";;
-sparc-sun-solaris2*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -fpic";
+sparc-sun-solaris2*)  LINKSHARED="-G -B symbolic -R $(exec_prefix)/lib";
+       if test $CC = gcc; then
+         echo using gcc for ld;
+	 LD=gcc;
+         LINKSHARED="-Wl,-G -Wl,-B,symbolic -Wl,-R,$(exec_prefix)/lib";
+       fi;
+       CFLAGS="$CFLAGS -I\$(top_srcdir)/include -fpic";
        LDSHARE="-Wl,-B,dynamic";
        LDARC="-Wl,-B,static";
-       LINKSHARED="-G -B symbolic -R $(exec_prefix)/lib";
        SHARETYPE=".so";;
 alpha-dec-osf*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include";
        LDSHARE="-so_archive ";
