@@ -385,6 +385,9 @@ static int GetDatafile(TREE_INFO *info, unsigned short *rfa, int *buffer_size, c
     if ((fread((void *)&hdr,12,1,info->data_file->get) == 1))
     {
      unsigned int partlen = min(32755, buffer_space);
+     hdr.node_number = swapint(hdr.node_number);
+     *(int *)&hdr.rfa = swapint(*(int *)&hdr.rfa);
+     ((short *)&hdr.rfa)[2] = swapshort(((short *)&hdr.rfa)[2]);
      if (first)
         *nodenum = hdr.node_number;
       else if (*nodenum != hdr.node_number)
@@ -409,25 +412,25 @@ static int GetDatafile(TREE_INFO *info, unsigned short *rfa, int *buffer_size, c
 #endif
 }
 
-#define length_of(ptr)    ((unsigned short *)&ptr[0])
-#define dtype_of(ptr)     ((unsigned char  *)&ptr[2])
-#define class_of(ptr)     ((unsigned char  *)&ptr[3])
-#define pointer_of(ptr)   ((unsigned int   *)&ptr[4])
-#define l_length_of(ptr)  ((unsigned int   *)&ptr[8])
-#define ndesc_of(ptr)     ((unsigned char  *)&ptr[8])
-#define dscptrs_of(ptr,j) ((unsigned int   *)&ptr[12+j*4])
-#define scale_of(ptr)     ((unsigned char  *)&ptr[8])
-#define digits_of(ptr)	  ((unsigned char  *)&ptr[9])
+#define length_of(ptr)    ((unsigned short)swapshort(*(short *)&ptr[0]))
+#define dtype_of(ptr)     (*(unsigned char  *)&ptr[2])
+#define class_of(ptr)     (*(unsigned char  *)&ptr[3])
+#define pointer_of(ptr)   ((unsigned int)swapint(*(int *)&ptr[4]))
+#define l_length_of(ptr)  ((unsigned int)swapint(*(int *)&ptr[8]))
+#define ndesc_of(ptr)     (*(unsigned char  *)&ptr[8])
+#define dscptrs_of(ptr,j) ((unsigned int)swapint(*(int *)&ptr[12+j*4]))
+#define scale_of(ptr)     (*(unsigned char  *)&ptr[8])
+#define digits_of(ptr)	  (*(unsigned char  *)&ptr[9])
 #define binscale_of(ptr)  ((*((unsigned char  *)&ptr[10]) & 0x08) != 0)
 #define redim_of(ptr)     ((*((unsigned char  *)&ptr[10]) & 0x10) != 0)
 #define column_of(ptr)    ((*((unsigned char  *)&ptr[10]) & 0x20) != 0)
 #define coeff_of(ptr)     ((*((unsigned char  *)&ptr[10]) & 0x40) != 0)
 #define bounds_of(ptr)    ((*((unsigned char  *)&ptr[10]) & 0x80) != 0)
 
-#define dimct_of(ptr)     ((unsigned char  *)&ptr[11])
-#define arsize_of(ptr)    ((unsigned int   *)&ptr[12])
-#define a0_of(ptr)        ((unsigned int   *)&ptr[16])
-#define m_of(ptr)         ((unsigned int   *)&ptr[20])
+#define dimct_of(ptr)     (*(unsigned char  *)&ptr[11])
+#define arsize_of(ptr)    ((unsigned int)swapint(*(int *)&ptr[12]))
+#define a0_of(ptr)        ((unsigned int)swapint(*(int *)&ptr[16]))
+#define m_of(ptr)         ((int *)&ptr[20])
 
 /*-----------------------------------------------------------------
 	Recursively compact all descriptors and adjust pointers.
@@ -444,21 +447,31 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
               size_out,
               size_in;
   if (in_ptr)
-    switch (*class_of(in_ptr))
+    switch (class_of(in_ptr))
     {
      case CLASS_S:
      case CLASS_D:
       {
 	struct descriptor in;
 	struct descriptor *po = (struct descriptor *) out_dsc_ptr;
-        in.length = *length_of(in_ptr);
-        in.dtype = *dtype_of(in_ptr);
+        in.length = length_of(in_ptr);
+        in.dtype = dtype_of(in_ptr);
 	in.class = CLASS_S;
 	if (po)
 	{
 	  *po = in;
 	  po->pointer = (char *) (po + 1);
           memcpy(po->pointer,in_ptr+8,in.length);
+          if (po->length > 1 && po->dtype != DTYPE_T)
+	  {
+	    switch (po->length)
+	    {
+	    case 2: *(short *)po->pointer = swapshort(*(short *)po->pointer); break;
+            case 4: *(int *)po->pointer = swapint(*(int *)po->pointer); break;
+            case 8: *(int *)po->pointer = swapint(*(int *)po->pointer); break;
+	            ((int *)po->pointer)[1] = swapint(((int *)po->pointer)[1]); break;
+	    }
+	  }
 	}
 	bytes_out = sizeof(struct descriptor) + in.length;
         bytes_in = 8 + in.length;
@@ -471,9 +484,9 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
 	struct descriptor_xs in;
 	struct descriptor_xs *po = (struct descriptor_xs *) out_dsc_ptr;
         in.length = 0;
-        in.dtype = *dtype_of(in_ptr);
+        in.dtype = dtype_of(in_ptr);
         in.class = CLASS_XS;
-        in.l_length = *l_length_of(in_ptr);
+        in.l_length = l_length_of(in_ptr);
 	if (po)
 	{
 	  *po = in;
@@ -490,21 +503,25 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
         struct descriptor_r pi_tmp;
 	struct descriptor_r *pi = &pi_tmp;
 	struct descriptor_r *po = (struct descriptor_r *) out_dsc_ptr;
-        pi_tmp.length = *length_of(in_ptr);
-        pi_tmp.dtype = *dtype_of(in_ptr);
+        pi_tmp.length = length_of(in_ptr);
+        pi_tmp.dtype = dtype_of(in_ptr);
         pi_tmp.class = CLASS_R;
-        pi_tmp.ndesc = *ndesc_of(in_ptr);
+        pi_tmp.ndesc = ndesc_of(in_ptr);
 		pi_tmp.dscptrs[0] = NULL;
 	bytes_out = sizeof(struct descriptor_r) + (int)(pi->ndesc - 1) * sizeof(struct descriptor *);
         bytes_in = 12 + (int)(pi->ndesc) * 4;
 	if (po)
 	{
-		memset(po,0,bytes_out);
+	  memset(po,0,bytes_out);
           *po = *pi;
 	  if (pi->length > 0)
 	  {
 	    po->pointer = (unsigned char *) po + bytes_out;
             memcpy(po->pointer,&in_ptr[12+pi->ndesc*4],pi->length);
+            if (po->dtype == DTYPE_FUNCTION && po->length == 2)
+	      {
+                *(short *)po->pointer = swapshort(*(short *)po->pointer);
+              }
 	  }
 	}
 	bytes_out += pi->length;
@@ -514,7 +531,7 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
       Each descriptor must be copied.
       ******************************/
 	for (j = 0; j < pi->ndesc && status & 1; ++j)
-          if (*dscptrs_of(in_ptr,j))
+          if (dscptrs_of(in_ptr,j))
 	  {
 	    status = copy_rec_dx(in_ptr + bytes_in, po ? (struct descriptor_xd *) ((char *) po + bytes_out) : 0, &size_out, &size_in);
 	    if (po)
@@ -529,18 +546,18 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
         array_coeff a_tmp;
 	array_coeff *pi = &a_tmp;
 	array_coeff *po = (array_coeff *) out_dsc_ptr;
-        a_tmp.length = *length_of(in_ptr);
-        a_tmp.dtype = *dtype_of(in_ptr);
-        a_tmp.class = *class_of(in_ptr);
-        a_tmp.scale = *scale_of(in_ptr);
-        a_tmp.digits = *digits_of(in_ptr);
+        a_tmp.length = length_of(in_ptr);
+        a_tmp.dtype = dtype_of(in_ptr);
+        a_tmp.class = class_of(in_ptr);
+        a_tmp.scale = scale_of(in_ptr);
+        a_tmp.digits = digits_of(in_ptr);
 		a_tmp.aflags.binscale = binscale_of(in_ptr);
 		a_tmp.aflags.redim = redim_of(in_ptr);
 		a_tmp.aflags.column = column_of(in_ptr);
 		a_tmp.aflags.coeff = coeff_of(in_ptr);
 		a_tmp.aflags.bounds = bounds_of(in_ptr);
-        a_tmp.dimct = *dimct_of(in_ptr);
-        a_tmp.arsize = *arsize_of(in_ptr);
+        a_tmp.dimct = dimct_of(in_ptr);
+        a_tmp.arsize = arsize_of(in_ptr);
 	bytes_in = 16
 		+ (pi->aflags.coeff ? sizeof(int) + sizeof(int) * pi->dimct : 0)
 		+ (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0);
@@ -554,18 +571,36 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
           {
             if (pi->aflags.coeff)
             {
-              po->m[i] = m_of(in_ptr)[i];
+              po->m[i] = swapint(m_of(in_ptr)[i]);
               if (pi->aflags.bounds)
               {
-                po->m[pi->dimct + 2 * i] = m_of(in_ptr)[pi->dimct + 2 * i];
-                po->m[pi->dimct + 2 * i + 1] = m_of(in_ptr)[pi->dimct + 2 * i + 1];
+                po->m[pi->dimct + 2 * i] = swapint(m_of(in_ptr)[pi->dimct + 2 * i]);
+                po->m[pi->dimct + 2 * i + 1] = swapint(m_of(in_ptr)[pi->dimct + 2 * i + 1]);
               }
             }
           }
 	  po->pointer = (char *) po + bytes_out;
           memcpy(po->pointer,&in_ptr[bytes_in],pi->arsize);
 	  if (pi->aflags.coeff)
-	    po->a0 = po->pointer + (*a0_of(in_ptr) - *pointer_of(in_ptr));
+	    po->a0 = po->pointer + (a0_of(in_ptr) - pointer_of(in_ptr));
+          if (po->dtype != DTYPE_T)
+	  {
+            int i;
+	    switch (po->length)
+	    {
+	    case 2: 
+	      { short *ptr;
+		for (i=0,ptr=(short *)po->pointer;i<po->arsize;i += sizeof(*ptr),ptr++) *ptr = swapshort(*ptr);
+	      }
+	      break;
+	    case 4:
+	    case 8:
+	      { int *ptr;
+		for (i=0,ptr=(int *)po->pointer;i<po->arsize;i += sizeof(*ptr),ptr++) *ptr = swapint(*ptr);
+	      }
+	      break;
+	    }
+	  }
 	}
 	bytes_out += pi->arsize;
         bytes_in += pi->arsize;
@@ -583,18 +618,18 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
 	struct descriptor **pdi = (struct descriptor **) pi->pointer;
 	struct descriptor **pdo = 0;
 	unsigned int       num_dsc;
-        a_tmp.length = *length_of(in_ptr);
-        a_tmp.dtype = *dtype_of(in_ptr);
-        a_tmp.class = *class_of(in_ptr);
-        a_tmp.scale = *scale_of(in_ptr);
-        a_tmp.digits = *digits_of(in_ptr);
+        a_tmp.length = length_of(in_ptr);
+        a_tmp.dtype = dtype_of(in_ptr);
+        a_tmp.class = class_of(in_ptr);
+        a_tmp.scale = scale_of(in_ptr);
+        a_tmp.digits = digits_of(in_ptr);
  		a_tmp.aflags.binscale = binscale_of(in_ptr);
 		a_tmp.aflags.redim = redim_of(in_ptr);
 		a_tmp.aflags.column = column_of(in_ptr);
 		a_tmp.aflags.coeff = coeff_of(in_ptr);
 		a_tmp.aflags.bounds = bounds_of(in_ptr);
-        a_tmp.dimct = *dimct_of(in_ptr);
-        a_tmp.arsize = *arsize_of(in_ptr);
+        a_tmp.dimct = dimct_of(in_ptr);
+        a_tmp.arsize = arsize_of(in_ptr);
 	bytes_in = 16
 		+ (pi->aflags.coeff ? sizeof(int) + sizeof(int) * pi->dimct : 0)
 		+ (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0);
@@ -609,11 +644,11 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
           {
             if (pi->aflags.coeff)
             {
-			  po->m[i] = m_of(in_ptr)[i];
+			  po->m[i] = swapint(m_of(in_ptr)[i]);
               if (pi->aflags.bounds)
               {
-                po->m[pi->dimct + 2 * i] = m_of(in_ptr)[pi->dimct + 2 * i];
-                po->m[pi->dimct + 2 * i + 1] = m_of(in_ptr)[pi->dimct + 2 * i + 1];
+                po->m[pi->dimct + 2 * i] = swapint(m_of(in_ptr)[pi->dimct + 2 * i]);
+                po->m[pi->dimct + 2 * i + 1] = swapint(m_of(in_ptr)[pi->dimct + 2 * i + 1]);
               }
             }
           }
@@ -621,7 +656,7 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
           for (i=0,pdo=(struct descriptor **)po->pointer;i<(int)num_dsc;i++)
             pdo[i] = (struct descriptor *)*(int *)&in_ptr[bytes_in];
 	  if (pi->aflags.coeff)
-	    po->a0 = po->pointer + (*a0_of(in_ptr) - *pointer_of(in_ptr));
+	    po->a0 = po->pointer + (a0_of(in_ptr) - pointer_of(in_ptr));
 	  pdo = (struct descriptor **) po->pointer;
           po->length = sizeof(struct descriptor *);
           po->arsize = num_dsc * sizeof(struct descriptor *);
@@ -649,18 +684,18 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
 	array_coeff *po = (array_coeff *) out_dsc_ptr;
 	struct descriptor **pdi = (struct descriptor **) pi->pointer;
 	struct descriptor **pdo = 0;
-        a_tmp.length = *length_of(in_ptr);
-        a_tmp.dtype = *dtype_of(in_ptr);
-        a_tmp.class = *class_of(in_ptr);
-        a_tmp.scale = *scale_of(in_ptr);
-        a_tmp.digits = *digits_of(in_ptr);
+        a_tmp.length = length_of(in_ptr);
+        a_tmp.dtype = dtype_of(in_ptr);
+        a_tmp.class = class_of(in_ptr);
+        a_tmp.scale = scale_of(in_ptr);
+        a_tmp.digits = digits_of(in_ptr);
  		a_tmp.aflags.binscale = binscale_of(in_ptr);
 		a_tmp.aflags.redim = redim_of(in_ptr);
 		a_tmp.aflags.column = column_of(in_ptr);
 		a_tmp.aflags.coeff = coeff_of(in_ptr);
 		a_tmp.aflags.bounds = bounds_of(in_ptr);
-        a_tmp.dimct = *dimct_of(in_ptr);
-        a_tmp.arsize = *arsize_of(in_ptr);
+        a_tmp.dimct = dimct_of(in_ptr);
+        a_tmp.arsize = arsize_of(in_ptr);
 	bytes_in = 16
 		+ (pi->aflags.coeff ? sizeof(int) + sizeof(int) * pi->dimct : 0)
 		+ (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0);
@@ -674,21 +709,21 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
           {
             if (pi->aflags.coeff)
             {
-              po->m[i] = m_of(in_ptr)[i];
+              po->m[i] = swapint(m_of(in_ptr)[i]);
               if (pi->aflags.bounds)
               {
-                po->m[pi->dimct + 2 * i] = m_of(in_ptr)[pi->dimct + 2 * i];
-                po->m[pi->dimct + 2 * i + 1] = m_of(in_ptr)[pi->dimct + 2 * i + 1];
+                po->m[pi->dimct + 2 * i] = swapint(m_of(in_ptr)[pi->dimct + 2 * i]);
+                po->m[pi->dimct + 2 * i + 1] = swapint(m_of(in_ptr)[pi->dimct + 2 * i + 1]);
               }
             }
           }
-          po->pointer = (*pointer_of(in_ptr)) ? (char *) po + bytes_out : NULL;
+          po->pointer = (pointer_of(in_ptr)) ? (char *) po + bytes_out : NULL;
 	}
 
       /***************************
       Null pointer for shape only.
       ***************************/
-	if (*pointer_of(in_ptr))
+	if (pointer_of(in_ptr))
 	{
           status = copy_rec_dx(in_ptr + bytes_in, po ? (struct descriptor_xd *) ((char *) po + bytes_out) : 0, &size_out, &size_in);
 	  bytes_out += size_out;

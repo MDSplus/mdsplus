@@ -610,17 +610,6 @@ int _TreeIsOn(void *dbid, int nid)
 
 static void FixupNciIn(NCI *nci)
 {
-/*
-  unsigned int flags = swapint(nci->flags);
-  unsigned char *flagsc_p = ((unsigned char *)nci) + sizeof(nci->NCI_FLAG_WORD.flags);
-  int i; 
-  nci->NCI_FLAG_WORD.flags = 0;
-  for (i=0;i<32;i++)
-  {
-    if (flags & (1 << (31 - i)))
-        nci->NCI_FLAG_WORD.flags |= (1 << i);  
-  }
-*/
   unsigned int flags;
   unsigned char *flagsc_p = ((unsigned char *)nci) + sizeof(nci->flags);
   int i; 
@@ -638,6 +627,20 @@ static void FixupNciIn(NCI *nci)
   nci->owner_identifier = swapint(nci->owner_identifier);
   nci->length = swapint(nci->length);
   nci->status = swapint(nci->status);
+  if (nci->data_in_att_block)
+  {
+  }
+  else if (nci->error_on_put)
+  {
+    nci->DATA_INFO.ERROR_INFO.error_status = swapint(nci->DATA_INFO.ERROR_INFO.error_status);
+    nci->DATA_INFO.ERROR_INFO.stv = swapint(nci->DATA_INFO.ERROR_INFO.stv);
+  }
+  else
+  {
+    *(int *)nci->DATA_INFO.DATA_LOCATION.rfa = swapint(*(int *)nci->DATA_INFO.DATA_LOCATION.rfa);
+    *(short *)&nci->DATA_INFO.DATA_LOCATION.rfa[2] = swapshort(*(short *)&nci->DATA_INFO.DATA_LOCATION.rfa[2]);
+    nci->DATA_INFO.DATA_LOCATION.record_length = swapint(nci->DATA_INFO.DATA_LOCATION.record_length);
+  }    
 }
 
 int GetNciW(TREE_INFO *info, int node_num, NCI *nci)

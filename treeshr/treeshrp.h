@@ -20,6 +20,7 @@
 #pragma member_alignment save
 #pragma nomember_alignment
 #define swapint(in) in
+#define swapshort(in) in
 #endif
 
 #ifdef __hpux__
@@ -33,11 +34,22 @@ static int swapint(int in)
   for (i=0;i<4;i++) out_c[3-i] = in_c[i];
   return out;
 }
+
+static int swapshort(short in)
+{
+  short out;
+  char *out_c = (char *)&out;
+  char *in_c = (char *)&in;
+  int i;
+  for (i=0;i<2;i++) out_c[1-i] = in_c[i];
+  return out;
+}
 #endif
 
 #ifdef _MSC_VER
 #pragma pack(push,enter_include,1)
 #define swapint(in) in
+#define swapshort(in) in
 #endif
 
 #define bitassign(bool,value,mask) value = (bool) ? (value) | (mask) : (value) & ~(mask)
@@ -216,6 +228,89 @@ static const NODE empty_node = {{'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e
 #define brother_of(a) (NODE *)((a)->brother ? (char *)(a) + swapint((a)->brother) : 0)
 #define link_of(a,b)  swapint((char *)(a) - (char *)(b))
 
+
+/********************************************
+   TAG_INFO
+
+4) The fourth section of a tree file contains
+   tag information blocks. These blocks are
+   not sorted but the tag index list (previous
+   section) provide a sorted index of the tags.
+   The tags are located using a binary search
+   of the tag indexes
+*********************************************/
+
+typedef unsigned char TAG_NAME[24];
+
+typedef struct tag_info
+{
+  TAG_NAME  name;
+  int       node_idx;	/* Node to which this tag is assigned   */
+  int       tag_link;	/* Index of next tag also assigned to this node (index of first tag is 1) */
+}         TAG_INFO;
+
+/*********************************************
+   TREE_HEADER
+
+1) The first section of a tree file is the
+   header. The tree header is the first 512
+   bytes of a tree file
+*********************************************/
+
+typedef struct tree_header
+{
+  char      version;	/* Version of tree file format */
+  unsigned  char sort_children:1;	/* Sort children flag */
+  unsigned  char sort_members:1;	/* Sort members  flag */
+  unsigned  char : 6;
+  char      fill1[6];
+  int       free;	/* First node in free node list (connected by PARENT/CHILD indexes */
+  int       tags;	/* Number of tags defined                                          */
+  int       externals;	/* Number of externals/subtrees referenced                         */
+  int       nodes;	/* Number of nodes allocated (both defined and free node)          */
+  char      fill2[488];
+}         TREE_HEADER;
+
+/***********************************
+Defines RFA type as 6 characters.
+Used for moving RFA's around
+efficiently.
+************************************/
+typedef struct
+{
+  char      rfa[6];
+}         RFA;
+
+#define RfaToSeek(rfa) (((*(unsigned int *)rfa - 1) * 512) + (*(unsigned short *)&((char *)rfa)[4] & 0x1ff))
+#define SeekToRfa(seek,rfa) {*(unsigned int *)rfa = (unsigned int)(seek/512 + 1); \
+                             *(unsigned short *)&(((char *)rfa)[4]) = (unsigned short)(seek % 512);}
+
+/****************************************
+RECORD_HEADER
+VFC portion of file.
+***************************************/
+typedef struct record_header
+{
+#if !defined(__VMS)
+  unsigned  short rlength;
+#endif
+  int       node_number;
+  RFA       rfa;
+}         RECORD_HEADER;
+
+
+#ifdef __DECC
+#pragma member_alignment restore
+#endif
+
+#ifdef _MSC_VER
+#pragma pack(pop,enter_include)
+#endif
+
+#ifdef __hpux__
+#pragma HP_ALIGN POP
+#endif
+
 /*****************************************************
   Search structures
 *****************************************************/
@@ -261,49 +356,6 @@ typedef struct search_context
   NODE        *stop;
   NODELIST    *stack;
 }         SEARCH_CONTEXT;
-
-
-/********************************************
-   TAG_INFO
-
-4) The fourth section of a tree file contains
-   tag information blocks. These blocks are
-   not sorted but the tag index list (previous
-   section) provide a sorted index of the tags.
-   The tags are located using a binary search
-   of the tag indexes
-*********************************************/
-
-typedef unsigned char TAG_NAME[24];
-
-typedef struct tag_info
-{
-  TAG_NAME  name;
-  int       node_idx;	/* Node to which this tag is assigned   */
-  int       tag_link;	/* Index of next tag also assigned to this node (index of first tag is 1) */
-}         TAG_INFO;
-
-/*********************************************
-   TREE_HEADER
-
-1) The first section of a tree file is the
-   header. The tree header is the first 512
-   bytes of a tree file
-*********************************************/
-
-typedef struct tree_header
-{
-  char      version;	/* Version of tree file format */
-  unsigned  char sort_children:1;	/* Sort children flag */
-  unsigned  char sort_members:1;	/* Sort members  flag */
-  unsigned  char : 6;
-  char      fill1[6];
-  int       free;	/* First node in free node list (connected by PARENT/CHILD indexes */
-  int       tags;	/* Number of tags defined                                          */
-  int       externals;	/* Number of externals/subtrees referenced                         */
-  int       nodes;	/* Number of nodes allocated (both defined and free node)          */
-  char      fill2[488];
-}         TREE_HEADER;
 
 /********************************************
    TREE_EDIT
@@ -396,32 +448,6 @@ typedef struct nci_file
 
 #define NCI_FILE_VM_SIZE sizeof(NCI_FILE) + sizeof(struct NAM) + sizeof(struct RAB) + sizeof(struct RAB) + sizeof(struct FAB)
 #endif
-
-/***********************************
-Defines RFA type as 6 characters.
-Used for moving RFA's around
-efficiently.
-************************************/
-typedef struct
-{
-  char      rfa[6];
-}         RFA;
-
-#define RfaToSeek(rfa) (((*(unsigned int *)rfa - 1) * 512) + (*(unsigned short *)&((char *)rfa)[4] & 0x1ff))
-#define SeekToRfa(seek,rfa) {*(unsigned int *)rfa = (unsigned int)(seek/512 + 1); \
-                             *(unsigned short *)&(((char *)rfa)[4]) = (unsigned short)(seek % 512);}
-
-/****************************************
-RECORD_HEADER
-VFC portion of file.
-***************************************/
-typedef struct record_header
-{
-  unsigned  short rlength;
-  int       node_number;
-  RFA       rfa;
-}         RECORD_HEADER;
-
 
 /**************************************
 ASY_NCI
@@ -598,16 +624,5 @@ extern int TreeCallHook(TreeshrHookType operation, TREE_INFO *info);
 extern int TreeEstablishRundownEvent(TREE_INFO *info);
 extern DATA_FILE *TreeGetVmDatafile();
 
-#ifdef __DECC
-#pragma member_alignment restore
-#endif
-
-#ifdef _MSC_VER
-#pragma pack(pop,enter_include)
-#endif
-
-#ifdef __hpux__
-#pragma HP_ALIGN POP
-#endif
 
 #endif
