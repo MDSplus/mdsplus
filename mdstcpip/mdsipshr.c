@@ -100,7 +100,7 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIPSHR.C */
 #include "mdsip.h"
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#define UNIX_SERVER
+#define xxxxUNIX_SERVER
 
 static unsigned char message_id = 1;
 Message *GetMdsMsg(SOCKET sock, int *status);

@@ -20,7 +20,9 @@ extern char *ctime();
 #define MAX_ARGS 256
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-
+#if !defined(_WIN95)
+#define closesocket close
+#endif
 typedef ARRAY_COEFF(char,7) ARRAY_7;
 
 typedef struct _context { void *tree;
@@ -110,7 +112,7 @@ int main(int argc, char **argv)
     readfds = fdactive;
   }
   shutdown(sock,2);
-  close(sock);
+  closesocket(sock);
   return 1;
 }
 
@@ -284,7 +286,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     {
       printf("Access denied\n");
       shutdown(sock,2);
-      close(sock);
+      closesocket(sock);
     }
   }
 }
