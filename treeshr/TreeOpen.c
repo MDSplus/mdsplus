@@ -1031,16 +1031,21 @@ int       _TreeOpenEdit(void **dbid, char *tree_in, int shot_in)
   	  if (info->edit)
 	  {
             memset(info->edit, 0, sizeof(TREE_EDIT));
-	    (*dblist)->tree_info = info;
-	    (*dblist)->open = 1;
-	    (*dblist)->open_for_edit = 1;
-	    (*dblist)->open_readonly = 0;
 	    info->root = info->node;
-	    (*dblist)->default_node = info->root;
-            TreeOpenNciW(info, 0);
-	  }
+            status = TreeOpenNciW(info, 0);
+            if (status & 1)
+	    {
+	      (*dblist)->tree_info = info;
+	      (*dblist)->open = 1;
+	      (*dblist)->open_for_edit = 1;
+	      (*dblist)->open_readonly = 0;
+	      (*dblist)->default_node = info->root;
+            }
+            else
+              free(info->edit);
+          }
 	}
-	else
+        if (!(status & 1))
 	{
           free(info->treenam);
           free(info);
