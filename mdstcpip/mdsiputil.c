@@ -667,7 +667,7 @@ Message *GetMdsMsg(SOCKET sock, int *status)
     if (CType(header.client_type) > CRAY_CLIENT || header.ndims > MAX_DIMS)
     {
       CloseSocket(sock);
-      fprintf(stderr,"\rGetMdsMsg shutdown socket %d: bad msg header\n",sock);
+      fprintf(stderr,"\rGetMdsMsg shutdown socket %d: bad msg header, header.ndims=%d, client_type=%d\n",sock,header.ndims,CType(header.client_type));
       *status = 0;
       return 0;
     }  
