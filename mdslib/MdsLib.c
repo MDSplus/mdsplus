@@ -621,7 +621,7 @@ int  MdsPut(char *pathname, char *expression, ...)
   if (mdsSocket > 0)   /* CLIENT/SERVER */
   {
 #ifdef _UNIX_SERVER
-    static char *putexpprefix = "TreePutRecord(";
+    static char *putexpprefix = "TreePut(";
     static char *argplace = "$,";
 #else
     static char *putexpprefix = "MDSLIB->MDS$PUT(";

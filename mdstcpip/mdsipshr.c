@@ -162,7 +162,7 @@ int MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL ter
   unsigned char idx = 0;
   int status = 1;
 #ifdef _UNIX_SERVER
-  static char *putexpprefix = "TreePutRecord(";
+  static char *putexpprefix = "TreePut(";
   static char *argplace = "$,";
 #else
   static char *putexpprefix = "MDSLIB->MDS$PUT(";
