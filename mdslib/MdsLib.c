@@ -13,16 +13,15 @@ variable argument lists so a second compilation of these routines is
 necessary to create the fortran entry points.  See more notes at
 bottom of this file for configuring fortran entry points.
 **************************************************************************/
-
-#if defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux) || defined (HAVE_WINDOWS_H)
-extern int mdsvalue_(char *expression, ...);
-#define MDSVALUE mdsvalue_
-#elif defined(__hpux)
-extern int mdsvalue(char *expression, ...);
-#define MDSVALUE mdsvalue
-#else
-#define MDSVALUE MdsValue
-#endif
+//#if defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux) || defined (HAVE_WINDOWS_H)
+//extern int mdsvalue_(char *expression, ...);
+//#define MDSVALUE mdsvalue_
+//#elif defined(__hpux)
+//extern int mdsvalue(char *expression, ...);
+//#define MDSVALUE mdsvalue
+//#else
+//#define MDSVALUE MdsValue
+//#endif
 #ifdef __VMS
 #include <descrip.h>
 #endif
@@ -309,7 +308,7 @@ static void MdsValueCopy(int dim, int length, char fill, char *in, int *in_m, ch
 
 static void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int *length)
 {
-  int fill = (outdsc->dtype == DTYPE_CSTRING) ? 32 : 0;
+  char fill = (outdsc->dtype == DTYPE_CSTRING) ? 32 : 0;
   if ( (indsc->class == CLASS_A) &&
        (outdsc->class == CLASS_A) &&
        (((struct descriptor_a *)outdsc)->dimct > 1) &&
@@ -377,7 +376,7 @@ int  MdsOpen(char *tree, int *shot)
     d2 = descr(&dtype_long,shot, &null);
     d3 = descr(&dtype_long,&answer,&null);
 
-    status = MDSVALUE(expression, &d1, &d2, &d3, &null, &length);
+    status = MdsValue(expression, &d1, &d2, &d3, &null, &length);
     if ((status & 1))
     {
       return *(int *)&answer; 
@@ -439,7 +438,7 @@ int  MdsClose(char *tree, int *shot)
     d2 = descr(&dtype_long,shot, &null);
     d3 = descr(&dtype_long,&answer,&null);
 
-    status = MDSVALUE(expression, &d1, &d2, &d3, &null, &length);
+    status = MdsValue(expression, &d1, &d2, &d3, &null, &length);
     
 #ifdef __VMS
     free(tree);
@@ -498,9 +497,9 @@ int  MdsSetDefault(char *node)
     expressiondsc.dsc$w_length = strlen(expression)+1;
     expressiondsc.dsc$a_pointer = expression;
     free(node);
-    status = MDSVALUE(&expressiondsc, &d1, &null, &length);
+    status = MdsValue(&expressiondsc, &d1, &null, &length);
 #else
-    status = MDSVALUE(expression, &d1, &null, &length);
+    status = MdsValue(expression, &d1, &null, &length);
 #endif
     free(expression);
     if ((status & 1))
@@ -562,7 +561,7 @@ SOCKET MdsConnect(char *host)
 #endif
 
 #if !defined(FORTRAN_ENTRY_POINTS) || defined(descr)
-int descr (int *dtype, void *data, int *dim1, ...)
+int WINAPI descr (int *dtype, void *data, int *dim1, ...)
 {
 
   /* variable length argument list: 
@@ -795,7 +794,7 @@ int MdsValue(char *expression, ...)
     free(expression);
 #endif
     arg = MakeDescrip(&exparg,DTYPE_CSTRING,0,0,newexpression);
-    status = SendArg(mdsSocket, 0, arg->dtype, (char)nargs+1, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
+    status = SendArg(mdsSocket, (char)0, arg->dtype, (unsigned char)(nargs+1), ArgLen(arg), arg->ndims, arg->dims, (void *)arg->ptr);
     free(newexpression); 
 
     /* send each argument */
@@ -812,7 +811,7 @@ int MdsValue(char *expression, ...)
       {
         dsc = descrs[*descnum-1];
         arg = MakeIpDescrip(arg, dsc);
-	status = SendArg(mdsSocket, (unsigned char)i, arg->dtype, (char)nargs+1, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
+	      status = SendArg(mdsSocket, (unsigned char)i, arg->dtype, (char)(nargs+1), ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
       }
       else
 	{
@@ -1101,8 +1100,54 @@ int  MdsPut(char *pathname, char *expression, ...)
 }
 #endif 
 
+
 #ifndef FORTRAN_ENTRY_POINTS
 #define FORTRAN_ENTRY_POINTS
+
+#ifdef HAVE_WINDOWS_H
+static int zero = 0;
+SOCKET WINAPI MdsConnectVB(char *host) { return MdsConnect(host);}
+void WINAPI MdsDisconnectVB() { MdsDisconnect();}
+int WINAPI MdsCloseVB(char *tree, int *shot) { return MdsClose(tree,shot);}
+int  WINAPI MdsSetDefaultVB(char *node) { return MdsSetDefault(node);}
+int  WINAPI MdsOpenVB(char *tree, int *shot) { return MdsOpen(tree,shot);}
+int WINAPI descr1VB(int *dtype, void *value)
+{ if (*dtype == DTYPE_CSTRING)
+  {
+    int len = strlen(value);
+    return descr(dtype,value,&zero,&len);
+  } else
+    return descr(dtype,value,&zero);
+}
+int WINAPI descr2VB(int *dtype, int *num, void *value)
+{ if (*dtype == DTYPE_CSTRING)
+  {
+    int len = strlen(value);
+    return descr(dtype,value,num,&zero,&len);
+  } else
+    return descr(dtype,value,num,&zero);
+}
+int WINAPI descr3VB(int *dtype, int *n1, int *n2, void *value)
+{ if (*dtype == DTYPE_CSTRING)
+  {
+    int len = strlen(value);
+    return descr(dtype,value,n1,n2,&zero,&len);
+  } else
+    return descr(dtype,value,n1,n2,&zero);
+}
+int WINAPI MdsValue1VB(char *expression, int *ansd, int *retlen)
+ { return MdsValue(expression,ansd,&zero,retlen);}
+int WINAPI MdsValue2VB(char *expression, int *arg1d, int *ansd, int *retlen)
+ { return MdsValue(expression,arg1d,ansd,&zero,retlen);}
+int WINAPI MdsValue3VB(char *expression, int *arg1d, int *arg2d, int *ansd, int *retlen)
+ { return MdsValue(expression,arg1d,ansd,&zero,retlen);}
+int WINAPI MdsPut1VB(char *node, char *expression, int *ansd)
+ { return MdsPut(node,expression,ansd,&zero);}
+int WINAPI MdsPut2VB(char *node, char *expression, int *arg1d, int *ansd)
+ { return MdsPut(node,expression,arg1d,ansd,&zero);}
+int WINAPI MdsPut3VB(char *node, char *expression, int *arg1d, int *arg2d, int *ansd)
+ { return MdsPut(node,expression,arg1d,arg2d,ansd,&zero);}
+#endif
 
 /************************************************************
 For each platform, you can define the following macros to
@@ -1159,6 +1204,7 @@ int  FortranMdsSetDefault(char *node) { return MdsSetDefault(node);}
 #ifdef FortranMdsOpen
 int  FortranMdsOpen(char *tree, int *shot) { return MdsOpen(tree,shot);}
 #endif
+
 
 #include __FILE__
 #endif

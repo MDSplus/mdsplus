@@ -1,5 +1,5 @@
 # Microsoft Developer Studio Project File - Name="math" - Package Owner=<4>
-# Microsoft Developer Studio Generated Build File, Format Version 5.00
+# Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Dynamic-Link Library" 0x0102
@@ -22,6 +22,7 @@ CFG=math - Win32 Debug
 !MESSAGE 
 
 # Begin Project
+# PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""
 # PROP Scc_LocalPath ""
 CPP=cl.exe
@@ -43,8 +44,8 @@ RSC=rc.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
 # ADD CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o NUL /win32
-# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o NUL /win32
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -69,9 +70,9 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o NUL /win32
-# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o NUL /win32
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -204,7 +205,7 @@ SOURCE=".\csint-win32.f"
 
 # Begin Custom Build - Compiling
 IntDir=.\Release
-InputPath=.\csint-win32.f
+InputPath=".\csint-win32.f"
 InputName=csint-win32
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -218,7 +219,7 @@ InputName=csint-win32
 
 # Begin Custom Build - Compiling
 IntDir=.\Debug
-InputPath=.\csint-win32.f
+InputPath=".\csint-win32.f"
 InputName=csint-win32
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -659,13 +660,12 @@ SOURCE=".\librtl-win32.f"
 
 # Begin Custom Build - Compiling
 IntDir=.\Release
-InputPath=.\librtl-win32.f
+InputPath=".\librtl-win32.f"
 InputName=librtl-win32
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	set path=%path%;%g77_dir%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -fno-underscoring\
-   -fcase-preserve 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -fno-underscoring    -fcase-preserve 
 	
 # End Custom Build
 
@@ -673,13 +673,12 @@ InputName=librtl-win32
 
 # Begin Custom Build - Compiling
 IntDir=.\Debug
-InputPath=.\librtl-win32.f
+InputPath=".\librtl-win32.f"
 InputName=librtl-win32
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	set path=%path%;%g77_dir%\bin 
-	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -fno-underscoring\
-   -fcase-preserve 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -fno-underscoring    -fcase-preserve 
 	
 # End Custom Build
 
@@ -1013,7 +1012,7 @@ SOURCE=".\umach-win32.f"
 
 # Begin Custom Build - Compiling
 IntDir=.\Release
-InputPath=.\umach-win32.f
+InputPath=".\umach-win32.f"
 InputName=umach-win32
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1027,7 +1026,7 @@ InputName=umach-win32
 
 # Begin Custom Build - Compiling
 IntDir=.\Debug
-InputPath=.\umach-win32.f
+InputPath=".\umach-win32.f"
 InputName=umach-win32
 
 "$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"

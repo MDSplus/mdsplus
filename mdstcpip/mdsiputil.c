@@ -327,7 +327,6 @@ static SOCKET ConnectToPort(char *host, char *service)
 
 int HostToIp(char *host, int *addr, short *port)
 {
-  int status;
   struct hostent *hp = NULL;
   struct servent *sp;
 

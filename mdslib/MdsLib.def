@@ -15,3 +15,16 @@ mdsput_
 mdsopen_
 mdsclose_
 mdsdisconnect_
+MdsConnectVB
+MdsOpenVB
+MdsCloseVB
+MdsDisconnectVB
+descr1VB
+descr2VB
+descr3VB
+MdsValue1VB
+MdsValue2VB
+MdsValue3VB
+MdsPut1VB
+MdsPut2VB
+MdsPut3VB

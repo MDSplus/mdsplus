@@ -1,4 +1,4 @@
-Microsoft Developer Studio Workspace File, Format Version 5.00
+Microsoft Developer Studio Workspace File, Format Version 6.00
 # WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
 
 ###############################################################################
@@ -75,33 +75,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "jScope"=.\javascope\jScope.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "jTraverser"=.\javatraverser\jTraverser.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name jScope
-    End Project Dependency
-}}}
-
-###############################################################################
-
 Project: "javamds"=.\javamds\javamds.dsp - Package Owner=<4>
 
 Package=<5>
@@ -118,6 +91,45 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name treeshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "javascope"=.\javascope\javascope.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "javatraverser"=.\javatraverser\javatraverser.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "jscopetest"=.\jscopetest\jscopetest.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name javamds
     End Project Dependency
 }}}
 
@@ -276,9 +288,6 @@ Package=<5>
 Package=<4>
 {{{
     Begin Project Dependency
-    Project_Dep_Name mdsipshr
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name mdsshr
     End Project Dependency
     Begin Project Dependency
@@ -286,6 +295,9 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name treeshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsipshr
     End Project Dependency
 }}}
 
