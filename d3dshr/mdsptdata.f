@@ -37,7 +37,8 @@ C calling program.
 C==========================================================================
 	integer*4 function MDSPTREAD(shot,pointname,f,t,n,sdate,stime,
      >        units,ier)
-	entry MDSPTREAD_
+	entry MDSPTREAD_(shot,pointname,f,t,n,sdate,stime,
+     >        units,ier)
 c	integer*4 function MDSPTREAD(shot,pointname,f,t,n,sdate,stime,ier)
 c	implicit none
 	integer n
@@ -370,7 +371,7 @@ c-------------------------------------------------------------------------------
 c-------------------------------------------------------------------------------
 
 	integer*4 function MDSPTNPTS(shot,pointname,ier)
-	entry MDSPTNPTS_
+	entry MDSPTNPTS_(shot,pointname,ier)
 
 c	implicit none                   
 	parameter (n=1)

@@ -1,7 +1,5 @@
 include $(MAKE_OPTIONS)
 
-D3DLIB = /c/$(OSPATH)/lib
-
 OBJECTS = \
         mdsptdata.o
 
@@ -14,7 +12,7 @@ mdsptdata.o : mdsptdata.f
 	f77 -c  -I. $(D3DFFLAGS) -o $@ mdsptdata.f
 
 ../shlib/libMdsD3D.$(SHARE_TYPE) : $(OBJECTS) 
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS)  -L$(D3DLIB) -ld3 -lc 
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS)  $(D3LIBOPTIONS)
 
 clean :
 	- rm *.o
@@ -25,4 +23,5 @@ clean :
 	find *.c -exec $(MAKE_DEPEND)
 
 include $(DEPEND)
+
 
