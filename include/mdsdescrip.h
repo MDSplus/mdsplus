@@ -27,16 +27,16 @@
 #ifdef __VMS
 #pragma member_alignment save
 #pragma nomember_alignment
-#endif
+#endif  /* __VMS */
 #ifdef _MSC_VER
 #define __fill_name__ fill
 #define __fill_value__ 0,
 #define __char_align__ char
-#else
+#else /* _MSC_VER */
 #define __char_align__
 #define __fill_name__
 #define __fill_value__
-#endif
+#endif /* _MSC_VER */
 /*
  *	Descriptor Prototype - each class of descriptor consists of at least the following fields:
  */
@@ -744,13 +744,23 @@ struct descriptor_with_error {	RECORD_HEAD
   struct descriptor d = {0,DTYPE_T,CLASS_S,0}; \
   d.length=strlen(cstring); \
   d.pointer=cstring;
+
 /*
- *	64-BIT DESCRIPTOR DEFINITIONS 
+ * array typedefs
  */
+
+#define MAXDIM 8
+typedef ARRAY_COEFF(char, MAXDIM) array_coeff;
+typedef ARRAY_BOUNDS(char,MAXDIM) array_bounds;
+typedef ARRAY_BOUNDS(struct descriptor *,MAXDIM) array_bounds_desc;
+typedef ARRAY(char) array; 
+typedef ARRAY(int) array_int;
+typedef ARRAY(struct descriptor *) array_desc;
+typedef SIGNAL(MAXDIM) signal_maxdim;
 
 #ifdef __VMS
 #pragma member_alignment restore
-#endif
+#endif /* __VMS */
 
 #ifdef __VMS
 #define DTYPE_FLOAT DTYPE_F
@@ -759,16 +769,16 @@ struct descriptor_with_error {	RECORD_HEAD
 #if __G_FLOAT
 #define DTYPE_DOUBLE DTYPE_G
 #define DTYPE_DOUBLE_COMPLEX DTYPE_GC
-#else
+#else /* __G_FLOAT */
 #define DTYPE_DOUBLE DTYPE_D
 #define DTYPE_DOUBLE_COMPLEX DTYPE_DC
-#endif
+#endif /* __G_FLOAT */
 
-#else
+#else /* __VMS */
 #define DTYPE_FLOAT DTYPE_FS
 #define DTYPE_DOUBLE DTYPE_FT
 #define DTYPE_FLOAT_COMPLEX DTYPE_FSC
 #define DTYPE_DOUBLE_COMPLEX DTYPE_FTC
-#endif
+#endif /* __VMS */
 
 #endif

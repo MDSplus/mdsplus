@@ -218,7 +218,7 @@ struct nci_itm;
 
 #ifdef _NO_PROTO
 
-	extern int TreeAbsPath();
+	extern char* TreeAbsPath();
 	extern int TreeAddConglom();
 	extern int TreeAddMethodImage();
 	extern int TreeAddNode();
@@ -257,10 +257,10 @@ extern int TreeGetNci();
 extern int _TreeGetNci();
 extern int TreeGetDefaultNid();
 extern int _TreeGetDefaultNid();
-extern int TreeGetMinimumPath();
-extern int _TreeGetMinimumPath();
-extern int TreeGetPath();
-extern int _TreeGetPath();
+extern char *TreeGetMinimumPath();
+extern char *_TreeGetMinimumPath();
+extern char *TreeGetPath();
+extern char *_TreeGetPath();
 	extern int TreeGetRecord();
 extern int TreeGetStackSize();
 extern int _TreeGetStackSize();
