@@ -30,7 +30,7 @@ public class AboutWindow extends JLabel  {
   }
   
   public void paint( Graphics gReal ) {
-  	// Double buffering
+  	//Double buffering
 	  Image imageBuffer = createImage( getWidth(), getHeight() );
 	  Graphics g = imageBuffer.getGraphics();
 
@@ -39,6 +39,7 @@ public class AboutWindow extends JLabel  {
     Image image = io.getImage();
   
     g.drawImage( image, 1, 1, null );
+    Toolkit.getDefaultToolkit().sync();
 
     int start  = 32+2;
     int top    = 102+1;

@@ -1844,13 +1844,16 @@ public class Waveform extends JComponent
     void DrawError(Graphics g, Dimension d, Signal sig)
     {
 	    int up, low, x, y;
+	    float up_error[] = sig.getUpError();
+	    float low_error[] = sig.getLowError();
+	    
 	    for(int i = 0; i < sig.n_points; i++)
 	    {
-	        up = wm.YPixel(sig.up_error[i] + sig.y[i], d);
+	        up = wm.YPixel(up_error[i] + sig.y[i], d);
 	        if(!sig.asym_error)
-		        low = wm.YPixel(sig.y[i] - sig.up_error[i], d);	
+		        low = wm.YPixel(sig.y[i] - up_error[i], d);	
 	        else
-		        low = wm.YPixel(sig.y[i] - sig.low_error[i], d);
+		        low = wm.YPixel(sig.y[i] - low_error[i], d);
 	        x = wm.XPixel(sig.x[i], d);
 
 	        g.drawLine(x, up, x, low);

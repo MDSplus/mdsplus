@@ -258,6 +258,8 @@ import javax.swing.event.*;
 	    lab = new JLabel("Signals list");
 	    add("North", lab);
 
+        
+	    list_model.addElement("Select this item to add new expression");
 	    sig_list = new JList(list_model);
         JScrollPane scroll_sig_list = new JScrollPane(sig_list);
         sig_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -266,6 +268,8 @@ import javax.swing.event.*;
 	        {
                 public void valueChanged(ListSelectionEvent e)
                 {
+                    if(e.getValueIsAdjusting())
+                        return;
                     SList.this.signalSelect(((JList)e.getSource()).getSelectedIndex()-1);
                 }
 	        });
@@ -357,7 +361,9 @@ import javax.swing.event.*;
         if(sig+1 >= sig_list.getModel().getSize())
             return;
 	    setSignalSelect(sig);
-	    sig_list.setSelectedIndex(getSignalSelect() + 1);
+	    int id = getSignalSelect() + 1;
+	    sig_list.setSelectedIndex(id);
+	    sig_list.ensureIndexIsVisible(id);
         if(sig >= 0)
             if(getSignalSelect() < signals.size())
                 putSignalSetup((Data)signals.elementAt(getSignalSelect()));
@@ -591,15 +597,16 @@ import javax.swing.event.*;
 		            addSignalSetup(ws);
 		            signalListAdd(ws);
 		        }	
-	        } else {
+	        } 
+	        else
+	        {
 		        ws.shot = UNDEF_SHOT;
 		        addSignalSetup(ws);
 		        signalListAdd(ws);
 	        } 
 	        signalSelect(findSignalSetup(ws));	    
-	        //putSignalSetup(ws);
-	      }	 
-       }
+	    }
+     }
        
        public boolean evaluateShotList(String in_shot) throws IOException
        {
@@ -611,6 +618,8 @@ import javax.swing.event.*;
 		    long new_shots[] = wi.GetShotArray(in_shot);     
 		    if(new_shots == null)
 		    {
+		        if(shots == null)
+		            return false;
 		        shots = null;
 		        return true;
 		    } 
@@ -637,37 +646,6 @@ import javax.swing.event.*;
 		        }
 		    }
 		    return true;
-        /*
-        if(in_shot != null) in_shot = in_shot.trim();
-        
-	    if((shot_str == null && in_shot != null && in_shot.length()!= 0) || 
-	       (shot_str != null && !shot_str.equals(in_shot)))
-	    {
-		    if(shots != null && shots.length != 0)
-		        list_num_shot = shots.length;
-		    else
-		        list_num_shot = 1;
-		    shots = wi.GetShotArray(in_shot);
-		    if(shots == null)
-		    {
-		        shot_str = null;
-		    } else {
-		        shot_str = in_shot;
-		        if(image_b.isSelected())
-		        {
-		            if(shots.length > 1)
-		            {
-		                long sh[] = new long[1];
-		                sh[0]=shots[0];
-		                shots = sh;
-		                list_num_shot = 1;
-		            }
-		        }
-		    }
-		    return true;
-	    } else
-		    return false;
-*/
        }
         
 
@@ -676,8 +654,9 @@ import javax.swing.event.*;
 	    int color_idx = 0, k = 0, l, num_sig, n_shot; 
 	    
 	    n_shot = (shots != null ? shots.length : 1);
+	        
 	    num_sig = signals.size()/list_num_shot * n_shot;
-    	    
+	        	    
 	    for(int j = 0; j < num_sig; j += n_shot)
 	    {	    		    
 		    for(int i = 0; i < n_shot; i++)
@@ -743,14 +722,13 @@ import javax.swing.event.*;
          
 	 public void signalListRefresh()
 	 {
-//	    if(sig_list.getItemCount() > 1)
-        if(!list_model.isEmpty())
-		    list_model.removeAllElements();
-	    list_model.addElement("Select this item to add new expression");
-        if(signals.size() == 0) return;
+        if(list_model.size() > 1)
+        {
+            sig_list.setSelectedIndex(0);        
+            list_model.removeRange(1, list_model.size() - 1);
+		}
 	    for(int i = 0; i < signals.size(); i++)
 		    signalListAdd((Data)signals.elementAt(i));
-//	    signalSelect(sel_signal); 	
 	  } 
 
 	  private void signalListAdd(Data ws)
@@ -788,12 +766,8 @@ import javax.swing.event.*;
 
       public void updateList() throws IOException
       {
-    	    if(evaluateShotList(shot.getText())) 
-    	    {
-		        signalsRefresh();
-		        signalListRefresh();
-	        }
-    	    if(getSignalSelect() == -1)
+	        
+ 	        if(getSignalSelect() == -1)
     	    {
 		        signalList.addSignals();
 		    }    
@@ -803,6 +777,12 @@ import javax.swing.event.*;
 		        else
 		            removeSignalSetup();
 		    }
+		    
+       	    if(evaluateShotList(shot.getText())) 
+    	    {
+		        signalsRefresh();
+		        signalListRefresh();
+	        }
       }
  
      
@@ -820,7 +800,6 @@ import javax.swing.event.*;
     	 }		  	      
       }
      
-//      public void actionPerformed(ActionEvent e) {}
       
       public void itemStateChanged(ItemEvent e)
       {
@@ -861,7 +840,6 @@ import javax.swing.event.*;
      ExpandExp(Frame _fw, SetupDataDialog conf_diag)
      {
 	    super(_fw, "Expand Expression Dialog", false);
-//	    super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
 	    setModal(true);
 	    conf_dialog = conf_diag;
   
@@ -946,7 +924,6 @@ import javax.swing.event.*;
    {
       super(fw, frame_title, false);
       setModal(true);
-//      setResizable(false);    
 
       main_scope  = (jScope_1)fw;
       error_w     = new SError(fw);
@@ -1563,7 +1540,6 @@ import javax.swing.event.*;
 	        signalList.updateList();
 	    } catch (Throwable e) {
 		    JOptionPane.showMessageDialog(null, e.getMessage(), "alert", JOptionPane.ERROR_MESSAGE); 
-//	        main_scope.SetStatusLabel("Error during update list "+e);	    
 	    }
         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
    }
@@ -1828,10 +1804,24 @@ import javax.swing.event.*;
       
       if(ob == error && y_expr.getText().trim().length() != 0)
       {
-	        updateDataSetup();
-	        signalList.updateError();
-	        error_w.setLocationRelativeTo(this);
-	        error_w.show();
+            if(signalList.getSignalSelect() == -1)
+            /*
+            Check if the list is in add mode (signal selectet -1)
+            in this case before to add error signal must be added
+            to the list
+            */
+	            updateDataSetup();
+	        
+            if(signalList.getSignalSelect() != -1)
+            {
+                /*
+                Only if is selected a signal in the list
+                the error signal dialog can be shown
+                */
+	            signalList.updateError();
+	            error_w.setLocationRelativeTo(this);
+	            error_w.show();
+	        }
       }
       
       if(ob == expand)

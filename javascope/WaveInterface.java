@@ -1106,13 +1106,12 @@ public class WaveInterface
             } else
     	        out_signal = new Signal(curr_x, curr_data, min_len);
             
-	        out_signal.up_error = up_err;
-            out_signal.low_error = low_err;
-            if(up_err != null)
-    	        out_signal.error = true;
             if(up_err != null && low_err != null)
-    	        out_signal.asym_error = true;
-            
+    	        out_signal.AddAsymError(up_err, low_err);
+    	    else
+                if(up_err != null)
+                    out_signal.AddError(up_err);
+   	        
         }
         
         
@@ -1302,12 +1301,11 @@ public class WaveInterface
             sc.putCacheData(provider, expr, experiment, sh, cd);          
     	}
     	
-	    out_signal.up_error = up_err;
-        out_signal.low_error = low_err;
-        if(up_err != null)
-    	    out_signal.error = true;
         if(up_err != null && low_err != null)
-    	    out_signal.asym_error = true;
+    	    out_signal.AddAsymError(up_err, low_err);
+    	else
+            if(up_err != null)
+                out_signal.AddError(up_err);
     	    
         return out_signal;
    }

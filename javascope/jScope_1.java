@@ -1150,9 +1150,11 @@ static int T_messageType;
   {
     net_text.setText("Data Server:" + wave_panel.GetServerLabel());
   }
+  
 
-  public void SetStatusLabel(String msg)
+  public synchronized void SetStatusLabel(String msg)
   {
+    
     info_text.setText(" Status: " + msg);
   }
   
@@ -2542,8 +2544,7 @@ class ServerDialog extends JDialog implements ActionListener
                                              "JetDataProvider",
                                              "FtuDataProvider",
                                              "TSDataProvider",
-                                             "AsdexDataProvider",
-                                             "DemoDataProvider"};
+                                             "AsdexDataProvider"};
     
 
     ServerDialog(JFrame _dw, String title)

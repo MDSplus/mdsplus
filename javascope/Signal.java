@@ -70,12 +70,12 @@ public class Signal
     /**
      * low error array of signal
      */
-    protected float low_error[];
+    private float low_error[];
 
     /**
      * up error array of signal
      */
-    protected float up_error[];
+    private float up_error[];
 
     /**
      * y array of signal
@@ -320,7 +320,10 @@ public class Signal
 	    error = true;
 	    up_error = _err;
 	    asym_error = false;
-	    setAxis(_x, _y, _x.length);
+	    //setAxis(_x, _y, _x.length);
+	    //Fix : signal points must be equal to the minus length 
+	    //between up and low error, x and y vectors
+	    setAxis(_x, _y, _err.length);
 	    CheckIncreasingX();
     }	
 
@@ -338,7 +341,10 @@ public class Signal
 	    up_error = _err1;
 	    low_error = _err2;
 	    asym_error = false;
-	    setAxis(_x, _y, _x.length);
+	    //setAxis(_x, _y, _x.length);
+	    //Fix : signal points must be equal to the minus length 
+	    //between up and low error, x and y vectors
+	    setAxis(_x, _y, (_err1.length < _err2.length ? _err1.length : _err2.length));
 	    CheckIncreasingX();
     }
 
@@ -991,6 +997,11 @@ public class Signal
     public double getYmax(){return saved_ymax;}
 
 
+    public float[] getLowError(){ return low_error;}
+    
+    public float[] getUpError(){return up_error;}
+
+
     /**
      * Check if x array coordinates are increasing.
      */
@@ -1134,19 +1145,26 @@ public class Signal
      * 
      * @param _error an array of y measure error
      */
+     
     public void AddError(float _error[])
     {
-	error = true;
-	up_error = _error;
-	for(int i = 0; i < n_points; i++)
-	{
-	    if(y[i] + up_error[i] > ymax)
-		ymax = saved_ymax = y[i] + up_error[i];
-	    if(y[i] - up_error[i] < ymin)
-		ymin = saved_ymin = y[i] - up_error[i];
-	}
-	  
+        if(_error == null || _error.length < 2 || y == null || n_points == 0)
+            return;
+	    error = true;
+	    up_error = _error;
+	    
+	    if(n_points > _error.length)
+	       n_points = _error.length;
+	       
+	    for(int i = 0; i < n_points; i++)
+	    {
+	        if(y[i] + up_error[i] > ymax)
+		    ymax = saved_ymax = y[i] + up_error[i];
+	        if(y[i] - up_error[i] < ymin)
+		    ymin = saved_ymin = y[i] - up_error[i];
+	    }	  
     }
+    
 
 
     public void setAttributes(Signal s)
@@ -1167,20 +1185,30 @@ public class Signal
      * @param _up_error an array of y up measure error
      * @param _low_error an array of y low measure error
      */
+     
     public void AddAsymError(float _up_error[], float _low_error[])
     {
-	error = asym_error = true;
-	up_error = _up_error;
-	low_error = _low_error;
-	for(int i = 0; i < n_points; i++)
-	{
-	    if(y[i] + up_error[i] > ymax)
-		ymax = saved_ymax = y[i] + up_error[i];
-	    if(y[i] - low_error[i] < ymin)
-		ymin = saved_ymin = y[i] - low_error[i];
-	}
+        if(_up_error == null || _up_error.length < 2 ||
+           _low_error == null || _low_error.length < 2 || 
+           y == null || n_points == 0)
+               return;
+               
+	    error = asym_error = true;
+	    up_error = _up_error;
+	    low_error = _low_error;
+	    
+	    if(_up_error.length < n_points) n_points = _up_error.length;
+	    if(_low_error.length < n_points) n_points = _low_error.length;
+	    
+	    for(int i = 0; i < n_points; i++)
+	    {
+	        if(y[i] + up_error[i] > ymax)
+		    ymax = saved_ymax = y[i] + up_error[i];
+	        if(y[i] - low_error[i] < ymin)
+		    ymin = saved_ymin = y[i] - low_error[i];
+	    }
     }		
-
+   
   /**
    * Return a new signal with a new_dim point.
    * 

@@ -24,7 +24,7 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
          //System.out.println("Evento su waveform "+e.name);
          WaveformEvent we = new WaveformEvent(this, WaveformEvent.EVENT_UPDATE,  "Update on event " + e.name);
          dispatchWaveformEvent(we);
-//         Refresh();
+         //Refresh();
     }
 
     public void Refresh()
