@@ -2,15 +2,15 @@ import java.util.*;
 import java.io.IOException;
 import javax.swing.JFrame;
 
-class TSDataProvider extends MdsDataProvider
+class AsdexDataProvider extends MdsDataProvider
 {
 
-    public TSDataProvider()
+    public AsdexDataProvider()
     {
         super();
     }
     
-    public TSDataProvider(String provider) throws IOException
+    public AsdexDataProvider(String provider) throws IOException
     {
         super(provider);
     }
@@ -32,19 +32,17 @@ class TSDataProvider extends MdsDataProvider
 	    if(in.startsWith("DIM_OF("))
 	        return in;
 	    StringTokenizer st = new StringTokenizer(in, ":");
-        String res = "GetTSData(\"";
+        String res;
 	    try{
+	        String diag = st.nextToken();
 	        String name = st.nextToken();
-	        String rang0 = st.nextToken();
-	        String rang1 = st.nextToken();
-	        res = "GetTSData(\"" + name + "\", " + shot + ", " + 
-	            rang0 + ", " + rang1 + ")";
+	        res = "augsignal("+ shot + ",\"" + diag + "\",\"" +name + "\")";
 	    }catch(Exception e)
 	    {
-	        error = "Wrong signal format: must be <signal_name>:<rangs[0]>:<rangs[1]>";
+	        error = "Wrong signal format: must be <diagnostic>:<signal>";
 	        return null;
 	    }
-	    //System.out.println(res);
+	    System.out.println(res);
 	    return res;
 	}
 
@@ -74,17 +72,6 @@ class TSDataProvider extends MdsDataProvider
     }
 
         
-protected String GetDefaultXLabel(String in_y)  throws IOException
-{
-	error= null;
-	return GetString("GetTSUnit(0)");
-}
-        
-protected String GetDefaultYLabel()  throws IOException
-{
-	error= null;
-	return GetString("GetTSUnit(1)");
-}
 
 public boolean SupportsCompression(){return false;}
 public void    SetCompression(boolean state){}

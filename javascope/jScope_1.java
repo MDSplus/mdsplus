@@ -2523,7 +2523,8 @@ class ServerDialog extends JDialog implements ActionListener
                                              "TwuDataProvider",
                                              "JetDataProvider",
                                              "FtuDataProvider",
-                                             "TSDataProvider"};
+                                             "TSDataProvider",
+                                             "AsdexDataProvider"};
     
 
     ServerDialog(JFrame _dw, String title)

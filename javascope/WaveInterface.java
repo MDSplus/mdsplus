@@ -952,9 +952,9 @@ public class WaveInterface
             } else
                 curr_error = dp.ErrorString();            
             frames.WaitLoadFrame();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             frames = null;
-            curr_error = " Load Frames error " + e.getMessage(); 
+            curr_error = " Load Frames error " + e; 
         }
     }
     

@@ -117,11 +117,9 @@ class Frames extends Canvas {
                     AddBITMAPImage(buf, fd.GetFrameDimension(), t[i]);
                 break;
                 case FrameData.AWT_IMAGE :
-//                    AddAWTImage(fd.GetFrameAt(i), t[i]);
                     AddAWTImage(buf, t[i]);
                 break;
                 case FrameData.JAI_IMAGE :
-//                    AddJAIImage(fd.GetFrameAt(i), t[i]);
                     AddJAIImage(buf, t[i]);
                 break;
             }
@@ -146,9 +144,8 @@ class Frames extends Canvas {
         return AddFrame(img, t);        
     }    
 
-    public boolean AddJAIImage(byte[] buf, float t)
+    public void AddJAIImage(byte[] buf, float t) throws IOException
     {
-        return false;
     }    
     
     public void SetColorIdx(int color_idx)

@@ -1,5 +1,6 @@
 import java.io.*;
 import javax.swing.JFrame;
+import java.util.*;
 
 class UniversalDataProvider implements DataProvider
 {
@@ -10,17 +11,28 @@ class UniversalDataProvider implements DataProvider
     JetDataProvider jet;
     JetMdsDataProvider jetmds;
     TSDataProvider ts;
+    AsdexDataProvider asd;
     public UniversalDataProvider() throws IOException
     {
         rfx = new MdsDataProvider();
-        rfx.SetArgument("150.178.3.80");
+        try {
+            rfx.SetArgument("150.178.3.80");
+        }catch(Exception exc){rfx = null;}
         ftu = new FtuDataProvider();
-        ftu.SetArgument("192.107.51.84:8100");
+        try {
+            ftu.SetArgument("192.107.51.84:8100");
+        }catch(Exception exc){ftu = null;}
         twu = new TwuDataProvider();
         jet = new JetDataProvider();
         jetmds = new JetMdsDataProvider();
         ts = new TSDataProvider();
-        ts.SetArgument("132.169.8.122:8000");
+        try {
+            ts.SetArgument("132.169.8.122:8000");
+        }catch(Exception exc){ts = null;}
+        asd = new AsdexDataProvider();
+        try {
+            asd.SetArgument("localhost:8000");
+        }catch(Exception exc){asd = null;}
     }
 
 
@@ -38,6 +50,8 @@ class UniversalDataProvider implements DataProvider
             return jetmds;
         if(spec.startsWith("ts:"))
             return ts;
+        if(spec.startsWith("asd:"))
+            return asd;
         error = "Unknown experiment";
             
         return null;
@@ -75,19 +89,20 @@ class UniversalDataProvider implements DataProvider
     
     public void    Dispose()
     {
-        rfx.Dispose();
-        ftu.Dispose(); 
-        twu.Dispose();
-        jet.Dispose();
-        jetmds.Dispose();
-        ts.Dispose();
+        if(rfx != null) rfx.Dispose();
+        if(ftu != null) ftu.Dispose(); 
+        if(twu != null) twu.Dispose();
+        if(jet != null) jet.Dispose();
+        if(jetmds != null) jetmds.Dispose();
+        if(ts != null) ts.Dispose();
+        if(asd != null) asd.Dispose();
     }
     public boolean SupportsCompression(){return false;}
     public void    SetCompression(boolean state){}
     public boolean SupportsContinuous() { return true; }
     public int     InquireCredentials(JFrame f, String user)
     {   
-        rfx.InquireCredentials(f, "java_user_ext");
+        if(rfx != null) rfx.InquireCredentials(f, "java_user_ext");
         return jet.InquireCredentials(f, user);
     }
     public boolean SupportsFastNetwork(){return false;}
@@ -101,18 +116,20 @@ class UniversalDataProvider implements DataProvider
     public void Update(String exp, int s)
     {
         if(exp == null) return;
-        if(exp.equals("rfx"))
+        if(exp.equals("rfx") && rfx != null)
             rfx.Update(exp, s);
-        else if(exp.equals("ftu"))
+        else if(exp.equals("ftu") && ftu != null)
             ftu.Update(exp, s);
-        else if(exp.equals("twu"))
+        else if(exp.equals("twu") && twu != null)
             twu.Update(exp, s);
-        else if(exp.equals("jet"))
+        else if(exp.equals("jet") && jet != null)
             jet.Update(null, s);
-        else if(exp.equals("jetmds"))
+        else if(exp.equals("jetmds") && jetmds != null)
             jetmds.Update(null, s);
-        else if(exp.equals("ts"))
+        else if(exp.equals("ts") && ts != null)
             ts.Update(null, s);
+        else if(exp.equals("asd") && asd != null)
+            asd.Update(null, s);
         error = null;
     }
 
@@ -133,8 +150,15 @@ class UniversalDataProvider implements DataProvider
     {
         int d[] = new int[1];
         try {
-            return ftu.GetShots(in);
-        }catch (Exception exc) {d[0] = 0;}
+            return rfx.GetShots(in);
+        }catch (Exception exc) 
+        {
+            try {
+                StringTokenizer st = new StringTokenizer(in, ":");
+                String shotStr = st.nextToken();
+                d[0] = Integer.parseInt(shotStr);
+            }catch(Exception exc1) {d[0] = 0;}
+        }
         return d;
     }
     
@@ -144,40 +168,44 @@ class UniversalDataProvider implements DataProvider
     }
     public void AddUpdateEventListener(UpdateEventListener l, String event) throws IOException
     {
-        twu.AddUpdateEventListener(l, event);
-        rfx.AddUpdateEventListener(l, event);
-        ftu.AddUpdateEventListener(l, event);
-        jet.AddUpdateEventListener(l, event);
-        jetmds.AddUpdateEventListener(l, event);
-        ts.AddUpdateEventListener(l, event);
+        if(twu != null) twu.AddUpdateEventListener(l, event);
+        if(rfx != null) rfx.AddUpdateEventListener(l, event);
+        if(ftu != null) ftu.AddUpdateEventListener(l, event);
+        if(jet != null) jet.AddUpdateEventListener(l, event);
+        if(jetmds != null) jetmds.AddUpdateEventListener(l, event);
+        if(ts != null) ts.AddUpdateEventListener(l, event);
+        if(asd != null) asd.AddUpdateEventListener(l, event);
     }
     public void RemoveUpdateEventListener(UpdateEventListener l, String event)throws IOException
     {
-        twu.RemoveUpdateEventListener(l, event);
-        rfx.RemoveUpdateEventListener(l, event);
-        ftu.RemoveUpdateEventListener(l, event);
-        jet.RemoveUpdateEventListener(l, event);
-        jetmds.RemoveUpdateEventListener(l, event);
-        ts.RemoveUpdateEventListener(l, event);
+        if(twu != null) twu.RemoveUpdateEventListener(l, event);
+        if(rfx != null) rfx.RemoveUpdateEventListener(l, event);
+        if(ftu != null) ftu.RemoveUpdateEventListener(l, event);
+        if(jet != null) jet.RemoveUpdateEventListener(l, event);
+        if(jetmds != null) jetmds.RemoveUpdateEventListener(l, event);
+        if(ts != null) ts.RemoveUpdateEventListener(l, event);
+        if(asd != null) asd.RemoveUpdateEventListener(l, event);
         
     }
     public void    AddConnectionListener(ConnectionListener l)
     {
-        twu.AddConnectionListener(l);
-        rfx.AddConnectionListener(l);
-        ftu.AddConnectionListener(l);
-        jet.AddConnectionListener(l);
-        jetmds.AddConnectionListener(l);
-        ts.AddConnectionListener(l);
+        if(twu != null) twu.AddConnectionListener(l);
+        if(rfx != null) rfx.AddConnectionListener(l);
+        if(ftu != null) ftu.AddConnectionListener(l);
+        if(jet != null) jet.AddConnectionListener(l);
+        if(jetmds != null) jetmds.AddConnectionListener(l);
+        if(ts != null) ts.AddConnectionListener(l);
+        if(asd != null) asd.AddConnectionListener(l);
     }
     public void    RemoveConnectionListener(ConnectionListener l)
     {
-        twu.RemoveConnectionListener(l);
-        rfx.RemoveConnectionListener(l);
-        ftu.RemoveConnectionListener(l);
-        jet.RemoveConnectionListener(l);
-        jetmds.RemoveConnectionListener(l);
-        ts.RemoveConnectionListener(l);
+        if(twu != null) twu.RemoveConnectionListener(l);
+        if(rfx != null) rfx.RemoveConnectionListener(l);
+        if(ftu != null) ftu.RemoveConnectionListener(l);
+        if(jet != null) jet.RemoveConnectionListener(l);
+        if(jetmds != null) jetmds.RemoveConnectionListener(l);
+        if(ts != null) ts.RemoveConnectionListener(l);
+        if(asd != null) asd.RemoveConnectionListener(l);
        
     }
 

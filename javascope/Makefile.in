@@ -52,7 +52,8 @@ FontSelection.java          JiNcVarShort.java           RowColumnContainer.java 
 FrameData.java              JiSlab.java                 RowColumnLayout.java        WaveformContainer_2.java    jScope_1.java \
 JiSlabIterator.java         SetupDataDialog.java        WaveformEvent.java          jScope_2.java 		UniversalDataProvider.java\
 Frames.java                 JiVar.java                  SetupDefaults.java          WaveformListener.java	NotConnectedDataProvider.java\
-SignalsBoxDialog.java	    SignalBox.java		MdsDataClient.java	    MdsIOException.java		SetupWaveformParams.java
+SignalsBoxDialog.java	    SignalBox.java		MdsDataClient.java	    MdsIOException.java		SetupWaveformParams.java \
+TSDataProvider.java	    AsdexDataProvider.java
 
 CLASSES = $(SOURCES:.java=.class)
 

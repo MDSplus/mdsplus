@@ -24,30 +24,23 @@ class FrameJAI extends Frames
 
     }
     
-//    public boolean AddFrame(byte[] buf, float t) 
-    public boolean AddJAIImage(byte[] buf, float t) 
+    public void AddJAIImage(byte[] buf, float t) throws IOException
     {
-        try
-        {
-            ByteArraySeekableStream stream = new ByteArraySeekableStream(buf);
+        ByteArraySeekableStream stream = new ByteArraySeekableStream(buf);
         
-        /* Create an operator to decode the image file. */
-            RenderedOp image1 = JAI.create("stream", stream);
-            if(getHorizontalFlip())
-            {
-                RenderedOp image2 = JAI.create("transpose", image1, TransposeDescriptor.FLIP_HORIZONTAL);
-                image1 = image2;
-            }
-            if(this.getVerticalFlip())
-            {
-                RenderedOp image2 = JAI.create("transpose", image1, TransposeDescriptor.FLIP_VERTICAL);
-                image1 = image2;
-            }
-            AddFrame(image1, t);
-            return true;
-        } catch (IOException e) {
-            return false;
+    /* Create an operator to decode the image file. */
+        RenderedOp image1 = JAI.create("stream", stream);
+        if(getHorizontalFlip())
+        {
+            RenderedOp image2 = JAI.create("transpose", image1, TransposeDescriptor.FLIP_HORIZONTAL);
+            image1 = image2;
         }
+        if(this.getVerticalFlip())
+        {
+            RenderedOp image2 = JAI.create("transpose", image1, TransposeDescriptor.FLIP_VERTICAL);
+            image1 = image2;
+        }
+        AddFrame(image1, t);
     }
     
     protected Dimension GetFrameDim(int idx)
