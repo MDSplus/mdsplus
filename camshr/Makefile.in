@@ -75,7 +75,7 @@ install:
 
 @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@ : $(OBJECTS)
 	$(CC) -g -nostartfiles -shared -W1,-soname,lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) \
-		-o @MAKESHRLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) $(OBJECTS) -lc
+		-o @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) $(OBJECTS) -lc
 	if [ ! -d @MAKESHLIBDIR@ ] ; then \
 		mkdir @MAKESHLIBDIR@; \
 		chmod 755 @MAKESHLIBDIR@; \
