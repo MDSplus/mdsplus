@@ -1,3 +1,8 @@
+/*  CMS REPLACEMENT HISTORY, Element TDISHREXT.C */
+/*  *3    31-AUG-2000 14:34:34 TWF "Fix conflicting names" */
+/*  *2    31-AUG-2000 14:32:24 TWF "Fix conflicting names" */
+/*  *1    31-AUG-2000 14:19:52 TWF "remote mdsconnect,mdsvalue,mdsdisconnect support from " */
+/*  CMS REPLACEMENT HISTORY, Element TDISHREXT.C */
 #define VERSION "2.2000.08.3"
 /* these are a few routines to get a TDI client up for MDSIP
  * They will be integrated into libBpdMdsUnix.so and called dynamically
@@ -24,34 +29,26 @@ ldconfig
 #define int32 int
 #endif
 
-#include <mdslib.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <ipdesc.h>
+#ifdef DTYPE_EVENT
+#undef DTYPE_EVENT
+#endif
+#include <mdsdescrip.h>
+#include <mds_stdarg.h>
 #ifdef VMS
-#define TdiZero TDI$ZERO
-#define MdsClose MDSCLOSE
-#define MdsOpen MDSOPEN
-#define MakeDescrip MAKEDESCRIP
-#define MdsValue MDSVALUE
-
-#define DisconnectFromMds DISCONNECTFROMMDS
-#define ConnectToMds CONNECTTOMDS
-#define SendArg SENDARG
-#define GetAnswerInfo GETANSWERINFO
-
-extern SOCKET ConnectToMds(char *host);
-extern SOCKET ConnectToMdsEvents(char *host);
-extern int  SendArg(SOCKET s,unsigned char i,char dtype,unsigned char nargs,short len,char ndims,int *dims,
-                                 char *ptr);
-extern int   GetAnswerInfo(SOCKET s, char *dtype, short *len, char *ndims, int *dims, 
-			  int *nbytes, void * *dptr);
-extern int   DisconnectFromMds(SOCKET sock);
-
-extern int TDI$ZERO();
+#include <ctype.h>
+#define TdiCvt TDI$CVT
 #endif
 extern int   MdsOpen(SOCKET sock, char *tree, int shot);
 extern int   MdsClose(SOCKET sock);
 extern int   MdsCopyDxXd(struct descriptor *in, struct descriptor_xd *out);
 extern int   TdiCvt();
-
+#ifndef _WIN32
+#define INVALID_SOCKET -1
+#endif
 #define MIN(a,b) (((a) < (b)) ? (a) : (b))
 #define MAX(a,b) (((a) > (b)) ? (a) : (b))
 
