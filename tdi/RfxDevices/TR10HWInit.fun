@@ -10,8 +10,8 @@ public fun TR10HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 	private _TR10_TRG_NO_PXI_OUT =			byte(0x7);
 	private _TR10_TRG_EXT_OUT_OFF =			byte(0x0);
 	private _TR10_TRG_EXT_OUT_ON =			byte(0x1);
-	private _TR10_TRG_RISING_EDGE =			byte(0x1);
-	private _TR10_TRG_FALLING_EDGE =		byte(0x0);
+	private _TR10_TRG_RISING_EDGE =			byte(0x0);
+	private _TR10_TRG_FALLING_EDGE =		byte(0x1);
 	private _TR10_TRG_TERMINATION_ON =		byte(0x1);
 	private _TR10_TRG_TERMINATION_OFF=		byte(0x0);
 	private _TR10_TRG_SYNCHRONOUS =			byte(0x1);
