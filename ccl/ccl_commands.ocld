@@ -189,6 +189,10 @@ Define syntax set_memory_24
 Define type memory_keywords
 	keyword 16 syntax=set_memory_16
 	keyword 24 syntax=set_memory_24
+Define syntax set_verbose
+        routine ccl_set_verbose
+Define syntax set_noverbose
+        routine ccl_set_noverbose
 Define syntax set_memory
 	routine ccl_set_memory
         parameter p1,prompt="What",value(required,type=set_keywords)
@@ -210,6 +214,8 @@ Define type set_keywords
 	keyword xandq		syntax=set_xandq
 	keyword memory		syntax=set_memory
         keyword module		syntax=set_module
+        keyword noverbose       syntax=set_noverbose
+        keyword verbose         syntax=set_verbose
 Define verb set
         parameter p1,prompt="What",value(required,type=set_keywords)
 Define syntax show_module

@@ -268,3 +268,14 @@ int ccl_show_data()
     printf("%s\n",outline);
   return 1;
 }
+
+int ccl_set_verbose()
+{
+   return CamVerbose(1);
+}
+
+int ccl_set_noverbose()
+{
+   return CamVerbose(0);
+}
+
