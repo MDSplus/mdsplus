@@ -1,6 +1,6 @@
 public fun RFXInverterSetup__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXInverterSetup',125, _nidout);
+    DevAddStart(_path, 'RFXInverterSetup',149, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':OUT_GAINS', 'NUMERIC', [1,1,1,1,1,1,1,1,1,1,1,1], *, _nid);
     DevAddNode(_path // ':CONTROL', 'NUMERIC', *, *, _nid);
@@ -20,6 +20,8 @@ public fun RFXInverterSetup__add(in _path, out _nidout)
 		DevAddNode(_cn // ':MIN_Y', 'NUMERIC', *, *, _nid);
 		DevAddNode(_cn // ':MAX_Y', 'NUMERIC', *, *, _nid);
 
+  		DevAddNode(_cn // ':IREL_LS', 'NUMERIC', *, *, _nid);
+  		DevAddNode(_cn // ':IREL_HS', 'NUMERIC', *, *, _nid);
   		DevAddNode(_cn // ':PERT_AMP', 'NUMERIC', 0, *, _nid);
   		DevAddNode(_cn // ':PERT_FREQ', 'NUMERIC', 0, *, _nid);
   		DevAddNode(_cn // ':PERT_PHASE', 'NUMERIC', 0, *, _nid);
