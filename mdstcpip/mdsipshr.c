@@ -653,7 +653,7 @@ static SOCKET ConnectToPort(char *host, char *service)
   if (hp == NULL)
   {
     int addr = inet_addr(host);
-    if (addr != INADDR_NONE)
+    if (addr != 0xffffffff)
     hp = gethostbyaddr((void *) &addr, (int) sizeof(addr), AF_INET);
   }
   if (hp == NULL)
