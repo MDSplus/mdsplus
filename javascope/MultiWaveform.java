@@ -1257,11 +1257,16 @@ public class MultiWaveform extends Waveform
         }
 
 
-        if(wi != null)
-	        wi.AsynchUpdate(signals, (float)(start_xs - x_range), (float)(end_xs + x_range),
-	            (float)orig_xmin, (float)orig_xmax, update_timestamp, mode == MODE_PAN, this);
+        if (wi != null)
 
-    }
+          wi.AsynchUpdate(signals, (float)(start_xs - x_range), (float)(end_xs + x_range),
+              (float)orig_xmin, (float)orig_xmax, update_timestamp, mode == MODE_PAN, this);
+          //wi.AsynchUpdate(signals, (float) (start_xs),
+          //                (float) (end_xs),
+          //                (float) orig_xmin, (float) orig_xmax, update_timestamp,
+          //                mode == MODE_PAN, this);
+
+      }
 
     protected void HandleCopy()
     {
