@@ -113,6 +113,7 @@ short ArgLen(struct descrip *d)
     case DTYPE_FLOAT   :  len = sizeof(float); break;
     case DTYPE_DOUBLE  :  len = sizeof(double); break;
     case DTYPE_COMPLEX :  len = sizeof(float) * 2; break;
+    case DTYPE_COMPLEX_DOUBLE :  len = sizeof(double) * 2; break;
     case DTYPE_ULONGLONG :
     case DTYPE_LONGLONG  :  len = 8; break;
   }
@@ -700,6 +701,7 @@ static void FlipData(Message *m)
     case DTYPE_FLOAT:   
     case DTYPE_DOUBLE:
     case DTYPE_COMPLEX:
+    case DTYPE_COMPLEX_DOUBLE:
 #endif
     case DTYPE_USHORT:
     case DTYPE_SHORT:  
