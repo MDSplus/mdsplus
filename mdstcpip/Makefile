@@ -8,7 +8,7 @@ OBJECTS_UTIL = \
 
 EXPORTS = mdsipshr.export
 
-mdstcpip : ../bin ../shlib ../etc ../bin/mdsiptest ../bin/mdsip ../bin/mdsipd ../etc/mdsip.hosts
+mdstcpip : ../bin ../shlib ../etc ../bin/mdsiptest ../bin/mdsip ../bin/mdsipd ../etc/mdsip.hosts ../shlib/libMdsIpShr.a
 
 ../bin :
 	mkdir ../bin
@@ -24,6 +24,9 @@ mdstcpip : ../bin ../shlib ../etc ../bin/mdsiptest ../bin/mdsip ../bin/mdsipd ..
 
 ../shlib/libMdsIpShr.$(SHARE_TYPE) : $(OBJECTS) libMdsIpUtil.a
 	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) $(OBJECTS_UTIL) -lc $(SOCKET_LIB) 
+
+../shlib/libMdsIpShr.a : $(OBJECTS) libMdsIpUtil.a
+	$(AR) -r $@ $(OBJECTS) ../mdstcpip/libMdsIpUtil.a 
 
 ../shlib :
 	mkdir ../shlib
@@ -41,6 +44,7 @@ libMdsIpUtil.a :  $(OBJECTS_UTIL)
 clean :
 	- rm *.o
 	- rm ../shlib/libMdsIpShr.$(SHARE_TYPE)
+	- rm ../shlib/libMdsIpShr.a
 	- rm .depend
 	- rm ../bin/mdsiptest
 	- rm ../bin/mdsip
