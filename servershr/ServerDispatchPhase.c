@@ -198,31 +198,27 @@ static void ActionDone(int idx)
   {
     niddsc.pointer = (char *)&actions[idx].nid;
     if (TdiCompletionOf(&niddsc,&event_name MDS_END_ARG) & 1 && event_name.length)
-	{
-	  char *event = strncpy((char *)malloc(event_name.length+1),event_name.pointer,event_name.length);
-	  event[event_name.length] = 0;
-          MDSEvent(event,sizeof(int),(char *)&table->shot);
-	  free(event);
-	}
+    {
+      char *event = strncpy((char *)malloc(event_name.length+1),event_name.pointer,event_name.length);
+      event[event_name.length] = 0;
+      MDSEvent(event,sizeof(int),(char *)&table->shot);
+      free(event);
+    }
     SendMonitor(MonitorDone, idx);
     actions[idx].done = 1;
     actions[idx].recorded = 0;
     path = TreeGetMinimumPath((int *)&zero,actions[idx].nid);
     if (actions[idx].status & 1)
-	{
-	  sprintf(logmsg,"%s, Action %s completed",now(),path);
-	}
+      sprintf(logmsg,"%s, Action %s completed",now(),path);
     else
     {
-	  char *emsg = MdsGetMsg(actions[idx].status);
-	  sprintf(logmsg,"%s, Action %s failed, %s",now(),path,emsg);
+      char *emsg = MdsGetMsg(actions[idx].status);
+      sprintf(logmsg,"%s, Action %s failed, %s",now(),path,emsg);
       SendReply(actions[idx].nid,logmsg);
     }
-	TreeFree(path);
+    TreeFree(path);
     if (Output)
-    {
       (*Output)(logmsg);
-    }
     if (!AbortInProgress)
     {
       expression_d.length = sprintf(expression,"_ACTION_%08X = %d",actions[idx].nid,actions[idx].status);
