@@ -270,7 +270,7 @@ int				j, token;
 	/**********************
 	Search of initial list.
 	**********************/
-	str_l = (unsigned char *)strncpy((char *)malloc(len+1),str,len);
+	str_l = (unsigned char *)strncpy((char *)malloc(len+1),(char *)str,len);
         str_l[len] = 0;
 	j = TdiHash(len, str_l);
 	free(str_l);
@@ -488,7 +488,7 @@ struct marker		*mark_ptr)
 {
   	int nid, status, token = LEX_VALUE;
 	unsigned char *str_l;
-	str_l = (unsigned char *)strncpy((char *)malloc(len+1),str,len);
+	str_l = (unsigned char *)strncpy((char *)malloc(len+1),(char *)str,len);
         str_l[len] = 0;
 	upcase(str_l,len);
 	mark_ptr->builtin = -1;
@@ -497,7 +497,7 @@ struct marker		*mark_ptr)
 		MAKE_S(DTYPE_PATH, (unsigned short)len, mark_ptr->rptr);
 		_MOVC3(len, str, (char *)mark_ptr->rptr->pointer);
 	}
-	else if (TreeFindNode(str_l, &nid) & 1)
+	else if (TreeFindNode((char *)str_l, &nid) & 1)
 	{
 		MAKE_S(DTYPE_NID, (unsigned short)sizeof(nid), mark_ptr->rptr);
 		*(int *)mark_ptr->rptr->pointer = nid;
@@ -505,7 +505,7 @@ struct marker		*mark_ptr)
 	else
 	{
 		struct descriptor	abs_dsc = {0,DTYPE_T,CLASS_D,0};
-		char *apath = TreeAbsPath(str_l);
+		char *apath = TreeAbsPath((char *)str_l);
 		if (apath != NULL)
 		{
 			unsigned short alen = (unsigned short)strlen(apath);
