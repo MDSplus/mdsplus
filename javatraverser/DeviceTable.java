@@ -133,6 +133,8 @@ public class DeviceTable extends DeviceComponent
         StringTokenizer st = new StringTokenizer(decompiled, " ,[]");
         items = new String[numCols * numRows];
         int idx = 0;
+        if(!decompiled.startsWith("["))
+          st.nextToken();
         while( idx < numCols * numRows && st.hasMoreTokens())
             items[idx++] = st.nextToken();
         label.setText(labelString);

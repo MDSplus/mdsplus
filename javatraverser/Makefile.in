@@ -34,6 +34,7 @@ RFXPMSetupSetup.java\
 RFXPCSetupSetup.java \
 RFXPVSetupSetup.java \
 RFXTFSetupSetup.java \
+RFXABUnitsSetup.java \
 RFXChopperSetupSetup.java \
 RFXInverterSetupSetup.java \
 RFXFeedforwardSetupSetup.java \
