@@ -110,7 +110,21 @@ dmgdir/MDSplus.mpkg: dmgdir MDSplus_files.pkg MDSplus_server.pkg MDSplus_logical
 	$(CP) -r MDSplus_files.pkg $@
 	$(CP) -r MDSplus_logicals.pkg $@
 	$(CP) -r MDSplus_server.pkg $@
-	find $@ -name CVS -exec rm -R {} \;
+	find $@ -name CVS -exec rm -Rf {} \;
+
+MDSplus_logicals.pkg:
+	rm -rf $@
+	mkdir /tmp/empty
+	$(PM) -build -p $(PWD)/$@ -f /tmp/empty -i $(PWD)/logicals_resources/Info.plist \
+	 -d $(PWD)/logicals_resources/Description.plist -r $(PWD)/logicals_resources
+	rm -rf /tmp/empty
+
+MDSplus_server.pkg:
+	rm -rf $@
+	mkdir /tmp/empty
+	$(PM) -build -p $(PWD)/$@ -f /tmp/empty -i $(PWD)/server_resources/Info.plist \
+	 -d $(PWD)/server_resources/Description.plist -r $(PWD)/server_resources
+	rm -rf /tmp/empty	
 
 MDSplus_files.pkg: dstroot
 	$(PM) -build -p $(PWD)/$@ -f $(PWD)/dstroot -i $(PWD)/files_resources/Info.plist \
@@ -138,8 +152,7 @@ local: dmgdir/MDSplus.mpkg Local_files.pkg
 	./make_dmg MDSplus_local.dmg dmgdir "MDSplus Installer (Local Version)"
 
 client:
-	(cd /usr/local/mdsplus; tar cf - $(CLIENT_BINARIES)) | gzip - > MDSplus.`uname`.client.tgz
-    
+	(cd /usr/local/mdsplus; tar cf - $(CLIENT_BINARIES)) | gzip - > MDSplus.`uname`.client.tgz    
 
 .IGNORE:
 
@@ -147,6 +160,7 @@ clean:
 	rm -rf dmgdir
 	rm -rf dstroot
 	rm -rf MDSplus_files.pkg
+	rm -rf MDSplus_logicals.pkg
+	rm -rf MDSplus_server.pkg
 	rm -rf Local_files.pkg
-	rm -rf localroot
-	
+	rm -rf localroot	
