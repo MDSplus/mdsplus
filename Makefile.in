@@ -1,5 +1,6 @@
 #@(#)$RCSfile$ $Revision$
 # @configure_input@
+prefix=@prefix@
 SHELL=/bin/sh
 
 JAVA_APS = javamds \
