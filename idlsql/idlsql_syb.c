@@ -434,9 +434,10 @@ void		*buf;
 int		count = 0;
 char		*pout_end = pout+MAXPARSE;
 
-	while (*pin) switch (*pin) {
+	while (*pin)          {	
         bufchk
-	default :			/* copy text */
+        switch (*pin) {	
+        default :			/* copy text */
 		*pout++ = *pin++;
 		break;
 	case '\'' :			/* quoted string */
@@ -493,6 +494,8 @@ char		*pout_end = pout+MAXPARSE;
 		pout += strlen(pout);
 		break;
 	}
+	}
+        
 	*pout = '\0';
 	if (count) ++used;
 	arg->used = used;
