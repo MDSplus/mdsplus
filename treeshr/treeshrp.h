@@ -656,6 +656,7 @@ extern int TreeFindTag(char *tagnam, char *treename, int *tagidx);
 extern int TreeCallHook(TreeshrHookType operation, TREE_INFO *info);
 extern int TreeEstablishRundownEvent(TREE_INFO *info);
 extern DATA_FILE *TreeGetVmDatafile();
-extern int TreeOpenNciW(TREE_INFO *info);
+extern int TreeOpenNciW(TREE_INFO *info, int tmpfile);
+extern int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile);
 
 #endif

@@ -55,7 +55,6 @@ static int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length);
 static int StartEvent(NID *nid_ptr, int utility_update);
 static void EndEvent(int id, int length, int status, int stv);
 static int AddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans);
-static int       OpenDatafileW(TREE_INFO *info, int *stv_ptr);
 static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr);
 static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr);
 static int compress_utility;
@@ -99,7 +98,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
     if (info_ptr->reopen)
       TreeCloseFiles(info_ptr);
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
-      open_status = OpenDatafileW(info_ptr, &stv);
+      open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
     else
       open_status = 1;
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
@@ -501,18 +500,10 @@ static int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length)
   return status;
 }
 
-static int       OpenDatafileW(TREE_INFO *info, int *stv_ptr)
+int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
 {
   int       status = 1;
-  int       tries = 0;
-  static char *datafile_name = ".datafile";
   DATA_FILE *df_ptr = info->data_file;
-  static    DESCRIPTOR(dataf_buffering, "DATAF");
-  static RECORD_HEADER header;
-/*------------------------------------------------------------------------------
-
- Executable:
-*/
   *stv_ptr = 0;
   if (df_ptr == 0)
   {
@@ -522,10 +513,10 @@ static int       OpenDatafileW(TREE_INFO *info, int *stv_ptr)
   if (status & 1)
   {
     size_t len = strlen(info->filespec)-4;
-    char *filename = strncpy(malloc(len+9),info->filespec,len);
+    char *filename = strncpy(malloc(len+20),info->filespec,len);
     filename[len]='\0';
-    strcat(filename,"datafile");
-    df_ptr->get = fopen(filename,"rb");
+    strcat(filename,tmpfile ? "datafile#" : "datafile");
+    df_ptr->get = fopen(filename,tmpfile ? "w+b" : "rb");
     status = (df_ptr->get == NULL) ? TreeFAILURE : TreeNORMAL;
     if (status & 1)
     {

@@ -22,7 +22,6 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 int treeshr_errno = 0;
 
 extern int MdsEventCan();
-extern int TreeOpenNciW();
 static void RemoveBlanksAndUpcase(char *out, char *in);
 static int CloseTopTree(PINO_DATABASE *dblist, int call_hook);
 static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *subtree_list);
@@ -593,14 +592,9 @@ static int CreateDbSlot(PINO_DATABASE **dblist, char *tree, int shot, int editti
 				*dblist=malloc(sizeof(PINO_DATABASE));
 				if (*dblist)
 				{
-					(*dblist)->tree_info = 0;
-					(*dblist)->next = db;
-					(*dblist)->open = 0;
-					(*dblist)->open_for_edit = 0;
-					(*dblist)->modified = 0;
-					(*dblist)->experiment = 0;
-					(*dblist)->main_treenam = 0;
-					status = TreeNORMAL;
+				  memset(*dblist,0,sizeof(PINO_DATABASE));
+				  (*dblist)->next = db;
+				  status = TreeNORMAL;
 				}
 			}
 		}
@@ -609,7 +603,11 @@ static int CreateDbSlot(PINO_DATABASE **dblist, char *tree, int shot, int editti
 	{
 		(*dblist)->shotid = shot;
 		(*dblist)->setup_info = (shot == -1);
+                if ((*dblist)->experiment)
+                  free((*dblist)->experiment);
 		(*dblist)->experiment = strcpy(malloc(strlen(tree)+1),tree);
+                if ((*dblist)->main_treenam)
+                  free((*dblist)->main_treenam);
 		(*dblist)->main_treenam = strcpy(malloc(strlen(tree)+1),tree);
 		(*dblist)->stack_size = stack_size;
 	}
@@ -1248,7 +1246,7 @@ int       _TreeOpenEdit(void **dbid, char *tree_in, int shot_in)
 	    (*dblist)->open_readonly = 0;
 	    info->root = info->node;
 	    (*dblist)->default_node = info->root;
-            TreeOpenNciW(info);
+            TreeOpenNciW(info, 0);
 	  }
 	}
 	else
@@ -1321,7 +1319,7 @@ int       _TreeOpenNew(void **dbid, char *tree_in, int shot_in)
 	    (*dblist)->open_readonly = 0;
 	    info->root = info->node;
 	    (*dblist)->default_node = info->root;
-            TreeOpenNciW(info);
+            TreeOpenNciW(info, 0);
             status = TreeExpandNodes(*dblist, 0, 0);
             strncpy(info->node->name,"TOP         ",sizeof(info->node->name));
             info->node->parent = 0;
@@ -1350,5 +1348,7 @@ int       _TreeOpenNew(void **dbid, char *tree_in, int shot_in)
       }
     }
   }
+  if (status & 1)
+    _TreeWriteTree(dbid, 0, 0);
   return status;
 }

@@ -4,6 +4,7 @@ OBJECTS = \
 dummies.o \
 TreeAddNode.o \
 TreeAddTag.o \
+TreeCleanDatafile.o \
 TreeCreatePulseFile.o \
 TreeDeleteNode.o \
 TreeDeletePulseFile.o \
@@ -19,6 +20,7 @@ TreeRenameNode.o \
 TreeRemoveNodesTags.o\
 TreeSetDefault.o \
 TreeSetNci.o \
+TreeVerify.o \
 RemoteAccess.o
 
 treeshr : ../shlib ../shlib/libTreeShr.$(SHARE_TYPE)
