@@ -100,7 +100,7 @@ struct dirent *readdir(DIR *dir)
 char *index(char *str, char c)
 {
 	int pos = strcspn(str,&c);
-	return (pos == 0) ? ((str[0] == c) ? str : 0) : &str[pos];
+  return (pos == 0) ? ((str[0] == c) ? str : 0) : ((pos == strlen(str)) ? 0 : &str[pos]);
 }
 
 static char *GetRegistry(char *where, char *pathname)
