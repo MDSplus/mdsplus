@@ -53,6 +53,8 @@ public fun RFXControl__init(as_is _nid, optional _method)
 write(*, 'RFXControl init');
 
     _vme_ip = DevNodeRef(_nid, _N_VME_IP);
+
+	MdsDisconnect();
     _cmd = 'MdsConnect("'//_vme_ip//'")';
     execute(_cmd);
 
