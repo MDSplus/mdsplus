@@ -380,32 +380,40 @@ int ServerConnect(char *server_in)
   char hostpart[256] = {0};
   char portpart[256] = {0};
   short port;
-  sscanf(server,"%[^:]:%s",hostpart,portpart);
-  addr = GetHostAddr(hostpart);
-  if (addr != 0)
+  int num = sscanf(server,"%[^:]:%s",hostpart,portpart);
+  if (num != 2)
   {
-    port = (short)atoi(portpart);
-    if (port > 0)
+    printf("Server /%s/ unknown\n",server_in);
+    sock = -1;
+  }
+  else
+  {
+    addr = GetHostAddr(hostpart);
+    if (addr != 0)
     {
-      Client *c;
-      for (c=ClientList; c && (c->addr != addr || c->port != port); c=c->next);
-      if (c)
+      port = (short)atoi(portpart);
+      if (port > 0)
       {
-        int tablesize = FD_SETSIZE;
-        fd_set fdactive;
-        int status;
-        struct timeval timeout = {0,0};
-        FD_ZERO(&fdactive);
-        FD_SET(c->send_sock,&fdactive);
-        status = select(tablesize,&fdactive,0,0,&timeout);
-        if (ServerBadSocket(c->send_sock))
-          RemoveClient(c,0);
-        else
-          return(c->send_sock);
+        Client *c;
+        for (c=ClientList; c && (c->addr != addr || c->port != port); c=c->next);
+        if (c)
+        {
+          int tablesize = FD_SETSIZE;
+          fd_set fdactive;
+          int status;
+          struct timeval timeout = {0,0};
+          FD_ZERO(&fdactive);
+          FD_SET(c->send_sock,&fdactive);
+          status = select(tablesize,&fdactive,0,0,&timeout);
+          if (ServerBadSocket(c->send_sock))
+            RemoveClient(c,0);
+          else
+            return(c->send_sock);
+        }
       }
     }
+    sock = ConnectToMds(server);
   }
-  sock = ConnectToMds(server);
   if (srv)
     TranslateLogicalFree(srv);
   if (sock >= 0)
