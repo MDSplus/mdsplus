@@ -1,0 +1,41 @@
+include $(MAKE_OPTIONS)
+
+
+OBJECTS = \
+dummies.o \
+TreeAddNode.o \
+TreeAddTag.o \
+TreeCleanDatafile.o \
+TreeCreatePulseFile.o \
+TreeDeleteNode.o \
+TreeDeletePulseFile.o \
+TreeDoMethod.o \
+TreeFindNode.o \
+TreeFindTagWild.o \
+TreeGetDbi.o \
+TreeGetNci.o \
+TreeGetRecord.o \
+TreeOpen.o \
+TreePutRecord.o \
+TreeRenameNode.o \
+TreeRemoveNodesTags.o\
+TreeSerializeNci.o\
+TreeSetDefault.o \
+TreeSetNci.o \
+TreeVerify.o \
+RemoteAccess.o
+
+treeshr : ../shlib $(OBJECTS)
+	mv dummies.o treeshr_dummies.o
+	ld68k -o ../vxWorks/libTreeShr.o -r *.o
+	rm *.o
+
+
+../shlib :
+	mkdir ../shlib
+
+
+clean :
+	- rm ../vxWorks/*.o
+	- rm .depend
+
