@@ -589,7 +589,7 @@ extern struct descriptor *TreeSectionName(TREE_INFO *info);
 extern int TreeFindTag(char *tagnam, char *treename, int *tagidx);
 int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tree, short taglen, char *tagnam, NODE **nodeptr, int *
 tagidx);
-extern int TreeCallHook(TreeshrHookType operation, TREE_INFO *info);
+extern int TreeCallHook(TreeshrHookType operation, TREE_INFO *info,int nid);
 extern int TreeEstablishRundownEvent(TREE_INFO *info);
 extern DATA_FILE *TreeGetVmDatafile();
 extern int TreeOpenNciW(TREE_INFO *info, int tmpfile);

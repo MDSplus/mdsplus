@@ -90,6 +90,9 @@ int       _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
   nid_to_tree_nidx(dblist, nid_ptr, tree_info, node_number);
   if (!tree_info)
     return TreeNNF;
+  status = TreeCallHook(PutNci, tree_info, nid_in);
+  if (status && !(status & 1))
+    return status;
   if (tree_info->reopen)
     TreeCloseFiles(tree_info);
   status = TreeGetNciLw(tree_info, node_number, &nci);
@@ -353,7 +356,7 @@ int TreeOpenNciW(TREE_INFO *info, int tmpfile)
       info->nci_file = NULL;
     }
   if (status & 1)
-    TreeCallHook(OpenNCIFileWrite, info);
+    TreeCallHook(OpenNCIFileWrite, info,0);
   return status;
 }
 

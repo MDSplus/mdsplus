@@ -29,6 +29,8 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
  if (need_nci)\
  {\
     nid_to_tree_nidx(dblist, (&nid), info, node_number);\
+    status = TreeCallHook(GetNci,info,nid_in);\
+    if (status && !(status & 1)) break;\
     if (info->reopen) TreeCloseFiles(info);\
     status = TreeGetNciW(info, node_number, &nci);\
     need_nci = 0;\

@@ -113,6 +113,9 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   {
     int       stv;
     NCI       local_nci;
+    status = TreeCallHook(PutData,info_ptr,nid);
+    if (status && !(status & 1))
+      return status;
     if (info_ptr->reopen)
       TreeCloseFiles(info_ptr);
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
@@ -358,7 +361,7 @@ int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
   }
   info->data_file = df_ptr;
   if (status & 1)
-    TreeCallHook(OpenDataFileWrite, info);
+    TreeCallHook(OpenDataFileWrite, info,0);
   return status;
 }
 

@@ -743,7 +743,7 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
 #endif
 
 		(*dblist)->modified = 0;
-        TreeCallHook(WriteTree, info_ptr);
+        TreeCallHook(WriteTree, info_ptr,0);
       }
     }
   }

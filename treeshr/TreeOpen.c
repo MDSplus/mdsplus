@@ -311,7 +311,7 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 							local_info->nci_file = NULL;
 						}
 						if (call_hook) 
-							TreeCallHook(CloseTree, local_info);
+							TreeCallHook(CloseTree, local_info,0);
 						if (local_info->filespec)
 							free(local_info->filespec);
 						if (local_info->treenam)
@@ -419,13 +419,13 @@ static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *su
 	  status = MapTree(tree, dblist->shotid, info, 0, parent == 0);
 	  if (status == TreeFAILURE && treeshr_errno == TreeFILE_NOT_FOUND)
 	  {
-	    status = TreeCallHook(RetrieveTree, info);
+	    status = TreeCallHook(RetrieveTree, info,0);
 	    if (status == TreeNORMAL)
 	      status = MapTree(tree, dblist->shotid, info, 0, parent == 0);
 	  }
 	  if (status == TreeNORMAL)
 	  {
-	    TreeCallHook(OpenTree, info);
+	    TreeCallHook(OpenTree, info,0);
 
       /**********************************************
        If this is the main tree the root node is the
@@ -1128,13 +1128,13 @@ int       _TreeOpenEdit(void **dbid, char *tree_in, int shot_in)
         status = MapTree(tree, (*dblist)->shotid, info, 1, 1);
         if (status == TreeFAILURE && treeshr_errno == TreeFILE_NOT_FOUND)
         {
-          status = TreeCallHook(RetrieveTree, info);
+          status = TreeCallHook(RetrieveTree, info,0);
           if (status == TreeNORMAL)
               status = MapTree(tree, (*dblist)->shotid, info, 1, 1);
         }
         if (status & 1)
         {
-	  TreeCallHook(OpenTreeEdit, info);
+	  TreeCallHook(OpenTreeEdit, info,0);
           info->edit = (TREE_EDIT *)malloc(sizeof(TREE_EDIT));
   	  if (info->edit)
 	  {
@@ -1207,7 +1207,7 @@ int       _TreeOpenNew(void **dbid, char *tree_in, int shot_in)
 	}
         if (file)
         {
-	  TreeCallHook(OpenTreeEdit, info);
+	  TreeCallHook(OpenTreeEdit, info,0);
           info->edit = (TREE_EDIT *)malloc(sizeof(TREE_EDIT));
   	  if (info->edit)
 	  {

@@ -66,6 +66,9 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
   nid_to_tree_nidx(dblist, nid, info, nidx);
   if (info)
   {
+    status = TreeCallHook(GetNci,info,nid_in);
+    if (status && !(status & 1))
+      return;
     if (info->reopen)
       TreeCloseFiles(info);
     if (!info->data_file)

@@ -9,7 +9,11 @@ typedef enum
   WriteTree,
   CloseTree,
   OpenNCIFileWrite,
-  OpenDataFileWrite
+  OpenDataFileWrite,
+  GetData,
+  GetNci,
+  PutData,
+  PutNci
 }         TreeshrHookType;
 
 #endif
