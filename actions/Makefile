@@ -9,7 +9,7 @@ all : ../bin/actions \
 	../uid/actions.uid
 
 ../bin/actions : $(OBJECTS) ../bin
-	 cc -o $@ $(OBJECTS)  $(CC_IMAGE_OPTIONS) -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr -lMdsdcl $(MOTIF_LIBS) $(X11_LIBS)
+	 cc -o $@ $(OBJECTS)  $(CC_IMAGE_OPTIONS) -L../shlib -lXmdsShr $(MOTIF_LIBS) $(X11_LIBS) -lTdiShr -lTreeShr -lMdsShr $(DLD) -lm
 
 ../bin :
 	mkdir ../bin
