@@ -6,6 +6,7 @@ OBJECTS = \
 	MdsXdRoutines.o \
 	MdsCmprs.o \
 	MdsPk.o \
+	MdsCompareXd.o \
 	librtl.o
 
 libMdsShr.so : libMdsShr.a
