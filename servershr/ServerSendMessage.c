@@ -270,9 +270,10 @@ static int CreatePort(short starting_port, short *port_out)
 {
   short port;
   static struct sockaddr_in sin;
-  long sendbuf=32768,recvbuf=32768;
+  long sendbuf=6000,recvbuf=6000;
   int s;
   int status;
+  int tries = 0;
   int one = 1;
   s = socket(AF_INET, SOCK_STREAM, 0);
   if (s == INVALID_SOCKET)
@@ -302,8 +303,9 @@ static int CreatePort(short starting_port, short *port_out)
   setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&one,sizeof(int));
   sin.sin_family = AF_INET;
   sin.sin_addr.s_addr = INADDR_ANY;
-  for (port = starting_port, status = -1; (status < 0) && (port < starting_port + 500);port++)
+  for (tries=0, status = -1; (status < 0) && (tries < 500);tries++)
   {
+    port = starting_port + (random() & 0xff);
     sin.sin_port = htons(port);
     status = bind(s, (struct sockaddr *)&sin, sizeof(struct sockaddr_in));
   }
@@ -318,7 +320,7 @@ static int CreatePort(short starting_port, short *port_out)
     perror("Error from listen\n");
     return(-1);
   }
-  *port_out = port - 1;
+  *port_out = port;
   return s;
 }
 

@@ -14,6 +14,7 @@ typedef int SOCKET;
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
+#include <signal.h>
 #endif
 #include <servershr.h>
 #include "servershrp.h"
@@ -624,7 +625,9 @@ static void RemoveClient(SrvJob *job)
 static int SendReply(SrvJob *job, int replyType, int status_in, int length, char *msg)
 {
   int status = 0;
-  SOCKET sock = AttachPort(job->h.addr, (short)job->h.port);
+  SOCKET sock;
+  signal(SIGPIPE,SIG_IGN);
+  sock = AttachPort(job->h.addr, (short)job->h.port);
   if (sock >= 0)
   {
     char reply[60];
@@ -645,6 +648,7 @@ static int SendReply(SrvJob *job, int replyType, int status_in, int length, char
     if (!(status & 1))
       RemoveClient(job);
   }
+  signal(SIGPIPE,SIG_DFL);
   return status;
 }
       
