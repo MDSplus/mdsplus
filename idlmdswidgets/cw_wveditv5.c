@@ -561,8 +561,8 @@ static Boolean ConvertSelection(Widget w, Atom *selection, Atom *target, Atom *t
     {
       *type = *target;
       *value = (char *)memcpy(XtMalloc(count * sizeof(float)),x,count * sizeof(float));
-      *length = count * sizeof(float);
-      *format = 8;
+      *length = count;
+      *format = 8 * sizeof(float);
       status = 1;
     }
   }
@@ -575,8 +575,8 @@ static Boolean ConvertSelection(Widget w, Atom *selection, Atom *target, Atom *t
     {
       *type = *target;
       *value = (char *)memcpy(XtMalloc(count * sizeof(float)),y,count * sizeof(float));
-      *length = count * sizeof(float);
-      *format = 8;
+      *length = count;
+      *format = 8 * sizeof(float);
       status = 1;
     }
   }
