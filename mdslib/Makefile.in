@@ -70,8 +70,8 @@ MdsLib_client.o : MdsLib.c
 	$(CC) -o $@ $(CFLAGS) mdslib_ctest.c -L@MAKELIBDIR@ -lMdsLib $(LIBS)
 
 @MAKEBINDIR@mdslib_ftest : mdslib_ftest.f 
-	$(FC) -o $@ $(FFLAGS) mdslib_ftest.f -L@MAKELIBDIR@ -lMdsLib -lTreeShr $(LIBS)
+	$(FC) -o $@ $(FFLAGS) mdslib_ftest.f -Wl,-L@MAKELIBDIR@ -lMdsLib -lTreeShr $(LIBS)
 
 @MAKEBINDIR@mdslib_fremotetest : mdslib_fremotetest.f
-	$(FC) -o $@ $(FFLAGS) mdslib_fremotetest.f -L@MAKELIBDIR@ -lMdsLib $(LIBS)
+	$(FC) -o $@ $(FFLAGS) mdslib_fremotetest.f -Wl,-L@MAKELIBDIR@ -lMdsLib $(LIBS)
 
