@@ -53,6 +53,7 @@ T2ControlSetup.java \
 TR32Setup.java \
 TR6_3Setup.java \
 FR10Setup.java \
+OAM01Setup.java \
 RFXMOPSetup.java \
 RFXANSALDOSetup.java \
 IPC901Setup.java \
