@@ -414,10 +414,10 @@ static char *DetailProc(int full)
         {
           msglen = 4096;
           msg = (char *)malloc(4096);
-          strcpy(msg,"Waiting on:");
+          strcpy(msg,"\nWaiting on:\n");
           first = 0;
         }
-        sprintf(msg1,"\n	%s %s %s\n",path,actions[i].doing ? "in progress on" : "dispatched to",Server(server,actions[i].server));
+        sprintf(msg1,"	%s %s %s\n",path,actions[i].doing ? "in progress on" : "dispatched to",Server(server,actions[i].server));
         TreeFree(path);
         if (msglen < (strlen(msg) + strlen(msg1) + 1))
         {
