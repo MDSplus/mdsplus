@@ -1192,8 +1192,8 @@ static void ProcessMessage(Client *c, Message *message)
         int mode = mode_in & 0x3;
         int nowait = mode_in &0x8;
         DESCRIPTOR_LONG(ans_d,0);
-#if defined (_WIN32)
         offset = *(_int64 *)&(message->h.dims[2]);
+#if defined (_WIN32)
         if (mode > 0)
           status = ( (LockFile((HANDLE)_get_osfhandle(fd), (int)offset, (int)(offset >> 32), size, 0) == 0) && 
                      (GetLastError() != ERROR_LOCK_VIOLATION) ) ? TreeFAILURE : TreeSUCCESS;
