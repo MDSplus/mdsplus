@@ -1,5 +1,5 @@
 # Microsoft Developer Studio Project File - Name="javamds" - Package Owner=<4>
-# Microsoft Developer Studio Generated Build File, Format Version 5.00
+# Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Dynamic-Link Library" 0x0102
@@ -17,12 +17,12 @@ CFG=javamds - Win32 Debug
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "javamds - Win32 Release" (based on\
- "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "javamds - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "javamds - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE 
 
 # Begin Project
+# PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""
 # PROP Scc_LocalPath ""
 CPP=cl.exe
@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ../mdsshr/Release/mdsshr.lib ../treeshr/Release/Treeshr.lib ../tdishr/Release/Tdishr.lib /nologo /dll /machine:I386 /out:"../Release/javamds.dll"
+# ADD LINK32 ../mdsshr/Release/mdsshr.lib ../treeshr/Release/Treeshr.lib ../tdishr/Release/Tdishr.lib e:\jdk1.2.1\lib\jvm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386 /out:"../Release/javamds.dll"
 
 !ELSEIF  "$(CFG)" == "javamds - Win32 Debug"
 
@@ -68,8 +68,8 @@ LINK32=link.exe
 # PROP Intermediate_Dir "Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MTd /W3 /GX /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JAVAMDS_EXPORTS" /YX /FD /ZI /GZ /c
-# ADD CPP /nologo /MDd /W3 /GX /Od /I "..\include" /I "$(JDK_DIR)\include" /I "$(JDK_DIR)\include\win32" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JAVAMDS_EXPORTS" /YX /FD /ZI /GZ "D:\jdk1.2\include\win32" /c
+# ADD BASE CPP /nologo /MTd /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JAVAMDS_EXPORTS" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /GX /ZI /Od /I "..\include" /I "$(JDK_DIR)\include" /I "$(JDK_DIR)\include\win32" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JAVAMDS_EXPORTS" /YX /FD /GZ "D:\jdk1.2\include\win32" /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\mdsshr\Debug\mdsshr.lib ..\treeshr\Debug\treeshr.lib ..\tdishr\Debug\tdishr.lib /nologo /dll /debug /machine:I386 /out:"../Debug/javamds.dll" /pdbtype:sept
+# ADD LINK32 ..\mdsshr\Debug\mdsshr.lib ..\treeshr\Debug\treeshr.lib ..\tdishr\Debug\tdishr.lib e:\jdk1.2.1\lib\jvm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /out:"../Debug/javamds.dll" /pdbtype:sept
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -98,6 +98,10 @@ SOURCE=.\JavaData.c
 # Begin Source File
 
 SOURCE=.\javamds.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\javamds.def
 # End Source File
 # Begin Source File
 
