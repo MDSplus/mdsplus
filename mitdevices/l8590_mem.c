@@ -46,7 +46,7 @@ int l8590_mem___init(struct descriptor_s *niddsc_ptr, InInitStruct *setup)
   static DESCRIPTOR_NID(sclr_niddsc,&sclr_nid);
   TreeGetDefaultNid(&old_def);
   TreeSetDefaultNid(*(int *)niddsc_ptr->pointer);
-  for (ctx=0; TreeFindNodeWild("L85090_%", &sclr_nid, &ctx, 0)&1;) {
+  for (ctx=0; TreeFindNodeWild("L85090_%", &sclr_nid, &ctx, -1)&1;) {
     setup_status = l8590_sclr___get_setup(&sclr_niddsc,&sclr_setup);
     if (setup_status & 1)
     {
@@ -92,7 +92,7 @@ int l8590_mem___store(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
   latch_nid = setup->head_nid + L8590_MEM_N_LATCH;
   TreeGetDefaultNid(&old_def);
   TreeSetDefaultNid(*(int *)niddsc_ptr->pointer);
-  for (ctx=0,sclrs=0; TreeFindNodeWild("L8590_%", &sclr_nids[sclrs], &ctx, 0)&1;sclrs++) {
+  for (ctx=0,sclrs=0; TreeFindNodeWild("L8590_%", &sclr_nids[sclrs], &ctx, -1)&1;sclrs++) {
     sclr_niddsc.pointer = (char *)&sclr_nids[sclrs];
     setup_status = l8590_sclr___get_setup(&sclr_niddsc,&sclr_setup);
     if (setup_status & 1)
@@ -119,7 +119,7 @@ int l8590_mem___store(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
     int max_idx = samps_per_chan - 1;
     int i;
     int sclr;
-    pio(setup->name,19,0,0);
+    pio(setup->name,19,0,&zero);
     pio(setup->name,18,0,&zero);
     pio(setup->name,25,0,0);
     pio(setup->name,2,0,&values[0]);
