@@ -350,8 +350,8 @@ public class RFXTimesSetup extends DeviceSetup {
     "node \\\\ENABLE_PM /off\'); 1;",
         "if(_START_PV_state == 1) tcl(\'set node \\\\START_PV/on\'); else tcl(\'set " +
     "node \\\\START_PV/off\'); 1;",
-        "if(_EN_INV_TC_state == 1) tcl(\'set node \\\\EN_INV_TC/on\'); else tcl(\'set " +
-    "node \\\\EN_INV_TC /off\'); 1;",
+        "if(_START_INV_TC_state == 1) tcl(\'set node \\\\EN_INV_TC/on\'); else " +
+    "tcl(\'set node \\\\EN_INV_TC /off\'); 1;",
         "if(_CROWBAR_ON_TC_state == 1) tcl(\'set node \\\\CROWBAR_ON_TC/on\'); " +
     "else tcl(\'set node \\\\CROWBAR_ON_TC /off\'); 1;",
         "if(_CLOSE_TNSI_state == 1) tcl(\'set node \\\\CLOSE_TNSI/on\'); else " +
@@ -376,7 +376,7 @@ public class RFXTimesSetup extends DeviceSetup {
     "node \\\\START_PC /off\'); 1;",
         "if(_STOP_PV_state == 1) tcl(\'set node \\\\ENABLE_PV/on\'); else tcl(\'set " +
     "node \\\\ENABLE_PV /off\'); 1;",
-        "if(_FOR_PWM_TC_state == 1) tcl(\'set node \\\\FOR_PWM_TC/on\'); else " +
+        "if(_START_PWM_TC_state == 1) tcl(\'set node \\\\FOR_PWM_TC/on\'); else " +
     "tcl(\'set node \\\\FOR_PWM_TC /off\'); 1;",
         "if(_CLOSE_TNSR_state == 1) tcl(\'set node \\\\CLOSE_TNSR/on\'); else " +
     "tcl(\'set node \\\\CLOSE_TNSR /off\'); 1;",
@@ -404,11 +404,9 @@ public class RFXTimesSetup extends DeviceSetup {
         "if(_START_PWM_TC_state == 1) tcl(\'set node \\\\FOR_PWM_TC/on\'); else " +
     "tcl(\'set node \\\\FOR_PWM_TC /off\'); 1;"
         });
-    deviceButtons1.setCheckMessages(new String[] {"None1<NL>None2<NL>None3<NL>None4<NL>None5<NL>None6<NL>None7<NL>None8<NL>None9<NL>None0<NL>None11<NL>N" +
-    "one12<NL>None13<NL>None14<NL>None15<NL>None16<NL>None17<NL>None18<NL>None19<NL>None20<NL>None21<NL>No" +
-    "ne22<NL>None23<NL>None24<NL>None25<NL>None26<NL>None27<NL>None28<NL>None29<NL>None30<NL>None31<NL>Non" +
-    "e32<NL>None33<NL>None34<NL>None35<NL>None36<NL>None37<NL>"
-        });
+    deviceButtons1.setCheckMessages(new String[] {"Item1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9", "Item 10", "Item 11", "Item 12", "Item 13", "Item 14", "Item 15",
+        "Item 16", "Item 17", "Item 18", "Item 19", "Item 20", "Item 21", "Item 22", "Item 23", "Item 24", "Item 25", "Item 26", "Item 27", "Item 28", "Item 29",
+        "Item 30", "Item 31", "Item 32", "Item 33", "Item 34", "Item 35", "Item 36", "Item 37", "Item 38"});
     deviceField1.setOffsetNid(35);
     deviceField1.setLabelString("T_STOP_CHOP_TC");
     deviceField1.setNumCols(5);
