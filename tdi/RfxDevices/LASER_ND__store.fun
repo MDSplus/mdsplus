@@ -41,8 +41,8 @@ write(*, _port);
     _n_pulses = if_error(data(DevNodeRef(_nid, _N_NUM_PULSES)), _error = 1);
     if(_error)
     {
-	DevLogErr(_nid, "Missing number of pulses");
-	abort();
+		DevLogErr(_nid, "Missing number of pulses");
+		abort();
     }
 
 write(*, _n_pulses);
@@ -50,8 +50,8 @@ write(*, _n_pulses);
     _delay_pulse = if_error(data(DevNodeRef(_nid, _N_DELAY_PULSE)), _error = 1);
     if(_error)
     {
-	DevLogErr(_nid, "Missing delay between pulse");
-	abort();
+		DevLogErr(_nid, "Missing delay between pulse");
+		abort();
     }
 
 write(*, _delay_pulse );
@@ -59,8 +59,8 @@ write(*, _delay_pulse );
     _trig = if_error(data(DevNodeRef(_nid, _TRIG_SOURCE)),(DevLogErr(_nid, "Missing trigger source"); abort();));
     if(_error)
     {
-	DevLogErr(_nid, "Missing trigger source");
-	abort();
+		DevLogErr(_nid, "Missing trigger source");
+		abort();
     }
 
    if( ( allocated (public _laser_nd_connected) ) == 0)
@@ -82,7 +82,7 @@ write(*, _delay_pulse );
     }    
 
 
-	if(TCPSendCommand(public _sock, "ND_DUMP") == 0)
+	if((_err_msg = TCPSendCommand(public _sock, "ND_DUMP") ) != "")
 	{
 		DevLogErr(_nid, "Error during send  ND_DUMP command"); 
 		abort();
@@ -91,7 +91,7 @@ write(*, _delay_pulse );
 
 /* STORE OSC SIGNAL */
 
-	if(TCPSendCommand(public _sock, "ND_GET_OSC") == 0)
+	if((_err_msg = TCPSendCommand(public _sock, "ND_GET_OSC")) != "")
 	{
 		DevLogErr(_nid, "Error during send  ND_GET_OSC command"); 
 		abort();
@@ -114,7 +114,7 @@ write(*, _delay_pulse );
 
 /* STORE AMP SIGNAL */
 
-	if(TCPSendCommand(public _sock, "ND_GET_AMP") == 0)
+	if((_err_msg = TCPSendCommand(public _sock, "ND_GET_AMP")) != "")
 	{
 		DevLogErr(_nid, "Error during send  ND_GET_AMP command"); 
 		abort();
@@ -139,7 +139,7 @@ write(*, _delay_pulse );
 
 /* STORE TOTAL SIGNAL */
 
-	if(TCPSendCommand(public _sock, "ND_GET_TOTAL") == 0)
+	if((_err_msg = TCPSendCommand(public _sock, "ND_GET_TOTAL")) != "")
 	{
 		DevLogErr(_nid, "Error during send  ND_GET_TOTAL command"); 
 		abort();

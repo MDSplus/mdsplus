@@ -15,32 +15,41 @@ public fun LASER_ND__dump(as_is _nid, optional _method)
 
 	private _ASCII_MODE = 0
 
-    _ip = if_error(data(DevNodeRef(_nid, _N_IP_ADDRESS)),(DevLogErr(_nid, "Missing IP address"); abort();));
+   _error = 0;
 
-    _port = if_error(data(DevNodeRef(_nid, _N_PORT)),(DevLogErr(_nid, "Missing TCP Port"); abort();));
-
-	_sock = TCPOpenConnection(_ip, _port, _ASCII_MODE);
-	if(_sock == 0)
-	{
-		DevLogErr(_nid, "Cannot connect to remote instruments"); 
+    _ip = if_error(data(DevNodeRef(_nid, _N_IP_ADDRESS)), _error = 1);
+    if(_error)
+    {
+		DevLogErr(_nid, "Missing IP address"); 
 		abort();
-	}
+    }
+
+    _port = if_error(data(DevNodeRef(_nid, _N_PORT)), _error = 1);
+    if(_error)
+    {
+		DevLogErr(_nid, "Missing TCP Port");
+		abort();
+    }
+
+    if( ( public _laser_nd_connected ) == 0 )
+    {
+
+		public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE);
+		if(public _sock == 0)
+		{
+			DevLogErr(_nid, "Cannot connect to remote instruments"); 
+			abort();
+		}
+        public _laser_nd_connected = 1;
+    }    
+
 
 	if(TCPSendCommand(_sock, "ND_DUMP") == 0)
 	{
-		TCPCloseConnection(_sock);
-		DevLogErr(_nid, "Error during send ND_DUMP command "); 
+		DevLogErr(_nid, _msg); 
 		abort();
 	}
 
-	if((_msg = TCPCheckAnswer(_sock) )!= "")
-	{
-		TCPCloseConnection(_sock);
-		DevLogErr(_nid, "Error in ND_DUMP command execution : "//_msg); 
-		abort();
-	}
-
-	TCPCloseConnection(_sock);
 
 	return (1);
 

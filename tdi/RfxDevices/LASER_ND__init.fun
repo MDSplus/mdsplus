@@ -56,51 +56,50 @@ write(*, _n_pulses);
 
 write(*, _delay_pulse );
 
-   if( ( allocated (public _laser_nd_connected) ) == 0)
-   {
-
-	public _laser_nd_connected = 0;
-   }
+    if( ( allocated (public _laser_nd_connected) ) == 0)
+    {
+		public _laser_nd_connected = 0;
+    }
 
     if( ( public _laser_nd_connected ) == 0 )
     {
 
-	public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE);
-	if(public _sock == 0)
-	{
-		DevLogErr(_nid, "Cannot connect to remote instruments"); 
-		abort();
-	}
+		public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE);
+		if(public _sock == 0)
+		{
+			DevLogErr(_nid, "Cannot connect to remote instruments"); 
+			abort();
+		}
         public _laser_nd_connected = 1;
     }    
 
-	if(TCPSendCommand(public _sock, "ND_DUMP") == 0)
+	if((_err_msg = TCPSendCommand(public _sock, "ND_DUMP")) != "")
 	{
-		DevLogErr(_nid, "Error during send  ND_CHARGE command"); 
+		DevLogErr(_nid, _err_msg); 
 		abort();
 	}
 
 	wait(5);
 
-	if(TCPSendCommand(public _sock, "ND_INIT") == 0)
+	if((_err_msg = TCPSendCommand(public _sock, "ND_INIT")) != "")
 	{
-		DevLogErr(_nid, "Error during send  ND_CHARGE command"); 
+		DevLogErr(_nid, _err_msg); 
 		abort();
 	}
 
 	wait(5);
 
-	if(TCPSendCommand(public _sock, "ND_CHARGE "//trim(adjustl(_n_pulses))//" "//trim(adjustl(_delay_pulse))) == 0)
+	if((_err_msg = TCPSendCommand(public _sock, "ND_CHARGE "//trim(adjustl(_n_pulses))//" "//trim(adjustl(_delay_pulse))) ) == "")
 	{
-		DevLogErr(_nid, "Error during send  ND_CHARGE command"); 
+		DevLogErr(_nid, _err_msg); 
 		abort();
 	}
 
 	wait(60);
 
-	if(TCPSendCommand(public _sock, "ND_PULSE") == 0)
+	if((_err_msg = TCPSendCommand(public _sock, "ND_PULSE") ) != "")
 	{
-		DevLogErr(_nid, "Error during send  ND_CHARGE command"); 
+		DevLogErr(_nid, _err_msg); 
 		abort();
 	}
 /*
