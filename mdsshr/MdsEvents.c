@@ -1022,6 +1022,7 @@ int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
     pthread_cond_wait(&t.cond,&t.mutex);
     pthread_cond_destroy(&t.cond);
     pthread_mutex_destroy(&t.mutex);
+    MDSEventCan(eventid);
     return(1);
 }
 
