@@ -13,6 +13,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.7  2002/05/06 16:07:10  jgk
+ * Further adjustment suggested by Marco van de Giessen.
+ *
  * Revision 1.6  2002/04/26 14:00:35  jgk
  * Added an error reporting method, as suggested by
  * Marco van de Giessen <A.P.M.vandeGiessen@phys.uu.nl>.
@@ -181,7 +184,7 @@ public class TWUSignal
     public boolean
     error()
     { 
-	return error ;
+        return error ;
     }
 
     public void
@@ -230,7 +233,7 @@ public class TWUSignal
         catch (Exception e) 
         {
             System.out.println("TWUSignal.tryToRead :" + e);
-	    error = true ;
+            error = true ;
         }
     }
 

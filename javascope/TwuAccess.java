@@ -14,7 +14,7 @@ public class TwuAccess implements DataAccess
     public static void main(String args[])
     {
         TwuAccess access = new TwuAccess();
-        String url = "twu://ipp333.ipp.kfa-juelich.de/textor/all/86858/RT2/IVD/IBT2P-star";
+        String url = "twu://ipptwu.ipp.kfa-juelich.de/textor/all/86858/RT2/IVD/IBT2P-star";
         boolean supports = access.supports(url);
         try
         {
