@@ -1,7 +1,7 @@
 CFLAGS = -I../include -signed -g 
 MOTIF_CFLAGS = -I../include -g -D_NO_DXm
 WMD_RULE = ../bin/wmdcreate ; ../bin/wmdcreate -o ../shlib/xmdsuil.wmd
-WML = echo 
+WML = touch UilConst.h ; echo 
 SHARE_TYPE = so
 MAKE_DEPEND = cc $(CFLAGS) -M {} > .depend \;
 LD_SHARED_LIB_OPTIONS = -shared

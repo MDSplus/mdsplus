@@ -5,17 +5,18 @@ PARTS = mdsshr \
 	xmdsshr \
 	dwscope \
 	mitdevices \
-	traverser \
 	mdslibidl \
 	mdstcpip	\
 	cdu	\
 	mdsdcl	\
 	ccl	\
-	tcl
+	tcl \
+	traverser
 
 all :
 	- cdir=`pwd`; \
         for dir in $(PARTS) ; do\
+          echo Making $${dir};\
 	  if (test -d $${dir}) then \
 	    cd $${dir};\
             if (test -f $(DEPEND)) then \

@@ -3,7 +3,9 @@ include $(MAKE_OPTIONS)
 OBJECTS = \
 tditest.o
 
-../bin/tditest : $(OBJECTS) ../bin
+_tditest : ../bin/tditest ../bin
+
+../bin/tditest : $(OBJECTS)
 	cc -o $@ $(OBJECTS) $(CC_IMAGE_OPTIONS) -lc -L../shlib -lTdiShr 
 
 ../bin :
