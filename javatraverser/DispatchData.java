@@ -21,8 +21,8 @@ public class DispatchData extends CompoundData
     public final Data getCompletion() {return descs[3]; }
 
     public static final int SCHED_NONE = 0x0;
-    public static final int SCHED_ASYNCH = 0x1000000;
-    public static final int SCHED_SEQ = 0x2000000;
-    public static final int SCHED_COND = 0x3000000;
+    public static final int SCHED_ASYNCH = 1;//0x1000000;
+    public static final int SCHED_SEQ = 2;//0x2000000;
+    public static final int SCHED_COND = 3;//0x3000000;
  
 }

@@ -318,6 +318,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    JOptionPane.showMessageDialog(frame, e.getMessage(), "Error opening "+exp, JOptionPane.ERROR_MESSAGE);
 	    return;
 	}
+
+
 	top = new DefaultMutableTreeNode(top_node);
 	try {
 	    top_node.expand();
@@ -333,7 +335,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	if(is_angled_style)
 	    curr_tree.putClientProperty("JTree.lineStyle", "Angled");
 	
-	curr_tree.setEditable(true);
+	curr_tree.setEditable(false);
 	curr_tree.setCellRenderer(new TreeCellRenderer()
 	{
 	    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected,
@@ -378,7 +380,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     }
     
     
-    public void mouseClicked(MouseEvent e){}
+    public void mouseClicked(MouseEvent e)
+    {}
     public void mouseEntered(MouseEvent e){}
     public void mouseExited(MouseEvent e){}
     public void mouseReleased(MouseEvent e){}
@@ -390,7 +393,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	curr_tree_node = 
 		(DefaultMutableTreeNode)curr_tree.getClosestPathForLocation(e.getX(), e.getY()).getLastPathComponent();
 	curr_node = (Node)curr_tree_node.getUserObject();
-	if(e.isPopupTrigger())
+	//if(e.isPopupTrigger())
+	if((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 	{
 	    Point screen_origin = getLocationOnScreen();
 	    curr_origin = new Point(e.getX()+screen_origin.x, e.getY()+screen_origin.y);

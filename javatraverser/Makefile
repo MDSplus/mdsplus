@@ -5,10 +5,7 @@ JFLAGS = -g   -d ../java/classes
 CLASSES = ../java/classes/*.java
 
 
-EXPORTS = javamds.export
-
-javatraverser : ../shlib/libJavaTrav.$(SHARE_TYPE) \
-		../java ../java/classes ../java/classes/jTraverser.class 
+javatraverser : ../java ../java/classes ../java/classes/jTraverser.class 
 	@ echo javaTraverser done
 
 
@@ -50,16 +47,6 @@ clean :
 
 .depend :
 	echo no depend needed
-
-
-../shlib/libJavaTrav.$(SHARE_TYPE) :  ../shlib ../shlib/libJavaData.$(SHARE_TYPE) JavaTrav.o 
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) JavaTrav.o -L../shlib -lMdsShr -lTreeShr -lTdiShr -lJavaData -lc $(DLD)
-
-../shlib/libJavaData.$(SHARE_TYPE) : JavaData.o 
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) JavaData.o -L../shlib -lMdsShr -lTreeShr -lTdiShr -lc $(DLD)
-./shlib :
-	mkdir ../shlib
-
 
 
 

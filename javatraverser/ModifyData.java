@@ -142,6 +142,7 @@ public class ModifyData extends NodeEditor implements ActionListener
 		replace(data_edit);    
 		data_edit.setEditable(is_editable);
 	}
+
 	if(node.isOn())
 	    onoff.setText("Node is On   ");
 	else
@@ -150,8 +151,9 @@ public class ModifyData extends NodeEditor implements ActionListener
 	    frame.setTitle("Modify data of " + node.getName());
 	else
 	    frame.setTitle("Display data of " + node.getName());
+
 	tags.setText(tagList(node.getTags()));
-	
+
 	this.node = node;
     }
     
