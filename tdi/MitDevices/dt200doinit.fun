@@ -22,9 +22,9 @@ public fun Dt200DOInit(IN _board, IN _trigSrc, IN _clockSource, IN _bits, IN _ti
     /* send the bits and times out */
     _brd = char(_board+ichar('0'));
     _devname = "/dev/acq32/acq32."//_brd//".DOf"; 
-    _lun = MitDevices->FOPEN(_devicename, 'w');
-    MitDevices->FWRITE(_buf, val(4), size(_buf))), val(_lun));
-    MitDevices->FCLOSE(val(_lun));
+    _lun = MitDevicesIO->FOPEN(_devicename, 'w');
+    MitDevicesIO->FWRITE(_buf, val(4), size(_buf))), val(_lun));
+    MitDevicesIO->FCLOSE(val(_lun));
     /* return success */
   return(1);
 }

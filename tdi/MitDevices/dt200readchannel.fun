@@ -12,7 +12,7 @@ public fun Dt200Readchannel(in _board, in _channel, in _start, in _end, in _inc,
   _chn2 = char(_channel /  10 +ichar('0'));
   _devname = "/dev/acq32/acq32."//_brd//"."//_chn2//_chn1;
   _buf = zero((_end - _start + 1)/_inc, 0w);
-  _count = MitDevices->DMARead3(ref(_buf), _devname, _start, _end, _inc, _coeffs, size(_coeffs));
+  _count = MitDevicesIO->DMARead3(ref(_buf), _devname, _start, _end, _inc, _coeffs, size(_coeffs));
   if(_count != _samples) {
     write(*, "Read "//_count//" of "//_samples//" samples");
     if (_count > 0) {

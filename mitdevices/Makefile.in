@@ -91,15 +91,21 @@ UIDS = \
 @MAKEUIDDIR@U_OF_M_SPECT.uid
 
 SOURCES = \
-io.c \
 dt200.c
 
+IO_SOURCES = \
+io.c 
+
 OBJECTS = $(SOURCES:.c=.o)
+
+IO_OBJECTS = $(IO_SOURCES:.c=.o)
+
 EXPORTS = MitDevices.exports
 
 
 all :  @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ \
        @MAKESHLIBDIR@libMitDevices@SHARETYPE@ @MAKELIBDIR@libMitDevices.a \
+       @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ @MAKELIBDIR@libMitDevicesIO.a \
        @MAKEBINDIR@daq_server  $(UIDS) 
 
 
@@ -110,6 +116,7 @@ depend:
 clean:
 	@ $(RM) $(UIDS)
 	@ $(RM) $(OBJECTS)
+	@ $(RM) $(IO_OBJECTS)
 	@ $(RM) so_locations
 	@ $(RM) @MAKESHLIBDIR@libio@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libio.a
@@ -138,6 +145,13 @@ install:
 
 @MAKELIBDIR@libMitDevices.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
+	@RANLIB@ $@
+
+@MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ : $(IO_OBJECTS)
+	$(LD) -o $@ @LINKSHARED@ $(IO_OBJECTS) $(LIBS)
+
+@MAKELIBDIR@libMitDevicesIO.a : $(IO_OBJECTS)
+	$(AR) -cr $@ $(IO_OBJECTS)
 	@RANLIB@ $@
 
 @MAKELIBDIR@ :
