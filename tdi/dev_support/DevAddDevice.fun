@@ -16,8 +16,8 @@ public fun DevAddDevice(in _path, in _type, optional out _nidout)
 	return(_stat);
      }
 
+   _path = (extract(0, 1, _path) == '\\') ? '\\'//_path : _path;
   _cmd = "_stat = "//_type//'__add("'//_path//'", "'//_type//'")';
   if_error(execute(_cmd), _stat=DevAddCalledDevice(_path, _type), return(0));
-  write (*, "about to return "//_stat);
   return(_stat);
 }

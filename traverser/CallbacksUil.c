@@ -1457,9 +1457,12 @@ SetUsage( Widget w, XtPointer client_data, XtPointer call_data)
 }
 void SetDeviceType( Widget w, XtPointer client_data, XtPointer call_data)
 {
+  char *sptr, *dptr;
   XmToggleButtonCallbackStruct *cb = (XmToggleButtonCallbackStruct *)call_data;
   device_type = realloc(device_type, strlen(w->core.name)+1);
-  strcpy(device_type, w->core.name);
+  for(sptr=w->core.name, dptr=device_type; *sptr; *dptr++=tolower(*sptr++));
+  *dptr='\0';
+  /*   strcpy(device_type, w->core.name); */
 }  
 void
 CommandEntered( Widget w, XtPointer client_data, XtPointer call_data)
