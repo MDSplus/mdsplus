@@ -32,6 +32,11 @@ int  LibFindImageSymbol();
 	/****************************************************************
 	 * mdsdcl_set_command:
 	 ****************************************************************/
+
+#ifndef _tolower
+#define _tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
+#endif
+
 int   mdsdcl_set_command(		/* Return: status		*/
     struct _mdsdcl_ctrl  *ctrl		/* <m> the control structure	*/
    )
@@ -52,6 +57,13 @@ int   mdsdcl_set_command(		/* Return: status		*/
            {
             str_concat(&dsc_table,&dsc_table,"_commands",0);
             sts = LibFindImageSymbol(&dsc_table,&dsc_table,&newTable);
+            if (~sts & 1)
+	    {
+              int i;
+              for (i=0;i<dsc_table.dscW_length;i++)
+                dsc_table.dscA_pointer[i] = _tolower(dsc_table.dscA_pointer[i]);
+              sts = LibFindImageSymbol(&dsc_table,&dsc_table,&newTable);
+            }
            }
         if (~sts & 1)
             return(MdsMsg(sts,"Failed to open table %s",
