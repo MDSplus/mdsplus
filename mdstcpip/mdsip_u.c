@@ -325,8 +325,8 @@ static int BecomeUser(char *remuser, struct descriptor *user)
 }
 #else
 
- static int BecomeUser(char *remuser, struct descriptor *local_user)
- {
+static int BecomeUser(char *remuser, struct descriptor *local_user)
+{
   int ok = 1;
   CompressString(local_user,0);
   if (local_user->length)
@@ -355,7 +355,7 @@ static int BecomeUser(char *remuser, struct descriptor *user)
        }
        else
          pid = getpid();
-       if (!pid)
+       if (!pid || mode != 'I')
        {
          initgroups(pwd->pw_name,pwd->pw_gid);
          status = setgid(pwd->pw_gid);
@@ -432,7 +432,7 @@ int main(int argc, char **argv)
     if (multi)
     {
      char multistr[] = "MULTI";
-       CheckClient(0,multistr);
+     CheckClient(0,multistr);
     }
     serverSock = CreateMdsPort(port,1);
     shut = 0;
