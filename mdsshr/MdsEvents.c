@@ -561,7 +561,7 @@ static void getServerDefinition(char *env_var, char **servers, int *num_servers,
     *use_local = 0;
     while(i < strlen(envname))
     {
-	for(j = 0; i < strlen(envname) && envname[i] != ':'; i++, j++)
+	for(j = 0; i < strlen(envname) && envname[i] != ';'; i++, j++)
 	    curr_name[j] = envname[i];
 	curr_name[j] = 0;
 	i++;
