@@ -11,8 +11,9 @@ OBJECTS = \
 	MdsGet1DxA.o \
 	MdsGet1DxS.o \
         MdsGetSetShotId.o \
-	MdsXdRoutines.o \
-	MdsPk.o
+        MdsPk.o \
+        MdsSerialize.o \
+	MdsXdRoutines.o
 
 mdsshr : ../shlib ../shlib/libMdsShr.$(SHARE_TYPE)
 
