@@ -41,7 +41,7 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField3.setLabelString("Frequency (Hz): ");
 		getContentPane().add(deviceField3);
 		deviceField3.setBounds(0,108,228,40);
-		deviceChoice1.setOffsetNid(5);
+		deviceChoice1.setOffsetNid(6);
 		{
 			String[] tempString = new String[5];
 			tempString[0] = "Offset Correction";
@@ -53,10 +53,10 @@ public class T2ControlSetup extends DeviceSetup
 		}
 		deviceChoice1.setLabelString("Initial Control");
 		deviceChoice1.setConvert(true);
-		deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)5});
+		deviceChoice1.setChoiceIntValues(new int[] {});
 		getContentPane().add(deviceChoice1);
 		deviceChoice1.setBounds(12,156,276,40);
-		deviceChoice2.setOffsetNid(6);
+		deviceChoice2.setOffsetNid(7);
 		{
 			String[] tempString = new String[5];
 			tempString[0] = "Offset Correction";
@@ -68,7 +68,7 @@ public class T2ControlSetup extends DeviceSetup
 		}
 		deviceChoice2.setLabelString("Triggered Control");
 		deviceChoice2.setConvert(true);
-		deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)5});
+		deviceChoice2.setChoiceIntValues(new int[] {});
 		getContentPane().add(deviceChoice2);
 		deviceChoice2.setBounds(312,156,300,40);
 		deviceField4.setNumCols(4);
@@ -314,7 +314,7 @@ public class T2ControlSetup extends DeviceSetup
 		deviceField33.setNumCols(5);
 		deviceField33.setIdentifier("pre_time");
 		deviceField33.setOffsetNid(11);
-		deviceField33.setLabelString("Presempling time (s):");
+		deviceField33.setLabelString("Presampling time (s):");
 		getContentPane().add(deviceField33);
 		deviceField33.setBounds(204,60,204,40);
 		deviceField34.setNumCols(5);
