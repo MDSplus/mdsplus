@@ -80,6 +80,7 @@ public class Waveform extends Canvas
     String f_error = null;
     Thread play_frame;
 
+    private static boolean bug_image = true;  
 
     public Waveform(WaveSetup c, Signal s)
     {
@@ -207,13 +208,16 @@ public class Waveform extends Canvas
                         {
                         while(is_playing)
                         {
-                            for(int i = 0; i < frames.getNumFrame(); i++)
+                            for(int i = 0; i < frames.getNumFrame() && is_playing; i++)
                             {
                                 frame = i;
                                 paint(g);
+                                if(mode == MODE_POINT)                                
+                                    controller.UpdatePoints(frames.GetTime(i), Waveform.this);
                                 waitTime(100);
                             }
                         }
+                        g.dispose();
                         }catch(InterruptedException e){};
                     }
                     
@@ -321,7 +325,12 @@ public class Waveform extends Canvas
 	            }
 	            
 	            if(is_image)
-	                paint(getGraphics());
+	            {
+	                Graphics g = getGraphics();
+	                paint(g);
+	                g.dispose();
+	                controller.UpdatePoints(frames.GetFrameTime(), w);
+	            }
             }
         
             public void mouseReleased(MouseEvent e)
@@ -385,7 +394,9 @@ public class Waveform extends Canvas
 	                curr_rect = null;
 		        dragging = false;
 	            //repaint();
-                paint(getGraphics());//Cesare prova 
+	            Graphics g = getGraphics();
+                paint(g);//Cesare prova 
+                g.dispose();
             }
         });
         
@@ -910,7 +921,15 @@ public class Waveform extends Canvas
 //	            g.clipRect(0, 0, d.width, d.height);
 	        
 	        if(!print_flag)
-	        {    
+	        {   
+	            if(bug_image)
+	            {
+	                bug_image = false;
+	                off_image = createImage(1, 1);
+	                off_graphics = off_image.getGraphics();
+	                off_graphics.drawString("", 0, 0);
+	                off_graphics.dispose();
+	            }
 	            off_image = createImage(d.width, d.height);
 	            off_graphics = off_image.getGraphics();
 	        } else

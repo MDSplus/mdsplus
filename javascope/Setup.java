@@ -237,9 +237,9 @@ public class Setup extends Object implements WaveSetup {
 	    }	
     }
     
-    public void DisplayFrameLoad(int frame, int all_frames)
+    public void DisplayFrameLoad(String msg)
     {
-        main_scope.AppendStatusLabel(" [Frame "+frame+"/"+all_frames+"]" );
+        main_scope.AppendStatusLabel(" ["+msg+" ]" );
     }
     
     public WaveInterface GetSource()
@@ -325,19 +325,6 @@ public class Setup extends Object implements WaveSetup {
 		}
     }
     
-    public void StopAllPlay()
-    {
-	    for(int i = 0; i < num_waves; i++) 
-	        if(waves[i].is_image)
-	            waves[i].StopFrame();
-    }
-
-    public void StartAllPlay()
-    {
-	    for(int i = 0; i < num_waves; i++) 
-	        if(waves[i].is_image)
-	            waves[i].PlayFrame();
-	}
     
     
     public void AutoscaleAll()
@@ -785,8 +772,7 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	MenuItem setup, autoscale, autoscaleY, autoscaleAll, autoscaleAllY,
 		 allSameScale, allSameXScale, allSameXScaleAutoY, allSameYScale,
 		 resetScales, resetAllScales, refresh, saveAsText, selectWave,
-		 legend, remove_legend, remove_panel, sep1, sep2, sep3, playFrame,
-		 startAllPlay, stopAllPlay;
+		 legend, remove_legend, remove_panel, sep1, sep2, sep3, playFrame;
 	Menu signalList, markerList, colorList, markerStep;
 	CheckboxMenuItem interpolate_f;
 	SetupDataDialog sd;
@@ -866,10 +852,6 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	
 	playFrame = new MenuItem();
 	playFrame.addActionListener(this);
-	startAllPlay = new MenuItem("Start all wave image");
-	startAllPlay.addActionListener(this);
-	stopAllPlay = new MenuItem("Stop all wave image");
-	stopAllPlay.addActionListener(this);
     }
 	
 	private void SelectListItem(Menu m, int idx)
@@ -914,7 +896,9 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	private void SetMenuItem(boolean is_image)
 	{
 	   if(is_image == is_image_menu)
+	   {
 	      return;
+	   }
 	   
 	   is_image_menu = is_image;
 	   
@@ -928,8 +912,6 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
            add(colorList);	
 	       add(sep1);
 	       add(playFrame);
-	       add(startAllPlay);
-	       add(stopAllPlay);
 	       add(sep2);
 	       add(autoscale);
 	       autoscaleAll.setLabel("Autoscale all images");
@@ -951,7 +933,7 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	       add(sep2);           
 	       add(autoscale);
 	       add(autoscaleY);
-	       autoscaleAll.setLabel("Autoscale all images");
+	       autoscaleAll.setLabel("Autoscale all");
 	       add(autoscaleAll);
 	       add(autoscaleAllY);
 	       add(allSameScale);
@@ -970,17 +952,20 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	{
 	    SetMenuItem(w.wi.is_image);
 	    boolean state = (w.frames != null && w.frames.getNumFrame() != 0);
+        colorList.setEnabled(state);	
+	    if(state)
+	    {
+	        w.wi.signal_select = 0;
+            SetColorMenu();
+	        if(controller.main_scope.is_playing && !w.is_playing)
+	            state = false;
+	    }
 	    playFrame.setEnabled(state);
         if(w.is_playing)
 	         playFrame.setLabel("Stop play");
 	    else 
 	         playFrame.setLabel("Start play");
 	    
-        if(state) {
-            w.wi.signal_select = 0;
-            SetColorMenu();
-        }
-        colorList.setEnabled(state);	
 	}
 	
 	private void SetSignalMenu(MultiWaveform w)
@@ -1179,21 +1164,13 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
        
 	if(target == playFrame)
 	{
+	    controller.main_scope.is_playing = !wave.is_playing;
 	    if(wave.is_playing)
 	        wave.StopFrame();
 	    else
 	        wave.PlayFrame();
 	}
 
-	if(target == startAllPlay)
-	{
-	    controller.StartAllPlay();
-	}
-
-	if(target == stopAllPlay)
-	{
-	    controller.StopAllPlay();
-	}
 
        
     }

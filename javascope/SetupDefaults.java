@@ -370,9 +370,17 @@ public class SetupDefaults extends ScopePositionDialog {
 	    case WaveInterface.B_exp:
 	      out =  def_flag ? experiment_str : wi.cexperiment;break; 
 	    case WaveInterface.B_x_max:
-	      out  = def_flag ? xmax : wi.cin_xmax; break; 
+	        if(wi.is_image)
+	            out  = def_flag ? xmax : wi.cin_timemax;
+	        else
+	            out  = def_flag ? xmax : wi.cin_xmax; 
+	    break;	    
 	    case WaveInterface.B_x_min:
-	      out  = def_flag ? xmin : wi.cin_xmin; break; 
+	        if(wi.is_image)
+	            out  = def_flag ? xmin : wi.cin_timemin;
+	        else
+	            out  = def_flag ? xmin : wi.cin_xmin; 
+	    break; 
 	    case WaveInterface.B_x_label:
 	      out =  def_flag ? xlabel : wi.cin_xlabel;break; 
 	    case WaveInterface.B_y_max:
@@ -418,11 +426,19 @@ public class SetupDefaults extends ScopePositionDialog {
       
       bit = WaveInterface.B_x_max;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
-      wi.in_xmax       = getDefaultValue(bit , def_flag , wi);
+      if(wi.is_image) {
+        wi.in_timemax  = getDefaultValue(bit , def_flag , wi);
+        wi.in_xmax = wi.cin_xmax;
+      } else
+        wi.in_xmax = getDefaultValue(bit , def_flag , wi);
       
       bit = WaveInterface.B_x_min;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
-      wi.in_xmin       = getDefaultValue(bit , def_flag , wi);
+      if(wi.is_image) {
+        wi.in_timemin  = getDefaultValue(bit , def_flag , wi);
+        wi.in_xmin = wi.cin_xmin;
+      } else
+        wi.in_xmin = getDefaultValue(bit , def_flag , wi);
       
       bit = WaveInterface.B_x_label;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);

@@ -1228,20 +1228,34 @@ import java.util.Vector;
 		add(expand);
 		expand.setBackground(java.awt.Color.lightGray);
 		expand.setBounds(636,24,84,20);
-		label1.setText("Signal Label");
-		add(label1);
-		label1.setBounds(6,48,72,20);
+		sig_label.setText("Signal Label");
+		add(sig_label);
+		sig_label.setBounds(6,48,72,20);
 		add(signal_label);
 		signal_label.setBounds(78,48,546,20);
 		error.setLabel("Error");
 		add(error);
 		error.setBackground(java.awt.Color.lightGray);
 		error.setBounds(636,48,84,20);
+		
 		y_lab.setText("Y");
 		add(y_lab);
 		y_lab.setBounds(10,73,12,20);
 		add(y_expr);
 		y_expr.setBounds(28,72,596,20);
+
+
+		pix_y_min.setText("Pix Y min");
+		add(pix_y_min);
+		pix_y_min.setBounds(321,96,52,20);
+        pix_y_min.setVisible(false);
+
+		pix_y_max.setText("Pix Y max");
+		add(pix_y_max);
+		pix_y_max.setBounds(477,96,56,20);
+        pix_y_max.setVisible(false);
+
+
 		y_min_b.setLabel("Y min");
 		add(y_min_b);
 		y_min_b.setBounds(321,96,52,20);
@@ -1266,7 +1280,24 @@ import java.util.Vector;
 		add(x_lab);
 		x_lab.setBounds(9,121,12,20);
 		add(x_expr);
-		x_expr.setBounds(28,120,596,20);
+
+		
+		time_min_b.setLabel("t min");
+		add(time_min_b);
+		time_min_b.setBounds(321,120,52,20);
+		add(time_min);
+		time_min.setBounds(376,120,92,20);
+        time_min_b.setVisible(false);
+        time_min.setVisible(false);
+
+		time_max_b.setLabel("t max");
+		add(time_max_b);
+		time_max_b.setBounds(477,120,56,20);
+		add(time_max);
+		time_max.setBounds(532,120,92,20);
+        time_max_b.setVisible(false);
+        time_max.setVisible(false);
+		
 		x_log.setLabel("Log scale");
 		add(x_log);
 		x_log.setBounds(636,120,84,20);
@@ -1283,6 +1314,18 @@ import java.util.Vector;
 		y_label_b.setBounds(6,96,63,20);
 		add(y_label);
 		y_label.setBounds(86,96,232,20);
+		
+
+		pix_x_min.setText("Pix X min");
+		add(pix_x_min);
+		pix_x_min.setBounds(322,145,52,20);
+		pix_x_min.setVisible(false);
+
+		pix_x_max.setText("Pix X max");
+		add(pix_x_max);
+		pix_x_max.setBounds(478,144,54,20);
+		pix_x_max.setVisible(false);
+		
 		x_min_b.setLabel("X min");
 		add(x_min_b);
 		x_min_b.setBounds(322,145,52,20);
@@ -1293,6 +1336,7 @@ import java.util.Vector;
 		x_max_b.setBounds(478,144,54,20);
 		add(x_max);
 		x_max.setBounds(533,144,91,19);
+		
 		experiment_b.setLabel("Experiment");
 		add(experiment_b);
 		experiment_b.setBounds(6,168,76,20);
@@ -1360,6 +1404,10 @@ import java.util.Vector;
       x_min.addKeyListener(this);
       x_max_b.addItemListener(this);
       x_max.addKeyListener(this);
+      time_max_b.addItemListener(this);
+      time_max.addKeyListener(this);
+      time_min_b.addItemListener(this);
+      time_min.addKeyListener(this);
       experiment_b.addItemListener(this);
       experiment.addKeyListener(this);
       shot_b.addItemListener(this);      
@@ -1378,15 +1426,17 @@ import java.util.Vector;
 	java.awt.Checkbox title_b = new java.awt.Checkbox();
 	java.awt.TextField title = new java.awt.TextField();
 	java.awt.Button expand = new java.awt.Button();
-	java.awt.Label label1 = new java.awt.Label();
+	java.awt.Label sig_label = new java.awt.Label();
 	java.awt.TextField signal_label = new java.awt.TextField();
 	java.awt.Button error = new java.awt.Button();
 	java.awt.Label y_lab = new java.awt.Label();
 	java.awt.TextField y_expr = new java.awt.TextField();
 	java.awt.Checkbox y_min_b = new java.awt.Checkbox();
 	java.awt.TextField y_min = new java.awt.TextField();
+	java.awt.Label pix_y_min = new java.awt.Label();
 	java.awt.Checkbox y_max_b = new java.awt.Checkbox();
 	java.awt.TextField y_max = new java.awt.TextField();
+	java.awt.Label pix_y_max = new java.awt.Label();
 	java.awt.Checkbox image_b = new java.awt.Checkbox();
 	java.awt.Checkbox use_jai_b = new java.awt.Checkbox();
 	java.awt.Label x_lab = new java.awt.Label();
@@ -1398,9 +1448,15 @@ import java.util.Vector;
 	java.awt.Checkbox y_label_b = new java.awt.Checkbox();
 	java.awt.TextField y_label = new java.awt.TextField();
 	java.awt.Checkbox x_min_b = new java.awt.Checkbox();
+	java.awt.Checkbox time_min_b = new java.awt.Checkbox();
+	java.awt.Label pix_x_max = new java.awt.Label();
 	java.awt.TextField x_min = new java.awt.TextField();
+	java.awt.TextField time_min = new java.awt.TextField();
 	java.awt.Checkbox x_max_b = new java.awt.Checkbox();
+	java.awt.Checkbox time_max_b = new java.awt.Checkbox();
+	java.awt.Label pix_x_min = new java.awt.Label();
 	java.awt.TextField x_max = new java.awt.TextField();
+	java.awt.TextField time_max = new java.awt.TextField();
 	java.awt.Checkbox experiment_b = new java.awt.Checkbox();
 	java.awt.TextField experiment = new java.awt.TextField();
 	java.awt.Checkbox shot_b = new java.awt.Checkbox();
@@ -1448,22 +1504,49 @@ import java.util.Vector;
    private void resetDefaultFlags()
    {
     boolean state = true;
+    wi.defaults = 0xffffffff;
+    if(wi.is_image)
+        wi.defaults = wi.defaults &  ~( (1 << WaveInterface.B_y_max) + 
+                                        (1 << WaveInterface.B_y_min));
+    
+        
 	title_b.setState(state);
 	title.setEditable(!state); 
 	shot_b.setState(state); 
 	shot.setEditable(!state); 
 	experiment_b.setState(state); 
-	experiment.setEditable(!state); 
-	x_max_b.setState(state); 
-	x_max.setEditable(!state); 
-	x_min_b.setState(state); 
-	x_min.setEditable(!state); 
+	experiment.setEditable(!state);
+	if(image_b.getState())
+	{
+	    time_max_b.setState(state); 
+	    time_max.setEditable(!state); 
+	    time_min_b.setState(state); 
+	    time_min.setEditable(!state);
+
+	    y_max_b.setState(false); 
+	    y_max.setEditable(true); 
+	    y_min_b.setState(false); 
+	    y_min .setEditable(true); 
+
+	    x_max_b.setState(false); 
+	    x_max.setEditable(true); 
+	    x_min_b.setState(false); 
+	    x_min.setEditable(true);
+	
+	} else {
+
+	    y_max_b.setState(state); 
+	    y_max.setEditable(!state); 
+	    y_min_b.setState(state); 
+	    y_min .setEditable(!state); 
+
+	    x_max_b.setState(state); 
+	    x_max.setEditable(!state); 
+	    x_min_b.setState(state); 
+	    x_min.setEditable(!state);
+	}
 	x_label_b.setState(state); 
 	x_label.setEditable(!state); 
-	y_max_b.setState(state); 
-	y_max.setEditable(!state); 
-	y_min_b.setState(state); 
-	y_min .setEditable(!state); 
 	y_label_b.setState(state);  
 	y_label.setEditable(!state);
 	upd_event_b.setState(state);
@@ -1486,9 +1569,17 @@ import java.util.Vector;
 		case WaveInterface.B_exp:
 		    experiment_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
 		case WaveInterface.B_x_max:
-		    x_max_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
+		    if(image_b.getState())
+		        time_max_b.setState(((flags & (1<<i)) == 1<<i)?true:false);
+		    else        
+		        x_max_b.setState(((flags & (1<<i)) == 1<<i)?true:false);
+		break; 
 		case WaveInterface.B_x_min:
-		    x_min_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
+		    if(image_b.getState())
+		        time_min_b.setState(((flags & (1<<i)) == 1<<i)?true:false); 
+		    else
+		        x_min_b.setState(((flags & (1<<i)) == 1<<i)?true:false);
+		break; 
 		case WaveInterface.B_x_label:
 		    x_label_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
 		case WaveInterface.B_y_max:
@@ -1514,11 +1605,21 @@ import java.util.Vector;
 	if  (shot_b.getState()  )	 value |= 1<<WaveInterface.B_shot  ; 
 				    else value &= ~(1<<WaveInterface.B_shot); 
 	if  (experiment_b.getState() )	 value |= 1<<WaveInterface.B_exp ; 
-				    else value &= ~(1<<WaveInterface.B_exp); 
-	if  (x_max_b.getState() )	 value |= 1<<WaveInterface.B_x_max ; 
+				    else value &= ~(1<<WaveInterface.B_exp);
+	if(image_b.getState())
+	{
+	    if  (time_max_b.getState() )	 value |= 1<<WaveInterface.B_x_max ; 
 				    else value &= ~(1<<WaveInterface.B_x_max); 
-	if  (x_min_b.getState() )	 value |= 1<<WaveInterface.B_x_min ;
-				    else value &= ~(1<<WaveInterface.B_x_min); 
+	    if  (time_min_b.getState() )	 value |= 1<<WaveInterface.B_x_min ;
+				    else value &= ~(1<<WaveInterface.B_x_min);
+	}
+	else
+	{
+	    if  (x_max_b.getState() )	 value |= 1<<WaveInterface.B_x_max ; 
+				    else value &= ~(1<<WaveInterface.B_x_max); 
+	    if  (x_min_b.getState() )	 value |= 1<<WaveInterface.B_x_min ;
+				    else value &= ~(1<<WaveInterface.B_x_min);
+	}
 	if  (x_label_b.getState() )	 value |= 1<<WaveInterface.B_x_label ; 
 				    else value &= ~(1<<WaveInterface.B_x_label); 
 	if  (y_max_b.getState() )        value |= 1<<WaveInterface.B_y_max ; 
@@ -1541,8 +1642,20 @@ import java.util.Vector;
 	    defaultButtonOperation(title, def_flag = title_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_title, def_flag, wi));
 	    putShotValue(shot_b.getState());
 	    defaultButtonOperation(experiment, def_flag = experiment_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_exp, def_flag, wi));
-	    defaultButtonOperation(x_max, def_flag = x_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_max, def_flag, wi));
-	    defaultButtonOperation(x_min, def_flag = x_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_min, def_flag, wi));
+	    if(image_b.getState())
+	    {
+	        defaultButtonOperation(time_max, def_flag = time_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_max, def_flag, wi));
+	        if(!def_flag)
+	            time_max.setText(wi.cin_timemax);
+	        defaultButtonOperation(time_min, def_flag = time_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_min, def_flag, wi));
+	        if(!def_flag)
+	            time_min.setText(wi.cin_timemin);
+	        x_min.setText(wi.cin_xmin);
+	        x_max.setText(wi.cin_xmax);
+	    } else {
+	        defaultButtonOperation(x_max, def_flag = x_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_max, def_flag, wi));
+	        defaultButtonOperation(x_min, def_flag = x_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_min, def_flag, wi));
+	    }
 	    defaultButtonOperation(x_label, def_flag = x_label_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_label, def_flag, wi));
 	    defaultButtonOperation(y_max, def_flag = y_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_max, def_flag, wi));
 	    defaultButtonOperation(y_min, def_flag = y_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_min, def_flag, wi));
@@ -1560,6 +1673,10 @@ import java.util.Vector;
 	    return;
 	}
 
+    if(wi.is_image)
+        wi.defaults = wi.defaults &  ~( (1 << WaveInterface.B_y_max) + 
+                                        (1 << WaveInterface.B_y_min));
+
     setImageDialog(wi.is_image);
 
 	this.wi.cexperiment     = wi.cexperiment;	
@@ -1571,6 +1688,10 @@ import java.util.Vector;
 	this.wi.cin_xmin        = wi.cin_xmin;
 	this.wi.cin_ymax        = wi.cin_ymax;
 	this.wi.cin_ymin        = wi.cin_ymin;
+
+	this.wi.cin_timemin        = wi.cin_timemin;
+	this.wi.cin_timemax        = wi.cin_timemax;
+	
 	this.wi.cin_title       = wi.cin_title;
 	this.wi.cin_xlabel      = wi.cin_xlabel;
 	this.wi.cin_ylabel      = wi.cin_ylabel;
@@ -1578,12 +1699,12 @@ import java.util.Vector;
 	this.wi.legend_y        = wi.legend_y;
     this.wi.make_legend     = wi.make_legend;
     this.wi.reversed        = wi.reversed;
-    
+    image_b.setState(wi.is_image);
+    use_jai_b.setState(wi.use_jai);
+
 	setDefaultFlags(wi.defaults);
 	putDefaultValues();
 	
-    image_b.setState(wi.is_image);
-    use_jai_b.setState(wi.use_jai);
 
 //    if(!wi.is_image)
 //    {
@@ -1610,6 +1731,26 @@ import java.util.Vector;
    // eraseForm();
     if(state)
     {
+        sig_label.setVisible(false);
+        signal_label.setVisible(false);
+
+        time_min_b.setVisible(true);
+        time_min.setVisible(true);
+        time_max_b.setVisible(true);
+        time_max.setVisible(true);
+
+        
+		pix_x_max.setVisible(true);
+		pix_x_min.setVisible(true);
+		x_max_b.setVisible(false);
+		x_min_b.setVisible(false);
+
+		pix_y_max.setVisible(true);
+		pix_y_min.setVisible(true);
+		y_max_b.setVisible(false);
+		y_min_b.setVisible(false);
+
+
         x_log.setVisible(false);
         y_log.setVisible(false); 
         signalList.setVisible(false);
@@ -1621,9 +1762,28 @@ import java.util.Vector;
 		y_expr.setBounds(47,72,577,20);
 		x_lab.setText("Times");
 		x_lab.setBounds(10,121,35,20);
-		x_expr.setBounds(47,120,577,20);
+		x_expr.setBounds(47,120,271,20);
 		setSize(730,255);
     } else {
+
+        sig_label.setVisible(true);
+        signal_label.setVisible(true);
+        
+        time_min_b.setVisible(false);
+        time_min.setVisible(false);
+        time_max_b.setVisible(false);
+        time_max.setVisible(false);
+
+		pix_x_max.setVisible(false);
+		pix_x_min.setVisible(false);
+		x_max_b.setVisible(true);
+		x_min_b.setVisible(true);
+
+		pix_y_max.setVisible(false);
+		pix_y_min.setVisible(false);
+		y_max_b.setVisible(true);
+		y_min_b.setVisible(true);
+
         x_log.setVisible(true);
         y_log.setVisible(true); 
         signalList.setVisible(true);        
@@ -1652,10 +1812,14 @@ import java.util.Vector;
 	x_expr.setText("");
 	x_label.setText("");
 	x_label.setForeground(Color.black);		
+	time_max.setText("");
+	time_max.setForeground(Color.black);		
 	x_max.setText("");
 	x_max.setForeground(Color.black);		
 	x_min.setText("");
 	x_min.setForeground(Color.black);		
+	time_min.setText("");
+	time_min.setForeground(Color.black);		
 	y_expr.setText("");
 	y_max.setText("");
 	y_max.setForeground(Color.black);		
@@ -1692,6 +1856,12 @@ import java.util.Vector;
 	if(!main_scope.equalsString(title.getText(),   wave_wi.cin_title))    return true;	
 	if(!main_scope.equalsString(x_max.getText(),   wave_wi.cin_xmax))     return true;
 	if(!main_scope.equalsString(x_min.getText(),   wave_wi.cin_xmin))     return true;
+	if(image_b.getState())
+	{
+	    if(!main_scope.equalsString(time_max.getText(),   wave_wi.cin_timemax))     return true;
+	    if(!main_scope.equalsString(time_min.getText(),   wave_wi.cin_timemin))     return true;
+	}
+	
 	if(!main_scope.equalsString(x_label.getText(), wave_wi.cin_xlabel))   return true;
 	if(x_log.getState() != wave_wi.x_log)				                  return true;
 	if(!main_scope.equalsString(y_max.getText(),   wave_wi.cin_ymax))     return true;
@@ -1739,11 +1909,18 @@ import java.util.Vector;
       if(!upd_event_b.getState() && !main_scope.equalsString(upd_event.getText(),   wi.cin_upd_event))
 	    wi.cin_upd_event      = upd_event.getText();	
       if(!def_node_b.getState() && !main_scope.equalsString(def_node.getText(),   wi.cin_def_node))
-	    wi.cin_def_node       = def_node.getText();	
+	    wi.cin_def_node       = def_node.getText();
+
+      if(!time_max_b.getState() && !main_scope.equalsString(time_max.getText(),   wi.cin_timemax))
+	    wi.cin_timemax      = time_max.getText();
+      if(!time_min_b.getState() && !main_scope.equalsString(time_min.getText(),   wi.cin_timemin))
+	    wi.cin_timemin      = time_min.getText();
+	    
       if(!x_max_b.getState() && !main_scope.equalsString(x_max.getText(),   wi.cin_xmax))
 	    wi.cin_xmax      = x_max.getText();
       if(!x_min_b.getState() && !main_scope.equalsString(x_min.getText(),   wi.cin_xmin))
 	    wi.cin_xmin      = x_min.getText();
+	    
       if(!y_max_b.getState() && !main_scope.equalsString(y_max.getText(),   wi.cin_ymax))
 	    wi.cin_ymax      = y_max.getText();
       if(!y_min_b.getState() && !main_scope.equalsString(y_min.getText(),   wi.cin_ymin))
@@ -1804,6 +1981,10 @@ import java.util.Vector;
       wi.in_upd_event   = new String(upd_event.getText());
 	  wi.in_xmax        = new String(x_max.getText());
 	  wi.in_xmin        = new String(x_min.getText());
+
+	  wi.in_timemax        = new String(time_max.getText());
+	  wi.in_timemin        = new String(time_min.getText());
+	  
 	  wi.in_ymax        = new String(y_max.getText());
 	  wi.in_ymin        = new String(y_min.getText());
 	  wi.in_title       = new String(title.getText());
@@ -1992,7 +2173,8 @@ import java.util.Vector;
       
      if(ob instanceof TextField)
      {
-	    if(ob == x_max || ob == y_max || ob == x_min || ob == y_min || ob == shot)
+	    if(ob == x_max || ob == y_max || ob == x_min 
+	       || ob == y_min || ob == shot || ob == time_max || ob == time_min)
 	    {
 	        Character ch = new Character((char)key);
             if(!ch.isDigit((char)key) && 
@@ -2056,6 +2238,10 @@ import java.util.Vector;
 	    defaultButtonOperation(x_max, def_flag = x_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_max, def_flag, wi));
 	if(ob == x_min_b)
 	    defaultButtonOperation(x_min, def_flag = x_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_min, def_flag, wi));
+	if(ob == time_max_b)
+	    defaultButtonOperation(time_max, def_flag = time_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_max, def_flag, wi));
+	if(ob == time_min_b)
+	    defaultButtonOperation(time_min, def_flag = time_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_min, def_flag, wi));
 	if(ob == x_label_b)
 	    defaultButtonOperation(x_label, def_flag = x_label_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_label, def_flag, wi));
 	if(ob == y_max_b)

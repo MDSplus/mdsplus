@@ -12,14 +12,14 @@ public class WaveInterface
     public String  in_label[], in_x[], in_y[], in_up_err[], in_low_err[];
     
     // Prameter used to evaluate waveform
-    public String  in_xmin, in_xmax, in_ymax, in_ymin;
+    public String  in_xmin, in_xmax, in_ymax, in_ymin, in_timemax, in_timemin;
     public String  in_title, in_xlabel, in_ylabel;
     public String  in_def_node, in_upd_event, experiment, last_upd_event;
     public int     in_grid_mode;
     public int     height; 
 
     // Configuration parameter
-    public String cin_xmin, cin_xmax, cin_ymax, cin_ymin;
+    public String cin_xmin, cin_xmax, cin_ymax, cin_ymin, cin_timemax, cin_timemin;
     public String cin_title, cin_xlabel, cin_ylabel;
     public String cin_def_node, cin_upd_event, cexperiment;
 
@@ -38,7 +38,7 @@ public class WaveInterface
     public  String  provider;
     public  String  w_error[];
     public  Signal  signals[];
-    public  float   xmax, xmin, ymax, ymin; 
+    public  float   xmax, xmin, ymax, ymin, timemax, timemin; 
     public  String  title, xlabel, ylabel;
     private DataProvider dp;
     
@@ -157,6 +157,16 @@ public class WaveInterface
 	    in_ymax = new String(wi.in_ymax);
 	else
 	    in_ymax = null;
+	    
+	if(wi.in_timemax != null)
+	    in_timemax = new String(wi.in_timemax);
+	else
+	    in_timemax = null;
+	if(wi.in_timemin != null)
+	    in_timemin = new String(wi.in_timemin);
+	else
+	    in_timemin = null;
+
 			
 	if(wi.in_shot != null)
 	    in_shot = new String(wi.in_shot);
@@ -207,6 +217,16 @@ public class WaveInterface
 	else
 	    cin_ymax = null;
 
+	if(wi.cin_timemax != null)
+	    cin_timemax = new String(wi.cin_timemax);
+	else
+	    cin_timemax = null;
+	if(wi.cin_timemin != null)
+	    cin_timemin = new String(wi.cin_timemin);
+	else
+	    cin_timemin = null;
+
+
 	if(wi.cin_shot != null)
 	    cin_shot = new String(wi.cin_shot);
 	else
@@ -256,7 +276,8 @@ public class WaveInterface
 	dp = _dp;
 	experiment = null;
 	shots = null;
-	in_xmin = in_xmax = in_ymin = in_ymax = in_title = in_xlabel = in_ylabel = null;
+	in_xmin = in_xmax = in_ymin = in_ymax = in_title = null; 
+	in_xlabel = in_ylabel = in_timemax = in_timemin= null;
 	markers = null;
 	colors = null;
 	interpolates = null;
@@ -498,6 +519,7 @@ public class WaveInterface
 	}
 	else
 	    ymax = (!is_image) ? HUGE : -1;
+	    
   	if(in_ymin != null && (in_ymin.trim()).length() != 0)
 	{
 	    ymin = dp.GetFloat(in_ymin);
@@ -509,6 +531,34 @@ public class WaveInterface
 	}
 	else
 	    ymin = (!is_image) ? -HUGE : -1;
+
+	if(is_image)
+	{
+	    if(in_timemax != null && (in_timemax.trim()).length() != 0)
+	    {
+	        timemax = dp.GetFloat(in_timemax);
+	        if(dp.ErrorString() != null)
+	        {
+		        error = dp.ErrorString();
+		        return 0;
+	        }
+	    }
+	    else
+	        timemax = HUGE;
+
+  	    if(in_timemin != null && (in_timemin.trim()).length() != 0)
+	    {
+	        timemin = dp.GetFloat(in_timemin);
+	        if(dp.ErrorString() != null)
+	        {
+		        error = dp.ErrorString();
+		        return 0;
+	        }
+	    }
+	    else
+	        timemin =  -HUGE;
+    }
+	       
 	//Compute title, x label, y_label
 	if(in_title != null && (in_title.trim()).length() != 0)
 	{
@@ -595,7 +645,7 @@ public class WaveInterface
         
         if(is_image)
         {
-            frames = GetFrames();
+            InitializeFrames();
             if(frames != null)
                 frames.SetViewRect((int)xmin, (int)ymin, (int)xmax, (int)ymax);
             error = curr_error;
@@ -635,47 +685,10 @@ public class WaveInterface
 	    }    	    
 	}
     }
-    
-    
-    private Frames GetFrames()
+
+    private void CreateNewFramesClass()
     {
-        float f_time[];
-        int j = 0, i = 0;
-        curr_error = null;
-
-	    if(in_y[0] == null)
-	    {
-	        curr_error = "Missing Y value";
-	        return null;
-	    }
-	    
-	    if(experiment != null && experiment.trim().length() > 0)    			    		    
-	        dp.Update(experiment, shots[0]);
-	    else
-	        if(shots != null && shots.length != 0)
-	            dp.Update(null, shots[0]);
-	        else
-	            dp.Update(null, 0);
-
-	    
-	    if(in_x[0] == null || in_x[0].length() == 0)
-            f_time =  dp.GetFrameTimes(in_y[0]);
-        else
-            f_time = dp.GetFloatArray(in_x[0]);
-        
-        
-        if(f_time == null)
-        {
-	        curr_error = " Frame times not found "; 
-	        
-	        if(dp.ErrorString() != null)
-	            curr_error = curr_error +"\n"+dp.ErrorString();
-	            
-	        return null;
-        }
-
-        Frames frames;
-        
+                
         if(use_jai)
         {
             try
@@ -699,36 +712,90 @@ public class WaveInterface
             }
         } else
             frames = new Frames();
-        
-        
-        
-        Image img;
+    }
+    
+    
+    private void InitializeFrames()
+    {
+        float f_time[];
+        int j = 0, i = 0;
+        curr_error = null;
         byte buf[];
+        
+
+	    if(in_y[0] == null)
+	    {
+	        curr_error = "Missing Y value";
+	        return;
+	    }
+	    
+	    if(experiment != null && experiment.trim().length() > 0)    			    		    
+	        dp.Update(experiment, shots[0]);
+	    else
+	        if(shots != null && shots.length != 0)
+	            dp.Update(null, shots[0]);
+	        else
+	            dp.Update(null, 0);
 
         try
         {
-           for(i = 0, j = 0; j < f_time.length && j < 100; j++)
+            controller.DisplayFrameLoad("Loading single or multi frame image");
+            if( (buf = dp.GetAllFrames(in_y[0])) != null )
             {
-                controller.DisplayFrameLoad(j, f_time.length);
-                buf = dp.GetFrameAt(in_y[0], j);
-                if(buf == null)
+                CreateNewFramesClass();
+                if(!frames.AddMultiFrame(buf, controller, timemin, timemax))
                 {
-                    continue;
+	                curr_error = " Can't decode multi frame image "; 
+                    frames = null;
                 } else {
-                    frames.AddFrame(buf, f_time[j]);
-                    i++;
+                    controller.DisplayFrameLoad("Decoding frame");
+                    frames.WaitLoadFrame();
+                }
+                buf = null;
+            } 
+            else 
+            {
+	            if(in_x[0] == null || in_x[0].length() == 0)
+                    f_time =  dp.GetFrameTimes(in_y[0]);
+                else
+                    f_time = dp.GetFloatArray(in_x[0]);        
+        
+                if(f_time == null)
+                {
+	                curr_error = " Frame times not found "; 
+	        
+	                if(dp.ErrorString() != null)
+	                    curr_error = curr_error +"\n"+dp.ErrorString();
+	            
+	                return;
+                }
+                CreateNewFramesClass();
+                for(i = 0, j = 0; j < f_time.length && j < 100; j++)
+                {
+                    if(f_time[j] < timemin || f_time[j] > timemax)
+                        continue;
+                    controller.DisplayFrameLoad("Frame "+(j+1)+"/"+f_time.length);
+                    buf = dp.GetFrameAt(in_y[0], j);
+                    if(buf == null)
+                    {
+                        continue;
+                    } else {
+                        frames.AddFrame(buf, f_time[j]);
+                        i++;
+                    }
+                }
+                frames.WaitLoadFrame();
+        
+                if(i == 0 && j == 100)
+                {
+	                curr_error = " Frames not found "; 
+                    frames = null;
                 }
             }
-            frames.WaitLoadFrame();
-        } catch (Exception e) {}
-        
-        if(i == 0 && j == 100)
-        {
-	        curr_error = " Frames not found "; 
-            frames = null;
+          System.gc();
+        } catch (Exception e) {
+            curr_error = " Load Frames error "+e; 
         }
-        
-        return frames;
     }
 				    
     private Signal GetSignal(int curr_wave, float xmin, float xmax)
@@ -1040,6 +1107,11 @@ public class WaveInterface
 	    jScope.writeLine(out, prompt + "ymax: "            , cin_ymax);
 	    jScope.writeLine(out, prompt + "xmin: "            , cin_xmin);
 	    jScope.writeLine(out, prompt + "xmax: "            , cin_xmax);
+        if(is_image)
+        {
+	        jScope.writeLine(out, prompt + "time_min: "            , cin_timemin);
+	        jScope.writeLine(out, prompt + "time_max: "            , cin_timemax);
+        }
 	    jScope.writeLine(out, prompt + "title: "           , cin_title);
 	    jScope.writeLine(out, prompt + "global_defaults: " , ""+defaults);
 	
@@ -1457,6 +1529,16 @@ public class WaveInterface
 		            {
 		                cin_xmax = str.substring(len, str.length());
 		                continue;
+		            }
+                    if(str.indexOf(".time_min:") != -1)
+		            {
+		                cin_timemin = str.substring(len, str.length());
+		                continue;		
+		            }
+		            if(str.indexOf(".time_max:") != -1)
+		            {
+		                cin_timemax = str.substring(len, str.length());
+		                continue;		
 		            }
 		            if(str.indexOf(".default_node:") != -1)
 		            {

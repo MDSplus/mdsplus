@@ -139,6 +139,7 @@ class JetDataProvider implements DataProvider
     public String GetDefaultYLabel(String in_y[]){return null;}
     public float[] GetFrameTimes(String in_frame){return null;} 
     public byte[] GetFrameAt(String in_frame, int frame_idx){return null;} 
+    public byte[]  GetAllFrames(String in_frame){return null;} 
     
     
     public void SetEnvironment(String s) {}

@@ -13,9 +13,10 @@
 <blockquote>
 <center><b><font size=+3>&nbsp;jScope</font></b></center>
 </blockquote>
-jScope is a Java tool for the display of waveforms. Its concepts derive
-from the MDSPlus Scope, a poular tool for data visualization. jScope adds
-new features, such as color support and error bars.
+<img SRC="jScope.jpg" height=496 width=765>
+<p>jScope is a Java tool for the display of waveforms. Its concepts derive
+from the MDSPlus Scope, the MDSplus tool for data visualization. jScope
+adds new features, such as color support and error bars.
 <br>With jScope it is possible to define a set of panels and a set of waveforms
 is associated with each panel. Once the Waveform(s) have been displayed,
 it is possible to zoom parts of them, to move a cursor in order to get
@@ -23,97 +24,195 @@ exact coordinates, and to drag waveforms.
 <p>Following is a brief&nbsp; summary of the options currently available
 in jScope:
 <p><b>Main Menu bar</b>:
-<br>&nbsp;&nbsp;&nbsp; - <u>File</u>:
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -<i>New Window</i>: creates
-a new jScope windows
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -<i>Close</i>: closes the
-current window
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -<i>Exit</i>: quit the application
-<p>&nbsp;&nbsp;&nbsp; - <u>Pointer mode</u>: defines the current mouse
-behaviour, which can be set as follows:
-<blockquote>-<i>Point</i>: in this configuration, a crosshair is present
-on each panel, and can be moved over the waveform.&nbsp; The corresponding
-point coordinates are displayed&nbsp; on a bottom line, and crosshairs
-on the other panels are moved accordingly to the time coordinates of the
-selected crosshair. When more tha one waveform is displayed on the same
-panel, clicking the mouse near one waveform, locks the crosshair to the
-selected waveform (as indicated also by the colour of the crosshair). The
-bottom line indicates which waveform is currently selected. Clicking MB2
-mouse button when in point mode sets all the scales of the waveforms (both
-X and Y) to the scale of the selected panel.
-<p>-<i>Zoom</i>: when in Zoom mode it is possible to drag the mouse in
-order to define a zoom region. Clicking MB1 mouse button when in Zoom mode
-also enlarges the waveform, centered around the current mouse position.
-<p>-<i>Pan</i>: when in Pan mode, it is possible to drag the waveform(s)
-of the selected panel.
-<p>-<i>Copy</i>: in Copy mode, it is possible to select one panel (clicking
+<ul>
+<li>
+&nbsp;<b><u>File</u>:</b></li>
+
+<blockquote>
+<li>
+<u>New Window:</u> creates a new jScope windows</li>
+
+<li>
+<u>Close</u>: closes the current window</li>
+
+<li>
+<u>Exit:</u> quit the application</li>
+</blockquote>
+
+<li>
+&nbsp;<b><u>Pointer mode</u></b>: defines the current mouse behaviour,
+which can be set as follows:</li>
+
+<ul>
+<li>
+<u>Point:</u> in this configuration, a crosshair is present on each panel,
+and can be moved over the waveform.&nbsp; The corresponding point coordinates
+are displayed&nbsp; on a bottom line, and crosshairs on the other panels
+are moved accordingly to the time coordinates of the selected crosshair.
+When more tha one waveform is displayed on the same panel, clicking the
+mouse near one waveform, locks the crosshair to the selected waveform (as
+indicated also by the colour of the crosshair). The bottom line indicates
+which waveform is currently selected. Clicking MB2 mouse button when in
+point mode sets all the scales of the waveforms (both X and Y) to the scale
+of the selected panel.</li>
+
+<li>
+<u>Zoom</u>: when in Zoom mode it is possible to drag the mouse in order
+to define a zoom region. Clicking MB1 mouse button when in Zoom mode also
+enlarges the waveform, centered around the current mouse position.</li>
+
+<li>
+<u>Pan</u>: when in Pan mode, it is possible to drag the waveform(s) of
+the selected panel.</li>
+
+<li>
+<u>Copy</u>: in Copy mode, it is possible to select one panel (clicking
 MB1 mouse button) and copy its contents in the other panels (clicking MB2
 mouse button). Deselection is made by clicking MB2 mouse button in the
-selected panel.
-<br>&nbsp;</blockquote>
-Pointer modes are also selectable using the bottom radio boxes.
-<p>- <u>Prin</u>t:
-<blockquote>- <i>Print All</i>: prints all the waveforms.</blockquote>
-- <u>Customize</u>:
-<blockquote>- <i>Global Setting</i>: defines a subset of the waveform settings
-which is valid for all waveforms (see description of waveform settings
-below). It defines also grid configuration, such as the number the number
-of vertical and horizontal grids.
-<p>- <i>Window</i>: defines the number of panels. Panels can then be re-dimensioned
-by dragging the small handles between panels.
-<p>- <i>Font Selection</i>: defines the font to be used for labels and
-numbers in jScope
-<p>- <i>Color list</i>: defines the color palette, which is then used to
-assign colors to waveforms.
-<p>- <i>Printer</i>: to be used for printer selection. It appears only
-using JDK 1.2.
-<p>- <i>Page setup</i>: It appears only using JDK 1.2, to be used for page
-orientation and print margins.
-<p>-<i>Public variables</i>: defines the context for data access (see customization
-section for using this feature in non MDSPlus systems)
-<p>- <i>Brief erro</i>r: defines complete or reduced error reporting (MDSPlus
-version only).
-<p>-<i> Use last Saved Setting, Use Saved Setting from... </i>: retrieve
+selected panel. Pointer modes are also selectable using the bottom radio
+boxes.</li>
+</ul>
+
+<li>
+<b><u>Prin</u>t</b>:</li>
+
+<blockquote>
+<li>
+<u>Print All:</u> prints all the waveforms.</li>
+</blockquote>
+
+<li>
+&nbsp;<b><u>Customize</u></b>:</li>
+
+<blockquote>
+<li>
+<u>Global Setting</u>: defines a subset of the waveform settings which
+is valid for all waveforms (see description of waveform settings below).
+It defines also grid configuration, such as the number the number of vertical
+and horizontal grids. A toggle button will also define black or white background.</li>
+
+<li>
+<u>Window</u>: defines the number of panels. Panels can then be re-dimensioned
+by dragging the small handles between panels.</li>
+
+<li>
+<u>Printer</u>: to be used for printer selection. It appears only using
+JDK 1.2.</li>
+
+<li>
+<u>Page setup</u>: It appears only using JDK 1.2, to be used for page orientation
+and print margins.</li>
+
+<li>
+<u>Font Selection:</u> defines the font to be used for labels and numbers
+in jScope</li>
+
+<li>
+<u>Color list</u>: defines the color palette, which is then used to assign
+colors to waveforms.</li>
+
+<li>
+<u>Public variables</u>: defines the context for data access (see customization
+section for using this feature in non MDSPlus systems)</li>
+
+<li>
+<u>Brief error</u>: defines complete or reduced error reporting (MDSPlus
+version only).</li>
+
+<li>
+<u>Use last Saved Setting, Use Saved Setting from...</u><i> </i>: retrieve
 the a saved jScope configuration. jScope configurations can be saved in
 files, and reloaded at any time. The name of a configuration file can be
-defined as a command argument. e.g. java jScope &lt;configuration filename>.
-<p>- <i>Save current setting, Save current setting as</i>: save current
-configuration in a file.</blockquote>
-- <u>Autoscale</u>: used to redisplay full waveforms (e.g. after zooming
-or dragging) it is a subset of a popup menu described below.
-<blockquote>-<i>All</i>: autoscale all signals
-<p>-<i>All y</i>: autoscale only y values.</blockquote>
--<u>Network</u>: defines current connection to data.
-<blockquote>- <i>Fast network access</i>: enables data reduction over the
-network (MDSplus version only)
-<p>-<i> Servers</i>: defines data source. A server can be local or remote.
-In the latter case it is defined by its IP address. The current server
-can be defined at the command line as follows: java -Ddata.address=&lt;IP
-address> jScope. The current server is displayed in the bottom line on
-the right.
-<p>- <i>Edit server list</i>: allows to add new servers on the server list.</blockquote>
-<b>Popup Menu</b>
-<p>A popup menu is displayed clicking MB3 mouse button on a panel (except
-in Copy mode). The first item of this menu defines the contents of the
-selected panel and activates a setup form. The form defines the following
-fields:
-<blockquote>- <u>Title</u>: the title of the panel (optional)
-<br>- <u>Signal Label</u>: the string to appear in the legend associated
-with the signal. If no label is defined, the definition of the Y axis of
-the signal is displayed.
-<br>- <u>Y</u>: the y axis of the signal
-<br>- <u>Y</u> label: the label associated with y axis (optional)
-<br>- <u>X</u>: the x axis of the signal (optional, see below how jScope
-handles the case in which no x axis is specified)
-<br>- <u>X label:</u> the label associated with x axis (optional)
-<br>-<u>Xmin, Xmax, Ymin, Ymax</u>: maximum and minimum values for x and
-y axis (optional)
-<br>-<u>Experiment:</u> the name of the experiment (pulse file)
-<br>-<u>Shot</u>: the shot number
-<br>-<u>Update event:</u> the name of the event which generates an automaic
-update (MDSPlus version only)
-<br>-<u>Default node</u>: the default node in expression evaluation (MDSPlus
-version only)</blockquote>
+defined as a command argument. e.g. java jScope &lt;configuration filename>.</li>
+
+<li>
+<u>Save current setting, Save current setting as</u>: save current configuration
+in a file.</li>
+</blockquote>
+
+<li>
+<b><u>Autoscale:</u></b> used to redisplay full waveforms (e.g. after zooming
+or dragging) it is a subset of a popup menu described below.</li>
+
+<blockquote>
+<li>
+<u>All</u>: autoscale all signals</li>
+
+<li>
+<u>All y</u>: autoscale only y values.</li>
+</blockquote>
+
+<li>
+<b><u>Network</u></b>: defines current connection to data.</li>
+
+<blockquote>
+<li>
+<u>Fast network access</u>: enables data reduction over the network (MDSplus
+version only)</li>
+
+<li>
+<u>Servers</u>: defines data source. A server can be local or remote. In
+the latter case it is defined by its IP address. The current server can
+be defined at the command line as follows: java -Ddata.address=&lt;IP address>
+jScope. The current server is displayed in the bottom line on the right.</li>
+
+<li>
+<u>Edit server list</u>: allows to add new servers on the server list.</li>
+</blockquote>
+</ul>
+
+<p><br><b>Popup Menu</b>
+<br>A popup menu is displayed clicking MB3 mouse button on a panel (except
+in Copy mode) as follows:
+<br><img SRC="data_popup.jpg" height=612 width=472>
+<br>&nbsp;
+<br>&nbsp;
+<p>The first item of this menu defines the contents of the selected panel
+and activates a setup form. The form is as follows
+<br><img SRC="data_setup.jpg" height=405 width=730>
+<p>and defines the following fields:
+<blockquote>
+<ul>
+<li>
+<u>Title</u>: the title of the panel (optional)</li>
+
+<li>
+<u>Signal Label</u>: the string to appear in the legend associated with
+the signal. If no label is defined, the definition of the Y axis of the
+signal is displayed.</li>
+
+<li>
+&nbsp;<u>Y</u>: the y axis of the signal</li>
+
+<li>
+&nbsp;<u>Y</u> label: the label associated with y axis (optional)</li>
+
+<li>
+&nbsp;<u>X</u>: the x axis of the signal (optional, see below how jScope
+handles the case in which no x axis is specified)</li>
+
+<li>
+&nbsp;<u>X label:</u> the label associated with x axis (optional)</li>
+
+<li>
+<u>Xmin, Xmax, Ymin, Ymax</u>: maximum and minimum values for x and y axis
+(optional)</li>
+
+<li>
+<u>Experiment:</u> the name of the experiment (pulse file)</li>
+
+<li>
+<u>Shot</u>: the shot number</li>
+
+<li>
+<u>Update event:</u> the name of the event which generates an automaic
+update (MDSPlus version only)</li>
+
+<li>
+<u>Default node</u>: the default node in expression evaluation (MDSPlus
+version only)</li>
+</ul>
+</blockquote>
 It is possible to define a set of signals using the form: after filling
 the fields and pressing &lt;return>, the signal is added to the list. Definitions
 can be modified by selecting the signal on the list. To add a new signal
@@ -122,13 +221,12 @@ it and press &lt;del>.
 <br>Clicking the <u>expand expr</u> button, a popup window is displayed,
 which allows easier typing of long specifications of the X and Y axis.
 It is possible then to define maximum and minimum errors for displaying
-error bars, by clicking <u>button error...</u>. The other elements are
-still not implemented (browse). Most fields have a toggle button associated
-with them: when selected, the value of the corresponding field is taken
-from the global configuration (see before). For the definition of the shot
-field it is also possible to use the bottom shot field. In this case a
-set or a range of shots can be defined: a set is specified by the following
-syntax: [&lt;sho1>, ,shot2>, ...]; a range by: &lt;first_shot>:&lt;last_shot>.
+error bars, by clicking <u>button error...</u>.&nbsp; Most fields have
+a toggle button associated with them: when selected, the value of the corresponding
+field is taken from the global configuration (see before). For the definition
+of the shot field it is also possible to use the bottom shot field. In
+this case a set or a range of shots can be defined: a set is specified
+by the following syntax: [&lt;sho1>, ,shot2>, ...]; a range by: &lt;first_shot>:&lt;last_shot>.
 Once a signal has been added to the list, the corresponding color and type
 of marker can be set first selecting the signal and then using the pull-down
 menus on the right of the form.
@@ -162,56 +260,278 @@ graphical configuration without opening the Setup data source popup form.
 <p>The other items of the popup list allow rescalings of waveforms, and
 their meanings are clear from the associated label.
 <p>Finally the last item <i>Save as Text</i> writes the displayed waveforms
-points in a text file.
-<blockquote>&nbsp;</blockquote>
-</blockquote>
+points in a text file.</blockquote>
 
-<center><b><font size=+2>How to customize jScope to a non MDSplus system</font></b></center>
+<center>
+<p><br><b><font size=+2>jScope and Images</font></b></center>
+
+<p><br>
+<blockquote>It is now possible with jScope to look at sequences of frames
+(usually produced by a camera) and to correlate them with other waveforms.
+Using standard jdk, it is possible to look at gif, jpeg and multiframe
+gifs developed at CMOD. It is also possible to look at other formats by
+installing the standard java extension JAI (Java Advanced Imaging).
+<br>A jScope panel can be connected to a sequence of frames by selecting
+the is_image check box in the data setup dialog. When image mode is selected,
+the fields of the setu data dialog are changed and looks like the following:
+<br><img SRC="image_setup.jpg" height=255 width=730 align=TEXTTOP>
+<br>&nbsp;
+<p>where the fields have the following meaning
+<ul>
+<li>
+<u>Title</u>: title written above the image</li>
+
+<li>
+<u>Frames</u>: frame sequence name (the following section will explain
+how names are associated with frame sequences)</li>
+
+<li>
+<u>Times</u>: defines the time to be associated with each frame. If timing
+information is stored into the frame set (such as for CMOD multiframe gifs)
+, there is no need to fill this field. Otherwise it will refer to a vector
+of times.</li>
+
+<li>
+<u>t min, t.max</u>: defines minimum and maximum time to be considered
+in the frame sequence. NOTE: this field is very important for very large
+sequences of frames. jScope in fact discards frames whose time is outside
+the specified interval, thus freeing memory resources. The default value(as
+specified by the associated checkboxes) is taken from xmin and xmax fields
+of the global setting.</li>
+
+<li>
+<u>use JAI</u> enables the use of the JAI library. NOTE: avoid using JAI
+support for formats already supported by jdk because JAI libraries use
+more memory.</li>
+
+<li>
+<u>Y label</u>: the label associated with y axis (optional)</li>
+
+<li>
+<u>X label:</u> the label associated with x axis (optional)</li>
+
+<li>
+<u>Pix Xmin, Pix Xmax, Pix Ymin, Pix Ymax</u>: maximum and minimum values
+for the region of interest in the image(in pixel)</li>
+
+<li>
+<u>Experiment:</u> the name of the experiment (pulse file)</li>
+
+<li>
+<u>Shot</u>: the shot number</li>
+
+<li>
+<u>Update event:</u> the name of the event which generates an automaic
+update (MDSPlus version only)</li>
+
+<li>
+<u>Default node</u>: the default node in expression evaluation (MDSPlus
+version only)</li>
+</ul>
+and the checkboxes indicate wether the corresponding value is taken from
+the global setup.
+<br>Once the frame sequence has been loaded, the first frame of the sequence
+is displayed. When in zoom mode, it is possible to enlarge portions of
+the image. When in point mode, the frame sequence is synchronized with
+the other displayed waveforms. This means that moving the cursor over a
+waveform will also update the displayed frame accordingly. When in point
+mode, &lt;ctrl>MB1 click will proceede one frame further (moving in correspondence
+the cursor over the other waveforms). Conversely, &lt;shift>MB1 click will
+go back one frame.
+<br>When a panel is displaying a frame sequence, the popup menu will look
+as follows:
+<p><img SRC="frame_popup.jpg" height=438 width=522>
+<p>where some frame-specific menu items are defined as follows(the others
+have the same meaning as when looking at waveforms):
+<ul>
+<li>
+<u>Start play</u>: start frame animation. When in zoom mode, the cursor
+is moved over the other waveforms, and animation is performed in step for
+the other frame panels. During animation the item is chenged to stop play
+for stopping the animation.</li>
+
+<li>
+<u>Autoscale</u>: used to come back to the original frame width after zooming.</li>
+
+<li>
+<u>Autoscale all images</u>: the same as above, performed on all the frame
+panels.</li>
+</ul>
+
+<p><br><b><font size=+1>How to integrate frame sequences in jScope using
+MDSplus</font></b>
+<p>When using a MDSplus data server (mdsip) for getting data in jScope,
+the following TDI functions must be provided for displaying frame sequences,
+and will be invoked by jScope in the given sequence:
+<br>&nbsp;
+<ul>
+<li>
+<b>JavaGetAllFrames(in _experiment, in_frame_name, in_shot)</b> : this
+TDI function receive the experiment (string), the shot (int) and the frame
+sequence name(string) as defined in the popup dialog. This fun will return
+0 if frames are stored in separate items, thus making jScope separately
+request each frame of the request. Currently this fun will return a non
+zero value only for multiframe gif format implemented at CMOD. In this
+case, the content of the file is returned in the form of a byte array as
+it stands (it will be decoded by jScope) and the following funs are <u>not</u>
+called.</li>
+
+<li>
+<b>JavaGetFrameTimes(in _experiment, in _frame_name, in _shot):</b> this
+TDI function receives the same parameters of the above function, and will
+return an array of times, specifying the ime associated with each frame.</li>
+
+<li>
+<b>JavaGetFrameAt(in _experiment, in _frame_name, in _shot, in _frame_idx):
+</b>this
+TDI function receives in addition the index of the required frame in the
+frame sequence. It will be called by jScope as many times as the dimension
+of the time vector returned by JavaGetFrameTimes, and will provide the
+selected image (frame) as it stands in the form of a byte array.</li>
+</ul>
+</blockquote>
+<b><font size=+1>The property file of jScope</font></b>
+<br>When started, jScope looks for the jScope.properties file. This file
+allows user configuration of jScope and may look as follows:
+<p><font size=-2>jScope.directory=E:\\</font>
+<br><font size=-2>jScope.default_server=Demo server</font>
+<br><font size=-2>jScope.data_server_1=Jet data</font>
+<br><font size=-2>jScope.data_server_2=Ftu data:192.107.51.30</font>
+<br><font size=-2>jScope.data_server_3=150.178.3.47</font>
+<br><font size=-2>jScope.data_server_4=150.178.3.80</font>
+<br><font size=-2>jScope.data_server_5=150.178.3.80:8000</font>
+<br><font size=-2>jScope.data_server_6=pdigi1.igi.pd.cnr.it:8000</font>
+<p><font size=-2>jScope.reversed=false</font>
+<br><font size=-2>jScope.grid_mode=Dotted</font>
+<br><font size=-2>jScope.x_grid=5</font>
+<br><font size=-2>jScope.y_grid=5</font>
+<p><font size=-2>jScope.item_color_0=Blak,java.awt.Color[r=0,g=0,b=0]</font>
+<br><font size=-2>jScope.item_color_1=Blue,java.awt.Color[r=0,g=0,b=255]</font>
+<br><font size=-2>jScope.item_color_2=Cyan,java.awt.Color[r=0,g=255,b=255]</font>
+<br><font size=-2>jScope.item_color_3=DarkGray,java.awt.Color[r=64,g=64,b=64]</font>
+<br><font size=-2>jScope.item_color_4=Gray,java.awt.Color[r=128,g=128,b=128]</font>
+<br><font size=-2>jScope.item_color_5=Green,java.awt.Color[r=0,g=255,b=0]</font>
+<br><font size=-2>jScope.item_color_6=LightGray,java.awt.Color[r=192,g=192,b=192]</font>
+<br><font size=-2>jScope.item_color_7=Magenta,java.awt.Color[r=255,g=0,b=255]</font>
+<br><font size=-2>jScope.item_color_8=Orange,java.awt.Color[r=255,g=200,b=0]</font>
+<br><font size=-2>jScope.item_color_9=Pink,java.awt.Color[r=255,g=175,b=175]</font>
+<br><font size=-2>jScope.item_color_10=Red,java.awt.Color[r=255,g=0,b=0]</font>
+<br><font size=-2>jScope.item_color_11=Yellow,java.awt.Color[r=255,g=255,b=0]</font>
+<br>&nbsp;
+<br>&nbsp;
+<ul>
+<li>
+<b>jScope.directory</b>&nbsp; defines the default directory for storing
+and retrieving configurations.</li>
+
+<li>
+<b>jScope.default_server</b> defines the data server at startup.</li>
+
+<li>
+<b>jScope.data_server_n</b>&nbsp; defines the data nth data server displayed
+in the server list.</li>
+
+<li>
+<b>jScope.reversed</b>, if true, defines black background.</li>
+
+<li>
+<b>jScope.grid_mode</b> defines the grid selection.</li>
+
+<li>
+<b>jScope.x_grid</b> defines the tentative number of x labels.</li>
+
+<li>
+<b>jScope.y_grid</b> defines the tentative number of y labels.</li>
+
+<li>
+<b>jScope.item_color_n</b> defines the nth color in the color palette.</li>
+</ul>
+
+<center>
+<p><b><font size=+2>How to customize jScope to a non MDSplus system</font></b></center>
 
 <p>Using jScope in another system requires the implementation of two classes<i>
 LocalProvider</i>, used to access local data, and <i>NetworkProvider</i>,
 used to access remote data, both implementing the <i>DataProvider</i> interface.
 <p><i>DataProvider</i> defines the following methods, which must be implemented
 by both classes:
-<p><i>public void SetEnvironment(String s)</i>&nbsp; defines the environment
+<br>&nbsp;
+<ul>
+<li>
+<b><i>public void SetEnvironment(String s)</i></b>&nbsp; defines the environment
 for data retirieval: the argument is a String which defines &lt;name value>
 pairs, which is defined by the customize-global variables menu bar item.
 In MDSplus, for example, it is used to set global variables which can then
 be used in expression evaluation, i.e. when retrieving signals. If the
-system does not support anything similar, the&nbsp; simply returns.
-<p><i>public void Update(String experiment, int shot)</i> called before
-each signal readout to define the current experiment and shot.
-<p><i>public String GetString(String in): </i>called when a string (i.e.
-a title of a panel, or a X/Y label) needs to be evalueted. If no evaluation
-is required, simply return the argument.
-<p><i>public float GetFloat(String in)</i>: called when a single floating
+system does not support anything similar, the&nbsp; simply returns.</li>
+
+<li>
+<b><i>public void Update(String experiment, int shot)</i></b> called before
+each signal readout to define the current experiment and shot.</li>
+
+<li>
+<i><b>public String GetString(String in)</b>: </i>called when a string
+(i.e. a title of a panel, or a X/Y label) needs to be evalueted. If no
+evaluation is required, simply return the argument.</li>
+
+<li>
+<b><i>public float GetFloat(String in)</i></b>: called when a single floating
 point value is required. It is used to evaluate X/Y min/max values when
 defined in the setup form. If no particular evaluation is required, simply
-return <i>new Float(in).floatValue()</i>.
-<p><i>public float[] GetFloatArray(String in)</i>: called each time a signal
-must be read. The argument is the specification given in Y field of the
-setup form. Its interpretation is left to this method.
-<p><i>public int[] GetIntArray(String in)</i>: called to evaluate shot
+return <i>new Float(in).floatValue()</i>.</li>
+
+<li>
+<b><i>public float[] GetFloatArray(String in)</i></b>: called each time
+a signal must be read. The argument is the specification given in Y field
+of the setup form. Its interpretation is left to this method.</li>
+
+<li>
+<b><i>public int[] GetIntArray(String in)</i></b>: called to evaluate shot
 number(s). The argument to be evaluated is the content of the bottom <i>shot</i>
-field, possibly defining an array of shot numbers.
-<p><i>public String GetXSpecification(String in)</i>: called when data
+field, possibly defining an array of shot numbers.</li>
+
+<li>
+<b><i>public String GetXSpecification(String in)</i>:</b> called when data
 must be retrieved, but no specification of the X axis is given. Most systems,
 in fact provide some method for evaluating x axis, based on the specification
 of the signal. The returned string is then passed to <i>GetFloatArray</i>
-to retrieve x values.
-<p><i>public String ErrorString()</i>: if <i>GetFloatArray</i> returns
+to retrieve x values.</li>
+
+<li>
+<b><i>public String ErrorString()</i></b>: if <i>GetFloatArray</i> returns
 null, jScope assumes that an error occurred in data retrievel, and calls
 <i>ErrorString</i>
 to get the description of the error, in order to display it on a popup
-window.
-<p><i>public String GetDefaultTitle(String in_y[])</i>
-<br><i>public String GetDefaultXLabel(String in_y[])</i>
-<br><i>public String GetDefaultYLabel(String in_y[])</i>
-<br>These methods are called when fields title, x label and y label, repectively,
-are left empty. The argument is&nbsp; the content of the y value field.
-If no default label is defined, these methods return null.
-<p>The following methods refer to more specialized tasks, currently supported
-by MDSplus. Implement them as follows:
+window.</li>
+
+<li>
+<b><i>public String GetDefaultTitle(String in_y[])</i></b></li>
+
+<li>
+<b><i>public String GetDefaultXLabel(String in_y[])</i></b></li>
+
+<li>
+<b><i>public String GetDefaultYLabel(String in_y[]) </i></b>:these methods
+are called when fields title, x label and y label, repectively, are left
+empty. The argument is&nbsp; the content of the y value field. If no default
+label is defined, these methods return null.</li>
+
+<li>
+<b><i>public byte[] GetAllFrames(String frame_name)</i></b> called first
+when a frame sequence is requested. Returns null if frames are stored individually.
+Currently only CMOD multiframe gifs are supported.</li>
+
+<li>
+<b><i>public float[]GetFrameTimes(String frame_name)</i></b> return the
+array of times associated with the specified frame sequence.</li>
+
+<li>
+<b><i>public byte[] GetFrameAt(String frame_name, int idx) </i></b>return
+the frame at index idx. The content of the file is passed as a byre array.</li>
+</ul>
+
+<p><br>The following methods refer to more specialized tasks, currently
+supported by MDSplus. Implement them as follows:
 <p>public boolean SupportsAsynch() { return false; }
 <br>public void addMdsEventListener(MdsEventListener l, String event){}
 <br>public void removeMdsEventListener(MdsEventListener l, String event){}
@@ -224,8 +544,9 @@ argument, i.e. the IP address of the associated server. Class NetworkProvider
 will handle the required protocol with the remote data server.
 <br>&nbsp;
 <br>&nbsp;
-<p>For further information, contact me at the following e-mail address:&nbsp;
-manduchi@igi.pd.cnr.it
+<p>For further information, contact me at the following e-mail address:<a href="mailto:manduchi@igi.pd.cnr.it">
+
+<i>manduchi@igi.pd.cnr.it</i></a>
 <br>&nbsp;
 <br>&nbsp;
 <blockquote>&nbsp;</blockquote>

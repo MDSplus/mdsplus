@@ -13,6 +13,7 @@ interface DataProvider {
     public String GetDefaultTitle(String in_y[]);
     public String GetDefaultXLabel(String in_y[]);
     public String GetDefaultYLabel(String in_y[]);
+    public byte[] GetAllFrames(String in_frame);     
     public float[] GetFrameTimes(String in_frame); 
     public byte[]  GetFrameAt(String in_frame, int frame_idx); 
     }	    

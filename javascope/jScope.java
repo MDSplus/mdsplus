@@ -92,6 +92,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   URLDialog         url_diag;
   ResourceBundle    rb = null;
   String            default_server=DEFAULT_SERVER;
+  boolean           is_playing = false;
 
   class PrintThread extends Thread {
     public void run()
@@ -114,9 +115,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   class UpdateWaves extends Thread {
   
     boolean and_print;
-  
-      
-    
+
     synchronized public void run()
     {
          
@@ -127,6 +126,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
             wait();
         } catch (InterruptedException e){}
 
+        
 	    isUpdateAllWaves = true;
 	    SetStatusLabel("");
 	    apply_b.setLabel("Abort");
@@ -156,8 +156,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 		    {
 		        if(setup.waves[k].wi != null)
 		        {
-			        setup.waves[k].wi.StartEvaluate();
 			        SetStatusLabel("Start Evaluate column " + (i + 1) + " row " + (j + 1));
+			        setup.waves[k].wi.StartEvaluate();
 		        }
 		    }
 	    }
@@ -175,9 +175,9 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 			        {
 			            if(setup.waves[k].wi != null && setup.waves[k].wi.num_waves != 0 && setup.waves[k].wi.UseDefaultShot())
 			            {
-				            setup.waves[k].wi.EvaluateShot(main_shots[l]);			
 				            SetStatusLabel("Update signal column " + (i + 1) + " row " + (j + 1) + " main shot " + 
 											main_shots[l]);										    
+				            setup.waves[k].wi.EvaluateShot(main_shots[l]);			
 				        }
 			        }
 			    } 
@@ -192,8 +192,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 		    {
                 if(setup.waves[k].wi != null && setup.waves[k].wi.num_waves != 0)
                 {
+			        SetStatusLabel("Evaluate wave column " + (i + 1) + " row " + (j + 1));
 			        setup.waves[k].wi.EvaluateOthers();
-			        SetStatusLabel("Evaluate Other column " + (i + 1) + " row " + (j + 1));
 		        }		    
 		    }
 	    }	    
@@ -224,8 +224,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    {
 	        jScope.this.printAllWaves();
 	    }
-	    	    
 
+	    	    
 	    } catch(Throwable e ) {
 	        isUpdateAllWaves = false;      
  	        apply_b.setLabel("Apply");
@@ -233,6 +233,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 		    SetStatusLabel("Error during apply "+e);	        
     	    jScope.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	    }    
+        System.gc();
       }
     }     
      
@@ -836,7 +837,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    } catch (Throwable e) {	        
 	        w.SetMode(wave_mode);
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-	        SetStatusLabel("Unrecoverable error during applies");	    
+	        SetStatusLabel("Error during apply: "+e);	    
 	    }
     }
   
@@ -1003,7 +1004,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
   public void resetDrawPanel(int in_row[])
   {
-    setup.StopAllPlay();
+//    setup.StopAllPlay();
 	setup.ChangeRowColumn(in_row);
 //	draw_pan.removeAll();
 	draw_pan.createWavePanel(db);
@@ -2119,7 +2120,6 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
   public static void main(String[] args)
   {
-    
     String file = null;      
     jScope win = new jScope(100, 100, false, null);
     win.pack();

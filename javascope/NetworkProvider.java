@@ -98,6 +98,18 @@ private String GetExperimentName(String in_frame)
     return exp;
 }
 
+public byte[] GetAllFrames(String in_frame)
+{
+    String exp = GetExperimentName(in_frame);
+        
+//    String in = "*GetFrameAt(\""+ exp +"\",\" "+ in_frame +"\","+shot + ", " + "0 )";
+    String in = "JavaGetAllFrames(\""+ exp +"\",\" "+ in_frame +"\","+shot +  " )";
+//    if(!CheckOpen())
+//	    return null;
+    Descriptor desc = mds.MdsValue(in);
+    return GetByteArray(desc);
+}
+
 public float[]  GetFrameTimes(String in_frame)
 {
     String exp = GetExperimentName(in_frame);
@@ -113,7 +125,7 @@ public float[]  GetFrameTimes(String in_frame)
 	    case desc.DTYPE_LONG: 
 	        float[] out_data = new float[desc.int_data.length];
 	        for(int i = 0; i < desc.int_data.length; i++)
-		    out_data[i] = (float)desc.int_data[i];
+		        out_data[i] = (float)desc.int_data[i];
 	    return out_data;
 	    case desc.DTYPE_BYTE:
 	        error = "Cannot convert byte array to float array";
@@ -131,9 +143,15 @@ public byte[] GetFrameAt(String in_frame, int frame_idx)
     String exp = GetExperimentName(in_frame);
         
     String in = "JavaGetFrameAt(\""+ exp +"\",\" "+ in_frame +"\","+shot + ", " + frame_idx + " )";
+    
 //    if(!CheckOpen())
 //	    return null;
     Descriptor desc = mds.MdsValue(in);
+    return GetByteArray(desc);
+}
+
+private byte[] GetByteArray(Descriptor desc)
+{
     switch(desc.dtype)  {
 	    case desc.DTYPE_FLOAT:
 	    case desc.DTYPE_LONG: 
@@ -146,7 +164,7 @@ public byte[] GetFrameAt(String in_frame, int frame_idx)
 	    return null;
     }	
     return null;
-} 
+}
 
 public synchronized String ErrorString() { return error; }
 
@@ -524,6 +542,7 @@ class PMET extends Thread //Process Mds Event Thread
 	    }
 	} catch(IOException e) { out.error = new String("Could not get IO for "+provider + e);}
       catch (InterruptedException e) {out.error = new String("Could not get IO for "+provider + e);}  
+    message.body = null;
 	return out;
     }		
     	    

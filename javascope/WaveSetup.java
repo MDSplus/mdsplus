@@ -10,5 +10,6 @@ interface WaveSetup {
 	public void SetSourceCopy(Waveform source_w);
 	public void Refresh(Waveform w, String label);
 	public WaveInterface GetSource();
-    public void DisplayFrameLoad(int frame, int all_frames);
+    public void DisplayFrameLoad(String msg);
+    public void UpdatePoints(double x, Waveform curr_w);   
 }

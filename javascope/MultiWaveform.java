@@ -78,6 +78,8 @@ waveforms.
         super.is_image = wi.is_image;
         super.frames = wi.frames;
 
+        System.gc();
+
 	    if(wi.signals != null)
 	    {
 	        for(int i = 0; i < wi.signals.length; i++)

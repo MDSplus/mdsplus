@@ -108,14 +108,14 @@ class DemoProvider implements DataProvider
         String in , ext;
         
         in = in_expr.substring(0, in_expr.indexOf("."));
-        ext = in_expr.substring(in_expr.indexOf(".") + 1, in_expr.length());
+        ext = in_expr.substring(in_expr.indexOf("."), in_expr.length());
         
-        for(int i = 0; i < 30; i++)
+        for(int i = 0; i < 100; i++)
         {
                 if(i < 10)
-                    n = in + "_00" +(i) +"."+ ext;
+                    n = in + "_00" +(i) + ext;
                 else
-                    n = in + "_00" +(i) +"."+ ext;
+                    n = in + "_0" +(i) + ext;
             f = new File(n);
             if(f.exists())
                 cnt++;
@@ -125,12 +125,13 @@ class DemoProvider implements DataProvider
         {
             out = new float[cnt];
             for(int i = 1 ; i < out.length; i++)
-                out[i] += out[i-1] + 0.2;
+                out[i] += out[i-1] + 1;
         }
         
         return out;
     }
     
+    public byte[]  GetAllFrames(String in_frame){return null;} 
     
     public byte[] GetFrameAt(String in_expr, int frame_idx)
     {
@@ -144,37 +145,23 @@ class DemoProvider implements DataProvider
         String in , ext;
         
         in = in_expr.substring(0, in_expr.indexOf("."));
-        ext = in_expr.substring(in_expr.indexOf(".")+1, in_expr.length());
+        ext = in_expr.substring(in_expr.indexOf("."), in_expr.length());
                 
                 
                 if(i < 10)
-                    n = in + "_00" +(i) +"."+ ext;
+                    n = in + "_00" +(i) + ext;
                 else
-                    n = in + "_00" +(i) +"."+ ext;
+                    n = in + "_0" +(i) + ext;
                 
                 
                 File f = new File(n);
-/*                
-                if(f.isDirectory())
-                {
-                   l = f.list();
-                }
 
-                if(l == null)
-                    return null;
-                    
-            for(int i = 0; i < 10 && i < l.length; i++)
-            {
-                n = in + l[i];
-
-                f = new File(n);
-*/
                 if(f.exists())
                 {
                     System.out.println("Esiste "+n);
-                    try
+                   try
                     {
-                        FileInputStream bin = new FileInputStream(n);
+                         FileInputStream bin = new FileInputStream(n);
                     
                         size  = f.length();
                         buf = new byte[(int)size];

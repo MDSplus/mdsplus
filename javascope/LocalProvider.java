@@ -16,6 +16,7 @@ public class LocalProvider implements DataProvider {
     public String GetDefaultTitle(String in_y[]){return null;}
     public String GetDefaultXLabel(String in_y[]){return null;}
     public String GetDefaultYLabel(String in_y[]){return null;}
+    public byte[]  GetAllFrames(String in_frame){return null;} 
     public float[]  GetFrameTimes(String in_frame){return null;} 
     public byte[] GetFrameAt(String in_frame, int frame_idx){return null;} 
     }	    
