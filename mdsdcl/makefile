@@ -35,8 +35,8 @@ libMdsdcl.a:	$(OBJFILES)
 		-lMdsShr  -lTreeShr  -lTdiShr  -lcurses -lc
 
 ../bin/mdsdcl:	mdsdcl.o  ../shlib/libMdsdcl.$(SHARE_TYPE)
-	$(CC) $(CFLAGS) -o $@ $(LFLAGS) mdsdcl.o -lMdsdcl		\
-		$(MDSPLUS)/cdu/libCdu.a
+	$(CC) $(CFLAGS) -o $@ $(LFLAGS) mdsdcl.o	\
+		-lMdsdcl -lMdsShr  $(MDSPLUS)/cdu/libCdu.a
 
 .depend:
 	touch .depend
