@@ -274,6 +274,16 @@ dnl          -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable
        LINKSHARED="";
        FEXECLIBDIR="-L";
        SHARETYPE="";;
+*qnx*) CFLAGS="$CFLAGS -fpic";
+       LDSHARE="-Wl,-Bdynamic ";
+       LDARC="-Wl,-Bstatic ";
+       LD_LDSHARE="-Bdynamic ";
+       LD_LDARC="-Bstatic ";
+       LINKSHARED="-shared ";
+       LIBPATH="LD_LIBRARY_PATH";
+       FOR_LDFLAGS="";
+       FEXECLIBDIR="-L";
+       SHARETYPE=".so";;
 *)     CFLAGS="$CFLAGS";
        FFLAGS="$FFLAGS";
        FOR_LDFLAGS="";
