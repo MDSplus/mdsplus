@@ -48,7 +48,23 @@ class jScopeWavePopup extends MultiWavePopup {
 	        {
 	            public void actionPerformed(ActionEvent e)
 	            {
-	                ((WaveformManager)jScopeWavePopup.this.parent).removePanel(wave);
+	                Object[] options = {"Yes",
+                                        "No"};
+                    int opt = JOptionPane.showOptionDialog(null,
+                            "Are you sure you want to remove this wave panel?",
+                            "Warning",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options,
+                            options[1]);
+	                switch(opt)
+	                {
+		                case JOptionPane.YES_OPTION :
+		                    ((WaveformManager)jScopeWavePopup.this.parent).removePanel(wave);;
+		                break;
+	                }
+	                
 	            }
 	        }
 	    );

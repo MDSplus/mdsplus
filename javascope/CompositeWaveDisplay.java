@@ -478,9 +478,18 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
   
     public void print(Graphics g)
     {
-        Dimension dim = new Dimension();
-        Dimension applet_size = getSize();
         
+        Dimension dim = getSize();
+        /*
+        System.out.println(g);
+        PrintGraphics pg = (PrintGraphics)g;
+        PrintJob pj = pg.getPrintJob();
+        System.out.println(pj); 
+        System.out.println("Size "+pj.getPageDimension()+ " resolution " + pj.getPageResolution());
+        */
+        /*
+        Dimension dim = new Dimension();       
+        Dimension applet_size = getSize();
         if(print_scaling != 100)
         {
 	        System.out.println("Proporzionale " + this.getBounds());
@@ -491,8 +500,8 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 	        dim.width = 530;
 	        dim.height = 816;
         }
-
-	    wave_container.PrintAll(g, 0, 0, dim.width, dim.height); 
+        */
+	    wave_container.PrintAll(g, 0, 0, dim.height-1, dim.width-1); 
     }
     
 }

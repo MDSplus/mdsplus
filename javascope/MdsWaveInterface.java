@@ -188,7 +188,8 @@ class MdsWaveInterface extends WaveInterface {
      if(error == null)
      {
         UpdateDefault();
-        dp.SetDefaultNid(in_def_node);
+        if(in_def_node != null)
+            dp.SetEnvironment("__default_node = " + " "+in_def_node);
      } else {
         signals = null;
      }
@@ -259,7 +260,6 @@ class MdsWaveInterface extends WaveInterface {
 	    x_log = wi.x_log;
 	    y_log = wi.y_log;
 	    is_image = wi.is_image;
-	    use_jai = wi.use_jai;
 	    keep_ratio = wi.keep_ratio;
 	    vertical_flip = wi.vertical_flip;
 	    horizontal_flip = wi.horizontal_flip;	
@@ -469,7 +469,7 @@ class MdsWaveInterface extends WaveInterface {
     }
     
    
-    public String getErrorString(boolean brief_error)
+    public String getErrorString()//boolean brief_error)
     {
        String full_error = null;
        
@@ -483,7 +483,11 @@ class MdsWaveInterface extends WaveInterface {
 	        String e;
 	        
 	        if(isAddSignal())
-	            i = w_error.length - 1;
+	        {
+	            //Return error only for added signals
+	            i = this.num_waves - this.num_shot;
+	            if(i < 0) i = 0;
+	        }
 	        else
 	            i = 0;
 	        
@@ -517,6 +521,14 @@ class MdsWaveInterface extends WaveInterface {
 		        }
 		    }
         }
+        
+        if(full_error == null && error != null)
+            if(brief_error && error.indexOf("\n") != -1)
+                full_error = error.substring(0, error.indexOf("\n"));
+            else
+                full_error = error;
+            
+            
         return full_error;
     }
     
@@ -596,7 +608,7 @@ class MdsWaveInterface extends WaveInterface {
 	    }
     }
 
-    public void AddEvent(NetworkListener w) throws IOException
+    public void AddEvent(UpdateEventListener w) throws IOException
     {
         int bit = MdsWaveInterface.B_event;
         boolean def_flag = ((defaults & (1<<bit)) == 1<<bit);      
@@ -607,36 +619,36 @@ class MdsWaveInterface extends WaveInterface {
         }
     }
 
-    public void RemoveEvent(NetworkListener w)  throws IOException
+    public void RemoveEvent(UpdateEventListener w)  throws IOException
     {
         if(in_upd_event != null)
         {
-            dp.removeNetworkListener(w, in_upd_event);
+            dp.RemoveUpdateEventListener(w, in_upd_event);
             in_upd_event = null;
         }
     }
 
-    public void RemoveEvent(NetworkListener w, String event)  throws IOException
+    public void RemoveEvent(UpdateEventListener w, String event)  throws IOException
     {
-        dp.removeNetworkListener(w, event);
+        dp.RemoveUpdateEventListener(w, event);
     }
    
-    public void AddEvent(NetworkListener w, String event) throws IOException
+    public void AddEvent(UpdateEventListener w, String event) throws IOException
     {   
         
        if( in_upd_event != null && in_upd_event.length() != 0)
        {
             if(event == null || event.length() == 0)
             {
-                dp.removeNetworkListener(w, in_upd_event);
+                dp.RemoveUpdateEventListener(w, in_upd_event);
                 in_upd_event = null;
             } 
             else 
             {
                 if(!in_upd_event.equals(event))
                 {
-                    dp.removeNetworkListener(w, in_upd_event);
-                    dp.addNetworkListener(w, event);
+                    dp.RemoveUpdateEventListener(w, in_upd_event);
+                    dp.AddUpdateEventListener(w, event);
                     in_upd_event = event;
                 }
             }
@@ -644,7 +656,7 @@ class MdsWaveInterface extends WaveInterface {
             if(event != null && event.length() != 0) 
             { 
 
-                dp.addNetworkListener(w, event);
+                dp.AddUpdateEventListener(w, event);
                 in_upd_event = event;
             }
     }
@@ -676,7 +688,6 @@ class MdsWaveInterface extends WaveInterface {
 	        }
 	    } else {
 	       WaveInterface.WriteLine(out,prompt + "is_image: "          , ""+is_image);
-	       WaveInterface.WriteLine(out,prompt + "use_jai: "           , ""+use_jai);
 	       WaveInterface.WriteLine(out,prompt + "keep_ratio: "        , ""+keep_ratio);
 	       WaveInterface.WriteLine(out,prompt + "horizontal_flip: "   , ""+horizontal_flip);
 	       WaveInterface.WriteLine(out,prompt + "vertical_flip: "     , ""+vertical_flip);
@@ -792,9 +803,6 @@ class MdsWaveInterface extends WaveInterface {
             if(prop != null)
  		        is_image = new Boolean(prop).booleanValue();;		
     		        
-            prop = pr.getProperty(prompt+".use_jai");
-            if(prop != null)
- 		        use_jai = new Boolean(prop).booleanValue();;		
 
             prop = pr.getProperty(prompt+".keep_ratio");
             if(prop != null)

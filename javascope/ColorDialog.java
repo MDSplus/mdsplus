@@ -41,7 +41,7 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
     {
 
         super(dw, title, true);
-	    setResizable(false);
+	    //setResizable(false);
 	    //super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
 
 	    main_scope = (jScope_1)dw;

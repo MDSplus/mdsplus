@@ -2,6 +2,7 @@ import java.util.Properties;
 
 public class jScope
 {
+    static final String VERSION = "jScope (version 6.0)";
     static public boolean is_debug = false;
     
     static boolean IsNewJVMVersion()

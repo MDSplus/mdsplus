@@ -58,7 +58,7 @@ public class RdaAccess implements DataAccess
             jp.setEvaluateUrl(true);
             //jp.setUrlSource(protocol+"://"+addr+"/");
             jp.setUrlSource("http://"+addr+"/");
-            if(!jp.checkPasswd(encoded_credentials))
+            if(!jp.CheckPasswd(encoded_credentials))
                 throw(new IOException("Invalid autentication"));
             
             ip_addr = addr;
@@ -102,14 +102,22 @@ public class RdaAccess implements DataAccess
         signal = setProvider(url);
         if(signal == null) return null;
         System.out.println(signal);
-        return jp.GetFloatArray(jp.GetXSpecification(signal));
+        return jp.GetWaveData(signal).GetXData();
     }
-    
+
     public float [] getY(String url) throws IOException
     {
         signal = setProvider(url);
         if(signal == null) return null;
-        return jp.GetFloatArray(signal);
+        System.out.println(signal);
+        return jp.GetWaveData(signal).GetYData();
+    }
+    
+    public float [] getData(String url) throws IOException
+    {
+        signal = setProvider(url);
+        if(signal == null) return null;
+        return jp.GetWaveData(signal).GetFloatData();
     }
     
     private SignalInfo parseSignal(String s)
@@ -151,41 +159,43 @@ public class RdaAccess implements DataAccess
         
         if(sig_info.type == Signal.TYPE_1D)
         {
-            float y[] = jp.GetFloatArray(sig_info.signal);
-            float x[] = jp.GetFloatArray(jp.GetXSpecification(sig_info.signal));
-            float x_data[] = jp.GetFloatArray(jp.GetXDataSpecification(sig_info.signal));
+            WaveData wd = jp.GetWaveData(sig_info.signal);
+            float data[] = wd.GetFloatData();
+            float x[] = wd.GetXData();
+            float y[] = wd.GetYData();
             
-            if(x == null || y == null)
+            if(x == null || data == null)
                 return null;
 
-            if(x_data == null || x_data.length == 0)
-                s = new Signal(x, y);
+            if(y == null || y.length == 0)
+                s = new Signal(x, data);
             else
-                if(x_data.length > 1)
-                    s = new Signal(y, x_data, x, Signal.MODE_YTIME, Float.NaN);
+                if(y.length > 1)
+                    s = new Signal(data, y, x, Signal.MODE_YTIME, Float.NaN);
                 else
                 {
-                    s = new Signal(x, y);
-                    s.setXData(x_data[0]);
+                    s = new Signal(x, data);
+                    s.setXData(y[0]);
                 }
         }
         
         if(sig_info.type == Signal.TYPE_2D)
         {
 
-            float y[] = jp.GetFloatArray(sig_info.signal);
-            float time[] = jp.GetFloatArray(jp.GetXSpecification(sig_info.signal));
-            float x_data[] = jp.GetFloatArray(jp.GetXDataSpecification(sig_info.signal));
+            WaveData wd = jp.GetWaveData(sig_info.signal);
+            float data[] = wd.GetFloatData();
+            float x[] = wd.GetXData();
+            float y[] = wd.GetYData();
             
-            if(y == null || time == null || x_data == null)
+            if(y == null || data == null || x == null)
                 return null;
             
-            if(x_data.length > 1)
-                s = new Signal(y, x_data, time, sig_info.mode, sig_info.value); 
+            if(y.length > 1)
+                s = new Signal(data, y, x, sig_info.mode, sig_info.value); 
             else
             {
-                s = new Signal(time, y);
-                s.setXData(x_data[0]);
+                s = new Signal(x, data);
+                s.setXData(y[0]);
             }
         }        
         
@@ -195,7 +205,7 @@ public class RdaAccess implements DataAccess
     public String getError()
     {   
         if(jp == null)
-            return("Cannot create NetworkProvider");
+            return("Cannot create JetDataProvider");
         return jp.ErrorString();
     }
 

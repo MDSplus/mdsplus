@@ -15,7 +15,7 @@ class jScopeWaveContainer_2 extends jScopeWaveContainer implements Printable
         super(rows, dp, def_vals);
     }
  
-    protected jScopeMultiWave buildjScopeMultiWave(DataProvider dp, jScopeDefaultValues def_vals)
+    protected jScopeMultiWave BuildjScopeMultiWave(DataProvider dp, jScopeDefaultValues def_vals)
     {
         return new jScopeMultiWave_2(dp, def_vals);
     }
@@ -24,7 +24,7 @@ class jScopeWaveContainer_2 extends jScopeWaveContainer implements Printable
     {
         try
         {
-            initMdsWaveInterface();
+            InitMdsWaveInterface();
             UpdateAllWave();
             PrintAllWaves(prnJob, pf);
         } catch (InterruptedException e){}

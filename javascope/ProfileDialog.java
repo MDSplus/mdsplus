@@ -13,10 +13,10 @@ public class ProfileDialog extends JDialog
     private String name;
     private jScopeMultiWave source_profile = null;
     
-    ProfileDialog(jScopeMultiWave source_profile)
+    ProfileDialog(JFrame parent, jScopeMultiWave source_profile)
     {
+        super(parent, "Profile Dialog");
         this.source_profile = source_profile;
-        setTitle("Profile Dialog");
         profile_container = new WaveformContainer(row, false);
         WavePopup wp = new WavePopup();
         profile_container.setPopupMenu(wp);

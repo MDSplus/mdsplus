@@ -47,6 +47,7 @@ public class WaveInterface
     float wave_xmin, wave_xmax;
     int wave_timestamp;
     AsynchUpdater du;
+    ContinuousUpdater cu;
     boolean request_pending;
     float orig_xmin, orig_xmax;
     protected boolean evaluated[];
@@ -55,16 +56,23 @@ public class WaveInterface
 //    static int MAX_POINTS = 1000;
    
     protected boolean is_image = false;
-    boolean use_jai = false;
     boolean keep_ratio = true;
     boolean horizontal_flip = false;
     boolean vertical_flip = false;
     int     signal_select = -1;
     Frames  frames;
+    
+    protected boolean is_async_update = false;
+    
     static public boolean auto_color_on_expr = false;
     
     //True when a signal is added
     protected boolean  add_signal = false;
+    protected boolean  is_signal_added = false;
+    
+    static boolean cache_enabled = false;
+    static SignalCache sc = null;
+    static boolean brief_error = true;
     
         
     public WaveInterface()
@@ -112,12 +120,28 @@ public class WaveInterface
         xlabel = null; 
         ylabel = null;
         is_image = false;
-        use_jai = false;
         keep_ratio = true;
         horizontal_flip = false;
         vertical_flip = false;
         frames = null;
         show_legend = false;
+    }
+
+    static public void EnableCache(boolean state)
+    {
+        if(state && sc == null)
+            sc = new SignalCache();
+        cache_enabled = state;
+    }
+    
+    static public boolean IsCacheEnabled()
+    {
+        return cache_enabled;
+    }
+
+    static public void FreeCache()
+    {
+        sc.freeCache();
     }
     
     static void WriteLine(PrintWriter out, String prompt, String value)
@@ -148,7 +172,6 @@ public class WaveInterface
 	    String  y_new = new String();
 	    int     new_pos = 0, old_pos = 0;
 	
-	   // s = TrimString(s);
 	    while((new_pos = s.indexOf("|||", old_pos)) != -1)
 	    {
 	        y_new = y_new.concat(s.substring(old_pos, new_pos));
@@ -180,8 +203,10 @@ public class WaveInterface
     private void CreateWaveInterface(DataProvider dp)
     {
         this.wave = wave;
-	    full_flag = true;
+        
 	    this.dp = dp;
+        if(dp == null)
+	        full_flag = true;
 	    experiment = null;
 	    shots = null;
 	    in_xmin = in_xmax = in_ymin = in_ymax = in_title = null; 
@@ -201,6 +226,8 @@ public class WaveInterface
 		error = null;
 		curr_error = null;
 		w_error = null;
+		signals = null;
+		modified = true;
     }
 
     public DataProvider getDataProvider()
@@ -247,7 +274,25 @@ public class WaveInterface
 	    else
 	        return str;
     }
+    
+    public int GetNumEvaluatedSignal()
+    {
+        if(signals == null) return 0;
+        int i, n = 0;
+        for(i=0; i < signals.length; i++)
+            if(signals[i] != null) n++;
+        return n;
+    }
+    
+    public boolean IsSignalAdded(){return is_signal_added;}
+    public void SetIsSignalAdded(boolean is_signal_added){this.is_signal_added = is_signal_added;}
 
+
+    public  String getErrorTitle()
+    {
+        return getErrorTitle(brief_error);
+    }
+    
     public  String getErrorTitle(boolean brief)
     {
         int n_error = 0;
@@ -342,8 +387,15 @@ public class WaveInterface
         if(num_waves != 0)
         {
             for(int i = 0; i < num_waves; i++)
+            {
                 if(s.equals(in_y[i]))
-                    return false;
+                {
+                    if(evaluated != null && evaluated[i])
+                        return true;
+                    else
+                        return false;
+                }
+            }
             new_num_waves = num_waves + (num_shot != 0 ? num_shot : 1);
             expr_idx = (new_num_waves/(num_shot != 0 ? num_shot : 1)) - 1;
         } else 
@@ -409,7 +461,7 @@ public class WaveInterface
 	        
 	        new_interpolates[i] = true;
 	        new_evaluated[i] = false;
-	        if(shots != null && shots.length != 0)
+	        if(shots != null && shots.length != 0 && num_shot > 0)
 	            new_shots[i] = shots[(i - num_shot> 0) ? (i - num_shot) : 0];
         }
 
@@ -676,7 +728,7 @@ public class WaveInterface
 	        }
 	    }    
 	    else
-	        title = dp.GetDefaultTitle(in_y);
+	        title = dp.GetWaveData(in_y[0]).GetTitle();
 	    
 	    if(in_xlabel != null && (in_xlabel.trim()).length() != 0)
 	    {
@@ -688,7 +740,7 @@ public class WaveInterface
 	        }
 	    }	
 	    else
-	        xlabel = dp.GetDefaultXLabel(in_y);
+	        xlabel = dp.GetWaveData(in_y[0], in_x[0]).GetXLabel();
 	    
 	    if(in_ylabel != null && (in_ylabel.trim()).length() != 0)
 	    {
@@ -700,7 +752,7 @@ public class WaveInterface
 	        }
 	    }	
 	    else
-	        ylabel = dp.GetDefaultYLabel(in_y);
+	        ylabel = dp.GetWaveData(in_y[0]).GetYLabel();
       
       
 	    return 1;
@@ -724,7 +776,7 @@ public class WaveInterface
 	        {
 	            w_error[curr_wave] = null;
 		        evaluated[curr_wave] = true;
-		        signals[curr_wave] = GetSignal(curr_wave, (float)-1E8, (float)1E8);
+		        signals[curr_wave] = GetSignal(curr_wave, -HUGE, HUGE);
 		        if(signals[curr_wave] == null)
 		        {
 		            w_error[curr_wave] = curr_error;
@@ -769,7 +821,7 @@ public class WaveInterface
 	        {
 	            w_error[curr_wave] = null;    
 		        evaluated[curr_wave] = true;
-		        signals[curr_wave] = GetSignal(curr_wave, (float)-1E8, (float)1E8);
+		        signals[curr_wave] = GetSignal(curr_wave, (float)-HUGE, (float)HUGE);
 		        if(signals[curr_wave] == null)
 		        {
 	                w_error[curr_wave] = curr_error;
@@ -787,10 +839,10 @@ public class WaveInterface
 	    modified = false;
     }
 
-    private void CreateNewFramesClass()
+    private void CreateNewFramesClass(int image_type) throws IOException
     {
                 
-        if(use_jai)
+        if(image_type == FrameData.JAI_IMAGE)
         {
             try
             {
@@ -799,8 +851,7 @@ public class WaveInterface
             } 
             catch (Exception e)
             {
-                frames = new Frames();
-                use_jai = false;
+                throw(new IOException("Java Advanced Imaging must be installed to show this type of image"));
             }
         } else
             frames = new Frames();
@@ -822,87 +873,32 @@ public class WaveInterface
 	        return;
 	    }
 	    
-	    //if(experiment != null && experiment.trim().length() > 0)    			    		    
-	    //    dp.Update(experiment, shots[0]);
-	    //else
-	        if(shots != null && shots.length != 0)
-	            dp.Update(experiment, shots[0]);
-	            //dp.Update(null, shots[0]);
-	        else
-	            dp.Update(null, 0);
+	    if(shots != null && shots.length != 0)
+	        dp.Update(experiment, shots[0]);
+	    else
+	        dp.Update(null, 0);
 
         try
         {
             we = new WaveformEvent(wave, "Loading single or multi frame image");
             wave.dispatchWaveformEvent(we);
-            if( (buf = dp.GetAllFrames(in_y[0])) != null )
+            FrameData fd = dp.GetFrameData(in_y[0], in_x[0], timemin, timemax);            
+            if(fd != null)
             {
-                CreateNewFramesClass();
+                CreateNewFramesClass(fd.GetFrameType());
                 frames.setHorizontalFlip(horizontal_flip);
-                frames.setVerticalFlip(vertical_flip);                
-                if(!frames.AddMultiFrame(buf, timemin, timemax))
-                {
-	                curr_error = " Can't decode multi frame image "; 
-                    frames = null;
-                } else {
-                    we = new WaveformEvent(wave, "Decoding frame");
-                    wave.dispatchWaveformEvent(we);
-                    frames.WaitLoadFrame();
-                }
-                buf = null;
-            } 
-            else 
-            {
-                String mframe_error = dp.ErrorString();
-
- 	            if(in_x[0] == null || in_x[0].length() == 0)
-                    f_time =  dp.GetFrameTimes(in_y[0]);
+                frames.setVerticalFlip(vertical_flip);
+                frames.SetFrameData(fd);
+                if(in_label != null && in_label[0] != null && in_label[0].length() != 0)
+                    frames.setName(in_label[0]);
                 else
-                    f_time = dp.GetFloatArray(in_x[0]);        
-        
-                if(f_time == null)
-                {
-                    if(mframe_error != null)
-                        curr_error = " Pulse file or image file not found\nRead on pulse file error\n"+mframe_error+"\nFrame times read error";
-                    else
-	                    curr_error = " Image file not found "; 
-	        
-	                if(dp.ErrorString() != null)
-	                    curr_error = curr_error +"\n"+dp.ErrorString();
-	            
-	                return;
-                }
-                CreateNewFramesClass();
-                frames.setHorizontalFlip(horizontal_flip);
-                frames.setVerticalFlip(vertical_flip);                
-                for(i = 0, j = 0; j < f_time.length; j++)
-                {
-                    if(f_time[j] < timemin || f_time[j] > timemax)
-                        continue;
-                    we = new WaveformEvent(wave, "Loading frame "+(j+1)+"/"+f_time.length);
-                    wave.dispatchWaveformEvent(we);
-                    buf = dp.GetFrameAt(in_y[0], j);
-                    if(buf == null)
-                    {
-                        continue;
-                    } else {
-                        frames.AddFrame(buf, f_time[j]);
-                        i++;
-                    }
-                }
-                frames.WaitLoadFrame();
-        
-                if(i == 0)
-                {
-	                curr_error = " Frames not found "; 
-                    frames = null;
-                }
-            }
-            if(frames != null)
-                frames.setName(in_y[0]);
-//            System.gc();
+                    frames.setName(in_y[0]);              
+            } else
+                curr_error = dp.ErrorString();            
+            frames.WaitLoadFrame();
         } catch (Exception e) {
-            curr_error = " Load Frames error "+e; 
+            frames = null;
+            curr_error = " Load Frames error " + e.getMessage(); 
         }
     }
     
@@ -920,8 +916,7 @@ public class WaveInterface
 	    if(in_shots == null || in_shots.trim().length() == 0)
 	        return int_data;
 	
-//	    dp.Update(null, 0);
-	    int_data = dp.GetIntArray(in_shots);
+	    int_data = dp.GetShots(in_shots);
 	    if( int_data == null || int_data.length == 0 || int_data.length > MAX_NUM_SHOT)
 	    {
 	        if(int_data != null && int_data.length > MAX_NUM_SHOT)
@@ -937,194 +932,317 @@ public class WaveInterface
    }
 
     private Signal GetSignal(int curr_wave, float xmin, float xmax) throws IOException
-    {			    
+    {
+	    Signal out_signal = null;
+	    
+	    if(in_y[curr_wave] == null)
+	    {
+	        curr_error = "Missing Y value";
+	        return null;
+	    }
 		
-//	    String limits = "FLOAT("+new Float(xmin).toString()+"), " +		    		    
-//	                        "FLOAT("+new Float(xmax).toString()+")";
-	                        
-	    //if(experiment != null && experiment.trim().length() > 0)    			    		    
-	    //    dp.Update(experiment, shots[curr_wave]);
-	    //else
-	        if(shots != null && shots.length != 0)
-	            dp.Update(experiment, shots[curr_wave]);
-	            //dp.Update(null, shots[curr_wave]);
+		if(cache_enabled && full_flag && !is_async_update)
+		{
+		    out_signal = GetSignalFromCache(curr_wave, xmin, xmax);      
+		}
+		
+		if(out_signal == null)
+		{
+		    out_signal = GetSignalFromProvider(curr_wave, xmin, xmax);
+	        if(!(full_flag || 
+	             wave_signals == null || 
+	             wave_signals.length <= curr_wave || 
+	             wave_signals[curr_wave] == null))
+	        {
+    	        // In this case GetSignal is called only
+    	        // to inflate the signal and therefore
+    	        // limits must not be changed
+    	        return out_signal;
+	        }
+		}
+		
+		if(out_signal != null)
+    	{
+	        if(xmin != -HUGE)
+	            out_signal.xmin = out_signal.saved_xmin = xmin;
+	        if(xmax != HUGE)
+	            out_signal.xmax = out_signal.saved_xmax = xmax;    
+        
+	        if(in_ymax != null && (in_ymax.trim()).length() != 0)
+	            out_signal.ymax = out_signal.saved_ymax = ymax;
+	        if(out_signal.xmin > out_signal.xmax)
+	            out_signal.xmin = out_signal.xmax;
+	        if(in_ymin != null && (in_ymin.trim()).length() != 0)
+	            out_signal.ymin = out_signal.saved_ymin = ymin;
+	        if(out_signal.ymin > out_signal.ymax)
+	            out_signal.ymin = out_signal.ymax;       
+        	
+    	    out_signal.setFullLoad(full_flag);
+        }
+        
+        return out_signal;
+    }
+    
+    private Signal GetSignalFromCache(int curr_wave, float xmin, float xmax) throws IOException
+    {
+	    float curr_data[] = null, curr_x[] = null, up_err[] = null,
+	          low_err[] = null;
+	    int x_samples = 0, min_len, sh = 0;
+	    WaveData wd;
+	    Signal out_signal = null;
+	    DataCacheObject cd;
+        String expr;
+        
+        expr = in_y[curr_wave];
+        if(in_up_err[curr_wave] != null)
+            expr = expr+in_up_err[curr_wave];
+            
+        if(in_low_err[curr_wave] != null)
+            expr = expr+in_low_err[curr_wave];
+        
+        if(shots != null && shots.length != 0)
+            sh = shots[curr_wave];
+ 
+        cd = (DataCacheObject)sc.getCacheData(provider, expr, experiment, sh);
+        if(cd != null)
+        {
+            
+            WaveformEvent we = new WaveformEvent(wave, WaveformEvent.CACHE_DATA, "Cache");
+            wave.dispatchWaveformEvent(we);
+            
+            title = cd.title;
+            xlabel = cd.x_label;
+            ylabel = cd.y_label;
+            up_err = cd.up_err;
+            low_err = cd.low_err;
+            curr_data = cd.data;
+            curr_x = cd.x;
+            if(curr_x == null || curr_data == null)
+                return null;
+                
+	        if(curr_data.length < curr_x.length)
+		        min_len = curr_data.length;
 	        else
-	            dp.Update(null, 0);
+		        min_len = curr_x.length;
+                          
+            if(cd.dimension == 2)
+            {
+                float[] curr_y = cd.y;
+	            out_signal = new Signal(curr_data, curr_y, curr_x, Signal.MODE_YTIME);
+            } else
+    	        out_signal = new Signal(curr_x, curr_data, min_len);
+            
+	        out_signal.up_error = up_err;
+            out_signal.low_error = low_err;
+            if(up_err != null)
+    	        out_signal.error = true;
+            if(up_err != null && low_err != null)
+    	        out_signal.asym_error = true;
+            
+        }
+        
+        
+        return out_signal;
+    }
+    
+    private Signal GetSignalFromProvider(int curr_wave, float xmin, float xmax) throws IOException
+    {
+	    float curr_data[] = null, curr_x[] = null, curr_y[] = null, up_err[] = null,
+	          low_err[] = null;
+	    int x_samples = 0, min_len;
+	    WaveData wd;
+	    int dimension;
+	    Signal out_signal;
+
+ 	    if(shots != null && shots.length != 0)
+	        dp.Update(experiment, shots[curr_wave]);
+	    else
+	        dp.Update(null, 0);
 	    
 	    if(dp.ErrorString() != null)
 	    {
 	        error = dp.ErrorString();
 	        return null;
 	    }
-	
-	    if(in_y[curr_wave] == null)
-	    {
-	        curr_error = "Missing Y value";
-	        return null;
-	    }
-	    float curr_y[] = null, curr_x[] = null, up_err[] = null,
-	        low_err[] = null, expanded_x[] = null;
-	    int x_samples = 0;
-	
-	    if(in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0)
-	    {
-		    curr_y = dp.GetFloatArray(in_y[curr_wave]);
-	
-	        if(curr_y != null && curr_y.length > 1 && in_up_err != null && 
-		        in_up_err[curr_wave] != null && (in_up_err[curr_wave].trim()).length() != 0)
-	        {
-		        up_err = dp.GetFloatArray(in_up_err[curr_wave]);
-		        if(up_err == null || up_err.length <= 1)
-			        curr_y = null;			
-	        }
-	        if(curr_y != null && in_low_err != null && 
-		        in_low_err[curr_wave] != null && (in_low_err[curr_wave].trim()).length() != 0)
-	        {
-		        low_err = dp.GetFloatArray(in_low_err[curr_wave]);
-		        if(low_err == null || low_err.length <= 1)
-			        curr_y = null;			
-	        }
-	        if(curr_y != null) 
-	        {
-		        curr_x = dp.GetFloatArray(in_x[curr_wave]);
-		        if(curr_x == null || curr_x.length <= 1)
-			        curr_y = null;
-	        }
-	    }
-	    else // Campo X non definito
-	    {
-	        if(full_flag)
-		        curr_y = dp.GetFloatArray(in_y[curr_wave]);
-	        else
-		        curr_y = dp.GetFloatArray(in_y[curr_wave], in_y[curr_wave], xmin, xmax);
-	        
-//		        curr_y = dp.GetFloatArray("JavaResample("+ "FLOAT("+in_y[curr_wave]+ "), "+
-//		                    "FLOAT(DIM_OF("+in_y[curr_wave]+")), "+ limits + ")");
-		
-		
-	        if(curr_y != null && curr_y.length > 1 && in_up_err != null && in_up_err[curr_wave] != null 
-		        && (in_up_err[curr_wave].trim()).length() != 0)
-	        {
-		        if(full_flag)
-		            up_err = dp.GetFloatArray(in_up_err[curr_wave]);
-		        else
-		            up_err = dp.GetFloatArray(in_up_err[curr_wave], in_y[curr_wave], xmin, xmax);
-//		            up_err = dp.GetFloatArray("JavaResample(FLOAT("+ in_up_err[curr_wave]+ "), DIM_OF(FLOAT("+
-//			    in_y[curr_wave] + ")), "+limits +")");
-		        if(up_err == null || up_err.length <= 1)
-		            curr_y = null;
 	    
-	        }				
-	        if(curr_y != null && in_low_err != null && 
-		        in_low_err[curr_wave] != null && (in_low_err[curr_wave].trim()).length() != 0)
-	        {
-		        if(full_flag)
-		            low_err = dp.GetFloatArray(in_low_err[curr_wave]);
-		        else
-		            low_err = dp.GetFloatArray(in_low_err[curr_wave], in_y[curr_wave], xmin, xmax);
-//		            low_err = dp.GetFloatArray("JavaResample(FLOAT("+in_low_err[curr_wave] +
-//			            "), DIM_OF(FLOAT("+ in_y[curr_wave] + ")),"+ limits + ")");
-			
-		        if(low_err == null || low_err.length <= 1)
-		            curr_y = null;
-	        }				
-		
-	        if(curr_y != null)
-	        {
-		        if(full_flag)
-		            curr_x = dp.GetFloatArray(dp.GetXSpecification(in_y[curr_wave]));
-		        else
-		        {
-		 //           if(dp instanceof NetworkProvider)
-		 //               curr_x = dp.GetFloatArray("DIM_OF("+ in_y[curr_wave]+ ")", ""+curr_y.length, xmin, xmax );
-		 //           else
-		                curr_x = dp.GetFloatArray(dp.GetXSpecification(in_y[curr_wave]), ""+curr_y.length, xmin, xmax );
-		            /*
-		            curr_x = dp.GetFloatArray("JavaDim(FLOAT(DIM_OF("+ in_y[curr_wave]+ 
-			                                    ")), "+ limits + ")"); 
-		            if(curr_x != null && curr_x.length > 1)
-		            {   
-			            expanded_x = new float[curr_y.length];
-			            x_samples = ExpandTimes(curr_x, expanded_x);
-			            curr_x = expanded_x;
-		            }
-		            */
-		            x_samples = curr_x.length;
-		        }
-		        if(curr_x == null)
-		            curr_y = null;
-	        }
-	    }
-	    if(curr_x == null || curr_y == null)
+	    dimension = dp.GetWaveData(in_y[curr_wave]).GetNumDimension();
+	    if(dp.ErrorString() != null)
 	    {
 	        curr_error = dp.ErrorString();
 	        return null;
 	    }
-	    int min_len;
+	    
+	    if(dimension > 2)
+	    {
+	        curr_error = "Can't display signal with more than two dimensions";
+	        return null;
+	    }
+	    
+	    if(in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0)
+	    {
+	        wd = dp.GetWaveData(in_y[curr_wave], in_x[curr_wave]);
+		    curr_data = wd.GetFloatData();
+	
+	        if(curr_data != null && curr_data.length > 1 && in_up_err != null && 
+		        in_up_err[curr_wave] != null && (in_up_err[curr_wave].trim()).length() != 0)
+	        {
+		        up_err = dp.GetWaveData(in_up_err[curr_wave]).GetFloatData();
+		        if(up_err == null || up_err.length <= 1)
+			        curr_data = null;			
+	        }
+	        
+	        if(curr_data != null && in_low_err != null && 
+		        in_low_err[curr_wave] != null && (in_low_err[curr_wave].trim()).length() != 0)
+	        {
+		        low_err = dp.GetWaveData(in_low_err[curr_wave]).GetFloatData();
+		        if(low_err == null || low_err.length <= 1)
+			        curr_data = null;			
+	        }
+	        
+	        if(curr_data != null) 
+	        {
+		        curr_x = wd.GetXData();
+		        if(curr_x == null || curr_x.length <= 1)
+			        curr_data = null;
+	        }
+	    }
+	    else // Campo X non definito
+	    {
+	        if(full_flag || dimension > 1)
+		        wd = dp.GetWaveData(in_y[curr_wave]);
+	        else
+		        wd = dp.GetResampledWaveData(in_y[curr_wave], xmin, xmax, Waveform.MAX_POINTS);
+
+		    curr_data = wd.GetFloatData();	        
+	        
+	        if(dimension == 1)
+	        {
+    	        
+	            if(curr_data != null && curr_data.length > 1 && in_up_err != null && in_up_err[curr_wave] != null 
+		            && (in_up_err[curr_wave].trim()).length() != 0)
+	            {
+		            if(full_flag)
+		                up_err = dp.GetWaveData(in_up_err[curr_wave]).GetFloatData();
+		            else
+		                up_err = dp.GetResampledWaveData(in_up_err[curr_wave], in_y[curr_wave], xmin, xmax, Waveform.MAX_POINTS).GetFloatData();
+		            if(up_err == null || up_err.length <= 1)
+		                curr_data = null;
+    	    
+	            }				
+	            if(curr_data != null && in_low_err != null && 
+		            in_low_err[curr_wave] != null && (in_low_err[curr_wave].trim()).length() != 0)
+	            {
+		            if(full_flag)
+		                low_err = dp.GetWaveData(in_low_err[curr_wave]).GetFloatData();
+		            else
+		                low_err = dp.GetResampledWaveData(in_low_err[curr_wave], in_y[curr_wave], xmin, xmax, Waveform.MAX_POINTS).GetFloatData();
+    			
+		            if(low_err == null || low_err.length <= 1)
+		                curr_data = null;
+	            }				
+            }
+            
+	        if(curr_data != null)
+	        {
+		        curr_x = wd.GetXData();
+		        
+		        if(curr_x != null && !(full_flag || dimension > 1))
+		            x_samples = curr_x.length;
+		            
+		        if(curr_x == null)
+		            curr_data = null;
+	        }
+	    }
+	    if(curr_x == null || curr_data == null)
+	    {
+	        curr_error = dp.ErrorString();
+	        return null;
+	    }
 	// Se e' definito il campo x si assume full_flag true
-	    if(full_flag || (in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0))
-	        min_len  = curr_y.length;
+	    if(full_flag ||
+	       dimension > 1 || 
+	       (in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0))
+	        min_len  = curr_data.length;
 	    else
 	    { 
-	        if(curr_y.length < x_samples)
-		        min_len = curr_y.length;
+	        if(curr_data.length < x_samples)
+		        min_len = curr_data.length;
 	        else
 		        min_len = x_samples;
 	    }
 	    
-	    Signal out_signal;
-	    String xdata_spec = dp.GetXDataSpecification(in_y[curr_wave]);
-	    if(xdata_spec != null)
+	    if(dimension == 2)
 	    {
-	      float x_data[] = dp.GetFloatArray(xdata_spec);
-	      if(x_data != null && x_data.length > 1)
-	        out_signal = new Signal(curr_y, x_data, curr_x, Signal.MODE_YTIME);
-	      else
-	      {
-    	    out_signal = new Signal(curr_x, curr_y, min_len);
-    	    if(x_data != null && x_data.length == 1)
-    	        out_signal.setXData(x_data[0]);
-	      }
+	      curr_y = wd.GetYData();
+	      out_signal = new Signal(curr_data, curr_y, curr_x, Signal.MODE_YTIME);
 	    } else {
 	        if(full_flag || wave_signals == null || wave_signals.length <= curr_wave || wave_signals[curr_wave] == null)
 	        {
-    	        out_signal = new Signal(curr_x, curr_y, min_len);
+    	        out_signal = new Signal(curr_x, curr_data, min_len);
     	    } else {
-    	        // In this case GetSignal is called only
-    	        // to inflate the signal and therefore
-    	        // limits must not be changed
     	        out_signal = wave_signals[curr_wave];
-    	        out_signal.merge(curr_x, curr_y);
+    	        out_signal.merge(curr_x, curr_data);
     	        out_signal.setFullLoad(full_flag);    
-    	        return out_signal;
     	    }
     	}
     	
-	    if(xmin != -HUGE)
-	        out_signal.xmin = out_signal.saved_xmin = xmin;
-	    if(xmax != HUGE)
-	        out_signal.xmax = out_signal.saved_xmax = xmax;    
-    
-	    if(in_ymax != null && (in_ymax.trim()).length() != 0)
-	        out_signal.ymax = out_signal.saved_ymax = ymax;
-	    if(out_signal.xmin > out_signal.xmax)
-	        out_signal.xmin = out_signal.xmax;
-	    if(in_ymin != null && (in_ymin.trim()).length() != 0)
-	        out_signal.ymin = out_signal.saved_ymin = ymin;
-	    if(out_signal.ymin > out_signal.ymax)
-	        out_signal.ymin = out_signal.ymax;
+    	if(cache_enabled && full_flag && !is_async_update)
+    	{
+    	    int sh = 0;
+    	    DataCacheObject cd = new DataCacheObject();
+    	    
+            String expr = in_y[curr_wave];
+            if(in_up_err[curr_wave] != null)
+                expr = expr+in_up_err[curr_wave];
+                
+            if(in_low_err[curr_wave] != null)
+                expr = expr+in_low_err[curr_wave];
+    	    
+            cd.title = title;
+            cd.x_label = xlabel;
+            cd.y_label = ylabel;
+            cd.up_err = up_err;
+            cd.low_err = low_err;
+            cd.data = curr_data;
+            cd.x = curr_x;
+            cd.y = curr_y;
+            cd.dimension = dimension;
+            
+            if(shots != null && shots.length != 0)
+                sh = shots[curr_wave];
+            
+            sc.putCacheData(provider, expr, experiment, sh, cd);          
+    	}
+    	
 	    out_signal.up_error = up_err;
-            out_signal.low_error = low_err;
+        out_signal.low_error = low_err;
         if(up_err != null)
     	    out_signal.error = true;
         if(up_err != null && low_err != null)
     	    out_signal.asym_error = true;
-    	
-    	out_signal.setFullLoad(full_flag);    
-    	
+    	    
         return out_signal;
-    }
+   }
     
+    void ContinuousUpdate(Vector sigs, MultiWaveform w)
+    {
+	    wave_signals = new Signal[sigs.size()];
+	    for(int i = 0; i < sigs.size(); i++)
+	        wave_signals[i] = (Signal)sigs.elementAt(i);
+        if(!dp.SupportsContinuous())
+            return;
+        if(cu != null)
+        {
+            cu.terminate();
+            try {
+                cu.join(); //force termination and wait
+            }catch(Exception exc){}
+        }
+        cu = new ContinuousUpdater(this, w, dp);
+        cu.start();
+	}
+
+
     void AsynchUpdate(/*Signal sigs[],*/ Vector sigs, float xmin, float xmax, 
 	                    float _orig_xmin, float _orig_xmax, 
 	                    int timestamp, boolean panning, MultiWaveform w)
@@ -1150,7 +1268,7 @@ public class WaveInterface
 		    (orig_xmin > xmin || orig_xmax < xmax) )
 		        needs_update = true;
 	    }
-	    if(needs_update && dp.SupportsAsynch() )
+	    if(needs_update && dp.SupportsFastNetwork() )
 	    {
 	        if(asynch_update)
 	        {
@@ -1166,49 +1284,81 @@ public class WaveInterface
 	        {
 	            try
 	            {
-		            DynamicUpdate(w);
+		            DynamicUpdate(w, false);
 		        } catch (IOException e){}
 		    }
 	    }
     }
 
-    public synchronized void DynamicUpdate(MultiWaveform w) throws IOException
+    public /*synchronized*/ void DynamicUpdate(MultiWaveform w,  boolean is_continuous) throws IOException
     {
 	    boolean needs_update = false;
 	    int curr_wave, saved_timestamp = wave_timestamp;
-	    
-	    Cursor curr_cursor = w.getCursor();
-        w.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-	   
+	    	   
         WaveformEvent we = new WaveformEvent(w, "Asyncronous signal loading");
         w.dispatchWaveformEvent(we);
         
+        is_async_update = true;
+        
 	    for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
 	    {
-	    //if (wave_signals[curr_wave].n_points >= MAX_POINTS - 1)
-	    //if (wave_signals[curr_wave].n_points >= MAX_POINTS - 1 || 
-		//orig_xmin < wave_xmin || orig_xmax > wave_xmax)
-	        {
-	            //Check if signal is full loaded so no need dynamic update
-        		if(wave_signals[curr_wave] != null && wave_signals[curr_wave].isFullLoad())
-        		    continue;
+	        //Check if signal is full loaded, i.e. does not need dynamic update
+        	if(!is_continuous && wave_signals[curr_wave] != null && wave_signals[curr_wave].isFullLoad())
+        		continue;
         		    
-		        needs_update = true;
+		    needs_update = true;
+		    if(is_continuous)  //continuous signal update
+		        wave_signals[curr_wave] = GetSignal(curr_wave, -HUGE, HUGE);
+		    else  //asyncronous update during zoom
 		        wave_signals[curr_wave] = GetSignal(curr_wave, wave_xmin, wave_xmax);
-	        }
         }
 	    if(needs_update && saved_timestamp == wave_timestamp)
 	    {
-	        w.UpdateSignals(wave_signals, wave_timestamp);
+	        w.UpdateSignals(wave_signals, wave_timestamp, is_continuous);
 	        //w.AutoscaleY();
 	        //w.UpdateSignals(wave_signals, wave_signals.length, wave_timestamp);
 	    }
-        w.setCursor(curr_cursor);
+	    
+        is_async_update = false;
+        
         we = new WaveformEvent(w, "Asyncronous operation completed");
         w.dispatchWaveformEvent(we);
      }
 
 }		
+
+class ContinuousUpdater  extends Thread
+{
+    WaveInterface wi;
+    MultiWaveform w;
+    boolean terminate;
+    DataProvider dp;
+    
+    public ContinuousUpdater(WaveInterface wi, MultiWaveform w, DataProvider dp)
+    {
+        this.wi = wi;
+        this.w = w;
+        this.dp = dp;
+        terminate = false;
+    }
+    public void run()
+    {
+        setName("Continuous Update Thread");
+        w.SetEnabledPan(false);
+        while(dp.DataPending())
+        {
+            try {
+                wi.DynamicUpdate(w, true);
+            }catch(Exception exc){System.out.println(exc);}
+            if(terminate) break;
+        }
+        w.SetEnabledPan(true);
+    }
+    public void terminate()
+    {
+        terminate = true;
+    }
+}
 	
 class AsynchUpdater  extends Thread
 {
@@ -1220,9 +1370,9 @@ class AsynchUpdater  extends Thread
         wi = _wi;
         w = _w;
     }
-    public synchronized void run()
+    public void run()
     {
-        setName("Asybch Update Thread");
+        setName("Asynch Update Thread");
         while(true)
         {
 	        while(wi.request_pending)
@@ -1231,11 +1381,14 @@ class AsynchUpdater  extends Thread
 	            
 	            try
 	            {
-	                wi.DynamicUpdate(w);
+	                wi.DynamicUpdate(w, false);
 	            } catch (Exception e) {}
 	        }
 	        try {
-	            wait();
+	            synchronized(this) 
+	            {
+	                wait();
+	            }
 	        } catch (InterruptedException e){}
         }
     }

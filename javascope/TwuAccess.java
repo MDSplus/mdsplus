@@ -8,7 +8,7 @@ public class TwuAccess implements DataAccess
     String shot_str = null;
     String signal = null;
     String experiment = null;
-    TWUDataProvider tw = null;
+    TwuDataProvider tw = null;
         
     public static void main(String args[])
     {
@@ -47,8 +47,9 @@ public class TwuAccess implements DataAccess
         shot_str  = st.nextToken();
         
         if(tw == null)
-            tw = new TWUDataProvider();
-                
+        {
+            tw = new TwuDataProvider("jScope applet (Version 6.0)");
+        }        
         return signal;
     }
     
@@ -80,14 +81,14 @@ public class TwuAccess implements DataAccess
     {
         signal = setProvider(url);
         if(signal == null) return null;
-        return tw.GetFloatArray(tw.GetXSpecification(signal));
+        return tw.GetFloatArray(signal, true);
     }
     
     public float [] getY(String url) throws IOException
     {
         signal = setProvider(url);
         if(signal == null) return null;
-        return tw.GetFloatArray(signal);
+        return tw.GetFloatArray(signal, false);
     }    
     
     public Signal getSignal(String url) throws IOException
@@ -96,15 +97,15 @@ public class TwuAccess implements DataAccess
         if(signal == null) return null;
         Signal s = null;
         
-        float y[] = tw.GetFloatArray(signal);
-        float x[] = tw.GetFloatArray(tw.GetXSpecification(signal));
+        float y[] = tw.GetFloatArray(signal, false);
+        float x[] = tw.GetFloatArray(signal, true);
             
         if(x == null || y == null)
             return null;
 
         s = new Signal(x, y);
         
-        s.setName(tw.getSignalProperty("SignalName", signal));
+        s.setName(tw.GetSignalProperty("SignalName", signal));
         
         //System.out.println(tw.getSignalProperty("SignalName", signal));
                 
@@ -114,7 +115,7 @@ public class TwuAccess implements DataAccess
     public String getError()
     {   
         if(tw == null)
-            return("Cannot create NetworkProvider");
+            return("Cannot create TwuDataProvider");
         return tw.ErrorString();
     }
 

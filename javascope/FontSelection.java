@@ -71,10 +71,10 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
 
 //        if(System.getProperty("java.version").equals("1.2.2"))
 //        {
-//            GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
-//            envfonts = gEnv.getAvailableFontFamilyNames();
+            GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            envfonts = gEnv.getAvailableFontFamilyNames();
 //        } else
-            envfonts = getToolkit().getFontList();
+//            envfonts = getToolkit().getFontList();
         
         
         fonts = new JComboBox(envfonts);
@@ -120,9 +120,17 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
     
     private void setFontChoice()
     {
+        fonts.removeItemListener(this);
+        styles.removeItemListener(this);
+        sizes.removeItemListener(this);
+        
         fonts.setSelectedItem(fontchoice);
         styles.setSelectedIndex(stChoice);
         sizes.setSelectedItem(siChoice);
+        
+        fonts.addItemListener(this);
+        styles.addItemListener(this);
+        sizes.addItemListener(this);
     }
     
     public Font StringToFont(String f)

@@ -4,7 +4,7 @@ import java.awt.List;
 import java.awt.event.*;
 import java.lang.*;
 import java.util.*;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
@@ -13,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public class jScope_1 extends JFrame implements ActionListener, ItemListener, 
                              WindowListener, WaveContainerListener, 
-                             NetworkListener, ConnectionListener
+                             UpdateEventListener, ConnectionListener
 {
  
    public  static final int MAX_NUM_SHOT   = 30;
@@ -23,7 +23,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   JWindow aboutScreen;
 
   /** Default server */
-  static final String DEFAULT_SERVER = "Demo server";
+  //static final String DEFAULT_SERVER = "Demo server";
   /**Main menu bar*/
   protected JMenuBar       mb;
   /**Menus on menu bar */
@@ -75,7 +75,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 //  ResourceBundle rb = null;
 //  PropertyResourceBundle prb = null;
   Properties js_prop = null;
-  String            default_server=DEFAULT_SERVER;
+  int            default_server_idx; 
   boolean           is_playing = false;
   int height = 500, width = 700, xpos = 50, ypos = 50;
   jScopeDefaultValues def_values = new jScopeDefaultValues();
@@ -83,10 +83,11 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
 //  static SignalCache sc = new SignalCache();
   JProgressBar progress_bar;
 
-  private jScopeHelpDialog help_dialog ;
+  private jScopeBrowseUrl help_dialog ;
 
   private boolean modified = false;
   
+
 
     // LookAndFeel class names
     static String macClassName =
@@ -104,7 +105,6 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
     JRadioButtonMenuItem motifMenuItem;
     JRadioButtonMenuItem windowsMenuItem;
     
-
     
     
 static Component T_parentComponent;
@@ -176,7 +176,7 @@ static int T_messageType;
 	  super(fw, "Public Variables", false); 	
 	  //super.setFont(new Font("Helvetica", Font.PLAIN, 12));
 	  dw = (jScope_1)fw; 
-	  setResizable(false);   	    
+	  //setResizable(false);   	    
 		    
 	  GridBagConstraints c = new GridBagConstraints();
 	  GridBagLayout gridbag = new GridBagLayout();
@@ -438,7 +438,13 @@ static int T_messageType;
   {
         
  
-    help_dialog = new jScopeHelpDialog(this);
+    help_dialog = new jScopeBrowseUrl(this);
+ 	try { 
+ 		String path = "docs/jScope.html"; 
+ 		URL url = getClass().getResource(path);
+ 		help_dialog.connectToBrowser(url);
+    } catch (Exception e){} 
+
     main_scope = this;
 
    
@@ -469,7 +475,7 @@ static int T_messageType;
 	    {
 	        public void actionPerformed(ActionEvent e)
             {
-                wave_panel.showBrowseSignals();
+                wave_panel.ShowBrowseSignals();
             }
 	    }
 	);
@@ -592,17 +598,20 @@ static int T_messageType;
 
     customize_m.add(new JSeparator());
     use_last_i = new JMenuItem("Use last saved settings");
-    customize_m.add(use_last_i);
     use_last_i.addActionListener(this);
-
+    use_last_i.setEnabled(false);
+    customize_m.add(use_last_i);
+    
     use_i = new JMenuItem("Use saved settings from ...");
-    customize_m.add(use_i);
     use_i.addActionListener(this);
+    customize_m.add(use_i);
 
     customize_m.add(new JSeparator());
+    
     save_i = new JMenuItem("Save current settings");
-    customize_m.add(save_i);
+    save_i.setEnabled(false);
     save_i.addActionListener(this);
+    customize_m.add(save_i);
     
     save_as_i = new JMenuItem("Save current settings as ...");
     customize_m.add(save_as_i);
@@ -633,12 +642,12 @@ static int T_messageType;
     network_m.add(fast_network_i);
     fast_network_i.addItemListener(this);
 
-    use_cache_i = new JCheckBoxMenuItem("Enable signals cache", false);
+    use_cache_i = new JCheckBoxMenuItem("Enable signals cache", true);
     network_m.add(use_cache_i);
     use_cache_i.addItemListener(this);
 
     free_cache_i = new JMenuItem("Free cache");
-    free_cache_i.setEnabled(false);
+    free_cache_i.setEnabled(true);
     network_m.add(free_cache_i);
     free_cache_i.addActionListener(new ActionListener()
 	    {
@@ -652,7 +661,7 @@ static int T_messageType;
                                 JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                                 null, options, options[0]);
 	                if (opt == JOptionPane.OK_OPTION)
-	                        wave_panel.freeCache();
+	                        wave_panel.FreeCache();
                 } else {
 		            JOptionPane.showMessageDialog(null, "Undefined cache directory", "alert", JOptionPane.ERROR_MESSAGE);     
                 }
@@ -747,7 +756,7 @@ static int T_messageType;
         {
            public void focusLost(FocusEvent e)
            {
-                wave_panel.setMainShotStr(shot_t.getText().trim());
+                wave_panel.SetMainShotStr(shot_t.getText().trim());
            }
         }
     );
@@ -930,10 +939,40 @@ static int T_messageType;
     if(js_prop == null) return;
     
     curr_directory = (String)js_prop.getProperty("jScope.directory");
-    default_server = (String)js_prop.getProperty("jScope.default_server");
+    if(curr_directory == null || curr_directory.trim().length() == 0)
+    {
+       curr_directory  = (String)System.getProperty("jScope.config_directory");
+    }
+    
+    default_server_idx = Integer.parseInt((String)js_prop.getProperty("jScope.default_server")) - 1;
     String cache_directory = (String)js_prop.getProperty("jScope.cache_directory");
     String cache_size = (String)js_prop.getProperty("jScope.cache_size");
     String f_name = (String)js_prop.getProperty("jScope.save_selected_points");
+    
+    String prop = (String)js_prop.getProperty("jScope.vertical_offset");
+    int val = 0;
+    if(prop != null)
+    {
+        try
+        {
+            val = Integer.parseInt(prop);
+        } 
+        catch (NumberFormatException e) {}
+	    Waveform.SetVerticalOffset(val);
+        
+    }
+    val = 0;   
+    prop = (String)js_prop.getProperty("jScope.horizontal_offset");
+    if(prop != null)
+    {
+        try
+        {
+            val = Integer.parseInt(prop);
+        } catch (NumberFormatException e) {}
+	    Waveform.SetHorizontalOffset(val);
+    }
+
+    
     Properties p = System.getProperties();
     if(cache_directory != null)
         p.put("Signal.cache_directory", cache_directory);
@@ -943,6 +982,8 @@ static int T_messageType;
         p.put("jScope.save_selected_points", f_name);
     if(curr_directory != null)
         p.put("jScope.curr_directory", curr_directory);
+        
+        
   }
         
   private boolean IsIpAddress(String addr)
@@ -956,42 +997,56 @@ static int T_messageType;
 
   private void InitDataServer()
   {
-    String is_local = null;
+    //String is_local = null;
     String ip_addr = null;
-    DataServerItem srv_item;// srv_name;
+    String dp_class = null;
+    DataServerItem srv_item = null;
 
     Properties props = System.getProperties();
-    is_local = props.getProperty("data.is_local");
+    //is_local = props.getProperty("data.is_local");
     ip_addr = props.getProperty("data.address");
+    dp_class = props.getProperty("data.class");
     server_diag = new ServerDialog(this, "Server list");  
     
     
-    if(ip_addr != null || is_local == null || (is_local != null && is_local.equals("no")))
+    if(ip_addr != null && dp_class != null)//|| is_local == null || (is_local != null && is_local.equals("no")))
     {
-	    if(ip_addr == null) //Set to default server if no server is defined
-	        srv_item = new DataServerItem(default_server, null, null);
-	    else {
+	   // if(ip_addr == null) //Set to default server if no server is defined
+	   //     srv_item = new DataServerItem(default_server, null, null, null);
+	   //  else {
 	        //Set to the command line defined server 
-	        srv_item = new DataServerItem(ip_addr, null, null); 
+	        srv_item = new DataServerItem(ip_addr, ip_addr, null, dp_class,  null, null); 
 	 //       server_diag.addServerIp(srv_item);
-	    }
+          //Add server to the server list and if presente browse class and
+           //url browse signal set it into srv_item
+           server_diag.addServerIp(srv_item); 
+
+	    
     }
-    else
+    //else
         //Only if local provider is supported
-        srv_item = new DataServerItem("Local", null, null); 
+        //srv_item = new DataServerItem("Local", "LocalDataProvider", null, null); 
      
      //Add server to the server list and if presente browse class and
      //url browse signal set it into srv_item
-     server_diag.addServerIp(srv_item); 
+    // server_diag.addServerIp(srv_item); 
      //if some error occurs reset server to default server
-     if(SetDataServer(srv_item) != null && !srv_item.equals(default_server))
-        SetDataServer(new DataServerItem("default_server", null, null));
+     
+     
+     if(srv_item == null || !SetDataServer(srv_item))
+     {
+        if(server_ip_list != null && default_server_idx >= 0 && default_server_idx < server_ip_list.length)
+        {
+            srv_item = server_ip_list[default_server_idx];
+            SetDataServer(srv_item);
+        }
+     }
   }
 
 
   public void setDataServerLabel()
   {
-    net_text.setText("Data Server:" + wave_panel.GetServerName());
+    net_text.setText("Data Server:" + wave_panel.GetServerLabel());
   }
 
   public void SetStatusLabel(String msg)
@@ -1098,13 +1153,14 @@ static int T_messageType;
 
     public void setChange(boolean change)
     {
+        if(modified == change) return;
         modified = change;
         this.SetWindowTitle("");
     }
 
-    public boolean isChange()
+    public boolean IsChange()
     {
-        return modified || wave_panel.isChange();
+        return modified;
     }
 
 
@@ -1116,7 +1172,10 @@ static int T_messageType;
 	
 	    if(conf_file == null || conf_file.length() == 0) return;
 
+
 	    last_directory = new String(conf_file);
+	    save_i.setEnabled(true);
+	    use_last_i.setEnabled(true);
 	
 	    f = new File(conf_file);    
 	    if(f.exists()) f.delete();   
@@ -1150,7 +1209,7 @@ static int T_messageType;
   
   public void closeScope()
   {
-	if(isChange())
+	if(IsChange())
 	{
         switch( saveWarning())
 	    {
@@ -1203,7 +1262,9 @@ static int T_messageType;
 	                } else
 	                    config_file = null;
 	                if(config_file != null)
-	                    SaveConfiguration(config_file);	
+	                {
+	                    SaveConfiguration(config_file);
+	                } 
 	            }
              }
         });
@@ -1213,7 +1274,7 @@ static int T_messageType;
 
   private void LoadConfigurationFrom()
   {
-    if(isChange())
+    if(IsChange())
     {
         switch( saveWarning())
 	    {
@@ -1260,40 +1321,32 @@ static int T_messageType;
   
 
 
-  public String SetDataServer(DataServerItem new_srv_item)//String new_data_server)
+  public boolean SetDataServer(DataServerItem new_srv_item)
   {
     String error = null;
     
-    if((error = wave_panel.SetDataServer(new_srv_item, this)) != null)
+    try
     {
-		JOptionPane.showMessageDialog(null, error, "alert", JOptionPane.ERROR_MESSAGE); 
-    }   
+        wave_panel.SetDataServer(new_srv_item, this);
+        
+        fast_network_i.setEnabled(wave_panel.SupportsFastNetwork());
+        fast_network_i.setState(wave_panel.GetFastNetworkState());
+        	
+        enable_compression_i.setEnabled(wave_panel.SupportsCompression());
+        enable_compression_i.setState(false);
 
-    if(!wave_panel.supportsLocalProvider())
-	    servers_m.getItem(0).setEnabled(false); //local server sempre indice 0
-    else
-	    servers_m.getItem(0).setEnabled(true); //local server sempre indice 0
-          
-    
-    fast_network_i.setEnabled(wave_panel.supportsFastNetwork());
-    fast_network_i.setState(wave_panel.GetFastNetworkState());
-    	
-    enable_compression_i.setEnabled(wave_panel.supportsCompression());
-    enable_compression_i.setState(wave_panel.compressionEnable());
-
-    if(wave_panel.supportsCache())
+        use_cache_i.setState(WaveInterface.IsCacheEnabled());
+        free_cache_i.setEnabled(WaveInterface.IsCacheEnabled());        
+        
+        setDataServerLabel();
+        
+        return true;
+    } 
+    catch (Exception e)
     {
-        use_cache_i.setEnabled(true);
-        use_cache_i.setState(wave_panel.isCacheEnabled());
-        free_cache_i.setEnabled(wave_panel.isCacheEnabled());        
-    } else {
-        use_cache_i.setEnabled(false);
-        free_cache_i.setEnabled(false);
-    }
-    
-    setDataServerLabel();
-		
-	return error;    
+       JOptionPane.showMessageDialog(null, e.getMessage(), "alert", JOptionPane.ERROR_MESSAGE); 
+    }    
+    return false;    
   }
   
   private void updateServerMenu()
@@ -1354,19 +1407,8 @@ static int T_messageType;
   
   protected void PrintAllWaves()
   {
-    /*
-        if(IsNewJVMVersion())
-        {
-            try {
-                wave_panel.PrintAllWaves(prnJob, pf);
-            } catch (PrinterException er) {
-                System.out.println("Error on printing");
-            }
-        } else {
-*/
-            JOptionPane.showMessageDialog(null, "Print on event is available on jdk 1.2 or later", 
-		                                  "alert", JOptionPane.ERROR_MESSAGE); 
-//       }
+     JOptionPane.showMessageDialog(this, "Print on event is available on jdk 1.2 or later", 
+		                            "alert", JOptionPane.ERROR_MESSAGE); 
   }
   
 
@@ -1381,6 +1423,15 @@ static int T_messageType;
 	    case WaveContainerEvent.KILL_UPDATE:
 	        apply_b.setText("Apply");
 	        executing_update = false;
+	        if(event_id == WaveContainerEvent.KILL_UPDATE)
+	        {
+                JOptionPane.showMessageDialog(this, e.info, 
+		                                "alert", JOptionPane.ERROR_MESSAGE);
+	            SetStatusLabel(" Aborted ");		    
+		    }
+		    else
+	            SetStatusLabel(e.info);		    
+		    break;
 	    case WaveContainerEvent.START_UPDATE:
 	        SetStatusLabel(e.info);
 	    break;
@@ -1413,6 +1464,13 @@ static int T_messageType;
 	            case WaveformEvent.STATUS_INFO:
 	                SetStatusLabel(we.status_info);
 	            break;
+	            case WaveformEvent.CACHE_DATA:
+                    if(we.status_info != null)
+                        progress_bar.setString(we.status_info);
+                    else
+                        progress_bar.setString("");
+                    progress_bar.setValue(0);
+                break;
 	        }
 	        break;
 	    }        
@@ -1420,6 +1478,7 @@ static int T_messageType;
 
     public void processConnectionEvent(ConnectionEvent e)
     {   
+        progress_bar.setString("");
         if(e.current_size == 0 && e.total_size == 0)
         {
             if(e.info != null)
@@ -1432,17 +1491,9 @@ static int T_messageType;
             progress_bar.setValue(v);
             progress_bar.setString((e.info != null ? e.info : "")+v+"%");
         }
-
-        /*
-        try {
-            progress_monitor.setEvent(e);
-            SwingUtilities.invokeAndWait(progress_monitor);
-        } catch (InvocationTargetException exc) {} 
-          catch (InterruptedException exc){}
-        */
     }
 
-  public void processNetworkEvent(NetworkEvent e)
+  public void processUpdateEvent(UpdateEvent e)
   {     
      String print_event = wave_panel.GetPrintEvent();
      String event = wave_panel.GetEvent();
@@ -1481,7 +1532,7 @@ static int T_messageType;
 	    if(action.equals("SET_SERVER"))
 	    {
 	        String value = action_cmd.substring(action.length()+1);
-	        if(!wave_panel.GetServerName().equals(value) )
+	        if(!wave_panel.GetServerLabel().equals(value) )
 	        {	            
 	            SetDataServer(getServerItem(value));
     	    }
@@ -1490,11 +1541,12 @@ static int T_messageType;
     
     if(ob == signal_expr)
     {
-        String error = null, sig = signal_expr.getText(); 
+        String error = null, sig = signal_expr.getText().trim(); 
         
-        if(sig != null && sig.trim().length() != 0)
+        if(sig != null && sig.length() != 0)
         {
-            wave_panel.AddSignal(sig);
+            wave_panel.AddSignal(sig, false);
+            setChange(true);
         }
     }
 
@@ -1507,8 +1559,20 @@ static int T_messageType;
 	            wave_panel.AbortUpdate();
 	    } else {
 	        if (ob == shot_t)
-                wave_panel.setMainShotStr(shot_t.getText().trim());
+	        {
+                wave_panel.SetMainShotStr(shot_t.getText().trim());
+            }
+            
+ 
+            String sig = signal_expr.getText().trim();         
+            if(sig != null && sig.length() != 0)
+            {
+                wave_panel.AddSignal(sig, true);
+                setChange(true);
+            }
+            
     	    UpdateAllWaves();
+	            
 	    }	     
     }
 
@@ -1580,6 +1644,7 @@ static int T_messageType;
 	    {
 	        curr_directory = last_directory;
 		    config_file = curr_directory;
+		    setChange(false);
 	        LoadConfiguration();
 	    }		
     }
@@ -1768,6 +1833,15 @@ static int T_messageType;
 //	for(int i = 0; i < wi.colors_idx.length; i++)
 //	    wi.colors[i] = color_dialog.GetColorAt(wi.colors_idx[i]);
    }
+   
+   public void SetFastNetworkState(boolean state)
+   {
+	    wave_panel.SetFastNetworkState(state);
+        use_cache_i.setEnabled(!state);
+        use_cache_i.setState(false);
+    	WaveInterface.EnableCache(false);
+        free_cache_i.setEnabled(!state);
+   }
 
    public void itemStateChanged(ItemEvent e)
    {
@@ -1778,26 +1852,24 @@ static int T_messageType;
      {
         if(ob == fast_network_i)
         {
-	        wave_panel.SetFastNetworkState(fast_network_i.getState());
-            use_cache_i.setEnabled(!fast_network_i.getState());
-    	    wave_panel.enableCache(false);
-            free_cache_i.setEnabled(false);
-            use_cache_i.setState(false);
+            boolean state = fast_network_i.getState();
+            SetFastNetworkState(state);
         }
          
         if(ob == enable_compression_i)
         {
-            wave_panel.setCompression(enable_compression_i.getState(), this);
+            wave_panel.SetCompression(enable_compression_i.getState(), this);
         }
          
         if(ob == brief_error_i)
         {
-	        wave_panel.SetBriefError(brief_error_i.getState());
+            WaveInterface.brief_error = brief_error_i.getState();
+//	        wave_panel.SetBriefError(brief_error_i.getState());
         }
          
         if(ob == use_cache_i)
         {
-	        wave_panel.enableCache(use_cache_i.getState());
+	        wave_panel.EnableCache(use_cache_i.getState());
             free_cache_i.setEnabled(use_cache_i.getState());        
         }
 
@@ -1858,9 +1930,9 @@ static int T_messageType;
 	    f_name = "Untitled";
   
 	if(wave_panel.GetTitle() != null)
-	    setTitle(" - " + wave_panel.GetTitle() + " - " + f_name + (isChange() ? " (changed)" : "") + " " + info);
+	    setTitle(" - " + wave_panel.GetTitle() + " - " + f_name + (IsChange() ? " (changed)" : "") + " " + info);
 	else
-	    setTitle("- Scope - " + f_name + (isChange() ? " (changed)" : "") + " " + info);
+	    setTitle("- Scope - " + f_name + (IsChange() ? " (changed)" : "") + " " + info);
 	
   }
   
@@ -1934,13 +2006,13 @@ static int T_messageType;
         catch (IOException e)
         {
             Reset();
-	        JOptionPane.showMessageDialog(null, e.getMessage(), "alert", JOptionPane.ERROR_MESSAGE); 
+	        JOptionPane.showMessageDialog(this, e.getMessage(), "alert", JOptionPane.ERROR_MESSAGE); 
         }
+	    save_i.setEnabled(true);
   }
   
   public void LoadConfiguration(Properties pr)
   {
-    String curr_dsa = wave_panel.GetServerName();
     
     wave_panel.EraseAllWave();
     try
@@ -1951,16 +2023,15 @@ static int T_messageType;
         UpdateFont();
 	    wave_panel.update();	
 	    validate();   	    
-        server_diag.addServerIp(wave_panel.getServerItem());
-        SetDataServer(wave_panel.getServerItem());
+        server_diag.addServerIp(wave_panel.GetServerItem());
+        SetDataServer(wave_panel.GetServerItem());
+        SetFastNetworkState(wave_panel.GetFastNetworkState());
         UpdateAllWaves();
-        //wave_panel.initMdsWaveInterface();
-   	    //wave_panel.UpdateAllWave();
     } 
     catch(Exception e)
     {
         Reset();
-		JOptionPane.showMessageDialog(null, e.getMessage(), 
+		JOptionPane.showMessageDialog(this, e.getMessage(), 
 		                                  "alert", JOptionPane.ERROR_MESSAGE); 
     }
     SetWindowTitle("");
@@ -2139,21 +2210,6 @@ static int T_messageType;
 	}
 
     }
-
-	class SymContainer extends java.awt.event.ContainerAdapter
-	{
-		public void componentAdded(java.awt.event.ContainerEvent event)
-		{
-			Object object = event.getSource();
-			if (object == jScope_1.this)
-				jScope1_componentAdded(event);
-		}
-	}
-
-	void jScope1_componentAdded(java.awt.event.ContainerEvent event)
-	{
-		// to do: code goes here.
-	}
 }
 
 class WindowDialog extends JDialog implements ActionListener 
@@ -2171,7 +2227,7 @@ class WindowDialog extends JDialog implements ActionListener
     WindowDialog(JFrame dw, String title) {
 
         super(dw, title, true);
-	    setResizable(false);
+//	    setResizable(false);
 	    //super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
 
 	    parent = (jScope_1)dw;
@@ -2362,12 +2418,14 @@ class WindowDialog extends JDialog implements ActionListener
 
 class ServerDialog extends JDialog implements ActionListener
 {
+    private Hashtable data_server_class = new Hashtable();
     private JList server_list;
     private DefaultListModel list_model = new DefaultListModel();
     private JButton add_b, remove_b, cancel_b;
             JLabel server_label, user_label;
-            JTextField server_ip;
+            JTextField server_l, server_a, server_u;
             JCheckBox automatic;
+            JComboBox data_provider_list;
     jScope_1 dw;
     
 
@@ -2375,7 +2433,7 @@ class ServerDialog extends JDialog implements ActionListener
     {
         super(_dw, title, true);
 	    dw = (jScope_1)_dw;
-	    setResizable(false);
+//	    setResizable(false);
 
 	    GridBagLayout gridbag = new GridBagLayout();
 	    GridBagConstraints c = new GridBagConstraints();
@@ -2388,10 +2446,22 @@ class ServerDialog extends JDialog implements ActionListener
         c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.fill =  GridBagConstraints.BOTH;
 	    c.gridheight = 10;
-	    server_list = new JList(list_model);//5, false);
+	    server_list = new JList(list_model);
 	    JScrollPane scrollServerList = new JScrollPane(server_list);
         server_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	    //server_list.addItemListener(this);
+	    server_list.addListSelectionListener(new ListSelectionListener()
+	        {
+	            public void valueChanged(ListSelectionEvent e)
+                {
+                    int idx = server_list.getSelectedIndex();
+                    server_l.setText(dw.server_ip_list[idx].name);
+                    server_a.setText(dw.server_ip_list[idx].argument);
+                    server_u.setText(dw.server_ip_list[idx].user);
+                    data_provider_list.setSelectedItem(dw.server_ip_list[idx].class_name);
+                }
+
+	        }
+	    );
 	    //server_list.addKeyListener(this);
 	    gridbag.setConstraints(scrollServerList, c);
 	    getContentPane().add(scrollServerList);
@@ -2400,21 +2470,70 @@ class ServerDialog extends JDialog implements ActionListener
 	    c.fill =  GridBagConstraints.NONE;
 	    c.gridheight = 1;
 	    c.gridwidth = 1;	
-	    server_label = new JLabel("Server name ");
+	    server_label = new JLabel("Server label ");
 	    gridbag.setConstraints(server_label, c);
 	    getContentPane().add(server_label);
  
         c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.fill =  GridBagConstraints.BOTH;
-	    server_ip = new JTextField(20);
-	    gridbag.setConstraints(server_ip, c);
-	    getContentPane().add(server_ip);
+	    server_l = new JTextField(20);
+	    gridbag.setConstraints(server_l, c);
+	    getContentPane().add(server_l);
+
+	    c.gridwidth = 1;	
+	    server_label = new JLabel("Server argument ");
+	    gridbag.setConstraints(server_label, c);
+	    getContentPane().add(server_label);
+ 
+        c.gridwidth = GridBagConstraints.REMAINDER;
+	    c.fill =  GridBagConstraints.BOTH;
+	    server_a = new JTextField(20);
+	    gridbag.setConstraints(server_a, c);
+	    getContentPane().add(server_a);
 	    
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.fill =  GridBagConstraints.BOTH;
 	    automatic = new JCheckBox("Get user name from host");
+        automatic.addItemListener(new ItemListener()
+	    {
+            public void itemStateChanged(ItemEvent e)
+	        {
+	            if(automatic.isSelected())
+	            {
+	                server_u.setText(System.getProperty("user.name"));
+	                server_u.setEditable(false);
+	            } else {
+	                server_u.setText("");
+	                server_u.setEditable(true);
+	            }
+	        }
+	    });	    
 	    gridbag.setConstraints(automatic, c);
 	    getContentPane().add(automatic);
+
+	    c.gridwidth = 1;	
+	    server_label = new JLabel("User name ");
+	    gridbag.setConstraints(server_label, c);
+	    getContentPane().add(server_label);
+ 
+        c.gridwidth = GridBagConstraints.REMAINDER;
+	    c.fill =  GridBagConstraints.BOTH;
+	    server_u = new JTextField(20);
+	    gridbag.setConstraints(server_u, c);
+	    getContentPane().add(server_u);
+
+	    c.anchor = GridBagConstraints.WEST;
+	    c.gridwidth = 1;
+	    JLabel lab = new JLabel("Server Class : ");
+	    gridbag.setConstraints(lab, c);
+	    getContentPane().add(lab);
+	    
+	    c.gridwidth = GridBagConstraints.REMAINDER;
+	    c.fill =  GridBagConstraints.BOTH;
+        data_provider_list = new JComboBox();
+	    gridbag.setConstraints(data_provider_list, c);
+	    getContentPane().add(data_provider_list);
+	    
 	    
 	    JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));			
 	    add_b = new JButton("Add");
@@ -2434,14 +2553,19 @@ class ServerDialog extends JDialog implements ActionListener
 	    getContentPane().add(p);
 	
 	    if(dw.server_ip_list == null) {
-	        addServerIp(new DataServerItem("Local", null, null));	
+//	        addServerIp(new DataServerItem("Local", "LocalDataProvider", null, null));	
 	        GetPropertiesValue();
-	        addServerIp(new DataServerItem(dw.default_server, null, null));
+//	        addServerIp(new DataServerItem(dw.default_server, null, null, null));
+	        
+	        Object[] ls = data_server_class.values().toArray();
+	        for(int i = 0; i < ls.length; i++)
+	            this.data_provider_list.addItem((String)ls[i]);
 	    }
 	    else
 	    {
 	        addServerIpList(dw.server_ip_list);
 	    }
+	    pack();
 	    
     }
 
@@ -2454,8 +2578,11 @@ class ServerDialog extends JDialog implements ActionListener
        if(js_prop == null) return;
        while(true) {
            dsi = new DataServerItem();
-           dsi.data_server = (String)js_prop.getProperty("jScope.data_server_"+i);
-           if(dsi.data_server == null) break;
+           dsi.name = (String)js_prop.getProperty("jScope.data_server_"+i+".name");
+           if(dsi.name == null) break;
+           dsi.argument = (String)js_prop.getProperty("jScope.data_server_"+i+".argument");
+           dsi.user = (String)js_prop.getProperty("jScope.data_server_"+i+".user");
+           dsi.class_name = (String)js_prop.getProperty("jScope.data_server_"+i+".class");
            dsi.browse_class = (String)js_prop.getProperty("jScope.data_server_"+i+".browse_class");
            dsi.browse_url = (String)js_prop.getProperty("jScope.data_server_"+i+".browse_url");
 	       addServerIp(dsi);
@@ -2466,29 +2593,15 @@ class ServerDialog extends JDialog implements ActionListener
     public void Show()
     {    
 	    setLocationRelativeTo(dw);
-	    pack();
 	    show();
     }
     
-    public void addServerIp(DataServerItem dsi)//String ip)
+    public void addServerIp(DataServerItem dsi)
     {
 	    int i;
 	    JMenuItem new_ip;
-	    String ip = dsi.data_server;
 	    DataServerItem found_dsi = null;
 
-
-        int idx = ip.indexOf("|");
-        if(idx != -1)
-        {
-            String user = ip.substring(0, idx);
-            if(!user.equals(System.getProperty("user.name")))
-            {
-                ip = System.getProperty("user.name") + ip.substring(idx, ip.length());
-                dsi.data_server = ip;
-            }
-        }
-	
 	
 	    Enumeration e = list_model.elements();	
 	    boolean found = false;
@@ -2501,17 +2614,30 @@ class ServerDialog extends JDialog implements ActionListener
 	            break;
 	        }
 	    }
+	    
+	    if(dsi.class_name != null &&
+           !data_server_class.containsValue(dsi.class_name))
+                data_server_class.put(dsi.class_name, dsi.class_name);
+	    
+	    
+	    if(!found && dsi.class_name == null)
+	    {
+		  JOptionPane.showMessageDialog(null, "Undefine data server class for " + dsi.name, "alert", JOptionPane.ERROR_MESSAGE);     
+	    }
+	    
 	    if(!found)
 	    {
 	        list_model.addElement(dsi);
-	        new_ip = new JMenuItem(ip);
+	        new_ip = new JMenuItem(dsi.name);
 	        dw.servers_m.add(new_ip);
-	        new_ip.setActionCommand("SET_SERVER " + ip);
+	        new_ip.setActionCommand("SET_SERVER " + dsi.name);
 	        new_ip.addActionListener(dw);
-	        dw.server_ip_list = getServerIpList();//server_list.getItems();
+	        dw.server_ip_list = getServerIpList();
 	    } else {
 	        if(found_dsi != null)
 	        {
+	            dsi.user = found_dsi.user;
+	            dsi.class_name = found_dsi.class_name;
 	            dsi.browse_class = found_dsi.browse_class;
 	            dsi.browse_url = found_dsi.browse_url;	            
 	        }
@@ -2526,31 +2652,36 @@ class ServerDialog extends JDialog implements ActionListener
 
     public DataServerItem[] getServerIpList()
     {
+    
 	    Enumeration e = list_model.elements();
 	    DataServerItem out[] = new DataServerItem[list_model.size()];
 	    for(int i = 0; e.hasMoreElements(); i++)
 	        out[i] = ((DataServerItem)e.nextElement());
 	    return out;
+	    
     }
 	        
     public void actionPerformed(ActionEvent event)
     { 
 
         Object ob = event.getSource();
-        String ip;
+        String arg;
       
 	    if(ob == cancel_b)
 	        setVisible(false);
 	    
-	    if(ob == add_b && server_ip.getText() != null && server_ip.getText().trim().length() != 0)
+	    if(ob == add_b)
 	    {
+	       String srv =  server_l.getText().trim();
+           
+	       if(srv != null && srv.length() != 0)
+	       {
 	       	        
-	        if(automatic.isSelected())
-	            ip = System.getProperty("user.name")+"|"+server_ip.getText().trim();
-            else
-                ip = server_ip.getText().trim();
-            addServerIp(new DataServerItem(ip, null, null));	  
-	     
+            addServerIp(new DataServerItem(srv, server_a.getText().trim(), 
+                                           server_u.getText().trim(), 
+                                           (String)data_provider_list.getSelectedItem(),
+                                           null, null));	  
+	       }
 	    }
 	
 	    if(ob == remove_b)

@@ -7,7 +7,7 @@ import javax.swing.SwingUtilities;
 Class MultiWaveform extends the capability of class Waveform to deal with multiple
 waveforms.
 */
-public class jScopeMultiWave extends MultiWaveform implements NetworkListener
+public class jScopeMultiWave extends MultiWaveform implements UpdateEventListener
 {
    // MdsWaveInterface wi;
    
@@ -18,7 +18,7 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
 	    wi = new MdsWaveInterface(this, dp, def_values);
     }
     
-    public void processNetworkEvent(NetworkEvent e)
+    public void processUpdateEvent(UpdateEvent e)
     {
          //System.out.println("Evento su waveform "+e.name);
          WaveformEvent we = new WaveformEvent(this, WaveformEvent.EVENT_UPDATE,  "Update on event " + e.name);
@@ -73,25 +73,18 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
         
         if(wi.isAddSignal())
         {
-            out_error = ((MdsWaveInterface)wi).getErrorString(true);
-            if(wi.error != null)
-                out_error = wi.error;
-        }
-        else
-            out_error = ((MdsWaveInterface)wi).getErrorTitle(true);
-        
-        if(out_error != null && ((MdsWaveInterface)wi).prev_wi != null) 
-        {
-            //reset to previous configuration
-            ((MdsWaveInterface)wi).prev_wi.error = ((MdsWaveInterface)wi).error;            
-            ((MdsWaveInterface)wi).prev_wi.w_error = ((MdsWaveInterface)wi).w_error;            
-            if(wi.isAddSignal())
-                ((MdsWaveInterface)wi).prev_wi.setAddSignal(true);                    
-            wi = ((MdsWaveInterface)wi).prev_wi;
-            ((MdsWaveInterface)wi).prev_wi = null;
-        }
-        else 
-        {
+            //reset to previous configuration if signal/s are not added
+            if(((MdsWaveInterface)wi).prev_wi != null && 
+            ((MdsWaveInterface)wi).prev_wi.GetNumEvaluatedSignal() == ((MdsWaveInterface)wi).GetNumEvaluatedSignal()) 
+            {
+                ((MdsWaveInterface)wi).prev_wi.error = ((MdsWaveInterface)wi).error;            
+                ((MdsWaveInterface)wi).prev_wi.w_error = ((MdsWaveInterface)wi).w_error;            
+                ((MdsWaveInterface)wi).prev_wi.setAddSignal(wi.isAddSignal());                    
+                wi = ((MdsWaveInterface)wi).prev_wi;
+                wi.SetIsSignalAdded(false);
+            } else
+                wi.SetIsSignalAdded(true);
+            
             ((MdsWaveInterface)wi).prev_wi = null;
         }
         Update(wi);
@@ -113,7 +106,7 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
 	    
 	  //  String error = null;
 	  //  if(!wi.isAddSignal())
-	        wave_error = wi.getErrorTitle(true);
+	    wave_error = wi.getErrorTitle(true);
 	        
 	    if(wi.title != null)
 	        super.title = wi.title;
@@ -124,7 +117,7 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
 	    super.legend_x = wi.legend_x;
         super.legend_y = wi.legend_y;
         super.is_image = wi.is_image;
-        super.frames = wi.frames;
+        SetFrames(wi.frames);
 
 	    if(wi.signals != null)
 	    {
@@ -230,25 +223,6 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkListener
        return wi.GetSignalState(i);
     }
 
-/*
-    protected void NotifyZoom(double start_xs, double end_xs, double start_ys, double end_ys,
-	    int timestamp) 
-    {
-        double x_range = end_xs - start_xs;
-        if(orig_signals == null)
-        {
-	        orig_signals = new Vector();
-	        for(int i = 0; i < signals.size(); i++)
-	            orig_signals.addElement(signals.elementAt(i));
-	        orig_xmin = waveform_signal.xmin;
-	        orig_xmax = waveform_signal.xmax;
-        }
-        
-        if(wi != null)
-	        wi.AsynchUpdate(signals, (float)(start_xs - x_range), (float)(end_xs + x_range), 
-	            (float)orig_xmin, (float)orig_xmax, update_timestamp, mode == MODE_PAN, this);
-    }	
-*/
     public void AddEvent(String event)  throws IOException
     {
         ((MdsWaveInterface)wi).AddEvent(this, event);

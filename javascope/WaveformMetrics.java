@@ -20,72 +20,80 @@ public  class WaveformMetrics implements Serializable {
     int start_x;
     double FACT_X, FACT_Y, OFS_X, OFS_Y;
     
+    int horizontal_offset, vertical_offset;
+    
+    
     static final double LOG10 = 2.302585092994, MIN_LOG = 10E-100; 
 
     public WaveformMetrics(double _xmax, double _xmin, 
-	double _ymax, double _ymin, Rectangle limits, Dimension d, boolean _x_log, boolean _y_log)
+	double _ymax, double _ymin, Rectangle limits, Dimension d, boolean _x_log, boolean _y_log,
+	int horizontal_offset, int vertical_offset)
     {
      	int ylabel_width = limits.width, xlabel_height = limits.height;
-	double delta_x, delta_y;
-	int border_y;
+	    double delta_x, delta_y;
+	    int border_y;
 	
-	if(_ymin > _ymax) _ymin = _ymax;
-	if(_xmin > _xmax) _xmin = _xmax;
-	start_x = ylabel_width;
-    	x_log = _x_log;
-	y_log = _y_log;
+	    this.horizontal_offset = horizontal_offset;
+	    this.vertical_offset = vertical_offset;
+	    if(_ymin > _ymax) _ymin = _ymax;
+	    if(_xmin > _xmax) _xmin = _xmax;
+	    start_x = ylabel_width ;
+        x_log = _x_log;
+	    y_log = _y_log;
 
-	border_y = xlabel_height;
-    	y_range = (d.height - border_y)/(double)d.height;
+	    border_y = xlabel_height;
+//    y_range = (d.height - border_y)/(double)d.height;
+        y_range = (d.height - border_y - 2*vertical_offset)/(double)d.height;
 	
-	x_range = (d.width - start_x)/(double)d.width;
-	x_offset = start_x/(double)d.width;	
+//	x_range = (d.width - start_x)/(double)d.width;
+	    x_range = (d.width - start_x - 2*horizontal_offset)/(double)d.width;
+	    x_offset = start_x/(double)d.width;	
 	
-	if(x_log)
-	{
-	    if(_xmax < MIN_LOG) _xmax = MIN_LOG;
-	    if(_xmin < MIN_LOG) _xmin = MIN_LOG; 
+	    if(x_log)
+	    {
+	        if(_xmax < MIN_LOG) _xmax = MIN_LOG;
+	        if(_xmin < MIN_LOG) _xmin = MIN_LOG; 
 	
-	    xmax = Math.log(_xmax)/LOG10;
-	    xmin = Math.log(_xmin)/LOG10;
-	}
-	else
-	{
-	    xmax = _xmax;
-	    xmin = _xmin;
-	}
+	        xmax = Math.log(_xmax)/LOG10;
+	        xmin = Math.log(_xmin)/LOG10;
+	    }
+	    else
+	    {
+	        xmax = _xmax;
+	        xmin = _xmin;
+	    }
         delta_x = xmax - xmin;
-	xmax += delta_x/100.;
-	xmin -= delta_x /100.;
+	    xmax += delta_x/100.;
+	    xmin -= delta_x /100.;
 
-	if(y_log)
-	{
-	    if(_ymax < MIN_LOG) _ymax = MIN_LOG;
-	    if(_ymin < MIN_LOG) _ymin = MIN_LOG; 
-	    ymax = Math.log(_ymax)/LOG10;
-	    ymin = Math.log(_ymin)/LOG10;
-	}
-	else
-	{
-	    ymax = _ymax;
-	    ymin = _ymin;
-	}
-	delta_y = ymax - ymin;
-	ymax += delta_y/50;
-	ymin -= delta_y / 50.;
+	    if(y_log)
+	    {
+	        if(_ymax < MIN_LOG) _ymax = MIN_LOG;
+	        if(_ymin < MIN_LOG) _ymin = MIN_LOG; 
+	        ymax = Math.log(_ymax)/LOG10;
+	        ymin = Math.log(_ymin)/LOG10;
+	    }
+	    else
+	    {
+	        ymax = _ymax;
+	        ymin = _ymin;
+	    }
+	    delta_y = ymax - ymin;
+	    ymax += delta_y/50;
+	    ymin -= delta_y / 50.;
 
-	xrange = xmax - xmin;
-	yrange = ymax - ymin;
-	
-	if(xrange <= 0)
-	{ 
-	    xrange = (double)1E-10;
-	    x_offset = 0.5;
-	}
- 	if(yrange <= 0)
-	{
-	    yrange = (double)1E-10;
-	}
+	    xrange = xmax - xmin;
+	    yrange = ymax - ymin;
+    	
+	    if(xrange <= 0)
+	    { 
+	        xrange = (double)1E-10;
+	        x_offset = 0.5;
+	    }
+ 	    if(yrange <= 0)
+	    {
+	        yrange = (double)1E-10;
+	    }
     }
     final public double XMax() {return xmax;}
     final public double YMax() {return ymax;}
@@ -97,9 +105,11 @@ public  class WaveformMetrics implements Serializable {
     final public boolean YLog() {return y_log;}	
     final public void ComputeFactors(Dimension d)
     {
-	OFS_X = x_offset * d.width - xmin*x_range*d.width/xrange + 0.5;
+//	OFS_X = x_offset * d.width - xmin*x_range*d.width/xrange + 0.5;
+	OFS_X = x_offset * d.width - xmin*x_range*d.width/xrange + horizontal_offset + 0.5;
 	FACT_X = x_range*d.width/xrange;
-	OFS_Y = y_range * ymax*d.height/yrange + 0.5;
+//	OFS_Y = y_range * ymax*d.height/yrange + 0.5;
+	OFS_Y = y_range * ymax*d.height/yrange + vertical_offset + 0.5;
 	FACT_Y = -y_range * d.height/yrange;
     }
     final public int XPixel(double x)

@@ -97,12 +97,14 @@ public class SignalCache {
 
  public void putCacheData(String provider, String expression, String experiment, int shot, Object data)
  {
-    if(provider == null || expression == null || data == null) return;
+ //   if(provider == null || expression == null || data == null) return;
+    
+    if(expression == null || data == null) return;
     
     if(experiment == null) 
         experiment = "";
         
-    String name = provider.trim().toUpperCase()+
+    String name = //provider.trim().toUpperCase()+
                   expression.trim().toUpperCase()+
                   experiment.trim().toUpperCase()+shot;
     
@@ -130,12 +132,15 @@ public class SignalCache {
 
  public Object getCacheData(String provider, String expression, String experiment, int shot)
  {
-    if(provider == null || expression == null) return null;
+    
+    
+    //if(provider == null || expression == null) return null;
+    if(expression == null) return null;
 
     if(experiment == null) 
         experiment = "";
     
-    String name = provider.trim().toUpperCase()+
+    String name = //provider.trim().toUpperCase()+
                   expression.trim().toUpperCase()+
                   experiment.trim().toUpperCase()+ shot;
     if(!isInCache(name)) return null;
@@ -146,14 +151,17 @@ public class SignalCache {
     {
         FileInputStream istream = new FileInputStream(cache_file);
         ObjectInputStream p = new ObjectInputStream(istream);
-        DataCached dc = (DataCached)p.readObject();
+        DataCached dc = null;
+        try
+        {
+            dc = (DataCached)p.readObject();
+        } catch (ClassNotFoundException e) {System.out.println(e);}
         istream.close();
         
-        if(dc.equals(expression, experiment, shot))
+        if(dc != null && dc.equals(expression, experiment, shot))
             return dc.data;
         
      } catch (IOException e) {System.out.println(e);}
-       catch (ClassNotFoundException e) {System.out.println(e);}
      
      return null;
  }

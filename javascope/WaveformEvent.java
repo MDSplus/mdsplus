@@ -14,6 +14,7 @@ public class WaveformEvent extends AWTEvent {
     static final int POINT_IMAGE_UPDATE   = AWTEvent.RESERVED_ID_MAX + 9;
     static final int START_UPDATE         = AWTEvent.RESERVED_ID_MAX + 10;
     static final int END_UPDATE           = AWTEvent.RESERVED_ID_MAX + 11;
+    static final int CACHE_DATA           = AWTEvent.RESERVED_ID_MAX + 12;
     
     int    signal_idx;
     int    pixel_value;

@@ -14,34 +14,7 @@ public class MdsPlusBrowseSignals extends jScopeBrowseSignals
     {
         String sig_path = null, curr_line;
         try
-        {
-            /*
-            URLConnection urlcon;
-            URL u = new URL(url_name);//+"?only");//read properties first 
-            urlcon = u.openConnection();
-            BufferedReader br = new BufferedReader(new InputStreamReader(urlcon.getInputStream()));
-            while (sig_path == null)
-            {
-                try {
-                    curr_line = br.readLine();
-                      System.out.println(curr_line);
-                      sig_path = curr_line;
-//                    if(curr_line.startsWith("Path"))
-//                        sig_path = curr_line.substring(curr_line.indexOf("\\"));
-//                    if(curr_line.startsWith("Should be handle"))
-//                        sig_path = curr_line.substring(curr_line.indexOf("http:"), 
-//                                                       curr_line.indexOf("?only"));
-               }
-                catch(Exception exc) 
-                {
- 		             JOptionPane.showMessageDialog(this, "Error reading URL " + url_name + " :unexpected properties format", 
-		                                "alert", JOptionPane.ERROR_MESSAGE);
-		             return null;
-                }
-            }
-            
-            */
-            
+        {            
             if(url_name != null)
             {
                 String name;
@@ -66,14 +39,6 @@ public class MdsPlusBrowseSignals extends jScopeBrowseSignals
                     shot = (String)pr.getProperty("shot");
                     sig_path = (String)pr.getProperty("path");
                     
-                    /*
-                    dummy = st.nextToken();
-                    server_url = st.nextToken();
-                    tree  = st.nextToken();
-                    group = st.nextToken();
-                    shot  = st.nextToken();
-                    sig_path = server_url+"//"+group+st.nextToken("");
-                    */
                 }
             }
         } 

@@ -25,7 +25,7 @@ public class TextorBrowseSignals extends jScopeBrowseSignals
                }
                 catch(Exception exc) 
                 {
- 		             JOptionPane.showMessageDialog(this, "Error reading URL " + url_name + " :unexpected properties format", 
+ 		             JOptionPane.showMessageDialog(this, "Error reading URL " + url_name + " :unexpected properties format when read SignalURL property", 
 		                                "alert", JOptionPane.ERROR_MESSAGE);
 		             return null;
                 }

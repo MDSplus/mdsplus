@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.*;
 import java.io.*;
 import javax.swing.*;
-//import java.awt.print.*;
+import javax.swing.JFrame;
 
 
 class jScopeWaveContainer extends WaveformContainer 
@@ -50,7 +50,8 @@ class jScopeWaveContainer extends WaveformContainer
               MdsWaveInterface mds_wi[];
     private   String    save_as_txt_directory = null;
     private   jScopeBrowseSignals browse_sig = null;
-    private   boolean modified; 
+    private   boolean modified_xx; 
+    private   String prev_add_signal = null;
 
     class UpdW extends Thread  
     {
@@ -89,18 +90,21 @@ class jScopeWaveContainer extends WaveformContainer
                          	
                         date = new Date();
                         end = date.getTime();
-                         	     	    
+                        
+                        String msg;
 	                    if(!abort)
-                            wce = new WaveContainerEvent(this, WaveContainerEvent.END_UPDATE, "All waveforms are up to date < "+(end-start)+" ms >");
+                            msg = "All waveforms are up to date < "+(end-start)+" ms >";
 	                    else
-                            wce = new WaveContainerEvent(this, WaveContainerEvent.KILL_UPDATE, " Aborted ");
+                            msg = " Aborted ";
+                                                        
+                        wce = new WaveContainerEvent(this, WaveContainerEvent.END_UPDATE, msg);
 
                         jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
                     	    	    
 	                } 
 	                catch(Throwable e) 
 	                {
-                        wce = new WaveContainerEvent(this, WaveContainerEvent.KILL_UPDATE, "Error during apply " + e);
+                        wce = new WaveContainerEvent(this, WaveContainerEvent.KILL_UPDATE, e.getMessage());
                         jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
 	                }
                 } catch (InterruptedException e){}
@@ -118,7 +122,6 @@ class jScopeWaveContainer extends WaveformContainer
     public jScopeWaveContainer(int rows[], jScopeDefaultValues def_vals)
     {
         this(rows, null, def_vals);
-        
     }
 
        
@@ -141,7 +144,7 @@ class jScopeWaveContainer extends WaveformContainer
         jScopeMultiWave      wave = null;
         for(int i = 0; i < c.length;i++)
         {
-	       wave = buildjScopeMultiWave(dp, def_vals);
+	       wave = BuildjScopeMultiWave(dp, def_vals);
 	       wave.wi.full_flag = !GetFastNetworkState();
 	       wave.addWaveformListener(this);
 	       SetWaveParams(wave);
@@ -150,12 +153,12 @@ class jScopeWaveContainer extends WaveformContainer
         return c;
     }
     
-    protected jScopeMultiWave buildjScopeMultiWave(DataProvider dp, jScopeDefaultValues def_vals)
+    protected jScopeMultiWave BuildjScopeMultiWave(DataProvider dp, jScopeDefaultValues def_vals)
     {
         return new jScopeMultiWave(dp, def_vals);
     }
     
-    public void initMdsWaveInterface()
+    public void InitMdsWaveInterface()
     {
         jScopeMultiWave w;
         
@@ -184,7 +187,9 @@ class jScopeWaveContainer extends WaveformContainer
 	        if(w != null)
 	        {
 	   	        if(w.wi != null)
+	   	        {
 		            w.wi.SetDataProvider(dp);
+	            }
 	            w.Erase();
 	            w.SetTitle(null);
 		    }
@@ -223,92 +228,59 @@ class jScopeWaveContainer extends WaveformContainer
     public String GetTitle(){return title;}
     public String GetEvent(){return event;}
     public String GetPrintEvent(){return print_event;}
-    public String GetServerName(){return server_item.data_server;}
-    public String getBrowseClass(){return server_item.browse_class;}
-    public String getBrowseUrl(){return server_item.browse_url;}
-    public DataServerItem getServerItem(){return server_item;}
+    public String GetServerLabel(){return (server_item != null ? server_item.name : "");}
+    public String GetServerArgument(){return (server_item != null ? server_item.argument : "");}
+    public String GetBrowseClass(){return (server_item != null ? server_item.browse_class : "");}
+    public String GetBrowseUrl(){return (server_item != null ? server_item.browse_url : "");}
+    public DataServerItem GetServerItem(){return server_item;}
     
     
     public String GetServerInfo()
     {
-        if(dp == null && server_item != null && server_item.data_server != null)
-            return "Can't connect to " + server_item.data_server;
+        if(dp == null && server_item != null && server_item.name != null)
+            return "Can't connect to " + server_item.name;
         if(dp == null && server_item == null)
             return "Not connected";
             
-        return server_item.data_server;
+        return server_item.name;
     }
    
     public void    SetTitle(String title){this.title = title;}
     
-    public void    SetServerItem(DataServerItem server_item)
-    {
-        this.server_item = server_item;
-    }
 
-    public boolean supportsFastNetwork(){return supports_fast_network;}
-    public boolean supportsLocalProvider(){return supports_local;}
+    public boolean SupportsFastNetwork(){return supports_fast_network;}
     
-    public boolean supportsCompression()
+    public boolean SupportsCompression()
     {
         if(dp != null)
-            return dp.supportsCompression();
+            return dp.SupportsCompression();
         else
             return false;
     }
     
-    
-    public boolean compressionEnable()
+    public void SetCompression(boolean state, UpdateEventListener l) throws IOException
     {
-        if(dp != null)
-            return dp.useCompression();
-        else
-            return false;
-    }
-
-    public void setCompression(boolean state, NetworkListener l) throws IOException
-    {
-        if(dp != null && dp.supportsCompression() && dp.useCompression() != state) 
+        if(dp != null && dp.SupportsCompression()) 
         {
             RemoveAllEvents(l);
-            dp.disconnect();
-            dp.setCompression(state);
+            dp.SetCompression(state);
             AddAllEvents(l);
         }
     }
     
-    public void freeCache()
+    public void FreeCache()
     {
-        dp.freeCache();
+        WaveInterface.FreeCache();
+    }
+
+    public void EnableCache(boolean state)
+    {
+        WaveInterface.EnableCache(state);
     }
 
     
-    public boolean supportsCache()
-    {
-        if(dp != null)
-            return dp.supportsCache();
-        else
-            return false;
-    }
-
-    public void enableCache(boolean state)
-    {
-        if(dp != null)
-            dp.enableCache(state);
-    }
-
-    public boolean isCacheEnabled()
-    {
-        if(dp != null)
-            return dp.isCacheEnabled();
-        else
-            return false;
-    }
-
-
-    
-  public void SetBriefError(boolean brief_error){this.brief_error = brief_error;}
-  public boolean getBriefError(){return brief_error;}
+//  public void SetBriefError(boolean brief_error){this.brief_error = brief_error;}
+//  public boolean GetBriefError(){return brief_error;}
  
     /*
   public void PrintAllWaves(PrinterJob prnJob, PageFormat pf) throws PrinterException
@@ -343,15 +315,16 @@ class jScopeWaveContainer extends WaveformContainer
 	            if(w.wi.isAddSignal())
 	            {
 	                String er;
+	                
+	                if(!w.wi.IsSignalAdded())
+	                    prev_add_signal = null;
+	                    
 	                if(w.wi.error != null)
 	                    er = w.wi.error;
 	                else
-	                     er = ((MdsWaveInterface)w.wi).getErrorString(this.brief_error);
+	                    er = ((MdsWaveInterface)w.wi).getErrorString();//this.brief_error);
 	                if(er != null)
-//		                JOptionPane.showMessageDialog(this, er, 
-//		                                            "alert", 
-//		                                            JOptionPane.ERROR_MESSAGE);
-		                jScope_1.ShowMessage(this, er, 
+		                JOptionPane.showMessageDialog(this, er, 
 		                                            "alert", 
 		                                            JOptionPane.ERROR_MESSAGE);
 	                w.wi.setAddSignal(false);
@@ -363,18 +336,18 @@ class jScopeWaveContainer extends WaveformContainer
         }
     }
 
-    public void showBrowseSignals()
+    public void ShowBrowseSignals()
     {
         if(browse_sig != null)
             browse_sig.show();
         else
         {
           String msg;
-          if(this.getBrowseUrl() == null)
+          if(this.GetBrowseUrl() == null)
             msg = "Signals browser not yet implemented on this data server";
           else
           {
-            msg = "jScope is unable to locate the signal server page at " + this.getBrowseUrl();
+            msg = "jScope is unable to locate the signal server page at " + this.GetBrowseUrl();
             msg = msg + "\nModify browse_url property for this data server in jScope.properties file.";
 		  }
 		  JOptionPane.showMessageDialog(null, msg , "alert", JOptionPane.ERROR_MESSAGE); 
@@ -387,7 +360,7 @@ class jScopeWaveContainer extends WaveformContainer
             profile_dialog.dispose();
         //if(profile_dialog == null)
         {
-            profile_dialog = new ProfileDialog(wave);
+            profile_dialog = new ProfileDialog(GetFrameParent(), wave);
             profile_dialog.pack();
             profile_dialog.setSize(200, 300);
             if(profile_source != null)
@@ -440,30 +413,17 @@ class jScopeWaveContainer extends WaveformContainer
         updateThread = new UpdW();
         updateThread.start();
       }
-      initMdsWaveInterface();
+      InitMdsWaveInterface();
       updateThread.StartUpdate();
   }
 
-/*
-  public void StartPrint(PrinterJob prnJob, PageFormat pf)
-  {
-    try
-    {
-      initMdsWaveInterface();
-      UpdateAllWave();
-      PrintAllWaves(prnJob, pf);
-    } catch (InterruptedException e){}
-      catch (PrinterException e){}
-      catch (Exception e){}
-  }
-*/
 
   public int[] getMainShots()
   {
      try
      {
         if(main_shot_changed)
-            evaluateMainShot(main_shot_str);
+            EvaluateMainShot(main_shot_str);
      } catch (IOException e){}
      return main_shots;
   }
@@ -473,12 +433,12 @@ class jScopeWaveContainer extends WaveformContainer
     try
     {
         if(main_shot_changed)
-            evaluateMainShot(main_shot_str);
+            EvaluateMainShot(main_shot_str);
     } catch (IOException e){}
     return main_shot_str;
   }
 
-  public void setMainShotStr(String main_shot_str)
+  public void SetMainShotStr(String main_shot_str)
   {
     if(main_shot_str == null || !main_shot_str.equals(this.main_shot_str))
        main_shot_changed = true;
@@ -493,7 +453,7 @@ class jScopeWaveContainer extends WaveformContainer
         return main_shot_error;
   }
 
-  public void evaluateMainShot(String in_shots) throws IOException
+  public void EvaluateMainShot(String in_shots) throws IOException
   {
         String error = null;
 	    int int_data[] = null;
@@ -515,7 +475,7 @@ class jScopeWaveContainer extends WaveformContainer
         main_shot_str = null;
 	
 //	    dp.Update(null, 0);
-	    int_data = dp.GetIntArray(in_shots);
+	    int_data = dp.GetShots(in_shots);
 	    if( int_data == null || int_data.length == 0 || int_data.length > MdsWaveInterface.MAX_NUM_SHOT)
 	    {
 	        if(int_data != null && int_data.length > MdsWaveInterface.MAX_NUM_SHOT)
@@ -543,7 +503,7 @@ class jScopeWaveContainer extends WaveformContainer
   }
 
 
-  public void RemoveAllEvents(NetworkListener l)  throws IOException
+  public void RemoveAllEvents(UpdateEventListener l)  throws IOException
   {
      jScopeMultiWave w;
      MdsWaveInterface wi; 
@@ -552,10 +512,10 @@ class jScopeWaveContainer extends WaveformContainer
         return;
     
      if(event != null && event.length() != 0)
-		 dp.removeNetworkListener(l, event);
+		 dp.RemoveUpdateEventListener(l, event);
      
      if(print_event != null && print_event.length() != 0)
-		 dp.removeNetworkListener(l, print_event);      
+		 dp.RemoveUpdateEventListener(l, print_event);      
         
 	 for(int i = 0, k = 0; i < 4; i++)
 	 {
@@ -567,7 +527,7 @@ class jScopeWaveContainer extends WaveformContainer
      }
   }
    
-  public synchronized void AddAllEvents(NetworkListener l)  throws IOException
+  public synchronized void AddAllEvents(UpdateEventListener l)  throws IOException
   {
      jScopeMultiWave w;
      MdsWaveInterface wi; 
@@ -576,10 +536,10 @@ class jScopeWaveContainer extends WaveformContainer
         return;
 
      if(event != null && event.length() != 0)
-		 dp.addNetworkListener(l, event);
+		 dp.AddUpdateEventListener(l, event);
      
      if(print_event != null && print_event.length() != 0)
-		 dp.addNetworkListener(l, print_event);      
+		 dp.AddUpdateEventListener(l, print_event);      
     
 	 for(int i = 0, k = 0; i < 4; i++)
 	 {
@@ -621,7 +581,6 @@ class jScopeWaveContainer extends WaveformContainer
 	        if(w != null && w.wi != null ) {
 		       w.wi.full_flag = !state;
 		       w.wi.setModified(true);
-		       //Refresh(w, "Refresh");
 		    }
 		}
     }    
@@ -641,11 +600,7 @@ class jScopeWaveContainer extends WaveformContainer
     {
         jScopeMultiWave w;
         WaveContainerEvent wce;
-        
-        int curr_mode = GetMode();
-	    //SetMode(Waveform.MODE_WAIT);
-    	setCursor(new Cursor(Cursor.WAIT_CURSOR));
-    	
+            	
         try
         {
 
@@ -664,8 +619,6 @@ class jScopeWaveContainer extends WaveformContainer
 		        {
 		            if(mds_wi[k] != null)
 		                mds_wi[k].Update();
-		            //w = (jScopeMultiWave)getGridComponent(k);
-		            //((MdsWaveInterface)w.wi).Update();
 		        }
 	        }
 
@@ -674,14 +627,11 @@ class jScopeWaveContainer extends WaveformContainer
 	        {
 		        for(int j = 0; j < rows[i] && !abort; j++, k++) 
 		        {
-		        // w = (jScopeMultiWave)getGridComponent(k);
-		        // if( w.wi!= null && w.wi.error == null)
 		            if(mds_wi[k] != null && mds_wi[k].error == null)
 		            {
 			            wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, 
 							        "Start Evaluate column " + (i + 1) + " row " + (j + 1));
                         dispatchWaveContainerEvent(wce);
-			            //w.wi.StartEvaluate();
 			            mds_wi[k].StartEvaluate();
 		            }
 		        }
@@ -696,16 +646,12 @@ class jScopeWaveContainer extends WaveformContainer
 		            {
 			            for(int j = 0; j < rows[i] && !abort; j++, k++)
 			            {
-    //		                w = (jScopeMultiWave)getGridComponent(k);
-    //			            MdsWaveInterface wi = (MdsWaveInterface)w.wi;
-    //			            if(wi != null && wi.error == null && wi.num_waves != 0 && wi.UseDefaultShot())
 			                if(mds_wi[k] != null && mds_wi[k].error == null && mds_wi[k].num_waves != 0 && mds_wi[k].UseDefaultShot())
 			                {
 					            wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, 
 								                "Update signal column " + (i + 1) + " row " + (j + 1) + 
 								                " main shot " + main_shots[l]);
 					            dispatchWaveContainerEvent(wce);
-    //				            wi.EvaluateShot(main_shots[l]);			
 				                mds_wi[k].EvaluateShot(main_shots[l]);			
 				            }
 			            }
@@ -719,68 +665,63 @@ class jScopeWaveContainer extends WaveformContainer
 	        {
 		        for(int j = 0; j < rows[i] && !abort; j++, k++) 
 		        {
-		    //      w = (jScopeMultiWave)getGridComponent(k);
-            //      if(w.wi != null && w.wi.error == null && w.wi.num_waves != 0)
 			        if(mds_wi[k] != null && mds_wi[k].error == null && mds_wi[k].num_waves != 0)
                     {
                         wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, 
                                 "Evaluate wave column " + (i + 1) + " row " + (j + 1));
                         dispatchWaveContainerEvent(wce);
-			        //    w.wi.EvaluateOthers();
 			            mds_wi[k].EvaluateOthers();
     			        
 		            }		    
 		        }
 	        }	    
 
-            SwingUtilities.invokeLater(new Runnable() 
-            {
-                public void run()
-                {
-                    jScopeMultiWave wx;
-	                for(int i = 0, k = 0; i < 4 && !abort; i++)
-	                {
-		                for(int j = 0; j < rows[i] && !abort; j++, k++) 
-		                {
-	    	                wx = (jScopeMultiWave)getGridComponent(k);
-	    	                if(wx.wi != null)
-			                    wx.Update(wx.wi);
-		                }
-                    }
-                }
-             });
-            
+             RepaintAllWave();
              mds_wi = null;
-            
-	 //       System.gc();
-	//        SetMode(curr_mode);
-
-	        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        
-        } catch (Exception e) 
+                    
+        } 
+        catch (Exception e) 
         {
-   //       System.gc();
-  //        SetMode(curr_mode);
-  	        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            RepaintAllWave();
             throw(new Exception(""+e));
         }
     }
 
-    private String AddRemoveEvent(NetworkListener l, String curr_event, String event)  throws IOException
+    private void RepaintAllWave()
+    {
+        SwingUtilities.invokeLater(new Runnable() 
+        {
+            public void run()
+            {
+                jScopeMultiWave wx;
+	            for(int i = 0, k = 0; i < 4 /*&& !abort*/; i++)
+	            {
+		            for(int j = 0; j < rows[i] /*&& !abort*/; j++, k++) 
+		            {
+	    	            wx = (jScopeMultiWave)getGridComponent(k);
+	    	            if(wx.wi != null)
+			                wx.Update(wx.wi);
+		            }
+                }
+            }
+            });
+    }
+
+    private String AddRemoveEvent(UpdateEventListener l, String curr_event, String event)  throws IOException
     {
         if(curr_event != null && curr_event.length() != 0)
         {
             if(event == null || event.length() == 0)
             {
-                dp.removeNetworkListener(l, curr_event);
+                dp.RemoveUpdateEventListener(l, curr_event);
                 return null;
             } 
             else 
             {
                 if(!curr_event.equals(event))
                 {
-                    dp.removeNetworkListener(l, curr_event);
-                    dp.addNetworkListener(l, event);
+                    dp.RemoveUpdateEventListener(l, curr_event);
+                    dp.AddUpdateEventListener(l, event);
                     return event;
                 }
             }
@@ -788,19 +729,19 @@ class jScopeWaveContainer extends WaveformContainer
          else 
          {
             if(event != null && event.length() != 0) 
-                dp.addNetworkListener(l, event);
+                dp.AddUpdateEventListener(l, event);
                 return event;
          }
          return null;
     }
 
-    public void SetEvent(NetworkListener l, String event) throws IOException
+    public void SetEvent(UpdateEventListener l, String event) throws IOException
     {
         this.event = AddRemoveEvent(l, this.event, event);
     }
     
 
-    public void SetPrintEvent(NetworkListener l, String print_event) throws IOException
+    public void SetPrintEvent(UpdateEventListener l, String print_event) throws IOException
     {
         this.print_event = AddRemoveEvent(l, this.print_event, print_event);
     }
@@ -832,20 +773,26 @@ class jScopeWaveContainer extends WaveformContainer
 		    fast_network_access =  new Boolean(prop).booleanValue();
 	    }
 	    
-	    prop = pr.getProperty(prompt+".data_server_address");
+	    prop = pr.getProperty(prompt+".data_server_name");
 	    if(prop != null)
 	    {
 	        server_item = new DataServerItem();
-	        String server_name;
-		    server_name = prop;
-            int idx = server_name.indexOf("|");
-            if(idx != -1)
-            {
-                String user = server_name.substring(0, idx);
-                if(!user.equals(System.getProperty("user.name")))
-                    server_name = System.getProperty("user.name") + server_name.substring(idx, server_name.length());
-            }
-		    server_item.data_server = server_name;
+		    server_item.name = prop;
+        }
+
+        if(server_item != null)
+        {
+            server_item.argument = pr.getProperty(prompt+".data_server_argument");
+        }
+        
+        if(server_item != null)
+        {
+            server_item.user = pr.getProperty(prompt+".data_server_user");
+        }
+
+        if(server_item != null)
+        {
+            server_item.class_name = pr.getProperty(prompt+".data_server_class");
         }
         
         if(server_item != null)
@@ -910,6 +857,35 @@ class jScopeWaveContainer extends WaveformContainer
 	    def_vals.upd_event_str = pr.getProperty(prompt+".global_1_1.event");
 	    
 	    def_vals.def_node_str = pr.getProperty(prompt+".global_1_1.default_node");
+ 
+        prop = pr.getProperty(prompt+".global_1_1.horizontal_offset");
+        {
+            if(prop != null)
+            {
+                int v = 0;
+                try
+                {
+                    v = Integer.parseInt(prop);
+                }
+                catch(NumberFormatException exc){}
+                Waveform.SetHorizontalOffset(v);
+            }    
+        }
+
+        prop = pr.getProperty(prompt+".global_1_1.vertical_offset");
+        {
+            if(prop != null)
+            {
+                int v = 0;
+                try
+                {
+                    v = Integer.parseInt(prop);
+                }
+                catch(NumberFormatException exc){}
+                Waveform.SetVerticalOffset(v);
+            }    
+        }
+
         
         prop = pr.getProperty(prompt+".global_1_1.shot");
         if(prop != null)
@@ -1004,123 +980,75 @@ class jScopeWaveContainer extends WaveformContainer
     else
         return false;
   }
-
-    public String SetDataServer(DataServerItem server_item, NetworkListener l)//String new_data_server, NetworkListener l)
+  
+  private JFrame GetFrameParent()
+  {
+        Container c = this;
+        while(c != null && !(c instanceof JFrame))
+            c = c.getParent();
+        return (JFrame)c;
+  }
+  
+    public void SetDataServer(DataServerItem server_item, UpdateEventListener l) throws Exception
     {
+        
 	    boolean change = false;  
-	    //DataProvider old_dp = dp;
 	    DataProvider new_dp = null;
 	    String error = null;
 	    
-	    if(server_item == null || server_item.data_server.trim().length() == 0)
-	        return "Defined null or empty data server name";
+	    if(server_item == null || server_item.name.trim().length() == 0)
+	        throw(new Exception("Defined null or empty data server name"));
 	        
-	    String new_data_server = server_item.data_server;
 	    
-        if(new_data_server.equals("Local") && supports_local)
-        {
-	        try {
-		        new_dp = new LocalProvider();
-		        fast_network_access = false;
-		        supports_fast_network = false;
-		        supports_local = true;
-		        change = true;	
-	        } catch (Throwable ex) {
-		        supports_local = false;
-		        error = "Local data access is not supported on this platform";
-		        change = false;
-	        }
-	    } 
-
-	    if(new_data_server.equals("Jet MDSPlus data"))
-	    {
-		    new_dp = new JetMdsProvider();
-		    fast_network_access = false;
-		    supports_fast_network = true;
-		    change = true;	
-	    }
-	    
-	    
-//Gabriele 26/10/99
-        if(new_data_server.equals("Jet data"))
-        {
-            new_dp = new JetDataProvider();
-            Container c = this;
-            while(c != null && !(c instanceof JFrame))
-                c = c.getParent();
-            ((JetDataProvider)new_dp).InquireCredentials((JFrame)c);//(JFrame)this.getParent().getParent());
-            int option = ((JetDataProvider)new_dp).GetLoginStatus();
-            switch(option)
-            {
-                case JetDataProvider.LOGIN_OK :
-		            fast_network_access = false;
-		            supports_fast_network = false;
-                    change = true;
-                break;
-                case JetDataProvider.LOGIN_ERROR :
-                    return "Invallid Login";
-                case JetDataProvider.LOGIN_CANCEL :
-                    return null;         
-            }
-        } 
-    
-        if(new_data_server.indexOf("Ftu data") != -1)
+        if(server_item.class_name != null)
         {
             try
             {
-	            String ip = new_data_server.substring(new_data_server.indexOf(":")+1, new_data_server.length());
-                new_dp = new FtuProvider(ip);
-                fast_network_access = false;
-		        supports_fast_network = true;
-                change = true;
+                Class cl = Class.forName(server_item.class_name);
+                new_dp = (DataProvider)cl.newInstance();
             } 
-            catch (IOException ex) 
+            catch (Exception e)
             {
-		        error = "Ftu data server error :" + ex.getMessage();
-		        change = false;
+	            throw(new Exception("Can't load data provider class : "+ server_item.class_name));
             }
-        } 
+        } else {
+	        throw(new Exception("Undefine data provider class for "+ server_item.name));
+        }
+
+        int option = new_dp.InquireCredentials(GetFrameParent(), server_item.user);
+        switch(option)
+        {
+            case DataProvider.LOGIN_OK :
+		       // fast_network_access = false;
+		        supports_fast_network = new_dp.SupportsFastNetwork();
+                change = true;
+            break;
+            case DataProvider.LOGIN_ERROR :
+	            throw(new Exception("Invalid login"));
+            case DataProvider.LOGIN_CANCEL :
+                return;         
+        }
         
-        if(new_data_server.indexOf("TEXTOR data") != -1)
-        {
-            new_dp = new TWUDataProvider();
-            fast_network_access = false;
-		    supports_fast_network = true;
-            change = true;
-        } 
-
-        if(new_data_server.equals("Demo server"))
-        {
-            new_dp = new DemoProvider();
- 		    fast_network_access = false;
-		    supports_fast_network = false;
-            change = true;
-        }
-
-        if(!change && IsIpAddress(new_data_server))
-        {
-	        new_dp = new NetworkProvider(new_data_server);
-            fast_network_access = false;
-		    supports_fast_network = true;
-            change = true;
-        }
-
+        new_dp.SetArgument(server_item.argument);
+	    
 	    if(change) 
 	    {
+	        if (browse_sig != null && browse_sig.isShowing())
+	            browse_sig.setVisible(false);
+	            
 	        try
 	        {
 	            RemoveAllEvents(l);
 	        
 	            if(dp != null) {
-                    dp.removeConnectionListener((ConnectionListener)l);
-                    dp.disconnect();
+                    dp.RemoveConnectionListener((ConnectionListener)l);
+                    dp.Dispose();
                 }
                 
 	            dp = new_dp;
                 if(dp != null)
-                    dp.addConnectionListener((ConnectionListener)l);
+                    dp.AddConnectionListener((ConnectionListener)l);
                     
-                SetServerItem(server_item);
                 ChangeDataProvider(dp);
                 AddAllEvents(l);
                 
@@ -1138,10 +1066,11 @@ class jScopeWaveContainer extends WaveformContainer
                     } 
                     catch (Exception e)
                     {
-		   //             JOptionPane.showMessageDialog(this, "Can't create browse signal : "+e, 
-		   //                                         "alert", 
-		   //                                         JOptionPane.ERROR_MESSAGE);
-                        browse_sig = null;
+                       browse_sig = null;
+ 		               JOptionPane.showMessageDialog(this, 
+ 		                                             "Unable to locate the signal server "+
+ 		                                             server_item.browse_url +" : "+e.getMessage(), 
+		                                             "alert", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
                     browse_sig = null;
@@ -1150,19 +1079,26 @@ class jScopeWaveContainer extends WaveformContainer
             } 
             catch (IOException e) 
             {
-                SetServerItem(server_item);
+                server_item = null;
                 dp = null;
-                error = e.getMessage();
+                throw(new Exception(e.getMessage()));
             }
-	    } else
-            error = "Data server "+ new_data_server +" not defined\n";        
-	    
-	    	
-	    return error;
+	    }
+	    	        
     }
-    
+
+    public void AddSignal(String expr, boolean check_prev_signal)
+    {
+        if(expr != null && expr.length() != 0)
+            if( !check_prev_signal || (check_prev_signal && (prev_add_signal == null || !prev_add_signal.equals(expr))))
+            {
+                prev_add_signal = expr;
+                AddSignal(null, null, expr, false);
+            }
+    }
+
     // with_error == true => Signals is added also if an error occurs 
-    // during its evaluation
+    // during its evaluations
     public void AddSignal(String tree, String shot, String expr, boolean with_error)
     {
         MdsWaveInterface new_wi = null;
@@ -1199,22 +1135,13 @@ class jScopeWaveContainer extends WaveformContainer
         if(sel_wave.wi.AddSignal(expr)) 
         {
             add_sig = true;
-            modified = true;
             Refresh(sel_wave, "Add signal to");
             update();
             add_sig = false;
 	    }
     }
     
-    public boolean isChange()
-    {
-        return modified;
-    }
 
-    public void AddSignal(String expr)
-    {
-        AddSignal(null, null, expr, false);
-    }
 
     public void ToFile(PrintWriter out, String prompt) throws IOException
     {
@@ -1224,7 +1151,12 @@ class jScopeWaveContainer extends WaveformContainer
 	    WaveInterface.WriteLine(out, prompt + "title: ", title);
 	    if(server_item != null)
 	    {
-	        WaveInterface.WriteLine(out, prompt + "data_server_address: ",      server_item.data_server);
+	        WaveInterface.WriteLine(out, prompt + "data_server_name: ",      server_item.name);
+	        WaveInterface.WriteLine(out, prompt + "data_server_class: ", server_item.class_name);
+	        if(server_item.argument != null)
+	            WaveInterface.WriteLine(out, prompt + "data_server_argument: ",   server_item.argument);
+	        if(server_item.user != null)
+	            WaveInterface.WriteLine(out, prompt + "data_server_user: ", server_item.user);	        
 	        if(server_item.browse_class != null)
 	            WaveInterface.WriteLine(out, prompt + "data_server_browse_class: ", server_item.browse_class);
 	        if(server_item.browse_url != null)
@@ -1248,6 +1180,8 @@ class jScopeWaveContainer extends WaveformContainer
 	    WaveInterface.WriteLine(out,prompt + "global_1_1.ymax: "          , def_vals.ymax);
 	    WaveInterface.WriteLine(out,prompt + "global_1_1.ymin: "          , def_vals.ymin);
 	    WaveInterface.WriteLine(out,prompt + "global_1_1.y_label: "       , def_vals.ylabel);
+	    WaveInterface.WriteLine(out,prompt + "global_1_1.horizontal_offset: "     , ""+Waveform.GetHorizontalOffset());
+	    WaveInterface.WriteLine(out,prompt + "global_1_1.vertical_offset: "       , ""+Waveform.GetVerticalOffset());
 	    
 	    out.println();
 	    	    

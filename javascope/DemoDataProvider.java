@@ -1,23 +1,91 @@
 import java.io.*;
+import javax.swing.JFrame;
 
 
-class DemoProvider implements DataProvider 
+class DemoDataProvider implements DataProvider 
 {
     String error = null;
+    int loop_count = 0;
 
-    public void    disconnect(){}
-    public boolean supportsCompression(){return false;}
-    public void    setCompression(boolean state){}
-    public boolean useCompression(){return false;}
-    public boolean supportsCache(){return false;}
-    public void    enableCache(boolean state){}
-    public boolean isCacheEnabled(){return false;}
-    public void    freeCache(){}
-    
-    public void SetDefaultNid(String exp)
+    class SimpleWaveData implements WaveData
     {
-        error = null;
+        String in_x, in_y;
+        
+        public SimpleWaveData(String in_y)
+        {
+            this.in_y = in_y;
+            this.in_x = in_y + "_x";
+        }
+        public SimpleWaveData(String in_y, String in_x)
+        {
+            this.in_y = in_y;
+            this.in_x = in_x;
+        }
+        
+        public int GetNumDimension()throws IOException
+        {
+            return 1;
+        }
+        
+        public float[] GetFloatData() throws IOException
+        {
+            return GetFloatArray(in_y);
+        }
+                
+        public float[] GetXData()   throws IOException
+        {
+            return GetFloatArray(in_x);
+        }
+        
+        public float[] GetYData()   throws IOException
+        {
+            return null;
+        }
+        
+        public String GetTitle()   throws IOException
+        {
+            return null;
+        }
+        public String GetXLabel()  throws IOException
+        {
+            return null;
+        }
+        public String GetYLabel()  throws IOException
+        {
+            return null;
+        }
+        public String GetZLabel()  throws IOException
+        {
+            return null;
+        }
+   }
+    
+    public WaveData GetWaveData(String in)
+    {
+        return new SimpleWaveData(in);
     }
+    public WaveData GetWaveData(String in_y, String in_x)
+    {
+        return new SimpleWaveData(in_y, in_x);
+    }
+    public WaveData GetResampledWaveData(String in, float start, float end, int n_points)
+    {
+        return null;
+    }
+    public WaveData GetResampledWaveData(String in_y, String in_x, float start, float end, int n_points)
+    {
+        return null;
+    }
+    
+    public void    Dispose(){}
+    public boolean SupportsCompression(){return false;}
+    public void    SetCompression(boolean state){}
+    public boolean SupportsContinuous() { return true; }
+    public int     InquireCredentials(JFrame f, String user){return DataProvider.LOGIN_OK;}
+    public boolean SupportsFastNetwork(){return false;}
+    public void    SetArgument(String arg){}
+
+    
     public void SetEnvironment(String exp)
     {
         error = null;
@@ -47,6 +115,9 @@ class DemoProvider implements DataProvider
     {
         float d[] = new float[1000];
         
+        try {
+            Thread.sleep(100, 0);
+        }catch(Exception exc){}
         error = null;
         if(!in.equals("sin") &&
            !in.equals("cos") &&
@@ -65,19 +136,20 @@ class DemoProvider implements DataProvider
                 continue;               
             }
             if(in.equals("cos")) {
-                d[i] = (float)Math.cos(6.28/1000*i);
+                d[i] = (float)Math.cos(loop_count/(float)100. * 6.28/1000*i);
                 continue;               
             }
             if(in.equals("sin*cos")) {
-                d[i] = (float)(Math.sin(6.28/1000*i) * Math.cos(6.28/1000*i));
+                d[i] = (float)(Math.sin(loop_count/200. * 6.28/1000*i) * Math.cos(6.28/1000*i));
                 continue;               
             }
             if(in.indexOf("_x") != -1)
-                d[i] = (float)6.28/1000*i;
+                d[i] = loop_count/(float)100. * (float)6.28/1000*i;
         }
         return d;
     }
-    public int[] GetIntArray(String in)
+    
+    public int[] GetShots(String in)
     {
         error = null;
         int d[] = new int[1];
@@ -85,48 +157,29 @@ class DemoProvider implements DataProvider
         return d;
         
     }
-    public String GetXSpecification(String in)
-    {
-        error = null;
-        return new String(in+"_x");
-    }
-    public String GetXDataSpecification(String in)
-    {
-        return null;
-    }
+    
     public String ErrorString()
     {
         return error;
     }
-    public boolean SupportsAsynch()
-    {
-        return false;
-    }
-    public void addNetworkListener(NetworkListener l, String event)
+    public void AddUpdateEventListener(UpdateEventListener l, String event)
     {
     }
-    public void removeNetworkListener(NetworkListener l, String event)
+    public void RemoveUpdateEventListener(UpdateEventListener l, String event)
     {
     }
-    public void    addConnectionListener(ConnectionListener l)
+    public void    AddConnectionListener(ConnectionListener l)
     {
     }
-    public void    removeConnectionListener(ConnectionListener l)
+    public void    RemoveConnectionListener(ConnectionListener l)
     {
     }
-    public String GetDefaultTitle(String in_y[])
+
+    public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
     {
-        return null;
+        throw(new IOException("Frames visualization on DemoDataProvider not implemented"));
     }
-    public String GetDefaultXLabel(String in_y[])
-    {
-        return null;
-        
-    }
-    public String GetDefaultYLabel(String in_y[])
-    {
-        return null;
-    }
+
     
     public float[] GetFrameTimes(String in_expr)
     {
@@ -207,5 +260,14 @@ class DemoProvider implements DataProvider
             
       
                 return buf;
-    }    
+    }
+    
+    public boolean DataPending()
+    {
+        if(loop_count++ < 100)
+            return true;
+        loop_count = 0;
+        return false;
+    }
+    
  }	    

@@ -21,8 +21,8 @@ public class SetupDefaults extends JDialog implements ActionListener {
       
    boolean reversed;
    
-   private JPanel        panel;
    private JTextField    x_grid_lines, y_grid_lines;
+   private JTextField    vertical_offset, horizontal_offset;
    private JComboBox	 grid_mode;
    private JComboBox     legend_mode;
    private JCheckBox     reversed_b; 
@@ -39,9 +39,7 @@ public class SetupDefaults extends JDialog implements ActionListener {
       super(fw, frame_title, true);
 //      super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
       setModal(true);
-      setResizable(false);
       
-//      this.def_vals = def_vals;      
       main_scope = (jScope_1)fw;
       
 	  GetPropertiesValue();
@@ -60,7 +58,7 @@ public class SetupDefaults extends JDialog implements ActionListener {
       getContentPane().add(lab);
 
       c.gridwidth = GridBagConstraints.REMAINDER; 
-      title = new JTextField(40);
+      title = new JTextField(30);
       gridbag.setConstraints(title, c);
       getContentPane().add(title);		 	
  	                       
@@ -153,54 +151,69 @@ public class SetupDefaults extends JDialog implements ActionListener {
       gridbag.setConstraints(def_node, c);
       getContentPane().add(def_node);
 
-    panel = new JPanel();
-    panel.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
-    c.fill =  GridBagConstraints.NONE;     
-    lab = new JLabel("Grid: Mode");
-    panel.add(lab);
-            
-    grid_mode = new JComboBox(Grid.GRID_MODE);
-    
-    grid_mode.setSelectedIndex(curr_grid_mode);	      	
-    panel.add(grid_mode);
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
+        c.fill =  GridBagConstraints.NONE;
+                
+        panel.add(new JLabel("   lines x:"));
+        panel.add(x_grid_lines = new JTextField(2));
+        x_grid_lines.addActionListener(this);
+        x_grid_lines.setText(""+x_curr_lines_grid);    
 
-    panel.add(new JLabel("   lines x:"));
-    panel.add(x_grid_lines = new JTextField(2));
-    x_grid_lines.addActionListener(this);
-    x_grid_lines.setText(""+x_curr_lines_grid);    
+        panel.add(new JLabel("   lines y:"));
+        panel.add(y_grid_lines = new JTextField(2));
+        y_grid_lines.addActionListener(this);
+        y_grid_lines.setText(""+y_curr_lines_grid);    
 
-    panel.add(new JLabel("   lines y:"));
-    panel.add(y_grid_lines = new JTextField(2));
-    y_grid_lines.addActionListener(this);
-    y_grid_lines.setText(""+y_curr_lines_grid);    
+        panel.add(new JLabel("   Vertical offset:"));
+        panel.add(vertical_offset = new JTextField(3));
+        vertical_offset.addActionListener(this);
+        vertical_offset.setText("");    
 
-    panel.add(reversed_b = new JCheckBox("Reversed"));
-    reversed_b.setHorizontalTextPosition(SwingConstants.LEFT);
+        panel.add(new JLabel("   Horizontal offset:"));
+        panel.add(horizontal_offset = new JTextField(3));
+        horizontal_offset.addActionListener(this);
+        horizontal_offset.setText("");    
 
-    
-    lab = new JLabel("Legend:");
-    panel.add(lab);
-    legend_mode = new JComboBox();
-    legend_mode.addItem("In Graphics");
-    legend_mode.addItem("Fixed Bottom");
-    legend_mode.addItem("Fixed Right");
-    legend_mode.setSelectedIndex(curr_legend_mode);	      	
-    panel.add(legend_mode);
+        gridbag.setConstraints(panel, c);
+        getContentPane().add(panel);	
 
-    lab = new JLabel("Auto color:");
-    panel.add(lab);
-    auto_color_mode = new JComboBox();
-    auto_color_mode.addItem("on shot");
-    auto_color_mode.addItem("on expression");
-    auto_color_mode.setSelectedIndex(WaveInterface.auto_color_on_expr ? 1 : 0);	      	
-    panel.add(auto_color_mode);
+        JPanel panel1 = new JPanel();
+        panel1.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
+        c.fill =  GridBagConstraints.NONE;
 
+        panel1.add(reversed_b = new JCheckBox("Reversed"));
+        reversed_b.setHorizontalTextPosition(SwingConstants.LEFT);
 
-    gridbag.setConstraints(panel, c);
-    getContentPane().add(panel);	
-     	      	
-      	      	
-    JPanel p1 = new JPanel();  	      	
+        lab = new JLabel("Grid: Mode");
+        panel1.add(lab);
+                        
+        grid_mode = new JComboBox(Grid.GRID_MODE);    
+        grid_mode.setSelectedIndex(curr_grid_mode);	      	
+        panel1.add(grid_mode);    
+                
+        lab = new JLabel("Legend:");
+        panel1.add(lab);
+        legend_mode = new JComboBox();
+        legend_mode.addItem("In Graphics");
+        legend_mode.addItem("Fixed Bottom");
+        legend_mode.addItem("Fixed Right");
+        legend_mode.setSelectedIndex(curr_legend_mode);	      	
+        panel1.add(legend_mode);
+
+        lab = new JLabel("Auto color:");
+        panel1.add(lab);
+        auto_color_mode = new JComboBox();
+        auto_color_mode.addItem("on shot");
+        auto_color_mode.addItem("on expression");
+        auto_color_mode.setSelectedIndex(WaveInterface.auto_color_on_expr ? 1 : 0);	      	
+        panel1.add(auto_color_mode);
+
+        gridbag.setConstraints(panel1, c);
+        getContentPane().add(panel1);	
+                 	      	
+                  	      	
+        JPanel p1 = new JPanel();  	      	
 
       ok = new JButton("Ok");
       ok.addActionListener(this);
@@ -227,7 +240,8 @@ public class SetupDefaults extends JDialog implements ActionListener {
       c.gridwidth = GridBagConstraints.REMAINDER;
       gridbag.setConstraints(p1, c);
       getContentPane().add(p1);	
-   }
+ 	  pack();
+  }
    
    private int IsGridMode(String mode)
    {
@@ -263,7 +277,8 @@ public class SetupDefaults extends JDialog implements ActionListener {
             {
                 val = Integer.parseInt(prop);
                 x_curr_lines_grid = val > Grid.MAX_GRID ? Grid.MAX_GRID : val;
-            } catch (NumberFormatException e) {}
+            } 
+            catch (NumberFormatException e) {}
        }
        
        prop = (String)js_prop.getProperty("jScope.y_grid");
@@ -274,8 +289,7 @@ public class SetupDefaults extends JDialog implements ActionListener {
                 val = Integer.parseInt(prop);
                 y_curr_lines_grid = val > Grid.MAX_GRID ? Grid.MAX_GRID : val;
             } catch (NumberFormatException e) {}
-       }
-       
+       }       
    }
    
    public int getLegendMode()
@@ -319,6 +333,8 @@ public class SetupDefaults extends JDialog implements ActionListener {
 	grid_mode.setSelectedIndex(0);
 	x_grid_lines.setText("3");
 	y_grid_lines.setText("3");
+	horizontal_offset.setText("0");
+	vertical_offset.setText("0");
     reversed_b.setSelected(false);	
    }
    
@@ -349,6 +365,8 @@ public class SetupDefaults extends JDialog implements ActionListener {
 	    x_grid_lines.setText(""+x_curr_lines_grid);
 	    y_grid_lines.setText(""+y_curr_lines_grid);
 	    reversed_b.setSelected(reversed);
+	    horizontal_offset.setText(""+Waveform.GetHorizontalOffset());
+	    vertical_offset.setText(""+Waveform.GetVerticalOffset());
    }
    
    public void SaveDefaultConfiguration(jScopeDefaultValues def_vals)
@@ -368,34 +386,70 @@ public class SetupDefaults extends JDialog implements ActionListener {
 	  curr_grid_mode      = grid_mode.getSelectedIndex();
 	  curr_legend_mode    = legend_mode.getSelectedIndex();
 	  reversed            = reversed_b.getModel().isSelected();
+
+      int h_ofs = 0, v_ofs = 0;  
+	  try
+	  {
+	    h_ofs = new Integer(horizontal_offset.getText().trim()).intValue();
+	  } 
+	  catch (NumberFormatException exc)
+	  {
+	    h_ofs = 0;
+	  }
+	  Waveform.SetHorizontalOffset(h_ofs);
+	  horizontal_offset.setText(""+h_ofs);
+
+	  try
+	  {
+	    v_ofs = new Integer(vertical_offset.getText().trim()).intValue();
+	  } 
+	  catch (NumberFormatException exc)
+	  {
+	    v_ofs = 0;
+	  }
+	  Waveform.SetVerticalOffset(v_ofs);
+	  vertical_offset.setText(""+v_ofs);
+	  
+	  
 	  
 	  if(auto_color_mode.getSelectedIndex() == 0)
 	    WaveInterface.auto_color_on_expr = false;
 	  else
 	    WaveInterface.auto_color_on_expr = true;
 	  
-	  
-	  x_curr_lines_grid = new Integer(x_grid_lines.getText().trim()).intValue();
-	  if(x_curr_lines_grid > Grid.MAX_GRID) {
+	  try
+	  {
+	    x_curr_lines_grid = new Integer(x_grid_lines.getText().trim()).intValue();
+	  } 
+	  catch (NumberFormatException exc)
+	  {
+	    x_curr_lines_grid = 3;
+	  }
+	  if(x_curr_lines_grid > Grid.MAX_GRID)
 	    x_curr_lines_grid = Grid.MAX_GRID;
-	    x_grid_lines.setText(""+Grid.MAX_GRID);
-	  }
+	  x_grid_lines.setText(""+x_curr_lines_grid);
 	  
-	  y_curr_lines_grid = new Integer(y_grid_lines.getText().trim()).intValue();
-	  if(y_curr_lines_grid > Grid.MAX_GRID) {
-	    y_curr_lines_grid = Grid.MAX_GRID;
-	    y_grid_lines.setText(""+Grid.MAX_GRID);
+	  try
+	  {	  
+	    y_curr_lines_grid = new Integer(y_grid_lines.getText().trim()).intValue();
+      }
+	  catch (NumberFormatException exc)
+	  {
+	    y_curr_lines_grid = 3;
 	  }
+	  if(y_curr_lines_grid > Grid.MAX_GRID)
+	    y_curr_lines_grid = Grid.MAX_GRID;
+	  y_grid_lines.setText(""+y_curr_lines_grid);
+	  
 	  def_vals.is_evaluated = false;
     } 
        
 
    public void  Show( jScopeDefaultValues def_vals)
    {
-    this.def_vals = def_vals;
-	initialize();
-	pack();
-	show();
+        this.def_vals = def_vals;
+	    initialize();
+	    show();
    }
    
    

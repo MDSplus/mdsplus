@@ -660,7 +660,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
     public void stopPlaying()
     {
         Waveform w;
-        this.reversed = reversed;
         for(int i = 0; i < getGridComponentCount(); i++)
 	    {
 	        w = GetWavePanel(i);

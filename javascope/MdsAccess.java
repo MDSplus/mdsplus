@@ -8,7 +8,7 @@ public class MdsAccess implements DataAccess
     String shot_str = null;
     String signal = null;
     String experiment = null;
-    NetworkProvider np = null;
+    MdsDataProvider np = null;
     String error = null;
 
     
@@ -47,7 +47,7 @@ public class MdsAccess implements DataAccess
         if(addr == null) return null;
         if(ip_addr == null || !ip_addr.equals(addr))
         {
-            np = new NetworkProvider(addr);
+            np = new MdsDataProvider(addr);
             ip_addr = addr;
         }
         experiment = st2.nextToken();
@@ -85,7 +85,7 @@ public class MdsAccess implements DataAccess
     public void close()
     {
         if(np != null)
-            np.disconnect();
+            np.Dispose();
         np = null;
         ip_addr = null;
     }
@@ -160,7 +160,7 @@ public class MdsAccess implements DataAccess
     public String getError()
     {   
         if(np == null)
-           return("Cannot create NetworkProvider");
+           return("Cannot create MdsDataProvider");
         if(error != null)
             return error;
         return np.ErrorString();

@@ -108,9 +108,9 @@ public class jScope_2 extends jScope_1
         }
   }
 
-  public void processNetworkEvent(NetworkEvent e)
+  public void processUpdateEvent(UpdateEvent e)
   {     
-     super.processNetworkEvent(e);
+     super.processUpdateEvent(e);
      
      String print_event = wave_panel.GetPrintEvent();
      String event = wave_panel.GetEvent();

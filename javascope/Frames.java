@@ -26,6 +26,7 @@ class Frames extends Canvas {
     protected Point sel_point = null;
     protected boolean horizontal_flip = false;
     protected boolean vertical_flip = false;
+    protected int color_idx;
     
     Frames()
     {
@@ -35,7 +36,7 @@ class Frames extends Canvas {
         for(int i = 0; i < 256; i++, b++)
             rgb[i] = b;                   
         c_model = new IndexColorModel(8, 256, rgb, rgb, rgb);
-   }
+    }
     
     Frames(Frames frames)
     {
@@ -65,6 +66,17 @@ class Frames extends Canvas {
         } catch (InterruptedException e) {}
     }
 
+    static int DecodeImageType(byte buf[])
+    {
+        String s = new String(buf, 0, 20);
+        if(s.indexOf("GIF") == 0)
+            return FrameData.AWT_IMAGE;
+        if(s.indexOf("JFIF") == 6)
+            return FrameData.AWT_IMAGE;
+
+        return FrameData.JAI_IMAGE;
+    }
+    
     
     protected void finalize()
     {
@@ -75,6 +87,65 @@ class Frames extends Canvas {
         tracker = null;
     }
      
+    public void SetFrameData(FrameData fd) throws IOException
+    {
+        int n_frames = fd.GetNumFrames();
+        float t[] = fd.GetFrameTimes();
+        byte[] buf;
+        for(int i = 0; i < n_frames; i++)
+        {
+            buf = fd.GetFrameAt(i);
+            if(buf == null)
+                continue;
+            switch(fd.GetFrameType())
+            {
+                case FrameData.BITMAP_IMAGE :
+                    FlipFrame(buf, fd.GetFrameDimension());
+                    AddBITMAPImage(buf, fd.GetFrameDimension(), t[i]);
+                break;
+                case FrameData.AWT_IMAGE :
+                    AddAWTImage(fd.GetFrameAt(i), t[i]);
+                break;
+                case FrameData.JAI_IMAGE :
+                    AddJAIImage(fd.GetFrameAt(i), t[i]);
+                break;
+            }
+        }
+    }
+
+    public boolean AddBITMAPImage(byte[] buf, Dimension d, float t)
+    {
+        Image img;
+        MemoryImageSource source;
+        if(buf == null || d == null) return false;
+        source = new MemoryImageSource(d.width, d.height, c_model, buf, 0, d.width);
+        img = createImage(source);
+        return AddFrame(img, t);        
+    }        
+
+    public boolean AddAWTImage(byte[] buf, float t)
+    {
+        Image img;
+        if(buf == null) return false;
+        img = getToolkit().createImage(buf);
+        return AddFrame(img, t);        
+    }    
+
+    public boolean AddJAIImage(byte[] buf, float t)
+    {
+        return false;
+    }    
+
+    public void SetColorIdx(int color_idx)
+    {
+        this.color_idx = color_idx;
+    }
+
+    public int GetColorIdx()
+    {
+        return color_idx;
+    }
+
      
     public int getNumFrame()
     {
@@ -91,6 +162,23 @@ class Frames extends Canvas {
         this.aspect_ratio = aspect_ratio;
     }
     
+    public void FlipFrame(byte buf[], Dimension d)
+    {
+        if(!vertical_flip && !horizontal_flip)
+            return;
+
+        int img_size = d.height*d.width;
+        byte tmp[] = new byte[img_size];
+        int i, j , k , ofs;
+        
+        int h = vertical_flip ? d.height - 1: 0;
+        int w = horizontal_flip ? d.width - 1: 0;
+                
+        for(j = 0; j < d.width; j++)
+            for(k = 0; k < d.height; k++)
+                tmp[(Math.abs(h - k) * d.width) +  Math.abs(w - j)] = buf[(k * d.width) + j];
+        System.arraycopy(tmp, 0, buf, 0, img_size);
+    }
     
     public void flipFrames(byte buf[])
     {
@@ -130,7 +218,7 @@ class Frames extends Canvas {
     }
     
     
-    public boolean AddMultiFrame(byte[] buf, /* WaveSetup controller,*/ float timemin, float timemax)
+    public boolean AddMultiFrame(byte[] buf, float timemin, float timemax)
     {
 
         try
@@ -153,7 +241,6 @@ class Frames extends Canvas {
             Image img;
             for(int i = 0; i < n_frame; i++)
             {
-                //controller.DisplayFrameLoad("Extracting frame "+ i+"/"+n_frame);
                 if(f_time[i] < timemin || f_time[i] > timemax)
                 {
                     d.skip(img_size);
@@ -168,13 +255,24 @@ class Frames extends Canvas {
             }
             d.close();
             
-        } catch(IOException e)
+        } 
+        catch(IOException e)
         {
             System.out.println("Errore "+e);
             return false;
         }
         return true;
     }
+
+
+    public boolean AddFrame(byte[] buf, float t)
+    {
+        Image img;
+        if(buf == null) return false;
+        img = getToolkit().createImage(buf);
+        return AddFrame(img, t);
+        
+    }    
 
     public boolean AddFrame(Image img, float t)
     {
@@ -186,15 +284,6 @@ class Frames extends Canvas {
         } else
             return false;
     }
-
-    public boolean AddFrame(byte[] buf, float t)
-    {
-        Image img;
-        if(buf == null) return false;
-        img = getToolkit().createImage(buf);
-        return AddFrame(img, t);
-        
-    }    
 
     public boolean AddFrame(Object f, float t)
     {
@@ -217,7 +306,7 @@ class Frames extends Canvas {
             img_height = img_h = img.getHeight(this);
        }
        int pixel_array[] = new int[img_w * img_h]; 
-       PixelGrabber grabber = new PixelGrabber(img, x, y, img_w, img_h, pixel_array,0,img_width);    
+       PixelGrabber grabber = new PixelGrabber(img, x, y, img_w, img_h, pixel_array,0,img_w);//idth);    
        try 
        { 
           grabber.grabPixels(); 
@@ -356,7 +445,6 @@ class Frames extends Canvas {
     public int[] getPixelsSignal(int x, int y)
     {
         int pixels_signal[] = null;
-        
         if(frames_pixel_array == null || !frames_pixel_roi.contains(x, y))
         {
             frames_pixel_roi = new Rectangle();

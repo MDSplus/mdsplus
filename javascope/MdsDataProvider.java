@@ -2,11 +2,13 @@ import java.io.*;
 import java.net.*;
 import java.awt.*;
 import java.util.Vector;
+import java.util.Properties;
 import java.lang.OutOfMemoryError;
 import java.lang.InterruptedException;
+import javax.swing.JFrame;
 
 
-public class NetworkProvider implements DataProvider 
+public class MdsDataProvider implements DataProvider 
 {
     String provider;
     String experiment;
@@ -17,10 +19,276 @@ public class NetworkProvider implements DataProvider
     MdsConnection mds;
     public String error;
     private boolean use_compression = false;
-    private boolean use_cache = false;
-    private SignalCache sc = null;
+    static int var_idx = 0;
+
+    class SimpleFrameData implements FrameData
+    {
+        String in_x, in_y;
+        float time_max, time_min;
+        int mode = -1;
+        int first_frame_idx = -1;
+        byte buf[];
+        String error;
+        private int st_idx = -1, end_idx = -1;
+        private int n_frames = 0;
+        private float times[] = null;
+        private Dimension dim = null;
+
+        public SimpleFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
+        {
+            int i;
+            float t;
+            float all_times[] = null;
+            int n_all_frames = 0;
+            
+            this.in_y = in_y;
+            this.in_x = in_x;
+            this.time_min = time_min;
+            this.time_max = time_max; 
+            buf = GetAllFrames(in_y);
+            if(buf != null)
+            {
+                ByteArrayInputStream b = new ByteArrayInputStream(buf);
+                DataInputStream d = new DataInputStream(b);
+                
+                int width = d.readInt();
+                int height = d.readInt();
+                int img_size = height*width;
+                int n_frame = d.readInt();
+                Vector f_time = new Vector();
+                
+                dim = new Dimension(width, height);
+                all_times = new float[n_frame];
+                for(i = 0; i < n_frame; i++)
+                {
+                    t = d.readFloat();
+                    if(t > time_max)
+                        break;
+                    if(t > time_min)
+                    {
+                        f_time.addElement(new Float(t));
+                        if(st_idx == -1) st_idx = i;
+                    }
+                }
+                end_idx = i;
+                for(i = 0; i < f_time.size(); i++)
+                    all_times[i] = ((Float)f_time.elementAt(i)).floatValue();
+                
+                mode = BITMAP_IMAGE;
+            }
+            else 
+            {
+                String mframe_error = ErrorString();
+
+ 	            if(in_x == null || in_x.length() == 0)
+                    all_times = MdsDataProvider.this.GetFrameTimes(in_y);
+                else
+                    all_times = MdsDataProvider.this.GetWaveData(in_x).GetFloatData();        
         
-    public NetworkProvider()
+                if(all_times == null)
+                {
+                    if(mframe_error != null)
+                        error = " Pulse file or image file not found\nRead on pulse file error\n"+mframe_error+"\nFrame times read error";
+                    else
+	                    error = " Image file not found "; 
+	        
+	                if(ErrorString() != null)
+	                    error = error +"\n"+ErrorString();
+	                
+	                throw(new IOException(error));
+                }
+                               
+                for(i = 0; i < all_times.length; i++)
+                {
+                    t = all_times[i];
+                    if(t > time_max)
+                        break;
+                    if(t > time_min)
+                    {
+                        if(st_idx == -1) st_idx = i;
+                    }
+                }
+                end_idx = i;
+              /*  
+                if(in_y.indexOf(".gif") != -1 || in_y.indexOf(".jpg") != -1)
+                    mode = this.AWT_IMAGE;
+                else
+                    mode = this.JAI_IMAGE;
+              */
+             }
+             
+             if(st_idx == -1)
+                throw(new IOException("No frames found between "+time_min+ " - "+time_max));
+ 
+             n_frames = end_idx - st_idx;
+             times = new float[n_frames];
+             int j = 0;
+             for(i = st_idx; i < end_idx; i++)
+                times[j++] = all_times[i];
+        }
+        
+        public int GetFrameType() throws IOException
+        {
+            if(mode != -1) return mode;
+            int i;
+            for(i = 0; i < n_frames; i++)
+            {
+                buf = GetFrameAt(i);
+                if(buf != null)
+                    break;
+            }
+            first_frame_idx = i;
+            mode = Frames.DecodeImageType(buf);
+            return mode;
+        }
+        public int GetNumFrames(){return n_frames;}
+        public Dimension GetFrameDimension(){return dim;}
+        public float[] GetFrameTimes(){return times;}
+        public byte[] GetFrameAt(int idx) throws IOException
+        {
+            byte[] b_img = null;
+            
+                
+            if(mode == BITMAP_IMAGE)
+            {
+                if(buf == null)
+                    throw(new IOException("Frames not loaded"));
+                
+                ByteArrayInputStream b = new ByteArrayInputStream(buf);
+                DataInputStream d = new DataInputStream(b);
+                
+                if(buf == null)
+                    throw(new IOException("Frames dimension not evaluated"));
+ 
+                int img_size = dim.width*dim.height;
+                d.skip(12+4*n_frames+ (st_idx + idx)*img_size);
+                
+                b_img = new byte[img_size];
+                d.read(b_img);
+                return b_img ;
+            } else {
+  //              we = new WaveformEvent(wave, "Loading frame "+idx+"/"+n_frames);
+  //              wave.dispatchWaveformEvent(we);
+                if(idx == first_frame_idx && buf != null)
+                    return buf;
+                b_img = MdsDataProvider.this.GetFrameAt(in_y, st_idx+idx);
+                return b_img;
+            }
+        }
+    }
+    
+    class SimpleWaveData implements WaveData
+    {
+        String in_x, in_y;
+        float  xmax, xmin;
+        int n_points;
+        boolean resample = false;
+        boolean _jscope_set = false;
+        int v_idx;
+        
+        public SimpleWaveData(String in_y)
+        {
+            this.in_y = in_y;
+            v_idx = var_idx;
+        }
+        public SimpleWaveData(String in_y, String in_x)
+        {
+            this.in_y = in_y;
+            this.in_x = in_x;
+            v_idx = var_idx;
+        }
+        public SimpleWaveData(String in_y, float xmin, float xmax, int n_points)
+        {
+            resample = true;
+            this.in_y = in_y;
+            this.xmin = xmin;
+            this.xmax = xmax;
+            this.n_points = n_points;
+            v_idx = var_idx;
+        }
+        public SimpleWaveData(String in_y, String in_x, float xmin, float xmax, int n_points)
+        {
+            resample = true;
+            this.in_y = in_y;
+            this.in_x = in_x;
+            this.xmin = xmin;
+            this.xmax = xmax;           
+            this.n_points = n_points;
+            v_idx = var_idx;
+        }
+        
+        public int GetNumDimension() throws IOException
+        {
+            int shape[] = GetIntArray("shape("+in_y+")");
+            if(error != null)
+                return 0;
+                //throw(new IOException(error));
+            return shape.length;
+        }
+        
+        
+        public float[] GetFloatData() throws IOException
+        {
+           _jscope_set = true;
+           if(resample && in_x == null)
+           {
+	            String limits = "FLOAT("+xmin+"), " + "FLOAT("+xmax+")";
+                String expr = "JavaResample("+ "FLOAT("+in_y+ "), "+
+		            "FLOAT(DIM_OF("+in_y+")), "+ limits + ")";
+		        return GetFloatArray(expr);
+           }
+           else
+                return GetFloatArray(in_y);   
+        }
+        
+        
+        public float[] GetXData() throws IOException 
+        {
+            String expr;
+            if(in_x == null)
+            {
+                if(_jscope_set)
+                {
+                    expr = "DIM_OF(_jscope_"+v_idx+", 0)";
+                } 
+                else
+                {
+                    if(resample)
+                    {
+	                  String limits = "FLOAT("+xmin+"), " + "FLOAT("+xmax+")";
+                      expr = "DIM_OF(JavaResample("+ "FLOAT("+in_y+ "), "+
+		                    "FLOAT(DIM_OF("+in_y+")), "+ limits + "))";
+                    }
+                    else
+                    {
+                       expr =  "DIM_OF("+in_y+", 0)";
+                    }
+                }
+                return GetFloatArray(expr);
+            }
+            else
+                return GetFloatArray(in_x);
+        }
+        
+        public float[] GetYData() throws IOException
+        {
+            return GetFloatArray("DIM_OF("+in_y+", 1)");
+        }
+        
+        public String GetTitle() throws IOException
+        {return GetDefaultTitle(in_y);}
+        public String GetXLabel() throws IOException
+        {return GetDefaultXLabel(in_y);}
+        public String GetYLabel() throws IOException
+        {return GetDefaultYLabel(in_y);}
+        public String GetZLabel()  throws IOException
+        {
+            return null;
+        }
+    }
+             
+        
+    public MdsDataProvider()
     {
         experiment = null;
         shot = 0;
@@ -29,7 +297,7 @@ public class NetworkProvider implements DataProvider
         error = null;
     }
 
-    public NetworkProvider(String _provider)
+    public MdsDataProvider(String _provider)
     {
         provider = _provider;
         experiment = null;
@@ -39,7 +307,7 @@ public class NetworkProvider implements DataProvider
         error = null;
     }
 
-    public NetworkProvider(String exp, int s)
+    public MdsDataProvider(String exp, int s)
     {
         experiment = exp;
         shot = 0;
@@ -55,35 +323,21 @@ public class NetworkProvider implements DataProvider
         if(open)
     	    mds.MdsValue("JavaClose(\""+experiment+"\","+shot+")");
         if(connected)
-	        status = mds.DisconnectFromMds();//err);
+	        status = mds.DisconnectFromMds();
     }
 
-    public boolean supportsCompression(){return true;}
-    public void    setCompression(boolean state){use_compression = state;}
-    public boolean useCompression(){return use_compression;}
-
-    public boolean supportsCache(){return true;}
-    public void    enableCache(boolean state)
+    public void    SetArgument(String arg) throws IOException
     {
-        if(state)
-        {
-            if(sc == null)
-                sc = new SignalCache();
-        } else
-            sc = null;
-        use_cache = state;
+        provider = arg;
+        mds.setProvider(provider);
     }
-    public boolean isCacheEnabled(){return use_cache;}
-    public void    freeCache()
+    
+    public boolean SupportsCompression(){return true;}
+    public void    SetCompression(boolean state)
     {
-        if(sc != null)
-            sc.freeCache();
+        Dispose();
+        use_compression = state;
     }
-
-    public String GetDefaultTitle(String in_y[])throws IOException {return null;}
-    public String GetDefaultXLabel(String in_y[])throws IOException {return null;}
-    public String GetDefaultYLabel(String in_y[]) throws IOException {return null;}
-
 
     protected String GetExperimentName(String in_frame)
     {
@@ -101,6 +355,11 @@ public class NetworkProvider implements DataProvider
         return exp;
     }
 
+    public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
+    {
+        return (new SimpleFrameData(in_y, in_x, time_min, time_max));
+    }
+    
     public synchronized byte[] GetAllFrames(String in_frame) throws IOException
     {
         byte img_buf[], out[] = null;
@@ -199,11 +458,6 @@ public class NetworkProvider implements DataProvider
 
     public synchronized String ErrorString() { return error; }
 
-    public String GetXSpecification(String yspec) {return "DIM_OF(_jscope)";}
-    public String GetXDataSpecification(String yspec) {return null;}
-
-    public boolean SupportsAsynch() { return true; }
-
     public synchronized void Update(String exp, int s)
     {
         error = null;
@@ -256,6 +510,23 @@ public class NetworkProvider implements DataProvider
     public synchronized void SetEnvironment(String in)  throws IOException
     {
 
+        if(in == null || in.length() == 0)
+            return;
+            
+        Properties pr = new Properties();
+        pr.load(new ByteArrayInputStream(in.getBytes()));
+        String def_node = ((String)pr.getProperty("__default_node"));
+        if(def_node != null)
+        {
+            def_node = def_node.trim();
+            if(!(default_node != null && def_node.equals(default_node))
+            || (def_node.length() == 0 && default_node != null) )
+            {
+                default_node = (def_node.length() == 0) ? null : def_node;
+                def_node_changed = true;
+                return;
+            } 
+        }
         error = null;
         //Update(null , 0);
         if(!CheckOpen()) 
@@ -270,19 +541,7 @@ public class NetworkProvider implements DataProvider
 	                error = desc.error;
         }
     }
-    
-    
-    public synchronized void SetDefaultNid(String in)
-    {
-        if(in != null) in = in.trim();
-        if(in != null && !(default_node != null && in.equals(default_node))
-           || (in == null && default_node != null) )
-        {
-          default_node = (in != null && in.length() == 0) ? null : in;
-          def_node_changed = true;
-        } 
-    }
-    
+        
     	
     public synchronized float GetFloat(String in)  throws IOException
     {
@@ -343,56 +602,36 @@ public class NetworkProvider implements DataProvider
         return out_idx;
     }
         
-    public synchronized float[] GetFloatArray(String in_y, String in_x, float start, float end)  throws IOException
+
+    public WaveData GetWaveData(String in)
     {
-	    String limits = "FLOAT("+start+"), " + "FLOAT("+end+")";
-	    if(in_y.startsWith("DIM_OF"))
-	    {
-	        return GetFloatArray(in_y);
-	/*        
-		    float curr_x[] = GetFloatArray("JavaDim(FLOAT("+ in_y+ "), "+ limits + ")"); 
-		    if(curr_x != null && curr_x.length > 1)
-		    {   
-			    float expanded_x[] = new float[Integer.parseInt(in_x)];
-			    int x_samples = ExpandTimes(curr_x, expanded_x);
-			    if(expanded_x.length > x_samples)
-			    {
-			       curr_x = new float[x_samples];
-			       for(int i = 0; i < x_samples; i++)
-			         curr_x[i] = expanded_x[i];
-			    } else			    
-			       curr_x = expanded_x;
-		    }
-		    return curr_x;
-	*/	    
-	    }
-	    else 
-	    {
-		    return GetFloatArray("JavaResample("+ "FLOAT("+in_y+ "), "+
-		                    "FLOAT(DIM_OF("+in_x+")), "+ limits + ")");
-		}
+        return new SimpleWaveData(in);
     }
+    public WaveData GetWaveData(String in_y, String in_x)
+    {
+        return new SimpleWaveData(in_y, in_x);
+    }
+    public WaveData GetResampledWaveData(String in, float start, float end, int n_points)
+    {
+        return new SimpleWaveData(in, start, end, n_points);
+    }
+    public WaveData GetResampledWaveData(String in_y, String in_x, float start, float end, int n_points)
+    {
+        return new SimpleWaveData(in_y, in_x, start, end, n_points);
+    }
+
+
+
     	
     public synchronized float[] GetFloatArray(String in)  throws IOException
     {
-        in = "( _jscope = ("+in+"), fs_float(_jscope))";// "fs_float(("+in+"))";
+        in = "( _jscope_"+var_idx+" = ("+in+"), fs_float(_jscope_"+var_idx+"))";// "fs_float(("+in+"))";
+        var_idx++;
 
-        String open_err = new String("");
         float[] out = null;
         
-        if(use_cache)
-        {                
-            out = (float[])sc.getCacheData(provider, in, experiment, shot);
-            if(out != null)
-            {
-                ConnectionEvent e = new ConnectionEvent(this, "Cache");
-                dispatchConnectionEvent(e);
-                return out;
-            }
-        } else {
-	        ConnectionEvent e = new ConnectionEvent(this, 1, 0);
-	        dispatchConnectionEvent(e);
-        }
+	    ConnectionEvent e = new ConnectionEvent(this, 1, 0);
+	    DispatchConnectionEvent(e);
         
         if(!CheckOpen())
 	        return null;
@@ -416,15 +655,30 @@ public class NetworkProvider implements DataProvider
 	            error = desc.error;
 	        return null;
         }	
-        if(use_cache && out != null)
-            sc.putCacheData(provider, in, experiment, shot, out);
 
         return out;
     }        
-    	
+    
+    public int[] GetShots(String in) throws IOException
+    {
+        return GetIntArray(in);
+    }
+    /*
     public synchronized int[] GetIntArray(String in) throws IOException
     {
-        String open_err = new String("");
+        float float_data[] = GetFloatArray(in);
+        if(float_data != null)
+        {
+	        int out_data[] = new int[float_data.length];
+	        for(int i = 0; i < float_data.length; i++)
+		        out_data[i] = (int)(float_data[i]);// + 0.5);
+	        return out_data;
+	    } else
+	        return null;
+    }
+  */  	
+    public synchronized int[] GetIntArray(String in) throws IOException
+    {
         if(!CheckOpen())
 	    return null;
         Descriptor desc = mds.MdsValue(in);
@@ -448,8 +702,9 @@ public class NetworkProvider implements DataProvider
         }	
         return null;
     }        
-
-    public void disconnect()
+   
+    
+    public void Dispose()
     {
         if(connected)
         {
@@ -463,14 +718,13 @@ public class NetworkProvider implements DataProvider
         int status;
         if(!connected)
         {
-	        status = mds.ConnectToMds(useCompression());
+	        status = mds.ConnectToMds(use_compression);
 	        if(status == 0)
 	        {
 	            if(mds.error != null)
-	                throw new IOException("Cannot open experiment " + experiment + " shot "+ 
-		                        shot + " : "+ mds.error);
+	                throw new IOException("Cannot connect to data server : "+ mds.error);
    	            else
-		            error = "Cannot open experiment " + experiment + " shot "+ shot;	    
+		            error = "Cannot connect to data server";	    
 	            return false;
 	        }
 	        connected = true;
@@ -498,7 +752,8 @@ public class NetworkProvider implements DataProvider
 		                                shot + " : "+ mds.error;
 	            else
 		            error = "Cannot open experiment " + experiment + " shot "+ shot;	    
-	            return false;
+	          //  return false;
+	          return true;
 	        }
         }
         if(open && def_node_changed)
@@ -538,7 +793,7 @@ public class NetworkProvider implements DataProvider
         return ris;
     }
 
-    public synchronized void addNetworkListener(NetworkListener l, String event_name) throws IOException
+    public synchronized void AddUpdateEventListener(UpdateEventListener l, String event_name) throws IOException
     {
         
         int eventid;
@@ -550,7 +805,7 @@ public class NetworkProvider implements DataProvider
         
         if(!connected)
         {
-	        if(mds.ConnectToMds(useCompression()) == 0)
+	        if(mds.ConnectToMds(use_compression) == 0)
 	        {
 	            if(mds.error != null)
 	                throw new IOException(mds.error);
@@ -562,7 +817,7 @@ public class NetworkProvider implements DataProvider
 	    mds.MdsSetEvent(l, event_name);
     }
 
-    public synchronized void removeNetworkListener(NetworkListener l, String event_name) throws IOException      
+    public synchronized void RemoveUpdateEventListener(UpdateEventListener l, String event_name) throws IOException      
     {
         int eventid;
         String error;
@@ -572,7 +827,7 @@ public class NetworkProvider implements DataProvider
        
         if(!connected)
         {
-	        if(mds.ConnectToMds(useCompression()) == 0)
+	        if(mds.ConnectToMds(use_compression) == 0)
 	        {
 	            if(mds.error != null)
 	                throw new IOException(mds.error);
@@ -585,7 +840,7 @@ public class NetworkProvider implements DataProvider
     }
 
 
-    public synchronized void addConnectionListener(ConnectionListener l) 
+    public synchronized void AddConnectionListener(ConnectionListener l) 
     {
 	    if (mds == null) {
 	        return;
@@ -593,7 +848,7 @@ public class NetworkProvider implements DataProvider
         mds.addConnectionListener(l);
     }
 
-    public synchronized void removeConnectionListener(ConnectionListener l) 
+    public synchronized void RemoveConnectionListener(ConnectionListener l) 
     {
 	    if (mds == null) {
 	        return;
@@ -601,13 +856,38 @@ public class NetworkProvider implements DataProvider
         mds.removeConnectionListener(l);
     }
     
-    protected void dispatchConnectionEvent(ConnectionEvent e) 
+    protected void DispatchConnectionEvent(ConnectionEvent e) 
     {
 	    if (mds == null) {
 	        return;
 	    }
         mds.dispatchConnectionEvent(e);
     }
+    public boolean SupportsContinuous() {return false; }
+    public boolean DataPending() {return  false;}
+
+    public int     InquireCredentials(JFrame f, String user)
+    {
+       mds.setUser(user);
+       return DataProvider.LOGIN_OK;
+    }
+    public boolean SupportsFastNetwork(){return true;}
+    
+    protected String GetDefaultTitle(String in_y)   throws IOException
+    {
+        return null;
+    }
+            
+    protected String GetDefaultXLabel(String in_y)  throws IOException
+    {
+        return null;
+    }
+            
+    protected String GetDefaultYLabel(String in_y)  throws IOException
+    {
+        return null;
+    }
+    
 }
 
 								  

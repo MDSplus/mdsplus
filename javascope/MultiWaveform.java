@@ -306,14 +306,14 @@ public class MultiWaveform extends Waveform
 	        super.Update(waveform_signal);
     }
 */    	
-    public void UpdateSignals(Signal signals[], int timestamp)
+    public synchronized void UpdateSignals(Signal signals[], int timestamp, boolean force_update)
     {
         
 	    //System.out.println("timestamp "+update_timestamp + " "+ timestamp);
     
         Signal s;
     
-	    if(update_timestamp != timestamp)
+	    if(!force_update && update_timestamp != timestamp)
 	        return;
 	        
 	    for(int i = 0; i < signals.length; i++)
@@ -324,14 +324,20 @@ public class MultiWaveform extends Waveform
 	    
 	    if(this.signals.size() != 0)
 	        this.signals.removeAllElements(); 
+	        
 	    for(int i = 0; i < signals.length; i++)
 	    {
 	        this.signals.addElement(signals[i]);
 	    }
 	    
+	    if(force_update)
+	        UpdateLimits();
+	        
 	    if(waveform_signal != null)
 	    {
-	        curr_point_sig_idx = 0;
+	        if(curr_point_sig_idx > signals.length || curr_point_sig_idx == -1)
+	            curr_point_sig_idx = 0;
+	        
 	        super.UpdateSignal(waveform_signal);
 	    }
     }
@@ -576,6 +582,8 @@ public class MultiWaveform extends Waveform
 	        {
 	            curr_point_sig_idx = 0;
 	            super.Update(waveform_signal);
+	            if(wi != null)
+	                wi.ContinuousUpdate(signals, this); //for handling continuous signals
 	        }
 	    }
 	    else

@@ -32,7 +32,7 @@ public class MdsConnection
         int     eventid;
         Vector  listener = new Vector();
     
-        Item (String name, int eventid, NetworkListener l)
+        Item (String name, int eventid, UpdateEventListener l)
         {
             this.name = name;
             this.eventid = eventid;
@@ -55,7 +55,7 @@ public class MdsConnection
         public void run()
         {
             setName("Process Mds Event Thread");
-	        dispatchNetworkEvent(eventid);
+	        dispatchUpdateEvent(eventid);
         }
             
         public void SetEventid(int id)
@@ -145,18 +145,26 @@ public class MdsConnection
         host = null;
     }
 
-    public synchronized String getProviderUser()
+    public void setProvider(String provider)
     {
-        if(provider == null) return null;
-        String user = DEFAULT_USER;
-        int idx = provider.indexOf("|");
-        if(idx != -1)
-        {
-            user = provider.substring(0, idx);
-            if(!user.equals(System.getProperty("user.name")))
-                user = DEFAULT_USER;
-        }
-        return user;
+        if(connected)
+            DisconnectFromMds();
+        this.provider = provider; 
+        port = DEFAULT_PORT; 
+        host = null;       
+    }
+    
+    public void setUser(String user)
+    {
+        if(user == null)
+            this.user = DEFAULT_USER;
+        else
+            this.user = user; 
+    }
+
+    public String getProviderUser()
+    {        
+        return (user != null ? user : DEFAULT_USER);
     }
   
     public synchronized String getProviderHost()
@@ -323,13 +331,14 @@ public class MdsConnection
 	    return out;
     }		
     	    
-    public synchronized int DisconnectFromMds()//String error)
+    public synchronized int DisconnectFromMds()
     {
 	    try {
             if(connection_listener.size() > 0)
                 connection_listener.removeAllElements();
 	        dos.close();
             dis.close();
+            connected = false;
 	    } 
 	    catch(IOException e) 
 	        { 
@@ -402,7 +411,7 @@ public class MdsConnection
     }
 
    
-    public synchronized int AddEvent(NetworkListener l, String event_name)
+    public synchronized int AddEvent(UpdateEventListener l, String event_name)
     {
        int i, eventid = -1;
        Item event_item; 
@@ -427,7 +436,7 @@ public class MdsConnection
         return eventid;
     }
     
-    public synchronized int RemoveEvent(NetworkListener l, String event_name)
+    public synchronized int RemoveEvent(UpdateEventListener l, String event_name)
     {
         int i, eventid = -1;
         Item event_item; 
@@ -450,7 +459,7 @@ public class MdsConnection
         return eventid;        
     }
     
-    public synchronized void dispatchNetworkEvent(int eventid)
+    public synchronized void dispatchUpdateEvent(int eventid)
     {
         int i;
 
@@ -460,16 +469,16 @@ public class MdsConnection
         if(i > event_list.size()) return;
         Item event_item = ((Item)event_list.elementAt(i));
         Vector event_listener = event_item.listener;
-        NetworkEvent e = new NetworkEvent(this, event_item.name, eventid);
+        UpdateEvent e = new UpdateEvent(this, event_item.name);
     
         for(i = 0; i < event_listener.size(); i++)
-	        ((NetworkListener)event_listener.elementAt(i)).processNetworkEvent(e);
+	        ((UpdateEventListener)event_listener.elementAt(i)).processUpdateEvent(e);
     }   
     
     
    
     
-    public synchronized void MdsSetEvent(NetworkListener l, String event)
+    public synchronized void MdsSetEvent(UpdateEventListener l, String event)
     {
        int eventid; 
        if((eventid = AddEvent(l, event)) == -1)
@@ -491,7 +500,7 @@ public class MdsConnection
     }
     
 
-    public synchronized void MdsRemoveEvent(NetworkListener l, String event)
+    public synchronized void MdsRemoveEvent(UpdateEventListener l, String event)
     {
        int eventid; 
        if((eventid = RemoveEvent(l, event)) == -1)

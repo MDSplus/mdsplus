@@ -24,7 +24,8 @@ class FrameJAI extends Frames
 
     }
     
-    public boolean AddFrame(byte[] buf, float t) 
+//    public boolean AddFrame(byte[] buf, float t) 
+    public boolean AddJAIImage(byte[] buf, float t) 
     {
         try
         {

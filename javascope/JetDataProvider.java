@@ -8,6 +8,7 @@ import java.lang.InterruptedException;
 
 class JetDataProvider implements DataProvider
 {
+    static final int DATA = 0, X = 1, Y = 2;
 
     String provider;
     String experiment;
@@ -21,16 +22,14 @@ class JetDataProvider implements DataProvider
     BufferedInputStream br;
     int content_len;
     private String last_url_name;
-    private float [] last_y, last_x, last_xdata;
+    private float [] last_data, last_x, last_y;
+    private int dimension;
     JDialog inquiry_dialog;
     JFrame owner_f;
-    static final int LOGIN_OK = 1, LOGIN_ERROR = 2, LOGIN_CANCEL = 3;
     private int login_status;
     private boolean evaluate_url = false;
     private String url_source = "http://data.jet.uk/";
 
-    private boolean use_cache = false;
-    private SignalCache sc = null;
     private   Vector    connection_listener = new Vector();
 
     JTextField user_text; 
@@ -46,6 +45,101 @@ class JetDataProvider implements DataProvider
             encoded_credentials = translator.encode(credentials);
         }catch(Exception e){}
     }
+
+//DataProvider implementation
+ //   public float[] GetFrameTimes(String in_frame){return null;}
+  //  public byte[]  GetFrameAt(String in_frame, int frame_idx){return null;}
+  //  public byte[]  GetAllFrames(String in_frame){return null;}
+    public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
+    {
+        throw(new IOException("Frames visualization on JetDataProvider not implemented"));
+    }
+    public void    SetEnvironment(String s) {}
+    public void    Dispose(){}
+    public String  GetString(String in) {return in; }
+    public float   GetFloat(String in){ return new Float(in).floatValue(); }
+    public String  ErrorString() { return error_string; }
+    public void    AddUpdateEventListener(UpdateEventListener l, String event){}
+    public void    RemoveUpdateEventListener(UpdateEventListener l, String event){}
+    public boolean SupportsContinuous() {return false; }
+    public boolean DataPending() {return  false;}
+    public boolean SupportsFastNetwork(){return false;}
+    public void    SetArgument(String arg){};
+    
+    class SimpleWaveData implements WaveData
+    {
+        String in_x, in_y;
+        
+        public SimpleWaveData(String in_y)
+        {
+            this.in_y = in_y;
+        }
+        public SimpleWaveData(String in_y, String in_x)
+        {
+            this.in_y = in_y;
+            this.in_x = in_x;
+        }
+        
+        public int GetNumDimension()throws IOException
+        {
+            GetFloatArray(in_y, DATA);
+            return dimension;
+        }
+        
+        public float[] GetFloatData() throws IOException
+        {
+            return GetFloatArray(in_y, DATA);
+        }
+                
+        public float[] GetXData()   throws IOException
+        {
+            if(in_x != null)
+                return GetFloatArray(in_x, X);
+            else
+                return GetFloatArray(in_y, X);
+        }
+        
+        public float[] GetYData()   throws IOException
+        {
+            return GetFloatArray(in_y, Y);
+        }
+        
+        public String GetTitle()   throws IOException
+        {
+            return null;
+        }
+        public String GetXLabel()  throws IOException
+        {
+            return null;
+        }
+        public String GetYLabel()  throws IOException
+        {
+            return null;
+        }
+        public String GetZLabel()  throws IOException
+        {
+            return null;
+        }
+   }
+    
+    public WaveData GetWaveData(String in)
+    {
+        return new SimpleWaveData(in);
+    }
+    public WaveData GetWaveData(String in_y, String in_x)
+    {
+        return new SimpleWaveData(in_y, in_x);
+    }
+    public WaveData GetResampledWaveData(String in, float start, float end, int n_points)
+    {
+        return null;
+    }
+    public WaveData GetResampledWaveData(String in_y, String in_x, float start, float end, int n_points)
+    {
+        return null;
+    }
+
+
 
     public int GetLoginStatus()
     {
@@ -63,37 +157,17 @@ class JetDataProvider implements DataProvider
         //System.out.println(url_source);
     }
 
-    public boolean supportsCompression(){return false;}
-    public void    setCompression(boolean state){}
-    public boolean useCompression(){return false;}
+    public boolean SupportsCompression(){return false;}
+    public void    SetCompression(boolean state){}
 
-    public boolean supportsCache(){return true;}
-    public void    enableCache(boolean state)
+    public int InquireCredentials(JFrame f, String user)
     {
-        if(state)
+        if(login_status == DataProvider.LOGIN_CANCEL)
         {
-            if(sc == null)
-                sc = new SignalCache();
-        } else
-            sc = null;
-        use_cache = state;
-    }
-    public boolean isCacheEnabled(){return use_cache;}
-    public void    freeCache()
-    {
-        if(sc != null)
-            sc.freeCache();
-    }
-
-
-    synchronized void InquireCredentials(JFrame f)
-    {
-        if(login_status == LOGIN_CANCEL)
-        {
-            login_status = LOGIN_OK;
-            return;
+            login_status = DataProvider.LOGIN_OK;
+            return login_status;
         }
-        login_status = LOGIN_OK;
+        login_status = DataProvider.LOGIN_OK;
         owner_f = f;
         inquiry_dialog = new JDialog(f, "JET data server login", true);
 
@@ -102,6 +176,8 @@ class JetDataProvider implements DataProvider
         p.add(new JLabel("Username: "));
         user_text = new JTextField(15);
         p.add(user_text);
+        if(user != null)
+            user_text.setText(user);
         inquiry_dialog.getContentPane().add(p, "North");
         p = new JPanel();
         p.add(new JLabel("Password: "));
@@ -111,17 +187,17 @@ class JetDataProvider implements DataProvider
         inquiry_dialog.getContentPane().add(p, "Center");
         p = new JPanel();
         JButton ok_b = new JButton("Ok");
+        ok_b.setDefaultCapable(true);
         ok_b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
                 {
                     username = user_text.getText();
                     passwd = new String(passwd_text.getPassword());
-                    if(!checkPasswd(username, passwd))
+                    if(!CheckPasswd(username, passwd))
                     {
-                        inquiry_dialog.setTitle("JET data server login ERROR");
-//da mettere exception  ErrorMessage.ShowErrorMessage(owner_f, "Incorrect password");
-                        login_status = LOGIN_ERROR;
-                        return;
+ 		                JOptionPane.showMessageDialog(inquiry_dialog, "Login ERROR : " + ((error_string != null) ? error_string : "no further information"), 
+		                                "alert", JOptionPane.ERROR_MESSAGE);
+                        login_status = DataProvider.LOGIN_ERROR;
                     }
 
                     String credentials = username+":"+passwd;
@@ -129,12 +205,12 @@ class JetDataProvider implements DataProvider
                         encoded_credentials = translator.encode(credentials);
                     } catch(Exception exc)
                     {
-                        login_status = LOGIN_ERROR;
+                        login_status = DataProvider.LOGIN_ERROR;
                     }
-                    if(login_status == LOGIN_OK)
+                    if(login_status == DataProvider.LOGIN_OK)
                         inquiry_dialog.setVisible(false);
                     else
-                        login_status = LOGIN_OK;
+                        login_status = DataProvider.LOGIN_OK;
                 }});
         p.add(ok_b);
         JButton clear_b = new JButton("Clear");
@@ -149,7 +225,7 @@ class JetDataProvider implements DataProvider
         cancel_b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
                 {
-                    login_status = LOGIN_CANCEL;
+                    login_status = DataProvider.LOGIN_CANCEL;
                     inquiry_dialog.setVisible(false);
                 }});
         p.add(cancel_b);
@@ -159,9 +235,10 @@ class JetDataProvider implements DataProvider
         inquiry_dialog.setLocation(r.x + r.width/2 - inquiry_dialog.getBounds().width/2,
 			r.y + r.height/2 - inquiry_dialog.getBounds().height/2);
         inquiry_dialog.show();
+        return login_status;
     }
 
-   public boolean checkPasswd(String encoded_credentials)
+   public boolean CheckPasswd(String encoded_credentials)
    {
             this.encoded_credentials = encoded_credentials;
             //System.out.println(encoded_credentials);
@@ -179,32 +256,28 @@ class JetDataProvider implements DataProvider
                 num_read_bytes += br.read(buffer, num_read_bytes, buffer.length - num_read_bytes);
             br.close();
             br = null;
-        }catch(Exception e){System.out.println(e);return false;}
+        }
+        catch(Exception e)
+        {
+            error_string = e.getMessage();
+            return false;
+        }
         String out = new String(buffer);
         if(out.indexOf("incorrect password") != -1)
+        {
+            error_string = "Incorrect password";
             return false;
+        }
         return true;
    }
 
 
-   boolean checkPasswd(String username, String passwd)
+   boolean CheckPasswd(String username, String passwd)
    {
         String credentials = username+":"+passwd;
         encoded_credentials = translator.encode(credentials);
-        return checkPasswd(encoded_credentials);
+        return CheckPasswd(encoded_credentials);
    }
-//DataProvider implementation
-
-    public String GetDefaultTitle(String in_y[]){return null;}
-    public String GetDefaultXLabel(String in_y[]){return null;}
-    public String GetDefaultYLabel(String in_y[]){return null;}
-    public float[] GetFrameTimes(String in_frame){return null;}
-    public byte[] GetFrameAt(String in_frame, int frame_idx){return null;}
-    public byte[]  GetAllFrames(String in_frame){return null;}
-    
-    public void SetEnvironment(String s) {}
-    public void SetDefaultNid(String s) {}
-    public void disconnect(){}
     
     public void Update(String experiment, int shot)
     {
@@ -212,27 +285,16 @@ class JetDataProvider implements DataProvider
         this.shot = shot;
         error_string = null;
     }
-    public String GetString(String in) {return in; }
-    public float GetFloat(String in){ return new Float(in).floatValue(); }
 
-    public float[] GetFloatArray(String in_x, String in_y, float start, float end) throws IOException
-    {
-        return GetFloatArray(in_x);
-    }
 
-    public float[] GetFloatArray(String in) throws IOException
+    public float[] GetFloatArray(String in, int type) throws IOException
     {
         float out[] = null;
         String in_expr = new String(in);
         
         error_string = null;
-        boolean is_time = in.startsWith("TIME:", 0);
-        boolean is_xdata = in.startsWith("X:", 0);
-        if(is_time)
-            in = in.substring(5);
-        if(is_xdata)
-            in = in.substring(2);
-
+        boolean is_time = (type == X);
+        boolean is_y = (type == Y);
         String url_name;
 
         if(evaluate_url)
@@ -253,19 +315,9 @@ class JetDataProvider implements DataProvider
         }
 
         out = null;
-        if(use_cache)
-        {
-            String data_from = "Cache";
-            out = (float[])sc.getCacheData(provider, in_expr, experiment, shot);
-            if(out == null)
-                data_from = "Network";
-            ConnectionEvent e = new ConnectionEvent(this, data_from);
-            dispatchConnectionEvent(e);
-
-        } else {
-            ConnectionEvent e = new ConnectionEvent(this, "Network");
-            dispatchConnectionEvent(e);
-        }
+        
+        ConnectionEvent e = new ConnectionEvent(this, "Network");
+        DispatchConnectionEvent(e);
         
         if((last_url_name != null && url_name.equals(last_url_name)) || out!= null)
         {
@@ -275,15 +327,17 @@ class JetDataProvider implements DataProvider
             if(is_time)
                 return last_x;
             else
-                if(is_xdata)
-                    return last_xdata;
-                else
+                if(is_y)
                     return last_y;
+                else
+                    return last_data;
         }
         else
         {
-            last_x = last_y = last_xdata = null;
-            try{
+            last_x = last_data = last_y = null;
+            try
+            {
+                dimension = 1;
                 last_url_name = url_name;
                 URLConnection urlcon;
                 url = new URL(url_source + url_name);
@@ -332,129 +386,105 @@ class JetDataProvider implements DataProvider
                 time = null;
 
                 dims = jvarData.getDims();
-                last_y = jvarData.readFloat(dims);
+                last_data = jvarData.readFloat(dims);
 
                 if(jvarXData != null)
                 {
+                    dimension = 2;
                     dims = jvarXData.getDims();
-                    last_xdata = jvarXData.readFloat(dims);
+                    last_y = jvarXData.readFloat(dims);
                 }
 
-            }catch(Exception e)
+            }
+            catch(Exception ex)
             {
-                error_string = "Error reading URL " + url_name + " : " + e;
+                error_string = "Error reading URL " + url_name + " : " + ex;
                 last_url_name = null;
                 throw(new IOException(error_string));
-//                return null;
             }
 
-
-
-            if(use_cache) 
-            {
-                sc.putCacheData(provider, in, experiment, shot, last_y);
-                sc.putCacheData(provider, "TIME:"+in, experiment, shot, last_x);
-                if(last_xdata != null)
-                    sc.putCacheData(provider, "X:"+in, experiment, shot, last_xdata);
-            }
             
             if(is_time)            
                 return last_x;
              else 
-                if(is_xdata)
-                    return last_xdata;
-                else
+                if(is_y)
                     return last_y;
+                else
+                    return last_data;
 
         }
     }
 
- public int[] GetIntArray(String in) throws IOException
- {
-    error_string = null;
-    int [] result;
-    String curr_in = in.trim();
-    if(curr_in.startsWith("[", 0))
+    public int[] GetShots(String in) throws IOException
     {
-        if(curr_in.endsWith("]"))
+        error_string = null;
+        int [] result;
+        String curr_in = in.trim();
+        if(curr_in.startsWith("[", 0))
         {
-            curr_in = curr_in.substring(1, curr_in.length() - 1);
-            StringTokenizer st = new StringTokenizer(curr_in, ",", false);
-            result = new int[st.countTokens()];
-            int i = 0;
-            try{
-                while(st.hasMoreTokens())
-                    result[i++] = Integer.parseInt(st.nextToken());
-                return result;
-            } catch(Exception e) {}
-        }
-    }
-    else
-    {
-        if(curr_in.indexOf(":") != -1)
-        {
-            StringTokenizer st = new StringTokenizer(curr_in, ":");
-            int start, end;
-            if(st.countTokens() == 2)
+            if(curr_in.endsWith("]"))
             {
+                curr_in = curr_in.substring(1, curr_in.length() - 1);
+                StringTokenizer st = new StringTokenizer(curr_in, ",", false);
+                result = new int[st.countTokens()];
+                int i = 0;
                 try{
-                    start = Integer.parseInt(st.nextToken());
-                    end = Integer.parseInt(st.nextToken());
-                    if(end < start) end = start;
-                    result = new int[end-start+1];
-                    for(int i = 0; i < end-start+1; i++)
-                        result[i] = start+i;
+                    while(st.hasMoreTokens())
+                        result[i++] = Integer.parseInt(st.nextToken());
                     return result;
-                }catch(Exception e){}
+                } catch(Exception e) {}
             }
         }
         else
         {
-            result = new int[1];
-            try {
-                result[0] = Integer.parseInt(curr_in);
-                return result;
-            }catch(Exception e){}
+            if(curr_in.indexOf(":") != -1)
+            {
+                StringTokenizer st = new StringTokenizer(curr_in, ":");
+                int start, end;
+                if(st.countTokens() == 2)
+                {
+                    try{
+                        start = Integer.parseInt(st.nextToken());
+                        end = Integer.parseInt(st.nextToken());
+                        if(end < start) end = start;
+                        result = new int[end-start+1];
+                        for(int i = 0; i < end-start+1; i++)
+                            result[i] = start+i;
+                        return result;
+                    }catch(Exception e){}
+                }
+            }
+            else
+            {
+                result = new int[1];
+                try {
+                    result[0] = Integer.parseInt(curr_in);
+                    return result;
+                }catch(Exception e){}
+            }
         }
+        error_string = "Error parsing shot number(s)";
+        throw(new IOException(error_string));
     }
-    error_string = "Error parsing shot number(s)";
-    throw(new IOException(error_string));
-    //return null;
- }
-
- public String GetXSpecification(String in)
- {
-    return "TIME:" + in;
- }
-
- public String GetXDataSpecification(String in)
- {
-    return "X:" + in;
- }
 
 
- public String ErrorString() { return error_string; }
- public boolean SupportsAsynch() { return false; }
- public void addNetworkListener(NetworkListener l, String event){}
- public void removeNetworkListener(NetworkListener l, String event){}
-
- public void addConnectionListener(ConnectionListener l)
- {
-	if (l == null) {
-	    return;
-	}
-    connection_listener.addElement(l);
- }
- 
- public void removeConnectionListener(ConnectionListener l)
- {
-	if (l == null) {
-	    return;
-	}
-    connection_listener.removeElement(l);
- }
- 
-    protected void dispatchConnectionEvent(ConnectionEvent e) 
+    public void AddConnectionListener(ConnectionListener l)
+    {
+	    if (l == null) {
+	        return;
+	    }
+        connection_listener.addElement(l);
+    }
+     
+    public void RemoveConnectionListener(ConnectionListener l)
+    {
+	    if (l == null) {
+	        return;
+	    }
+        connection_listener.removeElement(l);
+    }
+     
+    protected void DispatchConnectionEvent(ConnectionEvent e) 
     {
         if (connection_listener != null) 
         {
@@ -472,17 +502,17 @@ public static void main(String args[])
     System.out.println("\nStart readout PPF/40573/MAGN/IPLA");
     JetDataProvider dp = new JetDataProvider("obarana", "clublatino");
     dp.setEvaluateUrl(true);
-    float x[], y[], xdata[];
+    float data[], y[], x[];
     try
     {
-    y = dp.GetFloatArray("PPF/40573/MAGN/BPOL");
-    x = dp.GetFloatArray("TIME:PPF/40573/MAGN/BPOL");
-    xdata = dp.GetFloatArray("X:PPF/40573/MAGN/BPOL");
+    data = dp.GetFloatArray("PPF/40573/MAGN/BPOL", JetDataProvider.DATA);
+    x = dp.GetFloatArray("PPF/40573/MAGN/BPOL", JetDataProvider.X);
+    y = dp.GetFloatArray("X:PPF/40573/MAGN/BPOL", JetDataProvider.Y);
 
     for(int i = 0; i < x.length; i++)
-        System.out.println(x[i] + "  " +y[i]);
+        System.out.println(x[i] + "  " +data[i]);
 
-    System.out.println("Num. points: "+y.length);
+    System.out.println("Num. points: "+data.length);
     } catch (IOException exc){}
  }
 

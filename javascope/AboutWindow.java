@@ -18,10 +18,6 @@ public class AboutWindow extends JLabel  {
             io = new ImageIcon(icon_file);
         if(jScope.is_debug)
             System.out.println("about_jscope image path "+icon_file);
-        //if(jScope.IsNewJVMVersion())
-        //    io = new ImageIcon(getClass().getClassLoader().getResource("about_jscope.jpg"));
-        //else
-        //    io = new ImageIcon("about_jscope.jpg");
         setIcon(io);
     } catch (NullPointerException e){}
   }

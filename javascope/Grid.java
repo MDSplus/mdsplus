@@ -16,24 +16,25 @@ public class Grid implements Serializable {
     Font font;
     Image vert_label;	
     int label_width, label_height, label_descent, num_x_steps, num_y_steps;	
-    String x_label, y_label, title;	
+    String x_label, y_label, title, error;	
     final static int IS_X = 0, IS_Y = 1;	
     final static int IS_DOTTED = 0, IS_GRAY = 1, IS_NONE = 2, MAX_GRID = 10;
     final static String GRID_MODE[] = {"Dotted", "Gray", "None"};
 	
     public Grid(double xmax, double ymax, double xmin, double ymin, boolean xlog, boolean ylog, 
-	int _mode, String _x_label, String _y_label, String _title, int _grid_step_x, int _grid_step_y,
-	boolean _int_xlabels, boolean _int_ylabels, boolean _reversed)
+	int mode, String x_label, String y_label, String title, String error, int grid_step_x, int grid_step_y,
+	boolean int_xlabels, boolean int_ylabels, boolean reversed)
     {
-        reversed = _reversed;
-	    mode = _mode;
-	    x_label = _x_label;
-	    y_label = _y_label;
-	    title = _title;
-	    grid_step_x = _grid_step_x;
-	    grid_step_y = _grid_step_y;
-	    int_xlabels = _int_xlabels;
-	    int_ylabels = _int_ylabels;
+        this.reversed = reversed;
+	    this.mode = mode;
+	    this.x_label = x_label;
+	    this.y_label = y_label;
+	    this.title = title;
+	    this.error = error;
+	    this.grid_step_x = grid_step_x;
+	    this.grid_step_y = grid_step_y;
+	    this.int_xlabels = int_xlabels;
+	    this.int_ylabels = int_ylabels;
 	    font = null;
 	    x_values = new double[50];
 	    y_values = new double[50];
@@ -231,18 +232,17 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 
 	    if(y_label != null && vert_label == null)
 	    {
-	        Image label_image = w.createImage(fm.stringWidth(y_label), fm.getHeight());
+	        Image label_image = w.createImage(fm.stringWidth(y_label+" ") , fm.getHeight());
 	        Graphics label_gc = label_image.getGraphics();
 	    
-	        label_gc.setFont(font);
+	        label_gc.setFont(g.getFont());
 	        label_gc.setColor(Color.white);
 	        label_gc.fillRect(0, 0, d.width, d.height);
 	        label_gc.setColor(Color.black);
 	        label_gc.drawString(y_label, 0, fm.getAscent());
 	        ImageFilter filter = new RotateFilter(Math.PI/2.);
-	        ImageProducer producer = new FilteredImageSource(
-		    label_image.getSource(), filter);
-	        vert_label = w.createImage(producer); 
+	        ImageProducer producer = new FilteredImageSource(label_image.getSource(), filter);
+	        vert_label = w.createImage(producer);
         }
 
 
@@ -362,12 +362,17 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 
 	
 	    if(x_label != null) 
-	        g.drawString(x_label, (d.width - fm.stringWidth(x_label))/2, d.height - label_descent);	        
+	        g.drawString(x_label, (d.width - fm.stringWidth(x_label))/2, d.height - label_descent - fm.getHeight());	        
 	    if(y_label != null)
 	        g.drawImage(vert_label, 2, (d.height - fm.stringWidth(y_label))/2, w);
 	    if(title != null)
 	        g.drawString(title, (d.width - fm.stringWidth(title))/2, fm.getAscent() + d.height/40);
-    
+	    if(error != null)
+	    {
+	        int y_pos = 0;
+	        if(title != null && title.trim().length() != 0) y_pos =  fm.getHeight();
+	        g.drawString(error, (d.width - fm.stringWidth(error))/2, y_pos + fm.getAscent() + d.height/40);
+        }
     }
         
 

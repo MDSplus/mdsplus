@@ -1,12 +1,15 @@
 import java.util.*;
 import java.io.IOException;
+import javax.swing.JFrame;
 
-class JetMdsProvider extends NetworkProvider
+class JetMdsDataProvider extends MdsDataProvider
 {
-    public JetMdsProvider()
+    public JetMdsDataProvider()
     {
         super("194.81.223.90");
-    }    
+    } 
+    
+    public void SetArgument(String arg){};
         
     public synchronized void Update(String exp, int s)
 	{
@@ -57,22 +60,30 @@ class JetMdsProvider extends NetworkProvider
 		        break;
 		    }   
 		} 	  
-	}catch(Exception e){System.out.println(e);}
+	}
+	catch(Exception e)
+	{
+	    System.out.println(e);
+	}
 	//System.out.println("parsed: "+ parsed);
 	float [] out_array = super.GetFloatArray(parsed);
-	if(out_array == null&& error == null)
+	if(out_array == null && error == null)
 	    error = "Cannot evaluate " + in + " for shot " + shot;
+	/*    
 	if(out_array != null && out_array.length <= 1)
 	{
 	    error = "Cannot evaluate " + in + " for shot " + shot;
 	    return null;
 	}
+	*/
 	return out_array;
 }
 
-
-public boolean supportsCompression(){return false;}
-public void setCompression(boolean state){}
-public boolean useCompression(){return false;}
+public boolean SupportsCompression(){return false;}
+public void    SetCompression(boolean state){}
+public boolean SupportsContinuous() {return false; }
+public boolean DataPending() {return  false;}
+public int     InquireCredentials(JFrame f, String user){return DataProvider.LOGIN_OK;}
+public boolean SupportsFastNetwork(){return true;}
 }
 								

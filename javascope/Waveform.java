@@ -116,6 +116,9 @@ public class Waveform extends JComponent
     private boolean border_changed = false;
     private javax.swing.Timer play_timer;
 	private boolean restart_play = false;
+	private boolean pan_enabled = true;
+    static protected int horizontal_offset = 0;
+    static protected int vertical_offset = 0;
 	
      
     class ZoomRegion
@@ -141,7 +144,7 @@ public class Waveform extends JComponent
 	    waveform_signal = new Signal(s, 1000);
 //      Reshape al piu' con 1000 punti
 	    not_drawn = true;
-	    double xmax = MaxXSignal(), xmin = MinXSignal(), ymax = MaxYSignal(), ymin = MinYSignal();
+//	    double xmax = MaxXSignal(), xmin = MinXSignal(), ymax = MaxYSignal(), ymin = MinYSignal();
 	}
 
     public Waveform()
@@ -328,15 +331,31 @@ public class Waveform extends JComponent
         return colors;
     }
 
-    public int GetColorIdx(){return (waveform_signal != null ? waveform_signal.getColorIdx() : 0);}
+
+    public int GetColorIdx()
+    {
+        if (waveform_signal != null)
+            return waveform_signal.getColorIdx();
+        else
+            if(frames != null)
+                return frames.GetColorIdx();
+        return 0;
+    }
 
     public void SetColorIdx(int idx)
     {
+        idx = idx % colors.length;
         if(waveform_signal != null)
         {
-            idx = idx % colors.length;
             waveform_signal.setColorIdx(idx);
-        } 
+        } else {
+            if(frames != null)
+            {
+                idx = (idx == 0 ? 1 : idx);
+                frames.SetColorIdx(idx);
+                SetCrosshairColor(idx);
+            }
+        }
         this.SetCrosshairColor(idx);
     }
     
@@ -352,6 +371,12 @@ public class Waveform extends JComponent
     public boolean  GetInterpolate(){return (waveform_signal != null ? waveform_signal.getInterpolate() : true );}
     public int      GetMarker()     {return (waveform_signal != null ? waveform_signal.getMarker() : 0 );}
     public int      GetMarkerStep() {return (waveform_signal != null ? waveform_signal.getMarkerStep() : 0 );}
+
+    static public void     SetHorizontalOffset(int h_offset){horizontal_offset = h_offset;}
+    static public int      GetHorizontalOffset(){return horizontal_offset;}
+    static public void     SetVerticalOffset(int v_offset){vertical_offset = v_offset;}
+    static public int      GetVerticalOffset(){return vertical_offset;}
+    
 
     public void SetMarkerStep(int step)
     {
@@ -783,6 +808,7 @@ public class Waveform extends JComponent
 	    x_label = null;
 	    y_label = null;
 	    not_drawn = true;
+	   // wave_error = null;
 	    repaint();
     }
 	
@@ -897,7 +923,7 @@ public class Waveform extends JComponent
     
     public void UpdateImage(Frames frames)
     {
-        this.frames = frames;
+        SetFrames(frames);
         if(frames != null && frames.getNumFrame() > 0)
             frames.curr_frame_idx = 0;
         this.is_image = true;
@@ -935,26 +961,38 @@ public class Waveform extends JComponent
       SetMode(mode);
    }
 
-   protected void SetMode(int mod)
+    public void SetEnabledPan(boolean pan_enabled)
+    {
+        this.pan_enabled = pan_enabled;
+    }
+
+   protected void SetMode(int mode)
    {
 	    if(def_cursor == null)
 	        def_cursor = getCursor();
-	    mode = mod;
 	    switch(mode) {
 	        case MODE_PAN: 
-		        setCursor(new Cursor(Cursor.MOVE_CURSOR));
+                if(pan_enabled)
+                {
+		            setCursor(new Cursor(Cursor.MOVE_CURSOR));
+	                this.mode = mode;
+	            }
 		    break; 
 	        case MODE_COPY: 
 		        setCursor(new Cursor(Cursor.HAND_CURSOR));
+	            this.mode = mode;
 		    break;
 	        case MODE_WAIT:
 		        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+	            this.mode = mode;
 		    break;
 	        case MODE_ZOOM:
 		        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	            this.mode = mode;
 		    break;
 	        default: 
 		        setCursor(def_cursor);
+	            this.mode = mode;
 		    break;
 	    }	
 	    if(waveform_signal != null || is_image) 
@@ -976,6 +1014,7 @@ public class Waveform extends JComponent
     }
 
 
+
     void DrawWave(Dimension d)
     {
 	    int i;
@@ -994,6 +1033,7 @@ public class Waveform extends JComponent
 	    end_x = x[0];
 	    end_y = y[0];
     }
+
 
 /*
     void DrawWave(Dimension d)
@@ -1035,17 +1075,7 @@ public class Waveform extends JComponent
 	    end_y = y[0];
     }
 */
-    private String getTitle()
-    {
-	   String tit;
-	            
-	   if(wave_error != null)
-	      tit = title + " " + wave_error;
-	   else
-	      tit = title;
-	      
-	   return tit;
-    }
+
        
     synchronized public void PaintImage(Graphics g, Dimension d, int print_mode)
     {        
@@ -1058,11 +1088,11 @@ public class Waveform extends JComponent
             curr_rect = null;
        } 
 
- //	   if(resizing) // If new Grid and WaveformMatrics have not been computed before
+ //	   if(resizing) // If new Grid and WaveformMetrics have not been computed before
 //	   {
 	    
 		    grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, 
-		                    getTitle(), grid_step_x, grid_step_y, int_xlabel, int_ylabel, reversed);
+		                    title, wave_error, grid_step_x, grid_step_y, int_xlabel, int_ylabel, true);
 		    //grid.font = font;
 		    //resizing = false; 
 //	   }
@@ -1100,25 +1130,33 @@ public class Waveform extends JComponent
 		            ymax = MaxYSignal();
 		            ymin = MinYSignal();
 		            
+		            double xrange = xmax - xmin;
+		            xmax += xrange * horizontal_offset/200.;
+		            xmin -= xrange * horizontal_offset/200.;
+		            double yrange = ymax - ymin;
+		            ymax += yrange * vertical_offset/200.;
+		            ymin -= yrange * vertical_offset/200.;
+		            
 		        }
 	        }
 
 	    
-	        //if(resizing || wm == null) // If new Grid and WaveformMatrics have been computed before
-	        //if(resizing || grid == null || wm == null)//!resizing) // If new Grid and WaveformMatrics have not been computed before
+	        //if(resizing || wm == null) // If new Grid and WaveformMetrics have been computed before
+	        //if(resizing || grid == null || wm == null)//!resizing) // If new Grid and WaveformMetrics have not been computed before
 	        //if(resizing || grid == null)
 	        if(resizing || grid == null || wm == null || change_limits)
 	        {
 	            change_limits = false;
 		        grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, 
-		                    getTitle(), grid_step_x, grid_step_y, int_xlabel, int_ylabel, reversed);
+		                    title, wave_error, grid_step_x, grid_step_y, int_xlabel, int_ylabel, reversed);
 		        //grid.font = font;
 		    //}
 		    //if(resizing ||  wm == null)
 		    //{
 		        curr_display_limits = new Rectangle();
 		        grid.GetLimits(g, curr_display_limits, y_log);
-		        wm = new WaveformMetrics(xmax, xmin, ymax, ymin, curr_display_limits, d, x_log, y_log);
+		        wm = new WaveformMetrics(xmax, xmin, ymax, ymin, curr_display_limits, 
+		                                 d, x_log, y_log, 0, 0);
 //		        resizing = false;
 	        }
 //	        else
@@ -1338,7 +1376,7 @@ public class Waveform extends JComponent
 	    {   
 	        waveform_signal.Traslate(pan_delta_x, pan_delta_y, wm.x_log, wm.y_log);
 	        wm = new WaveformMetrics(MaxXSignal(), MinXSignal(), MaxYSignal(), 
-			    MinYSignal(), curr_display_limits, d, wm.x_log, wm.y_log);
+			    MinYSignal(), curr_display_limits, d, wm.x_log, wm.y_log, 0,0);
 
             if(reversed)
 	            g.setColor(Color.black);
@@ -1430,6 +1468,7 @@ public class Waveform extends JComponent
 	            resizing = true;
 	            dim = d;
 	            off_graphics = g;
+	            g.setColor(Color.black);
                 off_graphics.drawRect(0, 0, d.width-1, d.height-1);
             }
 
@@ -1937,7 +1976,6 @@ public class Waveform extends JComponent
     
     public void SetXScaleAutoY(Waveform w)
     {
-	    double xmin, xmax;
 
 	    if(waveform_signal == null)
 	        return;
@@ -2085,9 +2123,15 @@ public class Waveform extends JComponent
     public int GetGridStepY(){ return grid_step_y; }
     public Image GetImage() {return off_image; }
 
+    public void SetFrames(Frames frames)
+    {
+        this.frames = frames;
+    }
     
     void SetReversed(boolean reversed)
     {
+        if(this.is_image && !reversed)
+            return;
         if(this.reversed != reversed)
         {
             this.reversed = reversed;

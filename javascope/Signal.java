@@ -553,20 +553,37 @@ public class Signal
     public Signal(float data[], float x_data[], float time[], int mode)
     {
         this(data, x_data, time, mode, Float.NaN);
-    }
+    } 
+    
     
     public Signal(float data[], float x_data[], float time[], int mode, float value)
-    {  
-        this.data   = data;
-        this.x_data = x_data;
-        this.time   = time;
-        this.mode   = mode;
-        this.type   = TYPE_2D;
-        setAxis(time, data, x_data);
-        if(Float.isNaN(value))
-            setMode(mode);
-        else
-            setMode(mode, value);
+    { 
+        
+	    error = asym_error = false;
+        if(x_data != null && x_data.length > 1)
+        {
+            this.data   = data;
+            this.x_data = x_data;
+            this.time   = time;
+            this.mode   = mode;
+            this.type   = TYPE_2D;
+            setAxis(time, data, x_data);
+            if(Float.isNaN(value))
+                setMode(mode);
+            else
+                setMode(mode, value);
+        } else {
+            int min_len;
+            if(time.length > data.length)
+                min_len = data.length;
+            else
+                min_len = time.length;
+                
+	        setAxis(time, data, min_len);
+	        CheckIncreasingX();
+    	    if(x_data != null && x_data.length == 1)
+    	        setXData(x_data[0]);
+        }
    }
 
     private int getArrayIndex(float data[], float d)
@@ -737,7 +754,9 @@ public class Signal
     
     public void showYTime(int idx)
     {
-        if(idx > x_data.length || idx == curr_data_yt_idx) return;
+        if(idx > x_data.length ||
+           time.length * (idx + 1) - 1 > data.length ||
+           idx == curr_data_yt_idx) return;
 
         curr_data_yt_plot = x_data[idx];
         curr_data_yt_idx = idx;
@@ -789,6 +808,7 @@ public class Signal
             break;
             case MODE_YX:
             case MODE_XY:
+                prev_idx = 0;
                 showXY(mode, value);
             break;
         }

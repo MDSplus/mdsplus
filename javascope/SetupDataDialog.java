@@ -44,7 +44,6 @@ import javax.swing.event.*;
     JTextField y_max = new JTextField(10);
     JLabel pix_y_max = new JLabel();
     JCheckBox image_b = new JCheckBox("Is image");
-    JCheckBox use_jai_b = new JCheckBox("Use JAI");
     JLabel x_lab = new JLabel();
     JTextField x_expr = new JTextField(58);
     JCheckBox x_log = new JCheckBox("Log scale");
@@ -158,7 +157,7 @@ import javax.swing.event.*;
       {               
 	        super(fw, "Error Setup", true); 	
 //	        super.setFont(new Font("Helvetica", Font.PLAIN, 10)); 
-	        setResizable(false);   
+//	        setResizable(false);   
         	    
 	        JLabel label;
         		    
@@ -248,7 +247,7 @@ import javax.swing.event.*;
     private JComboBox        show_type, color, marker;
     private JTextField	     marker_step_t;
     private Vector	         signals = new Vector();
-    private String	         shot_str;
+    private String	         shot_str = null;
     private int		         shots[]=null, list_num_shot = 0;  
     private int              sel_signal = -1;
     private int              UNDEF_SHOT     = -99999;
@@ -533,10 +532,11 @@ import javax.swing.event.*;
 	            shots = new int[wi.num_shot];
 	            for(int i = 0; i < wi.num_shot; i++)
 		            shots[i] = wi.shots[i];
+    	        shot_str = wi.in_shot;
 		    }
 		    
 	        list_num_shot = wi.num_shot;
-	        shot_str = wi.in_shot;
+//	        shot_str = wi.in_shot;
 	    
 	        for(int i = 0; i < wi.num_waves; i++)
 	        {
@@ -908,6 +908,7 @@ import javax.swing.event.*;
 	    {
 	        conf_dialog.x_expr.setText(x_expr.getText());
 	        conf_dialog.y_expr.setText(y_expr.getText());
+	        updateDataSetup();
 	    }
 	    setVisible(false);	   
      }      
@@ -919,7 +920,7 @@ import javax.swing.event.*;
    {
       super(fw, frame_title, false);
       setModal(true);
-      setResizable(false);    
+//      setResizable(false);    
 
       main_scope  = (jScope_1)fw;
       error_w     = new SError(fw);
@@ -982,9 +983,6 @@ import javax.swing.event.*;
 		
 		p5.add(x_log);
 		
-		p5.add(use_jai_b);
-        use_jai_b.setVisible(false);
-
         JPanel p6 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		p6.add(x_label_b);
 		p6.add(x_label);
@@ -1059,7 +1057,6 @@ import javax.swing.event.*;
       y_max_b.addItemListener(this);
       y_max.addKeyListener(this);
       image_b.addItemListener(this);
-     // use_jai_b.addItemListener(this);
       x_expr.addKeyListener(this);
       x_label_b.addItemListener(this);
       x_min_b.addItemListener(this);
@@ -1331,7 +1328,6 @@ import javax.swing.event.*;
     this.wi.show_legend     = wi.show_legend;
     this.wi.reversed        = wi.reversed;
     image_b.setSelected(wi.is_image);
-    use_jai_b.setSelected(wi.use_jai);
     keep_ratio_b.setSelected(wi.keep_ratio);
     horizontal_flip_b.setSelected(wi.horizontal_flip);
     vertical_flip_b.setSelected(wi.vertical_flip);
@@ -1389,7 +1385,6 @@ import javax.swing.event.*;
         signalList.setVisible(false);        
         p9.setVisible(false);        
         error.setVisible(false);
-        use_jai_b.setVisible(true);
         keep_ratio_b.setVisible(true);
         horizontal_flip_b.setVisible(true);
         vertical_flip_b.setVisible(true);
@@ -1428,7 +1423,6 @@ import javax.swing.event.*;
         p9.setVisible(true);        
         error.setVisible(true);
         x_lab.setVisible(true);
-        use_jai_b.setVisible(false);
         keep_ratio_b.setVisible(false);
         horizontal_flip_b.setVisible(false);
         vertical_flip_b.setVisible(false);
@@ -1518,7 +1512,6 @@ import javax.swing.event.*;
 	if(!main_scope.equalsString(experiment.getText(), wave_wi.cexperiment))   return true;
 	if(getDefaultFlags() != wave_wi.defaults)				                  return true;	
 	if(image_b.isSelected() != wave_wi.is_image)				                  return true;		
-	if(use_jai_b.isSelected() != wave_wi.use_jai)				                  return true;		
 	if(keep_ratio_b.isSelected() != wave_wi.keep_ratio)				          return true;		
 	if(horizontal_flip_b.isSelected() != wave_wi.horizontal_flip)				  return true;		
 	if(vertical_flip_b.isSelected() != wave_wi.vertical_flip)				      return true;		
@@ -1591,9 +1584,6 @@ import javax.swing.event.*;
 
  	  if(num_signal == 0)
  	  {
-//	      wave.wi = new MdsWaveInterface(main_scope.db, wave.controller, main_scope.def_values);
-//	      wi.is_image = image_b.isSelected();
-//	      wi.use_jai = use_jai_b.isSelected();
           if(wave.wi != null)
             wave.wi.Erase();
 	      return 1;
@@ -1602,7 +1592,6 @@ import javax.swing.event.*;
 	  wi.modified = isChanged(s);
 	  main_scope.setChange(wi.modified);
 	  wi.is_image = image_b.isSelected();
-	  wi.use_jai = use_jai_b.isSelected();
 	  wi.keep_ratio = keep_ratio_b.isSelected();
 	  wi.horizontal_flip = horizontal_flip_b.isSelected();
 	  wi.vertical_flip = vertical_flip_b.isSelected();
@@ -1721,12 +1710,6 @@ import javax.swing.event.*;
                 //return 1;
                 error = 1;
 		    }    
-		    /*
-	        if(!def_exp && !setup.data_server_address.equals("Ftu data") && !image_b.isSelected()) {	    
-		        error_msg.addMessage("Shot defined but undefined experiment\n");
-	            error = 1;
-	        }
-	        */
 	    }
 
 	    updateDataSetup();
@@ -1766,7 +1749,7 @@ import javax.swing.event.*;
         switch(e.getID())
         {
              case WaveformEvent.END_UPDATE :
-                String full_error = ((MdsWaveInterface)w.wi).getErrorString(main_scope.wave_panel.getBriefError());
+                String full_error = ((MdsWaveInterface)w.wi).getErrorString();//main_scope.wave_panel.GetBriefError());
                 if(full_error != null)
                 {
 		            JOptionPane.showMessageDialog(SetupDataDialog.this, full_error, 
@@ -1824,8 +1807,8 @@ import javax.swing.event.*;
       if(ob == expand)
       {	
 	        expand_expr.setExpressionString(x_expr.getText(), y_expr.getText());
-	        expand_expr.setLocationRelativeTo(this);	        
 	        expand_expr.setSize(600,400);
+	        expand_expr.setLocationRelativeTo(this);	        
 	        expand_expr.show();
       }	
    }
