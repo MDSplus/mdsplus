@@ -78,7 +78,7 @@ end
 
 function GetCurrentRun
 ;  set_database, 'logbook'
-  dummy = dsql("select max(run) from runs", runs, /debug)
+  dummy = dsql("select max(run) from runs", runs)
 ;  sql_finish
   return, runs(0)
 end
@@ -356,7 +356,7 @@ function get_query, ctx, voided=voided, user=user, run=run, topic=topic
     for i=0, n_elements(runs)-1 do begin
       if (strtrim(runs(i),2) eq 'CURRENT') then begin
 ;        set_database, 'logbook'
-        n = dsql('select max(run) from runs', run,/debug)
+        n = dsql('select max(run) from runs', run)
 ;        sql_finish
         runs(i) = string(run(0), format='(I7)')
       endif
@@ -1368,11 +1368,12 @@ end
 forward_function fix_quotes
 
 function fix_quotes, text
-  idx = strpos(text, "'")
+  idx = strpos(text, '"')
   if (idx eq -1) then $
     return, text $
   else $
-    return, strmid(text, 0, idx)+"''" + fix_quotes(strmid(text, idx+1, strlen(text)-idx-1))
+    return, strmid(text, 0, idx)+'""' + fix_quotes(strmid(text, idx+1, strlen(text)-idx-1))
+;  return, text
 end
 
 function make_new_entry, ctx
