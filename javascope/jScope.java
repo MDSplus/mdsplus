@@ -2,7 +2,7 @@
 import java.io.*;
 import java.net.*;
 import java.awt.List;
-import java.awt.event.*; 
+import java.awt.event.*;
 import java.lang.*;
 import java.util.*;
 import java.awt.event.*;
@@ -17,20 +17,20 @@ import java.awt.datatransfer.*;
 import java.awt.image.*;
 
 
-public class jScope extends JFrame implements ActionListener, ItemListener, 
-                             WindowListener, WaveContainerListener, 
+public class jScope extends JFrame implements ActionListener, ItemListener,
+                             WindowListener, WaveContainerListener,
                              UpdateEventListener, ConnectionListener
 {
- 
-   static final String VERSION = "jScope (version 7.2.8)";
+
+   static final String VERSION = "jScope (version 7.2.9)";
    static public boolean is_debug = false;
-    
+
    public  static final int MAX_NUM_SHOT   = 30;
    public  static final int MAX_VARIABLE   = 10;
    private static int spos_x = 100, spos_y = 100;
 
   JWindow aboutScreen;
-  
+
 
   /**Main menu bar*/
   protected JMenuBar       mb;
@@ -38,22 +38,22 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
   protected JMenu        edit_m, look_and_feel_m, pointer_mode_m,
                          customize_m, autoscale_m, network_m, help_m;
            	JMenu		 servers_m, updates_m;
-  private JCheckBoxMenuItem  update_i, update_when_icon_i;	
-  /**Menu items on menu edit_m */	  
+  private JCheckBoxMenuItem  update_i, update_when_icon_i;
+  /**Menu items on menu edit_m */
   private   JMenuItem    exit_i, win_i;
-  protected JMenuItem    default_i, use_i, pub_variables_i, save_as_i, use_last_i, 
-                         save_i, color_i, print_all_i,  open_i, 
+  protected JMenuItem    default_i, use_i, pub_variables_i, save_as_i, use_last_i,
+                         save_i, color_i, print_all_i,  open_i,
                          close_i, server_list_i,  font_i, save_all_as_text_i,
                          free_cache_i;
-  private JCheckBoxMenuItem  brief_error_i;			
-  /**Menu item on menu pointer_mode_m */	  
+  private JCheckBoxMenuItem  brief_error_i;
+  /**Menu item on menu pointer_mode_m */
   private JMenuItem	zoom_i, point_i, copy_i, pan_i;
-  /**Menu item on menu autoscale_m */	    
+  /**Menu item on menu autoscale_m */
   private JMenuItem	all_i, allY_i;
-  
+
   private JMenuItem      print_i, page_i, properties_i;
   private String         propertiesFilePath = null;
-   
+
   private JPanel             panel, panel1;
   private ButtonGroup        pointer_mode = new ButtonGroup();
   private JRadioButton       zoom, point, copy, pan;
@@ -79,32 +79,32 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
   static  boolean	            not_sup_local = false;
   private boolean	            executing_update = false;
   private JFrame                main_scope;
-  
+
   PrinterJob            prnJob;
   PageFormat            pf;
 
   Properties        js_prop = null;
-  int               default_server_idx; 
+  int               default_server_idx;
   boolean           is_playing = false;
   int height = 500, width = 700, xpos = 50, ypos = 50;
   jScopeDefaultValues def_values = new jScopeDefaultValues();
-  SetupDataDialog     setup_dialog;  
+  SetupDataDialog     setup_dialog;
   JProgressBar        progress_bar;
 
   private jScopeBrowseUrl help_dialog ;
 
   private boolean modified = false;
-  
- 
+
+
 
     // LookAndFeel class names
     static String macClassName =
             "com.sun.java.swing.plaf.mac.MacLookAndFeel";
     static String metalClassName =
             "javax.swing.plaf.metal.MetalLookAndFeel";
-    static String motifClassName = 
+    static String motifClassName =
 	    "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
-    static String windowsClassName = 
+    static String windowsClassName =
 	    "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
 
     // L&F radio buttons
@@ -112,35 +112,35 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     JRadioButtonMenuItem metalMenuItem;
     JRadioButtonMenuItem motifMenuItem;
     JRadioButtonMenuItem windowsMenuItem;
-    
-    
-    
+
+
+
     static Component T_parentComponent;
     static Object T_message;
     static String T_title;
     static int T_messageType;
 
   static public void ShowMessage(Component parentComponent, Object message,
-                                    String title,int messageType)  
-  {  
+                                    String title,int messageType)
+  {
         T_parentComponent = parentComponent;
         T_message = message;
         T_title = title;
         T_messageType = messageType;
-        
-        
+
+
 
 	    // do the following on the gui thread
 	    SwingUtilities.invokeLater(new Runnable() {
 	        public void run() {
-		        JOptionPane.showMessageDialog(T_parentComponent, T_message, 
-		                                            T_title, 
+		        JOptionPane.showMessageDialog(T_parentComponent, T_message,
+		                                            T_title,
 		                                            T_messageType);
 	        }
 	    });
-      
+
   }
-   
+
   class PubVarDialog extends JDialog implements ActionListener {
 
        private Vector name_list = new Vector();
@@ -148,25 +148,25 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
        private JButton apply, cancel, save, reset;
        jScope dw;
        boolean is_pv_apply = false;
-    
+
        PubVarDialog(Frame fw) {
-       
-	  super(fw, "Public Variables", false); 	
-	  dw = (jScope)fw; 
-	  
+
+	  super(fw, "Public Variables", false);
+	  dw = (jScope)fw;
+
 	  GridBagConstraints c = new GridBagConstraints();
 	  GridBagLayout gridbag = new GridBagLayout();
-	  getContentPane().setLayout(gridbag);        
-    
+	  getContentPane().setLayout(gridbag);
+
 	  c.insets = new Insets(2, 2, 2, 2);
 	  c.fill = GridBagConstraints.NONE;
-    
+
 	  c.anchor = GridBagConstraints.CENTER;
 	  c.gridwidth = 1;
 	  JLabel lab = new JLabel("Name");
 	  gridbag.setConstraints(lab, c);
 	  getContentPane().add(lab);
-	  
+
 	  c.gridwidth = GridBagConstraints.REMAINDER;
 	  lab = new JLabel("Expression");
    	  gridbag.setConstraints(lab, c);
@@ -181,7 +181,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	      txt = new JTextField(10);
 	      gridbag.setConstraints(txt, c);
 	      getContentPane().add(txt);
-	      
+
 	      c.gridwidth = GridBagConstraints.REMAINDER;
 	      txt = new JTextField(30);
 	      gridbag.setConstraints(txt, c);
@@ -190,36 +190,36 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 
       JPanel p = new JPanel();
 	  p.setLayout(new FlowLayout(FlowLayout.CENTER));
-	    
+
 	  apply = new JButton("Apply");
-	  apply.addActionListener(this);	
+	  apply.addActionListener(this);
 	  p.add(apply);
 
 	  save = new JButton("Save");
-	  save.addActionListener(this);	
+	  save.addActionListener(this);
 	  p.add(save);
-    
+
 	  reset = new JButton("Reset");
-	  reset.addActionListener(this);	
+	  reset.addActionListener(this);
 	  p.add(reset);
-    
+
 	  cancel = new JButton("Cancel");
-	  cancel.addActionListener(this);	
+	  cancel.addActionListener(this);
 	  p.add(cancel);
 
-			    
+
 	  c.gridwidth = GridBagConstraints.REMAINDER;
 	  gridbag.setConstraints(p, c);
 	  getContentPane().add(p);
-	     
-      } 
-       
+
+      }
+
       public String getCurrentPublicVar()
       {
 	    String txt1, txt2, str;
 	    StringBuffer buf = new StringBuffer();
 	    Container p = getContentPane();
-      
+
 	    for (int i = 2; i < MAX_VARIABLE * 2; i+=2)
 	    {
 		    txt1 = ((JTextField) p.getComponent(i)).getText();
@@ -230,20 +230,20 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 		        else
 			        str = "public "+txt1+" = "+txt2+";";
 		        buf.append(str);
-		    }		
+		    }
 	    }
 	    return (new String(buf));
        }
-       
+
 
       public String getPublicVar()
       {
-        
+
              if(is_pv_apply) return getCurrentPublicVar();
-        
+
 	    String txt1, txt2, str;
 	    StringBuffer buf = new StringBuffer();
-      
+
 	    for (int i = 0; i < name_list.size(); i++)
 	    {
             txt1 = (String)name_list.elementAt(i);
@@ -254,23 +254,23 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 		        else
 			        str = "public "+txt1+" = "+txt2+";";
 		        buf.append(str);
-		    }		
+		    }
 	    }
 	    return (new String(buf));
        }
 
-       
-       
-       
+
+
+
        private void SavePubVar()
        {
 	        String txt1, txt2, str;
-	        
+
 	        if(name_list.size() != 0)
                 name_list.removeAllElements();
             if(expr_list.size() != 0)
                 expr_list.removeAllElements();
-                
+
 	        Container p = getContentPane();
 
 	        for (int i = 2, j = 0; i < MAX_VARIABLE * 2; i+=2, j++)
@@ -280,13 +280,13 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 		        if(txt1.length() != 0 && txt2.length() != 0) {
 		            name_list.insertElementAt(new String(txt1), j);
 		            expr_list.insertElementAt(new String(txt2), j);
-		        }		
+		        }
 	        }
 	        dw.setChange(true);
         }
-       
+
        private void SetPubVar()
-       {      
+       {
 	        Container p = getContentPane();
 		    for (int i = 2, j = 0; j < name_list.size(); i+=2, j++)
 	        {
@@ -294,49 +294,49 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 		        ((JTextField)p.getComponent(i+1)).setText((String)expr_list.elementAt(j));
 	        }
        }
-       	         
+
        public void Show()
        {
            is_pv_apply = true;
-		   SetPubVar();   
+		   SetPubVar();
            pack();
            setLocationRelativeTo(dw);
            setVisible(true);
        }
-       
+
        public void actionPerformed(ActionEvent e)
        {
-	        Object ob = e.getSource();	
-    
+	        Object ob = e.getSource();
+
 	        if(ob == apply) {
 	             dw.setPublicVariables(getPublicVar());
-	             dw.UpdateAllWaves();	    
+	             dw.UpdateAllWaves();
 	        }
-	        
+
 	        if(ob == save) {
 	            SavePubVar();
 	        }
-	        
+
 	        if(ob == reset) {
 	            SetPubVar();
             }
-            
+
 	        if(ob == cancel) {
 	            is_pv_apply = false;
-	            setVisible(false);	   
+	            setVisible(false);
             }
        }
-       
+
        public void toFile(PrintWriter out, String prompt)
        {
 	        for(int i = 0; i < name_list.size() ; i++)
             {
-	            out.println(prompt + i + ": " + name_list.elementAt(i) 
-	                                            + " = " + expr_list.elementAt(i));		
+	            out.println(prompt + i + ": " + name_list.elementAt(i)
+	                                            + " = " + expr_list.elementAt(i));
             }
 	        out.println("");
         }
-       
+
     public void fromFile(Properties pr, String prompt) throws IOException
     {
     	String prop;
@@ -344,48 +344,48 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 
 	    while((prop = pr.getProperty(prompt+idx)) != null)
 	    {
-		    StringTokenizer st = new StringTokenizer(prop, "="); 
+		    StringTokenizer st = new StringTokenizer(prop, "=");
 		    String name = st.nextToken();
 		    String expr = st.nextToken();
 		    name_list.insertElementAt(name.trim(), idx);
 		    expr_list.insertElementAt(expr.trim(), idx);
-		    idx++;     
+		    idx++;
 	    }
      }
   }
 
 
 
-	    
-	    
+
+
     /**
      * Show the spash screen while the rest of the demo loads
      */
-    public void createAboutScreen() {	
+    public void createAboutScreen() {
 	    JLabel aboutLabel = new AboutWindow();
 	    aboutScreen = new JWindow();
 	    aboutScreen.addMouseListener( new MouseAdapter()
 	    {
-            public void mouseClicked( MouseEvent e ) 
+            public void mouseClicked( MouseEvent e )
             {
                 hideAbout();
             }
 	    });
-	    
-	    
+
+
 	    aboutScreen.getContentPane().add(aboutLabel);
-	    
+
 	    aboutScreen.pack();
 	    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	    aboutScreen.setLocation(screenSize.width/2 - aboutScreen.getSize().width/2,
 				     screenSize.height/2 - aboutScreen.getSize().height/2);
     }
 
-    public void showAboutScreen() 
+    public void showAboutScreen()
     {
         aboutScreen.show();
     }
-    
+
      /**
      * pop down the spash screen
      */
@@ -395,10 +395,10 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	    aboutScreen = null;
     }
 
-	    
+
   public jScope(int spos_x, int spos_y)
   {
-    
+
     if(num_scope == 0)
     {
 	    createAboutScreen();
@@ -411,13 +411,13 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	    });
     }
 	jScopeCreate(spos_x, spos_y);
-	  
+
 	}
-	    
+
   public void jScopeCreate(int spos_x, int spos_y)
   {
-        
- 
+
+
     prnJob = PrinterJob.getPrinterJob();
     pf = prnJob.defaultPage();
     pf.setOrientation(PageFormat.LANDSCAPE);
@@ -425,24 +425,24 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     p.setSize(595.2239, 841.824);
     p.setImageableArea(16., 16., 560., 810.);
     pf.setPaper(p);
- 
- 
+
+
     help_dialog = new jScopeBrowseUrl(this);
- 	try { 
- 	    
+ 	try {
+
  		String path = "docs/jScope.html";
  		URL url = getClass().getClassLoader().getResource(path);
  		help_dialog.connectToBrowser(url);
-    } catch (Exception e){} 
+    } catch (Exception e){}
 
     main_scope = this;
 
-   
+
     setBounds(spos_x, spos_y, 750, 550);
 
     InitProperties();
     GetPropertiesValue();
-        
+
     font_dialog   = new FontSelection(this, "Waveform Font Selection");
     setup_default = new SetupDefaults(this, "Default Setup", def_values);
     color_dialog  = new ColorDialog(this, "Color Configuration Dialog");
@@ -451,15 +451,15 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 
     getContentPane().setLayout(new BorderLayout());
     setBackground(Color.lightGray);
-    
+
     addWindowListener(this);
-    
+
     mb = new JMenuBar();
     setJMenuBar(mb);
     edit_m = new JMenu("File");
     mb.add(edit_m);
-    
-    JMenuItem browse_signals_i = new JMenuItem("Browse signals");            
+
+    JMenuItem browse_signals_i = new JMenuItem("Browse signals");
     edit_m.add(browse_signals_i);
     browse_signals_i.addActionListener(new ActionListener()
 	    {
@@ -470,10 +470,10 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	    }
 	);
 
-    
+
     open_i = new JMenuItem("New Window");
     open_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-    edit_m.add(open_i);	
+    edit_m.add(open_i);
     open_i.addActionListener(this);
 
     look_and_feel_m = new JMenu("Look & Feel");
@@ -484,37 +484,37 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     JMenuItem sign = new JMenuItem("History...");
     sign.addActionListener(new ActionListener()
     {
-        public void actionPerformed(ActionEvent e) 
+        public void actionPerformed(ActionEvent e)
         {
             SignalsBoxDialog sig_box_diag = new SignalsBoxDialog(jScope.this, "Visited Signals", false);
-    	    sig_box_diag.setVisible(true);	
+    	    sig_box_diag.setVisible(true);
         }
     });
-    
+
     edit_m.add(sign);
- 
+
     edit_m.addSeparator();
-    
+
     //Copy image to clipborad can be done only with
     //java release 1.4
     if(AboutWindow.javaVersion.indexOf("1.4") != -1)
-    { 
+    {
         JMenuItem cb_copy = new JMenuItem("Copy to Clipboard");
         cb_copy.addActionListener(new ActionListener()
         {
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
 	            Dimension dim = wave_panel.getSize();
 	            BufferedImage ri = new BufferedImage(dim.width , dim.height, BufferedImage.TYPE_INT_RGB);
 	            Graphics2D g2d = (Graphics2D)ri.getGraphics();
 	            g2d.setBackground(Color.white);
-	            wave_panel.PrintAll(g2d, dim.height, dim.width);	                        
+	            wave_panel.PrintAll(g2d, dim.height, dim.width);
 	            try
 	            {
-                    ImageTransferable imageTransferable = new ImageTransferable(ri); 
-                    Clipboard cli = Toolkit.getDefaultToolkit().getSystemClipboard();                
-	                cli.setContents(imageTransferable, imageTransferable);	                        
-	            } 
+                    ImageTransferable imageTransferable = new ImageTransferable(ri);
+                    Clipboard cli = Toolkit.getDefaultToolkit().getSystemClipboard();
+	                cli.setContents(imageTransferable, imageTransferable);
+	            }
 	            catch(Exception exc)
 	            {
 	                System.out.println("Exception "+exc);
@@ -524,42 +524,42 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         edit_m.add(cb_copy);
         edit_m.addSeparator();
     }
-    
+
     print_i = new JMenuItem("Print Setup ...");
     print_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
     print_i.addActionListener(new ActionListener()
     {
-        public void actionPerformed(ActionEvent e) 
+        public void actionPerformed(ActionEvent e)
         {
             Thread print_cnf = new Thread()
             {
-                public void run() 
+                public void run()
                 {
                     setName("Print Dialog Thread");
                     prnJob.printDialog();
                 }
             };
-            print_cnf.start();        
+            print_cnf.start();
         }
     });
     edit_m.add(print_i);
-    
-    
+
+
     page_i = new JMenuItem("Page Setup ...");
     page_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J, ActionEvent.CTRL_MASK));
     page_i.addActionListener(new ActionListener()
     {
-        public void actionPerformed(ActionEvent e) 
+        public void actionPerformed(ActionEvent e)
         {
             Thread page_cnf = new Thread()
             {
-                public void run() 
+                public void run()
                 {
                     setName("Page  Dialog Thread");
 	                pf = prnJob.pageDialog(pf);
                 }
             };
-            page_cnf.start();        
+            page_cnf.start();
         }
     });
     edit_m.add(page_i);
@@ -567,45 +567,45 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     print_all_i = new JMenuItem("Print");
     print_all_i.addActionListener(new ActionListener()
     {
-        public void actionPerformed(ActionEvent e) 
+        public void actionPerformed(ActionEvent e)
         {
             Thread print_page = new Thread()
             {
-                public void run() 
+                public void run()
                 {
                     setName("Print All Thread");
                     PrintAllWaves();
                 }
             };
-            print_page.start();        
+            print_page.start();
         }
     });
-    edit_m.add(print_all_i);      
-      
+    edit_m.add(print_all_i);
+
     edit_m.addSeparator();
-   
+
     properties_i = new JMenuItem("Properties...");
     properties_i.addActionListener(new ActionListener()
     {
-        public void actionPerformed(ActionEvent e) 
+        public void actionPerformed(ActionEvent e)
         {
             PropertiesEditor pe = new PropertiesEditor(jScope.this, propertiesFilePath);
             pe.show();
         }
     });
     edit_m.add(properties_i);
- 
-    
+
+
     edit_m.addSeparator();
 
     close_i = new JMenuItem("Close");
     close_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
     edit_m.add(close_i);
-    close_i.addActionListener(this);    
+    close_i.addActionListener(this);
 
     exit_i = new JMenuItem("Exit");
     exit_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
-    edit_m.add(exit_i);	
+    edit_m.add(exit_i);
     exit_i.addActionListener(this);
 
 
@@ -663,32 +663,32 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     pointer_mode_m.add(copy_i);
     copy_i.addActionListener(this);
     pointer_mode_m.add(copy_i);
-    
+
     customize_m = new JMenu("Customize");
-    mb.add(customize_m);    
+    mb.add(customize_m);
     default_i = new JMenuItem("Global Settings ...");
     default_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
     customize_m.add(default_i);
-    default_i.addActionListener(this);    
+    default_i.addActionListener(this);
     win_i = new JMenuItem("Window ...");
     win_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
-    win_i.addActionListener(this);        
+    win_i.addActionListener(this);
     customize_m.add(win_i);
 
     font_i = new JMenuItem("Font selection ...");
     font_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
-    font_i.addActionListener(this);    
+    font_i.addActionListener(this);
     customize_m.add(font_i);
     color_i = new JMenuItem("Colors List ...");
     color_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-    color_i.addActionListener(this);    
+    color_i.addActionListener(this);
     customize_m.add(color_i);
     pub_variables_i = new JMenuItem("Public variables ...");
     pub_variables_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, ActionEvent.CTRL_MASK));
-    pub_variables_i.addActionListener(this);    
+    pub_variables_i.addActionListener(this);
     customize_m.add(pub_variables_i);
     brief_error_i = new JCheckBoxMenuItem("Brief Error", true);
-    brief_error_i.addItemListener(this);        
+    brief_error_i.addItemListener(this);
     customize_m.add(brief_error_i);
 
     customize_m.add(new JSeparator());
@@ -696,18 +696,18 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     use_last_i.addActionListener(this);
     use_last_i.setEnabled(false);
     customize_m.add(use_last_i);
-    
+
     use_i = new JMenuItem("Use saved settings from ...");
     use_i.addActionListener(this);
     customize_m.add(use_i);
 
     customize_m.add(new JSeparator());
-    
+
     save_i = new JMenuItem("Save current settings");
     save_i.setEnabled(false);
     save_i.addActionListener(this);
     customize_m.add(save_i);
-    
+
     save_as_i = new JMenuItem("Save current settings as ...");
     customize_m.add(save_as_i);
     save_as_i.addActionListener(this);
@@ -736,7 +736,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     allY_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
     autoscale_m.add(allY_i);
     allY_i.addActionListener(this);
-    
+
     network_m = new JMenu("Network");
     mb.add(network_m);
 
@@ -761,13 +761,13 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                 if(cache_directory != null && cache_directory.trim().length() != 0)
                 {
                     Object[] options = { "OK", "CANCEL" };
-                    int opt = JOptionPane.showOptionDialog(null, "Remove all files in jScope cache directory "+ cache_directory, "Warning", 
+                    int opt = JOptionPane.showOptionDialog(null, "Remove all files in jScope cache directory "+ cache_directory, "Warning",
                                 JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                                 null, options, options[0]);
 	                if (opt == JOptionPane.OK_OPTION)
 	                        wave_panel.FreeCache();
                 } else {
-		            JOptionPane.showMessageDialog(null, "Undefined cache directory", "alert", JOptionPane.ERROR_MESSAGE);     
+		            JOptionPane.showMessageDialog(null, "Undefined cache directory", "alert", JOptionPane.ERROR_MESSAGE);
                 }
 	        }
 	    }
@@ -795,12 +795,12 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
             }
 	    }
 	);
-    
-    
+
+
     server_list_i  = new JMenuItem("Edit server list ...");
     network_m.add(server_list_i);
     server_list_i.addActionListener(this);
-    
+
     network_m.addMenuListener(new MenuListener()
 	    {
 	        public void menuSelected(MenuEvent e)
@@ -815,7 +815,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
             }
 	    }
 	);
-    
+
     point_pos = new JLabel("[0.000000000, 0.000000000]");
     point_pos.setFont(new Font("Courier", Font.PLAIN, 12));
     info_text = new JTextField(" Status : ", 85);
@@ -864,26 +864,26 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 
 
     setup_dialog = new SetupDataDialog(this, "Setup");
-    
+
     wave_panel = buildWaveContainer();
-    
+
     wave_panel.addWaveContainerListener(this);
-        
+
     wave_panel.SetParams(Waveform.MODE_ZOOM,
-                                setup_default.getGridMode(), 
-                                setup_default.getLegendMode(), 
+                                setup_default.getGridMode(),
+                                setup_default.getLegendMode(),
                                 setup_default.getXLines(),
-                                setup_default.getYLines(), 
+                                setup_default.getYLines(),
                                 setup_default.getReversed());
-                                
+
     wave_panel.setPopupMenu(new jScopeWavePopup(setup_dialog, new ProfileDialog(null, null)));
-    
+
     getContentPane().add("Center", wave_panel);
-    
+
     panel = new JPanel();
     panel.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
     shot_l = new JLabel("Shot");
-    
+
     shot_t = new JTextField(10);
     shot_t.addActionListener(this);
     /*
@@ -896,10 +896,10 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         }
     );
     */
-    
+
     apply_b  = new JButton("Apply");
     apply_b.addActionListener(this);
-    
+
     point = new JRadioButton("Point");
     point.addItemListener(this);
     zoom  = new JRadioButton("Zoom", true);
@@ -919,7 +919,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     panel.add(pan);
     panel.add(copy);
     panel.add(shot_l);
-    panel.add(shot_t);    
+    panel.add(shot_t);
     panel.add(apply_b);
     panel.add(new JLabel(" Signal: "));
 
@@ -928,13 +928,13 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     GridBagConstraints c = new GridBagConstraints();
     Insets insets = new Insets(2,2,2,2);
 
-    panel3.setLayout(gridbag);		
-    c.anchor = GridBagConstraints.WEST;	
+    panel3.setLayout(gridbag);
+    c.anchor = GridBagConstraints.WEST;
     c.fill =  GridBagConstraints.HORIZONTAL;
     c.insets = insets;
-    c.weightx = 1.0; 	
-    c.gridwidth = 1;	
- 
+    c.weightx = 1.0;
+    c.gridwidth = 1;
+
     signal_expr  = new JTextField(25);
     signal_expr.addActionListener(this);
 
@@ -944,19 +944,19 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     JPanel panel4 = new JPanel(new BorderLayout());
     panel4.add("West", panel);
     panel4.add("Center", panel3);
-    
+
 
     JPanel panel2 = new JPanel();
-   
+
     panel2.setLayout(new BorderLayout());
-    panel2.add(BorderLayout.WEST, progress_pan);        
-    panel2.add(BorderLayout.CENTER, info_text);    
+    panel2.add(BorderLayout.WEST, progress_pan);
+    panel2.add(BorderLayout.CENTER, info_text);
     panel2.add(BorderLayout.EAST, net_text  = new JTextField(" Data server :", 25));
     net_text.setBorder(BorderFactory.createLoweredBevelBorder());
     info_text.setEditable(false);
     net_text.setEditable(false);
-     
-       
+
+
     panel1 = new JPanel();
     panel1.setLayout(new BorderLayout());
     panel1.add("North", panel4);
@@ -964,19 +964,19 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     panel1.add("South", panel2);
 
     getContentPane().add("South",panel1);
-       
+
     color_dialog.SetReversed(setup_default.getReversed());
 
     if(jScope.is_debug)
     {
-        Thread mon_mem = new MonMemory();           
-        mon_mem.start();        
+        Thread mon_mem = new MonMemory();
+        mon_mem.start();
 	    JButton exec_gc = new JButton("Exec gc");
 	    exec_gc.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
 	            {
-	                System.gc();  
+	                System.gc();
 	            }
 	        }
 	    );
@@ -984,48 +984,49 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     }
     InitDataServer();
     UpdateFont();
+    UpdateColors();
 
 	}
-	
+
 	protected jScopeWaveContainer buildWaveContainer()
 	{
         int rows[] = {1,0,0,0};
         return (new jScopeWaveContainer(rows, def_values));
 	}
-  
+
     class MonMemory extends Thread
     {
-        public void run() 
+        public void run()
         {
             setName("Monitor Thread");
             try
             {
                 while(true)
                 {
-                                    
+
                     //System.out.println
                     SetWindowTitle("Free :" + (int)(Runtime.getRuntime().freeMemory()/1024) +" "+
 	                    "Total :" + (int)(Runtime.getRuntime().totalMemory())/1024+" "+
 	                    "USED :" + (int)((Runtime.getRuntime().totalMemory()-
-	                                Runtime.getRuntime().freeMemory())/1024.));                            
+	                                Runtime.getRuntime().freeMemory())/1024.));
                     sleep(2000, 0);
                     //waitTime(2000);
                 }
             } catch(InterruptedException e){}
         }
-                        
+
         synchronized void waitTime(long t) throws InterruptedException
         {
             wait(t);
-        }       
+        }
     }
- 
+
   public void SetApplicationFonts(String font, int style, int size)
   {
     SetApplicationFonts(new Font(font, style, size));
   }
- 
- 
+
+
   public void SetApplicationFonts(Font font)
   {
     //int fontSize=9;
@@ -1055,10 +1056,10 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     UIManager.put("PopupMenu.font", new FontUIResource(defaultFont));
     UIManager.put("TableHeader.font", new FontUIResource(defaultFont));
     UIManager.put("PasswordField.font", new FontUIResource(defaultFont));
-    UIManager.put("CheckBoxMenuItem.font", new FontUIResource(defaultFont));    
-    UIManager.put("CheckBox.font", new FontUIResource(defaultFont));    
-    UIManager.put("RadioButtonMenuItem.font", new FontUIResource(defaultFont));    
-    UIManager.put("RadioButton.font", new FontUIResource(defaultFont));    
+    UIManager.put("CheckBoxMenuItem.font", new FontUIResource(defaultFont));
+    UIManager.put("CheckBox.font", new FontUIResource(defaultFont));
+    UIManager.put("RadioButtonMenuItem.font", new FontUIResource(defaultFont));
+    UIManager.put("RadioButton.font", new FontUIResource(defaultFont));
  // Containters
     UIManager.put("ToolBar.font", new FontUIResource(defaultFont));
     UIManager.put("MenuBar.font", new FontUIResource(defaultFont));
@@ -1071,7 +1072,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     UIManager.put("ColorChooser.font", new FontUIResource(defaultFont));
     jScopeUpdateUI();
   }
-    
+
   public void InvalidateDefaults()
   {
         wave_panel.InvalidateDefaults();
@@ -1088,7 +1089,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         f = new File(p);
         if(!f.isDirectory())
             continue;
-        f_name = p + File.separator + file;        
+        f_name = p + File.separator + file;
         f = new File(f_name);
         if(f.exists())
             return f_name;
@@ -1103,12 +1104,12 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     {
         if(jScope.is_debug)
         {
-            
+
             System.out.println("jScope.properties " + System.getProperty("jScope.properties"));
             System.out.println("jScope.config_directory " + System.getProperty("jScope.config_directory"));
         }
-        
-        if( ( (new File(f_name)).exists() ) || 
+
+        if( ( (new File(f_name)).exists() ) ||
             (f_name = System.getProperty("jScope.properties")) != null)
         {
             js_prop = new Properties();
@@ -1116,20 +1117,20 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         }
         else
         {
-            
+
             f_name = System.getProperty("user.home") + File.separator + "jScope" + File.separator;
             File jScopeUserDir = new File(f_name);
             if(!jScopeUserDir.exists())
-                jScopeUserDir.mkdirs();           
+                jScopeUserDir.mkdirs();
             f_name = f_name + "jScope.properties";
-            
+
             js_prop = new Properties();
             InputStream pis = getClass().getClassLoader().getResourceAsStream("jScope.properties");
             if(pis != null)
-            {                
+            {
                 js_prop.load(pis);
                 pis.close();
-                
+
                 pis = getClass().getClassLoader().getResourceAsStream("jScope.properties");
                 f_name = System.getProperty("user.home") + File.separator + "jScope" + File.separator + "jScope.properties";
                 FileOutputStream fos = new FileOutputStream(f_name);
@@ -1144,8 +1145,8 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                 System.out.println("Not found jScope.properties file");
             }
         }
-    } 
-    
+    }
+
     catch( FileNotFoundException e)
     {
         System.out.println(e);
@@ -1156,20 +1157,20 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     }
     propertiesFilePath = f_name;
   }
-  
+
   private void crateConfigDir()
   {
-    
+
   }
 
   protected void GetPropertiesValue()
-  {    
+  {
     if(js_prop == null) return;
-    
+
     //jScope configurations file directory can be defined
-    //with decrease priority order: 
-    // 1) by system property jScope.config_directory; 
-    //    in this case jScope must be started with 
+    //with decrease priority order:
+    // 1) by system property jScope.config_directory;
+    //    in this case jScope must be started with
     //    -DjScope.config_directory=<directory> option.
     // 2) in jScope.properties using jScope.directory property
    //If the previous properties are not defined jScope create
@@ -1182,7 +1183,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
    if(curr_directory == null || curr_directory.trim().length() == 0)
     {
        curr_directory = (String)js_prop.getProperty("jScope.directory");
-    
+
        if(curr_directory == null || curr_directory.trim().length() == 0)
        {
             //Store default jScope configuration file in local
@@ -1198,34 +1199,34 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                 {
                     String s;
                     byte b[] = new byte[1024];
-                                        
+
                     jScopeUserDir.mkdirs();
-                    
+
                     String configList[] = {"FTU_plasma_current.jscp",
                                             "fusion.jscp",
                                             "JET_plasma_current.jscp",
                                             "RFX_plasma_current.jscp",
                                             "TS_plasma_current.jscp",
                                             "TWU_plasma_current.jscp"};
-                   
+
                     for(int i = 0; i < configList.length; i++)
-                    {             
+                    {
                         InputStream  fis = getClass().getClassLoader().getResourceAsStream("configurations/" + configList[i]);
                         FileOutputStream fos = new FileOutputStream(curr_directory + configList[i]);
                         for(int len = fis.read(b); len > 0; len = fis.read(b))
                             fos.write(b, 0, len);
-                        fos.close();                    
+                        fos.close();
                         fis.close();
                     }
                 }
-            } 
-            catch (Exception exc) 
+            }
+            catch (Exception exc)
             {
                 curr_directory = System.getProperty("user.home");
-            }            
+            }
        }
     }
-    
+
     default_server_idx = -1;
     String prop = (String)js_prop.getProperty("jScope.default_server");
     if(prop != null)
@@ -1233,17 +1234,17 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         try
         {
             default_server_idx = Integer.parseInt(prop) - 1;
-        } 
-        catch (NumberFormatException e) {}        
+        }
+        catch (NumberFormatException e) {}
     }
-    
-    
+
+
     String cache_directory = (String)js_prop.getProperty("jScope.cache_directory");
     String cache_size = (String)js_prop.getProperty("jScope.cache_size");
     String f_name = (String)js_prop.getProperty("jScope.save_selected_points");
     String proxy_host = (String)js_prop.getProperty("jScope.http_proxy_host");
     String proxy_port = (String)js_prop.getProperty("jScope.http_proxy_port");
-    
+
     prop = (String)js_prop.getProperty("jScope.vertical_offset");
     int val = 0;
     if(prop != null)
@@ -1251,12 +1252,12 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         try
         {
             val = Integer.parseInt(prop);
-        } 
+        }
         catch (NumberFormatException e) {}
 	    Waveform.SetVerticalOffset(val);
-        
+
     }
-    val = 0;   
+    val = 0;
     prop = (String)js_prop.getProperty("jScope.horizontal_offset");
     if(prop != null)
     {
@@ -1267,7 +1268,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	    Waveform.SetHorizontalOffset(val);
     }
 
-    
+
     Properties p = System.getProperties();
     if(cache_directory != null)
         p.put("Signal.cache_directory", cache_directory);
@@ -1277,14 +1278,14 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         p.put("jScope.save_selected_points", f_name);
     if(curr_directory != null)
         p.put("jScope.curr_directory", curr_directory);
-        
+
     if(proxy_port != null && proxy_host != null)
     {
         p.setProperty("http.proxyHost",proxy_host);
         p.setProperty("http.proxyPort",proxy_port);
-    }        
+    }
   }
-        
+
   private boolean IsIpAddress(String addr)
   {
     if(addr.trim().indexOf(".") != -1 && addr.trim().indexOf(" ") == -1)
@@ -1292,7 +1293,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     else
         return false;
   }
-  
+
 
   private void InitDataServer()
   {
@@ -1303,18 +1304,18 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     Properties props = System.getProperties();
     ip_addr = props.getProperty("data.address");
     dp_class = props.getProperty("data.class");
-    server_diag = new ServerDialog(this, "Server list");  
+    server_diag = new ServerDialog(this, "Server list");
 
 
-    
+
     if(ip_addr != null && dp_class != null)//|| is_local == null || (is_local != null && is_local.equals("no")))
     {
-	    srv_item = new DataServerItem(ip_addr, ip_addr, null, dp_class,  null, null, null, false); 
+	    srv_item = new DataServerItem(ip_addr, ip_addr, null, dp_class,  null, null, null, false);
         //Add server to the server list and if presente browse class and
         //url browse signal set it into srv_item
-        server_diag.addServerIp(srv_item); 	    
-    }     
-     
+        server_diag.addServerIp(srv_item);
+    }
+
     if(srv_item == null || !SetDataServer(srv_item))
     {
         if(server_ip_list != null && default_server_idx >= 0 && default_server_idx < server_ip_list.length)
@@ -1323,7 +1324,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
             SetDataServer(srv_item);
         } else
             setDataServerLabel();
-    } 
+    }
   }
 
 
@@ -1331,53 +1332,53 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
   {
     net_text.setText("Data Server:" + wave_panel.GetServerLabel());
   }
-  
+
 
   public void SetStatusLabel(String msg)
   {
     info_text.setText(" Status: " + msg);
   }
-  
-  
+
+
   public void RepaintAllWaves()
   {
      int wave_mode = wave_panel.GetMode();
      jScopeMultiWave w;
-    
+
      wave_panel.SetMode(Waveform.MODE_WAIT);
-          
+
      for(int i = 0, k = 0; i < 4; i++)
      {
-	    for(int j = 0; j < wave_panel.getComponentsInColumn(i); j++, k++) 
+	    for(int j = 0; j < wave_panel.getComponentsInColumn(i); j++, k++)
 	    {
 	        w = (jScopeMultiWave)wave_panel.GetWavePanel(k);
 	        if(w.wi != null)
 	        {
 		        SetStatusLabel("Repaint signal column " + (i + 1) + " row " + (j + 1));
-		        setColor(w.wi);    
+		        setColor(w.wi);
 		        w.Update(w.wi);
-	        }	    
+	        }
 	    }
      }
      wave_panel.RepaintAllWaves();
-     wave_panel.SetMode(wave_mode);     
+     wave_panel.SetMode(wave_mode);
   }
-  
+
   public boolean briefError()
   {
 	return brief_error_i.getState();
   }
-  
-  
+
+
   public boolean IsShotDefined()
   {
     return (shot_t.getText() != null && shot_t.getText().trim().length() > 0);
   }
-   
+
   public boolean equalsString(String s1, String s2)
   {
 	boolean res = false;
-	
+
 	if(s1 != null) {
 	    if(s2 == null && s1.length() == 0) res = true;
 	    else
@@ -1386,9 +1387,9 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	    if(s2 != null && s2.length() != 0) res =  false;
 	    else res = true;
 	}
-	return res;	        
+	return res;
   }
-  
+
   public void setPublicVariables(String public_variables)
   {
      def_values.public_variables = public_variables;
@@ -1396,12 +1397,12 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
      //Force update in all waveform
      wave_panel.SetModifiedState(true);
   }
-  
+
   public void SetMainShot()
   {
     wave_panel.SetMainShot(shot_t.getText());
   }
-    
+
   public void UpdateAllWaves()
   {
 	   executing_update = true;
@@ -1410,25 +1411,25 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
        SetMainShot();
        wave_panel.StartUpdate();
   }
-  
-  
-  
+
+
+
     private void ToFile(PrintWriter out) throws IOException
     {
         Rectangle r = getBounds();
         Dimension d = getSize();
         setChange(false);
-        SetWindowTitle("");                   
+        SetWindowTitle("");
 	    out.println("Scope.geometry: " + r.width + "x" + r.height + "+" + r.x + "+" + r.y);
 	    out.println("Scope.update.disable: " + update_i.getState());
 	    out.println("Scope.update.disable_when_icon: " + update_when_icon_i.getState());
-        
+
         font_dialog.toFile(out, "Scope.font");
-        
+
         pub_var_diag.toFile(out, "Scope.public_variable_");
-        
+
         color_dialog.toFile(out, "Scope.color_");
-        
+
         wave_panel.ToFile(out, "Scope.");
     }
 
@@ -1445,32 +1446,32 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     }
 
 
-    public void SaveConfiguration(String conf_file)    
+    public void SaveConfiguration(String conf_file)
     {
         PrintWriter out;
-	    File f;	
-	
-	
+	    File f;
+
+
 	    if(conf_file == null || conf_file.length() == 0) return;
         if(conf_file.indexOf('.') == -1)
             conf_file = conf_file + ".jscp";
-        
+
 	    last_directory = new String(conf_file);
 	    save_i.setEnabled(true);
 	    use_last_i.setEnabled(true);
-	
-	    f = new File(conf_file);    
-	    if(f.exists()) f.delete();   
-	
+
+	    f = new File(conf_file);
+	    if(f.exists()) f.delete();
+
         try {
 	        out = new PrintWriter(new FileWriter(f));
 	        ToFile(out);
 	        out.close();
     	} catch(IOException e) {
 	        System.out.println("Errore : " + e);
-	    }		
+	    }
     }
-  
+
   private int saveWarning()
   {
 	    Object[] options = {"Save",
@@ -1484,11 +1485,11 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
             null,
             options,
             options[0]);
-            
+
         return val;
-            
+
   }
-  
+
   public void closeScope()
   {
 	if(IsChange())
@@ -1505,47 +1506,47 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 //		        exitScope();
 		    break;
 	    }
-	} 
-//	else 
+	}
+//	else
 //	{
 //        exitScope();
 //	}
 	exitScope();
   }
-  
+
   private void exitScope()
   {
-     try 
+     try
      {
-        wave_panel.RemoveAllEvents(this);  
+        wave_panel.RemoveAllEvents(this);
      } catch(IOException e){}
      dispose();
      num_scope--;
      System.gc();
   }
-    
+
   private void SaveAs()
   {
 	    if(curr_directory != null &&  curr_directory.trim().length() != 0)
 	        file_diag.setCurrentDirectory(new File(curr_directory));
-	    
+
 //       javax.swing.Timer tim = new javax.swing.Timer(20, new ActionListener()
 //       {
             ByteArrayOutputStream image;
-            
+
 //            public void actionPerformed(ActionEvent ae) {
 
                 int returnVal = JFileChooser.CANCEL_OPTION;
                 boolean done = false;
-                
+
                 while(!done)
                 {
                     returnVal = file_diag.showSaveDialog(jScope.this);
-                    if (returnVal == JFileChooser.APPROVE_OPTION) 
-                    {    	  
+                    if (returnVal == JFileChooser.APPROVE_OPTION)
+                    {
 	                    File file = file_diag.getSelectedFile();
 	                    String txtsig_file = file.getAbsolutePath();
-            	        
+
 	                    if(file.exists())
 	                    {
 	                        Object[] options = {"Yes", "No"};
@@ -1557,22 +1558,22 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                                         null,
                                         options,
                                         options[1]);
-                                        
+
                             if(val == JOptionPane.YES_OPTION)
 	                            done = true;
 	                    }
 	                    else
 	                        done = true;
 	                } else
-	                    done = true;        	        
+	                    done = true;
                 }
-                              
-                if (returnVal == JFileChooser.APPROVE_OPTION) 
+
+                if (returnVal == JFileChooser.APPROVE_OPTION)
                 {
                     File file = file_diag.getSelectedFile();
                     String d = file.getAbsolutePath();
 	                String f = file.getName();
-	                if(f != null && f.trim().length() != 0 && 
+	                if(f != null && f.trim().length() != 0 &&
 	                    d != null && d.trim().length() != 0)
 	                {
                         curr_directory = d;
@@ -1581,8 +1582,8 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	                config_file = null;
 	                if(config_file != null)
 	                {
-	                    SaveConfiguration(config_file);       
-	                } 
+	                    SaveConfiguration(config_file);
+	                }
 	            }
   //         }
   //      });
@@ -1606,75 +1607,75 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 			break;
 		    case JOptionPane.CANCEL_OPTION:
 		    return;
-		    
+
 	    }
     }
     setChange(false);
 
 	if(curr_directory != null &&  curr_directory.trim().length() != 0)
 	    file_diag.setCurrentDirectory(new File(curr_directory));
-    
+
     javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
-        public void actionPerformed(ActionEvent ae) 
+        public void actionPerformed(ActionEvent ae)
         {
 
             int returnVal = file_diag.showOpenDialog(jScope.this);
-            if (returnVal == JFileChooser.APPROVE_OPTION) 
-	        {    	    
+            if (returnVal == JFileChooser.APPROVE_OPTION)
+	        {
                 File file = file_diag.getSelectedFile();
                 String d = file.getAbsolutePath();
 	            String f = file.getName();
 	            if(f != null && f.trim().length() != 0 && d != null && d.trim().length() != 0)
-	            { 
+	            {
 	                curr_directory = d;
 			        config_file = curr_directory;
                     LoadConfiguration();
 	            }
-	        }     
+	        }
 	    }
     });
     t.setRepeats(false);
     t.start();
   }
-  
+
 
 
   public boolean SetDataServer(DataServerItem new_srv_item)
   {
     String error = null;
-    
+
     try
     {
         wave_panel.SetDataServer(new_srv_item, this);
-        
+
         wave_panel.SetCacheState(new_srv_item.enable_cache);
         use_cache_i.setState(new_srv_item.enable_cache);
-        free_cache_i.setEnabled(new_srv_item.enable_cache);        
+        free_cache_i.setEnabled(new_srv_item.enable_cache);
 
-        
+
         fast_network_i.setEnabled(wave_panel.SupportsFastNetwork());
         fast_network_i.setState(wave_panel.GetFastNetworkState());
         SetFastNetworkState(wave_panel.GetFastNetworkState());
-        
+
         enable_compression_i.setEnabled(wave_panel.SupportsCompression());
         if(!wave_panel.SupportsCompression())
             new_srv_item.enable_compression = false;
 
         enable_compression_i.setState(new_srv_item.enable_compression);
         SetCompressionState(new_srv_item.enable_compression);
-        
-        
+
+
         setDataServerLabel();
-        
+
         return true;
-    } 
+    }
     catch (Exception e)
     {
-       JOptionPane.showMessageDialog(null, e.getMessage(), "alert", JOptionPane.ERROR_MESSAGE); 
-    }    
-    return false;    
+       JOptionPane.showMessageDialog(null, e.getMessage(), "alert", JOptionPane.ERROR_MESSAGE);
+    }
+    return false;
   }
-  
+
   private void updateServerMenu()
   {
   }
@@ -1683,7 +1684,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
   {
      wave_panel.SetFont(font_dialog.GetFont());
   }
-  
+
   public void UpdateColors()
   {
       wave_panel.SetColors(color_dialog.GetColors(), color_dialog.GetColorsName());
@@ -1694,10 +1695,10 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
   {
 
     	boolean is_changed = false;
-    	
+
     	try
     	{
-        	
+
 	        if((is_changed = setup_default.IsChanged(def_values)))
 	        {
 	            this.setChange(true);
@@ -1708,44 +1709,44 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	            UpdateAllWaves();
 	        } else
 	            setup_default.SaveDefaultConfiguration(def_values);
-    	        
-	        wave_panel.SetParams(wave_panel.GetMode(), 
-                                setup_default.getGridMode(), 
-                                setup_default.getLegendMode(), 
+
+	        wave_panel.SetParams(wave_panel.GetMode(),
+                                setup_default.getGridMode(),
+                                setup_default.getLegendMode(),
                                 setup_default.getXLines(),
-                                setup_default.getYLines(), 
+                                setup_default.getYLines(),
                                 setup_default.getReversed());
-                                                             
+
 
 	        color_dialog.SetReversed(setup_default.getReversed());
-    	    
+
 	        UpdateColors();
 
 	        if(!is_changed)
 	            RepaintAllWaves();
-	            
-	    } 
-	    catch (IOException e) 
+
+	    }
+	    catch (IOException e)
 	    {
-		    JOptionPane.showMessageDialog(null, e.getMessage(), "alert", JOptionPane.ERROR_MESSAGE); 
+		    JOptionPane.showMessageDialog(null, e.getMessage(), "alert", JOptionPane.ERROR_MESSAGE);
 	    }
   }
-  
+
   protected void PrintAllWaves()
   {
-        try 
+        try
         {
             this.SetStatusLabel("Execute printing");
             wave_panel.PrintAllWaves(prnJob, pf);
             SetStatusLabel("End print operation");
-        } 
-        catch (PrinterException er) 
+        }
+        catch (PrinterException er)
         {
- 	        JOptionPane.showMessageDialog(null, "Error on printing", 
-		                                "alert", JOptionPane.ERROR_MESSAGE); 
+ 	        JOptionPane.showMessageDialog(null, "Error on printing",
+		                                "alert", JOptionPane.ERROR_MESSAGE);
         }
   }
-  
+
 
   public void processWaveContainerEvent(WaveContainerEvent e)
   {
@@ -1760,24 +1761,24 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	        executing_update = false;
 	        if(event_id == WaveContainerEvent.KILL_UPDATE)
 	        {
-                JOptionPane.showMessageDialog(this, e.info, 
+                JOptionPane.showMessageDialog(this, e.info,
 		                                "alert", JOptionPane.ERROR_MESSAGE);
-	            SetStatusLabel(" Aborted ");		    
-		    }    
+	            SetStatusLabel(" Aborted ");
+		    }
 		    else
-	            SetStatusLabel(e.info);		    
+	            SetStatusLabel(e.info);
             SetWindowTitle("");
 		    break;
 	    case WaveContainerEvent.START_UPDATE:
 	        SetStatusLabel(e.info);
 	    break;
 	    case WaveContainerEvent.WAVEFORM_EVENT:
-	    
+
 	        WaveformEvent we = (WaveformEvent)e.we;
 	        jScopeMultiWave w = (jScopeMultiWave)we.getSource();
 	        MdsWaveInterface  wi = (MdsWaveInterface)w.wi;
 	        int we_id = we.getID();
-	        
+
 	        switch(we_id)
 	        {
 	            case WaveformEvent.EVENT_UPDATE:
@@ -1791,11 +1792,11 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	                if(wi.shots != null)
 	                {
 		                point_pos.setText(s +
-		                    " Expr : " + w.getSignalName(we.signal_idx) +  
+		                    " Expr : " + w.getSignalName(we.signal_idx) +
 		                    " Shot = " + wi.shots[we.signal_idx]);
 	                } else {
 		                point_pos.setText(s +
-		                    " Expr : " + w.getSignalName(we.signal_idx));  
+		                    " Expr : " + w.getSignalName(we.signal_idx));
 	                }
 	            break;
 	            case WaveformEvent.STATUS_INFO:
@@ -1810,26 +1811,26 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                 break;
 	        }
 	        break;
-	    }        
+	    }
     }
 
     public void processConnectionEvent(ConnectionEvent e)
-    {   
+    {
         progress_bar.setString("");
-        
+
         if(e.getID() == ConnectionEvent.LOST_CONNECTION)
         {
-            
-		    JOptionPane.showMessageDialog(this, 
-		                                    e.info, 
-		                                    "alert", 
+
+		    JOptionPane.showMessageDialog(this,
+		                                    e.info,
+		                                    "alert",
 		                                    JOptionPane.ERROR_MESSAGE);
-            
-            SetDataServer(new DataServerItem("Not Connected", null, null, 
+
+            SetDataServer(new DataServerItem("Not Connected", null, null,
                           "NotConnectedDataProvider", null, null, null, false));
             return;
         }
-        
+
         if(e.current_size == 0 && e.total_size == 0)
         {
             if(e.info != null)
@@ -1843,7 +1844,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
             progress_bar.setString((e.info != null ? e.info : "")+v+"%");
         }
     }
-  
+
   private boolean EventUpdateEnabled()
   {
      if(update_i.getState())
@@ -1851,13 +1852,13 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         SetStatusLabel("Disable event update");
         return false;
      }
-     if(getExtendedState() == JFrame.ICONIFIED && 
+     if(getExtendedState() == JFrame.ICONIFIED &&
         update_when_icon_i.getState())
         {
             this.SetStatusLabel("Event update is disabled when iconified");
             return false;
         }
-      return true;    
+      return true;
   }
 
   public void processUpdateEvent(UpdateEvent e)
@@ -1866,13 +1867,13 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
      {
         String print_event = wave_panel.GetPrintEvent();
         String event = wave_panel.GetEvent();
-                     
+
         if(e.name.equals(event))
             wave_panel.StartUpdate();
-                             
+
         if(e.name.equals(print_event))
             wave_panel.StartPrint(prnJob,  pf);
-     }     
+     }
   }
 
   private DataServerItem getServerItem(String server)
@@ -1882,17 +1883,17 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
             return server_ip_list[i];
      return null;
   }
-    
+
   public void actionPerformed(ActionEvent e) {
 
     Object ob = e.getSource();
     String action_cmd = null;
-    
+
     if(ob != open_i)
         wave_panel.RemoveSelection();
-    
+
     if(ob instanceof AbstractButton)
-        action_cmd = ((AbstractButton)ob).getModel().getActionCommand();	        
+        action_cmd = ((AbstractButton)ob).getModel().getActionCommand();
 
 	if(action_cmd != null)
 	{
@@ -1903,16 +1904,16 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	    {
 	        String value = action_cmd.substring(action.length()+1);
 	        if(!wave_panel.GetServerLabel().equals(value) )
-	        {	            
+	        {
 	            SetDataServer(getServerItem(value));
     	    }
         }
     }
-    
+
     if(ob == signal_expr)
     {
-        String error = null, sig = signal_expr.getText().trim(); 
-        
+        String error = null, sig = signal_expr.getText().trim();
+
         if(sig != null && sig.length() != 0)
         {
             SetMainShot();
@@ -1921,10 +1922,10 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         }
     }
 
-    
+
     if(ob == apply_b || ob == shot_t)
-    {        
-    	if(executing_update) 
+    {
+    	if(executing_update)
     	{
 	        if(ob == apply_b)
 	            wave_panel.AbortUpdate();
@@ -1933,20 +1934,20 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	        {
                 SetMainShot();
             }
-             
-            String sig = signal_expr.getText().trim();         
+
+            String sig = signal_expr.getText().trim();
             if(sig != null && sig.length() != 0)
             {
                 wave_panel.AddSignal(sig, true);
                 setChange(true);
             }
     	    UpdateAllWaves();
-	            
-	    }	     
+
+	    }
     }
 
     if(ob == color_i)
-    {    	
+    {
         javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 jScope.this.color_dialog.ShowColorDialog(jScope.this.wave_panel);
@@ -1957,7 +1958,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     }
 
     if(ob == font_i)
-    {        
+    {
 	    font_dialog.setLocationRelativeTo(this);
         javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -1970,25 +1971,25 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 
     if(ob == default_i)
     {
-	    
+
         javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-	            setup_default.Show(jScope.this, jScope.this.def_values);	    
+	            setup_default.Show(jScope.this, jScope.this.def_values);
             }
         });
         t.setRepeats(false);
         t.start();
     }
-    
-    
+
+
     if (ob == win_i)
     {
-        
-        
-        if(win_diag == null) 
+
+
+        if(win_diag == null)
 	        win_diag = new WindowDialog(this, "Window");
-      
-	    
+
+
         javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 boolean returnFlag = win_diag.ShowWindowDialog();
@@ -2014,31 +2015,31 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 		    config_file = curr_directory;
 		    setChange(false);
 	        LoadConfiguration();
-	    }		
+	    }
     }
-    
+
     if (ob == use_i)
     {
- 
+
 	    LoadConfigurationFrom();
     }
 
     if (ob == save_i)
     {
-	    SaveConfiguration(config_file);	
+	    SaveConfiguration(config_file);
     }
-    
+
     if (ob == save_as_i)
     {
 	    SaveAs();
     }
-    
+
     if (ob == save_all_as_text_i)
     {
         wave_panel.SaveAsText(null, true);
     }
 
-    if (ob == exit_i) 
+    if (ob == exit_i)
     {
 	    if(num_scope > 1)
 	    {
@@ -2071,11 +2072,11 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	        System.gc();
 	    }
     }
-    
+
     if (ob == close_i && num_scope != 1) {
 	    closeScope();
     }
-    
+
     if (ob == open_i)
     {
 	    num_scope++;
@@ -2084,24 +2085,24 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	    jScope new_scope = buildNewScope(r.x+5, r.y+40);
 	    new_scope.wave_panel.SetCopySource(wave_panel.GetCopySource());
 	    new_scope.startScope(null);
-    }		
+    }
 
     if (ob == all_i)
     {
 	    wave_panel.AutoscaleAll();
     }
-     
+
      if (ob == allY_i)
      {
 	    wave_panel.AutoscaleAllY();
      }
 
-     if (ob == copy_i) 
+     if (ob == copy_i)
      {
 	    wave_panel.SetMode(Waveform.MODE_COPY);
 	    copy.getModel().setSelected(true);
      }
-     
+
      if (ob == zoom_i)
      {
 	    wave_panel.SetMode(Waveform.MODE_ZOOM);
@@ -2133,7 +2134,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
      }
 
      if(ob == pub_variables_i)
-     {            
+     {
         javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
 	            pub_var_diag.Show();
@@ -2143,16 +2144,16 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         t.start();
      }
 
-  } 
-  
-  
+  }
+
+
    private void setColor(WaveInterface wi)
    {
 //	if(wi == null || wi.colors_idx == null) return;
 //	for(int i = 0; i < wi.colors_idx.length; i++)
 //	    wi.colors[i] = color_dialog.GetColorAt(wi.colors_idx[i]);
    }
-   
+
    public void SetFastNetworkState(boolean state)
    {
 	    wave_panel.SetFastNetworkState(state);
@@ -2163,13 +2164,13 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         }
         use_cache_i.setEnabled(!state);
         free_cache_i.setEnabled(!state);
-        
+
     }
 
    public void SetCacheState(boolean state)
    {
 	    wave_panel.SetCacheState(state);
-        free_cache_i.setEnabled(state);        
+        free_cache_i.setEnabled(state);
    }
 
    public void SetCompressionState(boolean state) throws IOException
@@ -2180,7 +2181,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 
    public void itemStateChanged(ItemEvent e)
    {
-      
+
      Object ob = e.getSource();
 
      try
@@ -2189,18 +2190,18 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         {
             SetFastNetworkState(fast_network_i.getState());
         }
-         
+
         if(ob == enable_compression_i)
         {
             SetCompressionState(enable_compression_i.getState());
         }
-         
+
         if(ob == brief_error_i)
         {
             WaveInterface.brief_error = brief_error_i.getState();
 //	        wave_panel.SetBriefError(brief_error_i.getState());
         }
-         
+
         if(ob == use_cache_i)
         {
 	        SetCacheState(use_cache_i.getState());
@@ -2208,12 +2209,12 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 
         if(e.getStateChange() != ItemEvent.SELECTED)
             return;
-      
-        if (ob == copy) 
+
+        if (ob == copy)
         {
 	        wave_panel.SetMode(Waveform.MODE_COPY);
         }
-         
+
         if (ob == zoom)
         {
 	        wave_panel.SetMode(Waveform.MODE_ZOOM);
@@ -2229,49 +2230,49 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	        wave_panel.SetMode(Waveform.MODE_PAN);
         }
     }
-	catch (IOException ev) 
+	catch (IOException ev)
 	{
-		JOptionPane.showMessageDialog(null, ev.getMessage(), "alert", JOptionPane.ERROR_MESSAGE); 
-	}        
+		JOptionPane.showMessageDialog(null, ev.getMessage(), "alert", JOptionPane.ERROR_MESSAGE);
+	}
 
 
   }
-  
-  
+
+
   public void SetWindowTitle(String info)
   {
-    
+
 	String f_name = config_file;
 
 
     if(f_name == null)
 	    f_name = "Untitled";
-  
+
 	if(wave_panel.GetTitle() != null)
 	    setTitle(" - " + wave_panel.GetEvaluatedTitle() + " - " + f_name + (IsChange() ? " (changed)" : "") + " " + info);
 	else
 	    setTitle("- Scope - " + f_name + (IsChange() ? " (changed)" : "") + " " + info);
   }
-  
+
   public void FromFile(Properties pr) throws IOException
   {
 	    String prop = "";
-    
+
         try
         {
-            if((prop = pr.getProperty("Scope.update.disable")) != null) 
+            if((prop = pr.getProperty("Scope.update.disable")) != null)
             {
                 boolean b = new Boolean(prop).booleanValue();
                 update_i.setState(b);
             }
-            
-            if((prop = pr.getProperty("Scope.update.disable_when_icon")) != null) 
+
+            if((prop = pr.getProperty("Scope.update.disable_when_icon")) != null)
             {
                 boolean b = new Boolean(prop).booleanValue();
                 update_when_icon_i.setState(b);
-            }            
-            
-	        if((prop = pr.getProperty("Scope.geometry")) != null) 
+            }
+
+	        if((prop = pr.getProperty("Scope.geometry")) != null)
 	        {
 	            StringTokenizer st = new StringTokenizer(prop);
 		        width  = new Integer(st.nextToken("x")).intValue();
@@ -2279,16 +2280,16 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 		        xpos = new Integer(st.nextToken("+")).intValue();
 		        ypos = new Integer(st.nextToken("+")).intValue();
 	        }
-	        
-        } 
+
+        }
         catch (Exception exc)
         {
             throw (new IOException(prop));
         }
   }
 
-    
-  public void LoadFromFile(Properties pr) throws IOException  
+
+  public void LoadFromFile(Properties pr) throws IOException
   {
     try
     {
@@ -2303,7 +2304,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         throw (new IOException("Configuration file syntax error : "+e.getMessage()));
 	 }
   }
- 
+
   private void Reset()
   {
 	config_file = null;
@@ -2311,27 +2312,27 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     wave_panel.Reset();
   }
 
-  
+
   public void LoadConfiguration()
   {
         if(config_file == null) return;
 
-        try {  		    
+        try {
             jScopeProperties pr = new jScopeProperties();
             pr.load(new FileInputStream(config_file));
             LoadConfiguration(pr);
-        } 
+        }
         catch (IOException e)
         {
             Reset();
-	        JOptionPane.showMessageDialog(this, e.getMessage(), "alert", JOptionPane.ERROR_MESSAGE); 
+	        JOptionPane.showMessageDialog(this, e.getMessage(), "alert", JOptionPane.ERROR_MESSAGE);
         }
 	    save_i.setEnabled(true);
   }
-  
+
   public void LoadConfiguration(Properties pr)
   {
-    
+
     wave_panel.EraseAllWave();
     try
     {
@@ -2339,23 +2340,23 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	    setBounds(xpos, ypos, width, height);
         UpdateColors();
         UpdateFont();
-	    wave_panel.update();	
-	    validate();   	    
+	    wave_panel.update();
+	    validate();
         server_diag.addServerIp(wave_panel.GetServerItem());
         SetDataServer(wave_panel.GetServerItem());
         //SetFastNetworkState(wave_panel.GetFastNetworkState());
         UpdateAllWaves();
-    } 
+    }
     catch(Exception e)
     {
         Reset();
-		JOptionPane.showMessageDialog(this, e.getMessage(), 
-		                                  "alert", JOptionPane.ERROR_MESSAGE); 
+		JOptionPane.showMessageDialog(this, e.getMessage(),
+		                                  "alert", JOptionPane.ERROR_MESSAGE);
     }
     SetWindowTitle("");
     System.gc();
   }
-  
+
   protected jScope buildNewScope(int x, int y)
   {
       return new jScope(x, y);
@@ -2368,7 +2369,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	       config_file = new String(file);
 	       LoadConfiguration();
 	    }
-        SetWindowTitle("");      
+        SetWindowTitle("");
         show();
   }
 
@@ -2376,19 +2377,19 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 /**********************
     jScope Main
 ***********************/
-    
+
     static boolean IsNewJVMVersion()
     {
         String ver = System.getProperty("java.version");
         return (! (ver.indexOf("1.0") != -1 || ver.indexOf("1.1") != -1) );
     }
-  
+
     public static void main(String args[])
     {
-        String file = null;    
-                
+        String file = null;
+
         jScope win = null;
- 
+
         Properties props = System.getProperties();
         String debug = props.getProperty("debug");
         if(debug != null && debug.equals("true"))
@@ -2396,7 +2397,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
             is_debug = true;
             Waveform.is_debug = true;
         }
-        
+
         if(IsNewJVMVersion())
             win = new jScope(100, 100);
         else
@@ -2404,12 +2405,12 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
             System.out.println("jScope application required JDK version 1.2 or later");
             System.exit(1);
         }
-        
-        win.pack();                 
+
+        win.pack();
 	    win.setSize(750, 550);
-        if(args.length == 1) 
-            file = new String(args[0]); 
-        
+        if(args.length == 1)
+            file = new String(args[0]);
+
         win.num_scope++;
         win.startScope(file);
     }
@@ -2421,17 +2422,17 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     else
        exitScope();
   }
-  
+
   public void windowOpened(WindowEvent e)
   {
     if(this.aboutScreen != null)
         hideAbout();
   }
-  
+
   public void windowClosed(WindowEvent e)
   {
   }
-  
+
   public void windowIconified(WindowEvent e)
   {
   }
@@ -2443,7 +2444,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
   public void windowActivated(WindowEvent e)
   {
   }
-  
+
   public void windowDeactivated(WindowEvent e)
   {
   }
@@ -2452,9 +2453,9 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
   {
      System.exit(0);
   }
-    
 
-     protected  void jScopeUpdateUI() 
+
+     protected  void jScopeUpdateUI()
      {
         jScope.jScopeSetUI(this);
         jScope.jScopeSetUI(font_dialog);
@@ -2466,7 +2467,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
      }
 
 
-     protected static void jScopeSetUI(Component c) 
+     protected static void jScopeSetUI(Component c)
      {
         if(c != null)
 	        SwingUtilities.updateComponentTreeUI(c);
@@ -2477,12 +2478,12 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
      * isSupportedLookAndFeel() method. Returns true if the LookAndFeel
      * is supported. Returns false if the LookAndFeel is not supported
      * and/or if there is any kind of error checking if the LookAndFeel
-     * is supported. 
+     * is supported.
      * The L&F menu will use this method to detemine whether the various
      * L&F options should be active or inactive.
      *
      */
-     protected static boolean isAvailableLookAndFeel(String classname) 
+     protected static boolean isAvailableLookAndFeel(String classname)
      {
 	    try { // Try to create a L&F given a String
 	        Class lnfClass = Class.forName(classname);
@@ -2493,7 +2494,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	    }
      }
 
-    
+
     /**
      * Switch the between the Windows, Motif, Mac, and the Java Look and Feel
      */
@@ -2513,7 +2514,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 		    //                currentUI = "Macintosh";
 	    	                UIManager.setLookAndFeel("com.sun.java.swing.plaf.mac.MacLookAndFeel");
 	    	                SwingUtilities.updateComponentTreeUI(jScope.this);
-	                    } else if(rb.isSelected() && rb.getText().equals("Motif Look and Feel")) 
+	                    } else if(rb.isSelected() && rb.getText().equals("Motif Look and Feel"))
 	                            {
 		    //                        currentUI = "Motif";
 	    	                        UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
@@ -2523,7 +2524,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 		    //                                currentUI = "Metal";
 	    	                                UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 	    	                                SwingUtilities.updateComponentTreeUI(jScope.this);
-	                                    } 
+	                                    }
                 jScopeUpdateUI();
                 /*
                 jScope.jScopeSetUI(font_dialog);
@@ -2539,22 +2540,22 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 		// Error - unsupported L&F
 		        rb.setEnabled(false);
                 System.err.println("Unsupported LookAndFeel: " + rb.getText());
-		
+
 		// Set L&F to JLF
 		        try {
 		     //       currentUI = "Metal";
 		            metalMenuItem.setSelected(true);
 		            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 		            SwingUtilities.updateComponentTreeUI(jScope.this);
-		        } 
-		        catch (Exception exc2) 
+		        }
+		        catch (Exception exc2)
 		        {
 		            exc2.printStackTrace();
 		            System.err.println("Could not load LookAndFeel: " + exc2);
 		            exc2.printStackTrace();
 		        }
-            } 
-            catch (Exception exc) 
+            }
+            catch (Exception exc)
             {
                 rb.setEnabled(false);
 		        exc.printStackTrace();
@@ -2564,12 +2565,12 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 
 	        root.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
-  }  
+  }
 }
 
-class WindowDialog extends JDialog implements ActionListener 
+class WindowDialog extends JDialog implements ActionListener
 {
-    
+
     JTextField titleText, eventText, printEventText;
     JSlider row_1, row_2, row_3, row_4;
     JButton ok, apply, cancel;
@@ -2577,17 +2578,17 @@ class WindowDialog extends JDialog implements ActionListener
     JLabel label;
     int out_row[] = new int[4];
     int in_row[];
-    boolean changed = false;	
+    boolean changed = false;
 
     WindowDialog(JFrame dw, String title) {
 
         super(dw, title, true);
 
 	    parent = (jScope)dw;
-	
+
         GridBagConstraints c = new GridBagConstraints();
         GridBagLayout gridbag = new GridBagLayout();
-        getContentPane().setLayout(gridbag);        
+        getContentPane().setLayout(gridbag);
 
 	    c.insets = new Insets(4, 4, 4, 4);
         c.fill = GridBagConstraints.BOTH;
@@ -2600,7 +2601,7 @@ class WindowDialog extends JDialog implements ActionListener
  	    JPanel p = new JPanel();
         p.setLayout(new FlowLayout(FlowLayout.LEFT));
         c.gridwidth = GridBagConstraints.BOTH;
-	
+
 	    row_1 = new JSlider(JSlider.VERTICAL,  1, 16, 1);
         //row_1.setMajorTickSpacing(4);
         row_1.setMinorTickSpacing(1);
@@ -2613,7 +2614,7 @@ class WindowDialog extends JDialog implements ActionListener
         labelTable.put( new Integer( 12 ), new JLabel("12") );
         labelTable.put( new Integer( 16 ), new JLabel("16") );
         row_1.setLabelTable( labelTable );
-        
+
         row_1.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
         row_2 = new JSlider(JSlider.VERTICAL,  0, 16, 0);
         row_2.setMajorTickSpacing(4);
@@ -2627,13 +2628,13 @@ class WindowDialog extends JDialog implements ActionListener
         row_3.setPaintTicks(true);
         row_3.setPaintLabels(true);
         row_3.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
-	    row_4 = new JSlider(JSlider.VERTICAL,  0, 16, 0);	
+	    row_4 = new JSlider(JSlider.VERTICAL,  0, 16, 0);
         row_4.setMajorTickSpacing(4);
         row_4.setMinorTickSpacing(1);
         row_4.setPaintTicks(true);
         row_4.setPaintLabels(true);
         row_4.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
-	
+
 	    c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(p, c);
 	    getContentPane().add(p);
@@ -2646,7 +2647,7 @@ class WindowDialog extends JDialog implements ActionListener
 	    label = new JLabel("Title");
         gridbag.setConstraints(label, c);
         getContentPane().add(label);
-    		
+
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    titleText = new JTextField(40);
         gridbag.setConstraints(titleText, c);
@@ -2656,8 +2657,8 @@ class WindowDialog extends JDialog implements ActionListener
 	    label = new JLabel("Update event");
         gridbag.setConstraints(label, c);
         getContentPane().add(label);
-  
-		  		
+
+
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    eventText = new JTextField(40);
         gridbag.setConstraints(eventText, c);
@@ -2667,8 +2668,8 @@ class WindowDialog extends JDialog implements ActionListener
 	    label = new JLabel("Print event");
         gridbag.setConstraints(label, c);
         getContentPane().add(label);
-  
-		  		
+
+
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    printEventText = new JTextField(40);
         gridbag.setConstraints(printEventText, c);
@@ -2676,13 +2677,13 @@ class WindowDialog extends JDialog implements ActionListener
 
 	    JPanel p1 = new JPanel();
         p1.setLayout(new FlowLayout(FlowLayout.CENTER));
-    			
+
 	    ok = new JButton("Ok");
-	    ok.addActionListener(this);	
+	    ok.addActionListener(this);
         p1.add(ok);
-        
+
         cancel = new JButton("Cancel");
-	    cancel.addActionListener(this);	
+	    cancel.addActionListener(this);
         p1.add(cancel);
 
     	c.gridwidth = GridBagConstraints.REMAINDER;
@@ -2690,7 +2691,7 @@ class WindowDialog extends JDialog implements ActionListener
 	    getContentPane().add(p1);
 	    pack();
      }
- 
+
 
     public boolean ShowWindowDialog()
     {
@@ -2701,9 +2702,9 @@ class WindowDialog extends JDialog implements ActionListener
 	        eventText.setText(parent.wave_panel.GetEvent());
 	    if(	parent.wave_panel.GetPrintEvent() != null)
 	        printEventText.setText(parent.wave_panel.GetPrintEvent());
-	
+
 	    int in_row[] = parent.wave_panel.getComponentsInColumns();
-	    
+
 	    row_1.setValue(in_row[0]);
 	    row_2.setValue(in_row[1]);
 	    row_3.setValue(in_row[2]);
@@ -2715,59 +2716,59 @@ class WindowDialog extends JDialog implements ActionListener
 
 	    setLocationRelativeTo(parent);
         show();
-        
+
         return changed;
     }
-       
-    public void actionPerformed(ActionEvent e) 
+
+    public void actionPerformed(ActionEvent e)
     {
 
 	    Object ob = e.getSource();
-        
+
         try
         {
-            
+
 	        if (ob == ok || ob == apply)
-	        {    
+	        {
 	            parent.wave_panel.SetTitle(new String(titleText.getText()));
-        	    
+
 	            String event = new String(eventText.getText().trim());
 	            parent.wave_panel.SetEvent(parent, event);
-        	    
+
 	            event = new String(printEventText.getText().trim());
 	            parent.wave_panel.SetPrintEvent(parent, event);
-        	    
+
 	            parent.SetWindowTitle("");
-    	        
+
 	            out_row[0] = row_1.getValue();
 	            out_row[1] = row_2.getValue();
 	            out_row[2] = row_3.getValue();
 	            out_row[3] = row_4.getValue();
-        	    
+
 	            for(int i = 0; i < 4; i++)
 	                if(out_row[i] != in_row[i])
 	                {
 	                    changed = true;
 	                    break;
 	                }
-        	        
+
 	            in_row = null;
 
 	            if(ob == ok)
 		            setVisible(false);
-    		
-            }  
+
+            }
 
             if (ob == cancel)
 	        {
 	            setVisible(false);
 	        }
 	    }
-	    catch (IOException ev) 
+	    catch (IOException ev)
 	    {
-		    JOptionPane.showMessageDialog(null, ev.getMessage(), "alert", JOptionPane.ERROR_MESSAGE); 
-	    }        
-    }  
+		    JOptionPane.showMessageDialog(null, ev.getMessage(), "alert", JOptionPane.ERROR_MESSAGE);
+	    }
+    }
 }
 
 
@@ -2781,10 +2782,10 @@ class ServerDialog extends JDialog implements ActionListener
             JTextField server_l, server_a, server_u;
             JCheckBox automatic;
             JComboBox data_provider_list;
-            
+
             JCheckBox tunneling;
             JTextField tunnel_port;
-            
+
     jScope dw;
     private static String know_provider[] = {"MdsDataProvider",
                                              "JetMdsDataProvider",
@@ -2794,7 +2795,7 @@ class ServerDialog extends JDialog implements ActionListener
                                              "TSDataProvider",
                                              "AsdexDataProvider",
                                              "ASCIIDataProvider"};
-    
+
 
     ServerDialog(JFrame _dw, String title)
     {
@@ -2806,10 +2807,10 @@ class ServerDialog extends JDialog implements ActionListener
 	    GridBagConstraints c = new GridBagConstraints();
 	    Insets insets = new Insets(4, 4, 4, 4);
 
-	    getContentPane().setLayout(gridbag);		
+	    getContentPane().setLayout(gridbag);
 	    c.insets = insets;
 
-	    c.anchor = GridBagConstraints.WEST;	
+	    c.anchor = GridBagConstraints.WEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.fill =  GridBagConstraints.BOTH;
 	    c.gridheight = 10;
@@ -2837,14 +2838,14 @@ class ServerDialog extends JDialog implements ActionListener
                             {
                                 tunneling.setSelected(true);
                                 tunnel_port.setText(dw.server_ip_list[idx].tunnel_port);
-                                tunnel_port.setEditable(true);                            
+                                tunnel_port.setEditable(true);
                             }
                         }
                         if(dw.server_ip_list[idx].tunnel_port == null)
                         {
                             tunnel_port.setText("");
                             tunneling.setSelected(false);
-                            tunnel_port.setEditable(false);        
+                            tunnel_port.setEditable(false);
                         }
                     } else {
                         remove_b.setEnabled(false);
@@ -2858,32 +2859,32 @@ class ServerDialog extends JDialog implements ActionListener
 	    gridbag.setConstraints(scrollServerList, c);
 	    getContentPane().add(scrollServerList);
 
-	    c.anchor = GridBagConstraints.WEST;	
+	    c.anchor = GridBagConstraints.WEST;
 	    c.fill =  GridBagConstraints.NONE;
 	    c.gridheight = 1;
-	    c.gridwidth = 1;	
+	    c.gridwidth = 1;
 	    server_label = new JLabel("Server label ");
 	    gridbag.setConstraints(server_label, c);
 	    getContentPane().add(server_label);
- 
+
         c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.fill =  GridBagConstraints.BOTH;
 	    server_l = new JTextField(20);
 	    gridbag.setConstraints(server_l, c);
 	    getContentPane().add(server_l);
 
-	    c.gridwidth = 1;	
+	    c.gridwidth = 1;
 	    server_label = new JLabel("Server argument ");
 	    gridbag.setConstraints(server_label, c);
 	    getContentPane().add(server_label);
- 
+
         c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.fill =  GridBagConstraints.BOTH;
 	    server_a = new JTextField(20);
 	    gridbag.setConstraints(server_a, c);
 	    getContentPane().add(server_a);
 
-        c.gridwidth = 1;	    
+        c.gridwidth = 1;
 	    tunneling = new JCheckBox("Tunneling local Port:");
         tunneling.addItemListener(new ItemListener()
 	    {
@@ -2896,18 +2897,18 @@ class ServerDialog extends JDialog implements ActionListener
 	                tunnel_port.setEditable(false);
 	            }
 	        }
-	    });	    
+	    });
 	    gridbag.setConstraints(tunneling, c);
 	    getContentPane().add(tunneling);
-	    
+
         c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.fill =  GridBagConstraints.BOTH;
 	    tunnel_port = new JTextField(6);
 	    tunnel_port.setEditable(false);
 	    gridbag.setConstraints(tunnel_port, c);
 	    getContentPane().add(tunnel_port);
-	    	    
-	    
+
+
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.fill =  GridBagConstraints.BOTH;
 	    automatic = new JCheckBox("Get user name from host");
@@ -2924,15 +2925,15 @@ class ServerDialog extends JDialog implements ActionListener
 	                server_u.setEditable(true);
 	            }
 	        }
-	    });	    
+	    });
 	    gridbag.setConstraints(automatic, c);
 	    getContentPane().add(automatic);
-	    
-	    c.gridwidth = 1;	
+
+	    c.gridwidth = 1;
 	    server_label = new JLabel("User name ");
 	    gridbag.setConstraints(server_label, c);
 	    getContentPane().add(server_label);
- 
+
         c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.fill =  GridBagConstraints.BOTH;
 	    server_u = new JTextField(20);
@@ -2944,7 +2945,7 @@ class ServerDialog extends JDialog implements ActionListener
 	    JLabel lab = new JLabel("Server Class : ");
 	    gridbag.setConstraints(lab, c);
 	    getContentPane().add(lab);
-	    
+
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.fill =  GridBagConstraints.BOTH;
         data_provider_list = new JComboBox();
@@ -2968,14 +2969,14 @@ class ServerDialog extends JDialog implements ActionListener
                 catch (Exception exc)
                 {}
 	        }
-	        
+
 	    });
-	        
-	    JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));			
+
+	    JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
 	    add_b = new JButton("Add");
 	    add_b.addActionListener(this);
 	    p.add(add_b);
-      	
+
 	    modify_b = new JButton("Modify");
 	    modify_b.addActionListener(this);
         modify_b.setEnabled(false);
@@ -2985,7 +2986,7 @@ class ServerDialog extends JDialog implements ActionListener
 	    remove_b.addActionListener(this);
 	    remove_b.setEnabled(false);
 	    p.add(remove_b);
-	    
+
 	    cancel_b = new JButton("Cancel");
 	    cancel_b.addActionListener(this);
 	    p.add(cancel_b);
@@ -2993,21 +2994,21 @@ class ServerDialog extends JDialog implements ActionListener
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(p, c);
 	    getContentPane().add(p);
-	    
+
 	    addKnowProvider();
-	
+
 	    if(dw.server_ip_list == null)
 	        GetPropertiesValue();
 	    else
 	        addServerIpList(dw.server_ip_list);
-	    
+
     }
 
     private void GetPropertiesValue()
     {
        Properties js_prop = dw.js_prop;
        DataServerItem dsi;
-       int i = 1;       
+       int i = 1;
 
        if(js_prop == null) return;
        while(true) {
@@ -3030,11 +3031,11 @@ class ServerDialog extends JDialog implements ActionListener
 		    }
 	       addServerIp(dsi);
 	       i++;
-       } 
+       }
     }
-    
+
     public void Show()
-    {   
+    {
         pack();
         resetAll();
         DataServerItem found_dsi = findServer(dw.wave_panel.GetServerItem());
@@ -3043,7 +3044,7 @@ class ServerDialog extends JDialog implements ActionListener
 	    setLocationRelativeTo(dw);
 	    show();
     }
-    
+
     private void resetAll()
     {
         server_list.clearSelection();
@@ -3053,13 +3054,13 @@ class ServerDialog extends JDialog implements ActionListener
         tunnel_port.setText("");
         data_provider_list.setSelectedIndex(0);
     }
-    
+
     private DataServerItem findServer(DataServerItem dsi)
     {
 	    DataServerItem found_dsi = null;
-	    Enumeration e = list_model.elements();	
+	    Enumeration e = list_model.elements();
 	    while(e.hasMoreElements())
-	    {   
+	    {
 	        found_dsi = (DataServerItem)e.nextElement();
 	        if(found_dsi.equals(dsi))
 	        {
@@ -3068,29 +3069,29 @@ class ServerDialog extends JDialog implements ActionListener
 	    }
 	    return null;
     }
-    
-    
+
+
     public void addServerIp(DataServerItem dsi)
     {
 	    int i;
 	    JMenuItem new_ip;
 	    DataServerItem found_dsi = null;
 	    boolean found = false;
-	    
+
 	    found = ((found_dsi = findServer(dsi)) != null);
-	    
+
 	    if(dsi.class_name != null &&
            !data_server_class.containsValue(dsi.class_name))
         {
                 data_server_class.put(dsi.class_name, dsi.class_name);
                 data_provider_list.addItem(dsi.class_name);
         }
-	    
+
 	    if(!found && dsi.class_name == null)
 	    {
-		  JOptionPane.showMessageDialog(null, "Undefine data server class for " + dsi.name, "alert", JOptionPane.ERROR_MESSAGE);     
+		  JOptionPane.showMessageDialog(null, "Undefine data server class for " + dsi.name, "alert", JOptionPane.ERROR_MESSAGE);
 	    }
-	    
+
 	    if(!found)
 	    {
 	        list_model.addElement(dsi);
@@ -3110,7 +3111,7 @@ class ServerDialog extends JDialog implements ActionListener
 	        }
 	    }
     }
-    
+
     private void addKnowProvider()
     {
         for(int i = 0; i < know_provider.length; i++)
@@ -3119,49 +3120,49 @@ class ServerDialog extends JDialog implements ActionListener
             data_provider_list.addItem(know_provider[i]);
         }
     }
-    
+
     public void addServerIpList(DataServerItem[] dsi_list)
     {
         if(dsi_list == null) return;
-	    for(int i = 0; i < dsi_list.length; i++) 
+	    for(int i = 0; i < dsi_list.length; i++)
 	        addServerIp(dsi_list[i]);
     }
 
     public DataServerItem[] getServerIpList()
     {
-    
+
 	    Enumeration e = list_model.elements();
 	    DataServerItem out[] = new DataServerItem[list_model.size()];
 	    for(int i = 0; e.hasMoreElements(); i++)
 	        out[i] = ((DataServerItem)e.nextElement());
 	    return out;
-	    
+
     }
-	        
+
     public void actionPerformed(ActionEvent event)
-    { 
+    {
 
         Object ob = event.getSource();
         String arg;
-              
-      
+
+
 	    if(ob == cancel_b)
 	        setVisible(false);
-	    
+
 	    if(ob == add_b)
 	    {
 	       String srv =  server_l.getText().trim();
-           
+
 	       if(srv != null && srv.length() != 0)
 	       {
-	       	        
-            addServerIp(new DataServerItem(srv, server_a.getText().trim(), 
-                                           server_u.getText().trim(), 
+
+            addServerIp(new DataServerItem(srv, server_a.getText().trim(),
+                                           server_u.getText().trim(),
                                            (String)data_provider_list.getSelectedItem(),
                                            null, null, tunnel_port.getText(),false));
 	       }
 	    }
-	
+
 	    if(ob == remove_b)
 	    {
 	        int idx = server_list.getSelectedIndex();
@@ -3170,7 +3171,7 @@ class ServerDialog extends JDialog implements ActionListener
 		        dw.servers_m.remove(idx);
 	        }
 	    }
-	    
+
 	    if(ob == modify_b)
 	    {
 	        int idx = server_list.getSelectedIndex();
@@ -3192,7 +3193,7 @@ class ServerDialog extends JDialog implements ActionListener
                     }
                 }
 	        }
-	    }   
+	    }
     }
 }
 
