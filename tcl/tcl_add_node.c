@@ -28,10 +28,10 @@ int   TclAddNode()		/* Return: status			*/
     int   sts;
     int   stsQual;
     char  usage;
-    DYNAMIC_DESCRIPTOR(dsc_nodnam);
-    DYNAMIC_DESCRIPTOR(dsc_modelType);
-    DYNAMIC_DESCRIPTOR(dsc_qualifiers);
-    DYNAMIC_DESCRIPTOR(dsc_usageStr);
+    DYNAMIC_DESCRIPTOR(static dsc_nodnam);
+    DYNAMIC_DESCRIPTOR(static dsc_modelType);
+    DYNAMIC_DESCRIPTOR(static dsc_qualifiers);
+    DYNAMIC_DESCRIPTOR(static dsc_usageStr);
 
     sts = cli_get_value("NODENAME",&dsc_nodnam);
     l2u(dsc_nodnam.dscA_pointer,0);
