@@ -33,7 +33,7 @@ static unsigned int masks[33] = {0,
 0x1ffff, 0x3ffff, 0x7ffff, 0xfffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff,
 0x1ffffff, 0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff, 0xffffffff,};
 #include  <string.h>
-
+#include <mdsdescrip.h>
 #ifdef _big_endian
 static int SwapBytes(int in)
 {

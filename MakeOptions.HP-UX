@@ -1,0 +1,4 @@
+CFLAGS = +z -Ae -I../include -g 
+SHARE_TYPE = sl
+MAKE_DEPEND = cc $(CFLAGS) -P -Wp,-M {} 2> .depend \; ; rm *.i
+LD_SHARED_LIB_OPTIONS = -b -ldld

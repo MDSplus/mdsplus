@@ -74,7 +74,7 @@
 #define BITSX 10		/*number of bits for run length*/
 #define BITSY 6			/*number of bits in y 0-32*/
 
-#if defined(__hpux__)
+#if defined(__hpux)
 #pragma HP_ALIGN NOPADDING PUSH
 #elif defined(__irix__)
 #pragma pack(1)
@@ -129,7 +129,7 @@ struct HEADER
   union Y_X e;
 };
 
-#if defined(__hpux__)
+#if defined(__hpux)
 #pragma HP_ALIGN POP
 #elif defined(__irix__)
 #pragma pack(0)

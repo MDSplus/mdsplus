@@ -12,7 +12,7 @@ void __MB(){return;}
 
 #if defined(__osf__) || defined(__irix__) || defined(__sunos__)
 #include <dlfcn.h>
-#elif defined(__hpux__)
+#elif defined(__hpux)
 #include <dl.h>
 #endif
 
@@ -149,7 +149,7 @@ int StrGet1Dx(unsigned short *len, struct descriptor *out)
 typedef __int64 _int64;
 #elif defined(__osf__) || defined(__irix__) || defined(__sunos__)
 typedef long _int64;
-#elif defined(__hpux__)
+#elif defined(__hpux)
 typedef long long _int64;
 #endif
 
@@ -943,7 +943,7 @@ unsigned int LibCallg(void **arglist, FARPROC *routine)
 
   return retval;
 }
-#elif defined(__osf__) || defined (__hpux__) || defined(__irix__) || defined(__sunos__)
+#elif defined(__osf__) || defined (__hpux) || defined(__irix__) || defined(__sunos__)
 unsigned int LibCallg(void **arglist, unsigned int (*routine)())
 {
   switch (*(int *)arglist & 0xff)

@@ -16,6 +16,10 @@
 #define __fill_value__
 #endif /* _WINDOWS */
 
+#if defined(__hpux) || defined(__irix__) || defined(__sunos__)
+#define _big_endian
+#endif
+
 /*
  *	Descriptor Prototype - each class of descriptor consists of at least the following fields:
  */

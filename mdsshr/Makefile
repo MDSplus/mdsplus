@@ -1,5 +1,4 @@
 include $(MAKE_OPTIONS)
-include .depend
 
 OBJECTS = \
 	dummies.o \
@@ -13,7 +12,7 @@ OBJECTS = \
 	MdsPk.o
 
 ../shlib/libMdsShr.$(SHARE_TYPE) : $(OBJECTS) ../shlib
-	$(LD) -o $@ $(OBJECTS) -lc $(LD_OPTIONS)
+	$(LD) -o $@ $(OBJECTS) -lc $(LD_SHARED_LIB_OPTIONS)
 
 ../shlib :
 	mkdir ../shlib
@@ -22,6 +21,8 @@ clean :
 	- rm *.o
 	- rm ../shlib/libMdsShr.$(SHARE_TYPE)
 	- rm .depend
+
+include .depend
 
 depend : .depend
 
