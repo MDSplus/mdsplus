@@ -160,7 +160,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
         AddQuadword(temp,addin,local_nci.time_inserted);
 #endif
 */
-        *(_int64)local_nci.time_inserted = temp + addin;
+        *(_int64 *)local_nci.time_inserted = temp + addin;
 	/*
         AddQuadword(&temp,&addin,local_nci.time_inserted);
 	*/
