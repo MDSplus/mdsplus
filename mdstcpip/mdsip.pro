@@ -174,6 +174,7 @@ function mds$value,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10
       answer = 0
     endif
   endif else begin
+    if (status and 1) then status = 265519162
     if not keyword_set(quiet) then message,'Error evaluating expression',/continue
     answer = 0
   endelse
