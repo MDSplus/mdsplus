@@ -136,6 +136,9 @@
 /* Define if you have pthread_lock_global_np routine. */
 #undef HAVE_PTHREAD_LOCK_GLOBAL_NP
 
+/* Define if you have <readline/readline.h> */
+#undef HAVE_READLINE_READLINE.H
+
 #undef HAS_SIGVEC
 #ifdef HAVE_SIGVEC
 #define SIGVEC sigvec
