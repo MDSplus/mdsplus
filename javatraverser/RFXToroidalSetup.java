@@ -173,8 +173,8 @@ public class RFXToroidalSetup extends DeviceSetup {
         "fpga_clk", "tmin_on_h", "tmin_off_h", "tdead", "tfbon_h", "tfboff_h", "ith_inv_on", "ith_inv_endf", "imin_inv_off", "vdc_max", "vmaxload",
         "ih_max", "vdc_overvolt", "vdc_undevolt", "vdc_t", "spare44", "spare45", "iac_lim", "vac_lim", "spare48", "kp_reg_vac", "ki_reg_vac", "s0_reg_vac",
         "up_reg_vac", "lo_reg_vac", "kp_rec_iac_lim", "ki_reg_iac_lim", "s0_reg_iac_lim", "up_reg_iac_lim", "lo_reg_uiac_lim", "kp_reg_vac_lim",
-        "ki_reg_vac_lim", "s0_reg_vac_lim", "up_reg_vac_lim", "lo_reg_vac_lim", "spare1", "spare2", "spare3", "spare4", "spare5", "spare6", "spare7",
-        "spare8", "spare9", "spare10", "spare11", "spare12"});
+        "ki_reg_vac_lim", "s0_reg_vac_lim", "up_reg_vac_lim", "lo_reg_vac_lim", "od_so_reg_iac", "spare1", "spare2", "spare3", "spare4",
+        "spare5", "spare6", "spare7", "spare8", "spare9", "spare10", "spare11"});
     deviceTable6.setEditable(false);
     deviceTable6.setColumnNames(new String[] {"Sect.1", "Sect.2", "Sect.3", "Sect.4", "Sect.5", "Sect.6"});
     deviceTable6.setIdentifier("");
@@ -212,8 +212,8 @@ public class RFXToroidalSetup extends DeviceSetup {
         "fpga_clk", "tmin_on_h", "tmin_off_h", "tdead", "tfbon_h", "tfboff_h", "ith_inv_on", "ith_inv_endf", "imin_inv_off", "vdc_max", "vmaxload",
         "ih_max", "vdc_overvolt", "vdc_undevolt", "vdc_t", "spare44", "spare45", "iac_lim", "vac_lim", "spare48", "kp_reg_vac", "ki_reg_vac", "s0_reg_vac",
         "up_reg_vac", "lo_reg_vac", "kp_rec_iac_lim", "ki_reg_iac_lim", "s0_reg_iac_lim", "up_reg_iac_lim", "lo_reg_uiac_lim", "kp_reg_vac_lim",
-        "ki_reg_vac_lim", "s0_reg_vac_lim", "up_reg_vac_lim", "lo_reg_vac_lim", "spare1", "spare2", "spare3", "spare4", "spare5", "spare6", "spare7",
-        "spare8", "spare9", "spare10", "spare11", "spare12"});
+        "ki_reg_vac_lim", "s0_reg_vac_lim", "up_reg_vac_lim", "lo_reg_vac_lim", "od_so_reg_iac", "spare1", "spare2", "spare3", "spare4",
+        "spare5", "spare6", "spare7", "spare8", "spare9", "spare10", "spare11"});
     deviceTable8.setDisplayRowNumber(true);
     deviceTable8.setPreferredColumnWidth(40);
     deviceTable8.setPreferredHeight(100);
