@@ -324,7 +324,7 @@ static int BecomeUser(char *remuser, struct descriptor *user)
 }
 #else
 
- static int BecomeUser(char *remuser, struct descriptor *local_user){}
+ static int BecomeUser(char *remuser, struct descriptor *local_user)
  {
   int ok = 1;
   CompressString(local_user,0);
