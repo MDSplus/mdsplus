@@ -81,6 +81,7 @@ FUN	PUBLIC EVENT_TABLE() {
 		   'OECE_START',	     '54',
 		   'RF_ARCLIGHT_START',	     '55',
 		   'LH_START',		     '56',
+		   'HXR_START',		     '57',
                    'MSE_START',		    '123',
 		   'DNB_CHECK', 	    '100',
                    'MOLVAX_TEST',	    '124',
