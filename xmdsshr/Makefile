@@ -65,9 +65,9 @@ all :	../shlib/libXmdsShr.$(SHARE_TYPE) \
 	cc -o $@ -DMDS_EXTENSION $(CFLAGS) wmldbcreate-xmdsshr.c $(MOTIF_LIBS) $(X11_LIBS) $(SOCKET_LIB)
 
 UilConst.h : xmdsuil.wml 
-	/usr/examples/motif/wml/wml xmdsuil.wml
-	rm wml-uil.mm
-	rm wml-uil.sdml
+	$(WML) xmdsuil.wml
+	- rm wml-uil.mm
+	- rm wml-uil.sdml
 
 tokens.dat : 
 	ln -s /usr/examples/motif/wml/tokens.dat .
