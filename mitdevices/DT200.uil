@@ -3965,8 +3965,8 @@ object nidOptionMenu19 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
-	compound_string("'MI0'"),
-	compound_string("'J50'"),
+	compound_string("'MI2'"),
+	compound_string("'J52'"),
 	compound_string(""));
         XmNlabelString = compound_string("");
         XmdsNputOnApply = true;

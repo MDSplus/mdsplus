@@ -108,9 +108,7 @@ EXPORTS = MitDevices.exports
 
 all :  @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ \
        @MAKESHLIBDIR@libMitDevices@SHARETYPE@ @MAKELIBDIR@libMitDevices.a \
-       @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ @MAKELIBDIR@libMitDevicesIO.a \
-       @MAKEBINDIR@daq_server  $(UIDS) 
-
+       @MITDEVICESIO_TARGETS@ $(UIDS)
 
 
 depend:
@@ -151,7 +149,7 @@ install:
 	@RANLIB@ $@
 
 @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ : $(IO_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(IO_OBJECTS) $(MATH_LIBS) $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(IO_OBJECTS) $(LIBS)
 
 @MAKELIBDIR@libMitDevicesIO.a : $(IO_OBJECTS)
 	$(AR) -cr $@ $(IO_OBJECTS)
