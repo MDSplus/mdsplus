@@ -1,5 +1,0 @@
-sys$library:mdsipshr_IEEE.exe/share
-multinet:MULTINET_SOCKET_LIBRARY.EXE/share
-psect_attr=sock,noshr
-psect_attr=serv,noshr
-psect_attr=servip,noshr

@@ -1,7 +1,0 @@
-LIBRARY	JETRDAAPI
-EXPORTS
-;
-_JETFreeData@4
-_JETGetLastErrorDetail@8
-_JETReadData@32
-_JETSetIdentity@8
