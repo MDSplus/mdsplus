@@ -14,6 +14,15 @@ static int initialized = 0;
 static void FlipHeader(MsgHdr *header);
 static void FlipData(Message *m);
 
+#ifdef _UCX
+#else
+extern int inet_addr();
+#endif
+
+#ifdef __VMS
+extern int MdsDispatchEvent();
+#endif
+
 static char ClientType(void)
 {
   static char ctype = 0;
@@ -85,7 +94,6 @@ short ArgLen(struct descrip *d)
   return len;
 }
 
-
 #ifdef _WIN32
 void MdsIpFree(void *ptr)
 {
@@ -93,7 +101,7 @@ void MdsIpFree(void *ptr)
 }
 #endif
 
-#if !defined(_VMS) && !defined(_WIN32) && !defined(vxWorks)
+#if !defined(__VMS) && !defined(_WIN32) && !defined(vxWorks)
 static struct timeval connectTimer = {0,0};
 
 int SetMdsConnectTimeout(int sec)
@@ -128,11 +136,9 @@ static SOCKET ConnectToPort(char *host, char *service)
 	  hp = gethostbyname(host);
   }
 #endif
-
   if (hp == NULL)
   {
     addr = inet_addr(host);
-
 #ifndef vxWorks
     if (addr != 0xffffffff)
     	hp = gethostbyaddr((void *) &addr, (int) sizeof(addr), AF_INET);
@@ -149,7 +155,6 @@ static SOCKET ConnectToPort(char *host, char *service)
   }
   s = socket(AF_INET, SOCK_STREAM, 0);
   if (s == INVALID_SOCKET) return INVALID_SOCKET;
-
 #ifdef vxWorks
   if (atoi(service) == 0)
   {
@@ -186,7 +191,7 @@ static SOCKET ConnectToPort(char *host, char *service)
 #else
   memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
 #endif
-#if !defined(_VMS) && !defined(_WIN32) && !defined(vxWorks)
+#if !defined(__VMS) && !defined(_WIN32) && !defined(vxWorks)
   if (connectTimer.tv_sec)
   {
     status = fcntl(s,F_SETFL,O_NONBLOCK);
@@ -220,7 +225,7 @@ static SOCKET ConnectToPort(char *host, char *service)
       fcntl(s,F_SETFL,0);
   } else
 #endif
-    status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
+  status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
   if (status == INVALID_SOCKET)
   {
     perror("Error in connect to service\n");
@@ -243,7 +248,7 @@ static SOCKET ConnectToPort(char *host, char *service)
     user_p = (cuserid(user) && strlen(user)) ? user : "?";
 #endif
 #endif
-   m = malloc(sizeof(MsgHdr) + strlen(user_p));
+    m = malloc(sizeof(MsgHdr) + strlen(user_p));
     m->h.client_type = 0;
     m->h.length = strlen(user_p);
     m->h.msglen = sizeof(MsgHdr) + m->h.length;
@@ -291,10 +296,8 @@ static SOCKET ConnectToPort(char *host, char *service)
 
 SOCKET  ConnectToMds(char *host)
 {
-
   char hostpart[256] = {0};
   char portpart[256] = {0};
-
   sscanf(host,"%[^:]:%s",hostpart,portpart);
   if (strlen(portpart) == 0)
     strcpy(portpart,"mdsip");
@@ -565,8 +568,8 @@ Message *GetMdsMsg(SOCKET sock, int *status)
       else
       {
         perror("MDSplus GETMSG recv error");
-		*status = 0;
-		return 0;
+        *status = 0;
+        return 0;
       }
     }
     else

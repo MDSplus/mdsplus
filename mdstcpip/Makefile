@@ -1,7 +1,7 @@
 include $(MAKE_OPTIONS)
 
 OBJECTS = \
-	mdsipshr.o
+	mdsipshr.o vmshpwd.o
 
 OBJECTS_UTIL = \
 	mdsiputil.o
@@ -39,7 +39,6 @@ mdstcpip : ../bin ../shlib ../etc ../bin/mdsiptest ../bin/mdsip ../bin/mdsipd ..
 
 libMdsIpUtil.a :  $(OBJECTS_UTIL)
 	$(AR) -r $@ $(OBJECTS_UTIL)
-	
 
 clean :
 	- rm *.o
