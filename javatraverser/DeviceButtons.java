@@ -11,7 +11,7 @@ public class DeviceButtons extends JPanel
     }
     
     public String [] getMethods() { return methods; }
-    
+   
     public DeviceButtons()
     {
         add(ok = new DeviceOk());

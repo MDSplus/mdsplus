@@ -5,9 +5,13 @@ exec_prefix=@exec_prefix@
 JAVADIR = @MAKEJAVADIR@classes
 JAVAC = @JAVAC@
 JAR = @JAR@
+RMIC = rmic
 INSTALL=@top_srcdir@/conf/install-sh -c
 
-DEVICES = TRCHSetup.java
+DEVICES = TRCHSetup.java\
+ADC265Setup.java\
+E1463Setup.java\
+VMEWavesSetup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
@@ -79,6 +83,7 @@ QuadArray.java\
 QuadData.java\
 RangeData.java\
 RangeEditor.java\
+RemoteTree.java\
 RoutineData.java\
 RoutineEditor.java\
 ShortArray.java\
@@ -90,6 +95,7 @@ TaskEditor.java\
 Tree.java\
 TreeDialog.java\
 TreeNode.java\
+TreeServer.java\
 UnsupportedDataException.java\
 WindowData.java\
 WindowEditor.java\
@@ -148,6 +154,7 @@ install:
 jTraverser.class: 	$(SOURCES) $(DEVICES)
 	$(JAVAC) -g $(SOURCES)
 	$(JAVAC) -g $(DEVICES)
+	$(RMIC) TreeServer 
 
 @MAKEBINDIR@ : ; mkdir @MAKEBINDIR@
 

@@ -30,9 +30,9 @@ public class DeviceDispatch extends DeviceComponent
         if(subtree == null) return;
         try {
             nodeInfo = subtree.getInfo(nidData);
-        }catch(DatabaseException e)
+        }catch(Exception e)
         {
-            System.out.println("Cannot read device NCI");
+            System.out.println("Cannot read device NCI: "+e);
             return;
         }
         NidData currNid = new NidData(nidData.getInt());
@@ -42,9 +42,9 @@ public class DeviceDispatch extends DeviceComponent
         {
             try {
                 nodeInfos[i] = subtree.getInfo(currNid);
-            }catch(DatabaseException e)
+            }catch(Exception e)
             {
-                System.out.println("Cannot read device NCI");
+                System.out.println("Cannot read device NCI: "+e);
                 return;
             }
             if(nodeInfos[i].getUsage() == NodeInfo.USAGE_ACTION)
@@ -61,9 +61,9 @@ public class DeviceDispatch extends DeviceComponent
                 try
                 {
                     actions[j] = subtree.getData(currNid);
-                }catch(DatabaseException e)
+                }catch(Exception e)
                 {
-                    System.out.println("Cannot read device actions");
+                    System.out.println("Cannot read device actions: "+e);
                     return;
                 }
                 dispatch_fields[j] = new DeviceDispatchField();

@@ -11,7 +11,7 @@ public class DeviceSetup extends JDialog
     protected String deviceProvider;
     public int baseNid, num_components = 0;
     protected Vector device_components = new Vector();
-    public Database subtree = null;
+    public RemoteTree subtree = null;
     protected Vector dataChangeListeners = new Vector();
     protected String [] methods;
     JMenuItem pop_items[];
@@ -63,13 +63,13 @@ public class DeviceSetup extends JDialog
         setTitle(deviceTitle);
         //getContentPane().setLayout(new BorderLayout());
     }
-    public void configure(Database subtree, int baseNid)
+    public void configure(RemoteTree subtree, int baseNid)
     {
         this.baseNid = baseNid;
         this.subtree = subtree;  
         
         //collect every DeviceComponent
-        Stack search_stack = new Stack();  
+        java.util.Stack search_stack = new java.util.Stack();  
         search_stack.push(this);
         do
         {

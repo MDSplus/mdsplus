@@ -3,8 +3,9 @@
 DataListeners is maintained, as well as methods to notify a data change to the element of this list.
 */
 import java.util.*;
+import java.io.*;
 
-public abstract class Data 
+public abstract class Data implements Serializable
 {
     static {
         try {

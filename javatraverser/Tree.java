@@ -7,6 +7,8 @@ import javax.swing.tree.*;
 import javax.swing.event.*;
 import java.util.*;
 import java.beans.*;
+import java.rmi.*;
+import java.rmi.RemoteException.*;
 
 public class Tree extends JScrollPane implements TreeSelectionListener, 
     MouseListener, ActionListener, KeyListener, DataChangeListener
@@ -23,9 +25,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     private Point curr_origin;
     static int curr_dialog_idx;
     DialogSet dialog_sets[];
-    Stack trees, experiments;
+    java.util.Stack trees, experiments;
     JTree curr_tree;
-    Database curr_experiment;
+    RemoteTree curr_experiment;
     Node curr_node = null;
     DefaultMutableTreeNode curr_tree_node; 
     JDialog open_dialog = null, add_node_dialog = null;
@@ -58,8 +60,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     public Tree(jTraverser _frame)
     {
 	frame = _frame;
-	trees = new Stack();
-	experiments = new Stack();
+	trees = new java.util.Stack();
+	experiments = new java.util.Stack();
 	setPreferredSize(new Dimension(300,400));
 	setBackground(Color.white);
 	curr_tree = null;
@@ -99,29 +101,35 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     {
 	while(!experiments.empty())
 	{
-	    curr_experiment = (Database)experiments.pop();
+	    curr_experiment = (RemoteTree)experiments.pop();
 	    try {
 		curr_experiment.close();
 	    } catch(Exception e)
 	    {
-		if(curr_experiment.isEditable())
-		{
-		    int n = JOptionPane.showConfirmDialog(frame, "Tree has been changed: write it before closing?",
-			"Tree " + curr_experiment.getName() + " open in edit mode", JOptionPane.YES_NO_OPTION);
-		    if(n == JOptionPane.YES_OPTION)
+	        boolean editable = false;
+	        String name = null;
+	        try {
+	            editable = curr_experiment.isEditable();
+	            name = curr_experiment.getName();
+	        }catch(Exception exc){}
+		    if(editable)
 		    {
-			try{
-			    curr_experiment.write();
-			    curr_experiment.close();
-			}catch(Exception exc)
-			{
-			    System.out.println("Error closing " + curr_experiment.getName() +  ": " + exc.getMessage());
-			}     
+		        int n = JOptionPane.showConfirmDialog(frame, "Tree has been changed: write it before closing?",
+			    "Tree " + name + " open in edit mode", JOptionPane.YES_NO_OPTION);
+		        if(n == JOptionPane.YES_OPTION)
+		        {
+			        try{
+			            curr_experiment.write();
+			            curr_experiment.close();
+			        }catch(Exception exc)
+			        {
+			            System.out.println("Error closing experiment: " + exc.getMessage());
+			        }     
+		        }
 		    }
-		}
-		else
-		    System.out.println("Error closing " + curr_experiment.getName() +  ": " + e.getMessage());
-	    }
+		    else
+		        System.out.println("Error closing experiment: " + e.getMessage());
+	        }
 	}
 	System.exit(0);
     }
@@ -134,31 +142,37 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	try {
 	    curr_experiment.close();
 	} catch(Exception e) {
-	    if(curr_experiment.isEditable())
+	    boolean editable = false;
+	    String name = null;
+	    try {
+	        editable = curr_experiment.isEditable();
+	        name = curr_experiment.getName().trim();
+	    }catch(Exception exc){}
+		if(editable)
 	    {
-		int n = JOptionPane.showConfirmDialog(frame, "Tree " + curr_experiment.getName().trim() + 
-		    " open in edit mode has been changed: write it before closing?",
-			"Closing Tree ", JOptionPane.YES_NO_OPTION);
-		if(n == JOptionPane.YES_OPTION)
-		{
-		    try{
-			curr_experiment.write();
-			curr_experiment.close();
-		    }catch(Exception exc)
+		    int n = JOptionPane.showConfirmDialog(frame, "Tree " + name + 
+		        " open in edit mode has been changed: write it before closing?",
+			    "Closing Tree ", JOptionPane.YES_NO_OPTION);
+		    if(n == JOptionPane.YES_OPTION)
 		    {
-			JOptionPane.showMessageDialog(frame, "Error closing tree", exc.getMessage(),JOptionPane.WARNING_MESSAGE);
-			return;
-		    }     
-		}
-		else
-		{
-		    try {
-			curr_experiment.quit();
-		    } catch(Exception exce) {
-			JOptionPane.showMessageDialog(frame, "Error quitting tree", exce.getMessage(),JOptionPane.WARNING_MESSAGE);
-			return;
+		        try{
+			    curr_experiment.write();
+			    curr_experiment.close();
+		        }catch(Exception exc)
+		        {
+			    JOptionPane.showMessageDialog(frame, "Error closing tree", exc.getMessage(),JOptionPane.WARNING_MESSAGE);
+			    return;
+		        }     
 		    }
-		}
+		    else
+		    {
+		        try {
+			    curr_experiment.quit();
+		        } catch(Exception exce) {
+			    JOptionPane.showMessageDialog(frame, "Error quitting tree", exce.getMessage(),JOptionPane.WARNING_MESSAGE);
+			    return;
+		        }
+		    }
 	    }
 	    else
 	    {
@@ -171,13 +185,15 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	if(!trees.empty())
 	{
 	    curr_tree = (JTree)trees.peek();
-	    curr_experiment = (Database)experiments.peek();
+	    curr_experiment = (RemoteTree)experiments.peek();
 	    setViewportView(curr_tree);
-	    frame.reportChange(curr_experiment.getName(), curr_experiment.getShot(),
-		curr_experiment.isEditable(), curr_experiment.isReadonly());
-	    if(is_editable != curr_experiment.isEditable())
-		pop = null;
-	    is_editable = curr_experiment.isEditable();	
+	    try {
+	        frame.reportChange(curr_experiment.getName(), curr_experiment.getShot(),
+		    curr_experiment.isEditable(), curr_experiment.isReadonly());
+	        if(is_editable != curr_experiment.isEditable())
+		    pop = null;
+	        is_editable = curr_experiment.isEditable();	
+	    }catch(Exception exc) {System.err.println("Error in RMI communication: "+exc);}
 
 	}
 	else
@@ -300,21 +316,58 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	JTree prev_tree = curr_tree;
 	
 //first we need to check if the tree is already open
-	Database loop_exp = null;
+	RemoteTree loop_exp = null;
 	for(i = 0; i < trees.size(); i++)
 	{
-	    loop_exp = (Database)experiments.elementAt(i);
-	    if(loop_exp.getName().equals(exp) && loop_exp.getShot() == shot)
-		break;
+	    loop_exp = (RemoteTree)experiments.elementAt(i);
+	    try {
+	        if(loop_exp.getName().equals(exp) && loop_exp.getShot() == shot)
+		    break;
+		}catch(Exception exc){}
 	}
 	if(i < trees.size())
 	{
 	    trees.removeElementAt(i);
 	    experiments.removeElementAt(i);
 	}	
-	curr_experiment = new Database(exp, shot);
-	curr_experiment.is_editable = editable;
-	curr_experiment.is_readonly = readonly;
+	
+	String remote_tree_ip = System.getProperty("remote_tree.ip");
+	if(remote_tree_ip == null)
+	    curr_experiment = new Database();
+	else
+	{
+        if (System.getSecurityManager() == null) 
+            System.setSecurityManager(new RMISecurityManager()
+                {
+                    public void checkConnect(String host, int port){}
+                    public void checkPropertiesAccess() {}
+                    public void checkLink(String lib){}
+                    public void checkRead(String file){}
+                    public void checkRead(FileDescriptor fd){}
+                    public void checkRead(String file, Object context){}
+                    public void checkPropertyAccess(String property) {}
+                });
+        String name = "//" + remote_tree_ip + "/TreeServer";
+        try {
+            curr_experiment = (RemoteTree) Naming.lookup(name);
+        }catch(Exception exc)
+        {
+	        JOptionPane.showMessageDialog(frame, exc.getMessage(), "Error opening remote "+exp, JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	}
+	try {
+        curr_experiment.setTree(exp, shot);        
+        curr_experiment.setEditable(editable);
+        curr_experiment.setReadonly(readonly);
+    }catch(Exception exc)
+    {
+        System.err.println("Error in RMI communication: "+ exc);
+    }
+
+	//curr_experiment = new Database(exp, shot);
+	//curr_experiment.is_editable = editable;
+	//curr_experiment.is_readonly = readonly;
 	try {
 	    curr_experiment.open();
 	    top_node = new Node(curr_experiment, this);
@@ -356,7 +409,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	setViewportView(curr_tree);
 	trees.push(curr_tree);
 	experiments.push(curr_experiment);
-	is_editable = curr_experiment.isEditable();
+	try {
+	    is_editable = curr_experiment.isEditable();
+	}catch(Exception exc){is_editable = false;}
 	frame.reportChange(exp,shot,editable,readonly);
     }
     

@@ -1,6 +1,6 @@
 //package jTraverser;
 
-public class Database {
+public class Database implements RemoteTree{
     String name;
     int shot;
     boolean is_open = false;
@@ -11,10 +11,26 @@ public class Database {
 	    System.loadLibrary("JavaMds");
 	    }catch(Exception e) {System.out.println("Cannot load library " + e); }
     }
+    public Database() {super();}
     public Database(String name, int shot)
     {
 	this.name = name.toUpperCase();
 	this.shot = shot;	
+    }
+    public void setTree(String name, int shot)
+    {
+        this.name = name.toUpperCase();
+        this.shot = shot;
+    }
+    
+    public void setEditable(boolean editable)
+    {
+        this.is_editable = editable;
+    }
+    
+    public void setReadonly(boolean readonly)
+    {
+        this.is_readonly = readonly;
     }
     final public String getName() {return name; }
     final public int getShot() {return shot;}

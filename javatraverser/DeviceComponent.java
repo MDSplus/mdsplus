@@ -3,7 +3,7 @@ import java.awt.*;
 
 public abstract class DeviceComponent extends JPanel
 {
-    Database subtree;
+    RemoteTree subtree;
     
     public int mode = DATA;
     public static final int DATA = 0, STATE = 1, DISPATCH = 2;
@@ -14,8 +14,8 @@ public abstract class DeviceComponent extends JPanel
     protected String identifier;
     private boolean is_initialized = false;
     
-    void setSubtree(Database subtree) {this.subtree = subtree; }
-    Database getSubtree(){return subtree; }
+    void setSubtree(RemoteTree subtree) {this.subtree = subtree; }
+    RemoteTree getSubtree(){return subtree; }
     public void setBaseNid(int nid) {baseNid = nid; }
     public int getBaseNid() {return baseNid; }
     public void setOffsetNid(int nid) {offsetNid = nid; }

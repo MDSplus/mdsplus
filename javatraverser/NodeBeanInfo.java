@@ -6,13 +6,13 @@ import java.awt.*;
 public class NodeBeanInfo extends SimpleBeanInfo
 {
     int usage;
-    Database experiment;
+    RemoteTree experiment;
     String name;
     
     /* This constructor is intended to be used only by the traverser and not
     by a standard Bean Bulder, which  considers only the class to discriminate the 
     corresponding BeanInfo object */
-    public NodeBeanInfo(Database experiment, int usage, String name)
+    public NodeBeanInfo(RemoteTree experiment, int usage, String name)
     {	
 	this.experiment  = experiment;
 	this.usage = usage;
@@ -61,8 +61,10 @@ public class NodeBeanInfo extends SimpleBeanInfo
 	if(usage != NodeInfo.USAGE_DEVICE)
 	    if(short_descr.equals("Setup Device"))
 		return false;
-	if(experiment.isReadonly() && (short_descr.equals("Modify Data") || short_descr.equals("Toggle On/Off")))
-	    return false;
+    try {
+	    if(experiment.isReadonly() && (short_descr.equals("Modify Data") || short_descr.equals("Toggle On/Off")))
+	        return false;
+	}catch(Exception exc){return false;}
 	return true;
     }
 	    

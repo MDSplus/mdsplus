@@ -1,10 +1,12 @@
 //package jTraverser;
 import javax.swing.*;
 import java.net.URL;
+import java.rmi.*;
+import java.rmi.RemoteException.*;
 
 public class Node
 {
-    Database experiment;
+    RemoteTree experiment;
     Data data;
     NodeInfo info;
     NidData nid;
@@ -16,7 +18,7 @@ public class Node
     NodeBeanInfo bean_info = null;
     Tree hierarchy;
     
-    public Node(Database experiment, Tree hierarchy) throws DatabaseException
+    public Node(RemoteTree experiment, Tree hierarchy) throws DatabaseException, RemoteException
     {
 	this.experiment = experiment;
 	this.hierarchy = hierarchy;
@@ -26,7 +28,7 @@ public class Node
 	is_member = false;
     }
     
-    public Node(Database experiment, Tree hierarchy, Node parent, boolean is_member, NidData nid)
+    public Node(RemoteTree experiment, Tree hierarchy, Node parent, boolean is_member, NidData nid)
     {
 	this.experiment = experiment;
 	this.hierarchy = hierarchy;
@@ -37,39 +39,39 @@ public class Node
 	}catch(Exception e) {System.out.println("Error getting info " + e);}
     }
     
-    public void updateData() throws DatabaseException
+    public void updateData() throws DatabaseException, RemoteException
     {
 	data = experiment.getData(nid);
     }
     
-    public void updateInfo() throws DatabaseException
+    public void updateInfo() throws DatabaseException, RemoteException
     {
 	info = experiment.getInfo(nid);
     }
     
-    public void expand() throws DatabaseException
+    public void expand() throws DatabaseException, RemoteException
     {
-	int i;
-	NidData sons_nid[] = experiment.getSons(nid);
-	NidData members_nid[] = experiment.getMembers(nid);
-	sons = new Node[sons_nid.length];
-	members = new Node[members_nid.length];
-	for(i = 0; i < sons_nid.length; i++)
-	    sons[i] = new Node(experiment, hierarchy, this, false, sons_nid[i]);
-	for(i = 0; i < members_nid.length; i++)
-	    members[i] = new Node(experiment, hierarchy, this, true, members_nid[i]);
+	    int i;
+	    NidData sons_nid[] = experiment.getSons(nid);
+	    NidData members_nid[] = experiment.getMembers(nid);
+	    sons = new Node[sons_nid.length];
+	    members = new Node[members_nid.length];
+	    for(i = 0; i < sons_nid.length; i++)
+	        sons[i] = new Node(experiment, hierarchy, this, false, sons_nid[i]);
+	    for(i = 0; i < members_nid.length; i++)
+	        members[i] = new Node(experiment, hierarchy, this, true, members_nid[i]);
     }
     
-    public void setDefault() throws DatabaseException
+    public void setDefault() throws DatabaseException, RemoteException
     {
-	experiment.setDefault(nid);
+	    experiment.setDefault(nid);
     }
-    public void toggle() throws DatabaseException
+    public void toggle() throws DatabaseException, RemoteException
     {
-	if(experiment.isOn(nid))
-	    experiment.setOn(nid, false);
-	else
-	    experiment.setOn(nid, true);
+	    if(experiment.isOn(nid))
+	        experiment.setOn(nid, false);
+	    else
+	        experiment.setOn(nid, true);
     }
     
     public void turnOn()
@@ -85,7 +87,7 @@ public class Node
 	}catch(Exception e) {System.out.println("Error turning on " + e.getMessage());}
     }    
     
-    public void doAction() throws DatabaseException
+    public void doAction() throws DatabaseException, RemoteException
     {
         try {
             experiment.doAction(nid);
@@ -96,23 +98,23 @@ public class Node
         
     }
     
-    public void setData(Data data) throws DatabaseException 
+    public void setData(Data data) throws DatabaseException, RemoteException 
     {
 	this.data = data;
 	experiment.putData(nid, data);
     }
-    public Data getData() throws DatabaseException
+    public Data getData() throws DatabaseException, RemoteException
     {
 	data = experiment.getData(nid);
 	return data;
     }
-    public NodeInfo getInfo()throws DatabaseException
+    public NodeInfo getInfo()throws DatabaseException, RemoteException
     {
 	if(info == null)
 	    info = experiment.getInfo(nid);
 	return info;
     }
-    public void setInfo(NodeInfo info)throws DatabaseException
+    public void setInfo(NodeInfo info)throws DatabaseException, RemoteException
     {
     }
     public boolean isOn()
@@ -176,8 +178,14 @@ public class Node
 	    bean_info = new NodeBeanInfo(experiment, info.usage, info.name);
 	return bean_info;
     }
-    public String [] getTags() {return experiment.getTags(nid); }
-    public void setTags(String[] tags) throws DatabaseException
+    public String [] getTags() {
+        try {
+            return experiment.getTags(nid); 
+        }catch(Exception exc){return null; }
+    }
+        
+        
+    public void setTags(String[] tags) throws DatabaseException, RemoteException
     {
 	experiment.setTags(nid, tags);
     }
@@ -199,7 +207,7 @@ public class Node
     }
     public Node[] getSons() {return sons; }
     public Node[] getMembers() {return members; }
-    public Node addNode(int usage, String name) throws DatabaseException
+    public Node addNode(int usage, String name) throws DatabaseException, RemoteException
     {
 	NidData prev_default = experiment.getDefault(), new_nid = null;
 	experiment.setDefault(nid);
@@ -212,7 +220,7 @@ public class Node
 	return new Node(experiment, hierarchy, this, true, new_nid);
     }
 
-    public Node addDevice(String name, String type) throws DatabaseException
+    public Node addDevice(String name, String type) throws DatabaseException, RemoteException
     {
 	    NidData prev_default = experiment.getDefault(), new_nid = null;
 	    experiment.setDefault(nid);
@@ -228,7 +236,7 @@ public class Node
 
 	 
 	 
-    public Node addChild(String name) throws DatabaseException
+    public Node addChild(String name) throws DatabaseException, RemoteException
     {
 	NidData prev_default = experiment.getDefault(), new_nid;
 	experiment.setDefault(nid);
@@ -256,7 +264,7 @@ public class Node
 	}catch(Exception e) {System.out.println("Error executing delete: " + e.getMessage());}
     }
     
-    void rename(String new_name) throws DatabaseException 
+    void rename(String new_name) throws DatabaseException, RemoteException 
     {
         experiment.renameNode(nid, new_name);
 	info = experiment.getInfo(nid);

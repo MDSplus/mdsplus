@@ -113,7 +113,7 @@ public class DeviceChannel extends DeviceComponent
         if(device_components == null)
         {
             device_components = new Vector();
-            Stack search_stack = new Stack();  
+            java.util.Stack search_stack = new java.util.Stack();  
             search_stack.push(this);
             do
             {

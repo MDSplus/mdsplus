@@ -1,8 +1,9 @@
 //package jTraverser;
 
 /** class NodeInfo carries all the NCI information */
+import java.io.*;
 
-public class NodeInfo
+public class NodeInfo implements Serializable
 {
 
     boolean on, parent_on, setup, write_once, compressible, compress_on_put, 
