@@ -495,7 +495,7 @@ static void CommandLineOpen(Display *display, Widget tree)
 
   static OptionsRec options;
   static XtResource resources[] = {
-	{"tree", "Tree", XtRString, sizeof(String), XtOffsetOf(OptionsRec, tree), XtRString,  "test"},
+	{"tree", "Tree", XtRString, sizeof(String), XtOffsetOf(OptionsRec, tree), XtRString,  NULL},
 	{"shot", "Shot", XtRInt,    sizeof(int),    XtOffsetOf(OptionsRec, shot), XtRImmediate, (XtPointer)-1}, 
 	{"edit", "Edit", XtRBoolean,sizeof(Boolean), XtOffsetOf(OptionsRec, edit), XtRImmediate, (XtPointer)FALSE}, 
 	{"read_only", "Read_only", XtRBoolean,sizeof(Boolean), XtOffsetOf(OptionsRec, read_only), XtRImmediate, (XtPointer)FALSE}};
@@ -503,20 +503,23 @@ static void CommandLineOpen(Display *display, Widget tree)
   XtGetApplicationResources(BxFindTopShell(tree), (XtPointer)&options, resources, XtNumber(resources), (Arg *)NULL, 0);
   {
     int status;
-    if (options.edit) {
-      status = TreeOpenEdit(options.tree, options.shot);
-      if (status == TreeFILE_NOT_FOUND) {
-	printf("Tree /%s/ shot /%d/ does not exist.  Create?(Y/N) ", options.tree, options.shot);
-	scanf("%s", chars);
-	if ((chars[0] == 'y') || (chars[0] == 'Y')) {
-	  status = TreeOpenNew(options.tree, options.shot);
-	}
+    if (options.tree != NULL)
+    {
+      if (options.edit) {
+        status = TreeOpenEdit(options.tree, options.shot);
+        if (status == TreeFILE_NOT_FOUND) {
+	  printf("Tree /%s/ shot /%d/ does not exist.  Create?(Y/N) ", options.tree, options.shot);
+	  scanf("%s", chars);
+	  if ((chars[0] == 'y') || (chars[0] == 'Y')) {
+	    status = TreeOpenNew(options.tree, options.shot);
+	  }
+        }
       }
+      else
+        status = TreeOpen(options.tree, options.shot, options.read_only);
+      if (status&1)
+        Init(tree);
     }
-    else
-      status = TreeOpen(options.tree, options.shot, options.read_only);
-    if (status&1)
-      Init(tree);
   }
 }
 
