@@ -11,11 +11,11 @@ subtree_path $main_path/subtree
 #
 # UID path
 #
-UIDPATH $MDSPLUS/uid/%U
+XAPPLRESDIR $MDSPLUS
 #
 # IDL path
 #
-IDL_PATH $MDSPLUS/idl
+IDL_PATH $IDL_PATH\:+$MDSPLUS/idl
 #
 # Make options file
 #
