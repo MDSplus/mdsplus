@@ -1,12 +1,13 @@
-static int 	three = 3;
-static int 	nitem;		/*the row count*/
+#include <stdio.h>
+#include "export.h"
+static IDL_MEMINT 	three = 3;
+static IDL_MEMINT 	nitem;		/*the row count*/
 static int	nline;		/*character count on row*/
 static char	*pline;		/*temporary line*/
 #define MAXMSG 1024
 static char	hold[MAXMSG];	/*decode/encode holder*/
 static int	excess;		/*flag for unchecked argument count*/
 static int	date;		/*flag for absolute day*/
-#include <stdio.h>
 
 typedef struct {
 	unsigned int	l0;
@@ -83,7 +84,6 @@ extern void Logout_Sybase();
 extern char *GetDBMsgText();
 extern int GetDBStatus();
 
-#include "export.h"
 #ifndef WIN32
 #include "sybfront.h"
 #include "sybdb.h"
@@ -119,7 +119,7 @@ static int      quiet;
 static const short	HUGE_W = 0x7fff;
 /*********************************************************/
 static void IDLresize(k, dst)
-int	k;
+IDL_MEMINT	k;
 IDL_VPTR	dst;
 {
  IDL_VPTR	tptr;
@@ -207,11 +207,7 @@ char	*form;
 static void	txtadd(form, arg1, arg2, arg3, arg4)
 char	*form;
 {
-#ifdef	sun	/*non-ANSCI gives pointer not length*/
-	nline += strlen(sprintf(pline+nline, form, arg1, arg2, arg3, arg4));
-#else
 	nline += sprintf(pline+nline, form, arg1, arg2, arg3, arg4);
-#endif
 }
 /*********************************************************/
 static void	txtline(form, arg1, arg2, arg3, arg4)
