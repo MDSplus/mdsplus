@@ -1,6 +1,7 @@
 PARTS = mdsshr \
 	treeshr \
 	tdishr \
+        remcam \
 	tditest \
 	xmdsshr \
 	dwscope \
