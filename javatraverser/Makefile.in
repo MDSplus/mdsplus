@@ -29,7 +29,8 @@ PELLETSetup.java\
 L5613Setup.java\
 RFXTimesSetup.java\
 RFXPConfigSetup.java\
-RFXPSetupSetup.java
+RFXPMSetupSetup.java\
+RFXPCSetupSetup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
