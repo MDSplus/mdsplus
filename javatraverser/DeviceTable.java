@@ -20,6 +20,8 @@ public class DeviceTable extends DeviceComponent
     boolean displayRowNumber = false;
 
 
+    protected int preferredColumnWidth = 30;
+    protected int preferredHeight = 70;
     protected JScrollPane scroll;
     protected JTable table;
     protected JLabel label;
@@ -49,10 +51,24 @@ public class DeviceTable extends DeviceComponent
     public void setNumCols(int numCols)
     {
         this.numCols = numCols;
-        table.setPreferredScrollableViewportSize(new Dimension(30 * numCols, 70));
+        table.setPreferredScrollableViewportSize(new Dimension(preferredColumnWidth * numCols, preferredHeight));
         redisplay();
     }
     public int getNumCols() {return numCols; }
+
+    public void setPreferredColumnWidth(int preferredColumnWidth)
+    {
+      this.preferredColumnWidth = preferredColumnWidth;
+    }
+    public int getPreferredColumnWidth(){return preferredColumnWidth;}
+
+
+    public int getPreferredHeight(){return preferredHeight;}
+
+    public void setPreferredHeight(int preferredHeight)
+    {
+      this.preferredHeight = preferredHeight;
+    }
 
     public void setColumnNames(String [] columnNames)
     {
@@ -137,7 +153,7 @@ public class DeviceTable extends DeviceComponent
             public int getRowCount() {return numRows; }
             public String getColumnName(int idx)
             {
-                if(displayRowNumber || rowNames.length > 0)
+                if(displayRowNumber || (rowNames != null && rowNames.length > 0))
                 {
                     if(idx == 0)
                         return "";
@@ -150,7 +166,7 @@ public class DeviceTable extends DeviceComponent
 
             public Object getValueAt(int row, int col)
             {
-               if(rowNames.length > 0)
+               if(rowNames != null && rowNames.length > 0)
                 {
                   if (col == 0) {
                     try {
@@ -209,10 +225,7 @@ public class DeviceTable extends DeviceComponent
                     items[row * numCols + col] = (String)value;
                 fireTableCellUpdated(row, col);
             }});
-        if(numRows < 10)
-            table.setPreferredScrollableViewportSize(new Dimension(numCols* 33, numRows* table.getRowHeight()));
-        else
-            table.setPreferredScrollableViewportSize(new Dimension(numCols* 33, 100));
+        table.setPreferredScrollableViewportSize(new Dimension(preferredColumnWidth * numCols,preferredHeight));
         initializing = false;
     }
 

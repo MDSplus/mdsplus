@@ -15,7 +15,7 @@ public class DeviceFieldBeanInfo extends SimpleBeanInfo
     {
         return loadImage("DeviceField.gif");
     }
-    
+
     public BeanDescriptor getBeanDescriptor()
     {
         return new BeanDescriptor(DeviceField.class, DeviceFieldCustomizer.class);
@@ -31,7 +31,8 @@ public class DeviceFieldBeanInfo extends SimpleBeanInfo
                property("identifier", "Optional field identifier"),
                property("showState", "Display on/off state"),
                property("editable", "Text field editable"),
-               property("displayEvaluated", "Display evaluated data")
+               property("displayEvaluated", "Display evaluated data"),
+               property("preferredWidth", "Preferred width")
             };
             return props;
         }catch(IntrospectionException e)
@@ -40,5 +41,5 @@ public class DeviceFieldBeanInfo extends SimpleBeanInfo
             return super.getPropertyDescriptors();
         }
     }
-    
+
 }

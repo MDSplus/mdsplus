@@ -128,12 +128,12 @@ public class TR32Setup extends DeviceSetup {
     deviceField3.setLabelString("Comment: ");
     deviceField3.setNumCols(35);
     deviceField3.setIdentifier("");
-    deviceField3.setBounds(new Rectangle(7, 44, 511, 30));
+    deviceField3.setBounds(new Rectangle(7, 44, 518, 30));
     deviceField4.setOffsetNid(8);
     deviceField4.setLabelString("Clock Source: ");
     deviceField4.setNumCols(30);
     deviceField4.setIdentifier("");
-    deviceField4.setBounds(new Rectangle(4, 73, 442, 30));
+    deviceField4.setBounds(new Rectangle(4, 73, 445, 30));
     deviceDispatch1.setBounds(new Rectangle(545, 45, 130, 31));
     deviceField5.setOffsetNid(7);
     deviceField5.setLabelString("Trig. Source: ");

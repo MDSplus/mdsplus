@@ -1,5 +1,3 @@
-
-
 import java.awt.*;
 import javax.swing.*;
 /**
@@ -14,7 +12,6 @@ import javax.swing.*;
 public class RFXInverterSetupSetup extends DeviceSetup {
   BorderLayout borderLayout1 = new BorderLayout();
   JPanel jPanel1 = new JPanel();
-  DeviceChoice deviceChoice1 = new DeviceChoice();
   DeviceField deviceField1 = new DeviceField();
   DeviceButtons deviceButtons1 = new DeviceButtons();
   JTabbedPane jTabbedPane1 = new JTabbedPane();
@@ -138,6 +135,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
   DeviceField deviceField1116 = new DeviceField();
   DeviceField deviceField1117 = new DeviceField();
   JPanel jPanel115 = new JPanel();
+  DeviceField deviceField30 = new DeviceField();
   public RFXInverterSetupSetup() {
     try {
       jbInit();
@@ -158,13 +156,6 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField1.setLabelString("Comment: ");
     deviceField1.setNumCols(20);
     deviceField1.setIdentifier("");
-    deviceChoice1.setChoiceIntValues(null);
-    deviceChoice1.setChoiceFloatValues(null);
-    deviceChoice1.setOffsetNid(3);
-    deviceChoice1.setLabelString("Control: ");
-    deviceChoice1.setChoiceItems(new String[] {"VOLTAGE", "CURRENT", "OPEN LOOP"});
-    deviceChoice1.setUpdateIdentifier("");
-    deviceChoice1.setIdentifier("");
     deviceChannel1.setLabelString("On");
     deviceChannel1.setOffsetNid(5);
     deviceChannel1.setUpdateIdentifier("");
@@ -477,9 +468,15 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField1117.setLabelString("Start Time:");
     deviceField1117.setNumCols(4);
     deviceField1117.setIdentifier("");
+    deviceField30.setOffsetNid(3);
+    deviceField30.setTextOnly(true);
+    deviceField30.setLabelString("Control");
+    deviceField30.setIdentifier("");
+    deviceField30.setEditable(false);
+    deviceField30.setDisplayEvaluated(true);
     this.getContentPane().add(jPanel1, BorderLayout.NORTH);
     jPanel1.add(deviceField1, null);
-    jPanel1.add(deviceChoice1, null);
+    jPanel1.add(deviceField30, null);
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
     jTabbedPane1.add(deviceChannel1,   "1");

@@ -9,10 +9,11 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
     DeviceTable bean = null;
     Object obj;
     PropertyChangeSupport listeners = new PropertyChangeSupport(this);
-    TextField labelString, identifier, numCols, numRows, columnNames, rowNames;
+    TextField labelString, identifier, numCols, numRows, columnNames, rowNames,
+        preferredColumnWidthT, preferredHeightT;
     Choice nids;
     Button doneButton;
-    Checkbox displayRowNumC;
+    Checkbox displayRowNumC, editableC;
 
     public DeviceTableCustomizer()
     {
@@ -23,7 +24,7 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
 
         setLayout(new BorderLayout());
         Panel jp = new Panel();
-        jp.setLayout(new GridLayout(4, 1));
+        jp.setLayout(new GridLayout(5, 1));
         Panel jp1 = new Panel();
         jp1.add(new Label("Label: "));
         jp1.add(labelString = new TextField(20));
@@ -57,9 +58,16 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
         jp1.add(new Label("Opt. identifier: "));
         jp1.add(identifier = new TextField(bean.getIdentifier(), 15));
         jp1.add(displayRowNumC = new Checkbox("Display row num.", bean.getDisplayRowNumber()));
-
-
         jp.add(jp1);
+
+        jp1 = new Panel();
+        jp1.add(new Label("Pref. Column Width: "));
+        jp1.add(preferredColumnWidthT = new TextField(""+bean.getPreferredColumnWidth(),4));
+        jp1.add(new Label("Pref. Height: "));
+        jp1.add(preferredHeightT = new TextField(""+bean.getPreferredHeight(),4));
+        jp1.add(editableC = new Checkbox("Editable", bean.getEditable()));
+        jp.add(jp1);
+
         jp1 = new Panel();
         jp1.add(new Label("Column Names: "));
         columnNames = new TextField(30);
@@ -110,9 +118,20 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
                 String oldIdentifier = bean.getIdentifier();
                 bean.setIdentifier(identifier.getText());
                 listeners.firePropertyChange("identifier", oldIdentifier, bean.getIdentifier());
-                boolean oldDisplayRowNumber = displayRowNumC.getState();
+                boolean oldDisplayRowNumber = bean.getDisplayRowNumber();
                 bean.setDisplayRowNumber(displayRowNumC.getState());
                 listeners.firePropertyChange("displayRowNumber", oldDisplayRowNumber, bean.getDisplayRowNumber());
+
+                boolean oldEditable = bean.getEditable();
+                bean.setEditable(editableC.getState());
+                listeners.firePropertyChange("editable", oldEditable, bean.getEditable());
+                int oldPreferredColumnWidth = bean.getPreferredColumnWidth();
+                bean.setPreferredColumnWidth(Integer.parseInt(preferredColumnWidthT.getText()));
+                listeners.firePropertyChange("preferredColumnWidth", oldPreferredColumnWidth, bean.getPreferredColumnWidth());
+                int oldPreferredHeight = bean.getPreferredHeight();
+                bean.setPreferredHeight(Integer.parseInt(preferredHeightT.getText()));
+                listeners.firePropertyChange("preferredHeight", oldPreferredHeight, bean.getPreferredHeight());
+
                 StringTokenizer st = new StringTokenizer(columnNames.getText(), " ,");
                 String colNames[] = new String[st.countTokens()];
                 int idx = 0;

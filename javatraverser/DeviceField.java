@@ -13,6 +13,12 @@ public class DeviceField extends DeviceComponent
     public int numCols = 10;
     private boolean initial_state;
     protected boolean initializing = false;
+    GridBagLayout gridbag;
+    protected int preferredWidth = -1;
+    JPanel jp;
+    protected boolean isGridBag = false;
+
+
 
     private boolean reportingChange = false;
 
@@ -27,6 +33,11 @@ public class DeviceField extends DeviceComponent
     public boolean getEditable() { return editable; }
     public boolean getDisplayEvaluated() {return displayEvaluated;}
     public void setDisplayEvaluated(boolean displayEvaluated){this.displayEvaluated = displayEvaluated;}
+    public void setPreferredWidth(int preferredWidth)
+    {
+      this.preferredWidth = preferredWidth;
+    }
+    public int getPreferredWidth(){return preferredWidth;}
     public void setLabelString(String labelString)
     {
         this.labelString = labelString;
@@ -55,12 +66,14 @@ public class DeviceField extends DeviceComponent
     public DeviceField()
     {
         initializing = true;
-        add(checkB = new JCheckBox());
+        jp = new JPanel();
+        jp.add(checkB = new JCheckBox());
         checkB.setVisible(false);
-        add(label = new JLabel());
+        jp.add(label = new JLabel());
+        add(jp);
         add(textF = new JTextField(10));
         textF.setEditable(editable);
-        setSize(30, 10);
+        //setLayout(gridbag = new GridBagLayout());
         initializing = false;
     }
 
@@ -68,7 +81,28 @@ public class DeviceField extends DeviceComponent
     {
         initializing = true;
         initial_state = is_on;
-        if(showState)
+
+       Container parent = getParent();
+       if(parent.getLayout() == null)
+        {
+          isGridBag = false;
+        }
+        else
+          isGridBag = true;
+
+        GridBagConstraints gc = null;
+        if(isGridBag)
+        {
+          setLayout(gridbag = new GridBagLayout());
+          gc = new GridBagConstraints();
+          gc.anchor = GridBagConstraints.WEST;
+          gc.gridx = gc.gridy = 0;
+          gc.gridwidth = gc.gridheight = 1;
+          gc.weightx = gc.weighty = 1.;
+          gc.fill = GridBagConstraints.NONE;
+          gridbag.setConstraints(jp, gc);
+        }
+       if(showState)
         {
             //add(checkB = new JCheckBox());
             checkB.setVisible(true);
@@ -85,6 +119,13 @@ public class DeviceField extends DeviceComponent
                 }
             });
         }
+        if(textF != null && isGridBag)
+        {
+          gc.gridx++;
+          gc.anchor = GridBagConstraints.EAST;
+          gridbag.setConstraints(textF, gc);
+        }
+
         displayData(data, is_on);
         setEnabled(is_on);
 
@@ -97,6 +138,12 @@ public class DeviceField extends DeviceComponent
         });
 
         textF.setEditable(editable);
+        if(preferredWidth > 0)
+        {
+          setPreferredSize(new Dimension(preferredWidth, getPreferredSize().height));
+          setSize(new Dimension(preferredWidth, getPreferredSize().height));
+        }
+        redisplay();
         initializing = false;
     }
 
