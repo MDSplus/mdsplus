@@ -451,22 +451,28 @@ static jobject jobjects[1024];
 void createWindow(char *name, int idx)
 {
 	JavaVM *jvm;
-	JDK1_1InitArgs vm_args;
 	jint res;
 	jclass cls;
 	jmethodID mid;
 	jstring jstr;
 	char classpath[2048], *curr_classpath;
 
+	JavaVMInitArgs vm_args;
+        JavaVMOption options[1];
+
 	if(env == 0) /* Java virtual machine does not exist yet */
 	{
-		vm_args.version = 0x00010001;
-		JNI_GetDefaultJavaVMInitArgs(&vm_args);
+		vm_args.version = JNI_VERSION_1_2;
+		vm_args.options = options;
+		vm_args.nOptions = 1;
+		vm_args.ignoreUnrecognized = 1;
+
+
 		curr_classpath = getenv("CLASSPATH");
 		if(curr_classpath)
 		{
-			sprintf(classpath, "%s%c%s", vm_args.classpath, PATH_SEPARATOR, curr_classpath);
-			vm_args.classpath = classpath;
+			sprintf(classpath, "-Djava.class.path=%s", curr_classpath);
+			options[0].optionString = classpath;
 		}
 		res = JNI_CreateJavaVM(&jvm, (void **)&env, &vm_args);
 		if(res < 0)
