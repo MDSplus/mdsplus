@@ -54,7 +54,7 @@ fi
 LD=ld
 LD_LDARC=""
 LD_LDSHARE=""
-IDL_BIN_SUF=""
+IDL_LD=""
 MDSVME=""
 LOC="%loc"
 CAMSHR=""
@@ -113,7 +113,7 @@ hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s +DA1.1 +DS1.1 +z";
        LINKSHARED="-b +s ";
        FOR_LDFLAGS="-v -L/usr/lib/pa1.1 -lcl -lf";
        LIBPATH="SHLIB_PATH";
-       IDL_BIN_SUF="hp";
+       IDL_LD="-L/usr/local/rsi/bin/bin.hp -lidl";
        LIBPTHREAD="";
        FEXECLIBDIR="-Wl,-L";
        SHARETYPE=".sl";
@@ -156,7 +156,7 @@ sparc-sun-solaris2*)
          fi;
        fi;
        FFLAGS="$FFLAGS -PIC";
-       IDL_BIN_SUF="solaris2.sparc"
+       IDL_LD="-L/usr/local/rsi/bin/bin.solaris2.sparc -lidl"
        LIBPATH="LD_LIBRARY_PATH";
        FEXECLIBDIR="-L";
        SHARETYPE=".so";
@@ -167,7 +167,7 @@ sparc-sun-solaris2*)
 alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FFLAGS="$FFLAGS -pthread";
        GROFF_MAN_FLAGS="-t -mgan -Tascii";
-       IDL_BIN_SUF="alpha"
+       IDL_LD="-expect_unresolved 'IDL_*'"
        LDSHARE="-Wl,-so_archive ";
        LDARC="-Wl,-no_so ";
        LD_LDARC="-no_so ";
@@ -184,7 +184,6 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
 *86*linux*) CFLAGS="$CFLAGS -fpic";
        CAMSHR="camshr";
        FFLAGS="$FFLAGS -fpic -Wno-globals -fno-backslash";
-       IDL_BIN_SUF="linux.x86";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
@@ -204,7 +203,6 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
 *linux*) CFLAGS="$CFLAGS -fpic";
        CAMSHR="camshr";
        FFLAGS="$FFLAGS -fpic -Wno-globals -fno-backslash";
-       IDL_BIN_SUF="linux"
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
@@ -417,7 +415,7 @@ IDL_DIR="/usr/local/rsi/idl"
 if test -r $IDL_DIR
 then
         IDL_INC="-I$IDL_DIR/external"
-        IDL_LIB="-L$IDL_DIR/bin/bin.$IDL_BIN_SUF -lidl"
+        IDL_LIB=$IDL_LD
         IDLMDSEVENT="idlmdsevent"
         AC_MSG_RESULT(have idl $IDL_INC)
 else
