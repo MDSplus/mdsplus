@@ -3,7 +3,7 @@ top_srcdir=@top_srcdir@
 RM=$(top_srcdir)/devscripts/rm_if
 exec_prefix=@exec_prefix@
 JAVADIR = @MAKEJAVADIR@classes
-JAVAC = @JAVAC@
+JAVAC = @JAVAC@  -classpath ../java/classes/jScope.jar:.
 JAR = @JAR@
 RMIC = rmic
 INSTALL=@top_srcdir@/conf/install-sh -c
@@ -51,9 +51,19 @@ DataListener.java\
 Database.java\
 DatabaseException.java\
 DependencyData.java\
+DeviceField.java\
+DeviceChoice.java\
+DeviceDispatch.java\
+DeviceDispatchField.java\
 DeviceComponent.java\
 DeviceSetup.java\
 DeviceSetupBeanInfo.java\
+DeviceButtons.java\
+DeviceOk.java\
+DeviceReset.java\
+DeviceControl.java\
+DeviceApply.java\
+DeviceCancel.java\
 DeviceWave.java\
 DimensionData.java\
 DispatchData.java\
