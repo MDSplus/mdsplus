@@ -29,7 +29,11 @@ OBJECTS = \
 	umach.o  \
 	zaxpy.o  \
 	zgeco.o  \
-	zmul.o  
+	zmul.o   \
+	mod.o
+
+.f.o: 
+	f77 $(FFLAGS) +apollo -c $<
 
 math : ../shlib ../shlib/libMdsMath.$(SHARE_TYPE) 
 

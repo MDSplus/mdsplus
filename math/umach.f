@@ -120,10 +120,10 @@
 	Logical LibGetVm
 	If (igot(2).ne.iwant) Then
 		If (igot(2).ne.0)
-     1	Call LibFreeVm(4*igot(2),igot(1)*4+%loc(igot(1)))
+     1	Call LibFreeVm(4*igot(2),igot(1)*4+%loc(igot(1)),%val(0))
 		igot(2) = 0
 		If (iwant.gt.0) Then
-			If (LibGetVm(4*iwant,igot(1))) Then
+			If (LibGetVm(4*iwant,igot(1),%val(0))) Then
 				igot(1) = (igot(1) - %loc(igot(1)))/4
 				igot(2) = iwant
 			Endif

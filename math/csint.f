@@ -118,10 +118,10 @@
 !-----------------------------------------------------------------------
 	Subroutine CSAKM(ndata,xdata,fdata,break,c)
 	Integer	ndata	!input, number of data points
-	Real	xdata(*)!input, [ndata] abscissae
-	Real	fdata(*)!input, [ndata] ordinates
-	Real	break(*)!output, [ndata] breakpoints
-	Real	c(4,*)	!output, [4,ndata] coefficients, f f' f'' f'''
+	Real	xdata(ndata)!input, [ndata] abscissae
+	Real	fdata(ndata)!input, [ndata] ordinates
+	Real	break(ndata)!output, [ndata] breakpoints
+	Real	c(4,ndata)	!output, [4,ndata] coefficients, f f' f'' f'''
 !+Akima cubic spline, local order(step**-2) approximation
 ! less wiggles than most methods
 ! NOT ADDITIVE cc(a+b).ne.cc(a)+cc(b) in general

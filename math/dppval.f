@@ -181,7 +181,7 @@
 !+Evaluate the integral of a piecewise polynomial
 	Real*8	DPPITG
 	Integer j,ja,jb,n,inca,incb
-	n = min0(na,nb)
+	n = min(na,nb)
 	If (na.eq.1) n = nb
 	inca = 0
 	incb = 0
