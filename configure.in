@@ -49,7 +49,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        FOR_LDFLAGS="";
        LIBPATH="LD_LIBRARY_PATH";
        SHARETYPE=".so";;
-sparc-sun-solaris2*)  LINKSHARED="-G -B symbolic -R \$(exec_prefix)/lib";
+sparc-sun-solaris2*)  
        if test $CC = gcc; then
 	 LD=gcc;
          LINKSHARED="-Wl,-G -symbolic -Wl,-R,\$(exec_prefix)/lib";
@@ -59,12 +59,14 @@ sparc-sun-solaris2*)  LINKSHARED="-G -B symbolic -R \$(exec_prefix)/lib";
          LDARC="-Wl,-B,static";
          CFLAGS="$CFLAGS -fpic";
        else 
+         LINKSHARED="-G -B symbolic -R \$(exec_prefix)/lib";
          LD_LDARC="-B static ";
          LD_LDSHARE="-B dynamic ";
          LDSHARE="-B dynamic";
          LDARC="-B static";
+         CFLAGS="$CFLAGS -Kpic";
        fi;
-       FFLAGS="$FFLAGS -fpic";
+       FFLAGS="$FFLAGS -pic";
        IDL_BIN_SUF="solaris2.sparc"
        LIBPATH="LD_LIBRARY_PATH";
        SHARETYPE=".so";;
