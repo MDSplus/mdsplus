@@ -60,7 +60,9 @@ void parse_crate_db( struct CRATE *in, struct Crate_ *out )
 			 );
 
 	out->device = (in->DSFname[0] != '.') ? atoi(in->DSFname)	// valid /dev/sg#
+
 										  : -1;					// in-valid
+
 	out->type	= in->HwyType;			// highway type
         out->enhanced   = in->enhanced == '1';
         out->online     = in->online == '1';

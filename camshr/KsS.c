@@ -60,6 +60,10 @@ static int KsSingleIo(
   Command[3] = MODE(dmode, Mem);
   Command[4] = NAFhi(Key.slot, A, F);
   Command[5] = NAFlo(Key.slot, A, F);
+  Command[6] = 0;
+  Command[7] = 0;
+  Command[8] = 0;
+  Command[9] = 0;
   
   direction = ((F & 0x08) == 0) ? ((F < 8) ? 1 : 2) : 0;
   
