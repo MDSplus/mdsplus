@@ -75,7 +75,7 @@ write(*, 'T2Control init');
 
 	_start_time = data(DevNodeRef(_nid, _N_PRE_TIME));
  	write(*, 'Start sampling time: ', _start_time);
-	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackPreTriggerSamples', long( - _start_time * _period));
+	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackPreTriggerSamples', long( - _start_time * _frequency));
 
 
 	_end_time = data(DevNodeRef(_nid, _N_POST_TIME));
@@ -86,7 +86,7 @@ write(*, 'T2Control init');
 	}
 
 	write(*, 'End sampling time: ', _end_time);
-	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackPostTriggerSamples', long(_end_time * _period));
+	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackPostTriggerSamples', long(_end_time * _frequency));
 
 
 	_control_idx = data(DevNodeRef(_nid, _N_TRIG_CONTROL));
