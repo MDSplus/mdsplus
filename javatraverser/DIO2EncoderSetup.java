@@ -37,7 +37,6 @@ public class DIO2EncoderSetup extends DeviceSetup
   DeviceField deviceField6 = new DeviceField();
   DeviceDispatch deviceDispatch1 = new DeviceDispatch();
   DeviceField deviceField7 = new DeviceField();
-  DeviceChoice deviceChoice5 = new DeviceChoice();
   JPanel jPanel7 = new JPanel();
   DeviceChannel deviceChannel2 = new DeviceChannel();
   DeviceField deviceField8 = new DeviceField();
@@ -215,13 +214,6 @@ public class DIO2EncoderSetup extends DeviceSetup
     deviceField7.setNumCols(4);
     deviceField7.setLabelString("Event code");
     deviceField7.setOffsetNid(88);
-    deviceChoice5.setIdentifier("");
-    deviceChoice5.setUpdateIdentifier("");
-    deviceChoice5.setChoiceItems(new String[] {"ON", "OFF"});
-    deviceChoice5.setLabelString("Termination: ");
-    deviceChoice5.setOffsetNid(90);
-    deviceChoice5.setChoiceFloatValues(null);
-    deviceChoice5.setChoiceIntValues(null);
     deviceChannel2.setLabelString("Ch Software: ");
     deviceChannel2.setOffsetNid(86);
     deviceChannel2.setBorderVisible(true);
@@ -244,7 +236,7 @@ public class DIO2EncoderSetup extends DeviceSetup
     deviceChoice6.setUpdateIdentifier("");
     deviceChoice6.setChoiceItems(new String[] {"ON", "OFF"});
     deviceChoice6.setLabelString("Termination: ");
-    deviceChoice6.setOffsetNid(1085);
+    deviceChoice6.setOffsetNid(85);
     deviceChoice6.setChoiceFloatValues(null);
     deviceChoice6.setChoiceIntValues(null);
     deviceChannel3.setLabelString("Ch 16: ");
@@ -253,7 +245,7 @@ public class DIO2EncoderSetup extends DeviceSetup
     deviceChannel3.setInSameLine(true);
     deviceChannel3.setUpdateIdentifier("");
     deviceChannel3.setShowVal("");
-    deviceField11.setOffsetNid(782);
+    deviceField11.setOffsetNid(82);
     deviceField11.setTextOnly(true);
     deviceField11.setLabelString("Event name: ");
     deviceField11.setIdentifier("");
@@ -726,7 +718,6 @@ public class DIO2EncoderSetup extends DeviceSetup
     jPanel7.add(deviceField8, null);
     jPanel7.add(deviceField7, null);
     jPanel7.add(deviceField9, null);
-    jPanel7.add(deviceChoice5, null);
   }
 
 }
