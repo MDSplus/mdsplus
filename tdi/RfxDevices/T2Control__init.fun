@@ -70,7 +70,7 @@ write(*, 'T2Control init');
 
 
 	_control_idx = data(DevNodeRef(_nid, _N_INIT_CONTROL));
-	if(_control_idx < 0 || _control_idx > 6)
+	if(_control_idx < 0 || _control_idx > 7)
 	{
 		write(*, 'Invalid Control Idx ', _control_idx);
 		return(0);
@@ -96,7 +96,7 @@ write(*, 'T2Control init');
 
 
 	_control_idx = data(DevNodeRef(_nid, _N_TRIG_CONTROL));
-	if(_control_idx < 0 || _control_idx > 6)
+	if(_control_idx < 0 || _control_idx > 7)
 	{
 		write(*, 'Invalid Control Idx ', _control_idx);
 		return(0);
