@@ -10,6 +10,7 @@ LibFindFile
 LibFindFileEnd
 LibFindFileRecurseCaseBlind
 LibFindImageSymbol
+LibFindImageSymbolErrString
 LibFreeVm
 LibGetVm
 LibInsertTree

@@ -479,6 +479,7 @@ void pthread_cancel(unsigned long *thread)
 #include <pthread.h>
 static pthread_mutex_t GlobalMutex;
 static int Initialized = 0;
+static int LockCount = 0;
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
 #define pthread_mutexattr_default NULL
@@ -486,7 +487,6 @@ static int Initialized = 0;
 #else
 #undef select
 #endif
-
 void pthread_lock_global_np()
 {
   if (!Initialized)
@@ -510,7 +510,7 @@ void pthread_lock_global_np()
 #endif
   pthread_mutex_lock(&GlobalMutex);
 #ifdef ___DEBUG_IT
-  printf("Global locked\n");
+  printf("Global locked - %d\n",++LockCount);
 #endif
 }
 
@@ -533,11 +533,11 @@ void pthread_unlock_global_np()
     Initialized = 1;
   }
 #ifdef ___DEBUG_IT
-  printf("About to unlock global\n");
+  printf("About to unlock global - %d\n",LockCount--);
 #endif
   pthread_mutex_unlock(&GlobalMutex);
 #ifdef ___DEBUG_IT
-  printf("Unlocked global\n");
+  printf("Unlocked global - %d\n",LockCount);
 #endif
 }
 #endif
@@ -883,23 +883,32 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
 }
 
 #else
+char *FIS_Error = 0;
+
+char *LibFindImageSymbolErrString()
+{
+  return FIS_Error;
+}
+
 int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
 {
   char *c_filename = MdsDescrToCstring(filename);
   char *full_filename = malloc(strlen(c_filename) + 10);
   void *handle;
-  char *dlopen_error=0;
+  char *tmp_error = 0;
   *symbol_value = NULL;
   strcpy(full_filename,"lib");
   strcat(full_filename,c_filename);
   strcat(full_filename,SHARELIB_TYPE);
+  if (FIS_Error)
+  {
+    free(FIS_Error);
+    FIS_Error = 0;
+  }
   handle = dlopen(full_filename,RTLD_LAZY);
   if (handle == NULL) {
-    if (strcmp(c_filename,"MdsFunctions"))
-    {
-      dlopen_error = dlerror();
-      dlopen_error = strcpy((char *)malloc(strlen(dlopen_error)+1),dlopen_error);
-    }
+    tmp_error = dlerror();
+    tmp_error = strcpy((char *)malloc(strlen(tmp_error)+1),tmp_error);
     handle = dlopen(&full_filename[3],RTLD_LAZY);
   }
   if (handle != NULL)
@@ -907,14 +916,22 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     char *c_symbol = MdsDescrToCstring(symbol);
     *symbol_value = dlsym(handle,c_symbol);
     if (!symbol_value)
-      printf("error finding symbol %s, %s\n",c_symbol,dlerror());
+    {
+      char *tmp = dlerror();
+      sprintf((FIS_Error = (char *)malloc(strlen(tmp)+strlen("error finding symbol , ")+strlen(c_symbol)+1)),"error finding symbol %s, %s",
+			  c_symbol,tmp);
+    }
     free(c_symbol);
   }
-  else if (strcmp(c_filename,"MdsFunctions") && strcmp(c_filename,"TreeShrHooks"))
-    printf("Error opening library %s, %s\nError opening library %s, %s\n",full_filename,dlopen_error,
-       &full_filename[3],dlerror());
-  if (dlopen_error)
-    free(dlopen_error);
+  else 
+  {
+    char *tmp = dlerror();
+    sprintf((FIS_Error = (char *)malloc(strlen("Error opening library , \nError opening library , ")+strlen(full_filename)*2+strlen(tmp)+
+                                       strlen(tmp_error))),"Error opening library %s, %s\nError opening library %s, %s",full_filename,tmp_error,
+			&full_filename[3],tmp);
+  }
+  if (tmp_error)
+    free(tmp_error);
   free(c_filename);
   free(full_filename);
   if (*symbol_value == NULL)
