@@ -1448,7 +1448,7 @@ echo "configure:1448: checking ...d3d library..." >&5
 if test "$d3d_lib"
 then
 		 D3DSHR="d3dshr";
-		 D3DLIB="$d3d_lib";
+		 D3DLIB="-L$d3d_lib";
                  echo "$ac_t""$D3DLIB" 1>&6
 else
 		 D3DSHR="";
