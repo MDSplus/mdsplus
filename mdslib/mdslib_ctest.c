@@ -7,7 +7,7 @@ void main(int argc, char *argv[])
 {
   long status;
   int shot;
-  char *string[50];
+  char string[50];
   float result[10], result1;
   int dsc,dsc1,dsc2,dscr,dscrsize,dscrstring,i;
   short int sizeresult;
@@ -20,6 +20,7 @@ void main(int argc, char *argv[])
   int dtype_float = DTYPE_F;
   int dtype_short = DTYPE_SHORT;
   int dtype_cstring = DTYPE_CSTRING;
+  int dtype_long = DTYPE_LONG;
   int sx = 2;
   int sy = 13;
   int sresult = 10;
@@ -117,7 +118,7 @@ void main(int argc, char *argv[])
   printf("=================== TEST 4 ======================\n");
 
   
-  dsc = descr(&dtype_float, &testmulti, &sx, &sy, &null); 
+  dsc = descr(&dtype_float, testmulti, &sx, &sy, &null); 
 
   status = MdsPut("\\TOP:ONE_NUMBER","$",&dsc,&null);
   printf("Putting: %f\n",testmulti[0][2]);
@@ -126,7 +127,7 @@ void main(int argc, char *argv[])
 
   if (status & 1) 
   {
-    float *data = malloc(sx*sy);
+    float *data = malloc(sx*sy * sizeof(float));
     dsc = descr(&dtype_float, data, &sx, &sy, &null);
     status = MdsValue("\\TOP:ONE_NUMBER",&dsc,&null,&returnlength);
     printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
@@ -141,6 +142,13 @@ void main(int argc, char *argv[])
   printf("=================== TEST 5 ======================\n");
 
   printf("Status setting default: %d\n",MdsSetDefault("\\TOP.RESULTS.AEQDSK"));
+  status = MdsValue("$EXPT",&dscrstring,&null,&returnlength);
+  printf("experiment: %s\n",string);
+
+  dsc = descr(&dtype_long,&shot, &null);
+  status = MdsValue("$SHOT",&dsc,&null);
+  printf("SHOT: %d\n",shot);
+
 
   status = MdsValue("$DEFAULT",&dscrstring,&null,&returnlength);
   printf("MdsValue status: %d   Return length: %d\n",status,returnlength);

@@ -427,8 +427,11 @@ int MdsValue(char *expression, ...)
     {
       status = SendArg(mdsSocket, (unsigned char)i, arg->dtype, (char)nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
       descnum = va_arg(incrmtr, int *);
-      dsc = descrs[*descnum-1];
-      arg = MakeIpDescrip(arg, dsc);
+      if (*descnum > 0)
+      {
+        dsc = descrs[*descnum-1];
+        arg = MakeIpDescrip(arg, dsc);
+      }
 
     }
 
@@ -487,6 +490,8 @@ int MdsValue(char *expression, ...)
 	 
       descnum = va_arg(incrmtr, int *);
       dsc = descrs[*descnum-1];
+
+      /********** very suspicious code in next if statement!!! doesn't do anything as written *******/
       if (dsc->class == CLASS_A) 
 	{
 	  struct descriptor_a *adsc = (struct descriptor_a *)dsc;
@@ -499,7 +504,7 @@ int MdsValue(char *expression, ...)
 	  status = TdiCvt(&xd2,dsc,&xd3 MDS_END_ARG);
 	}
       
-      if (status) 
+      if (status & 1) 
       {
 	int numbytes;
 	switch ((*xd3.pointer).class)
@@ -609,8 +614,11 @@ int  MdsPut(char *pathname, char *expression, ...)
     {
       status = SendArg(mdsSocket, (char)i, arg->dtype, nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
       descnum = va_arg(incrmtr, int *);
-      dsc = descrs[*descnum-1];
-      arg = MakeIpDescrip(arg, dsc);
+      if (*descnum > 0)
+      {
+        dsc = descrs[*descnum-1];
+        arg = MakeIpDescrip(arg, dsc);
+      }
     }
       
     if (status & 1)
@@ -695,7 +703,8 @@ int  MdsOpen(char *tree, int *shot)
     static char *expression = "MDSLIB->MDS$OPEN($,$)";
 #endif
 
-    d1 = descr(&dtype_cstring,tree,&null);
+    length = strlen(tree);
+    d1 = descr(&dtype_cstring,tree,&null,&length);
     d2 = descr(&dtype_long,shot, &null);
     d3 = descr(&dtype_long,&answer,&null);
 
@@ -745,7 +754,8 @@ int  MdsClose(char *tree, int *shot)
     static char *expression = "MDSLIB->MDS$CLOSE($,$)";
 #endif
 
-    d1 = descr(&dtype_cstring,tree,&null);
+    length = strlen(tree);
+    d1 = descr(&dtype_cstring,tree,&null,&length);
     d2 = descr(&dtype_long,shot, &null);
     d3 = descr(&dtype_long,&answer,&null);
 
@@ -786,11 +796,11 @@ int  MdsSetDefault(char *node)
 #endif
 
     long answer;
-    int length;
+    int length = strlen(node);
     int null = 0;
     int dtype_long = DTYPE_LONG;
     int dtype_cstring = DTYPE_CSTRING;
-    int d1 = descr(&dtype_cstring, node, &null);
+    int d1 = descr(&dtype_cstring, node, &null,&length);
     int d2 = descr(&dtype_long, &answer, &null);
     int status = MdsValue(expression, &d1, &d2, &null, &length);
     if ((status & 1))
