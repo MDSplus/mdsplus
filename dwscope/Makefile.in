@@ -13,7 +13,7 @@ X_EXTRA_LIBS=@X_EXTRA_LIBS@
 X_PRE_LIBS=@X_PRE_LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 MOTIF_LIBS = @XM_LIBS@
-MLIBS = $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS)
+MLIBS = $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS)
 SOURCES = dwscope.c dwscopesubs.c dwpad.c
 OBJECTS = $(SOURCES:.c=.o)
 
@@ -53,7 +53,7 @@ install:
               -L@MAKELIBDIR@ @LDARC@ -lXmdsShr @LDSHARE@ -lMdsIpShr $(MLIBS)
 
 @MAKEUIDDIR@dwscope.uid : dwscope.uil
-	uil -o $@ dwscope.uil
+	$(UIL) -o $@ dwscope.uil
 
 @MAKEBINDIR@dwpad : dwpad.o dwscopesubs.o XmdsWidgetCallbacks.o
 	$(CC) -o $@ $(CFLAGS) dwpad.o dwscopesubs.o XmdsWidgetCallbacks.o $(MLIBS)
@@ -62,7 +62,7 @@ XmdsWidgetCallbacks.o: ../xmdsshr/XmdsWidgetCallbacks.c
 	$(CC) -c $(CFLAGS) -D_NO_XDS -o $@ ../xmdsshr/XmdsWidgetCallbacks.c
 
 @MAKEUIDDIR@dwpad.uid : dwpad.uil
-	uil -o $@ dwpad.uil
+	$(UIL) -o $@ dwpad.uil
  
 evaluate_local.o : evaluate.c
 	$(CC) -c $(CFLAGS) -D_LOCAL_ACCESS -o $@ evaluate.c

@@ -13,7 +13,7 @@ X_EXTRA_LIBS=@X_EXTRA_LIBS@
 X_PRE_LIBS=@X_PRE_LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 MOTIF_LIBS = @XM_LIBS@
-MLIBS = $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS)
+MLIBS = $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS)
 
 SOURCES = actions.c
 OBJECTS = $(SOURCES:.c=.o)
