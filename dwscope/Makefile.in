@@ -51,13 +51,13 @@ install:
 
 @MAKEBINDIR@dwscope_remote : dwscope.o dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o
 	$(CC) -o $@ $(CFLAGS) dwscope.o  dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o \
-              -L@MAKESHLIBDIR@ @LDARC@ -lXmdsShr @LDSHARE@ -lMdsIpShr $(MLIBS) @LIBM@
+              -L@MAKESHLIBDIR@ @LDARC@ -lXmdsShr @LDSHARE@ -lMdsIpShr $(MLIBS) @LIBM@ -L@MAKESHLIBDIR@ @MEMCHKLIB@
 
 @MAKEUIDDIR@dwscope.uid : dwscope.uil
 	$(UIL) -o $@ dwscope.uil
 
 @MAKEBINDIR@dwpad : dwpad.o dwscopesubs.o XmdsWidgetCallbacks.o
-	$(CC) -o $@ $(CFLAGS) dwpad.o dwscopesubs.o XmdsWidgetCallbacks.o $(MLIBS) @MEMCHKLIB@
+	$(CC) -o $@ $(CFLAGS) dwpad.o dwscopesubs.o XmdsWidgetCallbacks.o $(MLIBS) -L@MAKESHLIBDIR@ @MEMCHKLIB@
 
 XmdsWidgetCallbacks.o: ../xmdsshr/XmdsWidgetCallbacks.c
 	$(CC) -c $(CFLAGS) -D_NO_XDS -o $@ ../xmdsshr/XmdsWidgetCallbacks.c
