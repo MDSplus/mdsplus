@@ -676,9 +676,10 @@ public class EM_GAINSetup extends DeviceSetup {
     deviceField111121.setNumCols(12);
     deviceField111121.setTextOnly(true);
     deviceField111121.setOffsetNid(72);
-    deviceField11114.setOffsetNid(73);
+    deviceField11114.setOffsetNid(82);
     deviceField11114.setNumCols(7);
-    deviceField11115.setOffsetNid(72);
+    deviceField11114.setIdentifier("");
+    deviceField11115.setOffsetNid(81);
     deviceField11115.setTextOnly(true);
     deviceField11115.setNumCols(12);
     deviceField11115.setIdentifier("");
