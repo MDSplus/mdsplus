@@ -31,7 +31,9 @@ RFXTimesSetup.java\
 RFXPConfigSetup.java\
 RFXPMSetupSetup.java\
 RFXPCSetupSetup.java \
-TR10Setup.java
+TR10Setup.java \
+DIO2Setup.java \
+DIO2EncoderSetup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
