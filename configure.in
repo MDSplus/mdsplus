@@ -15,6 +15,9 @@ alpha-dec-osf*) : ${CC=cc};
 sparc-sun-solaris2*) : ${CC=cc};;
 esac
 
+AC_CHECK_SIZEOF(int *)
+SIZEOF_INT_P=$ac_cv_sizeof_int_p
+
 AC_ARG_ENABLE(nodebug,
 	[  --enable-nodebug        compile without debug info],
 	if test "$enableval" = yes; then
@@ -134,6 +137,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
 sparc-sun-solaris2*)  
        GROFF=nroff;
        GROFF_MAN_FLAGS="-t -man ";
+       if test $SIZEOF_INT_P = 4; then CFLAGS="$CFLAGS D=_ILP32 "; else CFLAGS="$CFLAGS D=_LP64 "; fi;
        if test $CC = gcc; then
 	 LD=gcc;
          LINKSHARED="-Wl,-G -symbolic ";
@@ -141,7 +145,7 @@ sparc-sun-solaris2*)
          LD_LDARC="-Wl,-B,static";
          LDSHARE="-Wl,-B,dynamic";
          LDARC="-Wl,-B,static";
-         CFLAGS="$CFLAGS -fpic";
+         CFLAGS="$CFLAGS -fpic ";
        else 
          LINKSHARED="-G ";
          LD_LDARC="-B static ";
@@ -451,8 +455,6 @@ AC_C_CHAR_UNSIGNED
 AC_CHECK_SIZEOF(long)
 AC_CHECK_SIZEOF(long long)
 AC_CHECK_SIZEOF(_int64)
-AC_CHECK_SIZEOF(int *)
-SIZEOF_INT_P=$ac_cv_sizeof_int_p
 AC_PATH_XTRA
 AC_PATH_PROG(UIL,uil,uil,$UILPATH:/usr/bin/X11:$PATH:/usr/dt/bin)
 AC_PATH_PROG(JAVAC,javac,javac)
