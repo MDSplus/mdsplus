@@ -127,7 +127,7 @@ static int   initLookupTable(	/* Return: num entries in cmd-lookup table*/
         ;
 
     entLookup = *addrTable;
-    maxEntities = entLookup ? ((int)entLookup[0].cmdA_string-1) : 0;
+    maxEntities = entLookup ? (char *)entLookup[0].cmdA_string - (char *)0 - 1 : 0;
     if (icnt > maxEntities)
        {			/*..need larger entLookup[] table	*/
         maxEntities = icnt+2;	/*....allow a little extra ..		*/

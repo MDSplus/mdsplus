@@ -104,7 +104,7 @@ int cmd_lookup(
     if (context && *context)
         noerrmsg = 1;
     first = 1 + (context ? *context : 0);
-    ilast = (int)cmdlist->cmdA_string;	/* # of entries in list		*/
+    ilast = (int)((char *)cmdlist->cmdA_string - (char *)0);	/* # of entries in list		*/
     isave = 0;
 
 		/*======================================================

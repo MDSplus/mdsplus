@@ -508,7 +508,7 @@ int  IdlMdsClose(int lArgc, void * * lpvArgv)
 */
   int status;
   BlockSig(SIGALRM);
-  status = MdsClose((SOCKET)lpvArgv[0]);
+  status = MdsClose((SOCKET)((char *)lpvArgv[0] - (char *)0));
   UnBlockSig(SIGALRM);
   return status;
 }
@@ -530,7 +530,7 @@ int  IdlDisconnectFromMds(int lArgc, void * * lpvArgv)
 */
   int status;
   BlockSig(SIGALRM);
-  status = DisconnectFromMds((SOCKET)lpvArgv[0]);
+  status = DisconnectFromMds((SOCKET)((char *)lpvArgv[0] - (char *)0));
   UnBlockSig(SIGALRM);
   return status;
 }
@@ -541,7 +541,7 @@ int  IdlMdsOpen(int lArgc, void * * lpvArgv)
 */
   int status;
   BlockSig(SIGALRM);
-  status = MdsOpen((int)lpvArgv[0],(char *)lpvArgv[1],(int)lpvArgv[2]);
+  status = MdsOpen((SOCKET)((char *)lpvArgv[0] - (char *)0),(char *)lpvArgv[1],(int)((char *)lpvArgv[2] - (char *)0));
   UnBlockSig(SIGALRM);
   return status;
 }
@@ -552,7 +552,7 @@ int  IdlMdsSetDefault(int lArgc, void * * lpvArgv)
 */
   int status;
   BlockSig(SIGALRM);
-  status = MdsSetDefault((int)lpvArgv[0],(char *)lpvArgv[1]);
+  status = MdsSetDefault((SOCKET)((char *)lpvArgv[0] - (char *)0),(char *)lpvArgv[1]);
   UnBlockSig(SIGALRM);
   return status;
 }
@@ -563,7 +563,7 @@ int  IdlMdsLogin(int lArgc, void * * lpvArgv)
 */
   int status;
   BlockSig(SIGALRM);
-  status = MdsLogin((int)lpvArgv[0],(char *)lpvArgv[1],(char *)lpvArgv[2]);
+  status = MdsLogin((SOCKET)((char *)lpvArgv[0] - (char *)0),(char *)lpvArgv[1],(char *)lpvArgv[2]);
   UnBlockSig(SIGALRM);
   return status;
 }
@@ -575,7 +575,7 @@ int  IdlGetAnsInfo(int lArgc, void * * lpvArgv)
 */
   int status;
   BlockSig(SIGALRM);
-  status = GetAnswerInfo((SOCKET)lpvArgv[0], (char *)lpvArgv[1], (short *)lpvArgv[2], (char *)lpvArgv[3],
+  status = GetAnswerInfo((SOCKET)((char *)lpvArgv[0] - (char *)0), (char *)lpvArgv[1], (short *)lpvArgv[2], (char *)lpvArgv[3],
                        (int *)lpvArgv[4], (int *)lpvArgv[5], (void **)lpvArgv[6]);
   UnBlockSig(SIGALRM);
   return status;
@@ -586,9 +586,9 @@ int  Idlmemcpy(int lArgc, void * * lpvArgv)
 /*  status = call_external('mdsipshr','Idlmemcpy', answer, answer_ptr, nbytes, value=[0b,1b,1b])
 */
 #ifdef __alpha
-  memcpy((void *)lpvArgv[0],*(void **)lpvArgv[1], (int)lpvArgv[2]);
+  memcpy((void *)lpvArgv[0],*(void **)lpvArgv[1], (int)((char *)lpvArgv[2] - (char *)0));
 #else
-  memcpy((void *)lpvArgv[0],(void *)lpvArgv[1], (int)lpvArgv[2]);
+  memcpy((void *)lpvArgv[0],(void *)lpvArgv[1], (int)((char *)lpvArgv[2] - (char *)0));
 #endif
   return 1;
 }
@@ -598,14 +598,14 @@ int  IdlSendArg(int lArgc, void * * lpvArgv)
 /*  status = call_external('mdsipshr','IdlSendArg', sock_l, idx_l, dtype_b, nargs_w, length_w, ndims_b, dims_l[7], 
 			    bytes, value=[1b,1b,1b,1b,1b,1b,1b,0b,0b])
 */
-  unsigned char idx    = (unsigned char)(int)lpvArgv[1];
-  unsigned char dtype  = (unsigned char)(int)lpvArgv[2];
-  unsigned char nargs  = (unsigned char)(int)lpvArgv[3];
-  short         length = (short)(int)lpvArgv[4];
-  char          ndims  = (char)(int)lpvArgv[5];
+  unsigned char idx    = (unsigned char)((char *)lpvArgv[1] - (char *)0);
+  unsigned char dtype  = (unsigned char)((char *)lpvArgv[2] - (char *)0);
+  unsigned char nargs  = (unsigned char)((char *)lpvArgv[3] - (char *)0);
+  short         length = (short)((char *)lpvArgv[4] - (char *)0);
+  char          ndims  = (char)((char *)lpvArgv[5] - (char *)0);
   int status;
   BlockSig(SIGALRM);
-  status = SendArg((SOCKET)lpvArgv[0], idx, dtype, nargs, length, ndims, (int *)lpvArgv[6], (char *)lpvArgv[7]);
+  status = SendArg((SOCKET)((char *)lpvArgv[0] - (char *)0), idx, dtype, nargs, length, ndims, (int *)lpvArgv[6], (char *)lpvArgv[7]);
   UnBlockSig(SIGALRM);
   return status;
 }
@@ -614,7 +614,7 @@ int IdlSetCompressionLevel(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlSetCompressionLevel', sock_l, level_l, value=[1b,1b])
 */
-  return MdsSetCompression((SOCKET)lpvArgv[0],(int)lpvArgv[1]);
+  return MdsSetCompression((SOCKET)((char *)lpvArgv[0] - (char *)0),(int)((char *)lpvArgv[1] - (char *)0));
 }
 
 #endif //HAVE_VXWORKS_H

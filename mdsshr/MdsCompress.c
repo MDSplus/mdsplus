@@ -230,7 +230,7 @@ static  int       compress(
       pca0 = (array_coef *) pwork;
       pca0->class = CLASS_CA;
       if (pca0->aflags.coeff)
-	pca0->a0 -= (int) porig->pointer;
+	pca0->a0 = (char *)(pca0->a0 - porig->pointer);
       _MOVC3((short) asize, (char *) pca0, (char *) pca1);
       pca0->pointer = (char *) prec;
       pca1->pointer = 0;

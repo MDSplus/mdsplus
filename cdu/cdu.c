@@ -164,7 +164,7 @@ static int   cdu_lookup(	/* Returns: cmd id#			*/
 		 *------------------------------------------------------*/
 
     l2u(userString,*p);
-    k = (int)cmdlist[0].cmdA_string;	/* full dim of array		*/
+    k = (int)((char *)cmdlist[0].cmdA_string - (char *)0);	/* full dim of array		*/
 
     for (i=1 ; i<k ; i++)
        {

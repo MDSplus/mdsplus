@@ -231,7 +231,7 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
               }
             }
           }
-	  po->pointer = (char *)po + (align(((unsigned int)((char *)po + dsc_size)),align_size) - (unsigned int)po);
+	  po->pointer = (char *)po + align((char *)po -(char *)0 + dsc_size,align_size) - ((char *)po - (char *)0);
           memcpy(po->pointer,&in_ptr[bytes_in],pi->arsize);
 	  if (pi->aflags.coeff)
 	    { int offset;
@@ -395,7 +395,7 @@ static int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
             }
           }
           po->pointer = offset ? 
-              (char *)po + (align(((unsigned int)((char *)po + bytes_out)),sizeof(void *)) - (unsigned int)po) : 0;
+              (char *)po + align( ((char *)po - (char *)0) + bytes_out, sizeof(void *)) - ((char *)po - (char *)0) : 0;
 	}
 
       /***************************
@@ -797,12 +797,12 @@ static int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length)
      case CLASS_S:
      case CLASS_D:
       *length += sizeof(struct descriptor) + dsc_ptr->length;
-      dsc_ptr->pointer = dsc_ptr->pointer - (int) dsc_ptr;
+      dsc_ptr->pointer = dsc_ptr->pointer - ((char *)dsc_ptr - (char *)0);
       break;
      case CLASS_XD:
      case CLASS_XS:
       *length += sizeof(struct descriptor_xd) + ((struct descriptor_xd *) dsc_ptr)->l_length;
-      dsc_ptr->pointer = dsc_ptr->pointer - (int) dsc_ptr;
+      dsc_ptr->pointer = dsc_ptr->pointer - ((char *)dsc_ptr - (char *)0);
       break;
      case CLASS_R:
       {
@@ -811,12 +811,12 @@ static int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length)
 	*length += sizeof(*r_ptr) + (r_ptr->ndesc - 1) * sizeof(struct descriptor *)
 		   + r_ptr->length;
 	if (r_ptr->length != 0)
-	  r_ptr->pointer = r_ptr->pointer - (int) r_ptr;
+	  r_ptr->pointer = r_ptr->pointer - ((char *)r_ptr - (char *)0);
 	for (i = 0; (status & 1) && (i < r_ptr->ndesc); i++)
 	  if (r_ptr->dscptrs[i] != 0)
 	  {
 	    status = PointerToOffset(r_ptr->dscptrs[i], length);
-	    r_ptr->dscptrs[i] = (struct descriptor *) ((char *) r_ptr->dscptrs[i] - (int) r_ptr);
+	    r_ptr->dscptrs[i] = (struct descriptor *) ((char *) r_ptr->dscptrs[i] - ((char *)r_ptr - (char *)0));
 	  }
       }
       break;
@@ -827,11 +827,11 @@ static int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length)
 		+ (a_ptr->aflags.coeff ? sizeof(int) * (a_ptr->dimct + 1) : 0)
 		+ (a_ptr->aflags.bounds ? sizeof(int) * (a_ptr->dimct * 2) : 0)
 		+ a_ptr->arsize;
-	a_ptr->pointer = a_ptr->pointer - (int) a_ptr;
+	a_ptr->pointer = a_ptr->pointer - ((char *)a_ptr - (char *)0);
 	if (a_ptr->aflags.coeff)
 	{
 	  int     *a0_ptr = (int *)((char *) a_ptr + sizeof(struct descriptor_a));
-	  *a0_ptr = *a0_ptr - (int) a_ptr;
+	  *a0_ptr = *a0_ptr - ((char *)a_ptr - (char *)0);
 	}
       }
       break;
@@ -850,18 +850,18 @@ static int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length)
 	  if (dsc_ptr && *dsc_ptr)
 	  {
 	    status = PointerToOffset(*dsc_ptr, length);
-	    *dsc_ptr = (struct descriptor *) ((char *) *dsc_ptr - (int) a_ptr);
+	    *dsc_ptr = (struct descriptor *) ((char *) *dsc_ptr - ((char *)a_ptr - (char *)0));
 	  }
 	  else
 	    status = 1;
 	}
 	if (status & 1)
 	{
-	  a_ptr->pointer = a_ptr->pointer - (int) a_ptr;
+	  a_ptr->pointer = a_ptr->pointer - ((char *)a_ptr - (char *)0);
 	  if (a_ptr->aflags.coeff)
 	  {
 	    char     *a0_ptr = (char *) a_ptr + sizeof(struct descriptor_a);
-	    *a0_ptr = *a0_ptr - (int) a_ptr;
+	    *a0_ptr = *a0_ptr - ((char *)a_ptr - (char *)0);
 	  }
 	}
       }
@@ -876,7 +876,7 @@ static int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length)
 		+ (a_ptr->aflags.bounds ? sizeof(int) * (a_ptr->dimct * 2) : 0)
 		+ a_ptr->arsize;
 	status = PointerToOffset((struct descriptor *) dsc_ptr->pointer, &dummy_length);
-	a_ptr->pointer = a_ptr->pointer - (int) a_ptr;
+	a_ptr->pointer = a_ptr->pointer - ((char *)a_ptr - (char *)0);
       }
       break;
      default:

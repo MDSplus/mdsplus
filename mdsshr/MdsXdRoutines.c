@@ -152,8 +152,8 @@ static int copy_dx(
 	{
 	  *po = in;
 	  po->class = CLASS_S;
-	  po->pointer = in.length ? ((char *)po + (align(((unsigned int)((char *)po + sizeof(struct descriptor))),align_size)
-                   - (unsigned int)po)) : 0;
+	  po->pointer = in.length ? (char *)po + align((char *)po - (char *)0 + sizeof(struct descriptor),align_size)
+                   - ((char *)po - (char *)0) : 0;
 	  if (in.length)
             _MOVC3(in.length, (char *) in.pointer, (char *) po->pointer);
 	}
@@ -263,7 +263,7 @@ static int copy_dx(
 	if (po)
 	{
 	  _MOVC3(dscsize, (char *) pi, (char *) po);
-	  po->pointer = (char *)po + (align(((unsigned int)((char *)po + dscsize)),align_size) - (unsigned int)po);
+	  po->pointer = (char *)po + align((char *)po -(char *)0 + dscsize,align_size) - ((char *)po - (char *)0);
 	  _MOVC3(pi->arsize, pi->pointer, po->pointer);
 	  if (pi->aflags.coeff)
 	    po->a0 = po->pointer + (pi->a0 - pi->pointer);
@@ -319,7 +319,7 @@ static int copy_dx(
 	{
 	  _MOVC3(bytes, (char *) pi, (char *) po);
 	  if (pi->pointer)
-  	    po->pointer = (char *)po + (align(((unsigned int)((char *)po + bytes)),sizeof(void *)) - (unsigned int)po);
+  	    po->pointer = (char *)po + align((char *)po - (char *)0 + bytes,sizeof(void *)) - ((char *)po - (char *)0);
           else
             po->pointer = NULL;
 	}

@@ -82,8 +82,8 @@ static int UnBlockSig(int sig_number)
 int IDLMdsEventCan(int argc, void * *argv)
 {
         EventStruct *e,*p;
-	SOCKET sock = (SOCKET)argv[0];
-	 int eventid = (unsigned int)argv[1];
+	SOCKET sock = (SOCKET)((char *)argv[0] - (char *)0);
+	 int eventid = (unsigned int)((char *)argv[1] - (char *)0);
         int status;
         BlockSig(SIGALRM);
 	status = (sock >= 0) ? MdsEventCan(sock, eventid) : MDSEventCan(eventid);
@@ -102,7 +102,7 @@ int IDLMdsEventCan(int argc, void * *argv)
 
 int IDLMdsGetevi(int argc, void **argv)
 {
-  int eventid = (unsigned int)argv[0];
+  int eventid = (unsigned int)((char *)argv[0] - (char *)0);
   EventStruct *e;
   for (e=EventList;e && e->loc_event_id != eventid;e=e->next);
   if (e) memcpy(argv[1],e,52);
@@ -111,7 +111,7 @@ int IDLMdsGetevi(int argc, void **argv)
 
 int IDLMdsEvent(int argc, void * *argv)
 {
-  SOCKET sock = (SOCKET)argv[0];
+  SOCKET sock = (SOCKET)((char *)argv[0] - (char *)0);
   int *base_id = (int *)argv[1];
   int *stub_id = (int *)argv[2];
   char *name = (char *)argv[3];
@@ -161,7 +161,7 @@ static void EventAst(EventStruct *e,int len, char *data)
     HWND wid1, wid2;
     IDL_WidgetGetStubIds(stub_rec, (unsigned long *)&wid1, (unsigned long *)&wid2);
 #endif
-    IDL_WidgetIssueStubEvent(stub_rec, (IDL_LONG)e);
+    IDL_WidgetIssueStubEvent(stub_rec, e);
 #ifdef WIN32
     PostMessage(wid1, WM_MOUSEMOVE, (WPARAM)NULL, (LPARAM)NULL);
 #else

@@ -204,8 +204,8 @@ int Tdi3MaxLoc(struct descriptor *in, struct descriptor *mask,
   SetupArgs
   switch (in->dtype)
   {
-    case DTYPE_T:  OperateL(int,(int)pi1,Tdi3Gt(pi0,*(int *)result),
-		         result = (int)pi0;count = j0;,*outp++ = count)
+    case DTYPE_T:  OperateL(int,((char *)pi1 - (char *)0),Tdi3Gt(pi0,*(int *)result),
+		         result = ((char *)pi0 - (char *)0);count = j0;,*outp++ = count)
     case DTYPE_B:  OperateL(char,(char)-127,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_BU: OperateL(unsigned char,(unsigned char)0,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_W:  OperateL(short,(short)-32768,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
@@ -238,8 +238,8 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
   SetupArgs
   switch (in->dtype)
   {
-    case DTYPE_T:  OperateL(int,(int)pi1,Tdi3Lt(pi0,*(int *)result),
-		         result = (int)pi0;count = j0;,*outp++ = count)
+    case DTYPE_T:  OperateL(int,((char *)pi1 - (char *)0),Tdi3Lt(pi0,*(int *)result),
+		         result = ((char *)pi0 - (char *)0);count = j0;,*outp++ = count)
     case DTYPE_B:  OperateL(char,(char)127,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_BU: OperateL(unsigned char,(unsigned char)255,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_W:  OperateL(short,(short)32767,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
@@ -294,8 +294,8 @@ int Tdi3MaxVal(struct descriptor *in, struct descriptor *mask,
   SetupArgs
   switch (in->dtype)
   {
-    case DTYPE_T:  Operate(int,(int)pi1,Tdi3Gt(pi0,*(int *)result),
-		         result = (int)pi0;count = j0;,memmove(out++,(int *)result,step0))
+    case DTYPE_T:  Operate(int,((char *)pi1 - (char *)0),Tdi3Gt(pi0,*(int *)result),
+		         result = ((char *)pi0 - (char *)0);count = j0;,memmove(out++,(int *)result,step0))
     case DTYPE_B:  Operate(char,(char)-128,*pi0 > result,result = *pi0;,*outp++ = result)
     case DTYPE_BU: Operate(unsigned char,(unsigned char)0,*pi0 > result,result = *pi0;,*outp++ = result)
     case DTYPE_W:  Operate(short,(short)-32768,*pi0 > result,result = *pi0;,*outp++ = result)
@@ -328,8 +328,8 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
   SetupArgs
   switch (in->dtype)
   {
-    case DTYPE_T:  Operate(int,(int)pi1,Tdi3Lt(pi0,*(int *)result),
-		         result = (int)pi0;count = j0;,memmove(out++,(int *)result,step0))
+    case DTYPE_T:  Operate(int,((char *)pi1 - (char *)0),Tdi3Lt(pi0,*(int *)result),
+		         result = ((char *)pi0 - (char *)0);count = j0;,memmove(out++,(int *)result,step0))
     case DTYPE_B:  Operate(char,(char)127,*pi0 < result,result = *pi0;,*outp++ = result)
     case DTYPE_BU: Operate(unsigned char,(unsigned char)255,*pi0 < result,result = *pi0;,*outp++ = result)
     case DTYPE_W:  Operate(short,(short)32767,*pi0 < result,result = *pi0;,*outp++ = result)
