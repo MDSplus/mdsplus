@@ -42,7 +42,7 @@ public class WaveformEditor extends Waveform
                 int newIdx = -1;
                 float currX = convertX(e.getX());
                 float currY = convertY(e.getY());
-                float minDist = currentX[currentX.length-1] - currentX[0];
+                float minDist = Float.MAX_VALUE;
                 int prevIdx = -1;
                 for(int i = closestIdx = 0; i < currentX.length; i++)
                 {
