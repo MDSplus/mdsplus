@@ -374,10 +374,11 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   jfieldID nid_fid;
   jclass cls = (*env)->GetObjectClass(env, jnid);
   jmethodID constr;
-  jvalue args[18];
+  jvalue args[20];
   static  int nci_flags, nci_flags_len, time_inserted[2], time_len, conglomerate_nids_len, conglomerate_nids,
-    owner_id, owner_len, dtype_len, class_len, length, length_len, usage_len, name_len, fullpath_len, minpath_len;
-  static  char dtype, class, time_str[256], usage, name[16], fullpath[512], minpath[512];
+    owner_id, owner_len, dtype_len, class_len, length, length_len, usage_len, name_len, fullpath_len, 
+	minpath_len, original_part_name_len, conglomerate_elt, conglomerate_elt_len;
+  static  char dtype, class, time_str[256], usage, name[16], fullpath[512], minpath[512], original_part_name[512];
   unsigned short asctime_len;
   struct descriptor time_dsc = {256, DTYPE_T, CLASS_S, time_str};
 
@@ -394,12 +395,14 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
    {511, NciFULLPATH, fullpath, &fullpath_len},
    {511, NciMINPATH, minpath, &minpath_len},
   {4, NciNUMBER_OF_ELTS, &conglomerate_nids, &conglomerate_nids_len}, 
+  {4, NciCONGLOMERATE_ELT, &conglomerate_elt, &conglomerate_elt_len}, 
    {NciEND_OF_LIST, 0, 0, 0}};
 
 
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
   conglomerate_nids = 0;
+
   status = TreeGetNci(nid, nci_list);
   if(!(status & 1))
    {
@@ -410,9 +413,9 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   fullpath[fullpath_len] = 0;
   minpath[minpath_len] = 0;
   cls = (*env)->FindClass(env, "NodeInfo");
-  constr = (*env)->GetStaticMethodID(env, cls, "getNodeInfo", "(ZZZZZZZZLjava/lang/String;IIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;I)LNodeInfo;");
-  args[0].z = nci_flags & NciM_STATE;
-  args[1].z = nci_flags & NciM_PARENT_STATE;
+  constr = (*env)->GetStaticMethodID(env, cls, "getNodeInfo", "(ZZZZZZZZLjava/lang/String;IIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;II)LNodeInfo;");
+  args[0].z = !(nci_flags & NciM_STATE);
+  args[1].z = !(nci_flags & NciM_PARENT_STATE);
   args[2].z = nci_flags & NciM_SETUP_INFORMATION;
   args[3].z = nci_flags & NciM_WRITE_ONCE;
   args[4].z = nci_flags & NciM_COMPRESSIBLE;
@@ -437,10 +440,31 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   args[15].l = (*env)->NewStringUTF(env, fullpath);
   args[16].l = (*env)->NewStringUTF(env, minpath);
   args[17].i = conglomerate_nids;
+  args[18].i = conglomerate_elt;
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }
 
+JNIEXPORT jstring JNICALL Java_Database_getOriginalPartName
+  (JNIEnv *env, jobject obj, jobject jnid)
+{
+	static char part_name[512];
+	static int part_name_len;
+	int nid, status;
+	jfieldID nid_fid;
+	jclass cls = (*env)->GetObjectClass(env, jnid);
 
+	struct nci_itm nci_list[] = {{511, NciORIGINAL_PART_NAME, part_name, &part_name_len}, {NciEND_OF_LIST, 0, 0, 0}};
+	
+	nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+	nid = (*env)->GetIntField(env, jnid, nid_fid);
+	status = TreeGetNci(nid, nci_list);
+	if(!(status & 1))
+	{
+		RaiseException(env, MdsGetMsg(status));
+		return NULL;
+	}
+	return (*env)->NewStringUTF(env, part_name);
+}
 
 
 JNIEXPORT void JNICALL Java_Database_setTags
