@@ -1,4 +1,4 @@
-MDSPLUS `pwd`
+MDSPLUS $cwd
 #
 # TDI Functions
 #
@@ -19,5 +19,5 @@ IDL_PATH $MDSPLUS/idl
 #
 # Make options file
 #
-MAKE_OPTIONS $MDSPLUS/sys_specific/MakeOptions.`uname`
+MAKE_OPTIONS $MDSPLUS/sys_specific/MakeOptions.$os
 DEPEND .depend
