@@ -262,11 +262,11 @@ typedef __int64 _int64;
 #define swapquad(in)
 #define swapocta(in)
 #elif defined(__osf__) 
-typedef long _int64;
+typedef long long _int64;
 #define swapquad(in)
 #define swapocta(in)
 #elif defined(__irix__)
-typedef long _int64;
+typedef long long _int64;
 #define swapquad(in)
 #define swapocta(in)
 #elif defined(__hpux__)
