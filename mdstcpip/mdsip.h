@@ -66,6 +66,7 @@
 /*  *2    17-MAY-1994 15:09:57 TWF "Put IPDESC.H in MDS$ROOT:[SYSLIB]" */
 /*  *1    17-MAY-1994 09:31:48 TWF "Include for MDSIPSHR" */
 /*  CMS REPLACEMENT HISTORY, Element MDSIP.H */
+
 #if defined(__sgi) || defined(sun)
 #define memcpy(a,b,c) bcopy(b,a,c)
 #include <errno.h>
@@ -73,7 +74,14 @@
 #include <errno.h>
 #include <time.h>
 #else
+#ifndef vxWorks
 #include <sys/errno.h>
+#endif
+#endif
+#ifdef vxWorks
+#include <types/vxTypesOld.h>
+#include <errno.h>
+#include <time.h>
 #endif
 #if defined(_WIN32)
 #include <windows.h>
@@ -81,11 +89,15 @@
 #include <winsock.h>
 #else
 #define INVALID_SOCKET -1
+#ifndef vxWorks
 #include <sys/time.h>
+#endif
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#ifndef vxWorks
 #include <netdb.h>
+#endif
 #include "signal.h"
 #include <netinet/tcp.h>
 #endif

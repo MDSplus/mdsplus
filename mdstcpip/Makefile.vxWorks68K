@@ -1,0 +1,20 @@
+include $(MAKE_OPTIONS)
+
+OBJECTS = \
+	mdsipshr.o \
+	mdsiputil.o
+
+mdstcpip:  ../vxWorks ../vxWorks/68K $(OBJECTS)
+	ld68k -o ../vxWorks/68K/MdsIpShr.o -r *.o
+	rm *.o
+
+../vxWorks :
+	mkdir ../vxWorks
+
+../vxWorks/68K :
+	mkdir ../vxWorks/68K
+
+clean :
+	rm ../vxWorks/*.o
+	rm .depend
+
