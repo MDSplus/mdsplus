@@ -146,7 +146,7 @@ install:
 	$(JAR) c0f $@ *.class $(GIFS)
 
 jTraverser.class: 	$(SOURCES) $(DEVICES)
-	$(JAVAC) -g jTraverser.java
+	$(JAVAC) -g $(SOURCES)
 	$(JAVAC) -g $(DEVICES)
 
 @MAKEBINDIR@ : ; mkdir @MAKEBINDIR@
