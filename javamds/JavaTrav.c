@@ -97,7 +97,10 @@ JNIEXPORT jint JNICALL Java_Database_create
   name_fid =  (*env)->GetFieldID(env, cls, "name", "Ljava/lang/String;");
   jname = (*env)->GetObjectField(env, obj, name_fid);
   name = (*env)->GetStringUTFChars(env, jname, 0);
+  printf("ADESSO CREO IL PULSE FILE\n");
+
   status = TreeCreatePulseFile(shot, 0, NULL);
+  printf("Creato: %s\n", MdsGetMsg(status));
   if(!(status & 1))
     RaiseException(env, MdsGetMsg(status));
   return 0;
@@ -140,10 +143,14 @@ static char buf[1000];
 	  }
     }
   else
+ { 
+   printf("APRO %s %d\n", name, shot);
+
     status = TreeOpen((char *)name, shot, is_readonly);
   (*env)->ReleaseStringUTFChars(env, jname, name);
-
-/*  //printf("Aperto\n");*/
+  printf("APERTO: %s\n", MdsGetMsg(status));
+ }
+ /*  //printf("Aperto\n");*/
 
 /*//report(MdsGetMsg(status));*/
 sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));

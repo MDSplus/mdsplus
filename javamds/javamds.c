@@ -746,7 +746,7 @@ void deviceSetup(char *deviceName, char *treeName, int shot, char *rootName, int
 	{
 	        vm_args.version = JNI_VERSION_1_2;//0x00010001;
 		options[0].optionString = "-Djava.compiler=NONE";           /* disable JIT */
-		options[1].optionString = "-Djava.class.path=/usr/local/mdsplus/java/classes/jTraverser.jar";            /* user classes */
+		options[1].optionString = "-Djava.class.path=.";// /usr/local/mdsplus/java/classes/jTraverser.jar";           
 		options[2].optionString = "-verbose:jni";                   /* print JNI-related messages */
 
 		vm_args.nOptions = 2;
@@ -777,7 +777,7 @@ void deviceSetup(char *deviceName, char *treeName, int shot, char *rootName, int
 	{
 		printf("\nCannot find DeviceSetup classe!");
 		return;
-	}	
+	}
 	mid = (*env)->GetStaticMethodID(env, cls, "activateDeviceSetup", 
 		"(Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;II)V");
 	if(mid == 0)
