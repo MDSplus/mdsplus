@@ -36,7 +36,7 @@ public fun LASER_ND__dump(as_is _nid, optional _method)
     if( ( public _laser_nd_connected ) == 0 )
     {
 
-		public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 2000, 0);
+		public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 2000, _swap=0);
 		if(public _sock == 0)
 		{
 			DevLogErr(_nid, "Cannot connect to remote instruments"); 

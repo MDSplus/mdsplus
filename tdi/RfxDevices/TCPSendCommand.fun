@@ -2,6 +2,8 @@ public fun TCPSendCommand(in _sock, in _cmnd)
 {
 	_out = "";
 
+write(*, "TCP command : "//_cmnd);
+
 	_status = TcpClient->SendCommand(val(_sock), _cmnd);
 	if( _status == 0)
 	{

@@ -11,7 +11,7 @@ public fun LASER_ND__store(as_is _nid, optional _method)
     private _N_DELAY_PULSE	= 6;
     private _N_OSC		= 7;
     private _N_AMP		= 8;
-    private _N_TOTAL		= 9;
+    private _N_SLAB		= 9;
 
     private _ASCII_MODE = 0;
 
@@ -56,7 +56,7 @@ write(*, _n_pulses);
 
 write(*, _delay_pulse );
 
-    _trig = if_error(data(DevNodeRef(_nid, _TRIG_SOURCE)),(DevLogErr(_nid, "Missing trigger source"); abort();));
+    _trig = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _error = 1);
     if(_error)
     {
 		DevLogErr(_nid, "Missing trigger source");
@@ -71,7 +71,7 @@ write(*, _delay_pulse );
     if( ( public _laser_nd_connected ) == 0 )
     {
 
-		public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 2000, 0);
+		public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 2000, _swap=0);
 		if(public _sock == 0)
 		{
 			DevLogErr(_nid, "Cannot connect to remote instruments"); 
@@ -89,6 +89,7 @@ write(*, _delay_pulse );
 
 /* STORE OSC SIGNAL */
 
+
 	if((_err_msg = TCPSendCommand(public _sock, "ND_GET_OSC")) != "")
 	{
 		DevLogErr(_nid, "Error during send  ND_GET_OSC command"); 
@@ -96,7 +97,7 @@ write(*, _delay_pulse );
 	}
 
 
-	_data = TCPReadFloat(public _sock);
+	_data = TCPReadFloat(public _sock, 1);
 
 	write(*,  _data);
 
@@ -104,13 +105,15 @@ write(*, _delay_pulse );
 	{
 		DevLogErr(_nid, "No data read for OSC signal"); 
 	} else {
-		_dim = build_dim(make_window(0, size(_data) - 1, _trig), [* : *: _data[1]]);
-		_osc_sig = build_signal(_data[1,*],, _dim );
-		if(! DevPut(_nid, _N_OSC, _osc_sig))
+		_dim = make_dim(make_window(0, size(_data) - 1, _trig), [* : *: _data[1]]);
+		_sig_nid =  DevHead(_nid) +_N_OSC;
+		_status = DevPutSignal(_sig_nid, 0, 1., _data[1..*], 0, size(_data) - 1, _dim);
+		if(! _status )
 		{
 			DevLogErr(_nid, 'Error writing data in pulse file');
 		}
 	}
+
 
 /* STORE AMP SIGNAL */
 
@@ -121,39 +124,40 @@ write(*, _delay_pulse );
 	}
 
 
-	_data = TCPReadFloat(public _sock);
+	_data = TCPReadFloat(public _sock, 1);
 
 	if( size( _data ) < 2)
 	{
 		DevLogErr(_nid, "No data read for AMP signal"); 
 	} else {
 
-		_dim = build_dim(make_window(0, size(_data) - 1, _trig), [* : *: _data[1]]);
-		_amp_sig = build_signal(_data[1,*],, _dim );
-		if(! DevPut(_nid, _N_AMP, _amp_sig))
+		_dim = make_dim(make_window(0, size(_data) - 1, _trig), [* : *: _data[1]]);
+		_sig_nid =  DevHead(_nid) +_N_AMP;
+		_status = DevPutSignal(_sig_nid, 0, 1., _data[1..*], 0, size(_data) - 1, _dim);
+		if(! _status )
 		{
 			DevLogErr(_nid, 'Error writing data in pulse file');
-		}
-	}
+		}	}
 
 
 /* STORE TOTAL SIGNAL */
 
-	if((_err_msg = TCPSendCommand(public _sock, "ND_GET_TOTAL")) != "")
+	if( (_err_msg = TCPSendCommand(public _sock, "ND_GET_SLAB") ) != "")
 	{
-		DevLogErr(_nid, "Error during send  ND_GET_TOTAL command"); 
+		DevLogErr(_nid, "Error during send  ND_GET_SLAB command "); 
 		abort();
 	}
 
-	_data = TCPReadFloat(public _sock);
+	_data = TCPReadFloat(public _sock, 1);
 
 	if( size( _data ) < 4)
 	{
-		DevLogErr(_nid, "No data read for TOTAL signal"); 
+		DevLogErr(_nid, "No data read for SLAB signal"); 
 	} else {
-		_dim = build_dim(make_window(0, size(_data) - 1, _trig), [* : *: _data[1]]);
-		_total_sig = build_signal(_data[1,*],, _dim );
-		if(! DevPut(_nid, _N_TOTAL, _total_sig))
+		_dim = make_dim(make_window(0, size(_data) - 1, _trig), [* : *: _data[1]]);
+		_sig_nid =  DevHead(_nid) +_N_SLAB;
+		_status = DevPutSignal(_sig_nid, 0, 1., _data[1..*], 0, size(_data) - 1, _dim);
+		if(! _status )
 		{
 			DevLogErr(_nid, 'Error writing data in pulse file');
 		}
