@@ -28,7 +28,7 @@ libMdsdcl.a:	libMdsdcl.a( $(OBJFILES) )
 	$(CC) $(CFLAGS)  -o $@ $(LD_SHARED_LIB_OPTIONS)	\
 		mdsdcl_main.o  mdsdcl_tables.o		\
 		libMdsdcl.a  $(MDSPLUS)/cdu/libCdu.a	\
-		-lTreeShr  -lTdiShr  -lcurses -lc
+		$(LFLAGS) -lTreeShr  -lTdiShr  -lcurses -lc
 
 mdsdcl:	mdsdcl.o  ../shlib/libMdsdcl.$(SHARE_TYPE)
 	$(CC) $(CFLAGS) -o $@ $(LFLAGS) $@.o -lMdsdcl		\
