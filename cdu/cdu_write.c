@@ -12,6 +12,8 @@
 * Support routines for CDU emulator ...
 *
 * History:
+*  09-Mar-1998  TRG  When writing prmL_flags, qualL_flags, or keyL_flags,
+*                     or-in identifying bit ENT_M_xxx.
 *  09-Oct-1997  TRG  Create.
 *
 ***********************************************************************/
@@ -182,8 +184,8 @@ static void  writeUserType(
             strcpy(textSyntax,"0");
 
         fprintf(fp,fmt_userType2, icnt?',':' ',key->keyA_name,
-            key->keyL_flags,textLabel,
-            textSyntax,textValue);
+            key->keyL_flags | ENT_M_KEYWORDS,
+            textLabel,textSyntax,textValue);
        }
     fprintf(fp,"       ,0\t\t\t\t/* null entry at end\t*/\n");
     fprintf(fp,"       };\n");
@@ -234,7 +236,7 @@ static void  writeParams(
             strcpy(textValue,"0");
 
         fprintf(fp,fmt_params2, icnt?',':' ',
-            prm->prmA_name,prm->prmL_flags,
+            prm->prmA_name,prm->prmL_flags | ENT_M_PARAMETERS,
             textLabel,textPrompt,textValue);
        }
     fprintf(fp,"       ,0\t\t\t\t/* null entry at end\t*/\n");
@@ -290,7 +292,7 @@ static void  writeQualifiers(
             strcpy(textValue,"0");
 
         fprintf(fp,fmt_qualifiers2, icnt?',':' ',
-            qual->qualA_name,qual->qualL_flags,
+            qual->qualA_name,qual->qualL_flags | ENT_M_QUALIFIERS,
             textLabel,textSyntax,textValue);
        }
     fprintf(fp,"       ,0\t\t\t\t/* null entry at end\t*/\n");

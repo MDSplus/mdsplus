@@ -29,10 +29,6 @@
 
 extern char  *cliNonblank();
 extern int   cliToken();
-static long  set_value(		/* PROTOTYPE: Return: CLI_STS_xxxx	*/
-    char  **pp			/* <m> current location in cmd line	*/
-   ,struct cduValue  *val	/* <m> the value struct			*/
-   );
 
 
 static struct cduVerb  *currentTable;	/* addr of current table	*/
@@ -107,7 +103,7 @@ static int   init_value(	/* Return: initial "processing" status	*/
 	/****************************************************************
 	 * initLookupTable:
 	 ****************************************************************/
-static int   initLookupTable(	/* Return: num entries in lookup table	*/
+static int   initLookupTable(	/* Return: num entries in cmd-lookup table*/
     struct cduEntity  *entTop	/* <r> top of entity array		*/
    ,struct cmd_struct  **addrTable /* <m> start of "lookup" table	*/
    )
@@ -169,7 +165,7 @@ static int   initLookupTable(	/* Return: num entries in lookup table	*/
 	/***************************************************************
 	 * initEntityTable:
 	 ***************************************************************/
-static int   initEntityTable(	/* Return: num of entities defined	*/
+static int   initEntityTable(	/* Return: num entities defined		*/
     void  *entTop		/* <r> top of paramList or qualList	*/
    ,struct cmd_struct  **addrTable /* <m> top of entity "lookup" table	*/
    )
@@ -199,115 +195,11 @@ static int   initEntityTable(	/* Return: num of entities defined	*/
    }
 
 
-	/****************************************************************
-	 * init_paramTable:
-	 ****************************************************************/
-static int   init_paramTable()	/* Return: num of parameters define	*/
-   {
-    int   i,k;
-    int   icnt;
-    struct cduParam  *prm;
-    struct cduVerb  *v;
-
-    v = currentSyntax;
-    if (!v->vrbA_parameters)
-        return(0);
-
-		/*=====================================================
-		 * Check size of cmdParam list ...
-		 *====================================================*/
-    prm = v->vrbA_parameters;
-    for (icnt=0 ; prm->prmA_name ; icnt++,prm++)
-        ;
-    if (icnt > maxParams)
-       {			/*..need larger cmdParam[] table	*/
-        maxParams = icnt+2;	/*....allow a little extra ..		*/
-        if (cmdParam)
-            free(cmdParam);	/*....free old cmdParam[]		*/
-        cmdParam = malloc((maxParams+1)*sizeof(struct cmd_struct));
-        if (!cmdParam)
-           {
-            fprintf(stderr,"*EXIT* Out of space!\n");
-            exit(0);
-           }
-        clear_buffer(cmdParam,(maxParams+1)*sizeof(struct cmd_struct));
-        cmdParam[0].cmdL_id = 0;
-        cmdParam[0].cmdA_string = (void *)(maxParams+1);
-       }
-
-    prm = v->vrbA_parameters;
-    for (i=1 ; i<=icnt ; i++,prm++)
-       {
-        cmdParam[i].cmdL_id = i;
-        cmdParam[i].cmdA_string =
-                prm->prmA_label ? prm->prmA_label : prm->prmA_name;
-        init_value(prm->prmA_value);
-        prm->prmL_status = 0;
-        if (prm->prmL_flags & PARAM_M_DEFAULT)
-            prm->prmL_status = CLI_STS_DEFAULTED;
-       }
-    return(icnt);
-   }
-
-
-
-	/****************************************************************
-	 * init_qualTable:
-	 ****************************************************************/
-static int   init_qualTable()	/* Return: num of qualifiers defined	*/
-   {
-    int   i,k;
-    int   icnt;
-    struct cduQualifier  *qual;
-    struct cduVerb  *v;
-
-    v = currentSyntax;
-    if (!v->vrbA_qualifiers)
-        return(0);
-
-		/*=====================================================
-		 * Check size of cmdQual list ...
-		 *====================================================*/
-    qual = v->vrbA_qualifiers;
-    for (icnt=0 ; qual->qualA_name ; icnt++,qual++)
-        ;
-    if (icnt > maxQualifiers)
-       {			/*..need larger cmdQual[] table		*/
-        maxQualifiers = icnt+2;	/*....allow a little extra ..		*/
-        if (cmdQual)
-            free(cmdQual);	/*....free old cmdQual[]		*/
-        cmdQual = malloc((maxQualifiers+1)*sizeof(struct cmd_struct));
-        if (!cmdQual)
-           {
-            fprintf(stderr,"*EXIT* Out of space!\n");
-            exit(0);
-           }
-        clear_buffer(cmdQual,(maxQualifiers+1)*sizeof(struct cmd_struct));
-        cmdQual[0].cmdL_id = 0;
-        cmdQual[0].cmdA_string = (void *)(maxQualifiers+1);
-       }
-
-    qual = v->vrbA_qualifiers;
-    for (i=1 ; i<=icnt ; i++,qual++)
-       {
-        cmdQual[i].cmdL_id = i;
-        cmdQual[i].cmdA_string =
-                qual->qualA_label ? qual->qualA_label : qual->qualA_name;
-        init_value(qual->qualA_value);
-
-        qual->qualL_status = 0;
-        if (qual->qualL_flags & QUAL_M_DEFAULT)
-            qual->qualL_status = CLI_STS_DEFAULTED;
-       }
-    return(icnt);
-   }
-
-
 
 	/*****************************************************************
 	 * init_table:
 	 *****************************************************************/
-static int   init_table(	/* Return: num of verbs defined		*/
+static int   init_table(	/* Return: num verbs defined		*/
     struct cduVerb  *table	/* <r> addr of command table		*/
    )
    {
@@ -364,11 +256,36 @@ static void  setCurrentSyntax(
    ,struct cduVerb  *v		/* <r> addr of new syntax struct	*/
    )
    {
+    int   i,k;
+    struct cduVerb  *oldSyntax;
+    struct cduParam  *oldPrms;
+    struct cduValue  *val,*oldval;
+
+    oldSyntax = currentSyntax;
     currentSyntax = v;
     if (flag || v->vrbA_parameters)
        {
         numParams = initEntityTable(v->vrbA_parameters,&cmdParam);
+        oldPrms = currentParameters;
         currentParameters = v->vrbA_parameters;
+
+        if ((k=paramId) > numParams)
+           {
+            fprintf(stderr,
+                "\nsetCurrentSyntax: *WARN* paramId=%d  numParams=%d\n\n",
+                paramId,numParams);
+#ifdef vms
+            lib$signal(SS$_DEBUG);
+#endif
+            k = numParams;
+           }
+        for (i=0 ; i<k ; i++)
+           {		/* Copy val_dsc and status for each param ...	*/
+            val = currentParameters[i].prmA_value;
+            oldval = oldPrms[i].prmA_value;
+            str_copy_dx(&val->val_dsc,&oldval->val_dsc);
+            currentParameters[i].prmL_status = oldPrms[i].prmL_status;
+           }
        }
     if (flag || v->vrbA_qualifiers)
        {
@@ -384,70 +301,6 @@ static void  clearCurrentSyntax()
     numParams = 0;
     numQualifiers = 0;
     return;
-   }
-
-
-
-	/****************************************************************
-	 * set_value_userDefined:
-	 ****************************************************************/
-static long  set_value_userDefined(
-    char  **pp			/* <m> current location in cmd line	*/
-   ,struct cduValue  *val	/* <m> the value struct			*/
-   )
-   {
-    int   i,k;
-    int   opt;
-    int   sts;
-    char  *p;
-    struct cmd_struct  *cmd;
-    struct cduKeyword  *key;
-
-    cmd = make_lookup_keyword(val->valA_userType);
-    if (!cmd)
-        return(cli_error(CLI_STS_BADLINE,"problem with user-defined type"));
-
-    sts = 0;
-    opt = cmd_lookup(pp,cmd,0,NOMSG,0);
-    if (opt)
-       {
-        key = val->valA_userType + (opt-1);
-        sts = CLI_STS_PRESENT;
-       }
-    else
-       {		/* Not found:  check for negated keyword ...	*/
-        if (toupper(**pp)=='N' && toupper(*(*pp+1))=='O')
-           {
-            p = *pp + 2;
-            opt = cmd_lookup(&p,cmd,0,NOMSG,0);
-            if (opt > 0)
-               {
-                key = val->valA_userType + (opt-1);
-                if (!(key->keyL_flags & KEY_M_NEGATABLE))
-                   {		/* default for keywd is NON-NEGATABLE	*/
-                    free(cmd);
-                    return(cli_error(CLI_STS_BADLINE,"not negatable"));
-                   }
-                sts = CLI_STS_NEGATED;
-                *pp = p;
-               }
-           }
-       }
-    free(cmd);
-    if (!opt)
-        return(CLI_STS_IVKEYW);
-
-    if (cliDebug)
-        printf("--> keyword = '%s'%s\n",key->keyA_name,
-                (sts==CLI_STS_NEGATED)?" (NEGATED)":"");
-    if (key->keyA_syntax)
-        setCurrentSyntax(FALSE,key->keyA_syntax);
-
-    key->keyL_status = sts;
-    if (key->keyA_value && key->keyL_status!=CLI_STS_NEGATED)
-        key->keyL_status = set_value(pp,key->keyA_value);
-
-    return(key->keyL_status);
    }
 
 
@@ -509,6 +362,7 @@ static long  set_value(		/* Return: CLI_STS_xxxx			*/
     char  *p,*p2;
     struct cmd_struct  *cmd;
     struct cduKeyword  *key;
+    static DYNAMIC_DESCRIPTOR(dsc_temp);
 
     if ((val->valL_flags & VAL_M_LIST) && **pp=='(')
         sts = readCliValueList(pp,val);
@@ -526,28 +380,36 @@ static long  set_value(		/* Return: CLI_STS_xxxx			*/
     if (!val->valA_userType)
         return(CLI_STS_PRESENT);	/*--------------- Nope: return	*/
 
+		/*-------------------------------------------------------
+		 *...yes: check each input for keyword ...
+		 *------------------------------------------------------*/
     cmd = make_lookup_keyword(val->valA_userType);
     p = val->val_dsc.dscA_pointer;
+    str_free1_dx(&dsc_temp);
     keycnt = 0;
     for ( ; p ; keycnt++)
        {
         if (keycnt)
            {			/* skip separator character		*/
             if (*p=='\01' || *p=='\02')
+               {
+                str_append(&dsc_temp,(*p=='\01')?"\01":"\02");
                 p++;
-#ifdef vms
+               }
             else
                {
                 fprintf(stderr,"Illegal separator character!\n");
+#ifdef vms
                 lib$signal(SS$_DEBUG);
-               }
 #endif
+               }
            }
         opt = cmd_lookup(&p,cmd,0,NOMSG,0);
         if (opt)
            {
             key = val->valA_userType + (opt-1);
             key->keyL_status = CLI_STS_PRESENT;
+            str_append(&dsc_temp,key->keyA_name);
             continue;			/* back to top of loop ...	*/
            }
 
@@ -567,6 +429,7 @@ static long  set_value(		/* Return: CLI_STS_xxxx			*/
                     return(cli_error(CLI_STS_NOTNEGATABLE,"not negatable"));
                    }
                 key->keyL_status = CLI_STS_NEGATED;
+                str_append(&dsc_temp,key->keyA_name);
                 continue;		/* back to top of loop ...	*/
                }
            }
@@ -583,15 +446,21 @@ static long  set_value(		/* Return: CLI_STS_xxxx			*/
 		 * Ok -- all keywords were checked ...
 		 *=======================================================*/
     free(cmd);
+    str_copy_dx(&val->val_dsc,&dsc_temp);
+    str_free1_dx(&dsc_temp);
     if (key->keyA_syntax)
        {
         if (keycnt == 1)
+           {
+            sts = key->keyL_status;		/* save status		*/
             setCurrentSyntax(FALSE,key->keyA_syntax);
+            key->keyL_status = sts;
+           }
         else
             fprintf(stderr,"Keyword syntax specified, but keycnt=%d\n",
                 keycnt);
        }
-    return(CLI_STS_PRESENT);		/*---------------------> return	*/
+    return((keycnt==1) ? key->keyL_status : CLI_STS_PRESENT);
    }
 
 
@@ -650,6 +519,8 @@ static long  cli_process_qualifier(	/* Return: status		*/
        {
         (*pp)++;
         qual->qualL_status = set_value(pp,qual->qualA_value);
+		/* Note: currentSyntax may have changed inside set_value */
+		/* .. we're ignoring this problem for now ...		*/
        }
     return(1);
    }
@@ -666,6 +537,7 @@ static long  cli_process_parameter(	/* Return: status		*/
    {
     int   i,k;
     int   opt;
+    int   sts;
     struct cduParam  *prm;
     struct cduVerb  *v;
 
@@ -677,7 +549,10 @@ static long  cli_process_parameter(	/* Return: status		*/
     if (cliDebug)
         printf("--> parameter %s\n",prm->prmA_name);
 
-    prm->prmL_status = set_value(pp,prm->prmA_value);
+    sts = set_value(pp,prm->prmA_value);
+		/* Note: currentSyntax may have changed inside set_value */
+    prm = currentParameters + (paramId-1);
+    prm->prmL_status = sts;
 
     return(LEGAL_STATUS(prm->prmL_status) ? 1 : 0);
    }
@@ -796,6 +671,14 @@ static struct cduEntity  *find_entity(	/* Return: addr of struct	*/
         t = e->entA_label ? e->entA_label : e->entA_name;
         if (!strncmp(entity,t,k))
             break;
+
+        if (!(e->entL_flags & ENT_M_PARAMETERS))
+            continue;
+        if (val = e->entA_value)
+           {
+            if ((t=val->val_dsc.dscA_pointer) && !strcmp(entity,t))
+                break;
+           }
 /*        if (val = e->entA_value)
 /*           {				/*...check keywords, if any	*/
 /*            if (val->valA_userType)

@@ -16,6 +16,8 @@
 * Definitions for command-line parser ...
 *
 * History:
+*  09-Feb-1998  TRG  Define ENT_M_xxx, to help in generic processing of
+*                     entities.  xxx={PARAMETERS,QUALIFIERS,KEYWORDS}.
 *  06-Oct-1997  TRG  Create.
 *
 ***********************************************************************/
@@ -98,6 +100,9 @@
 #define ENT_M_DEFAULTED     0x0001
 #define ENT_M_NEGATABLE     0x0002
 #define ENT_M_NONNEGATABLE  0x0004
+#define ENT_M_PARAMETERS    0x1000	/* identify type of structure	*/
+#define ENT_M_QUALIFIERS    0x2000	/* identify type of structure	*/
+#define ENT_M_KEYWORDS      0x4000	/* identify type of structure	*/
 
 		/*========================================================
 	 	 * structures ...
