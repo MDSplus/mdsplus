@@ -3758,6 +3758,7 @@ sparc-sun-solaris2*)
        if test $SIZEOF_INT_P = 4; then CFLAGS="$CFLAGS -D_ILP32 "; else CFLAGS="$CFLAGS -D_LP64 "; fi;
        if test $CC = gcc; then
 	 LD=gcc;
+	 FORLD=gcc;
          LINKSHARED="-Wl,-G -symbolic ";
          LD_LDSHARE="-Wl,-B,dynamic";
          LD_LDARC="-Wl,-B,static";
