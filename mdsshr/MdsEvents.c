@@ -1,3 +1,9 @@
+#define _GNU_SOURCE /* glibc2 needs this */
+#if defined(__sparc__)
+#include "/usr/include/sys/types.h"
+#elif !defined(HAVE_WINDOWS_H)
+#include <sys/types.h>
+#endif
 #include <config.h>
 #if defined(vxWorks)
 int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}

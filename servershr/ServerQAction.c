@@ -1,3 +1,5 @@
+#include <servershr.h>
+#include "servershrp.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -15,11 +17,8 @@ typedef int SOCKET;
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <netinet/in.h>
-#include <pthread.h>
 #include <signal.h>
 #endif
-#include <servershr.h>
-#include "servershrp.h"
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
