@@ -272,9 +272,6 @@ extern int TreeIsOpen();
 extern int _TreeIsOpen();
 	extern int TreeLink();
 	extern int TreeMarkIncludes();
-/*
-	extern int TreeNodePresent();
-*/
 extern int TreeOpen();
 	extern int TreeOpenTreeEdit();
 	extern int TreeOpenTreeNew();
@@ -387,7 +384,7 @@ extern int _TreeOpen(void **dbid,char *tree, int shot, int flags);
 extern int TreeOpenTree_EDIT(struct descriptor *treenam, int *shotid);
 extern int TreeOpenTree_NEW(struct descriptor *treenam, int *shotid);
 extern int TreePutRecord(int nid, struct descriptor *descriptor_ptr, int utility_update);
-extern int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int utility_update);
+extern int _TreePutRecord(void **dbud, int nid, struct descriptor *descriptor, int utility_update);
 extern int TreeQuitTree();
 /** Optional arguments *****************************************************************
 			  struct descriptor *treename;
