@@ -1,218 +1,278 @@
-#include "mdslib.h"
+#include <mdslib.h>
+#include <treeshr.h>
+#include <math.h>
+
+#define BUFFLEN 10
+
+long status;
+int null=0;
+int returnlength=0;
+int dtype_short = DTYPE_SHORT;
+int dtype_long = DTYPE_LONG;
+int dtype_float = DTYPE_FLOAT;
+int dtype_cstring = DTYPE_CSTRING;
+
+void report(int test)
+{
+  if (test & 1)
+    {
+      printf(" ... ok\n");
+    }
+  else
+    {
+      printf(" ... ERROR\n");
+    }
+}
 
 
-int main(int argc, char *argv[])
+long testOpen(char *tree, int shot)
+{
+  printf("Opening tree %s shot %d", tree,shot);
+  status = MdsOpen(tree,&shot);
+  return(status);
+}
+
+long testClose(char *tree, int shot)
+{
+  printf("Closing tree %s shot %d", tree,shot);
+  status = MdsClose(tree,&shot);
+  return(status);
+}
+
+long testScalarString(char *expression, char *expected, int length)
+{
+  char *string = malloc(length);
+  int dsc = descr(&dtype_cstring,string, &null, &length);
+  printf("Checking to see if '%s' is '%s'", expression, expected);
+  status = MdsValue(expression, &dsc, &null, &returnlength);
+  /*printf("result: %s\n",string);*/
+  if (status & 1)  status = (returnlength == length) && (strncmp(string,expected,length) == 0);
+  free(string);
+  return(status);
+}
+
+long testSetDefault(char *node)
+{
+  printf("Setting default to %s", node);
+  return(MdsSetDefault(node));
+}
+  
+      
+long testNull(char *expression)
+{
+  char *buf = malloc(BUFFLEN);
+  int bufflen = BUFFLEN;
+  int dsc = descr(&dtype_cstring, buf, &null, &bufflen);
+  printf("Checking to see if '%s' is NULL", expression);
+  status = MdsValue(expression, &dsc, &null, &returnlength);
+  return((status &1 ) == 0 && (returnlength == 0));
+}
+  
+long testPut1Dsc(char *node, char *expression, int dsc)
+{
+  printf("Writing 1D array expression '%s' to  node %s",expression,node);
+  return(MdsPut(node, expression, &dsc, &null));
+}
+
+long testPut2Dsc(char *node, char *expression, int dsc1, int dsc2)
+{
+  printf("Writing 2D array expression '%s' to  node %s\n",expression,node);
+  return(MdsPut(node, expression, &dsc1, &dsc2, &null));
+}
+
+long testClearNode(char *node)
+{
+  printf("Clearing node %s",node);
+  return(MdsPut(node,"",&null));
+}
+
+/******** MAJOR TEST SECTIONS ********/  
+
+void TestTreeOpenClose()
+{
+  printf("\n*** TREE OPENING AND CLOSING TESTS ***\n");
+  report(testOpen("SUBTREE",-1));
+  report(testOpen("FOOFOOFOO",12345) == TreeFILE_NOT_FOUND);
+  report(testOpen("MAIN",-1));
+  report(testSetDefault("\\MAIN::TOP.CHILD"));
+  report(testScalarString("$DEFAULT","\\MAIN::TOP.CHILD",16));
+  report(testClose("FOOFOOFOO",12345) == TreeNOT_OPEN);
+  report(testScalarString("$EXPT","MAIN",4));
+  report(testClose("SUBTREE",-1));
+  report(testScalarString("$EXPT","MAIN",4));
+  report(testClose("MAIN",-1));
+  report(testNull("$EXPT"));
+}
+
+
+void TestTdi()
 {
   long status;
-  int shot;
-  char string[50];
   float result[10], result1;
-  float thomsondata[1000];
-  int dsc,dsc1,dsc2,dscr,dscrsize,dscrstring,i;
-  short int sizeresult;
-  struct descrip ans;
-  struct descrip darg1,darg2;
-  struct descrip *jeff1,*jeff2;
+  int dsc,dsc1,dsc2,i;
   float arg1 = 1.234567;
   float arg2 = 2.345678;
-  int null = 0;
-  int dtype_float = DTYPE_F;
-  int dtype_short = DTYPE_SHORT;
-  int dtype_cstring = DTYPE_CSTRING;
-  int dtype_long = DTYPE_LONG;
-  int sx = 2;
-  int sy = 13;
   int sresult = 10;
-  int stringlength = 50;
-  int returnlength=0;
-  float testmulti[2][13] = {
-    {0., 31., 28., 31., 30., 31., 30., 31., 31., 30., 31., 30., 31.},
-    {0., 31., 29., 31., 30., 31., 30., 31., 31., 30., 31., 30., 31.}};
+
+  printf("\n*** TDI TESTS ***\n");
 
   for (i=0;i<10;i++) result[i]=0;
 
-  for (i=0;i<1000;i++) thomsondata[i] = 12345.678;
-
-
-  dsc = descr(&dtype_float,result,&sresult,&null);
-  dsc1 = descr(&dtype_float,&arg1,&null);
-  dsc2 = descr(&dtype_float,&arg2,&null);
-  dscr = descr(&dtype_float,&result1,&null);
-  dscrsize = descr(&dtype_short,&sizeresult,&null); 
-  dscrstring = descr(&dtype_cstring,string,&null,&stringlength);
-
-
-  if (argc > 1) 
-    {
-      printf("SOCKET: %d\n",MdsConnect(argv[1])); 
-      printf("SOCKET: %d\n",MdsConnect(argv[1])); 
-    }
-  printf("doing mdsvalue(1)\n");
-  status = MdsValue("1.",&dscr,&null,&returnlength);
-
-  shot = 96021;
-  status = MdsOpen("EFIT01",&shot);
-  printf("Status opening EFIT01, %d: %d\n",shot,status);
-
-  shot = 12345;
-  status = MdsOpen("FOOFOOFOO",&shot);
-  printf("Status opening BOGUS Tree: %d\n",status);
-
-  shot = 96333;
-  status = MdsOpen("ELECTRONS",&shot);
-  printf("Status opening ELECTRONS Tree, %d: %d\n",shot, status);
-
-  shot = 12345;
-  status = MdsClose("FOOFOOFOO",&shot);
-  printf("Status closing BOGUS Tree: %d\n",status);
-  status = MdsValue("$EXPT",&dscrstring,&null,&returnlength);
-  printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
-  printf("Current experiment: %s \n", string);
-
-  shot = 96021;
-  status = MdsClose("EFIT01",&shot);
-  printf("Status closing EFIT01, %d: %d\n",shot,status);
-  status = MdsValue("$EXPT",&dscrstring,&null,&returnlength);
-  printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
-  printf("Current experiment: %s \n", string);
-
-  shot = 96333;
-  status = MdsClose("ELECTRONS",&shot);
-  printf("Status closing ELECTRONS Tree, %d: %d\n",shot, status);
-  status = MdsValue("$EXPT",&dscrstring,&null,&returnlength);
-  printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
-  printf("Current experiment: %s \n", string);
-
-  printf("=================== TEST 1 ======================\n");
-  status = MdsValue("2. : 20. : 2.",&dsc,&null,&returnlength);
-  printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
-  for (i=0; i<10; i++) 
-  {
-    printf("i: %d   result: %f \n",i,result[i]);
-  }
-
-
-  printf("=================== TEST 2 ======================\n");
-  status = MdsValue("$ * $",&dsc1,&dsc2,&dscr,&null,&returnlength);
-  printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
-  printf("result: %f\n",result1);
-
-
-  printf("=================== TEST 3 ======================\n");
-
-  shot = 10;
-  printf("Status opening EFIT01, shot=%d: %d\n",shot,MdsOpen("EFIT01",&shot));
-  status = MdsValue("$EXPT",&dscrstring,&null,&returnlength);
-  printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
-  printf("experiment: %s\n",string);
-
-  status = MdsValue("SIZE(\\ATIME)",&dscrsize,&null,&returnlength);
-  printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
-  printf("result: %d\n",sizeresult);
-
-  dsc = descr(&dtype_float,result,&sresult,&null);
-  status = MdsValue("\\ATIME",&dsc,&null,&returnlength);
-  printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
-  for (i=0; i<10; i++)
-  {
-    printf("i: %d   atime: %f \n",i,result[i]);
-  }
-
-  printf("=================== TEST 4 ======================\n");
-
-  
-  dsc = descr(&dtype_float, testmulti, &sx, &sy, &null); 
-
-  status = MdsPut("\\TOP:NEMPROF","$",&dsc,&null);
-  printf("Putting: %f\n",testmulti[0][2]);
-  printf("Status putting \\TOP:NEMPROF: %d\n",status);
-
-
-  if (status & 1) 
-  {
-    float *data = malloc(sx*sy * sizeof(float));
-    dsc = descr(&dtype_float, data, &sx, &sy, &null);
-    status = MdsValue("\\TOP:NEMPROF",&dsc,&null,&returnlength);
-    printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
-    for (i=0;i<sx;i++)
-      {
-	int j;
-	for (j=0;j<sy;j++) printf("i: %d, j: %d, data: %f \n",i,j,(data+j)[i]);
-      }
-    free(data);
-  }
-  
-
-  
-  printf("=================== TEST 5 ======================\n");
-
-  printf("Status setting default: %d\n",MdsSetDefault("\\TOP.RESULTS.AEQDSK"));
-  status = MdsValue("$EXPT",&dscrstring,&null,&returnlength);
-  printf("experiment: %s\n",string);
-
-  dsc = descr(&dtype_long,&shot, &null);
-  status = MdsValue("$SHOT",&dsc,&null,&returnlength);
-  printf("SHOT: %d\n",shot);
-
-
-  status = MdsValue("$DEFAULT",&dscrstring,&null,&returnlength);
-  printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
-  printf("default: %s\n",string);
-  
-
-  printf("=================== TEST 6 ======================\n");
-
-  status = MdsValue("1.",&dsc1,&null,&returnlength);  /* DO NOT USE &null as last argument because then null!=0 !! */
-  printf("MdsValue status: %d  (NO RETURN LENGTH IN ARGUMENT LIST)\n", status);
-  printf("result: %f\n",arg1);
-
-  printf("=================== TEST 7 ======================\n");
-    
-  dsc = descr(&dtype_cstring,string,&null,&stringlength);
-  status = MdsValue("FINDSIG('TSTE_CORE')",&dsc,&null,&returnlength);
-  printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
-  printf("FINDSIG(TSTE_CORE): %s\n",string);
-  
-
-  printf("=================== TEST 8 ======================\n");
-
-  sresult = 1000;
-  dsc = descr(&dtype_float, thomsondata, &sresult, &null);
-  status = MdsOpen("EFIT01", &shot);
-  if (status & 1)
-    {
-      status = MdsPut("\\TOP:ONE_NUMBER","$",&dsc,&null);
-      printf("Putting: %f\n",thomsondata[0]);
-      printf("Status putting \\TOP:ONE_NUMBER: %d\n",status);
-    }
-  
-
-  printf("=================== TEST 9 ======================\n");
-
-  sresult = 1000;
-  dsc = descr(&dtype_float,thomsondata,&sresult,&null);
-  shot = 100;
-  status = MdsOpen("ELECTRONS",&shot);
-  if (status & 1) 
-    {
-      status = MdsPut("\\TSTE_CORE","BUILD_SIGNAL($,*,*)",&dsc,&null);
-    }
-  printf("Status putting thomson data: %d\n",status);
-  
-
-  printf("=================== TIMING TEST ======================\n");
-
-
-  for (i=0;i<500;i++) status = MdsValue("FINDSIG('\\TSTE_CORE')",&dscrstring,&null,&returnlength);
-  
-  /*  printf("=================== CDESCR TEST ======================\n");
-
-  status = MdsValue("FINDSIG('TSTE_CORE')",cdescr(DTYPE_CSTRING,string,0,stringlength),&null,&returnlength);
-  printf("MdsValue status: %d   Return length: %d\n",status,returnlength);
-  printf("FINDSIG(TSTE_CORE): %s\n",string);
+  printf("MdsValue(1.) - with no return length argument SEG FAULT WITHOUT -g\n");
+  /*
+    dsc = descr(&dtype_float, &result1, &null);
+    status = MdsValue("1.", &dsc);
+    printf("status: %d\n");
   */
 
+  printf("Range creation");
+  dsc = descr(&dtype_float,result,&sresult,&null);
+  status = MdsValue("2. : 20. : 2.",&dsc,&null,&returnlength);
+  status = (status && (returnlength == 10));
+  if (status & 1) 
+    {
+      for (i=0; i<returnlength; i++) status = status && (result[i] == 2.*(i+1));
+    }
+  report(status);
 
-  exit(0);
+  printf("Multiplication of two parameters");
+  dsc1 = descr(&dtype_float,&arg1,&null);
+  dsc2 = descr(&dtype_float,&arg2,&null);
+  dsc = descr(&dtype_float,&result1,&null);
+  status = MdsValue("$ * $",&dsc1,&dsc2,&dsc,&null,&returnlength);
+  status = status && (returnlength == 1);
+  if (status & 1) status = status && (sqrt(result1*result1)-(arg1*arg2) < 1.e-7);
+  report(status);
 
+  report(testScalarString("MACHINE()", getenv("MACHINE"), strlen(getenv("MACHINE"))));
 }
+  
+
+void TestArray1D()
+{
+  int i;
+  int dsc;
+  int size=100;
+  float *array = malloc(size * sizeof(float));
+  float *compare = malloc(size * sizeof(float));
+  
+  printf("\n*** WRITING AND READING 1D ARRAY TO/FROM TREE ***\n");
+  report(testOpen("MAIN",-1));
+  
+  for (i=0; i<size; i++) array[i] = i*10;
+  dsc = descr(&dtype_float, array, &size, &null);
+  report(testPut1Dsc("\\TOP:NUMERIC","$",dsc));
+  
+  printf("Testing data in \\TOP:NUMERIC");
+  dsc = descr(&dtype_float, compare, &size, &null);
+  status = MdsValue("\\TOP:NUMERIC", &dsc, &null, &returnlength);
+  if (status & 1)
+    {
+      status = (returnlength == size);
+      if (status & 1)
+	{
+	  int i;
+	  for (i=0; i<size; i++) status = status && (array[i] == compare[i]);
+	}
+    }
+  report(status);
+
+  report(testClearNode("\\TOP:NUMERIC"));
+
+  free(array);
+  free(compare);
+}
+
+
+void TestArray2D()
+{
+  int dsc;
+  int sx=2;
+  int sy=13;
+  int sxx = 4;
+  int syy = 20;
+  int i;
+  float array[2][13] = {
+    {0., 31., 28., 31., 30., 31., 30., 31., 31., 30., 31., 30., 31.},
+    {0., 31., 29., 31., 30., 31., 30., 31., 31., 30., 31., 30., 31.}};
+  float compare[2][13];
+  float compareBigger[4][20];
+  for (i=0; i<sx; i++) { int j; for (j=0; j<sy; j++) compare[i][j] = 0;}
+  for (i=0; i<sxx; i++) { int j; for (j=0; j<syy; j++) compareBigger[i][j] = 0;}
+
+  
+  printf("\n*** WRITING AND READING 2D SIGNAL ***\n");
+  report(testOpen("MAIN",-1));
+
+  dsc = descr(&dtype_float, array, &sx, &sy, &null); 
+  report(testPut1Dsc("\\TOP:SIGNAL","BUILD_SIGNAL($,*,*,*)",dsc));
+
+  printf("Testing data in \\TOP:SIGNAL");
+  dsc = descr(&dtype_float, compare, &sx, &sy, &null);
+  status = MdsValue("\\TOP:SIGNAL",&dsc,&null,&returnlength);
+  if (status & 1)
+    {
+      status = (returnlength == sx*sy);
+      if (status & 1)
+	{
+	  int i;
+	  for (i=0; i<sx; i++) 
+	    {
+	      int j;
+	      for (j=0; j<sy; j++) 
+		{
+		  /*printf("i: %d, j: %d, data: %f \n",i,j,compare[i][j]);*/
+		  status = status && (array[i][j] == compare[i][j]);
+		}
+	    }
+	}
+    }
+  report(status);
+
+  printf("Testing reading 2D data from \\TOP:SIGNAL into larger array");
+  dsc = descr(&dtype_float, compareBigger, &sxx, &syy, &null);
+  status = MdsValue("\\TOP:SIGNAL",&dsc,&null,&returnlength);
+  if (status & 1)
+    {
+      status = (returnlength == sx*sy);
+      if (status & 1)
+	{
+	  int i;
+	  for (i=0; i<sx; i++) 
+	    {
+	      int j;
+	      for (j=0; j<sy; j++) 
+		{
+		  /*printf("i: %d, j: %d, data: %f \n",i,j,compare[i][j]);*/
+		  status = status && (array[i][j] == compare[i][j]);
+		}
+	    }
+	}
+    }
+  report(status);
+
+
+  report(testClearNode("\\TOP:SIGNAL"));
+  
+}
+
+int main(int argc, char *argv[])
+{
+  int i;
+  long s;
+  if (argc > 1) 
+    {
+      SOCKET socket;
+      printf("*** Connecting to: %s",argv[1]);
+      socket = MdsConnect(argv[1]);
+      report((socket != INVALID_SOCKET));
+    }      
+
+  TestTreeOpenClose();
+  TestTdi();
+  TestArray1D();
+  TestArray2D();
+  printf("\n");
+  exit(0);
+}
+
