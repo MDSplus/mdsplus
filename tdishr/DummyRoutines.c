@@ -3,5 +3,4 @@
 dummy(LibConvertDateString)
 dummy(LibFindVmZone)
 dummy(LibShowVmZone)
-dummy(SysGetMsg)
 

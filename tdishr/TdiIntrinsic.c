@@ -352,12 +352,9 @@ int	option = -1;
 	if (narg > 0 && list[0]) status = TdiGetLong(list[0], &option);
 	if (option & 1 && mess_stat != 1) {
 	int	len;
-	char	msg[MAXLINE];
 	struct descriptor dmsg = {0,DTYPE_T,CLASS_S,0};
-                dmsg.pointer = (char *)msg;
-                dmsg.length = MAXLINE;
-		SysGetMsg(mess_stat, &len, &dmsg, 15, 0);
-		dmsg.length = (unsigned short) len;
+        dmsg.pointer = MdsGetMsg(mess_stat);
+        dmsg.length = strlen(dmsg.pointer);
 		StrConcat(&message, &dmsg, &newline, &message MDS_END_ARG);
 	}
 	if (message.length) {
