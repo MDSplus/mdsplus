@@ -157,11 +157,11 @@ static fixup_path(struct descriptor *pin, int	arg, struct descriptor_d *pout) {
 
 TdiRefStandard(Tdi1Using)
 void *ctx;
+int reset_ctx=0;
 int nid, shot, stat1;
 struct descriptor def = {0,DTYPE_T,CLASS_D,0}, expt = def;
 unsigned char	omits[] = {DTYPE_PATH,0};
 
-	ctx = TreeSaveContext(&ctx);
 	/**********************
 	Evaluate with current.
 	Use current if omitted.
@@ -230,6 +230,8 @@ unsigned char	omits[] = {DTYPE_PATH,0};
 		*********************/
 		if (status & 1)
 		{
+                      	ctx = TreeSwitchDbid(0);
+                        reset_ctx=1;
 			char *tree = MdsDescrToCstring(&expt);
 			status = TreeOpen(tree, shot, 1);
 			MdsFree(tree);
@@ -252,6 +254,10 @@ unsigned char	omits[] = {DTYPE_PATH,0};
 			fixup_nid, NULL, fixup_path, NULL);
 		MdsFree1Dx(&tmp, NULL);
 	}
-	if (ctx) TreeRestoreContext(ctx);
+        if (reset_ctx)
+        {
+          while(TreeClose(0,0) & 1);
+	  TreeSwitchDbid(ctx);
+        }
 	return status;
 }
