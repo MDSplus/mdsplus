@@ -12,8 +12,8 @@ Public fun dt196__add(in _path, out _nidout)
     _name=_path//':DI'//TEXT(_c, 1 );
     _wval='MI'//TEXT(_c,1);
     DevAddNode(_name, 'AXIS', *,'/noshot_write', _nid);
-    DevAddNode(_name//':WIRE', 'TEXT', (_c==0) ? 'CLK' : ((_c==3) ? 'trig' : ''),'/noshot_write', _nid);
-    DevAddNode(_name//':BUS', 'TEXT', *,'/noshot_write', _nid);
+    DevAddNode(_name//':WIRE', 'TEXT', (_c==0) ? 'mezz' : ((_c==3) ? 'mezz' : 'fpga'),'/noshot_write', _nid);
+    DevAddNode(_name//':BUS', 'TEXT', ((_c==0) || (_c==3)) ? 'fpga' : ' ','/noshot_write', _nid);
   }
   /* internal clock / clock divider (or int clock freq) */
   DevAddNode(_path//':CLOCK_SRC', 'TEXT', 'INT', '/noshot_write', _nid);
@@ -23,9 +23,9 @@ Public fun dt196__add(in _path, out _nidout)
 
   DevAddNode(_path//':DAQ_MEM', 'NUMERIC', 512, '/noshot_write', _nid);
   DevAddNode(_path//':ACTIVE_CHAN', 'NUMERIC', 96, '/noshot_write', _nid);
-  DevAddNode(_path//':TRIG_SRC', 'TEXT', 'DI2', '/noshot_write', _nid);
+  DevAddNode(_path//':TRIG_SRC', 'TEXT', 'DI3', '/noshot_write', _nid);
   DevAddNode(_path//':POST_TRIG','NUMERIC',64,'/noshot_write',_nid);
-  DevAddNode(_path//':PRE_TRIG','NUMERIC',1,'/noshot_write',_nid);
+  DevAddNode(_path//':PRE_TRIG','NUMERIC',0,'/noshot_write',_nid);
   for (_c=1;_c<=96;_c++)
   {
     _cn = _path//':INPUT_'//TEXT(_c/10,1)//TEXT(_c mod 10,1);
@@ -35,33 +35,6 @@ Public fun dt196__add(in _path, out _nidout)
     DevAddNode(_cn//':INC','NUMERIC',*,*,_nid);
     DevAddNode(_cn//':FILTER_COEFS','NUMERIC',*,'/noshot_write',_nid);
   }
-
-  /* Digital Outputs
-
-  _dpath = _path//'.DIG_OUT';
-  DevAddNode(_dpath, 'STRUCTURE', *, *, _nid);
-  DevAddNode(_dpath//':TRIG_SRC', 'TEXT', 'DI1', '/noshot_write', _nid);
-  for (_c=1;_c<=8;_c++)
-  {
-    _cn = _dpath//':OUTPUT_'//TEXT(_c, 1);
-    DevAddNode(_cn, 'SIGNAL', *,'/noshot_write', _nid);
-    DevAddNode(_cn//':SET_POINTS', 'NUMERIC', *,'/noshot_write', _nid);
-    DevAddNode(_cn//':EDGES_R', 'NUMERIC', *,'/noshot_write', _nid);
-    DevAddNode(_cn//':EDGES_F', 'NUMERIC', *,'/noshot_write', _nid);
-  }
-  */
-  /* Analog Outputs
-  _apath = _path//'.ANALOG_OUT';
-  DevAddNode(_apath, 'STRUCTURE', *, *, _nid);
-  DevAddNode(_apath//':TRIG_SRC', 'TEXT', 'DI1', '/noshot_write', _nid);
-  DevAddNode(_apath//':NSAMP', 'TEXT', 'DI1', '/noshot_write', _nid);
-  for (_c=1;_c<=2;_c++)
-  {
-    _cn = _apath//':OUTPUT_'//TEXT(_c, 1);
-    DevAddNode(_cn, 'SIGNAL', *,'/noshot_write', _nid);
-    DevAddNode(_cn//':SET_POINTS', 'NUMERIC', *,'/noshot_write', _nid);
-  }
-  */
 
   /* and the default actions */
   DevAddAction(_path//':INIT_ACTION','INIT','INIT',50,'CAMAC_SERVER',_path,_nid);
