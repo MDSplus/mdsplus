@@ -528,41 +528,23 @@ int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
 {
   pid_t  pid,xpid;
   char *cmdstring = MdsDescrToCstring(cmd);
-  int   sts;
+  int   sts=0;
   signal(SIGCHLD,notifyFlag ? child_done : SIG_DFL);
   pid = fork();
   if (!pid)
-  {		/*-------------> child process: execute cmd	*/
+  {
+  /*-------------> child process: execute cmd	*/
     static char  *arglist[4];
     char  *p;
-    if (cmd->length == 0)
+    int i=0;
+    arglist[i++] = getenv("SHELL");
+    if (cmd->length != 0)
     {
-      arglist[0] = getenv("SHELL");
-      arglist[1] = 0;
-      sts = execvp(arglist[0],arglist);
+      arglist[i++] = "-c";
+      arglist[i++] = nonblank(cmdstring);
     }
-    else
-    {
-      arglist[0] = nonblank(cmdstring);
-      p = blank(arglist[0]);
-      if (p)
-      {
-        *p = '\0';
-        p = nonblank(p+1);
-      }
-      arglist[1] = p;
-      sts = execvp(arglist[0],arglist);
-      printf("\nChild process:  try again ...\n");
-      arglist[3] = 0;
-      arglist[2] = arglist[1];
-      arglist[1] = arglist[0];
-      arglist[0] = "sh";
-      sts = execvp("/bin/sh",arglist);
-      fprintf(stderr,"\n+++ *ERR* should never have gotten here!\n");
-      perror("from inside mdsdcl_spawn()");
-      fprintf(stderr,"\n");
-      exit(1);
-    }
+    arglist[i] = 0;
+    sts = execvp(arglist[0],arglist);
   }
   /*-------------> parent process ...		*/
   if (pid == -1)
@@ -570,7 +552,7 @@ int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
     fprintf(stderr,"Error %d from fork()\n",errno);
     return(0);
   }
-  if (waitflag)
+  if (waitflag || cmd->length == 0)
   {
     for ( ; ; )
     {
