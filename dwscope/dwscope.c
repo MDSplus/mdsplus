@@ -67,9 +67,9 @@ extern void XmdsUnmanageChildCallback();
 
 extern void SetupEvent(String event, Boolean *received, void **id);
 extern void SetupEventInput(XtAppContext app_context, Widget w);
-extern Boolean ConvertSelectionToWave(Widget w, Atom result_type, unsigned int length, XtPointer header, WaveInfo *info);
+extern Boolean ConvertSelectionToWave(Widget w, Atom result_type, unsigned long length, XtPointer header, WaveInfo *info);
 extern Boolean ConvertWaveToSelection(Widget w, String prefix, WaveInfo *wave, Atom target, Atom *type, XtPointer *header,
-				                unsigned int *length, int *format);
+				                unsigned long *length, int *format);
 extern Boolean ReplaceString(String *old, String new, Boolean free);
 extern String GetResource(XrmDatabase db, String resource, String default_answer);
 extern String WaveToText(String prefix, WaveInfo *wave, Dimension height, int *ctx);
@@ -98,7 +98,7 @@ extern void CloseDataSources();
 static String GlobalShot();
 static void RaiseWindows();
 static    Boolean /*XtConvertSelectionProc*/ConvertSelection(Widget w, Atom *selection, Atom *target, Atom *type, XtPointer *value,
-							              unsigned int *length, int *format);
+							              unsigned long *length, int *format);
 static int UpdateWaveform(Boolean complain, WaveInfo *info, Boolean event, int global_change_mask, int change_mask);
 static void /*XtCallbackProc*/GridStyle(Widget w, XtPointer client_data, XmAnyCallbackStruct *cb);
 static void Shrink();
@@ -140,9 +140,9 @@ static void Setup(Widget w, XtPointer client_data, XButtonEvent *event, Boolean 
 void /*XtInputCallbackProc*/EventUpdate(XtPointer client_data, int *source, XtInputId *id);
 static void /*XtLoseSelectionProc*/LoseSelection(Widget w, Atom *selection);
 static void /*XtSelectionCallbackProc*/PasteComplete(Widget w, WaveInfo *info, Atom *selection, Atom *type, XtPointer value,
-						              unsigned int *length, int *format);
+						              unsigned long *length, int *format);
 static void /*XtSelectionCallbackProc*/PasteTypesComplete(Widget w, XtPointer cdata, Atom *selection, Atom *type, XtPointer value,
-						              unsigned int *length, int *format);
+						              unsigned long *length, int *format);
 static void  Complain(WaveInfo *info, char mode, String error);
 static void  CopyWave(WaveInfo *in, WaveInfo *out);
 static void  FreeWave(WaveInfo *info);
@@ -1639,8 +1639,8 @@ static void /*XtCallbackProc*/Cut(Widget w, XtPointer client_data, XmAnyCallback
 {
   WaveInfo *pending = GetPending(w);
   if (pending == SelectedWave)
-    XtDisownSelection(SelectedWave->w, XA_PRIMARY, XtLastTimestampProcessed(XtDisplay(w)));
-  else if (XtOwnSelection(pending->w, XA_PRIMARY, XtLastTimestampProcessed(XtDisplay(w)), 
+    XtDisownSelection(SelectedWave->w, XA_PRIMARY, callback_struct->event->xbutton.time);
+  else if (XtOwnSelection(pending->w, XA_PRIMARY, callback_struct->event->xbutton.time, 
          (XtConvertSelectionProc)ConvertSelection, LoseSelection, NULL))
   {
     SelectedWave = pending;
@@ -1649,7 +1649,7 @@ static void /*XtCallbackProc*/Cut(Widget w, XtPointer client_data, XmAnyCallback
 }
 
 static    Boolean /*XtConvertSelectionProc*/ConvertSelection(Widget w, Atom *selection, Atom *target, Atom *type, XtPointer *value,
-							              unsigned int *length, int *format)
+							              unsigned long *length, int *format)
 {
   int       r = 0;
   int       c = 0;
@@ -1681,7 +1681,7 @@ static void /*XtActionProc*/Paste(Widget w, XEvent *event, String *params, Cardi
 
 
 static void /*XtSelectionCallbackProc*/PasteTypesComplete(Widget w, XtPointer cdata, Atom *selection, Atom *type, XtPointer value,
-						              unsigned int *length, int *format)
+						              unsigned long *length, int *format)
 {
   int i;
   Atom req_type = XA_STRING;
@@ -1698,7 +1698,7 @@ static void /*XtSelectionCallbackProc*/PasteTypesComplete(Widget w, XtPointer cd
 }
 
 static void /*XtSelectionCallbackProc*/PasteComplete(Widget w, WaveInfo *info, Atom *selection, Atom *type, XtPointer value,
-						              unsigned int *length, int *format)
+						              unsigned long *length, int *format)
 {
   if (ConvertSelectionToWave(w, *type, *length, value, info))
   {

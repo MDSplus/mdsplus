@@ -83,9 +83,9 @@ extern int sys$filescan();
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int XmdsManageWindow();
-Boolean   ConvertSelectionToWave(Widget w, Atom result_type, unsigned int length, CutHeader *header, WaveInfo *info);
+Boolean   ConvertSelectionToWave(Widget w, Atom result_type, unsigned long length, CutHeader *header, WaveInfo *info);
 Boolean   ConvertWaveToSelection(Widget w, String prefix, WaveInfo *wave, Atom target, Atom *type, String *header,
-				           unsigned int *length, int *format);
+				           unsigned long *length, int *format);
 Boolean   ReplaceString(String *old, String new, Boolean free);
 String    GetResource(XrmDatabase db, String resource, String default_answer);
 String    WaveToText(String prefix, WaveInfo *wave, Dimension height, int *ctx);
@@ -133,7 +133,7 @@ static int FlipBitsIfNecessary(int in)
   }
 }
 
-Boolean   ConvertSelectionToWave(Widget w, Atom type, unsigned int length, CutHeader *header, WaveInfo *wave)
+Boolean   ConvertSelectionToWave(Widget w, Atom type, unsigned long length, CutHeader *header, WaveInfo *wave)
 {
   int       status = 0;
   if (type == XA_DWSCOPE_PANEL)
@@ -393,7 +393,7 @@ String    WaveToText(String prefix, WaveInfo *wave, Dimension height, int *ctx)
 }
 
 Boolean   ConvertWaveToSelection(Widget w, String prefix, WaveInfo *wave, Atom target, Atom *type, String *value,
-				           unsigned int *length, int *format)
+				           unsigned long *length, int *format)
 {
   int       status = 0;
   if (target == XA_DWSCOPE_PANEL)
