@@ -48,7 +48,8 @@ static int RewriteDatafile(void **dbid, char *tree, int shot, int compress)
                 TreeGetNciW(info1, i, &nci);
                 TreePutNci(info2, i, &nci, 1);
                 lstatus = _TreeGetRecord(dbid1, i, &xd);
-                lstatus = _TreePutRecord(dbid2, i, (struct descriptor *)&xd, compress ? 2 : 1);
+                if (lstatus & 1)
+                  lstatus = _TreePutRecord(dbid2, i, (struct descriptor *)&xd, compress ? 2 : 1);
               }
               from_c = strcpy(malloc(strlen(info1->filespec)+20),info1->filespec);
               strcpy(from_c+strlen(info1->filespec)-4,"characteristics#");
