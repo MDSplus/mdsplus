@@ -132,16 +132,6 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
         unsigned int m2 = 10000000;
         _int64 addin = 0x7c95674beb4000ll;
         _int64 zero = 0;
-/*
-        unsigned int zero[2] = {0,0};
-#ifdef WORDS_BIGENDIAN
-        unsigned int addin[2] = {0x7c9567,0x4beb4000};
-        unsigned int time_inserted[2];
-#else
-        unsigned int addin[2] = {0x4beb4000,0x7c9567};
-#endif
-        unsigned int temp[2] = {0,0};
-*/
         _int64 temp = 0;
         bitassign(dblist->setup_info, local_nci.flags, NciM_SETUP_INFORMATION);
 	local_nci.owner_identifier = saved_uic;
@@ -151,19 +141,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 #endif
         m1 = (unsigned int)time(NULL) - timezone;
 	LibEmul(&m1,&m2,&zero,&temp);
-/*
-#ifdef WORDS_BIGENDIAN
-        AddQuadword(temp,addin,time_inserted);
-        local_nci.time_inserted[0] = time_inserted[1];
-        local_nci.time_inserted[1] = time_inserted[0];
-#else
-        AddQuadword(temp,addin,local_nci.time_inserted);
-#endif
-*/
-        *(_int64 *)local_nci.time_inserted = temp + addin;
-	/*
-        AddQuadword(&temp,&addin,local_nci.time_inserted);
-	*/
+        local_nci.time_inserted = temp + addin;
       }
       if (!(open_status & 1))
       {

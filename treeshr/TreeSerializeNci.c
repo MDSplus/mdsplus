@@ -38,7 +38,7 @@ void TreeSerializeNciIn(char *in, NCI *out)
   char *ptr = in;
   out->flags = swapint(ptr);                                              ptr += 4;
   out->flags2 = *ptr;                                                     ptr += 1;
-  *(_int64 *)out->time_inserted = swapquad(ptr);                          ptr += 8;
+  out->time_inserted = swapquad(ptr);                                     ptr += 8;
   out->owner_identifier = swapint(ptr);                                   ptr += 4;
   out->class = *ptr;                                                      ptr += 1;
   out->dtype = *ptr;                                                      ptr += 1;

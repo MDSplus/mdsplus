@@ -28,7 +28,7 @@ typedef struct nci
   unsigned int  flags;
   unsigned char flags2;
   unsigned char spare;
-  unsigned int  time_inserted[2];
+  _int64        time_inserted;
   unsigned int  owner_identifier;
   unsigned char class;
   unsigned char dtype;
