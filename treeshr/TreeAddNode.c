@@ -773,15 +773,20 @@ static int TreeWriteNci(TREE_INFO *info)
   int       status = TreeNORMAL;
   if (info->header->nodes > info->edit->first_in_mem)
   {
+    int numnodes = info->header->nodes - info->edit->first_in_mem;
+    int num;
     status = TreeFAILURE;
-    if (!fseek(info->nci_file->put,info->edit->first_in_mem * sizeof(struct nci),SEEK_SET))
+#ifdef _WIN32
+    fseek(info->nci_file->put,info->edit->first_in_mem * sizeof(struct nci),SEEK_SET);
+    num = fwrite(info->edit->nci,sizeof(struct nci),numnodes,info->nci_file->put);
+#else
+    lseek(info->nci_file->put,info->edit->first_in_mem * sizeof(struct nci),SEEK_SET);
+    num = write(info->nci_file->put,info->edit->nci,numnodes * sizeof(NCI))/sizeof(NCI);
+#endif
+    if (num == numnodes)
     {
-      size_t num = fwrite(info->edit->nci,sizeof(struct nci),info->header->nodes - info->edit->first_in_mem,info->nci_file->put);
-      if (num == (size_t)(info->header->nodes - info->edit->first_in_mem))
-      {
-        info->edit->first_in_mem = info->header->nodes;
-        status = TreeNORMAL;
-      }
+      info->edit->first_in_mem = info->header->nodes;
+      status = TreeNORMAL;
     }
   }
   return status;
