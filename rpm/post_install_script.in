@@ -20,6 +20,10 @@ done
 echo $MDSPLUS_DIR > /etc/.mdsplus_dir
 if (test "$RPM_INSTALL_PREFIX" != "")
 then
+  if [ ! -r $MDSPLUS_DIR/local/mdsplus_post_uninstall_script ]
+  then
+    cp $MDSPLUS_DIR/rpm/post_uninstall_script $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
+  fi
   echo ""
   echo "MDSplus is now installed on your system. If you would like to"
   echo "have MDSplus environment variables setup for all users or"
@@ -154,10 +158,6 @@ then
       echo "source $MDSPLUS_DIR/setup.csh" >> /etc/csh.login
     fi
   fi
-fi
-if [ ! -r $MDSPLUS_DIR/local/mdsplus_post_uninstall_script ]
-then
-  cp $MDSPLUS_DIR/rpm/post_uninstall_script $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 fi
 unset MDSplusEnv
 unset MDSplusSrv

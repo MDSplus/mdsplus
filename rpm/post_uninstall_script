@@ -7,14 +7,14 @@ then
     MDSPLUS_DIR=`/bin/cat /etc/.mdsplus_dir`
   fi
 fi
-if [ -r /etc/profile.d/mdsplus.csh ]; then
-  rm /etc/profile.d/mdsplus.csh
+if ( test -L /etc/profile.d/mdsplus.csh ); then
+  rm -f /etc/profile.d/mdsplus.csh
 else
   /bin/cp /etc/csh.login /etc/csh.login.before_mdsplus_removal
   /bin/grep -v "^source $MDSPLUS_DIR/etc/profile.d/mdsplus.csh" /etc/csh.login.before_mdsplus_removal > /etc/csh.login
 fi
-if [ -r /etc/profile.d/mdsplus.sh ]; then
-  rm /etc/profile.d/mdsplus.sh
+if ( test -L /etc/profile.d/mdsplus.sh ); then
+  rm -f /etc/profile.d/mdsplus.sh
 else
   /bin/cp /etc/profile /etc/profile.before_mdsplus_removal
   /bin/grep -v "^. $MDSPLUS_DIR/setup.sh" /etc/profile.before_mdsplus_removal > /etc/profile
@@ -25,5 +25,5 @@ then
 fi
 if (test -r /etc/.mdsplus_dir)
 then
-  rm /etc/.mdsplus_dir
+  rm -f /etc/.mdsplus_dir
 fi
