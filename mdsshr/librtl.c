@@ -1140,26 +1140,19 @@ time_t LibCvtTim(int *time_in,double *t)
 {
   double t_out;
   time_t bintim = time(&bintim);
-  struct tm *_tm;
 #ifndef HAVE_VXWORKS_H
   tzset();
-  _tm = localtime(&bintim);
   if (time_in)
   {
     _int64 time_local;
     double time_d;
     memcpy(&time_local,time_in,sizeof(time_local));
     time_d = ((double)(time_local >> 24)) * 1.6777216 - 3.5067168e+09;
-    t_out = (time_d > 0 ? time_d : 0) + timezone;
-    bintim = (time_t)(time_d > 0 ? time_d : 0);  
+    t_out = (time_d > 0 ? time_d : 0) + timezone - daylight * 3600;
+    bintim = (long)t_out;
   }
   else
-    bintim = (long)t_out = time(0);
-#ifdef HAVE_WINDOWS_H
-  bintim = (long)t_out = bintim + _daylight * 3600;
-#else
-  bintim -= _tm->tm_gmtoff;
-#endif
+    bintim = (long)(t_out = time(0));
 #else
   bintim = t_out = time(0);
 #endif

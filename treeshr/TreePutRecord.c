@@ -140,7 +140,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 #ifndef HAVE_VXWORKS_H
         tzset();
 #endif
-        m1 = (unsigned int)time(NULL) - timezone;
+        m1 = (unsigned int)time(NULL) - timezone + daylight * 3600;
 	LibEmul(&m1,&m2,&zero,&temp);
         local_nci.time_inserted = temp + addin;
       }
