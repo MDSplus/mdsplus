@@ -6,7 +6,7 @@
 #pragma nomember_alignment
 #endif  /* __VMS */
 
-#ifdef _WINDOWS
+#ifdef _WIN32
 #define __fill_name__ fill
 #define __fill_value__ 0,
 #define __char_align__ char
