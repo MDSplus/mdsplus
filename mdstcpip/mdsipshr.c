@@ -103,6 +103,7 @@
 #include <netinet/tcp.h>
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
+#define _UNIX_SERVER
 
 static unsigned char message_id = 1;
 Message *GetMdsMsg(SOCKET sock, int32 *status);
@@ -238,8 +239,13 @@ int32 MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL t
   unsigned char nargs;
   unsigned char idx = 0;
   int32 status = 1;
+#ifdef _UNIX_SERVER
+  static char *putexpprefix = "TreePutRecord(";
+  static char *argplace = "$,";
+#else
   static char *putexpprefix = "MDSLIB->MDS$PUT(";
   static char *argplace = "descr($),";
+#endif
   char *putexp;
   struct descrip putexparg;
   struct descrip nodearg;
@@ -476,7 +482,12 @@ int32 PASCAL MdsOpen(SOCKET sock, char *tree, int32 shot)
   struct descrip treearg;
   struct descrip shotarg;
   struct descrip ansarg;
-  int32 status = MdsValue(sock, "MDSLIB->MDS$OPEN($,$)", MakeDescrip((struct descrip *)&treearg,DTYPE_CSTRING,0,0,tree), 
+#ifdef _UNIX_SERVER
+  static char *expression = "TreeOpen($,$)";
+#else
+  static char *expression = "MDSLIB->MDS$OPEN($,$)";
+#endif
+  int32 status = MdsValue(sock, expression, MakeDescrip((struct descrip *)&treearg,DTYPE_CSTRING,0,0,tree), 
 			      MakeDescrip((struct descrip *)&shotarg,DTYPE_LONG,0,0,&shot),
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
 
@@ -488,7 +499,12 @@ int32 PASCAL MdsOpen(SOCKET sock, char *tree, int32 shot)
 int32 PASCAL MdsClose(SOCKET sock)
 {
   struct descrip ansarg;
-  int32 status = MdsValue(sock, "MDSLIB->MDS$CLOSE()", &ansarg, NULL);
+#ifdef _UNIX_SERVER
+  static char *expression = "TreeClose()";
+#else
+  static char *expression = "MDSLIB->MDS$CLOSE()";
+#endif
+  int32 status = MdsValue(sock, expression, &ansarg, NULL);
   if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) status = *(int32 *)ansarg.ptr;
   if (ansarg.ptr) free(ansarg.ptr);
   return status;
@@ -498,7 +514,12 @@ int32 PASCAL MdsSetDefault(SOCKET sock, char *node)
 {
   struct descrip nodearg;
   struct descrip ansarg;
-  int32 status = MdsValue(sock, "MDSLIB->MDS$SET_DEFAULT($)", MakeDescrip(&nodearg,DTYPE_CSTRING,0,0,node), &ansarg, NULL);
+#ifdef _UNIX_SERVER
+  static char *expression = "TreeSetDefault($)";
+#else
+  static char *expression = "MDSLIB->MDS$SET_DEFAULT($)";
+#endif
+  int32 status = MdsValue(sock, expression, MakeDescrip(&nodearg,DTYPE_CSTRING,0,0,node), &ansarg, NULL);
   if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) status = *(int32 *)ansarg.ptr;
   if (ansarg.ptr) free(ansarg.ptr);
   return status;
