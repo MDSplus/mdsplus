@@ -52,7 +52,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386 /out:"../Release/MdsMath.dll"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib libg2c.a libgcc.a /nologo /subsystem:windows /dll /machine:I386 /out:"../Release/MdsMath.dll"
+# SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "math - Win32 Debug"
 
@@ -78,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"../Debug/MdsMath.dll" /pdbtype:sept
+# ADD LINK32 libg2c.a libgcc.a kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"../Debug/MdsMath.dll" /pdbtype:sept /libpath:"e:\g77\lib"
 
 !ENDIF 
 
@@ -96,15 +97,29 @@ SOURCE=.\caxpy.f
 
 !IF  "$(CFG)" == "math - Win32 Release"
 
-!ELSEIF  "$(CFG)" == "math - Win32 Debug"
-
 # Begin Custom Build - Compiling
+IntDir=.\Release
 InputPath=.\caxpy.f
 InputName=caxpy
 
-"$(InputName).o" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	set path=%path%;%g77_dir%\bin 
-	g77 -c $(InputName).f 
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\caxpy.f
+InputName=caxpy
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
 	
 # End Custom Build
 
@@ -114,70 +129,562 @@ InputName=caxpy
 # Begin Source File
 
 SOURCE=.\cgeco.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\cgeco.f
+InputName=cgeco
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\cgeco.f
+InputName=cgeco
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\cmul.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\cmul.f
+InputName=cmul
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\cmul.f
+InputName=cmul
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
-SOURCE=.\csint.F
-# End Source File
-# Begin Source File
+SOURCE=".\csint-win32.f"
 
-SOURCE=.\csint.f.in
-# End Source File
-# Begin Source File
+!IF  "$(CFG)" == "math - Win32 Release"
 
-SOURCE=.\csint.F.old
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\csint-win32.f
+InputName=csint-win32
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\csint-win32.f
+InputName=csint-win32
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\csval.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\csval.f
+InputName=csval
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\csval.f
+InputName=csval
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\daxpy.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\daxpy.f
+InputName=daxpy
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\daxpy.f
+InputName=daxpy
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\dcsint.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\dcsint.f
+InputName=dcsint
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\dcsint.f
+InputName=dcsint
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\dcsval.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\dcsval.f
+InputName=dcsval
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\dcsval.f
+InputName=dcsval
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\dgeco.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\dgeco.f
+InputName=dgeco
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\dgeco.f
+InputName=dgeco
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\dmul.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\dmul.f
+InputName=dmul
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\dmul.f
+InputName=dmul
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\dpermu.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\dpermu.f
+InputName=dpermu
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\dpermu.f
+InputName=dpermu
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\dppval.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\dppval.f
+InputName=dppval
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\dppval.f
+InputName=dppval
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\dsrch.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\dsrch.f
+InputName=dsrch
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\dsrch.f
+InputName=dsrch
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\dsvrgn.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\dsvrgn.f
+InputName=dsvrgn
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\dsvrgn.f
+InputName=dsvrgn
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\gn.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\gn.f
+InputName=gn
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\gn.f
+InputName=gn
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\isrch.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\isrch.f
+InputName=isrch
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\isrch.f
+InputName=isrch
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=".\librtl-win32.f"
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\librtl-win32.f
+InputName=librtl-win32
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	set path=%path%;%g77_dir%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -fno-underscoring\
+ -fcase-preserve 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\librtl-win32.f
+InputName=librtl-win32
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	set path=%path%;%g77_dir%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -fno-underscoring\
+ -fcase-preserve 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -186,62 +693,457 @@ SOURCE=.\MdsMath.def
 # Begin Source File
 
 SOURCE=.\permu.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\permu.f
+InputName=permu
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\permu.f
+InputName=permu
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\ppval.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\ppval.f
+InputName=ppval
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\ppval.f
+InputName=ppval
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\saxpy.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\saxpy.f
+InputName=saxpy
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\saxpy.f
+InputName=saxpy
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\sgeco.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\sgeco.f
+InputName=sgeco
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\sgeco.f
+InputName=sgeco
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\smul.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\smul.f
+InputName=smul
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\smul.f
+InputName=smul
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\srch.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\srch.f
+InputName=srch
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\srch.f
+InputName=srch
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\ssrch.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\ssrch.f
+InputName=ssrch
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\ssrch.f
+InputName=ssrch
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\svign.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\svign.f
+InputName=svign
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\svign.f
+InputName=svign
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\svrgn.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\svrgn.f
+InputName=svrgn
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\svrgn.f
+InputName=svrgn
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
-SOURCE=.\umach.F
-# End Source File
-# Begin Source File
+SOURCE=".\umach-win32.f"
 
-SOURCE=.\umach.f.in
-# End Source File
-# Begin Source File
+!IF  "$(CFG)" == "math - Win32 Release"
 
-SOURCE=.\umach.F.old
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\umach-win32.f
+InputName=umach-win32
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\umach-win32.f
+InputName=umach-win32
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\zaxpy.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\zaxpy.f
+InputName=zaxpy
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\zaxpy.f
+InputName=zaxpy
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\zgeco.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\zgeco.f
+InputName=zgeco
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\zgeco.f
+InputName=zgeco
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\zmul.f
+
+!IF  "$(CFG)" == "math - Win32 Release"
+
+# Begin Custom Build - Compiling
+IntDir=.\Release
+InputPath=.\zmul.f
+InputName=zmul
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "math - Win32 Debug"
+
+# Begin Custom Build - Compiling
+IntDir=.\Debug
+InputPath=.\zmul.f
+InputName=zmul
+
+"$(IntDir)\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	echo $(IntDir)\$(InputName).f 
+	set path=%path%;%G77_DIR%\bin 
+	g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w -fno-underscoring 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # End Target
 # End Project
