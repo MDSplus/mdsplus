@@ -313,7 +313,7 @@ static int       TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr, NODE **t
 
     if (node_ptr->parent)
     {
-      header_ptr->free += node_ptr->parent;
+      header_ptr->free += swapint((char *)&node_ptr->parent);
       (parent_of(node_ptr))->child = 0;
     }
     else
