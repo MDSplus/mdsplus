@@ -74,10 +74,34 @@
 #define BITSX 10		/*number of bits for run length*/
 #define BITSY 6			/*number of bits in y 0-32*/
 
-#ifdef __hpux__
+#if defined(__hpux__)
 #pragma HP_ALIGN NOPADDING PUSH
+#elif defined(__irix__)
+#pragma pack(1)
 #endif
 
+#ifdef _big_endian
+typedef union
+{
+  int       l;
+  struct
+  {
+    short     s1,
+                s0;
+  }         s;
+}        *PF;
+
+union Y_X
+{
+  int       dummy;
+  struct
+  {
+    unsigned  :16;
+    unsigned  x:BITSX;
+    unsigned  y:BITSY;
+  }         fields;
+};
+#else
 typedef union
 {
   int       l;
@@ -97,14 +121,18 @@ union Y_X
     unsigned  x:BITSX;
   }         fields;
 };
+#endif
+
 struct HEADER
 {
   union Y_X n;
   union Y_X e;
 };
 
-#ifdef __hpux__
+#if defined(__hpux__)
 #pragma HP_ALIGN POP
+#elif defined(__irix__)
+#pragma pack(0)
 #endif
 
 static int FIELDSY = BITSY + BITSX;
