@@ -32,6 +32,7 @@ int ServerSendMessage();
 #include <pthread.h>
 #include <ipdesc.h>
 #include <string.h>
+#include <servershr.h>
 #include "servershrp.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -475,7 +476,7 @@ static void RemoveClient(Client *c, fd_set *fdactive)
     if (j)
     {
       found = 1;
-      DoCompletionAst(j->jobid, ServerABORT, 0, 1);
+      DoCompletionAst(j->jobid, ServerPATH_DOWN, 0, 1);
     }
   }
   if (fdactive)
