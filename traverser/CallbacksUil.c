@@ -1060,6 +1060,7 @@ static int setup_device(Widget parent, int nid)
       static DESCRIPTOR(const postfix, ".uid\0");
       static DESCRIPTOR(const zero,"\0");
       StrTrim(&model,&model,0);
+      StrUpcase(&model, &model);
       StrConcat(&filename,&model,&postfix MDS_END_ARG);
       StrAppend(&model,&zero MDS_END_ARG);
       status = XmdsDeviceSetup(parent, &c_nid, &filename.pointer, 1, model.pointer, NULL, 0, 0);
