@@ -1,4 +1,4 @@
-public fun DIO2HWGetRecEvents(in _nid, in _board_id)
+public fun DIO2HWGetPhaseCount(in _nid, in _board_id, in _channel)
 {
 
 	private _DIO2_CLOCK_SOURCE_INTERNAL	=	0x0;
@@ -18,17 +18,12 @@ public fun DIO2HWGetRecEvents(in _nid, in _board_id)
 	private _DIO2_EC_STOP_TRIGGER		=		0x02;
 
 
-/* Create _rec_times global variable if the first time */ 
-    if_error(_DIO2_rec_times,(public _DIO2_rec_times = 0;));
-	write(*, 'DIO2HWGetRecEvents', _board_id);
-	public _DIO2_rec_times = [10,20,30];
-	return([1,2,3]);
 
-
+	write(*, 'DIO2HWGetPhaseCount', _board_id, _channel);
+	return([1,2]);
 
 /* Initialize Library if the first time */
     if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1;));
- 
  
 /* Open device */
 	_handle = 0L;
@@ -42,32 +37,18 @@ public fun DIO2HWGetRecEvents(in _nid, in _board_id)
 		return(0);
 	}
 
-	_event_count = byte(0);
-	_status = DIO2->DIO2_ER_GetEventCount(val(_handle), ref(_event_count));
-	if(_status != 0)
-	{
-		if(_nid != 0)
-			DevLogErr(_nid, "Error getting event count in DIO2 device, board ID = "// _board_id);
-		else
-			write(*, "Error getting event count  in DIO2 device, board ID = "// _board_id);
-		return(0);
-	}
+	_phase1 = long(0);
+	_phase2 = long(0);
 
-	_rec_events = [];
-	_DIO2_rec_times = [];
-	for(_i = 0; _i < _event_count; _i++)
-	{
-		_curr_event = byte(0);
-		_curr_time = long(0);
-		DIO2->DIO2_ER_GetEvent(val(_handle), ref(_curr_event), ref(_curr_time));
-		_rec_events = [_rec_events, _curr_event];
-		_DIO2_rec_times = [_DIO2_rec_times, _curr_time];
-	}
+	DIO2->DIO2_TC_GetPhase1Count(val(_handle), val(byte(_channel + 1)), ref(_phase1));
+	DIO2->DIO2_TC_GetPhase2Count(val(_handle), val(byte(_channel + 1)), ref(_phase2));
+
+	_phases = [_phase1, _phase2];
 
 
 /* Close device */
 	DIO2->DIO2_Close(val(_handle));
 
-    return(_rec_events);
+    return(_phases);
 }
 		

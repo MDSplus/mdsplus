@@ -50,7 +50,7 @@ public fun DIO2HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 	if(_trig_mode == 2) _hw_trig_mode = byte(_DIO_TC_IO_TRIGGER_FALLING);
 
 	_status = DIO2->DIO2_TC_SetTrigger(val(_handle), val(byte(_channel + 1)), val(_hw_trig_mode), 
-		val(byte(_DIO2_TC_SOURCE_FRONT_REAR)), val(byte(_chan+1)));
+		val(byte(_DIO2_TC_SOURCE_FRONT_REAR)), val(byte(2 * _channel + 2)));
 	if(_status != 0)
 	{
 		if(_nid != 0)

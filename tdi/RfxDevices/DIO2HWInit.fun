@@ -17,6 +17,18 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 	private _DIO2_EC_START_TRIGGER		=		0x01;
 	private _DIO2_EC_STOP_TRIGGER		=		0x02;
 
+	private _DIO2_IO_CONNECTION_SOURCE_REGISTER	=		0x00;
+	private _DIO2_IO_CONNECTION_SOURCE_BUFFER	=		0x01;
+	private _DIO2_IO_CONNECTION_SOURCE_PXI_TRIGGER=		0x02;
+	private _DIO2_IO_CONNECTION_SOURCE_TIMING	=		0x03;
+
+	private _DIO2_IO_CONNECTION_SIDE_FRONT		=		0x00;
+	private _DIO2_IO_CONNECTION_SIDE_REAR		=		0x01;
+	private _DIO2_IO_CONNECTION_TERMINATION_ON	=		0x01;
+	private _DIO2_IO_CONNECTION_TERMINATION_OFF	=		0x00;
+	private _DIO2_IO_INT_ENABLE	=	0x1;
+	private _DIO2_IO_INT_DISABLE	=	0x0;
+
 
 
 	write(*, 'DIO2HWInit', _board_id, _ext_clock, _rec_event, _synch_event);
@@ -51,7 +63,7 @@ write(*, 'RESET');
 	else
 		_clock_source = byte(_DIO2_CLOCK_SOURCE_INTERNAL);
 		
-	for(_c = 0; _c <= 8; _c++)
+	for(_c = 1; _c <= 8; _c++)
 		_status = DIO2->DIO2_CS_SetClockSource(val(_handle), val(_clock_source), val(byte(_c)), val(byte(_DIO2_CLOCK_SOURCE_RISING_EDGE)));
 	if(_status != 0)
 	{
@@ -102,6 +114,32 @@ write(*, 'RESET');
 		}
 	}		
 
+/* Configure Outputs: channel i: output, channel i + 1 corresponding trigger */
+	for(_c = 0; _c < 8; _c++)
+	{
+		_status = DIO2->DIO2_IO_SetIOConnectionOutput(val(_handle), val(byte(2 * _c + 1)), 
+			val(byte(_DIO2_CONNECTION_SIDE_FRONT)), val(byte(_DIO2_CONNECTION_SOURCE_TIMING)),
+			val(byte(_c + 1)), val(byte(_DIO2_CONNECTION_TERMINATION_OFF)), 
+			val(byte(_DIO2_IO_INT_DISABLE)));  
+		if(_status != 0)
+		{
+			if(_nid != 0)
+				DevLogErr(_nid, "Error setting output configuration in DIO2 device, board ID = "// _board_id);
+			else
+				write(*, "Error setting output configuration  in DIO2 device, board ID = "// _board_id);
+			return(0);
+		}
+		_status = DIO2->DIO2_IO_SetIOConnectionInput(val(_handle), val(byte(2 * _c + 2)),
+			val(byte(_DIO2_CONNECTION_SIDE_FRONT)), val(byte(_DIO2_CONNECTION_TERMINATION_OFF)));
+		if(_status != 0)
+		{
+			if(_nid != 0)
+				DevLogErr(_nid, "Error setting input configuration in DIO2 device, board ID = "// _board_id);
+			else
+				write(*, "Error setting input configuration  in DIO2 device, board ID = "// _board_id);
+			return(0);
+		}
+	}
 
 
 

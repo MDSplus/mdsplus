@@ -162,9 +162,6 @@ write(*, '***', _c);
 			{
 				DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_TRIG_MODE,
 					['EVENT', 'RISING EDGE', 'FALLING EDGE', 'SOFTWARE'], [0,1,2,3], _trig_mode = 3);
-
-write(*,'CACCA');
-
 				if(_trig_mode == 0) /* If event triger */
 				{
 					_ev_name =if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_EVENT)), '');
@@ -181,16 +178,12 @@ write(*,'CACCA');
 				}
 				else
 					_event = 0;
-write(*,'CACCA');
 				DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_CYCLIC,
 					['NO', 'YES'], [0,1], _cyclic = 0);
 				DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_INIT_LEVEL_1,
 					['LOW', 'HIGH'], [0,1], _init_level_1 = 0);
 				DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_INIT_LEVEL_2,
 					['LOW', 'HIGH'], [0,1], _init_level_2 = 0);
-
-
-write(*,'CACCA');
 
 				_delay =if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_DELAY)), _INVALID);
 				if(_delay == _INVALID)
@@ -253,12 +246,18 @@ write(*,'CACCA');
  						abort();
 					}
 					_event_time = TimingGetEventTime(_event);
-					if(_event_time == HUGE(0.) || _event_time == HUGE(0.))
+					if(_event_time == HUGE(0.) || _event_time == -HUGE(0.))
 					{
-    					DevLogErr(_nid, "Cannot associate a time to event "// _ev_name // " in channel " // (_c + 1));
- 						abort();
+/* If event time cannot be reconstructed (i.e. RFXTiming device is missing) rely on trigger time */
+						_event_time = if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER)), _INVALID);
+						if(_event_time == _INVALID)
+						{
+    						DevLogErr(_nid, "Cannot associate a time to event "// _ev_name // " in channel " // (_c + 1));
+ 							abort();
+						}
 					}
- 	    			DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER, _event_time);
+					else
+ 	    				DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER, _event_time);
 
 				}
 				else
@@ -334,6 +333,18 @@ write(*,'CACCA');
     					DevLogErr(_nid, "Invalid event for gclock channel " // (_c + 1));
  						abort();
 					}
+					_event_time = TimingGetEventTime(_event);
+					if(_event_time == HUGE(0.) || _event_time == -HUGE(0.))
+					{
+						_event_time = if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER)), _INVALID);
+						if(_event_time == _INVALID)
+						{
+    						DevLogErr(_nid, "Cannot associate a time to event "// _ev_name // " in channel " // (_c + 1));
+ 							abort();
+						}
+					}
+					else
+ 	    				DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER, _event_time);
 				}
 				else
 					_event = 0;

@@ -64,13 +64,13 @@ public fun DIO2__store(as_is _nid, optional _method)
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		execute(_cmd);
 	    _rec_events = MdsValue('DIO2HWGetRecEvents(0, $1)');
-	    _rec_times = MdsValue('DIO2HWGetRecTimes(0, $1)');
+	    _rec_times = _DIO2_rec_times;
 		MdsDisconnect();
 	}
 	else
 	{
 		_rec_events = DIO2HWGetRecEvents(_nid, _board_id);
-		_rec_times = DIO2HWGetRecTimes(_nid, _board_id);
+	    _rec_times = _DIO2_rec_times;
 	}
 
   	DevPut(_nid, _N_REC_EVENTS, _rec_events);
