@@ -162,6 +162,13 @@ else
 fi
 
 
+dnl Check for 0xnnnnll (long long constants)
+AC_LANG_SAVE
+AC_LANG_C
+AC_TRY_COMPILE(,int gub(){return((int)0x1ll);},AC_DEFINE(HAVE_LL_CONSTANTS))
+AC_LANG_RESTORE
+
+
 dnl Checks for libraries.
 
 AC_CHECK_LIB(c,printf)
