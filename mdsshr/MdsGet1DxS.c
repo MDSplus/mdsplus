@@ -44,20 +44,25 @@
 #include <mdsshr.h>
 #include <stdlib.h>
 
+#define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 
 int       MdsGet1DxS(unsigned short *length_ptr, unsigned char *dtype_ptr, struct descriptor_xd *out_dsc_ptr)
 {
 
   int       status;
-  unsigned int length = sizeof(struct descriptor) + *length_ptr;
+  int dsc_size = sizeof(struct descriptor);
+  int align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
+  unsigned int length;
   static unsigned char dsc_dtype = DTYPE_DSC;
+  dsc_size = align(dsc_size,align_size);
+  length = dsc_size + *length_ptr;
   status = MdsGet1Dx(&length, &dsc_dtype, out_dsc_ptr, NULL);
   if (status & 1)
   {
     out_dsc_ptr->pointer->length = *length_ptr;
     out_dsc_ptr->pointer->dtype = *dtype_ptr;
     out_dsc_ptr->pointer->class = CLASS_S;
-    out_dsc_ptr->pointer->pointer = (char *) out_dsc_ptr->pointer + sizeof(struct descriptor);
+    out_dsc_ptr->pointer->pointer = (char *) out_dsc_ptr->pointer + dsc_size;
   }
   return status;
 }
