@@ -1,0 +1,44 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=@LD@
+top_srcdir=@top_srcdir@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@ @IDL_INC@ 
+LDFLAGS=@LDFLAGS@ @IDL_LIB@
+LIBS=@SYBASE_LIB@ @IDL_LIB@ @LIBS@ @DNET_STUB@ @LIBSOCKET@ -lMdsIpShr
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = \
+mdsevent.c 
+
+OBJECTS = $(SOURCES:.c=.o)
+EXPORTS = IdlMdsEvent.export
+
+all : @MAKELIBDIR@ @MAKELIBDIR@libIdlMdsEvent@SHARETYPE@ @MAKELIBDIR@libIdlMdsEvent.a
+
+clean:
+	- rm *.o
+	- rm @MAKELIBDIR@libIdlMdsEvent@SHARETYPE@
+	- rm @MAKELIBDIR@libIdlMdsEvent.a
+
+depend:
+	 @makedepend -- $(CFLAGS) -- $(SOURCES)
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 644  @MAKELIBDIR@libIdlMdsEvent.a @libdir@
+	$(INSTALL) -m 755  @MAKELIBDIR@libIdlMdsEvent@SHARETYPE@ @libdir@
+
+@MAKELIBDIR@libIdlMdsEvent@SHARETYPE@ : $(OBJECTS) 
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ $(LDFLAGS) $(LIBS)
+
+@MAKELIBDIR@libIdlMdsEvent.a : $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
+	@RANLIB@ $@
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@
