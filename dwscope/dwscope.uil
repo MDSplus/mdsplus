@@ -350,6 +350,7 @@ object
                     XmOptionMenu printer_select;
                     XmLabel print_file_label;
                     XmText print_file;
+                    XmToggleButton cp_portrait_button;
                     XmLabel print_event_label;
                     XmText print_event;
                     XmToggleButton print_window_title;
@@ -2075,6 +2076,19 @@ object
             XmNleftWidget = XmOptionMenu printer_select;
             };
         };
+    cp_portrait_button : XmToggleButton widget
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Portrait mode");
+            XmNset = false;
+            XmNtopAttachment = XmATTACH_WIDGET;
+            XmNtopWidget = XmLabel print_file_label;
+            XmNtopOffset = 5;
+            XmNleftAttachment = XmATTACH_FORM;
+            };
+        };
     print_event_label: XmLabel widget
         {
         arguments
@@ -2082,7 +2096,7 @@ object
             XmNlabelString = 
             compound_string("Print event:");
             XmNtopAttachment = XmATTACH_WIDGET;
-            XmNtopWidget = XmLabel print_file_label;
+            XmNtopWidget = XmToggleButton cp_portrait_button;
             XmNleftAttachment = XmATTACH_FORM;
             XmNtopOffset = 5;
             };

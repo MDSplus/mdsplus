@@ -199,6 +199,7 @@ static Boolean ScopeTitleEventReceived = 0;
 static String ScopePrintEvent = 0;
 static String ScopeTitleEvent = 0;
 static String ScopePrintFile = 0;
+static Boolean ScopePrintPortrait = 0;
 static String ScopePrinter = 0;
 static int ScopeTempFileIdx = 0;
 static int ScopePrintWindowTitle = 0;
@@ -983,9 +984,13 @@ static void /*XtCallbackProc*/ResetCustomizePrint(Widget w, XtPointer client_dat
   Widget *children;
   int    numchildren;
   int i;
+  Widget portrait_w;
   XmTextSetString(XtNameToWidget(CustomizePrintWidget, "print_file"), ScopePrintFile);
   XmTextSetString(XtNameToWidget(CustomizePrintWidget, "print_event"), ScopePrintEvent);
   XmToggleButtonSetState(XtNameToWidget(CustomizePrintWidget,"print_window_title"),ScopePrintWindowTitle,1);
+  portrait_w = XtNameToWidget(CustomizePrintWidget,"cp_portrait_button");
+  if (portrait_w)
+    XmToggleButtonSetState(portrait_w,ScopePrintPortrait,1);
   XtVaGetValues(XtNameToWidget(CustomizePrintWidget,"*printer_select_pulldown"),XmNnumChildren,&numchildren,
 		XmNchildren,&children,NULL);
   for (i=0;i<numchildren;i++)
@@ -1132,12 +1137,15 @@ static void /*XtCallbackProc*/ApplyCustomizePrint(Widget w, XtPointer client_dat
   Widget option;
   XmString label;
   String label_string;
+  Widget portrait_w = XtNameToWidget(CustomizePrintWidget,"cp_portrait_button");
   XtVaGetValues(printer_select,XmNmenuHistory,&option,NULL);
   XtVaGetValues(option,XmNlabelString,&label,NULL);
   XmStringGetLtoR(label,XmSTRING_DEFAULT_CHARSET,&label_string);
   ReplaceString(&ScopePrinter,label_string,1);
   ReplaceString(&ScopePrintFile, XmTextGetString(XtNameToWidget(CustomizePrintWidget, "print_file")), 1);
   ReplaceString(&ScopePrintEvent, XmTextGetString(XtNameToWidget(CustomizePrintWidget, "print_event")), 1);
+  if (portrait_w)
+    ScopePrintPortrait = XmToggleButtonGetState(portrait_w);
   ScopePrintWindowTitle = XmToggleButtonGetState(XtNameToWidget(CustomizePrintWidget,"print_window_title"));
   ScopePrintToFile = strcmp(ScopePrinter,"To file") == 0;
   SetupEvent(ScopePrintEvent, &ScopePrintEventReceived, &ScopePrintEventId);
@@ -1500,7 +1508,7 @@ static void /*XtCallbackProc*/PrintAll(Widget w, XtPointer client_data, XmAnyCal
   if (printfid)
   {
     XmString  filenames[1];
-    int       orientation = 2;
+    int       orientation = ScopePrintPortrait ? 1 : 2;
     filenames[0] = XmStringCreateSimple(ScopePrintFile);
 
 #ifndef _NO_DXm
@@ -1569,7 +1577,7 @@ static void /*XtCallbackProc*/Print(Widget w, XtPointer client_data, XmAnyCallba
     if (printfid)
     {
       XmString  filenames[1];
-      int       orientation = 2;
+      int       orientation = ScopePrintPortrait ? 1 : 2;
       filenames[0] = XmStringCreateSimple(ScopePrintFile);
 #ifndef _NO_DXm
       XtVaGetValues(CustomizePrintWidget, DXmNorientation, &orientation, NULL);
@@ -1909,6 +1917,7 @@ static void  RestoreDatabase(String dbname)
 #else
   ReplaceString(&ScopePrintFile, GetResource(scopedb, "Scope.print_file", "dwscope.ps"), 0);
 #endif
+  ScopePrintPortrait = atoi(GetResource(scopedb, "Scope.print_portrait", "0"));
   ScopePrintWindowTitle = atoi(GetResource(scopedb, "Scope.print_window_title", "0"));
   default_printer = getenv("PRINTER");
   if (default_printer == 0) default_printer="To file";  
@@ -2014,6 +2023,7 @@ static void  WriteDatabase(String dbname, Boolean zoom)
     fprintf(file, "Scope.title_event: %s\n", ScopeTitleEvent);
     fprintf(file, "Scope.print_file: %s\n", ScopePrintFile);
     fprintf(file, "Scope.print_event: %s\n", ScopePrintEvent);
+    fprintf(file, "Scope.print_portrait: %d\n", ScopePrintPortrait);
     fprintf(file, "Scope.print_window_title: %d\n", ScopePrintWindowTitle);
     fprintf(file, "Scope.printer: %d\n",ScopePrinter);
 /*
