@@ -15,6 +15,7 @@ XLIBS = $(X_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS)
 MOTIF_LIBS = @MOTIF_LD_LDARC@ @XM_LIBS@ @MOTIF_LD_LDSHARE@ @LIBXP@ @LIBXEXT@
 LIBS=@IDL_LIB@  @LIBS@ @DNET_STUB@ @LIBSOCKET@ -lMdsIpShr -lMdsShr -lMdsMath
 INSTALL=@top_srcdir@/conf/install-sh -c
+UIL=@UIL@ -I$(top_srcdir)/include
 
 SOURCES = \
 mdsevent.c \
@@ -25,7 +26,7 @@ OBJECTS = $(SOURCES:.c=.o)
 
 EXPORTS = IdlMdsWidgets.export
 
-all : @MAKELIBDIR@ @MAKELIBDIR@libIdlMdsWidgets@SHARETYPE@ @MAKELIBDIR@libIdlMdsWidgets.a
+all : @MAKELIBDIR@ @MAKELIBDIR@libIdlMdsWidgets@SHARETYPE@ @MAKELIBDIR@libIdlMdsWidgets.a @MAKEUIDDIR@cw_wvedit.uid
 
 
 clean:
@@ -44,6 +45,7 @@ install:
         fi;
 	$(INSTALL) -m 644  @MAKELIBDIR@libIdlMdsWidgets.a @libdir@
 	$(INSTALL) -m 755  @MAKELIBDIR@libIdlMdsWidgets@SHARETYPE@ @libdir@
+	$(INSTALL) -m 644 @MAKEUIDDIR@cw_wvedit.uid @uiddir@
 
 
 @MAKELIBDIR@libIdlMdsWidgets@SHARETYPE@ : $(OBJECTS) 
@@ -59,3 +61,5 @@ install:
 
 cw_wveditv5.o : cw_wveditv5.c
 	$(CC) -c -o $@ $(CFLAGS) cw_wveditv5.c $(X_CFLAGS) 
+
+@MAKEUIDDIR@cw_wvedit.uid : cw_wvedit.uil ; $(UIL) -o $@ cw_wvedit.uil
