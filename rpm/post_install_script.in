@@ -125,7 +125,7 @@ then
 #
   if [ -r /etc/xinetd.d ] ; then
     echo Adding mdsip to /etc/xinetd.d
-    ln -s $MDSPLUS_DIR/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
+    cp $MDSPLUS_DIR/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
     @HUP_TO_XINETD@
   else
     echo Adding mdsipd service to /etc/inetd.conf
