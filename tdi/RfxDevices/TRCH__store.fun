@@ -59,7 +59,7 @@ write(*, 'MAR', _base_mar);
 
 write(*,'Start idx', _start_idx, 'End idx', _end_idx);
 
-/*Check and correct memory overflow or wron setting*/
+/*Check and correct memory overflow or wrong setting*/
 	    if(_end_idx > _pts) _end_idx = _pts;
 	    if(_num_chans == 6)
 	        _max_samples = _500K;
@@ -80,7 +80,13 @@ write(*,'Start idx', _start_idx, 'End idx', _end_idx);
     	    DevCamChk(_name, CamPiow(_name, 0,16,_mar, 24),1,1);
 	    DevCamChk(_name, CamFstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);
 
+
+write(*, 'START IDX: ', _start_idx);
+write(*, 'END IDX: ', _end_idx);
+write(*, 'TRIG: ', _trig);
+write(*, 'CLOCK: ', _clock);
 	    _dim = make_dim(make_window(_start_idx, _end_idx, _trig), _clock);
+write(*, 'DIMENSION: ', _dim);
 	    _sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
 
 	    _status = DevPutSignal(_sig_nid, 0, 5/2048., word(_data), 0, _end_idx - _start_idx - 1, _dim);

@@ -15,7 +15,7 @@ public fun E1463__add(in _path, out _nidout)
     DevAddNode(_path // ':DATA', 'SIGNAL', *, '/compress_on_put', _nid);
     DevAddNode(_path // ':BACK', 'SIGNAL', *, '/compress_on_put', _nid);
     DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 50,'GPIB_SERVER',getnci(_path, 'fullpath'), _nid);
-    DevAddAction(_path// ':ARM_ACTION', 'ARM', 'ARM', 60,'GPIB_SERVER',getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path// ':ARM_ACTION', 'ARM', 'INIT', 60,'GPIB_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path// ':STORE_ACTION', 'STORE','STORE', 50,'GPIB_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }
