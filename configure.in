@@ -690,8 +690,8 @@ AC_CHECK_SIZEOF(long long)
 AC_CHECK_SIZEOF(_int64)
 AC_PATH_XTRA
 AC_PATH_PROG(UIL,uil,uil,$UILPATH:/usr/bin/X11:$PATH:/usr/dt/bin)
-AC_PATH_PROG(JAVAC,javac,javac)
-AC_PATH_PROG(JAR,jar,jar)
+AC_PATH_PROG(JAVAC,javac,javac,$jdk_dir/bin)
+AC_PATH_PROG(JAR,jar,jar,$jdk_dir/bin)
 AC_PATH_PROG(RMIC,rmic,rmic,$jdk_dir/bin)
 
 XM_LIBS="-lMrm -lXm"
