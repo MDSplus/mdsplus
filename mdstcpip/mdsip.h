@@ -167,7 +167,7 @@ typedef struct _msghdr { int msglen bits32;
                          signed char client_type;
                          unsigned char ndims;
 #ifdef __CRAY
-			 long  dims[MAX_DIMS/2];
+			 long  dims[(MAX_DIMS+1)/2];
 #else
                          int  dims[MAX_DIMS];
                          int  fill;

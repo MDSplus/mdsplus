@@ -759,13 +759,8 @@ int *dims, char *bytes)
   m->h.length = length;
   m->h.ndims = ndims;
 #ifdef __CRAY
-  for (i=0;i<MAX_DIMS;i++)
-  {
-    if (i % 2)
-      m->h.dims[i/2] |= i < ndims ? (dims[i] << 32) : 0;
-    else
-      m->h.dims[i/2] = dims[i];
-  }
+  for (i=0;i<4;i++)
+    m->h.dims[i] = ((ndims > i * 2) ? (dims[i * 2] << 32) : 0) | ((ndims > (i * 2 + 1)) ? (dims[i * 2 + 1]) : 0); 
 #else
   for (i=0;i<MAX_DIMS;i++) m->h.dims[i] = i < ndims ? dims[i] : 0;
 #endif
