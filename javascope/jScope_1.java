@@ -421,15 +421,17 @@ static int T_messageType;
 	    
   public jScope_1(int spos_x, int spos_y)
   {
-	createAboutScreen();
+    if(num_scope == 0)
+    {
+	    createAboutScreen();
 
-	// do the following on the gui thread
-	SwingUtilities.invokeLater(new Runnable() {
-	    public void run() {
-		showAboutScreen();
-	    }
-	});
-	
+	    // do the following on the gui thread
+	    SwingUtilities.invokeLater(new Runnable() {
+	        public void run() {
+		    showAboutScreen();
+	        }
+	    });
+    }	
 	jScopeCreate(spos_x, spos_y);
 	  
 	}
@@ -948,6 +950,8 @@ static int T_messageType;
     String cache_directory = (String)js_prop.getProperty("jScope.cache_directory");
     String cache_size = (String)js_prop.getProperty("jScope.cache_size");
     String f_name = (String)js_prop.getProperty("jScope.save_selected_points");
+    String proxy_host = (String)js_prop.getProperty("jScope.http_proxy_host");
+    String proxy_port = (String)js_prop.getProperty("jScope.http_proxy_port");
     
     String prop = (String)js_prop.getProperty("jScope.vertical_offset");
     int val = 0;
@@ -983,7 +987,11 @@ static int T_messageType;
     if(curr_directory != null)
         p.put("jScope.curr_directory", curr_directory);
         
-        
+    if(proxy_port != null && proxy_host != null)
+    {
+        p.setProperty("http.proxyHost",proxy_host);
+        p.setProperty("http.proxyPort",proxy_port);
+    }        
   }
         
   private boolean IsIpAddress(String addr)

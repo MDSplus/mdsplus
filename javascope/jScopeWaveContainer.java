@@ -228,14 +228,14 @@ class jScopeWaveContainer extends WaveformContainer
     public String GetTitle(){return title;}
     public String GetEvent(){return event;}
     public String GetPrintEvent(){return print_event;}
-    public String GetServerLabel(){return (server_item != null ? server_item.name : "");}
+  //  public String GetServerLabel(){return (server_item != null ? server_item.name : "");}
     public String GetServerArgument(){return (server_item != null ? server_item.argument : "");}
     public String GetBrowseClass(){return (server_item != null ? server_item.browse_class : "");}
     public String GetBrowseUrl(){return (server_item != null ? server_item.browse_url : "");}
     public DataServerItem GetServerItem(){return server_item;}
     
     
-    public String GetServerInfo()
+    public String GetServerLabel()
     {
         if(dp == null && server_item != null && server_item.name != null)
             return "Can't connect to " + server_item.name;
@@ -1022,14 +1022,17 @@ class jScopeWaveContainer extends WaveformContainer
 		       // fast_network_access = false;
 		        supports_fast_network = new_dp.SupportsFastNetwork();
                 change = true;
+                new_dp.SetArgument(server_item.argument);
             break;
             case DataProvider.LOGIN_ERROR :
-	            throw(new Exception("Invalid login"));
+//	            throw(new Exception("Invalid login"));
             case DataProvider.LOGIN_CANCEL :
-                return;         
-        }
+                server_item = new DataServerItem("Not Connected", null, null, 
+                          null, null, null);
+                new_dp = new NotConnectedDataProvider();            
+                change = true;
+       }
         
-        new_dp.SetArgument(server_item.argument);
 	    
 	    if(change) 
 	    {
@@ -1053,7 +1056,7 @@ class jScopeWaveContainer extends WaveformContainer
                 AddAllEvents(l);
                 
                 //create browse panel if defined
-                if(server_item.browse_class != null &&
+                if(server_item != null && server_item.browse_class != null &&
                    server_item.browse_url != null)
                 {
                     try

@@ -70,11 +70,17 @@
   <blockquote>
   </blockquote>
   <li><u>Global Setting</u>: defines a subset of the waveform settings which is valid for all
-    waveforms (see description of waveform settings below). It defines also grid
-    configuration, such as the number the number of vertical and horizontal grids. A toggle
-    button will also define black or white background.</li>
+    waveforms (see description of waveform settings below).&nbsp; From this dialog it is
+    possible to define the following configurations:<br>
+    - number of vertical and horizontal lines in the grid;<br>
+    - appearance of the grid;<br>
+    - vertical and horizontal offset, i.e. the dimension of the blank area between the drawn
+    waveform and the panel borderd, when the waveform is autoscaled;<br>
+    - reversed image (i.e. black foreground);<br>
+    - legend position;<br>
+    - use of color palette (recirculate over shot numbers or over sigan names)</li>
   <li><u>Window</u>: defines the number of panels. Panels can then be re-dimensioned by
-    dragging the small handles between panels.</li>
+    dragging the small handles between panels</li>
   <li><u>Printer</u>: to be used for printer selection. It appears only using JDK 1.2.</li>
   <li><u>Page setup</u>: It appears only using JDK 1.2, to be used for page orientation and
     print margins.</li>
@@ -386,6 +392,14 @@ jScope.data_server_7.class = DemoDataProvider&nbsp; </small></pre>
   <li><u>jScope.y_grid</u> defines the tentative number of y labels.</li>
   <li><u>jScope.item_color_n</u> defines the nth color in the color palette</li>
   <li><u>jScope.reversed</u> if true defines black background.</li>
+  <li><u>jScope.vertical_offset</u> defines the dimension of the border between the drawn
+    waveforms and the top and bottom limits of the panel.</li>
+  <li><u>jScope.vertical_offset</u> defines the dimension of the border between the drawn
+    waveforms and the left and right limits of the panel.</li>
+  <li>j<u>Scope.http_proxy_host</u> defines the proxy server to be uased when using HTTP
+    connections.</li>
+  <li><u>jScope.http_proxy_port</u> defines the port of the proxy server to be uased when
+    using HTTP connections.</li>
   <li><u>jScope.default_server</u> defined as the index of the default server in the server
     list</li>
 </ul>

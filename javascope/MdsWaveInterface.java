@@ -724,6 +724,7 @@ class MdsWaveInterface extends WaveInterface {
 	    for(exp = 0, exp_n = 1; exp < num_waves; exp += eval_shot, exp_n++)
 	    {
 	       WaveInterface.WriteLine(out,prompt + "label"     + "_" + exp_n + ": " , in_label[exp]);
+	       //add blank at the end of expression to fix bug when last expression character is \
 	       WaveInterface.WriteLine(out,prompt + "x_expr"     + "_" + exp_n + ": " , AddNewLineCode(in_x[exp]));
 	       WaveInterface.WriteLine(out,prompt + "y_expr"     + "_" + exp_n + ": " , AddNewLineCode(in_y[exp]));
 	        

@@ -105,4 +105,13 @@ public class jScopeProperties extends Properties
             slashCount++;
         return (slashCount % 2 == 1);
     }
+    
+    public String getProperty(String key)
+    {
+        String p = super.getProperty(key);
+        if(p == null) return null;
+        p = p.trim();
+        if(p.length() == 0) return null;
+        return p;
+    }
 }

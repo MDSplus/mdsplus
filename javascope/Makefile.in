@@ -29,7 +29,7 @@ Descriptor.java             JiNcVarInt.java             RotateFilter.java       
 JiNcVarShort.java  \
 FrameData.java              JiSlab.java \
 JiSlabIterator.java         			    WaveformEvent.java  \
-Frames.java                 JiVar.java                  			    WaveformListener.java
+Frames.java                 JiVar.java                  			    WaveformListener.java NotConnectedDataProvider.java
 
 
 
@@ -51,7 +51,7 @@ Descriptor.java             JiNcVarInt.java             RotateFilter.java       
 FontSelection.java          JiNcVarShort.java           RowColumnContainer.java     WaveformContainer.java      jScopeWavePopup.java \
 FrameData.java              JiSlab.java                 RowColumnLayout.java        WaveformContainer_2.java    jScope_1.java \
 JiSlabIterator.java         SetupDataDialog.java        WaveformEvent.java          jScope_2.java \
-Frames.java                 JiVar.java                  SetupDefaults.java          WaveformListener.java
+Frames.java                 JiVar.java                  SetupDefaults.java          WaveformListener.java	NotConnectedDataProvider.java
 
 CLASSES = $(SOURCES:.java=.class)
 

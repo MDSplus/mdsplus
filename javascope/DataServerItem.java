@@ -13,7 +13,7 @@ public class DataServerItem
     }
     
     public DataServerItem(String name, String argument, String user, 
-                          String class_name, String browse_class, String browse_utl)
+                          String class_name, String browse_class, String browse_url)
     {
         this.name = name;
         this.argument = argument;
@@ -30,10 +30,11 @@ public class DataServerItem
     {
         try
         {
-            boolean out = name.equals(dsi.name) && 
-                          argument.equals(dsi.argument) && 
-                          class_name.equals(dsi.class_name) &&
-                          browse_class.equals(dsi.browse_class);
+            boolean out = name.equals(dsi.name);
+                         //&& 
+                         // argument.equals(dsi.argument) && 
+                         // class_name.equals(dsi.class_name) &&
+                         // browse_class.equals(dsi.browse_class);
             return out;
         }
         catch (Exception exc)

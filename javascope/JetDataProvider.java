@@ -162,11 +162,6 @@ class JetDataProvider implements DataProvider
 
     public int InquireCredentials(JFrame f, String user)
     {
-        if(login_status == DataProvider.LOGIN_CANCEL)
-        {
-            login_status = DataProvider.LOGIN_OK;
-            return login_status;
-        }
         login_status = DataProvider.LOGIN_OK;
         owner_f = f;
         inquiry_dialog = new JDialog(f, "JET data server login", true);
@@ -198,19 +193,10 @@ class JetDataProvider implements DataProvider
  		                JOptionPane.showMessageDialog(inquiry_dialog, "Login ERROR : " + ((error_string != null) ? error_string : "no further information"), 
 		                                "alert", JOptionPane.ERROR_MESSAGE);
                         login_status = DataProvider.LOGIN_ERROR;
-                    }
-
-                    String credentials = username+":"+passwd;
-                    try{
-                        encoded_credentials = translator.encode(credentials);
-                    } catch(Exception exc)
-                    {
-                        login_status = DataProvider.LOGIN_ERROR;
-                    }
-                    if(login_status == DataProvider.LOGIN_OK)
+                    } else {
                         inquiry_dialog.setVisible(false);
-                    else
                         login_status = DataProvider.LOGIN_OK;
+                    }
                 }});
         p.add(ok_b);
         JButton clear_b = new JButton("Clear");

@@ -146,7 +146,7 @@ public class WaveInterface
     
     static void WriteLine(PrintWriter out, String prompt, String value)
     {
-	    if(value != null && !value.equals("null") && value.length() != 0)
+	    if(value != null && value.length() != 0)
 	    {
 		    out.println(prompt + value);
 	    }
@@ -194,7 +194,7 @@ public class WaveInterface
 	        old_pos = new_pos + "\n".length();			  
 	        s_new += "|||";
 	    }
-	    s_new = s_new.concat(s.substring(old_pos, s.length()));
+	    s_new = s_new.concat(s.substring(old_pos, s.length())) + " ";
 	    return s_new;
     }
     
@@ -627,11 +627,11 @@ public class WaveInterface
 	
 	    if(shots != null)
 	    {
-	        int i = -1;
+	        int i = 0;
 	        do
 	        {
-	            i++;
 	            dp.Update(experiment, shots[i]);
+	            i++;
 	        } while( i < shots.length && dp.ErrorString() != null);
 	    }
 	    else
@@ -1314,9 +1314,10 @@ public class WaveInterface
         }
 	    if(needs_update && saved_timestamp == wave_timestamp)
 	    {
-	        w.UpdateSignals(wave_signals, wave_timestamp, is_continuous);
-	        //w.AutoscaleY();
-	        //w.UpdateSignals(wave_signals, wave_signals.length, wave_timestamp);
+	        synchronized(this)
+	        {
+	            w.UpdateSignals(wave_signals, wave_timestamp, is_continuous);
+	        }
 	    }
 	    
         is_async_update = false;
