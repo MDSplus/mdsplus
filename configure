@@ -664,7 +664,7 @@ if test "${enable_memcheck+set}" = set; then
   enableval="$enable_memcheck"
   if test "$enableval" = yes; then
            MEMCHK="-Dmalloc=MdsMALLOC -Dfree=MdsFREE -Drealloc=MdsREALLOC"
-           MEMCHKLIB="-lMdsShr"
+           MEMCHKLIB="-L\$(top_srcdir)/lib/ -lMdsShr"
         else
            MEMCHK=""
            MEMCHKLIB=""
