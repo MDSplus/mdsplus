@@ -1,0 +1,8 @@
+Tcl('set command tcl')
+Tcl('set tree main')
+Tcl('dir')
+Tcl('dir/tag')
+Tcl('dir/tag *sub*::*')
+Tcl('set default .subtree')
+Tcl('set def \main')
+Tcl('dir A*/FULL')
