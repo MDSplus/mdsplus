@@ -88,7 +88,9 @@ SOURCES = io.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = io.exports
 
-all :  @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libio@SHARETYPE@ @MAKELIBDIR@libio.a  $(UIDS)
+all :  @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ \
+       @MAKESHLIBDIR@libio@SHARETYPE@ @MAKELIBDIR@libio.a \
+       @MAKEBINDIR@daq_server  $(UIDS) 
 
 
 
@@ -114,6 +116,12 @@ install:
 	if (test @SHARETYPE@ != .a) then \
 	  $(INSTALL) -m 644  @MAKELIBDIR@libio.a @libdir@; \
 	fi;
+
+@MAKEBINDIR@ :
+	mkdir @MAKEBINDIR@
+
+@MAKEBINDIR@daq_server : daq_server
+	cp daq_server @MAKEBINDIR@daq_server
 
 @MAKESHLIBDIR@libio@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
