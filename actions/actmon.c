@@ -292,19 +292,17 @@ static int executable(const char *script)
   const static int null=0;
   const static int dtype_long = DTYPE_LONG;
   int status;
-  static const char *cmd_front = "Spawn('/usr/bin/which ";
-  static const char *cmd_back = " > /dev/null 2>/dev/null')";
-  int dsc;
-  int ans;
-  int retlen;
-  char cmd[132];
+  static const char *cmd_front = "/bin/sh -c '/usr/bin/which ";
+  static const char *cmd_back = " > /dev/null 2>/dev/null'";
+  static char cmd[132];   
+  static struct descriptor cmd_d = {0,DTYPE_T,CLASS_S,cmd};
   strcpy(cmd, cmd_front);
   strcat(cmd, script); 
   strcat(cmd, cmd_back);
-  dsc = descr((int *)&dtype_long, &ans, (int *)&null, sizeof(ans));
-  status = MdsValue(cmd, &dsc, &null, &retlen);
-  /*  printf("evaluating / %s / returned %d\n", cmd, ans); */
-  return !ans;
+  cmd_d.length = strlen(cmd);
+  status = LibSpawn(&cmd_d,1,0);  
+/*  printf("evaluating / %s / returned %d\n", cmd, status); */
+  return !status;
 }
 
 static void SetKillSensitive(Widget top)
