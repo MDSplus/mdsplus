@@ -9,6 +9,7 @@ treegetnci.o \
 treegetrecord.o \
 treeopen.o \
 treesetdefault.o \
+treesetnci.o \
 RemoteAccess.o
 
 libTreeShr.so : $(OBJECTS)

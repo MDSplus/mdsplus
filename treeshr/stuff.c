@@ -26,8 +26,6 @@ Dummy(TreeDoMethod,0)
 Dummy(_TreeDoMethod,0)
 Dummy(MdsEventCan,0)
 
-DummyArgs(TreeTurnOn,int,(int nid),1)
-DummyArgs(TreeTurnOff,int,(int nid),1)
 DummyArgs(TreePutRecord,int,(int nid, struct descriptor *d, ...),1)
 DummyArgs(TreeAddTag,int,(int nid,char *tag),1)
 DummyArgs(TreeRemoveNodesTags,int,(int nid),1)
