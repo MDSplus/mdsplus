@@ -101,7 +101,7 @@ int TclDeleteNode()
         static char  message[] = "Additional descendent and/or device\
  nodes will be deleted";
         static DYNAMIC_DESCRIPTOR(dsc_answer);
-        static char  prompt[] = "Respond D-delete,L-list,Q-quit: ";
+        static char  prompt[] = "Respond D-delete,L-list,Q-quit [Q]: ";
 
         TclTextOut(message);
         ans = 0;
@@ -109,8 +109,9 @@ int TclDeleteNode()
            {
             str_free1_dx(&dsc_answer);
             mdsdcl_get_input(prompt,&dsc_answer);
-            ans = dsc_answer.dscW_length ?
-                    toupper(*dsc_answer.dscA_pointer) : 0;
+            if (dsc_answer.dscW_length == 0)
+              str_append(&dsc_answer,"Q");
+            ans = toupper(*dsc_answer.dscA_pointer);
             if (ans == 'L')
                {
                 nid = 0;
