@@ -1728,7 +1728,7 @@ and c then donot define the macro.
 #define MdsPut mdsput
 #define MdsValue mdsvalue
 #define MdsPut2 mdsput2
-#define MdsValue2 mdsvalue
+#define MdsValue2 mdsvalue2
 #endif
 int MdsValue(char *expression, ...);
 int descr (int *dtype, void *data, int *dim1, ...);
