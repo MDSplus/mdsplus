@@ -40,6 +40,11 @@ int TreeQuitTree(char *exp_ptr, int shotid)
   return _TreeQuitTree(&DBID, exp_ptr, shotid);
 }
 
+int TreeSetNoSubtree(int nid)
+{
+  return _TreeSetNoSubtree(DBID, nid);
+}
+
 int TreeSetSubtree(int nid)
 {
   return _TreeSetSubtree(DBID, nid);
@@ -869,10 +874,10 @@ int _TreeSetSubtree(void *dbid, int nid)
 }
 
 
-int _TreeSetNosubtree(void *dbid, int nid)
+int _TreeSetNoSubtree(void *dbid, int nid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
-  NID *nid_ptr = (NID *)nid;
+  NID *nid_ptr = (NID *)&nid;
   NODE     *node_ptr;
   int       node_idx;
   int       ext_idx;
