@@ -13,6 +13,9 @@
 # from the first line containing a map and continues until the first match
 # is found. Trailing comments are not permitted in the mapping lines.
 # You can use either ip address names or numbers in the match string.
+# For local account mapping you can also use the keyword MAP_TO_LOCAL which
+# maps the username of the remote user to the same name on the local system.
+#
 # Changes to this file take effect immediately without restarting inetd or
 # any other service. They do not effect existing connections however.
 #
