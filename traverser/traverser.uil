@@ -130,6 +130,9 @@ procedure AddNode();
 procedure AddNodeApply();
 procedure AddNodeDismiss();
 procedure SetUsage(integer);
+procedure CommandEntered();
+procedure MessageDismiss();
+procedure MessageClear();
 
 list BaseStyle : arguments {
 };
@@ -172,6 +175,7 @@ object mainWindow : XmMainWindow widget {
 !(BX)         unmanaged XmDialogShell xmDialogShell;
          managed XmMenuBar menuBar;
          managed XmCommand command;
+         unmanaged XmFormDialog message_box;
     };
     callbacks {
         MrmNcreateCallback = procedure AddListTree();
@@ -1334,10 +1338,96 @@ object command : XmCommand widget {
     arguments {
         XmNwidth = 509;
         XmNheight = 151;
+        XmNpromptString = "TCL>";
     };
     controls {
     };
     callbacks {
+        XmNcommandEnteredCallback = procedure CommandEntered();
     };
 };
+
+object
+    message_box: XmFormDialog
+        {
+        arguments
+            {
+            XmNborderWidth = 1;
+            XmNdialogTitle =
+            compound_string("SVN Text output");
+            XmNmarginHeight = 3;
+            XmNmarginWidth = 3;
+            XmNautoUnmanage = false;
+            };
+        controls
+            {
+            XmPushButtonGadget
+                {
+                arguments
+                    {
+                    XmNlabelString =
+                    compound_string("Clear");
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNleftOffset = 95;
+                    XmNbottomAttachment = XmATTACH_FORM;
+                    XmNbottomOffset = 10;
+                    XmNtopOffset = 3;
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        MessageClear();
+                        };
+                    };
+                };
+            XmPushButtonGadget
+                {
+                arguments
+                    {
+                    XmNlabelString =
+                    compound_string("Dismiss");
+                    XmNleftAttachment = XmATTACH_NONE;
+                    XmNleftOffset = 354;
+                    XmNbottomAttachment = XmATTACH_FORM;
+                    XmNbottomOffset = 10;
+                    XmNtopOffset = 5;
+                    XmNrightAttachment = XmATTACH_FORM;
+                    XmNrightOffset = 96;
+                    XmNx = 354;
+                    XmNy = 191;
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        MessageDismiss();
+                        };
+                    };
+                };
+            XmScrolledText message_text;
+            };
+        callbacks
+            {
+            };
+        };
+    message_text: XmScrolledText
+        {
+        arguments
+            {
+            XmNcolumns = 80;
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNtopAttachment = XmATTACH_FORM;
+            XmNleftOffset = 8;
+            XmNtopOffset = 6;
+            XmNrows = 10;
+            XmNeditMode = XmMULTI_LINE_EDIT;
+            XmNeditable = false;
+            XmNrightAttachment = XmATTACH_FORM;
+            XmNrightOffset = 7;
+            XmNbottomAttachment = XmATTACH_FORM;
+            XmNbottomOffset = 50;
+            };
+        };
+
 end module;

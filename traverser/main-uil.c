@@ -53,8 +53,11 @@
  * External procedure declarations 
  */
 extern void CloseTree(Widget, XtPointer, XtPointer);
+extern void CommandEntered(Widget, XtPointer, XtPointer);
 extern void MDisplayData(Widget, XtPointer, XtPointer);
 extern void MDoAction(Widget, XtPointer, XtPointer);
+extern void MessageClear(Widget, XtPointer, XtPointer);
+extern void MessageDismiss(Widget, XtPointer, XtPointer);
 extern void ModifyData(Widget, XtPointer, XtPointer);
 extern void MenuUnmap(Widget, XtPointer, XtPointer);
 extern void BxManageCB(Widget, XtPointer, XtPointer);
@@ -155,15 +158,21 @@ int main(int argc, char **argv)
     MrmHierarchy HierarchyID;
     MrmType MrmWClass;
     static char *UidFile [] = { BX_UID_FILE_NAME };
-    MRMRegisterArg NamesList[24];
+    MRMRegisterArg NamesList[27];
     Cardinal Nlac;
     Nlac = 0;
     NamesList[Nlac].name = "CloseTree";
     NamesList[Nlac++].value = (XtPointer) CloseTree;
+    NamesList[Nlac].name = "CommandEntered";
+    NamesList[Nlac++].value = (XtPointer) CommandEntered;
     NamesList[Nlac].name = "MDisplayData";
     NamesList[Nlac++].value = (XtPointer) MDisplayData;
     NamesList[Nlac].name = "MDoAction";
     NamesList[Nlac++].value = (XtPointer) MDoAction;
+    NamesList[Nlac].name = "MessageClear";
+    NamesList[Nlac++].value = (XtPointer) MessageClear;
+    NamesList[Nlac].name = "MessageDismiss";
+    NamesList[Nlac++].value = (XtPointer) MessageDismiss;
     NamesList[Nlac].name = "ModifyData";
     NamesList[Nlac++].value = (XtPointer) ModifyData;
     NamesList[Nlac].name = "MenuUnmap";

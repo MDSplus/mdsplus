@@ -93,6 +93,8 @@ struct node {
   int populated;
 };
 
+typedef enum {on_off, rename_node, delete, new, tree, set_def} NodeTouchType; 
+
 static char *get_node_name(int nid)
 {
     char *ans;
@@ -479,6 +481,61 @@ static void CommandLineOpen(Display *display, Widget tree)
   }
 }
 
+static void NodeTouched(int nid, NodeTouchType type)
+{
+}
+
+static Widget toplevel;
+
+void MessageDismiss(Widget w)
+{
+  Widget box_w = XtParent(w);
+  XtUnmanageChild(box_w);
+}
+
+void MessageClear(Widget w)
+{
+  Widget text_w = XtNameToWidget(XtParent(w), "*message_text");
+  XmTextSetString(text_w, "");
+}
+
+static void TOutput(struct descriptor *text)
+{
+  char *txt = malloc(text->length+2);
+  Widget message_box = XtNameToWidget(toplevel, "*message_box");
+  Widget message_text = XtNameToWidget(message_box, "*message_text");
+  txt[0] = '\n';
+  strncpy(&txt[1], (char *)text->pointer, text->length);
+  txt[text->length+1]=0;
+  XmTextInsert(message_text, XmTextGetLastPosition(message_text), txt);
+  XmTextShowPosition(message_text, XmTextGetLastPosition(message_text));
+  XtFree(txt);
+}
+
+static void TCLOutput(struct descriptor *text)
+{
+  Widget message_box = XtNameToWidget(toplevel, "*message_box");
+  if (!XtIsManaged(message_box))
+    XtManageChild(message_box);
+  TOutput(text);
+}
+
+static void InitializeCommandInterface(Widget w)
+{
+  static DESCRIPTOR(const image_name, "tcl_commands");
+  static DESCRIPTOR(const routine_name, "TclSetCallbacks");
+  static DESCRIPTOR(const set_command, "set command tcl_commands/def_file=*.tcl/helplib=tclhelp");
+  int status = mdsdcl_do_command(&set_command);
+  if (status&1) {
+    int (*set_callbacks)();
+    status = LibFindImageSymbol(&image_name, &routine_name, &set_callbacks);
+    if (status&1)
+      set_callbacks(TCLOutput, TCLOutput, NodeTouched);
+  }
+  toplevel = BxFindTopShell(w);
+}
+
+
 void
 AddListTree( Widget w, XtPointer client_data, XtPointer call_data)
 {
@@ -503,7 +560,7 @@ AddListTree( Widget w, XtPointer client_data, XtPointer call_data)
 	XtAddCallback(tree,XtNactivateCallback, ActivateCallback, (XtPointer) NULL);
 	XtAddCallback(tree,XtNmenuCallback, MenuCallback, (XtPointer) NULL);
         CommandLineOpen(XtDisplay(tree), tree);
-/*	Init(tree, "cmod", -1);    */
+        InitializeCommandInterface(w);
 }
 /*      Function Name:	BxExitCB
  *
@@ -1033,3 +1090,12 @@ SetUsage( Widget w, XtPointer client_data, XtPointer call_data)
   if (cb->set)
     usage = *(int *)client_data;
 }
+void
+CommandEntered( Widget w, XtPointer client_data, XtPointer call_data)
+{
+  XmCommandCallbackStruct *cb = (XmCommandCallbackStruct *)call_data;
+  char *cmd;
+  int status;
+  XmStringGetLtoR(cb->value, XmSTRING_DEFAULT_CHARSET, &cmd);
+  status = mdsdcl_do_command(cmd);
+} 

@@ -15,14 +15,14 @@ all : ../bin/traverser \
 	../uid/traverser.uid
 
 ../bin/traverser : $(OBJECTS) ../bin
-	 cc -o $@ $(OBJECTS)  $(CC_IMAGE_OPTIONS) -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr $(MOTIF_LIBS) $(X11_LIBS)
+	 cc -o $@ $(OBJECTS)  $(CC_IMAGE_OPTIONS) -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr -lMdsdcl $(MOTIF_LIBS) $(X11_LIBS)
 
 ../bin :
 	mkdir ../bin
 
 ../uid/traverser.uid : traverser.uil
 	uil -wmd ../shlib/xmdsuil.wmd -o $@ traverser.uil
-	
+
 clean :
 	- rm *.o
 	- rm ../bin/traverser
