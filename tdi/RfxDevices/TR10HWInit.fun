@@ -14,8 +14,8 @@ public fun TR10HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 	private _TR10_TRG_FALLING_EDGE =		byte(0x1);
 	private _TR10_TRG_TERMINATION_ON =		byte(0x1);
 	private _TR10_TRG_TERMINATION_OFF=		byte(0x0);
-	private _TR10_TRG_SYNCHRONOUS =			byte(0x1);
-	private _TR10_TRG_ASYNCHRONOUS =		byte(0x0);
+	private _TR10_TRG_SYNCHRONOUS =			byte(0x0);
+	private _TR10_TRG_ASYNCHRONOUS =		byte(0x1);
 
 	private _TR10_CLK_SOURCE_INTERNAL =		byte(0x0);
 	private _TR10_CLK_SOURCE_PXI	=		byte(0x1);
@@ -66,9 +66,6 @@ public fun TR10HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 	
 
 
-/*	TR10->TR10_Trg_SetTrigger(val(_handle), val(_trig_mode), val(0B), val(0B),
-		val(_TR10_TRG_EXT_OUT_ON), val(_TR10_TRG_RISING_EDGE), val(_TR10_TRG_TERMINATION_OFF),
-		val(_TR10_TRG_SYNCHRONOUS), val(0B));*/
 
 	TR10->TR10_Trg_SetTrigger(val(_handle), val(_trig_mode), val(0B), val(0B),
 		val(_TR10_TRG_EXT_OUT_ON), val(byte(_trig_edge)), val(_TR10_TRG_TERMINATION_ON),
