@@ -9,6 +9,12 @@
  * Builder Xcessory 3.5.1 VMS.
  *
  */
+#include <stdio.h>
+#include <string.h>
+#ifndef _AIX
+#include <strings.h>
+#endif
+#include <ctype.h>
 #include <Xm/Xm.h>
 #include <Mrm/MrmPublic.h>
 #include <Xm/RowColumn.h>
@@ -25,12 +31,6 @@
 /*
  * Standard includes for builtins.
  */
-#include <stdio.h>
-#include <string.h>
-#ifndef _AIX
-#include <strings.h>
-#endif
-#include <ctype.h>
 #include <libroutines.h>
 #include <strroutines.h>
 #include <usagedef.h>
