@@ -21,7 +21,6 @@ struct handle_struct { globus_io_handle_t handle;
                        int in_use;
                        MsgHdr *header;
                      };
-
 static struct handle_struct iohandles[512];
 
 static void InitGlobus()
@@ -86,13 +85,12 @@ static void (*DoMessage)(SOCKET) = 0;
 
 void ReadCallback(void *sock, globus_io_handle_t *handle, globus_result_t result, globus_byte_t *buf, globus_size_t nbytes)
 {
-  if (result == GLOBUS_SUCCESS)
-    (*DoMessage)((SOCKET)sock);
-  else
+  if (result != GLOBUS_SUCCESS)
   {
-    CloseSocket((SOCKET)sock);
-    exit(0);
+    free(iohandles[(SOCKET)sock-1].header);
+    iohandles[(SOCKET)sock-1].header = 0;
   }
+  (*DoMessage)((SOCKET)sock);
 }
 
 void RegisterRead(SOCKET s)
@@ -104,7 +102,6 @@ void RegisterRead(SOCKET s)
   if (status != GLOBUS_SUCCESS) 
   {
     CloseSocket(s);
-    exit(0);
   }
 }
 
@@ -183,8 +180,7 @@ void Poll(int shut,int IsWorker,int IsService, SOCKET serverSock)
 
 static globus_bool_t AuthenticationCallback(void *arg, globus_io_handle_t *handle, globus_result_t result, char *identity, gss_ctx_id_t *context_handle)
 {
-/*  printf("AuthenticationCallback from identity %s\n",identity);
- */
+  printf("AuthenticationCallback from identity %s\n",identity);
   return 1;
 }
 
@@ -245,6 +241,9 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
   globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
   globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_CALLBACK,&auth_data);
   globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
+/*
+  globus_io_attr_set_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
+*/
   AddClient = AddClient_in;
   DoMessage = DoMessage_in;
   if (globus_io_tcp_create_listener(&netport,5,&attr,handle) != GLOBUS_SUCCESS)
@@ -367,20 +366,6 @@ void SetSocketOptions(SOCKET s, int reuse)
 #endif
 }
 
-void SetSocketSecure(SOCKET s,int secure)
-{
-#ifdef GLOBUS
-  globus_io_attr_t attr;
-  globus_io_handle_t *handle = GetHandle(s);
-  globus_io_tcp_get_attr(handle,&attr);
-  globus_io_attr_set_secure_channel_mode(&attr,
-    secure ? GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP
-           : GLOBUS_IO_SECURE_CHANNEL_MODE_CLEAR);
-  globus_io_tcp_set_attr(handle,&attr);
-  globus_io_tcpattr_destroy(&attr);
-#endif
-}
-
 #ifndef GLOBUS
 #if !defined(__VMS) && !defined(_WIN32) && !defined(HAVE_VXWORKS_H)
 static struct timeval connectTimer = {0,0};
@@ -493,10 +478,13 @@ SOCKET Connect(char *host, unsigned short port)
   if (host[0]=='_')
   {
     globus_io_secure_authorization_data_initialize(&auth_data);
-    globus_io_secure_authorization_data_set_identity(&auth_data,"/O=Grid/O=National Fusion Collaboratory/OU=MIT/CN=LBNL-MDSplusDataServer");
     globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
-    globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_IDENTITY,&auth_data);
+    globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_HOST,&auth_data);
+    globus_io_attr_set_secure_delegation_mode(&attr,GLOBUS_IO_SECURE_DELEGATION_MODE_FULL_PROXY);
     globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
+/*
+    globus_io_attr_set_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
+*/
   }
   if ((result = globus_io_tcp_connect((host[0] == '_') ? &host[1] : host,htons(port),&attr,handle)) != GLOBUS_SUCCESS)
   {
@@ -648,6 +636,9 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
   globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
   globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_CALLBACK,&auth_data);
   globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
+/*
+  globus_io_attr_set_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
+*/
   globus_io_tcp_posix_convert( 0,&attr,handle);
   AddClient = AddClient_in;
   DoMessage = DoMessage_in;

@@ -360,6 +360,8 @@ static int BecomeUser(char *remuser, struct descriptor *user)
          initgroups(pwd->pw_name,pwd->pw_gid);
          status = setgid(pwd->pw_gid);
          status = setuid(pwd->pw_uid);
+         if (status)
+           printf("Cannot setuid - run server as root!");
          strcat(cmd,pwd->pw_dir);
          putenv(cmd);
        /* DO NOT FREE CMD --- putenv requires it to stay allocated */
@@ -367,8 +369,10 @@ static int BecomeUser(char *remuser, struct descriptor *user)
        else
          status = 0;
     }
+    else
+      printf("Invalid mapping, cannot find user %s\n",user);
     MdsFree(luser);
-    ok = (status == 0) ? 1 : 2;
+    ok = (status == 0) ? 1 : 0;
   }
   return ok;
 }
@@ -402,8 +406,6 @@ int main(int argc, char **argv)
     ParseCommand(argc, argv, &Portname, &port, &hostfile, &mode, &flags, &MaxCompressionLevel);
 
 #endif
-  printf("starting process - pid = %d\n",getpid());
-
   MdsSetServerPortname(Portname);
   if (IsService)
     InitializeService();
@@ -445,7 +447,10 @@ int main(int argc, char **argv)
     serverSock = ConnectToInet(port,AddClient,DoMessage);
     shut = (ClientList == NULL);
 #ifdef GLOBUS
-    if (shut) exit(0);
+    if (shut)
+    {
+      exit(0);
+    }
 #endif
   }
 #ifdef GLOBUS
@@ -646,7 +651,7 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
     m.h.client_type = m_user ? m_user->h.client_type : 0; 
     if (m_user)
       free(m_user);
-    if (mode == 'I' && pid == getpid())
+    if ((ok & 1) && mode == 'I' && pid == getpid())
       return;
     SetSocketOptions(sock);
     SendMdsMsg(sock,&m,0);
@@ -761,6 +766,7 @@ static void RemoveClient(Client *c)
       ClientList = c->next;
   }
   free(c);
+  if (ClientList == 0 && !multi) exit(0);
 }
 
 static void ConvertFloat(int num, int in_type, char in_length, char *in_ptr, int out_type, char out_length, char *out_ptr)
@@ -1398,6 +1404,8 @@ static void PrintHelp(char *option)
   printf("      --install\n");
   printf("      --remove\n");
   printf("      --hostfile hostfile\n");
+  printf("      --cert certificatefile (globus only)\n");
+  printf("      --key  keyfile (globus only)\n");
   printf("      --nocompression\n");
   printf("      --compression [level,default=9]\n\n");
   printf("  Deprecated Format:\n\n    mdsip port|service [multi|server|install|install_server|install_multi|remove] [hostfile]\n");
@@ -1457,6 +1465,38 @@ static int ParseOption(char *option, char **argv, int argc, char **portname, sho
   else if (strcmp(option,"compression") == 0)
   {
     if (argc > 0 && *argv[0] >= '0' && *argv[0] <= '9') *compression_level = atoi(argv[0]); else *compression_level = 9;
+  }
+  else if (strcmp(option,"cert") == 0)
+  {
+    if (argc > 0)
+    {
+      char *cmd = malloc(50+strlen(argv[0]));
+      strcpy(cmd,"X509_USER_CERT=");
+      strcat(cmd,argv[0]);
+      putenv(cmd);
+      increment = 1;
+    }
+    else
+    {
+      printf("cert file node specified\n\n");
+      PrintHelp(0);
+    }
+  }
+  else if (strcmp(option,"key") == 0)
+  {
+    if (argc > 0)
+    {
+      char *cmd = malloc(50+strlen(argv[0]));
+      strcpy(cmd,"X509_USER_KEY=");
+      strcat(cmd,argv[0]);
+      putenv(cmd);
+      increment = 1;
+    }
+    else
+    {
+      printf("cert file node specified\n\n");
+      PrintHelp(0);
+    }
   }
   else
   {
