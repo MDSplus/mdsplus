@@ -66,7 +66,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
   NODE     *cng_node;
   int       node_exists;
   int		depth;
-  unsigned int rfa_l;
+  off_t    rfa_l;
   int       count = 0;
   NID      *out_nids;
   NID      *end_nids;
@@ -170,7 +170,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 	  case NciRFA:
 		  break_on_no_node;
 		  read_nci;
-		  set_retlen(sizeof(unsigned int));
+		  set_retlen(sizeof(rfa_l));
 		  rfa_l = RfaToSeek(nci.DATA_INFO.DATA_LOCATION.rfa);
 		  memcpy(itm->pointer, &rfa_l, min(sizeof(unsigned int), itm->buffer_length));
 		  break;
@@ -721,23 +721,33 @@ void TreeFree(void *ptr)
   free(ptr);
 }
 
-int RfaToSeek(unsigned char *rfa)
+off_t RfaToSeek(unsigned char *rfa)
 {
-  int ans = (((unsigned int)rfa[0] << 9) |
-            ((unsigned int)rfa[1] << 17) |
-            ((unsigned int)rfa[2] << 25) |
-            ((unsigned int)rfa[4]) |
-            (((unsigned int)rfa[5] & 1) << 8)) - 512;
+  off_t ans = (((off_t)rfa[0] << 9) |
+            ((off_t)rfa[1] << 17) |
+            ((off_t)rfa[2] << 25) |
+            ((off_t)rfa[4]) |
+            (((off_t)rfa[5] & 1) << 8)) - 512;
+  if (sizeof(ans) == 8)
+    ans |= ((off_t)rfa[3] << 33);
   return ans;
 }
 
-void SeekToRfa(unsigned int seek, unsigned char *rfa)
+void SeekToRfa(off_t seek, unsigned char *rfa)
 {
-  int tmp = seek + 512;
+  off_t tmp = seek + 512;
   rfa[0] = (tmp >> 9) & 0xff;
   rfa[1] = (tmp >> 17) & 0xff;
-  rfa[2] = (tmp >> 25) & 0x7f;
-  rfa[3] = 0;
+  if (sizeof(tmp) == 8)
+  {
+    rfa[2] = (tmp >> 25) & 0xff;
+    rfa[3] = (tmp >> 33) & 0xff;
+  }
+  else
+  {
+    rfa[2] = (tmp >> 25) & 0x7f;
+    rfa[3] = 0;
+  }
   rfa[4] = tmp & 0xff;
   rfa[5] = tmp >> 8 & 0x1;
 }

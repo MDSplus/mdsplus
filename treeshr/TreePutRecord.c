@@ -376,13 +376,14 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
   while (bytes_to_put && (status & 1))
   {
     int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
-    int eof;
+    off_t eof;
     unsigned char rfa[6];
     status = TreeLockDatafile(info, 0, -1);
     if (status & 1)
     {
       unsigned short rlength = bytes_this_time + 10;
       eof = lseek(info->data_file->put,0,SEEK_END);
+      printf("eof = %ld\n",eof);
       bytes_to_put -= bytes_this_time;
       LoadShort(rlength,(char *)&info->data_file->record_header->rlength);
       status = (write(info->data_file->put,(void *) info->data_file->record_header,sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
@@ -427,7 +428,7 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
   while (bytes_to_put && (status & 1))
   {
     int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
-    int rfa_l = RfaToSeek(nci_ptr->DATA_INFO.DATA_LOCATION.rfa);
+    off_t rfa_l = RfaToSeek(nci_ptr->DATA_INFO.DATA_LOCATION.rfa);
     status = TreeLockDatafile(info, 0, rfa_l);
     if (status & 1)
     {
@@ -489,7 +490,7 @@ int TreeLockDatafile(TREE_INFO *info, int readonly, int nodenum)
 int TreeUnLockDatafile(TREE_INFO *info, int readonly, int nodenum)
 { return TreeSUCCESS; }
 #else
-int TreeLockDatafile(TREE_INFO *info, int readonly, int offset)
+int TreeLockDatafile(TREE_INFO *info, int readonly, off_t offset)
 {
   struct flock flock_info;
   flock_info.l_type = readonly ? F_RDLCK : F_WRLCK;
@@ -500,7 +501,7 @@ int TreeLockDatafile(TREE_INFO *info, int readonly, int offset)
           TreeSUCCESS : TreeLOCK_FAILURE;
 }
 
-int TreeUnLockDatafile(TREE_INFO *info, int readonly, int offset)
+int TreeUnLockDatafile(TREE_INFO *info, int readonly, off_t offset)
 {
   struct flock flock_info;
   flock_info.l_type = F_UNLCK;

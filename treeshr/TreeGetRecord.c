@@ -68,7 +68,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
   {
     status = TreeCallHook(GetNci,info,nid_in);
     if (status && !(status & 1))
-      return;
+      return 0;
     if (info->reopen)
       TreeCloseFiles(info);
     if (!info->data_file)
@@ -285,10 +285,11 @@ static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size,
   while ((rfa[0] || rfa[1] || rfa[2] || rfa[3] || rfa[4] || rfa[5]) && buffer_space && (status & 1))
   {
     RECORD_HEADER hdr;
-    unsigned int rfa_l = RfaToSeek(rfa);
+    off_t rfa_l = RfaToSeek(rfa);
     status = TreeLockDatafile(info, 1, rfa_l);
     if (status & 1)
     {
+      /*
       if (rfa_l > 0x7fffffff)
       {
         errno = 0;
@@ -296,6 +297,7 @@ static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size,
         status = lseek(info->data_file->get,rfa_l-0x7fffffff,SEEK_CUR);
       }
       else
+      */
         status = lseek(info->data_file->get,rfa_l,SEEK_SET);
       status = (read(info->data_file->get,(void *)&hdr,12) == 12) ? TreeSUCCESS : TreeFAILURE;
       if (status & 1)

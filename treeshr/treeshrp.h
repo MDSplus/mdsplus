@@ -571,8 +571,8 @@ extern int SetDefaultNidRemote(PINO_DATABASE *dblist, int nid);
 
 extern int GetDefaultNidRemote(PINO_DATABASE *dblist, int *nid);
 
-extern int RfaToSeek(unsigned char *rfa);
-void SeekToRfa(unsigned int seek, unsigned char *rfa);
+extern off_t RfaToSeek(unsigned char *rfa);
+void SeekToRfa(off_t seek, unsigned char *rfa);
 extern int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state);
 
 extern int TreeCloseFiles(TREE_INFO *info);
@@ -598,6 +598,6 @@ extern void TreeSerializeNciIn(char *in, struct nci *out);
 extern void TreeSerializeNciOut(struct nci *in, char *out);
 extern int TreeLockNci(TREE_INFO *info, int readonly, int nodenum);
 extern int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum);
-extern int TreeLockDatafile(TREE_INFO *info, int readonly, int where);
-extern int TreeUnLockDatafile(TREE_INFO *info, int readonly, int where);
+extern int TreeLockDatafile(TREE_INFO *info, int readonly, off_t where);
+extern int TreeUnLockDatafile(TREE_INFO *info, int readonly, off_t where);
 #endif
