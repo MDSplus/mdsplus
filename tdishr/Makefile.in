@@ -96,6 +96,8 @@ all: @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libTdiShr@SHARETYPE@ @MAKELIBDIR@
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
+	@mv Makefile Makefile.tmp
+	@rm Makefile.tmp
 
 clean:
 	@ $(RM) $(OBJECTS)
