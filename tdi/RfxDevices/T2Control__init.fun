@@ -102,7 +102,7 @@ write(*, 'T2Control init');
 
 	_in_calibration = data(DevNodeRef(_nid, _N_IN_CALIB));
 /*	write(*, 'Calibration: ', _calibration);*/
-	_status = MdsValue('Feedback->setInputCalibration($1, $2)', float(_in_calibration), 64);
+	_status = MdsValue('Feedback->setInputCalibration($1, $2)', float(_in_calibration), 96);
 	
 	_out_calibration = data(DevNodeRef(_nid, _N_OUT_CALIB));
 /*	write(*, 'Calibration: ', _calibration);*/
