@@ -1,0 +1,11 @@
+CFLAGS = -I../include -I. -g -Ae
+
+OBJECTS = \
+tditest.o
+
+tditest : $(OBJECTS)
+	cc -o $@ $(OBJECTS) -Wl,+s -Wl,-E -lc -L../tdishr -lTdiShr /opt/langtools/lib/end.o
+
+clean :
+	rm *.o
+	rm tditest
