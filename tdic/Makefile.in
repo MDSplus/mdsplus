@@ -1,0 +1,51 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=@LD@
+prefix=@prefix@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@ -L$(top_srcdir)/lib -lMdsIpShr -lTdiShr -lMdsShr
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = \
+        TdiShrExt.c
+
+OBJECTS = $(SOURCES:.c=.o)
+EXPORTS = TdiShrExt.exports
+
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@ @MAKELIBDIR@libTdiShrExt.a
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
+
+clean :
+	rm *.o
+	rm @MAKELIBDIR@libTdiShrExt.a
+	rm @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@ @libdir@
+	if (test @SHARETYPE@ != .a) then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libTdiShrExt.a @libdir@; \
+	fi;
+
+@MAKESHLIBDIR@libTdiShrExt@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
+
+@MAKELIBDIR@libTdiShrExt.a : $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
+	@RANLIB@ $@
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@
+
+@MAKESHLIBDIR_RULE@
+
+TdiShrExt.exports: TdiShrExt.def
+	sed -e /LIBRARY/\;/\;/d TdiShrExt.def > $@
