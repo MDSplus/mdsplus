@@ -1,4 +1,4 @@
-CFLAGS = -c -I../include -I. -g
+include $(MAKE_OPTIONS)
 
 OBJECTS = \
 tditest.o
@@ -10,13 +10,13 @@ tditest.o
 	mkdir ../bin
 
 clean :
+	- rm .depend
 	- rm *.o
 	- rm ../bin/tditest
 
 depend : .depend
 
 .depend :
-	- rm .depend
-	find *.c -exec cc -I../include -M {} > .depend \;
+	find *.c -exec $(MAKE_DEPEND)
 
 include .depend
