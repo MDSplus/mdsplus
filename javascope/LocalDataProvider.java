@@ -66,7 +66,6 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     native public float[] GetFloatArrayNative(String in);
     native public double[] GetDoubleArrayNative(String in);
     native public int[]   GetIntArray(String in);
-    native public long[]  GetLongArray(String in);
 
     public long[] GetShots(String in)
     {
@@ -78,7 +77,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
             return lshots;
         }catch(Exception exc)
         {
-            System.err.println("Error in GetLongArray: " + exc);
+            System.err.println("Error in GetIntArray: " + exc);
 
             return null;
         }
