@@ -883,7 +883,7 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
   int socket = -1;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename,&hostpart,&filepart);
-  int fd = hostpart ? io_open_remote(hostpart,filepart,options,mode,&socket) : open(filename, options | O_BINARY | O_RANDOM, mode);
+  int fd = hostpart ? io_open_remote(hostpart,filepart,options,mode,&socket) :  open(filename, options, mode);
   free(tmp);
   if (fd != -1)
     fd = NewFD(fd,socket);
@@ -966,10 +966,24 @@ static _int64 io_lseek_remote(int fd, _int64 offset, int whence)
 
 _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
 {
+#ifdef __APPLE__
+    _int64 pos;
+    if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
+        if (FDS[fd-1].socket == -1) {
+            pos = (_int64) lseek(FDS[fd-1].fd,(off_t)offset,whence);
+            if ((whence == SEEK_END) && (offset == 0))
+                printf("MDS_IO_LSEEK: EOF at %lld\n",pos);
+            return pos;
+        } else
+            return io_lseek_remote(fd,offset,whence);
+    else
+        return -1;
+#else
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
-    return (FDS[fd-1].socket == -1) ? lseek(FDS[fd-1].fd,(off_t)offset,whence) : io_lseek_remote(fd,offset,whence);
+    return (FDS[fd-1].socket == -1) ? (_int64) lseek(FDS[fd-1].fd,(off_t)offset,whence) : io_lseek_remote(fd,offset,whence);
   else
-    return -1; 
+    return -1;
+#endif /* __APPLE__ */
 }
 
 static int io_write_remote(int fd, void *buff, size_t count)

@@ -47,7 +47,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
  */
 #if defined(__cplusplus) || defined(__STDC__) || defined(__EXTENSIONS__)
 #include <stdlib.h>
-#ifndef VMS
+#if !defined(VMS) && !defined(__APPLE__)
 #include <malloc.h>
 #endif
 #endif

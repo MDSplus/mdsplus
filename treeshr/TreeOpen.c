@@ -26,6 +26,9 @@ extern char *index(char *str,char c);
 #endif
 
 #ifdef HAVE_SYS_RESOURCE_H
+#ifdef __APPLE__
+#include <sys/time.h>
+#endif
 #include <sys/resource.h>
 #endif
 
@@ -843,7 +846,7 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
         else
         {
           fd = MDS_IO_OPEN(resnam,O_RDONLY,0);
-#if (defined(__osf__) || defined(__linux) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX)) && !defined(HAVE_VXWORKS_H)
+#if (defined(__osf__) || defined(__linux) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX) || defined(__APPLE__)) && !defined(HAVE_VXWORKS_H)
           info->channel = (MDS_IO_SOCKET(fd) == -1) ? fd : 0;
 #endif
         }

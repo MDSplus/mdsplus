@@ -74,7 +74,7 @@ typedef struct nci
 #pragma pack(1)
 #elif defined(_WINDOWS)
 #pragma pack(push,enter_include,1)
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(__APPLE__)
 #undef  PACK
 #define PACK __attribute__ ((packed))
 #endif
