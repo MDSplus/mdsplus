@@ -19,13 +19,13 @@ PARTS = \
         xmdsshr \
         mdstcpip \
         dwscope \
+        mdslibidl \
+        cdu     \
+        mdsdcl  \
 	gen_device \
 	@CAMSHR@ \
         remcam \
         mitdevices \
-        mdslibidl \
-        cdu     \
-        mdsdcl  \
         ccl     \
         cts     \
 	servershr \
