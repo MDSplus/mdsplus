@@ -174,7 +174,7 @@ public class DFLUSetupSetup extends DeviceSetup {
     deviceField110.setLabelString("Delay: ");
     deviceField110.setIdentifier("");
     gridLayout6.setRows(3);
-    deviceField21.setOffsetNid(30);
+    deviceField21.setOffsetNid(22);
     deviceField21.setLabelString("Duration: ");
     deviceField21.setIdentifier("");
     deviceField111.setOffsetNid(30);
