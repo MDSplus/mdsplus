@@ -36,7 +36,7 @@ static int FindImageSymbol(char *name, void **sym)
 
 static struct _host_list {char *host; int socket; int connections; struct _host_list *next;} *host_list = 0;
 
-static int RemoteAccessConnect(char *host)
+static int RemoteAccessConnect(char *host, int inc_count)
 {
   struct _host_list *hostchk;
   struct _host_list **nextone;
@@ -51,7 +51,8 @@ static int RemoteAccessConnect(char *host)
   {
     if (strcmp(hostchk->host,host) == 0)
     {
-      hostchk->connections++;
+      if (inc_count)
+        hostchk->connections++;
       return hostchk->socket;
     }
   }
@@ -61,7 +62,7 @@ static int RemoteAccessConnect(char *host)
     *nextone = malloc(sizeof(struct _host_list));
     (*nextone)->host = strcpy(malloc(strlen(host)+1),host);
     (*nextone)->socket = socket;
-    (*nextone)->connections = 1;
+    (*nextone)->connections = inc_count ? 1 : 0;
     (*nextone)->next = 0;
   }
   return socket;
@@ -144,7 +145,7 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,int 
       {
         int socket;
         *cptr = '\0';
-        socket = RemoteAccessConnect(logname);
+        socket = RemoteAccessConnect(logname,1);
         if (socket != -1)
         {
           struct descrip ans = empty_ans;
@@ -596,7 +597,7 @@ int TreeTurnOffRemote(PINO_DATABASE *dblist, int nid)
 int TreeGetCurrentShotIdRemote(char *tree, char *path, int *shot)
 {
   int status = 0;
-  int channel = RemoteAccessConnect(path);
+  int channel = RemoteAccessConnect(path,0);
   if (channel > 0)
   {
     struct descrip ans = empty_ans;
@@ -611,7 +612,6 @@ int TreeGetCurrentShotIdRemote(char *tree, char *path, int *shot)
         status = status & 1 ? 0 : status;
       free(ans.ptr);
     }
-    RemoteAccessDisconnect(channel);
   }
   return status;
 }
@@ -619,7 +619,7 @@ int TreeGetCurrentShotIdRemote(char *tree, char *path, int *shot)
 int TreeSetCurrentShotIdRemote(char *tree, char *path, int shot)
 {
   int status = 0;
-  int channel = RemoteAccessConnect(path);
+  int channel = RemoteAccessConnect(path,0);
   if (channel > 0)
   {
     struct descrip ans = empty_ans;
@@ -631,7 +631,6 @@ int TreeSetCurrentShotIdRemote(char *tree, char *path, int shot)
       status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
       free(ans.ptr);
     }
-    RemoteAccessDisconnect(channel);
   }
   return status;
 }
