@@ -2058,12 +2058,12 @@ common widget_common, base
   message_w = widget_text(r, value='', xsize=70)
   auto_w = widget_button(widget_base(r, /nonexclusive), value='Automatic Updates')
   widget_control,auto_w, set_button=options.display_options.auto_update
-  if (!version.os eq "Win32") then begin
+  if (!version.os eq "Win32" or !version.os eq "linux") then begin
     host = getenv("MDS_HOST")
     if (host eq "") then $
        X_COMPLAIN, "Set the environment variable MDS_HOST the your MDSplus event server" $
     else begin
-      mdsconnect, "cmoda", port=8001
+      mdsconnect, host, port=8001
       dummy = execute("id = mdsevent(base, 'LOGBOOK_ENTRY')")
     endelse
   endif else $
