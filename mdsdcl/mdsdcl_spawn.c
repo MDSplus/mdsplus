@@ -64,7 +64,7 @@ int   mdsdcl_spawn(			/* Return: status		*/
     static DYNAMIC_DESCRIPTOR(dsc_cli);
 #if !defined(vms)
     char  cmdstring[256];
-#if defined(unix)
+#ifndef _WIN32
     pid_t  pid,xpid;
 #endif
 #endif

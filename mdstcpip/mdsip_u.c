@@ -190,7 +190,7 @@ static int CheckClient(char *host_c, char *user_c)
           {
             if (StrMatchWild(&match,&access_id) & 1)
             {
-#if defined(__unix__) || defined(unix) || defined(__unix)
+#ifndef _WIN32
               CompressString(&local_user,0);
               if (local_user.length)
               {
