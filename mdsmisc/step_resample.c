@@ -40,10 +40,10 @@ extern int TdiByte();
 extern int TdiDimOf();
 extern int TdiCvt();
 
-struct descriptor *STEP_RESAMPLE(struct descriptor *in_sig,struct descriptor *in_x)
+struct descriptor *StepResample(struct descriptor *in_sig,struct descriptor *in_x)
 { 
 
-#define return_on_error(func) if (!((status = func)&1)) lib$signal(status,0)
+#define return_on_error(func) if (!((status = func)&1)) return status
 
 int status;
 static EMPTYXD(sig_x_xd);
@@ -89,7 +89,7 @@ int sig_elements;
   new_x = (struct descriptor_a *)new_x_xd.pointer;
   if (new_x->class != CLASS_A) return 0;
   new_x_f = (float *)new_x->pointer;
-  MDS$COPY_DXXD((struct descriptor *)new_x,&new_y_xd);
+  MdsCopyDxXd((struct descriptor *)new_x,&new_y_xd);
   new_elements = new_x->arsize/new_x->length;
   new_y = (struct descriptor_a *)new_y_xd.pointer;
   new_y->dtype = DTYPE_B;
