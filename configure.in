@@ -35,6 +35,7 @@ FFLAGS="$FFLAGS -I\$(top_srcdir)/include"
 uiddir="/usr/lib/X11/uid"
 MAKESHLIBDIR="\$(top_srcdir)/lib/"
 EXPORTS_FILE=""
+MOTIF_STATIC_EXTRA_LIBS=""
 
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
@@ -100,6 +101,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LINKSHARED="-shared ";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
+       MOTIF_STATIC_EXTRA_LIBS="-lXp -lXext"
        SHARETYPE=".so";;
 *aix*) CFLAGS="$CFLAGS";
        FFLAGS="$FFLAGS";
@@ -183,9 +185,9 @@ AC_MSG_CHECKING(if we are supposed to use static motif libraries)
 if test "$enable_staticmotif" = yes -o "$enable_d3d" = on ; then
   AC_MSG_RESULT(yes)
   MOTIF_LDARC=$LDARC;
-  MOTIF_LDSHARE=$LDSHARE;
+  MOTIF_LDSHARE="$LDSHARE $MOTIF_STATIC_EXTRA_LIBS";
   MOTIF_LD_LDARC=$LD_LDARC;
-  MOTIF_LD_LDSHARE=$LD_LDSHARE;
+  MOTIF_LD_LDSHARE="$LD_LDSHARE $MOTIF_STATIC_EXTRA_LIBS";
 else
   AC_MSG_RESULT(no)
   MOTIF_LDARC="";
