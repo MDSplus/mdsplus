@@ -248,6 +248,8 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
     if (dblist->remote)
     {
       status = CloseTreeRemote(dblist, call_hook);
+      if (status == TreeNOT_OPEN)  /**** Remote server might have already opened the tree ****/
+	status = TreeNORMAL;
     }
     else if (local_info)
     {
