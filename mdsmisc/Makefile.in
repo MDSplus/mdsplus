@@ -15,7 +15,8 @@ SOURCES = boxsmooth.c \
           getnidarray.c  \
           getreferences.c  \
           resample.c  \
-          step_resample.c
+          step_resample.c \
+	  fformat.c
 
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = MdsMisc.exports
