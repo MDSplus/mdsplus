@@ -125,7 +125,7 @@ else
     set shellcmd=`/bin/awk "$awkcmd" $temp_file`
     unset temp_file
     eval $shellcmd
-    unset temp_setup_script
+#    unset temp_setup_script
     unset shellcmd
     unset awkcmd
   else
