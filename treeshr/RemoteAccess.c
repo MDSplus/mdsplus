@@ -152,10 +152,9 @@ static int MdsValue1(int socket, char *exp, struct descrip *arg1, struct descrip
   return (*MdsValue)(socket, exp, arg1, ans, 0);
 } 
   
-int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,char *path, int status)
+int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,char *logname, int status)
 {
   char *resnam = 0;
-  char *logname;
   char *colon = 0;
   int slen;
   int socket;
