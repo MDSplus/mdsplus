@@ -67,35 +67,41 @@ int turn_crate_on_off_line( char *crate_name, int state )
 
 	pController = &controller[0];
 
-	SCCdata = 1;					// initiates Dataway Z
-	status = CamPiow(
-					pController,		// serial crate controller name
-					0,				// A	--\__ write status register
-					17,				// F	--/
-					&SCCdata,		// data value
-					16,				// mem == 16-bit data
-					&iosb			// *iosb
-					);
-
-	SCCdata = (state == ON) ? 0 : 0x1000;	// clear status register
-	status = CamPiow(
-					pController,		// serial crate controller name
-					0,				// A	--\__ write status register
-					17,				// F	--/
-					&SCCdata, 		// data value
-					16,				// mem == 16-bit data
-					&iosb			// *iosb
-					);
-        if (status & 1)
-	{
- 	  status = get_crate_status(pController, &crateStatus);
-  	  online = ((crateStatus & 0x1000) != 0x1000)    ? TRUE  : FALSE;
-	  if( !crateStatus || crateStatus == 0x3 )
+        if (CRATEdb[idx].HwyType != JORWAY_73A) {
+	  SCCdata = 1;					// initiates Dataway Z
+	  status = CamPiow(
+			   pController,		// serial crate controller name
+			   0,				// A	--\__ write status register
+			   17,				// F	--/
+			   &SCCdata,		// data value
+			   16,				// mem == 16-bit data
+			   &iosb			// *iosb
+			   );
+	  
+	  SCCdata = (state == ON) ? 0 : 0x1000;	// clear status register
+	  status = CamPiow(
+			   pController,		// serial crate controller name
+			   0,				// A	--\__ write status register
+			   17,				// F	--/
+			   &SCCdata, 		// data value
+			   16,				// mem == 16-bit data
+			   &iosb			// *iosb
+			   );
+	  if (status & 1)
+	    {
+	      status = get_crate_status(pController, &crateStatus);
+	      online = ((crateStatus & 0x1000) != 0x1000)    ? TRUE  : FALSE;
+	      if( !crateStatus || crateStatus == 0x3 )
 		online = FALSE;
-          CRATEdb[idx].online = online ? '1' : '0';
-  	  enhanced = (online && (crateStatus & 0x4000)) ? TRUE  : FALSE;
-          CRATEdb[idx].enhanced = enhanced ? '1' : '0';          
-        }
+	      CRATEdb[idx].online = online ? '1' : '0';
+	      enhanced = (online && (crateStatus & 0x4000)) ? TRUE  : FALSE;
+	      CRATEdb[idx].enhanced = enhanced ? '1' : '0';          
+	    }
+	}
+        else {
+	    CRATEdb[idx].online = (status == ON) ? '1' : '0';
+            CRATEdb[idx].enhanced = '0';
+	}
 
 //-----------------------------------------------------------
 TurnCrateOnOffLine_Exit:
