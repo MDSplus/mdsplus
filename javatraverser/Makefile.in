@@ -1,8 +1,10 @@
 SHELL=/bin/sh
 top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
 JAVADIR = @MAKEJAVADIR@classes
 JAVAC = @JAVAC@
 JAR = @JAR@
+INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = ActionData.java\
 ActionEditor.java\
@@ -119,12 +121,12 @@ clean: ; rm $(CLASSES) @MAKEBINDIR@jTraverser @MAKEJAVADIR@classes/jTraverser.ja
 depend: ; @ :
 
 install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
+	if [ ! -d @exec_prefix@/java/classes ] ; then \
+                mkdirhier @exec_prefix@/java/classes; \
+                chmod -R 755 @exec_prefix@/java; \
         fi;
-	$(INSTALL) -m 644  @MAKEJAVADIR@classes/jTraverser.jar @libdir@
-	$(INSTALL) -m 755  @MAKEBINDIR@jTraverser @bindir@
+	$(INSTALL) -m 644  @MAKEJAVADIR@classes/jTraverser.jar @exec_prefix@/java/classes
+	$(INSTALL) -m 755  @MAKEBINDIR@jTraverser @exec_prefix@/bin
 
 @MAKEJAVADIR@ : ; mkdir @MAKEJAVADIR@
 
