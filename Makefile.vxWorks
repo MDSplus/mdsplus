@@ -1,19 +1,18 @@
-PARTS =mdsshr treeshr tdishr
+PARTS = mdsshr treeshr tdishr
+PLATFORMS = 68K Alpha
 
 all :
 	- cdir=`pwd`; \
         for dir in $(PARTS) ; do\
-          echo Making $${dir};\
+          echo              make68K='make -f Makefile.vxWorks68K';\
+ Making $${dir};\
 	  rm $${dir}/*.o;\
 	  if (test -d $${dir}) then \
 	    cd $${dir};\
-            if (test -f Makefile.vxWorks) then \
-              make='make -f Makefile.vxWorks';\
-            else\
-              make=make;\
-            fi;\
             if (test -f $(DEPEND)) then \
-	      $$make;\
+	      for platform in $(PLATFORMS) ; do \
+		make -f Makefile.vxWorks$${platform}; \
+	      done\
             else\
               $$make DEPEND=/dev/null $(DEPEND);\
               $$make;\
