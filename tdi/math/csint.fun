@@ -12,6 +12,6 @@ FUN PUBLIC CSINT(IN _s) {
 	IF (SIZE(_xdata) == 0) _xdata = RAMP(_n, 1.);
 	_break = ARRAY(_n, 0.);
 	_coeff = ARRAY([4,_n], 0.);
-	MdsMath->csint(REF(_n), REF(_xdata), REF(_fdata), REF(_break), REF(_coeff));
+	MdsMath->csint_(REF(_n), REF(_xdata), REF(_fdata), REF(_break), REF(_coeff));
 	RETURN(MAKE_SIGNAL(_coeff,,, _break));
 }

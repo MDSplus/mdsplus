@@ -12,6 +12,6 @@ FUN PUBLIC CSVAL(IN _x, IN _cs) {
 	_nintv = SIZE(_break) - 1;
 	_nx = SIZE(_x);
 	_y = _x;
-	MdsMath->csvalv(_nx, _x, _nintv, _break, _coeff, REF(_y));
+	MdsMath->csvalv_(_nx, _x, _nintv, _break, _coeff, REF(_y));
 	RETURN (make_signal(_y,,_x));
 }

@@ -13,6 +13,6 @@ FUN PUBLIC CSDER(IN _x, IN _cs) {
 	_nx = SIZE(_x);
 	_order= 1;
 	_y = _x;
-	MdsMath->csderv(_order, _nx, _x, _nintv, _break, _coeff, REF(_y));
+	MdsMath->csderv_(_order, _nx, _x, _nintv, _break, _coeff, REF(_y));
 	RETURN (make_signal(_y,,_x));
 }

@@ -13,6 +13,6 @@ FUN PUBLIC CSITG(IN _a, IN _b, IN _cs) {
 	_na = SIZE(_a);
 	_nb = SIZE(_b);
 	_y = _a;
-	MdsMath->csitgv(_na, _a, _nb, _b, _nintv, _break, _coeff, REF(_y));
+	MdsMath->csitgv_(_na, _a, _nb, _b, _nintv, _break, _coeff, REF(_y));
 	RETURN (MAKE_SIGNAL(_y,,.5*(_a+_b)));
 }
