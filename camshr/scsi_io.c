@@ -1,4 +1,3 @@
-
 /****************************************************************
 
    status         = scsi_io(int scsiDevice,
@@ -127,7 +126,9 @@ static int OpenScsi(int scsiDevice, char **buff_out)
           if (MAXBUF[scsiDevice] < MIN_MAXBUF)
 	    MAXBUF[scsiDevice] = MIN_MAXBUF;
 	}
+      try_again:
         reqsize = ((MAXBUF[scsiDevice] + pagesize -1) / pagesize) * pagesize;
+        BUFFSIZE[scsiDevice] = 0;
 	if( ( ioctl(fd, SG_SET_RESERVED_SIZE, &reqsize) < 0) ||
 	    ( ioctl(fd, SG_GET_RESERVED_SIZE, &BUFFSIZE[scsiDevice]) < 0) ||
 	    ( BUFFSIZE[scsiDevice] < MIN_MAXBUF ))
@@ -139,11 +140,20 @@ static int OpenScsi(int scsiDevice, char **buff_out)
         else
 	{
           buff = mmap(0,BUFFSIZE[scsiDevice],(PROT_READ | PROT_WRITE),MAP_SHARED, fd,0);
-          if (buff == 0)
+          if (buff == (char *)-1)
 	  {
-            fprintf( stderr, "%(): error in mmap to scsi buffer, errno = %d\n", ROUTINE_NAME, errno);
-            close(fd);
-            fd = -1;
+            fprintf( stderr, "%s(): error in mmap to scsi buffer, buffer = %d bytes\n", ROUTINE_NAME, BUFFSIZE[scsiDevice]);
+            perror("mmap error");
+            if (MAXBUF[scsiDevice] != MIN_MAXBUF)
+	    {
+              MAXBUF[scsiDevice] = MIN_MAXBUF;
+              goto try_again;
+            }
+            else
+	    {
+              close(fd);
+              fd = -1;
+            }
           }
           else
             BUFFS[scsiDevice] = buff;
