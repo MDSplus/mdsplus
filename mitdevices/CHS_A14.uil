@@ -24,7 +24,7 @@ object
                 arguments
                     {
                     XmNlabelString = 
-                    compound_string("CAMAC name:");
+                    compound_string("Module Number:");
                     XmNx = 10;
                     XmNy = 10;
                     };
@@ -33,13 +33,13 @@ object
                 {
                 arguments
                     {
-                    XmNcolumns = 54;
+                    XmNcolumns = 4;
                     XmNmarginHeight = 1;
                     XmNmarginWidth = 1;
                     XmdsNnid = DEVICE_NID;
-                    XmdsNnidOffset = A14$N_CTS_NAME;
-                    XmdsNdefaultQuote = true;
-                    XmdsNautoQuote = true;
+                    XmdsNnidOffset = A14$N_DIGNUM;
+                    XmdsNdefaultQuote = false;
+                    XmdsNautoQuote = false;
                     XmNx = 120;
                     XmNy = 10;
                     };
@@ -376,7 +376,7 @@ value
     DEVICE_NID: -1;
     A14$K_CONG_NODES: 33;
     A14$N_HEAD: 0;
-    A14$N_CTS_NAME: 1;
+    A14$N_DIGNUM: 1;
     A14$N_COMMENT: 2;
     A14$N_EXT_CLOCK_IN: 4;
     A14$N_STOP_TRIG: 5;
