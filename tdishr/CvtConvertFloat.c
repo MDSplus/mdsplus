@@ -215,7 +215,7 @@ typedef struct {unsigned int low2; unsigned low:16; unsigned hi : 4; unsigned ex
 #define g_float_exp(val) ((*(int *)val >> 4) & 0x7ff)
 #define g_float_sign(val) ((*(int *)val >> 15) &0x1)
 #define IsRoprandG(val) ((g_float_exp(val) == 0) && (g_float_sign(val) == 1))
-#define t_float_exp(val) ((((int *)val)[1] >> 4) & 0x7ff)
+#define t_float_exp(val) ((((int *)val)[1] >> 20) & 0x7ff)
 #define IsRoprandT(val) (t_float_exp(val) == 2047)
 
 #define cvt_s_normal 			CvtNORMAL
