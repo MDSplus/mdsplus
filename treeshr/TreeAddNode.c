@@ -856,7 +856,7 @@ int _TreeSetSubtree(void *dbid, int nid)
 
   node_idx = node_ptr - dblist->tree_info->node;
   for (i = 0; i < dblist->tree_info->header->externals; i++) {
-    if (*(dblist->tree_info->external + i) == node_idx) {
+    if (swapint((char *)&dblist->tree_info->external[i]) == node_idx) {
       if (node_ptr->usage != TreeUSAGE_SUBTREE) {
         node_ptr->usage = TreeUSAGE_SUBTREE;
         dblist->modified = 1;
@@ -894,7 +894,7 @@ int _TreeSetSubtree(void *dbid, int nid)
  and increment the number of externals.
 *****************************************************/
 
-  *(dblist->tree_info->external + numext - 1) = node_idx;
+  *(dblist->tree_info->external + numext - 1) = swapint((char *)&node_idx);
   dblist->tree_info->header->externals++;
   dblist->modified = 1;
 
@@ -928,7 +928,7 @@ int _TreeSetNoSubtree(void *dbid, int nid)
   nid_to_node(dblist, nid_ptr, node_ptr);
   node_idx = node_ptr - dblist->tree_info->node;
   for (ext_idx = 0; ext_idx < dblist->tree_info->header->externals; ext_idx++)
-    if (*(dblist->tree_info->external + ext_idx) == node_idx)
+    if (swapint((char *)&dblist->tree_info->external[ext_idx]) == node_idx)
       break;
   if (ext_idx >= dblist->tree_info->header->externals)
     return TreeNORMAL;
@@ -941,7 +941,7 @@ int _TreeSetNoSubtree(void *dbid, int nid)
   dblist->tree_info->header->externals--;
   for (i = ext_idx; i < dblist->tree_info->header->externals; i++)
     *(dblist->tree_info->external + i) =
-      *(dblist->tree_info->external + i + 1);
+      swapint((char *)&dblist->tree_info->external[i + 1]);
   dblist->modified = 1;
 
 /*******************************
