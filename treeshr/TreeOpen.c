@@ -6,13 +6,13 @@
 #ifndef _WINDOWS
 #include <unistd.h>
 #include <sys/mman.h>
+#include <sys/types.h>
 #endif
 #include <stdlib.h>
 #include <string.h>
 #include <usagedef.h>
 #include <errno.h>
 #include <fcntl.h>
-
 #define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
@@ -690,7 +690,7 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,char *op
 					strcat(resnam,TREE_PATH_DELIM);
 				strcat(resnam,name);
 				strcat(resnam,type);
-#if defined(__osf__) || defined(__hpux__)
+#if defined(__osf__) || defined(__hpux__) || defined(__sunos__)
 				info->channel = open(resnam,O_RDONLY);
 				file = info->channel ? fdopen(info->channel,"rb") : NULL;
 #else
@@ -913,7 +913,10 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int remote
                         status = addr != (void *)-1;
                         if (!status)
                           printf("Error mapping file - errno = %d\n",errno);
-#elif defined(__hpux__)
+#elif defined(__hpux__) || defined(__sunos__)
+#if defined(__sunos__)
+#define MAP_FILE 0
+#endif
                         info->section_addr[0] = mmap(0,info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE, 
                             info->channel, 0);
                         status = info->section_addr[0] != (void *)-1;

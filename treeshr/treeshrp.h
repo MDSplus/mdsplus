@@ -23,6 +23,8 @@
 #pragma HP_ALIGN NOPADDING PUSH
 #elif defined(__irix__)
 #pragma pack(1)
+#elif defined(__sunos__)
+#pragma pack(1)
 #elif defined(_WINDOWS)
 #pragma pack(push,enter_include,1)
 #endif
@@ -322,6 +324,8 @@ typedef struct record_header
 #pragma HP_ALIGN POP
 #elif defined(__irix__)
 #pragma pack(0)
+#elif defined(__sunos__)
+#pragma pack(4)
 #elif defined(_WINDOWS)
 #pragma pack(pop,enter_include)
 #endif
