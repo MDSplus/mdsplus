@@ -20,6 +20,7 @@ int MDSEvent(char *evname){}
 #include <pthread.h>
 #include <unistd.h>
 #include <mdsdescrip.h>
+#include <mdsshr.h>
 /* Just to avoid compiler complains */
 #undef DTYPE_DOUBLE
 #undef DTYPE_EVENT
