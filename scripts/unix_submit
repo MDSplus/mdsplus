@@ -23,6 +23,7 @@ if [ -d "$MDS_LOGS" -a -w "$MDS_LOGS" ]; then
     CUMULATIVE_LOG="$MDS_LOGS/$FILE.log"
     lockfile "$LOG.lock"
     echo ">>>>>>>>>>>>>>>>>>>>>   $2  >>>>>>>>>>>>>>>>>>>>" >> $LOG
+    hostname >> $LOG
     date >> $LOG
     /usr/bin/time -a -f "Elapsed %E\tUser %U\tSystem %S"  -o $LOG $1 $2 < /dev/null >>$LOG 2>&1
     echo "<<<<<<<<<<<<<<<<<<<<<   $2  <<<<<<<<<<<<<<<<<<<<" >> $LOG
