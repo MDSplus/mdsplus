@@ -68,9 +68,7 @@ xmdsshr : ../shlib \
 	cc -o $@ -DMDS_EXTENSION $(CFLAGS) $(WML_INCLUDE) wmldbcreate-xmdsshr.c $(MOTIF_LIBS) $(X11_LIBS) $(SOCKET_LIB)
 
 UilConst.h : xmdsuil.wml 
-	$(WML) xmdsuil.wml
-	- rm wml-uil.mm
-	- rm wml-uil.sdml
+	$(WML) 
 
 clean :
 	- rm *.o
