@@ -1266,8 +1266,8 @@ int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in)
   {
 #ifdef SRB
     if (FDS[fd-1].socket == SRB_SOCKET) {
-      status = srbUioLock(fd, offset, size, mode_in);
-      return status;
+      status = srbUioLock(FDS[fd-1].fd, offset, size, mode_in);
+      return (status == 0) ? TreeSUCCESS : TreeFAILURE;
     }
 #endif
     LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
