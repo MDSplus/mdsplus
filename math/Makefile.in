@@ -1,14 +1,16 @@
 SHELL=/bin/sh
+CC=@CC@
 LD=@LD@
-FC=@F77@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
+top_srcdir=@top_srcdir@
 exec_prefix=@exec_prefix@
-FFLAGS=@FFLAGS@
+RM=$(top_srcdir)/devscripts/rm_if
+CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@ @LIBM@
 INSTALL=@top_srcdir@/conf/install-sh -c
+FC=@F77@
+FFLAGS=@FFLAGS@
+LIBS=@LIBS@ @LIBM@
 
 SOURCES = \
 	caxpy.f \
