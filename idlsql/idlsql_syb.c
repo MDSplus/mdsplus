@@ -140,7 +140,7 @@ static int IdlStrSize()
   if (strsize == 0)
   {
     char *b = (char *)IDL_SysvVersionRelease();
-    strsize = (b[4] != 0 || b[5] != 0) ? sizeof(IDL_STRING_S) : sizeof(IDL_STRING_L);
+    strsize = (((b[4] != 0) && (b[4] != 1)) || (b[5] != 0)) ? sizeof(IDL_STRING_S) : sizeof(IDL_STRING_L);
   }
   return strsize;
 }
