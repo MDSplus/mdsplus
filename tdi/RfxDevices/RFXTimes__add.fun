@@ -30,6 +30,7 @@ public fun RFXTimes__add(in _path, out _nidout)
     DevAddNode(_path // ':INSRT_PC', 'NUMERIC', *, *, _nid);
 	tcl('add tag ' // _path // ':INSRT_PC T_INSRT_PC');
     DevAddNode(_path // ':INSRT_PTCB_1', 'NUMERIC', *, *, _nid);
+	tcl('add tag ' // _path // ':INSRT_PTCB_1 T_INSRT_PTCB');
 	tcl('add tag ' // _path // ':INSRT_PTCB_1 T_INSRT_PTCB_1');
     DevAddNode(_path // ':INSRT_PTCB_2', 'NUMERIC', *, *, _nid);
 	tcl('add tag ' // _path // ':INSRT_PTCB_2 T_INSRT_PTCB_2');
@@ -38,6 +39,7 @@ public fun RFXTimes__add(in _path, out _nidout)
     DevAddNode(_path // ':INSRT_PTCB_4', 'NUMERIC', *, *, _nid);
 	tcl('add tag ' // _path // ':INSRT_PTCB_4 T_INSRT_PTCB_4');
     DevAddNode(_path // ':OPEN_PTSO_1', 'NUMERIC', *, *, _nid);
+	tcl('add tag ' // _path // ':OPEN_PTSO_1 T_OPEN_PTSO');
 	tcl('add tag ' // _path // ':OPEN_PTSO_1 T_OPEN_PTSO_1');
     DevAddNode(_path // ':OPEN_PTSO_2', 'NUMERIC', *, *, _nid);
 	tcl('add tag ' // _path // ':OPEN_PTSO_2 T_OPEN_PTSO_2');
