@@ -1,3 +1,3 @@
 os=`uname`
 cwd=`pwd`
-eval `awk '$1 !~ /#/ {print $1 "=" $2 "; export " $1 ";"}' envsyms sys_specific/envsyms.$os`
+eval `awk '{ if ($1 == "source") print "" ; else if ($1 == ".") print $0 ";"; else if ($1 !~ /^#.*/) print $1 "=" $2 "; export " $1 ";"}' envsyms sys_specific/envsyms.$os`
