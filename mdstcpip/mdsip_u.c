@@ -670,9 +670,9 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
 	      new->tdicontext[i] = NULL;
         for (i=0;i<MAX_ARGS;i++)
           new->descrip[i] = NULL;
-/*
+#ifndef GLOBUS
         new->addr = *(int *)&sin->sin_addr;
-	*/
+#endif
         new->next = NULL;
         for (c=ClientList; c && c->next; c = c->next);
         if (c) 
