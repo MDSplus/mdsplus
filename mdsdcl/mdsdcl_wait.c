@@ -113,9 +113,18 @@ int   mdsdcl_wait()		/* Return:  status			*/
         pthread_mutex_init(&wait_mutex,pthread_mutexattr_default);
         initialized = 1;
       }
+#ifdef HAVE_GETTIMEOFDAY
+      {  /* ftime is deprecated unix... Thus doesn't exist on MacOS X */
+        struct timeval tv;
+        gettimeofday(&tv,NULL);
+        abstime.tv_sec = tv.tv_sec + nsec;
+        abstime.tv_nsec = (tv.tv_usec + millisec * 1000) * 1000;
+      }
+#else
       ftime(&now);
       abstime.tv_sec = now.time + nsec;
       abstime.tv_nsec = (now.millitm + millisec) * 1000000;
+#endif
       if (abstime.tv_nsec > 1000000000)
       {
         abstime.tv_nsec -= 1000000000;

@@ -1784,8 +1784,8 @@ determine the names of the corresponding fortran entry point:
 If any of these entry points share the same name for fortran
 and c then donot define the macro.
 *************************************************************/
-       
-#if defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux) || defined (HAVE_WINDOWS_H)
+
+#if defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux) || defined(__APPLE__) || defined (HAVE_WINDOWS_H)
 #define descr descr_
 #define descr2 descr2_
 #define FortranMdsConnect mdsconnect_
