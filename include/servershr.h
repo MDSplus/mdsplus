@@ -1,7 +1,14 @@
 #ifndef __SERVERSHR
 #define __SERVERSHR
 
+#include <config.h>
+#ifdef HAVE_WINDOWS_H
+typedef void *pthread_cond_t;
+typedef void *pthread_t;
+typedef void *pthread_mutex_t;
+#else
 #include <pthread.h>
+#endif
 
 #define ServerNOT_DISPATCHED  0xfe18008
 #define ServerINVALID_DEPENDENCY  0xfe18012
@@ -10,7 +17,7 @@
 #define ServerABORT    0xfe18032
 #define ServerPATH_DOWN 0xfe18042
 
-extern int ServerAbortServer( char *server, int *flush );
+extern int ServerAbortServer( char *server, int flush );
 extern int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table);
 extern int ServerCloseTrees( char *server );
 extern int ServerCreatePulse(pthread_cond_t *efn, char *server, char *tree, int shot,
@@ -28,8 +35,8 @@ extern int ServerDispatchPhase(pthread_cond_t *efn, void *vtable, char *phasenam
                           int sync, void (*output_rtn)(), char *monitor);
 extern int ServerFailedEssential(void *vtable,int reset);
 extern char *ServerFindServers(void **ctx, char *wild_match);
-extern int ServerMonitorCheckin(char *server, void (*ast)(), void *astparam, void (*link_down)());
-extern int ServerSetLogging( char *server, int logging_mode );
+extern int ServerMonitorCheckin(char *server, void (*ast)(), void *astparam);
+extern int ServerSetLogging( char *server, char logging_mode );
 extern int ServerStartServer( char *server );
 extern int ServerStopServer( char *server );
 
