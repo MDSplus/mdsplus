@@ -8,6 +8,15 @@ JAR = @JAR@
 INSTALL=@top_srcdir@/conf/install-sh -c
 DOCS=jScope.html data_popup.jpg data_setup.jpg frame_popup.jpg image_setup.jpg jScope.jpg 
 
+APPLETSOURCES = RotateFilter.java NetworkProvider.java DataProvider.java Frames.java\
+		JiNcVar.java Descriptor.java Grid.java Waveform.java JiNcVarFloat.java\
+		JiDim.java RdaAccess.java WaveInterface.java JiSlabIterator.java TwuAccess.java\
+		JiNcVarInt.java TWUDataProvider.java JiSlab.java JiVar.java WavePopup.java\
+		JiNcSource.java JiNcVarByte.java JiNcVarDouble.java JetDataProvider.java\
+		MultiWavePopup.java MdsMessage.java DataAccessURL.java MdsConnection.java\
+		WaveDisplay.java LocalProvider.java JiVarImpl.java SignalCache.java JiNcVarChar.java\
+		FtuProvider.java NetworkListener.java WaveformEvent.java ConnectionEvent.java
+
 SOURCES = AboutWindow.java            Grid.java                   JiVarImpl.java              RowColumnContainer.java     WaveformListener.java \
 Base64.java                 JetDataProvider.java        LocalProvider.java          RowColumnLayout.java        WaveformManager.java\
 ColorDialog.java            JiDataSource.java           MdsAccess.java              SetupDataDialog.java        WaveformMetrics.java\
@@ -27,12 +36,13 @@ FtuProvider.java            JiVar.java                  RotateFilter.java       
 
 CLASSES = $(SOURCES:.java=.class)
 
-all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/docs @MAKEJAVADIR@classes/jScope.jar docs 
+all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/docs @MAKEJAVADIR@classes/jScope.jar  @MAKEJAVADIR@classes/WaveDisplay.jar docs 
 
 clean: 
 	@ $(RM) *.class
 	@ $(RM) @MAKEBINDIR@jScope
 	@ $(RM) @MAKEJAVADIR@classes/jScope.jar
+	@ $(RM) @MAKEJAVADIR@classes/WaveDisplay.jar
 
 depend: ; @ :
 
@@ -42,6 +52,7 @@ install:
                 chmod -R 755 @exec_prefix@/java; \
         fi;
 	$(INSTALL) -m 644  @MAKEJAVADIR@classes/jScope.jar @exec_prefix@/java/classes
+	$(INSTALL) -m 644  @MAKEJAVADIR@classes/WaveDisplay.jar @exec_prefix@/java/classes
 	$(INSTALL) -m 644  jScope.properties @exec_prefix@/java/classes
 	$(INSTALL) -m 755  @MAKEBINDIR@jScope @exec_prefix@/bin
 
@@ -52,6 +63,11 @@ install:
 @MAKEJAVADIR@classes/docs : ; mkdir @MAKEJAVADIR@classes/docs
 
 @MAKEJAVADIR@classes/jScope.jar: jScope.class CompositeWaveDisplay.class
+	$(JAR) c0f $@ *.class
+
+@MAKEJAVADIR@classes/WaveDisplay.jar: $(APPLETSOURCES)
+	rm *.class
+	$(JAVAC) -g  $(APPLETSOURCES) 
 	$(JAR) c0f $@ *.class
 
 jScope.class: 	$(SOURCES)
