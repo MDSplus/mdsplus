@@ -1,2 +1,3 @@
 #!/bin/sh
-$MDSPLUS/bin/mdsdcl -prep 'set command tcl_commands -prompt="TCL> " -def_file="*.tcl"' $1 $2 $3 $4 $5 $6 $7 $8
+fdir=`echo $0 | sed s/tcl//`
+`echo $0 | sed s/tcl//`mdsdcl -prep 'set command tcl_commands -prompt="TCL> " -def_file="*.tcl"' $1 $2 $3 $4 $5 $6 $7 $8
