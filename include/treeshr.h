@@ -219,7 +219,8 @@ struct nci_itm;
 
 #ifdef _NO_PROTO
 
-	extern char* TreeAbsPath();
+extern char* TreeAbsPath();
+extern char* _TreeAbsPath();
 	extern int TreeAddConglom();
 	extern int TreeAddMethodImage();
 	extern int TreeAddNode();
@@ -277,7 +278,8 @@ extern int _TreeIsOpen();
 extern int TreeOpen();
 	extern int TreeOpenTreeEdit();
 	extern int TreeOpenTreeNew();
-	extern int TreePutRecord();
+extern int TreePutRecord();
+extern int _TreePutRecord();
 	extern int TreeQuitTree();
 	extern int TreeRemoveNodesTags();
 	extern int TreeRemoveTag();
@@ -287,7 +289,8 @@ extern void _TreeRestoreContext();
 	extern int TreeRundownTree();
 extern void *TreeSaveContext();
 extern void *_TreeSaveContext();
-	extern int TreeSetNci();
+extern int TreeSetNci();
+extern int _TreeSetNci();
 extern int TreeSetDefault();
 extern int _TreeSetDefault();
 extern int TreeSetDefaultNid();
@@ -298,8 +301,10 @@ extern int _TreeSetStackSize();
 	extern int TreeSetSubtree();
 	extern int TreeStartConglomerate();
 	extern int TreeSwitchDbig();
-	extern int TreeTurnOff();
-	extern int TreeTurnOn();
+extern int TreeTurnOff();
+extern int _TreeTurnOff();
+extern int TreeTurnOn();
+extern int _TreeTurnOn();
 	extern int TreeVerifyTree();
 	extern int TreeWait();
 	extern int TreeWriteTree();
@@ -352,7 +357,9 @@ extern int _TreeFlushOff(void *dbid, int nid);
 extern int TreeFlushReset(int nid);
 extern int _TreeFlushReset(void *dbid, int nid);
 extern void TreeFree(void *);
+
 extern int TreeGetDbi(struct dbi_itm *itmlst);
+
 extern int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst);
 extern int TreeGetNci(int nid, struct nci_itm *itmlst);
 extern int _TreeGetNci(void *dbid, int nid, struct nci_itm *itmlst);
@@ -363,7 +370,9 @@ extern char *_TreeGetMinimumPath(void *dbid, int *def_nid, int nid);
 extern char *TreeGetPath(int nid);
 extern char *_TreeGetPath(void *dbid, int nid);
 extern int TreeGetRecord(int nid, struct descriptor_xd *dsc_ptr);
+
 extern int _TreeGetRecord(void *dbid, int nid, struct descriptor_xd *dsc_ptr);
+
 extern int TreeGetStackSize();
 extern int _TreeGetStackSize(void *dbid);
 extern int TreeIsOn(int nid);
@@ -377,10 +386,8 @@ extern int TreeOpen(char *tree, int shot, int flags);
 extern int _TreeOpen(void **dbid,char *tree, int shot, int flags);
 extern int TreeOpenTree_EDIT(struct descriptor *treenam, int *shotid);
 extern int TreeOpenTree_NEW(struct descriptor *treenam, int *shotid);
-extern int TreePutRecord(int nid, struct descriptor *descriptor_ptr, ...);
-/** Optional arguments *****************************************************************
-			  int *utility_flag;
-***************************************************************************************/
+extern int TreePutRecord(int nid, struct descriptor *descriptor_ptr, int utility_update);
+extern int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int utility_update);
 extern int TreeQuitTree();
 /** Optional arguments *****************************************************************
 			  struct descriptor *treename;
@@ -407,7 +414,9 @@ extern int TreeSetSubtree(int *nid);
 extern int TreeStartConglomerate(int *numnodes);
 extern int TreeSwitchDbig(int old_dbid);
 extern int TreeTurnOff(int nid);
+extern int _TreeTurnOff(void *dbid, int nid);
 extern int TreeTurnOn(int nid);
+extern int _TreeTurnOn(void *dbid, int nid);
 extern int TreeVerifyTree();
 extern int TreeWait();
 extern int TreeWriteTree();
