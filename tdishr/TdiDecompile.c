@@ -93,7 +93,7 @@ struct descriptor_d	*out_ptr)
 /*-------------------------------------------------------
 	Handle arrays and arrays of pointers to descriptors.
 */
-int			vector(
+static int			tdi_vector(
 struct descriptor	*in_ptr,
 int			level,
 char			**item_ptr_ptr,
@@ -106,7 +106,7 @@ int	j, status;
 	status = StrAppend(out_ptr, &LEFT_BRACKET);
 	if (level > 0)
 		for (j = n; --j >= 0 && status & 1;) {
-			status = vector(in_ptr, level-1, item_ptr_ptr, out_ptr);
+			status = tdi_vector(in_ptr, level-1, item_ptr_ptr, out_ptr);
 			if (j > 0 && status & 1) status = StrAppend(out_ptr, &COMMA_SPACE);
 		}
 	else {
@@ -622,7 +622,7 @@ char n1c;
 			}
 			else {
 			char *pitem = (char *)a_ptr->pointer;
-				status = vector((struct descriptor *)a_ptr, dimct-1, &pitem, out_ptr);
+				status = tdi_vector((struct descriptor *)a_ptr, dimct-1, &pitem, out_ptr);
 			}
 			if (more && status & 1) status = StrAppend(out_ptr, &RIGHT_PAREN);
 			if (bptr && status & 1) status = StrAppend(out_ptr, &RIGHT_PAREN);
