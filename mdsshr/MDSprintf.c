@@ -89,8 +89,8 @@ int   MDSfprintf( FILE *fp , char *fmt , ... )
 	 * MdsGetOutputFunctions:
 	 ***************************************************************/
 void  MdsSetOutputFunctions(
-    int (*NEWvprintf)(const char *, char *)
-   ,int (*NEWvfprintf)(FILE *,const char *,char *)
+    int (*NEWvprintf)(const char *, void *)
+   ,int (*NEWvfprintf)(FILE *,const char *,void *)
    )
    {
     MDSvprintf = ((void *)NEWvprintf==(void *)-1) ? vprintf : NEWvprintf;
