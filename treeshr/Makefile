@@ -18,6 +18,7 @@ TreeOpen.o \
 TreePutRecord.o \
 TreeRenameNode.o \
 TreeRemoveNodesTags.o\
+TreeSerializeNci.o \
 TreeSetDefault.o \
 TreeSetNci.o \
 TreeVerify.o \

@@ -15,6 +15,45 @@
   for now they will live in their own file.
 *********************************************/
 
+#define   NciM_DATA_IN_ATT_BLOCK   0x01
+#define   NciV_DATA_IN_ATT_BLOCK      0
+#define   NciM_ERROR_ON_PUT        0x02
+#define   NciV_ERROR_ON_PUT           1
+
+typedef struct nci
+{
+  unsigned int  flags;
+  unsigned char flags2;
+  unsigned char spare;
+  unsigned int  time_inserted[2];
+  unsigned int  owner_identifier;
+  unsigned char class;
+  unsigned char dtype;
+  unsigned int  length;
+  unsigned char spare2;
+  unsigned int  status;
+  union
+  {
+    struct
+    {
+      unsigned char file_level;
+      unsigned char file_version;
+      unsigned char rfa[6];
+      unsigned int record_length;
+    }         DATA_LOCATION;
+    struct
+    {
+      unsigned char element_length;
+      unsigned char data[11];
+    }         DATA_IN_RECORD;
+    struct
+    {
+      unsigned int error_status;
+      unsigned int stv;
+    }         ERROR_INFO;
+  }         DATA_INFO;
+  unsigned char nci_fill;
+}         NCI;
 
 #define PACK
 #if defined(__hpux)
@@ -27,6 +66,7 @@
 #undef  PACK
 #define PACK __attribute__ ((packed))
 #endif
+
 
 #if defined(_big_endian)
 
@@ -72,46 +112,6 @@ static int swapshort(char *in_c)
 
 #define bitassign(bool,value,mask) value = (bool) ? (value) | (mask) : (value) & ~(mask)
 #define bitassign_c(bool,value,mask) value = (char)((bool) ? (value) | (mask) : (value) & ~(mask))
-
-#define   NciM_DATA_IN_ATT_BLOCK   0x01
-#define   NciV_DATA_IN_ATT_BLOCK      0
-#define   NciM_ERROR_ON_PUT        0x02
-#define   NciV_ERROR_ON_PUT           1
-
-typedef struct nci
-{
-  unsigned int  flags PACK;
-  unsigned char flags2 PACK;
-  unsigned char spare PACK;
-  unsigned int  time_inserted[2] PACK;
-  unsigned int  owner_identifier PACK;
-  unsigned char class PACK;
-  unsigned char dtype PACK;
-  unsigned int  length PACK;
-  unsigned char spare2 PACK;
-  unsigned int  status PACK;
-  union
-  {
-    struct
-    {
-      unsigned char file_level PACK;
-      unsigned char file_version PACK;
-      unsigned char rfa[6] PACK;
-      unsigned int record_length PACK;
-    }         DATA_LOCATION PACK;
-    struct
-    {
-      unsigned char element_length PACK;
-      unsigned char data[11] PACK;
-    }         DATA_IN_RECORD PACK;
-    struct
-    {
-      unsigned int error_status PACK;
-      unsigned int stv PACK;
-    }         ERROR_INFO PACK;
-  }         DATA_INFO PACK;
-  unsigned char nci_fill PACK;
-}         NCI PACK;
 
 /*****************************************
   NID
