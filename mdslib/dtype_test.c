@@ -16,13 +16,13 @@ int main(int argc, char *argv[])
   int dsc;
 
   int dtype_uchar = DTYPE_UCHAR;
-  uchar vUChar = UCHAR_MAX;
+  unsigned char vUChar = UCHAR_MAX;
 
   int dtype_ushort = DTYPE_USHORT;
-  ushort vUShort = USHRT_MAX;
+  unsigned short vUShort = USHRT_MAX;
 
   int dtype_ulong = DTYPE_ULONG;
-  ulong vULong = UINT_MAX;
+  unsigned long vULong = UINT_MAX;
 
   int dtype_ulonglong = DTYPE_ULONGLONG;
   long vULongLong[2] = {UINT_MAX,UINT_MAX};
