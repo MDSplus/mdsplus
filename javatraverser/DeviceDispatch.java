@@ -82,6 +82,16 @@ public class DeviceDispatch extends DeviceComponent
                 menu.addItem(name);
             }
         }
+        menu.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                int idx = menu.getSelectedIndex();
+                if(idx < 0 || idx >= dispatch_fields.length)
+                    return;
+                activateForm(dispatch_fields[menu.getSelectedIndex()], (String)menu.getSelectedItem());
+            }
+        });
         initializing = false;
     }
      protected void activateForm(DeviceDispatchField field, String name)
@@ -142,26 +152,8 @@ public class DeviceDispatch extends DeviceComponent
         public Component getEditorComponent() {return label;}
         public Object getItem() {return label; }
         public void selectAll() {}
-        public void setItem(Object obj)
-        {
-            if(initializing || !(obj instanceof String)) return;
-            if(dispatch_fields == null) return;
-            name = (String) obj;
-            idx = menu.getSelectedIndex();
-            if(idx >= 0) 
-            {
-                //Workaround for swing wrong timing
-                Timer t = new javax.swing.Timer(20, new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        activateForm(dispatch_fields[idx], name);
-                    }});
-                t.setRepeats(false);
-                t.start();
-            }
-        }
+        public void setItem(Object obj){}
     }
-
 }
 
     

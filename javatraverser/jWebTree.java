@@ -113,7 +113,11 @@ public class jWebTree extends HttpServlet implements SingleThreadModel{
                 else
                     tree = new Database(experiment, shot);
                 tree.open();
-            }catch(Exception exc) {tree = null; }
+            }catch(Exception exc) 
+	   {
+		System.err.println(e);
+		tree = null; 
+	    }
         }
         if(tree == null)
         {
