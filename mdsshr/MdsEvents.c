@@ -154,7 +154,7 @@ static int getSemId()
         }
         else
 	{
-          union semun { int val; struct semid_ds *buf; unsigned short *array;} arg;
+          union semun__mds { int val; struct semid_ds *buf; unsigned short *array;} arg;
           arg.val = 1;
           status = semctl(semId,0,SETVAL,arg);
           if (status == -1)
