@@ -29,12 +29,15 @@ int SERVER$FIND_SERVERS(int *ctx, struct dsc$descriptor *server )
 
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
+#ifndef HAVE_WINDOWS_H
 #include <dirent.h>
+#endif
 #include <string.h>
 #include <stdlib.h>
 
 char *ServerFindServers(void **ctx, char *wild_match)
 {
+#ifndef HAVE_WINDOWS_H
   char *ans = 0;
   DIR *dir = (DIR *)*ctx;
   if (dir == 0)
@@ -77,4 +80,7 @@ char *ServerFindServers(void **ctx, char *wild_match)
     }
   }
   return ans;
+#else
+  return 0;
+#endif
 }
