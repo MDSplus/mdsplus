@@ -193,6 +193,9 @@
 			RelativePath=".\librtl.c">
 		</File>
 		<File
+			RelativePath="mds_dsc_string.c">
+		</File>
+		<File
 			RelativePath=".\mdsmsg.c">
 		</File>
 	</Files>

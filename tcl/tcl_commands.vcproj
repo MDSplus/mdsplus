@@ -129,9 +129,6 @@
 	</Configurations>
 	<Files>
 		<File
-			RelativePath=".\mds_dsc_string.c">
-		</File>
-		<File
 			RelativePath=".\tcl_add_node.c">
 		</File>
 		<File
@@ -241,6 +238,9 @@ cdu &lt; &quot;$(InputPath)&quot;
 		</File>
 		<File
 			RelativePath=".\tcl_show_db.c">
+		</File>
+		<File
+			RelativePath="tcl_show_version.c">
 		</File>
 		<File
 			RelativePath=".\tcl_verify_tree.c">
