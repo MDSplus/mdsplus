@@ -14,8 +14,8 @@
 #define lseek _lseek
 #else
 #include <unistd.h>
-#endif
 #include <pthread.h>
+#endif
 #include <time.h>
 #include <fcntl.h>
 #include <sys/stat.h>
