@@ -20,8 +20,8 @@ class MdsServer extends MdsConnection
     static final int SrvJobBEFORE_NOTIFY =1;
     static final int SrvJobAFTER_NOTIFY  =2;
 
-    static final int ServerABORT    = 0xfe18032;    
-    
+    static final int ServerABORT    = 0xfe18032;
+
     static final short START_PORT = 8800;
 
     /**
@@ -30,29 +30,29 @@ class MdsServer extends MdsConnection
     */
     private ServerSocket  rcv_sock;
     /**
-    *  Server socket port 
+    *  Server socket port
     */
     protected Socket read_sock = null;
     public short rcv_port;
-    
+
     protected boolean rcv_connected = false;
-    
+
     transient Vector server_event_listener = new Vector();
     transient Vector curr_listen_sock = new Vector();
-    
+
     byte [] self_address;
-    
+
     class ReceiveServerMessage extends Thread
     {
         DataInputStream dis;
         Socket s;
         boolean connected = true;
-        
+
         public ReceiveServerMessage(Socket s)
         {
             this.s = s;
         }
-        
+
         public void run()
         {
             try
@@ -68,7 +68,7 @@ class MdsServer extends MdsConnection
 	                    //continue;
 	                    break;
 	                }
-	                
+
 	                String head = new String(header);
 	                StringTokenizer buf = new StringTokenizer(head, " \0");
  	                int id = 0;
@@ -100,8 +100,8 @@ class MdsServer extends MdsConnection
 	                        se = new MdsServerEvent(this, id, flags, status);
 	                    }
 	                    dispatchMdsServerEvent(se);
-	                } 
-	                catch (Exception e) 
+	                }
+	                catch (Exception e)
 	                {
 	                    System.out.println("Bad Message "+head);
 	                    se = new MdsServerEvent(this, id, flags, status);
@@ -113,13 +113,13 @@ class MdsServer extends MdsConnection
 	        }
         }
     }
-    
+
     class ListenServerConnection extends Thread
     {
         public void run()
         {
             ReceiveServerMessage rec_srv_msg;
-            
+
             //do
 	        {
                 try
@@ -130,7 +130,7 @@ class MdsServer extends MdsConnection
                     System.out.println("Receive connection from server "+provider);
 	                rec_srv_msg = new ReceiveServerMessage(read_sock);
 	                rec_srv_msg.start();
-	            } 
+	            }
 	            catch (IOException e)
 	            {
 	                rcv_connected = false;
@@ -139,7 +139,7 @@ class MdsServer extends MdsConnection
 	        //while(rcv_connected);
         }
     }
-    
+
     public MdsServer(String server) throws IOException
     {
         super(server);
@@ -149,16 +149,16 @@ class MdsServer extends MdsConnection
             throw(new IOException(error));
         startReceiver();
     }
-    
+
     private void startReceiver() throws IOException
     {
         if(rcv_port == 0)
             createPort(START_PORT);
-        
+
         ListenServerConnection listen_server_con = new ListenServerConnection();
         listen_server_con.start();
     }
-    
+
     private void createPort(short start_port) throws IOException
     {
         boolean found = false;
@@ -170,7 +170,7 @@ class MdsServer extends MdsConnection
                 try
                 {
                     rcv_sock = new ServerSocket((rcv_port = (short)(start_port + tries)));
-                } catch(IOException e) 
+                } catch(IOException e)
                 {
                     rcv_sock = null;
                 }
@@ -180,7 +180,7 @@ class MdsServer extends MdsConnection
             found = true;
          }
     }
-    
+
     public  String getFullPath(String tree, int shot, int nid)
     {
 	    Vector args = new Vector();
@@ -193,12 +193,12 @@ class MdsServer extends MdsConnection
         else
             return out.strdata;
     }
-    
+
     public synchronized void shutdown() throws IOException
     {
         if(server_event_listener.size() != 0)
         {
-            server_event_listener.removeAllElements();   
+            server_event_listener.removeAllElements();
         }
         if(rcv_sock != null)
             rcv_sock.close();
@@ -207,25 +207,25 @@ class MdsServer extends MdsConnection
         if(curr_listen_sock.size() != 0)
         {
             for(int i = 0; i < curr_listen_sock.size(); i++)
-                ((Socket)curr_listen_sock.elementAt(i)).close();  
-            curr_listen_sock.removeAllElements();  
+                ((Socket)curr_listen_sock.elementAt(i)).close();
+            curr_listen_sock.removeAllElements();
         }
 
         DisconnectFromMds();
    }
-   
+
    protected void finalize()
    {
         try{
             shutdown();
         } catch (IOException ex){}
    }
-   
+
     public Descriptor sendMessage(int id, int op, Vector args, boolean wait) throws IOException
     {
         return sendMessage(id, op, false, args, wait);
     }
-    
+
     public Descriptor sendMessage(int id, int op, boolean before_notify, Vector args, boolean wait) throws IOException
     {
         String cmd = new String("ServerQAction");
@@ -234,13 +234,13 @@ class MdsServer extends MdsConnection
 
         if(args == null)
             args = new Vector();
-            
+
         args.add(0, new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(id))));
         args.add(0, new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(flags))));
         args.add(0, new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(op))));
         args.add(0, new Descriptor(Descriptor.DTYPE_SHORT,   null, Descriptor.dataToByteArray(new Short(rcv_port))));
         args.add(0, new Descriptor(Descriptor.DTYPE_LONG,    null, self_address));
-        
+
         Descriptor out;
         if(wait)
             out = MdsValue(cmd, args);
@@ -251,7 +251,7 @@ class MdsServer extends MdsConnection
             throw(new IOException(out.error));
         return out;
     }
-            
+
 
     public Descriptor abort(boolean do_flush) throws IOException
     {
@@ -259,49 +259,49 @@ class MdsServer extends MdsConnection
         int flush;
         flush = (do_flush)?1:0;
         args.add(new Descriptor(Descriptor.DTYPE_LONG,  null, Descriptor.dataToByteArray(new Integer(flush))));
-        Descriptor reply = sendMessage(0, SrvAbort, args, true);       
+        Descriptor reply = sendMessage(0, SrvAbort, args, true);
         return reply;
     }
-    
+
     public Descriptor closeTrees() throws IOException
     {
-        Descriptor reply = sendMessage(0, SrvClose, null, true);     
+        Descriptor reply = sendMessage(0, SrvClose, null, true);
         return reply;
     }
-    
+
     public Descriptor createPulse(String tree, int shot) throws IOException
     {
         Vector args = new Vector();
         args.add(new Descriptor(Descriptor.DTYPE_CSTRING, null, tree.getBytes()));
         args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(shot))));
-        Descriptor reply = sendMessage(0, SrvCreatePulse, args, true);        
+        Descriptor reply = sendMessage(0, SrvCreatePulse, args, true);
         return reply;
     }
-    
+
     public Descriptor dispatchAction(String tree, int shot, int nid, int id) throws IOException
     {
         Vector args = new Vector();
         args.add(new Descriptor(Descriptor.DTYPE_CSTRING, null, tree.getBytes()));
         args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(shot))));
         args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(nid))));
-        Descriptor reply = sendMessage(id, SrvAction, true, args, false);        
+        Descriptor reply = sendMessage(id, SrvAction, true, args, true);
         return reply;
     }
-    
+
     public Descriptor dispatchCommand(String cli, String command) throws IOException
     {
         Vector args = new Vector();
         args.add(new Descriptor(Descriptor.DTYPE_CSTRING, null, cli.getBytes()));
         args.add(new Descriptor(Descriptor.DTYPE_CSTRING, null, command.getBytes()));
-        Descriptor reply = sendMessage(0, SrvCommand, args, true);        
+        Descriptor reply = sendMessage(0, SrvCommand, args, true);
         return reply;
     }
-        
+
     public Descriptor monitorCheckin() throws IOException
     {
         String cmd = "";
         Vector args = new Vector();
-            
+
         args.add(new Descriptor(Descriptor.DTYPE_CSTRING, null, cmd.getBytes()));
         args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(0))));
         args.add(new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(0))));
@@ -313,26 +313,26 @@ class MdsServer extends MdsConnection
         Descriptor reply = sendMessage(0, SrvMonitor, args, true);
         return reply;
     }
-    
+
     public Descriptor setLogging(byte logging_mode) throws IOException
     {
         byte data[] = new byte[1];
         data[0] = logging_mode;
         Vector args = new Vector();
-        args.add(new Descriptor(Descriptor.DTYPE_CHAR,    null, data));            
-        Descriptor reply = sendMessage(0, SrvSetLogging, args, true);       
+        args.add(new Descriptor(Descriptor.DTYPE_CHAR,    null, data));
+        Descriptor reply = sendMessage(0, SrvSetLogging, args, true);
         return reply;
     }
-    
+
     public Descriptor stop() throws IOException
     {
-        Descriptor reply = sendMessage(0, SrvStop, null, true);       
+        Descriptor reply = sendMessage(0, SrvStop, null, true);
         return reply;
     }
 
     public Descriptor removeLast() throws IOException
     {
-        Descriptor reply = sendMessage(0, SrvRemoveLast, null, true);       
+        Descriptor reply = sendMessage(0, SrvRemoveLast, null, true);
         return reply;
     }
 
@@ -343,7 +343,7 @@ class MdsServer extends MdsConnection
 	    }
         server_event_listener.addElement(l);
     }
-    
+
     public synchronized void removeMdsServerListener(MdsServerListener l)
     {
 	    if (l == null) {
@@ -351,8 +351,8 @@ class MdsServer extends MdsConnection
 	    }
         server_event_listener.removeElement(l);
     }
-    
-    
+
+
     protected void dispatchMdsServerEvent(MdsServerEvent e)
     {
         synchronized(server_event_listener)
@@ -364,7 +364,7 @@ class MdsServer extends MdsConnection
             }
         }
     }
-    
+
     static void main(String arg[])
     {
         MdsServer ms = null;
@@ -373,7 +373,7 @@ class MdsServer extends MdsConnection
             ms = new MdsServer("150.178.3.47:8001");
 
             Descriptor reply = ms.monitorCheckin();
-            
+
             Frame f = new Frame();
             f.show();
             /*
@@ -389,8 +389,8 @@ class MdsServer extends MdsConnection
                 }
             } while(reply != null);
             */
-        } 
-        catch (IOException e) 
+        }
+        catch (IOException e)
         {
             System.out.println(""+e);
         }
