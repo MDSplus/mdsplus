@@ -811,9 +811,10 @@ static void ProcessMessage(Client *c, Message *message)
   }
 }
 
-static void ClientEventAst(MdsEventList *e)
+static void ClientEventAst(MdsEventList *e, int len, char *data)
 {
   Client *c;
+  int i;
   for (c=ClientList; c && (c->sock != e->sock); c = c->next);
   if (c)
   {
@@ -826,9 +827,9 @@ static void ClientEventAst(MdsEventList *e)
       m->h.msglen = len;
       m->h.dtype = DTYPE_EVENT;
       info = (JMdsEventInfo *)m->bytes;
-      /*
-      MdsGetEvi(e->eventid, info->data, 0);
-      */
+      memcpy(info->data, data, (len<12)?len:12);
+      for(i = len; i < 12; i++)
+        info->data[i] = 0;
       info->eventid = e->jeventid;
       SendMdsMsg(c->sock, m, 0);
       free(m);
@@ -839,9 +840,9 @@ static void ClientEventAst(MdsEventList *e)
       m->h.client_type = c->client_type;
       m->h.msglen = sizeof(MsgHdr) + e->info_len;
       m->h.dtype = DTYPE_EVENT;
-      /*
-      MdsGetEvi(e->eventid, e->info->data, 0);
-      */
+      memcpy(e->info->data, data, (len<12)?len:12); 
+      for(i = len; i < 12; i++)
+        e->info->data[i] = 0;
       memcpy(m->bytes,e->info,e->info_len);
       SendMdsMsg(c->sock, m, MSG_OOB);
       free(m);
@@ -849,9 +850,7 @@ static void ClientEventAst(MdsEventList *e)
   }
   else
   {
-    /**/
     MDSEventCan(e->eventid);
-    /**/
     if (e->info_len > 0) free(e->info);
     free(e);
   }
