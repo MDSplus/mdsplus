@@ -335,7 +335,6 @@ static int BecomeUser(char *remuser, struct descriptor *user)
     char *user = strcmp(luser,"MAP_TO_LOCAL") == 0 ? remuser : (strcmp(luser,"SELF") == 0 ? cuserid(0) : luser);
     int status = -1;
     struct passwd *pwd = getpwnam(user);
-    printf("user = %s\n",user);
     if (!pwd && remuser == user)
     {
       int i;
@@ -631,12 +630,12 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
     tim = time(0);
     timestr = ctime(&tim);
     timestr[strlen(timestr)-1] = 0;
-#ifndef GLOBUS
 #ifdef HAVE_VXWORKS_H
     hp = resolvGetHostByAddr((const char *)&sin->sin_addr, hostent_buf, 512);
 #else
     hp = gethostbyaddr((char *)&sin->sin_addr,sizeof(sin->sin_addr),AF_INET);
 #endif
+#ifndef GLOBUS
     if (hp) ok = CheckClient(hp->h_name,user_p);
     if (ok == 0) ok = CheckClient((char *)inet_ntoa(sin->sin_addr),user_p);
 #else
@@ -695,7 +694,10 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
     else
       printf("%s (%d) (pid %d) Connection received from %s@%s\r\n", timestr, sock, pid, user_p, inet_ntoa(sin->sin_addr));
 #else
-    printf("%s (pid %d) Connection received from:\n%s\r\n",timestr,pid,dn);
+    if (hp)
+      printf("%s (pid %d) Connection received from: %s [%s]\n%s\r\n",timestr,pid,hp->h_name, inet_ntoa(sin->sin_addr), dn);
+    else
+      printf("%s (pid %d) Connection received from: %s\n%s\r\n",timestr,pid,inet_ntoa(sin->sin_addr), dn);
 #endif
     if (!(m_status & 1))
     {

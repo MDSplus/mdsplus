@@ -104,9 +104,9 @@ void ConnectReceived(void *callback_arg, globus_io_handle_t *listener_handle, gl
   }
   else
   {
-/*
-      globus_io_tcp_get_remote_address(handle,&host,&port);
-*/
+    int host[4];
+    int in_host;
+    struct sockaddr_in sin;
     gss_ctx_id_t context = 0;
     OM_uint32 minor_status = 0;
     gss_name_t src_name = 0;
@@ -121,7 +121,14 @@ void ConnectReceived(void *callback_arg, globus_io_handle_t *listener_handle, gl
     globus_io_tcp_get_security_context(handle,&context);
     gss_inquire_context(&minor_status, context, &src_name, &targ_name, 0, 0,0,0,0);
     gss_display_name(&minor_status,src_name,&gss_buffer,&gss_oid);
-    (*AddClient)(s,0,(char *)gss_buffer.value);
+    if ((result = globus_io_tcp_get_remote_address(handle,host,&sin.sin_port)) != GLOBUS_SUCCESS)
+    {
+      globus_libc_printf("Error accepting client connection:\n\t");
+      globus_libc_printf(globus_object_printable_to_string(globus_error_get(result)));
+    }
+    in_host = host[0] | (host[1] << 8) | (host[2] << 16) | (host[3] << 24);
+    memcpy(&sin.sin_addr,&in_host,sizeof(host));
+    (*AddClient)(s,&sin,(char *)gss_buffer.value);
   }
   if (pid == getpid())
   {
@@ -140,7 +147,9 @@ void Poll(int shut,int IsWorker,int IsService, SOCKET serverSock)
 
 static globus_bool_t AuthenticationCallback(void *arg, globus_io_handle_t *handle, globus_result_t result, char *identity, gss_ctx_id_t *context_handle)
 {
+/*
   printf("AuthenticationCallback from identity %s\n",identity);
+*/
   return 1;
 }
 
