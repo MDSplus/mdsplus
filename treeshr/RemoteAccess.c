@@ -1,3 +1,8 @@
+#ifdef linux
+#define _LARGEFILE_SOURCE
+#define _FILE_OFFSET_BITS 64
+#define __USE_FILE_OFFSET64
+#endif
 #ifndef HAVE_VXWORKS_H
 #include <config.h>
 #endif
@@ -17,7 +22,7 @@
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ncidef.h>
-
+#include <unistd.h>
 #ifndef HAVE_VXWORKS_H
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
