@@ -1332,7 +1332,6 @@ STATIC_ROUTINE void cleanup(int dummy)
     UnlockMdsShrMutex(&sharedMutex);
 
     releaseMessages();
-    exit(0);
 
 }
 
