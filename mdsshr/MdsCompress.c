@@ -48,15 +48,12 @@ The expansion routine "xentry":
 
 
 #include <string.h>
+#include <mdstypes.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <libroutines.h>
 #include <strroutines.h>
 #include <librtl_messages.h>
-
-#ifndef _WIN32
-typedef long long _int64;
-#endif
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))

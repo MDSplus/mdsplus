@@ -95,17 +95,7 @@ int  MdsFree1Dx(struct descriptor_xd *dsc_ptr, void **zone)
   return status;
 }
 
-#ifdef __VMS
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-typedef ARRAY_COEFF(char, 1) array_coef;
-typedef ARRAY_COEFF(float, 12) ARRAY;
 typedef struct _bounds { int l; int u; } BOUNDS;
-#ifdef __VMS
-#pragma member_alignment restore
-#endif
-
 
 static struct descriptor *FixedArray();
 
@@ -237,8 +227,8 @@ static int copy_dx(
 
      case CLASS_NCA:
       {
-	array_coef *pi = (array_coef *) FixedArray(in_ptr);
-	array_coef *po = (array_coef *) out_dsc_ptr;
+	array_coeff *pi = (array_coeff *) FixedArray(in_ptr);
+	array_coeff *po = (array_coeff *) out_dsc_ptr;
 	bytes = sizeof(struct descriptor_a)
 		+ (pi->aflags.coeff ? sizeof(int) * (pi->dimct + 1) : 0)
 		+ (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0);
@@ -261,8 +251,8 @@ static int copy_dx(
       {
         int dscsize;
         int align_size;
-	array_coef *pi = (array_coef *) in_ptr;
-	array_coef *po = (array_coef *) out_dsc_ptr;
+	array_coeff *pi = (array_coeff *) in_ptr;
+	array_coeff *po = (array_coeff *) out_dsc_ptr;
 	dscsize = sizeof(struct descriptor_a)
 		+ (pi->aflags.coeff ? sizeof(char *) + sizeof(int) * pi->dimct : 0)
 		+ (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0);
@@ -389,11 +379,11 @@ int MdsCopyDxXdZ(struct descriptor *in_dsc_ptr, struct descriptor_xd *out_dsc_pt
 static struct descriptor *FixedArray(struct descriptor *in)
 {
 
-  ARRAY *a = (ARRAY *)in;
+  array_coeff *a = (array_coeff *)in;
   int dsize = sizeof(struct descriptor_a)+4+12*a->dimct;
   int i;
   BOUNDS *bounds = (BOUNDS *)&a->m[a->dimct];
-  ARRAY *answer = (ARRAY *)memcpy(malloc(dsize),a,dsize);
+  array_coeff *answer = (array_coeff *)memcpy(malloc(dsize),a,dsize);
   answer->class = CLASS_A;
   answer->aflags.column = 1;
   answer->aflags.coeff = 1;

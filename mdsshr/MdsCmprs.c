@@ -74,75 +74,21 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define MAXY 32			/*maximum bits that we can pack*/
 #define BITSX 10		/*number of bits for run length*/
 #define BITSY 6			/*number of bits in y 0-32*/
+#define MASK(bits)  ((unsigned int)0xffffffff >> (32 - bits))
+#define YFIELD(y) ((unsigned int)(y) & MASK(BITSY))
+#define XFIELD(x) ((unsigned int)(x) & MASK(BITSX) << BITSY)
+#define X_AND_Y(x,y) (XFIELD(x) | YFIELD(y))
+#define X_OF_INT(val) (((unsigned int)(val) >> BITSY) & MASK(BITSX))
+#define Y_OF_INT(val) ((unsigned int)(val) & MASK(BITSY))
+#define SWAP_SHORTS(in,out)         ((short *)out)[0] = ((short *)in)[1],((short *)out)[1] = ((short *)in)[0]
 
-#if defined(__hpux)
-#pragma HP_ALIGN NOPADDING PUSH
-#elif defined(__sgi)
-#pragma pack(1)
-#elif defined(__GNUC__)
-#pragma pack(1)
-#elif defined(_AIX)
-#pragma options align=packed
-#endif
 
-#ifdef _big_endian
-typedef union
-{
-  int       l;
-  struct
-  {
-    short     s1,
-              s0;
-  }         s;
-}        *PF;
-
-union Y_X
-{
-  int       dummy;
-  struct
-  {
-    unsigned  :16;
-    unsigned  x:BITSX;
-    unsigned  y:BITSY;
-  }         fields;
-};
-#else
-typedef union
-{
-  int       l;
-  struct
-  {
-    short     s0,
-              s1;
-  }         s;
-}        *PF;
-
-union Y_X
-{
-  int       dummy;
-  struct
-  {
-    unsigned  y:BITSY;
-    unsigned  x:BITSX;
-  }         fields;
-};
-#endif
-
+typedef struct {int l;} *PF;
 struct HEADER
 {
-  union Y_X n;
-  union Y_X e;
+  int n;
+  int e;
 };
-
-#if defined(__hpux)
-#pragma HP_ALIGN POP
-#elif defined(__GNUC__)
-#pragma pack()
-#elif defined(__sgi)
-#pragma pack(0)
-#elif defined(_AIX)
-#pragma options align=power
-#endif
 
 static char FIELDSY = BITSY + BITSX;
 static int FIELDSX = 2;
@@ -262,7 +208,7 @@ Do this in runs.
      case DTYPE_H:
      case DTYPE_HC:
       for (; --j >= 0;)
-	((PF) pe)->s.s0 = ((PF) px)->s.s1, ((PF) pe)->s.s1 = ((PF) px)->s.s0, ++pe, ++px;
+	SWAP_SHORTS(px,pe),++pe,++px;
       break;
     }
 
@@ -359,12 +305,8 @@ Do this in runs.
   ******************************/
     if (*bit_ptr + xe * ye + xn * yn > limit)
       return LibSTRTRU;
-    header.n.dummy = 0;
-    header.n.fields.x = xn - 1;
-    header.n.fields.y = yn;
-    header.e.dummy = 0;
-    header.e.fields.x = xe;
-    header.e.fields.y = ye - 1;
+    header.n = X_AND_Y(xn - 1,yn);
+    header.e = X_AND_Y(xe,ye - 1);
     MdsPk((char *) &FIELDSY, &FIELDSX, (int *) ppack, (int *) &header, (int *) bit_ptr);
     yn_c = (char)yn;
     ye_c = (char)ye;
@@ -422,13 +364,13 @@ Note the sign-extended unpacking.
     if (*bit_ptr + 2 * (BITSY + BITSX) > limit)
       break;
     MdsUnpk(&nbits, (int *) &FIELDSX, (int *) ppack, (int *) &header, (int *) bit_ptr);
-    xhead = j = header.n.fields.x + 1;
+    xhead = j = X_OF_INT(header.n) + 1;
     if (j > nitems)
       j = nitems;
     xn = j;
-    yn = -(int)header.n.fields.y;
-    xe = header.e.fields.x;
-    ye = -(int)(header.e.fields.y + 1);
+    yn = -(int)Y_OF_INT(header.n);
+    xe = X_OF_INT(header.e);
+    ye = -(int)Y_OF_INT(header.e) + 1;
     if (*bit_ptr - ye * xe - yn * j > limit)
       break;
     nitems -= j;
@@ -497,12 +439,12 @@ Note the sign-extended unpacking.
       if (xe)
 	for (; --j >= 0;)
 	  if (*pn != mark)
-	    pf->l += *pn++, ((PF) px)->s.s0 = pf->s.s1, ((PF) px)->s.s1 = pf->s.s0, ++px;
+	    pf->l += *pn++, SWAP_SHORTS(pf,px), ++px;
 	  else
-	    ++pn, pf->l += *pe++, ((PF) px)->s.s0 = pf->s.s1, ((PF) px)->s.s1 = pf->s.s0, ++px;
+	    ++pn, pf->l += *pe++, SWAP_SHORTS(pf,px),++px;
       else
 	for (; --j >= 0;)
-	  pf->l += *pn++, ((PF) px)->s.s0 = pf->s.s1, ((PF) px)->s.s1 = pf->s.s0, ++px;
+	  pf->l += *pn++, SWAP_SHORTS(pf,px), ++px;
       break;
     }
   }

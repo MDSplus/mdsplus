@@ -16,12 +16,13 @@ PARTS = ipcs \
         cdu     \
         mdsdcl  \
         ccl     \
+	servershr \
         tcl \
         traverser \
         actions \
         mdslib \
         math \
-        d3dshr \
+        @D3DSHR@ \
         wfevent
 
 all:

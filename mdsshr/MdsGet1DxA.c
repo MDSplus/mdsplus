@@ -53,28 +53,19 @@
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 
-#ifdef __VMS
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-typedef ARRAY_COEFF(char, 1) array_coef;
-#ifdef __VMS
-#pragma member_alignment restore
-#endif
-
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
   int       MdsGet1DxA(struct descriptor_a * in_ptr, unsigned short *length_ptr, unsigned char *dtype_ptr,
 			            struct descriptor_xd *out_xd)
 {
-  array_coef *in_dsc = (array_coef *) in_ptr;
+  array_coeff *in_dsc = (array_coeff *) in_ptr;
   int       new_arsize;
   int       dsc_size;
   unsigned int new_size;
   int       status;
   int       i;
   int align_size;
-  array_coef *out_dsc;
+  array_coeff *out_dsc;
   unsigned char dsc_dtype = DTYPE_DSC;
   new_arsize = (in_dsc->dscL_arsize / in_dsc->dscW_length) * (*length_ptr);
   dsc_size = sizeof(struct descriptor_a) + (in_dsc->aflags.dscV_coeff ? sizeof(char *) + 
@@ -87,7 +78,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
   status = MdsGet1Dx(&new_size, &dsc_dtype, out_xd, NULL);
   if (status & 1)
   {
-    out_dsc = (array_coef *) out_xd->dscA_pointer;
+    out_dsc = (array_coeff *) out_xd->dscA_pointer;
     *(struct descriptor_a *) out_dsc = *(struct descriptor_a *) in_dsc;
     out_dsc->dscW_length = *length_ptr;
     out_dsc->dscB_dtype = *dtype_ptr;

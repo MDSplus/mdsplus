@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <mdstypes.h>
 #include <mdsdescrip.h>
 #include <math.h>
 #include <time.h>
@@ -7,6 +8,8 @@
 #include <libroutines.h>
 #include <mds_stdarg.h>
 #include <librtl_messages.h>
+
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int MdsCopyDxXd();
 
@@ -17,14 +20,12 @@ int StrCopyDx(struct descriptor *out, struct descriptor *in);
 int StrAppend(struct descriptor *out, struct descriptor *tail);
 void TranslateLogicalFree(char *value);
 
-#if defined(WIN32)
+#ifdef HAVE_WINDOWS_H
 #pragma warning (disable : 4100 4201 4115 4214 4514)
 #include <windows.h>
 #include <process.h>
 
 #define RTLD_LAZY 0
-#define SHARELIB_PREFIX ""
-#define SHARELIB_TYPE ""
 
 static void *dlopen(char *filename, int flags)
 {
@@ -179,18 +180,16 @@ unsigned int LibCallg(void **arglist, FARPROC *routine)
 
 #else /* WIN32 */
 
-#ifndef _LINUX
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+
 #include <sys/types.h>
 #include <dirent.h>
 #include <errno.h>
 
-#define SHARELIB_PREFIX "lib"
-
-#if defined(__hpux)
+#ifdef HAVE_DL_H
 #include <dl.h>
-#define SHARELIB_TYPE ".sl"
 #define RTLD_LAZY BIND_DEFERRED | BIND_NOSTART | DYNAMIC_PATH
 
 static void *dlopen(char *filename, int flags)
@@ -204,12 +203,8 @@ void *dlsym(void *handle, char *name)
   int s = shl_findsym((shl_t *)&handle,name,0,&symbol);
   return symbol;
 }
-#elif defined(_AIX)
-#include <dlfcn.h>
-#define SHARELIB_TYPE ".a"
 #else
 #include <dlfcn.h>
-#define SHARELIB_TYPE ".so"
 #endif
 
 static char *nonblank( char *p)
@@ -322,7 +317,7 @@ unsigned int LibCallg(void **arglist, unsigned int (*routine)())
 }
 
 
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
 int LibSpawn(struct descriptor *cmd)
 {
   pid_t  pid,xpid;
@@ -367,7 +362,7 @@ int LibSpawn(struct descriptor *cmd)
 }
 
 #endif
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
 
 #include <vxWorks.h>
 #include <wdLib.h>
@@ -408,7 +403,6 @@ int LibWait(float *secs)
 
 #endif
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #ifndef va_count
 #define  va_count(narg) va_start(incrmtr, first); \
                         for (narg=1; (narg < 256) && (va_arg(incrmtr, struct descriptor *) != MdsEND_ARG); narg++)
@@ -459,7 +453,7 @@ char *MdsDescrToCstring(struct descriptor *in)
 
 int LibSigToRet(){return 1;}
 
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
 #include <symLib.h>
 #include <taskLib.h>
 
@@ -529,7 +523,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   char *full_filename = malloc(strlen(c_filename) + 10);
   void *handle;
   *symbol_value = NULL;
-  strcpy(full_filename,SHARELIB_PREFIX);
+  strcpy(full_filename,"lib");
   strcat(full_filename,c_filename);
   strcat(full_filename,SHARELIB_TYPE);
   handle = dlopen(full_filename,RTLD_LAZY);
@@ -633,11 +627,7 @@ int StrGet1Dx(unsigned short *len, struct descriptor *out)
   return 1;
 }
 
-#ifndef _WIN32
-typedef long long _int64;
-#endif
-
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
 static int timezone = 0;
 #endif
 
@@ -811,7 +801,7 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, unsigned int *time
   char *time_str;
   char time_out[23];
   unsigned short slen=sizeof(time_out);
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
   tzset();
 #endif
   if (time_in)

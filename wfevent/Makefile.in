@@ -1,0 +1,34 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=@LD@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=@LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = wfevent.o
+OBJECTS = $(SOURCES:.c=.o)
+
+all: @MAKEBINDIR@ @MAKEBINDIR@wfevent 
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
+
+clean :
+	- rm *.o
+	- rm @MAKEBINDIR@wfevent
+
+install:
+	if [ ! -d @bindir@ ] ; then \
+                mkdir @bindir@; \
+                chmod 755 @bindir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKEBINDIR@wfevent	@bindir@
+
+@MAKEBINDIR@ :
+	mkdir @MAKEBINDIR@
+
+@MAKEBINDIR@wfevent : $(OBJECTS)
+	$(CC) -o $@ $(OBJECTS)  -L@MAKELIBDIR@ -lMdsShr -lipcs $(LIBS)

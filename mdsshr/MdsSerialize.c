@@ -23,7 +23,7 @@
 #define a0_of(ptr)        ((unsigned int)swapint(&ptr[16]))
 #define m_of(ptr)         (&ptr[20])
 #define LoadChar(in,outp)  (outp)[0] = ((char *)&in)[0]
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 #define LoadShort(in,outp) (outp)[0] = ((char *)&in)[1]; (outp)[1] = ((char *)&in)[0]
 #define LoadInt(in,outp)   (outp)[0] = ((char *)&in)[3]; (outp)[1] = ((char *)&in)[2]; \
                            (outp)[2] = ((char *)&in)[1]; (outp)[3] = ((char *)&in)[0]
@@ -36,7 +36,7 @@
                                      | (inp->aflags.coeff << 6) | (inp->aflags.bounds << 7)
 #define offset(ptr)       *(unsigned int *)&ptr
 
-#if defined(_big_endian)
+#if defined(WORDS_BIGENDIAN)
 
 static int swapint(char *in_c)
 {
@@ -433,7 +433,7 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
           LoadChar(in_ptr->class,out_ptr+3);
           LoadInt(dscsize,out_ptr+4);
           out_ptr += 8;
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
           if (in_ptr->dtype != DTYPE_T)
 	  {
 	    switch (in_ptr->length)
@@ -562,7 +562,7 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
               }
             }
           }
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
           if (in_ptr->dtype != DTYPE_T)
 	  {
             unsigned int i;
@@ -912,7 +912,7 @@ int MdsSerializeDscOutZ(struct descriptor *in,
         data_in_altbuf = 1;
 	class = CLASS_S;
 	length = out_ptr->length + 8;
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
         if (dtype != DTYPE_T)
         {
           char *outp = (char *)altbuf;
