@@ -54,6 +54,7 @@
  */
 extern void CloseTree(Widget, XtPointer, XtPointer);
 extern void CommandEntered(Widget, XtPointer, XtPointer);
+extern void CreateTree(Widget, XtPointer, XtPointer);
 extern void MDisplayData(Widget, XtPointer, XtPointer);
 extern void MDoAction(Widget, XtPointer, XtPointer);
 extern void MessageClear(Widget, XtPointer, XtPointer);
@@ -162,13 +163,15 @@ int main(int argc, char **argv)
     MrmHierarchy HierarchyID;
     MrmType MrmWClass;
     static char *UidFile [] = { BX_UID_FILE_NAME };
-    MRMRegisterArg NamesList[31];
+    MRMRegisterArg NamesList[32];
     Cardinal Nlac;
     Nlac = 0;
     NamesList[Nlac].name = "CloseTree";
     NamesList[Nlac++].value = (XtPointer) CloseTree;
     NamesList[Nlac].name = "CommandEntered";
     NamesList[Nlac++].value = (XtPointer) CommandEntered;
+    NamesList[Nlac].name = "CreateTree";
+    NamesList[Nlac++].value = (XtPointer) CreateTree;
     NamesList[Nlac].name = "MDisplayData";
     NamesList[Nlac++].value = (XtPointer) MDisplayData;
     NamesList[Nlac].name = "MDoAction";

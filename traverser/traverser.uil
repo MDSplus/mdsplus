@@ -137,6 +137,7 @@ procedure AddDeviceDismiss();
 procedure CreateAddDevice();
 procedure AddDevice();
 procedure WriteTree(integer);
+procedure CreateTree();
 
 list BaseStyle : arguments {
 };
@@ -180,9 +181,27 @@ object mainWindow : XmMainWindow widget {
          managed XmMenuBar menuBar;
          managed XmCommand command;
          unmanaged XmFormDialog message_box;
+	 unmanaged XmMessageDialog createDialog;
     };
     callbacks {
         MrmNcreateCallback = procedure AddListTree();
+    };
+};
+
+object createDialog : XmMessageDialog widget {
+    arguments {
+        XmNdialogStyle = XmDIALOG_FULL_APPLICATION_MODAL;
+        XmNdialogType = XmDIALOG_QUESTION;
+        XmNmessageString = compound_string("Tree does not exist");
+        XmNmessageAlignment = XmALIGNMENT_CENTER;
+        XmNokLabelString = compound_string("Create");
+        XmNx = 0;
+        XmNy = 0;
+        XmNwidth = 290;
+        XmNheight = 112;
+    };
+    callbacks {
+        XmNokCallback = procedure CreateTree;
     };
 };
 

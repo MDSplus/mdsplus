@@ -482,6 +482,7 @@ static void Init(Widget tree)
 
 static void CommandLineOpen(Display *display, Widget tree)
 {
+  char chars[132];
   int status;
   typedef struct {
 	int shot;
@@ -500,8 +501,16 @@ static void CommandLineOpen(Display *display, Widget tree)
   XtGetApplicationResources(BxFindTopShell(tree), (XtPointer)&options, resources, XtNumber(resources), (Arg *)NULL, 0);
   {
     int status;
-    if (options.edit)
+    if (options.edit) {
       status = TreeOpenEdit(options.tree, options.shot);
+      if (status == TreeFILE_NOT_FOUND) {
+	printf("Tree /%s/ shot /%d/ does not exist.  Create?(Y/N) ", options.tree, options.shot);
+	scanf("%s", chars);
+	if ((chars[0] == 'y') || (chars[0] == 'Y')) {
+	  status = TreeOpenNew(options.tree, options.shot);
+	}
+      }
+    }
     else
       status = TreeOpen(options.tree, options.shot, options.read_only);
     if (status&1)
@@ -614,6 +623,7 @@ static void InitializeCommandInterface(Widget w)
   toplevel = BxFindTopShell(w);
 }
 
+static Widget TREE;
 
 void
 AddListTree( Widget w, XtPointer client_data, XtPointer call_data)
@@ -621,6 +631,7 @@ AddListTree( Widget w, XtPointer client_data, XtPointer call_data)
         Widget tree;
 	ListTreeItem *item;
         tree = XtCreateWidget("tree", listtreeWidgetClass, w, NULL, 0);
+        TREE = tree;
         XtVaSetValues(tree,
           XtNheight,      	(Dimension)200,
           XtNwidth,		(Dimension)150,
@@ -1010,12 +1021,49 @@ void WriteTree( Widget w, XtPointer client_data, XtPointer call_data)
       XmdsComplain(BxFindTopShell(w), "Error writing or quiting from tree");
 }
 
+struct tree_id {
+  char *tree;
+  int  shot;
+};
+
+static void AskCreate(Widget w, char *tree, int shot)
+{
+  Widget ask_dlog = XtNameToWidget(BxFindTopShell(w), "*.createDialog");
+  struct tree_id *treeid = (struct tree_id *)malloc(sizeof(treeid));
+  treeid->shot = shot;
+  treeid->tree = (char *)malloc(strlen(tree)+1);
+  strcpy(treeid->tree, tree);
+  XtVaSetValues(ask_dlog, XmNuserData, (XtPointer)treeid, 0);
+  XtManageChild(ask_dlog);
+}
+
+void CreateTree( Widget w, XtPointer client_data, XtPointer call_data)
+{
+  int status=1;
+  struct tree_id *treeid;
+  XtVaGetValues(w, XmNuserData, (char *)(&treeid), NULL);
+  status = TreeOpenNew(treeid->tree, treeid->shot);
+  free(treeid->tree);
+  free(treeid);  
+  if (status&1) {
+    Widget tree = TREE;
+    ListTreeItem *top = ListTreeFirstItem(tree);
+    ListTreeRefreshOff(tree);
+    if (top != NULL) ListTreeDelete(tree, top);
+    Init(tree);
+    ListTreeRefreshOn(tree);
+  }
+}
+
 void open_tree(Widget w, char *tree, int shot)
 {
   int status;
   Widget edit = XtNameToWidget(BxFindTopShell(w), "*.edit_toggle");
-  if (XmToggleButtonGetState(edit))
+  if (XmToggleButtonGetState(edit)) {
     status = TreeOpenEdit(tree, shot);
+    if (status == TreeFILE_NOT_FOUND)
+      AskCreate(w, tree, shot);
+  }
   else {
     Widget r_o = XtNameToWidget(BxFindTopShell(w), "*.r_o_toggle");
     status = TreeOpen(tree, shot, XmToggleButtonGetState(r_o));
