@@ -523,10 +523,7 @@ int ServerBadSocket(int socket)
 int ServerConnect(char *server_in)
 {
   int sock = -1;
-/***** VMS
   char *srv = TranslateLogical(server_in);
-****************/
-  char *srv = server_in;
   char *server = srv ? srv : server_in;
   int found = 0;
   unsigned int addr;
@@ -565,10 +562,8 @@ int ServerConnect(char *server_in)
     if (sock == -1)
       sock = ConnectToMds(server);
   }
-/*************************** VMS
   if (srv)
     TranslateLogicalFree(srv);
-******************************************/
   if (!found && sock >= 0)
     AddClient(addr,port,sock);
   return(sock);
