@@ -23,7 +23,6 @@ LibSysAscTim
 LibTraverseTree
 LibWait
 MdsCompareXd
-MdsCompress
 MdsCopyDxXd
 MdsCopyDxXdZ
 MdsDescrToCstring
