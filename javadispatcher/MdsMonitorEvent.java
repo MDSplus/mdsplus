@@ -25,7 +25,16 @@ class MdsMonitorEvent extends MdsServerEvent
     String date_st;
     String error_message;
     
-    
+    public MdsMonitorEvent(Object obj, int phase, int nid, String msg)
+    {
+        super(obj, 0, 0, 1);
+        this.tree = null;
+        this.shot = 0;
+        this.phase = phase;
+        this.nid = nid;
+        this.error_message = msg;
+   }
+
     public MdsMonitorEvent(Object obj, String tree, int shot, int phase, int nid, String name, int on, int mode, 
         String server, int ret_status)
     {

@@ -8,6 +8,61 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                                                  ConnectionListener
 {
     
+
+    class UpdateList implements Runnable
+    {
+	MdsMonitorEvent me;
+
+	UpdateList(MdsMonitorEvent me)
+	{
+	    this.me = me;
+	} 
+
+	public void run()
+	{
+	    int status = 1;
+
+	    System.out.println(me);
+            switch(me.mode)
+            {
+                case MdsMonitorEvent.MonitorBuildBegin :
+                    resetAll(me);
+                case MdsMonitorEvent.MonitorBuild      : 
+                case MdsMonitorEvent.MonitorBuildEnd   :
+                    build_list.addElement(me);
+                    break;
+                case MdsMonitorEvent.MonitorCheckin    : 
+                    break;
+                case MdsMonitorEvent.MonitorDone       :
+                    status = me.ret_status;
+                case MdsMonitorEvent.MonitorDispatched : 
+                case MdsMonitorEvent.MonitorDoing      :
+                    int idx = getIndex(me, executing_list.size());
+                    if(idx == -2)
+                    {
+	                    JOptionPane.showMessageDialog(null, 
+	                                    "Invalid message received", 
+	                                    "Alert", 
+	                                    JOptionPane.ERROR_MESSAGE);
+	                    return;
+                    }                 
+                    if(idx == -1)
+                        executing_list.addElement(me);
+                    else
+                        executing_list.set(idx,me);
+                      
+                    if((status & 1) == 0) 
+                    {
+                        failed_list.addElement(me);
+                        showUpdateAction(failedList, -1);  
+                    }
+                    showUpdateAction(executingList, idx);                          
+                    break;
+            }
+            counter(me);
+        }	 
+    }
+    
     
     
     public class ErrorMgr extends MdsIp
@@ -21,21 +76,25 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     //The message handler: the expression and arguments are passed as a vector of MdsMessage
         public MdsMessage handleMessage(MdsMessage [] messages)
         {
-            int [] nids = null;
+            int nids[] = null;
+            int nid = 0;
             String message = null;
             //method MdsMessage.ToString returns the argument as a string
             //in this ase messages[0] contains the expression to be evaluated
             //the other elements of emssages contain additional arguments
-            //see the definition of MdsMessage (or ask me) if you need to handle other types of arguments
-            String arg1 = messages[0].ToString();
-            System.out.println(arg1);
+            //see the definition of MdsMessage (or ask me) 
+            //if you need to handle other types of arguments
             try {
                 nids = messages[1].ToIntArray();
-                System.out.println(nids[0]);
-                System.out.println(nids[1]);
+                nid = nids[0];
                 message = messages[2].ToString();
-                System.out.println(message);
-            } catch(Exception exc) {System.out.println(exc);}
+                System.out.println(message + " nid = " + nid);
+            } 
+            catch(Exception exc)
+            {
+                System.out.println("Error receiving error message : " + exc);
+                return new MdsMessage((byte)1);
+            }
                         
             //do the stuff here
             
@@ -55,8 +114,18 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             
             if(actions.containsKey(new Integer(nids[0])))
             {
-                MdsMonitorEvent e = (MdsMonitorEvent)actions.get(new Integer(nids[0]));
-                e.error_message += message+"\n";
+                MdsMonitorEvent me = (MdsMonitorEvent)actions.get(new Integer(nids[0]));
+                if(me.error_message == null || me.error_message.indexOf("SS-W-NOMSG") != -1)
+                    me.error_message = message;
+                else
+                    me.error_message += " " + message;
+                System.out.println("Async error on nid "+me.nid + " " + me.error_message);
+            }
+            else
+            {
+                MdsMonitorEvent me = new MdsMonitorEvent(this, curr_phase, nids[0], message);
+                actions.put(new Integer(nids[0]), me);
+                System.out.println("Nid non presente "+nids[0] + " " + message);
             }
             
             
@@ -65,12 +134,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             //if a integer number has to be returned instead, 
             //you can type return new MdsMessage((Byte)<number>) 
         }
-
     }
-
-    
-    
-    
     
     static Font disp_font = new Font("Platino Linotype", Font.ITALIC, 12);
     static Font doing_font = new Font("Platino Linotype", Font.ITALIC | Font.BOLD, 12);
@@ -122,6 +186,35 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         public ToolTipJList(ListModel lm)
         {
             super(lm);
+            addMouseListener(new MouseAdapter()
+            {
+                public void mouseClicked(MouseEvent e)
+                {
+                    if(e.getClickCount() == 2)
+                    {
+                        int index = locationToIndex(e.getPoint());
+                        ListModel dlm = getModel();
+                        MdsMonitorEvent item = (MdsMonitorEvent)dlm.getElementAt(index);;
+                        ensureIndexIsVisible(index);
+                        
+                        if((item.ret_status & 1) == 0)
+                        	JOptionPane.showMessageDialog(null, 
+		                            item.error_message, 
+		                            "alert", 
+		                            JOptionPane.ERROR_MESSAGE);
+
+                        else
+                        {
+                            if(item.error_message != null && item.error_message.length() != 0)
+                                JOptionPane.showMessageDialog(null, 
+		                            item.error_message, 
+		                            "alert", 
+		                            JOptionPane.WARNING_MESSAGE);
+                        }
+                        System.out.println("Double clicked on " + item);        
+                    }
+                }    
+            });
         }
         
         public String getToolTipText(MouseEvent event) 
@@ -743,72 +836,31 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     
     public synchronized void processMdsServerEvent(MdsServerEvent e)
     {
-        int status = 1;
-        
         if(e instanceof MdsMonitorEvent)
         {
             MdsMonitorEvent me = (MdsMonitorEvent)e;
-            switch(me.mode)
-            {
-                case MdsMonitorEvent.MonitorBuildBegin :
-                    resetAll(me);
-                case MdsMonitorEvent.MonitorBuild      : 
-                case MdsMonitorEvent.MonitorBuildEnd   :
-                    build_list.addElement(me);
-                    break;
-                case MdsMonitorEvent.MonitorCheckin    : 
-                    break;
-                case MdsMonitorEvent.MonitorDone       :
-                    status = me.ret_status;
-                case MdsMonitorEvent.MonitorDispatched : 
-                case MdsMonitorEvent.MonitorDoing      :
-                    int idx = getIndex(me, executing_list.size());
-                    if(idx == -2)
-                    {
-	                    JOptionPane.showMessageDialog(null, 
-	                                    "Invalid message received", 
-	                                    "Alert", 
-	                                    JOptionPane.ERROR_MESSAGE);
-	                    return;
-                    }
-                    
-                    if(idx == -1)
-                        executing_list.addElement(me);
-                    else
-                        executing_list.set(idx,me);
-                        
-                    if((status & 1) == 0) 
-                    {
-                        failed_list.addElement(me);
-                        showUpdateAction(failedList, -1);  
-                    }
-                    showUpdateAction(executingList, idx);  
-                        
-                    break;
-            }
-            counter(me);
+	    UpdateList ul = new UpdateList(me);
+	    try
+	    {
+		//SwingUtilities.invokeAndWait(ul); 
+	      SwingUtilities.invokeLater(ul);
+            } catch(Exception exc){System.out.println("MERDA " + exc);}
+
         }
+
     }
     
     private  void showUpdateAction(JList list, int idx)
     {
         curr_list = list;
         item_idx = idx;
-        try
+        
+	if(auto_scroll && show_phase == -1)
         {
-            SwingUtilities.invokeAndWait(new Runnable() 
-            {
-                public void run()
-                {
-                    if(auto_scroll && show_phase == -1)
-                    {
-                        if(item_idx == -1)
-                            item_idx = curr_list.getModel().getSize() - 1;
-                        curr_list.ensureIndexIsVisible(item_idx);
-                    }   
-                }
-            });
-        } catch(Exception e){}
+            if(item_idx == -1)
+               item_idx = curr_list.getModel().getSize() - 1;
+            curr_list.ensureIndexIsVisible(item_idx);
+        }   
     }
     
     private void counter(MdsMonitorEvent me)
@@ -882,7 +934,9 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             if(phase_hash.containsKey(new Integer(ph)))
                 actions = (Hashtable)phase_hash.get(new Integer(ph));                                        
                     
-        } else {    
+        } 
+	else 
+	{    
             if(phase_hash.containsKey(new Integer(me.phase)))
                 actions = (Hashtable)phase_hash.get(new Integer(me.phase));
             else 
@@ -908,21 +962,54 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 idx = 0;
             }
         }
-        
+
+        if(me.phase == -2) //redispatch phase index
+        {
+            if(show_phase != -1)
+               ph = show_phase;
+            else
+                if(curr_phase != -1)
+                    ph = curr_phase;
+        }
+
         if(actions == null)
             return -2;
         
         if(actions.containsKey(new Integer(me.nid)))
         {
             MdsMonitorEvent e = (MdsMonitorEvent)actions.get(new Integer(me.nid));
+
+            System.out.println("Replace action nid "+ e.nid + " " + e.error_message);
+            //Check if the current MdsMonitorActionEvenr is added 
+            //by ErrorMgr thread
+            if(e.tree == null)
+            {
+                e.tree = me.tree;
+                e.shot = me.shot;
+                e.name = me.name;
+                e.on = me.on;
+                e.mode = me.mode;
+                e.server = me.server;
+            }
+
             if(me.mode == MdsMonitorEvent.MonitorDone)
             {
+             //If there is an error message in the stored MdsMonitorEvent
+            //it must be appended at the error message field of the
+            //current MdsMonitorEvent
+            
+                if(e.error_message != null && e.error_message.indexOf("SS-W-NOMSG") == -1)
+                {
+                    me.error_message += " " + e.error_message;
+                }
+
                 if(e.mode == MdsMonitorEvent.MonitorDispatched)
                     doing_count++;
             }
             e.ret_status = me.ret_status;
             e.mode = me.mode;
             e.date = me.date;
+
             return e.jobid;
         }
         else
@@ -931,7 +1018,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             actions.put(new Integer(me.nid), me);
             return -1;
         }            
-    }
+    } 
     
     private boolean addPhaseItem(int phase, String phase_st)
     {
