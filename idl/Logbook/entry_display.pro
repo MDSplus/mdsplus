@@ -358,7 +358,7 @@ function get_query, ctx, voided=voided, user=user, run=run, topic=topic
         set_database, 'logbook'
         n = dsql('select max(run) from runs', run)
         sql_finish
-        runs(i) = string(run(0), format='(I6)')
+        runs(i) = string(run(0), format='(I7)')
       endif
     endfor
     if (n_elements(runs) eq 1) then $
