@@ -1,11 +1,441 @@
-Version 1.3-0
+Version 1.3-1
 
+
+2002-11-01 08:51  twf
+
+	* mdsdcl/mdsdcl_dcl_parse.c:
+	
+	Fix buffer overrun problem
+
+2002-10-31 09:25  manduchi
+
+	* javatraverser/CompileTree.java:
+	
+	Compile renamed nodes
+
+2002-10-30 10:56  manduchi
+
+	* treeshr/TreeSetNci.c:
+	
+	Always Lock the file at the beginning of TreeSetNciLw.
+
+2002-10-30 10:10  manduchi
+
+	* treeshr/: RemoteAccess.c, TreeSetNci.c:
+	
+	Fixed O_BINARY and O_RANDOM flags in MDS_IO_OP
+
+2002-10-30 07:41  manduchi
+
+	* javadispatcher/: ActionServer.java, jDispatcherIp.java:
+	
+	Added default shotid support
+
+2002-10-30 07:11  manduchi
+
+	* mdstcpip/mdsip_u.c:
+	
+	Fidex memory allocation problems in event management
+
+2002-10-30 04:28  manduchi
+
+	* javatraverser/: CompileTree.java, Database.java,
+	DecompileTree.java, DeviceCancel.gif, DeviceSetup.gif,
+	NodeInfo.java, action.gif, device.gif, task.gif, window.gif:
+	
+	Added support for XML - MDSplus trees conversion
+
+2002-10-30 04:25  manduchi
+
+	* javamds/: Database.h, JavaTrav.c:
+	
+	Added support for XMS - MDSplus tree conversion
+
+2002-10-29 15:22  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Fix for windows
+
+2002-10-29 15:21  twf
+
+	* mdstcpip/: mdsip_socket_io.c, mdsipshr.def:
+	
+	Fix GetMdsMsgOOB on windows
+
+2002-10-25 13:23  twf
+
+	* configure, configure.in:
+	
+	Add MacOSX support
+
+2002-10-25 13:01  twf
+
+	* macosx/: bindtable, macmake.sh:
+	
+	Add MacOSX support
+
+2002-10-25 12:48  twf
+
+	* traverser/bxutils-uil.c, treeshr/RemoteAccess.c,
+	treeshr/TreeOpen.c, treeshr/TreePutRecord.c, treeshr/treeshrp.h:
+	
+	Add MacOSX support
+
+2002-10-25 12:46  twf
+
+	* remcam/Makefile.in:
+	
+	Use SHARETYPE for shared library type
+
+2002-10-25 12:40  twf
+
+	* mdsshr/MdsEvents.c, mdsshr/librtl.c, mdstcpip/Makefile.in,
+	mdstcpip/mdsip.h, mdstcpip/mdsiputil.c:
+	
+	Add MacOSX support
+
+2002-10-25 12:37  twf
+
+	* javascope/jScope.template, mdsmisc/Makefile.in:
+	
+	Add support for MacOSX
+
+2002-10-25 12:34  twf
+
+	* javaclient/Makefile.in, javaclient/MdsPlusDescriptor.java,
+	javamds/Makefile.in:
+	
+	Add support for MacOSX
+
+2002-10-25 12:29  twf
+
+	* gen_device/Makefile.in, gen_device/gen_device.c,
+	include/mdstypes.h:
+	
+	Add support for MacOSX
+
+2002-10-25 12:09  twf
+
+	* conf/: config.guess, config.sub:
+	
+	Add MacOSX support
+
+2002-10-25 12:06  twf
+
+	* configure.in, configure:
+	
+	Add MacOSX support
+
+2002-10-24 09:20  manduchi
+
+	* tdi/RfxDevices/: TRCF__store.fun, TRCH__store.fun:
+	
+	Use QSTOP instead of FSTOP
+
+2002-10-24 08:54  manduchi
+
+	* javamds/: Database.h, JavaTrav.c:
+	
+	jTraverser changes
+
+2002-10-24 07:32  manduchi
+
+	* javatraverser/: Database.java, NodeInfo.java, TRCFSetup.java:
+	
+	Minor fixes
+
+2002-10-22 11:50  twf
+
+	* tdi/hdf5/: hdf5close.fun, hdf5list.fun, hdf5open.fun,
+	hdf5read.fun:
+	
+	Add hdf5 access functions
+
+2002-10-22 11:49  twf
+
+	* configure, configure.in:
+	
+	Add hdf5 utilities
+
+2002-10-22 11:49  twf
+
+	* hdf5/: Makefile.in, dynhdf5.c, hdf5ToMds.c, hdf5tdi.c:
+	
+	Add hdf5 to MDSplus tree converter and tdi to hdf5 gateway
+
+2002-10-21 08:54  twf
+
+	* configure, configure.in:
+	
+	Fix location of IDL libraries
+
+2002-10-17 13:16  twf
+
+	* configure, configure.in:
+	
+	allow GLOBUS_FLAVOR environment variable
+
+2002-10-17 12:55  twf
+
+	* mdsshr/MdsSerialize.c:
+	
+	Fix bug in apd code
+
+2002-10-10 10:51  manduchi
+
+	* tdi/RfxDevices/: RFXPConfig__add.fun, TRCH__trigger.fun,
+	VMEWaves__add.fun, VMEWaves__hw_trigger.fun, VMEWaves__trigger.fun:
+	
+	Added RFXPConfig device
+
+2002-10-10 10:45  manduchi
+
+	* javatraverser/: DeviceField.java, DeviceFieldBeanInfo.java,
+	DeviceFieldCustomizer.java, RFXPConfigSetup.java,
+	VMEWavesSetup.java:
+	
+	Fixes
+
+2002-10-08 12:09  jas
+
+	* idl/dsql.pro:
+	
+	fix strings on 32k boundries
+
+2002-10-07 17:04  jas
+
+	* tdi/time_union.fun:
+	
+	fix time_union if all sigs are empty
+
+2002-10-03 15:02  twf
+
+	* mdsdcl/mdsdcl_wait.c, mdslib/MdsLib.c:
+	
+	Fix for Mac OSX
+
+2002-10-03 14:55  twf
+
+	* cdu/: cdu.c, dasutil_routines1.c, dasutil_routines3.c:
+	
+	Fix for Mac OSX
+
+2002-10-03 14:51  twf
+
+	* include/config.h.in:
+	
+	Add Mac OSX support
+
+2002-10-03 14:20  twf
+
+	* configure, configure.in:
+	
+	Fix for sparc
+
+2002-10-03 14:18  twf
+
+	* configure, configure.in:
+	
+	remote cts makefile
+
+2002-10-03 14:16  twf
+
+	* configure, configure.in:
+	
+	Fix for sparc
+
+2002-10-03 14:11  twf
+
+	* configure, configure.in:
+	
+	Fix for sparc
+
+2002-10-02 12:34  twf
+
+	* mdstcpip/mdsip_u.c, tcl/tcl_dispatch.c:
+	
+	Fix for sparc, pthread.h uses types not defined in gcc's
+	<sys/types>
+
+2002-10-02 12:33  twf
+
+	* mdstcpip/: mdsip.h, mdsip_socket_io.c:
+	
+	Fix for sparc
+
+2002-10-02 12:30  twf
+
+	* mdsshr/librtl.c:
+	
+	Fix for sparc, pthread.h uses types not defined in gcc's
+	<sys/types>
+
+2002-10-02 12:25  twf
+
+	* mdsdcl/mdsdcl_wait.c, mdsshr/MdsEvents.c, mdsshr/MdsMalloc.c,
+	mdsshr/mdsmsg.c, servershr/ServerQAction.c:
+	
+	Fix for sparc, pthread.h uses types not defined in gcc's
+	<sys/types>
+
+2002-10-02 12:23  twf
+
+	* include/servershr.h:
+	
+	Fix for sparc
+
+2002-10-02 11:25  twf
+
+	* mdsshr/librtl.c:
+	
+	Fix install cleanup routines
+
+2002-10-02 11:24  twf
+
+	* mdsplus.sln, Setup/Setup.vdproj:
+	
+	Add new setup image
+
+2002-10-02 11:07  twf
+
+	* WinInstall/: WinInstall.c, WinInstall.vcproj:
+	
+	Add setup image
+
+2002-10-01 12:11  manduchi
+
+	* tdi/RfxDevices/: DevLogErr.fun, RFXTimes__add.fun:
+	
+	Fixes
+
+2002-10-01 12:05  manduchi
+
+	* javatraverser/: ActionData.java, ActionEditor.java, ApdData.java,
+	ArgEditor.java, ArrayData.java, AtomicData.java,
+	Aurora14Setup.java, AxisEditor.java, ByteArray.java, ByteData.java,
+	CallData.java, CompoundData.java, ConditionData.java,
+	ConglomData.java, Data.java, DataChangeEvent.java,
+	DataChangeListener.java, DataEditor.java, DataId.java,
+	DataListener.java, Database.java, DatabaseException.java,
+	DependencyData.java, DeviceApply.java, DeviceApplyBeanInfo.java,
+	DeviceButtons.java, DeviceButtonsBeanInfo.java,
+	DeviceButtonsCustomizer.java, DeviceCancel.java,
+	DeviceCancelBeanInfo.java, DeviceChannel.java,
+	DeviceChannelBeanInfo.java, DeviceChannelCustomizer.java,
+	DeviceChoice.java, DeviceChoiceBeanInfo.java,
+	DeviceChoiceCustomizer.java, DeviceComponent.java,
+	DeviceControl.java, DeviceCustomizer.java, DeviceDispatch.java,
+	DeviceDispatchBeanInfo.java, DeviceDispatchField.java,
+	DeviceField.java, DeviceFieldBeanInfo.java,
+	DeviceFieldCustomizer.java, DeviceOk.java, DeviceOkBeanInfo.java,
+	DeviceReset.java, DeviceResetBeanInfo.java, DeviceSetup.java,
+	DeviceSetupBeanInfo.java, DeviceTable.java,
+	DeviceTableBeanInfo.java, DeviceTableCustomizer.java,
+	DimensionData.java, DispatchData.java, DispatchEditor.java,
+	DisplayData.java, DisplayNci.java, DoubleArray.java,
+	DoubleData.java, Editor.java, EventData.java, ExprEditor.java,
+	FloatArray.java, FloatArrayEditor.java, FloatData.java,
+	FrameRepository.java, FunctionData.java, IdentData.java,
+	IllegalDataException.java, IntArray.java, IntArrayEditor.java,
+	IntData.java, LabeledExprEditor.java, MPBDecoderSetup.java,
+	MPBEncoderSetup.java, MPBRecorderSetup.java, MethodData.java,
+	MethodEditor.java, ModifyData.java, NidData.java, Node.java,
+	NodeBeanInfo.java, NodeDataPropertyEditor.java,
+	NodeDisplayData.java, NodeDisplayNci.java, NodeEditor.java,
+	NodeId.java, NodeInfo.java, NodeInfoPropertyEditor.java,
+	NodeModifyData.java, OctaArray.java, OctaData.java,
+	ParameterData.java, PathData.java, ProcedureData.java,
+	ProcedureEditor.java, ProgramData.java, ProgramEditor.java,
+	QuadArray.java, QuadData.java, RFXClockSetup.java,
+	RFXDClockSetup.java, RFXGClockSetup.java, RFXPulseSetup.java,
+	RFXTimesSetup.java, RFXTimingSetup.java, RangeData.java,
+	RangeEditor.java, RemoteTree.java, RoutineData.java,
+	RoutineEditor.java, ShortArray.java, ShortData.java,
+	SignalData.java, StringArray.java, StringData.java,
+	SyntaxException.java, TRCFSetup.java, TaskEditor.java, Tree.java,
+	TreeDialog.java, TreeNode.java, TreeServer.java,
+	UnsupportedDataException.java, VMEWavesSetup.java, WindowData.java,
+	WindowEditor.java, WithErrorData.java, WithUnitsData.java,
+	jTraverser.java:
+	
+	Fixes
+
+2002-10-01 10:58  manduchi
+
+	* tdi/RfxDevices/DevLogErr.fun, tdi/RfxDevices/DevNodeCvt.fun,
+	tdi/RfxDevices/DevPut.fun, tdi/RfxDevices/GPIBGetId.fun,
+	tdi/RfxDevices/GPIBHardInit.fun, tdi/RfxDevices/GPIBInit.fun,
+	tdi/RfxDevices/GPIBQuery.fun, tdi/RfxDevices/GPIBReadShorts.fun,
+	tdi/RfxDevices/GPIBWrite.fun, tdi/RfxDevices/GPIBWriteW.fun,
+	tdi/RfxDevices/MPBDecoder__add.fun,
+	tdi/RfxDevices/MPBDecoder__init.fun,
+	tdi/RfxDevices/MPBEncoder__add.fun,
+	tdi/RfxDevices/MPBEncoder__disable.fun,
+	tdi/RfxDevices/MPBEncoder__init.fun,
+	tdi/RfxDevices/MPBEncoder__trigger.fun,
+	tdi/RfxDevices/MPBRecorder__add.fun,
+	tdi/RfxDevices/MPBRecorder__init.fun,
+	tdi/RfxDevices/MPBRecorder__store.fun,
+	tdi/RfxDevices/RFXClock__add.fun,
+	tdi/RfxDevices/RFXTiming__add.fun, tdi/RfxDevices/TRCF__add.fun,
+	tdi/RfxDevices/TRCF__init.fun, tdi/RfxDevices/TRCF__store.fun,
+	tdi/RfxDevices/TRCF__trigger.fun, tdi/RfxDevices/TRCH__init.fun,
+	tdi/RfxDevices/TRCH__store.fun,
+	tdi/RfxDevices/TimingDecodeEvent.fun,
+	tdi/RfxDevices/TimingEncodeEvent.fun,
+	tdi/RfxDevices/TimingGetEventTime.fun,
+	tdi/RfxDevices/TimingGetEvents.fun,
+	tdi/RfxDevices/TimingRegisterEventTime.fun,
+	tdi/RfxDevices/VMEWaves__init.fun, javadispatcher/Action.java,
+	javadispatcher/ActionServer.java, javadispatcher/Balancer.java,
+	javadispatcher/Descriptor.java, javadispatcher/InfoServer.java,
+	javadispatcher/MdsHelper.java, javadispatcher/MdsIp.java,
+	javadispatcher/MdsMonitor.java,
+	javadispatcher/MdsMonitorEvent.java, javadispatcher/MdsServer.java,
+	javadispatcher/MdsServerEvent.java,
+	javadispatcher/MdsServerListener.java,
+	javadispatcher/MonitorEvent.java,
+	javadispatcher/MonitorListener.java,
+	javadispatcher/NetworkEvent.java,
+	javadispatcher/NetworkListener.java, javadispatcher/Server.java,
+	javadispatcher/ServerEvent.java,
+	javadispatcher/ServerListener.java,
+	javadispatcher/jDispatchMonitor.java,
+	javadispatcher/jDispatcher.java, javadispatcher/jDispatcherIp.java:
+	
+	Fixes
+
+2002-09-30 15:32  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	Windows thread fixes
+
+2002-09-30 15:31  twf
+
+	* mdsshr/MdsShr.def:
+	
+	New version entry points
+
+2002-09-30 15:30  twf
+
+	* Setup/Setup.vdproj, tcl/tcl_commands.vcproj,
+	mdsshr/mdsshr.vcproj:
+	
+	Update projects on Windows
 
 2002-09-24 09:02  twf
 
 	* mdstcpip/mdsip_u.c:
 	
 	Fix memory leak in multi mode operation
+
+2002-09-24 09:02  twf
+
+	* tdishr/: TdiShr.def, TdiVar.c:
+	
+	Add TdiDeleteContext
 
 2002-09-24 09:02  twf
 
