@@ -59,7 +59,8 @@ public class DeviceField extends DeviceComponent
         initial_state = is_on;
         if(showState)
         {
-            add(checkB = new JCheckBox());
+            //add(checkB = new JCheckBox());
+            checkB.setVisible(true);
             checkB.setSelected(is_on);
             checkB.addChangeListener(new ChangeListener()
             {

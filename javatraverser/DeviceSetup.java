@@ -47,7 +47,7 @@ public class DeviceSetup extends JDialog
     public void setDeviceTitle(String deviceTitle) 
     {
         this.deviceTitle = deviceTitle;
-        setTitle(deviceTitle);
+        //setTitle(deviceTitle);
         
     }
     public String getDeviceTitle() {return deviceTitle; }
@@ -77,6 +77,17 @@ public class DeviceSetup extends JDialog
  
         this.baseNid = baseNid;
         this.subtree = subtree;  
+        
+        String path = null;
+        try {
+            NodeInfo info = subtree.getInfo(new NidData(baseNid), 0);
+            path = info.getFullPath();
+        }catch(Exception exc){}
+        if(path == null)
+            setTitle(deviceTitle);
+        else
+            setTitle(deviceTitle + " -- " + path);
+            
         
         //collect every DeviceComponent
         java.util.Stack search_stack = new java.util.Stack();  
@@ -228,6 +239,11 @@ public class DeviceSetup extends JDialog
                 currData = ((DeviceComponent)(device_components.elementAt(idx))).getData();
                 if(currData != null)
                     varExpr.append("_"+currId+ " = " + Tree.dataToString(currData) + ";");
+                int currState;
+                if(((DeviceComponent)(device_components.elementAt(idx))).getState())
+                    varExpr.append("_"+currId+ "_state = 1; ");
+                else
+                    varExpr.append("_"+currId+ "_state = 0; ");
             }
         }
         for(idx = 0; idx < num_expr; idx++)

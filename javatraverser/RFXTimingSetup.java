@@ -71,7 +71,8 @@ class RFXTimingSetup extends DeviceSetup
     String fullRecEvents[];
     float fullRecTimes[];
     NidData recorderNid = null;
-    
+    boolean firstScan = true;
+    JSplitPane splitP;
     
     class Decoder
     {
@@ -563,6 +564,16 @@ class RFXTimingSetup extends DeviceSetup
             }
         }
         reportEvents();
+        if(firstScan)
+            firstScan = false;
+        else
+        {
+            String errors = getErrors();
+            if(errors != null)
+                JOptionPane.showMessageDialog(RFXTimingSetup.this, errors, "Errors in timing configuration",
+                    JOptionPane.WARNING_MESSAGE);
+            
+        }
     }
  
     
@@ -611,7 +622,8 @@ class RFXTimingSetup extends DeviceSetup
                     try {
                         device.draw(g, chanIdx, start, convFact, d.width, decoder.path, chan);
                         chanIdx++;
-                    }catch(Exception exc){System.err.println("Error drawing output"); }
+                    }catch(Exception exc){System.err.println("Error drawing output for device " + device.path + " (channel " + chan + 
+                        " of decoder " + decoder.path + "): " + exc); }
                 }
             }
         }           
@@ -631,7 +643,9 @@ class RFXTimingSetup extends DeviceSetup
     {
         this.subtree = subtree;
         scan();
-        getContentPane().add(buildEventTable(), "Center");
+        //getContentPane().add(buildEventTable(), "Center");
+        JComponent eventT = buildEventTable();
+        splitP.setBottomComponent(eventT);
         pack();
         javax.swing.Timer timer = new javax.swing.Timer(500, new ActionListener()
         {
@@ -645,7 +659,7 @@ class RFXTimingSetup extends DeviceSetup
             }
         });
         timer.setRepeats(false);
-        
+        timer.start();
     }
     
     void reportEvents()
@@ -818,7 +832,9 @@ class RFXTimingSetup extends DeviceSetup
     public RFXTimingSetup()
     {
         super();
+        splitP = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(splitP, "Center");
         setTitle("Timing supervisor");
         JComponent waves = new JComponent()
         {
@@ -831,7 +847,8 @@ class RFXTimingSetup extends DeviceSetup
         };
         JScrollPane scroll = new JScrollPane(waves);
         scroll.setPreferredSize(new Dimension(500, 300));
-        getContentPane().add(scroll, "North");
+        splitP.setTopComponent(scroll);
+        //getContentPane().add(scroll, "North");
         JPanel jp = new JPanel();
         JButton cancelB = new JButton("Cancel");
         cancelB.addActionListener(new ActionListener() {

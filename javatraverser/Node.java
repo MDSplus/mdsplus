@@ -406,7 +406,7 @@ public class Node
                 newNode.expand();
                 try {
                     Data data = fromNode.getData();
-                    if(data != null)
+                    if(data != null && fromNode.getUsage() != NodeInfo.USAGE_ACTION)
                         newNode.setData(data);
                 }catch(Exception exc){}
                 for(int i = 0; i < fromNode.sons.length; i++)
