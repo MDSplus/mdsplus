@@ -29,7 +29,7 @@ Descriptor.java             JiNcVarInt.java             RotateFilter.java       
 JiNcVarShort.java  \
 FrameData.java              JiSlab.java \
 JiSlabIterator.java         			    WaveformEvent.java  \
-Frames.java                 JiVar.java                  			    WaveformListener.java NotConnectedDataProvider.java
+Frames.java                 JiVar.java              UniversalDataProvider.java     WaveformListener.java NotConnectedDataProvider.java
 
 
 

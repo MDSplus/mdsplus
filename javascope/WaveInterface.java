@@ -728,8 +728,11 @@ public class WaveInterface
 	        }
 	    }    
 	    else
-	        title = dp.GetWaveData(in_y[0]).GetTitle();
-	    
+	    {
+	        try{
+	            title = dp.GetWaveData(in_y[0]).GetTitle();
+	        }catch(Exception exc) {title = null;}
+	    }
 	    if(in_xlabel != null && (in_xlabel.trim()).length() != 0)
 	    {
 	        xlabel = dp.GetString(in_xlabel);
@@ -740,7 +743,11 @@ public class WaveInterface
 	        }
 	    }	
 	    else
-	        xlabel = dp.GetWaveData(in_y[0], in_x[0]).GetXLabel();
+	    {
+	        try {
+	            xlabel = dp.GetWaveData(in_y[0], in_x[0]).GetXLabel();
+	        }catch(Exception exc) {xlabel = null;}
+	    }
 	    
 	    if(in_ylabel != null && (in_ylabel.trim()).length() != 0)
 	    {
@@ -752,8 +759,11 @@ public class WaveInterface
 	        }
 	    }	
 	    else
-	        ylabel = dp.GetWaveData(in_y[0]).GetYLabel();
-      
+	    {
+	        try {
+	            ylabel = dp.GetWaveData(in_y[0]).GetYLabel();
+            }catch(Exception exc) {ylabel = null; }
+        }
       
 	    return 1;
     } 
@@ -1065,7 +1075,10 @@ public class WaveInterface
 	        return null;
 	    }
 	    
-	    dimension = dp.GetWaveData(in_y[curr_wave]).GetNumDimension();
+	    
+	    try {
+	        dimension = dp.GetWaveData(in_y[curr_wave]).GetNumDimension();
+	    }catch(Exception exc) {dimension = 1; }
 	    if(dp.ErrorString() != null)
 	    {
 	        curr_error = dp.ErrorString();
@@ -1081,7 +1094,10 @@ public class WaveInterface
 	    if(in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0)
 	    {
 	        wd = dp.GetWaveData(in_y[curr_wave], in_x[curr_wave]);
-		    curr_data = wd.GetFloatData();
+	        if(wd == null)
+	            curr_data = null;
+	        else
+		        curr_data = wd.GetFloatData();
 	
 	        if(curr_data != null && curr_data.length > 1 && in_up_err != null && 
 		        in_up_err[curr_wave] != null && (in_up_err[curr_wave].trim()).length() != 0)
@@ -1113,7 +1129,10 @@ public class WaveInterface
 	        else
 		        wd = dp.GetResampledWaveData(in_y[curr_wave], xmin, xmax, Waveform.MAX_POINTS);
 
-		    curr_data = wd.GetFloatData();	        
+            if(wd == null)
+                curr_data = null;
+            else
+		        curr_data = wd.GetFloatData();	        
 	        
 	        if(dimension == 1)
 	        {

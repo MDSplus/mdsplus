@@ -44,10 +44,10 @@ class Base64
                 } else {
                     word <<=2;
                     out_s.append((char)Base64Alphabet[word]);
-                    out_s.append('=');
+                    out_s.append("=");
                 }
             } else {
-                out_s.append((char)Base64Alphabet[word]);
+                out_s.append((char)Base64Alphabet[word<<4]);
                 out_s.append("==");
             }
             size -=3;
