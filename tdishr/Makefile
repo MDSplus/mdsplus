@@ -94,8 +94,8 @@ clean :
 #TdiLex.c : TdiLex.x
 #	lex -t TdiLex.x > $@
 
-tdiyacc.h : TdiYacc.y
-	yacc -d TdiYacc.y ; mv y.tab.h $@
+#tdiyacc.h : TdiYacc.y
+#	yacc -d TdiYacc.y ; mv y.tab.h $@
 
 .depend : TdiLex.c TdiYacc.c
 	find *.c -exec $(MAKE_DEPEND)
