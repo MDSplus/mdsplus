@@ -285,6 +285,7 @@ struct descriptor_xd	*data_ptr)
 struct descriptor		key_dsc = EMPTDY_S;
 node_type			*node_ptr;
 block_type			*block_ptr;
+ struct descriptor               upstr = {0,DTYPE_T,CLASS_D,0};
 int				size = 0, status;
 STATIC_CONSTANT int zero = 0;
   LockTdiMutex(&lock,&lock_initialized);
@@ -293,9 +294,9 @@ STATIC_CONSTANT int zero = 0;
 	Find where we should place the stuff.
 	************************************/
 	status = TdiFindIdent(3, ident_ptr, &key_dsc, 0, &block_ptr);
-	if (status & 1) status = LibInsertTree(&block_ptr->head, &key_dsc, &zero, compare, allocate, &node_ptr, block_ptr);
-	if (key_dsc.class != CLASS_S) 
-          StrFree1Dx(&key_dsc);
+        StrUpcase(&upstr,&key_dsc);
+	if (status & 1) status = LibInsertTree(&block_ptr->head, &upstr, &zero, compare, allocate, &node_ptr, block_ptr); 
+        StrFree1Dx(&upstr);
 	if (status & 1) {
 		if (node_ptr->xd.class == 0) 
                   node_ptr->xd = EMPTY_XD;
